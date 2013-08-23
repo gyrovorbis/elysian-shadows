@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "basic", "basic.vcxproj", "{3FC403F7-9025-4658-BF88-28065315C093}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E13F5BC8-952A-4C83-BF8C-D0C26E04516D} = {E13F5BC8-952A-4C83-BF8C-D0C26E04516D}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libGyroWin32", "..\..\..\vs2010\libGyroWin32.vcxproj", "{E13F5BC8-952A-4C83-BF8C-D0C26E04516D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3FC403F7-9025-4658-BF88-28065315C093}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3FC403F7-9025-4658-BF88-28065315C093}.Debug|Win32.Build.0 = Debug|Win32
+		{3FC403F7-9025-4658-BF88-28065315C093}.Release|Win32.ActiveCfg = Release|Win32
+		{3FC403F7-9025-4658-BF88-28065315C093}.Release|Win32.Build.0 = Release|Win32
+		{E13F5BC8-952A-4C83-BF8C-D0C26E04516D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E13F5BC8-952A-4C83-BF8C-D0C26E04516D}.Debug|Win32.Build.0 = Debug|Win32
+		{E13F5BC8-952A-4C83-BF8C-D0C26E04516D}.Release|Win32.ActiveCfg = Release|Win32
+		{E13F5BC8-952A-4C83-BF8C-D0C26E04516D}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
