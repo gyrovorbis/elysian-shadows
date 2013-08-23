@@ -27,8 +27,6 @@
 #include "elysian_adventure_log.hpp"
 #include "elysian_lua_behavior.hpp"
 
-#include <iostream>
-
 namespace elysian {
 
 //======STATIC MEMBERS=====
@@ -74,7 +72,6 @@ void Debug::writeLog(const Debug::SOURCE source, const Debug::LEVEL level, const
 	_dbgFile << buffer;
 	_dbgFile.flush(); //write to log file
 	gyPrintf(buffer); //use the "preferred" IO of each platform
-    std::cout << buffer << endl;
     
 	//Wrap to AdventureLog
 	if(_advLogWrap) {

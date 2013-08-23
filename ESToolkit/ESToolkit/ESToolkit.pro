@@ -229,6 +229,6 @@ macx {
 
 RESOURCES += resource/resource.qrc \
 
-DESTDIR = ../../../Project
+DESTDIR = ../../Project
 
 
