@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SheetDockWidget</class>
+ <widget class="QDockWidget" name="SheetDockWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>450</width>
+    <height>220</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>100</width>
+    <height>100</height>
+   </size>
+  </property>
+  <property name="features">
+   <set>QDockWidget::AllDockWidgetFeatures</set>
+  </property>
+  <property name="allowedAreas">
+   <set>Qt::BottomDockWidgetArea|Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+  </property>
+  <property name="windowTitle">
+   <string>Sheet View</string>
+  </property>
+  <widget class="QWidget" name="dockWidgetContents">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="margin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="SheetView" name="m_tileSelectionView">
+      <property name="resizeAnchor">
+       <enum>QGraphicsView::AnchorViewCenter</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>SheetView</class>
+   <extends>QGraphicsView</extends>
+   <header>sheetView.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

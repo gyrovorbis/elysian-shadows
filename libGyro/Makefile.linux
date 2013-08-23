@@ -1,0 +1,26 @@
+TARGET = libGyroLinux.a
+
+INCDIR=include include/kinetic
+SRCDIR:=source source/x86 source/glal source/soft source/kinetic
+OBJDIR=obj/linux
+DEPDIR=.dep/linux
+
+CFLAGS = $(addprefix -I , $(INCDIR))
+CC=gcc
+AR=ar rcs
+
+include bin/gyromake.rules
+
+LIBS = -lSDL -lpng
+CFLAGS+= -O2 -Wall -DGYRO_PLATFORM=GYRO_PLATFORM_x86 -I/usr/include -I/usr/include/GL -I/usr/include/SDL -g
+CXXFLAGS = $(CFLAGS)
+ASFLAGS = $(CFLAGS)
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	@echo Creating $@
+	@$(AR) $@ $?
+
+.PHONY: customclean
+customclean:

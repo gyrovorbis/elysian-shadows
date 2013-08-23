@@ -1,0 +1,97 @@
+#ifndef ELYSIAN_COLLISION_SYSTEM_HPP
+#define ELYSIAN_COLLISION_SYSTEM_HPP
+
+#include <gyro.h>
+#include <gyro_kinetic.h>
+#include "elysian_system.hpp"
+#include "elysian_tile.hpp"
+#include "elysian_collidable.hpp"
+
+#define ELYSIAN_COLLISION_CONTACT_LIST_SIZE					100
+#define ELYSIAN_COLLISION_PREV_CONTACT_LIST_SIZE			100
+#define ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS 100
+#define ELYSIAN_COLLISION_CONTACT_PENETRATION_EPSILON		0.5f
+
+namespace elysian {
+	
+	class CollisionSystem: public System { 
+	public:
+		enum RENDER_LAYER {
+			RENDER_DISABLED,
+			RENDER_LAYER_1,
+			RENDER_LAYER_2,
+			RENDER_LAYER_3,
+			RENDER_COMBINED,
+			RENDER_MAX
+        };
+	private:
+
+		CollisionContact _contactPool[ELYSIAN_COLLISION_CONTACT_LIST_SIZE];
+		
+		/* Stores minimal collision information from the previous frame ONLY for
+		 * entities that have collision triggers */
+		struct PrevContact {
+			Collidable* collidable[2];
+		} _prevContactPool[ELYSIAN_COLLISION_PREV_CONTACT_LIST_SIZE];
+
+		unsigned _contactAmount;
+		unsigned _prevContactAmount;
+
+		RENDER_LAYER _renderLayer;
+		bool _enabled;
+
+		void renderEntities(void);
+		void detectEntityCollision(const unsigned i);
+		void detectTerrainCollision(Collidable &col);
+		bool resolvePenetration(void); //true if resolved, false if ran out of attempts
+		bool resolveVelocities(void);
+
+		void _prepareGeometry(void);
+		void _checkTriggers(void);
+		void _detectCollisions(void);
+        void _applyTileColliderTransform(const Tile::COLLIDER_TYPE colType) const;
+
+		void _detectCollidableColliderCollision(Collidable &collidable, GYCollider &collider);
+		void _detectEntityTileCollisionFine(Collidable &collidable, const unsigned x, const unsigned y);
+		void _detectEntityTileCollisionCoarse(Collidable &collidable);
+
+	public:
+
+		CollisionSystem(void);
+		void update(void);
+		void render(void); 
+        void renderTileColliders(void) const;
+		//void PrepareGeometry(void);
+		//void DetectCollisions(void);
+		//void ResolveContacts(void);
+
+		void clearContacts(void);
+
+		void toggleCollision(void);
+		RENDER_LAYER cycleRenderLayer(void);
+
+		bool checkCollision(const Entity &entity1, const Entity &entity2) const;
+		bool checkCollision(const Collidable &col1, const Collidable &col2) const;
+		bool previouslyColliding(const Collidable &col1, const Collidable &col2) const;
+		
+	};
+
+
+	//==== INLINEZ ====
+	inline void CollisionSystem::clearContacts(void) { _contactAmount = 0; _prevContactAmount = 0; }
+	inline void CollisionSystem::toggleCollision(void) { _enabled = !_enabled; }
+
+	inline bool CollisionSystem::previouslyColliding(const Collidable& col1, const Collidable& col2) const {
+		for(unsigned i = 0; i < _prevContactAmount; ++i) {
+			const PrevContact &con = _prevContactPool[i];
+			if((con.collidable[0] == &col1 && con.collidable[1] == &col2) ||
+				(con.collidable[0] == &col2 && con.collidable[1] == &col1)) 
+				return true;
+		}
+		
+		return false;
+	}
+
+}
+
+#endif

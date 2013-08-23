@@ -1,0 +1,1405 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C8282E1B144B45EC00451BBE /* lua5_1.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8282E17144B45B100451BBE /* lua5_1.framework */; };
+		C8282E1C144B45EC00451BBE /* tolua++.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8282E18144B45B100451BBE /* tolua++.framework */; };
+		C8282E1D144B45F100451BBE /* lua5_1.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = C8282E17144B45B100451BBE /* lua5_1.framework */; };
+		C8282E1E144B45F100451BBE /* tolua++.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = C8282E18144B45B100451BBE /* tolua++.framework */; };
+		C829D24B14F6FE74001F4637 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C829D24A14F6FE74001F4637 /* liblua.a */; };
+		C83320061697C5A6006D081E /* elysian_tile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C83320051697C5A6006D081E /* elysian_tile.cpp */; };
+		C83320071697C5A6006D081E /* elysian_tile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C83320051697C5A6006D081E /* elysian_tile.cpp */; };
+		C863A9B115B6269A00EB49B2 /* elysian_quad_attrib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C863A9B015B6269A00EB49B2 /* elysian_quad_attrib.cpp */; };
+		C863A9B215B6269A00EB49B2 /* elysian_quad_attrib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C863A9B015B6269A00EB49B2 /* elysian_quad_attrib.cpp */; };
+		C86E3367142FECE700466D89 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C86E3366142FECE700466D89 /* Cocoa.framework */; };
+		C86E3371142FECE700466D89 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C86E336F142FECE700466D89 /* InfoPlist.strings */; };
+		C86E3377142FECE800466D89 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = C86E3375142FECE800466D89 /* Credits.rtf */; };
+		C86E3398142FED1200466D89 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C86E3396142FED1200466D89 /* InfoPlist.strings */; };
+		C874B6ED167500320044D9D3 /* libGyroOSX.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8C8E39615683A2C00C4293D /* libGyroOSX.framework */; };
+		C874B6EE167500520044D9D3 /* libGyroOSX.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = C8C8E39615683A2C00C4293D /* libGyroOSX.framework */; };
+		C8802C761748010100449268 /* elysian_map_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8802C751748010100449268 /* elysian_map_system.cpp */; };
+		C8802C771748010100449268 /* elysian_map_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8802C751748010100449268 /* elysian_map_system.cpp */; };
+		C8840D8D14F6FB0D00665CD4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8840D8914F6FA4000665CD4 /* UIKit.framework */; };
+		C8840D8E14F6FB0D00665CD4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8840D8714F6F9C000665CD4 /* CoreGraphics.framework */; };
+		C8840D8F14F6FB0D00665CD4 /* libLibGyroiOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C8840D1414F6EE1200665CD4 /* libLibGyroiOS.a */; };
+		C8840D9014F6FB0D00665CD4 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8840D7A14F6F5ED00665CD4 /* OpenGLES.framework */; };
+		C8840D9314F6FB6400665CD4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8840D9114F6FB5500665CD4 /* Foundation.framework */; };
+		C89DCBD016A222430092DAAE /* font in CopyFiles */ = {isa = PBXBuildFile; fileRef = C89DCBCF16A222430092DAAE /* font */; };
+		C89DCBD216A2225B0092DAAE /* level in CopyFiles */ = {isa = PBXBuildFile; fileRef = C89DCBD116A2225B0092DAAE /* level */; };
+		C89DCBD416A222720092DAAE /* item in CopyFiles */ = {isa = PBXBuildFile; fileRef = C89DCBD316A222720092DAAE /* item */; };
+		C89DCBD616A2227A0092DAAE /* party in CopyFiles */ = {isa = PBXBuildFile; fileRef = C89DCBD516A2227A0092DAAE /* party */; };
+		C89DCBD816A222F00092DAAE /* gamma_args.txt in CopyFiles */ = {isa = PBXBuildFile; fileRef = C89DCBD716A222F00092DAAE /* gamma_args.txt */; };
+		C89F75D31446651D0078A1DF /* SDLMain.m in Sources */ = {isa = PBXBuildFile; fileRef = C89F75D21446651D0078A1DF /* SDLMain.m */; };
+		C89F75D5144667270078A1DF /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C89F75D4144667270078A1DF /* SDL.framework */; };
+		C89F75DD14466E4B0078A1DF /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = C89F75D4144667270078A1DF /* SDL.framework */; };
+		C8B354C9175A511500B7B426 /* elysian_lua_script.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B354C8175A511500B7B426 /* elysian_lua_script.cpp */; };
+		C8B354CA175A511500B7B426 /* elysian_lua_script.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B354C8175A511500B7B426 /* elysian_lua_script.cpp */; };
+		C8B355511763984400B7B426 /* elysian_lua_wrappers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B355501763984400B7B426 /* elysian_lua_wrappers.cpp */; };
+		C8B355521763984400B7B426 /* elysian_lua_wrappers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B355501763984400B7B426 /* elysian_lua_wrappers.cpp */; };
+		C8B355681763A0B300B7B426 /* class_from_stack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B355541763A0AE00B7B426 /* class_from_stack.cpp */; };
+		C8B355691763A0B300B7B426 /* class_from_stack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B355541763A0AE00B7B426 /* class_from_stack.cpp */; };
+		C8B3556A1763A0B300B7B426 /* lua_function.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B3555C1763A0B000B7B426 /* lua_function.cpp */; };
+		C8B3556B1763A0B300B7B426 /* lua_function.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B3555C1763A0B000B7B426 /* lua_function.cpp */; };
+		C8B3556C1763A0B300B7B426 /* lua_ref.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B355601763A0B100B7B426 /* lua_ref.cpp */; };
+		C8B3556D1763A0B300B7B426 /* lua_ref.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B355601763A0B100B7B426 /* lua_ref.cpp */; };
+		C8B3556E1763A0B300B7B426 /* lua_stack_dump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B355621763A0B100B7B426 /* lua_stack_dump.cpp */; };
+		C8B3556F1763A0B300B7B426 /* lua_stack_dump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B355621763A0B100B7B426 /* lua_stack_dump.cpp */; };
+		C8B355701763A0B300B7B426 /* lua_table.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B355641763A0B100B7B426 /* lua_table.cpp */; };
+		C8B355711763A0B300B7B426 /* lua_table.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B355641763A0B100B7B426 /* lua_table.cpp */; };
+		C8B355921763A0D900B7B426 /* oolua_check_result.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B355741763A0D500B7B426 /* oolua_check_result.cpp */; };
+		C8B355931763A0D900B7B426 /* oolua_check_result.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B355741763A0D500B7B426 /* oolua_check_result.cpp */; };
+		C8B355941763A0D900B7B426 /* oolua_error.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B355781763A0D600B7B426 /* oolua_error.cpp */; };
+		C8B355951763A0D900B7B426 /* oolua_error.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B355781763A0D600B7B426 /* oolua_error.cpp */; };
+		C8B355961763A0D900B7B426 /* oolua_push_pull.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B3557E1763A0D600B7B426 /* oolua_push_pull.cpp */; };
+		C8B355971763A0D900B7B426 /* oolua_push_pull.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B3557E1763A0D600B7B426 /* oolua_push_pull.cpp */; };
+		C8B355981763A0D900B7B426 /* oolua_registration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B355801763A0D700B7B426 /* oolua_registration.cpp */; };
+		C8B355991763A0D900B7B426 /* oolua_registration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B355801763A0D700B7B426 /* oolua_registration.cpp */; };
+		C8B3559A1763A0D900B7B426 /* oolua_storage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B355821763A0D700B7B426 /* oolua_storage.cpp */; };
+		C8B3559B1763A0D900B7B426 /* oolua_storage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B355821763A0D700B7B426 /* oolua_storage.cpp */; };
+		C8B3559C1763A0D900B7B426 /* oolua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B355881763A0D800B7B426 /* oolua.cpp */; };
+		C8B3559D1763A0D900B7B426 /* oolua.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B355881763A0D800B7B426 /* oolua.cpp */; };
+		C8B3559E1763A0D900B7B426 /* push_pointer_internal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B3558E1763A0D800B7B426 /* push_pointer_internal.cpp */; };
+		C8B3559F1763A0D900B7B426 /* push_pointer_internal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8B3558E1763A0D800B7B426 /* push_pointer_internal.cpp */; };
+		C8C76BA7146F317400A3F506 /* elysian_animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76B96146F317400A3F506 /* elysian_animation.cpp */; };
+		C8C76BA8146F317400A3F506 /* elysian_animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76B96146F317400A3F506 /* elysian_animation.cpp */; };
+		C8C76BA9146F317400A3F506 /* elysian_area.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76B97146F317400A3F506 /* elysian_area.cpp */; };
+		C8C76BAA146F317400A3F506 /* elysian_area.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76B97146F317400A3F506 /* elysian_area.cpp */; };
+		C8C76BAB146F317400A3F506 /* elysian_asset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76B98146F317400A3F506 /* elysian_asset.cpp */; };
+		C8C76BAC146F317400A3F506 /* elysian_asset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76B98146F317400A3F506 /* elysian_asset.cpp */; };
+		C8C76BAD146F317400A3F506 /* elysian_behavior.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76B99146F317400A3F506 /* elysian_behavior.cpp */; };
+		C8C76BAE146F317400A3F506 /* elysian_behavior.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76B99146F317400A3F506 /* elysian_behavior.cpp */; };
+		C8C76BAF146F317400A3F506 /* elysian_character.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76B9A146F317400A3F506 /* elysian_character.cpp */; };
+		C8C76BB0146F317400A3F506 /* elysian_character.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76B9A146F317400A3F506 /* elysian_character.cpp */; };
+		C8C76BB1146F317400A3F506 /* elysian_collidable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76B9B146F317400A3F506 /* elysian_collidable.cpp */; };
+		C8C76BB2146F317400A3F506 /* elysian_collidable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76B9B146F317400A3F506 /* elysian_collidable.cpp */; };
+		C8C76BB3146F317400A3F506 /* elysian_component.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76B9C146F317400A3F506 /* elysian_component.cpp */; };
+		C8C76BB4146F317400A3F506 /* elysian_component.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76B9C146F317400A3F506 /* elysian_component.cpp */; };
+		C8C76BB5146F317400A3F506 /* elysian_conversation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76B9D146F317400A3F506 /* elysian_conversation.cpp */; };
+		C8C76BB6146F317400A3F506 /* elysian_conversation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76B9D146F317400A3F506 /* elysian_conversation.cpp */; };
+		C8C76BB7146F317400A3F506 /* elysian_enemy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76B9E146F317400A3F506 /* elysian_enemy.cpp */; };
+		C8C76BB8146F317400A3F506 /* elysian_enemy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76B9E146F317400A3F506 /* elysian_enemy.cpp */; };
+		C8C76BB9146F317400A3F506 /* elysian_entity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76B9F146F317400A3F506 /* elysian_entity.cpp */; };
+		C8C76BBA146F317400A3F506 /* elysian_entity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76B9F146F317400A3F506 /* elysian_entity.cpp */; };
+		C8C76BBB146F317400A3F506 /* elysian_friendly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BA0146F317400A3F506 /* elysian_friendly.cpp */; };
+		C8C76BBC146F317400A3F506 /* elysian_friendly.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BA0146F317400A3F506 /* elysian_friendly.cpp */; };
+		C8C76BBD146F317400A3F506 /* elysian_item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BA1146F317400A3F506 /* elysian_item.cpp */; };
+		C8C76BBE146F317400A3F506 /* elysian_item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BA1146F317400A3F506 /* elysian_item.cpp */; };
+		C8C76BBF146F317400A3F506 /* elysian_level_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BA2146F317400A3F506 /* elysian_level_manager.cpp */; };
+		C8C76BC0146F317400A3F506 /* elysian_level_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BA2146F317400A3F506 /* elysian_level_manager.cpp */; };
+		C8C76BC1146F317400A3F506 /* elysian_level.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BA3146F317400A3F506 /* elysian_level.cpp */; };
+		C8C76BC2146F317400A3F506 /* elysian_level.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BA3146F317400A3F506 /* elysian_level.cpp */; };
+		C8C76BC3146F317400A3F506 /* elysian_lua_behavior.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BA4146F317400A3F506 /* elysian_lua_behavior.cpp */; };
+		C8C76BC4146F317400A3F506 /* elysian_lua_behavior.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BA4146F317400A3F506 /* elysian_lua_behavior.cpp */; };
+		C8C76BC5146F317400A3F506 /* elysian_renderable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BA5146F317400A3F506 /* elysian_renderable.cpp */; };
+		C8C76BC6146F317400A3F506 /* elysian_renderable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BA5146F317400A3F506 /* elysian_renderable.cpp */; };
+		C8C76BC7146F317400A3F506 /* elysian_warp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BA6146F317400A3F506 /* elysian_warp.cpp */; };
+		C8C76BC8146F317400A3F506 /* elysian_warp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BA6146F317400A3F506 /* elysian_warp.cpp */; };
+		C8C76BE1146F319600A3F506 /* elysian_adventure_log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BC9146F319600A3F506 /* elysian_adventure_log.cpp */; };
+		C8C76BE2146F319600A3F506 /* elysian_adventure_log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BC9146F319600A3F506 /* elysian_adventure_log.cpp */; };
+		C8C76BE3146F319600A3F506 /* elysian_animation_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BCA146F319600A3F506 /* elysian_animation_system.cpp */; };
+		C8C76BE4146F319600A3F506 /* elysian_animation_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BCA146F319600A3F506 /* elysian_animation_system.cpp */; };
+		C8C76BE5146F319600A3F506 /* elysian_behavior_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BCB146F319600A3F506 /* elysian_behavior_system.cpp */; };
+		C8C76BE6146F319600A3F506 /* elysian_behavior_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BCB146F319600A3F506 /* elysian_behavior_system.cpp */; };
+		C8C76BE7146F319600A3F506 /* elysian_camera_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BCC146F319600A3F506 /* elysian_camera_system.cpp */; };
+		C8C76BE8146F319600A3F506 /* elysian_camera_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BCC146F319600A3F506 /* elysian_camera_system.cpp */; };
+		C8C76BE9146F319600A3F506 /* elysian_character_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BCD146F319600A3F506 /* elysian_character_system.cpp */; };
+		C8C76BEA146F319600A3F506 /* elysian_character_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BCD146F319600A3F506 /* elysian_character_system.cpp */; };
+		C8C76BEB146F319600A3F506 /* elysian_collision_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BCE146F319600A3F506 /* elysian_collision_system.cpp */; };
+		C8C76BEC146F319600A3F506 /* elysian_collision_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BCE146F319600A3F506 /* elysian_collision_system.cpp */; };
+		C8C76BED146F319600A3F506 /* elysian_conversation_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BCF146F319600A3F506 /* elysian_conversation_system.cpp */; };
+		C8C76BEE146F319600A3F506 /* elysian_conversation_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BCF146F319600A3F506 /* elysian_conversation_system.cpp */; };
+		C8C76BEF146F319600A3F506 /* elysian_debug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BD0146F319600A3F506 /* elysian_debug.cpp */; };
+		C8C76BF0146F319600A3F506 /* elysian_debug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BD0146F319600A3F506 /* elysian_debug.cpp */; };
+		C8C76BF1146F319600A3F506 /* elysian_enemy_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BD1146F319600A3F506 /* elysian_enemy_system.cpp */; };
+		C8C76BF2146F319600A3F506 /* elysian_enemy_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BD1146F319600A3F506 /* elysian_enemy_system.cpp */; };
+		C8C76BF3146F319600A3F506 /* elysian_engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BD2146F319600A3F506 /* elysian_engine.cpp */; };
+		C8C76BF4146F319600A3F506 /* elysian_engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BD2146F319600A3F506 /* elysian_engine.cpp */; };
+		C8C76BF5146F319600A3F506 /* elysian_font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BD3146F319600A3F506 /* elysian_font.cpp */; };
+		C8C76BF6146F319600A3F506 /* elysian_font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BD3146F319600A3F506 /* elysian_font.cpp */; };
+		C8C76BF7146F319600A3F506 /* elysian_friendly_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BD4146F319600A3F506 /* elysian_friendly_system.cpp */; };
+		C8C76BF8146F319600A3F506 /* elysian_friendly_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BD4146F319600A3F506 /* elysian_friendly_system.cpp */; };
+		C8C76BF9146F319600A3F506 /* elysian_game_input.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BD5146F319600A3F506 /* elysian_game_input.cpp */; };
+		C8C76BFA146F319600A3F506 /* elysian_game_input.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BD5146F319600A3F506 /* elysian_game_input.cpp */; };
+		C8C76BFB146F319600A3F506 /* elysian_gui_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BD6146F319600A3F506 /* elysian_gui_system.cpp */; };
+		C8C76BFC146F319600A3F506 /* elysian_gui_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BD6146F319600A3F506 /* elysian_gui_system.cpp */; };
+		C8C76BFD146F319600A3F506 /* elysian_item_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BD7146F319600A3F506 /* elysian_item_system.cpp */; };
+		C8C76BFE146F319600A3F506 /* elysian_item_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BD7146F319600A3F506 /* elysian_item_system.cpp */; };
+		C8C76BFF146F319600A3F506 /* elysian_level_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BD8146F319600A3F506 /* elysian_level_system.cpp */; };
+		C8C76C00146F319600A3F506 /* elysian_level_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BD8146F319600A3F506 /* elysian_level_system.cpp */; };
+		C8C76C01146F319600A3F506 /* elysian_lua_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BD9146F319600A3F506 /* elysian_lua_manager.cpp */; };
+		C8C76C02146F319600A3F506 /* elysian_lua_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BD9146F319600A3F506 /* elysian_lua_manager.cpp */; };
+		C8C76C03146F319600A3F506 /* elysian_lua_singleton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BDA146F319600A3F506 /* elysian_lua_singleton.cpp */; };
+		C8C76C04146F319600A3F506 /* elysian_lua_singleton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BDA146F319600A3F506 /* elysian_lua_singleton.cpp */; };
+		C8C76C05146F319600A3F506 /* elysian_party_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BDB146F319600A3F506 /* elysian_party_system.cpp */; };
+		C8C76C06146F319600A3F506 /* elysian_party_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BDB146F319600A3F506 /* elysian_party_system.cpp */; };
+		C8C76C07146F319600A3F506 /* elysian_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BDC146F319600A3F506 /* elysian_system.cpp */; };
+		C8C76C08146F319600A3F506 /* elysian_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BDC146F319600A3F506 /* elysian_system.cpp */; };
+		C8C76C0B146F319600A3F506 /* elysian_timer_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BDE146F319600A3F506 /* elysian_timer_system.cpp */; };
+		C8C76C0C146F319600A3F506 /* elysian_timer_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BDE146F319600A3F506 /* elysian_timer_system.cpp */; };
+		C8C76C0D146F319600A3F506 /* elysian_warp_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BDF146F319600A3F506 /* elysian_warp_system.cpp */; };
+		C8C76C0E146F319600A3F506 /* elysian_warp_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BDF146F319600A3F506 /* elysian_warp_system.cpp */; };
+		C8C76C0F146F319600A3F506 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BE0146F319600A3F506 /* main.cpp */; };
+		C8C76C10146F319600A3F506 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C76BE0146F319600A3F506 /* main.cpp */; };
+		C8CDC02D14F9779B00D3252D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8CDC02B14F9779300D3252D /* QuartzCore.framework */; };
+		C8F7571616C84CB8002198FD /* elysian_zcoords.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8F7571516C84CB8002198FD /* elysian_zcoords.cpp */; };
+		C8F7571716C84CB8002198FD /* elysian_zcoords.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8F7571516C84CB8002198FD /* elysian_zcoords.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C8332003168F646A006D081E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C8C8E38E15683A2C00C4293D /* LibGyro.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = C8840CCB14F6E71000665CD4;
+			remoteInfo = LibGyroiOS;
+		};
+		C8A6A118158C02E6008A636C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C8C8E38E15683A2C00C4293D /* LibGyro.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = C8840CE314F6E8F100665CD4;
+			remoteInfo = libGyroOSX;
+		};
+		C8B354E11763944A00B7B426 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C8B354DD1763944900B7B426 /* oolua.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = C8B354D61763944900B7B426;
+			remoteInfo = oolua;
+		};
+		C8C8E39315683A2C00C4293D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C8C8E38E15683A2C00C4293D /* LibGyro.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = C8840CCC14F6E71000665CD4;
+			remoteInfo = LibGyroiOS;
+		};
+		C8C8E39515683A2C00C4293D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C8C8E38E15683A2C00C4293D /* LibGyro.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = C8840CE414F6E8F100665CD4;
+			remoteInfo = libGyroOSX;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		C829D25414F70244001F4637 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+				C89DCBD016A222430092DAAE /* font in CopyFiles */,
+				C89DCBD216A2225B0092DAAE /* level in CopyFiles */,
+				C89DCBD616A2227A0092DAAE /* party in CopyFiles */,
+				C89DCBD816A222F00092DAAE /* gamma_args.txt in CopyFiles */,
+				C89DCBD416A222720092DAAE /* item in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C89F75DC14466E130078A1DF /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				C874B6EE167500520044D9D3 /* libGyroOSX.framework in CopyFiles */,
+				C89F75DD14466E4B0078A1DF /* SDL.framework in CopyFiles */,
+				C8282E1D144B45F100451BBE /* lua5_1.framework in CopyFiles */,
+				C8282E1E144B45F100451BBE /* tolua++.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		C8282E17144B45B100451BBE /* lua5_1.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = lua5_1.framework; path = ../../../Dev/ESDev2/Engine/trunk/ESGamma/lib/osx/lib/lua5_1.framework; sourceTree = "<group>"; };
+		C8282E18144B45B100451BBE /* tolua++.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "tolua++.framework"; path = "../../../Dev/ESDev2/Engine/trunk/ESGamma/lib/osx/lib/tolua++.framework"; sourceTree = "<group>"; };
+		C829D24A14F6FE74001F4637 /* liblua.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblua.a; path = ../lib/ios/liblua.a; sourceTree = "<group>"; };
+		C829D24E14F7007F001F4637 /* level */ = {isa = PBXFileReference; lastKnownFileType = folder; name = level; path = ../../../Project/level; sourceTree = "<group>"; };
+		C829D25014F70099001F4637 /* party */ = {isa = PBXFileReference; lastKnownFileType = folder; name = party; path = ../../../Project/party; sourceTree = "<group>"; };
+		C829D25214F700A8001F4637 /* font */ = {isa = PBXFileReference; lastKnownFileType = folder; name = font; path = ../../../Project/font; sourceTree = "<group>"; };
+		C83320051697C5A6006D081E /* elysian_tile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_tile.cpp; path = ../assetio/source/elysian_tile.cpp; sourceTree = "<group>"; };
+		C863A9A515B6266A00EB49B2 /* elysian_model_attrib.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_model_attrib.hpp; path = ../assetio/include/elysian_model_attrib.hpp; sourceTree = "<group>"; };
+		C863A9A615B6266A00EB49B2 /* elysian_prim_attrib.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_prim_attrib.hpp; path = ../assetio/include/elysian_prim_attrib.hpp; sourceTree = "<group>"; };
+		C863A9A715B6266A00EB49B2 /* elysian_quad_attrib.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_quad_attrib.hpp; path = ../assetio/include/elysian_quad_attrib.hpp; sourceTree = "<group>"; };
+		C863A9A815B6266A00EB49B2 /* elysian_quad_sprite_attrib.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_quad_sprite_attrib.hpp; path = ../assetio/include/elysian_quad_sprite_attrib.hpp; sourceTree = "<group>"; };
+		C863A9A915B6266A00EB49B2 /* elysian_rect_attrib.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_rect_attrib.hpp; path = ../assetio/include/elysian_rect_attrib.hpp; sourceTree = "<group>"; };
+		C863A9AA15B6266A00EB49B2 /* elysian_sprite_attrib.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_sprite_attrib.hpp; path = ../assetio/include/elysian_sprite_attrib.hpp; sourceTree = "<group>"; };
+		C863A9AC15B6266A00EB49B2 /* elysian_textured_attrib.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_textured_attrib.hpp; path = ../assetio/include/elysian_textured_attrib.hpp; sourceTree = "<group>"; };
+		C863A9B015B6269A00EB49B2 /* elysian_quad_attrib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_quad_attrib.cpp; path = ../source/elysian_quad_attrib.cpp; sourceTree = "<group>"; };
+		C86E3362142FECE700466D89 /* ESGammaOSX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ESGammaOSX.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C86E3366142FECE700466D89 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		C86E3369142FECE700466D89 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		C86E336A142FECE700466D89 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		C86E336B142FECE700466D89 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		C86E336E142FECE700466D89 /* ESGammaOSX-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ESGammaOSX-Info.plist"; sourceTree = "<group>"; };
+		C86E3370142FECE700466D89 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		C86E3374142FECE700466D89 /* ESGammaOSX-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ESGammaOSX-Prefix.pch"; sourceTree = "<group>"; };
+		C86E3376142FECE800466D89 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		C86E3387142FED0400466D89 /* ESGammaiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ESGammaiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C86E3395142FED1200466D89 /* ESGammaiOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ESGammaiOS-Info.plist"; sourceTree = "<group>"; };
+		C86E3397142FED1200466D89 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		C86E339B142FED1200466D89 /* ESGammaiOS-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ESGammaiOS-Prefix.pch"; sourceTree = "<group>"; };
+		C8802C74174800EE00449268 /* elysian_map_system.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_map_system.hpp; path = ../include/elysian_map_system.hpp; sourceTree = "<group>"; };
+		C8802C751748010100449268 /* elysian_map_system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_map_system.cpp; path = ../source/elysian_map_system.cpp; sourceTree = "<group>"; };
+		C8840D1414F6EE1200665CD4 /* libLibGyroiOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libLibGyroiOS.a; path = "../../libGyro/xcode4/build/Debug-iphoneos/libLibGyroiOS.a"; sourceTree = "<group>"; };
+		C8840D7A14F6F5ED00665CD4 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.3.sdk/System/Library/Frameworks/OpenGLES.framework; sourceTree = DEVELOPER_DIR; };
+		C8840D8714F6F9C000665CD4 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.3.sdk/System/Library/Frameworks/CoreGraphics.framework; sourceTree = DEVELOPER_DIR; };
+		C8840D8914F6FA4000665CD4 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.3.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		C8840D9114F6FB5500665CD4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.3.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		C89DCBCD16A222130092DAAE /* Project */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Project; path = ../../../../Dropbox/ESDev/Project; sourceTree = "<group>"; };
+		C89DCBCF16A222430092DAAE /* font */ = {isa = PBXFileReference; lastKnownFileType = folder; name = font; path = ../../../../Dropbox/ESDev/Project/font; sourceTree = "<group>"; };
+		C89DCBD116A2225B0092DAAE /* level */ = {isa = PBXFileReference; lastKnownFileType = folder; name = level; path = ../../../../Dropbox/ESDev/Project/level; sourceTree = "<group>"; };
+		C89DCBD316A222720092DAAE /* item */ = {isa = PBXFileReference; lastKnownFileType = folder; name = item; path = ../../../../Dropbox/ESDev/Project/item; sourceTree = "<group>"; };
+		C89DCBD516A2227A0092DAAE /* party */ = {isa = PBXFileReference; lastKnownFileType = folder; name = party; path = ../../../../Dropbox/ESDev/Project/party; sourceTree = "<group>"; };
+		C89DCBD716A222F00092DAAE /* gamma_args.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = gamma_args.txt; path = ../../../../Dropbox/ESDev/Project/gamma_args.txt; sourceTree = "<group>"; };
+		C89F75D11446651D0078A1DF /* SDLMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SDLMain.h; path = ../../libGyro/lib/osx/SDLMain.h; sourceTree = "<group>"; };
+		C89F75D21446651D0078A1DF /* SDLMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SDLMain.m; path = ../../libGyro/lib/osx/SDLMain.m; sourceTree = "<group>"; };
+		C89F75D4144667270078A1DF /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL.framework; path = ../../libGyro/lib/osx/SDL.framework; sourceTree = "<group>"; };
+		C89F75DA144669110078A1DF /* LibGyroOSX.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LibGyroOSX.framework; path = "../../../../Library/Developer/Xcode/DerivedData/ESGamma-egnthzguxafoizfmkopiqtabefvj/Build/Products/Debug/LibGyroOSX.framework"; sourceTree = "<group>"; };
+		C8B354C7175A50E300B7B426 /* elysian_lua_script.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_lua_script.hpp; path = ../include/elysian_lua_script.hpp; sourceTree = "<group>"; };
+		C8B354C8175A511500B7B426 /* elysian_lua_script.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_lua_script.cpp; path = ../source/elysian_lua_script.cpp; sourceTree = "<group>"; };
+		C8B354DD1763944900B7B426 /* oolua.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = oolua.xcodeproj; path = ../../../Dev/OOLUA/oolua/oolua.xcodeproj; sourceTree = "<group>"; };
+		C8B355501763984400B7B426 /* elysian_lua_wrappers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_lua_wrappers.cpp; path = ../source/elysian_lua_wrappers.cpp; sourceTree = "<group>"; };
+		C8B355531763A0AE00B7B426 /* base_checker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = base_checker.h; path = ../../../Dev/OOLUA/base_checker.h; sourceTree = "<group>"; };
+		C8B355541763A0AE00B7B426 /* class_from_stack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = class_from_stack.cpp; path = ../../../Dev/OOLUA/class_from_stack.cpp; sourceTree = "<group>"; };
+		C8B355551763A0AE00B7B426 /* class_from_stack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = class_from_stack.h; path = ../../../Dev/OOLUA/class_from_stack.h; sourceTree = "<group>"; };
+		C8B355561763A0AE00B7B426 /* class_public_member.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = class_public_member.h; path = ../../../Dev/OOLUA/class_public_member.h; sourceTree = "<group>"; };
+		C8B355571763A0AF00B7B426 /* cpp_constructor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cpp_constructor.h; path = ../../../Dev/OOLUA/cpp_constructor.h; sourceTree = "<group>"; };
+		C8B355581763A0AF00B7B426 /* cpp_member_func.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cpp_member_func.h; path = ../../../Dev/OOLUA/cpp_member_func.h; sourceTree = "<group>"; };
+		C8B355591763A0AF00B7B426 /* determin_qualifier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = determin_qualifier.h; path = ../../../Dev/OOLUA/determin_qualifier.h; sourceTree = "<group>"; };
+		C8B3555A1763A0AF00B7B426 /* export_func_to_lua.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = export_func_to_lua.h; path = ../../../Dev/OOLUA/export_func_to_lua.h; sourceTree = "<group>"; };
+		C8B3555B1763A0B000B7B426 /* fwd_push_pull.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = fwd_push_pull.h; path = ../../../Dev/OOLUA/fwd_push_pull.h; sourceTree = "<group>"; };
+		C8B3555C1763A0B000B7B426 /* lua_function.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lua_function.cpp; path = ../../../Dev/OOLUA/lua_function.cpp; sourceTree = "<group>"; };
+		C8B3555D1763A0B100B7B426 /* lua_function.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lua_function.h; path = ../../../Dev/OOLUA/lua_function.h; sourceTree = "<group>"; };
+		C8B3555E1763A0B100B7B426 /* lua_includes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lua_includes.h; path = ../../../Dev/OOLUA/lua_includes.h; sourceTree = "<group>"; };
+		C8B3555F1763A0B100B7B426 /* lua_operator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lua_operator.h; path = ../../../Dev/OOLUA/lua_operator.h; sourceTree = "<group>"; };
+		C8B355601763A0B100B7B426 /* lua_ref.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lua_ref.cpp; path = ../../../Dev/OOLUA/lua_ref.cpp; sourceTree = "<group>"; };
+		C8B355611763A0B100B7B426 /* lua_ref.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lua_ref.h; path = ../../../Dev/OOLUA/lua_ref.h; sourceTree = "<group>"; };
+		C8B355621763A0B100B7B426 /* lua_stack_dump.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lua_stack_dump.cpp; path = ../../../Dev/OOLUA/lua_stack_dump.cpp; sourceTree = "<group>"; };
+		C8B355631763A0B100B7B426 /* lua_stack_dump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lua_stack_dump.h; path = ../../../Dev/OOLUA/lua_stack_dump.h; sourceTree = "<group>"; };
+		C8B355641763A0B100B7B426 /* lua_table.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lua_table.cpp; path = ../../../Dev/OOLUA/lua_table.cpp; sourceTree = "<group>"; };
+		C8B355651763A0B200B7B426 /* lua_table.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lua_table.h; path = ../../../Dev/OOLUA/lua_table.h; sourceTree = "<group>"; };
+		C8B355661763A0B300B7B426 /* lvd_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lvd_types.h; path = ../../../Dev/OOLUA/lvd_types.h; sourceTree = "<group>"; };
+		C8B355671763A0B300B7B426 /* member_func_helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = member_func_helper.h; path = ../../../Dev/OOLUA/member_func_helper.h; sourceTree = "<group>"; };
+		C8B355721763A0D500B7B426 /* oolua_c_func.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = oolua_c_func.h; path = ../../../Dev/OOLUA/oolua_c_func.h; sourceTree = "<group>"; };
+		C8B355731763A0D500B7B426 /* oolua_char_arrays.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = oolua_char_arrays.h; path = ../../../Dev/OOLUA/oolua_char_arrays.h; sourceTree = "<group>"; };
+		C8B355741763A0D500B7B426 /* oolua_check_result.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = oolua_check_result.cpp; path = ../../../Dev/OOLUA/oolua_check_result.cpp; sourceTree = "<group>"; };
+		C8B355751763A0D500B7B426 /* oolua_check_result.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = oolua_check_result.h; path = ../../../Dev/OOLUA/oolua_check_result.h; sourceTree = "<group>"; };
+		C8B355761763A0D500B7B426 /* oolua_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = oolua_config.h; path = ../../../Dev/OOLUA/oolua_config.h; sourceTree = "<group>"; };
+		C8B355771763A0D500B7B426 /* oolua_converters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = oolua_converters.h; path = ../../../Dev/OOLUA/oolua_converters.h; sourceTree = "<group>"; };
+		C8B355781763A0D600B7B426 /* oolua_error.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = oolua_error.cpp; path = ../../../Dev/OOLUA/oolua_error.cpp; sourceTree = "<group>"; };
+		C8B355791763A0D600B7B426 /* oolua_error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = oolua_error.h; path = ../../../Dev/OOLUA/oolua_error.h; sourceTree = "<group>"; };
+		C8B3557A1763A0D600B7B426 /* oolua_exception.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = oolua_exception.h; path = ../../../Dev/OOLUA/oolua_exception.h; sourceTree = "<group>"; };
+		C8B3557B1763A0D600B7B426 /* oolua_member_function.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = oolua_member_function.h; path = ../../../Dev/OOLUA/oolua_member_function.h; sourceTree = "<group>"; };
+		C8B3557C1763A0D600B7B426 /* oolua_paramater_macros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = oolua_paramater_macros.h; path = ../../../Dev/OOLUA/oolua_paramater_macros.h; sourceTree = "<group>"; };
+		C8B3557D1763A0D600B7B426 /* oolua_parameter_helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = oolua_parameter_helper.h; path = ../../../Dev/OOLUA/oolua_parameter_helper.h; sourceTree = "<group>"; };
+		C8B3557E1763A0D600B7B426 /* oolua_push_pull.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = oolua_push_pull.cpp; path = ../../../Dev/OOLUA/oolua_push_pull.cpp; sourceTree = "<group>"; };
+		C8B3557F1763A0D600B7B426 /* oolua_push_pull.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = oolua_push_pull.h; path = ../../../Dev/OOLUA/oolua_push_pull.h; sourceTree = "<group>"; };
+		C8B355801763A0D700B7B426 /* oolua_registration.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = oolua_registration.cpp; path = ../../../Dev/OOLUA/oolua_registration.cpp; sourceTree = "<group>"; };
+		C8B355811763A0D700B7B426 /* oolua_registration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = oolua_registration.h; path = ../../../Dev/OOLUA/oolua_registration.h; sourceTree = "<group>"; };
+		C8B355821763A0D700B7B426 /* oolua_storage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = oolua_storage.cpp; path = ../../../Dev/OOLUA/oolua_storage.cpp; sourceTree = "<group>"; };
+		C8B355831763A0D700B7B426 /* oolua_storage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = oolua_storage.h; path = ../../../Dev/OOLUA/oolua_storage.h; sourceTree = "<group>"; };
+		C8B355841763A0D700B7B426 /* oolua_typedefs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = oolua_typedefs.h; path = ../../../Dev/OOLUA/oolua_typedefs.h; sourceTree = "<group>"; };
+		C8B355851763A0D700B7B426 /* oolua_userdata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = oolua_userdata.h; path = ../../../Dev/OOLUA/oolua_userdata.h; sourceTree = "<group>"; };
+		C8B355861763A0D700B7B426 /* oolua_va_args.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = oolua_va_args.h; path = ../../../Dev/OOLUA/oolua_va_args.h; sourceTree = "<group>"; };
+		C8B355871763A0D700B7B426 /* oolua_version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = oolua_version.h; path = ../../../Dev/OOLUA/oolua_version.h; sourceTree = "<group>"; };
+		C8B355881763A0D800B7B426 /* oolua.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = oolua.cpp; path = ../../../Dev/OOLUA/oolua.cpp; sourceTree = "<group>"; };
+		C8B355891763A0D800B7B426 /* oolua.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = oolua.h; path = ../../../Dev/OOLUA/oolua.h; sourceTree = "<group>"; };
+		C8B3558A1763A0D800B7B426 /* param_traits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = param_traits.h; path = ../../../Dev/OOLUA/param_traits.h; sourceTree = "<group>"; };
+		C8B3558B1763A0D800B7B426 /* platform_check.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = platform_check.h; path = ../../../Dev/OOLUA/platform_check.h; sourceTree = "<group>"; };
+		C8B3558C1763A0D800B7B426 /* proxy_caller.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = proxy_caller.h; path = ../../../Dev/OOLUA/proxy_caller.h; sourceTree = "<group>"; };
+		C8B3558D1763A0D800B7B426 /* proxy_class.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = proxy_class.h; path = ../../../Dev/OOLUA/proxy_class.h; sourceTree = "<group>"; };
+		C8B3558E1763A0D800B7B426 /* push_pointer_internal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = push_pointer_internal.cpp; path = ../../../Dev/OOLUA/push_pointer_internal.cpp; sourceTree = "<group>"; };
+		C8B3558F1763A0D800B7B426 /* push_pointer_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = push_pointer_internal.h; path = ../../../Dev/OOLUA/push_pointer_internal.h; sourceTree = "<group>"; };
+		C8B355901763A0D900B7B426 /* type_list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = type_list.h; path = ../../../Dev/OOLUA/type_list.h; sourceTree = "<group>"; };
+		C8B355911763A0D900B7B426 /* typelist_structs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = typelist_structs.h; path = ../../../Dev/OOLUA/typelist_structs.h; sourceTree = "<group>"; };
+		C8B355A11763A24500B7B426 /* elysian_lua_wrappers.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_lua_wrappers.hpp; path = ../include/elysian_lua_wrappers.hpp; sourceTree = "<group>"; };
+		C8C76B58146F310B00A3F506 /* elysian_animation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_animation.hpp; path = ../assetio/include/elysian_animation.hpp; sourceTree = "<group>"; };
+		C8C76B59146F310B00A3F506 /* elysian_area.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_area.hpp; path = ../assetio/include/elysian_area.hpp; sourceTree = "<group>"; };
+		C8C76B5A146F310B00A3F506 /* elysian_asset.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_asset.hpp; path = ../assetio/include/elysian_asset.hpp; sourceTree = "<group>"; };
+		C8C76B5B146F310B00A3F506 /* elysian_behavior.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_behavior.hpp; path = ../assetio/include/elysian_behavior.hpp; sourceTree = "<group>"; };
+		C8C76B5C146F310B00A3F506 /* elysian_character.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_character.hpp; path = ../assetio/include/elysian_character.hpp; sourceTree = "<group>"; };
+		C8C76B5D146F310B00A3F506 /* elysian_collidable.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_collidable.hpp; path = ../assetio/include/elysian_collidable.hpp; sourceTree = "<group>"; };
+		C8C76B5E146F310B00A3F506 /* elysian_component.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_component.hpp; path = ../assetio/include/elysian_component.hpp; sourceTree = "<group>"; };
+		C8C76B5F146F310B00A3F506 /* elysian_conversation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_conversation.hpp; path = ../assetio/include/elysian_conversation.hpp; sourceTree = "<group>"; };
+		C8C76B60146F310B00A3F506 /* elysian_cstr_map.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_cstr_map.hpp; path = ../assetio/include/elysian_cstr_map.hpp; sourceTree = "<group>"; };
+		C8C76B61146F310B00A3F506 /* elysian_direction.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_direction.hpp; path = ../assetio/include/elysian_direction.hpp; sourceTree = "<group>"; };
+		C8C76B62146F310B00A3F506 /* elysian_enemy.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_enemy.hpp; path = ../assetio/include/elysian_enemy.hpp; sourceTree = "<group>"; };
+		C8C76B63146F310B00A3F506 /* elysian_entity.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_entity.hpp; path = ../assetio/include/elysian_entity.hpp; sourceTree = "<group>"; };
+		C8C76B64146F310B00A3F506 /* elysian_friendly.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_friendly.hpp; path = ../assetio/include/elysian_friendly.hpp; sourceTree = "<group>"; };
+		C8C76B65146F310B00A3F506 /* elysian_instance_transform.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_instance_transform.hpp; path = ../assetio/include/elysian_instance_transform.hpp; sourceTree = "<group>"; };
+		C8C76B66146F310B00A3F506 /* elysian_item.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_item.hpp; path = ../assetio/include/elysian_item.hpp; sourceTree = "<group>"; };
+		C8C76B67146F310B00A3F506 /* elysian_level_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_level_manager.hpp; path = ../assetio/include/elysian_level_manager.hpp; sourceTree = "<group>"; };
+		C8C76B68146F310B00A3F506 /* elysian_level.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_level.hpp; path = ../assetio/include/elysian_level.hpp; sourceTree = "<group>"; };
+		C8C76B69146F310B00A3F506 /* elysian_linked_list.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_linked_list.hpp; path = ../assetio/include/elysian_linked_list.hpp; sourceTree = "<group>"; };
+		C8C76B6A146F310B00A3F506 /* elysian_lua_behavior.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_lua_behavior.hpp; path = ../assetio/include/elysian_lua_behavior.hpp; sourceTree = "<group>"; };
+		C8C76B6D146F310B00A3F506 /* elysian_pool.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_pool.hpp; path = ../assetio/include/elysian_pool.hpp; sourceTree = "<group>"; };
+		C8C76B72146F310B00A3F506 /* elysian_renderable_object.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_renderable_object.hpp; path = ../assetio/include/elysian_renderable_object.hpp; sourceTree = "<group>"; };
+		C8C76B73146F310B00A3F506 /* elysian_renderable.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_renderable.hpp; path = ../assetio/include/elysian_renderable.hpp; sourceTree = "<group>"; };
+		C8C76B75146F310B00A3F506 /* elysian_stl_algorithm.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_stl_algorithm.hpp; path = ../assetio/include/elysian_stl_algorithm.hpp; sourceTree = "<group>"; };
+		C8C76B77146F310B00A3F506 /* elysian_tile.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_tile.hpp; path = ../assetio/include/elysian_tile.hpp; sourceTree = "<group>"; };
+		C8C76B78146F310B00A3F506 /* elysian_warp.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_warp.hpp; path = ../assetio/include/elysian_warp.hpp; sourceTree = "<group>"; };
+		C8C76B79146F310B00A3F506 /* elysian_zcoords.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_zcoords.hpp; path = ../assetio/include/elysian_zcoords.hpp; sourceTree = "<group>"; };
+		C8C76B7A146F314800A3F506 /* elysian_adventure_log.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_adventure_log.hpp; path = ../include/elysian_adventure_log.hpp; sourceTree = "<group>"; };
+		C8C76B7B146F314800A3F506 /* elysian_animation_system.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_animation_system.hpp; path = ../include/elysian_animation_system.hpp; sourceTree = "<group>"; };
+		C8C76B7C146F314800A3F506 /* elysian_behavior_system.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_behavior_system.hpp; path = ../include/elysian_behavior_system.hpp; sourceTree = "<group>"; };
+		C8C76B7D146F314800A3F506 /* elysian_camera_system.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_camera_system.hpp; path = ../include/elysian_camera_system.hpp; sourceTree = "<group>"; };
+		C8C76B7E146F314800A3F506 /* elysian_character_system.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_character_system.hpp; path = ../include/elysian_character_system.hpp; sourceTree = "<group>"; };
+		C8C76B7F146F314800A3F506 /* elysian_collision_system.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_collision_system.hpp; path = ../include/elysian_collision_system.hpp; sourceTree = "<group>"; };
+		C8C76B80146F314800A3F506 /* elysian_conversation_system.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_conversation_system.hpp; path = ../include/elysian_conversation_system.hpp; sourceTree = "<group>"; };
+		C8C76B81146F314800A3F506 /* elysian_debug.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_debug.hpp; path = ../include/elysian_debug.hpp; sourceTree = "<group>"; };
+		C8C76B82146F314800A3F506 /* elysian_enemy_system.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_enemy_system.hpp; path = ../include/elysian_enemy_system.hpp; sourceTree = "<group>"; };
+		C8C76B83146F314800A3F506 /* elysian_engine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_engine.hpp; path = ../include/elysian_engine.hpp; sourceTree = "<group>"; };
+		C8C76B84146F314800A3F506 /* elysian_font.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_font.hpp; path = ../include/elysian_font.hpp; sourceTree = "<group>"; };
+		C8C76B85146F314800A3F506 /* elysian_friendly_system.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_friendly_system.hpp; path = ../include/elysian_friendly_system.hpp; sourceTree = "<group>"; };
+		C8C76B86146F314800A3F506 /* elysian_game_input.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_game_input.hpp; path = ../include/elysian_game_input.hpp; sourceTree = "<group>"; };
+		C8C76B87146F314800A3F506 /* elysian_gui_system.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_gui_system.hpp; path = ../include/elysian_gui_system.hpp; sourceTree = "<group>"; };
+		C8C76B88146F314800A3F506 /* elysian_item_system.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_item_system.hpp; path = ../include/elysian_item_system.hpp; sourceTree = "<group>"; };
+		C8C76B89146F314800A3F506 /* elysian_level_system.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_level_system.hpp; path = ../include/elysian_level_system.hpp; sourceTree = "<group>"; };
+		C8C76B8A146F314800A3F506 /* elysian_lua_manager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_lua_manager.hpp; path = ../include/elysian_lua_manager.hpp; sourceTree = "<group>"; };
+		C8C76B8B146F314800A3F506 /* elysian_lua_singleton.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_lua_singleton.hpp; path = ../include/elysian_lua_singleton.hpp; sourceTree = "<group>"; };
+		C8C76B8C146F314800A3F506 /* elysian_model.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_model.hpp; path = ../include/elysian_model.hpp; sourceTree = "<group>"; };
+		C8C76B8D146F314800A3F506 /* elysian_party_system.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_party_system.hpp; path = ../include/elysian_party_system.hpp; sourceTree = "<group>"; };
+		C8C76B8E146F314800A3F506 /* elysian_quad_sprite.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_quad_sprite.hpp; path = ../include/elysian_quad_sprite.hpp; sourceTree = "<group>"; };
+		C8C76B8F146F314800A3F506 /* elysian_quad.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_quad.hpp; path = ../include/elysian_quad.hpp; sourceTree = "<group>"; };
+		C8C76B90146F314800A3F506 /* elysian_rect.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_rect.hpp; path = ../include/elysian_rect.hpp; sourceTree = "<group>"; };
+		C8C76B91146F314800A3F506 /* elysian_sprite.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_sprite.hpp; path = ../include/elysian_sprite.hpp; sourceTree = "<group>"; };
+		C8C76B92146F314800A3F506 /* elysian_system.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_system.hpp; path = ../include/elysian_system.hpp; sourceTree = "<group>"; };
+		C8C76B94146F314800A3F506 /* elysian_timer_system.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_timer_system.hpp; path = ../include/elysian_timer_system.hpp; sourceTree = "<group>"; };
+		C8C76B95146F314800A3F506 /* elysian_warp_system.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_warp_system.hpp; path = ../include/elysian_warp_system.hpp; sourceTree = "<group>"; };
+		C8C76B96146F317400A3F506 /* elysian_animation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_animation.cpp; path = ../assetio/source/elysian_animation.cpp; sourceTree = "<group>"; };
+		C8C76B97146F317400A3F506 /* elysian_area.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_area.cpp; path = ../assetio/source/elysian_area.cpp; sourceTree = "<group>"; };
+		C8C76B98146F317400A3F506 /* elysian_asset.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_asset.cpp; path = ../assetio/source/elysian_asset.cpp; sourceTree = "<group>"; };
+		C8C76B99146F317400A3F506 /* elysian_behavior.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_behavior.cpp; path = ../assetio/source/elysian_behavior.cpp; sourceTree = "<group>"; };
+		C8C76B9A146F317400A3F506 /* elysian_character.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_character.cpp; path = ../assetio/source/elysian_character.cpp; sourceTree = "<group>"; };
+		C8C76B9B146F317400A3F506 /* elysian_collidable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_collidable.cpp; path = ../assetio/source/elysian_collidable.cpp; sourceTree = "<group>"; };
+		C8C76B9C146F317400A3F506 /* elysian_component.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_component.cpp; path = ../assetio/source/elysian_component.cpp; sourceTree = "<group>"; };
+		C8C76B9D146F317400A3F506 /* elysian_conversation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_conversation.cpp; path = ../assetio/source/elysian_conversation.cpp; sourceTree = "<group>"; };
+		C8C76B9E146F317400A3F506 /* elysian_enemy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_enemy.cpp; path = ../assetio/source/elysian_enemy.cpp; sourceTree = "<group>"; };
+		C8C76B9F146F317400A3F506 /* elysian_entity.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_entity.cpp; path = ../assetio/source/elysian_entity.cpp; sourceTree = "<group>"; };
+		C8C76BA0146F317400A3F506 /* elysian_friendly.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_friendly.cpp; path = ../assetio/source/elysian_friendly.cpp; sourceTree = "<group>"; };
+		C8C76BA1146F317400A3F506 /* elysian_item.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_item.cpp; path = ../assetio/source/elysian_item.cpp; sourceTree = "<group>"; };
+		C8C76BA2146F317400A3F506 /* elysian_level_manager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_level_manager.cpp; path = ../assetio/source/elysian_level_manager.cpp; sourceTree = "<group>"; };
+		C8C76BA3146F317400A3F506 /* elysian_level.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_level.cpp; path = ../assetio/source/elysian_level.cpp; sourceTree = "<group>"; };
+		C8C76BA4146F317400A3F506 /* elysian_lua_behavior.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_lua_behavior.cpp; path = ../assetio/source/elysian_lua_behavior.cpp; sourceTree = "<group>"; };
+		C8C76BA5146F317400A3F506 /* elysian_renderable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_renderable.cpp; path = ../assetio/source/elysian_renderable.cpp; sourceTree = "<group>"; };
+		C8C76BA6146F317400A3F506 /* elysian_warp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_warp.cpp; path = ../assetio/source/elysian_warp.cpp; sourceTree = "<group>"; };
+		C8C76BC9146F319600A3F506 /* elysian_adventure_log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_adventure_log.cpp; path = ../source/elysian_adventure_log.cpp; sourceTree = "<group>"; };
+		C8C76BCA146F319600A3F506 /* elysian_animation_system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_animation_system.cpp; path = ../source/elysian_animation_system.cpp; sourceTree = "<group>"; };
+		C8C76BCB146F319600A3F506 /* elysian_behavior_system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_behavior_system.cpp; path = ../source/elysian_behavior_system.cpp; sourceTree = "<group>"; };
+		C8C76BCC146F319600A3F506 /* elysian_camera_system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_camera_system.cpp; path = ../source/elysian_camera_system.cpp; sourceTree = "<group>"; };
+		C8C76BCD146F319600A3F506 /* elysian_character_system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_character_system.cpp; path = ../source/elysian_character_system.cpp; sourceTree = "<group>"; };
+		C8C76BCE146F319600A3F506 /* elysian_collision_system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_collision_system.cpp; path = ../source/elysian_collision_system.cpp; sourceTree = "<group>"; };
+		C8C76BCF146F319600A3F506 /* elysian_conversation_system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_conversation_system.cpp; path = ../source/elysian_conversation_system.cpp; sourceTree = "<group>"; };
+		C8C76BD0146F319600A3F506 /* elysian_debug.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_debug.cpp; path = ../source/elysian_debug.cpp; sourceTree = "<group>"; };
+		C8C76BD1146F319600A3F506 /* elysian_enemy_system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_enemy_system.cpp; path = ../source/elysian_enemy_system.cpp; sourceTree = "<group>"; };
+		C8C76BD2146F319600A3F506 /* elysian_engine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_engine.cpp; path = ../source/elysian_engine.cpp; sourceTree = "<group>"; };
+		C8C76BD3146F319600A3F506 /* elysian_font.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_font.cpp; path = ../source/elysian_font.cpp; sourceTree = "<group>"; };
+		C8C76BD4146F319600A3F506 /* elysian_friendly_system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_friendly_system.cpp; path = ../source/elysian_friendly_system.cpp; sourceTree = "<group>"; };
+		C8C76BD5146F319600A3F506 /* elysian_game_input.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_game_input.cpp; path = ../source/elysian_game_input.cpp; sourceTree = "<group>"; };
+		C8C76BD6146F319600A3F506 /* elysian_gui_system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_gui_system.cpp; path = ../source/elysian_gui_system.cpp; sourceTree = "<group>"; };
+		C8C76BD7146F319600A3F506 /* elysian_item_system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_item_system.cpp; path = ../source/elysian_item_system.cpp; sourceTree = "<group>"; };
+		C8C76BD8146F319600A3F506 /* elysian_level_system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_level_system.cpp; path = ../source/elysian_level_system.cpp; sourceTree = "<group>"; };
+		C8C76BD9146F319600A3F506 /* elysian_lua_manager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_lua_manager.cpp; path = ../source/elysian_lua_manager.cpp; sourceTree = "<group>"; };
+		C8C76BDA146F319600A3F506 /* elysian_lua_singleton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_lua_singleton.cpp; path = ../source/elysian_lua_singleton.cpp; sourceTree = "<group>"; };
+		C8C76BDB146F319600A3F506 /* elysian_party_system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_party_system.cpp; path = ../source/elysian_party_system.cpp; sourceTree = "<group>"; };
+		C8C76BDC146F319600A3F506 /* elysian_system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_system.cpp; path = ../source/elysian_system.cpp; sourceTree = "<group>"; };
+		C8C76BDE146F319600A3F506 /* elysian_timer_system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_timer_system.cpp; path = ../source/elysian_timer_system.cpp; sourceTree = "<group>"; };
+		C8C76BDF146F319600A3F506 /* elysian_warp_system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_warp_system.cpp; path = ../source/elysian_warp_system.cpp; sourceTree = "<group>"; };
+		C8C76BE0146F319600A3F506 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../source/main.cpp; sourceTree = "<group>"; };
+		C8C8E38E15683A2C00C4293D /* LibGyro.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LibGyro.xcodeproj; path = ESGamma.xcodeproj/../../../libGyro/xcode4/LibGyro.xcodeproj; sourceTree = "<group>"; };
+		C8CDC02B14F9779300D3252D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS4.3.sdk/System/Library/Frameworks/QuartzCore.framework; sourceTree = DEVELOPER_DIR; };
+		C8F7571416BF056F002198FD /* elysian_map_depth_buffer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = elysian_map_depth_buffer.hpp; path = ../assetio/include/elysian_map_depth_buffer.hpp; sourceTree = "<group>"; };
+		C8F7571516C84CB8002198FD /* elysian_zcoords.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = elysian_zcoords.cpp; path = ../assetio/source/elysian_zcoords.cpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C86E335F142FECE700466D89 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C874B6ED167500320044D9D3 /* libGyroOSX.framework in Frameworks */,
+				C86E3367142FECE700466D89 /* Cocoa.framework in Frameworks */,
+				C8282E1B144B45EC00451BBE /* lua5_1.framework in Frameworks */,
+				C8282E1C144B45EC00451BBE /* tolua++.framework in Frameworks */,
+				C89F75D5144667270078A1DF /* SDL.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C86E3384142FED0400466D89 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C8840D8D14F6FB0D00665CD4 /* UIKit.framework in Frameworks */,
+				C8840D8E14F6FB0D00665CD4 /* CoreGraphics.framework in Frameworks */,
+				C8840D9314F6FB6400665CD4 /* Foundation.framework in Frameworks */,
+				C8840D8F14F6FB0D00665CD4 /* libLibGyroiOS.a in Frameworks */,
+				C8840D9014F6FB0D00665CD4 /* OpenGLES.framework in Frameworks */,
+				C8CDC02D14F9779B00D3252D /* QuartzCore.framework in Frameworks */,
+				C829D24B14F6FE74001F4637 /* liblua.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C863A9A415B6261D00EB49B2 /* primitive */ = {
+			isa = PBXGroup;
+			children = (
+				C863A9B015B6269A00EB49B2 /* elysian_quad_attrib.cpp */,
+			);
+			name = primitive;
+			sourceTree = "<group>";
+		};
+		C86E3357142FECE700466D89 = {
+			isa = PBXGroup;
+			children = (
+				C8B354DD1763944900B7B426 /* oolua.xcodeproj */,
+				C89DCBD716A222F00092DAAE /* gamma_args.txt */,
+				C89DCBD516A2227A0092DAAE /* party */,
+				C89DCBD316A222720092DAAE /* item */,
+				C89DCBD116A2225B0092DAAE /* level */,
+				C89DCBCF16A222430092DAAE /* font */,
+				C89DCBCD16A222130092DAAE /* Project */,
+				C8C8E38E15683A2C00C4293D /* LibGyro.xcodeproj */,
+				C86E33E6142FF13700466D89 /* include */,
+				C86E33E8142FF14300466D89 /* source */,
+				C86E34AC142FF68900466D89 /* resources */,
+				C86E3365142FECE700466D89 /* Frameworks */,
+				C86E3363142FECE700466D89 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C86E3363142FECE700466D89 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C86E3362142FECE700466D89 /* ESGammaOSX.app */,
+				C86E3387142FED0400466D89 /* ESGammaiOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C86E3365142FECE700466D89 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C86E34B2142FF9CA00466D89 /* osx */,
+				C86E34B1142FF9C200466D89 /* ios */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C86E336C142FECE700466D89 /* ESGammaOSX */ = {
+			isa = PBXGroup;
+			children = (
+				C86E336E142FECE700466D89 /* ESGammaOSX-Info.plist */,
+				C86E336F142FECE700466D89 /* InfoPlist.strings */,
+				C86E3374142FECE700466D89 /* ESGammaOSX-Prefix.pch */,
+				C86E3375142FECE800466D89 /* Credits.rtf */,
+			);
+			path = ESGammaOSX;
+			sourceTree = "<group>";
+		};
+		C86E3393142FED1200466D89 /* ESGammaiOS */ = {
+			isa = PBXGroup;
+			children = (
+				C829D25214F700A8001F4637 /* font */,
+				C829D25014F70099001F4637 /* party */,
+				C829D24E14F7007F001F4637 /* level */,
+				C86E3395142FED1200466D89 /* ESGammaiOS-Info.plist */,
+				C86E3396142FED1200466D89 /* InfoPlist.strings */,
+				C86E339B142FED1200466D89 /* ESGammaiOS-Prefix.pch */,
+			);
+			path = ESGammaiOS;
+			sourceTree = "<group>";
+		};
+		C86E33E6142FF13700466D89 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				C89F75D11446651D0078A1DF /* SDLMain.h */,
+				C86E33E7142FF13E00466D89 /* assetio */,
+				C86E34B4143000F900466D89 /* core */,
+				C86E34BA143001F600466D89 /* lua */,
+				C86E34B51430010200466D89 /* subsystem */,
+				C86E34B91430018600466D89 /* ui */,
+			);
+			name = include;
+			sourceTree = "<group>";
+		};
+		C86E33E7142FF13E00466D89 /* assetio */ = {
+			isa = PBXGroup;
+			children = (
+				C8F7571416BF056F002198FD /* elysian_map_depth_buffer.hpp */,
+				C8C76B59146F310B00A3F506 /* elysian_area.hpp */,
+				C8C76B5A146F310B00A3F506 /* elysian_asset.hpp */,
+				C8C76B61146F310B00A3F506 /* elysian_direction.hpp */,
+				C8C76B65146F310B00A3F506 /* elysian_instance_transform.hpp */,
+				C8C76B67146F310B00A3F506 /* elysian_level_manager.hpp */,
+				C8C76B68146F310B00A3F506 /* elysian_level.hpp */,
+				C8C76B72146F310B00A3F506 /* elysian_renderable_object.hpp */,
+				C8C76B77146F310B00A3F506 /* elysian_tile.hpp */,
+				C8C76B79146F310B00A3F506 /* elysian_zcoords.hpp */,
+				C89F75B514465FEB0078A1DF /* container */,
+				C89F75B414465FDA0078A1DF /* primitive */,
+				C8FA0B04143FE99E001D7BA3 /* component */,
+			);
+			name = assetio;
+			sourceTree = "<group>";
+		};
+		C86E33E8142FF14300466D89 /* source */ = {
+			isa = PBXGroup;
+			children = (
+				C8B355A01763A0DF00B7B426 /* OOLUA_FUCK */,
+				C89F75D21446651D0078A1DF /* SDLMain.m */,
+				C86E33E9142FF14900466D89 /* assetio */,
+				C86E34BF1430038400466D89 /* core */,
+				C86E34BD1430037E00466D89 /* lua */,
+				C86E34BC1430037A00466D89 /* subsystem */,
+				C86E34BB1430037000466D89 /* ui */,
+			);
+			name = source;
+			sourceTree = "<group>";
+		};
+		C86E33E9142FF14900466D89 /* assetio */ = {
+			isa = PBXGroup;
+			children = (
+				C863A9A415B6261D00EB49B2 /* primitive */,
+				C83320051697C5A6006D081E /* elysian_tile.cpp */,
+				C8C76B97146F317400A3F506 /* elysian_area.cpp */,
+				C8C76B98146F317400A3F506 /* elysian_asset.cpp */,
+				C8F7571516C84CB8002198FD /* elysian_zcoords.cpp */,
+				C8C76B9F146F317400A3F506 /* elysian_entity.cpp */,
+				C8C76BA2146F317400A3F506 /* elysian_level_manager.cpp */,
+				C8C76BA3146F317400A3F506 /* elysian_level.cpp */,
+				C8FA0B05143FE9A8001D7BA3 /* component */,
+			);
+			name = assetio;
+			sourceTree = "<group>";
+		};
+		C86E34AC142FF68900466D89 /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				C86E3393142FED1200466D89 /* ESGammaiOS */,
+				C86E336C142FECE700466D89 /* ESGammaOSX */,
+			);
+			name = resources;
+			sourceTree = "<group>";
+		};
+		C86E34B1142FF9C200466D89 /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				C829D24A14F6FE74001F4637 /* liblua.a */,
+				C8CDC02B14F9779300D3252D /* QuartzCore.framework */,
+				C8840D9114F6FB5500665CD4 /* Foundation.framework */,
+				C8840D8914F6FA4000665CD4 /* UIKit.framework */,
+				C8840D8714F6F9C000665CD4 /* CoreGraphics.framework */,
+				C8840D1414F6EE1200665CD4 /* libLibGyroiOS.a */,
+				C8840D7A14F6F5ED00665CD4 /* OpenGLES.framework */,
+			);
+			name = ios;
+			sourceTree = "<group>";
+		};
+		C86E34B2142FF9CA00466D89 /* osx */ = {
+			isa = PBXGroup;
+			children = (
+				C8282E17144B45B100451BBE /* lua5_1.framework */,
+				C8282E18144B45B100451BBE /* tolua++.framework */,
+				C89F75DA144669110078A1DF /* LibGyroOSX.framework */,
+				C89F75D4144667270078A1DF /* SDL.framework */,
+				C86E3369142FECE700466D89 /* AppKit.framework */,
+				C86E336A142FECE700466D89 /* CoreData.framework */,
+				C86E336B142FECE700466D89 /* Foundation.framework */,
+				C86E3366142FECE700466D89 /* Cocoa.framework */,
+			);
+			name = osx;
+			sourceTree = "<group>";
+		};
+		C86E34B4143000F900466D89 /* core */ = {
+			isa = PBXGroup;
+			children = (
+				C8C76B81146F314800A3F506 /* elysian_debug.hpp */,
+				C8C76B83146F314800A3F506 /* elysian_engine.hpp */,
+				C8C76B86146F314800A3F506 /* elysian_game_input.hpp */,
+				C8C76B92146F314800A3F506 /* elysian_system.hpp */,
+			);
+			name = core;
+			sourceTree = "<group>";
+		};
+		C86E34B51430010200466D89 /* subsystem */ = {
+			isa = PBXGroup;
+			children = (
+				C8802C74174800EE00449268 /* elysian_map_system.hpp */,
+				C8C76B7B146F314800A3F506 /* elysian_animation_system.hpp */,
+				C8C76B7C146F314800A3F506 /* elysian_behavior_system.hpp */,
+				C8C76B7D146F314800A3F506 /* elysian_camera_system.hpp */,
+				C8C76B7E146F314800A3F506 /* elysian_character_system.hpp */,
+				C8C76B7F146F314800A3F506 /* elysian_collision_system.hpp */,
+				C8C76B80146F314800A3F506 /* elysian_conversation_system.hpp */,
+				C8C76B82146F314800A3F506 /* elysian_enemy_system.hpp */,
+				C8C76B85146F314800A3F506 /* elysian_friendly_system.hpp */,
+				C8C76B87146F314800A3F506 /* elysian_gui_system.hpp */,
+				C8C76B88146F314800A3F506 /* elysian_item_system.hpp */,
+				C8C76B89146F314800A3F506 /* elysian_level_system.hpp */,
+				C8C76B8D146F314800A3F506 /* elysian_party_system.hpp */,
+				C8C76B94146F314800A3F506 /* elysian_timer_system.hpp */,
+				C8C76B95146F314800A3F506 /* elysian_warp_system.hpp */,
+			);
+			name = subsystem;
+			sourceTree = "<group>";
+		};
+		C86E34B91430018600466D89 /* ui */ = {
+			isa = PBXGroup;
+			children = (
+				C8C76B7A146F314800A3F506 /* elysian_adventure_log.hpp */,
+				C8C76B84146F314800A3F506 /* elysian_font.hpp */,
+				C89F75C0144661560078A1DF /* renderable */,
+			);
+			name = ui;
+			sourceTree = "<group>";
+		};
+		C86E34BA143001F600466D89 /* lua */ = {
+			isa = PBXGroup;
+			children = (
+				C8B355A11763A24500B7B426 /* elysian_lua_wrappers.hpp */,
+				C8C76B8A146F314800A3F506 /* elysian_lua_manager.hpp */,
+				C8C76B8B146F314800A3F506 /* elysian_lua_singleton.hpp */,
+				C8B354C7175A50E300B7B426 /* elysian_lua_script.hpp */,
+			);
+			name = lua;
+			sourceTree = "<group>";
+		};
+		C86E34BB1430037000466D89 /* ui */ = {
+			isa = PBXGroup;
+			children = (
+				C8C76BC9146F319600A3F506 /* elysian_adventure_log.cpp */,
+				C8C76BD3146F319600A3F506 /* elysian_font.cpp */,
+			);
+			name = ui;
+			sourceTree = "<group>";
+		};
+		C86E34BC1430037A00466D89 /* subsystem */ = {
+			isa = PBXGroup;
+			children = (
+				C8802C751748010100449268 /* elysian_map_system.cpp */,
+				C8C76BCA146F319600A3F506 /* elysian_animation_system.cpp */,
+				C8C76BCB146F319600A3F506 /* elysian_behavior_system.cpp */,
+				C8C76BCC146F319600A3F506 /* elysian_camera_system.cpp */,
+				C8C76BCD146F319600A3F506 /* elysian_character_system.cpp */,
+				C8C76BCE146F319600A3F506 /* elysian_collision_system.cpp */,
+				C8C76BCF146F319600A3F506 /* elysian_conversation_system.cpp */,
+				C8C76BD1146F319600A3F506 /* elysian_enemy_system.cpp */,
+				C8C76BD4146F319600A3F506 /* elysian_friendly_system.cpp */,
+				C8C76BD6146F319600A3F506 /* elysian_gui_system.cpp */,
+				C8C76BD7146F319600A3F506 /* elysian_item_system.cpp */,
+				C8C76BD8146F319600A3F506 /* elysian_level_system.cpp */,
+				C8C76BDB146F319600A3F506 /* elysian_party_system.cpp */,
+				C8C76BDC146F319600A3F506 /* elysian_system.cpp */,
+				C8C76BDE146F319600A3F506 /* elysian_timer_system.cpp */,
+				C8C76BDF146F319600A3F506 /* elysian_warp_system.cpp */,
+			);
+			name = subsystem;
+			sourceTree = "<group>";
+		};
+		C86E34BD1430037E00466D89 /* lua */ = {
+			isa = PBXGroup;
+			children = (
+				C8B355501763984400B7B426 /* elysian_lua_wrappers.cpp */,
+				C8C76BD9146F319600A3F506 /* elysian_lua_manager.cpp */,
+				C8C76BDA146F319600A3F506 /* elysian_lua_singleton.cpp */,
+				C8B354C8175A511500B7B426 /* elysian_lua_script.cpp */,
+			);
+			name = lua;
+			sourceTree = "<group>";
+		};
+		C86E34BF1430038400466D89 /* core */ = {
+			isa = PBXGroup;
+			children = (
+				C8C76BD0146F319600A3F506 /* elysian_debug.cpp */,
+				C8C76BD2146F319600A3F506 /* elysian_engine.cpp */,
+				C8C76BD5146F319600A3F506 /* elysian_game_input.cpp */,
+				C8C76BE0146F319600A3F506 /* main.cpp */,
+			);
+			name = core;
+			sourceTree = "<group>";
+		};
+		C89F75B414465FDA0078A1DF /* primitive */ = {
+			isa = PBXGroup;
+			children = (
+				C863A9A515B6266A00EB49B2 /* elysian_model_attrib.hpp */,
+				C863A9A615B6266A00EB49B2 /* elysian_prim_attrib.hpp */,
+				C863A9A715B6266A00EB49B2 /* elysian_quad_attrib.hpp */,
+				C863A9A815B6266A00EB49B2 /* elysian_quad_sprite_attrib.hpp */,
+				C863A9A915B6266A00EB49B2 /* elysian_rect_attrib.hpp */,
+				C863A9AA15B6266A00EB49B2 /* elysian_sprite_attrib.hpp */,
+				C863A9AC15B6266A00EB49B2 /* elysian_textured_attrib.hpp */,
+			);
+			name = primitive;
+			sourceTree = "<group>";
+		};
+		C89F75B514465FEB0078A1DF /* container */ = {
+			isa = PBXGroup;
+			children = (
+				C8C76B60146F310B00A3F506 /* elysian_cstr_map.hpp */,
+				C8C76B69146F310B00A3F506 /* elysian_linked_list.hpp */,
+				C8C76B6D146F310B00A3F506 /* elysian_pool.hpp */,
+				C8C76B75146F310B00A3F506 /* elysian_stl_algorithm.hpp */,
+			);
+			name = container;
+			sourceTree = "<group>";
+		};
+		C89F75C0144661560078A1DF /* renderable */ = {
+			isa = PBXGroup;
+			children = (
+				C8C76B8C146F314800A3F506 /* elysian_model.hpp */,
+				C8C76B8E146F314800A3F506 /* elysian_quad_sprite.hpp */,
+				C8C76B8F146F314800A3F506 /* elysian_quad.hpp */,
+				C8C76B90146F314800A3F506 /* elysian_rect.hpp */,
+				C8C76B91146F314800A3F506 /* elysian_sprite.hpp */,
+			);
+			name = renderable;
+			sourceTree = "<group>";
+		};
+		C8B354DE1763944900B7B426 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C8B354E21763944A00B7B426 /* liboolua.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C8B355A01763A0DF00B7B426 /* OOLUA_FUCK */ = {
+			isa = PBXGroup;
+			children = (
+				C8B355721763A0D500B7B426 /* oolua_c_func.h */,
+				C8B355731763A0D500B7B426 /* oolua_char_arrays.h */,
+				C8B355741763A0D500B7B426 /* oolua_check_result.cpp */,
+				C8B355751763A0D500B7B426 /* oolua_check_result.h */,
+				C8B355761763A0D500B7B426 /* oolua_config.h */,
+				C8B355771763A0D500B7B426 /* oolua_converters.h */,
+				C8B355781763A0D600B7B426 /* oolua_error.cpp */,
+				C8B355791763A0D600B7B426 /* oolua_error.h */,
+				C8B3557A1763A0D600B7B426 /* oolua_exception.h */,
+				C8B3557B1763A0D600B7B426 /* oolua_member_function.h */,
+				C8B3557C1763A0D600B7B426 /* oolua_paramater_macros.h */,
+				C8B3557D1763A0D600B7B426 /* oolua_parameter_helper.h */,
+				C8B3557E1763A0D600B7B426 /* oolua_push_pull.cpp */,
+				C8B3557F1763A0D600B7B426 /* oolua_push_pull.h */,
+				C8B355801763A0D700B7B426 /* oolua_registration.cpp */,
+				C8B355811763A0D700B7B426 /* oolua_registration.h */,
+				C8B355821763A0D700B7B426 /* oolua_storage.cpp */,
+				C8B355831763A0D700B7B426 /* oolua_storage.h */,
+				C8B355841763A0D700B7B426 /* oolua_typedefs.h */,
+				C8B355851763A0D700B7B426 /* oolua_userdata.h */,
+				C8B355861763A0D700B7B426 /* oolua_va_args.h */,
+				C8B355871763A0D700B7B426 /* oolua_version.h */,
+				C8B355881763A0D800B7B426 /* oolua.cpp */,
+				C8B355891763A0D800B7B426 /* oolua.h */,
+				C8B3558A1763A0D800B7B426 /* param_traits.h */,
+				C8B3558B1763A0D800B7B426 /* platform_check.h */,
+				C8B3558C1763A0D800B7B426 /* proxy_caller.h */,
+				C8B3558D1763A0D800B7B426 /* proxy_class.h */,
+				C8B3558E1763A0D800B7B426 /* push_pointer_internal.cpp */,
+				C8B3558F1763A0D800B7B426 /* push_pointer_internal.h */,
+				C8B355901763A0D900B7B426 /* type_list.h */,
+				C8B355911763A0D900B7B426 /* typelist_structs.h */,
+				C8B355531763A0AE00B7B426 /* base_checker.h */,
+				C8B355541763A0AE00B7B426 /* class_from_stack.cpp */,
+				C8B355551763A0AE00B7B426 /* class_from_stack.h */,
+				C8B355561763A0AE00B7B426 /* class_public_member.h */,
+				C8B355571763A0AF00B7B426 /* cpp_constructor.h */,
+				C8B355581763A0AF00B7B426 /* cpp_member_func.h */,
+				C8B355591763A0AF00B7B426 /* determin_qualifier.h */,
+				C8B3555A1763A0AF00B7B426 /* export_func_to_lua.h */,
+				C8B3555B1763A0B000B7B426 /* fwd_push_pull.h */,
+				C8B3555C1763A0B000B7B426 /* lua_function.cpp */,
+				C8B3555D1763A0B100B7B426 /* lua_function.h */,
+				C8B3555E1763A0B100B7B426 /* lua_includes.h */,
+				C8B3555F1763A0B100B7B426 /* lua_operator.h */,
+				C8B355601763A0B100B7B426 /* lua_ref.cpp */,
+				C8B355611763A0B100B7B426 /* lua_ref.h */,
+				C8B355621763A0B100B7B426 /* lua_stack_dump.cpp */,
+				C8B355631763A0B100B7B426 /* lua_stack_dump.h */,
+				C8B355641763A0B100B7B426 /* lua_table.cpp */,
+				C8B355651763A0B200B7B426 /* lua_table.h */,
+				C8B355661763A0B300B7B426 /* lvd_types.h */,
+				C8B355671763A0B300B7B426 /* member_func_helper.h */,
+			);
+			name = OOLUA_FUCK;
+			sourceTree = "<group>";
+		};
+		C8C8E38F15683A2C00C4293D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C8C8E39415683A2C00C4293D /* libLibGyroiOS.a */,
+				C8C8E39615683A2C00C4293D /* libGyroOSX.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C8FA0B04143FE99E001D7BA3 /* component */ = {
+			isa = PBXGroup;
+			children = (
+				C8C76B58146F310B00A3F506 /* elysian_animation.hpp */,
+				C8C76B5B146F310B00A3F506 /* elysian_behavior.hpp */,
+				C8C76B5C146F310B00A3F506 /* elysian_character.hpp */,
+				C8C76B5D146F310B00A3F506 /* elysian_collidable.hpp */,
+				C8C76B5E146F310B00A3F506 /* elysian_component.hpp */,
+				C8C76B5F146F310B00A3F506 /* elysian_conversation.hpp */,
+				C8C76B62146F310B00A3F506 /* elysian_enemy.hpp */,
+				C8C76B63146F310B00A3F506 /* elysian_entity.hpp */,
+				C8C76B64146F310B00A3F506 /* elysian_friendly.hpp */,
+				C8C76B66146F310B00A3F506 /* elysian_item.hpp */,
+				C8C76B6A146F310B00A3F506 /* elysian_lua_behavior.hpp */,
+				C8C76B73146F310B00A3F506 /* elysian_renderable.hpp */,
+				C8C76B78146F310B00A3F506 /* elysian_warp.hpp */,
+			);
+			name = component;
+			sourceTree = "<group>";
+		};
+		C8FA0B05143FE9A8001D7BA3 /* component */ = {
+			isa = PBXGroup;
+			children = (
+				C8C76BA0146F317400A3F506 /* elysian_friendly.cpp */,
+				C8C76BA1146F317400A3F506 /* elysian_item.cpp */,
+				C8C76B99146F317400A3F506 /* elysian_behavior.cpp */,
+				C8C76B9A146F317400A3F506 /* elysian_character.cpp */,
+				C8C76B9B146F317400A3F506 /* elysian_collidable.cpp */,
+				C8C76B9C146F317400A3F506 /* elysian_component.cpp */,
+				C8C76B9D146F317400A3F506 /* elysian_conversation.cpp */,
+				C8C76B9E146F317400A3F506 /* elysian_enemy.cpp */,
+				C8C76B96146F317400A3F506 /* elysian_animation.cpp */,
+				C8C76BA4146F317400A3F506 /* elysian_lua_behavior.cpp */,
+				C8C76BA5146F317400A3F506 /* elysian_renderable.cpp */,
+				C8C76BA6146F317400A3F506 /* elysian_warp.cpp */,
+			);
+			name = component;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C86E3361142FECE700466D89 /* ESGammaOSX */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C86E3380142FECE800466D89 /* Build configuration list for PBXNativeTarget "ESGammaOSX" */;
+			buildPhases = (
+				C86E335E142FECE700466D89 /* Sources */,
+				C86E335F142FECE700466D89 /* Frameworks */,
+				C86E3360142FECE700466D89 /* Resources */,
+				C89F75DC14466E130078A1DF /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C8A6A119158C02E6008A636C /* PBXTargetDependency */,
+			);
+			name = ESGammaOSX;
+			productName = ESGammaOSX;
+			productReference = C86E3362142FECE700466D89 /* ESGammaOSX.app */;
+			productType = "com.apple.product-type.application";
+		};
+		C86E3386142FED0400466D89 /* ESGammaiOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C86E33AF142FED1300466D89 /* Build configuration list for PBXNativeTarget "ESGammaiOS" */;
+			buildPhases = (
+				C86E3383142FED0400466D89 /* Sources */,
+				C86E3384142FED0400466D89 /* Frameworks */,
+				C86E3385142FED0400466D89 /* Resources */,
+				C829D25414F70244001F4637 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C8332004168F646A006D081E /* PBXTargetDependency */,
+			);
+			name = ESGammaiOS;
+			productName = ESGammaiOS;
+			productReference = C86E3387142FED0400466D89 /* ESGammaiOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C86E3359142FECE700466D89 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = C86E335C142FECE700466D89 /* Build configuration list for PBXProject "ESGamma" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = C86E3357142FECE700466D89;
+			productRefGroup = C86E3363142FECE700466D89 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = C8C8E38F15683A2C00C4293D /* Products */;
+					ProjectRef = C8C8E38E15683A2C00C4293D /* LibGyro.xcodeproj */;
+				},
+				{
+					ProductGroup = C8B354DE1763944900B7B426 /* Products */;
+					ProjectRef = C8B354DD1763944900B7B426 /* oolua.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				C86E3361142FECE700466D89 /* ESGammaOSX */,
+				C86E3386142FED0400466D89 /* ESGammaiOS */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		C8B354E21763944A00B7B426 /* liboolua.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = liboolua.a;
+			remoteRef = C8B354E11763944A00B7B426 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C8C8E39415683A2C00C4293D /* libLibGyroiOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libLibGyroiOS.a;
+			remoteRef = C8C8E39315683A2C00C4293D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		C8C8E39615683A2C00C4293D /* libGyroOSX.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = libGyroOSX.framework;
+			remoteRef = C8C8E39515683A2C00C4293D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C86E3360142FECE700466D89 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C86E3371142FECE700466D89 /* InfoPlist.strings in Resources */,
+				C86E3377142FECE800466D89 /* Credits.rtf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C86E3385142FED0400466D89 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C86E3398142FED1200466D89 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C86E335E142FECE700466D89 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C89F75D31446651D0078A1DF /* SDLMain.m in Sources */,
+				C8C76BA7146F317400A3F506 /* elysian_animation.cpp in Sources */,
+				C8C76BA9146F317400A3F506 /* elysian_area.cpp in Sources */,
+				C8C76BAB146F317400A3F506 /* elysian_asset.cpp in Sources */,
+				C8C76BAD146F317400A3F506 /* elysian_behavior.cpp in Sources */,
+				C8C76BAF146F317400A3F506 /* elysian_character.cpp in Sources */,
+				C8C76BB1146F317400A3F506 /* elysian_collidable.cpp in Sources */,
+				C8C76BB3146F317400A3F506 /* elysian_component.cpp in Sources */,
+				C8C76BB5146F317400A3F506 /* elysian_conversation.cpp in Sources */,
+				C8C76BB7146F317400A3F506 /* elysian_enemy.cpp in Sources */,
+				C8C76BB9146F317400A3F506 /* elysian_entity.cpp in Sources */,
+				C8C76BBB146F317400A3F506 /* elysian_friendly.cpp in Sources */,
+				C8C76BBD146F317400A3F506 /* elysian_item.cpp in Sources */,
+				C8C76BBF146F317400A3F506 /* elysian_level_manager.cpp in Sources */,
+				C8C76BC1146F317400A3F506 /* elysian_level.cpp in Sources */,
+				C8C76BC3146F317400A3F506 /* elysian_lua_behavior.cpp in Sources */,
+				C8C76BC5146F317400A3F506 /* elysian_renderable.cpp in Sources */,
+				C8C76BC7146F317400A3F506 /* elysian_warp.cpp in Sources */,
+				C8C76BE1146F319600A3F506 /* elysian_adventure_log.cpp in Sources */,
+				C8C76BE3146F319600A3F506 /* elysian_animation_system.cpp in Sources */,
+				C8C76BE5146F319600A3F506 /* elysian_behavior_system.cpp in Sources */,
+				C8C76BE7146F319600A3F506 /* elysian_camera_system.cpp in Sources */,
+				C8C76BE9146F319600A3F506 /* elysian_character_system.cpp in Sources */,
+				C8C76BEB146F319600A3F506 /* elysian_collision_system.cpp in Sources */,
+				C8C76BED146F319600A3F506 /* elysian_conversation_system.cpp in Sources */,
+				C8C76BEF146F319600A3F506 /* elysian_debug.cpp in Sources */,
+				C8C76BF1146F319600A3F506 /* elysian_enemy_system.cpp in Sources */,
+				C8C76BF3146F319600A3F506 /* elysian_engine.cpp in Sources */,
+				C8C76BF5146F319600A3F506 /* elysian_font.cpp in Sources */,
+				C8C76BF7146F319600A3F506 /* elysian_friendly_system.cpp in Sources */,
+				C8C76BF9146F319600A3F506 /* elysian_game_input.cpp in Sources */,
+				C8C76BFB146F319600A3F506 /* elysian_gui_system.cpp in Sources */,
+				C8C76BFD146F319600A3F506 /* elysian_item_system.cpp in Sources */,
+				C8C76BFF146F319600A3F506 /* elysian_level_system.cpp in Sources */,
+				C8C76C01146F319600A3F506 /* elysian_lua_manager.cpp in Sources */,
+				C8C76C03146F319600A3F506 /* elysian_lua_singleton.cpp in Sources */,
+				C8C76C05146F319600A3F506 /* elysian_party_system.cpp in Sources */,
+				C8C76C07146F319600A3F506 /* elysian_system.cpp in Sources */,
+				C8C76C0B146F319600A3F506 /* elysian_timer_system.cpp in Sources */,
+				C8C76C0D146F319600A3F506 /* elysian_warp_system.cpp in Sources */,
+				C8C76C0F146F319600A3F506 /* main.cpp in Sources */,
+				C863A9B115B6269A00EB49B2 /* elysian_quad_attrib.cpp in Sources */,
+				C83320061697C5A6006D081E /* elysian_tile.cpp in Sources */,
+				C8F7571616C84CB8002198FD /* elysian_zcoords.cpp in Sources */,
+				C8802C761748010100449268 /* elysian_map_system.cpp in Sources */,
+				C8B354C9175A511500B7B426 /* elysian_lua_script.cpp in Sources */,
+				C8B355511763984400B7B426 /* elysian_lua_wrappers.cpp in Sources */,
+				C8B355681763A0B300B7B426 /* class_from_stack.cpp in Sources */,
+				C8B3556A1763A0B300B7B426 /* lua_function.cpp in Sources */,
+				C8B3556C1763A0B300B7B426 /* lua_ref.cpp in Sources */,
+				C8B3556E1763A0B300B7B426 /* lua_stack_dump.cpp in Sources */,
+				C8B355701763A0B300B7B426 /* lua_table.cpp in Sources */,
+				C8B355921763A0D900B7B426 /* oolua_check_result.cpp in Sources */,
+				C8B355941763A0D900B7B426 /* oolua_error.cpp in Sources */,
+				C8B355961763A0D900B7B426 /* oolua_push_pull.cpp in Sources */,
+				C8B355981763A0D900B7B426 /* oolua_registration.cpp in Sources */,
+				C8B3559A1763A0D900B7B426 /* oolua_storage.cpp in Sources */,
+				C8B3559C1763A0D900B7B426 /* oolua.cpp in Sources */,
+				C8B3559E1763A0D900B7B426 /* push_pointer_internal.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C86E3383142FED0400466D89 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C8C76BA8146F317400A3F506 /* elysian_animation.cpp in Sources */,
+				C8C76BAA146F317400A3F506 /* elysian_area.cpp in Sources */,
+				C8C76BAC146F317400A3F506 /* elysian_asset.cpp in Sources */,
+				C8C76BAE146F317400A3F506 /* elysian_behavior.cpp in Sources */,
+				C8C76BB0146F317400A3F506 /* elysian_character.cpp in Sources */,
+				C8C76BB2146F317400A3F506 /* elysian_collidable.cpp in Sources */,
+				C8C76BB4146F317400A3F506 /* elysian_component.cpp in Sources */,
+				C8C76BB6146F317400A3F506 /* elysian_conversation.cpp in Sources */,
+				C8C76BB8146F317400A3F506 /* elysian_enemy.cpp in Sources */,
+				C8C76BBA146F317400A3F506 /* elysian_entity.cpp in Sources */,
+				C8C76BBC146F317400A3F506 /* elysian_friendly.cpp in Sources */,
+				C8C76BBE146F317400A3F506 /* elysian_item.cpp in Sources */,
+				C8C76BC0146F317400A3F506 /* elysian_level_manager.cpp in Sources */,
+				C8C76BC2146F317400A3F506 /* elysian_level.cpp in Sources */,
+				C8C76BC4146F317400A3F506 /* elysian_lua_behavior.cpp in Sources */,
+				C8C76BC6146F317400A3F506 /* elysian_renderable.cpp in Sources */,
+				C8C76BC8146F317400A3F506 /* elysian_warp.cpp in Sources */,
+				C8C76BE2146F319600A3F506 /* elysian_adventure_log.cpp in Sources */,
+				C8C76BE4146F319600A3F506 /* elysian_animation_system.cpp in Sources */,
+				C8C76BE6146F319600A3F506 /* elysian_behavior_system.cpp in Sources */,
+				C8C76BE8146F319600A3F506 /* elysian_camera_system.cpp in Sources */,
+				C8C76BEA146F319600A3F506 /* elysian_character_system.cpp in Sources */,
+				C8C76BEC146F319600A3F506 /* elysian_collision_system.cpp in Sources */,
+				C8C76BEE146F319600A3F506 /* elysian_conversation_system.cpp in Sources */,
+				C8C76BF0146F319600A3F506 /* elysian_debug.cpp in Sources */,
+				C8C76BF2146F319600A3F506 /* elysian_enemy_system.cpp in Sources */,
+				C8C76BF4146F319600A3F506 /* elysian_engine.cpp in Sources */,
+				C8C76BF6146F319600A3F506 /* elysian_font.cpp in Sources */,
+				C8C76BF8146F319600A3F506 /* elysian_friendly_system.cpp in Sources */,
+				C8C76BFA146F319600A3F506 /* elysian_game_input.cpp in Sources */,
+				C8C76BFC146F319600A3F506 /* elysian_gui_system.cpp in Sources */,
+				C8C76BFE146F319600A3F506 /* elysian_item_system.cpp in Sources */,
+				C8C76C00146F319600A3F506 /* elysian_level_system.cpp in Sources */,
+				C8C76C02146F319600A3F506 /* elysian_lua_manager.cpp in Sources */,
+				C8C76C04146F319600A3F506 /* elysian_lua_singleton.cpp in Sources */,
+				C8C76C06146F319600A3F506 /* elysian_party_system.cpp in Sources */,
+				C8C76C08146F319600A3F506 /* elysian_system.cpp in Sources */,
+				C8C76C0C146F319600A3F506 /* elysian_timer_system.cpp in Sources */,
+				C8C76C0E146F319600A3F506 /* elysian_warp_system.cpp in Sources */,
+				C8C76C10146F319600A3F506 /* main.cpp in Sources */,
+				C863A9B215B6269A00EB49B2 /* elysian_quad_attrib.cpp in Sources */,
+				C83320071697C5A6006D081E /* elysian_tile.cpp in Sources */,
+				C8F7571716C84CB8002198FD /* elysian_zcoords.cpp in Sources */,
+				C8802C771748010100449268 /* elysian_map_system.cpp in Sources */,
+				C8B354CA175A511500B7B426 /* elysian_lua_script.cpp in Sources */,
+				C8B355521763984400B7B426 /* elysian_lua_wrappers.cpp in Sources */,
+				C8B355691763A0B300B7B426 /* class_from_stack.cpp in Sources */,
+				C8B3556B1763A0B300B7B426 /* lua_function.cpp in Sources */,
+				C8B3556D1763A0B300B7B426 /* lua_ref.cpp in Sources */,
+				C8B3556F1763A0B300B7B426 /* lua_stack_dump.cpp in Sources */,
+				C8B355711763A0B300B7B426 /* lua_table.cpp in Sources */,
+				C8B355931763A0D900B7B426 /* oolua_check_result.cpp in Sources */,
+				C8B355951763A0D900B7B426 /* oolua_error.cpp in Sources */,
+				C8B355971763A0D900B7B426 /* oolua_push_pull.cpp in Sources */,
+				C8B355991763A0D900B7B426 /* oolua_registration.cpp in Sources */,
+				C8B3559B1763A0D900B7B426 /* oolua_storage.cpp in Sources */,
+				C8B3559D1763A0D900B7B426 /* oolua.cpp in Sources */,
+				C8B3559F1763A0D900B7B426 /* push_pointer_internal.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C8332004168F646A006D081E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = LibGyroiOS;
+			targetProxy = C8332003168F646A006D081E /* PBXContainerItemProxy */;
+		};
+		C8A6A119158C02E6008A636C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = libGyroOSX;
+			targetProxy = C8A6A118158C02E6008A636C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		C86E336F142FECE700466D89 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C86E3370142FECE700466D89 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		C86E3375142FECE800466D89 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C86E3376142FECE800466D89 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+		C86E3396142FED1200466D89 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C86E3397142FED1200466D89 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		C86E337E142FECE800466D89 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					ELYSIAN_ENGINE,
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"\"$(SRCROOT)/../include\"",
+					"\"$(SRCROOT)/../assetio/include\"",
+					"\"$(SRCROOT)/../lib/include\"",
+					"\"$(SRCROOT)/../../libGyro/include\"",
+					"\"$(SRCROOT)/../../libGyro/include/kinetic\"",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		C86E337F142FECE800466D89 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = ELYSIAN_ENGINE;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"\"$(SRCROOT)/../include\"",
+					"\"$(SRCROOT)/../assetio/include\"",
+					"\"$(SRCROOT)/../lib/include\"",
+					"\"$(SRCROOT)/../../libGyro/include\"",
+					"\"$(SRCROOT)/../../libGyro/include/kinetic\"",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		C86E3381142FECE800466D89 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../lib/osx\"",
+					"\"$(SRCROOT)/../../../Dev/ESDev2/Engine/trunk/ESGamma/lib/osx/lib\"",
+					"\"$(SRCROOT)/../../libGyro/lib/osx\"",
+					"\"$(SRCROOT)/../../../../Library/Developer/Xcode/DerivedData/ESGamma-egnthzguxafoizfmkopiqtabefvj/Build/Products/Debug\"",
+					"\"$(SRCROOT)/../../Engine copy/lib/osx\"",
+				);
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ESGammaOSX/ESGammaOSX-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					"GYRO_PLATFORM=GYRO_PLATFORM_x86",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../libGyro/lib/osx/SDL.framework/Headers\"",
+				);
+				INFOPLIST_FILE = "ESGammaOSX/ESGammaOSX-Info.plist";
+				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/../lib/osx\"/**";
+				OTHER_LDFLAGS = "-llua52";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SYMROOT = "$(SRCROOT)/../../Project";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		C86E3382142FECE800466D89 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../lib/osx\"",
+					"\"$(SRCROOT)/../../../Dev/ESDev2/Engine/trunk/ESGamma/lib/osx/lib\"",
+					"\"$(SRCROOT)/../../libGyro/lib/osx\"",
+					"\"$(SRCROOT)/../../../../Library/Developer/Xcode/DerivedData/ESGamma-egnthzguxafoizfmkopiqtabefvj/Build/Products/Debug\"",
+					"\"$(SRCROOT)/../../Engine copy/lib/osx\"",
+				);
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ESGammaOSX/ESGammaOSX-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"GYRO_PLATFORM=GYRO_PLATFORM_x86",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../libGyro/lib/osx/SDL.framework/Headers\"",
+				);
+				INFOPLIST_FILE = "ESGammaOSX/ESGammaOSX-Info.plist";
+				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/../lib/osx\"/**";
+				OTHER_LDFLAGS = "-llua52";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SYMROOT = "$(SRCROOT)/../../Project";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		C86E33B0142FED1300466D89 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(DEVELOPER_FRAMEWORKS_DIR)\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ESGammaiOS/ESGammaiOS-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					ELYSIAN_ENGINE,
+					"DEBUG=1",
+					"$(inherited)",
+					"\"GYRO_PLATFORM=GYRO_PLATFORM_iOS\"",
+				);
+				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				HEADER_SEARCH_PATHS = "$(inherited)";
+				INFOPLIST_FILE = "ESGammaiOS/ESGammaiOS-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../libGyro/xcode4/build/Debug-iphoneos\"",
+					"\"$(SRCROOT)/../lib/ios\"",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		C86E33B1142FED1300466D89 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(DEVELOPER_FRAMEWORKS_DIR)\"",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ESGammaiOS/ESGammaiOS-Prefix.pch";
+				"GCC_THUMB_SUPPORT[arch=armv6]" = "";
+				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				HEADER_SEARCH_PATHS = "$(inherited)";
+				INFOPLIST_FILE = "ESGammaiOS/ESGammaiOS-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../libGyro/xcode4/build/Debug-iphoneos\"",
+					"\"$(SRCROOT)/../lib/ios\"",
+				);
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C86E335C142FECE700466D89 /* Build configuration list for PBXProject "ESGamma" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C86E337E142FECE800466D89 /* Debug */,
+				C86E337F142FECE800466D89 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C86E3380142FECE800466D89 /* Build configuration list for PBXNativeTarget "ESGammaOSX" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C86E3381142FECE800466D89 /* Debug */,
+				C86E3382142FECE800466D89 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C86E33AF142FED1300466D89 /* Build configuration list for PBXNativeTarget "ESGammaiOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C86E33B0142FED1300466D89 /* Debug */,
+				C86E33B1142FED1300466D89 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C86E3359142FECE700466D89 /* Project object */;
+}

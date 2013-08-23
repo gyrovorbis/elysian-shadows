@@ -1,0 +1,26 @@
+TARGET = ElysianShadowsPSP
+
+INCDIR=include editorAsset/include libGyro/include/psp libGyro/include
+SRCDIR:=source editorAsset/source
+DEP_EXT=.dpsp
+CFLAGS = $(addprefix -I , $(INCDIR))
+
+include bin/gyromake.rules
+
+LIBS = -lGyroPSP -llua -ltoLua++ -lpspgum -lpspgu -lpsprtc -lstdc++ -lpspvfpu -lpng -lz -lm
+LDFLAGS += -L./libGyro
+
+CFLAGS = -O2 -G0 -Wall -D__PSP__ -DGYRO_PLATFORM=GYRO_PSP -DELYSIAN_ENGINE
+CXXFLAGS = -g $(CFLAGS) -fno-exceptions -fno-rtti 
+ASFLAGS = $(CFLAGS)
+
+
+EXTRA_TARGETS = EBOOT.PBP
+PSP_EBOOT_TITLE = LibGyro EBOOT
+
+#PSP_EBOOT_ICON = ICON0.png
+#PSP_EBOOT_PIC1 = PIC1.png
+
+PSPSDK=$(shell psp-config --pspsdk-path)
+include $(PSPSDK)/lib/build.mak
+
