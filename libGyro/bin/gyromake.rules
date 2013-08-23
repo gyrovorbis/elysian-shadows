@@ -1,0 +1,78 @@
+.DEFAULT_GOAL = all
+
+#some shit so everything works
+ifndef OBJDIR
+	OBJDIR=objs
+endif
+
+ifndef DEPDIR
+	DEPDIR=.deps
+endif
+
+CPP_SRC:=$(foreach dir,$(SRCDIR),$(wildcard $(dir)/*.cpp)) 
+C_SRC:= $(foreach dir,$(SRCDIR),$(wildcard $(dir)/*.c))
+OBJC_SRC:= $(foreach dir,$(SRCDIR),$(wildcard $(dir)/*.m)) 
+OBJC_SRC:= $(foreach dir,$(SRCDIR),$(wildcard $(dir)/*.m))
+OBJCPP_SRC:= $(foreach dir,$(SRCDIR),$(wildcard $(dir)/*.mm))
+#ASM_SRC:= $(SRC) $(foreach dir,$(SRC_DIR),$(wildcard $(dir)/*.s)) 
+
+OBJS = $(patsubst %.cpp,$(OBJDIR)/%.o,$(CPP_SRC))
+OBJS += $(patsubst %.c,$(OBJDIR)/%.o,$(C_SRC))
+OBJS += $(patsubst %.s,$(OBJDIR)/%.o,$(ASM_SRC))  
+OBJS += $(patsubst %.m, $(OBJDIR)/%.o, $(OBJC_SRC))
+OBJS += $(patsubst %.mm, $(OBJDIR)/%.o, $(OBJCPP_SRC))
+
+-include $(patsubst $(OBJDIR)/%.o, $(DEPDIR)/%.d, $(OBJS))
+
+#Defining a subroutine for auto dependency generation
+#by being a cheapass and storing the function calls in
+#a variable named GEN_DEPS
+#NOT NEEDED ANYMORE (but keeping it for sentimental reasons)
+define GEN_DEPS
+$(CC) -M $(CFLAGS) $(LIBS) $< > $@.$$$$;                  \
+sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $(DEPDIR)/$@; \
+rm -f $@.$$$$
+endef
+
+#this shit overrides what the PSP's build.mak uses
+#not sure about KOS (but it should work)
+$(OBJDIR)/%.o: %.m
+	@echo Compiling $@
+	@mkdir -p $(dir $@)
+	@$(CC) -c $(CFLAGS) $< -o $@
+	@mkdir -p $(dir $(patsubst $(OBJDIR)/%, $(DEPDIR)/%, $@))
+	@$(CC) -MM $(CFLAGS) $*.m > $(DEPDIR)/$*.d
+	
+
+$(OBJDIR)/%.o: %.mm
+	@echo Compiling $@
+	@mkdir -p $(dir $@)
+	@$(CPP) -c $(CFLAGS) $< -o $@
+	@mkdir -p $(dir $(patsubst $(OBJDIR)/%, $(DEPDIR)/%, $@))
+	@$(CPP) -MM $(CFLAGS) $*.mm > $(DEPDIR)/$*.d
+
+$(OBJDIR)/%.o: %.cpp
+	@echo Compiling $@
+	@mkdir -p $(dir $@)
+	@$(CPP) -c $(CFLAGS) $< -o $@
+	@mkdir -p $(dir $(patsubst $(OBJDIR)/%, $(DEPDIR)/%, $@))
+	@$(CPP) -MM $(CFLAGS) $*.cpp > $(DEPDIR)/$*.d
+
+$(OBJDIR)/%.o: %.c
+	@echo Compiling $@
+	@mkdir -p $(dir $@)
+	@$(CC) -c $(CFLAGS) $< -o $@
+	@mkdir -p $(dir $(patsubst $(OBJDIR)/%, $(DEPDIR)/%, $@))
+	@$(CC) -MM $(CFLAGS) $*.c > $(DEPDIR)/$*.d
+
+#.PHONY: clean
+clean: customclean
+	@echo Cleaning...
+	@echo Removing Object files
+	@rm -f $(OBJS)
+	@rm -rf $(OBJDIR)
+	@echo Removing Binaries
+	@rm -f $(TARGET)
+	@rm -f $(TARGET_LIB) #doesn't matter if it doesn't exist (the power of -f)
+	@echo Removing dependancy files
+	@rm -rf $(DEPDIR)
