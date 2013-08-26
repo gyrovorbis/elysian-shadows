@@ -9,7 +9,7 @@ void gyResolvePenetration(struct _GYContact *con, GYVector2 posDelta[], GYVector
 	float linearMove[2], angularMove[2];
 	float linearInertia[2], angularInertia[2];
 	
-	float angularLimit = 1000.0f;
+    //float angularLimit = 1000.0f;
 	float totalInertia = 0;
 
 	float rotPerImp;
