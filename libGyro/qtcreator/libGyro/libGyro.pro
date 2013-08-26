@@ -6,11 +6,13 @@ CONFIG -= qt
 DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_x86
 
 INCLUDEPATH += ../../include \
-    ../../lib/win32 \
     ../../include/x86/png
 
+win32 {
+    INCLUDEPATH +=  ../../lib/win32
+}
+
 DEPENDPATH += ../../include \
-    ../../lib/win32 \
     ../../include/x86/png
 
 HEADERS += \

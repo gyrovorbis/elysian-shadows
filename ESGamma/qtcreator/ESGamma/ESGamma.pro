@@ -1,28 +1,31 @@
 TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle
+CONFIG += c++11
 
 DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_x86 \
     ELYSIAN_ENGINE
+
 QMAKE_CXXFLAGS += -std=c++11 \
     -fno-rtti
     -fno-exceptions
-CONFIG += c++11
 
 INCLUDEPATH += ../../include \
     ../../lib/include \
     ../../../AssetIO/include \
     ../../../libGyro/include \
     ../../../libGyro/include/kinetic \
-    ../../../libGyro/lib/win32 \
     ../../../OOLua/include
+
+win32 {
+    INCLUDEPATH += ../../../libGyro/lib/win32
+}
 
 DEPENDPATH += ../../include \
     ../../lib/include \
     ../../../AssetIO/include \
     ../../../libGyro/include \
     ../../../libGyro/include/kinetic \
-    ../../../libGyro/lib/win32 \
     ../../../OOLua/include
 
 HEADERS += \
@@ -163,16 +166,32 @@ win32:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../../OOLua
 else:win32:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../../OOLua/qtcreator/OOLua/debug/libOOLua.a
 else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../../OOLua/qtcreator/OOLua/libOOLua.a
 
-LIBS += -L../../lib/win32 \
-    -llua52 \
-    -L../../../libGyro/lib/win32 \
-    -lopengl32 \
-    -lglu32 \
-    -lz \
-    -lz.dll \
-    -lmingw32 \
-    -lSDLmain \
-    -lSDL.dll \
-    -mconsole
+
+win32 {
+    LIBS += -L../../lib/win32 \
+        -llua52 \
+        -L../../../libGyro/lib/win32 \
+        -lopengl32 \
+        -lglu32 \
+        -lz \
+        -lz.dll \
+        -lmingw32 \
+        -lSDLmain \
+        -lSDL.dll \
+        -mconsole
+}
+
+macx {
+    LIBS += -llua52 \
+       -lopengl32 \
+      -lglu32 \
+        -lz \
+        -lz.dll \
+        -lmingw32 \
+        -lSDLmain \
+        -lSDL.dll
+}
+
+
 
 DESTDIR = ../../../Project

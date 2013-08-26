@@ -7,6 +7,8 @@ CONFIG -= qt
 INCLUDEPATH += ../../include \
     ../../../ESGamma/lib/include
 
+DEPENDPATH += ../../include
+
 SOURCES += \
     ../../source/push_pointer_internal.cpp \
     ../../source/oolua_storage.cpp \

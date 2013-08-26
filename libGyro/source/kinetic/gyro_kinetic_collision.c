@@ -34,8 +34,8 @@ void gyCalcBoxWorldVert(GYBoxCollider *const box) {
 	//Calculate vertices in world coordinates
 	gyMatMultVec(gyBoxLocalVerts, box->worldVert, 4);
 	//Normalize axes for later collision checks
-	gyVec2Sub(&box->axis[0], &box->worldVert[1], &box->worldVert[0]);
-	gyVec2Sub(&box->axis[1], &box->worldVert[3], &box->worldVert[0]);
+    gyVec2Sub((GYVector2*)&box->axis[0], (GYVector2*)&box->worldVert[1], (GYVector2*)&box->worldVert[0]);
+    gyVec2Sub((GYVector2*)&box->axis[1], (GYVector2*)&box->worldVert[3], (GYVector2*)&box->worldVert[0]);
 	gyVec2Normalize(&box->axis[0]);
 	gyVec2Normalize(&box->axis[1]);
 	//gyMatPop();
@@ -48,9 +48,9 @@ void gyCalcTriWorldVert(GYTriCollider *const tri) {
 	//Calculate vertices in world coordinates
 	gyMatMultVec(gyRTriLocalVerts, tri->worldVert, 3);
 	//Normalize axes for later collision checks
-	gyVec2Sub(&tri->axis[0], &tri->worldVert[1], &tri->worldVert[0]);
-	gyVec2Sub(&tri->axis[1], &tri->worldVert[2], &tri->worldVert[0]);
-	gyVec2Sub(&tri->axis[2], &tri->worldVert[2], &tri->worldVert[1]);
+    gyVec2Sub((GYVector2*)&tri->axis[0], (GYVector2*)&tri->worldVert[1], (GYVector2*)&tri->worldVert[0]);
+    gyVec2Sub((GYVector2*)&tri->axis[1], (GYVector2*)&tri->worldVert[2], (GYVector2*)&tri->worldVert[0]);
+    gyVec2Sub((GYVector2*)&tri->axis[2], (GYVector2*)&tri->worldVert[2], (GYVector2*)&tri->worldVert[1]);
 	gyVec2Normalize(&tri->axis[0]);
 	gyVec2Normalize(&tri->axis[1]);
 	gyVec2Normalize(&tri->axis[2]);
@@ -139,12 +139,12 @@ static inline void Swapf(float *const a, float *const b) {
 
 static inline void ProjectPolygon(const GYVector2 *const axis, const GYVector4 vertex[], float *const min, float *const max, int *const minIndex, int *const maxIndex) {
 	unsigned int i = 1;
-	float dotProduct = gyVec2DotProd(&vertex[0], axis);
+    float dotProduct = gyVec2DotProd((GYVector2*)&vertex[0], axis);
 	
 	*max = *min = dotProduct;
 	*minIndex = *maxIndex = 0;
 	for(; i < 4; ++i) {
-        dotProduct = gyVec2DotProd(&vertex[i], axis);
+        dotProduct = gyVec2DotProd((GYVector2*)&vertex[i], axis);
         if(dotProduct < *min) {
 			*min = dotProduct;
 			*minIndex = i;
@@ -189,8 +189,8 @@ int gyCollisionOBBvOBB(const GYBoxCollider *boxA, const GYBoxCollider *boxB, str
 	for(; i < 4; ++i) gyroVector2Normalize(&axis[i]); //ugh*/
 		
 	// Calculate axis[0] projections.
-	scalarA[0] = gyVec2DotProd(&boxA->worldVert[0], &boxA->axis[0]);
-	scalarA[1] = gyVec2DotProd(&boxA->worldVert[1], &boxA->axis[0]);
+    scalarA[0] = gyVec2DotProd((GYVector2*)&boxA->worldVert[0], (GYVector2*)&boxA->axis[0]);
+    scalarA[1] = gyVec2DotProd((GYVector2*)&boxA->worldVert[1], (GYVector2*)&boxA->axis[0]);
 	if(scalarA[0] > scalarA[1]) {
 		Swapf(&scalarA[0], &scalarA[1]);
 		scalarAIndex[0] = 0;
@@ -208,8 +208,8 @@ int gyCollisionOBBvOBB(const GYBoxCollider *boxA, const GYBoxCollider *boxB, str
 	if(!((scalarB[0] < scalarA[1]) && (scalarB[1] > scalarA[0]))) return 0; //De Morgan, dumbass
 		
 	// Calculate axis[1] projections.
-	scalarA[2] = gyVec2DotProd(&boxA->worldVert[0], &boxA->axis[1]);
-	scalarA[3] = gyVec2DotProd(&boxA->worldVert[3], &boxA->axis[1]);
+    scalarA[2] = gyVec2DotProd((GYVector2*)&boxA->worldVert[0], (GYVector2*)&boxA->axis[1]);
+    scalarA[3] = gyVec2DotProd((GYVector2*)&boxA->worldVert[3], (GYVector2*)&boxA->axis[1]);
 	if(scalarA[2] > scalarA[3]) {
 		Swapf(&scalarA[2], &scalarA[3]);
 		scalarAIndex[2] = 0;
@@ -227,8 +227,8 @@ int gyCollisionOBBvOBB(const GYBoxCollider *boxA, const GYBoxCollider *boxB, str
 	if(!((scalarB[2] < scalarA[3]) && (scalarB[3] > scalarA[2]))) return 0;
 		
 	// Calculate axis[2] projections.
-	scalarB[4] = gyVec2DotProd(&boxB->worldVert[0], &boxB->axis[0]);
-	scalarB[5] = gyVec2DotProd(&boxB->worldVert[1], &boxB->axis[0]);
+    scalarB[4] = gyVec2DotProd((GYVector2*)&boxB->worldVert[0], (GYVector2*)&boxB->axis[0]);
+    scalarB[5] = gyVec2DotProd((GYVector2*)&boxB->worldVert[1], (GYVector2*)&boxB->axis[0]);
 	if(scalarB[4] > scalarB[5]) {
 		Swapf(&scalarB[4], &scalarB[5]);
 		scalarBIndex[4] = 0;
@@ -246,8 +246,8 @@ int gyCollisionOBBvOBB(const GYBoxCollider *boxA, const GYBoxCollider *boxB, str
 	if(!((scalarB[4] < scalarA[5]) && (scalarB[5] > scalarA[4]))) return 0;
 		
 	// Calculate axis[3] projections.
-	scalarB[6] = gyVec2DotProd(&boxB->worldVert[0], &boxB->axis[1]);
-	scalarB[7] = gyVec2DotProd(&boxB->worldVert[3], &boxB->axis[1]);
+    scalarB[6] = gyVec2DotProd((GYVector2*)&boxB->worldVert[0], (GYVector2*)&boxB->axis[1]);
+    scalarB[7] = gyVec2DotProd((GYVector2*)&boxB->worldVert[3], (GYVector2*)&boxB->axis[1]);
 	if(scalarB[6] > scalarB[7]) {
 		Swapf(&scalarB[6], &scalarB[7]);
 		scalarBIndex[6] = 0;
