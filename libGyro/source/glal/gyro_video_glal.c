@@ -131,7 +131,7 @@ void gyVidQuad(const GYVector4 *const verts, const unsigned int frame) {
 }
 
 void gyVidRect(const unsigned int frame) {
-    const static GYVector4 localVertArray[4] = {
+    static const GYVector4 localVertArray[4] = {
         {-0.5f, -0.5f, 0.0f, 1.0f},
         {0.5f, -0.5f, 0.0f, 1.0f},
         {-0.5f, 0.5f, 0.0f, 1.0f},
@@ -180,7 +180,7 @@ void gyVidCoord(const struct _GYTexCoord2 *const ptr) {
 }
 
 void gyVidTexBind(const GYTexture *const tex) {
-    GYMatrix4 texMatrix;
+    //GYMatrix4 texMatrix;
 	
 	if(tex) {
 		glEnable(GL_TEXTURE_2D);
