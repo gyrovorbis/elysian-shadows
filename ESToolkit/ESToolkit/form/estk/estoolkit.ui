@@ -155,6 +155,8 @@
      <string>Area</string>
     </property>
     <addaction name="actionAreaRemove"/>
+    <addaction name="separator"/>
+    <addaction name="actionScreenshot"/>
    </widget>
    <widget class="QMenu" name="menuDebug">
     <property name="title">
@@ -911,6 +913,11 @@
    </property>
    <property name="toolTip">
     <string>Change Horizontal/Vertical SheetView Perspective</string>
+   </property>
+  </action>
+  <action name="actionScreenshot">
+   <property name="text">
+    <string>Dump to PNG</string>
    </property>
   </action>
  </widget>

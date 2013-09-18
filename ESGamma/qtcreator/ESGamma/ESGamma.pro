@@ -192,6 +192,7 @@ macx {
         -lSDL.dll
 }
 
+CONFIG(release, debug|release) {
+    DESTDIR = ../../Project
+}
 
-
-DESTDIR = ../../../Project

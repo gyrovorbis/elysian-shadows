@@ -631,7 +631,13 @@ void ESToolkit::OnAreaChanged(Area *const area) {
             if(_areaTabBar->tabText(i) == area->getName()) _areaTabBar->setCurrentIndex(i);
         }
     }
-	  _ui->mapView->deleteSelectionItemGroup();
+    _ui->mapView->deleteSelectionItemGroup();
+    //auto boundingRect = Area::editorScene->itemsBoundingRect();
+    //boundingRect.setTop(boundingRect.getTop()-16.0f);
+    //boundingRect.setLeft(boundingRect.getLeft()-16.0f);
+    //boundingRect.setBottom(boundingRect.getBottom()+16.0f);
+    //boundingRect.setRight(boundingRect.getRight()+16.0f);
+    //Area::editorScene->setSceneRect();
     _ui->mapView->scene()->update();
 }
 
@@ -1299,4 +1305,24 @@ void ESToolkit::keyPressEvent(QKeyEvent *event) {
 		break;
 	}
 	Area::updateScene();
+}
+
+void ESToolkit::on_actionScreenshot_triggered(void) {
+    //Area::editorScene->setSceneRect(Area::editorScene->itemsBoundingRect());                          // Re-shrink the scene to it's bounding contents
+    _ui->mapView->scale(0.1f, 0.1f);
+    QImage image(Area::editorScene->sceneRect().size().toSize(), QImage::Format_ARGB32);              // Create the image with the exact size of the shrunk scene
+    image.fill(Qt::transparent);                                                                      // Start all pixels transparent
+
+    QPainter painter(&image);
+    Area::editorScene->render(&painter);
+
+    QDir dir("");
+    if(!dir.exists("screenshots")) dir.mkdir("screenshots");
+    QString fileBase("screenshots/estkScreenshot");
+    unsigned num = 1;
+
+    while(QFile::exists(fileBase+QString::number(num)+QString(".png"))) ++num;
+    image.save(fileBase+QString::number(num)+QString(".png"));
+
+    _ui->mapView->scale(10.0f, 10.0f);
 }

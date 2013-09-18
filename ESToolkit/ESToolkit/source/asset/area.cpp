@@ -283,9 +283,9 @@ bool Area::activate(void) {
 	if(!_active) {
 		_curArea = &_elysianArea;
 
-		editorScene->setSceneRect(QRect(-48,-48,32*_elysianArea.width+64, 32*_elysianArea.height+64));
-		resizeEditorScene();
 		editorScene->addItem(_bgRect);
+        resizeEditorScene();
+        editorScene->setSceneRect(QRect(-48,-48,32*_elysianArea.width+64, 32*_elysianArea.height+64));
 
 		for(int i = 0; i < _entities.size(); ++i) editorScene->addItem(_entities[i]);
 		//editorScene->addItem(_entityParent);
