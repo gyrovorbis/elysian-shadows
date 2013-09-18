@@ -9,13 +9,17 @@
 #endif
 //this is no good
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
-    #include "GL/gl.h"
+#	ifdef __APPLE__
+#		include <OpenGL/gl.h>
+#	else
+#		include <GL/gl.h>
+#	endif
 #elif GYRO_PLATFORM == GYRO_PLATFORM_iOS
-	#include "ios/ios_system.h"
-	#include "ios/gyro_gles_ios.h"
+#	include "ios/ios_system.h"
+#	include "ios/gyro_gles_ios.h"
 #elif GYRO_PLATFORM == GYRO_PLATFORM_droid
-	#include "droid/droid_system.h"
-	#include "droid/gyro_gles_droid.h"
+#	include "droid/droid_system.h"
+#	include "droid/gyro_gles_droid.h"
 #endif
 
 #endif

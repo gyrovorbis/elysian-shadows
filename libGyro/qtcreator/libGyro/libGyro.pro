@@ -12,6 +12,10 @@ win32 {
     INCLUDEPATH +=  ../../lib/win32
 }
 
+macx {
+	INCLUDEPATH += ../../lib/osx/SDL.framework/Headers
+}
+
 DEPENDPATH += ../../include \
     ../../include/x86/png
 
@@ -62,7 +66,6 @@ SOURCES += \
     ../../source/soft/gyro_matrix_soft.c \
     ../../source/x86/gyro_wav_x86.c \
     ../../source/x86/gyro_video_x86.c \
-    ../../source/x86/gyro_tracking_x86.c \
     ../../source/x86/gyro_timer_x86.c \
     ../../source/x86/gyro_texture_x86.c \
     ../../source/x86/gyro_system_x86.c \
