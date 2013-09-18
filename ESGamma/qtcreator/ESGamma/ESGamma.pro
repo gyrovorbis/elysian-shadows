@@ -1,6 +1,7 @@
 TEMPLATE = app
 CONFIG += console
-CONFIG -= app_bundle
+#CONFIG -= app_bundle
+CONFIG -= qt
 CONFIG += c++11
 
 DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_x86 \
@@ -9,6 +10,13 @@ DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_x86 \
 QMAKE_CXXFLAGS += -std=c++11 \
     -fno-rtti
     -fno-exceptions
+
+#Required to get C++11x to work on OSX
+macx {
+	QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -stdlib=libc++
+	LIBS += -mmacosx-version-min=10.7 -stdlib=libc++
+	CONFIG += objective_c
+}
 
 INCLUDEPATH += ../../include \
     ../../lib/include \
@@ -19,6 +27,10 @@ INCLUDEPATH += ../../include \
 
 win32 {
     INCLUDEPATH += ../../../libGyro/lib/win32
+}
+
+macx {
+	INCLUDEPATH += ../../../libGyro/lib/osx/SDL.framework/Headers
 }
 
 DEPENDPATH += ../../include \
@@ -95,6 +107,10 @@ HEADERS += \
     ../../../AssetIO/include/elysian_area.hpp \
     ../../../AssetIO/include/elysian_animation.hpp
 
+macx {
+	OBJECTIVE_HEADERS += ../../../libGyro/lib/osx/SDLMain.h
+}
+
 SOURCES += \
     ../../source/main.cpp \
     ../../source/elysian_warp_system.cpp \
@@ -144,6 +160,10 @@ SOURCES += \
     ../../../AssetIO/source/elysian_area.cpp \
     ../../../AssetIO/source/elysian_animation.cpp
 
+macx {
+	OBJECTIVE_SOURCES += ../../../libGyro/lib/osx/SDLMain.mm
+}
+
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../libGyro/qtcreator/libGyro/release/ -llibGyro
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../../libGyro/qtcreator/libGyro/debug/ -llibGyro
 else:unix: LIBS += -L$$OUT_PWD/../../../libGyro/qtcreator/libGyro/ -llibGyro
@@ -182,14 +202,19 @@ win32 {
 }
 
 macx {
-    LIBS += -llua52 \
-       -lopengl32 \
-      -lglu32 \
+	LIBS += -L../../lib/osx \
+		-llua52 \
+		#-lGL \
+		-framework OpenGL \
         -lz \
-        -lz.dll \
-        -lmingw32 \
-        -lSDLmain \
-        -lSDL.dll
+ #       -lz.dll \
+ #       -lmingw32 \
+		-F../../../libGyro/lib/osx \
+		-framework Foundation \
+		-framework Cocoa \
+		-lobjc \
+		-framework SDL
+
 }
 
 

@@ -126,9 +126,11 @@ static int _TexComparator(const void *const payload, const void *const data) {
 	return (strcmp(((const GYTexture*)payload)->filename, ((const char *)data)) == 0);
 }
 
+#include <unistd.h>
 static void *_TexConstructor(void *const data) {
 	GYTexture *tex;
 	GYTexEntryDat *texData = data;
+	char cwd[1024];
 
 	//Allocate texture and add entry
 	tex = malloc(sizeof(GYTexture));
@@ -150,6 +152,8 @@ static void *_TexConstructor(void *const data) {
 	//platform-specific texture allocation
 	if(!_gyVidTexAlloc(tex, texData->sheetWidth, texData->sheetHeight)) {
 		free(tex);
+		getcwd(cwd, sizeof(cwd));
+		printf("DIR - %s\n", cwd);
 		assert(0); //OUT OF VRAM! DEFAULT TEXTURE ME!!!
 	}
 
