@@ -25,6 +25,7 @@ class TerrainImage;
 class QIcon;
 class SheetManagerTileSelection;
 class SourceView;
+class QFileSystemWatcher;
 
 namespace Ui {
     class SheetManager;
@@ -70,6 +71,7 @@ private slots:
 	void onSourceOtherTabChanged(const int index);
 	void onSourceOtherTabClose(const int index);
 	void onSelectionChanged(SheetManagerTileSelection *const sel);
+    void onFileChanged(const QString& path);
 	void focusDestView(void);
     void onUndo_triggered();
     void onRedo_triggered();
@@ -116,6 +118,9 @@ private:
 	//Dest sheet storage
 	QGraphicsScene *_destSheetScene;
 	QGraphicsRectItem *_destSceneBgRect;
+
+    //Monitor open files for modification
+    QFileSystemWatcher *_watcher;
 
     bool _ignoreSheetTabChange;
 

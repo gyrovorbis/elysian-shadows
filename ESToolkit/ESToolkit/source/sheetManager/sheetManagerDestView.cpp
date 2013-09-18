@@ -15,6 +15,7 @@ void SheetManagerDestView::_externalSelectionCreate(void) {
 
 void SheetManagerDestView::_externalSelectionClear(void) {
 	getSMAssets()->setCurrentSelection(NULL);
+    scene()->setSceneRect(scene()->itemsBoundingRect());
 }
 
 TileSelection<SheetManagerTileEntry> *SheetManagerDestView::_getTileSelection(void) const {

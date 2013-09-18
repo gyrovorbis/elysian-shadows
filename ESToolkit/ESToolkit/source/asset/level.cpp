@@ -36,10 +36,7 @@ bool Level::initializeScene(const SourceView *const view, bool horiz) {
 	const unsigned tileHeight = (horiz)? 16 : 32;
 
 	_sheetViewScene = new SelectionScene;
-
-    //must start at -16 x,y offsets b/c of Falco's retardation
-    //also, size is 512 + 16 to accomodate for gridlines
-	_sheetViewScene->setSceneRect(QRect(-16, -16, 32*tileWidth+16+32, 32*tileHeight+16+32));
+    _sheetViewScene->setSceneRect(QRect(-16, -16, 32*tileWidth, 32*tileHeight));
 
 
 	//Allocate SheetViewTileGraphicsItems for tile/object sheets.

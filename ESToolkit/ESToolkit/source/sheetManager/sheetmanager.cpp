@@ -8,6 +8,8 @@
 #include <QGLWidget>
 #include <QStatusBar>
 #include <QShortcut>
+#include <QFileSystemWatcher>
+#include <QPushButton>
 
 #include "debug.h"
 #include "sheetManager.h"
@@ -65,7 +67,10 @@ QPixmap SheetManager::reorientPixmap(const QPixmap &pixmap, const GY_RECT_TEX_OR
 //=====INSTANCE=====
 
 SheetManager::SheetManager(QWidget *parent):
-	QMainWindow(parent), _ui(new Ui::SheetManager), _ignoreSheetTabChange(true) {
+    QMainWindow(parent),
+    _ui(new Ui::SheetManager),
+    _ignoreSheetTabChange(true)
+{
 	_ui->setupUi(this);
 	_ui->_destView->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
 	_ui->_srcView->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
@@ -156,6 +161,8 @@ SheetManager::SheetManager(QWidget *parent):
 	statusBar()->addWidget(label, 0);
 	statusBar()->addWidget(_ui->_destView->getZoomLabel(), 2);
 
+    _watcher = new QFileSystemWatcher(this);
+
 	//Keyboard shortcuts
 	QShortcut *shortcut = new QShortcut(QKeySequence(tr("Ctrl+Z", "Undo")),
 							  this);
@@ -164,6 +171,7 @@ SheetManager::SheetManager(QWidget *parent):
 							  this);
     connect(shortcut, SIGNAL(activated()), this, SLOT(onRedo_triggered()));
 
+    connect(_watcher, SIGNAL(fileChanged(const QString&)), this, SLOT(onFileChanged(const QString&)));
 	connect(AssetManager::getAssets(), SIGNAL(levelAdded(Project *const, Level  *const)), this, SLOT(onLevelAdded(Project * const, Level * const)));
 	connect(AssetManager::getAssets(), SIGNAL(levelRemoved(Project*const,Level*const)), this, SLOT(onLevelRemoved(Project*const,Level*const)));
 	connect(_srcOtherTabBar, SIGNAL(currentChanged(int)), this, SLOT(onSourceOtherTabChanged(int)));
@@ -223,9 +231,9 @@ void SheetManager::closeEvent(QCloseEvent *) {
 
 	msgBox.exec();
 
-	if(msgBox.clickedButton() == (QAbstractButton *)applyButton) {
+    if(msgBox.clickedButton() == static_cast<QAbstractButton*>(applyButton)) {
 		_save();
-	} else if(msgBox.clickedButton() == (QAbstractButton *)discardButton) {
+    } else if(msgBox.clickedButton() == static_cast<QAbstractButton*>(discardButton)) {
 		//Without this, we can't lay the same selection in the previous location, even though it may have been undone
 		_ui->_destView->setSelectionChanged(true);
 		for(int i = _assets.getUndoStack()->index(); i >= 0; --i)
@@ -407,6 +415,9 @@ bool SheetManager::_openSourceSheet(const QString filename /*, bool forceReload=
 		_srcOtherTabBar->addTab(*entry->icon, tabName);
 		_srcOtherTabBar->setCurrentIndex(_srcSheetTabLookup.size()-1);
 
+        //add to filesystem monitor
+        _watcher->addPath(filename);
+
 	} else {
 		entry = i.value();
 		for(int i = 0; i < _srcSheetTabLookup.size(); ++i)
@@ -431,6 +442,8 @@ bool SheetManager::_closeSourceSheet(const QString filename) {
 	entry = i.value();
 	_srcSheets.remove(i.key());
 
+    //remove from filesystem watcher
+    _watcher->removePath(filename);
 
 	if(entry == _assets.getCurrentSourceSheetEntry()) {
 		_ui->_srcView->setScene(NULL);
@@ -513,7 +526,7 @@ void SheetManager::on_actionPaste_triggered(void) {
 }
 
 void SheetManager::on_actionOpen_triggered() {
-	QString filename = QFileDialog::getOpenFileName(this, tr("Browse source image"), "./", tr("Images (*.png *.jpeg *.jpg *.bmp *.gif)"));
+    QString filename = QFileDialog::getOpenFileName(this, tr("Browse source image"), QString(), tr("Images (*.png *.jpeg *.jpg *.bmp *.gif)"));
 
 	if(filename == "") {
 		return;
@@ -574,3 +587,20 @@ void SheetManager::onRedo_triggered(void) {
 	_assets.getUndoStack()->redo();
 }
 
+void SheetManager::onFileChanged(const QString &path) {
+    QMessageBox msgBox;
+    msgBox.setText(QString(path) + QString(" has been modified outside of Sheet Manager. Reload image?"));
+    QPushButton *reloadButton	= msgBox.addButton(tr("Reload"), QMessageBox::ActionRole);
+    QPushButton *cancelButton	= msgBox.addButton(tr("Cancel"), QMessageBox::ActionRole);
+
+    msgBox.exec();
+
+    if(msgBox.clickedButton() == static_cast<QAbstractButton*>(reloadButton)) {
+        _closeSourceSheet(path);
+        _openSourceSheet(path);
+
+    } else if(msgBox.clickedButton() == static_cast<QAbstractButton*>(cancelButton)) {
+        //don't do shit
+    }
+
+}
