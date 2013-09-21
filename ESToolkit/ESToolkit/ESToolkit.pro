@@ -226,16 +226,18 @@ macx {
     QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -stdlib=libc++
     LIBS += -mmacosx-version-min=10.7 -stdlib=libc++
 
-    CONFIG(reelease, debug|release) {
-        QMAKE_POST_LINK = "macdeployqt ../../Project/ESToolkit.app"
-    }
+	#CONFIG(release, debug|release) {
+	 #  QMAKE_POST_LINK = "macdeployqt TARGET"
+	#}
 
 }
 
 RESOURCES += resource/resource.qrc \
 
-CONFIG(release, debug|release) {
-    DESTDIR = ../../Project
+win32 {
+	CONFIG(release, debug|release) {
+		DESTDIR = ../../Project
+	}
 }
 
 

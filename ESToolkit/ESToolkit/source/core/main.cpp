@@ -9,7 +9,6 @@
 #include <initializer_list>
 #include <iostream>
 
-
 void consumeArgs() {
     qDebug() << "ARGS CONSUMED!";
 }
