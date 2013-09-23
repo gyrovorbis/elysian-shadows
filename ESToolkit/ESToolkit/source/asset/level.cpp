@@ -151,7 +151,7 @@ void Level::populateModel(void) {
 
 	addProperty("name", new PropertyStandardItem<QString, Level>(this, &Level::getName, &Level::setName));
     addProperty("path", new PropertyStandardItem<QString, Level>(this, &Level::getLocation));
-    addProperty("string", new PropertyStandardItem<QString, Level>(this, &Level::getString, &Level::setString));
+	addProperty("display", new PropertyStandardItem<QString, Level>(this, &Level::getString, &Level::setString));
 
     //addProperty("tiles", new PropertyStandardItem<unsigned char, Level>(this, &Level::getTileAmount));
 
@@ -611,7 +611,12 @@ bool Level::reloadSheets(void) {
 }
 
 QString Level::getString(void) const { return _elysianLevel.string; }
-void Level::setString(const QString str) { strcpy(_elysianLevel.string, str.toStdString().c_str()); }
+void Level::setString(const QString str) {
+	if(str.isEmpty()) {
+		return;
+	}
+	strcpy(_elysianLevel.string, str.toStdString().c_str());
+}
 
 
 bool Level::isActive(void) const { return _active; }

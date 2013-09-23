@@ -144,7 +144,7 @@ bool Debug::sandboxInit(void) {
 	Renderable *render = player->addRenderable();
 	render->setFrame(0);
 	SpriteAttrib *sprAttrib = new SpriteAttrib;
-	sprAttrib->loadTexture(gyFilePath("party/julien.png"), 256, 256);
+	sprAttrib->loadTexture(gyFilePath("party/julien.png"), 256, 256, 32, 64);
 	sprAttrib->setColor(255, 255, 255, 255);
 	render->setSpriteAttrib(sprAttrib);
 
@@ -159,34 +159,34 @@ bool Debug::sandboxInit(void) {
 	seq->addFrame(0.0f, 0.0f, 0.15f, 5);
 	seq->addFrame(0.0f, 0.0f, 0.15f, 6);
 	seq = attrib->addSequence("WalkUp");
-	seq->addFrame(0.0f, 0.0f, 0.15f, 8);
 	seq->addFrame(0.0f, 0.0f, 0.15f, 9);
 	seq->addFrame(0.0f, 0.0f, 0.15f, 10);
 	seq->addFrame(0.0f, 0.0f, 0.15f, 11);
 	seq->addFrame(0.0f, 0.0f, 0.15f, 12);
 	seq->addFrame(0.0f, 0.0f, 0.15f, 13);
+	seq->addFrame(0.0f, 0.0f, 0.15f, 14);
 	seq = attrib->addSequence("WalkRight");
-	seq->addFrame(0.0f, 0.0f, 0.15f, 15);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 16);
 	seq->addFrame(0.0f, 0.0f, 0.15f, 17);
 	seq->addFrame(0.0f, 0.0f, 0.15f, 18);
 	seq->addFrame(0.0f, 0.0f, 0.15f, 19);
 	seq->addFrame(0.0f, 0.0f, 0.15f, 20);
-	seq = attrib->addSequence("WalkLeft");
+	seq->addFrame(0.0f, 0.0f, 0.15f, 21);
 	seq->addFrame(0.0f, 0.0f, 0.15f, 22);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 23);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 24);
+	seq = attrib->addSequence("WalkLeft");
 	seq->addFrame(0.0f, 0.0f, 0.15f, 25);
 	seq->addFrame(0.0f, 0.0f, 0.15f, 26);
 	seq->addFrame(0.0f, 0.0f, 0.15f, 27);
+	seq->addFrame(0.0f, 0.0f, 0.15f, 28);
+	seq->addFrame(0.0f, 0.0f, 0.15f, 29);
+	seq->addFrame(0.0f, 0.0f, 0.15f, 30);
 	seq = attrib->addSequence("StandUp");
-	seq->addFrame(0.0f, 0.0f, 0.0f, 7);
+	seq->addFrame(0.0f, 0.0f, 0.0f, 8);
 	seq = attrib->addSequence("StandDown");
 	seq->addFrame(0.0f, 0.0f, 0.0f, 0);
 	seq = attrib->addSequence("StandLeft");
-	seq->addFrame(0.0f, 0.0f, 0.0f, 21);
+	seq->addFrame(0.0f, 0.0f, 0.0f, 24);
 	seq = attrib->addSequence("StandRight");
-	seq->addFrame(0.0f, 0.0f, 0.0f, 14);
+	seq->addFrame(0.0f, 0.0f, 0.0f, 16);
 	anim->setAttrib(attrib);
 
 	//Collidable Component

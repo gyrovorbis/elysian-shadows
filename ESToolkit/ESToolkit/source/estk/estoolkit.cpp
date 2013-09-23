@@ -775,7 +775,7 @@ void ESToolkit::on_actionFileSaveCurrentLevel_triggered() {
 void ESToolkit::on_actionFileSaveCurrentArea_triggered() {
 	_assets.getCurrentArea()->save();
 	//Force TreeNode to update the '*' for unsaved area
-	_assets.getCurrentArea()->getUndoStack().setClean();
+	//_assets.getCurrentArea()->getUndoStack().setClean();
 	//_assets.getCurrentArea()->onUndoCleanStateChanged(true);
 }
 

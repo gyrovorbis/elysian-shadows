@@ -71,7 +71,7 @@ void Area::populateModel(void) {
 
 	addProperty("name", new PropertyStandardItem<QString, Area, true>(this, &Area::getName, &Area::setName, UndoItem::AREA_RENAME, &_undoStack));
 	addProperty("path", new PropertyStandardItem<QString, Area>(this, &Area::getLocation));
-	addProperty("string", new PropertyStandardItem<QString, Area, true>(this, &Area::getString, &Area::setString, UndoItem::AREA_STRING, &_undoStack));
+	addProperty("display", new PropertyStandardItem<QString, Area, true>(this, &Area::getString, &Area::setString, UndoItem::AREA_STRING, &_undoStack));
 
 	pushLabel("size");
 		addProperty("width", new PropertyStandardItem<unsigned short, Area, true>(this, &Area::getMapWidth, &Area::setMapWidth, UndoItem::AREA_WIDTH, &_undoStack));
@@ -145,6 +145,7 @@ void Area::setLocation(const QString loc) {
 }
 
 void Area::setString(const QString str) {
+	if(str.isEmpty()) return;
 	strcpy(_elysianArea.string, str.toStdString().c_str());
 }
 
@@ -203,6 +204,7 @@ bool Area::save(void) {
 	success &= _level->save();
 	//export to previous save location
 	success &= saveAs(_location);
+	_undoStack.setClean();
 	Debug::Pop();
 	return success;
 }
