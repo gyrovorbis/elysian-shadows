@@ -2,6 +2,7 @@
 #define ELYSIAN_DEBUG_HPP
 
 #include <fstream>
+#include <cstring>
 #include <gyro.h>
 #include "elysian_asset.hpp"
 #include "elysian_system.hpp"

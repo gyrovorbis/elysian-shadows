@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <gyro.h>
+#include <cstring>
 #include <kinetic/gyro_kinetic.h>
 
 #include "elysian_component.hpp"

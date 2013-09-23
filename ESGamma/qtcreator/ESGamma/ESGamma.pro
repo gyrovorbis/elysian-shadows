@@ -218,6 +218,6 @@ macx {
 }
 
 CONFIG(release, debug|release) {
-	DESTDIR = ../../Project
+    DESTDIR = ../../../Project
 }
 
