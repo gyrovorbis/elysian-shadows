@@ -8,7 +8,7 @@ DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_x86 \
     ELYSIAN_ENGINE
 
 QMAKE_CXXFLAGS += -std=c++11 \
-    -fno-rtti
+    -fno-rtti \
     -fno-exceptions
 
 #Required to get C++11x to work on OSX
@@ -215,6 +215,17 @@ macx {
 		-lobjc \
 		-framework SDL
 
+}
+
+unix {
+    LIBS += \
+        -llua5.2 \
+        -L../../../libGyro/lib/win32 \
+        -lGL \
+        -lGLU \
+        -lz \
+        -lSDLmain \
+        -lSDL \
 }
 
 CONFIG(release, debug|release) {
