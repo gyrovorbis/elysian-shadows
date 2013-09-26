@@ -2,7 +2,7 @@
 #define GL_UTILITIES_H
 
 #include <QGLFormat>
-#include "Debug.h"
+#include "debug.h"
 
 struct glUtilities {
 
