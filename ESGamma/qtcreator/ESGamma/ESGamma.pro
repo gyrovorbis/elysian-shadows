@@ -220,7 +220,6 @@ macx {
 unix {
     LIBS += \
         -llua5.2 \
-        -L../../../libGyro/lib/win32 \
         -lGL \
         -lGLU \
         -lz \
