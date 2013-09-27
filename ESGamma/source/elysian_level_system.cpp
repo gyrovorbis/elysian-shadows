@@ -6,6 +6,7 @@
 #include "elysian_behavior_system.hpp"
 #include "elysian_collision_system.hpp"
 #include "elysian_map_system.hpp"
+#include "elysian_audio_system.hpp"
 
 #include <gyro.h>
 
@@ -78,6 +79,7 @@ bool LevelSystem::SwitchArea(const char *const dir) {
 	getBehavSys()->callTriggers(Behavior::ON_LOAD);
 	getPartySys()->addPartyToArea();
 	getBehavSys()->callTriggers(Behavior::ON_ENTER);
+	getAudioSys()->update();
 	return true;
 }
 

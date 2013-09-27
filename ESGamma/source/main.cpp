@@ -35,6 +35,7 @@ static void Init(int argc, char *argv[]) {
 
 	gySysInit();
 	gyVidInit(&vidParams);
+	gyAudInit();
 	gyInputInit();
 	gyAudInit();
 	gyTimerInit();

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <unistd.h>
 #include "gyro_texture.h"
 #include "gyro_system.h"
 #include "gyro_asset_bank.h"
@@ -126,7 +127,6 @@ static int _TexComparator(const void *const payload, const void *const data) {
 	return (strcmp(((const GYTexture*)payload)->filename, ((const char *)data)) == 0);
 }
 
-#include <unistd.h>
 static void *_TexConstructor(void *const data) {
 	GYTexture *tex;
 	GYTexEntryDat *texData = data;

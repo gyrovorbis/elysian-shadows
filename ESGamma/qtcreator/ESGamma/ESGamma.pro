@@ -105,7 +105,9 @@ HEADERS += \
     ../../../AssetIO/include/elysian_behavior.hpp \
     ../../../AssetIO/include/elysian_asset.hpp \
     ../../../AssetIO/include/elysian_area.hpp \
-    ../../../AssetIO/include/elysian_animation.hpp
+    ../../../AssetIO/include/elysian_animation.hpp \
+    ../../../AssetIO/include/elysian_audio_source.hpp \
+    ../../include/elysian_audio_system.hpp
 
 macx {
 	OBJECTIVE_HEADERS += ../../../libGyro/lib/osx/SDLMain.h
@@ -158,7 +160,9 @@ SOURCES += \
     ../../../AssetIO/source/elysian_behavior.cpp \
     ../../../AssetIO/source/elysian_asset.cpp \
     ../../../AssetIO/source/elysian_area.cpp \
-    ../../../AssetIO/source/elysian_animation.cpp
+    ../../../AssetIO/source/elysian_animation.cpp \
+    ../../../AssetIO/source/elysian_audio_source.cpp \
+    ../../source/elysian_audio_system.cpp
 
 macx {
 	OBJECTIVE_SOURCES += ../../../libGyro/lib/osx/SDLMain.mm
@@ -206,6 +210,7 @@ macx {
 		-llua52 \
 		#-lGL \
 		-framework OpenGL \
+		-framework OpenAL \
         -lz \
  #       -lz.dll \
  #       -lmingw32 \
@@ -217,7 +222,9 @@ macx {
 
 }
 
+win32 {
 CONFIG(release, debug|release) {
 	DESTDIR = ../../Project
+}
 }
 

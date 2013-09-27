@@ -25,6 +25,7 @@ namespace elysian {
 	class Friendly;
 	class Enemy;
 	class Examinable;
+	class AudioSource;
 	class Behavior;
 	class LuaBehavior;
 	
@@ -61,6 +62,7 @@ namespace elysian {
 		Friendly*       addFriendly(void);
 		Enemy*          addEnemy(void);
 		Examinable*		addExaminable(void);
+		AudioSource*	addAudioSource(void);
 		
 		Renderable*		getRenderable(void) const { return _renderable; }
 		Animation*      getAnimation(void) const { return _animation; }
@@ -71,6 +73,7 @@ namespace elysian {
 		Friendly*       getFriendly(void) const { return _friendly; }
 		Enemy*          getEnemy(void) const { return _enemy; }
 		Examinable*		getExaminable(void) const { return _examinable; }
+		AudioSource*	getAudioSource(void) const { return _audioSource; }
 		
 		void removeRenderable(void);
 		void removeAnimation(void);
@@ -81,6 +84,7 @@ namespace elysian {
 		void removeFriendly(void);
 		void removeEnemy(void);
 		void removeExaminable(void);
+		void removeAudioSource(void);
  
 		Behavior* addBehavior(char const* behaviorName);
         Behavior* getBehavior(char const* constbehaviorName) const;
@@ -96,30 +100,31 @@ namespace elysian {
     protected:
 		
         char _name[ELYSIAN_ENTITY_NAME_SIZE];
-        bool _active;
-		
-		Renderable*		_renderable;
-		Animation*      _animation;
-		Collidable*     _collidable;
-		Character*      _character;
-		Warp*           _warp;
-		Item*           _item;
-		Friendly*       _friendly;
-		Enemy*          _enemy;
-		Examinable*		_examinable;
-        //RigidBody*    _rigidBody;
-		
         bool _componentActive[Component::MAX_TYPE];
         
         std::map<char const *, Behavior*, ltstr> _behavior;
 
-		unsigned char _elev;
-		DEPTH_TYPE _depthType;
+		unsigned char	_elev			= 0;
+		DEPTH_TYPE		_depthType		= DEPTH_NONE;
+		bool			_active			= false;
+		Renderable*		_renderable		= NULL;
+		Animation*      _animation		= NULL;
+		Collidable*     _collidable		= NULL;
+		Character*      _character		= NULL;
+		Warp*           _warp			= NULL;
+		Item*           _item			= NULL;
+		Friendly*       _friendly		= NULL;
+		Enemy*          _enemy			= NULL;
+		Examinable*		_examinable		= NULL;
+		AudioSource*	_audioSource	= NULL;
+		//RigidBody*    _rigidBody;
 		
 		bool attachComponent(Component* const comp);
 		Behavior* attachBehavior(Behavior *const behav);
 		void reested(void); //default for failed deserialization attempts
     }; 
+
+
 
 
 	inline void Entity::setElev(const unsigned char e) { _elev = e; }

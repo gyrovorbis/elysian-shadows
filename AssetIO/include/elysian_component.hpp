@@ -18,7 +18,8 @@ namespace elysian {
 			CHARACTER, 
 			WARP, 
 			EXAMINABLE,
-			RIGID_BODY, 
+			RIGID_BODY,
+			AUDIO_SOURCE,
 			ITEM, 
 			FRIENDLY, 
 			ENEMY, 
@@ -43,8 +44,6 @@ namespace elysian {
 		inline Component(void) { }
 		Entity* _entity;
 		
-	private:
-		TYPE _type;
 	}; 
 }
 

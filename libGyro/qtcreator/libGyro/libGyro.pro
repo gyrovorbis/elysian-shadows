@@ -21,7 +21,6 @@ DEPENDPATH += ../../include \
 
 HEADERS += \
     ../../include/glal/gyro_video_glal.h \
-    ../../include/glal/gyro_gl_glal.h \
     ../../include/kinetic/gyro_kinetic_static.h \
     ../../include/kinetic/gyro_kinetic_physics.h \
     ../../include/kinetic/gyro_kinetic_kinetic.h \
@@ -55,7 +54,8 @@ HEADERS += \
     ../../include/x86/png/pnginfo.h \
     ../../include/x86/png/pngdebug.h \
     ../../include/x86/png/pngconf.h \
-    ../../include/x86/png/png.h
+    ../../include/x86/png/png.h \
+    ../../include/glal/gyro_glal.h
 
 SOURCES += \
     ../../include/soft/gyro_math_soft.inl \
@@ -91,5 +91,5 @@ SOURCES += \
     ../../source/x86/png/pngmem.c \
     ../../source/x86/png/pngget.c \
     ../../source/x86/png/pngerror.c \
-    ../../source/x86/png/png.c
+	../../source/x86/png/png.c \
 

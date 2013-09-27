@@ -5,21 +5,6 @@
 #include "elysian_system.hpp"
 
 namespace elysian {
-
-	class Debug;
-	class MapSystem;
-	class LevelSystem;
-	class GameInput;
-	class CameraSystem;
-	class AnimationSystem;
-	class CharacterSystem;
-	class PartySystem;
-	class TimerSystem;
-	class WarpSystem;
-	class CollisionSystem;
-	class GuiSystem;
-	class LuaSystem;
-	class BehaviorSystem;
 	
 	class Engine: public System {
 		friend class Debug;

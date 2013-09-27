@@ -20,7 +20,7 @@ namespace elysian {
 	private:
 		static const Component::TYPE _type = Component::BEHAVIOR;
 		static std::map<const char*, Behavior* (*)(Entity&), ltstr> _creators;
-		bool _active;
+		bool _active = false;
         
 	protected:
 		static void registerCreator(const char*typeName, Behavior* (*const func)(Entity&));
@@ -28,7 +28,7 @@ namespace elysian {
 		Behavior(Entity& parent);
 		virtual ~Behavior(void);
 		
-		uint64_t _triggerBits;
+		uint64_t _triggerBits = 0;
 		
 	public:
 		//64 triggers max, currently
@@ -90,7 +90,7 @@ namespace elysian {
 	
 	//========= INLINEZ =========
 	
-	inline Behavior::Behavior(Entity& parent): Component(parent), _triggerBits(0), _active(false) {}
+	inline Behavior::Behavior(Entity& parent): Component(parent) {}
 	inline Behavior::~Behavior(void) { }
 	inline uint64_t Behavior::getTriggers(void) const { return _triggerBits; }
 	//inline void Behavior::addTrigger(const uint64_t flags) { _triggerBits |= flags; }

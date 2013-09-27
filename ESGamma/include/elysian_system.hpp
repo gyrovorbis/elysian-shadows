@@ -16,6 +16,7 @@ namespace elysian {
 	class CollisionSystem;
 	class GuiSystem;
 	class ExaminableSystem;
+	class AudioSystem;
 	class BehaviorSystem;
 
 	class System: public LevelManager {
@@ -28,18 +29,19 @@ namespace elysian {
 		static ENGINE_STATE _engineState;
 		static bool _processInput;
 
-		static LevelSystem        *_levelSystem;
-		static MapSystem		  *_mapSystem;
-		static CameraSystem       *_cameraSystem;
-		static AnimationSystem    *_animationSystem;
-		static CharacterSystem    *_characterSystem;
-		static PartySystem        *_partySystem;
-		static TimerSystem		  *_timerSystem;
-		static WarpSystem		  *_warpSystem;
-		static CollisionSystem	  *_collisionSystem;
-		static GuiSystem		  *_guiSystem;
-		static ExaminableSystem	  *_examinableSystem;
-		static BehaviorSystem     *_behaviorSystem;
+		static LevelSystem		*_levelSystem;
+		static MapSystem		*_mapSystem;
+		static CameraSystem		*_cameraSystem;
+		static AnimationSystem	*_animationSystem;
+		static CharacterSystem	*_characterSystem;
+		static PartySystem      *_partySystem;
+		static TimerSystem		*_timerSystem;
+		static WarpSystem		*_warpSystem;
+		static CollisionSystem	*_collisionSystem;
+		static GuiSystem		*_guiSystem;
+		static ExaminableSystem	*_examinableSystem;
+		static AudioSystem		*_audioSystem;
+		static BehaviorSystem	*_behaviorSystem;
 
 	public:
 		static LevelSystem*			getLevelSys(void) { return _levelSystem; }
@@ -53,6 +55,7 @@ namespace elysian {
 		static CollisionSystem*		getCollisionSys(void) { return _collisionSystem; }
 		static GuiSystem*			getGuiSys(void) { return _guiSystem; }
 		static ExaminableSystem*	getExamSys(void) { return _examinableSystem; }
+		static AudioSystem*			getAudioSys(void) { return _audioSystem; }
 		static BehaviorSystem*		getBehavSys(void) { return _behaviorSystem; }
 		static bool getProcessInput(void) { return _processInput; }
 		static void setProcessInput(const bool in=true) { _processInput = in; }

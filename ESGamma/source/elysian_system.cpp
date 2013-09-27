@@ -16,6 +16,7 @@ namespace elysian {
 	CollisionSystem*	System::_collisionSystem = NULL;
 	GuiSystem*			System::_guiSystem = NULL;
 	ExaminableSystem*	System::_examinableSystem = NULL;
-	BehaviorSystem*		System::_behaviorSystem = NULL;;
+	AudioSystem*		System::_audioSystem = NULL;
+	BehaviorSystem*		System::_behaviorSystem = NULL;
 
 }

@@ -99,7 +99,8 @@ SOURCES += source/asset/project.cpp \
     ../../AssetIO/source/elysian_behavior.cpp \
     ../../AssetIO/source/elysian_asset.cpp \
     ../../AssetIO/source/elysian_area.cpp \
-    ../../AssetIO/source/elysian_animation.cpp
+	../../AssetIO/source/elysian_animation.cpp \
+	../../AssetIO/source/elysian_audio_source.cpp
 HEADERS += include/asset/project.h \
     include/asset/level.h \
     include/asset/entity.h \
@@ -200,7 +201,8 @@ HEADERS += include/asset/project.h \
     ../../AssetIO/include/elysian_behavior.hpp \
     ../../AssetIO/include/elysian_asset.hpp \
     ../../AssetIO/include/elysian_area.hpp \
-    ../../AssetIO/include/elysian_animation.hpp
+	../../AssetIO/include/elysian_animation.hpp \
+	../../AssetIO/include/elysian_audio_source.hpp
 FORMS += \
     form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \
@@ -234,10 +236,10 @@ macx {
 
 RESOURCES += resource/resource.qrc \
 
-
+win32 {
 	CONFIG(release, debug|release) {
 		DESTDIR = ../../Project
 	}
-
+}
 
 

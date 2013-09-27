@@ -26,6 +26,7 @@
 #include "elysian_level.hpp"
 #include "elysian_adventure_log.hpp"
 #include "elysian_lua_behavior.hpp"
+#include "elysian_audio_source.hpp"
 
 namespace elysian {
 
@@ -215,7 +216,6 @@ bool Debug::sandboxInit(void) {
 	getPartySys()->addCharacterToParty(*player);
 
 
-#if 0
 
 //======================    
     
@@ -228,6 +228,13 @@ bool Debug::sandboxInit(void) {
 	player->transform.setScale(1.0f, 1.0f);
 	player->transform.setOrientZ(0.0f);
 	player->setDepthType(DEPTH_BUFFERED);
+
+	//AudioSource Component
+	AudioSource* audio = player->addAudioSource();
+	audio->setWav(gyAudWavCreate("phone.wav"));
+	audio->setLooping(true);
+	//audio->setGain(0.1f);
+	audio->play();
 	
 	//Renderable Component
 	render = player->addRenderable();
@@ -296,10 +303,9 @@ bool Debug::sandboxInit(void) {
 
 	//Character Component
 	//player->addCharacter();
-
+#if 0
 	behav = player->addLuaBehavior("level/new_level1/area/Falco_ZTran_Sandbox/test.lua");
 	behav->setTriggers(Behavior::ONCREATE | Behavior::ONUPDATE);
-
 //=================
     //Base Entity Data
 	player = new Entity;

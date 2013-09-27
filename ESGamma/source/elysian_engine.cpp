@@ -13,6 +13,7 @@
 #include "elysian_warp_system.hpp"
 #include "elysian_collision_system.hpp"
 #include "elysian_gui_system.hpp"
+#include "elysian_audio_system.hpp"
 #include "elysian_lua_singleton.hpp"
 #include "elysian_lua_manager.hpp"
 #include "elysian_behavior_system.hpp"
@@ -36,6 +37,7 @@ Engine::Engine(void) {
 	_collisionSystem	= new CollisionSystem;
 	_guiSystem			= new GuiSystem;
 	_behaviorSystem		= new BehaviorSystem;
+	_audioSystem		= new AudioSystem;
 
 	//register Lua dependencies
 	Singletons::setGameInput(&_gameInput);
@@ -63,6 +65,7 @@ void Engine::update(void) {
 	switch(System::_engineState) {
 		case System::ENGINE_NORMAL:
         case System::ENGINE_WARPING:
+			_audioSystem->update();
             _collisionSystem->update();
             _timerSystem->update();
             _mapSystem->update();
@@ -73,7 +76,6 @@ void Engine::update(void) {
             //warpSystem->Update();
             _guiSystem->update();
             _warpSystem->Update();
-
 
 			//conversationSystem->Update();
 			_behaviorSystem->callTriggers(Behavior::ON_UPDATE);
@@ -157,6 +159,7 @@ Engine::~Engine(void) {
 	delete _characterSystem;
 	delete _partySystem;
 	delete _timerSystem;
+	delete _audioSystem;
 	delete _guiSystem;
 	delete _behaviorSystem;
 	

@@ -330,7 +330,7 @@ void ESToolkit::SyncEntityMenuBar(const Entity *const /*entity*/) {
 
     if(entity->getEnemy()) {
         _ui->actionEntityAttachEnemy->setDisabled(true);
-        _ui->actionEntityRemoveEnemy->setDisabled(false);
+		_ui->actionEntityRemoveEnemy->setDisabled(false);
     }
 #endif
 }
@@ -1221,9 +1221,11 @@ void ESToolkit::on_actionToggle_AutoScroll_triggered()
 
 void ESToolkit::on_actionActionSecret_triggered()
 {
-	_sheetManager->initialize(_ui->actionEnable_OpenGL->isChecked(), _ui->actionToggle_AutoScroll->isChecked());
-    _sheetManager->setFocus();
-    _sheetManager->showMaximized();
+	if(_assets.getCurLevel) {
+		_sheetManager->initialize(_ui->actionEnable_OpenGL->isChecked(), _ui->actionToggle_AutoScroll->isChecked());
+		_sheetManager->setFocus();
+		_sheetManager->showMaximized();
+	}
 }
 
 void ESToolkit::on_actionEngine_Settings_triggered() {

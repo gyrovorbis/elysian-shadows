@@ -9,7 +9,6 @@
 #include "elysian_animation.hpp"
 #include "elysian_collidable.hpp"
 #include "elysian_character.hpp"
-#include "elysian_examinable.hpp"
 #include "elysian_enemy.hpp"
 #include "elysian_friendly.hpp"
 #include "elysian_warp.hpp"
@@ -18,25 +17,13 @@
 #include "elysian_stl_algorithm.hpp"
 #include "elysian_lua_behavior.hpp"
 #include "elysian_examinable.hpp"
+#include "elysian_audio_source.hpp"
 
 using namespace std;
 
-
 namespace elysian {
 
-Entity::Entity():
-	_active(false),
-	_renderable(NULL),
-	_animation(NULL),
-	_collidable(NULL),
-	_character(NULL),
-	_warp(NULL),
-	_item(NULL),
-	_friendly(NULL),
-	_enemy(NULL),
-	_examinable(NULL),
-	_elev(0),
-	_depthType(DEPTH_NONE)
+Entity::Entity(void)
 {
 	for(unsigned int i = 0; i < Component::MAX_TYPE; ++i) _componentActive[i] = false;
 	strcpy(_name, "Untitled");
@@ -62,6 +49,7 @@ Entity::~Entity(void) {
 	removeFriendly();
 	removeEnemy();
 	removeExaminable();
+	removeAudioSource();
 	
 	// Cleanup Behaviors
 	for(std::map<const char *, Behavior *, ltstr>::iterator it = _behavior.begin(); it != _behavior.end(); ++it) {
@@ -151,6 +139,10 @@ bool Entity::activate(void) {
 		_examinable->addToLevel();
 		_componentActive[Component::EXAMINABLE] = true;
 	}
+	if(_audioSource && !_componentActive[Component::AUDIO_SOURCE]) {
+		_audioSource->addToLevel();
+		_componentActive[Component::AUDIO_SOURCE] = true;
+	}
 	for(std::map<const char *, Behavior *, ltstr>::iterator it = _behavior.begin(); it != _behavior.end(); ++it) {
 		if(!it->second->getActive()) {
 			it->second->addToLevel();
@@ -204,7 +196,11 @@ bool Entity::deactivate(void) {
 		_examinable->removeFromLevel();
 		_componentActive[Component::EXAMINABLE] = false;
 	}
-	
+	if(_audioSource && _componentActive[Component::AUDIO_SOURCE]) {
+		_audioSource->removeFromLevel();
+		_componentActive[Component::AUDIO_SOURCE] = false;
+	}
+
 	for(std::map<const char *, Behavior *, ltstr>::iterator it = _behavior.begin(); it != _behavior.end(); ++it) {
 		if(it->second->getActive()) {
 			it->second->removeFromLevel();
@@ -264,6 +260,9 @@ bool Entity::load(ifstream &stream) { //Deserialization
 			case Component::EXAMINABLE:
 				comp = addExaminable();
 				break;
+			case Component::AUDIO_SOURCE:
+				comp = addAudioSource();
+				break;
 			case Component::BEHAVIOR:
 				stream >> behaviorName;
 				comp = addBehavior(behaviorName);
@@ -313,6 +312,7 @@ bool Entity::save(ofstream &stream) { //Serialization
 	if(getItem()) ++compCount;
 	if(getWarp()) ++compCount;
 	if(getExaminable()) ++compCount;
+	if(getAudioSource()) ++compCount;
     for(std::map<const char *, Behavior *, ltstr>::iterator it = _behavior.begin(); it != _behavior.end(); ++it) ++compCount;
 	stream << compCount << endl;
 
@@ -353,6 +353,10 @@ bool Entity::save(ofstream &stream) { //Serialization
 		stream << (int)Component::EXAMINABLE << endl;
         success &= comp->save(stream);
     }
+	if((comp = getAudioSource())) {
+		stream << (int)Component::AUDIO_SOURCE << endl;
+		success &= comp->save(stream);
+	}
 	
 	//Behaviors
     for(std::map<const char *, Behavior *, ltstr>::iterator it = _behavior.begin(); it != _behavior.end(); ++it) {
@@ -509,6 +513,12 @@ Examinable *Entity::addExaminable(void) {
 	return _examinable = attachComponent(_examinable)? _examinable : NULL;
 }
 
+AudioSource *Entity::addAudioSource(void) {
+	if(_audioSource) return NULL;
+	_audioSource = new AudioSource(*this);
+	return _audioSource = attachComponent(_audioSource)? _audioSource : NULL;
+}
+
 
 void Entity::removeRenderable(void) {
 	if(_renderable && _active) {
@@ -591,5 +601,13 @@ void Entity::removeExaminable(void) {
 	_examinable = NULL;
 }
 
+void Entity::removeAudioSource(void) {
+	if(_audioSource && _active) {
+		_audioSource->removeFromLevel();
+		_componentActive[Component::AUDIO_SOURCE] = false;
+	}
+	delete _audioSource;
+	_audioSource = NULL;
+}
 
 }
