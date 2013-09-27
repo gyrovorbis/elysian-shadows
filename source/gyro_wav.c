@@ -14,6 +14,7 @@ static void *_WavConstructor(void *const data) {
 	GYWav *wav = malloc(sizeof(GYWav));
 	if(!wav) return 0;
 	wav->bytes = 0;
+	strcpy(wav->filename, (const char*)data);
 	//Allocate platform-specific wav data
 	if(!_gyAudWavAlloc(wav)) return 0;
 	return wav;

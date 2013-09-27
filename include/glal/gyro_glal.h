@@ -11,6 +11,8 @@
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
 #	ifdef __APPLE__
 #		include <OpenGL/gl.h>
+#		include <OpenAL/al.h>
+//#		include <OpenAL/alut.h>
 #	else
 #		include <GL/gl.h>
 #	endif
