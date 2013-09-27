@@ -7,13 +7,10 @@
 extern "C" {
 #endif
 
-struct __GYWavPayload;
-typedef struct __GYWavPayload _GYWavPayload;
-
 typedef struct _GYWav {
     char filename[GYRO_FILENAME_MAX_SIZE];
     unsigned int bytes;
-	_GYWavPayload *_data;
+	void* _data;
 } GYWav;
 
 GYWav *gyAudWavCreate(const char *const filename);
