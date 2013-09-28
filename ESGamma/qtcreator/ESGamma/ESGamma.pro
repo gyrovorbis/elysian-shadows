@@ -222,9 +222,18 @@ macx {
 
 }
 
-win32 {
-CONFIG(release, debug|release) {
-	DESTDIR = ../../Project
-}
+linux {
+	LIBS += \
+		-llua5.2 \
+		-lGL \
+		-lGLU \
+		-lz \
+		-lSDLmain \
+		-lSDL \
 }
 
+win32 {
+	CONFIG(release, debug|release) {
+		DESTDIR = ../../Project
+	}
+}

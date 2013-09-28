@@ -2,6 +2,7 @@
 #define ELYSIAN_MAP_DEPTH_BUFFER_H
 
 #include <cassert>
+#include <cstring>
 #include "elysian_area.hpp"
 
 //Maximum elevation height an object can have
