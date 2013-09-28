@@ -19,6 +19,7 @@
 #include "elysian_game_input.hpp"
 #include "elysian_party_system.hpp"
 #include "elysian_timer_system.hpp"
+#include "elysian_audio_source.hpp"
 
 /* IT'S NOT SAFE TO GO ALONE! TAKE THIS HEADER FILE. IT WILL HELP
  * YOU ON YOUR JOURNEY!
@@ -68,6 +69,7 @@ namespace OOLUA
 	typedef elysian::PartySystem			PartySystem;
 	typedef elysian::TimerSystem			TimerSystem;
 	typedef elysian::Singletons				Singletons;
+	typedef elysian::AudioSource			AudioSource;
 }
 
 OOLUA_CLASS_NO_BASES(GYVector2)
@@ -75,6 +77,13 @@ OOLUA_CLASS_NO_BASES(GYVector2)
 	OOLUA_ONLY_DEFAULT_CONSTRUCTOR
 	OOLUA_PUBLIC_MEMBER_GET_SET(x)
 	OOLUA_PUBLIC_MEMBER_GET_SET(y)
+OOLUA_CLASS_END
+
+OOLUA_CLASS_NO_BASES(GYWav)
+OOLUA_TYPEDEFS
+	No_public_constructors,
+	No_public_destructor
+OOLUA_TYPEDEFS_END
 OOLUA_CLASS_END
 
 OOLUA_CLASS_NO_BASES(InstanceTransform)
@@ -113,6 +122,7 @@ namespace OOLUA {
     template<> class Proxy_class<elysian::Collidable>;
     template<> class Proxy_class<elysian::Character>;
     template<> class Proxy_class<elysian::Warp>;
+	template<> class Proxy_class<elysian::AudioSource>;
     template<> class Proxy_class<elysian::Behavior>;
     template<> class Proxy_class<elysian::LuaBehavior>;
 }
@@ -134,14 +144,16 @@ OOLUA_CLASS(Entity): public Proxy_class<RenderableObject>
 	OOLUA_MEM_FUNC_0(Animation*, addAnimation)
 	OOLUA_MEM_FUNC_0(Collidable*, addCollidable)
 	OOLUA_MEM_FUNC_0(Character*, addCharacter)
-	OOLUA_MEM_FUNC_0(Warp*, addWarp);
-	OOLUA_MEM_FUNC_1(Behavior*, addBehavior, const char*);
+	OOLUA_MEM_FUNC_0(Warp*, addWarp)
+	OOLUA_MEM_FUNC_0(AudioSource*, addAudioSource)
+	OOLUA_MEM_FUNC_1(Behavior*, addBehavior, const char*)
 	OOLUA_MEM_FUNC_1(LuaBehavior*, addLuaBehavior, const char*)
 	OOLUA_MEM_FUNC_0_CONST(Renderable*, getRenderable);
 	OOLUA_MEM_FUNC_0_CONST(Animation*, getAnimation);
 	OOLUA_MEM_FUNC_0_CONST(Collidable*, getCollidable);
 	OOLUA_MEM_FUNC_0_CONST(Character*, getCharacter);
 	OOLUA_MEM_FUNC_0_CONST(Warp*, getWarp)
+	OOLUA_MEM_FUNC_0_CONST(AudioSource*, getAudioSource)
 	OOLUA_MEM_FUNC_1_CONST(Behavior*, getBehavior, const char*)
 	OOLUA_MEM_FUNC_1_CONST(LuaBehavior*, getLuaBehavior, const char*)
 	//OOLUA_MEM_FUNC_0(void, removeRenderable)
@@ -313,6 +325,22 @@ OOLUA_CLASS(Warp): public Proxy_class<Component>
 	OOLUA_MEM_FUNC_1(void, setLevelPath, const char*)
 	OOLUA_MEM_FUNC_1(void, setChangeArea, bool)
 	OOLUA_MEM_FUNC_1(void, setChangeLevel, bool)
+OOLUA_CLASS_END
+
+OOLUA_CLASS(AudioSource): public Proxy_class<Component>
+	OOLUA_BASIC
+	OOLUA_TYPEDEFS
+		No_public_constructors,
+		No_public_destructor
+	OOLUA_TYPEDEFS_END
+	OOLUA_BASES_START Component OOLUA_BASES_END
+	OOLUA_MEM_FUNC_1(void, setWav, const GYWav*)
+	OOLUA_MEM_FUNC_1_CONST(void, playWav, const GYWav*)
+	OOLUA_MEM_FUNC_0_CONST(void, play)
+	OOLUA_MEM_FUNC_0_CONST(void, stop)
+	OOLUA_MEM_FUNC_1_CONST(void, setGain, float)
+	OOLUA_MEM_FUNC_1_CONST(void, setPitch, float)
+	OOLUA_MEM_FUNC_1_CONST(void, setLooping, bool)
 OOLUA_CLASS_END
 
 OOLUA_CLASS(Behavior): public Proxy_class<Component>
@@ -597,6 +625,14 @@ static inline int Singletons_getTimerSystem(lua_State* const l) {
 
 static inline int gyroFilePath(lua_State *const l) {
 	OOLUA_C_FUNCTION_1(const char*, gyFilePath, const char*)
+}
+
+static inline int gyroWavCreate(lua_State *const l) {
+	OOLUA_C_FUNCTION_1(GYWav*, gyAudWavCreate, const char*)
+}
+
+static inline int gyroWavDestroy(lua_State *const l) {
+	OOLUA_C_FUNCTION_1(int, gyAudWavDestroy, GYWav*)
 }
 
 #endif

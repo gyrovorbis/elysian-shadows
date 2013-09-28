@@ -218,7 +218,8 @@ bool Debug::sandboxInit(void) {
 
 
 //======================    
-    
+#if 0
+
 	//Base Entity Data
 	player = new Entity;
 	_curArea->addEntity(player);
@@ -230,11 +231,11 @@ bool Debug::sandboxInit(void) {
 	player->setDepthType(DEPTH_BUFFERED);
 
 	//AudioSource Component
-	AudioSource* audio = player->addAudioSource();
+	/*AudioSource* audio = player->addAudioSource();
 	audio->setWav(gyAudWavCreate("phone.wav"));
 	audio->setLooping(true);
 	//audio->setGain(0.1f);
-	audio->play();
+	audio->play();*/
 	
 	//Renderable Component
 	render = player->addRenderable();
@@ -303,7 +304,7 @@ bool Debug::sandboxInit(void) {
 
 	//Character Component
 	//player->addCharacter();
-#if 0
+
 	behav = player->addLuaBehavior("level/new_level1/area/Falco_ZTran_Sandbox/test.lua");
 	behav->setTriggers(Behavior::ONCREATE | Behavior::ONUPDATE);
 //=================

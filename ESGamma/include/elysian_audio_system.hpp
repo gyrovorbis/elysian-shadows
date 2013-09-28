@@ -5,7 +5,7 @@
 #include "elysian_system.hpp"
 
 #define ELYSIAN_AUDIO_REFERENCE_DIST 10
-#define ELYSIAN_AUDIO_ZSCALE		 100.0f
+#define ELYSIAN_AUDIO_ZSCALE		 32.0f
 
 namespace elysian {
 

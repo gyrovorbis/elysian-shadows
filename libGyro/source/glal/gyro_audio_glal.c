@@ -137,5 +137,7 @@ void gyAudSourcePlayWav(GYWavSource*const src, const GYWav* wav) {
 
 //audio listener
 void gyAudListenerSetPos(const struct _GYVector3* const pos) {
-	alListenerfv(AL_POSITION, pos);
+	GYVector3 veccy = *pos;
+	veccy.z *= _zScale;
+	alListenerfv(AL_POSITION, &veccy);
 }

@@ -13,7 +13,6 @@ namespace elysian {
 	bool AudioSource::save(std::ofstream& /*stream*/) {
 		//implement this bitch later
 		return true;
-
 	}
 
 	void AudioSource::update(void) const {

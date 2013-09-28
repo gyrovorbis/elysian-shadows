@@ -30,7 +30,7 @@ static GYTexCoordSheet *_LoadSheetCoords(const GYTexEntryDat *const data) {
 	file = fopen(fname, "r");
 	if(!file) {
 		gyPrintf("! - _LoadSheetCoords(%s): unable to open file!\n", fname);	
-		assert(file); //UNABLE TO OPEN SPRITE SHEET COORDINATE FILE!
+		//assert(file); //UNABLE TO OPEN SPRITE SHEET COORDINATE FILE!
 		return NULL;
 	}
 
@@ -154,7 +154,7 @@ static void *_TexConstructor(void *const data) {
 		free(tex);
 		getcwd(cwd, sizeof(cwd));
 		printf("DIR - %s\n", cwd);
-		assert(0); //OUT OF VRAM! DEFAULT TEXTURE ME!!!
+		//assert(0); //OUT OF VRAM! DEFAULT TEXTURE ME!!!
 	}
 
 	tex->_coord = (!texData->spriteWidth || !texData->spriteHeight)?

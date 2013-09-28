@@ -29,6 +29,8 @@ namespace elysian {
 		_mainState->register_class<GameInput>();
 		_mainState->register_class<Singletons>();
 		_mainState->register_class<gyro>();
+		_mainState->register_class<GYWav>();
+		_mainState->register_class<AudioSource>();
 
 		//Register C and static member functions
 		lua_register(*_mainState, "print", &print);
@@ -38,7 +40,11 @@ namespace elysian {
 		_mainState->register_class_static<Singletons>("setProcessInput", &Singletons_setProcessInput);
 		_mainState->register_class_static<Singletons>("getPartySys", &Singletons_getPartySystem);
 		_mainState->register_class_static<Singletons>("getTimerSys", &Singletons_getTimerSystem);
+
+		//libGyro wrappers
 		_mainState->register_class_static<gyro>("filePath", &gyroFilePath);
+		_mainState->register_class_static<gyro>("createWav", &gyroWavCreate);
+		_mainState->register_class_static<gyro>("destroyWav", &gyroWavDestroy);
 
 		//Register constants and enumerations
 		luaRegisterEnumsConstants(_mainState);
@@ -48,6 +54,9 @@ namespace elysian {
 
 EXPORT_OOLUA_FUNCTIONS_2_CONST(GYVector2, get_x, get_y)
 EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(GYVector2, set_x, set_y)
+
+EXPORT_OOLUA_FUNCTIONS_0_CONST(GYWav)
+EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(GYWav)
 
 EXPORT_OOLUA_FUNCTIONS_9_NON_CONST(InstanceTransform,
 									setPos2f,
@@ -74,7 +83,7 @@ EXPORT_OOLUA_FUNCTIONS_0_CONST(RenderableObject)
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Component)
 EXPORT_OOLUA_FUNCTIONS_1_CONST(Component, getEntity)
 
-EXPORT_OOLUA_FUNCTIONS_12_NON_CONST(Entity,
+EXPORT_OOLUA_FUNCTIONS_13_NON_CONST(Entity,
 									activate,
 									deactivate,
 									move,
@@ -85,6 +94,7 @@ EXPORT_OOLUA_FUNCTIONS_12_NON_CONST(Entity,
 									addCollidable,
 									addCharacter,
 									addWarp,
+									addAudioSource,
 									addBehavior,
 									addLuaBehavior)
 									//removeRenderable,
@@ -94,7 +104,7 @@ EXPORT_OOLUA_FUNCTIONS_12_NON_CONST(Entity,
 									//removeWarp,
 									//removeBehavior,
 									//removeLuaBehavior)
-EXPORT_OOLUA_FUNCTIONS_9_CONST(Entity,
+EXPORT_OOLUA_FUNCTIONS_10_CONST(Entity,
 								getName,
 								getElev,
 								getRenderable,
@@ -102,6 +112,7 @@ EXPORT_OOLUA_FUNCTIONS_9_CONST(Entity,
 								getCollidable,
 								getCharacter,
 								getWarp,
+								getAudioSource,
 								getBehavior,
 								getLuaBehavior)
 
@@ -195,6 +206,16 @@ EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(Warp,
 								   setChangeArea,
 								   setChangeLevel)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(Warp)
+
+ EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(AudioSource,
+									 setWav)
+ EXPORT_OOLUA_FUNCTIONS_6_CONST(AudioSource,
+									 playWav,
+									 play,
+									 stop,
+									 setGain,
+									 setPitch,
+									 setLooping)
 
 EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(Behavior,
 								   addTrigger,
