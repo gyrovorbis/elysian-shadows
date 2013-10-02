@@ -152,9 +152,7 @@ static void *_TexConstructor(void *const data) {
 	//platform-specific texture allocation
 	if(!_gyVidTexAlloc(tex, texData->sheetWidth, texData->sheetHeight)) {
 		free(tex);
-		getcwd(cwd, sizeof(cwd));
-		printf("DIR - %s\n", cwd);
-		//assert(0); //OUT OF VRAM! DEFAULT TEXTURE ME!!!
+		_gyLog(GY_DEBUG_CRITICAL, "! - Could not load texture! - %s", tex->filename);
 	}
 
 	tex->_coord = (!texData->spriteWidth || !texData->spriteHeight)?

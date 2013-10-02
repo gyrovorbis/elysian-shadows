@@ -133,7 +133,7 @@ bool Debug::sandboxInit(void) {
 	//Base Entity Data
 	Entity *player = new Entity;
 	player->setName("Julien");
-	_curArea->addEntity(player);
+	//_curArea->addEntity(player);
 	//player->transform.setPosition((float)_cmdLineArgs.x, (float)_cmdLineArgs.y, ELYSIAN_ZCOORD_OBJECT2+10.0f);
     player->transform.setPos(_cmdLineArgs.x, _cmdLineArgs.y, ELYSIAN_ZCOORD_OBJECT2+10.0f);
 	player->transform.setSize(32.0f, 64.0f);

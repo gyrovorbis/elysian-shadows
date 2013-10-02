@@ -34,13 +34,11 @@ RType _callFunction(const char* funcName, PTypes... parameters) {
 }
 
 
-
 int main(int argc, char *argv[]) {
     QRectF rect;
     rect.setSize(QSizeF(2.0f, 5.0f));
 
     auto i = _callFunction<unsigned, float, const char*, int, QRectF>("funcztor", 0.04f, "lolzer", 3, rect);
-
 
     QApplication a(argc, argv);
     a.setOrganizationName("Elysian Shadows");

@@ -208,12 +208,9 @@ win32 {
 macx {
 	LIBS += -L../../lib/osx \
 		-llua52 \
-		#-lGL \
 		-framework OpenGL \
 		-framework OpenAL \
         -lz \
- #       -lz.dll \
- #       -lmingw32 \
 		-F../../../libGyro/lib/osx \
 		-framework Foundation \
 		-framework Cocoa \
@@ -226,6 +223,7 @@ linux {
 	LIBS += \
 		-llua5.2 \
 		-lGL \
+		-lAL \
 		-lGLU \
 		-lz \
 		-lSDLmain \

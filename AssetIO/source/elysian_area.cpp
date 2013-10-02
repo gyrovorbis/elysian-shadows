@@ -31,7 +31,7 @@ Entity* Area::findEntity(const char *name) {
 }
 
 void Area::addEntity(Entity *entity) {
-	entities.push_back(entity);
+	//entities.push_back(entity);
 	entity->activate();
 }
 

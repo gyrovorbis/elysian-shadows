@@ -45,8 +45,9 @@ static void Init(int argc, char *argv[]) {
 	
 	engine->loadAssets();
 	debug->setEngine(*engine);
-	debug->initializeEngine();
 	debug->sandboxInit();
+	debug->initializeEngine();
+
 
 }
 
