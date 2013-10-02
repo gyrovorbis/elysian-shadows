@@ -8,7 +8,7 @@ DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_x86 \
     ELYSIAN_ENGINE
 
 QMAKE_CXXFLAGS += -std=c++11 \
-    -fno-rtti
+    -fno-rtti \
     -fno-exceptions
 
 #Required to get C++11x to work on OSX
