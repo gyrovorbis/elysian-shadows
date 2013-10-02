@@ -13,9 +13,9 @@ QMAKE_CXXFLAGS += -std=c++11 \
 
 #Required to get C++11x to work on OSX
 macx {
-	QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -stdlib=libc++
-	LIBS += -mmacosx-version-min=10.7 -stdlib=libc++
-	CONFIG += objective_c
+  QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -stdlib=libc++
+  LIBS += -mmacosx-version-min=10.7 -stdlib=libc++
+  CONFIG += objective_c
 }
 
 INCLUDEPATH += ../../include \
@@ -30,7 +30,7 @@ win32 {
 }
 
 macx {
-	INCLUDEPATH += ../../../libGyro/lib/osx/SDL.framework/Headers
+  INCLUDEPATH += ../../../libGyro/lib/osx/SDL.framework/Headers
 }
 
 DEPENDPATH += ../../include \
@@ -110,7 +110,7 @@ HEADERS += \
     ../../include/elysian_audio_system.hpp
 
 macx {
-	OBJECTIVE_HEADERS += ../../../libGyro/lib/osx/SDLMain.h
+  OBJECTIVE_HEADERS += ../../../libGyro/lib/osx/SDLMain.h
 }
 
 SOURCES += \
@@ -165,7 +165,7 @@ SOURCES += \
     ../../source/elysian_audio_system.cpp
 
 macx {
-	OBJECTIVE_SOURCES += ../../../libGyro/lib/osx/SDLMain.mm
+  OBJECTIVE_SOURCES += ../../../libGyro/lib/osx/SDLMain.mm
 }
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../../libGyro/qtcreator/libGyro/release/ -llibGyro
@@ -207,32 +207,32 @@ win32 {
 }
 
 macx {
-	LIBS += -L../../lib/osx \
-		-llua52 \
-		-framework OpenGL \
-		-framework OpenAL \
+  LIBS += -L../../lib/osx \
+    -llua52 \
+    -framework OpenGL \
+    -framework OpenAL \
         -lz \
-		-F../../../libGyro/lib/osx \
-		-framework Foundation \
-		-framework Cocoa \
-		-lobjc \
-		-framework SDL
+    -F../../../libGyro/lib/osx \
+    -framework Foundation \
+    -framework Cocoa \
+    -lobjc \
+    -framework SDL
 
 }
 
 linux {
-	LIBS += \
-		-llua5.2 \
-		-lGL \
-		-lAL \
-		-lGLU \
-		-lz \
-		-lSDLmain \
-		-lSDL \
+  LIBS += \
+    -llua5.2 \
+    -lGL \
+    -lopenal \
+    -lGLU \
+    -lz \
+    -lSDLmain \
+    -lSDL \
 }
 
 win32 {
-	CONFIG(release, debug|release) {
+  CONFIG(release, debug|release) {
         DESTDIR = ../../../Project
-	}
+  }
 }
