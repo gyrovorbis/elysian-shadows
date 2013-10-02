@@ -2,7 +2,7 @@
 #include "gyro_system.h"
 #include "x86/gyro_sdl_x86.h"
 #include "glal/gyro_video_glal.h"
-#include "glal/gyro_gl_glal.h"
+#include "glal/gyro_glal.h"
 
 //Global SDL shit--shared with input (which has to resize window)
 GYVidInitParams vidParams;

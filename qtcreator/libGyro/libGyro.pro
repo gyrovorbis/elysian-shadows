@@ -55,7 +55,8 @@ HEADERS += \
     ../../include/x86/png/pngdebug.h \
     ../../include/x86/png/pngconf.h \
     ../../include/x86/png/png.h \
-    ../../include/glal/gyro_glal.h
+    ../../include/glal/gyro_glal.h \
+    ../../include/x86/gyro_wav_x86.h
 
 SOURCES += \
     ../../include/soft/gyro_math_soft.inl \
@@ -64,7 +65,6 @@ SOURCES += \
     ../../source/kinetic/gyro_kinetic_physics.c \
     ../../source/kinetic/gyro_kinetic_collision.c \
     ../../source/soft/gyro_matrix_soft.c \
-    ../../source/x86/gyro_wav_x86.c \
     ../../source/x86/gyro_video_x86.c \
     ../../source/x86/gyro_timer_x86.c \
     ../../source/x86/gyro_texture_x86.c \
