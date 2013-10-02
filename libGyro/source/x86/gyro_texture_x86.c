@@ -30,7 +30,7 @@
 #include "png.h"
 #include "stdio.h"
 #include "gyro_texture.h"
-#include "glal/gyro_gl_glal.h"
+#include "glal/gyro_glal.h"
 
 typedef struct image_s
 {

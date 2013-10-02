@@ -12,7 +12,7 @@
 #	ifdef __APPLE__
 #		include <OpenGL/gl.h>
 #		include <OpenAL/al.h>
-//#		include <OpenAL/alut.h>
+#		include <OpenAL/alc.h>
 #	else
 #		include <GL/gl.h>
 #	endif

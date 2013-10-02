@@ -3,7 +3,7 @@
 #include "gyro_texture.h"
 #include "gyro_matrix.h"
 #include "gyro_matrix_stack.h"
-#include "glal/gyro_gl_glal.h"
+#include "glal/gyro_glal.h"
 #include "glal/gyro_video_glal.h"
 
 #include <assert.h>
