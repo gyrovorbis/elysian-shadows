@@ -196,6 +196,7 @@ win32 {
         -llua52 \
         -L../../../libGyro/lib/win32 \
         -lopengl32 \
+        -lopenal32.dll \
         -lglu32 \
         -lz \
         -lz.dll \
@@ -232,6 +233,6 @@ linux {
 
 win32 {
 	CONFIG(release, debug|release) {
-		DESTDIR = ../../Project
+        DESTDIR = ../../../Project
 	}
 }

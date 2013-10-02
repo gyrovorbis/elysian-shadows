@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include "gyro_audio.h"
 #include "gyro_wav.h"
 #include "gyro_matrix.h"

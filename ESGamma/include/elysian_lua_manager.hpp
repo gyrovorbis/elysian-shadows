@@ -53,7 +53,7 @@ namespace elysian {
 #ifdef ELYSIAN_LUA_DEBUG
 		if((_errorCode = lua_pcall(*_mainState, nargs, nresults, 0)) != 0) {
 			showError();
-			script->setError();
+            if(script) script->setError();
 		}
 #else
 		lua_call(*_mainState, nargs, nresults);
