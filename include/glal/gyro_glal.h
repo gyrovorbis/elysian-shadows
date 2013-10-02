@@ -15,6 +15,8 @@
 #		include <OpenAL/alc.h>
 #	else
 #		include <GL/gl.h>
+#       include <AL/al.h.>
+#       include <AL/alc.h>
 #	endif
 #elif GYRO_PLATFORM == GYRO_PLATFORM_iOS
 #	include "ios/ios_system.h"
