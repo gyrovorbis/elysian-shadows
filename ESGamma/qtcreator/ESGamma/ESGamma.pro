@@ -220,7 +220,7 @@ macx {
 
 }
 
-linux {
+unix {
   LIBS += \
     -llua5.2 \
     -lGL \
@@ -228,7 +228,7 @@ linux {
     -lGLU \
     -lz \
     -lSDLmain \
-    -lSDL \
+    -lSDL
 }
 
 win32 {

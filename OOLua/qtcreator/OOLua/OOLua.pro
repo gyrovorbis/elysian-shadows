@@ -6,13 +6,13 @@ CONFIG -= qt
 CONFIG += c++11
 
 QMAKE_CXXFLAGS += -std=c++11 \
-	-fno-rtti \
-	-fno-exceptions
+  -fno-rtti \
+  -fno-exceptions
 
 #Required to get C++11x to work on OSX
 macx {
-	QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -stdlib=libc++
-	LIBS += -mmacosx-version-min=10.7 -stdlib=libc++
+  QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -stdlib=libc++
+  LIBS += -mmacosx-version-min=10.7 -stdlib=libc++
 }
 
 
