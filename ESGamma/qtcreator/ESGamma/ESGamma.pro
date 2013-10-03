@@ -220,7 +220,7 @@ macx {
 
 }
 
-unix {
+linux {
   LIBS += \
     -llua5.2 \
     -lGL \
