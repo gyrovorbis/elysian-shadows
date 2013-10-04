@@ -77,7 +77,7 @@
      <x>0</x>
      <y>0</y>
      <width>1024</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -125,11 +125,6 @@
     <property name="title">
      <string>View</string>
     </property>
-    <widget class="QMenu" name="menuType_Here">
-     <property name="title">
-      <string>Type Here</string>
-     </property>
-    </widget>
     <addaction name="actionAsset_View"/>
     <addaction name="actionLayer_View"/>
     <addaction name="actionSheet_View"/>
@@ -138,7 +133,6 @@
     <addaction name="separator"/>
     <addaction name="actionReset_Layout"/>
     <addaction name="separator"/>
-    <addaction name="menuType_Here"/>
    </widget>
    <widget class="QMenu" name="menuLevel">
     <property name="enabled">
