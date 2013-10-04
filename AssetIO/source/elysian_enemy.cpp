@@ -1,6 +1,7 @@
 #include "elysian_enemy.hpp"
 #include "elysian_entity.hpp"
 #include "elysian_area.hpp"
+#include "elysian_generic.hpp"
 
 namespace elysian {
 
@@ -28,13 +29,7 @@ bool Enemy::addToLevel(void) {
 }
 
 bool Enemy::removeFromLevel(void) {
-	for(unsigned int i = 0; i < _curArea->enemies.size(); ++i) {
-		if(_curArea->enemies[i] == this) {
-			_curArea->enemies.erase(_curArea->enemies.begin() + i);
-			return true;
-		}
-	}
-	return false;
+    return containerEraseOnMatch(this, _curArea->enemies);
 }
 
 }

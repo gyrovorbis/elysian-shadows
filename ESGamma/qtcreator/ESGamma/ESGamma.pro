@@ -107,7 +107,8 @@ HEADERS += \
     ../../../AssetIO/include/elysian_area.hpp \
     ../../../AssetIO/include/elysian_animation.hpp \
     ../../../AssetIO/include/elysian_audio_source.hpp \
-    ../../include/elysian_audio_system.hpp
+    ../../include/elysian_audio_system.hpp \
+    ../../../AssetIO/include/elysian_generic.hpp
 
 macx {
   OBJECTIVE_HEADERS += ../../../libGyro/lib/osx/SDLMain.h

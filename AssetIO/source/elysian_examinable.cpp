@@ -1,6 +1,7 @@
 #include "elysian_examinable.hpp"
 #include "elysian_entity.hpp"
 #include "elysian_area.hpp"
+#include "elysian_generic.hpp"
 
 namespace elysian {
 
@@ -23,16 +24,7 @@ namespace elysian {
 	}
 	
 	bool Examinable::removeFromLevel(void) {
-		for(auto it = _curArea->examinables.begin();
-			it != _curArea->examinables.end();
-			++it) 
-		{
-			if(*it == this) {
-				_curArea->examinables.erase(it);
-				return true;
-			}
-		}
-		return false;
+        containerEraseOnMatch(this, _curArea->examinables);
 	}
 
 	Examinable::TYPE Examinable::getType(void) const {

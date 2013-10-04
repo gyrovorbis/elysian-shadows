@@ -1,6 +1,7 @@
 #include "elysian_item.hpp"
 #include "elysian_entity.hpp"
 #include "elysian_area.hpp"
+#include "elysian_generic.hpp"
 
 namespace elysian {
 
@@ -29,13 +30,7 @@ bool Item::addToLevel() {
 }
 
 bool Item::removeFromLevel() {
-	for(unsigned int i = 0; i < _curArea->items.size(); ++i) {
-		if(_curArea->items[i] == this) {
-			_curArea->items.erase(_curArea->items.begin() + i);
-			return true;
-		}
-	}
-	return false;
+    return containerEraseOnMatch(this, _curArea->items);
 }
 
 }

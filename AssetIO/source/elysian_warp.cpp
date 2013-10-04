@@ -1,6 +1,7 @@
 #include "elysian_warp.hpp"
 #include "elysian_entity.hpp"
 #include "elysian_area.hpp"
+#include "elysian_generic.hpp"
 
 namespace elysian {
 
@@ -54,13 +55,14 @@ bool Warp::addToLevel(void) {
 
 //O(n)
 bool Warp::removeFromLevel(void) {
-	for(unsigned int i = 0; i < _curArea->warps.size(); ++i) {
-		if(_curArea->warps[i] == this) {
-			_curArea->warps.erase(_curArea->warps.begin() + i);
-			return true;
-		}
-	}
-	return false;
+    containerEraseOnMatch(this, _curArea->warps);
+    for(unsigned int i = 0; i < _curArea->warps.size(); ++i) {
+        if(_curArea->warps[i] == this) {
+            _curArea->warps.erase(_curArea->warps.begin() + i);
+            return true;
+        }
+    }
+    return false;
 }
 
 }

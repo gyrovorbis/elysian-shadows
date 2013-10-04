@@ -2,6 +2,7 @@
 #include "elysian_audio_source.hpp"
 #include "elysian_area.hpp"
 #include "elysian_entity.hpp"
+#include "elysian_generic.hpp"
 
 namespace elysian {
 
@@ -31,14 +32,6 @@ namespace elysian {
 
 	//O(n)
 	bool AudioSource::removeFromLevel(void) {
-		auto &comp = _curArea->audioSources;
-		auto it = std::find(comp.begin(), comp.end(), this);
-
-		if(it == comp.end()) {
-			return false;
-		} else {
-			comp.erase(it);
-			return true;
-		}
+        return containerEraseOnMatch(this, _curArea->audioSources);
 	}
 }

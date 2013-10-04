@@ -3,6 +3,7 @@
 #include "elysian_lua_behavior.hpp"
 #include "elysian_entity.hpp"
 #include "elysian_collidable.hpp"
+#include "elysian_generic.hpp"
 
 namespace elysian {
 
@@ -122,13 +123,7 @@ bool Behavior::addToLevel(void) {
 }
 
 bool Behavior::removeFromLevel(void) {
-	for(unsigned int i = 0; i < _curArea->behaviors.size(); ++i) {
-		if(_curArea->behaviors[i] == this) {
-			_curArea->behaviors.erase(_curArea->behaviors.begin() + i);
-			return true;
-		}
-	}
-	return false;
+    return containerEraseOnMatch(this, _curArea->behaviors);
 }
 
 

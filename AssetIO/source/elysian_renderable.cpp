@@ -1,5 +1,6 @@
 #include "elysian_renderable.hpp"
 #include "elysian_area.hpp"
+#include "elysian_generic.hpp"
 
 namespace elysian {
 
@@ -104,13 +105,7 @@ bool Renderable::addToLevel(void) {
 
 //O(n)
 bool Renderable::removeFromLevel(void) {
-	for(unsigned i = 0; i < _curArea->renderables.size(); ++i) {
-		if(_curArea->renderables[i] == this) {
-			_curArea->renderables.erase(_curArea->renderables.begin() + i);
-			return true;
-		}
-	}
-	return false;
+    return containerEraseOnMatch(this, _curArea->renderables);
 }
 
 }

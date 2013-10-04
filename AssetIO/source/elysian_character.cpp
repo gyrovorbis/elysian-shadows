@@ -2,6 +2,7 @@
 #include "elysian_entity.hpp"
 #include "elysian_area.hpp"
 #include "elysian_animation.hpp"
+#include "elysian_generic.hpp"
 
 namespace elysian {
 
@@ -28,13 +29,7 @@ bool Character::addToLevel(void) {
 
 //O(n)
 bool Character::removeFromLevel(void) {
-	for(unsigned int i = 0; i < _curArea->characters.size(); ++i) {
-		if(_curArea->characters[i] == this) {
-			_curArea->characters.erase(_curArea->characters.begin() + i);
-			return true;
-		}
-	}
-        return false;
+    return containerEraseOnMatch(this, _curArea->characters);
 }
 
 #ifdef ELYSIAN_ENGINE

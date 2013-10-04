@@ -4,6 +4,7 @@
 #include "elysian_area.hpp"
 #include "elysian_entity.hpp"
 #include "elysian_renderable.hpp"
+#include "elysian_generic.hpp"
 
 namespace elysian {
 
@@ -115,13 +116,7 @@ bool Animation::addToLevel(void) {
 
 //O(n)
 bool Animation::removeFromLevel(void) {
-        for(unsigned int i = 0; i < _curArea->animations.size(); ++i) {
-                if(_curArea->animations[i] == this) {
-                        _curArea->animations.erase(_curArea->animations.begin() + i);
-			return true;
-		}
-	}
-        return false;
+    return containerEraseOnMatch(this, _curArea->animations);
 }
 
 #ifdef ELYSIAN_ENGINE

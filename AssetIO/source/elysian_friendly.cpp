@@ -1,6 +1,7 @@
 #include "elysian_friendly.hpp"
 #include "elysian_entity.hpp"
 #include "elysian_area.hpp"
+#include "elysian_generic.hpp"
 
 namespace elysian {
 
@@ -28,13 +29,7 @@ bool Friendly::addToLevel(void) {
 }
 
 bool Friendly::removeFromLevel(void) {
-    for(unsigned int i = 0; i < _curArea->friendlies.size(); ++i) {
-		if(_curArea->friendlies[i] == this) {
-			_curArea->friendlies.erase(_curArea->friendlies.begin() + i);
-			return true;
-		}
-	}
-	return false;
+    return containerEraseOnMatch(this, _curArea->friendlies);
 }
 
 }

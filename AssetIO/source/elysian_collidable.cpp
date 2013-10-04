@@ -3,7 +3,7 @@
 #include "elysian_collidable.hpp"
 #include "elysian_area.hpp"
 #include "elysian_instance_transform.hpp"
-
+#include "elysian_generic.hpp"
 
 namespace elysian {
 
@@ -122,13 +122,7 @@ bool Collidable::addToLevel(void) {
 
 //O(n)
 bool Collidable::removeFromLevel(void) {
-	for(unsigned int i = 0; i < _curArea->collidables.size(); ++i) {
-		if(_curArea->collidables[i] == this) {
-			_curArea->collidables.erase(_curArea->collidables.begin() + i);
-			return true;
-		}
-	}
-        return false;
+    return containerEraseOnMatch(this, _curArea->collidables);
 }
 
 }
