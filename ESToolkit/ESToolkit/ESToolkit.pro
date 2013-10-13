@@ -237,9 +237,14 @@ macx {
 RESOURCES += resource/resource.qrc \
 
 win32 {
-	CONFIG(release, debug|release) {
-		DESTDIR = ../../Project
-	}
+	  CONFIG(release, debug|release) {
+		    DESTDIR = ../../Project
+	  }
 }
 
+linux {
+	  CONFIG(release, debug|release) {
+		    DESTDIR = ../../Project
+	  }
+}
 

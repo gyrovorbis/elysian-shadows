@@ -207,32 +207,39 @@ win32 {
 }
 
 macx {
-  LIBS += -L../../lib/osx \
-    -llua52 \
-    -framework OpenGL \
-    -framework OpenAL \
-        -lz \
-    -F../../../libGyro/lib/osx \
-    -framework Foundation \
-    -framework Cocoa \
-    -lobjc \
-    -framework SDL
+    LIBS += -L../../lib/osx \
+        -llua52 \
+        -framework OpenGL \
+        -framework OpenAL \
+            -lz \
+        -F../../../libGyro/lib/osx \
+        -framework Foundation \
+        -framework Cocoa \
+        -lobjc \
+        -framework SDL
 
 }
 
 linux {
-  LIBS += \
-    -llua5.2 \
-    -lGL \
-    -lopenal \
-    -lGLU \
-    -lz \
-    -lSDLmain \
-    -lSDL
+    LIBS += \
+        -llua5.2 \
+        -lGL \
+        -lopenal \
+        -lGLU \
+        -lz \
+        -lSDLmain \
+        -lSDL
 }
 
 win32 {
-  CONFIG(release, debug|release) {
-        DESTDIR = ../../../Project
-  }
+    CONFIG(release, debug|release) {
+          DESTDIR = ../../../Project
+    }
 }
+
+linux {
+    CONFIG(release, debug|release) {
+          DESTDIR = ../../../Project
+    }
+}
+
