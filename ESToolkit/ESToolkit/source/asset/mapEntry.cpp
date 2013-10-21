@@ -10,26 +10,26 @@ bool TileEntry::renderZTran		= false;
 
 void TileEntry::renderCollider(QPainter *const painter, const elysian::Tile::COLLIDER_TYPE collider) {
 	static const QColor fillColor(0, 0, 255, 80);
-    static const QPointF rTriSE[3] = {
-         QPointF(16.0f, -16.0f),
-         QPointF(16.0f, 16.0f),
-         QPointF(-16.0f, 16.0f)
-     };
-    static const QPointF rTriNE[3] = {
-         QPointF(-16.0f, -16.0f),
-         QPointF(16.0f, -16.0f),
-         QPointF(16.0f, 16.0f)
-     };
-    static const QPointF rTriNW[3] = {
-         QPointF(16.0f, -16.0f),
-         QPointF(-16.0f, -16.0f),
-         QPointF(-16.0f, 16.0f)
-     };
-    static const QPointF rTriSW[3] = {
-         QPointF(-16.0f, -16.0f),
-         QPointF(-16.0f, 16.0),
-         QPointF(16.0f, 16.0f)
-     };
+	static const QPointF rTriSE[3] = {
+		 QPointF(16.0f, -16.0f),
+		 QPointF(16.0f, 16.0f),
+		 QPointF(-16.0f, 16.0f)
+	 };
+	static const QPointF rTriNE[3] = {
+		 QPointF(-16.0f, -16.0f),
+		 QPointF(16.0f, -16.0f),
+		 QPointF(16.0f, 16.0f)
+	 };
+	static const QPointF rTriNW[3] = {
+		 QPointF(16.0f, -16.0f),
+		 QPointF(-16.0f, -16.0f),
+		 QPointF(-16.0f, 16.0f)
+	 };
+	static const QPointF rTriSW[3] = {
+		 QPointF(-16.0f, -16.0f),
+		 QPointF(-16.0f, 16.0),
+		 QPointF(16.0f, 16.0f)
+	 };
 
 	//_pushTileFlipRotXForm(painter, orient);
 
@@ -183,6 +183,10 @@ void TileEntry::renderDecoration(QPainter *const painter, const unsigned /*x*/, 
 		unsigned colorIndex = (yBase%16)+2;						//Use Qt's built in global colors, because I'm too lazy to make my own LUT.
 		if(colorIndex > 3 && colorIndex < 7) colorIndex += 4;  //Bump it off the lame ass, repetitive color region.
 		QColor color((Qt::GlobalColor)colorIndex);
+		/* Quick hack to fix conflict between collision and elevation layer colours. @todo Make this more efficent. */
+		if(color.blue() > 90) {
+			color.setBlue(90);
+		}
 		color.setAlpha(100);
 		painter->fillRect(rect, color);
 		painter->drawText(rect, Qt::AlignCenter, QString::number(elev));
