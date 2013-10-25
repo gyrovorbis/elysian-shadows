@@ -183,7 +183,7 @@ namespace elysian {
 	inline TileEntry::TileEntry(void) {}
 	inline TileEntry::TileEntry(const uint32_t val): MapEntry(val) {}
 	inline uint16_t TileEntry::getIndex(void) const { return ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, INDEX); }
-	inline void TileEntry::setIndex(const uint16_t i) {	ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, INDEX, i); }
+	inline void TileEntry::setIndex(const uint16_t i) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, INDEX, i); }
 	inline bool TileEntry::getZTran(void) const { return ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, ZTRAN); }
 	inline void TileEntry::setZTran(const bool z) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, ZTRAN, z); }
 

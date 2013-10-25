@@ -335,12 +335,12 @@ OOLUA_CLASS(AudioSource): public Proxy_class<Component>
 	OOLUA_TYPEDEFS_END
 	OOLUA_BASES_START Component OOLUA_BASES_END
 	OOLUA_MEM_FUNC_1(void, setWav, const GYWav*)
-	OOLUA_MEM_FUNC_1_CONST(void, playWav, const GYWav*)
-	OOLUA_MEM_FUNC_0_CONST(void, play)
-	OOLUA_MEM_FUNC_0_CONST(void, stop)
-	OOLUA_MEM_FUNC_1_CONST(void, setGain, float)
-	OOLUA_MEM_FUNC_1_CONST(void, setPitch, float)
-	OOLUA_MEM_FUNC_1_CONST(void, setLooping, bool)
+	OOLUA_MEM_FUNC_1(void, playWav, const GYWav*)
+	OOLUA_MEM_FUNC_0(void, play)
+	OOLUA_MEM_FUNC_0(void, stop)
+	OOLUA_MEM_FUNC_1(void, setGain, float)
+	OOLUA_MEM_FUNC_1(void, setPitch, float)
+	OOLUA_MEM_FUNC_1(void, setLooping, bool)
 OOLUA_CLASS_END
 
 OOLUA_CLASS(Behavior): public Proxy_class<Component>

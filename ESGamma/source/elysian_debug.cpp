@@ -108,7 +108,9 @@ void Debug::printf(const Debug::LEVEL level, const char *const string, ...) {
 
 //=====NONSTATIC MEMBERS=====
 
-Debug::Debug(void): _nextFrame(true) {
+Debug::Debug(void):
+	_nextFrame(true)
+{
     //Register debug callback with LibGyro
     gySysDebugEnable(ELYSIAN_DEBUG_LIBGYRO_LEVEL_DEFAULT, &libGyroPrintf);
     //Register pointer to asset debug interface with AssetIO
@@ -441,6 +443,15 @@ bool Debug::sandboxInit(void) {
     collid->setAttrib(colAttrib);
 #endif
 
+	getAudioSys()->loadBgmTrack(0, "audio/music/CaveLoop1.ogg");
+	getAudioSys()->loadBgmTrack(1, "audio/music/CaveLoop2.ogg");
+	getAudioSys()->loadAuxTrack(0, "audio/music/RainThunder.ogg");
+	getAudioSys()->playAuxTrack(0);
+	//getAudioSys()->setAuxTrackGain(0, 0.5f);
+	getAudioSys()->playBgmTrack();
+	getAudioSys()->setBgmTrackGain(0.5f);
+	getAudioSys()->setBgmTrackPitch(0.5f);
+
 	pop();
 	return true;
 }
@@ -528,14 +539,29 @@ void Debug::processInput(const GameInput& input) {
 
 	//VRAM and Audio Stats
 	if(input.getTapped(GameInput::BUT_Z)) {
-		gyVidTexWalkthrough();
+		//gyVidTexWalkthrough();
+		//getAudioSys()->morphIntoBgmTrack(1, 5.0f);
+		//getAudioSys()->fadeIntoBgmTrack(1, 5.0f);
+		//getAudioSys()->morphIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop2.ogg");
+		//getAudioSys()->fadeIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop2.ogg");
+		//getAudioSys()->fadeIntoNewAuxTrack(0, 5.0f, "audio/music/RainThunder.ogg");
+		//getAudioSys()->fadeInAuxTrack(0, 5.0f);
+		getAudioSys()->fadeIntoNewAuxTrack(0, 5.0f, "audio/music/RainThunder.ogg");
+		//getAudioSys()->playBgmTrack();
 	}
 	if(input.getTapped(GameInput::BUT_X)) {
-		gyAudWavWalkthrough();
+		//getAudioSys()->morphIntoBgmTrack(0, 5.0f);
+		//getAudioSys()->fadeIntoBgmTrack(0, 5.0f);
+		//getAudioSys()->stopBgmTrack();
+		//getAudioSys()->morphIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop1.ogg");
+		//getAudioSys()->fadeIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop1.ogg");
+		getAudioSys()->fadeOutAuxTrack(0, 5.0f);
+		//gyAudWavWalkthrough();
 	}
 
 	//Elevate player
 	if(input.getTapped(GameInput::BUT_Y)) {
+		getAudioSys()->fadeOutBgmTrack(5.0f);
 		Entity* leader = _engine->_partySystem->getPartyLeader();
 		if(leader) {
 			unsigned elev = leader->getElev();
@@ -546,6 +572,7 @@ void Debug::processInput(const GameInput& input) {
 	}
 	//Display players' tile position
 	if(input.getTapped(GameInput::BUT_M)) {
+		getAudioSys()->fadeInBgmTrack(5.0f);
 		Entity *player1 = _engine->_partySystem->getPartyLeader();
 		if(player1) {
 			printf(VERBOSE, "<%d, %d>\n",  ((int)player1->transform._pos.x+16)/32, ((int)player1->transform._pos.y+16)/32);

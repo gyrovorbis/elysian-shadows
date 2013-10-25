@@ -15,8 +15,6 @@ static ALCcontext *_alContext;
 //==== PUBLIC API IMPLEMENTATION =====
 
 int gyAudInit(void) {
-	//alutInit(0, 0);                                                      //And an OpenAL Context
-
 	_alDevice = alcOpenDevice(NULL);                                               //Open the device
 	if(!_alDevice) {
 		_gyLog(GY_DEBUG_CRITICAL, "! - Could not open OpenAL Device!");
@@ -33,28 +31,11 @@ int gyAudInit(void) {
 }
 
 int gyAudUninit(void) {
-	//alutExit();
-
 	alcMakeContextCurrent(NULL);
 	alcDestroyContext(_alContext);
 	alcCloseDevice(_alDevice);
     return 1;
 }
-
-int gyAudPlayOgg(const char *const filename) {
-    return 1;
-}
-
-
-int gyAudStopOgg(void) {
-    return 1;
-}
-
-
-void gyAudPlayWav(const struct _GYWav *const wav) {
-
-}
-
 
 void gyAudSetReferenceDistance(const int dist) {
 	_refDist = dist;
@@ -64,18 +45,49 @@ void gyAudSetZScale(const float scale) {
 	_zScale = scale;
 }
 
+static inline const char* _openALError(const int errorCode) {
+	switch (errorCode) {
+	case AL_NO_ERROR:
+		return "AL_NO_ERROR";
+	case AL_INVALID_NAME:
+		return "AL_INVALID_NAME";
+	case AL_INVALID_ENUM:
+		return "AL_INVALID_ENUM";
+	case AL_INVALID_VALUE:
+		return "AL_INVALID_VALUE";
+	case AL_INVALID_OPERATION:
+		return "AL_INVALID_OPERATION";
+	case AL_OUT_OF_MEMORY:
+		return "AL_OUT_OF_MEMORY";
+	default:
+		return "No such error code";
+	}
+}
+
+static inline int _checkALError(void) {
+	int error = alGetError();
+
+	if(error != AL_NO_ERROR) {
+		_gyLog(GY_DEBUG_CRITICAL, "! - OpenAL Error raised: %s", _openALError(error));
+		return 1;
+	}
+	return 0;
+}
 
 //audio source
 GYWavSource* gyAudSourceCreate(void) {
 	ALuint* src = malloc(sizeof(ALuint));
 	alGenSources(1, src);
 	alSourcei(*src, AL_REFERENCE_DISTANCE, _refDist);
+	_checkALError();
 	return src;
 }
 
 void gyAudSourceDestroy(GYWavSource*const src) {
+	int errorCode;
 	if(!src) return;
 	alDeleteSources(1, src);
+	_checkALError();
 	free(src);
 }
 
@@ -106,10 +118,33 @@ void gyAudSourceSetf(GYWavSource*const src, const GY_SOURCE_ATTRIB attrib, const
 	case GY_SOURCE_PITCH:
 		alIndex = AL_PITCH;
 		break;
+	case GY_SOURCE_ROLLOFF_FACTOR:
+		alIndex = AL_ROLLOFF_FACTOR;
+		break;
 	}
 
 	alSourcef(*src, alIndex, val);
 
+}
+
+float gyAudSourceGetf(GYWavSource*const src, const GY_SOURCE_ATTRIB attrib) {
+	int alIndex;
+	switch(attrib) {
+	case GY_SOURCE_GAIN:
+		alIndex = AL_GAIN;
+		break;
+	case GY_SOURCE_PITCH:
+		alIndex = AL_PITCH;
+		break;
+	case GY_SOURCE_ROLLOFF_FACTOR:
+		alIndex = AL_ROLLOFF_FACTOR;
+		break;
+	}
+
+	float value;
+
+	alGetSourcef(*src, alIndex, &value);
+	return value;
 }
 
 void gyAudSourceSeti(GYWavSource*const src, const GY_SOURCE_ATTRIB attrib, const int val) {
@@ -117,9 +152,23 @@ void gyAudSourceSeti(GYWavSource*const src, const GY_SOURCE_ATTRIB attrib, const
 	switch(attrib) {
 	case GY_SOURCE_LOOPING:
 		alIndex = AL_LOOPING;
+		break;
+	case GY_SOURCE_RELATIVE:
+		alIndex = AL_SOURCE_RELATIVE;
 	}
 
 	alSourcei(*src, alIndex, val);
+}
+
+void gyAudSourceStop(GYWavSource*const src) {
+	alSourceStop(*src);
+}
+
+int gyAudSourceIsPlaying(GYWavSource*const src) {
+	ALenum state;
+	alGetSourcei(*src, AL_SOURCE_STATE, &state);
+
+	return (state == AL_PLAYING);
 }
 
 typedef struct _GYAudWavPayload {
@@ -146,10 +195,11 @@ void gyAudListenerSetPos(const struct _GYVector3* const pos) {
 
 
 int _gyAudWavFree(GYWav *const wav) {
+	int errorCode;
 	GYAudWavPayload *payload = wav->_data;
 
 	alDeleteBuffers(1, &payload->buffer);
-
+	_checkALError();
 	free(payload);
 	return 1;
 }
@@ -202,6 +252,7 @@ static int _loadWavFile(const char* filename, ALuint* buffer, ALsizei* size,
 	_WAVE_RIFF_Header riff_header;
 	_WAVE_Data wave_data;
 	unsigned char* data;
+	int alErrorCode;
 
 	soundFile = fopen(filename, "rb");
 	if (!soundFile) {
@@ -284,8 +335,8 @@ static int _loadWavFile(const char* filename, ALuint* buffer, ALsizei* size,
 
 	//create our openAL buffer and check for success
 	alGenBuffers(1, buffer);
-	if(alGetError() != AL_NO_ERROR) {
-		_gyLog(GY_DEBUG_CRITICAL, "! - alGenBuffers() failure - %s", filename);
+	if((alErrorCode = alGetError()) != AL_NO_ERROR) {
+		_gyLog(GY_DEBUG_CRITICAL, "! - alGenBuffers() failure - %s", _openALError(alErrorCode));
 		fclose(soundFile);
 		return 0;
 	}
@@ -294,8 +345,8 @@ static int _loadWavFile(const char* filename, ALuint* buffer, ALsizei* size,
 	//check for success
 	alBufferData(*buffer, *format, (void*)data,
 				 *size, *frequency);
-	if(alGetError() != AL_NO_ERROR) {
-		_gyLog(GY_DEBUG_CRITICAL, "! - alBufferData() failure - %s", filename);
+	if((alErrorCode = alGetError()) != AL_NO_ERROR) {
+		_gyLog(GY_DEBUG_CRITICAL, "! - alBufferData() failure - %s", _openALError(alErrorCode));
 		fclose(soundFile);
 		return 0;
 	}
@@ -321,6 +372,215 @@ int _gyAudWavAlloc(GYWav *const wav) {
 	wav->_data = payload;
 	return 1;
 }
+
+#include <ogg/ogg.h>
+#include <vorbis/codec.h>
+#include <vorbis/vorbisenc.h>
+#include <vorbis/vorbisfile.h>
+
+#define GYRO_OGG_STREAM_BUFF_SIZE	(4096 * 20)
+#define GYRO_OGG_STREAM_BUFF_COUNT	2
+
+typedef struct _GYOggPayload {
+	ALuint			buffers[2];
+	FILE*           oggFile;
+	OggVorbis_File  oggStream;
+	vorbis_info*    vorbisInfo;
+	vorbis_comment* vorbisComment;
+	ALenum			format;
+} GYOggPayload;
+
+static inline const char* _vorbisErrorString(const int code) {
+	switch(code) {
+		case OV_EREAD:
+			return "Read from media";
+		case OV_ENOTVORBIS:
+			return "Not Vorbis data";
+		case OV_EVERSION:
+			return "Vorbis version mismatch";
+		case OV_EBADHEADER:
+			return "Invalid Vorbis header";
+		case OV_EFAULT:
+			return "Internal logic fault (bug or heap/stack corruption";
+		default:
+			return "Unknown Ogg error";
+	}
+}
+
+GYOgg* gyAudCreateOgg(const char*const path) {
+	int result;
+	int alErrorCode;
+
+	GYOgg* ogg = malloc(sizeof(GYOgg));
+	GYOggPayload* payload = ogg->_data = malloc(sizeof(GYOggPayload));
+
+	strcpy(ogg->path, path);
+	ogg->looping = 0;
+
+	if(!(payload->oggFile = fopen(path, "rb"))) {
+		_gyLog(GY_DEBUG_CRITICAL, "! - Could not open ogg file %s", path);
+		free(payload);
+		free(ogg);
+		return NULL;
+	}
+
+	if((result = ov_open(payload->oggFile, &payload->oggStream, NULL, 0)) < 0) {
+		_gyLog(GY_DEBUG_CRITICAL, "! - Could not open OGG stream: %s", _vorbisErrorString(result));
+		fclose(payload->oggFile);
+		free(payload);
+		free(ogg);
+		return NULL;
+	}
+
+	payload->vorbisInfo = ov_info(&payload->oggStream, -1);
+	payload->vorbisComment = ov_comment(&payload->oggStream, -1);
+
+	payload->format = (payload->vorbisInfo->channels == 1)?
+		AL_FORMAT_MONO16 : AL_FORMAT_STEREO16;
+
+	alGenBuffers(2, payload->buffers);
+	if((alErrorCode = alGetError()) != AL_NO_ERROR) {
+		_gyLog(GY_DEBUG_CRITICAL, "! - Could not generate OpenAL buffers for OGG stream: %s", _openALError(alErrorCode));
+	}
+
+	printf("Version - %d\n", payload->vorbisInfo->version);
+	printf("Channels - %d\n", payload->vorbisInfo->channels);
+	printf("Rate (hz) - %ld\n", payload->vorbisInfo->rate);
+	printf("bitrate upper - %ld\n", payload->vorbisInfo->bitrate_upper);
+	printf("bitrate nominal - %ld\n", payload->vorbisInfo->bitrate_nominal);
+	printf("bitrate lower - %ld\n", payload->vorbisInfo->bitrate_lower);
+	printf("bitrate window - %ld\n", payload->vorbisInfo->bitrate_window);
+	return ogg;
+}
+
+
+void gyAudDestroyOgg(GYOgg*const ogg) {
+	GYOggPayload* payload = ogg->_data;
+	int errorCode;
+
+	//Homeboy only deleted one, but I think that's a memory leak!
+	alDeleteBuffers(2, payload->buffers);
+	if((errorCode = alGetError()) != AL_NO_ERROR) {
+		_gyLog(GY_DEBUG_CRITICAL, "! - Could not delete OpenAL buffers from OGG stream: %s", _openALError(errorCode));
+	}
+
+	ov_clear(&payload->oggStream);
+
+	free(payload);
+	free(ogg);
+
+}
+
+// Streams data from open OGG file into given buffer
+static inline int _streamOgg(const ALuint buffer, GYOgg*const ogg) {
+	char pcm[GYRO_OGG_STREAM_BUFF_SIZE];
+	int  size = 0;
+	int  section;
+	int  result;
+	GYOggPayload* payload = ogg->_data;
+
+	while(size < GYRO_OGG_STREAM_BUFF_SIZE)
+	{
+		result = ov_read(&payload->oggStream, pcm + size, GYRO_OGG_STREAM_BUFF_SIZE - size, 0, 2, 1, &section);
+
+		if(result > 0) {
+			size += result;
+		} else {
+			if(result < 0) {
+				_gyLog(GY_DEBUG_CRITICAL, "! - Error streaming OGG file: %s", _vorbisErrorString(result));
+				return 0;
+			 } else {
+				if(ogg->looping)
+					ov_pcm_seek(&payload->oggStream, 0);
+				else
+					break;
+			}
+		}
+	}
+
+	if(size != 0) {
+		int errorCode;
+		alBufferData(buffer, payload->format, pcm, size, payload->vorbisInfo->rate);
+		_checkALError();
+		return 1;
+	}
+
+	return 0;
+}
+
+void gyAudSourcePlayOgg(GYWavSource*const src, const struct _GYOgg*const ogg) {
+	GYOggPayload* payload = ogg->_data;
+
+	if(gyAudSourceIsPlaying(src))
+		return;
+
+	if(!_streamOgg(payload->buffers[0], ogg))
+		return;
+
+	if(!_streamOgg(payload->buffers[1], ogg))
+		return;
+
+	alSourceQueueBuffers(*src, 2, payload->buffers);
+	alSourcePlay(*src);
+	_checkALError();
+}
+
+void gyAudPauseOggStream(GYWavSource*const src, GYOgg*const ogg) {
+	int queued;
+
+	alSourceStop(*src);
+	alGetSourcei(*src, AL_BUFFERS_QUEUED, &queued);
+
+	while(queued--) {
+		ALuint buffer;
+
+		alSourceUnqueueBuffers(*src, 1, &buffer);
+		_checkALError();
+	}
+}
+
+void gyAudStopOggStream(GYWavSource*const src, GYOgg*const ogg) {
+	gyAudPauseOggStream(src, ogg);
+	GYOggPayload* payload = ogg->_data;
+	ov_pcm_seek(&payload->oggStream, 0);
+}
+
+//I think this can be invoked even when an OGG is not currently streaming or is done?
+void gyAudOggUpdate(GYWavSource* const src, struct _GYOgg* const ogg) {
+	int processed;
+	int errorCode;
+	double time;
+
+	alGetSourcei(*src, AL_BUFFERS_PROCESSED, &processed);
+	_checkALError();
+
+	while(processed--) {
+		ALuint buffer;
+
+		alSourceUnqueueBuffers(*src, 1, &buffer);
+		if(!_streamOgg(buffer, ogg)) break;
+
+		alSourceQueueBuffers(*src, 1, &buffer);
+		_checkALError();
+	}
+
+}
+
+
+void gyAudOggSync(GYOgg*const ogg1, GYOgg*const ogg2) {
+	GYOggPayload* payload1 = ogg1->_data;
+	GYOggPayload* payload2 = ogg2->_data;
+	double time;
+
+	time = ov_time_tell(&payload1->oggStream);
+	ov_time_seek_lap(&payload2->oggStream, time);
+
+}
+
+void gyAudOggSetLooping(GYOgg*const ogg, const unsigned looping) {
+	ogg->looping = looping;
+}
+
 
 
 

@@ -246,7 +246,7 @@ void gyVidTexWalkthrough(void) {
         gyPrintf("%d) %s\n", count, tex->filename);
         gyPrintf("\tbpp - %d, palette - %d\n", tex->bpp, tex->palette);
         gyPrintf("\tSheet size - %dx%d\n", tex->_coord->sheetWidth, tex->_coord->sheetHeight);
-        gyPrintf("\tSprite size - %dx%d", tex->_coord->spriteWidth, tex->_coord->spriteHeight);
+		gyPrintf("\tSprite size - %dx%d\n", tex->_coord->spriteWidth, tex->_coord->spriteHeight);
         gyPrintf("\t_refCount - %d\n", entry->_refCount);
         ++count;
     }

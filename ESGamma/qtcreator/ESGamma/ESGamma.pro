@@ -30,7 +30,8 @@ win32 {
 }
 
 macx {
-  INCLUDEPATH += ../../../libGyro/lib/osx/SDL.framework/Headers
+	INCLUDEPATH += ../../../libGyro/lib/osx
+	INCLUDEPATH += ../../../libGyro/lib/osx/SDL.framework/Headers
 }
 
 DEPENDPATH += ../../include \
@@ -213,11 +214,15 @@ macx {
     -framework OpenAL \
         -lz \
     -F../../../libGyro/lib/osx \
+	-L../../../libGyro/lib/osx \
     -framework Foundation \
     -framework Cocoa \
     -lobjc \
-    -framework SDL
-
+	-framework SDL \
+	-logg \
+	-lvorbis \
+	-lvorbisenc \
+	-lvorbisfile
 }
 
 linux {

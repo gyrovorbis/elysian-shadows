@@ -207,15 +207,15 @@ EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(Warp,
 								   setChangeLevel)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(Warp)
 
- EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(AudioSource,
-									 setWav)
- EXPORT_OOLUA_FUNCTIONS_6_CONST(AudioSource,
+ EXPORT_OOLUA_FUNCTIONS_7_NON_CONST(AudioSource,
+									 setWav,
 									 playWav,
 									 play,
 									 stop,
 									 setGain,
 									 setPitch,
 									 setLooping)
+EXPORT_OOLUA_FUNCTIONS_0_CONST(AudioSource)
 
 EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(Behavior,
 								   addTrigger,
