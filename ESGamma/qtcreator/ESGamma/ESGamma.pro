@@ -203,7 +203,14 @@ win32 {
         -lz.dll \
         -lmingw32 \
         -lSDLmain \
-        -lSDL.dll \
+		-lSDL.dll \
+		-logg \
+		-lvorbis \
+		#-lvorbis.dll \
+		-lvorbisenc \
+		#-lvorbisenc.dll \
+		-lvorbisfile \
+		#-lvorbisfile.dll \
         -mconsole
 }
 

@@ -443,14 +443,14 @@ bool Debug::sandboxInit(void) {
     collid->setAttrib(colAttrib);
 #endif
 
-	getAudioSys()->loadBgmTrack(0, "audio/music/CaveLoop1.ogg");
-	getAudioSys()->loadBgmTrack(1, "audio/music/CaveLoop2.ogg");
+    //getAudioSys()->loadBgmTrack(0, "audio/music/CaveLoop1.ogg");
+    //getAudioSys()->loadBgmTrack(1, "audio/music/CaveLoop2.ogg");
 	getAudioSys()->loadAuxTrack(0, "audio/music/RainThunder.ogg");
 	getAudioSys()->playAuxTrack(0);
 	//getAudioSys()->setAuxTrackGain(0, 0.5f);
-	getAudioSys()->playBgmTrack();
+    //getAudioSys()->playBgmTrack();
 	getAudioSys()->setBgmTrackGain(0.5f);
-	getAudioSys()->setBgmTrackPitch(0.5f);
+    //getAudioSys()->setBgmTrackPitch(0.5f);
 
 	pop();
 	return true;
@@ -542,20 +542,20 @@ void Debug::processInput(const GameInput& input) {
 		//gyVidTexWalkthrough();
 		//getAudioSys()->morphIntoBgmTrack(1, 5.0f);
 		//getAudioSys()->fadeIntoBgmTrack(1, 5.0f);
-		//getAudioSys()->morphIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop2.ogg");
+        getAudioSys()->morphIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop2.ogg");
 		//getAudioSys()->fadeIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop2.ogg");
 		//getAudioSys()->fadeIntoNewAuxTrack(0, 5.0f, "audio/music/RainThunder.ogg");
 		//getAudioSys()->fadeInAuxTrack(0, 5.0f);
-		getAudioSys()->fadeIntoNewAuxTrack(0, 5.0f, "audio/music/RainThunder.ogg");
+        //getAudioSys()->fadeIntoNewAuxTrack(0, 5.0f, "audio/music/RainThunder.ogg");
 		//getAudioSys()->playBgmTrack();
 	}
 	if(input.getTapped(GameInput::BUT_X)) {
 		//getAudioSys()->morphIntoBgmTrack(0, 5.0f);
 		//getAudioSys()->fadeIntoBgmTrack(0, 5.0f);
 		//getAudioSys()->stopBgmTrack();
-		//getAudioSys()->morphIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop1.ogg");
+        getAudioSys()->morphIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop1.ogg");
 		//getAudioSys()->fadeIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop1.ogg");
-		getAudioSys()->fadeOutAuxTrack(0, 5.0f);
+        //getAudioSys()->fadeOutAuxTrack(0, 5.0f);
 		//gyAudWavWalkthrough();
 	}
 
