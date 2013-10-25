@@ -226,14 +226,14 @@ macx {
 }
 
 linux {
-  LIBS += \
-    -llua5.2 \
-    -lGL \
-    -lopenal \
-    -lGLU \
-    -lz \
-    -lSDLmain \
-    -lSDL
+    LIBS += \
+        -llua5.2 \
+        -lGL \
+        -lopenal \
+        -lGLU \
+        -lz \
+        -lSDLmain \
+        -lSDL
 }
 
 win32 {
@@ -241,3 +241,10 @@ win32 {
         DESTDIR = ../../../Project
   }
 }
+
+linux {
+    CONFIG(release, debug|release) {
+          DESTDIR = ../../../Project
+    }
+}
+
