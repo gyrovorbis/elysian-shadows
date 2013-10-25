@@ -13,6 +13,7 @@ win32 {
 }
 
 macx {
+	INCLUDEPATH += ../../../libGyro/lib/osx
 	INCLUDEPATH += ../../lib/osx/SDL.framework/Headers
 }
 
