@@ -313,17 +313,14 @@ namespace elysian {
 	}
 
 	void AudioSystem::setSfxChannelPos(const unsigned channel, const GYVector3 &pos) const {
-		gyAudSourceSetf(_channels[channel].src, GY_SOURCE_ROLLOFF_FACTOR, 1.0f);
-		gyAudSourceSeti(_channels[channel].src, GY_SOURCE_RELATIVE, 1);
+        //gyAudSourceSetf(_channels[channel].src, GY_SOURCE_ROLLOFF_FACTOR, 1.0f);
+        //gyAudSourceSeti(_channels[channel].src, GY_SOURCE_RELATIVE, 1);
 		gyAudSourceSetfv(_channels[channel].src, GY_SOURCE_POS, &pos);
 	}
 
-	void AudioSystem::setSfxChannelNoPos(const unsigned channel) const {
-		GYVector3 pos = { 0.0f, 0.0f, 0.0f };
-		gyAudSourceSetf(_channels[channel].src, GY_SOURCE_ROLLOFF_FACTOR, 0.0f);
-		gyAudSourceSeti(_channels[channel].src, GY_SOURCE_RELATIVE, 1);
-		gyAudSourceSetfv(_channels[channel].src, GY_SOURCE_POS, &pos);
-	}
+    void AudioSystem::setSfxChannelRolloffFactor(const unsigned channel, const float val) const {
+        gyAudSourceSetf(_channels[channel].src, GY_SOURCE_ROLLOFF_FACTOR, val);
+    }
 
 	//======= BGM OGG API ========
 
@@ -659,7 +656,6 @@ namespace elysian {
 			gyAudSourceSetf(_streamChannels[StreamChannel::Type::AUX_2_TRAN].src, GY_SOURCE_ROLLOFF_FACTOR, val);
 		}
 	}
-
 
 
 }

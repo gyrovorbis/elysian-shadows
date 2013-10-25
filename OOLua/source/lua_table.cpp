@@ -5,20 +5,20 @@
 
 namespace OOLUA
 {
-	Lua_table::Lua_table()
+	Table::Table()
 	{}
-	Lua_table::Lua_table(Lua_table_ref const& ref)
+	Table::Table(Lua_table_ref const& ref)
 		:m_table_ref(ref)
 	{}
-	Lua_table::Lua_table(lua_State*  const lua,std::string const& name)
+	Table::Table(lua_State*  const lua,std::string const& name)
 		:m_table_ref(lua)
 	{
 		set_table(name);
 	}
-	Lua_table::Lua_table(Lua_table const& rhs)
+	Table::Table(Table const& rhs)
 		:m_table_ref(rhs.m_table_ref)
 	{}
-	void Lua_table::bind_script(lua_State*  const lua)
+	void Table::bind_script(lua_State*  const lua)
 	{
 		if(m_table_ref.m_lua == lua)return;
 		if(m_table_ref.valid() )
@@ -29,7 +29,7 @@ namespace OOLUA
 		else m_table_ref.m_lua = lua;
 
 	}
-	void Lua_table::set_table(std::string const& name)
+	void Table::set_table(std::string const& name)
 	{ 
 		if(name.empty())
 		{
@@ -54,7 +54,7 @@ namespace OOLUA
 		}
 		set_ref( m_table_ref.m_lua, luaL_ref(m_table_ref.m_lua, LUA_REGISTRYINDEX) );
 	}
-	bool Lua_table::valid()const
+	bool Table::valid()const
 	{ 
 		int const init_stack_top = initial_stack_size();
 		bool result = get_table();
@@ -62,13 +62,13 @@ namespace OOLUA
 		return result;
 	}
 
-	void Lua_table::set_ref(lua_State* const lua,int const& ref)
+	void Table::set_ref(lua_State* const lua,int const& ref)
 	{
 		m_table_ref.set_ref(lua,ref);
 	}
 
 	
-	bool Lua_table::get_table()const
+	bool Table::get_table()const
 	{
 		bool result(false);
 		if( !m_table_ref.valid() )return result;
@@ -76,19 +76,23 @@ namespace OOLUA
 		return  lua_type(m_table_ref.m_lua, -1) == LUA_TTABLE;
 	}
 
-	bool Lua_table::push_on_stack(lua_State* l)const
+	bool Table::push_on_stack(lua_State* l)const
 	{
 		return m_table_ref.push(l);
 	}
-	bool Lua_table::pull_from_stack(lua_State* l)
+	bool Table::pull_from_stack(lua_State* l)
 	{
 		return m_table_ref.pull(l);
 	}
-	void Lua_table::lua_pull_from_stack(lua_State* l)
+	void Table::lua_pull_from_stack(lua_State* l)
 	{
 		m_table_ref.lua_pull(l);
 	}
-	void Lua_table::restore_stack(int const & init_stack_size)const
+	void Table::lua_get(lua_State* l,int idx)
+	{
+		m_table_ref.lua_get(l,idx);
+	}
+	void Table::restore_stack(int const & init_stack_size)const
 	{
 		//ok now we need to clean up the stack if there are left overs
 		if(!m_table_ref.m_lua)return;
@@ -98,13 +102,13 @@ namespace OOLUA
 			lua_pop(m_table_ref.m_lua,end_stack_size - init_stack_size);
 		}
 	}
-	int Lua_table::initial_stack_size()const
+	int Table::initial_stack_size()const
 	{
 		return (!m_table_ref.m_lua)? 0 : lua_gettop(m_table_ref.m_lua);
 	}
-	void Lua_table::traverse(Lua_table::traverse_do_function do_)
+	void Table::traverse(Table::traverse_do_function do_)
 	{
-		Lua_table& t = *this;
+		Table& t = *this;
 		oolua_pairs(t)
 		{
 			(*do_)(lvm);
@@ -112,20 +116,20 @@ namespace OOLUA
 		}
 		oolua_pairs_end()
 	}
-	void Lua_table::swap(Lua_table & rhs)
+	void Table::swap(Table & rhs)
 	{
 		m_table_ref.swap(rhs.m_table_ref);
 	}
 
-	void new_table(lua_State* l,Lua_table& t)
+	void new_table(lua_State* l,Table& t)
 	{
 		new_table(l).swap(t);
 	}
 	
-	Lua_table new_table(lua_State* l)
+	Table new_table(lua_State* l)
 	{
 		lua_newtable(l);
-		Lua_table t;
+		Table t;
 		t.pull_from_stack(l);
 		return t;
 	}

@@ -9,6 +9,7 @@
 namespace OOLUA
 {
 
+	/** \cond INTERNAL*/
 	template<typename T>
 	void register_class(lua_State* l);
 	
@@ -16,7 +17,7 @@ namespace OOLUA
 	{
 
 		template<typename T>
-		bool stack_top_type_is_base(lua_State* const l
+		void stack_top_type_is_base(lua_State* const l
 								   ,Lua_ud* requested_ud
 								   ,int const& userdata_index);
 		
@@ -35,37 +36,36 @@ namespace OOLUA
 		template<typename ProxyStackType,typename BaseType,int DoWork = 1>
 		struct CastToRequestedProxyType
 		{
-			static void cast(lua_State* const l,int const& userdata_index)
+			static void* cast(lua_State* const l,int const& userdata_index)
 			{
 				//get the userdata
-				Lua_ud* ud = static_cast<Lua_ud*>( lua_touserdata(l, userdata_index) );
 				//cast the class void ptr from the stack to the stacktype
 				//then to base type to get correct offset
-				BaseType* baseptr = static_cast<typename ProxyStackType::class_* > ( ud->void_class_ptr );
-				//push class pointer of requested type onto stack
-				lua_pushlightuserdata(l,baseptr);
+				return static_cast<BaseType*>(
+							static_cast<typename ProxyStackType::class_* > ( 
+										( static_cast<Lua_ud*>( lua_touserdata(l, userdata_index) ) )->void_class_ptr
+																			)
+											  );
 			}
 		};
 		template<typename ProxyStackType,typename BaseType>
 		struct CastToRequestedProxyType<ProxyStackType,BaseType,0>
 		{
-			static void cast(lua_State* const /*l*/,int const& /*userdata_index*/)//noop
-			{}
+			static void* cast(lua_State* const /*l*/,int const& /*userdata_index*/)
+			{return (void*)0;}
 		};
 
 		template<typename ProxyStackType,typename Bases, int BaseIndex,typename BaseType>
 		struct Is_a_base
 		{
-			void operator()(lua_State * const l,int const& userdata_index,Lua_ud* requested_ud,bool & result)
+			void operator()(lua_State * const l,int const& userdata_index,Lua_ud* requested_ud)
 			{
-				if(result) return;
 				//is this a base
 				if( ud_is_type<BaseType>(requested_ud) )
 				{
-					result = true;
-					CastToRequestedProxyType<ProxyStackType,BaseType,1>::cast(l,userdata_index);
+					requested_ud->void_class_ptr = CastToRequestedProxyType<ProxyStackType,BaseType,1>::cast(l,userdata_index);
+					return;
 				}
-				if(result) return;
 				//check the next in the type list
 				Is_a_base<
 					ProxyStackType
@@ -73,7 +73,7 @@ namespace OOLUA
 					,BaseIndex + 1
 					,typename TYPELIST::At_default< Bases, BaseIndex + 1, TYPE::Null_type >::Result
 				> nextIsBase;
-				nextIsBase(l,userdata_index,requested_ud,result);
+				nextIsBase(l,userdata_index,requested_ud);
 			}
 		};
 		template<typename ProxyStackType,typename Bases, int BaseIndex>
@@ -81,14 +81,13 @@ namespace OOLUA
 		{
 			void operator()(lua_State * const /*l*/
 							,int const& /*userdata_index*/
-							,INTERNAL::Lua_ud* /*requested_ud*/
-							,bool & /*result*/)
+							,INTERNAL::Lua_ud* /*requested_ud*/)
 			{}//noop
 		};
 
 
 		template<typename T>
-		inline bool stack_top_type_is_base(lua_State* const l
+		inline void stack_top_type_is_base(lua_State* const l
 										  ,Lua_ud* requested_ud
 										  ,int const& userdata_index)
 		{
@@ -98,9 +97,7 @@ namespace OOLUA
 					,0
 					,typename TYPELIST::At_default< typename OOLUA::Proxy_class<T>::AllBases,0,TYPE::Null_type >::Result
 				> checkBases;
-			bool result(false);
-			checkBases(l,userdata_index,requested_ud,result);
-			return result;
+			checkBases(l,userdata_index,requested_ud);
 		}
 		
 		template<typename T>
@@ -110,5 +107,7 @@ namespace OOLUA
 			return ud->type_check ==  static_cast<oolua_type_check_function>(&OOLUA::register_class<T>);
 		}
 	}
+	
+	/** \endcond */
 }
 #endif

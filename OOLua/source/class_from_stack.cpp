@@ -39,13 +39,7 @@ namespace OOLUA
 #	endif
 
 #endif
-
-
-		bool is_requested_type_a_base(lua_State* l,Lua_ud const* stack_ud,Lua_ud* requested_ud,int const& userdata_index)
-		{
-			return stack_ud->base_checker(l,requested_ud,userdata_index);
-		}
-		
+	
 		void report_error_userdata_is_constant(lua_State* const l, char const* pulling_class_type)
 		{
 			luaL_error (l, "%s \"%s\" %s", "Tried to pull a none constant"

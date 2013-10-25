@@ -9,6 +9,9 @@
 
 namespace OOLUA
 {
+	
+	/** \cond INTERNAL */
+	
 	namespace INTERNAL
 	{
 		
@@ -76,6 +79,7 @@ MSC_POP_COMPILER_WARNING_OOLUA
 			}
 		};
 	}
+	/** \endcond */
 }
 
 #endif

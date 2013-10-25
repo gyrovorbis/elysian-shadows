@@ -3,9 +3,7 @@
 ///  Header for the types used.
 ///
 ///  @author Liam Devine
-///  @email
-///  See http://www.liamdevine.co.uk for contact details.
-///  @licence
+///  \copyright
 ///  See licence.txt for more details. \n 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -14,6 +12,8 @@
 
 #	include "platform_check.h"
 #	include "type_list.h"
+
+/** \cond INTERNAL*/
 
 #	if ( defined (WINDOWS_BUILD) )
 #		ifdef __GNUC__
@@ -175,5 +175,6 @@ namespace LVD
 
 }//end of TYPE
 
+/** \endcond*/
 
 #endif//BASIC_TYPES_H_

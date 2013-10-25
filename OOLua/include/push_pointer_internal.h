@@ -10,7 +10,7 @@ struct lua_State;
 
 namespace OOLUA
 {
-
+	/** \cond INTERNAL*/
 	namespace INTERNAL
 	{
 		template<typename Raw,typename TypeMaybeConst>
@@ -24,12 +24,12 @@ namespace OOLUA
 		{
 			if_check_enabled_check_type_is_registered(l,Proxy_class<Raw>::class_name);
 			Lua_ud* ud( find_ud(l,(Raw*)ptr,(bool)LVD::is_const<TypeMaybeConst>::value) );
-			if(! ud ) ud = add_ptr(l,(Raw*)ptr,(bool)LVD::is_const<TypeMaybeConst>::value);
-			
-			set_owner_if_change(owner,ud);
+			if(! ud ) ud = add_ptr(l,(Raw*)ptr,(bool)LVD::is_const<TypeMaybeConst>::value,owner);
+			else set_owner_if_change(owner,ud);
 		}
 		
 	}
+	/**\endcond*/
 }
 
 #endif

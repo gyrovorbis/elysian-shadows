@@ -5,11 +5,12 @@
 ///  @file typelist_structs.h
 ///  @remarks This file was auto generated
 ///  @author Liam Devine
-///  @email
-///  See http://www.liamdevine.co.uk for contact details.
-///  @licence 
+///  \copyright 
 ///  See licence.txt for more details. \n 
 ///////////////////////////////////////////////////////////////////////////////
+
+/** \cond INTERNAL*/
+
 namespace TYPE
 {
 	struct Null_type{};
@@ -63,5 +64,6 @@ struct Type_list<>
 	typedef TYPE::Null_type type;
 };
 
+/**\endcond*/
 
 #endif//TYPELIST_STRUCTS_H_

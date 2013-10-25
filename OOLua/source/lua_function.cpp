@@ -117,6 +117,7 @@ namespace OOLUA
 		if( ! lua_checkstack(lvm, (count)) )throw OOLUA::Runtime_error("unable to grow the stack")
 #	elif OOLUA_STORE_LAST_ERROR == 1
 #		define OOLUA_CHECK_STACK_IF_ENABLED(lvm,count) \
+		MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA \
 		if( ! lua_checkstack(lvm, (count)) ) \
 		do \
 		{ \
@@ -127,7 +128,8 @@ namespace OOLUA
 			} \
 			/*else cant even grow the stack to add the error*/ \
 			return false; \
-		}while(0)
+		}while(0) \
+		MSC_POP_COMPILER_WARNING_OOLUA
 #	endif
 #elif OOLUA_DEBUG_CHECKS == 1
 #	define OOLUA_CHECK_STACK_IF_ENABLED(lvm,count) \

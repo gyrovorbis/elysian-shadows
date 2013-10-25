@@ -77,7 +77,9 @@ LuaScript *LuaManager::loadScript(const char *const file, bool save) {
 		ref = luaL_ref(*_mainState,	LUA_REGISTRYINDEX);	//store reference to ENV in Lua registry 
 		if(script) script->setEnvironRef(ref);		//and save key in LuaScript
 		lua_setupvalue(*_mainState, 1, 1);			//loadfile.upvalue1 = ENV
+        Debug::printf(Debug::VERBOSE, "BEFORE PROTECTEDCALL");
 		_protectedCall(0, 0, script);
+        Debug::printf(Debug::VERBOSE, "AFTER PROTECTEDCALL");
 	}
 
 	if(script) {
