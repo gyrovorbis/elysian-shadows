@@ -224,7 +224,7 @@ EXPORT_OOLUA_FUNCTIONS_1_CONST(Behavior,
 								getBehavName)
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(LuaBehavior)//,
-                                  // getDataTable)
+								  // getDataTable)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(LuaBehavior)
 
 EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(Tile,

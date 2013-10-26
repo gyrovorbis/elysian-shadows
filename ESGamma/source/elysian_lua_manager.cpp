@@ -42,6 +42,36 @@ bool LuaManager::runString(const char *const string) {
 	}
 	return true;
 }
+
+static void stackDump (lua_State *L) {
+	int i;
+	int top = lua_gettop(L);
+	for (i = 1; i <= top; i++) {  /* repeat for each level */
+	  int t = lua_type(L, i);
+	  switch (t) {
+
+		case LUA_TSTRING:  /* strings */
+		  Debug::printf(Debug::VERBOSE, "`%s'", lua_tostring(L, i));
+		  break;
+
+		case LUA_TBOOLEAN:  /* booleans */
+		  Debug::printf(Debug::VERBOSE, lua_toboolean(L, i) ? "true" : "false");
+		  break;
+
+		case LUA_TNUMBER:  /* numbers */
+		  Debug::printf(Debug::VERBOSE, "%g", lua_tonumber(L, i));
+		  break;
+
+		default:  /* other values */
+		 Debug::printf(Debug::VERBOSE, "%s", lua_typename(L, t));
+		  break;
+
+	  }
+	  Debug::printf(Debug::VERBOSE, "  ");  /* put a separator */
+	}
+	Debug::printf(Debug::VERBOSE, "\n");  /* end the listing */
+  }
+
 	
 	
 LuaScript *LuaManager::loadScript(const char *const file, bool save) {
@@ -76,10 +106,11 @@ LuaScript *LuaManager::loadScript(const char *const file, bool save) {
 		lua_pushvalue(*_mainState, -1);				//duplicate ENV
 		ref = luaL_ref(*_mainState,	LUA_REGISTRYINDEX);	//store reference to ENV in Lua registry 
 		if(script) script->setEnvironRef(ref);		//and save key in LuaScript
-		lua_setupvalue(*_mainState, 1, 1);			//loadfile.upvalue1 = ENV
+		Debug::printf(Debug::VERBOSE, "UPVAL - %s\n", lua_setupvalue(*_mainState, -2, 1));			//loadfile.upvalue1 = ENV
         Debug::printf(Debug::VERBOSE, "BEFORE PROTECTEDCALL");
 		_protectedCall(0, 0, script);
         Debug::printf(Debug::VERBOSE, "AFTER PROTECTEDCALL");
+		//stackDump(*_mainState);
 	}
 
 	if(script) {

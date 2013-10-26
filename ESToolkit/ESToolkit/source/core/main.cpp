@@ -33,7 +33,6 @@ RType _callFunction(const char* funcName, PTypes... parameters) {
     }(parameters...);
 }
 
-
 int main(int argc, char *argv[]) {
     QRectF rect;
     rect.setSize(QSizeF(2.0f, 5.0f));

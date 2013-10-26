@@ -317,7 +317,7 @@ OOLUA_PROXY(LuaBehavior, Behavior)
         No_public_constructors,
         No_public_destructor
     )
-    //OOLUA_MEM_FUNC(Lua_table_ref&, getDataTable)
+	//OOLUA_MEM_FUNC(Lua_table_ref&, getDataTable)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Tile)

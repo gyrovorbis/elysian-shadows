@@ -625,7 +625,7 @@ for parameters contain as part of their name "out", "in" or a combination.
 		};
 
 //============OOLUA MOD=======================
-
+/*
         template<int ID>
         struct function_return<Lua_ref<ID>& >
         {
@@ -637,7 +637,7 @@ for parameters contain as part of their name "out", "in" or a combination.
                 enum { owner = No_change};
                 enum { is_by_value = 0 };
                 enum { is_constant = 0 };
-                enum { is_integral = 1 };
+				enum { is_integral = 0 };
             };
 
         template<int ID>
@@ -651,8 +651,8 @@ for parameters contain as part of their name "out", "in" or a combination.
                 enum { owner = No_change};
                 enum { is_by_value = 0 };
                 enum { is_constant = 1 };
-                enum { is_integral = 1 };
-         };
+				enum { is_integral = 0 };
+		 };*/
 
 //=============/OOLUA MOD===================
 
