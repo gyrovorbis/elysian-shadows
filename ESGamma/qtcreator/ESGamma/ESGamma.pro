@@ -30,7 +30,8 @@ win32 {
 }
 
 macx {
-  INCLUDEPATH += ../../../libGyro/lib/osx/SDL.framework/Headers
+    INCLUDEPATH += ../../../libGyro/lib/osx
+    INCLUDEPATH += ../../../libGyro/lib/osx/SDL.framework/Headers
 }
 
 DEPENDPATH += ../../include \
@@ -204,6 +205,13 @@ win32 {
         -lmingw32 \
         -lSDLmain \
         -lSDL.dll \
+        -logg \
+        -lvorbis \
+        #-lvorbis.dll \
+        -lvorbisenc \
+        #-lvorbisenc.dll \
+        -lvorbisfile \
+        #-lvorbisfile.dll \
         -mconsole
 }
 
@@ -214,22 +222,30 @@ macx {
     -framework OpenAL \
         -lz \
     -F../../../libGyro/lib/osx \
+    -L../../../libGyro/lib/osx \
     -framework Foundation \
     -framework Cocoa \
     -lobjc \
-    -framework SDL
-
+    -framework SDL \
+    -logg \
+    -lvorbis \
+    -lvorbisenc \
+    -lvorbisfile
 }
 
 linux {
-  LIBS += \
-    -llua5.2 \
-    -lGL \
-    -lopenal \
-    -lGLU \
-    -lz \
-    -lSDLmain \
-    -lSDL
+    LIBS += \
+        -llua5.2 \
+        -lGL \
+        -lopenal \
+        -lGLU \
+        -lz \
+        -lSDLmain \
+        -lSDL \
+        -logg \
+        -lvorbis \
+        -lvorbisenc \
+        -lvorbisfile
 }
 
 win32 {
@@ -237,3 +253,10 @@ win32 {
         DESTDIR = ../../../Project
   }
 }
+
+linux {
+    CONFIG(release, debug|release) {
+          DESTDIR = ../../../Project
+    }
+}
+

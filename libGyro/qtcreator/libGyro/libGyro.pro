@@ -13,6 +13,7 @@ win32 {
 }
 
 macx {
+    INCLUDEPATH += ../../lib/osx
 	INCLUDEPATH += ../../lib/osx/SDL.framework/Headers
 }
 
