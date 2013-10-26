@@ -30,8 +30,8 @@ win32 {
 }
 
 macx {
-	INCLUDEPATH += ../../../libGyro/lib/osx
-	INCLUDEPATH += ../../../libGyro/lib/osx/SDL.framework/Headers
+    INCLUDEPATH += ../../../libGyro/lib/osx
+    INCLUDEPATH += ../../../libGyro/lib/osx/SDL.framework/Headers
 }
 
 DEPENDPATH += ../../include \
@@ -203,14 +203,14 @@ win32 {
         -lz.dll \
         -lmingw32 \
         -lSDLmain \
-		-lSDL.dll \
-		-logg \
-		-lvorbis \
-		#-lvorbis.dll \
-		-lvorbisenc \
-		#-lvorbisenc.dll \
-		-lvorbisfile \
-		#-lvorbisfile.dll \
+        -lSDL.dll \
+        -logg \
+        -lvorbis \
+        #-lvorbis.dll \
+        -lvorbisenc \
+        #-lvorbisenc.dll \
+        -lvorbisfile \
+        #-lvorbisfile.dll \
         -mconsole
 }
 
@@ -221,15 +221,15 @@ macx {
     -framework OpenAL \
         -lz \
     -F../../../libGyro/lib/osx \
-	-L../../../libGyro/lib/osx \
+    -L../../../libGyro/lib/osx \
     -framework Foundation \
     -framework Cocoa \
     -lobjc \
-	-framework SDL \
-	-logg \
-	-lvorbis \
-	-lvorbisenc \
-	-lvorbisfile
+    -framework SDL \
+    -logg \
+    -lvorbis \
+    -lvorbisenc \
+    -lvorbisfile
 }
 
 linux {
@@ -240,7 +240,11 @@ linux {
         -lGLU \
         -lz \
         -lSDLmain \
-        -lSDL
+        -lSDL \
+        -logg \
+        -lvorbis \
+        -lvorbisenc \
+        -lvorbisfile
 }
 
 win32 {

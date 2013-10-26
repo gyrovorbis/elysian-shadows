@@ -38,18 +38,18 @@ Engine *Debug::_engine = NULL;
 bool Debug::_advLogWrap = false;
 unsigned int Debug::_stackDepth = 0;
 Debug::LEVEL Debug::_level = ELYSIAN_DEBUG_LOG_LEVEL_DEFAULT;
-    
+
 // Central endpoint for all debug log calls
 void Debug::writeLog(const Debug::SOURCE source, const Debug::LEVEL level, const char *const str) {
-    static char buffer[ELYSIAN_DEBUG_BUFFER_SIZE];
+	static char buffer[ELYSIAN_DEBUG_BUFFER_SIZE];
 	//only log events that are as important or more important than the current level
 	if(level < _level && source != LUA) return;
 
 	buffer[0] = '\0';
-    
+
 	//Add tabs for each stack layer
 	for(unsigned int i = 0; i < _stackDepth; ++i) strcat(buffer, ELYSIAN_DEBUG_PREFIX_STACK);
-    
+
 	//Add prefixes for error types
 	switch(level) {
 	case FATAL:
@@ -64,20 +64,20 @@ void Debug::writeLog(const Debug::SOURCE source, const Debug::LEVEL level, const
 	}
 
 	//Append string
-    strcat(buffer, str);
-    
+	strcat(buffer, str);
+
 	//Append newline character to the end
 	size_t length = strlen(buffer);
 	strcat(buffer, "\n");
-    
+
 	_dbgFile << buffer;
 	_dbgFile.flush(); //write to log file
 	gyPrintf(buffer); //use the "preferred" IO of each platform
-    
+
 	//Wrap to AdventureLog
 	if(_advLogWrap) {
 		AdventureLog::TEXT_TYPE advType;
-		
+
 		switch(source) {
 		case LUA:
 			advType = AdventureLog::TEXT_LUA_DEBUG;
@@ -95,15 +95,15 @@ void Debug::writeLog(const Debug::SOURCE source, const Debug::LEVEL level, const
 
 // Invoked for non AssetIO Engine logging
 void Debug::printf(const Debug::LEVEL level, const char *const string, ...) {
-    char buffer[ELYSIAN_DEBUG_BUFFER_SIZE]; 
-	va_list argptr;  
+	char buffer[ELYSIAN_DEBUG_BUFFER_SIZE];
+	va_list argptr;
 	//early-out
 	if(level < _level) return;
 
-	va_start(argptr,string); 
-	vsprintf(buffer, string, argptr); 
-	va_end(argptr); 
-    writeLog(ENGINE, level, buffer);
+	va_start(argptr,string);
+	vsprintf(buffer, string, argptr);
+	va_end(argptr);
+	writeLog(ENGINE, level, buffer);
 }
 
 //=====NONSTATIC MEMBERS=====
@@ -111,9 +111,9 @@ void Debug::printf(const Debug::LEVEL level, const char *const string, ...) {
 Debug::Debug(void):
 	_nextFrame(true)
 {
-    //Register debug callback with LibGyro
-    gySysDebugEnable(ELYSIAN_DEBUG_LIBGYRO_LEVEL_DEFAULT, &libGyroPrintf);
-    //Register pointer to asset debug interface with AssetIO
+	//Register debug callback with LibGyro
+	gySysDebugEnable(ELYSIAN_DEBUG_LIBGYRO_LEVEL_DEFAULT, &libGyroPrintf);
+	//Register pointer to asset debug interface with AssetIO
 	Asset::setDebugStack(&_assetDebug);
 	_dbgFile.open(_fileName);
 	printf(VERBOSE, "-----Debug Initialized-----");
@@ -130,19 +130,19 @@ bool Debug::sandboxInit(void) {
 
 	_advLogWrap = true;
 
-//======================    
-    
+//======================
+
 	//Base Entity Data
 	Entity *player = new Entity;
 	player->setName("Julien");
 	//_curArea->addEntity(player);
 	//player->transform.setPosition((float)_cmdLineArgs.x, (float)_cmdLineArgs.y, ELYSIAN_ZCOORD_OBJECT2+10.0f);
-    player->transform.setPos(_cmdLineArgs.x, _cmdLineArgs.y, ELYSIAN_ZCOORD_OBJECT2+10.0f);
+	player->transform.setPos(_cmdLineArgs.x, _cmdLineArgs.y, ELYSIAN_ZCOORD_OBJECT2+10.0f);
 	player->transform.setSize(32.0f, 64.0f);
 	player->transform.setScale(1.0f, 1.0f);
 	player->transform.setOrientZ(0.0f);
 	player->setDepthType(DEPTH_BUFFERED);
-	
+
 	//Renderable Component
 	Renderable *render = player->addRenderable();
 	render->setFrame(0);
@@ -194,19 +194,19 @@ bool Debug::sandboxInit(void) {
 
 	//Collidable Component
 	Collidable *collid = player->addCollidable();
-    CollidableAttrib *colAttrib = new CollidableAttrib;
-    colAttrib->setColliderType(GY_COLLIDER_AABB);
-    colAttrib->setRelPos(0.0f, 0.25f);
-    colAttrib->setRelSize(1.0f, 0.4f);
-    static GYStatic statAttrib = {
-        /* inverseMass */ 1.0f/5000.0f,
-        /* coeffOfRest */ 1.0f,
-        /* damping */ 0.0f,
-        /* invMomOfInertia */ 0.0f,
-        /* angDamping */ 0.0f
-    };
-    *colAttrib->getStaticAttrib() = statAttrib;
-    collid->setAttrib(colAttrib);
+	CollidableAttrib *colAttrib = new CollidableAttrib;
+	colAttrib->setColliderType(GY_COLLIDER_AABB);
+	colAttrib->setRelPos(0.0f, 0.25f);
+	colAttrib->setRelSize(1.0f, 0.4f);
+	static GYStatic statAttrib = {
+		/* inverseMass */ 1.0f/5000.0f,
+		/* coeffOfRest */ 1.0f,
+		/* damping */ 0.0f,
+		/* invMomOfInertia */ 0.0f,
+		/* angDamping */ 0.0f
+	};
+	*colAttrib->getStaticAttrib() = statAttrib;
+	collid->setAttrib(colAttrib);
 
 	//Character Component
 	player->addCharacter();
@@ -219,7 +219,7 @@ bool Debug::sandboxInit(void) {
 
 
 
-//======================    
+//======================
 #if 0
 
 	//Base Entity Data
@@ -238,7 +238,7 @@ bool Debug::sandboxInit(void) {
 	audio->setLooping(true);
 	//audio->setGain(0.1f);
 	audio->play();*/
-	
+
 	//Renderable Component
 	render = player->addRenderable();
 	render->setFrame(0);
@@ -290,19 +290,19 @@ bool Debug::sandboxInit(void) {
 
 	//Collidable Component
 	collid = player->addCollidable();
-    colAttrib = new CollidableAttrib;
-    colAttrib->setColliderType(GY_COLLIDER_AABB);
-    colAttrib->setRelPos(0.0f, 0.25f);
-    colAttrib->setRelSize(1.0f, 0.3f);
-    static GYStatic statAttrib2 = {
-        /* inverseMass */ 1.0f/3000.0f,
-        /* coeffOfRest */ 1.0f,
-        /* damping */ 1.0f,
-        /* invMomOfInertia */ 0.0f,
-        /* angDamping */ 1.0f
-    };
-    *colAttrib->getStaticAttrib() = statAttrib;
-    collid->setAttrib(colAttrib);
+	colAttrib = new CollidableAttrib;
+	colAttrib->setColliderType(GY_COLLIDER_AABB);
+	colAttrib->setRelPos(0.0f, 0.25f);
+	colAttrib->setRelSize(1.0f, 0.3f);
+	static GYStatic statAttrib2 = {
+		/* inverseMass */ 1.0f/3000.0f,
+		/* coeffOfRest */ 1.0f,
+		/* damping */ 1.0f,
+		/* invMomOfInertia */ 0.0f,
+		/* angDamping */ 1.0f
+	};
+	*colAttrib->getStaticAttrib() = statAttrib;
+	collid->setAttrib(colAttrib);
 
 	//Character Component
 	//player->addCharacter();
@@ -310,7 +310,7 @@ bool Debug::sandboxInit(void) {
 	behav = player->addLuaBehavior("level/new_level1/area/Falco_ZTran_Sandbox/test.lua");
 	behav->setTriggers(Behavior::ONCREATE | Behavior::ONUPDATE);
 //=================
-    //Base Entity Data
+	//Base Entity Data
 	player = new Entity;
 	_curArea->addEntity(player);
 	player->setName("Dreamcast");
@@ -318,7 +318,7 @@ bool Debug::sandboxInit(void) {
 	player->transform.setSize(32.0f, 32.0f);
 	player->transform.setScale(1.0f, 1.0f);
 	player->transform.setOrientZ(0.0f);
-	
+
 	//Renderable Component
 	render = player->addRenderable();
 	render->setFrame(0);
@@ -326,24 +326,24 @@ bool Debug::sandboxInit(void) {
 	sprAttrib->loadTexture(gyFilePath("item/drmcsat.PNG"), 32, 32, 32, 32);
 	sprAttrib->setColor(255, 255, 255, 255);
 	render->setSpriteAttrib(sprAttrib);
-    
-    //Collidable Component
+
+	//Collidable Component
 	collid = player->addCollidable();
-    colAttrib = new CollidableAttrib;
-    colAttrib->setColliderType(GY_COLLIDER_AABB);
-    colAttrib->setRelPos(0.0f, 0.0f);
-    colAttrib->setRelSize(0.5f, 0.5f);
-    static GYStatic statAttrib3 = {
-        /* inverseMass */ 1.0f/3000.0f,
-        /* coeffOfRest */ 1.0f,
-        /* damping */ 1.0f,
-        /* invMomOfInertia */ 0.0f,
-        /* angDamping */ 1.0f
-    };
-    *colAttrib->getStaticAttrib() = statAttrib;
-    collid->setAttrib(colAttrib);
-    
-    //Base Entity Data
+	colAttrib = new CollidableAttrib;
+	colAttrib->setColliderType(GY_COLLIDER_AABB);
+	colAttrib->setRelPos(0.0f, 0.0f);
+	colAttrib->setRelSize(0.5f, 0.5f);
+	static GYStatic statAttrib3 = {
+		/* inverseMass */ 1.0f/3000.0f,
+		/* coeffOfRest */ 1.0f,
+		/* damping */ 1.0f,
+		/* invMomOfInertia */ 0.0f,
+		/* angDamping */ 1.0f
+	};
+	*colAttrib->getStaticAttrib() = statAttrib;
+	collid->setAttrib(colAttrib);
+
+	//Base Entity Data
 	player = new Entity;
 	_curArea->addEntity(player);
 	player->setName("Star");
@@ -351,7 +351,7 @@ bool Debug::sandboxInit(void) {
 	player->transform.setSize(32.0f, 32.0f);
 	player->transform.setScale(1.0f, 1.0f);
 	player->transform.setOrientZ(0.0f);
-	
+
 	//Renderable Component
 	render = player->addRenderable();
 	render->setFrame(0);
@@ -359,24 +359,24 @@ bool Debug::sandboxInit(void) {
 	sprAttrib->loadTexture(gyFilePath("item/star.PNG"), 32, 32, 32, 32);
 	sprAttrib->setColor(255, 255, 255, 255);
 	render->setSpriteAttrib(sprAttrib);
-    
-    //Collidable Component
+
+	//Collidable Component
 	collid = player->addCollidable();
-    colAttrib = new CollidableAttrib;
-    colAttrib->setColliderType(GY_COLLIDER_AABB);
-    colAttrib->setRelPos(0.0f, 0.0f);
-    colAttrib->setRelSize(0.5f, 0.5f);
-    static GYStatic statAttrib4 = {
-        /* inverseMass */ 1.0f/3000.0f,
-        /* coeffOfRest */ 1.0f,
-        /* damping */ 1.0f,
-        /* invMomOfInertia */ 0.0f,
-        /* angDamping */ 1.0f
-    };
-    *colAttrib->getStaticAttrib() = statAttrib;
-    collid->setAttrib(colAttrib);
-    
-    //Base Entity Data
+	colAttrib = new CollidableAttrib;
+	colAttrib->setColliderType(GY_COLLIDER_AABB);
+	colAttrib->setRelPos(0.0f, 0.0f);
+	colAttrib->setRelSize(0.5f, 0.5f);
+	static GYStatic statAttrib4 = {
+		/* inverseMass */ 1.0f/3000.0f,
+		/* coeffOfRest */ 1.0f,
+		/* damping */ 1.0f,
+		/* invMomOfInertia */ 0.0f,
+		/* angDamping */ 1.0f
+	};
+	*colAttrib->getStaticAttrib() = statAttrib;
+	collid->setAttrib(colAttrib);
+
+	//Base Entity Data
 	player = new Entity;
 	_curArea->addEntity(player);
 	player->setName("Fireflower");
@@ -384,7 +384,7 @@ bool Debug::sandboxInit(void) {
 	player->transform.setSize(32.0f, 32.0f);
 	player->transform.setScale(1.0f, 1.0f);
 	player->transform.setOrientZ(0.0f);
-	
+
 	//Renderable Component
 	render = player->addRenderable();
 	render->setFrame(0);
@@ -392,24 +392,24 @@ bool Debug::sandboxInit(void) {
 	sprAttrib->loadTexture(gyFilePath("item/fireflower.PNG"), 32, 32, 32, 32);
 	sprAttrib->setColor(255, 255, 255, 255);
 	render->setSpriteAttrib(sprAttrib);
-    
-    //Collidable Component
+
+	//Collidable Component
 	collid = player->addCollidable();
-    colAttrib = new CollidableAttrib;
-    colAttrib->setColliderType(GY_COLLIDER_AABB);
-    colAttrib->setRelPos(0.0f, 0.0f);
-    colAttrib->setRelSize(0.5f, 0.5f);
-    static GYStatic statAttrib5 = {
-        /* inverseMass */ 1.0f/3000.0f,
-        /* coeffOfRest */ 1.0f,
-        /* damping */ 1.0f,
-        /* invMomOfInertia */ 0.0f,
-        /* angDamping */ 1.0f
-    };
-    *colAttrib->getStaticAttrib() = statAttrib;
-    collid->setAttrib(colAttrib);
-    
-    //Base Entity Data
+	colAttrib = new CollidableAttrib;
+	colAttrib->setColliderType(GY_COLLIDER_AABB);
+	colAttrib->setRelPos(0.0f, 0.0f);
+	colAttrib->setRelSize(0.5f, 0.5f);
+	static GYStatic statAttrib5 = {
+		/* inverseMass */ 1.0f/3000.0f,
+		/* coeffOfRest */ 1.0f,
+		/* damping */ 1.0f,
+		/* invMomOfInertia */ 0.0f,
+		/* angDamping */ 1.0f
+	};
+	*colAttrib->getStaticAttrib() = statAttrib;
+	collid->setAttrib(colAttrib);
+
+	//Base Entity Data
 	player = new Entity;
 	_curArea->addEntity(player);
 	player->setName("Block");
@@ -417,7 +417,7 @@ bool Debug::sandboxInit(void) {
 	player->transform.setSize(32.0f, 32.0f);
 	player->transform.setScale(1.0f, 1.0f);
 	player->transform.setOrientZ(0.0f);
-	
+
 	//Renderable Component
 	render = player->addRenderable();
 	render->setFrame(0);
@@ -425,32 +425,32 @@ bool Debug::sandboxInit(void) {
 	sprAttrib->loadTexture(gyFilePath("item/marioblock.png"), 32, 32, 32, 32);
 	sprAttrib->setColor(255, 255, 255, 255);
 	render->setSpriteAttrib(sprAttrib);
-    
-    //Collidable Component
+
+	//Collidable Component
 	collid = player->addCollidable();
-    colAttrib = new CollidableAttrib;
-    colAttrib->setColliderType(GY_COLLIDER_AABB);
-    colAttrib->setRelPos(0.0f, 0.0f);
-    colAttrib->setRelSize(0.5f, 0.5f);
-    static GYStatic statAttrib6 = {
-        /* inverseMass */ 1.0f/3000.0f,
-        /* coeffOfRest */ 1.0f,
-        /* damping */ 1.0f,
-        /* invMomOfInertia */ 0.0f,
-        /* angDamping */ 1.0f
-    };
-    *colAttrib->getStaticAttrib() = statAttrib;
-    collid->setAttrib(colAttrib);
+	colAttrib = new CollidableAttrib;
+	colAttrib->setColliderType(GY_COLLIDER_AABB);
+	colAttrib->setRelPos(0.0f, 0.0f);
+	colAttrib->setRelSize(0.5f, 0.5f);
+	static GYStatic statAttrib6 = {
+		/* inverseMass */ 1.0f/3000.0f,
+		/* coeffOfRest */ 1.0f,
+		/* damping */ 1.0f,
+		/* invMomOfInertia */ 0.0f,
+		/* angDamping */ 1.0f
+	};
+	*colAttrib->getStaticAttrib() = statAttrib;
+	collid->setAttrib(colAttrib);
 #endif
 
-    //getAudioSys()->loadBgmTrack(0, "audio/music/CaveLoop1.ogg");
-    //getAudioSys()->loadBgmTrack(1, "audio/music/CaveLoop2.ogg");
+	//getAudioSys()->loadBgmTrack(0, "audio/music/CaveLoop1.ogg");
+	//getAudioSys()->loadBgmTrack(1, "audio/music/CaveLoop2.ogg");
 	getAudioSys()->loadAuxTrack(0, "audio/music/RainThunder.ogg");
 	getAudioSys()->playAuxTrack(0);
 	//getAudioSys()->setAuxTrackGain(0, 0.5f);
-    //getAudioSys()->playBgmTrack();
+	//getAudioSys()->playBgmTrack();
 	getAudioSys()->setBgmTrackGain(0.5f);
-    //getAudioSys()->setBgmTrackPitch(0.5f);
+	//getAudioSys()->setBgmTrackPitch(0.5f);
 
 	pop();
 	return true;
@@ -463,7 +463,7 @@ void Debug::renderOverlay(void) {
 	//BLAH BLAH ETC
 }
 
-void Debug::render(void) {		
+void Debug::render(void) {
 
 }
 
@@ -491,34 +491,34 @@ void Debug::processInput(const GameInput& input) {
 	}
 
 	//Rendering layers
-    if(input.getTapped(GameInput::BUT_0)) { 
-        if(_engine->_guiSystem->adventureLog.isEnabled()) {
+	if(input.getTapped(GameInput::BUT_0)) {
+		if(_engine->_guiSystem->adventureLog.isEnabled()) {
 			_engine->_guiSystem->adventureLog.disable();
 			printf(VERBOSE, "Disable GUI Layer");
 		} else {
 			_engine->_guiSystem->adventureLog.enable();
 			printf(VERBOSE, "Enable GUI Layer");
 		}
-    }
+	}
 	if(input.getTapped(GameInput::BUT_1)) {
 		bool render = _engine->_mapSystem->toggleRenderLayer(0);
-        printf(VERBOSE, "Render Layer 1 - %s", (render)? "enabled" : "disabled");
+		printf(VERBOSE, "Render Layer 1 - %s", (render)? "enabled" : "disabled");
 	}
 	if(input.getTapped(GameInput::BUT_2)) {
 		bool render = _engine->_mapSystem->toggleRenderLayer(1);
-        printf(VERBOSE, "Render Layer 2 - %s", (render)? "enabled" : "disabled");
+		printf(VERBOSE, "Render Layer 2 - %s", (render)? "enabled" : "disabled");
 	}
-	if(input.getTapped(GameInput::BUT_3)) { 
+	if(input.getTapped(GameInput::BUT_3)) {
 		bool render = _engine->_mapSystem->toggleRenderLayer(2);
-        printf(VERBOSE, "Render Layer 3 - %s", (render)? "enabled" : "disabled");
+		printf(VERBOSE, "Render Layer 3 - %s", (render)? "enabled" : "disabled");
 	}
 	if(input.getTapped(GameInput::BUT_4)) {
 		bool render = _engine->_mapSystem->toggleRenderLayer(3);
-        printf(VERBOSE, "Render Layer 4 - %s", (render)? "enabled" : "disabled");
-    }
+		printf(VERBOSE, "Render Layer 4 - %s", (render)? "enabled" : "disabled");
+	}
 	if(input.getTapped(GameInput::BUT_5)) {
 		CollisionSystem::RENDER_LAYER layer = _engine->_collisionSystem->cycleRenderLayer();
-        switch(layer) {
+		switch(layer) {
 		case CollisionSystem::RENDER_DISABLED:
 			printf(VERBOSE, "Render Collision Layer - Disabled");
 			break;
@@ -542,20 +542,20 @@ void Debug::processInput(const GameInput& input) {
 		//gyVidTexWalkthrough();
 		//getAudioSys()->morphIntoBgmTrack(1, 5.0f);
 		//getAudioSys()->fadeIntoBgmTrack(1, 5.0f);
-        getAudioSys()->morphIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop2.ogg");
+		getAudioSys()->morphIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop2.ogg");
 		//getAudioSys()->fadeIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop2.ogg");
 		//getAudioSys()->fadeIntoNewAuxTrack(0, 5.0f, "audio/music/RainThunder.ogg");
 		//getAudioSys()->fadeInAuxTrack(0, 5.0f);
-        //getAudioSys()->fadeIntoNewAuxTrack(0, 5.0f, "audio/music/RainThunder.ogg");
+		//getAudioSys()->fadeIntoNewAuxTrack(0, 5.0f, "audio/music/RainThunder.ogg");
 		//getAudioSys()->playBgmTrack();
 	}
 	if(input.getTapped(GameInput::BUT_X)) {
 		//getAudioSys()->morphIntoBgmTrack(0, 5.0f);
 		//getAudioSys()->fadeIntoBgmTrack(0, 5.0f);
 		//getAudioSys()->stopBgmTrack();
-        getAudioSys()->morphIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop1.ogg");
+		getAudioSys()->morphIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop1.ogg");
 		//getAudioSys()->fadeIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop1.ogg");
-        //getAudioSys()->fadeOutAuxTrack(0, 5.0f);
+		//getAudioSys()->fadeOutAuxTrack(0, 5.0f);
 		//gyAudWavWalkthrough();
 	}
 
@@ -617,7 +617,7 @@ bool Debug::parseArguments(int argc, char *argv[]) {
 			printf(CRITICAL, "! - Unrecognized command-line argument: %s", argv[i]);
 			continue;
 		}
-		
+
 		//Parse all command-line arguments and store them within internal structure
 		switch(argv[i][1]) {
 			case 'l':
@@ -643,7 +643,7 @@ bool Debug::parseArguments(int argc, char *argv[]) {
 	}
 	pop();
 	return true;
-}	
+}
 
 
 bool Debug::initializeEngine(void) {
