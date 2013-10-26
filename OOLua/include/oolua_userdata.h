@@ -6,10 +6,11 @@
 struct lua_State;
 namespace OOLUA
 {
+	/** \cond INTERNAL*/
     namespace INTERNAL
     {
 		struct Lua_ud;
-		typedef bool (*oolua_function_check_base)(lua_State* const l,INTERNAL::Lua_ud*,int const&);
+		typedef void (*oolua_function_check_base)(lua_State* const l,INTERNAL::Lua_ud*,int const&);
 		typedef void (*oolua_type_check_function)(lua_State * l);
         struct Lua_ud
         {
@@ -53,6 +54,7 @@ namespace OOLUA
 		}	
 
     }
+	/**\endcond*/
 }
 
 #endif

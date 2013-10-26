@@ -18,7 +18,7 @@ struct lua_State;
 namespace OOLUA
 {
 
-
+	/** \cond INTERNAL*/
 	namespace INTERNAL
 	{
 
@@ -29,12 +29,7 @@ namespace OOLUA
 		T  * check_index_no_const(lua_State * l, int narg);
 
 		bool index_is_userdata(lua_State* l,int index,Lua_ud*& ud);
-		bool is_requested_type_a_base(lua_State* l,Lua_ud const* stack_ud,Lua_ud* requested_ud,int const& userdata_index);
 		void report_error_userdata_is_constant(lua_State* const l, char const* pulling_class_type);
-		
-		template<typename T>
-		T* no_stack_checks_class_from_index(lua_State *  l, int narg);
-		
 		
 #if OOLUA_CHECK_EVERY_USERDATA_IS_CREATED_BY_OOLUA == 0
 		inline bool index_is_userdata(lua_State* l,int index,Lua_ud*& ud)
@@ -79,21 +74,9 @@ namespace OOLUA
 		template<typename T>
 		T* valid_base_ptr_or_null(lua_State* l,Lua_ud const* stack_ud,int userdata_index)
 		{
-			Lua_ud requested_ud;
-			requested_ud.base_checker = &stack_top_type_is_base<T>;
-			requested_ud.type_check = &OOLUA::register_class<T>;
-			if(!is_requested_type_a_base(l,stack_ud,&requested_ud,userdata_index))
-			{
-				//ud ...
-				return (T*)0;
-			}
-			else  
-			{
-				//ud ... typed_class_ptr 
-				T* t = static_cast<T* >(lua_touserdata(l, -1));
-				lua_pop(l,1);//ud ...  
-				return t;
-			}
+			Lua_ud requested_ud = {0,&stack_top_type_is_base<T>,&OOLUA::register_class<T>,0};
+			stack_ud->base_checker(l,&requested_ud,userdata_index);
+			return static_cast<T* >(requested_ud.void_class_ptr);
 		}
 
 
@@ -128,6 +111,7 @@ namespace OOLUA
 		}
 		
 	}
+	/** \endcond */
 
 }
 #endif

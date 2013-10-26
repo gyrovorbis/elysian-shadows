@@ -5,6 +5,7 @@
 
 namespace OOLUA
 {
+	/** \cond INTERNAL*/
 	namespace INTERNAL
 	{
 #if OOLUA_DEBUG_CHECKS == 1
@@ -31,4 +32,5 @@ namespace OOLUA
 		}
 		
 	}
+	/** \endcond*/
 }

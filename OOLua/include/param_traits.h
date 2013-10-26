@@ -8,9 +8,7 @@
 ///  For function return values OOLUA::function_return is used (inside the generating
 ///  function), this template is specialised for void types.
 ///  @author Liam Devine
-///  @email
-///  See http://www.liamdevine.co.uk for contact details.
-///  @licence
+///  \copyright
 ///  See licence.txt for more details.
 ///////////////////////////////////////////////////////////////////////////////
 #ifndef PARAM_TRAITS_H_
@@ -23,77 +21,171 @@
 
 namespace OOLUA
 {
-	class Lua_table;
-	template<int ID>struct Lua_ref;
 	
-	///////////////////////////////////////////////////////////////////////////////
-	///  @struct in_p
-	///  Input parameter trait
-	///  Informs that a parameter is supplied via Lua and that no change of 
-	///  ownership occurs.
-	///////////////////////////////////////////////////////////////////////////////
+/** \addtogroup OOLuaTraits Traits
+@{
+\brief Provides direction and ownership information.
+\details
+In C++ the use of traits which have a lua_ or cpp_ prefix can control ownership for 
+parameters, returns values and stack entries whilst traits which specify direction
+for parameters contain as part of their name "out", "in" or a combination.
+<p>
+ | Trait	| Details						|
+ | :------- | :----------------------------- |
+ |\ref OOLUA::in_p "in_p"		| \copydetails OOLUA::in_p 		|
+ |\ref OOLUA::out_p	"out_p"	| \copydetails OOLUA::out_p		|
+ |\ref OOLUA::in_out_p	"in_out_p" | \copydetails OOLUA::in_out_p	|
+ |\ref OOLUA::cpp_in_p	"cpp_in_p" | \copydetails OOLUA::cpp_in_p	|
+ |\ref OOLUA::lua_out_p	"lua_out_p" | \copydetails OOLUA::lua_out_p	|
+<p> 
+
+*/
+	
+	/** \struct in_p
+		\brief Input parameter trait
+		\details
+		The calling Lua procedure supplies the parameter to the proxied function.
+		No change of ownership occurs.
+		\note
+		This is the default trait used for function parameters when no trait 
+		is supplied.
+	 */
 	template<typename T>struct in_p;
-	///////////////////////////////////////////////////////////////////////////////
-	///  @struct out_p
-	///  Output parameter trait
-	///  Lua code does not pass an instance to the C++ function, instead one is 
-	///  created using the default constructor and it's value after the function 
-	///  call will be pushed back to Lua. If this is a type which has a proxy
-	///  then it will cause a heap allocation of the type, which Lua will own.
-	///////////////////////////////////////////////////////////////////////////////
+
+	/** \struct out_p
+		\brief Output parameter trait
+		\details
+		The calling Lua procedure does not pass the parameter to the proxied
+		function, instead one is created using the default constructor and
+		passed to the proxied function. The result after the proxied call with 
+		be returned to the calling procedure. If this is a type which has a
+		proxy then it will cause a heap allocation of the type, which Lua will
+		own.
+		\code{.cpp}
+		struct foo
+		{
+			void bar( int& result);
+		};
+		OOLUA_PROXY(foo)
+			OOLUA_MEM_FUNC(void,bar,out_p<int&>)
+		OOLUA_PROXY_END
+		local result = foo.new():bar()
+		assert(result)
+		\endcode
+	*/
 	template<typename T>struct out_p;
-	///////////////////////////////////////////////////////////////////////////////
-	///  @struct in_out_p
-	///  Input and output parameter trait
-	///  Informs that a parameter is supplied via Lua and the value is also pushed
-	///  back to the stack. No change of ownership occurs.
-	///////////////////////////////////////////////////////////////////////////////
+
+	/** \struct in_out_p
+		\brief Input and output parameter trait
+		\details
+		The calling Lua procedure supplies the parameter to the proxied
+		function, the value of the parameter after the proxied call will be
+		passed back to the calling procedure as a return value.
+		No change of ownership occurs.
+		\code{.cpp}
+		struct foo
+		{
+			void bar( int& input_and_result){++input_and_result;}
+		};
+		OOLUA_PROXY(foo)
+			OOLUA_MEM_FUNC(void,bar,in_out_p<int&>)
+		OOLUA_PROXY_END
+		local input = 1
+		local result = foo.new():bar(input)
+		assert(result and result~=input)
+		\endcode
+	*/
 	template<typename T>struct in_out_p;
 
-	///////////////////////////////////////////////////////////////////////////////
-	///  @struct cpp_in_p
-	///  Input parameter trait 
-	///  Parameter supplied via Lua changes ownership to C++. 
-	///////////////////////////////////////////////////////////////////////////////
+	/** \struct cpp_in_p
+		\brief Input parameter trait which will be owned by C++
+		\details Parameter supplied via Lua changes ownership to C++.
+		\code{.cpp}
+		struct foo
+		{
+			void take_ownership(foo*);
+		};
+		OOLUA_PROXY(foo)
+			OOLUA_MEM_FUNC(void,take_ownership,cpp_in_p<foo*>)
+		OOLUA_PROXY_END
+
+		m_lua->run_chunk("local f = foo.new() \n"
+						"f:take_ownership(foo.new())");
+		\endcode
+
+	*/
 	template<typename T>struct cpp_in_p;
 
-	///////////////////////////////////////////////////////////////////////////////
-	///  @struct lua_out_p
-	///  Output parameter trait 
-	///  Lua code does not pass an instance to the C++ function, yet the pushed back
-	///  value after the function call will be owned by Lua. This is meaningful only
-	///  if called with a type which has a proxy and it is by reference, otherwise 
-	///  undefined.
-	///////////////////////////////////////////////////////////////////////////////
+
+	/** \struct lua_out_p
+		\brief Output parameter trait which will be owned by Lua
+		\details
+		Lua code does not pass an instance to the C++ function, yet the pushed back
+		value after the function call will be owned by Lua. This is meaningful only
+		if called with a type which has a proxy and it is by reference, otherwise 
+		undefined.
+		\code{.cpp}
+		struct foo
+		{
+			foo* create();
+		};
+		OOLUA_PROXY(foo)
+			OOLUA_MEM_FUNC(lua_out_p<foo*>,create)
+		OOLUA_PROXY_END
+
+		local automatically_owned_by_lua = foo.new()
+		local also_owned_by_lua = automatically_owned_by_lua:create()
+		\endcode
+
+	*/
 	template<typename T>struct lua_out_p;
 	
 	
 	
-	///////////////////////////////////////////////////////////////////////////////
-	///  @struct cpp_acquire_ptr
-	///  Informs the binding that Lua will take control of the pointer being used
-	///  and call delete on it when appropriate. This is only valid for 
-	///  OOLUA::pull2cpp calls.
-	///////////////////////////////////////////////////////////////////////////////
+	/** \struct cpp_acquire_ptr
+		\brief Change of ownership to C++
+		\details
+		Informs the binding that C++ will take control of the pointer being used
+		and call delete on it when appropriate. This is only valid for 
+		OOLUA::pull calls.
+	*/
 	template<typename T>struct cpp_acquire_ptr;
 	
-	///////////////////////////////////////////////////////////////////////////////
-	///  @struct lua_acquire_ptr
-	///  Informs the binding that Lua will take control of the pointer being used
-	///  and call delete on it when appropriate.
-	///////////////////////////////////////////////////////////////////////////////
+	/** \struct lua_acquire_ptr
+		\brief Change of ownership to Lua
+		\details
+		Informs the binding that Lua will take control of the pointer being used
+		and call delete on it when appropriate. This is only valid for 
+		OOLUA::push calls
+	*/
 	template<typename T>struct lua_acquire_ptr;
 	
+	/** \struct OOLUA::calling_lua_state
+		\brief Informs that the calling state is a parameter for a function
+	*/
+	struct calling_lua_state;
 	
-	//which language owns the parameter Lua, Cpp or no change to ownership
-	enum Owner{No_change,Cpp,Lua};
+	/** \enum Owner
+		Which language owns the parameter Lua, Cpp or no change to ownership
+	*/
+	enum Owner
+	{	No_change	/*!< No change of ownership*/
+		,Cpp		/*!< Change in ownership, C++ will now own the instance*/
+		,Lua		/*!< Change in ownership, Lua will now own the instance*/
+	};
 	
+/**}@*/
+	
+	
+	/** \cond INTERNAL*/
 	template<typename T>
 	class Proxy_class;
 	
+	class Table;
+	template<int ID>struct Lua_ref;
+	
 	namespace INTERNAL 
 	{
-		
 		
 		template<typename Type>
 		struct has_a_proxy_type
@@ -317,7 +409,6 @@ namespace OOLUA
 		typedef char type_can_not_be_just_a_pointer_to_type [LVD::is_same<raw*,type>::value ? -1 : 1];
 	};
 	
-	
 
 	template<typename T>
 	struct cpp_acquire_ptr
@@ -532,34 +623,38 @@ namespace OOLUA
 			enum { is_constant = 0 };
 			enum { is_integral = 1 };
 		};
-		
-		template<int ID>
-				struct function_return<Lua_ref<ID>& >
-				{
-						typedef Lua_ref<ID>& type;
-						typedef Lua_ref<ID> pull_type;
-						typedef Lua_ref<ID> raw;
-						enum { in = 0};
-						enum { out = 1};
-						enum { owner = No_change};
-						enum { is_by_value = 0 };
-						enum { is_constant = 0 };
-						enum { is_integral = 1 };
-					};
-		
-				template<int ID>
-				struct function_return<Lua_ref<ID> const& >
-				{
-						typedef Lua_ref<ID>const& type;
-						typedef Lua_ref<ID> pull_type;
-						typedef Lua_ref<ID> raw;
-						enum { in = 0};
-						enum { out = 1};
-						enum { owner = No_change};
-						enum { is_by_value = 0 };
-						enum { is_constant = 1 };
-						enum { is_integral = 1 };
-					};
+
+//============OOLUA MOD=======================
+/*
+        template<int ID>
+        struct function_return<Lua_ref<ID>& >
+        {
+                typedef Lua_ref<ID>& type;
+                typedef Lua_ref<ID> pull_type;
+                typedef Lua_ref<ID> raw;
+                enum { in = 0};
+                enum { out = 1};
+                enum { owner = No_change};
+                enum { is_by_value = 0 };
+                enum { is_constant = 0 };
+				enum { is_integral = 0 };
+            };
+
+        template<int ID>
+        struct function_return<Lua_ref<ID> const& >
+        {
+                typedef Lua_ref<ID>const& type;
+                typedef Lua_ref<ID> pull_type;
+                typedef Lua_ref<ID> raw;
+                enum { in = 0};
+                enum { out = 1};
+                enum { owner = No_change};
+                enum { is_by_value = 0 };
+                enum { is_constant = 1 };
+				enum { is_integral = 0 };
+		 };*/
+
+//=============/OOLUA MOD===================
 
 	
 	
@@ -692,6 +787,7 @@ namespace OOLUA
 	template struct in_p<lua_State*>;//disable it
 	
 	struct calling_lua_state {};
+	
 	template<>
 	struct in_p<calling_lua_state>
 	{
@@ -801,11 +897,11 @@ namespace OOLUA
 	 */
 	
 	template<>
-	struct in_p<Lua_table>
+	struct in_p<Table>
 	{
-		typedef Lua_table type;
-		typedef Lua_table raw;
-		typedef Lua_table pull_type;
+		typedef Table type;
+		typedef Table raw;
+		typedef Table pull_type;
 		enum {in = 1};
 		enum {out = 0};
 		enum {owner = No_change};
@@ -955,11 +1051,12 @@ namespace OOLUA
 		{
 			
 			typedef Type_list<
-			Lua_ref<TABLE>,Lua_table
+			Lua_ref<TABLE>,Table
 			>::type Table_types;
 			enum {value = TYPELIST::IndexOf<Table_types,Cpp_type>::value == -1 ? 0 : 1};
 		};
 	}
+	/**\endcond*/
 }
 
 

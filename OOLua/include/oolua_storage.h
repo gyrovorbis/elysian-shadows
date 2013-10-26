@@ -16,6 +16,7 @@
 
 namespace OOLUA
 {
+	/** \cond INTERNAL*/
 	namespace INTERNAL
 	{
 		typedef bool (*is_const_func_sig)(Lua_ud const* ud);
@@ -68,7 +69,7 @@ namespace OOLUA
 
 		//pushes the weak top and returns its index
 		int push_weak_table(lua_State* l);
-		template<typename T>Lua_ud* add_ptr(lua_State*  l,T* const ptr,bool is_const);
+		template<typename T>Lua_ud* add_ptr(lua_State*  l,T* const ptr,bool is_const,Owner owner);
 
 		template<typename T>Lua_ud* find_ud(lua_State*  l,T* ptr,bool is_const);
 
@@ -109,7 +110,7 @@ namespace OOLUA
 			T* p = class_from_index<T>(l,1);
 			lua_remove(l,1);
 			Owner own(No_change);
-			pull2cpp(l,own);
+			pull(l,own);
 			set_owner(l,p,own);
 			return 0;
 		}
@@ -209,10 +210,10 @@ namespace OOLUA
 		}
 		
 		template<typename T>
-		inline Lua_ud* add_ptr(lua_State* const l,T* const ptr,bool is_const)
+		inline Lua_ud* add_ptr(lua_State* const l,T* const ptr,bool is_const,Owner owner)
 		{		
 			Lua_ud* ud = new_userdata(l, ptr, is_const,&stack_top_type_is_base<T>,&OOLUA::register_class<T>);
-
+			if(owner != No_change)userdata_gc_value(ud, owner == Lua);
 			lua_getfield(l, LUA_REGISTRYINDEX
 						 ,  (char*) (is_const ? OOLUA::Proxy_class<T>::class_name_const 
 									 : OOLUA::Proxy_class<T>::class_name)
@@ -292,6 +293,7 @@ namespace OOLUA
 
 
 	}
+	/**\endcond*/
 
 
 }

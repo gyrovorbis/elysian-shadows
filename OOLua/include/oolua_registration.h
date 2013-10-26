@@ -1,27 +1,27 @@
-///////////////////////////////////////////////////////////////////////////////
-///	 Orginally based on \n
-///  http://lua-users.org/wiki/SimplerCppBinding \n
-///	 http://www.lua.org/notes/ltn005.html \n
-///  @author modified by Liam Devine
-///  @email
-///  See http://www.liamdevine.co.uk for contact details.
-/// @licence
-///	Copyright (c) 2005 Leonardo Palozzi
-///	Permission is hereby granted, free of charge, to any person obtaining a copy of
-///	this software and associated documentation files (the "Software"), to deal in the
-///	Software without restriction, including without limitation the rights to use,
-///	copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
-///	Software, and to permit persons to whom the Software is furnished to do so,
-///	subject to the following conditions:
-///	The above copyright notice and this permission notice shall be included in all
-///	copies or substantial portions of the Software.
-///	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-///	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-///	PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-///	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-///	OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-///	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-///////////////////////////////////////////////////////////////////////////////
+
+/**
+	\file oolua_registration.h
+	\details
+	\copyright
+	The MIT License\n
+	Copyright (c) 2005 Leonardo Palozzi \n
+	Permission is hereby granted, free of charge, to any person obtaining a copy of
+	this software and associated documentation files (the "Software"), to deal in the
+	Software without restriction, including without limitation the rights to use,
+	copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+	Software, and to permit persons to whom the Software is furnished to do so,
+	subject to the following conditions:\n
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.\n
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+	INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+	PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+	HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+	OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+	SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+
 #ifndef OOLUA_REGISTRATION_H_
 #   define OOLUA_REGISTRATION_H_
 
@@ -36,38 +36,63 @@
 #include "base_checker.h"
 #include "oolua_char_arrays.h"
 #include "lvd_types.h"
-#include "oolua_typedefs.h"
+#include "oolua_tags.h"
 #include "lua_table.h"
 
 #include "oolua_config.h"
-#if OOLUA_USING_SHARED_PTR == 1
-#	include OOLUA_SHARED_PTR_INCLUDE
-#endif
+
 
 namespace OOLUA
 {
+	/**
+		\brief Registers the class type T with an instance of lua_State
+		\tparam T Class type to register with OOLua
+		\details Registers a class type T with OOLua if there is a Proxy for the type
+		and the type has not already been registered with the instance.
+		\todo this should also register base classes is this not happending?
+	*/
     template<typename T>void register_class(lua_State *  l);
 
+	/**
+		\brief
+		Registers the class type \arg T and recurrisvely registers it's bases
+		\tparam T Class type to register
+		\note This is safe to call when the class has no bases.
+	 */	
+	template<typename T>void register_class_and_bases(lua_State * l);
+	
+	/**
+		\brief
+		Registers a key K and value V entry into class T
+		\tparam T Class type to register the static for
+		\tparam K Key
+		\tparam V Value
+	*/	
 	template<typename T,typename K,typename V>
 	void register_class_static(lua_State * const l,K const& k, V const& v);
 
-	template<typename T>void register_class_and_bases(lua_State * l);
+	
 
+	/** \cond INTERNAL*/
 	namespace INTERNAL
 	{
 		template<typename T>struct garbage_collect;
 		template<typename T>int set_methods(lua_State*  l);
 		template<typename T>int set_const_methods(lua_State*   l,int none_const_methods,int none_const_mt);
-        template<typename T, bool IsAbstract>struct set_create_function;
+
         template<typename T,typename B>struct Add_base;
         template<typename T,typename TL, int index,typename B>struct Register_base;
 		template<typename T>int set_type_top_to_none_const(lua_State *  l);
 		
 		template<typename T,int HasNoPublicDestructor>struct set_delete_function;
 		template<typename T,bool HasNoPublicDestructor>struct set_owner_function;
-		
 		template<typename T, bool IsAbstractOrNoConstructors>struct set_create_function;
-		
+
+		//fwd declare, not defined here
+		template<typename T>
+		int oolua_generic_default_constructor(lua_State* l);
+
+			
 		void set_function_in_table_with_upvalue(lua_State* l, char const * func_name, lua_CFunction func
 														, int tableIndex, void* upvalue);
 		void set_function_in_table(lua_State* l, char const* func_name,lua_CFunction func,int tableIndex);
@@ -81,7 +106,7 @@ namespace OOLUA
 		template<typename T,int HasRegisterEnumsTag>struct set_class_enums;
 	
 		int get_oolua_module(lua_State* L);
-		void register_oolua_type(lua_State* L, char const* name,size_t const name_sz, int const stack_index);	
+		void register_oolua_type(lua_State* L, char const* name, int const stack_index);	
 	}
 
     namespace INTERNAL
@@ -199,7 +224,7 @@ namespace OOLUA
 			lua_setglobal(l,Proxy_class<T>::class_name);
 			//global[name]=methods
 
-			register_oolua_type(l, Proxy_class<T>::class_name, Proxy_class<T>::name_size,methods);
+			register_oolua_type(l, Proxy_class<T>::class_name,methods);
 			//OOLua[name] = methods
 			
 			set_oolua_userdata_creation_key_value_in_table(l,mt);
@@ -244,7 +269,7 @@ namespace OOLUA
 			lua_setglobal(l,Proxy_class<T>::class_name_const);
 			//global[name#_const]=const_methods
 			
-			register_oolua_type(l, Proxy_class<T>::class_name_const, Proxy_class<T>::name_size + sizeof("_const") -1,const_methods);
+			register_oolua_type(l, Proxy_class<T>::class_name_const, const_methods);
 			//OOLua[name#const] = const_methods		
 
 			set_oolua_userdata_creation_key_value_in_table(l,const_mt);
@@ -341,18 +366,57 @@ namespace OOLUA
 			void operator()(lua_State * const  /*l*/,int const& /*methods*/,int const& /*const_methods*/){}///no-op
 		};
 
+		template<typename T>
+		struct class_or_base_has_ctor_block
+		{
+			template <typename U> 
+			static char (& check_for_ctor_block(typename OOLUA::Proxy_class<U>::ctor_block_check*))[1] ;
+			template <typename U> 
+			static char (& check_for_ctor_block(...))[2];
+			enum {value = sizeof( check_for_ctor_block<T >(0) ) == 1 ? 1 : 0} ;
+		};
+
+		template< typename T, int CtorBlockMaybeInClass_or_MaybeInABase>
+		struct ctor_block_is_same
+		{
+			enum {value = LVD::is_same< typename Proxy_class<T>::ctor_block_check,T >::value };
+		};
+
+		template< typename T>
+		struct ctor_block_is_same<T,0>
+		{
+			enum {value = 0};
+		};
+
+		template< typename T>
+		struct proxy_class_has_correct_ctor_block
+		{
+			enum { value = ctor_block_is_same<T,class_or_base_has_ctor_block<T>::value >::value  };
+		};
+
 		template<typename T, bool IsAbstractOrNoConstructors>
 		struct set_create_function
 		{
-			static void set(lua_State*  const l, int methods)
+			static void do_set(lua_State* const l,int methods, LVD::Int2type<1> /*use factory function*/)
 			{
 				set_function_in_table(l
 									  ,new_str
 									  ,&OOLUA::Proxy_class<T>::oolua_factory_function
 									  ,methods);
-				// methods["new"] = create_type
 			}
-			
+			static void do_set(lua_State* const l,int methods, LVD::Int2type<0> /*needs generic function*/)
+			{
+				set_function_in_table(l
+									  ,new_str
+									  ,&oolua_generic_default_constructor<T>
+									  ,methods);
+
+			}
+			static void set(lua_State*  const l, int methods)
+			{
+				do_set(l,methods,LVD::Int2type<proxy_class_has_correct_ctor_block<T>::value>() );
+				// methods["new"] = some_method
+			}
 		};
 
 		template<typename T>
@@ -376,13 +440,14 @@ namespace OOLUA
 
 		};
 		
-    template<typename T>
+		template<typename T>
 		struct set_owner_function<T, true>
 		{
 			static void set(lua_State*  const /*l*/,int /*methods*/){}///no-op
 		};
 
 	}
+	/**\endcond*/
 
     template<typename T>
 	inline void register_class(lua_State * /*const*/ l)
@@ -429,10 +494,11 @@ namespace OOLUA
 	template<typename T,typename K,typename V>
 	inline void register_class_static(lua_State * const l,K const& k, V const& v)
 	{
-		Lua_table meth(l,Proxy_class<T>::class_name);
+		Table meth(l,Proxy_class<T>::class_name);
 		meth.set_value(k,v);
 	}
-
+	
+	/** \cond INTERNAL*/
 	namespace INTERNAL
 	{
 		template<int Index,typename Bases, typename Type>
@@ -457,6 +523,7 @@ namespace OOLUA
 			{}
 		};
 	}
+	/** \endcond*/
 
 	template<typename T>
 	inline void register_class_and_bases(lua_State * l)

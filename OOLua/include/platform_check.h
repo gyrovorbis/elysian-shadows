@@ -4,9 +4,7 @@
 ///  @remarks
 ///  Information available via http://predef.sourceforge.net/preos.html
 ///  @author Liam Devine
-///  @email
-///  See http://www.liamdevine.co.uk for contact details.
-///  @licence
+///  \copyright
 ///  See licence.txt for more details. \n 
 ///////////////////////////////////////////////////////////////////////////////
 

@@ -46,12 +46,11 @@ HEADERS += \
     ../../include/oolua_version.h \
     ../../include/oolua_va_args.h \
     ../../include/oolua_userdata.h \
-    ../../include/oolua_typedefs.h \
+    ../../include/oolua_tags.h \
     ../../include/oolua_storage.h \
     ../../include/oolua_registration.h \
     ../../include/oolua_push_pull.h \
     ../../include/oolua_parameter_helper.h \
-    ../../include/oolua_paramater_macros.h \
     ../../include/oolua_member_function.h \
     ../../include/oolua_exception.h \
     ../../include/oolua_error.h \
@@ -60,6 +59,7 @@ HEADERS += \
     ../../include/oolua_check_result.h \
     ../../include/oolua_char_arrays.h \
     ../../include/oolua_c_func.h \
+    ../../include/oolua_boilerplate.h \
     ../../include/oolua.h \
     ../../include/member_func_helper.h \
     ../../include/lvd_types.h \
@@ -72,9 +72,9 @@ HEADERS += \
     ../../include/fwd_push_pull.h \
     ../../include/export_func_to_lua.h \
     ../../include/determin_qualifier.h \
+    ../../include/default_trait_caller.h \
     ../../include/cpp_member_func.h \
     ../../include/cpp_constructor.h \
     ../../include/class_public_member.h \
     ../../include/class_from_stack.h \
     ../../include/base_checker.h
-

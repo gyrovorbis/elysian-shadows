@@ -23,7 +23,7 @@ INCLUDEPATH += ../../include \
     ../../../AssetIO/include \
     ../../../libGyro/include \
     ../../../libGyro/include/kinetic \
-    ../../../OOLua/include
+	../../../OOLua/include
 
 win32 {
     INCLUDEPATH += ../../../libGyro/lib/win32
@@ -39,7 +39,7 @@ DEPENDPATH += ../../include \
     ../../../AssetIO/include \
     ../../../libGyro/include \
     ../../../libGyro/include/kinetic \
-    ../../../OOLua/include
+	../../../OOLua/include
 
 HEADERS += \
     ../../include/elysian_warp_system.hpp \

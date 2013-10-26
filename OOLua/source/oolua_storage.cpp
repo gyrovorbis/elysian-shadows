@@ -14,6 +14,7 @@
 namespace OOLUA
 {
 
+	/** \cond INTERNAL*/
 	namespace INTERNAL
 	{
 		
@@ -134,6 +135,7 @@ namespace OOLUA
 		}
 		
 	}
+	/**\endcond*/
 }
 
 

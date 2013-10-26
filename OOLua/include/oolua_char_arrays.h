@@ -1,11 +1,11 @@
 #ifndef OOLUA_CHAR_ARRAYS_H_
 #	define OOLUA_CHAR_ARRAYS_H_
-/*
-This file is to do away with magic string literals
-whilst also not paying the cost of a strlen
+
+/** \cond INTERNAL*/
+/**
+ This file is to do away with magic string literals whilst also not paying the cost of a strlen
 */
 
-//#include "lua_includes.h"
 
 namespace OOLUA
 {
@@ -23,4 +23,5 @@ namespace OOLUA
 
 #define push_char_carray(lua,carray)lua_pushlstring(lua, carray, sizeof(carray)-1)
 
+/** \endcond*/
 #endif
