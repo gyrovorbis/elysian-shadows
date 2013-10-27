@@ -1,10 +1,9 @@
 #include <GL/gl.h>
-#include "elysian_weather.hpp"
+#include "elysian_weather_system.hpp"
 #include "elysian_camera_system.hpp"
 namespace elysian {
-Weather* _weather = NULL;
 
-Weather::Weather(void) :
+WeatherSystem::WeatherSystem(void) :
 	_precipType(PT_NONE),
 	_maxParticles(128),
 	_rainMass(1),
@@ -15,12 +14,12 @@ Weather::Weather(void) :
 	// Load in some texture.
 }
 
-void Weather::destroy(void) {
+void WeatherSystem::destroy(void) {
 	// Do we need to remove a texture?
 	delete this;
 }
 
-void Weather::update(float dt) {
+void WeatherSystem::update(float dt) {
 	// Update particles.
 	generateParticles();
 
@@ -40,7 +39,7 @@ void Weather::update(float dt) {
 	}
 }
 
-void Weather::generateParticles(void) {
+void WeatherSystem::generateParticles(void) {
 	if(_precipType == PT_NONE) {
 		return;
 	}
@@ -52,11 +51,11 @@ void Weather::generateParticles(void) {
 
 }
 
-void Weather::resetParticles(void) {
+void WeatherSystem::resetParticles(void) {
 	_particles.clear();
 }
 
-void Weather::resetParticles(int precipType) {
+void WeatherSystem::resetParticles(int precipType) {
 	std::vector<WeatherParticle>::iterator it = _particles.begin();
 	while(it != _particles.end()) {
 		WeatherParticle& particle = *it;
@@ -69,13 +68,13 @@ void Weather::resetParticles(int precipType) {
 	}
 }
 
-void Weather::render(void) {
+void WeatherSystem::render(void) {
 	_renderRainParticles();
 	_renderSnowParticles();
 	_renderHailParticles();
 }
 
-void Weather::_renderRainParticles(void) {
+void WeatherSystem::_renderRainParticles(void) {
 	// TODO: Bring this inline with gyro_video or whatever is used.
 	glDisable(GL_TEXTURE_2D);
 
@@ -93,15 +92,15 @@ void Weather::_renderRainParticles(void) {
 	glEnd();
 }
 
-void Weather::_renderSnowParticles(void) {
+void WeatherSystem::_renderSnowParticles(void) {
 	// TODO
 }
 
-void Weather::_renderHailParticles(void) {
+void WeatherSystem::_renderHailParticles(void) {
 	// TODO
 }
 
-GYColor4 Weather::getToneModifier(void) const {
+GYColor4 WeatherSystem::getToneModifier(void) const {
 	if(_precipType & PT_RAIN || _precipType & PT_SNOW || _precipType & PT_HAIL) {
 		// TODO: Return colour (0.8f, 0.8f, 0.8f)
 	}

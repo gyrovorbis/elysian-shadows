@@ -110,7 +110,7 @@ HEADERS += \
     ../../../AssetIO/include/elysian_audio_source.hpp \
     ../../include/elysian_audio_system.hpp \
     ../../../AssetIO/include/elysian_generic.hpp \
-    ../../include/elysian_weather.hpp
+    ../../include/elysian_weather_system.hpp
 
 macx {
   OBJECTIVE_HEADERS += ../../../libGyro/lib/osx/SDLMain.h
@@ -166,7 +166,7 @@ SOURCES += \
     ../../../AssetIO/source/elysian_animation.cpp \
     ../../../AssetIO/source/elysian_audio_source.cpp \
     ../../source/elysian_audio_system.cpp \
-    ../../source/elysian_weather.cpp
+    ../../source/elysian_weather_system.cpp
 
 macx {
   OBJECTIVE_SOURCES += ../../../libGyro/lib/osx/SDLMain.mm

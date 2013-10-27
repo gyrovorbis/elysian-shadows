@@ -1,6 +1,7 @@
-#ifndef ELYSIAN_WEATHER_HPP
-#define ELYSIAN_WEATHER_HPP
+#ifndef ELYSIAN_WEATHER_SYSTEM_HPP
+#define ELYSIAN_WEATHER_SYSTEM_HPP
 #include <vector>
+#include "elysian_system.hpp"
 #include "gyro.h"
 
 namespace elysian {
@@ -12,7 +13,7 @@ enum {
 	PT_HAIL = 0x04
 };
 
-struct WeatherParticle {
+struct WeatherParticle : public System {
 	signed int	type;
 	GYVector2	pos;
 	GYVector2	dir;
@@ -31,9 +32,9 @@ struct MistParticle {
 	float		length;
 };
 
-class Weather {
+class WeatherSystem {
 public:
-	Weather(void);
+	WeatherSystem(void);
 	void destroy(void);
 
 	void update(float dt);
@@ -82,8 +83,6 @@ private:
 	GYTexture _snowTexture;
 };
 
-extern Weather* _weather;
-
 } // Namespace elysian.
 
-#endif // ELYSIAN_WEATHER_HPP
+#endif // ELYSIAN_WEATHER_SYSTEM_HPP
