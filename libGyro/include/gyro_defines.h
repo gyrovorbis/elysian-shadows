@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 #define GYRO_FILENAME_MAX_SIZE 200
-#define GYRO_PRINTF_BUFFER_SIZE 300
+#define GYRO_PRINTF_BUFFER_SIZE 500
 
 #ifdef __cplusplus
 }

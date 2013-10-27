@@ -216,13 +216,13 @@ win32 {
 }
 
 macx {
-  LIBS += -L../../lib/osx \
-    -llua52 \
-    -framework OpenGL \
+  LIBS +=  -L../../lib/osx \
+	-framework OpenGL \
     -framework OpenAL \
-        -lz \
+	-lz \
     -F../../../libGyro/lib/osx \
     -L../../../libGyro/lib/osx \
+	-llua52 \
     -framework Foundation \
     -framework Cocoa \
     -lobjc \
@@ -248,15 +248,22 @@ linux {
         -lvorbisfile
 }
 
+macx {
+	CONFIG(release, debug|release) {
+		DESTDIR = ../../../Project
+	}
+	QMAKE_POST_LINK = "./ESGammaAppDereest.command"
+}
+
 win32 {
-  CONFIG(release, debug|release) {
-        DESTDIR = ../../../Project
-  }
+	CONFIG(release, debug|release) {
+		DESTDIR = ../../../Project
+	}
 }
 
 linux {
-    CONFIG(release, debug|release) {
-          DESTDIR = ../../../Project
-    }
+	CONFIG(release, debug|release) {
+		DESTDIR = ../../../Project
+	}
 }
 

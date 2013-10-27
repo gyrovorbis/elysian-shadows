@@ -236,6 +236,14 @@ macx {
 
 RESOURCES += resource/resource.qrc \
 
+macx {
+	CONFIG(release, debug|release) {
+		DESTDIR = ../../Project
+	}
+	QMAKE_POST_LINK = "./ESToolkitAppDereest.command"
+}
+
+
 win32 {
 	  CONFIG(release, debug|release) {
 		    DESTDIR = ../../Project

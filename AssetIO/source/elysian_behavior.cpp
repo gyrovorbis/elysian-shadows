@@ -47,6 +47,9 @@ void Behavior::onDialog(const unsigned screen, const int option) { dbgprintf(LOG
 void Behavior::addTrigger(TRIGGER flag) {
 	std::map<const char*, Behavior*, ltstr>& behaviors = getEntity()->getBehaviors();
 
+	//Trigger already added!
+	if(_triggerBits & flag) return;
+
 	//If entity already has the trigger enabled, we don't need to set anything up
 	for(auto it = behaviors.begin();
 		it != behaviors.end();

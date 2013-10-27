@@ -34,20 +34,24 @@ namespace elysian {
 		//static lua_State *_mainState;
 		static OOLUA::Script *_mainState;
 
-		static bool unloadScript(LuaScript &script);
 		static void showError(void);
 		static int getErrorCode(void);
 		
 		static void _protectedCall(int nargs, int nresults, LuaScript *script);
 		static void _stackDump(void);
 		static int _traceBack (lua_State *L);
+		static LuaScript*			_createScriptFromExisting(const char* const file);
 	public:
 
 		static bool initialize(void);
 		static bool uninitialize(void);
 		
-		static bool runString(const char *const string);
-		static LuaScript *loadScript(const char *const file, bool save=true);
+		static bool					runString(const char *const string);
+		static LuaScript*			loadScript(const char *const file);
+		static LuaBehaviorScript*	loadBehaviorScript(const char *const file);
+		static bool					unloadBehaviorScript(LuaBehaviorScript &script);
+		static bool					unloadScript(LuaScript &script);
+		static bool runScriptSandbox(const char *const file, LuaScript* const script=nullptr);
 
 	};
 	

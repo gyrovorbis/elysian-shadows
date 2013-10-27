@@ -1,5 +1,6 @@
 #include "elysian_lua_manager.hpp"
 #include "elysian_lua_script.hpp"
+#include "elysian_lua_wrappers.hpp"
 #include "elysian_debug.hpp"
 
 namespace elysian {
@@ -95,22 +96,77 @@ void LuaManager::_stackDump (void) {
 	Debug::pop();
 }
 
-	
-	
-LuaScript *LuaManager::loadScript(const char *const file, bool save) {
-	//Check if script has already been loaded, and return its globals table
-	
-	std::map<const char *, LuaScript*, ltstr>::iterator it = _scripts.find(file);
+inline LuaScript *LuaManager::_createScriptFromExisting(const char* const file) {
+	const auto it = _scripts.find(file);
 	if(it != _scripts.end()) {
 		//already allocated
-		Debug::printf(Debug::VERBOSE, "Already loaded - Creating new instance");
+		Debug::printf(Debug::VERBOSE, "Script %s already loaded - Creating new instance", file);
 		it->second->incRefCount();
 		return it->second;
 	}
+	return nullptr;
+}
+
+LuaBehaviorScript* LuaManager::loadBehaviorScript(const char* const file) {
+
+	LuaBehaviorScript* behav = static_cast<LuaBehaviorScript*>(_createScriptFromExisting(file));
+	if(behav) return behav;
+
+	behav = new LuaBehaviorScript(file);
+
+	if(!runScriptSandbox(file, behav)) {
+		delete behav;
+		return nullptr;
+	}
+
+	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, behav->getEnvironRef());	//push _ENV
+	lua_getfield(*_mainState, -1, "setScriptAttrib");						//get _ENV.setScriptAttrib()
+	lua_remove(*_mainState, -2);											//remove _ENV
+	OOLUA::push(*_mainState, behav->getAttrib());							//push attribTable
+	_protectedCall(1, 0, behav);											//call _ENV.setScriptAttrib(attribTable)
+
+	if(behav->getAttrib()->hasParent()) {
+		behav->setParent(loadBehaviorScript(behav->getAttrib()->getParentPath()));
+
+		//Make _ENV inherit from parent._ENV
+		lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, behav->getEnvironRef());					//_ENV
+		lua_newtable(*_mainState);																//metatable
+		lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, behav->getParent()->getEnvironRef());		//parent._ENV
+		lua_setfield(*_mainState, -2, "__index");												//metatable[__index] = parent._ENV;
+		lua_setmetatable(*_mainState, -2);														//setmetatable(_ENV, metatable);
+	}
+
+	if(behav->getAttrib()->getSupportedTriggers() & Behavior::ON_SCRIPT_CREATE) {
+		lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, behav->getEnvironRef());	//push _ENV
+		lua_getfield(*_mainState, -1, "onScriptCreate");						//get _ENV.onScriptCreate()
+		lua_remove(*_mainState, -2);											//remove _ENV
+		_protectedCall(0, 0, behav);											//call _ENV.onScriptCreate()
+	}
+
+	_scripts.insert(std::pair<const char *, LuaScript *>(behav->getPath(), behav));
+	return behav;
+
+}
+
+LuaScript* LuaManager::loadScript(const char * const file) {
+	LuaScript* script = _createScriptFromExisting(file);
+	if(script) return script;
+
+	script = new LuaScript(file);
+
+	if(!runScriptSandbox(file, script)) {
+		delete script;
+		return nullptr;
+	}
+
+	_scripts.insert(std::pair<const char *, LuaScript *>(script->getPath(), script));
+	return script;
+}
+
 	
-	//Shit hasn't been loaded yet
-	LuaScript *script = (save)? new LuaScript(file) : NULL;
-	int ref = 0;
+bool LuaManager::runScriptSandbox(const char *const file, LuaScript* const script) {
+	//Check if script has already been loaded, and return its globals table
+	int ref = LUA_NOREF;
 
 	if((_errorCode = luaL_loadfile(*_mainState, file)) != 0) {
 		showError();
@@ -119,40 +175,72 @@ LuaScript *LuaManager::loadScript(const char *const file, bool save) {
 		}
 		if(script) script->setError();
 		lua_remove(*_mainState, 1);					//take loaded chunk off of stack
+		return false;
+
 	} else {
 		
-		lua_newtable(*_mainState);					//ENV
-		lua_newtable(*_mainState);					//metatable
-		lua_getglobal(*_mainState, "_G");			//globals table
-		lua_setfield(*_mainState, -2, "__index");	//metatable[__index] = _G;
-		lua_setmetatable(*_mainState, -2);			//setmetatable(ENV, metatable);
-		lua_pushvalue(*_mainState, -1);				//duplicate ENV
-		ref = luaL_ref(*_mainState,	LUA_REGISTRYINDEX);	//store reference to ENV in Lua registry 
-		if(script) script->setEnvironRef(ref);		//and save key in LuaScript
+		lua_newtable(*_mainState);							//ENV
+		lua_newtable(*_mainState);							//metatable
+		lua_getglobal(*_mainState, "_G");					//globals table
+		lua_setfield(*_mainState, -2, "__index");			//metatable[__index] = _G;
+		lua_setmetatable(*_mainState, -2);					//setmetatable(ENV, metatable);
+		if(script) {
+			lua_pushvalue(*_mainState, -1);					//duplicate ENV
+			ref = luaL_ref(*_mainState,	LUA_REGISTRYINDEX);	//store reference to ENV in Lua registry
+			script->setEnvironRef(ref);						//and save key in LuaScript
+		}
 		lua_setupvalue(*_mainState, -2, 1);
 		_protectedCall(0, 0, script);
 	}
 
-	if(script) {
-		_scripts.insert(std::pair<const char *, LuaScript *>(script->getPath(), script));
-	} else {
-		luaL_unref(*_mainState, LUA_REGISTRYINDEX, ref);
+	return true;
+}
+
+bool LuaManager::unloadBehaviorScript(LuaBehaviorScript &script) {
+	auto* it = &script;
+	auto* nextIt = it;
+	bool success = true;
+
+	//unload scripts from child to parent,
+	//by traversing up the hierarchy
+	while(it) {
+		nextIt = it->getParent();
+		success &= unloadScript(*it);
+		it = nextIt;
 	}
 
-	return script;
+	return success;
+
 }
 	
 bool LuaManager::unloadScript(LuaScript &script) {
-	for(std::map<const char *, LuaScript *, ltstr>::iterator it = _scripts.begin();
-		it != _scripts.end(); ++it)
+	for(auto it = _scripts.begin();
+		it != _scripts.end();
+		++it)
 	{
+		//We found the bitch in our cache
 		if(&script == it->second) {
+			//Decrease its refCount
 			it->second->decRefCount();
+			//No more references, delete the fucker
 			if(!it->second->getRefCount()) {
+				//Behaviors can clean themselves up with the onScriptDestroy() trigger
+				if(it->second->getType() == LuaScript::TYPE_BEHAVIOR) {
+					auto behav = static_cast<LuaBehaviorScript*>(it->second);
+					if(behav->getAttrib()->getSupportedTriggers() & Behavior::ON_SCRIPT_DESTROY) {
+						lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, behav->getEnvironRef());	//push _ENV
+						lua_getfield(*_mainState, -1, "onScriptDestroy");							//get _ENV.onScriptDestroy()
+						lua_remove(*_mainState, -2);												//remove _ENV
+						_protectedCall(1, 0, behav);												//call _ENV.onScriptDestroy()
+					}
+				}
 				//remove reference to script's ENV from Lua registry
 				luaL_unref(*_mainState, LUA_REGISTRYINDEX, it->second->getEnvironRef());
+				//delete script
 				delete it->second;
+				//remove script from cache
 				_scripts.erase(it);
+				//do a gc sweep
 				_mainState->gc();
 			}
 			return true;
@@ -165,7 +253,6 @@ bool LuaManager::initialize(void) {
 	Debug::printf(Debug::VERBOSE, "LuaManager::initialize() - Initializing main Lua state.");
     Debug::push();
     
-
 	_errorFile = fopen("lua_error.txt", "w");
 	_mainState = new OOLUA::Script; 
 	luaL_openlibs(*_mainState);

@@ -31,9 +31,8 @@ LuaBehavior::LuaBehavior(Entity &entity,
                          script
 #endif
                          ):
-    Behavior(entity),
-    _script(NULL),
-	_selfTableRef(0) {
+	Behavior(entity)
+{
 #ifdef ELYSIAN_ENGINE
 
 	loadScript(script);
@@ -44,9 +43,18 @@ LuaBehavior::LuaBehavior(Entity &entity,
 	
 LuaBehavior::~LuaBehavior(void) {
 #ifdef ELYSIAN_ENGINE
-	//if(_script) luaL_unref(*_mainState, LUA_REGISTRYINDEX, _dataTableRef);
-	if(_triggerBits & ON_DESTROY) onDestroy();
-	LuaManager::unloadScript(*_script);
+
+	//Traverse hierarchy from BOTTOM TO TOP cleaning shit up
+	//    - Call onDestroy if script implements it (NOT if behavior uses it)
+	//    - Delete selfTable
+	for(unsigned i = 0; i < _hierarchyDepth; ++i) {
+		_script = _scriptHierarchy[i];
+		_selfTableRef = _selfTableRefHierarchy[i];
+		if(_script->getAttrib()->getSupportedTriggers() & ON_DESTROY) onDestroy();
+		luaL_unref(*_mainState, LUA_REGISTRYINDEX, _selfTableRefHierarchy[i]);
+	}
+
+	LuaManager::unloadBehaviorScript(*_script);
 #endif
 }
 
@@ -91,11 +99,49 @@ bool LuaBehavior::loadScript(const char *file) {
 	}
 
 #ifdef ELYSIAN_ENGINE
-	_script = LuaManager::loadScript(file);
-#endif
+	_script = LuaManager::loadBehaviorScript(file);
 
-	//if(_triggerBits & ONCREATE) MANDATORY!
-	onCreate();
+	//Climb hierarchy and create top-down list
+	for(auto* script = _script;
+		script != nullptr;
+		script = script->getParent())
+	{
+		_scriptHierarchy[_hierarchyDepth++] = script;
+	}
+
+	//Iterate over hierarchy from parent to child order
+	//Should we ever store the selfTable hierarchy?
+	int parentSelfTableRef = LUA_NOREF;
+	for(int curIndex = _hierarchyDepth-1; curIndex >= 0; --curIndex) {
+
+		lua_newtable(*_mainState);											//create new selfTable
+		lua_pushvalue(*_mainState, -1);										//duplicate on stack
+		_selfTableRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);			//store in registry
+		_selfTableRefHierarchy[curIndex] = _selfTableRef;
+
+		if(parentSelfTableRef != LUA_NOREF) { 	//inherit parent's self table if child
+
+			lua_newtable(*_mainState);										//metatable
+			lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, parentSelfTableRef);	//parentSelfTable
+			lua_setfield(*_mainState, -2, "__index");						//metatable[__index] = parentSelfTable;
+			lua_setmetatable(*_mainState, -2);								//setmetatable(selfTable, metatable);
+
+		} else { //initialize self.selfEntity if parent
+
+			OOLUA::push(*_mainState, getEntity());							//push parent entity
+			lua_setfield(*_mainState, -2, "selfEntity");					//selfTable.selfEntity = entity
+		}
+
+		_script = _scriptHierarchy[curIndex];
+
+		//add script triggers to behavior default triggers
+		addTriggers(_script->getAttrib()->getSupportedTriggers());
+
+		if(_triggerBits & ON_CREATE) onCreate();
+		parentSelfTableRef = _selfTableRef;
+	}
+
+#endif
 	return true;
 }
 
@@ -124,9 +170,8 @@ void LuaBehavior::onCreate(void) {
 	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
 	lua_getfield(*_mainState, -1, "onCreate");								//get ENV.onCreate()
 	lua_remove(*_mainState, -2);											//remove ENV
-	_protectedCall(0, 1, _script);											//call onCreate()
-	_selfTableRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);				//store ref to return table
-	_ooSelfTableRef.set_ref(*_mainState, _selfTableRef);
+	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push selfTable arg
+	_protectedCall(1, 0, _script);											//call onCreate(selfTable)
 	
 #endif
 }

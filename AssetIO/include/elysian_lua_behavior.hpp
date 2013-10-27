@@ -4,14 +4,18 @@
 #include "elysian_behavior.hpp"
 #ifdef ELYSIAN_ENGINE
 #	include "elysian_lua_manager.hpp"
+#	include <lua/lua.hpp>
+#else
+#	define LUA_NOREF 0
 #endif
 
-#define ELYSIAN_LUA_BEHAVIOR_NAME "LuaBehavior"
+#define ELYSIAN_LUA_BEHAVIOR_NAME				"LuaBehavior"
+#define ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH	5
 
 namespace elysian {
 
 	class Entity;
-	class LuaScript;
+	class LuaBehaviorScript;
 	class Collidable;
 
     class LuaBehavior: 
@@ -22,8 +26,11 @@ namespace elysian {
 	{
 	friend class Entity;
 	protected:
-		LuaScript*			_script;
-		int					_selfTableRef;
+		LuaBehaviorScript*	_scriptHierarchy[ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH]		= { nullptr };
+		int					_selfTableRefHierarchy[ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH]	= { LUA_NOREF };
+		LuaBehaviorScript*	_script = nullptr;
+		int					_selfTableRef = LUA_NOREF;
+		unsigned			_hierarchyDepth = 0;
 #ifdef ELYSIAN_ENGINE
 		OOLUA::Lua_table_ref _ooSelfTableRef;
 #endif

@@ -20,6 +20,7 @@
 #include "elysian_party_system.hpp"
 #include "elysian_timer_system.hpp"
 #include "elysian_audio_source.hpp"
+#include "elysian_lua_script.hpp"
 
 /* IT'S NOT SAFE TO GO ALONE! TAKE THIS HEADER FILE. IT WILL HELP
  * YOU ON YOUR JOURNEY!
@@ -42,36 +43,46 @@
 
 namespace OOLUA
 {
-    typedef elysian::InstanceTransform		InstanceTransform;
-	typedef elysian::RenderableObject		RenderableObject;
-	typedef elysian::Component				Component;
-	typedef elysian::Entity					Entity;
-	typedef elysian::RectAttrib				RectAttrib;
-	typedef elysian::TexturedAttrib			TexturedAttrib;
-	typedef elysian::SpriteAttrib			SpriteAttrib;
-	typedef elysian::Renderable				Renderable;
-	typedef elysian::AnimationSequence		AnimationSequence;
-	typedef elysian::AnimationAttrib		AnimationAttrib;
-	typedef elysian::Animation				Animation;
-	typedef elysian::CollisionFlags			CollisionFlags;
-	typedef elysian::CollidableAttrib		CollidableAttrib;
-	typedef elysian::Collidable				Collidable;
-	typedef elysian::Character				Character;
-	typedef elysian::Warp					Warp;
-	typedef elysian::Behavior				Behavior;
-	typedef elysian::LuaBehavior			LuaBehavior;
-	typedef elysian::Tile					Tile;
-	typedef elysian::Level					Level;
-	typedef elysian::MapEntry				MapEntry;
-	typedef elysian::TileEntry				TileEntry;
-	typedef elysian::Area					Area;
-	typedef elysian::GameInput				GameInput;
-	typedef elysian::PartySystem			PartySystem;
-	typedef elysian::TimerSystem			TimerSystem;
-	typedef elysian::Singletons				Singletons;
-	typedef elysian::AudioSource			AudioSource;
-	typedef elysian::AudioSystem			AudioSystem;
+	typedef elysian::InstanceTransform			InstanceTransform;
+	typedef elysian::RenderableObject			RenderableObject;
+	typedef elysian::Component					Component;
+	typedef elysian::Entity						Entity;
+	typedef elysian::RectAttrib					RectAttrib;
+	typedef elysian::TexturedAttrib				TexturedAttrib;
+	typedef elysian::SpriteAttrib				SpriteAttrib;
+	typedef elysian::Renderable					Renderable;
+	typedef elysian::AnimationSequence			AnimationSequence;
+	typedef elysian::AnimationAttrib			AnimationAttrib;
+	typedef elysian::Animation					Animation;
+	typedef elysian::CollisionFlags				CollisionFlags;
+	typedef elysian::CollidableAttrib			CollidableAttrib;
+	typedef elysian::Collidable					Collidable;
+	typedef elysian::Character					Character;
+	typedef elysian::Warp						Warp;
+	typedef elysian::Behavior					Behavior;
+	typedef elysian::LuaBehavior				LuaBehavior;
+	typedef elysian::Tile						Tile;
+	typedef elysian::Level						Level;
+	typedef elysian::MapEntry					MapEntry;
+	typedef elysian::TileEntry					TileEntry;
+	typedef elysian::Area						Area;
+	typedef elysian::GameInput					GameInput;
+	typedef elysian::PartySystem				PartySystem;
+	typedef elysian::TimerSystem				TimerSystem;
+	typedef elysian::Singletons					Singletons;
+	typedef elysian::AudioSource				AudioSource;
+	typedef elysian::AudioSystem				AudioSystem;
+	typedef elysian::LuaBehaviorScriptAttrib	LuaBehaviorScriptAttrib;
 }
+
+OOLUA_PROXY(LuaBehaviorScriptAttrib)
+	OOLUA_TAGS (
+		No_public_constructors,
+		No_public_destructor
+	)
+	OOLUA_MFUNC(inheritFromBehavior)
+	OOLUA_MFUNC(addSupportedTrigger)
+OOLUA_PROXY_END
 
 OOLUA_PROXY(GYVector2)
     OOLUA_MGET_MSET(x)
@@ -510,6 +521,8 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 
 	//Behavior::TRIGGER
 	typedef OOLUA::Behavior Behavior;
+	s->register_class_static<Behavior>("ON_SCRIPT_CREATE", Behavior::ON_SCRIPT_CREATE);
+	s->register_class_static<Behavior>("ON_SCRIPT_DESTROY", Behavior::ON_SCRIPT_DESTROY);
 	s->register_class_static<Behavior>("ON_CREATE", Behavior::ON_CREATE);
 	s->register_class_static<Behavior>("ON_DESTROY", Behavior::ON_DESTROY);
 	s->register_class_static<Behavior>("ON_LOAD", Behavior::ON_LOAD);

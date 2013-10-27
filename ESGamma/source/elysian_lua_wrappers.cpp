@@ -8,6 +8,7 @@ namespace elysian {
 	void LuaManager::_registerWrappers(void) {
 		
 		//Register classes and structs
+		_mainState->register_class<LuaBehaviorScriptAttrib>();
 		_mainState->register_class<GYVector2>();
 		_mainState->register_class<InstanceTransform>();
 		OOLUA::register_class_and_bases<Entity>(*_mainState);
@@ -54,6 +55,11 @@ namespace elysian {
 	}
 
 }
+
+OOLUA_EXPORT_FUNCTIONS(LuaBehaviorScriptAttrib,
+					   inheritFromBehavior,
+					   addSupportedTrigger)
+OOLUA_EXPORT_FUNCTIONS_CONST(LuaBehaviorScriptAttrib)
 
 EXPORT_OOLUA_FUNCTIONS_2_CONST(GYVector2, get_x, get_y)
 EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(GYVector2, set_x, set_y)
