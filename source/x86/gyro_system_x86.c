@@ -7,7 +7,16 @@
 
 
 int gySysInit(void) {
-	_gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86 v%s\n", GYRO_LIB_VERSION);
+	const char* platString =
+#ifdef __APPLE__
+	"OSX";
+#elif defined(WIN32)
+	"WINDOWS";
+#else
+	"LINUX"
+#endif
+
+	_gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86 [%s] v%s", platString, GYRO_LIB_VERSION);
     return 1;
 }
 
