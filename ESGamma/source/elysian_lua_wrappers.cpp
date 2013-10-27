@@ -1,6 +1,8 @@
 #include "elysian_lua_wrappers.hpp"
 #include "elysian_lua_manager.hpp"
 
+#include "elysian_entity.hpp"
+
 namespace elysian {
 
 	void LuaManager::_registerWrappers(void) {
@@ -40,6 +42,7 @@ namespace elysian {
 		_mainState->register_class_static<Singletons>("setProcessInput", &Singletons_setProcessInput);
 		_mainState->register_class_static<Singletons>("getPartySys", &Singletons_getPartySystem);
 		_mainState->register_class_static<Singletons>("getTimerSys", &Singletons_getTimerSystem);
+		_mainState->register_class_static<Singletons>("getAudioSys", &Singletons_getAudioSystem);
 
 		//libGyro wrappers
 		_mainState->register_class_static<gyro>("filePath", &gyroFilePath);
@@ -83,28 +86,29 @@ EXPORT_OOLUA_FUNCTIONS_0_CONST(RenderableObject)
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Component)
 EXPORT_OOLUA_FUNCTIONS_1_CONST(Component, getEntity)
 
-EXPORT_OOLUA_FUNCTIONS_13_NON_CONST(Entity,
-									activate,
-									deactivate,
-									move,
-									setName,
-									setElev,
-									addRenderable,
-									addAnimation,
-									addCollidable,
-									addCharacter,
-									addWarp,
-									addAudioSource,
-									addBehavior,
-									addLuaBehavior)
-									//removeRenderable,
-									//removeAnimation,
-									//removeCollidable,
-									//removeCharacter,
-									//removeWarp,
-									//removeBehavior,
-									//removeLuaBehavior)
-EXPORT_OOLUA_FUNCTIONS_10_CONST(Entity,
+OOLUA_EXPORT_FUNCTIONS(Entity,
+						activate,
+						deactivate,
+						move,
+						setName,
+						setElev,
+						addRenderable,
+						addAnimation,
+						addCollidable,
+						addCharacter,
+						addWarp,
+						addAudioSource,
+						addBehavior,
+						addLuaBehavior,
+						removeRenderable,
+						removeAnimation,
+						removeCollidable,
+						removeCharacter,
+						removeWarp,
+						removeAudioSource,
+						removeBehavior,
+						removeLuaBehavior);
+OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getName,
 								getElev,
 								getRenderable,
@@ -286,6 +290,54 @@ EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(PartySystem,
 EXPORT_OOLUA_FUNCTIONS_2_CONST(PartySystem,
 								getPartyLeader,
 								getCharacterPartyMember)
+
+OOLUA_EXPORT_FUNCTIONS(AudioSystem,
+					   loadBgmTrack,
+					   setBgmTrack,
+					   fadeOutBgmTrack,
+					   fadeInBgmTrack,
+					   morphIntoBgmTrack,
+					   setBgmTrackLooping,
+					   setBgmTrackGain,
+					   fadeIntoBgmTrack,
+					   morphIntoNewBgmTrack,
+					   fadeIntoNewBgmTrack,
+					   loadAuxTrack,
+					   fadeOutAuxTrack,
+					   fadeInAuxTrack,
+					   morphIntoNewAuxTrack,
+					   fadeIntoNewAuxTrack,
+					   setAuxTrackLooping,
+					   setAuxTrackGain)
+
+
+OOLUA_EXPORT_FUNCTIONS_CONST(AudioSystem,
+							 playSfxChannel,
+							 stopSfxChannel,
+							 setSfxChannelGain,
+							 setSfxChannelPitch,
+							 setSfxChannelLooping,
+							 setSfxChannelRolloffFactor,
+							 setSfxChannelPos,
+							 playBgmTrack,
+							 stopBgmTrack,
+							 pauseBgmTrack,
+							 isBgmTrackPlaying,
+							 getBgmTrack,
+							 getBgmTrackPath,
+							 setBgmTrackPitch,
+							 setBgmTrackPos,
+							 setBgmTrackRolloffFactor,
+							 playAuxTrack,
+							 stopAuxTrack,
+							 pauseAuxTrack,
+							 isAuxTrackPlaying,
+							 getAuxTrackPath,
+							 setAuxTrackPitch,
+							 setAuxTrackPos,
+							 setAuxTrackRolloffFactor,
+							 getBgmTrackTime,
+							 getAuxTrackTime)
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Singletons)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(Singletons)

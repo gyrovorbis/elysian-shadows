@@ -59,6 +59,7 @@ void gyAudOggUpdate(GYWavSource* const src, struct _GYOgg* const ogg);
 void gyAudStopOggStream(GYWavSource*const src, GYOgg*const ogg);
 void gyAudPauseOggStream(GYWavSource*const src, GYOgg*const ogg);
 void gyAudOggSync(GYOgg*const ogg1, GYOgg*const ogg2);
+double gyAudOggTime(GYOgg*const ogg);
 void gyAudOggSetLooping(GYOgg*const ogg, const unsigned looping);
 
 

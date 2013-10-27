@@ -581,6 +581,10 @@ void gyAudOggSetLooping(GYOgg*const ogg, const unsigned looping) {
 	ogg->looping = looping;
 }
 
+double gyAudOggTime(GYOgg*const ogg) {
+	GYOggPayload* payload = ogg->_data;
+	return ov_time_tell(&payload->oggStream);
+}
 
 
 

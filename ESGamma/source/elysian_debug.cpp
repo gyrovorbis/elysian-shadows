@@ -590,13 +590,13 @@ bool Debug::parseArguments(void) {
 	strcpy(_cmdLineArgs.level, ELYSIAN_DEBUG_LEVEL_DEFAULT);
 	strcpy(_cmdLineArgs.area, ELYSIAN_DEBUG_AREA_DEFAULT);
 
-	FILE *file = fopen(gyFilePath("gamma_args.txt"), "r");
+	FILE *file = fopen(gyFilePath(ELYSIAN_DEBUG_ARG_FILE), "r");
 	if(file) { //read cmd-line arguments from file
-		printf(VERBOSE, "Debug::InitializeEngine() - initializing from text file");
+		printf(VERBOSE, "Debug::parseArguments(void) - initializing from '%s'", ELYSIAN_DEBUG_ARG_FILE);
 		push();
 		while(fscanf(file, "%s", argBuff[argc]) != EOF) {
 			argv[argc+1] = argBuff[argc]; //yes, I'm really doing this.
-			printf(VERBOSE, "ARG - %s", argv[argc+1]);
+			printf(VERBOSE, "argv[%d] - %s", argc+1, argv[argc+1]);
 			++argc;
 		}
 		fclose(file);
@@ -610,7 +610,7 @@ bool Debug::parseArguments(void) {
 bool Debug::parseArguments(int argc, char *argv[]) {
 	if(argc <= 1) return parseArguments(); //default init
 
-	printf(VERBOSE, "Debug::InitializeEngine(%d, char *argv[])", argc);
+	printf(VERBOSE, "Debug::parseArguments(%d, char *argv[])", argc);
 	push();
 	for(unsigned int i = 1; i < (unsigned int)argc; ++i) {
 		if(argv[i][0] != '-') {

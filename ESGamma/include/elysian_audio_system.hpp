@@ -28,7 +28,7 @@ namespace elysian {
 		void		setSfxChannelPitch(const unsigned channel, const float val) const;
 		void		setSfxChannelLooping(const unsigned channel, const bool val) const;
         void		setSfxChannelRolloffFactor(const unsigned channel, const float val) const;
-		void		setSfxChannelPos(const unsigned channel, const GYVector3 &pos) const;
+		void		setSfxChannelPos(const unsigned channel, const GYVector2 &pos, const unsigned elev) const;
 
 		//OGG BGM API
 		void		loadBgmTrack(const unsigned track, const char*const path);
@@ -38,14 +38,15 @@ namespace elysian {
 		bool		isBgmTrackPlaying(void) const;
 		unsigned	getBgmTrack(void) const;
         void		setBgmTrack(const unsigned track);
-		const char* getBgmTrackPath(const unsigned track);
+		const char* getBgmTrackPath(const unsigned track) const;
+		double		getBgmTrackTime(void) const;
 		void		fadeOutBgmTrack(const float secs);
 		void		fadeInBgmTrack(const float secs);
 		void		morphIntoBgmTrack(const unsigned track, const float secs);
 		void		setBgmTrackLooping(const bool val);
 		void		setBgmTrackGain(const float val);
 		void		setBgmTrackPitch(const float val) const;
-		void		setBgmTrackPos(const GYVector3& pos) const;
+		void		setBgmTrackPos(const GYVector2& pos, const unsigned elev) const;
 		void		setBgmTrackRolloffFactor(const float val) const;
 		void		fadeIntoBgmTrack(const unsigned track, const float secs);
 		void		morphIntoNewBgmTrack(const unsigned track, const float secs, const char* path);
@@ -59,6 +60,7 @@ namespace elysian {
 		void		pauseAuxTrack(const unsigned track) const;
 		bool		isAuxTrackPlaying(const unsigned track) const;
 		const char*	getAuxTrackPath(const unsigned track) const;
+		double		getAuxTrackTime(const unsigned track) const;
 		void		fadeOutAuxTrack(const unsigned track, const float secs);
 		void 		fadeInAuxTrack(const unsigned track, const float secs);
 		void		morphIntoNewAuxTrack(const unsigned track, const float secs, const char* path);
@@ -66,7 +68,7 @@ namespace elysian {
 		void		setAuxTrackLooping(const unsigned track, const bool val);
 		void		setAuxTrackGain(const unsigned track, const float val);
 		void		setAuxTrackPitch(const unsigned track, const float val) const;
-		void		setAuxTrackPos(const unsigned track, const GYVector3& pos) const;
+		void		setAuxTrackPos(const unsigned track, const GYVector2& pos, const unsigned elev) const;
 		void		setAuxTrackRolloffFactor(const unsigned track, const float val) const;
 
 		//Internal

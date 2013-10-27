@@ -23,9 +23,9 @@ namespace elysian {
 	friend class Entity;
 	protected:
 		LuaScript*			_script;
-		int					_dataTableRef;
+		int					_selfTableRef;
 #ifdef ELYSIAN_ENGINE
-		OOLUA::Lua_table_ref _ooDataTableRef;
+		OOLUA::Lua_table_ref _ooSelfTableRef;
 #endif
 							LuaBehavior(Entity &entity, const char *script);
 							~LuaBehavior(void);
@@ -56,9 +56,9 @@ namespace elysian {
 		virtual void		onExamine(Entity* entity) override;
 		virtual void		onDialog(const unsigned screen, const int option) override;
 		
-		int					getDataTableRef(void) const;
+		int					getSelfTableRef(void) const;
 #ifdef ELYSIAN_ENGINE
-		OOLUA::Lua_table_ref& getDataTable(void) { return _ooDataTableRef; }
+		OOLUA::Lua_table_ref& getSelfTable(void) { return _ooSelfTableRef; }
 #endif
     };
 
@@ -66,7 +66,7 @@ namespace elysian {
 	//======= INLINEZ ======
 	
 	inline const char* LuaBehavior::getBehavName(void) const { return ELYSIAN_LUA_BEHAVIOR_NAME; }
-	inline int LuaBehavior::getDataTableRef(void) const { return _dataTableRef; }
+	inline int LuaBehavior::getSelfTableRef(void) const { return _selfTableRef; }
 
 
 	

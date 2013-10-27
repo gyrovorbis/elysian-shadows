@@ -46,8 +46,20 @@ ESToolkit::ESToolkit(QWidget *parent):
     AssetManager::_assets = &_assets;
     elysian::Behavior::staticConstructor();
 
+	const QString verString = QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" \"Audacious Cuntwhisp\" Release");
+	const char* platString =
+#ifdef __APPLE__
+	"OSX";
+#elif defined(WIN32)
+	"WINDOWS";
+#else
+	"LINUX"
+#endif
+
+	Debug::Logf(Debug::VERBOSE, "Initializing %s [%s]", verString.toStdString().c_str(), platString);
+
 	_ui->setupUi(this);
-	setWindowTitle(QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" \"Audacious Cuntwhisp\" Release"));
+	setWindowTitle(verString);
 
     //Instantiate external dialogs/tools
 	_sheetManager = new SheetManager(/*this*/);

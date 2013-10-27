@@ -39,6 +39,8 @@ namespace elysian {
 		static int getErrorCode(void);
 		
 		static void _protectedCall(int nargs, int nresults, LuaScript *script);
+		static void _stackDump(void);
+		static int _traceBack (lua_State *L);
 	public:
 
 		static bool initialize(void);
@@ -51,9 +53,13 @@ namespace elysian {
 	
 	inline void LuaManager::_protectedCall(int nargs, int nresults, LuaScript *script) {
 #ifdef ELYSIAN_LUA_DEBUG
-		if((_errorCode = lua_pcall(*_mainState, nargs, nresults, 0)) != 0) {
+
+		lua_pushcfunction(*_mainState, &LuaManager::_traceBack);
+		lua_insert(*_mainState, 1);
+		if((_errorCode = lua_pcall(*_mainState, nargs, nresults, 1)) != 0) {
 			showError();
             if(script) script->setError();
+			_stackDump();
 		}
 #else
 		lua_call(*_mainState, nargs, nresults);

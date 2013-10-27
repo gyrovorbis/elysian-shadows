@@ -70,6 +70,7 @@ namespace OOLUA
 	typedef elysian::TimerSystem			TimerSystem;
 	typedef elysian::Singletons				Singletons;
 	typedef elysian::AudioSource			AudioSource;
+	typedef elysian::AudioSystem			AudioSystem;
 }
 
 OOLUA_PROXY(GYVector2)
@@ -144,13 +145,14 @@ OOLUA_PROXY(Entity, RenderableObject)
     OOLUA_MEM_FUNC_CONST(AudioSource*, getAudioSource)
     OOLUA_MEM_FUNC_CONST(Behavior*, getBehavior, const char*)
     OOLUA_MEM_FUNC_CONST(LuaBehavior*, getLuaBehavior, const char*)
-	//OOLUA_MEM_FUNC_0(void, removeRenderable)
-	//OOLUA_MEM_FUNC_0(void, removeAnimation)
-	//OOLUA_MEM_FUNC_0(void, removeCollidable)
-	//OOLUA_MEM_FUNC_0(void, removeCharacter)
-	//OOLUA_MEM_FUNC_0(void, removeWarp)
-	//OOLUA_MEM_FUNC_1(void, removeBehavior, const char*)
-	//OOLUA_MEM_FUNC_1(void, removeLuaBehavior, const char*)
+	OOLUA_MEM_FUNC(void, removeRenderable)
+	OOLUA_MEM_FUNC(void, removeAnimation)
+	OOLUA_MEM_FUNC(void, removeCollidable)
+	OOLUA_MEM_FUNC(void, removeCharacter)
+	OOLUA_MEM_FUNC(void, removeWarp)
+	OOLUA_MEM_FUNC(void, removeAudioSource)
+	OOLUA_MEM_FUNC(void, removeBehavior, const char*)
+	OOLUA_MEM_FUNC(void, removeLuaBehavior, const char*)
 
 
 	/* TODO: Components and Move */
@@ -407,6 +409,56 @@ OOLUA_PROXY(TimerSystem)
     OOLUA_MEM_FUNC_CONST(float, getDeltaTime)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(AudioSystem)
+	OOLUA_TAGS (
+		No_public_constructors,
+		No_public_destructor
+	)
+	OOLUA_MFUNC_CONST(playSfxChannel)
+	OOLUA_MFUNC_CONST(stopSfxChannel)
+	OOLUA_MFUNC_CONST(setSfxChannelGain)
+	OOLUA_MFUNC_CONST(setSfxChannelPitch)
+	OOLUA_MFUNC_CONST(setSfxChannelLooping)
+	OOLUA_MFUNC_CONST(setSfxChannelRolloffFactor)
+	OOLUA_MFUNC_CONST(setSfxChannelPos)
+	OOLUA_MFUNC(loadBgmTrack)
+	OOLUA_MFUNC_CONST(playBgmTrack)
+	OOLUA_MFUNC_CONST(stopBgmTrack)
+	OOLUA_MFUNC_CONST(pauseBgmTrack)
+	OOLUA_MFUNC_CONST(isBgmTrackPlaying)
+	OOLUA_MFUNC_CONST(getBgmTrack)
+	OOLUA_MFUNC(setBgmTrack)
+	OOLUA_MFUNC_CONST(getBgmTrackPath)
+	OOLUA_MFUNC(fadeOutBgmTrack)
+	OOLUA_MFUNC(fadeInBgmTrack)
+	OOLUA_MFUNC(morphIntoBgmTrack)
+	OOLUA_MFUNC(setBgmTrackLooping)
+	OOLUA_MFUNC(setBgmTrackGain)
+	OOLUA_MFUNC_CONST(setBgmTrackPitch)
+	OOLUA_MFUNC_CONST(setBgmTrackPos)
+	OOLUA_MFUNC_CONST(setBgmTrackRolloffFactor)
+	OOLUA_MFUNC(fadeIntoBgmTrack)
+	OOLUA_MFUNC(morphIntoNewBgmTrack)
+	OOLUA_MFUNC(fadeIntoNewBgmTrack)
+	OOLUA_MFUNC_CONST(getBgmTrackTime)
+	OOLUA_MFUNC(loadAuxTrack)
+	OOLUA_MFUNC_CONST(playAuxTrack)
+	OOLUA_MFUNC_CONST(stopAuxTrack)
+	OOLUA_MFUNC_CONST(pauseAuxTrack)
+	OOLUA_MFUNC_CONST(isAuxTrackPlaying)
+	OOLUA_MFUNC_CONST(getAuxTrackPath)
+	OOLUA_MFUNC(fadeOutAuxTrack)
+	OOLUA_MFUNC(fadeInAuxTrack)
+	OOLUA_MFUNC(morphIntoNewAuxTrack)
+	OOLUA_MFUNC(fadeIntoNewAuxTrack)
+	OOLUA_MFUNC(setAuxTrackLooping)
+	OOLUA_MFUNC(setAuxTrackGain)
+	OOLUA_MFUNC_CONST(setAuxTrackPitch)
+	OOLUA_MFUNC_CONST(setAuxTrackPos)
+	OOLUA_MFUNC_CONST(setAuxTrackRolloffFactor)
+	OOLUA_MFUNC_CONST(getAuxTrackTime)
+OOLUA_PROXY_END
+
 OOLUA_PROXY(Singletons)
     OOLUA_TAGS (
         No_public_constructors,
@@ -567,6 +619,10 @@ static inline int Singletons_setProcessInput(lua_State* const l) {
 
 static inline int Singletons_getPartySystem(lua_State* const l) {
     OOLUA_C_FUNCTION(elysian::PartySystem*, elysian::Singletons::getPartySys)
+}
+
+static inline int Singletons_getAudioSystem(lua_State* const l) {
+	OOLUA_C_FUNCTION(elysian::AudioSystem*, elysian::Singletons::getAudioSys)
 }
 
 static inline int Singletons_getTimerSystem(lua_State* const l) {

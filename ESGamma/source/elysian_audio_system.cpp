@@ -312,10 +312,11 @@ namespace elysian {
 		gyAudSourceSeti(_channels[channel].src, GY_SOURCE_LOOPING, static_cast<int>(val));
 	}
 
-	void AudioSystem::setSfxChannelPos(const unsigned channel, const GYVector3 &pos) const {
+	void AudioSystem::setSfxChannelPos(const unsigned channel, const GYVector2 &pos, const unsigned elev) const {
         //gyAudSourceSetf(_channels[channel].src, GY_SOURCE_ROLLOFF_FACTOR, 1.0f);
         //gyAudSourceSeti(_channels[channel].src, GY_SOURCE_RELATIVE, 1);
-		gyAudSourceSetfv(_channels[channel].src, GY_SOURCE_POS, &pos);
+		GYVector3 pos3 = { pos.x, pos.y, static_cast<float>(elev) };
+		gyAudSourceSetfv(_channels[channel].src, GY_SOURCE_POS, &pos3);
 	}
 
     void AudioSystem::setSfxChannelRolloffFactor(const unsigned channel, const float val) const {
@@ -391,14 +392,15 @@ namespace elysian {
 		_bgmLooping = val;
 	}
 
-	const char* AudioSystem::getBgmTrackPath(const unsigned track) {
+	const char* AudioSystem::getBgmTrackPath(const unsigned track) const {
 		return _bgmTracks[track]->path;
 	}
 
-	void AudioSystem::setBgmTrackPos(const GYVector3& pos) const {
+	void AudioSystem::setBgmTrackPos(const GYVector2& pos, const unsigned elev) const {
+		GYVector3 pos3 = { pos.x, pos.y, static_cast<float>(elev) };
 		for(unsigned i = 0; i < 2; ++i) {
 			//gyAudSourceSetf(_channels[i].src, GY_SOURCE_ROLLOFF_FACTOR, 1.0f);
-			gyAudSourceSetfv(_streamChannels[i].src, GY_SOURCE_POS, &pos);
+			gyAudSourceSetfv(_streamChannels[i].src, GY_SOURCE_POS, &pos3);
 		}
 	}
 
@@ -420,6 +422,10 @@ namespace elysian {
 		for(unsigned i = 0; i < 2; ++i) {
 			gyAudSourceSetf(_streamChannels[i].src, GY_SOURCE_PITCH, val);
 		}
+	}
+
+	double AudioSystem::getBgmTrackTime(void) const {
+		return gyAudOggTime(_streamChannels[StreamChannel::Type::BGM].ogg);
 	}
 
 	void AudioSystem::morphIntoBgmTrack(const unsigned track, const float secs) {
@@ -637,13 +643,14 @@ namespace elysian {
 		}
 	}
 
-	void AudioSystem::setAuxTrackPos(const unsigned track, const GYVector3& pos) const {
+	void AudioSystem::setAuxTrackPos(const unsigned track, const GYVector2& pos, const unsigned elev) const {
+		GYVector3 pos3 = { pos.x, pos.y, static_cast<float>(elev)  };
 		if(track == 0) {
-			gyAudSourceSetfv(_streamChannels[StreamChannel::Type::AUX_1].src, GY_SOURCE_POS, &pos);
-			gyAudSourceSetfv(_streamChannels[StreamChannel::Type::AUX_1_TRAN].src, GY_SOURCE_POS, &pos);
+			gyAudSourceSetfv(_streamChannels[StreamChannel::Type::AUX_1].src, GY_SOURCE_POS, &pos3);
+			gyAudSourceSetfv(_streamChannels[StreamChannel::Type::AUX_1_TRAN].src, GY_SOURCE_POS, &pos3);
 		} else {
-			gyAudSourceSetfv(_streamChannels[StreamChannel::Type::AUX_2].src, GY_SOURCE_POS, &pos);
-			gyAudSourceSetfv(_streamChannels[StreamChannel::Type::AUX_2_TRAN].src, GY_SOURCE_POS, &pos);
+			gyAudSourceSetfv(_streamChannels[StreamChannel::Type::AUX_2].src, GY_SOURCE_POS, &pos3);
+			gyAudSourceSetfv(_streamChannels[StreamChannel::Type::AUX_2_TRAN].src, GY_SOURCE_POS, &pos3);
 		}
 	}
 
@@ -654,6 +661,14 @@ namespace elysian {
 		} else {
 			gyAudSourceSetf(_streamChannels[StreamChannel::Type::AUX_2].src, GY_SOURCE_ROLLOFF_FACTOR, val);
 			gyAudSourceSetf(_streamChannels[StreamChannel::Type::AUX_2_TRAN].src, GY_SOURCE_ROLLOFF_FACTOR, val);
+		}
+	}
+
+	double AudioSystem::getAuxTrackTime(const unsigned track) const {
+		if(track == 0) {
+			return gyAudOggTime(_streamChannels[StreamChannel::Type::AUX_1].ogg);
+		} else {
+			return gyAudOggTime(_streamChannels[StreamChannel::Type::AUX_2].ogg);
 		}
 	}
 

@@ -33,7 +33,7 @@ LuaBehavior::LuaBehavior(Entity &entity,
                          ):
     Behavior(entity),
     _script(NULL),
-    _dataTableRef(0) {
+	_selfTableRef(0) {
 #ifdef ELYSIAN_ENGINE
 
 	loadScript(script);
@@ -94,12 +94,8 @@ bool LuaBehavior::loadScript(const char *file) {
 	_script = LuaManager::loadScript(file);
 #endif
 
-    dbgprintf(LOG_VERBOSE, "AFTER LOAD");
-
 	//if(_triggerBits & ONCREATE) MANDATORY!
 	onCreate();
-
-	dbgPop();
 	return true;
 }
 
@@ -111,7 +107,7 @@ void LuaBehavior::onUpdate(void) {
 	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
 	lua_getfield(*_mainState, -1, "onUpdate");								//get ENV.onUpdate()
 	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _dataTableRef);				//push dataTableRef arg
+	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push dataTableRef arg
 	_protectedCall(1, 0, _script);											//call onUpdate(dataTable)
 #endif
 }
@@ -129,8 +125,8 @@ void LuaBehavior::onCreate(void) {
 	lua_getfield(*_mainState, -1, "onCreate");								//get ENV.onCreate()
 	lua_remove(*_mainState, -2);											//remove ENV
 	_protectedCall(0, 1, _script);											//call onCreate()
-	_dataTableRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);				//store ref to return table
-	_ooDataTableRef.set_ref(*_mainState, _dataTableRef);
+	_selfTableRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);				//store ref to return table
+	_ooSelfTableRef.set_ref(*_mainState, _selfTableRef);
 	
 #endif
 }
@@ -141,7 +137,7 @@ void LuaBehavior::onDestroy(void) {
 	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
 	lua_getfield(*_mainState, -1, "onDestroy");								//get ENV.onDestroy()
 	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _dataTableRef);				//push dataTableRef arg
+	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push dataTableRef arg
 	_protectedCall(1, 0, _script);		
 #endif
 }
@@ -152,7 +148,7 @@ void LuaBehavior::onLoad(void) {
 	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
 	lua_getfield(*_mainState, -1, "onLoad");								//get ENV.onLoad()
 	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _dataTableRef);				//push dataTableRef arg
+	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push dataTableRef arg
 	_protectedCall(1, 0, _script);		
 #endif
 }
@@ -163,7 +159,7 @@ void LuaBehavior::onUnload(void) {
 	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
 	lua_getfield(*_mainState, -1, "onUnload");								//get ENV.onUnload()
 	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _dataTableRef);				//push dataTableRef arg
+	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push dataTableRef arg
 	_protectedCall(1, 0, _script);		
 #endif
 }
@@ -174,7 +170,7 @@ void LuaBehavior::onEnter(void) {
 	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
 	lua_getfield(*_mainState, -1, "onEnter");								//get ENV.onEnter()
 	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _dataTableRef);				//push dataTableRef arg
+	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push dataTableRef arg
 	_protectedCall(1, 0, _script);		
 #endif
 }
@@ -185,7 +181,7 @@ void LuaBehavior::onExit(void) {
 	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
 	lua_getfield(*_mainState, -1, "onExit");								//get ENV.onExit()
 	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _dataTableRef);				//push dataTableRef arg
+	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push dataTableRef arg
 	_protectedCall(1, 0, _script);		
 #endif
 }
@@ -196,7 +192,7 @@ void LuaBehavior::onCollide(elysian::Collidable *collidable) {
 	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
 	lua_getfield(*_mainState, -1, "onCollide");								//get ENV.onCollide()
 	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _dataTableRef);				//push dataTableRef arg
+	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push dataTableRef arg
     OOLUA::push(*_mainState, collidable);
 	_protectedCall(2, 0, _script);											//call onUpdate(dataTable)
 #endif
@@ -208,7 +204,7 @@ void LuaBehavior::onCollisionEnter(elysian::Collidable *collidable) {
 	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
 	lua_getfield(*_mainState, -1, "onCollisionEnter");								//get ENV.onCollide()
 	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _dataTableRef);				//push dataTableRef arg
+	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push dataTableRef arg
     OOLUA::push(*_mainState, collidable);
 	_protectedCall(2, 0, _script);											//call onUpdate(dataTable)
 #endif
@@ -220,7 +216,7 @@ void LuaBehavior::onCollisionExit(elysian::Collidable *collidable) {
 	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
 	lua_getfield(*_mainState, -1, "onCollisionExit");						//get ENV.onCollide()
 	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _dataTableRef);				//push dataTableRef arg
+	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push dataTableRef arg
     OOLUA::push(*_mainState, collidable);
 	_protectedCall(2, 0, _script);											//call onUpdate(dataTable)
 #endif
@@ -232,7 +228,7 @@ void LuaBehavior::onExamine(Entity* entity) {
 	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
 	lua_getfield(*_mainState, -1, "onExamine");								//get ENV.onExamine()
 	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _dataTableRef);				//push dataTableRef arg
+	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push dataTableRef arg
     OOLUA::push(*_mainState, &entity);
 	_protectedCall(2, 0, _script);											//call onUpdate(dataTable)
 #endif
@@ -244,7 +240,7 @@ void LuaBehavior::onDialog(const unsigned screen, const int option) {
 	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
 	lua_getfield(*_mainState, -1, "onDialog");								//get ENV.onExamine()
 	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _dataTableRef);				//push dataTableRef arg
+	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push dataTableRef arg
     OOLUA::push(*_mainState, screen);
     OOLUA::push(*_mainState, option);
 	_protectedCall(2, 0, _script);											//call onUpdate(dataTable)

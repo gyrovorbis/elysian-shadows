@@ -8,6 +8,7 @@
 #include "elysian_system.hpp"
 
 #define ELYSIAN_DEBUG_FILE					"debug.txt"
+#define ELYSIAN_DEBUG_ARG_FILE				"gamma_args.txt"
 #define ELYSIAN_DEBUG_LOG_LEVEL_DEFAULT		Debug::VERBOSE
 #define ELYSIAN_DEBUG_LIBGYRO_LEVEL_DEFAULT GY_DEBUG_VERBOSE
 #define ELYSIAN_DEBUG_LEVEL_DEFAULT			"level/Loren_Beta2"

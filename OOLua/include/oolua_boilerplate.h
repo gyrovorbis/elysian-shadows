@@ -1,10 +1,10 @@
 /** 
 	\file oolua_boilerplate.h
-	\date Mon Jun 10 22:11:17 2013
+	\date Sun Oct 27 00:12:09 2013
 	\details 
 	Configurable values as set when generating this file
-	\li constructor_params 5 - Maximum amount of parameters for a constructor of a proxied type	(Default 5)
 	\li lua_params 10 - Maximum amount of parameters for a call to a Lua function	(Default 10)
+	\li constructor_params 5 - Maximum amount of parameters for a constructor of a proxied type	(Default 5)
 	\li cpp_params 8 - Maximum number of parameters a C++ function can have	(Default 8)
 	\note Warning this file was generated, edits to the file will not persist if it is regenerated.	
 */

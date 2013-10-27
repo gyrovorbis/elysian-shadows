@@ -18,6 +18,7 @@ namespace elysian {
 	class ExaminableSystem;
 	class AudioSystem;
 	class BehaviorSystem;
+	class AudioSystem;
 
 	class System: public LevelManager {
 	public:
