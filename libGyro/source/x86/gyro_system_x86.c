@@ -7,16 +7,16 @@
 
 
 int gySysInit(void) {
-	const char* platString =
+  const char* platString =
 #ifdef __APPLE__
-	"OSX";
+  "OSX";
 #elif defined(WIN32)
-	"WINDOWS";
+  "WINDOWS";
 #else
-	"LINUX"
+  "LINUX";
 #endif
 
-	_gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86 [%s] v%s", platString, GYRO_LIB_VERSION);
+  _gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86 [%s] v%s", platString, GYRO_LIB_VERSION);
     return 1;
 }
 
@@ -33,7 +33,7 @@ void gyPrintf(const char *const str, ...) {
     va_end(argptr);
 
     fprintf(stdout, "%s", buffer);
-	fflush(stdout);
+  fflush(stdout);
 }
 
 unsigned int gySysStatsVram(void) {
