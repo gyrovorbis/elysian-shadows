@@ -21,7 +21,7 @@ namespace elysian {
 		
 		static std::map<const char *, LuaScript *, ltstr> _scripts;
 		static int _errorCode;
-		static char _rPrint[];
+		static const char _rPrint[];
 
 		static void _errorprintf(const char *const string, ...);
 		static void _registerWrappers(void);
