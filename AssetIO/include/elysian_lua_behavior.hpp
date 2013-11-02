@@ -27,12 +27,21 @@ namespace elysian {
 	friend class Entity;
 	protected:
 		LuaBehaviorScript*	_scriptHierarchy[ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH]		= { nullptr };
-		int					_selfTableRefHierarchy[ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH]	= { LUA_NOREF };
+		//int					_selfTableRefHierarchy[ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH]	= { LUA_NOREF };
 		LuaBehaviorScript*	_script = nullptr;
-		int					_selfTableRef = LUA_NOREF;
+		//int					_selfTableRef = LUA_NOREF;
+
 		unsigned			_hierarchyDepth = 0;
 #ifdef ELYSIAN_ENGINE
-		OOLUA::Lua_table_ref _ooSelfTableRef;
+		OOLUA::Lua_table_ref _ooSelfTableRefHierarchy[ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH];
+		OOLUA::Lua_table_ref* _ooSelfTableRef = nullptr;
+
+		template<typename RType, typename... PTypes>
+		RType _callTrigger(const char*const triggerName, PTypes... parameters) {
+			return _callGlobalFunction<RType>(triggerName, _script, parameters...);
+		}
+
+		void				_selfTableDump(void);
 #endif
 							LuaBehavior(Entity &entity, const char *script);
 							~LuaBehavior(void);
@@ -65,7 +74,7 @@ namespace elysian {
 		
 		int					getSelfTableRef(void) const;
 #ifdef ELYSIAN_ENGINE
-		OOLUA::Lua_table_ref& getSelfTable(void) { return _ooSelfTableRef; }
+		OOLUA::Lua_table_ref& getSelfTable(void) { return *_ooSelfTableRef; }
 #endif
     };
 
@@ -73,7 +82,7 @@ namespace elysian {
 	//======= INLINEZ ======
 	
 	inline const char* LuaBehavior::getBehavName(void) const { return ELYSIAN_LUA_BEHAVIOR_NAME; }
-	inline int LuaBehavior::getSelfTableRef(void) const { return _selfTableRef; }
+	//inline int LuaBehavior::getSelfTableRef(void) const { return _selfTableRef; }
 
 
 	

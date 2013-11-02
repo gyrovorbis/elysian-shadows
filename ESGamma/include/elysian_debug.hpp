@@ -7,7 +7,8 @@
 #include "elysian_asset.hpp"
 #include "elysian_system.hpp"
 
-#define ELYSIAN_DEBUG_FILE					"debug.txt"
+#define ELYSIAN_DEBUG_FILE					"gamma_debug.txt"
+#define ELYSIAN_LUA_DEBUG_FILE				"lua_debug.txt"
 #define ELYSIAN_DEBUG_ARG_FILE				"gamma_args.txt"
 #define ELYSIAN_DEBUG_LOG_LEVEL_DEFAULT		Debug::VERBOSE
 #define ELYSIAN_DEBUG_LIBGYRO_LEVEL_DEFAULT GY_DEBUG_VERBOSE
@@ -46,6 +47,7 @@ namespace elysian {
 		static unsigned int _stackDepth;
 		static bool _advLogWrap;
 		static ofstream _dbgFile;
+		static ofstream _luaDbgFile;
 		static const char _fileName[];
         bool _nextFrame;
 
@@ -62,7 +64,7 @@ namespace elysian {
 		static void pop(void) { --_stackDepth; }
 
         //Invoked by Lua (always VERBOSE, not silenced with the rest)
-		static void print(const char *string) { writeLog(LUA, VERBOSE, string); }
+		static void luaPrint(const char *string) { writeLog(LUA, VERBOSE, string); }
 
 	private:
         //Invoked by AssetIO 

@@ -34,6 +34,7 @@ namespace elysian {
 		_mainState->register_class<gyro>();
 		_mainState->register_class<GYWav>();
 		_mainState->register_class<AudioSource>();
+		_mainState->register_class<AudioSystem>();
 
 		//Register C and static member functions
 		lua_register(*_mainState, "print", &print);

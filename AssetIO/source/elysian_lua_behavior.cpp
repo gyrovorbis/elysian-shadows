@@ -5,25 +5,19 @@
 #	include "elysian_lua_wrappers.hpp"
 #endif 
 
+#ifdef ELYSIAN_LUA_DEBUG
+#	define _PROTECTED(a) \
+		do {\
+			if(!_script || _script->getError()) return; \
+			a; \
+			if(_script->getError()) _selfTableDump(); \
+		} while(0)
+#else
+#	define _PROTECTED(a) (a)
+#endif
+
+
 namespace elysian {
-
-
-template<typename RType, typename... PTypes>
-RType LuaBehavior::_callLuaFunction(const char* funcName, PTypes... parameters) const {
-    /*if(!_script || _script->getError()) return;
-
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
-	lua_getfield(*_mainState, -1, funcName);								//retrieve ENV.funcName()
-	lua_remove(*_mainState, -2);											//remove ENV
-
-	auto list = { (OOLUA::push2lua(*_mainState, parameters))... };
-
-
-	_protectedCall(0, 1, _script);											//call funcName()
-	_dataTableRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);				//store ref to return table
-    _ooDataTableRef.set_ref(*_mainState, _dataTableRef);*/
-}
-
 
 LuaBehavior::LuaBehavior(Entity &entity,
                          const char *
@@ -46,12 +40,11 @@ LuaBehavior::~LuaBehavior(void) {
 
 	//Traverse hierarchy from BOTTOM TO TOP cleaning shit up
 	//    - Call onDestroy if script implements it (NOT if behavior uses it)
-	//    - Delete selfTable
+	//    - OOLUA will delete selfTables automatically
 	for(unsigned i = 0; i < _hierarchyDepth; ++i) {
 		_script = _scriptHierarchy[i];
-		_selfTableRef = _selfTableRefHierarchy[i];
+		_ooSelfTableRef = &_ooSelfTableRefHierarchy[i];
 		if(_script->getAttrib()->getSupportedTriggers() & ON_DESTROY) onDestroy();
-		luaL_unref(*_mainState, LUA_REGISTRYINDEX, _selfTableRefHierarchy[i]);
 	}
 
 	LuaManager::unloadBehaviorScript(*_script);
@@ -116,8 +109,11 @@ bool LuaBehavior::loadScript(const char *file) {
 
 		lua_newtable(*_mainState);											//create new selfTable
 		lua_pushvalue(*_mainState, -1);										//duplicate on stack
-		_selfTableRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);			//store in registry
-		_selfTableRefHierarchy[curIndex] = _selfTableRef;
+		int selfTableRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);			//store in registry
+		//_selfTableRefHierarchy[curIndex] = _selfTableRef;
+		_ooSelfTableRefHierarchy[curIndex].set_ref(*_mainState, selfTableRef);
+		_ooSelfTableRef = &_ooSelfTableRefHierarchy[curIndex];
+
 
 		if(parentSelfTableRef != LUA_NOREF) { 	//inherit parent's self table if child
 
@@ -138,23 +134,28 @@ bool LuaBehavior::loadScript(const char *file) {
 		addTriggers(_script->getAttrib()->getSupportedTriggers());
 
 		if(_triggerBits & ON_CREATE) onCreate();
-		parentSelfTableRef = _selfTableRef;
+		parentSelfTableRef = selfTableRef;
 	}
 
 #endif
 	return true;
 }
 
-// CAN'T THIS SHIT ALL BE TEMPLATED?!!?!
+#ifdef ELYSIAN_ENGINE
+void LuaBehavior::_selfTableDump(void) {
+	char selfDisplay[20] = {0};
+	Debug::luaPrint("**** BEHAVIOR SELF TABLE DUMP ****");
+
+	for(int i = _hierarchyDepth-1; i >= 0; --i) {
+		sprintf(selfDisplay, "self[%d]", _hierarchyDepth-1-i);
+		_rPrintByRef(_ooSelfTableRefHierarchy[i].ref(), 0, selfDisplay);
+	}
+}
+#endif
 
 void LuaBehavior::onUpdate(void) {
 #ifdef ELYSIAN_ENGINE
-	if(!_script || _script->getError()) return;
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
-	lua_getfield(*_mainState, -1, "onUpdate");								//get ENV.onUpdate()
-	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push dataTableRef arg
-	_protectedCall(1, 0, _script);											//call onUpdate(dataTable)
+	_PROTECTED(_callTrigger<void>("onUpdate", _ooSelfTableRef));
 #endif
 }
 
@@ -166,129 +167,67 @@ void LuaBehavior::onRender(void) {
 
 void LuaBehavior::onCreate(void) {
 #ifdef ELYSIAN_ENGINE
-	if(!_script || _script->getError()) return;
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
-	lua_getfield(*_mainState, -1, "onCreate");								//get ENV.onCreate()
-	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push selfTable arg
-	_protectedCall(1, 0, _script);											//call onCreate(selfTable)
-	
+	_PROTECTED(_callTrigger<void>("onCreate", _ooSelfTableRef));
 #endif
 }
 
 void LuaBehavior::onDestroy(void) {
 #ifdef ELYSIAN_ENGINE
-	if(!_script || _script->getError()) return;
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
-	lua_getfield(*_mainState, -1, "onDestroy");								//get ENV.onDestroy()
-	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push dataTableRef arg
-	_protectedCall(1, 0, _script);		
+	_PROTECTED(_callTrigger<void>("onDestroy", _ooSelfTableRef));
 #endif
 }
 
 void LuaBehavior::onLoad(void) {
 #ifdef ELYSIAN_ENGINE
-	if(!_script || _script->getError()) return;
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
-	lua_getfield(*_mainState, -1, "onLoad");								//get ENV.onLoad()
-	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push dataTableRef arg
-	_protectedCall(1, 0, _script);		
+	_PROTECTED(_callTrigger<void>("onLoad", _ooSelfTableRef));
 #endif
 }
 
 void LuaBehavior::onUnload(void) {
 #ifdef ELYSIAN_ENGINE
-	if(!_script || _script->getError()) return;
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
-	lua_getfield(*_mainState, -1, "onUnload");								//get ENV.onUnload()
-	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push dataTableRef arg
-	_protectedCall(1, 0, _script);		
+	_PROTECTED(_callTrigger<void>("onUnload", _ooSelfTableRef));
 #endif
 }
 
 void LuaBehavior::onEnter(void) {
 #ifdef ELYSIAN_ENGINE
-	if(!_script || _script->getError()) return;
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
-	lua_getfield(*_mainState, -1, "onEnter");								//get ENV.onEnter()
-	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push dataTableRef arg
-	_protectedCall(1, 0, _script);		
+	_PROTECTED(_callTrigger<void>("onEnter", _ooSelfTableRef));
 #endif
 }
 
 void LuaBehavior::onExit(void) {
 #ifdef ELYSIAN_ENGINE
-	if(!_script || _script->getError()) return;
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
-	lua_getfield(*_mainState, -1, "onExit");								//get ENV.onExit()
-	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push dataTableRef arg
-	_protectedCall(1, 0, _script);		
+	_PROTECTED(_callTrigger<void>("onExit", _ooSelfTableRef));
 #endif
 }
 	
 void LuaBehavior::onCollide(elysian::Collidable *collidable) {
 #ifdef ELYSIAN_ENGINE
-	if(!_script || _script->getError()) return;
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
-	lua_getfield(*_mainState, -1, "onCollide");								//get ENV.onCollide()
-	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push dataTableRef arg
-    OOLUA::push(*_mainState, collidable);
-	_protectedCall(2, 0, _script);											//call onUpdate(dataTable)
+	_PROTECTED(_callTrigger<void>("onCollide", _ooSelfTableRef, collidable));
 #endif
 }
 
 void LuaBehavior::onCollisionEnter(elysian::Collidable *collidable) {
 #ifdef ELYSIAN_ENGINE
-	if(!_script || _script->getError()) return;
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
-	lua_getfield(*_mainState, -1, "onCollisionEnter");								//get ENV.onCollide()
-	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push dataTableRef arg
-    OOLUA::push(*_mainState, collidable);
-	_protectedCall(2, 0, _script);											//call onUpdate(dataTable)
+	_PROTECTED(_callTrigger<void>("onCollisionEnter", _ooSelfTableRef, collidable));
 #endif
 }
 
 void LuaBehavior::onCollisionExit(elysian::Collidable *collidable) {
 #ifdef ELYSIAN_ENGINE
-	if(!_script || _script->getError()) return;
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
-	lua_getfield(*_mainState, -1, "onCollisionExit");						//get ENV.onCollide()
-	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push dataTableRef arg
-    OOLUA::push(*_mainState, collidable);
-	_protectedCall(2, 0, _script);											//call onUpdate(dataTable)
+	_PROTECTED(_callTrigger<void>("onCollisionExit", _ooSelfTableRef, collidable));
 #endif
 }
 
 void LuaBehavior::onExamine(Entity* entity) {
 #ifdef ELYSIAN_ENGINE
-	if(!_script || _script->getError()) return;
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
-	lua_getfield(*_mainState, -1, "onExamine");								//get ENV.onExamine()
-	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push dataTableRef arg
-    OOLUA::push(*_mainState, &entity);
-	_protectedCall(2, 0, _script);											//call onUpdate(dataTable)
+	_PROTECTED(_callTrigger<void>("onExamine", _ooSelfTableRef, entity));
 #endif
 }
 
 void LuaBehavior::onDialog(const unsigned screen, const int option) {
 #ifdef ELYSIAN_ENGINE
-	if(!_script || _script->getError()) return;
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());	//push ENV
-	lua_getfield(*_mainState, -1, "onDialog");								//get ENV.onExamine()
-	lua_remove(*_mainState, -2);											//remove ENV
-	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _selfTableRef);				//push dataTableRef arg
-    OOLUA::push(*_mainState, screen);
-    OOLUA::push(*_mainState, option);
-	_protectedCall(2, 0, _script);											//call onUpdate(dataTable)
+	_PROTECTED(_callTrigger<void>("onCollide", screen, option));
 #endif
 }
 

@@ -611,7 +611,37 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 // ======= C GLOBAL AND C++ STATIC FUNCTION WRAPPERS ======
 
 static inline int print(lua_State* const l) {
-    OOLUA_C_FUNCTION(void, elysian::Debug::print, const char*)
+	char string[GYRO_PRINTF_BUFFER_SIZE] = {0};
+	unsigned n = lua_gettop(l);
+	const char *curString;
+
+	for(unsigned i = 1; i <= n; ++i) {
+		int t = lua_type(l, i);
+
+		switch(t) {
+			case LUA_TSTRING:
+			case LUA_TNUMBER:
+			//case LUA_TBOOLEAN:
+				curString = lua_tostring(l, i);
+				strcat(string, curString);
+				break;
+			case LUA_TBOOLEAN:
+				curString = (lua_toboolean(l, i))? "true" : "false";
+				strcat(string, curString);
+				break;
+			default:
+			/*	curString = lua_typename(l, t);
+				strcat(string, curString);*/
+				continue;
+		}
+
+		strcat(string, " ");
+
+	}
+
+	elysian::Debug::luaPrint(string);
+
+	return 1;
 }
 
 static inline int Singletons_getCurArea(lua_State* const l) {

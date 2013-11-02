@@ -9,30 +9,6 @@
 #include <initializer_list>
 #include <iostream>
 
-void consumeArgs() {
-    qDebug() << "ARGS CONSUMED!";
-}
-
-template <class First, class... Rest>
-void consumeArgs(First first, Rest... rest) {
-    // Do something with first
-    qDebug() << "ARG" << first << endl;
-
-    consumeArgs(rest...); // Unpack the arguments for further treatment
-}
-
-
-template<typename RType, typename... PTypes>
-RType _callFunction(const char* funcName, PTypes... parameters) {
-    qDebug() << funcName;
-    //consumeArgs(parameters...);
-
-    /*std::function<void(PTypes... A)> Unpack =*/
-    [&](PTypes... A) {
-        auto l = {((printf("%d\n", &A)), 0)...};
-    }(parameters...);
-}
-
 int main(int argc, char *argv[]) {
     QRectF rect;
     rect.setSize(QSizeF(2.0f, 5.0f));

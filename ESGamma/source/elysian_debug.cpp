@@ -32,12 +32,12 @@ namespace elysian {
 
 //======STATIC MEMBERS=====
 
-const char Debug::_fileName[] = ELYSIAN_DEBUG_FILE;
-ofstream Debug::_dbgFile;
-Engine *Debug::_engine = NULL;
-bool Debug::_advLogWrap = false;
-unsigned int Debug::_stackDepth = 0;
-Debug::LEVEL Debug::_level = ELYSIAN_DEBUG_LOG_LEVEL_DEFAULT;
+ofstream		Debug::_dbgFile;
+ofstream		Debug::_luaDbgFile;
+Engine*			Debug::_engine = NULL;
+bool			Debug::_advLogWrap = false;
+unsigned int	Debug::_stackDepth = 0;
+Debug::LEVEL	Debug::_level = ELYSIAN_DEBUG_LOG_LEVEL_DEFAULT;
 
 // Central endpoint for all debug log calls
 void Debug::writeLog(const Debug::SOURCE source, const Debug::LEVEL level, const char *const str) {
@@ -72,6 +72,10 @@ void Debug::writeLog(const Debug::SOURCE source, const Debug::LEVEL level, const
 
 	_dbgFile << buffer;
 	_dbgFile.flush(); //write to log file
+	if(source == LUA) {
+		_luaDbgFile << str << std::endl;
+		_luaDbgFile.flush(); //write to lua's log file
+	}
 	gyPrintf(buffer); //use the "preferred" IO of each platform
 
 	//Wrap to AdventureLog
@@ -87,7 +91,7 @@ void Debug::writeLog(const Debug::SOURCE source, const Debug::LEVEL level, const
 		}
 		if(level == CRITICAL || level == FATAL) advType = AdventureLog::TEXT_ERROR;
 
-		//characters that the adventure log cannot display--shouldn't it handle this? Not debug?
+		//characters that the adventure log cannot display--shouldn't it handle this? Not debug? No shit.
 		for(unsigned int i = 0; i < strlen(buffer); ++i) if(buffer[i] == '\n' || buffer[i] == '\t') buffer[i] = ' ';
 		if(_engine) getGuiSys()->adventureLog.addLine(advType, buffer);
 	}
@@ -115,11 +119,13 @@ Debug::Debug(void):
 	gySysDebugEnable(ELYSIAN_DEBUG_LIBGYRO_LEVEL_DEFAULT, &libGyroPrintf);
 	//Register pointer to asset debug interface with AssetIO
 	Asset::setDebugStack(&_assetDebug);
-	_dbgFile.open(_fileName);
+	_dbgFile.open(ELYSIAN_DEBUG_FILE);
+	_luaDbgFile.open(ELYSIAN_LUA_DEBUG_FILE);
 	printf(VERBOSE, "-----Debug Initialized-----");
 }
 
 Debug::~Debug(void) {
+	_luaDbgFile.close();
 	_dbgFile.close();
 }
 
@@ -445,11 +451,11 @@ bool Debug::sandboxInit(void) {
 
 	//getAudioSys()->loadBgmTrack(0, "audio/music/CaveLoop1.ogg");
 	//getAudioSys()->loadBgmTrack(1, "audio/music/CaveLoop2.ogg");
-	getAudioSys()->loadAuxTrack(0, "audio/music/RainThunder.ogg");
-	getAudioSys()->playAuxTrack(0);
+	//getAudioSys()->loadAuxTrack(0, "audio/music/RainThunder.ogg");
+	//getAudioSys()->playAuxTrack(0);
 	//getAudioSys()->setAuxTrackGain(0, 0.5f);
 	//getAudioSys()->playBgmTrack();
-	getAudioSys()->setBgmTrackGain(0.5f);
+	//getAudioSys()->setBgmTrackGain(0.5f);
 	//getAudioSys()->setBgmTrackPitch(0.5f);
 
 	pop();
@@ -539,10 +545,10 @@ void Debug::processInput(const GameInput& input) {
 
 	//VRAM and Audio Stats
 	if(input.getTapped(GameInput::BUT_Z)) {
-		//gyVidTexWalkthrough();
+		gyVidTexWalkthrough();
 		//getAudioSys()->morphIntoBgmTrack(1, 5.0f);
 		//getAudioSys()->fadeIntoBgmTrack(1, 5.0f);
-		getAudioSys()->morphIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop2.ogg");
+		//getAudioSys()->morphIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop2.ogg");
 		//getAudioSys()->fadeIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop2.ogg");
 		//getAudioSys()->fadeIntoNewAuxTrack(0, 5.0f, "audio/music/RainThunder.ogg");
 		//getAudioSys()->fadeInAuxTrack(0, 5.0f);
@@ -553,10 +559,10 @@ void Debug::processInput(const GameInput& input) {
 		//getAudioSys()->morphIntoBgmTrack(0, 5.0f);
 		//getAudioSys()->fadeIntoBgmTrack(0, 5.0f);
 		//getAudioSys()->stopBgmTrack();
-		getAudioSys()->morphIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop1.ogg");
+		//getAudioSys()->morphIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop1.ogg");
 		//getAudioSys()->fadeIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop1.ogg");
 		//getAudioSys()->fadeOutAuxTrack(0, 5.0f);
-		//gyAudWavWalkthrough();
+		gyAudWavWalkthrough();
 	}
 
 	//Elevate player
