@@ -37,7 +37,6 @@ SOURCES += \
     ../../source/oolua_open.cpp \
     ../../source/oolua_helpers.cpp \
     ../../source/oolua_function.cpp \
-    ../../source/oolua_exception.cpp \
     ../../source/oolua_error.cpp \
     ../../source/oolua_chunk.cpp \
     ../../source/oolua_check_result.cpp \
