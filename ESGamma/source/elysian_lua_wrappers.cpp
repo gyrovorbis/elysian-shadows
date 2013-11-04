@@ -6,13 +6,13 @@
 namespace elysian {
 
 	void LuaManager::_registerWrappers(void) {
-		
+
 		//Register classes and structs
 		_mainState->register_class<LuaBehaviorScriptAttrib>();
 		_mainState->register_class<GYVector2>();
 		_mainState->register_class<InstanceTransform>();
-		OOLUA::register_class_and_bases<Entity>(*_mainState);
-		OOLUA::register_class_and_bases<SpriteAttrib>(*_mainState);
+		OOLUA::register_class<Entity>(*_mainState);
+		OOLUA::register_class<SpriteAttrib>(*_mainState);
 		_mainState->register_class<Component>();
 		_mainState->register_class<Renderable>();
 		_mainState->register_class<AnimationSequence>();
@@ -24,10 +24,10 @@ namespace elysian {
 		_mainState->register_class<Collidable>();
 		_mainState->register_class<Character>();
 		_mainState->register_class<Warp>();
-		OOLUA::register_class_and_bases<LuaBehavior>(*_mainState);
+		OOLUA::register_class<LuaBehavior>(*_mainState);
 		_mainState->register_class<Tile>();
 		_mainState->register_class<Level>();
-		OOLUA::register_class_and_bases<TileEntry>(*_mainState);
+		OOLUA::register_class<TileEntry>(*_mainState);
 		_mainState->register_class<Area>();
 		_mainState->register_class<GameInput>();
 		_mainState->register_class<Singletons>();

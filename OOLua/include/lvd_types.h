@@ -1,10 +1,29 @@
+/*
+The MIT License
+
+Copyright (c) 2009 - 2013 Liam Devine
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
 ///////////////////////////////////////////////////////////////////////////////
 ///  @file lvd_types.h
-///  Header for the types used.
-///
-///  @author Liam Devine
-///  \copyright
-///  See licence.txt for more details. \n 
+///  \brief Cross platform integral sized types.
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifndef BASIC_TYPES_H_
@@ -20,33 +39,33 @@
     #		include <stdint.h>
 namespace LVD
 {
-            typedef int8_t				int8;
-            typedef uint8_t				uint8;
-            typedef int16_t				int16;
-            typedef uint16_t			uint16;
-            typedef int32_t				int32;
-            typedef uint32_t			uint32;
+			typedef int8_t				int8;
+			typedef uint8_t				uint8;
+			typedef int16_t				int16;
+			typedef uint16_t			uint16;
+			typedef int32_t				int32;
+			typedef uint32_t			uint32;
 			//gcc does define these types yet you need to use the
 			// -Wno-long-long flag
 			__extension__ typedef long long             int64;
 			__extension__ typedef unsigned long long    uint64;
-}
+} // namespace LVD
 #		elif defined _MSC_VER
 namespace LVD
 {
-            typedef signed	__int8		int8;
-            typedef unsigned __int8		uint8;
-            typedef signed	__int16		int16;
-            typedef unsigned __int16	uint16;
-            typedef signed	__int32		int32;
-            typedef unsigned __int32	uint32;
+			typedef signed	__int8		int8;
+			typedef unsigned __int8		uint8;
+			typedef signed	__int16		int16;
+			typedef unsigned __int16	uint16;
+			typedef signed	__int32		int32;
+			typedef unsigned __int32	uint32;
 			typedef	signed	__int64		int64;
 			typedef unsigned __int64	uint64;
-}
+} // namespace LVD
 #		else
 #			error please inform me what compiler are you using and set the correct types
 #		endif
-#	elif (defined(UNIX_BUILD) || defined(MAC_BUILD))
+#	elif(defined(UNIX_BUILD) || defined(MAC_BUILD))
 #		include <stdint.h>
 namespace LVD
 {
@@ -67,7 +86,7 @@ namespace LVD
 			typedef int64_t				int64;
 			typedef uint64_t			uint64;
 #		endif
-}
+} // namespace LVD
 
 #	endif
 
@@ -78,17 +97,17 @@ namespace LVD
 	typedef uint32 size_t;
 
 	template<typename T>
- 	struct is_integral_type
- 	{
-        typedef Type_list<
-        		bool,
-				char,unsigned char, signed char,
-				short,unsigned short, signed short,
-				int,unsigned int, signed int,
-				long, unsigned long, signed long, int64, uint64,
-				float,
-				double, long double>::type Integral;
-		enum {value = TYPELIST::IndexOf<Integral,T>::value == -1 ? 0 : 1};
+	struct is_integral_type
+	{
+		typedef Type_list<
+				bool
+				, char, unsigned char, signed char
+				, short, unsigned short, signed short
+				, int, unsigned int, signed int
+				, long, unsigned long, signed long, int64, uint64
+				, float
+				, double, long double>::type Integral;
+		enum {value = TYPELIST::IndexOf<Integral, T>::value == -1 ? 0 : 1};
 	};
 
 
@@ -104,16 +123,16 @@ namespace LVD
 		enum {RESULT = 0};
 	};
 
-	template<int T,int T1>
+	template<int T, int T1>
 	struct if_or
 	{
-	 	   enum {value =1};
- 	};
+		enum {value =1};
+	};
 	template<>
-	struct if_or<0,0>
+	struct if_or<0, 0>
 	{
-	 	   enum {value =0};
- 	};
+		enum {value =0};
+	};
 
 	template< bool B, typename Then = void, typename Else = void >
 	struct if_else
@@ -130,11 +149,11 @@ namespace LVD
 	struct Pointer_size
 	{
 		enum Size{size_value = sizeof(void*)};
-		typedef  if_else< sizeof( uint8 ) == size_value, uint8,
-				 if_else< sizeof( uint16 ) == size_value, uint16,
-			 	 if_else< sizeof( uint32 ) == size_value, uint32,
-			 	 if_else< sizeof( uint64 ) == size_value, uint64>::type
-                 >::type >::type >::type type;
+		typedef if_else< sizeof(uint8) == size_value, uint8
+					, if_else< sizeof(uint16) == size_value, uint16
+					, if_else< sizeof(uint32) == size_value, uint32
+					, if_else< sizeof(uint64) == size_value, uint64
+				>::type >::type >::type >::type type;
 	};
 //
 //	///unsigned int type for pointer manipulation
@@ -173,7 +192,7 @@ namespace LVD
 		};
 	};
 
-}//end of TYPE
+} // namespace LVD
 
 /** \endcond*/
 
