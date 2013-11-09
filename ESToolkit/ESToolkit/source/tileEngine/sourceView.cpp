@@ -178,7 +178,7 @@ void SourceView::mousePressEvent(QMouseEvent *event){
 	}
 	else if(event->button() == Qt::MidButton) {
 		QMouseEvent fooledya(event->type(), event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers());
-		setDragMode(NoDrag);
+		setDragMode(ScrollHandDrag);
 		_startRegionSelection(event);
 		QGraphicsView::mousePressEvent(&fooledya);
 	} else QGraphicsView::mousePressEvent(event);
