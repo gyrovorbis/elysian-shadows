@@ -245,6 +245,43 @@ void DestView<T>::wheelEvent(QWheelEvent *event) {
 }
 
 template<typename T>
+void DestView<T>::mousePressEvent(QMouseEvent *event) {
+
+	if(event->button() == Qt::LeftButton && !(event->modifiers() &= Qt::ControlModifier)) {
+		if(_selItemGroup) placeSelection();
+		else setDragMode(ScrollHandDrag);
+		//event->ignore();
+		//return;
+	}
+	else if(event->button() == Qt::MidButton) {
+		QMouseEvent fooledya(event->type(), event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers());
+		setDragMode(ScrollHandDrag);
+		QGraphicsView::mousePressEvent(&fooledya);
+	} else QGraphicsView::mousePressEvent(event);
+
+	if(event->buttons() & Qt::LeftButton && (event->modifiers() &= Qt::ControlModifier)) {
+		_startRegionFill(event);
+		event->ignore();
+		return;
+	}
+
+	if(event->button() == Qt::RightButton) {
+		if(_selItemGroup) {
+			delete _selItemGroup;
+			_selItemGroup=NULL;
+		}
+		setDragMode(NoDrag);
+
+		_startRegionSelection(event);
+		//event->accept();
+		return;
+	}
+
+	//event->ignore();
+	QGraphicsView::mousePressEvent(event);
+}
+
+template<typename T>
 void DestView<T>::mouseReleaseEvent(QMouseEvent *event) {
 	if(event->button() == Qt::RightButton) {
 		_endRegionSelection(event);
@@ -265,43 +302,6 @@ void DestView<T>::mouseReleaseEvent(QMouseEvent *event) {
 
 	event->ignore();
 	QGraphicsView::mouseReleaseEvent(event);
-}
-
-template<typename T>
-void DestView<T>::mousePressEvent(QMouseEvent *event) {
-
-	if(event->button() == Qt::LeftButton && !(event->modifiers() &= Qt::ControlModifier)) {
-		if(_selItemGroup) placeSelection();
-		else setDragMode(ScrollHandDrag);
-		//event->ignore();
-		//return;
-	}
-	else if(event->button() == Qt::MidButton) {
-		QMouseEvent fooledya(event->type(), event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers());
-		setDragMode(ScrollHandDrag);
-		QGraphicsView::mousePressEvent(&fooledya);
-	} //else QGraphicsView::mousePressEvent(event);
-
-	else if(event->buttons() & Qt::LeftButton && (event->modifiers() &= Qt::ControlModifier)) {
-		_startRegionFill(event);
-		event->ignore();
-		return;
-	}
-
-	if(event->button() == Qt::RightButton) {
-		if(_selItemGroup) {
-			delete _selItemGroup;
-			_selItemGroup=NULL;
-		}
-		setDragMode(NoDrag);
-
-		_startRegionSelection(event);
-		//event->accept();
-		return;
-	}
-
-	//event->ignore();
-	QGraphicsView::mousePressEvent(event);
 }
 
 template<typename T>
