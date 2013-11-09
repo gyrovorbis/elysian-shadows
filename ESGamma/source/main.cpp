@@ -48,7 +48,6 @@ static void Init(int argc, char *argv[]) {
 	debug->sandboxInit();
 	debug->initializeEngine();
 
-
 }
 
 int Update(void) {

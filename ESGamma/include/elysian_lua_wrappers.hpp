@@ -21,6 +21,7 @@
 #include "elysian_timer_system.hpp"
 #include "elysian_audio_source.hpp"
 #include "elysian_lua_script.hpp"
+#include "elysian_map_depth_buffer.hpp"
 
 /* IT'S NOT SAFE TO GO ALONE! TAKE THIS HEADER FILE. IT WILL HELP
  * YOU ON YOUR JOURNEY!
@@ -140,6 +141,8 @@ OOLUA_PROXY(Entity, RenderableObject)
 	OOLUA_MEM_FUNC_CONST(const char *, getName)
 	OOLUA_MEM_FUNC(void, setElev, const unsigned char)
 	OOLUA_MEM_FUNC_CONST(unsigned char, getElev)
+	OOLUA_MFUNC_CONST(getDepthType)
+	OOLUA_MFUNC(setDepthType)
 	OOLUA_MEM_FUNC(Renderable*, addRenderable)
 	OOLUA_MEM_FUNC(Animation*, addAnimation)
 	OOLUA_MEM_FUNC(Collidable*, addCollidable)
@@ -330,7 +333,7 @@ OOLUA_PROXY(LuaBehavior, Behavior)
 		No_public_constructors,
 		No_public_destructor
 	)
-	//OOLUA_MEM_FUNC(Lua_table_ref&, getDataTable)
+	OOLUA_MEM_FUNC(Lua_table_ref&, getSelfTable)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Tile)
@@ -404,8 +407,8 @@ OOLUA_PROXY(PartySystem)
 		No_public_constructors,
 		No_public_destructor
 	)
-	OOLUA_MEM_FUNC(bool, addCharacterToParty, Entity&)
-	OOLUA_MEM_FUNC(bool, removeCharacterFromParty, const Entity&)
+	OOLUA_MEM_FUNC(bool, addCharacterToParty, Entity*)
+	OOLUA_MEM_FUNC(bool, removeCharacterFromParty, const Entity*)
 	OOLUA_MEM_FUNC_CONST(Entity*, getPartyLeader)
 	OOLUA_MEM_FUNC_CONST(Entity*, getCharacterPartyMember, unsigned)
 OOLUA_PROXY_END
@@ -504,6 +507,11 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 	s->register_class_static<gyro>("TEX_ORIENT_ROT_270", GY_RECT_TEX_ORIENT_ROT_270);
 	s->register_class_static<gyro>("TEX_ORIENT_FLIP_HORIZ_ROT_90", GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_90);
 	s->register_class_static<gyro>("TEX_ORIENT_FLIP_HORIZ_ROT_270", GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_270);
+
+	//Entity::DEPTH_TYPE
+	typedef OOLUA::Entity Entity;
+	s->register_class_static<Entity>("DEPTH_NONE", elysian::DEPTH_NONE);
+	s->register_class_static<Entity>("DEPTH_BUFFERED", elysian::DEPTH_BUFFERED);
 
 	//CollisionFlags::TYPE
 	typedef OOLUA::CollisionFlags CollisionFlags;

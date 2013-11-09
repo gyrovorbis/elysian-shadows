@@ -1,6 +1,9 @@
 #include <fstream>
 #include <string.h>
 #include "elysian_level.hpp"
+#ifdef ELYSIAN_ENGINE
+#	include "elysian_lua_manager.hpp"
+#endif
 
 using namespace std;
 
@@ -33,7 +36,6 @@ namespace elysian {
 		strcat(buffer, ELYSIAN_TILESET_PATH);
 		success &= loadTileset(buffer);
 
-
 #ifdef ELYSIAN_ENGINE
 		strcpy(buffer, dir);
 		strcat(buffer, ELYSIAN_TILESHEET_PATH);
@@ -49,6 +51,13 @@ namespace elysian {
 			dbgprintf(LOG_CRITICAL, "FAILURE!");
 		}
 		dbgPop();
+
+#	ifdef ELYSIAN_ENGINE
+		strcpy(buffer, dir);
+		strcat(buffer, ELYSIAN_LEVEL_INIT_LUA_PATH);
+		LuaManager::runScriptSandbox(buffer);
+#	endif
+
 #endif
 		dbgPop();
 		return success;

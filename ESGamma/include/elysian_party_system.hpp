@@ -50,13 +50,13 @@ namespace elysian {
 		
 		bool addPlayableToParty(const char *name);
 		bool addPlayableToParty(const Entity &entity);
-		bool addCharacterToParty(Entity &entity);
+		bool addCharacterToParty(Entity *entity);
 		
 		bool removePlayableFromParty(const char *name);
 		bool removePlayableFromParty(const Entity &entity);
 		bool removePlayableFromParty(const unsigned int slot);
 		bool removeCharacterFromParty(const char *name);
-		bool removeCharacterFromParty(const Entity &entity);
+		bool removeCharacterFromParty(const Entity *entity);
 		bool removeCharacterFromParty(const unsigned int slot);
 		
 		Entity *getPartyLeader(void) const;

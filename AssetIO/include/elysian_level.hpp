@@ -11,6 +11,7 @@
 #define ELYSIAN_LEVEL_PATH_SIZE			200
 #define ELYSIAN_TILESET_PATH			"/tile/tileset.txt"
 #define ELYSIAN_TILESHEET_PATH			"/tile/tilesheet.png"
+#define ELYSIAN_LEVEL_INIT_LUA_PATH		"/level_init.lua"
 #define ELYSIAN_TILESHEET_WIDTH			512
 #define ELYSIAN_TILESHEET_HEIGHT		1024
 #define ELYSIAN_TILESHEET_TILE_WIDTH	16
