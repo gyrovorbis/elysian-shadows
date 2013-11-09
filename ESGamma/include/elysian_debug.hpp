@@ -25,15 +25,15 @@ namespace elysian {
 	class Entity;
 
 	class Debug: public System {
-    public:
-        enum SOURCE { LIBGYRO, ENGINE, ASSETIO, LUA };
+	public:
+		enum SOURCE { LIBGYRO, ENGINE, ASSETIO, LUA };
 		enum LEVEL { VERBOSE, CRITICAL, FATAL, OFF };
 
-	private: 
+	private:
 		//Taken from elysian_asset.hpp cmd-line arg list
 		struct CmdLineArgs {
-			char level[100] = ELYSIAN_DEBUG_LEVEL_DEFAULT;
-			char area[100]	= ELYSIAN_DEBUG_AREA_DEFAULT;
+			char level[100];	//	= ELYSIAN_DEBUG_LEVEL_DEFAULT;
+			char area[100];		//	= ELYSIAN_DEBUG_AREA_DEFAULT;	/* You can't do this crap in Linux. */
 			int x			= 0;
 			int y			= 0;
 			int resolution	= 0;
@@ -44,31 +44,31 @@ namespace elysian {
 				//	strcpy(area, ELYSIAN_DEBUG_AREA_DEFAULT);
 				}
 		} _cmdLineArgs;
-        
+
 		static unsigned int _stackDepth;
 		static bool _advLogWrap;
 		static ofstream _dbgFile;
 		static ofstream _luaDbgFile;
 		static const char _fileName[];
-        bool _nextFrame;
+		bool _nextFrame;
 
-        //Centralized Debug Print/Log Mechanism
-        static void writeLog(const SOURCE source, const LEVEL level, const char* const str);
-        //Invoked by LibGyro (callback function)
-        static void libGyroPrintf(const GY_DEBUG_LEVEL level, const char* const str) { writeLog(LIBGYRO, (LEVEL)level, str); }
-        
+		//Centralized Debug Print/Log Mechanism
+		static void writeLog(const SOURCE source, const LEVEL level, const char* const str);
+		//Invoked by LibGyro (callback function)
+		static void libGyroPrintf(const GY_DEBUG_LEVEL level, const char* const str) { writeLog(LIBGYRO, (LEVEL)level, str); }
+
 	public:
-        //Invoked by Engine
-		static void printf(const LEVEL level, const char *const string, ...); 
+		//Invoked by Engine
+		static void printf(const LEVEL level, const char *const string, ...);
 
 		static void push(void) { ++_stackDepth; }
 		static void pop(void) { --_stackDepth; }
 
-        //Invoked by Lua (always VERBOSE, not silenced with the rest)
+		//Invoked by Lua (always VERBOSE, not silenced with the rest)
 		static void luaPrint(const char *string) { writeLog(LUA, VERBOSE, string); }
 
 	private:
-        //Invoked by AssetIO 
+		//Invoked by AssetIO
 		class AssetDebugStack: public Asset::DebugStack {
 			public:
 				void push(void) { Debug::push(); }
@@ -90,7 +90,7 @@ namespace elysian {
 			return instance;
 		}
 
-		static void setAdvLogWrap(const bool val=true) { _advLogWrap = val; } 
+		static void setAdvLogWrap(const bool val=true) { _advLogWrap = val; }
 		static void setEngine(Engine &eng) { _engine = &eng; }
 		static void setLevel(const LEVEL level) { _level = level; }
 
@@ -105,12 +105,12 @@ namespace elysian {
 		bool initializeEngine(void);
 		bool parseArguments(void);
 		bool parseArguments(int argc, char *argv[]);
-		
+
 		void setNextFrame(const bool val=true) { _nextFrame = val; }
 		bool getNextFrame(void) const { return _nextFrame; }
 
 		const CmdLineArgs& getCmdLineArgs(void) const { return _cmdLineArgs; }
-	}; 
+	};
 
 }
 

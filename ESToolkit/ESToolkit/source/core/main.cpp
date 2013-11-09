@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
 
 	QApplication a(argc, argv);
 	a.setOrganizationName("Elysian Shadows");
-	a.setOrganizationDomain("ESDev");
+	a.setOrganizationDomain("elysianshadows.com");
 	a.setApplicationName("ESTk");
 	a.setWindowIcon(QIcon(":/estk/images/estk.ico"));
 	a.setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
 	splashFont.setBold(true);
 	painter.setFont(splashFont);
 	painter.drawText(25,82,QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" \"Audacious Cuntwhisp\" Release"));
-	painter.drawText(25,190,"http://elysianshadows.com/tkreleasenotes");
+	painter.drawText(25,190,"http://elysianshadows.com/tkreleasenotes"); /* This is an invalid URL!!!! */
 
 	QSplashScreen splash(splashScreen, Qt::WindowStaysOnTopHint);
 	splash.show();
