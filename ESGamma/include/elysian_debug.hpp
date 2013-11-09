@@ -10,6 +10,7 @@
 #define ELYSIAN_DEBUG_FILE					"gamma_debug.txt"
 #define ELYSIAN_LUA_DEBUG_FILE				"lua_debug.txt"
 #define ELYSIAN_DEBUG_ARG_FILE				"gamma_args.txt"
+#define ELYSIAN_GLOBAL_INIT_LUA_PATH		"global_init.lua"
 #define ELYSIAN_DEBUG_LOG_LEVEL_DEFAULT		Debug::VERBOSE
 #define ELYSIAN_DEBUG_LIBGYRO_LEVEL_DEFAULT GY_DEBUG_VERBOSE
 #define ELYSIAN_DEBUG_LEVEL_DEFAULT			"level/Loren_Beta2"
@@ -31,18 +32,18 @@ namespace elysian {
 	private: 
 		//Taken from elysian_asset.hpp cmd-line arg list
 		struct CmdLineArgs {
-			char level[100];
-			char area[100];
-			int x, y;
-			int resolution;
+			char level[100] = ELYSIAN_DEBUG_LEVEL_DEFAULT;
+			char area[100]	= ELYSIAN_DEBUG_AREA_DEFAULT;
+			int x			= 0;
+			int y			= 0;
+			int resolution	= 0;
 
-			CmdLineArgs(void):
-				x(0), y(0), resolution(0)
+			CmdLineArgs(void)
 				{
-					strcpy(level, ELYSIAN_DEBUG_LEVEL_DEFAULT);
-					strcpy(area, ELYSIAN_DEBUG_AREA_DEFAULT);
+				//	strcpy(level, ELYSIAN_DEBUG_LEVEL_DEFAULT);
+				//	strcpy(area, ELYSIAN_DEBUG_AREA_DEFAULT);
 				}
-		}_cmdLineArgs;
+		} _cmdLineArgs;
         
 		static unsigned int _stackDepth;
 		static bool _advLogWrap;

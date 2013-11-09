@@ -248,17 +248,17 @@ Entity *PartySystem::getPartyLeader(void) const {
     _playableParty.front();
 }
 
-bool PartySystem::addCharacterToParty(Entity &entity) {
+bool PartySystem::addCharacterToParty(Entity *entity) {
 	for(unsigned int i = 0; i < _characterParty.size(); ++i) { //check if character is already in _characterParty
-		if(_characterParty[i] == &entity) {
-			Debug::printf(Debug::CRITICAL, "PartySystem::AddCharacterToParty(Entity&): %s is already in the party!", entity.getName());
+		if(_characterParty[i] == entity) {
+			Debug::printf(Debug::CRITICAL, "PartySystem::AddCharacterToParty(Entity&): %s is already in the party!", entity->getName());
 			return false;
 		}
 	}
-	Debug::printf(Debug::VERBOSE, "%s has joined the party!", entity.getName());
-	_characterParty.push_back(&entity);
-	if(_playableParty.size() > 0 || _characterParty.size() > 1) entity.transform.setPos(_partyPathPoint[_partyPathPoint.size()-1]);
-	if(_playableParty.size() == 0 && _characterParty.size() == 1) getCameraSys()->setFollowEntity(&entity);
+	Debug::printf(Debug::VERBOSE, "%s has joined the party!", entity->getName());
+	_characterParty.push_back(entity);
+	if(_playableParty.size() > 0 || _characterParty.size() > 1) entity->transform.setPos(_partyPathPoint[_partyPathPoint.size()-1]);
+	if(_playableParty.size() == 0 && _characterParty.size() == 1) getCameraSys()->setFollowEntity(entity);
 	_resizePartyPathPoints();
 	return true;
 }
@@ -274,14 +274,14 @@ bool PartySystem::removeCharacterFromParty(const char *name) {
 	return false;
 }
 
-bool PartySystem::removeCharacterFromParty(const Entity &entity) {
+bool PartySystem::removeCharacterFromParty(const Entity *entity) {
 	for(unsigned int i = 0; i < _characterParty.size(); ++i) {
-		if(_characterParty[i] == &entity) { //determine slot from memory address
+		if(_characterParty[i] == entity) { //determine slot from memory address
 			removeCharacterFromParty(i); //invoke slot
 			return true;
 		}
 	}
-	Debug::printf(Debug::CRITICAL, "! - PartySystem::RemoveCharacterFromParty(Entity&): %s is not in the party!", entity.getName());
+	Debug::printf(Debug::CRITICAL, "! - PartySystem::RemoveCharacterFromParty(Entity&): %s is not in the party!", entity->getName());
 	return false;
 }
 

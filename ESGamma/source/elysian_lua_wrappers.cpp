@@ -30,6 +30,7 @@ namespace elysian {
 		OOLUA::register_class<TileEntry>(*_mainState);
 		_mainState->register_class<Area>();
 		_mainState->register_class<GameInput>();
+		_mainState->register_class<PartySystem>();
 		_mainState->register_class<Singletons>();
 		_mainState->register_class<gyro>();
 		_mainState->register_class<GYWav>();
@@ -114,7 +115,8 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
 						removeWarp,
 						removeAudioSource,
 						removeBehavior,
-						removeLuaBehavior);
+						removeLuaBehavior,
+						setDepthType);
 OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getName,
 								getElev,
@@ -125,7 +127,8 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getWarp,
 								getAudioSource,
 								getBehavior,
-								getLuaBehavior)
+								getLuaBehavior,
+								getDepthType)
 
 EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(RectAttrib,
 								   setColor,
@@ -234,8 +237,8 @@ EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(Behavior,
 EXPORT_OOLUA_FUNCTIONS_1_CONST(Behavior,
 								getBehavName)
 
-EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(LuaBehavior)//,
-								  // getDataTable)
+EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(LuaBehavior,
+								   getSelfTable)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(LuaBehavior)
 
 EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(Tile,
@@ -291,10 +294,10 @@ EXPORT_OOLUA_FUNCTIONS_3_CONST(TimerSystem,
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(TimerSystem)
 
 
-EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(PartySystem,
+OOLUA_EXPORT_FUNCTIONS(PartySystem,
 									addCharacterToParty,
 									removeCharacterFromParty)
-EXPORT_OOLUA_FUNCTIONS_2_CONST(PartySystem,
+OOLUA_EXPORT_FUNCTIONS_CONST(PartySystem,
 								getPartyLeader,
 								getCharacterPartyMember)
 
