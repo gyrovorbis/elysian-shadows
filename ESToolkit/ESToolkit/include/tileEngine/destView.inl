@@ -282,7 +282,7 @@ void DestView<T>::mousePressEvent(QMouseEvent *event) {
 		QGraphicsView::mousePressEvent(&fooledya);
 	} //else QGraphicsView::mousePressEvent(event);
 
-	/*else*/ if(event->buttons() & Qt::LeftButton && (event->modifiers() &= Qt::ControlModifier)) {
+	else if(event->buttons() & Qt::LeftButton && (event->modifiers() &= Qt::ControlModifier)) {
 		_startRegionFill(event);
 		event->ignore();
 		return;
