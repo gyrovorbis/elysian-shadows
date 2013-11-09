@@ -33,7 +33,7 @@ QRect SourceView::getRect(const QPoint &p1, const QPoint &p2) {
 //==== INSTANCE ====
 
 SourceView::SourceView(QWidget *parent):
-    QGraphicsView(parent)
+	QGraphicsView(parent)
 {
 	setDragMode(NoDrag);
 	setFocusPolicy(Qt::StrongFocus);
@@ -51,9 +51,9 @@ SourceView::SourceView(QWidget *parent):
 
 void SourceView::_updateSceneMousePos(void) {
 	_sceneMousePos = mapToScene(_viewMousePos);
-    _sceneMousePosLabel->setText(QString::number((int)_sceneMousePos.x()) + QString(", ") + QString::number((int)_sceneMousePos.y()));
-    _sceneMouseTileLabel->setText(QString::number(((int)_sceneMousePos.x()+16)/32) + QString(", ") + QString::number(((int)_sceneMousePos.y()+16)/32)
-        + QString(" [") + QString::number((int)((_sceneMousePos.x()+16)/32)*32) + QString(", ") + QString::number((int)((_sceneMousePos.y()+16)/32)*32) + QString("]"));
+	_sceneMousePosLabel->setText(QString::number((int)_sceneMousePos.x()) + QString(", ") + QString::number((int)_sceneMousePos.y()));
+	_sceneMouseTileLabel->setText(QString::number(((int)_sceneMousePos.x()+16)/32) + QString(", ") + QString::number(((int)_sceneMousePos.y()+16)/32)
+		+ QString(" [") + QString::number((int)((_sceneMousePos.x()+16)/32)*32) + QString(", ") + QString::number((int)((_sceneMousePos.y()+16)/32)*32) + QString("]"));
 }
 
 void SourceView::setCenter(const QPointF &centerPoint) {
@@ -176,7 +176,13 @@ void SourceView::mousePressEvent(QMouseEvent *event){
 		_startRegionSelection(event);
 		emit exitPanMode();
 	}
-    else if(event->button() == _panMouseButton) setDragMode(ScrollHandDrag);
+	else if(event->button() == Qt::MidButton) {
+		QMouseEvent fooledya(event->type(), event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers());
+		setDragMode(NoDrag);
+		_startRegionSelection(event);
+		QGraphicsView::mousePressEvent(&fooledya);
+	} else QGraphicsView::mousePressEvent(event);
+	if(event->button() == _panMouseButton) setDragMode(ScrollHandDrag);
 
 	event->ignore();
 	QGraphicsView::mousePressEvent(event);
@@ -186,6 +192,7 @@ void SourceView::keyReleaseEvent(QKeyEvent *event){
 	if(event->key() == Qt::Key_Control) {
 		_endRegionSelection(NULL);
 	}
+
    //else QGraphicsView::keyReleaseEvent(event);
 	event->ignore();
 }
@@ -211,6 +218,10 @@ void SourceView::mouseReleaseEvent(QMouseEvent *event) {
 		  Staggered selection will reest! --FG */
 		if(!(event->modifiers() &= Qt::ControlModifier)) emit releaseFocus();
 	}
+	else if(event->button() == Qt::MidButton) {
+		QMouseEvent fooledya(event->type(), event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers());
+		QGraphicsView::mouseReleaseEvent(&fooledya);
+	} else QGraphicsView::mousePressEvent(event);
 	event->ignore();
 	QGraphicsView::mouseReleaseEvent(event);
 }
@@ -228,23 +239,23 @@ void SourceView::_startRegionSelection(QMouseEvent * event) {
 	if(!scene()) return;
 
 	if(!_selecting) { //Begin a new selection
-        _externalSelectionClear();
+		_externalSelectionClear();
 		_selecting = true;
 
-        _fixedPivot = _currentPivot = mapToScene(event->pos());
+		_fixedPivot = _currentPivot = mapToScene(event->pos());
 
-        //Prime the rect stack.
+		//Prime the rect stack.
 		//_sceneSelectionAddRect(getRect(QPointF(-100.0f, -100.0f), QPointF(-100.0f, -100.0f)));
 
 	}
 	else { //Continue a new selection -- move pivot (staggered selection)
-        //_selectedPath.moveTo(mapToScene(event->pos()));
-        _currentPivot = mapToScene(event->pos());
-    }
+		//_selectedPath.moveTo(mapToScene(event->pos()));
+		_currentPivot = mapToScene(event->pos());
+	}
 }
 
 void SourceView::_updateRegionSelection(QMouseEvent * event) {
-    if(_selecting) {
+	if(_selecting) {
 		QPointF scenePos = mapToScene(event->pos());
 		_sceneSelectionUpdateLastRect(getRect(_currentPivot, scenePos));
 
@@ -255,23 +266,23 @@ void SourceView::_updateRegionSelection(QMouseEvent * event) {
 		QRect rect = getRect(intScenePos, intPivot);
 
 		_sceneSelectionSizeLabel->setText(QString::number(rect.width()+1) + QString(", ") + QString::number(rect.height()+1));
-    }
+	}
 }
 
 void SourceView::_endRegionSelection(QMouseEvent *event) {
-    if(!_selecting) return; //Not that this should ever happen...
+	if(!_selecting) return; //Not that this should ever happen...
 
 	if(event) {
-        _sceneSelectionAddRect(getRect(_currentPivot, mapToScene(event->pos())));
+		_sceneSelectionAddRect(getRect(_currentPivot, mapToScene(event->pos())));
 
-        if((event->modifiers() &= Qt::ControlModifier)) {
+		if((event->modifiers() &= Qt::ControlModifier)) {
 			return; //Continue selection for staggered selection
 		}
 	}
 
-    _externalSelectionCreate();
+	_externalSelectionCreate();
 	_selecting = false;
-    _sceneSelectionClear();
+	_sceneSelectionClear();
 }
 
 
@@ -282,22 +293,22 @@ void SourceView::_endRegionSelection(QMouseEvent *event) {
 // ===== INTERNAL SELECTION =====
 
 void SourceView::_sceneSelectionAddRect(const QRectF &rect) {
-    _selectingPath = _selectedPath;
-    _selectingPath.addRect(rect);
-    _selectedPath = _selectingPath;
-    scene()->setSelectionArea(_selectingPath, Qt::IntersectsItemBoundingRect);
+	_selectingPath = _selectedPath;
+	_selectingPath.addRect(rect);
+	_selectedPath = _selectingPath;
+	scene()->setSelectionArea(_selectingPath, Qt::IntersectsItemBoundingRect);
 }
 
 void SourceView::_sceneSelectionUpdateLastRect(const QRectF &rect) {
-    _selectingPath = _selectedPath;
+	_selectingPath = _selectedPath;
 	_selectingPath.addRect(rect);
-    scene()->setSelectionArea(_selectingPath, Qt::IntersectsItemBoundingRect);
+	scene()->setSelectionArea(_selectingPath, Qt::IntersectsItemBoundingRect);
 
 }
 
 void SourceView::_sceneSelectionClear(void) {
-    _selectingPath = _selectedPath = QPainterPath();
-    scene()->clearSelection();
+	_selectingPath = _selectedPath = QPainterPath();
+	scene()->clearSelection();
 }
 
 

@@ -250,6 +250,11 @@ void DestView<T>::mouseReleaseEvent(QMouseEvent *event) {
 		_endRegionSelection(event);
 	}
 
+	if(event->button() == Qt::MidButton) {
+		QMouseEvent fooledya(event->type(), event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers());
+		QGraphicsView::mouseReleaseEvent(&fooledya);
+	} else QGraphicsView::mouseReleaseEvent(event);
+
 	if(event->button() == Qt::LeftButton && _fillingRegion) {
 		_endRegionFill(event);
 	}
@@ -271,7 +276,13 @@ void DestView<T>::mousePressEvent(QMouseEvent *event) {
 		//event->ignore();
 		//return;
 	}
-	else if(event->buttons() & Qt::LeftButton && (event->modifiers() &= Qt::ControlModifier)) {
+	else if(event->button() == Qt::MidButton) {
+		QMouseEvent fooledya(event->type(), event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers());
+		setDragMode(ScrollHandDrag);
+		QGraphicsView::mousePressEvent(&fooledya);
+	} //else QGraphicsView::mousePressEvent(event);
+
+	/*else*/ if(event->buttons() & Qt::LeftButton && (event->modifiers() &= Qt::ControlModifier)) {
 		_startRegionFill(event);
 		event->ignore();
 		return;
@@ -323,6 +334,7 @@ void DestView<T>::keyReleaseEvent (QKeyEvent *event)  {
 		else if(isFillingRegion()) _endRegionFill(NULL);
 	}
 	//else QGraphicsView::keyReleaseEvent(event);
+
 	event->ignore();
 }
 
