@@ -17,6 +17,7 @@ namespace elysian {
 		
 	protected:
 		GYVector2 _toPosition;
+		unsigned char _toElev = 0;
 		bool _changeArea, _changeLevel;
 		char _areaPath[ELYSIAN_WARP_AREA_PATH_MAX_CHARS];
 		char _levelPath[ELYSIAN_WARP_LEVEL_PATH_MAX_CHARS];
@@ -26,7 +27,7 @@ namespace elysian {
 		virtual ~Warp(void);
 		
 	public:
-		void setToPos(const GYVector2& pos);
+		void setToPos(const float x, const float y, const unsigned char elev);
 		const GYVector2 &getToPos(void) const;
 		const char *getAreaPath(void) const;
 		void setAreaPath(const char *name);
@@ -47,9 +48,10 @@ namespace elysian {
 	};
 	
 	
-	inline void Warp::setToPos(const GYVector2& pos) {
-		_toPosition.x = pos.x;
-		_toPosition.y = pos.y;
+	inline void Warp::setToPos(const float x, const float y, const unsigned char elev) {
+		_toPosition.x = x;
+		_toPosition.y = y;
+		_toElev = elev;
 	}
 	
 	inline const GYVector2 &Warp::getToPos(void) const {

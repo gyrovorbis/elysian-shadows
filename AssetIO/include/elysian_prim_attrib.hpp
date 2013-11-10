@@ -13,7 +13,7 @@ namespace elysian {
 */
 	class PrimAttrib: public Asset {
 	public:
-		enum TYPE { RECT, SPRITE, QUAD, QUAD_SPRITE, MODEL, NONE };
+		enum TYPE { SPRITE, QUAD_SPRITE, MODEL, NONE };
 
 		virtual TYPE getType(void) const = 0;
 		virtual void submit(void) = 0;

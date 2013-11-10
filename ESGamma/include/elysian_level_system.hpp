@@ -21,7 +21,7 @@ namespace elysian {
 
         static const unsigned MAX_LEVELS_LOADED = 1;
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86 || GYRO_PLATFORM == GYRO_PLATFORM_iOS
-		static const unsigned MAX_AREAS_LOADED = 3;
+		static const unsigned MAX_AREAS_LOADED = 1;
 #elif GYRO_PLATFORM == GYRO_PLATFORM_PSP
         static const unsigned MAX_AREAS_LOADED = 2;
 #elif GYRO_PLATFORM == GYRO_PLATFORM_DC

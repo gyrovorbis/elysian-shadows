@@ -22,6 +22,7 @@
 #include "elysian_audio_source.hpp"
 #include "elysian_lua_script.hpp"
 #include "elysian_map_depth_buffer.hpp"
+#include "elysian_quad_sprite.hpp"
 
 /* IT'S NOT SAFE TO GO ALONE! TAKE THIS HEADER FILE. IT WILL HELP
  * YOU ON YOUR JOURNEY!
@@ -48,9 +49,10 @@ namespace OOLUA
 	typedef elysian::RenderableObject			RenderableObject;
 	typedef elysian::Component					Component;
 	typedef elysian::Entity						Entity;
-	typedef elysian::RectAttrib					RectAttrib;
+	typedef elysian::PrimAttrib					PrimAttrib;
 	typedef elysian::TexturedAttrib				TexturedAttrib;
 	typedef elysian::SpriteAttrib				SpriteAttrib;
+	typedef elysian::QuadSpriteAttrib			QuadSpriteAttrib;
 	typedef elysian::Renderable					Renderable;
 	typedef elysian::AnimationSequence			AnimationSequence;
 	typedef elysian::AnimationAttrib			AnimationAttrib;
@@ -167,9 +169,6 @@ OOLUA_PROXY(Entity, RenderableObject)
 	OOLUA_MEM_FUNC(void, removeAudioSource)
 	OOLUA_MEM_FUNC(void, removeBehavior, const char*)
 	OOLUA_MEM_FUNC(void, removeLuaBehavior, const char*)
-
-
-	/* TODO: Components and Move */
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Component)
@@ -180,28 +179,24 @@ OOLUA_PROXY(Component)
 	OOLUA_MEM_FUNC_CONST(Entity*, getEntity)
 OOLUA_PROXY_END
 
-OOLUA_PROXY(RectAttrib)
-	OOLUA_TAGS (
-		No_public_constructors,
-		No_public_destructor
-	)
+OOLUA_PROXY(PrimAttrib)
+	OOLUA_TAGS (Abstract)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(SpriteAttrib, PrimAttrib)
+	OOLUA_MEM_FUNC(void, setFrame, unsigned)
 	OOLUA_MEM_FUNC(void, setColor, unsigned char, unsigned char, unsigned char, unsigned char)
 	OOLUA_MEM_FUNC_CONST(void, getColor, out_p<unsigned char&>, out_p<unsigned char&>, out_p<unsigned char&>, out_p<unsigned char&>)
 	OOLUA_MEM_FUNC_CONST(unsigned char, getAlpha)
 	OOLUA_MEM_FUNC(void, setAlpha, unsigned char)
-OOLUA_PROXY_END
-
-OOLUA_PROXY(TexturedAttrib)
-	OOLUA_TAGS (
-		No_public_constructors,
-		No_public_destructor
-	)
 	OOLUA_MEM_FUNC(void, loadTexture, const char *, unsigned, unsigned, unsigned, unsigned)
-	OOLUA_MEM_FUNC_RENAME(loadSheet, void, loadTexture, const char *, unsigned, unsigned)
+	OOLUA_MEM_FUNC(void, loadSheet, const char *, unsigned, unsigned)
 OOLUA_PROXY_END
 
-OOLUA_PROXY(SpriteAttrib, RectAttrib, TexturedAttrib)
-	OOLUA_MEM_FUNC(void, setFrame, unsigned)
+OOLUA_PROXY(QuadSpriteAttrib, SpriteAttrib)
+	OOLUA_MEM_FUNC(void, setVertexColor, const unsigned short, const unsigned char, const unsigned char, const unsigned char, const unsigned char)
+	OOLUA_MEM_FUNC_CONST(void, getVertexColor, unsigned short, out_p<unsigned char&>, out_p<unsigned char&>, out_p<unsigned char&>, out_p<unsigned char&>)
+	OOLUA_MEM_FUNC(void, setVerticesAlpha, const unsigned char, const unsigned char, const unsigned char, const unsigned char)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Renderable, Component)
@@ -297,7 +292,7 @@ OOLUA_PROXY(Warp, Component)
 		No_public_constructors,
 		No_public_destructor
 	)
-	OOLUA_MEM_FUNC(void, setToPos, const GYVector2&)
+	OOLUA_MEM_FUNC(void, setToPos, const float, const float, unsigned char)
 	OOLUA_MEM_FUNC(void, setAreaPath, const char*)
 	OOLUA_MEM_FUNC(void, setLevelPath, const char*)
 	OOLUA_MEM_FUNC(void, setChangeArea, bool)

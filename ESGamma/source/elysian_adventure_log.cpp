@@ -1,7 +1,7 @@
 #include "elysian_adventure_log.hpp"
 #include "elysian_system.hpp"
 #include "elysian_timer_system.hpp"
-#include "elysian_quad.hpp"
+#include "elysian_quad_sprite.hpp"
 #include "elysian_font.hpp"
 #include <string.h>
 #include <stdint.h>
@@ -140,7 +140,7 @@ void AdventureLog::update(void) {
 void AdventureLog::render(Font &font) {
 	if(_exitState == EXIT_DISABLED) return;
 	
-	static Quad quad;
+	static QuadSprite quad;
 	static GYColor4 topColor = { 0, 0, 255, 255 };
 	static GYColor4 bottomColor = { 0, 155, 255, 255 };
 	static GYColor4 canvasColor = { 0, 0, 0, 0 };
@@ -148,8 +148,8 @@ void AdventureLog::render(Font &font) {
     //Draw Canvas for log strings
 	quad.transform.setPos(ELYSIAN_ADV_LOG_X, ELYSIAN_ADV_LOG_Y+11+0.5f*(22*(_endIndex-_startIndex+1)-_yOffset-22), ELYSIAN_ADV_LOG_Z);
 	quad.transform.setSize(430.0f, 22.0f*(_endIndex-_startIndex+1)-_yOffset-22.0f);
-	quad.setColor(canvasColor);
-	quad.setAlpha(0.8f*_baseAlpha*255.0f, 0.8f*_baseAlpha*255.0f, 0.3f*_baseAlpha*255.0f, 0.3f*_baseAlpha*255.0f);
+	for(unsigned i = 0; i < 4; ++i) quad.setVertexColor(i, canvasColor.r, canvasColor.g, canvasColor.b, canvasColor.a);
+	quad.setVerticesAlpha(0.8f*_baseAlpha*255.0f, 0.8f*_baseAlpha*255.0f, 0.3f*_baseAlpha*255.0f, 0.3f*_baseAlpha*255.0f);
 	quad.render();
 	//renderer.drawTransparentQuad(ADV_LOG_X, ADV_LOG_Y+22, ADV_LOG_Z+1, 430, 22*(endIndex-startIndex+1)+yOffset-22, 0.8f, 0, 0, 0, 0.8f, 0, 0, 0, 0.3f, 0, 0, 0, 0.3f, 0, 0, 0);
     
@@ -204,10 +204,10 @@ void AdventureLog::render(Font &font) {
     
     quad.transform.setPos(ELYSIAN_ADV_LOG_X, ELYSIAN_ADV_LOG_Y, ELYSIAN_ADV_LOG_Z+2);
 	quad.transform.setSize(ELYSIAN_ADV_LOG_W, ELYSIAN_ADV_LOG_H/3.0f);
-	quad.setColor(0, topColor); quad.setColor(1, topColor);
-	quad.setColor(3, bottomColor); quad.setColor(2, bottomColor);
+	quad.setVertexColor(0, topColor.r, topColor.g, topColor.b, topColor.a); quad.setVertexColor(1, topColor.r, topColor.g, topColor.b, topColor.a);
+	quad.setVertexColor(3, bottomColor.r, bottomColor.g, bottomColor.b, bottomColor.a); quad.setVertexColor(2, bottomColor.r, bottomColor.g, bottomColor.b, bottomColor.a);
 	//quad.setColorVertical(0.0f, 0.0f, 1.0f, 0.0f, 0.7f, 1.0f);
-	quad.setAlpha(_baseAlpha*255.0f, _baseAlpha*255.0f, _baseAlpha*255.0f, _baseAlpha*255.0f);
+	quad.setVerticesAlpha(_baseAlpha*255.0f, _baseAlpha*255.0f, _baseAlpha*255.0f, _baseAlpha*255.0f);
 	quad.render();
 	
     //renderer.drawTransparentQuad(ADV_LOG_X, ADV_LOG_Y, ADV_LOG_Z+2, 430, 22, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);

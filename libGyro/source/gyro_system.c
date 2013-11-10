@@ -11,7 +11,7 @@ void _gyLog(GY_DEBUG_LEVEL level, const char*const str, ...) {
     char buffer[GYRO_PRINTF_BUFFER_SIZE];
     va_list argptr;
 
-    if(_dbgLevel == GY_DEBUG_OFF || level > _dbgLevel) return;
+	if(_dbgLevel == GY_DEBUG_OFF || level < _dbgLevel) return;
 
     va_start(argptr, str);
     vsprintf(buffer, str, argptr);

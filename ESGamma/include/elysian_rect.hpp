@@ -6,7 +6,7 @@
 #include <gyro.h>
 
 namespace elysian {
-
+#if 0
 	class Rect: public RenderableObject, public RectAttrib {
 	public:
 
@@ -19,6 +19,8 @@ namespace elysian {
 		}
 
 	};
+
+#endif
 
 }
 

@@ -49,6 +49,7 @@ void WarpSystem::Update(void) {
 			if(_currentWarp._changeLevel) getLevelSys()->SwitchLevel(_currentWarp._levelPath);
 			if(_currentWarp._changeArea) getLevelSys()->SwitchArea(_currentWarp._areaPath);
 			getPartySys()->getPartyLeader()->transform.setPos(_currentWarp._toPosition);
+			getPartySys()->getPartyLeader()->setElev(_currentWarp._toElev);
 			_state = FADE_IN;
 			break;
 		case FADE_IN:

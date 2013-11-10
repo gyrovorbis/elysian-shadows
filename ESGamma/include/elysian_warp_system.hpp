@@ -3,7 +3,7 @@
 
 #include "elysian_system.hpp"
 #include "elysian_warp.hpp"
-#include "elysian_rect.hpp"
+#include "elysian_sprite.hpp"
 
 #include "gyro.h"
 
@@ -34,7 +34,7 @@ namespace elysian {
 		float _timer;
 		Warp _currentWarp;
 		
-		Rect _screenRect;
+		Sprite _screenRect;
 		STATE _state;
 	}; 
 	

@@ -1,6 +1,6 @@
 #ifndef ELYSIAN_RECT_ATTRIB_HPP
 #define ELYSIAN_RECT_ATTRIB_HPP
-
+#if 0
 #include "elysian_prim_attrib.hpp"
 
 #include <gyro.h>
@@ -70,5 +70,5 @@ namespace elysian {
 	};
 
 }
-
+#endif
 #endif

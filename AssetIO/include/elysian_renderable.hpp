@@ -16,18 +16,18 @@ namespace elysian {
 	class Renderable: public Component {
 	friend class Entity;
 	private:
-		SpriteAttrib *_sprAttrib;		//Prefab-able attributes
-		unsigned _frame;			//for animation
-		GYVector2 _offset;			//texture offset from base transform (local coords)
+		SpriteAttrib *_spriteAttrib = nullptr;	//Prefab-able attributes
+		unsigned _frame			= 0;			//for animation
+		GYVector2 _offset		= {0.0f, 0.0f};	//texture offset from base transform (local coords)
 
-		inline Renderable(Entity &parent): Component(parent), _sprAttrib(NULL), _frame(0) { _offset.x = _offset.y = 0; }
+		inline Renderable(Entity &parent): Component(parent) {}
 	public:
-        virtual bool canAddTo(Entity& /*entity*/) { return true; } //no prereqs
-		virtual bool load(std::ifstream& stream);
-		virtual bool save(std::ofstream& stream);
-		virtual bool addToLevel(void);
-		virtual bool removeFromLevel(void);
-		virtual Component::TYPE getType(void) const { return Component::RENDERABLE; }
+		virtual bool canAddTo(Entity& /*entity*/) override { return true; } //no prereqs
+		virtual bool load(std::ifstream& stream) override;
+		virtual bool save(std::ofstream& stream) override;
+		virtual bool addToLevel(void) override;
+		virtual bool removeFromLevel(void) override;
+		virtual Component::TYPE getType(void) const override { return Component::RENDERABLE; }
 
 		/*Split into phases JUST IN CASE we wanted to optimize for 
 		header submission/state changes when renderables share attributes*/
@@ -41,12 +41,10 @@ namespace elysian {
 				{ 0.0f, 0.0f, 0.0f, 1.0f}
 			};
 
-			gyVidTexBind(_sprAttrib->_tex);
-			gyVidAlphaLevel((_sprAttrib->_color.a == 255)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
-
-			if(_sprAttrib->_tex) {
+			gyVidTexBind(_spriteAttrib->_tex);
+			if(_spriteAttrib->_tex) {
 				const GYVector2 *size = &_entity->transform._size;
-				const GYTexCoordFrame *fr = &_sprAttrib->_tex->_coord->texCoord[_frame];
+				const GYTexCoordFrame *fr = &_spriteAttrib->_tex->_coord->texCoord[_frame];
 				const float locX = ((float) fr->spriteWidth / size->x)/2.0f;
 				const float locY = ((float) fr->spriteHeight / size->y)/2.0f;
 				localVerts[0].x = -locX + _offset.x;
@@ -59,14 +57,19 @@ namespace elysian {
 				localVerts[3].y = locY + _offset.y;
 			}
 
-			switch(_sprAttrib->getType()) {
-			case PrimAttrib::QUAD:
+			//Submit vertices
+			switch(_spriteAttrib->getType()) {
 			case PrimAttrib::QUAD_SPRITE:
+				gyVidAlphaLevel(GY_ALPHA_FULL);
+				gyVidColorArray(&_spriteAttrib->_color);
+				if(_spriteAttrib->_tex)
+					gyVidTexCoordArray(gyVidTexCoordArrayFromFrame(&_spriteAttrib->_tex->_coord->texCoord[_frame],
+																   GY_RECT_TEX_ORIENT_NORMAL));
 				gyVidTriangleStrip(localVerts, 0, 4);
 				break;
 			case PrimAttrib::SPRITE:
-			case PrimAttrib::RECT:
-				gyVidQuadListBegin(&_sprAttrib->_color);
+				gyVidAlphaLevel((_spriteAttrib->_color.a == 255)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
+				gyVidQuadListBegin(&_spriteAttrib->_color);
 				gyVidQuad(localVerts, _frame);
 				gyVidQuadListEnd();
 				break;
@@ -84,8 +87,8 @@ namespace elysian {
 		inline void setOffset(const GYVector2 &offset) { _offset = offset; }
 		inline void getOffset(GYVector2 &offset) const { offset = _offset; } 
 
-		inline SpriteAttrib *getSpriteAttrib(void) const { return _sprAttrib; }
-		inline void setSpriteAttrib(SpriteAttrib *const attrib) { _sprAttrib = attrib; if(attrib) _frame = attrib->_frame;}
+		inline SpriteAttrib *getSpriteAttrib(void) const { return _spriteAttrib; }
+		inline void setSpriteAttrib(SpriteAttrib *const attrib) { _spriteAttrib = attrib; if(attrib) _frame = attrib->_frame;}
 		
 	};
 

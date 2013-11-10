@@ -12,7 +12,7 @@ namespace elysian {
 		_mainState->register_class<GYVector2>();
 		_mainState->register_class<InstanceTransform>();
 		OOLUA::register_class<Entity>(*_mainState);
-		OOLUA::register_class<SpriteAttrib>(*_mainState);
+		OOLUA::register_class<QuadSpriteAttrib>(*_mainState);
 		_mainState->register_class<Component>();
 		_mainState->register_class<Renderable>();
 		_mainState->register_class<AnimationSequence>();
@@ -130,21 +130,24 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getLuaBehavior,
 								getDepthType)
 
-EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(RectAttrib,
+EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(PrimAttrib)
+EXPORT_OOLUA_FUNCTIONS_0_CONST(PrimAttrib)
+
+EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(SpriteAttrib,
+								   setFrame,
 								   setColor,
-								   setAlpha)
-EXPORT_OOLUA_FUNCTIONS_2_CONST(RectAttrib,
+								   setAlpha,
+								   loadTexture,
+								   loadSheet)
+EXPORT_OOLUA_FUNCTIONS_2_CONST(SpriteAttrib,
 							   getColor,
 							   getAlpha)
 
-EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(TexturedAttrib,
-								   loadTexture,
-								   loadSheet)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(TexturedAttrib)
-
-EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(SpriteAttrib,
-								   setFrame)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(SpriteAttrib)
+EXPORT_OOLUA_FUNCTIONS_1_CONST(QuadSpriteAttrib,
+							   getVertexColor)
+EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(QuadSpriteAttrib,
+								   setVertexColor,
+								   setVerticesAlpha)
 
 EXPORT_OOLUA_FUNCTIONS_3_NON_CONST(Renderable,
 								   setFrame,
