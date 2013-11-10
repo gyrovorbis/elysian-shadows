@@ -15,18 +15,24 @@ namespace elysian {
 		inline SpriteAttrib(void): _frame(0) {}
 		inline void setFrame(const unsigned fr) { _frame = fr; }
 		inline unsigned getFrame(void) const { return _frame; }
-		void Submit(void) { //Resubmits header every time...
+
+		virtual void submit(void) override { //Resubmits header every time...
 #ifdef ELYSIAN_ENGINE
+			submitVerts();
+#endif
+		}
+
+		virtual void submitVerts(GYVector4 *verts = nullptr) override {
 			if(!_tex) return RectAttrib::submit();
-            if(_color.a == 255) gyVidAlphaLevel(GY_ALPHA_PUNCHTHRU);
-            else gyVidAlphaLevel(GY_ALPHA_FULL);
+			if(_color.a == 255) gyVidAlphaLevel(GY_ALPHA_PUNCHTHRU);
+			else gyVidAlphaLevel(GY_ALPHA_FULL);
 			gyVidTexBind(_tex);
 			gyVidQuadListBegin(&_color);
-			
-			gyVidRect(_frame);
-			
+
+			if(verts) gyVidRect(_frame);
+			else gyVidQuad(verts, _frame);
+
 			gyVidQuadListEnd();
-#endif
 		}
 
 		PrimAttrib::TYPE getType(void) const { return PrimAttrib::SPRITE; }

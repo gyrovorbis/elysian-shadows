@@ -86,7 +86,7 @@ int gyAssetBankRemove(GYAssetBank *const bank, const void *const payload) {
 				bank->_tail = 0;
 			}
 			//Invoke destructor on payload if specified
-			if(bank->_destructor) bank->_destructor(entry);
+			if(bank->_destructor) bank->_destructor(/*entry*/payload);
 			free(entry);
 			--bank->_size;
 		}

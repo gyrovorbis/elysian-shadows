@@ -16,11 +16,9 @@ namespace elysian {
 	class Renderable: public Component {
 	friend class Entity;
 	private:
-		SpriteAttrib *_sprAttrib;	//Prefab-able attributes
+		SpriteAttrib *_sprAttrib;		//Prefab-able attributes
 		unsigned _frame;			//for animation
 		GYVector2 _offset;			//texture offset from base transform (local coords)
-
-		static GYVector4 _localVerts[4];
 
 		inline Renderable(Entity &parent): Component(parent), _sprAttrib(NULL), _frame(0) { _offset.x = _offset.y = 0; }
 	public:
@@ -33,35 +31,52 @@ namespace elysian {
 
 		/*Split into phases JUST IN CASE we wanted to optimize for 
 		header submission/state changes when renderables share attributes*/
-		inline void beginRender(void) {
-			gyVidTexBind(_sprAttrib->_tex);
-			gyVidAlphaLevel((_sprAttrib->_color.a == 255)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
-			gyVidQuadListBegin(&_sprAttrib->_color);
-		}
+		inline void beginRender(void) {}
 
 		inline void render(void) { 
+			GYVector4 localVerts[4] = {
+				{ 0.0f, 0.0f, 0.0f, 1.0f},
+				{ 0.0f, 0.0f, 0.0f, 1.0f},
+				{ 0.0f, 0.0f, 0.0f, 1.0f},
+				{ 0.0f, 0.0f, 0.0f, 1.0f}
+			};
+
+			gyVidTexBind(_sprAttrib->_tex);
+			gyVidAlphaLevel((_sprAttrib->_color.a == 255)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
+
 			if(_sprAttrib->_tex) {
-				GYVector2 *size = &_entity->transform._size;
-				GYTexCoordFrame *fr = &_sprAttrib->_tex->_coord->texCoord[_frame];
-				float locX = ((float) fr->spriteWidth / size->x)/2.0f;
-				float locY = ((float) fr->spriteHeight / size->y)/2.0f;
-				_localVerts[0].x = -locX + _offset.x;
-				_localVerts[0].y = -locY + _offset.y;
-				_localVerts[1].x = locX + _offset.x;
-				_localVerts[1].y = -locY + _offset.y;
-				_localVerts[2].x = -locX + _offset.x;
-				_localVerts[2].y = locY + _offset.y;
-				_localVerts[3].x = locX + _offset.x;
-				_localVerts[3].y = locY + _offset.y;
-				gyVidQuad(_localVerts, _frame);
+				const GYVector2 *size = &_entity->transform._size;
+				const GYTexCoordFrame *fr = &_sprAttrib->_tex->_coord->texCoord[_frame];
+				const float locX = ((float) fr->spriteWidth / size->x)/2.0f;
+				const float locY = ((float) fr->spriteHeight / size->y)/2.0f;
+				localVerts[0].x = -locX + _offset.x;
+				localVerts[0].y = -locY + _offset.y;
+				localVerts[1].x = locX + _offset.x;
+				localVerts[1].y = -locY + _offset.y;
+				localVerts[2].x = -locX + _offset.x;
+				localVerts[2].y = locY + _offset.y;
+				localVerts[3].x = locX + _offset.x;
+				localVerts[3].y = locY + _offset.y;
 			}
-			else {
-				gyVidRect(0);
+
+			switch(_sprAttrib->getType()) {
+			case PrimAttrib::QUAD:
+			case PrimAttrib::QUAD_SPRITE:
+				gyVidTriangleStrip(localVerts, 0, 4);
+				break;
+			case PrimAttrib::SPRITE:
+			case PrimAttrib::RECT:
+				gyVidQuadListBegin(&_sprAttrib->_color);
+				gyVidQuad(localVerts, _frame);
+				gyVidQuadListEnd();
+				break;
+			default: break;//the fuck is wrong with you, son?
 			}
+
 		}
 
 		inline void endRender(void) {
-			gyVidQuadListEnd();
+			//gyVidQuadListEnd();
 		}
 
 		inline unsigned getFrame(void) const { return _frame; }

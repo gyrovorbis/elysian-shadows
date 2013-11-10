@@ -407,8 +407,8 @@ OOLUA_PROXY(PartySystem)
 		No_public_constructors,
 		No_public_destructor
 	)
-	OOLUA_MEM_FUNC(bool, addCharacterToParty, Entity*)
-	OOLUA_MEM_FUNC(bool, removeCharacterFromParty, const Entity*)
+	OOLUA_MEM_FUNC(bool, addCharacterToParty, cpp_in_p<Entity*>)
+	OOLUA_MEM_FUNC(bool, removeCharacterFromParty, in_out_p<const Entity*>)
 	OOLUA_MEM_FUNC_CONST(Entity*, getPartyLeader)
 	OOLUA_MEM_FUNC_CONST(Entity*, getCharacterPartyMember, unsigned)
 OOLUA_PROXY_END

@@ -52,16 +52,21 @@ namespace elysian {
 			_vertColor[0].a = a2; _vertColor[1].a = a3; _vertColor[2].a = a4; _color.a = a1; 
 		}
 
-		void submit(void) {
+		virtual void submit(void) override {
 #ifdef ELYSIAN_ENGINE			
-			//We got some serious fucking design issues if this shit ain't true.
-			assert((char *)&_vertColor == ((char*)&_color+4));
-            gyVidTexBind(NULL);
-			gyVidAlphaLevel(GY_ALPHA_FULL);
-			gyVidColorArray(&_color);
-			gyVidTriangleStrip(_verts, 0, 4);
+			submitVerts();
 #endif
 		}
+
+		virtual void submitVerts(GYVector4 *verts = nullptr) {
+			//We got some serious fucking design issues if this shit ain't true.
+			assert((char *)&_vertColor == ((char*)&_color+4));
+			gyVidTexBind(nullptr);
+			gyVidAlphaLevel(GY_ALPHA_FULL);
+			gyVidColorArray(&_color);
+			gyVidTriangleStrip((verts)? verts :_verts, 0, 4);
+		}
+
 
 		PrimAttrib::TYPE getType(void) const { return PrimAttrib::QUAD; }
 

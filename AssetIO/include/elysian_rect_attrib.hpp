@@ -13,16 +13,21 @@ namespace elysian {
 		GYColor4 _color;
 	public:
 		//Not super efficient, but since each rect needs its own color, header must be resubmitted...
-		void submit(void) {
+		virtual void submit(void) override {
 #ifdef ELYSIAN_ENGINE
-            if(_color.a == 255) gyVidAlphaLevel(GY_ALPHA_NONE);
-            else gyVidAlphaLevel(GY_ALPHA_FULL);
-            
+			submitVerts();
+#endif
+		}
+
+		virtual void submitVerts(GYVector4* verts = nullptr) {
+			if(_color.a == 255) gyVidAlphaLevel(GY_ALPHA_NONE);
+			else gyVidAlphaLevel(GY_ALPHA_FULL);
+
 			gyVidTexBind(NULL);
 			gyVidQuadListBegin(&_color);
-			gyVidRect(0);
+			if(verts) gyVidQuad(verts, 0);
+			else gyVidRect(0);
 			gyVidQuadListEnd();
-#endif
 		}
 
 		RectAttrib(void) { 

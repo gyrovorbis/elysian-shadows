@@ -7,6 +7,7 @@
 #include "elysian_collision_system.hpp"
 #include "elysian_map_system.hpp"
 #include "elysian_audio_system.hpp"
+#include "elysian_debug.hpp"
 
 #include <gyro.h>
 
@@ -34,6 +35,7 @@ bool LevelSystem::SwitchLevel(const char *const dir) {
 	}
 
 	if(level.size() >= MAX_LEVELS_LOADED) {
+		Debug::printf(Debug::VERBOSE, "LEVEL DBG - %s", level[0]->path);
 		delete level[0];
 		level.erase(level.begin());
 	}
