@@ -17,10 +17,8 @@ extern "C" {
     
 #include "gyro_texture.h"
 
-struct _GYTexture;
 struct _GYVector4;
 struct _GYVector3;
-struct _GYTexCoord2;
 
 typedef struct _GYColor4 {
     unsigned char r, g, b, a;
@@ -46,7 +44,7 @@ void gyVidRect(const unsigned int frame);
 
 //Triangle strip API 
 void gyVidColorArray(const GYColor4 *const ptr);
-void gyVidTexCoordArray(const struct _GYTexCoord2 *const ptr);
+void gyVidTexCoordArray(const GYTexCoord2 *const ptr);
 void gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsigned int startIndex, const unsigned int amount);
 
 //Internal state

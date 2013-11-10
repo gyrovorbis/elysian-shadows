@@ -12,6 +12,8 @@
 #include <kos.h> //for PVR_PACK_16BIT_UV()
 #endif
 
+static GYTexCoord2 _texFrameCoords[4];
+
 //Used internally for searches/construction
 typedef struct _GYTexEntryDat {
 	const char *const file;
@@ -124,7 +126,9 @@ static int _TexCoordDestructor(void *const payload) {
 static GYAssetBank _texCoordBank = { 0, 0, 0, &_TexCoordComparator, &_TexCoordConstructor, &_TexCoordDestructor };
 
 static int _TexComparator(const void *const payload, const void *const data) {
-	return (strcmp(((const GYTexture*)payload)->filename, ((const char *)data)) == 0);
+	if(!payload) return 0;
+	GYTexEntryDat* texData = data;
+	return (strcmp(((const GYTexture*)payload)->filename, texData->file) == 0);
 }
 
 static void *_TexConstructor(void *const data) {
@@ -151,8 +155,9 @@ static void *_TexConstructor(void *const data) {
 
 	//platform-specific texture allocation
 	if(!_gyVidTexAlloc(tex, texData->sheetWidth, texData->sheetHeight)) {
+		_gyLog(GY_DEBUG_CRITICAL, "Could not load texture! - %s", texData->file);
 		free(tex);
-		_gyLog(GY_DEBUG_CRITICAL, "! - Could not load texture! - %s", tex->filename);
+		return NULL;
 	}
 
 	tex->_coord = (!texData->spriteWidth || !texData->spriteHeight)?
@@ -195,7 +200,8 @@ GYTexture *gyVidTexCreate(const char *const filename, const unsigned width, cons
 
 int gyVidTexDestroy(GYTexture *const tex) {
 	if(!tex) return 0;
-	return gyAssetBankRemove(&_texBank, tex);
+	GYTexEntryDat data = { tex->filename, tex->_coord->sheetWidth, tex->_coord->sheetHeight, tex->_coord->spriteWidth, tex->_coord->spriteHeight};
+	return gyAssetBankRemove(&_texBank, &data);
 }
 
 //Better make damn sure there were no more active references, unsafe.
@@ -216,6 +222,7 @@ int gyVidTexReloadAll(void) {
 	GYTexture *tex;
 	for(; entry; entry = entry->_next) {
 		tex = entry->_payload;
+		if(!tex) continue;
 		width = tex->_coord->sheetWidth;
 		height = tex->_coord->sheetHeight;
 		success &= _gyVidTexFree(tex);
@@ -230,27 +237,86 @@ void gyVidTexWalkthrough(void) {
     GYTexture *tex;
 	GYAssetBankEntry *entry = _texCoordBank._head;
 
-    gyPrintf("====TEX COORD WALKTHROUGH====\n");
+	_gyLog(GY_DEBUG_VERBOSE, "====TEX COORD WALKTHROUGH====");
 	for(; entry; entry = entry->_next) {
 		coord = entry->_payload;
-		gyPrintf("%d) Sheet - %dx%d, Sprite - %dx%d\n", count, coord->sheetWidth, coord->sheetHeight, coord->spriteWidth, coord->spriteHeight);
-        gyPrintf("\tFrames - %d, _refCount - %d\n", coord->frames, entry->_refCount);
+		_gyLog(GY_DEBUG_VERBOSE, "%d) Sheet - %dx%d, Sprite - %dx%d", count, coord->sheetWidth, coord->sheetHeight, coord->spriteWidth, coord->spriteHeight);
+		_gyLog(GY_DEBUG_VERBOSE, "\tFrames - %d, _refCount - %d", coord->frames, entry->_refCount);
         ++count;
     }
-    gyPrintf("====/TEX COORD WALKTHROUGH====\n");
+	_gyLog(GY_DEBUG_VERBOSE, "====/TEX COORD WALKTHROUGH====");
 
     count = 0;
-    gyPrintf("====TEXTURE WALKTHROUGH====\n");
+	_gyLog(GY_DEBUG_VERBOSE, "====TEXTURE WALKTHROUGH====");
 	for(entry = _texBank._head; entry; entry = entry->_next) {
 		tex = entry->_payload;
-        gyPrintf("%d) %s\n", count, tex->filename);
-        gyPrintf("\tbpp - %d, palette - %d\n", tex->bpp, tex->palette);
-        gyPrintf("\tSheet size - %dx%d\n", tex->_coord->sheetWidth, tex->_coord->sheetHeight);
-		gyPrintf("\tSprite size - %dx%d\n", tex->_coord->spriteWidth, tex->_coord->spriteHeight);
-        gyPrintf("\t_refCount - %d\n", entry->_refCount);
+		if(!tex) {
+			_gyLog(GY_DEBUG_VERBOSE, "%d) NULL", count++);
+			continue;
+		}
+		_gyLog(GY_DEBUG_VERBOSE, "%d) %s", count, tex->filename);
+		_gyLog(GY_DEBUG_VERBOSE, "\tbpp - %d, palette - %d", tex->bpp, tex->palette);
+		_gyLog(GY_DEBUG_VERBOSE, "\tSheet size - %dx%d", tex->_coord->sheetWidth, tex->_coord->sheetHeight);
+		_gyLog(GY_DEBUG_VERBOSE, "\tSprite size - %dx%d", tex->_coord->spriteWidth, tex->_coord->spriteHeight);
+		_gyLog(GY_DEBUG_VERBOSE, "\t_refCount - %d", entry->_refCount);
         ++count;
     }
-    gyPrintf("====/TEXTURE WALKTHROUGH====\n");
+	_gyLog(GY_DEBUG_VERBOSE, "====/TEXTURE WALKTHROUGH====");
 }
 
+const GYTexCoord2* gyVidTexCoordArrayFromFrame(const GYTexCoordFrame *const frame, const GY_RECT_TEX_ORIENT orient) {
+	switch(orient) {
+		case GY_RECT_TEX_ORIENT_NORMAL:
+			_texFrameCoords[0].u = frame->topLeft.u; _texFrameCoords[0].v = frame->topLeft.v;
+			_texFrameCoords[1].u = frame->botRight.u; _texFrameCoords[1].v = frame->topLeft.v;
+			_texFrameCoords[2].u = frame->topLeft.u; _texFrameCoords[2].v = frame->botRight.v;
+			_texFrameCoords[3].u = frame->botRight.u; _texFrameCoords[3].v = frame->botRight.v;
+			break;
+		case GY_RECT_TEX_ORIENT_FLIP_HORIZ:
+			_texFrameCoords[0].u = frame->botRight.u; _texFrameCoords[0].v = frame->topLeft.v;
+			_texFrameCoords[1].u = frame->topLeft.u; _texFrameCoords[1].v = frame->topLeft.v;
+			_texFrameCoords[2].u = frame->botRight.u; _texFrameCoords[2].v = frame->botRight.v;
+			_texFrameCoords[3].u = frame->topLeft.u; _texFrameCoords[3].v = frame->botRight.v;
+			break;
+		case GY_RECT_TEX_ORIENT_FLIP_VERT:
+			_texFrameCoords[0].u = frame->topLeft.u; _texFrameCoords[0].v = frame->botRight.v;
+			_texFrameCoords[1].u = frame->botRight.u; _texFrameCoords[1].v = frame->botRight.v;
+			_texFrameCoords[2].u = frame->topLeft.u; _texFrameCoords[2].v = frame->topLeft.v;
+			_texFrameCoords[3].u = frame->botRight.u; _texFrameCoords[3].v = frame->topLeft.v;
+			break;
+		case GY_RECT_TEX_ORIENT_ROT_90:
+			_texFrameCoords[2].u = frame->topLeft.u; _texFrameCoords[2].v = frame->topLeft.v;
+			_texFrameCoords[0].u = frame->botRight.u; _texFrameCoords[0].v = frame->topLeft.v;
+			_texFrameCoords[3].u = frame->topLeft.u; _texFrameCoords[3].v = frame->botRight.v;
+			_texFrameCoords[1].u = frame->botRight.u; _texFrameCoords[1].v = frame->botRight.v;
+			break;
+		case GY_RECT_TEX_ORIENT_ROT_180:
+			_texFrameCoords[3].u = frame->topLeft.u; _texFrameCoords[3].v = frame->topLeft.v;
+			_texFrameCoords[2].u = frame->botRight.u; _texFrameCoords[2].v = frame->topLeft.v;
+			_texFrameCoords[1].u = frame->topLeft.u; _texFrameCoords[1].v = frame->botRight.v;
+			_texFrameCoords[0].u = frame->botRight.u; _texFrameCoords[0].v = frame->botRight.v;
+			break;
+		case GY_RECT_TEX_ORIENT_ROT_270:
+			_texFrameCoords[1].u = frame->topLeft.u; _texFrameCoords[1].v = frame->topLeft.v;
+			_texFrameCoords[3].u = frame->botRight.u; _texFrameCoords[3].v = frame->topLeft.v;
+			_texFrameCoords[0].u = frame->topLeft.u; _texFrameCoords[0].v = frame->botRight.v;
+			_texFrameCoords[2].u = frame->botRight.u; _texFrameCoords[2].v = frame->botRight.v;
+			break;
+		case GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_90:
+			_texFrameCoords[3].u = frame->topLeft.u; _texFrameCoords[3].v = frame->topLeft.v;
+			_texFrameCoords[1].u = frame->botRight.u; _texFrameCoords[1].v = frame->topLeft.v;
+			_texFrameCoords[2].u = frame->topLeft.u; _texFrameCoords[2].v = frame->botRight.v;
+			_texFrameCoords[0].u = frame->botRight.u; _texFrameCoords[0].v = frame->botRight.v;
+			break;
+		case GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_270:
+			_texFrameCoords[0].u = frame->topLeft.u; _texFrameCoords[0].v = frame->topLeft.v;
+			_texFrameCoords[2].u = frame->botRight.u; _texFrameCoords[2].v = frame->topLeft.v;
+			_texFrameCoords[1].u = frame->topLeft.u; _texFrameCoords[1].v = frame->botRight.v;
+			_texFrameCoords[3].u = frame->botRight.u; _texFrameCoords[3].v = frame->botRight.v;
+			break;
+		default:
+			assert(0);
+		}
 
+	return _texFrameCoords;
+}
