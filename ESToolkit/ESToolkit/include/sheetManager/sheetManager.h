@@ -68,6 +68,7 @@ private slots:
 	void changeActiveLevel(QAction *action);
 	void onLevelAdded(Project * const project, Level * const level);
 	void onLevelRemoved(Project * const project, Level * const level);
+	void onLevelRenamed(const QString oldName, const QString newName);
 	void onSourceOtherTabChanged(const int index);
 	void onSourceOtherTabClose(const int index);
 	void onSelectionChanged(SheetManagerTileSelection *const sel);

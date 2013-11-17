@@ -21,6 +21,7 @@ void Project::connectSlots(Level *const level) {
 	connect(level, SIGNAL(areaAdded(Level *const, Area *const)), this, SLOT(onAreaAdded(Level *const, Area *const)));
 	connect(level, SIGNAL(areaRenamed(QString,QString)), this, SLOT(onAreaRenamed(QString,QString)));
 	connect(level, SIGNAL(areaRemoved(Level*const,Area*const)), this, SLOT(onAreaRemoved(Level*const,Area*const)));
+	connect(level, SIGNAL(levelRenamed(QString,QString)), this, SLOT(onLevelRenamed(QString,QString)));
 	connect(level, SIGNAL(entityAdded(Level*const,Area*const,Entity*const)), this, SLOT(onAddEntity(Level*const,Area*const,Entity*const)));
 	connect(level, SIGNAL(entityRemoved(Level*const,Area*const,Entity*const)), this, SLOT(onRemoveEntity(Level*const,Area*const,Entity*const)));
 	connect(level, SIGNAL(componentAttached(Level*const,Area*const,Entity*const,Component*const)), this, SLOT(onComponentAttached(Level*const,Area*const,Entity*const,Component*const)));
@@ -335,4 +336,8 @@ void Project::onComponentRemoved(Level *const level, Area *const area, Entity *c
 
 void Project::onAreaRenamed(const QString oldName, const QString newName) {
 	emit areaRenamed(oldName, newName);
+}
+
+void Project::onLevelRenamed(const QString oldName, const QString newName) {
+	emit levelRenamed(oldName, newName);
 }

@@ -31,6 +31,7 @@ namespace elysian {
 		_mainState->register_class<Area>();
 		_mainState->register_class<GameInput>();
 		_mainState->register_class<PartySystem>();
+		_mainState->register_class<TimerSystem>();
 		_mainState->register_class<Singletons>();
 		_mainState->register_class<gyro>();
 		_mainState->register_class<GYWav>();
@@ -290,11 +291,11 @@ EXPORT_OOLUA_FUNCTIONS_2_CONST(GameInput,
 								getDown,
 								getTapped)
 
-EXPORT_OOLUA_FUNCTIONS_3_CONST(TimerSystem,
+OOLUA_EXPORT_FUNCTIONS_CONST(TimerSystem,
 								getTotalTicks,
 								getCurrentFrameTicks,
 								getDeltaTime)
-EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(TimerSystem)
+OOLUA_EXPORT_FUNCTIONS(TimerSystem)
 
 
 OOLUA_EXPORT_FUNCTIONS(PartySystem,

@@ -66,6 +66,7 @@ signals:
 	void areaAdded(Project *const project, Level *const level, Area *const area);
 	void areaRenamed(const QString oldName, const QString newName);
 	void levelAdded(Project *const project, Level *const level);
+	void levelRenamed(const QString oldName, const QString newName);
 	void projectAdded(Project *const project);
 	void entityAdded(Project *const project, Level *const level, Area *const area, Entity *const entity);
 
@@ -84,6 +85,7 @@ private slots:
 	void onAreaRemoved(Project *const project, Level *const level, Area *const area);
 	void onLevelAdded(Project *const project, Level *const level);
 	void onLevelRemoved(Project *const project, Level *const level);
+	void onLevelRenamed(const QString oldName, const QString newName);
 	void onEntityAdded(Project *const project, Level *const level, Area *const area, Entity *const entity);
 	void onEntityRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity);
 	void onComponentAttached(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);

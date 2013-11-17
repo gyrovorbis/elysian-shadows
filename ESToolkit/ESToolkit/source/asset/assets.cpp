@@ -9,10 +9,10 @@
 
 //====STATIC MEMBERS====
 
-Area *Assets::_currentArea = NULL;
-Level *Assets::_currentLevel = NULL;
-Project *Assets::m_project = NULL;
-Selectable *Assets::_currentSelection = NULL;
+Area *Assets::_currentArea = nullptr;
+Level *Assets::_currentLevel = nullptr;
+Project *Assets::m_project = nullptr;
+Selectable *Assets::_currentSelection = nullptr;
 Selectable::TYPE Assets::_currentSelectionType = Selectable::EMPTY;
 Assets::LAYER_TYPE Assets::_currentLayer = Assets::LAYER_TILE1;
 bool Assets::_layerVisible[Assets::LAYER_MAX] = { true };
@@ -73,6 +73,7 @@ void Assets::connectSlots(Project *const project) {
 	connect(project, SIGNAL(areaRemoved(Project*const,Level*const,Area*const)), this, SLOT(onAreaRemoved(Project*const,Level*const,Area*const)));
 	connect(project, SIGNAL(levelAdded(Project *const, Level *const)), this, SLOT(onLevelAdded(Project *const, Level *const)));
 	connect(project, SIGNAL(levelRemoved(Project*const,Level*const)), this, SLOT(onLevelRemoved(Project*const,Level*const)));
+	connect(project, SIGNAL(levelRenamed(QString,QString)), this, SLOT(onLevelRenamed(QString,QString)));
 	connect(project, SIGNAL(entityAdded(Project*const,Level*const,Area*const,Entity*const)), this, SLOT(onEntityAdded(Project*const,Level*const,Area*const,Entity*const)));
 	connect(project, SIGNAL(entityRemoved(Project*const,Level*const,Area*const,Entity*const)), this, SLOT(onEntityRemoved(Project*const,Level*const,Area*const,Entity*const)));
 	connect(project, SIGNAL(componentAttached(Project*const,Level*const,Area*const,Entity*const,Component*const)), this, SLOT(onComponentAttached(Project*const,Level*const,Area*const,Entity*const,Component*const)));
@@ -294,4 +295,9 @@ void Assets::onComponentRemoved(Project *const project, Level *const level, Area
 void Assets::onAreaRenamed(const QString oldName, const QString newName) {
 	emit areaRenamed(oldName, newName);
 }
+
+void Assets::onLevelRenamed(const QString oldName, const QString newName) {
+	emit levelRenamed(oldName, newName);
+}
+
 

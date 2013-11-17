@@ -413,9 +413,9 @@ OOLUA_PROXY(TimerSystem)
 		No_public_constructors,
 		No_public_destructor
 	)
-	OOLUA_MEM_FUNC_CONST(unsigned long, getTotalTicks)
-	OOLUA_MEM_FUNC_CONST(unsigned long, getCurrentFrameTicks)
-	OOLUA_MEM_FUNC_CONST(float, getDeltaTime)
+	OOLUA_MFUNC_CONST(getTotalTicks)
+	OOLUA_MFUNC_CONST(getCurrentFrameTicks)
+	OOLUA_MFUNC_CONST(getDeltaTime)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(AudioSystem)

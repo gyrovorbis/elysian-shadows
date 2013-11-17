@@ -116,6 +116,7 @@ signals:
 	void componentAttached(Level *const level, Area *const area, Entity *const entity, Component *const comp);
 	void componentRemoved(Level *const level, Area *const area, Entity *const entity, Component *const comp);
 	void areaRenamed(const QString oldName, const QString newName);
+	void levelRenamed(const QString oldName, const QString newName);
 
 };
 

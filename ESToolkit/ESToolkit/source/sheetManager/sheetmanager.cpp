@@ -174,6 +174,7 @@ SheetManager::SheetManager(QWidget *parent):
 	connect(_watcher, SIGNAL(fileChanged(const QString&)), this, SLOT(onFileChanged(const QString&)));
 	connect(AssetManager::getAssets(), SIGNAL(levelAdded(Project *const, Level  *const)), this, SLOT(onLevelAdded(Project * const, Level * const)));
 	connect(AssetManager::getAssets(), SIGNAL(levelRemoved(Project*const,Level*const)), this, SLOT(onLevelRemoved(Project*const,Level*const)));
+	connect(AssetManager::getAssets(), SIGNAL(levelRenamed(QString,QString)), this, SLOT(onLevelRenamed(QString,QString)));
 	connect(_srcOtherTabBar, SIGNAL(currentChanged(int)), this, SLOT(onSourceOtherTabChanged(int)));
 	connect(_srcOtherTabBar, SIGNAL(tabCloseRequested(int)), this, SLOT(onSourceOtherTabClose(int)));
 	connect(_destLevelMenu, SIGNAL(triggered(QAction*)), this, SLOT(changeActiveLevel(QAction*)));
@@ -327,6 +328,26 @@ void SheetManager::onLevelRemoved(Project *const /*project*/, Level *const level
 		}
 	}
 }
+
+void SheetManager::onLevelRenamed(const QString oldName, const QString newName) {
+	//Clear all actions
+	for(int i = 0; i < _destLevelActions.size(); ++i) {
+		delete _destLevelActions[i];
+		_destLevelActions.remove(i);
+	}
+	for(int i = 0; i < _srcLevelActions.size(); ++i) {
+		delete _srcLevelActions[i];
+		_srcLevelActions.remove(i);
+	}
+
+	//repopulate actions
+	unsigned levIndex = 0;
+	Level* lev = nullptr;
+	while((lev = AssetManager::getAssets()->getCurrentProject()->getLevelByIndex(levIndex++))) {
+		onLevelAdded(nullptr, lev);
+	}
+}
+
 
 void SheetManager::onSourceOtherTabChanged(const int index) {
 	if(index != -1) {

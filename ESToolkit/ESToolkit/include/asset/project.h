@@ -28,7 +28,7 @@ public:
 	Project(void);
 	~Project(void); //delete all levels
 
-	virtual void populateModel(void);
+	virtual void populateModel(void) override;
 
     void setName(const QString name);
     void setLocation(const QString loc);
@@ -62,6 +62,7 @@ private slots:
 	  void onAreaAdded(Level *const level, Area *const area);
 	  void onAreaRenamed(const QString oldName, const QString newName);
 	  void onAreaRemoved(Level *const level, Area *const area);
+	  void onLevelRenamed(const QString oldName, const QString newName);
 	  void onAddEntity(Level *const level, Area *const area, Entity *const entity);
 	  void onRemoveEntity(Level *const level, Area *const area, Entity *const entity);
 	  void onComponentAttached(Level *const level, Area *const area, Entity *const entity, Component *const comp);
@@ -74,6 +75,7 @@ signals:
 	void areaRemoved(Project *const project, Level *const level, Area *const area);
 	void levelAdded(Project *const project, Level *const level);
 	void levelRemoved(Project *const project, Level *const level);
+	void levelRenamed(const QString oldName, const QString newName);
 	void entityAdded(Project *const project, Level *const level, Area *const area, Entity *const entity);
 	void entityRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity);
 	void componentAttached(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
