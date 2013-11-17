@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <pthread.h>
 #include "gyro_audio.h"
 #include "gyro_wav.h"
 #include "gyro_matrix.h"
@@ -586,6 +587,60 @@ double gyAudOggTime(GYOgg*const ogg) {
 	return ov_time_tell(&payload->oggStream);
 }
 
+
+
+
+//======= OGG STREAM PTHREADICISM =======
+
+typedef struct _StreamPthData {
+	GYWavSource*	src;
+	GYOgg*			ogg;
+} StreamPthData;
+
+
+void* _pthOggUpdate(void* data) {
+	StreamPthData* streamData = data;
+	int processed;
+	int errorCode;
+	double time;
+
+	while(1) {
+		alGetSourcei(*streamData->src, AL_BUFFERS_PROCESSED, &processed);
+		_checkALError();
+
+		while(processed--) {
+			ALuint buffer;
+
+			alSourceUnqueueBuffers(*streamData->src, 1, &buffer);
+			if(!_streamOgg(*streamData->src, streamData->ogg)) break;
+
+			alSourceQueueBuffers(*streamData->src, 1, &buffer);
+			_checkALError();
+		}
+	}
+}
+
+#define GYRO_AUDIO_MAX_STREAMS 6
+
+typedef struct __StreamData {
+	GYWavSource*	src;
+	GYOgg*			ogg;
+	pthread_t		pthread;
+} _StreamData;
+
+static _StreamData _streamData[GYRO_AUDIO_MAX_STREAMS];
+
+void _startStream(GYWavSource* src, GYOgg* ogg) {
+
+
+}
+
+
+
+
+
+
+//====== /OGG STREAM PTHREADICISM ========
 
 
 
