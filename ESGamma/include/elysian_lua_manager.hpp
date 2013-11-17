@@ -7,7 +7,7 @@
 #include "elysian_lua_script.hpp"
 #include "elysian_debug.hpp"
 
-#if GYRO_PLATOFRM == GYRO_PLATFORM_x86
+#if GYRO_PLATFORM == GYRO_PLATFORM_x86
 #	define ELYSIAN_LUA_DEBUG true
 #	define OOLUA_DEBUG_CHECKS 1
 #else
@@ -124,7 +124,6 @@ namespace elysian {
 
 	inline void LuaManager::_protectedCall(const int nargs, const int nresults, LuaScript *script) {
 #ifdef ELYSIAN_LUA_DEBUG
-
 		lua_pushcfunction(*_mainState, &LuaManager::_traceBack);
 		lua_insert(*_mainState, 1);
 		if((_errorCode = lua_pcall(*_mainState, nargs, nresults, 1)) != 0) {
@@ -138,9 +137,8 @@ namespace elysian {
 		} else {
 			lua_remove(*_mainState, 1); //remove c traceback function from bottom of stack
 		}
-
 #else	//ain't NOBODY got time for debug overhead!
-		lua_call(*_mainState, nargs, nresults);
+	//	lua_call(*_mainState, nargs, nresults);
 #endif
 	}
 

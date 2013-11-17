@@ -15,7 +15,7 @@ namespace elysian {
 		//Allocate audio channels
 		//and initialize channel data
 		for(unsigned i = 0; i < ELYSIAN_AUDIO_CHANNELS; ++i) {
-			_channels[i].src = gyAudSourceCreate();
+			_channels[i].src = (i >= AudioChannel::BGM_1 && i <= AudioChannel::AUX_2)? gyAudSourceOggStreamCreate() : gyAudSourceCreate();
 			_channels[i].owner = AudioChannel::FREE;
 		}
 
@@ -64,20 +64,18 @@ namespace elysian {
 		for(unsigned i = 0; i < 6; ++i) {
 
 			//if(gyAudSourceIsPlaying(_oggTracks[i].src)) {
-			if(_streamChannels[i].ogg) gyAudOggUpdate(_streamChannels[i].src, _streamChannels[i].ogg);
+			//if(_streamChannels[i].ogg) gyAudOggUpdate(_streamChannels[i].src, _streamChannels[i].ogg);
 			//}
 
 			/*Reested to have to do this every frame, but looping is tied to the OGG track, not the source,
 			so we can't set all tracks at once when this value changes */
-			if(i < 2) { //Do the same for AUX TRACKS!!!!!
+			/*if(i < 2) { //Do the same for AUX TRACKS!!!!!
 				if(_streamChannels[i].ogg) gyAudOggSetLooping(_streamChannels[i].ogg, _bgmLooping);
 			} else if(i >= 2 && i < 4) {
 				if(_streamChannels[i].ogg) gyAudOggSetLooping(_streamChannels[i].ogg, _aux1Looping);
 			} else {
 				if(_streamChannels[i].ogg) gyAudOggSetLooping(_streamChannels[i].ogg, _aux2Looping);
-			}
-
-
+			}*/
 
 			switch(_streamChannels[i].state) {
 			case StreamChannel::State::FADE_OUT:
@@ -344,15 +342,15 @@ namespace elysian {
 	}
 
 	void AudioSystem::playBgmTrack(void) const {
-		gyAudSourcePlayOgg(_streamChannels[StreamChannel::Type::BGM].src, _streamChannels[StreamChannel::Type::BGM].ogg);
+		gyAudOggStreamPlay(_streamChannels[StreamChannel::Type::BGM].src, _streamChannels[StreamChannel::Type::BGM].ogg);
 	}
 
 	void AudioSystem::stopBgmTrack(void) const {
-		gyAudStopOggStream(_streamChannels[StreamChannel::Type::BGM].src, _streamChannels[StreamChannel::Type::BGM].ogg);
+		gyAudOggStreamStop(_streamChannels[StreamChannel::Type::BGM].src);
 	}
 
 	void AudioSystem::pauseBgmTrack(void) const {
-		gyAudPauseOggStream(_streamChannels[StreamChannel::Type::BGM].src, _streamChannels[StreamChannel::Type::BGM].ogg);
+		gyAudOggStreamPause(_streamChannels[StreamChannel::Type::BGM].src);
 	}
 
 	bool AudioSystem::isBgmTrackPlaying(void) const {

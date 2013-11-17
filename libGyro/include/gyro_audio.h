@@ -63,6 +63,17 @@ double gyAudOggTime(GYOgg*const ogg);
 void gyAudOggSetLooping(GYOgg*const ogg, const unsigned looping);
 
 
+//NEWFANGLED API!!!!!!
+GYWavSource* gyAudSourceOggStreamCreate(void);
+void gyAudSourceOggStreamDestroy(GYWavSource*const src);
+void gyAudOggStreamPlay(GYWavSource*src, GYOgg*ogg);
+void gyAudOggStreamPause(GYWavSource*src);
+void gyAudOggStreamStop(GYWavSource*src);
+
+
+
+
+
 #ifdef __cplusplus
 }
 #endif
