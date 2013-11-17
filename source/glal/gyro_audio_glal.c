@@ -550,7 +550,6 @@ void gyAudStopOggStream(GYWavSource*const src, GYOgg*const ogg) {
 void gyAudOggUpdate(GYWavSource* const src, struct _GYOgg* const ogg) {
 	int processed;
 	int errorCode;
-	double time;
 
 	alGetSourcei(*src, AL_BUFFERS_PROCESSED, &processed);
 	_checkALError();
@@ -587,61 +586,138 @@ double gyAudOggTime(GYOgg*const ogg) {
 	return ov_time_tell(&payload->oggStream);
 }
 
-
-
-
 //======= OGG STREAM PTHREADICISM =======
 
-typedef struct _StreamPthData {
-	GYWavSource*	src;
+#include <pthread.h>
+#include <errno.h>
+#include <semaphore.h>
+
+typedef struct __AudioStream {
+	ALuint			src;
 	GYOgg*			ogg;
-} StreamPthData;
+	pthread_t		thread;
+	sem_t*			semaphore;
+	pthread_mutex_t mutex;
+	pthread_cond_t	condition;
+	unsigned		looping;
+} _AudioStream;
 
-
-void* _pthOggUpdate(void* data) {
-	StreamPthData* streamData = data;
+static void* _gyAudOggStreamUpdate(void* data) {
+	_AudioStream*const stream = data;
 	int processed;
 	int errorCode;
-	double time;
+	int done;
 
 	while(1) {
-		alGetSourcei(*streamData->src, AL_BUFFERS_PROCESSED, &processed);
+		done = 0;
+
+		if(sem_trywait(stream->semaphore) == -1) {
+			pthread_mutex_lock(&stream->mutex);
+			pthread_cond_wait(&stream->condition, &stream->mutex);
+			pthread_mutex_unlock(&stream->mutex);
+		}
+
+		if(!gyAudSourceIsPlaying(stream)) {
+			continue;
+		}
+
+		alGetSourcei(stream->src, AL_BUFFERS_PROCESSED, &processed);
 		_checkALError();
 
 		while(processed--) {
 			ALuint buffer;
 
-			alSourceUnqueueBuffers(*streamData->src, 1, &buffer);
-			if(!_streamOgg(*streamData->src, streamData->ogg)) break;
+			alSourceUnqueueBuffers(stream->src, 1, &buffer);
+			if(!_streamOgg(buffer, stream->ogg)) {
+				done = 1;
+				break;
+			}
 
-			alSourceQueueBuffers(*streamData->src, 1, &buffer);
+			alSourceQueueBuffers(stream->src, 1, &buffer);
 			_checkALError();
 		}
+
+		if(!done)
+			sem_post(stream->semaphore);
+	}
+
+	return NULL;
+}
+
+GYWavSource* gyAudSourceOggStreamCreate(void) {
+	char buff[20];
+	_AudioStream*const stream = malloc(sizeof(_AudioStream));
+	alGenSources(1, &stream->src);
+	alSourcei(stream->src, AL_REFERENCE_DISTANCE, _refDist);
+	_checkALError();
+	stream->looping = 1;
+	stream->ogg = NULL;
+	sprintf(buff, "%d", stream->src);
+	sem_unlink(buff);
+	stream->semaphore = sem_open(buff, O_CREAT, 0777, 0);
+	pthread_mutex_init(&stream->mutex, NULL);
+	pthread_cond_init(&stream->condition, NULL);
+	pthread_create(&stream->thread, NULL, &_gyAudOggStreamUpdate, stream);
+	return stream;
+}
+
+void gyAudSourceOggStreamDestroy(GYWavSource*const src) {
+	char buff[20];
+	_AudioStream*const stream = src;
+	//KILL THE THREAD FIRST
+	sem_close(stream->semaphore);
+	sprintf(buff, "%d", stream->src);
+	sem_unlink(buff);
+	pthread_mutex_destroy(&stream->mutex);
+	pthread_cond_destroy(&stream->condition);
+	gyAudSourceDestroy(src);
+}
+
+
+void gyAudOggStreamPlay(GYWavSource*src, GYOgg*ogg) {
+	_AudioStream* stream = src;
+	GYOggPayload* payload = ogg->_data;
+
+	if(gyAudSourceIsPlaying(src))
+		return;
+
+	if(!_streamOgg(payload->buffers[0], ogg))
+		return;
+
+	if(!_streamOgg(payload->buffers[1], ogg))
+		return;
+
+	alSourceQueueBuffers(*src, 2, payload->buffers);
+	alSourcePlay(*src);
+	_checkALError();
+
+	stream->ogg = ogg;
+
+	pthread_mutex_lock(&stream->mutex);
+	pthread_cond_signal(&stream->condition);
+	pthread_mutex_unlock(&stream->mutex);
+}
+
+void gyAudOggStreamPause(GYWavSource*src) {
+	_AudioStream* stream = src;
+	int queued;
+
+	alSourceStop(stream->src);
+	alGetSourcei(stream->src, AL_BUFFERS_QUEUED, &queued);
+
+	while(queued--) {
+		ALuint buffer;
+
+		alSourceUnqueueBuffers(stream->src, 1, &buffer);
+		_checkALError();
 	}
 }
 
-#define GYRO_AUDIO_MAX_STREAMS 6
+void gyAudOggStreamStop(GYWavSource*src) {
+	GYOggPayload* payload = ((_AudioStream*)src)->ogg->_data;
 
-typedef struct __StreamData {
-	GYWavSource*	src;
-	GYOgg*			ogg;
-	pthread_t		pthread;
-} _StreamData;
-
-static _StreamData _streamData[GYRO_AUDIO_MAX_STREAMS];
-
-void _startStream(GYWavSource* src, GYOgg* ogg) {
-
-
+	gyAudOggStreamPause(src);
+	ov_pcm_seek(&payload->oggStream, 0);
 }
-
-
-
-
-
-
-//====== /OGG STREAM PTHREADICISM ========
-
-
 
 
