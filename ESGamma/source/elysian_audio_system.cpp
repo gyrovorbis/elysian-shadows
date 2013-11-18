@@ -32,11 +32,6 @@ namespace elysian {
 			gyAudSourceSetf(_channels[i].src, GY_SOURCE_ROLLOFF_FACTOR, 0.0f);
 			//gyAudSourceSeti(_channels[i].src, GY_SOURCE_RELATIVE, 1);
 		}
-
-
-        gyAudSourceOggStreamDestroy(_streamChannels[5].src);
-
-
 	}
 
 	AudioSystem::~AudioSystem(void) {
