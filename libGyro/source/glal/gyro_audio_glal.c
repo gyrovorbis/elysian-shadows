@@ -590,6 +590,7 @@ double gyAudOggTime(GYOgg*const ogg) {
 
 #include <pthread.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <semaphore.h>
 
 typedef struct __AudioStream {
@@ -599,7 +600,8 @@ typedef struct __AudioStream {
 	sem_t*			semaphore;
 	pthread_mutex_t mutex;
 	pthread_cond_t	condition;
-	unsigned		looping;
+    unsigned		looping;
+    unsigned        killme;
 } _AudioStream;
 
 static void* _gyAudOggStreamUpdate(void* data) {
@@ -616,6 +618,8 @@ static void* _gyAudOggStreamUpdate(void* data) {
 			pthread_cond_wait(&stream->condition, &stream->mutex);
 			pthread_mutex_unlock(&stream->mutex);
 		}
+
+        if(stream->killme) break; //It had a good run.
 
 		if(!gyAudSourceIsPlaying(stream)) {
 			continue;
@@ -652,9 +656,15 @@ GYWavSource* gyAudSourceOggStreamCreate(void) {
 	_checkALError();
 	stream->looping = 1;
 	stream->ogg = NULL;
-	sprintf(buff, "%d", stream->src);
+    stream->killme = 0;
+#ifdef __WIN32  //GOD FUCKING DAMNIT!!!!!
+    stream->semaphore = malloc(sizeof(sem_t));
+    sem_init(stream->semaphore, 0, 0);
+#else
+    sprintf(buff, "%d", stream->src);
 	sem_unlink(buff);
 	stream->semaphore = sem_open(buff, O_CREAT, 0777, 0);
+#endif
 	pthread_mutex_init(&stream->mutex, NULL);
 	pthread_cond_init(&stream->condition, NULL);
 	pthread_create(&stream->thread, NULL, &_gyAudOggStreamUpdate, stream);
@@ -664,9 +674,18 @@ GYWavSource* gyAudSourceOggStreamCreate(void) {
 void gyAudSourceOggStreamDestroy(GYWavSource*const src) {
 	char buff[20];
 	_AudioStream*const stream = src;
-	//KILL THE THREAD FIRST
+    //Wake the fucker up (if asleep) and tell it to commit suicide
+    stream->killme = 1;
+    pthread_mutex_lock(&stream->mutex);
+    pthread_cond_signal(&stream->condition);
+    pthread_mutex_unlock(&stream->mutex);
+    pthread_join(stream->thread, NULL);
+#ifdef __WIN32
+    sem_destroy(stream->semaphore);
+    free(stream->semaphore);
+#else
 	sem_close(stream->semaphore);
-	sprintf(buff, "%d", stream->src);
+#endif
 	sem_unlink(buff);
 	pthread_mutex_destroy(&stream->mutex);
 	pthread_cond_destroy(&stream->condition);
