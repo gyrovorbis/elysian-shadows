@@ -246,6 +246,7 @@ linux {
         -lvorbis \
         -lvorbisenc \
         -lvorbisfile \
+        -lX11 \
         -lpthread
 }
 

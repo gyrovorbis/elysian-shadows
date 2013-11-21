@@ -1,3 +1,7 @@
+#ifdef __unix__
+#include <thread>
+#include <X11/Xlib.h>
+#endif
 #include <gyro.h>
 
 #include "elysian_engine.hpp"
@@ -20,15 +24,15 @@ static void Init(int argc, char *argv[]) {
 
 	debug->parseArguments();
 	strcpy(verString, "ESGamma v");
-	strcat(verString, GYRO_LIB_VERSION); 
-	
-	GYVidInitParams vidParams = 
-#if GYRO_PLATFORM == GYRO_PLATFORM_x86	
+	strcat(verString, GYRO_LIB_VERSION);
+
+	GYVidInitParams vidParams =
+#if GYRO_PLATFORM == GYRO_PLATFORM_x86
 	{ (GY_VID_RESOLUTION)debug->getCmdLineArgs().resolution, GY_WIN_RESIZABLE, 480, 270, 1280, 720, verString, "icon.bmp"};
 #elif GYRO_PLATFORM == GYRO_PLATFORM_iOS
-    { 0 };
+	{ 0 };
 #elif GYRO_PLATFORM == GYRO_PLATFORM_DC
-    { 0 };
+	{ 0 };
 #elif GYRO_PLATFORM == GYRO_PLATFORM_PSP
 
 #endif
@@ -39,10 +43,10 @@ static void Init(int argc, char *argv[]) {
 	gyInputInit();
 	gyAudInit();
 	gyTimerInit();
-    gyFileInit();
+	gyFileInit();
 
 	engine = new Engine;
-	
+
 	engine->loadAssets();
 	debug->setEngine(*engine);
 	debug->sandboxInit();
@@ -73,6 +77,9 @@ static void StaticConstructor(void) {
    Droid and iOS reest will be less painful.
  */
 int main(int argc, char *argv[]) {
+#ifdef __unix__
+	XInitThreads();
+#endif
 	StaticConstructor();
 
 #if GYRO_PLATFORM == GYRO_PLATFORM_iOS
@@ -84,13 +91,13 @@ int main(int argc, char *argv[]) {
 #else
 
 	Init(argc, argv);
-    
+
 	for(;;) {
 		if(Update() == -1) break;
 		Render();
 		ProcessInput();
 	}
-    
+
 #endif
 	return 0;
 }

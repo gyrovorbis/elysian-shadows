@@ -28,14 +28,14 @@ int gyAudInit(void) {
 		return 0;
 	}
 
-    return 1;
+	return 1;
 }
 
 int gyAudUninit(void) {
 	alcMakeContextCurrent(NULL);
 	alcDestroyContext(_alContext);
 	alcCloseDevice(_alDevice);
-    return 1;
+	return 1;
 }
 
 void gyAudSetReferenceDistance(const int dist) {
@@ -411,6 +411,7 @@ static inline const char* _vorbisErrorString(const int code) {
 GYOgg* gyAudCreateOgg(const char*const path) {
 	int result;
 	int alErrorCode;
+	char* device = (char*)alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
 
 	GYOgg* ogg = malloc(sizeof(GYOgg));
 	GYOggPayload* payload = ogg->_data = malloc(sizeof(GYOggPayload));
@@ -444,13 +445,16 @@ GYOgg* gyAudCreateOgg(const char*const path) {
 		_gyLog(GY_DEBUG_CRITICAL, "! - Could not generate OpenAL buffers for OGG stream: %s", _openALError(alErrorCode));
 	}
 
-	printf("Version - %d\n", payload->vorbisInfo->version);
-	printf("Channels - %d\n", payload->vorbisInfo->channels);
-	printf("Rate (hz) - %ld\n", payload->vorbisInfo->rate);
-	printf("bitrate upper - %ld\n", payload->vorbisInfo->bitrate_upper);
+	/* Debug stuff. */
+
+	printf("Device			- %s\n", device);
+	printf("Version			- %d\n", payload->vorbisInfo->version);
+	printf("Channels		- %d\n", payload->vorbisInfo->channels);
+	printf("Rate (hz)		- %ld\n", payload->vorbisInfo->rate);
+	printf("bitrate upper	- %ld\n", payload->vorbisInfo->bitrate_upper);
 	printf("bitrate nominal - %ld\n", payload->vorbisInfo->bitrate_nominal);
-	printf("bitrate lower - %ld\n", payload->vorbisInfo->bitrate_lower);
-	printf("bitrate window - %ld\n", payload->vorbisInfo->bitrate_window);
+	printf("bitrate lower	- %ld\n", payload->vorbisInfo->bitrate_lower);
+	printf("bitrate window	- %ld\n", payload->vorbisInfo->bitrate_window);
 	return ogg;
 }
 
@@ -500,7 +504,7 @@ static inline int _streamOgg(const ALuint buffer, GYOgg*const ogg) {
 	}
 
 	if(size != 0) {
-		int errorCode;
+		//int errorCode;
 		alBufferData(buffer, payload->format, pcm, size, payload->vorbisInfo->rate);
 		_checkALError();
 		return 1;
@@ -600,8 +604,8 @@ typedef struct __AudioStream {
 	sem_t*			semaphore;
 	pthread_mutex_t mutex;
 	pthread_cond_t	condition;
-    unsigned		looping;
-    unsigned        killme;
+	unsigned		looping;
+	unsigned        killme;
 } _AudioStream;
 
 static void* _gyAudOggStreamUpdate(void* data) {
@@ -619,7 +623,7 @@ static void* _gyAudOggStreamUpdate(void* data) {
 			pthread_mutex_unlock(&stream->mutex);
 		}
 
-        if(stream->killme) break; //It had a good run.
+		if(stream->killme) break; //It had a good run.
 
 		if(!gyAudSourceIsPlaying(stream)) {
 			continue;
@@ -656,12 +660,12 @@ GYWavSource* gyAudSourceOggStreamCreate(void) {
 	_checkALError();
 	stream->looping = 1;
 	stream->ogg = NULL;
-    stream->killme = 0;
+	stream->killme = 0;
 #ifdef __WIN32  //GOD FUCKING DAMNIT!!!!!
-    stream->semaphore = malloc(sizeof(sem_t));
-    sem_init(stream->semaphore, 0, 0);
+	stream->semaphore = malloc(sizeof(sem_t));
+	sem_init(stream->semaphore, 0, 0);
 #else
-    sprintf(buff, "%d", stream->src);
+	sprintf(buff, "%d", stream->src);
 	sem_unlink(buff);
 	stream->semaphore = sem_open(buff, O_CREAT, 0777, 0);
 #endif
@@ -674,15 +678,15 @@ GYWavSource* gyAudSourceOggStreamCreate(void) {
 void gyAudSourceOggStreamDestroy(GYWavSource*const src) {
 	char buff[20];
 	_AudioStream*const stream = src;
-    //Wake the fucker up (if asleep) and tell it to commit suicide
-    stream->killme = 1;
-    pthread_mutex_lock(&stream->mutex);
-    pthread_cond_signal(&stream->condition);
-    pthread_mutex_unlock(&stream->mutex);
-    pthread_join(stream->thread, NULL);
+	//Wake the fucker up (if asleep) and tell it to commit suicide
+	stream->killme = 1;
+	pthread_mutex_lock(&stream->mutex);
+	pthread_cond_signal(&stream->condition);
+	pthread_mutex_unlock(&stream->mutex);
+	pthread_join(stream->thread, NULL);
 #ifdef __WIN32
-    sem_destroy(stream->semaphore);
-    free(stream->semaphore);
+	sem_destroy(stream->semaphore);
+	free(stream->semaphore);
 #else
 	sem_close(stream->semaphore);
 #endif
