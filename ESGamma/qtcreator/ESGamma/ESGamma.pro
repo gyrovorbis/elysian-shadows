@@ -23,7 +23,7 @@ INCLUDEPATH += ../../include \
     ../../../AssetIO/include \
     ../../../libGyro/include \
     ../../../libGyro/include/kinetic \
-	../../../OOLua/include
+    ../../../OOLua/include
 
 win32 {
     INCLUDEPATH += ../../../libGyro/lib/win32
@@ -39,7 +39,7 @@ DEPENDPATH += ../../include \
     ../../../AssetIO/include \
     ../../../libGyro/include \
     ../../../libGyro/include/kinetic \
-	../../../OOLua/include
+    ../../../OOLua/include
 
 HEADERS += \
     ../../include/elysian_warp_system.hpp \
@@ -217,12 +217,12 @@ win32 {
 
 macx {
   LIBS +=  -L../../lib/osx \
-	-framework OpenGL \
+    -framework OpenGL \
     -framework OpenAL \
-	-lz \
+    -lz \
     -F../../../libGyro/lib/osx \
     -L../../../libGyro/lib/osx \
-	-llua52 \
+    -llua52 \
     -framework Foundation \
     -framework Cocoa \
     -lobjc \
@@ -245,25 +245,26 @@ linux {
         -logg \
         -lvorbis \
         -lvorbisenc \
-        -lvorbisfile
+        -lvorbisfile \
+        -lpthread
 }
 
 macx {
-	CONFIG(release, debug|release) {
-		DESTDIR = ../../../Project
-	}
-	QMAKE_POST_LINK = "./ESGammaAppDereest.command"
+    CONFIG(release, debug|release) {
+        DESTDIR = ../../../Project
+    }
+    QMAKE_POST_LINK = "./ESGammaAppDereest.command"
 }
 
 win32 {
-	CONFIG(release, debug|release) {
-		DESTDIR = ../../../Project
-	}
+    CONFIG(release, debug|release) {
+        DESTDIR = ../../../Project
+    }
 }
 
 linux {
-	CONFIG(release, debug|release) {
-		DESTDIR = ../../../Project
-	}
+    CONFIG(release, debug|release) {
+        DESTDIR = ../../../Project
+    }
 }
 
