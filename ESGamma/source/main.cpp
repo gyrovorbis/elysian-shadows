@@ -20,6 +20,7 @@ Debug *debug;
 
 static void Init(int argc, char *argv[]) {
 	debug = &Debug::getInstance();
+	gyDebugSigInit();
 	char verString[50];
 
 	debug->parseArguments();

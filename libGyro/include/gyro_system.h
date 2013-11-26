@@ -20,6 +20,8 @@ unsigned int gySysStatsRam(void);
 
 void _gyLog(GY_DEBUG_LEVEL level, const char* const str, ...);
 
+void gyDebugSigInit(void);
+
 #ifdef __cplusplus
 }
 #endif
