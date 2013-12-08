@@ -14,7 +14,12 @@ win32 {
 
 macx {
     INCLUDEPATH += ../../lib/osx
-	INCLUDEPATH += ../../lib/osx/SDL.framework/Headers
+    INCLUDEPATH += ../../lib/osx/SDL.framework/Headers
+}
+
+linux {
+    LIBS += \
+        -ldynamic
 }
 
 DEPENDPATH += ../../include \
@@ -92,5 +97,5 @@ SOURCES += \
     ../../source/x86/png/pngmem.c \
     ../../source/x86/png/pngget.c \
     ../../source/x86/png/pngerror.c \
-	../../source/x86/png/png.c \
+    ../../source/x86/png/png.c \
 
