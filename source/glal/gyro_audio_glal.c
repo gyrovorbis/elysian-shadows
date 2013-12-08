@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <pthread.h>
+#include <string.h>
 #include "gyro_audio.h"
 #include "gyro_wav.h"
 #include "gyro_matrix.h"
@@ -69,7 +70,7 @@ static inline int _checkALError(void) {
 	int error = alGetError();
 
 	if(error != AL_NO_ERROR) {
-		_gyLog(GY_DEBUG_CRITICAL, "! - OpenAL Error raised: %s", _openALError(error));
+		_gyLog(GY_DEBUG_CRITICAL, "OpenAL Error raised: %s", _openALError(error));
 		return 1;
 	}
 	return 0;
@@ -81,13 +82,12 @@ GYWavSource* gyAudSourceCreate(void) {
 	alGenSources(1, src);
 	alSourcei(*src, AL_REFERENCE_DISTANCE, _refDist);
 	_checkALError();
-	return src;
+	return (GYWavSource*)src;
 }
 
 void gyAudSourceDestroy(GYWavSource*const src) {
-	int errorCode;
 	if(!src) return;
-	alDeleteSources(1, src);
+	alDeleteSources(1, (ALuint*)src);
 	_checkALError();
 	free(src);
 }
@@ -103,10 +103,11 @@ void gyAudSourceSetfv(GYWavSource*const src, const GY_SOURCE_ATTRIB attrib, cons
 	case GY_SOURCE_VEL:
 		alIndex = AL_VELOCITY;
 		break;
+	default: return;
 	}
 
 	newVec.z *= _zScale;
-	alSourcefv(*src, alIndex, &newVec);
+	alSourcefv(*(ALuint*)src, alIndex, (void*)&newVec);
 
 }
 
@@ -122,9 +123,10 @@ void gyAudSourceSetf(GYWavSource*const src, const GY_SOURCE_ATTRIB attrib, const
 	case GY_SOURCE_ROLLOFF_FACTOR:
 		alIndex = AL_ROLLOFF_FACTOR;
 		break;
+	default: return;
 	}
 
-	alSourcef(*src, alIndex, val);
+	alSourcef(*(ALuint*)src, alIndex, val);
 
 }
 
@@ -140,11 +142,12 @@ float gyAudSourceGetf(GYWavSource*const src, const GY_SOURCE_ATTRIB attrib) {
 	case GY_SOURCE_ROLLOFF_FACTOR:
 		alIndex = AL_ROLLOFF_FACTOR;
 		break;
+	default: return 0.0f;
 	}
 
 	float value;
 
-	alGetSourcef(*src, alIndex, &value);
+	alGetSourcef(*(ALuint*)src, alIndex, &value);
 	return value;
 }
 
@@ -156,19 +159,20 @@ void gyAudSourceSeti(GYWavSource*const src, const GY_SOURCE_ATTRIB attrib, const
 		break;
 	case GY_SOURCE_RELATIVE:
 		alIndex = AL_SOURCE_RELATIVE;
+		break;
+	default: return;
 	}
 
-	alSourcei(*src, alIndex, val);
+	alSourcei(*(ALuint*)src, alIndex, val);
 }
 
 void gyAudSourceStop(GYWavSource*const src) {
-	alSourceStop(*src);
+	alSourceStop(*(ALuint*)src);
 }
 
 int gyAudSourceIsPlaying(GYWavSource*const src) {
 	ALenum state;
-	alGetSourcei(*src, AL_SOURCE_STATE, &state);
-
+	alGetSourcei(*(ALuint*)src, AL_SOURCE_STATE, &state);
 	return (state == AL_PLAYING);
 }
 
@@ -181,22 +185,21 @@ typedef struct _GYAudWavPayload {
 
 void gyAudSourcePlayWav(GYWavSource*const src, const GYWav* wav) {
 	const GYAudWavPayload* payload = wav->_data;
-	alSourcei(*src, AL_BUFFER, payload->buffer);
-	alSourcePlay(*src);
+	alSourcei(*(ALuint*)src, AL_BUFFER, payload->buffer);
+	alSourcePlay(*(ALuint*)src);
 }
 
 //audio listener
 void gyAudListenerSetPos(const struct _GYVector3* const pos) {
 	GYVector3 veccy = *pos;
 	veccy.z *= _zScale;
-	alListenerfv(AL_POSITION, &veccy);
+	alListenerfv(AL_POSITION, (void*)&veccy);
 }
 
 //===== PRIVATE =======
 
 
 int _gyAudWavFree(GYWav *const wav) {
-	int errorCode;
 	GYAudWavPayload *payload = wav->_data;
 
 	alDeleteBuffers(1, &payload->buffer);
@@ -377,6 +380,9 @@ int _gyAudWavAlloc(GYWav *const wav) {
 #include <ogg/ogg.h>
 #include <vorbis/codec.h>
 #include <vorbis/vorbisenc.h>
+/* Defined so dickface vorbisfile.h doesn't create static data that
+ * we don't give a shit about in this compilation unit. */
+#define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbis/vorbisfile.h>
 
 #define GYRO_OGG_STREAM_BUFF_SIZE	(4096 * 20)
@@ -500,7 +506,6 @@ static inline int _streamOgg(const ALuint buffer, GYOgg*const ogg) {
 	}
 
 	if(size != 0) {
-		int errorCode;
 		alBufferData(buffer, payload->format, pcm, size, payload->vorbisInfo->rate);
 		_checkALError();
 		return 1;
@@ -509,198 +514,151 @@ static inline int _streamOgg(const ALuint buffer, GYOgg*const ogg) {
 	return 0;
 }
 
-void gyAudSourcePlayOgg(GYWavSource*const src, const struct _GYOgg*const ogg) {
-	GYOggPayload* payload = ogg->_data;
-
-	if(gyAudSourceIsPlaying(src))
-		return;
-
-	if(!_streamOgg(payload->buffers[0], ogg))
-		return;
-
-	if(!_streamOgg(payload->buffers[1], ogg))
-		return;
-
-	alSourceQueueBuffers(*src, 2, payload->buffers);
-	alSourcePlay(*src);
-	_checkALError();
-}
-
-void gyAudPauseOggStream(GYWavSource*const src, GYOgg*const ogg) {
-	int queued;
-
-	alSourceStop(*src);
-	alGetSourcei(*src, AL_BUFFERS_QUEUED, &queued);
-
-	while(queued--) {
-		ALuint buffer;
-
-		alSourceUnqueueBuffers(*src, 1, &buffer);
-		_checkALError();
-	}
-}
-
-void gyAudStopOggStream(GYWavSource*const src, GYOgg*const ogg) {
-	gyAudPauseOggStream(src, ogg);
-	GYOggPayload* payload = ogg->_data;
-	ov_pcm_seek(&payload->oggStream, 0);
-}
-
-//I think this can be invoked even when an OGG is not currently streaming or is done?
-void gyAudOggUpdate(GYWavSource* const src, struct _GYOgg* const ogg) {
-	int processed;
-	int errorCode;
-
-	alGetSourcei(*src, AL_BUFFERS_PROCESSED, &processed);
-	_checkALError();
-
-	while(processed--) {
-		ALuint buffer;
-
-		alSourceUnqueueBuffers(*src, 1, &buffer);
-		if(!_streamOgg(buffer, ogg)) break;
-
-		alSourceQueueBuffers(*src, 1, &buffer);
-		_checkALError();
-	}
-
-}
-
-
-void gyAudOggSync(GYOgg*const ogg1, GYOgg*const ogg2) {
-	GYOggPayload* payload1 = ogg1->_data;
-	GYOggPayload* payload2 = ogg2->_data;
-	double time;
-
-	time = ov_time_tell(&payload1->oggStream);
-	ov_time_seek_lap(&payload2->oggStream, time);
-
-}
-
-void gyAudOggSetLooping(GYOgg*const ogg, const unsigned looping) {
-	ogg->looping = looping;
-}
-
-double gyAudOggTime(GYOgg*const ogg) {
-	GYOggPayload* payload = ogg->_data;
-	return ov_time_tell(&payload->oggStream);
-}
-
 //======= OGG STREAM PTHREADICISM =======
 
 #include <pthread.h>
-#include <errno.h>
-#include <semaphore.h>
 
-typedef struct __AudioStream {
-	ALuint			src;
-	GYOgg*			ogg;
-	pthread_t		thread;
-	sem_t*			semaphore;
-	pthread_mutex_t mutex;
-	pthread_cond_t	condition;
-	unsigned		looping;
-} _AudioStream;
+typedef struct __OggStreamSource {
+	ALuint				src;				//polymorphically compatible with GYAudioSource
+	GYOgg*				ogg;
+	pthread_t			thread;
+	unsigned			stillStreaming;		//boolean for whether we have work or not
+	pthread_mutex_t		streamMutex;
+	pthread_mutexattr_t	streamMutexAttr;
+	pthread_cond_t		tryStreamCond;
+	unsigned			killMe;
+	unsigned			looping;
+} _OggStreamSource;
 
 static void* _gyAudOggStreamUpdate(void* data) {
-	_AudioStream*const stream = data;
+	_OggStreamSource*const stream = data;
 	int processed;
-	int errorCode;
 	int done;
 
 	while(1) {
 		done = 0;
 
-		if(sem_trywait(stream->semaphore) == -1) {
-			pthread_mutex_lock(&stream->mutex);
-			pthread_cond_wait(&stream->condition, &stream->mutex);
-			pthread_mutex_unlock(&stream->mutex);
+		//Protect against ANY other stream-related operations while updating
+		pthread_mutex_lock(&stream->streamMutex);
+		while(!stream->stillStreaming) {
+			pthread_cond_wait(&stream->tryStreamCond, &stream->streamMutex);	//wait for master to signal to resume stream
 		}
 
-		if(!gyAudSourceIsPlaying(stream)) {
-			continue;
+		//parent wants us dead (cleaning up stream)
+		if(stream->killMe) {
+			pthread_mutex_unlock(&stream->streamMutex);
+			break; //He had a good run...
 		}
 
-		alGetSourcei(stream->src, AL_BUFFERS_PROCESSED, &processed);
-		_checkALError();
+		//Update stream if we're playing
+		if(gyAudSourceIsPlaying((GYWavSource*)stream)) {
 
-		while(processed--) {
-			ALuint buffer;
-
-			alSourceUnqueueBuffers(stream->src, 1, &buffer);
-			if(!_streamOgg(buffer, stream->ogg)) {
-				done = 1;
-				break;
-			}
-
-			alSourceQueueBuffers(stream->src, 1, &buffer);
+			alGetSourcei(stream->src, AL_BUFFERS_PROCESSED, &processed);
 			_checkALError();
-		}
 
-		if(!done)
-			sem_post(stream->semaphore);
+			while(processed--) {
+				ALuint buffer;
+
+				alSourceUnqueueBuffers(stream->src, 1, &buffer);
+				if(!_streamOgg(buffer, stream->ogg)) {
+					done = 1;
+					break;
+				}
+
+				alSourceQueueBuffers(stream->src, 1, &buffer);
+				_checkALError();
+			}
+		} else done = 1;	//otherwise we're done
+
+		if(done) stream->stillStreaming = 0;
+
+		pthread_mutex_unlock(&stream->streamMutex);
 	}
 
 	return NULL;
 }
 
-GYWavSource* gyAudSourceOggStreamCreate(void) {
-	char buff[20];
-	_AudioStream*const stream = malloc(sizeof(_AudioStream));
+GYWavSource* gyAudOggStreamCreate(void) {
+	_OggStreamSource*const stream = malloc(sizeof(_OggStreamSource));
+
+	//Init source
 	alGenSources(1, &stream->src);
 	alSourcei(stream->src, AL_REFERENCE_DISTANCE, _refDist);
 	_checkALError();
-	stream->looping = 1;
+
+	stream->killMe = 0;
 	stream->ogg = NULL;
-	sprintf(buff, "%d", stream->src);
-	sem_unlink(buff);
-	stream->semaphore = sem_open(buff, O_CREAT, 0777, 0);
-	pthread_mutex_init(&stream->mutex, NULL);
-	pthread_cond_init(&stream->condition, NULL);
+	stream->stillStreaming = 0;
+	stream->looping = 1;
+
+	//Initialize thread and synchronization primitives
+	pthread_mutexattr_init(&stream->streamMutexAttr);
+	pthread_mutexattr_settype(&stream->streamMutexAttr, PTHREAD_MUTEX_RECURSIVE);
+	pthread_mutex_init(&stream->streamMutex, &stream->streamMutexAttr);
+	pthread_cond_init(&stream->tryStreamCond, NULL);
+
+	//spawn the thread
 	pthread_create(&stream->thread, NULL, &_gyAudOggStreamUpdate, stream);
-	return stream;
+	return (GYWavSource*)stream;
 }
 
-void gyAudSourceOggStreamDestroy(GYWavSource*const src) {
-	char buff[20];
-	_AudioStream*const stream = src;
-	//KILL THE THREAD FIRST
-	sem_close(stream->semaphore);
-	sprintf(buff, "%d", stream->src);
-	sem_unlink(buff);
-	pthread_mutex_destroy(&stream->mutex);
-	pthread_cond_destroy(&stream->condition);
+void gyAudOggStreamDestroy(GYWavSource*const src) {
+	_OggStreamSource*const stream = (void*)src;
+
+	//Kill the stream thread
+	stream->killMe = 1;										//flag thread to commit suicide
+	pthread_mutex_lock(&stream->streamMutex);
+	pthread_cond_signal(&stream->tryStreamCond);
+	stream->stillStreaming = 1;								//wake its bitch ass up
+	pthread_mutex_unlock(&stream->streamMutex);
+	pthread_join(stream->thread, NULL);						//await its death
+
+	//free threading resources
+	pthread_mutex_destroy(&stream->streamMutex);
+	pthread_mutexattr_destroy(&stream->streamMutexAttr);
+	pthread_cond_destroy(&stream->tryStreamCond);
+
+	//kill alSource
 	gyAudSourceDestroy(src);
 }
 
 
 void gyAudOggStreamPlay(GYWavSource*src, GYOgg*ogg) {
-	_AudioStream* stream = src;
+	_OggStreamSource* stream = (void*)src;
 	GYOggPayload* payload = ogg->_data;
+	int validBuffers = 0;
 
 	if(gyAudSourceIsPlaying(src))
-		return;
+		gyAudOggStreamPause(src);
 
-	if(!_streamOgg(payload->buffers[0], ogg))
-		return;
+	pthread_mutex_lock(&stream->streamMutex);
 
-	if(!_streamOgg(payload->buffers[1], ogg))
-		return;
+	if(_streamOgg(payload->buffers[0], ogg))
+		++validBuffers;
 
-	alSourceQueueBuffers(*src, 2, payload->buffers);
-	alSourcePlay(*src);
-	_checkALError();
+	if(_streamOgg(payload->buffers[1], ogg))
+		++validBuffers;
 
-	stream->ogg = ogg;
+	if(validBuffers) {
+		alSourceQueueBuffers(*(ALuint*)src, validBuffers, payload->buffers);
+		alSourcePlay(*(ALuint*)src);
+		_checkALError();
 
-	pthread_mutex_lock(&stream->mutex);
-	pthread_cond_signal(&stream->condition);
-	pthread_mutex_unlock(&stream->mutex);
+		stream->ogg = ogg;
+		stream->ogg->looping = stream->looping;
+
+		stream->stillStreaming = 1;
+		pthread_cond_signal(&stream->tryStreamCond);
+	}
+
+	pthread_mutex_unlock(&stream->streamMutex);
 }
 
 void gyAudOggStreamPause(GYWavSource*src) {
-	_AudioStream* stream = src;
+	_OggStreamSource* stream = (void*)src;
 	int queued;
+
+	pthread_mutex_lock(&stream->streamMutex);
 
 	alSourceStop(stream->src);
 	alGetSourcei(stream->src, AL_BUFFERS_QUEUED, &queued);
@@ -711,13 +669,57 @@ void gyAudOggStreamPause(GYWavSource*src) {
 		alSourceUnqueueBuffers(stream->src, 1, &buffer);
 		_checkALError();
 	}
+
+	stream->stillStreaming = 0;
+
+	pthread_mutex_unlock(&stream->streamMutex);
 }
 
 void gyAudOggStreamStop(GYWavSource*src) {
-	GYOggPayload* payload = ((_AudioStream*)src)->ogg->_data;
+	_OggStreamSource* stream = (void*)src;
+	if(!stream || !stream->ogg) return;
+	GYOggPayload* payload = stream->ogg->_data;
+
+	pthread_mutex_lock(&stream->streamMutex);
 
 	gyAudOggStreamPause(src);
 	ov_pcm_seek(&payload->oggStream, 0);
+
+	pthread_mutex_unlock(&stream->streamMutex);
+}
+
+void gyAudOggStreamSync(GYWavSource*const src1, GYWavSource*const src2) {
+	_OggStreamSource* stream1 = (_OggStreamSource*)src1;
+	_OggStreamSource* stream2 = (_OggStreamSource*)src2;
+	GYOggPayload* payload1 = stream1->ogg->_data;
+	GYOggPayload* payload2 = stream2->ogg->_data;
+
+	double time;
+	pthread_mutex_lock(&stream1->streamMutex);
+	pthread_mutex_lock(&stream2->streamMutex);
+
+	time = ov_time_tell(&payload1->oggStream);
+	ov_time_seek_lap(&payload2->oggStream, time);
+
+	pthread_mutex_unlock(&stream1->streamMutex);
+	pthread_mutex_unlock(&stream2->streamMutex);
+
+}
+
+void gyAudOggStreamSetLooping(GYWavSource*const src, const unsigned looping) {
+	_OggStreamSource* stream = (_OggStreamSource*)src;
+	GYOgg *ogg = stream->ogg;
+	//lock?
+	stream->looping = looping;
+	if(ogg) ogg->looping = looping;
+}
+
+double gyAudOggStreamTime(GYWavSource*const src) {
+	_OggStreamSource* stream = (_OggStreamSource*)src;
+	GYOggPayload *ogg = stream->ogg->_data;
+
+	//lock? Not sure if this does any writing internally... better fucking not...
+	return ov_time_tell(&ogg->oggStream);
 }
 
 
