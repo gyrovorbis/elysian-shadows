@@ -620,8 +620,11 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable) {
 bool CollisionSystem::resolvePenetration(void) {
 	float deepest = -1.0f;
 	int deepestIndex = -1;
-	GYVector2 posDelta[2], velDelta[2], rotDir[2]; //Apparently rotDir isn't really used? What in fuck's cunt? 
-	float orientDelta[2], rotDelta[2];
+	GYVector2 posDelta[2];
+	//GYVector2 velDelta[2]
+	GYVector2 rotDir[2]; //Apparently rotDir isn't really used? What in fuck's cunt? 
+	float orientDelta[2];
+	//float rotDelta[2];
 	GYVector2 cp;
 	float deltaTime = getTimerSys()->getDeltaTime();
 	unsigned j;

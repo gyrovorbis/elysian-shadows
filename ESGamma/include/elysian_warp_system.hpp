@@ -5,7 +5,7 @@
 #include "elysian_warp.hpp"
 #include "elysian_sprite.hpp"
 
-#include "gyro.h"
+#include <gyro.h>
 
 namespace elysian {
 
@@ -29,13 +29,13 @@ namespace elysian {
 		void UpdateFadeIn(void);
 		void UpdatePause(void);
 		
-		bool _renderWarps;
-		bool _enabled;
-		float _timer;
+		bool _renderWarps		= true;
+		bool _enabled			= true;
+		float _timer			= 0.0f;
+		STATE _state			= CHECK_WARP;
 		Warp _currentWarp;
 		
 		Sprite _screenRect;
-		STATE _state;
 	}; 
 	
 }

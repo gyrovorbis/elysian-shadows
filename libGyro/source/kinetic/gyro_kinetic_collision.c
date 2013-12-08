@@ -120,11 +120,21 @@ int gyCollisionAABBvAABB(const GYBoxCollider *boxA, const GYBoxCollider *boxB, s
 
 //SPECIALIZED SAT - Only OBB v Tri
 int gyCollisionOBBvTri(const GYBoxCollider *boxA, const GYTriCollider *triB, struct _GYContact *con, const struct _GYStatic *const statA, const struct _GYStatic *const statB) {
+	(void)boxA;
+	(void)triB;
+	(void)con;
+	(void)statA;
+	(void)statB;
 	return 0;
 }
 
 //SPECIALIZED SAT - Only Tri v Tri
 int gyCollisionTrivTri(const GYTriCollider *triA, const GYTriCollider *triB, struct _GYContact *con, const struct _GYStatic *const statA, const struct _GYStatic *const statB) {
+	(void)triA;
+	(void)triB;
+	(void)con;
+	(void)statA;
+	(void)statB;
 	return 0;
 }
 
@@ -160,7 +170,7 @@ static inline void ProjectPolygon(const GYVector2 *const axis, const GYVector4 v
 int gyCollisionOBBvOBB(const GYBoxCollider *boxA, const GYBoxCollider *boxB, struct _GYContact *con, const struct _GYStatic *const statA, const struct _GYStatic *const statB) {
 	float min, max;
 	unsigned int i = 0;
-	int minIndex, maxIndex;
+	//int minIndex, maxIndex;
 	//gyroVector2 axis[4]; //move this shit
 	//cache the bitches
 		
@@ -277,8 +287,8 @@ int gyCollisionOBBvOBB(const GYBoxCollider *boxA, const GYBoxCollider *boxB, str
 
 	con->staticAttrib[0] = statA;
 	con->staticAttrib[1] = statB;
-	con->collider[0] = boxA;
-	con->collider[1] = boxB;
+	con->collider[0] = (const GYCollider*)boxA;
+	con->collider[1] = (const GYCollider*)boxB;
 
 	minDiff = scalarB[1] - scalarA[0];
 	for(i = 0; i < 8; i += 2) {
@@ -314,8 +324,8 @@ int gyCollisionOBBvOBB(const GYBoxCollider *boxA, const GYBoxCollider *boxB, str
     
     
     
-    con->worldPos.x = (boxA->collider.transform._pos.x + boxB->collider.transform._pos.x)/2.0f;
-    con->worldPos.y = (boxA->collider.transform._pos.y + boxB->collider.transform._pos.y)/2.0f;
+	con->worldPos.x = (boxA->collider.transform._pos.x + boxB->collider.transform._pos.x) * 0.5f;
+	con->worldPos.y = (boxA->collider.transform._pos.y + boxB->collider.transform._pos.y) * 0.5f;
     
 
 	return 1;

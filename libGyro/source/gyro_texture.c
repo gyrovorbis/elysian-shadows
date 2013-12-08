@@ -22,7 +22,7 @@ typedef struct _GYTexEntryDat {
 } GYTexEntryDat;
 
 static GYTexCoordSheet *_LoadSheetCoords(const GYTexEntryDat *const data) {
-	char fname[GYRO_FILENAME_MAX_SIZE];
+	char fname[GYRO_PATH_MAX_SIZE];
 	FILE *file;
 	unsigned amount, i, x, y, w, h;
 	GYTexCoordSheet *coord;
@@ -127,14 +127,13 @@ static GYAssetBank _texCoordBank = { 0, 0, 0, &_TexCoordComparator, &_TexCoordCo
 
 static int _TexComparator(const void *const payload, const void *const data) {
 	if(!payload) return 0;
-	GYTexEntryDat* texData = data;
+	const GYTexEntryDat* texData = data;
 	return (strcmp(((const GYTexture*)payload)->filename, texData->file) == 0);
 }
 
 static void *_TexConstructor(void *const data) {
 	GYTexture *tex;
 	GYTexEntryDat *texData = data;
-	char cwd[1024];
 
 	//Allocate texture and add entry
 	tex = malloc(sizeof(GYTexture));

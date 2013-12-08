@@ -22,7 +22,10 @@ namespace elysian {
 	#endif
 		}
 
+		virtual ~SpriteAttrib(void) = default;
+
 		virtual void submitVerts(GYVector4* verts = nullptr) {
+			(void)verts;
 			if(_color.a == 255) gyVidAlphaLevel(GY_ALPHA_NONE);
 			else gyVidAlphaLevel(GY_ALPHA_FULL);
 
@@ -65,11 +68,11 @@ namespace elysian {
 		void setFrame(const unsigned fr) { _frame = fr; }
 		unsigned getFrame(void) const { return _frame; }
 
-		bool load(std::ifstream& stream) {
+		virtual bool load(std::ifstream& /*stream*/) override {
 			return true;
 		}
 
-		bool save(std::ofstream& stream) {
+		virtual bool save(std::ofstream& /*stream*/) override {
 			return true;
 		}
 	};

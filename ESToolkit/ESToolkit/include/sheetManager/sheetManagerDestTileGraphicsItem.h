@@ -15,7 +15,7 @@ private:
 	virtual const QPixmap _getTilePixmap(const SheetManagerTileEntry entry, const bool selection=false) const;
 	virtual const TileSelection<SheetManagerTileEntry> *_getTileSelection(void) const;
 
-	uint16_t _value;
+	//uint16_t _value;
 	uint16_t _x, _y;
 public:
 

@@ -202,30 +202,36 @@ void LuaBehavior::onExit(void) {
 }
 	
 void LuaBehavior::onCollide(elysian::Collidable *collidable) {
+	(void)collidable;
 #ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onCollide", _ooSelfTableRef, collidable));
 #endif
 }
 
 void LuaBehavior::onCollisionEnter(elysian::Collidable *collidable) {
+	(void)collidable;
 #ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onCollisionEnter", _ooSelfTableRef, collidable));
 #endif
 }
 
 void LuaBehavior::onCollisionExit(elysian::Collidable *collidable) {
+	(void)collidable;
 #ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onCollisionExit", _ooSelfTableRef, collidable));
 #endif
 }
 
 void LuaBehavior::onExamine(Entity* entity) {
+	(void)entity;
 #ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onExamine", _ooSelfTableRef, entity));
 #endif
 }
 
 void LuaBehavior::onDialog(const unsigned screen, const int option) {
+	(void)screen;
+	(void)option;
 #ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onCollide", screen, option));
 #endif

@@ -237,7 +237,7 @@ linux {
     LIBS += \
         -llua5.2 \
         -lGL \
-        -lopenal \
+		-lopenal \
         -lGLU \
         -lz \
         -lSDLmain \
@@ -251,8 +251,8 @@ linux {
 macx {
 	CONFIG(release, debug|release) {
 		DESTDIR = ../../../Project
+		QMAKE_POST_LINK = "./ESGammaAppDereest.command"
 	}
-	QMAKE_POST_LINK = "./ESGammaAppDereest.command"
 }
 
 win32 {

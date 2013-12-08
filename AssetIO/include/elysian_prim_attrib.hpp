@@ -12,13 +12,16 @@ namespace elysian {
 	Renderable component, hence the required Load/Save functionality.
 */
 	class PrimAttrib: public Asset {
+	protected:
+		PrimAttrib(void)							= default;
 	public:
 		enum TYPE { SPRITE, QUAD_SPRITE, MODEL, NONE };
 
-		virtual TYPE getType(void) const = 0;
-		virtual void submit(void) = 0;
-		virtual bool load(std::ifstream &stream) = 0;
-		virtual bool save(std::ofstream &stream) = 0;
+		virtual ~PrimAttrib(void)					= default;
+		virtual TYPE getType(void) const			= 0;
+		virtual void submit(void)					= 0;
+		virtual bool load(std::ifstream &stream)	= 0;
+		virtual bool save(std::ofstream &stream)	= 0;
 	};
 
 }

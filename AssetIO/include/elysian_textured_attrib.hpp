@@ -100,7 +100,7 @@ namespace elysian {
 		}
 
 		bool load(std::ifstream& stream) {
-			static char filename[GYRO_FILENAME_MAX_SIZE];
+			static char filename[GYRO_PATH_MAX_SIZE];
 			unsigned sheetWidth, sheetHeight;
 			unsigned spriteWidth, spriteHeight;
 

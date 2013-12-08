@@ -131,16 +131,12 @@ private:
 	class CollisionContact: private GYContact {
 #ifdef ELYSIAN_ENGINE
 		friend class CollisionSystem;
+		Collidable* _bodyA			= nullptr;
+		Collidable* _bodyB			= nullptr;
+		bool _resolvePen			= true;
+		bool _trigger				= false;
 #endif
-		Collidable *_bodyA, *_bodyB;
-		bool _resolvePen, _trigger;
 
-		inline CollisionContact(void): 
-			_bodyA(NULL), 
-			_bodyB(NULL),
-			_resolvePen(true),
-			_trigger(false)
-		{}
 	};
 
 	inline CollidableAttrib::CollidableAttrib(void): 

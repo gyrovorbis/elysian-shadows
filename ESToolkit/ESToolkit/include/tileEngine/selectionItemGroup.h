@@ -13,7 +13,7 @@ public:
 					   (((int(point.y()+16)/32))*32)-16);
 	}
 
-	inline virtual QPainterPath opaqueArea(void) { return path; }
+	inline virtual QPainterPath opaqueArea(void) const override { return path; }
 	inline SelectionItemGroup(QGraphicsItem * parent = 0): QGraphicsItemGroup(parent) { setFlag(ItemSendsGeometryChanges, true); }
 	inline virtual void paint (QPainter */*painter*/, const QStyleOptionGraphicsItem * /*option*/, QWidget */*widget = 0*/) { }
 

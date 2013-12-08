@@ -32,12 +32,12 @@ namespace elysian {
     class Entity: public RenderableObject, public Asset {
 	public:
         Entity();
-        ~Entity(void);
+		virtual ~Entity(void);
 		
 		bool load(std::ifstream &stream);
 		bool save(std::ofstream &stream);
 
-		void render(void);
+		virtual void render(void) override;
         void renderAtZ(const float z); //reested?
 
 		bool activate(void);
@@ -97,7 +97,7 @@ namespace elysian {
         
         float getDepthBaseY(void) const;
         
-    protected:
+	protected:
 		
         char _name[ELYSIAN_ENTITY_NAME_SIZE];
         bool _componentActive[Component::MAX_TYPE];
@@ -107,16 +107,16 @@ namespace elysian {
 		unsigned char	_elev			= 0;
 		DEPTH_TYPE		_depthType		= DEPTH_NONE;
 		bool			_active			= false;
-		Renderable*		_renderable		= NULL;
-		Animation*      _animation		= NULL;
-		Collidable*     _collidable		= NULL;
-		Character*      _character		= NULL;
-		Warp*           _warp			= NULL;
-		Item*           _item			= NULL;
-		Friendly*       _friendly		= NULL;
-		Enemy*          _enemy			= NULL;
-		Examinable*		_examinable		= NULL;
-		AudioSource*	_audioSource	= NULL;
+		Renderable*		_renderable		= nullptr;
+		Animation*      _animation		= nullptr;
+		Collidable*     _collidable		= nullptr;
+		Character*      _character		= nullptr;
+		Warp*           _warp			= nullptr;
+		Item*           _item			= nullptr;
+		Friendly*       _friendly		= nullptr;
+		Enemy*          _enemy			= nullptr;
+		Examinable*		_examinable		= nullptr;
+		AudioSource*	_audioSource	= nullptr;
 		//RigidBody*    _rigidBody;
 		
 		bool attachComponent(Component* const comp);

@@ -16,10 +16,9 @@ namespace elysian {
 	
 	class PartySystem: public System { 
 	private:
-
-		unsigned int _activePlayablePartySize;
-		unsigned int _characterPartySize;
-		unsigned int _playableAmount;
+		unsigned int _activePlayablePartySize	= 3;
+//		unsigned int _characterPartySize		= 3;
+		unsigned int _playableAmount			= 0;
 		
 		//Array holding every potential playable character
 		Entity **_playable;

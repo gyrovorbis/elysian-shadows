@@ -15,6 +15,8 @@ Engine *engine;
 Debug *debug;
 
 static void Init(int argc, char *argv[]) {
+	(void)argc;
+	(void)argv;
 	debug = &Debug::getInstance();
 	char verString[50];
 

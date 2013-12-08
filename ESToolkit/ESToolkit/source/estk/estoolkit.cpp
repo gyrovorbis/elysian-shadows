@@ -1233,7 +1233,7 @@ void ESToolkit::on_actionToggle_AutoScroll_triggered()
 
 void ESToolkit::on_actionActionSecret_triggered()
 {
-	if(_assets.getCurLevel) {
+	if(_assets.getCurLevel()) {
 		_sheetManager->initialize(_ui->actionEnable_OpenGL->isChecked(), _ui->actionToggle_AutoScroll->isChecked());
 		_sheetManager->setFocus();
 		_sheetManager->showMaximized();

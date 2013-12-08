@@ -48,6 +48,7 @@ void Character::update(void) {
 		case DIR_RIGHT:
 			_entity->getAnimation()->playAnimation("StandRight");
 			break;
+		default: break;
 		}
 	}
 	else _movedThisFrame = false;

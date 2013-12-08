@@ -58,7 +58,7 @@ QWidget *TileSelectableSelectionViewDelegate::createEditor(QWidget *parent, cons
 	auto model = static_cast<const PropertyStackModel*>(index.model());
 	auto item = static_cast<ESTkStandardItem*>(model->itemFromIndex(index));
 	QComboBox *colliderEditor;
-	QCheckBox *animatedEditor;
+//	QCheckBox *animatedEditor;
 
 	switch(item->getUndoItemType()) {
 	case UndoItem::TILE_COLLIDER:
@@ -85,9 +85,8 @@ void TileSelectableSelectionViewDelegate::setEditorData(QWidget *editor, const Q
 	auto model = static_cast<const PropertyStackModel*>(index.model());
 	auto item = static_cast<ESTkStandardItem*>(model->itemFromIndex(index));
 	QComboBox *colliderEditor;
-	QCheckBox *animatedEditor;
+//	QCheckBox *animatedEditor;
 	QString string;
-	bool checked;
 
 	switch(item->getUndoItemType()) {
 	case UndoItem::TILE_COLLIDER:
@@ -113,7 +112,7 @@ void TileSelectableSelectionViewDelegate::setEditorData(QWidget *editor, const Q
 void TileSelectableSelectionViewDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
 	auto item = static_cast<ESTkStandardItem*>(static_cast<PropertyStackModel*>(model)->itemFromIndex(index));
 	QComboBox *colliderEditor;
-	QCheckBox *animatedEditor;
+//	QCheckBox *animatedEditor;
 
 	switch(item->getUndoItemType()) {
 	case UndoItem::TILE_COLLIDER:

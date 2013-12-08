@@ -329,7 +329,7 @@ void SheetManager::onLevelRemoved(Project *const /*project*/, Level *const level
 	}
 }
 
-void SheetManager::onLevelRenamed(const QString oldName, const QString newName) {
+void SheetManager::onLevelRenamed(const QString /*oldName*/, const QString /*newName*/) {
 	//Clear all actions
 	for(int i = 0; i < _destLevelActions.size(); ++i) {
 		delete _destLevelActions[i];

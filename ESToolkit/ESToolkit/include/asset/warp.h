@@ -9,7 +9,7 @@ namespace elysian {
 
 class Warp: public Component {
 private:
-    elysian::Warp *_elysianWarp;
+	//elysian::Warp *_elysianWarp;
 public:
     Warp(elysian::Warp *const comp);
 	elysian::Component::TYPE getType(void) const { return elysian::Component::WARP; }

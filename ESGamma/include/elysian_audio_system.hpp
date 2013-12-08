@@ -133,7 +133,7 @@ namespace elysian {
 			float fadeTime = 0.0f;
 		} _globalStates[TYPE_MAX];
 
-		unsigned			_allocedChannels	= 0;
+//		unsigned			_allocedChannels	= 0;
 		unsigned			_lastStolenChannel	= AudioChannel::DYN_1;
 		//unsigned			_curBgmTrack		= 0;
 		bool				_bgmLooping			= true;

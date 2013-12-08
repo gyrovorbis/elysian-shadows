@@ -25,9 +25,11 @@ int LevelSystem::getAreaIndex(const char *const dir) const {
 	return -1;
 }
 
-bool LevelSystem::SwitchLevel(const char *const dir) {
+bool LevelSystem::switchLevel(const char *const dir) {
 	int index;
 	Level *lev;
+
+	if(_curLevel) strcpy(_prevLevelPath, _curLevel->getName());
 
 	if((index = getLevelIndex(dir)) >= 0) {
 		_curLevel = level[index];
@@ -35,7 +37,6 @@ bool LevelSystem::SwitchLevel(const char *const dir) {
 	}
 
 	if(level.size() >= MAX_LEVELS_LOADED) {
-		Debug::printf(Debug::VERBOSE, "LEVEL DBG - %s", level[0]->path);
 		delete level[0];
 		level.erase(level.begin());
 	}
@@ -46,7 +47,7 @@ bool LevelSystem::SwitchLevel(const char *const dir) {
 	return true;
 }
 
-bool LevelSystem::SwitchArea(const char *const dir) {
+bool LevelSystem::switchArea(const char *const dir) {
 	int index;
 	Area *ar;
 
@@ -57,6 +58,8 @@ bool LevelSystem::SwitchArea(const char *const dir) {
 	}
 	getCollisionSys()->clearContacts();
 	getMapSys()->resetAnimation();
+
+	if(_curArea) strcpy(_prevAreaPath, _curArea->getName());
 	
 	//Check if new area has already been loaded
 	if((index = getAreaIndex(dir)) >= 0) {

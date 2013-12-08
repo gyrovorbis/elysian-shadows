@@ -143,6 +143,7 @@ void AssetTreeWidget::onCustomContextMenuRequested(QPoint point) {
 
 	default:
 		Q_ASSERT(false);
+		return;
 	}
 
 	delete menu;

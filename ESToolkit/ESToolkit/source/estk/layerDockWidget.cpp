@@ -137,6 +137,7 @@ void LayerDockWidget::setCurrentLayer(const Assets::LAYER_TYPE layer) {
 		index = 0;
 		break;
 	default:
+		index = 0;
 		Q_ASSERT(false);
 	}
 	ui->m_layerTreeWidget->setCurrentItem(NULL);

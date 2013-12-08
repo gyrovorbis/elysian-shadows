@@ -67,7 +67,7 @@ void Debug::writeLog(const Debug::SOURCE source, const Debug::LEVEL level, const
 	strcat(buffer, str);
 
 	//Append newline character to the end
-	size_t length = strlen(buffer);
+//	size_t length = strlen(buffer);
 	strcat(buffer, "\n");
 
 	_dbgFile << buffer;
@@ -223,6 +223,7 @@ void Debug::processInput(const GameInput& input) {
 		case CollisionSystem::RENDER_COMBINED:
 			printf(VERBOSE, "Render Collision Layer - Combined");
 			break;
+		default: break;
 		}
 	}
 
@@ -336,8 +337,8 @@ bool Debug::parseArguments(int argc, char *argv[]) {
 
 
 bool Debug::initializeEngine(void) {
-	if(_cmdLineArgs.level) _engine->_levelSystem->SwitchLevel(_cmdLineArgs.level);
-	if(_cmdLineArgs.area) _engine->_levelSystem->SwitchArea(_cmdLineArgs.area);
+	if(_cmdLineArgs.level) _engine->_levelSystem->switchLevel(_cmdLineArgs.level);
+	if(_cmdLineArgs.area) _engine->_levelSystem->switchArea(_cmdLineArgs.area);
 	return true;
 }
 

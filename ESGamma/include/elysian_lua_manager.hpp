@@ -9,7 +9,7 @@
 
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
 #	define ELYSIAN_LUA_DEBUG true
-#	define OOLUA_DEBUG_CHECKS 1
+//#	define OOLUA_DEBUG_CHECKS 1
 #else
 #	define ELYSIAN_LUA_DEBUG false
 #endif
@@ -138,7 +138,7 @@ namespace elysian {
 			lua_remove(*_mainState, 1); //remove c traceback function from bottom of stack
 		}
 #else	//ain't NOBODY got time for debug overhead!
-	//	lua_call(*_mainState, nargs, nresults);
+		lua_call(*_mainState, nargs, nresults);
 #endif
 	}
 

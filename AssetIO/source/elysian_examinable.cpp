@@ -10,11 +10,11 @@ namespace elysian {
 		return entity.getCollidable();
 	}
 
-	bool Examinable::load(std::ifstream& stream) {
+	bool Examinable::load(std::ifstream& /*stream*/) {
 		return true;
 	}
 
-	bool Examinable::save(std::ofstream& stream) {
+	bool Examinable::save(std::ofstream& /*stream*/) {
 		return true;
 	}
 
@@ -25,6 +25,7 @@ namespace elysian {
 	
 	bool Examinable::removeFromLevel(void) {
         containerEraseOnMatch(this, _curArea->examinables);
+		return true;
 	}
 
 	Examinable::TYPE Examinable::getType(void) const {

@@ -9,7 +9,7 @@ namespace elysian {
 
 class Animation: public Component {
 private:
-    elysian::Animation *_elysianAnim;
+	//elysian::Animation *_elysianAnim;
 public:
     Animation(elysian::Animation *const anim);
 	elysian::Component::TYPE getType(void) const { return elysian::Component::ANIMATION; }

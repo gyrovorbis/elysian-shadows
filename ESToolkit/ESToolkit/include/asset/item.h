@@ -9,7 +9,7 @@ namespace elysian {
 
 class Item: public Component {
 private:
-    elysian::Item *_elysianItem;
+	//elysian::Item *_elysianItem;
 public:
     Item(elysian::Item *const comp);
 	elysian::Component::TYPE getType(void) const { return elysian::Component::ITEM; }

@@ -20,6 +20,7 @@
 #include "elysian_party_system.hpp"
 #include "elysian_timer_system.hpp"
 #include "elysian_audio_source.hpp"
+#include "elysian_level_system.hpp"
 #include "elysian_lua_script.hpp"
 #include "elysian_map_depth_buffer.hpp"
 #include "elysian_quad_sprite.hpp"
@@ -75,6 +76,7 @@ namespace OOLUA
 	typedef elysian::Singletons					Singletons;
 	typedef elysian::AudioSource				AudioSource;
 	typedef elysian::AudioSystem				AudioSystem;
+	typedef elysian::LevelSystem				LevelSystem;
 	typedef elysian::LuaBehaviorScriptAttrib	LuaBehaviorScriptAttrib;
 }
 
@@ -418,6 +420,16 @@ OOLUA_PROXY(TimerSystem)
 	OOLUA_MFUNC_CONST(getDeltaTime)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(LevelSystem)
+	OOLUA_TAGS (
+		No_public_constructors,
+		No_public_destructor
+	)
+	OOLUA_MFUNC_CONST(getPrevAreaPath)
+	OOLUA_MFUNC_CONST(getPrevLevelPath)
+OOLUA_PROXY_END
+
+
 OOLUA_PROXY(AudioSystem)
 	OOLUA_TAGS (
 		No_public_constructors,
@@ -645,6 +657,10 @@ static inline int print(lua_State* const l) {
 	elysian::Debug::luaPrint(string);
 
 	return 1;
+}
+
+static inline int Singletons_getLevelSystem(lua_State* const vm) {
+	OOLUA_C_FUNCTION(elysian::LevelSystem*, elysian::Singletons::getLevelSys)
 }
 
 static inline int Singletons_getCurArea(lua_State* const vm) {

@@ -1,5 +1,5 @@
 #include "character.h"
 #include "elysian_character.hpp"
 
-Character::Character(elysian::Character *const comp): _elysianChar(comp) {}
+Character::Character(elysian::Character *const /*comp*/) {}
 

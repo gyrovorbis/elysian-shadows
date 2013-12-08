@@ -7,9 +7,7 @@
 
 namespace elysian {
 
-Font::Font(void) {}
-
-bool Font::load(const char* const img_file, int sheet_width, int sheet_height, int sprite_width, int sprite_height, const char* const width_file) {
+bool Font::loadTextData(const char* const img_file, int sheet_width, int sheet_height, int sprite_width, int sprite_height, const char* const width_file) {
 	bool success = true;
     
     Debug::printf(Debug::VERBOSE, "Font::Load(%s, %s)", img_file, width_file);
@@ -89,7 +87,7 @@ void Font::drawString(const FORMAT format, const ALIGNMENT align, const char *co
 
 /* Modifies cur_x depending on character width (to support loops easier), returns the index of
  the next character to process */
-void Font::_renderChar(const FORMAT format, float &current_x, float &current_y, const char *const str, int &i) {
+void Font::_renderChar(const FORMAT /*format*/, float &current_x, float &current_y, const char *const str, int &i) {
 	//if(format == FONT_FORMATTED) { // check for formatting characters
 	switch (str[i]) {
 		case '~': //special character sequence following

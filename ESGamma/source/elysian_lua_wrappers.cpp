@@ -37,6 +37,7 @@ namespace elysian {
 		_mainState->register_class<GYWav>();
 		_mainState->register_class<AudioSource>();
 		_mainState->register_class<AudioSystem>();
+		_mainState->register_class<LevelSystem>();
 
 		//Register C and static member functions
 		lua_register(*_mainState, "print", &print);
@@ -47,6 +48,7 @@ namespace elysian {
 		_mainState->register_class_static<Singletons>("getPartySys", &Singletons_getPartySystem);
 		_mainState->register_class_static<Singletons>("getTimerSys", &Singletons_getTimerSystem);
 		_mainState->register_class_static<Singletons>("getAudioSys", &Singletons_getAudioSystem);
+		_mainState->register_class_static<Singletons>("getLevelSys", &Singletons_getLevelSystem);
 
 		//libGyro wrappers
 		_mainState->register_class_static<gyro>("filePath", &gyroFilePath);
@@ -304,6 +306,11 @@ OOLUA_EXPORT_FUNCTIONS(PartySystem,
 OOLUA_EXPORT_FUNCTIONS_CONST(PartySystem,
 								getPartyLeader,
 								getCharacterPartyMember)
+
+OOLUA_EXPORT_FUNCTIONS(LevelSystem)
+OOLUA_EXPORT_FUNCTIONS_CONST(LevelSystem,
+								getPrevAreaPath,
+								getPrevLevelPath)
 
 OOLUA_EXPORT_FUNCTIONS(AudioSystem,
 					   loadBgmTrack,

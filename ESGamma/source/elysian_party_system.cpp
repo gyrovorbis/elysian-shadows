@@ -15,10 +15,7 @@ namespace elysian {
 
 //----NONSTATIC----
 
-PartySystem::PartySystem(void): 
-	_playableAmount(0), 
-	_characterPartySize(3), 
-	_activePlayablePartySize(3) 
+PartySystem::PartySystem(void)
 {}
 
 PartySystem::~PartySystem() {
@@ -125,8 +122,8 @@ bool PartySystem::loadPlayables(void) {
 	return true;
 }
 
-bool PartySystem::loadParty(std::ifstream &stream) { return true; }
-bool PartySystem::saveParty(std::ofstream &stream) { return true; }
+bool PartySystem::loadParty(std::ifstream &/*stream*/) { return true; }
+bool PartySystem::saveParty(std::ofstream &/*stream*/) { return true; }
 
 bool PartySystem::addPlayableToParty(const char *name) { 
 	for(unsigned int i = 0; i < _playableAmount; ++i) {
@@ -320,24 +317,24 @@ Entity *PartySystem::getCharacterPartyMember(const unsigned int slot) const {
 void PartySystem::_resizePartyPathPoints(void) {
 	int pathPointAmount = 0;
 	//check if even necessary
-	if((pathPointAmount = (_playableParty.size()-1 + _characterParty.size())*_pointsPerCharacter+1) == _partyPathPoint.size()) return;
+	if((pathPointAmount = (_playableParty.size()-1 + _characterParty.size())*_pointsPerCharacter+1) == (int)_partyPathPoint.size()) return;
 	if(pathPointAmount < 0) return;
 	
 	//allocate more
-	if(pathPointAmount > (unsigned)_partyPathPoint.size()) {
+	if(pathPointAmount > (int)_partyPathPoint.size()) {
 		GYVector2 lastPoint;
 		if(_partyPathPoint.size() == 0) {
 			lastPoint = (_playableParty.size() != 0)? _playableParty[0]->transform._pos : _characterParty[0]->transform._pos;
 		} else {
 			lastPoint = _partyPathPoint[_partyPathPoint.size()-1];
 		}
-		while(_partyPathPoint.size() != pathPointAmount) {
+		while((int)_partyPathPoint.size() != pathPointAmount) {
 			_partyPathPoint.push_back(lastPoint);
 		}
 	}
 	//delete points
 	else {
-		while((unsigned)_partyPathPoint.size() > pathPointAmount) {
+		while((int)_partyPathPoint.size() > pathPointAmount) {
 			_partyPathPoint.erase(_partyPathPoint.end()-1);
 		}
 	}

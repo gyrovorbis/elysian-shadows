@@ -10,18 +10,6 @@ namespace elysian {
 
 const float AdventureLog::_exitFadeTime = 1.0f;
 
-//Constructor just makes sure it's ready to be used.
-AdventureLog::AdventureLog(void): 
-	_state(WAIT), 
-	_exitState(EXIT_ACTIVE),
-	_waitCounter(0), 
-	_fadeCounter(0), 
-	_startIndex(0), 
-	_endIndex(0), 
-	_yOffset(0), 
-	_baseAlpha(1.0f)
-{}
-
 /*
  Does a good deal more than just copy the line to the Adventure Log. 
  Due to the complexity of the Update and Draw functions, error checking
@@ -53,7 +41,7 @@ void AdventureLog::addLine(const TEXT_TYPE lineType, const char *line) {
     const size_t length = strlen(line);
     if(length >= ELYSIAN_ADV_LOG_CHARS_PER_LINE) { //Shit, we got a problem!
         //Break the bastard down into multiple lines.
-        for(int i = 0; i < length; i += ELYSIAN_ADV_LOG_CHARS_PER_LINE-1) {
+		for(int i = 0; i < (int)length; i += ELYSIAN_ADV_LOG_CHARS_PER_LINE-1) {
             //Add this chunk as its own line.
 			if (_endIndex >= ELYSIAN_ADV_LOG_LINES)	//Prevent overflow
 				_endIndex -= ELYSIAN_ADV_LOG_LINES;

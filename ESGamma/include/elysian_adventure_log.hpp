@@ -30,8 +30,6 @@ class Font;
 		enum LOG_STATE { WAIT, FADE, SCROLL };
 		//Exit states
 		enum LOG_EXIT { EXIT_ACTIVE, EXIT_FADE_OUT, EXIT_DISABLED, EXIT_FADE_IN };
-
-		AdventureLog(void);
 		
 		void update(void);
 		void render(Font &font);
@@ -47,13 +45,15 @@ class Font;
 		
 		char _log[ELYSIAN_ADV_LOG_LINES][ELYSIAN_ADV_LOG_CHARS_PER_LINE];
 		TEXT_TYPE _type[ELYSIAN_ADV_LOG_LINES];
-		LOG_STATE _state;
-		LOG_EXIT _exitState;
-		
-		float _baseAlpha;
-		int _startIndex, _endIndex;
-		float _yOffset;
-		float _waitCounter, _fadeCounter; 
+
+		LOG_STATE _state				= WAIT;
+		LOG_EXIT _exitState				= EXIT_ACTIVE;
+		float _baseAlpha				= 1.0f;
+		int _startIndex					= 0;
+		int _endIndex					= 0;
+		float _yOffset					= 0;
+		float _waitCounter				= 0.0f;
+		float _fadeCounter				= 0.0f;
 		//float _waitCounter;
 		//unsigned int _maxLinesOnscreen;
 		
