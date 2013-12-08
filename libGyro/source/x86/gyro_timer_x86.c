@@ -11,5 +11,5 @@ unsigned long int gyTimerTicks(void) {
 }
 
 void gyTimerSleep(const unsigned long duration) {
-    
+	(void)duration;
 }

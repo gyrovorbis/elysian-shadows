@@ -48,7 +48,7 @@ typedef struct _GYTexCoordSheet {
 } GYTexCoordSheet;
 
 typedef struct _GYTexture {
-	char filename[GYRO_FILENAME_MAX_SIZE];
+	char filename[GYRO_PATH_MAX_SIZE];
 	//unsigned int sheetWidth, sheetHeight; //duplicate data?
 	//unsigned int spriteWidth, spriteHeight; //duplicate data?
 	unsigned int bytes;

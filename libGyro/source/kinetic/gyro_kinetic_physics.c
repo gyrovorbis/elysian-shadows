@@ -5,6 +5,7 @@
 //Optimize for nonrigid bodies, so rotational math isn't performed
 //Make support only one body for terrain
 void gyResolvePenetration(struct _GYContact *con, GYVector2 posDelta[], GYVector2 rotDir[], float orientDelta[], float deltaTime) {
+	(void)deltaTime;
 	GYVector2 velPerImp;
 	float linearMove[2], angularMove[2];
 	float linearInertia[2], angularInertia[2];

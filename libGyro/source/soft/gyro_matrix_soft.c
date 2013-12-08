@@ -6,6 +6,8 @@
 #include "stdio.h"
 #include "string.h"
 
+#include <xmmintrin.h>
+
 static GYMatrix4 _curMat;
 
 void gyMatLoad(GYMatrix4 *mat) {

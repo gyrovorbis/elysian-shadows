@@ -80,7 +80,7 @@ void gyMatTranslate(const float x, const float y, const float z) {
     _translationMat[3][0] = x;
     _translationMat[3][1] = y;
     _translationMat[3][2] = z;
-    gyMatApply(&_translationMat);
+	gyMatApply(_translationMat);
 }
 
 void gyMatRotateZ(const float theta) {
@@ -88,14 +88,14 @@ void gyMatRotateZ(const float theta) {
     gySinCos(theta, &zsin, &zcos);
     _zRotationMat[0][0] = zcos;  _zRotationMat[1][0] = zsin;
     _zRotationMat[0][1] = -zsin; _zRotationMat[1][1] = zcos;
-    gyMatApply(&_zRotationMat);
+	gyMatApply(_zRotationMat);
 }
 
 void gyMatScale(const float sx, const float sy, const float sz) {
     _scaleMat[0][0] = sx;
     _scaleMat[1][1] = sy;
     _scaleMat[2][2] = sz;
-    gyMatApply(&_scaleMat);
+	gyMatApply(_scaleMat);
 }
 
 void gyMatTranslateScale(const float x, const float y, const float z, const float sx, const float sy, const float sz) {
@@ -105,7 +105,7 @@ void gyMatTranslateScale(const float x, const float y, const float z, const floa
 	_tranScaleMat[3][0] = x;
     _tranScaleMat[3][1] = y;
     _tranScaleMat[3][2] = z;
-    gyMatApply(&_tranScaleMat);
+	gyMatApply(_tranScaleMat);
 }
 
 void gyMatInstance(const GYInstMat *const inst) {
@@ -116,5 +116,5 @@ void gyMatInstance(const GYInstMat *const inst) {
     _instanceMat[0][0] = sc.x*cos; _instanceMat[1][0] = -sc.y*sin; _instanceMat[3][0] = inst->_pos.x;
     _instanceMat[0][1] = sc.x*sin; _instanceMat[1][1] = sc.y*cos; _instanceMat[3][1] = inst->_pos.y;
 	_instanceMat[3][2] = inst->_posZ; //and scale Z?
-    gyMatApply(&_instanceMat);
+	gyMatApply(_instanceMat);
 }

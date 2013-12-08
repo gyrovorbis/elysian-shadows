@@ -59,7 +59,7 @@ void gyVidQuadListEnd(void) {
 
 void gyVidQuad(const GYVector4 *const verts, const unsigned int frame) {
 	GYMatrix4 modelViewMat;
-	GYTexCoord2* coord;
+	const GYTexCoord2* coord;
     
 	gyMatStore(&modelViewMat);
     glLoadMatrixf((float *)modelViewMat);
@@ -83,7 +83,7 @@ void gyVidRect(const unsigned int frame) {
         {0.5f, 0.5f, 0.0f, 1.0f}
     };
 	GYMatrix4 modelViewMat;
-	GYTexCoord2* coord;
+	const GYTexCoord2* coord;
 
 	gyMatStore(&modelViewMat);
     glLoadMatrixf((float *)modelViewMat);
