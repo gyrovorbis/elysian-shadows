@@ -29,14 +29,14 @@ int gyAudInit(void) {
 		return 0;
 	}
 
-    return 1;
+	return 1;
 }
 
 int gyAudUninit(void) {
 	alcMakeContextCurrent(NULL);
 	alcDestroyContext(_alContext);
 	alcCloseDevice(_alDevice);
-    return 1;
+	return 1;
 }
 
 void gyAudSetReferenceDistance(const int dist) {
@@ -417,6 +417,7 @@ static inline const char* _vorbisErrorString(const int code) {
 GYOgg* gyAudCreateOgg(const char*const path) {
 	int result;
 	int alErrorCode;
+	char* device = (char*)alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
 
 	GYOgg* ogg = malloc(sizeof(GYOgg));
 	GYOggPayload* payload = ogg->_data = malloc(sizeof(GYOggPayload));
@@ -450,13 +451,16 @@ GYOgg* gyAudCreateOgg(const char*const path) {
 		_gyLog(GY_DEBUG_CRITICAL, "! - Could not generate OpenAL buffers for OGG stream: %s", _openALError(alErrorCode));
 	}
 
-	printf("Version - %d\n", payload->vorbisInfo->version);
-	printf("Channels - %d\n", payload->vorbisInfo->channels);
-	printf("Rate (hz) - %ld\n", payload->vorbisInfo->rate);
-	printf("bitrate upper - %ld\n", payload->vorbisInfo->bitrate_upper);
+	/* Debug stuff. */
+
+	printf("Device			- %s\n", device);
+	printf("Version			- %d\n", payload->vorbisInfo->version);
+	printf("Channels		- %d\n", payload->vorbisInfo->channels);
+	printf("Rate (hz)		- %ld\n", payload->vorbisInfo->rate);
+	printf("bitrate upper	- %ld\n", payload->vorbisInfo->bitrate_upper);
 	printf("bitrate nominal - %ld\n", payload->vorbisInfo->bitrate_nominal);
-	printf("bitrate lower - %ld\n", payload->vorbisInfo->bitrate_lower);
-	printf("bitrate window - %ld\n", payload->vorbisInfo->bitrate_window);
+	printf("bitrate lower	- %ld\n", payload->vorbisInfo->bitrate_lower);
+	printf("bitrate window	- %ld\n", payload->vorbisInfo->bitrate_window);
 	return ogg;
 }
 
