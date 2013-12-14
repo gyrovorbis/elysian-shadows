@@ -64,7 +64,7 @@ static void _checkCPUCapabilities(void) {
 	}
 
 	if(!SSE) {
-		_gyLog(GY_DEBUG_FATAL, "\tSSE CPU Support Not Detected! Shit ain't gonna work!");
+		_gyLog(GY_DEBUG_FATAL, "\tSSE CPU Support Not Detected! Prepare for crash... and maybe consider a processor from this decade.");
 		//exit(0);
 	} else {
 		_gyLog(GY_DEBUG_VERBOSE, "\tSSE CPU Extensions detected! Fast-ass math enabled!");
