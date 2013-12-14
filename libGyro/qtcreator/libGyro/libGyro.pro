@@ -62,7 +62,8 @@ HEADERS += \
     ../../include/x86/png/pngconf.h \
     ../../include/x86/png/png.h \
     ../../include/glal/gyro_glal.h \
-    ../../include/x86/gyro_wav_x86.h
+    ../../include/x86/gyro_wav_x86.h \
+    ../../include/gyro_shader.h
 
 SOURCES += \
     ../../include/soft/gyro_math_soft.inl \
@@ -98,4 +99,13 @@ SOURCES += \
     ../../source/x86/png/pngget.c \
     ../../source/x86/png/pngerror.c \
     ../../source/x86/png/png.c \
+    ../../source/gyro_shader.c \
+    ../../include/soft/gyro_matrix_sse.inl
+
+OTHER_FILES += \
+    ../../source/glal/shaders/fixedFunctionTextured.vsh \
+    ../../source/glal/shaders/fixedFunctionTextured.fsh \
+    ../../source/glal/shaders/fixedFunctionUntextured.vsh \
+    ../../source/glal/shaders/fixedFunctionUntextured.fsh
+
 

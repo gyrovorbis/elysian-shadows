@@ -70,7 +70,7 @@ namespace elysian {
 			case PrimAttrib::SPRITE:
 				gyVidAlphaLevel((_spriteAttrib->_color.a == 255)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
 				gyVidQuadListBegin(&_spriteAttrib->_color);
-				gyVidQuad(localVerts, _frame);
+			//	gyVidQuad(localVerts, _frame);
 				gyVidQuadListEnd();
 				break;
 			default: break;//the fuck is wrong with you, son?

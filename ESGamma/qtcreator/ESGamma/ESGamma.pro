@@ -109,7 +109,8 @@ HEADERS += \
     ../../../AssetIO/include/elysian_animation.hpp \
     ../../../AssetIO/include/elysian_audio_source.hpp \
     ../../include/elysian_audio_system.hpp \
-    ../../../AssetIO/include/elysian_generic.hpp
+    ../../../AssetIO/include/elysian_generic.hpp \
+    ../../include/elysian_shader_manager.hpp
 
 macx {
   OBJECTIVE_HEADERS += ../../../libGyro/lib/osx/SDLMain.h
@@ -164,7 +165,8 @@ SOURCES += \
     ../../../AssetIO/source/elysian_area.cpp \
     ../../../AssetIO/source/elysian_animation.cpp \
     ../../../AssetIO/source/elysian_audio_source.cpp \
-    ../../source/elysian_audio_system.cpp
+    ../../source/elysian_audio_system.cpp \
+    ../../source/elysian_shader_manager.cpp
 
 macx {
   OBJECTIVE_SOURCES += ../../../libGyro/lib/osx/SDLMain.mm
@@ -252,9 +254,11 @@ linux {
 
 macx {
 	CONFIG(release, debug|release) {
-		DESTDIR = ../../../Project
-		QMAKE_POST_LINK = "./ESGammaAppDereest.command"
+		#DESTDIR = ../../../Project
+		#QMAKE_POST_LINK = "./ESGammaAppDereest.command"
 	}
+
+	QMAKE_POST_LINK = cp -rf ../../../libGyro/source/glal/shaders/* ../../../Project/shaders
 }
 
 win32 {

@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth, const int projHeight);
+void _glalOnMatApply(void);
 
 #ifdef __cplusplus
 }

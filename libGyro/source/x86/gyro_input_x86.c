@@ -2,6 +2,7 @@
 #include "gyro_system.h"
 #include "gyro_video.h"
 #include "gyro_texture.h"
+#include "gyro_shader.h"
 #include "x86/gyro_sdl_x86.h"
 #include "glal/gyro_video_glal.h"
 
@@ -171,6 +172,7 @@ void gyInputPoll(GYInput *const input) {
 					SDL_Quit();
 				}
 
+				gyShadersReloadAll();
 			   gyVidOglInit(viewWidth, viewHeight, projWidth, projHeight);
 			   gyVidTexReloadAll();
 

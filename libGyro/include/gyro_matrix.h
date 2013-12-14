@@ -9,16 +9,18 @@ extern "C" {
 #endif
 
 //Column-Major
-typedef float GYMatrix4[4][4] 
+typedef float GYMatrix4[4][4]
 #if GYRO_PLATFORM == GYRO_PLATFORM_DC
 __attribute__((aligned(32)))
+#elif GYRO_PLATFORM == GYRO_PLATFORM_x86
+__attribute__ ((aligned (16)));
 #endif
 ;
 
 typedef struct _GYVector4 {
     float x, y, z, w;
 } GYVector4 
-#if GYRO_PLATFORM == GYRO_PLATFORM_DC
+#if GYRO_PLATFORM == GYRO_PLATFORM_DC || GYRO_PLATFORM == GYRO_PLATFORM_x86
 __attribute__((aligned(16)))
 #endif
 ;
@@ -45,10 +47,11 @@ typedef struct _GYInstMat {
 #       include "dc/gyro_matrix_dc.inl"
 #   endif
 #else
-void gyMatLoad(GYMatrix4 *mat);
-void gyMatStore(GYMatrix4 *mat);
-void gyMatApply(GYMatrix4 mat);
-void gyMatMultVec(const GYVector4 *const src, GYVector4 *const dest, const unsigned int count);
+#	include "soft/gyro_matrix_sse.inl"
+//void gyMatLoad(GYMatrix4 *mat);
+//void gyMatStore(GYMatrix4 *mat);
+//void gyMatApply(GYMatrix4 mat);
+//void gyMatMultVec(const GYVector4 *const src, GYVector4 *const dest, const unsigned int count);
 #endif
 
 static inline void gyVec2Clear(GYVector2 *const vec) { vec->x = vec->y = 0.0f; }
@@ -92,20 +95,6 @@ static inline void gyVec3Sub(GYVector3* const dest, const GYVector3* const v1, c
 	dest->x = v1->x - v2->x;
 	dest->y = v1->y - v2->y;
 	dest->z = v1->z - v2->z;
-}
-
-static inline void gyVec4Add(GYVector4* const dest, const GYVector4* const v1, const GYVector4* const v2) {
-	dest->x = v1->x + v2->x;
-	dest->y = v1->y + v2->y;
-	dest->z = v1->z + v2->z;
-	dest->w = v1->w + v2->w;
-}
-
-static inline void gyVec4Sub(GYVector4* const dest, const GYVector4* const v1, const GYVector4* const v2) {
-	dest->x = v1->x - v2->x;
-	dest->y = v1->y - v2->y;
-	dest->z = v1->z - v2->z;
-	dest->w = v1->w - v2->w;
 }
 
 static inline void gyVec3AddAccum(GYVector3* const dest, const GYVector3* const src) {
