@@ -1,5 +1,5 @@
 uniform mat4	uProjMat;
-uniform mat4	uModelViewMat;
+//uniform mat4	uModelViewMat;
 
 attribute vec4	aPosition;
 attribute vec4	aColor;
@@ -12,5 +12,5 @@ varying vec2	vTexCoord;
 void main(void) {
 	vColor = aColor;
 	vTexCoord = aTexCoord;
-	gl_Position = uProjMat * uModelViewMat * aPosition;
+	gl_Position = uProjMat * /*uModelViewMat * */ aPosition;
 }

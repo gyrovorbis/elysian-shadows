@@ -76,7 +76,7 @@ void _setCurrentFFShader(_FixedFunctionShaderProgram*const program) {
 		_curFFShaderProg = program;
 		if(_fixedFunctionMode) {
 			glUseProgram(_curFFShaderProg->program->program);
-			glUniformMatrix4fv(_curFFShaderProg->uniformLoc[FF_SHADER_MODEL_VIEW_MAT], 1, GL_FALSE, (float*)&_modelViewMatrix);
+			//glUniformMatrix4fv(_curFFShaderProg->uniformLoc[FF_SHADER_MODEL_VIEW_MAT], 1, GL_FALSE, (float*)&_modelViewMatrix);
 		}
 	}
 }
@@ -195,15 +195,15 @@ int _gyVidShaderProgramDestroy(GYShaderProgram* program) {
 }
 
 void _glalOnMatApply(void) {
-	gyMatStore(&_modelViewMatrix);
-	glUniformMatrix4fv(_curFFShaderProg->uniformLoc[FF_SHADER_MODEL_VIEW_MAT], 1, GL_FALSE, (float*)&_modelViewMatrix);
+	//gyMatStore(&_modelViewMatrix);
+	//glUniformMatrix4fv(_curFFShaderProg->uniformLoc[FF_SHADER_MODEL_VIEW_MAT], 1, GL_FALSE, (float*)&_modelViewMatrix);
 }
 
 static int _queryFixedFunctionShader(_FixedFunctionShaderProgram*const shader, const unsigned textured) {
 
 	//poll uniform location(s)
 	shader->uniformLoc[FF_SHADER_PROJ_MAT] = glGetUniformLocation(shader->program->program, "uProjMat");
-	shader->uniformLoc[FF_SHADER_MODEL_VIEW_MAT] = glGetUniformLocation(shader->program->program, "uModelViewMat");
+	//shader->uniformLoc[FF_SHADER_MODEL_VIEW_MAT] = glGetUniformLocation(shader->program->program, "uModelViewMat");
 
 	//poll attribute location(s)
 	shader->attribLoc[FF_SHADER_POS] = glGetAttribLocation(shader->program->program, "aPosition");
@@ -299,7 +299,11 @@ void gyVidRectTexOrient(const GY_RECT_TEX_ORIENT orient) {
 }
 
 void gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsigned int startIndex, const unsigned int amount) {
-	glVertexAttribPointer(_curFFShaderProg->attribLoc[FF_SHADER_POS], 4, GL_FLOAT, GL_FALSE, 0, vertexArray);
+	GYVector4 modelViewVertices[amount];
+
+	gyMatMultVec(vertexArray, modelViewVertices, amount);
+
+	glVertexAttribPointer(_curFFShaderProg->attribLoc[FF_SHADER_POS], 4, GL_FLOAT, GL_FALSE, 0, modelViewVertices);
 	glEnableVertexAttribArray(_curFFShaderProg->attribLoc[FF_SHADER_POS]);
 	glDrawArrays(GL_TRIANGLE_STRIP, startIndex, amount);
 }
