@@ -22,7 +22,7 @@ static unsigned int _projWidth = 0;
 static unsigned int _projHeight = 0;
 static GY_RECT_TEX_ORIENT _rectTexOrient = GY_RECT_TEX_ORIENT_NORMAL;
 static GYMatrix4 _projectionMatrix = { { 0.0f } };
-static GYMatrix4 _modelViewMatrix = { { 0.0f } };
+//static GYMatrix4 _modelViewMatrix = { { 0.0f } };
 
 typedef enum __FF_SHADER_ATTRIB {
 	FF_SHADER_POS,
