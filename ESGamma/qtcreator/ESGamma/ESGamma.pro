@@ -271,5 +271,7 @@ linux {
     CONFIG(release, debug|release) {
         DESTDIR = ../../../Project
     }
+
+	QMAKE_POST_LINK = cp -rf ../../../libGyro/source/glal/shaders/* ../../../Project/shaders
 }
 

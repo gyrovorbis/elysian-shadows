@@ -1,6 +1,6 @@
 #include <xmmintrin.h>
 #include <string.h>
-#include "glal/gyro_video_glal.h"
+//#include "glal/gyro_video_glal.h"
 
 extern GYMatrix4 _curMat;
 
@@ -51,7 +51,7 @@ static inline void gyMatApply(GYMatrix4 mat) {
 #else
 	for(unsigned i = 0; i < 16; ++i) ((float*)&_curMat)[i] = ((float*)&res)[i];
 #endif
-	(void)_glalOnMatApply(); //FUCKING REESTED!!!!!
+	//(void)_glalOnMatApply(); //FUCKING REESTED!!!!!
 }
 
 static inline void gyMatMultVec(const GYVector4 *const src, GYVector4 *const dest, const unsigned int count) {
