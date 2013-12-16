@@ -1,5 +1,6 @@
 #include <xmmintrin.h>
 #include <string.h>
+#include <assert.h>
 //#include "glal/gyro_video_glal.h"
 
 extern GYMatrix4 _curMat;
@@ -72,6 +73,7 @@ static inline void gyMatMultVec(const GYVector4 *const src, GYVector4 *const des
 
 	__m128 dest_line, src1_line, src2_line;
 	unsigned i, j;
+  //  assert(((unsigned long)dest & 15) == 0);
 
 	//Unravel first iteration of the loop for dat optimization
 	for(j = 0; j < count; ++j) {													//iterate over every vertex
@@ -107,6 +109,7 @@ static inline void gyVec4Add(GYVector4* const dest, const GYVector4* const v1, c
 }
 
 static inline void gyVec4Sub(GYVector4* const dest, const GYVector4* const v1, const GYVector4* const v2) {
+    assert(((unsigned long)dest & 15) == 0);
 	const __m128 s1 = _mm_load_ps((float*)v1);
 	const __m128 s2 = _mm_load_ps((float*)v2);
 	const __m128 d = _mm_sub_ps(s1, s2);
