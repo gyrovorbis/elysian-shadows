@@ -8,6 +8,9 @@ DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_x86
 INCLUDEPATH += ../../include \
     ../../include/x86/png
 
+QMAKE_CFLAGS += -msse
+			#-mstackrealign
+
 win32 {
     INCLUDEPATH +=  ../../lib/win32
 }
