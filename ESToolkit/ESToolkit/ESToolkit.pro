@@ -5,7 +5,7 @@
 TARGET = ESToolkit
 TEMPLATE = app
 QT		+= opengl
-QMAKE_CXXFLAGS += -std=c++11 #fuuuuck
+QMAKE_CXXFLAGS += -std=c++11 -msse
 CONFIG += c++11
 
 ICON = resource/images/estk.icns

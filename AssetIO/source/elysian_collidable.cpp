@@ -19,7 +19,7 @@ void Collidable::update(void) {
 	gyMatLoadIdentity();
 	_entity->transform.apply();
 	gyMatTranslateScale(_attrib->_relPos.x, _attrib->_relPos.y, 0.0f, _attrib->_relSize.x, _attrib->_relSize.y, 1.0f);
-	gyMatMultVec(&origin, &_centerWorldPos, 1);
+    gyMatMultVec(&origin, &_centerWorldPos, 1);
 	gyCalcWorldVert(&_collider.col);
 	gyMatPop();
 #endif

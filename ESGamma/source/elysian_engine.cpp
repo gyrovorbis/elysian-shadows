@@ -65,7 +65,7 @@ void Engine::update(void) {
 		case System::ENGINE_NORMAL:
         case System::ENGINE_WARPING:
 			_audioSystem->update();
-			_collisionSystem->update();
+            _collisionSystem->update();
 			_timerSystem->update();
 			_mapSystem->update();
 			_cameraSystem->Update();

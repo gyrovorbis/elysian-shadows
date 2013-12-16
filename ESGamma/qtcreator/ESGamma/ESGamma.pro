@@ -9,7 +9,12 @@ DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_x86 \
 
 QMAKE_CXXFLAGS += -std=c++11 \
     -fno-rtti \
-    -fno-exceptions
+	-fno-exceptions \
+	-msse
+	#-mstackrealign
+
+QMAKE_CFLAGS += 	-msse \
+	-mstackrealign
 
 #Required to get C++11x to work on OSX
 macx {
@@ -166,7 +171,8 @@ SOURCES += \
     ../../../AssetIO/source/elysian_animation.cpp \
     ../../../AssetIO/source/elysian_audio_source.cpp \
     ../../source/elysian_audio_system.cpp \
-    ../../source/elysian_shader_manager.cpp
+    ../../source/elysian_shader_manager.cpp \
+    ../../../AssetIO/source/elysian_new.cpp
 
 macx {
   OBJECTIVE_SOURCES += ../../../libGyro/lib/osx/SDLMain.mm
@@ -213,6 +219,8 @@ win32 {
         -lvorbisenc \
         #-lvorbisenc.dll \
         -lvorbisfile \
+		-lglew32 \
+		-lglew32.dll \
         #-lvorbisfile.dll \
         -mconsole
 }
@@ -265,6 +273,8 @@ win32 {
     CONFIG(release, debug|release) {
         DESTDIR = ../../../Project
     }
+
+	QMAKE_POST_LINK = cp -rf ../../../libGyro/source/glal/shaders/* ../../../Project/shaders
 }
 
 linux {

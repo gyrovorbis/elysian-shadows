@@ -75,11 +75,11 @@ static void StaticConstructor(void) {
 	Behavior::staticConstructor();
 }
 
-
 /* Everything is in a global function, so that switching LibGyro to be event-driven for
    Droid and iOS reest will be less painful.
  */
 int main(int argc, char *argv[]) {
+
 #ifdef __unix__
 	XInitThreads();
 #endif

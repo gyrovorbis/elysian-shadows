@@ -240,21 +240,37 @@ void gyVidResolution(unsigned int *const projWidth, unsigned int *const projHeig
 }
 
 int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth, const int projHeight) {
-	const float far = 1000.0f;
-	const float near = -1000.0f;
-	const float left = 0.0f;
-	const float right = projWidth;
-	const float top = 0.0f;
-	const float bottom = projHeight;
+    const float pfar = 1000.0f;
+    const float pnear = -1000.0f;
+    const float pleft = 0.0f;
+    const float pright = projWidth;
+    const float ptop = 0.0f;
+    const float pbottom = projHeight;
 
 	GYMatrix4 orthoProjMat = {
-		{ 2.0f/(right-left), 0.0f, 0.0f, -(right+left)/(right-left) },
-		{ 0.0f, 2.0f/(top-bottom), 0.0f, -(top+bottom)/(top-bottom) },
-		{ 0.0f, 0.0f, -2.0f/(far-near), -(far+near)/(far-near) },
+        { 2.0f/(pright-pleft), 0.0f, 0.0f, -(pright+pleft)/(pright-pleft) },
+        { 0.0f, 2.0f/(ptop-pbottom), 0.0f, -(ptop+pbottom)/(ptop-pbottom) },
+        { 0.0f, 0.0f, -2.0f/(pfar-pnear), -(pfar+pnear)/(pfar-pnear) },
 		{ 0.0f, 0.0f, 0.0f, 1.0f }
 	};
 
 	memcpy(_projectionMatrix, orthoProjMat, sizeof(GYMatrix4));
+#ifdef _WIN32
+
+    _gyLog(GY_DEBUG_VERBOSE, "Initializing GLEW...");
+    GLenum err = glewInit();
+    if (err != GLEW_OK) {
+      /* Problem: glewInit failed, something is seriously wrong. */
+        _gyLog(GY_DEBUG_CRITICAL, "\tError: %s", glewGetErrorString(err));
+    }
+
+    if(GLEW_VERSION_2_1) {
+        _gyLog(GY_DEBUG_VERBOSE, "\tOpenGL 2.1 Extensions detected");
+    } else {
+        _gyLog(GY_DEBUG_CRITICAL, "\tOpenGL 2.1 Extensions NOT detected! Prepare for crash!");
+    }
+
+#endif
 
     _projWidth = projWidth;
     _projHeight = projHeight;
