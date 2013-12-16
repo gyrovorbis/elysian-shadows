@@ -1,5 +1,7 @@
+#ifdef __WIN32
+
 #include <stdlib.h>
-#include <malloc.h>
+//#include <malloc.h>
 //#include <windows.h>
 
 void* operator new (size_t size)
@@ -20,3 +22,6 @@ void operator delete (void *p) {
     free(p);
 #endif
 }
+
+
+#endif
