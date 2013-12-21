@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include <malloc.h>
+//#include <malloc.h>
 //#include <windows.h>
 
 void* operator new (size_t size)
