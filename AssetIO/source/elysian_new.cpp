@@ -1,3 +1,5 @@
+#ifdef __WIN32
+
 #include <stdlib.h>
 //#include <malloc.h>
 //#include <windows.h>
@@ -20,3 +22,6 @@ void operator delete (void *p) {
     free(p);
 #endif
 }
+
+
+#endif

@@ -9,12 +9,12 @@ DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_x86 \
 
 QMAKE_CXXFLAGS += -std=c++11 \
     -fno-rtti \
-	-fno-exceptions \
-	-msse
-	#-mstackrealign
+	-fno-exceptions
 
-QMAKE_CFLAGS += 	-msse \
-	-mstackrealign
+win32 {
+	QMAKE_CXXFLAGS += -msse
+	QMAKE_CFLAGS += 	-msse
+}
 
 #Required to get C++11x to work on OSX
 macx {
@@ -260,13 +260,14 @@ linux {
         -lpthread
 }
 
+QMAKE_POST_LINK = cp -rf ../../../libGyro/source/glal/shaders/* ../../../Project/shaders
+
 macx {
 	CONFIG(release, debug|release) {
 		#DESTDIR = ../../../Project
 		#QMAKE_POST_LINK = "./ESGammaAppDereest.command"
 	}
 
-	QMAKE_POST_LINK = cp -rf ../../../libGyro/source/glal/shaders/* ../../../Project/shaders
 }
 
 win32 {
@@ -274,7 +275,6 @@ win32 {
         DESTDIR = ../../../Project
     }
 
-	QMAKE_POST_LINK = cp -rf ../../../libGyro/source/glal/shaders/* ../../../Project/shaders
 }
 
 linux {
@@ -282,6 +282,5 @@ linux {
         DESTDIR = ../../../Project
     }
 
-	QMAKE_POST_LINK = cp -rf ../../../libGyro/source/glal/shaders/* ../../../Project/shaders
 }
 
