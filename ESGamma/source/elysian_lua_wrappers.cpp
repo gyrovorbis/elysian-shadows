@@ -249,7 +249,8 @@ EXPORT_OOLUA_FUNCTIONS_0_CONST(LuaBehavior)
 
 EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(Tile,
 									setColliderType)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(Tile)
+EXPORT_OOLUA_FUNCTIONS_1_CONST(Tile,
+                               getColliderType)
 
 EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(Level,
 									getTile)

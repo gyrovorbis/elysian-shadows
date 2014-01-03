@@ -339,6 +339,7 @@ OOLUA_PROXY(Tile)
 		No_public_destructor
 	)
 	OOLUA_MEM_FUNC(void, setColliderType, unsigned)
+    OOLUA_MEM_FUNC_CONST(unsigned, getColliderType)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Level)
