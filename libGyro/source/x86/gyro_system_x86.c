@@ -69,12 +69,10 @@ static void _checkCPUCapabilities(void) {
 	} else {
 		_gyLog(GY_DEBUG_VERBOSE, "\tSSE CPU Extensions detected! Fast-ass math enabled!");
 	}
-
-
 }
 
 
-#ifdef __LINUX__
+#if defined(__LINUX__) || defined(__APPLE__)
 #include <signal.h>
 #include <execinfo.h>
 #include <stdlib.h>
@@ -124,7 +122,7 @@ unsigned int gySysStatsRam(void) {
 }
 
 
-#ifdef __LINUX__
+#if defined(__LINUX__) || defined(__APPLE__)
 static const char* gyDebugSigCodeToStr(int sig, int sig_code) {
 	if(sig == SIGFPE)
 		switch(sig_code) {
@@ -167,18 +165,19 @@ static void gyDebugSigHandler(int sig, siginfo_t* info, void* unused) {
 	num = backtrace(buf, 64);
 	symbols = backtrace_symbols(buf, num);
 
+	_gyLog(GY_DEBUG_FATAL, "**** BEGIN C/++ BACKTRACE ****");
 	_gyLog(GY_DEBUG_FATAL, "RECIEVED SIGNAL: %s!",
 		   gyDebugSigCodeToStr(info->si_signo, info->si_code));
 	for(i = 0; i < num; i++)
 		_gyLog(GY_DEBUG_FATAL, "	%s", symbols[i]);
-	_gyLog(GY_DEBUG_FATAL, "Report this to one of the code monkeys with the backtrace.");
+	_gyLog(GY_DEBUG_FATAL, "**** END C/++ BACKTRACE ****");
 
 	exit(1);
 }
 #endif
 
 void gyDebugSigInit(void) {
-#ifdef __LINUX__
+#if defined(__LINUX__) || defined(__APPLE__)
 	struct sigaction sa, so;
 
 	/* Set up handler. */

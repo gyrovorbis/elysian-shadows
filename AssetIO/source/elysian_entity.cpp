@@ -23,12 +23,6 @@ using namespace std;
 
 namespace elysian {
 
-Entity::Entity(void)
-{
-	for(unsigned int i = 0; i < Component::MAX_TYPE; ++i) _componentActive[i] = false;
-	strcpy(_name, "Untitled");
-} 
-
 void Entity::reested(void) {
 	dbgprintf(LOG_VERBOSE, "Entity::Reested(%s) - Dereesting entity!", _name);
 	//SHED COMPONENTS GRACEFULLY

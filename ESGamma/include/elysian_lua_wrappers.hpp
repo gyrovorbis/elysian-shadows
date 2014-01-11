@@ -172,6 +172,8 @@ OOLUA_PROXY(Entity, RenderableObject)
 	OOLUA_MEM_FUNC(void, removeAudioSource)
 	OOLUA_MEM_FUNC(void, removeBehavior, const char*)
 	OOLUA_MEM_FUNC(void, removeLuaBehavior, const char*)
+	OOLUA_MEM_FUNC(Lua_table_ref&, getSelfTable)
+	OOLUA_MEM_FUNC(void, setSelfTable, Lua_table_ref)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Component)

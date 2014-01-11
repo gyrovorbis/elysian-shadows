@@ -119,7 +119,9 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
 						removeAudioSource,
 						removeBehavior,
 						removeLuaBehavior,
-						setDepthType);
+						setDepthType,
+						setSelfTable,
+						getSelfTable)
 OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getName,
 								getElev,
