@@ -18,6 +18,7 @@
 #include "elysian_lua_behavior.hpp"
 #include "elysian_examinable.hpp"
 #include "elysian_audio_source.hpp"
+#include "elysian_light_source.hpp"
 
 using namespace std;
 
@@ -25,7 +26,6 @@ namespace elysian {
 
 Entity::Entity(void)
 {
-	for(unsigned int i = 0; i < Component::MAX_TYPE; ++i) _componentActive[i] = false;
 	strcpy(_name, "Untitled");
 } 
 
@@ -50,9 +50,10 @@ Entity::~Entity(void) {
 	removeEnemy();
 	removeExaminable();
 	removeAudioSource();
+	removeLightSource();
 	
 	// Cleanup Behaviors
-	for(std::map<const char *, Behavior *, ltstr>::iterator it = _behavior.begin(); it != _behavior.end(); ++it) {
+	for(auto it = _behavior.begin(); it != _behavior.end(); ++it) {
 		removeBehavior(it->first);
 	}
 	_behavior.clear();
@@ -62,6 +63,8 @@ void Entity::render(void) {
 #ifdef ELYSIAN_ENGINE
 	if(!_renderable) return;
 	gyMatPush();
+	if(_depthType == DEPTH_BUFFERED)
+		transform._size.z = transform._size.y;
 	transform.apply();
 	_renderable->beginRender();
 	_renderable->render();
@@ -69,7 +72,8 @@ void Entity::render(void) {
 	gyMatPop();
 #endif
 }
-    
+
+#if 0
 	void Entity::renderAtZ(const float
 #ifdef ELYSIAN_ENGINE
 						   z
@@ -87,12 +91,13 @@ void Entity::render(void) {
         _renderable->endRender();
         gyMatPop();
 #endif
-    }
+	}
+#endif
     
 #ifdef ELYSIAN_ENGINE
 void Entity::move(const GYVector2& dist) {
     if(_character) _character->move(dist);
-    else gyVec2AddAccum(&transform._pos, &dist);
+	else gyVec2AddAccum((GYVector2*)&transform._pos, &dist);
 }
 #endif
 
@@ -143,7 +148,11 @@ bool Entity::activate(void) {
 		_audioSource->addToLevel();
 		_componentActive[Component::AUDIO_SOURCE] = true;
 	}
-	for(std::map<const char *, Behavior *, ltstr>::iterator it = _behavior.begin(); it != _behavior.end(); ++it) {
+	if(_lightSource && !_componentActive[Component::LIGHT_SOURCE]) {
+		_lightSource->addToLevel();
+		_componentActive[Component::LIGHT_SOURCE] = true;
+	}
+	for(auto it = _behavior.begin(); it != _behavior.end(); ++it) {
 		if(!it->second->getActive()) {
 			it->second->addToLevel();
 			it->second->setActive();
@@ -200,8 +209,12 @@ bool Entity::deactivate(void) {
 		_audioSource->removeFromLevel();
 		_componentActive[Component::AUDIO_SOURCE] = false;
 	}
+	if(_lightSource && _componentActive[Component::LIGHT_SOURCE]) {
+		_lightSource->removeFromLevel();
+		_componentActive[Component::LIGHT_SOURCE] = false;
+	}
 
-	for(std::map<const char *, Behavior *, ltstr>::iterator it = _behavior.begin(); it != _behavior.end(); ++it) {
+	for(auto it = _behavior.begin(); it != _behavior.end(); ++it) {
 		if(it->second->getActive()) {
 			it->second->removeFromLevel();
 			it->second->setActive(false);
@@ -263,6 +276,9 @@ bool Entity::load(ifstream &stream) { //Deserialization
 			case Component::AUDIO_SOURCE:
 				comp = addAudioSource();
 				break;
+			case Component::LIGHT_SOURCE:
+				comp = addLightSource();
+				break;
 			case Component::BEHAVIOR:
 				stream >> behaviorName;
 				comp = addBehavior(behaviorName);
@@ -313,7 +329,8 @@ bool Entity::save(ofstream &stream) { //Serialization
 	if(getWarp()) ++compCount;
 	if(getExaminable()) ++compCount;
 	if(getAudioSource()) ++compCount;
-    for(std::map<const char *, Behavior *, ltstr>::iterator it = _behavior.begin(); it != _behavior.end(); ++it) ++compCount;
+	if(getLightSource()) ++compCount;
+	for(auto it = _behavior.begin(); it != _behavior.end(); ++it) ++compCount;
 	stream << compCount << endl;
 
 	//Built-in Components
@@ -357,9 +374,13 @@ bool Entity::save(ofstream &stream) { //Serialization
 		stream << (int)Component::AUDIO_SOURCE << endl;
 		success &= comp->save(stream);
 	}
+	if((comp = getLightSource())) {
+		stream << (int)Component::LIGHT_SOURCE << endl;
+		success &= comp->save(stream);
+	}
 	
 	//Behaviors
-    for(std::map<const char *, Behavior *, ltstr>::iterator it = _behavior.begin(); it != _behavior.end(); ++it) {
+	for(auto it = _behavior.begin(); it != _behavior.end(); ++it) {
 		stream << (int)Component::BEHAVIOR << endl;
         stream << it->second->getBehavName() << endl;
         success &= it->second->save(stream);
@@ -519,6 +540,12 @@ AudioSource *Entity::addAudioSource(void) {
 	return _audioSource = attachComponent(_audioSource)? _audioSource : NULL;
 }
 
+LightSource *Entity::addLightSource(void) {
+	if(_lightSource) return nullptr;
+	_lightSource = new LightSource(*this);
+	return _lightSource = attachComponent(_lightSource)? _lightSource : NULL;
+}
+
 
 void Entity::removeRenderable(void) {
 	if(_renderable && _active) {
@@ -608,6 +635,15 @@ void Entity::removeAudioSource(void) {
 	}
 	delete _audioSource;
 	_audioSource = NULL;
+}
+
+void Entity::removeLightSource(void) {
+	if(_lightSource && _active) {
+		_lightSource->removeFromLevel();
+		_componentActive[Component::LIGHT_SOURCE] = false;
+	}
+	delete _lightSource;
+	_lightSource = nullptr;
 }
 
 }

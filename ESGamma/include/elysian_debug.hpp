@@ -112,6 +112,10 @@ namespace elysian {
 		const CmdLineArgs& getCmdLineArgs(void) const { return _cmdLineArgs; }
 	};
 
+	class LightSource;
+	extern LightSource* lightSrc;
+	extern GYVector3 dirVec;
+
 }
 
 #endif

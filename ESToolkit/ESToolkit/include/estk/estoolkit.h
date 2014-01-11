@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QUndoGroup>
-#include <gyro_system.h>
+#include <gyro_system_api.h>
 #include "assets.h"
 
 #define ESTOOLKIT_VERSION				GYRO_LIB_VERSION

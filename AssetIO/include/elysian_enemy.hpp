@@ -11,8 +11,8 @@ namespace elysian {
 		
 	protected:
 		Enemy(Entity& parent): Component(parent) {}
-		Enemy(void) {}
-		virtual ~Enemy(void) { }
+		Enemy(void) = default;
+		virtual ~Enemy(void) override = default;
 		
 	public:
 		bool load(std::ifstream& stream);

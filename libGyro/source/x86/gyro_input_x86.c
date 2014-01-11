@@ -1,10 +1,10 @@
-#include "gyro_input.h"
-#include "gyro_system.h"
-#include "gyro_video.h"
-#include "gyro_texture.h"
-#include "gyro_shader.h"
-#include "x86/gyro_sdl_x86.h"
-#include "glal/gyro_video_glal.h"
+#include <gyro_input_api.h>
+#include <gyro_system_api.h>
+#include <gyro_video_api.h>
+#include <gyro_texture_api.h>
+#include <gyro_shader_api.h>
+#include <x86/gyro_sdl_x86.inl>
+#include "../glal/gyro_video_glal.h"
 
 extern GYVidInitParams vidParams;
 extern int vidBpp;

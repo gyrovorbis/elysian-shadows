@@ -19,6 +19,7 @@ namespace elysian {
 	class AudioSystem;
 	class BehaviorSystem;
 	class AudioSystem;
+	class LightSystem;
 
 	class System: public LevelManager {
 	public:
@@ -42,6 +43,7 @@ namespace elysian {
 		static GuiSystem		*_guiSystem;
 		static ExaminableSystem	*_examinableSystem;
 		static AudioSystem		*_audioSystem;
+		static LightSystem		*_lightSystem;
 		static BehaviorSystem	*_behaviorSystem;
 
 	public:
@@ -57,6 +59,7 @@ namespace elysian {
 		static GuiSystem*			getGuiSys(void) { return _guiSystem; }
 		static ExaminableSystem*	getExamSys(void) { return _examinableSystem; }
 		static AudioSystem*			getAudioSys(void) { return _audioSystem; }
+		static LightSystem*			getLightSys(void) { return _lightSystem; }
 		static BehaviorSystem*		getBehavSys(void) { return _behaviorSystem; }
 		static bool getProcessInput(void) { return _processInput; }
 		static void setProcessInput(const bool in=true) { _processInput = in; }

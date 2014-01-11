@@ -18,7 +18,7 @@ namespace elysian {
 WarpSystem::WarpSystem(void): 
 	_currentWarp()
 {
-	_screenRect.transform._posZ = ELYSIAN_ZCOORD_WARP_OVERLAY;
+	_screenRect.transform._pos.z = ELYSIAN_ZCOORD_WARP_OVERLAY;
 	_screenRect.setColor(0, 0, 0, 0);
 }
 

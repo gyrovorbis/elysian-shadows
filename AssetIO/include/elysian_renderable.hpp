@@ -17,11 +17,14 @@ namespace elysian {
 	friend class Entity;
 	private:
 		SpriteAttrib *_spriteAttrib = nullptr;	//Prefab-able attributes
-		unsigned _frame			= 0;			//for animation
-		GYVector2 _offset		= {0.0f, 0.0f};	//texture offset from base transform (local coords)
+		unsigned _frame				= 0;			//for animation
+		GYVector2 _offset			= {0.0f, 0.0f};	//texture offset from base transform (local coords)
 
 		inline Renderable(Entity &parent): Component(parent) {}
 	public:
+		static const GYVector4 flatRectVerts[4];
+		static const GYVector4 depthRectVerts[4];
+
 		virtual bool canAddTo(Entity& /*entity*/) override { return true; } //no prereqs
 		virtual bool load(std::ifstream& stream) override;
 		virtual bool save(std::ofstream& stream) override;
@@ -35,15 +38,17 @@ namespace elysian {
 
 		inline void render(void) { 
 			GYVector4 localVerts[4] = {
-				{ 0.0f, 0.0f, 0.0f, 1.0f},
-				{ 0.0f, 0.0f, 0.0f, 1.0f},
-				{ 0.0f, 0.0f, 0.0f, 1.0f},
-				{ 0.0f, 0.0f, 0.0f, 1.0f}
+				{-0.5f, -0.5f, 1.0f, 1.0f},
+				{0.5f, -0.5f, 1.0f, 1.0f},
+				{-0.5f, 0.5f, 0.0f, 1.0f},
+				{0.5f, 0.5f, 0.0f, 1.0f}
 			};
 
 			gyVidTexBind(_spriteAttrib->_tex);
+
+			//Why aren't we just pushing another matrix to handle this?
 			if(_spriteAttrib->_tex) {
-				const GYVector2 *size = &_entity->transform._size;
+				const GYVector2 *size = (GYVector2*)&_entity->transform._size;
 				const GYTexCoordFrame *fr = &_spriteAttrib->_tex->_coord->texCoord[_frame];
 				const float locX = ((float) fr->spriteWidth / size->x)/2.0f;
 				const float locY = ((float) fr->spriteHeight / size->y)/2.0f;
@@ -55,6 +60,14 @@ namespace elysian {
 				localVerts[2].y = locY + _offset.y;
 				localVerts[3].x = locX + _offset.x;
 				localVerts[3].y = locY + _offset.y;
+			}
+
+			//branch assumes shit will usually be depth buffered
+			if(getEntity()->getDepthType() != DEPTH_BUFFERED) {
+				localVerts[0].z = localVerts[1].z = 0.0f;
+				gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
+			} else {
+				gyVidRectNormalType(GY_RECT_NORMAL_DEPTH);
 			}
 
 			//Submit vertices
@@ -70,7 +83,7 @@ namespace elysian {
 			case PrimAttrib::SPRITE:
 				gyVidAlphaLevel((_spriteAttrib->_color.a == 255)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
 				gyVidQuadListBegin(&_spriteAttrib->_color);
-			//	gyVidQuad(localVerts, _frame);
+				gyVidQuad(localVerts, _frame);
 				gyVidQuadListEnd();
 				break;
 			default: break;//the fuck is wrong with you, son?

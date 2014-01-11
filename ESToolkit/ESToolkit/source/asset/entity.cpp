@@ -57,10 +57,10 @@ Entity::Entity(elysian::Entity &entity): _elysianEntity(&entity),
     setName(entity.getName());
 	_nameEdit->setText(entity.getName());
 	QGraphicsRectItem::setPos(entity.transform._pos.x, entity.transform._pos.y);
-	setZValue(entity.transform._posZ);
+	setZValue(entity.transform._pos.z);
 
 	setPos(_elysianEntity->transform._pos.x, _elysianEntity->transform._pos.y);
-	setPosZ(_elysianEntity->transform._posZ);
+	setPosZ(_elysianEntity->transform._pos.z);
 	setSize(_elysianEntity->transform._size.x, _elysianEntity->transform._size.y);
 	setScale(_elysianEntity->transform._scale.y, _elysianEntity->transform._scale.y);
 	setOrientZ(_elysianEntity->transform.getOrientZ()*(180.0f/M_PI));

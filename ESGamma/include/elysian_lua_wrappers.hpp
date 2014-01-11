@@ -650,7 +650,7 @@ static inline int print(lua_State* const l) {
 				continue;
 		}
 
-		strcat(string, " ");
+		//strcat(string, " ");
 
 	}
 

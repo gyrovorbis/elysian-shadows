@@ -2,7 +2,7 @@
 #define ELYSIAN_SHADER_MANAGER_HPP
 
 #include <map>
-#include <gyro_shader.h>
+#include <gyro_shader_api.h>
 #include "elysian_stl_algorithm.hpp"
 
 namespace elysian {

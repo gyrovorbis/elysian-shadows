@@ -26,6 +26,7 @@ namespace elysian {
 	class Enemy;
 	class Examinable;
 	class AudioSource;
+	class LightSource;
 	class Behavior;
 	class LuaBehavior;
 	
@@ -63,6 +64,7 @@ namespace elysian {
 		Enemy*          addEnemy(void);
 		Examinable*		addExaminable(void);
 		AudioSource*	addAudioSource(void);
+		LightSource*	addLightSource(void);
 		
 		Renderable*		getRenderable(void) const { return _renderable; }
 		Animation*      getAnimation(void) const { return _animation; }
@@ -74,6 +76,7 @@ namespace elysian {
 		Enemy*          getEnemy(void) const { return _enemy; }
 		Examinable*		getExaminable(void) const { return _examinable; }
 		AudioSource*	getAudioSource(void) const { return _audioSource; }
+		LightSource*	getLightSource(void) const { return _lightSource; }
 		
 		void removeRenderable(void);
 		void removeAnimation(void);
@@ -85,6 +88,7 @@ namespace elysian {
 		void removeEnemy(void);
 		void removeExaminable(void);
 		void removeAudioSource(void);
+		void removeLightSource(void);
  
 		Behavior* addBehavior(char const* behaviorName);
         Behavior* getBehavior(char const* constbehaviorName) const;
@@ -100,7 +104,7 @@ namespace elysian {
 	protected:
 		
         char _name[ELYSIAN_ENTITY_NAME_SIZE];
-        bool _componentActive[Component::MAX_TYPE];
+		bool _componentActive[Component::MAX_TYPE] = { false };
         
         std::map<char const *, Behavior*, ltstr> _behavior;
 
@@ -117,11 +121,12 @@ namespace elysian {
 		Enemy*          _enemy			= nullptr;
 		Examinable*		_examinable		= nullptr;
 		AudioSource*	_audioSource	= nullptr;
+		LightSource*	_lightSource	= nullptr;
 		//RigidBody*    _rigidBody;
 		
-		bool attachComponent(Component* const comp);
-		Behavior* attachBehavior(Behavior *const behav);
-		void reested(void); //default for failed deserialization attempts
+		bool		attachComponent(Component* const comp);
+		Behavior*	attachBehavior(Behavior *const behav);
+		void		reested(void); //default for failed deserialization attempts
     }; 
 
 

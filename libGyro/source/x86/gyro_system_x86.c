@@ -1,7 +1,7 @@
-#include "gyro_system.h"
+#include <gyro_system_api.h>
 #include "gyro_defines.h"
-#include "x86/gyro_sdl_x86.h"
-#include "glal/gyro_video_glal.h"
+#include <x86/gyro_sdl_x86.inl>
+#include "../glal/gyro_video_glal.h"
 #include "stdio.h"
 #include "stdarg.h"
 
@@ -81,6 +81,29 @@ static void _checkCPUCapabilities(void) {
 #include <unistd.h>
 #endif
 
+void gyDebugSigInit(void) {
+#ifdef __LINUX__
+	struct sigaction sa, so;
+
+	/* Set up handler. */
+	sa.sa_handler		= NULL;
+	sa.sa_sigaction		= gyDebugSigHandler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags			= SA_SIGINFO;
+
+	/* Attach signals. */
+	sigaction(SIGSEGV, &sa, &so);
+	if(so.sa_handler == SIG_IGN)
+		_gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGSEGV signal handler.");
+	sigaction(SIGFPE, &sa, &so);
+	if(so.sa_handler == SIG_IGN)
+		_gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGFPE signal handler.");
+	sigaction(SIGTRAP, &sa, &so);
+	if(so.sa_handler == SIG_IGN)
+		_gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGTRAP signal handler.");
+#endif
+}
+
 int gySysInit(void) {
   const char* platString =
 #ifdef __APPLE__
@@ -96,6 +119,8 @@ int gySysInit(void) {
 
 	_checkCPUCapabilities();
 
+
+	gyDebugSigInit();
     return 1;
 }
 
@@ -177,25 +202,3 @@ static void gyDebugSigHandler(int sig, siginfo_t* info, void* unused) {
 }
 #endif
 
-void gyDebugSigInit(void) {
-#ifdef __LINUX__
-	struct sigaction sa, so;
-
-	/* Set up handler. */
-	sa.sa_handler		= NULL;
-	sa.sa_sigaction		= gyDebugSigHandler;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags			= SA_SIGINFO;
-
-	/* Attach signals. */
-	sigaction(SIGSEGV, &sa, &so);
-	if(so.sa_handler == SIG_IGN)
-		_gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGSEGV signal handler.");
-	sigaction(SIGFPE, &sa, &so);
-	if(so.sa_handler == SIG_IGN)
-		_gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGFPE signal handler.");
-	sigaction(SIGTRAP, &sa, &so);
-	if(so.sa_handler == SIG_IGN)
-		_gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGTRAP signal handler.");
-#endif
-}

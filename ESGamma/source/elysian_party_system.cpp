@@ -324,7 +324,7 @@ void PartySystem::_resizePartyPathPoints(void) {
 	if(pathPointAmount > (int)_partyPathPoint.size()) {
 		GYVector2 lastPoint;
 		if(_partyPathPoint.size() == 0) {
-			lastPoint = (_playableParty.size() != 0)? _playableParty[0]->transform._pos : _characterParty[0]->transform._pos;
+			lastPoint = (_playableParty.size() != 0)? GYVector2 {_playableParty[0]->transform._pos.x, _playableParty[0]->transform._pos.y } : GYVector2 {_characterParty[0]->transform._pos.x, _characterParty[0]->transform._pos.y };
 		} else {
 			lastPoint = _partyPathPoint[_partyPathPoint.size()-1];
 		}
@@ -361,7 +361,7 @@ void PartySystem::updatePartyPaths(void) {
 	}
 	
 	//add leader's current position
-	_partyPathPoint[0] = (_playableParty.size() > 0)? _playableParty[0]->transform._pos : _characterParty[0]->transform._pos;
+	_partyPathPoint[0] = (_playableParty.size() > 0)? GYVector2{_playableParty[0]->transform._pos.x, _playableParty[0]->transform._pos.y } : GYVector2 {_characterParty[0]->transform._pos.x, _characterParty[0]->transform._pos.x };
 
 	unsigned int currentIndex = 2;
 	//update playables

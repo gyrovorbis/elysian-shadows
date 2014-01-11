@@ -51,7 +51,7 @@ namespace elysian {
 	protected:
 		AnimationAttrib *_attrib; //prefab-able
 		Animation(Entity& entity);
-		virtual ~Animation(void) { }
+		virtual ~Animation(void) = default;
 
 		bool _isActive;
 		unsigned int _currentFrame;

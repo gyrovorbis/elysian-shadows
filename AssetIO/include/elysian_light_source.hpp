@@ -1,0 +1,101 @@
+#ifndef ELYSIAN_LIGHT_SOURCE_HPP
+#define ELYSIAN_LIGHT_SOURCE_HPP
+
+#include <gyro_shader_api.h>
+#include <gyro_video_api.h>
+#include "elysian_component.hpp"
+
+namespace elysian {
+
+	class LightAttrib: private GYLightProperties {
+		friend class LightSystem;
+		friend class LightSource;
+	public:
+		LightAttrib(void):
+			GYLightProperties(defaultProperties) {}
+
+		static GYLightProperties defaultProperties;
+
+		void setAmbientColor(const GYVector4& color);
+		void setDiffuseColor(const GYVector4& color);
+		void setSpecularColor(const GYVector4& color);
+		void setAttenuationFactors(const GYVector3& vec);
+		void setSpotExponent(const float exp);
+		void setComputeDistanceAttenuation(const bool val);
+	};
+
+	class LightSource: public Component, private GYLightSource {
+		friend class LightSystem;
+		friend class Engine;
+	public:
+		enum LIGHT_TYPE { LIGHT_DIRECTIONAL, LIGHT_POINT };
+	private:
+		LIGHT_TYPE _type			= LIGHT_POINT;
+
+	public:
+
+		LightSource(Entity& entity);
+		virtual ~LightSource(void) override = default;
+
+		//reimplemented from component
+		virtual bool canAddTo(Entity& entity) override;
+		virtual bool load(std::ifstream& stream) override;
+		virtual bool save(std::ofstream& stream) override;
+		virtual bool addToLevel(void) override;
+		virtual bool removeFromLevel(void) override;
+		virtual TYPE getType(void) const override;
+
+		void setLightType(const LIGHT_TYPE type);
+		LIGHT_TYPE getLightType(void) const;
+		void setDirection(const GYVector3& dir);
+		void setSpotCutoffAngle(const float angle);
+		void setAttrib(const LightAttrib* const attrib);
+		LightAttrib& getLightAttrib(void);
+
+		void update(void);
+
+	};
+
+	inline void LightAttrib::setAmbientColor(const GYVector4& color) {
+		ambientColor = color;
+	}
+	inline void LightAttrib::setDiffuseColor(const GYVector4& color) {
+		diffuseColor = color;
+	}
+	inline void LightAttrib::setSpecularColor(const GYVector4& color) {
+		specularColor = color;
+	}
+	inline void LightAttrib::setAttenuationFactors(const GYVector3& vec) {
+		attenuationFactors = vec;
+	}
+	inline void LightAttrib::setSpotExponent(const float exp) {
+		spotExponent = exp;
+	}
+
+	inline bool LightSource::canAddTo(Entity &/*entity*/) { return true; }
+	inline auto LightSource::getType(void) const -> TYPE { return LIGHT_SOURCE; }
+	inline LightSource::LightSource(Entity& entity):
+		Component(entity),
+		GYLightSource({
+			{
+				{ 1.0f, 0.0f, 0.0f, 1.0f },
+				{ 0.0f, 1.0f, 0.0f, 1.0f },
+				{ 0.0f, 0.0f, 1.0f, 1.0f },
+				{ 0.0f, 0.0f, 0.0f, 0.0f }
+			},
+			{ 0.0f, 0.0f, 0.0f, 0.0f }, //pos
+			{ 0.0f, -0.0f, 0.00f },		//dir
+			360.0f,						//cutoff
+			&LightAttrib::defaultProperties
+}) { gyVec3Normalize(&direction);  }
+	inline void LightSource::setAttrib(const LightAttrib* const attrib) { properties = (GYLightProperties*)attrib; }
+	inline void LightSource::setDirection(const GYVector3& dir) { gyVec3Normalize(&direction); direction = dir; }
+	inline void LightSource::setSpotCutoffAngle(const float angle) { spotCutoffAngle = angle; }
+	inline void LightSource::setLightType(const LIGHT_TYPE type) { _type = type; if(type == LIGHT_DIRECTIONAL) position.w = 0.0f; }
+	inline auto LightSource::getLightType(void) const -> LIGHT_TYPE { return _type; }
+	inline LightAttrib& LightSource::getLightAttrib(void) { return *static_cast<LightAttrib*>(properties); }
+
+}
+
+
+#endif // ELYSIAN_LIGHT_SOURCE_HPP

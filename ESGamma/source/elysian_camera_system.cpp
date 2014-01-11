@@ -5,27 +5,44 @@
 
 namespace elysian {
 
-CameraSystem::CameraSystem(void): _entity(NULL), _scrWidth(0), _scrHeight(0), 
-	_tileStartX(0), _tileEndX(0), _tileStartY(0), _tileEndY(0),
-	_scrStartX(0), _scrStartY(0), _scrEndX(0), _scrEndY(0) {
+CameraSystem::CameraSystem(void)  {
 	transform._pos.x = transform._pos.y = 200.0f;
+	//update();
 }
 
 void CameraSystem::PushTransform(void) {
+	GYVector4 pos = { transform._pos.x, transform._pos.y, transform.getPosZ(), 1.0f};
+/*
 	gyMatPush();
+	gyMatLoadIdentity();
 	gyMatTranslate(_scrWidth/2.0f, _scrHeight/2.0f, 0.0f);
 	gyMatScale(transform._scale.x, transform._scale.y, 1.0f);
 	gyMatRotateZ(transform._orientZ);
 	gyMatTranslate(-transform._pos.x, -transform._pos.y, 0.0f);
+	gyMatStore(&mat);
+	gyMatPop();
+
+	gyVidCameraSetTransform(mat);
+	gyVidCameraSetPosition(&pos);
+
+*/
+
+	gyVidCameraSetViewCenter(&pos, transform._scale.x, transform._orientZ);
 }
 
-void CameraSystem::Update(void) {
+void CameraSystem::PopTransform() {
+
+
+}
+
+void CameraSystem::update(void) {
 	//Update camera resolution
 	getGuiSys()->getResolution(_scrWidth, _scrHeight);
 
 	//Follow entities
 	if(_entity) {
 		transform.setPos(_entity->transform._pos);
+		transform.setPosZ(_entity->transform.getPosZ());
 	}
 
 	//Update tile rendering region
@@ -62,6 +79,12 @@ void CameraSystem::Transform(GYVector2* dest, const GYVector2* src) {
 
 	dest->x = out.x; dest->y = out.y;
 
+}
+
+void CameraSystem::Transform(GYVector4* dest, const GYVector4* src) {
+	PushTransform();
+	gyMatMultVec(src, dest, 1);
+	PopTransform();
 }
 
 bool CameraSystem::isOnscreen(const Entity &entity) {

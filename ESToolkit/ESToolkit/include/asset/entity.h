@@ -109,7 +109,7 @@ public slots:
 
 public:
 	Entity(elysian::Entity &parent);
-	~Entity(void);
+	virtual ~Entity(void) override;
 
 	//Selectable
 	virtual Selectable::TYPE getType(void) const { return Selectable::ENTITY; }
@@ -117,8 +117,8 @@ public:
 
 	//Should "technically" be decoupled. See .cpp for comment.
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-	virtual bool activate(void);
-	virtual bool deactivate(void);
+	virtual bool activate(void) override;
+	virtual bool deactivate(void) override;
 
 	void setPos(float x, float y);
 	void setPos(float x, float y, float z);

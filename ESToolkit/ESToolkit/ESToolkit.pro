@@ -6,6 +6,7 @@ TARGET = ESToolkit
 TEMPLATE = app
 QT		+= opengl
 QMAKE_CXXFLAGS += -std=c++11 -msse
+DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt
 CONFIG += c++11
 
 ICON = resource/images/estk.icns
@@ -100,7 +101,8 @@ SOURCES += source/asset/project.cpp \
     ../../AssetIO/source/elysian_asset.cpp \
     ../../AssetIO/source/elysian_area.cpp \
     ../../AssetIO/source/elysian_animation.cpp \
-    ../../AssetIO/source/elysian_audio_source.cpp
+    ../../AssetIO/source/elysian_audio_source.cpp \
+    ../../AssetIO/source/elysian_light_source.cpp
 HEADERS += include/asset/project.h \
     include/asset/level.h \
     include/asset/entity.h \
@@ -213,7 +215,8 @@ FORMS += \
     form/sheetManager/sheetmanager.ui \
     form/widget/historyDockWidget.ui \
     form/dialog/engineSettings.ui \
-    form/sheetManager/sheetManagerFileDockWidget.ui
+    form/sheetManager/sheetManagerFileDockWidget.ui \
+    ../../AssetIO/include/elysian_light_source.hpp
 
 #Create windows manifest requesting ESTk to be run as admin (to run dc-tool as admin)
 #win32 {

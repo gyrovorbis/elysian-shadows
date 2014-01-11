@@ -43,8 +43,11 @@ DEPENDPATH += ../../include \
     ../../lib/include \
     ../../../AssetIO/include \
     ../../../libGyro/include \
-    ../../../libGyro/include/kinetic \
-    ../../../OOLua/include
+	../../../libGyro/include/kinetic \
+	../../../libGyro/include/glal \
+	../../../OOLua/include \
+	../../../libGyro/source/glal/shaders \
+	../../../libGyro/include/x86
 
 HEADERS += \
     ../../include/elysian_warp_system.hpp \
@@ -115,7 +118,9 @@ HEADERS += \
     ../../../AssetIO/include/elysian_audio_source.hpp \
     ../../include/elysian_audio_system.hpp \
     ../../../AssetIO/include/elysian_generic.hpp \
-    ../../include/elysian_shader_manager.hpp
+    ../../include/elysian_shader_manager.hpp \
+    ../../../AssetIO/include/elysian_light_source.hpp \
+    ../../include/elysian_light_system.hpp
 
 macx {
   OBJECTIVE_HEADERS += ../../../libGyro/lib/osx/SDLMain.h
@@ -172,7 +177,9 @@ SOURCES += \
     ../../../AssetIO/source/elysian_audio_source.cpp \
     ../../source/elysian_audio_system.cpp \
     ../../source/elysian_shader_manager.cpp \
-    ../../../AssetIO/source/elysian_new.cpp
+    ../../../AssetIO/source/elysian_new.cpp \
+    ../../../AssetIO/source/elysian_light_source.cpp \
+    ../../source/elysian_light_system.cpp
 
 macx {
   OBJECTIVE_SOURCES += ../../../libGyro/lib/osx/SDLMain.mm
@@ -264,8 +271,8 @@ QMAKE_POST_LINK = cp -rf ../../../libGyro/source/glal/shaders/* ../../../Project
 
 macx {
 	CONFIG(release, debug|release) {
-		#DESTDIR = ../../../Project
-		#QMAKE_POST_LINK = "./ESGammaAppDereest.command"
+		DESTDIR = ../../../Project
+		QMAKE_POST_LINK = "./ESGammaAppDereest.command"
 	}
 
 }

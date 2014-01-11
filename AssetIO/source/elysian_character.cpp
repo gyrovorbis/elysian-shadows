@@ -78,7 +78,7 @@ void Character::face(const DIR4 dir) {
 
 void Character::face(Entity &entity) {
 	GYVector2 dist;
-	gyVec2Sub(&dist, &entity.transform._pos, &_entity->transform._pos);
+	gyVec2Sub(&dist, (GYVector2*)&entity.transform._pos, (GYVector2*)&_entity->transform._pos);
 	face(Direction::fromVector(dist));
 }
 

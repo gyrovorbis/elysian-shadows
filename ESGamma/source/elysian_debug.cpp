@@ -27,6 +27,8 @@
 #include "elysian_adventure_log.hpp"
 #include "elysian_lua_behavior.hpp"
 #include "elysian_audio_source.hpp"
+#include "elysian_light_source.hpp"
+#include "elysian_light_system.hpp"
 
 namespace elysian {
 
@@ -129,6 +131,14 @@ Debug::~Debug(void) {
 	_dbgFile.close();
 }
 
+LightSource* lightSrc;
+#if 1
+GYVector3 dirVec = { -1.0f, 0.0f, 0.0f };
+#else
+GYVector3 dirVec = { 0.0f, 0.0f, -1.0f };
+
+#endif
+
 bool Debug::sandboxInit(void) {
 	//Fuck the current loading paradigm. Initialization happens here for now.
 	printf(VERBOSE, "Debug::sandboxInit()");
@@ -138,8 +148,11 @@ bool Debug::sandboxInit(void) {
 	LuaManager::runScriptSandbox(ELYSIAN_GLOBAL_INIT_LUA_PATH);
 	Entity* leader = getPartySys()->getPartyLeader();
 	if(leader) {
-		leader->transform.setPos(_cmdLineArgs.x, _cmdLineArgs.y, ELYSIAN_ZCOORD_OBJECT2+10.0f);
+		leader->transform.setPos(_cmdLineArgs.x, _cmdLineArgs.y);
+		leader->transform._size.z = 64.0f;
 	}
+
+	//LightSource* lightSrc = leader->addLightSource();
 
 	pop();
 	return true;
@@ -159,6 +172,8 @@ void Debug::render(void) {
 void Debug::update(void) {
 
 }
+
+static LightSource* src;
 
 void Debug::processInput(const GameInput& input) {
 	//Camera zoom/rotate
@@ -180,7 +195,7 @@ void Debug::processInput(const GameInput& input) {
 	}
 
 	//Rendering layers
-	if(input.getTapped(GameInput::BUT_0)) {
+	/*if(input.getDown(GameInput::BUT_0)) {
 		if(_engine->_guiSystem->adventureLog.isEnabled()) {
 			_engine->_guiSystem->adventureLog.disable();
 			printf(VERBOSE, "Disable GUI Layer");
@@ -188,7 +203,7 @@ void Debug::processInput(const GameInput& input) {
 			_engine->_guiSystem->adventureLog.enable();
 			printf(VERBOSE, "Enable GUI Layer");
 		}
-	}
+	}*/
 	if(input.getTapped(GameInput::BUT_1)) {
 		bool render = _engine->_mapSystem->toggleRenderLayer(0);
 		printf(VERBOSE, "Render Layer 1 - %s", (render)? "enabled" : "disabled");
@@ -205,8 +220,15 @@ void Debug::processInput(const GameInput& input) {
 		bool render = _engine->_mapSystem->toggleRenderLayer(3);
 		printf(VERBOSE, "Render Layer 4 - %s", (render)? "enabled" : "disabled");
 	}
-	if(input.getTapped(GameInput::BUT_5)) {
-		CollisionSystem::RENDER_LAYER layer = _engine->_collisionSystem->cycleRenderLayer();
+
+		GYVector4 tempVec;
+	if(input.getDown(GameInput::BUT_0)) {
+
+		GYWav* wav = gyAudWavCreate("phone`.wav");
+		getAudioSys()->playSfxChannel(0, *wav);
+		//getAudioSys()->setSfxChannelLooping(0, true);
+
+		/*CollisionSystem::RENDER_LAYER layer = _engine->_collisionSystem->cycleRenderLayer();
 		switch(layer) {
 		case CollisionSystem::RENDER_DISABLED:
 			printf(VERBOSE, "Render Collision Layer - Disabled");
@@ -224,12 +246,48 @@ void Debug::processInput(const GameInput& input) {
 			printf(VERBOSE, "Render Collision Layer - Combined");
 			break;
 		default: break;
-		}
+		}*/
+		dirVec.x -= 0.1f;
+		gyVec3Normalize(&dirVec);
+		src->setDirection(dirVec);
+		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
+
+	}
+
+	if(input.getDown(GameInput::BUT_5)) {
+		dirVec.z += 0.1f;
+		gyVec3Normalize(&dirVec);
+		src->setDirection(dirVec);
+		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
+	}
+	if(input.getDown(GameInput::BUT_6)) {
+		dirVec.z -= 0.1f;
+		gyVec3Normalize(&dirVec);
+		src->setDirection(dirVec);
+		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
+	}
+	if(input.getDown(GameInput::BUT_7)) {
+		dirVec.y += 0.1f;
+		gyVec3Normalize(&dirVec);
+		src->setDirection(dirVec);
+		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
+	}
+	if(input.getDown(GameInput::BUT_8)) {
+		dirVec.y -= 0.1f;
+		gyVec3Normalize(&dirVec);
+		src->setDirection(dirVec);
+		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
+	}
+	if(input.getDown(GameInput::BUT_9)) {
+		dirVec.x += 0.1f;
+		gyVec3Normalize(&dirVec);
+		src->setDirection(dirVec);
+		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
 	}
 
 	//VRAM and Audio Stats
 	if(input.getTapped(GameInput::BUT_Z)) {
-		gyVidTexWalkthrough();
+		//gyVidTexWalkthrough();
 		//getAudioSys()->morphIntoBgmTrack(1, 5.0f);
 		//getAudioSys()->fadeIntoBgmTrack(1, 5.0f);
 		//getAudioSys()->morphIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop2.ogg");
@@ -238,15 +296,130 @@ void Debug::processInput(const GameInput& input) {
 		//getAudioSys()->fadeInAuxTrack(0, 5.0f);
 		//getAudioSys()->fadeIntoNewAuxTrack(0, 5.0f, "audio/music/RainThunder.ogg");
 		//getAudioSys()->playBgmTrack();
+
+		Entity* entity = new Entity();
+		LightSource* lightSrc = entity->addLightSource();
+		lightSrc->setLightType(LightSource::LIGHT_DIRECTIONAL);
+		lightSrc->setDirection(GYVector3{0.5f, -1.0f, -0.5f});
+		LightAttrib* attrib = new LightAttrib;
+		//attrib->setAmbientColor(GYVector4{ 0.3f, 0.3f, 0.3f, 1.0f});
+		attrib->setDiffuseColor(GYVector4{ 0.4f, 0.4f, 0.4f, 0.0f });
+		//attrib->setSpecularColor(GYVector4{ 0.0f, 0.0f, 1.0f, 1.0f});
+		//attrib->setAmbientColor(GYVector4{ 1.0f, 1.0f, 1.0f, 1.0f});
+		lightSrc->setAttrib(attrib);
+		_curArea->addEntity(entity);
+
+
+		entity = new Entity();
+		entity->transform.setPos(500.0f*2.0f, 500.0f*2.0f-100.0f);
+		entity->transform.setPosZ(32.0f);
+		lightSrc = entity->addLightSource();
+		lightSrc->setDirection(GYVector3{1.0f, 0.0f, -1.0f});
+		attrib = new LightAttrib;
+		attrib->setDiffuseColor(GYVector4{ 0.0f, 2.0f, 0.5f, 1.0f });
+		attrib->setSpecularColor(GYVector4{ 0.0f, 0.0f, 1.0f, 1.0f});
+		lightSrc->setAttrib(attrib);
+		//lightSrc->setSpotCutoffAngle(80.0f);
+		//attrib->setAttenuationFactors(GYVector3{ 0.000005f, 0.000005f, 0.000005f });
+		attrib->setSpotExponent(4.0f);
+		_curArea->addEntity(entity);
+
+		entity = new Entity();
+		entity->transform.setPos(500.0f*2.0f-300.0f, 500.0f*2.0f-100.0f);
+		entity->transform.setPosZ(10.0f);
+		lightSrc = entity->addLightSource();
+		attrib = new LightAttrib;
+		attrib->setDiffuseColor(GYVector4{ 0.0f, 0.0f, 2.0f, 1.0f });
+		attrib->setSpecularColor(GYVector4{ 0.0f, 0.0f, 1.0f, 1.0f});
+		lightSrc->setDirection(GYVector3{0.0f, 0.0f, -1.0f});
+		//lightSrc->setSpotCutoffAngle(80.0f);
+		//attrib->setAttenuationFactors(GYVector3{ 0.000005f, 0.000005f, 0.000005f });
+		attrib->setSpotExponent(4.0f);
+		lightSrc->setAttrib(attrib);
+		_curArea->addEntity(entity);
+
+
 	}
 	if(input.getTapped(GameInput::BUT_X)) {
+		static int enabled = 0;
+		static int once = 0;
+
+		if(!enabled) {
+			if(!once) {
+				Entity* entity = _curArea->findEntity("Julien");
+				//curArea->addEntity(entity);
+				//entity->transform.setPos(600, 600);
+				//entity->setDepthType(DEPTH_BUFFERED);
+				src = lightSrc = entity->addLightSource();
+				gyVec3Normalize(&dirVec);
+				lightSrc->setDirection(dirVec);
+				LightAttrib* attrib = new LightAttrib;
+				//attrib->setAmbientColor(GYVector4{ 0.3f, 0.3f, 0.3f, 1.0f});
+				attrib->setDiffuseColor(GYVector4{ 1.4f, 0.3f, 0.3f, 1.0f });
+				attrib->setSpecularColor(GYVector4{ 0.0f, 0.0f, 1.0f, 1.0f});
+				//attrib->setAmbientColor(GYVector4{ 1.0f, 1.0f, 1.0f, 1.0f});
+				lightSrc->setAttrib(attrib);
+
+#if 0
+				lightSrc->setLightType(LightSource::LIGHT_DIRECTIONAL);
+#else
+				lightSrc->setSpotCutoffAngle(80.0f);
+				attrib->setAttenuationFactors(GYVector3{ 0.000005f, 0.000005f, 0.000005f });
+				attrib->setSpotExponent(4.0f);
+#endif
+
+				once = 1;
+			} else {
+				lightSrc = src;
+			}
+		} else {
+			lightSrc = nullptr;
+		}
+
+		enabled = !enabled;
+
 		//getAudioSys()->morphIntoBgmTrack(0, 5.0f);
 		//getAudioSys()->fadeIntoBgmTrack(0, 5.0f);
 		//getAudioSys()->stopBgmTrack();
 		//getAudioSys()->morphIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop1.ogg");
 		//getAudioSys()->fadeIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop1.ogg");
 		//getAudioSys()->fadeOutAuxTrack(0, 5.0f);
-		gyAudWavWalkthrough();
+		//gyAudWavWalkthrough();
+
+
+		/*
+		Entity* entity = new Entity;
+		_curArea->addEntity(entity);
+		entity->transform.setPos(600, 600);
+		entity->setDepthType(DEPTH_BUFFERED);
+		LightSource* lightSrc = entity->addLightSource();
+		lightSrc->setSpotCutoffAngle(360.0f);
+		LightAttrib* attrib = new LightAttrib;
+		attrib->setDiffuseColor(GYVector4{ 0.2f, 2.0f, 0.4f, 1.0f });
+		attrib->setAttenuationFactors(GYVector3{ 0.0, 0.000001, 0.000015 });
+		lightSrc->setAttrib(attrib);
+
+		entity = new Entity;
+		_curArea->addEntity(entity);
+		entity->setDepthType(DEPTH_BUFFERED);
+		entity->transform.setPos(400, 900);
+		lightSrc = entity->addLightSource();
+		lightSrc->setSpotCutoffAngle(360.0f);
+		attrib = new LightAttrib;
+		attrib->setDiffuseColor(GYVector4{ 0.4f, 0.2f, 2.0f, 1.0f });
+		attrib->setAttenuationFactors(GYVector3{ 0.0, 0.000001, 0.000015 });
+		lightSrc->setAttrib(attrib);
+
+		entity = new Entity;
+		_curArea->addEntity(entity);
+		entity->transform.setPos(700, 900);
+		entity->setDepthType(DEPTH_BUFFERED);
+		lightSrc = entity->addLightSource();
+		lightSrc->setSpotCutoffAngle(360.0f);
+		attrib = new LightAttrib;
+		attrib->setDiffuseColor(GYVector4{ 1.5f, 1.0f, 0.3f, 1.0f });
+		attrib->setAttenuationFactors(GYVector3{ 0.0, 0.000001, 0.000015 });
+		lightSrc->setAttrib(attrib);*/
 	}
 
 	//Elevate player

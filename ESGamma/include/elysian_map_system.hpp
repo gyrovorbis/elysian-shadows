@@ -7,6 +7,7 @@
 #include "elysian_entity.hpp"
 #include "elysian_level.hpp"
 #include "elysian_zcoords.hpp"
+#include "elysian_renderable.hpp"
 #include <gyro.h>
 /*
 //Objects have integer zCoords, force Entities to floats to prevent duplicate z
@@ -92,7 +93,7 @@ namespace elysian {
 	}
 	
 	inline float MapSystem::getBaseZCoord(void) const {
-		return ZCoordConstants::object1;
+		return ZCoordConstants::mapBase;
 	}
 	
 	inline void MapSystem::getObjectLayerEntry(const unsigned /*x*/, const unsigned /*y*/, MapDepthBuffEntry &entry) const {
@@ -104,19 +105,29 @@ namespace elysian {
 		if(!_renderLayer[entry.layer]) return; //Don't render if this layer has been toggled off.
 
 		gyMatPush();
-		gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z, 32.0f, 32.0f, 1.0f);
+		gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z, 32.0f, 32.0f, 32.0f);
 		gyVidRectTexOrient(entry.mapEntry.getOrient());
+		gyVidRectNormalType((entry.mapEntry.getElev() > 0)? GY_RECT_NORMAL_DEPTH : GY_RECT_NORMAL_FLAT);
 		gyVidRect(_animTiles[((TileEntry *)&entry.mapEntry)->getIndex()].curIndex);
+
+/*		if(entry.mapEntry.getElev() > 0) {
+			gyVidNormalArray(Renderable::depthNormals);
+			gyVidQuad(Renderable::depthRectVerts, _animTiles[((TileEntry *)&entry.mapEntry)->getIndex()].curIndex);
+		} else {
+			gyVidRect(_animTiles[((TileEntry *)&entry.mapEntry)->getIndex()].curIndex);
+		}*/
 		gyMatPop();
 	}
 	
 	inline void MapSystem::beginObjectList(void) const {
 		gyVidTexBind(_curLevel->tileSheet);
+		gyVidNormalMapBind(_curLevel->normalSheet);
 		gyVidQuadListBegin(&_tileColor);
 	}
 	
 	inline void MapSystem::endObjectList(void) const {
 		gyVidQuadListEnd();
+		gyVidNormalMapBind(nullptr);
 	}
 	
 	inline unsigned MapSystem::getEntityCount(void) const {
@@ -136,7 +147,9 @@ namespace elysian {
 	}
 	
 	inline void MapSystem::renderEntityEntry(const GammaEntityDepthBuffEntry &entry) const {
-		entry.entity->renderAtZ(entry.zCoord);
+		//entry.entity->renderAtZ(entry.zCoord);
+		entry.entity->transform.setPosZ(entry.zCoordWorld);
+		entry.entity->render();
 	}
 
 }

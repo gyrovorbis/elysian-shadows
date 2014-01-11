@@ -11,6 +11,7 @@
 #define ELYSIAN_LEVEL_PATH_SIZE			200
 #define ELYSIAN_TILESET_PATH			"/tile/tileset.txt"
 #define ELYSIAN_TILESHEET_PATH			"/tile/tilesheet.png"
+#define ELYSIAN_NORMALSHEET_PATH		"/tile/normalsheet.png"
 #define ELYSIAN_LEVEL_INIT_LUA_PATH		"/level_init.lua"
 #define ELYSIAN_TILESHEET_WIDTH			512
 #define ELYSIAN_TILESHEET_HEIGHT		1024
@@ -28,9 +29,10 @@ namespace elysian {
         char			name[ELYSIAN_LEVEL_NAME_SIZE];
         char            string[ELYSIAN_LEVEL_STRING_SIZE];
 #ifdef ELYSIAN_ENGINE
-		GYTexture *tileSheet;
+		GYTexture* tileSheet		= nullptr;
+		GYTexture* normalSheet		= nullptr;
 #endif
-		unsigned short	tileAmount;
+		unsigned short	tileAmount	= ELYSIAN_TILESHEET_TILES;
 		
         //lookup tables of attributes
         //palette table(s)
@@ -43,7 +45,6 @@ namespace elysian {
 		const char *getName(void) const;
 		const char *getPath(void) const;
 
-        Level(void);
 		~Level(void);
 		bool load(const char *const dir);
 		bool save(const char *const dir);

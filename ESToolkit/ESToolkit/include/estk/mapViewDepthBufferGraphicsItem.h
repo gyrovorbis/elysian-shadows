@@ -61,7 +61,7 @@ inline void MapViewDepthBufferGraphicsItem::getOnscreenTileRegion(unsigned &star
 }
 
 inline float MapViewDepthBufferGraphicsItem::getBaseZCoord(void) const {
-	return elysian::ZCoordConstants::object1;
+	return elysian::ZCoordConstants::mapBase;
 }
 
 inline void MapViewDepthBufferGraphicsItem::getObjectLayerEntry(const unsigned x, const unsigned y, ESTkTileDepthBuffEntry &entry) {

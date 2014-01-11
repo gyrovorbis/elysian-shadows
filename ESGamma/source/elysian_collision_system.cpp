@@ -225,7 +225,7 @@ void CollisionSystem::renderTileColliders(void) const {
 			if(colType == Tile::COLLIDER_NONE && !isZTran) continue;
 
 			gyMatPush();
-			gyMatTranslateScale(x*32.0f, y*32.0f, ELYSIAN_ZCOORD_FG, 32.0f, 32.0f, 1.0f);
+			gyMatTranslateScale(x*32.0f, y*32.0f, ZCoordConstants::fg1, 32.0f, 32.0f, 1.0f);
 			
 			if(isZTran) {
 				gyVidQuadListBegin(&zTranColor);
@@ -651,12 +651,12 @@ bool CollisionSystem::resolvePenetration(void) {
 
 /**** TAKEN FROM C PENETRATION RESOLUTION *****/
 		CollisionContact *con = &_contactPool[deepestIndex];
-		gyVec2AddAccum(&con->_bodyA->getEntity()->transform._pos, &posDelta[0]);
+		gyVec2AddAccum((GYVector2*)&con->_bodyA->getEntity()->transform._pos, &posDelta[0]);
         //con->_bodyA->getEntity()->move(posDelta[0]);
 		con->_bodyA->getEntity()->transform._orientZ += orientDelta[0];
 
 		if(con->staticAttrib[1]) {
-			gyVec2AddAccum(&con->_bodyB->getEntity()->transform._pos, &posDelta[1]);
+			gyVec2AddAccum((GYVector2*)&con->_bodyB->getEntity()->transform._pos, &posDelta[1]);
             //con->_bodyB->getEntity()->move(posDelta[1]);
 			con->_bodyB->getEntity()->transform._orientZ += orientDelta[1];
 		}

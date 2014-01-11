@@ -11,14 +11,6 @@ namespace elysian {
     
 	static char buffer[ELYSIAN_LEVEL_PATH_SIZE+50];
 
-	Level::Level(void): 
-#ifdef ELYSIAN_ENGINE
-		tileSheet(NULL),
-#endif
-		tileAmount(ELYSIAN_TILESHEET_TILES) 
-	{
-	}
-
 	Level::~Level(void) { 
 #ifdef ELYSIAN_ENGINE
 		gyVidTexDestroy(tileSheet);
@@ -51,6 +43,23 @@ namespace elysian {
 			dbgprintf(LOG_CRITICAL, "FAILURE!");
 		}
 		dbgPop();
+
+		strcpy(buffer, dir);
+		strcat(buffer, ELYSIAN_NORMALSHEET_PATH);
+		dbgprintf(LOG_VERBOSE, "Level::LoadNormalSheet(%s)", buffer);
+		dbgPush();
+		if(!(normalSheet = gyVidTexCreateSheetUniform(gyFilePath(buffer),
+													   ELYSIAN_TILESHEET_WIDTH,
+													   ELYSIAN_TILESHEET_HEIGHT,
+													   ELYSIAN_TILE_WIDTH,
+													   ELYSIAN_TILE_HEIGHT)))
+		{
+			success = false;
+			dbgprintf(LOG_CRITICAL, "FAILURE!");
+		}
+		dbgPop();
+
+
 
 #	ifdef ELYSIAN_ENGINE
 		strcpy(buffer, dir);
