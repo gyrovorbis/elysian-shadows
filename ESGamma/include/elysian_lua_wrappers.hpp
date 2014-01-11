@@ -78,6 +78,7 @@ namespace OOLUA
 	typedef elysian::AudioSystem				AudioSystem;
 	typedef elysian::LevelSystem				LevelSystem;
 	typedef elysian::LuaBehaviorScriptAttrib	LuaBehaviorScriptAttrib;
+	typedef elysian::Direction					Direction;
 }
 
 OOLUA_PROXY(LuaBehaviorScriptAttrib)
@@ -212,6 +213,7 @@ OOLUA_PROXY(Renderable, Component)
 	OOLUA_MEM_FUNC(void, setFrame, unsigned)
 	OOLUA_MEM_FUNC_CONST(SpriteAttrib*, getSpriteAttrib)
 	OOLUA_MEM_FUNC(void, setSpriteAttrib, cpp_in_p<SpriteAttrib*>)
+	OOLUA_MEM_FUNC_CONST(QuadSpriteAttrib*, getQuadSpriteAttrib)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(AnimationSequence)
@@ -280,13 +282,23 @@ OOLUA_PROXY(Collidable, Component)
 	OOLUA_MEM_FUNC(void, setResolvePenetration, bool)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(Direction)
+	OOLUA_TAGS (
+		No_public_constructors,
+		No_public_destructor
+	)
+OOLUA_PROXY_END
+
 OOLUA_PROXY(Character, Component)
 	OOLUA_TAGS (
 		No_public_constructors,
 		No_public_destructor
 	)
-	OOLUA_MEM_FUNC(void, face, Entity&)
+	OOLUA_MEM_FUNC(void, faceEntity, Entity&)
+	OOLUA_MEM_FUNC(void, faceDir, Direction::DIR4)
 	OOLUA_MEM_FUNC(void, move, const GYVector2&)
+	OOLUA_MEM_FUNC_CONST(bool, isFacing, const Entity&)
+	OOLUA_MEM_FUNC_CONST(Direction::DIR4, getFaceDir)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Warp, Component)
@@ -384,7 +396,7 @@ OOLUA_PROXY(Area)
 	OOLUA_MEM_FUNC(void, setTileEntry, unsigned, unsigned, unsigned, TileEntry)
 	OOLUA_MEM_FUNC(void, addEntity, cpp_in_p<Entity*>)
 	OOLUA_MEM_FUNC(void, removeEntity, in_out_p<Entity*>)
-	OOLUA_MEM_FUNC(Entity*, findEntity, const char*)
+	OOLUA_MEM_FUNC(maybe_null<Entity*>, findEntity, const char*)
 	OOLUA_MEM_FUNC_CONST(unsigned short, getMapWidth);
 	OOLUA_MEM_FUNC_CONST(unsigned short, getMapHeight);
 OOLUA_PROXY_END
@@ -419,6 +431,7 @@ OOLUA_PROXY(TimerSystem)
 	OOLUA_MFUNC_CONST(getTotalTicks)
 	OOLUA_MFUNC_CONST(getCurrentFrameTicks)
 	OOLUA_MFUNC_CONST(getDeltaTime)
+	OOLUA_MFUNC_CONST(getTotalTime)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(LevelSystem)
@@ -574,7 +587,6 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 	s->register_class_static<Tile>("COLLIDER_45DEG_NW", Tile::COLLIDER_45DEG_NW);
 	s->register_class_static<Tile>("COLLIDER_45DEG_SW", Tile::COLLIDER_45DEG_SW);
 
-
 	//GameInput::BUTTONS
 	typedef OOLUA::GameInput GameInput;
 	s->register_class_static<GameInput>("BUT_NONE", GameInput::BUT_NONE);
@@ -619,8 +631,25 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 	s->register_class_static<GameInput>("BUT_8", GameInput::BUT_8);
 	s->register_class_static<GameInput>("BUT_9", GameInput::BUT_9);
 	s->register_class_static<GameInput>("BUT_ESC", GameInput::BUT_ESC);
+	s->register_class_static<GameInput>("BUT_SPACE", GameInput::BUT_SPACE);
+	s->register_class_static<GameInput>("BUT_RETURN", GameInput::BUT_RETURN);
+	s->register_class_static<GameInput>("BUT_LSHIFT", GameInput::BUT_LSHIFT);
+	s->register_class_static<GameInput>("BUT_RSHIFT", GameInput::BUT_RSHIFT);
+	s->register_class_static<GameInput>("BUT_LCTRL", GameInput::BUT_LCTRL);
+	s->register_class_static<GameInput>("BUT_RCTRL", GameInput::BUT_RCTRL);
+	s->register_class_static<GameInput>("BUT_LALT", GameInput::BUT_LALT);
+	s->register_class_static<GameInput>("BUT_RALT", GameInput::BUT_RALT);
+	s->register_class_static<GameInput>("BUT_BACKQUOTE", GameInput::BUT_BACKQUOTE);
 	s->register_class_static<GameInput>("BUT_MAX", GameInput::BUT_MAX);
 
+
+	//Direction::DIR4
+	typedef OOLUA::Direction Direction;
+	s->register_class_static<Direction>("DIR4_CENTER", Direction::DIR4_CENTER);
+	s->register_class_static<Direction>("DIR4_LEFT", Direction::DIR4_LEFT);
+	s->register_class_static<Direction>("DIR4_RIGHT", Direction::DIR4_RIGHT);
+	s->register_class_static<Direction>("DIR4_UP", Direction::DIR4_UP);
+	s->register_class_static<Direction>("DIR4_DOWN", Direction::DIR4_DOWN);
 }
 
 

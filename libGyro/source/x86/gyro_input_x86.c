@@ -103,6 +103,24 @@ static inline GY_X86_KEY _TranslateFromSDL(const SDLKey keyCode) {
 		return GY_KEY_8;
 	case SDLK_9:
 		return GY_KEY_9;
+	case SDLK_SPACE:
+		return GY_KEY_SPACE;
+	case SDLK_RETURN:
+		return GY_KEY_RETURN;
+	case SDLK_LSHIFT:
+		return GY_KEY_LSHIFT;
+	case SDLK_RSHIFT:
+		return GY_KEY_RSHIFT;
+	case SDLK_LCTRL:
+		return GY_KEY_LCTRL;
+	case SDLK_RCTRL:
+		return GY_KEY_RCTRL;
+	case SDLK_LALT:
+		return GY_KEY_LALT;
+	case SDLK_RALT:
+		return GY_KEY_RALT;
+	case SDLK_BACKQUOTE:
+		return GY_KEY_BACKQUOTE;
     default:
         return GY_KEY_NONE;
     }

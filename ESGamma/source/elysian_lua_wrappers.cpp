@@ -156,10 +156,11 @@ EXPORT_OOLUA_FUNCTIONS_3_NON_CONST(Renderable,
 								   setFrame,
 								   setOffset,
 								   setSpriteAttrib)
-EXPORT_OOLUA_FUNCTIONS_3_CONST(Renderable,
+EXPORT_OOLUA_FUNCTIONS_4_CONST(Renderable,
 							   getFrame,
 							   getOffset,
-							   getSpriteAttrib)
+							   getSpriteAttrib,
+							   getQuadSpriteAttrib)
 
 EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(AnimationSequence,
 								   addFrame)
@@ -214,10 +215,16 @@ EXPORT_OOLUA_FUNCTIONS_2_CONST(Collidable,
 							   getAttrib,
 							   getContactCount)
 
-EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(Character,
-								   face,
+EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Direction)
+EXPORT_OOLUA_FUNCTIONS_0_CONST(Direction)
+
+EXPORT_OOLUA_FUNCTIONS_3_NON_CONST(Character,
+								   faceEntity,
+								   faceDir,
 								   move)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(Character)
+EXPORT_OOLUA_FUNCTIONS_2_CONST(Character,
+							   getFaceDir,
+							   isFacing)
 
 EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(Warp,
 								   setToPos,
@@ -297,7 +304,8 @@ EXPORT_OOLUA_FUNCTIONS_2_CONST(GameInput,
 OOLUA_EXPORT_FUNCTIONS_CONST(TimerSystem,
 								getTotalTicks,
 								getCurrentFrameTicks,
-								getDeltaTime)
+								getDeltaTime,
+								getTotalTime)
 OOLUA_EXPORT_FUNCTIONS(TimerSystem)
 
 

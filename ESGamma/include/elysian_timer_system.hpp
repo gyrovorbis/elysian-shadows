@@ -18,6 +18,7 @@ namespace elysian {
 		unsigned long int _prevFrameTicks;
 		unsigned long int _curFrameTicks;
 		float _deltaTime;
+		double _totalTime;
         bool _enableMaxFramerate, _enableMinFramerate;
 		float _maxFramerate, _minFramerate;
 
@@ -31,6 +32,7 @@ namespace elysian {
 		unsigned long int getTotalTicks(void) const;
 		unsigned long int getPreviousFrameTicks(void) const;
 		unsigned long int getCurrentFrameTicks(void) const;
+		double getTotalTime(void) const;
 		float getDeltaTime(void) const;
        // bool getLimitFramerate(void) const { return _limitFramerate; }
        // void setLimitFramerate(const bool val=true) { _limitFramerate = val; }
@@ -41,6 +43,8 @@ namespace elysian {
 	//===== INLINEZ ======
 
 	inline unsigned long int TimerSystem::getTotalTicks(void) const { return _totalTicks; }
+
+	inline double TimerSystem::getTotalTime(void) const { return _totalTime; }
 
 
 	inline unsigned long int TimerSystem::getPreviousFrameTicks(void) const {

@@ -3,12 +3,10 @@
 
 #include "elysian_component.hpp"
 #include "elysian_entity.hpp"
-#include "elysian_sprite_attrib.hpp"
+#include "elysian_quad_sprite_attrib.hpp"
 #include <gyro.h>
 
 namespace elysian {
-
-	class SpriteAttrib;
 
 	/*ONLY SUPPORTS SPRITE PRIMITIVES NOW!
 	  The old mechanism for supporting others was totally fucking reested and not worth
@@ -88,6 +86,7 @@ namespace elysian {
 		inline void getOffset(GYVector2 &offset) const { offset = _offset; } 
 
 		inline SpriteAttrib *getSpriteAttrib(void) const { return _spriteAttrib; }
+		inline QuadSpriteAttrib* getQuadSpriteAttrib(void) const { return static_cast<QuadSpriteAttrib*>(_spriteAttrib); }
 		inline void setSpriteAttrib(SpriteAttrib *const attrib) { _spriteAttrib = attrib; if(attrib) _frame = attrib->_frame;}
 		
 	};

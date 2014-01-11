@@ -68,6 +68,8 @@ void TimerSystem::update(void) {
 
 	//Reset circular buffer when it fills up
 	if(++_buffIndex >= DELTA_TIME_CIRC_BUFFER_SIZE) _buffIndex = 0; 
+
+	_totalTime += _deltaTime;
 }
 
 }
