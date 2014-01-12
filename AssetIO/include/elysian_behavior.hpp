@@ -26,7 +26,7 @@ namespace elysian {
 		static void registerCreator(const char*typeName, Behavior* (*const func)(Entity&));
 		
 		Behavior(Entity& parent);
-		virtual ~Behavior(void);
+		virtual ~Behavior(void) override;
 		
 		uint64_t _triggerBits = 0;
 		
@@ -48,8 +48,10 @@ namespace elysian {
 			ON_COLLISION_EXIT	= 1<<12,
 			ON_EXAMINE			= 1<<13,
 			ON_DIALOG			= 1<<14,
-			TRIGGER_MAX			= 1<<115
+			TRIGGER_MAX			= 1<<15
 		};
+
+		static const char* triggerNameFromFlag(const uint64_t flag);
 
 		virtual const char *getBehavName(void) const = 0;
 		

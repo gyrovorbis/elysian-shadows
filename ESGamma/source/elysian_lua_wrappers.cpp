@@ -38,6 +38,7 @@ namespace elysian {
 		_mainState->register_class<AudioSource>();
 		_mainState->register_class<AudioSystem>();
 		_mainState->register_class<LevelSystem>();
+		_mainState->register_class<Direction>();
 
 		//Register C and static member functions
 		lua_register(*_mainState, "print", &print);
@@ -172,12 +173,16 @@ EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(AnimationAttrib,
 								   addSequence)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(AnimationAttrib)
 
-EXPORT_OOLUA_FUNCTIONS_3_NON_CONST(Animation,
+EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(Animation,
 								   setAttrib,
 								   playAnimation,
-								   stopAnimation)
-EXPORT_OOLUA_FUNCTIONS_1_CONST(Animation,
-							   getAttrib)
+								   stopAnimation,
+								   setLooping,
+								   setCurrentFrame)
+EXPORT_OOLUA_FUNCTIONS_3_CONST(Animation,
+							   getAttrib,
+							   isLooping,
+							   getCurrentFrame)
 
 EXPORT_OOLUA_FUNCTIONS_4_NON_CONST(CollisionFlags,
 								   resetType,

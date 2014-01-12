@@ -239,6 +239,10 @@ OOLUA_PROXY(Animation, Component)
 	OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<AnimationAttrib *>)
 	OOLUA_MEM_FUNC(void, playAnimation, const char*)
 	OOLUA_MEM_FUNC(void, stopAnimation)
+	OOLUA_MEM_FUNC_CONST(bool, isLooping)
+	OOLUA_MEM_FUNC(void, setLooping, bool)
+	OOLUA_MEM_FUNC_CONST(unsigned, getCurrentFrame)
+	OOLUA_MEM_FUNC(void, setCurrentFrame, const unsigned)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CollisionFlags)
@@ -642,6 +646,8 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 	s->register_class_static<GameInput>("BUT_LALT", GameInput::BUT_LALT);
 	s->register_class_static<GameInput>("BUT_RALT", GameInput::BUT_RALT);
 	s->register_class_static<GameInput>("BUT_BACKQUOTE", GameInput::BUT_BACKQUOTE);
+	s->register_class_static<GameInput>("BUT_BACKQUOTE", GameInput::BUT_BACKSLASH);
+	s->register_class_static<GameInput>("BUT_BACKQUOTE", GameInput::BUT_FORWARDSLASH);
 	s->register_class_static<GameInput>("BUT_MAX", GameInput::BUT_MAX);
 
 
@@ -682,7 +688,7 @@ static inline int print(lua_State* const l) {
 				continue;
 		}
 
-        //strcat(string, " ");
+		strcat(string, " ");
 
 	}
 

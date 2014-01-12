@@ -121,6 +121,10 @@ static inline GY_X86_KEY _TranslateFromSDL(const SDLKey keyCode) {
 		return GY_KEY_RALT;
 	case SDLK_BACKQUOTE:
 		return GY_KEY_BACKQUOTE;
+	case SDLK_BACKSLASH:
+		return GY_KEY_BACKSLASH;
+	case SDLK_SLASH:
+		return GY_KEY_FORWARDSLASH;
     default:
         return GY_KEY_NONE;
     }

@@ -28,6 +28,48 @@ Behavior* Behavior::create(const char* typeName, Entity& parent) {
 	return _creators[typeName](parent);
 }
 
+const char* Behavior::triggerNameFromFlag(const uint64_t flag) {
+	static char buff[20];
+
+	switch(flag) {
+	case ON_SCRIPT_CREATE:
+		return "ON_SCRIPT_CREATE";
+	case ON_SCRIPT_DESTROY:
+		return "ON_SCRIPT_DESTROY";
+	case ON_CREATE:
+		return "ON_CREATE";
+	case ON_DESTROY:
+		return "ON_DESTROY";
+	case ON_LOAD:
+		return "ON_LOAD";
+	case ON_UNLOAD:
+		return "ON_UNLOAD";
+	case ON_ENTER:
+		return "ON_ENTER";
+	case ON_EXIT:
+		return "ON_EXIT";
+	case ON_UPDATE:
+		return "ON_UPDATE";
+	case ON_RENDER:
+		return "ON_RENDER";
+	case ON_COLLIDE:
+		return "ON_COLLIDE";
+	case ON_COLLISION_ENTER:
+		return "ON_COLLISION_ENTER";
+	case ON_COLLISION_EXIT:
+		return "ON_COLLISION_EXIT";
+	case ON_EXAMINE:
+		return "ON_EXAMINE";
+	case ON_DIALOG:
+		return "ON_DIALOG";
+	case TRIGGER_MAX:
+		return "TRIGGER_MAX";
+	default:
+		sprintf(buff, "INVALID (%llu)", flag);
+		return buff;
+	}
+}
+
 //----NONSTATIC----
 	
 void Behavior::onCreate(void) { dbgprintf(LOG_CRITICAL, "Behavior::onCreate() - Unimplemented for '%s'.\n", getBehavName()); }

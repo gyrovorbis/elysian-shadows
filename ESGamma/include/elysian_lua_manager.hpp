@@ -119,6 +119,8 @@ namespace elysian {
 		static bool					unloadScript(LuaScript &script);
 		static bool					runScriptSandbox(const char *const file, LuaScript* const script=nullptr);
 
+		static void					runGarbageCollector(void);
+		static void					dumpStats(void);
 	};
 
 
@@ -133,6 +135,7 @@ namespace elysian {
 				_cStackDump();
 				lua_remove(*_mainState, lua_gettop(*_mainState));		//clean up stack after reesting
 				_envDump(script);
+				dumpStats();
 			}
 		} else {
 			lua_remove(*_mainState, 1); //remove c traceback function from bottom of stack

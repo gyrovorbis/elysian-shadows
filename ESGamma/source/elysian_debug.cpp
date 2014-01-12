@@ -48,7 +48,7 @@ void Debug::writeLog(const Debug::SOURCE source, const Debug::LEVEL level, const
 	buffer[0] = '\0';
 
 	//Add tabs for each stack layer
-	for(unsigned int i = 0; i < _stackDepth; ++i) strcat(buffer, ELYSIAN_DEBUG_PREFIX_STACK);
+	if(source != LUA) for(unsigned int i = 0; i < _stackDepth; ++i) strcat(buffer, ELYSIAN_DEBUG_PREFIX_STACK);
 
 	//Add prefixes for error types
 	switch(level) {
@@ -239,6 +239,42 @@ void Debug::processInput(const GameInput& input) {
 		//getAudioSys()->fadeIntoNewAuxTrack(0, 5.0f, "audio/music/RainThunder.ogg");
 		//getAudioSys()->playBgmTrack();
 	}
+	if(input.getTapped(GameInput::BUT_FORWARDSLASH)) {
+		LuaManager::dumpStats();
+	}
+	if(input.getTapped(GameInput::BUT_T)) {
+		Entity *entity = new Entity;
+		entity->setName("DICKMITE");
+		entity->transform.setPos(1400.0f+80.0f+32.0f, 1060.0f);
+		entity->transform.setScale(1.0f, 1.0f);
+		entity->transform.setSize(128.0f, 128.0f);
+		entity->setElev(0);
+		entity->setDepthType(DEPTH_BUFFERED);
+		Renderable* render = entity->addRenderable();
+#if 1
+		QuadSpriteAttrib* attrib = new QuadSpriteAttrib;
+		attrib->setVertexColor(0, 255, 0, 0, 255);
+		attrib->setVertexColor(1, 0, 255, 0, 100);
+		attrib->setVertexColor(2, 0, 0, 255, 255);
+		attrib->setVertexColor(3, 255, 255, 0, 255);
+		attrib->loadTexture("item/legacyItems/jigglypuff1.PNG", 32, 32, 32, 32);
+#else
+
+		SpriteAttrib* attrib = new SpriteAttrib;
+		attrib->setColor(100, 100, 100, 100);
+		attrib->loadTexture("item/legacyItems/jigglypuff1.PNG", 32, 32, 32, 32);
+#endif
+		render->setSpriteAttrib(attrib);
+
+		GYWav* wav = gyAudWavCreate("phone.wav");
+		AudioSource* src = entity->addAudioSource();
+		src->setLooping(true);
+		src->playWav(wav);
+
+		getCurArea()->addEntity(entity);
+
+	}
+
 	if(input.getTapped(GameInput::BUT_X)) {
 		//getAudioSys()->morphIntoBgmTrack(0, 5.0f);
 		//getAudioSys()->fadeIntoBgmTrack(0, 5.0f);

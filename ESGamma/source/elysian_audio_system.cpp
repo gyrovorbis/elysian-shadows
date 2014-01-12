@@ -104,7 +104,7 @@ namespace elysian {
 		//						gyAudOggSync(_streamChannels[i].ogg, _bgmTracks[5]);
 
 							if(_bgmTracks[_globalStates[TYPE_BGM].newTrack])
-								gyAudDestroyOgg(_bgmTracks[_globalStates[TYPE_BGM].newTrack]);
+								gyAudOggDestroy(_bgmTracks[_globalStates[TYPE_BGM].newTrack]);
 							_bgmTracks[_globalStates[TYPE_BGM].newTrack] = _bgmTracks[5];
 							_bgmTracks[5] = nullptr;
 
@@ -121,7 +121,7 @@ namespace elysian {
 	//							gyAudOggSync(_streamChannels[i].ogg, _auxTracks[1]);
 
 							if(_auxTracks[_globalStates[TYPE_AUX1].newTrack])
-								gyAudDestroyOgg(_auxTracks[_globalStates[TYPE_AUX1].newTrack]);
+								gyAudOggDestroy(_auxTracks[_globalStates[TYPE_AUX1].newTrack]);
 							_auxTracks[_globalStates[TYPE_AUX1].newTrack] = _auxTracks[1];
 							_auxTracks[1] = nullptr;
 
@@ -137,7 +137,7 @@ namespace elysian {
 	//							gyAudOggSync(_streamChannels[i].ogg, _auxTracks[3]);
 
 							if(_auxTracks[_globalStates[TYPE_AUX2].newTrack])
-								gyAudDestroyOgg(_auxTracks[_globalStates[TYPE_AUX2].newTrack]);
+								gyAudOggDestroy(_auxTracks[_globalStates[TYPE_AUX2].newTrack]);
 							_auxTracks[_globalStates[TYPE_AUX2].newTrack] = _auxTracks[3];
 							_auxTracks[3] = nullptr;
 
@@ -178,7 +178,7 @@ namespace elysian {
 						//It's a temp track, replace old track
 						if(_streamChannels[StreamChannel::Type::BGM].track == 5) {
 							if(_bgmTracks[_streamChannels[StreamChannel::Type::BGM].newTrack])
-								gyAudDestroyOgg(_bgmTracks[_streamChannels[StreamChannel::Type::BGM].newTrack]);
+								gyAudOggDestroy(_bgmTracks[_streamChannels[StreamChannel::Type::BGM].newTrack]);
 							_bgmTracks[_streamChannels[StreamChannel::Type::BGM].newTrack] = _bgmTracks[5];
 							_bgmTracks[5] = nullptr;
 							_streamChannels[StreamChannel::Type::BGM].track = _streamChannels[StreamChannel::Type::BGM].newTrack;
@@ -194,7 +194,7 @@ namespace elysian {
 						//It's a temp track, replace old track
 						if(_streamChannels[StreamChannel::Type::AUX_1].track == 1) {
 							if(_auxTracks[_streamChannels[StreamChannel::Type::AUX_1].newTrack])
-								gyAudDestroyOgg(_auxTracks[_streamChannels[StreamChannel::Type::AUX_1].newTrack]);
+								gyAudOggDestroy(_auxTracks[_streamChannels[StreamChannel::Type::AUX_1].newTrack]);
 							_auxTracks[_streamChannels[StreamChannel::Type::AUX_1].newTrack] = _auxTracks[1];
 							_auxTracks[1] = nullptr;
 							_streamChannels[StreamChannel::Type::AUX_1].track = _streamChannels[StreamChannel::Type::AUX_1].newTrack;
@@ -213,7 +213,7 @@ namespace elysian {
 						//It's a temp track, replace old track
 						if(_streamChannels[StreamChannel::Type::AUX_2].track == 3) {
 							if(_auxTracks[_streamChannels[StreamChannel::Type::AUX_2].newTrack])
-								gyAudDestroyOgg(_auxTracks[_streamChannels[StreamChannel::Type::AUX_2].newTrack]);
+								gyAudOggDestroy(_auxTracks[_streamChannels[StreamChannel::Type::AUX_2].newTrack]);
 							_auxTracks[_streamChannels[StreamChannel::Type::AUX_2].newTrack] = _auxTracks[3];
 							_auxTracks[3] = nullptr;
 							_streamChannels[StreamChannel::Type::AUX_2].track = _streamChannels[StreamChannel::Type::AUX_2].newTrack;
@@ -331,11 +331,11 @@ namespace elysian {
 		if(_bgmTracks[track]) {
 
 			//Deallocate old track
-			gyAudDestroyOgg(_bgmTracks[track]);
+			gyAudOggDestroy(_bgmTracks[track]);
 		}
 
 		//Allocate new track
-		_bgmTracks[track] = gyAudCreateOgg(path);
+		_bgmTracks[track] = gyAudOggCreate(path);
 
 		if(track == _streamChannels[StreamChannel::Type::BGM].track)
 			_streamChannels[StreamChannel::Type::BGM].ogg = _bgmTracks[track];
@@ -455,11 +455,11 @@ namespace elysian {
 		//Temp track is already allocated
 		if(_bgmTracks[5]) {
 			//Deallocate old track
-			gyAudDestroyOgg(_bgmTracks[5]);
+			gyAudOggDestroy(_bgmTracks[5]);
 		}
 
 		//Allocate new track
-		_bgmTracks[5] = gyAudCreateOgg(path);
+		_bgmTracks[5] = gyAudOggCreate(path);
 
 	//	if(_streamChannels[StreamChannel::Type::BGM].ogg)
 		//	gyAudOggSync(_streamChannels[StreamChannel::Type::BGM].ogg, _bgmTracks[5]);
@@ -478,11 +478,11 @@ namespace elysian {
 		//Temp track is already allocated
 		if(_bgmTracks[5]) {
 			//Deallocate old track
-			gyAudDestroyOgg(_bgmTracks[5]);
+			gyAudOggDestroy(_bgmTracks[5]);
 		}
 
 		//Allocate new track
-		_bgmTracks[5] = gyAudCreateOgg(path);
+		_bgmTracks[5] = gyAudOggCreate(path);
 
 		_globalStates[TYPE_BGM].state = GlobalState::FADE_OUT_NEW;
 		_globalStates[TYPE_BGM].newTrack = track;
@@ -515,11 +515,11 @@ namespace elysian {
 		if(_auxTracks[oggTrack]) {
 
 			//Deallocate old track
-			gyAudDestroyOgg(_auxTracks[oggTrack]);
+			gyAudOggDestroy(_auxTracks[oggTrack]);
 		}
 
 		//Allocate new track
-		_auxTracks[oggTrack] = gyAudCreateOgg(path);
+		_auxTracks[oggTrack] = gyAudOggCreate(path);
 
 		const unsigned channel = _auxIndexToStreamChannel(track);
 		_streamChannels[channel].ogg = _auxTracks[oggTrack];
@@ -570,11 +570,11 @@ namespace elysian {
 
 		if(_auxTracks[oggTrack]) {
 			//Deallocate old track
-			gyAudDestroyOgg(_bgmTracks[oggTrack]);
+			gyAudOggDestroy(_bgmTracks[oggTrack]);
 		}
 
 		//Allocate new track
-		_bgmTracks[oggTrack] = gyAudCreateOgg(path);
+		_bgmTracks[oggTrack] = gyAudOggCreate(path);
 
 //		if(_streamChannels[channel].ogg)
 //			gyAudOggSync(_streamChannels[channel].ogg, _bgmTracks[oggTrack]);
@@ -597,11 +597,11 @@ namespace elysian {
 		//Temp track is already allocated
 		if(_auxTracks[oggTrack]) {
 			//Deallocate old track
-			gyAudDestroyOgg(_auxTracks[oggTrack]);
+			gyAudOggDestroy(_auxTracks[oggTrack]);
 		}
 
 		//Allocate new track
-		_auxTracks[oggTrack] = gyAudCreateOgg(path);
+		_auxTracks[oggTrack] = gyAudOggCreate(path);
 
 		_globalStates[TYPE_AUX1+track].state = GlobalState::FADE_OUT_NEW;
 		_globalStates[TYPE_AUX1+track].newTrack = oggTrack-1;
