@@ -35,8 +35,8 @@ typedef struct _GYOgg {
 } GYOgg;
 
 
-GYOgg* gyAudCreateOgg(const char*const path);
-void gyAudDestroyOgg(GYOgg*const ogg);
+GYOgg* gyAudOggCreate(const char*const path);
+void gyAudOggDestroy(GYOgg*const ogg);
 
 //audio listener
 void gyAudListenerSetPos(const struct _GYVector3* const pos);

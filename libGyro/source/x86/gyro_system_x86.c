@@ -88,10 +88,8 @@ int gySysInit(void) {
 #else
   "LINUX";
 #endif
-
 	_gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86 [%s] v%s", platString, GYRO_LIB_VERSION);
-
-
+	gyDebugSigInit();
 	_checkCPUCapabilities();
 
     return 1;
