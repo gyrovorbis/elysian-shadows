@@ -414,7 +414,7 @@ static inline const char* _vorbisErrorString(const int code) {
 	}
 }
 
-GYOgg* gyAudCreateOgg(const char*const path) {
+GYOgg* gyAudOggCreate(const char*const path) {
 	int result;
 	int alErrorCode;
 	char* device = (char*)alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
@@ -465,7 +465,7 @@ GYOgg* gyAudCreateOgg(const char*const path) {
 }
 
 
-void gyAudDestroyOgg(GYOgg*const ogg) {
+void gyAudOggDestroy(GYOgg*const ogg) {
 	GYOggPayload* payload = ogg->_data;
 	int errorCode;
 
