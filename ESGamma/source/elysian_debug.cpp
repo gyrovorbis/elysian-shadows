@@ -309,7 +309,7 @@ void Debug::processInput(const GameInput& input) {
 		lightSrc->setAttrib(attrib);
 		_curArea->addEntity(entity);
 
-
+/*
 		entity = new Entity();
 		entity->transform.setPos(500.0f*2.0f, 500.0f*2.0f-100.0f);
 		entity->transform.setPosZ(32.0f);
@@ -338,7 +338,7 @@ void Debug::processInput(const GameInput& input) {
 		lightSrc->setAttrib(attrib);
 		_curArea->addEntity(entity);
 
-
+*/
 	}
 	if(input.getTapped(GameInput::BUT_X)) {
 		static int enabled = 0;

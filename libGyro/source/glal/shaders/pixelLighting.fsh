@@ -31,12 +31,15 @@ uniform GYMaterial		uMaterial;
 uniform mat4			uProjViewMat;
 uniform vec4			uAmbience;
 uniform bool			uLightsEnabled[cMaxLights];
+uniform samplerCube		uShadowCubeMaps[cMaxLights];
 uniform bool			uLightingEnabled;
 uniform bool			uNormalMapEnabled;
 uniform sampler2D		uNormalMap;
 uniform vec3			uNormal;
 uniform vec3			uTangent;
 uniform sampler2D		uShadowMaps[cMaxLights];
+
+uniform mat4			uShadowCubeMapProjMat;
 
 uniform sampler2D uTexture;
 
@@ -89,6 +92,15 @@ vec4 lightingEquation(const int i) {
 			if(texture2D(uShadowMaps[i], (vShadowPos[i].xy)/vShadowPos[i].w).z < ((vShadowPos[i].z-0.005)/vShadowPos[i].w)) {
 				shadowFactor = 0.5;
 			}
+		} else { //point light cube shadows
+			vec4 absPos = abs(vShadowPos[i]);
+			float frus_z = -max(absPos.x, max(absPos.y, absPos.z));
+			vec4 clip = uShadowCubeMapProjMat * vec4(0.0, 0.0, frus_z, 1.0);
+			float depth = (clip.z/clip.w)*0.5+0.5;
+			vec4 veccy = textureCube(uShadowCubeMaps[0], vec3(0.0, 1.0, 1.0));
+			//if(textureCube(uShadowCubeMaps[i], (vShadowPos[i].xyz)/clip.w).z < depth) {
+				//shadowFactor = 0.5;
+			//}
 		}
 	} else {								//Directional Light
 		//VPpli = -uLights[i].position.xyz;	//MUST BE PRENORMALIZED
