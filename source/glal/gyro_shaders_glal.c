@@ -58,6 +58,16 @@ _LightingShaderProgram*	curLightShader									= &_lightingShader;
 static int _curShadowPass = 0;
 static GLuint _shadowFBOs[GYRO_VIDEO_LIGHT_SOURCES_MAX] = { 0 };
 static GLuint _shadowMaps[GYRO_VIDEO_LIGHT_SOURCES_MAX] = { 0 };
+static GLuint _shadowCubeMaps[GYRO_VIDEO_LIGHT_SOURCES_MAX] = { 0 };
+typedef enum __CUBE_MAP_FACES {
+	CUBE_MAP_LEFT,
+	CUBE_MAP_RIGHT,
+	CUBE_MAP_BACK,
+	CUBE_MAP_BOTTOM,
+	CUBE_MAP_FACES_MAX
+} _CUBE_MAP_FACES;
+static GYMatrix4 _pointShadowFaceMatrices[CUBE_MAP_FACES_MAX];
+static _CUBE_MAP_FACES _curPointShadowFace = CUBE_MAP_FACES_MAX;
 
 const static GLenum _shadowMapTexUnits[GYRO_VIDEO_LIGHT_SOURCES_MAX] = {
 	GL_TEXTURE2,
@@ -80,14 +90,14 @@ void gyVidSetDefaultShaderProgram(void) {
 void gyVidNormalMapBind(const GYTexture * const tex) {
 	glActiveTexture(GL_TEXTURE1);
 	int enabled;
-	if(tex) {
+	/*if(tex) {
 		enabled = 1;
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, *(GLuint *)&tex->_data);
-	} else {
+	} else {*/
 		enabled = 0;
 		glDisable(GL_TEXTURE_2D);
-	}
+	//}
 	glUniform1i(curLightShader->uniformLoc[SHADER_NORMAL_MAP_ENABLED], enabled);
 	_normalMap = tex;
 	glActiveTexture(GL_TEXTURE0);
@@ -166,7 +176,7 @@ static inline void NormalizeVector(float *pvector)
 	pvector[2]*=normalizingConstant;
 }
 
-
+//Fucking fix me!!!
 static void _glhLookAtf2( float *matrix, float *eyePosition3D,
 				  float *center3D, float *upVector3D )
 {
@@ -236,13 +246,13 @@ void _glalShadowMultiPassInit(void) {
 
 	glGenFramebuffers(GYRO_VIDEO_LIGHT_SOURCES_MAX, _shadowFBOs);
 	glGenTextures(GYRO_VIDEO_LIGHT_SOURCES_MAX, _shadowMaps);
+	glGenTextures(GYRO_VIDEO_LIGHT_SOURCES_MAX, _shadowCubeMaps);
 
 	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
 
 		glBindFramebuffer(GL_FRAMEBUFFER, _shadowFBOs[i]);
 
 		glBindTexture(GL_TEXTURE_2D, _shadowMaps[i]);
-#pragma warning "Don't hardcode resolution!!!"
 		 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -253,27 +263,50 @@ void _glalShadowMultiPassInit(void) {
 		 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 		 glTexImage2D(GL_TEXTURE_2D, 0,GL_DEPTH_COMPONENT32, shadowWidth, shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 		 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, 1.0f);
-	 }
-	/*
-	unsigned maxTextureUnits;
-	glGetIntegerv(GL_MAX_TEXTURE_UNITS, &maxTextureUnits);
-	_gyLog(GY_DEBUG_VERBOSE, "MAX TEXTURE UNITS - %d", maxTextureUnits);
-	*/
 
+		//initialize cubemaps
+		 glBindTexture(GL_TEXTURE_CUBE_MAP, _shadowCubeMaps[i]);
+		 glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		 glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		 glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		 glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		 glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		 //probably should be intensity?
+		 glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
+		 glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+		 glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+		 //Does this REALLY have to have 6 faces!?
+		 for (size_t i = 0; i < CUBE_MAP_FACES_MAX; ++i) {
+			 //shadowDepth? lolz
+			 glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, shadowWidth, shadowHeight, shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+		 }
+		 glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+	 }
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	//glActiveTexture(GL_TEXTURE7);
+	//glBindTexture(GL_TEXTURE_CUBE_MAP, _shadowCubeMaps[0]);
+	glUniform1i(curLightShader->lightsUniformLoc[0][SHADER_LIGHT_SHADOW_CUBE_MAP], 50);
+	//glActiveTexture(GL_TEXTURE0);
+
+	// create point light face view matrices
+	glMatrixMode(GL_MODELVIEW);
+
+	glLoadIdentity(); gluLookAt(0.0, 0.0, 0.0,  1.0, 0.0, 0.0,  0.0,-1.0, 0.0); // +X
+	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)_pointShadowFaceMatrices[CUBE_MAP_RIGHT]);
+
+	glLoadIdentity(); gluLookAt(0.0, 0.0, 0.0, -1.0, 0.0, 0.0,  0.0,-1.0, 0.0); // -X
+	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)_pointShadowFaceMatrices[CUBE_MAP_LEFT]);
+
+	glLoadIdentity(); gluLookAt(0.0, 0.0, 0.0,  0.0, 1.0, 0.0,  0.0, 0.0, 1.0); // +Y
+	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)_pointShadowFaceMatrices[CUBE_MAP_BOTTOM]);
+
+	glLoadIdentity(); gluLookAt(0.0, 0.0, 0.0,  0.0, 0.0, 1.0,  0.0,-1.0, 0.0); // +Z
+	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)_pointShadowFaceMatrices[CUBE_MAP_BACK]);
 
 	initialized = 1;
 }
-/*
-gyMatPush();
-gyMatLoadIdentity();
-gyMatTranslate(_scrWidth/2.0f, _scrHeight/2.0f, 0.0f);
-gyMatScale(transform._scale.x, transform._scale.y, 1.0f);
-gyMatRotateZ(transform._orientZ);
-gyMatTranslate(-transform._pos.x, -transform._pos.y, 0.0f);
-gyMatStore(&mat);
-gyMatPop();
-*/
 
 void glalGetLightViewMatrix(GYMatrix4 dest, const GYLightSource*const lightSrc) {
 	GYMatrix4 temp;
@@ -296,7 +329,7 @@ void glalGetLightViewMatrix(GYMatrix4 dest, const GYLightSource*const lightSrc) 
 				  0.0f, 0.0f, 0.0f,
 				  0.0f, 1.0f, 0.0f);
 		glGetFloatv(GL_MODELVIEW_MATRIX, (float*)temp);
-		gyMatApply(&temp);
+		gyMatApply((float*)&temp);
 
 		gyMatTranslate(-shadowWidth*0.5f, -shadowHeight*0.5f, 0.0f);
 
@@ -317,7 +350,7 @@ void glalGetLightViewMatrix(GYMatrix4 dest, const GYLightSource*const lightSrc) 
 		//gyMatTranslate(-1280.0f*0.5f, -720.0f*0.5f, 0.0f);
 		//gyMatTranslate(-viewPosition.x, -viewPosition.y, 0.0f);
 
-		gyMatStore(dest);
+		gyMatStore((float*)dest);
 		gyMatPop();
 
 	} else {
@@ -338,7 +371,7 @@ void glalGetLightViewMatrix(GYMatrix4 dest, const GYLightSource*const lightSrc) 
 					  0.0f, 0.0f, 0.0f,
 					  0.0f, 0.0f, 1.0f);
 			glGetFloatv(GL_MODELVIEW_MATRIX, (float*)temp);
-			gyMatApply(&temp);
+			gyMatApply((float*)&temp);
 
 			//gyMatRotate(0.785398163f*2.0f, -lightSrc->direction.x, -lightSrc->direction.y, -lightSrc->direction.z);
 
@@ -346,7 +379,7 @@ void glalGetLightViewMatrix(GYMatrix4 dest, const GYLightSource*const lightSrc) 
 
 			gyMatTranslate(-lightSrc->position.x, -lightSrc->position.y, -lightSrc->position.z-1000.0f);//+900.0f
 
-			gyMatStore(dest);
+			gyMatStore((float*)dest);
 			gyMatPop();
 		}
 
@@ -386,11 +419,13 @@ void glalGetLightProjectionMatrix(GYMatrix4* dest, const GYLightSource*const lig
 }
 
 int gyVidBeginNextShadowPass(void) {
-	GYMatrix4 projViewMatrix;
+	GYMatrix4 lightProjMatrix;
 	GYMatrix4 lightViewMatrix;
+	GYMatrix4 lightProjViewMatrix;
+
 	GYVector3 center3D = { 0.0f, 0.0f, 0.0f };
 	GYVector3 upVector3D = { 0.0f, -1.0f, 0.0f };
-			GYMatrix4 finalMat;
+
 	static const GYMatrix4 shadowTexCoordBiasMat = {
 		{ 0.5f, 0.0f, 0.0f, 0.0f },
 		{ 0.0f, 0.5f, 0.0f, 0.0f },
@@ -418,18 +453,51 @@ int gyVidBeginNextShadowPass(void) {
 		return 0;
 	}
 
-	glBindFramebuffer(GL_FRAMEBUFFER, _shadowFBOs[_curShadowPass]);
+	GYLightSource* curLight = _lightSources[_curShadowPass];
 
+	glBindFramebuffer(GL_FRAMEBUFFER, _shadowFBOs[_curShadowPass]);
 	glClear(GL_DEPTH_BUFFER_BIT);
 
-	//glBindTexture(GL_TEXTURE_2D, _shadowMaps[_curShadowPass]);
-//	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, _shadowMaps[_curShadowPass], 0);
-	glFramebufferTexture2D(
-			GL_FRAMEBUFFER,
-			GL_DEPTH_ATTACHMENT,
-			GL_TEXTURE_2D,
-			_shadowMaps[_curShadowPass],
-			0);
+	//Determine whether we're processing a point shadow's cubemap
+	if(curLight->spotCutoffAngle > 180.0f &&
+			curLight->position.w != 0.0f) {
+
+		if(_curPointShadowFace == CUBE_MAP_FACES_MAX)
+			_curPointShadowFace == CUBE_MAP_LEFT;
+
+		//Create Projection matrix
+		glMatrixMode(GL_MODELVIEW_MATRIX);
+		glLoadIdentity();
+		gluPerspective(90.0f, (float)shadowWidth/(float)shadowHeight, 0.5f, 150.0f);
+		glGetFloatv(GL_MODELVIEW_MATRIX, (float*)lightProjMatrix);
+
+		//Create View Matrix
+		gyMatPush();
+		gyMatLoadIdentity();
+		gyMatLoad(_pointShadowFaceMatrices[_curPointShadowFace]);
+
+		gyMatTranslate(-curLight->position.x, -curLight->position.y, -curLight->position.z);
+
+		gyMatStore(lightViewMatrix);
+		gyMatPop();
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER,
+							   GL_DEPTH_ATTACHMENT,
+							   GL_TEXTURE_CUBE_MAP_POSITIVE_X + _curPointShadowFace,
+							   _shadowCubeMaps[_curShadowPass],
+							   0);
+
+	} else {
+
+		glalGetLightProjectionMatrix(lightProjMatrix, curLight);
+		glalGetLightViewMatrix(lightViewMatrix, curLight);
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER,
+							   GL_DEPTH_ATTACHMENT,
+							   GL_TEXTURE_2D,
+							   _shadowMaps[_curShadowPass],
+							   0);
+	}
 
 	glDrawBuffer(GL_NONE); // No color buffer is drawn to.
 	glReadBuffer(GL_NONE);
@@ -437,7 +505,7 @@ int gyVidBeginNextShadowPass(void) {
 	//Check whether shit has reested with our FBO
 	GLenum status;
 	 if((status = glCheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE) {
-		 _gyLog(GY_DEBUG_CRITICAL, "Binding GLAL depth texture to frame buffer has reested - %d, %s!", status);
+		 _gyLog(GY_DEBUG_CRITICAL, "Binding GLAL depth texture to frame buffer has reested - %d!", status);
 		 _curShadowPass = 0;
 		 gyVidSetDefaultShaderProgram();
 		 glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -446,20 +514,17 @@ int gyVidBeginNextShadowPass(void) {
 	 }
 	glEnable(GL_DEPTH_TEST);
 
-	 GYLightSource* curLight = _lightSources[_curShadowPass];
-
-	 glalGetLightProjectionMatrix(projViewMatrix, curLight);
-	 glalGetLightViewMatrix(lightViewMatrix, curLight);
-	 gyMatMultMat(&finalMat, &projViewMatrix, &lightViewMatrix);
+	//find projView matrix
+	gyMatMultMat(&lightProjViewMatrix, &lightProjMatrix, &lightViewMatrix);
 
 	//SUBMIT PROJVIEW UNIFORM TO SHADOW SHADER
-	glUniformMatrix4fv(_shadowMapShader.uniformLoc[SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)finalMat);
+	glUniformMatrix4fv(_shadowMapShader.uniformLoc[SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)lightProjViewMatrix);
 
 	//Store projection view matrix (plus bias) for next render pass
-	gyMatMultMat(&curLight->projViewMat, &shadowTexCoordBiasMat, &finalMat);
+	gyMatMultMat(&curLight->projViewMat, &shadowTexCoordBiasMat, &lightProjViewMatrix);
 
-
-	++_curShadowPass;
+	if(_curPointShadowFace != CUBE_MAP_FACES_MAX) ++_curPointShadowFace;
+	if(_curPointShadowFace == CUBE_MAP_FACES_MAX) ++_curShadowPass;
 
 	return 1;
 }
@@ -493,13 +558,14 @@ static void _queryLightingShader(_LightingShaderProgram*const shader) {
 	shader->attribLoc[SHADER_TEX_COORD] = _protectedAttribQuery(shader->program, "aTexCoord");
 
 	//poll for global uniform locations
-	shader->uniformLoc[SHADER_NORMAL]				= _protectedUniformQuery(shader->program, "uNormal");
-	shader->uniformLoc[SHADER_TANGENT]				= _protectedUniformQuery(shader->program, "uTangent");
-	shader->uniformLoc[SHADER_PROJ_VIEW_MAT]		= _protectedUniformQuery(shader->program, "uProjViewMat");
-	shader->uniformLoc[SHADER_AMBIENCE]				= _protectedUniformQuery(shader->program, "uAmbience");
-	shader->uniformLoc[SHADER_LIGHTING_ENABLED]		= _protectedUniformQuery(shader->program, "uLightingEnabled");
-	shader->uniformLoc[SHADER_NORMAL_MAP_ENABLED]	= _protectedUniformQuery(shader->program, "uNormalMapEnabled");
-	shader->uniformLoc[SHADER_NORMAL_MAP]			= _protectedUniformQuery(shader->program, "uNormalMap");
+	shader->uniformLoc[SHADER_NORMAL]					= _protectedUniformQuery(shader->program, "uNormal");
+	shader->uniformLoc[SHADER_TANGENT]					= _protectedUniformQuery(shader->program, "uTangent");
+	shader->uniformLoc[SHADER_PROJ_VIEW_MAT]			= _protectedUniformQuery(shader->program, "uProjViewMat");
+	shader->uniformLoc[SHADER_AMBIENCE]					= _protectedUniformQuery(shader->program, "uAmbience");
+	shader->uniformLoc[SHADER_LIGHTING_ENABLED]			= _protectedUniformQuery(shader->program, "uLightingEnabled");
+	shader->uniformLoc[SHADER_NORMAL_MAP_ENABLED]		= _protectedUniformQuery(shader->program, "uNormalMapEnabled");
+	shader->uniformLoc[SHADER_NORMAL_MAP]				= _protectedUniformQuery(shader->program, "uNormalMap");
+	shader->uniformLoc[SHADER_SHADOW_CUBE_MAP_PROJ_MAT] = _protectedUniformQuery(shader->program, "uShadowCubeMapProjMat");
 
 	//poll for GYMaterial uniform locations
 	shader->uniformLoc[SHADER_MATERIAL_SHININESS]		= _protectedUniformQuery(shader->program, "uMaterial.shininess");
@@ -540,6 +606,9 @@ static void _queryLightingShader(_LightingShaderProgram*const shader) {
 
 		sprintf(buff, "uShadowMaps[%d]", i);
 		shader->lightsUniformLoc[i][SHADER_LIGHT_SHADOW_MAP]					= _protectedUniformQuery(shader->program, buff);
+
+		sprintf(buff, "uShadowCubeMaps[%d]", i);
+		shader->lightsUniformLoc[i][SHADER_LIGHT_SHADOW_CUBE_MAP]				= _protectedUniformQuery(shader->program, buff);
 
 		sprintf(buff, "uLightProjViewMats[%d]", i);
 		shader->lightsUniformLoc[i][SHADER_LIGHT_PROJ_VIEW_MAT]					= _protectedUniformQuery(shader->program, buff);
@@ -589,7 +658,15 @@ void glalDefaultShadersLoadUniforms(void) {
 	//next texture banks are used for shadow maps for each light
 	for(unsigned i = 0; i < SHADER_LIGHTS_PER_PASS; ++i) {
 		glUniform1i(curLightShader->lightsUniformLoc[i][SHADER_LIGHT_SHADOW_MAP], 2+i);
+		//glUniform1i(curLightShader->lightsUniformLoc[i][SHADER_LIGHT_SHADOW_CUBE_MAP], 6+i);
 	}
+
+	GYMatrix4 projMatrix;
+	glMatrixMode(GL_MODELVIEW_MATRIX);
+	glLoadIdentity();
+	gluPerspective(90.0f, (float)shadowWidth/(float)shadowHeight, 0.5f, 150.0f);
+	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)projMatrix);
+	glUniformMatrix4fv(curLightShader->uniformLoc[SHADER_SHADOW_CUBE_MAP_PROJ_MAT], 1, GL_FALSE, (float*)projMatrix);
 
 	//Initialize internal data for shadow shader
 	_glalShadowMultiPassInit();

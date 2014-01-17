@@ -108,6 +108,7 @@ int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth,
     glLoadIdentity();
     glMatrixMode(GL_MODELVIEW);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS)​;
    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glLoadIdentity();
 
