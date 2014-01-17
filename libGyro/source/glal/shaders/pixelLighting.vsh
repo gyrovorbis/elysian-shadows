@@ -33,10 +33,12 @@ uniform vec4			uAmbience;
 uniform vec3			uNormal;
 uniform vec3			uTangent;
 uniform bool			uLightsEnabled[cMaxLights];
+uniform samplerCube		uShadowCubeMaps[cMaxLights];
 uniform bool			uLightingEnabled;
 uniform bool			uNormalMapEnabled;
 uniform sampler2D		uNormalMap;
-uniform sampler2D		uShadowMaps[cMaxLights];
+uniform sampler2D		uShadowMaps;
+
 uniform mat4			uLightProjViewMats[cMaxLights];
 
 attribute vec4			aPosition;
