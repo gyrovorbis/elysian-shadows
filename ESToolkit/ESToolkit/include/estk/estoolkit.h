@@ -70,7 +70,7 @@ private:
     void ReadSettings();
     void ResetViewChecks();
 
-	virtual void keyPressEvent(QKeyEvent *event);
+	virtual void keyPressEvent(QKeyEvent *event) override;
 
 private slots:
 
@@ -159,5 +159,6 @@ private slots:
 	void on_actionZ_Transitional_toggled(bool arg1);
 	void on_actionHorizontal_SheetView_triggered(bool checked);
     void on_actionScreenshot_triggered();
+
 };
 #endif // ESTOOLKIT_H

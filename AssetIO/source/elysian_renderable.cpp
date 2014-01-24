@@ -4,12 +4,6 @@
 
 namespace elysian {
 
-GYVector4 Renderable::_localVerts[4] = {
-	{ 0.0f, 0.0f, 0.0f, 1.0f},
-	{ 0.0f, 0.0f, 0.0f, 1.0f},
-	{ 0.0f, 0.0f, 0.0f, 1.0f},
-	{ 0.0f, 0.0f, 0.0f, 1.0f}
-};
 /*
 Primitive *Renderable::setPrimitiveType(const Primitive::TYPE type) { 
 	delete _prim;

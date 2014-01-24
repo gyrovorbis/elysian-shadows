@@ -4,7 +4,7 @@
 #include "tileGraphicsItem.h"
 #include "sheetManagerTileEntry.h"
 
-class SourceSheetEntry;
+struct SourceSheetEntry;
 class SheetManagerTileSelection;
 class SourceView;
 

@@ -161,7 +161,9 @@ void Level::populateModel(void) {
 
 void Level::setName(const QString str) {
 	QString newLocation;
+	bool renamed = false;
 	QString name = str;
+	QString oldName = _name;
 	name.replace(QRegExp("[\\\\/ ]"), QString("_"));
 
 	if(_name == name) return;
@@ -188,12 +190,16 @@ void Level::setName(const QString str) {
 			QMessageBox::critical(NULL, tr("Error!"), tr("Unable to rename the directory!\n"));
 			return;
 		}
+
+		renamed = true;
 	}
 
 	TreeNode::setName(name);
 	_location = newLocation;
 	strcpy(_elysianLevel.name, name.toStdString().c_str());
 	strcpy(_elysianLevel.path, _location.toStdString().c_str());
+
+	if(renamed) emit levelRenamed(oldName, name);
 }
 
 void Level::setLocation(const QString loc) {

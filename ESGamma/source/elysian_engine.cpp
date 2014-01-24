@@ -18,7 +18,6 @@
 #include "elysian_lua_manager.hpp"
 #include "elysian_behavior_system.hpp"
 #include "elysian_entity.hpp"
-#include "elysian_quad.hpp"
 
 namespace elysian {
 
@@ -66,16 +65,16 @@ void Engine::update(void) {
 		case System::ENGINE_NORMAL:
         case System::ENGINE_WARPING:
 			_audioSystem->update();
-            _collisionSystem->update();
-            _timerSystem->update();
-            _mapSystem->update();
-            _cameraSystem->Update();
-            _partySystem->update();
-            _characterSystem->Update();
-            _animationSystem->Update();
-            //warpSystem->Update();
-            _guiSystem->update();
-            _warpSystem->Update();
+			_collisionSystem->update();
+			_timerSystem->update();
+			_mapSystem->update();
+			_cameraSystem->Update();
+			_partySystem->update();
+			_characterSystem->Update();
+			_animationSystem->Update();
+			//warpSystem->Update();
+			_guiSystem->update();
+			_warpSystem->Update();
 
 			//conversationSystem->Update();
 			_behaviorSystem->callTriggers(Behavior::ON_UPDATE);
@@ -106,7 +105,7 @@ void Engine::update(void) {
 void Engine::processInput(void) {
 
 	gyInputPoll(&_platInput);
-	GameInput::Translate(_platInput, _gameInput);
+	GameInput::translate(_platInput, _gameInput);
 	Debug::getInstance().processInput(_gameInput);
 
 	if(!_processInput) return;

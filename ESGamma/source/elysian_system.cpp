@@ -18,6 +18,4 @@ namespace elysian {
 	ExaminableSystem*	System::_examinableSystem	= NULL;
 	AudioSystem*		System::_audioSystem		= NULL;
 	BehaviorSystem*		System::_behaviorSystem		= NULL;
-	WeatherSystem*		System::_weatherSystem		= NULL;
-
 }

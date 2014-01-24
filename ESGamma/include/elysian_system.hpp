@@ -18,7 +18,7 @@ namespace elysian {
 	class ExaminableSystem;
 	class AudioSystem;
 	class BehaviorSystem;
-	class WeatherSystem;
+	class AudioSystem;
 
 	class System: public LevelManager {
 	public:
@@ -43,7 +43,6 @@ namespace elysian {
 		static ExaminableSystem	*_examinableSystem;
 		static AudioSystem		*_audioSystem;
 		static BehaviorSystem	*_behaviorSystem;
-		static WeatherSystem	*_weatherSystem;
 
 	public:
 		static LevelSystem*			getLevelSys(void)		 { return _levelSystem; }
@@ -59,7 +58,7 @@ namespace elysian {
 		static ExaminableSystem*	getExamSys(void)		 { return _examinableSystem; }
 		static AudioSystem*			getAudioSys(void)		 { return _audioSystem; }
 		static BehaviorSystem*		getBehavSys(void)		 { return _behaviorSystem; }
-		static WeatherSystem*		getWeathSys(void)		 { return _weatherSystem; }
+
 		static bool getProcessInput(void)					 { return _processInput; }
 		static void setProcessInput(const bool in=true)		 { _processInput = in; }
 		static ENGINE_STATE getEngineState(void)			 { return _engineState; }

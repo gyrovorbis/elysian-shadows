@@ -4,14 +4,18 @@
 #include "elysian_behavior.hpp"
 #ifdef ELYSIAN_ENGINE
 #	include "elysian_lua_manager.hpp"
+#	include <lua/lua.hpp>
+#else
+#	define LUA_NOREF 0
 #endif
 
-#define ELYSIAN_LUA_BEHAVIOR_NAME "LuaBehavior"
+#define ELYSIAN_LUA_BEHAVIOR_NAME				"LuaBehavior"
+#define ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH	5
 
 namespace elysian {
 
 	class Entity;
-	class LuaScript;
+	class LuaBehaviorScript;
 	class Collidable;
 
     class LuaBehavior: 
@@ -22,10 +26,22 @@ namespace elysian {
 	{
 	friend class Entity;
 	protected:
-		LuaScript*			_script;
-		int					_dataTableRef;
+		LuaBehaviorScript*	_scriptHierarchy[ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH]		= { nullptr };
+		//int					_selfTableRefHierarchy[ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH]	= { LUA_NOREF };
+		LuaBehaviorScript*	_script = nullptr;
+		//int					_selfTableRef = LUA_NOREF;
+
+		unsigned			_hierarchyDepth = 0;
 #ifdef ELYSIAN_ENGINE
-		OOLUA::Lua_table_ref _ooDataTableRef;
+		OOLUA::Lua_table_ref _ooSelfTableRefHierarchy[ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH];
+		OOLUA::Lua_table_ref* _ooSelfTableRef = nullptr;
+
+		template<typename RType, typename... PTypes>
+		RType _callTrigger(const char*const triggerName, PTypes... parameters) {
+			return _callGlobalFunction<RType>(triggerName, _script, parameters...);
+		}
+
+		void				_selfTableDump(void);
 #endif
 							LuaBehavior(Entity &entity, const char *script);
 							~LuaBehavior(void);
@@ -56,9 +72,9 @@ namespace elysian {
 		virtual void		onExamine(Entity* entity) override;
 		virtual void		onDialog(const unsigned screen, const int option) override;
 		
-		int					getDataTableRef(void) const;
+		int					getSelfTableRef(void) const;
 #ifdef ELYSIAN_ENGINE
-		OOLUA::Lua_table_ref& getDataTable(void) { return _ooDataTableRef; }
+		OOLUA::Lua_table_ref& getSelfTable(void) { return *_ooSelfTableRef; }
 #endif
     };
 
@@ -66,7 +82,7 @@ namespace elysian {
 	//======= INLINEZ ======
 	
 	inline const char* LuaBehavior::getBehavName(void) const { return ELYSIAN_LUA_BEHAVIOR_NAME; }
-	inline int LuaBehavior::getDataTableRef(void) const { return _dataTableRef; }
+	//inline int LuaBehavior::getSelfTableRef(void) const { return _selfTableRef; }
 
 
 	

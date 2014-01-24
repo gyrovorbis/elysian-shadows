@@ -9,7 +9,7 @@ namespace elysian {
 
 class Collidable: public Component {
 private:
-    elysian::Collidable *_elysianCollid;
+	//elysian::Collidable *_elysianCollid;
 public:
     Collidable(elysian::Collidable *const comp);
 

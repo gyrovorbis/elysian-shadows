@@ -9,37 +9,13 @@
 #include <initializer_list>
 #include <iostream>
 
-void consumeArgs() {
-    qDebug() << "ARGS CONSUMED!";
-}
-
-template <class First, class... Rest>
-void consumeArgs(First first, Rest... rest) {
-    // Do something with first
-    qDebug() << "ARG" << first << endl;
-
-    consumeArgs(rest...); // Unpack the arguments for further treatment
-}
-
-
-template<typename RType, typename... PTypes>
-RType _callFunction(const char* funcName, PTypes... parameters) {
-    qDebug() << funcName;
-    //consumeArgs(parameters...);
-
-    /*std::function<void(PTypes... A)> Unpack =*/
-    [&](PTypes... A) {
-        auto l = {((printf("%d\n", &A)), 0)...};
-    }(parameters...);
-}
-
 int main(int argc, char *argv[]) {
-    QRectF rect;
-    rect.setSize(QSizeF(2.0f, 5.0f));
+	QRectF rect;
+	rect.setSize(QSizeF(2.0f, 5.0f));
 
-    QApplication a(argc, argv);
-    a.setOrganizationName("Elysian Shadows");
-    a.setOrganizationDomain("ESDev");
+	QApplication a(argc, argv);
+	a.setOrganizationName("Elysian Shadows");
+	a.setOrganizationDomain("elysianshadows.com");
 	a.setApplicationName("ESTk");
 	a.setWindowIcon(QIcon(":/estk/images/estk.ico"));
 	a.setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
@@ -47,20 +23,27 @@ int main(int argc, char *argv[]) {
 	QPixmap splashScreen(":/splash/images/splashScreen.png");
 	QPainter painter(&splashScreen);
 	painter.setPen(QPen(QColor(225, 202, 251)));
-    QFont splashFont("Arial", 10);
-    splashFont.setBold(true);
+	QFont splashFont("Arial", 10);
+	splashFont.setBold(true);
 	painter.setFont(splashFont);
 	painter.drawText(25,82,QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" \"Audacious Cuntwhisp\" Release"));
-	painter.drawText(25,190,"http://elysianshadows.com/tkreleasenotes");
+	painter.drawText(25,190,"http://elysianshadows.com/tkreleasenotes"); /* This is an invalid URL!!!! */
 
-    QSplashScreen splash(splashScreen, Qt::WindowStaysOnTopHint);
+	QSplashScreen splash(splashScreen, Qt::WindowStaysOnTopHint);
 	splash.show();
 
-    ESToolkit w;
+	ESToolkit w;
 
 	//QApplication::setWindowIcon(QIcon(":/estk/images/estk.ico"));
+
+// We don't want to wait for the splash screen whilst debugging. --Sara.
+#ifdef QT_NO_DEBUG
 	QTimer::singleShot(2500, &splash, SLOT(close()));
 	QTimer::singleShot(2500, &w, SLOT(showMaximized()));
+#else
+	QTimer::singleShot(1000, &splash, SLOT(close()));
+	QTimer::singleShot(0, &w, SLOT(showMaximized()));
+#endif
 
-    return a.exec();
+	return a.exec();
 }

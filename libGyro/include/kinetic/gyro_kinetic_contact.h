@@ -14,8 +14,8 @@ typedef struct _GYContact {
 	GYVector2 objPos[2];
 	GYVector2 worldPos;
 	GYVector2 normal;
-	struct _GYCollider *collider[2];
-	struct _GYStatic *staticAttrib[2];
+	const struct _GYCollider *collider[2];
+	const struct _GYStatic *staticAttrib[2];
 	//GYVector2 pointOfContact; Is that not the exact same thing as worldPos? WTF?
 	float sepVel;
 	float closingVel;

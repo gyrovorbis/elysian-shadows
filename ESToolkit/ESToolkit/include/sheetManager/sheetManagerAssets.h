@@ -4,13 +4,13 @@
 #include <QPixmap>
 #include <QObject>
 #include <QUndoStack>
-#include "gyro.h"
+#include <gyro.h>
 #include "assets.h"
 #include "sheetManagerTileSelection.h"
 #include "sheetManagerTileEntry.h"
 
 class SheetManagerTileSelection;
-class SourceSheetEntry;
+struct SourceSheetEntry;
 class Level;
 
 class SheetManagerAssets: public QObject {

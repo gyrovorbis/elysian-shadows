@@ -28,6 +28,48 @@ Behavior* Behavior::create(const char* typeName, Entity& parent) {
 	return _creators[typeName](parent);
 }
 
+const char* Behavior::triggerNameFromFlag(const uint64_t flag) {
+	static char buff[20];
+
+	switch(flag) {
+	case ON_SCRIPT_CREATE:
+		return "ON_SCRIPT_CREATE";
+	case ON_SCRIPT_DESTROY:
+		return "ON_SCRIPT_DESTROY";
+	case ON_CREATE:
+		return "ON_CREATE";
+	case ON_DESTROY:
+		return "ON_DESTROY";
+	case ON_LOAD:
+		return "ON_LOAD";
+	case ON_UNLOAD:
+		return "ON_UNLOAD";
+	case ON_ENTER:
+		return "ON_ENTER";
+	case ON_EXIT:
+		return "ON_EXIT";
+	case ON_UPDATE:
+		return "ON_UPDATE";
+	case ON_RENDER:
+		return "ON_RENDER";
+	case ON_COLLIDE:
+		return "ON_COLLIDE";
+	case ON_COLLISION_ENTER:
+		return "ON_COLLISION_ENTER";
+	case ON_COLLISION_EXIT:
+		return "ON_COLLISION_EXIT";
+	case ON_EXAMINE:
+		return "ON_EXAMINE";
+	case ON_DIALOG:
+		return "ON_DIALOG";
+	case TRIGGER_MAX:
+		return "TRIGGER_MAX";
+	default:
+		sprintf(buff, "INVALID (%llu)", flag);
+		return buff;
+	}
+}
+
 //----NONSTATIC----
 	
 void Behavior::onCreate(void) { dbgprintf(LOG_CRITICAL, "Behavior::onCreate() - Unimplemented for '%s'.\n", getBehavName()); }
@@ -38,14 +80,17 @@ void Behavior::onEnter(void) { dbgprintf(LOG_CRITICAL, "Behavior::onEnter() - Un
 void Behavior::onExit(void) { dbgprintf(LOG_CRITICAL, "Behavior::onExit() - Unimplemented for '%s'.\n", getBehavName()); }
 void Behavior::onUpdate(void) { dbgprintf(LOG_CRITICAL, "Behavior::onUpdate() - Unimplemented for '%s'.\n", getBehavName()); }
 void Behavior::onRender(void) { dbgprintf(LOG_CRITICAL, "Behavior::onRender() - Unimplemented for '%s'.\n", getBehavName()); }
-void Behavior::onCollide(Collidable* const collidable) { dbgprintf(LOG_CRITICAL, "Behavior::onCollide() - Unimplemented for '%s'.\n", getBehavName()); }
-void Behavior::onCollisionEnter(Collidable* const collidable) { dbgprintf(LOG_CRITICAL, "Behavior::onCollisionEnter() - Unimplemented for '%s'.\n", getBehavName()); }
-void Behavior::onCollisionExit(Collidable* const collidable) { dbgprintf(LOG_CRITICAL, "Behavior::onCollisionExit() - Unimplemented for '%s'.\n", getBehavName()); }
-void Behavior::onExamine(Entity* entity) { dbgprintf(LOG_CRITICAL, "Behavior::onExamine() - Unimplemented for '%s'.\n", getBehavName()); }
-void Behavior::onDialog(const unsigned screen, const int option) { dbgprintf(LOG_CRITICAL, "Behavior::onDialog() - Unimplemented for '%s'.\n", getBehavName()); }
+void Behavior::onCollide(Collidable* const /*collidable*/) { dbgprintf(LOG_CRITICAL, "Behavior::onCollide() - Unimplemented for '%s'.\n", getBehavName()); }
+void Behavior::onCollisionEnter(Collidable* const /*collidable*/) { dbgprintf(LOG_CRITICAL, "Behavior::onCollisionEnter() - Unimplemented for '%s'.\n", getBehavName()); }
+void Behavior::onCollisionExit(Collidable* const /*collidable*/) { dbgprintf(LOG_CRITICAL, "Behavior::onCollisionExit() - Unimplemented for '%s'.\n", getBehavName()); }
+void Behavior::onExamine(Entity* /*entity*/) { dbgprintf(LOG_CRITICAL, "Behavior::onExamine() - Unimplemented for '%s'.\n", getBehavName()); }
+void Behavior::onDialog(const unsigned /*screen*/, const int /*option*/) { dbgprintf(LOG_CRITICAL, "Behavior::onDialog() - Unimplemented for '%s'.\n", getBehavName()); }
 
 void Behavior::addTrigger(TRIGGER flag) {
 	std::map<const char*, Behavior*, ltstr>& behaviors = getEntity()->getBehaviors();
+
+	//Trigger already added!
+	if(_triggerBits & flag) return;
 
 	//If entity already has the trigger enabled, we don't need to set anything up
 	for(auto it = behaviors.begin();

@@ -48,7 +48,7 @@ typedef struct _GYTexCoordSheet {
 } GYTexCoordSheet;
 
 typedef struct _GYTexture {
-	char filename[GYRO_FILENAME_MAX_SIZE];
+	char filename[GYRO_PATH_MAX_SIZE];
 	//unsigned int sheetWidth, sheetHeight; //duplicate data?
 	//unsigned int spriteWidth, spriteHeight; //duplicate data?
 	unsigned int bytes;
@@ -61,6 +61,7 @@ typedef struct _GYTexture {
 GYTexture *gyVidTexCreateSheetUniform(const char *const filename, const unsigned int sheetWidth, const unsigned int sheetHeight, const unsigned int spriteWidth, const unsigned int spriteHeight);
 GYTexture *gyVidTexCreateSheet(const char *const filename, const unsigned width, const unsigned height);
 GYTexture *gyVidTexCreate(const char *const filename, const unsigned int width, const unsigned int height);
+const GYTexCoord2* gyVidTexCoordArrayFromFrame(const GYTexCoordFrame*const frame, const GY_RECT_TEX_ORIENT orient);
 
 int gyVidTexDestroy(GYTexture *const tex);
 unsigned int gyVidTexAmount(void);

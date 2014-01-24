@@ -28,15 +28,15 @@ typedef enum _GY_SOURCE_ATTRIB {
 
 
 typedef struct _GYOgg {
-	char path[GYRO_FILENAME_MAX_SIZE];
+	char path[GYRO_PATH_MAX_SIZE];
 	unsigned int bytes;
 	unsigned looping;
 	void* _data;
 } GYOgg;
 
 
-GYOgg* gyAudCreateOgg(const char*const path);
-void gyAudDestroyOgg(GYOgg*const ogg);
+GYOgg* gyAudOggCreate(const char*const path);
+void gyAudOggDestroy(GYOgg*const ogg);
 
 //audio listener
 void gyAudListenerSetPos(const struct _GYVector3* const pos);
@@ -55,11 +55,14 @@ void gyAudSourcePlayOgg(GYWavSource*const src, const struct _GYOgg*const ogg);
 void gyAudSourceStop(GYWavSource*const src);
 int  gyAudSourceIsPlaying(GYWavSource*const src);
 
-void gyAudOggUpdate(GYWavSource* const src, struct _GYOgg* const ogg);
-void gyAudStopOggStream(GYWavSource*const src, GYOgg*const ogg);
-void gyAudPauseOggStream(GYWavSource*const src, GYOgg*const ogg);
-void gyAudOggSync(GYOgg*const ogg1, GYOgg*const ogg2);
-void gyAudOggSetLooping(GYOgg*const ogg, const unsigned looping);
+GYWavSource* gyAudOggStreamCreate(void);
+void gyAudOggStreamDestroy(GYWavSource*const src);
+void gyAudOggStreamPlay(GYWavSource*src, GYOgg*ogg);
+void gyAudOggStreamPause(GYWavSource*src);
+void gyAudOggStreamStop(GYWavSource*src);
+void gyAudOggStreamSetLooping(GYWavSource*const src, const unsigned looping);
+double gyAudOggStreamTime(GYWavSource*const src);
+void gyAudOggStreamSync(GYWavSource*const src1, GYWavSource*const src2);
 
 
 #ifdef __cplusplus

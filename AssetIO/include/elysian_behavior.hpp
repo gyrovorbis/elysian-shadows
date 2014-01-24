@@ -26,28 +26,32 @@ namespace elysian {
 		static void registerCreator(const char*typeName, Behavior* (*const func)(Entity&));
 		
 		Behavior(Entity& parent);
-		virtual ~Behavior(void);
+		virtual ~Behavior(void) override;
 		
 		uint64_t _triggerBits = 0;
 		
 	public:
 		//64 triggers max, currently
 		enum TRIGGER {
-			ON_CREATE			= 1,
-			ON_DESTROY			= 1<<1,
-			ON_LOAD				= 1<<2,
-			ON_UNLOAD			= 1<<3,
-			ON_ENTER			= 1<<4,
-			ON_EXIT				= 1<<5,
-			ON_UPDATE			= 1<<6,
-			ON_RENDER			= 1<<7,
-			ON_COLLIDE			= 1<<8,
-			ON_COLLISION_ENTER	= 1<<9,
-			ON_COLLISION_EXIT	= 1<<10,
-			ON_EXAMINE			= 1<<11,
-			ON_DIALOG			= 1<<12,
-			TRIGGER_MAX			= 1<<13
+			ON_SCRIPT_CREATE	= 1,
+			ON_SCRIPT_DESTROY	= 1<<1,
+			ON_CREATE			= 1<<2,
+			ON_DESTROY			= 1<<3,
+			ON_LOAD				= 1<<4,
+			ON_UNLOAD			= 1<<5,
+			ON_ENTER			= 1<<6,
+			ON_EXIT				= 1<<7,
+			ON_UPDATE			= 1<<8,
+			ON_RENDER			= 1<<9,
+			ON_COLLIDE			= 1<<10,
+			ON_COLLISION_ENTER	= 1<<11,
+			ON_COLLISION_EXIT	= 1<<12,
+			ON_EXAMINE			= 1<<13,
+			ON_DIALOG			= 1<<14,
+			TRIGGER_MAX			= 1<<15
 		};
+
+		static const char* triggerNameFromFlag(const uint64_t flag);
 
 		virtual const char *getBehavName(void) const = 0;
 		
@@ -74,6 +78,7 @@ namespace elysian {
 
 		uint64_t	getTriggers(void) const;
 		void		addTrigger(const TRIGGER flag);
+		void		addTriggers(const uint64_t flags);
 		void		removeTrigger(const TRIGGER flag);
 		inline bool getActive(void) const { return _active; }
 		inline void setActive(const bool val=true) { _active = val; }
@@ -97,6 +102,12 @@ namespace elysian {
 	//inline void Behavior::setTriggers(const uint64_t flags) { _triggerBits = flags; }
 	inline Component::TYPE Behavior::getType(void) const { return Component::BEHAVIOR; }
 	inline bool Behavior::canAddTo(Entity& /*entity*/) { return true; /*for each bit, make sure entity has required components*/ }
+
+	inline void Behavior::addTriggers(const uint64_t flags) {
+		for(unsigned i = 0; i < 64; ++i) {
+			addTrigger((TRIGGER)(flags & (0x1<<i)));
+		}
+	}
 	
 	inline void Behavior::callTrigger(const TRIGGER trigger) {
 		if(!_triggerBits & trigger) return;

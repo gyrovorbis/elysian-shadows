@@ -6,7 +6,7 @@
 #include "gyro.h"
 
 namespace elysian {
-
+#if 0
 	class Quad: public RenderableObject, public QuadAttrib {
 	public:
 
@@ -19,6 +19,7 @@ namespace elysian {
 		}
 
 	};
+#endif
 
 }
 

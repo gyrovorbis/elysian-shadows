@@ -245,24 +245,6 @@ void DestView<T>::wheelEvent(QWheelEvent *event) {
 }
 
 template<typename T>
-void DestView<T>::mouseReleaseEvent(QMouseEvent *event) {
-	if(event->button() == Qt::RightButton) {
-		_endRegionSelection(event);
-	}
-
-	if(event->button() == Qt::LeftButton && _fillingRegion) {
-		_endRegionFill(event);
-	}
-
-	if( !(event->modifiers() &= Qt::ControlModifier) ) {
-		disableSelectionPlacementMerge();
-	}
-
-	event->ignore();
-	QGraphicsView::mouseReleaseEvent(event);
-}
-
-template<typename T>
 void DestView<T>::mousePressEvent(QMouseEvent *event) {
 
 	if(event->button() == Qt::LeftButton && !(event->modifiers() &= Qt::ControlModifier)) {
@@ -271,7 +253,13 @@ void DestView<T>::mousePressEvent(QMouseEvent *event) {
 		//event->ignore();
 		//return;
 	}
-	else if(event->buttons() & Qt::LeftButton && (event->modifiers() &= Qt::ControlModifier)) {
+	else if(event->button() == Qt::MidButton) {
+		QMouseEvent fooledya(event->type(), event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers());
+		setDragMode(ScrollHandDrag);
+		QGraphicsView::mousePressEvent(&fooledya);
+	} else QGraphicsView::mousePressEvent(event);
+
+	if(event->buttons() & Qt::LeftButton && (event->modifiers() &= Qt::ControlModifier)) {
 		_startRegionFill(event);
 		event->ignore();
 		return;
@@ -291,6 +279,29 @@ void DestView<T>::mousePressEvent(QMouseEvent *event) {
 
 	//event->ignore();
 	QGraphicsView::mousePressEvent(event);
+}
+
+template<typename T>
+void DestView<T>::mouseReleaseEvent(QMouseEvent *event) {
+	if(event->button() == Qt::RightButton) {
+		_endRegionSelection(event);
+	}
+
+	if(event->button() == Qt::MidButton) {
+		QMouseEvent fooledya(event->type(), event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers());
+		QGraphicsView::mouseReleaseEvent(&fooledya);
+	} else QGraphicsView::mouseReleaseEvent(event);
+
+	if(event->button() == Qt::LeftButton && _fillingRegion) {
+		_endRegionFill(event);
+	}
+
+	if( !(event->modifiers() &= Qt::ControlModifier) ) {
+		disableSelectionPlacementMerge();
+	}
+
+	event->ignore();
+	QGraphicsView::mouseReleaseEvent(event);
 }
 
 template<typename T>
@@ -323,6 +334,7 @@ void DestView<T>::keyReleaseEvent (QKeyEvent *event)  {
 		else if(isFillingRegion()) _endRegionFill(NULL);
 	}
 	//else QGraphicsView::keyReleaseEvent(event);
+
 	event->ignore();
 }
 

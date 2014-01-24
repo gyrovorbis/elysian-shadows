@@ -23,7 +23,7 @@ INCLUDEPATH += ../../include \
     ../../../AssetIO/include \
     ../../../libGyro/include \
     ../../../libGyro/include/kinetic \
-	../../../OOLua/include
+    ../../../OOLua/include
 
 win32 {
     INCLUDEPATH += ../../../libGyro/lib/win32
@@ -39,7 +39,7 @@ DEPENDPATH += ../../include \
     ../../../AssetIO/include \
     ../../../libGyro/include \
     ../../../libGyro/include/kinetic \
-	../../../OOLua/include
+    ../../../OOLua/include
 
 HEADERS += \
     ../../include/elysian_warp_system.hpp \
@@ -109,8 +109,7 @@ HEADERS += \
     ../../../AssetIO/include/elysian_animation.hpp \
     ../../../AssetIO/include/elysian_audio_source.hpp \
     ../../include/elysian_audio_system.hpp \
-    ../../../AssetIO/include/elysian_generic.hpp \
-    ../../include/elysian_weather_system.hpp
+    ../../../AssetIO/include/elysian_generic.hpp
 
 macx {
   OBJECTIVE_HEADERS += ../../../libGyro/lib/osx/SDLMain.h
@@ -165,8 +164,7 @@ SOURCES += \
     ../../../AssetIO/source/elysian_area.cpp \
     ../../../AssetIO/source/elysian_animation.cpp \
     ../../../AssetIO/source/elysian_audio_source.cpp \
-    ../../source/elysian_audio_system.cpp \
-    ../../source/elysian_weather_system.cpp
+    ../../source/elysian_audio_system.cpp
 
 macx {
   OBJECTIVE_SOURCES += ../../../libGyro/lib/osx/SDLMain.mm
@@ -218,13 +216,13 @@ win32 {
 }
 
 macx {
-  LIBS += -L../../lib/osx \
-    -llua52 \
+  LIBS +=  -L../../lib/osx \
     -framework OpenGL \
     -framework OpenAL \
-        -lz \
+    -lz \
     -F../../../libGyro/lib/osx \
     -L../../../libGyro/lib/osx \
+    -llua52 \
     -framework Foundation \
     -framework Cocoa \
     -lobjc \
@@ -239,7 +237,7 @@ linux {
     LIBS += \
         -llua5.2 \
         -lGL \
-        -lopenal \
+		-lopenal \
         -lGLU \
         -lz \
         -lSDLmain \
@@ -247,18 +245,27 @@ linux {
         -logg \
         -lvorbis \
         -lvorbisenc \
-        -lvorbisfile
+        -lvorbisfile \
+        -lX11 \
+        -lpthread
+}
+
+macx {
+	CONFIG(release, debug|release) {
+		DESTDIR = ../../../Project
+		QMAKE_POST_LINK = "./ESGammaAppDereest.command"
+	}
 }
 
 win32 {
-  CONFIG(release, debug|release) {
+    CONFIG(release, debug|release) {
         DESTDIR = ../../../Project
-  }
+    }
 }
 
 linux {
     CONFIG(release, debug|release) {
-          DESTDIR = ../../../Project
+        DESTDIR = ../../../Project
     }
 }
 

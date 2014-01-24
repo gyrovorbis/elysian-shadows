@@ -87,6 +87,7 @@ namespace elysian {
 	inline void AudioSource::setWav(const GYWav* const wav) { _wav = wav; }
 
 	inline void AudioSource::playWav(const GYWav* const wav) {
+		(void)wav;
 #ifdef ELYSIAN_ENGINE
 		//Reserve a channel if we haven't already
 		if(!_src) {

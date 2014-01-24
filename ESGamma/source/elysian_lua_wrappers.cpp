@@ -1,15 +1,18 @@
 #include "elysian_lua_wrappers.hpp"
 #include "elysian_lua_manager.hpp"
 
+#include "elysian_entity.hpp"
+
 namespace elysian {
 
 	void LuaManager::_registerWrappers(void) {
-		
+
 		//Register classes and structs
+		_mainState->register_class<LuaBehaviorScriptAttrib>();
 		_mainState->register_class<GYVector2>();
 		_mainState->register_class<InstanceTransform>();
-		OOLUA::register_class_and_bases<Entity>(*_mainState);
-		OOLUA::register_class_and_bases<SpriteAttrib>(*_mainState);
+		OOLUA::register_class<Entity>(*_mainState);
+		OOLUA::register_class<QuadSpriteAttrib>(*_mainState);
 		_mainState->register_class<Component>();
 		_mainState->register_class<Renderable>();
 		_mainState->register_class<AnimationSequence>();
@@ -21,16 +24,21 @@ namespace elysian {
 		_mainState->register_class<Collidable>();
 		_mainState->register_class<Character>();
 		_mainState->register_class<Warp>();
-		OOLUA::register_class_and_bases<LuaBehavior>(*_mainState);
+		OOLUA::register_class<LuaBehavior>(*_mainState);
 		_mainState->register_class<Tile>();
 		_mainState->register_class<Level>();
-		OOLUA::register_class_and_bases<TileEntry>(*_mainState);
+		OOLUA::register_class<TileEntry>(*_mainState);
 		_mainState->register_class<Area>();
 		_mainState->register_class<GameInput>();
+		_mainState->register_class<PartySystem>();
+		_mainState->register_class<TimerSystem>();
 		_mainState->register_class<Singletons>();
 		_mainState->register_class<gyro>();
 		_mainState->register_class<GYWav>();
 		_mainState->register_class<AudioSource>();
+		_mainState->register_class<AudioSystem>();
+		_mainState->register_class<LevelSystem>();
+		_mainState->register_class<Direction>();
 
 		//Register C and static member functions
 		lua_register(*_mainState, "print", &print);
@@ -40,6 +48,8 @@ namespace elysian {
 		_mainState->register_class_static<Singletons>("setProcessInput", &Singletons_setProcessInput);
 		_mainState->register_class_static<Singletons>("getPartySys", &Singletons_getPartySystem);
 		_mainState->register_class_static<Singletons>("getTimerSys", &Singletons_getTimerSystem);
+		_mainState->register_class_static<Singletons>("getAudioSys", &Singletons_getAudioSystem);
+		_mainState->register_class_static<Singletons>("getLevelSys", &Singletons_getLevelSystem);
 
 		//libGyro wrappers
 		_mainState->register_class_static<gyro>("filePath", &gyroFilePath);
@@ -51,6 +61,11 @@ namespace elysian {
 	}
 
 }
+
+OOLUA_EXPORT_FUNCTIONS(LuaBehaviorScriptAttrib,
+					   inheritFromBehavior,
+					   addSupportedTrigger)
+OOLUA_EXPORT_FUNCTIONS_CONST(LuaBehaviorScriptAttrib)
 
 EXPORT_OOLUA_FUNCTIONS_2_CONST(GYVector2, get_x, get_y)
 EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(GYVector2, set_x, set_y)
@@ -83,28 +98,32 @@ EXPORT_OOLUA_FUNCTIONS_0_CONST(RenderableObject)
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Component)
 EXPORT_OOLUA_FUNCTIONS_1_CONST(Component, getEntity)
 
-EXPORT_OOLUA_FUNCTIONS_13_NON_CONST(Entity,
-									activate,
-									deactivate,
-									move,
-									setName,
-									setElev,
-									addRenderable,
-									addAnimation,
-									addCollidable,
-									addCharacter,
-									addWarp,
-									addAudioSource,
-									addBehavior,
-									addLuaBehavior)
-									//removeRenderable,
-									//removeAnimation,
-									//removeCollidable,
-									//removeCharacter,
-									//removeWarp,
-									//removeBehavior,
-									//removeLuaBehavior)
-EXPORT_OOLUA_FUNCTIONS_10_CONST(Entity,
+OOLUA_EXPORT_FUNCTIONS(Entity,
+						activate,
+						deactivate,
+						move,
+						setName,
+						setElev,
+						addRenderable,
+						addAnimation,
+						addCollidable,
+						addCharacter,
+						addWarp,
+						addAudioSource,
+						addBehavior,
+						addLuaBehavior,
+						removeRenderable,
+						removeAnimation,
+						removeCollidable,
+						removeCharacter,
+						removeWarp,
+						removeAudioSource,
+						removeBehavior,
+						removeLuaBehavior,
+						setDepthType,
+						setSelfTable,
+						getSelfTable)
+OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getName,
 								getElev,
 								getRenderable,
@@ -114,32 +133,37 @@ EXPORT_OOLUA_FUNCTIONS_10_CONST(Entity,
 								getWarp,
 								getAudioSource,
 								getBehavior,
-								getLuaBehavior)
+								getLuaBehavior,
+								getDepthType)
 
-EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(RectAttrib,
+EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(PrimAttrib)
+EXPORT_OOLUA_FUNCTIONS_0_CONST(PrimAttrib)
+
+EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(SpriteAttrib,
+								   setFrame,
 								   setColor,
-								   setAlpha)
-EXPORT_OOLUA_FUNCTIONS_2_CONST(RectAttrib,
+								   setAlpha,
+								   loadTexture,
+								   loadSheet)
+EXPORT_OOLUA_FUNCTIONS_2_CONST(SpriteAttrib,
 							   getColor,
 							   getAlpha)
 
-EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(TexturedAttrib,
-								   loadTexture,
-								   loadSheet)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(TexturedAttrib)
-
-EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(SpriteAttrib,
-								   setFrame)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(SpriteAttrib)
+EXPORT_OOLUA_FUNCTIONS_1_CONST(QuadSpriteAttrib,
+							   getVertexColor)
+EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(QuadSpriteAttrib,
+								   setVertexColor,
+								   setVerticesAlpha)
 
 EXPORT_OOLUA_FUNCTIONS_3_NON_CONST(Renderable,
 								   setFrame,
 								   setOffset,
 								   setSpriteAttrib)
-EXPORT_OOLUA_FUNCTIONS_3_CONST(Renderable,
+EXPORT_OOLUA_FUNCTIONS_4_CONST(Renderable,
 							   getFrame,
 							   getOffset,
-							   getSpriteAttrib)
+							   getSpriteAttrib,
+							   getQuadSpriteAttrib)
 
 EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(AnimationSequence,
 								   addFrame)
@@ -149,12 +173,16 @@ EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(AnimationAttrib,
 								   addSequence)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(AnimationAttrib)
 
-EXPORT_OOLUA_FUNCTIONS_3_NON_CONST(Animation,
+EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(Animation,
 								   setAttrib,
 								   playAnimation,
-								   stopAnimation)
-EXPORT_OOLUA_FUNCTIONS_1_CONST(Animation,
-							   getAttrib)
+								   stopAnimation,
+								   setLooping,
+								   setCurrentFrame)
+EXPORT_OOLUA_FUNCTIONS_3_CONST(Animation,
+							   getAttrib,
+							   isLooping,
+							   getCurrentFrame)
 
 EXPORT_OOLUA_FUNCTIONS_4_NON_CONST(CollisionFlags,
 								   resetType,
@@ -194,10 +222,16 @@ EXPORT_OOLUA_FUNCTIONS_2_CONST(Collidable,
 							   getAttrib,
 							   getContactCount)
 
-EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(Character,
-								   face,
+EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Direction)
+EXPORT_OOLUA_FUNCTIONS_0_CONST(Direction)
+
+EXPORT_OOLUA_FUNCTIONS_3_NON_CONST(Character,
+								   faceEntity,
+								   faceDir,
 								   move)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(Character)
+EXPORT_OOLUA_FUNCTIONS_2_CONST(Character,
+							   getFaceDir,
+							   isFacing)
 
 EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(Warp,
 								   setToPos,
@@ -223,13 +257,14 @@ EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(Behavior,
 EXPORT_OOLUA_FUNCTIONS_1_CONST(Behavior,
 								getBehavName)
 
-EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(LuaBehavior)//,
-								  // getDataTable)
+EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(LuaBehavior,
+								   getSelfTable)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(LuaBehavior)
 
 EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(Tile,
 									setColliderType)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(Tile)
+EXPORT_OOLUA_FUNCTIONS_1_CONST(Tile,
+                               getColliderType)
 
 EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(Level,
 									getTile)
@@ -273,19 +308,73 @@ EXPORT_OOLUA_FUNCTIONS_2_CONST(GameInput,
 								getDown,
 								getTapped)
 
-EXPORT_OOLUA_FUNCTIONS_3_CONST(TimerSystem,
+OOLUA_EXPORT_FUNCTIONS_CONST(TimerSystem,
 								getTotalTicks,
 								getCurrentFrameTicks,
-								getDeltaTime)
-EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(TimerSystem)
+								getDeltaTime,
+								getTotalTime)
+OOLUA_EXPORT_FUNCTIONS(TimerSystem)
 
 
-EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(PartySystem,
+OOLUA_EXPORT_FUNCTIONS(PartySystem,
 									addCharacterToParty,
 									removeCharacterFromParty)
-EXPORT_OOLUA_FUNCTIONS_2_CONST(PartySystem,
+OOLUA_EXPORT_FUNCTIONS_CONST(PartySystem,
 								getPartyLeader,
 								getCharacterPartyMember)
+
+OOLUA_EXPORT_FUNCTIONS(LevelSystem)
+OOLUA_EXPORT_FUNCTIONS_CONST(LevelSystem,
+								getPrevAreaPath,
+								getPrevLevelPath)
+
+OOLUA_EXPORT_FUNCTIONS(AudioSystem,
+					   loadBgmTrack,
+					   setBgmTrack,
+					   fadeOutBgmTrack,
+					   fadeInBgmTrack,
+					   morphIntoBgmTrack,
+					   setBgmTrackLooping,
+					   setBgmTrackGain,
+					   fadeIntoBgmTrack,
+					   morphIntoNewBgmTrack,
+					   fadeIntoNewBgmTrack,
+					   loadAuxTrack,
+					   fadeOutAuxTrack,
+					   fadeInAuxTrack,
+					   morphIntoNewAuxTrack,
+					   fadeIntoNewAuxTrack,
+					   setAuxTrackLooping,
+					   setAuxTrackGain)
+
+
+OOLUA_EXPORT_FUNCTIONS_CONST(AudioSystem,
+							 playSfxChannel,
+							 stopSfxChannel,
+							 setSfxChannelGain,
+							 setSfxChannelPitch,
+							 setSfxChannelLooping,
+							 setSfxChannelRolloffFactor,
+							 setSfxChannelPos,
+							 playBgmTrack,
+							 stopBgmTrack,
+							 pauseBgmTrack,
+							 isBgmTrackPlaying,
+							 getBgmTrack,
+							 getBgmTrackPath,
+							 setBgmTrackPitch,
+							 setBgmTrackPos,
+							 setBgmTrackRolloffFactor,
+							 playAuxTrack,
+							 stopAuxTrack,
+							 pauseAuxTrack,
+							 isAuxTrackPlaying,
+							 getAuxTrackPath,
+							 setAuxTrackPitch,
+							 setAuxTrackPos,
+							 setAuxTrackRolloffFactor,
+							 getBgmTrackTime,
+							 getAuxTrackTime)
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Singletons)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(Singletons)

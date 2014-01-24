@@ -16,9 +16,6 @@
 namespace elysian {
 
 WarpSystem::WarpSystem(void): 
-	_renderWarps(true), 
-	_state(CHECK_WARP), 
-	_timer(0.0f), 
 	_currentWarp()
 {
 	_screenRect.transform._posZ = ELYSIAN_ZCOORD_WARP_OVERLAY;
@@ -46,9 +43,10 @@ void WarpSystem::Update(void) {
 			UpdateFadeOut();
 			break;
 		case WARP:
-			if(_currentWarp._changeLevel) getLevelSys()->SwitchLevel(_currentWarp._levelPath);
-			if(_currentWarp._changeArea) getLevelSys()->SwitchArea(_currentWarp._areaPath);
+			if(_currentWarp._changeLevel) getLevelSys()->switchLevel(_currentWarp._levelPath);
+			if(_currentWarp._changeArea) getLevelSys()->switchArea(_currentWarp._areaPath);
 			getPartySys()->getPartyLeader()->transform.setPos(_currentWarp._toPosition);
+			getPartySys()->getPartyLeader()->setElev(_currentWarp._toElev);
 			_state = FADE_IN;
 			break;
 		case FADE_IN:

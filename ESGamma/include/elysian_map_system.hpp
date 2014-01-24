@@ -95,7 +95,7 @@ namespace elysian {
 		return ZCoordConstants::object1;
 	}
 	
-	inline void MapSystem::getObjectLayerEntry(const unsigned x, const unsigned y, MapDepthBuffEntry &entry) const {
+	inline void MapSystem::getObjectLayerEntry(const unsigned /*x*/, const unsigned /*y*/, MapDepthBuffEntry &entry) const {
 		entry.mapEntry = _curArea->getTileEntry(entry.layer, entry.x, entry.y);
 	}
 	

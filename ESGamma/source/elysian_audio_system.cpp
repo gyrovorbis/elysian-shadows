@@ -15,7 +15,7 @@ namespace elysian {
 		//Allocate audio channels
 		//and initialize channel data
 		for(unsigned i = 0; i < ELYSIAN_AUDIO_CHANNELS; ++i) {
-			_channels[i].src = gyAudSourceCreate();
+			_channels[i].src = (i >= AudioChannel::BGM_1 && i <= AudioChannel::AUX_2)? gyAudOggStreamCreate() : gyAudSourceCreate();
 			_channels[i].owner = AudioChannel::FREE;
 		}
 
@@ -30,6 +30,7 @@ namespace elysian {
 		//Initialize all nondynamic sources to be nondirectional
 		for(unsigned i = AudioChannel::BGM_1; i < AudioChannel::DYN_1; ++i) {
 			gyAudSourceSetf(_channels[i].src, GY_SOURCE_ROLLOFF_FACTOR, 0.0f);
+			gyAudOggStreamSetLooping(_channels[i].src, 1);
 			//gyAudSourceSeti(_channels[i].src, GY_SOURCE_RELATIVE, 1);
 		}
 	}
@@ -38,7 +39,8 @@ namespace elysian {
 		//Deallocate channels and their sources
 		for(unsigned i = 0; i < ELYSIAN_AUDIO_CHANNELS; ++i) {
 			gyAudSourceStop(_channels[i].src);
-			gyAudSourceDestroy(_channels[i].src);
+			if(i >= AudioChannel::BGM_1 && i <= AudioChannel::AUX_2) gyAudOggStreamDestroy(_channels[i].src);
+			else gyAudSourceDestroy(_channels[i].src);
 		}
 
 		//Deallocate BGM tracks
@@ -64,26 +66,24 @@ namespace elysian {
 		for(unsigned i = 0; i < 6; ++i) {
 
 			//if(gyAudSourceIsPlaying(_oggTracks[i].src)) {
-			if(_streamChannels[i].ogg) gyAudOggUpdate(_streamChannels[i].src, _streamChannels[i].ogg);
+			//if(_streamChannels[i].ogg) gyAudOggUpdate(_streamChannels[i].src, _streamChannels[i].ogg);
 			//}
 
 			/*Reested to have to do this every frame, but looping is tied to the OGG track, not the source,
 			so we can't set all tracks at once when this value changes */
-			if(i < 2) { //Do the same for AUX TRACKS!!!!!
+			/*if(i < 2) { //Do the same for AUX TRACKS!!!!!
 				if(_streamChannels[i].ogg) gyAudOggSetLooping(_streamChannels[i].ogg, _bgmLooping);
 			} else if(i >= 2 && i < 4) {
 				if(_streamChannels[i].ogg) gyAudOggSetLooping(_streamChannels[i].ogg, _aux1Looping);
 			} else {
 				if(_streamChannels[i].ogg) gyAudOggSetLooping(_streamChannels[i].ogg, _aux2Looping);
-			}
-
-
+			}*/
 
 			switch(_streamChannels[i].state) {
 			case StreamChannel::State::FADE_OUT:
 				_streamChannels[i].fadeEllapsed += getTimerSys()->getDeltaTime();
 				if(_streamChannels[i].fadeEllapsed >= _streamChannels[i].fadeTime) {
-					gyAudPauseOggStream(_streamChannels[i].src, _streamChannels[i].ogg);
+					gyAudOggStreamPause(_streamChannels[i].src);
 					_streamChannels[i].fadeEllapsed = 0.0f;
 					_streamChannels[i].state = StreamChannel::State::NORMAL;
 					gyAudSourceSetf(_streamChannels[i].src, GY_SOURCE_GAIN, _streamChannels[i].baseGain);
@@ -92,19 +92,19 @@ namespace elysian {
 					case StreamChannel::Type::BGM:
 						if(_globalStates[TYPE_BGM].state == GlobalState::FADE_OUT) {
 							_globalStates[TYPE_BGM].state = GlobalState::FADE_IN;
-							if(_streamChannels[i].ogg)
-								gyAudOggSync(_streamChannels[i].ogg, _bgmTracks[_globalStates[TYPE_BGM].newTrack]);
+		//					if(_streamChannels[i].ogg)
+	//							gyAudOggStreamSync(_streamChannels[i].src, _bgmTracks[_globalStates[TYPE_BGM].newTrack]);
 							_streamChannels[i].ogg = _bgmTracks[_globalStates[TYPE_BGM].newTrack];
 							_streamChannels[i].track = _globalStates[TYPE_BGM].newTrack;
 							fadeInBgmTrack(_globalStates[TYPE_BGM].fadeTime/2.0f);
 
 						} else if(_globalStates[TYPE_BGM].state == GlobalState::FADE_OUT_NEW) {
 							_globalStates[TYPE_BGM].state = GlobalState::FADE_IN;
-							if(_streamChannels[i].ogg)
-								gyAudOggSync(_streamChannels[i].ogg, _bgmTracks[5]);
+	//						if(_streamChannels[i].ogg)
+		//						gyAudOggSync(_streamChannels[i].ogg, _bgmTracks[5]);
 
 							if(_bgmTracks[_globalStates[TYPE_BGM].newTrack])
-								gyAudDestroyOgg(_bgmTracks[_globalStates[TYPE_BGM].newTrack]);
+								gyAudOggDestroy(_bgmTracks[_globalStates[TYPE_BGM].newTrack]);
 							_bgmTracks[_globalStates[TYPE_BGM].newTrack] = _bgmTracks[5];
 							_bgmTracks[5] = nullptr;
 
@@ -117,11 +117,11 @@ namespace elysian {
 					case StreamChannel::Type::AUX_1:
 						if(_globalStates[TYPE_AUX1].state == GlobalState::FADE_OUT_NEW) {
 							_globalStates[TYPE_AUX1].state = GlobalState::FADE_IN;
-							if(_streamChannels[i].ogg)
-								gyAudOggSync(_streamChannels[i].ogg, _auxTracks[1]);
+	//						if(_streamChannels[i].ogg)
+	//							gyAudOggSync(_streamChannels[i].ogg, _auxTracks[1]);
 
 							if(_auxTracks[_globalStates[TYPE_AUX1].newTrack])
-								gyAudDestroyOgg(_auxTracks[_globalStates[TYPE_AUX1].newTrack]);
+								gyAudOggDestroy(_auxTracks[_globalStates[TYPE_AUX1].newTrack]);
 							_auxTracks[_globalStates[TYPE_AUX1].newTrack] = _auxTracks[1];
 							_auxTracks[1] = nullptr;
 
@@ -133,11 +133,11 @@ namespace elysian {
 					case StreamChannel::Type::AUX_2:
 						if(_globalStates[TYPE_AUX2].state == GlobalState::FADE_OUT_NEW) {
 							_globalStates[TYPE_AUX2].state = GlobalState::FADE_IN;
-							if(_streamChannels[i].ogg)
-								gyAudOggSync(_streamChannels[i].ogg, _auxTracks[3]);
+//							if(_streamChannels[i].ogg)
+	//							gyAudOggSync(_streamChannels[i].ogg, _auxTracks[3]);
 
 							if(_auxTracks[_globalStates[TYPE_AUX2].newTrack])
-								gyAudDestroyOgg(_auxTracks[_globalStates[TYPE_AUX2].newTrack]);
+								gyAudOggDestroy(_auxTracks[_globalStates[TYPE_AUX2].newTrack]);
 							_auxTracks[_globalStates[TYPE_AUX2].newTrack] = _auxTracks[3];
 							_auxTracks[3] = nullptr;
 
@@ -146,7 +146,7 @@ namespace elysian {
 							fadeInAuxTrack(1, _globalStates[TYPE_AUX2].fadeTime/2.0f);
 						}
 						break;
-						
+					default: break;
 						
 					}
 					
@@ -178,7 +178,7 @@ namespace elysian {
 						//It's a temp track, replace old track
 						if(_streamChannels[StreamChannel::Type::BGM].track == 5) {
 							if(_bgmTracks[_streamChannels[StreamChannel::Type::BGM].newTrack])
-								gyAudDestroyOgg(_bgmTracks[_streamChannels[StreamChannel::Type::BGM].newTrack]);
+								gyAudOggDestroy(_bgmTracks[_streamChannels[StreamChannel::Type::BGM].newTrack]);
 							_bgmTracks[_streamChannels[StreamChannel::Type::BGM].newTrack] = _bgmTracks[5];
 							_bgmTracks[5] = nullptr;
 							_streamChannels[StreamChannel::Type::BGM].track = _streamChannels[StreamChannel::Type::BGM].newTrack;
@@ -194,7 +194,7 @@ namespace elysian {
 						//It's a temp track, replace old track
 						if(_streamChannels[StreamChannel::Type::AUX_1].track == 1) {
 							if(_auxTracks[_streamChannels[StreamChannel::Type::AUX_1].newTrack])
-								gyAudDestroyOgg(_auxTracks[_streamChannels[StreamChannel::Type::AUX_1].newTrack]);
+								gyAudOggDestroy(_auxTracks[_streamChannels[StreamChannel::Type::AUX_1].newTrack]);
 							_auxTracks[_streamChannels[StreamChannel::Type::AUX_1].newTrack] = _auxTracks[1];
 							_auxTracks[1] = nullptr;
 							_streamChannels[StreamChannel::Type::AUX_1].track = _streamChannels[StreamChannel::Type::AUX_1].newTrack;
@@ -213,19 +213,18 @@ namespace elysian {
 						//It's a temp track, replace old track
 						if(_streamChannels[StreamChannel::Type::AUX_2].track == 3) {
 							if(_auxTracks[_streamChannels[StreamChannel::Type::AUX_2].newTrack])
-								gyAudDestroyOgg(_auxTracks[_streamChannels[StreamChannel::Type::AUX_2].newTrack]);
+								gyAudOggDestroy(_auxTracks[_streamChannels[StreamChannel::Type::AUX_2].newTrack]);
 							_auxTracks[_streamChannels[StreamChannel::Type::AUX_2].newTrack] = _auxTracks[3];
 							_auxTracks[3] = nullptr;
 							_streamChannels[StreamChannel::Type::AUX_2].track = _streamChannels[StreamChannel::Type::AUX_2].newTrack;
 						}
 
-
-
-
 						break;
 					case StreamChannel::Type::BGM:
 						_globalStates[TYPE_BGM].fadeTime = 0.0f;
 						_globalStates[TYPE_BGM].state = GlobalState::NORMAL;
+						break;
+					default: break;
 					}
 
 				} else {
@@ -312,10 +311,11 @@ namespace elysian {
 		gyAudSourceSeti(_channels[channel].src, GY_SOURCE_LOOPING, static_cast<int>(val));
 	}
 
-	void AudioSystem::setSfxChannelPos(const unsigned channel, const GYVector3 &pos) const {
+	void AudioSystem::setSfxChannelPos(const unsigned channel, const GYVector2 &pos, const unsigned elev) const {
         //gyAudSourceSetf(_channels[channel].src, GY_SOURCE_ROLLOFF_FACTOR, 1.0f);
         //gyAudSourceSeti(_channels[channel].src, GY_SOURCE_RELATIVE, 1);
-		gyAudSourceSetfv(_channels[channel].src, GY_SOURCE_POS, &pos);
+		GYVector3 pos3 = { pos.x, pos.y, static_cast<float>(elev) };
+		gyAudSourceSetfv(_channels[channel].src, GY_SOURCE_POS, &pos3);
 	}
 
     void AudioSystem::setSfxChannelRolloffFactor(const unsigned channel, const float val) const {
@@ -331,11 +331,11 @@ namespace elysian {
 		if(_bgmTracks[track]) {
 
 			//Deallocate old track
-			gyAudDestroyOgg(_bgmTracks[track]);
+			gyAudOggDestroy(_bgmTracks[track]);
 		}
 
 		//Allocate new track
-		_bgmTracks[track] = gyAudCreateOgg(path);
+		_bgmTracks[track] = gyAudOggCreate(path);
 
 		if(track == _streamChannels[StreamChannel::Type::BGM].track)
 			_streamChannels[StreamChannel::Type::BGM].ogg = _bgmTracks[track];
@@ -343,15 +343,15 @@ namespace elysian {
 	}
 
 	void AudioSystem::playBgmTrack(void) const {
-		gyAudSourcePlayOgg(_streamChannels[StreamChannel::Type::BGM].src, _streamChannels[StreamChannel::Type::BGM].ogg);
+		gyAudOggStreamPlay(_streamChannels[StreamChannel::Type::BGM].src, _streamChannels[StreamChannel::Type::BGM].ogg);
 	}
 
 	void AudioSystem::stopBgmTrack(void) const {
-		gyAudStopOggStream(_streamChannels[StreamChannel::Type::BGM].src, _streamChannels[StreamChannel::Type::BGM].ogg);
+		gyAudOggStreamStop(_streamChannels[StreamChannel::Type::BGM].src);
 	}
 
 	void AudioSystem::pauseBgmTrack(void) const {
-		gyAudPauseOggStream(_streamChannels[StreamChannel::Type::BGM].src, _streamChannels[StreamChannel::Type::BGM].ogg);
+		gyAudOggStreamPause(_streamChannels[StreamChannel::Type::BGM].src);
 	}
 
 	bool AudioSystem::isBgmTrackPlaying(void) const {
@@ -391,14 +391,15 @@ namespace elysian {
 		_bgmLooping = val;
 	}
 
-	const char* AudioSystem::getBgmTrackPath(const unsigned track) {
+	const char* AudioSystem::getBgmTrackPath(const unsigned track) const {
 		return _bgmTracks[track]->path;
 	}
 
-	void AudioSystem::setBgmTrackPos(const GYVector3& pos) const {
+	void AudioSystem::setBgmTrackPos(const GYVector2& pos, const unsigned elev) const {
+		GYVector3 pos3 = { pos.x, pos.y, static_cast<float>(elev) };
 		for(unsigned i = 0; i < 2; ++i) {
 			//gyAudSourceSetf(_channels[i].src, GY_SOURCE_ROLLOFF_FACTOR, 1.0f);
-			gyAudSourceSetfv(_streamChannels[i].src, GY_SOURCE_POS, &pos);
+			gyAudSourceSetfv(_streamChannels[i].src, GY_SOURCE_POS, &pos3);
 		}
 	}
 
@@ -422,17 +423,21 @@ namespace elysian {
 		}
 	}
 
+	double AudioSystem::getBgmTrackTime(void) const {
+		return gyAudOggStreamTime(_streamChannels[StreamChannel::Type::BGM].src);
+	}
+
 	void AudioSystem::morphIntoBgmTrack(const unsigned track, const float secs) {
 		if(_streamChannels[StreamChannel::Type::BGM].track == track) return;
 
-		gyAudOggSync(_streamChannels[StreamChannel::Type::BGM].ogg, _bgmTracks[track]);
+		//gyAudOggSync(_streamChannels[StreamChannel::Type::BGM].ogg, _bgmTracks[track]);
 		fadeOutBgmTrack(secs);
 
 		_streamChannels[StreamChannel::Type::BGM_TRAN].ogg = _bgmTracks[track];
 		_streamChannels[StreamChannel::Type::BGM_TRAN].state = StreamChannel::State::FADE_IN;
 		_streamChannels[StreamChannel::Type::BGM_TRAN].fadeTime = secs;
 		_streamChannels[StreamChannel::Type::BGM_TRAN].track = track;
-		gyAudSourcePlayOgg(_streamChannels[StreamChannel::Type::BGM_TRAN].src, _streamChannels[StreamChannel::Type::BGM_TRAN].ogg);
+		gyAudOggStreamPlay(_streamChannels[StreamChannel::Type::BGM_TRAN].src, _streamChannels[StreamChannel::Type::BGM_TRAN].ogg);
 	}
 
 
@@ -450,14 +455,14 @@ namespace elysian {
 		//Temp track is already allocated
 		if(_bgmTracks[5]) {
 			//Deallocate old track
-			gyAudDestroyOgg(_bgmTracks[5]);
+			gyAudOggDestroy(_bgmTracks[5]);
 		}
 
 		//Allocate new track
-		_bgmTracks[5] = gyAudCreateOgg(path);
+		_bgmTracks[5] = gyAudOggCreate(path);
 
-		if(_streamChannels[StreamChannel::Type::BGM].ogg)
-			gyAudOggSync(_streamChannels[StreamChannel::Type::BGM].ogg, _bgmTracks[5]);
+	//	if(_streamChannels[StreamChannel::Type::BGM].ogg)
+		//	gyAudOggSync(_streamChannels[StreamChannel::Type::BGM].ogg, _bgmTracks[5]);
 		fadeOutBgmTrack(secs);
 
 		_streamChannels[StreamChannel::Type::BGM_TRAN].ogg = _bgmTracks[5];
@@ -465,7 +470,7 @@ namespace elysian {
 		_streamChannels[StreamChannel::Type::BGM_TRAN].fadeTime = secs;
 		_streamChannels[StreamChannel::Type::BGM_TRAN].track = 5;
 		_streamChannels[StreamChannel::Type::BGM_TRAN].newTrack = track;
-		gyAudSourcePlayOgg(_streamChannels[StreamChannel::Type::BGM_TRAN].src, _streamChannels[StreamChannel::Type::BGM_TRAN].ogg);
+		gyAudOggStreamPlay(_streamChannels[StreamChannel::Type::BGM_TRAN].src, _streamChannels[StreamChannel::Type::BGM_TRAN].ogg);
 
 	}
 
@@ -473,11 +478,11 @@ namespace elysian {
 		//Temp track is already allocated
 		if(_bgmTracks[5]) {
 			//Deallocate old track
-			gyAudDestroyOgg(_bgmTracks[5]);
+			gyAudOggDestroy(_bgmTracks[5]);
 		}
 
 		//Allocate new track
-		_bgmTracks[5] = gyAudCreateOgg(path);
+		_bgmTracks[5] = gyAudOggCreate(path);
 
 		_globalStates[TYPE_BGM].state = GlobalState::FADE_OUT_NEW;
 		_globalStates[TYPE_BGM].newTrack = track;
@@ -510,11 +515,11 @@ namespace elysian {
 		if(_auxTracks[oggTrack]) {
 
 			//Deallocate old track
-			gyAudDestroyOgg(_auxTracks[oggTrack]);
+			gyAudOggDestroy(_auxTracks[oggTrack]);
 		}
 
 		//Allocate new track
-		_auxTracks[oggTrack] = gyAudCreateOgg(path);
+		_auxTracks[oggTrack] = gyAudOggCreate(path);
 
 		const unsigned channel = _auxIndexToStreamChannel(track);
 		_streamChannels[channel].ogg = _auxTracks[oggTrack];
@@ -523,17 +528,17 @@ namespace elysian {
 
 	void AudioSystem::playAuxTrack(const unsigned track) const {
 		const unsigned channel = _auxIndexToStreamChannel(track);
-		gyAudSourcePlayOgg(_streamChannels[channel].src, _streamChannels[channel].ogg);
+		gyAudOggStreamPlay(_streamChannels[channel].src, _streamChannels[channel].ogg);
 	}
 
 	void AudioSystem::stopAuxTrack(const unsigned track) const {
 		const unsigned channel = _auxIndexToStreamChannel(track);
-		gyAudStopOggStream(_streamChannels[channel].src, _streamChannels[channel].ogg);
+		gyAudOggStreamStop(_streamChannels[channel].src);
 	}
 
 	void AudioSystem::pauseAuxTrack(const unsigned track) const {
 		const unsigned channel = _auxIndexToStreamChannel(track);
-		gyAudPauseOggStream(_streamChannels[channel].src, _streamChannels[channel].ogg);
+		gyAudOggStreamPause(_streamChannels[channel].src);
 	}
 
 	bool AudioSystem::isAuxTrackPlaying(const unsigned track) const {
@@ -565,14 +570,14 @@ namespace elysian {
 
 		if(_auxTracks[oggTrack]) {
 			//Deallocate old track
-			gyAudDestroyOgg(_bgmTracks[oggTrack]);
+			gyAudOggDestroy(_bgmTracks[oggTrack]);
 		}
 
 		//Allocate new track
-		_bgmTracks[oggTrack] = gyAudCreateOgg(path);
+		_bgmTracks[oggTrack] = gyAudOggCreate(path);
 
-		if(_streamChannels[channel].ogg)
-			gyAudOggSync(_streamChannels[channel].ogg, _bgmTracks[oggTrack]);
+//		if(_streamChannels[channel].ogg)
+//			gyAudOggSync(_streamChannels[channel].ogg, _bgmTracks[oggTrack]);
 		fadeOutAuxTrack(track, secs);
 
 		_streamChannels[channel+1].ogg = _bgmTracks[oggTrack];
@@ -580,23 +585,23 @@ namespace elysian {
 		_streamChannels[channel+1].fadeTime = secs;
 		_streamChannels[channel+1].track = oggTrack;
 		_streamChannels[channel+1].newTrack = track;
-		gyAudSourcePlayOgg(_streamChannels[channel+1].src, _streamChannels[channel+1].ogg);
+		gyAudOggStreamPlay(_streamChannels[channel+1].src, _streamChannels[channel+1].ogg);
 
 	}
 
 	void AudioSystem::fadeIntoNewAuxTrack(const unsigned track, const float secs, const char *path) {
 		//Temp track is already allocated
 		const unsigned oggTrack = _auxIndexToTrack(track)+1;
-		const unsigned channel = _auxIndexToStreamChannel(track);
+//		const unsigned channel = _auxIndexToStreamChannel(track);
 
 		//Temp track is already allocated
 		if(_auxTracks[oggTrack]) {
 			//Deallocate old track
-			gyAudDestroyOgg(_auxTracks[oggTrack]);
+			gyAudOggDestroy(_auxTracks[oggTrack]);
 		}
 
 		//Allocate new track
-		_auxTracks[oggTrack] = gyAudCreateOgg(path);
+		_auxTracks[oggTrack] = gyAudOggCreate(path);
 
 		_globalStates[TYPE_AUX1+track].state = GlobalState::FADE_OUT_NEW;
 		_globalStates[TYPE_AUX1+track].newTrack = oggTrack-1;
@@ -637,13 +642,14 @@ namespace elysian {
 		}
 	}
 
-	void AudioSystem::setAuxTrackPos(const unsigned track, const GYVector3& pos) const {
+	void AudioSystem::setAuxTrackPos(const unsigned track, const GYVector2& pos, const unsigned elev) const {
+		GYVector3 pos3 = { pos.x, pos.y, static_cast<float>(elev)  };
 		if(track == 0) {
-			gyAudSourceSetfv(_streamChannels[StreamChannel::Type::AUX_1].src, GY_SOURCE_POS, &pos);
-			gyAudSourceSetfv(_streamChannels[StreamChannel::Type::AUX_1_TRAN].src, GY_SOURCE_POS, &pos);
+			gyAudSourceSetfv(_streamChannels[StreamChannel::Type::AUX_1].src, GY_SOURCE_POS, &pos3);
+			gyAudSourceSetfv(_streamChannels[StreamChannel::Type::AUX_1_TRAN].src, GY_SOURCE_POS, &pos3);
 		} else {
-			gyAudSourceSetfv(_streamChannels[StreamChannel::Type::AUX_2].src, GY_SOURCE_POS, &pos);
-			gyAudSourceSetfv(_streamChannels[StreamChannel::Type::AUX_2_TRAN].src, GY_SOURCE_POS, &pos);
+			gyAudSourceSetfv(_streamChannels[StreamChannel::Type::AUX_2].src, GY_SOURCE_POS, &pos3);
+			gyAudSourceSetfv(_streamChannels[StreamChannel::Type::AUX_2_TRAN].src, GY_SOURCE_POS, &pos3);
 		}
 	}
 
@@ -654,6 +660,14 @@ namespace elysian {
 		} else {
 			gyAudSourceSetf(_streamChannels[StreamChannel::Type::AUX_2].src, GY_SOURCE_ROLLOFF_FACTOR, val);
 			gyAudSourceSetf(_streamChannels[StreamChannel::Type::AUX_2_TRAN].src, GY_SOURCE_ROLLOFF_FACTOR, val);
+		}
+	}
+
+	double AudioSystem::getAuxTrackTime(const unsigned track) const {
+		if(track == 0) {
+			return gyAudOggStreamTime(_streamChannels[StreamChannel::Type::AUX_1].src);
+		} else {
+			return gyAudOggStreamTime(_streamChannels[StreamChannel::Type::AUX_2].src);
 		}
 	}
 

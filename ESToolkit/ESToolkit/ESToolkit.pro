@@ -99,8 +99,8 @@ SOURCES += source/asset/project.cpp \
     ../../AssetIO/source/elysian_behavior.cpp \
     ../../AssetIO/source/elysian_asset.cpp \
     ../../AssetIO/source/elysian_area.cpp \
-	../../AssetIO/source/elysian_animation.cpp \
-	../../AssetIO/source/elysian_audio_source.cpp
+    ../../AssetIO/source/elysian_animation.cpp \
+    ../../AssetIO/source/elysian_audio_source.cpp
 HEADERS += include/asset/project.h \
     include/asset/level.h \
     include/asset/entity.h \
@@ -133,7 +133,6 @@ HEADERS += include/asset/project.h \
     include/sheetManager/sheetManagerDestView.h \
     include/sheetManager/SheetManagerAssets.h \
     include/sheetManager/SheetManagerAssetManager.h \
-    include/sheetManager/sheetmanager.h \
     include/tileEngine/tileSelection.h \
     include/tileEngine/tileGroupUndoItem.h \
     include/tileEngine/tileGraphicsItem.h \
@@ -158,6 +157,7 @@ HEADERS += include/asset/project.h \
     include/sheetManager/SheetManagerDestTileGraphicsItem.h \
     include/sheetManager/sheetManagerFileDockWidget.h \
     include/sheetManager/sheetManagerSourceTileGraphicsItem.h \
+    include/sheetManager/sheetManager.h \
     include/core/tileImage.h \
     include/estk/mapViewPlaceTileGroupUndoItem.h \
     include/core/checkeredAlphaRectGraphicsItem.h \
@@ -201,8 +201,8 @@ HEADERS += include/asset/project.h \
     ../../AssetIO/include/elysian_behavior.hpp \
     ../../AssetIO/include/elysian_asset.hpp \
     ../../AssetIO/include/elysian_area.hpp \
-	../../AssetIO/include/elysian_animation.hpp \
-	../../AssetIO/include/elysian_audio_source.hpp
+    ../../AssetIO/include/elysian_animation.hpp \
+    ../../AssetIO/include/elysian_audio_source.hpp \
 FORMS += \
     form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \
@@ -228,23 +228,31 @@ macx {
     QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -stdlib=libc++
     LIBS += -mmacosx-version-min=10.7 -stdlib=libc++
 
-	#CONFIG(release, debug|release) {
-	 #  QMAKE_POST_LINK = "macdeployqt TARGET"
-	#}
+    #CONFIG(release, debug|release) {
+     #  QMAKE_POST_LINK = "macdeployqt TARGET"
+    #}
 
 }
 
 RESOURCES += resource/resource.qrc \
 
+macx {
+    CONFIG(release, debug|release) {
+        DESTDIR = ../../Project
+    }
+    QMAKE_POST_LINK = "./ESToolkitAppDereest.command"
+}
+
+
 win32 {
-	  CONFIG(release, debug|release) {
-		    DESTDIR = ../../Project
-	  }
+      CONFIG(release, debug|release) {
+            DESTDIR = ../../Project
+      }
 }
 
 linux {
-	  CONFIG(release, debug|release) {
-		    DESTDIR = ../../Project
-	  }
+      CONFIG(release, debug|release) {
+            DESTDIR = ../../Project
+      }
 }
 

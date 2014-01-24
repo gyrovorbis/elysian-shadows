@@ -17,7 +17,7 @@
 #define ELYSIAN_AREA_PATH_SIZE		200
 #define ELYSIAN_AREA_MAP_PATH		"/map.txt"
 #define ELYSIAN_AREA_ENTITY_PATH	"/entity.txt"
-#define ELYSIAN_AREA_INIT_LUA_PATH	"/init.lua"
+#define ELYSIAN_AREA_INIT_LUA_PATH	"/area_init.lua"
 
 //Common MapEntry properties
 #define ELYSIAN_MAP_ENTRY_ORIENT_BIT_POS	9

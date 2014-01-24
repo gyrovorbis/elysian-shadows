@@ -4,7 +4,7 @@
 #include <vector>
 #include "elysian_system.hpp"
 
-#include "gyro.h"
+#include <gyro.h>
 
 namespace elysian {
 
@@ -13,6 +13,8 @@ namespace elysian {
 
 	class LevelSystem: public System { 
 	private:
+		char _prevAreaPath[GYRO_PATH_MAX_SIZE]	= { 0 };
+		char _prevLevelPath[GYRO_PATH_MAX_SIZE] = { 0 };
 
 		std::vector<Level*> level;
 		std::vector<Area*>  area;
@@ -21,7 +23,7 @@ namespace elysian {
 
         static const unsigned MAX_LEVELS_LOADED = 1;
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86 || GYRO_PLATFORM == GYRO_PLATFORM_iOS
-		static const unsigned MAX_AREAS_LOADED = 3;
+		static const unsigned MAX_AREAS_LOADED = 1;
 #elif GYRO_PLATFORM == GYRO_PLATFORM_PSP
         static const unsigned MAX_AREAS_LOADED = 2;
 #elif GYRO_PLATFORM == GYRO_PLATFORM_DC
@@ -32,10 +34,13 @@ namespace elysian {
 		int getLevelIndex(const char *const dir) const;
 		int getAreaIndex(const char *const dir) const;
 
-		bool SwitchLevel(const char *const dir);
-		bool SwitchArea(const char *const dir);
+		bool switchLevel(const char *const dir);
+		bool switchArea(const char *const dir);
 
-        void Walkthrough(void); //Print currently loaded assets
+		const char* getPrevLevelPath(void) const { return _prevLevelPath; }
+		const char* getPrevAreaPath(void) const { return _prevAreaPath; }
+
+		void walkthrough(void); //Print currently loaded assets
 	};
 
 }

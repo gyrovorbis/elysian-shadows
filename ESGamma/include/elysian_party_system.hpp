@@ -16,10 +16,9 @@ namespace elysian {
 	
 	class PartySystem: public System { 
 	private:
-
-		unsigned int _activePlayablePartySize;
-		unsigned int _characterPartySize;
-		unsigned int _playableAmount;
+		unsigned int _activePlayablePartySize	= 3;
+//		unsigned int _characterPartySize		= 3;
+		unsigned int _playableAmount			= 0;
 		
 		//Array holding every potential playable character
 		Entity **_playable;
@@ -50,13 +49,13 @@ namespace elysian {
 		
 		bool addPlayableToParty(const char *name);
 		bool addPlayableToParty(const Entity &entity);
-		bool addCharacterToParty(Entity &entity);
+		bool addCharacterToParty(Entity *entity);
 		
 		bool removePlayableFromParty(const char *name);
 		bool removePlayableFromParty(const Entity &entity);
 		bool removePlayableFromParty(const unsigned int slot);
 		bool removeCharacterFromParty(const char *name);
-		bool removeCharacterFromParty(const Entity &entity);
+		bool removeCharacterFromParty(const Entity *entity);
 		bool removeCharacterFromParty(const unsigned int slot);
 		
 		Entity *getPartyLeader(void) const;

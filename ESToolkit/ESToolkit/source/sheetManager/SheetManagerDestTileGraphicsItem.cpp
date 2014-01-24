@@ -9,7 +9,7 @@ SheetManagerDestTileGraphicsItem::SheetManagerDestTileGraphicsItem(const unsigne
                                                                    const unsigned y,
                                                                    const SourceView *const view):
 	TileGraphicsItem<SheetManagerTileEntry>::TileGraphicsItem(TYPE_DEST),
-	_value(y*ELYSIAN_TILESHEET_TILE_WIDTH+x),
+	//_value(y*ELYSIAN_TILESHEET_TILE_WIDTH+x),
 	_x(x),
 	_y(y)
 {

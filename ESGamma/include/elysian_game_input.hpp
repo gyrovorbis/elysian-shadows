@@ -12,7 +12,9 @@ namespace elysian {
 			BUT_Q, BUT_R, BUT_S, BUT_T, BUT_U, BUT_V, BUT_W, BUT_X, BUT_Y, BUT_Z, 
 			BUT_DPAD_U, BUT_DPAD_D, BUT_DPAD_L, BUT_DPAD_R,
 			BUT_0, BUT_1, BUT_2, BUT_3, BUT_4, BUT_5, BUT_6, BUT_7, BUT_8, BUT_9, 
-			BUT_ESC,
+			BUT_SPACE, BUT_RETURN, BUT_ESC,
+			BUT_BACKSLASH, BUT_FORWARDSLASH,
+			BUT_LSHIFT, BUT_RSHIFT, BUT_LCTRL, BUT_RCTRL, BUT_RALT, BUT_LALT, BUT_BACKQUOTE,
 			BUT_MAX 
 		};
 		
@@ -20,7 +22,7 @@ namespace elysian {
 		bool getTapped(BUTTON key) const;
 		bool getDown(BUTTON key) const;
 
-		static void Translate(const GYInput &platInput, GameInput &gameInput); 
+		static void translate(const GYInput &platInput, GameInput &gameInput);
 
 		void setDown(BUTTON key);
 		void setUp(BUTTON key);

@@ -45,61 +45,6 @@ void gyVidRectTexOrient(const GY_RECT_TEX_ORIENT orient) {
 	_rectTexOrient = orient;
 }
 
-static inline void gyVidTexCoordArrayFromFrame(GYTexCoord2 *const coord, const GYTexCoordFrame *const frame) {
-	switch(_rectTexOrient) {
-		case GY_RECT_TEX_ORIENT_NORMAL:
-			coord[0].u = frame->topLeft.u; coord[0].v = frame->topLeft.v; 
-			coord[1].u = frame->botRight.u; coord[1].v = frame->topLeft.v; 
-			coord[2].u = frame->topLeft.u; coord[2].v = frame->botRight.v; 
-			coord[3].u = frame->botRight.u; coord[3].v = frame->botRight.v; 
-			break;
-		case GY_RECT_TEX_ORIENT_FLIP_HORIZ:
-			coord[0].u = frame->botRight.u; coord[0].v = frame->topLeft.v; 
-			coord[1].u = frame->topLeft.u; coord[1].v = frame->topLeft.v; 
-			coord[2].u = frame->botRight.u; coord[2].v = frame->botRight.v; 
-			coord[3].u = frame->topLeft.u; coord[3].v = frame->botRight.v; 
-			break;
-		case GY_RECT_TEX_ORIENT_FLIP_VERT:
-			coord[0].u = frame->topLeft.u; coord[0].v = frame->botRight.v; 
-			coord[1].u = frame->botRight.u; coord[1].v = frame->botRight.v; 
-			coord[2].u = frame->topLeft.u; coord[2].v = frame->topLeft.v; 
-			coord[3].u = frame->botRight.u; coord[3].v = frame->topLeft.v; 
-			break;
-		case GY_RECT_TEX_ORIENT_ROT_90:
-			coord[2].u = frame->topLeft.u; coord[2].v = frame->topLeft.v; 
-			coord[0].u = frame->botRight.u; coord[0].v = frame->topLeft.v; 
-			coord[3].u = frame->topLeft.u; coord[3].v = frame->botRight.v; 
-			coord[1].u = frame->botRight.u; coord[1].v = frame->botRight.v; 
-			break;
-		case GY_RECT_TEX_ORIENT_ROT_180:
-			coord[3].u = frame->topLeft.u; coord[3].v = frame->topLeft.v; 
-			coord[2].u = frame->botRight.u; coord[2].v = frame->topLeft.v; 
-			coord[1].u = frame->topLeft.u; coord[1].v = frame->botRight.v; 
-			coord[0].u = frame->botRight.u; coord[0].v = frame->botRight.v; 
-			break;
-		case GY_RECT_TEX_ORIENT_ROT_270:
-			coord[1].u = frame->topLeft.u; coord[1].v = frame->topLeft.v; 
-			coord[3].u = frame->botRight.u; coord[3].v = frame->topLeft.v; 
-			coord[0].u = frame->topLeft.u; coord[0].v = frame->botRight.v; 
-			coord[2].u = frame->botRight.u; coord[2].v = frame->botRight.v; 
-			break;
-		case GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_90:
-			coord[3].u = frame->topLeft.u; coord[3].v = frame->topLeft.v; 
-			coord[1].u = frame->botRight.u; coord[1].v = frame->topLeft.v; 
-			coord[2].u = frame->topLeft.u; coord[2].v = frame->botRight.v; 
-			coord[0].u = frame->botRight.u; coord[0].v = frame->botRight.v; 
-			break;
-		case GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_270:
-			coord[0].u = frame->topLeft.u; coord[0].v = frame->topLeft.v; 
-			coord[2].u = frame->botRight.u; coord[2].v = frame->topLeft.v; 
-			coord[1].u = frame->topLeft.u; coord[1].v = frame->botRight.v; 
-			coord[3].u = frame->botRight.u; coord[3].v = frame->botRight.v; 
-			break;
-		default:
-			assert(0);
-		}
-}
-
 void gyVidQuadListBegin(const GYColor4 *const color) {
     glColor4ub(color->r, color->g, color->b, color->a);
 	if(_curTex) {
@@ -114,13 +59,13 @@ void gyVidQuadListEnd(void) {
 
 void gyVidQuad(const GYVector4 *const verts, const unsigned int frame) {
 	GYMatrix4 modelViewMat;
-	GYTexCoord2 coord[4];
+	const GYTexCoord2* coord;
     
 	gyMatStore(&modelViewMat);
     glLoadMatrixf((float *)modelViewMat);
 	
 	if(_curTex) {
-		gyVidTexCoordArrayFromFrame(coord, &_curTex->_coord->texCoord[frame]);
+		coord = gyVidTexCoordArrayFromFrame(&_curTex->_coord->texCoord[frame], _rectTexOrient);
 
 		glTexCoordPointer(2, GL_FLOAT, 0, coord);
 		_rectTexOrient = GY_RECT_TEX_ORIENT_NORMAL; //reset after each rect
@@ -138,13 +83,13 @@ void gyVidRect(const unsigned int frame) {
         {0.5f, 0.5f, 0.0f, 1.0f}
     };
 	GYMatrix4 modelViewMat;
-    GYTexCoord2 coord[4];
+	const GYTexCoord2* coord;
 
 	gyMatStore(&modelViewMat);
     glLoadMatrixf((float *)modelViewMat);
 	
 	if(_curTex) {
-		gyVidTexCoordArrayFromFrame(coord, &_curTex->_coord->texCoord[frame]);
+		coord = gyVidTexCoordArrayFromFrame(&_curTex->_coord->texCoord[frame], _rectTexOrient);
 
 		glTexCoordPointer(2, GL_FLOAT, 0, coord);
 		_rectTexOrient = GY_RECT_TEX_ORIENT_NORMAL; //reset after each rect
@@ -174,7 +119,7 @@ void gyVidColorArray(const struct _GYColor4 *const ptr) {
     glColorPointer(4, GL_UNSIGNED_BYTE, 0, ptr);
 }
 
-void gyVidCoord(const struct _GYTexCoord2 *const ptr) {
+void gyVidTexCoordArray(const struct _GYTexCoord2 *const ptr) {
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glTexCoordPointer(2, GL_FLOAT, 0, ptr);
 }

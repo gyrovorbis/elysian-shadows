@@ -9,15 +9,6 @@
 namespace elysian {
 
 //----NONSTATIC----
-    
-Animation::Animation(Entity& parent): 
-	Component(parent), 
-	_attrib(NULL), 
-	_isActive(false), 
-	_currentFrame(0),
-	_timer(0.0f), 
-	_currentSequence(NULL)
-{}
 
 void AnimationSequence::addFrame(const float xOffset, const float yOffset, const float duration, const unsigned int frame) {
 	AnimationFrame animFrame;
@@ -121,7 +112,7 @@ bool Animation::removeFromLevel(void) {
 
 #ifdef ELYSIAN_ENGINE
 
-void Animation::update(float deltaTime) {
+void Animation::update(const float deltaTime) {
 	if(!_isActive || !_currentSequence) return;
 
 	_timer += deltaTime;
@@ -131,6 +122,7 @@ void Animation::update(float deltaTime) {
 
 		_entity->getRenderable()->setOffset(_currentSequence->_frames[_currentFrame].offset);
 		_entity->getRenderable()->setFrame(_currentSequence->_frames[_currentFrame].spriteFrame);
+		if(!_looping) _isActive = false;
 	}
 }
 
@@ -157,6 +149,13 @@ void Animation::stopAnimation(void) {
 	//_entity->setFrame(_currentSequence->_frames[_currentFrame].sheetIndex);
 	//gyroSprite.transform.setPosition(_currentSequence->_frame[_currentFrame].offset);
 	_isActive = false;
+}
+
+void Animation::setCurrentFrame(const unsigned frame) {
+	_currentFrame = frame;
+	_timer = 0.0f;
+	_entity->getRenderable()->setOffset(_currentSequence->_frames[frame].offset);
+	_entity->getRenderable()->setFrame(_currentSequence->_frames[frame].spriteFrame);
 }
 
 #endif

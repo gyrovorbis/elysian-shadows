@@ -7,6 +7,7 @@
 #include "elysian_collision_system.hpp"
 #include "elysian_map_system.hpp"
 #include "elysian_audio_system.hpp"
+#include "elysian_debug.hpp"
 
 #include <gyro.h>
 
@@ -24,9 +25,11 @@ int LevelSystem::getAreaIndex(const char *const dir) const {
 	return -1;
 }
 
-bool LevelSystem::SwitchLevel(const char *const dir) {
+bool LevelSystem::switchLevel(const char *const dir) {
 	int index;
 	Level *lev;
+
+	if(_curLevel) strcpy(_prevLevelPath, _curLevel->getName());
 
 	if((index = getLevelIndex(dir)) >= 0) {
 		_curLevel = level[index];
@@ -44,7 +47,7 @@ bool LevelSystem::SwitchLevel(const char *const dir) {
 	return true;
 }
 
-bool LevelSystem::SwitchArea(const char *const dir) {
+bool LevelSystem::switchArea(const char *const dir) {
 	int index;
 	Area *ar;
 
@@ -55,6 +58,8 @@ bool LevelSystem::SwitchArea(const char *const dir) {
 	}
 	getCollisionSys()->clearContacts();
 	getMapSys()->resetAnimation();
+
+	if(_curArea) strcpy(_prevAreaPath, _curArea->getName());
 	
 	//Check if new area has already been loaded
 	if((index = getAreaIndex(dir)) >= 0) {

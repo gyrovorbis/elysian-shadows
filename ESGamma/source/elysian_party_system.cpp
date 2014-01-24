@@ -15,10 +15,7 @@ namespace elysian {
 
 //----NONSTATIC----
 
-PartySystem::PartySystem(void): 
-	_playableAmount(0), 
-	_characterPartySize(3), 
-	_activePlayablePartySize(3) 
+PartySystem::PartySystem(void)
 {}
 
 PartySystem::~PartySystem() {
@@ -125,8 +122,8 @@ bool PartySystem::loadPlayables(void) {
 	return true;
 }
 
-bool PartySystem::loadParty(std::ifstream &stream) { return true; }
-bool PartySystem::saveParty(std::ofstream &stream) { return true; }
+bool PartySystem::loadParty(std::ifstream &/*stream*/) { return true; }
+bool PartySystem::saveParty(std::ofstream &/*stream*/) { return true; }
 
 bool PartySystem::addPlayableToParty(const char *name) { 
 	for(unsigned int i = 0; i < _playableAmount; ++i) {
@@ -248,17 +245,17 @@ Entity *PartySystem::getPartyLeader(void) const {
     _playableParty.front();
 }
 
-bool PartySystem::addCharacterToParty(Entity &entity) {
+bool PartySystem::addCharacterToParty(Entity *entity) {
 	for(unsigned int i = 0; i < _characterParty.size(); ++i) { //check if character is already in _characterParty
-		if(_characterParty[i] == &entity) {
-			Debug::printf(Debug::CRITICAL, "PartySystem::AddCharacterToParty(Entity&): %s is already in the party!", entity.getName());
+		if(_characterParty[i] == entity) {
+			Debug::printf(Debug::CRITICAL, "PartySystem::AddCharacterToParty(Entity&): %s is already in the party!", entity->getName());
 			return false;
 		}
 	}
-	Debug::printf(Debug::VERBOSE, "%s has joined the party!", entity.getName());
-	_characterParty.push_back(&entity);
-	if(_playableParty.size() > 0 || _characterParty.size() > 1) entity.transform.setPos(_partyPathPoint[_partyPathPoint.size()-1]);
-	if(_playableParty.size() == 0 && _characterParty.size() == 1) getCameraSys()->setFollowEntity(&entity);
+	Debug::printf(Debug::VERBOSE, "%s has joined the party!", entity->getName());
+	_characterParty.push_back(entity);
+	if(_playableParty.size() > 0 || _characterParty.size() > 1) entity->transform.setPos(_partyPathPoint[_partyPathPoint.size()-1]);
+	if(_playableParty.size() == 0 && _characterParty.size() == 1) getCameraSys()->setFollowEntity(entity);
 	_resizePartyPathPoints();
 	return true;
 }
@@ -274,14 +271,14 @@ bool PartySystem::removeCharacterFromParty(const char *name) {
 	return false;
 }
 
-bool PartySystem::removeCharacterFromParty(const Entity &entity) {
+bool PartySystem::removeCharacterFromParty(const Entity *entity) {
 	for(unsigned int i = 0; i < _characterParty.size(); ++i) {
-		if(_characterParty[i] == &entity) { //determine slot from memory address
+		if(_characterParty[i] == entity) { //determine slot from memory address
 			removeCharacterFromParty(i); //invoke slot
 			return true;
 		}
 	}
-	Debug::printf(Debug::CRITICAL, "! - PartySystem::RemoveCharacterFromParty(Entity&): %s is not in the party!", entity.getName());
+	Debug::printf(Debug::CRITICAL, "! - PartySystem::RemoveCharacterFromParty(Entity&): %s is not in the party!", entity->getName());
 	return false;
 }
 
@@ -320,24 +317,24 @@ Entity *PartySystem::getCharacterPartyMember(const unsigned int slot) const {
 void PartySystem::_resizePartyPathPoints(void) {
 	int pathPointAmount = 0;
 	//check if even necessary
-	if((pathPointAmount = (_playableParty.size()-1 + _characterParty.size())*_pointsPerCharacter+1) == _partyPathPoint.size()) return;
+	if((pathPointAmount = (_playableParty.size()-1 + _characterParty.size())*_pointsPerCharacter+1) == (int)_partyPathPoint.size()) return;
 	if(pathPointAmount < 0) return;
 	
 	//allocate more
-	if(pathPointAmount > (unsigned)_partyPathPoint.size()) {
+	if(pathPointAmount > (int)_partyPathPoint.size()) {
 		GYVector2 lastPoint;
 		if(_partyPathPoint.size() == 0) {
 			lastPoint = (_playableParty.size() != 0)? _playableParty[0]->transform._pos : _characterParty[0]->transform._pos;
 		} else {
 			lastPoint = _partyPathPoint[_partyPathPoint.size()-1];
 		}
-		while(_partyPathPoint.size() != pathPointAmount) {
+		while((int)_partyPathPoint.size() != pathPointAmount) {
 			_partyPathPoint.push_back(lastPoint);
 		}
 	}
 	//delete points
 	else {
-		while((unsigned)_partyPathPoint.size() > pathPointAmount) {
+		while((int)_partyPathPoint.size() > pathPointAmount) {
 			_partyPathPoint.erase(_partyPathPoint.end()-1);
 		}
 	}

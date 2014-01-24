@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 typedef struct _GYWav {
-    char filename[GYRO_FILENAME_MAX_SIZE];
+	char filename[GYRO_PATH_MAX_SIZE];
     unsigned int bytes;
 	void* _data;
 } GYWav;

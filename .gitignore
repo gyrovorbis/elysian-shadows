@@ -83,8 +83,11 @@
 *.dll
 *.exe
 *.o
+*.a
 *.so
 build/*
+ESGamma
+ESToolkit
 # Packages #
 ############
 # it's better to unpack these files and commit the raw source
@@ -116,6 +119,14 @@ Thumbs.db
 *.pro.user
 
 Project
+
+# Meta Object Code #
+####################
+moc_*
+
+# Documentation #
+#################
+Docs/Documentation/
 
 
 

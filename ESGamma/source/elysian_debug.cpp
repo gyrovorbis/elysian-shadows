@@ -32,12 +32,12 @@ namespace elysian {
 
 //======STATIC MEMBERS=====
 
-const char Debug::_fileName[] = ELYSIAN_DEBUG_FILE;
-ofstream Debug::_dbgFile;
-Engine *Debug::_engine = NULL;
-bool Debug::_advLogWrap = false;
-unsigned int Debug::_stackDepth = 0;
-Debug::LEVEL Debug::_level = ELYSIAN_DEBUG_LOG_LEVEL_DEFAULT;
+ofstream		Debug::_dbgFile;
+ofstream		Debug::_luaDbgFile;
+Engine*			Debug::_engine = NULL;
+bool			Debug::_advLogWrap = false;
+unsigned int	Debug::_stackDepth = 0;
+Debug::LEVEL	Debug::_level = ELYSIAN_DEBUG_LOG_LEVEL_DEFAULT;
 
 // Central endpoint for all debug log calls
 void Debug::writeLog(const Debug::SOURCE source, const Debug::LEVEL level, const char *const str) {
@@ -48,7 +48,7 @@ void Debug::writeLog(const Debug::SOURCE source, const Debug::LEVEL level, const
 	buffer[0] = '\0';
 
 	//Add tabs for each stack layer
-	for(unsigned int i = 0; i < _stackDepth; ++i) strcat(buffer, ELYSIAN_DEBUG_PREFIX_STACK);
+	if(source != LUA) for(unsigned int i = 0; i < _stackDepth; ++i) strcat(buffer, ELYSIAN_DEBUG_PREFIX_STACK);
 
 	//Add prefixes for error types
 	switch(level) {
@@ -67,11 +67,15 @@ void Debug::writeLog(const Debug::SOURCE source, const Debug::LEVEL level, const
 	strcat(buffer, str);
 
 	//Append newline character to the end
-	size_t length = strlen(buffer);
+//	size_t length = strlen(buffer);
 	strcat(buffer, "\n");
 
 	_dbgFile << buffer;
 	_dbgFile.flush(); //write to log file
+	if(source == LUA) {
+		_luaDbgFile << str << std::endl;
+		_luaDbgFile.flush(); //write to lua's log file
+	}
 	gyPrintf(buffer); //use the "preferred" IO of each platform
 
 	//Wrap to AdventureLog
@@ -87,7 +91,7 @@ void Debug::writeLog(const Debug::SOURCE source, const Debug::LEVEL level, const
 		}
 		if(level == CRITICAL || level == FATAL) advType = AdventureLog::TEXT_ERROR;
 
-		//characters that the adventure log cannot display--shouldn't it handle this? Not debug?
+		//characters that the adventure log cannot display--shouldn't it handle this? Not debug? No shit.
 		for(unsigned int i = 0; i < strlen(buffer); ++i) if(buffer[i] == '\n' || buffer[i] == '\t') buffer[i] = ' ';
 		if(_engine) getGuiSys()->adventureLog.addLine(advType, buffer);
 	}
@@ -115,11 +119,13 @@ Debug::Debug(void):
 	gySysDebugEnable(ELYSIAN_DEBUG_LIBGYRO_LEVEL_DEFAULT, &libGyroPrintf);
 	//Register pointer to asset debug interface with AssetIO
 	Asset::setDebugStack(&_assetDebug);
-	_dbgFile.open(_fileName);
+	_dbgFile.open(ELYSIAN_DEBUG_FILE);
+	_luaDbgFile.open(ELYSIAN_LUA_DEBUG_FILE);
 	printf(VERBOSE, "-----Debug Initialized-----");
 }
 
 Debug::~Debug(void) {
+	_luaDbgFile.close();
 	_dbgFile.close();
 }
 
@@ -129,328 +135,11 @@ bool Debug::sandboxInit(void) {
 	push();
 
 	_advLogWrap = true;
-
-//======================
-
-	//Base Entity Data
-	Entity *player = new Entity;
-	player->setName("Julien");
-	//_curArea->addEntity(player);
-	//player->transform.setPosition((float)_cmdLineArgs.x, (float)_cmdLineArgs.y, ELYSIAN_ZCOORD_OBJECT2+10.0f);
-	player->transform.setPos(_cmdLineArgs.x, _cmdLineArgs.y, ELYSIAN_ZCOORD_OBJECT2+10.0f);
-	player->transform.setSize(32.0f, 64.0f);
-	player->transform.setScale(1.0f, 1.0f);
-	player->transform.setOrientZ(0.0f);
-	player->setDepthType(DEPTH_BUFFERED);
-
-	//Renderable Component
-	Renderable *render = player->addRenderable();
-	render->setFrame(0);
-	SpriteAttrib *sprAttrib = new SpriteAttrib;
-	sprAttrib->loadTexture(gyFilePath("party/julien.png"), 256, 256, 32, 64);
-	sprAttrib->setColor(255, 255, 255, 255);
-	render->setSpriteAttrib(sprAttrib);
-
-	//Animation Component
-	Animation *anim = player->addAnimation();
-	AnimationAttrib *attrib = new AnimationAttrib;
-	AnimationSequence *seq = attrib->addSequence("WalkDown");
-	seq->addFrame(0.0f, 0.0f, 0.15f, 1);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 2);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 3);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 4);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 5);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 6);
-	seq = attrib->addSequence("WalkUp");
-	seq->addFrame(0.0f, 0.0f, 0.15f, 9);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 10);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 11);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 12);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 13);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 14);
-	seq = attrib->addSequence("WalkRight");
-	seq->addFrame(0.0f, 0.0f, 0.15f, 17);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 18);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 19);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 20);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 21);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 22);
-	seq = attrib->addSequence("WalkLeft");
-	seq->addFrame(0.0f, 0.0f, 0.15f, 25);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 26);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 27);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 28);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 29);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 30);
-	seq = attrib->addSequence("StandUp");
-	seq->addFrame(0.0f, 0.0f, 0.0f, 8);
-	seq = attrib->addSequence("StandDown");
-	seq->addFrame(0.0f, 0.0f, 0.0f, 0);
-	seq = attrib->addSequence("StandLeft");
-	seq->addFrame(0.0f, 0.0f, 0.0f, 24);
-	seq = attrib->addSequence("StandRight");
-	seq->addFrame(0.0f, 0.0f, 0.0f, 16);
-	anim->setAttrib(attrib);
-
-	//Collidable Component
-	Collidable *collid = player->addCollidable();
-	CollidableAttrib *colAttrib = new CollidableAttrib;
-	colAttrib->setColliderType(GY_COLLIDER_AABB);
-	colAttrib->setRelPos(0.0f, 0.25f);
-	colAttrib->setRelSize(1.0f, 0.4f);
-	static GYStatic statAttrib = {
-		/* inverseMass */ 1.0f/5000.0f,
-		/* coeffOfRest */ 1.0f,
-		/* damping */ 0.0f,
-		/* invMomOfInertia */ 0.0f,
-		/* angDamping */ 0.0f
-	};
-	*colAttrib->getStaticAttrib() = statAttrib;
-	collid->setAttrib(colAttrib);
-
-	//Character Component
-	player->addCharacter();
-
-	//Lua Behavior
-	//LuaBehavior *behav = player->addLuaBehavior("level/new_level1/area/Falco_ZTran_Sandbox/test.lua");
-	//behav->setTriggers(Behavior::ONCREATE | Behavior::ONUPDATE);
-
-	getPartySys()->addCharacterToParty(*player);
-
-
-
-//======================
-#if 0
-
-	//Base Entity Data
-	player = new Entity;
-	_curArea->addEntity(player);
-	player->setName("Angel");
-	player->transform.setPos(12.0f*32.0f, 20.0f*32.0f, ELYSIAN_ZCOORD_OBJECT2+10.0f);
-	player->transform.setSize(32.0f, 60.0f);
-	player->transform.setScale(1.0f, 1.0f);
-	player->transform.setOrientZ(0.0f);
-	player->setDepthType(DEPTH_BUFFERED);
-
-	//AudioSource Component
-	/*AudioSource* audio = player->addAudioSource();
-	audio->setWav(gyAudWavCreate("phone.wav"));
-	audio->setLooping(true);
-	//audio->setGain(0.1f);
-	audio->play();*/
-
-	//Renderable Component
-	render = player->addRenderable();
-	render->setFrame(0);
-	sprAttrib = new SpriteAttrib;
-	sprAttrib->loadTexture(gyFilePath("party/party_member_3.png"), 256, 256, 32, 64);
-	sprAttrib->setColor(255, 255, 255, 255);
-	render->setSpriteAttrib(sprAttrib);
-	/*
-	//Animation Component
-	anim = player->addAnimation();
-	attrib = new AnimationAttrib;
-	seq = attrib->addSequence("WalkDown");
-	seq->addFrame(0.0f, 0.0f, 0.15f, 1);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 2);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 3);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 4);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 5);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 6);
-	seq = attrib->addSequence("WalkUp");
-	seq->addFrame(0.0f, 0.0f, 0.15f, 9);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 10);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 11);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 12);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 13);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 14);
-	seq = attrib->addSequence("WalkRight");
-	seq->addFrame(0.0f, 0.0f, 0.15f, 17);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 18);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 19);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 20);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 21);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 22);
-	seq = attrib->addSequence("WalkLeft");
-	seq->addFrame(0.0f, 0.0f, 0.15f, 25);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 26);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 27);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 28);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 29);
-	seq->addFrame(0.0f, 0.0f, 0.15f, 30);
-	seq = attrib->addSequence("StandUp");
-	seq->addFrame(0.0f, 0.0f, 0.0f, 8);
-	seq = attrib->addSequence("StandDown");
-	seq->addFrame(0.0f, 0.0f, 0.0f, 0);
-	seq = attrib->addSequence("StandLeft");
-	seq->addFrame(0.0f, 0.0f, 0.0f, 24);
-	seq = attrib->addSequence("StandRight");
-	seq->addFrame(0.0f, 0.0f, 0.0f, 16);
-	anim->setAttrib(attrib); */
-
-	//Collidable Component
-	collid = player->addCollidable();
-	colAttrib = new CollidableAttrib;
-	colAttrib->setColliderType(GY_COLLIDER_AABB);
-	colAttrib->setRelPos(0.0f, 0.25f);
-	colAttrib->setRelSize(1.0f, 0.3f);
-	static GYStatic statAttrib2 = {
-		/* inverseMass */ 1.0f/3000.0f,
-		/* coeffOfRest */ 1.0f,
-		/* damping */ 1.0f,
-		/* invMomOfInertia */ 0.0f,
-		/* angDamping */ 1.0f
-	};
-	*colAttrib->getStaticAttrib() = statAttrib;
-	collid->setAttrib(colAttrib);
-
-	//Character Component
-	//player->addCharacter();
-
-	behav = player->addLuaBehavior("level/new_level1/area/Falco_ZTran_Sandbox/test.lua");
-	behav->setTriggers(Behavior::ONCREATE | Behavior::ONUPDATE);
-//=================
-	//Base Entity Data
-	player = new Entity;
-	_curArea->addEntity(player);
-	player->setName("Dreamcast");
-	player->transform.setPos(16.0f*32.0f, 23.0f*32.0f, ELYSIAN_ZCOORD_OBJECT2+10.0f);
-	player->transform.setSize(32.0f, 32.0f);
-	player->transform.setScale(1.0f, 1.0f);
-	player->transform.setOrientZ(0.0f);
-
-	//Renderable Component
-	render = player->addRenderable();
-	render->setFrame(0);
-	sprAttrib = new SpriteAttrib;
-	sprAttrib->loadTexture(gyFilePath("item/drmcsat.PNG"), 32, 32, 32, 32);
-	sprAttrib->setColor(255, 255, 255, 255);
-	render->setSpriteAttrib(sprAttrib);
-
-	//Collidable Component
-	collid = player->addCollidable();
-	colAttrib = new CollidableAttrib;
-	colAttrib->setColliderType(GY_COLLIDER_AABB);
-	colAttrib->setRelPos(0.0f, 0.0f);
-	colAttrib->setRelSize(0.5f, 0.5f);
-	static GYStatic statAttrib3 = {
-		/* inverseMass */ 1.0f/3000.0f,
-		/* coeffOfRest */ 1.0f,
-		/* damping */ 1.0f,
-		/* invMomOfInertia */ 0.0f,
-		/* angDamping */ 1.0f
-	};
-	*colAttrib->getStaticAttrib() = statAttrib;
-	collid->setAttrib(colAttrib);
-
-	//Base Entity Data
-	player = new Entity;
-	_curArea->addEntity(player);
-	player->setName("Star");
-	player->transform.setPos(16.0f*32.0f, 25.0f*32.0f, ELYSIAN_ZCOORD_OBJECT2+10.0f);
-	player->transform.setSize(32.0f, 32.0f);
-	player->transform.setScale(1.0f, 1.0f);
-	player->transform.setOrientZ(0.0f);
-
-	//Renderable Component
-	render = player->addRenderable();
-	render->setFrame(0);
-	sprAttrib = new SpriteAttrib;
-	sprAttrib->loadTexture(gyFilePath("item/star.PNG"), 32, 32, 32, 32);
-	sprAttrib->setColor(255, 255, 255, 255);
-	render->setSpriteAttrib(sprAttrib);
-
-	//Collidable Component
-	collid = player->addCollidable();
-	colAttrib = new CollidableAttrib;
-	colAttrib->setColliderType(GY_COLLIDER_AABB);
-	colAttrib->setRelPos(0.0f, 0.0f);
-	colAttrib->setRelSize(0.5f, 0.5f);
-	static GYStatic statAttrib4 = {
-		/* inverseMass */ 1.0f/3000.0f,
-		/* coeffOfRest */ 1.0f,
-		/* damping */ 1.0f,
-		/* invMomOfInertia */ 0.0f,
-		/* angDamping */ 1.0f
-	};
-	*colAttrib->getStaticAttrib() = statAttrib;
-	collid->setAttrib(colAttrib);
-
-	//Base Entity Data
-	player = new Entity;
-	_curArea->addEntity(player);
-	player->setName("Fireflower");
-	player->transform.setPos(19.0f*32.0f, 21.0f*32.0f, ELYSIAN_ZCOORD_OBJECT2+10.0f);
-	player->transform.setSize(32.0f, 32.0f);
-	player->transform.setScale(1.0f, 1.0f);
-	player->transform.setOrientZ(0.0f);
-
-	//Renderable Component
-	render = player->addRenderable();
-	render->setFrame(0);
-	sprAttrib = new SpriteAttrib;
-	sprAttrib->loadTexture(gyFilePath("item/fireflower.PNG"), 32, 32, 32, 32);
-	sprAttrib->setColor(255, 255, 255, 255);
-	render->setSpriteAttrib(sprAttrib);
-
-	//Collidable Component
-	collid = player->addCollidable();
-	colAttrib = new CollidableAttrib;
-	colAttrib->setColliderType(GY_COLLIDER_AABB);
-	colAttrib->setRelPos(0.0f, 0.0f);
-	colAttrib->setRelSize(0.5f, 0.5f);
-	static GYStatic statAttrib5 = {
-		/* inverseMass */ 1.0f/3000.0f,
-		/* coeffOfRest */ 1.0f,
-		/* damping */ 1.0f,
-		/* invMomOfInertia */ 0.0f,
-		/* angDamping */ 1.0f
-	};
-	*colAttrib->getStaticAttrib() = statAttrib;
-	collid->setAttrib(colAttrib);
-
-	//Base Entity Data
-	player = new Entity;
-	_curArea->addEntity(player);
-	player->setName("Block");
-	player->transform.setPos(22.0f*32.0f, 24.0f*32.0f, ELYSIAN_ZCOORD_OBJECT2+10.0f);
-	player->transform.setSize(32.0f, 32.0f);
-	player->transform.setScale(1.0f, 1.0f);
-	player->transform.setOrientZ(0.0f);
-
-	//Renderable Component
-	render = player->addRenderable();
-	render->setFrame(0);
-	sprAttrib = new SpriteAttrib;
-	sprAttrib->loadTexture(gyFilePath("item/marioblock.png"), 32, 32, 32, 32);
-	sprAttrib->setColor(255, 255, 255, 255);
-	render->setSpriteAttrib(sprAttrib);
-
-	//Collidable Component
-	collid = player->addCollidable();
-	colAttrib = new CollidableAttrib;
-	colAttrib->setColliderType(GY_COLLIDER_AABB);
-	colAttrib->setRelPos(0.0f, 0.0f);
-	colAttrib->setRelSize(0.5f, 0.5f);
-	static GYStatic statAttrib6 = {
-		/* inverseMass */ 1.0f/3000.0f,
-		/* coeffOfRest */ 1.0f,
-		/* damping */ 1.0f,
-		/* invMomOfInertia */ 0.0f,
-		/* angDamping */ 1.0f
-	};
-	*colAttrib->getStaticAttrib() = statAttrib;
-	collid->setAttrib(colAttrib);
-#endif
-
-	//getAudioSys()->loadBgmTrack(0, "audio/music/CaveLoop1.ogg");
-	//getAudioSys()->loadBgmTrack(1, "audio/music/CaveLoop2.ogg");
-	getAudioSys()->loadAuxTrack(0, "audio/music/RainThunder.ogg");
-	getAudioSys()->playAuxTrack(0);
-	//getAudioSys()->setAuxTrackGain(0, 0.5f);
-	//getAudioSys()->playBgmTrack();
-	getAudioSys()->setBgmTrackGain(0.5f);
-	//getAudioSys()->setBgmTrackPitch(0.5f);
+	LuaManager::runScriptSandbox(ELYSIAN_GLOBAL_INIT_LUA_PATH);
+	Entity* leader = getPartySys()->getPartyLeader();
+	if(leader) {
+		leader->transform.setPos(_cmdLineArgs.x, _cmdLineArgs.y, ELYSIAN_ZCOORD_OBJECT2+10.0f);
+	}
 
 	pop();
 	return true;
@@ -534,29 +223,66 @@ void Debug::processInput(const GameInput& input) {
 		case CollisionSystem::RENDER_COMBINED:
 			printf(VERBOSE, "Render Collision Layer - Combined");
 			break;
+		default: break;
 		}
 	}
 
 	//VRAM and Audio Stats
 	if(input.getTapped(GameInput::BUT_Z)) {
-		//gyVidTexWalkthrough();
+		gyVidTexWalkthrough();
 		//getAudioSys()->morphIntoBgmTrack(1, 5.0f);
 		//getAudioSys()->fadeIntoBgmTrack(1, 5.0f);
-		getAudioSys()->morphIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop2.ogg");
+		//getAudioSys()->morphIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop2.ogg");
 		//getAudioSys()->fadeIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop2.ogg");
 		//getAudioSys()->fadeIntoNewAuxTrack(0, 5.0f, "audio/music/RainThunder.ogg");
 		//getAudioSys()->fadeInAuxTrack(0, 5.0f);
 		//getAudioSys()->fadeIntoNewAuxTrack(0, 5.0f, "audio/music/RainThunder.ogg");
 		//getAudioSys()->playBgmTrack();
 	}
+	if(input.getTapped(GameInput::BUT_FORWARDSLASH)) {
+		LuaManager::dumpStats();
+	}
+	if(input.getTapped(GameInput::BUT_T)) {
+		Entity *entity = new Entity;
+		entity->setName("DICKMITE");
+		entity->transform.setPos(1400.0f+80.0f+32.0f, 1060.0f);
+		entity->transform.setScale(1.0f, 1.0f);
+		entity->transform.setSize(128.0f, 128.0f);
+		entity->setElev(0);
+		entity->setDepthType(DEPTH_BUFFERED);
+		Renderable* render = entity->addRenderable();
+#if 1
+		QuadSpriteAttrib* attrib = new QuadSpriteAttrib;
+		attrib->setVertexColor(0, 255, 0, 0, 255);
+		attrib->setVertexColor(1, 0, 255, 0, 100);
+		attrib->setVertexColor(2, 0, 0, 255, 255);
+		attrib->setVertexColor(3, 255, 255, 0, 255);
+		attrib->loadTexture("item/legacyItems/jigglypuff1.PNG", 32, 32, 32, 32);
+#else
+
+		SpriteAttrib* attrib = new SpriteAttrib;
+		attrib->setColor(100, 100, 100, 100);
+		attrib->loadTexture("item/legacyItems/jigglypuff1.PNG", 32, 32, 32, 32);
+#endif
+		render->setSpriteAttrib(attrib);
+
+		GYWav* wav = gyAudWavCreate("phone.wav");
+		AudioSource* src = entity->addAudioSource();
+		src->setLooping(true);
+		src->playWav(wav);
+
+		getCurArea()->addEntity(entity);
+
+	}
+
 	if(input.getTapped(GameInput::BUT_X)) {
 		//getAudioSys()->morphIntoBgmTrack(0, 5.0f);
 		//getAudioSys()->fadeIntoBgmTrack(0, 5.0f);
 		//getAudioSys()->stopBgmTrack();
-		getAudioSys()->morphIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop1.ogg");
+		//getAudioSys()->morphIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop1.ogg");
 		//getAudioSys()->fadeIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop1.ogg");
 		//getAudioSys()->fadeOutAuxTrack(0, 5.0f);
-		//gyAudWavWalkthrough();
+		gyAudWavWalkthrough();
 	}
 
 	//Elevate player
@@ -590,13 +316,13 @@ bool Debug::parseArguments(void) {
 	strcpy(_cmdLineArgs.level, ELYSIAN_DEBUG_LEVEL_DEFAULT);
 	strcpy(_cmdLineArgs.area, ELYSIAN_DEBUG_AREA_DEFAULT);
 
-	FILE *file = fopen(gyFilePath("gamma_args.txt"), "r");
+	FILE *file = fopen(gyFilePath(ELYSIAN_DEBUG_ARG_FILE), "r");
 	if(file) { //read cmd-line arguments from file
-		printf(VERBOSE, "Debug::InitializeEngine() - initializing from text file");
+		printf(VERBOSE, "Debug::parseArguments(void) - initializing from '%s'", ELYSIAN_DEBUG_ARG_FILE);
 		push();
 		while(fscanf(file, "%s", argBuff[argc]) != EOF) {
 			argv[argc+1] = argBuff[argc]; //yes, I'm really doing this.
-			printf(VERBOSE, "ARG - %s", argv[argc+1]);
+			printf(VERBOSE, "argv[%d] - %s", argc+1, argv[argc+1]);
 			++argc;
 		}
 		fclose(file);
@@ -610,7 +336,7 @@ bool Debug::parseArguments(void) {
 bool Debug::parseArguments(int argc, char *argv[]) {
 	if(argc <= 1) return parseArguments(); //default init
 
-	printf(VERBOSE, "Debug::InitializeEngine(%d, char *argv[])", argc);
+	printf(VERBOSE, "Debug::parseArguments(%d, char *argv[])", argc);
 	push();
 	for(unsigned int i = 1; i < (unsigned int)argc; ++i) {
 		if(argv[i][0] != '-') {
@@ -647,8 +373,8 @@ bool Debug::parseArguments(int argc, char *argv[]) {
 
 
 bool Debug::initializeEngine(void) {
-	if(_cmdLineArgs.level) _engine->_levelSystem->SwitchLevel(_cmdLineArgs.level);
-	if(_cmdLineArgs.area) _engine->_levelSystem->SwitchArea(_cmdLineArgs.area);
+	if(_cmdLineArgs.level) _engine->_levelSystem->switchLevel(_cmdLineArgs.level);
+	if(_cmdLineArgs.area) _engine->_levelSystem->switchArea(_cmdLineArgs.area);
 	return true;
 }
 

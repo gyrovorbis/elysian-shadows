@@ -185,6 +185,8 @@ static GLuint create_texture_png(const char *filename, GLenum st, GLenum min, GL
 };
 
 int _gyVidTexAlloc(GYTexture *const tex, const unsigned width, const unsigned height) {
+	(void)width;
+	(void)height;
     unsigned success = 0;
     tex->_data = NULL;
     

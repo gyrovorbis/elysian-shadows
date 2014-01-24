@@ -115,7 +115,7 @@ bool Area::load(const char *const dir, const Level *lev) {
 #	ifdef ELYSIAN_ENGINE
 	strcpy(buffer, dir);
 	strcat(buffer, ELYSIAN_AREA_INIT_LUA_PATH);
-	LuaManager::loadScript(buffer, false);
+	LuaManager::runScriptSandbox(buffer);
 #	endif
 #endif
 

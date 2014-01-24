@@ -1,18 +1,19 @@
 /**
 	\file type_list.h
+	\brief Loki Type_list from Andrei Alexandrescu's book Modern C++ Design
 	\details
 	\copyright
 	The Loki Library \n
 	Copyright (c) 2001 by Andrei Alexandrescu \n
 	This code accompanies the book: \n
-	Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design 
+	Alexandrescu, Andrei. "Modern C++ Design: Generic Programming and Design
 	Patterns Applied". Copyright (c) 2001. Addison-Wesley. \n
-	Permission to use, copy, modify, distribute and sell this software for any 
-	purpose is hereby granted without fee, provided that the above copyright 
-	notice appear in all copies and that both that copyright notice and this 
+	Permission to use, copy, modify, distribute and sell this software for any
+	purpose is hereby granted without fee, provided that the above copyright
+	notice appear in all copies and that both that copyright notice and this
 	permission notice appear in supporting documentation.
-	The author or Addison-Wesley Longman make no representations about the 
-	suitability of this software for any purpose. It is provided "as is" 
+	The author or Addison-Wesley Longman make no representations about the
+	suitability of this software for any purpose. It is provided "as is"
 	without express or implied warranty. \n
 */
 
@@ -30,14 +31,14 @@ namespace TYPELIST
 
 	///length////////////////////////////////////////////////////////////
 	template <typename Type_list> struct Length;//forward declare
-	
+
 	///end of list stop recursive search
 	template <> struct Length<TYPE::Null_type>
 	{
 		enum { value = 0 };
 	};
 
-	///recursively search the list counting until we reach null 
+	///recursively search the list counting until we reach null
 	template <typename This, typename Next>
 	struct Length< Type_node<This, Next> >//node in the list
 	{
@@ -69,9 +70,9 @@ namespace TYPELIST
 	///forgiving at//////////////////////////////////////////////////////
 	///at returns a compile time error when out of bounds where as this
 	///just set the type to the default if out of bounds
-	
+
 	//end of list, so prevent out of bounds and use default
-	template <typename Type_list, unsigned int index,typename Default = TYPE::Null_type>
+	template <typename Type_list, unsigned int index, typename Default = TYPE::Null_type>
 	struct At_default
 	{
 		typedef Default Result;
@@ -209,7 +210,7 @@ namespace TYPELIST
 	};
 	///erase all/////////////////////////////////////////////////////////
 
-}///endof namespace TYPELIST
+}//namespace TYPELIST
 
 /**\endcond*/
 
