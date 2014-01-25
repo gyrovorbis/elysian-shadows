@@ -33,6 +33,7 @@ uniform vec4			uAmbience;
 uniform bool			uLightsEnabled[cMaxLights];
 uniform samplerCube		uShadowCubeMaps[cMaxLights];
 uniform bool			uLightingEnabled;
+uniform bool			uTextureEnabled;
 uniform bool			uNormalMapEnabled;
 uniform sampler2D		uNormalMap;
 uniform vec3			uNormal;
@@ -54,6 +55,16 @@ varying vec3			vNormal;
 varying vec2			vTexCoord;
 
 vec3 normal;
+
+float VectorToDepthValue(vec3 Vec) {
+	vec3 AbsVec = abs(Vec);
+	float LocalZcomp = max(AbsVec.x, max(AbsVec.y, AbsVec.z));
+
+	const float f = 901.0;
+	const float n = 1.0;
+	float NormZComp = (f+n) / (f-n) - (2.0*f*n)/(f-n)/LocalZcomp;
+	return (NormZComp + 1.0) * 0.5;
+}
 
 vec4 lightingEquation(const int i) {
 	vec4 computedColor = vec4(cfZero, cfZero, cfZero, cfZero);
@@ -93,21 +104,32 @@ vec4 lightingEquation(const int i) {
 				shadowFactor = 0.5;
 			}
 		} else { //point light cube shadows
+
 			vec4 absPos = abs(vShadowPos[i]);
 			float frus_z = -max(absPos.x, max(absPos.y, absPos.z));
 			vec4 clip = uShadowCubeMapProjMat * vec4(0.0, 0.0, frus_z, 1.0);
-			float depth = (clip.z/clip.w)*0.5+0.5;
-			vec4 veccy = textureCube(uShadowCubeMaps[0], vec3(0.0, 1.0, 1.0));
-			//if(textureCube(uShadowCubeMaps[i], (vShadowPos[i].xyz)/clip.w).z < depth) {
-				//shadowFactor = 0.5;
-			//}
+			float depth = (clip.z/clip.w) * 0.5 + 0.5;
+
+			if(textureCube(uShadowCubeMaps[i], vShadowPos[i].xyz).r < depth) {
+				shadowFactor = 0.1;
+			}
+/*
+			float shadowDepth = textureCube(uShadowCubeMaps[i], vShadowPos[i].xyz).r;
+			if(shadowDepth < VectorToDepthValue(vShadowPos[i].xyz)) {
+				shadowFactor = 0.1;
+			}*/
+
+			//shadowFactor = texture(uShadowCubeMaps[i], vShadowPos[i]);
+
+			//vec4 clip = uShadowCubeMapProjMat * vec4(0.0, 0.0, frus_z, 1.0);
+
 		}
 	} else {								//Directional Light
 		//VPpli = -uLights[i].position.xyz;	//MUST BE PRENORMALIZED
 		VPpli = -uLights[i].direction.xyz;
 
 		if(texture2D(uShadowMaps[i], vShadowPos[i].xy).z < vShadowPos[i].z) {
-			shadowFactor = 0.5;
+			shadowFactor = 0.1;
 		}
 	}
 
@@ -144,7 +166,8 @@ vec4 lightingEquation(const int i) {
 
 
 void main(void) {
-	vec4 color = vColor + uAmbience;
+	vec4 color = vColor * uAmbience;
+	vec4 texColor = vec4(cfOne);
 	int i;
 
 	if(uNormalMapEnabled) {
@@ -181,8 +204,13 @@ void main(void) {
 		}
 	}
 
+	if(uTextureEnabled) {
+		texColor = texture2D(uTexture, vTexCoord);
+	}
+
+
 	//if(!uNormalMapEnabled)
-	gl_FragColor = texture2D(uTexture, vTexCoord) * color;
+	gl_FragColor =  texColor * color;
 	//else
 	//gl_FragColor = texture2D(uNormalMap, vTexCoord) * color;
 

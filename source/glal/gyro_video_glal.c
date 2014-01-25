@@ -56,14 +56,15 @@ float						viewZOrient				= 0.0f;
 float						viewScale				= 0.0f;
 GYMatrix4					viewMatrix				= { { 0.0f } };
 GYMatrix4					projectionMatrix		= { { 0.0f } };
+const GYTexture*			curTex					= 0;
 
 //Private video state variables
 static GYColor4				_rectColor[4];
-static const GYTexture*		_curTex					= 0;
 static unsigned int			_projWidth				= 0;
 static unsigned int			_projHeight				= 0;
 static GY_RECT_TEX_ORIENT	_rectTexOrient			= GY_RECT_TEX_ORIENT_NORMAL;
 static GY_RECT_NORMAL_TYPE	_normalType				= GY_RECT_NORMAL_FLAT;
+static GYColor4				_curQuadListColor[4]	= { {0} };
 
 void gyVidResolution(unsigned int *const projWidth, unsigned int *const projHeight) {
 	*projWidth = _projWidth; *projHeight = _projHeight;
@@ -77,7 +78,7 @@ int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth,
     const float ptop = 0.0f;
     const float pbottom = projHeight;
 
-	gyVidOrthoProjMatrix(&projectionMatrix, pleft, pright, pbottom, ptop, pnear, pfar);
+	gyVidOrthoProjMatrix(projectionMatrix, pleft, pright, pbottom, ptop, pnear, pfar);
 
 //God fucking damnit, Windows....
 #ifdef _WIN32
@@ -122,8 +123,10 @@ int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth,
 // ==== LOW-LEVEL API =====
 
 void gyVidCameraSetTransform(const GYMatrix4 mat) {
+	GYMatrix4 bullshit;
 	gyMatMultMat(projectionViewMatrix, projectionMatrix, mat);
 	memcpy(viewMatrix, mat, sizeof(GYMatrix4));
+	memcpy(bullshit, projectionViewMatrix, sizeof(GYMatrix4));
 	glUniformMatrix4fv(curLightShader->uniformLoc[SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)projectionViewMatrix);
 }
 
@@ -152,9 +155,9 @@ void gyVidCameraSetViewCenter(const GYVector4*const pos, const float scale, cons
 }
 
 void gyVidProjectionSetTransform(const GYMatrix4 mat) {
-	GYMatrix4 result;
-	gyMatMultMat(result, mat, viewMatrix);
-	memcpy(projectionViewMatrix, result, sizeof(GYMatrix4));
+	//GYMatrix4 result;
+	gyMatMultMat(projectionViewMatrix, mat, viewMatrix);
+	//memcpy(projectionViewMatrix, result, sizeof(GYMatrix4));
 	memcpy(projectionMatrix, mat, sizeof(GYMatrix4));
 	glUniformMatrix4fv(curLightShader->uniformLoc[SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)projectionViewMatrix);
 }
@@ -174,18 +177,12 @@ void gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsign
 }
 
 void gyVidColorArray(const struct _GYColor4 *const ptr) {
-	static const GYColor4 temp[4] = {
-		{ 0, 0, 0, 255 },
-		{ 0, 0, 0, 255 },
-		{ 0, 0, 0, 255 },
-		{ 0, 0, 0, 255 }
-	};
-	glVertexAttribPointer(curLightShader->attribLoc[SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, &temp);
+	glVertexAttribPointer(curLightShader->attribLoc[SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, ptr);
 	glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_COLOR]);
 }
 
 void gyVidTexCoordArray(const struct _GYTexCoord2 *const ptr) {
-	assert(_curTex); //You should not be submitting this to the untextured shader, dumbass!
+	assert(curTex); //You should not be submitting this to the untextured shader, dumbass!
 	glVertexAttribPointer(curLightShader->attribLoc[SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, 0, ptr);
 	glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_TEX_COORD]);
 }
@@ -202,13 +199,19 @@ void gyVidTangentArray(const GYVector3 *const ptr) {
 }*/
 
 void gyVidTexBind(const GYTexture *const tex) {
+	static int wasEnabled = 0;
+	int enabled = 1;
+
 	if(tex) {
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, *(GLuint *)&tex->_data);
 	} else {
+		enabled = 0;
 		glDisable(GL_TEXTURE_2D);
 	}
-	_curTex = tex;
+	curTex = tex;
+	if(enabled != wasEnabled) glUniform1i(curLightShader->uniformLoc[SHADER_TEXTURE_ENABLED], enabled);
+	wasEnabled = enabled;
 }
 
 void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
@@ -225,12 +228,10 @@ void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
 
 
 void gyVidQuadListBegin(const GYColor4 *const color) {
-	//Pad for to apply to each vertex
-	_rectColor[0] = *color;
-	_rectColor[1] = *color;
-	_rectColor[2] = *color;
-	_rectColor[3] = *color;
-	gyVidColorArray(_rectColor);
+	_curQuadListColor[0] = *color;
+	_curQuadListColor[1] = *color;
+	_curQuadListColor[2] = *color;
+	_curQuadListColor[3] = *color;
 }
 
 //Don't do shit. Lolz.
@@ -253,11 +254,13 @@ void gyVidQuad(const GYVector4 *const verts, const unsigned int frame) {
 	const GYTexCoord2* coord;
 	const GYVector3* tangent;
 
-	if(_curTex) {
-		coord = gyVidTexCoordArrayFromFrame(&_curTex->_coord->texCoord[frame], _rectTexOrient);
+	if(curTex) {
+		coord = gyVidTexCoordArrayFromFrame(&curTex->_coord->texCoord[frame], _rectTexOrient);
 		gyVidTexCoordArray(coord);
 		_rectTexOrient = GY_RECT_TEX_ORIENT_NORMAL; //reset after each rect
 	}
+
+	gyVidColorArray(_curQuadListColor);
 
 	tangent = &_rectTangents[_rectTexOrient];
 	if(tangent != tangentVector) {
