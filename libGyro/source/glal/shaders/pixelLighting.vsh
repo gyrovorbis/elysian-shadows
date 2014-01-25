@@ -34,6 +34,7 @@ uniform vec3			uNormal;
 uniform vec3			uTangent;
 uniform bool			uLightsEnabled[cMaxLights];
 uniform samplerCube		uShadowCubeMaps[cMaxLights];
+uniform bool			uTextureEnabled;
 uniform bool			uLightingEnabled;
 uniform bool			uNormalMapEnabled;
 uniform sampler2D		uNormalMap;
@@ -57,70 +58,6 @@ varying vec3			vhalfVector;
 varying vec3			vNormal;
 varying vec2			vTexCoord;
 
-
-/*
-vec4 lightingEquation(const int i) {
-	vec4 computedColor = vec4(cfZero, cfZero, cfZero, cfZero);
-	vec3 halfVec;
-	vec3 VPpli;
-	float nDotL, nDotH;
-	float attFactor = cfOne;
-
-	if(uLights[i].position.w != cfZero) {		//Point Light
-		vec3 attDist;
-		float spotFactor;
-
-		//Direction of light
-		VPpli = uLights[i].position.xyz - aPosition.xyz;
-		//if() {
-			attDist.x = cfOne;
-			attDist.z = dot(VPpli, VPpli);
-			attDist.y = sqrt(attDist.z);
-			attFactor = cfOne / dot(attDist, uLights[i].attenuationFactors);
-		//}
-		VPpli = normalize(VPpli);
-
-		//Spot light
-		if(uLights[i].spotCutoffAngle < cMaxSpotCutoffAngle) {
-			spotFactor = dot(-VPpli, uLights[i].spotDirection);
-
-			if(spotFactor >= cos((radians(uLights[i].spotCutoffAngle))))
-				spotFactor = pow(spotFactor, uLights[i].spotExponent);
-			else
-				spotFactor = cfOne;
-
-			attFactor *= spotFactor;
-		}
-	} else {								//Directional Light
-		VPpli = uLights[i].position.xyz;	//MUST BE PRENORMALIZED
-	}
-
-	//Process lighting equation
-	if(attFactor > cfZero) {
-		//Calculate and apply ambient lighting
-		computedColor += uLights[i].ambientColor * uMaterial.ambientColor;
-
-		//Calculate and apply diffuse lighting
-		nDotL = max(cfZero, dot(aNormal, VPpli));
-		computedColor += (nDotL * uLights[i].diffuseColor * uMaterial.diffuseColor);
-
-		//Calculate and apply specular lighting
-		halfVec = normalize(VPpli + vec3(cfZero, cfZero, cfOne));
-		nDotH = dot(aNormal, halfVec);
-		if(nDotH > cfZero) {
-			computedColor += (pow(nDotH, uMaterial.shininess) *
-								uMaterial.specularColor *
-								uLights[i].specularColor);
-		}
-
-		computedColor *= attFactor;
-	}
-
-	return computedColor;
-
-}
-*/
-
 void calculateLighting(void) {
 	int i;
 
@@ -139,7 +76,6 @@ void calculateLighting(void) {
 
 void main(void) {
 	gl_Position = uProjViewMat * aPosition;
-	gl_Position.xyz /= gl_Position.w;
 	vColor = aColor;
 	vWorldPos = aPosition;
 	vNormal = uNormal;

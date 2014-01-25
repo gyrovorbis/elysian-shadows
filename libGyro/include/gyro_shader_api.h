@@ -4,7 +4,7 @@
 #include "gyro_defines.h"
 #include "gyro_matrix_api.h"
 
-#define GYRO_VIDEO_LIGHT_SOURCES_MAX 20
+#define GYRO_VIDEO_LIGHT_SOURCES_MAX 4
 
 #ifdef __cplusplus
 extern "C" {
@@ -12,6 +12,16 @@ extern "C" {
 
 struct _GYColor4;
 struct _GYTexture;
+
+typedef enum _GY_CUBE_MAP_FACE {
+	GY_CUBE_MAP_RIGHT,
+	GY_CUBE_MAP_LEFT,
+	GY_CUBE_MAP_BOTTOM,
+	GY_CUBE_MAP_TOP,
+	GY_CUBE_MAP_BACK,
+	GY_CUBE_MAP_FRONT,
+	GY_CUBE_MAP_FACE_MAX
+} GY_CUBE_MAP_FACE;
 
 typedef struct _GYLightProperties {
 	GYVector4	ambientColor;
@@ -21,12 +31,20 @@ typedef struct _GYLightProperties {
 	float		spotExponent;
 } GYLightProperties;
 
+typedef enum _GY_LIGHT_TYPE {
+	GY_LIGHT_DIRECTIONAL,
+	GY_LIGHT_SPOT,
+	GY_LIGHT_POINT
+} GY_LIGHT_TYPE;
+
 typedef struct _GYLightSource {
 	GYMatrix4					projViewMat;
 	GYVector4					position;					//position.w = 0.0f for directional light
 	GYVector3					direction;
 	float						spotCutoffAngle;
+	GY_LIGHT_TYPE				type;
 	GYLightProperties*			properties;
+	void*						_data;
 } GYLightSource;
 
 typedef struct _GYMaterial {
@@ -52,6 +70,7 @@ typedef struct _GYShaderProgram {
 
 //Lighting API
 void gyVidLightSourceClear(void);
+
 void gyVidLightSourceAdd(const GYLightSource* const light);
 void gyVidLightSourceSetEnable(const int enabled);
 void gyVidLightSourceAmbientSetEnable(const int enabled);
@@ -68,9 +87,16 @@ void gyVidSetGlobalAmbience(const struct _GYVector4*const color);
 //Shadow Multipass Rendering
 int gyVidBeginNextShadowPass(void);
 
+
 //Shader manipulation
 void gyVidSetCurrentShaderProgram(struct _GYShaderProgram*const program);
 void gyVidSetDefaultShaderProgram();
+
+void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type);
+void gyVidLightSourceUninit(GYLightSource* const light);
+void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_MAP_FACE face);
+void gyVidLightSourceEndShadowPasses(void);
+void gyVidLightSourceBeginShadowPasses(void);
 
 //Shader management
 GYShader* gyShaderCreate(const char*const path);
