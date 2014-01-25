@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 #define GYRO_PATH_MAX_SIZE		200
-#define GYRO_PRINTF_BUFFER_SIZE 500
+#define GYRO_PRINTF_BUFFER_SIZE 10000 //REESTED TO FUCK, CHANGE ME
 
 #ifdef __cplusplus
 }

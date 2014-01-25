@@ -43,12 +43,13 @@ extern GYMatrix4 _instanceMat;
 //===INLINE THE FUCK OUT OF EVERYTHING =====
 //====MATRIX STACK OPERATIONS======
 static inline void gyMatPush(void) {
-	//assert(_curStackFr < GYRO_MATH_MATRIX_STACK_DEPTH);
+	assert(_curStackFr < GYRO_MATH_MATRIX_STACK_DEPTH);
 	gyMatStore(&_matStack[_curStackFr]);
 	++_curStackFr;
 }
 
 static inline void gyMatPop(void) {
+	assert(_curStackFr > 0);
 	--_curStackFr;
 	gyMatLoad(&_matStack[_curStackFr]);
 }

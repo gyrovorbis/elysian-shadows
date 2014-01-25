@@ -27,15 +27,11 @@ namespace elysian {
 	class LightSource: public Component, private GYLightSource {
 		friend class LightSystem;
 		friend class Engine;
-	public:
-		enum LIGHT_TYPE { LIGHT_DIRECTIONAL, LIGHT_POINT };
-	private:
-		LIGHT_TYPE _type			= LIGHT_POINT;
 
 	public:
 
 		LightSource(Entity& entity);
-		virtual ~LightSource(void) override = default;
+		virtual ~LightSource(void) override;
 
 		//reimplemented from component
 		virtual bool canAddTo(Entity& entity) override;
@@ -45,12 +41,12 @@ namespace elysian {
 		virtual bool removeFromLevel(void) override;
 		virtual TYPE getType(void) const override;
 
-		void setLightType(const LIGHT_TYPE type);
-		LIGHT_TYPE getLightType(void) const;
+		void setLightType(const GY_LIGHT_TYPE _type);
+		GY_LIGHT_TYPE getLightType(void) const;
 		void setDirection(const GYVector3& dir);
 		void setSpotCutoffAngle(const float angle);
 		void setAttrib(const LightAttrib* const attrib);
-		LightAttrib& getLightAttrib(void);
+		LightAttrib& getAttrib(void);
 
 		void update(void);
 
@@ -86,14 +82,15 @@ namespace elysian {
 			{ 0.0f, 0.0f, 0.0f, 0.0f }, //pos
 			{ 0.0f, -0.0f, 0.00f },		//dir
 			360.0f,						//cutoff
-			&LightAttrib::defaultProperties
+			GY_LIGHT_SPOT,				//type
+			&LightAttrib::defaultProperties,
+			nullptr
 }) { gyVec3Normalize(&direction);  }
 	inline void LightSource::setAttrib(const LightAttrib* const attrib) { properties = (GYLightProperties*)attrib; }
 	inline void LightSource::setDirection(const GYVector3& dir) { gyVec3Normalize(&direction); direction = dir; }
 	inline void LightSource::setSpotCutoffAngle(const float angle) { spotCutoffAngle = angle; }
-	inline void LightSource::setLightType(const LIGHT_TYPE type) { _type = type; if(type == LIGHT_DIRECTIONAL) position.w = 0.0f; }
-	inline auto LightSource::getLightType(void) const -> LIGHT_TYPE { return _type; }
-	inline LightAttrib& LightSource::getLightAttrib(void) { return *static_cast<LightAttrib*>(properties); }
+	inline auto LightSource::getLightType(void) const -> GY_LIGHT_TYPE { return type; }
+	inline LightAttrib& LightSource::getAttrib(void) { return *static_cast<LightAttrib*>(properties); }
 
 }
 

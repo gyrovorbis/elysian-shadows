@@ -3,6 +3,13 @@
 #include "elysian_generic.hpp"
 
 namespace elysian {
+
+LightSource::~LightSource(void) {
+#ifdef ELYSIAN_ENGINE
+	gyVidLightSourceUninit(static_cast<GYLightSource*>(this));
+#endif
+}
+
 /*
 typedef struct _GYLightProperties {
 	GYVector4	ambientColor;
@@ -34,8 +41,16 @@ bool LightSource::removeFromLevel(void) {
 	return true;
 }
 
+void LightSource::setLightType(const GY_LIGHT_TYPE _type) {
+	if(type == GY_LIGHT_DIRECTIONAL) position.w = 0.0f;
+
+#ifdef ELYSIAN_ENGINE
+	gyVidLightSourceInit(static_cast<GYLightSource*>(this), _type);
+#endif
+}
+
 void LightSource::update(void) {
-	if(_type == LIGHT_POINT) {
+	if(type == GY_LIGHT_POINT || type == GY_LIGHT_SPOT) {
 		position = {
 			getEntity()->transform._pos.x,//-200.0f,
 			getEntity()->transform._pos.y,//-200.0f,

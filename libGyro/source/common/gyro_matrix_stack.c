@@ -43,6 +43,15 @@ GYMatrix4 _rotationMat =
 	{0, 0, 0, 1}
 };
 
+GYMatrix4 _xAxisReflectionMat =
+{
+	{1, 0, 0, 0},
+	{0, 1, 0, 0},
+	{0, 0, 1, 0},
+	{0, 0, 0, 1}
+};
+
+
 GYMatrix4  _tranScaleMat =
 {
     {1, 0, 0, 0},

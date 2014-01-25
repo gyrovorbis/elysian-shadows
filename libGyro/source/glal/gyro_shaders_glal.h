@@ -2,12 +2,13 @@
 #define GYRO_SHADERS_GLAL_H
 
 #include <glal/gyro_glal.h>
+#include <gyro_shader_api.h>
+
+#define GLAL_SHADOW_MAP_SIZE	1024
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#define SHADER_LIGHTS_PER_PASS 4
 
 struct _GYShaderProgram;
 
@@ -19,6 +20,7 @@ typedef enum __SHADER_ATTRIB {
 } _SHADER_ATTRIB;
 
 typedef enum __SHADER_UNIFORM {
+	SHADER_TEXTURE_ENABLED,
 	SHADER_NORMAL,
 	SHADER_TANGENT,
 	SHADER_PROJ_VIEW_MAT,
@@ -56,11 +58,25 @@ typedef struct __LightingShaderProgram {
 	struct _GYShaderProgram*	program;
 	GLint						attribLoc[SHADER_ATTRIB_MAX];
 	GLint						uniformLoc[SHADER_UNIFORM_MAX];
-	GLint						lightsUniformLoc[SHADER_LIGHTS_PER_PASS][SHADER_LIGHT_UNIFORMS_MAX];
+	GLint						lightsUniformLoc[GYRO_VIDEO_LIGHT_SOURCES_MAX][SHADER_LIGHT_UNIFORMS_MAX];
 } _LightingShaderProgram;
 
+typedef struct __LightInternals {
+	GLuint fbo;
+	GLuint shadowMap;
+} _LightInternals;
 
-extern _LightingShaderProgram* curLightShader;
+extern GYShaderProgram*				_curShaderProg;
+extern _LightingShaderProgram		_lightingShader;
+extern _LightingShaderProgram		_shadowMapShader;
+extern _LightingShaderProgram*		curLightShader;
+extern const GYMatrix4				shadowTexCoordBiasMat;
+extern GYMatrix4					pointShadowFaceMatrices[GY_CUBE_MAP_FACE_MAX];
+
+extern GYLightSource*		lightSources[GYRO_VIDEO_LIGHT_SOURCES_MAX];
+extern unsigned				lightSourceCount;
+extern int					lightingEnabled;
+extern int					lightsEnabled[GYRO_VIDEO_LIGHT_SOURCES_MAX];
 
 void glalLoadDefaultShaders(void);
 void glalGetLightViewMatrix(GYMatrix4 dest, const GYLightSource*const lightSrc);

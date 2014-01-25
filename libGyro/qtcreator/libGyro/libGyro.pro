@@ -125,5 +125,6 @@ SOURCES += \
     ../../source/common/gyro_system.c \
     ../../source/common/gyro_shader.c \
     ../../source/common/gyro_matrix_stack.c \
-    ../../source/common/gyro_asset_bank.c
+    ../../source/common/gyro_asset_bank.c \
+    ../../source/glal/gyro_lighting_glal.c
 

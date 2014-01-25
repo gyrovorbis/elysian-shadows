@@ -20,7 +20,9 @@
 #include "elysian_party_system.hpp"
 #include "elysian_timer_system.hpp"
 #include "elysian_audio_source.hpp"
+#include "elysian_light_source.hpp"
 #include "elysian_level_system.hpp"
+#include "elysian_light_system.hpp"
 #include "elysian_lua_script.hpp"
 #include "elysian_map_depth_buffer.hpp"
 #include "elysian_quad_sprite.hpp"
@@ -71,12 +73,15 @@ namespace OOLUA
 	typedef elysian::TileEntry					TileEntry;
 	typedef elysian::Area						Area;
 	typedef elysian::GameInput					GameInput;
+	typedef elysian::LightAttrib				LightAttrib;
 	typedef elysian::PartySystem				PartySystem;
 	typedef elysian::TimerSystem				TimerSystem;
 	typedef elysian::Singletons					Singletons;
 	typedef elysian::AudioSource				AudioSource;
+	typedef elysian::LightSource				LightSource;
 	typedef elysian::AudioSystem				AudioSystem;
 	typedef elysian::LevelSystem				LevelSystem;
+	typedef elysian::LightSystem				LightSystem;
 	typedef elysian::LuaBehaviorScriptAttrib	LuaBehaviorScriptAttrib;
 }
 
@@ -90,8 +95,21 @@ OOLUA_PROXY(LuaBehaviorScriptAttrib)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(GYVector2)
-	OOLUA_MGET_MSET(x)
-	OOLUA_MGET_MSET(y)
+	OOLUA_MGET_MSET(x, getX, setX)
+	OOLUA_MGET_MSET(y, getY, setY)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(GYVector3)
+	OOLUA_MGET_MSET(x, getX, setX)
+	OOLUA_MGET_MSET(y, getY, setY)
+	OOLUA_MGET_MSET(z, getZ, setZ)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(GYVector4)
+	OOLUA_MGET_MSET(x, getX, setX)
+	OOLUA_MGET_MSET(y, getY, setY)
+	OOLUA_MGET_MSET(z, getZ, setZ)
+	OOLUA_MGET_MSET(w, getW, setW)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(GYWav)
@@ -134,6 +152,7 @@ namespace OOLUA {
 	template<> class Proxy_class<elysian::Character>;
 	template<> class Proxy_class<elysian::Warp>;
 	template<> class Proxy_class<elysian::AudioSource>;
+	template<> class Proxy_class<elysian::LightSource>;
 	template<> class Proxy_class<elysian::Behavior>;
 	template<> class Proxy_class<elysian::LuaBehavior>;
 }
@@ -153,6 +172,7 @@ OOLUA_PROXY(Entity, RenderableObject)
 	OOLUA_MEM_FUNC(Character*, addCharacter)
 	OOLUA_MEM_FUNC(Warp*, addWarp)
 	OOLUA_MEM_FUNC(AudioSource*, addAudioSource)
+	OOLUA_MEM_FUNC(LightSource*, addLightSource)
 	OOLUA_MEM_FUNC(Behavior*, addBehavior, const char*)
 	OOLUA_MEM_FUNC(LuaBehavior*, addLuaBehavior, const char*)
 	OOLUA_MEM_FUNC_CONST(Renderable*, getRenderable);
@@ -161,6 +181,7 @@ OOLUA_PROXY(Entity, RenderableObject)
 	OOLUA_MEM_FUNC_CONST(Character*, getCharacter);
 	OOLUA_MEM_FUNC_CONST(Warp*, getWarp)
 	OOLUA_MEM_FUNC_CONST(AudioSource*, getAudioSource)
+	OOLUA_MEM_FUNC_CONST(LightSource*, getLightSource)
 	OOLUA_MEM_FUNC_CONST(Behavior*, getBehavior, const char*)
 	OOLUA_MEM_FUNC_CONST(LuaBehavior*, getLuaBehavior, const char*)
 	OOLUA_MEM_FUNC(void, removeRenderable)
@@ -169,6 +190,7 @@ OOLUA_PROXY(Entity, RenderableObject)
 	OOLUA_MEM_FUNC(void, removeCharacter)
 	OOLUA_MEM_FUNC(void, removeWarp)
 	OOLUA_MEM_FUNC(void, removeAudioSource)
+	OOLUA_MEM_FUNC(void, removeLightSource)
 	OOLUA_MEM_FUNC(void, removeBehavior, const char*)
 	OOLUA_MEM_FUNC(void, removeLuaBehavior, const char*)
 OOLUA_PROXY_END
@@ -253,11 +275,11 @@ OOLUA_PROXY(GYStatic)
 		No_public_constructors,
 		No_public_destructor
 	)
-	OOLUA_MGET_MSET(inverseMass)
-	OOLUA_MGET_MSET(coeffOfRest)
-	OOLUA_MGET_MSET(damping)
-	OOLUA_MGET_MSET(invMomOfInertia)
-	OOLUA_MGET_MSET(angDamping)
+	OOLUA_MGET_MSET(inverseMass, getInverseMass, setInverseMass)
+	OOLUA_MGET_MSET(coeffOfRest, getCoeffOfRest, setCoeffOfRest)
+	OOLUA_MGET_MSET(damping, getDamping, setDamping)
+	OOLUA_MGET_MSET(invMomOfInertia, getInvMomOfInertia, setInvMomOfInertia)
+	OOLUA_MGET_MSET(angDamping, getAngDamping, setAngDamping)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CollidableAttrib)
@@ -313,6 +335,27 @@ OOLUA_PROXY(AudioSource, Component)
 	OOLUA_MEM_FUNC(void, setGain, float)
 	OOLUA_MEM_FUNC(void, setPitch, float)
 	OOLUA_MEM_FUNC(void, setLooping, bool)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(LightAttrib)
+	OOLUA_MEM_FUNC(void, setAmbientColor, const GYVector4&)
+	OOLUA_MEM_FUNC(void, setDiffuseColor, const GYVector4&)
+	OOLUA_MEM_FUNC(void, setSpecularColor, const GYVector4&)
+	OOLUA_MEM_FUNC(void, setAttenuationFactors, const GYVector3&)
+	OOLUA_MEM_FUNC(void, setSpotExponent, const float)
+	//OOLUA_MEM_FUNC(void, setComputeDistanceAttenuation, const bool)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(LightSource, Component)
+	 OOLUA_TAGS (
+		 No_public_constructors,
+		 No_public_destructor
+	 )
+	OOLUA_MEM_FUNC(void, setLightType, const GY_LIGHT_TYPE)
+	OOLUA_MEM_FUNC(void, setDirection, const GYVector3&)
+	OOLUA_MEM_FUNC(void, setSpotCutoffAngle, const float)
+	OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<const LightAttrib*>)
+	OOLUA_MEM_FUNC(LightAttrib&, getAttrib)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Behavior, Component)
@@ -429,6 +472,13 @@ OOLUA_PROXY(LevelSystem)
 	OOLUA_MFUNC_CONST(getPrevLevelPath)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(LightSystem)
+	OOLUA_TAGS (
+		No_public_constructors,
+		No_public_destructor
+	)
+	OOLUA_MFUNC(setGlobalAmbientColor)
+OOLUA_PROXY_END
 
 OOLUA_PROXY(AudioSystem)
 	OOLUA_TAGS (
@@ -514,6 +564,10 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 	s->register_class_static<gyro>("TEX_ORIENT_ROT_270", GY_RECT_TEX_ORIENT_ROT_270);
 	s->register_class_static<gyro>("TEX_ORIENT_FLIP_HORIZ_ROT_90", GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_90);
 	s->register_class_static<gyro>("TEX_ORIENT_FLIP_HORIZ_ROT_270", GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_270);
+
+	s->register_class_static<gyro>("LIGHT_DIRECTIONAL", GY_LIGHT_DIRECTIONAL);
+	s->register_class_static<gyro>("LIGHT_SPOT", GY_LIGHT_SPOT);
+	s->register_class_static<gyro>("LIGHT_POINT", GY_LIGHT_POINT);
 
 	//Entity::DEPTH_TYPE
 	typedef OOLUA::Entity Entity;
@@ -685,6 +739,10 @@ static inline int Singletons_getPartySystem(lua_State* const vm) {
 
 static inline int Singletons_getAudioSystem(lua_State* const vm) {
 	OOLUA_C_FUNCTION(elysian::AudioSystem*, elysian::Singletons::getAudioSys)
+}
+
+static inline int Singletons_getLightSystem(lua_State* const vm) {
+	OOLUA_C_FUNCTION(elysian::LightSystem*, elysian::Singletons::getLightSys)
 }
 
 static inline int Singletons_getTimerSystem(lua_State* const vm) {

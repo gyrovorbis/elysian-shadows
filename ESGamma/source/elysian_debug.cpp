@@ -299,7 +299,7 @@ void Debug::processInput(const GameInput& input) {
 
 		Entity* entity = new Entity();
 		LightSource* lightSrc = entity->addLightSource();
-		lightSrc->setLightType(LightSource::LIGHT_DIRECTIONAL);
+		lightSrc->setLightType(GY_LIGHT_DIRECTIONAL);
 		lightSrc->setDirection(GYVector3{0.5f, -1.0f, -0.5f});
 		LightAttrib* attrib = new LightAttrib;
 		//attrib->setAmbientColor(GYVector4{ 0.3f, 0.3f, 0.3f, 1.0f});
@@ -355,17 +355,20 @@ void Debug::processInput(const GameInput& input) {
 				lightSrc->setDirection(dirVec);
 				LightAttrib* attrib = new LightAttrib;
 				//attrib->setAmbientColor(GYVector4{ 0.3f, 0.3f, 0.3f, 1.0f});
-				attrib->setDiffuseColor(GYVector4{ 1.4f, 0.3f, 0.3f, 1.0f });
-				attrib->setSpecularColor(GYVector4{ 0.0f, 0.0f, 1.0f, 1.0f});
-				//attrib->setAmbientColor(GYVector4{ 1.0f, 1.0f, 1.0f, 1.0f});
+				//attrib->setDiffuseColor(GYVector4{ 300.0f, 5.3f, 5.3f, 1.0f });
+				attrib->setSpecularColor(GYVector4{ 10.0f, 0.0f, 1.0f, 1.0f});
+				//attrib->setAmbientColor(GYVector4{ 0.1f, 0.0f, 0.0f, 1.0f});
 				lightSrc->setAttrib(attrib);
 
 #if 0
 				lightSrc->setLightType(LightSource::LIGHT_DIRECTIONAL);
 #else
-				lightSrc->setSpotCutoffAngle(80.0f);
-				attrib->setAttenuationFactors(GYVector3{ 0.000005f, 0.000005f, 0.000005f });
-				attrib->setSpotExponent(4.0f);
+				lightSrc->setLightType(GY_LIGHT_POINT);
+				lightSrc->setSpotCutoffAngle(180.0f);
+				attrib->setAttenuationFactors(GYVector3{ 0.0005f, 0.0005f, 0.0005f });
+
+
+				attrib->setSpotExponent(1.0f);
 #endif
 
 				once = 1;
