@@ -86,8 +86,8 @@ void PartySystem::processInput(const GameInput &input) {
 
 	gyVec2ScaleAccum(&moveDist, getTimerSys()->getDeltaTime());
 	if(moved) {
-		if(_playableParty.size() == 0 && _characterParty.size() == 0) getCameraSys()->transform.translate(moveDist); 
-		else if(_playableParty.size() != 0) _playableParty[0]->getCharacter()->move(moveDist);
+//		if(_playableParty.size() == 0 && _characterParty.size() == 0) getCameraSys()->transform.translate(moveDist);
+		if(_playableParty.size() != 0) _playableParty[0]->getCharacter()->move(moveDist);
 		else if(_characterParty.size() != 0) _characterParty[0]->getCharacter()->move(moveDist);
 	}
 }

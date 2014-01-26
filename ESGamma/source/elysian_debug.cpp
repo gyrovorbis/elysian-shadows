@@ -178,20 +178,20 @@ static LightSource* src;
 void Debug::processInput(const GameInput& input) {
 	//Camera zoom/rotate
 	if(input.getDown(GameInput::BUT_Q)){
-		_engine->_cameraSystem->transform.rotate(0.1f);
+		_engine->_cameraSystem->rotate(0.1f);
 	}
 	if(input.getDown(GameInput::BUT_A)){
-		_engine->_cameraSystem->transform.rotate(-0.1f);
+		_engine->_cameraSystem->rotate(-0.1f);
 	}
 	if(input.getDown(GameInput::BUT_W)){
-		_engine->_cameraSystem->transform.scale(0.9f, 0.9f);
+		_engine->_cameraSystem->scale(0.9f);
 	}
 	if(input.getDown(GameInput::BUT_S)){
-		_engine->_cameraSystem->transform.scale(1.1f, 1.1f);
+		_engine->_cameraSystem->scale(1.1f);
 	}
 	if(input.getDown(GameInput::BUT_E)) { //Reset Transform
-		_engine->_cameraSystem->transform.setScale(1.0f, 1.0f);
-		_engine->_cameraSystem->transform.setOrientZ(0.0f);
+		_engine->_cameraSystem->setScale(1.0f);
+		_engine->_cameraSystem->setOrientZ(0.0f);
 	}
 
 	//Rendering layers

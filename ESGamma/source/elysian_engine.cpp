@@ -111,7 +111,6 @@ void Engine::processInput(void) {
 
 	gyInputPoll(&_platInput);
 	GameInput::Translate(_platInput, _gameInput);
-	Debug::getInstance().processInput(_gameInput);
 
 	if(!_processInput) return;
 
@@ -119,6 +118,8 @@ void Engine::processInput(void) {
 		case System::ENGINE_NORMAL:
 		case System::ENGINE_CONVERSATION:
 			_partySystem->processInput(_gameInput);
+			_cameraSystem->processInput(_gameInput);
+			Debug::getInstance().processInput(_gameInput);
 			//conversationSystem->ProcessInput(input);
 			break;
 		case System::ENGINE_MODAL_CONVERSATION:
@@ -126,6 +127,9 @@ void Engine::processInput(void) {
 			break;
 		case System::ENGINE_WARPING:
 			break;
+		case System::ENGINE_CAMERA_DEBUG:
+			_cameraSystem->processInput(_gameInput);
+		break;
 		default:
 			break;
 	}
@@ -160,10 +164,11 @@ void Engine::render(void) {
 			gyVidResolution(&width, &height);
 			glViewport(0, 0, width, height);
 
-			gyVidOrthoProjMatrix(projectionMatrix, pleft, pright, pbottom, ptop, pnear, pfar);
+			gyVidOrthoProjMat(projectionMatrix, pleft, pright, pbottom, ptop, pnear, pfar);
 			glDepthRange(0, 1);
-			gyVidProjectionSetTransform(projectionMatrix);
-			_cameraSystem->PushTransform();
+			//gyVidProjectionSetTransform(projectionMatrix);
+			gyVidProjectionDefaultMatrix();
+			_cameraSystem->pushViewProjMatrix();
 
 			_lightSystem->shadowRenderPasses();
 
@@ -175,8 +180,8 @@ void Engine::render(void) {
 					glalGetPointLightViewMatrix(lightViewMatrix, lightSrc, 4);
 					glalGetPointLightProjectionMatrix(projectionMatrix);
 
-					gyVidProjectionSetTransform(projectionMatrix);
-					gyVidCameraSetTransform(lightViewMatrix);
+					gyVidProjectionCustomMatrix(projectionMatrix);
+					gyVidCameraCustomViewMatrix(lightViewMatrix);
 					//glCullFace(GL_BACK);
 
 			}
@@ -189,7 +194,7 @@ void Engine::render(void) {
 
 			 _collisionSystem->render();
 
-			_cameraSystem->PopTransform();
+			_cameraSystem->popViewProjMatrix();
 
 			//Begin rendering overlays
 			_warpSystem->Render();

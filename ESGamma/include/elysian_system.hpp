@@ -23,7 +23,7 @@ namespace elysian {
 
 	class System: public LevelManager {
 	public:
-		enum ENGINE_STATE { ENGINE_NORMAL, ENGINE_WARPING, ENGINE_CONVERSATION, ENGINE_MODAL_CONVERSATION };
+		enum ENGINE_STATE { ENGINE_NORMAL, ENGINE_WARPING, ENGINE_CONVERSATION, ENGINE_MODAL_CONVERSATION, ENGINE_CAMERA_DEBUG };
 		friend class Engine;
 		friend class Debug;
 

@@ -1,7 +1,7 @@
 #ifndef GYRO_VIDEO_COMMON_H
 #define GYRO_VIDEO_COMMON_H
 
-static inline void gyVidOrthoProjMatrix(GYMatrix4 mat, const float pleft, const float pright,
+static inline void gyVidOrthoProjMat(GYMatrix4 mat, const float pleft, const float pright,
 						 const float pbottom, const float ptop,
 						 const float pnear, const float pfar) {
 	const GYMatrix4 orthoProjMat = {
