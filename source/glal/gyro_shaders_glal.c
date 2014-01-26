@@ -126,13 +126,20 @@ void glalLightingInit(void) {
 }
 
 void gyVidMaterialBind(const GYMaterial*const material) {
-	_currentMaterial = material;
 
-	glUniform1f(curLightShader->uniformLoc[SHADER_MATERIAL_SHININESS], material->shininess);
-	glUniform4fv(curLightShader->uniformLoc[SHADER_MATERIAL_AMBIENT_COLOR], 1, (float*)&material->ambientColor);
-	glUniform4fv(curLightShader->uniformLoc[SHADER_MATERIAL_DIFFUSE_COLOR], 1, (float*)&material->diffuseColor);
-	glUniform4fv(curLightShader->uniformLoc[SHADER_MATERIAL_SPECULAR_COLOR], 1, (float*)&material->specularColor);
-	glUniform4fv(curLightShader->uniformLoc[SHADER_MATERIAL_EMISSIVE_COLOR], 1, (float*)&material->emissiveColor);
+	if(!material) gyVidMaterialBind(&_defaultMaterial);
+	else if(_currentMaterial != material) {
+		_currentMaterial = material;
+
+		if(_currentMaterial) {
+			glUniform1f(curLightShader->uniformLoc[SHADER_MATERIAL_SHININESS], material->shininess);
+			glUniform4fv(curLightShader->uniformLoc[SHADER_MATERIAL_AMBIENT_COLOR], 1, (float*)&material->ambientColor);
+			glUniform4fv(curLightShader->uniformLoc[SHADER_MATERIAL_DIFFUSE_COLOR], 1, (float*)&material->diffuseColor);
+			glUniform4fv(curLightShader->uniformLoc[SHADER_MATERIAL_SPECULAR_COLOR], 1, (float*)&material->specularColor);
+			glUniform4fv(curLightShader->uniformLoc[SHADER_MATERIAL_EMISSIVE_COLOR], 1, (float*)&material->emissiveColor);
+
+		}
+	}
 }
 
 void gyVidSetGlobalAmbience(const GYVector4*const color) {
@@ -244,10 +251,12 @@ void glalLoadDefaultShaders(void) {
 void glalDefaultShadersLoadUniforms(void) {
 	GYLightSource* sources[GYRO_VIDEO_LIGHT_SOURCES_MAX];
 	int count = lightSourceCount;
+	GYMaterial* material = _currentMaterial;
+	_currentMaterial = NULL;
 
 	glUniformMatrix4fv(curLightShader->uniformLoc[SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)projectionViewMatrix);
 //	glUniform4fv(curLightShader->uniformLoc[SHADER_CAM_POS], 1, (float*)&viewPosition);
-	gyVidMaterialBind(_currentMaterial);
+	gyVidMaterialBind(material);
 
 	memcpy(sources, lightSources, sizeof(GYLightSource*) * count);
 
