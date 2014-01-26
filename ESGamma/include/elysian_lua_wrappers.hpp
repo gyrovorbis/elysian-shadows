@@ -223,6 +223,14 @@ OOLUA_PROXY(QuadSpriteAttrib, SpriteAttrib)
 	OOLUA_MEM_FUNC(void, setVerticesAlpha, const unsigned char, const unsigned char, const unsigned char, const unsigned char)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(GYMaterial)
+	OOLUA_MGET(ambientColor, getAmbientColor)
+	OOLUA_MGET(diffuseColor, getDiffuseColor)
+	OOLUA_MGET(specularColor, getSpecularColor)
+	OOLUA_MGET(emissiveColor, getEmissiveColor)
+	OOLUA_MGET_MSET(shininess, getShininess, setShininess)
+OOLUA_PROXY_END
+
 OOLUA_PROXY(Renderable, Component)
 	OOLUA_TAGS (
 		No_public_constructors,
@@ -234,6 +242,9 @@ OOLUA_PROXY(Renderable, Component)
 	OOLUA_MEM_FUNC(void, setFrame, unsigned)
 	OOLUA_MEM_FUNC_CONST(SpriteAttrib*, getSpriteAttrib)
 	OOLUA_MEM_FUNC(void, setSpriteAttrib, cpp_in_p<SpriteAttrib*>)
+	OOLUA_MEM_FUNC(void, setMaterial, cpp_in_p<GYMaterial*>)
+	OOLUA_MFUNC(getMaterial)
+	OOLUA_MFUNC(loadNormalMap)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(AnimationSequence)

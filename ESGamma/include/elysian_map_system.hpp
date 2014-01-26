@@ -68,6 +68,8 @@ namespace elysian {
 		unsigned getEntityCount(void) const;
         bool getOnscreenEntity(const unsigned index, GammaEntityDepthBuffEntry &entry, DEPTH_TYPE &type, float &lowestY, unsigned char &elev) const;
         void renderEntityEntry(const GammaEntityDepthBuffEntry &entry) const;
+		void enablePolygonOffset(void) const;
+		void disablePolygonOffset(void) const;
 
 
 		//=== /MapDepthBuffer Implementation ===
@@ -133,7 +135,7 @@ namespace elysian {
 	inline unsigned MapSystem::getEntityCount(void) const {
 		return _curArea->entities.size();
 	}
-	
+
 	inline bool MapSystem::getOnscreenEntity(const unsigned index, GammaEntityDepthBuffEntry &entry, DEPTH_TYPE &type, float &lowestY, unsigned char &elev) const {
 		Entity &entity = *(_curArea->entities)[index];
 		if(getCameraSys()->isOnscreen(entity)) {
@@ -150,6 +152,15 @@ namespace elysian {
 		//entry.entity->renderAtZ(entry.zCoord);
 		entry.entity->transform.setPosZ(entry.zCoordWorld);
 		entry.entity->render();
+	}
+
+	inline void MapSystem::enablePolygonOffset(void) const {
+		//glEnable(GL_POLYGON_OFFSET_FILL);
+		//glPolygonOffset(10.0f, 10.0f);
+	}
+
+	inline void MapSystem::disablePolygonOffset(void) const {
+		glDisable(GL_POLYGON_OFFSET_FILL);
 	}
 
 }

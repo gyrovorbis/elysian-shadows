@@ -16,6 +16,7 @@ namespace elysian {
 		OOLUA::register_class<Entity>(*_mainState);
 		OOLUA::register_class<QuadSpriteAttrib>(*_mainState);
 		_mainState->register_class<Component>();
+		_mainState->register_class<GYMaterial>();
 		_mainState->register_class<Renderable>();
 		_mainState->register_class<AnimationSequence>();
 		_mainState->register_class<AnimationAttrib>();
@@ -167,14 +168,26 @@ EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(QuadSpriteAttrib,
 								   setVertexColor,
 								   setVerticesAlpha)
 
-EXPORT_OOLUA_FUNCTIONS_3_NON_CONST(Renderable,
-								   setFrame,
-								   setOffset,
-								   setSpriteAttrib)
-EXPORT_OOLUA_FUNCTIONS_3_CONST(Renderable,
-							   getFrame,
-							   getOffset,
-							   getSpriteAttrib)
+OOLUA_EXPORT_FUNCTIONS(GYMaterial,
+					   setShininess)
+OOLUA_EXPORT_FUNCTIONS_CONST(GYMaterial,
+							 getAmbientColor,
+							 getDiffuseColor,
+							 getSpecularColor,
+							 getEmissiveColor,
+							 getShininess)
+
+OOLUA_EXPORT_FUNCTIONS(Renderable,
+					   setFrame,
+					   setOffset,
+					   setSpriteAttrib,
+					   loadNormalMap,
+					   getMaterial,
+					   setMaterial)
+OOLUA_EXPORT_FUNCTIONS_CONST(Renderable,
+						   getFrame,
+						   getOffset,
+						   getSpriteAttrib)
 
 EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(AnimationSequence,
 								   addFrame)

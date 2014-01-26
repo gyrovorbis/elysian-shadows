@@ -16,9 +16,11 @@ namespace elysian {
 	class Renderable: public Component {
 	friend class Entity;
 	private:
-		SpriteAttrib *_spriteAttrib = nullptr;	//Prefab-able attributes
-		unsigned _frame				= 0;			//for animation
-		GYVector2 _offset			= {0.0f, 0.0f};	//texture offset from base transform (local coords)
+		GYMaterial*		_material		= nullptr;
+		GYTexture*		_normalMap		= nullptr;
+		SpriteAttrib*	_spriteAttrib	= nullptr;	//Prefab-able attributes
+		unsigned		_frame			= 0;			//for animation
+		GYVector2		_offset			= {0.0f, 0.0f};	//texture offset from base transform (local coords)
 
 		inline Renderable(Entity &parent): Component(parent) {}
 	public:
@@ -45,6 +47,8 @@ namespace elysian {
 			};
 
 			gyVidTexBind(_spriteAttrib->_tex);
+			gyVidNormalMapBind(_normalMap);
+			gyVidMaterialBind(_material);
 
 			//Why aren't we just pushing another matrix to handle this?
 			if(_spriteAttrib->_tex) {
@@ -54,12 +58,16 @@ namespace elysian {
 				const float locY = ((float) fr->spriteHeight / size->y)/2.0f;
 				localVerts[0].x = -locX + _offset.x;
 				localVerts[0].y = -locY + _offset.y;
+				localVerts[0].z = locY*2.0f + _offset.y;
 				localVerts[1].x = locX + _offset.x;
 				localVerts[1].y = -locY + _offset.y;
+				localVerts[1].z = locY*2.0f + _offset.y;
 				localVerts[2].x = -locX + _offset.x;
 				localVerts[2].y = locY + _offset.y;
+			//	localVerts[0].z = -locY + _offset.y;
 				localVerts[3].x = locX + _offset.x;
 				localVerts[3].y = locY + _offset.y;
+			//	localVerts[0].z = -locY + _offset.y;
 			}
 
 			//branch assumes shit will usually be depth buffered
@@ -102,6 +110,18 @@ namespace elysian {
 
 		inline SpriteAttrib *getSpriteAttrib(void) const { return _spriteAttrib; }
 		inline void setSpriteAttrib(SpriteAttrib *const attrib) { _spriteAttrib = attrib; if(attrib) _frame = attrib->_frame;}
+
+		inline void setMaterial(GYMaterial*const material) {
+			_material = material;
+		}
+
+		inline GYMaterial& getMaterial(void) {
+			return *_material;
+		}
+
+		inline void loadNormalMap(const char*const path, const unsigned width, const unsigned height) {
+			_normalMap = gyVidTexCreate(path, width, height);
+		}
 		
 	};
 

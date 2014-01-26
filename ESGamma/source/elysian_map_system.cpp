@@ -30,8 +30,6 @@ namespace elysian {
 		updateAnimation();
 	}
 
-
-
 	void MapSystem::updateAnimation(void) {
 		//Cache time since last frame
 		float deltaTime = getTimerSys()->getDeltaTime();

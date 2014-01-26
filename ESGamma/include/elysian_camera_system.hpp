@@ -6,9 +6,29 @@
 
 #include <gyro.h>
 
+#define ELYSIAN_CAMERA_SYSTEM_STACK_DEPTH	3
+
 namespace elysian {
 	
 	class Entity;
+
+	struct CameraState {
+		Entity* entity		= nullptr;
+		GYVector3 pos		= { 0.0f, 0.0f, 0.0f };
+		GYVector3 dir		= { 0.0f, 1.0f, 0.0f };
+		GYVector3 up		= { 0.0f, 0.0f, 1.0f };
+		float scale			= 1.0f;
+		float zOrient		= 0.0f;
+
+		bool ortho			= true;
+		float fov			= 90.0f;
+		float aspect		= 1.0f;
+		float znear			= 0.5f;
+		float zfar			= 300.0f;
+
+		float viewWidth		= 640.0f;
+		float viewHeight	= 480.0f;
+	};
 
 	class CameraSystem: public System { 
 	private:
@@ -25,6 +45,9 @@ namespace elysian {
 		unsigned _scrStartY		= 0;
 		unsigned _scrEndX		= 0;
 		unsigned _scrEndY		= 0;
+
+
+
 	public:
 		CameraSystem(void);
 		InstanceTransform transform;
@@ -47,6 +70,9 @@ namespace elysian {
 		void update(void);
 
 		bool isOnscreen(const Entity &entity);
+
+		void pushState(void);
+		void popState(void);
 
 		/* LEGACY
 		//const static gyro::Vector2 screenSize;

@@ -172,7 +172,7 @@ void Engine::render(void) {
 
 					glViewport(0, 0, 1024, 1024);
 					//glDepthRange(1, 0);
-					glalGetPointLightViewMatrix(lightViewMatrix, lightSrc, 0);
+					glalGetPointLightViewMatrix(lightViewMatrix, lightSrc, 4);
 					glalGetPointLightProjectionMatrix(projectionMatrix);
 
 					gyVidProjectionSetTransform(projectionMatrix);

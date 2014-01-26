@@ -222,13 +222,13 @@ void Debug::processInput(const GameInput& input) {
 	}
 
 		GYVector4 tempVec;
-	if(input.getDown(GameInput::BUT_0)) {
+	if(input.getTapped(GameInput::BUT_0)) {
 
-		GYWav* wav = gyAudWavCreate("phone`.wav");
-		getAudioSys()->playSfxChannel(0, *wav);
+		//GYWav* wav = gyAudWavCreate("phone`.wav");
+		//getAudioSys()->playSfxChannel(0, *wav);
 		//getAudioSys()->setSfxChannelLooping(0, true);
 
-		/*CollisionSystem::RENDER_LAYER layer = _engine->_collisionSystem->cycleRenderLayer();
+		CollisionSystem::RENDER_LAYER layer = _engine->_collisionSystem->cycleRenderLayer();
 		switch(layer) {
 		case CollisionSystem::RENDER_DISABLED:
 			printf(VERBOSE, "Render Collision Layer - Disabled");
@@ -246,12 +246,12 @@ void Debug::processInput(const GameInput& input) {
 			printf(VERBOSE, "Render Collision Layer - Combined");
 			break;
 		default: break;
-		}*/
+		}/*
 		dirVec.x -= 0.1f;
 		gyVec3Normalize(&dirVec);
 		src->setDirection(dirVec);
 		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
-
+*/
 	}
 
 	if(input.getDown(GameInput::BUT_5)) {
@@ -356,7 +356,7 @@ void Debug::processInput(const GameInput& input) {
 				LightAttrib* attrib = new LightAttrib;
 				//attrib->setAmbientColor(GYVector4{ 0.3f, 0.3f, 0.3f, 1.0f});
 				//attrib->setDiffuseColor(GYVector4{ 300.0f, 5.3f, 5.3f, 1.0f });
-				attrib->setSpecularColor(GYVector4{ 10.0f, 0.0f, 1.0f, 1.0f});
+				attrib->setSpecularColor(GYVector4{ 1.0f, 1.0f, 1.0f, 1.0f});
 				//attrib->setAmbientColor(GYVector4{ 0.1f, 0.0f, 0.0f, 1.0f});
 				lightSrc->setAttrib(attrib);
 
@@ -365,7 +365,7 @@ void Debug::processInput(const GameInput& input) {
 #else
 				lightSrc->setLightType(GY_LIGHT_POINT);
 				lightSrc->setSpotCutoffAngle(180.0f);
-				attrib->setAttenuationFactors(GYVector3{ 0.0005f, 0.0005f, 0.0005f });
+				attrib->setAttenuationFactors(GYVector3{ 0.00005f, 0.00005f, 0.00005f });
 
 
 				attrib->setSpotExponent(1.0f);
