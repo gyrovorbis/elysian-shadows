@@ -18,14 +18,6 @@ unsigned			lightSourceCount								= 0;
 int					lightingEnabled									= 1;
 int					lightsEnabled[GYRO_VIDEO_LIGHT_SOURCES_MAX]		= { 0 };
 
-void glalTranspose(GYMatrix4 mat) {
-	GYMatrix4 mat2;
-	memcpy(mat2, mat, sizeof(GYMatrix4));
-	for(unsigned i = 0; i < 4; ++i)
-		for(unsigned j = 0; j < 4; ++j)
-			mat[i][j] = mat2[j][i];
-}
-
 void gyVidLightingSetEnable(const int enabled) {
 	lightingEnabled = enabled;
 	glUniform1i(curLightShader->uniformLoc[SHADER_LIGHTING_ENABLED], enabled);
@@ -201,7 +193,7 @@ void glalGetDirectionalLightViewMatrix(GYMatrix4 dest, const GYLightSource*const
 }
 
 void glalGetDirectionalLightProjectionMatrix(GYMatrix4* dest, const GYLightSource*const lightSrc) {
-	gyVidOrthoProjMatrix(dest, 0, GLAL_SHADOW_MAP_SIZE,
+	gyVidOrthoProjMat(dest, 0, GLAL_SHADOW_MAP_SIZE,
 							 0, GLAL_SHADOW_MAP_SIZE,
 							 -1500, 1500);
 }
@@ -671,7 +663,7 @@ void glalGetLightViewMatrix(GYMatrix4 dest, const GYLightSource*const lightSrc) 
 }
 
 void glalGetLightOrthoProjectionMatrix(GYMatrix4* dest, const GYLightSource*const lightSrc) {
-	gyVidOrthoProjMatrix(dest, 0, shadowWidth,
+	gyVidOrthoProjMat(dest, 0, shadowWidth,
 							 0, shadowHeight,
 							 -1500, 1500);
 }

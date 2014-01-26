@@ -24,10 +24,11 @@ void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev);
 void gyVidResolution(unsigned int *const width, unsigned int *const height);
 
 //Camera API
-void gyVidProjectionSetTransform(const GYMatrix4 mat);
-void gyVidCameraSetTransform(const GYMatrix4 mat);
+void gyVidProjectionDefaultMatrix(void); //sets to platform's default
+void gyVidProjectionCustomMatrix(const GYMatrix4 mat);
+void gyVidCameraCustomViewMatrix(const GYMatrix4 mat);
 //void gyVidCameraSetPosition(const struct _GYVector4* pos);
-void gyVidCameraSetViewCenter(const GYVector4* const pos, const float scale, const float zOrient);
+void gyVidCameraSetViewCenter(const GYVector3* const pos, const float scale, const float zOrient);
 
 
 //General Video API
@@ -50,6 +51,13 @@ void gyVidTexCoordArray(const struct _GYTexCoord2 *const ptr);
 //void gyVidNormalArray(const struct _GYVector3 *const ptr);
 //void gyVidTangentArray(const struct _GYVector3 *const ptr);
 void gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsigned startIndex, const unsigned amount);
+
+
+//CHANGE THIS INTO ONE SHARED FUNCTION, NOT PLATFORM-SPECIFIC!!!
+void gyVidViewFrustrumMat(GYMatrix4 mat, const float fov, const float aspect, const float znear, const float zfar);
+void gyVidLookAtMat(GYMatrix4 mat, const float ex, const float ey, const float ez,
+									const float dx, const float dy, const float dz,
+									const float ux, const float uy, const float uz);
 
 #include "common/gyro_video_common.h"
 
