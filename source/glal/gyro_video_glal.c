@@ -78,7 +78,7 @@ int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth,
     const float ptop = 0.0f;
     const float pbottom = projHeight;
 
-	gyVidOrthoProjMatrix(projectionMatrix, pleft, pright, pbottom, ptop, pnear, pfar);
+	gyVidOrthoProjMat(projectionMatrix, pleft, pright, pbottom, ptop, pnear, pfar);
 
 //God fucking damnit, Windows....
 #ifdef _WIN32
@@ -122,7 +122,7 @@ int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth,
 
 // ==== LOW-LEVEL API =====
 
-void gyVidCameraSetTransform(const GYMatrix4 mat) {
+void gyVidCameraCustomViewMatrix(const GYMatrix4 mat) {
 	GYMatrix4 bullshit;
 	gyMatMultMat(projectionViewMatrix, projectionMatrix, mat);
 	memcpy(viewMatrix, mat, sizeof(GYMatrix4));
@@ -130,12 +130,15 @@ void gyVidCameraSetTransform(const GYMatrix4 mat) {
 	glUniformMatrix4fv(curLightShader->uniformLoc[SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)projectionViewMatrix);
 }
 
-void gyVidCameraSetViewCenter(const GYVector4*const pos, const float scale, const float zOrient) {
+void gyVidCameraSetViewCenter(const GYVector3*const pos, const float scale, const float zOrient) {
 	unsigned scrWidth, scrHeight;
 	GYMatrix4 result;
+	GYVector4 pos4 = {
+		pos->x, pos->y, pos->z, 1.0f
+	};
 
 	//Save shit for other subsystems
-	memcpy(&viewPosition, pos, sizeof(GYVector4));
+	memcpy(&viewPosition, &pos4, sizeof(GYVector4));
 	viewScale = scale;
 	viewZOrient = zOrient;
 
@@ -151,10 +154,10 @@ void gyVidCameraSetViewCenter(const GYVector4*const pos, const float scale, cons
 	gyMatStore(&result);
 	gyMatPop();
 
-	gyVidCameraSetTransform(result);
+	gyVidCameraCustomViewMatrix(result);
 }
 
-void gyVidProjectionSetTransform(const GYMatrix4 mat) {
+void gyVidProjectionCustomMatrix(const GYMatrix4 mat) {
 	//GYMatrix4 result;
 	gyMatMultMat(projectionViewMatrix, mat, viewMatrix);
 	//memcpy(projectionViewMatrix, result, sizeof(GYMatrix4));
@@ -273,6 +276,47 @@ void gyVidQuad(const GYVector4 *const verts, const unsigned int frame) {
 
 void gyVidRect(const unsigned int frame) {
 	gyVidQuad(_rectVerts[_normalType], frame);
+}
+
+void gyVidProjectionDefaultMatrix(void) {
+	GYMatrix4 mat;
+	const float pfar = 1000.0f;
+	const float pnear = -999.0f;
+	const float pleft = 0.0f;
+	float pright;
+	const float ptop = 0.0f;
+	float pbottom;
+
+	unsigned width, height;
+
+	gyVidResolution(&width, &height);
+
+	pright = width; pbottom = height;
+
+	gyVidOrthoProjMat(mat, pleft, pright, pbottom, ptop, pnear, pfar);
+	gyVidProjectionCustomMatrix(mat);
+}
+
+void gyVidViewFrustrumMat(GYMatrix4 mat, const float fov, const float aspect, const float znear, const float zfar) {
+	glMatrixMode(GL_MODELVIEW_MATRIX);
+	glLoadIdentity();
+	gluPerspective(fov, aspect, znear, zfar);
+	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)mat);
+	glalTranspose(mat);
+	glLoadIdentity();
+}
+
+void gyVidLookAtMat(GYMatrix4 mat, const float ex, const float ey, const float ez,
+									const float dx, const float dy, const float dz,
+									const float ux, const float uy, const float uz) {
+	glMatrixMode(GL_MODELVIEW);
+
+	//Cache cube shadow map lookat matrices
+	glLoadIdentity();
+	gluLookAt(ex, ey, ez, dx, dy, dz, ux, uy, uz);
+	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)mat);
+	glalTranspose(mat);
+	glLoadIdentity();
 }
 
 
