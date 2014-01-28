@@ -103,7 +103,7 @@ int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth,
     glClearColor(0, 0, 0, 0);
 	glClearDepth (1.0f);
     glDepthFunc(GL_LEQUAL);
-    glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 	glViewport(0, 0, viewWidth, viewHeight);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -123,10 +123,10 @@ int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth,
 // ==== LOW-LEVEL API =====
 
 void gyVidCameraCustomViewMatrix(const GYMatrix4 mat) {
-	GYMatrix4 bullshit;
+//	GYMatrix4 bullshit;
 	gyMatMultMat(projectionViewMatrix, projectionMatrix, mat);
 	memcpy(viewMatrix, mat, sizeof(GYMatrix4));
-	memcpy(bullshit, projectionViewMatrix, sizeof(GYMatrix4));
+//	memcpy(bullshit, projectionViewMatrix, sizeof(GYMatrix4));
 	glUniformMatrix4fv(curLightShader->uniformLoc[SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)projectionViewMatrix);
 }
 

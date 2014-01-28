@@ -208,6 +208,8 @@ void main(void) {
 		texColor = texture2D(uTexture, vTexCoord);
 	}
 
+	if(texColor.a == 0.0) discard;
+
 
 	//if(!uNormalMapEnabled)
 	gl_FragColor =  texColor * color;
