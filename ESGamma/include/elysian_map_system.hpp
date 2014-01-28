@@ -154,13 +154,15 @@ namespace elysian {
 		entry.entity->render();
 	}
 
-	inline void MapSystem::enablePolygonOffset(void) const {
+	inline void MapSystem::disableDepthTest(void) const {
+		glDisable(GL_DEPTH_TEST);
 		//glEnable(GL_POLYGON_OFFSET_FILL);
 		//glPolygonOffset(10.0f, 10.0f);
 	}
 
-	inline void MapSystem::disablePolygonOffset(void) const {
-		glDisable(GL_POLYGON_OFFSET_FILL);
+	inline void MapSystem::enableDepthTest(void) const {
+		glEnable(GL_DEPTH_TEST);
+		//glDisable(GL_POLYGON_OFFSET_FILL);
 	}
 
 }

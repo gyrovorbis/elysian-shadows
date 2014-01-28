@@ -101,12 +101,12 @@ namespace elysian {
 			static_cast<T*>(this)->renderEntityEntry(entry);
 		}
 
-		void _enablePolygonOffset(void) const {
-			static_cast<const T*>(this)->enablePolygonOffset();
+		void _disableDepthTest(void) const {
+			static_cast<const T*>(this)->disableDepthTest();
 		}
 
-		void _disablePolygonOffset(void) const {
-			static_cast<const T*>(this)->disablePolygonOffset();
+		void _enableDepthTest(void) const {
+			static_cast<const T*>(this)->enableDepthTest();
 		}
 
 		//Object buffer
@@ -209,7 +209,7 @@ namespace elysian {
 				}    
             } else { //Buffer and render later
                 //calculate relative Z coord
-				float zCoord = (entityBase-mapStartY)/32.0f + elev+1;
+				float zCoord = (entityBase-mapStartY)/32.0f + elev;
 				//FUCKING DISGUSTING, DIRTY, UGLY Z-FIGHTING HACK!!!!
 				float worldZCoord = (ZCoordConstants::mapBase + (elev)*32.0f);//-(((float)entityBase/32.0f)-((int)entityBase/32));
                     
@@ -243,6 +243,8 @@ namespace elysian {
         
         // ==== RENDER ENTITIES AND OBJECTS QUEUED IN DEPTH BUFFER ==== 
 
+
+		_enablePolygonOffset();
 		//Iterate through depth buffers and render from lowest to highest z coord
 		for(unsigned i = 0; i < depthBuffMaxHeight; ++i) {
 
@@ -257,16 +259,14 @@ namespace elysian {
 
                       
 			//Objects - rendered with Z at the BOTTOM of the map tile location
-			//_enablePolygonOffset();
+
 			_beginObjectList();
 			for(unsigned j = 0; j < _objectCount[i]; ++j) {
 				_renderObjectEntry(_objectBuff[i][j], ZCoordConstants::mapBase+(_objectBuff[i][j].mapEntry.getElev()-1)*32.0f /*zCoordBufferedBase+i+1.0f*/);
 			}
 			_endObjectList();
-			//_disablePolygonOffset();
-
-
 		}
+		_disablePolygonOffset();
 	}
     
 }
