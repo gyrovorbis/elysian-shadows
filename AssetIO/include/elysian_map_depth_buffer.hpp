@@ -244,7 +244,7 @@ namespace elysian {
         // ==== RENDER ENTITIES AND OBJECTS QUEUED IN DEPTH BUFFER ==== 
 
 
-		_enablePolygonOffset();
+		_disableDepthTest();
 		//Iterate through depth buffers and render from lowest to highest z coord
 		for(unsigned i = 0; i < depthBuffMaxHeight; ++i) {
 
@@ -266,7 +266,7 @@ namespace elysian {
 			}
 			_endObjectList();
 		}
-		_disablePolygonOffset();
+		_enableDepthTest();
 	}
     
 }

@@ -68,8 +68,8 @@ namespace elysian {
 		unsigned getEntityCount(void) const;
         bool getOnscreenEntity(const unsigned index, GammaEntityDepthBuffEntry &entry, DEPTH_TYPE &type, float &lowestY, unsigned char &elev) const;
         void renderEntityEntry(const GammaEntityDepthBuffEntry &entry) const;
-		void enablePolygonOffset(void) const;
-		void disablePolygonOffset(void) const;
+		void disableDepthTest(void) const;
+		void enableDepthTest(void) const;
 
 
 		//=== /MapDepthBuffer Implementation ===
