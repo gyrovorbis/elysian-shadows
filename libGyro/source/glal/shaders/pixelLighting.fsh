@@ -97,7 +97,7 @@ vec4 lightingEquation(const int i) {
 			else
 				spotFactor = cfZero;
 
-			//WRONG, THIS WILL AFFECT AMBIENCE!!!!
+			//WRONG, THIS WILL AFFECT AMBIENCE!!!! ...wut?
 			attFactor *= spotFactor;
 
 			if(texture2D(uShadowMaps[i], (vShadowPos[i].xy)/vShadowPos[i].w).z < ((vShadowPos[i].z-0.005)/vShadowPos[i].w)) {
@@ -111,7 +111,7 @@ vec4 lightingEquation(const int i) {
 			float depth = (clip.z/clip.w) * 0.5 + 0.5;
 
 			if(textureCube(uShadowCubeMaps[i], vShadowPos[i].xyz).r < depth) {
-				shadowFactor = 0.1;
+				shadowFactor = 0.5;
 			}
 /*
 			float shadowDepth = textureCube(uShadowCubeMaps[i], vShadowPos[i].xyz).r;
@@ -129,7 +129,7 @@ vec4 lightingEquation(const int i) {
 		VPpli = -uLights[i].direction.xyz;
 
 		if(texture2D(uShadowMaps[i], vShadowPos[i].xy).z < vShadowPos[i].z) {
-			shadowFactor = 0.1;
+			shadowFactor = 0.5;
 		}
 	}
 
@@ -153,12 +153,10 @@ vec4 lightingEquation(const int i) {
 	}
 
 	computedColor *= attFactor;
+	computedColor *= shadowFactor;
 
 	//Calculate and apply ambient lighting
 	computedColor += vAmbients[i];
-
-
-	computedColor *= shadowFactor;
 
 	return computedColor;
 
@@ -208,11 +206,11 @@ void main(void) {
 		texColor = texture2D(uTexture, vTexCoord);
 	}
 
-	if(texColor.a == 0.0) discard;
-
+	vec4 finalColor = texColor * color;
+	if(finalColor.a == 0.0) discard;
 
 	//if(!uNormalMapEnabled)
-	gl_FragColor =  texColor * color;
+	gl_FragColor =  finalColor;
 	//else
 	//gl_FragColor = texture2D(uNormalMap, vTexCoord) * color;
 
