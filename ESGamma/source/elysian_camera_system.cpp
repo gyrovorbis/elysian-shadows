@@ -6,8 +6,15 @@
 
 namespace elysian {
 
-CameraSystem::CameraSystem(void) {
+const GYMatrix4 CameraSystem::_identityMat = {
+  { 1.0f, 0.0f, 0.0f, 0.0f },
+  { 0.0f, 1.0f, 0.0f, 0.0f },
+  { 0.0f, 0.0f, 1.0f, 0.0f },
+  { 0.0f, 0.0f, 0.0f, 1.0f }
+};
 
+CameraSystem::CameraSystem(void) {
+	//Could have sworn I had something useful to do here... Shit.
 }
 
 void CameraSystem::pushViewProjMatrix(void) {
@@ -47,6 +54,7 @@ void CameraSystem::popViewProjMatrix(void) {
 	//Set proj matrix to ortho perspective
 
 	gyVidProjectionDefaultMatrix();
+	gyVidCameraCustomViewMatrix(_identityMat);
 
 	_projViewActive = false;
 }

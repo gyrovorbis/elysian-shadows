@@ -34,12 +34,13 @@ namespace elysian {
 
 	class CameraSystem: public System { 
 	private:
-		CameraState		_states[ELYSIAN_CAMERA_SYSTEM_STACK_SIZE];
-		CameraState		_debugState;
-		CameraState*	_curState		= &_states[0];
-		int				_depth			= 0; //depth is technically +1... my code, fuck you.
-		bool			_projViewActive = false;
-		bool			_debugActive	= false;
+		CameraState				_states[ELYSIAN_CAMERA_SYSTEM_STACK_SIZE];
+		CameraState				_debugState;
+		CameraState*			_curState		= &_states[0];
+		int						_depth			= 0; //depth is technically +1... my code, fuck you.
+		bool					_projViewActive = false;
+		bool					_debugActive	= false;
+		const static GYMatrix4	_identityMat;
 
 		unsigned _scrWidth		= 0;
 		unsigned _scrHeight		= 0;
@@ -52,7 +53,6 @@ namespace elysian {
 		unsigned _scrStartY		= 0;
 		unsigned _scrEndX		= 0;
 		unsigned _scrEndY		= 0;
-
 
 	public:
 		CameraSystem(void);
@@ -117,6 +117,9 @@ namespace elysian {
 			startX = _tileStartX; endX = _tileEndX;
 			startY = _tileStartY; endY = _tileEndY;
 		}
+
+		void pushViewMatrixToStack(void);
+		void popViewMatrixFromStack(void);
 
 		//Transforms a WORLD COORDINATE vector into SCREEN COORDINATES
 		void transform(GYVector2* dest, const GYVector2* src);

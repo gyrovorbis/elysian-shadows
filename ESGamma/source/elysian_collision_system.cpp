@@ -225,7 +225,7 @@ void CollisionSystem::renderTileColliders(void) const {
 			if(colType == Tile::COLLIDER_NONE && !isZTran) continue;
 
 			gyMatPush();
-			gyMatTranslateScale(x*32.0f, y*32.0f, ZCoordConstants::fg1, 32.0f, 32.0f, 1.0f);
+			gyMatTranslateScale(x*32.0f, y*32.0f, ZCoordConstants::tileDecor, 32.0f, 32.0f, 1.0f);
 			
 			if(isZTran) {
 				gyVidQuadListBegin(&zTranColor);
@@ -663,7 +663,7 @@ bool CollisionSystem::resolvePenetration(void) {
 		
 /**** /TAKEN FROM C PENETRATION RESOLUTION *****/
 
-		//printf("pen - %f\n", _conP‰ool[deepestIndex]._depth);
+		//printf("pen - %f\n", _conPÂ‰ool[deepestIndex]._depth);
 		//printf("posDelta[0] = <%f, %f> posDelta[1] = <%f, %f>\n", posDelta[0].x, posDelta[0].y, posDelta[1].x, posDelta[1].y);
 		
 		//update ALL contacts affected by this resolution

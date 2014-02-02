@@ -269,13 +269,13 @@ linux {
 
 QMAKE_POST_LINK = cp -rf ../../../libGyro/source/glal/shaders/* ../../../Project/shaders
 
-macx {
-	CONFIG(release, debug|release) {
-		DESTDIR = ../../../Project
-		QMAKE_POST_LINK = "./ESGammaAppDereest.command"
-	}
+#macx {
+#	CONFIG(release, debug|release) {
+#		DESTDIR = ../../../Project
+#		QMAKE_POST_LINK = "./ESGammaAppDereest.command"
+#	}
 
-}
+#}
 
 win32 {
     CONFIG(release, debug|release) {

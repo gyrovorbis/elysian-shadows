@@ -71,7 +71,7 @@ void Engine::update(void) {
 			_cameraSystem->update();
 			_lightSystem->update();
 			_audioSystem->update();
-			//_collisionSystem->update();
+			_collisionSystem->update();
 			_timerSystem->update();
 			_mapSystem->update();
 			_partySystem->update();

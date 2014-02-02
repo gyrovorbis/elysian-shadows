@@ -13,15 +13,18 @@
 
 //Map Layers
 #define ELYSIAN_ZCOORD_MAP_BASE			2.0f
-#define ELYSIAN_ZCOORD_MAP_SIZE			(ELYSIAN_AREA_MAP_HEIGHT*32.0f + ELYSIAN_MAP_ENTRY_ELEV_MAX*32.0f)
+#define ELYSIAN_ZCOORD_MAP_SIZE			(ELYSIAN_MAP_ENTRY_ELEV_MAX*32.0f)
 
 //Foreground Layers
 #define ELYSIAN_ZCOORD_FG_1				(ELYSIAN_ZCOORD_MAP_BASE + ELYSIAN_ZCOORD_MAP_SIZE + 1.0f)
 #define ELYSIAN_ZCOORD_FG_2				(ELYSIAN_ZCOORD_FG_1 + 1.0f)
 #define ELYSIAN_ZCOORD_FG_3				(ELYSIAN_ZCOORD_FG_2 + 1.0f)
 
+//Tile Decoration Layers
+#define ELYSIAN_ZCOORD_TILE_DECOR		(ELYSIAN_ZCOORD_FG_3 + 1.0f)
+
 //Overlay layers
-#define ELYSIAN_ZCOORD_WARP_OVERLAY		(ELYSIAN_ZCOORD_FG_3 + 1.0f)
+#define ELYSIAN_ZCOORD_WARP_OVERLAY		(ELYSIAN_ZCOORD_TILE_DECOR + 1.0f)
 #define ELYSIAN_ZCOORD_ADVLOG			(ELYSIAN_ZCOORD_WARP_OVERLAY + 1.0f)
 
 namespace elysian {
@@ -37,6 +40,8 @@ namespace elysian {
 		static const float fg1;
 		static const float fg2;
 		static const float fg3;
+
+		static const float tileDecor;
 	
 		static const float warpOverlay;
 		static const float advLog;
