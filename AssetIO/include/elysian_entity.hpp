@@ -32,7 +32,7 @@ namespace elysian {
 	
     class Entity: public RenderableObject, public Asset {
 	public:
-        Entity();
+		Entity(void);
 		virtual ~Entity(void);
 		
 		bool load(std::ifstream &stream);
@@ -40,6 +40,7 @@ namespace elysian {
 
 		virtual void render(void) override;
         void renderAtZ(const float z); //reested?
+		void renderShadowVolume(void);
 
 		bool activate(void);
 		bool deactivate(void);
@@ -53,6 +54,8 @@ namespace elysian {
 		unsigned char getElev(void) const;
 		DEPTH_TYPE getDepthType(void) const;
 		void setDepthType(const DEPTH_TYPE depth);
+		void setShadowVolume(const bool v);
+		bool isShadowVolume(void) const;
         
 		Renderable*		addRenderable(void);
 		Animation*      addAnimation(void);
@@ -109,6 +112,8 @@ namespace elysian {
         std::map<char const *, Behavior*, ltstr> _behavior;
 
 		unsigned char	_elev			= 0;
+		bool			_shadowVolume	= true;
+		float			_shadowDepth	= 32.0f;
 		DEPTH_TYPE		_depthType		= DEPTH_NONE;
 		bool			_active			= false;
 		Renderable*		_renderable		= nullptr;
@@ -129,15 +134,14 @@ namespace elysian {
 		void		reested(void); //default for failed deserialization attempts
     }; 
 
-
-
-
 	inline void Entity::setElev(const unsigned char e) { _elev = e; }
 	inline unsigned char Entity::getElev(void) const { return _elev; }
 	inline DEPTH_TYPE Entity::getDepthType(void) const { return _depthType; }
 	inline void Entity::setDepthType(const DEPTH_TYPE depth) { _depthType = depth; }
     inline float Entity::getDepthBaseY(void) const { return (transform._pos.y + 0.5f * transform._size.y + 16.0f); }
 	inline std::map<char const *, Behavior*, ltstr>& Entity::getBehaviors(void) { return _behavior; }
+	inline void Entity::setShadowVolume(const bool v) { _shadowVolume = v; }
+	inline bool Entity::isShadowVolume(void) const { return _shadowVolume; }
 
 }
 

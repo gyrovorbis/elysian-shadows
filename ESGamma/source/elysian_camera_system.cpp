@@ -20,6 +20,7 @@ CameraSystem::CameraSystem(void) {
 void CameraSystem::pushViewProjMatrix(void) {
 
 	if(_curState->defaultProjMat) {
+		gyVidProjectionDefaultMatrix();
 		gyVidCameraSetViewCenter(&_curState->pos, _curState->scale, _curState->zOrient);
 	} else {
 
@@ -157,7 +158,8 @@ void CameraSystem::update(void) {
 		_curState->pos = GYVector3 {
 			_curState->entity->transform._pos.x,
 			_curState->entity->transform._pos.y,
-			_curState->entity->transform.getPosZ()
+			//_curState->entity->transform.getPosZ(),
+			0.0f
 		};
 	}
 

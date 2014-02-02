@@ -149,6 +149,7 @@ void gyVidCameraSetViewCenter(const GYVector3*const pos, const float scale, cons
 	gyMatLoadIdentity();
 	gyMatTranslate((float)scrWidth*0.5f, (float)scrHeight*0.5f, 0.0f);
 	gyMatScale(scale, scale, 1.0f);
+	gyMatRotate(-0.785398163f, 1.0f, 0.0f, 0.0f);
 	gyMatRotateZ(zOrient);
 	gyMatTranslate(-pos->x, -pos->y, 0.0f);
 	gyMatStore(&result);
@@ -235,6 +236,8 @@ void gyVidQuadListBegin(const GYColor4 *const color) {
 	_curQuadListColor[1] = *color;
 	_curQuadListColor[2] = *color;
 	_curQuadListColor[3] = *color;
+	GYColor4 colours = *color;
+	(void)colours;
 }
 
 //Don't do shit. Lolz.

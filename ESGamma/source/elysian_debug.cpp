@@ -347,6 +347,7 @@ void Debug::processInput(const GameInput& input) {
 		if(!enabled) {
 			if(!once) {
 				Entity* entity = _curArea->findEntity("Julien");
+				entity->setShadowVolume(false);
 				//curArea->addEntity(entity);
 				//entity->transform.setPos(600, 600);
 				//entity->setDepthType(DEPTH_BUFFERED);
@@ -356,7 +357,7 @@ void Debug::processInput(const GameInput& input) {
 				LightAttrib* attrib = new LightAttrib;
 				//attrib->setAmbientColor(GYVector4{ 0.3f, 0.3f, 0.3f, 1.0f});
 				//attrib->setDiffuseColor(GYVector4{ 300.0f, 5.3f, 5.3f, 1.0f });
-				attrib->setSpecularColor(GYVector4{ 1.0f, 1.0f, 1.0f, 1.0f});
+				attrib->setSpecularColor(GYVector4{ 0.0f, 0.5f, 0.3f, 0.0f});
 				//attrib->setAmbientColor(GYVector4{ 0.1f, 0.0f, 0.0f, 1.0f});
 				lightSrc->setAttrib(attrib);
 
@@ -365,13 +366,14 @@ void Debug::processInput(const GameInput& input) {
 #else
 				lightSrc->setLightType(GY_LIGHT_POINT);
 				lightSrc->setSpotCutoffAngle(180.0f);
-				attrib->setAttenuationFactors(GYVector3{ 0.00005f, 0.00005f, 0.00005f });
+				attrib->setAttenuationFactors(GYVector3{ 0.000005f, 0.00005f, 0.00005f });
 
 
 				attrib->setSpotExponent(1.0f);
 #endif
 
 				once = 1;
+
 			} else {
 				lightSrc = src;
 			}

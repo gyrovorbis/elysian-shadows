@@ -266,7 +266,7 @@ namespace elysian {
 			}
 			_endObjectList();
 		}
-		_enableDepthTest();
+		//_enableDepthTest();
 	}
     
 }

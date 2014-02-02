@@ -150,7 +150,7 @@ void Engine::render(void) {
 			gyVidSceneBegin();
             gyMatLoadIdentity();
 
-			unsigned w, h;
+		/*	unsigned w, h;
 			gyVidResolution(&w, &h);
 
 			const float pfar = 1000.0f;
@@ -165,36 +165,21 @@ void Engine::render(void) {
 			glViewport(0, 0, width, height);
 
 			gyVidOrthoProjMat(projectionMatrix, pleft, pright, pbottom, ptop, pnear, pfar);
-			glDepthRange(0, 1);
-			//gyVidProjectionSetTransform(projectionMatrix);
-			gyVidProjectionDefaultMatrix();
+			//glDepthRange(0, 1);
+			gyVidProjectionCustomMatrix(projectionMatrix);
+			//gyVidProjectionDefaultMatrix(); */
 			_cameraSystem->pushViewProjMatrix();
 
 			_lightSystem->shadowRenderPasses();
-
-
-			if(lightSrc) {
-
-					glViewport(0, 0, 1024, 1024);
-					//glDepthRange(1, 0);
-					glalGetPointLightViewMatrix(lightViewMatrix, lightSrc, 4);
-					glalGetPointLightProjectionMatrix(projectionMatrix);
-
-					gyVidProjectionCustomMatrix(projectionMatrix);
-					gyVidCameraCustomViewMatrix(lightViewMatrix);
-					//glCullFace(GL_BACK);
-
-			}
-
-			gyVidTexBind(nullptr);
-
-			_lightSystem->render();
+			_lightSystem->addLightSourcesToScene();
 
 			_mapSystem->render();
+			//_lightSystem->render();
 
 			 _collisionSystem->render();
 
 			_cameraSystem->popViewProjMatrix();
+			_lightSystem->removeLightSourcesFromScene();
 
 			//Begin rendering overlays
 			_warpSystem->Render();
