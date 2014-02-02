@@ -103,6 +103,8 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
 	glUniform1f(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_SPOT_EXPONENT], light->properties->spotExponent);
 	glUniform1f(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_SPOT_CUTOFF_ANGLE], light->spotCutoffAngle);
 
+	glUniformMatrix4fv(_lightingShader.lightsUniformLoc[index][SHADER_LIGHT_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)light->projViewMat);
+
 	glUniform1i(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_ENABLED], 1);
 
 	//Determine whether we're processing a point shadow's cubemap
@@ -335,7 +337,6 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 	 }
 	glEnable(GL_DEPTH_TEST);
 
-
 	//find projView matrix
 	gyMatMultMat(lightProjViewMatrix, lightProjMatrix, lightViewMatrix);
 
@@ -343,7 +344,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 	glUniformMatrix4fv(_shadowMapShader.uniformLoc[SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)lightProjViewMatrix);
 
 	//Store projection view matrix (plus bias) for next render pass
-	if(useBias) gyMatMultMat(&light->projViewMat, &shadowTexCoordBiasMat, &lightProjViewMatrix);
+	if(useBias) gyMatMultMat(light->projViewMat, shadowTexCoordBiasMat, lightProjViewMatrix);
 
 }
 
@@ -355,12 +356,8 @@ void gyVidLightSourceEndShadowPasses(void) {
 	gyVidResolution(&width, &height);
 	glViewport(0, 0, width, height);
 
-	GYMatrix4 mat;
-	//SUBMIT PROJVIEW UNIFORM TO LIGHT SHADER
-	for(unsigned i = 0; i < lightSourceCount; ++i) {
-		glUniformMatrix4fv(_lightingShader.lightsUniformLoc[i][SHADER_LIGHT_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)&lightSources[i]->projViewMat);
-		memcpy(mat, lightSources[i]->projViewMat, sizeof(GYMatrix4));
-	}
+	//glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+	//glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 
