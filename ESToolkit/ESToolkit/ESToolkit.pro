@@ -203,8 +203,7 @@ HEADERS += include/asset/project.h \
     ../../AssetIO/include/elysian_area.hpp \
     ../../AssetIO/include/elysian_animation.hpp \
     ../../AssetIO/include/elysian_audio_source.hpp \
-FORMS += \
-    form/estk/sheetdockwidget.ui \
+FORMS += form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \
     form/estk/layerdockwidget.ui \
     form/estk/estoolkit.ui \
