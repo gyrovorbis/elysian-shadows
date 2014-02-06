@@ -12,7 +12,7 @@
 //Binary paths
 #define ENGINE_DIALOG_WIN_PATH			"ESGamma.exe"
 #define ENGINE_DIALOG_OSX_PATH			"ESGamma.app"
-#define ENGINE_DIALOG_LINUX_PATH		"ESGamma"
+#define ENGINE_DIALOG_LINUX_PATH		"./ESGamma"
 #define ENGINE_DIALOG_DC_PATH			"bin/ESGammaDC.elf"
 
 //DC-Tool binary paths

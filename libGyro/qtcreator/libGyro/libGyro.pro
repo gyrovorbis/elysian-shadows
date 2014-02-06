@@ -18,6 +18,8 @@ macx {
 }
 
 linux {
+    QMAKE_CFLAGS += -msse
+
     LIBS += \
         -ldynamic
 }

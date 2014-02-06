@@ -9,6 +9,7 @@ QMAKE_CXXFLAGS += -std=c++11 #fuuuuck
 CONFIG += c++11
 
 ICON = resource/images/estk.icns
+
 DEPENDPATH += include/asset \
     include/core \
     include/dialog \
@@ -19,6 +20,7 @@ DEPENDPATH += include/asset \
     ../../AssetIO/include \
     ../../libGyro/include \
     ../../libGyro/include/kinetic
+
 INCLUDEPATH += include/asset \
     include/core \
     include/dialog \
@@ -29,6 +31,7 @@ INCLUDEPATH += include/asset \
     ../../AssetIO/include \
     ../../libGyro/include \
     ../../libGyro/include/kinetic
+
 SOURCES += source/asset/project.cpp \
     source/asset/level.cpp \
     source/asset/entity.cpp \
@@ -101,6 +104,7 @@ SOURCES += source/asset/project.cpp \
     ../../AssetIO/source/elysian_area.cpp \
     ../../AssetIO/source/elysian_animation.cpp \
     ../../AssetIO/source/elysian_audio_source.cpp
+
 HEADERS += include/asset/project.h \
     include/asset/level.h \
     include/asset/entity.h \
@@ -203,6 +207,7 @@ HEADERS += include/asset/project.h \
     ../../AssetIO/include/elysian_area.hpp \
     ../../AssetIO/include/elysian_animation.hpp \
     ../../AssetIO/include/elysian_audio_source.hpp \
+
 FORMS += form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \
     form/estk/layerdockwidget.ui \
