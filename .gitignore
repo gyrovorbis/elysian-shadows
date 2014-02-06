@@ -122,4 +122,6 @@ qtcreator/libGyro/Makefile.release
 qtcreator/libGyro/object_script.liblibGyro.Debug
 qtcreator/libGyro/object_script.liblibGyro.Release
 
-
+contrib/build
+contrib/download
+out
