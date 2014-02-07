@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include "math.h"
 #include "time.h"
-#include "gyro_file.h"
 GYTexture *tex = NULL;
 GYInput input;
 float offset = 240.0f;
@@ -58,7 +57,7 @@ void initExample() {
         }  
 #endif
 
-	tex = gyVidTexCreate(gyFilePath("test.png"), 32, 32);
+    //tex = gyVidTexCreate(gyFilePath("test.png"), 32, 32);
 	if(!tex) {
                 gyPrintf("TEX NOT FOUND\n");
 	}
