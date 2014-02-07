@@ -204,12 +204,12 @@ if(GY_TARGET_OS MATCHES "i386" OR GY_TARGET_ARCH MATCHES "x86_64")
 		${GY_INCLUDE_DIR}/x86/gyro_input_x86.inl
 		${GY_INCLUDE_DIR}/x86/gyro_math_sse_x86.inl
 		${GY_INCLUDE_DIR}/x86/gyro_matrix_sse_x86.inl
-		${GY_INCLUDE_DIR}/x86/gyro_sdl_x86.inl
+		${GY_INCLUDE_DIR}/x86/gyro_glfw_x86.inl
 		${GY_INCLUDE_DIR}/x86/gyro_video_x86.inl
 	)
 endif()
 
-include_directories(${GY_INCLUDE_DIR})
+include_directories(SYSTEM ${GY_INCLUDE_DIR})
 include_directories(SYSTEM "${GY_TARGET_CONTRIB_OUT_DIR}/include")
 include_directories(SYSTEM "${GY_TARGET_OUT_DIR}/include")
 
