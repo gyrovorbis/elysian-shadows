@@ -203,9 +203,58 @@ merge_static_libs(Gyro_combined OUTPUT_NAME Gyro
 	zlib
 )
 
-#if(GY_BUILD_EXAMPLES)
-#	add_subdirectory(examples)
-#endif()
+#
+# "FindGyro"
+#
+
+find_library(Gyro_LIBRARY Gyro
+	PATHS @CMAKE_INSTALL_PREFIX@/lib
+	NO_DEFAULT_PATH
+)
+
+set(Gyro_LIBRARIES ${Gyro_LIBRARY})
+set(Gyro_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include)
+set(Gyro_DEFINITIONS -DGYRO_PLATFORM=${GYRO_PLATFORM})
+
+if(${GYRO_PLATFORM} EQUAL GYRO_PLATFORM_x86)
+	find_package(OpenGL REQUIRED)
+	list(APPEND Gyro_LIBRARIES ${OPENGL_gl_LIBRARY})
+	if(APPLE)
+		find_library(COCOA_FRAMEWORK Cocoa)
+		find_library(IOKIT_FRAMEWORK IOKit)
+		find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
+		find_library(CORE_VIDEO_FRAMEWORK CoreVideo)
+		list(APPEND Gyro_LIBRARIES
+			${COCOA_FRAMEWORK}
+			${IOKIT_FRAMEWORK}
+			${CORE_FOUNDATION_FRAMEWORK}
+			${CORE_VIDEO_FRAMEWORK}
+		)
+	elseif(UNIX)
+		find_package(X11 REQUIRED)
+		list(APPEND Gyro_LIBRARIES
+			${X11_X11_LIB}
+			${CMAKE_THREAD_LIBS_INIT}
+#			${RT_LIBRARY}
+			${X11_Xrandr_LIB}
+			m
+		)
+		if(X11_Xinput_LIB)
+			list(APPEND Gyro_LIBRARIES ${X11_Xinput_LIB})
+		else()
+			list(APPEND Gyro_LIBRARIES Xi)
+		endif()
+		if(X11_Xxf86vm_LIB)
+			list(APPEND Gyro_LIBRARIES ${X11_Xxf86vm_LIB})
+		else()
+			list(APPEND Gyro_LIBRARIES Xxf86vm)
+		endif()
+	endif()
+endif()
+
+if(GY_BUILD_EXAMPLES)
+	add_subdirectory(examples)
+endif()
 
 configure_file(${GY_ROOT_DIR}/GyroConfig.cmake.in
 	${libGyro_BINARY_DIR}/GyroConfig.cmake @ONLY)
