@@ -94,45 +94,7 @@ configure_file("${GY_SOURCE_DIR}/gyro_version.c.in" "${CMAKE_CURRENT_BINARY_DIR}
 
 find_package(Threads REQUIRED)
 
-add_library(glew STATIC IMPORTED)
-set_target_properties(glew PROPERTIES
-	IMPORTED_LOCATION ${GY_TARGET_CONTRIB_OUT_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}glew${CMAKE_STATIC_LIBRARY_SUFFIX}
-)
-
-add_library(glfw STATIC IMPORTED)
-set_target_properties(glfw PROPERTIES
-	IMPORTED_LOCATION ${GY_TARGET_CONTRIB_OUT_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}glfw3${CMAKE_STATIC_LIBRARY_SUFFIX}
-)
-
-add_library(ogg STATIC IMPORTED)
-set_target_properties(ogg PROPERTIES
-	IMPORTED_LOCATION ${GY_TARGET_CONTRIB_OUT_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}ogg${CMAKE_STATIC_LIBRARY_SUFFIX}
-)
-
-add_library(vorbis STATIC IMPORTED)
-set_target_properties(vorbis PROPERTIES
-	IMPORTED_LOCATION ${GY_TARGET_CONTRIB_OUT_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}vorbis${CMAKE_STATIC_LIBRARY_SUFFIX}
-)
-
-add_library(vorbisfile STATIC IMPORTED)
-set_target_properties(vorbisfile PROPERTIES
-	IMPORTED_LOCATION ${GY_TARGET_CONTRIB_OUT_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}vorbisfile${CMAKE_STATIC_LIBRARY_SUFFIX}
-)
-
-add_library(openal STATIC IMPORTED)
-set_target_properties(openal PROPERTIES
-	IMPORTED_LOCATION ${GY_TARGET_CONTRIB_OUT_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}openal${CMAKE_STATIC_LIBRARY_SUFFIX}
-)
-
-add_library(zlib STATIC IMPORTED)
-set_target_properties(zlib PROPERTIES
-	IMPORTED_LOCATION ${GY_TARGET_CONTRIB_OUT_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}z${CMAKE_STATIC_LIBRARY_SUFFIX}
-)
-
-add_library(libpng STATIC IMPORTED)
-set_target_properties(libpng PROPERTIES
-	IMPORTED_LOCATION ${GY_TARGET_CONTRIB_OUT_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}png${CMAKE_STATIC_LIBRARY_SUFFIX}
-)
+include("${GY_CONTRIB_DIR}/CMakeLists.txt")
 
 #
 # libGyro
@@ -244,6 +206,17 @@ merge_static_libs(Gyro_combined OUTPUT_NAME Gyro
 #if(GY_BUILD_EXAMPLES)
 #	add_subdirectory(examples)
 #endif()
+
+configure_file(${GY_ROOT_DIR}/GyroConfig.cmake.in
+	${libGyro_BINARY_DIR}/GyroConfig.cmake @ONLY)
+
+install(TARGETS Gyro_combined
+    ARCHIVE DESTINATION lib)
+install(FILES ${gyro_INCLUDES}
+	DESTINATION include/gyro)
+
+install(FILES ${libGyro_BINARY_DIR}/GyroConfig.cmake
+	DESTINATION lib${LIB_SUFFIX}/cmake/gyro)
 
 group_by_folder(${GY_ROOT_DIR} "${gyro_SOURCES}")
 group_by_folder(${GY_ROOT_DIR} "${gyro_INCLUDES}")
