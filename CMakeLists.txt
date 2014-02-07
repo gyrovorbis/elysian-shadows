@@ -209,6 +209,8 @@ merge_static_libs(Gyro_combined OUTPUT_NAME Gyro
 
 install(TARGETS Gyro_combined
     ARCHIVE DESTINATION lib)
+install(FILES ${gyro_INCLUDES}
+	DESTINATION include/gyro)
 
 group_by_folder(${GY_ROOT_DIR} "${gyro_SOURCES}")
 group_by_folder(${GY_ROOT_DIR} "${gyro_INCLUDES}")
