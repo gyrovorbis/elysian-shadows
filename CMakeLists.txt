@@ -208,7 +208,7 @@ merge_static_libs(Gyro_combined OUTPUT_NAME Gyro
 #endif()
 
 configure_file(${GY_ROOT_DIR}/GyroConfig.cmake.in
-	${Gyro_BINARY_DIR}/GyroConfig.cmake @ONLY)
+	${libGyro_BINARY_DIR}/GyroConfig.cmake @ONLY)
 
 install(TARGETS Gyro_combined
     ARCHIVE DESTINATION lib)
