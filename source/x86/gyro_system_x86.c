@@ -69,40 +69,17 @@ static void _checkCPUCapabilities(void) {
 	} else {
 		_gyLog(GY_DEBUG_VERBOSE, "\tSSE CPU Extensions detected! Fast-ass math enabled!");
 	}
-
-
 }
 
 
-#ifdef __LINUX__
+#if defined(__LINUX__) || defined(__APPLE__)
 #include <signal.h>
 #include <execinfo.h>
 #include <stdlib.h>
 #include <unistd.h>
 #endif
 
-void gyDebugSigInit(void) {
-#ifdef __LINUX__
-	struct sigaction sa, so;
-
-	/* Set up handler. */
-	sa.sa_handler		= NULL;
-	sa.sa_sigaction		= gyDebugSigHandler;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags			= SA_SIGINFO;
-
-	/* Attach signals. */
-	sigaction(SIGSEGV, &sa, &so);
-	if(so.sa_handler == SIG_IGN)
-		_gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGSEGV signal handler.");
-	sigaction(SIGFPE, &sa, &so);
-	if(so.sa_handler == SIG_IGN)
-		_gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGFPE signal handler.");
-	sigaction(SIGTRAP, &sa, &so);
-	if(so.sa_handler == SIG_IGN)
-		_gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGTRAP signal handler.");
-#endif
-}
+void gyDebugSigInit(void);
 
 int gySysInit(void) {
   const char* platString =
@@ -113,14 +90,10 @@ int gySysInit(void) {
 #else
   "LINUX";
 #endif
-
-	_gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86 [%s] v%s", platString, GYRO_LIB_VERSION);
-
-
+	_gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86 MARCEL VERSION [%s] v%s", platString, GYRO_LIB_VERSION);
+	gyDebugSigInit();
 	_checkCPUCapabilities();
 
-
-	gyDebugSigInit();
     return 1;
 }
 
@@ -149,7 +122,7 @@ unsigned int gySysStatsRam(void) {
 }
 
 
-#ifdef __LINUX__
+#if defined(__LINUX__) || defined(__APPLE__)
 static const char* gyDebugSigCodeToStr(int sig, int sig_code) {
 	if(sig == SIGFPE)
 		switch(sig_code) {
@@ -192,13 +165,36 @@ static void gyDebugSigHandler(int sig, siginfo_t* info, void* unused) {
 	num = backtrace(buf, 64);
 	symbols = backtrace_symbols(buf, num);
 
+	_gyLog(GY_DEBUG_FATAL, "**** BEGIN C/++ BACKTRACE ****");
 	_gyLog(GY_DEBUG_FATAL, "RECIEVED SIGNAL: %s!",
 		   gyDebugSigCodeToStr(info->si_signo, info->si_code));
 	for(i = 0; i < num; i++)
 		_gyLog(GY_DEBUG_FATAL, "	%s", symbols[i]);
-	_gyLog(GY_DEBUG_FATAL, "Report this to one of the code monkeys with the backtrace.");
+	_gyLog(GY_DEBUG_FATAL, "**** END C/++ BACKTRACE ****");
 
 	exit(1);
 }
 #endif
 
+void gyDebugSigInit(void) {
+#if defined(__LINUX__) || defined(__APPLE__)
+	struct sigaction sa, so;
+
+	/* Set up handler. */
+	sa.sa_handler		= NULL;
+	sa.sa_sigaction		= gyDebugSigHandler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags			= SA_SIGINFO;
+
+	/* Attach signals. */
+	sigaction(SIGSEGV, &sa, &so);
+	if(so.sa_handler == SIG_IGN)
+		_gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGSEGV signal handler.");
+	sigaction(SIGFPE, &sa, &so);
+	if(so.sa_handler == SIG_IGN)
+		_gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGFPE signal handler.");
+	sigaction(SIGTRAP, &sa, &so);
+	if(so.sa_handler == SIG_IGN)
+		_gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGTRAP signal handler.");
+#endif
+}
