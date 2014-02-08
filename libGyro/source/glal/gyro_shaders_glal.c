@@ -21,7 +21,7 @@ const static GYMaterial _defaultMaterial = {
 	{ 1.0f, 1.0f, 1.0f, 1.0f },
 	{ 1.0f, 1.0f, 1.0f, 1.0f },
 	{ 1.0f, 1.0f, 1.0f, 1.0f },
-	10.0f
+	1.0f
 };
 
 const static GYLightProperties _emptyLightProperties = {
