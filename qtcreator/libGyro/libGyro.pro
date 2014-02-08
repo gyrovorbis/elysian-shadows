@@ -6,10 +6,11 @@ CONFIG -= qt
 DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_x86
 
 INCLUDEPATH += ../../include \
-    ../../include/x86/png
+				../../source/x86/png
 
 win32 {
-    INCLUDEPATH +=  ../../lib/win32
+	INCLUDEPATH +=  ../../lib/win32
+	QMAKE_CFLAGS += -msse
 }
 
 macx {
@@ -25,66 +26,74 @@ linux {
 }
 
 DEPENDPATH += ../../include \
-    ../../include/x86/png
+	../../include/x86/png \
+	../../source/glal/shaders \
+	../../source/glal \
+	../../include/x86 \
+	../../include/glal
+
+OTHER_FILES += \
+    ../../source/glal/shaders/fixedFunctionTextured.vsh \
+    ../../source/glal/shaders/fixedFunctionTextured.fsh \
+    ../../source/glal/shaders/fixedFunctionUntextured.vsh \
+    ../../source/glal/shaders/fixedFunctionUntextured.fsh \
+    ../../source/glal/shaders/vertexLightingDirectional.fsh \
+    ../../source/glal/shaders/vertexLightingDirectional.vsh \
+    ../../source/glal/shaders/vertexLighting.fsh \
+    ../../source/glal/shaders/vertexLighting.vsh \
+    ../../source/glal/shaders/pixelLighting.fsh \
+    ../../source/glal/shaders/pixelLighting.vsh \
+    ../../source/glal/shaders/shadowMap.vsh \
+    ../../source/glal/shaders/shadowMap.fsh
 
 HEADERS += \
-    ../../include/glal/gyro_video_glal.h \
+    ../../include/gyro.h \
+    ../../include/gyro_wav_api.h \
+    ../../include/gyro_video_api.h \
+    ../../include/gyro_timer_api.h \
+    ../../include/gyro_texture_api.h \
+    ../../include/gyro_system_api.h \
+    ../../include/gyro_shader_api.h \
+    ../../include/gyro_platform.h \
+    ../../include/gyro_ogg_api.h \
+    ../../include/gyro_matrix_api.h \
+    ../../include/gyro_math_api.h \
+    ../../include/gyro_input_api.h \
+    ../../include/gyro_file_api.h \
+    ../../include/gyro_defines.h \
+    ../../include/gyro_audio_api.h \
+    ../../include/common/gyro_wav_common.h \
+    ../../include/common/gyro_texture_common.h \
+    ../../include/common/gyro_system_common.h \
+    ../../include/common/gyro_matrix_stack.h \
+    ../../include/glal/gyro_glal.h \
+    ../../include/kinetic/gyro_kinetic.h \
     ../../include/kinetic/gyro_kinetic_static.h \
     ../../include/kinetic/gyro_kinetic_physics.h \
     ../../include/kinetic/gyro_kinetic_kinetic.h \
     ../../include/kinetic/gyro_kinetic_contact.h \
     ../../include/kinetic/gyro_kinetic_collision.h \
     ../../include/kinetic/gyro_kinetic_collider.h \
-    ../../include/kinetic/gyro_kinetic.h \
-    ../../include/x86/gyro_video_x86.h \
-    ../../include/x86/gyro_sdl_x86.h \
-    ../../include/x86/gyro_input_x86.h \
-    ../../include/gyro_wav.h \
-    ../../include/gyro_video.h \
-    ../../include/gyro_tracking_internal.h \
-    ../../include/gyro_tracking.h \
-    ../../include/gyro_timer.h \
-    ../../include/gyro_texture.h \
-    ../../include/gyro_system.h \
-    ../../include/gyro_platform.h \
-    ../../include/gyro_matrix_stack.h \
-    ../../include/gyro_matrix.h \
-    ../../include/gyro_math.h \
-    ../../include/gyro_log.h \
-    ../../include/gyro_input.h \
-    ../../include/gyro_file.h \
-    ../../include/gyro_defines.h \
-    ../../include/gyro_audio.h \
-    ../../include/gyro_asset_bank.h \
-    ../../include/gyro.h \
-    ../../include/x86/png/pngstruct.h \
-    ../../include/x86/png/pngpriv.h \
-    ../../include/x86/png/pnginfo.h \
-    ../../include/x86/png/pngdebug.h \
-    ../../include/x86/png/pngconf.h \
-    ../../include/x86/png/png.h \
-    ../../include/glal/gyro_glal.h \
-    ../../include/x86/gyro_wav_x86.h
+    ../../source/x86/png/pngstruct.h \
+    ../../source/x86/png/pngpriv.h \
+    ../../source/x86/png/pnglibconf.h \
+    ../../source/x86/png/pnginfo.h \
+    ../../source/x86/png/pngdebug.h \
+    ../../source/x86/png/pngconf.h \
+    ../../source/x86/png/png.h \
+    ../../source/glal/gyro_video_glal.h \
+    ../../source/glal/gyro_shaders_glal.h \
+    ../../source/common/gyro_asset_bank.h \
+    ../../include/x86/gyro_input_x86.inl \
+    ../../include/x86/gyro_math_sse_x86.inl \
+    ../../include/x86/gyro_matrix_sse_x86.inl \
+    ../../include/x86/gyro_sdl_x86.inl \
+    ../../include/x86/gyro_video_x86.inl \
+    ../../include/glal/gyro_audio_glal.inl \
+    ../../include/glal/gyro_texture_glal.inl \
+    ../../include/common/gyro_video_common.h
 
 SOURCES += \
-    ../../include/soft/gyro_math_soft.inl \
-    ../../source/glal/gyro_video_glal.c \
-    ../../source/glal/gyro_audio_glal.c \
-    ../../source/kinetic/gyro_kinetic_physics.c \
-    ../../source/kinetic/gyro_kinetic_collision.c \
-    ../../source/soft/gyro_matrix_soft.c \
-    ../../source/x86/gyro_video_x86.c \
-    ../../source/x86/gyro_timer_x86.c \
-    ../../source/x86/gyro_texture_x86.c \
-    ../../source/x86/gyro_system_x86.c \
-    ../../source/x86/gyro_input_x86.c \
-    ../../source/gyro_wav.c \
-    ../../source/gyro_tracking.c \
-    ../../source/gyro_texture.c \
-    ../../source/gyro_system.c \
-    ../../source/gyro_matrix_stack.c \
-    ../../source/gyro_log.c \
-    ../../source/gyro_asset_bank.c \
     ../../source/x86/png/pngwutil.c \
     ../../source/x86/png/pngwtran.c \
     ../../source/x86/png/pngwrite.c \
@@ -100,4 +109,24 @@ SOURCES += \
     ../../source/x86/png/pngget.c \
     ../../source/x86/png/pngerror.c \
     ../../source/x86/png/png.c \
+    ../../source/x86/gyro_video_x86.c \
+    ../../source/x86/gyro_timer_x86.c \
+    ../../source/x86/gyro_texture_x86.c \
+    ../../source/x86/gyro_system_x86.c \
+    ../../source/x86/gyro_matrix_x86.c \
+    ../../source/x86/gyro_input_x86.c \
+    ../../source/kinetic/gyro_kinetic_physics.c \
+    ../../source/kinetic/gyro_kinetic_collision.c \
+    ../../source/glal/gyro_wav_glal.c \
+    ../../source/glal/gyro_video_glal.c \
+    ../../source/glal/gyro_shaders_glal.c \
+    ../../source/glal/gyro_ogg_glal.c \
+    ../../source/glal/gyro_audio_glal.c \
+    ../../source/common/gyro_wav.c \
+    ../../source/common/gyro_texture.c \
+    ../../source/common/gyro_system.c \
+    ../../source/common/gyro_shader.c \
+    ../../source/common/gyro_matrix_stack.c \
+    ../../source/common/gyro_asset_bank.c \
+    ../../source/glal/gyro_lighting_glal.c
 

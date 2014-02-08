@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#include "gyro_matrix.h"
+#include "../gyro_matrix_api.h"
 
 typedef struct _GYKinetic {
 	GYVector2 vel;
