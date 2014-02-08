@@ -87,12 +87,16 @@ static int gy__get_binary_path(char **path, size_t *len)
         strcpy(temp_path, "./");
     }
 #endif
+#if defined(TARGET_OS_WINDOWS)
     *path = gy__strdup(temp_path);
+#else
+    *path = realpath(temp_path, NULL);
+#endif
     if (*path == NULL) {
         return 0;
     }
     if (len != NULL) {
-        *len = strlen(temp_path);
+        *len = strlen(*path);
     }
     return 1;
 }
