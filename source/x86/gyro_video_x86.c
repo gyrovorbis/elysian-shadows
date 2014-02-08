@@ -43,6 +43,9 @@ int gyVidInit(const GYVidInitParams *const params) {
 
     glfwMakeContextCurrent(window);
 
+    glewExperimental = 1;
+    glewInit();
+
     /* vsync */
     glfwSwapInterval(1);
 
