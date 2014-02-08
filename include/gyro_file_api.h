@@ -35,7 +35,7 @@ typedef struct _GYFile GYFile;
 
 #ifdef GYRO_FILE_PLATFORM_INCLUDE
 #	include GYRO_FILE_PLATFORM_INCLUDE
-#else
+#endif
 
 int gyFileInit(const char *author, const char *name);
 int gyFileQuit(void);
@@ -45,7 +45,5 @@ int gyFileResolvePath(GYPathType path_type, char **path, size_t *len);
 int gyFileOpen(GYPathType path_type, const char *file_path, const char *mode, GYFile **fp);
 int gyFileRead(GYFile *fp, char **buffer, size_t *len);
 int gyFileClose(GYFile **fp);
-
-#endif
 
 #endif
