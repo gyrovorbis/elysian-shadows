@@ -1,7 +1,7 @@
-#include "gyro_system.h"
+#include <gyro_system_api.h>
 #include "gyro_defines.h"
-#include "x86/gyro_sdl_x86.h"
-#include "glal/gyro_video_glal.h"
+#include <x86/gyro_sdl_x86.inl>
+#include "../glal/gyro_video_glal.h"
 #include "stdio.h"
 #include "stdarg.h"
 
@@ -64,7 +64,7 @@ static void _checkCPUCapabilities(void) {
 	}
 
 	if(!SSE) {
-		_gyLog(GY_DEBUG_FATAL, "\tSSE CPU Support Not Detected! Shit ain't gonna work!");
+		_gyLog(GY_DEBUG_FATAL, "\tSSE CPU Support Not Detected! Prepare for crash... and maybe consider a processor from this decade.");
 		//exit(0);
 	} else {
 		_gyLog(GY_DEBUG_VERBOSE, "\tSSE CPU Extensions detected! Fast-ass math enabled!");
@@ -78,6 +78,8 @@ static void _checkCPUCapabilities(void) {
 #include <stdlib.h>
 #include <unistd.h>
 #endif
+
+void gyDebugSigInit(void);
 
 int gySysInit(void) {
   const char* platString =

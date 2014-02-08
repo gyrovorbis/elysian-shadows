@@ -1,8 +1,7 @@
-#include "gyro_video.h"
-#include "gyro_system.h"
-#include "x86/gyro_sdl_x86.h"
-#include "glal/gyro_video_glal.h"
-#include "glal/gyro_glal.h"
+#include <gyro_video_api.h>
+#include <gyro_system_api.h>
+#include "../glal/gyro_video_glal.h"
+#include <glal/gyro_glal.h>
 
 //Global SDL shit--shared with input (which has to resize window)
 GYVidInitParams vidParams;
@@ -93,7 +92,7 @@ int gyVidUninit(void) {
 }
 
 void gyVidSceneBegin(void) {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glLoadIdentity();
 }
 
