@@ -51,7 +51,7 @@ void CameraSystem::pushViewProjMatrix(void) {
 		gyMatApply(camMat);
 
 		gyMatScale(1.0f, 1.0f, -1.0f);
-		gyMatTranslate(-_curState->entity->transform._pos.x, -_curState->entity->transform._pos.y, -500.0f);
+		gyMatTranslate(-_curState->entity->transform._pos.x, -_curState->entity->transform._pos.y+30.0f, -(_curState->entity->getElev()+1)*32.0f-ZCoordConstants::mapBase);
 		gyMatStore(&camMat);
 		gyMatPop();
 

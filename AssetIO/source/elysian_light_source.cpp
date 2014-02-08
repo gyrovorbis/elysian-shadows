@@ -54,7 +54,7 @@ void LightSource::update(void) {
 		position = {
 			getEntity()->transform._pos.x,//-200.0f,
 			getEntity()->transform._pos.y,//-200.0f,
-			getEntity()->getElev()*32.0f,
+			(getEntity()->getElev()+1)*32.0f,
 			1.0f
 		};
 	}

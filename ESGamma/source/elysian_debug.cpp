@@ -343,6 +343,11 @@ void Debug::processInput(const GameInput& input) {
 	if(input.getTapped(GameInput::BUT_FORWARDSLASH)) {
 		LuaManager::dumpStats();
 	}
+	if(input.getTapped(GameInput::BUT_N)) {
+		Debug::luaPrint("-----------------------------------------");
+		Debug::luaPrint("One man's corruption is another man's salvation.");
+		Debug::luaPrint("-----------------------------------------");
+	}
 	if(input.getTapped(GameInput::BUT_T)) {
 		Entity *entity = new Entity;
 		entity->setName("DICKMITE");
@@ -392,8 +397,8 @@ void Debug::processInput(const GameInput& input) {
 				lightSrc->setDirection(dirVec);
 				LightAttrib* attrib = new LightAttrib;
 				//attrib->setAmbientColor(GYVector4{ 0.3f, 0.3f, 0.3f, 1.0f});
-				//attrib->setDiffuseColor(GYVector4{ 0.0f, 0.0f, 0.3f, 1.0f });
-				attrib->setSpecularColor(GYVector4{ 0.0f, 0.0f, 0.1f, 1.0f});
+				attrib->setDiffuseColor(GYVector4{ 0.0f, 0.0f, 2.0f, 1.0f });
+				//attrib->setSpecularColor(GYVector4{ 0.0f, 0.0f, 1.0f, 1.0f});
 				//attrib->setAmbientColor(GYVector4{ 0.1f, 0.0f, 0.0f, 1.0f});
 				lightSrc->setAttrib(attrib);		
 #if 0

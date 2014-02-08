@@ -122,7 +122,7 @@ namespace elysian {
 
 		unsigned char	_elev			= 0;
 		bool			_shadowVolume	= true;
-		float			_shadowDepth	= 32.0f;
+		float			_shadowDepth	= 16.0f;
 		DEPTH_TYPE		_depthType		= DEPTH_NONE;
 		bool			_active			= false;
 		Renderable*		_renderable		= nullptr;

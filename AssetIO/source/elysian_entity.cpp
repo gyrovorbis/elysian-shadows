@@ -60,7 +60,7 @@ void Entity::render(void) {
 	gyMatPush();
 	if(_depthType == DEPTH_BUFFERED) {
 		transform._size.z = transform._size.y;
-	//	transform._size.y = 1.0f;
+		//transform._size.y = 400.0f;
 	}
 	transform.apply();
 	_renderable->beginRender();
@@ -98,7 +98,7 @@ void Entity::render(void) {
 void Entity::renderShadowVolume(void) {
 #ifdef ELYSIAN_ENGINE
 	//Honestly don't know for sure if this is the most compact cube.
-	static const float unitCubeVerts[17*4] = {
+/*	static const float unitCubeVerts[17*4] = {
 		-1.0f,  1.0f,  1.0f, 1.0f,
 		 1.0f,  1.0f,  1.0f, 1.0f,
 		-1.0f, 0.0f,  1.0f, 1.0f,
@@ -116,17 +116,79 @@ void Entity::renderShadowVolume(void) {
 		-1.0f,  1.0f, -1.0f, 1.0f,
 		-1.0f, 0.0f,  1.0f, 1.0f,
 		-1.0f,  1.0f,  1.0f, 1.0f
+	};*/
+/*
+	static const float unitCubeVerts[17*4] = {
+		-1,  1,  -1, 1.0f,
+		 1,  1,  -1, 1.0f,
+		-1, -1,  -1, 1.0f,
+		 1, -1,  -1, 1.0f,
+		-1, -1, 1, 1.0f,
+		1, -1, 1, 1.0f,
+		-1,  1, 1, 1.0f,
+		 1,  1, 1, 1.0f,
+		 -1,  1,  -1, 1.0f,
+		 1,  1,  -1, 1.0f,
+		 1, -1,  -1, 1.0f,
+		 1,  1, 1, 1.0f,
+		 1, -1, 1, 1.0f,
+		-1, -1, 1, 1.0f,
+		-1,  1, 1, 1.0f,
+		-1, -1,  -1, 1.0f,
+		-1,  1,  -1, 1.0f
+	};*/
+
+	static const float unitCubeVerts[17*4] = {
+		-1,  1,  0, 1.0f,
+		 1,  1,  0, 1.0f,
+		-1, -1,  0, 1.0f,
+		 1, -1,  0, 1.0f,
+		-1, -1, 1, 1.0f,
+		1, -1, 1, 1.0f,
+		-1,  1, 1, 1.0f,
+		 1,  1, 1, 1.0f,
+		 -1,  1,  0, 1.0f,
+		 1,  1,  0, 1.0f,
+		 1, -1,  0, 1.0f,
+		 1,  1, 1, 1.0f,
+		 1, -1, 1, 1.0f,
+		-1, -1, 1, 1.0f,
+		-1,  1, 1, 1.0f,
+		-1, -1,  0, 1.0f,
+		-1,  1,  0, 1.0f
+	};
+
+	static const GYColor4 colors[17] = {
+		{ 255, 255, 0, 255 },
+		{ 255, 0, 255, 255 },
+		{ 255, 255, 255, 255 },
+		{ 255, 0, 255, 255 },
+		{ 255, 255, 0, 255 },
+		{ 255, 0, 255, 255 },
+		{ 255, 255, 255, 255 },
+		{ 255, 0, 255, 255 },
+		{ 255, 255, 0, 255 },
+		{ 255, 0, 255, 255 },
+		{ 255, 255, 255, 255 },
+		{ 255, 0, 255, 255 },
+		{ 255, 255, 0, 255 },
+		{ 255, 0, 255, 255 },
+		{ 255, 255, 255, 255 },
+		{ 255, 0, 255, 255 },
+		{ 255, 255, 0, 255 }
 	};
 
 	gyMatPush();
+	//gyMatLoadIdentity();
+
 	gyMatTranslate(transform._pos.x, transform._pos.y, ZCoordConstants::mapBase + (_elev)*32.0f);
 	gyMatScale(transform._size.x*transform._scale.x*0.5f,
 			   _shadowDepth*0.5f,
-			   transform._size.y*transform._scale.y);
-	gyMatRotateZ(transform._orientZ);
-	gyMatTranslate(0.0f, 0.5f, 0.0f);
+			   60.0f/*transform._size.y*transform._scale.y*/);
+	//gyMatRotateZ(transform._orientZ);
 
 	//transform.apply();
+	gyVidColorArray(colors);
 	gyVidTriangleStrip((GYVector4*)unitCubeVerts, 0, 17);
 
 	gyMatPop();

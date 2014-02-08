@@ -175,6 +175,7 @@ void Engine::render(void) {
 			_lightSystem->addLightSourcesToScene();
 
 			_mapSystem->render();
+
 			//_lightSystem->render();
 
 			 _collisionSystem->render();
