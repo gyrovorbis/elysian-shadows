@@ -35,6 +35,8 @@ int gyVidInit(const GYVidInitParams *const params) {
     glfwWindowHint(GLFW_BLUE_BITS, 5);
     glfwWindowHint(GLFW_DEPTH_BITS, 16);
     glfwWindowHint(GLFW_RESIZABLE, (params->prop & GY_WIN_RESIZABLE) ? 1 : 0);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
     window = glfwCreateWindow(viewWidth, viewHeight, params->title, (params->prop & GY_WIN_FULLSCREEN) ? glfwGetPrimaryMonitor() : NULL, NULL);
     if (window == NULL) {
