@@ -1,8 +1,9 @@
 #ifndef ELYSIAN_AUDIO_SYSTEM_HPP
 #define ELYSIAN_AUDIO_SYSTEM_HPP
 
-#include <gyro_audio.h>
-#include <gyro_wav.h>
+#include <gyro_audio_api.h>
+#include <gyro_wav_api.h>
+#include <gyro_ogg_api.h>
 #include "elysian_system.hpp"
 
 #define ELYSIAN_AUDIO_CHANNELS			32
@@ -72,8 +73,8 @@ namespace elysian {
 		void		setAuxTrackRolloffFactor(const unsigned track, const float val) const;
 
 		//Internal
-		GYWavSource*	reserveChannel(AudioSource*const comp = nullptr);
-		void			releaseChannel(const GYWavSource* const src);
+		GYAudioSource*	reserveChannel(AudioSource*const comp = nullptr);
+		void			releaseChannel(const GYAudioSource* const src);
 
 		//called from Component
 		struct AudioChannel {
@@ -92,7 +93,7 @@ namespace elysian {
 			enum OWNER { SYSTEM, COMPONENT, FREE } owner;
 			//enum STATE { FADING, TRANSITIONING, PLAYING } state;
 
-			GYWavSource* src;
+			GYAudioSource* src;
 			AudioSource* comp;
 		};
 
@@ -114,7 +115,7 @@ namespace elysian {
 			enum class State {
 				NORMAL, FADE_OUT, FADE_IN
 			}				state			= State::NORMAL;
-			GYWavSource*	src				= nullptr;
+			GYAudioSource*	src				= nullptr;
 			GYOgg*			ogg				= nullptr;
 			unsigned		track			= 0;
 			unsigned		newTrack		= 0;

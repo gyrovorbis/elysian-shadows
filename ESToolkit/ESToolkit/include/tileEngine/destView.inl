@@ -194,7 +194,7 @@ void DestView<T>::createSelectionItemGroup(void) {
 
 			item->setX(x*32);
 			item->setY(y*32);
-			item->setZValue(elysian::ZCoordConstants::fg);
+			item->setZValue(elysian::ZCoordConstants::fg1);
 			item->setVisible(false);
 
 			path.addRect(x*32,y*32,32,32);
@@ -205,7 +205,7 @@ void DestView<T>::createSelectionItemGroup(void) {
 
 	 castedItemGroup->path = path.simplified();
 
-	 _selItemGroup->setZValue(elysian::ZCoordConstants::fg);
+	 _selItemGroup->setZValue(elysian::ZCoordConstants::fg1);
 
 	 _selItemGroup->setPos(SelectionItemGroup::clampToTileLoc(_sceneMousePos));
 	 _selItemGroup->update();

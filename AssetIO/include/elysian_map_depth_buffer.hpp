@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cstring>
 #include "elysian_area.hpp"
+#include "elysian_zcoords.hpp"
 
 //Maximum elevation height an object can have
 #define ELYSIAN_DEPTH_BUFFER_OBJECT_ELEVATION_MAX 15
@@ -36,7 +37,8 @@ namespace elysian {
     
     //Minimal base class for entity entries
     struct EntityDepthBuffEntry {
-        float zCoord; //required to sort the bitches
+		float zCoordRelative; //required to sort the bitches
+		float zCoordWorld;
         //Entity *entity //don't need this in base anymore
     };
     
@@ -92,29 +94,37 @@ namespace elysian {
 		}
 		
         bool _getOnscreenEntity(const unsigned index, E &entry, DEPTH_TYPE &type, float &lowestY, unsigned char &elev) const {
-            return static_cast<const T*>(this)->getOnscreenEntity(index, entry, type, lowestY, elev);
-        }
-        
+			return static_cast<const T*>(this)->getOnscreenEntity(index, entry, type, lowestY, elev);
+		}
+
 		void _renderEntityEntry(E &entry) {
 			static_cast<T*>(this)->renderEntityEntry(entry);
-        }
-        
-        //Object buffer
-        unsigned _objectCount[ELYSIAN_DEPTH_BUFFER_HEIGHT];
-        O _objectBuff[ELYSIAN_DEPTH_BUFFER_HEIGHT][ELYSIAN_DEPTH_BUFFER_OBJECT_WIDTH];
-        
-        //Entity buffer
-        unsigned _entityCount[ELYSIAN_DEPTH_BUFFER_HEIGHT];
-        E _entityBuff[ELYSIAN_DEPTH_BUFFER_HEIGHT][ELYSIAN_DEPTH_BUFFER_ENTITY_WIDTH];
-        
-    public:
-        void render(void);
-    };
-	
+		}
+
+		void _disableDepthTest(void) const {
+			static_cast<const T*>(this)->disableDepthTest();
+		}
+
+		void _enableDepthTest(void) const {
+			static_cast<const T*>(this)->enableDepthTest();
+		}
+
+		//Object buffer
+		unsigned _objectCount[ELYSIAN_DEPTH_BUFFER_HEIGHT];
+		O _objectBuff[ELYSIAN_DEPTH_BUFFER_HEIGHT][ELYSIAN_DEPTH_BUFFER_OBJECT_WIDTH];
+
+		//Entity buffer
+		unsigned _entityCount[ELYSIAN_DEPTH_BUFFER_HEIGHT];
+		E _entityBuff[ELYSIAN_DEPTH_BUFFER_HEIGHT][ELYSIAN_DEPTH_BUFFER_ENTITY_WIDTH];
+
+	public:
+		void render(void);
+	};
+
 	/* Algorithm Details:
-	 
+
 	 ZCOORD RANGE:
-		From _getBaseZCoord() to (_getBaseZCoord() + ELYSIAN_DEPTH_BUFFER_HEIGHT), 
+		From _getBaseZCoord() to (_getBaseZCoord() + ELYSIAN_DEPTH_BUFFER_HEIGHT),
 		depending on how large of a region is returned from _getOnscreenTileRegion().
 	 */
 	template<typename T, typename O, typename E>
@@ -122,9 +132,9 @@ namespace elysian {
 
 		//Calculate z coordinates
 		const float zCoordImmediateObject	= _getBaseZCoord();
-		const float zCoordImmediateEntity	= zCoordImmediateObject + 0.5f;
-		const float zCoordBufferedBase		= zCoordImmediateObject + 1.0f;
-        
+		const float zCoordImmediateEntity	= zCoordImmediateObject + 0.5f; //Dont know about this...
+		//const float zCoordBufferedBase		= zCoordImmediateObject + 1.0f;
+
 		//Calculate depth buffer boundaries
 		unsigned startX, startY, endX, endY;
 		_getOnscreenTileRegion(startX, startY, endX, endY);
@@ -133,13 +143,12 @@ namespace elysian {
 		//Cap max at depth buffer height
 		const unsigned depthBuffMaxHeight = (depthBuffMaxVisible > ELYSIAN_DEPTH_BUFFER_HEIGHT)? ELYSIAN_DEPTH_BUFFER_HEIGHT: depthBuffMaxVisible;
 
-		
 		//Clear depth buffer counters
 		memset(_objectCount, 0, sizeof(unsigned)*depthBuffMaxHeight);
 		memset(_entityCount, 0, sizeof(unsigned)*depthBuffMaxHeight);
-        
-        
-		// ==== QUEUE AND IMMEDIATE RENDER OBJECTS ==== 
+
+
+		// ==== QUEUE AND IMMEDIATE RENDER OBJECTS ====
 		_beginObjectList();
 		for(unsigned j = startY; j <= endY; ++j) {
 			for(unsigned i = startX; i <= endX; ++i) {
@@ -157,7 +166,7 @@ namespace elysian {
 					int elevation = curMapEntry.mapEntry.getElev()-1;
                     
 					if(elevation == -1) { //render objects immediately at elevation -1 (below entities)
-						_renderObjectEntry(curMapEntry, zCoordImmediateObject);
+						_renderObjectEntry(curMapEntry, ZCoordConstants::mapBase/*zCoordImmediateObject*/);
 					} else { //Buffer if higher elevation
 						unsigned zCoord = j-startY+elevation;
 						//if(zCoord >= depthBuffMaxHeight) zCoord = depthBuffMaxHeight-1;
@@ -190,16 +199,19 @@ namespace elysian {
 
             if(entityDepthType == DEPTH_NONE) { //Render immediately
 				if(!elev) {
-					entityEntry.zCoord = zCoordImmediateEntity;
-					_renderEntityEntry(entityEntry);
+					entityEntry.zCoordWorld = ZCoordConstants::mapBase+0.1f;/* + entityBase*///zCoordImmediateEntity;
+					//s_renderEntityEntry(entityEntry);
 				} else {
-					entityEntry.zCoord = zCoordImmediateEntity + elev;
+					entityEntry.zCoordRelative = zCoordImmediateEntity + elev;
+					entityEntry.zCoordWorld = (ZCoordConstants::mapBase + (elev)*32.0f );
 					_entityBuff[elev][_entityCount[elev]] = entityEntry;
 					++_entityCount[elev];
 				}    
             } else { //Buffer and render later
                 //calculate relative Z coord
-                float zCoord = (entityBase-mapStartY)/32.0f + elev;
+				float zCoord = (entityBase-mapStartY)/32.0f + elev;
+				//FUCKING DISGUSTING, DIRTY, UGLY Z-FIGHTING HACK!!!!
+				float worldZCoord = (ZCoordConstants::mapBase + (elev)*32.0f);//-(((float)entityBase/32.0f)-((int)entityBase/32));
                     
                 //Add depth buffer entry
                 unsigned zIndex = (unsigned)zCoord;
@@ -207,17 +219,20 @@ namespace elysian {
                 //assert(zIndex >= 0 && zIndex < depthBuffMaxHeight);
                 
                 _entityBuff[zIndex][_entityCount[zIndex]] = entityEntry;
-                _entityBuff[zIndex][_entityCount[zIndex]].zCoord = zCoordBufferedBase + zCoord;
+				_entityBuff[zIndex][_entityCount[zIndex]].zCoordRelative = zCoord;
+				_entityBuff[zIndex][_entityCount[zIndex]].zCoordWorld = worldZCoord;
+
                 ++_entityCount[zIndex];
 			}
 		}
         
 		//Sort entity z entries per z coord (ascending order)
+		//--[./Arce]
 		//IMPLEMENT ME MORE EFFICIENTLY! BUBBLE SORT IS FUCKING GAY
 		for(unsigned j = 0; j < depthBuffMaxHeight; ++j) {
 			for(unsigned i = 0; i < _entityCount[j]; ++i) {
 				for(unsigned k = i+1; k < _entityCount[j]; ++k) {
-					if(_entityBuff[j][i].zCoord > _entityBuff[j][k].zCoord) {
+					if(_entityBuff[j][i].zCoordRelative > _entityBuff[j][k].zCoordRelative) {
 						E temp = _entityBuff[j][i];
 						_entityBuff[j][i] = _entityBuff[j][k];
 						_entityBuff[j][k] = temp;
@@ -228,6 +243,8 @@ namespace elysian {
         
         // ==== RENDER ENTITIES AND OBJECTS QUEUED IN DEPTH BUFFER ==== 
 
+
+		_disableDepthTest();
 		//Iterate through depth buffers and render from lowest to highest z coord
 		for(unsigned i = 0; i < depthBuffMaxHeight; ++i) {
 
@@ -239,15 +256,17 @@ namespace elysian {
 				//Give each entity a tiny delta to prevent duplicate z from same y coord
 				entityZDelta += ELYSIAN_DEPTH_BUFFER_ENTITY_ENTITY_MIN_Z_OFFSET;
 			}
+
                       
 			//Objects - rendered with Z at the BOTTOM of the map tile location
+
 			_beginObjectList();
 			for(unsigned j = 0; j < _objectCount[i]; ++j) {
-				_renderObjectEntry(_objectBuff[i][j], zCoordBufferedBase+i+1.0f);
+				_renderObjectEntry(_objectBuff[i][j], ZCoordConstants::mapBase+(_objectBuff[i][j].mapEntry.getElev()-1)*32.0f /*zCoordBufferedBase+i+1.0f*/);
 			}
 			_endObjectList();
-
 		}
+		//_enableDepthTest();
 	}
     
 }

@@ -5,17 +5,19 @@ namespace elysian {
 	System::ENGINE_STATE System::_engineState = System::ENGINE_NORMAL;
 	bool System::_processInput = true;
 
-	LevelSystem*		System::_levelSystem		= NULL;
-	MapSystem*			System::_mapSystem			= NULL;
-	CameraSystem*		System::_cameraSystem		= NULL;
-	AnimationSystem*	System::_animationSystem	= NULL;
-	CharacterSystem*	System::_characterSystem	= NULL;
-	PartySystem*		System::_partySystem		= NULL;
-	TimerSystem*		System::_timerSystem		= NULL;
-	WarpSystem*			System::_warpSystem			= NULL;
-	CollisionSystem*	System::_collisionSystem	= NULL;
-	GuiSystem*			System::_guiSystem			= NULL;
-	ExaminableSystem*	System::_examinableSystem	= NULL;
-	AudioSystem*		System::_audioSystem		= NULL;
-	BehaviorSystem*		System::_behaviorSystem		= NULL;
+	LevelSystem*		System::_levelSystem		= nullptr;
+	MapSystem*			System::_mapSystem			= nullptr;
+	CameraSystem*		System::_cameraSystem		= nullptr;
+	AnimationSystem*	System::_animationSystem	= nullptr;
+	CharacterSystem*	System::_characterSystem	= nullptr;
+	PartySystem*		System::_partySystem		= nullptr;
+	TimerSystem*		System::_timerSystem		= nullptr;
+	WarpSystem*			System::_warpSystem			= nullptr;
+	CollisionSystem*	System::_collisionSystem	= nullptr;
+	GuiSystem*			System::_guiSystem			= nullptr;
+	ExaminableSystem*	System::_examinableSystem	= nullptr;
+	AudioSystem*		System::_audioSystem		= nullptr;
+	LightSystem*		System::_lightSystem		= nullptr;
+	BehaviorSystem*		System::_behaviorSystem		= nullptr;
+
 }

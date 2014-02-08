@@ -7,6 +7,7 @@
 #include "elysian_entity.hpp"
 #include "elysian_level.hpp"
 #include "elysian_zcoords.hpp"
+#include "elysian_renderable.hpp"
 #include <gyro.h>
 /*
 //Objects have integer zCoords, force Entities to floats to prevent duplicate z
@@ -67,6 +68,8 @@ namespace elysian {
 		unsigned getEntityCount(void) const;
         bool getOnscreenEntity(const unsigned index, GammaEntityDepthBuffEntry &entry, DEPTH_TYPE &type, float &lowestY, unsigned char &elev) const;
         void renderEntityEntry(const GammaEntityDepthBuffEntry &entry) const;
+		void disableDepthTest(void) const;
+		void enableDepthTest(void) const;
 
 
 		//=== /MapDepthBuffer Implementation ===
@@ -92,7 +95,7 @@ namespace elysian {
 	}
 	
 	inline float MapSystem::getBaseZCoord(void) const {
-		return ZCoordConstants::object1;
+		return ZCoordConstants::mapBase;
 	}
 	
 	inline void MapSystem::getObjectLayerEntry(const unsigned /*x*/, const unsigned /*y*/, MapDepthBuffEntry &entry) const {
@@ -104,25 +107,43 @@ namespace elysian {
 		if(!_renderLayer[entry.layer]) return; //Don't render if this layer has been toggled off.
 
 		gyMatPush();
-		gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z, 32.0f, 32.0f, 1.0f);
+
 		gyVidRectTexOrient(entry.mapEntry.getOrient());
+
+		if(entry.mapEntry.getElev() > 0) {
+			gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z, 32.0f, 32.0f, 32.0f);
+			gyVidRectNormalType(GY_RECT_NORMAL_DEPTH);
+		} else {
+			gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z, 32.0f, 32.0f, 1.0f);
+			gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
+		}
+
 		gyVidRect(_animTiles[((TileEntry *)&entry.mapEntry)->getIndex()].curIndex);
+
+/*		if(entry.mapEntry.getElev() > 0) {
+			gyVidNormalArray(Renderable::depthNormals);
+			gyVidQuad(Renderable::depthRectVerts, _animTiles[((TileEntry *)&entry.mapEntry)->getIndex()].curIndex);
+		} else {
+			gyVidRect(_animTiles[((TileEntry *)&entry.mapEntry)->getIndex()].curIndex);
+		}*/
 		gyMatPop();
 	}
 	
 	inline void MapSystem::beginObjectList(void) const {
 		gyVidTexBind(_curLevel->tileSheet);
+		gyVidNormalMapBind(_curLevel->normalSheet);
 		gyVidQuadListBegin(&_tileColor);
 	}
 	
 	inline void MapSystem::endObjectList(void) const {
 		gyVidQuadListEnd();
+		gyVidNormalMapBind(nullptr);
 	}
 	
 	inline unsigned MapSystem::getEntityCount(void) const {
 		return _curArea->entities.size();
 	}
-	
+
 	inline bool MapSystem::getOnscreenEntity(const unsigned index, GammaEntityDepthBuffEntry &entry, DEPTH_TYPE &type, float &lowestY, unsigned char &elev) const {
 		Entity &entity = *(_curArea->entities)[index];
 		if(getCameraSys()->isOnscreen(entity)) {
@@ -136,7 +157,20 @@ namespace elysian {
 	}
 	
 	inline void MapSystem::renderEntityEntry(const GammaEntityDepthBuffEntry &entry) const {
-		entry.entity->renderAtZ(entry.zCoord);
+		//entry.entity->renderAtZ(entry.zCoord);
+		entry.entity->transform.setPosZ(entry.zCoordWorld);
+		entry.entity->render();
+	}
+
+	inline void MapSystem::disableDepthTest(void) const {
+		glDisable(GL_DEPTH_TEST);
+		//glEnable(GL_POLYGON_OFFSET_FILL);
+		//glPolygonOffset(10.0f, 10.0f);
+	}
+
+	inline void MapSystem::enableDepthTest(void) const {
+		glEnable(GL_DEPTH_TEST);
+		//glDisable(GL_POLYGON_OFFSET_FILL);
 	}
 
 }

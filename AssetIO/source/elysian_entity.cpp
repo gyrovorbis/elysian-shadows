@@ -18,6 +18,7 @@
 #include "elysian_lua_behavior.hpp"
 #include "elysian_examinable.hpp"
 #include "elysian_audio_source.hpp"
+#include "elysian_light_source.hpp"
 
 using namespace std;
 
@@ -44,9 +45,10 @@ Entity::~Entity(void) {
 	removeEnemy();
 	removeExaminable();
 	removeAudioSource();
+	removeLightSource();
 	
 	// Cleanup Behaviors
-	for(std::map<const char *, Behavior *, ltstr>::iterator it = _behavior.begin(); it != _behavior.end(); ++it) {
+	for(auto it = _behavior.begin(); it != _behavior.end(); ++it) {
 		removeBehavior(it->first);
 	}
 	_behavior.clear();
@@ -56,14 +58,23 @@ void Entity::render(void) {
 #ifdef ELYSIAN_ENGINE
 	if(!_renderable) return;
 	gyMatPush();
+	if(_depthType == DEPTH_BUFFERED) {
+		transform._size.z = transform._size.y;
+	//	transform._size.y = 1.0f;
+	}
 	transform.apply();
 	_renderable->beginRender();
+	//if(_depthType == DEPTH_BUFFERED) transform._size.y = transform._size.z;
 	_renderable->render();
 	_renderable->endRender();
 	gyMatPop();
+	if(_depthType == DEPTH_BUFFERED) {
+		//transform._size.y = transform._size.z;
+	}
 #endif
 }
-    
+
+#if 0
 	void Entity::renderAtZ(const float
 #ifdef ELYSIAN_ENGINE
 						   z
@@ -81,12 +92,52 @@ void Entity::render(void) {
         _renderable->endRender();
         gyMatPop();
 #endif
-    }
+	}
+#endif
+
+void Entity::renderShadowVolume(void) {
+#ifdef ELYSIAN_ENGINE
+	//Honestly don't know for sure if this is the most compact cube.
+	static const float unitCubeVerts[17*4] = {
+		-1.0f,  1.0f,  1.0f, 1.0f,
+		 1.0f,  1.0f,  1.0f, 1.0f,
+		-1.0f, 0.0f,  1.0f, 1.0f,
+		 1.0f, 0.0f,  1.0f, 1.0f,
+		-1.0f, 0.0f, 1.0f, 1.0f,
+		1.0f, 0.0f, -1.0f, 1.0f,
+		-1.0f,  1.0f, -1.0f, 1.0f,
+		 1.0f,  1.0f, -1.0f, 1.0f,
+		 -1.0f,  1.0f,  1.0f, 1.0f,
+		 1.0f,  1.0f,  1.0f, 1.0f,
+		 1.0f, 0.0f,  1.0f, 1.0f,
+		 1.0f,  1.0f, -1.0f, 1.0f,
+		 1.0f, 0.0f, -1.0f, 1.0f,
+		-1.0f, 0.0f, -1.0f, 1.0f,
+		-1.0f,  1.0f, -1.0f, 1.0f,
+		-1.0f, 0.0f,  1.0f, 1.0f,
+		-1.0f,  1.0f,  1.0f, 1.0f
+	};
+
+	gyMatPush();
+	gyMatTranslate(transform._pos.x, transform._pos.y, ZCoordConstants::mapBase + (_elev)*32.0f);
+	gyMatScale(transform._size.x*transform._scale.x*0.5f,
+			   _shadowDepth*0.5f,
+			   transform._size.y*transform._scale.y);
+	gyMatRotateZ(transform._orientZ);
+	gyMatTranslate(0.0f, 0.5f, 0.0f);
+
+	//transform.apply();
+	gyVidTriangleStrip((GYVector4*)unitCubeVerts, 0, 17);
+
+	gyMatPop();
+
+#endif
+}
     
 #ifdef ELYSIAN_ENGINE
 void Entity::move(const GYVector2& dist) {
     if(_character) _character->move(dist);
-    else gyVec2AddAccum(&transform._pos, &dist);
+	else gyVec2AddAccum((GYVector2*)&transform._pos, &dist);
 }
 #endif
 
@@ -137,7 +188,11 @@ bool Entity::activate(void) {
 		_audioSource->addToLevel();
 		_componentActive[Component::AUDIO_SOURCE] = true;
 	}
-	for(std::map<const char *, Behavior *, ltstr>::iterator it = _behavior.begin(); it != _behavior.end(); ++it) {
+	if(_lightSource && !_componentActive[Component::LIGHT_SOURCE]) {
+		_lightSource->addToLevel();
+		_componentActive[Component::LIGHT_SOURCE] = true;
+	}
+	for(auto it = _behavior.begin(); it != _behavior.end(); ++it) {
 		if(!it->second->getActive()) {
 			it->second->addToLevel();
 			it->second->setActive();
@@ -194,8 +249,12 @@ bool Entity::deactivate(void) {
 		_audioSource->removeFromLevel();
 		_componentActive[Component::AUDIO_SOURCE] = false;
 	}
+	if(_lightSource && _componentActive[Component::LIGHT_SOURCE]) {
+		_lightSource->removeFromLevel();
+		_componentActive[Component::LIGHT_SOURCE] = false;
+	}
 
-	for(std::map<const char *, Behavior *, ltstr>::iterator it = _behavior.begin(); it != _behavior.end(); ++it) {
+	for(auto it = _behavior.begin(); it != _behavior.end(); ++it) {
 		if(it->second->getActive()) {
 			it->second->removeFromLevel();
 			it->second->setActive(false);
@@ -257,6 +316,9 @@ bool Entity::load(ifstream &stream) { //Deserialization
 			case Component::AUDIO_SOURCE:
 				comp = addAudioSource();
 				break;
+			case Component::LIGHT_SOURCE:
+				comp = addLightSource();
+				break;
 			case Component::BEHAVIOR:
 				stream >> behaviorName;
 				comp = addBehavior(behaviorName);
@@ -307,7 +369,8 @@ bool Entity::save(ofstream &stream) { //Serialization
 	if(getWarp()) ++compCount;
 	if(getExaminable()) ++compCount;
 	if(getAudioSource()) ++compCount;
-    for(std::map<const char *, Behavior *, ltstr>::iterator it = _behavior.begin(); it != _behavior.end(); ++it) ++compCount;
+	if(getLightSource()) ++compCount;
+	for(auto it = _behavior.begin(); it != _behavior.end(); ++it) ++compCount;
 	stream << compCount << endl;
 
 	//Built-in Components
@@ -351,9 +414,13 @@ bool Entity::save(ofstream &stream) { //Serialization
 		stream << (int)Component::AUDIO_SOURCE << endl;
 		success &= comp->save(stream);
 	}
+	if((comp = getLightSource())) {
+		stream << (int)Component::LIGHT_SOURCE << endl;
+		success &= comp->save(stream);
+	}
 	
 	//Behaviors
-    for(std::map<const char *, Behavior *, ltstr>::iterator it = _behavior.begin(); it != _behavior.end(); ++it) {
+	for(auto it = _behavior.begin(); it != _behavior.end(); ++it) {
 		stream << (int)Component::BEHAVIOR << endl;
         stream << it->second->getBehavName() << endl;
         success &= it->second->save(stream);
@@ -513,6 +580,12 @@ AudioSource *Entity::addAudioSource(void) {
 	return _audioSource = attachComponent(_audioSource)? _audioSource : NULL;
 }
 
+LightSource *Entity::addLightSource(void) {
+	if(_lightSource) return nullptr;
+	_lightSource = new LightSource(*this);
+	return _lightSource = attachComponent(_lightSource)? _lightSource : NULL;
+}
+
 
 void Entity::removeRenderable(void) {
 	if(_renderable && _active) {
@@ -602,6 +675,15 @@ void Entity::removeAudioSource(void) {
 	}
 	delete _audioSource;
 	_audioSource = NULL;
+}
+
+void Entity::removeLightSource(void) {
+	if(_lightSource && _active) {
+		_lightSource->removeFromLevel();
+		_componentActive[Component::LIGHT_SOURCE] = false;
+	}
+	delete _lightSource;
+	_lightSource = nullptr;
 }
 
 }

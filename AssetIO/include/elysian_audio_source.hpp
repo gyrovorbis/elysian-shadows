@@ -5,8 +5,8 @@
 #ifdef ELYSIAN_ENGINE
 #	include "elysian_audio_system.hpp"
 #endif
-#include <gyro_wav.h>
-#include <gyro_audio.h>
+#include <gyro_wav_api.h>
+#include <gyro_audio_api.h>
 
 namespace elysian {
 
@@ -36,14 +36,14 @@ namespace elysian {
 
 		//subsystem
 		void			update(void);
-		void			setChannel(GYWavSource* const src);
-		GYWavSource*	getChannel(void) const;
+		void			setChannel(GYAudioSource* const src);
+		GYAudioSource*	getChannel(void) const;
 		static void		setAudioSys(AudioSystem* const sys);
 
 
 	private:
 		static AudioSystem* _audioSys;
-		GYWavSource*		_src = nullptr;
+		GYAudioSource*		_src = nullptr;
 		const GYWav*		_wav = nullptr;
 
 		//source attributes

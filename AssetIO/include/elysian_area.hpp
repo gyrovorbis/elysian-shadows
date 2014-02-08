@@ -18,6 +18,7 @@
 #define ELYSIAN_AREA_MAP_PATH		"/map.txt"
 #define ELYSIAN_AREA_ENTITY_PATH	"/entity.txt"
 #define ELYSIAN_AREA_INIT_LUA_PATH	"/area_init.lua"
+#define ELYSIAN_MAP_ENTRY_ELEV_MAX	15
 
 //Common MapEntry properties
 #define ELYSIAN_MAP_ENTRY_ORIENT_BIT_POS	9
@@ -59,6 +60,7 @@ namespace elysian {
 	class Enemy;
 	class Examinable;
 	class AudioSource;
+	class LightSource;
 	class Behavior;
 
 	struct MapEntry {
@@ -109,6 +111,7 @@ namespace elysian {
 		std::vector<Enemy*>			enemies;
 		std::vector<Examinable*>	examinables;
 		std::vector<AudioSource*>	audioSources;
+		std::vector<LightSource*>	lightSources;
 		std::vector<Behavior*>		behaviors;
 		
 		char name[ELYSIAN_AREA_NAME_SIZE];		//name of area directory

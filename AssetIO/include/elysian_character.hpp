@@ -56,7 +56,7 @@ namespace elysian {
 
 	inline bool Character::isFacing(const Entity &entity) const {
 		GYVector2 distVec;
-		gyVec2Sub(&distVec, &entity.transform._pos, &_entity->transform._pos);
+		gyVec2Sub(&distVec, (GYVector2*)&entity.transform._pos, (GYVector2*)&_entity->transform._pos);
 		return (_faceDir == Direction::fromVector(distVec));
 	}
 
@@ -72,7 +72,7 @@ namespace elysian {
 
 	inline void Character::faceEntity(Entity &entity) {
 		GYVector2 dist;
-		gyVec2Sub(&dist, &entity.transform._pos, &_entity->transform._pos);
+		gyVec2Sub(&dist, (GYVector2*)&entity.transform._pos, (GYVector2*)&_entity->transform._pos);
 		faceDir(Direction::fromVector(dist));
 	}
 

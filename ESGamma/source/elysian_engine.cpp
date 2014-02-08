@@ -17,7 +17,10 @@
 #include "elysian_lua_singleton.hpp"
 #include "elysian_lua_manager.hpp"
 #include "elysian_behavior_system.hpp"
+#include "elysian_light_system.hpp"
 #include "elysian_entity.hpp"
+#include "elysian_light_source.hpp"
+#include "glal/gyro_glal.h"
 
 namespace elysian {
 
@@ -37,6 +40,7 @@ Engine::Engine(void) {
 	_guiSystem			= new GuiSystem;
 	_behaviorSystem		= new BehaviorSystem;
 	_audioSystem		= new AudioSystem;
+	_lightSystem		= new LightSystem;
 
 	//register Lua dependencies
 	Singletons::setGameInput(&_gameInput);
@@ -63,12 +67,13 @@ bool Engine::loadAssets(void) {
 void Engine::update(void) {
 	switch(System::_engineState) {
 		case System::ENGINE_NORMAL:
-        case System::ENGINE_WARPING:
+		case System::ENGINE_WARPING:
+			_cameraSystem->update();
+			_lightSystem->update();
 			_audioSystem->update();
 			_collisionSystem->update();
 			_timerSystem->update();
 			_mapSystem->update();
-			_cameraSystem->Update();
 			_partySystem->update();
 			_characterSystem->Update();
 			_animationSystem->Update();
@@ -114,6 +119,8 @@ void Engine::processInput(void) {
 		case System::ENGINE_NORMAL:
 		case System::ENGINE_CONVERSATION:
 			_partySystem->processInput(_gameInput);
+			_cameraSystem->processInput(_gameInput);
+			Debug::getInstance().processInput(_gameInput);
 			//conversationSystem->ProcessInput(input);
 			break;
 		case System::ENGINE_MODAL_CONVERSATION:
@@ -121,24 +128,59 @@ void Engine::processInput(void) {
 			break;
 		case System::ENGINE_WARPING:
 			break;
+		case System::ENGINE_CAMERA_DEBUG:
+			_cameraSystem->processInput(_gameInput);
+		break;
 		default:
 			break;
 	}
 }
 
+
+extern "C" void glalGetLightViewMatrix(GYMatrix4 *mat, const GYLightSource*const src);
+extern "C" void glalGetLightProjectionMatrix(GYMatrix4 *mat, const GYLightSource*const src);
+extern "C" void glalGetPointLightProjectionMatrix(GYMatrix4 dest);
+extern "C" void glalGetPointLightViewMatrix(GYMatrix4 dest, const GYLightSource* const lightSrc, unsigned face);
+
 void Engine::render(void) {
+	GYMatrix4 lightViewMatrix;
+	GYMatrix4 projectionMatrix;
+
 	switch(System::_engineState) {
 		default:
 			gyVidSceneBegin();
             gyMatLoadIdentity();
 
-			//Begin rendering things affected by camera
-            _cameraSystem->PushTransform();
-            
-            _mapSystem->render();
-            _collisionSystem->render();
+		/*	unsigned w, h;
+			gyVidResolution(&w, &h);
 
-			_cameraSystem->PopTransform();
+			const float pfar = 1000.0f;
+			const float pnear = -999.0f;
+			const float pleft = 0.0f;
+			const float pright = (float)w;
+			const float ptop = 0.0f;
+			const float pbottom = (float)h;
+			unsigned width, height;
+
+			gyVidResolution(&width, &height);
+			glViewport(0, 0, width, height);
+
+			gyVidOrthoProjMat(projectionMatrix, pleft, pright, pbottom, ptop, pnear, pfar);
+			//glDepthRange(0, 1);
+			gyVidProjectionCustomMatrix(projectionMatrix);
+			//gyVidProjectionDefaultMatrix(); */
+			_cameraSystem->pushViewProjMatrix();
+
+			_lightSystem->shadowRenderPasses();
+			_lightSystem->addLightSourcesToScene();
+
+			_mapSystem->render();
+			//_lightSystem->render();
+
+			 _collisionSystem->render();
+
+			_cameraSystem->popViewProjMatrix();
+			_lightSystem->removeLightSourcesFromScene();
 
 			//Begin rendering overlays
 			_warpSystem->Render();
@@ -159,6 +201,7 @@ Engine::~Engine(void) {
 	delete _partySystem;
 	delete _timerSystem;
 	delete _audioSystem;
+	delete _lightSystem;
 	delete _guiSystem;
 	delete _behaviorSystem;
 	

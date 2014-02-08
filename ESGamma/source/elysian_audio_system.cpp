@@ -247,7 +247,7 @@ namespace elysian {
 
 	//===== INTERNAL ======
 
-	GYWavSource* AudioSystem::reserveChannel(AudioSource* const comp) {
+	GYAudioSource* AudioSystem::reserveChannel(AudioSource* const comp) {
 		signed channel = -1;
 
 		for(unsigned i = AudioChannel::DYN_1; i < ELYSIAN_AUDIO_CHANNELS; ++i) {
@@ -277,7 +277,7 @@ namespace elysian {
 		return _channels[channel].src;
 	}
 
-	void AudioSystem::releaseChannel(const GYWavSource* const src) {
+	void AudioSystem::releaseChannel(const GYAudioSource* const src) {
 		for(unsigned i = AudioChannel::DYN_1; i < ELYSIAN_AUDIO_CHANNELS; ++i) {
 			if(_channels[i].src == src) {
 				_channels[i].comp = nullptr;

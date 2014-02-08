@@ -9,7 +9,12 @@ DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_x86 \
 
 QMAKE_CXXFLAGS += -std=c++11 \
     -fno-rtti \
-    -fno-exceptions
+	-fno-exceptions
+
+win32 {
+	QMAKE_CXXFLAGS += -msse
+	QMAKE_CFLAGS += 	-msse
+}
 
 #Required to get C++11x to work on OSX
 macx {
@@ -38,8 +43,11 @@ DEPENDPATH += ../../include \
     ../../lib/include \
     ../../../AssetIO/include \
     ../../../libGyro/include \
-    ../../../libGyro/include/kinetic \
-    ../../../OOLua/include
+	../../../libGyro/include/kinetic \
+	../../../libGyro/include/glal \
+	../../../OOLua/include \
+	../../../libGyro/source/glal/shaders \
+	../../../libGyro/include/x86
 
 HEADERS += \
     ../../include/elysian_warp_system.hpp \
@@ -109,7 +117,10 @@ HEADERS += \
     ../../../AssetIO/include/elysian_animation.hpp \
     ../../../AssetIO/include/elysian_audio_source.hpp \
     ../../include/elysian_audio_system.hpp \
-    ../../../AssetIO/include/elysian_generic.hpp
+    ../../../AssetIO/include/elysian_generic.hpp \
+    ../../include/elysian_shader_manager.hpp \
+    ../../../AssetIO/include/elysian_light_source.hpp \
+    ../../include/elysian_light_system.hpp
 
 macx {
   OBJECTIVE_HEADERS += ../../../libGyro/lib/osx/SDLMain.h
@@ -164,7 +175,11 @@ SOURCES += \
     ../../../AssetIO/source/elysian_area.cpp \
     ../../../AssetIO/source/elysian_animation.cpp \
     ../../../AssetIO/source/elysian_audio_source.cpp \
-    ../../source/elysian_audio_system.cpp
+    ../../source/elysian_audio_system.cpp \
+    ../../source/elysian_shader_manager.cpp \
+    ../../../AssetIO/source/elysian_new.cpp \
+    ../../../AssetIO/source/elysian_light_source.cpp \
+    ../../source/elysian_light_system.cpp
 
 macx {
   OBJECTIVE_SOURCES += ../../../libGyro/lib/osx/SDLMain.mm
@@ -211,6 +226,8 @@ win32 {
         -lvorbisenc \
         #-lvorbisenc.dll \
         -lvorbisfile \
+		-lglew32 \
+		-lglew32.dll \
         #-lvorbisfile.dll \
         -mconsole
 }
@@ -250,22 +267,27 @@ linux {
         -lpthread
 }
 
-macx {
-	CONFIG(release, debug|release) {
-		DESTDIR = ../../../Project
-		QMAKE_POST_LINK = "./ESGammaAppDereest.command"
-	}
-}
+QMAKE_POST_LINK = cp -rf ../../../libGyro/source/glal/shaders/* ../../../Project/shaders
+
+#macx {
+#	CONFIG(release, debug|release) {
+#		DESTDIR = ../../../Project
+#		QMAKE_POST_LINK = "./ESGammaAppDereest.command"
+#	}
+
+#}
 
 win32 {
     CONFIG(release, debug|release) {
         DESTDIR = ../../../Project
     }
+
 }
 
 linux {
     CONFIG(release, debug|release) {
         DESTDIR = ../../../Project
     }
+
 }
 

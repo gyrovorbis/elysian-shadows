@@ -19,7 +19,7 @@ void Collidable::update(void) {
 	gyMatLoadIdentity();
 	_entity->transform.apply();
 	gyMatTranslateScale(_attrib->_relPos.x, _attrib->_relPos.y, 0.0f, _attrib->_relSize.x, _attrib->_relSize.y, 1.0f);
-	gyMatMultVec(&origin, &_centerWorldPos, 1);
+    gyMatMultVec(&origin, &_centerWorldPos, 1);
 	gyCalcWorldVert(&_collider.col);
 	gyMatPop();
 #endif
@@ -37,7 +37,7 @@ void Collidable::render(void) {
         
     gyVidQuadListBegin((_contactCount == 0)? &color : &colColor);
     _entity->transform.apply();
-    gyMatTranslateScale(_attrib->_relPos.x, _attrib->_relPos.y, 30.0f, _attrib->_relSize.x, _attrib->_relSize.y, 1.0f);
+	gyMatTranslateScale(_attrib->_relPos.x, _attrib->_relPos.y, 1.0f, _attrib->_relSize.x, _attrib->_relSize.y, 1.0f);
     gyVidRect(0);
     gyMatPop();
     gyVidQuadListEnd();
@@ -47,12 +47,12 @@ void Collidable::render(void) {
 	gyVidQuadListBegin(&colColor);
 
 	gyMatPush(); //Render bottom of entity
-	gyMatTranslateScale(_entity->transform._pos.x, _entity->transform._pos.y + 0.5f*_entity->transform._size.y, 30.0f, 2.0f, 2.0f, 1.0f);
+	gyMatTranslateScale(_entity->transform._pos.x, _entity->transform._pos.y + 0.5f*_entity->transform._size.y, ZCoordConstants::tileDecor, 2.0f, 2.0f, 1.0f);
 	gyVidRect(0);
 	gyMatPop();
 
 	gyMatPush(); //Render center of entity
-	gyMatTranslateScale(_entity->transform._pos.x, _entity->transform._pos.y, 30.0f, 2.0f, 2.0f, 1.0f);
+	gyMatTranslateScale(_entity->transform._pos.x, _entity->transform._pos.y, ZCoordConstants::tileDecor, 2.0f, 2.0f, 1.0f);
 	gyVidRect(0);
 	gyMatPop();
 

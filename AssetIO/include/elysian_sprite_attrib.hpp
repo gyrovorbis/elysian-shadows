@@ -29,6 +29,7 @@ namespace elysian {
 			if(_color.a == 255) gyVidAlphaLevel(GY_ALPHA_NONE);
 			else gyVidAlphaLevel(GY_ALPHA_FULL);
 
+			//gyVidMaterialBind(nullptr);
 			gyVidTexBind(_tex);
 			gyVidQuadListBegin(&_color);
 			gyVidRect(_frame);

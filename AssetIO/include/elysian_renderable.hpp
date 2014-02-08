@@ -14,12 +14,17 @@ namespace elysian {
 	class Renderable: public Component {
 	friend class Entity;
 	private:
-		SpriteAttrib *_spriteAttrib = nullptr;	//Prefab-able attributes
-		unsigned _frame			= 0;			//for animation
-		GYVector2 _offset		= {0.0f, 0.0f};	//texture offset from base transform (local coords)
+		GYMaterial*		_material		= nullptr;
+		GYTexture*		_normalMap		= nullptr;
+		SpriteAttrib*	_spriteAttrib	= nullptr;	//Prefab-able attributes
+		unsigned		_frame			= 0;			//for animation
+		GYVector2		_offset			= {0.0f, 0.0f};	//texture offset from base transform (local coords)
 
 		inline Renderable(Entity &parent): Component(parent) {}
 	public:
+		static const GYVector4 flatRectVerts[4];
+		static const GYVector4 depthRectVerts[4];
+
 		virtual bool canAddTo(Entity& /*entity*/) override { return true; } //no prereqs
 		virtual bool load(std::ifstream& stream) override;
 		virtual bool save(std::ofstream& stream) override;
@@ -33,26 +38,42 @@ namespace elysian {
 
 		inline void render(void) { 
 			GYVector4 localVerts[4] = {
-				{ 0.0f, 0.0f, 0.0f, 1.0f},
-				{ 0.0f, 0.0f, 0.0f, 1.0f},
-				{ 0.0f, 0.0f, 0.0f, 1.0f},
-				{ 0.0f, 0.0f, 0.0f, 1.0f}
+				{-0.5f, -0.5f, 1.0f, 1.0f},
+				{0.5f, -0.5f, 1.0f, 1.0f},
+				{-0.5f, 0.5f, 0.0f, 1.0f},
+				{0.5f, 0.5f, 0.0f, 1.0f}
 			};
 
 			gyVidTexBind(_spriteAttrib->_tex);
+			gyVidNormalMapBind(_normalMap);
+			gyVidMaterialBind(_material);
+
+			//Why aren't we just pushing another matrix to handle this?
 			if(_spriteAttrib->_tex) {
-				const GYVector2 *size = &_entity->transform._size;
+				const GYVector2 *size = (GYVector2*)&_entity->transform._size;
 				const GYTexCoordFrame *fr = &_spriteAttrib->_tex->_coord->texCoord[_frame];
 				const float locX = ((float) fr->spriteWidth / size->x)/2.0f;
 				const float locY = ((float) fr->spriteHeight / size->y)/2.0f;
 				localVerts[0].x = -locX + _offset.x;
 				localVerts[0].y = -locY + _offset.y;
+				localVerts[0].z = locY*2.0f + _offset.y;
 				localVerts[1].x = locX + _offset.x;
 				localVerts[1].y = -locY + _offset.y;
+				localVerts[1].z = locY*2.0f + _offset.y;
 				localVerts[2].x = -locX + _offset.x;
 				localVerts[2].y = locY + _offset.y;
+			//	localVerts[0].z = -locY + _offset.y;
 				localVerts[3].x = locX + _offset.x;
 				localVerts[3].y = locY + _offset.y;
+			//	localVerts[0].z = -locY + _offset.y;
+			}
+
+			//branch assumes shit will usually be depth buffered
+			if(getEntity()->getDepthType() != DEPTH_BUFFERED) {
+				localVerts[0].z = localVerts[1].z = 0.0f;
+				gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
+			} else {
+				gyVidRectNormalType(GY_RECT_NORMAL_DEPTH);
 			}
 
 			//Submit vertices
@@ -88,6 +109,18 @@ namespace elysian {
 		inline SpriteAttrib *getSpriteAttrib(void) const { return _spriteAttrib; }
 		inline QuadSpriteAttrib* getQuadSpriteAttrib(void) const { return static_cast<QuadSpriteAttrib*>(_spriteAttrib); }
 		inline void setSpriteAttrib(SpriteAttrib *const attrib) { _spriteAttrib = attrib; if(attrib) _frame = attrib->_frame;}
+
+		inline void setMaterial(GYMaterial*const material) {
+			_material = material;
+		}
+
+		inline GYMaterial& getMaterial(void) {
+			return *_material;
+		}
+
+		inline void loadNormalMap(const char*const path, const unsigned width, const unsigned height) {
+			_normalMap = gyVidTexCreate(path, width, height);
+		}
 		
 	};
 

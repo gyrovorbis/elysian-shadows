@@ -30,6 +30,7 @@ namespace elysian {
 	class Enemy;
 	class Examinable;
 	class AudioSource;
+	class LightSource;
 	class Behavior;
 	class LuaBehavior;
 	
@@ -43,6 +44,7 @@ namespace elysian {
 
 		virtual void render(void) override;
         void renderAtZ(const float z); //reested?
+		void renderShadowVolume(void);
 
 		bool activate(void);
 		bool deactivate(void);
@@ -56,6 +58,8 @@ namespace elysian {
 		unsigned char getElev(void) const;
 		DEPTH_TYPE getDepthType(void) const;
 		void setDepthType(const DEPTH_TYPE depth);
+		void setShadowVolume(const bool v);
+		bool isShadowVolume(void) const;
         
 		Renderable*		addRenderable(void);
 		Animation*      addAnimation(void);
@@ -67,6 +71,7 @@ namespace elysian {
 		Enemy*          addEnemy(void);
 		Examinable*		addExaminable(void);
 		AudioSource*	addAudioSource(void);
+		LightSource*	addLightSource(void);
 		
 		Renderable*		getRenderable(void) const { return _renderable; }
 		Animation*      getAnimation(void) const { return _animation; }
@@ -78,6 +83,7 @@ namespace elysian {
 		Enemy*          getEnemy(void) const { return _enemy; }
 		Examinable*		getExaminable(void) const { return _examinable; }
 		AudioSource*	getAudioSource(void) const { return _audioSource; }
+		LightSource*	getLightSource(void) const { return _lightSource; }
 		
 		void removeRenderable(void);
 		void removeAnimation(void);
@@ -89,6 +95,7 @@ namespace elysian {
 		void removeEnemy(void);
 		void removeExaminable(void);
 		void removeAudioSource(void);
+		void removeLightSource(void);
  
 		Behavior* addBehavior(char const* behaviorName);
         Behavior* getBehavior(char const* constbehaviorName) const;
@@ -113,27 +120,30 @@ namespace elysian {
         
         std::map<char const *, Behavior*, ltstr> _behavior;
 
-		unsigned char			_elev			= 0;
-		DEPTH_TYPE				_depthType		= DEPTH_NONE;
-		bool					_active			= false;
-		Renderable*				_renderable		= nullptr;
-		Animation*				_animation		= nullptr;
-		Collidable*				_collidable		= nullptr;
-		Character*				_character		= nullptr;
-		Warp*					_warp			= nullptr;
-		Item*					_item			= nullptr;
-		Friendly*				_friendly		= nullptr;
-		Enemy*					_enemy			= nullptr;
-		Examinable*				_examinable		= nullptr;
-		AudioSource*			_audioSource	= nullptr;
+		unsigned char	_elev			= 0;
+		bool			_shadowVolume	= true;
+		float			_shadowDepth	= 32.0f;
+		DEPTH_TYPE		_depthType		= DEPTH_NONE;
+		bool			_active			= false;
+		Renderable*		_renderable		= nullptr;
+		Animation*      _animation		= nullptr;
+		Collidable*     _collidable		= nullptr;
+		Character*      _character		= nullptr;
+		Warp*           _warp			= nullptr;
+		Item*           _item			= nullptr;
+		Friendly*       _friendly		= nullptr;
+		Enemy*          _enemy			= nullptr;
+		Examinable*		_examinable		= nullptr;
+		AudioSource*	_audioSource	= nullptr;
+		LightSource*	_lightSource	= nullptr;
+		//RigidBody*    _rigidBody;
 #ifdef ELYSIAN_ENGINE
 		OOLUA::Lua_table_ref	_selfTable;
 #endif
-		//RigidBody*    _rigidBody;
 		
-		bool attachComponent(Component* const comp);
-		Behavior* attachBehavior(Behavior *const behav);
-		void reested(void); //default for failed deserialization attempts
+		bool		attachComponent(Component* const comp);
+		Behavior*	attachBehavior(Behavior *const behav);
+		void		reested(void); //default for failed deserialization attempts
     }; 
 
 #ifdef ELYSIAN_ENGINE
@@ -153,6 +163,8 @@ namespace elysian {
 	inline void Entity::setDepthType(const DEPTH_TYPE depth) { _depthType = depth; }
     inline float Entity::getDepthBaseY(void) const { return (transform._pos.y + 0.5f * transform._size.y + 16.0f); }
 	inline std::map<char const *, Behavior*, ltstr>& Entity::getBehaviors(void) { return _behavior; }
+	inline void Entity::setShadowVolume(const bool v) { _shadowVolume = v; }
+	inline bool Entity::isShadowVolume(void) const { return _shadowVolume; }
 
 }
 

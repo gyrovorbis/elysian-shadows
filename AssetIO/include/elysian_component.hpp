@@ -20,6 +20,7 @@ namespace elysian {
 			EXAMINABLE,
 			RIGID_BODY,
 			AUDIO_SOURCE,
+			LIGHT_SOURCE,
 			ITEM, 
 			FRIENDLY, 
 			ENEMY, 

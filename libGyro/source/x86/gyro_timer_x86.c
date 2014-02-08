@@ -1,6 +1,5 @@
-#include "gyro_timer.h"
-#include "x86/gyro_sdl_x86.h"
-
+#include <gyro_timer_api.h>
+#include <x86/gyro_sdl_x86.inl>
 
 int gyTimerInit(void) {
     return 1;

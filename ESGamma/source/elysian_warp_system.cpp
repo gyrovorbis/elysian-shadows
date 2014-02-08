@@ -18,11 +18,13 @@ namespace elysian {
 WarpSystem::WarpSystem(void): 
 	_currentWarp()
 {
-	_screenRect.transform._posZ = ELYSIAN_ZCOORD_WARP_OVERLAY;
+	_screenRect.transform._pos.z = ZCoordConstants::warpOverlay;
 	_screenRect.setColor(0, 0, 0, 0);
 }
 
 void WarpSystem::Render(void) {
+	//glDisable(GL_DEPTH_TEST);
+	gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
 	_screenRect.render(); 
 
 }

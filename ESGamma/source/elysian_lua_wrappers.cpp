@@ -10,10 +10,13 @@ namespace elysian {
 		//Register classes and structs
 		_mainState->register_class<LuaBehaviorScriptAttrib>();
 		_mainState->register_class<GYVector2>();
+		_mainState->register_class<GYVector3>();
+		_mainState->register_class<GYVector4>();
 		_mainState->register_class<InstanceTransform>();
 		OOLUA::register_class<Entity>(*_mainState);
 		OOLUA::register_class<QuadSpriteAttrib>(*_mainState);
 		_mainState->register_class<Component>();
+		_mainState->register_class<GYMaterial>();
 		_mainState->register_class<Renderable>();
 		_mainState->register_class<AnimationSequence>();
 		_mainState->register_class<AnimationAttrib>();
@@ -36,7 +39,9 @@ namespace elysian {
 		_mainState->register_class<gyro>();
 		_mainState->register_class<GYWav>();
 		_mainState->register_class<AudioSource>();
+		_mainState->register_class<LightSource>();
 		_mainState->register_class<AudioSystem>();
+		_mainState->register_class<LightSystem>();
 		_mainState->register_class<LevelSystem>();
 		_mainState->register_class<Direction>();
 
@@ -49,6 +54,7 @@ namespace elysian {
 		_mainState->register_class_static<Singletons>("getPartySys", &Singletons_getPartySystem);
 		_mainState->register_class_static<Singletons>("getTimerSys", &Singletons_getTimerSystem);
 		_mainState->register_class_static<Singletons>("getAudioSys", &Singletons_getAudioSystem);
+		_mainState->register_class_static<Singletons>("getLightSys", &Singletons_getLightSystem);
 		_mainState->register_class_static<Singletons>("getLevelSys", &Singletons_getLevelSystem);
 
 		//libGyro wrappers
@@ -67,8 +73,15 @@ OOLUA_EXPORT_FUNCTIONS(LuaBehaviorScriptAttrib,
 					   addSupportedTrigger)
 OOLUA_EXPORT_FUNCTIONS_CONST(LuaBehaviorScriptAttrib)
 
-EXPORT_OOLUA_FUNCTIONS_2_CONST(GYVector2, get_x, get_y)
-EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(GYVector2, set_x, set_y)
+EXPORT_OOLUA_FUNCTIONS_2_CONST(GYVector2, getX, getY)
+EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(GYVector2, setX, setY)
+
+
+OOLUA_EXPORT_FUNCTIONS(GYVector3, setX, setY, setZ)
+OOLUA_EXPORT_FUNCTIONS_CONST(GYVector3, getX, getY, getZ)
+
+OOLUA_EXPORT_FUNCTIONS(GYVector4, setX, setY, setZ, setW)
+OOLUA_EXPORT_FUNCTIONS_CONST(GYVector4, getX, getY, getZ, getW)
 
 EXPORT_OOLUA_FUNCTIONS_0_CONST(GYWav)
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(GYWav)
@@ -110,6 +123,7 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
 						addCharacter,
 						addWarp,
 						addAudioSource,
+						addLightSource,
 						addBehavior,
 						addLuaBehavior,
 						removeRenderable,
@@ -118,6 +132,7 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
 						removeCharacter,
 						removeWarp,
 						removeAudioSource,
+						removeLightSource,
 						removeBehavior,
 						removeLuaBehavior,
 						setDepthType,
@@ -132,6 +147,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getCharacter,
 								getWarp,
 								getAudioSource,
+								getLightSource,
 								getBehavior,
 								getLuaBehavior,
 								getDepthType)
@@ -155,15 +171,27 @@ EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(QuadSpriteAttrib,
 								   setVertexColor,
 								   setVerticesAlpha)
 
-EXPORT_OOLUA_FUNCTIONS_3_NON_CONST(Renderable,
-								   setFrame,
-								   setOffset,
-								   setSpriteAttrib)
-EXPORT_OOLUA_FUNCTIONS_4_CONST(Renderable,
-							   getFrame,
-							   getOffset,
-							   getSpriteAttrib,
-							   getQuadSpriteAttrib)
+OOLUA_EXPORT_FUNCTIONS(GYMaterial,
+					   setShininess)
+OOLUA_EXPORT_FUNCTIONS_CONST(GYMaterial,
+							 getAmbientColor,
+							 getDiffuseColor,
+							 getSpecularColor,
+							 getEmissiveColor,
+							 getShininess)
+
+OOLUA_EXPORT_FUNCTIONS(Renderable,
+					   setFrame,
+					   setOffset,
+					   setSpriteAttrib,
+					   loadNormalMap,
+					   getMaterial,
+					   setMaterial)
+OOLUA_EXPORT_FUNCTIONS_CONST(Renderable,
+						   getFrame,
+						   getOffset,
+						   getSpriteAttrib,
+						   getQuadSpriteAttrib)
 
 EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(AnimationSequence,
 								   addFrame)
@@ -192,18 +220,18 @@ EXPORT_OOLUA_FUNCTIONS_4_NON_CONST(CollisionFlags,
 EXPORT_OOLUA_FUNCTIONS_0_CONST(CollisionFlags)
 
 
-EXPORT_OOLUA_FUNCTIONS_5_CONST(GYStatic,
-								   get_inverseMass,
-								   get_coeffOfRest,
-								   get_damping,
-								   get_invMomOfInertia,
-								   get_angDamping)
-EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(GYStatic,
-							   set_inverseMass,
-							   set_coeffOfRest,
-							   set_damping,
-							   set_invMomOfInertia,
-							   set_angDamping)
+OOLUA_EXPORT_FUNCTIONS_CONST(GYStatic,
+							getInverseMass,
+							getCoeffOfRest,
+							getDamping,
+							getInvMomOfInertia,
+							getAngDamping)
+OOLUA_EXPORT_FUNCTIONS(GYStatic,
+						setInverseMass,
+						setCoeffOfRest,
+						setDamping,
+						setInvMomOfInertia,
+						setAngDamping)
 
 
 EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(CollidableAttrib,
@@ -250,6 +278,22 @@ EXPORT_OOLUA_FUNCTIONS_0_CONST(Warp)
 									 setPitch,
 									 setLooping)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(AudioSource)
+
+OOLUA_EXPORT_FUNCTIONS(LightAttrib,
+					   setAmbientColor,
+					   setDiffuseColor,
+					   setSpecularColor,
+					   setAttenuationFactors,
+					   setSpotExponent)
+OOLUA_EXPORT_FUNCTIONS_CONST(LightAttrib)
+
+OOLUA_EXPORT_FUNCTIONS(LightSource,
+					   setLightType,
+					   setDirection,
+					   setSpotCutoffAngle,
+					   setAttrib,
+					   getAttrib)
+OOLUA_EXPORT_FUNCTIONS_CONST(LightSource)
 
 EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(Behavior,
 								   addTrigger,
@@ -317,8 +361,8 @@ OOLUA_EXPORT_FUNCTIONS(TimerSystem)
 
 
 OOLUA_EXPORT_FUNCTIONS(PartySystem,
-									addCharacterToParty,
-									removeCharacterFromParty)
+						addCharacterToParty,
+						removeCharacterFromParty)
 OOLUA_EXPORT_FUNCTIONS_CONST(PartySystem,
 								getPartyLeader,
 								getCharacterPartyMember)
@@ -327,6 +371,10 @@ OOLUA_EXPORT_FUNCTIONS(LevelSystem)
 OOLUA_EXPORT_FUNCTIONS_CONST(LevelSystem,
 								getPrevAreaPath,
 								getPrevLevelPath)
+
+OOLUA_EXPORT_FUNCTIONS(LightSystem,
+					   setGlobalAmbientColor)
+OOLUA_EXPORT_FUNCTIONS_CONST(LightSystem)
 
 OOLUA_EXPORT_FUNCTIONS(AudioSystem,
 					   loadBgmTrack,
