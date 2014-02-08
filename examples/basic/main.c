@@ -117,6 +117,7 @@ void destroy() {
 	gyVidTexDestroy(tex);
 	gyInputUninit();
 	gyVidUninit();
+    gyFileQuit();
 	gySysUninit();
 }
 
