@@ -148,9 +148,10 @@ void gyVidCameraSetViewCenter(const GYVector3*const pos, const float scale, cons
 	gyMatPush();
 	gyMatLoadIdentity();
 	gyMatTranslate((float)scrWidth*0.5f, (float)scrHeight*0.5f, 0.0f);
-	gyMatScale(scale, scale, 1.0f);
 	gyMatRotate(-0.785398163f, 1.0f, 0.0f, 0.0f);
+	gyMatScale(scale, scale, scale);
 	gyMatRotateZ(zOrient);
+
 	gyMatTranslate(-pos->x, -pos->y, 0.0f);
 	gyMatStore(&result);
 	gyMatPop();
