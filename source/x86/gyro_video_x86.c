@@ -11,6 +11,7 @@ int gyVidInit(const GYVidInitParams *const params) {
 	int flags = 0;
     unsigned int viewWidth=0, viewHeight=0, projWidth=0, projHeight=0;
     int videoInit;
+    GLFWwindow *window;
 
 	memcpy(&vidParams, params, sizeof(GYVidInitParams));
 
@@ -35,9 +36,12 @@ int gyVidInit(const GYVidInitParams *const params) {
     glfwWindowHint(GLFW_DEPTH_BITS, 16);
     glfwWindowHint(GLFW_RESIZABLE, (params->prop & GY_WIN_RESIZABLE) ? 1 : 0);
 
-    if (glfwCreateWindow(viewWidth, viewHeight, params->title, (params->prop & GY_WIN_FULLSCREEN) ? glfwGetPrimaryMonitor() : NULL, NULL) == NULL) {
+    window = glfwCreateWindow(viewWidth, viewHeight, params->title, (params->prop & GY_WIN_FULLSCREEN) ? glfwGetPrimaryMonitor() : NULL, NULL);
+    if (window == NULL) {
         _gyLog(GY_DEBUG_CRITICAL, "Video mode set failed\n");
     }
+
+    glfwMakeContextCurrent(window);
 
     /* vsync */
     glfwSwapInterval(1);
