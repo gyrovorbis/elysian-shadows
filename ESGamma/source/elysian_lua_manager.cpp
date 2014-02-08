@@ -182,7 +182,6 @@ inline LuaScript *LuaManager::_createScriptFromExisting(const char* const file) 
 	const auto it = _scripts.find(file);
 	if(it != _scripts.end()) {
 		//already allocated
-		Debug::printf(Debug::VERBOSE, "Script %s already loaded - Creating new instance", file);
 		it->second->incRefCount();
 		return it->second;
 	}
@@ -344,6 +343,87 @@ bool LuaManager::initialize(void) {
 bool LuaManager::uninitialize(void) {
 	delete _mainState;
 	return true;
+}
+
+
+void LuaManager::dumpStats(void) {
+	char buffer[100];
+	unsigned int count = 0;
+	LuaBehaviorScript* behav;
+	LuaBehaviorScriptAttrib* attrib;
+	uint64_t triggers;
+	int kbytes;
+
+	/*
+	 *
+	 *	class LuaBehaviorScriptAttrib {
+	private:
+		uint64_t	_triggers				= 0;
+		char		_parentPath[200]		= {0};
+		bool		_hasParent				= false;
+	public:
+		uint64_t getSupportedTriggers(void) const { return _triggers; }
+		const char* getParentPath(void) const { return _parentPath; }
+		void addSupportedTrigger(const Behavior::TRIGGER trigger) { _triggers |= trigger; }
+		void inheritFromBehavior(const char*const path) { _hasParent = true; strcpy(_parentPath, path); }
+		bool hasParent(void) const { return _hasParent; }
+		*/
+
+	kbytes = lua_gc(*_mainState, LUA_GCCOUNT, 0);
+
+
+	Debug::luaPrint("**** LUAMANAGER STATS DUMP ****");
+	sprintf(buffer, "\tTotal scripts loaded:\t%d", _scripts.size());
+	Debug::luaPrint(buffer);
+	sprintf(buffer, "\tMemory Usage:\t%fMB", (float)kbytes/1024.0f);
+	Debug::luaPrint(buffer);
+
+	for(auto it : _scripts) {
+
+		sprintf(buffer, "\t[%d] = %s", count, it.second->getPath());
+		Debug::luaPrint(buffer);
+
+		sprintf(buffer, "\t\trefCount = %d", it.second->getRefCount());
+		Debug::luaPrint(buffer);
+		sprintf(buffer, "\t\terror = %d", it.second->getError());
+		Debug::luaPrint(buffer);
+
+		switch(it.second->getType()) {
+		case LuaScript::TYPE_SCRIPT:
+			Debug::luaPrint("\t\ttype = SCRIPT");
+
+			break;
+		case LuaScript::TYPE_BEHAVIOR:
+			behav = static_cast<LuaBehaviorScript*>(it.second);
+			attrib = behav->getAttrib();
+			triggers = attrib->getSupportedTriggers();
+
+			Debug::luaPrint("\t\ttype = BEHAVIOR");
+
+			Debug::luaPrint("\t\tattrib = ");
+			sprintf(buffer, "\t\t\tparent = %s", attrib->getParentPath());
+			Debug::luaPrint(buffer);
+
+			Debug::luaPrint("\t\t\ttriggers = ");
+			Debug::push();
+			for(unsigned i = 0; i < 64; ++i) {
+				uint64_t mask = (1<<i);
+				if(mask >= Behavior::TRIGGER_MAX) break;
+				if(triggers & mask) {
+					sprintf(buffer, "\t\t\t\t%s", Behavior::triggerNameFromFlag(triggers&mask));
+					Debug::luaPrint(buffer);
+				}
+			}
+
+			break;
+		}
+
+		++count;
+	}
+}
+
+void LuaManager::runGarbageCollector(void) {
+	_mainState->gc();
 }
 
 }

@@ -6,10 +6,6 @@
 
 namespace elysian {
 
-
-Character::Character(Entity& entity): Component(entity), _movedThisFrame(false), _moveDir(DIR_NONE) {
-}
-
 bool Character::save(std::ofstream& /*stream*/) {
 	dbgprintf(LOG_VERBOSE, "Character::Save(ifstream)");
 	return true;
@@ -33,86 +29,57 @@ bool Character::removeFromLevel(void) {
 }
 
 #ifdef ELYSIAN_ENGINE
-void Character::update(void) {
-	if(!_movedThisFrame) {
-		switch(_moveDir) {
-		case DIR_UP:
-			_entity->getAnimation()->playAnimation("StandUp");
-			break;
-		case DIR_DOWN:
-			_entity->getAnimation()->playAnimation("StandDown");
-			break;
-		case DIR_LEFT:
-			_entity->getAnimation()->playAnimation("StandLeft");
-			break;
-		case DIR_RIGHT:
-			_entity->getAnimation()->playAnimation("StandRight");
-			break;
-		default: break;
-		}
-	}
-	else _movedThisFrame = false;
-}
 
-
-void Character::face(const DIR4 dir) {
+void Character::faceDir(const Direction::DIR4 dir) {
 	Animation *animComp = _entity->getAnimation();
 	switch(dir) {
-		case DIR_UP:
-			animComp->playAnimation("StandUp");
+		case Direction::DIR4_UP:
+			animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_STAND_UP);
 			break;
-		case DIR_DOWN:
-			animComp->playAnimation("StandDown");
+		case Direction::DIR4_DOWN:
+			animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_STAND_DOWN);
 			break;
-		case DIR_LEFT:
-			animComp->playAnimation("StandLeft");
+		case Direction::DIR4_LEFT:
+			animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_STAND_LEFT);
 			break;
-		case DIR_RIGHT:
-			animComp->playAnimation("StandRight");
+		case Direction::DIR4_RIGHT:
+			animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_STAND_RIGHT);
 			break;
 		default:
 			break;
 	}
-	_moveDir = dir;
-}
-
-void Character::face(Entity &entity) {
-	GYVector2 dist;
-	gyVec2Sub(&dist, (GYVector2*)&entity.transform._pos, (GYVector2*)&_entity->transform._pos);
-	face(Direction::fromVector(dist));
+	_faceDir = dir;
 }
 
 void Character::move(const GYVector2 &dist) {
 	if(gyVec2IsZero(&dist)) return;
 
 	_entity->transform.translate(dist);
-
 	_movedThisFrame = true;
-	DIR4 dir = Direction::fromVector(dist);
 
+	Direction::DIR4 dir = Direction::fromVector(dist);
 	Animation *animComp = _entity->getAnimation();
-	//if(dir == _moveDir && animComp->isActive()) return;
 
 	switch(dir) {
-		case DIR_UP:
-			animComp->playAnimation("WalkUp");
+		case Direction::DIR4_UP:
+			animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_WALK_UP);
 			break;
-		case DIR_DOWN:
-			animComp->playAnimation("WalkDown");
+		case Direction::DIR4_DOWN:
+			animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_WALK_DOWN);
 			break;
-		case DIR_LEFT:
-			animComp->playAnimation("WalkLeft");
+		case Direction::DIR4_LEFT:
+			animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_WALK_LEFT);
 			break;
-		case DIR_RIGHT:
-			animComp->playAnimation("WalkRight");
+		case Direction::DIR4_RIGHT:
+			animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_WALK_RIGHT);
 			break;
 		default:
 			break;
 	}
-
-	_moveDir = dir;
-
+	_faceDir = dir;
 }
+
 #endif
+
 
 }

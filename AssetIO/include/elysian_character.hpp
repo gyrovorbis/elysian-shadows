@@ -6,41 +6,80 @@
 #include "elysian_direction.hpp"
 #include "elysian_entity.hpp"
 
+#define ELYSIAN_CHAR_ANIM_SEQ_STAND_UP		"StandUp"
+#define ELYSIAN_CHAR_ANIM_SEQ_STAND_DOWN	"StandDown"
+#define ELYSIAN_CHAR_ANIM_SEQ_STAND_LEFT	"StandLeft"
+#define ELYSIAN_CHAR_ANIM_SEQ_STAND_RIGHT	"StandRight"
+#define ELYSIAN_CHAR_ANIM_SEQ_WALK_UP		"WalkUp"
+#define ELYSIAN_CHAR_ANIM_SEQ_WALK_DOWN		"WalkDown"
+#define ELYSIAN_CHAR_ANIM_SEQ_WALK_LEFT		"WalkLeft"
+#define ELYSIAN_CHAR_ANIM_SEQ_WALK_RIGHT	"WalkRight"
+
 namespace elysian {
 	
-	class Character: public Component { //tolua_export
+	class Character: public Component {
         friend class Entity;
 	private:
-		static const Component::TYPE _type = Component::CHARACTER;
+		static const Component::TYPE _type		= Component::CHARACTER;
 		
 	protected:
 		Character(Entity& entity);
-		virtual ~Character(void) { }
-		//walkingSpeed?
+		virtual ~Character(void) override		= default;
 
-		bool _movedThisFrame;
-		DIR4 _moveDir;
-		//gyro::Vector2::DIRECTION _moveDir; Uh, yeaaaah...
+		bool				_movedThisFrame		= false;
+		Direction::DIR4		_faceDir			= Direction::DIR4_CENTER;
 		
 	public:
-		bool load(std::ifstream& stream);
-		bool save(std::ofstream& stream);
-		bool canAddTo(Entity& entity) { return (entity.getAnimation() && entity.getAnimation()); }
-		bool addToLevel(void);
-		bool removeFromLevel(void);
-		Component::TYPE getType(void) const { return Component::CHARACTER; }
+		virtual bool load(std::ifstream& stream) override;
+		virtual bool save(std::ofstream& stream) override;
+		virtual bool canAddTo(Entity& entity) override { return (entity.getAnimation() && entity.getAnimation()); }
+		virtual bool addToLevel(void) override;
+		virtual bool removeFromLevel(void) override;
+		virtual Component::TYPE getType(void) const override { return Component::CHARACTER; }
 
-		//static Component *CreateComponent(Entity &entity);
+		Direction::DIR4 getFaceDir(void) const;
+		bool isFacing(const Entity& entity) const;
+
 #ifdef ELYSIAN_ENGINE
 		void update(void);
-//tolua_begin
 		void move(const GYVector2& vec);
-		void face(const DIR4 dir);
-		void face(Entity& entity);
+		void faceDir(const Direction::DIR4 dir);
+		void faceEntity(Entity& entity);
 #endif
-		//void Walk();
-		//void Pickup();
-	}; //tolua_export	
+	};
+
+	inline Character::Character(Entity& entity): Component(entity) {}
+
+	inline Direction::DIR4 Character::getFaceDir(void) const {
+		return _faceDir;
+	}
+
+	inline bool Character::isFacing(const Entity &entity) const {
+		GYVector2 distVec;
+		gyVec2Sub(&distVec, (GYVector2*)&entity.transform._pos, (GYVector2*)&_entity->transform._pos);
+		return (_faceDir == Direction::fromVector(distVec));
+	}
+
+
+#ifdef ELYSIAN_ENGINE
+
+	inline void Character::update(void) {
+		if(!_movedThisFrame) {
+			faceDir(_faceDir);
+		}
+		else _movedThisFrame = false;
+	}
+
+	inline void Character::faceEntity(Entity &entity) {
+		GYVector2 dist;
+		gyVec2Sub(&dist, (GYVector2*)&entity.transform._pos, (GYVector2*)&_entity->transform._pos);
+		faceDir(Direction::fromVector(dist));
+	}
+
+
+#endif
+
+
 }
 
 #endif

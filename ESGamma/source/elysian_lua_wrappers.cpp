@@ -43,6 +43,7 @@ namespace elysian {
 		_mainState->register_class<AudioSystem>();
 		_mainState->register_class<LightSystem>();
 		_mainState->register_class<LevelSystem>();
+		_mainState->register_class<Direction>();
 
 		//Register C and static member functions
 		lua_register(*_mainState, "print", &print);
@@ -134,7 +135,9 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
 						removeLightSource,
 						removeBehavior,
 						removeLuaBehavior,
-						setDepthType);
+						setDepthType,
+						setSelfTable,
+						getSelfTable)
 OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getName,
 								getElev,
@@ -187,7 +190,8 @@ OOLUA_EXPORT_FUNCTIONS(Renderable,
 OOLUA_EXPORT_FUNCTIONS_CONST(Renderable,
 						   getFrame,
 						   getOffset,
-						   getSpriteAttrib)
+						   getSpriteAttrib,
+						   getQuadSpriteAttrib)
 
 EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(AnimationSequence,
 								   addFrame)
@@ -197,12 +201,16 @@ EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(AnimationAttrib,
 								   addSequence)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(AnimationAttrib)
 
-EXPORT_OOLUA_FUNCTIONS_3_NON_CONST(Animation,
+EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(Animation,
 								   setAttrib,
 								   playAnimation,
-								   stopAnimation)
-EXPORT_OOLUA_FUNCTIONS_1_CONST(Animation,
-							   getAttrib)
+								   stopAnimation,
+								   setLooping,
+								   setCurrentFrame)
+EXPORT_OOLUA_FUNCTIONS_3_CONST(Animation,
+							   getAttrib,
+							   isLooping,
+							   getCurrentFrame)
 
 EXPORT_OOLUA_FUNCTIONS_4_NON_CONST(CollisionFlags,
 								   resetType,
@@ -242,10 +250,16 @@ EXPORT_OOLUA_FUNCTIONS_2_CONST(Collidable,
 							   getAttrib,
 							   getContactCount)
 
-EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(Character,
-								   face,
+EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Direction)
+EXPORT_OOLUA_FUNCTIONS_0_CONST(Direction)
+
+EXPORT_OOLUA_FUNCTIONS_3_NON_CONST(Character,
+								   faceEntity,
+								   faceDir,
 								   move)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(Character)
+EXPORT_OOLUA_FUNCTIONS_2_CONST(Character,
+							   getFaceDir,
+							   isFacing)
 
 EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(Warp,
 								   setToPos,
@@ -293,7 +307,8 @@ EXPORT_OOLUA_FUNCTIONS_0_CONST(LuaBehavior)
 
 EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(Tile,
 									setColliderType)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(Tile)
+EXPORT_OOLUA_FUNCTIONS_1_CONST(Tile,
+                               getColliderType)
 
 EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(Level,
 									getTile)
@@ -340,7 +355,8 @@ EXPORT_OOLUA_FUNCTIONS_2_CONST(GameInput,
 OOLUA_EXPORT_FUNCTIONS_CONST(TimerSystem,
 								getTotalTicks,
 								getCurrentFrameTicks,
-								getDeltaTime)
+								getDeltaTime,
+								getTotalTime)
 OOLUA_EXPORT_FUNCTIONS(TimerSystem)
 
 

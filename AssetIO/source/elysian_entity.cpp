@@ -24,11 +24,6 @@ using namespace std;
 
 namespace elysian {
 
-Entity::Entity(void)
-{
-	strcpy(_name, "Untitled");
-} 
-
 void Entity::reested(void) {
 	dbgprintf(LOG_VERBOSE, "Entity::Reested(%s) - Dereesting entity!", _name);
 	//SHED COMPONENTS GRACEFULLY

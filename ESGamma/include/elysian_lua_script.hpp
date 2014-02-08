@@ -12,16 +12,16 @@ namespace elysian {
 	*/
 	class LuaScript {
 	protected:
-		char _path[ELYSIAN_LUA_SCRIPT_PATH_SIZE];
-		unsigned _refCount;
-		int _environRef;
-		bool _error;
+		char		_path[ELYSIAN_LUA_SCRIPT_PATH_SIZE];
+		unsigned	_refCount		= 1;
+		int			_environRef;
+		bool		_error			= false;
 
 	public:
 		enum TYPE { TYPE_SCRIPT, TYPE_BEHAVIOR };
 		
 		LuaScript(const char *path);
-		virtual ~LuaScript(void);
+		virtual ~LuaScript(void) = default;
 		
 		const char *getPath(void) const;
 		unsigned getRefCount(void) const;
@@ -39,7 +39,7 @@ namespace elysian {
 	class LuaBehaviorScriptAttrib {
 	private:
 		uint64_t	_triggers				= 0;
-		char		_parentPath[200]		= {0};
+		char		_parentPath[200]		= "none";
 		bool		_hasParent				= false;
 	public:
 		uint64_t getSupportedTriggers(void) const { return _triggers; }

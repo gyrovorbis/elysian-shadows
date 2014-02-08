@@ -16,8 +16,8 @@ typedef struct _GYOgg {
 	void*			_data;
 } GYOgg;
 
-GYOgg* gyAudCreateOgg(const char*const path);
-void gyAudDestroyOgg(GYOgg*const ogg);
+GYOgg* gyAudOggCreate(const char*const path);
+void gyAudOggDestroy(GYOgg*const ogg);
 
 struct _GYAudioSource* gyAudOggStreamCreate(void);
 void gyAudOggStreamDestroy(struct _GYAudioSource*const src);

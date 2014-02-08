@@ -2,8 +2,8 @@
 
 namespace elysian {
 
-	System::ENGINE_STATE System::_engineState		= System::ENGINE_NORMAL;
-	bool System::_processInput						= true;
+	System::ENGINE_STATE System::_engineState = System::ENGINE_NORMAL;
+	bool System::_processInput = true;
 
 	LevelSystem*		System::_levelSystem		= nullptr;
 	MapSystem*			System::_mapSystem			= nullptr;

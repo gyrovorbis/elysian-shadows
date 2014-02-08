@@ -49,32 +49,37 @@ namespace elysian {
 	class Animation: public Component { 
         friend class Entity;
 	protected:
-		AnimationAttrib *_attrib; //prefab-able
-		Animation(Entity& entity);
-		virtual ~Animation(void) = default;
+		Animation(Entity& parent): Component(parent) {}
+		virtual ~Animation(void) override = default;
 
-		bool _isActive;
-		unsigned int _currentFrame;
-		float _timer;
-		AnimationSequence *_currentSequence;
+		AnimationAttrib* _attrib			= nullptr;
+		AnimationSequence* _currentSequence = nullptr;
+		float _timer						= 0.0f;
+		unsigned int _currentFrame			= 0;
+		bool _isActive						= false;
+		bool _looping						= true;
 		
 	public:
-		virtual bool load(std::ifstream& stream);
-		virtual bool save(std::ofstream& stream);
-		virtual bool canAddTo(Entity& entity);
-		virtual Component::TYPE getType(void) const { return Component::ANIMATION; }
-		virtual bool addToLevel(void);
-		virtual bool removeFromLevel(void);
+		virtual bool load(std::ifstream& stream) override;
+		virtual bool save(std::ofstream& stream) override;
+		virtual bool canAddTo(Entity& entity) override;
+		virtual Component::TYPE getType(void) const override { return Component::ANIMATION; }
+		virtual bool addToLevel(void) override;
+		virtual bool removeFromLevel(void) override;
 
 #ifdef ELYSIAN_ENGINE
-		void update(float deltaTime);
+		void update(const float deltaTime);
 		void playAnimation(const char *name);
 		void stopAnimation(void);
-		inline bool isActive(void) const { return _isActive; }
 #endif
 		
-		inline AnimationAttrib* getAttrib(void) const { return _attrib; }
-		inline void setAttrib(AnimationAttrib* attributes) { _attrib = attributes; }
+		AnimationAttrib* getAttrib(void) const { return _attrib; }
+		void setAttrib(AnimationAttrib* attributes) { _attrib = attributes; }
+		bool isActive(void) const { return _isActive; }
+		unsigned getCurrentFrame(void) const { return _currentFrame; }
+		void setCurrentFrame(const unsigned frame);
+		bool isLooping(void) const { return _looping; }
+		void setLooping(const bool val) { _looping = val; }
 	
 	};
 	
