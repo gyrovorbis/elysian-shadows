@@ -16,8 +16,8 @@ namespace elysian {
 	struct CameraState {
 		Entity* entity		= nullptr;
 		GYVector3 pos		= { 0.0f, 0.0f, 0.0f };
-		GYVector3 dir		= { 0.0f, -1.0f, 0.0f };
-		GYVector3 up		= { 0.0f, 0.0f, 1.0f };
+		GYVector3 dir		= { 0.0f, 1.0f, 0.0f };
+		GYVector3 up		= { 0.0f, -1.0f, 0.0f };
 		float scale			= 1.0f;
 		float zOrient		= 0.0f;
 

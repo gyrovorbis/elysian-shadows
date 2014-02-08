@@ -108,16 +108,18 @@ static inline void gyMatRotate(const float angle, const float x, const float y, 
 	gySinCos(angle, &sinTheta, &cosTheta);
 
 	_rotationMat[0][0] = cosTheta + x*x*(1.0f-cosTheta);
-	_rotationMat[0][1] = y*x*(1.0f-cosTheta) + z*sinTheta;
-	_rotationMat[0][2] = z*x*(1.0f-cosTheta) + y*sinTheta;
+	_rotationMat[1][0] = y*x*(1.0f-cosTheta) + z*sinTheta;
+	_rotationMat[2][0] = z*x*(1.0f-cosTheta) - y*sinTheta;
 
-	_rotationMat[1][0] = x*y*(1.0f-cosTheta) - z*sinTheta;
+	_rotationMat[0][1] = x*y*(1.0f-cosTheta) - z*sinTheta;
 	_rotationMat[1][1] = cosTheta + y*y*(1.0f-cosTheta);
-	_rotationMat[1][2] = z*y*(1.0f-cosTheta) + x*sinTheta;
+	_rotationMat[2][1] = z*y*(1.0f-cosTheta) + x*sinTheta;
 
-	_rotationMat[2][0] = x*z*(1.0f-cosTheta) + y*sinTheta;
-	_rotationMat[2][1] = y*z*(1.0f-cosTheta) + x*sinTheta;
+	_rotationMat[0][2] = x*z*(1.0f-cosTheta) + y*sinTheta;
+	_rotationMat[1][2] = y*z*(1.0f-cosTheta) - x*sinTheta;
 	_rotationMat[2][2] = cosTheta + z*z*(1.0f-cosTheta);
+
+	gyMatApply(_rotationMat);
 }
 
     

@@ -356,21 +356,21 @@ void Debug::processInput(const GameInput& input) {
 				lightSrc->setDirection(dirVec);
 				LightAttrib* attrib = new LightAttrib;
 				//attrib->setAmbientColor(GYVector4{ 0.3f, 0.3f, 0.3f, 1.0f});
-				//attrib->setDiffuseColor(GYVector4{ 300.0f, 5.3f, 5.3f, 1.0f });
-				attrib->setSpecularColor(GYVector4{ 0.0f, 0.5f, 0.3f, 0.0f});
+				//attrib->setDiffuseColor(GYVector4{ 0.0f, 0.0f, 0.3f, 1.0f });
+				attrib->setSpecularColor(GYVector4{ 0.0f, 0.0f, 0.1f, 1.0f});
 				//attrib->setAmbientColor(GYVector4{ 0.1f, 0.0f, 0.0f, 1.0f});
-				lightSrc->setAttrib(attrib);
-
+				lightSrc->setAttrib(attrib);		
 #if 0
 				lightSrc->setLightType(LightSource::LIGHT_DIRECTIONAL);
 #else
 				lightSrc->setLightType(GY_LIGHT_POINT);
 				lightSrc->setSpotCutoffAngle(180.0f);
-				attrib->setAttenuationFactors(GYVector3{ 0.000005f, 0.00005f, 0.00005f });
+				attrib->setAttenuationFactors(GYVector3{ 0.00005f, 0.00005f, 0.00005f });
 
 
-				attrib->setSpotExponent(1.0f);
+				//attrib->setSpotExponent(100.0f);
 #endif
+
 
 				once = 1;
 

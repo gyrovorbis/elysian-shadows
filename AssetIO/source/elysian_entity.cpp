@@ -65,10 +65,11 @@ void Entity::render(void) {
 	gyMatPush();
 	if(_depthType == DEPTH_BUFFERED) {
 		transform._size.z = transform._size.y;
-		//transform._size.y = 1.0f;
+	//	transform._size.y = 1.0f;
 	}
 	transform.apply();
 	_renderable->beginRender();
+	//if(_depthType == DEPTH_BUFFERED) transform._size.y = transform._size.z;
 	_renderable->render();
 	_renderable->endRender();
 	gyMatPop();

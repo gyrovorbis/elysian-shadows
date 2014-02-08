@@ -23,7 +23,7 @@ void CameraSystem::pushViewProjMatrix(void) {
 		gyVidProjectionDefaultMatrix();
 		gyVidCameraSetViewCenter(&_curState->pos, _curState->scale, _curState->zOrient);
 	} else {
-
+#if 0
 		GYMatrix4 camMat;
 		gyMatPush();
 		gyMatLoadIdentity();
@@ -38,6 +38,25 @@ void CameraSystem::pushViewProjMatrix(void) {
 		gyMatTranslate(-_curState->pos.x, -_curState->pos.y, -_curState->pos.z);
 		gyMatStore(&camMat);
 		gyMatPop();
+#else
+
+		GYMatrix4 camMat;
+		gyMatPush();
+		gyMatLoadIdentity();
+
+		//Create View Matrix
+		gyVidLookAtMat(camMat, 0.0f, 0.0f, 0.0f,
+					   0.0f, 1.0f, 1.0f,
+					   _curState->up.x, _curState->up.y, _curState->up.z);
+		gyMatApply(camMat);
+
+		gyMatScale(1.0f, 1.0f, -1.0f);
+		gyMatTranslate(-_curState->entity->transform._pos.x, -_curState->entity->transform._pos.y, -500.0f);
+		gyMatStore(&camMat);
+		gyMatPop();
+
+
+#endif
 
 		gyVidCameraCustomViewMatrix(camMat);
 		gyVidProjectionCustomMatrix(_curState->projMat);
@@ -84,23 +103,18 @@ void CameraSystem::processInput(const GameInput& input) {
 		_debugActive = !_debugActive;
 
 		if(_debugActive) { //enable
-			_debugState.pos = GYVector3 {
-					_curState->entity->transform._pos.x,
-					_curState->entity->transform._pos.y,
-					10.0f
-			};
-
+			_debugState.entity = _curState->entity;
 
 			_curState = &_debugState;
 			setPerspectiveFrustum(90.0f, 1.0f, 0.5f, 900.0f);
-			setEngineState(ENGINE_CAMERA_DEBUG);
+		//	setEngineState(ENGINE_CAMERA_DEBUG);
 
 		} else { //disable
 			_curState = &_states[_depth];
 			setEngineState(ENGINE_NORMAL);
 		}
 	}
-
+#if 0
 	if(_debugActive) {
 
 		if(input.getDown(GameInput::BUT_DPAD_U)) {
@@ -146,6 +160,7 @@ void CameraSystem::processInput(const GameInput& input) {
 			translate(GYVector3{ 3.0f, 0.0f, 0.0f});
 		}
 	}
+#endif
 
 }
 
@@ -178,6 +193,12 @@ void CameraSystem::update(void) {
 	_tileStartY = (startY < 0)? 0 : (unsigned)startY;
 	_tileEndX = (endX >= _curArea->width)? _curArea->width-1 : (unsigned)endX;
 	_tileEndY = (endY >= _curArea->height)? _curArea->height-1 : (unsigned)endY;
+
+	//////FUCKING FIX ME!!!!!!!!!
+	_tileStartX = 0;
+	_tileStartY = 0;
+	_tileEndX = _curArea->width-1;
+	_tileEndY = _curArea->height-1;
 
 	_scrStartX = _tileStartX*32;
 	_scrStartY = _tileStartY*32;

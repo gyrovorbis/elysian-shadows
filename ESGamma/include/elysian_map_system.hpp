@@ -107,9 +107,17 @@ namespace elysian {
 		if(!_renderLayer[entry.layer]) return; //Don't render if this layer has been toggled off.
 
 		gyMatPush();
-		gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z, 32.0f, 32.0f, 32.0f);
+
 		gyVidRectTexOrient(entry.mapEntry.getOrient());
-		gyVidRectNormalType((entry.mapEntry.getElev() > 0)? GY_RECT_NORMAL_DEPTH : GY_RECT_NORMAL_FLAT);
+
+		if(entry.mapEntry.getElev() > 0) {
+			gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z, 32.0f, 32.0f, 32.0f);
+			gyVidRectNormalType(GY_RECT_NORMAL_DEPTH);
+		} else {
+			gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z, 32.0f, 32.0f, 1.0f);
+			gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
+		}
+
 		gyVidRect(_animTiles[((TileEntry *)&entry.mapEntry)->getIndex()].curIndex);
 
 /*		if(entry.mapEntry.getElev() > 0) {

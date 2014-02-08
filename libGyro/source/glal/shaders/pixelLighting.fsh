@@ -140,7 +140,7 @@ vec4 lightingEquation(const int i) {
 		computedColor += (nDotL * vDiffuses[i]);
 
 		//Calculate and apply specular lighting
-		halfVec = normalize(VPpli + vec3(cfZero, cfZero, cfOne));
+		halfVec = normalize(VPpli + vec3(cfZero, cfZero, -cfOne));
 		nDotH = dot(normal, halfVec);
 		if(nDotH > cfZero) {
 			computedColor += (pow(nDotH, uMaterial.shininess) *
