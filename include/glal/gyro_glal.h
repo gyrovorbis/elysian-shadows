@@ -10,15 +10,9 @@
 //this is no good
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
 #	ifdef __APPLE__
-#		include <OpenGL/gl.h>
 #		include <OpenAL/al.h>
 #		include <OpenAL/alc.h>
 #	else
-#       ifdef _WIN32
-#           include <gl/glew.h>
-#           include <gl/wglew.h>
-#       endif
-#		include <GL/gl.h>
 #		include <AL/al.h>
 #       include <AL/alc.h>
 #	endif
