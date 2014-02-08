@@ -18,4 +18,4 @@ if(APPLE)
 	)
 endif()
 
-target_link_libraries(basic ${Gyro_LIBRARIES})
+target_link_libraries(basic Gyro_combined ${Gyro_LIBRARIES})
