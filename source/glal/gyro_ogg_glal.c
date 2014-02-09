@@ -51,8 +51,7 @@ static size_t __ov_read_fn(void *ptr, size_t size, size_t nmemb, void *datasourc
 
 static int __ov_seek_fn(void *datasource, ogg_int64_t offset, int whence)
 {
-    /* TODO: Implement this */
-    return -1;
+    return gyFileSeek(datasource, offset, whence);
 }
 
 static int __ov_close_fn(void *datasource)
@@ -60,10 +59,11 @@ static int __ov_close_fn(void *datasource)
     return !gyFileClose((GYFile**)&datasource);
 }
 
-static int __ov_tell_fn(void *datasource)
+static long int __ov_tell_fn(void *datasource)
 {
-    /* TODO: Implement this */
-    return -1;
+    long int pos = 0;
+    gyFileTell(datasource, &pos);
+    return pos;
 }
 
 GYOgg* gyAudCreateOgg(const char*const path) {
@@ -76,9 +76,9 @@ GYOgg* gyAudCreateOgg(const char*const path) {
 
     ov_callbacks callbacks;
     callbacks.read_func = &__ov_read_fn;
-    callbacks.seek_func = NULL;
+    callbacks.seek_func = &__ov_seek_fn;
     callbacks.close_func = &__ov_close_fn;
-    callbacks.tell_func = NULL;
+    callbacks.tell_func = &__ov_tell_fn;
 
 	strcpy(ogg->path, path);
 	ogg->looping = 0;
