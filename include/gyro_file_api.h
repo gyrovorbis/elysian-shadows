@@ -43,7 +43,7 @@ int gyFileQuit(void);
 int gyFileResolvePath(GYPathType path_type, char **path, size_t *len);
 
 int gyFileOpen(GYPathType path_type, const char *file_path, const char *mode, GYFile **fp);
-int gyFileRead(GYFile *fp, char **buffer, size_t *len);
+int gyFileRead(GYFile *fp, char *buffer, size_t count, size_t *bytes_read);
 int gyFileClose(GYFile **fp);
 
 #endif

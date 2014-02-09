@@ -171,25 +171,15 @@ int gyFileOpen(GYPathType path_type, const char *file_path, const char *mode, GY
     return 1;
 }
 
-int gyFileRead(GYFile *fp, char **buffer, size_t *len)
+int gyFileRead(GYFile *fp, char *buffer, size_t count, size_t *bytes_read)
 {
-    size_t flen;
-    if (fp == NULL) {
+    size_t read_bytes = 0;
+    if (fp == NULL || buffer == NULL) {
         return 0;
     }
-    fseek(fp->fp, 0, SEEK_END);
-    flen = (size_t) ftell(fp->fp);
-    rewind(fp->fp);
-    if (len != NULL) {
-        *len = flen;
-    }
-    if (buffer != NULL) {
-        *buffer = malloc(flen + 1);
-        if (*buffer == NULL) {
-            return 0;
-        }
-        fread(*buffer, flen, 1, fp->fp);
-        (*buffer)[flen] = '\0';
+    read_bytes = fread(buffer, count, 1, fp->fp);
+    if (bytes_read != NULL) {
+        *bytes_read = read_bytes;
     }
     return 1;
 }
