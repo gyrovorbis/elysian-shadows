@@ -184,6 +184,17 @@ int gyFileRead(GYFile *fp, char *buffer, size_t count, size_t *bytes_read)
     return 1;
 }
 
+int gyFileLength(GYFile *fp, size_t *len)
+{
+    if (fp == NULL || fp->fp == NULL) {
+        return 0;
+    }
+    fseek(fp->fp, 0, SEEK_END);
+    *len = (size_t) ftell(fp->fp);
+    rewind(fp->fp);
+    return 1;
+}
+
 int gyFileClose(GYFile **fp)
 {
     if (fp == NULL || *fp == NULL) {
