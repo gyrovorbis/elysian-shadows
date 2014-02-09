@@ -184,6 +184,14 @@ int gyFileRead(GYFile *fp, char *buffer, size_t count, size_t *bytes_read)
     return 1;
 }
 
+int gyFileSeek(GYFile *fp, off_t offset, int whence)
+{
+    if (fp == NULL || fp->fp == NULL) {
+        return 0;
+    }
+    return !fseeko(fp->fp, offset, whence);
+}
+
 int gyFileLength(GYFile *fp, size_t *len)
 {
     if (fp == NULL || fp->fp == NULL) {
@@ -193,6 +201,15 @@ int gyFileLength(GYFile *fp, size_t *len)
     *len = (size_t) ftell(fp->fp);
     rewind(fp->fp);
     return 1;
+}
+
+int gyFileTell(GYFile *fp, long int *pos)
+{
+    if (fp == NULL || fp->fp == NULL) {
+        return 0;
+    }
+    *pos = ftell(fp->fp);
+    return *pos > -1L;
 }
 
 int gyFileClose(GYFile **fp)

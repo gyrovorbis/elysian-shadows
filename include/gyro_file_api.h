@@ -2,6 +2,7 @@
 #define GYRO_FILE_H
 
 #include <stddef.h>
+#include <sys/types.h>
 
 #include "gyro_platform.h"
 
@@ -44,7 +45,9 @@ int gyFileResolvePath(GYPathType path_type, char **path, size_t *len);
 
 int gyFileOpen(GYPathType path_type, const char *file_path, const char *mode, GYFile **fp);
 int gyFileRead(GYFile *fp, char *buffer, size_t count, size_t *bytes_read);
+int gyFileSeek(GYFile *fp, off_t offset, int whence);
 int gyFileLength(GYFile *fp, size_t *len);
+int gyFileTell(GYFile *fp, long int *pos);
 
 int gyFileClose(GYFile **fp);
 
