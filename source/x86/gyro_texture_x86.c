@@ -60,7 +60,7 @@ static unsigned char *load_png(GYFile *f, image_t *img)
 {
     png_byte header[8];
 	png_structp png_ptr;
-	unsigned int sig_read = 0;
+	unsigned int sig_read = 8;
 	png_uint_32 width, height;
 	int bit_depth, colour_type, interlace_type;
 	png_infop info_ptr;
