@@ -209,12 +209,7 @@ merge_static_libs(Gyro_combined OUTPUT_NAME Gyro
 # "FindGyro"
 #
 
-find_library(Gyro_LIBRARY Gyro
-	PATHS @CMAKE_INSTALL_PREFIX@/lib
-	NO_DEFAULT_PATH
-)
-
-set(Gyro_LIBRARIES ${Gyro_LIBRARY})
+set(Gyro_LIBRARIES Gyro_combined)
 set(Gyro_INCLUDE_DIRS ${CMAKE_INSTALL_PREFIX}/include)
 set(Gyro_DEFINITIONS -DGYRO_PLATFORM=${GYRO_PLATFORM})
 
