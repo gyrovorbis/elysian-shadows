@@ -45,13 +45,13 @@ static inline const char* _vorbisErrorString(const int code) {
 static size_t __ov_read_fn(void *ptr, size_t size, size_t nmemb, void *datasource)
 {
     size_t bytes_read = 0;
-    gyFileRead(datasource, ptr, nmemb, &bytes_read);
+    gyFileRead(datasource, ptr, size * nmemb, &bytes_read);
     return bytes_read;
 }
 
 static int __ov_seek_fn(void *datasource, ogg_int64_t offset, int whence)
 {
-    return gyFileSeek(datasource, offset, whence);
+    return !gyFileSeek(datasource, offset, whence);
 }
 
 static int __ov_close_fn(void *datasource)
