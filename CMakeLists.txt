@@ -181,28 +181,26 @@ link_directories("${GY_TARGET_CONTRIB_OUT_DIR}/lib")
 link_directories("${GY_TARGET_OUT_DIR}/lib")
 
 add_library(Gyro STATIC ${gyro_SOURCES} ${gyro_INCLUDES})
-add_dependencies(Gyro
-	glew
-	glfw
-	libpng
-	openal
-	ogg
-	vorbis
-	zlib
+set(gyro_DEPENDENCIES
+    glew
+    glfw
+    libpng
+    ogg
+    vorbis
+    vorbisfile
+    zlib
 )
+if(NOT APPLE OR NOT ${GYRO_PLATFORM} EQUAL GYRO_PLATFORM_x86)
+    list(APPEND gyro_DEPENDENCIES openal)
+endif()
+add_dependencies(Gyro ${gyro_DEPENDENCIES})
 set_target_properties(Gyro PROPERTIES
 	OUTPUT_NAME Gyro_nodeps
 )
 
 merge_static_libs(Gyro_combined OUTPUT_NAME Gyro
 	Gyro
-	glew
-	glfw
-	libpng
-	openal
-	ogg
-	vorbis
-	zlib
+	${gyro_DEPENDENCIES}
 )
 
 #
@@ -221,11 +219,13 @@ if(${GYRO_PLATFORM} EQUAL GYRO_PLATFORM_x86)
 		find_library(IOKIT_FRAMEWORK IOKit)
 		find_library(CORE_FOUNDATION_FRAMEWORK CoreFoundation)
 		find_library(CORE_VIDEO_FRAMEWORK CoreVideo)
+		find_library(OPENAL_FRAMEWORK OpenAL)
 		list(APPEND Gyro_LIBRARIES
 			${COCOA_FRAMEWORK}
 			${IOKIT_FRAMEWORK}
 			${CORE_FOUNDATION_FRAMEWORK}
 			${CORE_VIDEO_FRAMEWORK}
+			${OPENAL_FRAMEWORK}
 		)
 	elseif(UNIX)
 		find_package(X11 REQUIRED)
