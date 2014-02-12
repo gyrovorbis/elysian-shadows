@@ -186,6 +186,7 @@ add_dependencies(Gyro
 	openal
 	ogg
 	vorbis
+	vorbisfile
 	zlib
 )
 set_target_properties(Gyro PROPERTIES
@@ -200,6 +201,7 @@ merge_static_libs(Gyro_combined OUTPUT_NAME Gyro
 	openal
 	ogg
 	vorbis
+	vorbisfile
 	zlib
 )
 
