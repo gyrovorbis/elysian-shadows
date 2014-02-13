@@ -148,7 +148,7 @@ namespace elysian {
 		memset(_entityCount, 0, sizeof(unsigned)*depthBuffMaxHeight);
 
 
-		// ==== QUEUE AND IMMEDIATE RENDER OBJECTS ====
+		// ==== QUEUE AND IMMEDIATE RENDER TILES ====
 		_beginObjectList();
 		for(unsigned j = startY; j <= endY; ++j) {
 			for(unsigned i = startX; i <= endX; ++i) {
