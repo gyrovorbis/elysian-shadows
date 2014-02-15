@@ -37,8 +37,8 @@ public:
 	unsigned getEntityCount(void) const;
 	bool getOnscreenEntity(const unsigned index, ESTkEntityDepthBuffEntry &entry, elysian::DEPTH_TYPE &type, float &lowestY, unsigned char &elev) const;
 	void renderEntityEntry(ESTkEntityDepthBuffEntry &entry);
-	void enablePolygonOffset(void) const;
-	void disablePolygonOffset(void) const;
+    void enableDepthTest(void) const;
+    void disableDepthTest(void) const;
 
 	//=== /Implemened from elysian::MapDepthBuffer ===
 
@@ -112,9 +112,9 @@ inline void MapViewDepthBufferGraphicsItem::renderEntityEntry(ESTkEntityDepthBuf
 	//entry.entity->paint(_curPainter, NULL, NULL);
 }
 
-inline void MapViewDepthBufferGraphicsItem::enablePolygonOffset(void) const { }
+inline void MapViewDepthBufferGraphicsItem::enableDepthTest(void) const { }
 
 
-void MapViewDepthBufferGraphicsItem::disablePolygonOffset(void) const {}
+void MapViewDepthBufferGraphicsItem::disableDepthTest(void) const {}
 
 #endif // MAPVIEWDEPTHBUFFERTILEGRAPHICSITEM_H

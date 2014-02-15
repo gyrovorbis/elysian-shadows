@@ -218,8 +218,7 @@ FORMS += form/estk/sheetdockwidget.ui \
     form/sheetManager/sheetmanager.ui \
     form/widget/historyDockWidget.ui \
     form/dialog/engineSettings.ui \
-    form/sheetManager/sheetManagerFileDockWidget.ui \
-    ../../AssetIO/include/elysian_light_source.hpp
+    form/sheetManager/sheetManagerFileDockWidget.ui
 
 #Create windows manifest requesting ESTk to be run as admin (to run dc-tool as admin)
 #win32 {

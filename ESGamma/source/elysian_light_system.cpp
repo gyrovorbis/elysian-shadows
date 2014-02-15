@@ -103,7 +103,7 @@ static void renderCube(float x, float y, float z,
 
 
 void LightSystem::render(void) {
-/*
+
 	gyVidTexBind(nullptr);
 	gyVidMaterialBind(nullptr);
 	gyVidNormalMapBind(nullptr);
@@ -146,7 +146,7 @@ void LightSystem::render(void) {
 
 	_renderShadowVolumes();
 
-	*/
+
 }
 
 void LightSystem::shadowRenderPasses(void) {
