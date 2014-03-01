@@ -32,6 +32,7 @@ extern "C" {
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
 
 #   define GYRO_ENDIAN					GYRO_ENDIAN_LITTLE
+#	define GYRO_CACHE_BLOCK_SIZE
 
 #	define GYRO_AUDIO_PLATFORM_INCLUDE	"glal/gyro_audio_glal.inl"
 #	define GYRO_INPUT_PLATFORM_INCLUDE	"x86/gyro_input_x86.inl"

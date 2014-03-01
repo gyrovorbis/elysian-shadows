@@ -4,6 +4,9 @@
 #include <gyro_shader_api.h>
 #include <gyro_video_api.h>
 #include "elysian_component.hpp"
+#ifdef ELYSIAN_ENGINE
+#	include "elysian_camera_system.hpp"
+#endif
 
 namespace elysian {
 
@@ -28,6 +31,10 @@ namespace elysian {
 		friend class LightSystem;
 		friend class Engine;
 
+#ifdef ELYSIAN_ENGINE
+		CameraState _camState;
+#endif
+
 	public:
 
 		LightSource(Entity& entity);
@@ -46,7 +53,12 @@ namespace elysian {
 		void setDirection(const GYVector3& dir);
 		void setSpotCutoffAngle(const float angle);
 		void setAttrib(const LightAttrib* const attrib);
+		const GYVector4& getPosition(void) const;
+
 		LightAttrib& getAttrib(void);
+#ifdef ELYSIAN_ENGINE
+		CameraState* getCameraState(void);
+#endif
 
 		void update(void);
 
@@ -90,7 +102,16 @@ namespace elysian {
 	inline void LightSource::setDirection(const GYVector3& dir) { gyVec3Normalize(&direction); direction = dir; }
 	inline void LightSource::setSpotCutoffAngle(const float angle) { spotCutoffAngle = angle; }
 	inline auto LightSource::getLightType(void) const -> GY_LIGHT_TYPE { return type; }
+	inline const GYVector4& LightSource::getPosition(void) const { return position; }
 	inline LightAttrib& LightSource::getAttrib(void) { return *static_cast<LightAttrib*>(properties); }
+
+
+#ifdef ELYSIAN_ENGINE
+	inline CameraState* LightSource::getCameraState(void) {
+		return &_camState;
+	}
+
+#endif
 
 }
 

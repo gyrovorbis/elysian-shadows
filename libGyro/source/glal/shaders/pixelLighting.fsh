@@ -207,7 +207,7 @@ void main(void) {
 	}
 
 	vec4 finalColor = texColor * color;
-	//if(finalColor.a == 0.0) discard;
+	if(finalColor.a == 0.0) discard;
 
 	//if(!uNormalMapEnabled)
 	gl_FragColor =  finalColor;

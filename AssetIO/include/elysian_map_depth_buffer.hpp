@@ -4,7 +4,9 @@
 #include <cassert>
 #include <cstring>
 #include "elysian_area.hpp"
+#include "elysian_system.hpp"
 #include "elysian_zcoords.hpp"
+#include "elysian_light_system.hpp"
 
 //Maximum elevation height an object can have
 #define ELYSIAN_DEPTH_BUFFER_OBJECT_ELEVATION_MAX 15
@@ -29,10 +31,12 @@ namespace elysian {
     
     //Minimal base class for object entries
 	struct MapDepthBuffEntry {
-        //float x, y;
+		//float x, y;
 		unsigned x, y; //tile location
 		unsigned layer;
+		uint32_t lights;
 		MapEntry mapEntry;
+		unsigned renderPass = 0;
     };
     
     //Minimal base class for entity entries
@@ -59,7 +63,7 @@ namespace elysian {
      E - EntityDepthBuffEntry type      - MUST inherit from EntityDepthBuffEntry!
      */
     template<typename T, typename O, typename E>
-    class MapDepthBuffer {
+	class MapDepthBuffer: public elysian::System {
     private:
         
         //General interface
@@ -109,13 +113,66 @@ namespace elysian {
 			static_cast<const T*>(this)->enableDepthTest();
 		}
 
+		//Culling functions
+		//Just cull in getObjectLayerEntry and getOnscreenEntity?
+
+		//Bounding volumes for tileZRows
+		//Or whatever the shit grouping if you don't want to do that
+
 		//Object buffer
-		unsigned _objectCount[ELYSIAN_DEPTH_BUFFER_HEIGHT];
-		O _objectBuff[ELYSIAN_DEPTH_BUFFER_HEIGHT][ELYSIAN_DEPTH_BUFFER_OBJECT_WIDTH];
+		unsigned	_objectCount[ELYSIAN_DEPTH_BUFFER_HEIGHT];
+		O			_objectBuff[ELYSIAN_DEPTH_BUFFER_HEIGHT][ELYSIAN_DEPTH_BUFFER_OBJECT_WIDTH];
+		uint32_t	_objectRowLights[ELYSIAN_DEPTH_BUFFER_HEIGHT];
+		O			_objectBuffImmediate[ELYSIAN_DEPTH_BUFFER_HEIGHT*ELYSIAN_DEPTH_BUFFER_OBJECT_WIDTH];
+		unsigned	_objectBuffImmediateCount = 0;
+
+		unsigned	_queue[2][ELYSIAN_DEPTH_BUFFER_HEIGHT*ELYSIAN_DEPTH_BUFFER_OBJECT_WIDTH];
+		unsigned	_queued = 0;
+		int			_nextRow = 0;
+		int			_curRow = 0;
 
 		//Entity buffer
 		unsigned _entityCount[ELYSIAN_DEPTH_BUFFER_HEIGHT];
 		E _entityBuff[ELYSIAN_DEPTH_BUFFER_HEIGHT][ELYSIAN_DEPTH_BUFFER_ENTITY_WIDTH];
+
+		uint32_t _lightsRendered = 0;
+		uint32_t _lightsActive	= 0;
+
+		unsigned _scrStartX, _scrStartY, _scrEndX, _scrEndY;
+		unsigned _depthBuffMaxVisible;
+		unsigned _depthBuffMaxHeight;
+
+		void _processTiles(void);
+		void _processEntities(void);
+		void _renderDepthBuffTileRow(const unsigned i);
+		void _renderDepthBuffEntityRow(const unsigned i);
+
+		bool _tileEntryLightPass(O& tileEntry) {
+			++tileEntry.renderPass;
+			if((tileEntry.lights | _lightsRendered) == _lightsRendered) { //it's done!
+				_renderObjectEntry(tileEntry, ZCoordConstants::mapBase+(tileEntry.mapEntry.getElev())*32.0f /*zCoordBufferedBase+i+1.0f*/); //WILL THIS WORK FOR NO ELEVATION!?
+				return true;
+			} else if((tileEntry.lights & ~_lightsRendered) == tileEntry.lights) { //can't do dick this pass
+				return false;
+			} else { //partial render this pass
+				tileEntry.lights &= ~_lightsActive;
+				_renderObjectEntry(tileEntry, ZCoordConstants::mapBase+(tileEntry.mapEntry.getElev())*32.0f /*zCoordBufferedBase+i+1.0f*/);
+				return false;
+			}
+		}
+
+		void _renderOrBufferImmediateTileEntry(O& tileEntry) {
+			if(!_tileEntryLightPass(tileEntry)) {
+				_objectBuffImmediate[_objectBuffImmediateCount++] = tileEntry;
+			}
+		}
+
+		void _renderOrQueueTileEntry(const unsigned index, O& tileEntry) {
+			if(!_tileEntryLightPass(tileEntry)) {
+				_queue[_nextRow][_queued++] = index;
+			}
+		}
+
 
 	public:
 		void render(void);
@@ -135,55 +192,23 @@ namespace elysian {
 		const float zCoordImmediateEntity	= zCoordImmediateObject + 0.5f; //Dont know about this...
 		//const float zCoordBufferedBase		= zCoordImmediateObject + 1.0f;
 
-		//Calculate depth buffer boundaries
-		unsigned startX, startY, endX, endY;
-		_getOnscreenTileRegion(startX, startY, endX, endY);
+		_getOnscreenTileRegion(_scrStartX, _scrStartY, _scrEndX, _scrEndY);
+
 		//Maximum number of rows depth buffer could need based on visible region
-		unsigned depthBuffMaxVisible = endY - startY + 1 + ELYSIAN_DEPTH_BUFFER_OBJECT_ELEVATION_MAX;
+		_depthBuffMaxVisible = _scrEndY - _scrStartY + 1 + ELYSIAN_DEPTH_BUFFER_OBJECT_ELEVATION_MAX;
 		//Cap max at depth buffer height
-		const unsigned depthBuffMaxHeight = (depthBuffMaxVisible > ELYSIAN_DEPTH_BUFFER_HEIGHT)? ELYSIAN_DEPTH_BUFFER_HEIGHT: depthBuffMaxVisible;
+		_depthBuffMaxHeight = (_depthBuffMaxVisible > ELYSIAN_DEPTH_BUFFER_HEIGHT)? ELYSIAN_DEPTH_BUFFER_HEIGHT: _depthBuffMaxVisible;
 
 		//Clear depth buffer counters
-		memset(_objectCount, 0, sizeof(unsigned)*depthBuffMaxHeight);
-		memset(_entityCount, 0, sizeof(unsigned)*depthBuffMaxHeight);
+		memset(_objectCount, 0, sizeof(unsigned)*_depthBuffMaxHeight);
+		memset(_entityCount, 0, sizeof(unsigned)*_depthBuffMaxHeight);
 
+		_processTiles();
 
-		// ==== QUEUE AND IMMEDIATE RENDER TILES ====
-		_beginObjectList();
-		for(unsigned j = startY; j <= endY; ++j) {
-			for(unsigned i = startX; i <= endX; ++i) {
-				for(unsigned k = 0; k < 3; ++k) {
-					O curMapEntry;
-					curMapEntry.x = i;
-					curMapEntry.y = j;
-					curMapEntry.layer = k;
-					_getObjectLayerEntry(i, j, curMapEntry);
-					/* Had to move this check to client code, because the Toolkit actually does
-					render tile 0 decorations when selecting/selected/filling. It's moleculary
-					slower, but it's at least a clean solution.
-					*/
-					//if(curObjEntry.mapVal) { //not the blank object
-					int elevation = curMapEntry.mapEntry.getElev()-1;
-                    
-					if(elevation == -1) { //render objects immediately at elevation -1 (below entities)
-						_renderObjectEntry(curMapEntry, ZCoordConstants::mapBase/*zCoordImmediateObject*/);
-					} else { //Buffer if higher elevation
-						unsigned zCoord = j-startY+elevation;
-						//if(zCoord >= depthBuffMaxHeight) zCoord = depthBuffMaxHeight-1;
-						assert(zCoord < depthBuffMaxHeight);
-                        
-						_objectBuff[zCoord][_objectCount[zCoord]] = curMapEntry;
-						++_objectCount[zCoord];
-					}
-					//}
-				}
-			}
-		}
-		_endObjectList();
         
         // ==== QUEUE AND IMMEDIATE RENDER ENTITIES ==== 
         
-        const float mapStartY = startY*32.0f;
+		const float mapStartY = _scrStartY*32.0f;
 		const unsigned entityCount = _getEntityCount();
         E entityEntry;
         DEPTH_TYPE entityDepthType;
@@ -215,7 +240,7 @@ namespace elysian {
                     
                 //Add depth buffer entry
                 unsigned zIndex = (unsigned)zCoord;
-				if(zIndex >= depthBuffMaxHeight) zIndex = depthBuffMaxHeight-1;
+				if(zIndex >= _depthBuffMaxHeight) zIndex = _depthBuffMaxHeight-1;
                 //assert(zIndex >= 0 && zIndex < depthBuffMaxHeight);
                 
                 _entityBuff[zIndex][_entityCount[zIndex]] = entityEntry;
@@ -227,9 +252,8 @@ namespace elysian {
 		}
         
 		//Sort entity z entries per z coord (ascending order)
-		//--[./Arce]
 		//IMPLEMENT ME MORE EFFICIENTLY! BUBBLE SORT IS FUCKING GAY
-		for(unsigned j = 0; j < depthBuffMaxHeight; ++j) {
+		for(unsigned j = 0; j < _depthBuffMaxHeight; ++j) {
 			for(unsigned i = 0; i < _entityCount[j]; ++i) {
 				for(unsigned k = i+1; k < _entityCount[j]; ++k) {
 					if(_entityBuff[j][i].zCoordRelative > _entityBuff[j][k].zCoordRelative) {
@@ -241,12 +265,12 @@ namespace elysian {
 			}
 		}
         
-        // ==== RENDER ENTITIES AND OBJECTS QUEUED IN DEPTH BUFFER ==== 
+		// ==== RENDER ENTITIES AND TILES QUEUED IN DEPTH BUFFER ====
 
 
 		_disableDepthTest();
 		//Iterate through depth buffers and render from lowest to highest z coord
-		for(unsigned i = 0; i < depthBuffMaxHeight; ++i) {
+		for(unsigned i = 0; i < _depthBuffMaxHeight; ++i) {
 
 			//Entities come first, since they are always above the lowest point on the object
 			float entityZDelta = 0.0f;
@@ -257,16 +281,110 @@ namespace elysian {
 				entityZDelta += ELYSIAN_DEPTH_BUFFER_ENTITY_ENTITY_MIN_Z_OFFSET;
 			}
 
+			_renderDepthBuffTileRow(i);
                       
-			//Objects - rendered with Z at the BOTTOM of the map tile location
-
-			_beginObjectList();
-			for(unsigned j = 0; j < _objectCount[i]; ++j) {
-				_renderObjectEntry(_objectBuff[i][j], ZCoordConstants::mapBase+(_objectBuff[i][j].mapEntry.getElev()-1)*32.0f /*zCoordBufferedBase+i+1.0f*/);
-			}
-			_endObjectList();
 		}
-		//_enableDepthTest();
+		_enableDepthTest();
+	}
+
+	// ==== QUEUE AND IMMEDIATE RENDER TILES ====
+	template<typename T, typename O, typename E>
+	inline void MapDepthBuffer<T, O, E>::_processTiles(void) {
+		LightSystem*const	lightSys			= getLightSys();
+		uint32_t			lightsLeft			= 0;
+		const uint32_t		onscreenLights		= lightSys->getLightCount();
+		_lightsRendered = 0;
+
+		_objectBuffImmediateCount = 0;
+
+		for(unsigned i = 0; i < onscreenLights; ++i) lightsLeft |= (1<<i);
+
+		_beginObjectList();
+
+		_lightsRendered |= _lightsActive = lightSys->startLightPass(lightsLeft);
+		for(unsigned j = _scrStartY; j <= _scrEndY; ++j) {
+			for(unsigned i = _scrStartX; i <= _scrEndX; ++i) {
+				for(unsigned k = 0; k < 3; ++k) {
+					O curMapEntry;
+					curMapEntry.x = i;
+					curMapEntry.y = j;
+					curMapEntry.layer = k;
+					_getObjectLayerEntry(i, j, curMapEntry);
+					/* Had to move this check to client code, because the Toolkit actually does
+					render tile 0 decorations when selecting/selected/filling. It's moleculary
+					slower, but it's at least a clean solution.
+					*/
+					//if(!curMapEntry.mapEntry.getValue()) continue; //not the blank object
+					int elevation = curMapEntry.mapEntry.getElev()-1;
+
+					if(elevation == -1) { //render tile immediately at elevation -1 (below entities)
+						//Immediate render, or buffer if it requires multiple passes
+						_renderOrBufferImmediateTileEntry(curMapEntry);
+					} else { //Add to depth buffer if elevated
+						unsigned zCoord = j-_scrStartY+elevation;
+						//if(zCoord >= depthBuffMaxHeight) zCoord = depthBuffMaxHeight-1;
+						assert(zCoord < _depthBuffMaxHeight);
+
+						_objectBuff[zCoord][_objectCount[zCoord]] = curMapEntry;
+						_objectRowLights[zCoord] |= curMapEntry.lights;
+						++_objectCount[zCoord];
+					}
+				}
+			}
+		}
+
+		if(!_objectBuffImmediateCount) return;
+
+		//Make a pass through immediate tile multiplass buffer
+		_lightsRendered |= _lightsActive = lightSys->startLightPass(lightsLeft);
+		for(unsigned j = 0; j < _objectBuffImmediateCount; ++j) {
+			_renderOrQueueTileEntry(j, _objectBuffImmediate[j]);
+		}
+
+		//Continue making light passes until there are no more immediate tiles queued
+		while(_queued) {
+			const unsigned count = _queued;
+			_queued = 0;
+			_curRow = _nextRow;
+			_nextRow = !_curRow;
+			_lightsRendered |= _lightsActive = lightSys->startLightPass(lightsLeft);
+			for(unsigned j = 0; j < count; ++j) {
+				_renderOrQueueTileEntry(j, _objectBuffImmediate[_queue[_curRow][j]]);
+			}
+		}
+
+		_endObjectList();
+	}
+
+
+
+	template<typename T, typename O, typename E>
+	inline void MapDepthBuffer<T, O, E>::_renderDepthBuffTileRow(const unsigned int i) {
+		//Tiles - rendered with Z at the BOTTOM of the map tile location
+
+		_beginObjectList();
+
+		LightSystem*const	lightSys			= getLightSys();
+		_lightsRendered = 0;
+
+
+		_lightsRendered |= _lightsActive = lightSys->startLightPass(_objectRowLights[i]);
+		for(unsigned j = 0; j < _objectCount[i]; ++j) {
+			_renderOrQueueTileEntry(j, _objectBuff[i][j]);
+		}
+		while(_queued) {
+			const unsigned count = _queued;
+			_queued = 0;
+			_curRow = _nextRow;
+			_nextRow = !_curRow;
+			_lightsRendered |= _lightsActive = lightSys->startLightPass(_objectRowLights[i]);
+			for(unsigned j = 0; j < count; ++j) {
+				_renderOrQueueTileEntry(j, _objectBuff[i][_queue[_curRow][j]]);
+			}
+		}
+
+		_endObjectList();
+
 	}
     
 }

@@ -120,7 +120,7 @@ void Engine::processInput(void) {
 		case System::ENGINE_CONVERSATION:
 			_partySystem->processInput(_gameInput);
 			_cameraSystem->processInput(_gameInput);
-			Debug::getInstance().processInput(_gameInput);
+			//Debug::getInstance().processInput(_gameInput);
 			//conversationSystem->ProcessInput(input);
 			break;
 		case System::ENGINE_MODAL_CONVERSATION:
@@ -172,7 +172,7 @@ void Engine::render(void) {
 			_cameraSystem->pushViewProjMatrix();
 
 			_lightSystem->shadowRenderPasses();
-			_lightSystem->addLightSourcesToScene();
+			//_lightSystem->addLightSourcesToScene();
 
 			_mapSystem->render();
 

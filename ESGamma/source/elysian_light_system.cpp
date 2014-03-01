@@ -4,6 +4,7 @@
 #include "elysian_area.hpp"
 #include "elysian_entity.hpp"
 #include <gyro_shader_api.h>
+#include <cfloat>
 
 #include "elysian_level.hpp"
 
@@ -14,7 +15,21 @@ LightSystem::LightSystem(void) {
 	//gyVidLightingSetEnable(1);
 }
 
-unsigned LightSystem::getLightCount(void) { return _curArea->lightSources.size(); }
+
+void LightSystem::_addToLightMap(LightSource*const src) {
+	CameraState*const		 lightCam	= src->getCameraState();
+	const uint32_t			lightMask	= (1<<(_onscreenLightCount-1));
+
+	for(unsigned y = lightCam->tileStartY; y <= lightCam->tileEndY; ++y) {
+		for(unsigned x = lightCam->tileStartX; x <= lightCam->tileEndX; ++x) {
+			const unsigned xIndex = x-_screenTileXOffset;
+			const unsigned yIndex = y-_screenTileYOffset;
+			_lightMap[yIndex][xIndex] |= lightMask;
+		}
+	}
+}
+
+unsigned LightSystem::getLightCount(void) const { return _curArea->lightSources.size(); }
 
 void LightSystem::update(void) {
 	const auto sources = _curArea->lightSources;
@@ -103,7 +118,7 @@ static void renderCube(float x, float y, float z,
 
 
 void LightSystem::render(void) {
-/*
+
 	gyVidTexBind(nullptr);
 	gyVidMaterialBind(nullptr);
 	gyVidNormalMapBind(nullptr);
@@ -146,38 +161,56 @@ void LightSystem::render(void) {
 
 	_renderShadowVolumes();
 
-	*/
 }
 
 void LightSystem::shadowRenderPasses(void) {
-	const auto sources = _curArea->lightSources;
+
+	const auto sources	= _curArea->lightSources;
+	CameraState* cam	= getCameraSys()->getCurrentState();
+	_screenTileXOffset	= cam->tileStartX;
+	_screenTileYOffset	= cam->tileStartY;
+
+	_onscreenLightCount = 0;
+	memset(_lightMap, 0, sizeof(_lightMap));
 
 	gyVidLightSourceBeginShadowPasses();
 
 	for(auto it : sources) {
+		//if(!ONSCREEN) continue;!!!!
+		if(_onscreenLightCount >= 32) continue;
+		_onscreenLights[_onscreenLightCount++] = it;
+
 		switch(it->getLightType()) {
 		case GY_LIGHT_DIRECTIONAL:
 		case GY_LIGHT_SPOT:
-			gyVidLightSourceBeginShadowPass(it, GY_CUBE_MAP_FACE_MAX);
+			gyVidLightSourceBeginShadowPass(it, GY_CUBE_MAP_FACE_MAX, it->getCameraState());
+			it->getCameraState()->updateBoundingRegions(*cam);
+			getCameraSys()->setCustomCameraState(it->getCameraState());
 			render();
+			_addToLightMap(it);
 			break;
 		case GY_LIGHT_POINT:
 			for(unsigned i = GY_CUBE_MAP_RIGHT; i < GY_CUBE_MAP_FACE_MAX; ++i) {
-				gyVidLightSourceBeginShadowPass(it, (GY_CUBE_MAP_FACE)i);
-				//if(i != GY_CUBE_MAP_BACK) {
-					render();
-			//	}
+				gyVidLightSourceBeginShadowPass(it, (GY_CUBE_MAP_FACE)i, it->getCameraState());
+				/*  FIX THE FUCK OUT OF ME!!!! */
+				it->getCameraState()->updateBoundingRegions(*cam);
+				//getCameraSys()->setCustomCameraState(it->getCameraState());
+				//render();
+				_addToLightMap(it);
 			}
 			break;
 		}
 	}
 
+	//getCameraSys()->clearCustomCameraState();
 	gyVidLightSourceEndShadowPasses();
 
+	gyVidSetGlobalAmbience(&_globalAmbience);
+
+	//_sortOnscreenLights();
 }
 
 void LightSystem::addLightSourcesToScene(void) {
-	gyVidSetGlobalAmbience(&_globalAmbience);
 	const auto sources = _curArea->lightSources;
 	gyVidLightSourceClear();
 	for(auto it : sources) {
@@ -188,9 +221,204 @@ void LightSystem::addLightSourcesToScene(void) {
 void LightSystem::removeLightSourcesFromScene(void) {
 	const static GYVector4 fullAmbience = GYVector4{ 1.0f, 1.0f, 1.0f, 1.0f };
 	gyVidSetGlobalAmbience(&fullAmbience);
+	_activeLights = 0;
+	_activeLightCount = 0;
+	_shaderUniformChangesLastFrame = _shaderUniformChangesThisFrame;
+	_shaderUniformChangesThisFrame = 0;
 	gyVidLightSourceClear();
 
 }
 
 
+void LightSystem::getLightPassTileRegion(unsigned& startX, unsigned& startY, unsigned& endX, unsigned& endY) const {
+	startX	= ELYSIAN_LIGHT_SYSTEM_LIGHT_MAP_WIDTH;
+	endX	= 0;
+	startY	= ELYSIAN_LIGHT_SYSTEM_LIGHT_MAP_HEIGHT;
+	endY	= 0;
+
+	uint32_t lights		= _activeLights;
+	unsigned lightIndex = 0;
+
+	for(unsigned i = 0; i < _onscreenLightCount; ++i) {
+		if(!(lights & (1<<i))) continue;
+		const CameraState*const cam = _onscreenLights[i]->getCameraState();
+
+		if(cam->tileStartX < startX)	startX = cam->tileStartX;
+		if(cam->tileEndX > endX)		endX = cam->tileEndX;
+		if(cam->tileStartY < startY)	startY = cam->tileStartY;
+		if(cam->tileEndY < endY)		endY = cam->tileEndY;
+
+	}
 }
+
+uint32_t LightSystem::startLightPass(uint32_t& lightsLeft) {
+	//Number of enabled bits in a mask
+	auto bitCount = [&](const uint32_t mask) {
+		unsigned count = 0;
+		for(unsigned i = 0; i < _onscreenLightCount; ++i)
+			if(mask&(1<<i)) ++count;
+		return count;
+	};
+	//Retrieves and removes bit position of first active bit
+	auto pullFirstIndexFromMask = [&](uint32_t& mask) {
+		for(int i = 0; i < (int)_onscreenLightCount; ++i) {
+			if(mask&(1<<i)) {
+				mask &= ~(1<<i);
+				return i;
+			}
+		}
+		return 0;
+	};
+	//Converts index (bit position) to bitmask
+	auto indexToMask = [](const unsigned index) {
+		const uint32_t mask = (1<<index);
+		return mask;
+	};
+
+	//Lights we can keep from previous pass
+	const uint32_t	keepActiveLights		= (lightsLeft&_activeLights);
+	const unsigned	keepActiveLightCount	= bitCount(keepActiveLights);
+	//New lights we can potentially add
+	uint32_t		addLights				= lightsLeft^keepActiveLights;
+	unsigned		addLightsCount			= bitCount(addLights);
+	//Lights we're removing
+	uint32_t		removedLights			= (_activeLights&(~keepActiveLights));
+	const unsigned removedLightsCount		= bitCount(removedLights);
+
+	if(!lightsLeft) return 0;
+
+
+	//If we're either adding or removing lights, state change
+	if(addLightsCount != 0 || removedLightsCount != 0 || keepActiveLightCount != GYRO_VIDEO_LIGHT_SOURCES_MAX) {
+		//New values we're calculating
+		uint32_t		newActiveLights = keepActiveLights;
+		unsigned		newActiveLightCount = keepActiveLightCount;
+
+		//Number of new lights we can actually add to this pass
+		if(addLightsCount > GYRO_VIDEO_LIGHT_SOURCES_MAX) addLightsCount = GYRO_VIDEO_LIGHT_SOURCES_MAX;
+		else if(addLightsCount > 0) addLightsCount -= keepActiveLightCount;
+
+		//Iterate over lights we're removing
+		for(unsigned i = 0; i < removedLightsCount; ++i) {
+			LightSource*const removedLight = _onscreenLights[pullFirstIndexFromMask(removedLights)];
+
+			//Replace instead of remove, if we have a light to add
+			if(addLightsCount > 0) {
+				const unsigned addedIndex = pullFirstIndexFromMask(addLights);
+				gyVidLightSourceReplace(removedLight, _onscreenLights[addedIndex]);
+				newActiveLights |= indexToMask(addedIndex);
+				++newActiveLightCount;
+				--addLightsCount;
+				++_shaderUniformChangesThisFrame;
+			} else { //Remove
+				gyVidLightSourceRemove(removedLight);
+				++_shaderUniformChangesThisFrame;
+			}
+		}
+
+		//Lights to add to this pass
+		for(unsigned i = addLightsCount; i > 0; --i) {
+			if(newActiveLightCount == GYRO_VIDEO_LIGHT_SOURCES_MAX) break;
+			const unsigned addedIndex = pullFirstIndexFromMask(addLights);
+			gyVidLightSourceAdd(_onscreenLights[addedIndex]);
+			newActiveLights |= indexToMask(addedIndex);
+			++newActiveLightCount;
+			++_shaderUniformChangesThisFrame;
+		}
+
+		//Update pass state info
+		_activeLights = newActiveLights;
+		_activeLightCount = newActiveLightCount;
+
+	}
+
+	//Remove current pass from mask representing lights that still need to be rendered
+	lightsLeft &= ~_activeLights;
+
+	return _activeLights;
+
+}
+
+void LightSystem::_sortOnscreenLights(void) {
+	bool used[ELYSIAN_LIGHT_SYSTEM_MAX_LIGHTS_ONSCREEN] = { false };
+	LightSource* lights[ELYSIAN_LIGHT_SYSTEM_MAX_LIGHTS_ONSCREEN];
+	unsigned sortedCount = 0;
+
+	//don't bother if we're only doing a single pass
+	if(_onscreenLightCount < GYRO_VIDEO_LIGHT_SOURCES_MAX) return;
+
+	memcpy(lights, _onscreenLights, sizeof(lights));
+
+	/* Since the first render pass for non-buffered tiles covers the entire map,
+	 * regardless of lights, we can get more out of the algorithm by grouping the
+	 * largest lights in the first pass.
+	 *
+	 * Since subsequent passes are made by combining bounding box geometry into a
+	 * large bounding box, we can also avoid overdraw by grouping close light
+	 * sources contigouously.
+	 */
+
+	//Directional lights take up entire viewport, start with those bitches.
+	for(unsigned i = 0; i < _onscreenLightCount; ++i) {
+		if(lights[i]->getType() == GY_LIGHT_DIRECTIONAL) {
+			_onscreenLights[sortedCount++] = lights[i];
+			used[i] = true;
+			++sortedCount;
+		}
+	}
+
+	int bigShitNeeded = GYRO_VIDEO_LIGHT_SOURCES_MAX - sortedCount;
+
+	//Throw big shit into first pass!
+	//Could be done in a single iteration...
+	while(bigShitNeeded > 0) {
+		unsigned largestArea = 0;
+		unsigned largestIndex = 0;
+
+		for(unsigned i = 0; i < _onscreenLightCount; ++i) {
+			if(used[i]) continue;
+			const CameraState* const cam = lights[i]->getCameraState();
+			const unsigned area = (cam->tileEndX-cam->tileStartX)*(cam->tileEndY-cam->tileStartY);
+			if(area > largestArea) {
+				largestArea = area;
+				largestIndex = i;
+			}
+		}
+
+		used[largestIndex] = true;
+		_onscreenLights[sortedCount++] = lights[largestIndex];
+		--bigShitNeeded;
+	}
+
+	int leftOverLights = _onscreenLightCount - sortedCount;
+
+	//Try to group close shit together
+	GYVector2 pivot = { 0.0f, 0.0f };
+	while(leftOverLights > 0) {
+		float minDist = FLT_MAX; //~0.0f
+		unsigned minIndex = 0;
+
+		for(unsigned i = 0; i < _onscreenLightCount; ++i) {
+			if(used[i]) continue;
+			GYVector2 distVec;
+			const GYVector4& pos4 = lights[i]->getPosition();
+
+			gyVec2Sub(&distVec, &pivot, (GYVector2*)&pos4);
+			float dist = gyVec2Magnitude(&distVec);
+
+			if(dist < minDist) {
+				minDist = dist;
+				minIndex = i;
+			}
+		}
+
+		used[minIndex] = true;
+		_onscreenLights[sortedCount++] = lights[minIndex];
+		--leftOverLights;
+		pivot.x = lights[minIndex]->getPosition().x;
+		pivot.y = lights[minIndex]->getPosition().y;
+	}
+}
+
+}
+
