@@ -27,6 +27,20 @@ GYLightProperties LightAttrib::defaultProperties = {
 	1.0f,
 };
 
+void LightAttrib::setAttenuationFactors(const GYVector3& vec) {
+	//quadtratic coefficients
+	const float a = vec.z;
+	const float b = vec.y;
+	const float c = (-1.0f/ELYSIAN_LIGHT_SOURCE_ATTENUATION_EPISOLON + vec.x);
+
+	const float root1 = (-b + sqrt(b*b - 4.0f*a*c))/(2.0f*a);
+	//const float root2 = (-b - sqrt(b*b - 4.0f*a*c))/(2.0f*a);
+
+
+	attenuationFactors = vec;
+	_radius = root1;
+}
+
 //reimplemented from component
 bool LightSource::load(std::ifstream& /*stream*/) { return true; }
 bool LightSource::save(std::ofstream& /*stream*/) { return true; }
@@ -58,6 +72,63 @@ void LightSource::update(void) {
 			1.0f
 		};
 	}
+}
+
+void LightSource::updateBoundingVolume(const CameraState *const cam, const GY_CUBE_MAP_FACE face) {
+	CameraState* thisCam = static_cast<CameraState*>(camera);
+	GYViewVolume* vol = &thisCam->viewVolume;
+
+	const float halfW = properties->_radius;//maxDist*0.5f;
+
+	vol->ntl.x = position.x - halfW; vol->ntl.y = position.y - halfW;
+	vol->ntr.x = position.x + halfW; vol->ntr.y = position.y - halfW;
+	vol->nbl.x = position.x - halfW; vol->nbl.y = position.y + halfW;
+	vol->nbr.x = position.x + halfW; vol->nbr.y = position.y + halfW;
+
+	switch(face) {
+	case GY_CUBE_MAP_RIGHT:
+		vol->ntl.x += halfW;
+		vol->ntr.x += halfW;
+		vol->nbl.x += halfW;
+		vol->nbr.x += halfW;
+		break;
+	case GY_CUBE_MAP_LEFT:
+		vol->ntl.x -= halfW;
+		vol->ntr.x -= halfW;
+		vol->nbl.x -= halfW;
+		vol->nbr.x -= halfW;
+		break;
+
+	case GY_CUBE_MAP_BACK:
+		vol->ntl.y -= halfW;
+		vol->ntr.y -= halfW;
+		vol->nbl.y -= halfW;
+		vol->nbr.y -= halfW;
+		break;
+
+	case GY_CUBE_MAP_FRONT:
+		vol->ntl.y += halfW;
+		vol->ntr.y += halfW;
+		vol->nbl.y += halfW;
+		vol->nbr.y += halfW;
+		break;
+
+	case GY_CUBE_MAP_BOTTOM:
+	case GY_CUBE_MAP_TOP:
+	default:
+		break;
+	}
+
+	vol->ftl = vol->ntl;
+	vol->ftr = vol->ntr;
+	vol->fbl = vol->nbl;
+	vol->fbr = vol->nbr;
+
+
+
+	thisCam->updateBoundingSubregions(*cam);
+
+
 }
 
 }

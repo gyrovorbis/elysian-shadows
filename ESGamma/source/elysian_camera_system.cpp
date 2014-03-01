@@ -47,7 +47,7 @@ void CameraState::updateBoundingRegions(const int xMin, const int xMax, const in
 	tileEndY	= scrEndY/32+1;
 }
 
-void CameraState::updateBoundingRegions(const CameraState &cam) {
+void CameraState::updateBoundingSubregions(const CameraState &cam) {
 	/**** FUCKING FIX ME!!!!! ****/
 
 //	memcpy(&viewVolume, &cam.viewVolume, sizeof(GYViewVolume));

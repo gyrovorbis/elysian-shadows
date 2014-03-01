@@ -52,7 +52,7 @@ public:
 
 	void setRenderDebugEnabled(const bool val);
 
-	uint32_t getLightMapEntryScreenCoord(const unsigned y, const unsigned x) const;
+	//uint32_t getLightMapEntryScreenCoord(const unsigned y, const unsigned x) const;
 	uint32_t getLightMapEntryMapCoord(const unsigned y, const unsigned x) const;
 
 	void getLightPassTileRegion(unsigned& startX, unsigned& startY, unsigned& endX, unsigned& endY) const;
@@ -65,10 +65,10 @@ public:
 inline void LightSystem::setRenderDebugEnabled(const bool val) {
 	_enabled = val;
 }
-
+/*
 inline uint32_t LightSystem::getLightMapEntryScreenCoord(const unsigned y, const unsigned x) const {
 	return _lightMap[y][x];
-}
+}*/
 
 inline uint32_t LightSystem::getLightMapEntryMapCoord(const unsigned y, const unsigned x) const {
 	return _lightMap[y-_screenTileYOffset][x-_screenTileXOffset];

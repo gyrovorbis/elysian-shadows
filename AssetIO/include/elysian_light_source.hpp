@@ -1,6 +1,8 @@
 #ifndef ELYSIAN_LIGHT_SOURCE_HPP
 #define ELYSIAN_LIGHT_SOURCE_HPP
 
+#define ELYSIAN_LIGHT_SOURCE_ATTENUATION_EPISOLON	0.1f
+
 #include <gyro_shader_api.h>
 #include <gyro_video_api.h>
 #include "elysian_component.hpp"
@@ -13,6 +15,7 @@ namespace elysian {
 	class LightAttrib: private GYLightProperties {
 		friend class LightSystem;
 		friend class LightSource;
+
 	public:
 		LightAttrib(void):
 			GYLightProperties(defaultProperties) {}
@@ -25,6 +28,8 @@ namespace elysian {
 		void setAttenuationFactors(const GYVector3& vec);
 		void setSpotExponent(const float exp);
 		void setComputeDistanceAttenuation(const bool val);
+
+		float getRadius(void) const;
 	};
 
 	class LightSource: public Component, private GYLightSource {
@@ -34,6 +39,7 @@ namespace elysian {
 #ifdef ELYSIAN_ENGINE
 		CameraState _camState;
 #endif
+		bool _shadowCaster = false;
 
 	public:
 
@@ -54,6 +60,9 @@ namespace elysian {
 		void setSpotCutoffAngle(const float angle);
 		void setAttrib(const LightAttrib* const attrib);
 		const GYVector4& getPosition(void) const;
+		void setShadowCaster(const bool val);
+		bool isShadowCaster(void) const;
+		void updateBoundingVolume(const CameraState*const cam, const GY_CUBE_MAP_FACE face);
 
 		LightAttrib& getAttrib(void);
 #ifdef ELYSIAN_ENGINE
@@ -73,11 +82,13 @@ namespace elysian {
 	inline void LightAttrib::setSpecularColor(const GYVector4& color) {
 		specularColor = color;
 	}
-	inline void LightAttrib::setAttenuationFactors(const GYVector3& vec) {
-		attenuationFactors = vec;
-	}
+
 	inline void LightAttrib::setSpotExponent(const float exp) {
 		spotExponent = exp;
+	}
+
+	inline float LightAttrib::getRadius(void) const {
+		return _radius;
 	}
 
 	inline bool LightSource::canAddTo(Entity &/*entity*/) { return true; }
@@ -99,6 +110,8 @@ namespace elysian {
 	inline auto LightSource::getLightType(void) const -> GY_LIGHT_TYPE { return type; }
 	inline const GYVector4& LightSource::getPosition(void) const { return position; }
 	inline LightAttrib& LightSource::getAttrib(void) { return *static_cast<LightAttrib*>(properties); }
+	inline void LightSource::setShadowCaster(const bool val) { _shadowCaster = val; }
+	inline bool LightSource::isShadowCaster(void) const { return _shadowCaster; }
 
 
 #ifdef ELYSIAN_ENGINE

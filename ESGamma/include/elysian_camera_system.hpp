@@ -34,7 +34,9 @@ namespace elysian {
 		unsigned scrEndY	= 0;
 
 		void updateBoundingRegions(const int startX, const int endX, const int startY, const int endY);
-		void updateBoundingRegions(const CameraState& cam);
+		void updateBoundingSubregions(const CameraState& cam);
+
+		bool isWithinScreenRegion(const int x, const int y, const int width, const int height);
 
 	};
 
@@ -152,6 +154,20 @@ namespace elysian {
 		//gyro::Vector2 Transform(const gyro::Vector2& vec);
 		*/
 	};
+
+
+
+	inline bool CameraState::isWithinScreenRegion(const int x, const int y, const int halfWidth, const int halfHeight) {
+
+		const int distX = abs((int)x-(int)pos.x);
+		const int distY = abs((int)y-(int)pos.y);
+
+		const int maxDistX = halfWidth + (scrEndX-scrStartX)*0.5f;
+		const int maxDistY = halfHeight + (scrEndY-scrStartY)*0.5f;
+
+		return(distY < maxDistY && distX < maxDistX);
+
+	}
 	
 }
 

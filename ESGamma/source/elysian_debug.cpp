@@ -310,6 +310,7 @@ void Debug::processInput(const GameInput& input) {
 		_curArea->addEntity(entity);*/
 
 		Debug::printf(VERBOSE, "Shader Uniform Changes Last Frame - %d", getLightSys()->getShaderUniformChangesLastFrame());
+		Debug::printf(VERBOSE, "Lights Onscreen - %d", getLightSys()->getOnscreenLightCount());
 	}
 	if(input.getTapped(GameInput::BUT_FORWARDSLASH)) {
 		LuaManager::dumpStats();
@@ -368,7 +369,7 @@ void Debug::processInput(const GameInput& input) {
 			Entity* entity = (!count)? getCurArea()->findEntity("Julien") : new Entity;
 			entity->setName(buff);
 			entity->setShadowVolume(false);
-			entity->transform.setPos(((count%8)*200)+100, 300+200*(count/8));
+			entity->transform.setPos(((count%8)*200)+100, 700+200*(count/8));
 			entity->setElev(0);
 			//curArea->addEntity(entity);
 			//entity->transform.setPos(600, 600);
@@ -377,22 +378,23 @@ void Debug::processInput(const GameInput& input) {
 			gyVec3Normalize(&dirVec);
 			lightSrc->setDirection(dirVec);
 			LightAttrib* attrib = new LightAttrib;
-			attrib->setAmbientColor(GYVector4{ 0.0f, 0.0f, 0.0f, 0.0f});
+			//attrib->setAmbientColor(GYVector4{ 0.5f, 0.5f, 0.5f, 1.0f});
 			attrib->setDiffuseColor(diffuseColors[count%4]);
-			attrib->setSpecularColor(GYVector4{ 1.0f, 1.0f, 1.0f, 1.0f});
-			attrib->setAmbientColor(GYVector4{ 0.0f, 0.0f, 0.0f, 1.0f});
+			attrib->setSpecularColor(GYVector4{ 5.0f, 1.0f, 1.0f, 1.0f});
 			lightSrc->setAttrib(attrib);
 #if 0
 			lightSrc->setLightType(LightSource::LIGHT_DIRECTIONAL);
 #else
 			lightSrc->setLightType(GY_LIGHT_POINT);
 			lightSrc->setSpotCutoffAngle(180.0f);
-			attrib->setAttenuationFactors(GYVector3{ 0.00005f, 0.00005f, 0.00005f });
+			attrib->setAttenuationFactors(GYVector3{ 0.005f, 0.00005f, 0.00005f });
 
 			Debug::printf(VERBOSE, "Adding light - %d", count);
 
 			if(count) {
 				getCurArea()->addEntity(entity);
+			} else {
+				lightSrc->setShadowCaster(true);
 			}
 
 			++count;

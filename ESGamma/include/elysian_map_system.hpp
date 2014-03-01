@@ -116,7 +116,16 @@ namespace elysian {
 			//glBlendFunc(GL_ONE, GL_ONE);
 		//}
 
-		if(entry.renderPass > 1) glBlendFunc(GL_ONE, GL_ONE);
+		static bool blended = false;
+
+		if(entry.renderPass > 1 && !blended) {
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			blended = true;
+		}
+		else if(entry.renderPass == 1 && blended) {
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			blended = false;
+		}
 
 		if(entry.mapEntry.getElev() > 0) {
 			gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta, 32.0f, 32.0f, 1.0f);
@@ -129,10 +138,8 @@ namespace elysian {
 		}
 
 
-
 		//if(entry.lightState == MapDepthBuffEntry::LIGHT_STATE::PARTIAL)
 
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 /*		if(entry.mapEntry.getElev() > 0) {
 			gyVidNormalArray(Renderable::depthNormals);
@@ -152,6 +159,7 @@ namespace elysian {
 	inline void MapSystem::endObjectList(void) const {
 		gyVidQuadListEnd();
 		gyVidNormalMapBind(nullptr);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 	
 	inline unsigned MapSystem::getEntityCount(void) const {

@@ -178,24 +178,35 @@ void LightSystem::shadowRenderPasses(void) {
 	for(auto it : sources) {
 		//if(!ONSCREEN) continue;!!!!
 		if(_onscreenLightCount >= 32) continue;
-		_onscreenLights[_onscreenLightCount++] = it;
 
 		switch(it->getLightType()) {
 		case GY_LIGHT_DIRECTIONAL:
 		case GY_LIGHT_SPOT:
 			gyVidLightSourceBeginShadowPass(it, GY_CUBE_MAP_FACE_MAX);
-			it->getCameraState()->updateBoundingRegions(*cam);
+			it->getCameraState()->updateBoundingSubregions(*cam);
 			getCameraSys()->setCustomCameraState(it->getCameraState());
 			render();
 			_addToLightMap(it);
 			break;
 		case GY_LIGHT_POINT:
-			for(unsigned i = GY_CUBE_MAP_RIGHT; i < GY_CUBE_MAP_FACE_MAX; ++i) {
-				gyVidLightSourceBeginShadowPass(it, (GY_CUBE_MAP_FACE)i);
-				it->getCameraState()->updateBoundingRegions(*cam);
-				getCameraSys()->setCustomCameraState(it->getCameraState());
-				render();
-				_addToLightMap(it);
+			if(cam->isWithinScreenRegion(it->position.x, it->position.y, it->getAttrib().getRadius(), it->getAttrib().getRadius())) {
+				_onscreenLights[_onscreenLightCount++] = it;
+
+					for(unsigned i = GY_CUBE_MAP_RIGHT; i < GY_CUBE_MAP_FACE_MAX; ++i) {
+						it->updateBoundingVolume(cam, (GY_CUBE_MAP_FACE)i);
+
+						if(it->isShadowCaster()) {
+							gyVidLightSourceBeginShadowPass(it, (GY_CUBE_MAP_FACE)i);
+
+							//it->getCameraState()->updateBoundingSubregions(*cam);
+
+							getCameraSys()->setCustomCameraState(it->getCameraState());
+							render();
+
+						}
+						_addToLightMap(it);
+					}
+
 			}
 			break;
 		}
@@ -282,7 +293,7 @@ uint32_t LightSystem::startLightPass(uint32_t& lightsLeft) {
 	unsigned		addLightsCount			= bitCount(addLights);
 	//Lights we're removing
 	uint32_t		removedLights			= (_activeLights&(~keepActiveLights));
-	const unsigned removedLightsCount		= bitCount(removedLights);
+	unsigned removedLightsCount				= bitCount(removedLights);
 
 	if(!lightsLeft) return 0;
 
@@ -295,7 +306,14 @@ uint32_t LightSystem::startLightPass(uint32_t& lightsLeft) {
 
 		//Number of new lights we can actually add to this pass
 		if(addLightsCount > GYRO_VIDEO_LIGHT_SOURCES_MAX) addLightsCount = GYRO_VIDEO_LIGHT_SOURCES_MAX;
-		else if(addLightsCount > 0) addLightsCount -= keepActiveLightCount;
+		const int roomLeft = GYRO_VIDEO_LIGHT_SOURCES_MAX - keepActiveLightCount;
+		if(roomLeft) {
+			if(roomLeft < addLightsCount) addLightsCount = roomLeft;
+		} else {
+			addLightsCount = 0;
+		}
+
+		//if(removedLightsCount > addLightsCount) removedLightsCount = addLightsCount;
 
 		//Iterate over lights we're removing
 		for(unsigned i = 0; i < removedLightsCount; ++i) {
