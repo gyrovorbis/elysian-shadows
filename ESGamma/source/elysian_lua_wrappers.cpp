@@ -20,6 +20,7 @@ namespace elysian {
 		_mainState->register_class<Renderable>();
 		_mainState->register_class<AnimationSequence>();
 		_mainState->register_class<AnimationAttrib>();
+        _mainState->register_class<LightAttrib>();
 		_mainState->register_class<Animation>();
 		_mainState->register_class<CollisionFlags>();
 		_mainState->register_class<GYStatic>();
