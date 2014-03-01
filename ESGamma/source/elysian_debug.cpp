@@ -178,16 +178,16 @@ static LightSource* src;
 void Debug::processInput(const GameInput& input) {
 	//Camera zoom/rotate
 	if(input.getDown(GameInput::BUT_Q)){
-		_engine->_cameraSystem->rotate(0.1f);
+		_engine->_cameraSystem->rotate(0.2f);
 	}
 	if(input.getDown(GameInput::BUT_A)){
-		_engine->_cameraSystem->rotate(-0.1f);
+		_engine->_cameraSystem->rotate(-0.2f);
 	}
 	if(input.getDown(GameInput::BUT_W)){
-		_engine->_cameraSystem->scale(0.9f);
+		_engine->_cameraSystem->scale(0.9f*0.9f);
 	}
 	if(input.getDown(GameInput::BUT_S)){
-		_engine->_cameraSystem->scale(1.1f);
+		_engine->_cameraSystem->scale(1.1f*1.1f);
 	}
 	if(input.getDown(GameInput::BUT_E)) { //Reset Transform
 		_engine->_cameraSystem->setScale(1.0f);
@@ -297,7 +297,7 @@ void Debug::processInput(const GameInput& input) {
 		//getAudioSys()->fadeIntoNewAuxTrack(0, 5.0f, "audio/music/RainThunder.ogg");
 		//getAudioSys()->playBgmTrack();
 
-		Entity* entity = new Entity();
+	/*	Entity* entity = new Entity();
 		LightSource* lightSrc = entity->addLightSource();
 		lightSrc->setLightType(GY_LIGHT_DIRECTIONAL);
 		lightSrc->setDirection(GYVector3{0.5f, -1.0f, -0.5f});
@@ -307,38 +307,9 @@ void Debug::processInput(const GameInput& input) {
 		//attrib->setSpecularColor(GYVector4{ 0.0f, 0.0f, 1.0f, 1.0f});
 		//attrib->setAmbientColor(GYVector4{ 1.0f, 1.0f, 1.0f, 1.0f});
 		lightSrc->setAttrib(attrib);
-		_curArea->addEntity(entity);
+		_curArea->addEntity(entity);*/
 
-/*
-		entity = new Entity();
-		entity->transform.setPos(500.0f*2.0f, 500.0f*2.0f-100.0f);
-		entity->transform.setPosZ(32.0f);
-		lightSrc = entity->addLightSource();
-		lightSrc->setDirection(GYVector3{1.0f, 0.0f, -1.0f});
-		attrib = new LightAttrib;
-		attrib->setDiffuseColor(GYVector4{ 0.0f, 2.0f, 0.5f, 1.0f });
-		attrib->setSpecularColor(GYVector4{ 0.0f, 0.0f, 1.0f, 1.0f});
-		lightSrc->setAttrib(attrib);
-		//lightSrc->setSpotCutoffAngle(80.0f);
-		//attrib->setAttenuationFactors(GYVector3{ 0.000005f, 0.000005f, 0.000005f });
-		attrib->setSpotExponent(4.0f);
-		_curArea->addEntity(entity);
-
-		entity = new Entity();
-		entity->transform.setPos(500.0f*2.0f-300.0f, 500.0f*2.0f-100.0f);
-		entity->transform.setPosZ(10.0f);
-		lightSrc = entity->addLightSource();
-		attrib = new LightAttrib;
-		attrib->setDiffuseColor(GYVector4{ 0.0f, 0.0f, 2.0f, 1.0f });
-		attrib->setSpecularColor(GYVector4{ 0.0f, 0.0f, 1.0f, 1.0f});
-		lightSrc->setDirection(GYVector3{0.0f, 0.0f, -1.0f});
-		//lightSrc->setSpotCutoffAngle(80.0f);
-		//attrib->setAttenuationFactors(GYVector3{ 0.000005f, 0.000005f, 0.000005f });
-		attrib->setSpotExponent(4.0f);
-		lightSrc->setAttrib(attrib);
-		_curArea->addEntity(entity);
-
-*/
+		Debug::printf(VERBOSE, "Shader Uniform Changes Last Frame - %d", getLightSys()->getShaderUniformChangesLastFrame());
 	}
 	if(input.getTapped(GameInput::BUT_FORWARDSLASH)) {
 		LuaManager::dumpStats();
@@ -382,90 +353,49 @@ void Debug::processInput(const GameInput& input) {
 	}
 
 	if(input.getTapped(GameInput::BUT_X)) {
-		static int enabled = 0;
-		static int once = 0;
+		GYVector4 diffuseColors[4] = {
+			{ 1.0f, 1.0f, 2.0f, 1.0f},
+			{ 1.0f, 2.0f, 1.0f, 1.0f},
+			{ 2.0f, 1.0f, 1.0f, 1.0f},
+			{ 2.0f, 2.0f, 1.0f, 1.0f}
+		};
 
-		if(!enabled) {
-			if(!once) {
-				Entity* entity = _curArea->findEntity("Julien");
-				entity->setShadowVolume(false);
-				//curArea->addEntity(entity);
-				//entity->transform.setPos(600, 600);
-				//entity->setDepthType(DEPTH_BUFFERED);
-				src = lightSrc = entity->addLightSource();
-				gyVec3Normalize(&dirVec);
-				lightSrc->setDirection(dirVec);
-				LightAttrib* attrib = new LightAttrib;
-				//attrib->setAmbientColor(GYVector4{ 0.3f, 0.3f, 0.3f, 1.0f});
-				attrib->setDiffuseColor(GYVector4{ 0.0f, 0.0f, 2.0f, 1.0f });
-				//attrib->setSpecularColor(GYVector4{ 0.0f, 0.0f, 1.0f, 1.0f});
-				//attrib->setAmbientColor(GYVector4{ 0.1f, 0.0f, 0.0f, 1.0f});
-				lightSrc->setAttrib(attrib);		
+		static int count = 0;
+		char buff[100];
+
+	sprintf(buff, "LightSrc[%d]", count);
+
+			Entity* entity = new Entity;
+			entity->setName(buff);
+			entity->setShadowVolume(false);
+			entity->transform.setPos(((count%8)*200)+100, 300+200*(count/8));
+			entity->setElev(0);
+			//curArea->addEntity(entity);
+			//entity->transform.setPos(600, 600);
+			//entity->setDepthType(DEPTH_BUFFERED);
+			src = lightSrc = entity->addLightSource();
+			gyVec3Normalize(&dirVec);
+			lightSrc->setDirection(dirVec);
+			LightAttrib* attrib = new LightAttrib;
+			attrib->setAmbientColor(GYVector4{ 0.0f, 0.0f, 0.0f, 0.0f});
+			attrib->setDiffuseColor(diffuseColors[count%4]);
+			attrib->setSpecularColor(GYVector4{ 1.0f, 1.0f, 1.0f, 1.0f});
+			attrib->setAmbientColor(GYVector4{ 0.0f, 0.0f, 0.0f, 1.0f});
+			lightSrc->setAttrib(attrib);
 #if 0
-				lightSrc->setLightType(LightSource::LIGHT_DIRECTIONAL);
+			lightSrc->setLightType(LightSource::LIGHT_DIRECTIONAL);
 #else
-				lightSrc->setLightType(GY_LIGHT_POINT);
-				lightSrc->setSpotCutoffAngle(180.0f);
-				attrib->setAttenuationFactors(GYVector3{ 0.00005f, 0.00005f, 0.00005f });
+			lightSrc->setLightType(GY_LIGHT_POINT);
+			lightSrc->setSpotCutoffAngle(180.0f);
+			attrib->setAttenuationFactors(GYVector3{ 0.00005f, 0.00005f, 0.00005f });
 
+			++count;
+			Debug::printf(VERBOSE, "Adding light - %d", count);
 
-				//attrib->setSpotExponent(100.0f);
+			getCurArea()->addEntity(entity);
 #endif
 
 
-				once = 1;
-
-			} else {
-				lightSrc = src;
-			}
-		} else {
-			lightSrc = nullptr;
-		}
-
-		enabled = !enabled;
-
-		//getAudioSys()->morphIntoBgmTrack(0, 5.0f);
-		//getAudioSys()->fadeIntoBgmTrack(0, 5.0f);
-		//getAudioSys()->stopBgmTrack();
-		//getAudioSys()->morphIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop1.ogg");
-		//getAudioSys()->fadeIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop1.ogg");
-		//getAudioSys()->fadeOutAuxTrack(0, 5.0f);
-		//gyAudWavWalkthrough();
-
-
-		/*
-		Entity* entity = new Entity;
-		_curArea->addEntity(entity);
-		entity->transform.setPos(600, 600);
-		entity->setDepthType(DEPTH_BUFFERED);
-		LightSource* lightSrc = entity->addLightSource();
-		lightSrc->setSpotCutoffAngle(360.0f);
-		LightAttrib* attrib = new LightAttrib;
-		attrib->setDiffuseColor(GYVector4{ 0.2f, 2.0f, 0.4f, 1.0f });
-		attrib->setAttenuationFactors(GYVector3{ 0.0, 0.000001, 0.000015 });
-		lightSrc->setAttrib(attrib);
-
-		entity = new Entity;
-		_curArea->addEntity(entity);
-		entity->setDepthType(DEPTH_BUFFERED);
-		entity->transform.setPos(400, 900);
-		lightSrc = entity->addLightSource();
-		lightSrc->setSpotCutoffAngle(360.0f);
-		attrib = new LightAttrib;
-		attrib->setDiffuseColor(GYVector4{ 0.4f, 0.2f, 2.0f, 1.0f });
-		attrib->setAttenuationFactors(GYVector3{ 0.0, 0.000001, 0.000015 });
-		lightSrc->setAttrib(attrib);
-
-		entity = new Entity;
-		_curArea->addEntity(entity);
-		entity->transform.setPos(700, 900);
-		entity->setDepthType(DEPTH_BUFFERED);
-		lightSrc = entity->addLightSource();
-		lightSrc->setSpotCutoffAngle(360.0f);
-		attrib = new LightAttrib;
-		attrib->setDiffuseColor(GYVector4{ 1.5f, 1.0f, 0.3f, 1.0f });
-		attrib->setAttenuationFactors(GYVector3{ 0.0, 0.000001, 0.000015 });
-		lightSrc->setAttrib(attrib);*/
 	}
 
 	//Elevate player

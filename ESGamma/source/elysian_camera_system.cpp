@@ -6,23 +6,101 @@
 
 namespace elysian {
 
-const GYMatrix4 CameraSystem::_identityMat = {
-  { 1.0f, 0.0f, 0.0f, 0.0f },
-  { 0.0f, 1.0f, 0.0f, 0.0f },
-  { 0.0f, 0.0f, 1.0f, 0.0f },
-  { 0.0f, 0.0f, 0.0f, 1.0f }
-};
+void CameraState::updateBoundingRegions(const int xMin, const int xMax, const int yMin, const int yMax) {
+	int startX	= xMax;
+	int startY	= yMax;
+	int endX	= xMin;
+	int endY	= yMin;
+
+	auto checkPointBounds = [&](const GYVector3& point) {
+		if(point.x < (float)startX) startX = (int)point.x;
+		else if(point.x > (float)endX) endX = (int)point.x;
+		if(point.y < (float)startY) startY = (int)point.y;
+		else if(point.y > (float)endY) endY = (int) point.y;
+	};
+
+	//Find X/Y extremes given each vertex to create bounding box
+	checkPointBounds(viewVolume.ftr);
+	checkPointBounds(viewVolume.ftl);
+	checkPointBounds(viewVolume.fbr);
+	checkPointBounds(viewVolume.fbl);
+	checkPointBounds(viewVolume.ntr);
+	checkPointBounds(viewVolume.ntl);
+	checkPointBounds(viewVolume.nbr);
+	checkPointBounds(viewVolume.nbl);
+
+	//Convert from world to tile coordinates (and signed to unsigned)
+	scrStartX = (startX < xMin)? xMin : (unsigned)startX;
+	scrStartY = (startY < yMin)? yMin : (unsigned)startY;
+	scrEndX = (endX > xMax)? xMax : (unsigned)endX;
+	scrEndY = (endY > yMax)? yMax : (unsigned)endY;
+
+
+	//tileStartX = 0;
+	//tileStartY = 0;
+	//tileEndX = 49;
+	//tileEndY = 49;
+
+	tileStartX	= scrStartX/32;
+	tileEndX	= scrEndX/32+1;
+	tileStartY	= scrStartY/32;
+	tileEndY	= scrEndY/32+1;
+}
+
+void CameraState::updateBoundingRegions(const CameraState &cam) {
+	/**** FUCKING FIX ME!!!!! ****/
+
+	memcpy(&viewVolume, &cam.viewVolume, sizeof(GYViewVolume));
+
+
+	/***** END REEST ******/
+
+
+
+
+	updateBoundingRegions(cam.scrStartX, cam.scrEndX, cam.scrStartY, cam.scrEndY);
+
+
+}
+
 
 CameraSystem::CameraSystem(void) {
-	//Could have sworn I had something useful to do here... Shit.
+	static const GYMatrix4 identity4 = {
+		{ 1.0f, 0.0f, 0.0f, 0.0f },
+		{ 0.0f, 1.0f, 0.0f, 0.0f },
+		{ 0.0f, 0.0f, 1.0f, 0.0f },
+		{ 0.0f, 0.0f, 0.0f, 1.0f }
+	};
+	unsigned w, h;
+
+	//Initialize default camera
+	gyVidResolution(&w, &h);
+	gyVidCamOrthoProj(_curState, 0.0f, (float)w, (float)h, 0.0f, -999.0f, 1000.0f);
+	gyVidCamOrthoLookAt(_curState, &_curState->pos, 1.0f, 0.0f, 0.0f);
+
+	memcpy(_uiCamera.viewMat, identity4, sizeof(GYMatrix4));
+	gyVidCamOrthoProj(&_uiCamera, 0.0f, (float)w, (float)h, 0.0f, -999.0f, 1000.0f);
+
+	gyVidCamFrustum(&_debugState, 90.0f, (float)w/(float)h, 0.5f, 900.0f);
+	_debugState.dir = { 0.0f, 1.0f, 1.0f };
 }
 
 void CameraSystem::pushViewProjMatrix(void) {
 
-	if(_curState->defaultProjMat) {
-		gyVidProjectionDefaultMatrix();
-		gyVidCameraSetViewCenter(&_curState->pos, _curState->scale, _curState->zOrient);
-	} else {
+	if(_curState->projType == GY_PROJECTION_ORTHO) {
+		//gyVidProjectionDefaultMatrix();
+		//gyVidCameraSetViewCenter(&_curState->pos, _curState->scale, _curState->zOrient);
+		gyVidCamOrthoLookAt(_curState, &_curState->pos, _curState->scale, _curState->zOrient, 0.0f);
+
+	} else { //PERSPECTIVE PROJECTION
+		GYVector3 pos = {
+			-_curState->entity->transform._pos.x,
+			-_curState->entity->transform._pos.y+30.0f,
+			-(_curState->entity->getElev()+1)*32.0f-ZCoordConstants::mapBase
+		};
+
+		gyVidCamFrustumLookAt(_curState, &pos, &_curState->dir, &_curState->up);
+
 #if 0
 		GYMatrix4 camMat;
 		gyMatPush();
@@ -39,7 +117,7 @@ void CameraSystem::pushViewProjMatrix(void) {
 		gyMatStore(&camMat);
 		gyMatPop();
 #else
-
+/*
 		GYMatrix4 camMat;
 		gyMatPush();
 		gyMatLoadIdentity();
@@ -50,21 +128,23 @@ void CameraSystem::pushViewProjMatrix(void) {
 					   _curState->up.x, _curState->up.y, _curState->up.z);
 		gyMatApply(camMat);
 
+		//PRETTY SURE THIS SCALAR BULLSHIT IS WRONG ON THE DREAMCAST!!!
 		gyMatScale(1.0f, 1.0f, -1.0f);
 		gyMatTranslate(-_curState->entity->transform._pos.x, -_curState->entity->transform._pos.y+30.0f, -(_curState->entity->getElev()+1)*32.0f-ZCoordConstants::mapBase);
 		gyMatStore(&camMat);
-		gyMatPop();
+		gyMatPop();*/
 
 
 #endif
 
-		gyVidCameraCustomViewMatrix(camMat);
-		gyVidProjectionCustomMatrix(_curState->projMat);
+
+
+
 
 	}
 
-	//gyVidProjectionSetTransform(projectionMatrix);
-	//gyVidCameraSetTransform(lightViewMatrix);
+	gyVidCamUpdate(_curState);
+
 
 	_projViewActive = true;
 }
@@ -73,17 +153,19 @@ void CameraSystem::popViewProjMatrix(void) {
 	//Set View matrix to identity Matrix
 	//Set proj matrix to ortho perspective
 
-	gyVidProjectionDefaultMatrix();
-	gyVidCameraCustomViewMatrix(_identityMat);
+	//gyVidProjectionDefaultMatrix();
+	//gyVidCameraCustomViewMatrix(_identityMat);
+
+	gyVidCamUpdate(&_uiCamera);
 
 	_projViewActive = false;
 }
 
 
 void CameraSystem::setPerspectiveFrustum(const float fov, const float aspect, const float znear, const float zfar) {
-	_curState->defaultProjMat = false;
+	//_curState->defaultProjMat = false;
 
-	gyVidViewFrustrumMat(_curState->projMat, fov, aspect, znear, zfar);
+	//gyVidViewFrustumMat(_curState->projMat, fov, aspect, znear, zfar);
 	//gyVidProjectionCustomMatrix(_curState->projMat);
 }
 
@@ -106,12 +188,12 @@ void CameraSystem::processInput(const GameInput& input) {
 			_debugState.entity = _curState->entity;
 
 			_curState = &_debugState;
-			setPerspectiveFrustum(90.0f, 1.0f, 0.5f, 900.0f);
+			//setPerspectiveFrustum(90.0f, 1.0f, 0.5f, 900.0f);
 		//	setEngineState(ENGINE_CAMERA_DEBUG);
 
 		} else { //disable
 			_curState = &_states[_depth];
-			setEngineState(ENGINE_NORMAL);
+		//	setEngineState(ENGINE_NORMAL);
 		}
 	}
 #if 0
@@ -178,6 +260,9 @@ void CameraSystem::update(void) {
 		};
 	}
 
+	_curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
+
+/*
 	//Update tile rendering region
 	int startX = (_curState->pos.x - (0.5f*_scrWidth)/_curState->scale)/32;
 	int startY = (_curState->pos.y - (0.5f*_scrHeight)/_curState->scale)/32;
@@ -205,6 +290,8 @@ void CameraSystem::update(void) {
 	_scrEndX = _tileEndX*32;
 	_scrEndY = _tileEndY*32;
 
+	*/
+
 }
 
 //VERY INEFFICIENT. BATCH THIS BITCH! THESE DON'T WORK ANYMORE!!!!
@@ -228,20 +315,34 @@ void CameraSystem::transform(GYVector4* dest, const GYVector4* src) {
 bool CameraSystem::isOnscreen(const Entity &entity) {
 	
 	if(entity.transform._orientZ == 0.0f) { //Entities without rotation
-		return ((entity.transform._pos.x + 0.5f*entity.transform._size.x >= _scrStartX &&
-				entity.transform._pos.x - 0.5f*entity.transform._size.x <= _scrEndX) &&
-				(entity.transform._pos.y + 0.5f*entity.transform._size.y >= _scrStartY &&
-				entity.transform._pos.y - 0.5f*entity.transform._size.y <= _scrEndY));
+		return ((entity.transform._pos.x + 0.5f*entity.transform._size.x >= _curState->scrStartX &&
+				entity.transform._pos.x - 0.5f*entity.transform._size.x <= _curState->scrEndX) &&
+				(entity.transform._pos.y + 0.5f*entity.transform._size.y >= _curState->scrStartY &&
+				entity.transform._pos.y - 0.5f*entity.transform._size.y <= _curState->scrEndY));
 	} else { //Entities with rotation
 		//Approximate region by bounding as a square with largest dimension
 		float bigSide = (entity.transform._size.x > entity.transform._size.y)? 
 			0.5f*entity.transform._size.x : 0.5f*entity.transform._size.y;
 
-		return ((entity.transform._pos.x + bigSide >= _scrStartX &&
-				entity.transform._pos.x - bigSide <= _scrEndX) &&
-				(entity.transform._pos.y + bigSide >= _scrStartY &&
-				entity.transform._pos.y - bigSide <= _scrEndY));
+		return ((entity.transform._pos.x + bigSide >= _curState->scrStartX &&
+				entity.transform._pos.x - bigSide <= _curState->scrEndX) &&
+				(entity.transform._pos.y + bigSide >= _curState->scrStartY &&
+				entity.transform._pos.y - bigSide <= _curState->scrEndY));
 	}
 }
+
+
+
+
+void CameraSystem::isEntityWithinViewVolume(const Entity& entity) const {
+
+}
+
+void CameraSystem::isTileWithinViewVolume(const unsigned l, const unsigned x, const unsigned y) const {
+
+}
+
+
+
 
 }

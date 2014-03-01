@@ -13,7 +13,7 @@ namespace elysian {
 	class Entity;
 	class GameInput;
 
-	struct CameraState {
+	struct CameraState: public GYCamera {
 		Entity* entity		= nullptr;
 		GYVector3 pos		= { 0.0f, 0.0f, 0.0f };
 		GYVector3 dir		= { 0.0f, 1.0f, 0.0f };
@@ -21,41 +21,47 @@ namespace elysian {
 		float scale			= 1.0f;
 		float zOrient		= 0.0f;
 
-		bool defaultProjMat = true;
-		/*float fov			= 90.0f;
-		float aspect		= 1.0f;
-		float znear			= 0.5f;
-		float zfar			= 300.0f;*/
-		GYMatrix4 projMat;
+		//Visible Tile Region
+		unsigned tileStartX	= 0;
+		unsigned tileEndX	= 0;
+		unsigned tileStartY	= 0;
+		unsigned tileEndY	= 0;
 
-		float viewWidth		= 640.0f;
-		float viewHeight	= 480.0f;
+		//Bounding Geometry
+		unsigned scrStartX	= 0;
+		unsigned scrStartY	= 0;
+		unsigned scrEndX	= 0;
+		unsigned scrEndY	= 0;
+
+		void updateBoundingRegions(const int startX, const int endX, const int startY, const int endY);
+		void updateBoundingRegions(const CameraState& cam);
+
 	};
 
 	class CameraSystem: public System { 
 	private:
 		CameraState				_states[ELYSIAN_CAMERA_SYSTEM_STACK_SIZE];
 		CameraState				_debugState;
+		CameraState				_uiCamera;
 		CameraState*			_curState		= &_states[0];
 		int						_depth			= 0; //depth is technically +1... my code, fuck you.
 		bool					_projViewActive = false;
 		bool					_debugActive	= false;
-		const static GYMatrix4	_identityMat;
 
-		unsigned _scrWidth		= 0;
-		unsigned _scrHeight		= 0;
-		unsigned _tileStartX	= 0;
-		unsigned _tileEndX		= 0;
-		unsigned _tileStartY	= 0;
-		unsigned _tileEndY		= 0;
-		
-		unsigned _scrStartX		= 0;
-		unsigned _scrStartY		= 0;
-		unsigned _scrEndX		= 0;
-		unsigned _scrEndY		= 0;
+		unsigned				_scrWidth		= 0;
+		unsigned				_scrHeight		= 0;
+
 
 	public:
 		CameraSystem(void);
+
+		void setCustomCameraState(CameraState*const state) {
+			_curState = state;
+		}
+
+		void clearCustomCameraState(void) {
+			_curState = &_states[_depth];
+		}
 
 		void processInput(const GameInput& input);
 
@@ -113,9 +119,14 @@ namespace elysian {
 
 		void popState(void);
 
+		CameraState* getCurrentState(void) const { return _curState; }
+
 		void getVisibleTileRegion(unsigned& startX, unsigned& startY, unsigned& endX, unsigned& endY) const {
-			startX = _tileStartX; endX = _tileEndX;
-			startY = _tileStartY; endY = _tileEndY;
+			startX = _curState->tileStartX; endX = _curState->tileEndX;
+			startY = _curState->tileStartY; endY = _curState->tileEndY;
+			//startX = 0; startY = 0;
+			//endX = 49; endY = 49;
+
 		}
 
 		void pushViewMatrixToStack(void);
@@ -129,6 +140,8 @@ namespace elysian {
 
 		bool isOnscreen(const Entity &entity);
 
+		void isEntityWithinViewVolume(const Entity& entity) const;
+		void isTileWithinViewVolume(const unsigned l, const unsigned x, const unsigned y) const;
 
 
 		/* LEGACY

@@ -47,16 +47,36 @@ static const GYVector4 _rectVerts[GY_RECT_NORMAL_MAX][4] = {
 	}
 };
 
+
+/*
+ * typedef struct _GYViewVolume {
+	//static enum {OUTSIDE, INTERSECT, INSIDE};
+	GYPlane pl[6];
+	GYVector3 ntl,ntr,nbl,nbr,ftl,ftr,fbl,fbr;
+	float nearD, farD, ratio, angle, tang;
+	float nw, nh, fw, fh;
+} GYViewVolume;
+
+typedef struct _GYCamera {
+	GYViewVolume		viewVolume;
+	GYMatrix4			projMat;
+	GYMatrix4			viewMat;
+	GYMatrix4			projViewMat;
+	GY_PROJECTION_TYPE	projType;
+} GYCamera;
+ *
+ */
+
+static const GYCamera _defaultCamera;
+
 //Shared video state variables
 const GYVector3*			tangentVector			= &_rectTangents[0];
 const GYVector3*			normalVector			= &_rectNormals[0];
-GYMatrix4					projectionViewMatrix	= { { 0.0f } };
 GYVector4					viewPosition			= { 0.0f, 0.0f, 0.0f, 0.0f };
 float						viewZOrient				= 0.0f;
 float						viewScale				= 0.0f;
-GYMatrix4					viewMatrix				= { { 0.0f } };
-GYMatrix4					projectionMatrix		= { { 0.0f } };
 const GYTexture*			curTex					= 0;
+const GYCamera*				curCamera				= &_defaultCamera;
 
 //Private video state variables
 static GYColor4				_rectColor[4];
@@ -78,7 +98,10 @@ int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth,
     const float ptop = 0.0f;
     const float pbottom = projHeight;
 
-	gyVidOrthoProjMat(projectionMatrix, pleft, pright, pbottom, ptop, pnear, pfar);
+	GYVector3 center = { 0.0f, 0.0f, 0.0f };
+
+	//gyVidOrthoProjMat(projectionMatrix, pleft, pright, pbottom, ptop, pnear, pfar);
+	//gyVidCamOrthoProj(&_defaultCamera, pleft, pright, pbottom, ptop, pnear, pfar);
 
 //God fucking damnit, Windows....
 #ifdef _WIN32
@@ -103,6 +126,7 @@ int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth,
     glClearColor(0, 0, 0, 0);
 	glClearDepth (1.0f);
     glDepthFunc(GL_LEQUAL);
+	glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glViewport(0, 0, viewWidth, viewHeight);
     glMatrixMode(GL_PROJECTION);
@@ -122,49 +146,13 @@ int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth,
 
 // ==== LOW-LEVEL API =====
 
-void gyVidCameraCustomViewMatrix(const GYMatrix4 mat) {
-//	GYMatrix4 bullshit;
-	gyMatMultMat(projectionViewMatrix, projectionMatrix, mat);
-	memcpy(viewMatrix, mat, sizeof(GYMatrix4));
-//	memcpy(bullshit, projectionViewMatrix, sizeof(GYMatrix4));
-	glUniformMatrix4fv(curLightShader->uniformLoc[SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)projectionViewMatrix);
-}
-
-void gyVidCameraSetViewCenter(const GYVector3*const pos, const float scale, const float zOrient) {
-	unsigned scrWidth, scrHeight;
-	GYMatrix4 result;
-	GYVector4 pos4 = {
-		pos->x, pos->y, pos->z, 1.0f
-	};
-
-	//Save shit for other subsystems
-	memcpy(&viewPosition, &pos4, sizeof(GYVector4));
-	viewScale = scale;
-	viewZOrient = zOrient;
-
-	gyVidResolution(&scrWidth, &scrHeight);
-
-	//Calculate view matrix
-	gyMatPush();
-	gyMatLoadIdentity();
-	gyMatTranslate((float)scrWidth*0.5f, (float)scrHeight*0.5f, 0.0f);
-	gyMatRotate(-0.785398163f, 1.0f, 0.0f, 0.0f);
-	gyMatScale(scale, scale, scale);
-	gyMatRotateZ(zOrient);
-
-	gyMatTranslate(-pos->x, -pos->y, 0.0f);
-	gyMatStore(&result);
-	gyMatPop();
-
-	gyVidCameraCustomViewMatrix(result);
-}
-
-void gyVidProjectionCustomMatrix(const GYMatrix4 mat) {
-	//GYMatrix4 result;
-	gyMatMultMat(projectionViewMatrix, mat, viewMatrix);
-	//memcpy(projectionViewMatrix, result, sizeof(GYMatrix4));
-	memcpy(projectionMatrix, mat, sizeof(GYMatrix4));
-	glUniformMatrix4fv(curLightShader->uniformLoc[SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)projectionViewMatrix);
+void gyVidCamUpdate(const GYCamera *const cam) {
+	if(cam) {
+		curCamera = cam;
+	} else {
+		curCamera = &_defaultCamera;
+	}
+	glUniformMatrix4fv(curLightShader->uniformLoc[SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)curCamera->projViewMat);
 }
 
 void gyVidRectTexOrient(const GY_RECT_TEX_ORIENT orient) {
@@ -282,26 +270,8 @@ void gyVidRect(const unsigned int frame) {
 	gyVidQuad(_rectVerts[_normalType], frame);
 }
 
-void gyVidProjectionDefaultMatrix(void) {
-	GYMatrix4 mat;
-	const float pfar = 1000.0f;
-	const float pnear = -999.0f;
-	const float pleft = 0.0f;
-	float pright;
-	const float ptop = 0.0f;
-	float pbottom;
 
-	unsigned width, height;
-
-	gyVidResolution(&width, &height);
-
-	pright = width; pbottom = height;
-
-	gyVidOrthoProjMat(mat, pleft, pright, pbottom, ptop, pnear, pfar);
-	gyVidProjectionCustomMatrix(mat);
-}
-
-void gyVidViewFrustrumMat(GYMatrix4 mat, const float fov, const float aspect, const float znear, const float zfar) {
+void gyVidViewFrustumMat(GYMatrix4 mat, const float fov, const float aspect, const float znear, const float zfar) {
 	glMatrixMode(GL_MODELVIEW_MATRIX);
 	glLoadIdentity();
 	gluPerspective(fov, aspect, znear, zfar);
@@ -317,10 +287,18 @@ void gyVidLookAtMat(GYMatrix4 mat, const float ex, const float ey, const float e
 
 	//Cache cube shadow map lookat matrices
 	glLoadIdentity();
-	gluLookAt(ex, ey, ez, dx, dy, dz, ux, uy, uz);
+	gluLookAt(0.0f, 0.0f, 0.0f, dx, dy, dz, ux, uy, uz);
 	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)mat);
 	glalTranspose(mat);
 	glLoadIdentity();
+
+	gyMatPush();
+	gyMatLoad(mat);
+	gyMatScale(1.0f, 1.0f, -1.0f);
+	gyMatTranslate(ex, ey, ez);
+	gyMatStore(mat);
+	gyMatPop();
+
 }
 
 

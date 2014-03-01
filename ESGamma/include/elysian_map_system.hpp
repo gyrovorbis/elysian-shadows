@@ -100,25 +100,39 @@ namespace elysian {
 	
 	inline void MapSystem::getObjectLayerEntry(const unsigned /*x*/, const unsigned /*y*/, MapDepthBuffEntry &entry) const {
 		entry.mapEntry = _curArea->getTileEntry(entry.layer, entry.x, entry.y);
+		entry.lights = getLightSys()->getLightMapEntryMapCoord(entry.y, entry.x);
 	}
 	
 	inline void MapSystem::renderObjectEntry(const MapDepthBuffEntry &entry, const float z) const {
 		if(!entry.mapEntry.value) return; //Do not render tile 0, even if the depth buff algorithm tries to.
 		if(!_renderLayer[entry.layer]) return; //Don't render if this layer has been toggled off.
+		float delta = 0;//(entry.renderPass);
 
 		gyMatPush();
 
 		gyVidRectTexOrient(entry.mapEntry.getOrient());
 
+	//	if(entry.lightState == MapDepthBuffEntry::LIGHT_STATE::PARTIAL) {
+			//glBlendFunc(GL_ONE, GL_ONE);
+		//}
+
+		if(entry.renderPass > 1) glBlendFunc(GL_ONE, GL_ONE);
+
 		if(entry.mapEntry.getElev() > 0) {
-			gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z, 32.0f, 32.0f, 32.0f);
+			gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta, 32.0f, 32.0f, 1.0f);
 			gyVidRectNormalType(GY_RECT_NORMAL_DEPTH);
+					gyVidRect(_animTiles[((TileEntry *)&entry.mapEntry)->getIndex()].curIndex);
 		} else {
-			gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z, 32.0f, 32.0f, 1.0f);
+			gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta, 32.0f, 32.0f, 1.0f);
 			gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
+					gyVidRect(_animTiles[((TileEntry *)&entry.mapEntry)->getIndex()].curIndex);
 		}
 
-		gyVidRect(_animTiles[((TileEntry *)&entry.mapEntry)->getIndex()].curIndex);
+
+
+		//if(entry.lightState == MapDepthBuffEntry::LIGHT_STATE::PARTIAL)
+
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 /*		if(entry.mapEntry.getElev() > 0) {
 			gyVidNormalArray(Renderable::depthNormals);

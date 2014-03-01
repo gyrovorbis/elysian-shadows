@@ -20,9 +20,9 @@ typedef struct _GYLightProperties {
 	int			computeDistanceAtte
 */
 GYLightProperties LightAttrib::defaultProperties = {
-	{ 0.0f, 0.0f, 0.0f, 0.0f },
-	{ 0.7f, 0.7f, 0.7f, 0.0f },
-	{ 1.0f, 1.0f, 1.0f, 0.0f },
+	{ 0.0f, 0.0f, 0.0f, 1.0f },
+	{ 0.7f, 0.7f, 0.7f, 1.0f },
+	{ 1.0f, 1.0f, 1.0f, 1.0f },
 	{ 0.00005f, 0.00005f, 0.00005f },
 	1.0f,
 };
