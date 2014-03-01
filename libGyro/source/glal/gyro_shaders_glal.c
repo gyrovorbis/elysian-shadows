@@ -33,16 +33,11 @@ const static GYLightProperties _emptyLightProperties = {
 };
 
 const static GYLightSource _emptyLight = {
-	{
-		{ 1.0f, 0.0f, 0.0f, 1.0f },
-		{ 0.0f, 1.0f, 0.0f, 1.0f },
-		{ 0.0f, 0.0f, 1.0f, 1.0f },
-		{ 0.0f, 0.0f, 0.0f, 0.0f }
-	},
 	{ 0.0f, 0.0f, 0.0f, 1.0f },
 	{ 0.0f, 0.0f, 0.0f },
 	360.0f,
 	GY_LIGHT_DIRECTIONAL,
+	NULL,
 	&_emptyLightProperties
 };
 
@@ -284,11 +279,11 @@ void glalDefaultShadersLoadUniforms(void) {
 	glUniform1i(curLightShader->uniformLoc[SHADER_TEXTURE_ENABLED], (curTex)? 1 : 0);
 	glUniform1i(curLightShader->uniformLoc[SHADER_NORMAL_MAP_ENABLED], (_normalMap)? 1 : 0);
 
-	GYCamera cam;
+	GYMatrix4 projMat;
 	GYMatrix4 finalMat;
-	glalGetPointLightProjectionMatrix(&cam);
-	gyMatMultMat(finalMat, shadowTexCoordBiasMat, cam.projMat);
-	glUniformMatrix4fv(curLightShader->uniformLoc[SHADER_SHADOW_CUBE_MAP_PROJ_MAT], 1, GL_FALSE, (float*)finalMat); //NO TEX COORD OFFSET? WHAT THE FUCK!?
+	glalGetPointLightProjectionMatrix(&projMat);
+	gyMatMultMat(finalMat, shadowTexCoordBiasMat, projMat);
+	glUniformMatrix4fv(curLightShader->uniformLoc[SHADER_SHADOW_CUBE_MAP_PROJ_MAT], 1, GL_FALSE, (float*)projMat); //NO TEX COORD OFFSET? WHAT THE FUCK!?
 
 	//Initialize internal data for shadow shader
 	glalLightingInit();

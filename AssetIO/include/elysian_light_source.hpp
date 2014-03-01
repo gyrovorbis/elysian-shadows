@@ -85,19 +85,14 @@ namespace elysian {
 	inline LightSource::LightSource(Entity& entity):
 		Component(entity),
 		GYLightSource({
-			{
-				{ 1.0f, 0.0f, 0.0f, 1.0f },
-				{ 0.0f, 1.0f, 0.0f, 1.0f },
-				{ 0.0f, 0.0f, 1.0f, 1.0f },
-				{ 0.0f, 0.0f, 0.0f, 0.0f }
-			},
 			{ 0.0f, 0.0f, 0.0f, 0.0f }, //pos
 			{ 0.0f, -0.0f, 0.00f },		//dir
 			360.0f,						//cutoff
 			GY_LIGHT_SPOT,				//type
 			&LightAttrib::defaultProperties,
+			&_camState,
 			nullptr
-}) { gyVec3Normalize(&direction);  }
+	}) { gyVec3Normalize(&direction);  }
 	inline void LightSource::setAttrib(const LightAttrib* const attrib) { properties = (GYLightProperties*)attrib; }
 	inline void LightSource::setDirection(const GYVector3& dir) { gyVec3Normalize(&direction); direction = dir; }
 	inline void LightSource::setSpotCutoffAngle(const float angle) { spotCutoffAngle = angle; }

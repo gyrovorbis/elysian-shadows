@@ -36,6 +36,7 @@ void Area::addEntity(Entity *entity) {
 }
 
 void Area::removeEntity(Entity *entity) {
+	entity->deactivate();
 	for(std::vector<Entity*>::iterator it = entities.begin();
 		it != entities.end(); ++it)
 	{

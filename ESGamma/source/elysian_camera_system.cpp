@@ -50,13 +50,10 @@ void CameraState::updateBoundingRegions(const int xMin, const int xMax, const in
 void CameraState::updateBoundingRegions(const CameraState &cam) {
 	/**** FUCKING FIX ME!!!!! ****/
 
-	memcpy(&viewVolume, &cam.viewVolume, sizeof(GYViewVolume));
+//	memcpy(&viewVolume, &cam.viewVolume, sizeof(GYViewVolume));
 
 
 	/***** END REEST ******/
-
-
-
 
 	updateBoundingRegions(cam.scrStartX, cam.scrEndX, cam.scrStartY, cam.scrEndY);
 

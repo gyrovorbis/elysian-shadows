@@ -95,7 +95,7 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
 	glUniform1f(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_SPOT_EXPONENT], light->properties->spotExponent);
 	glUniform1f(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_SPOT_CUTOFF_ANGLE], light->spotCutoffAngle);
 
-	glUniformMatrix4fv(_lightingShader.lightsUniformLoc[index][SHADER_LIGHT_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)light->projViewMat);
+	glUniformMatrix4fv(_lightingShader.lightsUniformLoc[index][SHADER_LIGHT_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)light->camera->projViewMat);
 
 	glUniform1i(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_ENABLED], 1);
 
@@ -242,7 +242,7 @@ void glalGetSpotLightProjectionMatrix(GYCamera* const camera, const GYLightSourc
 
 	memcpy(test, dest, sizeof(GYMatrix4));*/
 }
-#if 0
+
 void glalGetPointLightProjectionMatrix(GYMatrix4 dest, const GYLightSource* const lightSrc) {
 	glMatrixMode(GL_MODELVIEW_MATRIX);
 	glLoadIdentity();
@@ -253,12 +253,7 @@ void glalGetPointLightProjectionMatrix(GYMatrix4 dest, const GYLightSource* cons
 
 	//gyVidCamFrustum(camera, 90.0f, 1.0f, 0.5f, 901.0f);
 }
-#else
 
-void glalGetPointLightProjectionMatrix(GYCamera* cam, const GYLightSource* const lightSrc) {
-	gyVidCamFrustum(cam, 90.0f, 1.0f, 0.5f, 901.0f);
-}
-#endif
 
 void glalGetPointLightCamMatrix(GYMatrix4 dest, const GYLightSource* const lightSrc) {
 	gyMatPush();
@@ -286,18 +281,69 @@ void glalGetPointLightViewMatrix(GYMatrix4 dest, const GYLightSource* const ligh
 	gyMatPop();
 }
 
+void glalGetPointLightViewVolume(GYViewVolume* const vol, GYLightSource* lightSrc, const GY_CUBE_MAP_FACE face) {
+	const float maxDist = 901.0f-0.5f;
+	const float halfW = maxDist*0.5f;
+
+	vol->ntl.x = lightSrc->position.x - halfW; vol->ntl.y = lightSrc->position.y - halfW;
+	vol->ntr.x = lightSrc->position.x + halfW; vol->ntr.y = lightSrc->position.y - halfW;
+	vol->nbl.x = lightSrc->position.x - halfW; vol->nbl.y = lightSrc->position.y + halfW;
+	vol->nbr.x = lightSrc->position.x + halfW; vol->nbr.y = lightSrc->position.y + halfW;
+
+	switch(face) {
+	case GY_CUBE_MAP_RIGHT:
+		vol->ntl.x += halfW;
+		vol->ntr.x += halfW;
+		vol->nbl.x += halfW;
+		vol->nbr.x += halfW;
+		break;
+	case GY_CUBE_MAP_LEFT:
+		vol->ntl.x -= halfW;
+		vol->ntr.x -= halfW;
+		vol->nbl.x -= halfW;
+		vol->nbr.x -= halfW;
+		break;
+
+	case GY_CUBE_MAP_BACK:
+		vol->ntl.y -= halfW;
+		vol->ntr.y -= halfW;
+		vol->nbl.y -= halfW;
+		vol->nbr.y -= halfW;
+		break;
+
+	case GY_CUBE_MAP_FRONT:
+		vol->ntl.y += halfW;
+		vol->ntr.y += halfW;
+		vol->nbl.y += halfW;
+		vol->nbr.y += halfW;
+		break;
+
+	case GY_CUBE_MAP_BOTTOM:
+	case GY_CUBE_MAP_TOP:
+	default:
+		break;
+	}
+
+	vol->ftl = vol->ntl;
+	vol->ftr = vol->ntr;
+	vol->fbl = vol->nbl;
+	vol->fbr = vol->nbr;
+
+}
+
 void gyVidLightSourceBeginShadowPasses(void) {
 	gyVidSetCurrentShaderProgram(_shadowMapShader.program);
 	curLightShader = &_shadowMapShader;
 }
 
 
-void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_MAP_FACE face, GYCamera*const camera) {
+void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_MAP_FACE face) {
 	GYMatrix4 lightProjMatrix;
 	GYMatrix4 lightViewMatrix;
 	GYMatrix4 lightProjViewMatrix;
 	int useBias;
 	_LightInternals* internals = light->_data;
+	GYCamera*const cam = light->camera;
 
 	glViewport(0, 0, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE);
 
@@ -307,7 +353,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 		useBias = 0;
 
 		//glDepthRange(0, 1);
-		glalGetPointLightProjectionMatrix(camera, light);
+		glalGetPointLightProjectionMatrix(lightProjMatrix, light);
 		glalGetPointLightViewMatrix(lightViewMatrix, light, face);
 
 		glEnable(GL_TEXTURE_CUBE_MAP);
@@ -316,8 +362,10 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 		//Only do this shit once, on the first pass
 		if(face == GY_CUBE_MAP_RIGHT) {
 			glBindFramebuffer(GL_FRAMEBUFFER, internals->fbo);
-			glalGetPointLightCamMatrix(light->projViewMat, light);
+			glalGetPointLightCamMatrix(cam->projViewMat, light);
 		}
+
+		glalGetPointLightViewVolume(&cam->viewVolume, light, face);
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER,
 							   GL_DEPTH_ATTACHMENT,
@@ -382,7 +430,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 	glUniformMatrix4fv(_shadowMapShader.uniformLoc[SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)lightProjViewMatrix);
 
 	//Store projection view matrix (plus bias) for next render pass
-	if(useBias) gyMatMultMat(light->projViewMat, shadowTexCoordBiasMat, lightProjViewMatrix);
+	if(useBias) gyMatMultMat(cam->projViewMat, shadowTexCoordBiasMat, lightProjViewMatrix);
 
 }
 

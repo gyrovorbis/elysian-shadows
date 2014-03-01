@@ -55,7 +55,7 @@ varying vec3			vNormal;
 varying vec2			vTexCoord;
 
 vec3 normal;
-
+/*
 float VectorToDepthValue(vec3 Vec) {
 	vec3 AbsVec = abs(Vec);
 	float LocalZcomp = max(AbsVec.x, max(AbsVec.y, AbsVec.z));
@@ -64,7 +64,7 @@ float VectorToDepthValue(vec3 Vec) {
 	const float n = 1.0;
 	float NormZComp = (f+n) / (f-n) - (2.0*f*n)/(f-n)/LocalZcomp;
 	return (NormZComp + 1.0) * 0.5;
-}
+}*/
 
 vec4 lightingEquation(const int i) {
 	vec4 computedColor = vec4(cfZero, cfZero, cfZero, cfZero);

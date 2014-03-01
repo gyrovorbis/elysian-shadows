@@ -183,7 +183,7 @@ void LightSystem::shadowRenderPasses(void) {
 		switch(it->getLightType()) {
 		case GY_LIGHT_DIRECTIONAL:
 		case GY_LIGHT_SPOT:
-			gyVidLightSourceBeginShadowPass(it, GY_CUBE_MAP_FACE_MAX, it->getCameraState());
+			gyVidLightSourceBeginShadowPass(it, GY_CUBE_MAP_FACE_MAX);
 			it->getCameraState()->updateBoundingRegions(*cam);
 			getCameraSys()->setCustomCameraState(it->getCameraState());
 			render();
@@ -191,18 +191,17 @@ void LightSystem::shadowRenderPasses(void) {
 			break;
 		case GY_LIGHT_POINT:
 			for(unsigned i = GY_CUBE_MAP_RIGHT; i < GY_CUBE_MAP_FACE_MAX; ++i) {
-				gyVidLightSourceBeginShadowPass(it, (GY_CUBE_MAP_FACE)i, it->getCameraState());
-				/*  FIX THE FUCK OUT OF ME!!!! */
+				gyVidLightSourceBeginShadowPass(it, (GY_CUBE_MAP_FACE)i);
 				it->getCameraState()->updateBoundingRegions(*cam);
-				//getCameraSys()->setCustomCameraState(it->getCameraState());
-				//render();
+				getCameraSys()->setCustomCameraState(it->getCameraState());
+				render();
 				_addToLightMap(it);
 			}
 			break;
 		}
 	}
 
-	//getCameraSys()->clearCustomCameraState();
+	getCameraSys()->clearCustomCameraState();
 	gyVidLightSourceEndShadowPasses();
 
 	gyVidSetGlobalAmbience(&_globalAmbience);

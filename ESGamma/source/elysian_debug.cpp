@@ -365,7 +365,7 @@ void Debug::processInput(const GameInput& input) {
 
 	sprintf(buff, "LightSrc[%d]", count);
 
-			Entity* entity = new Entity;
+			Entity* entity = (!count)? getCurArea()->findEntity("Julien") : new Entity;
 			entity->setName(buff);
 			entity->setShadowVolume(false);
 			entity->transform.setPos(((count%8)*200)+100, 300+200*(count/8));
@@ -389,10 +389,14 @@ void Debug::processInput(const GameInput& input) {
 			lightSrc->setSpotCutoffAngle(180.0f);
 			attrib->setAttenuationFactors(GYVector3{ 0.00005f, 0.00005f, 0.00005f });
 
-			++count;
 			Debug::printf(VERBOSE, "Adding light - %d", count);
 
-			getCurArea()->addEntity(entity);
+			if(count) {
+				getCurArea()->addEntity(entity);
+			}
+
+			++count;
+
 #endif
 
 
