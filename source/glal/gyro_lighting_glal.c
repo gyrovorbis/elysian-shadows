@@ -23,14 +23,6 @@ void gyVidLightingSetEnable(const int enabled) {
 	glUniform1i(curLightShader->uniformLoc[SHADER_LIGHTING_ENABLED], enabled);
 }
 
-void gyVidLightSourceClear(void) {
-	lightSourceCount = 0;
-	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
-		lightsEnabled[i] = 0;
-		glUniform1i(curLightShader->lightsUniformLoc[i][SHADER_LIGHT_ENABLED], 0);
-	}
-}
-
 void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) {
 	_LightInternals* internals = light->_data = malloc(sizeof(_LightInternals));
 
@@ -132,16 +124,51 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
 
 void gyVidLightSourceAdd(const GYLightSource* const light) {
 	assert(lightSourceCount < GYRO_VIDEO_LIGHT_SOURCES_MAX);
-	lightSources[lightSourceCount] = light;
 
-	_addLightUniform(lightSourceCount, light);
-	++lightSourceCount;
+	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
+		if(lightsEnabled[i] == 0) {
+			lightSources[i] = light;
+			_addLightUniform(i, light);
+			lightsEnabled[i] = 1;
+			++lightSourceCount;
+			return;
+		}
+	}
+}
+
+void gyVidLightSourceRemove(const GYLightSource* const light) {
+	--lightSourceCount;
+	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
+		if(lightSources[i] == light) {
+			lightsEnabled[i] = 0;
+			glUniform1i(curLightShader->lightsUniformLoc[i][SHADER_LIGHT_ENABLED], 0);
+			break;
+		}
+	}
+}
+
+void gyVidLightSourceReplace(const GYLightSource*const old, const GYLightSource*const next) {
+	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
+		if(lightSources[i] == old) {
+			lightSources[i] = next;
+			_addLightUniform(i, next);
+			break;
+		}
+	}
+}
+
+void gyVidLightSourceClear(void) {
+	lightSourceCount = 0;
+	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
+		lightsEnabled[i] = 0;
+		glUniform1i(curLightShader->lightsUniformLoc[i][SHADER_LIGHT_ENABLED], 0);
+	}
 }
 
 
-void glalGetSpotLightViewMatrix(GYMatrix4 dest, const GYLightSource*const lightSrc) {
+void glalGetSpotLightViewMatrix(GYCamera* const cam, const GYLightSource*const lightSrc) {
 	GYMatrix4 temp;
-
+/*
 	gyMatPush();
 	gyMatLoadIdentity();
 
@@ -161,11 +188,12 @@ void glalGetSpotLightViewMatrix(GYMatrix4 dest, const GYLightSource*const lightS
 
 	gyMatStore((float*)dest);
 	gyMatPop();
+*/
 }
 
-void glalGetDirectionalLightViewMatrix(GYMatrix4 dest, const GYLightSource*const lightSrc) {
+void glalGetDirectionalLightViewMatrix(GYCamera* const camera, const GYLightSource*const lightSrc) {
 	GYMatrix4 temp;
-
+/*
 	gyMatPush();
 	gyMatLoadIdentity();
 
@@ -192,17 +220,18 @@ void glalGetDirectionalLightViewMatrix(GYMatrix4 dest, const GYLightSource*const
 
 	gyMatStore((float*)dest);
 	gyMatPop();
+	*/
 }
 
-void glalGetDirectionalLightProjectionMatrix(GYMatrix4* dest, const GYLightSource*const lightSrc) {
-	gyVidOrthoProjMat(dest, 0, GLAL_SHADOW_MAP_SIZE,
+void glalGetDirectionalLightProjectionMatrix(GYCamera* const camera, const GYLightSource*const lightSrc) {
+/*	gyVidOrthoProjMat(dest, 0, GLAL_SHADOW_MAP_SIZE,
 							 0, GLAL_SHADOW_MAP_SIZE,
-							 -1500, 1500);
+							 -1500, 1500);*/
 }
 
-void glalGetSpotLightProjectionMatrix(GYMatrix4* dest, const GYLightSource*const lightSrc)  {
+void glalGetSpotLightProjectionMatrix(GYCamera* const camera, const GYLightSource*const lightSrc)  {
 	 GYMatrix4 test;
-
+/*
 	glMatrixMode(GL_MODELVIEW_MATRIX);
 	glLoadIdentity();
 	//TODO: DON'T HARDCODE ANGLE FOR PERSPECTIVE PROJECTION!!!
@@ -211,9 +240,9 @@ void glalGetSpotLightProjectionMatrix(GYMatrix4* dest, const GYLightSource*const
 	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)test);
 	glLoadIdentity();
 
-	memcpy(test, dest, sizeof(GYMatrix4));
+	memcpy(test, dest, sizeof(GYMatrix4));*/
 }
-
+#if 0
 void glalGetPointLightProjectionMatrix(GYMatrix4 dest, const GYLightSource* const lightSrc) {
 	glMatrixMode(GL_MODELVIEW_MATRIX);
 	glLoadIdentity();
@@ -221,7 +250,15 @@ void glalGetPointLightProjectionMatrix(GYMatrix4 dest, const GYLightSource* cons
 	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)dest);
 	glalTranspose(dest);
 	glLoadIdentity();
+
+	//gyVidCamFrustum(camera, 90.0f, 1.0f, 0.5f, 901.0f);
 }
+#else
+
+void glalGetPointLightProjectionMatrix(GYCamera* cam, const GYLightSource* const lightSrc) {
+	gyVidCamFrustum(cam, 90.0f, 1.0f, 0.5f, 901.0f);
+}
+#endif
 
 void glalGetPointLightCamMatrix(GYMatrix4 dest, const GYLightSource* const lightSrc) {
 	gyMatPush();
@@ -243,6 +280,7 @@ void glalGetPointLightViewMatrix(GYMatrix4 dest, const GYLightSource* const ligh
 	gyMatApply(&pointShadowFaceMatrices[face]);
 
 	glalGetPointLightCamMatrix(camMat, lightSrc);
+
 	gyMatApply(&camMat);
 	gyMatStore(dest);
 	gyMatPop();
@@ -254,7 +292,7 @@ void gyVidLightSourceBeginShadowPasses(void) {
 }
 
 
-void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_MAP_FACE face) {
+void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_MAP_FACE face, GYCamera*const camera) {
 	GYMatrix4 lightProjMatrix;
 	GYMatrix4 lightViewMatrix;
 	GYMatrix4 lightProjViewMatrix;
@@ -269,7 +307,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 		useBias = 0;
 
 		//glDepthRange(0, 1);
-		glalGetPointLightProjectionMatrix(lightProjMatrix, light);
+		glalGetPointLightProjectionMatrix(camera, light);
 		glalGetPointLightViewMatrix(lightViewMatrix, light, face);
 
 		glEnable(GL_TEXTURE_CUBE_MAP);

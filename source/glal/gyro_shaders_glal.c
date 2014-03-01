@@ -25,9 +25,9 @@ const static GYMaterial _defaultMaterial = {
 };
 
 const static GYLightProperties _emptyLightProperties = {
-	{ 0.0f, 0.0f, 0.0f, 0.0f },
-	{ 0.0f, 0.0f, 0.0f, 0.0f },
-	{ 0.0f, 0.0f, 0.0f, 0.0f },
+	{ 0.0f, 0.0f, 0.0f, 1.0f },
+	{ 0.0f, 0.0f, 0.0f, 1.0f },
+	{ 0.0f, 0.0f, 0.0f, 1.0f },
 	{ 0.0f, 0.0f, 0.0f },
 	1.0f
 };
@@ -254,7 +254,7 @@ void glalDefaultShadersLoadUniforms(void) {
 	GYMaterial* material = _currentMaterial;
 	_currentMaterial = NULL;
 
-	glUniformMatrix4fv(curLightShader->uniformLoc[SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)projectionViewMatrix);
+	glUniformMatrix4fv(curLightShader->uniformLoc[SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)curCamera->projViewMat);
 //	glUniform4fv(curLightShader->uniformLoc[SHADER_CAM_POS], 1, (float*)&viewPosition);
 	gyVidMaterialBind(material);
 
@@ -284,11 +284,11 @@ void glalDefaultShadersLoadUniforms(void) {
 	glUniform1i(curLightShader->uniformLoc[SHADER_TEXTURE_ENABLED], (curTex)? 1 : 0);
 	glUniform1i(curLightShader->uniformLoc[SHADER_NORMAL_MAP_ENABLED], (_normalMap)? 1 : 0);
 
-	GYMatrix4 projMatrix;
+	GYCamera cam;
 	GYMatrix4 finalMat;
-	glalGetPointLightProjectionMatrix(projMatrix);
-	gyMatMultMat(finalMat, shadowTexCoordBiasMat, projMatrix);
-	glUniformMatrix4fv(curLightShader->uniformLoc[SHADER_SHADOW_CUBE_MAP_PROJ_MAT], 1, GL_FALSE, (float*)projMatrix);
+	glalGetPointLightProjectionMatrix(&cam);
+	gyMatMultMat(finalMat, shadowTexCoordBiasMat, cam.projMat);
+	glUniformMatrix4fv(curLightShader->uniformLoc[SHADER_SHADOW_CUBE_MAP_PROJ_MAT], 1, GL_FALSE, (float*)finalMat); //NO TEX COORD OFFSET? WHAT THE FUCK!?
 
 	//Initialize internal data for shadow shader
 	glalLightingInit();

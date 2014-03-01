@@ -9,6 +9,7 @@ extern "C" {
 #include "gyro_matrix_api.h"
 
 struct _GYVidInitParams;
+struct _GYCamera;
 
 typedef struct _GYColor4 {
 	unsigned char r, g, b, a;
@@ -24,11 +25,7 @@ void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev);
 void gyVidResolution(unsigned int *const width, unsigned int *const height);
 
 //Camera API
-void gyVidProjectionDefaultMatrix(void); //sets to platform's default
-void gyVidProjectionCustomMatrix(const GYMatrix4 mat);
-void gyVidCameraCustomViewMatrix(const GYMatrix4 mat);
-//void gyVidCameraSetPosition(const struct _GYVector4* pos);
-void gyVidCameraSetViewCenter(const GYVector3* const pos, const float scale, const float zOrient);
+void gyVidCamUpdate(const struct _GYCamera *const cam);
 
 
 //General Video API
@@ -54,7 +51,7 @@ void gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsign
 
 
 //CHANGE THIS INTO ONE SHARED FUNCTION, NOT PLATFORM-SPECIFIC!!!
-void gyVidViewFrustrumMat(GYMatrix4 mat, const float fov, const float aspect, const float znear, const float zfar);
+void gyVidViewFrustumMat(GYMatrix4 mat, const float fov, const float aspect, const float znear, const float zfar);
 void gyVidLookAtMat(GYMatrix4 mat, const float ex, const float ey, const float ez,
 									const float dx, const float dy, const float dz,
 									const float ux, const float uy, const float uz);

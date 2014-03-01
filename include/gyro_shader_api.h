@@ -72,6 +72,8 @@ typedef struct _GYShaderProgram {
 void gyVidLightSourceClear(void);
 
 void gyVidLightSourceAdd(const GYLightSource* const light);
+void gyVidLightSourceRemove(const GYLightSource* const light);
+void gyVidLightSourceReplace(const GYLightSource*const old, const GYLightSource*const next);
 void gyVidLightSourceSetEnable(const int enabled);
 void gyVidLightSourceAmbientSetEnable(const int enabled);
 void gyVidLightSourceDiffuseSetEnable(const int enabled);
@@ -94,7 +96,7 @@ void gyVidSetDefaultShaderProgram();
 
 void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type);
 void gyVidLightSourceUninit(GYLightSource* const light);
-void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_MAP_FACE face);
+void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_MAP_FACE face, struct _GYCamera* cam);
 void gyVidLightSourceEndShadowPasses(void);
 void gyVidLightSourceBeginShadowPasses(void);
 
