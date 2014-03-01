@@ -293,7 +293,8 @@ OOLUA_EXPORT_FUNCTIONS(LightSource,
 					   setDirection,
 					   setSpotCutoffAngle,
 					   setAttrib,
-					   getAttrib)
+					   getAttrib,
+					   setShadowCaster)
 OOLUA_EXPORT_FUNCTIONS_CONST(LightSource)
 
 EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(Behavior,

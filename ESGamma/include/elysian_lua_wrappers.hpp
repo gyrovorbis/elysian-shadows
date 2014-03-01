@@ -385,6 +385,7 @@ OOLUA_PROXY(LightSource, Component)
 	OOLUA_MEM_FUNC(void, setSpotCutoffAngle, const float)
 	OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<const LightAttrib*>)
 	OOLUA_MEM_FUNC(LightAttrib&, getAttrib)
+	OOLUA_MFUNC(setShadowCaster)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Behavior, Component)
