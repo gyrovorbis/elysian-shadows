@@ -30,6 +30,7 @@ typedef struct _GYLightProperties {
 	GYVector4	specularColor;
 	GYVector3	attenuationFactors;
 	float		spotExponent;
+	float		_radius;
 } GYLightProperties;
 
 typedef enum _GY_LIGHT_TYPE {

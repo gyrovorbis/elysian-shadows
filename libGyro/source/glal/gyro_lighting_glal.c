@@ -282,8 +282,8 @@ void glalGetPointLightViewMatrix(GYMatrix4 dest, const GYLightSource* const ligh
 }
 
 void glalGetPointLightViewVolume(GYViewVolume* const vol, GYLightSource* lightSrc, const GY_CUBE_MAP_FACE face) {
-	const float maxDist = 901.0f-0.5f;
-	const float halfW = maxDist*0.5f;
+	//const float maxDist = 901.0f-0.5f;
+	const float halfW = lightSrc->properties->_radius;//maxDist*0.5f;
 
 	vol->ntl.x = lightSrc->position.x - halfW; vol->ntl.y = lightSrc->position.y - halfW;
 	vol->ntr.x = lightSrc->position.x + halfW; vol->ntr.y = lightSrc->position.y - halfW;
@@ -365,7 +365,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 			glalGetPointLightCamMatrix(cam->projViewMat, light);
 		}
 
-		glalGetPointLightViewVolume(&cam->viewVolume, light, face);
+		//glalGetPointLightViewVolume(&cam->viewVolume, light, face);
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER,
 							   GL_DEPTH_ATTACHMENT,
