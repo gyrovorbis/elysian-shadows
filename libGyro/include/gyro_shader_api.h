@@ -12,6 +12,7 @@ extern "C" {
 
 struct _GYColor4;
 struct _GYTexture;
+struct _GYCamera;
 
 typedef enum _GY_CUBE_MAP_FACE {
 	GY_CUBE_MAP_RIGHT,
@@ -38,12 +39,13 @@ typedef enum _GY_LIGHT_TYPE {
 } GY_LIGHT_TYPE;
 
 typedef struct _GYLightSource {
-	GYMatrix4					projViewMat;
+	//GYMatrix4					projViewMat;
 	GYVector4					position;					//position.w = 0.0f for directional light
 	GYVector3					direction;
 	float						spotCutoffAngle;
 	GY_LIGHT_TYPE				type;
 	GYLightProperties*			properties;
+	struct _GYCamera*			camera;
 	void*						_data;
 } GYLightSource;
 
@@ -96,7 +98,7 @@ void gyVidSetDefaultShaderProgram();
 
 void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type);
 void gyVidLightSourceUninit(GYLightSource* const light);
-void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_MAP_FACE face, struct _GYCamera* cam);
+void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_MAP_FACE face);
 void gyVidLightSourceEndShadowPasses(void);
 void gyVidLightSourceBeginShadowPasses(void);
 
