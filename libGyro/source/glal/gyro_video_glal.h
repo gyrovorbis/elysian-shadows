@@ -8,9 +8,9 @@ extern "C" {
 #endif
 
 struct _GYTexture;
+struct _GYCamera;
 
-extern GYMatrix4				projectionViewMatrix;
-extern GYMatrix4				projectionMatrix;
+extern const struct _GYCamera*	curCamera;
 extern GYMatrix4				viewMatrix;
 extern float					viewZOrient;
 extern float					viewScale;

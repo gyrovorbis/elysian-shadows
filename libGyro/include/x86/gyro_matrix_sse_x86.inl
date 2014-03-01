@@ -166,6 +166,10 @@ static inline void gyVec2ScaleAccum(GYVector2* const src, const float scalar) {
 	src->x *= scalar; src->y *= scalar;
 }
 
+static inline float gyVec2Magnitude(const GYVector2*const vec) {
+	return gySqrt(vec->x*vec->x + vec->y*vec->y);
+}
+
 static inline void gyVec3Add(GYVector3* const dest, const GYVector3* const v1, const GYVector3* const v2) {
 	dest->x = v1->x + v2->x;
 	dest->y = v1->y + v2->y;
@@ -194,6 +198,19 @@ static inline void gyVec3CompProdAccum(GYVector3* const dest, const GYVector3* c
 
 static inline void gyVec2CompProdAccum(GYVector2* const dest, const GYVector2* const src) {
 	dest->x *= src->x; dest->y *= src->y;
+}
+
+static inline void gyVec3CrossProd(GYVector3* const dest, const GYVector3* const src1, const GYVector3* const src2) {
+	dest->x = src1->y*src2->z - src1->z*src2->y;
+	dest->y = src1->z*src2->x - src1->x*src2->z;
+	dest->z = src1->x*src2->y - src1->y*src2->x;
+}
+
+static inline void gyVec3AddScaled(GYVector3*const dest, const float scalar1, const GYVector3*const vec1,
+														 const float scalar2, const GYVector3*const vec2) {
+	dest->x = scalar1*vec1->x + scalar2*vec2->x;
+	dest->y = scalar1*vec1->y + scalar2*vec2->y;
+	dest->z = scalar1*vec1->z + scalar2*vec2->z;
 }
 
 static inline float gyVec2DotProd(const GYVector2 *const src1, const GYVector2 *const src2) {
