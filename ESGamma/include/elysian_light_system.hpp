@@ -20,7 +20,7 @@ class LightSystem: public System {
 	GYVector4		_globalAmbience = { 0.1f, 0.1f, 0.2f, 1.0f };
 	unsigned		_onscreenLightCount	= 0;
 	LightSource*	_onscreenLights[ELYSIAN_LIGHT_SYSTEM_MAX_LIGHTS_ONSCREEN] = { nullptr };
-	uint32_t		_lightMap[ELYSIAN_LIGHT_SYSTEM_LIGHT_MAP_HEIGHT][ELYSIAN_LIGHT_SYSTEM_LIGHT_MAP_WIDTH] = { 0 };
+    uint32_t		_lightMap[ELYSIAN_LIGHT_SYSTEM_LIGHT_MAP_HEIGHT][ELYSIAN_LIGHT_SYSTEM_LIGHT_MAP_WIDTH] = { {0} };
 	unsigned		_screenTileXOffset	= 0;
 	unsigned		_screenTileYOffset	= 0;
 	uint32_t		_activeLights		= 0;

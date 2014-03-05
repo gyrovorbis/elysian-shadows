@@ -47,10 +47,14 @@ static inline void gyVidOrthoProjMat(GYMatrix4 mat, const float pleft, const flo
 		{ 0.0f, 0.0f, -2.0f/(pfar-pnear), -(pfar+pnear)/(pfar-pnear) },
 		{ 0.0f, 0.0f, 0.0f, 1.0f }
 	};
-
-	for(unsigned i = 0; i < 4; ++i)
-		for(unsigned j = 0; j < 4; ++j)
+unsigned i = 0;
+ unsigned j = 0;
+    for(i = 0; i < 4; ++i)
+        for(j = 0; j < 4; ++j)
 			mat[i][j] = orthoProjMat[j][i];
+//for(unsigned i = 0; i < 4; ++i)
+//    for(unsigned j = 0; j < 4; ++j)
+//        mat[i][j] = orthoProjMat[j][i];
 
 }
 
