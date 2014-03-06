@@ -133,7 +133,7 @@ Debug::~Debug(void) {
 
 LightSource* lightSrc;
 #if 1
-GYVector3 dirVec = { -1.0f, 0.0f, 0.0f };
+GYVector3 dirVec = { 1.0f, 0.0f, 0.0f };
 #else
 GYVector3 dirVec = { 0.0f, 0.0f, -1.0f };
 
@@ -284,6 +284,12 @@ void Debug::processInput(const GameInput& input) {
 		src->setDirection(dirVec);
 		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
 	}
+	if(input.getDown(GameInput::BUT_O)) {
+		dirVec.x -= 0.1f;
+		gyVec3Normalize(&dirVec);
+		src->setDirection(dirVec);
+		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
+	}
 
 	//VRAM and Audio Stats
 	if(input.getTapped(GameInput::BUT_Z)) {
@@ -297,17 +303,19 @@ void Debug::processInput(const GameInput& input) {
 		//getAudioSys()->fadeIntoNewAuxTrack(0, 5.0f, "audio/music/RainThunder.ogg");
 		//getAudioSys()->playBgmTrack();
 
-	/*	Entity* entity = new Entity();
+		Entity* entity = new Entity();
 		LightSource* lightSrc = entity->addLightSource();
+		src = lightSrc;
 		lightSrc->setLightType(GY_LIGHT_DIRECTIONAL);
-		lightSrc->setDirection(GYVector3{0.5f, -1.0f, -0.5f});
+		lightSrc->setDirection(GYVector3{0.0f, -1.0f, -1.0f});
 		LightAttrib* attrib = new LightAttrib;
 		//attrib->setAmbientColor(GYVector4{ 0.3f, 0.3f, 0.3f, 1.0f});
 		attrib->setDiffuseColor(GYVector4{ 0.4f, 0.4f, 0.4f, 0.0f });
 		//attrib->setSpecularColor(GYVector4{ 0.0f, 0.0f, 1.0f, 1.0f});
 		//attrib->setAmbientColor(GYVector4{ 1.0f, 1.0f, 1.0f, 1.0f});
 		lightSrc->setAttrib(attrib);
-		_curArea->addEntity(entity);*/
+		lightSrc->setShadowCaster(true);
+		_curArea->addEntity(entity);
 
 		Debug::printf(VERBOSE, "Shader Uniform Changes Last Frame - %d", getLightSys()->getShaderUniformChangesLastFrame());
 		Debug::printf(VERBOSE, "Lights Onscreen - %d", getLightSys()->getOnscreenLightCount());
@@ -364,12 +372,17 @@ void Debug::processInput(const GameInput& input) {
 		static int count = 0;
 		char buff[100];
 
+		if(count == 0) {
+
+		Entity* julien = getCurArea()->findEntity("Julien");
+
 	sprintf(buff, "LightSrc[%d]", count);
 
-			Entity* entity = (!count)? getCurArea()->findEntity("Julien") : new Entity;
-			entity->setName(buff);
+			Entity* entity = julien;
+		//	entity->setName(buff);
 			entity->setShadowVolume(false);
-			entity->transform.setPos(((count%8)*200)+100, 700+200*(count/8));
+			//entity->transform.setPos(((count%8)*200)+100, 700+200*(count/8));
+			//entity->transform.setPos(julien->transform._pos.x, julien->transform._pos.y);
 			entity->setElev(0);
 			//curArea->addEntity(entity);
 			//entity->transform.setPos(600, 600);
@@ -385,17 +398,30 @@ void Debug::processInput(const GameInput& input) {
 #if 0
 			lightSrc->setLightType(LightSource::LIGHT_DIRECTIONAL);
 #else
-			lightSrc->setLightType(GY_LIGHT_POINT);
-			lightSrc->setSpotCutoffAngle(180.0f);
-			attrib->setAttenuationFactors(GYVector3{ 0.005f, 0.00005f, 0.00005f });
+			lightSrc->setLightType(GY_LIGHT_SPOT);
+			lightSrc->setSpotCutoffAngle(45.0f);
+			lightSrc->setShadowCaster(true);
+			attrib->setAttenuationFactors(GYVector3{ 0.0005f, 0.00005f, 0.00005f });
 
 			Debug::printf(VERBOSE, "Adding light - %d", count);
 
-			if(count) {
-				getCurArea()->addEntity(entity);
-			} else {
-				lightSrc->setShadowCaster(true);
-			}
+			//getCameraSys()->setCustomCameraState(lightSrc->getCameraState());
+
+			//if(count) {
+				//getCurArea()->addEntity(entity);
+			//} else {
+				//lightSrc->setShadowCaster(true);
+			//}
+
+		}
+
+		if(count%2 == 0) {
+			getCameraSys()->pushCustomCameraState(src->getCameraState());
+
+		} else {
+			getCameraSys()->popState();
+
+		}
 
 			++count;
 

@@ -6,7 +6,7 @@
 
 #include <gyro.h>
 
-#define ELYSIAN_CAMERA_SYSTEM_STACK_SIZE	3
+#define ELYSIAN_CAMERA_SYSTEM_STACK_SIZE	5
 
 namespace elysian {
 	
@@ -42,10 +42,11 @@ namespace elysian {
 
 	class CameraSystem: public System { 
 	private:
-		CameraState				_states[ELYSIAN_CAMERA_SYSTEM_STACK_SIZE];
+		CameraState				_internalStates[ELYSIAN_CAMERA_SYSTEM_STACK_SIZE];
+		CameraState*			_states[ELYSIAN_CAMERA_SYSTEM_STACK_SIZE];
 		CameraState				_debugState;
 		CameraState				_uiCamera;
-		CameraState*			_curState		= &_states[0];
+		CameraState*			_curState		= &_internalStates[0];
 		int						_depth			= 0; //depth is technically +1... my code, fuck you.
 		bool					_projViewActive = false;
 		bool					_debugActive	= false;
@@ -57,12 +58,16 @@ namespace elysian {
 	public:
 		CameraSystem(void);
 
-		void setCustomCameraState(CameraState*const state) {
+		void pushCustomCameraState(CameraState*const state) {
+			++_depth;
+			assert(_depth < ELYSIAN_CAMERA_SYSTEM_STACK_SIZE);
+			_states[_depth] = state;
 			_curState = state;
 		}
 
-		void clearCustomCameraState(void) {
-			_curState = &_states[_depth];
+		void setCurrentCameraState(CameraState*const state) {
+			_states[_depth] = state;
+			_curState = state;
 		}
 
 		void processInput(const GameInput& input);
@@ -115,8 +120,10 @@ namespace elysian {
 		void popViewProjMatrix(void);
 
 		void pushState(void) {
-			assert(++_depth < ELYSIAN_CAMERA_SYSTEM_STACK_SIZE);
-			_curState = &_states[_depth];
+			++_depth;
+			assert(_depth < ELYSIAN_CAMERA_SYSTEM_STACK_SIZE);
+			_states[_depth] = &_internalStates[_depth];
+			_curState = _states[_depth];
 		}
 
 		void popState(void);

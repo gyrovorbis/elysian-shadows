@@ -29,6 +29,11 @@ void CameraState::updateBoundingRegions(const int xMin, const int xMax, const in
 	checkPointBounds(viewVolume.nbr);
 	checkPointBounds(viewVolume.nbl);
 
+	if(startX < 0) startX = 0;
+	if(startY < 0) startY = 0;
+	if(endX < 0) endX = 0;
+	if(endY < 0) endY = 0;
+
 	//Convert from world to tile coordinates (and signed to unsigned)
 	scrStartX = (startX < xMin)? xMin : (unsigned)startX;
 	scrStartY = (startY < yMin)? yMin : (unsigned)startY;
@@ -80,6 +85,8 @@ CameraSystem::CameraSystem(void) {
 
 	gyVidCamFrustum(&_debugState, 90.0f, (float)w/(float)h, 0.5f, 900.0f);
 	_debugState.dir = { 0.0f, 1.0f, 1.0f };
+
+	_states[0] = &_internalStates[0];
 }
 
 void CameraSystem::pushViewProjMatrix(void) {
@@ -90,6 +97,8 @@ void CameraSystem::pushViewProjMatrix(void) {
 		gyVidCamOrthoLookAt(_curState, &_curState->pos, _curState->scale, _curState->zOrient, 0.0f);
 
 	} else { //PERSPECTIVE PROJECTION
+
+		if(_curState == &_debugState) {
 		GYVector3 pos = {
 			-_curState->entity->transform._pos.x,
 			-_curState->entity->transform._pos.y+30.0f,
@@ -97,6 +106,7 @@ void CameraSystem::pushViewProjMatrix(void) {
 		};
 
 		gyVidCamFrustumLookAt(_curState, &pos, &_curState->dir, &_curState->up);
+		}
 
 #if 0
 		GYMatrix4 camMat;
@@ -167,8 +177,9 @@ void CameraSystem::setPerspectiveFrustum(const float fov, const float aspect, co
 }
 
 void CameraSystem::popState(void) {
-	assert(--_curState > 0);
-	_curState = &_states[_depth];
+	--_depth;
+	assert(_depth >= 0);
+	_curState = _states[_depth];
 
 	//restore projection matrix if it's supposed to be on the stack is this even really necessary?
 	/*if(_projViewActive) {
@@ -184,12 +195,14 @@ void CameraSystem::processInput(const GameInput& input) {
 		if(_debugActive) { //enable
 			_debugState.entity = _curState->entity;
 
-			_curState = &_debugState;
+			//_curState = &_debugState;
 			//setPerspectiveFrustum(90.0f, 1.0f, 0.5f, 900.0f);
 		//	setEngineState(ENGINE_CAMERA_DEBUG);
+			pushCustomCameraState(&_debugState);
 
 		} else { //disable
-			_curState = &_states[_depth];
+			if(_curState == &_debugState) //Only pop if debug is current camera
+				popState();
 		//	setEngineState(ENGINE_NORMAL);
 		}
 	}

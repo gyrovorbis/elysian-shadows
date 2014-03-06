@@ -166,7 +166,8 @@ void LightSystem::render(void) {
 void LightSystem::shadowRenderPasses(void) {
 
 	const auto sources	= _curArea->lightSources;
-	CameraState* cam	= getCameraSys()->getCurrentState();
+	CameraSystem* camSys = getCameraSys();
+	CameraState* cam	= camSys->getCurrentState();
 	_screenTileXOffset	= cam->tileStartX;
 	_screenTileYOffset	= cam->tileStartY;
 
@@ -174,18 +175,24 @@ void LightSystem::shadowRenderPasses(void) {
 	memset(_lightMap, 0, sizeof(_lightMap));
 
 	gyVidLightSourceBeginShadowPasses();
+	camSys->pushState();
 
 	for(auto it : sources) {
 		//if(!ONSCREEN) continue;!!!!
-		if(_onscreenLightCount >= 32) continue;
+		if(_onscreenLightCount >= ELYSIAN_LIGHT_SYSTEM_MAX_LIGHTS_ONSCREEN) continue;
 
 		switch(it->getLightType()) {
-		case GY_LIGHT_DIRECTIONAL:
 		case GY_LIGHT_SPOT:
-			gyVidLightSourceBeginShadowPass(it, GY_CUBE_MAP_FACE_MAX);
-			it->getCameraState()->updateBoundingSubregions(*cam);
-			getCameraSys()->setCustomCameraState(it->getCameraState());
-			render();
+		//	if(!cam->isWithinScreenRegion(it->position.x, it->position.y, it->getAttrib().getRadius(), it->getAttrib().getRadius())) break;
+		case GY_LIGHT_DIRECTIONAL:
+			_onscreenLights[_onscreenLightCount++] = it;
+			it->updateBoundingVolume(cam, GY_CUBE_MAP_FACE_MAX);
+
+			if(it->isShadowCaster()) {
+				gyVidLightSourceBeginShadowPass(it, GY_CUBE_MAP_FACE_MAX);
+				getCameraSys()->setCurrentCameraState(it->getCameraState());
+				render();
+			}
 			_addToLightMap(it);
 			break;
 		case GY_LIGHT_POINT:
@@ -200,7 +207,7 @@ void LightSystem::shadowRenderPasses(void) {
 
 							//it->getCameraState()->updateBoundingSubregions(*cam);
 
-							getCameraSys()->setCustomCameraState(it->getCameraState());
+							getCameraSys()->setCurrentCameraState(it->getCameraState());
 							render();
 
 						}
@@ -212,9 +219,8 @@ void LightSystem::shadowRenderPasses(void) {
 		}
 	}
 
-	getCameraSys()->clearCustomCameraState();
+	camSys->popState();
 	gyVidLightSourceEndShadowPasses();
-
 	gyVidSetGlobalAmbience(&_globalAmbience);
 
 	//_sortOnscreenLights();

@@ -1,6 +1,7 @@
 #include "elysian_light_source.hpp"
 #include "elysian_entity.hpp"
 #include "elysian_generic.hpp"
+#include <cfloat>
 
 namespace elysian {
 
@@ -78,52 +79,66 @@ void LightSource::updateBoundingVolume(const CameraState *const cam, const GY_CU
 	CameraState* thisCam = static_cast<CameraState*>(camera);
 	GYViewVolume* vol = &thisCam->viewVolume;
 
-	const float halfW = properties->_radius;//maxDist*0.5f;
+	if(type == GY_LIGHT_DIRECTIONAL) {
+		vol->ntl.x = FLT_MIN; vol->ntl.y = FLT_MIN;
+		vol->ntr.x = FLT_MAX; vol->ntr.y = FLT_MIN;
+		vol->nbl.x = FLT_MIN; vol->nbl.y = FLT_MAX;
+		vol->nbr.x = FLT_MAX; vol->nbr.y = FLT_MAX;
 
-	vol->ntl.x = position.x - halfW; vol->ntl.y = position.y - halfW;
-	vol->ntr.x = position.x + halfW; vol->ntr.y = position.y - halfW;
-	vol->nbl.x = position.x - halfW; vol->nbl.y = position.y + halfW;
-	vol->nbr.x = position.x + halfW; vol->nbr.y = position.y + halfW;
+	} else if(type == GY_LIGHT_SPOT) {
+		vol->ntl.x = FLT_MIN; vol->ntl.y = FLT_MIN;
+		vol->ntr.x = FLT_MAX; vol->ntr.y = FLT_MIN;
+		vol->nbl.x = FLT_MIN; vol->nbl.y = FLT_MAX;
+		vol->nbr.x = FLT_MAX; vol->nbr.y = FLT_MAX;
+	} else { // GY_LIGHT_POINT
 
-	switch(face) {
-	case GY_CUBE_MAP_RIGHT:
-		vol->ntl.x += halfW;
-		vol->ntr.x += halfW;
-		vol->nbl.x += halfW;
-		vol->nbr.x += halfW;
-		break;
-	case GY_CUBE_MAP_LEFT:
-		vol->ntl.x -= halfW;
-		vol->ntr.x -= halfW;
-		vol->nbl.x -= halfW;
-		vol->nbr.x -= halfW;
-		break;
+		const float halfW = properties->_radius;//maxDist*0.5f;
 
-	case GY_CUBE_MAP_BACK:
-		vol->ntl.y -= halfW;
-		vol->ntr.y -= halfW;
-		vol->nbl.y -= halfW;
-		vol->nbr.y -= halfW;
-		break;
+		vol->ntl.x = position.x - halfW; vol->ntl.y = position.y - halfW;
+		vol->ntr.x = position.x + halfW; vol->ntr.y = position.y - halfW;
+		vol->nbl.x = position.x - halfW; vol->nbl.y = position.y + halfW;
+		vol->nbr.x = position.x + halfW; vol->nbr.y = position.y + halfW;
 
-	case GY_CUBE_MAP_FRONT:
-		vol->ntl.y += halfW;
-		vol->ntr.y += halfW;
-		vol->nbl.y += halfW;
-		vol->nbr.y += halfW;
-		break;
+		switch(face) {
+		case GY_CUBE_MAP_RIGHT:
+			vol->ntl.x += halfW;
+			vol->ntr.x += halfW;
+			vol->nbl.x += halfW;
+			vol->nbr.x += halfW;
+			break;
+		case GY_CUBE_MAP_LEFT:
+			vol->ntl.x -= halfW;
+			vol->ntr.x -= halfW;
+			vol->nbl.x -= halfW;
+			vol->nbr.x -= halfW;
+			break;
 
-	case GY_CUBE_MAP_BOTTOM:
-	case GY_CUBE_MAP_TOP:
-	default:
-		break;
+		case GY_CUBE_MAP_BACK:
+			vol->ntl.y -= halfW;
+			vol->ntr.y -= halfW;
+			vol->nbl.y -= halfW;
+			vol->nbr.y -= halfW;
+			break;
+
+		case GY_CUBE_MAP_FRONT:
+			vol->ntl.y += halfW;
+			vol->ntr.y += halfW;
+			vol->nbl.y += halfW;
+			vol->nbr.y += halfW;
+			break;
+
+		case GY_CUBE_MAP_BOTTOM:
+		case GY_CUBE_MAP_TOP:
+		default:
+			break;
+		}
+
 	}
 
 	vol->ftl = vol->ntl;
 	vol->ftr = vol->ntr;
 	vol->fbl = vol->nbl;
 	vol->fbr = vol->nbr;
-
 
 
 	thisCam->updateBoundingSubregions(*cam);
