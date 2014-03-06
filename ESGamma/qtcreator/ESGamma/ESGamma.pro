@@ -3,17 +3,19 @@ CONFIG += console
 #CONFIG -= app_bundle
 CONFIG -= qt
 CONFIG += c++11
+#CONFIG += -std=c99
 
 DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_x86 \
     ELYSIAN_ENGINE
 
 QMAKE_CXXFLAGS += -std=c++11 \
     -fno-rtti \
-	-fno-exceptions
+        -fno-exceptions
 
 win32 {
 	QMAKE_CXXFLAGS += -msse
-	QMAKE_CFLAGS += 	-msse
+        QMAKE_CFLAGS += -msse -std=c99
+          # QMAKE_CFLAGS += -std=c99
 }
 
 #Required to get C++11x to work on OSX
