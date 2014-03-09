@@ -128,7 +128,7 @@ namespace elysian {
 		}
 
 		if(entry.mapEntry.getElev() > 0) {
-			gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta, 32.0f, 32.0f, 1.0f);
+			gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta-32.0f, 32.0f, 32.0f, 32.0f);
 			gyVidRectNormalType(GY_RECT_NORMAL_DEPTH);
 					gyVidRect(_animTiles[((TileEntry *)&entry.mapEntry)->getIndex()].curIndex);
 		} else {

@@ -16,8 +16,8 @@ namespace elysian {
 	struct CameraState: public GYCamera {
 		Entity* entity		= nullptr;
 		GYVector3 pos		= { 0.0f, 0.0f, 0.0f };
-		GYVector3 dir		= { 0.0f, 1.0f, 0.0f };
-		GYVector3 up		= { 0.0f, 0.0f, 1.0f };
+		GYVector3 dir		= { 0.0f, -1.0f, 0.0f };
+		GYVector3 up		= { 0.0f, 0.0f, -1.0f };
 		float scale			= 1.0f;
 		float zOrient		= 0.0f;
 
@@ -36,7 +36,7 @@ namespace elysian {
 		void updateBoundingRegions(const int startX, const int endX, const int startY, const int endY);
 		void updateBoundingSubregions(const CameraState& cam);
 
-		bool isWithinScreenRegion(const int x, const int y, const int width, const int height);
+		bool isWithinScreenRegion(const int x, const int y, const int width, const int height) const;
 
 	};
 
@@ -164,7 +164,7 @@ namespace elysian {
 
 
 
-	inline bool CameraState::isWithinScreenRegion(const int x, const int y, const int halfWidth, const int halfHeight) {
+	inline bool CameraState::isWithinScreenRegion(const int x, const int y, const int halfWidth, const int halfHeight) const {
 
 		const int distX = abs((int)x-(int)pos.x);
 		const int distY = abs((int)y-(int)pos.y);

@@ -63,7 +63,7 @@ public:
 
 
 inline void LightSystem::setRenderDebugEnabled(const bool val) {
-	_enabled = val;
+	_renderDebug = val;
 }
 /*
 inline uint32_t LightSystem::getLightMapEntryScreenCoord(const unsigned y, const unsigned x) const {

@@ -29,6 +29,8 @@
 #include "elysian_audio_source.hpp"
 #include "elysian_light_source.hpp"
 #include "elysian_light_system.hpp"
+#include "elysian_particle_system.hpp"
+#include "elysian_day_system.hpp"
 
 namespace elysian {
 
@@ -176,6 +178,11 @@ void Debug::update(void) {
 static LightSource* src;
 
 void Debug::processInput(const GameInput& input) {
+
+	static float theta = 0.0f;
+	static unsigned size = 3;
+	static unsigned intensity = 200;
+
 	//Camera zoom/rotate
 	if(input.getDown(GameInput::BUT_Q)){
 		_engine->_cameraSystem->rotate(0.2f);
@@ -254,25 +261,32 @@ void Debug::processInput(const GameInput& input) {
 */
 	}
 
+	//if(!input.getDown(GameInput::BUT_LCTRL)) return;
+	//EVERYTHING BEYOND THIS POINT IS IN FALCO'S DEBUG KEYSPACE!!!!
+
 	if(input.getDown(GameInput::BUT_5)) {
+		++intensity;
 		dirVec.z += 0.1f;
 		gyVec3Normalize(&dirVec);
 		src->setDirection(dirVec);
 		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
 	}
 	if(input.getDown(GameInput::BUT_6)) {
+		if(intensity != 0) --intensity;
 		dirVec.z -= 0.1f;
 		gyVec3Normalize(&dirVec);
 		src->setDirection(dirVec);
 		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
 	}
 	if(input.getDown(GameInput::BUT_7)) {
+		++size;
 		dirVec.y += 0.1f;
 		gyVec3Normalize(&dirVec);
 		src->setDirection(dirVec);
 		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
 	}
 	if(input.getDown(GameInput::BUT_8)) {
+		if(size != 0) --size;
 		dirVec.y -= 0.1f;
 		gyVec3Normalize(&dirVec);
 		src->setDirection(dirVec);
@@ -280,15 +294,39 @@ void Debug::processInput(const GameInput& input) {
 	}
 	if(input.getDown(GameInput::BUT_9)) {
 		dirVec.x += 0.1f;
+		theta += 0.1f;
 		gyVec3Normalize(&dirVec);
 		src->setDirection(dirVec);
 		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
 	}
 	if(input.getDown(GameInput::BUT_O)) {
-		dirVec.x -= 0.1f;
+		//dirVec.x -= 0.1f;
+		theta -= 0.1f;
 		gyVec3Normalize(&dirVec);
 		src->setDirection(dirVec);
 		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
+	}
+
+	if(input.getTapped(GameInput::BUT_R)) {
+
+		static bool renderDebug = false;
+		renderDebug = !renderDebug;
+		getLightSys()->setRenderDebugEnabled(renderDebug);
+		printf(VERBOSE, "LightSystem::renderShadowVolumes = %d", renderDebug);
+	//	getPartSys()->getAttrib(0)->size = size;
+		//getPartSys()->emitFrom(0, GYVector3 { entity->transform._pos.x+5, entity->transform._pos.y, entity->transform._pos.z}, theta, intensity);
+
+	}
+
+	static float timeSpeed = 60.0f;
+
+	if(input.getDown(GameInput::BUT_N)) {
+		timeSpeed *= 1.1f;
+		getDaySys()->setTimeDilation(timeSpeed);
+	}
+	if(input.getDown(GameInput::BUT_M)) {
+		timeSpeed *= 0.9f;
+		getDaySys()->setTimeDilation(timeSpeed);
 	}
 
 	//VRAM and Audio Stats
@@ -323,11 +361,11 @@ void Debug::processInput(const GameInput& input) {
 	if(input.getTapped(GameInput::BUT_FORWARDSLASH)) {
 		LuaManager::dumpStats();
 	}
-	if(input.getTapped(GameInput::BUT_N)) {
+/*	if(input.getTapped(GameInput::BUT_N)) {
 		Debug::luaPrint("-----------------------------------------");
 		Debug::luaPrint("One man's corruption is another man's salvation.");
 		Debug::luaPrint("-----------------------------------------");
-	}
+	}*/
 	if(input.getTapped(GameInput::BUT_T)) {
 		Entity *entity = new Entity;
 		entity->setName("DICKMITE");
@@ -442,13 +480,12 @@ void Debug::processInput(const GameInput& input) {
 		}
 	}
 	//Display players' tile position
-	if(input.getTapped(GameInput::BUT_M)) {
-		getAudioSys()->fadeInBgmTrack(5.0f);
+/*	if(input.getTapped(GameInput::BUT_M)) {
 		Entity *player1 = _engine->_partySystem->getPartyLeader();
 		if(player1) {
 			printf(VERBOSE, "<%d, %d>\n",  ((int)player1->transform._pos.x+16)/32, ((int)player1->transform._pos.y+16)/32);
 		}
-	}
+	}*/
 }
 
 bool Debug::parseArguments(void) {

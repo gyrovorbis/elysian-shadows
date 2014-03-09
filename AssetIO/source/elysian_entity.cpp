@@ -97,8 +97,10 @@ void Entity::render(void) {
 
 void Entity::renderShadowVolume(void) {
 #ifdef ELYSIAN_ENGINE
+
+#if 0
 	//Honestly don't know for sure if this is the most compact cube.
-/*	static const float unitCubeVerts[17*4] = {
+	static const float unitCubeVerts[17*4] = {
 		-1.0f,  1.0f,  1.0f, 1.0f,
 		 1.0f,  1.0f,  1.0f, 1.0f,
 		-1.0f, 0.0f,  1.0f, 1.0f,
@@ -116,8 +118,10 @@ void Entity::renderShadowVolume(void) {
 		-1.0f,  1.0f, -1.0f, 1.0f,
 		-1.0f, 0.0f,  1.0f, 1.0f,
 		-1.0f,  1.0f,  1.0f, 1.0f
-	};*/
-/*
+	};
+
+
+
 	static const float unitCubeVerts[17*4] = {
 		-1,  1,  -1, 1.0f,
 		 1,  1,  -1, 1.0f,
@@ -136,27 +140,30 @@ void Entity::renderShadowVolume(void) {
 		-1,  1, 1, 1.0f,
 		-1, -1,  -1, 1.0f,
 		-1,  1,  -1, 1.0f
-	};*/
-
-	static const float unitCubeVerts[17*4] = {
-		-1,  1,  0, 1.0f,
-		 1,  1,  0, 1.0f,
-		-1, -1,  0, 1.0f,
-		 1, -1,  0, 1.0f,
-		-1, -1, 1, 1.0f,
-		1, -1, 1, 1.0f,
-		-1,  1, 1, 1.0f,
-		 1,  1, 1, 1.0f,
-		 -1,  1,  0, 1.0f,
-		 1,  1,  0, 1.0f,
-		 1, -1,  0, 1.0f,
-		 1,  1, 1, 1.0f,
-		 1, -1, 1, 1.0f,
-		-1, -1, 1, 1.0f,
-		-1,  1, 1, 1.0f,
-		-1, -1,  0, 1.0f,
-		-1,  1,  0, 1.0f
 	};
+
+#endif
+
+	static const float verts[17*4] = {
+		-1,  1,  1, 1.0f,
+		 1,  1,  1, 1.0f,
+		-1, -1,  1, 1.0f,
+		 1, -1,  1, 1.0f,
+		-1, -1, -1, 1.0f,
+		1, -1, -1, 1.0f,
+		-1,  1, -1, 1.0f,
+		 1,  1, -1, 1.0f,
+		 -1,  1,  1, 1.0f,
+		 1,  1,  1, 1.0f,
+		 1, -1,  1, 1.0f,
+		 1,  1, -1, 1.0f,
+		 1, -1, -1, 1.0f,
+		-1, -1, -1, 1.0f,
+		-1,  1, -1, 1.0f,
+		-1, -1,  1, 1.0f,
+		-1,  1,  1, 1.0f
+	};
+
 
 	static const GYColor4 colors[17] = {
 		{ 255, 255, 0, 255 },
@@ -179,17 +186,19 @@ void Entity::renderShadowVolume(void) {
 	};
 
 	gyMatPush();
-	//gyMatLoadIdentity();
+	gyMatLoadIdentity();
 
-	gyMatTranslate(transform._pos.x, transform._pos.y, ZCoordConstants::mapBase + (_elev)*32.0f);
+	const float zSize = transform._size.y*transform._scale.y*0.5f;
+
+	gyMatTranslate(transform._pos.x, transform._pos.y, ZCoordConstants::mapBase + (_elev)*32.0f + 0.5f*zSize);
 	gyMatScale(transform._size.x*transform._scale.x*0.5f,
 			   _shadowDepth*0.5f,
-			   60.0f/*transform._size.y*transform._scale.y*/);
+			   zSize);
 	//gyMatRotateZ(transform._orientZ);
 
 	//transform.apply();
 	gyVidColorArray(colors);
-	gyVidTriangleStrip((GYVector4*)unitCubeVerts, 0, 17);
+	gyVidTriangleStrip((GYVector4*)verts, 0, 17);
 
 	gyMatPop();
 

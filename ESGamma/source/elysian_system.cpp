@@ -18,6 +18,8 @@ namespace elysian {
 	ExaminableSystem*	System::_examinableSystem	= nullptr;
 	AudioSystem*		System::_audioSystem		= nullptr;
 	LightSystem*		System::_lightSystem		= nullptr;
+	ParticleSystem*		System::_particleSystem		= nullptr;
+	DaySystem*			System::_daySystem			= nullptr;
 	BehaviorSystem*		System::_behaviorSystem		= nullptr;
 
 }

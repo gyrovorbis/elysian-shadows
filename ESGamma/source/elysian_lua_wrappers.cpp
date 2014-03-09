@@ -43,6 +43,9 @@ namespace elysian {
 		_mainState->register_class<LightSource>();
 		_mainState->register_class<AudioSystem>();
 		_mainState->register_class<LightSystem>();
+		_mainState->register_class<ParticleEmitterAttrib>();
+		_mainState->register_class<ParticleSystem>();
+		_mainState->register_class<DaySystem>();
 		_mainState->register_class<LevelSystem>();
 		_mainState->register_class<Direction>();
 
@@ -57,6 +60,8 @@ namespace elysian {
 		_mainState->register_class_static<Singletons>("getAudioSys", &Singletons_getAudioSystem);
 		_mainState->register_class_static<Singletons>("getLightSys", &Singletons_getLightSystem);
 		_mainState->register_class_static<Singletons>("getLevelSys", &Singletons_getLevelSystem);
+		_mainState->register_class_static<Singletons>("getPartSys", &Singletons_getParticleSystem);
+		_mainState->register_class_static<Singletons>("getDaySys", &Singletons_getDaySystem);
 
 		//libGyro wrappers
 		_mainState->register_class_static<gyro>("filePath", &gyroFilePath);
@@ -83,6 +88,10 @@ OOLUA_EXPORT_FUNCTIONS_CONST(GYVector3, getX, getY, getZ)
 
 OOLUA_EXPORT_FUNCTIONS(GYVector4, setX, setY, setZ, setW)
 OOLUA_EXPORT_FUNCTIONS_CONST(GYVector4, getX, getY, getZ, getW)
+
+
+OOLUA_EXPORT_FUNCTIONS(GYColor4, setA, setR, setG, setB)
+OOLUA_EXPORT_FUNCTIONS_CONST(GYColor4, getA, getR, getG, getB)
 
 EXPORT_OOLUA_FUNCTIONS_0_CONST(GYWav)
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(GYWav)
@@ -297,6 +306,13 @@ OOLUA_EXPORT_FUNCTIONS(LightSource,
 					   setShadowCaster)
 OOLUA_EXPORT_FUNCTIONS_CONST(LightSource)
 
+OOLUA_EXPORT_FUNCTIONS(ParticleEmitterAttrib,
+					   setGravity,
+					   setMaxLife,
+					   setSize,
+					   setColor)
+OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitterAttrib);
+
 EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(Behavior,
 								   addTrigger,
 								   removeTrigger)
@@ -425,6 +441,20 @@ OOLUA_EXPORT_FUNCTIONS_CONST(AudioSystem,
 							 setAuxTrackRolloffFactor,
 							 getBgmTrackTime,
 							 getAuxTrackTime)
+
+OOLUA_EXPORT_FUNCTIONS(ParticleSystem,
+					   emitFrom)
+OOLUA_EXPORT_FUNCTIONS_CONST(ParticleSystem,
+							 getAttrib)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(DaySystem,
+							 getDays,
+							 getHours,
+							 getMinutes,
+							 getSunLightAttrib)
+OOLUA_EXPORT_FUNCTIONS(DaySystem,
+					   setTimeDilation,
+					   setSunEnabled)
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Singletons)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(Singletons)

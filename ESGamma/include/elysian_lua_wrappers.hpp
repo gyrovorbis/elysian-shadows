@@ -23,9 +23,11 @@
 #include "elysian_light_source.hpp"
 #include "elysian_level_system.hpp"
 #include "elysian_light_system.hpp"
+#include "elysian_particle_system.hpp"
 #include "elysian_lua_script.hpp"
 #include "elysian_map_depth_buffer.hpp"
 #include "elysian_quad_sprite.hpp"
+#include "elysian_day_system.hpp"
 
 /* IT'S NOT SAFE TO GO ALONE! TAKE THIS HEADER FILE. IT WILL HELP
  * YOU ON YOUR JOURNEY!
@@ -82,6 +84,9 @@ namespace OOLUA
 	typedef elysian::AudioSystem				AudioSystem;
 	typedef elysian::LevelSystem				LevelSystem;
 	typedef elysian::LightSystem				LightSystem;
+	typedef elysian::ParticleEmitterAttrib		ParticleEmitterAttrib;
+	typedef elysian::ParticleSystem				ParticleSystem;
+	typedef elysian::DaySystem					DaySystem;
 	typedef elysian::LuaBehaviorScriptAttrib	LuaBehaviorScriptAttrib;
 	typedef elysian::Direction					Direction;
 }
@@ -111,6 +116,13 @@ OOLUA_PROXY(GYVector4)
 	OOLUA_MGET_MSET(y, getY, setY)
 	OOLUA_MGET_MSET(z, getZ, setZ)
 	OOLUA_MGET_MSET(w, getW, setW)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(GYColor4)
+	OOLUA_MGET_MSET(a, getA, setA)
+	OOLUA_MGET_MSET(r, getR, setR)
+	OOLUA_MGET_MSET(g, getG, setG)
+	OOLUA_MGET_MSET(b, getB, setB)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(GYWav)
@@ -388,6 +400,14 @@ OOLUA_PROXY(LightSource, Component)
 	OOLUA_MFUNC(setShadowCaster)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(ParticleEmitterAttrib)
+	OOLUA_MFUNC(setGravity)
+	OOLUA_MFUNC(setMaxLife)
+	OOLUA_MFUNC(setSize)
+	OOLUA_MFUNC(setColor)
+OOLUA_PROXY_END
+
+
 OOLUA_PROXY(Behavior, Component)
 	OOLUA_TAGS (
 		No_public_constructors,
@@ -561,6 +581,21 @@ OOLUA_PROXY(AudioSystem)
 	OOLUA_MFUNC_CONST(setAuxTrackRolloffFactor)
 	OOLUA_MFUNC_CONST(getAuxTrackTime)
 OOLUA_PROXY_END
+
+OOLUA_PROXY(ParticleSystem)
+	OOLUA_MFUNC(emitFrom)
+	OOLUA_MFUNC_CONST(getAttrib)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(DaySystem)
+	OOLUA_MFUNC_CONST(getDays)
+	OOLUA_MFUNC_CONST(getHours)
+	OOLUA_MFUNC_CONST(getMinutes)
+	OOLUA_MFUNC_CONST(getSunLightAttrib)
+	OOLUA_MFUNC(setTimeDilation)
+	OOLUA_MFUNC(setSunEnabled)
+OOLUA_PROXY_END
+
 
 OOLUA_PROXY(Singletons)
 	OOLUA_TAGS (
@@ -793,6 +828,14 @@ static inline int Singletons_getAudioSystem(lua_State* const vm) {
 
 static inline int Singletons_getLightSystem(lua_State* const vm) {
 	OOLUA_C_FUNCTION(elysian::LightSystem*, elysian::Singletons::getLightSys)
+}
+
+static inline int Singletons_getParticleSystem(lua_State* const vm) {
+	OOLUA_C_FUNCTION(elysian::ParticleSystem*, elysian::Singletons::getPartSys)
+}
+
+static inline int Singletons_getDaySystem(lua_State* const vm) {
+	OOLUA_C_FUNCTION(elysian::DaySystem*, elysian::Singletons::getDaySys)
 }
 
 static inline int Singletons_getTimerSystem(lua_State* const vm) {

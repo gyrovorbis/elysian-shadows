@@ -48,12 +48,6 @@ void LightSystem::setEnabled(const bool val) {
 	gyVidLightingSetEnable(val);
 }
 
-void LightSystem::_renderShadowVolumes(void) {
-	const auto entities = _curArea->entities;
-	for(auto it : entities) {
-		if(it->isShadowVolume()) it->renderShadowVolume();
-	}
-}
 
 static void renderCube(float x, float y, float z,
 					   float sx, float sy, float sz,
@@ -117,7 +111,8 @@ static void renderCube(float x, float y, float z,
 }
 
 
-void LightSystem::render(void) {
+
+void LightSystem::_renderShadowVolumes(void) {
 
 	gyVidTexBind(nullptr);
 	gyVidMaterialBind(nullptr);
@@ -159,6 +154,15 @@ void LightSystem::render(void) {
 			   25.0f, 25.0f, 50.0f,
 			   0.0f);
 
+	const auto entities = _curArea->entities;
+	for(auto it : entities) {
+		if(it->isShadowVolume()) it->renderShadowVolume();
+	}
+}
+
+
+void LightSystem::render(void) {
+	if(!_renderDebug) return;
 	_renderShadowVolumes();
 
 }
@@ -191,7 +195,7 @@ void LightSystem::shadowRenderPasses(void) {
 			if(it->isShadowCaster()) {
 				gyVidLightSourceBeginShadowPass(it, GY_CUBE_MAP_FACE_MAX);
 				getCameraSys()->setCurrentCameraState(it->getCameraState());
-				render();
+				_renderShadowVolumes();
 			}
 			_addToLightMap(it);
 			break;
@@ -208,7 +212,7 @@ void LightSystem::shadowRenderPasses(void) {
 							//it->getCameraState()->updateBoundingSubregions(*cam);
 
 							getCameraSys()->setCurrentCameraState(it->getCameraState());
-							render();
+							_renderShadowVolumes();
 
 						}
 						_addToLightMap(it);

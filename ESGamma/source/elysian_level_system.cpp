@@ -7,6 +7,7 @@
 #include "elysian_collision_system.hpp"
 #include "elysian_map_system.hpp"
 #include "elysian_audio_system.hpp"
+#include "elysian_day_system.hpp"
 #include "elysian_debug.hpp"
 
 #include <gyro.h>
@@ -51,21 +52,14 @@ bool LevelSystem::switchArea(const char *const dir) {
 	int index;
 	Area *ar;
 
-	//Clean up current area
-	getPartySys()->removePartyFromArea();
-	if(_curArea != NULL) { //Can't call that if no area has been loaded yet.
-		getBehavSys()->callTriggers(Behavior::ON_EXIT);
-	}
-	getCollisionSys()->clearContacts();
-	getMapSys()->resetAnimation();
+	_onAreaExit();
 
 	if(_curArea) strcpy(_prevAreaPath, _curArea->getName());
 	
 	//Check if new area has already been loaded
 	if((index = getAreaIndex(dir)) >= 0) {
 		_curArea = area[index];
-		getPartySys()->addPartyToArea();
-		getBehavSys()->callTriggers(Behavior::ON_ENTER);
+		_onAreaEnter();
 		return true;
 	}
 
@@ -82,10 +76,28 @@ bool LevelSystem::switchArea(const char *const dir) {
 	ar->load(dir, _curLevel);
 	area.push_back(ar);
 	getBehavSys()->callTriggers(Behavior::ON_LOAD);
-	getPartySys()->addPartyToArea();
-	getBehavSys()->callTriggers(Behavior::ON_ENTER);
-	getAudioSys()->update();
+	_onAreaEnter();
 	return true;
+}
+
+void LevelSystem::_onAreaEnter(void) {
+	getPartySys()->addPartyToArea();
+	getDaySys()->onAreaEnter();
+	getAudioSys()->update();
+
+	getBehavSys()->callTriggers(Behavior::ON_ENTER);
+}
+
+
+void LevelSystem::_onAreaExit(void) {
+	if(_curArea != NULL) { //Can't call that if no area has been loaded yet.
+		getBehavSys()->callTriggers(Behavior::ON_EXIT);
+		getDaySys()->onAreaExit();
+	}
+	//Clean up current area
+	getPartySys()->removePartyFromArea();
+	getCollisionSys()->clearContacts();
+	getMapSys()->resetAnimation();
 }
 
 

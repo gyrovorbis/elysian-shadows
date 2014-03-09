@@ -18,6 +18,9 @@ namespace elysian {
 
 		std::vector<Level*> level;
 		std::vector<Area*>  area;
+
+		void _onAreaEnter(void);
+		void _onAreaExit(void);
 		
 	public:
 

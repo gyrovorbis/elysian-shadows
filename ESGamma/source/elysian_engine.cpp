@@ -1,4 +1,5 @@
 #include <gyro.h>
+#include <ctime>
 
 #include "elysian_engine.hpp"
 #include "elysian_level_system.hpp"
@@ -20,11 +21,15 @@
 #include "elysian_light_system.hpp"
 #include "elysian_entity.hpp"
 #include "elysian_light_source.hpp"
+#include "elysian_particle_system.hpp"
+#include "elysian_day_system.hpp"
 #include "glal/gyro_glal.h"
 
 namespace elysian {
 
 Engine::Engine(void) {
+	srand(time(nullptr));
+
 	LuaManager::initialize();
 		
 	//allocate systems
@@ -41,6 +46,8 @@ Engine::Engine(void) {
 	_behaviorSystem		= new BehaviorSystem;
 	_audioSystem		= new AudioSystem;
 	_lightSystem		= new LightSystem;
+	_particleSystem		= new ParticleSystem;
+	_daySystem			= new DaySystem;
 
 	//register Lua dependencies
 	Singletons::setGameInput(&_gameInput);
@@ -80,6 +87,8 @@ void Engine::update(void) {
 			//warpSystem->Update();
 			_guiSystem->update();
 			_warpSystem->Update();
+			_particleSystem->update();
+			_daySystem->update();
 
 			//conversationSystem->Update();
 			_behaviorSystem->callTriggers(Behavior::ON_UPDATE);
@@ -136,12 +145,6 @@ void Engine::processInput(void) {
 	}
 }
 
-
-extern "C" void glalGetLightViewMatrix(GYMatrix4 *mat, const GYLightSource*const src);
-extern "C" void glalGetLightProjectionMatrix(GYMatrix4 *mat, const GYLightSource*const src);
-extern "C" void glalGetPointLightProjectionMatrix(GYMatrix4 dest);
-extern "C" void glalGetPointLightViewMatrix(GYMatrix4 dest, const GYLightSource* const lightSrc, unsigned face);
-
 void Engine::render(void) {
 	GYMatrix4 lightViewMatrix;
 	GYMatrix4 projectionMatrix;
@@ -176,9 +179,10 @@ void Engine::render(void) {
 
 			_mapSystem->render();
 
-			//_lightSystem->render();
+			_lightSystem->render();
 
 			 _collisionSystem->render();
+			 _particleSystem->render();
 
 			_cameraSystem->popViewProjMatrix();
 			_lightSystem->removeLightSourcesFromScene();
@@ -194,6 +198,8 @@ void Engine::render(void) {
 Engine::~Engine(void) { 
 
 	LuaManager::uninitialize();
+	delete _daySystem;
+	delete _particleSystem;
 	delete _levelSystem;
 	delete _mapSystem;
 	delete _cameraSystem;
