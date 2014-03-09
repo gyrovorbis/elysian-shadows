@@ -12,6 +12,7 @@ namespace elysian {
 		_mainState->register_class<GYVector2>();
 		_mainState->register_class<GYVector3>();
 		_mainState->register_class<GYVector4>();
+        _mainState->register_class<GYColor4>();
 		_mainState->register_class<InstanceTransform>();
 		OOLUA::register_class<Entity>(*_mainState);
 		OOLUA::register_class<QuadSpriteAttrib>(*_mainState);

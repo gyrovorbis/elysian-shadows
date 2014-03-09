@@ -24,8 +24,8 @@ namespace elysian {
 	public:
 
 		void setGravity(const GYVector3& grav);
-		void setMaxLife(const unsigned life);
-		void setSize(const unsigned newSize);
+        void setMaxLife(const unsigned life); //number of frames since birth that it lives
+        void setSize(const unsigned newSize); // 1 = 1x1 square
 		void setColor(const GYColor4& newColor);
 	};
 

@@ -406,6 +406,10 @@ OOLUA_PROXY(ParticleEmitterAttrib)
 	OOLUA_MFUNC(setSize)
 	OOLUA_MFUNC(setColor)
 OOLUA_PROXY_END
+//    void setGravity(const GYVector3& grav);
+//    void setMaxLife(const unsigned life); //number of frames since birth that it lives
+//    void setSize(const unsigned newSize); // 1 = 1x1 square
+//    void setColor(const GYColor4& newColor);
 
 
 OOLUA_PROXY(Behavior, Component)
@@ -583,9 +587,11 @@ OOLUA_PROXY(AudioSystem)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ParticleSystem)
-	OOLUA_MFUNC(emitFrom)
+    OOLUA_MFUNC(emitFrom)
 	OOLUA_MFUNC_CONST(getAttrib)
 OOLUA_PROXY_END
+//void emitFrom(const unsigned index, const GYVector3& pos, const float angle, const unsigned intensity);
+//ParticleEmitterAttrib *getAttrib(const unsigned index) const;
 
 OOLUA_PROXY(DaySystem)
 	OOLUA_MFUNC_CONST(getDays)
