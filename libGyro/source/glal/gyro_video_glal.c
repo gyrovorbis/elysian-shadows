@@ -294,7 +294,7 @@ void gyVidLookAtMat(GYMatrix4 mat, const float ex, const float ey, const float e
 
 	gyMatPush();
 	gyMatLoad(mat);
-	gyMatScale(1.0f, 1.0f, -1.0f);
+	gyMatScale(-1.0f, -1.0f, -1.0f);
 	gyMatTranslate(ex, ey, ez);
 	gyMatStore(mat);
 	gyMatPop();
