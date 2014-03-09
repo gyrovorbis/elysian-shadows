@@ -31,6 +31,7 @@
 #include "elysian_light_system.hpp"
 #include "elysian_particle_system.hpp"
 #include "elysian_day_system.hpp"
+#include "elysian_dialog_system.hpp"
 
 namespace elysian {
 
@@ -331,32 +332,27 @@ void Debug::processInput(const GameInput& input) {
 
 	//VRAM and Audio Stats
 	if(input.getTapped(GameInput::BUT_Z)) {
-		//gyVidTexWalkthrough();
-		//getAudioSys()->morphIntoBgmTrack(1, 5.0f);
-		//getAudioSys()->fadeIntoBgmTrack(1, 5.0f);
-		//getAudioSys()->morphIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop2.ogg");
-		//getAudioSys()->fadeIntoNewBgmTrack(1, 5.0f, "audio/music/CaveLoop2.ogg");
-		//getAudioSys()->fadeIntoNewAuxTrack(0, 5.0f, "audio/music/RainThunder.ogg");
-		//getAudioSys()->fadeInAuxTrack(0, 5.0f);
-		//getAudioSys()->fadeIntoNewAuxTrack(0, 5.0f, "audio/music/RainThunder.ogg");
-		//getAudioSys()->playBgmTrack();
+		Dialog* dialog = new Dialog;
+		DialogText* textScreen;
+		DialogPrompt *promptScreen;
+		Entity* julien = getCurArea()->findEntity("Random_Ass_Guy");
 
-		Entity* entity = new Entity();
-		LightSource* lightSrc = entity->addLightSource();
-		src = lightSrc;
-		lightSrc->setLightType(GY_LIGHT_DIRECTIONAL);
-		lightSrc->setDirection(GYVector3{0.0f, -1.0f, -1.0f});
-		LightAttrib* attrib = new LightAttrib;
-		//attrib->setAmbientColor(GYVector4{ 0.3f, 0.3f, 0.3f, 1.0f});
-		attrib->setDiffuseColor(GYVector4{ 0.4f, 0.4f, 0.4f, 0.0f });
-		//attrib->setSpecularColor(GYVector4{ 0.0f, 0.0f, 1.0f, 1.0f});
-		//attrib->setAmbientColor(GYVector4{ 1.0f, 1.0f, 1.0f, 1.0f});
-		lightSrc->setAttrib(attrib);
-		lightSrc->setShadowCaster(true);
-		_curArea->addEntity(entity);
 
-		Debug::printf(VERBOSE, "Shader Uniform Changes Last Frame - %d", getLightSys()->getShaderUniformChangesLastFrame());
-		Debug::printf(VERBOSE, "Lights Onscreen - %d", getLightSys()->getOnscreenLightCount());
+		textScreen = dialog->addTextScreen("Welcome to my chapel, child!\nI advise you confess your sins to save the game.\nLike this is Dragon Quest or something...");
+		textScreen->addSourceEntity(julien);
+		textScreen = dialog->addTextScreen("Diaaloooooog boooooox is workiiiiing!\n\nSKIP A LINE! SHIT STILL WORKS!");
+		textScreen->addSourceEntity(julien);
+		textScreen = dialog->addTextScreen("One line of text... Now for the obligatory prompt.");
+		textScreen->addSourceEntity(julien);
+		promptScreen = dialog->addPromptScreen("Do you know the times!?");
+		promptScreen->addOption("No", 0);
+		promptScreen->addOption("Yes", -1);
+		promptScreen->addSourceEntity(julien);
+		//textScreen->setNextIndex(-1);
+
+		getDialogSys()->startDialog(dialog);
+
+
 	}
 	if(input.getTapped(GameInput::BUT_FORWARDSLASH)) {
 		LuaManager::dumpStats();

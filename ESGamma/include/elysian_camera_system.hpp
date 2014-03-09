@@ -142,7 +142,7 @@ namespace elysian {
 		void popViewMatrixFromStack(void);
 
 		//Transforms a WORLD COORDINATE vector into SCREEN COORDINATES
-		void transform(GYVector2* dest, const GYVector2* src);
+		void transform(GYVector3* dest, const GYVector3* src);
 		void transform(GYVector4* dest, const GYVector4* src);
 
 		void update(void);

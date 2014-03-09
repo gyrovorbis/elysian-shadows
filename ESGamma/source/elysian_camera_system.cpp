@@ -305,15 +305,17 @@ void CameraSystem::update(void) {
 }
 
 //VERY INEFFICIENT. BATCH THIS BITCH! THESE DON'T WORK ANYMORE!!!!
-void CameraSystem::transform(GYVector2* dest, const GYVector2* src) {
-	GYVector4 in = { src->x, src->y, 1.0f, 1.0f };
-	GYVector4 out = { 0.0f, 0.0f, 0.0f, 0.0f };
+void CameraSystem::transform(GYVector3* dest, const GYVector3* src) {
+	GYVector4 in = { src->x, src->y, src->z, 1.0f };
+	GYVector4 out;
 
-	//PushTransform();
+	gyMatPush();
+	gyMatLoadIdentity();
+	gyMatLoad(&_curState->viewMat);
 	gyMatMultVec(&in, &out, 1);
-	//PopTransform();
+	gyMatPop();
 
-	dest->x = out.x; dest->y = out.y;
+	dest->x = out.x; dest->y = out.y; dest->z = out.z;
 }
 
 void CameraSystem::transform(GYVector4* dest, const GYVector4* src) {

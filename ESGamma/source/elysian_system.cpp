@@ -20,6 +20,7 @@ namespace elysian {
 	LightSystem*		System::_lightSystem		= nullptr;
 	ParticleSystem*		System::_particleSystem		= nullptr;
 	DaySystem*			System::_daySystem			= nullptr;
+	DialogSystem*		System::_dialogSystem		= nullptr;
 	BehaviorSystem*		System::_behaviorSystem		= nullptr;
 
 }

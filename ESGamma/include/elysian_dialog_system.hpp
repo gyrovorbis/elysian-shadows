@@ -2,70 +2,99 @@
 #define ELYSIAN_DIALOG_SYSTEM_HPP
 
 #include "elysian_system.hpp"
+#include "elysian_dialog.hpp"
+#include "elysian_quad_sprite.hpp"
+
+#define ELSYIAN_DIALOG_SYSTEM_CHAR_APPEAR_TIME	0.05f;
+#define ELYSIAN_DIALOG_SYSTEM_MAX_LINES			3
 
 namespace elysian {
 
+	class Dialog;
+	class GameInput;
+	class Entity;
 
 	class DialogSystem: public System {
 	public:
 		enum POS_STATE { POS_BOTTOM, POS_TOP, POS_MOVE_UP, POS_MOVE_DOWN };
 		enum BOX_STATE { BOX_OUTPUT, BOX_OUTPUT_END, BOX_INPUT };
 	private:
-		static const GYVector2 _maxNonmodalDist;
-		static const float _nextCharTime;
-		int _currentScreen;
-		unsigned int _currentLine;
-		unsigned int _currentCharacter;
-		int _currentOption;
-		float _characterTimer;
-		Conversation* _currentConversation;
-		ConversationDialog* _currentConversationDialog;
-		PartySystem* _partySystem;
-		GuiSystem* _guiSystem;
-		bool _dynamicDialog;
-		POS_STATE _posState;
-		BOX_STATE _boxState;
 
+		static const float _nextCharTime;
+
+
+
+		static const GYVector2 _maxNonmodalDist;
+
+		// ==== INTERNAL DISPLAY STATE ====
+		int				_currentScreen		= 0;
+		unsigned int	_currentLine		= 0;
+		unsigned int	_currentCharacter	= 0;
+		float			_characterTimer		= 0.0f;
+
+		char _textLines[3][ELYSIAN_DIALOG_SCREEN_TEXT_BUFFER_SIZE]; //current text string split into lines
+
+		// ==== USER STATE =====
+		int				_currentOption		= 0;
+
+		Dialog*			_curDialog			= nullptr;
+		union {
+			DialogScreen*	screen			= nullptr;
+			DialogText*		text;
+			DialogPrompt*	prompt;
+		} _curScreen;
+		//ConversationDialog* _currentConversationDialog; WTF?
+
+		//bool _dynamicDialog = false; WTF?
+
+
+		//DO SOMETHING, MAKE PRIVATE?
 		void NextScreen(void);
 		void CheckModal(void) const;
 		void FacePlayer(void) const;
 
+		void _splitText(void);
+
 		// ==== GUI SHIT ====
-		QuadSprite _mainCanvas;
-		Rect _optionBox;
-		Rect _border[2];
-		Rect _cursor;
+		QuadSprite _mainCanvas; //gets and sets for Lua to fuck with this shit!
+		QuadSprite _optionBox;
+		QuadSprite _border[2];
+		QuadSprite _cursor;
+
+		POS_STATE _posState = POS_BOTTOM;
+		BOX_STATE _boxState = BOX_OUTPUT;
 
 	public:
-		DialogSystem(void);
-		void update(void);
-		void render(void);
-		void processInput(const GameInput &input);
-
+				DialogSystem(void);
+		void	update(void);
+		void	render(void);
+		void	processInput(const GameInput &input);
 
 		//Quick helper functions that use default values internally (mostly debugging)
 		void	openText(const char*const str);
 		//void openTextf(const char*const tex, ...)
 		void	openTextAt(const char*const str, const float worldX, const float worldY);
-		void	openTextFrom(str, Entity);
+		void	openTextFrom(const char*const str, const Entity*const entity);
 
 		//Used for segmented/dynamic dialog
-		void	openTextScreen(DialogText&);
-		void	openPromptScreen(DialogPrompt&);
+		void	openTextScreen(DialogText& screen);
+		void	openPromptScreen(DialogPrompt& screen);
 
-		void	startDialog(Dialog&);
-		void	pauseDialog(Dialog&);   //stops, but keeps state information to resume later
+		void	startDialog(Dialog*const dialog);
+		void	pauseDialog(void);   //stops, but keeps state information to resume later
+		void	closeDialog(void);
 
 	   // unsigned getActiveScreenCount();
-		void       setEnabled(const bool val);
+		void	setEnabled(const bool val);
+		Dialog* getDialog(void) const;
+		bool isOpen(void) const;
 
 
 
 
 
 
-
-
+#if 0
 
 		void Openf(bool modal, const char *text, ...);
 
@@ -74,9 +103,8 @@ namespace elysian {
 		void Open(ConversationDialog& dialog);
 		void Open(bool modal, const char* text);
 		void Close(void);
+#endif
 
-		Conversation* getConversation(void) const;
-		bool isOpen(void) const;
 		//void setTexture();
 	};
 

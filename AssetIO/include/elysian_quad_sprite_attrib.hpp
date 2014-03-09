@@ -22,6 +22,11 @@ namespace elysian {
 #endif
 		}
 
+		void setVertexColor(const unsigned short index, const GYColor4 color) {
+			if(index > 0) _vertColor[index-1] = color;
+			else setColor(color);
+		}
+
 		void setVertexColor(const unsigned short index, const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a) {
 			if(index > 0) {
 				_vertColor[index-1].r = r; _vertColor[index-1].g = g; _vertColor[index-1].b = b; _vertColor[index-1].a = a;

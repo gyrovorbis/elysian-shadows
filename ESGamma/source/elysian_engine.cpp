@@ -23,6 +23,7 @@
 #include "elysian_light_source.hpp"
 #include "elysian_particle_system.hpp"
 #include "elysian_day_system.hpp"
+#include "elysian_dialog_system.hpp"
 #include "glal/gyro_glal.h"
 
 namespace elysian {
@@ -48,6 +49,7 @@ Engine::Engine(void) {
 	_lightSystem		= new LightSystem;
 	_particleSystem		= new ParticleSystem;
 	_daySystem			= new DaySystem;
+	_dialogSystem		= new DialogSystem;
 
 	//register Lua dependencies
 	Singletons::setGameInput(&_gameInput);
@@ -75,6 +77,8 @@ void Engine::update(void) {
 	switch(System::_engineState) {
 		case System::ENGINE_NORMAL:
 		case System::ENGINE_WARPING:
+		case System::ENGINE_MODAL_CONVERSATION:
+		case System::ENGINE_CONVERSATION:
 			_cameraSystem->update();
 			_lightSystem->update();
 			_audioSystem->update();
@@ -89,14 +93,15 @@ void Engine::update(void) {
 			_warpSystem->Update();
 			_particleSystem->update();
 			_daySystem->update();
+			_dialogSystem->update();
 
 			//conversationSystem->Update();
 			_behaviorSystem->callTriggers(Behavior::ON_UPDATE);
 			//collisionSystem->DetectCollisions();
 //
 			break;
-		case System::ENGINE_MODAL_CONVERSATION:
-		case System::ENGINE_CONVERSATION:
+
+
 #if 0
 			timerSystem->Update();
 			terrainSystem->Update();
@@ -129,11 +134,12 @@ void Engine::processInput(void) {
 		case System::ENGINE_CONVERSATION:
 			_partySystem->processInput(_gameInput);
 			_cameraSystem->processInput(_gameInput);
+			_dialogSystem->processInput(_gameInput);
 			//Debug::getInstance().processInput(_gameInput);
 			//conversationSystem->ProcessInput(input);
 			break;
 		case System::ENGINE_MODAL_CONVERSATION:
-			//conversationSystem->ProcessInput(input);
+			_dialogSystem->processInput(_gameInput);
 			break;
 		case System::ENGINE_WARPING:
 			break;
@@ -190,6 +196,7 @@ void Engine::render(void) {
 			//Begin rendering overlays
 			_warpSystem->Render();
 			_guiSystem->renderOverlay();
+			_dialogSystem->render();
 
 			gyVidSceneEnd();
 	}
@@ -198,6 +205,7 @@ void Engine::render(void) {
 Engine::~Engine(void) { 
 
 	LuaManager::uninitialize();
+	delete _dialogSystem;
 	delete _daySystem;
 	delete _particleSystem;
 	delete _levelSystem;
