@@ -753,8 +753,8 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 	s->register_class_static<GameInput>("BUT_LALT", GameInput::BUT_LALT);
 	s->register_class_static<GameInput>("BUT_RALT", GameInput::BUT_RALT);
 	s->register_class_static<GameInput>("BUT_BACKQUOTE", GameInput::BUT_BACKQUOTE);
-	s->register_class_static<GameInput>("BUT_BACKQUOTE", GameInput::BUT_BACKSLASH);
-	s->register_class_static<GameInput>("BUT_BACKQUOTE", GameInput::BUT_FORWARDSLASH);
+    s->register_class_static<GameInput>("BUT_BACKSLASH", GameInput::BUT_BACKSLASH);
+    s->register_class_static<GameInput>("BUT_FORWARDSLASH", GameInput::BUT_FORWARDSLASH);
 	s->register_class_static<GameInput>("BUT_MAX", GameInput::BUT_MAX);
 
 
