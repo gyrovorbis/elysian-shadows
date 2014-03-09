@@ -11,6 +11,7 @@ INCLUDEPATH += ../../include \
 win32 {
 	INCLUDEPATH +=  ../../lib/win32
         QMAKE_CFLAGS += -msse -std=c99
+        DEFINES += WIN32
 }
 
 macx {
