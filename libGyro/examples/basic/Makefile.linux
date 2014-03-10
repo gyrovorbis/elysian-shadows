@@ -1,0 +1,27 @@
+TARGET = libGyroBasic
+
+INCDIR=/usr/include/GL /usr/include/SDL ../../include
+SRCDIR=./
+
+DEP_DIR=.deps
+DEP_EXT=.dnix
+OBJDIR=objs
+CFLAGS = $(addprefix -I , $(INCDIR)) -DGYRO_PLATFORM=GYRO_PLATFORM_x86 -g
+LIBS = -lpng -lGL -lSDL -lGyroLinux
+LDFLAGS =-L../../
+CC = g++
+
+ifeq ($(GYRO_RULES),)
+	GYRO_RULES=../../bin/gyromake.rules
+endif
+
+include $(GYRO_RULES)
+
+all: $(TARGET)
+	
+$(TARGET): $(OBJS)
+	@echo Creating $@
+	@$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+.PHONY: customclean
+customclean:
