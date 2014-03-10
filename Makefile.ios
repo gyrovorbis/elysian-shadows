@@ -1,0 +1,42 @@
+TARGET_LIB = libGyroIOS.a
+
+OBJDIR=objs
+INCDIR=include include/ios include/glal include/kinetic
+SRCDIR:=source source/ios source/glal source/soft source/kinetic
+DEPDIR=.deps
+DEP_EXT=.dios
+CFLAGS = $(addprefix -I , $(INCDIR)) -DGYRO_PLATFORM=GYRO_PLATFORM_iOS
+CFLAGS+= -O2 -Wall -g
+
+CC=ios-clang
+CPP=ios-clang++
+AR=arm-apple-darwin11-ar rcs
+
+ifeq ($(GYRO_RULES),)
+	GYRO_RULES=bin/gyromake.rules
+endif
+
+include $(GYRO_RULES)
+
+LIBS =		-lobjc \
+		-bind_at_load \
+		-framework Foundation \
+		-framework CoreFoundation \
+		-framework UIKit \
+		-framework QuartzCore \
+		-framework OpenGLES \
+		-framework CoreGraphics \
+		-framework OpenAL \
+		-F$(HEAVEN)/System/Library/PrivateFrameworks \
+		-framework GraphicsServices \
+		-w
+
+all: $(TARGET_LIB)
+
+default:all
+$(TARGET_LIB): $(OBJS)
+	@echo Creating $@
+	@$(AR) $@ $?
+
+customclean:
+	

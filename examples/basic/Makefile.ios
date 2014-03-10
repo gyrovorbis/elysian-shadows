@@ -1,0 +1,47 @@
+TARGET = libGyroBasic
+
+INCDIR=./
+SRCDIR=./
+
+DEP_DIR=.deps
+DEP_EXT=.dios
+OBJDIR=objs
+CFLAGS = $(addprefix -I , $(INCDIR)) -DGYRO_PLATFORM=GYRO_PLATFORM_iOS
+CFLAGS+=-I../../include -g
+LIBS = -lGyroIOS -lobjc \
+		-bind_at_load \
+		-framework Foundation \
+		-framework CoreFoundation \
+		-framework UIKit \
+		-framework QuartzCore \
+		-framework OpenGLES \
+		-framework CoreGraphics \
+		-F/usr/share/iPhoneOS5.0.sdk/System/Library/PrivateFrameworks \
+		-framework GraphicsServices \
+		-w
+LDFLAGS=-ObjC -L../../
+CC = ios-clang
+CPP = ios-clang++
+
+ifeq (($GYRO_RULES),)
+	GYRO_RULES=./../../bin/gyromake.rules
+endif
+GYRO_RULES=../../bin/gyromake.rules
+include $(GYRO_RULES)
+
+all: $(TARGET)
+	
+$(TARGET): $(OBJS)
+	@echo Creating $@
+	@$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+bundle: $(TARGET)
+	@echo "Bundling $(TARGET) to $(TARGET).app"
+	@mkdir -p $(TARGET).app
+	@mv $(TARGET) $(TARGET).app/$(TARGET)_
+	@cp -f test.png $(TARGET).app/
+	@cp .info.plist $(TARGET).app/Info.plist
+	@dsymutil -o $(TARGET).app/$(TARGET)_.dSYM $(TARGET).app/$(TARGET)_
+customclean:
+	@echo "Removing bundle directory $(TARGET).app"
+	@rm -rf $(TARGET).app
