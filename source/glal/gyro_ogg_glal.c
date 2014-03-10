@@ -7,6 +7,7 @@
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbis/vorbisfile.h>
 #include <gyro_audio_api.h>
+#include <gyro_file_api.h>
 #include <gyro_ogg_api.h>
 #include <gyro_system_api.h>
 #include <stdlib.h>
@@ -17,7 +18,7 @@
 
 typedef struct _GYOggPayload {
 	ALuint			buffers[2];
-	FILE*           oggFile;
+	GYFile*           oggFile;
 	OggVorbis_File  oggStream;
 	vorbis_info*    vorbisInfo;
 	vorbis_comment* vorbisComment;
@@ -41,6 +42,30 @@ static inline const char* _vorbisErrorString(const int code) {
 	}
 }
 
+static size_t __ov_read_fn(void *ptr, size_t size, size_t nmemb, void *datasource)
+{
+    size_t bytes_read = 0;
+    gyFileRead(datasource, ptr, size * nmemb, &bytes_read);
+    return bytes_read;
+}
+
+static int __ov_seek_fn(void *datasource, ogg_int64_t offset, int whence)
+{
+    return !gyFileSeek(datasource, offset, whence);
+}
+
+static int __ov_close_fn(void *datasource)
+{
+    return !gyFileClose((GYFile**)&datasource);
+}
+
+static long int __ov_tell_fn(void *datasource)
+{
+    long int pos = 0;
+    gyFileTell(datasource, &pos);
+    return pos;
+}
+
 GYOgg* gyAudCreateOgg(const char*const path) {
 	int result;
 	int alErrorCode;
@@ -49,19 +74,24 @@ GYOgg* gyAudCreateOgg(const char*const path) {
 	GYOgg* ogg = malloc(sizeof(GYOgg));
 	GYOggPayload* payload = ogg->_data = malloc(sizeof(GYOggPayload));
 
+    ov_callbacks callbacks;
+    callbacks.read_func = &__ov_read_fn;
+    callbacks.seek_func = &__ov_seek_fn;
+    callbacks.close_func = &__ov_close_fn;
+    callbacks.tell_func = &__ov_tell_fn;
+
 	strcpy(ogg->path, path);
 	ogg->looping = 0;
 
-	if(!(payload->oggFile = fopen(path, "rb"))) {
+	if(!gyFileOpen(GY_PATH_BINARY, path, "rb", &payload->oggFile)) {
 		_gyLog(GY_DEBUG_CRITICAL, "! - Could not open ogg file %s", path);
 		free(payload);
 		free(ogg);
 		return NULL;
 	}
-
-	if((result = ov_open(payload->oggFile, &payload->oggStream, NULL, 0)) < 0) {
+	if((result = ov_open_callbacks(payload->oggFile, &payload->oggStream, NULL, 0, callbacks)) < 0) {
 		_gyLog(GY_DEBUG_CRITICAL, "! - Could not open OGG stream: %s", _vorbisErrorString(result));
-		fclose(payload->oggFile);
+        gyFileClose(&payload->oggFile);
 		free(payload);
 		free(ogg);
 		return NULL;

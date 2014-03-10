@@ -48,7 +48,7 @@ void initExample() {
 
 		int i = 0;
 	gySysInit();
-	gyFileInit();
+	gyFileInit("Team Gyro", "Basic Example");
 	gyVidInit(&params);
 	gyInputInit();
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
@@ -117,6 +117,7 @@ void destroy() {
 	gyVidTexDestroy(tex);
 	gyInputUninit();
 	gyVidUninit();
+    gyFileQuit();
 	gySysUninit();
 }
 

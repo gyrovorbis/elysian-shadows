@@ -154,6 +154,7 @@ set(gyro_INCLUDES
 if(GY_TARGET_OS MATCHES "i386" OR GY_TARGET_ARCH MATCHES "x86_64")
 	set(gyro_SOURCES
 		${gyro_SOURCES}
+		${GY_SOURCE_DIR}/x86/gyro_file_x86.c
 		${GY_SOURCE_DIR}/x86/gyro_input_x86.c
 		${GY_SOURCE_DIR}/x86/gyro_matrix_x86.c
 		${GY_SOURCE_DIR}/x86/gyro_system_x86.c
@@ -163,6 +164,7 @@ if(GY_TARGET_OS MATCHES "i386" OR GY_TARGET_ARCH MATCHES "x86_64")
 	)
 	set(gyro_INCLUDES
 		${gyro_INCLUDES}
+		${GY_INCLUDE_DIR}/x86/gyro_file_x86.inl
 		${GY_INCLUDE_DIR}/x86/gyro_input_x86.inl
 		${GY_INCLUDE_DIR}/x86/gyro_math_sse_x86.inl
 		${GY_INCLUDE_DIR}/x86/gyro_matrix_sse_x86.inl

@@ -1,3 +1,4 @@
+#include <gyro_file_api.h>
 #include <gyro_video_api.h>
 #include <gyro_shader_api.h>
 #include <gyro_texture_api.h>
@@ -301,6 +302,9 @@ int _gyVidShaderCreate(GYShader* shader) {
 	char path[GYRO_PATH_MAX_SIZE];
 	GLint compiled;
 	const char* extension = NULL;
+    GYFile *file;
+    size_t charCount = 0;
+    char *programSource = NULL;
 
 	//don't fuck it up by tokenizing
 	strcpy(path, shader->path);
@@ -324,17 +328,15 @@ int _gyVidShaderCreate(GYShader* shader) {
 		return 0;
 	}
 
-	FILE* file = fopen(shader->path, "r");
-	if(!file) {
+	if(!gyFileOpen(GY_PATH_BINARY, shader->path, "r", &file)) {
 		_gyLog(GY_DEBUG_CRITICAL, "\tCould not open shader", shader->path);
 		return 0;
 	}
-	fseek(file , 0L , SEEK_END);
-	long charCount = ftell(file);
-	rewind(file);
-	char* programSource = malloc(sizeof(char)*charCount+1);
-	fread(programSource, charCount, 1 , file);
+    gyFileLength(file, &charCount);
+	programSource = malloc(sizeof(char) * charCount + 1);
+    gyFileRead(file, programSource, charCount, NULL);
 	programSource[charCount] = '\0';
+    gyFileClose(&file);
 
 	glShaderSource(shader->shader, 1, (const char*const*)&programSource, NULL);
 	glCompileShader(shader->shader);
