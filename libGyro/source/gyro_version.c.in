@@ -1,0 +1,13 @@
+#define gy_VERSION_FULL "@gy_VERSION_FULL@"
+#define gy_VERSION_MAJOR @gy_VERSION_MAJOR@
+#define gy_VERSION_MINOR @gy_VERSION_MINOR@
+#define gy_VERSION_PATCH @gy_VERSION_PATCH@
+#define gy_VERSION_EXTRA "@gy_VERSION_EXTRA@"
+
+const char gy_version_full[] = gy_VERSION_FULL;
+
+const int gy_version_major = gy_VERSION_MAJOR;
+const int gy_version_minor = gy_VERSION_MINOR;
+const int gy_version_patch = gy_VERSION_PATCH;
+
+const char gy_version_extra[] = gy_VERSION_EXTRA;
