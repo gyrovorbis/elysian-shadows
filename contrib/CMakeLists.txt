@@ -1,0 +1,11 @@
+if(NOT GY_CONTRIB_DOWNLOAD_DIR)
+	set(GY_CONTRIB_DOWNLOAD_DIR ${GY_CONTRIB_DIR}/downloads)
+endif()
+
+include(ExternalGLEW)
+include(ExternalGLFW)
+if (NOT APPLE OR NOT ${GYRO_PLATFORM} EQUAL GYRO_PLATFORM_x86)
+	include(ExternalOpenAL)
+endif()
+include(ExternalPNG)
+include(ExternalOggVorbis)

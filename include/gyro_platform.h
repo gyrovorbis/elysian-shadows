@@ -36,9 +36,10 @@ extern "C" {
 
 #	define GYRO_AUDIO_PLATFORM_INCLUDE	"glal/gyro_audio_glal.inl"
 #	define GYRO_INPUT_PLATFORM_INCLUDE	"x86/gyro_input_x86.inl"
+#   define GYRO_FILE_PLATFORM_INCLUDE   "x86/gyro_file_x86.inl"
 #	define GYRO_MATH_PLATFORM_INCLUDE	"x86/gyro_math_sse_x86.inl"
 #	define GYRO_MATRIX_PLATFORM_INCLUDE "x86/gyro_matrix_sse_x86.inl"
-#	define GYRO_SYSTEM_PLATFORM_INCLUDE "x86/gyro_sdl_x86.inl"
+#	define GYRO_SYSTEM_PLATFORM_INCLUDE "x86/gyro_glfw_x86.inl"
 #	define GYRO_VIDEO_PLATFORM_INCLUDE	"x86/gyro_video_x86.inl"
 #	define GYRO_TEXTURE_PLATFORM_INCLUDE "glal/gyro_texture_glal.inl"
 

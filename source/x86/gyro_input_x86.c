@@ -3,7 +3,7 @@
 #include <gyro_video_api.h>
 #include <gyro_texture_api.h>
 #include <gyro_shader_api.h>
-#include <x86/gyro_sdl_x86.inl>
+#include <x86/gyro_glfw_x86.inl>
 #include "../glal/gyro_video_glal.h"
 
 extern GYVidInitParams vidParams;
@@ -19,121 +19,173 @@ static inline void _SetKeyUp(GYInput *const input, const GY_X86_KEY key) {
     input->keyTapped[key] = 0;
 }
 
-static inline GY_X86_KEY _TranslateFromSDL(const SDLKey keyCode) {
+static inline GY_X86_KEY _TranslateFromGLFW(const int keyCode) {
     switch(keyCode) {
-    case SDLK_ESCAPE:
+    case GLFW_KEY_ESCAPE:
         //exit(1);
         return GY_KEY_ESC;
-    case SDLK_UP:
+    case GLFW_KEY_UP:
         return GY_KEY_DPAD_U;
-    case SDLK_DOWN:
+    case GLFW_KEY_DOWN:
         return GY_KEY_DPAD_D;
-    case SDLK_LEFT:
+    case GLFW_KEY_LEFT:
         return GY_KEY_DPAD_L;
-    case SDLK_RIGHT:
+    case GLFW_KEY_RIGHT:
         return GY_KEY_DPAD_R;
-    case SDLK_a:
+    case GLFW_KEY_A:
         return GY_KEY_A;
-    case SDLK_b:
+    case GLFW_KEY_B:
         return GY_KEY_B;
-    case SDLK_c:
+    case GLFW_KEY_C:
         return GY_KEY_C;
-    case SDLK_d:
+    case GLFW_KEY_D:
         return GY_KEY_D;
-    case SDLK_e:
+    case GLFW_KEY_E:
         return GY_KEY_E;
-    case SDLK_f:
+    case GLFW_KEY_F:
         return GY_KEY_F;
-    case SDLK_g:
+    case GLFW_KEY_G:
         return GY_KEY_G;
-    case SDLK_h:
+    case GLFW_KEY_H:
         return GY_KEY_H;
-    case SDLK_i:
+    case GLFW_KEY_I:
         return GY_KEY_I;
-    case SDLK_j:
+    case GLFW_KEY_J:
         return GY_KEY_J;
-    case SDLK_k:
+    case GLFW_KEY_K:
         return GY_KEY_K;
-    case SDLK_l:
+    case GLFW_KEY_L:
         return GY_KEY_L;
-    case SDLK_m:
+    case GLFW_KEY_M:
         return GY_KEY_M;
-    case SDLK_n:
+    case GLFW_KEY_N:
         return GY_KEY_N;
-    case SDLK_o:
+    case GLFW_KEY_O:
         return GY_KEY_O;
-    case SDLK_p:
+    case GLFW_KEY_P:
         return GY_KEY_P;
-    case SDLK_q:
+    case GLFW_KEY_Q:
         return GY_KEY_Q;
-    case SDLK_r:
+    case GLFW_KEY_R:
         return GY_KEY_R;
-    case SDLK_s:
+    case GLFW_KEY_S:
         return GY_KEY_S;
-    case SDLK_t:
+    case GLFW_KEY_T:
         return GY_KEY_T;
-    case SDLK_u:
+    case GLFW_KEY_U:
         return GY_KEY_U;
-    case SDLK_v:
+    case GLFW_KEY_V:
         return GY_KEY_V;
-    case SDLK_w:
+    case GLFW_KEY_W:
         return GY_KEY_W;
-    case SDLK_x:
+    case GLFW_KEY_X:
         return GY_KEY_X;
-    case SDLK_y:
+    case GLFW_KEY_Y:
         return GY_KEY_Y;
-    case SDLK_z:
+    case GLFW_KEY_Z:
         return GY_KEY_Z;
-	case SDLK_0:
+	case GLFW_KEY_0:
 		return GY_KEY_0;
-	case SDLK_1:
+	case GLFW_KEY_1:
 		return GY_KEY_1;
-	case SDLK_2:
+	case GLFW_KEY_2:
 		return GY_KEY_2;
-	case SDLK_3:
+	case GLFW_KEY_3:
 		return GY_KEY_3;
-	case SDLK_4:
+	case GLFW_KEY_4:
 		return GY_KEY_4;
-	case SDLK_5:
+	case GLFW_KEY_5:
 		return GY_KEY_5;
-	case SDLK_6:
+	case GLFW_KEY_6:
 		return GY_KEY_6;
-	case SDLK_7:
+	case GLFW_KEY_7:
 		return GY_KEY_7;
-	case SDLK_8:
+	case GLFW_KEY_8:
 		return GY_KEY_8;
-	case SDLK_9:
+	case GLFW_KEY_9:
 		return GY_KEY_9;
-	case SDLK_SPACE:
+	case GLFW_KEY_SPACE:
 		return GY_KEY_SPACE;
-	case SDLK_RETURN:
+	case GLFW_KEY_ENTER:
 		return GY_KEY_RETURN;
-	case SDLK_LSHIFT:
+	case GLFW_KEY_LEFT_SHIFT:
 		return GY_KEY_LSHIFT;
-	case SDLK_RSHIFT:
+	case GLFW_KEY_RIGHT_SHIFT:
 		return GY_KEY_RSHIFT;
-	case SDLK_LCTRL:
+	case GLFW_KEY_LEFT_CONTROL:
 		return GY_KEY_LCTRL;
-	case SDLK_RCTRL:
+	case GLFW_KEY_RIGHT_CONTROL:
 		return GY_KEY_RCTRL;
-	case SDLK_LALT:
+	case GLFW_KEY_LEFT_ALT:
 		return GY_KEY_LALT;
-	case SDLK_RALT:
+	case GLFW_KEY_RIGHT_ALT:
 		return GY_KEY_RALT;
-	case SDLK_BACKQUOTE:
+	case GLFW_KEY_GRAVE_ACCENT:
 		return GY_KEY_BACKQUOTE;
-	case SDLK_BACKSLASH:
+	case GLFW_KEY_BACKSLASH:
 		return GY_KEY_BACKSLASH;
-	case SDLK_SLASH:
-		return GY_KEY_FORWARDSLASH;
+	case GLFW_KEY_SLASH:
+		return GY_KEY_FORWARDSLASH;  
     default:
         return GY_KEY_NONE;
     }
 }
 
+static GYInput *_Input = NULL;
+
+static void _KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+    GY_X86_KEY retval;
+    if (_Input == NULL) {
+        return;
+    }
+    retval = _TranslateFromGLFW(key);
+    switch (action) {
+        case GLFW_PRESS:
+            if (retval > GY_KEY_NONE && retval < GY_KEY_LAST) {
+                _SetKeyDown(_Input, retval);
+            }
+            break;
+        case GLFW_RELEASE:
+            if (retval > GY_KEY_NONE && retval < GY_KEY_LAST) {
+                _SetKeyUp(_Input, retval);
+            }
+            break;
+    }
+}
+
+static void _FramebufferResizeCallback(GLFWwindow *window, int width, int height) {
+    unsigned int projWidth, projHeight;
+    if (!(vidParams.prop & GY_WIN_STRETCH)) {
+        if (vidParams.minWidth != -1 && width < vidParams.minWidth) {
+            projWidth = vidParams.minWidth;
+        } else if (vidParams.maxWidth != -1 && width > vidParams.maxWidth) {
+            projWidth = vidParams.maxWidth;
+        } else {
+            projWidth = width;
+        }
+        if (vidParams.minHeight > -1 && height < vidParams.minHeight) {
+            projHeight = vidParams.minHeight;
+        } else if (vidParams.maxHeight > -1 && height > vidParams.maxHeight) {
+            projHeight = vidParams.maxHeight;
+        } else {
+            projHeight = height;
+        }
+    } else {
+        gyVidResolution(&projWidth, &projHeight);
+    }
+    gyShadersReloadAll();
+    gyVidOglInit(width, height, projWidth, projHeight);
+    gyVidTexReloadAll();
+}
+
 int gyInputInit(void) {
-
-
+    GLFWwindow *context = glfwGetCurrentContext();
+    if (context == NULL) {
+        _gyLog(GY_DEBUG_FATAL, "\tCan't initialize the input subsystem without an active context!\n");
+        return 0;
+    }
+    glfwSetKeyCallback(context, &_KeyCallback);
+    glfwSetFramebufferSizeCallback(context, &_FramebufferResizeCallback);
     return 1;
 }
 
@@ -142,64 +194,20 @@ int gyInputUninit(void) {
 }
 
 void gyInputPoll(GYInput *const input) {
-    SDL_Event event;
-    GY_X86_KEY retval;
-	int flags;
-	unsigned int viewWidth, viewHeight, projWidth, projHeight;
     unsigned int i;
 
     //keyTap is only true if it was pressed last frame, so prime it
     for (i = 0; i < GY_KEY_LAST; ++i)
         input->keyTapped[i] = 0;
 
-        while(SDL_PollEvent(&event)) {
-            switch(event.type) {
-            case SDL_KEYDOWN:
-                retval = _TranslateFromSDL(event.key.keysym.sym);
-                if(retval > GY_KEY_NONE && retval < GY_KEY_LAST) _SetKeyDown(input, retval);
-                break;
-            case SDL_KEYUP:
-                retval = _TranslateFromSDL(event.key.keysym.sym);
-                if(retval > GY_KEY_NONE && retval < GY_KEY_LAST) _SetKeyUp(input, retval);
-                break;
-           case SDL_QUIT:
-               SDL_Quit();
-                exit(0);
-			   return;
-		   case SDL_VIDEORESIZE:
-				viewWidth = event.resize.w;
-				viewHeight = event.resize.h;
+    _Input = input;
 
-				//resize projection to view
-				//if projection is outside of bounds, THEN stretch to fit
-				if(!(vidParams.prop & GY_WIN_STRETCH)) { 
-					if(vidParams.minWidth != -1 && event.resize.w < vidParams.minWidth) projWidth = vidParams.minWidth;
-					else if(vidParams.maxWidth != -1 && event.resize.w > vidParams.maxWidth) projWidth = vidParams.maxWidth;
-					else projWidth = event.resize.w;
+    glfwPollEvents();
+    if (glfwWindowShouldClose(glfwGetCurrentContext())) {
+        glfwTerminate();
+        exit(0);
+    }
 
-					if(vidParams.minHeight != -1 && event.resize.h < vidParams.minHeight) projHeight = vidParams.minHeight;
-					else if(vidParams.maxHeight != -1 && event.resize.h > vidParams.maxHeight) projHeight = vidParams.maxHeight;
-					else projHeight = event.resize.h;
-				}
-				else { //stretch the same projection to fit the view
-					gyVidResolution(&projWidth, &projHeight);	
-				}
-
-			    flags = SDL_OPENGL | SDL_ANYFORMAT | SDL_HWPALETTE;
-				if(vidParams.prop & GY_WIN_RESIZABLE) flags |= SDL_RESIZABLE;
-				if(vidParams.prop & GY_WIN_FULLSCREEN) flags |= SDL_FULLSCREEN;
-
-				if(SDL_SetVideoMode(viewWidth, viewHeight, vidBpp, flags) == 0) {
-					_gyLog(GY_DEBUG_CRITICAL, "Video mode set failed: %s\n", SDL_GetError());
-					SDL_Quit();
-				}
-
-				gyShadersReloadAll();
-			   gyVidOglInit(viewWidth, viewHeight, projWidth, projHeight);
-			   gyVidTexReloadAll();
-
-			   break;
-            }
-        }
+    _Input = NULL;
 }
 

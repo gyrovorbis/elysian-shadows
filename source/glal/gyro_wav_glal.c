@@ -1,5 +1,6 @@
 #include <glal/gyro_glal.h>
 #include <gyro_audio_api.h>
+#include <gyro_file_api.h>
 #include <gyro_wav_api.h>
 #include <gyro_system_api.h>
 #include <stdio.h>
@@ -61,21 +62,20 @@ typedef struct __WAVE_Data {
  */
 static int _loadWavFile(const char* filename, ALuint* buffer, ALsizei* size,
 					   ALsizei* frequency, ALenum* format) {
-	FILE* soundFile = NULL;
+	GYFile* soundFile = NULL;
 	_WAVE_Format wave_format;
 	_WAVE_RIFF_Header riff_header;
 	_WAVE_Data wave_data;
 	unsigned char* data;
 	int alErrorCode;
 
-	soundFile = fopen(filename, "rb");
-	if (!soundFile) {
+	if (!gyFileOpen(GY_PATH_BINARY, filename, "rb", &soundFile)) {
 		_gyLog(GY_DEBUG_CRITICAL, "! - Could not open WAV file - %s", filename);
 		return 0;
 	}
 
 	// Read in the first chunk into the struct
-	fread(&riff_header, sizeof(_WAVE_RIFF_Header), 1, soundFile);
+    gyFileRead(soundFile, &riff_header, sizeof(_WAVE_RIFF_Header), NULL);
 
 	//check for RIFF and WAVE tag in memeory
 	if (riff_header.chunkID[0] != 'R' ||
@@ -86,35 +86,35 @@ static int _loadWavFile(const char* filename, ALuint* buffer, ALsizei* size,
 		 riff_header.format[1] != 'A' ||
 		 riff_header.format[2] != 'V' ||
 		 riff_header.format[3] != 'E') {
-		fclose(soundFile);
+        gyFileClose(&soundFile);
 		_gyLog(GY_DEBUG_CRITICAL, "! - Invalid RIFF/WAVE tag - %s", filename);
 		return 0;
 	}
 
 	//Read in the 2nd chunk for the wave info
-	fread(&wave_format, sizeof(_WAVE_Format), 1, soundFile);
+    gyFileRead(soundFile, &wave_format, sizeof(_WAVE_Format), soundFile);
 	//check for fmt tag in memory
 	if (wave_format.subChunkID[0] != 'f' ||
 		wave_format.subChunkID[1] != 'm' ||
 		wave_format.subChunkID[2] != 't' ||
 		wave_format.subChunkID[3] != ' ') {
-		fclose(soundFile);
+        gyFileClose(&soundFile);
 		_gyLog(GY_DEBUG_CRITICAL, "! - Invalid fmt tag - %s", filename);
 		return 0;
 	}
 
 	//check for extra parameters;
 	if (wave_format.subChunkSize > 16)
-		fseek(soundFile, sizeof(uint16_t), SEEK_CUR);
+        gyFileSeek(soundFile, sizeof(uint16_t), SEEK_CUR);
 
 	//Read in the the last byte of data before the sound file
-	fread(&wave_data, sizeof(_WAVE_Data), 1, soundFile);
+    gyFileRead(soundFile, &wave_data, sizeof(_WAVE_Data), NULL);
 	//check for data tag in memory
 	if (wave_data.subChunkID[0] != 'd' ||
 		wave_data.subChunkID[1] != 'a' ||
 		wave_data.subChunkID[2] != 't' ||
 		wave_data.subChunkID[3] != 'a') {
-		fclose(soundFile);
+        gyFileClose(&soundFile);
 		_gyLog(GY_DEBUG_CRITICAL, "! - Invalid data tag - %s", filename);
 		return 0;
 	}
@@ -123,9 +123,9 @@ static int _loadWavFile(const char* filename, ALuint* buffer, ALsizei* size,
 	data = malloc(wave_data.subChunk2Size);
 
 	// Read in the sound data into the soundData variable
-	if (!fread(data, wave_data.subChunk2Size, 1, soundFile)) {
+	if (!gyFileRead(soundFile, data, wave_data.subChunk2Size, NULL)) {
 		_gyLog(GY_DEBUG_CRITICAL, "! - Could not read data - %s", filename);
-		fclose(soundFile);
+        gyFileClose(&soundFile);
 		return 0;
 	}
 
@@ -151,7 +151,7 @@ static int _loadWavFile(const char* filename, ALuint* buffer, ALsizei* size,
 	alGenBuffers(1, buffer);
 	if((alErrorCode = alGetError()) != AL_NO_ERROR) {
 		_gyLog(GY_DEBUG_CRITICAL, "! - alGenBuffers() failure - %s", _openALError(alErrorCode));
-		fclose(soundFile);
+        gyFileClose(&soundFile);
 		return 0;
 	}
 
@@ -161,12 +161,12 @@ static int _loadWavFile(const char* filename, ALuint* buffer, ALsizei* size,
 				 *size, *frequency);
 	if((alErrorCode = alGetError()) != AL_NO_ERROR) {
 		_gyLog(GY_DEBUG_CRITICAL, "! - alBufferData() failure - %s", _openALError(alErrorCode));
-		fclose(soundFile);
+        gyFileClose(&soundFile);
 		return 0;
 	}
 
 	free(data);
-	fclose(soundFile);
+    gyFileClose(&soundFile);
 	return 1;
 }
 

@@ -47,7 +47,6 @@ static const GYVector4 _rectVerts[GY_RECT_NORMAL_MAX][4] = {
 	}
 };
 
-
 /*
  * typedef struct _GYViewVolume {
 	//static enum {OUTSIDE, INTERSECT, INSIDE};

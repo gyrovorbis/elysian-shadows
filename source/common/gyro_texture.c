@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <unistd.h>
+#include <gyro_file_api.h>
 #include <gyro_texture_api.h>
 #include <gyro_system_api.h>
 #include "gyro_asset_bank.h"
@@ -22,21 +23,25 @@ typedef struct _GYTexEntryDat {
 
 static GYTexCoordSheet *_LoadSheetCoords(const GYTexEntryDat *const data) {
 	char fname[GYRO_PATH_MAX_SIZE];
-	FILE *file;
+	GYFile *file;
+    size_t file_size = 0;
+    char *buffer = NULL;
 	unsigned amount, i, x, y, w, h;
 	GYTexCoordSheet *coord;
 
 	strcpy(fname, data->file);
 	strcat(fname, GYRO_SHEET_TEX_COORD_EXT);
-	file = fopen(fname, "r");
-	if(!file) {
-		gyPrintf("! - _LoadSheetCoords(%s): unable to open file!\n", fname);	
+	if(!gyFileOpen(GY_PATH_BINARY, fname, "r", &file)) {
+		gyPrintf("! - _LoadSheetCoords(%s): unable to open file!\n", fname);
 		//assert(file); //UNABLE TO OPEN SPRITE SHEET COORDINATE FILE!
 		return NULL;
 	}
 
 	coord = malloc(sizeof(GYTexCoordSheet));
-	fscanf(file, "%u", &amount);
+    gyFileLength(file, &file_size);
+    buffer = malloc(sizeof(char) * file_size);
+    gyFileRead(file, buffer, file_size, NULL);
+	sscanf(buffer, "%u", &amount);
 	coord->frames = amount;
 	coord->sheetWidth = data->sheetWidth;
 	coord->sheetHeight = data->sheetHeight;
@@ -44,7 +49,7 @@ static GYTexCoordSheet *_LoadSheetCoords(const GYTexEntryDat *const data) {
 	coord->texCoord = malloc(sizeof(GYTexCoordFrame)*amount);
 
 	for(i = 0; i < amount; ++i) {
-		fscanf(file, "%u%u%u%u", &x, &y, &w, &h); 
+		sscanf(buffer, "%u%u%u%u", &x, &y, &w, &h);
 		coord->texCoord[i].spriteWidth = w;
 		coord->texCoord[i].spriteHeight = h;
 #if GYRO_PLATFORM != GYRO_PLATFORM_DC
@@ -59,7 +64,7 @@ static GYTexCoordSheet *_LoadSheetCoords(const GYTexEntryDat *const data) {
 		coord->texCoord[i].botLeft.uv = PVR_PACK_16BIT_UV((float)x/(float)data->sheetWidth, (float)(y+h)/(float)data->sheetHeight);
 #endif
 	}
-	fclose(file);
+    gyFileClose(&file);
 	return coord;
 }
 
