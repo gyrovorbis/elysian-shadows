@@ -10,8 +10,8 @@ INCLUDEPATH += ../../include \
 
 win32 {
 	INCLUDEPATH +=  ../../lib/win32
-        QMAKE_CFLAGS += -msse -std=c99
-        DEFINES += WIN32
+    QMAKE_CFLAGS += -msse -std=c99
+    DEFINES += WIN32
 }
 
 macx {
@@ -21,7 +21,6 @@ macx {
 
 linux {
     QMAKE_CFLAGS += -msse
-
     LIBS += \
         -ldynamic
 }
@@ -85,10 +84,11 @@ HEADERS += \
     ../../source/glal/gyro_video_glal.h \
     ../../source/glal/gyro_shaders_glal.h \
     ../../source/common/gyro_asset_bank.h \
+    ../../include/x86/gyro_file_x86.inl \
+    ../../include/x86/gyro_glfw_x86.inl \
     ../../include/x86/gyro_input_x86.inl \
     ../../include/x86/gyro_math_sse_x86.inl \
     ../../include/x86/gyro_matrix_sse_x86.inl \
-    ../../include/x86/gyro_sdl_x86.inl \
     ../../include/x86/gyro_video_x86.inl \
     ../../include/glal/gyro_audio_glal.inl \
     ../../include/glal/gyro_texture_glal.inl \
@@ -116,6 +116,7 @@ SOURCES += \
     ../../source/x86/gyro_system_x86.c \
     ../../source/x86/gyro_matrix_x86.c \
     ../../source/x86/gyro_input_x86.c \
+    ../../source/x86/gyro_file_x86.c \
     ../../source/kinetic/gyro_kinetic_physics.c \
     ../../source/kinetic/gyro_kinetic_collision.c \
     ../../source/glal/gyro_wav_glal.c \

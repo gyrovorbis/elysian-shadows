@@ -172,7 +172,6 @@ void gyVidLightSourceClear(void) {
  *
  */
 
-
 void glalGetSpotLightViewMatrix(GYMatrix4 dest, const GYLightSource*const lightSrc) {
 	GYMatrix4 temp;
 
@@ -479,6 +478,3 @@ void gyVidLightSourceEndShadowPasses(void) {
 	//glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	//glBindTexture(GL_TEXTURE_2D, 0);
 }
-
-
-\
