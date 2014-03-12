@@ -65,7 +65,9 @@ target_architecture(GY_TARGET_ARCH)
 set(GY_TARGET_OUT_DIR "${GY_OUT_DIR}/${GY_TARGET_OS}_${GY_TARGET_ARCH}")
 set(GY_TARGET_CONTRIB_OUT_DIR "${GY_TARGET_OUT_DIR}/contrib")
 
-set(CMAKE_INSTALL_PREFIX ${GY_TARGET_OUT_DIR})
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+	set (CMAKE_INSTALL_PREFIX "${GY_TARGET_OUT_DIR}" CACHE PATH "Default install path" FORCE)
+endif()
 
 #
 # Generate version information from git-describe
