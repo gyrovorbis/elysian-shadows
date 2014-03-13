@@ -11,6 +11,7 @@
 #include "elysian_camera_system.hpp"
 #include "elysian_timer_system.hpp"
 #include "elysian_character.hpp"
+#include "elysian_behavior_system.hpp"
 
 #include <cmath>
 
@@ -77,7 +78,7 @@ void DialogSystem::render(void) {
 		}
 
 		//Render Nametag
-		if(_curDialog && _boxState != BOX_INPUT) {//Check top or bottom
+		if(_curDialog && _boxState != BOX_INPUT && _curScreen.screen->getEntity()) {//Check top or bottom
 			GYVector3 screenPos;
 			getCameraSys()->transform(&screenPos, &_curScreen.screen->getEntity()->transform._pos);
 			getGuiSys()->verdana.setAlpha(alpha*255);
@@ -152,7 +153,7 @@ void DialogSystem::update(void) {
 	if(!_curScreen.screen) return;
 
 	//IF WE'RE SPEAKING TO AN ENTITY ----FUCK
-	if(_curScreen.screen) {
+	if(_curScreen.screen && _curScreen.screen->getEntity()) {
 		FacePlayer();
 
 		GYVector3 curPos;
@@ -302,6 +303,14 @@ void DialogSystem::NextScreen(void) {
 			break;
 	}
 
+	//Invoke Lua trigger
+	if(_curScreen.screen->isTrigger() && _curDialog->getTriggerEntity()) {
+		getBehavSys()->onDialog(_curDialog->getTriggerEntity(),
+								_curScreen.screen->getIndex(),
+								_currentOption);
+
+	}
+
 	if(nextIndex == -1) {
 		closeDialog();
 	} else {
@@ -319,7 +328,7 @@ void DialogSystem::CheckModal(void) const {
 }
 
 void DialogSystem::FacePlayer(void) const {
-	if(!_curScreen.screen->getEntity()->getCharacter()) return;
+	if(!_curScreen.screen->getEntity() || !_curScreen.screen->getEntity()->getCharacter()) return;
 	_curScreen.screen->getEntity()->getCharacter()->faceEntity(*getPartySys()->getCharacterPartyMember(0u));
 }
 

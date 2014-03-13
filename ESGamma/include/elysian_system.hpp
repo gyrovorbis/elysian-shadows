@@ -23,6 +23,7 @@ namespace elysian {
 	class ParticleSystem;
 	class DaySystem;
 	class DialogSystem;
+	class ExaminableSystem;
 
 	class System: public LevelManager {
 	public:

@@ -29,6 +29,11 @@ namespace elysian {
 		_mainState->register_class<Collidable>();
 		_mainState->register_class<Character>();
 		_mainState->register_class<Warp>();
+		_mainState->register_class<DialogScreen>();
+		_mainState->register_class<DialogText>();
+		_mainState->register_class<DialogPrompt>();
+		_mainState->register_class<Dialog>();
+		_mainState->register_class<Examinable>();
 		OOLUA::register_class<LuaBehavior>(*_mainState);
 		_mainState->register_class<Tile>();
 		_mainState->register_class<Level>();
@@ -47,6 +52,7 @@ namespace elysian {
 		_mainState->register_class<ParticleEmitterAttrib>();
 		_mainState->register_class<ParticleSystem>();
 		_mainState->register_class<DaySystem>();
+		_mainState->register_class<DialogSystem>();
 		_mainState->register_class<LevelSystem>();
 		_mainState->register_class<Direction>();
 
@@ -63,6 +69,7 @@ namespace elysian {
 		_mainState->register_class_static<Singletons>("getLevelSys", &Singletons_getLevelSystem);
 		_mainState->register_class_static<Singletons>("getPartSys", &Singletons_getParticleSystem);
 		_mainState->register_class_static<Singletons>("getDaySys", &Singletons_getDaySystem);
+		_mainState->register_class_static<Singletons>("getDialogSys", &Singletons_getDialogSystem);
 
 		//libGyro wrappers
 		_mainState->register_class_static<gyro>("filePath", &gyroFilePath);
@@ -135,6 +142,7 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
 						addWarp,
 						addAudioSource,
 						addLightSource,
+						addExaminable,
 						addBehavior,
 						addLuaBehavior,
 						removeRenderable,
@@ -144,6 +152,7 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
 						removeWarp,
 						removeAudioSource,
 						removeLightSource,
+						removeExaminable,
 						removeBehavior,
 						removeLuaBehavior,
 						setDepthType,
@@ -159,6 +168,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getWarp,
 								getAudioSource,
 								getLightSource,
+								getExaminable,
 								getBehavior,
 								getLuaBehavior,
 								getDepthType)
@@ -314,6 +324,33 @@ OOLUA_EXPORT_FUNCTIONS(ParticleEmitterAttrib,
 					   setColor)
 OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitterAttrib);
 
+OOLUA_EXPORT_FUNCTIONS(DialogScreen,
+					   addSourceEntity,
+					   setTrigger)
+OOLUA_EXPORT_FUNCTIONS_CONST(DialogScreen,
+							 getText,
+							 getIndex)
+
+OOLUA_EXPORT_FUNCTIONS(DialogText,
+					   setNextIndex)
+OOLUA_EXPORT_FUNCTIONS_CONST(DialogText,
+							 getNextIndex)
+
+OOLUA_EXPORT_FUNCTIONS(DialogPrompt,
+					   addOption)
+OOLUA_EXPORT_FUNCTIONS_CONST(DialogPrompt)
+
+OOLUA_EXPORT_FUNCTIONS(Dialog,
+					   addTextScreen,
+					   addPromptScreen,
+					   setTriggerEntity)
+OOLUA_EXPORT_FUNCTIONS_CONST(Dialog)
+
+OOLUA_EXPORT_FUNCTIONS(Examinable,
+					   setDialog,
+					   setMaxDist)
+OOLUA_EXPORT_FUNCTIONS_CONST(Examinable)
+
 EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(Behavior,
 								   addTrigger,
 								   removeTrigger)
@@ -456,6 +493,10 @@ OOLUA_EXPORT_FUNCTIONS_CONST(DaySystem,
 OOLUA_EXPORT_FUNCTIONS(DaySystem,
 					   setTimeDilation,
 					   setSunEnabled)
+
+OOLUA_EXPORT_FUNCTIONS(DialogSystem,
+					   startDialog)
+OOLUA_EXPORT_FUNCTIONS_CONST(DialogSystem)
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Singletons)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(Singletons)

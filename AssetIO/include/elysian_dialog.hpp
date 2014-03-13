@@ -40,6 +40,7 @@ namespace elysian {
 	   void			setTrigger(const bool val);					//Behavior::onDialog(unsigned screen, int option)
 	   SCREEN_TYPE	getScreenType(void) const;
 	   Entity*		getEntity(void) const;
+	   bool			isTrigger(void) const;
 	};
 
 
@@ -83,7 +84,8 @@ namespace elysian {
 
 	class Dialog {
 	private:
-		std::vector<DialogScreen*> _screens;
+		Entity*						_triggerEntity = nullptr;
+		std::vector<DialogScreen*>	_screens;
 
 	public:
 						~Dialog(void);
@@ -91,6 +93,8 @@ namespace elysian {
 		DialogPrompt*	addPromptScreen(const char*const text);
 		unsigned		getScreenCount(void) const;
 		DialogScreen*	getScreen(const unsigned index) const;
+		void			setTriggerEntity(Entity*const entity);
+		Entity*			getTriggerEntity(void) const;
 	};
 
 
@@ -103,6 +107,7 @@ namespace elysian {
 	inline auto DialogScreen::getScreenType(void) const -> SCREEN_TYPE { return _screenType; }
 	inline Entity* DialogScreen::getEntity(void) const { return _srcEntity; }
 	inline const char* DialogScreen::getText(void) const { return _text; }
+	inline bool DialogScreen::isTrigger(void) const { return _trigger; }
 
 
 	//==== DIALOGTEXT INLINEZ ====
@@ -117,6 +122,8 @@ namespace elysian {
 	//==== DIALOG INLINEZ =====
 	inline unsigned Dialog::getScreenCount(void) const { return _screens.size(); }
 	inline DialogScreen* Dialog::getScreen(const unsigned index) const { return _screens[index]; }
+	inline void Dialog::setTriggerEntity(Entity * const entity) { _triggerEntity = entity; }
+	inline Entity* Dialog::getTriggerEntity(void) const { return _triggerEntity; }
 
 
 

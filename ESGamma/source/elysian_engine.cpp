@@ -24,6 +24,7 @@
 #include "elysian_particle_system.hpp"
 #include "elysian_day_system.hpp"
 #include "elysian_dialog_system.hpp"
+#include "elysian_examinable_system.hpp"
 #include "glal/gyro_glal.h"
 
 namespace elysian {
@@ -49,6 +50,7 @@ Engine::Engine(void) {
 	_lightSystem		= new LightSystem;
 	_particleSystem		= new ParticleSystem;
 	_daySystem			= new DaySystem;
+	_examinableSystem	= new ExaminableSystem;
 	_dialogSystem		= new DialogSystem;
 
 	//register Lua dependencies
@@ -134,6 +136,7 @@ void Engine::processInput(void) {
 		case System::ENGINE_CONVERSATION:
 			_partySystem->processInput(_gameInput);
 			_cameraSystem->processInput(_gameInput);
+			_examinableSystem->processInput(_gameInput);
 			_dialogSystem->processInput(_gameInput);
 			//Debug::getInstance().processInput(_gameInput);
 			//conversationSystem->ProcessInput(input);
@@ -206,6 +209,7 @@ Engine::~Engine(void) {
 
 	LuaManager::uninitialize();
 	delete _dialogSystem;
+	delete _examinableSystem;
 	delete _daySystem;
 	delete _particleSystem;
 	delete _levelSystem;

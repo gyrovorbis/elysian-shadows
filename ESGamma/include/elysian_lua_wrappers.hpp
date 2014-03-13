@@ -12,6 +12,7 @@
 #include "elysian_collidable.hpp"
 #include "elysian_character.hpp"
 #include "elysian_warp.hpp"
+#include "elysian_examinable.hpp"
 #include "elysian_lua_behavior.hpp"
 #include "elysian_lua_singleton.hpp"
 #include "elysian_level.hpp"
@@ -28,6 +29,7 @@
 #include "elysian_map_depth_buffer.hpp"
 #include "elysian_quad_sprite.hpp"
 #include "elysian_day_system.hpp"
+#include "elysian_dialog_system.hpp"
 
 /* IT'S NOT SAFE TO GO ALONE! TAKE THIS HEADER FILE. IT WILL HELP
  * YOU ON YOUR JOURNEY!
@@ -67,6 +69,11 @@ namespace OOLUA
 	typedef elysian::Collidable					Collidable;
 	typedef elysian::Character					Character;
 	typedef elysian::Warp						Warp;
+	typedef elysian::Examinable					Examinable;
+	typedef elysian::Dialog						Dialog;
+	typedef elysian::DialogScreen				DialogScreen;
+	typedef elysian::DialogText					DialogText;
+	typedef elysian::DialogPrompt				DialogPrompt;
 	typedef elysian::Behavior					Behavior;
 	typedef elysian::LuaBehavior				LuaBehavior;
 	typedef elysian::Tile						Tile;
@@ -87,6 +94,7 @@ namespace OOLUA
 	typedef elysian::ParticleEmitterAttrib		ParticleEmitterAttrib;
 	typedef elysian::ParticleSystem				ParticleSystem;
 	typedef elysian::DaySystem					DaySystem;
+	typedef elysian::DialogSystem				DialogSystem;
 	typedef elysian::LuaBehaviorScriptAttrib	LuaBehaviorScriptAttrib;
 	typedef elysian::Direction					Direction;
 }
@@ -166,6 +174,7 @@ namespace OOLUA {
 	template<> class Proxy_class<elysian::Warp>;
 	template<> class Proxy_class<elysian::AudioSource>;
 	template<> class Proxy_class<elysian::LightSource>;
+	template<> class Proxy_class<elysian::Examinable>;
 	template<> class Proxy_class<elysian::Behavior>;
 	template<> class Proxy_class<elysian::LuaBehavior>;
 }
@@ -186,6 +195,7 @@ OOLUA_PROXY(Entity, RenderableObject)
 	OOLUA_MEM_FUNC(Warp*, addWarp)
 	OOLUA_MEM_FUNC(AudioSource*, addAudioSource)
 	OOLUA_MEM_FUNC(LightSource*, addLightSource)
+	OOLUA_MEM_FUNC(Examinable*, addExaminable)
 	OOLUA_MEM_FUNC(Behavior*, addBehavior, const char*)
 	OOLUA_MEM_FUNC(LuaBehavior*, addLuaBehavior, const char*)
 	OOLUA_MEM_FUNC_CONST(Renderable*, getRenderable);
@@ -195,6 +205,7 @@ OOLUA_PROXY(Entity, RenderableObject)
 	OOLUA_MEM_FUNC_CONST(Warp*, getWarp)
 	OOLUA_MEM_FUNC_CONST(AudioSource*, getAudioSource)
 	OOLUA_MEM_FUNC_CONST(LightSource*, getLightSource)
+	OOLUA_MEM_FUNC_CONST(Examinable*, getExaminable)
 	OOLUA_MEM_FUNC_CONST(Behavior*, getBehavior, const char*)
 	OOLUA_MEM_FUNC_CONST(LuaBehavior*, getLuaBehavior, const char*)
 	OOLUA_MEM_FUNC(void, removeRenderable)
@@ -204,6 +215,7 @@ OOLUA_PROXY(Entity, RenderableObject)
 	OOLUA_MEM_FUNC(void, removeWarp)
 	OOLUA_MEM_FUNC(void, removeAudioSource)
 	OOLUA_MEM_FUNC(void, removeLightSource)
+	OOLUA_MEM_FUNC(void, removeExaminable)
 	OOLUA_MEM_FUNC(void, removeBehavior, const char*)
 	OOLUA_MEM_FUNC(void, removeLuaBehavior, const char*)
 	OOLUA_MEM_FUNC(Lua_table_ref&, getSelfTable)
@@ -406,11 +418,49 @@ OOLUA_PROXY(ParticleEmitterAttrib)
 	OOLUA_MFUNC(setSize)
 	OOLUA_MFUNC(setColor)
 OOLUA_PROXY_END
-//    void setGravity(const GYVector3& grav);
-//    void setMaxLife(const unsigned life); //number of frames since birth that it lives
-//    void setSize(const unsigned newSize); // 1 = 1x1 square
-//    void setColor(const GYColor4& newColor);
 
+OOLUA_PROXY(DialogScreen)
+	OOLUA_TAGS (
+		No_public_constructors,
+		No_public_destructor
+	)
+	OOLUA_MEM_FUNC_CONST(const char*, getText)
+	OOLUA_MEM_FUNC(void, addSourceEntity, Entity*)
+	OOLUA_MEM_FUNC_CONST(unsigned, getIndex)
+	OOLUA_MEM_FUNC(void, setTrigger, bool)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(DialogText, DialogScreen)
+	OOLUA_TAGS (
+		No_public_constructors,
+		No_public_destructor
+	)
+	OOLUA_MEM_FUNC_CONST(int, getNextIndex)
+	OOLUA_MEM_FUNC(void, setNextIndex, int)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(DialogPrompt, DialogScreen)
+	OOLUA_TAGS (
+		No_public_constructors,
+		No_public_destructor
+	)
+	OOLUA_MEM_FUNC(void, addOption, const char*, int)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(Dialog)
+	OOLUA_MEM_FUNC(DialogText*, addTextScreen, const char*)
+	OOLUA_MEM_FUNC(DialogPrompt*, addPromptScreen, const char*)
+	OOLUA_MEM_FUNC(void, setTriggerEntity, Entity*)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(Examinable, Component)
+	OOLUA_TAGS (
+		No_public_constructors,
+		No_public_destructor
+	)
+	OOLUA_MEM_FUNC(void, setDialog, Dialog*)
+	OOLUA_MEM_FUNC(void, setMaxDist, float)
+OOLUA_PROXY_END
 
 OOLUA_PROXY(Behavior, Component)
 	OOLUA_TAGS (
@@ -587,19 +637,34 @@ OOLUA_PROXY(AudioSystem)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ParticleSystem)
+	OOLUA_TAGS (
+		No_public_constructors,
+		No_public_destructor
+	)
     OOLUA_MFUNC(emitFrom)
 	OOLUA_MFUNC_CONST(getAttrib)
 OOLUA_PROXY_END
-//void emitFrom(const unsigned index, const GYVector3& pos, const float angle, const unsigned intensity);
-//ParticleEmitterAttrib *getAttrib(const unsigned index) const;
 
 OOLUA_PROXY(DaySystem)
+	OOLUA_TAGS (
+		No_public_constructors,
+		No_public_destructor
+	)
 	OOLUA_MFUNC_CONST(getDays)
 	OOLUA_MFUNC_CONST(getHours)
 	OOLUA_MFUNC_CONST(getMinutes)
 	OOLUA_MFUNC_CONST(getSunLightAttrib)
 	OOLUA_MFUNC(setTimeDilation)
 	OOLUA_MFUNC(setSunEnabled)
+OOLUA_PROXY_END
+
+
+OOLUA_PROXY(DialogSystem)
+	OOLUA_TAGS (
+		No_public_constructors,
+		No_public_destructor
+	)
+	OOLUA_MEM_FUNC(void, startDialog, Dialog*)
 OOLUA_PROXY_END
 
 
@@ -676,6 +741,8 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 	s->register_class_static<Behavior>("ON_COLLIDE", Behavior::ON_COLLIDE);
 	s->register_class_static<Behavior>("ON_COLLISION_ENTER", Behavior::ON_COLLISION_ENTER);
 	s->register_class_static<Behavior>("ON_COLLISION_EXIT", Behavior::ON_COLLISION_EXIT);
+	s->register_class_static<Behavior>("ON_EXAMINE", Behavior::ON_EXAMINE);
+	s->register_class_static<Behavior>("ON_DIALOG", Behavior::ON_DIALOG);
 
 	//Tile::COLLIDER_TYPE
 	typedef OOLUA::Tile Tile;
@@ -842,6 +909,10 @@ static inline int Singletons_getParticleSystem(lua_State* const vm) {
 
 static inline int Singletons_getDaySystem(lua_State* const vm) {
 	OOLUA_C_FUNCTION(elysian::DaySystem*, elysian::Singletons::getDaySys)
+}
+
+static inline int Singletons_getDialogSystem(lua_State* const vm) {
+	OOLUA_C_FUNCTION(elysian::DialogSystem*, elysian::Singletons::getDialogSys)
 }
 
 static inline int Singletons_getTimerSystem(lua_State* const vm) {

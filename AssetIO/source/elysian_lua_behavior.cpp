@@ -233,7 +233,7 @@ void LuaBehavior::onDialog(const unsigned screen, const int option) {
 	(void)screen;
 	(void)option;
 #ifdef ELYSIAN_ENGINE
-	_PROTECTED(_callTrigger<void>("onCollide", screen, option));
+	_PROTECTED(_callTrigger<void>("onDialog", _ooSelfTableRef, screen, option));
 #endif
 }
 
