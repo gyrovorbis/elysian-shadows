@@ -126,5 +126,6 @@ moc_*
 #################
 Docs/Documentation/
 
-
+# CMake generated
+out/
 
