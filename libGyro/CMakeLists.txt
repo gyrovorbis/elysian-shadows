@@ -251,6 +251,11 @@ if(${GYRO_PLATFORM} EQUAL GYRO_PLATFORM_x86)
 	endif()
 endif()
 
+# Send Gyro_* variables to cache
+set(Gyro_LIBRARIES ${Gyro_LIBRARIES} CACHE INTERNAL "Libraries to link to when using libGyro")
+set(Gyro_INCLUDE_DIRS ${Gyro_INCLUDE_DIRS} CACHE INTERNAL "Location of libGyro includes")
+set(Gyro_DEFINITIONS ${Gyro_DEFINITIONS} CACHE INTERNAL "Definitions to be used with libGyro")
+
 if(GY_BUILD_EXAMPLES)
 	add_subdirectory(examples)
 endif()
