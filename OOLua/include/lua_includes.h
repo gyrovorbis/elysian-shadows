@@ -38,9 +38,9 @@ THE SOFTWARE.
 //Prevent name mangling
 extern "C"
 {
-#	include "lua/lua.h"
-#	include "lua/lauxlib.h"
-#	include "lua/lualib.h"
+#	include "lua5.2/lua.h"
+#	include "lua5.2/lauxlib.h"
+#	include "lua5.2/lualib.h"
 }
 
 #endif //LUA_INCLUDES_H_
