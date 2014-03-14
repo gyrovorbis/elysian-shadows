@@ -12,7 +12,7 @@ option(GY_BUILD_EXAMPLES "Build libGyro examples" ON)
 # Set up some variables
 #
 
-set(GY_ROOT_DIR "${CMAKE_SOURCE_DIR}")
+set(GY_ROOT_DIR "${PROJECT_SOURCE_DIR}")
 set(GY_ASSETS_DIR "${GY_ROOT_DIR}/assets")
 set(GY_CONTRIB_DIR "${GY_ROOT_DIR}/contrib")
 set(GY_SCRIPTS_DIR "${GY_ROOT_DIR}/scripts")
