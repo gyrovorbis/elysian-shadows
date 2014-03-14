@@ -92,10 +92,19 @@ message(STATUS "Building version: ${es_VERSION_FULL}")
 
 include_directories(SYSTEM "${ES_TARGET_CONTRIB_OUT_DIR}/include")
 include_directories(SYSTEM "${ES_TARGET_OUT_DIR}/include")
-include_directories(SYSTEM "${ES_TARGET_OUT_DIR}/include/oolua")
+include_directories(SYSTEM "${ES_TARGET_OUT_DIR}/include/gyro")
+include_directories(SYSTEM "${ES_ASSETIO_DIR}/include")
+include_directories(SYSTEM "${ES_GYRO_DIR}/include")
+include_directories(SYSTEM "${ES_OOLUA_DIR}/include")
 
 link_directories("${ES_TARGET_CONTRIB_OUT_DIR}/lib")
 link_directories("${ES_TARGET_OUT_DIR}/lib")
+
+#
+# Definitions
+#
+
+add_definitions(-DGYRO_PLATFORM=${GYRO_PLATFORM})
 
 #
 # Dependencies
@@ -111,3 +120,10 @@ add_subdirectory(libGyro)
 # OOLua
 add_subdirectory(OOLua)
 add_dependencies(OOLua lua52)
+
+# Bring in AssetIO variables
+include("${ES_ASSETIO_DIR}/CMakeLists.txt")
+
+# ESGamma
+add_subdirectory(ESGamma)
+add_dependencies(ESGamma libGyro OOLua lua52)
