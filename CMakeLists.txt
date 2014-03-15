@@ -91,8 +91,6 @@ message(STATUS "Building version: ${es_VERSION_FULL}")
 #
 
 include_directories(SYSTEM "${ES_TARGET_CONTRIB_OUT_DIR}/include")
-include_directories(SYSTEM "${ES_TARGET_OUT_DIR}/include")
-include_directories(SYSTEM "${ES_TARGET_OUT_DIR}/include/gyro")
 include_directories(SYSTEM "${ES_ASSETIO_DIR}/include")
 include_directories(SYSTEM "${ES_GYRO_DIR}/include")
 include_directories(SYSTEM "${ES_OOLUA_DIR}/include")
