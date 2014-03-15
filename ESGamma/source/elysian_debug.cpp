@@ -488,22 +488,32 @@ bool Debug::parseArguments(void) {
 	int argc = 0;
 	char argBuff[20][100];
 	char *argv[20];
+	char *buffer;
+	size_t buffer_len = 0;
+	GYFile *file;
 
 	//Default values for command-line args
 	_cmdLineArgs.x = _cmdLineArgs.y = 32*4;
 	strcpy(_cmdLineArgs.level, ELYSIAN_DEBUG_LEVEL_DEFAULT);
 	strcpy(_cmdLineArgs.area, ELYSIAN_DEBUG_AREA_DEFAULT);
 
-	FILE *file = fopen(gyFilePath(ELYSIAN_DEBUG_ARG_FILE), "r");
-	if(file) { //read cmd-line arguments from file
+	if (gyFileOpen(GY_PATH_ASSETS, ELYSIAN_DEBUG_ARG_FILE, "r", &file)) {
 		printf(VERBOSE, "Debug::parseArguments(void) - initializing from '%s'", ELYSIAN_DEBUG_ARG_FILE);
 		push();
-		while(fscanf(file, "%s", argBuff[argc]) != EOF) {
+		if (!gyFileLength(file, &buffer_len)) {
+			return 0;
+		}
+		buffer = malloc(sizeof(char) * buffer_len + 1);
+		if (!gyFileRead(file, buffer, buffer_len, NULL)) {
+			return 0;
+		}
+		while(sscanf(buffer, "%s", argBuff[argc]) != EOF) {
 			argv[argc+1] = argBuff[argc]; //yes, I'm really doing this.
 			printf(VERBOSE, "argv[%d] - %s", argc+1, argv[argc+1]);
 			++argc;
 		}
-		fclose(file);
+		free(buffer);
+		gyFileClose(&file);
 		pop();
 		//Recursively reinvoke argument-based initialization
 		return parseArguments(argc+1, argv);
