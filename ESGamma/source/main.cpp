@@ -45,7 +45,7 @@ static void Init(int argc, char *argv[]) {
 	gyInputInit();
 	gyAudInit();
 	gyTimerInit();
-	gyFileInit();
+	gyFileInit("ESTeam", "ESGamma");
 
 	engine = new Engine;
 
