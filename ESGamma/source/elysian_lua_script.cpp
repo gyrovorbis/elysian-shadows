@@ -1,5 +1,5 @@
 #include "elysian_lua_script.hpp"
-#include <lua/lua.hpp>
+#include <lua5.2/lua.hpp>
 #include <cstring>
 
 namespace elysian {

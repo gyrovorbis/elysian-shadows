@@ -4,7 +4,7 @@
 #include "elysian_behavior.hpp"
 #ifdef ELYSIAN_ENGINE
 #	include "elysian_lua_manager.hpp"
-#	include <lua/lua.hpp>
+#	include <lua5.2/lua.hpp>
 #else
 #	define LUA_NOREF 0
 #endif
