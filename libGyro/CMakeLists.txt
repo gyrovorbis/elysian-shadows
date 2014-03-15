@@ -123,6 +123,9 @@ set(gyro_SOURCES
 	${GY_SOURCE_DIR}/glal/gyro_video_glal.c
 	${GY_SOURCE_DIR}/glal/gyro_video_glal.h
 	${GY_SOURCE_DIR}/glal/gyro_wav_glal.c
+
+    ${GY_SOURCE_DIR}/kinetic/gyro_kinetic_collision.c
+    ${GY_SOURCE_DIR}/kinetic/gyro_kinetic_physics.c
 )
 
 set(gyro_INCLUDES
@@ -151,6 +154,14 @@ set(gyro_INCLUDES
 	${GY_INCLUDE_DIR}/glal/gyro_audio_glal.inl
 	${GY_INCLUDE_DIR}/glal/gyro_glal.h
 	${GY_INCLUDE_DIR}/glal/gyro_texture_glal.inl
+
+    ${GY_INCLUDE_DIR}/kinetic/gyro_kinetic.h
+    ${GY_INCLUDE_DIR}/kinetic/gyro_kinetic_collider.h
+    ${GY_INCLUDE_DIR}/kinetic/gyro_kinetic_collision.h
+    ${GY_INCLUDE_DIR}/kinetic/gyro_kinetic_contact.h
+    ${GY_INCLUDE_DIR}/kinetic/gyro_kinetic_kinetic.h
+    ${GY_INCLUDE_DIR}/kinetic/gyro_kinetic_physics.h
+    ${GY_INCLUDE_DIR}/kinetic/gyro_kinetic_static.h
 )
 
 if(GY_TARGET_OS MATCHES "i386" OR GY_TARGET_ARCH MATCHES "x86_64")
