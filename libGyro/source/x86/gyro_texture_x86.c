@@ -165,7 +165,7 @@ static GLuint create_texture_png(const char *filename, GLenum st, GLenum min, GL
 	image_t img;
 	unsigned char *pixels;
 	GLuint id;
-	if(!gyFileOpen(GY_PATH_BINARY, filename, "rb", &f)) {
+	if(!gyFileOpen(GY_PATH_ASSETS, filename, "rb", &f)) {
 		*success = 0;
 		return 0;
 	}
