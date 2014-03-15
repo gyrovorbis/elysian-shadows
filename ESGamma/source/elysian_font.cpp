@@ -31,14 +31,24 @@ bool Font::loadTextData(const char* const img_file, int sheet_width, int sheet_h
 }
 
 bool Font::_loadCharacterWidths(const char *width_file) {
-	ifstream file(gyFilePath(width_file));
-	if(!file.is_open()) return false;
-	
-	for(int i = 0; i < 128; ++i) {
-		file >> _charWidth[i]; 
+	char *buffer;
+	size_t buffer_len;
+	GYFile *file;
+	if (!gyFileOpen(GY_PATH_ASSETS, width_file, "r", &file)) {
+		return false;
 	}
-	
-	file.close();
+	if (!gyFileLength(file, &buffer_len)) {
+		return false;
+	}
+	buffer = malloc(sizeof(char) * buffer_len + 1);
+	if (!gyFileRead(file, buffer, buffer_len, NULL)) {
+		return false;
+	}
+	for(int i = 0; i < 128; ++i) {
+		sscanf(buffer, "%hu\n", &_charWidth[i]);
+	}
+	free(buffer);
+	gyFileClose(&file);
 	return true;
 }
 
