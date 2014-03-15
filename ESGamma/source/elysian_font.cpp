@@ -40,7 +40,7 @@ bool Font::_loadCharacterWidths(const char *width_file) {
 	if (!gyFileLength(file, &buffer_len)) {
 		return false;
 	}
-	buffer = malloc(sizeof(char) * buffer_len + 1);
+	buffer = (char *) malloc(sizeof(char) * buffer_len + 1);
 	if (!gyFileRead(file, buffer, buffer_len, NULL)) {
 		return false;
 	}

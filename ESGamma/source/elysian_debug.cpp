@@ -503,7 +503,7 @@ bool Debug::parseArguments(void) {
 		if (!gyFileLength(file, &buffer_len)) {
 			return 0;
 		}
-		buffer = malloc(sizeof(char) * buffer_len + 1);
+		buffer = (char *) malloc(sizeof(char) * buffer_len + 1);
 		if (!gyFileRead(file, buffer, buffer_len, NULL)) {
 			return 0;
 		}
