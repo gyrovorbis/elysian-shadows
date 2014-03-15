@@ -4,6 +4,7 @@
 #include <gyro_video_api.h>
 #include <gyro_math_api.h>
 #include "elysian_system.hpp"
+#include "elysian_mem_pool.hpp"
 
 #define ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_COUNT		4
 #define ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_POOL_SIZE	5000
@@ -40,7 +41,8 @@ namespace elysian {
 
 	class ParticleEmitterInternals {
 	private:
-		Particle*				_pool			= nullptr;
+        //Particle*				_pool			= nullptr;
+        Pool<Particle>          _pool           = Pool<Particle>(ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_POOL_SIZE);
 		ParticleEmitterAttrib*	_attrib			= nullptr;
 		unsigned				_poolSize		= 100;
 		unsigned				_activeCount	= 0;

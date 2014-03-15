@@ -48,6 +48,8 @@ DialogSystem::DialogSystem(void) {
 	_cursor.setVertexColor(1, cursorColor);
 	_cursor.setVertexColor(2, cursorColor);
 	_cursor.setVertexColor(3, cursorColor);
+
+    _curScreen.screen = nullptr;
 }
 
 //MAKE THESE POSITIONS RELATIVE

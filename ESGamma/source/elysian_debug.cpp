@@ -314,10 +314,15 @@ void Debug::processInput(const GameInput& input) {
 		renderDebug = !renderDebug;
 		getLightSys()->setRenderDebugEnabled(renderDebug);
 		printf(VERBOSE, "LightSystem::renderShadowVolumes = %d", renderDebug);
-	//	getPartSys()->getAttrib(0)->size = size;
-		//getPartSys()->emitFrom(0, GYVector3 { entity->transform._pos.x+5, entity->transform._pos.y, entity->transform._pos.z}, theta, intensity);
 
 	}
+
+    if(input.getDown(GameInput::BUT_U)) {
+        Entity* entity = getCurArea()->findEntity("Julien");
+        getPartSys()->getAttrib(0)->setSize(size);
+           getPartSys()->emitFrom(0, GYVector3 { entity->transform._pos.x+5, entity->transform._pos.y, entity->transform._pos.z}, theta, intensity);
+
+    }
 
 	static float timeSpeed = 60.0f;
 

@@ -1,32 +1,29 @@
 #include "elysian_particle_system.hpp"
 #include "elysian_camera_system.hpp"
+#include "elysian_debug.hpp"
 
 
 namespace elysian {
 
 void ParticleEmitterInternals::emitFrom(const GYVector3& pos, const float angle, const unsigned intensity) {
 	Particle* part;
-	unsigned curIndex = 0;
 	float relAngle;
 	float sinTheta, cosTheta;
 
-	auto nextFreeIndex = [&](unsigned& index) {
-		for(; curIndex < _poolSize; ++curIndex) {
-			if(!_pool[curIndex].active) {
-				index = curIndex;
-				return true;
-			}
-		}
-		return false;
-	};
+    if(_pool.isFull()) {
+        Debug::printf(Debug::VERBOSE, "FULL");
+    }
 
-	if(_activeCount >= _poolSize) return; //shit's full
+
+    if(_pool.isFull()) return;
+
+    if(_pool.size() == 0)
+            Debug::printf(Debug::VERBOSE, "EMPTY");
+
 
 	for(unsigned i = 0; i < intensity; ++i) {
-		unsigned newIndex;
 
-		if(!nextFreeIndex(newIndex)) break;
-		part = &_pool[newIndex];
+        part = &_pool.claimFreeEntry();
 
 		part->position.x = pos.x + ((rand() % 6) - 3);
 		part->position.y = pos.y + ((rand() % 6) - 3);
@@ -49,65 +46,48 @@ void ParticleEmitterInternals::emitFrom(const GYVector3& pos, const float angle,
 		part->color.g += (rand()%6)-3;
 		part->color.b += (rand()%6)-3;
 
-		part->active = true;
 
-		++_activeCount;
-	}
-
+    }
 
 }
 
 void ParticleEmitterInternals::update(const CameraState*const cam) {
-	Particle* part;
-
 
 	//Check for periodic emission!
 
-	//loop unroll my bitch ass
-	if(_activeCount == 0) return;
-	for(unsigned i = 0; i < _poolSize; ++i) {
-		if(!_pool[i].active) continue;
+    for(auto it = _pool.begin(); it < _pool.end(); ++it) {
 
-		part = &_pool[i];
+        gyVec3AddAccum(&it->position, &it->velocity);
 
-		gyVec3AddAccum(&part->position, &part->velocity);
-
-		if(!cam->isWithinScreenRegion(part->position.x, part->position.y, part->size, part->size)) {
-			part->active = false;
-			--_activeCount;
+        if(!cam->isWithinScreenRegion(it->position.x, it->position.y, it->size, it->size)) {
+            _pool.remove(it);
 			continue;
 		}
 
-		gyVec3AddAccum(&part->velocity, &_attrib->gravity);
+        gyVec3AddAccum(&it->velocity, &_attrib->gravity);
 
-		if(--part->life == 0) {
-			part->active = false;
-			--_activeCount;
-		}
-
+        if(--it->life == 0) {
+            _pool.remove(it);
+        }
 	}
 }
 
 void ParticleEmitterInternals::render(void) {
-	Particle* part;
 
 	//Probably could be optimized as shit to not bother using
 	//internal matrix stack!
-
-	if(_activeCount == 0) return;
 
 	gyVidTexBind(nullptr);
 	gyVidMaterialBind(nullptr);
 
 	//loop unroll my bitch ass
-	for(unsigned i = 0; i < _poolSize; ++i) {
-		if(!_pool[i].active) continue;
-		part = &_pool[i];
+
+    for(auto it = _pool.begin(); it < _pool.end(); ++it) {
 
 		gyMatPush();
-		gyVidQuadListBegin(&part->color);
+        gyVidQuadListBegin(&it->color);
 
-		gyMatTranslateScale(part->position.x, part->position.y, part->position.z, part->size, part->size, part->size);
+        gyMatTranslateScale(it->position.x, it->position.y, it->position.z, it->size, it->size, it->size);
 		gyVidRect(0);
 
 		gyVidQuadListEnd();
@@ -121,20 +101,14 @@ ParticleEmitterAttrib* ParticleEmitterInternals::getAttrib(void) const {
 }
 
 void ParticleEmitterInternals::allocatePool(const unsigned size) {
-	delete[] _pool;
-
-	_pool = new Particle[size];
-	_poolSize = size;
-	_activeCount = 0;
+    _pool.resize(size);
 }
 
 void ParticleEmitterInternals::setAttrib(ParticleEmitterAttrib * const attrib) {
 	_attrib = attrib;
 }
 
-ParticleEmitterInternals::~ParticleEmitterInternals(void) {
-	delete[] _pool;
-}
+ParticleEmitterInternals::~ParticleEmitterInternals(void) {}
 
 ParticleSystem::ParticleSystem(void) {
 	for(unsigned i = 0; i < ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_COUNT; ++i) {

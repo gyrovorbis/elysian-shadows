@@ -126,7 +126,8 @@ HEADERS += \
     ../../../AssetIO/include/elysian_particle_emitter.hpp \
     ../../include/elysian_particle_system.hpp \
     ../../include/elysian_day_system.hpp \
-    ../../include/elysian_examinable_system.hpp
+    ../../include/elysian_examinable_system.hpp \
+    ../../../AssetIO/include/elysian_mem_pool.hpp
 
 macx {
   OBJECTIVE_HEADERS += ../../../libGyro/lib/osx/SDLMain.h
@@ -189,7 +190,8 @@ SOURCES += \
     ../../source/elysian_particle_system.cpp \
     ../../../AssetIO/source/elysian_particle_emitter.cpp \
     ../../source/elysian_day_system.cpp \
-    ../../source/elysian_examinable_system.cpp
+    ../../source/elysian_examinable_system.cpp \
+    ../../../AssetIO/source/elysian_mem_pool.cpp
 
 macx {
   OBJECTIVE_SOURCES += ../../../libGyro/lib/osx/SDLMain.mm
