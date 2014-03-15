@@ -15,9 +15,9 @@ bool GuiSystem::loadAssets(void) {
 	
 	Debug::printf(Debug::VERBOSE, "GuiSystem::LoadAssets()");
     Debug::push();
-    
-	success &= twcen.loadTextData(gyFilePath(ELYSIAN_FONT_IMAGE_PATH_TWCEN), 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_TWCEN);
-	success &= verdana.loadTextData(gyFilePath(ELYSIAN_FONT_IMAGE_PATH_VERDANA), 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_VERDANA);
+
+	success &= twcen.loadTextData(ELYSIAN_FONT_IMAGE_PATH_TWCEN, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_TWCEN);
+	success &= verdana.loadTextData(ELYSIAN_FONT_IMAGE_PATH_VERDANA, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_VERDANA);
 
 	gyVidResolution(&_projWidth, &_projHeight);
 
