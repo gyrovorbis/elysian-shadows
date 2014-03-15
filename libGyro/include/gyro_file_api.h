@@ -29,8 +29,21 @@ typedef enum _GYPathType {
      * - Android: /data/0/com.myapp
      * - Dreamcast: /vmu <-- Falco can correct me if I'm wrong
      */
-    GY_PATH_USERDATA
+    GY_PATH_USERDATA,
+
+	/*
+	 * Path to game assets; Relative to GY_PATH_BINARY
+	 */
+	GY_PATH_ASSETS
 } GYPathType;
+
+#define GY_PATH_STR_ASSETS "assets"
+#if GYRO_PLATFORM == GYRO_PLATFORM_x86
+#   if __APPLE__
+#      undef GY_PATH_STR_ASSETS
+#      define GY_PATH_STR_ASSETS "../Resources/assets"
+#   endif
+#endif
 
 typedef struct _GYFile GYFile;
 

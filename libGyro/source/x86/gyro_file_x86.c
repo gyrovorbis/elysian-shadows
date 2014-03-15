@@ -17,6 +17,10 @@
 #   define TARGET_OS_MACOSX
 #endif
 
+#if !defined(TARGET_OS_WINDOWS)
+#   include <limits.h> /* For PATH_MAX */
+#endif
+
 #ifdef TARGET_OS_MACOSX
 extern char **NXArgv;
 #endif
@@ -132,6 +136,38 @@ static int gy__get_userdata_path(char **path, size_t *len)
     return 1;
 }
 
+static int gy__append_path_with_path(char **root, size_t *len, int (*base)(char **, size_t *), const char *path)
+{
+	char temp_path[2048];
+#if !defined(TARGET_OS_WINDOWS)
+	char real_path[PATH_MAX];
+#endif
+	if (!base(root, len)) {
+		return 0;
+	}
+	memset(temp_path, 0, sizeof temp_path);
+	sprintf(temp_path, "%s/%s", *root, path);
+	free(*root);
+#if defined(TARGET_OS_WINDOWS)
+	*root = gy__strdup(temp_path);
+#else
+	realpath(temp_path, real_path);
+	*root = gy__strdup(real_path);
+#endif
+	if (*root == NULL) {
+		return 0;
+	}
+	if (len != NULL) {
+		*len = strlen(*root);
+	}
+	return 1;
+}
+
+static int gy__get_assets_path(char **path, size_t *len)
+{
+	return gy__append_path_with_path(path, len, &gy__get_binary_path, GY_PATH_STR_ASSETS);
+}
+
 int gyFileResolvePath(GYPathType path_type, char **path, size_t *len)
 {
     if (path == NULL) {
@@ -142,6 +178,8 @@ int gyFileResolvePath(GYPathType path_type, char **path, size_t *len)
             return gy__get_binary_path(path, len);
         case GY_PATH_USERDATA:
             return gy__get_userdata_path(path, len);
+		case GY_PATH_ASSETS:
+			return gy__get_assets_path(path, len);
     }
     return 1;
 }
