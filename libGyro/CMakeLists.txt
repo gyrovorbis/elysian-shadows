@@ -187,6 +187,7 @@ if(GY_TARGET_OS MATCHES "i386" OR GY_TARGET_ARCH MATCHES "x86_64")
 endif()
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_GNU_SOURCE")
 
 include_directories(SYSTEM ${GY_INCLUDE_DIR})
 include_directories(SYSTEM "${GY_TARGET_CONTRIB_OUT_DIR}/include")
