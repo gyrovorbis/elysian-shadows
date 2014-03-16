@@ -20,6 +20,9 @@
 #if !defined(TARGET_OS_WINDOWS)
 #   include <limits.h> /* For PATH_MAX */
 #endif
+#if defined(TARGET_OS_LINUX)
+#   include <unistd.h>
+#endif
 
 #ifdef TARGET_OS_MACOSX
 extern char **NXArgv;
