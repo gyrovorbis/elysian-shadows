@@ -9,11 +9,12 @@ namespace elysian {
 	class SpriteAttrib: public PrimAttrib {
 		friend class Renderable;
 	protected:
-		GYTexture* _tex			= nullptr;
-		unsigned _spriteWidth	= 0;
-		unsigned _spriteHeight	= 0;
-		unsigned _frame			= 0;
-		GYColor4 _color			= {255, 255, 255, 255};
+		GYTexCoord2	_texCoords[4];
+		GYTexture*	_tex			= nullptr;
+		unsigned	_spriteWidth	= 0;
+		unsigned	_spriteHeight	= 0;
+		int			_frame			= 0;
+		GYColor4	_color			= {255, 255, 255, 255};
 	public:
 		//Not super efficient, but since each rect needs its own color, header must be resubmitted...
 		virtual void submit(void) override {
@@ -37,6 +38,8 @@ namespace elysian {
 			//gyVidMaterialBind(nullptr);
 			gyVidTexBind(_tex);
 			gyVidQuadListBegin(&_color);
+			if(_frame == -1) gyVidTexCoordArray(_texCoords);
+
 		}
 
 		inline void submitFinish(void) {
@@ -47,7 +50,11 @@ namespace elysian {
 		virtual void submitVerts(GYVector4* verts = nullptr) {
 			(void)verts;
 			gyVidRect(_frame);
+		}
 
+		inline void setTexCoord(const unsigned index, const float u, const float v) {
+			_texCoords[index].u = u; _texCoords[index].v = v;
+			_frame = -1;
 		}
 
 		void setColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a) { _color.r = r; _color.g = g; _color.b = b; _color.a = a; }
@@ -82,7 +89,7 @@ namespace elysian {
 		}
 
 		void setFrame(const unsigned fr) { _frame = fr; }
-		unsigned getFrame(void) const { return _frame; }
+		int getFrame(void) const { return _frame; }
 
 		virtual bool load(std::ifstream& /*stream*/) override {
 			return true;

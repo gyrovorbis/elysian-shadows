@@ -247,6 +247,7 @@ OOLUA_PROXY(SpriteAttrib, PrimAttrib)
 	OOLUA_MEM_FUNC(void, setAlpha, unsigned char)
 	OOLUA_MEM_FUNC(void, loadTexture, const char *, unsigned, unsigned, unsigned, unsigned)
 	OOLUA_MEM_FUNC(void, loadSheet, const char *, unsigned, unsigned)
+	OOLUA_MEM_FUNC(void, setTexCoord, unsigned, float, float)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(QuadSpriteAttrib, SpriteAttrib)

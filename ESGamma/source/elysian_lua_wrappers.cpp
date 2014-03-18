@@ -177,12 +177,13 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(PrimAttrib)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(PrimAttrib)
 
-EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(SpriteAttrib,
+EXPORT_OOLUA_FUNCTIONS_6_NON_CONST(SpriteAttrib,
 								   setFrame,
 								   setColor,
 								   setAlpha,
 								   loadTexture,
-								   loadSheet)
+								   loadSheet,
+								   setTexCoord)
 EXPORT_OOLUA_FUNCTIONS_2_CONST(SpriteAttrib,
 							   getColor,
 							   getAlpha)

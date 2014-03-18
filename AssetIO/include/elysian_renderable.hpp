@@ -17,7 +17,7 @@ namespace elysian {
 		GYMaterial*		_material		= nullptr;
 		GYTexture*		_normalMap		= nullptr;
 		SpriteAttrib*	_spriteAttrib	= nullptr;	//Prefab-able attributes
-		unsigned		_frame			= 0;			//for animation
+		int				_frame			= 0;			//for animation
 		GYVector2		_offset			= {0.0f, 0.0f};	//texture offset from base transform (local coords)
 
 		inline Renderable(Entity &parent): Component(parent) {}
@@ -81,14 +81,20 @@ namespace elysian {
 			case PrimAttrib::QUAD_SPRITE:
 				gyVidAlphaLevel(GY_ALPHA_FULL);
 				gyVidColorArray(&_spriteAttrib->_color);
-				if(_spriteAttrib->_tex)
-					gyVidTexCoordArray(gyVidTexCoordArrayFromFrame(&_spriteAttrib->_tex->_coord->texCoord[_frame],
+				if(_spriteAttrib->_tex) {
+					if(_frame != -1)
+						gyVidTexCoordArray(gyVidTexCoordArrayFromFrame(&_spriteAttrib->_tex->_coord->texCoord[_frame],
 																   GY_RECT_TEX_ORIENT_NORMAL));
+					else
+						gyVidTexCoordArray(_spriteAttrib->_texCoords);
+
+				}
 				gyVidTriangleStrip(localVerts, 0, 4);
 				break;
 			case PrimAttrib::SPRITE:
 				gyVidAlphaLevel((_spriteAttrib->_color.a == 255)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
 				gyVidQuadListBegin(&_spriteAttrib->_color);
+				if(_frame == -1) gyVidTexCoordArray(_spriteAttrib->_texCoords);
 				gyVidQuad(localVerts, _frame);
 				gyVidQuadListEnd();
 				break;
