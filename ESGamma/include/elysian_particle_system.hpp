@@ -4,62 +4,14 @@
 #include <gyro_video_api.h>
 #include <gyro_math_api.h>
 #include "elysian_system.hpp"
-#include "elysian_mem_pool.hpp"
+#include "elysian_particle_emitter.hpp"
 
 #define ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_COUNT		4
-#define ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_POOL_SIZE	5000
 
 namespace elysian {
 
 	struct CameraState;
 
-	class ParticleEmitterAttrib {
-		friend class ParticleEmitterInternals;
-	private:
-		GYVector3	gravity		= GYVector3 { 0.0f, 0.7f, 0.0f };
-		//GYVecture*	texture = nullptr;
-		unsigned	maxLife		= 100;
-		unsigned	size		= 3;
-		unsigned	intensity	= 100; //for periodically generated particles, dunno if it should be here or not
-		GYColor4	color		= GYColor4 { 255, 255, 255, 255 };
-	public:
-
-		void setGravity(const GYVector3& grav);
-        void setMaxLife(const unsigned life); //number of frames since birth that it lives
-        void setSize(const unsigned newSize); // 1 = 1x1 square
-		void setColor(const GYColor4& newColor);
-	};
-
-	struct Particle {
-		GYVector3 position;
-		GYVector3 velocity;
-		int life;
-		unsigned size;
-		GYColor4 color;
-		bool active = false;
-	};
-
-	class ParticleEmitterInternals {
-	private:
-        //Particle*				_pool			= nullptr;
-        Pool<Particle>          _pool           = Pool<Particle>(ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_POOL_SIZE);
-		ParticleEmitterAttrib*	_attrib			= nullptr;
-		unsigned				_poolSize		= 100;
-		unsigned				_activeCount	= 0;
-		bool					_overflow		= false;
-	public:
-		~ParticleEmitterInternals(void);
-
-		void allocatePool(const unsigned size);
-		void setAttrib(ParticleEmitterAttrib*const attrib);
-		ParticleEmitterAttrib* getAttrib(void) const;
-
-		void update(const CameraState*const state);
-		void render(void);
-
-		//create particles
-		void emitFrom(const GYVector3& pos, const float angle, const unsigned intensity);
-	};
 
 	class ParticleSystem: public System {
 	private:
@@ -72,7 +24,7 @@ namespace elysian {
 		void render(void);
 
 		//Internal particle emitters
-		void emitFrom(const unsigned index, const GYVector3& pos, const float angle, const unsigned intensity);
+		void emitFromPoint(const unsigned index, const GYVector3& pos, const float angle, const unsigned intensity);
 		ParticleEmitterAttrib *getAttrib(const unsigned index) const;
 		void resizePool(const unsigned index, const unsigned size);
 	};
@@ -81,21 +33,28 @@ namespace elysian {
 	//====== INLINEZ =====
 
 
-
-	inline void ParticleEmitterAttrib::setGravity(const GYVector3& grav) {
-		gravity = grav;
+	inline void ParticleEmitterAttrib::setAcceleration(const GYVector3& accel) {
+		_acceleration = accel;
 	}
 
 	inline void ParticleEmitterAttrib::setMaxLife(const unsigned life) {
-		maxLife = life;
+		_maxLife = life;
 	}
 
 	inline void ParticleEmitterAttrib::setSize(const unsigned newSize) {
-		size = newSize;
+		_size = newSize;
 	}
 
-	inline void ParticleEmitterAttrib::setColor(const GYColor4& newColor) {
-		color = newColor;
+	inline void ParticleEmitterAttrib::setAngularDamping(const float factor) {
+		_angularDamping = factor;
+	}
+
+	inline void ParticleEmitterAttrib::setFadeOut(const bool val) {
+		_fadeOut = val;
+	}
+
+	inline void ParticleEmitterAttrib::setFrameRange(const unsigned min, const unsigned max) {
+		_minFrame = min; _maxFrame = max;
 	}
 
 

@@ -21,6 +21,7 @@ namespace elysian {
 			RIGID_BODY,
 			AUDIO_SOURCE,
 			LIGHT_SOURCE,
+			PARTICLE_EMITTER,
 			ITEM, 
 			FRIENDLY, 
 			ENEMY, 

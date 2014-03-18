@@ -47,6 +47,8 @@ void DaySystem::setSunEnabled(const bool val) {
 	} else {
 		onAreaExit();
 	}
+
+	_sunEnabled = val;
 }
 
 

@@ -132,8 +132,6 @@ EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Component)
 EXPORT_OOLUA_FUNCTIONS_1_CONST(Component, getEntity)
 
 OOLUA_EXPORT_FUNCTIONS(Entity,
-						activate,
-						deactivate,
 						move,
 						setName,
 						setElev,
@@ -193,7 +191,6 @@ EXPORT_OOLUA_FUNCTIONS_1_CONST(QuadSpriteAttrib,
 EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(QuadSpriteAttrib,
 								   setVertexColor,
 								   setVerticesAlpha)
-
 OOLUA_EXPORT_FUNCTIONS(GYMaterial,
 					   setShininess)
 OOLUA_EXPORT_FUNCTIONS_CONST(GYMaterial,
@@ -320,7 +317,7 @@ OOLUA_EXPORT_FUNCTIONS(LightSource,
 OOLUA_EXPORT_FUNCTIONS_CONST(LightSource)
 
 OOLUA_EXPORT_FUNCTIONS(ParticleEmitterAttrib,
-					   setGravity,
+					   setAcceleration,
 					   setMaxLife,
 					   setSize,
 					   setColor)
@@ -483,7 +480,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(AudioSystem,
 							 getAuxTrackTime)
 
 OOLUA_EXPORT_FUNCTIONS(ParticleSystem,
-					   emitFrom)
+					   emitFromPoint)
 OOLUA_EXPORT_FUNCTIONS_CONST(ParticleSystem,
 							 getAttrib)
 

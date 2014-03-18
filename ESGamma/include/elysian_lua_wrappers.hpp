@@ -181,8 +181,6 @@ namespace OOLUA {
 	template<> class Proxy_class<elysian::LuaBehavior>;
 }
 OOLUA_PROXY(Entity, RenderableObject)
-	OOLUA_MEM_FUNC(bool, activate)
-	OOLUA_MEM_FUNC(bool, deactivate)
 	OOLUA_MEM_FUNC(void, move, const GYVector2&)
 	OOLUA_MEM_FUNC(void, setName, const char*)
 	OOLUA_MEM_FUNC_CONST(const char *, getName)
@@ -252,6 +250,7 @@ OOLUA_PROXY(QuadSpriteAttrib, SpriteAttrib)
 	OOLUA_MEM_FUNC(void, setVerticesAlpha, const unsigned char, const unsigned char, const unsigned char, const unsigned char)
 OOLUA_PROXY_END
 
+//REESTED TO FUCK!!!
 OOLUA_PROXY(GYMaterial)
 	OOLUA_MGET(ambientColor, getAmbientColor)
 	OOLUA_MGET(diffuseColor, getDiffuseColor)
@@ -414,11 +413,10 @@ OOLUA_PROXY(LightSource, Component)
 	OOLUA_MFUNC(setShadowCaster)
 OOLUA_PROXY_END
 
-OOLUA_PROXY(ParticleEmitterAttrib)
-	OOLUA_MFUNC(setGravity)
+OOLUA_PROXY(ParticleEmitterAttrib, SpriteAttrib)
+	OOLUA_MFUNC(setAcceleration)
 	OOLUA_MFUNC(setMaxLife)
 	OOLUA_MFUNC(setSize)
-	OOLUA_MFUNC(setColor)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(DialogScreen)
@@ -643,7 +641,7 @@ OOLUA_PROXY(ParticleSystem)
 		No_public_constructors,
 		No_public_destructor
 	)
-    OOLUA_MFUNC(emitFrom)
+	OOLUA_MFUNC(emitFromPoint)
 	OOLUA_MFUNC_CONST(getAttrib)
 OOLUA_PROXY_END
 

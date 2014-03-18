@@ -61,6 +61,7 @@ namespace elysian {
 	class Examinable;
 	class AudioSource;
 	class LightSource;
+	class ParticleEmitter;
 	class Behavior;
 
 	struct MapEntry {
@@ -98,21 +99,22 @@ namespace elysian {
 
     struct Area: public Asset {
 		//Entity data
-		std::vector<Entity*>		entities;
+		std::vector<Entity*>			entities;
 
 		//Component data
-		std::vector<Renderable*>	renderables;
-		std::vector<Animation*>		animations;
-		std::vector<Collidable*>	collidables;
-		std::vector<Character*>		characters;
-		std::vector<Warp*>			warps;
-		std::vector<Item*>			items;
-		std::vector<Friendly*>		friendlies;
-		std::vector<Enemy*>			enemies;
-		std::vector<Examinable*>	examinables;
-		std::vector<AudioSource*>	audioSources;
-		std::vector<LightSource*>	lightSources;
-		std::vector<Behavior*>		behaviors;
+		std::vector<Renderable*>		renderables;
+		std::vector<Animation*>			animations;
+		std::vector<Collidable*>		collidables;
+		std::vector<Character*>			characters;
+		std::vector<Warp*>				warps;
+		std::vector<Item*>				items;
+		std::vector<Friendly*>			friendlies;
+		std::vector<Enemy*>				enemies;
+		std::vector<Examinable*>		examinables;
+		std::vector<AudioSource*>		audioSources;
+		std::vector<LightSource*>		lightSources;
+		std::vector<ParticleEmitter*>	particleEmitters;
+		std::vector<Behavior*>			behaviors;
 		
 		char name[ELYSIAN_AREA_NAME_SIZE];		//name of area directory
 		char path[ELYSIAN_AREA_PATH_SIZE];

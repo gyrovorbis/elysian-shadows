@@ -76,6 +76,7 @@ bool Engine::loadAssets(void) {
 }
 
 void Engine::update(void) {
+
 	switch(System::_engineState) {
 		case System::ENGINE_NORMAL:
 		case System::ENGINE_WARPING:

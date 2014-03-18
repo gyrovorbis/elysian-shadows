@@ -19,6 +19,7 @@
 #include "elysian_examinable.hpp"
 #include "elysian_audio_source.hpp"
 #include "elysian_light_source.hpp"
+#include "elysian_particle_emitter.hpp"
 
 using namespace std;
 
@@ -46,6 +47,7 @@ Entity::~Entity(void) {
 	removeExaminable();
 	removeAudioSource();
 	removeLightSource();
+	removeParticleEmitter();
 	
 	// Cleanup Behaviors
 	for(auto it = _behavior.begin(); it != _behavior.end(); ++it) {
@@ -263,6 +265,10 @@ bool Entity::activate(void) {
 		_lightSource->addToLevel();
 		_componentActive[Component::LIGHT_SOURCE] = true;
 	}
+	if(_particleEmitter && !_componentActive[Component::PARTICLE_EMITTER]) {
+		_particleEmitter->addToLevel();
+		_componentActive[Component::PARTICLE_EMITTER] = true;
+	}
 	for(auto it = _behavior.begin(); it != _behavior.end(); ++it) {
 		if(!it->second->getActive()) {
 			it->second->addToLevel();
@@ -323,6 +329,10 @@ bool Entity::deactivate(void) {
 	if(_lightSource && _componentActive[Component::LIGHT_SOURCE]) {
 		_lightSource->removeFromLevel();
 		_componentActive[Component::LIGHT_SOURCE] = false;
+	}
+	if(_particleEmitter && _componentActive[Component::PARTICLE_EMITTER]) {
+		_particleEmitter->removeFromLevel();
+		_componentActive[Component::PARTICLE_EMITTER] = false;
 	}
 
 	for(auto it = _behavior.begin(); it != _behavior.end(); ++it) {
@@ -390,6 +400,9 @@ bool Entity::load(ifstream &stream) { //Deserialization
 			case Component::LIGHT_SOURCE:
 				comp = addLightSource();
 				break;
+			case Component::PARTICLE_EMITTER:
+				comp = addParticleEmitter();
+				break;
 			case Component::BEHAVIOR:
 				stream >> behaviorName;
 				comp = addBehavior(behaviorName);
@@ -441,6 +454,7 @@ bool Entity::save(ofstream &stream) { //Serialization
 	if(getExaminable()) ++compCount;
 	if(getAudioSource()) ++compCount;
 	if(getLightSource()) ++compCount;
+	if(getParticleEmitter()) ++compCount;
 	for(auto it = _behavior.begin(); it != _behavior.end(); ++it) ++compCount;
 	stream << compCount << endl;
 
@@ -487,6 +501,10 @@ bool Entity::save(ofstream &stream) { //Serialization
 	}
 	if((comp = getLightSource())) {
 		stream << (int)Component::LIGHT_SOURCE << endl;
+		success &= comp->save(stream);
+	}
+	if((comp = getParticleEmitter())) {
+		stream << (int)Component::PARTICLE_EMITTER << endl;
 		success &= comp->save(stream);
 	}
 	
@@ -657,6 +675,12 @@ LightSource *Entity::addLightSource(void) {
 	return _lightSource = attachComponent(_lightSource)? _lightSource : NULL;
 }
 
+ParticleEmitter *Entity::addParticleEmitter(void) {
+	if(_particleEmitter) return nullptr;
+	_particleEmitter = new ParticleEmitter(*this);
+	return _particleEmitter = attachComponent(_particleEmitter)? _particleEmitter : NULL;
+}
+
 
 void Entity::removeRenderable(void) {
 	if(_renderable && _active) {
@@ -755,6 +779,15 @@ void Entity::removeLightSource(void) {
 	}
 	delete _lightSource;
 	_lightSource = nullptr;
+}
+
+void Entity::removeParticleEmitter(void) {
+	if(_particleEmitter && _active) {
+		_particleEmitter->removeFromLevel();
+		_componentActive[Component::PARTICLE_EMITTER] = false;
+	}
+	delete _particleEmitter;
+	_particleEmitter = nullptr;
 }
 
 }

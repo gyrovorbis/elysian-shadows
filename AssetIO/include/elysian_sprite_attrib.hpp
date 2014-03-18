@@ -18,22 +18,36 @@ namespace elysian {
 		//Not super efficient, but since each rect needs its own color, header must be resubmitted...
 		virtual void submit(void) override {
 	#ifdef ELYSIAN_ENGINE
-			submitVerts();
+			submitHeader();
+			gyVidRect(_frame);
+			submitFinish();
 	#endif
 		}
 
-		virtual ~SpriteAttrib(void) = default;
+		inline GYTexture* getTexture(void) const { return _tex; }
 
-		virtual void submitVerts(GYVector4* verts = nullptr) {
-			(void)verts;
+		virtual ~SpriteAttrib(void) {
+			gyVidTexDestroy(_tex);
+		}
+
+		inline void submitHeader(void) {
 			if(_color.a == 255) gyVidAlphaLevel(GY_ALPHA_NONE);
 			else gyVidAlphaLevel(GY_ALPHA_FULL);
 
 			//gyVidMaterialBind(nullptr);
 			gyVidTexBind(_tex);
 			gyVidQuadListBegin(&_color);
-			gyVidRect(_frame);
+		}
+
+		inline void submitFinish(void) {
 			gyVidQuadListEnd();
+		}
+
+
+		virtual void submitVerts(GYVector4* verts = nullptr) {
+			(void)verts;
+			gyVidRect(_frame);
+
 		}
 
 		void setColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a) { _color.r = r; _color.g = g; _color.b = b; _color.a = a; }
@@ -41,6 +55,7 @@ namespace elysian {
 
 		void getColor(unsigned char& r, unsigned char& g, unsigned char& b, unsigned char& a) const { r = _color.r; g = _color.g; b = _color.b; a = _color.a; }
 		void getColor(GYColor4& color) const { color = _color; }
+		GYColor4 getColor(void) const { return _color; }
 
 		void setAlpha(const unsigned char a) { _color.a = a; }
 		unsigned char getAlpha(void) const { return _color.a; }

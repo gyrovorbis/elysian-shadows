@@ -58,28 +58,30 @@ int gyVidInit(const GYVidInitParams *const params) {
 /*
     Should be SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL, TRUE),
     but for some reason SDL_GL_SWAP_CONTROL can't be found,
-    so we have to cast the integer value.
-    (VSYNC)
+	so we have to cast the integer value.
+	(VSYNC)
 */
-    SDL_GL_SetAttribute((SDL_GLattr)16, 1);
-    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
-    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
-    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute((SDL_GLattr)16, 1);
+	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
+	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
+	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-    flags = SDL_OPENGL | SDL_ANYFORMAT; //SDL_HWSURFACE | SDL_HWPALETTE | SDL_DOUBLEBUF;
+	flags = SDL_OPENGL | SDL_ANYFORMAT; //SDL_HWSURFACE | SDL_HWPALETTE | SDL_DOUBLEBUF;
 	//flags = SDL_OPENGL | SDL_DOUBLEBUF;
 	if(params->prop & GY_WIN_RESIZABLE) flags |= SDL_RESIZABLE;
 	if(params->prop & GY_WIN_FULLSCREEN) flags |= SDL_FULLSCREEN;
 
-    icon = SDL_LoadBMP(params->icon);
-    SDL_WM_SetIcon(icon, NULL);
+	icon = SDL_LoadBMP(params->icon);
+	uint32_t colorkey = SDL_MapRGB(icon->format, 255, 0, 255);
+	SDL_SetColorKey(icon, SDL_SRCCOLORKEY, colorkey);
+	SDL_WM_SetIcon(icon, NULL);
 	SDL_WM_SetCaption(params->title, NULL);
 
-    if(SDL_SetVideoMode(viewWidth, viewHeight, vidBpp, flags) == 0) {
-        _gyLog(GY_DEBUG_CRITICAL, "Video mode set failed: %s\n", SDL_GetError());
-        SDL_Quit();
+	if(SDL_SetVideoMode(viewWidth, viewHeight, vidBpp, flags) == 0) {
+		_gyLog(GY_DEBUG_CRITICAL, "Video mode set failed: %s\n", SDL_GetError());
+		SDL_Quit();
     }
 
     atexit(SDL_Quit);

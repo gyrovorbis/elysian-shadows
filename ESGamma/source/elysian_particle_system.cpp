@@ -5,21 +5,17 @@
 
 namespace elysian {
 
-void ParticleEmitterInternals::emitFrom(const GYVector3& pos, const float angle, const unsigned intensity) {
+ParticleEmitterAttrib::~ParticleEmitterAttrib(void) {
+	delete _material;
+}
+
+void ParticleEmitterInternals::emitFromPoint(const GYVector3& pos, const float angle, const unsigned intensity) {
 	Particle* part;
 	float relAngle;
 	float sinTheta, cosTheta;
 
-    if(_pool.isFull()) {
-        Debug::printf(Debug::VERBOSE, "FULL");
-    }
-
 
     if(_pool.isFull()) return;
-
-    if(_pool.size() == 0)
-            Debug::printf(Debug::VERBOSE, "EMPTY");
-
 
 	for(unsigned i = 0; i < intensity; ++i) {
 
@@ -27,21 +23,31 @@ void ParticleEmitterInternals::emitFrom(const GYVector3& pos, const float angle,
 
 		part->position.x = pos.x + ((rand() % 6) - 3);
 		part->position.y = pos.y + ((rand() % 6) - 3);
-		part->life = _attrib->maxLife - (rand() % ((int)((float)intensity/20.0f) + 1));
+		part->position.z = pos.z;
+		part->life = _attrib->_maxLife - (rand() % ((int)((float)intensity/20.0f) + 1));
+
+		if(_attrib->_minFrame != _attrib->_maxFrame) { //use range
+			part->frame = rand()%(_attrib->_maxFrame-_attrib->_minFrame)+_attrib->_minFrame;
+		} else { //use static
+			part->frame = _attrib->getFrame();
+		}
 
 		if(part->life < 0) part->life = 0;
-		part->size = _attrib->size;
+		part->size = _attrib->_size;
 		if(part->size < 1) part->size = 1;
 		if(part->size > 200) part->size = 200;
 
 		//doesn't center the angle!
-		relAngle = angle;// + rand()%55;
+		relAngle = angle;// + (rand()%5-10)/10.0f;
+		part->orientation = relAngle;
 
 		gySinCos(angle, &sinTheta, &cosTheta);
 
+		part->rotation = -cosTheta*(intensity/100.0f); //tweak me better!
+
 		part->velocity.x = cosTheta * (float)intensity/(float)(rand()%14 + 10);
 		part->velocity.y = sinTheta * (float)intensity/(float)(rand()%14 + 10);
-		part->color = _attrib->color;
+		part->color = _attrib->getColor();
 		part->color.r += (rand()%6)-3;
 		part->color.g += (rand()%6)-3;
 		part->color.b += (rand()%6)-3;
@@ -57,6 +63,7 @@ void ParticleEmitterInternals::update(const CameraState*const cam) {
 
     for(auto it = _pool.begin(); it < _pool.end(); ++it) {
 
+		//integrate
         gyVec3AddAccum(&it->position, &it->velocity);
 
         if(!cam->isWithinScreenRegion(it->position.x, it->position.y, it->size, it->size)) {
@@ -64,11 +71,17 @@ void ParticleEmitterInternals::update(const CameraState*const cam) {
 			continue;
 		}
 
-        gyVec3AddAccum(&it->velocity, &_attrib->gravity);
+		it->orientation += it->rotation;
+		it->rotation *= _attrib->_angularDamping;
+
+		gyVec3AddAccum(&it->velocity, &_attrib->_acceleration);
 
         if(--it->life == 0) {
             _pool.remove(it);
+			continue;
         }
+
+		if(_attrib->_fadeOut) it->color.a = 255.0f*((float)_attrib->_maxLife/(float)it->life);
 	}
 }
 
@@ -77,8 +90,9 @@ void ParticleEmitterInternals::render(void) {
 	//Probably could be optimized as shit to not bother using
 	//internal matrix stack!
 
-	gyVidTexBind(nullptr);
+	gyVidTexBind(_attrib->getTexture());
 	gyVidMaterialBind(nullptr);
+	gyVidAlphaLevel(GY_ALPHA_FULL);
 
 	//loop unroll my bitch ass
 
@@ -87,8 +101,11 @@ void ParticleEmitterInternals::render(void) {
 		gyMatPush();
         gyVidQuadListBegin(&it->color);
 
-        gyMatTranslateScale(it->position.x, it->position.y, it->position.z, it->size, it->size, it->size);
-		gyVidRect(0);
+		gyMatTranslate(it->position.x, it->position.y, it->position.z);
+		gyMatScale(it->size, it->size, 1.0f);
+		gyMatRotateZ(it->orientation);
+
+		gyVidRect(it->frame);
 
 		gyVidQuadListEnd();
 		gyMatPop();
@@ -117,8 +134,8 @@ ParticleSystem::ParticleSystem(void) {
 	}
 }
 
-void ParticleSystem::emitFrom(const unsigned index, const GYVector3& pos, const float angle, const unsigned intensity) {
-	_emitters[index].emitFrom(pos, angle, intensity);
+void ParticleSystem::emitFromPoint(const unsigned index, const GYVector3& pos, const float angle, const unsigned intensity) {
+	_emitters[index].emitFromPoint(pos, angle, intensity);
 }
 
 ParticleEmitterAttrib* ParticleSystem::getAttrib(const unsigned index) const {

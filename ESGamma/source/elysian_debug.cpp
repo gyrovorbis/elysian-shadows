@@ -306,25 +306,36 @@ void Debug::processInput(const GameInput& input) {
 	}
 
 	if(input.getTapped(GameInput::BUT_R)) {
-
 		static bool renderDebug = false;
 		renderDebug = !renderDebug;
 		getLightSys()->setRenderDebugEnabled(renderDebug);
 		printf(VERBOSE, "LightSystem::renderShadowVolumes = %d", renderDebug);
-
 	}
 
     if(input.getDown(GameInput::BUT_U)) {
+
+		static bool once = true;
+		if(once) {
+			getPartSys()->getAttrib(0)->loadTexture("item/legacyItems/star.PNG", 32, 32, 32, 32);
+			//getPartSys()->getAttrib(0)->setFrameRange(10, 13);
+			once = false;
+		}
 		Entity* entity = getCurArea()->findEntity("Julien");
-/*		getPartSys()->getAttrib(0)->setSize(size);
-		   getPartSys()->emitFrom(0, GYVector3 { entity->transform._pos.x+5, entity->transform._pos.y, entity->transform._pos.z}, theta, intensity);
-*/
-		getGuiSys()->addCombatText("10", GYColor4 { 255, 0, 0, 255}, GYVector2 { entity->transform._pos.x, entity->transform._pos.y}, GYVector2 { 0.5f, -5.0f});
+		getPartSys()->getAttrib(0)->setSize(32);
+		   getPartSys()->emitFromPoint(0, GYVector3 { entity->transform._pos.x+5, entity->transform._pos.y, 500.0f}, theta, intensity);
+
+//		getGuiSys()->addCombatText("10", GYColor4 { 255, 0, 0, 255}, GYVector2 { entity->transform._pos.x, entity->transform._pos.y}, GYVector2 { 0.5f, -5.0f});
 
     }
 
 	static float timeSpeed = 60.0f;
 
+	if(input.getTapped(GameInput::BUT_N)) {
+		static bool sunEnabled = true;
+		sunEnabled = !sunEnabled;
+		getDaySys()->setSunEnabled(sunEnabled);
+	}
+	/*
 	if(input.getDown(GameInput::BUT_N)) {
 		timeSpeed *= 1.1f;
 		getDaySys()->setTimeDilation(timeSpeed);
@@ -332,7 +343,7 @@ void Debug::processInput(const GameInput& input) {
 	if(input.getDown(GameInput::BUT_M)) {
 		timeSpeed *= 0.9f;
 		getDaySys()->setTimeDilation(timeSpeed);
-	}
+	}*/
 
 	//VRAM and Audio Stats
 	if(input.getTapped(GameInput::BUT_Z)) {
