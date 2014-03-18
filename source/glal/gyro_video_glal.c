@@ -245,11 +245,11 @@ void gyVidRectNormalType(const GY_RECT_NORMAL_TYPE type) {
 	}
 }
 
-void gyVidQuad(const GYVector4 *const verts, const unsigned int frame) {
+void gyVidQuad(const GYVector4 *const verts, const int frame) {
 	const GYTexCoord2* coord;
 	const GYVector3* tangent;
 
-	if(curTex) {
+	if(curTex && frame != -1) {
 		coord = gyVidTexCoordArrayFromFrame(&curTex->_coord->texCoord[frame], _rectTexOrient);
 		gyVidTexCoordArray(coord);
 		_rectTexOrient = GY_RECT_TEX_ORIENT_NORMAL; //reset after each rect
@@ -266,7 +266,7 @@ void gyVidQuad(const GYVector4 *const verts, const unsigned int frame) {
 	gyVidTriangleStrip(verts, 0, 4);
 }
 
-void gyVidRect(const unsigned int frame) {
+void gyVidRect(const int frame) {
 	gyVidQuad(_rectVerts[_normalType], frame);
 }
 
