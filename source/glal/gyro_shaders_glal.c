@@ -255,8 +255,10 @@ static void _queryLightingShader(_LightingShaderProgram*const shader) {
 
 // =========== PUBLIC INTERNAL FUNCTIONS ==========
 void glalLoadDefaultShaders(void) {
-	GYShader* vertShader = gyShaderCreate("shaders/pixelLighting.vsh");
-	GYShader* fragShader = gyShaderCreate("shaders/pixelLighting.fsh");
+	//GYShader* vertShader = gyShaderCreate("shaders/pixelLighting.vsh");
+	//GYShader* fragShader = gyShaderCreate("shaders/pixelLighting.fsh");
+	GYShader* vertShader = gyShaderCreate("/Users/Falco/Documents/ESDev/libGyro/source/glal/shaders/pixelLighting.vsh");
+	GYShader* fragShader = gyShaderCreate("/Users/Falco/Documents/ESDev/libGyro/source/glal/shaders/pixelLighting.fsh");
 	_lightingShader.program = gyShaderProgramCreate(vertShader, fragShader);
 	_queryLightingShader(&_lightingShader);
 
@@ -292,11 +294,12 @@ void glalDefaultShadersLoadUniforms(void) {
 
 	//set normal map to use texture bank 1
 	glUniform1i(curLightShader->uniformLoc[SHADER_NORMAL_MAP], 1);
+	glUniform1i(curLightShader->uniformLoc[SHADER_SPECULAR_MAP], 2);
 
 	//next texture banks are used for shadow maps for each light
 	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
-		glUniform1i(curLightShader->lightsUniformLoc[i][SHADER_LIGHT_SHADOW_MAP], 2+i);
-		glUniform1i(curLightShader->lightsUniformLoc[i][SHADER_LIGHT_SHADOW_CUBE_MAP], 6+i);
+		glUniform1i(curLightShader->lightsUniformLoc[i][SHADER_LIGHT_SHADOW_MAP], 3+i);
+		glUniform1i(curLightShader->lightsUniformLoc[i][SHADER_LIGHT_SHADOW_CUBE_MAP], 7+i);
 	}
 
 	//Do these not need to be physically resubmitted?

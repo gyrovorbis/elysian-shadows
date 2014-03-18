@@ -86,6 +86,7 @@ void gyVidLightingSetEnable(const int enabled);
 void gyVidMaterialBind(const GYMaterial*const material);
 
 void gyVidNormalMapBind(const struct _GYTexture* const tex);
+void gyVidSpecularMapBind(const struct _GYTexture * const tex);
 
 void gyVidSetGlobalAmbience(const struct _GYVector4*const color);
 
