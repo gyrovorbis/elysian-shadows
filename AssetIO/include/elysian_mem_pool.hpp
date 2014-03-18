@@ -152,7 +152,7 @@ public:
         _used           = (bool*)malloc(sizeof(bool) * (maxCapacity+1));
         _freeIndices    = (int*)malloc(sizeof(int) * freeIndexSize);
 
-        _endIndex = maxCapacity;
+		//_endIndex = maxCapacity;
 
         memset(_used, 0, sizeof(bool) * maxCapacity);
         _used[maxCapacity] = true;

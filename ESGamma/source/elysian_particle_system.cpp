@@ -156,8 +156,8 @@ void ParticleSystem::update(void) {
 
 	//update entity emitters
 	auto emitters = getCurArea()->particleEmitters;
-	for(auto it = emitters.begin(); it != emitters.end(); ++it) {
-//		it->update();
+	for(auto it : emitters) {
+		it->update(state);
 	}
 }
 

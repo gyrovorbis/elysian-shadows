@@ -34,6 +34,8 @@ namespace elysian {
 		_mainState->register_class<DialogPrompt>();
 		_mainState->register_class<Dialog>();
 		_mainState->register_class<Examinable>();
+		_mainState->register_class<ParticleEmitterAttrib>();
+		_mainState->register_class<ParticleEmitter>();
 		OOLUA::register_class<LuaBehavior>(*_mainState);
 		_mainState->register_class<Tile>();
 		_mainState->register_class<Level>();
@@ -49,7 +51,6 @@ namespace elysian {
 		_mainState->register_class<LightSource>();
 		_mainState->register_class<AudioSystem>();
 		_mainState->register_class<LightSystem>();
-		_mainState->register_class<ParticleEmitterAttrib>();
 		_mainState->register_class<ParticleSystem>();
 		_mainState->register_class<DaySystem>();
 		_mainState->register_class<DialogSystem>();
@@ -322,6 +323,12 @@ OOLUA_EXPORT_FUNCTIONS(ParticleEmitterAttrib,
 					   setSize,
 					   setFrameRange)
 OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitterAttrib);
+
+OOLUA_EXPORT_FUNCTIONS(ParticleEmitter,
+					   emitFromPoint,
+					   emitFromEntity,
+					   setAttrib)
+OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitter)
 
 OOLUA_EXPORT_FUNCTIONS(DialogScreen,
 					   addSourceEntity,

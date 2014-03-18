@@ -75,6 +75,8 @@ namespace OOLUA
 	typedef elysian::DialogScreen				DialogScreen;
 	typedef elysian::DialogText					DialogText;
 	typedef elysian::DialogPrompt				DialogPrompt;
+	typedef elysian::ParticleEmitterAttrib		ParticleEmitterAttrib;
+	typedef elysian::ParticleEmitter			ParticleEmitter;
 	typedef elysian::Behavior					Behavior;
 	typedef elysian::LuaBehavior				LuaBehavior;
 	typedef elysian::Tile						Tile;
@@ -92,7 +94,6 @@ namespace OOLUA
 	typedef elysian::AudioSystem				AudioSystem;
 	typedef elysian::LevelSystem				LevelSystem;
 	typedef elysian::LightSystem				LightSystem;
-	typedef elysian::ParticleEmitterAttrib		ParticleEmitterAttrib;
 	typedef elysian::ParticleSystem				ParticleSystem;
 	typedef elysian::DaySystem					DaySystem;
 	typedef elysian::GuiSystem					GuiSystem;
@@ -177,6 +178,7 @@ namespace OOLUA {
 	template<> class Proxy_class<elysian::AudioSource>;
 	template<> class Proxy_class<elysian::LightSource>;
 	template<> class Proxy_class<elysian::Examinable>;
+	template<> class Proxy_class<elysian::ParticleEmitter>;
 	template<> class Proxy_class<elysian::Behavior>;
 	template<> class Proxy_class<elysian::LuaBehavior>;
 }
@@ -196,6 +198,7 @@ OOLUA_PROXY(Entity, RenderableObject)
 	OOLUA_MEM_FUNC(AudioSource*, addAudioSource)
 	OOLUA_MEM_FUNC(LightSource*, addLightSource)
 	OOLUA_MEM_FUNC(Examinable*, addExaminable)
+	OOLUA_MEM_FUNC(ParticleEmitter*, addParticleEmitter)
 	OOLUA_MEM_FUNC(Behavior*, addBehavior, const char*)
 	OOLUA_MEM_FUNC(LuaBehavior*, addLuaBehavior, const char*)
 	OOLUA_MEM_FUNC_CONST(Renderable*, getRenderable);
@@ -206,6 +209,7 @@ OOLUA_PROXY(Entity, RenderableObject)
 	OOLUA_MEM_FUNC_CONST(AudioSource*, getAudioSource)
 	OOLUA_MEM_FUNC_CONST(LightSource*, getLightSource)
 	OOLUA_MEM_FUNC_CONST(Examinable*, getExaminable)
+	OOLUA_MEM_FUNC_CONST(ParticleEmitter*, getParticleEmitter)
 	OOLUA_MEM_FUNC_CONST(Behavior*, getBehavior, const char*)
 	OOLUA_MEM_FUNC_CONST(LuaBehavior*, getLuaBehavior, const char*)
 	OOLUA_MEM_FUNC(void, removeRenderable)
@@ -216,6 +220,7 @@ OOLUA_PROXY(Entity, RenderableObject)
 	OOLUA_MEM_FUNC(void, removeAudioSource)
 	OOLUA_MEM_FUNC(void, removeLightSource)
 	OOLUA_MEM_FUNC(void, removeExaminable)
+	OOLUA_MEM_FUNC(void, removeParticleEmitter)
 	OOLUA_MEM_FUNC(void, removeBehavior, const char*)
 	OOLUA_MEM_FUNC(void, removeLuaBehavior, const char*)
 	OOLUA_MEM_FUNC(Lua_table_ref&, getSelfTable)
@@ -418,6 +423,16 @@ OOLUA_PROXY(ParticleEmitterAttrib, SpriteAttrib)
 	OOLUA_MFUNC(setMaxLife)
 	OOLUA_MFUNC(setSize)
 	OOLUA_MEM_FUNC(void, setFrameRange, unsigned, unsigned)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(ParticleEmitter, Component)
+	OOLUA_TAGS (
+		No_public_constructors,
+		No_public_destructor
+	)
+	OOLUA_MEM_FUNC(void, setAttrib, ParticleEmitterAttrib*)
+	OOLUA_MEM_FUNC(void, emitFromPoint, const GYVector3&, float, unsigned)
+	OOLUA_MEM_FUNC(void, emitFromEntity, const GYVector3&, float, unsigned)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(DialogScreen)

@@ -52,9 +52,6 @@ namespace elysian {
 		//Particle*				_pool			= nullptr;
 		Pool<Particle>          _pool           = Pool<Particle>(ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_POOL_SIZE);
 		ParticleEmitterAttrib*	_attrib			= nullptr;
-		unsigned				_poolSize		= 100;
-		unsigned				_activeCount	= 0;
-		bool					_overflow		= false;
 	public:
 		~ParticleEmitterInternals(void);
 

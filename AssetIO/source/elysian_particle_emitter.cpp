@@ -8,16 +8,18 @@ namespace elysian {
 ParticleEmitter::ParticleEmitter(Entity& entity): Component(entity) {}
 
 void ParticleEmitter::emitFromEntity(const GYVector3 &pos, const float angle, const unsigned intensity) {
-	GYVector4 localPos = { pos.x, pos.y, pos.z, 0.0f };
+	GYVector4 localPos = { pos.x, pos.y, pos.z, 1.0f };
 	GYVector4 worldPos;
 
 	gyMatPush();
 	gyMatLoadIdentity();
-	gyMatInstance(&_entity->transform);
+
+	_entity->transform.apply();
+
 	gyMatMultVec(&localPos, &worldPos, 1);
 	gyMatPop();
 
-	emitFromEntity(*(GYVector3*)&worldPos, angle, intensity);
+	emitFromPoint(*(GYVector3*)&worldPos, angle, intensity);
 
 }
 
