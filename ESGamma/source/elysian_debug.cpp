@@ -315,14 +315,20 @@ void Debug::processInput(const GameInput& input) {
     if(input.getDown(GameInput::BUT_U)) {
 
 		static bool once = true;
+		static ParticleEmitter* emitter;
+
 		if(once) {
+			Entity* entity = getCurArea()->findEntity("Julien");
 			getPartSys()->getAttrib(0)->loadTexture("item/legacyItems/star.PNG", 32, 32, 32, 32);
+			emitter = entity->addParticleEmitter();
+			emitter->setAttrib(getPartSys()->getAttrib(0));
+			getPartSys()->getAttrib(0)->setSize(32);
 			//getPartSys()->getAttrib(0)->setFrameRange(10, 13);
 			once = false;
 		}
-		Entity* entity = getCurArea()->findEntity("Julien");
-		getPartSys()->getAttrib(0)->setSize(32);
-		   getPartSys()->emitFromPoint(0, GYVector3 { entity->transform._pos.x+5, entity->transform._pos.y, 500.0f}, theta, intensity);
+
+		emitter->emitFromEntity( GYVector3 { 0.0f, 0.0f, 0.0f }, theta, intensity);
+		  // getPartSys()->emitFromPoint(0, GYVector3 { entity->transform._pos.x+5, entity->transform._pos.y, 500.0f}, theta, intensity);
 
 //		getGuiSys()->addCombatText("10", GYColor4 { 255, 0, 0, 255}, GYVector2 { entity->transform._pos.x, entity->transform._pos.y}, GYVector2 { 0.5f, -5.0f});
 

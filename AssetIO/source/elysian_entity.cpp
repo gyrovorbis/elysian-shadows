@@ -59,6 +59,7 @@ Entity::~Entity(void) {
 void Entity::render(void) {
 #ifdef ELYSIAN_ENGINE
 	if(!_renderable) return;
+	if(_particleEmitter) _particleEmitter->render();
 	gyMatPush();
 	if(_depthType == DEPTH_BUFFERED) {
 		transform._size.z = transform._size.y;
@@ -520,7 +521,7 @@ bool Entity::save(ofstream &stream) { //Serialization
 
 //=====BEHAVIORS======
 
-///===========THIS SHIT ALL BEGS TO BE TEMPLATIZED!? GOD, NO!============
+///===========THIS SHIT ALL BEGS TO BE TEMPLATIZED!? GOD, NO! -- YES============
 
 Behavior* Entity::addBehavior(const char *name) {
 	return attachBehavior(Behavior::create(name, *this));

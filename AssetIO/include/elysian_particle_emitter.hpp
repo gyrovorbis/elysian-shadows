@@ -85,9 +85,6 @@ namespace elysian {
 		virtual bool removeFromLevel(void) override;
 		virtual TYPE getType(void) const override;
 
-		void render(void);
-		void update(void);
-
 		void emitFromEntity(const GYVector3& pos, const float angle, const unsigned intensity);
 	};
 

@@ -1,7 +1,7 @@
 #include "elysian_particle_system.hpp"
 #include "elysian_camera_system.hpp"
 #include "elysian_debug.hpp"
-
+#include "elysian_area.hpp"
 
 namespace elysian {
 
@@ -155,6 +155,10 @@ void ParticleSystem::update(void) {
 	}
 
 	//update entity emitters
+	auto emitters = getCurArea()->particleEmitters;
+	for(auto it = emitters.begin(); it != emitters.end(); ++it) {
+//		it->update();
+	}
 }
 
 
@@ -165,7 +169,7 @@ void ParticleSystem::render(void) {
 		_emitters[i].render();
 	}
 
-	//render entity emitters
+	//render entity emitters (no, entities do this)
 
 }
 

@@ -10,9 +10,6 @@
 
 namespace elysian {
 
-	struct CameraState;
-
-
 	class ParticleSystem: public System {
 	private:
 		ParticleEmitterInternals	_emitters[ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_COUNT];

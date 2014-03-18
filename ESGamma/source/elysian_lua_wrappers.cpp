@@ -320,7 +320,7 @@ OOLUA_EXPORT_FUNCTIONS(ParticleEmitterAttrib,
 					   setAcceleration,
 					   setMaxLife,
 					   setSize,
-					   setColor)
+					   setFrameRange)
 OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitterAttrib);
 
 OOLUA_EXPORT_FUNCTIONS(DialogScreen,

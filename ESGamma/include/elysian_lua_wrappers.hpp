@@ -417,6 +417,7 @@ OOLUA_PROXY(ParticleEmitterAttrib, SpriteAttrib)
 	OOLUA_MFUNC(setAcceleration)
 	OOLUA_MFUNC(setMaxLife)
 	OOLUA_MFUNC(setSize)
+	OOLUA_MEM_FUNC(void, setFrameRange, unsigned, unsigned)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(DialogScreen)
