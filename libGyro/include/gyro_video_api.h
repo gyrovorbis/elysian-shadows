@@ -37,10 +37,10 @@ void gyVidSceneEnd(void);
 //Quad API
 void gyVidQuadListBegin(const GYColor4 *const color);
 void gyVidQuadListEnd(void);
-void gyVidQuad(const struct _GYVector4 *const verts, const unsigned int frame);
+void gyVidQuad(const struct _GYVector4 *const verts, const int frame);
 void gyVidRectTexOrient(const GY_RECT_TEX_ORIENT orient);
 void gyVidRectNormalType(const GY_RECT_NORMAL_TYPE type);
-void gyVidRect(const unsigned int frame);
+void gyVidRect(const int frame);
 
 //Triangle strip API 
 void gyVidColorArray(const GYColor4 *const ptr);
