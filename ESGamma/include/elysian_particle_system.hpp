@@ -27,34 +27,6 @@ namespace elysian {
 	};
 
 
-	//====== INLINEZ =====
-
-
-	inline void ParticleEmitterAttrib::setAcceleration(const GYVector3& accel) {
-		_acceleration = accel;
-	}
-
-	inline void ParticleEmitterAttrib::setMaxLife(const unsigned life) {
-		_maxLife = life;
-	}
-
-	inline void ParticleEmitterAttrib::setSize(const unsigned newSize) {
-		_size = newSize;
-	}
-
-	inline void ParticleEmitterAttrib::setAngularDamping(const float factor) {
-		_angularDamping = factor;
-	}
-
-	inline void ParticleEmitterAttrib::setFadeOut(const bool val) {
-		_fadeOut = val;
-	}
-
-	inline void ParticleEmitterAttrib::setFrameRange(const unsigned min, const unsigned max) {
-		_minFrame = min; _maxFrame = max;
-	}
-
-
 }
 
 

@@ -127,7 +127,8 @@ HEADERS += \
     ../../include/elysian_particle_system.hpp \
     ../../include/elysian_day_system.hpp \
     ../../include/elysian_examinable_system.hpp \
-    ../../../AssetIO/include/elysian_mem_pool.hpp
+    ../../../AssetIO/include/elysian_mem_pool.hpp \
+    ../../../AssetIO/include/elysian_material.hpp
 
 macx {
   OBJECTIVE_HEADERS += ../../../libGyro/lib/osx/SDLMain.h

@@ -31,6 +31,7 @@
 #include "elysian_day_system.hpp"
 #include "elysian_dialog_system.hpp"
 #include "elysian_gui_system.hpp"
+#include "elysian_material.hpp"
 
 /* IT'S NOT SAFE TO GO ALONE! TAKE THIS HEADER FILE. IT WILL HELP
  * YOU ON YOUR JOURNEY!
@@ -61,6 +62,7 @@ namespace OOLUA
 	typedef elysian::TexturedAttrib				TexturedAttrib;
 	typedef elysian::SpriteAttrib				SpriteAttrib;
 	typedef elysian::QuadSpriteAttrib			QuadSpriteAttrib;
+	typedef elysian::Material					Material;
 	typedef elysian::Renderable					Renderable;
 	typedef elysian::AnimationSequence			AnimationSequence;
 	typedef elysian::AnimationAttrib			AnimationAttrib;
@@ -256,13 +258,12 @@ OOLUA_PROXY(QuadSpriteAttrib, SpriteAttrib)
 	OOLUA_MEM_FUNC(void, setVerticesAlpha, const unsigned char, const unsigned char, const unsigned char, const unsigned char)
 OOLUA_PROXY_END
 
-//REESTED TO FUCK!!!
-OOLUA_PROXY(GYMaterial)
-	OOLUA_MGET(ambientColor, getAmbientColor)
-	OOLUA_MGET(diffuseColor, getDiffuseColor)
-	OOLUA_MGET(specularColor, getSpecularColor)
-	OOLUA_MGET(emissiveColor, getEmissiveColor)
-	OOLUA_MGET_MSET(shininess, getShininess, setShininess)
+OOLUA_PROXY(Material)
+	OOLUA_MEM_FUNC(void, setAmbientColor, const GYVector4&)
+	OOLUA_MEM_FUNC(void, setDiffuseColor, const GYVector4&)
+	OOLUA_MEM_FUNC(void, setSpecularColor, const GYVector4&)
+	OOLUA_MEM_FUNC(void, setEmissiveColor, const GYVector4&)
+	OOLUA_MEM_FUNC(void, setShininess, float)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Renderable, Component)
@@ -277,8 +278,8 @@ OOLUA_PROXY(Renderable, Component)
 	OOLUA_MEM_FUNC_CONST(SpriteAttrib*, getSpriteAttrib)
 	OOLUA_MEM_FUNC_CONST(QuadSpriteAttrib*, getQuadSpriteAttrib)
 	OOLUA_MEM_FUNC(void, setSpriteAttrib, cpp_in_p<SpriteAttrib*>)
-	OOLUA_MEM_FUNC(void, setMaterial, cpp_in_p<GYMaterial*>)
-	OOLUA_MFUNC(getMaterial)
+	OOLUA_MEM_FUNC(void, setMaterial, cpp_in_p<Material*>)
+	OOLUA_MFUNC_CONST(getMaterial)
 	OOLUA_MFUNC(loadNormalMap)
 OOLUA_PROXY_END
 
@@ -424,6 +425,7 @@ OOLUA_PROXY(ParticleEmitterAttrib, SpriteAttrib)
 	OOLUA_MFUNC(setMaxLife)
 	OOLUA_MFUNC(setSize)
 	OOLUA_MEM_FUNC(void, setFrameRange, unsigned, unsigned)
+	OOLUA_MEM_FUNC(void, setMaterial, cpp_in_p<Material*>)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ParticleEmitter, Component)
@@ -431,7 +433,7 @@ OOLUA_PROXY(ParticleEmitter, Component)
 		No_public_constructors,
 		No_public_destructor
 	)
-	OOLUA_MEM_FUNC(void, setAttrib, ParticleEmitterAttrib*)
+	OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<ParticleEmitterAttrib*>)
 	OOLUA_MEM_FUNC(void, emitFromPoint, const GYVector3&, float, unsigned)
 	OOLUA_MEM_FUNC(void, emitFromEntity, const GYVector3&, float, unsigned)
 OOLUA_PROXY_END
@@ -475,7 +477,7 @@ OOLUA_PROXY(Examinable, Component)
 		No_public_constructors,
 		No_public_destructor
 	)
-	OOLUA_MEM_FUNC(void, setDialog, Dialog*)
+	OOLUA_MEM_FUNC(void, setDialog, cpp_in_p<Dialog*>)
 	OOLUA_MEM_FUNC(void, setMaxDist, float)
 OOLUA_PROXY_END
 

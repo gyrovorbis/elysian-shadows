@@ -4,17 +4,15 @@
 #include "elysian_component.hpp"
 #include "elysian_entity.hpp"
 #include "elysian_quad_sprite_attrib.hpp"
-#include <gyro.h>
+#include "elysian_material.hpp"
+#include <gyro_video_api.h>
 
 namespace elysian {
 
-	/*ONLY SUPPORTS SPRITE PRIMITIVES NOW!
-	  The old mechanism for supporting others was totally fucking reested and not worth
-	  the effort... we will cross that bridge when (if) we ever get to it... */
 	class Renderable: public Component {
 	friend class Entity;
 	private:
-		GYMaterial*		_material		= nullptr;
+		Material*		_material		= nullptr;
 		GYTexture*		_normalMap		= nullptr;
 		SpriteAttrib*	_spriteAttrib	= nullptr;	//Prefab-able attributes
 		int				_frame			= 0;			//for animation
@@ -82,7 +80,7 @@ namespace elysian {
 				gyVidAlphaLevel(GY_ALPHA_FULL);
 				gyVidColorArray(&_spriteAttrib->_color);
 				if(_spriteAttrib->_tex) {
-					if(_frame != -1)
+					if(_spriteAttrib->_frame != -1)
 						gyVidTexCoordArray(gyVidTexCoordArrayFromFrame(&_spriteAttrib->_tex->_coord->texCoord[_frame],
 																   GY_RECT_TEX_ORIENT_NORMAL));
 					else
@@ -94,7 +92,7 @@ namespace elysian {
 			case PrimAttrib::SPRITE:
 				gyVidAlphaLevel((_spriteAttrib->_color.a == 255)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
 				gyVidQuadListBegin(&_spriteAttrib->_color);
-				if(_frame == -1) gyVidTexCoordArray(_spriteAttrib->_texCoords);
+				if(_spriteAttrib->_frame == -1) gyVidTexCoordArray(_spriteAttrib->_texCoords);
 				gyVidQuad(localVerts, _frame);
 				gyVidQuadListEnd();
 				break;
@@ -116,12 +114,12 @@ namespace elysian {
 		inline QuadSpriteAttrib* getQuadSpriteAttrib(void) const { return static_cast<QuadSpriteAttrib*>(_spriteAttrib); }
 		inline void setSpriteAttrib(SpriteAttrib *const attrib) { _spriteAttrib = attrib; if(attrib) _frame = attrib->_frame;}
 
-		inline void setMaterial(GYMaterial*const material) {
+		inline void setMaterial(Material*const material) {
 			_material = material;
 		}
 
-		inline GYMaterial& getMaterial(void) {
-			return *_material;
+		inline Material* getMaterial(void) const {
+			return _material;
 		}
 
 		inline void loadNormalMap(const char*const path, const unsigned width, const unsigned height) {

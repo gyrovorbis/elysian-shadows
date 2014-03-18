@@ -52,6 +52,7 @@ GYMatrix4 pointShadowFaceMatrices[GY_CUBE_MAP_FACE_MAX];
 static const GYMaterial*	_currentMaterial								= &_defaultMaterial;
 static GYVector4			_globalAmbience									= { 0.0f, 0.0f, 0.0f, 1.0f };
 static const GYTexture*		_normalMap										= NULL;
+static const GYTexture*		_specularMap									= NULL;
 
 // ==== INTERNAL STATE ===
 GYShaderProgram*			_curShaderProg		= NULL;
@@ -88,6 +89,26 @@ void gyVidNormalMapBind(const GYTexture * const tex) {
 
 	wasEnabled = enabled;
 }
+
+void gyVidSpecularMapBind(const GYTexture * const tex) {
+	static int wasEnabled = 0;
+	int enabled = 1;
+
+	glActiveTexture(GL_TEXTURE2);
+	if(tex) {
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, *(GLuint *)&tex->_data);
+	} else {
+		enabled = 0;
+		glDisable(GL_TEXTURE_2D);
+	}
+	if(enabled != wasEnabled) glUniform1i(curLightShader->uniformLoc[SHADER_SPECULAR_MAP_ENABLED], enabled);
+	_specularMap = tex;
+	glActiveTexture(GL_TEXTURE0);
+
+	wasEnabled = enabled;
+}
+
 
 void glalLightingInit(void) {
 	glMatrixMode(GL_MODELVIEW);
@@ -178,6 +199,8 @@ static void _queryLightingShader(_LightingShaderProgram*const shader) {
 	shader->uniformLoc[SHADER_LIGHTING_ENABLED]			= _protectedUniformQuery(shader->program, "uLightingEnabled");
 	shader->uniformLoc[SHADER_NORMAL_MAP_ENABLED]		= _protectedUniformQuery(shader->program, "uNormalMapEnabled");
 	shader->uniformLoc[SHADER_NORMAL_MAP]				= _protectedUniformQuery(shader->program, "uNormalMap");
+	shader->uniformLoc[SHADER_SPECULAR_MAP_ENABLED]		= _protectedUniformQuery(shader->program, "uSpecularMapEnabled");
+	shader->uniformLoc[SHADER_SPECULAR_MAP]				= _protectedUniformQuery(shader->program, "uSpecularMap");
 	shader->uniformLoc[SHADER_SHADOW_CUBE_MAP_PROJ_MAT] = _protectedUniformQuery(shader->program, "uShadowCubeMapProjMat");
 
 	//poll for GYMaterial uniform locations
@@ -276,8 +299,10 @@ void glalDefaultShadersLoadUniforms(void) {
 		glUniform1i(curLightShader->lightsUniformLoc[i][SHADER_LIGHT_SHADOW_CUBE_MAP], 6+i);
 	}
 
+	//Do these not need to be physically resubmitted?
 	glUniform1i(curLightShader->uniformLoc[SHADER_TEXTURE_ENABLED], (curTex)? 1 : 0);
 	glUniform1i(curLightShader->uniformLoc[SHADER_NORMAL_MAP_ENABLED], (_normalMap)? 1 : 0);
+	glUniform1i(curLightShader->uniformLoc[SHADER_SPECULAR_MAP_ENABLED], (_specularMap)? 1 : 0);
 
 	GYMatrix4 projMat;
 	GYMatrix4 finalMat;

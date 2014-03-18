@@ -17,7 +17,7 @@ namespace elysian {
 		OOLUA::register_class<Entity>(*_mainState);
 		OOLUA::register_class<QuadSpriteAttrib>(*_mainState);
 		_mainState->register_class<Component>();
-		_mainState->register_class<GYMaterial>();
+		_mainState->register_class<Material>();
 		_mainState->register_class<Renderable>();
 		_mainState->register_class<AnimationSequence>();
 		_mainState->register_class<AnimationAttrib>();
@@ -193,27 +193,26 @@ EXPORT_OOLUA_FUNCTIONS_1_CONST(QuadSpriteAttrib,
 EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(QuadSpriteAttrib,
 								   setVertexColor,
 								   setVerticesAlpha)
-OOLUA_EXPORT_FUNCTIONS(GYMaterial,
-					   setShininess)
-OOLUA_EXPORT_FUNCTIONS_CONST(GYMaterial,
-							 getAmbientColor,
-							 getDiffuseColor,
-							 getSpecularColor,
-							 getEmissiveColor,
-							 getShininess)
+OOLUA_EXPORT_FUNCTIONS(Material,
+					   setShininess,
+					   setAmbientColor,
+					   setDiffuseColor,
+					   setSpecularColor,
+					   setEmissiveColor)
+OOLUA_EXPORT_FUNCTIONS_CONST(Material)
 
 OOLUA_EXPORT_FUNCTIONS(Renderable,
 					   setFrame,
 					   setOffset,
 					   setSpriteAttrib,
 					   loadNormalMap,
-					   getMaterial,
 					   setMaterial)
 OOLUA_EXPORT_FUNCTIONS_CONST(Renderable,
 						   getFrame,
 						   getOffset,
 						   getSpriteAttrib,
-						   getQuadSpriteAttrib)
+						   getQuadSpriteAttrib,
+						   getMaterial)
 
 EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(AnimationSequence,
 								   addFrame)
@@ -322,7 +321,8 @@ OOLUA_EXPORT_FUNCTIONS(ParticleEmitterAttrib,
 					   setAcceleration,
 					   setMaxLife,
 					   setSize,
-					   setFrameRange)
+					   setFrameRange,
+					   setMaterial)
 OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitterAttrib);
 
 OOLUA_EXPORT_FUNCTIONS(ParticleEmitter,

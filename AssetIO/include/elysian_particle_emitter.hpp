@@ -10,12 +10,13 @@
 namespace elysian {
 
 	class CameraState;
+	class Material;
 
 	class ParticleEmitterAttrib: public SpriteAttrib {
 		friend class ParticleEmitterInternals;
 	private:
 		GYVector3	_acceleration	= GYVector3 { 0.0f, 0.7f, 0.0f };
-		GYMaterial*	_material		= nullptr;
+		Material*	_material		= nullptr;
 		float		_angularDamping	= 0.99f;
 		unsigned	_maxLife		= 100;
 		unsigned	_size			= 3;
@@ -33,6 +34,7 @@ namespace elysian {
 		void setSize(const unsigned newSize); // 1 = 1x1 square
 		void setFadeOut(const bool val);
 		void setFrameRange(const unsigned min, const unsigned max);
+		void setMaterial(Material*const material);
 	};
 
 	struct Particle {
@@ -84,6 +86,36 @@ namespace elysian {
 
 		void emitFromEntity(const GYVector3& pos, const float angle, const unsigned intensity);
 	};
+
+
+	// ====== INLINEZ =====
+
+
+	inline void ParticleEmitterAttrib::setAcceleration(const GYVector3& accel) {
+		_acceleration = accel;
+	}
+
+	inline void ParticleEmitterAttrib::setMaxLife(const unsigned life) {
+		_maxLife = life;
+	}
+
+	inline void ParticleEmitterAttrib::setSize(const unsigned newSize) {
+		_size = newSize;
+	}
+
+	inline void ParticleEmitterAttrib::setAngularDamping(const float factor) {
+		_angularDamping = factor;
+	}
+
+	inline void ParticleEmitterAttrib::setFadeOut(const bool val) {
+		_fadeOut = val;
+	}
+
+	inline void ParticleEmitterAttrib::setFrameRange(const unsigned min, const unsigned max) {
+		_minFrame = min; _maxFrame = max;
+	}
+
+	inline void ParticleEmitterAttrib::setMaterial(Material * const material) { _material = material; }
 
 
 }
