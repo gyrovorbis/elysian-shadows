@@ -14,6 +14,7 @@ namespace elysian {
 	private:
 		Material*		_material		= nullptr;
 		GYTexture*		_normalMap		= nullptr;
+		GYTexture*		_specularMap	= nullptr;
 		SpriteAttrib*	_spriteAttrib	= nullptr;	//Prefab-able attributes
 		int				_frame			= 0;			//for animation
 		GYVector2		_offset			= {0.0f, 0.0f};	//texture offset from base transform (local coords)
@@ -44,6 +45,7 @@ namespace elysian {
 
 			gyVidTexBind(_spriteAttrib->_tex);
 			gyVidNormalMapBind(_normalMap);
+			gyVidSpecularMapBind(_specularMap);
 			gyVidMaterialBind(_material);
 
 			//Why aren't we just pushing another matrix to handle this?
@@ -123,7 +125,13 @@ namespace elysian {
 		}
 
 		inline void loadNormalMap(const char*const path, const unsigned width, const unsigned height) {
+			if(_normalMap) gyVidTexDestroy(_normalMap);
 			_normalMap = gyVidTexCreate(path, width, height);
+		}
+
+		inline void loadSpecularMap(const char*const path, const unsigned width, const unsigned height) {
+			if(_specularMap) gyVidTexDestroy(_specularMap);
+			_specularMap = gyVidTexCreate(path, width, height);
 		}
 		
 	};

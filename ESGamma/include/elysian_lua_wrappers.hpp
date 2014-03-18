@@ -281,6 +281,7 @@ OOLUA_PROXY(Renderable, Component)
 	OOLUA_MEM_FUNC(void, setMaterial, cpp_in_p<Material*>)
 	OOLUA_MFUNC_CONST(getMaterial)
 	OOLUA_MFUNC(loadNormalMap)
+	OOLUA_MEM_FUNC(void, loadSpecularMap, const char*, unsigned, unsigned)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(AnimationSequence)
@@ -426,6 +427,7 @@ OOLUA_PROXY(ParticleEmitterAttrib, SpriteAttrib)
 	OOLUA_MFUNC(setSize)
 	OOLUA_MEM_FUNC(void, setFrameRange, unsigned, unsigned)
 	OOLUA_MEM_FUNC(void, setMaterial, cpp_in_p<Material*>)
+	OOLUA_MEM_FUNC(void, loadSpecularMap, const char*, unsigned, unsigned)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ParticleEmitter, Component)

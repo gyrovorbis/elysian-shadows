@@ -195,8 +195,8 @@ void main(void) {
 	shininess = uMaterial.shininess;
 	if(uSpecularMapEnabled) {
 		vec4 specMapVal = texture2D(uSpecularMap, vTexCoord);
-		specularity.rgb *= specMapVal.rgb; //dunno if a is supposed to be factored in here.
-		shininess += specularity.a;
+		specularity.rgba *= specMapVal.rgba; //dunno if a is supposed to be factored in here.
+		//.shininess += specularity.a;
 	}
 
 	for(i = 0; i < cMaxLights; ++i) {

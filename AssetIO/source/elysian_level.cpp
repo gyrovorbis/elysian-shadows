@@ -14,6 +14,8 @@ namespace elysian {
 	Level::~Level(void) { 
 #ifdef ELYSIAN_ENGINE
 		gyVidTexDestroy(tileSheet);
+		gyVidTexDestroy(normalSheet);
+		gyVidTexDestroy(specularSheet);
 #endif
 	}
 
@@ -55,7 +57,23 @@ namespace elysian {
 													   ELYSIAN_TILE_HEIGHT)))
 		{
 			success = false;
-			dbgprintf(LOG_CRITICAL, "FAILURE!");
+			dbgprintf(LOG_CRITICAL, "Fine. Don't bumpmap your shit.");
+		}
+		dbgPop();
+
+
+		strcpy(buffer, dir);
+		strcat(buffer, ELYSIAN_SPECULARSHEET_PATH);
+		dbgprintf(LOG_VERBOSE, "Level::LoadSpecularSheet(%s)", buffer);
+		dbgPush();
+		if(!(specularSheet = gyVidTexCreateSheetUniform(gyFilePath(buffer),
+													   ELYSIAN_TILESHEET_WIDTH,
+													   ELYSIAN_TILESHEET_HEIGHT,
+													   ELYSIAN_TILE_WIDTH,
+													   ELYSIAN_TILE_HEIGHT)))
+		{
+			success = false;
+			dbgprintf(LOG_CRITICAL, "No specular sheet? Aight.");
 		}
 		dbgPop();
 

@@ -17,6 +17,7 @@ namespace elysian {
 	private:
 		GYVector3	_acceleration	= GYVector3 { 0.0f, 0.7f, 0.0f };
 		Material*	_material		= nullptr;
+		GYTexture*	_specularMap	= nullptr;
 		float		_angularDamping	= 0.99f;
 		unsigned	_maxLife		= 100;
 		unsigned	_size			= 3;
@@ -35,6 +36,7 @@ namespace elysian {
 		void setFadeOut(const bool val);
 		void setFrameRange(const unsigned min, const unsigned max);
 		void setMaterial(Material*const material);
+		void loadSpecularMap(const char*const path, const unsigned width, const unsigned height);
 	};
 
 	struct Particle {
@@ -117,6 +119,10 @@ namespace elysian {
 
 	inline void ParticleEmitterAttrib::setMaterial(Material * const material) { _material = material; }
 
+	inline void ParticleEmitterAttrib::loadSpecularMap(const char*const path, const unsigned width, const unsigned height) {
+		if(_specularMap) gyVidTexDestroy(_specularMap);
+		_specularMap = gyVidTexCreate(path, width, height);
+	}
 
 }
 

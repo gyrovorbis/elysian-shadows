@@ -9,6 +9,7 @@ namespace elysian {
 
 ParticleEmitterAttrib::~ParticleEmitterAttrib(void) {
 	delete _material;
+	delete _specularMap;
 }
 
 void ParticleEmitterInternals::emitFromPoint(const GYVector3& pos, const float angle, const unsigned intensity) {

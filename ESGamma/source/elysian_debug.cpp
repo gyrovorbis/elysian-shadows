@@ -418,7 +418,7 @@ void Debug::processInput(const GameInput& input) {
 
 	if(input.getTapped(GameInput::BUT_X)) {
 		GYVector4 diffuseColors[4] = {
-			{ 1.0f, 1.0f, 2.0f, 1.0f},
+			{ 1.0f, 1.0f, 5.0f, 1.0f},
 			{ 1.0f, 2.0f, 1.0f, 1.0f},
 			{ 2.0f, 1.0f, 1.0f, 1.0f},
 			{ 2.0f, 2.0f, 1.0f, 1.0f}
@@ -448,13 +448,13 @@ void Debug::processInput(const GameInput& input) {
 			LightAttrib* attrib = new LightAttrib;
 			//attrib->setAmbientColor(GYVector4{ 0.5f, 0.5f, 0.5f, 1.0f});
 			attrib->setDiffuseColor(diffuseColors[count%4]);
-			attrib->setSpecularColor(GYVector4{ 5.0f, 1.0f, 1.0f, 1.0f});
+			attrib->setSpecularColor(GYVector4{ 20.0f, 1.0f, 1.0f, 1.0f});
 			lightSrc->setAttrib(attrib);
 #if 0
 			lightSrc->setLightType(LightSource::LIGHT_DIRECTIONAL);
 #else
-			lightSrc->setLightType(GY_LIGHT_SPOT);
-			lightSrc->setSpotCutoffAngle(45.0f);
+			lightSrc->setLightType(GY_LIGHT_POINT);
+			//lightSrc->setSpotCutoffAngle(45.0f);
 			lightSrc->setShadowCaster(true);
 			attrib->setAttenuationFactors(GYVector3{ 0.0005f, 0.00005f, 0.00005f });
 

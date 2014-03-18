@@ -206,6 +206,7 @@ OOLUA_EXPORT_FUNCTIONS(Renderable,
 					   setOffset,
 					   setSpriteAttrib,
 					   loadNormalMap,
+					   loadSpecularMap,
 					   setMaterial)
 OOLUA_EXPORT_FUNCTIONS_CONST(Renderable,
 						   getFrame,
@@ -322,6 +323,7 @@ OOLUA_EXPORT_FUNCTIONS(ParticleEmitterAttrib,
 					   setMaxLife,
 					   setSize,
 					   setFrameRange,
+					   loadSpecularMap,
 					   setMaterial)
 OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitterAttrib);
 

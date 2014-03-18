@@ -12,6 +12,7 @@
 #define ELYSIAN_TILESET_PATH			"/tile/tileset.txt"
 #define ELYSIAN_TILESHEET_PATH			"/tile/tilesheet.png"
 #define ELYSIAN_NORMALSHEET_PATH		"/tile/normalsheet.png"
+#define ELYSIAN_SPECULARSHEET_PATH		"/tile/specularsheet.png"
 #define ELYSIAN_LEVEL_INIT_LUA_PATH		"/level_init.lua"
 #define ELYSIAN_TILESHEET_WIDTH			512
 #define ELYSIAN_TILESHEET_HEIGHT		1024
@@ -31,6 +32,7 @@ namespace elysian {
 #ifdef ELYSIAN_ENGINE
 		GYTexture* tileSheet		= nullptr;
 		GYTexture* normalSheet		= nullptr;
+		GYTexture* specularSheet	= nullptr;
 #endif
 		unsigned short	tileAmount	= ELYSIAN_TILESHEET_TILES;
 		
