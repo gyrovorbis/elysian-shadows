@@ -7,10 +7,10 @@
 #include <stdio.h>
 
 const static GLenum _shadowMapTexUnits[GYRO_VIDEO_LIGHT_SOURCES_MAX] = {
-	GL_TEXTURE2,
 	GL_TEXTURE3,
 	GL_TEXTURE4,
-	GL_TEXTURE5
+	GL_TEXTURE5,
+	GL_TEXTURE6
 };
 
 GYLightSource*		lightSources[GYRO_VIDEO_LIGHT_SOURCES_MAX]		= { NULL };
