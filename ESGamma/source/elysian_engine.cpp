@@ -193,8 +193,12 @@ void Engine::render(void) {
 			 _collisionSystem->render();
 			 _particleSystem->render();
 
+
+			 _lightSystem->removeLightSourcesFromScene();
+
+			 _guiSystem->render();
+
 			_cameraSystem->popViewProjMatrix();
-			_lightSystem->removeLightSourcesFromScene();
 
 			//Begin rendering overlays
 			_warpSystem->Render();

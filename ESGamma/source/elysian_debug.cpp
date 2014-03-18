@@ -184,57 +184,15 @@ void Debug::processInput(const GameInput& input) {
 	static unsigned size = 3;
 	static unsigned intensity = 200;
 
-	//Camera zoom/rotate
-	if(input.getDown(GameInput::BUT_Q)){
-		_engine->_cameraSystem->rotate(0.2f);
-	}
-	if(input.getDown(GameInput::BUT_A)){
-		_engine->_cameraSystem->rotate(-0.2f);
-	}
+	//Camera zoom
 	if(input.getDown(GameInput::BUT_W)){
 		_engine->_cameraSystem->scale(0.9f*0.9f);
 	}
 	if(input.getDown(GameInput::BUT_S)){
 		_engine->_cameraSystem->scale(1.1f*1.1f);
 	}
-	if(input.getDown(GameInput::BUT_E)) { //Reset Transform
-		_engine->_cameraSystem->setScale(1.0f);
-		_engine->_cameraSystem->setOrientZ(0.0f);
-	}
 
-	//Rendering layers
-	/*if(input.getDown(GameInput::BUT_0)) {
-		if(_engine->_guiSystem->adventureLog.isEnabled()) {
-			_engine->_guiSystem->adventureLog.disable();
-			printf(VERBOSE, "Disable GUI Layer");
-		} else {
-			_engine->_guiSystem->adventureLog.enable();
-			printf(VERBOSE, "Enable GUI Layer");
-		}
-	}*/
-	if(input.getTapped(GameInput::BUT_1)) {
-		bool render = _engine->_mapSystem->toggleRenderLayer(0);
-		printf(VERBOSE, "Render Layer 1 - %s", (render)? "enabled" : "disabled");
-	}
-	if(input.getTapped(GameInput::BUT_2)) {
-		bool render = _engine->_mapSystem->toggleRenderLayer(1);
-		printf(VERBOSE, "Render Layer 2 - %s", (render)? "enabled" : "disabled");
-	}
-	if(input.getTapped(GameInput::BUT_3)) {
-		bool render = _engine->_mapSystem->toggleRenderLayer(2);
-		printf(VERBOSE, "Render Layer 3 - %s", (render)? "enabled" : "disabled");
-	}
-	if(input.getTapped(GameInput::BUT_4)) {
-		bool render = _engine->_mapSystem->toggleRenderLayer(3);
-		printf(VERBOSE, "Render Layer 4 - %s", (render)? "enabled" : "disabled");
-	}
-
-		GYVector4 tempVec;
 	if(input.getTapped(GameInput::BUT_0)) {
-
-		//GYWav* wav = gyAudWavCreate("phone`.wav");
-		//getAudioSys()->playSfxChannel(0, *wav);
-		//getAudioSys()->setSfxChannelLooping(0, true);
 
 		CollisionSystem::RENDER_LAYER layer = _engine->_collisionSystem->cycleRenderLayer();
 		switch(layer) {
@@ -254,15 +212,54 @@ void Debug::processInput(const GameInput& input) {
 			printf(VERBOSE, "Render Collision Layer - Combined");
 			break;
 		default: break;
-		}/*
-		dirVec.x -= 0.1f;
-		gyVec3Normalize(&dirVec);
-		src->setDirection(dirVec);
-		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
-*/
+		}
 	}
 
-	//if(!input.getDown(GameInput::BUT_LCTRL)) return;
+	if(input.getTapped(GameInput::BUT_1)) {
+		bool render = _engine->_mapSystem->toggleRenderLayer(0);
+		printf(VERBOSE, "Render Layer 1 - %s", (render)? "enabled" : "disabled");
+	}
+	if(input.getTapped(GameInput::BUT_2)) {
+		bool render = _engine->_mapSystem->toggleRenderLayer(1);
+		printf(VERBOSE, "Render Layer 2 - %s", (render)? "enabled" : "disabled");
+	}
+	if(input.getTapped(GameInput::BUT_3)) {
+		bool render = _engine->_mapSystem->toggleRenderLayer(2);
+		printf(VERBOSE, "Render Layer 3 - %s", (render)? "enabled" : "disabled");
+	}
+	if(input.getTapped(GameInput::BUT_4)) {
+		bool render = _engine->_mapSystem->toggleRenderLayer(3);
+		printf(VERBOSE, "Render Layer 4 - %s", (render)? "enabled" : "disabled");
+	}
+
+	//Rendering layers
+	if(input.getDown(GameInput::BUT_5)) {
+		if(_engine->_guiSystem->adventureLog.isEnabled()) {
+			_engine->_guiSystem->adventureLog.disable();
+			printf(VERBOSE, "Disable GUI Layer");
+		} else {
+			_engine->_guiSystem->adventureLog.enable();
+			printf(VERBOSE, "Enable GUI Layer");
+		}
+	}
+
+	if(!input.getDown(GameInput::BUT_LALT)) return;
+
+
+	if(input.getDown(GameInput::BUT_Q)){
+		_engine->_cameraSystem->rotate(0.2f);
+	}
+	if(input.getDown(GameInput::BUT_A)){
+		_engine->_cameraSystem->rotate(-0.2f);
+	}
+
+
+	if(input.getDown(GameInput::BUT_E)) { //Reset Transform
+		_engine->_cameraSystem->setScale(1.0f);
+		_engine->_cameraSystem->setOrientZ(0.0f);
+	}
+
+
 	//EVERYTHING BEYOND THIS POINT IS IN FALCO'S DEBUG KEYSPACE!!!!
 
 	if(input.getDown(GameInput::BUT_5)) {
@@ -318,9 +315,11 @@ void Debug::processInput(const GameInput& input) {
 	}
 
     if(input.getDown(GameInput::BUT_U)) {
-        Entity* entity = getCurArea()->findEntity("Julien");
-        getPartSys()->getAttrib(0)->setSize(size);
-           getPartSys()->emitFrom(0, GYVector3 { entity->transform._pos.x+5, entity->transform._pos.y, entity->transform._pos.z}, theta, intensity);
+		Entity* entity = getCurArea()->findEntity("Julien");
+/*		getPartSys()->getAttrib(0)->setSize(size);
+		   getPartSys()->emitFrom(0, GYVector3 { entity->transform._pos.x+5, entity->transform._pos.y, entity->transform._pos.z}, theta, intensity);
+*/
+		getGuiSys()->addCombatText("10", GYColor4 { 255, 0, 0, 255}, GYVector2 { entity->transform._pos.x, entity->transform._pos.y}, GYVector2 { 0.5f, -5.0f});
 
     }
 

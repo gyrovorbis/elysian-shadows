@@ -53,6 +53,7 @@ namespace elysian {
 		_mainState->register_class<ParticleSystem>();
 		_mainState->register_class<DaySystem>();
 		_mainState->register_class<DialogSystem>();
+		_mainState->register_class<GuiSystem>();
 		_mainState->register_class<LevelSystem>();
 		_mainState->register_class<Direction>();
 
@@ -70,6 +71,7 @@ namespace elysian {
 		_mainState->register_class_static<Singletons>("getPartSys", &Singletons_getParticleSystem);
 		_mainState->register_class_static<Singletons>("getDaySys", &Singletons_getDaySystem);
 		_mainState->register_class_static<Singletons>("getDialogSys", &Singletons_getDialogSystem);
+		_mainState->register_class_static<Singletons>("getGuiSys", &Singletons_getGuiSystem);
 
 		//libGyro wrappers
 		_mainState->register_class_static<gyro>("filePath", &gyroFilePath);
@@ -484,6 +486,10 @@ OOLUA_EXPORT_FUNCTIONS(ParticleSystem,
 					   emitFrom)
 OOLUA_EXPORT_FUNCTIONS_CONST(ParticleSystem,
 							 getAttrib)
+
+OOLUA_EXPORT_FUNCTIONS(GuiSystem,
+					   addCombatText)
+OOLUA_EXPORT_FUNCTIONS_CONST(GuiSystem)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(DaySystem,
 							 getDays,

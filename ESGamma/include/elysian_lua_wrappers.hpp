@@ -30,6 +30,7 @@
 #include "elysian_quad_sprite.hpp"
 #include "elysian_day_system.hpp"
 #include "elysian_dialog_system.hpp"
+#include "elysian_gui_system.hpp"
 
 /* IT'S NOT SAFE TO GO ALONE! TAKE THIS HEADER FILE. IT WILL HELP
  * YOU ON YOUR JOURNEY!
@@ -94,6 +95,7 @@ namespace OOLUA
 	typedef elysian::ParticleEmitterAttrib		ParticleEmitterAttrib;
 	typedef elysian::ParticleSystem				ParticleSystem;
 	typedef elysian::DaySystem					DaySystem;
+	typedef elysian::GuiSystem					GuiSystem;
 	typedef elysian::DialogSystem				DialogSystem;
 	typedef elysian::LuaBehaviorScriptAttrib	LuaBehaviorScriptAttrib;
 	typedef elysian::Direction					Direction;
@@ -667,6 +669,14 @@ OOLUA_PROXY(DialogSystem)
 	OOLUA_MEM_FUNC(void, startDialog, Dialog*)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(GuiSystem)
+	OOLUA_TAGS (
+		No_public_constructors,
+		No_public_destructor
+	)
+	OOLUA_MEM_FUNC(void, addCombatText, const char*, GYColor4, const GYVector2&, const GYVector2&)
+OOLUA_PROXY_END
+
 
 OOLUA_PROXY(Singletons)
 	OOLUA_TAGS (
@@ -913,6 +923,10 @@ static inline int Singletons_getDaySystem(lua_State* const vm) {
 
 static inline int Singletons_getDialogSystem(lua_State* const vm) {
 	OOLUA_C_FUNCTION(elysian::DialogSystem*, elysian::Singletons::getDialogSys)
+}
+
+static inline int Singletons_getGuiSystem(lua_State* const vm) {
+	OOLUA_C_FUNCTION(elysian::GuiSystem*, elysian::Singletons::getGuiSys)
 }
 
 static inline int Singletons_getTimerSystem(lua_State* const vm) {

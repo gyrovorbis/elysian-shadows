@@ -49,15 +49,16 @@ private:
     unsigned _claimFreeIndex(void) {
         if(_usedCount == _maxSize) return 0;
 
-  /*      if(_sequential) {
+		if(_sequential) {
             //grab next index
             _used[_endIndex] = true;
 
-            if(++_usedCount == _maxSize) {
+			if(++_endIndex == _maxSize) {
                 _sequential = false;
             }
 
-            ++_endIndex;
+			++_usedCount;
+
             _used[_endIndex] = true;
             return _endIndex-1;
 
@@ -75,13 +76,13 @@ private:
                     }
                 }
                 assert(0);
-            } else {*/
+			} else {
 
                 auto searchFreeIndex = [&](unsigned& index, const unsigned start, const unsigned end) {
                     for(index = start; index < end; ++index) {
                         if(!_used[index]) {
                             //++_usedCount;
-                            _used[index] = true;
+							//_used[index] = true;
                             return true;
                         }
                     }
@@ -104,8 +105,8 @@ private:
 
                 assert(0);
 
-           // }
-       // }
+			}
+		}
 
         assert(0);
         return 0;

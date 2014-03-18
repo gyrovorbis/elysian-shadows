@@ -4,6 +4,7 @@
 #include "elysian_system.hpp"
 #include "elysian_font.hpp"
 #include "elysian_adventure_log.hpp"
+#include "elysian_mem_pool.hpp"
 
 #include <gyro.h>
 
@@ -15,35 +16,43 @@
 #define ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_MAX_CHARS    50
 #define ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_POOL_SIZE    30
 #define ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_LIFE         1.0f
+#define ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_GRAVITY		GYVector2 { 0.0f, 0.4f }
 
 namespace elysian {
 
 
     class GuiSystem: public System {
 	private:
-        /*
+
         struct CombatText {
             char        text[ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_MAX_CHARS];
             GYColor4    color;
             GYVector2   pos;
             GYVector2   vel;
             float       timer;
-        } _combatTextPool[ELYSIAN_GUI_COMBAT_TEXT_POOL_SIZE];
-        */
+		};
+
+		Pool<CombatText> _combatText;
+		static const GYVector2 _combatTextGravity;
 
 		unsigned int _projWidth, _projHeight;
 	public:
 
 		GuiSystem(void);
+
 		bool loadAssets(void);
 		void update(void);
 		//void Render(void);
 		void renderOverlay(void);
+		void render(void);
 		inline void getResolution(unsigned int &width, unsigned int &height) const { width = _projWidth; height = _projHeight; }
 
-		AdventureLog adventureLog;
-		Font verdana;
-		Font twcen;
+		void addCombatText(const char*const text, const GYColor4 color, const GYVector2& pos, const GYVector2& vel);
+
+
+		AdventureLog	adventureLog;
+		Font			verdana;
+		Font			twcen;
 
 	};
 
