@@ -386,7 +386,7 @@ void Debug::processInput(const GameInput& input) {
 	if(input.getTapped(GameInput::BUT_T)) {
 		Entity *entity = new Entity;
 		entity->setName("DICKMITE");
-		entity->transform.setPos(1400.0f+80.0f+32.0f, 1060.0f);
+		entity->transform.setPos(200.0F, 200.0f);
 		entity->transform.setScale(1.0f, 1.0f);
 		entity->transform.setSize(128.0f, 128.0f);
 		entity->setElev(0);
@@ -399,6 +399,10 @@ void Debug::processInput(const GameInput& input) {
 		attrib->setVertexColor(2, 0, 0, 255, 255);
 		attrib->setVertexColor(3, 255, 255, 0, 255);
 		attrib->loadTexture("item/legacyItems/jigglypuff1.PNG", 32, 32, 32, 32);
+		attrib->setTexCoord(3, 2.0, 2.0f);
+		attrib->setTexCoord(2, 0.0, 2.0f);
+		attrib->setTexCoord(1, 2.0, 0.0f);
+		attrib->setTexCoord(0, 0.0, 0.0f);
 #else
 
 		SpriteAttrib* attrib = new SpriteAttrib;
