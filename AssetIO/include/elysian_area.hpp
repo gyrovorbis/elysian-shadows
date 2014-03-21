@@ -53,6 +53,7 @@ namespace elysian {
 	class Renderable;
     class Animation;
     class Collidable;
+	class RigidBody;
     class Character;
 	class Warp;
 	class Item;
@@ -105,6 +106,7 @@ namespace elysian {
 		std::vector<Renderable*>		renderables;
 		std::vector<Animation*>			animations;
 		std::vector<Collidable*>		collidables;
+		std::vector<RigidBody*>			rigidBodies;
 		std::vector<Character*>			characters;
 		std::vector<Warp*>				warps;
 		std::vector<Item*>				items;

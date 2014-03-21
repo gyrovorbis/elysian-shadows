@@ -66,6 +66,8 @@ namespace elysian {
 		//void ResolveContacts(void);
 
 		void clearContacts(void);
+		unsigned getContactCount(void) const;
+		CollisionContact* getContact(const unsigned index);
 
 		void toggleCollision(void);
 		RENDER_LAYER cycleRenderLayer(void);
@@ -91,6 +93,9 @@ namespace elysian {
 		
 		return false;
 	}
+
+	inline unsigned CollisionSystem::getContactCount(void) const { return _contactAmount; }
+	inline CollisionContact* CollisionSystem::getContact(const unsigned index) { return &_contactPool[index]; }
 
 }
 

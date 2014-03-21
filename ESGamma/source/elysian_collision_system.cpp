@@ -647,7 +647,7 @@ bool CollisionSystem::resolvePenetration(void) {
 		//printf("-------------POSITION ITERATION - %d-------\n", i);
 
 		//printf("ABOUT TO RESOLVE DEEPEST - %d, %f", deep
-		gyResolvePenetration(&_contactPool[deepestIndex], posDelta, rotDir, orientDelta, deltaTime); //maybe must update its own shit
+		gyResolvePenetration(&_contactPool[deepestIndex], posDelta, rotDir, orientDelta); //maybe must update its own shit
 
 /**** TAKEN FROM C PENETRATION RESOLUTION *****/
 		CollisionContact *con = &_contactPool[deepestIndex];

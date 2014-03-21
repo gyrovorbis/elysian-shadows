@@ -23,6 +23,7 @@ namespace elysian {
 	class Renderable;
     class Animation;
     class Collidable;
+	class RigidBody;
 	class Character;
 	class Warp;
 	class Item;
@@ -65,6 +66,7 @@ namespace elysian {
 		Renderable*			addRenderable(void);
 		Animation*			addAnimation(void);
 		Collidable*			addCollidable(void);
+		RigidBody*			addRigidBody(void);
 		Character*			addCharacter(void);
 		Warp*				addWarp(void);
 		Item*				addItem(void);
@@ -77,7 +79,8 @@ namespace elysian {
 		
 		Renderable*			getRenderable(void) const { return _renderable; }
 		Animation*			getAnimation(void) const { return _animation; }
-		Collidable*			getCollidable(void) const{ return _collidable; }
+		Collidable*			getCollidable(void) const { return _collidable; }
+		RigidBody*			getRigidBody(void) const { return _rigidBody; }
 		Character*			getCharacter(void) const { return _character; }
 		Warp*				getWarp(void) const { return _warp; }
 		Item*				getItem(void) const { return _item; }
@@ -91,6 +94,7 @@ namespace elysian {
 		void removeRenderable(void);
 		void removeAnimation(void);
 		void removeCollidable(void);
+		void removeRigidBody(void);
 		void removeCharacter(void);
 		void removeWarp(void);
 		void removeItem(void);
@@ -132,6 +136,7 @@ namespace elysian {
 		Renderable*			_renderable		= nullptr;
 		Animation*			_animation		= nullptr;
 		Collidable*			_collidable		= nullptr;
+		RigidBody*			_rigidBody		= nullptr;
 		Character*			_character		= nullptr;
 		Warp*				_warp			= nullptr;
 		Item*				_item			= nullptr;

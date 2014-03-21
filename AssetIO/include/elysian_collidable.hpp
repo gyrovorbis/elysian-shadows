@@ -69,13 +69,13 @@ private:
 	public:
 		enum ZTRAN_STATE { ZTRAN_INACTIVE, ZTRAN_ACTIVE };
 	protected:
-		GYVector4 _centerWorldPos;
-		unsigned _contactCount;
-		CollidableAttrib *_attrib;
-		unsigned _zTranTileX, _zTranTileY;
-		ZTRAN_STATE _zTranState;
-		bool _onZTran;
-		bool _resolvePen, _trigger;
+		GYVector4			_centerWorldPos;
+		unsigned			_contactCount;
+		CollidableAttrib*	_attrib;
+		unsigned			_zTranTileX, _zTranTileY;
+		ZTRAN_STATE			_zTranState;
+		bool				_onZTran;
+		bool				_resolvePen, _trigger;
 
 		union { 
 			GYCollider col;
@@ -121,6 +121,7 @@ private:
 		inline void setResolvePenetration(const bool v) { _resolvePen = v; }
 		inline bool getTrigger(void) const { return _trigger; }
 		inline void setTrigger(const bool t) { _trigger = t; }
+		inline GYCollider* getCollider(void) { return &_collider.col; }
 	};
 
 	/*
@@ -131,11 +132,15 @@ private:
 	class CollisionContact: private GYContact {
 #ifdef ELYSIAN_ENGINE
 		friend class CollisionSystem;
+		friend class RigidBodySystem;
 		Collidable* _bodyA			= nullptr;
 		Collidable* _bodyB			= nullptr;
 		bool _resolvePen			= true;
 		bool _trigger				= false;
 #endif
+
+	public:
+		Collidable* getBody(const unsigned index) const;
 
 	};
 
@@ -148,6 +153,8 @@ private:
 		_staticAttrib.coeffOfRest = 0.0f;
 		_staticAttrib.invMomOfInertia = 0.0f;
 	}
+
+	inline Collidable* CollisionContact::getBody(const unsigned index) const { return (index == 0)? _bodyA : _bodyB; }
 
 
 

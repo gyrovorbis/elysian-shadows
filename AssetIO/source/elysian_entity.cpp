@@ -20,6 +20,7 @@
 #include "elysian_audio_source.hpp"
 #include "elysian_light_source.hpp"
 #include "elysian_particle_emitter.hpp"
+#include "elysian_rigid_body.hpp"
 
 using namespace std;
 
@@ -39,6 +40,7 @@ Entity::~Entity(void) {
 	removeRenderable();
 	removeAnimation();
 	removeCollidable();
+	removeRigidBody();
 	removeCharacter();
 	removeWarp();
 	removeItem();
@@ -234,6 +236,10 @@ bool Entity::activate(void) {
 		_collidable->addToLevel();
 		_componentActive[Component::COLLIDABLE] = true;
 	}
+	if(_rigidBody && !_componentActive[Component::RIGID_BODY]) {
+		_rigidBody->addToLevel();
+		_componentActive[Component::RIGID_BODY] = true;
+	}
 	if(_character && !_componentActive[Component::CHARACTER]) {
 		_character->addToLevel();
 		_componentActive[Component::CHARACTER] = true;
@@ -298,6 +304,10 @@ bool Entity::deactivate(void) {
 	if(_collidable && _componentActive[Component::COLLIDABLE]) {
 		_collidable->removeFromLevel();
 		_componentActive[Component::COLLIDABLE] = false;
+	}
+	if(_rigidBody && _componentActive[Component::RIGID_BODY]) {
+		_rigidBody->removeFromLevel();
+		_componentActive[Component::RIGID_BODY] = false;
 	}
 	if(_character && _componentActive[Component::CHARACTER]) {
 		_character->removeFromLevel();
@@ -377,6 +387,9 @@ bool Entity::load(ifstream &stream) { //Deserialization
 			case Component::COLLIDABLE:
 				comp = addCollidable();
 				break;
+			case Component::RIGID_BODY:
+				comp = addRigidBody();
+				break;
 			case Component::CHARACTER:
 				comp = addCharacter();
 				break;
@@ -447,6 +460,7 @@ bool Entity::save(ofstream &stream) { //Serialization
 	if(getRenderable()) ++compCount;
 	if(getAnimation()) ++compCount;
 	if(getCollidable()) ++compCount;
+	if(getRigidBody()) ++compCount;
 	if(getCharacter()) ++compCount;
 	if(getFriendly()) ++compCount;
 	if(getEnemy()) ++compCount;
@@ -471,6 +485,10 @@ bool Entity::save(ofstream &stream) { //Serialization
     if((comp = getCollidable())) {
 		stream << (int)Component::COLLIDABLE << endl;
         success &= comp->save(stream);
+	}
+	if((comp = getRigidBody())) {
+		stream << (int)Component::RIGID_BODY << endl;
+		success &= comp->save(stream);
 	}
     if((comp = getItem())) {
 		stream << (int)Component::ITEM << endl;
@@ -628,6 +646,12 @@ Collidable *Entity::addCollidable(void) {
 	return _collidable = attachComponent(_collidable)? _collidable : NULL;
 }
 
+RigidBody *Entity::addRigidBody(void) {
+	if(_rigidBody) return nullptr;
+	_rigidBody = new RigidBody(*this);
+	return _rigidBody = attachComponent(_rigidBody)? _rigidBody : nullptr;
+}
+
 Character *Entity::addCharacter(void) {
 	if(_character) return NULL;
 	_character = new Character(*this);
@@ -708,6 +732,15 @@ void Entity::removeCollidable(void) {
 	}
 	delete _collidable;
 	_collidable = NULL;
+}
+
+void Entity::removeRigidBody(void) {
+	if(_rigidBody && _active) {
+		_rigidBody->removeFromLevel();
+		_componentActive[Component::RIGID_BODY] = false;
+	}
+	delete _rigidBody;
+	_rigidBody = nullptr;
 }
 
 void Entity::removeCharacter(void) {
