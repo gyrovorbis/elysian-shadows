@@ -170,6 +170,13 @@ static inline float gyVec2Magnitude(const GYVector2*const vec) {
 	return gySqrt(vec->x*vec->x + vec->y*vec->y);
 }
 
+
+static inline void gyVec2AddScaled(GYVector2* const dst, const GYVector2* src, const float scalar) {
+	dst->x += src->x * scalar;
+	dst->y += src->y * scalar;
+
+}
+
 static inline void gyVec3Add(GYVector3* const dest, const GYVector3* const v1, const GYVector3* const v2) {
 	dest->x = v1->x + v2->x;
 	dest->y = v1->y + v2->y;
