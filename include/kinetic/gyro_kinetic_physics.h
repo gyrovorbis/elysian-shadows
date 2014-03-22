@@ -32,6 +32,9 @@ STATIC ATTRIBUTE DATA MAY BE STORED WITHIN CONTACT AND MAY NOT HAVE TO BE PASSED
 
 //void gyResolveVelocity(struct _GYContact *con, struct _GYKinetic *kinA, struct _GYKinetic *kinB, const struct _GYStatic *statA, const struct _GYStatic *statB);
 void gyContactResolveVelocity(struct _GYContact *con, GYVector2 velDelta[], float rotDelta[]/*, const float deltaTime*/);
+
+void gyContactCalculatePenetrationInternals(struct _GYContact*const contact, const GYVector2*const pos1, const GYVector2*const pos2);
+void gyContactCalculateVelocityInternals(struct _GYContact*const contact, struct _GYKinetic*const rb1, struct _GYKinetic*const rb2, const float deltaTime);
 void gyContactUpdateDeltaVelocity(struct _GYContact*const contact, struct _GYKinetic*const rb1, struct _GYKinetic*const rb2, const float deltaTime);
 
 //Auxiliary functions
