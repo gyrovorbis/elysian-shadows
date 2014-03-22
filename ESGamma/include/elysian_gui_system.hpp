@@ -39,6 +39,7 @@ namespace elysian {
 		unsigned int _projWidth, _projHeight;
 
 
+		void _printDebugLine(const char*title, const char*str, ...);
 		void _renderDebugOverlay(void);
 	public:
 

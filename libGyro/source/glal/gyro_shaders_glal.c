@@ -182,11 +182,15 @@ static inline int _protectedAttribQuery(const GYShaderProgram* prog, const char*
 }
 
 
-static void _queryLightingShader(_LightingShaderProgram*const shader) {
+static void _queryLightingShader(_LightingShaderProgram*const shader, const unsigned light) {
 	char buff[100];
 
-	//poll for attribute locations
-	shader->attribLoc[SHADER_POS]		= _protectedAttribQuery(shader->program, "aPosition");
+	//SHARED SHADER ATTRIBS/UNIFORMS
+	shader->attribLoc[SHADER_POS]						= _protectedAttribQuery(shader->program, "aPosition");
+	shader->uniformLoc[SHADER_PROJ_VIEW_MAT]			= _protectedUniformQuery(shader->program, "uProjViewMat");
+
+	if(!light) return; //the rest is lighting only
+
 	shader->attribLoc[SHADER_COLOR]		= _protectedAttribQuery(shader->program, "aColor");
 	shader->attribLoc[SHADER_TEX_COORD] = _protectedAttribQuery(shader->program, "aTexCoord");
 
@@ -194,7 +198,6 @@ static void _queryLightingShader(_LightingShaderProgram*const shader) {
 	shader->uniformLoc[SHADER_TEXTURE_ENABLED]			= _protectedUniformQuery(shader->program, "uTextureEnabled");
 	shader->uniformLoc[SHADER_NORMAL]					= _protectedUniformQuery(shader->program, "uNormal");
 	shader->uniformLoc[SHADER_TANGENT]					= _protectedUniformQuery(shader->program, "uTangent");
-	shader->uniformLoc[SHADER_PROJ_VIEW_MAT]			= _protectedUniformQuery(shader->program, "uProjViewMat");
 	shader->uniformLoc[SHADER_AMBIENCE]					= _protectedUniformQuery(shader->program, "uAmbience");
 	shader->uniformLoc[SHADER_LIGHTING_ENABLED]			= _protectedUniformQuery(shader->program, "uLightingEnabled");
 	shader->uniformLoc[SHADER_NORMAL_MAP_ENABLED]		= _protectedUniformQuery(shader->program, "uNormalMapEnabled");
@@ -260,12 +263,12 @@ void glalLoadDefaultShaders(void) {
 	//GYShader* vertShader = gyShaderCreate("/Users/Falco/Documents/ESDev/libGyro/source/glal/shaders/pixelLighting.vsh");
 	//GYShader* fragShader = gyShaderCreate("/Users/Falco/Documents/ESDev/libGyro/source/glal/shaders/pixelLighting.fsh");
 	_lightingShader.program = gyShaderProgramCreate(vertShader, fragShader);
-	_queryLightingShader(&_lightingShader);
+	_queryLightingShader(&_lightingShader, 1);
 
 	vertShader = gyShaderCreate("shaders/shadowMap.vsh");
 	fragShader = gyShaderCreate("shaders/shadowMap.fsh");
 	_shadowMapShader.program = gyShaderProgramCreate(vertShader, fragShader);
-	_queryLightingShader(&_shadowMapShader);
+	_queryLightingShader(&_shadowMapShader, 0);
 }
 
 void glalDefaultShadersLoadUniforms(void) {

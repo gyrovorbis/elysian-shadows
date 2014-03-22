@@ -211,6 +211,18 @@ unsigned int gyVidTexAmount(void) {
 	return gyAssetBankSize(&_texBank);
 }
 
+unsigned gyVidTexBytes(void) {
+	unsigned totalBytes = 0;
+	GYAssetBankEntry *entry = _texBank._head;
+	GYTexture *tex;
+	for(; entry; entry = entry->_next) {
+		tex = entry->_payload;
+		if(!tex) continue;
+		totalBytes += tex->bytes;
+	}
+	return totalBytes;
+}
+
 /*I hate to fucking do this, but SDL forces us with window resizing...
 	ughhghg --Falco */
 int gyVidTexReloadAll(void) {

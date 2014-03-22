@@ -345,6 +345,22 @@ bool LuaManager::uninitialize(void) {
 	return true;
 }
 
+unsigned LuaManager::getScriptCount(void) {
+	return _scripts.size();
+}
+
+unsigned LuaManager::getScriptInstances(void) {
+	unsigned count = 0;
+	for(auto it : _scripts) {
+		count += it.second->getRefCount();
+	}
+	return count;
+}
+
+unsigned LuaManager::getKbytesUsed(void) {
+	return lua_gc(*_mainState, LUA_GCCOUNT, 0);
+}
+
 
 void LuaManager::dumpStats(void) {
 	char buffer[100];

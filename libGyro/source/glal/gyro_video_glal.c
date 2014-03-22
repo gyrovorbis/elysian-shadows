@@ -85,6 +85,9 @@ static unsigned int			_projHeight				= 0;
 static GY_RECT_TEX_ORIENT	_rectTexOrient			= GY_RECT_TEX_ORIENT_NORMAL;
 static GY_RECT_NORMAL_TYPE	_normalType				= GY_RECT_NORMAL_FLAT;
 static GYColor4				_curQuadListColor[4]	= { {0} };
+unsigned					polyCount				= 0;
+
+unsigned gyVidPolyCount(void) { return polyCount; }
 
 void gyVidResolution(unsigned int *const projWidth, unsigned int *const projHeight) {
 	*projWidth = _projWidth; *projHeight = _projHeight;
@@ -167,6 +170,7 @@ void gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsign
 	glVertexAttribPointer(curLightShader->attribLoc[SHADER_POS], 4, GL_FLOAT, GL_FALSE, 0, modelViewVertices);
 	glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_POS]);
 	glDrawArrays(GL_TRIANGLE_STRIP, startIndex, amount);
+	++polyCount;
 }
 
 void gyVidColorArray(const struct _GYColor4 *const ptr) {

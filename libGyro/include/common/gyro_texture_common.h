@@ -20,6 +20,7 @@ const struct _GYTexCoord2* gyVidTexCoordArrayFromFrame(const struct _GYTexCoordF
 
 int gyVidTexDestroy(struct _GYTexture *const tex);
 unsigned int gyVidTexAmount(void);
+unsigned gyVidTexBytes(void);
 int gyVidTexClear(void);
 int gyVidTexReloadAll(void);
 void gyVidTexWalkthrough(void);

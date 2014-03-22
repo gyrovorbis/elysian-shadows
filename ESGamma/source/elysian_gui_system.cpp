@@ -3,6 +3,12 @@
 #include "elysian_font.hpp"
 #include "elysian_debug.hpp"
 #include "elysian_timer_system.hpp"
+#include "elysian_party_system.hpp"
+#include "elysian_day_system.hpp"
+#include "elysian_entity.hpp"
+#include "elysian_collision_system.hpp"
+#include "elysian_lua_manager.hpp"
+#include "elysian_light_system.hpp"
 
 namespace elysian {
 
@@ -53,13 +59,44 @@ void GuiSystem::renderOverlay(void) {
 	_renderDebugOverlay();
 }
 
+void GuiSystem::_printDebugLine(const char *title, const char *str, ...) {
+	char buffer[100];
+	va_list argptr;
+	va_start(argptr,str);
+	vsprintf(buffer,str,argptr);
+	va_end(argptr);
+
+	twcen.transform._pos.y += 25.0f;
+	twcen.transform._pos.x = _projWidth-200.0f;
+	twcen.drawStringf(Font::NO_FORMAT, Font::R_ALIGN, title);
+	twcen.transform._pos.x = _projWidth-10.0f;
+	twcen.drawStringf(Font::NO_FORMAT, Font::R_ALIGN, buffer);
+}
+
 void GuiSystem::_renderDebugOverlay(void) {
 	if(!_debugOverlayEnabled) return;
 
-	twcen.transform._pos.x = _projWidth-10.0f;
-	twcen.transform._pos.y = 200.0f;
+	twcen.setColor(0, 255, 100, 255);
+	twcen.transform._pos.y = 100.0f;
 	twcen.transform._pos.z = 50.0f;
-	twcen.drawStringf(Font::NO_FORMAT, Font::R_ALIGN, "FPS: %f", getTimerSys()->getFramerate());
+
+	_printDebugLine("FPS:", "%.2f", getTimerSys()->getFramerate());
+	_printDebugLine("Poly Count:", "%d", gyVidPolyCount());
+	_printDebugLine("Textures:", "%d", gyVidTexAmount());
+	_printDebugLine("Texture MBytes:", "%f", gyVidTexBytes()/1024.0f/1024.0f);
+	twcen.transform._pos.y += 25.0f;
+	_printDebugLine("Onscreen Lights:", "%d", getLightSys()->getOnscreenLightCount());
+	_printDebugLine("Entities:", "%d", getCurArea()->entities.size());
+	_printDebugLine("Contacts:", "%d", getCollisionSys()->getContactCount());
+	twcen.transform._pos.y += 25.0f;
+	_printDebugLine("Lua Scripts:", "%d", LuaManager::getScriptCount());
+	_printDebugLine("Lua Script Instances:", "%d", LuaManager::getScriptInstances());
+	_printDebugLine("Lua MBytes:", "%f", LuaManager::getKbytesUsed()/1024.0f);
+	twcen.transform._pos.y += 25.0f;
+	_printDebugLine("Game Time:", "%d:%d:%d", getDaySys()->getDays(), getDaySys()->getHours(), getDaySys()->getMinutes());
+	if(getPartySys()->getPartyLeader()) {
+		_printDebugLine("player.pos:", "<%.2f, %.2f>", getPartySys()->getPartyLeader()->transform._pos.x, getPartySys()->getPartyLeader()->transform._pos.y);
+	}
 
 }
 
