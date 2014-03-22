@@ -33,6 +33,7 @@ int gyVidInit(const struct _GYVidInitParams *const params); //MUST SET PROJWIDTH
 int gyVidUninit(void);
 void gyVidSceneBegin(void);
 void gyVidSceneEnd(void);
+unsigned gyVidPolyCount(void);
 
 //Quad API
 void gyVidQuadListBegin(const GYColor4 *const color);
