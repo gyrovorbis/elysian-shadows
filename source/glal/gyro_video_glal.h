@@ -18,6 +18,7 @@ extern GYVector4				viewPosition;
 extern const GYVector3*			tangentVector;
 extern const GYVector3*			normalVector;
 extern const struct _GYTexture* curTex;
+extern unsigned					polyCount;
 
 int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth, const int projHeight);
 
