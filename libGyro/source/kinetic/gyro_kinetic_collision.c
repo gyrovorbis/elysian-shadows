@@ -324,8 +324,8 @@ int gyCollisionOBBvOBB(const GYBoxCollider *boxA, const GYBoxCollider *boxB, str
     
     
     
-	con->worldPos.x = (boxA->collider.transform._pos.x + boxB->collider.transform._pos.x) * 0.5f;
-	con->worldPos.y = (boxA->collider.transform._pos.y + boxB->collider.transform._pos.y) * 0.5f;
+	con->worldPos.x = (boxA->collider.worldPos.x + boxB->collider.worldPos.x) * 0.5f;
+	con->worldPos.y = (boxA->collider.worldPos.y + boxB->collider.worldPos.y) * 0.5f;
     
 
 	return 1;

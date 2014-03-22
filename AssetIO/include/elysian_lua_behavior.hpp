@@ -66,8 +66,8 @@ namespace elysian {
 		virtual void		onUnload(void) override;
 		virtual void		onEnter(void) override;
 		virtual void		onExit(void) override;
-		virtual void		onCollide(Collidable* const collidable) override;
-		virtual void		onCollisionEnter(Collidable* const collidable) override;
+		virtual void		onCollide(CollisionContact*const contact, Collidable* const collidable) override;
+		virtual void		onCollisionEnter(CollisionContact*const contact, Collidable* const collidable) override;
 		virtual void		onCollisionExit(Collidable* const collidable) override;
 		virtual void		onExamine(Entity* entity) override;
 		virtual void		onDialog(const unsigned screen, const int option) override;

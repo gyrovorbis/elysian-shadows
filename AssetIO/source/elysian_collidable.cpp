@@ -4,12 +4,28 @@
 #include "elysian_area.hpp"
 #include "elysian_instance_transform.hpp"
 #include "elysian_generic.hpp"
+#include "elysian_rigid_body.hpp"
+
 
 namespace elysian {
+
+void CollisionContact::_calculatePenetrationInternals(void) {
+	gyContactCalculatePenetrationInternals(this,
+										   (GYVector2*)&_bodyA->getCenterWorldPos(),
+										   (_bodyB)? (GYVector2*)&_bodyB->getCenterWorldPos() : nullptr);
+}
+
+void CollisionContact::_calculateVelocityInternals(const float deltaTime) {
+	gyContactCalculateVelocityInternals(this,
+										(GYKinetic*)_bodyA->getEntity()->getRigidBody(),
+										(_bodyB)? (GYKinetic*)_bodyB->getEntity()->getRigidBody() : nullptr,
+										deltaTime);
+}
 
 void Collidable::update(void) {
 #ifdef ELYSIAN_ENGINE
 	static const GYVector4 origin = { 0.0f, 0.0f, 0.0f, 1.0f };
+	GYVector4 worldPos;
 	/* This is necessary to ensure that if the attribute geometry was dynamically changed,
 		the runtime data is updated to reflect it. Keep shit synced. */
 	_collider.col.type = _attrib->_type; 
@@ -19,9 +35,11 @@ void Collidable::update(void) {
 	gyMatLoadIdentity();
 	_entity->transform.apply();
 	gyMatTranslateScale(_attrib->_relPos.x, _attrib->_relPos.y, 0.0f, _attrib->_relSize.x, _attrib->_relSize.y, 1.0f);
-    gyMatMultVec(&origin, &_centerWorldPos, 1);
+	gyMatMultVec(&origin, &worldPos, 1);
 	gyCalcWorldVert(&_collider.col);
 	gyMatPop();
+
+	_collider.col.worldPos = *(GYVector2*)&worldPos;
 #endif
 }
     

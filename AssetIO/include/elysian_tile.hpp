@@ -11,6 +11,7 @@ namespace elysian {
 
 	struct Tile: public Asset {
 		float animTime; //time to elapse before moving to next index
+		float damping = 1.0f;
 
 		enum COLLIDER_TYPE {
 			COLLIDER_NONE, COLLIDER_FULL,
@@ -34,6 +35,8 @@ namespace elysian {
 
 		void setAnimated(const bool v);
 		bool getAnimated(void) const;
+		float getDamping(void) const;
+		void setDamping(const float factor);
 		void setAnimTime(const float t);
 		float getAnimTime(void) const;
 		void setNextIndex(const uint16_t i);
@@ -47,7 +50,11 @@ namespace elysian {
 
 	};
     
-    
+	// ====== INLINEZ ======
+
+	inline float Tile::getDamping(void) const { return damping; }
+	inline void Tile::setDamping(const float factor) { damping = factor; }
+
 	inline unsigned Tile::getColliderType(void) const { return (unsigned)colliderType; }
     
 	inline void Tile::setColliderType(const unsigned type) {

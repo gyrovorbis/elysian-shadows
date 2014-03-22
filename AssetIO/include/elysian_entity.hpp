@@ -131,7 +131,7 @@ namespace elysian {
 		unsigned char		_elev			= 0;
 		bool				_shadowVolume	= true;
 		float				_shadowDepth	= 16.0f;
-		DEPTH_TYPE			_depthType		= DEPTH_NONE;
+		DEPTH_TYPE			_depthType		= DEPTH_BUFFERED;
 		bool				_active			= false;
 		Renderable*			_renderable		= nullptr;
 		Animation*			_animation		= nullptr;
@@ -146,7 +146,6 @@ namespace elysian {
 		AudioSource*		_audioSource	= nullptr;
 		LightSource*		_lightSource	= nullptr;
 		ParticleEmitter*	_particleEmitter = nullptr;
-		//RigidBody*    _rigidBody;
 #ifdef ELYSIAN_ENGINE
 		OOLUA::Lua_table_ref	_selfTable;
 #endif

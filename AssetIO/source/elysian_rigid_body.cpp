@@ -24,20 +24,33 @@ RigidBody::RigidBody(Entity& entity):
 
 void RigidBody::integrate(const float deltaTime) {
 	Collidable* collidable = getEntity()->getCollidable();
+	GYStatic*const stat = collidable->getAttrib()->getStaticAttrib();
+
+	stat->angDamping *= _tileDamping;
+	stat->damping *= _tileDamping;
 
 	gyIntegrate(this,
-				collidable->getAttrib()->getStaticAttrib(),
+				stat,
 				deltaTime,
 				(GYVector2*)&_entity->transform._pos,
 				&_entity->transform._orientZ);
+
+	stat->angDamping /= _tileDamping;
+	stat->damping /= _tileDamping;
+
 }
 
 void RigidBody::applyForce(const GYVector2 &force) {
-//	gyApplyForce(this, &force);
+	gyVec2AddAccum(&forceAccum, &force);
 }
 
-void RigidBody::applyPointForce(const GYVector2 &loc, const GYVector2 &force) {
-//	gyApplyPointForce(this, &force, &loc);
+void RigidBody::applyForceToPoint(const GYVector2 &loc, const GYVector2 &force) {
+	GYVector2 relPoint;
+
+	gyVec2AddAccum(&forceAccum, &force);
+
+	gyVec2Sub(&relPoint, &loc, &getEntity()->getCollidable()->getCollider()->worldPos);
+	torqueAccum += gyVec2ScalarCrossProd(&relPoint, &force);
 }
 
 bool RigidBody::canAddTo(Entity& entity) {

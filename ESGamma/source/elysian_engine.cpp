@@ -25,6 +25,7 @@
 #include "elysian_day_system.hpp"
 #include "elysian_dialog_system.hpp"
 #include "elysian_examinable_system.hpp"
+#include "elysian_rigid_body_system.hpp"
 #include "glal/gyro_glal.h"
 
 namespace elysian {
@@ -44,6 +45,7 @@ Engine::Engine(void) {
 	_timerSystem		= new TimerSystem;
 	_warpSystem			= new WarpSystem;
 	_collisionSystem	= new CollisionSystem;
+	_rigidBodySystem	= new RigidBodySystem;
 	_guiSystem			= new GuiSystem;
 	_behaviorSystem		= new BehaviorSystem;
 	_audioSystem		= new AudioSystem;
@@ -85,7 +87,11 @@ void Engine::update(void) {
 			_cameraSystem->update();
 			_lightSystem->update();
 			_audioSystem->update();
+			_rigidBodySystem->applyForces();
+			_rigidBodySystem->integrate();
 			_collisionSystem->update();
+			_rigidBodySystem->update();
+			_rigidBodySystem->resolveContactVelocities();
 			_timerSystem->update();
 			_mapSystem->update();
 			_partySystem->update();
@@ -226,6 +232,8 @@ Engine::~Engine(void) {
 	delete _timerSystem;
 	delete _audioSystem;
 	delete _lightSystem;
+	delete _rigidBodySystem;
+	delete _collisionSystem;
 	delete _guiSystem;
 	delete _behaviorSystem;
 	

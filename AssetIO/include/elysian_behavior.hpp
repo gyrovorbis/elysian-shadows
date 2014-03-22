@@ -14,6 +14,7 @@ namespace elysian {
 	struct ltstr;
 	class Entity;
 	class Collidable;
+	class CollisionContact;
 	
 	class Behavior: public Component {
 		friend class Entity;
@@ -68,8 +69,8 @@ namespace elysian {
 		virtual void onExit(void);
         virtual void onUpdate(void);
         virtual void onRender(void);
-		virtual void onCollide(Collidable* const collidable);
-		virtual void onCollisionEnter(Collidable* const collidable);
+		virtual void onCollide(CollisionContact*const contact, Collidable* const collidable);
+		virtual void onCollisionEnter(CollisionContact*const contact, Collidable* const collidable);
 		virtual void onCollisionExit(Collidable* const collidable);
 		virtual void onExamine(Entity* entity);
 		virtual void onDialog(const unsigned screen, const int option);

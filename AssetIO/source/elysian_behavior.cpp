@@ -80,8 +80,8 @@ void Behavior::onEnter(void) { dbgprintf(LOG_CRITICAL, "Behavior::onEnter() - Un
 void Behavior::onExit(void) { dbgprintf(LOG_CRITICAL, "Behavior::onExit() - Unimplemented for '%s'.\n", getBehavName()); }
 void Behavior::onUpdate(void) { dbgprintf(LOG_CRITICAL, "Behavior::onUpdate() - Unimplemented for '%s'.\n", getBehavName()); }
 void Behavior::onRender(void) { dbgprintf(LOG_CRITICAL, "Behavior::onRender() - Unimplemented for '%s'.\n", getBehavName()); }
-void Behavior::onCollide(Collidable* const /*collidable*/) { dbgprintf(LOG_CRITICAL, "Behavior::onCollide() - Unimplemented for '%s'.\n", getBehavName()); }
-void Behavior::onCollisionEnter(Collidable* const /*collidable*/) { dbgprintf(LOG_CRITICAL, "Behavior::onCollisionEnter() - Unimplemented for '%s'.\n", getBehavName()); }
+void Behavior::onCollide(CollisionContact*const /*contact*/,Collidable* const /*collidable*/) { dbgprintf(LOG_CRITICAL, "Behavior::onCollide() - Unimplemented for '%s'.\n", getBehavName()); }
+void Behavior::onCollisionEnter(CollisionContact*const /*contact*/,Collidable* const /*collidable*/) { dbgprintf(LOG_CRITICAL, "Behavior::onCollisionEnter() - Unimplemented for '%s'.\n", getBehavName()); }
 void Behavior::onCollisionExit(Collidable* const /*collidable*/) { dbgprintf(LOG_CRITICAL, "Behavior::onCollisionExit() - Unimplemented for '%s'.\n", getBehavName()); }
 void Behavior::onExamine(Entity* /*entity*/) { dbgprintf(LOG_CRITICAL, "Behavior::onExamine() - Unimplemented for '%s'.\n", getBehavName()); }
 void Behavior::onDialog(const unsigned /*screen*/, const int /*option*/) { dbgprintf(LOG_CRITICAL, "Behavior::onDialog() - Unimplemented for '%s'.\n", getBehavName()); }

@@ -135,7 +135,8 @@ public:
             return (_index < other._index);
         }
 
-        T* operator->(void) const;
+	   // T* operator->(void) const;
+		T& operator*(void) const;
 
         const iterator& operator++(void) {
             while(!_parent._used[++_index]);
@@ -185,6 +186,16 @@ public:
         _entries[_claimFreeIndex()] = entry;
 
     }
+
+	//Way slower than doing it with the iterator... but k.
+	void removeEntry(const T& entry) {
+		for(auto it = begin(); it < end(); ++it) {
+			if(_entries[it._index] == entry) {
+				remove(it);
+				return;
+			}
+		}
+	}
 
     void remove(const iterator it) {
         if(_freeCacheCount < _freeIndicesSize) {
@@ -239,10 +250,15 @@ public:
 
 };
 
-
+/*
 template<typename T>
 inline T* Pool<T>::iterator::operator ->(void) const {
     return &_parent._entries[_index];
+}*/
+
+template<typename T>
+inline T& Pool<T>::iterator::operator *(void) const {
+	return _parent._entries[_index];
 }
 
 

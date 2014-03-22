@@ -130,7 +130,8 @@ HEADERS += \
     ../../../AssetIO/include/elysian_mem_pool.hpp \
     ../../../AssetIO/include/elysian_material.hpp \
     ../../../AssetIO/include/elysian_rigid_body.hpp \
-    ../../include/elysian_rigid_body_system.hpp
+    ../../include/elysian_rigid_body_system.hpp \
+    ../../include/elysian_force_generator.hpp
 
 macx {
   OBJECTIVE_HEADERS += ../../../libGyro/lib/osx/SDLMain.h
@@ -194,9 +195,9 @@ SOURCES += \
     ../../../AssetIO/source/elysian_particle_emitter.cpp \
     ../../source/elysian_day_system.cpp \
     ../../source/elysian_examinable_system.cpp \
-    ../../../AssetIO/source/elysian_mem_pool.cpp \
     ../../../AssetIO/source/elysian_rigid_body.cpp \
-    ../../source/elysian_rigid_body_system.cpp
+    ../../source/elysian_rigid_body_system.cpp \
+    ../../source/elysian_force_generator.cpp
 
 macx {
   OBJECTIVE_SOURCES += ../../../libGyro/lib/osx/SDLMain.mm

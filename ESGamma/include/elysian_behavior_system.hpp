@@ -16,8 +16,8 @@ namespace elysian {
 		void callTriggers(const Behavior::TRIGGER trigger);
 
 		//Subsystem-specific events
-		void onCollide(Entity *const entity, Collidable *const collidable);
-		void onCollisionEnter(Entity *const entity, Collidable *const collidable);
+		void onCollide(Entity *const entity, CollisionContact*const contact, Collidable *const collidable);
+		void onCollisionEnter(Entity *const entity, CollisionContact*const contact, Collidable *const collidable);
 		void onCollisionExit(Entity *const entity, Collidable *const collidable);
 		void onExamine(Entity *const entity1, Entity *const entity2);
 		void onDialog(Entity *const entity, const unsigned screen, const int option);
@@ -27,23 +27,23 @@ namespace elysian {
 	
 	//====INLINEZ====
 
-	inline void BehaviorSystem::onCollide(Entity *const entity, Collidable *const collidable) {
+	inline void BehaviorSystem::onCollide(Entity *const entity, CollisionContact*const contact, Collidable *const collidable) {
 		auto& behaviors = entity->getBehaviors();
 		for(auto it = behaviors.begin();
 			it != behaviors.end();
 			++it)
 		{
-			if(it->second->getTriggers() & Behavior::ON_COLLIDE) it->second->onCollide(collidable);
+			if(it->second->getTriggers() & Behavior::ON_COLLIDE) it->second->onCollide(contact, collidable);
 		}
 	}
 
-	inline void BehaviorSystem::onCollisionEnter(Entity *const entity, Collidable *const collidable) {
+	inline void BehaviorSystem::onCollisionEnter(Entity *const entity, CollisionContact*const contact, Collidable *const collidable) {
 		auto& behaviors = entity->getBehaviors();
 		for(auto it = behaviors.begin();
 			it != behaviors.end();
 			++it)
 		{
-			if(it->second->getTriggers() & Behavior::ON_COLLISION_ENTER) it->second->onCollisionEnter(collidable);
+			if(it->second->getTriggers() & Behavior::ON_COLLISION_ENTER) it->second->onCollisionEnter(contact, collidable);
 		}
 	}
 

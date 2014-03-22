@@ -24,6 +24,7 @@ namespace elysian {
 	class DaySystem;
 	class DialogSystem;
 	class ExaminableSystem;
+	class RigidBodySystem;
 
 	class System: public LevelManager {
 	public:
@@ -44,6 +45,7 @@ namespace elysian {
 		static TimerSystem		*_timerSystem;
 		static WarpSystem		*_warpSystem;
 		static CollisionSystem	*_collisionSystem;
+		static RigidBodySystem	*_rigidBodySystem;
 		static GuiSystem		*_guiSystem;
 		static ExaminableSystem	*_examinableSystem;
 		static AudioSystem		*_audioSystem;
@@ -63,6 +65,7 @@ namespace elysian {
 		static TimerSystem*			getTimerSys(void) { return _timerSystem; }
 		static WarpSystem*			getWarpSys(void) { return _warpSystem; }
 		static CollisionSystem*		getCollisionSys(void) { return _collisionSystem; }
+		static RigidBodySystem*		getRigidBodySys(void) { return _rigidBodySystem; }
 		static GuiSystem*			getGuiSys(void) { return _guiSystem; }
 		static ExaminableSystem*	getExamSys(void) { return _examinableSystem; }
 		static AudioSystem*			getAudioSys(void) { return _audioSystem; }

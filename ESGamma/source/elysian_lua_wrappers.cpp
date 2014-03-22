@@ -26,6 +26,7 @@ namespace elysian {
 		_mainState->register_class<CollisionFlags>();
 		_mainState->register_class<GYStatic>();
 		_mainState->register_class<CollidableAttrib>();
+		_mainState->register_class<CollisionContact>();
 		_mainState->register_class<Collidable>();
 		_mainState->register_class<Character>();
 		_mainState->register_class<Warp>();
@@ -49,14 +50,19 @@ namespace elysian {
 		_mainState->register_class<GYWav>();
 		_mainState->register_class<AudioSource>();
 		_mainState->register_class<LightSource>();
+		_mainState->register_class<RigidBodyAttrib>();
+		_mainState->register_class<RigidBody>();
 		_mainState->register_class<AudioSystem>();
 		_mainState->register_class<LightSystem>();
 		_mainState->register_class<ParticleSystem>();
 		_mainState->register_class<DaySystem>();
 		_mainState->register_class<DialogSystem>();
+		_mainState->register_class<RigidBodySystem>();
 		_mainState->register_class<GuiSystem>();
 		_mainState->register_class<LevelSystem>();
 		_mainState->register_class<Direction>();
+		OOLUA::register_class<GravityForceGenerator>(*_mainState);
+
 
 		//Register C and static member functions
 		lua_register(*_mainState, "print", &print);
@@ -71,6 +77,7 @@ namespace elysian {
 		_mainState->register_class_static<Singletons>("getLevelSys", &Singletons_getLevelSystem);
 		_mainState->register_class_static<Singletons>("getPartSys", &Singletons_getParticleSystem);
 		_mainState->register_class_static<Singletons>("getDaySys", &Singletons_getDaySystem);
+		_mainState->register_class_static<Singletons>("getRigidBodySys", &Singletons_getRigidBodySystem);
 		_mainState->register_class_static<Singletons>("getDialogSys", &Singletons_getDialogSystem);
 		_mainState->register_class_static<Singletons>("getGuiSys", &Singletons_getGuiSystem);
 
@@ -144,6 +151,7 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
 						addAudioSource,
 						addLightSource,
 						addExaminable,
+						addRigidBody,
 						addBehavior,
 						addLuaBehavior,
 						removeRenderable,
@@ -154,6 +162,7 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
 						removeAudioSource,
 						removeLightSource,
 						removeExaminable,
+						removeRigidBody,
 						removeBehavior,
 						removeLuaBehavior,
 						setDepthType,
@@ -170,6 +179,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getAudioSource,
 								getLightSource,
 								getExaminable,
+								getRigidBody,
 								getBehavior,
 								getLuaBehavior,
 								getDepthType)
@@ -265,12 +275,42 @@ EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(CollidableAttrib,
 EXPORT_OOLUA_FUNCTIONS_1_CONST(CollidableAttrib,
 							   getColliderType)
 
+OOLUA_EXPORT_FUNCTIONS_CONST(CollisionContact,
+							 getCollidable,
+							 getWorldPos,
+							 getNormal,
+							 getObjPos,
+							 getSeparatingVel,
+							 getClosingVel,
+							 getDeltaVel,
+							 getDepth)
+OOLUA_EXPORT_FUNCTIONS(CollisionContact)
+
 EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(Collidable,
 								   setAttrib,
 								   setResolvePenetration)
 EXPORT_OOLUA_FUNCTIONS_2_CONST(Collidable,
 							   getAttrib,
 							   getContactCount)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(RigidBodyAttrib,
+							 getForceMask)
+OOLUA_EXPORT_FUNCTIONS(RigidBodyAttrib,
+					   setForceMask)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(RigidBody)
+OOLUA_EXPORT_FUNCTIONS(RigidBody,
+					   applyForce,
+					   applyForceToPoint,
+					   setAttrib)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(ForceGenerator)
+OOLUA_EXPORT_FUNCTIONS(ForceGenerator,
+					   setForceMask)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(GravityForceGenerator)
+OOLUA_EXPORT_FUNCTIONS(GravityForceGenerator,
+					   setAccel)
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Direction)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(Direction)
@@ -370,8 +410,9 @@ EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(LuaBehavior,
 								   getSelfTable)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(LuaBehavior)
 
-EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(Tile,
-									setColliderType)
+OOLUA_EXPORT_FUNCTIONS(Tile,
+						setColliderType,
+						setDamping)
 EXPORT_OOLUA_FUNCTIONS_1_CONST(Tile,
                                getColliderType)
 
@@ -436,6 +477,12 @@ OOLUA_EXPORT_FUNCTIONS(LevelSystem)
 OOLUA_EXPORT_FUNCTIONS_CONST(LevelSystem,
 								getPrevAreaPath,
 								getPrevLevelPath)
+
+OOLUA_EXPORT_FUNCTIONS(RigidBodySystem,
+					   addForce,
+					   removeForce,
+					   clearForces)
+OOLUA_EXPORT_FUNCTIONS_CONST(RigidBodySystem)
 
 OOLUA_EXPORT_FUNCTIONS(LightSystem,
 					   setGlobalAmbientColor)

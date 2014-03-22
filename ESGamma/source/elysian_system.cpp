@@ -14,6 +14,7 @@ namespace elysian {
 	TimerSystem*		System::_timerSystem		= nullptr;
 	WarpSystem*			System::_warpSystem			= nullptr;
 	CollisionSystem*	System::_collisionSystem	= nullptr;
+	RigidBodySystem*	System::_rigidBodySystem	= nullptr;
 	GuiSystem*			System::_guiSystem			= nullptr;
 	ExaminableSystem*	System::_examinableSystem	= nullptr;
 	AudioSystem*		System::_audioSystem		= nullptr;

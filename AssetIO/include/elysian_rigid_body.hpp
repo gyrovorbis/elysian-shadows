@@ -6,9 +6,21 @@
 
 namespace elysian {
 
+	class RigidBodyAttrib {	//later separate GYStatic attrib
+	private:
+		uint32_t _forceMask = ~0x0;
+
+	public:
+		uint32_t getForceMask(void) const;
+		void setForceMask(const uint32_t mask);
+
+	};
+
 	class RigidBody: public Component, private GYKinetic {
 		friend class RigidBodySystem;
-
+	private:
+		float				_tileDamping = 1.0f;
+		RigidBodyAttrib*	_attrib = nullptr;
 	public:
 
 		RigidBody(Entity& entity);
@@ -22,13 +34,33 @@ namespace elysian {
 		virtual bool removeFromLevel(void) override;
 		virtual TYPE getType(void) const override;
 
-		//GYKinetic rigid-bodies
+		void				setTileDamping(const float factor);
+		float				getTileDamping(void) const;
+		void				setAttrib(RigidBodyAttrib*const attrib);
+		RigidBodyAttrib*	getAttrib(void) const;
+
+		//GYKinetic rigid bodies internal
 		void integrate(const float deltaTime);
+
+		//GYKinetic rigid bodies external
 		void applyForce(const GYVector2& force);
-		void applyPointForce(const GYVector2& loc, const GYVector2& force);
+		void applyForceToPoint(const GYVector2& loc, const GYVector2& force);
+
+		void applyForceMask(const uint32_t mask, const GYVector2& force);
 
 	};
 
+
+	// ========= INLINEZ ==========
+
+	inline float RigidBody::getTileDamping(void) const { return _tileDamping; }
+	inline void RigidBody::setTileDamping(const float factor) {_tileDamping = factor; }
+	inline void RigidBody::setAttrib(RigidBodyAttrib*const attrib) { _attrib = attrib; }
+	inline RigidBodyAttrib* RigidBody::getAttrib(void) const { return _attrib; }
+	inline void RigidBody::applyForceMask(const uint32_t mask, const GYVector2& force) { if(_attrib->getForceMask() & mask) applyForce(force); }
+
+	inline uint32_t RigidBodyAttrib::getForceMask(void) const { return _forceMask; }
+	inline void RigidBodyAttrib::setForceMask(const uint32_t mask) { _forceMask = mask; }
 
 }
 

@@ -32,10 +32,14 @@ namespace elysian {
             float       timer;
 		};
 
-		Pool<CombatText> _combatText;
-		static const GYVector2 _combatTextGravity;
+		Pool<CombatText>		_combatText;
+		static const GYVector2	_combatTextGravity;
+		bool					_debugOverlayEnabled			= false;
 
 		unsigned int _projWidth, _projHeight;
+
+
+		void _renderDebugOverlay(void);
 	public:
 
 		GuiSystem(void);
@@ -49,12 +53,19 @@ namespace elysian {
 
 		void addCombatText(const char*const text, const GYColor4 color, const GYVector2& pos, const GYVector2& vel);
 
+		void setDebugOverLayEnabled(const bool enabled);
 
 		AdventureLog	adventureLog;
 		Font			verdana;
 		Font			twcen;
 
 	};
+
+
+
+	// ====== INLINEZ ======
+
+	inline void GuiSystem::setDebugOverLayEnabled(const bool enabled) { _debugOverlayEnabled = enabled; }
 
 	
 }

@@ -1,18 +1,23 @@
 #ifndef ELYSIAN_RIGID_BODY_SYSTEM_HPP
 #define ELYSIAN_RIGID_BODY_SYSTEM_HPP
 
-#define ELYSIAN_RIGID_BODY_SYSTEM_CONTACT_POOL_SIZE	100
+#define ELYSIAN_RIGID_BODY_SYSTEM_CONTACT_POOL_SIZE		100
+#define ELYSIAN_RIGID_BODY_FORCE_GENERATOR_MAX_COUNT	20
+#define ELYSIAN_RIGID_BODY_CLOSING_VELOCITY_EPSILON		1.0f
 
 #include "elysian_system.hpp"
+#include "elysian_mem_pool.hpp"
 
 namespace elysian {
 
 	class CollisionContact;
+	class ForceGenerator;
 
 	class RigidBodySystem: public System {
-
 		CollisionContact*	_contactPool[ELYSIAN_RIGID_BODY_SYSTEM_CONTACT_POOL_SIZE];
 		unsigned			_contactCount = 0;
+
+		Pool<ForceGenerator*> _forces	= Pool<ForceGenerator*>(ELYSIAN_RIGID_BODY_FORCE_GENERATOR_MAX_COUNT);
 
 		void _updateContacts(void);
 
@@ -21,8 +26,27 @@ namespace elysian {
 
 		void resolveContactVelocities(void);
 		void integrate(void);
+		void applyForces(void);
+
+		void addForce(ForceGenerator*const force);
+		void removeForce(ForceGenerator*const force);
+		void clearForces(void);
 
 	};
+
+
+	//====== INLINEZ =======
+	inline void RigidBodySystem::addForce(ForceGenerator * const force) {
+		_forces.insertEntry(force);
+	}
+	inline void RigidBodySystem::removeForce(ForceGenerator * const force) {
+		_forces.removeEntry(force);
+	}
+	inline void RigidBodySystem::clearForces(void) {
+		_forces.clear();
+	}
+
+
 
 }
 

@@ -11,7 +11,15 @@
 #define ENABLE_MIN_FRAMERATE true
 
 namespace elysian {
-	
+/*
+	struct TimerFrameProfileTask {
+		char name[100];
+		float startTime;
+		float endTime;
+		float totalTime;
+	};
+*/
+
 	class TimerSystem: public System { 
 	private:
 		unsigned long int _totalTicks; //play-time, essentially
@@ -34,6 +42,7 @@ namespace elysian {
 		unsigned long int getCurrentFrameTicks(void) const;
 		double getTotalTime(void) const;
 		float getDeltaTime(void) const;
+		float getFramerate(void) const;
        // bool getLimitFramerate(void) const { return _limitFramerate; }
        // void setLimitFramerate(const bool val=true) { _limitFramerate = val; }
         
@@ -58,6 +67,8 @@ namespace elysian {
 	inline float TimerSystem::getDeltaTime(void) const {
 		return _deltaTime;
 	}
+
+	inline float TimerSystem::getFramerate(void) const { return 1.0f/_deltaTime; }
 	
 }
 

@@ -233,7 +233,7 @@ void Debug::processInput(const GameInput& input) {
 	}
 
 	//Rendering layers
-	if(input.getDown(GameInput::BUT_5)) {
+	if(input.getTapped(GameInput::BUT_5)) {
 		if(_engine->_guiSystem->adventureLog.isEnabled()) {
 			_engine->_guiSystem->adventureLog.disable();
 			printf(VERBOSE, "Disable GUI Layer");
@@ -269,12 +269,16 @@ void Debug::processInput(const GameInput& input) {
 		src->setDirection(dirVec);
 		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
 	}
-	if(input.getDown(GameInput::BUT_6)) {
+	if(input.getTapped(GameInput::BUT_6)) {
+		static bool enabled = false;
+		enabled = !enabled;
+		getGuiSys()->setDebugOverLayEnabled(enabled);
+		/*
 		if(intensity != 0) --intensity;
 		dirVec.z -= 0.1f;
 		gyVec3Normalize(&dirVec);
 		src->setDirection(dirVec);
-		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
+		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);*/
 	}
 	if(input.getDown(GameInput::BUT_7)) {
 		++size;
@@ -415,6 +419,10 @@ void Debug::processInput(const GameInput& input) {
 		AudioSource* src = entity->addAudioSource();
 		src->setLooping(true);
 		src->playWav(wav);
+		Collidable *col = entity->addCollidable();
+		CollidableAttrib* colattrib = new CollidableAttrib();
+		col->setAttrib(colattrib);
+		entity->addRigidBody();
 
 		getCurArea()->addEntity(entity);
 

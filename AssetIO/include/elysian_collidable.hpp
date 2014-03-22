@@ -69,7 +69,6 @@ private:
 	public:
 		enum ZTRAN_STATE { ZTRAN_INACTIVE, ZTRAN_ACTIVE };
 	protected:
-		GYVector4			_centerWorldPos;
 		unsigned			_contactCount;
 		CollidableAttrib*	_attrib;
 		unsigned			_zTranTileX, _zTranTileY;
@@ -94,7 +93,6 @@ private:
 			_resolvePen(true),
 			_trigger(false)
 		{
-			memset(&_centerWorldPos, 0, sizeof(_centerWorldPos));
 		}
 
 		virtual ~Collidable(void) {}
@@ -115,13 +113,14 @@ private:
 		inline CollidableAttrib *getAttrib(void) const { return _attrib; }
 		inline ZTRAN_STATE getZTranState(void) const { return _zTranState; }
 		inline void setZTranState(const ZTRAN_STATE tran) { _zTranState = tran; }
-		inline const GYVector4 &getCenterWorldPos(void) const { return _centerWorldPos; }
+		inline const GYVector2 &getCenterWorldPos(void) const { return _collider.col.worldPos; }
 		inline void setZTranTile(unsigned x, unsigned y) { _zTranTileX = x; _zTranTileY = y; }
 		inline void getZTranTile(unsigned &x, unsigned &y) const { x = _zTranTileX; y = _zTranTileY; }
 		inline void setResolvePenetration(const bool v) { _resolvePen = v; }
 		inline bool getTrigger(void) const { return _trigger; }
 		inline void setTrigger(const bool t) { _trigger = t; }
 		inline GYCollider* getCollider(void) { return &_collider.col; }
+		const GYVector2& getWorldPos(void) const;
 	};
 
 	/*
@@ -129,6 +128,7 @@ private:
 	between the two GYColliders involved in the contact AND the 
 	elysian::Collidables encapsulating them.
 	*/
+
 	class CollisionContact: private GYContact {
 #ifdef ELYSIAN_ENGINE
 		friend class CollisionSystem;
@@ -139,10 +139,26 @@ private:
 		bool _trigger				= false;
 #endif
 
+		void _calculatePenetrationInternals(void);
+		void _calculateVelocityInternals(const float deltaTime);
+
 	public:
-		Collidable* getBody(const unsigned index) const;
+		Collidable*		getCollidable(const unsigned index) const;
+		const GYStatic*	getStaticAttrib(const unsigned index) const;
+		void			getWorldPos(GYVector2& pos) const;
+		void			getNormal(GYVector2& _normal) const;
+		void			getObjPos(const unsigned index, GYVector2& pos) const;
+		float			getSeparatingVel(void) const;
+		float			getClosingVel(void) const;
+		float			getDeltaVel(void) const;
+		float			getDepth(void) const;
 
 	};
+
+
+	// ======== INLINEZ ========
+
+	inline const GYVector2& Collidable::getWorldPos(void) const { return _collider.col.worldPos; }
 
 	inline CollidableAttrib::CollidableAttrib(void): 
 		_type(GY_COLLIDER_AABB) { 
@@ -154,8 +170,15 @@ private:
 		_staticAttrib.invMomOfInertia = 0.0f;
 	}
 
-	inline Collidable* CollisionContact::getBody(const unsigned index) const { return (index == 0)? _bodyA : _bodyB; }
-
+	inline Collidable* CollisionContact::getCollidable(const unsigned index) const { return (index == 0)? _bodyA : _bodyB; }
+	inline const GYStatic* CollisionContact::getStaticAttrib(const unsigned index) const { return staticAttrib[index]; }
+	inline void CollisionContact::getWorldPos(GYVector2 &pos) const { pos = worldPos; }
+	inline void CollisionContact::getNormal(GYVector2 &_normal) const { _normal = normal; }
+	inline void CollisionContact::getObjPos(const unsigned index, GYVector2 &pos) const { pos = objPos[index]; }
+	inline float CollisionContact::getSeparatingVel(void) const { return sepVel; }
+	inline float CollisionContact::getClosingVel(void) const { return closingVel; }
+	inline float CollisionContact::getDeltaVel(void) const { return deltaVel; }
+	inline float CollisionContact::getDepth(void) const { return depth; }
 
 
 }

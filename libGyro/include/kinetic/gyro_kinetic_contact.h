@@ -25,6 +25,9 @@ typedef struct _GYContact {
 	//GYint32 _colIndex[2]; //support for just one coming later.
 } GYContact;
 
+//gyroContactCalculateInternals(GYuint32 index, const float deltaTime)
+
+
 #ifdef __cplusplus
 }
 #endif

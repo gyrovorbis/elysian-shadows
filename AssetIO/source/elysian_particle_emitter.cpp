@@ -67,24 +67,24 @@ void ParticleEmitterInternals::update(const CameraState*const cam) {
 	for(auto it = _pool.begin(); it < _pool.end(); ++it) {
 
 		//integrate
-		gyVec3AddAccum(&it->position, &it->velocity);
+		gyVec3AddAccum(&(*it).position, &(*it).velocity);
 
-		if(!cam->isWithinScreenRegion(it->position.x, it->position.y, it->size, it->size)) {
+		if(!cam->isWithinScreenRegion((*it).position.x, (*it).position.y, (*it).size, (*it).size)) {
 			_pool.remove(it);
 			continue;
 		}
 
-		it->orientation += it->rotation;
-		it->rotation *= _attrib->_angularDamping;
+		(*it).orientation += (*it).rotation;
+		(*it).rotation *= _attrib->_angularDamping;
 
-		gyVec3AddAccum(&it->velocity, &_attrib->_acceleration);
+		gyVec3AddAccum(&(*it).velocity, &_attrib->_acceleration);
 
-		if(--it->life == 0) {
+		if(--(*it).life == 0) {
 			_pool.remove(it);
 			continue;
 		}
 
-		if(_attrib->_fadeOut) it->color.a = 255.0f*((float)_attrib->_maxLife/(float)it->life);
+		if(_attrib->_fadeOut) (*it).color.a = 255.0f*((float)_attrib->_maxLife/(float)(*it).life);
 	}
 }
 
@@ -102,13 +102,13 @@ void ParticleEmitterInternals::render(void) {
 	for(auto it = _pool.begin(); it < _pool.end(); ++it) {
 
 		gyMatPush();
-		gyVidQuadListBegin(&it->color);
+		gyVidQuadListBegin(&(*it).color);
 
-		gyMatTranslate(it->position.x, it->position.y, it->position.z);
-		gyMatScale(it->size, it->size, 1.0f);
-		gyMatRotateZ(it->orientation);
+		gyMatTranslate((*it).position.x, (*it).position.y, (*it).position.z);
+		gyMatScale((*it).size, (*it).size, 1.0f);
+		gyMatRotateZ((*it).orientation);
 
-		gyVidRect(it->frame);
+		gyVidRect((*it).frame);
 
 		gyVidQuadListEnd();
 		gyMatPop();

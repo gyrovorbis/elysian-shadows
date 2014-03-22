@@ -60,11 +60,11 @@ void CollisionSystem::_checkTriggers(void) {
 			}
 
 			if(!prevCollision) {
-				behavSys->onCollisionEnter(curContact._bodyA->getEntity(), curContact._bodyB);
-				behavSys->onCollisionEnter(curContact._bodyB->getEntity(), curContact._bodyA);
+				behavSys->onCollisionEnter(curContact._bodyA->getEntity(), &curContact, curContact._bodyB);
+				behavSys->onCollisionEnter(curContact._bodyB->getEntity(), &curContact, curContact._bodyA);
 			} else {
-				behavSys->onCollide(curContact._bodyA->getEntity(), curContact._bodyB);
-				behavSys->onCollide(curContact._bodyB->getEntity(), curContact._bodyA);
+				behavSys->onCollide(curContact._bodyA->getEntity(), &curContact, curContact._bodyB);
+				behavSys->onCollide(curContact._bodyB->getEntity(), &curContact, curContact._bodyA);
 			}
 		}
 	}
@@ -382,7 +382,7 @@ void CollisionSystem::detectEntityCollision(const unsigned i) {
 			_contactPool[_contactAmount]._resolvePen	= bodyA->_resolvePen && bodyB->_resolvePen; 
 			_contactPool[_contactAmount]._trigger		= bodyA->_trigger || bodyB->_trigger;
 			
-			//Emit onCollide trigger for any entities with this component
+			//Emit onCollide trigger for any entitjjies with this component
 			//getBehavSys()->onCollide(bodyA->getEntity(), bodyB);
 			//getBehavSys()->onCollide(bodyB->getEntity(), bodyA)
 			
@@ -395,9 +395,9 @@ inline void CollisionSystem::_detectCollidableColliderCollision(Collidable &coll
 	int swapFlag;
 
 	gyColliderCurrent(&collidable._collider.col, collidable.getAttrib()->getStaticAttrib());
-	if(gyCollision(&collider, NULL, &_contactPool[_contactAmount], &swapFlag)) {
+	if(gyCollision(&collider, nullptr, &_contactPool[_contactAmount], &swapFlag)) {
 		_contactPool[_contactAmount]._bodyA = &collidable;
-		_contactPool[_contactAmount]._bodyB = NULL;
+		_contactPool[_contactAmount]._bodyB = nullptr;
 		_contactPool[_contactAmount]._trigger = false;
 		_contactPool[_contactAmount++]._resolvePen = collidable._resolvePen;
 		++collidable._contactCount;
@@ -435,6 +435,10 @@ void CollisionSystem::_detectEntityTileCollisionFine(Collidable &collidable, con
 
 	//Will not always be the case!
 	boxCollider.collider.type = GY_COLLIDER_AABB;
+
+	//SKETCHY!!!
+	boxCollider.collider.worldPos.x = x*32.0f;
+	boxCollider.collider.worldPos.y = y*32.0f;
 	
 	switch(colType) {
 	case Tile::COLLIDER_NONE:
@@ -513,6 +517,7 @@ void CollisionSystem::_detectEntityTileCollisionFine(Collidable &collidable, con
 		_detectCollidableColliderCollision(collidable, boxCollider.collider);
 		break;
 	default:
+		break;
 		assert(0);
 	}           
 }
@@ -598,7 +603,16 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable) {
 
 	// ==== /ZTRAN LOGIC ====
 
-
+	int startX = (getCurArea()->width+1)*32.0f;
+	int endX = 0;
+	int startY = (getCurArea()->height+1)*32.0f;
+	int endY = 0;
+	auto checkBoundary = [&](GYVector4& vert) {
+		if(vert.x < startX) startX = vert.x;
+		if(vert.x > endX) endX = vert.x;
+		if(vert.y < startY) startY = vert.y;
+		if(vert.y > endY) endY = vert.y;
+	};
 
 
 	switch(collidable.getAttrib()->getColliderType()) {
@@ -612,26 +626,44 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable) {
 				gyMatPop();
 			}
 		break;
+	case GY_COLLIDER_OBB: //not very efficient for long shit
+		for(unsigned i = 0; i < 4; ++i) checkBoundary(collidable._collider.box.worldVert[i]);
+
+		for(int y = startY/32; y <= endY/32+1; ++y)
+			for(int x = startX/32; x <= endX/32+1; ++x) {
+				gyMatPush();
+				gyMatLoadIdentity();
+				gyMatTranslateScale(x*32.0f, y*32.0f, 5.0f, 32.0f, 32.0f, 1.0f);
+				_detectEntityTileCollisionFine(collidable, x, y);
+				gyMatPop();
+			}
+		break;
+
 	default:
 		assert(0);
 	}
 }
 
 bool CollisionSystem::resolvePenetration(void) {
-	float deepest = -1.0f;
-	int deepestIndex = -1;
+
 	GYVector2 posDelta[2];
 	//GYVector2 velDelta[2]
 	GYVector2 rotDir[2]; //Apparently rotDir isn't really used? What in fuck's cunt? 
 	float orientDelta[2];
 	//float rotDelta[2];
 	GYVector2 cp;
-	float deltaTime = getTimerSys()->getDeltaTime();
+	//float deltaTime = getTimerSys()->getDeltaTime();
 	unsigned j;
 
 	if(_contactAmount == 0) return true;
 
-	for(unsigned i = 0; i < ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS; ++i) { 
+	for(unsigned i = 0; i < _contactAmount; ++i) _contactPool[i]._calculatePenetrationInternals();
+
+	unsigned iter;
+	for(iter = 0; iter < ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS; ++iter) {
+
+		float deepest = -1.0f;
+		int deepestIndex = -1;
 
 		for(j = 0; j < _contactAmount; ++j) {
 			//reevaluate penetration depth
@@ -687,7 +719,7 @@ bool CollisionSystem::resolvePenetration(void) {
 			}
 			
 			//if(THERE IS EVEN A COLINDEX[1]) {
-			if(_contactPool[j].collider[1] == _contactPool[deepestIndex].collider[0]) {
+			if(_contactPool[j].collider[1] && _contactPool[j].collider[1] == _contactPool[deepestIndex].collider[0]) {
 				gyVec2RotOrigin(&cp, &_contactPool[j].objPos[1], orientDelta[0]);
 				gyVec2SubFrom(&cp, &_contactPool[j].objPos[1]);
 				gyVec2AddAccum(&cp, &posDelta[0]);
@@ -695,7 +727,7 @@ bool CollisionSystem::resolvePenetration(void) {
 				_contactPool[j].depth += gyVec2DotProd(&cp, &_contactPool[j].normal);
 				//printf("depth - %f\n", _contactPool[j].depth);
 			}
-			else if(_contactPool[j].collider[1] == _contactPool[deepestIndex].collider[1]) {
+			else if(_contactPool[j].collider[1] && _contactPool[j].collider[1] == _contactPool[deepestIndex].collider[1]) {
 				gyVec2RotOrigin(&cp, &_contactPool[j].objPos[1], orientDelta[1]);
 				gyVec2SubFrom(&cp, &_contactPool[j].objPos[1]);
 				gyVec2AddAccum(&cp, &posDelta[1]);
@@ -705,9 +737,10 @@ bool CollisionSystem::resolvePenetration(void) {
 				
 			}
 		}
-		deepestIndex = 0;
-		deepest = 0.0f;
 	}
+
+	//Debug::printf(Debug::VERBOSE, "ITER - %d", iter);
+
 	return true; 
 }
 

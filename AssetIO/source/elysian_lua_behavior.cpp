@@ -201,17 +201,17 @@ void LuaBehavior::onExit(void) {
 #endif
 }
 	
-void LuaBehavior::onCollide(elysian::Collidable *collidable) {
+void LuaBehavior::onCollide(CollisionContact*const contact, elysian::Collidable *collidable) {
 	(void)collidable;
 #ifdef ELYSIAN_ENGINE
-	_PROTECTED(_callTrigger<void>("onCollide", _ooSelfTableRef, collidable));
+	_PROTECTED(_callTrigger<void>("onCollide", _ooSelfTableRef, contact, collidable));
 #endif
 }
 
-void LuaBehavior::onCollisionEnter(elysian::Collidable *collidable) {
+void LuaBehavior::onCollisionEnter(CollisionContact*const contact, elysian::Collidable *collidable) {
 	(void)collidable;
 #ifdef ELYSIAN_ENGINE
-	_PROTECTED(_callTrigger<void>("onCollisionEnter", _ooSelfTableRef, collidable));
+	_PROTECTED(_callTrigger<void>("onCollisionEnter", _ooSelfTableRef, contact, collidable));
 #endif
 }
 

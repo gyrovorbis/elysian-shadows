@@ -37,12 +37,12 @@ void GuiSystem::update(void) {
 	//update CombatText
 	for(auto it = _combatText.begin(); it < _combatText.end(); ++it) {
 
-		gyVec2AddAccum(&it->pos, &it->vel);
-		gyVec2AddAccum(&it->vel, &_combatTextGravity);
-		it->timer += deltaTime;
-		it->color.a = 255.0f - (it->timer/ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_LIFE)*255.0f;
+		gyVec2AddAccum(&(*it).pos, &(*it).vel);
+		gyVec2AddAccum(&(*it).vel, &_combatTextGravity);
+		(*it).timer += deltaTime;
+		(*it).color.a = 255.0f - ((*it).timer/ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_LIFE)*255.0f;
 
-		if(it->timer >= ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_LIFE) {
+		if((*it).timer >= ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_LIFE) {
 			_combatText.remove(it);
 		}
 	}
@@ -50,18 +50,30 @@ void GuiSystem::update(void) {
 
 void GuiSystem::renderOverlay(void) {
 	adventureLog.render(twcen);
+	_renderDebugOverlay();
 }
+
+void GuiSystem::_renderDebugOverlay(void) {
+	if(!_debugOverlayEnabled) return;
+
+	twcen.transform._pos.x = _projWidth-10.0f;
+	twcen.transform._pos.y = 200.0f;
+	twcen.transform._pos.z = 50.0f;
+	twcen.drawStringf(Font::NO_FORMAT, Font::R_ALIGN, "FPS: %f", getTimerSys()->getFramerate());
+
+}
+
 
 void GuiSystem::render(void) {
 	for(auto it = _combatText.begin(); it < _combatText.end(); ++it) {
-		twcen.transform._pos.x = it->pos.x;
-		twcen.transform._pos.y = it->pos.y;
+		twcen.transform._pos.x = (*it).pos.x;
+		twcen.transform._pos.y = (*it).pos.y;
 		twcen.transform._pos.z = 50.0f;
 
-		twcen.setColor(it->color);
-		twcen.setAlpha(it->color.a);
+		twcen.setColor((*it).color);
+		twcen.setAlpha((*it).color.a);
 
-		twcen.drawString(Font::NO_FORMAT, Font::L_ALIGN, it->text);
+		twcen.drawString(Font::NO_FORMAT, Font::L_ALIGN, (*it).text);
 	}
 }
 
