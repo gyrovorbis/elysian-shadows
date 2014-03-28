@@ -95,9 +95,9 @@ vec4 lightingEquation(const int i) {
 			//WRONG, THIS WILL AFFECT AMBIENCE!!!! ...wut?
 			attFactor *= spotFactor;
 
-			if(texture2D(uShadowMaps[i], (vShadowPos[i].xy)/vShadowPos[i].w).z < ((vShadowPos[i].z-0.005)/vShadowPos[i].w)) {
-				shadowFactor = 0.5;
-			}
+		//	if(texture2D(uShadowMaps[i], (vShadowPos[i].xy)/vShadowPos[i].w).z < ((vShadowPos[i].z-0.005)/vShadowPos[i].w)) {
+			//	shadowFactor = 0.5;
+			//}
 		} else { //point light cube shadows
 
 			vec4 absPos = abs(vShadowPos[i]);
@@ -105,9 +105,9 @@ vec4 lightingEquation(const int i) {
 			vec4 clip = uShadowCubeMapProjMat * vec4(0.0, 0.0, frus_z, 1.0);
 			float depth = (clip.z/clip.w) * 0.5 + 0.5;
 
-			if(textureCube(uShadowCubeMaps[i], vShadowPos[i].xyz).r < depth) {
-				shadowFactor = 0.5;
-			}
+		//	if(textureCube(uShadowCubeMaps[i], vShadowPos[i].xyz).r < depth) {
+			//	shadowFactor = 0.5;
+			//}
 /*
 			float shadowDepth = textureCube(uShadowCubeMaps[i], vShadowPos[i].xyz).r;
 			if(shadowDepth < VectorToDepthValue(vShadowPos[i].xyz)) {
@@ -123,9 +123,9 @@ vec4 lightingEquation(const int i) {
 		//VPpli = -uLights[i].position.xyz;	//MUST BE PRENORMALIZED
 		VPpli = -uLights[i].direction.xyz;
 
-		if(texture2D(uShadowMaps[i], vShadowPos[i].xy).z < vShadowPos[i].z) {
-			shadowFactor = 0.5;
-		}
+	//	if(texture2D(uShadowMaps[i], vShadowPos[i].xy).z < vShadowPos[i].z) {
+		//	shadowFactor = 0.5;
+	//	}
 	}
 
 	//Process lighting equation
