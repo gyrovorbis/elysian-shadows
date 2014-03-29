@@ -583,6 +583,8 @@ OOLUA_PROXY(Combat, Component)
 	OOLUA_MEM_FUNC(Lua_table_ref&, getActionTable)
 	OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<CombatAttrib*>)
 	OOLUA_MEM_FUNC(void, setDmgType, Combat::DMG_TYPE)
+	OOLUA_MEM_FUNC(void, setDmgActive, bool)
+	OOLUA_MEM_FUNC(void, setCollisionFlags, uint32_t)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Behavior, Component)
@@ -885,6 +887,9 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 	s->register_class_static<Combat>("DMG_NONE", Combat::DMG_NONE);
 	s->register_class_static<Combat>("DMG_SOURCE", Combat::DMG_SOURCE);
 	s->register_class_static<Combat>("DMG_TARGET", Combat::DMG_TARGET);
+	s->register_class_static<Combat>("ON_COLLIDE", Combat::ON_COLLIDE);
+	s->register_class_static<Combat>("ON_COLLISION_ENTER", Combat::ON_COLLISION_ENTER);
+	s->register_class_static<Combat>("ON_COLLISION_EXIT", Combat::ON_COLLISION_EXIT);
 
 	//Behavior::TRIGGER
 	typedef OOLUA::Behavior Behavior;

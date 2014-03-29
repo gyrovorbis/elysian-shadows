@@ -8,6 +8,10 @@
 
 #include "elysian_component.hpp"
 
+#define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_BEHAVIOR_MASK	(1<<0)
+#define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_WARP_MASK		(1<<1)
+#define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_COMBAT_MASK		(1<<2)
+
 namespace elysian {
 
 	struct CollisionFlags { 
@@ -69,12 +73,14 @@ private:
 	public:
 		enum ZTRAN_STATE { ZTRAN_INACTIVE, ZTRAN_ACTIVE };
 	protected:
-		unsigned			_contactCount;
-		CollidableAttrib*	_attrib;
-		unsigned			_zTranTileX, _zTranTileY;
-		ZTRAN_STATE			_zTranState;
-		bool				_onZTran;
-		bool				_resolvePen, _trigger;
+		unsigned			_contactCount		= 0;
+		CollidableAttrib*	_attrib				= nullptr;
+		unsigned			_zTranTileX			= 0;
+		unsigned			_zTranTileY			= 0;
+		ZTRAN_STATE			_zTranState			= ZTRAN_INACTIVE;
+		bool				_onZTran			= false;
+		bool				_resolvePen			= true;
+		uint32_t			_eventMonitorMask	= 0;
 
 		union { 
 			GYCollider col;
@@ -84,16 +90,8 @@ private:
 		} _collider;
 
 		inline Collidable(Entity &parent): 
-			Component(parent), 
-			_contactCount(0), 
-			_attrib(NULL),
-			_zTranTileX(0), _zTranTileY(0),
-			_zTranState(ZTRAN_INACTIVE), 
-			_onZTran(false),
-			_resolvePen(true),
-			_trigger(false)
-		{
-		}
+			Component(parent)
+		{}
 
 		virtual ~Collidable(void) {}
 		
@@ -117,8 +115,8 @@ private:
 		inline void setZTranTile(unsigned x, unsigned y) { _zTranTileX = x; _zTranTileY = y; }
 		inline void getZTranTile(unsigned &x, unsigned &y) const { x = _zTranTileX; y = _zTranTileY; }
 		inline void setResolvePenetration(const bool v) { _resolvePen = v; }
-		inline bool getTrigger(void) const { return _trigger; }
-		inline void setTrigger(const bool t) { _trigger = t; }
+		inline uint32_t getContactEventMonitorMask(void) const { return _eventMonitorMask; }
+		inline void setContactEventMonitorMask(const uint32_t t) { _eventMonitorMask = t; }
 		inline GYCollider* getCollider(void) { return &_collider.col; }
 		const GYVector2& getWorldPos(void) const;
 	};
@@ -136,7 +134,7 @@ private:
 		Collidable* _bodyA			= nullptr;
 		Collidable* _bodyB			= nullptr;
 		bool _resolvePen			= true;
-		bool _trigger				= false;
+		uint32_t _eventMonitorMask	= 0;
 #endif
 
 		void _calculatePenetrationInternals(void);
@@ -152,6 +150,7 @@ private:
 		float			getClosingVel(void) const;
 		float			getDeltaVel(void) const;
 		float			getDepth(void) const;
+
 
 	};
 

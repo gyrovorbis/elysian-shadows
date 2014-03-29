@@ -425,7 +425,9 @@ OOLUA_EXPORT_FUNCTIONS(Combat,
 					   getSelfTable,
 					   getActionTable,
 					   setAttrib,
-					   setDmgType)
+					   setDmgType,
+					   setDmgActive,
+					   setCollisionFlags)
 
 
 EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(Behavior,

@@ -1,6 +1,7 @@
 #ifndef ELYSIAN_COLLISION_SYSTEM_HPP
 #define ELYSIAN_COLLISION_SYSTEM_HPP
 
+#include <map>
 #include <gyro.h>
 #include <gyro_kinetic.h>
 #include "elysian_system.hpp"
@@ -14,6 +15,19 @@
 #define ELYSIAN_COLLISION_CONTACT_PENETRATION_EPSILON		0.5f
 
 namespace elysian {
+
+	class CollisionContactEventMonitor {
+	private:
+		uint32_t _eventMask = 0;
+
+	public:
+
+		virtual void onCollisionEnter(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) = 0;
+		virtual void onCollide(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) = 0;
+		virtual void onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) = 0;
+		uint32_t getEventMask(void) const;
+		void setEventMask(const uint32_t mask);
+	};
 	
 	class CollisionSystem: public System { 
 	public:
@@ -26,7 +40,7 @@ namespace elysian {
 			RENDER_MAX
         };
 	private:
-
+		std::map<uint32_t, CollisionContactEventMonitor*> _contactMonitors;
 		CollisionContact _contactPool[ELYSIAN_COLLISION_CONTACT_LIST_SIZE];
 		
 		/* Stores minimal collision information from the previous frame ONLY for
@@ -66,6 +80,7 @@ namespace elysian {
 		//void DetectCollisions(void);
 		//void ResolveContacts(void);
 
+		void registerContactEventMonitor(const uint32_t mask, CollisionContactEventMonitor*const monitor);
 		void clearContacts(void);
 		unsigned getContactCount(void) const;
 		unsigned getPenResIterUsed(void) const;
@@ -82,6 +97,12 @@ namespace elysian {
 
 
 	//==== INLINEZ ====
+	inline uint32_t CollisionContactEventMonitor::getEventMask(void) const { return _eventMask; }
+	inline void CollisionContactEventMonitor::setEventMask(const uint32_t mask) { _eventMask = mask; }
+
+	inline void CollisionSystem::registerContactEventMonitor(const uint32_t mask, CollisionContactEventMonitor * const monitor) {
+		_contactMonitors[mask] = monitor;
+	}
 	inline void CollisionSystem::clearContacts(void) { _contactAmount = 0; _prevContactAmount = 0; }
 	inline void CollisionSystem::toggleCollision(void) { _enabled = !_enabled; }
 

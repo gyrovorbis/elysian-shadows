@@ -12,7 +12,9 @@ namespace elysian {
 	private:
 		uint32_t _typeFlags			= ~0x0;
 		uint32_t _typeAgainstFlags	= ~0x0;
+
 	public:
+
 		uint32_t getTypeFlags(void) const;
 		uint32_t getTypeAgainstFlags(void) const;
 		void setTypeFlags(const uint32_t flags);
@@ -21,15 +23,22 @@ namespace elysian {
 
 	class Combat: public Component {
 	public:
-		enum DMG_TYPE { DMG_NONE, DMG_SOURCE, DMG_TARGET };
+		enum COLLISION_FLAGS {
+			ON_COLLIDE			= (1<<0),
+			ON_COLLISION_ENTER	= (1<<1),
+			ON_COLLISION_EXIT	= (1<<2)
+		};
+		enum DMG_TYPE { DMG_NONE, DMG_SOURCE, DMG_TARGET, DMG_SOURCE_TARGET };
 
 	private:
 #ifdef ELYSIAN_ENGINE
 		OOLUA::Lua_table_ref	_selfTable;
 		OOLUA::Lua_table_ref	_actionTable;
 #endif
-		CombatAttrib*			_attrib		= nullptr;
-		DMG_TYPE				_dmgType	= DMG_NONE;
+		CombatAttrib*			_attrib			= nullptr;
+		DMG_TYPE				_dmgType		= DMG_NONE;
+		uint32_t				_collisionFlags	= ON_COLLISION_ENTER;
+		bool					_dmgActive		= true;
 	public:
 
 				Combat(Entity& entity);
@@ -54,11 +63,16 @@ namespace elysian {
 		void			setDmgType(const DMG_TYPE type);
 		CombatAttrib*	getAttrib(void) const;
 		void			setAttrib(CombatAttrib* attrib);
+		void			setCollisionFlags(const uint32_t flags);
+		uint32_t		getCollisionFlags(void) const;
+		bool			getDmgActive(void) const;
+		void			setDmgActive(const bool active);
 
 	};
 
 
 	// ======== INLINEZ ========
+
 	inline uint32_t CombatAttrib::getTypeFlags(void) const { return _typeFlags; }
 	inline uint32_t CombatAttrib::getTypeAgainstFlags(void) const { return _typeAgainstFlags; }
 	inline void CombatAttrib::setTypeFlags(const uint32_t flags) { _typeFlags = flags; }
@@ -72,10 +86,12 @@ namespace elysian {
 #endif
 
 	inline auto	Combat::getDmgType(void) const -> DMG_TYPE { return _dmgType; }
-	inline void Combat::setDmgType(const DMG_TYPE type) { _dmgType = type; }
 	inline CombatAttrib* Combat::getAttrib(void) const { return _attrib; }
 	inline void Combat::setAttrib(CombatAttrib* attrib) { _attrib = attrib; }
-
+	inline void Combat::setCollisionFlags(const uint32_t flags) { _collisionFlags = flags; }
+	inline uint32_t Combat::getCollisionFlags(void) const { return _collisionFlags; }
+	inline bool Combat::getDmgActive(void) const { return _dmgActive; }
+	inline void Combat::setDmgActive(const bool active) { _dmgActive = active; }
 }
 
 

@@ -6,6 +6,37 @@
 
 namespace elysian {
 
+void CombatSystem::initialize(void) {
+	getCollisionSys()->registerContactEventMonitor(ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_COMBAT_MASK, this);
+}
+
+void CombatSystem::onCollisionEnter(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) {
+	auto* combatA = bodyA->getEntity()->getCombat();
+	if(!(combatA->getCollisionFlags() & Combat::ON_COLLISION_ENTER) || !combatA->getDmgActive()) return;
+	auto* combatB = bodyB->getEntity()->getCombat();
+	if(!combatB || !(combatB->getAttrib()->getTypeFlags() & combatA->getAttrib()->getTypeAgainstFlags())) return;
+
+	_dealCollisionDamage(combatA, combatB);
+}
+
+void CombatSystem::onCollide(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) {
+	auto* combatA = bodyA->getEntity()->getCombat();
+	if(!(combatA->getCollisionFlags() & Combat::ON_COLLIDE) || !combatA->getDmgActive()) return;
+	auto* combatB = bodyB->getEntity()->getCombat();
+	if(!combatB || !(combatB->getAttrib()->getTypeFlags() & combatA->getAttrib()->getTypeAgainstFlags())) return;
+
+	_dealCollisionDamage(combatA, combatB);
+}
+
+void CombatSystem::onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) {
+	auto* combatA = bodyA->getEntity()->getCombat();
+	if(!(combatA->getCollisionFlags() & Combat::ON_COLLISION_EXIT) || !combatA->getDmgActive()) return;
+	auto* combatB = bodyB->getEntity()->getCombat();
+	if(!combatB || !(combatB->getAttrib()->getTypeFlags() & combatA->getAttrib()->getTypeAgainstFlags())) return;
+
+	_dealCollisionDamage(combatA, combatB);
+}
+
 void CombatSystem::addCombatant(Entity &entity) {
 
 }
@@ -18,6 +49,7 @@ void CombatSystem::killCombatant(Entity * const entity) {
 
 }
 
+//MACRO THESE FUNCTION NAMES
 void CombatSystem::resolveCombatAction(OOLUA::Lua_table_ref action, Combat*const src, Combat*const target) {
 	OOLUA::Lua_table_ref statMods;
 
@@ -39,7 +71,7 @@ void CombatSystem::_dealCollisionDamage(Combat *const src, Combat *const target)
 }
 
 void CombatSystem::update(void) {
-	std::vector<Combat*>& combats = getCurArea()->combats;
+/*	std::vector<Combat*>& combats = getCurArea()->combats;
 
 	for(unsigned i = 0; i < combats.size(); ++i) {
 
@@ -58,7 +90,7 @@ void CombatSystem::update(void) {
 
 		}
 
-	}
+	}*/
 }
 
 

@@ -57,6 +57,9 @@ Engine::Engine(void) {
 	_dialogSystem		= new DialogSystem;
 	_combatSystem		= new CombatSystem;
 
+	_behaviorSystem->initialize();
+	_combatSystem->initialize();
+
 	//register Lua dependencies
 	Singletons::setGameInput(&_gameInput);
 	Singletons::setDebug(&Debug::getInstance());

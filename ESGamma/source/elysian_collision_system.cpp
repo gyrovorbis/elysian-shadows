@@ -10,7 +10,6 @@
 #include "elysian_timer_system.hpp"
 #include "elysian_zcoords.hpp"
 #include "elysian_party_system.hpp"
-#include "elysian_behavior_system.hpp"
 
 /*
 	Welcome, motherfuckers, to hell. Where abstract math meets low-level optimization. 
@@ -39,25 +38,30 @@ void CollisionSystem::update(void) {
 }
 
 void CollisionSystem::_checkTriggers(void) {
-	BehaviorSystem *behavSys = getBehavSys();
 	
 	for(unsigned i = 0; i < _contactAmount; ++i) {
 		CollisionContact &curContact = _contactPool[i];
-		if(curContact._trigger) {
+		uint32_t curMask = 0;
+
+		if(curContact._eventMonitorMask) {
 			bool prevCollision = false;
-			for(unsigned j = 0; j < _prevContactAmount; ++j) {
-				if(previouslyColliding(*curContact._bodyA, *curContact._bodyB)) {
-					prevCollision = true;
-					break;
-				}
+			if(previouslyColliding(*curContact._bodyA, *curContact._bodyB)) {
+				prevCollision = true;
+				break;
 			}
 
-			if(!prevCollision) {
-				behavSys->onCollisionEnter(curContact._bodyA->getEntity(), &curContact, curContact._bodyB);
-				behavSys->onCollisionEnter(curContact._bodyB->getEntity(), &curContact, curContact._bodyA);
-			} else {
-				behavSys->onCollide(curContact._bodyA->getEntity(), &curContact, curContact._bodyB);
-				behavSys->onCollide(curContact._bodyB->getEntity(), &curContact, curContact._bodyA);
+			for(unsigned i = 0; i < 32; ++i) {
+				if( !(curMask = (curContact._eventMonitorMask & (1<<i))) ) continue;
+				auto monitor = _contactMonitors[curMask];
+
+				if(curMask & curContact._bodyA->_eventMonitorMask) {
+					if(!prevCollision) monitor->onCollisionEnter(curContact._bodyA, curContact._bodyB, &curContact);
+					else monitor->onCollide(curContact._bodyA, curContact._bodyB, &curContact);
+				}
+				if(curMask & curContact._bodyB->_eventMonitorMask) {
+					if(!prevCollision) monitor->onCollisionEnter(curContact._bodyB, curContact._bodyA, &curContact);
+					else monitor->onCollide(curContact._bodyB, curContact._bodyA, &curContact);
+				}
 			}
 		}
 	}
@@ -66,16 +70,20 @@ void CollisionSystem::_checkTriggers(void) {
 	for(unsigned i = 0; i < _prevContactAmount; ++i) {
 		Collidable& colA = *_prevContactPool[i].collidable[0];
 		Collidable& colB = *_prevContactPool[i].collidable[1];
+		uint32_t curMask = 0;
 
 		if(!checkCollision(colA, colB)) {
-			behavSys->onCollisionExit(colA.getEntity(), &colB);
-			behavSys->onCollisionExit(colB.getEntity(), &colA);
+			for(unsigned i = 0; i < 32; ++i) {
+				curMask = (1<<i);
+				if(curMask & colA._eventMonitorMask) _contactMonitors[curMask]->onCollisionExit(&colA, &colB);
+				if(curMask & colB._eventMonitorMask) _contactMonitors[curMask]->onCollisionExit(&colB, &colA);
+			}
 		}
 	}
 	
 	_prevContactAmount = 0;
 	for(unsigned i = 0; i < _contactAmount; ++i) {
-		if(_contactPool[i]._trigger) {
+		if(_contactPool[i]._eventMonitorMask) {
 			_prevContactPool[_prevContactAmount].collidable[0] = _contactPool[i]._bodyA;
 			_prevContactPool[_prevContactAmount].collidable[1] = _contactPool[i]._bodyB;
 			++_prevContactAmount;
@@ -372,8 +380,8 @@ void CollisionSystem::detectEntityCollision(const unsigned i) {
 				_contactPool[_contactAmount]._bodyA = bodyB;
 			}
 
-			_contactPool[_contactAmount]._resolvePen	= bodyA->_resolvePen && bodyB->_resolvePen; 
-			_contactPool[_contactAmount]._trigger		= bodyA->_trigger || bodyB->_trigger;
+			_contactPool[_contactAmount]._resolvePen		= bodyA->_resolvePen && bodyB->_resolvePen;
+			_contactPool[_contactAmount]._eventMonitorMask	= (bodyA->_eventMonitorMask | bodyB->_eventMonitorMask);
 			
 			//Emit onCollide trigger for any entitjjies with this component
 			//getBehavSys()->onCollide(bodyA->getEntity(), bodyB);
@@ -391,7 +399,7 @@ inline void CollisionSystem::_detectCollidableColliderCollision(Collidable &coll
 	if(gyCollision(&collider, nullptr, &_contactPool[_contactAmount], &swapFlag)) {
 		_contactPool[_contactAmount]._bodyA = &collidable;
 		_contactPool[_contactAmount]._bodyB = nullptr;
-		_contactPool[_contactAmount]._trigger = false;
+		_contactPool[_contactAmount]._eventMonitorMask = 0;
 		_contactPool[_contactAmount++]._resolvePen = collidable._resolvePen;
 		++collidable._contactCount;
 	}
