@@ -6,7 +6,7 @@
 #include <gyro.h>
 #include "elysian_asset.hpp"
 
-#define ELYSIAN_MAP_BOUNDARY_CHECKS true //am I ever even using this? NO, LULZ!!!
+#define ELYSIAN_MAP_BOUNDARY_CHECKS false //PLEASE, GOD, TAKE ME OUT BEFORE RELEASE!!!!!!
 #define ELYSIAN_AREA_USE_INIT_LUA	true
 
 #define ELYSIAN_AREA_MAP_LAYERS		3
@@ -32,19 +32,19 @@
 #define ELYSIAN_TILE_ENTRY_ZTRAN_BIT_POS	31
 #define ELYSIAN_TILE_ENTRY_ZTRAN_BIT_MASK	0x0001
 
-//LightEntry properties
-#define ELYSIAN_LIGHT_ENTRY_INDEX_BIT_POS	0
-#define ELYSIAN_LIGHT_ENTRY_INDEX_BIT_MASK	0x00ff
-#define ELYSIAN_LIGHT_ENTRY_PAL_BIT_POS		28
-#define ELYSIAN_LIGHT_ENTRY_PAL_BIT_MASK	0x0007
-
-
 #define ELYSIAN_MAP_ENTRY_GET_ATTRIB(t ,a)		((value >> ELYSIAN_##t##_ENTRY_##a##_BIT_POS) & ELYSIAN_##t##_ENTRY_##a##_BIT_MASK)
 #define ELYSIAN_MAP_ENTRY_SET_ATTRIB(t, a, v)	do { \
 													value &= ~(ELYSIAN_##t##_ENTRY_##a##_BIT_MASK << ELYSIAN_##t##_ENTRY_##a##_BIT_POS); \
 													(value) |= ((unsigned)(v) << ELYSIAN_##t##_ENTRY_##a##_BIT_POS); \
 												} while(0)
 
+#ifdef ELYSIAN_MAP_BOUNDARY_CHECKS
+#	define ELYSIAN_AREA_PROTECTED_MAP_ACCESS(t) (t < mapEntryCount)? tiles[t] : tiles[0]
+#	define ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(l, t) (t < layerEntryCount)? l[t] : l[0]
+#else
+#	define ELYSIAN_AREA_PROTECTED_MAP_ACCESS(t) tiles[t]
+#	define ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(l, t) l[t]
+#endif
 
 namespace elysian {
 
@@ -88,16 +88,6 @@ namespace elysian {
 		bool		getZTran(void) const;
 	};
 
-	struct LightEntry: public MapEntry {
-		LightEntry(void);
-		LightEntry(const uint32_t val);
-
-		void			setIndex(const unsigned char i);
-		unsigned char	getIndex(void) const;
-		void			setPal(const unsigned char p);
-		unsigned char	getPal(void) const;
-	};
-
     struct Area: public Asset {
 		//Entity data
 		std::vector<Entity*>			entities;
@@ -124,18 +114,18 @@ namespace elysian {
 
 		//map - tile layers
 		//pointer to entire map (contiguous block of memory)
-		TileEntry *tiles;
+		TileEntry*			tiles			= nullptr;
 		//pointer to individual tile layers (faster indexing)
-		TileEntry *tileLayer2;
-		TileEntry *tileLayer3;
-		//map - light layer
-		LightEntry *lights;
+		TileEntry*			tileLayer2		= nullptr;
+		TileEntry*			tileLayer3		= nullptr;
 
-        const Level* level;
+		const Level*		level			= nullptr;
 
-		unsigned short int width, height;
+		unsigned short int	width			= 0;
+		unsigned short int	height			= 0;
+		unsigned			mapEntryCount	= 0;
+		unsigned			layerEntryCount	= 0;
 
-		Area(void);
         ~Area(void);
 
 		unsigned short getMapWidth(void) const { return width; }
@@ -153,9 +143,6 @@ namespace elysian {
 		void		setL2TileEntry(const unsigned x, const unsigned y, const TileEntry e);
 		TileEntry	getL3TileEntry(const unsigned x, const unsigned y) const;
 		void		setL3TileEntry(const unsigned x, const unsigned y, const TileEntry e);
-
-		LightEntry	getLightEntry(const unsigned x, const unsigned y) const;
-		void		setLightEntry(const unsigned x, const unsigned y, const LightEntry l);
 
 		//entity management
 		void		addEntity(Entity *entity);
@@ -194,43 +181,29 @@ namespace elysian {
 	inline bool TileEntry::getZTran(void) const { return ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, ZTRAN); }
 	inline void TileEntry::setZTran(const bool z) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, ZTRAN, z); }
 
-	inline LightEntry::LightEntry(void) {}
-	inline LightEntry::LightEntry(const uint32_t v): MapEntry(v) {}
-	inline unsigned char LightEntry::getIndex(void) const { return ELYSIAN_MAP_ENTRY_GET_ATTRIB(LIGHT, INDEX); }
-	inline void LightEntry::setIndex(const unsigned char i) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(LIGHT, INDEX, i); }
-	inline unsigned char LightEntry::getPal(void) const { return ELYSIAN_MAP_ENTRY_GET_ATTRIB(LIGHT, PAL); }
-	inline void LightEntry::setPal(const unsigned char p) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(LIGHT, PAL, p); }
-
-
 	inline TileEntry Area::getTileEntry(const unsigned l, const unsigned x, const unsigned y) const {
-		return tiles[l*height*width + y*width + x];
+		return ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x);
 	}
 	inline void Area::setTileEntry(const unsigned l, const unsigned x, const unsigned y, const TileEntry e) {
-		tiles[l*height*width + y*width + x] = e;
+		ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
 	}
 	inline TileEntry Area::getL1TileEntry(const unsigned x, const unsigned y) const {
-		return tiles[y*width + x];
+		return ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tiles, y*width + x);
 	}
 	inline void Area::setL1TileEntry(const unsigned x, const unsigned y, const TileEntry e) {
-		tiles[y*width + x] = e;
+		ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tiles, y*width + x) = e;
 	}
 	inline TileEntry Area::getL2TileEntry(const unsigned x, const unsigned y) const {
-		return tileLayer2[y*width + x];
+		return ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tileLayer2, y*width + x);
 	}
 	inline void Area::setL2TileEntry(const unsigned x, const unsigned y, const TileEntry e) {
-		tileLayer2[y*width + x] = e;
+		ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tileLayer2, y*width + x) = e;
 	}
 	inline TileEntry Area::getL3TileEntry(const unsigned x, const unsigned y) const {
-		return tileLayer3[y*width + x];
+		return ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tileLayer3, y*width + x);
 	}
 	inline void Area::setL3TileEntry(const unsigned x, const unsigned y, const TileEntry e) {
-		tileLayer3[y*width + x] = e;
-	}
-	inline LightEntry Area::getLightEntry(const unsigned x, const unsigned y) const {
-		return lights[y*width + x];
-	}
-	inline void Area::setLightEntry(const unsigned x, const unsigned y, const LightEntry l) {
-		lights[y*width + x] = l;
+		ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tileLayer3, y*width + x) = e;
 	}
 
 }

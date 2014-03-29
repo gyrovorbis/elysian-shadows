@@ -14,15 +14,18 @@ namespace elysian {
 	class ForceGenerator;
 
 	class RigidBodySystem: public System {
-		CollisionContact*	_contactPool[ELYSIAN_RIGID_BODY_SYSTEM_CONTACT_POOL_SIZE];
-		unsigned			_contactCount = 0;
+		CollisionContact*		_contactPool[ELYSIAN_RIGID_BODY_SYSTEM_CONTACT_POOL_SIZE];
+		Pool<ForceGenerator*>	_forces			= Pool<ForceGenerator*>(ELYSIAN_RIGID_BODY_FORCE_GENERATOR_MAX_COUNT);
+		unsigned				_contactCount	= 0;
+		unsigned				_velResIter		= 0;
 
-		Pool<ForceGenerator*> _forces	= Pool<ForceGenerator*>(ELYSIAN_RIGID_BODY_FORCE_GENERATOR_MAX_COUNT);
 
 		void _updateContacts(void);
 
 	public:
 		void update(void);
+
+		unsigned getVelResIterUsed(void) const;
 
 		void resolveContactVelocities(void);
 		void integrate(void);
@@ -44,6 +47,9 @@ namespace elysian {
 	}
 	inline void RigidBodySystem::clearForces(void) {
 		_forces.clear();
+	}
+	inline unsigned RigidBodySystem::getVelResIterUsed(void) const {
+		return _velResIter;
 	}
 
 

@@ -56,10 +56,13 @@ void RigidBodySystem::resolveContactVelocities(void) {
 	GYVector2 cv;
 	unsigned j;
 
-	if(_contactCount == 0) return;
+	if(_contactCount == 0) {
+		_velResIter = 0;
+		return;
+	}
 
 	unsigned iter;
-	for(iter = 0; iter < 100; ++iter) {
+	for(iter = 0; iter < ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS; ++iter) {
 		float max = ELYSIAN_RIGID_BODY_CLOSING_VELOCITY_EPSILON;
 		int maxIndex = _contactCount;
 
@@ -165,6 +168,10 @@ void RigidBodySystem::resolveContactVelocities(void) {
 			}
 		}
 	}
+
+	_velResIter = iter;
+
+	if(iter == ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS) Debug::printf(Debug::CRITICAL, "OUT OF VELOCITY ITERATIONS!", iter);
 
 	//Debug::printf(Debug::VERBOSE, "ITER - %d", iter);
 

@@ -9,6 +9,7 @@
 #include "elysian_collision_system.hpp"
 #include "elysian_lua_manager.hpp"
 #include "elysian_light_system.hpp"
+#include "elysian_rigid_body_system.hpp"
 
 namespace elysian {
 
@@ -69,8 +70,8 @@ void GuiSystem::_printDebugLine(const char *title, const char *str, ...) {
 	twcen.transform._pos.y += 25.0f;
 	twcen.transform._pos.x = _projWidth-200.0f;
 	twcen.drawStringf(Font::NO_FORMAT, Font::R_ALIGN, title);
-	twcen.transform._pos.x = _projWidth-10.0f;
-	twcen.drawStringf(Font::NO_FORMAT, Font::R_ALIGN, buffer);
+	twcen.transform._pos.x = _projWidth-185.0f;
+	twcen.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, buffer);
 }
 
 void GuiSystem::_renderDebugOverlay(void) {
@@ -88,6 +89,8 @@ void GuiSystem::_renderDebugOverlay(void) {
 	_printDebugLine("Onscreen Lights:", "%d", getLightSys()->getOnscreenLightCount());
 	_printDebugLine("Entities:", "%d", getCurArea()->entities.size());
 	_printDebugLine("Contacts:", "%d", getCollisionSys()->getContactCount());
+	_printDebugLine("Pen Res Iter:", "%d", getCollisionSys()->getPenResIterUsed());
+	_printDebugLine("Vel Res Iter:", "%d", getRigidBodySys()->getVelResIterUsed());
 	twcen.transform._pos.y += 25.0f;
 	_printDebugLine("Lua Scripts:", "%d", LuaManager::getScriptCount());
 	_printDebugLine("Lua Script Instances:", "%d", LuaManager::getScriptInstances());

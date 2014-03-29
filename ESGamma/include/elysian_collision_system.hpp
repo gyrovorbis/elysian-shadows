@@ -7,10 +7,11 @@
 #include "elysian_tile.hpp"
 #include "elysian_collidable.hpp"
 
+#define ELYSIAN_COLLISION_SYSTEM_PROTECTED					true
 #define ELYSIAN_COLLISION_CONTACT_LIST_SIZE					100
 #define ELYSIAN_COLLISION_PREV_CONTACT_LIST_SIZE			100
-#define ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS 100
-#define ELYSIAN_COLLISION_CONTACT_PENETRATION_EPSILON		0.8f
+#define ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS 3000
+#define ELYSIAN_COLLISION_CONTACT_PENETRATION_EPSILON		0.5f
 
 namespace elysian {
 	
@@ -34,11 +35,12 @@ namespace elysian {
 			Collidable* collidable[2];
 		} _prevContactPool[ELYSIAN_COLLISION_PREV_CONTACT_LIST_SIZE];
 
-		unsigned _contactAmount;
-		unsigned _prevContactAmount;
+		unsigned		_contactAmount		= 0;
+		unsigned		_prevContactAmount	= 0;
+		unsigned		_conResIter			= 0;
 
-		RENDER_LAYER _renderLayer;
-		bool _enabled;
+		RENDER_LAYER	_renderLayer		= RENDER_DISABLED;
+		bool			_enabled			= true;
 
 		void renderEntities(void);
 		void detectEntityCollision(const unsigned i);
@@ -57,7 +59,6 @@ namespace elysian {
 
 	public:
 
-		CollisionSystem(void);
 		void update(void);
 		void render(void); 
         void renderTileColliders(void) const;
@@ -67,6 +68,7 @@ namespace elysian {
 
 		void clearContacts(void);
 		unsigned getContactCount(void) const;
+		unsigned getPenResIterUsed(void) const;
 		CollisionContact* getContact(const unsigned index);
 
 		void toggleCollision(void);
@@ -96,6 +98,7 @@ namespace elysian {
 
 	inline unsigned CollisionSystem::getContactCount(void) const { return _contactAmount; }
 	inline CollisionContact* CollisionSystem::getContact(const unsigned index) { return &_contactPool[index]; }
+	inline unsigned CollisionSystem::getPenResIterUsed(void) const { return _conResIter; }
 
 }
 

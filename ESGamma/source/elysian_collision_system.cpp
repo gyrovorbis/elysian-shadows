@@ -21,13 +21,6 @@
 
 namespace elysian {
 
-CollisionSystem::CollisionSystem(void): 
-	_contactAmount(0), 
-	_prevContactAmount(0),
-	_renderLayer(RENDER_DISABLED),
-	_enabled(true)
-{}
-
 //This is a pretty DAMN expensive operation
 void CollisionSystem::render(void) {
 	renderTileColliders();
@@ -603,9 +596,9 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable) {
 
 	// ==== /ZTRAN LOGIC ====
 
-	int startX = (getCurArea()->width+1)*32.0f;
+	int startX = (getCurArea()->width)*32.0f;
 	int endX = 0;
-	int startY = (getCurArea()->height+1)*32.0f;
+	int startY = (getCurArea()->height)*32.0f;
 	int endY = 0;
 	auto checkBoundary = [&](GYVector4& vert) {
 		if(vert.x < startX) startX = vert.x;
@@ -628,7 +621,9 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable) {
 		break;
 	case GY_COLLIDER_OBB: //not very efficient for long shit
 		for(unsigned i = 0; i < 4; ++i) checkBoundary(collidable._collider.box.worldVert[i]);
-
+#ifdef ELYSIAN_COLLISION_SYSTEM_PROTECTED
+		if(startX < 0 || startY < 0 || endX > getCurArea()->width*32.0f || endY > getCurArea()->height*32.0f) return;
+#endif
 		for(int y = startY/32; y <= endY/32+1; ++y)
 			for(int x = startX/32; x <= endX/32+1; ++x) {
 				gyMatPush();
@@ -653,11 +648,15 @@ bool CollisionSystem::resolvePenetration(void) {
 	//float rotDelta[2];
 	GYVector2 cp;
 	//float deltaTime = getTimerSys()->getDeltaTime();
-	unsigned j;
+	unsigned i, j;
 
-	if(_contactAmount == 0) return true;
 
-	for(unsigned i = 0; i < _contactAmount; ++i) _contactPool[i]._calculatePenetrationInternals();
+	if(_contactAmount == 0) {
+		_conResIter = 0;
+		return true;
+	}
+
+	for(i = 0; i < _contactAmount; ++i) _contactPool[i]._calculatePenetrationInternals();
 
 	unsigned iter;
 	for(iter = 0; iter < ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS; ++iter) {
@@ -739,7 +738,9 @@ bool CollisionSystem::resolvePenetration(void) {
 		}
 	}
 
-	//Debug::printf(Debug::VERBOSE, "ITER - %d", iter);
+	_conResIter = iter;
+
+	if(iter == ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS) Debug::printf(Debug::CRITICAL, "OUT OF PENETRATION ITERATIONS!", iter);
 
 	return true; 
 }

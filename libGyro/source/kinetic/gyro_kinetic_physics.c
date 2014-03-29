@@ -2,6 +2,7 @@
 #include "kinetic/gyro_kinetic_contact.h"
 #include "kinetic/gyro_kinetic_collider.h"
 #include "kinetic/gyro_kinetic_kinetic.h"
+#include <gyro_system_api.h>
 
 //void gyIntegrate(void *collider, struct _GYKinetic *kin, const struct _GYStatic *stat);
 
@@ -56,7 +57,7 @@ void gyResolvePenetration(struct _GYContact *con, GYVector2 posDelta[], GYVector
 	float linearMove[2], angularMove[2];
 	float linearInertia[2], angularInertia[2];
 	
-	float angularLimit = 10000.0f;
+	float angularLimit = 0.05f;
 	float totalInertia = 0;
 
 	float rotPerImp;
@@ -101,6 +102,7 @@ void gyResolvePenetration(struct _GYContact *con, GYVector2 posDelta[], GYVector
 	linearMove[1] = -con->depth * linearInertia[1] * totalInertia;
 	angularMove[1] = con->depth * angularInertia[1] * totalInertia;
 
+	//Excessive rotation check
 	for(unsigned i = 0; i < 2; ++i) {
 		if(con->staticAttrib[i]) {
 			float max = angularLimit * gyVec2Magnitude(&con->objPos[i]);
@@ -112,24 +114,25 @@ void gyResolvePenetration(struct _GYContact *con, GYVector2 posDelta[], GYVector
 		}
 	}
 
-	//printf("linearMove[0] - %f\n", linearMove[0]);
-	//printf("angularMove[0] - %f\n", angularMove[0]);
-	//printf("linearMove[1] - %f\n", linearMove[1]);
-	//printf("angularMove[1] - %f\n", angularMove[1]);
+#if 0
+	_gyLog(GY_DEBUG_VERBOSE, "linearMove[0] - %f\n", linearMove[0]);
+	_gyLog(GY_DEBUG_VERBOSE, "angularMove[0] - %f\n", angularMove[0]);
+	_gyLog(GY_DEBUG_VERBOSE, "linearMove[1] - %f\n", linearMove[1]);
+	_gyLog(GY_DEBUG_VERBOSE, "angularMove[1] - %f\n", angularMove[1]);
+#endif
 	
-	//Excessive rotation check
 	
 	//Calculate orientation change to give us the desired linear delta from angular movement
 	rotPerImp = gyVec2ScalarCrossProd(&con->objPos[0], &con->normal);
 	rotPerImp *= con->staticAttrib[0]->invMomOfInertia;
 	//printf("rotPerImp[0] - %f\n", rotPerImp);
-	orientDelta[0] = (angularInertia[0] != 0.0f)? rotPerImp / angularInertia[0] * angularMove[0] : 0.0f;
+	orientDelta[0] = (angularInertia[0] != 0.0f && angularMove[0] != 0.0f)? rotPerImp / angularInertia[0] * angularMove[0] : 0.0f;
 
 	if(con->staticAttrib[1]) {
 		rotPerImp = gyVec2ScalarCrossProd(&con->objPos[1], &con->normal);
 		rotPerImp *= con->staticAttrib[1]->invMomOfInertia;
 		//printf("rotPerImp[1] - %f\n", rotPerImp);
-		orientDelta[1] = (angularInertia[1] != 0.0f)? rotPerImp / angularInertia[1] * angularMove[1] : 0.0f;
+		orientDelta[1] = (angularInertia[1] != 0.0f && angularMove[1] != 0.0f)? rotPerImp / angularInertia[1] * angularMove[1] : 0.0f;
 	}
 	else orientDelta[1] = 0.0f;
 	
@@ -327,10 +330,10 @@ void gyContactUpdateDeltaVelocity(GYContact*const contact, GYKinetic*const rb1, 
 	}
 
 	//===========NEED AN EPSILON IN THE FUTURE ====
-	//newRestitution = (abs(_conPool[index]._closingVelocity) < 40.0f)? 0.0f : _conPool[index]._coeffOfRestitution;
+	contact->coeffOfRest = (abs(contact->closingVel) < 0.1f)? 0.0f : contact->coeffOfRest;
 
 	contact->deltaVel = -contact->closingVel -
-		newRestitution * (contact->closingVel - velocityFromAccel);
+		contact->coeffOfRest * (contact->closingVel - velocityFromAccel);
 
 
 	//contact->deltaVel = -contact->closingVel * (1.0f + newRestitution);

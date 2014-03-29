@@ -152,7 +152,7 @@ static inline unsigned OBB_getContactPoints(const GYVector2*const supportA, cons
     default:
     case 0:
     case 1:
-        assert(0);
+	  //  assert(0); SHOULDN'T EVER FUCKING HAPPEN
         return 0;
     case 2:
         return OBB_getContactPoints_VertexVertex(&supportA[0], &supportB[0], contacts);
@@ -169,9 +169,6 @@ static inline unsigned OBB_getContactPoints(const GYVector2*const supportA, cons
 
 
 // ======== /INTERNALS =======
-
-
-
 
 
 
@@ -509,6 +506,8 @@ int gyCollisionOBBvOBB(const GYBoxCollider *boxA,
                                     supportB, numSupportB,
                                     contacts);
 
+
+
     int edge;
 
     //Hurrrr durrr... average all the points for a single world-space POC?
@@ -525,12 +524,12 @@ int gyCollisionOBBvOBB(const GYBoxCollider *boxA,
         edge = 1;
     }
 
-    _gyLog(GY_DEBUG_VERBOSE, "POC[%d] = <%f, %f>, A = <%f, %f>, B = <%f, %f>",
+   /* _gyLog(GY_DEBUG_VERBOSE, "POC[%d] = <%f, %f>, A = <%f, %f>, B = <%f, %f>",
            edge,
            con->worldPos.x, con->worldPos.y,
            boxA->collider.worldPos.x, boxA->collider.worldPos.y,
            boxB->collider.worldPos.x, boxB->collider.worldPos.y);
-
+*/
 #endif
 
 	return 1;
