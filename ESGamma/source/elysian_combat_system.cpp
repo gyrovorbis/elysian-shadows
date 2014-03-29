@@ -2,6 +2,7 @@
 #include "elysian_combat.hpp"
 #include "elysian_area.hpp"
 #include "elysian_lua_wrappers.hpp"
+#include "elysian_collision_system.hpp"
 
 namespace elysian {
 
@@ -43,11 +44,14 @@ void CombatSystem::update(void) {
 	for(unsigned i = 0; i < combats.size(); ++i) {
 
 		if(combats[i]->getDmgType() == Combat::DMG_SOURCE) {
-			for(unsigned j = i+1; j < combats.size(); ++j) {
+			for(unsigned j = 0; j < combats.size(); ++j) {
+				if(i == j) continue;
 
 				if(combats[j]->getDmgType() == Combat::DMG_TARGET &&
 						(combats[i]->getAttrib()->getTypeAgainstFlags() & combats[j]->getAttrib()->getTypeFlags())) {
-					_dealCollisionDamage(combats[i], combats[j]);
+
+					if(getCollisionSys()->checkCollision(*combats[i]->getEntity()->getCollidable(), *combats[j]->getEntity()->getCollidable()))
+						_dealCollisionDamage(combats[i], combats[j]);
 
 				}
 			}
