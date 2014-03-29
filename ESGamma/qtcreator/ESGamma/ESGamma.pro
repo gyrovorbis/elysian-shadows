@@ -67,13 +67,10 @@ HEADERS += \
     ../../include/elysian_lua_script.hpp \
     ../../include/elysian_lua_manager.hpp \
     ../../include/elysian_level_system.hpp \
-    ../../include/elysian_item_system.hpp \
     ../../include/elysian_gui_system.hpp \
     ../../include/elysian_game_input.hpp \
-    ../../include/elysian_friendly_system.hpp \
     ../../include/elysian_font.hpp \
     ../../include/elysian_engine.hpp \
-    ../../include/elysian_enemy_system.hpp \
     ../../include/elysian_dialog_system.hpp \
     ../../include/elysian_debug.hpp \
     ../../include/elysian_collision_system.hpp \
@@ -101,12 +98,9 @@ HEADERS += \
     ../../../AssetIO/include/elysian_linked_list.hpp \
     ../../../AssetIO/include/elysian_level_manager.hpp \
     ../../../AssetIO/include/elysian_level.hpp \
-    ../../../AssetIO/include/elysian_item.hpp \
     ../../../AssetIO/include/elysian_instance_transform.hpp \
-    ../../../AssetIO/include/elysian_friendly.hpp \
     ../../../AssetIO/include/elysian_examinable.hpp \
     ../../../AssetIO/include/elysian_entity.hpp \
-    ../../../AssetIO/include/elysian_enemy.hpp \
     ../../../AssetIO/include/elysian_direction.hpp \
     ../../../AssetIO/include/elysian_dialog.hpp \
     ../../../AssetIO/include/elysian_cstr_map.hpp \
@@ -131,7 +125,9 @@ HEADERS += \
     ../../../AssetIO/include/elysian_material.hpp \
     ../../../AssetIO/include/elysian_rigid_body.hpp \
     ../../include/elysian_rigid_body_system.hpp \
-    ../../include/elysian_force_generator.hpp
+    ../../include/elysian_force_generator.hpp \
+    ../../include/elysian_combat_system.hpp \
+    ../../../AssetIO/include/elysian_combat.hpp
 
 macx {
   OBJECTIVE_HEADERS += ../../../libGyro/lib/osx/SDLMain.h
@@ -150,13 +146,10 @@ SOURCES += \
     ../../source/elysian_lua_script.cpp \
     ../../source/elysian_lua_manager.cpp \
     ../../source/elysian_level_system.cpp \
-    ../../source/elysian_item_system.cpp \
     ../../source/elysian_gui_system.cpp \
     ../../source/elysian_game_input.cpp \
-    ../../source/elysian_friendly_system.cpp \
     ../../source/elysian_font.cpp \
     ../../source/elysian_engine.cpp \
-    ../../source/elysian_enemy_system.cpp \
     ../../source/elysian_dialog_system.cpp \
     ../../source/elysian_debug.cpp \
     ../../source/elysian_collision_system.cpp \
@@ -172,11 +165,8 @@ SOURCES += \
     ../../../AssetIO/source/elysian_lua_behavior.cpp \
     ../../../AssetIO/source/elysian_level_manager.cpp \
     ../../../AssetIO/source/elysian_level.cpp \
-    ../../../AssetIO/source/elysian_item.cpp \
-    ../../../AssetIO/source/elysian_friendly.cpp \
     ../../../AssetIO/source/elysian_examinable.cpp \
     ../../../AssetIO/source/elysian_entity.cpp \
-    ../../../AssetIO/source/elysian_enemy.cpp \
     ../../../AssetIO/source/elysian_dialog.cpp \
     ../../../AssetIO/source/elysian_component.cpp \
     ../../../AssetIO/source/elysian_collidable.cpp \
@@ -197,7 +187,9 @@ SOURCES += \
     ../../source/elysian_examinable_system.cpp \
     ../../../AssetIO/source/elysian_rigid_body.cpp \
     ../../source/elysian_rigid_body_system.cpp \
-    ../../source/elysian_force_generator.cpp
+    ../../source/elysian_force_generator.cpp \
+    ../../source/elysian_combat_system.cpp \
+    ../../../AssetIO/source/elysian_combat.cpp
 
 macx {
   OBJECTIVE_SOURCES += ../../../libGyro/lib/osx/SDLMain.mm

@@ -22,9 +22,7 @@ namespace elysian {
 			AUDIO_SOURCE,
 			LIGHT_SOURCE,
 			PARTICLE_EMITTER,
-			ITEM, 
-			FRIENDLY, 
-			ENEMY, 
+			COMBAT,
 			MAX_TYPE, 
 			BEHAVIOR 
 		};

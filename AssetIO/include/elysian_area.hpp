@@ -56,13 +56,11 @@ namespace elysian {
 	class RigidBody;
     class Character;
 	class Warp;
-	class Item;
-	class Friendly;
-	class Enemy;
 	class Examinable;
 	class AudioSource;
 	class LightSource;
 	class ParticleEmitter;
+	class Combat;
 	class Behavior;
 
 	struct MapEntry {
@@ -99,13 +97,11 @@ namespace elysian {
 		std::vector<RigidBody*>			rigidBodies;
 		std::vector<Character*>			characters;
 		std::vector<Warp*>				warps;
-		std::vector<Item*>				items;
-		std::vector<Friendly*>			friendlies;
-		std::vector<Enemy*>				enemies;
 		std::vector<Examinable*>		examinables;
 		std::vector<AudioSource*>		audioSources;
 		std::vector<LightSource*>		lightSources;
 		std::vector<ParticleEmitter*>	particleEmitters;
+		std::vector<Combat*>			combats;
 		std::vector<Behavior*>			behaviors;
 		
 		char name[ELYSIAN_AREA_NAME_SIZE];		//name of area directory

@@ -675,7 +675,7 @@ bool CollisionSystem::resolvePenetration(void) {
 		if(deepest <= ELYSIAN_COLLISION_CONTACT_PENETRATION_EPSILON) break; //EPSILAAAAWN
 		if(deepestIndex == -1) break; //no more candidates for resolution
 		//this can probably be lowered quite a bit once point of contact is fucking correct
-		//printf("-------------POSITION ITERATION - %d-------\n", i);
+		Debug::printf(Debug::VERBOSE, "-------------POSITION ITERATION - %d-------", iter);
 
 		//printf("ABOUT TO RESOLVE DEEPEST - %d, %f", deep
 		gyResolvePenetration(&_contactPool[deepestIndex], posDelta, rotDir, orientDelta); //maybe must update its own shit

@@ -25,6 +25,7 @@ namespace elysian {
 	class DialogSystem;
 	class ExaminableSystem;
 	class RigidBodySystem;
+	class CombatSystem;
 
 	class System: public LevelManager {
 	public:
@@ -53,6 +54,7 @@ namespace elysian {
 		static ParticleSystem	*_particleSystem;
 		static DaySystem		*_daySystem;
 		static DialogSystem		*_dialogSystem;
+		static CombatSystem		*_combatSystem;
 		static BehaviorSystem	*_behaviorSystem;
 
 	public:
@@ -73,6 +75,7 @@ namespace elysian {
 		static ParticleSystem*		getPartSys(void) { return _particleSystem; }
 		static DaySystem*			getDaySys(void) { return _daySystem; }
 		static DialogSystem*		getDialogSys(void) { return _dialogSystem; }
+		static CombatSystem*		getCombatSys(void) { return _combatSystem; }
 		static BehaviorSystem*		getBehavSys(void) { return _behaviorSystem; }
 		static bool getProcessInput(void) { return _processInput; }
 		static void setProcessInput(const bool in=true) { _processInput = in; }

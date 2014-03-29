@@ -8,6 +8,7 @@ namespace elysian {
 	void LuaManager::_registerWrappers(void) {
 
 		//Register classes and structs
+		_mainState->register_class<Lua32BitMask>();
 		_mainState->register_class<LuaBehaviorScriptAttrib>();
 		_mainState->register_class<GYVector2>();
 		_mainState->register_class<GYVector3>();
@@ -35,6 +36,8 @@ namespace elysian {
 		_mainState->register_class<DialogPrompt>();
 		_mainState->register_class<Dialog>();
 		_mainState->register_class<Examinable>();
+		_mainState->register_class<CombatAttrib>();
+		_mainState->register_class<Combat>();
 		_mainState->register_class<ParticleEmitterAttrib>();
 		_mainState->register_class<ParticleEmitter>();
 		OOLUA::register_class<LuaBehavior>(*_mainState);
@@ -60,6 +63,7 @@ namespace elysian {
 		_mainState->register_class<RigidBodySystem>();
 		_mainState->register_class<GuiSystem>();
 		_mainState->register_class<LevelSystem>();
+		_mainState->register_class<CombatSystem>();
 		_mainState->register_class<Direction>();
 		OOLUA::register_class<GravityForceGenerator>(*_mainState);
 
@@ -91,6 +95,12 @@ namespace elysian {
 	}
 
 }
+
+OOLUA_EXPORT_FUNCTIONS_CONST(Lua32BitMask,
+							 toInt)
+OOLUA_EXPORT_FUNCTIONS(Lua32BitMask,
+					   fromInt,
+					   setBit)
 
 OOLUA_EXPORT_FUNCTIONS(LuaBehaviorScriptAttrib,
 					   inheritFromBehavior,
@@ -152,6 +162,7 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
 						addLightSource,
 						addExaminable,
 						addRigidBody,
+						addCombat,
 						addBehavior,
 						addLuaBehavior,
 						removeRenderable,
@@ -163,6 +174,7 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
 						removeLightSource,
 						removeExaminable,
 						removeRigidBody,
+						removeCombat,
 						removeBehavior,
 						removeLuaBehavior,
 						setDepthType,
@@ -180,6 +192,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getLightSource,
 								getExaminable,
 								getRigidBody,
+								getCombat,
 								getBehavior,
 								getLuaBehavior,
 								getDepthType)
@@ -400,6 +413,21 @@ OOLUA_EXPORT_FUNCTIONS(Examinable,
 					   setMaxDist)
 OOLUA_EXPORT_FUNCTIONS_CONST(Examinable)
 
+OOLUA_EXPORT_FUNCTIONS_CONST(CombatAttrib)
+OOLUA_EXPORT_FUNCTIONS(CombatAttrib,
+					   setTypeFlags,
+					   setTypeAgainstFlags)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(Combat)
+OOLUA_EXPORT_FUNCTIONS(Combat,
+					   setSelfTable,
+					   setActionTable,
+					   getSelfTable,
+					   getActionTable,
+					   setAttrib,
+					   setDmgType)
+
+
 EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(Behavior,
 								   addTrigger,
 								   removeTrigger)
@@ -557,6 +585,14 @@ OOLUA_EXPORT_FUNCTIONS(DaySystem,
 OOLUA_EXPORT_FUNCTIONS(DialogSystem,
 					   startDialog)
 OOLUA_EXPORT_FUNCTIONS_CONST(DialogSystem)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(CombatSystem)
+OOLUA_EXPORT_FUNCTIONS(CombatSystem,
+					   addCombatant,
+					   removeCombatant,
+					   killCombatant,
+					   setBgmTensionLevel,
+					   resolveCombatAction)
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Singletons)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(Singletons)

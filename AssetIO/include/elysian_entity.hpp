@@ -26,19 +26,17 @@ namespace elysian {
 	class RigidBody;
 	class Character;
 	class Warp;
-	class Item;
-	class Friendly;
-	class Enemy;
 	class Examinable;
 	class AudioSource;
 	class LightSource;
 	class ParticleEmitter;
+	class Combat;
 	class Behavior;
 	class LuaBehavior;
 	
     class Entity: public RenderableObject, public Asset {
 	public:
-		Entity(void)	= default;
+				Entity(void)	= default;
 		virtual ~Entity(void);
 		
 		bool load(std::ifstream &stream);
@@ -69,13 +67,11 @@ namespace elysian {
 		RigidBody*			addRigidBody(void);
 		Character*			addCharacter(void);
 		Warp*				addWarp(void);
-		Item*				addItem(void);
-		Friendly*			addFriendly(void);
-		Enemy*				addEnemy(void);
 		Examinable*			addExaminable(void);
 		AudioSource*		addAudioSource(void);
 		LightSource*		addLightSource(void);
 		ParticleEmitter*	addParticleEmitter(void);
+		Combat*				addCombat(void);
 		
 		Renderable*			getRenderable(void) const { return _renderable; }
 		Animation*			getAnimation(void) const { return _animation; }
@@ -83,27 +79,23 @@ namespace elysian {
 		RigidBody*			getRigidBody(void) const { return _rigidBody; }
 		Character*			getCharacter(void) const { return _character; }
 		Warp*				getWarp(void) const { return _warp; }
-		Item*				getItem(void) const { return _item; }
-		Friendly*			getFriendly(void) const { return _friendly; }
-		Enemy*				getEnemy(void) const { return _enemy; }
 		Examinable*			getExaminable(void) const { return _examinable; }
 		AudioSource*		getAudioSource(void) const { return _audioSource; }
 		LightSource*		getLightSource(void) const { return _lightSource; }
 		ParticleEmitter*	getParticleEmitter(void) const { return _particleEmitter; }
-		
+		Combat*				getCombat(void) const { return _combat; }
+
 		void removeRenderable(void);
 		void removeAnimation(void);
 		void removeCollidable(void);
 		void removeRigidBody(void);
 		void removeCharacter(void);
 		void removeWarp(void);
-		void removeItem(void);
-		void removeFriendly(void);
-		void removeEnemy(void);
 		void removeExaminable(void);
 		void removeAudioSource(void);
 		void removeLightSource(void);
 		void removeParticleEmitter(void);
+		void removeCombat(void);
  
 		Behavior* addBehavior(char const* behaviorName);
         Behavior* getBehavior(char const* constbehaviorName) const;
@@ -128,24 +120,22 @@ namespace elysian {
         
         std::map<char const *, Behavior*, ltstr> _behavior;
 
-		unsigned char		_elev			= 0;
-		bool				_shadowVolume	= true;
-		float				_shadowDepth	= 16.0f;
-		DEPTH_TYPE			_depthType		= DEPTH_BUFFERED;
-		bool				_active			= false;
-		Renderable*			_renderable		= nullptr;
-		Animation*			_animation		= nullptr;
-		Collidable*			_collidable		= nullptr;
-		RigidBody*			_rigidBody		= nullptr;
-		Character*			_character		= nullptr;
-		Warp*				_warp			= nullptr;
-		Item*				_item			= nullptr;
-		Friendly*			_friendly		= nullptr;
-		Enemy*				_enemy			= nullptr;
-		Examinable*			_examinable		= nullptr;
-		AudioSource*		_audioSource	= nullptr;
-		LightSource*		_lightSource	= nullptr;
-		ParticleEmitter*	_particleEmitter = nullptr;
+		unsigned char		_elev				= 0;
+		bool				_shadowVolume		= true;
+		float				_shadowDepth		= 16.0f;
+		DEPTH_TYPE			_depthType			= DEPTH_BUFFERED;
+		bool				_active				= false;
+		Renderable*			_renderable			= nullptr;
+		Animation*			_animation			= nullptr;
+		Collidable*			_collidable			= nullptr;
+		RigidBody*			_rigidBody			= nullptr;
+		Character*			_character			= nullptr;
+		Warp*				_warp				= nullptr;
+		Examinable*			_examinable			= nullptr;
+		AudioSource*		_audioSource		= nullptr;
+		LightSource*		_lightSource		= nullptr;
+		ParticleEmitter*	_particleEmitter	= nullptr;
+		Combat*				_combat				= nullptr;
 #ifdef ELYSIAN_ENGINE
 		OOLUA::Lua_table_ref	_selfTable;
 #endif

@@ -9,10 +9,7 @@
 #include "elysian_animation.hpp"
 #include "elysian_collidable.hpp"
 #include "elysian_character.hpp"
-#include "elysian_enemy.hpp"
-#include "elysian_friendly.hpp"
 #include "elysian_warp.hpp"
-#include "elysian_item.hpp"
 #include "elysian_area.hpp"
 #include "elysian_stl_algorithm.hpp"
 #include "elysian_lua_behavior.hpp"
@@ -21,6 +18,7 @@
 #include "elysian_light_source.hpp"
 #include "elysian_particle_emitter.hpp"
 #include "elysian_rigid_body.hpp"
+#include "elysian_combat.hpp"
 
 using namespace std;
 
@@ -43,13 +41,11 @@ Entity::~Entity(void) {
 	removeRigidBody();
 	removeCharacter();
 	removeWarp();
-	removeItem();
-	removeFriendly();
-	removeEnemy();
 	removeExaminable();
 	removeAudioSource();
 	removeLightSource();
 	removeParticleEmitter();
+	removeCombat();
 	
 	// Cleanup Behaviors
 	for(auto it = _behavior.begin(); it != _behavior.end(); ++it) {
@@ -244,21 +240,9 @@ bool Entity::activate(void) {
 		_character->addToLevel();
 		_componentActive[Component::CHARACTER] = true;
 	}
-	if(_item && !_componentActive[Component::ITEM]) {
-		_item->addToLevel();
-		_componentActive[Component::ITEM] = true;
-	}
 	if(_warp && !_componentActive[Component::WARP]) {
 		_warp->addToLevel();
 		_componentActive[Component::WARP] = true;
-	}
-	if(_friendly && !_componentActive[Component::FRIENDLY]) {
-		_friendly->addToLevel();
-		_componentActive[Component::FRIENDLY] = true;
-	}
-	if(_enemy && !_componentActive[Component::ENEMY]) {
-		_enemy->addToLevel();
-		_componentActive[Component::ENEMY] = true;
 	}
 	if(_examinable && !_componentActive[Component::EXAMINABLE]) {
 		_examinable->addToLevel();
@@ -275,6 +259,10 @@ bool Entity::activate(void) {
 	if(_particleEmitter && !_componentActive[Component::PARTICLE_EMITTER]) {
 		_particleEmitter->addToLevel();
 		_componentActive[Component::PARTICLE_EMITTER] = true;
+	}
+	if(_combat && !_componentActive[Component::COMBAT]) {
+		_combat->addToLevel();
+		_componentActive[Component::COMBAT] = true;
 	}
 	for(auto it = _behavior.begin(); it != _behavior.end(); ++it) {
 		if(!it->second->getActive()) {
@@ -313,21 +301,9 @@ bool Entity::deactivate(void) {
 		_character->removeFromLevel();
 		_componentActive[Component::CHARACTER] = false;
 	}
-	if(_item && _componentActive[Component::ITEM]) {
-		_item->removeFromLevel();
-		_componentActive[Component::ITEM] = false;
-	}
 	if(_warp && _componentActive[Component::WARP]) {
 		_warp->removeFromLevel();
 		_componentActive[Component::WARP] = false;
-	}
-	if(_friendly && _componentActive[Component::FRIENDLY]) {
-		_friendly->removeFromLevel();
-		_componentActive[Component::FRIENDLY] = false;
-	}
-	if(_enemy && _componentActive[Component::ENEMY]) {
-		_enemy->removeFromLevel();
-		_componentActive[Component::ENEMY] = false;
 	}
 	if(_examinable && _componentActive[Component::EXAMINABLE]) {
 		_examinable->removeFromLevel();
@@ -344,6 +320,10 @@ bool Entity::deactivate(void) {
 	if(_particleEmitter && _componentActive[Component::PARTICLE_EMITTER]) {
 		_particleEmitter->removeFromLevel();
 		_componentActive[Component::PARTICLE_EMITTER] = false;
+	}
+	if(_combat && _componentActive[Component::COMBAT]) {
+		_combat->removeFromLevel();
+		_componentActive[Component::COMBAT] = false;
 	}
 
 	for(auto it = _behavior.begin(); it != _behavior.end(); ++it) {
@@ -396,15 +376,6 @@ bool Entity::load(ifstream &stream) { //Deserialization
 			case Component::WARP:
 				comp = addWarp();
 				break;
-			case Component::ITEM:
-				comp = addItem();
-				break;
-			case Component::FRIENDLY:
-				comp = addFriendly();
-				break;
-			case Component::ENEMY:
-				comp = addEnemy();
-				break;
 			case Component::EXAMINABLE:
 				comp = addExaminable();
 				break;
@@ -416,6 +387,9 @@ bool Entity::load(ifstream &stream) { //Deserialization
 				break;
 			case Component::PARTICLE_EMITTER:
 				comp = addParticleEmitter();
+				break;
+			case Component::COMBAT:
+				comp = addCombat();
 				break;
 			case Component::BEHAVIOR:
 				stream >> behaviorName;
@@ -462,14 +436,12 @@ bool Entity::save(ofstream &stream) { //Serialization
 	if(getCollidable()) ++compCount;
 	if(getRigidBody()) ++compCount;
 	if(getCharacter()) ++compCount;
-	if(getFriendly()) ++compCount;
-	if(getEnemy()) ++compCount;
-	if(getItem()) ++compCount;
 	if(getWarp()) ++compCount;
 	if(getExaminable()) ++compCount;
 	if(getAudioSource()) ++compCount;
 	if(getLightSource()) ++compCount;
 	if(getParticleEmitter()) ++compCount;
+	if(getCombat()) ++compCount;
 	for(auto it = _behavior.begin(); it != _behavior.end(); ++it) ++compCount;
 	stream << compCount << endl;
 
@@ -490,10 +462,6 @@ bool Entity::save(ofstream &stream) { //Serialization
 		stream << (int)Component::RIGID_BODY << endl;
 		success &= comp->save(stream);
 	}
-    if((comp = getItem())) {
-		stream << (int)Component::ITEM << endl;
-        success &= comp->save(stream);
-    }
     if((comp = getWarp())) {
 		stream << (int)Component::WARP << endl;
         success &= comp->save(stream);
@@ -501,14 +469,6 @@ bool Entity::save(ofstream &stream) { //Serialization
     if((comp = getCharacter())) {
 		stream << (int)Component::CHARACTER << endl;
 		success &= comp->save(stream);
-    }
-    if((comp = getFriendly())) {
-		stream << (int)Component::FRIENDLY << endl;
-        success &= comp->save(stream);
-    }
-    if((comp = getEnemy())) {
-		stream << (int)Component::ENEMY << endl;
-        success &= comp->save(stream);
     }
     if((comp = getExaminable())) {
 		stream << (int)Component::EXAMINABLE << endl;
@@ -524,6 +484,10 @@ bool Entity::save(ofstream &stream) { //Serialization
 	}
 	if((comp = getParticleEmitter())) {
 		stream << (int)Component::PARTICLE_EMITTER << endl;
+		success &= comp->save(stream);
+	}
+	if((comp = getCombat())) {
+		stream << (int)Component::COMBAT << endl;
 		success &= comp->save(stream);
 	}
 	
@@ -664,24 +628,6 @@ Warp *Entity::addWarp(void) {
 	return _warp = attachComponent(_warp)? _warp : NULL;
 }
 
-Item *Entity::addItem(void) {
-	if(_item) return NULL;
-	_item = new Item(*this);
-	return _item = attachComponent(_item)? _item : NULL;
-}
-
-Friendly *Entity::addFriendly(void) {
-	if(_friendly) return NULL;
-	_friendly = new Friendly(*this);
-	return _friendly = attachComponent(_friendly)? _friendly : NULL;
-}
-
-Enemy *Entity::addEnemy(void) {
-	if(_enemy) return NULL;
-	_enemy = new Enemy(*this);
-	return _enemy = attachComponent(_enemy)? _enemy : NULL;
-}
-
 Examinable *Entity::addExaminable(void) {
 	if(_examinable) return NULL;
 	_examinable = new Examinable(*this);
@@ -704,6 +650,12 @@ ParticleEmitter *Entity::addParticleEmitter(void) {
 	if(_particleEmitter) return nullptr;
 	_particleEmitter = new ParticleEmitter(*this);
 	return _particleEmitter = attachComponent(_particleEmitter)? _particleEmitter : NULL;
+}
+
+Combat *Entity::addCombat(void) {
+	if(_combat) return nullptr;
+	_combat = new Combat(*this); //memory leak..... dumbfuck.
+	return _combat = attachComponent(_combat)? _combat : nullptr;
 }
 
 
@@ -761,33 +713,6 @@ void Entity::removeWarp(void) {
 	_warp = NULL;
 }
 
-void Entity::removeItem(void) {
-	if(_item && _active) {
-		_item->removeFromLevel();
-		_componentActive[Component::ITEM] = false;
-	}
-	delete _item;
-	_item = NULL;
-}
-
-void Entity::removeFriendly(void) {
-	if(_friendly && _active) {
-		_friendly->removeFromLevel();
-		_componentActive[Component::FRIENDLY] = false;
-	}
-	delete _friendly;
-	_friendly = NULL;
-}
-
-void Entity::removeEnemy(void) {
-	if(_enemy && _active) {
-		_enemy->removeFromLevel();
-		_componentActive[Component::ENEMY] = false;
-	}
-	delete _enemy;
-	_enemy = NULL;
-}
-
 void Entity::removeExaminable(void) {
 	if(_examinable && _active) {
 		_examinable->removeFromLevel();
@@ -822,6 +747,15 @@ void Entity::removeParticleEmitter(void) {
 	}
 	delete _particleEmitter;
 	_particleEmitter = nullptr;
+}
+
+void Entity::removeCombat(void) {
+	if(_combat && _active) {
+		_combat->removeFromLevel();
+		_componentActive[Component::COMBAT] = false;
+	}
+	delete _combat;
+	_combat = nullptr;
 }
 
 }

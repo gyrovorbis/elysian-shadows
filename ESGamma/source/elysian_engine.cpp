@@ -26,6 +26,7 @@
 #include "elysian_dialog_system.hpp"
 #include "elysian_examinable_system.hpp"
 #include "elysian_rigid_body_system.hpp"
+#include "elysian_combat_system.hpp"
 #include "glal/gyro_glal.h"
 
 namespace elysian {
@@ -54,6 +55,7 @@ Engine::Engine(void) {
 	_daySystem			= new DaySystem;
 	_examinableSystem	= new ExaminableSystem;
 	_dialogSystem		= new DialogSystem;
+	_combatSystem		= new CombatSystem;
 
 	//register Lua dependencies
 	Singletons::setGameInput(&_gameInput);
@@ -103,6 +105,7 @@ void Engine::update(void) {
 			_particleSystem->update();
 			_daySystem->update();
 			_dialogSystem->update();
+			_combatSystem->update();
 
 			//conversationSystem->Update();
 			_behaviorSystem->callTriggers(Behavior::ON_UPDATE);
@@ -219,6 +222,7 @@ void Engine::render(void) {
 Engine::~Engine(void) { 
 
 	LuaManager::uninitialize();
+	delete _combatSystem;
 	delete _dialogSystem;
 	delete _examinableSystem;
 	delete _daySystem;

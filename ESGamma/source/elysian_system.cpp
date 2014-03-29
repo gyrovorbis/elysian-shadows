@@ -22,6 +22,7 @@ namespace elysian {
 	ParticleSystem*		System::_particleSystem		= nullptr;
 	DaySystem*			System::_daySystem			= nullptr;
 	DialogSystem*		System::_dialogSystem		= nullptr;
+	CombatSystem*		System::_combatSystem		= nullptr;
 	BehaviorSystem*		System::_behaviorSystem		= nullptr;
 
 }

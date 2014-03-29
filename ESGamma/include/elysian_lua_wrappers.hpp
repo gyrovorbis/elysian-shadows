@@ -35,6 +35,8 @@
 #include "elysian_gui_system.hpp"
 #include "elysian_material.hpp"
 #include "elysian_force_generator.hpp"
+#include "elysian_combat.hpp"
+#include "elysian_combat_system.hpp"
 
 /* IT'S NOT SAFE TO GO ALONE! TAKE THIS HEADER FILE. IT WILL HELP
  * YOU ON YOUR JOURNEY!
@@ -85,6 +87,8 @@ namespace OOLUA
 	typedef elysian::DialogScreen				DialogScreen;
 	typedef elysian::DialogText					DialogText;
 	typedef elysian::DialogPrompt				DialogPrompt;
+	typedef elysian::CombatAttrib				CombatAttrib;
+	typedef elysian::Combat						Combat;
 	typedef elysian::ParticleEmitterAttrib		ParticleEmitterAttrib;
 	typedef elysian::ParticleEmitter			ParticleEmitter;
 	typedef elysian::Behavior					Behavior;
@@ -109,9 +113,29 @@ namespace OOLUA
 	typedef elysian::DaySystem					DaySystem;
 	typedef elysian::GuiSystem					GuiSystem;
 	typedef elysian::DialogSystem				DialogSystem;
+	typedef elysian::CombatSystem				CombatSystem;
 	typedef elysian::LuaBehaviorScriptAttrib	LuaBehaviorScriptAttrib;
 	typedef elysian::Direction					Direction;
 }
+
+struct Lua32BitMask {
+	uint32_t mask = 0;
+
+	uint32_t toInt(void) const { return mask; }
+	void fromInt(const uint32_t val) { mask = val; }
+
+	void setBit(const unsigned char index, const unsigned char val) {
+		if(val) mask |= (1<<index);
+		else mask &= ~(1<<index);
+	}
+
+};
+
+OOLUA_PROXY(Lua32BitMask)
+	OOLUA_MEM_FUNC_CONST(uint32_t, toInt)
+	OOLUA_MEM_FUNC(void, fromInt, uint32_t)
+	OOLUA_MEM_FUNC(void, setBit, unsigned char, unsigned char)
+OOLUA_PROXY_END
 
 OOLUA_PROXY(LuaBehaviorScriptAttrib)
 	OOLUA_TAGS (
@@ -191,6 +215,7 @@ namespace OOLUA {
 	template<> class Proxy_class<elysian::LightSource>;
 	template<> class Proxy_class<elysian::Examinable>;
 	template<> class Proxy_class<elysian::ParticleEmitter>;
+	template<> class Proxy_class<elysian::Combat>;
 	template<> class Proxy_class<elysian::Behavior>;
 	template<> class Proxy_class<elysian::LuaBehavior>;
 }
@@ -211,6 +236,7 @@ OOLUA_PROXY(Entity, RenderableObject)
 	OOLUA_MEM_FUNC(AudioSource*, addAudioSource)
 	OOLUA_MEM_FUNC(LightSource*, addLightSource)
 	OOLUA_MEM_FUNC(Examinable*, addExaminable)
+	OOLUA_MEM_FUNC(Combat*, addCombat)
 	OOLUA_MEM_FUNC(ParticleEmitter*, addParticleEmitter)
 	OOLUA_MEM_FUNC(Behavior*, addBehavior, const char*)
 	OOLUA_MEM_FUNC(LuaBehavior*, addLuaBehavior, const char*)
@@ -223,6 +249,7 @@ OOLUA_PROXY(Entity, RenderableObject)
 	OOLUA_MEM_FUNC_CONST(AudioSource*, getAudioSource)
 	OOLUA_MEM_FUNC_CONST(LightSource*, getLightSource)
 	OOLUA_MEM_FUNC_CONST(Examinable*, getExaminable)
+	OOLUA_MEM_FUNC_CONST(Combat*, getCombat)
 	OOLUA_MEM_FUNC_CONST(ParticleEmitter*, getParticleEmitter)
 	OOLUA_MEM_FUNC_CONST(Behavior*, getBehavior, const char*)
 	OOLUA_MEM_FUNC_CONST(LuaBehavior*, getLuaBehavior, const char*)
@@ -235,6 +262,7 @@ OOLUA_PROXY(Entity, RenderableObject)
 	OOLUA_MEM_FUNC(void, removeAudioSource)
 	OOLUA_MEM_FUNC(void, removeLightSource)
 	OOLUA_MEM_FUNC(void, removeExaminable)
+	OOLUA_MEM_FUNC(void, removeCombat);
 	OOLUA_MEM_FUNC(void, removeParticleEmitter)
 	OOLUA_MEM_FUNC(void, removeBehavior, const char*)
 	OOLUA_MEM_FUNC(void, removeLuaBehavior, const char*)
@@ -539,6 +567,24 @@ OOLUA_PROXY(Examinable, Component)
 	OOLUA_MEM_FUNC(void, setMaxDist, float)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(CombatAttrib)
+	OOLUA_MEM_FUNC(void, setTypeFlags, uint32_t)
+	OOLUA_MEM_FUNC(void, setTypeAgainstFlags, uint32_t)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(Combat, Component)
+	OOLUA_TAGS (
+		No_public_constructors,
+		No_public_destructor
+	)
+	OOLUA_MEM_FUNC(void, setSelfTable, Lua_table_ref)
+	OOLUA_MEM_FUNC(void, setActionTable, Lua_table_ref)
+	OOLUA_MEM_FUNC(Lua_table_ref&, getSelfTable)
+	OOLUA_MEM_FUNC(Lua_table_ref&, getActionTable)
+	OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<CombatAttrib*>)
+	OOLUA_MEM_FUNC(void, setDmgType, Combat::DMG_TYPE)
+OOLUA_PROXY_END
+
 OOLUA_PROXY(Behavior, Component)
 	OOLUA_TAGS (
 		No_public_constructors,
@@ -755,6 +801,18 @@ OOLUA_PROXY(DialogSystem)
 	OOLUA_MEM_FUNC(void, startDialog, Dialog*)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(CombatSystem)
+	OOLUA_TAGS (
+		No_public_constructors,
+		No_public_destructor
+	)
+	OOLUA_MEM_FUNC(void, addCombatant, Entity&)
+	OOLUA_MEM_FUNC(void, removeCombatant, Entity&)
+	OOLUA_MEM_FUNC(void, killCombatant, Entity*)
+	OOLUA_MEM_FUNC(void, setBgmTensionLevel, unsigned)
+	OOLUA_MEM_FUNC(void, resolveCombatAction, Lua_table_ref, Combat*, Combat*)
+OOLUA_PROXY_END
+
 OOLUA_PROXY(GuiSystem)
 	OOLUA_TAGS (
 		No_public_constructors,
@@ -821,6 +879,12 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 	s->register_class_static<CollisionFlags>("ENEMY", CollisionFlags::ENEMY);
 	s->register_class_static<CollisionFlags>("PLAYER", CollisionFlags::PLAYER);
 	s->register_class_static<CollisionFlags>("ALL", CollisionFlags::ALL);
+
+	//Combat::DMG_TYPE
+	typedef OOLUA::Combat Combat;
+	s->register_class_static<Combat>("DMG_NONE", Combat::DMG_NONE);
+	s->register_class_static<Combat>("DMG_SOURCE", Combat::DMG_SOURCE);
+	s->register_class_static<Combat>("DMG_TARGET", Combat::DMG_TARGET);
 
 	//Behavior::TRIGGER
 	typedef OOLUA::Behavior Behavior;
@@ -1021,6 +1085,10 @@ static inline int Singletons_getTimerSystem(lua_State* const vm) {
 
 static inline int Singletons_getRigidBodySystem(lua_State* const vm) {
 	OOLUA_C_FUNCTION(elysian::RigidBodySystem*, elysian::Singletons::getRigidBodySys)
+}
+
+static inline int Singletons_getCombatSystem(lua_State* const vm) {
+	OOLUA_C_FUNCTION(elysian::CombatSystem*, elysian::Singletons::getCombatSys)
 }
 
 static inline int gyroFilePath(lua_State *const vm) {

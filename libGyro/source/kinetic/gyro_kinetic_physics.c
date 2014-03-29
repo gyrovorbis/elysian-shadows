@@ -57,7 +57,7 @@ void gyResolvePenetration(struct _GYContact *con, GYVector2 posDelta[], GYVector
 	float linearMove[2], angularMove[2];
 	float linearInertia[2], angularInertia[2];
 	
-	float angularLimit = 0.05f;
+	float angularLimit = 0.01f;
 	float totalInertia = 0;
 
 	float rotPerImp;
@@ -106,6 +106,7 @@ void gyResolvePenetration(struct _GYContact *con, GYVector2 posDelta[], GYVector
 	for(unsigned i = 0; i < 2; ++i) {
 		if(con->staticAttrib[i]) {
 			float max = angularLimit * gyVec2Magnitude(&con->objPos[i]);
+			//float max = angularLimit * gyVec2DotProd
 			if(abs(angularMove[i]) > max) {
 				float totalMotion = angularMove[i] + linearMove[i];
 				angularMove[i] = (angularMove[i] > 0)? max : -max;
@@ -114,7 +115,7 @@ void gyResolvePenetration(struct _GYContact *con, GYVector2 posDelta[], GYVector
 		}
 	}
 
-#if 0
+#if 1
 	_gyLog(GY_DEBUG_VERBOSE, "linearMove[0] - %f\n", linearMove[0]);
 	_gyLog(GY_DEBUG_VERBOSE, "angularMove[0] - %f\n", angularMove[0]);
 	_gyLog(GY_DEBUG_VERBOSE, "linearMove[1] - %f\n", linearMove[1]);
