@@ -53,9 +53,9 @@ void gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsign
 
 //CHANGE THIS INTO ONE SHARED FUNCTION, NOT PLATFORM-SPECIFIC!!!
 void gyVidViewFrustumMat(GYMatrix4 mat, const float fov, const float aspect, const float znear, const float zfar);
-void gyVidLookAtMat(GYMatrix4 mat, const float ex, const float ey, const float ez,
+/*void gyVidLookAtMat(GYMatrix4 mat, const float ex, const float ey, const float ez,
 									const float dx, const float dy, const float dz,
-									const float ux, const float uy, const float uz);
+									const float ux, const float uy, const float uz);*/
 
 #include "common/gyro_video_common.h"
 
