@@ -53,8 +53,8 @@ namespace elysian {
         RType _callLuaFunction(const char* funcName, PTypes... parameters) const;
 		
 		//overridden from component
-		virtual bool		load(std::ifstream &stream) override;
-		virtual bool		save(std::ofstream &stream) override;
+		virtual bool		load(FILE* file) override;
+		virtual bool		save(FILE* file) override;
 		
 		//overriden from behavior
 		virtual const char* getBehavName(void) const override;

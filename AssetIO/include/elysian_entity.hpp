@@ -1,7 +1,6 @@
 #ifndef ELYSIAN_ENTITY_HPP
 #define ELYSIAN_ENTITY_HPP
 
-#include <fstream>
 #include <vector>
 #include <map>
 
@@ -39,8 +38,8 @@ namespace elysian {
 				Entity(void)	= default;
 		virtual ~Entity(void);
 		
-		bool load(std::ifstream &stream);
-		bool save(std::ofstream &stream);
+		bool load(FILE* file);
+		bool save(FILE* file);
 
 		virtual void render(void) override;
         void renderAtZ(const float z); //reested?

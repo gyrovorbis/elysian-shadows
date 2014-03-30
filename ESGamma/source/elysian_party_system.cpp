@@ -93,6 +93,7 @@ void PartySystem::processInput(const GameInput &input) {
 }
 
 bool PartySystem::loadPlayables(void) {
+#if 0
 	std::ifstream stream(gyFilePath(ELYSIAN_PARTY_PATH));
 	Debug::printf(Debug::VERBOSE, "PartySystem::LoadPlayable(%s)", ELYSIAN_PARTY_PATH);
     Debug::push();
@@ -120,10 +121,11 @@ bool PartySystem::loadPlayables(void) {
 	
     Debug::pop();
 	return true;
+#endif
 }
 
-bool PartySystem::loadParty(std::ifstream &/*stream*/) { return true; }
-bool PartySystem::saveParty(std::ofstream &/*stream*/) { return true; }
+//bool PartySystem::loadParty(std::ifstream &/*stream*/) { return true; }
+//bool PartySystem::saveParty(std::ofstream &/*stream*/) { return true; }
 
 bool PartySystem::addPlayableToParty(const char *name) { 
 	for(unsigned int i = 0; i < _playableAmount; ++i) {

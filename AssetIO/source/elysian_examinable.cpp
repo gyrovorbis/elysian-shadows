@@ -16,11 +16,11 @@ namespace elysian {
 		return true;
 	}
 
-	bool Examinable::load(std::ifstream& /*stream*/) {
+	bool Examinable::load(FILE* file) {
 		return true;
 	}
 
-	bool Examinable::save(std::ofstream& /*stream*/) {
+	bool Examinable::save(FILE* file) {
 		return true;
 	}
 

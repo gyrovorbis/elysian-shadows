@@ -96,8 +96,8 @@ private:
 		virtual ~Collidable(void) {}
 		
 	public:        
-		virtual bool load(std::ifstream& stream);
-		virtual bool save(std::ofstream& stream);
+		virtual bool load(FILE* file);
+		virtual bool save(FILE* file);
         virtual bool canAddTo(Entity& /*entity*/) { return true; }
 		virtual bool addToLevel(void);
 		virtual bool removeFromLevel(void);

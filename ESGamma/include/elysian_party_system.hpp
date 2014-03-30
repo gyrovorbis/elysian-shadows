@@ -1,11 +1,10 @@
 #ifndef ELYSIAN_PARTY_SYSTEM_HPP
 #define ELYSIAN_PARTY_SYSTEM_HPP
 
-#include <fstream>
 #include <vector>
 #include "elysian_system.hpp"
 
-#include "gyro.h"
+#include <gyro.h>
 
 #define ELYSIAN_PARTY_PATH	"party/party.txt"
 
@@ -44,8 +43,8 @@ namespace elysian {
 		void updatePartyPaths(void);
 		
 		bool loadPlayables();
-		bool loadParty(std::ifstream &stream);
-		bool saveParty(std::ofstream &stream);
+		//bool loadParty(std::ifstream &stream);
+		//bool saveParty(std::ofstream &stream);
 		
 		bool addPlayableToParty(const char *name);
 		bool addPlayableToParty(const Entity &entity);

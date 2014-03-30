@@ -56,9 +56,7 @@ HEADERS += \
     ../../include/elysian_timer_system.hpp \
     ../../include/elysian_system.hpp \
     ../../include/elysian_sprite.hpp \
-    ../../include/elysian_rect.hpp \
     ../../include/elysian_quad_sprite.hpp \
-    ../../include/elysian_quad.hpp \
     ../../include/elysian_party_system.hpp \
     ../../include/elysian_model.hpp \
     ../../include/elysian_map_system.hpp \
@@ -87,9 +85,7 @@ HEADERS += \
     ../../../AssetIO/include/elysian_sprite_attrib.hpp \
     ../../../AssetIO/include/elysian_renderable_object.hpp \
     ../../../AssetIO/include/elysian_renderable.hpp \
-    ../../../AssetIO/include/elysian_rect_attrib.hpp \
     ../../../AssetIO/include/elysian_quad_sprite_attrib.hpp \
-    ../../../AssetIO/include/elysian_quad_attrib.hpp \
     ../../../AssetIO/include/elysian_prim_attrib.hpp \
     ../../../AssetIO/include/elysian_pool.hpp \
     ../../../AssetIO/include/elysian_model_attrib.hpp \
@@ -168,7 +164,6 @@ SOURCES += \
     ../../../AssetIO/source/elysian_examinable.cpp \
     ../../../AssetIO/source/elysian_entity.cpp \
     ../../../AssetIO/source/elysian_dialog.cpp \
-    ../../../AssetIO/source/elysian_component.cpp \
     ../../../AssetIO/source/elysian_collidable.cpp \
     ../../../AssetIO/source/elysian_character.cpp \
     ../../../AssetIO/source/elysian_behavior.cpp \

@@ -1,7 +1,6 @@
 #ifndef ELYSIAN_CHARACTER_HPP
 #define ELYSIAN_CHARACTER_HPP
 
-#include <fstream>
 #include "elysian_component.hpp"
 #include "elysian_direction.hpp"
 #include "elysian_entity.hpp"
@@ -30,8 +29,8 @@ namespace elysian {
 		Direction::DIR4		_faceDir			= Direction::DIR4_CENTER;
 		
 	public:
-		virtual bool load(std::ifstream& stream) override;
-		virtual bool save(std::ofstream& stream) override;
+		virtual bool load(FILE* file) override;
+		virtual bool save(FILE* file) override;
 		virtual bool canAddTo(Entity& entity) override { return (entity.getAnimation() && entity.getAnimation()); }
 		virtual bool addToLevel(void) override;
 		virtual bool removeFromLevel(void) override;

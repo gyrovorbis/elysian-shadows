@@ -1,6 +1,7 @@
 #ifndef ELYSIAN_RIGID_BODY_HPP
 #define ELYSIAN_RIGID_BODY_HPP
 
+#include <stdint.h>
 #include <kinetic/gyro_kinetic_kinetic.h>
 #include "elysian_component.hpp"
 
@@ -28,8 +29,8 @@ namespace elysian {
 
 		//reimplemented from component
 		virtual bool canAddTo(Entity& entity) override;
-		virtual bool load(std::ifstream& stream) override;
-		virtual bool save(std::ofstream& stream) override;
+		virtual bool load(FILE* file) override;
+		virtual bool save(FILE* file) override;
 		virtual bool addToLevel(void) override;
 		virtual bool removeFromLevel(void) override;
 		virtual TYPE getType(void) const override;

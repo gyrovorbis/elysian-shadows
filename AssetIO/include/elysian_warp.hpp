@@ -39,8 +39,8 @@ namespace elysian {
 		void setChangeLevel(const bool flag=true);
 
 		
-		bool load(std::ifstream& stream);
-		bool save(std::ofstream& stream);
+		bool load(FILE* file);
+		bool save(FILE* file);
 		bool canAddTo(Entity &parent);
 		bool addToLevel(void);
 		bool removeFromLevel(void);

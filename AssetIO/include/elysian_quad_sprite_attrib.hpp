@@ -1,7 +1,6 @@
 #ifndef ELYSIAN_QUAD_SPRITE_ATTRIB_HPP
 #define ELYSIAN_QUAD_SPRITE_ATTRIB_HPP
 
-#include "elysian_quad_attrib.hpp"
 #include "elysian_textured_attrib.hpp"
 #include "elysian_sprite_attrib.hpp"
 
@@ -58,11 +57,11 @@ namespace elysian {
 
 		PrimAttrib::TYPE getType(void) const { return PrimAttrib::QUAD_SPRITE; }
 
-		virtual bool load(std::ifstream& /*stream*/) {
+		virtual bool load(FILE* file) {
 			return false;
 		}
 
-		virtual bool save(std::ofstream& /*stream*/) {
+		virtual bool save(FILE* file) {
 			return false;
 		}
 	};

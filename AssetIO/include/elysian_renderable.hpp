@@ -25,8 +25,8 @@ namespace elysian {
 		static const GYVector4 depthRectVerts[4];
 
 		virtual bool canAddTo(Entity& /*entity*/) override { return true; } //no prereqs
-		virtual bool load(std::ifstream& stream) override;
-		virtual bool save(std::ofstream& stream) override;
+		virtual bool load(FILE* file) override;
+		virtual bool save(FILE* file) override;
 		virtual bool addToLevel(void) override;
 		virtual bool removeFromLevel(void) override;
 		virtual Component::TYPE getType(void) const override { return Component::RENDERABLE; }

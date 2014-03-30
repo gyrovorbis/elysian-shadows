@@ -161,8 +161,8 @@ bool ParticleEmitter::removeFromLevel(void) {
 
 
 bool ParticleEmitter::canAddTo(Entity& entity) { return true; }
-bool ParticleEmitter::load(std::ifstream& stream) { return true; }
-bool ParticleEmitter::save(std::ofstream& stream) { return true; }
+bool ParticleEmitter::load(FILE* file) { return true; }
+bool ParticleEmitter::save(FILE* file) { return true; }
 auto ParticleEmitter::getType(void) const -> TYPE { return Component::PARTICLE_EMITTER; }
 
 }

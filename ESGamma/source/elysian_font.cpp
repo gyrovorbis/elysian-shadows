@@ -1,4 +1,3 @@
-#include <fstream>
 #include "gyro.h"
 #include "elysian_font.hpp"
 #include "elysian_debug.hpp"
@@ -31,14 +30,15 @@ bool Font::loadTextData(const char* const img_file, int sheet_width, int sheet_h
 }
 
 bool Font::_loadCharacterWidths(const char *width_file) {
-	ifstream file(gyFilePath(width_file));
-	if(!file.is_open()) return false;
+	FILE* file = fopen(gyFilePath(width_file), "r");
+
+	if(!file) return false;
 	
 	for(int i = 0; i < 128; ++i) {
-		file >> _charWidth[i]; 
+		fscanf(file, "%d", &_charWidth[i]);
 	}
 	
-	file.close();
+	fclose(file);
 	return true;
 }
 

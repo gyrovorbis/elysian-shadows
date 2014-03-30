@@ -6,7 +6,6 @@
 #include "elysian_entity.hpp"
 #include "elysian_debug.hpp"
 #include "elysian_map_system.hpp"
-#include "elysian_rect.hpp"
 #include "elysian_timer_system.hpp"
 #include "elysian_zcoords.hpp"
 #include "elysian_party_system.hpp"

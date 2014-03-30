@@ -15,7 +15,7 @@ namespace elysian {
 #endif
 		}
 
-        bool load(std::ifstream& /*stream*/) {
+		bool load(FILE* file) {
 			dbgprintf(LOG_VERBOSE, "ModelPrim::Load(ifstream&)");
 			dbgPush();
 			dbgprintf(LOG_CRITICAL, "Not implemented.");
@@ -23,7 +23,7 @@ namespace elysian {
 			return false;
 		}
 
-        bool save(std::ofstream& /*stream*/) {
+		bool save(FILE* file) {
 			dbgprintf(LOG_VERBOSE, "ModelPrim::Save(ofstream&)");
 			dbgPush();
 			dbgprintf(LOG_CRITICAL, "Not implemented.");

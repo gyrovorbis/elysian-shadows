@@ -1,4 +1,3 @@
-#include <fstream>
 #include <algorithm>
 
 #include "elysian_asset.hpp"
@@ -337,7 +336,8 @@ bool Entity::deactivate(void) {
 	return true;
 }
 
-bool Entity::load(ifstream &stream) { //Deserialization
+bool Entity::load(FILE* file) { //Deserialization
+#if 0
 	bool success = true;
 	unsigned int amount, compType;
 	
@@ -414,9 +414,11 @@ bool Entity::load(ifstream &stream) { //Deserialization
 	}
     dbgPop();
 	return success;
+#endif
 }
 
-bool Entity::save(ofstream &stream) { //Serialization
+bool Entity::save(FILE* file) { //Serialization
+#if 0
     Component *comp = NULL;
 	bool success = true;
 	dbgprintf(LOG_VERBOSE, "Entity::Save(ofstream)");
@@ -499,6 +501,7 @@ bool Entity::save(ofstream &stream) { //Serialization
     }
     dbgPop();
 	return success;
+#endif
 }
 
 //=====BEHAVIORS======

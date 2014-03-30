@@ -86,8 +86,8 @@ namespace elysian {
 		
 		//Reimplemented from Component
         virtual bool canAddTo(Entity& entity) override;
-		virtual bool load(std::ifstream& stream) override;
-		virtual bool save(std::ofstream& stream) override;
+		virtual bool load(FILE* file) override;
+		virtual bool save(FILE* file) override;
 		virtual bool addToLevel(void) override;
 		virtual bool removeFromLevel(void) override; 
 		virtual Component::TYPE getType(void) const override;

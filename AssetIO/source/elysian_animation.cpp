@@ -1,4 +1,3 @@
-#include <fstream>
 #include <cassert>
 #include "elysian_animation.hpp"
 #include "elysian_area.hpp"
@@ -19,7 +18,8 @@ void AnimationSequence::addFrame(const float xOffset, const float yOffset, const
 	_frames.push_back(animFrame);
 }
 
-bool Animation::load(std::ifstream& stream) {
+bool Animation::load(FILE* file) {
+#if 0
 	AnimationSequence *sequence;
 	unsigned sequenceAmount;
 	unsigned frameAmount;				
@@ -63,9 +63,11 @@ bool Animation::load(std::ifstream& stream) {
 	//}
     dbgPop();
 	return true;
+#endif
 }
 
-bool Animation::save(std::ofstream& stream) {
+bool Animation::save(FILE* file) {
+#if 0
 	dbgprintf(LOG_VERBOSE, "Animation::Save(ofstream)");
 	dbgPush();
     
@@ -92,6 +94,7 @@ bool Animation::save(std::ofstream& stream) {
 	//}
     dbgPop();
 	return true;
+#endif
 }
 
 bool Animation::canAddTo(Entity &parent) {

@@ -1,4 +1,3 @@
-#include <fstream>
 #include "elysian_entity.hpp"
 #include "elysian_collidable.hpp"
 #include "elysian_area.hpp"
@@ -79,7 +78,7 @@ void Collidable::render(void) {
 #endif    
 }
      
-bool Collidable::load(std::ifstream& /*stream*/) {
+bool Collidable::load(FILE* file) {
 //	unsigned type;
 //	bool empty = false;
 
@@ -119,7 +118,7 @@ bool Collidable::load(std::ifstream& /*stream*/) {
 
 }
 
-bool Collidable::save(std::ofstream& /*stream*/) {
+bool Collidable::save(FILE* file) {
 	dbgprintf(LOG_VERBOSE, "Collidable::Save(ofstream&)");
     dbgPush();
 /*

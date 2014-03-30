@@ -1,4 +1,3 @@
-#include <fstream>
 #include <string.h>
 #include "elysian_area.hpp"
 #include "elysian_level.hpp"
@@ -183,6 +182,7 @@ bool Area::saveMap(const char *const filename) {
 }
 
 bool Area::loadEntities(const char *const filename) {
+#if 0
 	ifstream file(gyFilePath(filename));
 	Entity *currentEntity;
 	unsigned int amount;
@@ -209,10 +209,12 @@ bool Area::loadEntities(const char *const filename) {
 	}
 
     dbgPop();
+#endif
 	return true;
 }
 
 bool Area::saveEntities(const char *const filename) {
+#if 0
 	ofstream file(gyFilePath(filename));
 	dbgprintf(LOG_VERBOSE, "Area::SaveEntities(%s)", filename);
     dbgPush();
@@ -230,6 +232,7 @@ bool Area::saveEntities(const char *const filename) {
 	}
 
     dbgPop();
+#endif
 	return true;
 }
 

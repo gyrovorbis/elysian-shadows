@@ -14,7 +14,8 @@ bool Warp::canAddTo(Entity& entity) {
     return (entity.getCollidable());
 }
 
-bool Warp::save(std::ofstream &stream) {
+bool Warp::save(FILE* file) {
+#if 0
 	dbgprintf(LOG_VERBOSE, "Warp::Save(ofstream)");
     dbgPush();
 	stream << _toPosition.x << std::endl;
@@ -24,10 +25,12 @@ bool Warp::save(std::ofstream &stream) {
 	stream << _changeLevel << std::endl;
 	if(_changeLevel) stream << _levelPath << std::endl;
 	dbgPop();
+#endif
 	return true;
 }
 
-bool Warp::load(std::ifstream &stream) {
+bool Warp::load(FILE* file) {
+#if 0
 	dbgprintf(LOG_VERBOSE, "Warp::Load(ifstream)");
     dbgPush();
 	stream >> _toPosition.x;
@@ -44,6 +47,7 @@ bool Warp::load(std::ifstream &stream) {
 		dbgprintf(LOG_VERBOSE, "_levelPath = %s", _levelPath);
 	}
 	dbgPop();
+#endif
 	return true;
 }
 

@@ -57,11 +57,11 @@ bool RigidBody::canAddTo(Entity& entity) {
 	return (entity.getCollidable());
 }
 
-bool RigidBody::load(std::ifstream& stream) {
+bool RigidBody::load(FILE* file) {
 	return true;
 }
 
-bool RigidBody::save(std::ofstream& stream) {
+bool RigidBody::save(FILE* file) {
 	return true;
 }
 

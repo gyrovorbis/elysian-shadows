@@ -1,7 +1,6 @@
 #ifndef ELYSIAN_TILE_HPP
 #define ELYSIAN_TILE_HPP
 
-#include <fstream>
 #include <gyro.h>
 #include <kinetic/gyro_kinetic.h>
 
@@ -44,9 +43,6 @@ namespace elysian {
 
 		static COLLIDER_TYPE combineColliders(const COLLIDER_TYPE col1, const COLLIDER_TYPE col2);
 		static COLLIDER_TYPE reorientCollider(const COLLIDER_TYPE collider, const GY_RECT_TEX_ORIENT orient);
-        
-		bool save(std::ofstream &stream);
-		bool load(std::ifstream &stream);
 
 	};
     

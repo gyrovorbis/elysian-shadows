@@ -3,7 +3,6 @@
 
 #include "gyro.h"
 #include "elysian_asset.hpp"
-#include <fstream>
 #include <string.h>
 #include <cassert>
 
@@ -99,7 +98,8 @@ namespace elysian {
 
 		}
 
-		bool load(std::ifstream& stream) {
+		bool load(FILE* file) {
+#if 0
 			static char filename[GYRO_PATH_MAX_SIZE];
 			unsigned sheetWidth, sheetHeight;
 			unsigned spriteWidth, spriteHeight;
@@ -121,9 +121,11 @@ namespace elysian {
 #endif
 			dbgPop();
 			return true;
+#endif
 		}
 
-		bool save(std::ofstream& stream) {
+		bool save(FILE* file) {
+#if 0
 			assert(_tex);
 			assert(_tex->_coord);
 			dbgprintf(LOG_VERBOSE, "Textured::Save(ofstream&)");
@@ -134,12 +136,12 @@ namespace elysian {
 			stream << _tex->_coord->spriteWidth << std::endl;
 			stream << _tex->_coord->spriteHeight << std::endl;
 			dbgPop();
+#endif
 			return true;
 		}
 
 		//unsigned getFrame(void) const { return frame; }
 		//void setFrame(const unsigned fr) { frame = fr; }
-
 	};
 
 }

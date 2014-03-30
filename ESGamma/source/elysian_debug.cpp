@@ -37,9 +37,9 @@ namespace elysian {
 
 //======STATIC MEMBERS=====
 
-ofstream		Debug::_dbgFile;
-ofstream		Debug::_luaDbgFile;
-Engine*			Debug::_engine = NULL;
+FILE*			Debug::_dbgFile;
+FILE*			Debug::_luaDbgFile;
+Engine*			Debug::_engine = nullptr;
 bool			Debug::_advLogWrap = false;
 unsigned int	Debug::_stackDepth = 0;
 Debug::LEVEL	Debug::_level = ELYSIAN_DEBUG_LOG_LEVEL_DEFAULT;
@@ -75,11 +75,12 @@ void Debug::writeLog(const Debug::SOURCE source, const Debug::LEVEL level, const
 //	size_t length = strlen(buffer);
 	strcat(buffer, "\n");
 
-	_dbgFile << buffer;
-	_dbgFile.flush(); //write to log file
+	fputs(buffer, _dbgFile);
+	fflush(_dbgFile);
 	if(source == LUA) {
-		_luaDbgFile << str << std::endl;
-		_luaDbgFile.flush(); //write to lua's log file
+		fputs(str, _luaDbgFile);
+		fputc('\n', _luaDbgFile);
+		fflush(_luaDbgFile);
 	}
 	gyPrintf(buffer); //use the "preferred" IO of each platform
 
@@ -124,14 +125,14 @@ Debug::Debug(void):
 	gySysDebugEnable(ELYSIAN_DEBUG_LIBGYRO_LEVEL_DEFAULT, &libGyroPrintf);
 	//Register pointer to asset debug interface with AssetIO
 	Asset::setDebugStack(&_assetDebug);
-	_dbgFile.open(ELYSIAN_DEBUG_FILE);
-	_luaDbgFile.open(ELYSIAN_LUA_DEBUG_FILE);
+	_dbgFile = fopen(ELYSIAN_DEBUG_FILE, "w");
+	_luaDbgFile = fopen(ELYSIAN_LUA_DEBUG_FILE, "w");
 	printf(VERBOSE, "-----Debug Initialized-----");
 }
 
 Debug::~Debug(void) {
-	_luaDbgFile.close();
-	_dbgFile.close();
+	fclose(_luaDbgFile);
+	fclose(_dbgFile);
 }
 
 LightSource* lightSrc;

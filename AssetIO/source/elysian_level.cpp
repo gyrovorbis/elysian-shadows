@@ -1,4 +1,3 @@
-#include <fstream>
 #include <string.h>
 #include "elysian_level.hpp"
 #ifdef ELYSIAN_ENGINE
@@ -105,57 +104,60 @@ namespace elysian {
 	}
 
 	bool Level::loadTileset(const char *const filename) {
-		std::ifstream file(gyFilePath(filename));
+		FILE* file = fopen(gyFilePath(filename), "r");
 
 		dbgprintf(LOG_VERBOSE, "Level::LoadTileset(%s)", filename);
 		dbgPush();
     
-		if(!file.is_open()) {
+		if(!file) {
 			dbgprintf(LOG_CRITICAL, "FAILURE!\n");
 			dbgPop();
 			return false;
 		}
 
-        file >> string;
-		file >> tileAmount;
+		fgets(string, ELYSIAN_LEVEL_STRING_SIZE, file);
+		fscanf(file, "%hd", &tileAmount);
 		dbgprintf(LOG_VERBOSE, "tileAmount - %d", tileAmount);
 
 		for(unsigned int i = 0; i < tileAmount; ++i) {
 			int tempInt;
-			file >> tempInt;
+			fscanf(file, "%d", &tempInt);
 			tileset[i].colliderType = (Tile::COLLIDER_TYPE)tempInt;
-            file >> tileset[i].animated;
-            file >> tileset[i].animTime;
-            file >> tileset[i].nextIndex;
+			fscanf(file, "%d", &tileset[i].animated);
+			fscanf(file, "%f", &tileset[i].animTime);
+			fscanf(file, "%hd", &tileset[i].nextIndex);
+
 		}
 	
+		fclose(file);
 		dbgPop();
 		return true;
 	}
 
 	bool Level::saveTileset(const char *const filename) {
-		std::ofstream file(gyFilePath(filename));
+		FILE* file = fopen(gyFilePath(filename), "w");
 
 		dbgprintf(LOG_VERBOSE, "Level::saveTileset(%s)", filename);
 		dbgPush();
     
-		if(!file.is_open()) {
+		if(!file) {
 			dbgprintf(LOG_VERBOSE, "FAILURE!");
 			dbgPop();
 			return false;
 		}
 
-        file << string << endl;
-		file << tileAmount << endl;
+		fprintf(file, "%s\n", string);
+		fprintf(file, "%d\n", tileAmount);
 		dbgprintf(LOG_VERBOSE, "tileAmount - %d", tileAmount);
 
 		for(unsigned int i = 0; i < tileAmount; ++i) {
-			file << tileset[i].colliderType << endl;
-			file << tileset[i].animated << endl;
-			file << tileset[i].animTime << endl;
-			file << tileset[i].nextIndex << endl;
+			fprintf(file, "%d\n", tileset[i].colliderType);
+			fprintf(file, "%d\n", tileset[i].animated);
+			fprintf(file, "%f\n", tileset[i].animTime);
+			fprintf(file, "%d\n", tileset[i].nextIndex);
 		}
 
+		fclose(file);
 		dbgPop();
 		return true;
 	}

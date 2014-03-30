@@ -111,34 +111,20 @@ void gyVidSpecularMapBind(const GYTexture * const tex) {
 
 
 void glalLightingInit(void) {
-	glMatrixMode(GL_MODELVIEW);
 
 	//Cache cube shadow map lookat matrices
-	glLoadIdentity(); gluLookAt(0.0, 0.0, 0.0,  1.0, 0.0, 0.0,  0.0,-1.0, 0.0); // +X
-	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)pointShadowFaceMatrices[GY_CUBE_MAP_RIGHT]);
-	glalTranspose(pointShadowFaceMatrices[GY_CUBE_MAP_RIGHT]);
 
-	glLoadIdentity(); gluLookAt(0.0, 0.0, 0.0, -1.0, 0.0, 0.0,  0.0,-1.0, 0.0); // -X
-	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)pointShadowFaceMatrices[GY_CUBE_MAP_LEFT]);
-	glalTranspose(pointShadowFaceMatrices[GY_CUBE_MAP_LEFT]);
+	gyVidLookAtMat(pointShadowFaceMatrices[GY_CUBE_MAP_RIGHT], 0.0, 0.0, 0.0,  1.0, 0.0, 0.0,  0.0,-1.0, 0.0); // +X
 
-	glLoadIdentity(); gluLookAt(0.0, 0.0, 0.0,  0.0, -1.0, 0.0,  0.0,0.0, -1.0); // +Y
-	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)pointShadowFaceMatrices[GY_CUBE_MAP_BOTTOM]);
-	glalTranspose(pointShadowFaceMatrices[GY_CUBE_MAP_BOTTOM]);
+	gyVidLookAtMat(pointShadowFaceMatrices[GY_CUBE_MAP_LEFT], 0.0, 0.0, 0.0, -1.0, 0.0, 0.0,  0.0,-1.0, 0.0); // -X
 
-	glLoadIdentity(); gluLookAt(0.0, 0.0, 0.0,  0.0, 1.0, 0.0,  0.0,0.0, 1.0); // -Y
-	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)pointShadowFaceMatrices[GY_CUBE_MAP_TOP]);
-	glalTranspose(pointShadowFaceMatrices[GY_CUBE_MAP_TOP]);
+	gyVidLookAtMat(pointShadowFaceMatrices[GY_CUBE_MAP_BOTTOM], 0.0, 0.0, 0.0,  0.0, -1.0, 0.0,  0.0,0.0, -1.0); // +Y
 
-	glLoadIdentity(); gluLookAt(0.0, 0.0, 0.0,  0.0, 0.0, 1.0,  0.0,-1.0, 0.0); // +Z
-	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)pointShadowFaceMatrices[GY_CUBE_MAP_BACK]);
-	glalTranspose(pointShadowFaceMatrices[GY_CUBE_MAP_BACK]);
+	gyVidLookAtMat(pointShadowFaceMatrices[GY_CUBE_MAP_TOP], 0.0, 0.0, 0.0,  0.0, 1.0, 0.0,  0.0,0.0, 1.0); // -Y
 
-	glLoadIdentity(); gluLookAt(0.0, 0.0, 0.0,  0.0, 0.0, -1.0,  0.0,1.0, 0.0); // -Z
-	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)pointShadowFaceMatrices[GY_CUBE_MAP_FRONT]);
-	glalTranspose(pointShadowFaceMatrices[GY_CUBE_MAP_FRONT]);
+	gyVidLookAtMat(pointShadowFaceMatrices[GY_CUBE_MAP_BACK], 0.0, 0.0, 0.0,  0.0, 0.0, 1.0,  0.0,-1.0, 0.0); // +Z
 
-	glLoadIdentity();
+	gyVidLookAtMat(pointShadowFaceMatrices[GY_CUBE_MAP_FRONT], 0.0, 0.0, 0.0,  0.0, 0.0, -1.0,  0.0,1.0, 0.0); // -Z
 }
 
 void gyVidMaterialBind(const GYMaterial*const material) {

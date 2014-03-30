@@ -8,12 +8,12 @@ namespace elysian {
 
 	AudioSystem* AudioSource::_audioSys = nullptr;
 
-	bool AudioSource::load(std::ifstream& /*stream*/) {
+	bool AudioSource::load(FILE* file) {
 		//implement this bitch later
 		return true;
 	}
 
-	bool AudioSource::save(std::ofstream& /*stream*/) {
+	bool AudioSource::save(FILE* file) {
 		//implement this bitch later
 		return true;
 	}
