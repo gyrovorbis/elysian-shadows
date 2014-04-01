@@ -1096,10 +1096,6 @@ static inline int Singletons_getCombatSystem(lua_State* const vm) {
 	OOLUA_C_FUNCTION(elysian::CombatSystem*, elysian::Singletons::getCombatSys)
 }
 
-static inline int gyroFilePath(lua_State *const vm) {
-	OOLUA_C_FUNCTION(const char*, gyFilePath, const char*)
-}
-
 static inline int gyroWavCreate(lua_State *const vm) {
 	OOLUA_C_FUNCTION(GYWav*, gyAudWavCreate, const char*)
 }

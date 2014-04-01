@@ -86,7 +86,6 @@ namespace elysian {
 		_mainState->register_class_static<Singletons>("getGuiSys", &Singletons_getGuiSystem);
 
 		//libGyro wrappers
-		_mainState->register_class_static<gyro>("filePath", &gyroFilePath);
 		_mainState->register_class_static<gyro>("createWav", &gyroWavCreate);
 		_mainState->register_class_static<gyro>("destroyWav", &gyroWavDestroy);
 
