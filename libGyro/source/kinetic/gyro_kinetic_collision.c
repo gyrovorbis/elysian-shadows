@@ -2,6 +2,7 @@
 #include "kinetic/gyro_kinetic_contact.h"
 #include "kinetic/gyro_kinetic_static.h"
 #include <gyro_matrix_api.h>
+#include <gyro_system_api.h>
 
 const GYVector4 gyBoxLocalVerts[4] = {
 	{ -0.5f, -0.5f, 0.0f, 1.0f },
@@ -18,6 +19,158 @@ const GYVector4 gyRTriLocalVerts[3] = {
 
 const GYCollider *_curCol = 0;
 const struct _GYStatic *_curStat = 0;
+
+// ======== INTENRALS ========
+
+static inline unsigned OBB_getSupportPoints(const GYBoxCollider*const collider, const GYVector2*const normal, GYVector2*const support) {
+    float t[4];
+    float min = -1.0f;
+    const float threshold = 1.0E-1;
+    unsigned count = 0;
+
+
+    for(int i = 0; i < 4; ++i) {
+        t[i] = gyVec2DotProd(&collider->worldVert[i], normal);
+
+        if(t[i] < min || i == 0)
+            min = t[i];
+    }
+
+    for(int i = 0; i < 4; ++i) {
+        if(t[i] < min+threshold) {
+            support[count++] = *(GYVector2*)&collider->worldVert[i];
+            if (count == 2) break;
+        }
+    }
+    return count;
+
+}
+
+static inline unsigned OBB_getContactPoints_VertexVertex(const GYVector2*const PA,
+                                                         const GYVector2*const PB,
+                                                         GYVector2*const contacts)
+{
+    contacts[0] = *PA;
+    contacts[1] = *PB;
+    return 1;
+}
+
+static inline void OBB_getClosestPointOnEdge(GYVector2*const closest,
+                                             const GYVector2*const P,
+                                             const GYVector2*const A,
+                                             const GYVector2*const B)
+{
+    GYVector2 AB, AP;
+
+    gyVec2Sub(&AB, B, A);
+    gyVec2Sub(&AP, P, A);
+
+    float ab_ab = gyVec2DotProd(&AB, &AB);
+    float ab_ap = gyVec2DotProd(&AP, &AB);
+    float t = ab_ap / ab_ab;
+
+    t = (t < 0.0f)? 0.0f : (t > 1.0f)? 1.0f : t;
+
+    gyVec2Scale(closest, &AB, t);
+    gyVec2AddAccum(closest, A);
+}
+
+
+static inline unsigned OBB_getContactPoints_EdgeVertex(const GYVector2*const edgeA,
+                                                       const GYVector2*const PB,
+                                                       GYVector2*const contacts)
+{
+    OBB_getClosestPointOnEdge(&contacts[0], PB, &edgeA[0], &edgeA[1]);
+    contacts[1] = *PB;
+    return 1;
+}
+
+static inline unsigned OBB_getContactPoints_VertexEdge(const GYVector2*const PA,
+                                                       const GYVector2*const edgeB,
+                                                       GYVector2*const contacts)
+{
+    contacts[0] = *PA;
+    OBB_getClosestPointOnEdge(&contacts[1], PA, &edgeB[0], &edgeB[1]);
+    return 1;
+}
+
+typedef struct __VSort {
+    const GYVector2*    vert;
+    float               dot;
+    unsigned            body;
+} _VSort;
+
+static inline unsigned OBB_getContactPoints_EdgeEdge(const GYVector2*const edgeA,
+                                                     const GYVector2*const edgeB,
+                                                     GYVector2*const contacts)
+{
+    _VSort vsort[4] = {
+        { &edgeA[0], 0.0f, 0 },
+        { &edgeA[1], 0.0f, 0 },
+        { &edgeB[0], 0.0f, 1 },
+        { &edgeB[1], 0.0f, 1 }
+    };
+    GYVector2 dir;
+
+    gyVec2Sub(&dir, &edgeA[1], &edgeA[0]);
+
+    for(unsigned i = 0; i < 4; ++i) {
+        vsort[i].dot = gyVec2DotProd(&dir, vsort[i].vert);
+    }
+
+    //bubble sort it ... :*(
+    for(unsigned i = 0; i < 4; ++i) {
+        for(unsigned j = i+1; j < 4; ++j) {
+            _VSort temp;
+            if(vsort[i].dot < vsort[j].dot) {
+                temp = vsort[i];
+                vsort[i] = vsort[j];
+                vsort[j] = temp;
+            }
+        }
+    }
+
+    for(unsigned i = 0; i < 2; ++i) {
+        // Vertex belonged to body A
+        if(vsort[i+1].body == 0) {
+            contacts[i*2] = *vsort[i+1].vert;
+            OBB_getClosestPointOnEdge(&contacts[i*2+1], vsort[i+1].vert, &edgeB[0], &edgeB[1]);
+        } else { // Vertex belonged to body B
+            OBB_getClosestPointOnEdge(&contacts[i*2], vsort[i+1].vert, &edgeA[0], &edgeA[1]);
+            contacts[i*2+1] = *vsort[i+1].vert;
+        }
+    }
+    return 2;
+
+}
+
+static inline unsigned OBB_getContactPoints(const GYVector2*const supportA, const unsigned numSupportA,
+                                     const GYVector2*const supportB, const unsigned numSupportB,
+                                     GYVector2*const contacts) {
+    switch(numSupportA + numSupportB) {
+    // shit has reested
+    default:
+    case 0:
+    case 1:
+	  //  assert(0); SHOULDN'T EVER FUCKING HAPPEN
+        return 0;
+    case 2:
+        return OBB_getContactPoints_VertexVertex(&supportA[0], &supportB[0], contacts);
+    case 3:
+        if(numSupportA > numSupportB)
+            return OBB_getContactPoints_EdgeVertex(supportA, &supportB[0], contacts);
+        else
+            return OBB_getContactPoints_VertexEdge(&supportA[0], supportB, contacts);
+    case 4:
+        return OBB_getContactPoints_EdgeEdge(supportA, supportB, contacts);
+    }
+
+}
+
+
+// ======== /INTERNALS =======
+
+
 
 void gyColliderCurrent(const GYCollider *const col, const struct _GYStatic *const stat) {
 	_curCol = col;
@@ -167,7 +320,11 @@ static inline void ProjectPolygon(const GYVector2 *const axis, const GYVector4 v
 }
 
 // SAT - OBB v OBB && OBB v AABB
-int gyCollisionOBBvOBB(const GYBoxCollider *boxA, const GYBoxCollider *boxB, struct _GYContact *con, const struct _GYStatic *const statA, const struct _GYStatic *const statB) {
+int gyCollisionOBBvOBB(const GYBoxCollider *boxA,
+                       const GYBoxCollider *boxB,
+                       struct _GYContact *con,
+                       const struct _GYStatic *const statA,
+                       const struct _GYStatic *const statB) {
 	float min, max;
 	unsigned int i = 0;
 	//int minIndex, maxIndex;
@@ -321,14 +478,59 @@ int gyCollisionOBBvOBB(const GYBoxCollider *boxA, const GYBoxCollider *boxB, str
 		con->normal.y = -con->normal.y;
 	}
 	con->depth = minDiff;
+
+//    if(!poc) return 1;
+    //else do extra calculations for point-of-contact
     
-    
-    
-	con->worldPos.x = (boxA->collider.transform._pos.x + boxB->collider.transform._pos.x) * 0.5f;
-	con->worldPos.y = (boxA->collider.transform._pos.y + boxB->collider.transform._pos.y) * 0.5f;
-    
+#if 0
+	con->worldPos.x = (boxA->collider.worldPos.x + boxB->collider.worldPos.x) * 0.5f;
+	con->worldPos.y = (boxA->collider.worldPos.y + boxB->collider.worldPos.y) * 0.5f;
+#else
+
+    GYVector2 supportA[2];
+    GYVector2 supportB[2];
+    GYVector2 MTD;
+    GYVector2 contacts[4];
+    unsigned numSupportA;
+    unsigned numSupportB;
+    unsigned numContacts;
+
+    gyVec2Scale(&MTD, &con->normal, minDiff);
+
+    numSupportA = OBB_getSupportPoints(boxA, &MTD, supportA);
+
+    gyVec2ScaleAccum(&MTD, -1.0f);
+    numSupportB = OBB_getSupportPoints(boxB, &MTD, supportB);
+
+    numContacts = OBB_getContactPoints(supportA, numSupportA,
+                                    supportB, numSupportB,
+                                    contacts);
+
+
+
+    int edge;
+
+    //Hurrrr durrr... average all the points for a single world-space POC?
+    if(numContacts == 1) {
+        edge = 0;
+        con->worldPos.x = (contacts[0].x + contacts[1].x) * 0.5f;
+        con->worldPos.y = (contacts[0].y + contacts[1].y) * 0.5f;
+    } else {
+        gyVec2Clear(&con->worldPos);
+        for(unsigned i = 0; i < 4; ++i) {
+            gyVec2AddAccum(&con->worldPos, &contacts[i]);
+        }
+        gyVec2ScaleAccum(&con->worldPos, 0.25f);
+        edge = 1;
+    }
+
+   /* _gyLog(GY_DEBUG_VERBOSE, "POC[%d] = <%f, %f>, A = <%f, %f>, B = <%f, %f>",
+           edge,
+           con->worldPos.x, con->worldPos.y,
+           boxA->collider.worldPos.x, boxA->collider.worldPos.y,
+           boxB->collider.worldPos.x, boxB->collider.worldPos.y);
+*/
+#endif
 
 	return 1;
-	//contact->_type = GYRO_CONTACT_PARTICLE_PARTICLE;
-	
 }

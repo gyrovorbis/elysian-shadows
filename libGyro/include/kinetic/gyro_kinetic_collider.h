@@ -13,6 +13,7 @@ typedef enum _GY_COLLIDER_TYPE { GY_COLLIDER_NONE, GY_COLLIDER_AABB, GY_COLLIDER
 typedef struct _GYCollider {
 	GY_COLLIDER_TYPE type;
 	GYInstMat transform; 
+	GYVector2 worldPos;
 } GYCollider;
 
 //Subclassed specific colliders

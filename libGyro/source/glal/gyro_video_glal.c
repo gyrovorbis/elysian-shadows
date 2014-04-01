@@ -84,6 +84,9 @@ static unsigned int			_projHeight				= 0;
 static GY_RECT_TEX_ORIENT	_rectTexOrient			= GY_RECT_TEX_ORIENT_NORMAL;
 static GY_RECT_NORMAL_TYPE	_normalType				= GY_RECT_NORMAL_FLAT;
 static GYColor4				_curQuadListColor[4]	= { {0} };
+unsigned					polyCount				= 0;
+
+unsigned gyVidPolyCount(void) { return polyCount; }
 
 void gyVidResolution(unsigned int *const projWidth, unsigned int *const projHeight) {
 	*projWidth = _projWidth; *projHeight = _projHeight;
@@ -128,13 +131,9 @@ int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth,
 	glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glViewport(0, 0, viewWidth, viewHeight);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glMatrixMode(GL_MODELVIEW);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS)​;
    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glLoadIdentity();
 
 	glalLoadDefaultShaders();
 	gyVidSetDefaultShaderProgram();
@@ -166,6 +165,7 @@ void gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsign
 	glVertexAttribPointer(curLightShader->attribLoc[SHADER_POS], 4, GL_FLOAT, GL_FALSE, 0, modelViewVertices);
 	glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_POS]);
 	glDrawArrays(GL_TRIANGLE_STRIP, startIndex, amount);
+	++polyCount;
 }
 
 void gyVidColorArray(const struct _GYColor4 *const ptr) {
@@ -244,11 +244,11 @@ void gyVidRectNormalType(const GY_RECT_NORMAL_TYPE type) {
 	}
 }
 
-void gyVidQuad(const GYVector4 *const verts, const unsigned int frame) {
+void gyVidQuad(const GYVector4 *const verts, const int frame) {
 	const GYTexCoord2* coord;
 	const GYVector3* tangent;
 
-	if(curTex) {
+	if(curTex && frame != -1) {
 		coord = gyVidTexCoordArrayFromFrame(&curTex->_coord->texCoord[frame], _rectTexOrient);
 		gyVidTexCoordArray(coord);
 		_rectTexOrient = GY_RECT_TEX_ORIENT_NORMAL; //reset after each rect
@@ -265,40 +265,88 @@ void gyVidQuad(const GYVector4 *const verts, const unsigned int frame) {
 	gyVidTriangleStrip(verts, 0, 4);
 }
 
-void gyVidRect(const unsigned int frame) {
+void gyVidRect(const int frame) {
 	gyVidQuad(_rectVerts[_normalType], frame);
 }
 
 
-void gyVidViewFrustumMat(GYMatrix4 mat, const float fov, const float aspect, const float znear, const float zfar) {
-	glMatrixMode(GL_MODELVIEW_MATRIX);
+
+void gyVidPerspectiveMat(GYMatrix4 mat, const float fov, const float aspect, const float znear, const float zfar) {
+#if 1
+	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	gluPerspective(fov, aspect, znear, zfar);
-	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)mat);
+	glGetFloatv(GL_MODELVIEW, (float*)mat);
 	glalTranspose(mat);
 	glLoadIdentity();
+#else
+
+	float *m = (float*)mat;
+	float ymax = znear * tan(fov * M_PI/360.0f);
+	 float ymin = -ymax;
+	 float xmax = ymax * aspect;
+	 float xmin = ymin * aspect;
+
+	 float width = xmax - xmin;
+	 float height = ymax - ymin;
+
+	 float depth = zfar - znear;
+	 float q = -(zfar + znear) / depth;
+	 float qn = -2 * (zfar * znear) / depth;
+
+	 float w = 2 * znear / width;
+	 w = w / aspect;
+	 float h = 2 * znear / height;
+
+	 m[0]  = w;
+	 m[1]  = 0;
+	 m[2]  = 0;
+	 m[3]  = 0;
+
+	 m[4]  = 0;
+	 m[5]  = h;
+	 m[6]  = 0;
+	 m[7]  = 0;
+
+	 m[8]  = 0;
+	 m[9]  = 0;
+	 m[10] = q;
+	 m[11] = -1;
+
+	 m[12] = 0;
+	 m[13] = 0;
+	 m[14] = qn;
+	 m[15] = 0;
+
+	 glalTranspose(mat);
+
+
+
+#endif
 }
 
-void gyVidLookAtMat(GYMatrix4 mat, const float ex, const float ey, const float ez,
-									const float dx, const float dy, const float dz,
-									const float ux, const float uy, const float uz) {
-	glMatrixMode(GL_MODELVIEW);
 
-	//Cache cube shadow map lookat matrices
-	glLoadIdentity();
-	gluLookAt(0.0f, 0.0f, 0.0f, dx, dy, dz, ux, uy, uz);
-	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)mat);
-	glalTranspose(mat);
-	glLoadIdentity();
+void gyVidCamFrustum(GYCamera* const cam, const float fov, const float aspect, const float znear, const float zfar) {
+	GYViewVolume* volume = &cam->viewVolume;
 
-	gyMatPush();
-	gyMatLoad(mat);
-	gyMatScale(-1.0f, -1.0f, -1.0f);
-	gyMatTranslate(ex, ey, ez);
-	gyMatStore(mat);
-	gyMatPop();
+	gyVidPerspectiveMat(cam->projMat, fov, aspect, znear, zfar);
+	cam->projType = GY_PROJECTION_PERSPECTIVE;
+
+	gyMatMultMat(cam->projViewMat, cam->projMat, cam->viewMat);
+
+	volume->ratio = aspect;
+	volume->nearD = znear;
+	volume->farD = zfar;
+	volume->angle = fov;
+
+	volume->tang = (float)tan(GY_ANG2RAD * volume->angle * 0.5);
+	volume->nh = volume->nearD * volume->tang;
+	volume->nw = volume->nh * volume->ratio;
+	volume->fh = volume->farD * volume->tang;
+	volume->fw = volume->fh * volume->ratio;
 
 }
+
 
 
 /*

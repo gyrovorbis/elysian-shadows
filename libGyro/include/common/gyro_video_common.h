@@ -38,6 +38,9 @@ typedef struct _GYCamera {
 	GY_PROJECTION_TYPE	projType;
 } GYCamera;
 
+
+
+
 static inline void gyVidOrthoProjMat(GYMatrix4 mat, const float pleft, const float pright,
 						 const float pbottom, const float ptop,
 						 const float pnear, const float pfar) {
@@ -132,26 +135,111 @@ static inline void gyVidCamOrthoLookAt(GYCamera *cam, const GYVector3* pos, cons
 
 }
 
-static inline void gyVidCamFrustum(GYCamera* const cam, const float fov, const float aspect, const float znear, const float zfar) {
-	GYViewVolume* volume = &cam->viewVolume;
+static inline void glalTranspose(GYMatrix4 mat) {
+	GYMatrix4 temp;
+	memcpy(temp, mat, sizeof(GYMatrix4));
 
-	gyVidViewFrustumMat(cam->projMat, fov, aspect, znear, zfar);
-	cam->projType = GY_PROJECTION_PERSPECTIVE;
+	for(unsigned i = 0; i < 4; ++i)
+		for(unsigned j = 0; j < 4; ++j)
+			mat[i][j] = temp[j][i];
+}
 
-	gyMatMultMat(cam->projViewMat, cam->projMat, cam->viewMat);
 
-	volume->ratio = aspect;
-	volume->nearD = znear;
-	volume->farD = zfar;
-	volume->angle = fov;
+void gyVidCamFrustum(GYCamera* const cam, const float fov, const float aspect, const float znear, const float zfar);
 
-	volume->tang = (float)tan(GY_ANG2RAD * volume->angle * 0.5);
-	volume->nh = volume->nearD * volume->tang;
-	volume->nw = volume->nh * volume->ratio;
-	volume->fh = volume->farD * volume->tang;
-	volume->fw = volume->fh * volume->ratio;
+// to perform cross product between 2 vectors in lookAtMat
+static inline void _lookAtCrossProd(float x1, float y1, float z1, float x2, float y2, float z2, float res[3])
+{
+	res[0] = y1*z2 - y2*z1;
+	res[1] = x2*z1 - x1*z2;
+	res[2] = x1*y2 - x2*y1;
+}
+
+// my own implementation
+static inline void gyVidLookAtMat(GYMatrix4 mat, float eyeX, float eyeY, float eyeZ, float lookAtX, float lookAtY, float lookAtZ, float upX, float upY, float upZ)
+{
+
+#if 0
+
+	glMatrixMode(GL_MODELVIEW);
+
+	//Cache cube shadow map lookat matrices
+	glLoadIdentity();
+	gluLookAt(0.0f, 0.0f, 0.0f, dx, dy, dz, ux, uy, uz);
+	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)mat);
+	glalTranspose(mat);
+	glLoadIdentity();
+/*
+	gyMatPush();
+	gyMatLoad(mat);
+	gyMatScale(-1.0f, -1.0f, -1.0f);
+	gyMatTranslate(ex, ey, ez);
+	gyMatStore(mat);
+	gyMatPop();*/
+#else
+
+
+	// i am not using here proper implementation for vectors.
+	// if you want, you can replace the arrays with your own
+	// vector types
+	float f[3];
+
+	// calculating the viewing vector
+	f[0] = lookAtX - eyeX;
+	f[1] = lookAtY - eyeY;
+	f[2] = lookAtZ - eyeZ;
+
+
+	float fMag = gySqrt(f[0]*f[0] + f[1]*f[1] + f[2]*f[2]);
+	float upMag = gySqrt(upX*upX + upY*upY + upZ*upZ);
+
+	// normalizing the viewing vector
+	if(fMag != 0) {
+		f[0] = f[0]/fMag;
+		f[1] = f[1]/fMag;
+		f[2] = f[2]/fMag;
+	}
+
+	// normalising the up vector. no need for this here if you have your
+	// up vector already normalised, which is mostly the case.
+	if(upMag != 0) {
+		upX = upX/upMag;
+		upY = upY/upMag;
+		upZ = upZ/upMag;
+	}
+
+	float s[3], u[3];
+
+	_lookAtCrossProd(f[0], f[1], f[2], upX, upY, upZ, s);
+	_lookAtCrossProd(s[0], s[1], s[2], f[0], f[1], f[2], u);
+
+	float M[]=
+	{
+		s[0], u[0], -f[0], 0,
+		s[1], u[1], -f[1], 0,
+		s[2], u[2], -f[2], 0,
+		0, 0, 0, 1
+	};
+
+	for(unsigned i = 0; i < 4; ++i)
+		for(unsigned j = 0; j < 4; ++j)
+			mat[i][j] = M[j*4+i];
+
+	gyMatPush();
+	gyMatLoad((GYMatrix4*)mat);
+	gyMatTranslate(-eyeX, -eyeY, -eyeZ);
+	gyMatStore((GYMatrix4*)mat);
+	gyMatPop();
+
+#endif
 
 }
+
+
+
+
+
+
 
 static inline void gyVidCamFrustumLookAt(GYCamera* const cam, const GYVector3* const eyePos,
 												const GYVector3* const lookDir,
@@ -160,6 +248,13 @@ static inline void gyVidCamFrustumLookAt(GYCamera* const cam, const GYVector3* c
 	gyVidLookAtMat(cam->viewMat, eyePos->x, eyePos->y, eyePos->z,
 				   lookDir->x, lookDir->y, lookDir->z,
 				   upDir->x, upDir->y, upDir->z);
+
+	gyMatPush();
+	gyMatLoad(&cam->viewMat);
+	gyMatScale(1.0f, -1.0f, -1.0f);
+	gyMatStore(&cam->viewMat);
+	gyMatPop();
+
 	gyMatMultMat(cam->projViewMat, cam->projMat, cam->viewMat);
 
 	GYViewVolume* const volume = &cam->viewVolume;
@@ -233,6 +328,18 @@ static inline void gyVidCamFrustumLookAt(GYCamera* const cam, const GYVector3* c
 
 //Camera culling
 //int gyVidCamBoxWithinViewVolume(GYCamera* cam);
+
+
+
+
+
+
+
+
+
+
+
+
 //int gyVidCamSphereWithinViewVolume(GYCamera* cam);
 
 
