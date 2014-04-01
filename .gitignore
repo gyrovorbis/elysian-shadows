@@ -128,4 +128,4 @@ Docs/Documentation/
 
 # CMake generated
 out/
-
+CMakeLists.txt.user
