@@ -35,7 +35,9 @@ uniform samplerCube		uShadowCubeMaps[cMaxLights];
 uniform bool			uLightingEnabled;
 uniform bool			uTextureEnabled;
 uniform bool			uNormalMapEnabled;
+uniform bool			uSpecularMapEnabled;
 uniform sampler2D		uNormalMap;
+uniform sampler2D		uSpecularMap;
 uniform vec3			uNormal;
 uniform vec3			uTangent;
 uniform sampler2D		uShadowMaps[cMaxLights];
@@ -54,17 +56,10 @@ varying vec3			vhalfVector;
 varying vec3			vNormal;
 varying vec2			vTexCoord;
 
-vec3 normal;
-/*
-float VectorToDepthValue(vec3 Vec) {
-	vec3 AbsVec = abs(Vec);
-	float LocalZcomp = max(AbsVec.x, max(AbsVec.y, AbsVec.z));
-
-	const float f = 901.0;
-	const float n = 1.0;
-	float NormZComp = (f+n) / (f-n) - (2.0*f*n)/(f-n)/LocalZcomp;
-	return (NormZComp + 1.0) * 0.5;
-}*/
+//cached pixel lighting values.
+vec3	normal;
+float	shininess;
+vec4	specularity;
 
 vec4 lightingEquation(const int i) {
 	vec4 computedColor = vec4(cfZero, cfZero, cfZero, cfZero);
@@ -143,8 +138,8 @@ vec4 lightingEquation(const int i) {
 		halfVec = normalize(VPpli + vec3(cfZero, cfZero, -cfOne));
 		nDotH = dot(normal, halfVec);
 		if(nDotH > cfZero) {
-			computedColor += (pow(nDotH, uMaterial.shininess) *
-								uMaterial.specularColor *
+			computedColor += (pow(nDotH, shininess) *
+								specularity *
 								uLights[i].specularColor);
 		}
 
@@ -194,6 +189,14 @@ void main(void) {
 	} else {
 		//normal = vec3(0.0, 0.0, 1.0);
 		normal = uNormal;
+	}
+
+	specularity = uMaterial.specularColor;
+	shininess = uMaterial.shininess;
+	if(uSpecularMapEnabled) {
+		vec4 specMapVal = texture2D(uSpecularMap, vTexCoord);
+		specularity.rgba *= specMapVal.rgba; //dunno if a is supposed to be factored in here.
+		//.shininess += specularity.a;
 	}
 
 	for(i = 0; i < cMaxLights; ++i) {

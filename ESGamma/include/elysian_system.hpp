@@ -23,6 +23,9 @@ namespace elysian {
 	class ParticleSystem;
 	class DaySystem;
 	class DialogSystem;
+	class ExaminableSystem;
+	class RigidBodySystem;
+	class CombatSystem;
 
 	class System: public LevelManager {
 	public:
@@ -43,6 +46,7 @@ namespace elysian {
 		static TimerSystem		*_timerSystem;
 		static WarpSystem		*_warpSystem;
 		static CollisionSystem	*_collisionSystem;
+		static RigidBodySystem	*_rigidBodySystem;
 		static GuiSystem		*_guiSystem;
 		static ExaminableSystem	*_examinableSystem;
 		static AudioSystem		*_audioSystem;
@@ -50,6 +54,7 @@ namespace elysian {
 		static ParticleSystem	*_particleSystem;
 		static DaySystem		*_daySystem;
 		static DialogSystem		*_dialogSystem;
+		static CombatSystem		*_combatSystem;
 		static BehaviorSystem	*_behaviorSystem;
 
 	public:
@@ -62,6 +67,7 @@ namespace elysian {
 		static TimerSystem*			getTimerSys(void) { return _timerSystem; }
 		static WarpSystem*			getWarpSys(void) { return _warpSystem; }
 		static CollisionSystem*		getCollisionSys(void) { return _collisionSystem; }
+		static RigidBodySystem*		getRigidBodySys(void) { return _rigidBodySystem; }
 		static GuiSystem*			getGuiSys(void) { return _guiSystem; }
 		static ExaminableSystem*	getExamSys(void) { return _examinableSystem; }
 		static AudioSystem*			getAudioSys(void) { return _audioSystem; }
@@ -69,6 +75,7 @@ namespace elysian {
 		static ParticleSystem*		getPartSys(void) { return _particleSystem; }
 		static DaySystem*			getDaySys(void) { return _daySystem; }
 		static DialogSystem*		getDialogSys(void) { return _dialogSystem; }
+		static CombatSystem*		getCombatSys(void) { return _combatSystem; }
 		static BehaviorSystem*		getBehavSys(void) { return _behaviorSystem; }
 		static bool getProcessInput(void) { return _processInput; }
 		static void setProcessInput(const bool in=true) { _processInput = in; }

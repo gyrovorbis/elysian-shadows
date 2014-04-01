@@ -37,8 +37,10 @@ uniform samplerCube		uShadowCubeMaps[cMaxLights];
 uniform bool			uTextureEnabled;
 uniform bool			uLightingEnabled;
 uniform bool			uNormalMapEnabled;
+uniform bool			uSpecularMapEnabled;
 uniform sampler2D		uNormalMap;
-uniform sampler2D		uShadowMaps;
+uniform sampler2D		uSpecularMap;
+uniform sampler2D		uShadowMaps[cMaxLights];
 
 uniform mat4			uLightProjViewMats[cMaxLights];
 

@@ -1,7 +1,6 @@
 #ifndef ELYSIAN_PRIM_ATTRIB_HPP
 #define ELYSIAN_PRIM_ATTRIB_HPP
 
-#include <fstream>
 #include "elysian_asset.hpp"
 
 namespace elysian {
@@ -20,8 +19,8 @@ namespace elysian {
 		virtual ~PrimAttrib(void)					= default;
 		virtual TYPE getType(void) const			= 0;
 		virtual void submit(void)					= 0;
-		virtual bool load(std::ifstream &stream)	= 0;
-		virtual bool save(std::ofstream &stream)	= 0;
+		virtual bool load(FILE* file)	= 0;
+		virtual bool save(FILE* file)	= 0;
 	};
 
 }

@@ -1,7 +1,6 @@
 #ifndef ELYSIAN_TILE_HPP
 #define ELYSIAN_TILE_HPP
 
-#include <fstream>
 #include <gyro.h>
 #include <kinetic/gyro_kinetic.h>
 
@@ -11,6 +10,7 @@ namespace elysian {
 
 	struct Tile: public Asset {
 		float animTime; //time to elapse before moving to next index
+		float damping = 1.0f;
 
 		enum COLLIDER_TYPE {
 			COLLIDER_NONE, COLLIDER_FULL,
@@ -34,6 +34,8 @@ namespace elysian {
 
 		void setAnimated(const bool v);
 		bool getAnimated(void) const;
+		float getDamping(void) const;
+		void setDamping(const float factor);
 		void setAnimTime(const float t);
 		float getAnimTime(void) const;
 		void setNextIndex(const uint16_t i);
@@ -41,13 +43,14 @@ namespace elysian {
 
 		static COLLIDER_TYPE combineColliders(const COLLIDER_TYPE col1, const COLLIDER_TYPE col2);
 		static COLLIDER_TYPE reorientCollider(const COLLIDER_TYPE collider, const GY_RECT_TEX_ORIENT orient);
-        
-		bool save(std::ofstream &stream);
-		bool load(std::ifstream &stream);
 
 	};
     
-    
+	// ====== INLINEZ ======
+
+	inline float Tile::getDamping(void) const { return damping; }
+	inline void Tile::setDamping(const float factor) { damping = factor; }
+
 	inline unsigned Tile::getColliderType(void) const { return (unsigned)colliderType; }
     
 	inline void Tile::setColliderType(const unsigned type) {

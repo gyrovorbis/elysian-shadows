@@ -1,8 +1,8 @@
 #ifndef ELYSIAN_DEBUG_HPP
 #define ELYSIAN_DEBUG_HPP
 
-#include <fstream>
 #include <cstring>
+#include <stdio.h>
 #include <gyro.h>
 #include "elysian_asset.hpp"
 #include "elysian_system.hpp"
@@ -47,8 +47,8 @@ namespace elysian {
 
 		static unsigned int _stackDepth;
 		static bool _advLogWrap;
-		static ofstream _dbgFile;
-		static ofstream _luaDbgFile;
+		static FILE* _dbgFile;
+		static FILE* _luaDbgFile;
 		static const char _fileName[];
 		bool _nextFrame;
 

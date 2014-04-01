@@ -51,7 +51,8 @@ LuaBehavior::~LuaBehavior(void) {
 #endif
 }
 
-bool LuaBehavior::load(std::ifstream &stream) {
+bool LuaBehavior::load(FILE* file) {
+#if 0
     dbgprintf(LOG_VERBOSE, "LuaBehavior::Load(ifstream&)");
     dbgPush();
 	bool success = true;
@@ -67,9 +68,11 @@ bool LuaBehavior::load(std::ifstream &stream) {
 #endif
     dbgPop();
 	return success;
+#endif
 }
 
-bool LuaBehavior::save(std::ofstream &stream) {
+bool LuaBehavior::save(FILE* file) {
+#if 0
     dbgprintf(LOG_VERBOSE, "LuaBehavior::Save(ofstream&)");
     dbgPush();
     
@@ -81,6 +84,7 @@ bool LuaBehavior::save(std::ofstream &stream) {
 #endif
     dbgPop();
 	return true;
+#endif
 }
 
 bool LuaBehavior::loadScript(const char *file) {
@@ -201,17 +205,17 @@ void LuaBehavior::onExit(void) {
 #endif
 }
 	
-void LuaBehavior::onCollide(elysian::Collidable *collidable) {
+void LuaBehavior::onCollide(CollisionContact*const contact, elysian::Collidable *collidable) {
 	(void)collidable;
 #ifdef ELYSIAN_ENGINE
-	_PROTECTED(_callTrigger<void>("onCollide", _ooSelfTableRef, collidable));
+	_PROTECTED(_callTrigger<void>("onCollide", _ooSelfTableRef, contact, collidable));
 #endif
 }
 
-void LuaBehavior::onCollisionEnter(elysian::Collidable *collidable) {
+void LuaBehavior::onCollisionEnter(CollisionContact*const contact, elysian::Collidable *collidable) {
 	(void)collidable;
 #ifdef ELYSIAN_ENGINE
-	_PROTECTED(_callTrigger<void>("onCollisionEnter", _ooSelfTableRef, collidable));
+	_PROTECTED(_callTrigger<void>("onCollisionEnter", _ooSelfTableRef, contact, collidable));
 #endif
 }
 
@@ -233,7 +237,7 @@ void LuaBehavior::onDialog(const unsigned screen, const int option) {
 	(void)screen;
 	(void)option;
 #ifdef ELYSIAN_ENGINE
-	_PROTECTED(_callTrigger<void>("onCollide", screen, option));
+	_PROTECTED(_callTrigger<void>("onDialog", _ooSelfTableRef, screen, option));
 #endif
 }
 

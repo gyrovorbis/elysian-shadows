@@ -4,20 +4,19 @@
 #include "elysian_component.hpp"
 #include "elysian_entity.hpp"
 #include "elysian_quad_sprite_attrib.hpp"
-#include <gyro.h>
+#include "elysian_material.hpp"
+#include <gyro_video_api.h>
 
 namespace elysian {
 
-	/*ONLY SUPPORTS SPRITE PRIMITIVES NOW!
-	  The old mechanism for supporting others was totally fucking reested and not worth
-	  the effort... we will cross that bridge when (if) we ever get to it... */
 	class Renderable: public Component {
 	friend class Entity;
 	private:
-		GYMaterial*		_material		= nullptr;
+		Material*		_material		= nullptr;
 		GYTexture*		_normalMap		= nullptr;
+		GYTexture*		_specularMap	= nullptr;
 		SpriteAttrib*	_spriteAttrib	= nullptr;	//Prefab-able attributes
-		unsigned		_frame			= 0;			//for animation
+		int				_frame			= 0;			//for animation
 		GYVector2		_offset			= {0.0f, 0.0f};	//texture offset from base transform (local coords)
 
 		inline Renderable(Entity &parent): Component(parent) {}
@@ -26,8 +25,8 @@ namespace elysian {
 		static const GYVector4 depthRectVerts[4];
 
 		virtual bool canAddTo(Entity& /*entity*/) override { return true; } //no prereqs
-		virtual bool load(std::ifstream& stream) override;
-		virtual bool save(std::ofstream& stream) override;
+		virtual bool load(FILE* file) override;
+		virtual bool save(FILE* file) override;
 		virtual bool addToLevel(void) override;
 		virtual bool removeFromLevel(void) override;
 		virtual Component::TYPE getType(void) const override { return Component::RENDERABLE; }
@@ -46,10 +45,11 @@ namespace elysian {
 
 			gyVidTexBind(_spriteAttrib->_tex);
 			gyVidNormalMapBind(_normalMap);
+			gyVidSpecularMapBind(_specularMap);
 			gyVidMaterialBind(_material);
 
 			//Why aren't we just pushing another matrix to handle this?
-			if(_spriteAttrib->_tex) {
+			if(_spriteAttrib->_tex && _spriteAttrib->_frame != -1) {
 				const GYVector2 *size = (GYVector2*)&_entity->transform._size;
 				const GYTexCoordFrame *fr = &_spriteAttrib->_tex->_coord->texCoord[_frame];
 				const float locX = ((float) fr->spriteWidth / size->x)/2.0f;
@@ -81,14 +81,20 @@ namespace elysian {
 			case PrimAttrib::QUAD_SPRITE:
 				gyVidAlphaLevel(GY_ALPHA_FULL);
 				gyVidColorArray(&_spriteAttrib->_color);
-				if(_spriteAttrib->_tex)
-					gyVidTexCoordArray(gyVidTexCoordArrayFromFrame(&_spriteAttrib->_tex->_coord->texCoord[_frame],
+				if(_spriteAttrib->_tex) {
+					if(_spriteAttrib->_frame != -1)
+						gyVidTexCoordArray(gyVidTexCoordArrayFromFrame(&_spriteAttrib->_tex->_coord->texCoord[_frame],
 																   GY_RECT_TEX_ORIENT_NORMAL));
+					else
+						gyVidTexCoordArray(_spriteAttrib->_texCoords);
+
+				}
 				gyVidTriangleStrip(localVerts, 0, 4);
 				break;
 			case PrimAttrib::SPRITE:
 				gyVidAlphaLevel((_spriteAttrib->_color.a == 255)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
 				gyVidQuadListBegin(&_spriteAttrib->_color);
+				if(_spriteAttrib->_frame == -1) gyVidTexCoordArray(_spriteAttrib->_texCoords);
 				gyVidQuad(localVerts, _frame);
 				gyVidQuadListEnd();
 				break;
@@ -110,16 +116,22 @@ namespace elysian {
 		inline QuadSpriteAttrib* getQuadSpriteAttrib(void) const { return static_cast<QuadSpriteAttrib*>(_spriteAttrib); }
 		inline void setSpriteAttrib(SpriteAttrib *const attrib) { _spriteAttrib = attrib; if(attrib) _frame = attrib->_frame;}
 
-		inline void setMaterial(GYMaterial*const material) {
+		inline void setMaterial(Material*const material) {
 			_material = material;
 		}
 
-		inline GYMaterial& getMaterial(void) {
-			return *_material;
+		inline Material* getMaterial(void) const {
+			return _material;
 		}
 
 		inline void loadNormalMap(const char*const path, const unsigned width, const unsigned height) {
+			if(_normalMap) gyVidTexDestroy(_normalMap);
 			_normalMap = gyVidTexCreate(path, width, height);
+		}
+
+		inline void loadSpecularMap(const char*const path, const unsigned width, const unsigned height) {
+			if(_specularMap) gyVidTexDestroy(_specularMap);
+			_specularMap = gyVidTexCreate(path, width, height);
 		}
 		
 	};

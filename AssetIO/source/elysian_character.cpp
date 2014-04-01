@@ -6,13 +6,13 @@
 
 namespace elysian {
 
-bool Character::save(std::ofstream& /*stream*/) {
-	dbgprintf(LOG_VERBOSE, "Character::Save(ifstream)");
+bool Character::save(FILE* file) {
+	dbgprintf(LOG_VERBOSE, "Character::Save(FILE*)");
 	return true;
 }
 
-bool Character::load(std::ifstream& /*stream*/) {
-	dbgprintf(LOG_VERBOSE, "Character::Load(ifstream)");
+bool Character::load(FILE* file) {
+	dbgprintf(LOG_VERBOSE, "Character::Load(FILE*)");
 	
 	return true;
 }

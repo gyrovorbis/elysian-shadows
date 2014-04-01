@@ -153,12 +153,14 @@ namespace elysian {
 	inline void MapSystem::beginObjectList(void) const {
 		gyVidTexBind(_curLevel->tileSheet);
 		gyVidNormalMapBind(_curLevel->normalSheet);
+		gyVidSpecularMapBind(_curLevel->specularSheet);
 		gyVidQuadListBegin(&_tileColor);
 	}
 	
 	inline void MapSystem::endObjectList(void) const {
 		gyVidQuadListEnd();
 		gyVidNormalMapBind(nullptr);
+		gyVidSpecularMapBind(nullptr);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 	

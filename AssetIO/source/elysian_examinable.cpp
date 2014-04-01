@@ -2,19 +2,25 @@
 #include "elysian_entity.hpp"
 #include "elysian_area.hpp"
 #include "elysian_generic.hpp"
+#include "elysian_dialog.hpp"
 
 namespace elysian {
 
-	//overridden from Component
-	bool Examinable::canAddTo(Entity& entity) {
-		return entity.getCollidable();
+	void Examinable::setDialog(Dialog* const dialog) {
+		_dialog = dialog;
+		_dialog->setTriggerEntity(_entity);
 	}
 
-	bool Examinable::load(std::ifstream& /*stream*/) {
+	//overridden from Component
+	bool Examinable::canAddTo(Entity& entity) {
 		return true;
 	}
 
-	bool Examinable::save(std::ofstream& /*stream*/) {
+	bool Examinable::load(FILE* file) {
+		return true;
+	}
+
+	bool Examinable::save(FILE* file) {
 		return true;
 	}
 

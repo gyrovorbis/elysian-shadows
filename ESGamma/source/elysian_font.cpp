@@ -1,4 +1,3 @@
-#include <fstream>
 #include "gyro.h"
 #include "elysian_font.hpp"
 #include "elysian_debug.hpp"
@@ -9,10 +8,10 @@ namespace elysian {
 
 bool Font::loadTextData(const char* const img_file, int sheet_width, int sheet_height, int sprite_width, int sprite_height, const char* const width_file) {
 	bool success = true;
-    
+
     Debug::printf(Debug::VERBOSE, "Font::Load(%s, %s)", img_file, width_file);
     Debug::push();
-	
+
 	transform.setSize(16.0f, 32.0f);
 
 	//CHECK IF TEXTURE IS EVER LOADED
@@ -22,7 +21,7 @@ bool Font::loadTextData(const char* const img_file, int sheet_width, int sheet_h
 	}
 
 	if(!_loadCharacterWidths(width_file)) {
-		Debug::printf(Debug::CRITICAL, "Font::LoadCharacterWidths(%s): could not open file!", width_file);	
+		Debug::printf(Debug::CRITICAL, "Font::LoadCharacterWidths(%s): could not open file!", width_file);
 		success = false;
 	}
 
@@ -54,10 +53,10 @@ bool Font::_loadCharacterWidths(const char *width_file) {
 
 void Font::drawStringf(const FORMAT format, const ALIGNMENT align, const char *const str, ...) {
 	char buffer[500];
-	va_list argptr;  
-	va_start(argptr,str); 
-	vsprintf(buffer,str,argptr); 
-	va_end(argptr); 
+	va_list argptr;
+	va_start(argptr,str);
+	vsprintf(buffer,str,argptr);
+	va_end(argptr);
 	drawString(format, align, buffer);
 }
 
@@ -66,7 +65,7 @@ void Font::drawString(const FORMAT format, const ALIGNMENT align, const char *co
 	float currentX = transform._pos.x;
 	float currentY = transform._pos.y;
 	int temp = 0;
-	
+
 	if(align == C_ALIGN) {
 		temp = getStringPixelWidth(buffer);
 		currentX = (transform._pos.x - (temp/2)-8);
@@ -77,7 +76,7 @@ void Font::drawString(const FORMAT format, const ALIGNMENT align, const char *co
 		}
 		currentX = (transform._pos.x - temp - 16);
 	}
-	
+
 	i = 0;
 
 	gyVidTexBind(_tex);
@@ -127,7 +126,7 @@ void Font::_renderChar(const FORMAT /*format*/, float &current_x, float &current
 
 			//if(camera == WITH_CAMERA) cameraSystem->RenderSprite(*this);
 			//else System::gyroVideo->RenderSprite(*this);
-			
+
 			current_x += _charWidth[(int)str[i]]+2;
 			break;
 	}

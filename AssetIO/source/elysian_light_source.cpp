@@ -43,8 +43,8 @@ void LightAttrib::setAttenuationFactors(const GYVector3& vec) {
 }
 
 //reimplemented from component
-bool LightSource::load(std::ifstream& /*stream*/) { return true; }
-bool LightSource::save(std::ofstream& /*stream*/) { return true; }
+bool LightSource::load(FILE* file) { return true; }
+bool LightSource::save(FILE* file) { return true; }
 
 bool LightSource::addToLevel(void) {
 	_curArea->lightSources.push_back(this);

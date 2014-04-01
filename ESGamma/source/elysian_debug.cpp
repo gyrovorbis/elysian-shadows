@@ -37,9 +37,9 @@ namespace elysian {
 
 //======STATIC MEMBERS=====
 
-ofstream		Debug::_dbgFile;
-ofstream		Debug::_luaDbgFile;
-Engine*			Debug::_engine = NULL;
+FILE*			Debug::_dbgFile;
+FILE*			Debug::_luaDbgFile;
+Engine*			Debug::_engine = nullptr;
 bool			Debug::_advLogWrap = false;
 unsigned int	Debug::_stackDepth = 0;
 Debug::LEVEL	Debug::_level = ELYSIAN_DEBUG_LOG_LEVEL_DEFAULT;
@@ -75,11 +75,12 @@ void Debug::writeLog(const Debug::SOURCE source, const Debug::LEVEL level, const
 //	size_t length = strlen(buffer);
 	strcat(buffer, "\n");
 
-	_dbgFile << buffer;
-	_dbgFile.flush(); //write to log file
+	fputs(buffer, _dbgFile);
+	fflush(_dbgFile);
 	if(source == LUA) {
-		_luaDbgFile << str << std::endl;
-		_luaDbgFile.flush(); //write to lua's log file
+		fputs(str, _luaDbgFile);
+		fputc('\n', _luaDbgFile);
+		fflush(_luaDbgFile);
 	}
 	gyPrintf(buffer); //use the "preferred" IO of each platform
 
@@ -124,14 +125,14 @@ Debug::Debug(void):
 	gySysDebugEnable(ELYSIAN_DEBUG_LIBGYRO_LEVEL_DEFAULT, &libGyroPrintf);
 	//Register pointer to asset debug interface with AssetIO
 	Asset::setDebugStack(&_assetDebug);
-	_dbgFile.open(ELYSIAN_DEBUG_FILE);
-	_luaDbgFile.open(ELYSIAN_LUA_DEBUG_FILE);
+	_dbgFile = fopen(ELYSIAN_DEBUG_FILE, "w");
+	_luaDbgFile = fopen(ELYSIAN_LUA_DEBUG_FILE, "w");
 	printf(VERBOSE, "-----Debug Initialized-----");
 }
 
 Debug::~Debug(void) {
-	_luaDbgFile.close();
-	_dbgFile.close();
+	fclose(_luaDbgFile);
+	fclose(_dbgFile);
 }
 
 LightSource* lightSrc;
@@ -184,57 +185,15 @@ void Debug::processInput(const GameInput& input) {
 	static unsigned size = 3;
 	static unsigned intensity = 200;
 
-	//Camera zoom/rotate
-	if(input.getDown(GameInput::BUT_Q)){
-		_engine->_cameraSystem->rotate(0.2f);
-	}
-	if(input.getDown(GameInput::BUT_A)){
-		_engine->_cameraSystem->rotate(-0.2f);
-	}
+	//Camera zoom
 	if(input.getDown(GameInput::BUT_W)){
 		_engine->_cameraSystem->scale(0.9f*0.9f);
 	}
 	if(input.getDown(GameInput::BUT_S)){
 		_engine->_cameraSystem->scale(1.1f*1.1f);
 	}
-	if(input.getDown(GameInput::BUT_E)) { //Reset Transform
-		_engine->_cameraSystem->setScale(1.0f);
-		_engine->_cameraSystem->setOrientZ(0.0f);
-	}
 
-	//Rendering layers
-	/*if(input.getDown(GameInput::BUT_0)) {
-		if(_engine->_guiSystem->adventureLog.isEnabled()) {
-			_engine->_guiSystem->adventureLog.disable();
-			printf(VERBOSE, "Disable GUI Layer");
-		} else {
-			_engine->_guiSystem->adventureLog.enable();
-			printf(VERBOSE, "Enable GUI Layer");
-		}
-	}*/
-	if(input.getTapped(GameInput::BUT_1)) {
-		bool render = _engine->_mapSystem->toggleRenderLayer(0);
-		printf(VERBOSE, "Render Layer 1 - %s", (render)? "enabled" : "disabled");
-	}
-	if(input.getTapped(GameInput::BUT_2)) {
-		bool render = _engine->_mapSystem->toggleRenderLayer(1);
-		printf(VERBOSE, "Render Layer 2 - %s", (render)? "enabled" : "disabled");
-	}
-	if(input.getTapped(GameInput::BUT_3)) {
-		bool render = _engine->_mapSystem->toggleRenderLayer(2);
-		printf(VERBOSE, "Render Layer 3 - %s", (render)? "enabled" : "disabled");
-	}
-	if(input.getTapped(GameInput::BUT_4)) {
-		bool render = _engine->_mapSystem->toggleRenderLayer(3);
-		printf(VERBOSE, "Render Layer 4 - %s", (render)? "enabled" : "disabled");
-	}
-
-		GYVector4 tempVec;
 	if(input.getTapped(GameInput::BUT_0)) {
-
-		//GYWav* wav = gyAudWavCreate("phone`.wav");
-		//getAudioSys()->playSfxChannel(0, *wav);
-		//getAudioSys()->setSfxChannelLooping(0, true);
 
 		CollisionSystem::RENDER_LAYER layer = _engine->_collisionSystem->cycleRenderLayer();
 		switch(layer) {
@@ -254,15 +213,54 @@ void Debug::processInput(const GameInput& input) {
 			printf(VERBOSE, "Render Collision Layer - Combined");
 			break;
 		default: break;
-		}/*
-		dirVec.x -= 0.1f;
-		gyVec3Normalize(&dirVec);
-		src->setDirection(dirVec);
-		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
-*/
+		}
 	}
 
-	//if(!input.getDown(GameInput::BUT_LCTRL)) return;
+	if(input.getTapped(GameInput::BUT_1)) {
+		bool render = _engine->_mapSystem->toggleRenderLayer(0);
+		printf(VERBOSE, "Render Layer 1 - %s", (render)? "enabled" : "disabled");
+	}
+	if(input.getTapped(GameInput::BUT_2)) {
+		bool render = _engine->_mapSystem->toggleRenderLayer(1);
+		printf(VERBOSE, "Render Layer 2 - %s", (render)? "enabled" : "disabled");
+	}
+	if(input.getTapped(GameInput::BUT_3)) {
+		bool render = _engine->_mapSystem->toggleRenderLayer(2);
+		printf(VERBOSE, "Render Layer 3 - %s", (render)? "enabled" : "disabled");
+	}
+	if(input.getTapped(GameInput::BUT_4)) {
+		bool render = _engine->_mapSystem->toggleRenderLayer(3);
+		printf(VERBOSE, "Render Layer 4 - %s", (render)? "enabled" : "disabled");
+	}
+
+	//Rendering layers
+	if(input.getTapped(GameInput::BUT_5)) {
+		if(_engine->_guiSystem->adventureLog.isEnabled()) {
+			_engine->_guiSystem->adventureLog.disable();
+			printf(VERBOSE, "Disable GUI Layer");
+		} else {
+			_engine->_guiSystem->adventureLog.enable();
+			printf(VERBOSE, "Enable GUI Layer");
+		}
+	}
+
+	if(!input.getDown(GameInput::BUT_LALT)) return;
+
+
+	if(input.getDown(GameInput::BUT_Q)){
+		_engine->_cameraSystem->rotate(0.2f);
+	}
+	if(input.getDown(GameInput::BUT_A)){
+		_engine->_cameraSystem->rotate(-0.2f);
+	}
+
+
+	if(input.getDown(GameInput::BUT_E)) { //Reset Transform
+		_engine->_cameraSystem->setScale(1.0f);
+		_engine->_cameraSystem->setOrientZ(0.0f);
+	}
+
+
 	//EVERYTHING BEYOND THIS POINT IS IN FALCO'S DEBUG KEYSPACE!!!!
 
 	if(input.getDown(GameInput::BUT_5)) {
@@ -272,12 +270,16 @@ void Debug::processInput(const GameInput& input) {
 		src->setDirection(dirVec);
 		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
 	}
-	if(input.getDown(GameInput::BUT_6)) {
+	if(input.getTapped(GameInput::BUT_6)) {
+		static bool enabled = false;
+		enabled = !enabled;
+		getGuiSys()->setDebugOverLayEnabled(enabled);
+		/*
 		if(intensity != 0) --intensity;
 		dirVec.z -= 0.1f;
 		gyVec3Normalize(&dirVec);
 		src->setDirection(dirVec);
-		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
+		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);*/
 	}
 	if(input.getDown(GameInput::BUT_7)) {
 		++size;
@@ -309,18 +311,42 @@ void Debug::processInput(const GameInput& input) {
 	}
 
 	if(input.getTapped(GameInput::BUT_R)) {
-
 		static bool renderDebug = false;
 		renderDebug = !renderDebug;
 		getLightSys()->setRenderDebugEnabled(renderDebug);
 		printf(VERBOSE, "LightSystem::renderShadowVolumes = %d", renderDebug);
-	//	getPartSys()->getAttrib(0)->size = size;
-		//getPartSys()->emitFrom(0, GYVector3 { entity->transform._pos.x+5, entity->transform._pos.y, entity->transform._pos.z}, theta, intensity);
-
 	}
+
+    if(input.getDown(GameInput::BUT_U)) {
+
+		static bool once = true;
+		static ParticleEmitter* emitter;
+
+		if(once) {
+			Entity* entity = getCurArea()->findEntity("Julien");
+			getPartSys()->getAttrib(0)->loadTexture("item/legacyItems/star.PNG", 32, 32, 32, 32);
+			emitter = entity->addParticleEmitter();
+			emitter->setAttrib(getPartSys()->getAttrib(0));
+			getPartSys()->getAttrib(0)->setSize(32);
+			//getPartSys()->getAttrib(0)->setFrameRange(10, 13);
+			once = false;
+		}
+
+		emitter->emitFromEntity( GYVector3 { 0.0f, 0.0f, 0.0f }, theta, intensity);
+		  // getPartSys()->emitFromPoint(0, GYVector3 { entity->transform._pos.x+5, entity->transform._pos.y, 500.0f}, theta, intensity);
+
+//		getGuiSys()->addCombatText("10", GYColor4 { 255, 0, 0, 255}, GYVector2 { entity->transform._pos.x, entity->transform._pos.y}, GYVector2 { 0.5f, -5.0f});
+
+    }
 
 	static float timeSpeed = 60.0f;
 
+	if(input.getTapped(GameInput::BUT_N)) {
+		static bool sunEnabled = true;
+		sunEnabled = !sunEnabled;
+		getDaySys()->setSunEnabled(sunEnabled);
+	}
+	/*
 	if(input.getDown(GameInput::BUT_N)) {
 		timeSpeed *= 1.1f;
 		getDaySys()->setTimeDilation(timeSpeed);
@@ -328,7 +354,7 @@ void Debug::processInput(const GameInput& input) {
 	if(input.getDown(GameInput::BUT_M)) {
 		timeSpeed *= 0.9f;
 		getDaySys()->setTimeDilation(timeSpeed);
-	}
+	}*/
 
 	//VRAM and Audio Stats
 	if(input.getTapped(GameInput::BUT_Z)) {
@@ -365,7 +391,7 @@ void Debug::processInput(const GameInput& input) {
 	if(input.getTapped(GameInput::BUT_T)) {
 		Entity *entity = new Entity;
 		entity->setName("DICKMITE");
-		entity->transform.setPos(1400.0f+80.0f+32.0f, 1060.0f);
+		entity->transform.setPos(200.0F, 200.0f);
 		entity->transform.setScale(1.0f, 1.0f);
 		entity->transform.setSize(128.0f, 128.0f);
 		entity->setElev(0);
@@ -378,6 +404,10 @@ void Debug::processInput(const GameInput& input) {
 		attrib->setVertexColor(2, 0, 0, 255, 255);
 		attrib->setVertexColor(3, 255, 255, 0, 255);
 		attrib->loadTexture("item/legacyItems/jigglypuff1.PNG", 32, 32, 32, 32);
+		attrib->setTexCoord(3, 2.0, 2.0f);
+		attrib->setTexCoord(2, 0.0, 2.0f);
+		attrib->setTexCoord(1, 2.0, 0.0f);
+		attrib->setTexCoord(0, 0.0, 0.0f);
 #else
 
 		SpriteAttrib* attrib = new SpriteAttrib;
@@ -390,6 +420,10 @@ void Debug::processInput(const GameInput& input) {
 		AudioSource* src = entity->addAudioSource();
 		src->setLooping(true);
 		src->playWav(wav);
+		Collidable *col = entity->addCollidable();
+		CollidableAttrib* colattrib = new CollidableAttrib();
+		col->setAttrib(colattrib);
+		entity->addRigidBody();
 
 		getCurArea()->addEntity(entity);
 
@@ -397,7 +431,7 @@ void Debug::processInput(const GameInput& input) {
 
 	if(input.getTapped(GameInput::BUT_X)) {
 		GYVector4 diffuseColors[4] = {
-			{ 1.0f, 1.0f, 2.0f, 1.0f},
+			{ 1.0f, 1.0f, 5.0f, 1.0f},
 			{ 1.0f, 2.0f, 1.0f, 1.0f},
 			{ 2.0f, 1.0f, 1.0f, 1.0f},
 			{ 2.0f, 2.0f, 1.0f, 1.0f}
@@ -427,13 +461,13 @@ void Debug::processInput(const GameInput& input) {
 			LightAttrib* attrib = new LightAttrib;
 			//attrib->setAmbientColor(GYVector4{ 0.5f, 0.5f, 0.5f, 1.0f});
 			attrib->setDiffuseColor(diffuseColors[count%4]);
-			attrib->setSpecularColor(GYVector4{ 5.0f, 1.0f, 1.0f, 1.0f});
+			attrib->setSpecularColor(GYVector4{ 20.0f, 1.0f, 1.0f, 1.0f});
 			lightSrc->setAttrib(attrib);
 #if 0
 			lightSrc->setLightType(LightSource::LIGHT_DIRECTIONAL);
 #else
-			lightSrc->setLightType(GY_LIGHT_SPOT);
-			lightSrc->setSpotCutoffAngle(45.0f);
+			lightSrc->setLightType(GY_LIGHT_POINT);
+			//lightSrc->setSpotCutoffAngle(45.0f);
 			lightSrc->setShadowCaster(true);
 			attrib->setAttenuationFactors(GYVector3{ 0.0005f, 0.00005f, 0.00005f });
 

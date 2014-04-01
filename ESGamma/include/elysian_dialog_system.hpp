@@ -54,6 +54,7 @@ namespace elysian {
 		void FacePlayer(void) const;
 
 		void _splitText(void);
+		//void _checkForDialog(void);
 
 		// ==== GUI SHIT ====
 		QuadSprite _mainCanvas; //gets and sets for Lua to fuck with this shit!

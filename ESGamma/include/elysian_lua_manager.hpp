@@ -121,6 +121,11 @@ namespace elysian {
 
 		static void					runGarbageCollector(void);
 		static void					dumpStats(void);
+
+		static unsigned				getScriptCount(void);
+		static unsigned				getScriptInstances(void);
+		static unsigned				getKbytesUsed(void);
+
 	};
 
 

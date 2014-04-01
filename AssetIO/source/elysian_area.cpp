@@ -1,4 +1,3 @@
-#include <fstream>
 #include <string.h>
 #include "elysian_area.hpp"
 #include "elysian_level.hpp"
@@ -11,23 +10,13 @@ using namespace std;
 
 namespace elysian {
 
-Area::Area(void):
-	tiles(NULL),
-	tileLayer2(NULL),
-	tileLayer3(NULL),
-	lights(NULL),
-	level(NULL),
-	width(0),
-	height(0)
-{ }
-
 Entity* Area::findEntity(const char *name) {
 	for(std::vector<Entity*>::iterator it = entities.begin();
 		it != entities.end(); ++it) {
 			if(strcmp(name, (*it)->getName()) == 0) 
 				return *it;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void Area::addEntity(Entity *entity) {
@@ -57,20 +46,18 @@ void Area::allocMap(void) {
 	tiles = (TileEntry *)malloc(sizeof(TileEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS);
 	tileLayer2 = tiles + width*height;
 	tileLayer3 = tiles + width*height*2;
-	lights = (LightEntry *)malloc(sizeof(LightEntry)*width*height);
+	mapEntryCount = width*height*ELYSIAN_AREA_MAP_LAYERS;
+	layerEntryCount = width*height;
 }
 
 void Area::freeMap(void) {
 	free(tiles);
-	free(lights);
 }
 
 void Area::resizeMap(const unsigned w, const unsigned h) {
 	TileEntry *ntiles = (TileEntry *)malloc(sizeof(TileEntry)*w*h*ELYSIAN_AREA_MAP_LAYERS);
-	LightEntry *nlights = (LightEntry *)malloc(sizeof(LightEntry)*w*h);
 
 	memset(ntiles, 0, sizeof(TileEntry)*w*h*ELYSIAN_AREA_MAP_LAYERS);
-	memset(nlights, 0, sizeof(LightEntry)*w*h);
 
 	unsigned endX = (w < width)? w : width;
 	unsigned endY = (h < height)? h : height;
@@ -79,17 +66,17 @@ void Area::resizeMap(const unsigned w, const unsigned h) {
 		for(unsigned x = 0; x < endX; ++x) {
 			for(unsigned i = 0; i < ELYSIAN_AREA_MAP_LAYERS; ++i)
 				ntiles[i*w*h+y*w+x] = getTileEntry(i, x, y);
-			nlights[y*w+x] = lights[y*w+x];
 		}
 
 	freeMap();
 
 	tiles = ntiles;
-	lights = nlights;
 	tileLayer2 = tiles + w*h;
 	tileLayer3 = tiles + w*h*2;
 	width = w;
 	height = h;
+	mapEntryCount = w*h*ELYSIAN_AREA_MAP_LAYERS;
+	layerEntryCount = w*h;
 
 }
 
@@ -165,7 +152,6 @@ bool Area::loadMap(const char *const filename) {
 	allocMap();
 
 	fread(tiles, sizeof(TileEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS, 1, file);
-	fread(lights, sizeof(LightEntry)*width*height, 1, file);
 
 	fclose(file);
     dbgPop();
@@ -189,7 +175,6 @@ bool Area::saveMap(const char *const filename) {
 	fwrite(&height, sizeof(height), 1, file);
 
 	fwrite(tiles, sizeof(TileEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS, 1, file);
-	fwrite(lights, sizeof(LightEntry)*width*height, 1, file);
 
 	fclose(file);
     dbgPop();
@@ -197,6 +182,7 @@ bool Area::saveMap(const char *const filename) {
 }
 
 bool Area::loadEntities(const char *const filename) {
+#if 0
 	ifstream file(gyFilePath(filename));
 	Entity *currentEntity;
 	unsigned int amount;
@@ -223,10 +209,12 @@ bool Area::loadEntities(const char *const filename) {
 	}
 
     dbgPop();
+#endif
 	return true;
 }
 
 bool Area::saveEntities(const char *const filename) {
+#if 0
 	ofstream file(gyFilePath(filename));
 	dbgprintf(LOG_VERBOSE, "Area::SaveEntities(%s)", filename);
     dbgPush();
@@ -244,6 +232,7 @@ bool Area::saveEntities(const char *const filename) {
 	}
 
     dbgPop();
+#endif
 	return true;
 }
 

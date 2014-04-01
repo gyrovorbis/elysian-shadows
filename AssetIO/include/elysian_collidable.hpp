@@ -8,6 +8,10 @@
 
 #include "elysian_component.hpp"
 
+#define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_BEHAVIOR_MASK	(1<<0)
+#define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_WARP_MASK		(1<<1)
+#define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_COMBAT_MASK		(1<<2)
+
 namespace elysian {
 
 	struct CollisionFlags { 
@@ -69,13 +73,14 @@ private:
 	public:
 		enum ZTRAN_STATE { ZTRAN_INACTIVE, ZTRAN_ACTIVE };
 	protected:
-		GYVector4 _centerWorldPos;
-		unsigned _contactCount;
-		CollidableAttrib *_attrib;
-		unsigned _zTranTileX, _zTranTileY;
-		ZTRAN_STATE _zTranState;
-		bool _onZTran;
-		bool _resolvePen, _trigger;
+		unsigned			_contactCount		= 0;
+		CollidableAttrib*	_attrib				= nullptr;
+		unsigned			_zTranTileX			= 0;
+		unsigned			_zTranTileY			= 0;
+		ZTRAN_STATE			_zTranState			= ZTRAN_INACTIVE;
+		bool				_onZTran			= false;
+		bool				_resolvePen			= true;
+		uint32_t			_eventMonitorMask	= 0;
 
 		union { 
 			GYCollider col;
@@ -85,23 +90,14 @@ private:
 		} _collider;
 
 		inline Collidable(Entity &parent): 
-			Component(parent), 
-			_contactCount(0), 
-			_attrib(NULL),
-			_zTranTileX(0), _zTranTileY(0),
-			_zTranState(ZTRAN_INACTIVE), 
-			_onZTran(false),
-			_resolvePen(true),
-			_trigger(false)
-		{
-			memset(&_centerWorldPos, 0, sizeof(_centerWorldPos));
-		}
+			Component(parent)
+		{}
 
 		virtual ~Collidable(void) {}
 		
 	public:        
-		virtual bool load(std::ifstream& stream);
-		virtual bool save(std::ofstream& stream);
+		virtual bool load(FILE* file);
+		virtual bool save(FILE* file);
         virtual bool canAddTo(Entity& /*entity*/) { return true; }
 		virtual bool addToLevel(void);
 		virtual bool removeFromLevel(void);
@@ -115,12 +111,14 @@ private:
 		inline CollidableAttrib *getAttrib(void) const { return _attrib; }
 		inline ZTRAN_STATE getZTranState(void) const { return _zTranState; }
 		inline void setZTranState(const ZTRAN_STATE tran) { _zTranState = tran; }
-		inline const GYVector4 &getCenterWorldPos(void) const { return _centerWorldPos; }
+		inline const GYVector2 &getCenterWorldPos(void) const { return _collider.col.worldPos; }
 		inline void setZTranTile(unsigned x, unsigned y) { _zTranTileX = x; _zTranTileY = y; }
 		inline void getZTranTile(unsigned &x, unsigned &y) const { x = _zTranTileX; y = _zTranTileY; }
 		inline void setResolvePenetration(const bool v) { _resolvePen = v; }
-		inline bool getTrigger(void) const { return _trigger; }
-		inline void setTrigger(const bool t) { _trigger = t; }
+		inline uint32_t getContactEventMonitorMask(void) const { return _eventMonitorMask; }
+		inline void setContactEventMonitorMask(const uint32_t t) { _eventMonitorMask = t; }
+		inline GYCollider* getCollider(void) { return &_collider.col; }
+		const GYVector2& getWorldPos(void) const;
 	};
 
 	/*
@@ -128,16 +126,38 @@ private:
 	between the two GYColliders involved in the contact AND the 
 	elysian::Collidables encapsulating them.
 	*/
+
 	class CollisionContact: private GYContact {
 #ifdef ELYSIAN_ENGINE
 		friend class CollisionSystem;
+		friend class RigidBodySystem;
 		Collidable* _bodyA			= nullptr;
 		Collidable* _bodyB			= nullptr;
 		bool _resolvePen			= true;
-		bool _trigger				= false;
+		uint32_t _eventMonitorMask	= 0;
 #endif
 
+		void _calculatePenetrationInternals(void);
+		void _calculateVelocityInternals(const float deltaTime);
+
+	public:
+		Collidable*		getCollidable(const unsigned index) const;
+		const GYStatic*	getStaticAttrib(const unsigned index) const;
+		void			getWorldPos(GYVector2& pos) const;
+		void			getNormal(GYVector2& _normal) const;
+		void			getObjPos(const unsigned index, GYVector2& pos) const;
+		float			getSeparatingVel(void) const;
+		float			getClosingVel(void) const;
+		float			getDeltaVel(void) const;
+		float			getDepth(void) const;
+
+
 	};
+
+
+	// ======== INLINEZ ========
+
+	inline const GYVector2& Collidable::getWorldPos(void) const { return _collider.col.worldPos; }
 
 	inline CollidableAttrib::CollidableAttrib(void): 
 		_type(GY_COLLIDER_AABB) { 
@@ -149,6 +169,15 @@ private:
 		_staticAttrib.invMomOfInertia = 0.0f;
 	}
 
+	inline Collidable* CollisionContact::getCollidable(const unsigned index) const { return (index == 0)? _bodyA : _bodyB; }
+	inline const GYStatic* CollisionContact::getStaticAttrib(const unsigned index) const { return staticAttrib[index]; }
+	inline void CollisionContact::getWorldPos(GYVector2 &pos) const { pos = worldPos; }
+	inline void CollisionContact::getNormal(GYVector2 &_normal) const { _normal = normal; }
+	inline void CollisionContact::getObjPos(const unsigned index, GYVector2 &pos) const { pos = objPos[index]; }
+	inline float CollisionContact::getSeparatingVel(void) const { return sepVel; }
+	inline float CollisionContact::getClosingVel(void) const { return closingVel; }
+	inline float CollisionContact::getDeltaVel(void) const { return deltaVel; }
+	inline float CollisionContact::getDepth(void) const { return depth; }
 
 
 }

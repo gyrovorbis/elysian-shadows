@@ -1,7 +1,6 @@
 #ifndef ELYSIAN_COMPONENT_HPP
 #define ELYSIAN_COMPONENT_HPP
 
-#include <fstream>
 #include "elysian_asset.hpp"
 
 namespace elysian {
@@ -21,9 +20,8 @@ namespace elysian {
 			RIGID_BODY,
 			AUDIO_SOURCE,
 			LIGHT_SOURCE,
-			ITEM, 
-			FRIENDLY, 
-			ENEMY, 
+			PARTICLE_EMITTER,
+			COMBAT,
 			MAX_TYPE, 
 			BEHAVIOR 
 		};
@@ -31,8 +29,8 @@ namespace elysian {
 		inline static bool isValidType(const TYPE type) { 	return (type >= 0 && type < Component::MAX_TYPE); }
 		
 		virtual bool canAddTo(Entity& entity) = 0;
-		virtual bool load(std::ifstream& stream) = 0;
-		virtual bool save(std::ofstream& stream) = 0;
+		virtual bool load(FILE* file) = 0;
+		virtual bool save(FILE* file) = 0;
 		virtual bool addToLevel(void) = 0;
 		virtual bool removeFromLevel(void) = 0;
 		virtual TYPE getType(void) const = 0;

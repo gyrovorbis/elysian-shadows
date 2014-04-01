@@ -1,16 +1,63 @@
 #include "kinetic/gyro_kinetic_physics.h"
 #include "kinetic/gyro_kinetic_contact.h"
 #include "kinetic/gyro_kinetic_collider.h"
+#include "kinetic/gyro_kinetic_kinetic.h"
+#include <gyro_system_api.h>
+
+//void gyIntegrate(void *collider, struct _GYKinetic *kin, const struct _GYStatic *stat);
+
+void gyIntegrate(struct _GYKinetic *kin,
+				 const struct _GYStatic *attrib,
+				 const float deltaTime,
+				 GYVector2* pos,
+				 float* orient)
+{
+
+
+	//Calculate linear acceleration with force input
+	kin->prevAccel.x = kin->accel.x;
+	kin->prevAccel.y = kin->accel.y;
+
+	gyVec2AddScaled(&kin->prevAccel, &kin->forceAccum, attrib->inverseMass);
+
+	//Calculate angular acceleration from torque input
+	kin->angAccel = kin->torqueAccum * attrib->invMomOfInertia;
+
+	//Update linear velocity from linear acceleration (and impulse?)
+	gyVec2AddScaled(&kin->vel, &kin->prevAccel, deltaTime);
+
+	//Update rotation from angular acceleration (and impulsive torque?)
+	kin->rot += kin->angAccel * deltaTime;
+
+	//Damp (impose drag)
+	gyVec2ScaleAccum(&kin->vel, attrib->damping);
+	kin->rot *= attrib->angDamping;
+
+	//Update position from linear velocity
+	gyVec2AddScaled(pos, &kin->vel, deltaTime);
+
+	//Update orientation from rotation
+	*orient += kin->rot * deltaTime;
+
+	//IMPOSE DRAG AGAIN?
+	//Calculate Derived Data
+
+	//Clear force accumulators
+	kin->forceAccum.x = kin->forceAccum.y = 0.0f;
+	kin->torqueAccum = 0.0f;
+
+}
+
 
 //Optimize for nonrigid bodies, so rotational math isn't performed
 //Make support only one body for terrain
-void gyResolvePenetration(struct _GYContact *con, GYVector2 posDelta[], GYVector2 rotDir[], float orientDelta[], float deltaTime) {
-	(void)deltaTime;
+void gyResolvePenetration(struct _GYContact *con, GYVector2 posDelta[], GYVector2 rotDir[], float orientDelta[]/*, float deltaTime*/) {
+//	(void)deltaTime;
 	GYVector2 velPerImp;
 	float linearMove[2], angularMove[2];
 	float linearInertia[2], angularInertia[2];
 	
-    //float angularLimit = 1000.0f;
+	float angularLimit = 0.01f;
 	float totalInertia = 0;
 
 	float rotPerImp;
@@ -27,13 +74,11 @@ void gyResolvePenetration(struct _GYContact *con, GYVector2 posDelta[], GYVector
 		gyVec2VectorCrossProd(&velPerImp, &con->objPos[1], rotPerImp);
 		angularInertia[1] = gyVec2DotProd(&velPerImp, &con->normal);
 	}
-	else angularInertia[1] = 0;
+	else angularInertia[1] = 0.0f;
 
 	//Linear Inertia
 	linearInertia[0] = con->staticAttrib[0]->inverseMass;
-	if(con->staticAttrib[1])
-		linearInertia[1] = con->staticAttrib[1]->inverseMass;
-	else linearInertia[1] = 0.0f;
+	linearInertia[1] = (con->staticAttrib[1])? con->staticAttrib[1]->inverseMass : 0.0f;
 
 #if 0
 	printf("linearInertia[0] - %f\n", linearInertia[0]);
@@ -44,9 +89,9 @@ void gyResolvePenetration(struct _GYContact *con, GYVector2 posDelta[], GYVector
 
 	//Total Inertia
 	totalInertia = linearInertia[0] + angularInertia[0] + linearInertia[1] + angularInertia[1];
-	totalInertia = 1.0f/totalInertia;
-	
+
 	if(totalInertia == 0.0f) return; //nothing here can move
+	totalInertia = 1.0f/totalInertia;
 	
 	//printf("totalInertia - %f\n", totalInertia);
 	
@@ -56,25 +101,39 @@ void gyResolvePenetration(struct _GYContact *con, GYVector2 posDelta[], GYVector
 	angularMove[0] = -con->depth * angularInertia[0] * totalInertia;
 	linearMove[1] = -con->depth * linearInertia[1] * totalInertia;
 	angularMove[1] = con->depth * angularInertia[1] * totalInertia;
-	
-	//printf("linearMove[0] - %f\n", linearMove[0]);
-	//printf("angularMove[0] - %f\n", angularMove[0]);
-	//printf("linearMove[1] - %f\n", linearMove[1]);
-	//printf("angularMove[1] - %f\n", angularMove[1]);
-	
+
 	//Excessive rotation check
+	for(unsigned i = 0; i < 2; ++i) {
+		if(con->staticAttrib[i]) {
+			float max = angularLimit * gyVec2Magnitude(&con->objPos[i]);
+			//float max = angularLimit * gyVec2DotProd
+			if(abs(angularMove[i]) > max) {
+				float totalMotion = angularMove[i] + linearMove[i];
+				angularMove[i] = (angularMove[i] > 0)? max : -max;
+				linearMove[i] = totalMotion - angularMove[i];
+			}
+		}
+	}
+
+#if 1
+	_gyLog(GY_DEBUG_VERBOSE, "linearMove[0] - %f\n", linearMove[0]);
+	_gyLog(GY_DEBUG_VERBOSE, "angularMove[0] - %f\n", angularMove[0]);
+	_gyLog(GY_DEBUG_VERBOSE, "linearMove[1] - %f\n", linearMove[1]);
+	_gyLog(GY_DEBUG_VERBOSE, "angularMove[1] - %f\n", angularMove[1]);
+#endif
+	
 	
 	//Calculate orientation change to give us the desired linear delta from angular movement
 	rotPerImp = gyVec2ScalarCrossProd(&con->objPos[0], &con->normal);
 	rotPerImp *= con->staticAttrib[0]->invMomOfInertia;
 	//printf("rotPerImp[0] - %f\n", rotPerImp);
-	orientDelta[0] = (angularInertia[0] != 0.0f)? rotPerImp / angularInertia[0] * angularMove[0] : 0.0f;
-	
+	orientDelta[0] = (angularInertia[0] != 0.0f && angularMove[0] != 0.0f)? rotPerImp / angularInertia[0] * angularMove[0] : 0.0f;
+
 	if(con->staticAttrib[1]) {
 		rotPerImp = gyVec2ScalarCrossProd(&con->objPos[1], &con->normal);
 		rotPerImp *= con->staticAttrib[1]->invMomOfInertia;
 		//printf("rotPerImp[1] - %f\n", rotPerImp);
-		orientDelta[1] = (angularInertia[1] != 0.0f)? rotPerImp / angularInertia[1] * angularMove[1] : 0.0f;
+		orientDelta[1] = (angularInertia[1] != 0.0f && angularMove[1] != 0.0f)? rotPerImp / angularInertia[1] * angularMove[1] : 0.0f;
 	}
 	else orientDelta[1] = 0.0f;
 	
@@ -97,6 +156,7 @@ void gyResolvePenetration(struct _GYContact *con, GYVector2 posDelta[], GYVector
 	//printf("orientDelta[1] - %f\n", orientDelta[1]);
 	
 	//Calculate rotation directions for penetration depth adjustment
+	//this is never even fucking used... not relevant in 3D?
 	rotDir[0].x = con->objPos[0].y * con->staticAttrib[0]->invMomOfInertia;
 	rotDir[0].y = -con->objPos[0].x * con->staticAttrib[0]->invMomOfInertia;
 	
@@ -108,4 +168,178 @@ void gyResolvePenetration(struct _GYContact *con, GYVector2 posDelta[], GYVector
 		rotDir[1].x = 0.0f;
 		rotDir[1].y = 0.0f;
 	}
+}
+
+
+
+void gyContactResolveVelocity(struct _GYContact *con, GYVector2 velDelta[], float rotDelta[]/*, const float deltaTime*/) {
+//	(void)deltaTime;
+	GYVector2 velPerImp;
+	GYVector2 impulse;
+	float rotPerImp;
+	float impulseMag;
+	float totalDeltaVelPerImp; //overall change in velocity of both objects per unit impulse
+
+//BODY 1 FACTORS
+
+	//totalDeltaVelPerImp = _attribPool[_partPool[_colPool[_conPool[index]._colIndex[0]].partIndex]._attribIndex]._inverseMass;
+	totalDeltaVelPerImp = con->staticAttrib[0]->inverseMass;
+
+	/*
+	rotPerImp = gyroVector2ScalarCrossProd(&_conPool[index]._relContactPos[0], &_conPool[index]._normal);
+	rotPerImp *= _attribPool[_partPool[_colPool[_conPool[index]._colIndex[0]].partIndex]._attribIndex]._invMomOfInertia;
+	gyroVector2VectorCrossProd(&velPerImp, &_conPool[index]._relContactPos[0], rotPerImp);
+	totalDeltaVelPerImp += gyroVector2DotProd(&velPerImp, &_conPool[index]._normal);
+	*/
+
+	rotPerImp = gyVec2ScalarCrossProd(&con->objPos[0], &con->normal);
+	rotPerImp *= con->staticAttrib[0]->invMomOfInertia;
+	gyVec2VectorCrossProd(&velPerImp, &con->objPos[0], rotPerImp);
+	totalDeltaVelPerImp += gyVec2DotProd(&velPerImp, &con->normal);
+
+//BODY 2 FACTORS
+
+	if(con->staticAttrib[1]) {
+		totalDeltaVelPerImp += con->staticAttrib[1]->inverseMass;
+
+		rotPerImp = gyVec2ScalarCrossProd(&con->objPos[1], &con->normal);
+		rotPerImp *= con->staticAttrib[1]->invMomOfInertia;
+		gyVec2VectorCrossProd(&velPerImp, &con->objPos[1], rotPerImp);
+		totalDeltaVelPerImp += gyVec2DotProd(&velPerImp, &con->normal);
+
+	}
+
+//	printf("TotalDeltaVelPerImp - %f\n", totalDeltaVelPerImp);
+
+	if(totalDeltaVelPerImp == 0.0f) return; //nothing can move
+
+	//IMPULSE CALCULATION
+	//impulseMag = _conPool[index]._deltaVelocity / totalDeltaVelPerImp;
+	//gyroVector2Scale(&impulse, &_conPool[index]._normal, impulseMag);
+	impulseMag = con->deltaVel / totalDeltaVelPerImp;
+	gyVec2Scale(&impulse, &con->normal, impulseMag);
+
+
+//	printf("impulseMag - %f\n", impulseMag);
+//	printf("impulse - <%f, %f>\n", impulse.x, impulse.y);
+
+	//CALCULATE RESULTING VELOCITY DELTAS BODY 1
+/*	gyroVector2Scale(&velDelta[0], &impulse, _attribPool[_partPool[_colPool[_conPool[index]._colIndex[0]].partIndex]._attribIndex]._inverseMass);
+	rotDelta[0] = gyroVector2ScalarCrossProd(&impulse, &_conPool[index]._relContactPos[0]);
+	rotDelta[0] *= _attribPool[_partPool[_colPool[_conPool[index]._colIndex[0]].partIndex]._attribIndex]._invMomOfInertia;*/
+
+	gyVec2Scale(&velDelta[0], &impulse, con->staticAttrib[0]->inverseMass);
+	rotDelta[0] = gyVec2ScalarCrossProd(&impulse, &con->objPos[0]);
+	rotDelta[0] *= con->staticAttrib[0]->invMomOfInertia;
+
+	if(con->staticAttrib[1]) {
+		gyVec2ScaleAccum(&impulse, -1.0f);
+
+	//CALCULATE RESULTING VELOCITY DELTAS BODY 2
+		gyVec2Scale(&velDelta[1], &impulse, con->staticAttrib[1]->inverseMass);
+		rotDelta[1] = gyVec2ScalarCrossProd(&impulse, &con->objPos[1]);
+		rotDelta[1] *= con->staticAttrib[1]->invMomOfInertia;
+	}
+
+
+	//APPLY RESULTING VELOCITY DELTAS
+	//gyroVector2AddTo(&_partPool[_colPool[_conPool[index]._colIndex[0]].partIndex]._velocity, &velDelta[0]);
+	//_partPool[_colPool[_conPool[index]._colIndex[0]].partIndex]._rotation += rotDelta[0];
+	//gyroVector2AddTo(&_partPool[_colPool[_conPool[index]._colIndex[1]].partIndex]._velocity, &velDelta[1]);
+	//_partPool[_colPool[_conPool[index]._colIndex[1]].partIndex]._rotation += rotDelta[1];
+
+}
+
+
+//needs to know:
+//worldPos[2];
+//velocity[0]
+//rotation
+
+void gyContactCalculatePenetrationInternals(GYContact*const contact, const GYVector2*const pos1, const GYVector2*const pos2) {
+
+	//printf("normal - <%f, %f>\n", _conPool[index]._normal.x, _conPool[index]._normal.y);
+	//printf("pen depth - %f\n", _conPool[index]._depth);
+
+	gyVec2Sub(&contact->objPos[0], &contact->worldPos, pos1);
+	if(pos2) gyVec2Sub(&contact->objPos[1], &contact->worldPos, pos2);
+
+	//printf("relContactPos[0] - <%f, %f>\n", _conPool[index]._relContactPos[0].x, _conPool[index]._relContactPos[0].y);
+	//printf("relContactPos[1] - <%f, %f>\n", _conPool[index]._relContactPos[1].x, _conPool[index]._relContactPos[1].y);
+
+	//printf("Coeff of Rest - %f\n", _conPool[index]._coeffOfRestitution);
+}
+
+
+void gyContactCalculateVelocityInternals(GYContact*const contact, GYKinetic*const rb1, GYKinetic*const rb2, const float deltaTime) {
+	GYVector2 totalVelocity[2];
+
+	gyVec2VectorCrossProd(&totalVelocity[0], &contact->objPos[0], rb1->rot);
+	//printf("body1->rotVel - <%f, %f>\n", totalVelocity[0].x, totalVelocity[0].y);
+	gyVec2AddAccum(&totalVelocity[0], &rb1->vel);
+
+	//WEIRD CORRECTIVE SHIT
+	//Add velocity from acceleration NOT IN THE DIRECTION OF THE NORMAL
+	GYVector2 accVelocity;
+	GYVector2 normalVel;
+//	gyVec2Scale(&accVelocity, &rb1->prevAccel, deltaTime);
+	//gyVec2Scale(&normalVel, &contact->normal, gyVec2DotProd(&accVelocity, &contact->normal));
+	//gyVec2SubFrom(&accVelocity, &normalVel);
+	//gyVec2AddAccum(&totalVelocity[0], &accVelocity);
+
+	if(rb2) {
+		gyVec2VectorCrossProd(&totalVelocity[1], &contact->objPos[1], rb2->rot);
+		//printf("body2->rotVel - <%f, %f>\n", totalVelocity[1].x, totalVelocity[1].y);
+		gyVec2AddAccum(&totalVelocity[1], &rb2->vel);
+
+		//gyVec2Scale(&accVelocity, &rb2->prevAccel, deltaTime);
+		//gyVec2Scale(&normalVel, &contact->normal, gyVec2DotProd(&accVelocity, &contact->normal));
+		//gyVec2SubFrom(&accVelocity, &normalVel);
+		//gyVec2AddAccum(&totalVelocity[1], &accVelocity);
+
+
+	} else {
+		totalVelocity[1].x = totalVelocity[1].y = 0.0f;
+	}
+
+	//printf("Body1->vel = <%f, %f>\n", totalVelocity[0].x, totalVelocity[0].y);
+	//printf("Body2->vel = <%f, %f>\n", totalVelocity[1].x, totalVelocity[1].y);
+
+	gyVec2SubFrom(&totalVelocity[0], &totalVelocity[1]);
+	//gyVec2AddAccum(&totalVelocity[0], &totalVelocity[1]);
+	//printf("Relative vel - <%f, %f>\n", totalVelocity[0].x, totalVelocity[0].y);
+	contact->closingVel = gyVec2DotProd(&totalVelocity[0], &contact->normal);
+
+	//printf("Separating vel - %f\n", _conPool[index]._closingVelocity);
+
+	contact->coeffOfRest = contact->staticAttrib[0]->coeffOfRest;
+	if(rb2) contact->coeffOfRest *= contact->staticAttrib[1]->coeffOfRest;
+
+	gyContactUpdateDeltaVelocity(contact, rb1, rb2, deltaTime);
+}
+
+//Do actual ADJUSTMENT of closing velocity in update loop
+//This could just as easily not be its own function anymore and be done in velocityResolution as with the linear case
+void gyContactUpdateDeltaVelocity(GYContact*const contact, GYKinetic*const rb1, GYKinetic*const rb2, const float deltaTime) {
+	float velocityFromAccel;
+	float newRestitution = contact->coeffOfRest;
+
+	velocityFromAccel = gyVec2DotProd(&rb1->prevAccel, &contact->normal) * deltaTime;
+
+	if(rb2) {
+		velocityFromAccel -= gyVec2DotProd(&rb2->prevAccel, &contact->normal) * deltaTime;
+	}
+
+	//===========NEED AN EPSILON IN THE FUTURE ====
+	contact->coeffOfRest = (abs(contact->closingVel) < 0.1f)? 0.0f : contact->coeffOfRest;
+
+	contact->deltaVel = -contact->closingVel -
+		contact->coeffOfRest * (contact->closingVel - velocityFromAccel);
+
+
+	//contact->deltaVel = -contact->closingVel * (1.0f + newRestitution);
+
+	//contact->deltaVel = -contact->closingVel*newRestitution -contact->closingVel;
+	//printf("DeltaVel - %f\n", _conPool[index]._deltaVelocity);
+
 }

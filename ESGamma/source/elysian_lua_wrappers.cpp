@@ -8,6 +8,7 @@ namespace elysian {
 	void LuaManager::_registerWrappers(void) {
 
 		//Register classes and structs
+		_mainState->register_class<Lua32BitMask>();
 		_mainState->register_class<LuaBehaviorScriptAttrib>();
 		_mainState->register_class<GYVector2>();
 		_mainState->register_class<GYVector3>();
@@ -17,7 +18,7 @@ namespace elysian {
 		OOLUA::register_class<Entity>(*_mainState);
 		OOLUA::register_class<QuadSpriteAttrib>(*_mainState);
 		_mainState->register_class<Component>();
-		_mainState->register_class<GYMaterial>();
+		_mainState->register_class<Material>();
 		_mainState->register_class<Renderable>();
 		_mainState->register_class<AnimationSequence>();
 		_mainState->register_class<AnimationAttrib>();
@@ -26,9 +27,19 @@ namespace elysian {
 		_mainState->register_class<CollisionFlags>();
 		_mainState->register_class<GYStatic>();
 		_mainState->register_class<CollidableAttrib>();
+		_mainState->register_class<CollisionContact>();
 		_mainState->register_class<Collidable>();
 		_mainState->register_class<Character>();
 		_mainState->register_class<Warp>();
+		_mainState->register_class<DialogScreen>();
+		_mainState->register_class<DialogText>();
+		_mainState->register_class<DialogPrompt>();
+		_mainState->register_class<Dialog>();
+		_mainState->register_class<Examinable>();
+		_mainState->register_class<CombatAttrib>();
+		_mainState->register_class<Combat>();
+		_mainState->register_class<ParticleEmitterAttrib>();
+		_mainState->register_class<ParticleEmitter>();
 		OOLUA::register_class<LuaBehavior>(*_mainState);
 		_mainState->register_class<Tile>();
 		_mainState->register_class<Level>();
@@ -42,13 +53,20 @@ namespace elysian {
 		_mainState->register_class<GYWav>();
 		_mainState->register_class<AudioSource>();
 		_mainState->register_class<LightSource>();
+		_mainState->register_class<RigidBodyAttrib>();
+		_mainState->register_class<RigidBody>();
 		_mainState->register_class<AudioSystem>();
 		_mainState->register_class<LightSystem>();
-		_mainState->register_class<ParticleEmitterAttrib>();
 		_mainState->register_class<ParticleSystem>();
 		_mainState->register_class<DaySystem>();
+		_mainState->register_class<DialogSystem>();
+		_mainState->register_class<RigidBodySystem>();
+		_mainState->register_class<GuiSystem>();
 		_mainState->register_class<LevelSystem>();
+		_mainState->register_class<CombatSystem>();
 		_mainState->register_class<Direction>();
+		OOLUA::register_class<GravityForceGenerator>(*_mainState);
+
 
 		//Register C and static member functions
 		lua_register(*_mainState, "print", &print);
@@ -63,6 +81,9 @@ namespace elysian {
 		_mainState->register_class_static<Singletons>("getLevelSys", &Singletons_getLevelSystem);
 		_mainState->register_class_static<Singletons>("getPartSys", &Singletons_getParticleSystem);
 		_mainState->register_class_static<Singletons>("getDaySys", &Singletons_getDaySystem);
+		_mainState->register_class_static<Singletons>("getRigidBodySys", &Singletons_getRigidBodySystem);
+		_mainState->register_class_static<Singletons>("getDialogSys", &Singletons_getDialogSystem);
+		_mainState->register_class_static<Singletons>("getGuiSys", &Singletons_getGuiSystem);
 
 		//libGyro wrappers
 		_mainState->register_class_static<gyro>("filePath", &gyroFilePath);
@@ -74,6 +95,12 @@ namespace elysian {
 	}
 
 }
+
+OOLUA_EXPORT_FUNCTIONS_CONST(Lua32BitMask,
+							 toInt)
+OOLUA_EXPORT_FUNCTIONS(Lua32BitMask,
+					   fromInt,
+					   setBit)
 
 OOLUA_EXPORT_FUNCTIONS(LuaBehaviorScriptAttrib,
 					   inheritFromBehavior,
@@ -123,8 +150,6 @@ EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Component)
 EXPORT_OOLUA_FUNCTIONS_1_CONST(Component, getEntity)
 
 OOLUA_EXPORT_FUNCTIONS(Entity,
-						activate,
-						deactivate,
 						move,
 						setName,
 						setElev,
@@ -135,6 +160,9 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
 						addWarp,
 						addAudioSource,
 						addLightSource,
+						addExaminable,
+						addRigidBody,
+						addCombat,
 						addBehavior,
 						addLuaBehavior,
 						removeRenderable,
@@ -144,6 +172,9 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
 						removeWarp,
 						removeAudioSource,
 						removeLightSource,
+						removeExaminable,
+						removeRigidBody,
+						removeCombat,
 						removeBehavior,
 						removeLuaBehavior,
 						setDepthType,
@@ -159,6 +190,9 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getWarp,
 								getAudioSource,
 								getLightSource,
+								getExaminable,
+								getRigidBody,
+								getCombat,
 								getBehavior,
 								getLuaBehavior,
 								getDepthType)
@@ -166,12 +200,13 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(PrimAttrib)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(PrimAttrib)
 
-EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(SpriteAttrib,
+EXPORT_OOLUA_FUNCTIONS_6_NON_CONST(SpriteAttrib,
 								   setFrame,
 								   setColor,
 								   setAlpha,
 								   loadTexture,
-								   loadSheet)
+								   loadSheet,
+								   setTexCoord)
 EXPORT_OOLUA_FUNCTIONS_2_CONST(SpriteAttrib,
 							   getColor,
 							   getAlpha)
@@ -181,28 +216,27 @@ EXPORT_OOLUA_FUNCTIONS_1_CONST(QuadSpriteAttrib,
 EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(QuadSpriteAttrib,
 								   setVertexColor,
 								   setVerticesAlpha)
-
-OOLUA_EXPORT_FUNCTIONS(GYMaterial,
-					   setShininess)
-OOLUA_EXPORT_FUNCTIONS_CONST(GYMaterial,
-							 getAmbientColor,
-							 getDiffuseColor,
-							 getSpecularColor,
-							 getEmissiveColor,
-							 getShininess)
+OOLUA_EXPORT_FUNCTIONS(Material,
+					   setShininess,
+					   setAmbientColor,
+					   setDiffuseColor,
+					   setSpecularColor,
+					   setEmissiveColor)
+OOLUA_EXPORT_FUNCTIONS_CONST(Material)
 
 OOLUA_EXPORT_FUNCTIONS(Renderable,
 					   setFrame,
 					   setOffset,
 					   setSpriteAttrib,
 					   loadNormalMap,
-					   getMaterial,
+					   loadSpecularMap,
 					   setMaterial)
 OOLUA_EXPORT_FUNCTIONS_CONST(Renderable,
 						   getFrame,
 						   getOffset,
 						   getSpriteAttrib,
-						   getQuadSpriteAttrib)
+						   getQuadSpriteAttrib,
+						   getMaterial)
 
 EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(AnimationSequence,
 								   addFrame)
@@ -254,12 +288,42 @@ EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(CollidableAttrib,
 EXPORT_OOLUA_FUNCTIONS_1_CONST(CollidableAttrib,
 							   getColliderType)
 
+OOLUA_EXPORT_FUNCTIONS_CONST(CollisionContact,
+							 getCollidable,
+							 getWorldPos,
+							 getNormal,
+							 getObjPos,
+							 getSeparatingVel,
+							 getClosingVel,
+							 getDeltaVel,
+							 getDepth)
+OOLUA_EXPORT_FUNCTIONS(CollisionContact)
+
 EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(Collidable,
 								   setAttrib,
 								   setResolvePenetration)
 EXPORT_OOLUA_FUNCTIONS_2_CONST(Collidable,
 							   getAttrib,
 							   getContactCount)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(RigidBodyAttrib,
+							 getForceMask)
+OOLUA_EXPORT_FUNCTIONS(RigidBodyAttrib,
+					   setForceMask)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(RigidBody)
+OOLUA_EXPORT_FUNCTIONS(RigidBody,
+					   applyForce,
+					   applyForceToPoint,
+					   setAttrib)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(ForceGenerator)
+OOLUA_EXPORT_FUNCTIONS(ForceGenerator,
+					   setForceMask)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(GravityForceGenerator)
+OOLUA_EXPORT_FUNCTIONS(GravityForceGenerator,
+					   setAccel)
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Direction)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(Direction)
@@ -308,11 +372,63 @@ OOLUA_EXPORT_FUNCTIONS(LightSource,
 OOLUA_EXPORT_FUNCTIONS_CONST(LightSource)
 
 OOLUA_EXPORT_FUNCTIONS(ParticleEmitterAttrib,
-					   setGravity,
+					   setAcceleration,
 					   setMaxLife,
 					   setSize,
-					   setColor)
+					   setFrameRange,
+					   loadSpecularMap,
+					   setMaterial)
 OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitterAttrib);
+
+OOLUA_EXPORT_FUNCTIONS(ParticleEmitter,
+					   emitFromPoint,
+					   emitFromEntity,
+					   setAttrib)
+OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitter)
+
+OOLUA_EXPORT_FUNCTIONS(DialogScreen,
+					   addSourceEntity,
+					   setTrigger)
+OOLUA_EXPORT_FUNCTIONS_CONST(DialogScreen,
+							 getText,
+							 getIndex)
+
+OOLUA_EXPORT_FUNCTIONS(DialogText,
+					   setNextIndex)
+OOLUA_EXPORT_FUNCTIONS_CONST(DialogText,
+							 getNextIndex)
+
+OOLUA_EXPORT_FUNCTIONS(DialogPrompt,
+					   addOption)
+OOLUA_EXPORT_FUNCTIONS_CONST(DialogPrompt)
+
+OOLUA_EXPORT_FUNCTIONS(Dialog,
+					   addTextScreen,
+					   addPromptScreen,
+					   setTriggerEntity)
+OOLUA_EXPORT_FUNCTIONS_CONST(Dialog)
+
+OOLUA_EXPORT_FUNCTIONS(Examinable,
+					   setDialog,
+					   setMaxDist)
+OOLUA_EXPORT_FUNCTIONS_CONST(Examinable)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(CombatAttrib)
+OOLUA_EXPORT_FUNCTIONS(CombatAttrib,
+					   setTypeFlags,
+					   setTypeAgainstFlags)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(Combat)
+OOLUA_EXPORT_FUNCTIONS(Combat,
+					   setSelfTable,
+					   setActionTable,
+					   getSelfTable,
+					   getActionTable,
+					   setAttrib,
+					   setDmgType,
+					   setDmgActive,
+					   setCollisionFlags)
+
 
 EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(Behavior,
 								   addTrigger,
@@ -324,8 +440,9 @@ EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(LuaBehavior,
 								   getSelfTable)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(LuaBehavior)
 
-EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(Tile,
-									setColliderType)
+OOLUA_EXPORT_FUNCTIONS(Tile,
+						setColliderType,
+						setDamping)
 EXPORT_OOLUA_FUNCTIONS_1_CONST(Tile,
                                getColliderType)
 
@@ -391,6 +508,12 @@ OOLUA_EXPORT_FUNCTIONS_CONST(LevelSystem,
 								getPrevAreaPath,
 								getPrevLevelPath)
 
+OOLUA_EXPORT_FUNCTIONS(RigidBodySystem,
+					   addForce,
+					   removeForce,
+					   clearForces)
+OOLUA_EXPORT_FUNCTIONS_CONST(RigidBodySystem)
+
 OOLUA_EXPORT_FUNCTIONS(LightSystem,
 					   setGlobalAmbientColor)
 OOLUA_EXPORT_FUNCTIONS_CONST(LightSystem)
@@ -444,9 +567,13 @@ OOLUA_EXPORT_FUNCTIONS_CONST(AudioSystem,
 							 getAuxTrackTime)
 
 OOLUA_EXPORT_FUNCTIONS(ParticleSystem,
-					   emitFrom)
+					   emitFromPoint)
 OOLUA_EXPORT_FUNCTIONS_CONST(ParticleSystem,
 							 getAttrib)
+
+OOLUA_EXPORT_FUNCTIONS(GuiSystem,
+					   addCombatText)
+OOLUA_EXPORT_FUNCTIONS_CONST(GuiSystem)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(DaySystem,
 							 getDays,
@@ -456,6 +583,18 @@ OOLUA_EXPORT_FUNCTIONS_CONST(DaySystem,
 OOLUA_EXPORT_FUNCTIONS(DaySystem,
 					   setTimeDilation,
 					   setSunEnabled)
+
+OOLUA_EXPORT_FUNCTIONS(DialogSystem,
+					   startDialog)
+OOLUA_EXPORT_FUNCTIONS_CONST(DialogSystem)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(CombatSystem)
+OOLUA_EXPORT_FUNCTIONS(CombatSystem,
+					   addCombatant,
+					   removeCombatant,
+					   killCombatant,
+					   setBgmTensionLevel,
+					   resolveCombatAction)
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Singletons)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(Singletons)

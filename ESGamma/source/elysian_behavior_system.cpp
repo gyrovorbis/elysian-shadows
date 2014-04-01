@@ -1,10 +1,13 @@
 #include "elysian_behavior_system.hpp"
-#include "elysian_lua_behavior.hpp"
-#include "elysian_behavior.hpp"
-#include "elysian_area.hpp"
+#include "elysian_collision_system.hpp"
 
 namespace elysian {
 
-BehaviorSystem::BehaviorSystem(void) {}
+	void BehaviorSystem::initialize(void) {
+		getCollisionSys()->registerContactEventMonitor(ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_BEHAVIOR_MASK, this);
+	}
+
+
 
 }
+

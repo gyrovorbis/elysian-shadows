@@ -34,7 +34,7 @@ Primitive *Renderable::setPrimitiveType(const Primitive::TYPE type) {
 	return _prim;
 }*/
 
-bool Renderable::load(std::ifstream& /*stream*/) {
+bool Renderable::load(FILE* file) {
 	/*unsigned primType;
 	Primitive *prim;
 	bool success = true;
@@ -85,7 +85,7 @@ bool Renderable::load(std::ifstream& /*stream*/) {
 	return true;
 }
 
-bool Renderable::save(std::ofstream& /*stream*/) {
+bool Renderable::save(FILE* file) {
 	/*bool success = true;
 	dbgprintf(LOG_VERBOSE, "Renderable::Save(ofstream&)");
 	dbgPush();

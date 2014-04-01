@@ -24,6 +24,9 @@
 #include "elysian_particle_system.hpp"
 #include "elysian_day_system.hpp"
 #include "elysian_dialog_system.hpp"
+#include "elysian_examinable_system.hpp"
+#include "elysian_rigid_body_system.hpp"
+#include "elysian_combat_system.hpp"
 #include "glal/gyro_glal.h"
 
 namespace elysian {
@@ -43,13 +46,19 @@ Engine::Engine(void) {
 	_timerSystem		= new TimerSystem;
 	_warpSystem			= new WarpSystem;
 	_collisionSystem	= new CollisionSystem;
+	_rigidBodySystem	= new RigidBodySystem;
 	_guiSystem			= new GuiSystem;
 	_behaviorSystem		= new BehaviorSystem;
 	_audioSystem		= new AudioSystem;
 	_lightSystem		= new LightSystem;
 	_particleSystem		= new ParticleSystem;
 	_daySystem			= new DaySystem;
+	_examinableSystem	= new ExaminableSystem;
 	_dialogSystem		= new DialogSystem;
+	_combatSystem		= new CombatSystem;
+
+	_behaviorSystem->initialize();
+	_combatSystem->initialize();
 
 	//register Lua dependencies
 	Singletons::setGameInput(&_gameInput);
@@ -74,6 +83,7 @@ bool Engine::loadAssets(void) {
 }
 
 void Engine::update(void) {
+
 	switch(System::_engineState) {
 		case System::ENGINE_NORMAL:
 		case System::ENGINE_WARPING:
@@ -82,7 +92,11 @@ void Engine::update(void) {
 			_cameraSystem->update();
 			_lightSystem->update();
 			_audioSystem->update();
+			_rigidBodySystem->applyForces();
+			_rigidBodySystem->integrate();
 			_collisionSystem->update();
+			_rigidBodySystem->update();
+			_rigidBodySystem->resolveContactVelocities();
 			_timerSystem->update();
 			_mapSystem->update();
 			_partySystem->update();
@@ -94,6 +108,7 @@ void Engine::update(void) {
 			_particleSystem->update();
 			_daySystem->update();
 			_dialogSystem->update();
+			_combatSystem->update();
 
 			//conversationSystem->Update();
 			_behaviorSystem->callTriggers(Behavior::ON_UPDATE);
@@ -134,6 +149,7 @@ void Engine::processInput(void) {
 		case System::ENGINE_CONVERSATION:
 			_partySystem->processInput(_gameInput);
 			_cameraSystem->processInput(_gameInput);
+			_examinableSystem->processInput(_gameInput);
 			_dialogSystem->processInput(_gameInput);
 			//Debug::getInstance().processInput(_gameInput);
 			//conversationSystem->ProcessInput(input);
@@ -190,8 +206,12 @@ void Engine::render(void) {
 			 _collisionSystem->render();
 			 _particleSystem->render();
 
+
+			 _lightSystem->removeLightSourcesFromScene();
+
+			 _guiSystem->render();
+
 			_cameraSystem->popViewProjMatrix();
-			_lightSystem->removeLightSourcesFromScene();
 
 			//Begin rendering overlays
 			_warpSystem->Render();
@@ -205,7 +225,9 @@ void Engine::render(void) {
 Engine::~Engine(void) { 
 
 	LuaManager::uninitialize();
+	delete _combatSystem;
 	delete _dialogSystem;
+	delete _examinableSystem;
 	delete _daySystem;
 	delete _particleSystem;
 	delete _levelSystem;
@@ -217,6 +239,8 @@ Engine::~Engine(void) {
 	delete _timerSystem;
 	delete _audioSystem;
 	delete _lightSystem;
+	delete _rigidBodySystem;
+	delete _collisionSystem;
 	delete _guiSystem;
 	delete _behaviorSystem;
 	
