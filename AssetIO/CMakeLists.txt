@@ -10,13 +10,10 @@ set(AssetIO_SOURCES
 	${AssetIO_SOURCE_DIR}/elysian_behavior.cpp
 	${AssetIO_SOURCE_DIR}/elysian_character.cpp
 	${AssetIO_SOURCE_DIR}/elysian_collidable.cpp
-	${AssetIO_SOURCE_DIR}/elysian_component.cpp
+	${AssetIO_SOURCE_DIR}/elysian_combat.cpp
 	${AssetIO_SOURCE_DIR}/elysian_dialog.cpp
-	${AssetIO_SOURCE_DIR}/elysian_enemy.cpp
 	${AssetIO_SOURCE_DIR}/elysian_entity.cpp
 	${AssetIO_SOURCE_DIR}/elysian_examinable.cpp
-	${AssetIO_SOURCE_DIR}/elysian_friendly.cpp
-	${AssetIO_SOURCE_DIR}/elysian_item.cpp
 	${AssetIO_SOURCE_DIR}/elysian_level.cpp
 	${AssetIO_SOURCE_DIR}/elysian_level_manager.cpp
 	${AssetIO_SOURCE_DIR}/elysian_light_source.cpp
@@ -24,6 +21,7 @@ set(AssetIO_SOURCES
 	${AssetIO_SOURCE_DIR}/elysian_new.cpp
 	${AssetIO_SOURCE_DIR}/elysian_particle_emitter.cpp
 	${AssetIO_SOURCE_DIR}/elysian_renderable.cpp
+	${AssetIO_SOURCE_DIR}/elysian_rigid_body.cpp
 	${AssetIO_SOURCE_DIR}/elysian_tile.cpp
 	${AssetIO_SOURCE_DIR}/elysian_warp.cpp
 	${AssetIO_SOURCE_DIR}/elysian_zcoords.cpp
@@ -37,30 +35,28 @@ set(AssetIO_INCLUDES
 	${AssetIO_INCLUDE_DIR}/elysian_behavior.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_character.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_collidable.hpp
+	${AssetIO_INCLUDE_DIR}/elysian_combat.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_component.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_cstr_map.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_dialog.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_direction.hpp
-	${AssetIO_INCLUDE_DIR}/elysian_enemy.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_entity.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_examinable.hpp
-	${AssetIO_INCLUDE_DIR}/elysian_friendly.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_generic.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_instance_transform.hpp
-	${AssetIO_INCLUDE_DIR}/elysian_item.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_level.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_level_manager.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_light_source.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_linked_list.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_lua_behavior.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_map_depth_buffer.hpp
+	${AssetIO_INCLUDE_DIR}/elysian_material.hpp
+	${AssetIO_INCLUDE_DIR}/elysian_mem_pool.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_model_attrib.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_particle_emitter.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_pool.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_prim_attrib.hpp
-	${AssetIO_INCLUDE_DIR}/elysian_quad_attrib.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_quad_sprite_attrib.hpp
-	${AssetIO_INCLUDE_DIR}/elysian_rect_attrib.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_renderable.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_renderable_object.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_sprite_attrib.hpp

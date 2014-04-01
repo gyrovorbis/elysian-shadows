@@ -34,16 +34,16 @@ set(ESG_SOURCES
 	${ESG_SOURCE_DIR}/elysian_camera_system.cpp
 	${ESG_SOURCE_DIR}/elysian_character_system.cpp
 	${ESG_SOURCE_DIR}/elysian_collision_system.cpp
+	${ESG_SOURCE_DIR}/elysian_combat_system.cpp
 	${ESG_SOURCE_DIR}/elysian_day_system.cpp
 	${ESG_SOURCE_DIR}/elysian_debug.cpp
 	${ESG_SOURCE_DIR}/elysian_dialog_system.cpp
-	${ESG_SOURCE_DIR}/elysian_enemy_system.cpp
 	${ESG_SOURCE_DIR}/elysian_engine.cpp
+	${ESG_SOURCE_DIR}/elysian_examinable_system.cpp
 	${ESG_SOURCE_DIR}/elysian_font.cpp
-	${ESG_SOURCE_DIR}/elysian_friendly_system.cpp
+	${ESG_SOURCE_DIR}/elysian_force_generator.cpp
 	${ESG_SOURCE_DIR}/elysian_game_input.cpp
 	${ESG_SOURCE_DIR}/elysian_gui_system.cpp
-	${ESG_SOURCE_DIR}/elysian_item_system.cpp
 	${ESG_SOURCE_DIR}/elysian_level_system.cpp
 	${ESG_SOURCE_DIR}/elysian_light_system.cpp
 	${ESG_SOURCE_DIR}/elysian_lua_manager.cpp
@@ -54,6 +54,7 @@ set(ESG_SOURCES
 	${ESG_SOURCE_DIR}/elysian_particle_system.cpp
 	${ESG_SOURCE_DIR}/elysian_party_system.cpp
 	${ESG_SOURCE_DIR}/elysian_quad_attrib.cpp
+	${ESG_SOURCE_DIR}/elysian_rigid_body_system.cpp
 	${ESG_SOURCE_DIR}/elysian_shader_manager.cpp
 	${ESG_SOURCE_DIR}/elysian_system.cpp
 	${ESG_SOURCE_DIR}/elysian_timer_system.cpp
@@ -68,16 +69,16 @@ set(ESG_INCLUDES
 	${ESG_INCLUDE_DIR}/elysian_camera_system.hpp
 	${ESG_INCLUDE_DIR}/elysian_character_system.hpp
 	${ESG_INCLUDE_DIR}/elysian_collision_system.hpp
+	${ESG_INCLUDE_DIR}/elysian_combat_system.hpp
 	${ESG_INCLUDE_DIR}/elysian_day_system.hpp
 	${ESG_INCLUDE_DIR}/elysian_debug.hpp
 	${ESG_INCLUDE_DIR}/elysian_dialog_system.hpp
-	${ESG_INCLUDE_DIR}/elysian_enemy_system.hpp
 	${ESG_INCLUDE_DIR}/elysian_engine.hpp
+	${ESG_INCLUDE_DIR}/elysian_examinable_system.hpp
 	${ESG_INCLUDE_DIR}/elysian_font.hpp
-	${ESG_INCLUDE_DIR}/elysian_friendly_system.hpp
+	${ESG_INCLUDE_DIR}/elysian_force_generator.hpp
 	${ESG_INCLUDE_DIR}/elysian_game_input.hpp
 	${ESG_INCLUDE_DIR}/elysian_gui_system.hpp
-	${ESG_INCLUDE_DIR}/elysian_item_system.hpp
 	${ESG_INCLUDE_DIR}/elysian_level_system.hpp
 	${ESG_INCLUDE_DIR}/elysian_light_system.hpp
 	${ESG_INCLUDE_DIR}/elysian_lua_manager.hpp
@@ -88,9 +89,8 @@ set(ESG_INCLUDES
 	${ESG_INCLUDE_DIR}/elysian_model.hpp
 	${ESG_INCLUDE_DIR}/elysian_particle_system.hpp
 	${ESG_INCLUDE_DIR}/elysian_party_system.hpp
-	${ESG_INCLUDE_DIR}/elysian_quad.hpp
 	${ESG_INCLUDE_DIR}/elysian_quad_sprite.hpp
-	${ESG_INCLUDE_DIR}/elysian_rect.hpp
+	${ESG_INCLUDE_DIR}/elysian_rigid_body_system.hpp
 	${ESG_INCLUDE_DIR}/elysian_shader_manager.hpp
 	${ESG_INCLUDE_DIR}/elysian_sprite.hpp
 	${ESG_INCLUDE_DIR}/elysian_system.hpp
