@@ -7,10 +7,10 @@
 #include <stdio.h>
 
 const static GLenum _shadowMapTexUnits[GYRO_VIDEO_LIGHT_SOURCES_MAX] = {
-	GL_TEXTURE2,
 	GL_TEXTURE3,
 	GL_TEXTURE4,
-	GL_TEXTURE5
+	GL_TEXTURE5,
+	GL_TEXTURE6
 };
 
 GYLightSource*		lightSources[GYRO_VIDEO_LIGHT_SOURCES_MAX]		= { NULL };
@@ -110,14 +110,14 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
 		glDisable(GL_TEXTURE_2D);
 		glEnable(GL_TEXTURE_CUBE_MAP);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, internals->shadowMap);
-		glUniform1i(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_SHADOW_MAP], 6+index);
-		glUniform1i(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_SHADOW_CUBE_MAP], 2+index);
+		glUniform1i(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_SHADOW_MAP], 7+index);
+		glUniform1i(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_SHADOW_CUBE_MAP], 3+index);
 	} else {
 		glDisable(GL_TEXTURE_CUBE_MAP);
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, internals->shadowMap);
-		glUniform1i(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_SHADOW_MAP], 2+index);
-		glUniform1i(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_SHADOW_CUBE_MAP], 6+index);
+		glUniform1i(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_SHADOW_MAP], 3+index);
+		glUniform1i(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_SHADOW_CUBE_MAP], 7+index);
 	}
 	glActiveTexture(GL_TEXTURE0);
 }
@@ -165,13 +165,6 @@ void gyVidLightSourceClear(void) {
 	}
 }
 
-/*
- * 	glLoadIdentity(); gluLookAt(0.0, 0.0, 0.0,  1.0, 0.0, 0.0,  0.0,-1.0, 0.0); // +X
-	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)pointShadowFaceMatrices[GY_CUBE_MAP_RIGHT]);
-	glalTranspose(pointShadowFaceMatrices[GY_CUBE_MAP_RIGHT]);
- *
- */
-
 void glalGetSpotLightViewMatrix(GYMatrix4 dest, const GYLightSource*const lightSrc) {
 	GYMatrix4 temp;
 
@@ -181,12 +174,10 @@ void glalGetSpotLightViewMatrix(GYMatrix4 dest, const GYLightSource*const lightS
 #if 0
 	gyMatRotateZ(0.785398163f);
 
-	glLoadIdentity();
-	gluLookAt(-lightSrc->direction.x, -lightSrc->direction.y, -lightSrc->direction.z,
-			  0.0f, 0.0f, 0.0f,
-			  0.0f, 0.0f, 1.0f);
-	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)temp);
-	glalTranspose(temp);
+	gyVidLookAtMat(temp,
+				   -lightSrc->direction.x, -lightSrc->direction.y, -lightSrc->direction.z,
+				   0.0f, 0.0f, 0.0f,
+				   0.0f, 0.0f, 1.0f);
 	gyMatApply(temp);
 
 
@@ -197,12 +188,10 @@ void glalGetSpotLightViewMatrix(GYMatrix4 dest, const GYLightSource*const lightS
 #else
 //gyMatRotateZ(-0.785398163f);
 
-	glLoadIdentity();
-	gluLookAt(0.0, 0.0, 0.0,
-			  lightSrc->direction.x, lightSrc->direction.y, lightSrc->direction.z,
-			  0.0,0.0, 1.0); // +X's up
-	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)temp);
-	glalTranspose(temp);
+	gyVidLookAtMat(temp,
+				   0.0, 0.0, 0.0,
+				   lightSrc->direction.x, lightSrc->direction.y, lightSrc->direction.z,
+				   0.0,0.0, 1.0);
 
 	gyMatApply(temp);
 	gyMatScale(1.0f, -1.0f, -1.0f);
@@ -223,13 +212,11 @@ void glalGetDirectionalLightViewMatrix(GYMatrix4 dest, const GYLightSource*const
 
 	gyMatTranslate(GLAL_SHADOW_MAP_SIZE*0.5f, GLAL_SHADOW_MAP_SIZE*0.5f, 0.0f);
 
-	glMatrixMode(GL_MODELVIEW_MATRIX);
-	glLoadIdentity();
-	gluLookAt(-lightSrc->direction.x, -lightSrc->direction.y, -lightSrc->direction.z,
-			  0.0f, 0.0f, 0.0f,
-			  0.0f, 1.0f, 0.0f);
-	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)temp);
-	glLoadIdentity();
+	gyVidLookAtMat(temp,
+				   -lightSrc->direction.x, -lightSrc->direction.y, -lightSrc->direction.z,
+				   0.0f, 0.0f, 0.0f,
+				   0.0f, 1.0f, 0.0f);
+
 	//glalTranspose(temp);
 
 	gyMatApply((float*)&temp);
@@ -256,32 +243,19 @@ void glalGetDirectionalLightProjectionMatrix(GYMatrix4 dest, const GYLightSource
 void glalGetSpotLightProjectionMatrix(GYMatrix4 dest, const GYLightSource*const lightSrc)  {
 	 //GYMatrix4 test;
 #if 0
-	glMatrixMode(GL_MODELVIEW_MATRIX);
-	glLoadIdentity();
 	//TODO: DON'T HARDCODE ANGLE FOR PERSPECTIVE PROJECTION!!!
 	//ratio is wrong!!!
-	gluPerspective(90, (float)GLAL_SHADOW_MAP_SIZE/(float)GLAL_SHADOW_MAP_SIZE, 0.5f, 150.0f);//150.0f
-	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)dest);
-	glalTranspose(dest);
+	gyVidPerspectiveMat(dest, 90, (float)GLAL_SHADOW_MAP_SIZE/(float)GLAL_SHADOW_MAP_SIZE, 0.5f, 150.0f);//150.0f
 #else
-	glMatrixMode(GL_MODELVIEW_MATRIX);
-	glLoadIdentity();
-	gluPerspective(90.0f, 1.0f, 0.5f, 150.0f);
-	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)dest);
-	glalTranspose(dest);
-	glLoadIdentity();
+
+	gyVidPerspectiveMat(dest, 90.0f, 1.0f, 0.5f, 150.0f);
 #endif
 
 	//memcpy(test, dest, sizeof(GYMatrix4));
 }
 
 void glalGetPointLightProjectionMatrix(GYMatrix4 dest, const GYLightSource* const lightSrc) {
-	glMatrixMode(GL_MODELVIEW_MATRIX);
-	glLoadIdentity();
-	gluPerspective(90.0f, 1.0f, 0.5f, 901.0f);
-	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)dest);
-	glalTranspose(dest);
-	glLoadIdentity();
+	gyVidPerspectiveMat(dest, 90.0f, 1.0f, 0.5f, 901.0f);
 
 	//gyVidCamFrustum(camera, 90.0f, 1.0f, 0.5f, 901.0f);
 }

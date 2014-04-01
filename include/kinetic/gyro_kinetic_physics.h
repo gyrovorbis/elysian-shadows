@@ -11,10 +11,15 @@ extern "C" {
 struct _GYKinetic;
 struct _GYContact;
 
-void gyResolvePenetration(struct _GYContact *con, GYVector2 posDelta[], GYVector2 rotDir[], float orientDelta[], float deltaTime);
+void gyResolvePenetration(struct _GYContact *con, GYVector2 posDelta[], GYVector2 rotDir[], float orientDelta[]/*, float deltaTime*/);
     
 //Physics pipeline (excluding collision checking)
-void gyIntegrate(void *collider, struct _GYKinetic *kin, const struct _GYStatic *stat);
+//void gyIntegrate(void *collider, struct _GYKinetic *kin, const struct _GYStatic *stat);
+void gyIntegrate(struct _GYKinetic *kin,
+				 const struct _GYStatic *attrib,
+				 const float deltaTime,
+				 GYVector2* pos,
+				 float* orient);
 
 /* CONTACT RESOLUTION
 Algorithms for resolving ONE contact. Since this contact could have potentially affected a million other contacts,
@@ -25,7 +30,12 @@ STATIC ATTRIBUTE DATA MAY BE STORED WITHIN CONTACT AND MAY NOT HAVE TO BE PASSED
 
 //NULL static attributes mean something? 
 
-void gyResolveVelocity(struct _GYContact *con, struct _GYKinetic *kinA, struct _GYKinetic *kinB, const struct _GYStatic *statA, const struct _GYStatic *statB);
+//void gyResolveVelocity(struct _GYContact *con, struct _GYKinetic *kinA, struct _GYKinetic *kinB, const struct _GYStatic *statA, const struct _GYStatic *statB);
+void gyContactResolveVelocity(struct _GYContact *con, GYVector2 velDelta[], float rotDelta[]/*, const float deltaTime*/);
+
+void gyContactCalculatePenetrationInternals(struct _GYContact*const contact, const GYVector2*const pos1, const GYVector2*const pos2);
+void gyContactCalculateVelocityInternals(struct _GYContact*const contact, struct _GYKinetic*const rb1, struct _GYKinetic*const rb2, const float deltaTime);
+void gyContactUpdateDeltaVelocity(struct _GYContact*const contact, struct _GYKinetic*const rb1, struct _GYKinetic*const rb2, const float deltaTime);
 
 //Auxiliary functions
 void gyApplyForce(struct _GYKinetic *kin, const GYVector2 *force);

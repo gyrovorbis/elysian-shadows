@@ -33,14 +33,15 @@ int gyVidInit(const struct _GYVidInitParams *const params); //MUST SET PROJWIDTH
 int gyVidUninit(void);
 void gyVidSceneBegin(void);
 void gyVidSceneEnd(void);
+unsigned gyVidPolyCount(void);
 
 //Quad API
 void gyVidQuadListBegin(const GYColor4 *const color);
 void gyVidQuadListEnd(void);
-void gyVidQuad(const struct _GYVector4 *const verts, const unsigned int frame);
+void gyVidQuad(const struct _GYVector4 *const verts, const int frame);
 void gyVidRectTexOrient(const GY_RECT_TEX_ORIENT orient);
 void gyVidRectNormalType(const GY_RECT_NORMAL_TYPE type);
-void gyVidRect(const unsigned int frame);
+void gyVidRect(const int frame);
 
 //Triangle strip API 
 void gyVidColorArray(const GYColor4 *const ptr);
@@ -52,9 +53,9 @@ void gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsign
 
 //CHANGE THIS INTO ONE SHARED FUNCTION, NOT PLATFORM-SPECIFIC!!!
 void gyVidViewFrustumMat(GYMatrix4 mat, const float fov, const float aspect, const float znear, const float zfar);
-void gyVidLookAtMat(GYMatrix4 mat, const float ex, const float ey, const float ez,
+/*void gyVidLookAtMat(GYMatrix4 mat, const float ex, const float ey, const float ez,
 									const float dx, const float dy, const float dz,
-									const float ux, const float uy, const float uz);
+									const float ux, const float uy, const float uz);*/
 
 #include "common/gyro_video_common.h"
 

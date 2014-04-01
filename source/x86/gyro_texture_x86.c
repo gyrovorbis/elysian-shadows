@@ -200,7 +200,7 @@ int _gyVidTexAlloc(GYTexture *const tex, const unsigned width, const unsigned he
     
     switch(tex->bpp) {
         case GY_TEX_16BPP:
-            *(GLuint *)&tex->_data = create_texture_png(tex->filename, GL_CLAMP, GL_NEAREST, GL_NEAREST, &success);
+			*(GLuint *)&tex->_data = create_texture_png(tex->filename, GL_REPEAT, GL_NEAREST, GL_NEAREST, &success);
             break;
         case GY_TEX_8BPP:
             
@@ -209,7 +209,7 @@ int _gyVidTexAlloc(GYTexture *const tex, const unsigned width, const unsigned he
             
             break;
         default:
-            *(GLuint *)&tex->_data = create_texture_png(tex->filename, GL_CLAMP, GL_NEAREST, GL_NEAREST, &success);
+			*(GLuint *)&tex->_data = create_texture_png(tex->filename, GL_REPEAT, GL_NEAREST, GL_NEAREST, &success);
     }
     
     return success;

@@ -18,21 +18,9 @@ extern GYVector4				viewPosition;
 extern const GYVector3*			tangentVector;
 extern const GYVector3*			normalVector;
 extern const struct _GYTexture* curTex;
+extern unsigned					polyCount;
 
 int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth, const int projHeight);
-
-static inline void glalTranspose(GYMatrix4 mat) {
-	GYMatrix4 mat2;
-	memcpy(mat2, mat, sizeof(GYMatrix4));
-    unsigned i = 0;
-    unsigned j = 0;
-    for(i = 0; i < 4; ++i)
-        for(j = 0; j < 4; ++j)
-            mat[i][j] = mat2[j][i];
- //   for(unsigned i = 0; i < 4; ++i)
-//		for(unsigned j = 0; j < 4; ++j)
-//			mat[i][j] = mat2[j][i];
-}
 
 #ifdef __cplusplus
 }
