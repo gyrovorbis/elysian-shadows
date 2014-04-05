@@ -83,7 +83,7 @@ GYOgg* gyAudOggCreate(const char*const path) {
 	strcpy(ogg->path, path);
 	ogg->looping = 0;
 
-	if(!gyFileOpen(GY_PATH_BINARY, path, "rb", &payload->oggFile)) {
+	if(!gyFileOpen(GY_PATH_ASSETS, path, "rb", &payload->oggFile)) {
 		_gyLog(GY_DEBUG_CRITICAL, "! - Could not open ogg file %s", path);
 		free(payload);
 		free(ogg);
