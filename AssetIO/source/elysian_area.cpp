@@ -137,7 +137,7 @@ bool Area::loadMap(const char *const filename) {
 	dbgprintf(LOG_VERBOSE, "Area::LoadMap(%s)", filename);
     dbgPush();
 
-	if (!gyFileOpen(GY_PATH_ASSETS, filename, "rb", &fp)) {
+	if (!gyFileOpen(filename, "rb", &fp)) {
 		dbgprintf(LOG_CRITICAL, "FAILURE!");
 		dbgPop();
 		return false;

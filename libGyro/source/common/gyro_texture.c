@@ -31,7 +31,7 @@ static GYTexCoordSheet *_LoadSheetCoords(const GYTexEntryDat *const data) {
 
 	strcpy(fname, data->file);
 	strcat(fname, GYRO_SHEET_TEX_COORD_EXT);
-	if(!gyFileOpen(GY_PATH_ASSETS, fname, "r", &file)) {
+	if(!gyFileOpen(fname, "r", &file)) {
 		gyPrintf("! - _LoadSheetCoords(%s): unable to open file!\n", fname);
 		//assert(file); //UNABLE TO OPEN SPRITE SHEET COORDINATE FILE!
 		return NULL;

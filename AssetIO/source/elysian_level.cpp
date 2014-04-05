@@ -138,7 +138,7 @@ namespace elysian {
 		dbgprintf(LOG_VERBOSE, "Level::LoadTileset(%s)", filename);
 		dbgPush();
 
-		if(!gyFileOpen(GY_PATH_ASSETS, filename, "r", &fp)) {
+		if(!gyFileOpen(filename, "r", &fp)) {
 			dbgprintf(LOG_CRITICAL, "FAILURE!\n");
 			dbgPop();
 			return false;

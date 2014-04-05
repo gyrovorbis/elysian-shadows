@@ -343,7 +343,7 @@ int _gyVidShaderCreate(GYShader* shader) {
 		return 0;
 	}
 
-	if(!gyFileOpen(GY_PATH_ASSETS, shader->path, "r", &file)) {
+	if(!gyFileOpen(shader->path, "r", &file)) {
 		_gyLog(GY_DEBUG_CRITICAL, "\tCould not open shader", shader->path);
 		return 0;
 	}

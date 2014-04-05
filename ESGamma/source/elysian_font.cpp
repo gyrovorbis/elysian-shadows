@@ -33,7 +33,7 @@ bool Font::_loadCharacterWidths(const char *width_file) {
 	char *buffer;
 	size_t buffer_len;
 	GYFile *file;
-	if (!gyFileOpen(GY_PATH_ASSETS, width_file, "r", &file)) {
+	if (!gyFileOpen(width_file, "r", &file)) {
 		return false;
 	}
 	if (!gyFileLength(file, &buffer_len)) {

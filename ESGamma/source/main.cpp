@@ -21,6 +21,10 @@ Debug *debug;
 static void Init(int argc, char *argv[]) {
 	(void)argc;
 	(void)argv;
+
+	/* The File subsystem needs to be initialized before anything else, ideally */
+	gyFileInit("ESTeam", "ESGamma");
+
 	debug = &Debug::getInstance();
 	char verString[50];
 
@@ -45,7 +49,6 @@ static void Init(int argc, char *argv[]) {
 	gyInputInit();
 	gyAudInit();
 	gyTimerInit();
-	gyFileInit("ESTeam", "ESGamma");
 
 	engine = new Engine;
 

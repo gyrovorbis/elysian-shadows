@@ -517,7 +517,7 @@ bool Debug::parseArguments(void) {
 	strcpy(_cmdLineArgs.level, ELYSIAN_DEBUG_LEVEL_DEFAULT);
 	strcpy(_cmdLineArgs.area, ELYSIAN_DEBUG_AREA_DEFAULT);
 
-	if (gyFileOpen(GY_PATH_ASSETS, ELYSIAN_DEBUG_ARG_FILE, "r", &file)) {
+	if (gyFileOpen(ELYSIAN_DEBUG_ARG_FILE, "r", &file)) {
 		printf(VERBOSE, "Debug::parseArguments(void) - initializing from '%s'", ELYSIAN_DEBUG_ARG_FILE);
 		push();
 		if (!gyFileLength(file, &buffer_len)) {
