@@ -22,14 +22,19 @@ WarpSystem::WarpSystem(void):
 	_screenRect.setColor(0, 0, 0, 0);
 }
 
-void WarpSystem::Render(void) {
+void WarpSystem::initialize(void) {
+	getCollisionSys()->registerContactEventMonitor(ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_WARP_MASK, this);
+
+}
+
+void WarpSystem::render(void) {
 	//glDisable(GL_DEPTH_TEST);
 	gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
 	_screenRect.render(); 
 
 }
 
-void WarpSystem::Update(void) {
+void WarpSystem::update(void) {
 	unsigned width, height;
 
 	//Update overlay size to match the current screen resolution
@@ -39,7 +44,7 @@ void WarpSystem::Update(void) {
 	
 	switch(_state) {
 		case CHECK_WARP:
-			UpdateCheckWarp();
+			//UpdateCheckWarp();
 			break;
 		case FADE_OUT:
 			UpdateFadeOut();
@@ -113,6 +118,25 @@ void WarpSystem::UpdateCheckWarp(void) {
 			setEngineState(System::ENGINE_WARPING);
 		} 
 	}
+}
+
+void WarpSystem::onCollisionEnter(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) {
+#if 0
+	if(_state != CHECK_WARP) return;
+
+	if(getPartySys()->getPartyLeader() && getPartySys()->getPartyLeader() == bodyB->getEntity()) {
+		_currentWarp = *bodyA->getEntity()->getWarp();
+		_state = FADE_OUT;
+		setEngineState(System::ENGINE_WARPING);
+	}
+#endif
+}
+
+void WarpSystem::onCollide(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) {
+
+}
+
+void WarpSystem::onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) {
 
 }
 

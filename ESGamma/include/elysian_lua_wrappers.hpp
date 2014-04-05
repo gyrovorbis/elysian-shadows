@@ -80,6 +80,8 @@ namespace OOLUA
 	typedef elysian::RigidBody					RigidBody;
 	typedef elysian::ForceGenerator				ForceGenerator;
 	typedef elysian::GravityForceGenerator		GravityForceGenerator;
+	typedef elysian::ImplosionForceGenerator	ImplosionForceGenerator;
+	typedef elysian::ExplosionForceGenerator	ExplosionForceGenerator;
 	typedef elysian::Character					Character;
 	typedef elysian::Warp						Warp;
 	typedef elysian::Examinable					Examinable;
@@ -88,6 +90,7 @@ namespace OOLUA
 	typedef elysian::DialogText					DialogText;
 	typedef elysian::DialogPrompt				DialogPrompt;
 	typedef elysian::CombatAttrib				CombatAttrib;
+	typedef elysian::CombatReceipt				CombatReceipt;
 	typedef elysian::Combat						Combat;
 	typedef elysian::ParticleEmitterAttrib		ParticleEmitterAttrib;
 	typedef elysian::ParticleEmitter			ParticleEmitter;
@@ -437,6 +440,17 @@ OOLUA_PROXY(GravityForceGenerator, ForceGenerator)
 	OOLUA_MEM_FUNC(void, setAccel, const GYVector2&)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(ImplosionForceGenerator, ForceGenerator)
+	OOLUA_MEM_FUNC(void, setFocalEntity, Entity*)
+	OOLUA_MEM_FUNC(void, setForceMagnitude, float)
+	OOLUA_MEM_FUNC(void, setRadius, float)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(ExplosionForceGenerator, ForceGenerator)
+	OOLUA_MEM_FUNC(void, setFocalEntity, Entity*)
+	OOLUA_MEM_FUNC(void, setForceMagnitude, float)
+	OOLUA_MEM_FUNC(void, setRadius, float)
+OOLUA_PROXY_END
 
 OOLUA_PROXY(Direction)
 	OOLUA_TAGS (
@@ -565,6 +579,13 @@ OOLUA_PROXY(Examinable, Component)
 	)
 	OOLUA_MEM_FUNC(void, setDialog, cpp_in_p<Dialog*>)
 	OOLUA_MEM_FUNC(void, setMaxDist, float)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(CombatReceipt)
+	OOLUA_MEM_FUNC(void, setText, const char*)
+	OOLUA_MEM_FUNC(void, setTextColor, const GYColor4&)
+	OOLUA_MEM_FUNC(void, setPartColor, const GYColor4&)
+	OOLUA_MEM_FUNC(void, setPartIntensityFactor, float)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CombatAttrib)
@@ -710,6 +731,7 @@ OOLUA_PROXY(RigidBodySystem)
 		No_public_destructor
 	)
 	OOLUA_MEM_FUNC(void, addForce, ForceGenerator*)
+	OOLUA_MEM_FUNC(void, applyForce, ForceGenerator*)
 	OOLUA_MEM_FUNC(void, removeForce, ForceGenerator*)
 	OOLUA_MEM_FUNC(void, clearForces)
 OOLUA_PROXY_END

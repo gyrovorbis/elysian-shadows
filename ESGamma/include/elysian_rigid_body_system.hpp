@@ -32,6 +32,7 @@ namespace elysian {
 		void applyForces(void);
 
 		void addForce(ForceGenerator*const force);
+		void applyForce(ForceGenerator*const force);
 		void removeForce(ForceGenerator*const force);
 		void clearForces(void);
 

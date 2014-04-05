@@ -36,6 +36,7 @@ namespace elysian {
 		_mainState->register_class<DialogPrompt>();
 		_mainState->register_class<Dialog>();
 		_mainState->register_class<Examinable>();
+		_mainState->register_class<CombatReceipt>();
 		_mainState->register_class<CombatAttrib>();
 		_mainState->register_class<Combat>();
 		_mainState->register_class<ParticleEmitterAttrib>();
@@ -66,6 +67,8 @@ namespace elysian {
 		_mainState->register_class<CombatSystem>();
 		_mainState->register_class<Direction>();
 		OOLUA::register_class<GravityForceGenerator>(*_mainState);
+		_mainState->register_class<ImplosionForceGenerator>();
+		_mainState->register_class<ExplosionForceGenerator>();
 
 
 		//Register C and static member functions
@@ -325,6 +328,18 @@ OOLUA_EXPORT_FUNCTIONS_CONST(GravityForceGenerator)
 OOLUA_EXPORT_FUNCTIONS(GravityForceGenerator,
 					   setAccel)
 
+OOLUA_EXPORT_FUNCTIONS_CONST(ImplosionForceGenerator)
+OOLUA_EXPORT_FUNCTIONS(ImplosionForceGenerator,
+					   setFocalEntity,
+					   setForceMagnitude,
+					   setRadius)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(ExplosionForceGenerator)
+OOLUA_EXPORT_FUNCTIONS(ExplosionForceGenerator,
+					   setFocalEntity,
+					   setForceMagnitude,
+					   setRadius)
+
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Direction)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(Direction)
 
@@ -412,6 +427,13 @@ OOLUA_EXPORT_FUNCTIONS(Examinable,
 					   setDialog,
 					   setMaxDist)
 OOLUA_EXPORT_FUNCTIONS_CONST(Examinable)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(CombatReceipt)
+OOLUA_EXPORT_FUNCTIONS(CombatReceipt,
+					   setText,
+					   setTextColor,
+					   setPartColor,
+					   setPartIntensityFactor)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(CombatAttrib)
 OOLUA_EXPORT_FUNCTIONS(CombatAttrib,
@@ -509,6 +531,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(LevelSystem,
 								getPrevLevelPath)
 
 OOLUA_EXPORT_FUNCTIONS(RigidBodySystem,
+					   applyForce,
 					   addForce,
 					   removeForce,
 					   clearForces)

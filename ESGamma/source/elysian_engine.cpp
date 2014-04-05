@@ -58,6 +58,7 @@ Engine::Engine(void) {
 	_combatSystem		= new CombatSystem;
 
 	_behaviorSystem->initialize();
+	_warpSystem->initialize();
 	_combatSystem->initialize();
 
 	//register Lua dependencies
@@ -101,10 +102,10 @@ void Engine::update(void) {
 			_mapSystem->update();
 			_partySystem->update();
 			_characterSystem->Update();
-			_animationSystem->Update();
+			_animationSystem->update();
 			//warpSystem->Update();
 			_guiSystem->update();
-			_warpSystem->Update();
+			_warpSystem->update();
 			_particleSystem->update();
 			_daySystem->update();
 			_dialogSystem->update();
@@ -214,7 +215,7 @@ void Engine::render(void) {
 			_cameraSystem->popViewProjMatrix();
 
 			//Begin rendering overlays
-			_warpSystem->Render();
+			_warpSystem->render();
 			_guiSystem->renderOverlay();
 			_dialogSystem->render();
 

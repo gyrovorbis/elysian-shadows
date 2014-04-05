@@ -16,11 +16,12 @@ namespace elysian {
 	private:
 		
 	protected:
-		GYVector2 _toPosition;
-		unsigned char _toElev = 0;
-		bool _changeArea, _changeLevel;
-		char _areaPath[ELYSIAN_WARP_AREA_PATH_MAX_CHARS];
-		char _levelPath[ELYSIAN_WARP_LEVEL_PATH_MAX_CHARS];
+		GYVector2		_toPosition;
+		unsigned char	_toElev = 0;
+		bool			_changeArea;
+		bool			_changeLevel;
+		char			_areaPath[ELYSIAN_WARP_AREA_PATH_MAX_CHARS];
+		char			_levelPath[ELYSIAN_WARP_LEVEL_PATH_MAX_CHARS];
 		
 		Warp(Entity &parent);
 		Warp(void);

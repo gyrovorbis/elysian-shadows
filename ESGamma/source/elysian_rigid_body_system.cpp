@@ -14,16 +14,21 @@ void RigidBodySystem::update(void) {
 	_updateContacts();
 }
 
-void RigidBodySystem::applyForces(void) {
-	auto rigidBodies = getCurArea()->rigidBodies;
+void RigidBodySystem::applyForce(ForceGenerator*const force) {
 	const float deltaTime = getTimerSys()->getDeltaTime();
+	auto rigidBodies = getCurArea()->rigidBodies;
+
+	for(auto rb : rigidBodies) {
+		if(force->getForceMask() & rb->getAttrib()->getForceMask()) {
+			force->applyForce(rb, deltaTime);
+		}
+	}
+}
+
+void RigidBodySystem::applyForces(void) {
 
 	for(auto force = _forces.begin(); force < _forces.end(); ++force) {
-		for(auto rb : rigidBodies) {
-			if((*force)->getForceMask() & rb->getAttrib()->getForceMask()) {
-				(*force)->applyForce(rb, deltaTime);
-			}
-		}
+		applyForce(*force);
 	}
 }
 

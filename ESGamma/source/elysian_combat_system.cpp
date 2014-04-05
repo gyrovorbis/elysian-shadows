@@ -16,7 +16,7 @@ void CombatSystem::onCollisionEnter(Collidable*const bodyA, Collidable*const bod
 	auto* combatB = bodyB->getEntity()->getCombat();
 	if(!combatB || !(combatB->getAttrib()->getTypeFlags() & combatA->getAttrib()->getTypeAgainstFlags())) return;
 
-	_dealCollisionDamage(combatA, combatB);
+	_dealCollisionDamage(combatA, combatB, contact);
 }
 
 void CombatSystem::onCollide(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) {
@@ -25,7 +25,7 @@ void CombatSystem::onCollide(Collidable*const bodyA, Collidable*const bodyB, Col
 	auto* combatB = bodyB->getEntity()->getCombat();
 	if(!combatB || !(combatB->getAttrib()->getTypeFlags() & combatA->getAttrib()->getTypeAgainstFlags())) return;
 
-	_dealCollisionDamage(combatA, combatB);
+	_dealCollisionDamage(combatA, combatB, contact);
 }
 
 void CombatSystem::onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) {
@@ -34,7 +34,7 @@ void CombatSystem::onCollisionExit(Collidable*const bodyA, Collidable*const body
 	auto* combatB = bodyB->getEntity()->getCombat();
 	if(!combatB || !(combatB->getAttrib()->getTypeFlags() & combatA->getAttrib()->getTypeAgainstFlags())) return;
 
-	_dealCollisionDamage(combatA, combatB);
+	_dealCollisionDamage(combatA, combatB, nullptr);
 }
 
 void CombatSystem::addCombatant(Entity &entity) {
@@ -49,9 +49,26 @@ void CombatSystem::killCombatant(Entity * const entity) {
 
 }
 
+void CombatSystem::_processCurrentCombatAction(void) {
+
+	//Process everything
+	//getGuiSys()->addCombatText();
+
+	//Reset everything
+	_curActionResolution.contact	= nullptr;
+	_curActionResolution.receipt	= nullptr;
+	_curActionResolution.src		= nullptr;
+	_curActionResolution.target		= nullptr;
+
+}
+
 //MACRO THESE FUNCTION NAMES
 void CombatSystem::resolveCombatAction(OOLUA::Lua_table_ref action, Combat*const src, Combat*const target) {
+	CombatReceipt* recpt;
 	OOLUA::Lua_table_ref statMods;
+
+	_curActionResolution.src = src;
+	_curActionResolution.target = target;
 
 	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, action.ref());	//push actionTable
 	lua_getfield(*_mainState, -1, "calculateCombatStatMods");
@@ -63,10 +80,12 @@ void CombatSystem::resolveCombatAction(OOLUA::Lua_table_ref action, Combat*const
 	lua_getfield(*_mainState, -1, "applyCombatAction");
 	_callFunction<void>(nullptr, statMods);
 
+	_processCurrentCombatAction();
+
 }
 
-void CombatSystem::_dealCollisionDamage(Combat *const src, Combat *const target) {
-	//PARTICLES AND SHIT HERE!!!
+void CombatSystem::_dealCollisionDamage(Combat *const src, Combat *const target, CollisionContact* contact) {
+	_curActionResolution.contact = contact;
 	resolveCombatAction(src->getActionTable(), src, target);
 }
 

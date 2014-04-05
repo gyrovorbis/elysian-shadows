@@ -358,26 +358,11 @@ void Debug::processInput(const GameInput& input) {
 
 	//VRAM and Audio Stats
 	if(input.getTapped(GameInput::BUT_Z)) {
-		Dialog* dialog = new Dialog;
-		DialogText* textScreen;
-		DialogPrompt *promptScreen;
-		Entity* julien = getCurArea()->findEntity("Random_Ass_Guy");
-
-
-		textScreen = dialog->addTextScreen("Welcome to my chapel, child!\nI advise you confess your sins to save the game.\nLike this is Dragon Quest or something...");
-		textScreen->addSourceEntity(julien);
-		textScreen = dialog->addTextScreen("Diaaloooooog boooooox is workiiiiing!\n\nSKIP A LINE! SHIT STILL WORKS!");
-		textScreen->addSourceEntity(julien);
-		textScreen = dialog->addTextScreen("One line of text... Now for the obligatory prompt.");
-		textScreen->addSourceEntity(julien);
-		promptScreen = dialog->addPromptScreen("Do you know the times!?");
-		promptScreen->addOption("No", 0);
-		promptScreen->addOption("Yes", -1);
-		promptScreen->addSourceEntity(julien);
-		//textScreen->setNextIndex(-1);
-
-		getDialogSys()->startDialog(dialog);
-
+		getCurLevel()->specularSheet = gyVidTexCreateSheetUniform(gyFilePath("level/Loren_Insides/tile/specularsheetr.png"),
+																				  ELYSIAN_TILESHEET_WIDTH,
+																				  ELYSIAN_TILESHEET_HEIGHT,
+																				  ELYSIAN_TILE_WIDTH,
+																				  ELYSIAN_TILE_HEIGHT);
 
 	}
 	if(input.getTapped(GameInput::BUT_FORWARDSLASH)) {
@@ -426,8 +411,8 @@ void Debug::processInput(const GameInput& input) {
 		entity->addRigidBody();
 
 		getCurArea()->addEntity(entity);
-
 	}
+
 
 	if(input.getTapped(GameInput::BUT_X)) {
 		GYVector4 diffuseColors[4] = {
@@ -447,6 +432,7 @@ void Debug::processInput(const GameInput& input) {
 	sprintf(buff, "LightSrc[%d]", count);
 
 			Entity* entity = julien;
+			//entity->getRenderable()->getSpriteAttrib()->setAlpha(0);
 		//	entity->setName(buff);
 			entity->setShadowVolume(false);
 			//entity->transform.setPos(((count%8)*200)+100, 700+200*(count/8));
@@ -460,8 +446,8 @@ void Debug::processInput(const GameInput& input) {
 			lightSrc->setDirection(dirVec);
 			LightAttrib* attrib = new LightAttrib;
 			//attrib->setAmbientColor(GYVector4{ 0.5f, 0.5f, 0.5f, 1.0f});
-			attrib->setDiffuseColor(diffuseColors[count%4]);
-			attrib->setSpecularColor(GYVector4{ 20.0f, 1.0f, 1.0f, 1.0f});
+			attrib->setDiffuseColor(GYVector4 { 0.0f, 0.0f, 0.0f, 1.0f });
+			attrib->setSpecularColor(GYVector4{ 0.5f, 0.5f, 0.5f, 0.0f});
 			lightSrc->setAttrib(attrib);
 #if 0
 			lightSrc->setLightType(LightSource::LIGHT_DIRECTIONAL);

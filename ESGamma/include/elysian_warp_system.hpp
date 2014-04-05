@@ -4,18 +4,26 @@
 #include "elysian_system.hpp"
 #include "elysian_warp.hpp"
 #include "elysian_sprite.hpp"
+#include "elysian_collision_system.hpp"
 
 #include <gyro.h>
 
 namespace elysian {
 
-	class WarpSystem: public System { 
+	class WarpSystem:	public System,
+						public CollisionContactEventMonitor {
 	public:
 		enum STATE { CHECK_WARP, FADE_OUT, WARP, FADE_IN, PAUSE };
 		
 		WarpSystem(void); 
-		void Update(void);
-		void Render(void);
+		void initialize(void);
+		void update(void);
+		void render(void);
+
+		//reimplemented from CollisionContactEventMonitor
+		virtual void onCollisionEnter(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) override;
+		virtual void onCollide(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) override;
+		virtual void onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) override;
 		
 		void setRenderWarps(const bool flag);
 		bool getRenderWarps(void) const;

@@ -7,8 +7,8 @@ namespace elysian {
 
 	class AnimationSystem: public System {
 	public:
-		void Render(void);
-		void Update(void);
+		void render(void);
+		void update(void);
 	
 	//===FUCK WITH PALETTES?===
 	
