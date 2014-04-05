@@ -122,7 +122,7 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
 	glActiveTexture(GL_TEXTURE0);
 }
 
-void gyVidLightSourceAdd(const GYLightSource* const light) {
+void gyVidLightSourceAdd(GYLightSource* const light) {
 	assert(lightSourceCount < GYRO_VIDEO_LIGHT_SOURCES_MAX);
 
 	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
@@ -147,7 +147,7 @@ void gyVidLightSourceRemove(const GYLightSource* const light) {
 	}
 }
 
-void gyVidLightSourceReplace(const GYLightSource*const old, const GYLightSource*const next) {
+void gyVidLightSourceReplace(const GYLightSource*const old, GYLightSource*const next) {
 	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
 		if(lightSources[i] == old) {
 			lightSources[i] = next;
@@ -200,7 +200,7 @@ void glalGetSpotLightViewMatrix(GYMatrix4 dest, const GYLightSource*const lightS
 
 #endif
 
-	gyMatStore(dest);
+	gyMatStore((void*)&dest);
 	gyMatPop();
 
 }
@@ -220,7 +220,7 @@ void glalGetDirectionalLightViewMatrix(GYMatrix4 dest, const GYLightSource*const
 
 	//glalTranspose(temp);
 
-	gyMatApply((float*)&temp);
+	gyMatApply(temp);
 
 	gyMatTranslate(-GLAL_SHADOW_MAP_SIZE*0.5f, -GLAL_SHADOW_MAP_SIZE*0.5f, 0.0f);
 
@@ -230,12 +230,13 @@ void glalGetDirectionalLightViewMatrix(GYMatrix4 dest, const GYLightSource*const
 	gyMatScale(1.0f, 1.0f, 1.0f);
 	gyMatTranslate(0.0f, 0.0f, 0.0f);
 
-	gyMatStore((float*)dest);
+	gyMatStore((void*)dest);
 	gyMatPop();
 
 }
 
 void glalGetDirectionalLightProjectionMatrix(GYMatrix4 dest, const GYLightSource*const lightSrc) {
+	(void)lightSrc;
 	gyVidOrthoProjMat(dest, 0, GLAL_SHADOW_MAP_SIZE,
 							 0, GLAL_SHADOW_MAP_SIZE,
 							 -1500, 1500);
@@ -249,6 +250,8 @@ void glalGetSpotLightProjectionMatrix(GYMatrix4 dest, const GYLightSource*const 
 	gyVidPerspectiveMat(dest, 90, (float)GLAL_SHADOW_MAP_SIZE/(float)GLAL_SHADOW_MAP_SIZE, 0.5f, 150.0f);//150.0f
 #else
 
+	(void)lightSrc;
+
 	gyVidPerspectiveMat(dest, 90.0f, 1.0f, 0.5f, 150.0f);
 #endif
 
@@ -257,6 +260,7 @@ void glalGetSpotLightProjectionMatrix(GYMatrix4 dest, const GYLightSource*const 
 
 void glalGetPointLightProjectionMatrix(GYMatrix4 dest, const GYLightSource* const lightSrc) {
 	gyVidPerspectiveMat(dest, 90.0f, 1.0f, 0.5f, 901.0f);
+	(void)lightSrc;
 
 	//gyVidCamFrustum(camera, 90.0f, 1.0f, 0.5f, 901.0f);
 }
@@ -269,7 +273,7 @@ void glalGetPointLightCamMatrix(GYMatrix4 dest, const GYLightSource* const light
 	gyMatScale(1.0f, -1.0f, -1.0f);
 	gyMatTranslate(-lightSrc->position.x+1, -lightSrc->position.y, -lightSrc->position.z);
 
-	gyMatStore(dest);
+	gyMatStore((void*)dest);
 	gyMatPop();
 }
 
@@ -279,12 +283,12 @@ void glalGetPointLightViewMatrix(GYMatrix4 dest, const GYLightSource* const ligh
 	gyMatLoadIdentity();
 
 	//Create View Matrix
-	gyMatApply(&pointShadowFaceMatrices[face]);
+	gyMatApply((void*)&pointShadowFaceMatrices[face]);
 
 	glalGetPointLightCamMatrix(camMat, lightSrc);
 
-	gyMatApply(&camMat);
-	gyMatStore(dest);
+	gyMatApply((void*)&camMat);
+	gyMatStore((void*)dest);
 	gyMatPop();
 }
 

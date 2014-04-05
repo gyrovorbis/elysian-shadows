@@ -30,7 +30,7 @@ static inline unsigned OBB_getSupportPoints(const GYBoxCollider*const collider, 
 
 
     for(int i = 0; i < 4; ++i) {
-        t[i] = gyVec2DotProd(&collider->worldVert[i], normal);
+		t[i] = gyVec2DotProd((GYVector2*)&collider->worldVert[i], normal);
 
         if(t[i] < min || i == 0)
             min = t[i];
