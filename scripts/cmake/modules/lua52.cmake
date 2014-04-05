@@ -41,6 +41,7 @@ set(lua52_SRC_LIB
 	src/lstrlib.c
 	src/ltablib.c
 	src/linit.c
+	src/loadlib.c
 )
 
 set(lua52_SRC_LUA
