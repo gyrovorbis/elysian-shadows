@@ -212,7 +212,7 @@ int gyFileOpen(GYPathType path_type, const char *file_path, const char *mode, GY
     return 1;
 }
 
-int gyFileRead(GYFile *fp, char *buffer, size_t count, size_t *bytes_read)
+int gyFileRead(GYFile *fp, void *buffer, size_t count, size_t *bytes_read)
 {
     size_t read_bytes = 0;
     if (fp == NULL || buffer == NULL) {
