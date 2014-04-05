@@ -8,6 +8,7 @@
 namespace elysian {
 
 	class RigidBody;
+	class Entity;
 
 	class ForceGenerator {
 	private:
@@ -28,6 +29,37 @@ namespace elysian {
 
 	};
 
+	class ImplosionForceGenerator: public ForceGenerator {
+	private:
+		Entity*		_focalEntity	= nullptr;
+		float		_magnitude		= 0.0f;
+		float		_radius			= 0.0f;
+
+	public:
+
+		void			setRadius(const float radius);
+		void			setForceMagnitude(const float mag);
+		void			setFocalEntity(Entity*const entity);
+		virtual void	applyForce(RigidBody*const body, const float deltaTime) override;
+
+	};
+
+	class ExplosionForceGenerator: public ForceGenerator {
+	private:
+		Entity*		_focalEntity	= nullptr;
+		float		_magnitude		= 0.0f;
+		float		_radius			= 0.0f;
+
+	public:
+
+		void			setRadius(const float radius);
+		void			setForceMagnitude(const float mag);
+		void			setFocalEntity(Entity*const entity);
+		virtual void	applyForce(RigidBody*const body, const float deltaTime) override;
+
+	};
+
+
 
 
 	// ======= INLINEZ ======
@@ -37,6 +69,16 @@ namespace elysian {
 
 
 	inline void GravityForceGenerator::setAccel(const GYVector2 &accel) { _accel = accel; }
+
+	inline void ImplosionForceGenerator::setForceMagnitude(const float mag) { _magnitude = mag;}
+	inline void ImplosionForceGenerator::setFocalEntity(Entity * const entity) { _focalEntity = entity; }
+	inline void ImplosionForceGenerator::setRadius(const float radius) { _radius = radius; }
+
+	inline void ExplosionForceGenerator::setForceMagnitude(const float mag) { _magnitude = mag; }
+	inline void ExplosionForceGenerator::setFocalEntity(Entity * const entity) { _focalEntity = entity; }
+	inline void ExplosionForceGenerator::setRadius(const float radius) { _radius = radius; }
+
+
 
 }
 

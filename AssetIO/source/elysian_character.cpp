@@ -60,22 +60,25 @@ void Character::move(const GYVector2 &dist) {
 	Direction::DIR4 dir = Direction::fromVector(dist);
 	Animation *animComp = _entity->getAnimation();
 
-	switch(dir) {
-		case Direction::DIR4_UP:
-			animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_WALK_UP);
-			break;
-		case Direction::DIR4_DOWN:
-			animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_WALK_DOWN);
-			break;
-		case Direction::DIR4_LEFT:
-			animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_WALK_LEFT);
-			break;
-		case Direction::DIR4_RIGHT:
-			animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_WALK_RIGHT);
-			break;
-		default:
-			break;
+	if((_walkAnimInterp && _faceDir == dir) || !_walkAnimInterp) {
+		switch(dir) {
+			case Direction::DIR4_UP:
+				animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_WALK_UP);
+				break;
+			case Direction::DIR4_DOWN:
+				animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_WALK_DOWN);
+				break;
+			case Direction::DIR4_LEFT:
+				animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_WALK_LEFT);
+				break;
+			case Direction::DIR4_RIGHT:
+				animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_WALK_RIGHT);
+				break;
+			default:
+				break;
+		}
 	}
+
 	_faceDir = dir;
 }
 

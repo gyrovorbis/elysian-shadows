@@ -27,6 +27,8 @@ namespace elysian {
 
 		bool				_movedThisFrame		= false;
 		Direction::DIR4		_faceDir			= Direction::DIR4_CENTER;
+		bool				_walkAnimInterp		= true;
+		//Direction::DIR4		_prevDir			= Direction::DIR4_CENTER;
 		
 	public:
 		virtual bool load(FILE* file) override;
@@ -37,7 +39,8 @@ namespace elysian {
 		virtual Component::TYPE getType(void) const override { return Component::CHARACTER; }
 
 		Direction::DIR4 getFaceDir(void) const;
-		bool isFacing(const Entity& entity) const;
+		bool			isFacing(const Entity& entity) const;
+		void			setWalkAnimInterp(const bool val);
 
 #ifdef ELYSIAN_ENGINE
 		void update(void);
@@ -58,6 +61,8 @@ namespace elysian {
 		gyVec2Sub(&distVec, (GYVector2*)&entity.transform._pos, (GYVector2*)&_entity->transform._pos);
 		return (_faceDir == Direction::fromVector(distVec));
 	}
+
+	inline void Character::setWalkAnimInterp(const bool val) { _walkAnimInterp = val; }
 
 
 #ifdef ELYSIAN_ENGINE

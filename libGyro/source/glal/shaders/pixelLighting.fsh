@@ -25,6 +25,7 @@ struct GYMaterial {
 	vec4	emissiveColor;
 };
 
+uniform vec3			uCamWorldPos;
 uniform GYLightSource	uLights[cMaxLights];
 //uniform int			uLightCount;  //can't loop dynamically or break
 uniform GYMaterial		uMaterial;
@@ -60,6 +61,7 @@ varying vec2			vTexCoord;
 vec3	normal;
 float	shininess;
 vec4	specularity;
+vec3	viewDir;
 
 vec4 lightingEquation(const int i) {
 	vec4 computedColor = vec4(cfZero, cfZero, cfZero, cfZero);
@@ -135,7 +137,7 @@ vec4 lightingEquation(const int i) {
 		computedColor += (nDotL * vDiffuses[i]);
 
 		//Calculate and apply specular lighting
-		halfVec = normalize(VPpli + vec3(cfZero, cfZero, -cfOne));
+		halfVec = normalize(VPpli + viewDir);
 		nDotH = dot(normal, halfVec);
 		if(nDotH > cfZero) {
 			computedColor += (pow(nDotH, shininess) *
@@ -191,6 +193,7 @@ void main(void) {
 		normal = uNormal;
 	}
 
+	viewDir = normalize(uCamWorldPos - vWorldPos.xyz);
 	specularity = uMaterial.specularColor;
 	shininess = uMaterial.shininess;
 	if(uSpecularMapEnabled) {

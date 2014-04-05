@@ -50,7 +50,7 @@ namespace elysian {
         friend class Entity;
 	protected:
 		Animation(Entity& parent): Component(parent) {}
-		virtual ~Animation(void) override = default;
+		virtual ~Animation(void) override	= default;
 
 		AnimationAttrib* _attrib			= nullptr;
 		AnimationSequence* _currentSequence = nullptr;

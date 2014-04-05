@@ -95,17 +95,19 @@ void CameraSystem::pushViewProjMatrix(void) {
 		//gyVidProjectionDefaultMatrix();
 		//gyVidCameraSetViewCenter(&_curState->pos, _curState->scale, _curState->zOrient);
 		gyVidCamOrthoLookAt(_curState, &_curState->pos, _curState->scale, _curState->zOrient, 0.0f);
+		gyVidSetCamWorldPos(&_curState->pos);
 
 	} else { //PERSPECTIVE PROJECTION
 
 		if(_curState == &_debugState) {
-		GYVector3 pos = {
-			-_curState->entity->transform._pos.x,
-			-_curState->entity->transform._pos.y+30.0f,
-			-(_curState->entity->getElev()+1)*32.0f-ZCoordConstants::mapBase
-		};
+			GYVector3 pos = {
+				-_curState->entity->transform._pos.x,
+				-_curState->entity->transform._pos.y+30.0f,
+				-(_curState->entity->getElev()+1)*32.0f-ZCoordConstants::mapBase
+			};
 
-		gyVidCamFrustumLookAt(_curState, &pos, &_curState->dir, &_curState->up);
+			gyVidCamFrustumLookAt(_curState, &pos, &_curState->dir, &_curState->up);
+			gyVidSetCamWorldPos(&pos);
 		}
 
 #if 0

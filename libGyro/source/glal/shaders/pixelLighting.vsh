@@ -25,6 +25,7 @@ struct GYMaterial {
 	vec4	emissiveColor;
 };
 
+uniform vec3			uCamWorldPos;
 uniform GYLightSource	uLights[cMaxLights];
 //uniform int			uLightCount;  //can't loop dynamically or break
 uniform GYMaterial		uMaterial;

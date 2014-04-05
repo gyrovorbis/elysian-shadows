@@ -26,9 +26,9 @@ DialogSystem::DialogSystem(void) {
 	 Set the initial values for main text canvas.
 	*/
 	static GYColor4 canvColor1 = { 0, 0, 150, 255 };
-	static GYColor4 canvColor2 = { 0, 0, 50, 255 };
-	static GYColor4 canvColor3 = { 0, 0, 50, 255 };
-	static GYColor4 canvColor4 = { 0, 0, 50, 255 };
+	static GYColor4 canvColor2 = { 0, 0, 150, 255 };
+	static GYColor4 canvColor3 = { 0, 0, 150, 255 };
+	static GYColor4 canvColor4 = { 0, 0, 150, 255 };
 	static GYColor4 optBoxColor = { 0, 0, 50, 255 };
 	static GYColor4 cursorColor = { 0, 180, 180, 255 };
 

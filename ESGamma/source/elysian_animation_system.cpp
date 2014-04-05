@@ -7,13 +7,13 @@
 
 namespace elysian {
 
-void AnimationSystem::Update(void) {
+void AnimationSystem::update(void) {
 	for(unsigned int i = 0; i < _curArea->animations.size(); ++i) {
 		_curArea->animations[i]->update(getTimerSys()->getDeltaTime());
 	}
 }
 
-void AnimationSystem::Render(void) {
+void AnimationSystem::render(void) {
 	for(unsigned int i = 0; i < _curArea->animations.size(); ++i) {
 		//Debug::Print(Debug::NORMAL, "Rendering this cunt - %s\n", _curArea->animation[i]->getEntity()->getName());
 		//cameraSystem->RenderSprite(_curArea->animation[i]->gyroSprite);
