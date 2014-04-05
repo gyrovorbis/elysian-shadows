@@ -316,11 +316,15 @@ int _gyVidShaderCreate(GYShader* shader) {
 	char path[GYRO_PATH_MAX_SIZE];
 	GLint compiled;
 	const char* extension = NULL;
+	const char* token = NULL;
 
 	//don't fuck it up by tokenizing
 	strcpy(path, shader->path);
 	strtok(path, ".");
-	extension = strtok(NULL, ".");
+
+	while((token = strtok(NULL, "."))) {
+		extension = token;
+	}
 
 	_gyLog(GY_DEBUG_VERBOSE, "Compiling shader: %s", shader->path);
 

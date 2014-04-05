@@ -22,7 +22,7 @@ static inline void _SetKeyUp(GYInput *const input, const GY_X86_KEY key) {
 static inline GY_X86_KEY _TranslateFromSDL(const SDLKey keyCode) {
     switch(keyCode) {
     case SDLK_ESCAPE:
-        //exit(1);
+		//exit(1);
 		return GY_KEY_ESC;
     case SDLK_UP:
         return GY_KEY_DPAD_U;

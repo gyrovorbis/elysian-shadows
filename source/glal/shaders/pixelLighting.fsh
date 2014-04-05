@@ -43,25 +43,47 @@ uniform vec3			uNormal;
 uniform vec3			uTangent;
 uniform sampler2D		uShadowMaps[cMaxLights];
 
+uniform mat4			uLightProjViewMats[cMaxLights];
 uniform mat4			uShadowCubeMapProjMat;
 
 uniform sampler2D uTexture;
 
 varying vec4			vColor;
 varying vec4			vWorldPos;
-varying vec4			vDiffuses[cMaxLights];
+//varying vec4			vDiffuses[cMaxLights];
 //varying vec4			vambientGlobal;
-varying vec4			vAmbients[cMaxLights];
-varying vec4			vShadowPos[cMaxLights];
-varying vec3			vhalfVector;
+//varying vec4			vAmbients[cMaxLights];
+//varying vec4			vShadowPos[cMaxLights];
 varying vec3			vNormal;
 varying vec2			vTexCoord;
+
+//Old varyings
+vec4			diffuses[cMaxLights];
+vec4			ambients[cMaxLights];
+vec4			shadowPos[cMaxLights];
 
 //cached pixel lighting values.
 vec3	normal;
 float	shininess;
 vec4	specularity;
 vec3	viewDir;
+
+
+void calculateLighting(void) {
+	int i;
+
+	//Accumulate colors from each active light source
+	for(i = ciZero; i < cMaxLights; ++i) {
+		if(uLightsEnabled[i]) {
+			shadowPos[i] = uLightProjViewMats[i] * vWorldPos;
+			ambients[i] = uLights[i].ambientColor * uMaterial.ambientColor;
+			diffuses[i] = uLights[i].diffuseColor * uMaterial.diffuseColor;
+		}
+	}
+
+	//vertexColor.a = uMaterial.diffuseColor.a;
+	//return vertexColor;
+}
 
 vec4 lightingEquation(const int i) {
 	vec4 computedColor = vec4(cfZero, cfZero, cfZero, cfZero);
@@ -97,17 +119,17 @@ vec4 lightingEquation(const int i) {
 			//WRONG, THIS WILL AFFECT AMBIENCE!!!! ...wut?
 			attFactor *= spotFactor;
 
-			if(texture2D(uShadowMaps[i], (vShadowPos[i].xy)/vShadowPos[i].w).z < ((vShadowPos[i].z-0.005)/vShadowPos[i].w)) {
+			if(texture2D(uShadowMaps[i], (shadowPos[i].xy)/shadowPos[i].w).z < ((shadowPos[i].z-0.005)/shadowPos[i].w)) {
 				shadowFactor = 0.5;
 			}
 		} else { //point light cube shadows
 
-			vec4 absPos = abs(vShadowPos[i]);
+			vec4 absPos = abs(shadowPos[i]);
 			float frus_z = -max(absPos.x, max(absPos.y, absPos.z));
 			vec4 clip = uShadowCubeMapProjMat * vec4(0.0, 0.0, frus_z, 1.0);
 			float depth = (clip.z/clip.w) * 0.5 + 0.5;
 
-			if(textureCube(uShadowCubeMaps[i], vShadowPos[i].xyz).r < depth) {
+			if(textureCube(uShadowCubeMaps[i], shadowPos[i].xyz).r < depth) {
 				shadowFactor = 0.5;
 			}
 /*
@@ -125,7 +147,7 @@ vec4 lightingEquation(const int i) {
 		//VPpli = -uLights[i].position.xyz;	//MUST BE PRENORMALIZED
 		VPpli = -uLights[i].direction.xyz;
 
-		if(texture2D(uShadowMaps[i], vShadowPos[i].xy).z < vShadowPos[i].z) {
+		if(texture2D(uShadowMaps[i], shadowPos[i].xy).z < shadowPos[i].z) {
 			shadowFactor = 0.5;
 		}
 	}
@@ -134,7 +156,7 @@ vec4 lightingEquation(const int i) {
 	if(attFactor > cfZero) {
 		//Calculate and apply diffuse lighting
 		nDotL = max(cfZero, dot(normal, VPpli));
-		computedColor += (nDotL * vDiffuses[i]);
+		computedColor += (nDotL * diffuses[i]);
 
 		//Calculate and apply specular lighting
 		halfVec = normalize(VPpli + viewDir);
@@ -153,7 +175,7 @@ vec4 lightingEquation(const int i) {
 	computedColor *= shadowFactor;
 
 	//Calculate and apply ambient lighting
-	computedColor += vAmbients[i];
+	computedColor += ambients[i];
 
 	return computedColor;
 
@@ -201,6 +223,8 @@ void main(void) {
 		specularity.rgba *= specMapVal.rgba; //dunno if a is supposed to be factored in here.
 		//.shininess += specularity.a;
 	}
+
+	calculateLighting();
 
 	for(i = 0; i < cMaxLights; ++i) {
 		if(uLightsEnabled[i]) {

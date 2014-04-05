@@ -14,17 +14,18 @@
 extern "C" {
 #endif
 
-    
+
+
 #ifdef GYRO_FILE_PLATFORM_INCLUDE
 #	include GYRO_FILE_PLATFORM_INCLUDE
 #else
-    
+
 //Dummy implementation for every other platform without a cock in its ass.
 inline static int gyFileInit(void) { return 1; }
-inline static const char* gyFilePath(const char *const file) { return file; } 
+inline static const char* gyFilePath(const char *const file) { return file; }
 
 #endif
-    
+
 #ifdef __cplusplus
 }
 #endif
