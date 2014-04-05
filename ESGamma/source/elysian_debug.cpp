@@ -358,7 +358,7 @@ void Debug::processInput(const GameInput& input) {
 
 	//VRAM and Audio Stats
 	if(input.getTapped(GameInput::BUT_Z)) {
-		getCurLevel()->specularSheet = gyVidTexCreateSheetUniform(gyFilePath("level/Loren_Insides/tile/specularsheetr.png"),
+		getCurLevel()->specularSheet = gyVidTexCreateSheetUniform("level/Loren_Insides/tile/specularsheetr.png",
 																				  ELYSIAN_TILESHEET_WIDTH,
 																				  ELYSIAN_TILESHEET_HEIGHT,
 																				  ELYSIAN_TILE_WIDTH,

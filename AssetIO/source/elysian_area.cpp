@@ -133,27 +133,26 @@ bool Area::save(const char *const dir) {
 }
 
 bool Area::loadMap(const char *const filename) {
+	GYFile *fp;
 	dbgprintf(LOG_VERBOSE, "Area::LoadMap(%s)", filename);
     dbgPush();
 
-	FILE *file = fopen(gyFilePath(filename), "rb");
-	
-	if(!file) {
+	if (!gyFileOpen(GY_PATH_ASSETS, filename, "rb", &fp)) {
 		dbgprintf(LOG_CRITICAL, "FAILURE!");
-        dbgPop();
-        return false;
+		dbgPop();
+		return false;
 	}
 
-	fread(name, sizeof(name), 1, file);
-	fread(string, sizeof(string), 1, file);
-	fread(&width, sizeof(width), 1, file);
-	fread(&height, sizeof(height), 1, file);
+	gyFileRead(fp, name, sizeof name, NULL);
+	gyFileRead(fp, string, sizeof string, NULL);
+	gyFileRead(fp, &width, sizeof width, NULL);
+	gyFileRead(fp, &height, sizeof height, NULL);
 
 	allocMap();
 
-	fread(tiles, sizeof(TileEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS, 1, file);
+	gyFileRead(fp, tiles, sizeof(TileEntry) * width * height * ELYSIAN_AREA_MAP_LAYERS, NULL);
 
-	fclose(file);
+	gyFileClose(&fp);
     dbgPop();
 	return true;
 }
@@ -162,7 +161,13 @@ bool Area::saveMap(const char *const filename) {
 	dbgprintf(LOG_VERBOSE, "Area::SaveMap(%s)", filename);
 	dbgPush();
 
-	FILE *file = fopen(gyFilePath(filename), "wb");
+	/*
+	 * This method should only ever be called from
+	 * the toolkit, so all I've done is remove the call
+	 * to gyFilePath. It should be safe to leave in
+	 * standard file i/o ops. - Eddie
+	 */
+	FILE *file = fopen(filename, "wb");
 	if(!file) {
 		dbgprintf(LOG_CRITICAL, "FAILURE!");
         dbgPop();
