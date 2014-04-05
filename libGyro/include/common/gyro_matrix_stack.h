@@ -2,6 +2,7 @@
 #define GYRO_MATRIX_STACK_H
 
 #include "../gyro_math_api.h"
+#include "../gyro_matrix_api.h"
 
 #ifdef __cplusplus
 extern "C" {
