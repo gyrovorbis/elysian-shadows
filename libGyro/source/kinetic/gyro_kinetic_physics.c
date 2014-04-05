@@ -115,7 +115,7 @@ void gyResolvePenetration(struct _GYContact *con, GYVector2 posDelta[], GYVector
 		}
 	}
 
-#if 1
+#if 0
 	_gyLog(GY_DEBUG_VERBOSE, "linearMove[0] - %f\n", linearMove[0]);
 	_gyLog(GY_DEBUG_VERBOSE, "angularMove[0] - %f\n", angularMove[0]);
 	_gyLog(GY_DEBUG_VERBOSE, "linearMove[1] - %f\n", linearMove[1]);
