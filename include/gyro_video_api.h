@@ -26,7 +26,7 @@ void gyVidResolution(unsigned int *const width, unsigned int *const height);
 
 //Camera API
 void gyVidCamUpdate(const struct _GYCamera *const cam);
-
+void gyVidSetCamWorldPos(const GYVector3*const pos);
 
 //General Video API
 int gyVidInit(const struct _GYVidInitParams *const params); //MUST SET PROJWIDTH/PROJHEIGHT

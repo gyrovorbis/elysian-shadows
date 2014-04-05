@@ -125,7 +125,7 @@ static inline GY_X86_KEY _TranslateFromGLFW(const int keyCode) {
 	case GLFW_KEY_BACKSLASH:
 		return GY_KEY_BACKSLASH;
 	case GLFW_KEY_SLASH:
-		return GY_KEY_FORWARDSLASH;  
+		return GY_KEY_FORWARDSLASH;
     default:
         return GY_KEY_NONE;
     }

@@ -54,6 +54,7 @@ static const GYMaterial*	_currentMaterial								= &_defaultMaterial;
 static GYVector4			_globalAmbience									= { 0.0f, 0.0f, 0.0f, 1.0f };
 static const GYTexture*		_normalMap										= NULL;
 static const GYTexture*		_specularMap									= NULL;
+static GYVector3			_camWorldPos									= { 0.0f, 0.0f, 0.0f };
 
 // ==== INTERNAL STATE ===
 GYShaderProgram*			_curShaderProg		= NULL;
@@ -70,6 +71,12 @@ void gyVidSetCurrentShaderProgram(struct _GYShaderProgram*const program) {
 
 void gyVidSetDefaultShaderProgram(void) {
 	gyVidSetCurrentShaderProgram(_lightingShader.program);
+}
+
+void gyVidSetCamWorldPos(const GYVector3*const pos) {
+	if(pos->x == _camWorldPos.x && pos->y == _camWorldPos.y && pos->z == _camWorldPos.z) return;
+	_camWorldPos = *pos;
+	glUniform3fv(curLightShader->uniformLoc[SHADER_CAM_WORLD_POS], 1, &_camWorldPos);
 }
 
 void gyVidNormalMapBind(const GYTexture * const tex) {
@@ -114,17 +121,11 @@ void gyVidSpecularMapBind(const GYTexture * const tex) {
 void glalLightingInit(void) {
 
 	//Cache cube shadow map lookat matrices
-
 	gyVidLookAtMat(pointShadowFaceMatrices[GY_CUBE_MAP_RIGHT], 0.0, 0.0, 0.0,  1.0, 0.0, 0.0,  0.0,-1.0, 0.0); // +X
-
 	gyVidLookAtMat(pointShadowFaceMatrices[GY_CUBE_MAP_LEFT], 0.0, 0.0, 0.0, -1.0, 0.0, 0.0,  0.0,-1.0, 0.0); // -X
-
 	gyVidLookAtMat(pointShadowFaceMatrices[GY_CUBE_MAP_BOTTOM], 0.0, 0.0, 0.0,  0.0, -1.0, 0.0,  0.0,0.0, -1.0); // +Y
-
 	gyVidLookAtMat(pointShadowFaceMatrices[GY_CUBE_MAP_TOP], 0.0, 0.0, 0.0,  0.0, 1.0, 0.0,  0.0,0.0, 1.0); // -Y
-
 	gyVidLookAtMat(pointShadowFaceMatrices[GY_CUBE_MAP_BACK], 0.0, 0.0, 0.0,  0.0, 0.0, 1.0,  0.0,-1.0, 0.0); // +Z
-
 	gyVidLookAtMat(pointShadowFaceMatrices[GY_CUBE_MAP_FRONT], 0.0, 0.0, 0.0,  0.0, 0.0, -1.0,  0.0,1.0, 0.0); // -Z
 }
 
@@ -182,6 +183,7 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
 	shader->attribLoc[SHADER_TEX_COORD] = _protectedAttribQuery(shader->program, "aTexCoord");
 
 	//poll for global uniform locations
+	shader->uniformLoc[SHADER_CAM_WORLD_POS]			= _protectedUniformQuery(shader->program, "uCamWorldPos");
 	shader->uniformLoc[SHADER_TEXTURE_ENABLED]			= _protectedUniformQuery(shader->program, "uTextureEnabled");
 	shader->uniformLoc[SHADER_NORMAL]					= _protectedUniformQuery(shader->program, "uNormal");
 	shader->uniformLoc[SHADER_TANGENT]					= _protectedUniformQuery(shader->program, "uTangent");
@@ -279,6 +281,7 @@ void glalDefaultShadersLoadUniforms(void) {
 	gyVidSetGlobalAmbience(&_globalAmbience);
 	gyVidLightingSetEnable(lightingEnabled);
 
+	glUniform3fv(curLightShader->uniformLoc[SHADER_CAM_WORLD_POS], 1, &_camWorldPos);
 	glUniform3fv(curLightShader->uniformLoc[SHADER_NORMAL], 1, normalVector);
 	glUniform3fv(curLightShader->uniformLoc[SHADER_TANGENT], 1, tangentVector);
 
