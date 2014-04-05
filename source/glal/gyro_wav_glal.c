@@ -69,7 +69,7 @@ static int _loadWavFile(const char* filename, ALuint* buffer, ALsizei* size,
 	unsigned char* data;
 	int alErrorCode;
 
-	if (!gyFileOpen(GY_PATH_BINARY, filename, "rb", &soundFile)) {
+	if (!gyFileOpen(GY_PATH_ASSETS, filename, "rb", &soundFile)) {
 		_gyLog(GY_DEBUG_CRITICAL, "! - Could not open WAV file - %s", filename);
 		return 0;
 	}
