@@ -358,11 +358,9 @@ void Debug::processInput(const GameInput& input) {
 
 	//VRAM and Audio Stats
 	if(input.getTapped(GameInput::BUT_Z)) {
-		getCurLevel()->specularSheet = gyVidTexCreateSheetUniform(gyFilePath("level/Loren_Insides/tile/specularsheetr.png"),
-																				  ELYSIAN_TILESHEET_WIDTH,
-																				  ELYSIAN_TILESHEET_HEIGHT,
-																				  ELYSIAN_TILE_WIDTH,
-																				  ELYSIAN_TILE_HEIGHT);
+		Entity* julien = getCurArea()->findEntity("Julien");
+
+		getGuiSys()->addCombatText("10", GYColor4{ 255, 0, 0, 255 }, *(GYVector2*)&julien->transform._pos, GYVector2 { 0.0f, -5.0f});
 
 	}
 	if(input.getTapped(GameInput::BUT_FORWARDSLASH)) {
@@ -446,8 +444,8 @@ void Debug::processInput(const GameInput& input) {
 			lightSrc->setDirection(dirVec);
 			LightAttrib* attrib = new LightAttrib;
 			//attrib->setAmbientColor(GYVector4{ 0.5f, 0.5f, 0.5f, 1.0f});
-			attrib->setDiffuseColor(GYVector4 { 0.0f, 0.0f, 0.0f, 1.0f });
-			attrib->setSpecularColor(GYVector4{ 0.5f, 0.5f, 0.5f, 0.0f});
+			attrib->setDiffuseColor(GYVector4 { 0.0f, 0.0f, 0.5f, 1.0f });
+			attrib->setSpecularColor(GYVector4{ 0.0f, 0.5f, 0.5f, 1.0f});
 			lightSrc->setAttrib(attrib);
 #if 0
 			lightSrc->setLightType(LightSource::LIGHT_DIRECTIONAL);

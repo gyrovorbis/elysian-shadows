@@ -2,6 +2,8 @@
 #include "elysian_camera_system.hpp"
 #include "elysian_debug.hpp"
 #include "elysian_area.hpp"
+#include "elysian_timer_system.hpp"
+#include "elysian_force_generator.hpp"
 
 namespace elysian {
 
@@ -25,17 +27,33 @@ void ParticleSystem::resizePool(const unsigned index, const unsigned size) {
 }
 
 void ParticleSystem::update(void) {
+	const float deltaTime = getTimerSys()->getDeltaTime();
 	CameraState* state = getCameraSys()->getCurrentState();
 
 	//Update internal emitters
 	for(unsigned i = 0; i < ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_COUNT; ++i) {
-		_emitters[i].update(state);
+		_emitters[i].update(state, deltaTime);
 	}
 
 	//update entity emitters
 	auto emitters = getCurArea()->particleEmitters;
 	for(auto it : emitters) {
-		it->update(state);
+		it->update(state, deltaTime);
+	}
+}
+
+void ParticleSystem::applyForce(ForceGenerator * const forceGen) {
+	const float deltaTime = getTimerSys()->getDeltaTime();
+
+	//Update internal emitters
+	for(unsigned i = 0; i < ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_COUNT; ++i) {
+		if(forceGen->getForceMask() & _emitters[i].getAttrib()->getForceMask()) _emitters[i].applyForce(forceGen, deltaTime);
+	}
+
+	//update entity emitters
+	auto emitters = getCurArea()->particleEmitters;
+	for(auto it : emitters) {
+		if(forceGen->getForceMask() & it->getAttrib()->getForceMask()) it->applyForce(forceGen, deltaTime);
 	}
 }
 

@@ -44,7 +44,7 @@ void WarpSystem::update(void) {
 	
 	switch(_state) {
 		case CHECK_WARP:
-			//UpdateCheckWarp();
+			UpdateCheckWarp();
 			break;
 		case FADE_OUT:
 			UpdateFadeOut();

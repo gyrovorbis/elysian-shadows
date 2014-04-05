@@ -592,7 +592,7 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable) {
 			curTileY = ((int)collidable.getCenterWorldPos().y+16)/32;
 		if(!(prevZTranX == curTileX && prevZTranY == curTileY)) {
 			if(closestElev != 16) {
-				Debug::printf(Debug::VERBOSE, "Elevation - %d", closestElev); 
+				//Debug::printf(Debug::VERBOSE, "Elevation - %d", closestElev);
 				collidable.getEntity()->setElev(closestElev);
 			}
 			collidable.setZTranState(Collidable::ZTRAN_INACTIVE);

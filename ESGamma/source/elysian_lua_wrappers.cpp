@@ -392,7 +392,8 @@ OOLUA_EXPORT_FUNCTIONS(ParticleEmitterAttrib,
 					   setSize,
 					   setFrameRange,
 					   loadSpecularMap,
-					   setMaterial)
+					   setMaterial,
+					   setForceMask)
 OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitterAttrib);
 
 OOLUA_EXPORT_FUNCTIONS(ParticleEmitter,

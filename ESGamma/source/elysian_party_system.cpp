@@ -254,9 +254,9 @@ bool PartySystem::addCharacterToParty(Entity *entity) {
 			return false;
 		}
 	}
-	Debug::printf(Debug::VERBOSE, "%s has joined the party!", entity->getName());
+	//Debug::printf(Debug::VERBOSE, "%s has joined the party!", entity->getName());
 	_characterParty.push_back(entity);
-	if(_playableParty.size() > 0 || _characterParty.size() > 1) entity->transform.setPos(_partyPathPoint[_partyPathPoint.size()-1]);
+	if( _characterParty.size() > 1) entity->transform.setPos(_partyPathPoint[_partyPathPoint.size()-1]);
 	if(_playableParty.size() == 0 && _characterParty.size() == 1) getCameraSys()->setFollowEntity(entity);
 	_resizePartyPathPoints();
 	return true;
@@ -363,7 +363,7 @@ void PartySystem::updatePartyPaths(void) {
 	}
 	
 	//add leader's current position
-	_partyPathPoint[0] = (_playableParty.size() > 0)? GYVector2{_playableParty[0]->transform._pos.x, _playableParty[0]->transform._pos.y } : GYVector2 {_characterParty[0]->transform._pos.x, _characterParty[0]->transform._pos.x };
+	_partyPathPoint[0] = (_playableParty.size() > 0)? GYVector2{_playableParty[0]->transform._pos.x, _playableParty[0]->transform._pos.y } : GYVector2 {_characterParty[0]->transform._pos.x, _characterParty[0]->transform._pos.y };
 
 	unsigned int currentIndex = 2;
 	//update playables

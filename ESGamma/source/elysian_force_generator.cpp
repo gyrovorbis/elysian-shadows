@@ -5,24 +5,25 @@
 
 namespace elysian {
 
-void GravityForceGenerator::applyForce(RigidBody * const body, const float /*deltaTime*/) {
+void GravityForceGenerator::applyForce(ForceTarget * const target, const float /*deltaTime*/) {
 	GYVector2 force;
-	const float invMass = body->getEntity()->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass;
+	const GYStatic* attrib = target->getStaticAttrib();
+	const float invMass = attrib->inverseMass;
 	if(invMass == 0.0f) return;
 
 	gyVec2Scale(&force, &_accel, 1.0f/invMass);
 
-	body->applyForce(force);
+	target->applyForce(force);
 
 }
 
-void ImplosionForceGenerator::applyForce(RigidBody * const body, const float /*deltaTime*/) {
+void ImplosionForceGenerator::applyForce(ForceTarget * const target, const float /*deltaTime*/) {
 	GYVector2 dir;
 	float distance;
 
-	if(_focalEntity == body->getEntity()) return;
+	//if(_focalEntity == body->getEntity()) return;
 
-	gyVec2Sub(&dir, (GYVector2*)&_focalEntity->transform._pos, (GYVector2*)&body->getEntity()->transform._pos);
+	gyVec2Sub(&dir, (GYVector2*)&_focalEntity->transform._pos, (GYVector2*)&target->getPosition());
 
 	distance = gyVec2Magnitude(&dir);
 
@@ -33,16 +34,17 @@ void ImplosionForceGenerator::applyForce(RigidBody * const body, const float /*d
 
 	gyVec2ScaleAccum(&dir, _magnitude);
 
-	body->applyForce(dir);
+	target->applyForce(dir);
 }
 
-void ExplosionForceGenerator::applyForce(RigidBody * const body, const float /*deltaTime*/) {
+void ExplosionForceGenerator::applyForce(ForceTarget * const target, const float /*deltaTime*/) {
 	GYVector2 dir;
 	float distance;
+	GYVector3 pos3 = target->getPosition();
 
-	if(_focalEntity == body->getEntity()) return;
+	//if(_focalEntity == body->getEntity()) return;
 
-	gyVec2Sub(&dir, (GYVector2*)&body->getEntity()->transform._pos, (GYVector2*)&_focalEntity->transform._pos);
+	gyVec2Sub(&dir, (GYVector2*)&pos3, (GYVector2*)&_focalEntity->transform._pos);
 
 	distance = gyVec2Magnitude(&dir);
 
@@ -53,7 +55,7 @@ void ExplosionForceGenerator::applyForce(RigidBody * const body, const float /*d
 
 	gyVec2ScaleAccum(&dir, _magnitude);
 
-	body->applyForce(dir);
+	target->applyForce(dir);
 
 }
 

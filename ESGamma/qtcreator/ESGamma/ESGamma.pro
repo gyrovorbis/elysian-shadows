@@ -87,7 +87,6 @@ HEADERS += \
     ../../../AssetIO/include/elysian_renderable.hpp \
     ../../../AssetIO/include/elysian_quad_sprite_attrib.hpp \
     ../../../AssetIO/include/elysian_prim_attrib.hpp \
-    ../../../AssetIO/include/elysian_pool.hpp \
     ../../../AssetIO/include/elysian_model_attrib.hpp \
     ../../../AssetIO/include/elysian_map_depth_buffer.hpp \
     ../../../AssetIO/include/elysian_lua_behavior.hpp \
