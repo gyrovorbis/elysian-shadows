@@ -123,7 +123,7 @@ namespace elysian {
 			int tempInt;
 			fscanf(file, "%d", &tempInt);
 			tileset[i].colliderType = (Tile::COLLIDER_TYPE)tempInt;
-			fscanf(file, "%d", &tileset[i].animated);
+			fscanf(file, "%d", (int*)&tileset[i].animated);
 			fscanf(file, "%f", &tileset[i].animTime);
 			fscanf(file, "%hd", &tileset[i].nextIndex);
 

@@ -12,7 +12,7 @@
 namespace elysian {
 
 class LightSource;
-class CameraState;
+struct CameraState;
 
 class LightSystem: public System {
 	bool			_enabled		= true;

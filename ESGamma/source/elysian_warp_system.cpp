@@ -120,7 +120,7 @@ void WarpSystem::UpdateCheckWarp(void) {
 	}
 }
 
-void WarpSystem::onCollisionEnter(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) {
+void WarpSystem::onCollisionEnter(Collidable*const /*bodyA*/, Collidable*const /*bodyB*/, CollisionContact* /*contact*/) {
 #if 0
 	if(_state != CHECK_WARP) return;
 
@@ -132,11 +132,11 @@ void WarpSystem::onCollisionEnter(Collidable*const bodyA, Collidable*const bodyB
 #endif
 }
 
-void WarpSystem::onCollide(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) {
+void WarpSystem::onCollide(Collidable*const /*bodyA*/, Collidable*const /*bodyB*/, CollisionContact* /*contact*/) {
 
 }
 
-void WarpSystem::onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) {
+void WarpSystem::onCollisionExit(Collidable*const /*bodyA*/, Collidable*const /*bodyB*/) {
 
 }
 

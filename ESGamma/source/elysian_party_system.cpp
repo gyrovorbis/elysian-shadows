@@ -122,6 +122,7 @@ bool PartySystem::loadPlayables(void) {
     Debug::pop();
 	return true;
 #endif
+	return true;
 }
 
 //bool PartySystem::loadParty(std::ifstream &/*stream*/) { return true; }

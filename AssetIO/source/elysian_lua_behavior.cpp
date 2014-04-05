@@ -51,7 +51,7 @@ LuaBehavior::~LuaBehavior(void) {
 #endif
 }
 
-bool LuaBehavior::load(FILE* file) {
+bool LuaBehavior::load(FILE* /*file*/) {
 #if 0
     dbgprintf(LOG_VERBOSE, "LuaBehavior::Load(ifstream&)");
     dbgPush();
@@ -69,9 +69,10 @@ bool LuaBehavior::load(FILE* file) {
     dbgPop();
 	return success;
 #endif
+	return true;
 }
 
-bool LuaBehavior::save(FILE* file) {
+bool LuaBehavior::save(FILE* /*file*/) {
 #if 0
     dbgprintf(LOG_VERBOSE, "LuaBehavior::Save(ofstream&)");
     dbgPush();
@@ -85,6 +86,7 @@ bool LuaBehavior::save(FILE* file) {
     dbgPop();
 	return true;
 #endif
+	return true;
 }
 
 bool LuaBehavior::loadScript(const char *file) {

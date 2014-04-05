@@ -273,8 +273,8 @@ void DialogSystem::processInput(const GameInput &input) {
 				//move down
 				if(input.getTapped(GameInput::BUT_DPAD_D)) {
 					++_currentOption;
-					if(_currentOption > _curScreen.prompt->getOptionCount()-1) {
-						_currentOption = _curScreen.prompt->getOptionCount()-1;
+					if(_currentOption > (int)_curScreen.prompt->getOptionCount()-1) {
+						_currentOption = (int)_curScreen.prompt->getOptionCount()-1;
 					}
 				}
 				//move up
@@ -303,6 +303,9 @@ void DialogSystem::NextScreen(void) {
 		case BOX_INPUT:
 			nextIndex = _curScreen.prompt->getOptionNextIndex(_currentOption); //_currentConversationDialog->getScreen(_currentScreen)->getOption(_currentOption)->resultScreen;
 			break;
+		default:
+			nextIndex = -1; //shit's reested.
+		break;
 	}
 
 	//Invoke Lua trigger

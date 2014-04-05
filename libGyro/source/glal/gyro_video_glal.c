@@ -79,12 +79,11 @@ const GYTexture*			curTex					= 0;
 const GYCamera*				curCamera				= &_defaultCamera;
 
 //Private video state variables
-static GYColor4				_rectColor[4];
 static unsigned int			_projWidth				= 0;
 static unsigned int			_projHeight				= 0;
 static GY_RECT_TEX_ORIENT	_rectTexOrient			= GY_RECT_TEX_ORIENT_NORMAL;
 static GY_RECT_NORMAL_TYPE	_normalType				= GY_RECT_NORMAL_FLAT;
-static GYColor4				_curQuadListColor[4]	= { {0} };
+static GYColor4				_curQuadListColor[4]	= { {0, 0, 0, 0} };
 unsigned					polyCount				= 0;
 
 unsigned gyVidPolyCount(void) { return polyCount; }
@@ -94,14 +93,6 @@ void gyVidResolution(unsigned int *const projWidth, unsigned int *const projHeig
 }
 
 int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth, const int projHeight) {
-	const float pfar = 1000.0f;
-	const float pnear = -999.0f;
-    const float pleft = 0.0f;
-	const float pright = projWidth;
-    const float ptop = 0.0f;
-    const float pbottom = projHeight;
-
-	GYVector3 center = { 0.0f, 0.0f, 0.0f };
 
 	//gyVidOrthoProjMat(projectionMatrix, pleft, pright, pbottom, ptop, pnear, pfar);
 	//gyVidCamOrthoProj(&_defaultCamera, pleft, pright, pbottom, ptop, pnear, pfar);
@@ -268,62 +259,6 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
 
 void gyVidRect(const int frame) {
 	gyVidQuad(_rectVerts[_normalType], frame);
-}
-
-
-
-void gyVidPerspectiveMat(GYMatrix4 mat, const float fov, const float aspect, const float znear, const float zfar) {
-#if 1
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	gluPerspective(fov, aspect, znear, zfar);
-	glGetFloatv(GL_MODELVIEW, (float*)mat);
-	glalTranspose(mat);
-	glLoadIdentity();
-#else
-
-	float *m = (float*)mat;
-	float ymax = znear * tan(fov * M_PI/360.0f);
-	 float ymin = -ymax;
-	 float xmax = ymax * aspect;
-	 float xmin = ymin * aspect;
-
-	 float width = xmax - xmin;
-	 float height = ymax - ymin;
-
-	 float depth = zfar - znear;
-	 float q = -(zfar + znear) / depth;
-	 float qn = -2 * (zfar * znear) / depth;
-
-	 float w = 2 * znear / width;
-	 w = w / aspect;
-	 float h = 2 * znear / height;
-
-	 m[0]  = w;
-	 m[1]  = 0;
-	 m[2]  = 0;
-	 m[3]  = 0;
-
-	 m[4]  = 0;
-	 m[5]  = h;
-	 m[6]  = 0;
-	 m[7]  = 0;
-
-	 m[8]  = 0;
-	 m[9]  = 0;
-	 m[10] = q;
-	 m[11] = -1;
-
-	 m[12] = 0;
-	 m[13] = 0;
-	 m[14] = qn;
-	 m[15] = 0;
-
-	 glalTranspose(mat);
-
-
-
-#endif
 }
 
 

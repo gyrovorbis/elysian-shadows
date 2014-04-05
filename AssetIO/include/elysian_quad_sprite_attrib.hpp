@@ -57,11 +57,11 @@ namespace elysian {
 
 		PrimAttrib::TYPE getType(void) const { return PrimAttrib::QUAD_SPRITE; }
 
-		virtual bool load(FILE* file) {
+		virtual bool load(FILE* /*file*/) {
 			return false;
 		}
 
-		virtual bool save(FILE* file) {
+		virtual bool save(FILE* /*file*/) {
 			return false;
 		}
 	};

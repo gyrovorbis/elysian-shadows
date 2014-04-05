@@ -169,8 +169,6 @@ void Engine::processInput(void) {
 }
 
 void Engine::render(void) {
-	GYMatrix4 lightViewMatrix;
-	GYMatrix4 projectionMatrix;
 
 	switch(System::_engineState) {
 		default:

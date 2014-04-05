@@ -78,7 +78,7 @@ void Collidable::render(void) {
 #endif    
 }
      
-bool Collidable::load(FILE* file) {
+bool Collidable::load(FILE* /*file*/) {
 //	unsigned type;
 //	bool empty = false;
 
@@ -118,7 +118,7 @@ bool Collidable::load(FILE* file) {
 
 }
 
-bool Collidable::save(FILE* file) {
+bool Collidable::save(FILE* /*file*/) {
 	dbgprintf(LOG_VERBOSE, "Collidable::Save(ofstream&)");
     dbgPush();
 /*

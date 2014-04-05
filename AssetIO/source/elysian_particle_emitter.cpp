@@ -193,9 +193,9 @@ bool ParticleEmitter::removeFromLevel(void) {
 }
 
 
-bool ParticleEmitter::canAddTo(Entity& entity) { return true; }
-bool ParticleEmitter::load(FILE* file) { return true; }
-bool ParticleEmitter::save(FILE* file) { return true; }
+bool ParticleEmitter::canAddTo(Entity& /*entity*/) { return true; }
+bool ParticleEmitter::load(FILE* /*file*/) { return true; }
+bool ParticleEmitter::save(FILE* /*file*/) { return true; }
 auto ParticleEmitter::getType(void) const -> TYPE { return Component::PARTICLE_EMITTER; }
 
 }

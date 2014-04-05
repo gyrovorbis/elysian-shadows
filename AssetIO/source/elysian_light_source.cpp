@@ -26,6 +26,7 @@ GYLightProperties LightAttrib::defaultProperties = {
 	{ 1.0f, 1.0f, 1.0f, 1.0f },
 	{ 0.00005f, 0.00005f, 0.00005f },
 	1.0f,
+	200.0f
 };
 
 void LightAttrib::setAttenuationFactors(const GYVector3& vec) {
@@ -43,8 +44,8 @@ void LightAttrib::setAttenuationFactors(const GYVector3& vec) {
 }
 
 //reimplemented from component
-bool LightSource::load(FILE* file) { return true; }
-bool LightSource::save(FILE* file) { return true; }
+bool LightSource::load(FILE* /*file*/) { return true; }
+bool LightSource::save(FILE* /*file*/) { return true; }
 
 bool LightSource::addToLevel(void) {
 	_curArea->lightSources.push_back(this);

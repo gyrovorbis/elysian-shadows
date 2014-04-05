@@ -91,11 +91,11 @@ namespace elysian {
 		void setFrame(const unsigned fr) { _frame = fr; }
 		int getFrame(void) const { return _frame; }
 
-		virtual bool load(FILE* file) override {
+		virtual bool load(FILE* /*file*/) override {
 			return true;
 		}
 
-		virtual bool save(FILE* file) override {
+		virtual bool save(FILE* /*file*/) override {
 			return true;
 		}
 	};

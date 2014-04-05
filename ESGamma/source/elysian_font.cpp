@@ -35,7 +35,7 @@ bool Font::_loadCharacterWidths(const char *width_file) {
 	if(!file) return false;
 	
 	for(int i = 0; i < 128; ++i) {
-		fscanf(file, "%d", &_charWidth[i]);
+		fscanf(file, "%hd", &_charWidth[i]);
 	}
 	
 	fclose(file);

@@ -38,15 +38,15 @@ void CombatSystem::onCollisionExit(Collidable*const bodyA, Collidable*const body
 	_dealCollisionDamage(combatA, combatB, nullptr);
 }
 
-void CombatSystem::addCombatant(Entity &entity) {
+void CombatSystem::addCombatant(Entity& /*entity*/) {
 
 }
 
-void CombatSystem::removeCombatant(Entity &entity) {
+void CombatSystem::removeCombatant(Entity& /*entity*/) {
 
 }
 
-void CombatSystem::killCombatant(Entity * const entity) {
+void CombatSystem::killCombatant(Entity * const /*entity*/) {
 
 }
 

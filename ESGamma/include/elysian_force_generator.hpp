@@ -15,6 +15,7 @@ namespace elysian {
 		uint32_t		_forceMask = ~0x0;
 	public:
 		virtual void	applyForce(ForceTarget*const target, const float deltaTime) = 0;
+		virtual			~ForceGenerator(void) = default;
 
 		uint32_t		getForceMask(void) const;
 		void			setForceMask(const uint32_t mask);
@@ -24,6 +25,7 @@ namespace elysian {
 	private:
 		GYVector2 _accel = GYVector2 { 0.0f, 0.7f };
 	public:
+		virtual			~GravityForceGenerator(void) = default;
 		void			setAccel(const GYVector2& accel);
 		virtual void	applyForce(ForceTarget*const target, const float deltaTime) override;
 
@@ -36,7 +38,7 @@ namespace elysian {
 		float		_radius			= 0.0f;
 
 	public:
-
+		virtual			~ImplosionForceGenerator(void) = default;
 		void			setRadius(const float radius);
 		void			setForceMagnitude(const float mag);
 		void			setFocalEntity(Entity*const entity);
@@ -52,6 +54,7 @@ namespace elysian {
 
 	public:
 
+		virtual			~ExplosionForceGenerator(void) = default;
 		void			setRadius(const float radius);
 		void			setForceMagnitude(const float mag);
 		void			setFocalEntity(Entity*const entity);

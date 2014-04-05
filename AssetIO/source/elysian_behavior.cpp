@@ -156,12 +156,12 @@ void Behavior::removeTrigger(TRIGGER flag) {
 	}
 }
 
-bool Behavior::load(FILE* file) {
+bool Behavior::load(FILE* /*file*/) {
 	//stream >> _triggerBits;
 	return true;
 }
 
-bool Behavior::save(FILE* file) {
+bool Behavior::save(FILE* /*file*/) {
 	//stream << _triggerBits << std::endl;
 	return false;
 }

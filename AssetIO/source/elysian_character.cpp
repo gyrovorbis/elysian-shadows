@@ -6,12 +6,12 @@
 
 namespace elysian {
 
-bool Character::save(FILE* file) {
+bool Character::save(FILE* /*file*/) {
 	dbgprintf(LOG_VERBOSE, "Character::Save(FILE*)");
 	return true;
 }
 
-bool Character::load(FILE* file) {
+bool Character::load(FILE* /*file*/) {
 	dbgprintf(LOG_VERBOSE, "Character::Load(FILE*)");
 	
 	return true;

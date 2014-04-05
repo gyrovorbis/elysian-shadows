@@ -84,7 +84,7 @@ void RigidBodySystem::resolveContactVelocities(void) {
 			}
 		}
 
-		if(maxIndex == _contactCount) {
+		if(maxIndex == (int)_contactCount) {
 			//printf("=======NONE FOUND! BREAKING EARLY!=======\n");
 			break; //EPSILAAAAWN
 		}

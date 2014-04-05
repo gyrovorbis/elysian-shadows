@@ -64,11 +64,11 @@ bool RigidBody::canAddTo(Entity& entity) {
 	return (entity.getCollidable());
 }
 
-bool RigidBody::load(FILE* file) {
+bool RigidBody::load(FILE* /*file*/) {
 	return true;
 }
 
-bool RigidBody::save(FILE* file) {
+bool RigidBody::save(FILE* /*file*/) {
 	return true;
 }
 

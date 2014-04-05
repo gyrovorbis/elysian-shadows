@@ -49,6 +49,7 @@ namespace elysian {
 		void _dealCollisionDamage(Combat*const src, Combat*const target, CollisionContact* contact);
 		void _processCurrentCombatAction(void);
 	public:
+		virtual ~CombatSystem(void) = default;
 
 		//reimplemented from CollisionContactEventMonitor
 		virtual void onCollisionEnter(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) override;

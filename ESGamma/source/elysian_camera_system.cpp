@@ -171,7 +171,7 @@ void CameraSystem::popViewProjMatrix(void) {
 }
 
 
-void CameraSystem::setPerspectiveFrustum(const float fov, const float aspect, const float znear, const float zfar) {
+void CameraSystem::setPerspectiveFrustum(const float /*fov*/, const float /*aspect*/, const float /*znear*/, const float /*zfar*/) {
 	//_curState->defaultProjMat = false;
 
 	//gyVidViewFrustumMat(_curState->projMat, fov, aspect, znear, zfar);
@@ -348,11 +348,11 @@ bool CameraSystem::isOnscreen(const Entity &entity) {
 
 
 
-void CameraSystem::isEntityWithinViewVolume(const Entity& entity) const {
+void CameraSystem::isEntityWithinViewVolume(const Entity& /*entity*/) const {
 
 }
 
-void CameraSystem::isTileWithinViewVolume(const unsigned l, const unsigned x, const unsigned y) const {
+void CameraSystem::isTileWithinViewVolume(const unsigned /*l*/, const unsigned /*x*/, const unsigned /*y*/) const {
 
 }
 

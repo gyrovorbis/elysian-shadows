@@ -10,7 +10,7 @@
 
 namespace elysian {
 
-	class CameraState;
+	struct CameraState;
 	class Material;
 	class ForceGenerator;
 

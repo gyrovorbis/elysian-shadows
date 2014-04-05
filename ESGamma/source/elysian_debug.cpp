@@ -339,7 +339,7 @@ void Debug::processInput(const GameInput& input) {
 
     }
 
-	static float timeSpeed = 60.0f;
+//	static float timeSpeed = 60.0f;
 
 	if(input.getTapped(GameInput::BUT_N)) {
 		static bool sunEnabled = true;
@@ -413,13 +413,13 @@ void Debug::processInput(const GameInput& input) {
 
 
 	if(input.getTapped(GameInput::BUT_X)) {
-		GYVector4 diffuseColors[4] = {
+/*		GYVector4 diffuseColors[4] = {
 			{ 1.0f, 1.0f, 5.0f, 1.0f},
 			{ 1.0f, 2.0f, 1.0f, 1.0f},
 			{ 2.0f, 1.0f, 1.0f, 1.0f},
 			{ 2.0f, 2.0f, 1.0f, 1.0f}
 		};
-
+*/
 		static int count = 0;
 		char buff[100];
 

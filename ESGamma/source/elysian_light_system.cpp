@@ -51,7 +51,7 @@ void LightSystem::setEnabled(const bool val) {
 
 static void renderCube(float x, float y, float z,
 					   float sx, float sy, float sz,
-					   float rotz) {
+					   float /*rotz*/) {
 	static const float verts[17*4] = {
 		-1,  1,  1, 1.0f,
 		 1,  1,  1, 1.0f,
@@ -257,7 +257,6 @@ void LightSystem::getLightPassTileRegion(unsigned& startX, unsigned& startY, uns
 	endY	= 0;
 
 	uint32_t lights		= _activeLights;
-	unsigned lightIndex = 0;
 
 	for(unsigned i = 0; i < _onscreenLightCount; ++i) {
 		if(!(lights & (1<<i))) continue;
@@ -318,7 +317,7 @@ uint32_t LightSystem::startLightPass(uint32_t& lightsLeft) {
 		if(addLightsCount > GYRO_VIDEO_LIGHT_SOURCES_MAX) addLightsCount = GYRO_VIDEO_LIGHT_SOURCES_MAX;
 		const int roomLeft = GYRO_VIDEO_LIGHT_SOURCES_MAX - keepActiveLightCount;
 		if(roomLeft) {
-			if(roomLeft < addLightsCount) addLightsCount = roomLeft;
+			if(roomLeft < (int)addLightsCount) addLightsCount = roomLeft;
 		} else {
 			addLightsCount = 0;
 		}
@@ -387,7 +386,7 @@ void LightSystem::_sortOnscreenLights(void) {
 
 	//Directional lights take up entire viewport, start with those bitches.
 	for(unsigned i = 0; i < _onscreenLightCount; ++i) {
-		if(lights[i]->getType() == GY_LIGHT_DIRECTIONAL) {
+		if((int)lights[i]->getType() == (int)GY_LIGHT_DIRECTIONAL) {
 			_onscreenLights[sortedCount++] = lights[i];
 			used[i] = true;
 			++sortedCount;
