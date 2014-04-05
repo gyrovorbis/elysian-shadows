@@ -82,7 +82,9 @@ extern int					lightingEnabled;
 extern int					lightsEnabled[GYRO_VIDEO_LIGHT_SOURCES_MAX];
 
 void glalLoadDefaultShaders(void);
+void glalDefaultShadersLoadUniforms(void);
 void glalGetLightViewMatrix(GYMatrix4 dest, const GYLightSource*const lightSrc);
+void glalGetPointLightProjectionMatrix(GYMatrix4 dest, const GYLightSource* const lightSrc);
 
 #ifdef __cplusplus
 }

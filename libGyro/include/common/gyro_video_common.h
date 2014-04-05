@@ -87,6 +87,8 @@ static inline void gyVidCamOrthoProj(GYCamera* cam, const float pleft, const flo
 }
 
 static inline void gyVidCamOrthoLookAt(GYCamera *cam, const GYVector3* pos, const float scale, const float rotZ, const float rotX) {
+	(void)rotX;
+
 	unsigned scrWidth, scrHeight;
 	GYViewVolume*const volume = &cam->viewVolume;
 	//rotX = -0.785398163f;
@@ -236,7 +238,59 @@ static inline void gyVidLookAtMat(GYMatrix4 mat, float eyeX, float eyeY, float e
 }
 
 
+static inline void gyVidPerspectiveMat(GYMatrix4 mat, const float fov, const float aspect, const float znear, const float zfar) {
+#if 0
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	gluPerspective(fov, aspect, znear, zfar);
+	glGetFloatv(GL_MODELVIEW, (float*)mat);
+	glalTranspose(mat);
+	glLoadIdentity();
+#else
 
+	float *m = (float*)mat;
+	float ymax = znear * tan(fov * M_PI/360.0f);
+	 float ymin = -ymax;
+	 float xmax = ymax * aspect;
+	 float xmin = ymin * aspect;
+
+	 float width = xmax - xmin;
+	 float height = ymax - ymin;
+
+	 float depth = zfar - znear;
+	 float q = -(zfar + znear) / depth;
+	 float qn = -2 * (zfar * znear) / depth;
+
+	 float w = 2 * znear / width;
+	 w = w / aspect;
+	 float h = 2 * znear / height;
+
+	 m[0]  = w;
+	 m[1]  = 0;
+	 m[2]  = 0;
+	 m[3]  = 0;
+
+	 m[4]  = 0;
+	 m[5]  = h;
+	 m[6]  = 0;
+	 m[7]  = 0;
+
+	 m[8]  = 0;
+	 m[9]  = 0;
+	 m[10] = q;
+	 m[11] = -1;
+
+	 m[12] = 0;
+	 m[13] = 0;
+	 m[14] = qn;
+	 m[15] = 0;
+
+	 glalTranspose(mat);
+
+
+
+#endif
+}
 
 
 
@@ -259,6 +313,7 @@ static inline void gyVidCamFrustumLookAt(GYCamera* const cam, const GYVector3* c
 
 	GYViewVolume* const volume = &cam->viewVolume;
 	GYVector3 dir, nc, fc, X, Y, Z;
+	(void)dir;
 
 	// compute the Z axis of camera
 	// this axis points in the opposite direction from
