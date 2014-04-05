@@ -247,15 +247,15 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
 
 // =========== PUBLIC INTERNAL FUNCTIONS ==========
 void glalLoadDefaultShaders(void) {
-	GYShader* vertShader = gyShaderCreate("shaders/pixelLighting.vsh");
-	GYShader* fragShader = gyShaderCreate("shaders/pixelLighting.fsh");
+	GYShader* vertShader = gyShaderCreate("/assets/shaders/pixelLighting.vsh");
+	GYShader* fragShader = gyShaderCreate("/assets/shaders/pixelLighting.fsh");
 	//GYShader* vertShader = gyShaderCreate("/Users/Falco/Documents/ESDev/libGyro/source/glal/shaders/pixelLighting.vsh");
 	//GYShader* fragShader = gyShaderCreate("/Users/Falco/Documents/ESDev/libGyro/source/glal/shaders/pixelLighting.fsh");
 	_lightingShader.program = gyShaderProgramCreate(vertShader, fragShader);
 	_queryLightingShader(&_lightingShader, 1);
 
-	vertShader = gyShaderCreate("shaders/shadowMap.vsh");
-	fragShader = gyShaderCreate("shaders/shadowMap.fsh");
+	vertShader = gyShaderCreate("/assets/shaders/shadowMap.vsh");
+	fragShader = gyShaderCreate("/assets/shaders/shadowMap.fsh");
 	_shadowMapShader.program = gyShaderProgramCreate(vertShader, fragShader);
 	_queryLightingShader(&_shadowMapShader, 0);
 }
