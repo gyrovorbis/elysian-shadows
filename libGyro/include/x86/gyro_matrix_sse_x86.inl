@@ -106,7 +106,7 @@ static inline void gyVec4Add(GYVector4* const dest, const GYVector4* const v1, c
 }
 
 static inline void gyVec4Sub(GYVector4* const dest, const GYVector4* const v1, const GYVector4* const v2) {
-    assert(((unsigned long)dest & 15) == 0);
+   // assert(((unsigned long)dest & 15) == 0);
 	const __m128 s1 = _mm_load_ps((float*)v1);
 	const __m128 s2 = _mm_load_ps((float*)v2);
 	const __m128 d = _mm_sub_ps(s1, s2);
