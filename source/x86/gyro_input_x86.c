@@ -23,7 +23,7 @@ static inline GY_X86_KEY _TranslateFromSDL(const SDLKey keyCode) {
     switch(keyCode) {
     case SDLK_ESCAPE:
         //exit(1);
-        return GY_KEY_ESC;
+		return GY_KEY_ESC;
     case SDLK_UP:
         return GY_KEY_DPAD_U;
     case SDLK_DOWN:
