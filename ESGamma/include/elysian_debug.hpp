@@ -7,14 +7,16 @@
 #include "elysian_asset.hpp"
 #include "elysian_system.hpp"
 
+#define ASSETS_VROOT						"/assets"
+
 #define ELYSIAN_DEBUG_FILE					"gamma_debug.txt"
 #define ELYSIAN_LUA_DEBUG_FILE				"lua_debug.txt"
-#define ELYSIAN_DEBUG_ARG_FILE				"gamma_args.txt"
-#define ELYSIAN_GLOBAL_INIT_LUA_PATH		"global_init.lua"
+#define ELYSIAN_DEBUG_ARG_FILE				ASSETS_VROOT "/gamma_args.txt"
+#define ELYSIAN_GLOBAL_INIT_LUA_PATH		ASSETS_VROOT "/global_init.lua"
 #define ELYSIAN_DEBUG_LOG_LEVEL_DEFAULT		Debug::VERBOSE
 #define ELYSIAN_DEBUG_LIBGYRO_LEVEL_DEFAULT GY_DEBUG_VERBOSE
-#define ELYSIAN_DEBUG_LEVEL_DEFAULT			"level/Loren_Beta2"
-#define ELYSIAN_DEBUG_AREA_DEFAULT			"level/Loren_Beta2/area/Uptown"
+#define ELYSIAN_DEBUG_LEVEL_DEFAULT			ASSETS_VROOT "/level/Loren_Beta2"
+#define ELYSIAN_DEBUG_AREA_DEFAULT			ASSETS_VROOT "/level/Loren_Beta2/area/Uptown"
 
 using namespace std;
 
