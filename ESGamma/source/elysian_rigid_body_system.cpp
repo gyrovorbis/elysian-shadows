@@ -7,6 +7,7 @@
 #include "elysian_force_generator.hpp"
 #include "elysian_debug.hpp"
 #include "elysian_level.hpp"
+#include "elysian_particle_system.hpp"
 
 namespace elysian {
 
@@ -23,6 +24,9 @@ void RigidBodySystem::applyForce(ForceGenerator*const force) {
 			force->applyForce(rb, deltaTime);
 		}
 	}
+
+	getPartSys()->applyForce(force);
+
 }
 
 void RigidBodySystem::applyForces(void) {
@@ -80,7 +84,7 @@ void RigidBodySystem::resolveContactVelocities(void) {
 			}
 		}
 
-		if(maxIndex == _contactCount) {
+		if(maxIndex == (int)_contactCount) {
 			//printf("=======NONE FOUND! BREAKING EARLY!=======\n");
 			break; //EPSILAAAAWN
 		}

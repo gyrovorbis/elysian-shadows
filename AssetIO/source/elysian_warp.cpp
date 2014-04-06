@@ -14,7 +14,7 @@ bool Warp::canAddTo(Entity& entity) {
     return (entity.getCollidable());
 }
 
-bool Warp::save(FILE* file) {
+bool Warp::save(FILE* /*file*/) {
 #if 0
 	dbgprintf(LOG_VERBOSE, "Warp::Save(ofstream)");
     dbgPush();
@@ -29,7 +29,7 @@ bool Warp::save(FILE* file) {
 	return true;
 }
 
-bool Warp::load(FILE* file) {
+bool Warp::load(FILE* /*file*/) {
 #if 0
 	dbgprintf(LOG_VERBOSE, "Warp::Load(ifstream)");
     dbgPush();

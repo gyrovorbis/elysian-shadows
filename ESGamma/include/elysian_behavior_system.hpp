@@ -11,6 +11,9 @@ namespace elysian {
 	class BehaviorSystem: public System, public CollisionContactEventMonitor {
 		
 	public:
+
+		virtual ~BehaviorSystem(void) = default;
+
 		void initialize(void);
 
 		//reimplemented from CollisionContactEventMonitor

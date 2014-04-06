@@ -18,7 +18,7 @@ void AnimationSequence::addFrame(const float xOffset, const float yOffset, const
 	_frames.push_back(animFrame);
 }
 
-bool Animation::load(FILE* file) {
+bool Animation::load(FILE* /*file*/) {
 #if 0
 	AnimationSequence *sequence;
 	unsigned sequenceAmount;
@@ -64,9 +64,10 @@ bool Animation::load(FILE* file) {
     dbgPop();
 	return true;
 #endif
+	return true;
 }
 
-bool Animation::save(FILE* file) {
+bool Animation::save(FILE* /*file*/) {
 #if 0
 	dbgprintf(LOG_VERBOSE, "Animation::Save(ofstream)");
 	dbgPush();
@@ -95,6 +96,7 @@ bool Animation::save(FILE* file) {
     dbgPop();
 	return true;
 #endif
+	return true;
 }
 
 bool Animation::canAddTo(Entity &parent) {

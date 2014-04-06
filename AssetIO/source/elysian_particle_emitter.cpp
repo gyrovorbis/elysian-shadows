@@ -4,12 +4,36 @@
 #include "elysian_entity.hpp"
 #include "elysian_camera_system.hpp"
 #include "elysian_material.hpp"
+#include "elysian_force_generator.hpp"
+#include "elysian_debug.hpp"
+
 
 namespace elysian {
+
+ParticleEmitterAttrib::ParticleEmitterAttrib(void):
+	GYStatic({1.0f/500.0f,
+			 1.0f,
+			 0.99f,
+			 1.0f/50000.0f,
+			 0.99f
+	}) {}
 
 ParticleEmitterAttrib::~ParticleEmitterAttrib(void) {
 	delete _material;
 	delete _specularMap;
+}
+
+auto Particle::getTargetType(void)	const -> TARGET_TYPE { return TARGET_PARTICLE; }
+float Particle::getOrientation(void) const { return orientation; }
+const GYVector3& Particle::getPosition(void) const { return position; }
+const GYStatic* Particle::getStaticAttrib(void) const { return static_cast<const GYStatic*>(attrib); }
+
+void Particle::integrate(const float deltaTime) {
+	gyIntegrate(static_cast<GYKinetic*>(this),
+				attrib,
+				deltaTime,
+				(GYVector2*)&position,
+				&orientation);
 }
 
 void ParticleEmitterInternals::emitFromPoint(const GYVector3& pos, const float angle, const unsigned intensity) {
@@ -20,10 +44,11 @@ void ParticleEmitterInternals::emitFromPoint(const GYVector3& pos, const float a
 
 	if(_pool.isFull()) return;
 
-	for(unsigned i = 0; i < intensity; ++i) {
+	for(unsigned i = 0; i < intensity && !_pool.isFull(); ++i) {
 
 		part = &_pool.claimFreeEntry();
 
+		part->attrib = _attrib;
 		part->position.x = pos.x + ((rand() % 6) - 3);
 		part->position.y = pos.y + ((rand() % 6) - 3);
 		part->position.z = pos.z;
@@ -48,8 +73,9 @@ void ParticleEmitterInternals::emitFromPoint(const GYVector3& pos, const float a
 
 		part->rotation = -cosTheta*(intensity/100.0f); //tweak me better!
 
-		part->velocity.x = cosTheta * (float)intensity/(float)(rand()%14 + 10);
-		part->velocity.y = sinTheta * (float)intensity/(float)(rand()%14 + 10);
+
+		part->setVelocity(GYVector2 { cosTheta * (float)intensity/(float)(rand()%14 + 10),
+						  sinTheta * (float)intensity/(float)(rand()%14 + 10) });
 		part->color = _attrib->getColor();
 		part->color.r += (rand()%6)-3;
 		part->color.g += (rand()%6)-3;
@@ -60,24 +86,23 @@ void ParticleEmitterInternals::emitFromPoint(const GYVector3& pos, const float a
 
 }
 
-void ParticleEmitterInternals::update(const CameraState*const cam) {
-
+void ParticleEmitterInternals::update(const CameraState*const cam, const float deltaTime) {
+	GYVector2 newVel;
 	//Check for periodic emission!
 
 	for(auto it = _pool.begin(); it < _pool.end(); ++it) {
 
+		//apply bullshit gravity
+		gyVec2Add(&newVel, &(*it).getVelocity(), (GYVector2*)&_attrib->_acceleration);
+		(*it).setVelocity(newVel);
 		//integrate
-		gyVec3AddAccum(&(*it).position, &(*it).velocity);
+		(*it).integrate(deltaTime);
+
 
 		if(!cam->isWithinScreenRegion((*it).position.x, (*it).position.y, (*it).size, (*it).size)) {
 			_pool.remove(it);
 			continue;
 		}
-
-		(*it).orientation += (*it).rotation;
-		(*it).rotation *= _attrib->_angularDamping;
-
-		gyVec3AddAccum(&(*it).velocity, &_attrib->_acceleration);
 
 		if(--(*it).life == 0) {
 			_pool.remove(it);
@@ -86,6 +111,14 @@ void ParticleEmitterInternals::update(const CameraState*const cam) {
 
 		if(_attrib->_fadeOut) (*it).color.a = 255.0f*((float)_attrib->_maxLife/(float)(*it).life);
 	}
+}
+
+void ParticleEmitterInternals::applyForce(ForceGenerator*const force, const float deltaTime) {
+	for(auto it = _pool.begin(); it < _pool.end(); ++it) {
+
+		force->applyForce(&(*it), deltaTime);
+	}
+
 }
 
 void ParticleEmitterInternals::render(void) {
@@ -160,9 +193,9 @@ bool ParticleEmitter::removeFromLevel(void) {
 }
 
 
-bool ParticleEmitter::canAddTo(Entity& entity) { return true; }
-bool ParticleEmitter::load(FILE* file) { return true; }
-bool ParticleEmitter::save(FILE* file) { return true; }
+bool ParticleEmitter::canAddTo(Entity& /*entity*/) { return true; }
+bool ParticleEmitter::load(FILE* /*file*/) { return true; }
+bool ParticleEmitter::save(FILE* /*file*/) { return true; }
 auto ParticleEmitter::getType(void) const -> TYPE { return Component::PARTICLE_EMITTER; }
 
 }

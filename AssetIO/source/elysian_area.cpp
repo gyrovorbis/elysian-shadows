@@ -186,7 +186,7 @@ bool Area::saveMap(const char *const filename) {
 	return true;
 }
 
-bool Area::loadEntities(const char *const filename) {
+bool Area::loadEntities(const char *const /*filename*/) {
 #if 0
 	ifstream file(gyFilePath(filename));
 	Entity *currentEntity;
@@ -218,7 +218,7 @@ bool Area::loadEntities(const char *const filename) {
 	return true;
 }
 
-bool Area::saveEntities(const char *const filename) {
+bool Area::saveEntities(const char *const /*filename*/) {
 #if 0
 	ofstream file(gyFilePath(filename));
 	dbgprintf(LOG_VERBOSE, "Area::SaveEntities(%s)", filename);

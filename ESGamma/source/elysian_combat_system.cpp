@@ -3,6 +3,7 @@
 #include "elysian_area.hpp"
 #include "elysian_lua_wrappers.hpp"
 #include "elysian_collision_system.hpp"
+#include <cmath>
 
 namespace elysian {
 
@@ -37,38 +38,55 @@ void CombatSystem::onCollisionExit(Collidable*const bodyA, Collidable*const body
 	_dealCollisionDamage(combatA, combatB, nullptr);
 }
 
-void CombatSystem::addCombatant(Entity &entity) {
+void CombatSystem::addCombatant(Entity& /*entity*/) {
 
 }
 
-void CombatSystem::removeCombatant(Entity &entity) {
+void CombatSystem::removeCombatant(Entity& /*entity*/) {
 
 }
 
-void CombatSystem::killCombatant(Entity * const entity) {
+void CombatSystem::killCombatant(Entity * const /*entity*/) {
 
 }
 
 void CombatSystem::_processCurrentCombatAction(void) {
+	GYVector2 vel;
+	GYVector3 pos3;
 
-	//Process everything
-	//getGuiSys()->addCombatText();
+	if(_curActionRes.contact) {
+		//Calculate combatText velocity
+		_curActionRes.contact->getNormal(vel);
+		gyVec2ScaleAccum(&vel, _curActionRes.contact->getClosingVel());
+		if(_curActionRes.contact->getCollidable(1) == _curActionRes.target->getEntity()->getCollidable())
+			gyVec2ScaleAccum(&vel, -1.0f);
+
+		//Add combat text to PoC
+		_curActionRes.contact->getWorldPos(*(GYVector2*)&pos3);
+		getGuiSys()->addCombatText(_curActionRes.receipt->getText(), _curActionRes.receipt->getTextColor(), *(GYVector2*)&pos3, vel);
+
+		//Emit particles from PoC
+		getPartSys()->getAttrib(2)->setColor(_curActionRes.receipt->getPartColor());
+		pos3.z = _curActionRes.target->getEntity()->getElev()*32.0f;
+		const float angle = tan(vel.y/vel.x);
+		getPartSys()->emitFromPoint(2, pos3, angle, _curActionRes.contact->getClosingVel()*_curActionRes.receipt->getPartIntensityFactor());
+
+	}
 
 	//Reset everything
-	_curActionResolution.contact	= nullptr;
-	_curActionResolution.receipt	= nullptr;
-	_curActionResolution.src		= nullptr;
-	_curActionResolution.target		= nullptr;
+	_curActionRes.contact	= nullptr;
+	_curActionRes.receipt	= nullptr;
+	_curActionRes.src		= nullptr;
+	_curActionRes.target	= nullptr;
 
 }
 
 //MACRO THESE FUNCTION NAMES
 void CombatSystem::resolveCombatAction(OOLUA::Lua_table_ref action, Combat*const src, Combat*const target) {
-	CombatReceipt* recpt;
 	OOLUA::Lua_table_ref statMods;
 
-	_curActionResolution.src = src;
-	_curActionResolution.target = target;
+	_curActionRes.src = src;
+	_curActionRes.target = target;
 
 	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, action.ref());	//push actionTable
 	lua_getfield(*_mainState, -1, "calculateCombatStatMods");
@@ -85,7 +103,7 @@ void CombatSystem::resolveCombatAction(OOLUA::Lua_table_ref action, Combat*const
 }
 
 void CombatSystem::_dealCollisionDamage(Combat *const src, Combat *const target, CollisionContact* contact) {
-	_curActionResolution.contact = contact;
+	_curActionRes.contact = contact;
 	resolveCombatAction(src->getActionTable(), src, target);
 }
 

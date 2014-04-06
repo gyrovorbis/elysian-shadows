@@ -54,7 +54,6 @@ set(AssetIO_INCLUDES
 	${AssetIO_INCLUDE_DIR}/elysian_mem_pool.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_model_attrib.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_particle_emitter.hpp
-	${AssetIO_INCLUDE_DIR}/elysian_pool.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_prim_attrib.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_quad_sprite_attrib.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_renderable.hpp

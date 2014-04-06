@@ -187,10 +187,10 @@ void Debug::processInput(const GameInput& input) {
 
 	//Camera zoom
 	if(input.getDown(GameInput::BUT_W)){
-		_engine->_cameraSystem->scale(0.9f*0.9f);
+		_engine->_cameraSystem->scale(0.9f*0.9f, 1.0f/60.0f);
 	}
 	if(input.getDown(GameInput::BUT_S)){
-		_engine->_cameraSystem->scale(1.1f*1.1f);
+		_engine->_cameraSystem->scale(1.1f*1.1f, 1.0f/60.0f);
 	}
 
 	if(input.getTapped(GameInput::BUT_0)) {
@@ -256,7 +256,7 @@ void Debug::processInput(const GameInput& input) {
 
 
 	if(input.getDown(GameInput::BUT_E)) { //Reset Transform
-		_engine->_cameraSystem->setScale(1.0f);
+		_engine->_cameraSystem->setScale(1.0f, 2.0f);
 		_engine->_cameraSystem->setOrientZ(0.0f);
 	}
 
@@ -339,7 +339,7 @@ void Debug::processInput(const GameInput& input) {
 
     }
 
-	static float timeSpeed = 60.0f;
+//	static float timeSpeed = 60.0f;
 
 	if(input.getTapped(GameInput::BUT_N)) {
 		static bool sunEnabled = true;
@@ -358,12 +358,8 @@ void Debug::processInput(const GameInput& input) {
 
 	//VRAM and Audio Stats
 	if(input.getTapped(GameInput::BUT_Z)) {
-		getCurLevel()->specularSheet = gyVidTexCreateSheetUniform("level/Loren_Insides/tile/specularsheetr.png",
-																				  ELYSIAN_TILESHEET_WIDTH,
-																				  ELYSIAN_TILESHEET_HEIGHT,
-																				  ELYSIAN_TILE_WIDTH,
-																				  ELYSIAN_TILE_HEIGHT);
-
+		Entity* julien = getCurArea()->findEntity("Julien");
+		getGuiSys()->addCombatText("10", GYColor4{ 255, 0, 0, 255 }, *(GYVector2*)&julien->transform._pos, GYVector2 { 0.0f, -5.0f});
 	}
 	if(input.getTapped(GameInput::BUT_FORWARDSLASH)) {
 		LuaManager::dumpStats();
@@ -415,13 +411,13 @@ void Debug::processInput(const GameInput& input) {
 
 
 	if(input.getTapped(GameInput::BUT_X)) {
-		GYVector4 diffuseColors[4] = {
+/*		GYVector4 diffuseColors[4] = {
 			{ 1.0f, 1.0f, 5.0f, 1.0f},
 			{ 1.0f, 2.0f, 1.0f, 1.0f},
 			{ 2.0f, 1.0f, 1.0f, 1.0f},
 			{ 2.0f, 2.0f, 1.0f, 1.0f}
 		};
-
+*/
 		static int count = 0;
 		char buff[100];
 
@@ -446,8 +442,8 @@ void Debug::processInput(const GameInput& input) {
 			lightSrc->setDirection(dirVec);
 			LightAttrib* attrib = new LightAttrib;
 			//attrib->setAmbientColor(GYVector4{ 0.5f, 0.5f, 0.5f, 1.0f});
-			attrib->setDiffuseColor(GYVector4 { 0.0f, 0.0f, 0.0f, 1.0f });
-			attrib->setSpecularColor(GYVector4{ 0.5f, 0.5f, 0.5f, 0.0f});
+			attrib->setDiffuseColor(GYVector4 { 0.0f, 0.0f, 0.5f, 1.0f });
+			attrib->setSpecularColor(GYVector4{ 0.0f, 0.5f, 0.5f, 1.0f});
 			lightSrc->setAttrib(attrib);
 #if 0
 			lightSrc->setLightType(LightSource::LIGHT_DIRECTIONAL);

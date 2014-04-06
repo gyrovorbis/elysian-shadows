@@ -467,6 +467,7 @@ OOLUA_PROXY(Character, Component)
 	OOLUA_MEM_FUNC(void, faceEntity, Entity&)
 	OOLUA_MEM_FUNC(void, faceDir, Direction::DIR4)
 	OOLUA_MEM_FUNC(void, move, const GYVector2&)
+	OOLUA_MEM_FUNC(void, setAnimate, bool)
 	OOLUA_MEM_FUNC_CONST(bool, isFacing, const Entity&)
 	OOLUA_MEM_FUNC_CONST(Direction::DIR4, getFaceDir)
 OOLUA_PROXY_END
@@ -519,13 +520,14 @@ OOLUA_PROXY(LightSource, Component)
 	OOLUA_MFUNC(setShadowCaster)
 OOLUA_PROXY_END
 
-OOLUA_PROXY(ParticleEmitterAttrib, SpriteAttrib)
+OOLUA_PROXY(ParticleEmitterAttrib, SpriteAttrib, GYStatic)
 	OOLUA_MFUNC(setAcceleration)
 	OOLUA_MFUNC(setMaxLife)
 	OOLUA_MFUNC(setSize)
 	OOLUA_MEM_FUNC(void, setFrameRange, unsigned, unsigned)
 	OOLUA_MEM_FUNC(void, setMaterial, cpp_in_p<Material*>)
 	OOLUA_MEM_FUNC(void, loadSpecularMap, const char*, unsigned, unsigned)
+	OOLUA_MEM_FUNC(void, setForceMask, uint32_t)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ParticleEmitter, Component)
@@ -909,6 +911,7 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 	s->register_class_static<Combat>("DMG_NONE", Combat::DMG_NONE);
 	s->register_class_static<Combat>("DMG_SOURCE", Combat::DMG_SOURCE);
 	s->register_class_static<Combat>("DMG_TARGET", Combat::DMG_TARGET);
+	s->register_class_static<Combat>("DMG_SOURCE_TARGET", Combat::DMG_SOURCE_TARGET);
 	s->register_class_static<Combat>("ON_COLLIDE", Combat::ON_COLLIDE);
 	s->register_class_static<Combat>("ON_COLLISION_ENTER", Combat::ON_COLLISION_ENTER);
 	s->register_class_static<Combat>("ON_COLLISION_EXIT", Combat::ON_COLLISION_EXIT);

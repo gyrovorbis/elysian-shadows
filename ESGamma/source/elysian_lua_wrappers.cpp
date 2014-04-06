@@ -342,10 +342,11 @@ OOLUA_EXPORT_FUNCTIONS(ExplosionForceGenerator,
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Direction)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(Direction)
 
-EXPORT_OOLUA_FUNCTIONS_3_NON_CONST(Character,
+EXPORT_OOLUA_FUNCTIONS_4_NON_CONST(Character,
 								   faceEntity,
 								   faceDir,
-								   move)
+								   move,
+								   setAnimate)
 EXPORT_OOLUA_FUNCTIONS_2_CONST(Character,
 							   getFaceDir,
 							   isFacing)
@@ -391,7 +392,8 @@ OOLUA_EXPORT_FUNCTIONS(ParticleEmitterAttrib,
 					   setSize,
 					   setFrameRange,
 					   loadSpecularMap,
-					   setMaterial)
+					   setMaterial,
+					   setForceMask)
 OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitterAttrib);
 
 OOLUA_EXPORT_FUNCTIONS(ParticleEmitter,

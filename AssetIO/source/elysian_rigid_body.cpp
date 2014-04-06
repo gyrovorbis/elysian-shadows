@@ -6,9 +6,7 @@
 
 namespace elysian {
 
-
-RigidBody::RigidBody(Entity& entity):
-	Component(entity),
+ForceTarget::ForceTarget(void):
 	GYKinetic {
 		{ 0.0f, 0.0f },		//vel
 		{ 0.0f, 0.0f },		//accel
@@ -19,12 +17,29 @@ RigidBody::RigidBody(Entity& entity):
 		0.0f				//torqueAccum
 	}
 {
-
 }
 
+void ForceTarget::applyForce(const GYVector2 &force) {
+	gyVec2AddAccum(&forceAccum, &force);
+}
+
+void ForceTarget::applyForceToPoint(const GYVector2 &loc, const GYVector2 &force) {
+	GYVector2 relPoint;
+
+	gyVec2AddAccum(&forceAccum, &force);
+
+	gyVec2Sub(&relPoint, (GYVector2*)&getPosition(), &loc);
+	torqueAccum += gyVec2ScalarCrossProd(&relPoint, &force);
+}
+
+
+RigidBody::RigidBody(Entity& entity):
+	Component(entity)
+
+{}
+
 void RigidBody::integrate(const float deltaTime) {
-	Collidable* collidable = getEntity()->getCollidable();
-	GYStatic*const stat = collidable->getAttrib()->getStaticAttrib();
+	GYStatic*const stat = getEntity()->getCollidable()->getAttrib()->getStaticAttrib();
 
 	stat->angDamping *= _tileDamping;
 	stat->damping *= _tileDamping;
@@ -40,28 +55,20 @@ void RigidBody::integrate(const float deltaTime) {
 
 }
 
-void RigidBody::applyForce(const GYVector2 &force) {
-	gyVec2AddAccum(&forceAccum, &force);
-}
-
-void RigidBody::applyForceToPoint(const GYVector2 &loc, const GYVector2 &force) {
-	GYVector2 relPoint;
-
-	gyVec2AddAccum(&forceAccum, &force);
-
-	gyVec2Sub(&relPoint, &loc, &getEntity()->getCollidable()->getCollider()->worldPos);
-	torqueAccum += gyVec2ScalarCrossProd(&relPoint, &force);
-}
+auto RigidBody::getTargetType(void) const -> TARGET_TYPE { return TARGET_RIGID_BODY; }
+float RigidBody::getOrientation(void) const { return getEntity()->transform._orientZ; }
+const GYVector3& RigidBody::getPosition(void) const { return getEntity()->transform._pos; }
+const GYStatic* RigidBody::getStaticAttrib(void) const { return getEntity()->getCollidable()->getAttrib()->getStaticAttrib(); }
 
 bool RigidBody::canAddTo(Entity& entity) {
 	return (entity.getCollidable());
 }
 
-bool RigidBody::load(FILE* file) {
+bool RigidBody::load(FILE* /*file*/) {
 	return true;
 }
 
-bool RigidBody::save(FILE* file) {
+bool RigidBody::save(FILE* /*file*/) {
 	return true;
 }
 

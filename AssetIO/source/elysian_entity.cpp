@@ -336,7 +336,7 @@ bool Entity::deactivate(void) {
 	return true;
 }
 
-bool Entity::load(FILE* file) { //Deserialization
+bool Entity::load(FILE* /*file*/) { //Deserialization
 #if 0
 	bool success = true;
 	unsigned int amount, compType;
@@ -415,9 +415,10 @@ bool Entity::load(FILE* file) { //Deserialization
     dbgPop();
 	return success;
 #endif
+	return true;
 }
 
-bool Entity::save(FILE* file) { //Serialization
+bool Entity::save(FILE* /*file*/) { //Serialization
 #if 0
     Component *comp = NULL;
 	bool success = true;
@@ -502,6 +503,7 @@ bool Entity::save(FILE* file) { //Serialization
     dbgPop();
 	return success;
 #endif
+	return true;
 }
 
 //=====BEHAVIORS======

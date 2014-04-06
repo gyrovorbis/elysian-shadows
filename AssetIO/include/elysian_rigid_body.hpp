@@ -2,7 +2,7 @@
 #define ELYSIAN_RIGID_BODY_HPP
 
 #include <stdint.h>
-#include <kinetic/gyro_kinetic_kinetic.h>
+#include <kinetic/gyro_kinetic.h>
 #include "elysian_component.hpp"
 
 namespace elysian {
@@ -17,7 +17,27 @@ namespace elysian {
 
 	};
 
-	class RigidBody: public Component, private GYKinetic {
+	//Abstraction for particles and rigidBodies to share force generators
+	class ForceTarget: protected GYKinetic {
+	public:
+		enum TARGET_TYPE { TARGET_PARTICLE, TARGET_RIGID_BODY };
+
+									ForceTarget(void);
+		virtual TARGET_TYPE			getTargetType(void) const			= 0;
+		virtual float				getOrientation(void) const			= 0;
+		virtual const GYVector3&	getPosition(void) const				= 0;
+		virtual const GYStatic*		getStaticAttrib(void) const			= 0;
+		//virtual void		integrate(const float deltaTime)	= 0; nevermind, fuck it.
+
+		void						applyForce(const GYVector2& force);
+		void						applyForceToPoint(const GYVector2& loc, const GYVector2& force);
+		const GYVector2&			getVelocity(void) const;
+		void						setVelocity(const GYVector2& _vel);
+		void						setRotation(const float rotation);
+	};
+
+
+	class RigidBody: public Component, public ForceTarget {
 		friend class RigidBodySystem;
 	private:
 		float				_tileDamping = 1.0f;
@@ -27,13 +47,19 @@ namespace elysian {
 		RigidBody(Entity& entity);
 		virtual ~RigidBody(void) override = default;
 
-		//reimplemented from component
+		//reimplemented from Component
 		virtual bool canAddTo(Entity& entity) override;
 		virtual bool load(FILE* file) override;
 		virtual bool save(FILE* file) override;
 		virtual bool addToLevel(void) override;
 		virtual bool removeFromLevel(void) override;
 		virtual TYPE getType(void) const override;
+
+		//reimplemented from ForceTarget
+		virtual TARGET_TYPE			getTargetType(void)	const override;
+		virtual float				getOrientation(void) const override;
+		virtual const GYVector3&	getPosition(void) const override;
+		virtual const GYStatic*		getStaticAttrib(void) const override;
 
 		void				setTileDamping(const float factor);
 		float				getTileDamping(void) const;
@@ -44,22 +70,22 @@ namespace elysian {
 		void integrate(const float deltaTime);
 
 		//GYKinetic rigid bodies external
-		void applyForce(const GYVector2& force);
-		void applyForceToPoint(const GYVector2& loc, const GYVector2& force);
-
-		void applyForceMask(const uint32_t mask, const GYVector2& force);
+		//void applyForceMask(const uint32_t mask, const GYVector2& force);
 
 	};
 
 
 	// ========= INLINEZ ==========
+	inline const GYVector2&	ForceTarget::getVelocity(void) const { return vel; }
+	inline void	ForceTarget::setVelocity(const GYVector2& _vel) { vel = _vel; }
+	inline void ForceTarget::setRotation(const float rotation) { rot = rotation; }
 
 	inline float RigidBody::getTileDamping(void) const { return _tileDamping; }
 	inline void RigidBody::setTileDamping(const float factor) {_tileDamping = factor; }
 	inline void RigidBody::setAttrib(RigidBodyAttrib*const attrib) { _attrib = attrib; }
-	inline RigidBodyAttrib* RigidBody::getAttrib(void) const { return _attrib; }
-	inline void RigidBody::applyForceMask(const uint32_t mask, const GYVector2& force) { if(_attrib->getForceMask() & mask) applyForce(force); }
 
+	inline RigidBodyAttrib* RigidBody::getAttrib(void) const { return _attrib; }
+	//inline void RigidBody::applyForceMask(const uint32_t mask, const GYVector2& force) { if(_attrib->getForceMask() & mask) applyForce(force); }
 	inline uint32_t RigidBodyAttrib::getForceMask(void) const { return _forceMask; }
 	inline void RigidBodyAttrib::setForceMask(const uint32_t mask) { _forceMask = mask; }
 

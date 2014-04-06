@@ -98,7 +98,7 @@ namespace elysian {
 
 		}
 
-		bool load(FILE* file) {
+		bool load(FILE* /*file*/) {
 #if 0
 			static char filename[GYRO_PATH_MAX_SIZE];
 			unsigned sheetWidth, sheetHeight;
@@ -122,9 +122,10 @@ namespace elysian {
 			dbgPop();
 			return true;
 #endif
+			return true;
 		}
 
-		bool save(FILE* file) {
+		bool save(FILE* /*file*/) {
 #if 0
 			assert(_tex);
 			assert(_tex->_coord);

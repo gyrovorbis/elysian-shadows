@@ -10,6 +10,8 @@
 
 namespace elysian {
 
+	class ForceGenerator;
+
 	class ParticleSystem: public System {
 	private:
 		ParticleEmitterInternals	_emitters[ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_COUNT];
@@ -19,6 +21,7 @@ namespace elysian {
 
 		void update(void);
 		void render(void);
+		void applyForce(ForceGenerator*const forceGen);
 
 		//Internal particle emitters
 		void emitFromPoint(const unsigned index, const GYVector3& pos, const float angle, const unsigned intensity);

@@ -47,7 +47,7 @@ private:
 
 
     unsigned _claimFreeIndex(void) {
-        if(_usedCount == _maxSize) return 0;
+		if(_usedCount == _maxSize) return 1;
 
 		if(_sequential) {
             //grab next index
@@ -149,7 +149,7 @@ public:
          const unsigned freeIndexSize = ELYSIAN_MEM_POOL_DEFAULT_FREE_INDEX_CAPACITY):
             _maxSize(maxCapacity), _freeIndicesSize(freeIndexSize)
     {
-        _entries        = (T*)malloc(sizeof(T) * maxCapacity);
+		_entries        = new T[maxCapacity];//(T*)malloc(sizeof(T) * maxCapacity);
         _used           = (bool*)malloc(sizeof(bool) * (maxCapacity+1));
         _freeIndices    = (int*)malloc(sizeof(int) * freeIndexSize);
 
@@ -163,7 +163,8 @@ public:
     ~Pool(void) {
         free(_freeIndices);
         free(_used);
-        free(_entries);
+		//free(_entries);
+		delete[] _entries;
     }
 
     iterator begin(void) {

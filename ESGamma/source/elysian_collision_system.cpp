@@ -592,7 +592,7 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable) {
 			curTileY = ((int)collidable.getCenterWorldPos().y+16)/32;
 		if(!(prevZTranX == curTileX && prevZTranY == curTileY)) {
 			if(closestElev != 16) {
-				Debug::printf(Debug::VERBOSE, "Elevation - %d", closestElev); 
+				//Debug::printf(Debug::VERBOSE, "Elevation - %d", closestElev);
 				collidable.getEntity()->setElev(closestElev);
 			}
 			collidable.setZTranState(Collidable::ZTRAN_INACTIVE);
@@ -682,7 +682,7 @@ bool CollisionSystem::resolvePenetration(void) {
 		if(deepest <= ELYSIAN_COLLISION_CONTACT_PENETRATION_EPSILON) break; //EPSILAAAAWN
 		if(deepestIndex == -1) break; //no more candidates for resolution
 		//this can probably be lowered quite a bit once point of contact is fucking correct
-		Debug::printf(Debug::VERBOSE, "-------------POSITION ITERATION - %d-------", iter);
+		//Debug::printf(Debug::VERBOSE, "-------------POSITION ITERATION - %d-------", iter);
 
 		//printf("ABOUT TO RESOLVE DEEPEST - %d, %f", deep
 		gyResolvePenetration(&_contactPool[deepestIndex], posDelta, rotDir, orientDelta); //maybe must update its own shit

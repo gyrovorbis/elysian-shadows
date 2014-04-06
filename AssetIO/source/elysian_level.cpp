@@ -157,10 +157,9 @@ namespace elysian {
 			int tempInt;
 			sscanf(buffer, "%d", &tempInt);
 			tileset[i].colliderType = (Tile::COLLIDER_TYPE)tempInt;
-			sscanf(buffer, "%d", &tileset[i].animated);
+			sscanf(buffer, "%d", (int*)&tileset[i].animated);
 			sscanf(buffer, "%f", &tileset[i].animTime);
 			sscanf(buffer, "%hd", &tileset[i].nextIndex);
-
 		}
 
 		free(buffer);

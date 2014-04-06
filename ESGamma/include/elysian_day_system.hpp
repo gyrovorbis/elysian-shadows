@@ -13,11 +13,11 @@ namespace elysian {
 	private:
 		GYVector3		_axis			= GYVector3 { 0.0f, 1.0f, -1.0f };
 		GYVector4		_baseDir		= GYVector4 { -1.0f, 0.0f, 0.0f, 1.0f };
-		float			_angle			= 0.0f;
+//		float			_angle			= 0.0f;
 		float			_time			= 0.0f;
 
 		//time configuration
-		float			_dayDutyCycle	= 0.65f;
+//		float			_dayDutyCycle	= 0.65f;
 		float			_hoursPerDay	= 24.0f;
 
 		//cached internal shit

@@ -12,15 +12,15 @@ namespace elysian {
 	}
 
 	//overridden from Component
-	bool Examinable::canAddTo(Entity& entity) {
+	bool Examinable::canAddTo(Entity& /*entity*/) {
 		return true;
 	}
 
-	bool Examinable::load(FILE* file) {
+	bool Examinable::load(FILE* /*file*/) {
 		return true;
 	}
 
-	bool Examinable::save(FILE* file) {
+	bool Examinable::save(FILE* /*file*/) {
 		return true;
 	}
 

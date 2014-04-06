@@ -28,6 +28,7 @@ namespace elysian {
 		bool				_movedThisFrame		= false;
 		Direction::DIR4		_faceDir			= Direction::DIR4_CENTER;
 		bool				_walkAnimInterp		= true;
+		bool				_animate			= true;
 		//Direction::DIR4		_prevDir			= Direction::DIR4_CENTER;
 		
 	public:
@@ -41,6 +42,7 @@ namespace elysian {
 		Direction::DIR4 getFaceDir(void) const;
 		bool			isFacing(const Entity& entity) const;
 		void			setWalkAnimInterp(const bool val);
+		void			setAnimate(const bool val);
 
 #ifdef ELYSIAN_ENGINE
 		void update(void);
@@ -66,6 +68,8 @@ namespace elysian {
 
 
 #ifdef ELYSIAN_ENGINE
+
+	inline void Character::setAnimate(const bool val) { _animate = val; }
 
 	inline void Character::update(void) {
 		if(!_movedThisFrame) {

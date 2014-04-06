@@ -44,7 +44,7 @@ bool Font::_loadCharacterWidths(const char *width_file) {
 		return false;
 	}
 	for(int i = 0; i < 128; ++i) {
-		sscanf(buffer, "%hu\n", &_charWidth[i]);
+		sscanf(buffer, "%hd", &_charWidth[i]);
 	}
 	free(buffer);
 	gyFileClose(&file);

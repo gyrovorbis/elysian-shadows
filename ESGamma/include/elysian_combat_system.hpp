@@ -21,10 +21,14 @@ namespace elysian {
 		float		_partIntensityFactor = 1.0f;
 	public:
 
-		void setText(const char* text);
-		void setTextColor(const GYColor4 &textColor);
-		void setPartColor(const GYColor4 &partColor);
-		void setPartIntensityFactor(const float factor);
+		const char* getText(void);
+		GYColor4	getPartColor(void);
+		GYColor4	getTextColor(void);
+		float		getPartIntensityFactor(void);
+		void		setText(const char* text);
+		void		setTextColor(const GYColor4 &textColor);
+		void		setPartColor(const GYColor4 &partColor);
+		void		setPartIntensityFactor(const float factor);
 	};
 
 	class CombatSystem: public System,
@@ -37,7 +41,7 @@ namespace elysian {
 			CollisionContact*	contact	= nullptr;
 			Combat*				src		= nullptr;
 			Combat*				target	= nullptr;
-		} _curActionResolution;
+		} _curActionRes;
 
 		Pool<Entity*>	_combatants;
 		unsigned		_bgmTensionLevel = 0;
@@ -45,6 +49,7 @@ namespace elysian {
 		void _dealCollisionDamage(Combat*const src, Combat*const target, CollisionContact* contact);
 		void _processCurrentCombatAction(void);
 	public:
+		virtual ~CombatSystem(void) = default;
 
 		//reimplemented from CollisionContactEventMonitor
 		virtual void onCollisionEnter(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) override;
@@ -76,6 +81,11 @@ namespace elysian {
 	inline void CombatReceipt::setTextColor(const GYColor4 &textColor) { _textColor = textColor; }
 	inline void CombatReceipt::setPartColor(const GYColor4 &partColor) { _partColor = partColor; }
 	inline void CombatReceipt::setPartIntensityFactor(const float factor) { _partIntensityFactor = factor; }
+	inline const char* CombatReceipt::getText(void) { return _text; }
+	inline GYColor4	CombatReceipt::getPartColor(void) { return _partColor; }
+	inline GYColor4	CombatReceipt::getTextColor(void) { return _textColor; }
+	inline float CombatReceipt::getPartIntensityFactor(void) { return _partIntensityFactor; }
+
 
 }
 
