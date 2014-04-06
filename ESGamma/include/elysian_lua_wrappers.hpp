@@ -911,6 +911,7 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 	s->register_class_static<Combat>("DMG_NONE", Combat::DMG_NONE);
 	s->register_class_static<Combat>("DMG_SOURCE", Combat::DMG_SOURCE);
 	s->register_class_static<Combat>("DMG_TARGET", Combat::DMG_TARGET);
+	s->register_class_static<Combat>("DMG_SOURCE_TARGET", Combat::DMG_SOURCE_TARGET);
 	s->register_class_static<Combat>("ON_COLLIDE", Combat::ON_COLLIDE);
 	s->register_class_static<Combat>("ON_COLLISION_ENTER", Combat::ON_COLLISION_ENTER);
 	s->register_class_static<Combat>("ON_COLLISION_EXIT", Combat::ON_COLLISION_EXIT);
