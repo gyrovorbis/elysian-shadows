@@ -74,9 +74,9 @@ typedef struct _GYShaderProgram {
 //Lighting API
 void gyVidLightSourceClear(void);
 
-void gyVidLightSourceAdd(const GYLightSource* const light);
+void gyVidLightSourceAdd(GYLightSource* const light);
 void gyVidLightSourceRemove(const GYLightSource* const light);
-void gyVidLightSourceReplace(const GYLightSource*const old, const GYLightSource*const next);
+void gyVidLightSourceReplace(const GYLightSource*const old, GYLightSource*const next);
 void gyVidLightSourceSetEnable(const int enabled);
 void gyVidLightSourceAmbientSetEnable(const int enabled);
 void gyVidLightSourceDiffuseSetEnable(const int enabled);

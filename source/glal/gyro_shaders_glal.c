@@ -25,12 +25,13 @@ const static GYMaterial _defaultMaterial = {
 	1.0f
 };
 
-const static GYLightProperties _emptyLightProperties = {
+static GYLightProperties _emptyLightProperties = {
 	{ 0.0f, 0.0f, 0.0f, 1.0f },
 	{ 0.0f, 0.0f, 0.0f, 1.0f },
 	{ 0.0f, 0.0f, 0.0f, 1.0f },
 	{ 0.0f, 0.0f, 0.0f },
-	1.0f
+	1.0f,
+	200.0f
 };
 
 const static GYLightSource _emptyLight = {
@@ -38,8 +39,9 @@ const static GYLightSource _emptyLight = {
 	{ 0.0f, 0.0f, 0.0f },
 	360.0f,
 	GY_LIGHT_DIRECTIONAL,
+	&_emptyLightProperties,
 	NULL,
-	&_emptyLightProperties
+	NULL
 };
 
 const static GYVector3 _defaultNormal = {
@@ -76,7 +78,7 @@ void gyVidSetDefaultShaderProgram(void) {
 void gyVidSetCamWorldPos(const GYVector3*const pos) {
 	if(pos->x == _camWorldPos.x && pos->y == _camWorldPos.y && pos->z == _camWorldPos.z) return;
 	_camWorldPos = *pos;
-	glUniform3fv(curLightShader->uniformLoc[SHADER_CAM_WORLD_POS], 1, &_camWorldPos);
+	glUniform3fv(curLightShader->uniformLoc[SHADER_CAM_WORLD_POS], 1, (float*)&_camWorldPos);
 }
 
 void gyVidNormalMapBind(const GYTexture * const tex) {
@@ -263,7 +265,7 @@ void glalLoadDefaultShaders(void) {
 void glalDefaultShadersLoadUniforms(void) {
 	GYLightSource* sources[GYRO_VIDEO_LIGHT_SOURCES_MAX];
 	int count = lightSourceCount;
-	GYMaterial* material = _currentMaterial;
+	const GYMaterial* material = _currentMaterial;
 	_currentMaterial = NULL;
 
 	glUniformMatrix4fv(curLightShader->uniformLoc[SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)curCamera->projViewMat);
@@ -281,9 +283,9 @@ void glalDefaultShadersLoadUniforms(void) {
 	gyVidSetGlobalAmbience(&_globalAmbience);
 	gyVidLightingSetEnable(lightingEnabled);
 
-	glUniform3fv(curLightShader->uniformLoc[SHADER_CAM_WORLD_POS], 1, &_camWorldPos);
-	glUniform3fv(curLightShader->uniformLoc[SHADER_NORMAL], 1, normalVector);
-	glUniform3fv(curLightShader->uniformLoc[SHADER_TANGENT], 1, tangentVector);
+	glUniform3fv(curLightShader->uniformLoc[SHADER_CAM_WORLD_POS], 1, (float*)&_camWorldPos);
+	glUniform3fv(curLightShader->uniformLoc[SHADER_NORMAL], 1, (float*)normalVector);
+	glUniform3fv(curLightShader->uniformLoc[SHADER_TANGENT], 1, (float*)tangentVector);
 
 	//set normal map to use texture bank 1
 	glUniform1i(curLightShader->uniformLoc[SHADER_NORMAL_MAP], 1);
@@ -302,7 +304,7 @@ void glalDefaultShadersLoadUniforms(void) {
 
 	GYMatrix4 projMat;
 	GYMatrix4 finalMat;
-	glalGetPointLightProjectionMatrix(&projMat);
+	glalGetPointLightProjectionMatrix(projMat, NULL);
 	gyMatMultMat(finalMat, shadowTexCoordBiasMat, projMat);
 	glUniformMatrix4fv(curLightShader->uniformLoc[SHADER_SHADOW_CUBE_MAP_PROJ_MAT], 1, GL_FALSE, (float*)projMat); //NO TEX COORD OFFSET? WHAT THE FUCK!?
 
@@ -317,6 +319,7 @@ int _gyVidShaderCreate(GYShader* shader) {
 	char path[GYRO_PATH_MAX_SIZE];
 	GLint compiled;
 	const char* extension = NULL;
+	const char* token = NULL;
     GYFile *file;
     size_t charCount = 0;
     char *programSource = NULL;
@@ -324,7 +327,10 @@ int _gyVidShaderCreate(GYShader* shader) {
 	//don't fuck it up by tokenizing
 	strcpy(path, shader->path);
 	strtok(path, ".");
-	extension = strtok(NULL, ".");
+
+	while((token = strtok(NULL, "."))) {
+		extension = token;
+	}
 
 	_gyLog(GY_DEBUG_VERBOSE, "Compiling shader: %s", shader->path);
 
