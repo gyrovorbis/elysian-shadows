@@ -187,10 +187,10 @@ void Debug::processInput(const GameInput& input) {
 
 	//Camera zoom
 	if(input.getDown(GameInput::BUT_W)){
-		_engine->_cameraSystem->scale(0.9f*0.9f);
+		_engine->_cameraSystem->scale(0.9f*0.9f, 1.0f/60.0f);
 	}
 	if(input.getDown(GameInput::BUT_S)){
-		_engine->_cameraSystem->scale(1.1f*1.1f);
+		_engine->_cameraSystem->scale(1.1f*1.1f, 1.0f/60.0f);
 	}
 
 	if(input.getTapped(GameInput::BUT_0)) {
@@ -256,7 +256,7 @@ void Debug::processInput(const GameInput& input) {
 
 
 	if(input.getDown(GameInput::BUT_E)) { //Reset Transform
-		_engine->_cameraSystem->setScale(1.0f);
+		_engine->_cameraSystem->setScale(1.0f, 2.0f);
 		_engine->_cameraSystem->setOrientZ(0.0f);
 	}
 

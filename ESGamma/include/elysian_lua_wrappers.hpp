@@ -467,6 +467,7 @@ OOLUA_PROXY(Character, Component)
 	OOLUA_MEM_FUNC(void, faceEntity, Entity&)
 	OOLUA_MEM_FUNC(void, faceDir, Direction::DIR4)
 	OOLUA_MEM_FUNC(void, move, const GYVector2&)
+	OOLUA_MEM_FUNC(void, setAnimate, bool)
 	OOLUA_MEM_FUNC_CONST(bool, isFacing, const Entity&)
 	OOLUA_MEM_FUNC_CONST(Direction::DIR4, getFaceDir)
 OOLUA_PROXY_END

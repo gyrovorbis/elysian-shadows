@@ -4,9 +4,11 @@
 #include "elysian_system.hpp"
 #include "elysian_instance_transform.hpp"
 
+#include <vector>
 #include <gyro.h>
 
-#define ELYSIAN_CAMERA_SYSTEM_STACK_SIZE	5
+#define ELYSIAN_CAMERA_SYSTEM_STACK_SIZE		5
+#define ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE	0.5
 
 namespace elysian {
 	
@@ -14,12 +16,36 @@ namespace elysian {
 	class GameInput;
 
 	struct CameraState: public GYCamera {
-		Entity* entity		= nullptr;
+
+		class LinearInterpolator {
+		private:
+			float _elapsedTime	= 1.0f;
+			float _totalTime	= 1.0f;
+
+			float _startScale	= 1.0f;
+			float _endScale		= 1.0f;
+		public:
+
+			void	startScaleInterp(const float startScale, const float endScale, const float time);
+			void	update(const float deltaTime);
+			float	getNewScale(void) const;
+
+		} curInterp;
+
+
+		Entity* focalEntity	= nullptr;
+		std::vector<Entity*> entities;
+
 		GYVector3 pos		= { 0.0f, 0.0f, 0.0f };
 		GYVector3 dir		= { 0.0f, -1.0f, 0.0f };
 		GYVector3 up		= { 0.0f, 0.0f, -1.0f };
 		float scale			= 1.0f;
 		float zOrient		= 0.0f;
+
+		//dynamic camera boundaries
+		float maxScale		= 5.0f;
+		float minScale		= 0.2f;
+		float baseScale		= 1.0f;
 
 		//Visible Tile Region
 		unsigned tileStartX	= 0;
@@ -38,6 +64,7 @@ namespace elysian {
 
 		bool isWithinScreenRegion(const int x, const int y, const int width, const int height) const;
 
+		void update(const float deltaTime);
 	};
 
 	class CameraSystem: public System { 
@@ -73,11 +100,27 @@ namespace elysian {
 		void processInput(const GameInput& input);
 
 		void setFollowEntity(Entity*const entity) {
-			_curState->entity = entity;
+			_curState->focalEntity = entity;
+		}
+
+		void setBaseScale(const float scale) {
+			_curState->baseScale = scale;
 		}
 
 		Entity* getFollowEntity(void) const {
-			return _curState->entity;
+			return _curState->focalEntity;
+		}
+
+		void addEntity(Entity*const entity) const {
+			_curState->entities.push_back(entity);
+		}
+
+		void removeEntity(Entity*const entity) const {
+			for(int i = 0; i < (int)_curState->entities.size(); ++i)
+				if(_curState->entities[i] == entity) {
+					_curState->entities.erase(_curState->entities.begin()+i);
+					return;
+				}
 		}
 
 		void setPosition(const GYVector3 &pos) {
@@ -88,8 +131,9 @@ namespace elysian {
 			gyVec3Add(&_curState->pos, &_curState->pos, &dist);
 		}
 
-		void scale(const float factor) {
-			_curState->scale *= factor;
+		void scale(const float factor, const float time) {
+			//_curState->scale *= factor;
+			_curState->curInterp.startScaleInterp(_curState->scale, _curState->scale*factor, time);
 		}
 
 		void rotate(const float delta) {
@@ -100,8 +144,8 @@ namespace elysian {
 			_curState->zOrient = angle;
 		}
 
-		void setScale(const float factor) {
-			_curState->scale = factor;
+		void setScale(const float factor, const float time) {
+			_curState->curInterp.startScaleInterp(_curState->scale, factor, time);
 		}
 
 		//Perspective functions
@@ -164,6 +208,26 @@ namespace elysian {
 
 
 
+
+	// ======== INLINEZ =======
+
+	inline void	CameraState::LinearInterpolator::startScaleInterp(const float startScale, const float endScale, const float time) {
+		_startScale = startScale; _endScale = endScale;
+		_totalTime = time; _elapsedTime = 0.0f;
+	}
+
+	inline void	CameraState::LinearInterpolator::update(const float deltaTime) {
+		if(_elapsedTime < _totalTime) {
+			_elapsedTime += deltaTime;
+			if(_elapsedTime > _totalTime) _elapsedTime = _totalTime;
+		}
+		else _elapsedTime = _totalTime;
+	}
+
+	inline float CameraState::LinearInterpolator::getNewScale(void) const {
+		return _startScale + (_elapsedTime/_totalTime)*(_endScale-_startScale);
+	}
+
 	inline bool CameraState::isWithinScreenRegion(const int x, const int y, const int halfWidth, const int halfHeight) const {
 
 		const int distX = abs((int)x-(int)pos.x);
@@ -175,6 +239,8 @@ namespace elysian {
 		return(distY < maxDistY && distX < maxDistX);
 
 	}
+
+
 	
 }
 

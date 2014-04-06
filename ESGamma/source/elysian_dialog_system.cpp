@@ -164,6 +164,8 @@ void DialogSystem::update(void) {
 		GYVector3 dist;
 		gyVec3Sub(&dist, &getPartySys()->getCharacterPartyMember(0u)->transform._pos, &_curScreen.screen->getEntity()->transform._pos);
 		if(fabs(dist.x) > _maxNonmodalDist.x || fabs(dist.y) > _maxNonmodalDist.y) {
+			_prevScreen.screen = _curScreen.screen;
+			_curScreen.screen = nullptr;
 			closeDialog();
 			return;
 		}
@@ -316,13 +318,16 @@ void DialogSystem::NextScreen(void) {
 
 	}
 
+	_prevScreen = _curScreen;
 	if(nextIndex == -1) {
+		_curScreen.screen = nullptr;
 		closeDialog();
 	} else {
 		_curScreen.screen = _curDialog->getScreen(nextIndex);
 		_boxState = BOX_OUTPUT;
 		_currentLine = _currentCharacter = 0;
 		_characterTimer = 0.0f;
+		_updateCamera();
 		_splitText();
 		CheckModal();
 	}
@@ -338,9 +343,11 @@ void DialogSystem::FacePlayer(void) const {
 }
 
 void DialogSystem::closeDialog(void) {
+	_updateCamera();
 	//if(_dynamicDialog) delete _currentConversationDialog;
 	_curDialog = nullptr;
 	_curScreen.screen = nullptr;
+	_prevScreen.screen = nullptr;
 	_currentScreen = _currentLine = _currentCharacter = _currentOption = 0;
 	_characterTimer = 0.0f;
 	//_dynamicDialog = false;
@@ -350,6 +357,20 @@ void DialogSystem::closeDialog(void) {
 	//_mainCanvas.transform.setPosition(_mainCanvas.transform._pos.x, 430.0f);
 	_mainCanvas.transform._pos.y = 430.0f;
 	getGuiSys()->adventureLog.enable();
+}
+
+void DialogSystem::_updateCamera(void) {
+
+	if(_prevScreen.screen && _prevScreen.screen->getEntity()) {
+		getCameraSys()->setBaseScale(1.5f);
+		getCameraSys()->removeEntity(_prevScreen.screen->getEntity());
+	}
+
+	if(_curScreen.screen && _curScreen.screen->getEntity()) {
+		getCameraSys()->setBaseScale(2.5f);
+		getCameraSys()->addEntity(_curScreen.screen->getEntity());
+	}
+
 }
 
 void DialogSystem::_splitText(void) {
@@ -375,6 +396,7 @@ void DialogSystem::startDialog(Dialog *const dialog) {
 	closeDialog();
 	_curDialog = dialog;
 	_curScreen.screen = dialog->getScreen(0);
+	_updateCamera();
 	FacePlayer();
 	_splitText();
 	CheckModal();

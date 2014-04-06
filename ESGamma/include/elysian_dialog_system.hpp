@@ -38,11 +38,11 @@ namespace elysian {
 		int				_currentOption		= 0;
 
 		Dialog*			_curDialog			= nullptr;
-		union {
+		union Screen {
 			DialogScreen*	screen			= nullptr;
 			DialogText*		text;
 			DialogPrompt*	prompt;
-		} _curScreen;
+		} _curScreen, _prevScreen;
 		//ConversationDialog* _currentConversationDialog; WTF?
 
 		//bool _dynamicDialog = false; WTF?
@@ -52,6 +52,7 @@ namespace elysian {
 		void NextScreen(void);
 		void CheckModal(void) const;
 		void FacePlayer(void) const;
+		void _updateCamera(void);
 
 		void _splitText(void);
 		//void _checkForDialog(void);

@@ -3,6 +3,7 @@
 #include "elysian_gui_system.hpp"
 #include "elysian_area.hpp"
 #include "elysian_game_input.hpp"
+#include "elysian_timer_system.hpp"
 
 namespace elysian {
 
@@ -65,6 +66,65 @@ void CameraState::updateBoundingSubregions(const CameraState &cam) {
 
 }
 
+void CameraState::update(const float deltaTime) {
+
+
+	//return to base zoom
+	if(entities.size() == 0) curInterp.startScaleInterp(scale, baseScale, 4.0f);
+	else {
+		unsigned baseWidth, baseHeight;
+		unsigned maxWidth, maxHeight, minWidth, minHeight;
+
+		gyVidResolution(&baseWidth, &baseHeight);
+		minWidth = maxWidth = baseWidth;
+		minHeight = maxHeight = baseHeight;
+
+		maxWidth	*= maxScale;
+		maxHeight	*= maxScale;
+		maxWidth -= 2.0f*(float)maxWidth*ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE;
+		maxHeight = 2.0f*(float)maxWidth*ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE;
+
+		minWidth	*= baseScale;
+		minHeight	*= baseScale;
+		minWidth -= 2.0f*(float)maxWidth*ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE;
+		minHeight = 2.0f*(float)maxWidth*ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE;
+
+		const int minStartX	= pos.x - 0.5f*maxWidth;
+		const int minStartY	= pos.y - 0.5f*maxHeight;
+		const int maxEndX	= pos.x + 0.5f*maxWidth;
+		const int maxEndY	= pos.y + 0.5f*maxHeight;
+
+		int startX	= pos.x - 0.5f*minWidth;
+		int startY	= pos.y - 0.5f*minHeight;
+		int endX	= pos.x + 0.5f*minWidth;
+		int endY	= pos.x + 0.5f*minHeight;
+
+		auto fitEntity = [&](const Entity*const entity) {
+			int x = entity->transform._pos.x;
+			int y = entity->transform._pos.y;
+
+			if(x < startX	&& x >= minStartX)	startX	= x;
+			if(x > endX		&& x <= maxEndX)	endX	= x;
+			if(y < startY	&& y >= minStartY)	startY	= y;
+			if(y > endY		&& y <= maxEndY)	endY	= y;
+		};
+
+		for(auto it : entities) fitEntity(it);
+
+		float scaleX = (float)(endX - startX)/(float)baseWidth;
+		float scaleY = (float)(endY - startY)/(float)baseWidth;
+
+
+		curInterp.startScaleInterp(scale, (scaleX > scale)? scaleX : scaleY, 4.0f);
+
+	}
+
+
+	curInterp.update(deltaTime);
+	scale = curInterp.getNewScale();
+
+}
+
 
 CameraSystem::CameraSystem(void) {
 	static const GYMatrix4 identity4 = {
@@ -101,9 +161,9 @@ void CameraSystem::pushViewProjMatrix(void) {
 
 		if(_curState == &_debugState) {
 			GYVector3 pos = {
-				-_curState->entity->transform._pos.x,
-				-_curState->entity->transform._pos.y+30.0f,
-				-(_curState->entity->getElev()+1)*32.0f-ZCoordConstants::mapBase
+				-_curState->focalEntity->transform._pos.x,
+				-_curState->focalEntity->transform._pos.y+30.0f,
+				-(_curState->focalEntity->getElev()+1)*32.0f-ZCoordConstants::mapBase
 			};
 
 			gyVidCamFrustumLookAt(_curState, &pos, &_curState->dir, &_curState->up);
@@ -195,7 +255,7 @@ void CameraSystem::processInput(const GameInput& input) {
 		_debugActive = !_debugActive;
 
 		if(_debugActive) { //enable
-			_debugState.entity = _curState->entity;
+			_debugState.focalEntity = _curState->focalEntity;
 
 			//_curState = &_debugState;
 			//setPerspectiveFrustum(90.0f, 1.0f, 0.5f, 900.0f);
@@ -259,20 +319,23 @@ void CameraSystem::processInput(const GameInput& input) {
 }
 
 void CameraSystem::update(void) {
+	const float deltaTime = getTimerSys()->getDeltaTime();
 	//Update camera resolution
 	getGuiSys()->getResolution(_scrWidth, _scrHeight);
 
 	//Follow entities
-	if(_curState->entity) {
+	if(_curState->focalEntity) {
 		_curState->pos = GYVector3 {
-			_curState->entity->transform._pos.x,
-			_curState->entity->transform._pos.y,
+			_curState->focalEntity->transform._pos.x,
+			_curState->focalEntity->transform._pos.y,
 			//_curState->entity->transform.getPosZ(),
 			0.0f
 		};
 	}
 
 	_curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
+	_curState->update(deltaTime);
+
 
 /*
 	//Update tile rendering region
