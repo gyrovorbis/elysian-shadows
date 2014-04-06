@@ -53,29 +53,12 @@ attribute vec2			aTexCoord;
 
 varying vec4			vColor;
 varying vec4			vWorldPos;
-varying vec4			vDiffuses[cMaxLights];
-//varying vec4			vambientGlobal;
-varying vec4			vAmbients[cMaxLights];
-varying vec4			vShadowPos[cMaxLights];
-varying vec3			vhalfVector;
+//varying vec4			vDiffuses[cMaxLights];
+//varying vec4			vAmbients[cMaxLights];
+//varying vec4			vShadowPos[cMaxLights];
 varying vec3			vNormal;
 varying vec2			vTexCoord;
 
-void calculateLighting(void) {
-	int i;
-
-	//Accumulate colors from each active light source
-	for(i = ciZero; i < cMaxLights; ++i) {
-		if(uLightsEnabled[i]) {
-			vShadowPos[i] = uLightProjViewMats[i] * aPosition;
-			vAmbients[i] = uLights[i].ambientColor * uMaterial.ambientColor;
-			vDiffuses[i] = uLights[i].diffuseColor * uMaterial.diffuseColor;
-		}
-	}
-
-	//vertexColor.a = uMaterial.diffuseColor.a;
-	//return vertexColor;
-}
 
 void main(void) {
 	gl_Position = uProjViewMat * aPosition;
@@ -83,5 +66,4 @@ void main(void) {
 	vWorldPos = aPosition;
 	vNormal = uNormal;
 	vTexCoord = aTexCoord;
-	if(uLightingEnabled) calculateLighting();
 }

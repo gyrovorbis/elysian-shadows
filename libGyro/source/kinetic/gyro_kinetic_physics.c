@@ -115,7 +115,7 @@ void gyResolvePenetration(struct _GYContact *con, GYVector2 posDelta[], GYVector
 		}
 	}
 
-#if 1
+#if 0
 	_gyLog(GY_DEBUG_VERBOSE, "linearMove[0] - %f\n", linearMove[0]);
 	_gyLog(GY_DEBUG_VERBOSE, "angularMove[0] - %f\n", angularMove[0]);
 	_gyLog(GY_DEBUG_VERBOSE, "linearMove[1] - %f\n", linearMove[1]);
@@ -280,8 +280,8 @@ void gyContactCalculateVelocityInternals(GYContact*const contact, GYKinetic*cons
 
 	//WEIRD CORRECTIVE SHIT
 	//Add velocity from acceleration NOT IN THE DIRECTION OF THE NORMAL
-	GYVector2 accVelocity;
-	GYVector2 normalVel;
+	//GYVector2 accVelocity;
+	//GYVector2 normalVel;
 //	gyVec2Scale(&accVelocity, &rb1->prevAccel, deltaTime);
 	//gyVec2Scale(&normalVel, &contact->normal, gyVec2DotProd(&accVelocity, &contact->normal));
 	//gyVec2SubFrom(&accVelocity, &normalVel);
@@ -322,7 +322,7 @@ void gyContactCalculateVelocityInternals(GYContact*const contact, GYKinetic*cons
 //This could just as easily not be its own function anymore and be done in velocityResolution as with the linear case
 void gyContactUpdateDeltaVelocity(GYContact*const contact, GYKinetic*const rb1, GYKinetic*const rb2, const float deltaTime) {
 	float velocityFromAccel;
-	float newRestitution = contact->coeffOfRest;
+	//float newRestitution = contact->coeffOfRest;
 
 	velocityFromAccel = gyVec2DotProd(&rb1->prevAccel, &contact->normal) * deltaTime;
 
