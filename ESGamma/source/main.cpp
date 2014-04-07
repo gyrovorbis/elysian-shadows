@@ -18,7 +18,7 @@ using namespace elysian;
 Engine *engine;
 Debug *debug;
 
-static void Init(int argc, char *argv[]) {
+GYAppCbRet Init(int argc, char **argv) {
 	(void)argc;
 	(void)argv;
 
@@ -57,52 +57,32 @@ static void Init(int argc, char *argv[]) {
 	debug->sandboxInit();
 	debug->initializeEngine();
 
+	return GY_RET_CONTINUE;
 }
 
-int Update(void) {
+GYAppCbRet Update(void) {
+	engine->processInput();
 	debug->update();
 	engine->update();
-	return 0;
+	return GY_RET_CONTINUE;
 };
 
-void Render(void) {
+GYAppCbRet Render(void) {
 	engine->render();
-}
-
-static void ProcessInput(void) {
-	engine->processInput();
+	return GY_RET_CONTINUE;
 }
 
 static void StaticConstructor(void) {
 	Behavior::staticConstructor();
 }
 
-/* Everything is in a global function, so that switching LibGyro to be event-driven for
-   Droid and iOS reest will be less painful.
- */
-int main(int argc, char *argv[]) {
-
+void gyro_main(void)
+{
 #ifdef __unix__
 	XInitThreads();
 #endif
 	StaticConstructor();
-
-#if GYRO_PLATFORM == GYRO_PLATFORM_iOS
-	IOS_SetInitFunc(Init);
-	IOS_SetRenderFunc(Render);
-	IOS_SetUpdateFunc(Update);
-	CallUIApplicationMain(argc, argv);
-
-#else
-
-	Init(argc, argv);
-
-	for(;;) {
-		if(Update() == -1) break;
-		Render();
-		ProcessInput();
-	}
-
-#endif
-	return 0;
+	gySysRegisterAppInit(&Init);
+	gySysRegisterAppTick(&Update);
+	gySysRegisterAppDraw(&Render);
 }

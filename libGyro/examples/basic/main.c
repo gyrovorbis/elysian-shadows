@@ -21,7 +21,8 @@ typedef struct _Object {
 Object object[OBJECT_COUNT];
 
 
-void render() {
+int render(void)
+{
 	GYColor4 color = {255, 255, 255, 127};
 
 	unsigned int i = 0;
@@ -38,14 +39,17 @@ void render() {
 	}
 	gyVidQuadListEnd();
 	gyVidSceneEnd();
-};
 
-void initExample() {
+	return GY_RET_CONTINUE;
+}
+
+int initExample(int argc, char **argv)
+{
 	GYVidInitParams params = {
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
 	GY_VID_1280x720, GY_WIN_RESIZABLE | GY_WIN_STRETCH, 320, 240, 1280, 720, "TESTZOR", "icon.BMP"
 #endif
-};
+	};
 
 		int i = 0;
 	gySysInit();
@@ -55,7 +59,7 @@ void initExample() {
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
         for(;i < GY_KEY_LAST;++i) {
 		input.keyDown[i] = input.keyTapped[i] = 0;
-        }  
+        }
 #endif
 
     //tex = gyVidTexCreate(gyFilePath("test.png"), 32, 32);
@@ -79,14 +83,11 @@ void initExample() {
             object[i].yvel = rand()%9+1;
             object[i].rotVel = (rand()%2)/3.141f;
         }
+	return GY_RET_CONTINUE;
 }
 
-
-void init_render(unsigned int width, unsigned int height) {
-	//do nothing right now!
-}
-
-int update() { //ios version of input
+int update(void)
+{
 	unsigned int i = 0;
 	unsigned int screenWidth, screenHeight;
 	gyInputPoll(&input);
@@ -99,9 +100,9 @@ int update() { //ios version of input
         if(input.keyDown[GY_KEY_DPAD_D])
 		offset += 1.0f;
 	if(input.keyDown[GY_KEY_ESC])
-                return 1;
+                return GY_RET_FINISH;
 #endif
-	if(1) return 0;
+	if(1) return GY_RET_CONTINUE;
         for(i = 0; i < OBJECT_COUNT; ++i) {
             object[i].x += object[i].xvel;
             object[i].y += object[i].yvel;
@@ -111,33 +112,21 @@ int update() { //ios version of input
             if(object[i].y >= screenHeight || object[i].y <= 0.0f) object[i].yvel = -object[i].yvel;
         }
 
-	return 0;
+	return 1;
 }
 
-void destroy() {
+int destroy(void) {
 	gyVidTexDestroy(tex);
 	gyInputUninit();
 	gyVidUninit();
     gyFileQuit();
 	gySysUninit();
+	return GY_RET_CONTINUE;
 }
 
-int main(int argc, char *argv[]) {
-#if GYRO_PLATFORM == GYRO_PLATFORM_iOS
-	IOS_SetInitFunc(initExample);
-	gyPrintf("main - init_render %p\n", init_render);
-	IOS_SetInitRenderFunc(init_render);
-	IOS_SetRenderFunc(render);
-	IOS_SetUpdateFunc(update);
-	CallUIApplicationMain(argc, argv);
-#endif
-
-	initExample();
-	while(1)
-	{
-		if(update()) break;
-		render();
-	}
-	destroy();
-	return 0;
-};
+void gyro_main(void) {
+	gySysRegisterAppInit(&initExample);
+	gySysRegisterAppTick(&update);
+	gySysRegisterAppDraw(&render);
+	gySysRegisterAppQuit(&destroy);
+}
