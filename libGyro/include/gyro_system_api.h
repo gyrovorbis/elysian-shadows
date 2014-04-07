@@ -16,8 +16,25 @@ int gySysUninit(void);
 
 void gyPrintf(const char *const str, ...);
 
+typedef enum {
+	GY_RET_FINISH = 0,
+	GY_RET_CONTINUE
+} GYAppCbRet;
+
+typedef GYAppCbRet (*GYAppInitCb)(int argc, char **argv);
+typedef GYAppCbRet (*GYAppTickCb)(void);
+typedef GYAppCbRet (*GYAppDrawCb)(void);
+typedef GYAppCbRet (*GYAppQuitCb)(void);
+
+void gySysRegisterAppInit(GYAppInitCb init_cb);
+void gySysRegisterAppTick(GYAppTickCb tick_cb);
+void gySysRegisterAppDraw(GYAppDrawCb draw_cb);
+void gySysRegisterAppQuit(GYAppQuitCb quit_cb);
+
 unsigned int gySysStatsVram(void);
 unsigned int gySysStatsRam(void);
+
+void gyro_main(void);
 
 #include "common/gyro_system_common.h"
 
