@@ -165,24 +165,26 @@ set(gyro_INCLUDES
     ${GY_INCLUDE_DIR}/kinetic/gyro_kinetic_static.h
 )
 
-if(GY_TARGET_OS MATCHES "i386" OR GY_TARGET_ARCH MATCHES "x86_64")
-	set(gyro_SOURCES
-		${gyro_SOURCES}
-		${GY_SOURCE_DIR}/x86/gyro_input_x86.c
-		${GY_SOURCE_DIR}/x86/gyro_matrix_x86.c
-		${GY_SOURCE_DIR}/x86/gyro_system_x86.c
-		${GY_SOURCE_DIR}/x86/gyro_texture_x86.c
-		${GY_SOURCE_DIR}/x86/gyro_timer_x86.c
-		${GY_SOURCE_DIR}/x86/gyro_video_x86.c
-	)
-	set(gyro_INCLUDES
-		${gyro_INCLUDES}
-		${GY_INCLUDE_DIR}/x86/gyro_input_x86.inl
-		${GY_INCLUDE_DIR}/x86/gyro_math_sse_x86.inl
-		${GY_INCLUDE_DIR}/x86/gyro_matrix_sse_x86.inl
-		${GY_INCLUDE_DIR}/x86/gyro_glfw_x86.inl
-		${GY_INCLUDE_DIR}/x86/gyro_video_x86.inl
-	)
+if(GY_TARGET_ARCH MATCHES "i386" OR GY_TARGET_ARCH MATCHES "x86_64")
+    if(${GYRO_PLATFORM} EQUAL GYRO_PLATFORM_x86)
+        set(gyro_SOURCES
+            ${gyro_SOURCES}
+            ${GY_SOURCE_DIR}/x86/gyro_input_x86.c
+            ${GY_SOURCE_DIR}/x86/gyro_matrix_x86.c
+            ${GY_SOURCE_DIR}/x86/gyro_system_x86.c
+            ${GY_SOURCE_DIR}/x86/gyro_texture_x86.c
+            ${GY_SOURCE_DIR}/x86/gyro_timer_x86.c
+            ${GY_SOURCE_DIR}/x86/gyro_video_x86.c
+        )
+        set(gyro_INCLUDES
+            ${gyro_INCLUDES}
+            ${GY_INCLUDE_DIR}/x86/gyro_input_x86.inl
+            ${GY_INCLUDE_DIR}/x86/gyro_math_sse_x86.inl
+            ${GY_INCLUDE_DIR}/x86/gyro_matrix_sse_x86.inl
+            ${GY_INCLUDE_DIR}/x86/gyro_glfw_x86.inl
+            ${GY_INCLUDE_DIR}/x86/gyro_video_x86.inl
+        )
+	endif()
 endif()
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
