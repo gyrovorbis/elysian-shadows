@@ -188,6 +188,15 @@ if(GY_TARGET_ARCH MATCHES "i386" OR GY_TARGET_ARCH MATCHES "x86_64")
 	endif()
 endif()
 
+if(${GYRO_PLATFORM} EQUAL GYRO_PLATFORM_ANDROID)
+    set(gyro_SOURCES
+        ${gyro_SOURCES}
+        ${GY_SOURCE_DIR}/android/android_native_app_glue.c
+        ${GY_SOURCE_DIR}/android/android_native_app_glue.h
+        ${GY_SOURCE_DIR}/android/gyro_system_android.c
+    )
+endif()
+
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_GNU_SOURCE")
 
