@@ -20,7 +20,7 @@
 #elif GYRO_PLATFORM == GYRO_PLATFORM_iOS
 #	include "ios/ios_system.h"
 #	include "ios/gyro_gles_ios.h"
-#elif GYRO_PLATFORM == GYRO_PLATFORM_droid
+#elif GYRO_PLATFORM == GYRO_PLATFORM_ANDROID
 #	include "droid/droid_system.h"
 #	include "droid/gyro_gles_droid.h"
 #endif
