@@ -113,6 +113,7 @@ set(gyro_SOURCES
 	${GY_SOURCE_DIR}/common/gyro_matrix_stack.c
 	${GY_SOURCE_DIR}/common/gyro_shader.c
 	${GY_SOURCE_DIR}/common/gyro_system.c
+	${GY_SOURCE_DIR}/common/gyro_system_callbacks.h
 	${GY_SOURCE_DIR}/common/gyro_texture.c
 	${GY_SOURCE_DIR}/common/gyro_wav.c
 
