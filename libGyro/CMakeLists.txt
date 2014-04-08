@@ -194,6 +194,7 @@ if(${GYRO_PLATFORM} EQUAL GYRO_PLATFORM_ANDROID)
         ${GY_SOURCE_DIR}/android/android_native_app_glue.c
         ${GY_SOURCE_DIR}/android/android_native_app_glue.h
         ${GY_SOURCE_DIR}/android/gyro_system_android.c
+        ${GY_SOURCE_DIR}/android/internal_android.h
     )
 endif()
 
