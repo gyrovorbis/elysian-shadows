@@ -65,10 +65,8 @@ extern "C" {
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_droid
 	#   define GYRO_ENDIAN GYRO_ENDIAN_LITTLE
-	#   define GYRO_MATH_SOFTWARE
-	#   define GYRO_MATRIX_SOFTWARE
-
-
+#	define GYRO_MATH_PLATFORM_INCLUDE	"common/gyro_math_common.inl"
+#	define GYRO_MATRIX_PLATFORM_INCLUDE	"common/gyro_matrix_common.inl"
 #elif GYRO_PLATFORM == GYRO_PLATFORM_Qt
 
 #	define GYRO_TEXTURE_PLATFORM_INCLUDE "glal/gyro_texture_glal.inl"
