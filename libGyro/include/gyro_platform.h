@@ -9,7 +9,7 @@ extern "C" {
 #define GYRO_PLATFORM_DC		(1<<1)
 #define GYRO_PLATFORM_PSP		(1<<2)
 #define GYRO_PLATFORM_iOS		(1<<3)
-#define GYRO_PLATFORM_droid 	(1<<4)
+#define GYRO_PLATFORM_ANDROID	(1<<4)
 #define GYRO_PLATFORM_Qt		(1<<5)
 	
 #define GYRO_ENDIAN_LITTLE		0x01
@@ -57,13 +57,13 @@ extern "C" {
 
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_PSP
-	
+
 #elif GYRO_PLATFORM == GYRO_PLATFORM_iOS
 	#   define GYRO_ENDIAN GYRO_ENDIAN_LITTLE
 	#   define GYRO_MATH_SOFTWARE
 	#   define GYRO_MATRIX_SOFTWARE
 
-#elif GYRO_PLATFORM == GYRO_PLATFORM_droid
+#elif GYRO_PLATFORM == GYRO_PLATFORM_ANDROID
 	#   define GYRO_ENDIAN GYRO_ENDIAN_LITTLE
 #	define GYRO_MATH_PLATFORM_INCLUDE	"common/gyro_math_common.inl"
 #	define GYRO_MATRIX_PLATFORM_INCLUDE	"common/gyro_matrix_common.inl"
