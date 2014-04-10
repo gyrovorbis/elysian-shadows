@@ -500,11 +500,13 @@ void Debug::processInput(const GameInput& input) {
 	}*/
 }
 
+#define ARG_LIMIT 20
 bool Debug::parseArguments(void) {
 	int argc = 0;
-	char argBuff[20][100];
-	char *argv[20];
+	char argBuff[ARG_LIMIT][100];
+	char *argv[ARG_LIMIT];
 	char *buffer;
+	char *bufptr;
 	size_t buffer_len = 0;
 	GYFile *file;
 
@@ -520,12 +522,15 @@ bool Debug::parseArguments(void) {
 			return 0;
 		}
 		buffer = (char *) malloc(sizeof(char) * buffer_len + 1);
+		memset(buffer, 0, sizeof(char) * buffer_len + 1);
 		if (!gyFileRead(file, buffer, buffer_len, NULL)) {
 			return 0;
 		}
-		while(sscanf(buffer, "%s", argBuff[argc]) != EOF) {
-			argv[argc+1] = argBuff[argc]; //yes, I'm really doing this.
-			printf(VERBOSE, "argv[%d] - %s", argc+1, argv[argc+1]);
+		bufptr = buffer;
+		while(sscanf(bufptr, "%s", argBuff[argc]) != EOF) {
+			argv[argc] = argBuff[argc]; //yes, I'm really doing this.
+			printf(VERBOSE, "argv[%d] - %s", argc, argv[argc]);
+			bufptr += strlen(argBuff[argc]);
 			++argc;
 		}
 		free(buffer);
