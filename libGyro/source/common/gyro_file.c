@@ -75,7 +75,8 @@ int gyFileTell(GYFile *fp, long int *pos)
 
 int gyFileClose(GYFile **fp)
 {
-	turfs_file_close(&(*fp)->fp);
+	turfs_ret ret = turfs_file_close(&(*fp)->fp);
 	free(*fp);
 	*fp = NULL;
+	return ret == TURFS_RET_OK;
 }
