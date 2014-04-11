@@ -528,9 +528,9 @@ bool Debug::parseArguments(void) {
 		}
 		bufptr = buffer;
 		while(sscanf(bufptr, "%s", argBuff[argc]) != EOF) {
-			argv[argc] = argBuff[argc]; //yes, I'm really doing this.
-			printf(VERBOSE, "argv[%d] - %s", argc, argv[argc]);
-			bufptr += strlen(argBuff[argc]);
+			argv[argc + 1] = argBuff[argc]; //yes, I'm really doing this.
+			printf(VERBOSE, "argv[%d] - %s", argc + 1, argv[argc + 1]);
+			bufptr += strlen(argBuff[argc]) + 1;
 			++argc;
 		}
 		free(buffer);
