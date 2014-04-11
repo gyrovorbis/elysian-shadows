@@ -3,7 +3,6 @@
 #include <turfs/turfs.h>
 
 #include <gyro_file_api.h>
-#include <stdio.h>
 
 struct _GYFile {
 	turfs_fp fp;
@@ -37,14 +36,8 @@ int gyFileResolvePath(GYPathType path_type, char **path, size_t *len)
 	return 1;
 }
 
-#include <string.h>
-
 int gyFileOpen(const char *file_path, const char *mode, GYFile **fp)
 {
-	char *buffer;
-	turfs_path_type type;
-	turfs_ret ret;
-	printf(">> gyFileOpen(%s)\n", file_path);
 	if (fp == NULL) {
 		return 0;
 	}
@@ -52,18 +45,7 @@ int gyFileOpen(const char *file_path, const char *mode, GYFile **fp)
 	if (*fp == NULL) {
 		return 0;
 	}
-	ret = turfs_virtual_path(TURFS_PATH_ASSETS, &buffer, 0);
-	printf("VP ret: %d\n", ret);
-	printf("Assets path: %s\n", buffer);
-	free(buffer);
-	buffer = NULL;
-	ret = turfs_silph_scope(file_path, &buffer, 0, &type);
-	printf("SILPH SAYS: %s\n", buffer);
-	printf("  TYPE    : %d\n", type);
-	printf("   RET    : %d\n", ret);
-	free(buffer);
-	if ((ret = turfs_file_open(file_path, mode, &(*fp)->fp)) != TURFS_RET_OK) {
-		printf("  ORET    : %d\n", ret);
+	if (turfs_file_open(file_path, mode, &(*fp)->fp) != TURFS_RET_OK) {
 		free(*fp);
 		*fp = NULL;
 		return 0;
