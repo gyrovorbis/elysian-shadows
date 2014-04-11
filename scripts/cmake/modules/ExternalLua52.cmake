@@ -15,10 +15,7 @@ ExternalProject_Add(lua52_build
 
 	DOWNLOAD_DIR ${ES_CONTRIB_DOWNLOAD_DIR}
 
-	URL http://www.lua.org/ftp/lua-5.2.3.tar.gz
-	URL_MD5 dc7f94ec6ff15c985d2d6ad0f1b35654
-
-	PATCH_COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ES_SCRIPTS_DIR}/cmake/modules/lua52.cmake <SOURCE_DIR>/CMakeLists.txt
+	GIT_REPOSITORY git://github.com/eddieringle/lua-es.git
 
 	INSTALL_DIR ${ES_TARGET_CONTRIB_OUT_DIR}
 	CMAKE_ARGS ${lua52_CMAKE_ARGS}
