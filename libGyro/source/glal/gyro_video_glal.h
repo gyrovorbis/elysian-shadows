@@ -14,7 +14,7 @@ extern const struct _GYCamera*	curCamera;
 extern GYMatrix4				viewMatrix;
 extern float					viewZOrient;
 extern float					viewScale;
-extern GYVector4				viewPosition;
+extern GYVector3				camWorldPos;
 extern const GYVector3*			tangentVector;
 extern const GYVector3*			normalVector;
 extern const struct _GYTexture* curTex;

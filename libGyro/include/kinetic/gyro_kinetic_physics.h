@@ -18,7 +18,7 @@ void gyResolvePenetration(struct _GYContact *con, GYVector2 posDelta[], GYVector
 void gyIntegrate(struct _GYKinetic *kin,
 				 const struct _GYStatic *attrib,
 				 const float deltaTime,
-				 GYVector2* pos,
+				 GYVector3* pos,
 				 float* orient);
 
 /* CONTACT RESOLUTION
