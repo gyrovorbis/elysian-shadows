@@ -35,6 +35,7 @@ namespace elysian {
 	
     class Entity: public RenderableObject, public Asset {
 	public:
+
 				Entity(void)	= default;
 		virtual ~Entity(void);
 		
@@ -55,10 +56,11 @@ namespace elysian {
 
 		void setElev(const unsigned char e);
 		unsigned char getElev(void) const;
-		DEPTH_TYPE getDepthType(void) const;
-		void setDepthType(const DEPTH_TYPE depth);
+		NORMAL_TYPE getNormalType(void) const;
+		void setNormalType(const NORMAL_TYPE normal);
 		void setShadowVolume(const bool v);
 		bool isShadowVolume(void) const;
+		void setShadowDepth(const float depth);
         
 		Renderable*			addRenderable(void);
 		Animation*			addAnimation(void);
@@ -120,9 +122,9 @@ namespace elysian {
         std::map<char const *, Behavior*, ltstr> _behavior;
 
 		unsigned char		_elev				= 0;
-		bool				_shadowVolume		= true;
+		bool				_shadowVolume		= false;
 		float				_shadowDepth		= 16.0f;
-		DEPTH_TYPE			_depthType			= DEPTH_BUFFERED;
+		NORMAL_TYPE			_normalType			= NORMAL_FRONT;
 		bool				_active				= false;
 		Renderable*			_renderable			= nullptr;
 		Animation*			_animation			= nullptr;
@@ -157,12 +159,13 @@ namespace elysian {
 
 	inline void Entity::setElev(const unsigned char e) { _elev = e; }
 	inline unsigned char Entity::getElev(void) const { return _elev; }
-	inline DEPTH_TYPE Entity::getDepthType(void) const { return _depthType; }
-	inline void Entity::setDepthType(const DEPTH_TYPE depth) { _depthType = depth; }
+	inline auto Entity::getNormalType(void) const -> NORMAL_TYPE { return _normalType; }
+	inline void Entity::setNormalType(const NORMAL_TYPE normal) { _normalType = normal; }
     inline float Entity::getDepthBaseY(void) const { return (transform._pos.y + 0.5f * transform._size.y + 16.0f); }
 	inline std::map<char const *, Behavior*, ltstr>& Entity::getBehaviors(void) { return _behavior; }
 	inline void Entity::setShadowVolume(const bool v) { _shadowVolume = v; }
 	inline bool Entity::isShadowVolume(void) const { return _shadowVolume; }
+	inline void Entity::setShadowDepth(const float depth) { _shadowDepth = depth; }
 
 }
 

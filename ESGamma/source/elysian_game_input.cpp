@@ -108,6 +108,10 @@ void GameInput::translate(const GYInput &platInput, GameInput &gameInput) {
 }
 
 GameInput::GameInput(void) {
+	clear();
+}
+
+void GameInput::clear(void) {
 	for(int i = 0; i < BUT_MAX; ++i) {
 		keyDown[i] = false;
 		keyTapped[i] = false;

@@ -19,6 +19,9 @@ namespace elysian {
 		};
 		
 		GameInput(void);
+
+		void clear(void);
+
 		bool getTapped(BUTTON key) const;
 		bool getDown(BUTTON key) const;
 

@@ -17,7 +17,7 @@ namespace elysian {
 	class ParticleEmitterAttrib: public SpriteAttrib, public GYStatic {
 		friend class ParticleEmitterInternals;
 	private:
-		GYVector3	_acceleration	= GYVector3 { 0.0f, 0.7f, 0.0f };
+		GYVector3	_acceleration	= GYVector3 { 0.0f, 0.7f, -7.0f };
 		Material*	_material		= nullptr;
 		GYTexture*	_specularMap	= nullptr;
 		//float		_angularDamping	= 0.99f;
@@ -55,6 +55,8 @@ namespace elysian {
 		unsigned				size;
 		unsigned				frame;
 		GYColor4				color;
+		int						zIndex;
+		bool					flat;
 
 		//bool		active = false;
 
@@ -83,6 +85,7 @@ namespace elysian {
 		void applyForce(ForceGenerator*const force, const float deltaTime);
 		void update(const CameraState*const state, const float deltaTime);
 		void render(void);
+		void renderAtElev(const unsigned char elev);
 
 		//emitter functions
 		void emitFromPoint(const GYVector3& pos, const float angle, const unsigned intensity);

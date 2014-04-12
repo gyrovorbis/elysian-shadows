@@ -97,11 +97,11 @@ void RigidBodySystem::resolveContactVelocities(void) {
 					_contactPool[maxIndex]->getCollidable(1)->getEntity()->getRigidBody() :
 					nullptr;
 
-		gyVec2AddAccum(&rbA->vel, &velDelta[0]);
+		gyVec2AddAccum((GYVector2*)&rbA->vel, &velDelta[0]);
 		rbA->rot += rotDelta[0];
 
 		if(rbB) {
-			gyVec2AddAccum(&rbB->vel, &velDelta[1]);
+			gyVec2AddAccum((GYVector2*)&rbB->vel, &velDelta[1]);
 			rbB->rot += rotDelta[1];
 		}
 

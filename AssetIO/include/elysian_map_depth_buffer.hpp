@@ -27,7 +27,7 @@
 
 namespace elysian {
     
-    enum DEPTH_TYPE { DEPTH_NONE, DEPTH_BUFFERED };
+	enum NORMAL_TYPE { NORMAL_FLAT, NORMAL_FRONT };
     
     //Minimal base class for object entries
 	struct MapDepthBuffEntry {
@@ -35,7 +35,7 @@ namespace elysian {
 		unsigned x, y; //tile location
 		unsigned layer;
 		uint32_t lights;
-		MapEntry mapEntry;
+		TileEntry mapEntry;
 		unsigned renderPass = 0;
     };
     
@@ -97,12 +97,16 @@ namespace elysian {
 			return static_cast<const T*>(this)->getEntityCount();
 		}
 		
-        bool _getOnscreenEntity(const unsigned index, E &entry, DEPTH_TYPE &type, float &lowestY, unsigned char &elev) const {
-			return static_cast<const T*>(this)->getOnscreenEntity(index, entry, type, lowestY, elev);
+		bool _getOnscreenEntity(const unsigned index, E &entry, NORMAL_TYPE &normalType, float &lowestY, unsigned char &elev) const {
+			return static_cast<const T*>(this)->getOnscreenEntity(index, entry, normalType, lowestY, elev);
 		}
 
 		void _renderEntityEntry(E &entry) {
 			static_cast<T*>(this)->renderEntityEntry(entry);
+		}
+
+		void _renderCustomPassAtElev(const unsigned char elev) const {
+			static_cast<const T*>(this)->renderCustomPassAtElev(elev);
 		}
 
 		void _disableDepthTest(void) const {
@@ -144,7 +148,8 @@ namespace elysian {
 
 		void _processTiles(void);
 		void _processEntities(void);
-		void _renderDepthBuffTileRow(const unsigned i);
+		void _beginRenderNextTileRow(void);
+		void _renderDepthBuffTileRow(const unsigned i, const NORMAL_TYPE normalType);
 		void _renderDepthBuffEntityRow(const unsigned i);
 
 		bool _tileEntryLightPass(O& tileEntry) {
@@ -187,11 +192,6 @@ namespace elysian {
 	template<typename T, typename O, typename E>
 	inline void MapDepthBuffer<T, O, E>::render(void) {
 
-		//Calculate z coordinates
-		const float zCoordImmediateObject	= _getBaseZCoord();
-		const float zCoordImmediateEntity	= zCoordImmediateObject + 0.5f; //Dont know about this...
-		//const float zCoordBufferedBase		= zCoordImmediateObject + 1.0f;
-
 		_getOnscreenTileRegion(_scrStartX, _scrStartY, _scrEndX, _scrEndY);
 
 		//Maximum number of rows depth buffer could need based on visible region
@@ -211,44 +211,34 @@ namespace elysian {
 		const float mapStartY = _scrStartY*32.0f;
 		const unsigned entityCount = _getEntityCount();
         E entityEntry;
-        DEPTH_TYPE entityDepthType;
+		NORMAL_TYPE normalType;
         float entityBase;
 		unsigned char elev;
         
 		//Determine entity Z coord and add to buff
 		//If PERFECTLY tile-aligned, add a delta/epsilon to prevent duplicate Zing - or don't bother? Doesn't matter?
 		for(unsigned i = 0; i < entityCount; ++i) {
-			if(!_getOnscreenEntity(i, entityEntry, entityDepthType, entityBase, elev)) continue; //not onscreen
-            
-			//FACTOR IN AN ENTITY'S ELEVATION!!!!
+			if(!_getOnscreenEntity(i, entityEntry, normalType, entityBase, elev)) continue; //not onscreen
 
-            if(entityDepthType == DEPTH_NONE) { //Render immediately
-				if(!elev) {
-					entityEntry.zCoordWorld = ZCoordConstants::mapBase+0.1f;/* + entityBase*///zCoordImmediateEntity;
-					//s_renderEntityEntry(entityEntry);
-				} else {
-					entityEntry.zCoordRelative = zCoordImmediateEntity + elev;
-					entityEntry.zCoordWorld = (ZCoordConstants::mapBase + (elev)*32.0f );
-					_entityBuff[elev][_entityCount[elev]] = entityEntry;
-					++_entityCount[elev];
-				}    
-            } else { //Buffer and render later
-                //calculate relative Z coord
-				float zCoord = (entityBase-mapStartY)/32.0f + elev;
-				//FUCKING DISGUSTING, DIRTY, UGLY Z-FIGHTING HACK!!!!
-				float worldZCoord = (ZCoordConstants::mapBase + (elev)*32.0f);//-(((float)entityBase/32.0f)-((int)entityBase/32));
-                    
-                //Add depth buffer entry
-                unsigned zIndex = (unsigned)zCoord;
-				if(zIndex >= _depthBuffMaxHeight) zIndex = _depthBuffMaxHeight-1;
-                //assert(zIndex >= 0 && zIndex < depthBuffMaxHeight);
-                
-                _entityBuff[zIndex][_entityCount[zIndex]] = entityEntry;
-				_entityBuff[zIndex][_entityCount[zIndex]].zCoordRelative = zCoord;
-				_entityBuff[zIndex][_entityCount[zIndex]].zCoordWorld = worldZCoord;
+			//FUCKING DISGUSTING, DIRTY, UGLY Z-FIGHTING HACK!!!!
+			float worldZCoord = (ZCoordConstants::mapBase + (elev)*32.0f);//-(((float)entityBase/32.0f)-((int)entityBase/32));
 
-                ++_entityCount[zIndex];
-			}
+			//calculate relative Z coord
+			float zCoord = (entityBase-mapStartY)/32.0f + elev;
+			//Add depth buffer entry
+			unsigned zIndex = (unsigned)zCoord;
+			if(zIndex >= _depthBuffMaxHeight) zIndex = _depthBuffMaxHeight-1;
+			//assert(zIndex >= 0 && zIndex < depthBuffMaxHeight);
+
+			_entityBuff[zIndex][_entityCount[zIndex]] = entityEntry;
+			_entityBuff[zIndex][_entityCount[zIndex]].zCoordRelative = zCoord;
+			_entityBuff[zIndex][_entityCount[zIndex]].zCoordWorld = worldZCoord;
+
+			//render immediately
+			if(elev && normalType == NORMAL_FLAT) _renderEntityEntry(_entityBuff[zIndex][_entityCount[zIndex]]);
+			//queue and render later
+			else ++_entityCount[zIndex];
+
 		}
         
 		//Sort entity z entries per z coord (ascending order)
@@ -272,6 +262,12 @@ namespace elysian {
 		//Iterate through depth buffers and render from lowest to highest z coord
 		for(unsigned i = 0; i < _depthBuffMaxHeight; ++i) {
 
+			_beginRenderNextTileRow();
+
+			_renderDepthBuffTileRow(i, NORMAL_FLAT);
+
+			_renderCustomPassAtElev(i);
+
 			//Entities come first, since they are always above the lowest point on the object
 			float entityZDelta = 0.0f;
 			for(unsigned j = 0; j < _entityCount[i]; ++j) {
@@ -281,7 +277,7 @@ namespace elysian {
 				entityZDelta += ELYSIAN_DEPTH_BUFFER_ENTITY_ENTITY_MIN_Z_OFFSET;
 			}
 
-			_renderDepthBuffTileRow(i);
+			_renderDepthBuffTileRow(i, NORMAL_FRONT);
                       
 		}
 		_enableDepthTest();
@@ -315,9 +311,9 @@ namespace elysian {
 					slower, but it's at least a clean solution.
 					*/
 					//if(!curMapEntry.mapEntry.getValue()) continue; //not the blank object
-					int elevation = curMapEntry.mapEntry.getElev()-1;
+					int elevation = curMapEntry.mapEntry.getElev();//-1;
 
-					if(elevation == -1) { //render tile immediately at elevation -1 (below entities)
+					if(elevation == 0 && !curMapEntry.mapEntry.getNormal()) { //render tile immediately at elevation -1 (below entities)
 						//Immediate render, or buffer if it requires multiple passes
 						_renderOrBufferImmediateTileEntry(curMapEntry);
 					} else { //Add to depth buffer if elevated
@@ -356,21 +352,23 @@ namespace elysian {
 		_endObjectList();
 	}
 
-
+	template<typename T, typename O, typename E>
+	inline void MapDepthBuffer<T, O, E>::_beginRenderNextTileRow(void) {
+		_lightsRendered = 0;
+	}
 
 	template<typename T, typename O, typename E>
-	inline void MapDepthBuffer<T, O, E>::_renderDepthBuffTileRow(const unsigned int i) {
+	inline void MapDepthBuffer<T, O, E>::_renderDepthBuffTileRow(const unsigned int i, const NORMAL_TYPE normalType) {
 		//Tiles - rendered with Z at the BOTTOM of the map tile location
 
 		_beginObjectList();
 
 		LightSystem*const	lightSys			= getLightSys();
-		_lightsRendered = 0;
-
 
 		_lightsRendered |= _lightsActive = lightSys->startLightPass(_objectRowLights[i]);
 		for(unsigned j = 0; j < _objectCount[i]; ++j) {
-			_renderOrQueueTileEntry(j, _objectBuff[i][j]);
+			if(_objectBuff[i][j].mapEntry.getNormal() == normalType)
+				_renderOrQueueTileEntry(j, _objectBuff[i][j]);
 		}
 		while(_queued) {
 			const unsigned count = _queued;

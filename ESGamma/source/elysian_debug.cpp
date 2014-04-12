@@ -37,12 +37,12 @@ namespace elysian {
 
 //======STATIC MEMBERS=====
 
-FILE*			Debug::_dbgFile;
-FILE*			Debug::_luaDbgFile;
-Engine*			Debug::_engine = nullptr;
-bool			Debug::_advLogWrap = false;
-unsigned int	Debug::_stackDepth = 0;
-Debug::LEVEL	Debug::_level = ELYSIAN_DEBUG_LOG_LEVEL_DEFAULT;
+FILE*				Debug::_dbgFile;
+FILE*				Debug::_luaDbgFile;
+Engine*				Debug::_engine = nullptr;
+unsigned int		Debug::_stackDepth = 0;
+Debug::LEVEL		Debug::_level = ELYSIAN_DEBUG_LOG_LEVEL_DEFAULT;
+Debug::ADV_LOG_WRAP Debug::_advLogWrap = Debug::ADV_LOG_LUA;
 
 // Central endpoint for all debug log calls
 void Debug::writeLog(const Debug::SOURCE source, const Debug::LEVEL level, const char *const str) {
@@ -84,19 +84,23 @@ void Debug::writeLog(const Debug::SOURCE source, const Debug::LEVEL level, const
 	}
 	gyPrintf(buffer); //use the "preferred" IO of each platform
 
-	//Wrap to AdventureLog
-	if(_advLogWrap) {
-		AdventureLog::TEXT_TYPE advType;
 
-		switch(source) {
-		case LUA:
-			advType = AdventureLog::TEXT_LUA_DEBUG;
-			break;
-		default:
-			advType = AdventureLog::TEXT_NORMAL;
-		}
-		if(level == CRITICAL || level == FATAL) advType = AdventureLog::TEXT_ERROR;
+	AdventureLog::TEXT_TYPE advType;
 
+	switch(source) {
+	case LUA:
+		advType = AdventureLog::TEXT_LUA_DEBUG;
+		break;
+	default:
+		advType = AdventureLog::TEXT_NORMAL;
+	}
+	if(level == CRITICAL || level == FATAL) advType = AdventureLog::TEXT_ERROR;
+
+	//Check to see if this kind of output is being wrapped to the Adventure Log
+	if(level == CRITICAL || level == FATAL ||
+			_advLogWrap == ADV_LOG_ALL ||
+			(_advLogWrap == ADV_LOG_LUA && source == LUA))
+	{
 		//characters that the adventure log cannot display--shouldn't it handle this? Not debug? No shit.
 		for(unsigned int i = 0; i < strlen(buffer); ++i) if(buffer[i] == '\n' || buffer[i] == '\t') buffer[i] = ' ';
 		if(_engine) getGuiSys()->adventureLog.addLine(advType, buffer);
@@ -137,7 +141,7 @@ Debug::~Debug(void) {
 
 LightSource* lightSrc;
 #if 1
-GYVector3 dirVec = { 1.0f, 0.0f, 0.0f };
+GYVector3 dirVec = { 0.0f, 1.0f, 1.0f };
 #else
 GYVector3 dirVec = { 0.0f, 0.0f, -1.0f };
 
@@ -148,7 +152,6 @@ bool Debug::sandboxInit(void) {
 	printf(VERBOSE, "Debug::sandboxInit()");
 	push();
 
-	_advLogWrap = true;
 	LuaManager::runScriptSandbox(ELYSIAN_GLOBAL_INIT_LUA_PATH);
 	Entity* leader = getPartySys()->getPartyLeader();
 	if(leader) {
@@ -179,7 +182,7 @@ void Debug::update(void) {
 
 static LightSource* src;
 
-void Debug::processInput(const GameInput& input) {
+void Debug::processInput(GameInput& input) {
 
 	static float theta = 0.0f;
 	static unsigned size = 3;
@@ -187,10 +190,10 @@ void Debug::processInput(const GameInput& input) {
 
 	//Camera zoom
 	if(input.getDown(GameInput::BUT_W)){
-		_engine->_cameraSystem->scale(0.9f*0.9f, 1.0f/60.0f);
+		_engine->_cameraSystem->staticScale(0.9f);
 	}
 	if(input.getDown(GameInput::BUT_S)){
-		_engine->_cameraSystem->scale(1.1f*1.1f, 1.0f/60.0f);
+		_engine->_cameraSystem->staticScale(1.1f);
 	}
 
 	if(input.getTapped(GameInput::BUT_0)) {
@@ -244,24 +247,48 @@ void Debug::processInput(const GameInput& input) {
 		}
 	}
 
+	//EVERYTHING BEYOND THIS POINT IS IN FALCO'S DEBUG KEYSPACE!!!!
 	if(!input.getDown(GameInput::BUT_LALT)) return;
 
 
 	if(input.getDown(GameInput::BUT_Q)){
-		_engine->_cameraSystem->rotate(0.2f);
+		_engine->_cameraSystem->rotateZ(0.2f);
 	}
 	if(input.getDown(GameInput::BUT_A)){
-		_engine->_cameraSystem->rotate(-0.2f);
+		_engine->_cameraSystem->rotateZ(-0.2f);
+	}
+
+	if(input.getDown(GameInput::BUT_E)) {
+		_engine->_cameraSystem->rotateX(-0.2f);
+	}
+
+	if(input.getDown(GameInput::BUT_D)) {
+		_engine->_cameraSystem->rotateX(0.2f);
 	}
 
 
-	if(input.getDown(GameInput::BUT_E)) { //Reset Transform
-		_engine->_cameraSystem->setScale(1.0f, 2.0f);
+	if(input.getTapped(GameInput::BUT_Z)) { //Reset Transform
+		_engine->_cameraSystem->setStaticScale(1.0f);
 		_engine->_cameraSystem->setOrientZ(0.0f);
+		_engine->_cameraSystem->setOrientX(0.0f);
 	}
 
+	if(input.getTapped(GameInput::BUT_C)) {
+		static bool enabled = true;
+		enabled = !enabled;
+		_engine->_collisionSystem->setEnabled(enabled);
+		if(enabled) Debug::printf(Debug::VERBOSE, "Collision Enabled");
+		else Debug::printf(Debug::VERBOSE, "Collision Disabled");
 
-	//EVERYTHING BEYOND THIS POINT IS IN FALCO'S DEBUG KEYSPACE!!!!
+	}
+
+	if(input.getTapped(GameInput::BUT_L)) {
+		ADV_LOG_WRAP newWrap = (_advLogWrap < ADV_LOG_MAX-1)? (ADV_LOG_WRAP)(_advLogWrap+1) : (ADV_LOG_WRAP)0;
+		if(newWrap == ADV_LOG_ALL) Debug::printf(Debug::VERBOSE, "Adventure Log Wrapping Engine Debug");
+		else if(newWrap == ADV_LOG_LUA) Debug::printf(Debug::VERBOSE, "Adventure Log Wrapping Lua only");
+		else Debug::printf(Debug::VERBOSE, "Adventure Log Wrapping None");
+		_advLogWrap = newWrap;
+	}
 
 	if(input.getDown(GameInput::BUT_5)) {
 		++intensity;
@@ -303,7 +330,7 @@ void Debug::processInput(const GameInput& input) {
 		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
 	}
 	if(input.getDown(GameInput::BUT_O)) {
-		//dirVec.x -= 0.1f;
+		dirVec.x -= 0.1f;
 		theta -= 0.1f;
 		gyVec3Normalize(&dirVec);
 		src->setDirection(dirVec);
@@ -332,7 +359,7 @@ void Debug::processInput(const GameInput& input) {
 			once = false;
 		}
 
-		emitter->emitFromEntity( GYVector3 { 0.0f, 0.0f, 0.0f }, theta, intensity);
+		emitter->emitFromEntity( GYVector3 { 0.0f, 0.0f, 0.0f }, theta, intensity*10);
 		  // getPartSys()->emitFromPoint(0, GYVector3 { entity->transform._pos.x+5, entity->transform._pos.y, 500.0f}, theta, intensity);
 
 //		getGuiSys()->addCombatText("10", GYColor4 { 255, 0, 0, 255}, GYVector2 { entity->transform._pos.x, entity->transform._pos.y}, GYVector2 { 0.5f, -5.0f});
@@ -356,13 +383,6 @@ void Debug::processInput(const GameInput& input) {
 		getDaySys()->setTimeDilation(timeSpeed);
 	}*/
 
-	//VRAM and Audio Stats
-	if(input.getTapped(GameInput::BUT_Z)) {
-		Entity* julien = getCurArea()->findEntity("Julien");
-
-		getGuiSys()->addCombatText("10", GYColor4{ 255, 0, 0, 255 }, *(GYVector2*)&julien->transform._pos, GYVector2 { 0.0f, -5.0f});
-
-	}
 	if(input.getTapped(GameInput::BUT_FORWARDSLASH)) {
 		LuaManager::dumpStats();
 	}
@@ -378,7 +398,7 @@ void Debug::processInput(const GameInput& input) {
 		entity->transform.setScale(1.0f, 1.0f);
 		entity->transform.setSize(128.0f, 128.0f);
 		entity->setElev(0);
-		entity->setDepthType(DEPTH_BUFFERED);
+		entity->setNormalType(NORMAL_FRONT);
 		Renderable* render = entity->addRenderable();
 #if 1
 		QuadSpriteAttrib* attrib = new QuadSpriteAttrib;
@@ -443,15 +463,15 @@ void Debug::processInput(const GameInput& input) {
 			gyVec3Normalize(&dirVec);
 			lightSrc->setDirection(dirVec);
 			LightAttrib* attrib = new LightAttrib;
-			//attrib->setAmbientColor(GYVector4{ 0.5f, 0.5f, 0.5f, 1.0f});
-			attrib->setDiffuseColor(GYVector4 { 0.0f, 0.0f, 0.5f, 1.0f });
-			attrib->setSpecularColor(GYVector4{ 0.0f, 0.5f, 0.5f, 1.0f});
+			attrib->setAmbientColor(GYVector4{ 0.0f, 0.0f, 0.2f, 1.0f});
+			attrib->setDiffuseColor(GYVector4 { 0.0f, 0.0f, 4.0f, 1.0f });
+			attrib->setSpecularColor(GYVector4{ 0.0f, 2.0f, 4.0f, 1.0f});
 			lightSrc->setAttrib(attrib);
 #if 0
 			lightSrc->setLightType(LightSource::LIGHT_DIRECTIONAL);
 #else
-			lightSrc->setLightType(GY_LIGHT_POINT);
-			//lightSrc->setSpotCutoffAngle(45.0f);
+			lightSrc->setLightType(GY_LIGHT_SPOT);
+			lightSrc->setSpotCutoffAngle(45.0f);
 			lightSrc->setShadowCaster(true);
 			attrib->setAttenuationFactors(GYVector3{ 0.0005f, 0.00005f, 0.00005f });
 
@@ -488,7 +508,7 @@ void Debug::processInput(const GameInput& input) {
 		Entity* leader = _engine->_partySystem->getPartyLeader();
 		if(leader) {
 			unsigned elev = leader->getElev();
-			elev = (elev < 15)? elev+1 : 0;
+			elev = (elev < ELYSIAN_MAP_ENTRY_ELEV_MAX)? elev+1 : 0;
 			leader->setElev(elev);
 			printf(VERBOSE, "Player.elevation - %d", elev);
 		}
@@ -500,6 +520,10 @@ void Debug::processInput(const GameInput& input) {
 			printf(VERBOSE, "<%d, %d>\n",  ((int)player1->transform._pos.x+16)/32, ((int)player1->transform._pos.y+16)/32);
 		}
 	}*/
+
+	//KILL ALL INPUT WHEN YOU'RE HOLDING ALT!!!!
+	input.clear();
+
 }
 
 bool Debug::parseArguments(void) {

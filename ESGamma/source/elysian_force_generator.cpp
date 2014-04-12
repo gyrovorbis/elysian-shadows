@@ -6,54 +6,54 @@
 namespace elysian {
 
 void GravityForceGenerator::applyForce(ForceTarget * const target, const float /*deltaTime*/) {
-	GYVector2 force;
+	GYVector3 force;
 	const GYStatic* attrib = target->getStaticAttrib();
 	const float invMass = attrib->inverseMass;
 	if(invMass == 0.0f) return;
 
-	gyVec2Scale(&force, &_accel, 1.0f/invMass);
+	gyVec3Scale(&force, &_accel, 1.0f/invMass);
 
 	target->applyForce(force);
 
 }
 
 void ImplosionForceGenerator::applyForce(ForceTarget * const target, const float /*deltaTime*/) {
-	GYVector2 dir;
+	GYVector3 dir;
 	float distance;
 
 	//if(_focalEntity == body->getEntity()) return;
 
-	gyVec2Sub(&dir, (GYVector2*)&_focalEntity->transform._pos, (GYVector2*)&target->getPosition());
+	gyVec3Sub(&dir, (GYVector3*)&_focalEntity->transform._pos, (GYVector3*)&target->getPosition());
 
-	distance = gyVec2Magnitude(&dir);
+	distance = gyVec3Magnitude(&dir);
 
 	//check range of influence
 	if(distance > _radius) return;
 
-	gyVec2Normalize(&dir);
+	gyVec3Normalize(&dir);
 
-	gyVec2ScaleAccum(&dir, _magnitude);
+	gyVec3ScaleAccum(&dir, _magnitude);
 
 	target->applyForce(dir);
 }
 
 void ExplosionForceGenerator::applyForce(ForceTarget * const target, const float /*deltaTime*/) {
-	GYVector2 dir;
+	GYVector3 dir;
 	float distance;
 	GYVector3 pos3 = target->getPosition();
 
 	//if(_focalEntity == body->getEntity()) return;
 
-	gyVec2Sub(&dir, (GYVector2*)&pos3, (GYVector2*)&_focalEntity->transform._pos);
+	gyVec3Sub(&dir, (GYVector3*)&pos3, (GYVector3*)&_focalEntity->transform._pos);
 
-	distance = gyVec2Magnitude(&dir);
+	distance = gyVec3Magnitude(&dir);
 
 	//check range of influence
 	if(distance > _radius) return;
 
-	gyVec2Normalize(&dir);
+	gyVec3Normalize(&dir);
 
-	gyVec2ScaleAccum(&dir, _magnitude);
+	gyVec3ScaleAccum(&dir, _magnitude);
 
 	target->applyForce(dir);
 

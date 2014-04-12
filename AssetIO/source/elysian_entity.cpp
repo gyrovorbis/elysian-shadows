@@ -55,12 +55,14 @@ Entity::~Entity(void) {
 
 void Entity::render(void) {
 #ifdef ELYSIAN_ENGINE
-	if(!_renderable) return;
 	if(_particleEmitter) _particleEmitter->render();
+	if(!_renderable) return;
 	gyMatPush();
-	if(_depthType == DEPTH_BUFFERED) {
+	if(_normalType == NORMAL_FRONT) {
 		transform._size.z = transform._size.y;
 		//transform._size.y = 400.0f;
+	} else {
+		transform._pos.z += _shadowDepth;
 	}
 	transform.apply();
 	_renderable->beginRender();
@@ -68,9 +70,6 @@ void Entity::render(void) {
 	_renderable->render();
 	_renderable->endRender();
 	gyMatPop();
-	if(_depthType == DEPTH_BUFFERED) {
-		//transform._size.y = transform._size.z;
-	}
 #endif
 }
 
@@ -97,53 +96,7 @@ void Entity::render(void) {
 
 void Entity::renderShadowVolume(void) {
 #ifdef ELYSIAN_ENGINE
-
-#if 0
-	//Honestly don't know for sure if this is the most compact cube.
-	static const float unitCubeVerts[17*4] = {
-		-1.0f,  1.0f,  1.0f, 1.0f,
-		 1.0f,  1.0f,  1.0f, 1.0f,
-		-1.0f, 0.0f,  1.0f, 1.0f,
-		 1.0f, 0.0f,  1.0f, 1.0f,
-		-1.0f, 0.0f, 1.0f, 1.0f,
-		1.0f, 0.0f, -1.0f, 1.0f,
-		-1.0f,  1.0f, -1.0f, 1.0f,
-		 1.0f,  1.0f, -1.0f, 1.0f,
-		 -1.0f,  1.0f,  1.0f, 1.0f,
-		 1.0f,  1.0f,  1.0f, 1.0f,
-		 1.0f, 0.0f,  1.0f, 1.0f,
-		 1.0f,  1.0f, -1.0f, 1.0f,
-		 1.0f, 0.0f, -1.0f, 1.0f,
-		-1.0f, 0.0f, -1.0f, 1.0f,
-		-1.0f,  1.0f, -1.0f, 1.0f,
-		-1.0f, 0.0f,  1.0f, 1.0f,
-		-1.0f,  1.0f,  1.0f, 1.0f
-	};
-
-
-
-	static const float unitCubeVerts[17*4] = {
-		-1,  1,  -1, 1.0f,
-		 1,  1,  -1, 1.0f,
-		-1, -1,  -1, 1.0f,
-		 1, -1,  -1, 1.0f,
-		-1, -1, 1, 1.0f,
-		1, -1, 1, 1.0f,
-		-1,  1, 1, 1.0f,
-		 1,  1, 1, 1.0f,
-		 -1,  1,  -1, 1.0f,
-		 1,  1,  -1, 1.0f,
-		 1, -1,  -1, 1.0f,
-		 1,  1, 1, 1.0f,
-		 1, -1, 1, 1.0f,
-		-1, -1, 1, 1.0f,
-		-1,  1, 1, 1.0f,
-		-1, -1,  -1, 1.0f,
-		-1,  1,  -1, 1.0f
-	};
-
-#endif
-
+/*
 	static const float verts[17*4] = {
 		-1,  1,  1, 1.0f,
 		 1,  1,  1, 1.0f,
@@ -162,8 +115,47 @@ void Entity::renderShadowVolume(void) {
 		-1,  1, -1, 1.0f,
 		-1, -1,  1, 1.0f,
 		-1,  1,  1, 1.0f
-	};
+	};*/
 
+	static const float verts[17*4] = {
+		-1,  1,  2, 1.0f,
+		 1,  1,  2, 1.0f,
+		-1, -1,  2, 1.0f,
+		 1, -1,  2, 1.0f,
+		-1, -1, 0, 1.0f,
+		1, -1, 0, 1.0f,
+		-1,  1, 0, 1.0f,
+		 1,  1, 0, 1.0f,
+		 -1,  1,  2, 1.0f,
+		 1,  1,  2, 1.0f,
+		 1, -1,  2, 1.0f,
+		 1,  1, 0, 1.0f,
+		 1, -1, 0, 1.0f,
+		-1, -1, 0, 1.0f,
+		-1,  1, 0, 1.0f,
+		-1, -1,  2, 1.0f,
+		-1,  1,  2, 1.0f
+	};
+/*
+	static const float verts[17*4] = {
+		-1,  1,  2, 1.0f,
+		 1,  1,  2, 1.0f,
+		-1, -1,  2, 1.0f,
+		 1, -1,  2, 1.0f,
+		-1, -1, 0, 1.0f,
+		1, -1, 0, 1.0f,
+		-1,  1, 0, 1.0f,
+		 1,  1, 0, 1.0f,
+		 -1,  1,  2, 1.0f,
+		 1,  1,  2, 1.0f,
+		 1, -1,  2, 1.0f,
+		 1,  1, 0, 1.0f,
+		 1, -1, 0, 1.0f,
+		-1, -1, 0, 1.0f,
+		-1,  1, 0, 1.0f,
+		-1, -1,  2, 1.0f,
+		-1,  1,  2, 1.0f
+	};*/
 
 	static const GYColor4 colors[17] = {
 		{ 255, 255, 0, 255 },
@@ -188,13 +180,70 @@ void Entity::renderShadowVolume(void) {
 	gyMatPush();
 	gyMatLoadIdentity();
 
-	const float zSize = transform._size.y*transform._scale.y*0.5f;
+#if 1
 
-	gyMatTranslate(transform._pos.x, transform._pos.y, ZCoordConstants::mapBase + (_elev)*32.0f + 0.5f*zSize);
-	gyMatScale(transform._size.x*transform._scale.x*0.5f,
-			   _shadowDepth*0.5f,
-			   zSize);
-	//gyMatRotateZ(transform._orientZ);
+	GYVector3 halfSize = {
+		transform._size.x*transform._scale.x*0.5f,
+		_shadowDepth*0.5f,
+		transform._size.y*transform._scale.y*0.5f
+	};
+
+	if(_normalType == NORMAL_FRONT) {
+		const float shearFactor = halfSize.z/halfSize.y;
+
+		gyMatTranslate(transform._pos.x,
+					   transform._pos.y+shearFactor*halfSize.y, //move to bottom then move back up by half the depth
+					   ZCoordConstants::mapBase + (_elev)*32.0f);
+
+		gyMatScale(halfSize.x, halfSize.y, halfSize.z);
+		gyMatShearZ(0.0f, -shearFactor);
+		//gyMatRotateZ(transform._orientZ);
+
+	} else {
+
+		gyMatTranslate(transform._pos.x,
+					   transform._pos.y, //move to bottom then move back up by half the depth
+					   ZCoordConstants::mapBase + (_elev)*32.0f);
+
+		gyMatRotateZ(-transform._orientZ);
+		gyMatScale(halfSize.x, halfSize.z, halfSize.y);
+
+	}
+
+#else
+
+
+	GYVector3 halfSize = {
+		transform._size.x*transform._scale.x*0.5f,
+		_shadowDepth*0.5f,
+		transform._size.y*transform._scale.y*0.5f
+	};
+
+	if(_normalType == NORMAL_FRONT) {
+
+		gyMatTranslate(transform._pos.x,
+					   transform._pos.y+halfSize.z, //move to bottom then move back up by half the depth
+					   ZCoordConstants::mapBase + (_elev)*32.0f);
+
+		gyMatScale(halfSize.x, -halfSize.y, halfSize.z*2.0f);
+		gyMatShearZ(0.0f, 1.0f);
+		//gyMatRotateZ(transform._orientZ);
+
+	} else {
+
+		gyMatTranslate(transform._pos.x,
+					   transform._pos.y, //move to bottom then move back up by half the depth
+					   ZCoordConstants::mapBase + (_elev)*32.0f + halfSize.z);
+
+		gyMatScale(halfSize.x, halfSize.z, halfSize.y);
+		gyMatRotateZ(transform._orientZ);
+
+	}
+
+
+
+
+#endif
 
 	//transform.apply();
 	gyVidColorArray(colors);

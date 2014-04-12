@@ -69,11 +69,11 @@ namespace elysian {
 			}
 
 			//branch assumes shit will usually be depth buffered
-			if(getEntity()->getDepthType() != DEPTH_BUFFERED) {
+			if(getEntity()->getNormalType() != NORMAL_FRONT) {
 				localVerts[0].z = localVerts[1].z = 0.0f;
 				gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
 			} else {
-				gyVidRectNormalType(GY_RECT_NORMAL_DEPTH);
+				gyVidRectNormalType(GY_RECT_NORMAL_FRONT);
 			}
 
 			//Submit vertices

@@ -29,11 +29,12 @@ namespace elysian {
 		virtual const GYStatic*		getStaticAttrib(void) const			= 0;
 		//virtual void		integrate(const float deltaTime)	= 0; nevermind, fuck it.
 
-		void						applyForce(const GYVector2& force);
+		void						applyForce(const GYVector3& force);
 		void						applyForceToPoint(const GYVector2& loc, const GYVector2& force);
-		const GYVector2&			getVelocity(void) const;
-		void						setVelocity(const GYVector2& _vel);
+		const GYVector3&			getVelocity(void) const;
+		void						setVelocity(const GYVector3& _vel);
 		void						setRotation(const float rotation);
+		void						clearKinetic(void);
 	};
 
 
@@ -76,9 +77,13 @@ namespace elysian {
 
 
 	// ========= INLINEZ ==========
-	inline const GYVector2&	ForceTarget::getVelocity(void) const { return vel; }
-	inline void	ForceTarget::setVelocity(const GYVector2& _vel) { vel = _vel; }
+	inline const GYVector3&	ForceTarget::getVelocity(void) const { return vel; }
+	inline void	ForceTarget::setVelocity(const GYVector3& _vel) { vel = _vel; }
 	inline void ForceTarget::setRotation(const float rotation) { rot = rotation; }
+	inline void ForceTarget::clearKinetic(void) {
+		GYKinetic* kinetic = static_cast<GYKinetic*>(this);
+		memset(kinetic, 0, sizeof(GYKinetic));
+	}
 
 	inline float RigidBody::getTileDamping(void) const { return _tileDamping; }
 	inline void RigidBody::setTileDamping(const float factor) {_tileDamping = factor; }

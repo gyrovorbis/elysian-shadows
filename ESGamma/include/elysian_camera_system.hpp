@@ -7,8 +7,9 @@
 #include <vector>
 #include <gyro.h>
 
-#define ELYSIAN_CAMERA_SYSTEM_STACK_SIZE		5
-#define ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE	0.5
+#define ELYSIAN_CAMERA_SYSTEM_STACK_SIZE			5
+#define ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE		0.1f
+#define ELYSIAN_CAMERA_STATE_SCALE_INTERP_EPSILON	0.01f
 
 namespace elysian {
 	
@@ -29,6 +30,7 @@ namespace elysian {
 			void	startScaleInterp(const float startScale, const float endScale, const float time);
 			void	update(const float deltaTime);
 			float	getNewScale(void) const;
+			float	getEndScale(void) const;
 
 		} curInterp;
 
@@ -37,15 +39,17 @@ namespace elysian {
 		std::vector<Entity*> entities;
 
 		GYVector3 pos		= { 0.0f, 0.0f, 0.0f };
-		GYVector3 dir		= { 0.0f, -1.0f, 0.0f };
-		GYVector3 up		= { 0.0f, 0.0f, -1.0f };
+		GYVector3 dir		= { 0.0f, 1.0f, 1.0f };
+		GYVector3 up		= { 0.0f, 0.0f, 1.0f };
 		float scale			= 1.0f;
+		float staticScale	= 1.0f;
 		float zOrient		= 0.0f;
+		float xOrient		= 0.0f;
 
 		//dynamic camera boundaries
 		float maxScale		= 5.0f;
-		float minScale		= 0.2f;
-		float baseScale		= 1.0f;
+		float minScale		= 0.5f;
+		float baseScale		= 1.5f;
 
 		//Visible Tile Region
 		unsigned tileStartX	= 0;
@@ -77,6 +81,7 @@ namespace elysian {
 		int						_depth			= 0; //depth is technically +1... my code, fuck you.
 		bool					_projViewActive = false;
 		bool					_debugActive	= false;
+		bool					_customState	= false;
 
 		unsigned				_scrWidth		= 0;
 		unsigned				_scrHeight		= 0;
@@ -90,6 +95,7 @@ namespace elysian {
 			assert(_depth < ELYSIAN_CAMERA_SYSTEM_STACK_SIZE);
 			_states[_depth] = state;
 			_curState = state;
+			_customState = true;
 		}
 
 		void setCurrentCameraState(CameraState*const state) {
@@ -136,8 +142,24 @@ namespace elysian {
 			_curState->curInterp.startScaleInterp(_curState->scale, _curState->scale*factor, time);
 		}
 
-		void rotate(const float delta) {
+		void staticScale(const float factor) {
+			_curState->staticScale *= factor;
+		}
+
+		void setStaticScale(const float factor) {
+			_curState->staticScale = factor;
+		}
+
+		void rotateZ(const float delta) {
 			_curState->zOrient += delta;
+		}
+
+		void rotateX(const float delta) {
+			_curState->xOrient += delta;
+		}
+
+		void setOrientX(const float angle) {
+			_curState->xOrient = angle;
 		}
 
 		void setOrientZ(const float angle) {
@@ -227,6 +249,8 @@ namespace elysian {
 	inline float CameraState::LinearInterpolator::getNewScale(void) const {
 		return _startScale + (_elapsedTime/_totalTime)*(_endScale-_startScale);
 	}
+
+	inline float CameraState::LinearInterpolator::getEndScale(void) const { return _endScale; }
 
 	inline bool CameraState::isWithinScreenRegion(const int x, const int y, const int halfWidth, const int halfHeight) const {
 

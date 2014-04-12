@@ -28,6 +28,7 @@ namespace elysian {
 	public:
 		enum SOURCE { LIBGYRO, ENGINE, ASSETIO, LUA };
 		enum LEVEL { VERBOSE, CRITICAL, FATAL, OFF };
+		enum ADV_LOG_WRAP { ADV_LOG_ALL, ADV_LOG_LUA, ADV_LOG_OFF, ADV_LOG_MAX };
 
 	private:
 		//Taken from elysian_asset.hpp cmd-line arg list
@@ -45,12 +46,12 @@ namespace elysian {
 				}
 		} _cmdLineArgs;
 
-		static unsigned int _stackDepth;
-		static bool _advLogWrap;
-		static FILE* _dbgFile;
-		static FILE* _luaDbgFile;
-		static const char _fileName[];
-		bool _nextFrame;
+		static unsigned int		_stackDepth;
+		static ADV_LOG_WRAP		_advLogWrap;
+		static FILE*			_dbgFile;
+		static FILE*			_luaDbgFile;
+		static const char		_fileName[];
+		bool					_nextFrame;
 
 		//Centralized Debug Print/Log Mechanism
 		static void writeLog(const SOURCE source, const LEVEL level, const char* const str);
@@ -90,14 +91,14 @@ namespace elysian {
 			return instance;
 		}
 
-		static void setAdvLogWrap(const bool val=true) { _advLogWrap = val; }
+		//static void setAdvLogWrap(const bool val=true) { _advLogWrap = val; }
 		static void setEngine(Engine &eng) { _engine = &eng; }
 		static void setLevel(const LEVEL level) { _level = level; }
 
 		~Debug(void);
 
 		void update(void);
-		void processInput(const GameInput &input);
+		void processInput(GameInput &input);
 		void render(void);
 		void renderOverlay(void);
 		bool sandboxInit(void);

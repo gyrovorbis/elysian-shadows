@@ -3,6 +3,7 @@
 #include "elysian_area.hpp"
 #include "elysian_lua_wrappers.hpp"
 #include "elysian_collision_system.hpp"
+#include "elysian_camera_system.hpp"
 #include <cmath>
 
 namespace elysian {
@@ -38,12 +39,12 @@ void CombatSystem::onCollisionExit(Collidable*const bodyA, Collidable*const body
 	_dealCollisionDamage(combatA, combatB, nullptr);
 }
 
-void CombatSystem::addCombatant(Entity& /*entity*/) {
-
+void CombatSystem::addCombatant(Entity& entity) {
+	getCameraSys()->addEntity(&entity);
 }
 
-void CombatSystem::removeCombatant(Entity& /*entity*/) {
-
+void CombatSystem::removeCombatant(Entity& entity) {
+	getCameraSys()->removeEntity(&entity);
 }
 
 void CombatSystem::killCombatant(Entity * const /*entity*/) {

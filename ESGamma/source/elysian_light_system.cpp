@@ -117,7 +117,7 @@ void LightSystem::_renderShadowVolumes(void) {
 	gyVidTexBind(nullptr);
 	gyVidMaterialBind(nullptr);
 	gyVidNormalMapBind(nullptr);
-
+/*
 	renderCube(350.0f, 150.0f, 100.0f,
 			   25.0f, 25.0f, 20.0f,
 			   0.0f);
@@ -153,7 +153,7 @@ void LightSystem::_renderShadowVolumes(void) {
 	renderCube(400.0f+600.0f, 400.0f+600.0f, 100.0f,
 			   25.0f, 25.0f, 50.0f,
 			   0.0f);
-
+*/
 	const auto entities = _curArea->entities;
 	for(auto it : entities) {
 		if(it->isShadowVolume()) it->renderShadowVolume();

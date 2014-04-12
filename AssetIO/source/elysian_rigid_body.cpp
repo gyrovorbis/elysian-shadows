@@ -8,10 +8,10 @@ namespace elysian {
 
 ForceTarget::ForceTarget(void):
 	GYKinetic {
-		{ 0.0f, 0.0f },		//vel
-		{ 0.0f, 0.0f },		//accel
-		{ 0.0f, 0.0f },		//prevAccel
-		{ 0.0f, 0.0f },		//forceAccum
+		{ 0.0f, 0.0f, 0.0f },		//vel
+		{ 0.0f, 0.0f, 0.0f },		//accel
+		{ 0.0f, 0.0f, 0.0f },		//prevAccel
+		{ 0.0f, 0.0f, 0.0f },		//forceAccum
 		0.0f,				//rot
 		0.0f,				//angAccel
 		0.0f				//torqueAccum
@@ -19,14 +19,14 @@ ForceTarget::ForceTarget(void):
 {
 }
 
-void ForceTarget::applyForce(const GYVector2 &force) {
-	gyVec2AddAccum(&forceAccum, &force);
+void ForceTarget::applyForce(const GYVector3 &force) {
+	gyVec3AddAccum(&forceAccum, &force);
 }
 
 void ForceTarget::applyForceToPoint(const GYVector2 &loc, const GYVector2 &force) {
 	GYVector2 relPoint;
 
-	gyVec2AddAccum(&forceAccum, &force);
+	gyVec2AddAccum((GYVector2*)&forceAccum, &force);
 
 	gyVec2Sub(&relPoint, (GYVector2*)&getPosition(), &loc);
 	torqueAccum += gyVec2ScalarCrossProd(&relPoint, &force);
@@ -47,7 +47,7 @@ void RigidBody::integrate(const float deltaTime) {
 	gyIntegrate(this,
 				stat,
 				deltaTime,
-				(GYVector2*)&_entity->transform._pos,
+				&_entity->transform._pos,
 				&_entity->transform._orientZ);
 
 	stat->angDamping /= _tileDamping;

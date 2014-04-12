@@ -65,6 +65,7 @@ namespace elysian {
 		_mainState->register_class<GuiSystem>();
 		_mainState->register_class<LevelSystem>();
 		_mainState->register_class<CombatSystem>();
+		_mainState->register_class<CameraSystem>();
 		_mainState->register_class<Direction>();
 		OOLUA::register_class<GravityForceGenerator>(*_mainState);
 		_mainState->register_class<ImplosionForceGenerator>();
@@ -87,6 +88,7 @@ namespace elysian {
 		_mainState->register_class_static<Singletons>("getRigidBodySys", &Singletons_getRigidBodySystem);
 		_mainState->register_class_static<Singletons>("getDialogSys", &Singletons_getDialogSystem);
 		_mainState->register_class_static<Singletons>("getGuiSys", &Singletons_getGuiSystem);
+		_mainState->register_class_static<Singletons>("getCameraSys", &Singletons_getCameraSystem);
 
 		//libGyro wrappers
 		_mainState->register_class_static<gyro>("filePath", &gyroFilePath);
@@ -166,6 +168,7 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
 						addExaminable,
 						addRigidBody,
 						addCombat,
+						addParticleEmitter,
 						addBehavior,
 						addLuaBehavior,
 						removeRenderable,
@@ -178,11 +181,14 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
 						removeExaminable,
 						removeRigidBody,
 						removeCombat,
+						removeParticleEmitter,
 						removeBehavior,
 						removeLuaBehavior,
-						setDepthType,
+						setNormalType,
 						setSelfTable,
-						getSelfTable)
+						getSelfTable,
+						setShadowDepth,
+						setShadowVolume)
 OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getName,
 								getElev,
@@ -196,9 +202,10 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getExaminable,
 								getRigidBody,
 								getCombat,
+								getParticleEmitter,
 								getBehavior,
 								getLuaBehavior,
-								getDepthType)
+								getNormalType)
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(PrimAttrib)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(PrimAttrib)
@@ -486,12 +493,14 @@ EXPORT_OOLUA_FUNCTIONS_3_CONST(MapEntry,
 								getOrient,
 								getElev)
 
-EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(TileEntry,
+EXPORT_OOLUA_FUNCTIONS_3_NON_CONST(TileEntry,
 									setIndex,
-									setZTran)
-EXPORT_OOLUA_FUNCTIONS_2_CONST(TileEntry,
+									setZTran,
+									setNormal)
+EXPORT_OOLUA_FUNCTIONS_3_CONST(TileEntry,
 								getIndex,
-								getZTran)
+								getZTran,
+								getNormal)
 
 EXPORT_OOLUA_FUNCTIONS_5_CONST(Area,
 									getName,
@@ -620,6 +629,11 @@ OOLUA_EXPORT_FUNCTIONS(CombatSystem,
 					   killCombatant,
 					   setBgmTensionLevel,
 					   resolveCombatAction)
+
+OOLUA_EXPORT_FUNCTIONS(CameraSystem)
+OOLUA_EXPORT_FUNCTIONS_CONST(CameraSystem,
+					   addEntity,
+					   removeEntity)
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Singletons)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(Singletons)

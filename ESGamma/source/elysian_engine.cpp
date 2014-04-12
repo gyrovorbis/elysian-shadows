@@ -90,6 +90,7 @@ void Engine::update(void) {
 		case System::ENGINE_WARPING:
 		case System::ENGINE_MODAL_CONVERSATION:
 		case System::ENGINE_CONVERSATION:
+			_partySystem->update();
 			_cameraSystem->update();
 			_lightSystem->update();
 			_audioSystem->update();
@@ -100,7 +101,6 @@ void Engine::update(void) {
 			_rigidBodySystem->resolveContactVelocities();
 			_timerSystem->update();
 			_mapSystem->update();
-			_partySystem->update();
 			_characterSystem->Update();
 			_animationSystem->update();
 			//warpSystem->Update();
@@ -203,7 +203,7 @@ void Engine::render(void) {
 			_lightSystem->render();
 
 			 _collisionSystem->render();
-			 _particleSystem->render();
+			// _particleSystem->render();
 
 
 			 _lightSystem->removeLightSourcesFromScene();

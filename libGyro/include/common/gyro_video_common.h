@@ -3,6 +3,10 @@
 
 #include "../gyro_matrix_api.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum _GY_FRUSTUM_PLANE {
 	GY_FRUSTUM_TOP,
 	GY_FRUSTUM_BOTTOM,
@@ -87,16 +91,21 @@ static inline void gyVidCamOrthoProj(GYCamera* cam, const float pleft, const flo
 }
 
 static inline void gyVidCamOrthoLookAt(GYCamera *cam, const GYVector3* pos, const float scale, const float rotZ, const float rotX) {
-	(void)rotX;
 
 	unsigned scrWidth, scrHeight;
 	GYViewVolume*const volume = &cam->viewVolume;
-	//rotX = -0.785398163f;
 	GYVector2 botRight;
 	float diagonalDist;
 
 	float rectWidth = volume->nw/scale;
 	float rectHeight = volume->nh/scale;
+
+	//Have to calculate the geometry differently when rotated about the X axis...
+	//fuck it for now...
+	if(rotX != 0.0f) {
+		rectWidth = 9999.0f;
+		rectHeight = 99999.0f;
+	}
 
 	if(rotZ != 0.0f) {
 		botRight.x = rectWidth;
@@ -123,11 +132,11 @@ static inline void gyVidCamOrthoLookAt(GYCamera *cam, const GYVector3* pos, cons
 	gyMatLoadIdentity();
 	gyVidResolution(&scrWidth, &scrHeight);
 	gyMatTranslate((float)scrWidth*0.5f, (float)scrHeight*0.5f, 0.0f);
-//	gyMatRotate(rotX, 1.0f, 0.0f, 0..0f);
 	gyMatScale(scale, scale, 1.0f);
+	gyMatRotate(rotX, 1.0f, 0.0f, 0.0f);
 	gyMatRotateZ(rotZ);
 
-	gyMatTranslate(-pos->x, -pos->y, 0.0f);
+	gyMatTranslate(-pos->x, -pos->y, (rotX == 0)? 0.0f : -pos->z);
 
 
 	gyMatStore(&cam->viewMat);
@@ -167,7 +176,7 @@ static inline void gyVidLookAtMat(GYMatrix4 mat, float eyeX, float eyeY, float e
 
 	//Cache cube shadow map lookat matrices
 	glLoadIdentity();
-	gluLookAt(0.0f, 0.0f, 0.0f, dx, dy, dz, ux, uy, uz);
+	gluLookAt(eyeX, eyeY, eyeZ, lookAtX, lookAtY, lookAtZ, upX, upY, upZ);
 	glGetFloatv(GL_MODELVIEW_MATRIX, (float*)mat);
 	glalTranspose(mat);
 	glLoadIdentity();
@@ -302,16 +311,18 @@ static inline void gyVidCamFrustumLookAt(GYCamera* const cam, const GYVector3* c
 	gyVidLookAtMat(cam->viewMat, eyePos->x, eyePos->y, eyePos->z,
 				   lookDir->x, lookDir->y, lookDir->z,
 				   upDir->x, upDir->y, upDir->z);
-
+/*
 	gyMatPush();
 	gyMatLoad(&cam->viewMat);
 	gyMatScale(1.0f, -1.0f, -1.0f);
 	gyMatStore(&cam->viewMat);
 	gyMatPop();
+	*/
 
 	gyMatMultMat(cam->projViewMat, cam->projMat, cam->viewMat);
 
 	GYViewVolume* const volume = &cam->viewVolume;
+#if 0
 	GYVector3 dir, nc, fc, X, Y, Z;
 	(void)dir;
 
@@ -376,6 +387,23 @@ static inline void gyVidCamFrustumLookAt(GYCamera* const cam, const GYVector3* c
 	pl[RIGHT].set3Points(nbr,ntr,fbr);
 	pl[NEARP].set3Points(ntl,ntr,nbr);
 	pl[FARP].set3Points(ftr,ftl,fbl);*/
+
+#else
+
+	//Fuck the calculations
+	volume->ftl.x = volume->ntl.x = -99999.0f;
+	volume->ftl.y = volume->ntl.y = -99999.0f;
+
+	volume->ftr.x = volume->ntr.x = 99999.0f;
+	volume->ftr.y = volume->ntr.y = -99999.0f;
+
+	volume->fbr.x = volume->nbr.x = 99999.0f;
+	volume->fbr.y = volume->nbr.y = 99999.0f;
+
+	volume->fbl.x = volume->nbl.x = -99999.0f;
+	volume->fbl.y = volume->nbl.y = 99999.0f;
+
+#endif
 }
 
 //Camera usage
@@ -397,7 +425,9 @@ static inline void gyVidCamFrustumLookAt(GYCamera* const cam, const GYVector3* c
 
 //int gyVidCamSphereWithinViewVolume(GYCamera* cam);
 
-
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif // GYRO_VIDEO_COMMON_H
