@@ -8,10 +8,10 @@ extern "C" {
 #include "../gyro_matrix_api.h"
 
 typedef struct _GYKinetic {
-	GYVector2 vel;
-	GYVector2 accel;
-	GYVector2 prevAccel;
-	GYVector2 forceAccum;
+	GYVector3 vel;
+	GYVector3 accel;
+	GYVector3 prevAccel;
+	GYVector3 forceAccum;
 	float rot;
 	float angAccel;
 	float torqueAccum;

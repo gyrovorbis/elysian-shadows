@@ -4,6 +4,7 @@ const float cfOne					= 1.0;
 const int	ciZero					= 0;
 const float cMaxSpotCutoffAngle		= 180.0;
 const vec3	cViewVector				= vec3(0.0, 0.0, 1.0);
+const vec3	cFlatNormal				= vec3(0.0, 0.0, 1.0);
 
 struct GYLightSource {
 	vec4	position;					//Position for point light, normalized direciton for directional light
