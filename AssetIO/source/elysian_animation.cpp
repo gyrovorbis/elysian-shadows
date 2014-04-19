@@ -9,105 +9,74 @@ namespace elysian {
 
 //----NONSTATIC----
 
-void AnimationSequence::addFrame(const float xOffset, const float yOffset, const float duration, const unsigned int frame) {
-	AnimationFrame animFrame;
-	animFrame.offset.x = xOffset;
-	animFrame.offset.y = yOffset;
-	animFrame.duration = duration;
-	animFrame.spriteFrame = frame;
-	_frames.push_back(animFrame);
+Animation::~Animation(void) {
+	delete _children;
+}
+
+Component::TYPE Animation::getType(void) const { return Component::ANIMATION; }
+
+
+void Animation::addChildEntity(Entity*const entity, const char*animName) {
+	ChildAnimEntry& entry = _children->claimFreeEntry();
+
+	entry.entity	= entity;
+	entry.anim		= _childAttrib->getAnimation(animName);
+	entry.seq		= entry.anim->getSequence(_currentSequence->getName());
+	entry.frame		= entry.seq->getFrame(_currentFrame);
+}
+
+void Animation::removeChildEntity(const char *animName) {
+	for(auto it = _children->begin(); it < _children->end(); ++it) {
+		if(strcmp((*it).anim->getName(), animName) == 0) {
+			_children->remove(it);
+			return;
+		}
+	}
+}
+
+void Animation::_updateChildren(void) {
+	if(!_children || _children->size() == 0) return;
+
+	InstanceTransform*	parentTransform = &getEntity()->transform;
+	InstanceTransform*	childTransform;
+	Animation*			childAnim;
+
+	for(auto it = _children->begin(); it < _children->end(); ++it) {
+
+		//update children's positions and orientations
+		childTransform = &(*it).entity->transform;
+		childTransform->_pos = GYVector3 {
+			parentTransform->_pos.x + (*it).frame->offset.x*0.5f*parentTransform->_size.x*parentTransform->_scale.x,
+			parentTransform->_pos.y + (*it).frame->offset.y*0.5f*parentTransform->_size.y*parentTransform->_scale.y,
+			parentTransform->_pos.z + (*it).frame->offset.z
+		};
+		childTransform->_orientZ = parentTransform->_orientZ + (*it).frame->zOrient;
+
+		//update children's animations
+		childAnim = (*it).entity->getAnimation();
+		if(childAnim) {
+			childAnim->playAnimation(_currentSequence->getName());
+			childAnim->setCurrentFrame(_currentFrame);
+		}
+	}
 }
 
 bool Animation::load(FILE* /*file*/) {
-#if 0
-	AnimationSequence *sequence;
-	unsigned sequenceAmount;
-	unsigned frameAmount;				
-	AnimationFrame frame;
-	
-	dbgprintf(LOG_VERBOSE, "Animation::Load(ifstream)");
-    dbgPush();
-	
-	/*stream >> _prefab;
-	
-	if(_prefab) {
-		dbgprintf(LOG_VERBOSE, "Prefab");
-                //delete _attrib;
-		//Uhm.... no.
-	}
-	else {
-		dbgprintf(LOG_VERBOSE, "Non-Prefab");
-                //_attrib = new AnimationAttributes;*/
-	
-		//Load animation attributes
-		stream >> sequenceAmount;
-		dbgprintf(LOG_VERBOSE, "sequenceAmount - %d", sequenceAmount);
-		for(unsigned int i = 0; i < sequenceAmount; ++i) {
-			sequence = new AnimationSequence();
-			stream >> sequence->_name;
-			_attrib->_sequences[sequence->_name] = sequence;
-			stream >> frameAmount;
-			dbgprintf(LOG_VERBOSE, "sequence->name - %s, sequence->frameAmount - %d", sequence->_name, frameAmount);
-			for(unsigned int j = 0; j < frameAmount; ++j) {
-
-				stream >> frame.offset.x;
-				stream >> frame.offset.y;
-				stream >> frame.duration;
-				stream >> frame.spriteFrame;
-				dbgprintf(LOG_VERBOSE, "frame.offset.x - %0.2f, frame.offset.y - %0.2f, frame.duration - %0.2f, frame.sheetIndex - %d", frame.offset.x, frame.offset.y, frame.duration, frame.spriteFrame);
-				sequence->_frames.push_back(frame);
-			
-			}
-		}
-			
-	//}
-    dbgPop();
-	return true;
-#endif
 	return true;
 }
 
 bool Animation::save(FILE* /*file*/) {
-#if 0
-	dbgprintf(LOG_VERBOSE, "Animation::Save(ofstream)");
-	dbgPush();
-    
-        //stream << _prefab << std::endl;
-	
-	//if(_prefab) {
-		
-	//}
-	//else {
-		
-		//animation
-		stream << _attrib->_sequences.size() << std::endl;
-		for(std::map<const char *, AnimationSequence *, ltstr>::iterator it = _attrib->_sequences.begin(); it != _attrib->_sequences.end(); ++it) {
-			stream << it->first << std::endl;
-			stream << it->second->_frames.size() << std::endl;
-			for(unsigned int i = 0; i < it->second->_frames.size(); ++i) {
-				stream << it->second->_frames[i].offset.x << std::endl;
-				stream << it->second->_frames[i].offset.y << std::endl;
-				stream << it->second->_frames[i].duration << std::endl;
-				stream << it->second->_frames[i].spriteFrame << std::endl;
-			}
-			
-		}
-	//}
-    dbgPop();
-	return true;
-#endif
 	return true;
 }
 
 bool Animation::canAddTo(Entity &parent) {
-	//There are no prereqs for this component.
     return (parent.getRenderable());
 }
 
 //O(1)
 bool Animation::addToLevel(void) {
-        _curArea->animations.push_back(this);
-        return true;
+	_curArea->animations.push_back(this);
+	return true;
 }
 
 //O(n)
@@ -120,6 +89,8 @@ bool Animation::removeFromLevel(void) {
 void Animation::update(const float deltaTime) {
 	if(!_isActive || !_currentSequence) return;
 
+	_updateChildren();
+
 	_timer += deltaTime;
 	if(_timer >= _currentSequence->_frames[_currentFrame].duration) {
 		if(_currentSequence->_frames.size() <= ++_currentFrame) _currentFrame = 0;
@@ -127,6 +98,7 @@ void Animation::update(const float deltaTime) {
 
 		_entity->getRenderable()->setOffset(_currentSequence->_frames[_currentFrame].offset);
 		_entity->getRenderable()->setFrame(_currentSequence->_frames[_currentFrame].spriteFrame);
+		_entity->getRenderable()->setTexOrient(_currentSequence->_frames[_currentFrame].texOrient);
 		if(!_looping) _isActive = false;
 	}
 }
@@ -144,6 +116,7 @@ void Animation::playAnimation(const char *name) {
 	//Begin initial animation frame immediately!
 	_entity->getRenderable()->setOffset(_currentSequence->_frames[0].offset);
 	_entity->getRenderable()->setFrame(_currentSequence->_frames[0].spriteFrame);
+	_entity->getRenderable()->setTexOrient(_currentSequence->_frames[0].texOrient);
 }
 
 void Animation::stopAnimation(void) {
@@ -161,6 +134,7 @@ void Animation::setCurrentFrame(const unsigned frame) {
 	_timer = 0.0f;
 	_entity->getRenderable()->setOffset(_currentSequence->_frames[frame].offset);
 	_entity->getRenderable()->setFrame(_currentSequence->_frames[frame].spriteFrame);
+	_entity->getRenderable()->setTexOrient(_currentSequence->_frames[frame].texOrient);
 }
 
 #endif

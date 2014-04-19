@@ -71,6 +71,9 @@ namespace OOLUA
 	typedef elysian::Renderable					Renderable;
 	typedef elysian::AnimationSequence			AnimationSequence;
 	typedef elysian::AnimationAttrib			AnimationAttrib;
+	typedef elysian::ChildAnimationSequence		ChildAnimationSequence;
+	typedef elysian::ChildAnimationAttrib		ChildAnimationAttrib;
+	typedef elysian::ChildAnimation				ChildAnimation;
 	typedef elysian::Animation					Animation;
 	typedef elysian::CollisionFlags				CollisionFlags;
 	typedef elysian::CollidableAttrib			CollidableAttrib;
@@ -336,11 +339,31 @@ OOLUA_PROXY(AnimationSequence)
 		No_public_constructors,
 		No_public_destructor
 	)
-	OOLUA_MEM_FUNC(void, addFrame, float, float, float, unsigned)
+	OOLUA_MEM_FUNC(void, addFrame, float, float, float, unsigned, GY_RECT_TEX_ORIENT)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(AnimationAttrib)
 	OOLUA_MEM_FUNC(AnimationSequence*, addSequence, const char*)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(ChildAnimationSequence)
+	OOLUA_TAGS (
+		No_public_constructors,
+		No_public_destructor
+	)
+	OOLUA_MEM_FUNC(void, addFrame, float, float, float, float)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(ChildAnimation)
+	OOLUA_TAGS (
+		No_public_constructors,
+		No_public_destructor
+	)
+OOLUA_MEM_FUNC(ChildAnimationSequence*, addSequence, const char*)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(ChildAnimationAttrib)
+	OOLUA_MEM_FUNC(ChildAnimation*, addAnimation, const char*)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Animation, Component)
@@ -349,9 +372,13 @@ OOLUA_PROXY(Animation, Component)
 		No_public_destructor
 	)
 	OOLUA_MEM_FUNC_CONST(AnimationAttrib*, getAttrib)
+	OOLUA_MEM_FUNC_CONST(ChildAnimationAttrib*, getChildAttrib)
 	OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<AnimationAttrib *>)
+	OOLUA_MEM_FUNC(void, setChildAttrib, cpp_in_p<ChildAnimationAttrib*>)
 	OOLUA_MEM_FUNC(void, playAnimation, const char*)
 	OOLUA_MEM_FUNC(void, stopAnimation)
+	OOLUA_MEM_FUNC(void, addChildEntity, Entity*, const char*)
+	OOLUA_MEM_FUNC(void, removeChildEntity, const char*)
 	OOLUA_MEM_FUNC_CONST(bool, isLooping)
 	OOLUA_MEM_FUNC(void, setLooping, bool)
 	OOLUA_MEM_FUNC_CONST(unsigned, getCurrentFrame)

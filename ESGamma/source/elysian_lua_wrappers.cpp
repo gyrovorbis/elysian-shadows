@@ -22,6 +22,9 @@ namespace elysian {
 		_mainState->register_class<Renderable>();
 		_mainState->register_class<AnimationSequence>();
 		_mainState->register_class<AnimationAttrib>();
+		_mainState->register_class<ChildAnimationSequence>();
+		_mainState->register_class<ChildAnimationAttrib>();
+		_mainState->register_class<ChildAnimation>();
         _mainState->register_class<LightAttrib>();
 		_mainState->register_class<Animation>();
 		_mainState->register_class<CollisionFlags>();
@@ -256,16 +259,33 @@ EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(AnimationAttrib,
 								   addSequence)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(AnimationAttrib)
 
-EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(Animation,
+OOLUA_EXPORT_FUNCTIONS(ChildAnimationSequence,
+								   addFrame)
+OOLUA_EXPORT_FUNCTIONS_CONST(ChildAnimationSequence)
+
+OOLUA_EXPORT_FUNCTIONS(ChildAnimation,
+								   addSequence)
+OOLUA_EXPORT_FUNCTIONS_CONST(ChildAnimation)
+
+
+OOLUA_EXPORT_FUNCTIONS(ChildAnimationAttrib,
+								   addAnimation)
+OOLUA_EXPORT_FUNCTIONS_CONST(ChildAnimationAttrib)
+
+EXPORT_OOLUA_FUNCTIONS_8_NON_CONST(Animation,
 								   setAttrib,
 								   playAnimation,
 								   stopAnimation,
 								   setLooping,
-								   setCurrentFrame)
-EXPORT_OOLUA_FUNCTIONS_3_CONST(Animation,
+								   setCurrentFrame,
+								   addChildEntity,
+								   removeChildEntity,
+								   setChildAttrib)
+EXPORT_OOLUA_FUNCTIONS_4_CONST(Animation,
 							   getAttrib,
 							   isLooping,
-							   getCurrentFrame)
+							   getCurrentFrame,
+							   getChildAttrib)
 
 EXPORT_OOLUA_FUNCTIONS_4_NON_CONST(CollisionFlags,
 								   resetType,
