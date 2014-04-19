@@ -40,20 +40,27 @@ void Animation::_updateChildren(void) {
 	InstanceTransform*	parentTransform = &getEntity()->transform;
 	InstanceTransform*	childTransform;
 	Animation*			childAnim;
+	ChildAnimEntry*		childEntry;
 
 	for(auto it = _children->begin(); it < _children->end(); ++it) {
+		childEntry = &(*it);
+
+		childEntry->seq		= childEntry->anim->getSequence(_currentSequence->getName());
+		childEntry->frame	= childEntry->seq->getFrame(_currentFrame);
 
 		//update children's positions and orientations
-		childTransform = &(*it).entity->transform;
+		childEntry->entity->setElev(getEntity()->getElev());
+
+		childTransform = &childEntry->entity->transform;
 		childTransform->_pos = GYVector3 {
-			parentTransform->_pos.x + (*it).frame->offset.x*0.5f*parentTransform->_size.x*parentTransform->_scale.x,
-			parentTransform->_pos.y + (*it).frame->offset.y*0.5f*parentTransform->_size.y*parentTransform->_scale.y,
-			parentTransform->_pos.z + (*it).frame->offset.z
+			parentTransform->_pos.x + childEntry->frame->offset.x*0.5f*parentTransform->_size.x*parentTransform->_scale.x,
+			parentTransform->_pos.y + childEntry->frame->offset.y*0.5f*parentTransform->_size.y*parentTransform->_scale.y,
+			parentTransform->_pos.z + childEntry->frame->offset.z
 		};
-		childTransform->_orientZ = parentTransform->_orientZ + (*it).frame->zOrient;
+		childTransform->_orientZ = parentTransform->_orientZ + childEntry->frame->zOrient;
 
 		//update children's animations
-		childAnim = (*it).entity->getAnimation();
+		childAnim = childEntry->entity->getAnimation();
 		if(childAnim) {
 			childAnim->playAnimation(_currentSequence->getName());
 			childAnim->setCurrentFrame(_currentFrame);

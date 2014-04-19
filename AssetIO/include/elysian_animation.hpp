@@ -204,7 +204,9 @@ namespace elysian {
 	inline Animation::Animation(Entity& parent): Component(parent) {}
 	inline AnimationAttrib* Animation::getAttrib(void) const { return _attrib; }
 	inline ChildAnimationAttrib* Animation::getChildAttrib(void) const { return _childAttrib; }
-	inline void Animation::setAttrib(AnimationAttrib* attributes) { _attrib = attributes; }
+	inline void Animation::setAttrib(AnimationAttrib* attributes) {
+		_attrib = attributes;
+	}
 	inline void Animation::setChildAttrib(ChildAnimationAttrib *childAttrib) {
 		_childAttrib = childAttrib;
 		if(_childAttrib && !_children) {
