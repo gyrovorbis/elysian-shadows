@@ -179,7 +179,6 @@ void glalGetSpotLightViewMatrix(GYMatrix4 dest, const GYLightSource*const lightS
 	gyMatPush();
 	gyMatLoadIdentity();
 
-#if 1
 
 	gyVidLookAtMat(temp,
 				   -lightSrc->direction.x, -lightSrc->direction.y, -lightSrc->direction.z,
@@ -193,19 +192,6 @@ void glalGetSpotLightViewMatrix(GYMatrix4 dest, const GYLightSource*const lightS
 
 	//gyMatTranslate(-lightSrc->position.x, -lightSrc->position.y, -lightSrc->position.z-1000.0f);//+900.0f
 	gyMatTranslate(-lightSrc->position.x, -lightSrc->position.y, -lightSrc->position.z);//+900.0f
-#else
-//gyMatRotateZ(-0.785398163f);
-
-	gyVidLookAtMat(temp,
-				   0.0, 0.0, 0.0,
-				   lightSrc->direction.x, lightSrc->direction.y, lightSrc->direction.z,
-				   0.0,0.0, 1.0);
-
-	gyMatApply(temp);
-	gyMatScale(1.0f, -1.0f, -1.0f);
-	gyMatTranslate(-lightSrc->position.x+1, -lightSrc->position.y, -lightSrc->position.z);
-
-#endif
 
 	gyMatStore((void*)dest);
 	gyMatPop();
