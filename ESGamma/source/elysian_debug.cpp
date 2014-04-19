@@ -373,6 +373,10 @@ void Debug::processInput(GameInput& input) {
 		sunEnabled = !sunEnabled;
 		getDaySys()->setSunEnabled(sunEnabled);
 	}
+	if(input.getDown(GameInput::BUT_M)) {
+		getDaySys()->addSeconds(600);
+	}
+
 	/*
 	if(input.getDown(GameInput::BUT_N)) {
 		timeSpeed *= 1.1f;
@@ -470,8 +474,8 @@ void Debug::processInput(GameInput& input) {
 #if 0
 			lightSrc->setLightType(LightSource::LIGHT_DIRECTIONAL);
 #else
-			lightSrc->setLightType(GY_LIGHT_SPOT);
-			lightSrc->setSpotCutoffAngle(45.0f);
+			lightSrc->setLightType(GY_LIGHT_POINT);
+			lightSrc->setSpotCutoffAngle(180.0f);
 			lightSrc->setShadowCaster(true);
 			attrib->setAttenuationFactors(GYVector3{ 0.0005f, 0.00005f, 0.00005f });
 

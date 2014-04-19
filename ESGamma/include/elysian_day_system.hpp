@@ -46,6 +46,7 @@ namespace elysian {
 		LightAttrib*	getSunLightAttrib(void) const;
 		void			setSunEnabled(const bool val);
 		void			setTimeDilation(const float multiplier);
+		void			addSeconds(const float seconds);
 		unsigned		getHours(void) const;
 		unsigned		getMinutes(void) const;
 		unsigned		getDays(void) const;
@@ -69,6 +70,7 @@ namespace elysian {
 	inline unsigned DaySystem::getDays(void) const { return _days; }
 	inline unsigned DaySystem::getHours(void) const { return _hours; }
 	inline unsigned DaySystem::getMinutes(void) const { return _minutes; }
+	inline void DaySystem::addSeconds(const float seconds) { _curSecs += seconds; }
 
 
 }

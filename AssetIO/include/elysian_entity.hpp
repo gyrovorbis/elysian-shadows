@@ -122,7 +122,7 @@ namespace elysian {
         std::map<char const *, Behavior*, ltstr> _behavior;
 
 		unsigned char		_elev				= 0;
-		bool				_shadowVolume		= false;
+		bool				_shadowVolume		= true;
 		float				_shadowDepth		= 16.0f;
 		NORMAL_TYPE			_normalType			= NORMAL_FRONT;
 		bool				_active				= false;

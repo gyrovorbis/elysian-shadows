@@ -90,7 +90,6 @@ HEADERS += \
     ../../../AssetIO/include/elysian_model_attrib.hpp \
     ../../../AssetIO/include/elysian_map_depth_buffer.hpp \
     ../../../AssetIO/include/elysian_lua_behavior.hpp \
-    ../../../AssetIO/include/elysian_linked_list.hpp \
     ../../../AssetIO/include/elysian_level_manager.hpp \
     ../../../AssetIO/include/elysian_level.hpp \
     ../../../AssetIO/include/elysian_instance_transform.hpp \
@@ -109,7 +108,6 @@ HEADERS += \
     ../../../AssetIO/include/elysian_audio_source.hpp \
     ../../include/elysian_audio_system.hpp \
     ../../../AssetIO/include/elysian_generic.hpp \
-    ../../include/elysian_shader_manager.hpp \
     ../../../AssetIO/include/elysian_light_source.hpp \
     ../../include/elysian_light_system.hpp \
     ../../../AssetIO/include/elysian_particle_emitter.hpp \
