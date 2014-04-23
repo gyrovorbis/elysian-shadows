@@ -22,6 +22,12 @@ void gySinCos(const float theta, float *const psin, float *const pcos);
 float gySqrt(const float val);
 #endif
 
+
+//This could so be SIMD accelerated to all fuck for vectors.
+static inline void gyLinearInterp(float* current, const unsigned int count, const float *previous, const float *next, const float interval, const float elapsed) {
+	for(unsigned i = 0; i < count; ++i) current[i] = (previous[i] + (next[i]-previous[i])/(interval/elapsed));
+}
+
 #ifdef __cplusplus
 }
 #endif
