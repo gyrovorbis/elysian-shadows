@@ -26,12 +26,15 @@ namespace elysian {
 		friend class Animation;
 	private:
 		char						_name[ELYSIAN_ANIMATION_SEQUENCE_NAME_SIZE];
+		bool						_linearInterpolation = true;
 		std::vector<AnimationFrame> _frames;
 					AnimationSequence(void) = default;
 	public:
 					AnimationSequence(const char* name);
 		const char*	getName(void);
 		void		addFrame(const float xOffset, const float yOffset, const float duration, const unsigned int sheetIndex, const GY_RECT_TEX_ORIENT texOrient);
+		void		setLinearInterpolation(const bool val);
+		bool		getLinearInterpolation(void) const;
 	};
 
 	class AnimationAttrib {
@@ -53,11 +56,14 @@ namespace elysian {
 	private:
 		char								_name[ELYSIAN_ANIMATION_SEQUENCE_NAME_SIZE];
 		std::vector<ChildAnimationFrame>	_frames;
+		bool								_linearInterpolation	= true;
 	public:
 								ChildAnimationSequence(const char* name);
 		const char*				getName(void);
 		void					addFrame(const float x, const float y, const float z, const float theta);
 		ChildAnimationFrame*	getFrame(const unsigned index);
+		void					setLinearInterpolation(const bool val);
+		bool					getLinearInterpolation(void) const;
 
 	};
 
@@ -98,8 +104,10 @@ namespace elysian {
 			ChildAnimationSequence* seq				= nullptr;
 			ChildAnimationFrame*	frame			= 0;
 			float					timer			= 0.0f;
+			unsigned				frIndex			= 0;
 		};
 
+		GYVector2				_childPivot			= GYVector2 { 0.0f, 0.0f };
 		Pool<ChildAnimEntry>*	_children			= nullptr;
 		AnimationAttrib*		_attrib				= nullptr;
 		ChildAnimationAttrib*	_childAttrib		= nullptr;
@@ -112,6 +120,7 @@ namespace elysian {
 				Animation(Entity& parent);
 		virtual ~Animation(void) override;
 		void	_updateChildren(void);
+		void	_linearInterpolate(float* current, const unsigned int count, const float* previous, const float* next, const float interval, const float elapsed);
 
 	public:
 		virtual bool load(FILE* file) override;
@@ -136,6 +145,8 @@ namespace elysian {
 		void					setCurrentFrame(const unsigned frame);
 		bool					isLooping(void) const;
 		void					setLooping(const bool val);
+		void					setChildPivot(const float x, const float y);
+		const GYVector2&		getChildPivot(void) const;
 		void					addChildEntity(Entity*const entity, const char*animName);
 		void					removeChildEntity(const char*animName);
 	
@@ -154,6 +165,8 @@ namespace elysian {
 			texOrient
 		});
 	}
+	inline void AnimationSequence::setLinearInterpolation(const bool val) { _linearInterpolation = val; }
+	inline bool AnimationSequence::getLinearInterpolation(void) const { return _linearInterpolation; }
 
 	inline AnimationSequence* AnimationAttrib::addSequence(const char *name) {
 		AnimationSequence *const seq = new AnimationSequence(name);
@@ -173,6 +186,8 @@ namespace elysian {
 		});
 	}
 	inline ChildAnimationFrame* ChildAnimationSequence::getFrame(const unsigned index) { return &_frames[index]; }
+	inline void ChildAnimationSequence::setLinearInterpolation(const bool val) { _linearInterpolation = val; }
+	inline bool ChildAnimationSequence::getLinearInterpolation(void) const { return _linearInterpolation; }
 
 	inline ChildAnimation::ChildAnimation(const char* name) { strcpy(_name, name); }
 	inline const char* ChildAnimation::getName(void) { return _name; }
@@ -217,7 +232,8 @@ namespace elysian {
 	inline unsigned Animation::getCurrentFrame(void) const { return _currentFrame; }
 	inline bool Animation::isLooping(void) const { return _looping; }
 	inline void Animation::setLooping(const bool val) { _looping = val; }
-
+	inline void Animation::setChildPivot(const float x, const float y) { _childPivot.x = x; _childPivot.y = y; }
+	inline const GYVector2& Animation::getChildPivot(void) const { return _childPivot; }
 
 
 

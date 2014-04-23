@@ -18,7 +18,7 @@ namespace elysian {
 		SpriteAttrib*		_spriteAttrib	= nullptr;	//Prefab-able attributes
 		int					_frame			= 0;			//for animation
 		GYVector2			_offset			= {0.0f, 0.0f};	//texture offset from base transform (local coords)
-		GY_RECT_TEX_ORIENT _texOrient		= GY_RECT_TEX_ORIENT_NORMAL;
+		GY_RECT_TEX_ORIENT	_texOrient		= GY_RECT_TEX_ORIENT_NORMAL;
 
 		inline Renderable(Entity &parent): Component(parent) {}
 	public:

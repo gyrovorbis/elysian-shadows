@@ -272,7 +272,7 @@ OOLUA_EXPORT_FUNCTIONS(ChildAnimationAttrib,
 								   addAnimation)
 OOLUA_EXPORT_FUNCTIONS_CONST(ChildAnimationAttrib)
 
-EXPORT_OOLUA_FUNCTIONS_8_NON_CONST(Animation,
+OOLUA_EXPORT_FUNCTIONS(Animation,
 								   setAttrib,
 								   playAnimation,
 								   stopAnimation,
@@ -280,8 +280,9 @@ EXPORT_OOLUA_FUNCTIONS_8_NON_CONST(Animation,
 								   setCurrentFrame,
 								   addChildEntity,
 								   removeChildEntity,
-								   setChildAttrib)
-EXPORT_OOLUA_FUNCTIONS_4_CONST(Animation,
+								   setChildAttrib,
+								   setChildPivot)
+OOLUA_EXPORT_FUNCTIONS_CONST(Animation,
 							   getAttrib,
 							   isLooping,
 							   getCurrentFrame,
