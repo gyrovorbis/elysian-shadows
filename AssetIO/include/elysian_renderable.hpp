@@ -96,8 +96,9 @@ namespace elysian {
 				gyVidAlphaLevel((_spriteAttrib->_color.a == 255)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
 				gyVidQuadListBegin(&_spriteAttrib->_color);
 				if(_spriteAttrib->_frame == -1) gyVidTexCoordArray(_spriteAttrib->_texCoords);
-				else gyVidTexCoordArray(gyVidTexCoordArrayFromFrame(&_spriteAttrib->_tex->_coord->texCoord[_frame],
-																	_texOrient));
+				else gyVidRectTexOrient(_texOrient);
+					/*gyVidTexCoordArray(gyVidTexCoordArrayFromFrame(&_spriteAttrib->_tex->_coord->texCoord[_frame],
+																	_texOrient));*/
 				gyVidQuad(localVerts, _frame);
 				gyVidQuadListEnd();
 				break;

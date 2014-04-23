@@ -32,7 +32,8 @@ namespace elysian {
 	public:
 					AnimationSequence(const char* name);
 		const char*	getName(void);
-		void		addFrame(const float xOffset, const float yOffset, const float duration, const unsigned int sheetIndex, const GY_RECT_TEX_ORIENT texOrient);
+		void		addFrame(const float xOffset, const float yOffset, const float duration,
+							 const unsigned int sheetIndex, const GY_RECT_TEX_ORIENT texOrient);
 		void		setLinearInterpolation(const bool val);
 		bool		getLinearInterpolation(void) const;
 	};
