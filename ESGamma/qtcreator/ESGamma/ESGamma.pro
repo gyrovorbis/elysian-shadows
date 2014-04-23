@@ -169,7 +169,6 @@ SOURCES += \
     ../../../AssetIO/source/elysian_animation.cpp \
     ../../../AssetIO/source/elysian_audio_source.cpp \
     ../../source/elysian_audio_system.cpp \
-    ../../source/elysian_shader_manager.cpp \
     ../../../AssetIO/source/elysian_new.cpp \
     ../../../AssetIO/source/elysian_light_source.cpp \
     ../../source/elysian_light_system.cpp \
