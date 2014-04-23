@@ -442,4 +442,25 @@ void LuaManager::runGarbageCollector(void) {
 	_mainState->gc();
 }
 
+
+void LuaEventCallback::onFinish(void) {
+	OOLUA::Lua_function caller(*_mainState);
+	caller(_callback);
+
+}
+
+void LuaEventListener::onFinish(void) {
+	if(_completed) return;
+
+	lua_pushglobaltable(*_mainState);
+	lua_getfield(*_mainState, -1, "coroutine");
+	lua_remove(*_mainState, -2);
+	lua_getfield(*_mainState, -1, "resume");
+	lua_remove(*_mainState, -2);
+	OOLUA::push(*_mainState, _coroutine);
+	_protectedCall(1, 0, nullptr);
+
+	_completed = true;
+}
+
 }

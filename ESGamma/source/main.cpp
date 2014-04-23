@@ -9,6 +9,8 @@
 #include "elysian_behavior.hpp"
 #include "elysian_lua_singleton.hpp"
 
+#include "elysian_subprocess_manager.hpp"
+
 #if GYRO_PLATFORM == GYRO_PLATFORM_iOS //reesty
 #	import "ios/bootstrap.h"
 #endif
@@ -18,7 +20,42 @@ using namespace elysian;
 Engine *engine;
 Debug *debug;
 
+
+class SystemProcessManager;
+
+class RandomProcess: public elysian::SubProcess<RandomProcess, SystemProcessManager> {
+public:
+	void update(SystemProcessManager *m) {printf("UPDATE"); }
+	void start(SystemProcessManager * const m) {printf("START"); }
+	void stop(SystemProcessManager * const m) { printf("STOP");}
+
+};
+
+class RandomProcess2: public elysian::MonitorableSubProcess<RandomProcess, SystemProcessManager> {
+public:
+	void update(SystemProcessManager *m) {printf("MONUPDATE"); }
+	void start(SystemProcessManager * const m) {printf("MONSTART"); }
+	void stop(SystemProcessManager * const m) { printf("MONSTOP");}
+
+};
+
+
+
+class SystemProcessManager: public elysian::SubProcessManager<SystemProcessManager, RandomProcess, RandomProcess, RandomProcess2>
+{
+
+public:
+	void update(void) { updateSubProcesses(); }
+};
+
 static void Init(int argc, char *argv[]) {
+
+	SystemProcessManager proc;
+	//get<0>(proc).update(&proc);
+	//get<1>(proc).start(&proc);
+	//get<2>(proc).stop(&proc);
+	proc.update();
+
 	(void)argc;
 	(void)argv;
 	debug = &Debug::getInstance();

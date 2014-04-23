@@ -120,7 +120,9 @@ HEADERS += \
     ../../include/elysian_rigid_body_system.hpp \
     ../../include/elysian_force_generator.hpp \
     ../../include/elysian_combat_system.hpp \
-    ../../../AssetIO/include/elysian_combat.hpp
+    ../../../AssetIO/include/elysian_combat.hpp \
+    ../../include/elysian_subprocess_manager.hpp \
+    ../../include/elysian_event_monitor.hpp
 
 macx {
   OBJECTIVE_HEADERS += ../../../libGyro/lib/osx/SDLMain.h
@@ -181,7 +183,8 @@ SOURCES += \
     ../../source/elysian_rigid_body_system.cpp \
     ../../source/elysian_force_generator.cpp \
     ../../source/elysian_combat_system.cpp \
-    ../../../AssetIO/source/elysian_combat.cpp
+    ../../../AssetIO/source/elysian_combat.cpp \
+    ../../source/elysian_event_monitor.cpp
 
 macx {
   OBJECTIVE_SOURCES += ../../../libGyro/lib/osx/SDLMain.mm
