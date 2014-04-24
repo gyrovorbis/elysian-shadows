@@ -132,7 +132,7 @@ namespace elysian {
 
 	bool Level::loadTileset(const char *const filename) {
 		GYFile *fp;
-		char *buffer;
+		char *buffer, *ptr;
 		size_t len;
 
 		dbgprintf(LOG_VERBOSE, "Level::LoadTileset(%s)", filename);
@@ -145,21 +145,21 @@ namespace elysian {
 		}
 
 		gyFileLength(fp, &len);
-		buffer = (char *) malloc(len + 1);
+		buffer = ptr = (char *) malloc(len + 1);
 		memset(buffer, 0, sizeof buffer);
 		gyFileRead(fp, buffer, len, NULL);
 
-		sgets(string, ELYSIAN_LEVEL_STRING_SIZE, &buffer);
-		sscanf(buffer, "%hd", &tileAmount);
+		sgets(string, ELYSIAN_LEVEL_STRING_SIZE, &ptr);
+		sscanf(ptr, "%hd", &tileAmount);
 		dbgprintf(LOG_VERBOSE, "tileAmount - %d", tileAmount);
 
 		for(unsigned int i = 0; i < tileAmount; ++i) {
 			int tempInt;
-			sscanf(buffer, "%d", &tempInt);
+			sscanf(ptr, "%d", &tempInt);
 			tileset[i].colliderType = (Tile::COLLIDER_TYPE)tempInt;
-			sscanf(buffer, "%d", (int*)&tileset[i].animated);
-			sscanf(buffer, "%f", &tileset[i].animTime);
-			sscanf(buffer, "%hd", &tileset[i].nextIndex);
+			sscanf(ptr, "%d", (int*)&tileset[i].animated);
+			sscanf(ptr, "%f", &tileset[i].animTime);
+			sscanf(ptr, "%hd", &tileset[i].nextIndex);
 		}
 
 		free(buffer);
