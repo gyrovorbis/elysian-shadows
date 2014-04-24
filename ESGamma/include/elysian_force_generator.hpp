@@ -23,10 +23,10 @@ namespace elysian {
 
 	class GravityForceGenerator: public ForceGenerator {
 	private:
-		GYVector2 _accel = GYVector2 { 0.0f, 0.7f };
+		GYVector3 _accel = GYVector3 { 0.0f, 0.7f, 0.0f };
 	public:
 		virtual			~GravityForceGenerator(void) = default;
-		void			setAccel(const GYVector2& accel);
+		void			setAccel(const GYVector3& accel);
 		virtual void	applyForce(ForceTarget*const target, const float deltaTime) override;
 
 	};
@@ -71,7 +71,7 @@ namespace elysian {
 	inline void ForceGenerator::setForceMask(const uint32_t mask) { _forceMask = mask; }
 
 
-	inline void GravityForceGenerator::setAccel(const GYVector2 &accel) { _accel = accel; }
+	inline void GravityForceGenerator::setAccel(const GYVector3 &accel) { _accel = accel; }
 
 	inline void ImplosionForceGenerator::setForceMagnitude(const float mag) { _magnitude = mag;}
 	inline void ImplosionForceGenerator::setFocalEntity(Entity * const entity) { _focalEntity = entity; }

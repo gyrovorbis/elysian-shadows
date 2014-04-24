@@ -86,7 +86,7 @@ namespace elysian {
 		unsigned getPenResIterUsed(void) const;
 		CollisionContact* getContact(const unsigned index);
 
-		void toggleCollision(void);
+		void setEnabled(const bool enabled);
 		RENDER_LAYER cycleRenderLayer(void);
 
 		bool checkCollision(const Entity &entity1, const Entity &entity2) const;
@@ -104,7 +104,7 @@ namespace elysian {
 		_contactMonitors[mask] = monitor;
 	}
 	inline void CollisionSystem::clearContacts(void) { _contactAmount = 0; _prevContactAmount = 0; }
-	inline void CollisionSystem::toggleCollision(void) { _enabled = !_enabled; }
+	inline void CollisionSystem::setEnabled(const bool enabled) { _enabled = enabled; }
 
 	inline bool CollisionSystem::previouslyColliding(const Collidable& col1, const Collidable& col2) const {
 		for(unsigned i = 0; i < _prevContactAmount; ++i) {

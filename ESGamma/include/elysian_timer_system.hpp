@@ -26,11 +26,13 @@ namespace elysian {
 		unsigned long int _prevFrameTicks;
 		unsigned long int _curFrameTicks;
 		float _deltaTime;
+		float _realDeltaTime;
 		double _totalTime;
         bool _enableMaxFramerate, _enableMinFramerate;
 		float _maxFramerate, _minFramerate;
 
 		float _deltaTimeCircBuffer[DELTA_TIME_CIRC_BUFFER_SIZE];
+		//float _realDeltaCircBuffer[DELTA_TIME_CIRC_BUFFER_SIZE];
 		unsigned _buffIndex;
 
 	public:
@@ -68,7 +70,7 @@ namespace elysian {
 		return _deltaTime;
 	}
 
-	inline float TimerSystem::getFramerate(void) const { return 1.0f/_deltaTime; }
+	inline float TimerSystem::getFramerate(void) const { return 1.0f/_realDeltaTime; }
 	
 }
 

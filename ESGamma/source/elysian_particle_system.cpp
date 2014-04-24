@@ -66,6 +66,14 @@ void ParticleSystem::render(void) {
 	}
 
 	//render entity emitters (no, entities do this)
+}
+
+
+void ParticleSystem::renderAtElev(const unsigned elev) {
+	//render internal emitters
+	for(unsigned i = 0; i < ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_COUNT; ++i) {
+		_emitters[i].renderAtElev(elev);
+	}
 
 }
 

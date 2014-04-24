@@ -47,7 +47,6 @@ set(AssetIO_INCLUDES
 	${AssetIO_INCLUDE_DIR}/elysian_level.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_level_manager.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_light_source.hpp
-	${AssetIO_INCLUDE_DIR}/elysian_linked_list.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_lua_behavior.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_map_depth_buffer.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_material.hpp

@@ -55,7 +55,6 @@ set(ESG_SOURCES
 	${ESG_SOURCE_DIR}/elysian_party_system.cpp
 	${ESG_SOURCE_DIR}/elysian_quad_attrib.cpp
 	${ESG_SOURCE_DIR}/elysian_rigid_body_system.cpp
-	${ESG_SOURCE_DIR}/elysian_shader_manager.cpp
 	${ESG_SOURCE_DIR}/elysian_system.cpp
 	${ESG_SOURCE_DIR}/elysian_timer_system.cpp
 	${ESG_SOURCE_DIR}/elysian_warp_system.cpp
@@ -91,7 +90,6 @@ set(ESG_INCLUDES
 	${ESG_INCLUDE_DIR}/elysian_party_system.hpp
 	${ESG_INCLUDE_DIR}/elysian_quad_sprite.hpp
 	${ESG_INCLUDE_DIR}/elysian_rigid_body_system.hpp
-	${ESG_INCLUDE_DIR}/elysian_shader_manager.hpp
 	${ESG_INCLUDE_DIR}/elysian_sprite.hpp
 	${ESG_INCLUDE_DIR}/elysian_system.hpp
 	${ESG_INCLUDE_DIR}/elysian_timer_system.hpp

@@ -18,19 +18,21 @@
 #define ELYSIAN_AREA_MAP_PATH		"/map.txt"
 #define ELYSIAN_AREA_ENTITY_PATH	"/entity.txt"
 #define ELYSIAN_AREA_INIT_LUA_PATH	"/area_init.lua"
-#define ELYSIAN_MAP_ENTRY_ELEV_MAX	15
+#define ELYSIAN_MAP_ENTRY_ELEV_MAX	31
 
 //Common MapEntry properties
 #define ELYSIAN_MAP_ENTRY_ORIENT_BIT_POS	9
 #define ELYSIAN_MAP_ENTRY_ORIENT_BIT_MASK	0x0007
 #define ELYSIAN_MAP_ENTRY_ELEV_BIT_POS		12
-#define ELYSIAN_MAP_ENTRY_ELEV_BIT_MASK		0x000f
+#define ELYSIAN_MAP_ENTRY_ELEV_BIT_MASK		0x001f
 
 //TileEntry properties
 #define ELYSIAN_TILE_ENTRY_INDEX_BIT_POS	0
 #define ELYSIAN_TILE_ENTRY_INDEX_BIT_MASK	0x01ff
 #define ELYSIAN_TILE_ENTRY_ZTRAN_BIT_POS	31
 #define ELYSIAN_TILE_ENTRY_ZTRAN_BIT_MASK	0x0001
+#define ELYSIAN_TILE_ENTRY_NORMAL_BIT_POS	30
+#define ELYSIAN_TILE_ENTRY_NORMAL_BIT_MASK	0x0001
 
 #define ELYSIAN_MAP_ENTRY_GET_ATTRIB(t ,a)		((value >> ELYSIAN_##t##_ENTRY_##a##_BIT_POS) & ELYSIAN_##t##_ENTRY_##a##_BIT_MASK)
 #define ELYSIAN_MAP_ENTRY_SET_ATTRIB(t, a, v)	do { \
@@ -39,8 +41,8 @@
 												} while(0)
 
 #ifdef ELYSIAN_MAP_BOUNDARY_CHECKS
-#	define ELYSIAN_AREA_PROTECTED_MAP_ACCESS(t) (t < mapEntryCount)? tiles[t] : tiles[0]
-#	define ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(l, t) (t < layerEntryCount)? l[t] : l[0]
+#	define ELYSIAN_AREA_PROTECTED_MAP_ACCESS(t) ((t < mapEntryCount)? tiles[t] : tiles[0])
+#	define ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(l, t) ((t < layerEntryCount)? l[t] : l[0])
 #else
 #	define ELYSIAN_AREA_PROTECTED_MAP_ACCESS(t) tiles[t]
 #	define ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(l, t) l[t]
@@ -84,6 +86,8 @@ namespace elysian {
 		uint16_t	getIndex(void) const;
 		void		setZTran(const bool z);
 		bool		getZTran(void) const;
+		void		setNormal(const bool n);
+		bool		getNormal(void) const;
 	};
 
     struct Area: public Asset {
@@ -176,6 +180,8 @@ namespace elysian {
 	inline void TileEntry::setIndex(const uint16_t i) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, INDEX, i); }
 	inline bool TileEntry::getZTran(void) const { return ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, ZTRAN); }
 	inline void TileEntry::setZTran(const bool z) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, ZTRAN, z); }
+	inline bool TileEntry::getNormal(void) const { return ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, NORMAL); }
+	inline void TileEntry::setNormal(const bool n) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, NORMAL, n); }
 
 	inline TileEntry Area::getTileEntry(const unsigned l, const unsigned x, const unsigned y) const {
 		return ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x);

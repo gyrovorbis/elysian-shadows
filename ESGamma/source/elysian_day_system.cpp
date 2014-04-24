@@ -14,7 +14,7 @@ void DaySystem::update(void) {
 
 	if(_curSecs >= _secsPerDay) {
 		_curSecs -= _secsPerDay;
-		Debug::printf(Debug::VERBOSE, "DAY WENT BY");
+		//Debug::printf(Debug::VERBOSE, "DAY WENT BY");
 		++_days;
 	}
 
@@ -65,6 +65,10 @@ void DaySystem::onAreaExit(void) {
 DaySystem::DaySystem(void) {
 	GYVector3 dir3 = { _baseDir.x, _baseDir.y, _baseDir.z };
 	_sunLightAttrib = new LightAttrib;
+	_sunLightAttrib->setAmbientColor(GYVector4{0.5f, 0.5f, 0.5f, 1.0f});
+	_sunLightAttrib->setDiffuseColor(GYVector4{0.5f, 0.5f, 0.5f, 1.0f});
+	_sunLightAttrib->setSpecularColor(GYVector4{1.0f, 1.0f, 1.0f, 1.0f});
+
 
 	_sunEntity = new Entity();
 	_sunEntity->setName("Sun");

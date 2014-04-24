@@ -21,6 +21,7 @@ namespace elysian {
 
 		void update(void);
 		void render(void);
+		void renderAtElev(const unsigned elev);
 		void applyForce(ForceGenerator*const forceGen);
 
 		//Internal particle emitters

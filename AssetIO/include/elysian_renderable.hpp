@@ -12,12 +12,13 @@ namespace elysian {
 	class Renderable: public Component {
 	friend class Entity;
 	private:
-		Material*		_material		= nullptr;
-		GYTexture*		_normalMap		= nullptr;
-		GYTexture*		_specularMap	= nullptr;
-		SpriteAttrib*	_spriteAttrib	= nullptr;	//Prefab-able attributes
-		int				_frame			= 0;			//for animation
-		GYVector2		_offset			= {0.0f, 0.0f};	//texture offset from base transform (local coords)
+		Material*			_material		= nullptr;
+		GYTexture*			_normalMap		= nullptr;
+		GYTexture*			_specularMap	= nullptr;
+		SpriteAttrib*		_spriteAttrib	= nullptr;	//Prefab-able attributes
+		int					_frame			= 0;			//for animation
+		GYVector2			_offset			= {0.0f, 0.0f};	//texture offset from base transform (local coords)
+		GY_RECT_TEX_ORIENT	_texOrient		= GY_RECT_TEX_ORIENT_NORMAL;
 
 		inline Renderable(Entity &parent): Component(parent) {}
 	public:
@@ -69,11 +70,11 @@ namespace elysian {
 			}
 
 			//branch assumes shit will usually be depth buffered
-			if(getEntity()->getDepthType() != DEPTH_BUFFERED) {
+			if(getEntity()->getNormalType() != NORMAL_FRONT) {
 				localVerts[0].z = localVerts[1].z = 0.0f;
 				gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
 			} else {
-				gyVidRectNormalType(GY_RECT_NORMAL_DEPTH);
+				gyVidRectNormalType(GY_RECT_NORMAL_FRONT);
 			}
 
 			//Submit vertices
@@ -84,7 +85,7 @@ namespace elysian {
 				if(_spriteAttrib->_tex) {
 					if(_spriteAttrib->_frame != -1)
 						gyVidTexCoordArray(gyVidTexCoordArrayFromFrame(&_spriteAttrib->_tex->_coord->texCoord[_frame],
-																   GY_RECT_TEX_ORIENT_NORMAL));
+																   _texOrient));
 					else
 						gyVidTexCoordArray(_spriteAttrib->_texCoords);
 
@@ -95,6 +96,9 @@ namespace elysian {
 				gyVidAlphaLevel((_spriteAttrib->_color.a == 255)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
 				gyVidQuadListBegin(&_spriteAttrib->_color);
 				if(_spriteAttrib->_frame == -1) gyVidTexCoordArray(_spriteAttrib->_texCoords);
+				else gyVidRectTexOrient(_texOrient);
+					/*gyVidTexCoordArray(gyVidTexCoordArrayFromFrame(&_spriteAttrib->_tex->_coord->texCoord[_frame],
+																	_texOrient));*/
 				gyVidQuad(localVerts, _frame);
 				gyVidQuadListEnd();
 				break;
@@ -111,6 +115,7 @@ namespace elysian {
 		inline void setFrame(const unsigned fr) { _frame = fr; }
 		inline void setOffset(const GYVector2 &offset) { _offset = offset; }
 		inline void getOffset(GYVector2 &offset) const { offset = _offset; } 
+		inline void setTexOrient(const GY_RECT_TEX_ORIENT texOrient) { _texOrient = texOrient; }
 
 		inline SpriteAttrib *getSpriteAttrib(void) const { return _spriteAttrib; }
 		inline QuadSpriteAttrib* getQuadSpriteAttrib(void) const { return static_cast<QuadSpriteAttrib*>(_spriteAttrib); }

@@ -30,6 +30,7 @@ void CollisionSystem::render(void) {
 }
 
 void CollisionSystem::update(void) {
+	if(!_enabled) return;
 	_prepareGeometry();
 	_detectCollisions();
     resolvePenetration();
@@ -419,8 +420,14 @@ void CollisionSystem::_detectEntityTileCollisionFine(Collidable &collidable, con
 	for(unsigned i = 0; i < 3; ++i) {
 		//Only look at colliders on the entity's z-plane
 		unsigned EntityElev = collidable.getEntity()->getElev();
+
+#if 0
 		if(tileEntry[i].getElev() > EntityElev + 1 ||
 			tileEntry[i].getElev() < EntityElev) continue;
+#else
+		if(tileEntry[i].getElev() != EntityElev) continue;
+#endif
+
 		//if((collidable._onZTran || collidable.getZTranState() == Collidable::ZTRAN_ACTIVE) && tileEntry[i].getElev() != EntityElev) continue;
 		Tile::COLLIDER_TYPE colType2 = _curLevel->tileset[tileEntry[i].getIndex()].colliderType;
 		colType2 = Tile::reorientCollider(colType2, tileEntry[i].getOrient());
@@ -527,8 +534,8 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable) {
 	// ==== ZTRAN LOGIC ====
 
 	bool zTranThisFrame = false;
-	int closestElev = -16;
-	int smallestElevDiff = -16;
+	int closestElev = -(ELYSIAN_MAP_ENTRY_ELEV_MAX+1);
+	int smallestElevDiff = -(ELYSIAN_MAP_ENTRY_ELEV_MAX+1);
 	unsigned zTranX, zTranY;
 
 	collidable._onZTran = false;
@@ -591,7 +598,7 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable) {
 			curTileX = ((int)collidable.getCenterWorldPos().x+16)/32;
 			curTileY = ((int)collidable.getCenterWorldPos().y+16)/32;
 		if(!(prevZTranX == curTileX && prevZTranY == curTileY)) {
-			if(closestElev != 16) {
+			if(closestElev != ELYSIAN_MAP_ENTRY_ELEV_MAX) {
 				//Debug::printf(Debug::VERBOSE, "Elevation - %d", closestElev);
 				collidable.getEntity()->setElev(closestElev);
 			}

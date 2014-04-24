@@ -50,13 +50,15 @@ void TimerSystem::update(void) {
 	TIMER_CLEAR;
 	TIMER_START;
 	//return;
+
+	_realDeltaTime = delta;
     
 	//Apply framerate limiting
 	if(_enableMaxFramerate && delta < _maxFramerate) {
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
-		//gyTimerSleep(_maxFramerate*1000.0f - _deltaTime*1000.0f);
+	//	gyTimerSleep(_maxFramerate*1000.0f - _deltaTime*1000.0f);
 #endif
-		//delta = _maxFramerate;
+		delta = _maxFramerate;
 	}
 	else if(_enableMinFramerate && delta > _minFramerate) delta = _minFramerate;
 	_deltaTimeCircBuffer[_buffIndex] = delta;

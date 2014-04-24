@@ -9,105 +9,127 @@ namespace elysian {
 
 //----NONSTATIC----
 
-void AnimationSequence::addFrame(const float xOffset, const float yOffset, const float duration, const unsigned int frame) {
-	AnimationFrame animFrame;
-	animFrame.offset.x = xOffset;
-	animFrame.offset.y = yOffset;
-	animFrame.duration = duration;
-	animFrame.spriteFrame = frame;
-	_frames.push_back(animFrame);
+//This could so be SIMD accelerated to all fuck for vectors.
+inline void Animation::_linearInterpolate(float* current, const unsigned int count, const float *previous, const float *next, const float interval, const float elapsed) {
+	for(unsigned i = 0; i < count; ++i) current[i] = (previous[i] + (next[i]-previous[i])/(interval/elapsed));
+}
+
+
+Animation::~Animation(void) {
+	delete _children;
+}
+
+Component::TYPE Animation::getType(void) const { return Component::ANIMATION; }
+
+
+void Animation::addChildEntity(Entity*const entity, const char*animName) {
+	ChildAnimEntry& entry = _children->claimFreeEntry();
+
+	entry.entity	= entity;
+	entry.anim		= _childAttrib->getAnimation(animName);
+	entry.seq		= entry.anim->getSequence(_currentSequence->getName());
+	entry.frame		= entry.seq->getFrame(_currentFrame);
+	entry.frIndex	= _currentFrame;
+}
+
+void Animation::removeChildEntity(const char *animName) {
+	for(auto it = _children->begin(); it < _children->end(); ++it) {
+		if(strcmp((*it).anim->getName(), animName) == 0) {
+			_children->remove(it);
+			return;
+		}
+	}
+}
+
+void Animation::_updateChildren(void) {
+	if(!_children || _children->size() == 0) return;
+
+	InstanceTransform*	parentTransform = &getEntity()->transform;
+	InstanceTransform*	childTransform;
+	Animation*			childAnim;
+	ChildAnimEntry*		childEntry;
+	GYVector4 localPos = { 0.0f, 0.0f, 0.0f, 1.0f };
+	GYVector4 worldPos;
+
+	for(auto it = _children->begin(); it < _children->end(); ++it) {
+		childEntry = &(*it);
+		childAnim = childEntry->entity->getAnimation();
+		childTransform = &childEntry->entity->transform;
+
+		GYVector3 offset;
+		float zOrient;
+
+		childEntry->seq		= childEntry->anim->getSequence(_currentSequence->getName());
+		childEntry->frame	= childEntry->seq->getFrame(_currentFrame);
+		childEntry->frIndex	= _currentFrame;
+
+
+		if(childEntry->seq->getLinearInterpolation()) {
+			_linearInterpolate((float*)&offset, 3, (childEntry->frIndex != 0)? (float*)&childEntry->seq->_frames[childEntry->frIndex-1].offset : (float*)&childEntry->seq->_frames[childEntry->seq->_frames.size()-1].offset,
+					(float*)&childEntry->frame->offset, _currentSequence->_frames[childEntry->frIndex].duration, _timer);
+
+			_linearInterpolate(&zOrient, 1, (childEntry->frIndex != 0)? &childEntry->seq->_frames[childEntry->frIndex-1].zOrient : &childEntry->seq->_frames[childEntry->seq->_frames.size()-1].zOrient,
+					&childEntry->frame->zOrient, _currentSequence->_frames[childEntry->frIndex].duration, _timer);
+
+		} else {
+			offset = childEntry->frame->offset;
+			zOrient = childEntry->frame->zOrient;
+
+		}
+
+		gyMatPush();
+		gyMatLoadIdentity();
+
+		gyMatTranslateScale(parentTransform->_pos.x + 0.5f*parentTransform->_size.x*parentTransform->_scale.x - offset.x,
+					   parentTransform->_pos.y + 0.5f*parentTransform->_size.y*parentTransform->_scale.y - offset.y,
+					   parentTransform->_pos.z + offset.z,
+					   childTransform->_size.x*childTransform->_scale.x, childTransform->_size.y*childTransform->_scale.y, 1.0f);
+		gyMatRotateZ(zOrient);
+
+		if(childAnim) gyMatTranslate(childAnim->getChildPivot().x, childAnim->getChildPivot().y, 0.0f);
+
+		gyMatMultVec(&localPos, &worldPos, 1);
+
+		gyMatPop();
+
+		//update children's positions and orientations
+		childEntry->entity->setElev(getEntity()->getElev());
+
+		childTransform->_pos = GYVector3 {
+			worldPos.x,
+			worldPos.y,
+			worldPos.z
+		};
+
+		childTransform->_orientZ = parentTransform->_orientZ + zOrient;
+
+		//update children's animations
+/*
+		if(childAnim) {
+			childAnim->playAnimation(_currentSequence->getName());
+			childAnim->setCurrentFrame(_currentFrame);
+		}
+
+*/
+	}
 }
 
 bool Animation::load(FILE* /*file*/) {
-#if 0
-	AnimationSequence *sequence;
-	unsigned sequenceAmount;
-	unsigned frameAmount;				
-	AnimationFrame frame;
-	
-	dbgprintf(LOG_VERBOSE, "Animation::Load(ifstream)");
-    dbgPush();
-	
-	/*stream >> _prefab;
-	
-	if(_prefab) {
-		dbgprintf(LOG_VERBOSE, "Prefab");
-                //delete _attrib;
-		//Uhm.... no.
-	}
-	else {
-		dbgprintf(LOG_VERBOSE, "Non-Prefab");
-                //_attrib = new AnimationAttributes;*/
-	
-		//Load animation attributes
-		stream >> sequenceAmount;
-		dbgprintf(LOG_VERBOSE, "sequenceAmount - %d", sequenceAmount);
-		for(unsigned int i = 0; i < sequenceAmount; ++i) {
-			sequence = new AnimationSequence();
-			stream >> sequence->_name;
-			_attrib->_sequences[sequence->_name] = sequence;
-			stream >> frameAmount;
-			dbgprintf(LOG_VERBOSE, "sequence->name - %s, sequence->frameAmount - %d", sequence->_name, frameAmount);
-			for(unsigned int j = 0; j < frameAmount; ++j) {
-
-				stream >> frame.offset.x;
-				stream >> frame.offset.y;
-				stream >> frame.duration;
-				stream >> frame.spriteFrame;
-				dbgprintf(LOG_VERBOSE, "frame.offset.x - %0.2f, frame.offset.y - %0.2f, frame.duration - %0.2f, frame.sheetIndex - %d", frame.offset.x, frame.offset.y, frame.duration, frame.spriteFrame);
-				sequence->_frames.push_back(frame);
-			
-			}
-		}
-			
-	//}
-    dbgPop();
-	return true;
-#endif
 	return true;
 }
 
 bool Animation::save(FILE* /*file*/) {
-#if 0
-	dbgprintf(LOG_VERBOSE, "Animation::Save(ofstream)");
-	dbgPush();
-    
-        //stream << _prefab << std::endl;
-	
-	//if(_prefab) {
-		
-	//}
-	//else {
-		
-		//animation
-		stream << _attrib->_sequences.size() << std::endl;
-		for(std::map<const char *, AnimationSequence *, ltstr>::iterator it = _attrib->_sequences.begin(); it != _attrib->_sequences.end(); ++it) {
-			stream << it->first << std::endl;
-			stream << it->second->_frames.size() << std::endl;
-			for(unsigned int i = 0; i < it->second->_frames.size(); ++i) {
-				stream << it->second->_frames[i].offset.x << std::endl;
-				stream << it->second->_frames[i].offset.y << std::endl;
-				stream << it->second->_frames[i].duration << std::endl;
-				stream << it->second->_frames[i].spriteFrame << std::endl;
-			}
-			
-		}
-	//}
-    dbgPop();
-	return true;
-#endif
 	return true;
 }
 
 bool Animation::canAddTo(Entity &parent) {
-	//There are no prereqs for this component.
     return (parent.getRenderable());
 }
 
 //O(1)
 bool Animation::addToLevel(void) {
-        _curArea->animations.push_back(this);
-        return true;
+	_curArea->animations.push_back(this);
+	return true;
 }
 
 //O(n)
@@ -120,6 +142,8 @@ bool Animation::removeFromLevel(void) {
 void Animation::update(const float deltaTime) {
 	if(!_isActive || !_currentSequence) return;
 
+	_updateChildren();
+
 	_timer += deltaTime;
 	if(_timer >= _currentSequence->_frames[_currentFrame].duration) {
 		if(_currentSequence->_frames.size() <= ++_currentFrame) _currentFrame = 0;
@@ -127,11 +151,27 @@ void Animation::update(const float deltaTime) {
 
 		_entity->getRenderable()->setOffset(_currentSequence->_frames[_currentFrame].offset);
 		_entity->getRenderable()->setFrame(_currentSequence->_frames[_currentFrame].spriteFrame);
+		_entity->getRenderable()->setTexOrient(_currentSequence->_frames[_currentFrame].texOrient);
 		if(!_looping) _isActive = false;
+	} else if(_currentSequence->getLinearInterpolation()) {
+		GYVector2 offset;
+
+		_linearInterpolate((float*)&offset, 2, (float*)&_currentSequence->_frames[(_currentFrame)? _currentFrame-1 : _currentSequence->_frames.size()-1].offset,
+										(float*)&_currentSequence->_frames[_currentFrame].offset, _currentSequence->_frames[_currentFrame].duration, _timer);
+
+		_entity->getRenderable()->setOffset(offset);
+
 	}
 }
 
 void Animation::playAnimation(const char *name) {
+
+	if(_children) {
+		for(auto it = _children->begin(); it < _children->end(); ++it) {
+			if((*it).entity->getAnimation()) (*it).entity->getAnimation()->playAnimation(name);
+		}
+	}
+
 	assert((_attrib->_sequences.find(name) != _attrib->_sequences.end()));
 	if((_attrib->_sequences.find(name) == _attrib->_sequences.end())) return;
 	if(_isActive && _attrib->_sequences[name] == _currentSequence) return;
@@ -144,15 +184,21 @@ void Animation::playAnimation(const char *name) {
 	//Begin initial animation frame immediately!
 	_entity->getRenderable()->setOffset(_currentSequence->_frames[0].offset);
 	_entity->getRenderable()->setFrame(_currentSequence->_frames[0].spriteFrame);
+	_entity->getRenderable()->setTexOrient(_currentSequence->_frames[0].texOrient);
 }
 
 void Animation::stopAnimation(void) {
-	if(!_currentSequence) return;
-	_currentFrame = 0;
-	_timer = 0.0f;
-// NEEDS TO BE DEREESTED WITH NEW RENDERABLE PARADIGM!!!!
-	//_entity->setFrame(_currentSequence->_frames[_currentFrame].sheetIndex);
-	//gyroSprite.transform.setPosition(_currentSequence->_frame[_currentFrame].offset);
+	if(_currentSequence) {
+		_currentFrame = 0;
+		_timer = 0.0f;
+	}
+
+	if(_children) {
+		for(auto it = _children->begin(); it < _children->end(); ++it) {
+			if((*it).entity->getAnimation()) (*it).entity->getAnimation()->stopAnimation();
+		}
+	}
+
 	_isActive = false;
 }
 
@@ -161,6 +207,7 @@ void Animation::setCurrentFrame(const unsigned frame) {
 	_timer = 0.0f;
 	_entity->getRenderable()->setOffset(_currentSequence->_frames[frame].offset);
 	_entity->getRenderable()->setFrame(_currentSequence->_frames[frame].spriteFrame);
+	_entity->getRenderable()->setTexOrient(_currentSequence->_frames[frame].texOrient);
 }
 
 #endif

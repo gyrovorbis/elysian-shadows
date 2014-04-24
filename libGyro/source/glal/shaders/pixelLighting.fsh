@@ -4,6 +4,7 @@ const float cfOne					= 1.0;
 const int	ciZero					= 0;
 const float cMaxSpotCutoffAngle		= 180.0;
 const vec3	cViewVector				= vec3(0.0, 0.0, 1.0);
+const vec3	cFlatNormal				= vec3(0.0, 0.0, 1.0);
 
 struct GYLightSource {
 	vec4	position;					//Position for point light, normalized direciton for directional light
@@ -60,7 +61,7 @@ varying vec2			vTexCoord;
 //Old varyings
 vec4			diffuses[cMaxLights];
 vec4			ambients[cMaxLights];
-vec4			shadowPos[cMaxLights];
+//vec4			shadowPos[cMaxLights];
 
 //cached pixel lighting values.
 vec3	normal;
@@ -68,7 +69,7 @@ float	shininess;
 vec4	specularity;
 vec3	viewDir;
 
-
+/*
 void calculateLighting(void) {
 	int i;
 
@@ -83,9 +84,10 @@ void calculateLighting(void) {
 
 	//vertexColor.a = uMaterial.diffuseColor.a;
 	//return vertexColor;
-}
+}*/
 
 vec4 lightingEquation(const int i) {
+	vec4 shadowPos = uLightProjViewMats[i] * vWorldPos;
 	vec4 computedColor = vec4(cfZero, cfZero, cfZero, cfZero);
 	vec3 halfVec;
 	vec3 VPpli;
@@ -119,17 +121,17 @@ vec4 lightingEquation(const int i) {
 			//WRONG, THIS WILL AFFECT AMBIENCE!!!! ...wut?
 			attFactor *= spotFactor;
 
-			if(texture2D(uShadowMaps[i], (shadowPos[i].xy)/shadowPos[i].w).z < ((shadowPos[i].z-0.005)/shadowPos[i].w)) {
+			if(texture2D(uShadowMaps[i], (shadowPos.xy)/shadowPos.w).z < ((shadowPos.z-0.005)/shadowPos.w)) {
 				shadowFactor = 0.5;
 			}
 		} else { //point light cube shadows
 
-			vec4 absPos = abs(shadowPos[i]);
+			vec4 absPos = abs(shadowPos);
 			float frus_z = -max(absPos.x, max(absPos.y, absPos.z));
 			vec4 clip = uShadowCubeMapProjMat * vec4(0.0, 0.0, frus_z, 1.0);
 			float depth = (clip.z/clip.w) * 0.5 + 0.5;
 
-			if(textureCube(uShadowCubeMaps[i], shadowPos[i].xyz).r < depth) {
+			if(textureCube(uShadowCubeMaps[i], shadowPos.xyz).r < depth) {
 				shadowFactor = 0.5;
 			}
 /*
@@ -147,7 +149,7 @@ vec4 lightingEquation(const int i) {
 		//VPpli = -uLights[i].position.xyz;	//MUST BE PRENORMALIZED
 		VPpli = -uLights[i].direction.xyz;
 
-		if(texture2D(uShadowMaps[i], shadowPos[i].xy).z < shadowPos[i].z) {
+		if(texture2D(uShadowMaps[i], shadowPos.xy).z < shadowPos.z) {
 			shadowFactor = 0.5;
 		}
 	}
@@ -156,7 +158,7 @@ vec4 lightingEquation(const int i) {
 	if(attFactor > cfZero) {
 		//Calculate and apply diffuse lighting
 		nDotL = max(cfZero, dot(normal, VPpli));
-		computedColor += (nDotL * diffuses[i]);
+		computedColor += (nDotL * uLights[i].diffuseColor * uMaterial.diffuseColor);
 
 		//Calculate and apply specular lighting
 		halfVec = normalize(VPpli + viewDir);
@@ -175,7 +177,7 @@ vec4 lightingEquation(const int i) {
 	computedColor *= shadowFactor;
 
 	//Calculate and apply ambient lighting
-	computedColor += ambients[i];
+	computedColor += uLights[i].ambientColor * uMaterial.ambientColor;
 
 	return computedColor;
 
@@ -223,8 +225,6 @@ void main(void) {
 		specularity.rgba *= specMapVal.rgba; //dunno if a is supposed to be factored in here.
 		//.shininess += specularity.a;
 	}
-
-	calculateLighting();
 
 	for(i = 0; i < cMaxLights; ++i) {
 		if(uLightsEnabled[i]) {

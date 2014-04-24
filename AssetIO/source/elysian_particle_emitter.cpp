@@ -14,7 +14,7 @@ ParticleEmitterAttrib::ParticleEmitterAttrib(void):
 	GYStatic({1.0f/500.0f,
 			 1.0f,
 			 0.99f,
-			 1.0f/50000.0f,
+			 1.0f/5000.0f,
 			 0.99f
 	}) {}
 
@@ -32,7 +32,7 @@ void Particle::integrate(const float deltaTime) {
 	gyIntegrate(static_cast<GYKinetic*>(this),
 				attrib,
 				deltaTime,
-				(GYVector2*)&position,
+				&position,
 				&orientation);
 }
 
@@ -48,10 +48,13 @@ void ParticleEmitterInternals::emitFromPoint(const GYVector3& pos, const float a
 
 		part = &_pool.claimFreeEntry();
 
+		part->clearKinetic();
+
 		part->attrib = _attrib;
+		part->flat = (rand()%2 == 1);
 		part->position.x = pos.x + ((rand() % 6) - 3);
 		part->position.y = pos.y + ((rand() % 6) - 3);
-		part->position.z = pos.z;
+		part->position.z = pos.z + ((rand() % 6) - 3);
 		part->life = _attrib->_maxLife - (rand() % ((int)((float)intensity/20.0f) + 1));
 
 		if(_attrib->_minFrame != _attrib->_maxFrame) { //use range
@@ -60,22 +63,28 @@ void ParticleEmitterInternals::emitFromPoint(const GYVector3& pos, const float a
 			part->frame = _attrib->getFrame();
 		}
 
-		if(part->life < 0) part->life = 0;
+		if(part->life <= 0) part->life = 1;
 		part->size = _attrib->_size;
 		if(part->size < 1) part->size = 1;
-		if(part->size > 200) part->size = 200;
+		//if(part->size > 200) part->size = 200;
 
 		//doesn't center the angle!
-		relAngle = angle;// + (rand()%5-10)/10.0f;
+		relAngle = angle + ((float)(rand()%50)-25)*(M_PI/180.0f);
 		part->orientation = relAngle;
 
-		gySinCos(angle, &sinTheta, &cosTheta);
+		gySinCos(relAngle, &sinTheta, &cosTheta);
 
 		part->rotation = -cosTheta*(intensity/100.0f); //tweak me better!
 
 
-		part->setVelocity(GYVector2 { cosTheta * (float)intensity/(float)(rand()%14 + 10),
-						  sinTheta * (float)intensity/(float)(rand()%14 + 10) });
+#if 1
+		part->setVelocity(GYVector3 { cosTheta * (float)intensity/(float)(rand()%14 + 10),
+						  sinTheta * (float)intensity/(float)(rand()%14 + 10), -sinTheta * (float)intensity/(float)(rand()%14 + 10) });
+#else
+		part->setVelocity(GYVector3 { cosTheta * (float)intensity/(float)(10),
+						  sinTheta * (float)intensity/(float)(10) });
+#endif
+
 		part->color = _attrib->getColor();
 		part->color.r += (rand()%6)-3;
 		part->color.g += (rand()%6)-3;
@@ -87,17 +96,24 @@ void ParticleEmitterInternals::emitFromPoint(const GYVector3& pos, const float a
 }
 
 void ParticleEmitterInternals::update(const CameraState*const cam, const float deltaTime) {
-	GYVector2 newVel;
+	GYVector3 newVel;
 	//Check for periodic emission!
 
 	for(auto it = _pool.begin(); it < _pool.end(); ++it) {
 
 		//apply bullshit gravity
-		gyVec2Add(&newVel, &(*it).getVelocity(), (GYVector2*)&_attrib->_acceleration);
-		(*it).setVelocity(newVel);
-		//integrate
-		(*it).integrate(deltaTime);
+		GYVector3 bullshitGravity;
 
+		if((*it).position.z > ZCoordConstants::mapBase) {
+			gyVec3Scale(&bullshitGravity, &_attrib->_acceleration, deltaTime);
+
+			gyVec3Add(&newVel, &(*it).getVelocity(), &bullshitGravity);
+			(*it).setVelocity(newVel);
+			//integrate
+			(*it).integrate(deltaTime);
+		} else {
+			(*it).position.z = ZCoordConstants::mapBase;
+		}
 
 		if(!cam->isWithinScreenRegion((*it).position.x, (*it).position.y, (*it).size, (*it).size)) {
 			_pool.remove(it);
@@ -108,6 +124,10 @@ void ParticleEmitterInternals::update(const CameraState*const cam, const float d
 			_pool.remove(it);
 			continue;
 		}
+		
+		(*it).zIndex = (((*it).position.y - 0.5f*(*it).size)-(float)cam->scrStartY)/32.0f + ((*it).position.z-ZCoordConstants::mapBase)/32.0f;
+		if((*it).zIndex < 0) (*it).zIndex = 0;
+		if((*it).zIndex >= ELYSIAN_DEPTH_BUFFER_HEIGHT) (*it).zIndex = ELYSIAN_DEPTH_BUFFER_HEIGHT;
 
 		if(_attrib->_fadeOut) (*it).color.a = 255.0f*((float)_attrib->_maxLife/(float)(*it).life);
 	}
@@ -129,6 +149,7 @@ void ParticleEmitterInternals::render(void) {
 	gyVidTexBind(_attrib->getTexture());
 	gyVidMaterialBind(_attrib->_material);
 	gyVidAlphaLevel(GY_ALPHA_FULL);
+	gyVidRectNormalType(GY_RECT_NORMAL_FRONT);
 
 	//loop unroll my bitch ass
 
@@ -138,8 +159,37 @@ void ParticleEmitterInternals::render(void) {
 		gyVidQuadListBegin(&(*it).color);
 
 		gyMatTranslate((*it).position.x, (*it).position.y, (*it).position.z);
-		gyMatScale((*it).size, (*it).size, 1.0f);
-		gyMatRotateZ((*it).orientation);
+		//gyMatRotateZ((*it).orientation);
+		gyMatScale((*it).size, (*it).size, (*it).size);
+
+		gyVidRect((*it).frame);
+
+		gyVidQuadListEnd();
+		gyMatPop();
+
+	}
+}
+
+void ParticleEmitterInternals::renderAtElev(const unsigned char elev) {
+	gyVidTexBind(_attrib->getTexture());
+	gyVidMaterialBind(_attrib->_material);
+	gyVidAlphaLevel(GY_ALPHA_FULL);
+
+	//loop unroll my bitch ass
+
+	for(auto it = _pool.begin(); it < _pool.end(); ++it) {
+
+		//Check if we are within the range of this level of elevation
+		if((*it).zIndex != elev)  continue;
+
+		gyVidRectNormalType((*it).flat? GY_RECT_NORMAL_FLAT : GY_RECT_NORMAL_FRONT);
+
+		gyMatPush();
+		gyVidQuadListBegin(&(*it).color);
+
+		gyMatTranslate((*it).position.x, (*it).position.y, (*it).position.z);
+		//gyMatRotateZ((*it).orientation);
+		gyMatScale((*it).size, (*it).size, (*it).size);
 
 		gyVidRect((*it).frame);
 

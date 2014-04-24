@@ -8,6 +8,7 @@
 #include "elysian_level.hpp"
 #include "elysian_zcoords.hpp"
 #include "elysian_renderable.hpp"
+#include "elysian_particle_system.hpp"
 #include <gyro.h>
 /*
 //Objects have integer zCoords, force Entities to floats to prevent duplicate z
@@ -66,10 +67,11 @@ namespace elysian {
         void beginObjectList(void) const;
         void endObjectList(void) const;
 		unsigned getEntityCount(void) const;
-        bool getOnscreenEntity(const unsigned index, GammaEntityDepthBuffEntry &entry, DEPTH_TYPE &type, float &lowestY, unsigned char &elev) const;
+		bool getOnscreenEntity(const unsigned index, GammaEntityDepthBuffEntry &entry, NORMAL_TYPE &normalType, float &lowestY, unsigned char &elev) const;
         void renderEntityEntry(const GammaEntityDepthBuffEntry &entry) const;
 		void disableDepthTest(void) const;
 		void enableDepthTest(void) const;
+		void renderCustomPassAtElev(const unsigned char elev) const;
 
 
 		//=== /MapDepthBuffer Implementation ===
@@ -126,17 +128,27 @@ namespace elysian {
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			blended = false;
 		}
+#if 1
+		if(entry.mapEntry.getNormal()) {
+			gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta, 32.0f, 32.0f, 32.0f);
+			gyVidRectNormalType(GY_RECT_NORMAL_FRONT);
+		} else {
+			gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta, 32.0f, 32.0f, 1.0f);
+			gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
+		}
 
+		gyVidRect(_animTiles[entry.mapEntry.getIndex()].curIndex);
+#else
 		if(entry.mapEntry.getElev() > 0) {
 			gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta-32.0f, 32.0f, 32.0f, 32.0f);
-			gyVidRectNormalType(GY_RECT_NORMAL_DEPTH);
+			gyVidRectNormalType(GY_RECT_NORMAL_FRONT);
 					gyVidRect(_animTiles[((TileEntry *)&entry.mapEntry)->getIndex()].curIndex);
 		} else {
 			gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta, 32.0f, 32.0f, 1.0f);
 			gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
 					gyVidRect(_animTiles[((TileEntry *)&entry.mapEntry)->getIndex()].curIndex);
 		}
-
+#endif
 
 		//if(entry.lightState == MapDepthBuffEntry::LIGHT_STATE::PARTIAL)
 
@@ -168,11 +180,11 @@ namespace elysian {
 		return _curArea->entities.size();
 	}
 
-	inline bool MapSystem::getOnscreenEntity(const unsigned index, GammaEntityDepthBuffEntry &entry, DEPTH_TYPE &type, float &lowestY, unsigned char &elev) const {
+	inline bool MapSystem::getOnscreenEntity(const unsigned index, GammaEntityDepthBuffEntry &entry, NORMAL_TYPE &normalType, float &lowestY, unsigned char &elev) const {
 		Entity &entity = *(_curArea->entities)[index];
 		if(getCameraSys()->isOnscreen(entity)) {
 			entry.entity = &entity;
-			type = entity.getDepthType();
+			normalType = entity.getNormalType();
 			lowestY = entity.getDepthBaseY();
 			elev = entity.getElev();
 			return true;
@@ -195,6 +207,10 @@ namespace elysian {
 	inline void MapSystem::enableDepthTest(void) const {
 		glEnable(GL_DEPTH_TEST);
 		//glDisable(GL_POLYGON_OFFSET_FILL);
+	}
+
+	inline void MapSystem::renderCustomPassAtElev(const unsigned char elev) const {
+		getPartSys()->renderAtElev(elev);
 	}
 
 }

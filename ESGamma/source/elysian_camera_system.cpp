@@ -4,6 +4,7 @@
 #include "elysian_area.hpp"
 #include "elysian_game_input.hpp"
 #include "elysian_timer_system.hpp"
+#include "elysian_debug.hpp"
 
 namespace elysian {
 
@@ -41,16 +42,19 @@ void CameraState::updateBoundingRegions(const int xMin, const int xMax, const in
 	scrEndX = (endX > xMax)? xMax : (unsigned)endX;
 	scrEndY = (endY > yMax)? yMax : (unsigned)endY;
 
-
-	//tileStartX = 0;
-	//tileStartY = 0;
-	//tileEndX = 49;
-	//tileEndY = 49;
-
+	//Fuckin' weird, hacky, and reesty... but okay.
 	tileStartX	= scrStartX/32;
 	tileEndX	= scrEndX/32+1;
+	while(tileEndX*32+16 > (unsigned)xMax) {
+		--tileEndX;
+		if(tileEndX == 0) break;
+	}
 	tileStartY	= scrStartY/32;
 	tileEndY	= scrEndY/32+1;
+	while(tileEndY*32+16 > (unsigned)yMax) {
+		--tileEndY;
+		if(tileEndY == 0) break;
+	}
 }
 
 void CameraState::updateBoundingSubregions(const CameraState &cam) {
@@ -70,52 +74,74 @@ void CameraState::update(const float deltaTime) {
 
 
 	//return to base zoom
-	if(entities.size() == 0) curInterp.startScaleInterp(scale, baseScale, 4.0f);
+	if(entities.size() == 0) {
+		if(fabs(baseScale - curInterp.getEndScale()) > ELYSIAN_CAMERA_STATE_SCALE_INTERP_EPSILON) {
+			curInterp.startScaleInterp(scale, baseScale, 4.0f);
+		}
+	}
 	else {
-		unsigned baseWidth, baseHeight;
-		unsigned maxWidth, maxHeight, minWidth, minHeight;
+		unsigned width, height;
+		float baseWidth, baseHeight, maxWidth, maxHeight, minWidth, minHeight;
 
-		gyVidResolution(&baseWidth, &baseHeight);
-		minWidth = maxWidth = baseWidth;
-		minHeight = maxHeight = baseHeight;
+		gyVidResolution(&width, &height);
+		baseWidth = minWidth = maxWidth = (float)width;
+		baseHeight = minHeight = maxHeight = (float)height;
 
-		maxWidth	*= maxScale;
-		maxHeight	*= maxScale;
-		maxWidth -= 2.0f*(float)maxWidth*ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE;
-		maxHeight = 2.0f*(float)maxWidth*ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE;
+		baseWidth	-= 2.0f*baseWidth*ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE;
+		baseHeight	-= 2.0f*baseHeight*ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE;
 
-		minWidth	*= baseScale;
-		minHeight	*= baseScale;
-		minWidth -= 2.0f*(float)maxWidth*ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE;
-		minHeight = 2.0f*(float)maxWidth*ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE;
+		maxWidth	/= minScale;
+		maxHeight	/= minScale;
+		maxWidth	-= 2.0f*maxWidth*ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE;
+		maxHeight	-= 2.0f*maxHeight*ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE;
 
-		const int minStartX	= pos.x - 0.5f*maxWidth;
-		const int minStartY	= pos.y - 0.5f*maxHeight;
-		const int maxEndX	= pos.x + 0.5f*maxWidth;
-		const int maxEndY	= pos.y + 0.5f*maxHeight;
+		minWidth	/= baseScale;
+		minHeight	/= baseScale;
+		minWidth	-= 2.0f*minWidth*ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE;
+		minHeight	-= 2.0f*minHeight*ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE;
 
-		int startX	= pos.x - 0.5f*minWidth;
-		int startY	= pos.y - 0.5f*minHeight;
-		int endX	= pos.x + 0.5f*minWidth;
-		int endY	= pos.x + 0.5f*minHeight;
+		const float maxXDist = 0.5f*maxWidth;
+		const float maxYDist = 0.5f*maxHeight;
+
+		float newXDist = 0.5f*minWidth;
+		float newYDist = 0.5f*minHeight;
 
 		auto fitEntity = [&](const Entity*const entity) {
-			int x = entity->transform._pos.x;
-			int y = entity->transform._pos.y;
+			float xDist = fabs(entity->transform._pos.x-pos.x);
+			float yDist = fabs(entity->transform._pos.y-pos.y);
 
-			if(x < startX	&& x >= minStartX)	startX	= x;
-			if(x > endX		&& x <= maxEndX)	endX	= x;
-			if(y < startY	&& y >= minStartY)	startY	= y;
-			if(y > endY		&& y <= maxEndY)	endY	= y;
+			//we can fit this fucker onscreen
+			if(xDist <= maxXDist && yDist <= maxYDist) {
+
+				if(xDist > newXDist) newXDist = xDist;
+				if(yDist > newYDist) newYDist = yDist;
+
+			}
 		};
 
 		for(auto it : entities) fitEntity(it);
 
-		float scaleX = (float)(endX - startX)/(float)baseWidth;
-		float scaleY = (float)(endY - startY)/(float)baseWidth;
+		//Debug::printf(Debug::VERBOSE, "<%f, %f>, <%f, %f>", newXDist, newYDist, maxXDist, maxYDist);
 
+		//convert dists to widths by adding back margins
 
-		curInterp.startScaleInterp(scale, (scaleX > scale)? scaleX : scaleY, 4.0f);
+		//const float scaleX = (newXDist*2.0f)/((float)baseWidth-(2.0f*(float)baseWidth*ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE));
+		//const float scaleY = (newYDist*2.0f)/((float)baseHeight-(2.0f*(float)baseHeight*ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE));
+		const float scaleX = (baseWidth)/(newXDist*2.0f);
+		const float scaleY = (baseHeight)/(newYDist*2.0f);
+
+		const float nextScale = (scaleX < scaleY)? scaleX : scaleY;
+
+		//Debug::printf(Debug::VERBOSE, "%f, %f - NEWSCALE - %f", scaleX, scaleY, nextScale);
+
+		//Check if we need to bother updating
+		if(fabs(nextScale - curInterp.getEndScale()) > ELYSIAN_CAMERA_STATE_SCALE_INTERP_EPSILON) {
+			Debug::printf(Debug::VERBOSE, "SCALE - %f", nextScale);
+			Debug::printf(Debug::VERBOSE, "<%f, %f>", scaleX, scaleY);
+
+			curInterp.startScaleInterp(scale, nextScale, 4.0f);
+
+		}
 
 	}
 
@@ -143,74 +169,14 @@ CameraSystem::CameraSystem(void) {
 	memcpy(_uiCamera.viewMat, identity4, sizeof(GYMatrix4));
 	gyVidCamOrthoProj(&_uiCamera, 0.0f, (float)w, (float)h, 0.0f, -999.0f, 1000.0f);
 
-	gyVidCamFrustum(&_debugState, 90.0f, (float)w/(float)h, 0.5f, 900.0f);
-	_debugState.dir = { 0.0f, 1.0f, 1.0f };
+	gyVidCamFrustum(&_debugState, 45.0f, 1.0f, 0.5f, 900.0f);
+	//_debugState.dir = { 0.0f, 1.0f, 1.0f };
 
 	_states[0] = &_internalStates[0];
 }
 
 void CameraSystem::pushViewProjMatrix(void) {
 
-	if(_curState->projType == GY_PROJECTION_ORTHO) {
-		//gyVidProjectionDefaultMatrix();
-		//gyVidCameraSetViewCenter(&_curState->pos, _curState->scale, _curState->zOrient);
-		gyVidCamOrthoLookAt(_curState, &_curState->pos, _curState->scale, _curState->zOrient, 0.0f);
-		gyVidSetCamWorldPos(&_curState->pos);
-
-	} else { //PERSPECTIVE PROJECTION
-
-		if(_curState == &_debugState) {
-			GYVector3 pos = {
-				-_curState->focalEntity->transform._pos.x,
-				-_curState->focalEntity->transform._pos.y+30.0f,
-				-(_curState->focalEntity->getElev()+1)*32.0f-ZCoordConstants::mapBase
-			};
-
-			gyVidCamFrustumLookAt(_curState, &pos, &_curState->dir, &_curState->up);
-			gyVidSetCamWorldPos(&pos);
-		}
-
-#if 0
-		GYMatrix4 camMat;
-		gyMatPush();
-		gyMatLoadIdentity();
-
-		//Create View Matrix
-		gyVidLookAtMat(camMat, 0.0f, 0.0f, 0.0f,
-					   _curState->dir.x, _curState->dir.y, _curState->dir.z,
-					   _curState->up.x, _curState->up.y, _curState->up.z);
-		gyMatApply(camMat);
-
-		gyMatScale(1.0f, -1.0f, -1.0f);
-		gyMatTranslate(-_curState->pos.x, -_curState->pos.y, -_curState->pos.z);
-		gyMatStore(&camMat);
-		gyMatPop();
-#else
-/*
-		GYMatrix4 camMat;
-		gyMatPush();
-		gyMatLoadIdentity();
-
-		//Create View Matrix
-		gyVidLookAtMat(camMat, 0.0f, 0.0f, 0.0f,
-					   0.0f, 1.0f, 1.0f,
-					   _curState->up.x, _curState->up.y, _curState->up.z);
-		gyMatApply(camMat);
-
-		//PRETTY SURE THIS SCALAR BULLSHIT IS WRONG ON THE DREAMCAST!!!
-		gyMatScale(1.0f, 1.0f, -1.0f);
-		gyMatTranslate(-_curState->entity->transform._pos.x, -_curState->entity->transform._pos.y+30.0f, -(_curState->entity->getElev()+1)*32.0f-ZCoordConstants::mapBase);
-		gyMatStore(&camMat);
-		gyMatPop();*/
-
-
-#endif
-
-
-
-
-
-	}
 
 	gyVidCamUpdate(_curState);
 
@@ -242,7 +208,7 @@ void CameraSystem::popState(void) {
 	--_depth;
 	assert(_depth >= 0);
 	_curState = _states[_depth];
-
+	_customState = false;
 	//restore projection matrix if it's supposed to be on the stack is this even really necessary?
 	/*if(_projViewActive) {
 		if(_curState->defaultProjMat) gyVidProjectionDefaultMatrix();
@@ -255,7 +221,13 @@ void CameraSystem::processInput(const GameInput& input) {
 		_debugActive = !_debugActive;
 
 		if(_debugActive) { //enable
-			_debugState.focalEntity = _curState->focalEntity;
+			//_debugState.focalEntity = _curState->focalEntity;
+
+			_debugState.pos = GYVector3 {
+				_curState->pos.x,
+				_curState->pos.y,
+				150
+			};
 
 			//_curState = &_debugState;
 			//setPerspectiveFrustum(90.0f, 1.0f, 0.5f, 900.0f);
@@ -268,50 +240,50 @@ void CameraSystem::processInput(const GameInput& input) {
 		//	setEngineState(ENGINE_NORMAL);
 		}
 	}
-#if 0
+#if 1
 	if(_debugActive) {
 
-		if(input.getDown(GameInput::BUT_DPAD_U)) {
-			GYVector3 delta = { 0.0f, 0.0f, -0.01f};
-			gyVec3Add(&_curState->dir, &_curState->dir, &delta);
-			gyVec3Normalize(&_curState->dir);
+		if(input.getDown(GameInput::BUT_O)) {
+			GYVector3 dist = { 0.0f, 0.0f, 5.0f };
+			//GYVector3 delta = { 0.0f, 0.0f, -0.01f};
+			//gyVec3Add(&_curState->dir, &_curState->dir, &delta);
+			//gyVec3Normalize(&_curState->dir);
+			translate(dist);
 		}
-		if(input.getDown(GameInput::BUT_DPAD_D)) {
-			GYVector3 delta = { 0.0f, 0.0f, 0.01f };
-			gyVec3Add(&_curState->dir, &_curState->dir, &delta);
-			gyVec3Normalize(&_curState->dir);
+		if(input.getDown(GameInput::BUT_L)) {
+			GYVector3 dist = { 0.0f, 0.0f, -5.0f };
+			//GYVector3 delta = { 0.0f, 0.0f, 0.01f };
+			//gyVec3Add(&_curState->dir, &_curState->dir, &delta);
+			//gyVec3Normalize(&_curState->dir);
+			translate(dist);
 		}
 		if(input.getDown(GameInput::BUT_DPAD_L)) {
-			GYVector3 delta = { -0.01f, 0.0f, 0.0f };
-			gyVec3Add(&_curState->dir, &_curState->dir, &delta);
-			gyVec3Normalize(&_curState->dir);
+			//GYVector3 delta = { -0.01f, 0.0f, 0.0f };
+			//gyVec3Add(&_curState->dir, &_curState->dir, &delta);
+			//gyVec3Normalize(&_curState->dir);
 		}
 		if(input.getDown(GameInput::BUT_DPAD_R)) {
-			GYVector3 delta = { 0.01f, 0.0f, 0.0f };
-			gyVec3Add(&_curState->dir, &_curState->dir, &delta);
-			gyVec3Normalize(&_curState->dir);
+			//GYVector3 delta = { 0.01f, 0.0f, 0.0f };
+			//gyVec3Add(&_curState->dir, &_curState->dir, &delta);
+			//gyVec3Normalize(&_curState->dir);
 		}
 
 		if(input.getDown(GameInput::BUT_W)) {
-			GYVector3 delta = _curState->dir;
-			gyVec3Scale(&delta, -3.0f);
-			translate(delta);
+			translate(GYVector3{ 0.0f, -5.0f, 0.0f});
 
 		}
 		if(input.getDown(GameInput::BUT_A)) {
 
-			translate(GYVector3{ -3.0f, 0.0f, 0.0f});
+			translate(GYVector3{ -5.0f, 0.0f, 0.0f});
 		}
 		if(input.getDown(GameInput::BUT_S)) {
 
-			GYVector3 delta = _curState->dir;
-			gyVec3Scale(&delta, 3.0f);
-			translate(delta);
+			translate(GYVector3{ 0.0f, 5.0f, 0.0f});
 
 		}
 		if(input.getDown(GameInput::BUT_D)) {
 
-			translate(GYVector3{ 3.0f, 0.0f, 0.0f});
+			translate(GYVector3{ 5.0f, 0.0f, 0.0f});
 		}
 	}
 #endif
@@ -323,49 +295,84 @@ void CameraSystem::update(void) {
 	//Update camera resolution
 	getGuiSys()->getResolution(_scrWidth, _scrHeight);
 
+	if(_customState) return;
+
+
 	//Follow entities
 	if(_curState->focalEntity) {
 		_curState->pos = GYVector3 {
 			_curState->focalEntity->transform._pos.x,
 			_curState->focalEntity->transform._pos.y,
-			//_curState->entity->transform.getPosZ(),
-			0.0f
+			_curState->focalEntity->transform.getPosZ(),
+			//0.0f
 		};
 	}
+
+	if(_curState->projType == GY_PROJECTION_ORTHO) {
+		//gyVidProjectionDefaultMatrix();
+		//gyVidCameraSetViewCenter(&_curState->pos, _curState->scale, _curState->zOrient);
+		gyVidCamOrthoLookAt(_curState, &_curState->pos, _curState->scale*_curState->staticScale, _curState->zOrient, _curState->xOrient);
+
+	} else { //PERSPECTIVE PROJECTION
+
+	if(_curState == &_debugState) {
+		/*	_debugState.pos = GYVector3{
+				-_curState->focalEntity->transform._pos.x,
+				-_curState->focalEntity->transform._pos.y+30.0f,
+				-(_curState->focalEntity->getElev()+1)*32.0f-ZCoordConstants::mapBase
+			};*/
+
+
+			//gyVidCamFrustumLookAt(_curState, &pos, &_curState->dir, &_curState->up);
+		gyVidSetCamWorldPos(&_curState->pos);
+
+		gyMatPush();
+
+		//Create View Matrix
+		const GYVector3 zeroPos = { 0.0f, 0.0f, 0.0f };
+		gyVidCamFrustumLookAt(_curState, &zeroPos, &_curState->dir, &_curState->up);
+		//gyVidLookAtMat(camMat, 0.0f, 0.0f, 0.0f,
+					 //  _curState->dir.x, _curState->dir.y, _curState->dir.z,
+					 //  _curState->up.x, _curState->up.y, _curState->up.z);
+		gyMatLoad(&_curState->viewMat);
+
+		gyMatScale(1.0f, 1.0f, -1.0f);
+		gyMatTranslate(-_curState->pos.x, -_curState->pos.y, -_curState->pos.z);
+		gyMatStore(&_curState->viewMat);
+		gyMatPop();
+
+		gyMatMultMat(_curState->projViewMat, _curState->projMat, _curState->viewMat);
+
+#if 0
+/*
+		GYMatrix4 camMat;
+		gyMatPush();
+		gyMatLoadIdentity();
+
+		//Create View Matrix
+		gyVidLookAtMat(camMat, 0.0f, 0.0f, 0.0f,
+					   0.0f, 1.0f, 1.0f,
+					   _curState->up.x, _curState->up.y, _curState->up.z);
+		gyMatApply(camMat);
+
+		//PRETTY SURE THIS SCALAR BULLSHIT IS WRONG ON THE DREAMCAST!!!
+		gyMatScale(1.0f, 1.0f, -1.0f);
+		gyMatTranslate(-_curState->entity->transform._pos.x, -_curState->entity->transform._pos.y+30.0f, -(_curState->entity->getElev()+1)*32.0f-ZCoordConstants::mapBase);
+		gyMatStore(&camMat);
+		gyMatPop();*/
+
+
+#endif
+
+
+		}
+	}
+
+	gyVidSetCamWorldPos(&_curState->pos);
 
 	_curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
 	_curState->update(deltaTime);
 
-
-/*
-	//Update tile rendering region
-	int startX = (_curState->pos.x - (0.5f*_scrWidth)/_curState->scale)/32;
-	int startY = (_curState->pos.y - (0.5f*_scrHeight)/_curState->scale)/32;
-	int endX = (_curState->pos.x + (0.5f*_scrWidth)/_curState->scale)/32+1;
-	int endY = (_curState->pos.y + (0.5f*_scrHeight)/_curState->scale)/32+1;
-	if(_curState->zOrient != 0.0f) { //insert REAL fix here! Resolution-dependent!
-		startY -= 4;
-		endY += 4;
-	}
-
-	//Convert to unsigned
-	_tileStartX = (startX < 0)? 0 : (unsigned)startX;
-	_tileStartY = (startY < 0)? 0 : (unsigned)startY;
-	_tileEndX = (endX >= _curArea->width)? _curArea->width-1 : (unsigned)endX;
-	_tileEndY = (endY >= _curArea->height)? _curArea->height-1 : (unsigned)endY;
-
-	//////FUCKING FIX ME!!!!!!!!!
-	_tileStartX = 0;
-	_tileStartY = 0;
-	_tileEndX = _curArea->width-1;
-	_tileEndY = _curArea->height-1;
-
-	_scrStartX = _tileStartX*32;
-	_scrStartY = _tileStartY*32;
-	_scrEndX = _tileEndX*32;
-	_scrEndY = _tileEndY*32;
-
-	*/
 
 }
 
