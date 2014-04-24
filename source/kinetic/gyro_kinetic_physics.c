@@ -9,7 +9,7 @@
 void gyIntegrate(struct _GYKinetic *kin,
 				 const struct _GYStatic *attrib,
 				 const float deltaTime,
-				 GYVector2* pos,
+				 GYVector3* pos,
 				 float* orient)
 {
 
@@ -17,24 +17,25 @@ void gyIntegrate(struct _GYKinetic *kin,
 	//Calculate linear acceleration with force input
 	kin->prevAccel.x = kin->accel.x;
 	kin->prevAccel.y = kin->accel.y;
+	kin->prevAccel.z = kin->accel.z;
 
-	gyVec2AddScaled(&kin->prevAccel, &kin->forceAccum, attrib->inverseMass);
+	gyVec3AddScaled(&kin->prevAccel, &kin->forceAccum, attrib->inverseMass);
 
 	//Calculate angular acceleration from torque input
 	kin->angAccel = kin->torqueAccum * attrib->invMomOfInertia;
 
 	//Update linear velocity from linear acceleration (and impulse?)
-	gyVec2AddScaled(&kin->vel, &kin->prevAccel, deltaTime);
+	gyVec3AddScaled(&kin->vel, &kin->prevAccel, deltaTime);
 
 	//Update rotation from angular acceleration (and impulsive torque?)
 	kin->rot += kin->angAccel * deltaTime;
 
 	//Damp (impose drag)
-	gyVec2ScaleAccum(&kin->vel, attrib->damping);
+	gyVec3ScaleAccum(&kin->vel, attrib->damping);
 	kin->rot *= attrib->angDamping;
 
 	//Update position from linear velocity
-	gyVec2AddScaled(pos, &kin->vel, deltaTime);
+	gyVec3AddScaled(pos, &kin->vel, deltaTime);
 
 	//Update orientation from rotation
 	*orient += kin->rot * deltaTime;
@@ -43,7 +44,7 @@ void gyIntegrate(struct _GYKinetic *kin,
 	//Calculate Derived Data
 
 	//Clear force accumulators
-	kin->forceAccum.x = kin->forceAccum.y = 0.0f;
+	kin->forceAccum.x = kin->forceAccum.y = kin->forceAccum.z = 0.0f;
 	kin->torqueAccum = 0.0f;
 
 }
@@ -276,7 +277,7 @@ void gyContactCalculateVelocityInternals(GYContact*const contact, GYKinetic*cons
 
 	gyVec2VectorCrossProd(&totalVelocity[0], &contact->objPos[0], rb1->rot);
 	//printf("body1->rotVel - <%f, %f>\n", totalVelocity[0].x, totalVelocity[0].y);
-	gyVec2AddAccum(&totalVelocity[0], &rb1->vel);
+	gyVec2AddAccum(&totalVelocity[0], (GYVector2*)&rb1->vel);
 
 	//WEIRD CORRECTIVE SHIT
 	//Add velocity from acceleration NOT IN THE DIRECTION OF THE NORMAL
@@ -290,7 +291,7 @@ void gyContactCalculateVelocityInternals(GYContact*const contact, GYKinetic*cons
 	if(rb2) {
 		gyVec2VectorCrossProd(&totalVelocity[1], &contact->objPos[1], rb2->rot);
 		//printf("body2->rotVel - <%f, %f>\n", totalVelocity[1].x, totalVelocity[1].y);
-		gyVec2AddAccum(&totalVelocity[1], &rb2->vel);
+		gyVec2AddAccum(&totalVelocity[1], (GYVector2*)&rb2->vel);
 
 		//gyVec2Scale(&accVelocity, &rb2->prevAccel, deltaTime);
 		//gyVec2Scale(&normalVel, &contact->normal, gyVec2DotProd(&accVelocity, &contact->normal));
@@ -324,10 +325,10 @@ void gyContactUpdateDeltaVelocity(GYContact*const contact, GYKinetic*const rb1, 
 	float velocityFromAccel;
 	//float newRestitution = contact->coeffOfRest;
 
-	velocityFromAccel = gyVec2DotProd(&rb1->prevAccel, &contact->normal) * deltaTime;
+	velocityFromAccel = gyVec2DotProd((GYVector2*)&rb1->prevAccel, &contact->normal) * deltaTime;
 
 	if(rb2) {
-		velocityFromAccel -= gyVec2DotProd(&rb2->prevAccel, &contact->normal) * deltaTime;
+		velocityFromAccel -= gyVec2DotProd((GYVector2*)&rb2->prevAccel, &contact->normal) * deltaTime;
 	}
 
 	//===========NEED AN EPSILON IN THE FUTURE ====

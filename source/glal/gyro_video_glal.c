@@ -14,7 +14,7 @@
 //OPENGL/OPENGL_ES COMMONS, BITCHES!
 static const GYVector3 _rectNormals[GY_RECT_NORMAL_MAX] = {
 	{ 0.0f, 0.0f, 1.0f },
-	{ 0.0f, 1.0f, 0.0f }
+	{ 0.0f, 1.0f, 1.0f }
 };
 
 static const GYVector3 _rectTangents[GY_RECT_TEX_ORIENT_MAX] = {
@@ -38,7 +38,7 @@ static const GYVector4 _rectVerts[GY_RECT_NORMAL_MAX][4] = {
 		{-0.5f, 0.5f, 0.0f, 1.0f},
 		{0.5f, 0.5f, 0.0f, 1.0f}
 	},
-	//DEPTH
+	//FRONT
 	{
 		{-0.5f, -0.5f, 1.0f, 1.0f},
 		{0.5f, -0.5f, 1.0f, 1.0f},
@@ -71,7 +71,7 @@ static const GYCamera _defaultCamera;
 //Shared video state variables
 const GYVector3*			tangentVector			= &_rectTangents[0];
 const GYVector3*			normalVector			= &_rectNormals[0];
-GYVector4					viewPosition			= { 0.0f, 0.0f, 0.0f, 0.0f };
+//GYVector4					viewPosition			= { 0.0f, 0.0f, 0.0f, 0.0f };
 float						viewZOrient				= 0.0f;
 float						viewScale				= 0.0f;
 const GYTexture*			curTex					= 0;

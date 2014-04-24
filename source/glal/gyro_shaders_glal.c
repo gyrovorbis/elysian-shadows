@@ -24,7 +24,7 @@ const static GYMaterial _defaultMaterial = {
 	{ 1.0f, 1.0f, 1.0f, 1.0f },
 	1.0f
 };
-
+/*
 static GYLightProperties _emptyLightProperties = {
 	{ 0.0f, 0.0f, 0.0f, 1.0f },
 	{ 0.0f, 0.0f, 0.0f, 1.0f },
@@ -32,8 +32,8 @@ static GYLightProperties _emptyLightProperties = {
 	{ 0.0f, 0.0f, 0.0f },
 	1.0f,
 	200.0f
-};
-
+};*/
+/*
 const static GYLightSource _emptyLight = {
 	{ 0.0f, 0.0f, 0.0f, 1.0f },
 	{ 0.0f, 0.0f, 0.0f },
@@ -46,7 +46,7 @@ const static GYLightSource _emptyLight = {
 
 const static GYVector3 _defaultNormal = {
   0.0f, 0.0f, 1.0f
-};
+};*/
 
 GYMatrix4 pointShadowFaceMatrices[GY_CUBE_MAP_FACE_MAX];
 
@@ -56,7 +56,7 @@ static const GYMaterial*	_currentMaterial								= &_defaultMaterial;
 static GYVector4			_globalAmbience									= { 0.0f, 0.0f, 0.0f, 1.0f };
 static const GYTexture*		_normalMap										= NULL;
 static const GYTexture*		_specularMap									= NULL;
-static GYVector3			_camWorldPos									= { 0.0f, 0.0f, 0.0f };
+GYVector3					camWorldPos									= { 0.0f, 0.0f, 0.0f };
 
 // ==== INTERNAL STATE ===
 GYShaderProgram*			_curShaderProg		= NULL;
@@ -76,9 +76,9 @@ void gyVidSetDefaultShaderProgram(void) {
 }
 
 void gyVidSetCamWorldPos(const GYVector3*const pos) {
-	if(pos->x == _camWorldPos.x && pos->y == _camWorldPos.y && pos->z == _camWorldPos.z) return;
-	_camWorldPos = *pos;
-	glUniform3fv(curLightShader->uniformLoc[SHADER_CAM_WORLD_POS], 1, (float*)&_camWorldPos);
+	if(pos->x == camWorldPos.x && pos->y == camWorldPos.y && pos->z == camWorldPos.z) return;
+	camWorldPos = *pos;
+	glUniform3fv(curLightShader->uniformLoc[SHADER_CAM_WORLD_POS], 1, (float*)&camWorldPos);
 }
 
 void gyVidNormalMapBind(const GYTexture * const tex) {
@@ -283,7 +283,7 @@ void glalDefaultShadersLoadUniforms(void) {
 	gyVidSetGlobalAmbience(&_globalAmbience);
 	gyVidLightingSetEnable(lightingEnabled);
 
-	glUniform3fv(curLightShader->uniformLoc[SHADER_CAM_WORLD_POS], 1, (float*)&_camWorldPos);
+	glUniform3fv(curLightShader->uniformLoc[SHADER_CAM_WORLD_POS], 1, (float*)&camWorldPos);
 	glUniform3fv(curLightShader->uniformLoc[SHADER_NORMAL], 1, (float*)normalVector);
 	glUniform3fv(curLightShader->uniformLoc[SHADER_TANGENT], 1, (float*)tangentVector);
 
