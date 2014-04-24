@@ -146,7 +146,7 @@ namespace elysian {
 
 		gyFileLength(fp, &len);
 		buffer = ptr = (char *) malloc(len + 1);
-		memset(buffer, 0, sizeof buffer);
+		memset(buffer, 0, sizeof(char) * (len + 1));
 		gyFileRead(fp, buffer, len, NULL);
 
 		sgets(string, ELYSIAN_LEVEL_STRING_SIZE, &ptr);
