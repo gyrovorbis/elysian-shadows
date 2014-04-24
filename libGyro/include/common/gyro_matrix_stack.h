@@ -40,6 +40,7 @@ extern GYMatrix4 _zRotationMat;
 extern GYMatrix4 _rotationMat;
 extern GYMatrix4 _tranScaleMat;
 extern GYMatrix4 _instanceMat;
+extern GYMatrix4 _shearMat;
 
 //===INLINE THE FUCK OUT OF EVERYTHING =====
 //====MATRIX STACK OPERATIONS======
@@ -121,6 +122,18 @@ static inline void gyMatRotate(const float angle, const float x, const float y, 
 	_rotationMat[2][2] = cosTheta + z*z*(1.0f-cosTheta);
 
 	gyMatApply(_rotationMat);
+}
+
+static inline void gyMatShearZ(const float shx, const float shy) {
+#if 1
+	_shearMat[2][0] = shx; _shearMat[3][0] = 0;
+	_shearMat[2][1] = shy; _shearMat[3][1] = 0;
+#else
+	_shearMat[1][0] = shx; //_shearMat[3][0] = -shx;
+	_shearMat[1][2] = shy;// _shearMat[3][1] = -shy;
+
+#endif
+	gyMatApply(_shearMat);
 }
 
     
