@@ -30,8 +30,9 @@ bool Font::loadTextData(const char* const img_file, int sheet_width, int sheet_h
 }
 
 bool Font::_loadCharacterWidths(const char *width_file) {
-	char *buffer;
+	char *buffer, *ptr;
 	size_t buffer_len;
+	int ptr_inc = 0;
 	GYFile *file;
 	if (!gyFileOpen(width_file, "r", &file)) {
 		return false;
@@ -39,12 +40,13 @@ bool Font::_loadCharacterWidths(const char *width_file) {
 	if (!gyFileLength(file, &buffer_len)) {
 		return false;
 	}
-	buffer = (char *) malloc(sizeof(char) * buffer_len + 1);
+	buffer = ptr = (char *) malloc(sizeof(char) * buffer_len + 1);
 	if (!gyFileRead(file, buffer, buffer_len, NULL)) {
 		return false;
 	}
 	for(int i = 0; i < 128; ++i) {
-		sscanf(buffer, "%hd", &_charWidth[i]);
+		sscanf(ptr, "%hd%n", &_charWidth[i], &ptr_inc);
+		ptr += ptr_inc;
 	}
 	free(buffer);
 	gyFileClose(&file);

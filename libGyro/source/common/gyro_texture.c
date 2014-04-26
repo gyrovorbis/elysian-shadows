@@ -25,7 +25,8 @@ static GYTexCoordSheet *_LoadSheetCoords(const GYTexEntryDat *const data) {
 	char fname[GYRO_PATH_MAX_SIZE];
 	GYFile *file;
     size_t file_size = 0;
-    char *buffer = NULL;
+    char *buffer = NULL, *ptr;
+	int ptr_inc = 0;
 	unsigned amount, i, x, y, w, h;
 	GYTexCoordSheet *coord;
 
@@ -39,9 +40,10 @@ static GYTexCoordSheet *_LoadSheetCoords(const GYTexEntryDat *const data) {
 
 	coord = malloc(sizeof(GYTexCoordSheet));
     gyFileLength(file, &file_size);
-    buffer = malloc(sizeof(char) * file_size);
+    buffer = ptr = malloc(sizeof(char) * file_size);
     gyFileRead(file, buffer, file_size, NULL);
-	sscanf(buffer, "%u", &amount);
+	sscanf(ptr, "%u%n", &amount, &ptr_inc);
+	ptr += ptr_inc;
 	coord->frames = amount;
 	coord->sheetWidth = data->sheetWidth;
 	coord->sheetHeight = data->sheetHeight;
@@ -49,7 +51,8 @@ static GYTexCoordSheet *_LoadSheetCoords(const GYTexEntryDat *const data) {
 	coord->texCoord = malloc(sizeof(GYTexCoordFrame)*amount);
 
 	for(i = 0; i < amount; ++i) {
-		sscanf(buffer, "%u%u%u%u", &x, &y, &w, &h);
+		sscanf(ptr, "%u%u%u%u%n", &x, &y, &w, &h, &ptr_inc);
+		ptr += ptr_inc;
 		coord->texCoord[i].spriteWidth = w;
 		coord->texCoord[i].spriteHeight = h;
 #if GYRO_PLATFORM != GYRO_PLATFORM_DC
@@ -64,6 +67,7 @@ static GYTexCoordSheet *_LoadSheetCoords(const GYTexEntryDat *const data) {
 		coord->texCoord[i].botLeft.uv = PVR_PACK_16BIT_UV((float)x/(float)data->sheetWidth, (float)(y+h)/(float)data->sheetHeight);
 #endif
 	}
+	free(buffer);
     gyFileClose(&file);
 	return coord;
 }
