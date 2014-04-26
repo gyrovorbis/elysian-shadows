@@ -8,46 +8,50 @@ namespace elysian {
 // SubSubProcess manager
 template<typename P, class... _Types> class SubProcessManager;
 
+enum PROC_STATE { PROC_STATE_IDLE, PROC_STATE_RUNNING };
+
 template <typename P, typename M>
 class SubProcess {
 	friend  M;
 public:
-	enum STATE { STATE_IDLE, STATE_RUNNING };
 
 	inline void start(M*const m) {
-		static_cast<P*>(this)->start(m);
+		_state = PROC_STATE_RUNNING;
+		static_cast<P*>(this)->_start(m);
 	}
 
-	inline void update(M*const m) {
-		static_cast<P*>(this)->update(m);
+	inline void update(M*const m, const float deltaTime) {
+		if(_state == PROC_STATE_RUNNING) static_cast<P*>(this)->_update(m, deltaTime);
 	}
 
 	inline void stop(M*const m) {
-		static_cast<P*>(this)->stop(m);
+		static_cast<P*>(this)->_stop(m);
+		_state = PROC_STATE_IDLE;
 	}
 
+	inline PROC_STATE getProcState(void) const { return _state; }
 
-private:
-	STATE _state = STATE_IDLE;
+
+protected:
+	PROC_STATE _state = PROC_STATE_IDLE;
 };
 
 template <typename P, typename M>
 class MonitorableSubProcess: public SubProcess<P, M> {
 public:
-	enum STATE { STATE_IDLE, STATE_RUNNING };
 
-	inline void _start(M*const m) {
-		static_cast<P*>(this)->start(m);
-		if(_monitor) _monitor->onStart();
+	inline void start(M*const m) {
+		static_cast<SubProcess<P,M>*>(this)->start(m);
+		if(_monitor && SubProcess<P,M>::_state == PROC_STATE_RUNNING) _monitor->onStart();
 	}
 
-	inline void _update(M*const m) {
-		static_cast<P*>(this)->update(m);
+	inline void update(M*const m, const float deltaTime) {
+		static_cast<SubProcess<P,M>*>(this)->update(m, deltaTime);
 	}
 
-	inline void _stop(M*const m) {
-		static_cast<P*>(this)->stop(m);
-		if(_monitor) _monitor->onFinish();
+	inline void stop(M*const m) {
+		static_cast<SubProcess<P,M>*>(this)->stop(m);
+		if(_monitor && SubProcess<P,M>::_state == PROC_STATE_IDLE) _monitor->onFinish();
 	}
 
 	inline void setEventMonitor(EventMonitor*const monitor) {
@@ -63,7 +67,7 @@ private:
 // empty SubProcess manager
 template<typename P> class SubProcessManager<P> {
 public:
-	inline void updateSubProcesses(void) {}
+	inline void updateSubProcesses(const float /*deltaTime*/) {}
 
 };
 
@@ -78,9 +82,9 @@ public:
 	_This _Myfirst;
 
 protected:
-	inline void updateSubSubProcesses(void) {
-		_Myfirst._update(static_cast<P*>(this));
-		SubProcessManager<P, _Rest...>::updateSubSubProcesses();
+	inline void updateSubProcesses(const float deltaTime) {
+		_Myfirst.update(static_cast<P*>(this), deltaTime);
+		SubProcessManager<P, _Rest...>::updateSubProcesses(deltaTime);
 	}
 
 };

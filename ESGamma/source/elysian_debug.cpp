@@ -32,6 +32,7 @@
 #include "elysian_particle_system.hpp"
 #include "elysian_day_system.hpp"
 #include "elysian_dialog_system.hpp"
+#include "elysian_event_monitor.hpp"
 
 namespace elysian {
 
@@ -182,18 +183,24 @@ void Debug::update(void) {
 
 static LightSource* src;
 
+static EventCallback callback;
+
 void Debug::processInput(GameInput& input) {
 
 	static float theta = 0.0f;
 	static unsigned size = 3;
 	static unsigned intensity = 200;
 
+	callback.setCallbackFunction([] {
+		printf(CRITICAL, "SHIT'S DONE INTERPOLATING!!!\n");
+	});
+
 	//Camera zoom
 	if(input.getDown(GameInput::BUT_W)){
-		_engine->_cameraSystem->staticScale(0.9f);
+		_engine->_cameraSystem->scale(0.7f, 0.0f, &callback);
 	}
 	if(input.getDown(GameInput::BUT_S)){
-		_engine->_cameraSystem->staticScale(1.1f);
+		_engine->_cameraSystem->scale(1.3f, 0.0f, EventMonitor::null());
 	}
 
 	if(input.getTapped(GameInput::BUT_0)) {

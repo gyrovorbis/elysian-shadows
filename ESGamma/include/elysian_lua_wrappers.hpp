@@ -37,6 +37,7 @@
 #include "elysian_force_generator.hpp"
 #include "elysian_combat.hpp"
 #include "elysian_combat_system.hpp"
+#include "elysian_lua_wrappers.hpp"
 
 /* IT'S NOT SAFE TO GO ALONE! TAKE THIS HEADER FILE. IT WILL HELP
  * YOU ON YOUR JOURNEY!
@@ -123,6 +124,11 @@ namespace OOLUA
 	typedef elysian::CameraSystem				CameraSystem;
 	typedef elysian::LuaBehaviorScriptAttrib	LuaBehaviorScriptAttrib;
 	typedef elysian::Direction					Direction;
+	typedef elysian::EventMonitor				EventMonitor;
+	typedef elysian::LuaEventMonitor			LuaEventMonitor;
+	typedef elysian::LuaEventCallback			LuaEventCallback;
+	typedef elysian::LuaEventBarrier			LuaEventBarrier;
+	typedef elysian::CameraKeyFrame				CameraKeyFrame;
 }
 
 struct Lua32BitMask {
@@ -183,6 +189,45 @@ OOLUA_PROXY(GYWav)
 		No_public_constructors,
 		No_public_destructor
 	)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(EventMonitor)
+	OOLUA_TAGS (
+		No_public_constructors,
+		No_public_destructor
+	)
+	OOLUA_SFUNC(null)
+OOLUA_PROXY_END
+
+namespace OOLUA {
+	template<> class Proxy_class<elysian::LuaEventMonitor>;
+}
+OOLUA_PROXY(LuaEventMonitor, EventMonitor)
+	OOLUA_TAGS (
+		No_public_constructors,
+		No_public_destructor
+	)
+	OOLUA_MEM_FUNC(void, setTable, OOLUA::Lua_table_ref&)
+	OOLUA_MEM_FUNC(OOLUA::Lua_table_ref&, getTable)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(LuaEventCallback, LuaEventMonitor)
+	OOLUA_TAGS(
+		No_default_constructor
+	)
+	OOLUA_CTORS(
+		OOLUA_CTOR(OOLUA::Lua_func_ref&)
+	)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(LuaEventBarrier, LuaEventMonitor)
+	OOLUA_TAGS(
+		No_default_constructor
+	)
+	OOLUA_CTORS(
+		OOLUA_CTOR(OOLUA::Lua_func_ref&)
+	)
+	OOLUA_MEM_FUNC(void, start)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(InstanceTransform)
@@ -880,6 +925,13 @@ OOLUA_PROXY(GuiSystem)
 	OOLUA_MEM_FUNC(void, addCombatText, const char*, GYColor4, const GYVector2&, const GYVector2&)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(CameraKeyFrame)
+	OOLUA_MEM_FUNC(void, setPos, float, float, float)
+	OOLUA_MEM_FUNC(void, setScale, float)
+	OOLUA_MEM_FUNC(void, setZOrient, float)
+	OOLUA_MEM_FUNC(void, setXOrient, float)
+OOLUA_PROXY_END
+
 OOLUA_PROXY(CameraSystem)
 	OOLUA_TAGS (
 		No_public_constructors,
@@ -887,6 +939,9 @@ OOLUA_PROXY(CameraSystem)
 	)
 	OOLUA_MEM_FUNC_CONST(void, addEntity, Entity*)
 	OOLUA_MEM_FUNC_CONST(void, removeEntity, Entity*)
+	OOLUA_MEM_FUNC(void, scale, float, float, EventMonitor*)
+	OOLUA_MEM_FUNC_CONST(CameraKeyFrame, getKeyFrame)
+	OOLUA_MEM_FUNC(void, moveToKeyFrame, const CameraKeyFrame&, float, EventMonitor*)
 OOLUA_PROXY_END
 
 

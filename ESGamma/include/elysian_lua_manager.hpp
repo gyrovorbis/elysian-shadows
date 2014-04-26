@@ -6,7 +6,6 @@
 #include "elysian_stl_algorithm.hpp"
 #include "elysian_lua_script.hpp"
 #include "elysian_debug.hpp"
-#include "elysian_event_monitor.hpp"
 
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
 #	define ELYSIAN_LUA_DEBUG true
@@ -16,6 +15,23 @@
 #endif
 
 namespace elysian {
+
+//1) rearchitect to support threads gracefully
+//2) figure out why shit's reesting with coroutines
+
+/*
+	//Architecture
+	//LuaThread encapsulating state and offering all debug functionality
+	//Managers can retrieve main state
+	class LuaThread: public LuaManager {
+		OOLUA::Script* _state = nullptr;
+
+
+
+
+
+
+	};*/
 	
 	class LuaManager {
 	private:
@@ -129,25 +145,6 @@ namespace elysian {
 
 	};
 
-	class LuaEventCallback: public EventMonitor, public LuaManager {
-	private:
-		OOLUA::Lua_func_ref	_callback;
-	public:
-		void			setCallbackFunction(OOLUA::Lua_func_ref callback);
-		virtual void	onFinish(void) override;
-	};
-
-	class LuaEventListener: public EventMonitor, public LuaManager {
-	private:
-		OOLUA::Lua_table_ref	_coroutine;
-		bool					_completed = false;
-	public:
-		virtual void	onFinish(void) override;
-		void			wait(void);
-		void			setCoroutine(const OOLUA::Lua_table_ref co);
-	};
-
-
 	inline void LuaManager::_protectedCall(const int nargs, const int nresults, LuaScript *script) {
 #ifdef ELYSIAN_LUA_DEBUG
 		lua_pushcfunction(*_mainState, &LuaManager::_traceBack);
@@ -180,21 +177,6 @@ namespace elysian {
 		static void pull(lua_State* const /*state*/) {}
 	};
 
-
-	inline void LuaEventCallback::setCallbackFunction(OOLUA::Lua_func_ref callback) { _callback = callback; }
-
-	inline void LuaEventListener::setCoroutine(const OOLUA::Lua_table_ref co) { _coroutine = co; }
-	inline void LuaEventListener::wait(void) {
-		if(_completed) return;
-
-		lua_pushglobaltable(*_mainState);
-		lua_getfield(*_mainState, -1, "coroutine");
-		lua_remove(*_mainState, -2);
-		lua_getfield(*_mainState, -1, "yield");
-		lua_remove(*_mainState, -2);
-		OOLUA::push(*_mainState, _coroutine);
-		_protectedCall(1, 0, nullptr);
-	}
 
 }
 

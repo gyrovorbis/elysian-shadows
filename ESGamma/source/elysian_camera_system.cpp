@@ -70,7 +70,7 @@ void CameraState::updateBoundingSubregions(const CameraState &cam) {
 
 }
 
-void CameraSystem::_updateState(CameraState*const state, const float deltaTime) {
+void CameraSystem::_updateState(CameraState*const state, const float /*deltaTime*/) {
 	auto &interp = get<SUBPROC_KEY_FR_INTERP>(*this);
 
 	//return to base zoom
@@ -291,6 +291,8 @@ void CameraSystem::processInput(const GameInput& input) {
 
 void CameraSystem::update(void) {
 	const float deltaTime = getTimerSys()->getDeltaTime();
+	updateSubProcesses(deltaTime);
+
 	//Update camera resolution
 	getGuiSys()->getResolution(_scrWidth, _scrHeight);
 
@@ -370,9 +372,7 @@ void CameraSystem::update(void) {
 	gyVidSetCamWorldPos(&_curState->_keyFrame._pos);
 
 	_curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
-
-	updateSubProcesses();
-	_updateState(_curState, deltaTime);
+	//_updateState(_curState, deltaTime);
 
 
 }

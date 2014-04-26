@@ -14,6 +14,8 @@ namespace elysian {
 		_mainState->register_class<GYVector3>();
 		_mainState->register_class<GYVector4>();
         _mainState->register_class<GYColor4>();
+		OOLUA::register_class<LuaEventCallback>(*_mainState);
+		_mainState->register_class<LuaEventBarrier>();
 		_mainState->register_class<InstanceTransform>();
 		OOLUA::register_class<Entity>(*_mainState);
 		OOLUA::register_class<QuadSpriteAttrib>(*_mainState);
@@ -73,6 +75,7 @@ namespace elysian {
 		OOLUA::register_class<GravityForceGenerator>(*_mainState);
 		_mainState->register_class<ImplosionForceGenerator>();
 		_mainState->register_class<ExplosionForceGenerator>();
+		_mainState->register_class<CameraKeyFrame>();
 
 
 		//Register C and static member functions
@@ -128,6 +131,21 @@ OOLUA_EXPORT_FUNCTIONS_CONST(GYVector4, getX, getY, getZ, getW)
 
 OOLUA_EXPORT_FUNCTIONS(GYColor4, setA, setR, setG, setB)
 OOLUA_EXPORT_FUNCTIONS_CONST(GYColor4, getA, getR, getG, getB)
+
+OOLUA_EXPORT_FUNCTIONS(EventMonitor)
+OOLUA_EXPORT_FUNCTIONS_CONST(EventMonitor)
+
+OOLUA_EXPORT_FUNCTIONS(LuaEventMonitor,
+					   setTable,
+					   getTable)
+OOLUA_EXPORT_FUNCTIONS_CONST(LuaEventMonitor)
+
+OOLUA_EXPORT_FUNCTIONS(LuaEventCallback)
+OOLUA_EXPORT_FUNCTIONS_CONST(LuaEventCallback)
+
+OOLUA_EXPORT_FUNCTIONS(LuaEventBarrier,
+					   start)
+OOLUA_EXPORT_FUNCTIONS_CONST(LuaEventBarrier)
 
 EXPORT_OOLUA_FUNCTIONS_0_CONST(GYWav)
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(GYWav)
@@ -651,10 +669,20 @@ OOLUA_EXPORT_FUNCTIONS(CombatSystem,
 					   setBgmTensionLevel,
 					   resolveCombatAction)
 
-OOLUA_EXPORT_FUNCTIONS(CameraSystem)
+OOLUA_EXPORT_FUNCTIONS_CONST(CameraKeyFrame)
+OOLUA_EXPORT_FUNCTIONS(CameraKeyFrame,
+					   setPos,
+					   setScale,
+					   setZOrient,
+					   setXOrient)
+
+OOLUA_EXPORT_FUNCTIONS(CameraSystem,
+					   scale,
+					   moveToKeyFrame)
 OOLUA_EXPORT_FUNCTIONS_CONST(CameraSystem,
 					   addEntity,
-					   removeEntity)
+					   removeEntity,
+					   getKeyFrame)
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Singletons)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(Singletons)

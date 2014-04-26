@@ -4,6 +4,7 @@
 #include "elysian_system.hpp"
 #include "elysian_instance_transform.hpp"
 #include "elysian_subprocess_manager.hpp"
+#include "elysian_timer_system.hpp"
 
 #include <vector>
 #include <gyro.h>
@@ -24,7 +25,7 @@ namespace elysian {
 
 	class CameraKeyFrame {
 		friend class CameraSystem;
-		friend class CameraState;
+		friend struct CameraState;
 		friend class CameraKeyFrameLinearInterpolator;
 	private:
 		GYVector3	_pos = GYVector3 { 0.0f, 0.0f, 0.0f };
@@ -36,24 +37,26 @@ namespace elysian {
 		void setScale(const float scale);
 		void setZOrient(const float zOrient);
 		void setXOrient(const float xOrient);
+
+
 		float getScale(void) const;
 	};
 
 
-	struct CameraKeyFrameLinearInterpolator:
+	class CameraKeyFrameLinearInterpolator:
 			public MonitorableSubProcess<CameraKeyFrameLinearInterpolator, CameraSystem> {
 		friend class CameraSystem;
 	private:
 		CameraKeyFrame	_startFrame;
 		CameraKeyFrame	_endFrame;
-		CameraKeyFrame	_curFrame;
+		//CameraKeyFrame	_curFrame;
 		float			_timeInterval;
 		float			_timeElapsed;
 	public:
 
-		void start(CameraSystem * const m);
-		void update(CameraSystem * const m);
-		void stop(CameraSystem * const m);
+		void _start(CameraSystem * const m);
+		void _update(CameraSystem * const m, const float deltaTime);
+		void _stop(CameraSystem * const m);
 
 		void setKeyFrames(const CameraKeyFrame& start, const CameraKeyFrame& end);
 		void setTimeInterval(const float time);
@@ -65,7 +68,7 @@ namespace elysian {
 		Entity* focalEntity	= nullptr;
 		std::vector<Entity*> entities;
 
-		CameraKeyFrame	_keyFrame;
+		CameraKeyFrame		_keyFrame;
 		GYVector3 dir		= { 0.0f, 1.0f, 1.0f };
 		GYVector3 up		= { 0.0f, 0.0f, 1.0f };
 		float staticScale	= 1.0f;
@@ -100,6 +103,8 @@ namespace elysian {
 									CameraKeyFrameLinearInterpolator>,
 			public System
 	{
+		friend class CameraKeyFrameLinearInterpolator;
+
 	private:
 		CameraState				_internalStates[ELYSIAN_CAMERA_SYSTEM_STACK_SIZE];
 		CameraState*			_states[ELYSIAN_CAMERA_SYSTEM_STACK_SIZE];
@@ -172,16 +177,19 @@ namespace elysian {
 			gyVec3Add(&_curState->_keyFrame._pos, &_curState->_keyFrame._pos, &dist);
 		}
 
-		void scale(const float factor, const float time) {
+		void scale(const float factor, const float time=0.0f, EventMonitor*const monitor=nullptr) {
+			auto &interp = get<SUBPROC_KEY_FR_INTERP>(*this);
+			if(interp.getProcState() == PROC_STATE_RUNNING) return;
+
 			CameraKeyFrame frame = getKeyFrame();
 			frame.setScale(frame.getScale()*factor);
-			auto &interp = get<SUBPROC_KEY_FR_INTERP>(*this);
 			interp.setKeyFrames(_curState->_keyFrame, frame);
 			interp.setTimeInterval(time);
+			interp.setEventMonitor(monitor);
 			interp.start(this);
 		}
 
-		void moveToKeyFrame(const CameraKeyFrame& frame, const float time, EventMonitor*const monitor=nullptr);
+		void moveToKeyFrame(const CameraKeyFrame& frame, const float time=0.0f, EventMonitor*const monitor=nullptr);
 
 		void staticScale(const float factor) {
 			_curState->staticScale *= factor;
@@ -207,12 +215,16 @@ namespace elysian {
 			_curState->_keyFrame._zOrient = angle;
 		}
 
-		void setScale(const float factor, const float time) {
+		void setScale(const float factor, const float time=0.0f, EventMonitor*const monitor=nullptr) {
+			auto &interp = get<SUBPROC_KEY_FR_INTERP>(*this);
+
+			if(interp.getProcState() == PROC_STATE_RUNNING) return;
+
 			CameraKeyFrame frame = getKeyFrame();
 			frame.setScale(factor);
-			auto &interp = get<SUBPROC_KEY_FR_INTERP>(*this);
 			interp.setKeyFrames(_curState->_keyFrame, frame);
 			interp.setTimeInterval(time);
+			interp.setEventMonitor(monitor);
 			interp.start(this);
 		}
 
@@ -283,6 +295,11 @@ namespace elysian {
 
 	inline float CameraKeyFrame::getScale(void) const { return _scale; }
 	inline void CameraKeyFrame::setScale(const float sc) { _scale = sc; }
+	inline void CameraKeyFrame::setPos(const float x, const float y, const float z) {
+		_pos.x = x; _pos.y = y; _pos.z = z;
+	}
+	inline void CameraKeyFrame::setZOrient(const float zOrient) { _zOrient = zOrient; }
+	inline void CameraKeyFrame::setXOrient(const float xOrient) { _xOrient = xOrient; }
 
 	inline void CameraKeyFrameLinearInterpolator::setKeyFrames(const CameraKeyFrame& start, const CameraKeyFrame& end) {
 		_startFrame = start; _endFrame = end;
@@ -292,9 +309,47 @@ namespace elysian {
 		_timeInterval = time;
 	}
 
-	inline void CameraKeyFrameLinearInterpolator::start(CameraSystem * const m) {
+	inline void CameraKeyFrameLinearInterpolator::_start(CameraSystem * const m) {
 		_timeElapsed = 0;
-		_curFrame = _startFrame;
+		if(_timeInterval == 0.0f) { //handle request immediately
+			m->_curState->_keyFrame = _endFrame;
+			stop(m);
+		}
+		else m->_curState->_keyFrame = _startFrame;
+	}
+
+	inline void CameraKeyFrameLinearInterpolator::_stop(CameraSystem * const m) {
+		_timeElapsed = 0;
+		_endFrame = m->_curState->_keyFrame;
+		_startFrame = _endFrame;
+	}
+
+	inline void CameraKeyFrameLinearInterpolator::_update(CameraSystem * const m, const float deltaTime) {
+		_timeElapsed += deltaTime;
+		bool done = false;
+		if(_timeElapsed >= _timeInterval) {
+			_timeElapsed = _timeInterval;
+			done = true;
+		}
+		/* Do some fucking terrible, type-unsafe casting to batch process linear interpolation
+		 * of all floats in the struct with the SIMD instructions. Ugly, but fast as shit. */
+		gyLinearInterp((float*)&m->_curState->_keyFrame._pos.x, 3,
+					   (float*)&_startFrame._pos.x, (float*)&_endFrame._pos.x,
+					   _timeInterval, _timeElapsed);
+
+		gyLinearInterp((float*)&m->_curState->_keyFrame._scale, 1,
+					   (float*)&_startFrame._scale, (float*)&_endFrame._scale,
+					   _timeInterval, _timeElapsed);
+
+		gyLinearInterp((float*)&m->_curState->_keyFrame._xOrient, 1,
+					   (float*)&_startFrame._xOrient, (float*)&_endFrame._xOrient,
+					   _timeInterval, _timeElapsed);
+
+		gyLinearInterp((float*)&m->_curState->_keyFrame._zOrient, 1,
+					   (float*)&_startFrame._zOrient, (float*)&_endFrame._zOrient,
+					   _timeInterval, _timeElapsed);
+
+		if(done) stop(m);
 	}
 
 	inline bool CameraState::isWithinScreenRegion(const int x, const int y, const int halfWidth, const int halfHeight) const {
