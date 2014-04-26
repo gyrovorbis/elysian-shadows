@@ -150,7 +150,7 @@ static unsigned char *load_png(GYFile *f, image_t *img)
 		return NULL;
 	}
     for(i = 0; i < height; i++) {
-		row_pointers[height - 1 - i] = (pixels + i * rowbytes);
+		row_pointers[i] = (pixels + i * rowbytes);
     }
 	png_read_image(png_ptr, row_pointers);
 	png_read_end(png_ptr, info_ptr);
