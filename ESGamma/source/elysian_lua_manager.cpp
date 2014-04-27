@@ -442,4 +442,7 @@ void LuaManager::runGarbageCollector(void) {
 	_mainState->gc();
 }
 
+
+
+
 }

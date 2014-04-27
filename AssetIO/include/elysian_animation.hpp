@@ -121,7 +121,6 @@ namespace elysian {
 				Animation(Entity& parent);
 		virtual ~Animation(void) override;
 		void	_updateChildren(void);
-		void	_linearInterpolate(float* current, const unsigned int count, const float* previous, const float* next, const float interval, const float elapsed);
 
 	public:
 		virtual bool load(FILE* file) override;

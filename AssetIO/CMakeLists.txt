@@ -57,6 +57,7 @@ set(AssetIO_INCLUDES
 	${AssetIO_INCLUDE_DIR}/elysian_quad_sprite_attrib.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_renderable.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_renderable_object.hpp
+	${AssetIO_INCLUDE_DIR}/elysian_rigid_body.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_sprite_attrib.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_stl_algorithm.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_textured_attrib.hpp

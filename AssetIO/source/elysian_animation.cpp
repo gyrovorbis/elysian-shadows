@@ -9,11 +9,6 @@ namespace elysian {
 
 //----NONSTATIC----
 
-//This could so be SIMD accelerated to all fuck for vectors.
-inline void Animation::_linearInterpolate(float* current, const unsigned int count, const float *previous, const float *next, const float interval, const float elapsed) {
-	for(unsigned i = 0; i < count; ++i) current[i] = (previous[i] + (next[i]-previous[i])/(interval/elapsed));
-}
-
 
 Animation::~Animation(void) {
 	delete _children;
@@ -65,10 +60,10 @@ void Animation::_updateChildren(void) {
 
 
 		if(childEntry->seq->getLinearInterpolation()) {
-			_linearInterpolate((float*)&offset, 3, (childEntry->frIndex != 0)? (float*)&childEntry->seq->_frames[childEntry->frIndex-1].offset : (float*)&childEntry->seq->_frames[childEntry->seq->_frames.size()-1].offset,
+			gyLinearInterp((float*)&offset, 3, (childEntry->frIndex != 0)? (float*)&childEntry->seq->_frames[childEntry->frIndex-1].offset : (float*)&childEntry->seq->_frames[childEntry->seq->_frames.size()-1].offset,
 					(float*)&childEntry->frame->offset, _currentSequence->_frames[childEntry->frIndex].duration, _timer);
 
-			_linearInterpolate(&zOrient, 1, (childEntry->frIndex != 0)? &childEntry->seq->_frames[childEntry->frIndex-1].zOrient : &childEntry->seq->_frames[childEntry->seq->_frames.size()-1].zOrient,
+			gyLinearInterp(&zOrient, 1, (childEntry->frIndex != 0)? &childEntry->seq->_frames[childEntry->frIndex-1].zOrient : &childEntry->seq->_frames[childEntry->seq->_frames.size()-1].zOrient,
 					&childEntry->frame->zOrient, _currentSequence->_frames[childEntry->frIndex].duration, _timer);
 
 		} else {
@@ -156,7 +151,7 @@ void Animation::update(const float deltaTime) {
 	} else if(_currentSequence->getLinearInterpolation()) {
 		GYVector2 offset;
 
-		_linearInterpolate((float*)&offset, 2, (float*)&_currentSequence->_frames[(_currentFrame)? _currentFrame-1 : _currentSequence->_frames.size()-1].offset,
+		gyLinearInterp((float*)&offset, 2, (float*)&_currentSequence->_frames[(_currentFrame)? _currentFrame-1 : _currentSequence->_frames.size()-1].offset,
 										(float*)&_currentSequence->_frames[_currentFrame].offset, _currentSequence->_frames[_currentFrame].duration, _timer);
 
 		_entity->getRenderable()->setOffset(offset);

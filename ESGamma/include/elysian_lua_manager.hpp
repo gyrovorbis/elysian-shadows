@@ -15,6 +15,23 @@
 #endif
 
 namespace elysian {
+
+//1) rearchitect to support threads gracefully
+//2) figure out why shit's reesting with coroutines
+
+/*
+	//Architecture
+	//LuaThread encapsulating state and offering all debug functionality
+	//Managers can retrieve main state
+	class LuaThread: public LuaManager {
+		OOLUA::Script* _state = nullptr;
+
+
+
+
+
+
+	};*/
 	
 	class LuaManager {
 	private:
@@ -128,7 +145,6 @@ namespace elysian {
 
 	};
 
-
 	inline void LuaManager::_protectedCall(const int nargs, const int nresults, LuaScript *script) {
 #ifdef ELYSIAN_LUA_DEBUG
 		lua_pushcfunction(*_mainState, &LuaManager::_traceBack);
@@ -160,8 +176,8 @@ namespace elysian {
 	struct LuaManager::__RValuePull<void> {
 		static void pull(lua_State* const /*state*/) {}
 	};
-	
-	
+
+
 }
 
 #endif

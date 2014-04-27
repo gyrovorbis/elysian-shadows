@@ -39,6 +39,7 @@ set(ESG_SOURCES
 	${ESG_SOURCE_DIR}/elysian_debug.cpp
 	${ESG_SOURCE_DIR}/elysian_dialog_system.cpp
 	${ESG_SOURCE_DIR}/elysian_engine.cpp
+	${ESG_SOURCE_DIR}/elysian_event_monitor.cpp
 	${ESG_SOURCE_DIR}/elysian_examinable_system.cpp
 	${ESG_SOURCE_DIR}/elysian_font.cpp
 	${ESG_SOURCE_DIR}/elysian_force_generator.cpp
@@ -73,6 +74,7 @@ set(ESG_INCLUDES
 	${ESG_INCLUDE_DIR}/elysian_debug.hpp
 	${ESG_INCLUDE_DIR}/elysian_dialog_system.hpp
 	${ESG_INCLUDE_DIR}/elysian_engine.hpp
+	${ESG_INCLUDE_DIR}/elysian_event_monitor.hpp
 	${ESG_INCLUDE_DIR}/elysian_examinable_system.hpp
 	${ESG_INCLUDE_DIR}/elysian_font.hpp
 	${ESG_INCLUDE_DIR}/elysian_force_generator.hpp
@@ -91,6 +93,7 @@ set(ESG_INCLUDES
 	${ESG_INCLUDE_DIR}/elysian_quad_sprite.hpp
 	${ESG_INCLUDE_DIR}/elysian_rigid_body_system.hpp
 	${ESG_INCLUDE_DIR}/elysian_sprite.hpp
+	${ESG_INCLUDE_DIR}/elysian_subprocess_manager.hpp
 	${ESG_INCLUDE_DIR}/elysian_system.hpp
 	${ESG_INCLUDE_DIR}/elysian_timer_system.hpp
 	${ESG_INCLUDE_DIR}/elysian_warp_system.hpp
