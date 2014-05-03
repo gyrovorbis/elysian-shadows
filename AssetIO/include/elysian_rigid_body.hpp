@@ -42,6 +42,7 @@ namespace elysian {
 		friend class RigidBodySystem;
 	private:
 		float				_tileDamping = 1.0f;
+		bool				_restingOnTile	= false;
 		RigidBodyAttrib*	_attrib = nullptr;
 	public:
 

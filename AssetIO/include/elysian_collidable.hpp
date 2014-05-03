@@ -54,14 +54,15 @@ public:
 	inline void setColliderType(const GY_COLLIDER_TYPE type) { _type = type; }
 	inline void setRelPos(const float x, const float y) { _relPos.x = x; _relPos.y = y; }
 	inline void setRelSize(const float x, const float y) { _relSize.x = x; _relSize.y = y; }
+	inline const GYVector3& getRelSize(void) const { return _relSize; }
 	inline GYStatic *getStaticAttrib(void) { return &_staticAttrib; }
 	inline CollisionFlags *getFlags(void) { return &flags; }
 	
 private:
         GYStatic _staticAttrib;
-        GYVector2 _relPos;
-		GYVector2 _relSize;
-        GY_COLLIDER_TYPE _type;
+		GYVector3 _relPos		= { 0.0f, 0.0f, 0.0f };
+		GYVector3 _relSize		= { 1.0f, 1.0f, 1.0f };
+		GY_COLLIDER_TYPE _type	= GY_COLLIDER_AABB;
 
 };
 	
@@ -69,6 +70,7 @@ private:
         friend class Entity;
 #ifdef ELYSIAN_ENGINE
 		friend class CollisionSystem;
+		friend class RigidBodySystem;
 #endif
 	public:
 		enum ZTRAN_STATE { ZTRAN_INACTIVE, ZTRAN_ACTIVE };
@@ -111,14 +113,14 @@ private:
 		inline CollidableAttrib *getAttrib(void) const { return _attrib; }
 		inline ZTRAN_STATE getZTranState(void) const { return _zTranState; }
 		inline void setZTranState(const ZTRAN_STATE tran) { _zTranState = tran; }
-		inline const GYVector2 &getCenterWorldPos(void) const { return _collider.col.worldPos; }
+		inline const GYVector3 &getCenterWorldPos(void) const { return _collider.col.worldPos; }
 		inline void setZTranTile(unsigned x, unsigned y) { _zTranTileX = x; _zTranTileY = y; }
 		inline void getZTranTile(unsigned &x, unsigned &y) const { x = _zTranTileX; y = _zTranTileY; }
 		inline void setResolvePenetration(const bool v) { _resolvePen = v; }
 		inline uint32_t getContactEventMonitorMask(void) const { return _eventMonitorMask; }
 		inline void setContactEventMonitorMask(const uint32_t t) { _eventMonitorMask = t; }
 		inline GYCollider* getCollider(void) { return &_collider.col; }
-		const GYVector2& getWorldPos(void) const;
+		const GYVector3& getWorldPos(void) const;
 	};
 
 	/*
@@ -157,11 +159,9 @@ private:
 
 	// ======== INLINEZ ========
 
-	inline const GYVector2& Collidable::getWorldPos(void) const { return _collider.col.worldPos; }
+	inline const GYVector3& Collidable::getWorldPos(void) const { return _collider.col.worldPos; }
 
-	inline CollidableAttrib::CollidableAttrib(void): 
-		_type(GY_COLLIDER_AABB) { 
-		_relSize.x = _relSize.y = 1.0f; _relPos.x = _relPos.y = 0.0f; 
+	inline CollidableAttrib::CollidableAttrib(void) {
 		_staticAttrib.inverseMass = 1.0f/3000.0f;
 		_staticAttrib.angDamping = 1.0f;
 		_staticAttrib.damping = 1.0f;

@@ -42,7 +42,6 @@ namespace elysian {
     //Minimal base class for entity entries
     struct EntityDepthBuffEntry {
 		float zCoordRelative; //required to sort the bitches
-		float zCoordWorld;
         //Entity *entity //don't need this in base anymore
     };
     
@@ -97,8 +96,8 @@ namespace elysian {
 			return static_cast<const T*>(this)->getEntityCount();
 		}
 		
-		bool _getOnscreenEntity(const unsigned index, E &entry, NORMAL_TYPE &normalType, float &lowestY, unsigned char &elev) const {
-			return static_cast<const T*>(this)->getOnscreenEntity(index, entry, normalType, lowestY, elev);
+		bool _getOnscreenEntity(const unsigned index, E &entry, NORMAL_TYPE &normalType, float &lowestY, float &zCoord) const {
+			return static_cast<const T*>(this)->getOnscreenEntity(index, entry, normalType, lowestY, zCoord);
 		}
 
 		void _renderEntityEntry(E &entry) {
@@ -213,29 +212,28 @@ namespace elysian {
         E entityEntry;
 		NORMAL_TYPE normalType;
         float entityBase;
-		unsigned char elev;
+		float zCoord;
         
 		//Determine entity Z coord and add to buff
 		//If PERFECTLY tile-aligned, add a delta/epsilon to prevent duplicate Zing - or don't bother? Doesn't matter?
 		for(unsigned i = 0; i < entityCount; ++i) {
-			if(!_getOnscreenEntity(i, entityEntry, normalType, entityBase, elev)) continue; //not onscreen
+			if(!_getOnscreenEntity(i, entityEntry, normalType, entityBase, zCoord)) continue; //not onscreen
 
 			//FUCKING DISGUSTING, DIRTY, UGLY Z-FIGHTING HACK!!!!
-			float worldZCoord = (ZCoordConstants::mapBase + (elev)*32.0f);//-(((float)entityBase/32.0f)-((int)entityBase/32));
+			//float worldZCoord = (ZCoordConstants::mapBase + (elev)*32.0f);//-(((float)entityBase/32.0f)-((int)entityBase/32));
 
 			//calculate relative Z coord
-			float zCoord = (entityBase-mapStartY)/32.0f + elev;
+			float relZCoord = (entityBase-mapStartY)/32.0f + zCoord;
 			//Add depth buffer entry
-			unsigned zIndex = (unsigned)zCoord;
+			unsigned zIndex = (unsigned)relZCoord;
 			if(zIndex >= _depthBuffMaxHeight) zIndex = _depthBuffMaxHeight-1;
 			//assert(zIndex >= 0 && zIndex < depthBuffMaxHeight);
 
 			_entityBuff[zIndex][_entityCount[zIndex]] = entityEntry;
-			_entityBuff[zIndex][_entityCount[zIndex]].zCoordRelative = zCoord;
-			_entityBuff[zIndex][_entityCount[zIndex]].zCoordWorld = worldZCoord;
+			_entityBuff[zIndex][_entityCount[zIndex]].zCoordRelative = relZCoord;
 
 			//render immediately
-			if(elev && normalType == NORMAL_FLAT) _renderEntityEntry(_entityBuff[zIndex][_entityCount[zIndex]]);
+			if(zCoord < 32.0f && normalType == NORMAL_FLAT) _renderEntityEntry(_entityBuff[zIndex][_entityCount[zIndex]]);
 			//queue and render later
 			else ++_entityCount[zIndex];
 

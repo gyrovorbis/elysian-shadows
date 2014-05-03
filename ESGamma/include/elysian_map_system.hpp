@@ -67,7 +67,7 @@ namespace elysian {
         void beginObjectList(void) const;
         void endObjectList(void) const;
 		unsigned getEntityCount(void) const;
-		bool getOnscreenEntity(const unsigned index, GammaEntityDepthBuffEntry &entry, NORMAL_TYPE &normalType, float &lowestY, unsigned char &elev) const;
+		bool getOnscreenEntity(const unsigned index, GammaEntityDepthBuffEntry &entry, NORMAL_TYPE &normalType, float &lowestY, float &zCoord) const;
         void renderEntityEntry(const GammaEntityDepthBuffEntry &entry) const;
 		void disableDepthTest(void) const;
 		void enableDepthTest(void) const;
@@ -180,13 +180,13 @@ namespace elysian {
 		return _curArea->entities.size();
 	}
 
-	inline bool MapSystem::getOnscreenEntity(const unsigned index, GammaEntityDepthBuffEntry &entry, NORMAL_TYPE &normalType, float &lowestY, unsigned char &elev) const {
+	inline bool MapSystem::getOnscreenEntity(const unsigned index, GammaEntityDepthBuffEntry &entry, NORMAL_TYPE &normalType, float &lowestY, float& zCoord) const {
 		Entity &entity = *(_curArea->entities)[index];
 		if(getCameraSys()->isOnscreen(entity)) {
 			entry.entity = &entity;
 			normalType = entity.getNormalType();
 			lowestY = entity.getDepthBaseY();
-			elev = entity.getElev();
+			zCoord = entity.transform._pos.z;
 			return true;
 		}
 		return false;
@@ -194,7 +194,7 @@ namespace elysian {
 	
 	inline void MapSystem::renderEntityEntry(const GammaEntityDepthBuffEntry &entry) const {
 		//entry.entity->renderAtZ(entry.zCoord);
-		entry.entity->transform.setPosZ(entry.zCoordWorld);
+		//entry.entity->transform.setPosZ(entry.zCoordWorld);
 		entry.entity->render();
 	}
 

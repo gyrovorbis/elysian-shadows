@@ -19,11 +19,11 @@ namespace elysian {
 		unsigned				_contactCount	= 0;
 		unsigned				_velResIter		= 0;
 
-
 		void _updateContacts(void);
 
 	public:
 		void update(void);
+		void integrate3D(void);
 
 		unsigned getVelResIterUsed(void) const;
 

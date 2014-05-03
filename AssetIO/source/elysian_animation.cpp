@@ -139,7 +139,7 @@ void Animation::update(const float deltaTime) {
 
 	_updateChildren();
 
-	_timer += deltaTime;
+	_timer += deltaTime * _speedMultiplier;
 	if(_timer >= _currentSequence->_frames[_currentFrame].duration) {
 		if(_currentSequence->_frames.size() <= ++_currentFrame) _currentFrame = 0;
 		_timer = 0.0f;

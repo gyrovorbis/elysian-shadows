@@ -25,6 +25,7 @@ namespace elysian {
 		unsigned	_size			= 3;
 		//unsigned	_intensity		= 100; //for periodically generated particles, dunno if it should be here or not
 		bool		_fadeOut		= true;
+		bool		_stick			= true;
 		unsigned	_minFrame		= 0;
 		unsigned	_maxFrame		= 0;
 		uint32_t	_forceMask		= ~0x0;
@@ -43,6 +44,7 @@ namespace elysian {
 		void loadSpecularMap(const char*const path, const unsigned width, const unsigned height);
 		uint32_t getForceMask(void) const;
 		void setForceMask(const uint32_t mask);
+		void setStick(const bool val);
 	};
 
 	class Particle: public ForceTarget {
@@ -142,6 +144,8 @@ namespace elysian {
 		if(_specularMap) gyVidTexDestroy(_specularMap);
 		_specularMap = gyVidTexCreate(path, width, height);
 	}
+
+	inline void ParticleEmitterAttrib::setStick(const bool val) { _stick = val; }
 
 }
 

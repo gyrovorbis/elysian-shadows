@@ -113,6 +113,7 @@ namespace elysian {
 		AnimationAttrib*		_attrib				= nullptr;
 		ChildAnimationAttrib*	_childAttrib		= nullptr;
 		AnimationSequence*		_currentSequence	= nullptr;
+		float					_speedMultiplier	= 1.0f;
 		float					_timer				= 0.0f;
 		unsigned int			_currentFrame		= 0;
 		bool					_isActive			= false;
@@ -138,6 +139,7 @@ namespace elysian {
 		
 		AnimationAttrib*		getAttrib(void) const;
 		ChildAnimationAttrib*	getChildAttrib(void) const;
+		void					setSpeedMultiplier(const float factor);
 		void					setAttrib(AnimationAttrib* attributes);
 		void					setChildAttrib(ChildAnimationAttrib* childAttrib);
 		bool					isActive(void) const;
@@ -149,7 +151,6 @@ namespace elysian {
 		const GYVector2&		getChildPivot(void) const;
 		void					addChildEntity(Entity*const entity, const char*animName);
 		void					removeChildEntity(const char*animName);
-	
 	};
 
 
@@ -234,6 +235,7 @@ namespace elysian {
 	inline void Animation::setLooping(const bool val) { _looping = val; }
 	inline void Animation::setChildPivot(const float x, const float y) { _childPivot.x = x; _childPivot.y = y; }
 	inline const GYVector2& Animation::getChildPivot(void) const { return _childPivot; }
+	inline void Animation::setSpeedMultiplier(const float factor) { _speedMultiplier = factor; }
 
 
 

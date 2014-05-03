@@ -10,6 +10,7 @@
 #include "elysian_collision_system.hpp"
 #include "elysian_examinable.hpp"
 #include "elysian_behavior_system.hpp"
+#include "elysian_particle_system.hpp"
 
 namespace elysian {
 
@@ -27,6 +28,7 @@ PartySystem::~PartySystem() {
 }
 
 void PartySystem::update(void) {//VOIDICATE
+	_tapTimer += getTimerSys()->getDeltaTime();
 	//if(_playableParty.size() < 1) return;
 	updatePartyPaths();
 }
@@ -34,12 +36,12 @@ void PartySystem::update(void) {//VOIDICATE
 void PartySystem::render() {}
 
 void PartySystem::processInput(const GameInput &input) {
-	GYVector2 moveDist = { 0.0f, 0.0f };
-	const static GYVector2 rightMove = { 180.0f, 0.0f };
-	const static GYVector2 leftMove = { -180.0f, 0.0f };
-	const static GYVector2 upMove = { 0.0f, -180.0f };
-	const static GYVector2 downMove = { 0.0f, 180.0f };
+	const static GYVector2 rightMove = { 1.0f, 0.0f };
+	const static GYVector2 leftMove = { -1.0f, 0.0f };
+	const static GYVector2 upMove = { 0.0f, -1.0f };
+	const static GYVector2 downMove = { 0.0f, 1.0f };
 	bool moved = false;
+	GYVector2 moveDist = { 0.0f, 0.0f };
 
 	//if(_playableParty.size() < 1) return;
 	
@@ -58,22 +60,102 @@ void PartySystem::processInput(const GameInput &input) {
 		RemovePlayableFromParty(0u);
 		return;
 	}*/
+
+	auto updateDash = [&](const GameInput::BUTTON but) {
+		bool updateTappedButton = true;
+
+		if(_dashing) {
+			bool stop = false;
+			switch(_lastDpadTapped) {
+				case GameInput::BUT_DPAD_U:
+				  if(but == GameInput::BUT_DPAD_D) stop = true;
+					break;
+				case GameInput::BUT_DPAD_D:
+					if(but == GameInput::BUT_DPAD_U) stop = true;
+					 break;
+
+				case GameInput::BUT_DPAD_L:
+					if(but == GameInput::BUT_DPAD_R) stop = true;
+					break;
+
+				case GameInput::BUT_DPAD_R:
+					if(but == GameInput::BUT_DPAD_L) stop = true;
+					  break;
+
+			}
+
+			if(stop) {
+				getPartyLeader()->getAnimation()->setSpeedMultiplier(1.0f);
+				_dashing = false;
+				_moveSpeed = ELYSIAN_PARTY_SYSTEM_WALK_SPEED;
+			} else {
+				updateTappedButton = false;
+			}
+		} else {
+			if(but == _lastDpadTapped && _tapTimer <= _dashTapTimeWindow) {
+				float angle;
+
+				switch(_lastDpadTapped) {
+					case GameInput::BUT_DPAD_U:
+					  angle = M_PI*0.5f;
+						break;
+					case GameInput::BUT_DPAD_D:
+						angle = -M_PI*0.5f;
+						 break;
+
+					case GameInput::BUT_DPAD_L:
+						angle = 0.0f;
+						break;
+
+					case GameInput::BUT_DPAD_R:
+						angle = -M_PI;
+						  break;
+
+				}
+
+				_dashing = true;
+				_moveSpeed = ELYSIAN_PARTY_SYSTEM_DASH_SPEED;
+				getPartyLeader()->getAnimation()->setSpeedMultiplier(3.0f);
+				getPartSys()->getAttrib(0)->setSize(3);
+				getPartSys()->getAttrib(0)->setFadeOut(true);
+				getPartSys()->getAttrib(0)->setAcceleration(GYVector3{ 0.0f, -70.0f, /*7.0f*//*6.5f*/ });
+				getPartSys()->getAttrib(0)->setForceMask(0);
+				getPartSys()->getAttrib(0)->setMaxLife(30);
+				getPartSys()->getAttrib(0)->setStick(false);
+				GYVector3 pos = getPartyLeader()->transform._pos;
+				pos.z += 5.0f;
+				pos.y = getPartyLeader()->getDepthBaseY();
+				getPartSys()->emitFromPoint(0, pos, angle, 500);
+
+				Debug::printf(Debug::VERBOSE, "DASHING!!!");
+			}
+		}
+
+		if(updateTappedButton) _lastDpadTapped = but;
+		_tapTimer = 0.0f;
+	};
+
+
 	
 	if(input.getDown(GameInput::BUT_DPAD_U)){
+		if(input.getTapped(GameInput::BUT_DPAD_U)) updateDash(GameInput::BUT_DPAD_U);
 		gyVec2AddAccum(&moveDist, &upMove);
 		moved = true;
 	}
 	if(input.getDown(GameInput::BUT_DPAD_D)){
+		if(input.getTapped(GameInput::BUT_DPAD_D))  updateDash(GameInput::BUT_DPAD_D);
 		gyVec2AddAccum(&moveDist, &downMove);
 		moved = true;
 	}
 	
 	if(input.getDown(GameInput::BUT_DPAD_L)){
+		if(input.getTapped(GameInput::BUT_DPAD_L))  updateDash(GameInput::BUT_DPAD_L);
 		gyVec2AddAccum(&moveDist, &leftMove);
 		moved = true;
 	}
 	
 	if(input.getDown(GameInput::BUT_DPAD_R)){
+		if(input.getTapped(GameInput::BUT_DPAD_R)) updateDash(GameInput::BUT_DPAD_R);
 		gyVec2AddAccum(&moveDist, &rightMove);
 		moved = true;
 	}
@@ -84,11 +166,15 @@ void PartySystem::processInput(const GameInput &input) {
 		if(_characterParty.size() != 0) _checkExamine(_characterParty[0]);
 	}
 
-	gyVec2ScaleAccum(&moveDist, getTimerSys()->getDeltaTime());
 	if(moved) {
+		gyVec2ScaleAccum(&moveDist, getTimerSys()->getDeltaTime()*_moveSpeed);
 //		if(_playableParty.size() == 0 && _characterParty.size() == 0) getCameraSys()->transform.translate(moveDist);
 		if(_playableParty.size() != 0) _playableParty[0]->getCharacter()->move(moveDist);
 		else if(_characterParty.size() != 0) _characterParty[0]->getCharacter()->move(moveDist);
+	} else {
+		_dashing = false;
+		_moveSpeed = ELYSIAN_PARTY_SYSTEM_WALK_SPEED;
+		getPartyLeader()->getAnimation()->setSpeedMultiplier(1.0f);
 	}
 }
 

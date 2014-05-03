@@ -94,11 +94,15 @@ void Engine::update(void) {
 			_cameraSystem->update();
 			_lightSystem->update();
 			_audioSystem->update();
+
 			_rigidBodySystem->applyForces();
 			_rigidBodySystem->integrate();
+			_collisionSystem->prepareGeometry();
+			_rigidBodySystem->integrate3D();
 			_collisionSystem->update();
 			_rigidBodySystem->update();
 			_rigidBodySystem->resolveContactVelocities();
+
 			_timerSystem->update();
 			_mapSystem->update();
 			_characterSystem->Update();

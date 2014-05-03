@@ -193,7 +193,7 @@ void Entity::renderShadowVolume(void) {
 
 		gyMatTranslate(transform._pos.x,
 					   transform._pos.y+shearFactor*halfSize.y, //move to bottom then move back up by half the depth
-					   ZCoordConstants::mapBase + (_elev)*32.0f);
+					   transform._pos.z);
 
 		gyMatScale(halfSize.x, halfSize.y, halfSize.z);
 		gyMatShearZ(0.0f, -shearFactor);
@@ -203,7 +203,7 @@ void Entity::renderShadowVolume(void) {
 
 		gyMatTranslate(transform._pos.x,
 					   transform._pos.y, //move to bottom then move back up by half the depth
-					   ZCoordConstants::mapBase + (_elev)*32.0f);
+					   transform._pos.z);
 
 		gyMatRotateZ(-transform._orientZ);
 		gyMatScale(halfSize.x, halfSize.z, halfSize.y);

@@ -60,6 +60,7 @@ namespace elysian {
 		_mainState->register_class<AudioSource>();
 		_mainState->register_class<LightSource>();
 		_mainState->register_class<RigidBodyAttrib>();
+		_mainState->register_class<ForceTarget>();
 		_mainState->register_class<RigidBody>();
 		_mainState->register_class<AudioSystem>();
 		_mainState->register_class<LightSystem>();
@@ -359,10 +360,13 @@ OOLUA_EXPORT_FUNCTIONS_CONST(RigidBodyAttrib,
 OOLUA_EXPORT_FUNCTIONS(RigidBodyAttrib,
 					   setForceMask)
 
+OOLUA_EXPORT_FUNCTIONS(ForceTarget,
+					   applyForce,
+					   applyForceToPoint)
+OOLUA_EXPORT_FUNCTIONS_CONST(ForceTarget)
+
 OOLUA_EXPORT_FUNCTIONS_CONST(RigidBody)
 OOLUA_EXPORT_FUNCTIONS(RigidBody,
-					   applyForce,
-					   applyForceToPoint,
 					   setAttrib)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(ForceGenerator)

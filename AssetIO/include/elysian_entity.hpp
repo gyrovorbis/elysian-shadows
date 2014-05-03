@@ -157,11 +157,11 @@ namespace elysian {
 #endif
 
 
-	inline void Entity::setElev(const unsigned char e) { _elev = e; }
-	inline unsigned char Entity::getElev(void) const { return _elev; }
+	inline void Entity::setElev(const unsigned char e) { transform._pos.z = (float)e*32.0f; }
+	inline unsigned char Entity::getElev(void) const { return transform._pos.z/32.0f; }
 	inline auto Entity::getNormalType(void) const -> NORMAL_TYPE { return _normalType; }
 	inline void Entity::setNormalType(const NORMAL_TYPE normal) { _normalType = normal; }
-    inline float Entity::getDepthBaseY(void) const { return (transform._pos.y + 0.5f * transform._size.y + 16.0f); }
+	inline float Entity::getDepthBaseY(void) const { return (transform._pos.y + 0.5f * transform._size.y * transform._scale.y); }
 	inline std::map<char const *, Behavior*, ltstr>& Entity::getBehaviors(void) { return _behavior; }
 	inline void Entity::setShadowVolume(const bool v) { _shadowVolume = v; }
 	inline bool Entity::isShadowVolume(void) const { return _shadowVolume; }

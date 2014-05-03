@@ -30,7 +30,7 @@ namespace elysian {
 		unsigned		_hours			= 0;
 		unsigned		_minutes		= 0;
 
-		float			_timeSpeed		= 600.0f;
+		float			_timeSpeed		= 60.0f;
 
 		Entity*			_sunEntity		= nullptr;
 		LightSource*	_sunLightSrc	= nullptr;

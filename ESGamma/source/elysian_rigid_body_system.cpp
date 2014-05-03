@@ -188,7 +188,7 @@ void RigidBodySystem::resolveContactVelocities(void) {
 
 void RigidBodySystem::integrate(void) {
 	const float deltaTime = getTimerSys()->getDeltaTime();
-	GYVector2 worldPos;
+	GYVector3 worldPos;
 	float damping;
 
 	auto accumTileDamping = [&](RigidBody* rb, TileEntry entry) {
@@ -199,7 +199,7 @@ void RigidBodySystem::integrate(void) {
 
 	//update entity RigidBodies
 	auto rigidBodies = getCurArea()->rigidBodies;
-	for(auto it : rigidBodies) {
+	for(auto& it : rigidBodies) {
 		damping = 1.0f;
 
 		worldPos = it->getEntity()->getCollidable()->getWorldPos();
@@ -208,6 +208,152 @@ void RigidBodySystem::integrate(void) {
 		it->setTileDamping(damping);
 		it->integrate(deltaTime);
 	}
+
+}
+
+void RigidBodySystem::integrate3D(void) {
+	const float deltaTime = getTimerSys()->getDeltaTime();
+	CollisionSystem*const colSys = getCollisionSys();
+	auto rigidBodies = getCurArea()->rigidBodies;
+
+#if 0
+
+	for(auto& it : rigidBodies) {
+		auto* collidable = it->getEntity()->getCollidable();
+
+		unsigned beforeCount = collidable->getContactCount();
+
+		if(collidable->getEntity()->transform._pos.z < 0.0f) {
+			GYVector3 vel = it->getVelocity();
+			vel.z = 0.0f;
+			//vel.y = 0.0f;
+			it->setVelocity(vel);
+			collidable->getEntity()->transform._pos.z = 0.0f;
+		} else {
+
+			GYVector3 vel = it->getVelocity();
+			if(vel.z > 0.0f) continue;
+
+			colSys->_detectEntityTileCollisionCoarse(*it->getEntity()->getCollidable(), CollisionSystem::ENTITY_TILE_CHECK_BOTTOM);
+			//We are standing ontop of a solid
+			if(beforeCount != collidable->getContactCount()) {
+				found = true;
+
+				//it->getAttrib()->setForceMask(0);
+				//move back up by normal
+				float normal =
+						(int)(collidable->getEntity()->transform._pos.z+16.0f)/32*32 - collidable->getEntity()->transform._pos.z;
+
+					collidable->getEntity()->transform._pos.z += normal;
+					GYVector3 vel = it->getVelocity();
+					vel.z = 0.0f;
+					it->setVelocity(vel);
+					Debug::printf(Debug::CRITICAL, "GOT IT");
+			//	} else {
+					//Debug::printf(Debug::CRITICAL, "TOUGH SHIT - %f", normal);
+			//	}
+			}
+			//else it->getAttrib()->setForceMask(1);
+
+		}
+
+
+
+	}
+
+#else
+
+
+	for(auto& it : rigidBodies) {
+		unsigned i;
+		TileEntry entry;
+		auto* collidable = it->getEntity()->getCollidable();
+
+		GYVector3 vel = it->getVelocity();
+		if(vel.z > 0.0f) continue;
+
+/*
+		if(collidable->getEntity()->transform._pos.z <= 0.0f) {
+			GYVector3 vel = it->getVelocity();
+			vel.z = 0.0f;
+			//vel.y = 0.0f;
+			it->setVelocity(vel);
+			collidable->getEntity()->transform._pos.z = 0.0f;
+			return;
+		}*/
+
+
+	//	for(unsigned i = 0; i < 4; ++i) {
+		//if(found) break;
+/*
+		GYVector3 worldPos = {
+			it->getEntity()->getCollidable()->_collider.box.worldVert[i].x,
+			it->getEntity()->getCollidable()->_collider.box.worldVert[i].y,
+			it->getEntity()->getCollidable()->_collider.box.worldVert[3].z
+		};*/
+		GYVector3 worldPos = it->getEntity()->getCollidable()->getCenterWorldPos();
+		float zTop = 0.0f;
+
+		const unsigned elev = /*(worldPos.z == 0.0f)? 0 :*/ (worldPos.z)/32;
+		worldPos.y += 32.0f; /*it->getEntity()->getCollidable()->getAttrib()->getRelSize().y*
+				it->getEntity()->transform._size.y * it->getEntity()->transform._scale.y;*/
+
+
+			for(i = 0; i < 3; ++i) {
+				for(unsigned j = 1; j < 2; ++j) {
+					//if(found) break;
+
+				entry = getCurArea()->getTileEntry(i, (worldPos.x+16.0f)/32, (worldPos.y+16.0f)/32/*+elev*/-j/*-1*/);
+
+
+				//if(!(j == 0 && entry.getNormal()) && !(j == 0 && !entry.getNormal())) {
+
+
+					if(getCurLevel()->getTile(entry.getIndex())->standOn) {
+
+
+						float newTop = (entry.getElev()*32 + (entry.getNormal()? 32.0f : 0.0f) );
+
+
+						if(newTop > zTop && fabs(newTop-worldPos.z) <= 16.0f) {
+							zTop = newTop;
+
+
+						}
+					}
+				//}
+				}
+
+			}
+
+		//}
+
+
+
+		//if(found) {
+				//it->getAttrib()->setForceMask(0);
+			if(collidable->getEntity()->transform._pos.z <= zTop) {
+				collidable->getEntity()->transform._pos.z = zTop;
+				GYVector3 vel = it->getVelocity();
+				vel.z = 0.0f;
+				it->setVelocity(vel);
+				//Debug::printf(Debug::CRITICAL, "Resting");
+				collidable->getEntity()->getCollidable()->update();
+
+				//collidable->setResolvePenetration(false);
+				it->_restingOnTile = true;
+		//	}
+
+		} else {
+			//Debug::printf(Debug::CRITICAL, "Falling");
+			it->getAttrib()->setForceMask(1);
+			collidable->setResolvePenetration(true);
+			it->_restingOnTile = false;
+
+		}
+	}
+#endif
+
 
 }
 

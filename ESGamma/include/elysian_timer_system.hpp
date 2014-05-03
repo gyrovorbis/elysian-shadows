@@ -4,8 +4,8 @@
 #include "elysian_system.hpp"
 
 #define DELTA_TIME_CIRC_BUFFER_SIZE 20
-#define MAX_FRAMERATE 60
-#define MIN_FRAMERATE 30
+#define MAX_FRAMERATE 60.0f
+#define MIN_FRAMERATE 30.0f
 
 #define ENABLE_MAX_FRAMERATE true
 #define ENABLE_MIN_FRAMERATE true
@@ -32,7 +32,7 @@ namespace elysian {
 		float _maxFramerate, _minFramerate;
 
 		float _deltaTimeCircBuffer[DELTA_TIME_CIRC_BUFFER_SIZE];
-		//float _realDeltaCircBuffer[DELTA_TIME_CIRC_BUFFER_SIZE];
+		float _realDeltaCircBuffer[DELTA_TIME_CIRC_BUFFER_SIZE];
 		unsigned _buffIndex;
 
 	public:

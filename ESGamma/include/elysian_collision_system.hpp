@@ -11,10 +11,12 @@
 #define ELYSIAN_COLLISION_SYSTEM_PROTECTED					true
 #define ELYSIAN_COLLISION_CONTACT_LIST_SIZE					100
 #define ELYSIAN_COLLISION_PREV_CONTACT_LIST_SIZE			100
-#define ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS 100
-#define ELYSIAN_COLLISION_CONTACT_PENETRATION_EPSILON		0.5f
+#define ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS 1000
+#define ELYSIAN_COLLISION_CONTACT_PENETRATION_EPSILON		0.8f
 
 namespace elysian {
+
+	class RigidBodySystem;
 
 	class CollisionContactEventMonitor {
 	private:
@@ -30,6 +32,7 @@ namespace elysian {
 	};
 	
 	class CollisionSystem: public System { 
+		friend class RigidBodySystem;
 	public:
 		enum RENDER_LAYER {
 			RENDER_DISABLED,
@@ -39,6 +42,11 @@ namespace elysian {
 			RENDER_COMBINED,
 			RENDER_MAX
         };
+		enum ENTITY_TILE_CHECK {
+			ENTITY_TILE_CHECK_BOTTOM,
+			ENTITY_TILE_CHECK_TOP,
+			ENTITY_TILE_CHECK_VOLUME
+		};
 	private:
 		std::map<uint32_t, CollisionContactEventMonitor*> _contactMonitors;
 		CollisionContact _contactPool[ELYSIAN_COLLISION_CONTACT_LIST_SIZE];
@@ -62,17 +70,18 @@ namespace elysian {
 		bool resolvePenetration(void); //true if resolved, false if ran out of attempts
 		bool resolveVelocities(void);
 
-		void _prepareGeometry(void);
+
 		void _checkTriggers(void);
-		void _detectCollisions(void);
         void _applyTileColliderTransform(const Tile::COLLIDER_TYPE colType) const;
 
 		void _detectCollidableColliderCollision(Collidable &collidable, GYCollider &collider);
-		void _detectEntityTileCollisionFine(Collidable &collidable, const unsigned x, const unsigned y);
-		void _detectEntityTileCollisionCoarse(Collidable &collidable);
+		void _detectEntityTileCollisionFine(Collidable &collidable, const unsigned x, const unsigned y, const unsigned char elev);
+		void _detectEntityTileCollisionCoarse(Collidable &collidable, const ENTITY_TILE_CHECK checkFlag=ENTITY_TILE_CHECK_VOLUME);
 
 	public:
 
+		void prepareGeometry(void);
+		void detectCollisions(void);
 		void update(void);
 		void render(void); 
         void renderTileColliders(void) const;

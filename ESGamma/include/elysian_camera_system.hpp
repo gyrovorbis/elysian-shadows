@@ -5,6 +5,7 @@
 #include "elysian_instance_transform.hpp"
 #include "elysian_subprocess_manager.hpp"
 #include "elysian_timer_system.hpp"
+#include "elysian_zcoords.hpp"
 
 #include <vector>
 #include <gyro.h>
@@ -28,7 +29,7 @@ namespace elysian {
 		friend struct CameraState;
 		friend class CameraKeyFrameLinearInterpolator;
 	private:
-		GYVector3	_pos = GYVector3 { 0.0f, 0.0f, 0.0f };
+		GYVector3	_pos = GYVector3 { 0.0f, 0.0f, -ZCoordConstants::mapBase };
 		float		_scale = 1.0f;
 		float		_zOrient = 0.0f;
 		float		_xOrient = 0.0f;

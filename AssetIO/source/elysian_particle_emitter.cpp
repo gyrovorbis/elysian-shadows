@@ -111,8 +111,10 @@ void ParticleEmitterInternals::update(const CameraState*const cam, const float d
 			(*it).setVelocity(newVel);
 			//integrate
 			(*it).integrate(deltaTime);
-		} else {
+		} else if(_attrib->_stick){
 			(*it).position.z = ZCoordConstants::mapBase;
+		} else { //we don't stick
+			_pool.remove(it);
 		}
 
 		if(!cam->isWithinScreenRegion((*it).position.x, (*it).position.y, (*it).size, (*it).size)) {

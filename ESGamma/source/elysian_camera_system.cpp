@@ -225,7 +225,7 @@ void CameraSystem::processInput(const GameInput& input) {
 			_debugState._keyFrame._pos = GYVector3 {
 				_curState->_keyFrame._pos.x,
 				_curState->_keyFrame._pos.y,
-				150
+				ZCoordConstants::mapBase+150.0f
 			};
 
 			//_curState = &_debugState;
@@ -304,7 +304,7 @@ void CameraSystem::update(void) {
 		_curState->_keyFrame._pos = GYVector3 {
 			_curState->focalEntity->transform._pos.x,
 			_curState->focalEntity->transform._pos.y,
-			_curState->focalEntity->transform.getPosZ(),
+			/*_curState->focalEntity->transform.getPosZ()*/-ZCoordConstants::mapBase,
 			//0.0f
 		};
 	}

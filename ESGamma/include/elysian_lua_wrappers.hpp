@@ -81,6 +81,7 @@ namespace OOLUA
 	typedef elysian::CollisionContact			CollisionContact;
 	typedef elysian::Collidable					Collidable;
 	typedef elysian::RigidBodyAttrib			RigidBodyAttrib;
+	typedef elysian::ForceTarget				ForceTarget;
 	typedef elysian::RigidBody					RigidBody;
 	typedef elysian::ForceGenerator				ForceGenerator;
 	typedef elysian::GravityForceGenerator		GravityForceGenerator;
@@ -494,13 +495,20 @@ OOLUA_PROXY(RigidBodyAttrib)
 	OOLUA_MEM_FUNC_CONST(uint32_t, getForceMask)
 OOLUA_PROXY_END
 
-OOLUA_PROXY(RigidBody, Component)
+OOLUA_PROXY(ForceTarget)
 	OOLUA_TAGS (
 		No_public_constructors,
 		No_public_destructor
 	)
 	OOLUA_MEM_FUNC(void, applyForce, const GYVector3&)
 	OOLUA_MEM_FUNC(void, applyForceToPoint, const GYVector2&, const GYVector2&)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(RigidBody, Component, ForceTarget)
+	OOLUA_TAGS (
+		No_public_constructors,
+		No_public_destructor
+	)
 	OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<RigidBodyAttrib*>)
 OOLUA_PROXY_END
 

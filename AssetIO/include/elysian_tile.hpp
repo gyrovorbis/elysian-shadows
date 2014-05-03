@@ -24,6 +24,7 @@ namespace elysian {
 
 		uint16_t nextIndex; //tile to turn into after animTime has elapsed
 		bool animated;
+		bool standOn = true;
 
 		static const COLLIDER_TYPE colliderReorientLUT[COLLIDER_MAX][GY_RECT_TEX_ORIENT_MAX];
         

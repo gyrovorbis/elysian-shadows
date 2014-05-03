@@ -3,6 +3,10 @@
 
 #include <vector>
 #include "elysian_system.hpp"
+#include "elysian_game_input.hpp"
+
+#define ELYSIAN_PARTY_SYSTEM_WALK_SPEED 180.0f
+#define ELYSIAN_PARTY_SYSTEM_DASH_SPEED 400.0f
 
 #include <gyro.h>
 
@@ -32,6 +36,14 @@ namespace elysian {
 		
 		void _resizePartyPathPoints(void);
 		void _checkExamine(Entity* const leader) const;
+
+
+		//dash state variables
+		bool				_dashing			= false;
+		GameInput::BUTTON	_lastDpadTapped		= GameInput::BUT_0;
+		float				_moveSpeed			= ELYSIAN_PARTY_SYSTEM_WALK_SPEED;
+		float				_tapTimer			= 0.0f;
+		float				_dashTapTimeWindow	= 0.3f;
 
 	public:
 		PartySystem(void);

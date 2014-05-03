@@ -98,7 +98,10 @@ void GuiSystem::_renderDebugOverlay(void) {
 	twcen.transform._pos.y += 25.0f;
 	_printDebugLine("Game Time:", "%d:%d:%d", getDaySys()->getDays(), getDaySys()->getHours(), getDaySys()->getMinutes());
 	if(getPartySys()->getPartyLeader()) {
-		_printDebugLine("player.pos:", "<%.2f, %.2f>", getPartySys()->getPartyLeader()->transform._pos.x, getPartySys()->getPartyLeader()->transform._pos.y);
+		_printDebugLine("player.pos:", "<%.2f, %.2f, %.2f>",
+						getPartySys()->getPartyLeader()->transform._pos.x,
+						getPartySys()->getPartyLeader()->transform._pos.y,
+						getPartySys()->getPartyLeader()->transform._pos.z);
 	}
 
 }

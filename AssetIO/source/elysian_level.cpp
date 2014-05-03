@@ -34,10 +34,10 @@ extern "C" {
 }
 
 namespace elysian {
-    
+
 	static char buffer[ELYSIAN_LEVEL_PATH_SIZE+50];
 
-	Level::~Level(void) { 
+	Level::~Level(void) {
 #ifdef ELYSIAN_ENGINE
 		gyVidTexDestroy(tileSheet);
 		gyVidTexDestroy(normalSheet);
@@ -47,11 +47,11 @@ namespace elysian {
 
 	bool Level::load(const char *const dir) {
 		bool success = true;
-    
+
 		dbgprintf(LOG_VERBOSE, "Level::Load(%s)", dir);
 		dbgPush();
 		strcpy(path, dir);
-    
+
 		strcpy(buffer, dir);
 		strcat(buffer, ELYSIAN_TILESET_PATH);
 		success &= loadTileset(buffer);
@@ -121,11 +121,11 @@ namespace elysian {
 
 		dbgprintf(LOG_VERBOSE, "Level::save(%s)", dir);
 		dbgPush();
-    
+
 		strcpy(buffer, dir);
 		strcat(buffer, ELYSIAN_TILESET_PATH);
 		success &= saveTileset(buffer);
-    
+
 		dbgPop();
 		return success;
 	}
@@ -166,6 +166,7 @@ namespace elysian {
 			ptr += ptr_inc;
 			sscanf(ptr, "%hd%n", &tileset[i].nextIndex, &ptr_inc);
 			ptr += ptr_inc;
+			tileset[i].standOn = true;
 		}
 
 		free(buffer);
@@ -179,7 +180,7 @@ namespace elysian {
 
 		dbgprintf(LOG_VERBOSE, "Level::saveTileset(%s)", filename);
 		dbgPush();
-    
+
 		if(!file) {
 			dbgprintf(LOG_VERBOSE, "FAILURE!");
 			dbgPop();
