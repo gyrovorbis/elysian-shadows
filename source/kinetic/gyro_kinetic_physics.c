@@ -31,14 +31,18 @@ void gyIntegrate(struct _GYKinetic *kin,
 	kin->rot += kin->angAccel * deltaTime;
 
 	//Damp (impose drag)
-	gyVec3ScaleAccum(&kin->vel, attrib->damping);
-	kin->rot *= attrib->angDamping;
+	//gyVec3ScaleAccum(&kin->vel, attrib->damping);
+	gyVec3ScaleAccum(&kin->vel, powf(attrib->damping, deltaTime));
+	kin->rot *= powf(attrib->angDamping, deltaTime);
 
 	//Update position from linear velocity
 	gyVec3AddScaled(pos, &kin->vel, deltaTime);
 
 	//Update orientation from rotation
 	*orient += kin->rot * deltaTime;
+
+	gyVec3ScaleAccum(&kin->vel, powf(attrib->damping, deltaTime));
+	kin->rot *= powf(attrib->angDamping, deltaTime);
 
 	//IMPOSE DRAG AGAIN?
 	//Calculate Derived Data
