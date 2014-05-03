@@ -5,8 +5,8 @@
 #include <gyro_system_api.h>
 
 const GYVector4 gyBoxLocalVerts[4] = {
-	{ -0.5f, -0.5f, 0.0f, 1.0f },
-	{ 0.5f, -0.5f, 0.0f, 1.0f },
+	{ -0.5f, -0.5f, 1.0f, 1.0f },
+	{ 0.5f, -0.5f, 1.0f, 1.0f },
 	{ 0.5f, 0.5f, 0.0f, 1.0f },
 	{ -0.5f, 0.5f, 0.0f, 1.0f }
 };
