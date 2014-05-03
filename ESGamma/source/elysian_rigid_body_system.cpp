@@ -11,6 +11,11 @@
 
 namespace elysian {
 
+RigidBodySystem::RigidBodySystem(void) {
+	_gravityGenerator.setForceMask(0x1);
+	addForce(&_gravityGenerator);
+}
+
 void RigidBodySystem::update(void) {
 	_updateContacts();
 }

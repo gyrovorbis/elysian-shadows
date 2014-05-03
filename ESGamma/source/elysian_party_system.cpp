@@ -170,6 +170,11 @@ void PartySystem::processInput(const GameInput &input) {
 		if(_characterParty.size() != 0) _checkPickup(_characterParty[0]);
 	}
 
+	if(input.getTapped(GameInput::BUT_I)) {
+		if(_characterParty.size() != 0) _characterParty[0]->getCharacter()->jump();
+
+	}
+
 	if(moved) {
 		gyVec2ScaleAccum(&moveDist, getTimerSys()->getDeltaTime()*_moveSpeed);
 //		if(_playableParty.size() == 0 && _characterParty.size() == 0) getCameraSys()->transform.translate(moveDist);

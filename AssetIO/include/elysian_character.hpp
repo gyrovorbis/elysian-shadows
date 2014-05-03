@@ -15,6 +15,8 @@
 #define ELYSIAN_CHAR_ANIM_SEQ_WALK_RIGHT	"WalkRight"
 #define ELYSIAN_CHAR_ANIM_CHILD_SEQ_HELD	"HeldEntity"
 
+#define ELYSIAN_CHAR_JUMP_DEFAULT_FORCE		GYVector3{ 0.0f, 0.0f, 330000.0f };
+
 namespace elysian {
 
 	class RigidBody;
@@ -59,8 +61,10 @@ namespace elysian {
 		void			setAnimate(const bool val);
 
 		void			setHeldEntity(Entity*const entity);
+		float			getHeldEntityForceDampFactor(void);
 		void			throwHeldEntity(void);
 		Entity*			getHeldEntity(void) const;
+		void			jump(void);
 
 #ifdef ELYSIAN_ENGINE
 		void update(void);

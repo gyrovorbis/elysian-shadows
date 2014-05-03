@@ -57,14 +57,34 @@ void Character::faceDir(const Direction::DIR4 dir) {
 	_faceDir = dir;
 }
 
+/* If we are currently holding another entity, their mass must be taken into account when applying
+ * our movement force, so that heavy objects slow us down.
+ * accel = force*inverseMass
+ * accel = force*(inverseMassParent + inverseMassChild)
+ */
+float Character::getHeldEntityForceDampFactor(void) {
+	const float invParent = _entity->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass;
+	const float invChild = _heldEntity->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass;
+
+	//Don't divid by zero, dipshit.
+	if(invParent+invChild == 0.0f) return 0.0f;
+
+	return (invChild/(invChild+invParent));
+}
+
 void Character::move(const GYVector2 &dist) {
 	if(gyVec2IsZero(&dist)) return;
+	GYVector2 totalForce = dist;
 
-	_entity->getRigidBody()->applyForce(GYVector3{ dist.x, dist.y, 0.0f });
+	if(_heldEntity) {
+		gyVec2Scale(&totalForce, &dist, getHeldEntityForceDampFactor());
+	}
+
+	_entity->getRigidBody()->applyForce(GYVector3{ totalForce.x, totalForce.y, 0.0f });
 	//_entity->transform.translate(dist);
 	_movedThisFrame = true;
 
-	Direction::DIR4 dir = Direction::fromVector(dist);
+	Direction::DIR4 dir = Direction::fromVector(totalForce);
 
 	if(_animate) {
 		Animation *animComp = _entity->getAnimation();
@@ -90,7 +110,7 @@ void Character::move(const GYVector2 &dist) {
 	}
 
 	_faceDir = dir;
-	gyVec2Scale(&_lastMoveDir, &dist, 1.0f/gyVec2Magnitude(&dist));
+	gyVec2Scale(&_lastMoveDir, &totalForce, 1.0f/gyVec2Magnitude(&totalForce));
 }
 
 void Character::update(void) {
@@ -119,7 +139,6 @@ void Character::setHeldEntity(Entity * const entity) {
 
 }
 
-
 void Character::throwHeldEntity(void) {
 	if(!_heldEntity) return;
 
@@ -128,23 +147,29 @@ void Character::throwHeldEntity(void) {
 		_lastMoveDir.y,
 		10.0f
 	};
-	//throwForce.z +=10000.0f;
+	gyVec3Scale(&throwForce, &throwForce, 40000.0f/_deltaTime);
 
 	//Set give the object its parent's initial velocity
 	_heldEntity->getRigidBody()->clearKinetic();
 	_heldEntity->getRigidBody()->setVelocity(_entity->getRigidBody()->getVelocity());
-	//_heldEntity->transform._pos = _entity->transform._pos;
-	//_heldEntity->transform._pos.y += 64.0f;
 
 	//Also apply a force to "throw" the bitch in the direction we're facing
-	gyVec3Scale(&throwForce, &throwForce, 40000.0f/_deltaTime);
 	_heldEntity->getRigidBody()->applyForce(throwForce);
 
 	setHeldEntity(nullptr);
-
 }
 
+void Character::jump(void) {
+	GYVector3 force = ELYSIAN_CHAR_JUMP_DEFAULT_FORCE;
 
+	if(_heldEntity) {
+		gyVec3ScaleAccum(&force, getHeldEntityForceDampFactor());
+	}
+
+	gyVec3ScaleAccum(&force, 1.0f/_deltaTime);
+	_entity->getRigidBody()->applyForce(force);
+
+}
 
 
 #endif

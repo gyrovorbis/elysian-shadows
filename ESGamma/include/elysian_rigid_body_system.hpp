@@ -7,6 +7,7 @@
 
 #include "elysian_system.hpp"
 #include "elysian_mem_pool.hpp"
+#include "elysian_force_generator.hpp"
 
 namespace elysian {
 
@@ -16,12 +17,15 @@ namespace elysian {
 	class RigidBodySystem: public System {
 		CollisionContact*		_contactPool[ELYSIAN_RIGID_BODY_SYSTEM_CONTACT_POOL_SIZE];
 		Pool<ForceGenerator*>	_forces			= Pool<ForceGenerator*>(ELYSIAN_RIGID_BODY_FORCE_GENERATOR_MAX_COUNT);
+		GravityForceGenerator	_gravityGenerator;
 		unsigned				_contactCount	= 0;
 		unsigned				_velResIter		= 0;
+		bool					_gravityEnabled = true;
 
 		void _updateContacts(void);
 
 	public:
+				RigidBodySystem(void);
 		void update(void);
 		void integrate3D(void);
 
@@ -35,6 +39,9 @@ namespace elysian {
 		void applyForce(ForceGenerator*const force);
 		void removeForce(ForceGenerator*const force);
 		void clearForces(void);
+
+		void setGravityEnabled(const bool val);
+		void setGravityAccel(const GYVector3& accel);
 
 	};
 
@@ -53,7 +60,20 @@ namespace elysian {
 		return _velResIter;
 	}
 
+	inline void RigidBodySystem::setGravityEnabled(const bool val) {
+		if(_gravityEnabled == val) return;
 
+		if(val) {
+			addForce(&_gravityGenerator);
+		} else {
+			removeForce(&_gravityGenerator);
+		}
+		_gravityEnabled = val;
+	}
+
+	inline void RigidBodySystem::setGravityAccel(const GYVector3 &accel) {
+		_gravityGenerator.setAccel(accel);
+	}
 
 }
 

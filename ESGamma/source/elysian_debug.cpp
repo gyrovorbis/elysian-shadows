@@ -33,6 +33,7 @@
 #include "elysian_day_system.hpp"
 #include "elysian_dialog_system.hpp"
 #include "elysian_event_monitor.hpp"
+#include "elysian_rigid_body_system.hpp"
 
 namespace elysian {
 
@@ -295,6 +296,13 @@ void Debug::processInput(GameInput& input) {
 		else if(newWrap == ADV_LOG_LUA) Debug::printf(Debug::VERBOSE, "Adventure Log Wrapping Lua only");
 		else Debug::printf(Debug::VERBOSE, "Adventure Log Wrapping None");
 		_advLogWrap = newWrap;
+	}
+
+	if(input.getTapped(GameInput::BUT_G)) {
+		static bool enabled = true;
+		enabled = !enabled;
+		getRigidBodySys()->setGravityEnabled(enabled);
+		Debug::printf(Debug::VERBOSE, "Gravity %s.", (enabled)? "enabled" : "disabled");
 	}
 
 	if(input.getDown(GameInput::BUT_5)) {
