@@ -47,20 +47,6 @@ public:
 	virtual void	onFinish(void) override;
 };
 
-class LuaEventBarrier: public LuaEventMonitor {
-private:
-	lua_State*				_coroutine;
-	OOLUA::Lua_func_ref		_function;
-	bool					_completed	= false;
-public:
-					//LuaEventBarrier(void) = default;
-					LuaEventBarrier(OOLUA::Lua_func_ref& function);
-	virtual void	onFinish(void) override;
-	void			start(void);
-	void			_resume(void);
-};
-
-
 
 inline void LuaEventMonitor::setTable(OOLUA::Lua_table_ref& table) { _table = table; }
 inline OOLUA::Lua_table_ref& LuaEventMonitor::getTable(void) { return _table; }
@@ -68,13 +54,6 @@ inline OOLUA::Lua_table_ref& LuaEventMonitor::getTable(void) { return _table; }
 inline LuaEventCallback::LuaEventCallback(OOLUA::Lua_func_ref &callback):
 	_callback(callback) {}
 inline void LuaEventCallback::setCallbackFunction(OOLUA::Lua_func_ref &callback) { _callback = callback; }
-
-inline LuaEventBarrier::LuaEventBarrier(OOLUA::Lua_func_ref& function):
-	_function(function)
-{
-	_coroutine = lua_newthread(*_mainState);
-}
-
 
 
 

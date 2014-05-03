@@ -15,7 +15,6 @@ namespace elysian {
 		_mainState->register_class<GYVector4>();
         _mainState->register_class<GYColor4>();
 		OOLUA::register_class<LuaEventCallback>(*_mainState);
-		_mainState->register_class<LuaEventBarrier>();
 		_mainState->register_class<InstanceTransform>();
 		OOLUA::register_class<Entity>(*_mainState);
 		OOLUA::register_class<QuadSpriteAttrib>(*_mainState);
@@ -143,10 +142,6 @@ OOLUA_EXPORT_FUNCTIONS_CONST(LuaEventMonitor)
 OOLUA_EXPORT_FUNCTIONS(LuaEventCallback,
 					   setCallbackFunction)
 OOLUA_EXPORT_FUNCTIONS_CONST(LuaEventCallback)
-
-OOLUA_EXPORT_FUNCTIONS(LuaEventBarrier,
-					   start)
-OOLUA_EXPORT_FUNCTIONS_CONST(LuaEventBarrier)
 
 EXPORT_OOLUA_FUNCTIONS_0_CONST(GYWav)
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(GYWav)

@@ -128,7 +128,6 @@ namespace OOLUA
 	typedef elysian::EventMonitor				EventMonitor;
 	typedef elysian::LuaEventMonitor			LuaEventMonitor;
 	typedef elysian::LuaEventCallback			LuaEventCallback;
-	typedef elysian::LuaEventBarrier			LuaEventBarrier;
 	typedef elysian::CameraKeyFrame				CameraKeyFrame;
 }
 
@@ -220,16 +219,6 @@ OOLUA_PROXY(LuaEventCallback, LuaEventMonitor)
 		OOLUA_CTOR(OOLUA::Lua_func_ref&)
 	)
 	OOLUA_MEM_FUNC(void, setCallbackFunction, OOLUA::Lua_func_ref&)
-OOLUA_PROXY_END
-
-OOLUA_PROXY(LuaEventBarrier, LuaEventMonitor)
-	OOLUA_TAGS(
-		No_default_constructor
-	)
-	OOLUA_CTORS(
-		OOLUA_CTOR(OOLUA::Lua_func_ref&)
-	)
-	OOLUA_MEM_FUNC(void, start)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(InstanceTransform)

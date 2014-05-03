@@ -47,7 +47,7 @@ void CollisionSystem::_checkTriggers(void) {
 			bool prevCollision = false;
 			if(previouslyColliding(*curContact._bodyA, *curContact._bodyB)) {
 				prevCollision = true;
-				break;
+				//break;
 			}
 
 			for(unsigned i = 0; i < 32; ++i) {
