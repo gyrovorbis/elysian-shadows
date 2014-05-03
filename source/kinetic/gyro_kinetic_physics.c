@@ -13,7 +13,6 @@ void gyIntegrate(struct _GYKinetic *kin,
 				 float* orient)
 {
 
-
 	//Calculate linear acceleration with force input
 	kin->prevAccel.x = kin->accel.x;
 	kin->prevAccel.y = kin->accel.y;
@@ -30,9 +29,9 @@ void gyIntegrate(struct _GYKinetic *kin,
 	//Update rotation from angular acceleration (and impulsive torque?)
 	kin->rot += kin->angAccel * deltaTime;
 
-	//Damp (impose drag)
+	//Damp (impose drag) DO NOT DAMP THE Z AXIS!!!
 	//gyVec3ScaleAccum(&kin->vel, attrib->damping);
-	gyVec3ScaleAccum(&kin->vel, powf(attrib->damping, deltaTime));
+	gyVec2ScaleAccum((GYVector2*)&kin->vel, powf(attrib->damping, deltaTime));
 	kin->rot *= powf(attrib->angDamping, deltaTime);
 
 	//Update position from linear velocity
@@ -41,7 +40,7 @@ void gyIntegrate(struct _GYKinetic *kin,
 	//Update orientation from rotation
 	*orient += kin->rot * deltaTime;
 
-	gyVec3ScaleAccum(&kin->vel, powf(attrib->damping, deltaTime));
+	gyVec2ScaleAccum((GYVector2*)&kin->vel, powf(attrib->damping, deltaTime));
 	kin->rot *= powf(attrib->angDamping, deltaTime);
 
 	//IMPOSE DRAG AGAIN?

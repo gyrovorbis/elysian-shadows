@@ -157,7 +157,7 @@ static inline void gyVec2AddAccum(GYVector2* const dest, const GYVector2* const 
 	dest->x += src->x; dest->y += src->y;
 }
 
-static inline void gyVec2Scale(GYVector2 *const dst, GYVector2 *const src, const float scalar) {
+static inline void gyVec2Scale(GYVector2 *const dst, const GYVector2 *const src, const float scalar) {
 	dst->x = src->x * scalar;
 	dst->y = src->y * scalar;
 }
