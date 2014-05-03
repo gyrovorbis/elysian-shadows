@@ -140,7 +140,8 @@ OOLUA_EXPORT_FUNCTIONS(LuaEventMonitor,
 					   getTable)
 OOLUA_EXPORT_FUNCTIONS_CONST(LuaEventMonitor)
 
-OOLUA_EXPORT_FUNCTIONS(LuaEventCallback)
+OOLUA_EXPORT_FUNCTIONS(LuaEventCallback,
+					   setCallbackFunction)
 OOLUA_EXPORT_FUNCTIONS_CONST(LuaEventCallback)
 
 OOLUA_EXPORT_FUNCTIONS(LuaEventBarrier,

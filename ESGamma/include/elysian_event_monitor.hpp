@@ -43,6 +43,7 @@ private:
 
 public:
 					LuaEventCallback(OOLUA::Lua_func_ref& callback);
+	void			setCallbackFunction(OOLUA::Lua_func_ref& callback);
 	virtual void	onFinish(void) override;
 };
 
@@ -66,6 +67,7 @@ inline OOLUA::Lua_table_ref& LuaEventMonitor::getTable(void) { return _table; }
 
 inline LuaEventCallback::LuaEventCallback(OOLUA::Lua_func_ref &callback):
 	_callback(callback) {}
+inline void LuaEventCallback::setCallbackFunction(OOLUA::Lua_func_ref &callback) { _callback = callback; }
 
 inline LuaEventBarrier::LuaEventBarrier(OOLUA::Lua_func_ref& function):
 	_function(function)

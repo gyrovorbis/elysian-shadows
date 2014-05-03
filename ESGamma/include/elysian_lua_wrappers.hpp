@@ -219,6 +219,7 @@ OOLUA_PROXY(LuaEventCallback, LuaEventMonitor)
 	OOLUA_CTORS(
 		OOLUA_CTOR(OOLUA::Lua_func_ref&)
 	)
+	OOLUA_MEM_FUNC(void, setCallbackFunction, OOLUA::Lua_func_ref&)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(LuaEventBarrier, LuaEventMonitor)
