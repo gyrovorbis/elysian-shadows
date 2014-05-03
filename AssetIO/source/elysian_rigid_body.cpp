@@ -39,6 +39,7 @@ RigidBody::RigidBody(Entity& entity):
 {}
 
 void RigidBody::integrate(const float deltaTime) {
+	if(!_active) return;
 	GYStatic*const stat = getEntity()->getCollidable()->getAttrib()->getStaticAttrib();
 
 	stat->angDamping *= _tileDamping;

@@ -72,14 +72,16 @@ namespace elysian {
 	class ChildAnimation {
 		friend class Animation;
 	private:
-		char													_name[ELYSIAN_ANIMATION_SEQUENCE_NAME_SIZE];
 		std::map<const char*, ChildAnimationSequence*, ltstr>	_sequences;
+		GYVector3												_globalOffset = { 0.0f, 0.0f, 0.0f };
+		char													_name[ELYSIAN_ANIMATION_SEQUENCE_NAME_SIZE];
 	public:
 								ChildAnimation(const char* name);
 								~ChildAnimation(void);
 		ChildAnimationSequence* addSequence(const char* name);
 		ChildAnimationSequence* getSequence(const char* name);
 		const char*				getName(void);
+		void					setGlobalOffset(const float x, const float y, const float z);
 	};
 
 	class ChildAnimationAttrib {
@@ -151,6 +153,7 @@ namespace elysian {
 		const GYVector2&		getChildPivot(void) const;
 		void					addChildEntity(Entity*const entity, const char*animName);
 		void					removeChildEntity(const char*animName);
+		void					removeChildEntity(const Entity* entity);
 	};
 
 
@@ -158,7 +161,8 @@ namespace elysian {
 
 	inline AnimationSequence::AnimationSequence(const char* name) { strcpy(_name, name); }
 	inline const char *AnimationSequence::getName(void) { return _name; }
-	inline void AnimationSequence::addFrame(const float xOffset, const float yOffset, const float duration, const unsigned int frame, const GY_RECT_TEX_ORIENT texOrient) {
+	inline void AnimationSequence::addFrame(const float xOffset, const float yOffset, const float duration,
+											const unsigned int frame, const GY_RECT_TEX_ORIENT texOrient) {
 		_frames.push_back(AnimationFrame {
 			GYVector2 { xOffset, yOffset },
 			duration,
@@ -198,10 +202,14 @@ namespace elysian {
 		return seq;
 	}
 	inline ChildAnimationSequence* ChildAnimation::getSequence(const char *name) {
-		return _sequences[name];
+		auto it = _sequences.find(name);
+		return (it == _sequences.end())? nullptr : it->second;
 	}
 	inline ChildAnimation::~ChildAnimation(void) {
 		for(auto it: _sequences) delete it.second;
+	}
+	inline void ChildAnimation::setGlobalOffset(const float x, const float y, const float z) {
+		_globalOffset.x = x; _globalOffset.y = y; _globalOffset.z = z;
 	}
 
 	inline ChildAnimation* ChildAnimationAttrib::addAnimation(const char *name) {
@@ -210,7 +218,8 @@ namespace elysian {
 		return anim;
 	}
 	inline ChildAnimation* ChildAnimationAttrib::getAnimation(const char *name) {
-		return _animations[name];
+		auto it = _animations.find(name);
+		return (it == _animations.end())? nullptr : it->second;
 	}
 
 	inline ChildAnimationAttrib::~ChildAnimationAttrib(void) {

@@ -346,6 +346,7 @@ void CollisionSystem::detectCollisions(void) {
 	for(; i < _curArea->collidables.size(); ++i) _curArea->collidables[i]->_contactCount = 0;
 
 	for(i = 0; i < _curArea->collidables.size(); ++i) {
+		if(!_curArea->collidables[i]->_active) continue;
 		detectEntityCollision(i);
 		if(_curArea->collidables[i]->getAttrib()->getFlags()->checkAgainst & CollisionFlags::TILE)
 			_detectEntityTileCollisionCoarse(*_curArea->collidables[i]);

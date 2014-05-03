@@ -82,6 +82,7 @@ private:
 		ZTRAN_STATE			_zTranState			= ZTRAN_INACTIVE;
 		bool				_onZTran			= false;
 		bool				_resolvePen			= true;
+		bool				_active				= true;
 		uint32_t			_eventMonitorMask	= 0;
 
 		union { 
@@ -121,6 +122,7 @@ private:
 		inline void setContactEventMonitorMask(const uint32_t t) { _eventMonitorMask = t; }
 		inline GYCollider* getCollider(void) { return &_collider.col; }
 		const GYVector3& getWorldPos(void) const;
+		inline void setActive(const bool val) { _active = val; }
 	};
 
 	/*

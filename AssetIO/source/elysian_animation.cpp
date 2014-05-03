@@ -20,16 +20,28 @@ Component::TYPE Animation::getType(void) const { return Component::ANIMATION; }
 void Animation::addChildEntity(Entity*const entity, const char*animName) {
 	ChildAnimEntry& entry = _children->claimFreeEntry();
 
-	entry.entity	= entity;
-	entry.anim		= _childAttrib->getAnimation(animName);
-	entry.seq		= entry.anim->getSequence(_currentSequence->getName());
-	entry.frame		= entry.seq->getFrame(_currentFrame);
-	entry.frIndex	= _currentFrame;
+	entry.entity		= entity;
+	entry.anim			= _childAttrib->getAnimation(animName);
+	if(entry.anim)
+		entry.seq			= entry.anim->getSequence(_currentSequence->getName());
+	if(entry.seq)
+		entry.frame		= entry.seq->getFrame(_currentFrame);
+	entry.frIndex		= _currentFrame;
 }
 
 void Animation::removeChildEntity(const char *animName) {
 	for(auto it = _children->begin(); it < _children->end(); ++it) {
+		if(!(*it).anim) continue;
 		if(strcmp((*it).anim->getName(), animName) == 0) {
+			_children->remove(it);
+			return;
+		}
+	}
+}
+
+void Animation::removeChildEntity(const Entity* const entity) {
+	for(auto it = _children->begin(); it < _children->end(); ++it) {
+		if((*it).entity == entity) {
 			_children->remove(it);
 			return;
 		}
@@ -51,34 +63,41 @@ void Animation::_updateChildren(void) {
 		childAnim = childEntry->entity->getAnimation();
 		childTransform = &childEntry->entity->transform;
 
-		GYVector3 offset;
-		float zOrient;
+		GYVector3 offset = { 0.0f, 0.0f, 0.0f };
+		float zOrient = 0.0f;
 
-		childEntry->seq		= childEntry->anim->getSequence(_currentSequence->getName());
-		childEntry->frame	= childEntry->seq->getFrame(_currentFrame);
-		childEntry->frIndex	= _currentFrame;
+		childEntry->frIndex		= _currentFrame;
+		if(childEntry->anim) {
+			childEntry->seq		= childEntry->anim->getSequence(_currentSequence->getName());
 
+			if(childEntry->seq) {
+				childEntry->frame	= childEntry->seq->getFrame(_currentFrame);
 
-		if(childEntry->seq->getLinearInterpolation()) {
-			gyLinearInterp((float*)&offset, 3, (childEntry->frIndex != 0)? (float*)&childEntry->seq->_frames[childEntry->frIndex-1].offset : (float*)&childEntry->seq->_frames[childEntry->seq->_frames.size()-1].offset,
-					(float*)&childEntry->frame->offset, _currentSequence->_frames[childEntry->frIndex].duration, _timer);
+				if(childEntry->seq->getLinearInterpolation()) {
+					gyLinearInterp((float*)&offset, 3, (childEntry->frIndex != 0)? (float*)&childEntry->seq->_frames[childEntry->frIndex-1].offset : (float*)&childEntry->seq->_frames[childEntry->seq->_frames.size()-1].offset,
+							(float*)&childEntry->frame->offset, _currentSequence->_frames[childEntry->frIndex].duration, _timer);
 
-			gyLinearInterp(&zOrient, 1, (childEntry->frIndex != 0)? &childEntry->seq->_frames[childEntry->frIndex-1].zOrient : &childEntry->seq->_frames[childEntry->seq->_frames.size()-1].zOrient,
-					&childEntry->frame->zOrient, _currentSequence->_frames[childEntry->frIndex].duration, _timer);
+					gyLinearInterp(&zOrient, 1, (childEntry->frIndex != 0)? &childEntry->seq->_frames[childEntry->frIndex-1].zOrient : &childEntry->seq->_frames[childEntry->seq->_frames.size()-1].zOrient,
+							&childEntry->frame->zOrient, _currentSequence->_frames[childEntry->frIndex].duration, _timer);
 
-		} else {
-			offset = childEntry->frame->offset;
-			zOrient = childEntry->frame->zOrient;
+				} else {
+					offset = childEntry->frame->offset;
+					zOrient = childEntry->frame->zOrient;
 
+				}
+			} else { //assuming to use global defaults
+				offset = childEntry->anim->_globalOffset;
+				zOrient = 0.0f;
+			}
 		}
 
 		gyMatPush();
 		gyMatLoadIdentity();
 
-		gyMatTranslateScale(parentTransform->_pos.x + 0.5f*parentTransform->_size.x*parentTransform->_scale.x - offset.x,
-					   parentTransform->_pos.y + 0.5f*parentTransform->_size.y*parentTransform->_scale.y - offset.y,
-					   parentTransform->_pos.z + offset.z,
-					   childTransform->_size.x*childTransform->_scale.x, childTransform->_size.y*childTransform->_scale.y, 1.0f);
+		gyMatTranslateScale(parentTransform->_pos.x +  (offset.x * parentTransform->_size.x*parentTransform->_scale.x),
+					   parentTransform->_pos.y + (offset.y*parentTransform->_size.y*parentTransform->_scale.y) ,
+					   parentTransform->_pos.z + (offset.z*parentTransform->_size.z*parentTransform->_scale.z),
+					   childTransform->_size.x*childTransform->_scale.x, childTransform->_size.y*childTransform->_scale.y,  childTransform->_size.z*childTransform->_scale.z);
 		gyMatRotateZ(zOrient);
 
 		if(childAnim) gyMatTranslate(childAnim->getChildPivot().x, childAnim->getChildPivot().y, 0.0f);
@@ -88,7 +107,7 @@ void Animation::_updateChildren(void) {
 		gyMatPop();
 
 		//update children's positions and orientations
-		childEntry->entity->setElev(getEntity()->getElev());
+		//childEntry->entity->setElev(getEntity()->getElev());
 
 		childTransform->_pos = GYVector3 {
 			worldPos.x,

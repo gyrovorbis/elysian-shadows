@@ -105,7 +105,7 @@ void Engine::update(void) {
 
 			_timerSystem->update();
 			_mapSystem->update();
-			_characterSystem->Update();
+			_characterSystem->update();
 			_animationSystem->update();
 			//warpSystem->Update();
 			_guiSystem->update();

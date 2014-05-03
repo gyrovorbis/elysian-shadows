@@ -161,9 +161,13 @@ void PartySystem::processInput(const GameInput &input) {
 	}
 
 	//examine
-	if(input.getDown(GameInput::BUT_M)) {
+	if(input.getTapped(GameInput::BUT_M)) {
 		if(_playableParty.size() != 0) _checkExamine(_playableParty[0]);
 		if(_characterParty.size() != 0) _checkExamine(_characterParty[0]);
+	}
+
+	if(input.getTapped(GameInput::BUT_N)) {
+		if(_characterParty.size() != 0) _checkPickup(_characterParty[0]);
 	}
 
 	if(moved) {
@@ -176,6 +180,28 @@ void PartySystem::processInput(const GameInput &input) {
 		_moveSpeed = ELYSIAN_PARTY_SYSTEM_WALK_SPEED;
 		getPartyLeader()->getAnimation()->setSpeedMultiplier(1.0f);
 	}
+}
+
+void PartySystem::_checkPickup(Entity * const leader) const {
+	if(leader->getCharacter()->getHeldEntity()) {
+		leader->getCharacter()->throwHeldEntity();
+	} else {
+
+		if(leader->getCollidable()->getContactCount() > 0) {
+			auto& rigidBodies = _curArea->rigidBodies;
+			for(auto it = rigidBodies.begin();
+				it != rigidBodies.end();
+				++it)
+			{
+				if(getCollisionSys()->checkCollision(*leader, *(*it)->getEntity())) {
+					leader->getCharacter()->setHeldEntity((*it)->getEntity());
+					break;
+				}
+			}
+		}
+
+	}
+
 }
 
 bool PartySystem::loadPlayables(void) {

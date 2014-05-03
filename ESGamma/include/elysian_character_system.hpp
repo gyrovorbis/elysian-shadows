@@ -8,7 +8,7 @@ namespace elysian {
 	class CharacterSystem: public System { //tolua_export
 	public:
 		//Render();
-		void Update();
+		void update();
 		
 	};//tolua_export
 	

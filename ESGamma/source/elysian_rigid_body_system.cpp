@@ -265,6 +265,8 @@ void RigidBodySystem::integrate3D(void) {
 
 
 	for(auto& it : rigidBodies) {
+
+		if(!it->_active) continue;
 		unsigned i;
 		TileEntry entry;
 		auto* collidable = it->getEntity()->getCollidable();
@@ -341,14 +343,14 @@ void RigidBodySystem::integrate3D(void) {
 				collidable->getEntity()->getCollidable()->update();
 
 				//collidable->setResolvePenetration(false);
-				it->_restingOnTile = true;
+				//it->_restingOnTile = true;
 		//	}
 
 		} else {
 			//Debug::printf(Debug::CRITICAL, "Falling");
 			it->getAttrib()->setForceMask(1);
-			collidable->setResolvePenetration(true);
-			it->_restingOnTile = false;
+			//collidable->setResolvePenetration(true);
+		//	it->_restingOnTile = false;
 
 		}
 	}

@@ -278,7 +278,8 @@ OOLUA_EXPORT_FUNCTIONS(ChildAnimationSequence,
 OOLUA_EXPORT_FUNCTIONS_CONST(ChildAnimationSequence)
 
 OOLUA_EXPORT_FUNCTIONS(ChildAnimation,
-								   addSequence)
+								   addSequence,
+					   setGlobalOffset)
 OOLUA_EXPORT_FUNCTIONS_CONST(ChildAnimation)
 
 

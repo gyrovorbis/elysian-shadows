@@ -395,7 +395,8 @@ OOLUA_PROXY(ChildAnimation)
 		No_public_constructors,
 		No_public_destructor
 	)
-OOLUA_MEM_FUNC(ChildAnimationSequence*, addSequence, const char*)
+	OOLUA_MEM_FUNC(ChildAnimationSequence*, addSequence, const char*)
+	OOLUA_MEM_FUNC(void, setGlobalOffset, float, float, float)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ChildAnimationAttrib)

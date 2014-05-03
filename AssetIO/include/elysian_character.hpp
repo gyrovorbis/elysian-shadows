@@ -13,11 +13,19 @@
 #define ELYSIAN_CHAR_ANIM_SEQ_WALK_DOWN		"WalkDown"
 #define ELYSIAN_CHAR_ANIM_SEQ_WALK_LEFT		"WalkLeft"
 #define ELYSIAN_CHAR_ANIM_SEQ_WALK_RIGHT	"WalkRight"
+#define ELYSIAN_CHAR_ANIM_CHILD_SEQ_HELD	"HeldEntity"
 
 namespace elysian {
-	
+
+	class RigidBody;
+
+	class CharacterAttrib {
+		bool _canHold = true;
+	};
+
 	class Character: public Component {
         friend class Entity;
+		friend class CharacterSystem;
 	private:
 		static const Component::TYPE _type		= Component::CHARACTER;
 		
@@ -27,14 +35,20 @@ namespace elysian {
 
 		bool				_movedThisFrame		= false;
 		Direction::DIR4		_faceDir			= Direction::DIR4_CENTER;
+		GYVector2			_lastMoveDir		= { 0.0f, 0.0f };
 		bool				_walkAnimInterp		= true;
 		bool				_animate			= true;
+		static float		_deltaTime;
 		//Direction::DIR4		_prevDir			= Direction::DIR4_CENTER;
+
+		//Pick-up state
+
+		Entity* _heldEntity = nullptr;
 		
 	public:
 		virtual bool load(FILE* file) override;
 		virtual bool save(FILE* file) override;
-		virtual bool canAddTo(Entity& entity) override { return (entity.getAnimation() && entity.getAnimation()); }
+		virtual bool canAddTo(Entity& entity) override { return (entity.getAnimation() && entity.getRigidBody()); }
 		virtual bool addToLevel(void) override;
 		virtual bool removeFromLevel(void) override;
 		virtual Component::TYPE getType(void) const override { return Component::CHARACTER; }
@@ -44,6 +58,10 @@ namespace elysian {
 		void			setWalkAnimInterp(const bool val);
 		void			setAnimate(const bool val);
 
+		void			setHeldEntity(Entity*const entity);
+		void			throwHeldEntity(void);
+		Entity*			getHeldEntity(void) const;
+
 #ifdef ELYSIAN_ENGINE
 		void update(void);
 		void move(const GYVector2& vec);
@@ -51,6 +69,9 @@ namespace elysian {
 		void faceEntity(Entity& entity);
 #endif
 	};
+
+
+	// ====== INLINEZ ======
 
 	inline Character::Character(Entity& entity): Component(entity) {}
 
@@ -66,17 +87,13 @@ namespace elysian {
 
 	inline void Character::setWalkAnimInterp(const bool val) { _walkAnimInterp = val; }
 
+	inline Entity* Character::getHeldEntity(void) const { return _heldEntity; }
+
 
 #ifdef ELYSIAN_ENGINE
 
 	inline void Character::setAnimate(const bool val) { _animate = val; }
 
-	inline void Character::update(void) {
-		if(!_movedThisFrame) {
-			faceDir(_faceDir);
-		}
-		else _movedThisFrame = false;
-	}
 
 	inline void Character::faceEntity(Entity &entity) {
 		GYVector2 dist;

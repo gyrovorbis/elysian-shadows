@@ -23,6 +23,7 @@ void CollisionContact::_calculateVelocityInternals(const float deltaTime) {
 
 void Collidable::update(void) {
 #ifdef ELYSIAN_ENGINE
+	if(!_active) return;
 	static const GYVector4 origin = { 0.0f, 0.0f, 0.0f, 1.0f };
 	GYVector4 worldPos;
 	/* This is necessary to ensure that if the attribute geometry was dynamically changed,

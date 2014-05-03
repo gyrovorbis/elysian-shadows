@@ -42,7 +42,7 @@ namespace elysian {
 		friend class RigidBodySystem;
 	private:
 		float				_tileDamping = 1.0f;
-		bool				_restingOnTile	= false;
+		bool				_active	= true;
 		RigidBodyAttrib*	_attrib = nullptr;
 	public:
 
@@ -63,6 +63,7 @@ namespace elysian {
 		virtual const GYVector3&	getPosition(void) const override;
 		virtual const GYStatic*		getStaticAttrib(void) const override;
 
+		void				setActive(const bool val);
 		void				setTileDamping(const float factor);
 		float				getTileDamping(void) const;
 		void				setAttrib(RigidBodyAttrib*const attrib);
@@ -89,6 +90,7 @@ namespace elysian {
 	inline float RigidBody::getTileDamping(void) const { return _tileDamping; }
 	inline void RigidBody::setTileDamping(const float factor) {_tileDamping = factor; }
 	inline void RigidBody::setAttrib(RigidBodyAttrib*const attrib) { _attrib = attrib; }
+	inline void RigidBody::setActive(const bool val) { _active = val; }
 
 	inline RigidBodyAttrib* RigidBody::getAttrib(void) const { return _attrib; }
 	//inline void RigidBody::applyForceMask(const uint32_t mask, const GYVector2& force) { if(_attrib->getForceMask() & mask) applyForce(force); }
