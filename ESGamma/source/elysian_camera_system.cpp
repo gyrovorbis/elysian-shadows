@@ -71,7 +71,7 @@ void CameraState::updateBoundingSubregions(const CameraState &cam) {
 }
 
 void CameraSystem::_updateState(CameraState*const state, const float /*deltaTime*/) {
-	auto &interp = get<SUBPROC_KEY_FR_INTERP>(*this);
+    auto &interp = get<SUBPROC_KEY_FR_INTERP>(static_cast<SubProcParent&>(*this));
 
 	//return to base zoom
 	if(state->entities.size() == 0) {

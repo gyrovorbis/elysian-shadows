@@ -179,7 +179,7 @@ namespace elysian {
 		}
 
 		void scale(const float factor, const float time=0.0f, EventMonitor*const monitor=nullptr) {
-			auto &interp = get<SUBPROC_KEY_FR_INTERP>(*this);
+            auto &interp = get<SUBPROC_KEY_FR_INTERP>(static_cast<SubProcParent& >(*this));
 			if(interp.getProcState() == PROC_STATE_RUNNING) return;
 
 			CameraKeyFrame frame = getKeyFrame();
@@ -217,7 +217,8 @@ namespace elysian {
 		}
 
 		void setScale(const float factor, const float time=0.0f, EventMonitor*const monitor=nullptr) {
-			auto &interp = get<SUBPROC_KEY_FR_INTERP>(*this);
+            auto &interp = get<SUBPROC_KEY_FR_INTERP > ( static_cast<SubProcessManager<CameraSystem,
+                                                      CameraKeyFrameLinearInterpolator>& >(*this));
 
 			if(interp.getProcState() == PROC_STATE_RUNNING) return;
 
@@ -366,7 +367,7 @@ namespace elysian {
 	}
 
 	inline void CameraSystem::moveToKeyFrame(const CameraKeyFrame &frame, const float time, EventMonitor * const monitor) {
-		auto &interp = get<SUBPROC_KEY_FR_INTERP>(*this);
+        auto &interp = get<SUBPROC_KEY_FR_INTERP>(static_cast<SubProcParent&>(*this));
 		interp.setKeyFrames(_curState->_keyFrame, frame);
 		interp.setTimeInterval(time);
 		interp.start(this);

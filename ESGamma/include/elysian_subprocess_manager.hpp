@@ -82,6 +82,8 @@ public:
 	_This _Myfirst;
 
 protected:
+    typedef SubProcessManager<P, _This, _Rest...> SubProcParent;
+
 	inline void updateSubProcesses(const float deltaTime) {
 		_Myfirst.update(static_cast<P*>(this), deltaTime);
 		SubProcessManager<P, _Rest...>::updateSubProcesses(deltaTime);
