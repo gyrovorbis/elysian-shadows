@@ -941,6 +941,7 @@ OOLUA_PROXY(CameraSystem)
 	OOLUA_MEM_FUNC(void, scale, float, float, EventMonitor*)
 	OOLUA_MEM_FUNC_CONST(CameraKeyFrame, getKeyFrame)
 	OOLUA_MEM_FUNC(void, moveToKeyFrame, const CameraKeyFrame&, float, EventMonitor*)
+	OOLUA_MEM_FUNC(void, setBoundaries, float, float, float, float)
 OOLUA_PROXY_END
 
 

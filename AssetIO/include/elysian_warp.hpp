@@ -20,6 +20,7 @@ namespace elysian {
 		unsigned char	_toElev = 0;
 		bool			_changeArea;
 		bool			_changeLevel;
+		bool			_obliqueTran = true;
 		char			_areaPath[ELYSIAN_WARP_AREA_PATH_MAX_CHARS];
 		char			_levelPath[ELYSIAN_WARP_LEVEL_PATH_MAX_CHARS];
 		
@@ -38,6 +39,7 @@ namespace elysian {
 		void setChangeArea(const bool flag=true);
 		bool getChangeLevel(void) const;
 		void setChangeLevel(const bool flag=true);
+		void setObliqueTransition(const bool flag=true);
 
 		
 		bool load(FILE* file);
@@ -47,7 +49,12 @@ namespace elysian {
 		bool removeFromLevel(void);
 		Component::TYPE getType(void) const { return Component::WARP; }
 	};
-	
+
+	// ====== INLINEZ ======
+
+	inline void Warp::setObliqueTransition(const bool flag) {
+		_obliqueTran = flag;
+	}
 	
 	inline void Warp::setToPos(const float x, const float y, const unsigned char elev) {
 		_toPosition.x = x;

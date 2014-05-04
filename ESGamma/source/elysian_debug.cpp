@@ -192,16 +192,12 @@ void Debug::processInput(GameInput& input) {
 	static unsigned size = 3;
 	static unsigned intensity = 200;
 
-	callback.setCallbackFunction([] {
-		printf(CRITICAL, "SHIT'S DONE INTERPOLATING!!!\n");
-	});
-
 	//Camera zoom
 	if(input.getDown(GameInput::BUT_W)){
-		_engine->_cameraSystem->scale(0.7f, 0.0f, &callback);
+		_engine->_cameraSystem->staticScale(0.7f);
 	}
 	if(input.getDown(GameInput::BUT_S)){
-		_engine->_cameraSystem->scale(1.3f, 0.0f, EventMonitor::null());
+		_engine->_cameraSystem->staticScale(1.3f);
 	}
 
 	if(input.getTapped(GameInput::BUT_0)) {

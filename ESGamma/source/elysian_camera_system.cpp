@@ -73,6 +73,28 @@ void CameraState::updateBoundingSubregions(const CameraState &cam) {
 void CameraSystem::_updateState(CameraState*const state, const float /*deltaTime*/) {
     auto &interp = get<SUBPROC_KEY_FR_INTERP>(static_cast<SubProcParent&>(*this));
 
+	unsigned width, height;
+
+	gyVidResolution(&width, &height);
+
+	int boundTop = (_topBoundary == -1)? -16 : _topBoundary*32-16;
+	int boundBottom = (_bottomBoundary == -1)? getCurArea()->height*32-16 : _bottomBoundary*32-16;
+	int boundLeft = (_leftBoundary == -1)? -16 : _leftBoundary*32-16;
+	int boundRight = (_rightBoundary == -1)? getCurArea()->width*32-16 : _rightBoundary*32-16;
+
+	float maxHeight = boundBottom	- boundTop;
+	float maxWidth	= boundRight	- boundLeft;
+
+	boundTop += (float)height/_curState->_keyFrame._scale*0.5f;
+	boundBottom -= (float)height/_curState->_keyFrame._scale*0.5f;
+	boundLeft += (float)width/_curState->_keyFrame._scale*0.5f;
+	boundRight -= (float)width/_curState->_keyFrame._scale*0.5f;
+
+	if(state->_keyFrame._pos.y < boundTop) _curState->_keyFrame._pos.y = boundTop;
+	if(state->_keyFrame._pos.y > boundBottom) _curState->_keyFrame._pos.y = boundBottom;
+	if(state->_keyFrame._pos.x < boundLeft) _curState->_keyFrame._pos.x = boundLeft;
+	if(state->_keyFrame._pos.x > boundRight) _curState->_keyFrame._pos.x = boundRight;
+
 	//return to base zoom
 	if(state->entities.size() == 0) {
 		if(fabs(state->baseScale - interp._endFrame._scale) > ELYSIAN_CAMERA_STATE_SCALE_INTERP_EPSILON) {
@@ -80,18 +102,14 @@ void CameraSystem::_updateState(CameraState*const state, const float /*deltaTime
 		}
 	}
 	else {
-		unsigned width, height;
-		float baseWidth, baseHeight, maxWidth, maxHeight, minWidth, minHeight;
 
-		gyVidResolution(&width, &height);
-		baseWidth = minWidth = maxWidth = (float)width;
-		baseHeight = minHeight = maxHeight = (float)height;
+		float baseWidth, baseHeight, minWidth, minHeight;
+		baseWidth = minWidth = (float)width;
+		baseHeight = minHeight = (float)height;
 
 		baseWidth	-= 2.0f*baseWidth*ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE;
 		baseHeight	-= 2.0f*baseHeight*ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE;
 
-		maxWidth	/= state->minScale;
-		maxHeight	/= state->minScale;
 		maxWidth	-= 2.0f*maxWidth*ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE;
 		maxHeight	-= 2.0f*maxHeight*ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE;
 
@@ -131,6 +149,9 @@ void CameraSystem::_updateState(CameraState*const state, const float /*deltaTime
 		const float scaleY = (baseHeight)/(newYDist*2.0f);
 
 		const float nextScale = (scaleX < scaleY)? scaleX : scaleY;
+
+		//float boundWidth = ;
+		//float boundHeight = ;
 
 		//Debug::printf(Debug::VERBOSE, "%f, %f - NEWSCALE - %f", scaleX, scaleY, nextScale);
 
@@ -309,6 +330,10 @@ void CameraSystem::update(void) {
 		};
 	}
 
+	_curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
+	_updateState(_curState, deltaTime);
+
+	_curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
 	if(_curState->projType == GY_PROJECTION_ORTHO) {
 		//gyVidProjectionDefaultMatrix();
 		//gyVidCameraSetViewCenter(&_curState->pos, _curState->scale, _curState->zOrient);
@@ -370,9 +395,6 @@ void CameraSystem::update(void) {
 	}
 
 	gyVidSetCamWorldPos(&_curState->_keyFrame._pos);
-
-	_curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
-	//_updateState(_curState, deltaTime);
 
 
 }

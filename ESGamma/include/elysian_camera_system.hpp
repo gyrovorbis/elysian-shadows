@@ -86,10 +86,10 @@ namespace elysian {
 		unsigned tileEndY	= 0;
 
 		//Bounding Geometry
-		unsigned scrStartX	= 0;
-		unsigned scrStartY	= 0;
-		unsigned scrEndX	= 0;
-		unsigned scrEndY	= 0;
+		int scrStartX	= 0;
+		int scrStartY	= 0;
+		int scrEndX		= 0;
+		int scrEndY		= 0;
 
 		void updateBoundingRegions(const int startX, const int endX, const int startY, const int endY);
 		void updateBoundingSubregions(const CameraState& cam);
@@ -119,6 +119,11 @@ namespace elysian {
 
 		unsigned				_scrWidth		= 0;
 		unsigned				_scrHeight		= 0;
+
+		int						_topBoundary	=	-1;
+		int						_bottomBoundary =	-1;
+		int						_leftBoundary	=	-1;
+		int						_rightBoundary	=	-1;
 
 		void _updateState(CameraState*const state, const float deltaTime);
 
@@ -180,7 +185,7 @@ namespace elysian {
 
 		void scale(const float factor, const float time=0.0f, EventMonitor*const monitor=nullptr) {
             auto &interp = get<SUBPROC_KEY_FR_INTERP>(static_cast<SubProcParent& >(*this));
-			if(interp.getProcState() == PROC_STATE_RUNNING) return;
+			//if(interp.getProcState() == PROC_STATE_RUNNING)
 
 			CameraKeyFrame frame = getKeyFrame();
 			frame.setScale(frame.getScale()*factor);
@@ -277,6 +282,10 @@ namespace elysian {
 
 		void isEntityWithinViewVolume(const Entity& entity) const;
 		void isTileWithinViewVolume(const unsigned l, const unsigned x, const unsigned y) const;
+
+		void setBoundaries(const float top, const float bottom, const float left, const float right) {
+			_topBoundary = top; _bottomBoundary = bottom; _leftBoundary = left; _rightBoundary = right;
+		}
 
 
 		/* LEGACY

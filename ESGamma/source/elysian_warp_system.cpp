@@ -55,6 +55,12 @@ void WarpSystem::update(void) {
 			getPartySys()->getPartyLeader()->transform.setPos(_currentWarp._toPosition);
 			getPartySys()->getPartyLeader()->setElev(_currentWarp._toElev);
 			_state = FADE_IN;
+			if(_currentWarp._obliqueTran) {
+				CameraKeyFrame fr = getCameraSys()->getKeyFrame();
+				fr.setXOrient(0.0f);
+				fr.setScale(1.0f);
+				getCameraSys()->moveToKeyFrame(fr, 1.0f);
+			}
 			break;
 		case FADE_IN:
 			UpdateFadeIn();
@@ -116,6 +122,12 @@ void WarpSystem::UpdateCheckWarp(void) {
 			_currentWarp = *_curArea->warps[i];
 			_state = FADE_OUT;
 			setEngineState(System::ENGINE_WARPING);
+			if(_currentWarp._obliqueTran) {
+				CameraKeyFrame fr = getCameraSys()->getKeyFrame();
+				fr.setXOrient(-0.25*M_PI);
+				fr.setScale(2.0f);
+				getCameraSys()->moveToKeyFrame(fr, 1.0f);
+			}
 		} 
 	}
 }

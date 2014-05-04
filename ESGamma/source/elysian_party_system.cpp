@@ -127,7 +127,7 @@ void PartySystem::processInput(const GameInput &input) {
 				pos.y = getPartyLeader()->getDepthBaseY();
 				getPartSys()->emitFromPoint(0, pos, angle, 500);
 
-				Debug::printf(Debug::VERBOSE, "DASHING!!!");
+				//Debug::printf(Debug::VERBOSE, "DASHING!!!");
 			}
 		}
 

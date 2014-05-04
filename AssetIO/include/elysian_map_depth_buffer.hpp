@@ -223,7 +223,7 @@ namespace elysian {
 			//float worldZCoord = (ZCoordConstants::mapBase + (elev)*32.0f);//-(((float)entityBase/32.0f)-((int)entityBase/32));
 
 			//calculate relative Z coord
-			float relZCoord = (entityBase-mapStartY)/32.0f + zCoord;
+			float relZCoord = ((entityBase+16.0f)-mapStartY)/32.0f + (int)((int)(zCoord+16)/32);
 			//Add depth buffer entry
 			unsigned zIndex = (unsigned)relZCoord;
 			if(zIndex >= _depthBuffMaxHeight) zIndex = _depthBuffMaxHeight-1;
@@ -267,12 +267,12 @@ namespace elysian {
 			_renderCustomPassAtElev(i);
 
 			//Entities come first, since they are always above the lowest point on the object
-			float entityZDelta = 0.0f;
+			//float entityZDelta = 0.0f;
 			for(unsigned j = 0; j < _entityCount[i]; ++j) {
 				//_entityBuff[i][j].zCoord += entityZDelta;
 				_renderEntityEntry(_entityBuff[i][j]);
 				//Give each entity a tiny delta to prevent duplicate z from same y coord
-				entityZDelta += ELYSIAN_DEPTH_BUFFER_ENTITY_ENTITY_MIN_Z_OFFSET;
+				//entityZDelta += ELYSIAN_DEPTH_BUFFER_ENTITY_ENTITY_MIN_Z_OFFSET;
 			}
 
 			_renderDepthBuffTileRow(i, NORMAL_FRONT);

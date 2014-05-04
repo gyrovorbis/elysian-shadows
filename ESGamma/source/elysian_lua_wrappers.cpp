@@ -678,7 +678,8 @@ OOLUA_EXPORT_FUNCTIONS(CameraKeyFrame,
 
 OOLUA_EXPORT_FUNCTIONS(CameraSystem,
 					   scale,
-					   moveToKeyFrame)
+					   moveToKeyFrame,
+					   setBoundaries)
 OOLUA_EXPORT_FUNCTIONS_CONST(CameraSystem,
 					   addEntity,
 					   removeEntity,
