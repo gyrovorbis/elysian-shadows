@@ -265,6 +265,11 @@ if(${GYRO_PLATFORM} EQUAL GYRO_PLATFORM_x86)
 			${X11_Xrandr_LIB}
 			m
 		)
+		if(X11_Xcursor_LIB)
+			list(APPEND Gyro_LIBRARIES ${X11_Xcursor_LIB})
+		else()
+			list(APPEND Gyro_LIBRARIES Xcursor)
+		endif()
 		if(X11_Xinput_LIB)
 			list(APPEND Gyro_LIBRARIES ${X11_Xinput_LIB})
 		else()
