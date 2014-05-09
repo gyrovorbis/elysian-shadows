@@ -2,6 +2,7 @@
 #define ELYSIAN_MEM_POOL_HPP
 
 #include <cassert>
+#include <cstdlib>
 #include <cstring>
 
 namespace elysian {
