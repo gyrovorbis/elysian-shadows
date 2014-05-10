@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 2.8.8)
 # Options
 #
 
-option(GY_BUILD_EXAMPLES "Build libGyro examples" ON)
+option(GY_BUILD_EXAMPLES "Build libGyro examples" OFF)
 
 #
 # Set up some variables
