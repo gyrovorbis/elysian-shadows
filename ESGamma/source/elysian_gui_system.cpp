@@ -18,7 +18,10 @@ const GYVector2 GuiSystem::_combatTextGravity = ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_G
 GuiSystem::GuiSystem(void): 
 	_projWidth(0), 
 	_projHeight(0) 
-{}
+{
+	gyVidResolution(&_projWidth, &_projHeight);
+
+}
 
 bool GuiSystem::loadAssets(void) {
 	bool success = true;

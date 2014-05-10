@@ -147,12 +147,12 @@ void Engine::processInput(void) {
 	GameInput::translate(_platInput, _gameInput);
 	Debug::getInstance().processInput(_gameInput);
 
-	if(!_processInput) return;
+	//if(!_processInput) return;
 
 	switch(System::_engineState){
 		case System::ENGINE_NORMAL:
 		case System::ENGINE_CONVERSATION:
-			_partySystem->processInput(_gameInput);
+			if(_processInput) _partySystem->processInput(_gameInput);
 			_cameraSystem->processInput(_gameInput);
 			_examinableSystem->processInput(_gameInput);
 			_dialogSystem->processInput(_gameInput);

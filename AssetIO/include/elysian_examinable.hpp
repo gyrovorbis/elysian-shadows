@@ -2,6 +2,7 @@
 #define ELYSIAN_EXAMINABLE_HPP
 
 #include "elysian_component.hpp"
+#include "elysian_direction.hpp"
 
 namespace elysian {
 
@@ -14,6 +15,8 @@ namespace elysian {
 		bool			_isDialogActive		= false;
 		bool			_enabled			= false;
 		float			_maxDist			= 48.0f;
+		Direction::DIR4 _dir				= Direction::DIR4_ANY;
+
 	public:
 						Examinable(Entity& parent);
 
@@ -32,8 +35,11 @@ namespace elysian {
 		bool			isDialogActive(void) const;
 		void			setEnabled(const bool en);
 		bool			isEnabled(void) const;
-
+		void			setRelativeDir(const Direction::DIR4 dir);
+		Direction::DIR4	getRelativeDir(void);
 	};
+
+	// ====== INLINEZ =======
 
 
 	inline Examinable::Examinable(Entity& parent): Component(parent) {}
@@ -43,6 +49,8 @@ namespace elysian {
 	inline bool Examinable::isEnabled(void) const { return _enabled; }
 	inline void Examinable::setMaxDist(const float dist) { _maxDist = dist; }
 	inline float Examinable::getMaxDist(void) const { return _maxDist; }
+	inline void Examinable::setRelativeDir(const Direction::DIR4 dir) { _dir = dir; }
+	inline auto Examinable::getRelativeDir(void) -> Direction::DIR4 { return _dir; }
 
 }
 

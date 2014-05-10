@@ -61,6 +61,7 @@ namespace elysian {
 		_mainState->register_class<RigidBodyAttrib>();
 		_mainState->register_class<ForceTarget>();
 		_mainState->register_class<RigidBody>();
+		_mainState->register_class<AnimationSystem>();
 		_mainState->register_class<AudioSystem>();
 		_mainState->register_class<LightSystem>();
 		_mainState->register_class<ParticleSystem>();
@@ -84,6 +85,7 @@ namespace elysian {
 		_mainState->register_class_static<Singletons>("getCurLevel", &Singletons_getCurLevel);
 		_mainState->register_class_static<Singletons>("getGameInput", &Singletons_getGameInput);
 		_mainState->register_class_static<Singletons>("setProcessInput", &Singletons_setProcessInput);
+		_mainState->register_class_static<Singletons>("getAnimSys", &Singletons_getAnimationSystem);
 		_mainState->register_class_static<Singletons>("getPartySys", &Singletons_getPartySystem);
 		_mainState->register_class_static<Singletons>("getTimerSys", &Singletons_getTimerSystem);
 		_mainState->register_class_static<Singletons>("getAudioSys", &Singletons_getAudioSystem);
@@ -96,7 +98,10 @@ namespace elysian {
 		_mainState->register_class_static<Singletons>("getGuiSys", &Singletons_getGuiSystem);
 		_mainState->register_class_static<Singletons>("getCameraSys", &Singletons_getCameraSystem);
 
+		_mainState->register_class_static<EventMonitor>("null", &EventMonitor_null);
+
 		//libGyro wrappers
+//		_mainState->register_class_static<gyro>("filePath", &gyroFilePath);
 		_mainState->register_class_static<gyro>("createWav", &gyroWavCreate);
 		_mainState->register_class_static<gyro>("destroyWav", &gyroWavDestroy);
 
@@ -302,6 +307,10 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Animation,
 							   isLooping,
 							   getCurrentFrame,
 							   getChildAttrib)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(AnimationSystem)
+OOLUA_EXPORT_FUNCTIONS(AnimationSystem,
+					   linearInterpTransform)
 
 EXPORT_OOLUA_FUNCTIONS_4_NON_CONST(CollisionFlags,
 								   resetType,
@@ -679,7 +688,8 @@ OOLUA_EXPORT_FUNCTIONS(CameraKeyFrame,
 OOLUA_EXPORT_FUNCTIONS(CameraSystem,
 					   scale,
 					   moveToKeyFrame,
-					   setBoundaries)
+					   setBoundaries,
+					   setDynamic)
 OOLUA_EXPORT_FUNCTIONS_CONST(CameraSystem,
 					   addEntity,
 					   removeEntity,

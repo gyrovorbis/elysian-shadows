@@ -5,14 +5,18 @@
 #include "elysian_dialog.hpp"
 #include "elysian_quad_sprite.hpp"
 
-#define ELSYIAN_DIALOG_SYSTEM_CHAR_APPEAR_TIME	0.05f;
+#define ELSYIAN_DIALOG_SYSTEM_CHAR_APPEAR_TIME	0.05f
 #define ELYSIAN_DIALOG_SYSTEM_MAX_LINES			3
+
+#define ELYSIAN_DIALOG_SYSTEM_MARGIN_SIZE		0.2f
+#define ELYSIAN_DIALOG_SYSTEM_DIST_MARGIN_SIZE	0.3f
 
 namespace elysian {
 
 	class Dialog;
 	class GameInput;
 	class Entity;
+	class EventMonitor;
 
 	class DialogSystem: public System {
 	public:
@@ -43,6 +47,7 @@ namespace elysian {
 			DialogText*		text;
 			DialogPrompt*	prompt;
 		} _curScreen, _prevScreen;
+		EventMonitor*	_monitor			= nullptr;
 		//ConversationDialog* _currentConversationDialog; WTF?
 
 		//bool _dynamicDialog = false; WTF?
@@ -82,7 +87,7 @@ namespace elysian {
 		void	openTextScreen(DialogText& screen);
 		void	openPromptScreen(DialogPrompt& screen);
 
-		void	startDialog(Dialog*const dialog);
+		void	startDialog(Dialog*const dialog, EventMonitor*const monitor=nullptr);
 		void	pauseDialog(void);   //stops, but keeps state information to resume later
 		void	closeDialog(void);
 

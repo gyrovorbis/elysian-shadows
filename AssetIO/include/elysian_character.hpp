@@ -22,7 +22,7 @@ namespace elysian {
 	class RigidBody;
 
 	class CharacterAttrib {
-		bool _canHold = true;
+		//bool _canHold = true;
 	};
 
 	class Character: public Component {

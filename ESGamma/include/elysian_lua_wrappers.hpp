@@ -38,6 +38,7 @@
 #include "elysian_combat.hpp"
 #include "elysian_combat_system.hpp"
 #include "elysian_lua_wrappers.hpp"
+#include "elysian_animation_system.hpp"
 
 /* IT'S NOT SAFE TO GO ALONE! TAKE THIS HEADER FILE. IT WILL HELP
  * YOU ON YOUR JOURNEY!
@@ -108,6 +109,7 @@ namespace OOLUA
 	typedef elysian::Area						Area;
 	typedef elysian::GameInput					GameInput;
 	typedef elysian::Singletons					Singletons;
+	typedef elysian::AnimationSystem			AnimationSystem;
 	typedef elysian::LightAttrib				LightAttrib;
 	typedef elysian::PartySystem				PartySystem;
 	typedef elysian::TimerSystem				TimerSystem;
@@ -196,7 +198,7 @@ OOLUA_PROXY(EventMonitor)
 		No_public_constructors,
 		No_public_destructor
 	)
-	OOLUA_SFUNC(null)
+	//OOLUA_SFUNC(null)
 OOLUA_PROXY_END
 
 namespace OOLUA {
@@ -282,7 +284,7 @@ OOLUA_PROXY(Entity, RenderableObject)
 	OOLUA_MEM_FUNC(Combat*, addCombat)
 	OOLUA_MEM_FUNC(ParticleEmitter*, addParticleEmitter)
 	OOLUA_MEM_FUNC(Behavior*, addBehavior, const char*)
-	OOLUA_MEM_FUNC(LuaBehavior*, addLuaBehavior, const char*)
+	OOLUA_MEM_FUNC(LuaBehavior*, addLuaBehavior, const char*, OOLUA::Lua_table_ref)
 	OOLUA_MEM_FUNC_CONST(Renderable*, getRenderable)
 	OOLUA_MEM_FUNC_CONST(Animation*, getAnimation)
 	OOLUA_MEM_FUNC_CONST(Collidable*, getCollidable)
@@ -421,6 +423,14 @@ OOLUA_PROXY(Animation, Component)
 	OOLUA_MEM_FUNC_CONST(unsigned, getCurrentFrame)
 	OOLUA_MEM_FUNC(void, setCurrentFrame, const unsigned)
 	OOLUA_MEM_FUNC(void, setChildPivot, float, float)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(AnimationSystem)
+OOLUA_TAGS (
+	No_public_constructors,
+	No_public_destructor
+)
+OOLUA_MEM_FUNC(void, linearInterpTransform, InstanceTransform*, const InstanceTransform&, float, EventMonitor*)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CollisionFlags)
@@ -901,7 +911,7 @@ OOLUA_PROXY(DialogSystem)
 		No_public_constructors,
 		No_public_destructor
 	)
-	OOLUA_MEM_FUNC(void, startDialog, Dialog*)
+	OOLUA_MEM_FUNC(void, startDialog, Dialog*, EventMonitor*)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CombatSystem)
@@ -942,6 +952,7 @@ OOLUA_PROXY(CameraSystem)
 	OOLUA_MEM_FUNC_CONST(CameraKeyFrame, getKeyFrame)
 	OOLUA_MEM_FUNC(void, moveToKeyFrame, const CameraKeyFrame&, float, EventMonitor*)
 	OOLUA_MEM_FUNC(void, setBoundaries, float, float, float, float)
+	OOLUA_MEM_FUNC(void, setDynamic, bool)
 OOLUA_PROXY_END
 
 
@@ -1178,6 +1189,10 @@ static inline int Singletons_setProcessInput(lua_State* const vm) {
 	OOLUA_C_FUNCTION(void, elysian::Singletons::setProcessInput, bool)
 }
 
+static inline int Singletons_getAnimationSystem(lua_State* const vm) {
+	OOLUA_C_FUNCTION(elysian::AnimationSystem*, elysian::Singletons::getAnimSys)
+}
+
 static inline int Singletons_getPartySystem(lua_State* const vm) {
 	OOLUA_C_FUNCTION(elysian::PartySystem*, elysian::Singletons::getPartySys)
 }
@@ -1220,6 +1235,10 @@ static inline int Singletons_getCombatSystem(lua_State* const vm) {
 
 static inline int Singletons_getCameraSystem(lua_State* const vm) {
 	OOLUA_C_FUNCTION(elysian::CameraSystem*, elysian::Singletons::getCameraSys)
+}
+
+static inline int EventMonitor_null(lua_State *const vm) {
+	OOLUA_C_FUNCTION(elysian::EventMonitor*, elysian::EventMonitor::null)
 }
 
 static inline int gyroWavCreate(lua_State *const vm) {

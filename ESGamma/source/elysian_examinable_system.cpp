@@ -6,6 +6,7 @@
 #include "elysian_game_input.hpp"
 #include "elysian_examinable.hpp"
 #include "elysian_character.hpp"
+#include "elysian_behavior_system.hpp"
 
 namespace elysian {
 
@@ -25,10 +26,16 @@ void ExaminableSystem::processInput(GameInput& input) {
 
 			//We are officially examining this motherfucker
 			if(partyLeader->getCharacter()->isFacing(*it->getEntity())) {
+
 				if(gyVec2Magnitude(&distVec) <= it->getMaxDist()) {
+
+					getBehavSys()->getBehavSys()->onExamine(it->getEntity(), partyLeader);
+
 					if(it->getDialog()) getDialogSys()->startDialog(it->getDialog());
 
 				}
+
+
 			}
 		}
 

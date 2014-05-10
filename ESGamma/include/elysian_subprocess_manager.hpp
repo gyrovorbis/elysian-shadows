@@ -36,6 +36,8 @@ protected:
 	PROC_STATE _state = PROC_STATE_IDLE;
 };
 
+
+
 template <typename P, typename M>
 class MonitorableSubProcess: public SubProcess<P, M> {
 public:
@@ -61,6 +63,62 @@ public:
 
 private:
 	EventMonitor* _monitor = nullptr; //may need more in the future... :(
+};
+
+template<typename T, typename M>
+class LinearInterpolatorSubProcess:
+		public MonitorableSubProcess<LinearInterpolatorSubProcess<T, M>, M> {
+
+	//friend MonitorableSubProcess<LinearInterpolatorSubProcess<T, M>, M>;
+	friend SubProcess<LinearInterpolatorSubProcess, M>;
+private:
+	T		_startKeyFrame;
+	T		_endKeyFrame;
+	T*		_curKeyFrame		= nullptr;
+
+	float	_timeInterval		= 0.0f;
+	float	_timeElapsed		= 0.0f;
+
+	inline void _start(M * const m) {
+		_timeElapsed = 0.0f;
+		if(_timeInterval == 0.0f) { //handle request immediately
+			*_curKeyFrame = _endKeyFrame;
+			MonitorableSubProcess<LinearInterpolatorSubProcess, M>::stop(m);
+		}
+		else _startKeyFrame = *_curKeyFrame;
+	}
+
+	inline void _stop(M * const /*m*/) {
+		_timeElapsed = 0.0f;
+		*_curKeyFrame = _endKeyFrame;
+		//_endFrame = m->_curState->_keyFrame;
+		//_startFrame = _endFrame;
+	}
+
+	inline void _update(M * const m, const float deltaTime) {
+		_timeElapsed += deltaTime;
+		bool done = false;
+		if(_timeElapsed >= _timeInterval) {
+			_timeElapsed = _timeInterval;
+			done = true;
+		}
+
+		_curKeyFrame->linearInterpolate(_startKeyFrame, _endKeyFrame, _timeInterval, _timeElapsed);
+
+		if(done) MonitorableSubProcess<LinearInterpolatorSubProcess, M>::stop(m);
+	}
+
+public:
+	void setKeyFrames(T*const curFrame, const T& endFrame) {
+		_curKeyFrame = curFrame;
+		//_startKeyFrame = startFrame;
+		_endKeyFrame = endFrame;
+	}
+
+	void setTimeInterval(const float interval) { _timeInterval = interval; }
+	const T& getEndKeyFrame(void) const { return _endKeyFrame; }
+	const T& getStartKeyFrame(void) const { return _startKeyFrame; }
+
 };
 
 
@@ -96,26 +154,26 @@ protected:
 
   // select first element
   template<typename P, class _This, class... _Rest>
-  struct SubProcessManagerSubProcessElement<0, SubProcessManager<P, _This, _Rest...> >
+  struct SubProcessManagerSubProcessElement<0, SubProcessManager<P, _This, _Rest...>>
   {
 	typedef _This& type;
 	typedef SubProcessManager<P, _This, _Rest...> _Ttype;
   };
 
   // recursive tuple_element definition
-  template <size_t _Index, class _Parent, class _This, class... _Rest>
-  struct SubProcessManagerSubProcessElement<_Index, SubProcessManager<_Parent, _This, _Rest...> >
-	: public SubProcessManagerSubProcessElement<_Index - 1, SubProcessManager<_Parent, _Rest...> >
+  template <size_t _Index, class _P, class _This, class... _Rest>
+  struct SubProcessManagerSubProcessElement<_Index, SubProcessManager<_P, _This, _Rest...>>
+	: public SubProcessManagerSubProcessElement<_Index - 1, SubProcessManager<_P, _Rest...> >
   {
   };
 
 
   // get reference to _Index element of tuple
-  template<size_t _Index, typename _Parent, class... _Types> inline
-	typename SubProcessManagerSubProcessElement<_Index, SubProcessManager<_Parent, _Types...> >::type
-	get(SubProcessManager<_Parent, _Types...>& _SubProcessManager)
+  template<size_t _Index, typename _P, class... _Types> inline
+	typename SubProcessManagerSubProcessElement<_Index, SubProcessManager<_P, _Types...>>::type
+	get(SubProcessManager<_P, _Types...>& _SubProcessManager)
   {
-	typedef typename SubProcessManagerSubProcessElement<_Index, SubProcessManager<_Parent, _Types...> >::_Ttype _Ttype;
+	typedef typename SubProcessManagerSubProcessElement<_Index, SubProcessManager<_P, _Types...>>::_Ttype _Ttype;
 	return (((_Ttype&) _SubProcessManager)._Myfirst);
   }
 

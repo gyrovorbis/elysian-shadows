@@ -8,7 +8,7 @@
 #ifdef ELYSIAN_LUA_DEBUG
 #	define _PROTECTED(a) \
 		do {\
-			if(!_script || _script->getError()) return; \
+			if(!_script || _script->getError()) break; \
 			a; \
 			if(_script->getError()) _selfTableDump(); \
 		} while(0)
@@ -22,14 +22,15 @@ namespace elysian {
 LuaBehavior::LuaBehavior(Entity &entity,
                          const char *
 #ifdef ELYSIAN_ENGINE
-                         script
+						 script,
+						 const OOLUA::Lua_table_ref paramTable
 #endif
                          ):
 	Behavior(entity)
 {
 #ifdef ELYSIAN_ENGINE
 
-	loadScript(script);
+	loadScript(script, paramTable);
 	
 #endif
 
@@ -89,7 +90,7 @@ bool LuaBehavior::save(FILE* /*file*/) {
 	return true;
 }
 
-bool LuaBehavior::loadScript(const char *file) {
+bool LuaBehavior::loadScript(const char *file, const OOLUA::Lua_table_ref paramTable) {
 	dbgprintf(LOG_VERBOSE, "LuaBehavior::loadScript(%s)", file);
     dbgPush();
 	if(_script) {
@@ -139,7 +140,13 @@ bool LuaBehavior::loadScript(const char *file) {
 		//add script triggers to behavior default triggers
 		addTriggers(_script->getAttrib()->getSupportedTriggers());
 
-		if(_triggerBits & ON_CREATE) onCreate();
+		if(_triggerBits & ON_CREATE) {
+			if(paramTable.ref() != LUA_REFNIL) //Call trigger with custom paramter table
+				_PROTECTED(_callTrigger<void>("onCreate", _ooSelfTableRef, paramTable));
+			//call basic trigger
+			else onCreate();
+		}
+
 		parentSelfTableRef = selfTableRef;
 	}
 

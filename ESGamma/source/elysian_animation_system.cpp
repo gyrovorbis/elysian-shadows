@@ -8,6 +8,7 @@
 namespace elysian {
 
 void AnimationSystem::update(void) {
+	updateSubProcesses(getTimerSys()->getDeltaTime());
 	for(unsigned int i = 0; i < _curArea->animations.size(); ++i) {
 		_curArea->animations[i]->update(getTimerSys()->getDeltaTime());
 	}

@@ -43,11 +43,11 @@ namespace elysian {
 
 		void				_selfTableDump(void);
 #endif
-							LuaBehavior(Entity &entity, const char *script);
+							LuaBehavior(Entity &entity, const char *script, const OOLUA::Lua_table_ref paramTable);
 							~LuaBehavior(void);
 	public:
 
-		bool				loadScript(const char *file);
+		bool				loadScript(const char *file, const OOLUA::Lua_table_ref paramTable);
 		
         template<typename RType, typename... PTypes>
         RType _callLuaFunction(const char* funcName, PTypes... parameters) const;

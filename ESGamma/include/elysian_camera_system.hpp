@@ -19,17 +19,14 @@ namespace elysian {
 	
 	class Entity;
 	class GameInput;
-	class EventMonitor;
-
-
 	class CameraSystem;
-	class CameraKeyFrameLinearInterpolator;
+	struct CameraState;
 
 	class CameraKeyFrame {
 		friend class CameraSystem;
 		friend struct CameraState;
-		friend class CameraKeyFrameLinearInterpolator;
 	private:
+
 		GYVector3	_pos = GYVector3 { 0.0f, 0.0f, -ZCoordConstants::mapBase };
 		float		_scale = 1.0f;
 		float		_zOrient = 0.0f;
@@ -40,30 +37,13 @@ namespace elysian {
 		void setZOrient(const float zOrient);
 		void setXOrient(const float xOrient);
 
-
 		float getScale(void) const;
+
+		void linearInterpolate(const CameraKeyFrame& startKeyFrame, const CameraKeyFrame& endKeyFrame,
+							   const float interval, const float elapsed);
 	};
 
-
-	class CameraKeyFrameLinearInterpolator:
-			public MonitorableSubProcess<CameraKeyFrameLinearInterpolator, CameraSystem> {
-		friend class CameraSystem;
-	private:
-		CameraKeyFrame	_startFrame;
-		CameraKeyFrame	_endFrame;
-		//CameraKeyFrame	_curFrame;
-		float			_timeInterval;
-		float			_timeElapsed;
-	public:
-
-		void _start(CameraSystem * const m);
-		void _update(CameraSystem * const m, const float deltaTime);
-		void _stop(CameraSystem * const m);
-
-		void setKeyFrames(const CameraKeyFrame& start, const CameraKeyFrame& end);
-		void setTimeInterval(const float time);
-	};
-
+	typedef LinearInterpolatorSubProcess<CameraKeyFrame, CameraSystem> CameraKeyFrameLinearInterpolator;
 
 	struct CameraState: public GYCamera {
 
@@ -105,7 +85,7 @@ namespace elysian {
 									CameraKeyFrameLinearInterpolator>,
 			public System
 	{
-		friend class CameraKeyFrameLinearInterpolator;
+		friend CameraKeyFrameLinearInterpolator;
 
 	private:
 		CameraState				_internalStates[ELYSIAN_CAMERA_SYSTEM_STACK_SIZE];
@@ -125,6 +105,8 @@ namespace elysian {
 		int						_bottomBoundary =	-1;
 		int						_leftBoundary	=	-1;
 		int						_rightBoundary	=	-1;
+
+		bool					_dynamic		= true;
 
 		void _updateState(CameraState*const state, const float deltaTime);
 
@@ -190,7 +172,7 @@ namespace elysian {
 
 			CameraKeyFrame frame = getKeyFrame();
 			frame.setScale(frame.getScale()*factor);
-			interp.setKeyFrames(_curState->_keyFrame, frame);
+			interp.setKeyFrames(&_curState->_keyFrame, frame);
 			interp.setTimeInterval(time);
 			interp.setEventMonitor(monitor);
 			interp.start(this);
@@ -230,7 +212,7 @@ namespace elysian {
 
 			CameraKeyFrame frame = getKeyFrame();
 			frame.setScale(factor);
-			interp.setKeyFrames(_curState->_keyFrame, frame);
+			interp.setKeyFrames(&_curState->_keyFrame, frame);
 			interp.setTimeInterval(time);
 			interp.setEventMonitor(monitor);
 			interp.start(this);
@@ -288,6 +270,8 @@ namespace elysian {
 			_topBoundary = top; _bottomBoundary = bottom; _leftBoundary = left; _rightBoundary = right;
 		}
 
+		void setDynamic(const bool value) { _dynamic = value; }
+
 
 		/* LEGACY
 		//const static gyro::Vector2 screenSize;
@@ -313,55 +297,26 @@ namespace elysian {
 	inline void CameraKeyFrame::setZOrient(const float zOrient) { _zOrient = zOrient; }
 	inline void CameraKeyFrame::setXOrient(const float xOrient) { _xOrient = xOrient; }
 
-	inline void CameraKeyFrameLinearInterpolator::setKeyFrames(const CameraKeyFrame& start, const CameraKeyFrame& end) {
-		_startFrame = start; _endFrame = end;
-	}
+	inline void CameraKeyFrame::linearInterpolate(const CameraKeyFrame& startKeyFrame, const CameraKeyFrame& endKeyFrame,
+										const float interval, const float elapsed) {
 
-	inline void CameraKeyFrameLinearInterpolator::setTimeInterval(const float time) {
-		_timeInterval = time;
-	}
-
-	inline void CameraKeyFrameLinearInterpolator::_start(CameraSystem * const m) {
-		_timeElapsed = 0;
-		if(_timeInterval == 0.0f) { //handle request immediately
-			m->_curState->_keyFrame = _endFrame;
-			stop(m);
-		}
-		else m->_curState->_keyFrame = _startFrame;
-	}
-
-	inline void CameraKeyFrameLinearInterpolator::_stop(CameraSystem * const m) {
-		_timeElapsed = 0;
-		_endFrame = m->_curState->_keyFrame;
-		_startFrame = _endFrame;
-	}
-
-	inline void CameraKeyFrameLinearInterpolator::_update(CameraSystem * const m, const float deltaTime) {
-		_timeElapsed += deltaTime;
-		bool done = false;
-		if(_timeElapsed >= _timeInterval) {
-			_timeElapsed = _timeInterval;
-			done = true;
-		}
 		/* Do some fucking terrible, type-unsafe casting to batch process linear interpolation
 		 * of all floats in the struct with the SIMD instructions. Ugly, but fast as shit. */
-		gyLinearInterp((float*)&m->_curState->_keyFrame._pos.x, 3,
-					   (float*)&_startFrame._pos.x, (float*)&_endFrame._pos.x,
-					   _timeInterval, _timeElapsed);
+		gyLinearInterp((float*)&_pos.x, 6,
+					   (float*)&startKeyFrame._pos.x, (float*)&endKeyFrame._pos.x,
+					   interval, elapsed);
+/*
+		gyLinearInterp((float*)&_scale, 1,
+					   (float*)&startKeyFrame._scale, (float*)&endKeyFrame._scale,
+					   interval, elapsed);
 
-		gyLinearInterp((float*)&m->_curState->_keyFrame._scale, 1,
-					   (float*)&_startFrame._scale, (float*)&_endFrame._scale,
-					   _timeInterval, _timeElapsed);
+		gyLinearInterp((float*)&_xOrient, 1,
+					   (float*)&startKeyFrame._xOrient, (float*)&endKeyFrame._xOrient,
+					   interval, elapsed);
 
-		gyLinearInterp((float*)&m->_curState->_keyFrame._xOrient, 1,
-					   (float*)&_startFrame._xOrient, (float*)&_endFrame._xOrient,
-					   _timeInterval, _timeElapsed);
-
-		gyLinearInterp((float*)&m->_curState->_keyFrame._zOrient, 1,
-					   (float*)&_startFrame._zOrient, (float*)&_endFrame._zOrient,
-					   _timeInterval, _timeElapsed);
-
-		if(done) stop(m);
+		gyLinearInterp((float*)&_zOrient, 1,
+					   (float*)&startKeyFrame._zOrient, (float*)&endKeyFrame._zOrient,
+					   interval, elapsed);*/
 	}
 
 	inline bool CameraState::isWithinScreenRegion(const int x, const int y, const int halfWidth, const int halfHeight) const {
@@ -378,7 +333,7 @@ namespace elysian {
 
 	inline void CameraSystem::moveToKeyFrame(const CameraKeyFrame &frame, const float time, EventMonitor * const monitor) {
         auto &interp = get<SUBPROC_KEY_FR_INTERP>(static_cast<SubProcParent&>(*this));
-		interp.setKeyFrames(_curState->_keyFrame, frame);
+		interp.setKeyFrames(&_curState->_keyFrame, frame);
 		interp.setTimeInterval(time);
 		interp.start(this);
 		interp.setEventMonitor(monitor);

@@ -21,8 +21,8 @@ namespace elysian {
 			{ 100.0f, 100.0f, 0.0f },
 			{ 100.0f, 100.0f, 100.0f },
 			{ 1.0f, 1.0f, 1.0f },
-			nullptr,
-			0.0f
+			0.0f,
+			nullptr
 		}) {}
 		void apply(void) const {
 #ifdef ELYSIAN_ENGINE
@@ -74,6 +74,14 @@ namespace elysian {
 
         //static void save(const GYInstMat &mat, std::ofstream &stream) {}
         //static void load(GYInstMat &mat, std::ifstream &stream) {}
+
+		void linearInterpolate(const InstanceTransform& startFrame, const InstanceTransform& endFrame,
+							   const float interval, const float elapsed)
+		{
+			gyLinearInterp((float*)&_pos.x, 10,
+						   (float*)&startFrame._pos.x, (float*)&endFrame._pos.x,
+						   interval, elapsed);
+		}
 	};
 
 }

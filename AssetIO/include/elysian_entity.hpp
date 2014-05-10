@@ -100,7 +100,7 @@ namespace elysian {
  
 		Behavior* addBehavior(char const* behaviorName);
         Behavior* getBehavior(char const* constbehaviorName) const;
-		LuaBehavior* addLuaBehavior(char const* scriptName);
+		LuaBehavior* addLuaBehavior(char const* scriptName, const OOLUA::Lua_table_ref paramTable);
 		LuaBehavior* getLuaBehavior(char const* scriptName) const;
 		std::map<char const *, Behavior*, ltstr>& getBehaviors(void);
 

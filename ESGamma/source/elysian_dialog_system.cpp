@@ -32,8 +32,11 @@ DialogSystem::DialogSystem(void) {
 	static GYColor4 optBoxColor = { 0, 0, 50, 255 };
 	static GYColor4 cursorColor = { 0, 180, 180, 255 };
 
+	unsigned width, height;
+	getGuiSys()->getResolution(width, height);
+
 	_mainCanvas.transform.setSize(640.0f, 100.0f);
-	_mainCanvas.transform.setPos(320.0f, 480.0f-50.0f, 200.0f);
+	_mainCanvas.transform.setPos(((float)width)*0.5f, (float)height - (float)height*ELYSIAN_DIALOG_SYSTEM_MARGIN_SIZE - 50.0f, 200.0f);
 	_mainCanvas.setVertexColor(0, canvColor1);
 	_mainCanvas.setVertexColor(1, canvColor2);
 	_mainCanvas.setVertexColor(2, canvColor3);
@@ -170,19 +173,34 @@ void DialogSystem::update(void) {
 			return;
 		}
 
+		unsigned width, height;
+		getGuiSys()->getResolution(width, height);
+
+		_mainCanvas.transform._pos.x = curPos.x;
+		if(_mainCanvas.transform._pos.x- _mainCanvas.transform._size.x*0.5f < 0)
+			_mainCanvas.transform._pos.x = _mainCanvas.transform._size.x*0.5f;
+		else if (_mainCanvas.transform._pos.x + _mainCanvas.transform._size.x*0.5f > width)
+			_mainCanvas.transform._pos.x = width - _mainCanvas.transform._size.x*0.5f;
+
+		const float yEntityTop = (float)height*ELYSIAN_DIALOG_SYSTEM_DIST_MARGIN_SIZE;
+		const float yEntityBottom = (float)height - (float)height*ELYSIAN_DIALOG_SYSTEM_DIST_MARGIN_SIZE;
+
+		const float yTop = (float)height*ELYSIAN_DIALOG_SYSTEM_MARGIN_SIZE;
+		const float yBottom = (float)height - (float)height*ELYSIAN_DIALOG_SYSTEM_MARGIN_SIZE;
+
 		switch(_posState) {
 			case POS_BOTTOM:
-				if(curPos.y > 350.0f) _posState = POS_MOVE_UP;
+				if(curPos.y > yEntityBottom) _posState = POS_MOVE_UP;
 				break;
 			case POS_TOP:
-				if(curPos.y < 130.0f) _posState = POS_MOVE_DOWN;
+				if(curPos.y < yEntityTop) _posState = POS_MOVE_DOWN;
 				break;
 			case POS_MOVE_UP:
-				if(_mainCanvas.transform._pos.y <= 50.0f) {
-					_mainCanvas.transform.setPos(_mainCanvas.transform._pos.x, 50.0f);
+				if(_mainCanvas.transform._pos.y <= yTop) {
+					_mainCanvas.transform.setPos(_mainCanvas.transform._pos.x, yTop);
 					_posState = POS_TOP;
 				}
-				else if(curPos.y < 130.0f) _posState = POS_MOVE_DOWN;
+				else if(curPos.y < yTop) _posState = POS_MOVE_DOWN;
 				else {
 					float alpha = fabs(_mainCanvas.transform._pos.y-240.0f)/600.0f;// - 0.8f;
 					if(alpha < 0.0f) alpha = 0.0f;
@@ -191,11 +209,11 @@ void DialogSystem::update(void) {
 				}
 				break;
 			case POS_MOVE_DOWN:
-				if(_mainCanvas.transform._pos.y >= 430.0f) {
-					_mainCanvas.transform.setPos(_mainCanvas.transform._pos.x, 430.0f);
+				if(_mainCanvas.transform._pos.y >= yBottom) {
+					_mainCanvas.transform.setPos(_mainCanvas.transform._pos.x, yBottom);
 					_posState = POS_BOTTOM;
 				}
-				else if(curPos.y > 350.0f) _posState = POS_MOVE_UP;
+				else if(curPos.y > yBottom) _posState = POS_MOVE_UP;
 				else {
 					float alpha = fabs(_mainCanvas.transform._pos.y-240.0f)/600.0f;// - 0.8f;
 					if(alpha < 0.0f) alpha = 0.0f;
@@ -343,11 +361,13 @@ void DialogSystem::FacePlayer(void) const {
 }
 
 void DialogSystem::closeDialog(void) {
+	if(_monitor) _monitor->onFinish();
 	_updateCamera();
 	//if(_dynamicDialog) delete _currentConversationDialog;
 	_curDialog = nullptr;
 	_curScreen.screen = nullptr;
 	_prevScreen.screen = nullptr;
+	_monitor = nullptr;
 	_currentScreen = _currentLine = _currentCharacter = _currentOption = 0;
 	_characterTimer = 0.0f;
 	//_dynamicDialog = false;
@@ -392,8 +412,9 @@ void DialogSystem::_splitText(void) {
 	for(; lineCount < ELYSIAN_DIALOG_SYSTEM_MAX_LINES; ++lineCount) _textLines[lineCount][0] = 0;
 }
 
-void DialogSystem::startDialog(Dialog *const dialog) {
+void DialogSystem::startDialog(Dialog *const dialog, EventMonitor*const monitor) {
 	closeDialog();
+	_monitor = monitor;
 	_curDialog = dialog;
 	_curScreen.screen = dialog->getScreen(0);
 	_updateCamera();

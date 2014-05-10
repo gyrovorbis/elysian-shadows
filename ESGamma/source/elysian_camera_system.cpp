@@ -97,7 +97,7 @@ void CameraSystem::_updateState(CameraState*const state, const float /*deltaTime
 
 	//return to base zoom
 	if(state->entities.size() == 0) {
-		if(fabs(state->baseScale - interp._endFrame._scale) > ELYSIAN_CAMERA_STATE_SCALE_INTERP_EPSILON) {
+		if(fabs(state->baseScale - interp.getEndKeyFrame()._scale) > ELYSIAN_CAMERA_STATE_SCALE_INTERP_EPSILON) {
 			setScale(state->baseScale, 4.0f);
 		}
 	}
@@ -156,7 +156,7 @@ void CameraSystem::_updateState(CameraState*const state, const float /*deltaTime
 		//Debug::printf(Debug::VERBOSE, "%f, %f - NEWSCALE - %f", scaleX, scaleY, nextScale);
 
 		//Check if we need to bother updating
-		if(fabs(nextScale - interp._endFrame._scale) > ELYSIAN_CAMERA_STATE_SCALE_INTERP_EPSILON) {
+		if(fabs(nextScale - interp.getEndKeyFrame()._scale) > ELYSIAN_CAMERA_STATE_SCALE_INTERP_EPSILON) {
 			Debug::printf(Debug::VERBOSE, "SCALE - %f", nextScale);
 			Debug::printf(Debug::VERBOSE, "<%f, %f>", scaleX, scaleY);
 
@@ -331,9 +331,11 @@ void CameraSystem::update(void) {
 	}
 
 	_curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
-	_updateState(_curState, deltaTime);
 
-	_curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
+	if(_dynamic) {
+		_updateState(_curState, deltaTime);
+		_curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
+	}
 	if(_curState->projType == GY_PROJECTION_ORTHO) {
 		//gyVidProjectionDefaultMatrix();
 		//gyVidCameraSetViewCenter(&_curState->pos, _curState->scale, _curState->zOrient);

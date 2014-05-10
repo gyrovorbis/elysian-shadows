@@ -563,8 +563,8 @@ Behavior* Entity::addBehavior(const char *name) {
 	return attachBehavior(Behavior::create(name, *this));
 }
 
-LuaBehavior* Entity::addLuaBehavior(const char *name) {
-	return static_cast<LuaBehavior*>(attachBehavior(new LuaBehavior(*this, name)));
+LuaBehavior* Entity::addLuaBehavior(const char *name, const OOLUA::Lua_table_ref paramTable) {
+	return static_cast<LuaBehavior*>(attachBehavior(new LuaBehavior(*this, name, paramTable)));
 }
 
      
