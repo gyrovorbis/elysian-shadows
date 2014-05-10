@@ -598,11 +598,13 @@ bool Debug::parseArguments(int argc, char *argv[]) {
 		switch(argv[i][1]) {
 			case 'l':
 				++i;
-				strcpy(_cmdLineArgs.level, argv[i]);
+				/*strcpy(_cmdLineArgs.level, argv[i]);*/
+				sprintf(_cmdLineArgs.level, "/assets/%s", argv[i]);
 				break;
 			case 'a':
 				++i;
-				strcpy(_cmdLineArgs.area, argv[i]);
+				/*strcpy(_cmdLineArgs.area, argv[i]);*/
+				sprintf(_cmdLineArgs.area, "/assets/%s", argv[i]);
 				break;
 			case 'x':
 				_cmdLineArgs.x = atoi(argv[++i]);
