@@ -7,6 +7,7 @@
 #include "elysian_timer_system.hpp"
 #include "elysian_zcoords.hpp"
 
+#include <cstdlib>
 #include <vector>
 #include <gyro.h>
 
