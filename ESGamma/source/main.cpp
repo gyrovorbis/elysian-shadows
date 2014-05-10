@@ -1,4 +1,4 @@
-#ifdef __unix__
+#if defined(__unix__) && !defined(ANDROID)
 #include <thread>
 #include <X11/Xlib.h>
 #endif
@@ -78,7 +78,7 @@ static void StaticConstructor(void) {
 
 void gyro_main(void)
 {
-#ifdef __unix__
+#if defined(__unix__) && !defined(ANDROID)
 	XInitThreads();
 #endif
 	StaticConstructor();
