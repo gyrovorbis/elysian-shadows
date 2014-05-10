@@ -92,6 +92,7 @@ message(STATUS "Building version: ${es_VERSION_FULL}")
 
 include_directories(SYSTEM "${ES_TARGET_CONTRIB_OUT_DIR}/include")
 include_directories(SYSTEM "${ES_ASSETIO_DIR}/include")
+include_directories(SYSTEM "${ES_GYRO_DIR}/out/${ES_TARGET_OS}_${ES_TARGET_ARCH}/contrib/include")
 include_directories(SYSTEM "${ES_GYRO_DIR}/include")
 include_directories(SYSTEM "${ES_GYRO_DIR}/include/kinetic")
 include_directories(SYSTEM "${ES_OOLUA_DIR}/include")
