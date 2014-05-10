@@ -570,12 +570,14 @@ LuaBehavior* Entity::addLuaBehavior(const char *name, const OOLUA::Lua_table_ref
      
 Behavior *Entity::attachBehavior(Behavior *behav) {
 	//Check for duplicate behaviors.
+#if 0
 	std::map<const char *, Behavior*, ltstr>::iterator it = _behavior.find(behav->getBehavName());
 	if(it != _behavior.end()) {
 		dbgprintf(LOG_CRITICAL, "Entity::AddBehavior(%s) - Already attached!", behav->getBehavName());
 		delete behav;
 		return NULL;
 	}
+#endif
 
 	//Check for prereqs
 	if(!behav->canAddTo(*this)) {

@@ -39,6 +39,7 @@
 #include "elysian_combat_system.hpp"
 #include "elysian_lua_wrappers.hpp"
 #include "elysian_animation_system.hpp"
+#include "elysian_character_system.hpp"
 
 /* IT'S NOT SAFE TO GO ALONE! TAKE THIS HEADER FILE. IT WILL HELP
  * YOU ON YOUR JOURNEY!
@@ -114,6 +115,7 @@ namespace OOLUA
 	typedef elysian::PartySystem				PartySystem;
 	typedef elysian::TimerSystem				TimerSystem;
 	typedef elysian::RigidBodySystem			RigidBodySystem;
+	typedef elysian::CharacterSystem			CharacterSystem;
 	typedef elysian::AudioSource				AudioSource;
 	typedef elysian::LightSource				LightSource;
 	typedef elysian::AudioSystem				AudioSystem;
@@ -555,6 +557,14 @@ OOLUA_PROXY(Character, Component)
 	OOLUA_MEM_FUNC(void, setAnimate, bool)
 	OOLUA_MEM_FUNC_CONST(bool, isFacing, const Entity&)
 	OOLUA_MEM_FUNC_CONST(Direction::DIR4, getFaceDir)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(CharacterSystem)
+OOLUA_TAGS (
+	No_public_constructors,
+	No_public_destructor
+)
+OOLUA_MEM_FUNC(void, walkToWayPoint, Character*, float, float, EventMonitor*)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Warp, Component)
@@ -1235,6 +1245,10 @@ static inline int Singletons_getCombatSystem(lua_State* const vm) {
 
 static inline int Singletons_getCameraSystem(lua_State* const vm) {
 	OOLUA_C_FUNCTION(elysian::CameraSystem*, elysian::Singletons::getCameraSys)
+}
+
+static inline int Singletons_getCharacterSystem(lua_State* const vm) {
+	OOLUA_C_FUNCTION(elysian::CharacterSystem*, elysian::Singletons::getCharSys)
 }
 
 static inline int EventMonitor_null(lua_State *const vm) {

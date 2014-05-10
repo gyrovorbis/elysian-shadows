@@ -2,6 +2,7 @@
 #define ELYSIAN_SUBPROCESS_MANAGER_HPP
 
 #include "elysian_event_monitor.hpp"
+#include "elysian_mem_pool.hpp"
 
 namespace elysian {
 
@@ -63,6 +64,41 @@ public:
 
 private:
 	EventMonitor* _monitor = nullptr; //may need more in the future... :(
+};
+
+template<typename T, typename M, unsigned C>
+class MonitorableSubProcessPool: public SubProcess<MonitorableSubProcessPool<T,M,C>, M> {
+private:
+	Pool<T> _pool = Pool<T>(C);
+
+public:
+	inline void _start(M* const m) {
+		/*for(auto it = _pool.begin(); it < _pool.end(); ++it) {
+			(*it).start(m);
+		}*/
+	}
+
+	inline void _stop(M* const m) {
+		for(auto it = _pool.begin(); it < _pool.end(); ++it) {
+			(*it).stop(m);
+			_pool.remove(it);
+		}
+	}
+
+	inline void _update(M* const m, const float deltaTime) {
+		for(auto it = _pool.begin(); it < _pool.end(); ++it) {
+			if((*it).getProcState() == PROC_STATE_IDLE) {
+				_pool.remove(it);
+			} else (*it).update(m, deltaTime);
+		}
+	}
+
+	inline T& claimIdleSubProcess(void) {
+		return _pool.claimFreeEntry();
+	}
+
+	inline Pool<T>& getPool(void) { return _pool; }
+
 };
 
 template<typename T, typename M>

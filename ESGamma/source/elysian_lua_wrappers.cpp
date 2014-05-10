@@ -62,6 +62,7 @@ namespace elysian {
 		_mainState->register_class<ForceTarget>();
 		_mainState->register_class<RigidBody>();
 		_mainState->register_class<AnimationSystem>();
+		_mainState->register_class<CharacterSystem>();
 		_mainState->register_class<AudioSystem>();
 		_mainState->register_class<LightSystem>();
 		_mainState->register_class<ParticleSystem>();
@@ -97,6 +98,7 @@ namespace elysian {
 		_mainState->register_class_static<Singletons>("getDialogSys", &Singletons_getDialogSystem);
 		_mainState->register_class_static<Singletons>("getGuiSys", &Singletons_getGuiSystem);
 		_mainState->register_class_static<Singletons>("getCameraSys", &Singletons_getCameraSystem);
+		_mainState->register_class_static<Singletons>("getCharSys", &Singletons_getCharacterSystem);
 
 		_mainState->register_class_static<EventMonitor>("null", &EventMonitor_null);
 
@@ -406,6 +408,10 @@ EXPORT_OOLUA_FUNCTIONS_4_NON_CONST(Character,
 EXPORT_OOLUA_FUNCTIONS_2_CONST(Character,
 							   getFaceDir,
 							   isFacing)
+
+OOLUA_EXPORT_FUNCTIONS(CharacterSystem,
+					   walkToWayPoint)
+OOLUA_EXPORT_FUNCTIONS_CONST(CharacterSystem)
 
 EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(Warp,
 								   setToPos,
