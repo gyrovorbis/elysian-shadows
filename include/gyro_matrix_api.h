@@ -27,8 +27,8 @@ typedef struct _GYInstMat {
 	GYVector3 _pos;
 	GYVector3 _size;
 	GYVector3 _scale;
-	struct _GYInstMat *parent;
 	float _orientZ;
+	struct _GYInstMat *parent;
 } GYInstMat;
 
 #ifdef GYRO_MATRIX_PLATFORM_INCLUDE
