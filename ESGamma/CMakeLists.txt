@@ -126,7 +126,7 @@ if(APPLE)
 endif()
 
 target_link_libraries(ESGamma ${Gyro_LIBRARIES} OOLua lua52)
-if(UNIX AND NOT APPLE)
+if(UNIX AND NOT APPLE AND NOT ANDROID)
 	target_link_libraries(ESGamma ${CMAKE_DL_LIBS} fluidsynth)
 endif()
 
