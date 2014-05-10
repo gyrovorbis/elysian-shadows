@@ -210,8 +210,6 @@ link_directories("${GY_TARGET_OUT_DIR}/lib")
 
 add_library(Gyro STATIC ${gyro_SOURCES} ${gyro_INCLUDES})
 set(gyro_DEPENDENCIES
-    glew
-    glfw
     libpng
     ogg
     turfs
@@ -221,6 +219,9 @@ set(gyro_DEPENDENCIES
 )
 if(NOT APPLE OR NOT ${GYRO_PLATFORM} EQUAL GYRO_PLATFORM_x86)
     list(APPEND gyro_DEPENDENCIES openal)
+endif()
+if(${GYRO_PLATFORM} EQUAL GYRO_PLATFORM_x86)
+    list(APPEND gyro_DEPENDENCIES glew glfw)
 endif()
 add_dependencies(Gyro ${gyro_DEPENDENCIES})
 set_target_properties(Gyro PROPERTIES
