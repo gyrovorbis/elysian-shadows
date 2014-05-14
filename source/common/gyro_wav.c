@@ -33,7 +33,7 @@ GYWav *gyAudWavCreate(const char *const filename) {
 }
 
 int gyAudWavDestroy(GYWav *const wav) {
-	return gyAssetBankRemove(&_wavBank, wav);
+	return (wav)? gyAssetBankRemove(&_wavBank, wav) : 0;
 }
 
 int gyAudWavClear(void) {
