@@ -11,6 +11,8 @@
 #include "elysian_examinable.hpp"
 #include "elysian_behavior_system.hpp"
 #include "elysian_particle_system.hpp"
+#include "elysian_level.hpp"
+#include "elysian_audio_system.hpp"
 
 namespace elysian {
 
@@ -36,6 +38,9 @@ void PartySystem::update(void) {//VOIDICATE
 void PartySystem::render() {}
 
 void PartySystem::processInput(const GameInput &input) {
+	Entity*entity = getPartyLeader();
+	if(!entity) return;
+
 	const static GYVector2 rightMove = { 1.0f, 0.0f };
 	const static GYVector2 leftMove = { -1.0f, 0.0f };
 	const static GYVector2 upMove = { 0.0f, -1.0f };
@@ -81,11 +86,13 @@ void PartySystem::processInput(const GameInput &input) {
 				case GameInput::BUT_DPAD_R:
 					if(but == GameInput::BUT_DPAD_L) stop = true;
 					  break;
+				default: break;
 
 			}
 
 			if(stop) {
 				getPartyLeader()->getAnimation()->setSpeedMultiplier(1.0f);
+				getAudioSys()->setSfxChannelPitch(0, 1.0f);
 				_dashing = false;
 				_moveSpeed = ELYSIAN_PARTY_SYSTEM_WALK_SPEED;
 			} else {
@@ -111,9 +118,12 @@ void PartySystem::processInput(const GameInput &input) {
 						angle = -M_PI;
 						  break;
 
+					default: break;
+
 				}
 
 				_dashing = true;
+				getAudioSys()->setSfxChannelPitch(0, 2.0f);
 				_moveSpeed = ELYSIAN_PARTY_SYSTEM_DASH_SPEED;
 				getPartyLeader()->getAnimation()->setSpeedMultiplier(3.0f);
 				getPartSys()->getAttrib(0)->setSize(3);
@@ -175,15 +185,67 @@ void PartySystem::processInput(const GameInput &input) {
 
 	}
 
-	if(moved) {
-		gyVec2ScaleAccum(&moveDist, getTimerSys()->getDeltaTime()*_moveSpeed);
-//		if(_playableParty.size() == 0 && _characterParty.size() == 0) getCameraSys()->transform.translate(moveDist);
-		if(_playableParty.size() != 0) _playableParty[0]->getCharacter()->move(moveDist);
-		else if(_characterParty.size() != 0) _characterParty[0]->getCharacter()->move(moveDist);
+	_footStepTimer += getTimerSys()->getDeltaTime();
+	if(_wasOnGround) {
+		if(!entity->getRigidBody()->getOnGround()) {
+			getAudioSys()->setSfxChannelGain(0, 0.0f);
+			_wasOnGround = false;
+		}
 	} else {
+		if(entity->getRigidBody()->getOnGround()) {
+			getAudioSys()->setSfxChannelGain(0, 1.0f);
+			_wasOnGround = true;
+		}
+	}
+
+	if(moved) {
+
+		//if(!_footStepSfxLooping) {
+			GYVector3 worldPos = entity->getCollidable()->getWorldPos();
+			GYWav* walkSfx = nullptr;
+			for(unsigned i = 0; i < 3; ++i) {
+				TileEntry tileEntry = getCurArea()->getTileEntry(i, (worldPos.x+16.0f)/32.0f, (worldPos.y+16.0f)/32.0f);
+				if(tileEntry.getElev() == entity->getElev()) {
+					auto* sfx = getCurLevel()->getTile(tileEntry.getIndex())->walkSfx;
+					if(sfx) walkSfx = sfx;
+				}
+			}
+
+			if(walkSfx) {
+				if(walkSfx != _curWalkSfx) {
+					getAudioSys()->setSfxChannelLooping(0, true);
+					getAudioSys()->stopSfxChannel(0);
+					getAudioSys()->setSfxChannelGain(0, 1.0f);
+					getAudioSys()->playSfxChannel(0, *walkSfx);
+					_footStepSfxLooping = true;
+					_curWalkSfx = walkSfx;
+				} else if(!_footStepSfxLooping) {
+					getAudioSys()->setSfxChannelGain(0, 1.0f);
+					_footStepSfxLooping = true;
+				}
+			}
+
+			_footStepTimer = 0.0f;
+		//}
+
+
+
+		gyVec2ScaleAccum(&moveDist, getTimerSys()->getDeltaTime()*_moveSpeed);
+		entity->getCharacter()->move(moveDist);
+	} else {
+		if(_footStepSfxLooping && _footStepTimer >= ELYSIAN_PARTY_SYSTEM_FOOT_STEP_SFX_TIME) {
+			getAudioSys()->setSfxChannelGain(0, 0.0f);
+			_footStepSfxLooping = false;
+		}
+		if(_moveSpeed == ELYSIAN_PARTY_SYSTEM_DASH_SPEED) {
+			getAudioSys()->setSfxChannelPitch(0, 1.0f);
+		}
+
 		_dashing = false;
 		_moveSpeed = ELYSIAN_PARTY_SYSTEM_WALK_SPEED;
-		getPartyLeader()->getAnimation()->setSpeedMultiplier(1.0f);
+		//_curWalkSfx = nullptr;
+		//getAudioSys()->setSfxChannelLooping(0, false);
+		entity->getAnimation()->setSpeedMultiplier(1.0f);
 	}
 }
 

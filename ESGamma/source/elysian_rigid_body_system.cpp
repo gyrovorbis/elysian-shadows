@@ -208,7 +208,7 @@ void RigidBodySystem::integrate(void) {
 		damping = 1.0f;
 
 		worldPos = it->getEntity()->getCollidable()->getWorldPos();
-		for(unsigned i = 0; i < 3; ++i) accumTileDamping(it, getCurArea()->getTileEntry(i, worldPos.x/32.0f, worldPos.y/32.0f));
+		for(unsigned i = 0; i < 3; ++i) accumTileDamping(it, getCurArea()->getTileEntry(i, (worldPos.x+16.0f)/32.0f, (worldPos.y+16.0f)/32.0f));
 
 		it->setTileDamping(damping);
 		it->integrate(deltaTime);
@@ -346,6 +346,7 @@ void RigidBodySystem::integrate3D(void) {
 				it->setVelocity(vel);
 				//Debug::printf(Debug::CRITICAL, "Resting");
 				collidable->getEntity()->getCollidable()->update();
+				it->setOnGround(true);
 
 				//collidable->setResolvePenetration(false);
 				//it->_restingOnTile = true;
@@ -354,6 +355,7 @@ void RigidBodySystem::integrate3D(void) {
 		} else {
 			//Debug::printf(Debug::CRITICAL, "Falling");
 			it->getAttrib()->setForceMask(1);
+			it->setOnGround(false);
 			//collidable->setResolvePenetration(true);
 		//	it->_restingOnTile = false;
 

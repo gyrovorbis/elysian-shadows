@@ -43,6 +43,7 @@ namespace elysian {
 	private:
 		float				_tileDamping = 1.0f;
 		bool				_active	= true;
+		bool				_onGround = true;
 		RigidBodyAttrib*	_attrib = nullptr;
 	public:
 
@@ -68,6 +69,8 @@ namespace elysian {
 		float				getTileDamping(void) const;
 		void				setAttrib(RigidBodyAttrib*const attrib);
 		RigidBodyAttrib*	getAttrib(void) const;
+		bool				getOnGround(void) const;
+		void				setOnGround(const bool val);
 
 		//GYKinetic rigid bodies internal
 		void integrate(const float deltaTime);
@@ -96,6 +99,8 @@ namespace elysian {
 	//inline void RigidBody::applyForceMask(const uint32_t mask, const GYVector2& force) { if(_attrib->getForceMask() & mask) applyForce(force); }
 	inline uint32_t RigidBodyAttrib::getForceMask(void) const { return _forceMask; }
 	inline void RigidBodyAttrib::setForceMask(const uint32_t mask) { _forceMask = mask; }
+	inline bool RigidBody::getOnGround(void) const { return _onGround; }
+	inline void RigidBody::setOnGround(const bool val) { _onGround = val; }
 
 }
 

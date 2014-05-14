@@ -25,7 +25,7 @@ const float DialogSystem::_nextCharTime = ELSYIAN_DIALOG_SYSTEM_CHAR_APPEAR_TIME
 
 DialogSystem::DialogSystem(void) {
 	/*
-	 Set the initial values for main text canvas.
+	 Set the initial values for main text canvas.4
 	*/
 	static GYColor4 canvColor1 = { 0, 0, 150, 255 };
 	static GYColor4 canvColor2 = { 0, 0, 150, 255 };
@@ -38,7 +38,7 @@ DialogSystem::DialogSystem(void) {
 	getGuiSys()->getResolution(width, height);
 
 	_mainCanvas.transform.setSize(640.0f, 100.0f);
-	_mainCanvas.transform.setPos(((float)width)*0.5f, (float)height - (float)height*ELYSIAN_DIALOG_SYSTEM_MARGIN_SIZE - 50.0f, 200.0f);
+	_mainCanvas.transform.setPos(((float)width)*0.5f, (float)height- (float)height*ELYSIAN_DIALOG_SYSTEM_MARGIN_SIZE - 50.0f, 6.0f);
 	_mainCanvas.setVertexColor(0, canvColor1);
 	_mainCanvas.setVertexColor(1, canvColor2);
 	_mainCanvas.setVertexColor(2, canvColor3);
@@ -202,10 +202,10 @@ void DialogSystem::update(void) {
 			_mainCanvas.transform._pos.x = width - _mainCanvas.transform._size.x*0.5f;
 
 		const float yEntityTop = (float)height*ELYSIAN_DIALOG_SYSTEM_DIST_MARGIN_SIZE;
-		const float yEntityBottom = (float)height - (float)height*ELYSIAN_DIALOG_SYSTEM_DIST_MARGIN_SIZE;
+		const float yEntityBottom = (float)height;// - (float)height*ELYSIAN_DIALOG_SYSTEM_DIST_MARGIN_SIZE;
 
 		const float yTop = (float)height*ELYSIAN_DIALOG_SYSTEM_MARGIN_SIZE;
-		const float yBottom = (float)height - (float)height*ELYSIAN_DIALOG_SYSTEM_MARGIN_SIZE;
+		const float yBottom = (float)height;// - (float)height*ELYSIAN_DIALOG_SYSTEM_MARGIN_SIZE;
 
 		switch(_posState) {
 			case POS_BOTTOM:
@@ -396,7 +396,7 @@ void DialogSystem::closeDialog(void) {
 	setEngineState(System::ENGINE_NORMAL);
 	_posState = POS_BOTTOM;
 	//_mainCanvas.transform.setPosition(_mainCanvas.transform._pos.x, 430.0f);
-	_mainCanvas.transform._pos.y = 430.0f;
+	//_mainCanvas.transform._pos.y = 430.0f;
 	getGuiSys()->adventureLog.enable();
 }
 

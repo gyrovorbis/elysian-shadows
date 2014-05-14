@@ -291,6 +291,10 @@ namespace elysian {
 
 	//========= SFX WAV API =======
 
+	bool AudioSystem::isSfxChannelPlaying(const unsigned channel) const {
+		return gyAudSourceIsPlaying(_channels[channel].src);
+	}
+
 	void AudioSystem::playSfxChannel(const int channel, const GYWav& wav) {
 		auto *src = (channel == -1)? reserveChannel() : _channels[channel].src;
 		gyAudSourcePlayWav(src, &wav);

@@ -26,6 +26,7 @@ namespace elysian {
 		//accept -1 for dynamic channel
 		void		playSfxChannel(int channel, const GYWav& wav);
 		void		stopSfxChannel(const unsigned channel) const;
+		bool		isSfxChannelPlaying(const unsigned channel) const;
 		//void		isSfXChannelPlaying(void);
 		void		setSfxChannelGain(const unsigned channel, const float val) const;
 		void		setSfxChannelPitch(const unsigned channel, const float val) const;

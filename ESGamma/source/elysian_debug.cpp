@@ -519,6 +519,11 @@ void Debug::processInput(GameInput& input) {
 
 	//Elevate player
 	if(input.getTapped(GameInput::BUT_Y)) {
+	/*	Dialog* dialog = new Dialog;
+		auto* screen = dialog->addTextScreen("WTF!? A wild Rattata appeared!");
+		screen->setNextIndex(-1);
+		getDialogSys()->startDialog(dialog);*/
+
 		Entity* leader = _engine->_partySystem->getPartyLeader();
 		if(leader) {
 			unsigned elev = leader->getElev();

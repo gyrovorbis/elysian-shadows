@@ -95,6 +95,8 @@ void CameraSystem::_updateState(CameraState*const state, const float /*deltaTime
 	if(state->_keyFrame._pos.x < boundLeft) _curState->_keyFrame._pos.x = boundLeft;
 	if(state->_keyFrame._pos.x > boundRight) _curState->_keyFrame._pos.x = boundRight;
 
+	if(!_dynamic) return;
+
 	//return to base zoom
 	if(state->entities.size() == 0) {
 		if(fabs(state->baseScale - interp.getEndKeyFrame()._scale) > ELYSIAN_CAMERA_STATE_SCALE_INTERP_EPSILON) {
@@ -333,10 +335,10 @@ void CameraSystem::update(void) {
 	_curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
 
 	if(_curState->projType == GY_PROJECTION_ORTHO) {
-		if(_dynamic) {
+		//if(_dynamic) {
 			_updateState(_curState, deltaTime);
 			_curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
-		}
+	//	}
 
 		//gyVidProjectionDefaultMatrix();
 		//gyVidCameraSetViewCenter(&_curState->pos, _curState->scale, _curState->zOrient);

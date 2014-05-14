@@ -8,6 +8,8 @@
 #define ELYSIAN_PARTY_SYSTEM_WALK_SPEED 48000000.0f
 #define ELYSIAN_PARTY_SYSTEM_DASH_SPEED 140000000.0f
 
+#define ELYSIAN_PARTY_SYSTEM_FOOT_STEP_SFX_TIME	0.3f
+
 #include <gyro.h>
 
 #define ELYSIAN_PARTY_PATH	"party/party.txt"
@@ -44,6 +46,12 @@ namespace elysian {
 		float				_moveSpeed			= ELYSIAN_PARTY_SYSTEM_WALK_SPEED;
 		float				_tapTimer			= 0.0f;
 		float				_dashTapTimeWindow	= 0.3f;
+
+		//footstep SFX
+		float				_footStepTimer		= 0.0f;
+		bool				_footStepSfxLooping	= false;
+		GYWav*				_curWalkSfx			= nullptr;
+		bool				_wasOnGround		= true;
 
 	public:
 		PartySystem(void);
