@@ -104,10 +104,14 @@ build/*
 *.log
 *.sql
 *.sqlite
+lua_debug.txt
+gamma_debug.txt
+gamma_args.txt
 
 # OS generated files #
 ######################
 .DS_Store?
+.DS_Store
 ehthumbs.db
 Icon?
 Thumbs.db
