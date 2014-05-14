@@ -14,6 +14,7 @@ typedef struct _GYAudWavPayload {
 } GYAudWavPayload;
 
 void gyAudSourcePlayWav(GYAudioSource*const src, const GYWav* wav) {
+	if(!wav) return;
 	const GYAudWavPayload* payload = wav->_data;
 	alSourcei(*(ALuint*)src, AL_BUFFER, payload->buffer);
 	alSourcePlay(*(ALuint*)src);
@@ -92,7 +93,7 @@ static int _loadWavFile(const char* filename, ALuint* buffer, ALsizei* size,
 	}
 
 	//Read in the 2nd chunk for the wave info
-    gyFileRead(soundFile, &wave_format, sizeof(_WAVE_Format), soundFile);
+	gyFileRead(soundFile, &wave_format, sizeof(_WAVE_Format), NULL);
 	//check for fmt tag in memory
 	if (wave_format.subChunkID[0] != 'f' ||
 		wave_format.subChunkID[1] != 'm' ||
@@ -105,7 +106,7 @@ static int _loadWavFile(const char* filename, ALuint* buffer, ALsizei* size,
 
 	//check for extra parameters;
 	if (wave_format.subChunkSize > 16)
-        gyFileSeek(soundFile, sizeof(uint16_t), SEEK_CUR);
+		gyFileSeek(soundFile, /*sizeof(uint16_t)*/ wave_format.subChunkSize, SEEK_CUR);
 
 	//Read in the the last byte of data before the sound file
     gyFileRead(soundFile, &wave_data, sizeof(_WAVE_Data), NULL);
