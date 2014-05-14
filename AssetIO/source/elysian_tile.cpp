@@ -1,4 +1,5 @@
 #include "elysian_tile.hpp"
+#include <gyro_audio_api.h>
 /*
  enum COLLIDER_TYPE {
  COLLIDER_NONE, COLLIDER_FULL,
@@ -27,6 +28,11 @@ GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_270,
 //ROTATING COUNTERCLOCKWISE
 
 namespace elysian {
+
+Tile::~Tile(void) {
+	gyAudWavDestroy(walkSfx);
+	gyAudWavDestroy(hitSfx);
+}
 
 const Tile::COLLIDER_TYPE Tile::colliderReorientLUT[COLLIDER_MAX][GY_RECT_TEX_ORIENT_MAX] =
 {

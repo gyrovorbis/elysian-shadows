@@ -6,10 +6,13 @@
 
 #include "elysian_asset.hpp"
 
+struct _GYWav;
+typedef struct _GYWav GYWav;
+
 namespace elysian {
 
 	struct Tile: public Asset {
-		float animTime; //time to elapse before moving to next index
+		float animTime = 0.0f; //time to elapse before moving to next index
 		float damping = 1.0f;
 
 		enum COLLIDER_TYPE {
@@ -20,15 +23,19 @@ namespace elysian {
 			COLLIDER_QUADS_SE_NW, COLLIDER_QUADS_SW_NE,
             COLLIDER_45DEG_SE, COLLIDER_45DEG_NE, COLLIDER_45DEG_NW, COLLIDER_45DEG_SW,
             COLLIDER_MAX
-		} colliderType;
+		} colliderType = COLLIDER_NONE;
 
-		uint16_t nextIndex; //tile to turn into after animTime has elapsed
-		bool animated;
+		uint16_t nextIndex = 0; //tile to turn into after animTime has elapsed
+		bool animated = false;
+
 		bool standOn = true;
 
+		GYWav* walkSfx = nullptr;
+		GYWav* hitSfx = nullptr;
+
 		static const COLLIDER_TYPE colliderReorientLUT[COLLIDER_MAX][GY_RECT_TEX_ORIENT_MAX];
-        
-        Tile(void);
+
+		~Tile(void);
         
 		unsigned getColliderType(void) const;
 		void setColliderType(const unsigned type);
@@ -41,6 +48,8 @@ namespace elysian {
 		float getAnimTime(void) const;
 		void setNextIndex(const uint16_t i);
 		uint16_t getNextIndex(void) const;
+		void setWalkSfx(GYWav* const wav);
+		void setHitSfx(GYWav* const wav);
 
 		static COLLIDER_TYPE combineColliders(const COLLIDER_TYPE col1, const COLLIDER_TYPE col2);
 		static COLLIDER_TYPE reorientCollider(const COLLIDER_TYPE collider, const GY_RECT_TEX_ORIENT orient);
@@ -48,6 +57,9 @@ namespace elysian {
 	};
     
 	// ====== INLINEZ ======
+
+	inline void Tile::setWalkSfx(GYWav* const wav) { walkSfx = wav; }
+	inline void Tile::setHitSfx(GYWav* const wav) { hitSfx = wav; }
 
 	inline float Tile::getDamping(void) const { return damping; }
 	inline void Tile::setDamping(const float factor) { damping = factor; }
@@ -58,12 +70,6 @@ namespace elysian {
 		colliderType = ((COLLIDER_TYPE)type >= COLLIDER_MAX)? COLLIDER_NONE : (COLLIDER_TYPE)type;
     }
     
-    inline Tile::Tile(void): 
-		animTime(0.0f),
-		colliderType(COLLIDER_NONE),
-		nextIndex(0),
-		animated(0)
-	{}
 
 	//IMPLEMENT THE FUCK OUT OF ME!!!!
 	inline Tile::COLLIDER_TYPE Tile::reorientCollider(const COLLIDER_TYPE col, const GY_RECT_TEX_ORIENT orient) {

@@ -22,9 +22,7 @@ namespace elysian {
 #ifdef ELYSIAN_ENGINE
 		if(_src) {
 			if(gyAudSourceIsPlaying(_src)) {
-				auto pos2 = _entity->transform._pos;
-				GYVector3 pos3 = { pos2.x, pos2.y, static_cast<float>(_entity->getElev()) };
-				gyAudSourceSetfv(_src, GY_SOURCE_POS, &pos3);
+				gyAudSourceSetfv(_src, GY_SOURCE_POS, &_entity->transform._pos);
 			} else {
 				//give the bitch back if we're done with it
 				_audioSys->releaseChannel(_src);

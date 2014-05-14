@@ -23,8 +23,10 @@ namespace elysian {
 		void		update(void);
 
 		//WAV SFX API
-		void		playSfxChannel(const unsigned channel, const GYWav& wav) const;
+		//accept -1 for dynamic channel
+		void		playSfxChannel(int channel, const GYWav& wav);
 		void		stopSfxChannel(const unsigned channel) const;
+		//void		isSfXChannelPlaying(void);
 		void		setSfxChannelGain(const unsigned channel, const float val) const;
 		void		setSfxChannelPitch(const unsigned channel, const float val) const;
 		void		setSfxChannelLooping(const unsigned channel, const bool val) const;
@@ -47,7 +49,7 @@ namespace elysian {
 		void		setBgmTrackLooping(const bool val);
 		void		setBgmTrackGain(const float val);
 		void		setBgmTrackPitch(const float val) const;
-		void		setBgmTrackPos(const GYVector2& pos, const unsigned elev) const;
+		void		setBgmTrackPos(const float x, const float y, const float z) const;
 		void		setBgmTrackRolloffFactor(const float val) const;
 		void		fadeIntoBgmTrack(const unsigned track, const float secs);
 		void		morphIntoNewBgmTrack(const unsigned track, const float secs, const char* path);
@@ -69,7 +71,7 @@ namespace elysian {
 		void		setAuxTrackLooping(const unsigned track, const bool val);
 		void		setAuxTrackGain(const unsigned track, const float val);
 		void		setAuxTrackPitch(const unsigned track, const float val) const;
-		void		setAuxTrackPos(const unsigned track, const GYVector2& pos, const unsigned elev) const;
+		void		setAuxTrackPos(const unsigned track, const float x, const float y, const float z) const;
 		void		setAuxTrackRolloffFactor(const unsigned track, const float val) const;
 
 		//Internal
@@ -84,7 +86,7 @@ namespace elysian {
 				//Engine static SFX range
 				SFX_1, SFX_2, SFX_3, SFX_4, SFX_5,
 				//BGM range
-				BGM_1, BGM_2, BGM_3, BGM_4, AUX_1, AUX_2,
+				BGM_1, BGM_1_TRAN, AUX_1, AUX_1_TRAN, AUX_2, AUX_2_TRAN,
 				//Dynamic SFX (AudioSource) range
 				DYN_1, DYN_2, DYN_3, DYN_4, DYN_5, DYN_6, DYN_7, DYN_8, DYN_9,
 				DYN_10, DYN_11, DYN_12, DYN_13, DYN_14, DYN_15, DYN_16

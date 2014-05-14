@@ -332,11 +332,12 @@ void CameraSystem::update(void) {
 
 	_curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
 
-	if(_dynamic) {
-		_updateState(_curState, deltaTime);
-		_curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
-	}
 	if(_curState->projType == GY_PROJECTION_ORTHO) {
+		if(_dynamic) {
+			_updateState(_curState, deltaTime);
+			_curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
+		}
+
 		//gyVidProjectionDefaultMatrix();
 		//gyVidCameraSetViewCenter(&_curState->pos, _curState->scale, _curState->zOrient);
 		gyVidCamOrthoLookAt(_curState, &_curState->_keyFrame._pos, _curState->_keyFrame._scale*_curState->staticScale, _curState->_keyFrame._zOrient, _curState->_keyFrame._xOrient);

@@ -527,7 +527,9 @@ EXPORT_OOLUA_FUNCTIONS_0_CONST(LuaBehavior)
 
 OOLUA_EXPORT_FUNCTIONS(Tile,
 						setColliderType,
-						setDamping)
+						setDamping,
+						setWalkSfx,
+						setHitSfx)
 EXPORT_OOLUA_FUNCTIONS_1_CONST(Tile,
                                getColliderType)
 
@@ -607,6 +609,7 @@ OOLUA_EXPORT_FUNCTIONS(LightSystem,
 OOLUA_EXPORT_FUNCTIONS_CONST(LightSystem)
 
 OOLUA_EXPORT_FUNCTIONS(AudioSystem,
+					   playSfxChannel,
 					   loadBgmTrack,
 					   setBgmTrack,
 					   fadeOutBgmTrack,
@@ -627,7 +630,6 @@ OOLUA_EXPORT_FUNCTIONS(AudioSystem,
 
 
 OOLUA_EXPORT_FUNCTIONS_CONST(AudioSystem,
-							 playSfxChannel,
 							 stopSfxChannel,
 							 setSfxChannelGain,
 							 setSfxChannelPitch,

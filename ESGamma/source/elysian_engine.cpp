@@ -78,6 +78,7 @@ bool Engine::loadAssets(void) {
 		 //Debug::Print(Debug::ERROR_2, "\t! - Playable Character file could not be opened.\n");
 	 //}
 	success &= !_guiSystem->loadAssets();
+	success &= !_dialogSystem->loadAssets();
 	
     Debug::pop();
 	return true;

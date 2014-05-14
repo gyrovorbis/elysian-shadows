@@ -98,7 +98,7 @@ void WarpSystem::UpdateFadeIn(void) {
 }
 
 void WarpSystem::UpdatePause(void) {
-	
+	setEngineState(System::ENGINE_NORMAL);
 	Collidable *playerCollider = getPartySys()->getPartyLeader()->getCollidable();
 	for(unsigned int i = 0; i < _curArea->warps.size(); ++i) {
 		if(getCollisionSys()->checkCollision(*playerCollider, *_curArea->warps[i]->getEntity()->getCollidable())) {
@@ -107,7 +107,7 @@ void WarpSystem::UpdatePause(void) {
 	}      
 	//Debug::printf(Debug::VERBOSE, "CHANGING STATE!");
 	_state = CHECK_WARP;
-	setEngineState(System::ENGINE_NORMAL);
+
 }
 
 void WarpSystem::UpdateCheckWarp(void) {

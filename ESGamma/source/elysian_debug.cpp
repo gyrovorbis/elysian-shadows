@@ -519,7 +519,6 @@ void Debug::processInput(GameInput& input) {
 
 	//Elevate player
 	if(input.getTapped(GameInput::BUT_Y)) {
-		getAudioSys()->fadeOutBgmTrack(5.0f);
 		Entity* leader = _engine->_partySystem->getPartyLeader();
 		if(leader) {
 			unsigned elev = leader->getElev();

@@ -12,8 +12,10 @@
 #include "elysian_timer_system.hpp"
 #include "elysian_character.hpp"
 #include "elysian_behavior_system.hpp"
+#include "elysian_audio_system.hpp"
 
 #include <cmath>
+#include <gyro_audio_api.h>
 
 namespace elysian {
 
@@ -53,6 +55,23 @@ DialogSystem::DialogSystem(void) {
 	_cursor.setVertexColor(3, cursorColor);
 
     _curScreen.screen = nullptr;
+}
+
+DialogSystem::~DialogSystem(void) {
+	delete _scrollDownSFX;
+	delete _scrollUpSFX;
+
+}
+
+bool DialogSystem::loadAssets(void) {
+	bool success = true;
+
+	_scrollDownSFX = gyAudWavCreate(ELYSIAN_DIALOG_SYSTEM_SCROLL_DOWN_SFX);
+	if(!_scrollDownSFX) Debug::printf(Debug::CRITICAL, "Could not load - %s", ELYSIAN_DIALOG_SYSTEM_SCROLL_DOWN_SFX);
+	_scrollUpSFX = gyAudWavCreate(ELYSIAN_DIALOG_SYSTEM_SCROLL_UP_SFX);
+	if(!_scrollUpSFX) Debug::printf(Debug::CRITICAL, "Could not load - %s", ELYSIAN_DIALOG_SYSTEM_SCROLL_UP_SFX);
+
+	return success;
 }
 
 //MAKE THESE POSITIONS RELATIVE
@@ -316,6 +335,8 @@ void DialogSystem::processInput(const GameInput &input) {
 void DialogSystem::NextScreen(void) {
 	int nextIndex;
 
+	getAudioSys()->playSfxChannel(-1, *_scrollDownSFX);
+
 	switch(_boxState) {
 		case BOX_OUTPUT_END:
 			nextIndex = _curScreen.text->getNextIndex();
@@ -417,6 +438,7 @@ void DialogSystem::startDialog(Dialog *const dialog, EventMonitor*const monitor)
 	_monitor = monitor;
 	_curDialog = dialog;
 	_curScreen.screen = dialog->getScreen(0);
+	getAudioSys()->playSfxChannel(-1, *_scrollUpSFX);
 	_updateCamera();
 	FacePlayer();
 	_splitText();

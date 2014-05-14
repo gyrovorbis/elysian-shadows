@@ -4,12 +4,16 @@
 #include "elysian_system.hpp"
 #include "elysian_dialog.hpp"
 #include "elysian_quad_sprite.hpp"
+#include <gyro_wav_api.h>
 
 #define ELSYIAN_DIALOG_SYSTEM_CHAR_APPEAR_TIME	0.05f
 #define ELYSIAN_DIALOG_SYSTEM_MAX_LINES			3
 
 #define ELYSIAN_DIALOG_SYSTEM_MARGIN_SIZE		0.2f
 #define ELYSIAN_DIALOG_SYSTEM_DIST_MARGIN_SIZE	0.3f
+
+#define ELYSIAN_DIALOG_SYSTEM_SCROLL_DOWN_SFX	"/assets/audio/sfx/SFX_DialogScrollDown_1.wav"
+#define ELYSIAN_DIALOG_SYSTEM_SCROLL_UP_SFX		"/assets/audio/sfx/SFX_DialogScrollUp_1.wav"
 
 namespace elysian {
 
@@ -71,8 +75,13 @@ namespace elysian {
 		POS_STATE _posState = POS_BOTTOM;
 		BOX_STATE _boxState = BOX_OUTPUT;
 
+		GYWav* _scrollUpSFX		= nullptr;
+		GYWav* _scrollDownSFX	= nullptr;
+
 	public:
 				DialogSystem(void);
+				~DialogSystem(void);
+		bool	loadAssets(void);
 		void	update(void);
 		void	render(void);
 		void	processInput(const GameInput &input);

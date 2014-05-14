@@ -10,22 +10,22 @@ namespace elysian {
 	AudioSystem::AudioSystem(void) {
 		AudioSource::setAudioSys(this);
 		gyAudSetReferenceDistance(ELYSIAN_AUDIO_REFERENCE_DIST);
-		gyAudSetZScale(ELYSIAN_AUDIO_ZSCALE);
+		//gyAudSetZScale(ELYSIAN_AUDIO_ZSCALE);
 
 		//Allocate audio channels
 		//and initialize channel data
 		for(unsigned i = 0; i < ELYSIAN_AUDIO_CHANNELS; ++i) {
-			_channels[i].src = (i >= AudioChannel::BGM_1 && i <= AudioChannel::AUX_2)? gyAudOggStreamCreate() : gyAudSourceCreate();
+			_channels[i].src = (i >= AudioChannel::BGM_1 && i <= AudioChannel::AUX_2_TRAN)? gyAudOggStreamCreate() : gyAudSourceCreate();
 			_channels[i].owner = AudioChannel::FREE;
 		}
 
 		//Give OggTracks their channel pointers
 		_streamChannels[0].src = _channels[AudioChannel::BGM_1].src;
-		_streamChannels[1].src = _channels[AudioChannel::BGM_2].src;
-		_streamChannels[2].src = _channels[AudioChannel::BGM_3].src;
-		_streamChannels[3].src = _channels[AudioChannel::BGM_4].src;
-		_streamChannels[4].src = _channels[AudioChannel::AUX_1].src;
-		_streamChannels[5].src = _channels[AudioChannel::AUX_2].src;
+		_streamChannels[1].src = _channels[AudioChannel::BGM_1_TRAN].src;
+		_streamChannels[2].src = _channels[AudioChannel::AUX_1].src;
+		_streamChannels[3].src = _channels[AudioChannel::AUX_1_TRAN].src;
+		_streamChannels[4].src = _channels[AudioChannel::AUX_2].src;
+		_streamChannels[5].src = _channels[AudioChannel::AUX_2_TRAN].src;
 
 		//Initialize all nondynamic sources to be nondirectional
 		for(unsigned i = AudioChannel::BGM_1; i < AudioChannel::DYN_1; ++i) {
@@ -51,7 +51,7 @@ namespace elysian {
 
 		//the fuck do we do otherwise?
 		if(player) {
-			_listenerPos = { player->transform._pos.x, player->transform._pos.y, static_cast<float>(player->getElev()) };
+			_listenerPos = { player->transform._pos.x, player->transform._pos.y, player->transform._pos.z };
 			gyAudListenerSetPos(&_listenerPos);
 		}
 
@@ -291,8 +291,9 @@ namespace elysian {
 
 	//========= SFX WAV API =======
 
-	void AudioSystem::playSfxChannel(const unsigned channel, const GYWav& wav) const {
-		gyAudSourcePlayWav(_channels[channel].src, &wav);
+	void AudioSystem::playSfxChannel(const int channel, const GYWav& wav) {
+		auto *src = (channel == -1)? reserveChannel() : _channels[channel].src;
+		gyAudSourcePlayWav(src, &wav);
 	}
 
 	void AudioSystem::stopSfxChannel(const unsigned channel) const {
@@ -395,8 +396,8 @@ namespace elysian {
 		return _bgmTracks[track]->path;
 	}
 
-	void AudioSystem::setBgmTrackPos(const GYVector2& pos, const unsigned elev) const {
-		GYVector3 pos3 = { pos.x, pos.y, static_cast<float>(elev) };
+	void AudioSystem::setBgmTrackPos(const float x, const float y, const float z) const {
+		GYVector3 pos3 = { x, y, z };
 		for(unsigned i = 0; i < 2; ++i) {
 			//gyAudSourceSetf(_channels[i].src, GY_SOURCE_ROLLOFF_FACTOR, 1.0f);
 			gyAudSourceSetfv(_streamChannels[i].src, GY_SOURCE_POS, &pos3);
@@ -642,8 +643,8 @@ namespace elysian {
 		}
 	}
 
-	void AudioSystem::setAuxTrackPos(const unsigned track, const GYVector2& pos, const unsigned elev) const {
-		GYVector3 pos3 = { pos.x, pos.y, static_cast<float>(elev)  };
+	void AudioSystem::setAuxTrackPos(const unsigned track, const float x, const float y, const float z) const {
+		GYVector3 pos3 = { x, y, z  };
 		if(track == 0) {
 			gyAudSourceSetfv(_streamChannels[StreamChannel::Type::AUX_1].src, GY_SOURCE_POS, &pos3);
 			gyAudSourceSetfv(_streamChannels[StreamChannel::Type::AUX_1_TRAN].src, GY_SOURCE_POS, &pos3);

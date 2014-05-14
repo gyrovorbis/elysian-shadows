@@ -731,6 +731,8 @@ OOLUA_PROXY(Tile)
 	OOLUA_MEM_FUNC(void, setColliderType, unsigned)
     OOLUA_MEM_FUNC_CONST(unsigned, getColliderType)
 	OOLUA_MEM_FUNC(void, setDamping, float)
+	OOLUA_MEM_FUNC(void, setWalkSfx, GYWav*)
+	OOLUA_MEM_FUNC(void, setHitSfx, GYWav*)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Level)
@@ -848,7 +850,7 @@ OOLUA_PROXY(AudioSystem)
 		No_public_constructors,
 		No_public_destructor
 	)
-	OOLUA_MFUNC_CONST(playSfxChannel)
+	OOLUA_MFUNC(playSfxChannel)
 	OOLUA_MFUNC_CONST(stopSfxChannel)
 	OOLUA_MFUNC_CONST(setSfxChannelGain)
 	OOLUA_MFUNC_CONST(setSfxChannelPitch)
