@@ -55,24 +55,24 @@ void CombatSystem::_processCurrentCombatAction(void) {
 	GYVector2 vel;
 	GYVector3 pos3;
 
-	if(_curActionRes.contact) {
-		//Calculate combatText velocity
-		_curActionRes.contact->getNormal(vel);
-		gyVec2ScaleAccum(&vel, _curActionRes.contact->getClosingVel());
-		if(_curActionRes.contact->getCollidable(1) == _curActionRes.target->getEntity()->getCollidable())
-			gyVec2ScaleAccum(&vel, -1.0f);
+//	if(_curActionRes.contact) {
+//		//Calculate combatText velocity
+//		_curActionRes.contact->getNormal(vel);
+//		gyVec2ScaleAccum(&vel, _curActionRes.contact->getClosingVel());
+//		if(_curActionRes.contact->getCollidable(1) == _curActionRes.target->getEntity()->getCollidable())
+//			gyVec2ScaleAccum(&vel, -1.0f);
 
-		//Add combat text to PoC
-		_curActionRes.contact->getWorldPos(*(GYVector2*)&pos3);
-		getGuiSys()->addCombatText(_curActionRes.receipt->getText(), _curActionRes.receipt->getTextColor(), *(GYVector2*)&pos3, vel);
+//		//Add combat text to PoC
+//		_curActionRes.contact->getWorldPos(*(GYVector2*)&pos3);
+//		getGuiSys()->addCombatText(_curActionRes.receipt->getText(), _curActionRes.receipt->getTextColor(), *(GYVector2*)&pos3, vel);
 
-		//Emit particles from PoC
-		getPartSys()->getAttrib(2)->setColor(_curActionRes.receipt->getPartColor());
-		pos3.z = _curActionRes.target->getEntity()->getElev()*32.0f;
-		const float angle = tan(vel.y/vel.x);
-		getPartSys()->emitFromPoint(2, pos3, angle, _curActionRes.contact->getClosingVel()*_curActionRes.receipt->getPartIntensityFactor());
+//		//Emit particles from PoC
+//		getPartSys()->getAttrib(2)->setColor(_curActionRes.receipt->getPartColor());
+//		pos3.z = _curActionRes.target->getEntity()->getElev()*32.0f;
+//		const float angle = tan(vel.y/vel.x);
+//		getPartSys()->emitFromPoint(2, pos3, angle, _curActionRes.contact->getClosingVel()*_curActionRes.receipt->getPartIntensityFactor());
 
-	}
+//	}
 
 	//Reset everything
 	_curActionRes.contact	= nullptr;
