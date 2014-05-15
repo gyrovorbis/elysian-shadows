@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "kinetic/gyro_kinetic_physics.h"
 #include "kinetic/gyro_kinetic_contact.h"
 #include "kinetic/gyro_kinetic_collider.h"

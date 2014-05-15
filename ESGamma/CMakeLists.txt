@@ -101,7 +101,15 @@ set(ESG_INCLUDES
 
 include_directories(${ESG_INCLUDE_DIR})
 
-if(APPLE)
+if(ANDROID)
+    add_library(ESGamma SHARED
+        ${ESG_SOURCES}
+        ${AssetIO_SOURCES}
+        ${ESG_INCLUDES}
+        ${AssetIO_INCLUDES}
+    )
+    target_link_libraries(ESGamma -llog -landroid -lm -lEGL -lGLESv2 -lOpenSLES)
+elseif(APPLE)
 	add_executable(ESGamma MACOSX_BUNDLE
 		${ESG_SOURCES}
 		${AssetIO_SOURCES}
@@ -132,6 +140,7 @@ endif()
 
 install(TARGETS ESGamma
 	BUNDLE DESTINATION bin
+	LIBRARY DESTINATION bin
     RUNTIME DESTINATION bin)
 
 group_by_folder(${ESG_ROOT_DIR} "${ESG_SOURCES}")
