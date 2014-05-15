@@ -117,7 +117,7 @@ int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth,
     _projHeight = projHeight;
 
     glClearColor(0, 0, 0, 0);
-	glClearDepth (1.0f);
+	glClearDepthf(1.0f);
     glDepthFunc(GL_LEQUAL);
 	glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);

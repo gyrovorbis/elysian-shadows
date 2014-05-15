@@ -37,6 +37,7 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
 		glBindTexture(GL_TEXTURE_2D, internals->shadowMap);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+#if !defined(ANDROID) /* TODO: FIXME */
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
@@ -45,6 +46,7 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, 1.0f);
+#endif
 		break;
 
 	case GY_LIGHT_POINT:
@@ -54,6 +56,7 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+#if !defined(ANDROID) /* TODO: FIXME */
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0);
@@ -66,6 +69,7 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
 			//shadowDepth? lolz
 			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT32, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 		}
+#endif
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 		break;
 	}
@@ -406,8 +410,10 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 
 	}
 
+#if !defined(ANDROID) /* TODO: FIXME */
 	glDrawBuffer(GL_NONE); // No color buffer is drawn to.
 	glReadBuffer(GL_NONE);
+#endif
 	glClear(GL_DEPTH_BUFFER_BIT);
 
 	//Check whether shit has reested with our FBO

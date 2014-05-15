@@ -64,9 +64,16 @@ extern "C" {
 	#   define GYRO_MATRIX_SOFTWARE
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_ANDROID
-	#   define GYRO_ENDIAN GYRO_ENDIAN_LITTLE
-#	define GYRO_MATH_PLATFORM_INCLUDE	"common/gyro_math_common.inl"
-#	define GYRO_MATRIX_PLATFORM_INCLUDE	"common/gyro_matrix_common.inl"
+#	define GYRO_ENDIAN						GYRO_ENDIAN_LITTLE
+#	define GYRO_AUDIO_PLATFORM_INCLUDE		"glal/gyro_audio_glal.inl"
+#	define GYRO_INPUT_PLATFORM_INCLUDE		"android/gyro_input_android.inl"
+#	define GYRO_MATH_PLATFORM_INCLUDE		"common/gyro_math_common.inl"
+#	define GYRO_MATRIX_PLATFORM_INCLUDE		"common/gyro_matrix_common.inl"
+#	define GYRO_TEXTURE_PLATFORM_INCLUDE	"glal/gyro_texture_glal.inl"
+#	define GYRO_VIDEO_PLATFORM_INCLUDE		"android/gyro_video_android.inl"
+
+#	define GYRO_MATRIX4_ALIGN				__attribute__ ((aligned (16)));
+#	define GYRO_VECTOR4_ALIGN				__attribute__ ((aligned (16)));
 #elif GYRO_PLATFORM == GYRO_PLATFORM_Qt
 
 #	define GYRO_TEXTURE_PLATFORM_INCLUDE "glal/gyro_texture_glal.inl"
