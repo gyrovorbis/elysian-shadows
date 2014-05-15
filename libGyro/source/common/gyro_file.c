@@ -8,15 +8,6 @@ struct _GYFile {
 	turfs_fp fp;
 };
 
-int gyFileInit(const char *author, const char *name)
-{
-	if (author == NULL || name == NULL) {
-		/* Require an app author & name to identify us */
-		return 0;
-	}
-	return turfs_init(author, name, NULL) == TURFS_RET_OK;
-}
-
 int gyFileQuit(void)
 {
 	return turfs_quit() == TURFS_RET_OK;

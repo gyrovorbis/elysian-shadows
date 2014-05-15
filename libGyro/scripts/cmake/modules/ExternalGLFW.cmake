@@ -1,4 +1,4 @@
-include(ExternalProject)
+include(ExternalProject2)
 
 set(glfw_PREFIX ${CMAKE_CURRENT_BINARY_DIR}/glfw)
 
