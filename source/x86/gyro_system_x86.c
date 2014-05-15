@@ -5,6 +5,8 @@
 #include "stdio.h"
 #include "stdarg.h"
 
+#include "../common/gyro_system_callbacks.h"
+
 //execute x86 CPUID opcode
 static inline void cpuid(int CPUInfo[4],int InfoType){
 	__asm__ __volatile__ (
@@ -199,4 +201,9 @@ void gyDebugSigInit(void) {
 	if(so.sa_handler == SIG_IGN)
 		_gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGTRAP signal handler.");
 #endif
+}
+
+int main(int argc, char **argv)
+{
+	return gyro_entry_point(argc, argv);
 }
