@@ -2,11 +2,11 @@
 
 #ifdef GYRO_MATRIX_SOFTWARE
 
-#include "gyro_matrix.h"
+#include <gyro_matrix_api.h>
 #include "stdio.h"
 #include "string.h"
 
-static GYMatrix4 _curMat;
+GYMatrix4 _curMat = { { 0.0f } };
 
 void gyMatLoad(GYMatrix4 *mat) {
     memcpy(_curMat, mat, sizeof(float)*16);

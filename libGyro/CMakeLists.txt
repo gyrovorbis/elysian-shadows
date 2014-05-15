@@ -43,8 +43,15 @@ list(APPEND CMAKE_MODULE_PATH "${GY_SCRIPTS_DIR}/cmake/modules")
 
 include(GetGitRevisionDescription)
 include(GroupByFolder)
+include(HostMacros)
 include(MergeStaticLibs)
 include(TargetArch)
+
+#
+# Host package detection
+#
+
+find_host_package(Git)
 
 #
 # Target Arch/OS detection
@@ -110,6 +117,7 @@ set(gyro_SOURCES
 	${GY_SOURCE_DIR}/common/gyro_asset_bank.c
 	${GY_SOURCE_DIR}/common/gyro_asset_bank.h
 	${GY_SOURCE_DIR}/common/gyro_file.c
+	${GY_SOURCE_DIR}/common/gyro_matrix_soft.c
 	${GY_SOURCE_DIR}/common/gyro_matrix_stack.c
 	${GY_SOURCE_DIR}/common/gyro_shader.c
 	${GY_SOURCE_DIR}/common/gyro_system.c
@@ -170,6 +178,7 @@ if(GY_TARGET_ARCH MATCHES "i386" OR GY_TARGET_ARCH MATCHES "x86_64")
     if(${GYRO_PLATFORM} EQUAL GYRO_PLATFORM_x86)
         set(gyro_SOURCES
             ${gyro_SOURCES}
+            ${GY_SOURCE_DIR}/x86/gyro_file_x86.c
             ${GY_SOURCE_DIR}/x86/gyro_input_x86.c
             ${GY_SOURCE_DIR}/x86/gyro_matrix_x86.c
             ${GY_SOURCE_DIR}/x86/gyro_system_x86.c
@@ -193,8 +202,20 @@ if(${GYRO_PLATFORM} EQUAL GYRO_PLATFORM_ANDROID)
         ${gyro_SOURCES}
         ${GY_SOURCE_DIR}/android/android_native_app_glue.c
         ${GY_SOURCE_DIR}/android/android_native_app_glue.h
+        ${GY_SOURCE_DIR}/android/bionic_polyfill.c
+        ${GY_SOURCE_DIR}/android/gyro_file_android.c
+        ${GY_SOURCE_DIR}/android/gyro_input_android.c
+        ${GY_SOURCE_DIR}/android/gyro_matrix_android.c
         ${GY_SOURCE_DIR}/android/gyro_system_android.c
+        ${GY_SOURCE_DIR}/android/gyro_texture_android.c
+        ${GY_SOURCE_DIR}/android/gyro_timer_android.c
+        ${GY_SOURCE_DIR}/android/gyro_video_android.c
         ${GY_SOURCE_DIR}/android/internal_android.h
+    )
+    set(gyro_INCLUDES
+        ${gyro_INCLUDES}
+        ${GY_INCLUDE_DIR}/android/gyro_input_android.inl
+        ${GY_INCLUDE_DIR}/android/gyro_video_android.inl
     )
 endif()
 

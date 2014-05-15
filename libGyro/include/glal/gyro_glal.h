@@ -21,8 +21,12 @@
 #	include "ios/ios_system.h"
 #	include "ios/gyro_gles_ios.h"
 #elif GYRO_PLATFORM == GYRO_PLATFORM_ANDROID
-#	include "droid/droid_system.h"
-#	include "droid/gyro_gles_droid.h"
+#	include <EGL/egl.h>
+#	include <GLES2/gl2.h>
+#	include <GLES2/gl2ext.h>
+#	define AL_LIBTYPE_STATIC
+#	include <AL/al.h>
+#	include <AL/alc.h>
 #endif
 
 #endif

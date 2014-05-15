@@ -54,7 +54,7 @@ void gySysRegisterAppQuit(GYAppQuitCb quit_cb)
 	gy_appQuitCb = quit_cb;
 }
 
-int main(int argc, char **argv)
+int gyro_entry_point(int argc, char **argv)
 {
 	gyro_main();
 	if (gy_appInitCb != NULL) {

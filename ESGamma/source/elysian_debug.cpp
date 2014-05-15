@@ -77,6 +77,7 @@ void Debug::writeLog(const Debug::SOURCE source, const Debug::LEVEL level, const
 //	size_t length = strlen(buffer);
 	strcat(buffer, "\n");
 
+#if !defined(ANDROID)
 	fputs(buffer, _dbgFile);
 	fflush(_dbgFile);
 	if(source == LUA) {
@@ -84,6 +85,7 @@ void Debug::writeLog(const Debug::SOURCE source, const Debug::LEVEL level, const
 		fputc('\n', _luaDbgFile);
 		fflush(_luaDbgFile);
 	}
+#endif
 	gyPrintf(buffer); //use the "preferred" IO of each platform
 
 
@@ -131,14 +133,18 @@ Debug::Debug(void):
 	gySysDebugEnable(ELYSIAN_DEBUG_LIBGYRO_LEVEL_DEFAULT, &libGyroPrintf);
 	//Register pointer to asset debug interface with AssetIO
 	Asset::setDebugStack(&_assetDebug);
+#if !defined(ANDROID)
 	_dbgFile = fopen(ELYSIAN_DEBUG_FILE, "w");
 	_luaDbgFile = fopen(ELYSIAN_LUA_DEBUG_FILE, "w");
+#endif
 	printf(VERBOSE, "-----Debug Initialized-----");
 }
 
 Debug::~Debug(void) {
+#if !defined(ANDROID)
 	fclose(_luaDbgFile);
 	fclose(_dbgFile);
+#endif
 }
 
 LightSource* lightSrc;

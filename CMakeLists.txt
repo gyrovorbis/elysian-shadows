@@ -42,8 +42,15 @@ list(APPEND CMAKE_MODULE_PATH "${ES_SCRIPTS_DIR}/cmake/modules")
 
 include(GetGitRevisionDescription)
 include(GroupByFolder)
+include(HostMacros)
 include(MergeStaticLibs)
 include(TargetArch)
+
+#
+# Host package detection
+#
+
+find_host_package(Git)
 
 #
 # Target Arch/OS detection
