@@ -32,6 +32,7 @@ void gyIntegrate(struct _GYKinetic *kin,
 	//Damp (impose drag) DO NOT DAMP THE Z AXIS!!!
 	//gyVec3ScaleAccum(&kin->vel, attrib->damping);
 	gyVec2ScaleAccum((GYVector2*)&kin->vel, powf(attrib->damping, deltaTime));
+	kin->vel.z *= powf(attrib->zDamping, deltaTime);
 	kin->rot *= powf(attrib->angDamping, deltaTime);
 
 	//Update position from linear velocity
@@ -41,6 +42,7 @@ void gyIntegrate(struct _GYKinetic *kin,
 	*orient += kin->rot * deltaTime;
 
 	gyVec2ScaleAccum((GYVector2*)&kin->vel, powf(attrib->damping, deltaTime));
+	kin->vel.z *= powf(attrib->zDamping, deltaTime);
 	kin->rot *= powf(attrib->angDamping, deltaTime);
 
 	//IMPOSE DRAG AGAIN?
