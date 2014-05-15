@@ -17,18 +17,19 @@ namespace elysian {
 	class ParticleEmitterAttrib: public SpriteAttrib, public GYStatic {
 		friend class ParticleEmitterInternals;
 	private:
-		GYVector3	_acceleration	= GYVector3 { 0.0f, 0.7f, -7.0f };
-		Material*	_material		= nullptr;
-		GYTexture*	_specularMap	= nullptr;
-		//float		_angularDamping	= 0.99f;
-		unsigned	_maxLife		= 100;
-		unsigned	_size			= 3;
-		//unsigned	_intensity		= 100; //for periodically generated particles, dunno if it should be here or not
-		bool		_fadeOut		= true;
-		bool		_stick			= true;
-		unsigned	_minFrame		= 0;
-		unsigned	_maxFrame		= 0;
-		uint32_t	_forceMask		= ~0x0;
+		GYVector3	_acceleration		= GYVector3 { 0.0f, 0.0f, 0.0f };
+		Material*	_material			= nullptr;
+		GYTexture*	_specularMap		= nullptr;
+		//float		_angularDamping		= 0.99f;
+		float		_intensityFactor	= 1.0f;
+		unsigned	_maxLife			= 100;
+		unsigned	_size				= 3;
+		//unsigned	_intensity			= 100; //for periodically generated particles, dunno if it should be here or not
+		bool		_fadeOut			= true;
+		bool		_stick				= true;
+		unsigned	_minFrame			= 0;
+		unsigned	_maxFrame			= 0;
+		uint32_t	_forceMask			= ~0x0;
 	public:
 
 				ParticleEmitterAttrib(void);
@@ -45,6 +46,7 @@ namespace elysian {
 		uint32_t getForceMask(void) const;
 		void setForceMask(const uint32_t mask);
 		void setStick(const bool val);
+		void setIntensityFactor(const float factor);
 	};
 
 	class Particle: public ForceTarget {
@@ -91,6 +93,7 @@ namespace elysian {
 
 		//emitter functions
 		void emitFromPoint(const GYVector3& pos, const float angle, const unsigned intensity);
+		void emitFromPointInDir(const GYVector3& pos, const GYVector3& dir, const unsigned intensity, const float angle);
 	//	void fallFromSky(void);
 	};
 
@@ -121,6 +124,8 @@ namespace elysian {
 	inline void ParticleEmitterAttrib::setAcceleration(const GYVector3& accel) {
 		_acceleration = accel;
 	}
+
+	inline void ParticleEmitterAttrib::setIntensityFactor(const float factor) { _intensityFactor = factor; }
 
 	inline void ParticleEmitterAttrib::setMaxLife(const unsigned life) {
 		_maxLife = life;

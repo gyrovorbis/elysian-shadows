@@ -169,6 +169,7 @@ private:
 		_staticAttrib.damping = 1.0f;
 		_staticAttrib.coeffOfRest = 0.0f;
 		_staticAttrib.invMomOfInertia = 0.0f;
+		_staticAttrib.zDamping = 1.0f;
 	}
 
 	inline Collidable* CollisionContact::getCollidable(const unsigned index) const { return (index == 0)? _bodyA : _bodyB; }

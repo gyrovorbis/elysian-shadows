@@ -103,6 +103,7 @@ void Engine::update(void) {
 			_collisionSystem->update();
 			_rigidBodySystem->update();
 			_rigidBodySystem->resolveContactVelocities();
+			_rigidBodySystem->breakRigidBodies();
 
 			_timerSystem->update();
 			_mapSystem->update();

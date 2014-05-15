@@ -11,6 +11,7 @@ typedef struct _GYStatic {
 	float damping;
 	float invMomOfInertia;
 	float angDamping;
+	float zDamping;
 } GYStatic;
 
 #ifdef __cplusplus

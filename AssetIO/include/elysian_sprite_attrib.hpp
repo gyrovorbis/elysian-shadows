@@ -57,6 +57,10 @@ namespace elysian {
 			_frame = -1;
 		}
 
+		inline void getTexCoord(const unsigned index, float &u, float &v) {
+			u = _texCoords[index].u; v = _texCoords[index].v;
+		}
+
 		void setColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a) { _color.r = r; _color.g = g; _color.b = b; _color.a = a; }
 		void setColor(const GYColor4& color) { _color = color; }
 

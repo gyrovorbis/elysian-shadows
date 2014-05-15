@@ -1,11 +1,44 @@
 #ifndef ELYSIAN_INSTANCE_TRANSFORM_HPP
 #define ELYSIAN_INSTANCE_TRANSFORM_HPP
 
-#include <gyro.h>
+#include <gyro_math_api.h>
+#include <gyro_matrix_api.h>
+#include <gyro_video_api.h>
 
 #include "elysian_asset.hpp"
 
 namespace elysian {
+
+	//Throwing C++ linear algebra wrappers in here until I figure out something better to do with the...
+	class Vector2: public GYVector2 {
+	public:
+		inline Vector2(void) = default;
+		inline Vector2(const float x, const float y):
+			GYVector2({x, y}) {}
+	};
+
+	class Vector3: public GYVector3 {
+	public:
+		inline Vector3(void) = default;
+		inline Vector3(const float x, const float y, const float z):
+			GYVector3({x, y, z}) {}
+	};
+
+	class Vector4: public GYVector4 {
+	public:
+		inline Vector4(void) = default;
+		inline Vector4(const float x, const float y, const float z, const float w):
+			GYVector4({x, y, z, w}) {}
+	};
+
+	class Color4: public GYColor4 {
+	public:
+		inline Color4(void) = default;
+		inline Color4(const unsigned char a, const unsigned char r, const unsigned char g, const unsigned char b):
+			GYColor4({a, r, g, b}) {}
+
+	};
+
 
 /*
 	Essentially a thin, inlined-to-fuck, OO C++ wrapper around LibGyro's InstanceMat() operation.

@@ -327,14 +327,15 @@ OOLUA_EXPORT_FUNCTIONS_CONST(GYStatic,
 							getCoeffOfRest,
 							getDamping,
 							getInvMomOfInertia,
-							getAngDamping)
+							getAngDamping,
+							getZDamping)
 OOLUA_EXPORT_FUNCTIONS(GYStatic,
 						setInverseMass,
 						setCoeffOfRest,
 						setDamping,
 						setInvMomOfInertia,
-						setAngDamping)
-
+						setAngDamping,
+					   setZDamping)
 
 EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(CollidableAttrib,
 								   setColliderType,
@@ -366,16 +367,21 @@ EXPORT_OOLUA_FUNCTIONS_2_CONST(Collidable,
 OOLUA_EXPORT_FUNCTIONS_CONST(RigidBodyAttrib,
 							 getForceMask)
 OOLUA_EXPORT_FUNCTIONS(RigidBodyAttrib,
-					   setForceMask)
+					   setForceMask,
+					   setBreakable,
+					   setBaseDurability)
 
 OOLUA_EXPORT_FUNCTIONS(ForceTarget,
 					   applyForce,
 					   applyForceToPoint)
 OOLUA_EXPORT_FUNCTIONS_CONST(ForceTarget)
 
-OOLUA_EXPORT_FUNCTIONS_CONST(RigidBody)
+OOLUA_EXPORT_FUNCTIONS_CONST(RigidBody,
+							 getDurability,
+							 getAttrib)
 OOLUA_EXPORT_FUNCTIONS(RigidBody,
-					   setAttrib)
+					   setAttrib,
+					   setDurability)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(ForceGenerator)
 OOLUA_EXPORT_FUNCTIONS(ForceGenerator,
@@ -455,13 +461,16 @@ OOLUA_EXPORT_FUNCTIONS(ParticleEmitterAttrib,
 					   setFrameRange,
 					   loadSpecularMap,
 					   setMaterial,
-					   setForceMask)
+					   setForceMask,
+					   setIntensityFactor)
 OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitterAttrib);
 
 OOLUA_EXPORT_FUNCTIONS(ParticleEmitter,
 					   emitFromPoint,
+					   emitFromPointInDir,
 					   emitFromEntity,
-					   setAttrib)
+					   setAttrib,
+					   allocatePool)
 OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitter)
 
 OOLUA_EXPORT_FUNCTIONS(DialogScreen,

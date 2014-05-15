@@ -15,6 +15,7 @@ ParticleEmitterAttrib::ParticleEmitterAttrib(void):
 			 1.0f,
 			 0.99f,
 			 1.0f/5000.0f,
+			 0.99f,
 			 0.99f
 	}) {}
 
@@ -36,13 +37,12 @@ void Particle::integrate(const float deltaTime) {
 				&orientation);
 }
 
-void ParticleEmitterInternals::emitFromPoint(const GYVector3& pos, const float angle, const unsigned intensity) {
+void ParticleEmitterInternals::emitFromPointInDir(const GYVector3& pos, const GYVector3& dir, const unsigned intensity, float angle) {
 	Particle* part;
-	float relAngle;
-	float sinTheta, cosTheta;
-
 
 	if(_pool.isFull()) return;
+
+	const float scaledIntensity = (float)intensity*_attrib->_intensityFactor;
 
 	for(unsigned i = 0; i < intensity && !_pool.isFull(); ++i) {
 
@@ -55,7 +55,7 @@ void ParticleEmitterInternals::emitFromPoint(const GYVector3& pos, const float a
 		part->position.x = pos.x + ((rand() % 6) - 3);
 		part->position.y = pos.y + ((rand() % 6) - 3);
 		part->position.z = pos.z + ((rand() % 6) - 3);
-		part->life = _attrib->_maxLife - (rand() % ((int)((float)intensity/20.0f) + 1));
+		part->life = _attrib->_maxLife - (rand() % ((int)((float)scaledIntensity/20.0f) + 1));
 
 		if(_attrib->_minFrame != _attrib->_maxFrame) { //use range
 			part->frame = rand()%(_attrib->_maxFrame-_attrib->_minFrame)+_attrib->_minFrame;
@@ -68,15 +68,33 @@ void ParticleEmitterInternals::emitFromPoint(const GYVector3& pos, const float a
 		if(part->size < 1) part->size = 1;
 		//if(part->size > 200) part->size = 200;
 
-		//doesn't center the angle!
-		relAngle = angle + ((float)(rand()%50)-25)*(M_PI/180.0f);
-		part->orientation = relAngle;
+		const float angleRatio = angle/360.0f;
+		const int randomMag = angleRatio*(scaledIntensity/(float)(rand()%14 + 10));
+		const int halfRandomMag = 0.5f * randomMag;
 
-		gySinCos(relAngle, &sinTheta, &cosTheta);
+		GYVector3 dirOffset = {
+			dirOffset.x = (float)(rand()%randomMag-halfRandomMag),
+			dirOffset.y = (float)(rand()%randomMag-halfRandomMag),
+			dirOffset.z = (float)(rand()%randomMag-halfRandomMag)
+		};
 
-		part->rotation = -cosTheta*(intensity/100.0f); //tweak me better!
+		//HOW ARE WE ROTATING!?
+		//part->rotation = -cosTheta*(intensity/100.0f); //tweak me better!
 
 
+		//relAngle = angle + ((float)(rand()%50)-25)*(M_PI/180.0f);
+		//part->orientation = relAngle;
+
+		GYVector3 velocity = { dir.x * (float)scaledIntensity/(float)(rand()%14 + 10),
+						  dir.y * (float)scaledIntensity/(float)(rand()%14 + 10),
+									  dir.z * (float)scaledIntensity/(float)(rand()%14 + 10) };
+
+		GYVector3 finalVel;
+		gyVec3Add(&finalVel, &velocity, &dirOffset);
+
+		part->setVelocity(finalVel);
+
+/*
 #if 1
 		part->setVelocity(GYVector3 { cosTheta * (float)intensity/(float)(rand()%14 + 10),
 						  sinTheta * (float)intensity/(float)(rand()%14 + 10), -sinTheta * (float)intensity/(float)(rand()%14 + 10) });
@@ -84,6 +102,7 @@ void ParticleEmitterInternals::emitFromPoint(const GYVector3& pos, const float a
 		part->setVelocity(GYVector3 { cosTheta * (float)intensity/(float)(10),
 						  sinTheta * (float)intensity/(float)(10) });
 #endif
+*/
 
 		part->color = _attrib->getColor();
 		part->color.r += (rand()%6)-3;
@@ -92,6 +111,23 @@ void ParticleEmitterInternals::emitFromPoint(const GYVector3& pos, const float a
 
 
 	}
+
+}
+
+void ParticleEmitterInternals::emitFromPoint(const GYVector3 &pos, const float angle, const unsigned intensity) {
+	float relAngle;
+	float sinTheta, cosTheta;
+
+	relAngle = angle + ((float)(rand()%50)-25)*(M_PI/180.0f);
+	//part->orientation = relAngle;
+
+	gySinCos(relAngle, &sinTheta, &cosTheta);
+
+	GYVector3 dir = {
+		cosTheta, sinTheta, -sinTheta
+	};
+
+	emitFromPointInDir(pos, dir, intensity, 180.0f);
 
 }
 
@@ -104,7 +140,7 @@ void ParticleEmitterInternals::update(const CameraState*const cam, const float d
 		//apply bullshit gravity
 		GYVector3 bullshitGravity;
 
-		if((*it).position.z > ZCoordConstants::mapBase) {
+		if((*it).position.z > ZCoordConstants::mapBase+1) {
 			gyVec3Scale(&bullshitGravity, &_attrib->_acceleration, deltaTime);
 
 			gyVec3Add(&newVel, &(*it).getVelocity(), &bullshitGravity);
@@ -112,7 +148,7 @@ void ParticleEmitterInternals::update(const CameraState*const cam, const float d
 			//integrate
 			(*it).integrate(deltaTime);
 		} else if(_attrib->_stick){
-			(*it).position.z = ZCoordConstants::mapBase;
+			(*it).position.z = ZCoordConstants::mapBase+1;
 		} else { //we don't stick
 			_pool.remove(it);
 		}
@@ -131,7 +167,7 @@ void ParticleEmitterInternals::update(const CameraState*const cam, const float d
 		if((*it).zIndex < 0) (*it).zIndex = 0;
 		if((*it).zIndex >= ELYSIAN_DEPTH_BUFFER_HEIGHT) (*it).zIndex = ELYSIAN_DEPTH_BUFFER_HEIGHT;
 
-		if(_attrib->_fadeOut) (*it).color.a = 255.0f*((float)_attrib->_maxLife/(float)(*it).life);
+		if(_attrib->_fadeOut) (*it).color.a = 255.0f*((float)(*it).life/(float)_attrib->_maxLife);
 	}
 }
 

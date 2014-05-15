@@ -12,6 +12,7 @@ namespace elysian {
 	class Renderable: public Component {
 	friend class Entity;
 	private:
+		GYTexCoord2			_texCoord[4];
 		Material*			_material		= nullptr;
 		GYTexture*			_normalMap		= nullptr;
 		GYTexture*			_specularMap	= nullptr;
@@ -50,7 +51,7 @@ namespace elysian {
 			gyVidMaterialBind(_material);
 
 			//Why aren't we just pushing another matrix to handle this?
-			if(_spriteAttrib->_tex && _spriteAttrib->_frame != -1) {
+			if(_spriteAttrib->_tex && _frame != -1) {
 				const GYVector2 *size = (GYVector2*)&_entity->transform._size;
 				const GYTexCoordFrame *fr = &_spriteAttrib->_tex->_coord->texCoord[_frame];
 				const float locX = ((float) fr->spriteWidth / size->x)/2.0f;
@@ -83,11 +84,11 @@ namespace elysian {
 				gyVidAlphaLevel(GY_ALPHA_FULL);
 				gyVidColorArray(&_spriteAttrib->_color);
 				if(_spriteAttrib->_tex) {
-					if(_spriteAttrib->_frame != -1)
+					if(_frame != -1)
 						gyVidTexCoordArray(gyVidTexCoordArrayFromFrame(&_spriteAttrib->_tex->_coord->texCoord[_frame],
 																   _texOrient));
 					else
-						gyVidTexCoordArray(_spriteAttrib->_texCoords);
+						gyVidTexCoordArray(_texCoord);
 
 				}
 				gyVidTriangleStrip(localVerts, 0, 4);
@@ -95,7 +96,7 @@ namespace elysian {
 			case PrimAttrib::SPRITE:
 				gyVidAlphaLevel((_spriteAttrib->_color.a == 255)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
 				gyVidQuadListBegin(&_spriteAttrib->_color);
-				if(_spriteAttrib->_frame == -1) gyVidTexCoordArray(_spriteAttrib->_texCoords);
+				if(_frame == -1) gyVidTexCoordArray(_texCoord);
 				else gyVidRectTexOrient(_texOrient);
 					/*gyVidTexCoordArray(gyVidTexCoordArrayFromFrame(&_spriteAttrib->_tex->_coord->texCoord[_frame],
 																	_texOrient));*/
@@ -116,6 +117,7 @@ namespace elysian {
 		inline void setOffset(const GYVector2 &offset) { _offset = offset; }
 		inline void getOffset(GYVector2 &offset) const { offset = _offset; } 
 		inline void setTexOrient(const GY_RECT_TEX_ORIENT texOrient) { _texOrient = texOrient; }
+		inline GY_RECT_TEX_ORIENT getTexOrient(void) const { return _texOrient; }
 
 		inline SpriteAttrib *getSpriteAttrib(void) const { return _spriteAttrib; }
 		inline QuadSpriteAttrib* getQuadSpriteAttrib(void) const { return static_cast<QuadSpriteAttrib*>(_spriteAttrib); }
@@ -137,6 +139,11 @@ namespace elysian {
 		inline void loadSpecularMap(const char*const path, const unsigned width, const unsigned height) {
 			if(_specularMap) gyVidTexDestroy(_specularMap);
 			_specularMap = gyVidTexCreate(path, width, height);
+		}
+
+		inline void setTexCoord(const unsigned index, const float u, const float v) {
+			_frame = -1;
+			_texCoord[index].u = u; _texCoord[index].v = v;
 		}
 		
 	};

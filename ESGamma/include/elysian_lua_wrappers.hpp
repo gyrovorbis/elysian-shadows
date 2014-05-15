@@ -145,7 +145,6 @@ struct Lua32BitMask {
 		if(val) mask |= (1<<index);
 		else mask &= ~(1<<index);
 	}
-
 };
 
 OOLUA_PROXY(Lua32BitMask)
@@ -456,6 +455,7 @@ OOLUA_PROXY(GYStatic)
 	OOLUA_MGET_MSET(damping, getDamping, setDamping)
 	OOLUA_MGET_MSET(invMomOfInertia, getInvMomOfInertia, setInvMomOfInertia)
 	OOLUA_MGET_MSET(angDamping, getAngDamping, setAngDamping)
+	OOLUA_MGET_MSET(zDamping, getZDamping, setZDamping)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CollidableAttrib)
@@ -496,6 +496,8 @@ OOLUA_PROXY_END
 OOLUA_PROXY(RigidBodyAttrib)
 	OOLUA_MEM_FUNC(void, setForceMask, uint32_t)
 	OOLUA_MEM_FUNC_CONST(uint32_t, getForceMask)
+	OOLUA_MEM_FUNC(void, setBreakable, bool)
+	OOLUA_MEM_FUNC(void, setBaseDurability, float)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ForceTarget)
@@ -513,6 +515,9 @@ OOLUA_PROXY(RigidBody, Component, ForceTarget)
 		No_public_destructor
 	)
 	OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<RigidBodyAttrib*>)
+	OOLUA_MEM_FUNC_CONST(RigidBodyAttrib*, getAttrib)
+	OOLUA_MEM_FUNC(void, setDurability, float)
+	OOLUA_MEM_FUNC_CONST(float, getDurability)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ForceGenerator)
@@ -623,6 +628,7 @@ OOLUA_PROXY(ParticleEmitterAttrib, SpriteAttrib, GYStatic)
 	OOLUA_MEM_FUNC(void, setMaterial, cpp_in_p<Material*>)
 	OOLUA_MEM_FUNC(void, loadSpecularMap, const char*, unsigned, unsigned)
 	OOLUA_MEM_FUNC(void, setForceMask, uint32_t)
+	OOLUA_MEM_FUNC(void, setIntensityFactor, float)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ParticleEmitter, Component)
@@ -630,9 +636,11 @@ OOLUA_PROXY(ParticleEmitter, Component)
 		No_public_constructors,
 		No_public_destructor
 	)
+	OOLUA_MEM_FUNC(void, allocatePool, unsigned)
 	OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<ParticleEmitterAttrib*>)
 	OOLUA_MEM_FUNC(void, emitFromPoint, const GYVector3&, float, unsigned)
 	OOLUA_MEM_FUNC(void, emitFromEntity, const GYVector3&, float, unsigned)
+	OOLUA_MEM_FUNC(void, emitFromPointInDir, const GYVector3&, const GYVector3&, unsigned, float)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(DialogScreen)

@@ -5,17 +5,24 @@
 #define ELYSIAN_RIGID_BODY_FORCE_GENERATOR_MAX_COUNT	20
 #define ELYSIAN_RIGID_BODY_CLOSING_VELOCITY_EPSILON		1.0f
 
+#define ELYSIAN_RIGID_BODY_BREAKABLE_IMPULSE_VELOCITY_MIN 20.0f
+#define ELYSIAN_RIGID_BODY_BREAKABLE_IMPULSE_ROTATION_MIN 0.4f
+
 #include "elysian_system.hpp"
 #include "elysian_mem_pool.hpp"
 #include "elysian_force_generator.hpp"
 
+#define ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_SIZE	50
+
 namespace elysian {
 
+	class RigidBody;
 	class CollisionContact;
 	class ForceGenerator;
 
 	class RigidBodySystem: public System {
 		CollisionContact*		_contactPool[ELYSIAN_RIGID_BODY_SYSTEM_CONTACT_POOL_SIZE];
+		Pool<Entity>			_shardPool		= Pool<Entity>(ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_SIZE);
 		Pool<ForceGenerator*>	_forces			= Pool<ForceGenerator*>(ELYSIAN_RIGID_BODY_FORCE_GENERATOR_MAX_COUNT);
 		GravityForceGenerator	_gravityGenerator;
 		unsigned				_contactCount	= 0;
@@ -32,9 +39,11 @@ namespace elysian {
 		unsigned getVelResIterUsed(void) const;
 
 		void resolveContactVelocities(void);
+		void breakRigidBodies(void);
 		void integrate(void);
 		void applyForces(void);
 
+		void breakRigidBody(RigidBody*const rigidBody);
 		void addForce(ForceGenerator*const force);
 		void applyForce(ForceGenerator*const force);
 		void removeForce(ForceGenerator*const force);

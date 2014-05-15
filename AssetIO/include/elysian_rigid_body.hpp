@@ -9,11 +9,17 @@ namespace elysian {
 
 	class RigidBodyAttrib {	//later separate GYStatic attrib
 	private:
-		uint32_t _forceMask = ~0x0;
+		uint32_t	_forceMask		= ~0x0;
+		bool		_breakable		= false;
+		float		_baseDurability = -1;
 
 	public:
-		uint32_t getForceMask(void) const;
-		void setForceMask(const uint32_t mask);
+		uint32_t	getForceMask(void) const;
+		void		setForceMask(const uint32_t mask);
+		void		setBreakable(const bool val);
+		bool		isBreakable(void) const;
+		float		getBaseDurability(void) const;
+		void		setBaseDurability(const float val);
 
 	};
 
@@ -45,6 +51,7 @@ namespace elysian {
 		bool				_active	= true;
 		bool				_onGround = true;
 		RigidBodyAttrib*	_attrib = nullptr;
+		float				_durability = -1.0f;
 	public:
 
 		RigidBody(Entity& entity);
@@ -71,6 +78,8 @@ namespace elysian {
 		RigidBodyAttrib*	getAttrib(void) const;
 		bool				getOnGround(void) const;
 		void				setOnGround(const bool val);
+		float				getDurability(void) const;
+		void				setDurability(const float val);
 
 		//GYKinetic rigid bodies internal
 		void integrate(const float deltaTime);
@@ -92,15 +101,23 @@ namespace elysian {
 
 	inline float RigidBody::getTileDamping(void) const { return _tileDamping; }
 	inline void RigidBody::setTileDamping(const float factor) {_tileDamping = factor; }
-	inline void RigidBody::setAttrib(RigidBodyAttrib*const attrib) { _attrib = attrib; }
+	inline void RigidBody::setAttrib(RigidBodyAttrib*const attrib) { _attrib = attrib; _durability = _attrib->getBaseDurability();}
 	inline void RigidBody::setActive(const bool val) { _active = val; }
+	inline float RigidBody::getDurability(void) const { return _durability; }
+	inline void RigidBody::setDurability(const float val) { _durability = val; }
+	inline bool RigidBody::getOnGround(void) const { return _onGround; }
+	inline void RigidBody::setOnGround(const bool val) { _onGround = val; }
 
 	inline RigidBodyAttrib* RigidBody::getAttrib(void) const { return _attrib; }
 	//inline void RigidBody::applyForceMask(const uint32_t mask, const GYVector2& force) { if(_attrib->getForceMask() & mask) applyForce(force); }
 	inline uint32_t RigidBodyAttrib::getForceMask(void) const { return _forceMask; }
 	inline void RigidBodyAttrib::setForceMask(const uint32_t mask) { _forceMask = mask; }
-	inline bool RigidBody::getOnGround(void) const { return _onGround; }
-	inline void RigidBody::setOnGround(const bool val) { _onGround = val; }
+	inline bool RigidBodyAttrib::isBreakable(void) const { return _breakable; }
+	inline void RigidBodyAttrib::setBreakable(const bool val) { _breakable = val; }
+	inline float RigidBodyAttrib::getBaseDurability(void) const { return _baseDurability; }
+	inline void RigidBodyAttrib::setBaseDurability(const float val) { _baseDurability = val; }
+
+
 
 }
 

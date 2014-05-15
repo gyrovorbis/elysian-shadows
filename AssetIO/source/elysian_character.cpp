@@ -145,9 +145,9 @@ void Character::throwHeldEntity(void) {
 	GYVector3 throwForce = {
 		_lastMoveDir.x,
 		_lastMoveDir.y,
-		10.0f
+		1.0f
 	};
-	gyVec3Scale(&throwForce, &throwForce, 40000.0f/_deltaTime);
+	gyVec3Scale(&throwForce, &throwForce, 90000.0f/_deltaTime);
 
 	//Set give the object its parent's initial velocity
 	_heldEntity->getRigidBody()->clearKinetic();

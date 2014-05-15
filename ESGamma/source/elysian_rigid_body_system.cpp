@@ -8,6 +8,7 @@
 #include "elysian_debug.hpp"
 #include "elysian_level.hpp"
 #include "elysian_particle_system.hpp"
+#include "elysian_renderable.hpp"
 
 namespace elysian {
 
@@ -104,10 +105,18 @@ void RigidBodySystem::resolveContactVelocities(void) {
 
 		gyVec2AddAccum((GYVector2*)&rbA->vel, &velDelta[0]);
 		rbA->rot += rotDelta[0];
+		float mag = gyVec2Magnitude(&velDelta[0]);
+		if(mag >= ELYSIAN_RIGID_BODY_BREAKABLE_IMPULSE_VELOCITY_MIN) {
+			rbA->setDurability(rbA->getDurability() - mag);
+		}
 
 		if(rbB) {
 			gyVec2AddAccum((GYVector2*)&rbB->vel, &velDelta[1]);
 			rbB->rot += rotDelta[1];
+			float mag = gyVec2Magnitude(&velDelta[1]);
+			if(mag >= ELYSIAN_RIGID_BODY_BREAKABLE_IMPULSE_VELOCITY_MIN) {
+				rbA->setDurability(rbA->getDurability() - mag);
+			}
 		}
 
 	/*	Debug::printf(Debug::VERBOSE, "=====ITER[%d]=====", iter);
@@ -362,6 +371,114 @@ void RigidBodySystem::integrate3D(void) {
 		}
 	}
 #endif
+
+
+}
+
+void RigidBodySystem::breakRigidBodies(void) {
+	std::vector<RigidBody*> toDelete;
+
+	auto rigidBodies = getCurArea()->rigidBodies;
+	for(auto rb : rigidBodies) {
+		if(rb->getAttrib()->isBreakable() && rb->getDurability() <= 0.0f) {
+			toDelete.push_back(rb);
+		}
+	}
+
+	for(unsigned i = 0; i < toDelete.size(); ++i) {
+		for(auto rb : rigidBodies) {
+			if(rb == toDelete[i]) {
+				breakRigidBody(rb);
+			}
+		}
+	}
+
+}
+
+void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
+
+	float width = rigidBody->getEntity()->getTransform()._size.x * rigidBody->getEntity()->getTransform()._scale.x;
+	float height = rigidBody->getEntity()->getTransform()._size.y * rigidBody->getEntity()->getTransform()._scale.y;
+
+	int xSize = width / 16;
+	int ySize = height / 16;
+
+	float xinc = width/xSize;
+	float yinc = height/ySize;
+
+	unsigned row = 0;
+	unsigned col = 0;
+
+	auto _createAndAddShard = [&](Entity*const entity, const float x, const float y, const float xinc, const float yinc) {
+		Entity* shard = &_shardPool.claimFreeEntry();
+
+		shard->transform._pos.x = entity->transform._pos.x - 0.5f*entity->transform._size.x + x;
+		shard->transform._pos.y = entity->transform._pos.y - 0.5f*entity->transform._size.y + y;
+		shard->setNormalType(entity->getNormalType());
+		if(entity->getNormalType() == NORMAL_FRONT) {
+			shard->transform._pos.y = entity->transform._pos.y - 0.5f*entity->transform._size.y;// + y;
+			shard->transform._pos.z = (ySize-row)*16.0f;
+		} else {
+			shard->transform._pos.y = entity->transform._pos.y - 0.5f*entity->transform._size.y + y;
+			shard->transform._pos.z = entity->transform._pos.z;
+
+		}
+
+
+		shard->transform.setSize(xinc, yinc);
+
+		if(!shard->getRenderable()) shard->addRenderable();
+		auto* attrib = entity->getRenderable()->getSpriteAttrib();
+		shard->getRenderable()->setSpriteAttrib(attrib);
+
+		GYTexCoordFrame* coord = &attrib->getTexture()->_coord->texCoord[entity->getRenderable()->getFrame()];
+
+		float frameWidth = (coord->botRight.u - coord->topLeft.u)/xSize;
+		float frameHeight = (coord->botRight.v - coord->topLeft.v)/ySize;
+
+		float baseX = coord->topLeft.u+col*frameWidth;
+		float baseY = coord->topLeft.v+row*frameHeight;
+
+		GYTexCoord2 shardCoord[4] = {
+			{baseX, baseY},
+			{baseX+frameWidth, baseY},
+			{baseX, baseY+frameHeight},
+			{baseX+frameWidth, baseY+frameHeight }
+		};
+
+		for(unsigned i = 0; i < 4; ++i) shard->getRenderable()->setTexCoord(i, shardCoord[i].u, shardCoord[i].v);
+
+//		float u1, v1, u2, v2,
+//s		attrib
+
+		if(!shard->getCollidable()) shard->addCollidable();
+		shard->getCollidable()->setAttrib(entity->getCollidable()->getAttrib());
+
+		if(!shard->getRigidBody()) shard->addRigidBody();
+		entity->getRigidBody()->getAttrib()->setBreakable(false);
+		shard->getRigidBody()->setAttrib(entity->getRigidBody()->getAttrib());
+
+		shard->getRigidBody()->setVelocity(entity->getRigidBody()->getVelocity());
+
+		getCurArea()->addEntity(shard);
+
+	};
+
+	float invMass = rigidBody->getEntity()->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass *= ySize*xSize;
+	//rigidBody->getEntity()->getCollidable()->getAttrib()->getStaticAttrib()->invMomOfInertia = 1.0f / (((1.0f/invMass)*(yinc*yinc+xinc*xinc)) /12.0f);
+
+	for(float y = 0.0f; y < height; y += yinc) {
+		for(float x = 0.0f; x < width; x += xinc) {
+			_createAndAddShard(rigidBody->getEntity(), x, y, xinc, yinc);
+			++col;
+		}
+		col = 0;
+		++row;
+
+	}
+
+	//rigidBody->getEntity()->transform._pos.x += 1000;
+	getCurArea()->removeEntity(rigidBody->getEntity());
 
 
 }
