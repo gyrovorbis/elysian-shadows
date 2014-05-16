@@ -176,6 +176,7 @@ set(gyro_INCLUDES
 
 if(GY_TARGET_ARCH MATCHES "i386" OR GY_TARGET_ARCH MATCHES "x86_64")
     if(${GYRO_PLATFORM} EQUAL GYRO_PLATFORM_x86)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse")
         set(gyro_SOURCES
             ${gyro_SOURCES}
             ${GY_SOURCE_DIR}/x86/gyro_file_x86.c
