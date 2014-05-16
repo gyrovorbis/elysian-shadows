@@ -219,7 +219,11 @@ if(${GYRO_PLATFORM} EQUAL GYRO_PLATFORM_ANDROID)
     )
 endif()
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
+if(MINGW)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu11")
+else()
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
+endif()
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_GNU_SOURCE")
 
 include_directories(SYSTEM ${GY_INCLUDE_DIR})
