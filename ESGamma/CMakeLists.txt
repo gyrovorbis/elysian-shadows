@@ -25,6 +25,12 @@ if(APPLE)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mmacosx-version-min=10.7 -stdlib=libc++")
 endif()
 
+if(ES_TARGET_ARCH MATCHES "i386" OR ES_TARGET_ARCH MATCHES "x86_64")
+    if(${GYRO_PLATFORM} EQUAL GYRO_PLATFORM_x86)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse")
+    endif()
+endif()
+
 set(ESG_SOURCES
 	${ESG_SOURCE_DIR}/main.cpp
 	${ESG_SOURCE_DIR}/elysian_adventure_log.cpp
