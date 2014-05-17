@@ -220,7 +220,7 @@ if(${GYRO_PLATFORM} EQUAL GYRO_PLATFORM_ANDROID)
     )
 endif()
 
-if(MINGW)
+if(MINGW OR WIN32)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu11")
 else()
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11")
@@ -283,6 +283,8 @@ if(${GYRO_PLATFORM} EQUAL GYRO_PLATFORM_x86)
 			${CORE_VIDEO_FRAMEWORK}
 			${OPENAL_FRAMEWORK}
 		)
+        elseif(WIN32)
+                list(APPEND Gyro_LIBRARIES winmm dsound)
 	elseif(UNIX)
 		find_package(X11 REQUIRED)
 		list(APPEND Gyro_LIBRARIES
