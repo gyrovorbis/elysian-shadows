@@ -92,6 +92,7 @@ namespace elysian {
 		_mainState->register_class_static<Singletons>("getAudioSys", &Singletons_getAudioSystem);
 		_mainState->register_class_static<Singletons>("getLightSys", &Singletons_getLightSystem);
 		_mainState->register_class_static<Singletons>("getLevelSys", &Singletons_getLevelSystem);
+        _mainState->register_class_static<Singletons>("getCombatSys", &Singletons_getCombatSystem);
 		_mainState->register_class_static<Singletons>("getPartSys", &Singletons_getParticleSystem);
 		_mainState->register_class_static<Singletons>("getDaySys", &Singletons_getDaySystem);
 		_mainState->register_class_static<Singletons>("getRigidBodySys", &Singletons_getRigidBodySystem);
