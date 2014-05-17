@@ -708,7 +708,9 @@ OOLUA_EXPORT_FUNCTIONS(CameraSystem,
 					   scale,
 					   moveToKeyFrame,
 					   setBoundaries,
-					   setDynamic)
+					   setDynamic,
+					   pushPerspectiveState,
+					   popState)
 OOLUA_EXPORT_FUNCTIONS_CONST(CameraSystem,
 					   addEntity,
 					   removeEntity,

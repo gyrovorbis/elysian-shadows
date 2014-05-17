@@ -125,6 +125,11 @@ namespace elysian {
 			_customState = true;
 		}
 
+		void pushPerspectiveState(void) {
+			_debugActive = true;
+			pushCustomCameraState(&_debugState);
+		}
+
 		void setCurrentCameraState(CameraState*const state) {
 			_states[_depth] = state;
 			_curState = state;

@@ -974,6 +974,8 @@ OOLUA_PROXY(CameraSystem)
 	OOLUA_MEM_FUNC(void, moveToKeyFrame, const CameraKeyFrame&, float, EventMonitor*)
 	OOLUA_MEM_FUNC(void, setBoundaries, float, float, float, float)
 	OOLUA_MEM_FUNC(void, setDynamic, bool)
+	OOLUA_MEM_FUNC(void, pushPerspectiveState)
+	OOLUA_MEM_FUNC(void, popState)
 OOLUA_PROXY_END
 
 
