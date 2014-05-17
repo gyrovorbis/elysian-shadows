@@ -193,7 +193,7 @@ static inline void gyVec3Sub(GYVector3* const dest, const GYVector3* const v1, c
 	dest->z = v1->z - v2->z;
 }
 
-static inline void gyVec3Scale(GYVector3*const dest, GYVector3*const source, const float scalar) {
+static inline void gyVec3Scale(GYVector3*const dest, const GYVector3*const source, const float scalar) {
 	dest->x = source->x * scalar;
 	dest->y = source->y * scalar;
 	dest->z = source->z * scalar;
