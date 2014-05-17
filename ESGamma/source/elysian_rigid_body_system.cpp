@@ -462,6 +462,8 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
 			shard->getCollidable()->setAttrib(new CollidableAttrib());
 		}
 		*shard->getCollidable()->getAttrib() = *entity->getCollidable()->getAttrib();
+		shard->getCollidable()->getAttrib()->getFlags()->addCheckAgainst(CollisionFlags::ALL);
+		shard->getCollidable()->getAttrib()->getFlags()->addType(CollisionFlags::ALL);
 
 		if(!shard->getRigidBody()) {
 			shard->addRigidBody();
@@ -482,7 +484,7 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
 		GYVector2 localPos;
 		gyVec2Sub(&localPos, (GYVector2*)&shard->transform._pos, (GYVector2*)&entity->transform._pos);
 		gyVec2Normalize(&localPos);
-		float crossProd = gyVec2ScalarCrossProd(&localPos, (GYVector2*)&velDir);
+		float crossProd = gyVec2DotProd(&localPos, (GYVector2*)&velDir);
 
 		gyVec2Scale((GYVector2*)&velDir, &localPos, crossProd);
 

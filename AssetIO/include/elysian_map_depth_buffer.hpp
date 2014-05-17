@@ -23,7 +23,7 @@
 #   define ELYSIAN_DEPTH_BUFFER_OBJECT_WIDTH ELYSIAN_AREA_MAP_WIDTH*3
 #endif
 //Guess this could be a bit smaller? Maybe?
-#define ELYSIAN_DEPTH_BUFFER_ENTITY_WIDTH 20
+#define ELYSIAN_DEPTH_BUFFER_ENTITY_WIDTH 100
 
 namespace elysian {
     

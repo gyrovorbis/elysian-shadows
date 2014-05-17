@@ -142,12 +142,22 @@ bool Animation::canAddTo(Entity &parent) {
 
 //O(1)
 bool Animation::addToLevel(void) {
+	if(_children)
+	for(auto it = _children->begin(); it < _children->end(); ++it) {
+		auto childEntry = &(*it);
+		_curArea->addEntity(childEntry->entity);
+	}
 	_curArea->animations.push_back(this);
 	return true;
 }
 
 //O(n)
 bool Animation::removeFromLevel(void) {
+	if(_children)
+	for(auto it = _children->begin(); it < _children->end(); ++it) {
+		auto childEntry = &(*it);
+		_curArea->removeEntity(childEntry->entity);
+	}
     return containerEraseOnMatch(this, _curArea->animations);
 }
 

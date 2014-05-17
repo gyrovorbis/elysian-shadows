@@ -145,7 +145,7 @@ void Character::throwHeldEntity(void) {
 	GYVector3 throwForce = {
 		_lastMoveDir.x,
 		_lastMoveDir.y,
-		0.5f
+		0.8f
 	};
 	gyVec3Scale(&throwForce, &throwForce, 300000.0f/_deltaTime);
 
