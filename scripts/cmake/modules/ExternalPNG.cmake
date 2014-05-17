@@ -50,12 +50,26 @@ ExternalProject_Add(libpng_build
 )
 
 add_library(zlib STATIC IMPORTED)
+if(WIN32)
+    set(zlib_NAME "zlibstatic")
+else()
+    set(zlib_NAME "z")
+endif()
 set_target_properties(zlib PROPERTIES
-	IMPORTED_LOCATION ${GY_TARGET_CONTRIB_OUT_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}z${CMAKE_STATIC_LIBRARY_SUFFIX}
+        IMPORTED_LOCATION ${GY_TARGET_CONTRIB_OUT_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}${zlib_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
 )
 add_dependencies(zlib zlib_build)
 add_library(libpng STATIC IMPORTED)
+if(WIN32)
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(png_NAME "png16d")
+    else()
+        set(png_NAME "png16")
+    endif()
+else()
+    set(png_NAME "png")
+endif()
 set_target_properties(libpng PROPERTIES
-	IMPORTED_LOCATION ${GY_TARGET_CONTRIB_OUT_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}png${CMAKE_STATIC_LIBRARY_SUFFIX}
+        IMPORTED_LOCATION ${GY_TARGET_CONTRIB_OUT_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}${png_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
 )
 add_dependencies(libpng libpng_build)
