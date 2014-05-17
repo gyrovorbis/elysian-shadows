@@ -145,13 +145,14 @@ void Character::throwHeldEntity(void) {
 	GYVector3 throwForce = {
 		_lastMoveDir.x,
 		_lastMoveDir.y,
-		1.0f
+		0.5f
 	};
-	gyVec3Scale(&throwForce, &throwForce, 90000.0f/_deltaTime);
+	gyVec3Scale(&throwForce, &throwForce, 300000.0f/_deltaTime);
 
 	//Set give the object its parent's initial velocity
 	_heldEntity->getRigidBody()->clearKinetic();
 	_heldEntity->getRigidBody()->setVelocity(_entity->getRigidBody()->getVelocity());
+	_entity->getRigidBody()->clearKinetic();
 
 	//Also apply a force to "throw" the bitch in the direction we're facing
 	_heldEntity->getRigidBody()->applyForce(throwForce);

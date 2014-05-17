@@ -186,7 +186,7 @@ void Animation::playAnimation(const char *name) {
 		}
 	}
 
-	assert((_attrib->_sequences.find(name) != _attrib->_sequences.end()));
+	//assert((_attrib->_sequences.find(name) != _attrib->_sequences.end()));
 	if((_attrib->_sequences.find(name) == _attrib->_sequences.end())) return;
 	if(_isActive && _attrib->_sequences[name] == _currentSequence) return;
 

@@ -303,7 +303,8 @@ OOLUA_EXPORT_FUNCTIONS(Animation,
 								   addChildEntity,
 								   removeChildEntity,
 								   setChildAttrib,
-								   setChildPivot)
+								   setChildPivot,
+									setSpeedMultiplier)
 OOLUA_EXPORT_FUNCTIONS_CONST(Animation,
 							   getAttrib,
 							   isLooping,

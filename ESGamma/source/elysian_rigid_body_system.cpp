@@ -103,19 +103,24 @@ void RigidBodySystem::resolveContactVelocities(void) {
 					_contactPool[maxIndex]->getCollidable(1)->getEntity()->getRigidBody() :
 					nullptr;
 
+		float dampingA = powf(rbA->getEntity()->getCollidable()->getAttrib()->getStaticAttrib()->damping, deltaTime);
+		float dampingB = (rbB)? powf(rbB->getEntity()->getCollidable()->getAttrib()->getStaticAttrib()->damping, deltaTime) : 1.0f;
+
 		gyVec2AddAccum((GYVector2*)&rbA->vel, &velDelta[0]);
 		rbA->rot += rotDelta[0];
-		float mag = gyVec2Magnitude(&velDelta[0]);
-		if(mag >= ELYSIAN_RIGID_BODY_BREAKABLE_IMPULSE_VELOCITY_MIN) {
+		float mag = gyVec2Magnitude(&velDelta[0]) * dampingB;
+		if(mag >= rbA->getDurability()) {
 			rbA->setDurability(rbA->getDurability() - mag);
+			rbA->setBreakContact(_contactPool[maxIndex]);
 		}
 
 		if(rbB) {
 			gyVec2AddAccum((GYVector2*)&rbB->vel, &velDelta[1]);
 			rbB->rot += rotDelta[1];
-			float mag = gyVec2Magnitude(&velDelta[1]);
-			if(mag >= ELYSIAN_RIGID_BODY_BREAKABLE_IMPULSE_VELOCITY_MIN) {
-				rbA->setDurability(rbA->getDurability() - mag);
+			float mag = gyVec2Magnitude(&velDelta[1]) * dampingA;
+			if(mag >= rbB->getDurability()) {
+				rbB->setDurability(rbB->getDurability() - mag);
+				rbB->setBreakContact(_contactPool[maxIndex]);
 			}
 		}
 
@@ -403,8 +408,8 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
 	int xSize = width / 16;
 	int ySize = height / 16;
 
-	float xinc = width/xSize;
-	float yinc = height/ySize;
+	float xinc = width/(float)xSize;
+	float yinc = height/(float)ySize;
 
 	unsigned row = 0;
 	unsigned col = 0;
@@ -412,17 +417,18 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
 	auto _createAndAddShard = [&](Entity*const entity, const float x, const float y, const float xinc, const float yinc) {
 		Entity* shard = &_shardPool.claimFreeEntry();
 
-		shard->transform._pos.x = entity->transform._pos.x - 0.5f*entity->transform._size.x + x;
-		shard->transform._pos.y = entity->transform._pos.y - 0.5f*entity->transform._size.y + y;
+		shard->transform._pos.x = entity->transform._pos.x - 0.5f*width + x + 0.5f*xinc;
+		shard->transform._pos.y = entity->transform._pos.y - 0.5f*height + y + 0.5f*yinc;
+		shard->transform._pos.z = entity->transform._pos.z;
 		shard->setNormalType(entity->getNormalType());
-		if(entity->getNormalType() == NORMAL_FRONT) {
-			shard->transform._pos.y = entity->transform._pos.y - 0.5f*entity->transform._size.y;// + y;
-			shard->transform._pos.z = (ySize-row)*16.0f;
+		/*if(entity->getNormalType() == NORMAL_FRONT) {
+			shard->transform._pos.y = entity->transform._pos.y - 0.5f*entity->transform._size.y; + y;
+			//shard->transform._pos.z = (ySize-row)*16.0f;
 		} else {
 			shard->transform._pos.y = entity->transform._pos.y - 0.5f*entity->transform._size.y + y;
 			shard->transform._pos.z = entity->transform._pos.z;
 
-		}
+		}*/
 
 
 		shard->transform.setSize(xinc, yinc);
@@ -451,20 +457,43 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
 //		float u1, v1, u2, v2,
 //s		attrib
 
-		if(!shard->getCollidable()) shard->addCollidable();
-		shard->getCollidable()->setAttrib(entity->getCollidable()->getAttrib());
+		if(!shard->getCollidable()) {
+			shard->addCollidable();
+			shard->getCollidable()->setAttrib(new CollidableAttrib());
+		}
+		*shard->getCollidable()->getAttrib() = *entity->getCollidable()->getAttrib();
 
-		if(!shard->getRigidBody()) shard->addRigidBody();
-		entity->getRigidBody()->getAttrib()->setBreakable(false);
-		shard->getRigidBody()->setAttrib(entity->getRigidBody()->getAttrib());
+		if(!shard->getRigidBody()) {
+			shard->addRigidBody();
+			shard->getRigidBody()->setAttrib(new RigidBodyAttrib);
+		}
 
-		shard->getRigidBody()->setVelocity(entity->getRigidBody()->getVelocity());
+		*shard->getRigidBody()->getAttrib() = *entity->getRigidBody()->getAttrib();
+		shard->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass *= ySize*xSize;
+
+		shard->getRigidBody()->getAttrib()->setBreakable(false);
+
+		GYVector3 velDir = entity->getRigidBody()->getVelocity();
+		//gyVec3Normalize(&velDir);
+		//float mag = gyVec3Magnitude(&entity->getRigidBody()->getVelocity());
+		//gyVec3Scale(&velDir, &velDir, xSize*ySize*mag);
+
+
+		GYVector2 localPos;
+		gyVec2Sub(&localPos, (GYVector2*)&shard->transform._pos, (GYVector2*)&entity->transform._pos);
+		gyVec2Normalize(&localPos);
+		float crossProd = gyVec2ScalarCrossProd(&localPos, (GYVector2*)&velDir);
+
+		gyVec2Scale((GYVector2*)&velDir, &localPos, crossProd);
+
+		shard->getRigidBody()->setVelocity(velDir);
+
 
 		getCurArea()->addEntity(shard);
 
 	};
 
-	float invMass = rigidBody->getEntity()->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass *= ySize*xSize;
+	//float invMass = rigidBody->getEntity()->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass *= ySize*xSize;
 	//rigidBody->getEntity()->getCollidable()->getAttrib()->getStaticAttrib()->invMomOfInertia = 1.0f / (((1.0f/invMass)*(yinc*yinc+xinc*xinc)) /12.0f);
 
 	for(float y = 0.0f; y < height; y += yinc) {

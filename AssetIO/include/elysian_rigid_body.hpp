@@ -7,6 +7,8 @@
 
 namespace elysian {
 
+	class CollisionContact;
+
 	class RigidBodyAttrib {	//later separate GYStatic attrib
 	private:
 		uint32_t	_forceMask		= ~0x0;
@@ -47,11 +49,12 @@ namespace elysian {
 	class RigidBody: public Component, public ForceTarget {
 		friend class RigidBodySystem;
 	private:
-		float				_tileDamping = 1.0f;
-		bool				_active	= true;
-		bool				_onGround = true;
-		RigidBodyAttrib*	_attrib = nullptr;
-		float				_durability = -1.0f;
+		float				_tileDamping	= 1.0f;
+		bool				_active			= true;
+		bool				_onGround		= true;
+		RigidBodyAttrib*	_attrib			= nullptr;
+		float				_durability		= -1.0f;
+		CollisionContact*	_breakContact	= nullptr;
 	public:
 
 		RigidBody(Entity& entity);
@@ -80,6 +83,8 @@ namespace elysian {
 		void				setOnGround(const bool val);
 		float				getDurability(void) const;
 		void				setDurability(const float val);
+		CollisionContact*	getBreakContact(void) const;
+		void				setBreakContact(CollisionContact*const contact);
 
 		//GYKinetic rigid bodies internal
 		void integrate(const float deltaTime);
@@ -107,6 +112,8 @@ namespace elysian {
 	inline void RigidBody::setDurability(const float val) { _durability = val; }
 	inline bool RigidBody::getOnGround(void) const { return _onGround; }
 	inline void RigidBody::setOnGround(const bool val) { _onGround = val; }
+	inline CollisionContact* RigidBody::getBreakContact(void) const { return _breakContact; }
+	inline void	RigidBody::setBreakContact(CollisionContact*const contact) { _breakContact = contact; }
 
 	inline RigidBodyAttrib* RigidBody::getAttrib(void) const { return _attrib; }
 	//inline void RigidBody::applyForceMask(const uint32_t mask, const GYVector2& force) { if(_attrib->getForceMask() & mask) applyForce(force); }
