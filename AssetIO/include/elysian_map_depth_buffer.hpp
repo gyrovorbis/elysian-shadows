@@ -27,7 +27,7 @@
 
 namespace elysian {
     
-	enum NORMAL_TYPE { NORMAL_FLAT, NORMAL_FRONT };
+	enum NORMAL_TYPE { NORMAL_FLAT, NORMAL_FRONT, NORMAL_BOTH };
     
     //Minimal base class for object entries
 	struct MapDepthBuffEntry {
@@ -125,11 +125,11 @@ namespace elysian {
 		//Object buffer
 		unsigned	_objectCount[ELYSIAN_DEPTH_BUFFER_HEIGHT];
 		O			_objectBuff[ELYSIAN_DEPTH_BUFFER_HEIGHT][ELYSIAN_DEPTH_BUFFER_OBJECT_WIDTH];
-		uint32_t	_objectRowLights[ELYSIAN_DEPTH_BUFFER_HEIGHT];
+		uint32_t	_objectRowLights[NORMAL_BOTH][ELYSIAN_DEPTH_BUFFER_HEIGHT];
 		O			_objectBuffImmediate[ELYSIAN_DEPTH_BUFFER_HEIGHT*ELYSIAN_DEPTH_BUFFER_OBJECT_WIDTH];
 		unsigned	_objectBuffImmediateCount = 0;
 
-		unsigned	_queue[2][ELYSIAN_DEPTH_BUFFER_HEIGHT*ELYSIAN_DEPTH_BUFFER_OBJECT_WIDTH];
+		unsigned	_queue[NORMAL_BOTH][ELYSIAN_DEPTH_BUFFER_HEIGHT*ELYSIAN_DEPTH_BUFFER_OBJECT_WIDTH];
 		unsigned	_queued = 0;
 		int			_nextRow = 0;
 		int			_curRow = 0;
@@ -203,7 +203,6 @@ namespace elysian {
 		memset(_entityCount, 0, sizeof(unsigned)*_depthBuffMaxHeight);
 
 		_processTiles();
-
         
         // ==== QUEUE AND IMMEDIATE RENDER ENTITIES ==== 
         
@@ -279,7 +278,7 @@ namespace elysian {
 			_renderDepthBuffTileRow(i, NORMAL_FRONT);
                       
 		}
-		_enableDepthTest();
+		//_enableDepthTest();
 	}
 
 	// ==== QUEUE AND IMMEDIATE RENDER TILES ====
@@ -321,7 +320,7 @@ namespace elysian {
 						assert(zCoord < _depthBuffMaxHeight);
 
 						_objectBuff[zCoord][_objectCount[zCoord]] = curMapEntry;
-						_objectRowLights[zCoord] |= curMapEntry.lights;
+						_objectRowLights[curMapEntry.mapEntry.getNormal()][zCoord] |= curMapEntry.lights;
 						++_objectCount[zCoord];
 					}
 				}
@@ -364,7 +363,7 @@ namespace elysian {
 
 		LightSystem*const	lightSys			= getLightSys();
 
-		_lightsRendered |= _lightsActive = lightSys->startLightPass(_objectRowLights[i]);
+		_lightsRendered |= _lightsActive = lightSys->startLightPass(_objectRowLights[normalType][i]);
 		for(unsigned j = 0; j < _objectCount[i]; ++j) {
 			if(_objectBuff[i][j].mapEntry.getNormal() == normalType)
 				_renderOrQueueTileEntry(j, _objectBuff[i][j]);
@@ -374,7 +373,7 @@ namespace elysian {
 			_queued = 0;
 			_curRow = _nextRow;
 			_nextRow = !_curRow;
-			_lightsRendered |= _lightsActive = lightSys->startLightPass(_objectRowLights[i]);
+			_lightsRendered |= _lightsActive = lightSys->startLightPass(_objectRowLights[normalType][i]);
 			for(unsigned j = 0; j < count; ++j) {
 				_renderOrQueueTileEntry(j, _objectBuff[i][_queue[_curRow][j]]);
 			}
