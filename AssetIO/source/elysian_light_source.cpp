@@ -81,16 +81,33 @@ void LightSource::updateBoundingVolume(const CameraState *const cam, const GY_CU
 	GYViewVolume* vol = &thisCam->viewVolume;
 
 	if(type == GY_LIGHT_DIRECTIONAL) {
-		vol->ntl.x = FLT_MIN; vol->ntl.y = FLT_MIN;
+	/*	vol->ntl.x = FLT_MIN; vol->ntl.y = FLT_MIN;
 		vol->ntr.x = FLT_MAX; vol->ntr.y = FLT_MIN;
 		vol->nbl.x = FLT_MIN; vol->nbl.y = FLT_MAX;
 		vol->nbr.x = FLT_MAX; vol->nbr.y = FLT_MAX;
 
+		vol->ftl.x = FLT_MIN; vol->ftl.y = FLT_MIN;
+		vol->ftr.x = FLT_MAX; vol->ftr.y = FLT_MIN;
+		vol->fbl.x = FLT_MIN; vol->fbl.y = FLT_MAX;
+		vol->fbr.x = FLT_MAX; vol->fbr.y = FLT_MAX;*/
+		*thisCam = *cam;
+
+		thisCam->updateBoundingSubregions(*cam);
+
 	} else if(type == GY_LIGHT_SPOT) {
-		vol->ntl.x = FLT_MIN; vol->ntl.y = FLT_MIN;
-		vol->ntr.x = FLT_MAX; vol->ntr.y = FLT_MIN;
-		vol->nbl.x = FLT_MIN; vol->nbl.y = FLT_MAX;
-		vol->nbr.x = FLT_MAX; vol->nbr.y = FLT_MAX;
+		/*vol->ntl.x = FLT_MIN; vol->ftl.y = FLT_MIN;
+		vol->ntr.x = FLT_MAX; vol->ftr.y = FLT_MIN;
+		vol->nbl.x = FLT_MIN; vol->fbl.y = FLT_MAX;
+		vol->nbr.x = FLT_MAX; vol->fbr.y = FLT_MAX;
+
+		vol->ftl.x = FLT_MIN; vol->ftl.y = FLT_MIN;
+		vol->ftr.x = FLT_MAX; vol->ftr.y = FLT_MIN;
+		vol->fbl.x = FLT_MIN; vol->fbl.y = FLT_MAX;
+		vol->fbr.x = FLT_MAX; vol->fbr.y = FLT_MAX;*/
+
+		*thisCam = *cam;
+
+		thisCam->updateBoundingSubregions(*cam);
 	} else { // GY_LIGHT_POINT
 
 		const float halfW = properties->_radius;//maxDist*0.5f;

@@ -308,7 +308,7 @@ uint32_t LightSystem::startLightPass(uint32_t& lightsLeft) {
 
 
 	//If we're either adding or removing lights, state change
-	if(addLightsCount != 0 || removedLightsCount != 0 || keepActiveLightCount != GYRO_VIDEO_LIGHT_SOURCES_MAX) {
+	if(addLightsCount != 0 /*|| removedLightsCount != 0 || keepActiveLightCount != GYRO_VIDEO_LIGHT_SOURCES_MAX*/) {
 		//New values we're calculating
 		uint32_t		newActiveLights = keepActiveLights;
 		unsigned		newActiveLightCount = keepActiveLightCount;

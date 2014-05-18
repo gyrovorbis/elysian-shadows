@@ -275,6 +275,7 @@ namespace elysian {
 				//entityZDelta += ELYSIAN_DEPTH_BUFFER_ENTITY_ENTITY_MIN_Z_OFFSET;
 			}
 
+			//_beginRenderNextTileRow();
 			_renderDepthBuffTileRow(i, NORMAL_FRONT);
                       
 		}
