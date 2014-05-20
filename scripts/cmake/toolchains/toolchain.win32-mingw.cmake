@@ -1,0 +1,29 @@
+set(CMAKE_SYSTEM_NAME Windows)
+
+set(COMPILER_PREFIX "i686-w64-mingw32")
+
+find_program(CMAKE_RC_COMPILER NAMES ${COMPILER_PREFIX}-windres)
+find_program(CMAKE_C_COMPILER NAMES ${COMPILER_PREFIX}-gcc)
+find_program(CMAKE_CXX_COMPILER NAMES ${COMPILER_PREFIX}-g++)
+
+set(CMAKE_FIND_ROOT_PATH /usr/${COMPILER_PREFIX})
+
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+
+set(CMAKE_C_FLAGS		""				CACHE STRING "c flags")
+set(CMAKE_CXX_FLAGS		""				CACHE STRING "c++ flags")
+set(CMAKE_C_FLAGS_DEBUG		"-O0 -g -DDEBUG -D_DEBUG"	CACHE STRING "c Debug flags")
+set(CMAKE_CXX_FLAGS_DEBUG	"-O0 -g -DDEBUG -D_DEBUG"	CACHE STRING "c++ Debug flags")
+set(CMAKE_C_FLAGS_RELEASE	"-O3 -DNDEBUG"			CACHE STRING "c Release flags")
+set(CMAKE_CXX_FLAGS_RELEASE	"-O3 -DNDEBUG"			CACHE STRING "c++ Release flags")
+set(CMAKE_SHARED_LINKER_FLAGS	""				CACHE STRING "shared linker flags")
+set(CMAKE_MODULE_LINKER_FLAGS	""				CACHE STRING "module linker flags")
+set(CMAKE_EXE_LINKER_FLAGS	""				CACHE STRING "executable linker flags")
+
+set(CMAKE_C_FLAGS "-Wl,--allow-multiple-definition ${CMAKE_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "-Wl,--allow-multiple-definition ${CMAKE_CXX_FLAGS}")
+
+set(CMAKE_C_FLAGS "-static -static-libgcc ${CMAKE_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "-static -static-libstdc++ ${CMAKE_CXX_FLAGS}")
