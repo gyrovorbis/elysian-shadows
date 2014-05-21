@@ -1,4 +1,3 @@
-#include <pthread.h>
 #include <ogg/ogg.h>
 #include <vorbis/codec.h>
 #include <vorbis/vorbisenc.h>
@@ -12,6 +11,8 @@
 #include <gyro_system_api.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "tinycthread.h"
 
 #define GYRO_OGG_STREAM_BUFF_SIZE	(4096 * 20)
 #define GYRO_OGG_STREAM_BUFF_COUNT	2
@@ -175,21 +176,20 @@ static inline int _streamOgg(const ALuint buffer, GYOgg*const ogg) {
 	return 0;
 }
 
-//======= OGG STREAM PTHREADICISM =======
+//======= OGG STREAM THREADICISM =======
 
 typedef struct __OggStreamSource {
 	ALuint				src;				//polymorphically compatible with GYAudioSource
 	GYOgg*				ogg;
-	pthread_t			thread;
+    thrd_t              thread;
 	unsigned			stillStreaming;		//boolean for whether we have work or not
-	pthread_mutex_t		streamMutex;
-	pthread_mutexattr_t	streamMutexAttr;
-	pthread_cond_t		tryStreamCond;
+    mtx_t               streamMutex;
+    cnd_t               tryStreamCond;
 	unsigned			killMe;
 	unsigned			looping;
 } _OggStreamSource;
 
-static void* _gyAudOggStreamUpdate(void* data) {
+static int _gyAudOggStreamUpdate(void* data) {
 	_OggStreamSource*const stream = data;
 	int processed;
 	int done;
@@ -198,14 +198,14 @@ static void* _gyAudOggStreamUpdate(void* data) {
 		done = 0;
 
 		//Protect against ANY other stream-related operations while updating
-		pthread_mutex_lock(&stream->streamMutex);
+        mtx_lock(&stream->streamMutex);
 		while(!stream->stillStreaming) {
-			pthread_cond_wait(&stream->tryStreamCond, &stream->streamMutex);	//wait for master to signal to resume stream
+            cnd_wait(&stream->tryStreamCond, &stream->streamMutex); /* wait for master to signal to resume stream */
 		}
 
 		//parent wants us dead (cleaning up stream)
 		if(stream->killMe) {
-			pthread_mutex_unlock(&stream->streamMutex);
+            mtx_unlock(&stream->streamMutex);
 			break; //He had a good run...
 		}
 
@@ -231,10 +231,10 @@ static void* _gyAudOggStreamUpdate(void* data) {
 
 		if(done) stream->stillStreaming = 0;
 
-		pthread_mutex_unlock(&stream->streamMutex);
+        mtx_unlock(&stream->streamMutex);
 	}
 
-	return NULL;
+    return thrd_success;
 }
 
 GYAudioSource* gyAudOggStreamCreate(void) {
@@ -248,14 +248,12 @@ GYAudioSource* gyAudOggStreamCreate(void) {
 	stream->stillStreaming = 0;
 	stream->looping = 1;
 
-	//Initialize thread and synchronization primitives
-	pthread_mutexattr_init(&stream->streamMutexAttr);
-	pthread_mutexattr_settype(&stream->streamMutexAttr, PTHREAD_MUTEX_RECURSIVE);
-	pthread_mutex_init(&stream->streamMutex, &stream->streamMutexAttr);
-	pthread_cond_init(&stream->tryStreamCond, NULL);
+    /* Initialize thread and synchronization primitives */
+    mtx_init(&stream->streamMutex, mtx_recursive);
+    cnd_init(&stream->tryStreamCond);
 
 	//spawn the thread
-	pthread_create(&stream->thread, NULL, &_gyAudOggStreamUpdate, stream);
+    thrd_create(&stream->thread, &_gyAudOggStreamUpdate, stream);
 	return (GYAudioSource*)stream;
 }
 
@@ -264,16 +262,15 @@ void gyAudOggStreamDestroy(GYAudioSource*const src) {
 
 	//Kill the stream thread
 	stream->killMe = 1;										//flag thread to commit suicide
-	pthread_mutex_lock(&stream->streamMutex);
-	pthread_cond_signal(&stream->tryStreamCond);
+    mtx_lock(&stream->streamMutex);
+    cnd_signal(&stream->tryStreamCond);
 	stream->stillStreaming = 1;								//wake its bitch ass up
-	pthread_mutex_unlock(&stream->streamMutex);
-	pthread_join(stream->thread, NULL);						//await its death
+    mtx_unlock(&stream->streamMutex);
+    thrd_join(stream->thread, NULL);                        /* await its death */
 
 	//free threading resources
-	pthread_mutex_destroy(&stream->streamMutex);
-	pthread_mutexattr_destroy(&stream->streamMutexAttr);
-	pthread_cond_destroy(&stream->tryStreamCond);
+    mtx_destroy(&stream->streamMutex);
+    cnd_destroy(&stream->tryStreamCond);
 
 	//kill alSource
 	gyAudSourceDestroy(src);
@@ -288,7 +285,7 @@ void gyAudOggStreamPlay(GYAudioSource*src, GYOgg*ogg) {
 	if(gyAudSourceIsPlaying(src))
 		gyAudOggStreamPause(src);
 
-	pthread_mutex_lock(&stream->streamMutex);
+    mtx_lock(&stream->streamMutex);
 
 	if(_streamOgg(payload->buffers[0], ogg))
 		++validBuffers;
@@ -304,18 +301,18 @@ void gyAudOggStreamPlay(GYAudioSource*src, GYOgg*ogg) {
 		stream->ogg = ogg;
 		stream->ogg->looping = stream->looping;
 
-		stream->stillStreaming = 1;
-		pthread_cond_signal(&stream->tryStreamCond);
+        stream->stillStreaming = 1;
+        cnd_signal(&stream->tryStreamCond);
 	}
 
-	pthread_mutex_unlock(&stream->streamMutex);
+    mtx_unlock(&stream->streamMutex);
 }
 
 void gyAudOggStreamPause(GYAudioSource*src) {
 	_OggStreamSource* stream = (void*)src;
 	int queued;
 
-	pthread_mutex_lock(&stream->streamMutex);
+    mtx_lock(&stream->streamMutex);
 
 	alSourceStop(stream->src);
 	alGetSourcei(stream->src, AL_BUFFERS_QUEUED, &queued);
@@ -329,7 +326,7 @@ void gyAudOggStreamPause(GYAudioSource*src) {
 
 	stream->stillStreaming = 0;
 
-	pthread_mutex_unlock(&stream->streamMutex);
+    mtx_unlock(&stream->streamMutex);
 }
 
 void gyAudOggStreamStop(GYAudioSource*src) {
@@ -337,12 +334,12 @@ void gyAudOggStreamStop(GYAudioSource*src) {
 	if(!stream || !stream->ogg) return;
 	GYOggPayload* payload = stream->ogg->_data;
 
-	pthread_mutex_lock(&stream->streamMutex);
+    mtx_lock(&stream->streamMutex);
 
 	gyAudOggStreamPause(src);
 	ov_pcm_seek(&payload->oggStream, 0);
 
-	pthread_mutex_unlock(&stream->streamMutex);
+    mtx_unlock(&stream->streamMutex);
 }
 
 void gyAudOggStreamSync(GYAudioSource*const src1, GYAudioSource*const src2) {
@@ -352,15 +349,14 @@ void gyAudOggStreamSync(GYAudioSource*const src1, GYAudioSource*const src2) {
 	GYOggPayload* payload2 = stream2->ogg->_data;
 
 	double time;
-	pthread_mutex_lock(&stream1->streamMutex);
-	pthread_mutex_lock(&stream2->streamMutex);
+    mtx_lock(&stream1->streamMutex);
+    mtx_lock(&stream2->streamMutex);
 
 	time = ov_time_tell(&payload1->oggStream);
 	ov_time_seek_lap(&payload2->oggStream, time);
 
-	pthread_mutex_unlock(&stream1->streamMutex);
-	pthread_mutex_unlock(&stream2->streamMutex);
-
+    mtx_unlock(&stream1->streamMutex);
+    mtx_unlock(&stream2->streamMutex);
 }
 
 void gyAudOggStreamSetLooping(GYAudioSource*const src, const unsigned looping) {
