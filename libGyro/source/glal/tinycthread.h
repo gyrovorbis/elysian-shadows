@@ -148,7 +148,9 @@ int _tthread_timespec_get(struct timespec *ts, int base);
 */
 
 /* FIXME: Check for a PROPER value of __STDC_VERSION__ to know if we have C11 */
-#if !(defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201102L)) && !defined(_Thread_local)
+#if defined(__GNUC__) && ((__GNUC__ == 4) && (__GNUC_MINOR__ < 9))
+ #define _Thread_local __thread
+#elif !(defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201102L)) && !defined(_Thread_local)
  #if defined(__GNUC__) || defined(__INTEL_COMPILER) || defined(__SUNPRO_CC) || defined(__IBMCPP__)
   #define _Thread_local __thread
  #else
