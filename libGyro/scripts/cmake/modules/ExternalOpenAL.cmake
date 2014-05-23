@@ -18,7 +18,7 @@ if(ANDROID)
     set(openal_GIT_URL git://github.com/AerialX/openal-soft-android.git)
     set(openal_GIT_TAG master)
 else()
-    set(openal_GIT_URL git://internal.invalid/esdev/openal-soft.git)
+    set(openal_GIT_URL http://internal.invalid/esdev/openal-soft.git)
     set(openal_GIT_TAG v1.15.1-es)
 endif()
 
