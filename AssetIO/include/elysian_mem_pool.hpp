@@ -42,7 +42,7 @@ private:
 
     //actual storage
     int             *_freeIndices       = nullptr;
-    std::vector<T>  _entries;
+    T               *_entries           = nullptr;
     bool            *_used              = nullptr;
     unsigned        _maxSize            = ELYSIAN_MEM_POOL_DEFAULT_MAX_CAPACITY;
     unsigned        _freeIndicesSize    = ELYSIAN_MEM_POOL_DEFAULT_FREE_INDEX_CAPACITY;
@@ -149,8 +149,9 @@ public:
 
     Pool(const unsigned maxCapacity = ELYSIAN_MEM_POOL_DEFAULT_MAX_CAPACITY,
          const unsigned freeIndexSize = ELYSIAN_MEM_POOL_DEFAULT_FREE_INDEX_CAPACITY):
-            _maxSize(maxCapacity), _freeIndicesSize(freeIndexSize), _entries(maxCapacity)
+            _maxSize(maxCapacity), _freeIndicesSize(freeIndexSize)
     {
+        _entries        = new T[maxCapacity];
         _used           = (bool*)malloc(sizeof(bool) * (maxCapacity+1));
         _freeIndices    = (int*)malloc(sizeof(int) * freeIndexSize);
 
@@ -164,6 +165,7 @@ public:
     ~Pool(void) {
         free(_freeIndices);
         free(_used);
+        delete[] _entries;
     }
 
     iterator begin(void) {
@@ -221,7 +223,10 @@ public:
     }
 
     void resize(const unsigned size) {
-        _entries.resize(size);
+        T *old_entries = _entries;
+        _entries = new T[size];
+        memcpy(_entries, old_entries, sizeof(T) * _maxSize);
+        delete[] old_entries;
         _maxSize = size;
         _used    = (bool*)realloc(_used, sizeof(bool) * (size+1));
         clear();
