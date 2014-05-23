@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
+#include <vector>
 
 namespace elysian {
 
@@ -40,11 +41,11 @@ private:
     unsigned    _startSearchIndex   = 0;
 
     //actual storage
-    int         *_freeIndices       = nullptr;
-    T           *_entries           = nullptr;
-    bool        *_used              = nullptr;
-    unsigned    _maxSize            = ELYSIAN_MEM_POOL_DEFAULT_MAX_CAPACITY;
-    unsigned    _freeIndicesSize    = ELYSIAN_MEM_POOL_DEFAULT_FREE_INDEX_CAPACITY;
+    int             *_freeIndices       = nullptr;
+    std::vector<T>  _entries;
+    bool            *_used              = nullptr;
+    unsigned        _maxSize            = ELYSIAN_MEM_POOL_DEFAULT_MAX_CAPACITY;
+    unsigned        _freeIndicesSize    = ELYSIAN_MEM_POOL_DEFAULT_FREE_INDEX_CAPACITY;
 
 
     unsigned _claimFreeIndex(void) {
@@ -148,9 +149,8 @@ public:
 
     Pool(const unsigned maxCapacity = ELYSIAN_MEM_POOL_DEFAULT_MAX_CAPACITY,
          const unsigned freeIndexSize = ELYSIAN_MEM_POOL_DEFAULT_FREE_INDEX_CAPACITY):
-            _maxSize(maxCapacity), _freeIndicesSize(freeIndexSize)
+            _maxSize(maxCapacity), _freeIndicesSize(freeIndexSize), _entries(maxCapacity)
     {
-		_entries        = new T[maxCapacity];//(T*)malloc(sizeof(T) * maxCapacity);
         _used           = (bool*)malloc(sizeof(bool) * (maxCapacity+1));
         _freeIndices    = (int*)malloc(sizeof(int) * freeIndexSize);
 
@@ -164,8 +164,6 @@ public:
     ~Pool(void) {
         free(_freeIndices);
         free(_used);
-		//free(_entries);
-		delete[] _entries;
     }
 
     iterator begin(void) {
@@ -223,7 +221,7 @@ public:
     }
 
     void resize(const unsigned size) {
-        _entries = (T*)realloc(_entries, sizeof(T)*size);
+        _entries.resize(size);
         _maxSize = size;
         _used    = (bool*)realloc(_used, sizeof(bool) * (size+1));
         clear();
