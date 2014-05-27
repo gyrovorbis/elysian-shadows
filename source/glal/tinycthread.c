@@ -132,6 +132,7 @@ int mtx_lock(mtx_t *mtx)
 #endif
 }
 
+#if 0 /* Not needed, plus pthread_mutex_timedlock isn't a thing on OS X */
 int mtx_timedlock(mtx_t *mtx, const struct timespec *ts)
 {
 #if defined(_TTHREAD_WIN32_)
@@ -187,6 +188,7 @@ int mtx_timedlock(mtx_t *mtx, const struct timespec *ts)
   }
 #endif
 }
+#endif
 
 int mtx_trylock(mtx_t *mtx)
 {
