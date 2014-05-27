@@ -1,5 +1,5 @@
 #import "ios_image.h"
-#include "gyro_file.h"
+#include "gyro_file_api.h"
 #include <string.h>
 #import <OpenGLES/ES1/gl.h>
 #import <UIKit/UIKit.h>

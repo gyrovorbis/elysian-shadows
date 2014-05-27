@@ -1,4 +1,4 @@
-#include "gyro_system.h"
+#include "gyro_system_api.h"
 #include "ios_log.h"
 #include "gyro_defines.h"
 #include <stdarg.h>

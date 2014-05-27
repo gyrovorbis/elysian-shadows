@@ -1,11 +1,10 @@
 #import <assert.h>
-#import "gyro_file.h"
-#import "gyro_system.h"
+//#import "gyro_file_api.h"
+#import "gyro_system_api.h"
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSString.h>
 #import <string.h>
 #import <stdlib.h>
-//#define GYRO_iOS_TEMP_FILENAME_BUFFER_SIZE 500
 
 static NSBundle *_appBundle = NULL;
 //static char _tempFileBuffer[GYRO_iOS_TEMP_FILENAME_BUFFER_SIZE];
@@ -85,6 +84,7 @@ int gyFileInit(void) {
 
 
 const char* gyFilePath(const char *const name) {
+    
     assert(_appBundle); //initialize the API first, fuckmite!
     
     PATHINFO *pathInfo = _SplitPath(name);

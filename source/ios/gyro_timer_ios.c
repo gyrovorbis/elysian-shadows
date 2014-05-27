@@ -1,4 +1,4 @@
-#include "gyro_timer.h"
+#include "gyro_timer_api.h"
 #include <sys/time.h>
 
 static struct timeval start, now;

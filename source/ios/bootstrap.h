@@ -5,12 +5,11 @@
 extern "C" {
 #endif
 
-typedef void (*_InitRenderFunc)(unsigned int width, unsigned int height);
 typedef void (*_RenderFunc)(void);
 typedef int (*_UpdateFunc)(void);
 typedef void (*_InitFunc)(int argc, char *argv[]);
 
-//void IOS_SetInitRenderFunc(_InitRenderFunc func);
+void IOS_SetInitRenderFunc(_RenderFunc func);
 void IOS_CallInitRenderFunc(int width, int height);
 
 void IOS_SetInitFunc(_InitFunc func);

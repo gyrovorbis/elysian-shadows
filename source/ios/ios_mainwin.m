@@ -9,6 +9,7 @@
 @synthesize window;
 @synthesize controller;
 @synthesize updateInterval;
+
 -(void)applicationDidFinishLaunching:(UIApplication *)app {
 	CGRect rect = [[UIScreen mainScreen] bounds];
 	rect.origin.x = rect.origin.y = 0.0;

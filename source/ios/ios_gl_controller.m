@@ -1,7 +1,7 @@
 #import "ios_gl_controller.h"
 #import "ios_video.h"
 #import "bootstrap.h"
-#import "gyro_log.h"
+//#import "gyro_log.h"
 
 #define RenderFreq 60.0
 
