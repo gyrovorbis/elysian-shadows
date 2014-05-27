@@ -423,12 +423,13 @@ OOLUA_EXPORT_FUNCTIONS(CharacterSystem,
 					   walkToWayPoint)
 OOLUA_EXPORT_FUNCTIONS_CONST(CharacterSystem)
 
-EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(Warp,
+EXPORT_OOLUA_FUNCTIONS_6_NON_CONST(Warp,
 								   setToPos,
 								   setAreaPath,
 								   setLevelPath,
 								   setChangeArea,
-								   setChangeLevel)
+								   setChangeLevel,
+								   setObliqueTransition)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(Warp)
 
  EXPORT_OOLUA_FUNCTIONS_7_NON_CONST(AudioSource,

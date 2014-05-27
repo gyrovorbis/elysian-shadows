@@ -586,6 +586,7 @@ OOLUA_PROXY(Warp, Component)
 	OOLUA_MEM_FUNC(void, setLevelPath, const char*)
 	OOLUA_MEM_FUNC(void, setChangeArea, bool)
 	OOLUA_MEM_FUNC(void, setChangeLevel, bool)
+	OOLUA_MEM_FUNC(void, setObliqueTransition, bool)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(AudioSource, Component)
