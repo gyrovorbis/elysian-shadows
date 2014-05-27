@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include <pthread.h>
 #include <string.h>
 #include <gyro_audio_api.h>
 #include <gyro_wav_api.h>
