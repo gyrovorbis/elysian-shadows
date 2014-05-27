@@ -1,4 +1,4 @@
-#include "gyro_texture.h"
+#include "gyro_texture_api.h"
 #include "ios_image.h"
 #include <stdlib.h>
 

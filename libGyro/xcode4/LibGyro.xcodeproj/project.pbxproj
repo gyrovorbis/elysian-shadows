@@ -7,87 +7,98 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C87E490C15717839003B67A7 /* gyro_asset_bank.h in Headers */ = {isa = PBXBuildFile; fileRef = C87E490B15717839003B67A7 /* gyro_asset_bank.h */; };
-		C87E490D15717839003B67A7 /* gyro_asset_bank.h in Headers */ = {isa = PBXBuildFile; fileRef = C87E490B15717839003B67A7 /* gyro_asset_bank.h */; };
-		C87E490F15717858003B67A7 /* gyro_asset_bank.c in Sources */ = {isa = PBXBuildFile; fileRef = C87E490E15717858003B67A7 /* gyro_asset_bank.c */; };
-		C87E491015717858003B67A7 /* gyro_asset_bank.c in Sources */ = {isa = PBXBuildFile; fileRef = C87E490E15717858003B67A7 /* gyro_asset_bank.c */; };
+		0FA25A8D18D6251900F6012D /* gyro_asset_bank.c in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A0018D6251900F6012D /* gyro_asset_bank.c */; };
+		0FA25A8E18D6251900F6012D /* gyro_asset_bank.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FA25A0118D6251900F6012D /* gyro_asset_bank.h */; };
+		0FA25A8F18D6251900F6012D /* gyro_matrix_stack.c in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A0218D6251900F6012D /* gyro_matrix_stack.c */; };
+		0FA25A9018D6251900F6012D /* gyro_shader.c in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A0318D6251900F6012D /* gyro_shader.c */; };
+		0FA25A9118D6251900F6012D /* gyro_system.c in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A0418D6251900F6012D /* gyro_system.c */; };
+		0FA25A9218D6251900F6012D /* gyro_texture.c in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A0518D6251900F6012D /* gyro_texture.c */; };
+		0FA25A9318D6251900F6012D /* gyro_wav.c in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A0618D6251900F6012D /* gyro_wav.c */; };
+		0FA25A9E18D6251900F6012D /* gyro_audio_glal.c in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A1518D6251900F6012D /* gyro_audio_glal.c */; };
+		0FA25A9F18D6251900F6012D /* gyro_lighting_glal.c in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A1618D6251900F6012D /* gyro_lighting_glal.c */; };
+		0FA25AA018D6251900F6012D /* gyro_ogg_glal.c in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A1718D6251900F6012D /* gyro_ogg_glal.c */; };
+		0FA25AA118D6251900F6012D /* gyro_shaders_glal.c in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A1818D6251900F6012D /* gyro_shaders_glal.c */; };
+		0FA25AA218D6251900F6012D /* gyro_shaders_glal.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FA25A1918D6251900F6012D /* gyro_shaders_glal.h */; };
+		0FA25AA318D6251900F6012D /* gyro_video_glal.c in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A1A18D6251900F6012D /* gyro_video_glal.c */; };
+		0FA25AA418D6251900F6012D /* gyro_video_glal.h in Headers */ = {isa = PBXBuildFile; fileRef = 0FA25A1B18D6251900F6012D /* gyro_video_glal.h */; };
+		0FA25AA518D6251900F6012D /* gyro_wav_glal.c in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A1C18D6251900F6012D /* gyro_wav_glal.c */; };
+		0FA25AA718D6251900F6012D /* bootstrap.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A2C18D6251900F6012D /* bootstrap.m */; };
+		0FA25AA818D6251900F6012D /* gyro_file_ios.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A2D18D6251900F6012D /* gyro_file_ios.m */; };
+		0FA25AAA18D6251900F6012D /* gyro_input_ios.c in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A2F18D6251900F6012D /* gyro_input_ios.c */; };
+		0FA25AAC18D6251900F6012D /* gyro_system_ios.c in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A3118D6251900F6012D /* gyro_system_ios.c */; };
+		0FA25AAD18D6251900F6012D /* gyro_system_ios.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A3218D6251900F6012D /* gyro_system_ios.m */; };
+		0FA25AAE18D6251900F6012D /* gyro_texture_ios.c in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A3318D6251900F6012D /* gyro_texture_ios.c */; };
+		0FA25AAF18D6251900F6012D /* gyro_timer_ios.c in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A3418D6251900F6012D /* gyro_timer_ios.c */; };
+		0FA25AB018D6251900F6012D /* gyro_tracking.c in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A3518D6251900F6012D /* gyro_tracking.c */; };
+		0FA25AB318D6251900F6012D /* gyro_tracking_ios.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A3818D6251900F6012D /* gyro_tracking_ios.m */; };
+		0FA25AB418D6251900F6012D /* gyro_video_ios.c in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A3918D6251900F6012D /* gyro_video_ios.c */; };
+		0FA25AB618D6251900F6012D /* gyro_wav_ios.c in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A3B18D6251900F6012D /* gyro_wav_ios.c */; };
+		0FA25ABA18D6251900F6012D /* ios_image.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A3F18D6251900F6012D /* ios_image.m */; };
+		0FA25ABC18D6251900F6012D /* ios_log.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A4118D6251900F6012D /* ios_log.m */; };
+		0FA25AC218D6251900F6012D /* gyro_kinetic_collision.c in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A4818D6251900F6012D /* gyro_kinetic_collision.c */; };
+		0FA25AC318D6251900F6012D /* gyro_kinetic_physics.c in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25A4918D6251900F6012D /* gyro_kinetic_physics.c */; };
+		0FA25AEA18D6253700F6012D /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FA25AE818D6253700F6012D /* OpenAL.framework */; };
+		0FA25AEB18D6253700F6012D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FA25AE918D6253700F6012D /* OpenGLES.framework */; };
+		0FA25BB818D7CE7300F6012D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FA25BB718D7CE7300F6012D /* Cocoa.framework */; };
+		0FA25BC718D7D78900F6012D /* libGyroAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25BC518D7D78900F6012D /* libGyroAppDelegate.m */; };
+		0FA25BCF18D7DA3900F6012D /* MainGLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25BCD18D7DA3900F6012D /* MainGLViewController.m */; };
+		0FA25BD318D7E03A00F6012D /* MainGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FA25BD118D7E03A00F6012D /* MainGLView.m */; };
 		C8840CD014F6E71000665CD4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8840CCF14F6E71000665CD4 /* Foundation.framework */; };
 		C8840CF014F6E8F200665CD4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C8840CEE14F6E8F200665CD4 /* InfoPlist.strings */; };
-		C8840D2914F6F1D500665CD4 /* gyro_audio.h in Headers */ = {isa = PBXBuildFile; fileRef = C8840D1714F6F1D500665CD4 /* gyro_audio.h */; };
-		C8840D2A14F6F1D500665CD4 /* gyro_defines.h in Headers */ = {isa = PBXBuildFile; fileRef = C8840D1814F6F1D500665CD4 /* gyro_defines.h */; };
-		C8840D2B14F6F1D500665CD4 /* gyro_input.h in Headers */ = {isa = PBXBuildFile; fileRef = C8840D1914F6F1D500665CD4 /* gyro_input.h */; };
-		C8840D2C14F6F1D500665CD4 /* gyro_log.h in Headers */ = {isa = PBXBuildFile; fileRef = C8840D1A14F6F1D500665CD4 /* gyro_log.h */; };
-		C8840D2D14F6F1D500665CD4 /* gyro_math.h in Headers */ = {isa = PBXBuildFile; fileRef = C8840D1B14F6F1D500665CD4 /* gyro_math.h */; };
-		C8840D2E14F6F1D500665CD4 /* gyro_matrix_stack.h in Headers */ = {isa = PBXBuildFile; fileRef = C8840D1C14F6F1D500665CD4 /* gyro_matrix_stack.h */; };
-		C8840D2F14F6F1D500665CD4 /* gyro_matrix.h in Headers */ = {isa = PBXBuildFile; fileRef = C8840D1D14F6F1D500665CD4 /* gyro_matrix.h */; };
-		C8840D3014F6F1D500665CD4 /* gyro_platform.h in Headers */ = {isa = PBXBuildFile; fileRef = C8840D1E14F6F1D500665CD4 /* gyro_platform.h */; };
-		C8840D3114F6F1D500665CD4 /* gyro_system.h in Headers */ = {isa = PBXBuildFile; fileRef = C8840D1F14F6F1D500665CD4 /* gyro_system.h */; };
-		C8840D3214F6F1D500665CD4 /* gyro_texture.h in Headers */ = {isa = PBXBuildFile; fileRef = C8840D2014F6F1D500665CD4 /* gyro_texture.h */; };
-		C8840D3314F6F1D500665CD4 /* gyro_timer.h in Headers */ = {isa = PBXBuildFile; fileRef = C8840D2114F6F1D500665CD4 /* gyro_timer.h */; };
-		C8840D3414F6F1D500665CD4 /* gyro_tracking_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = C8840D2214F6F1D500665CD4 /* gyro_tracking_internal.h */; };
-		C8840D3514F6F1D600665CD4 /* gyro_tracking.h in Headers */ = {isa = PBXBuildFile; fileRef = C8840D2314F6F1D500665CD4 /* gyro_tracking.h */; };
-		C8840D3614F6F1D600665CD4 /* gyro_video.h in Headers */ = {isa = PBXBuildFile; fileRef = C8840D2414F6F1D500665CD4 /* gyro_video.h */; };
-		C8840D3714F6F1D600665CD4 /* gyro_wav.h in Headers */ = {isa = PBXBuildFile; fileRef = C8840D2514F6F1D500665CD4 /* gyro_wav.h */; };
-		C8840D3814F6F1D600665CD4 /* gyro.h in Headers */ = {isa = PBXBuildFile; fileRef = C8840D2614F6F1D500665CD4 /* gyro.h */; };
-		C8840D5414F6F37300665CD4 /* gyro_audio_glal.c in Sources */ = {isa = PBXBuildFile; fileRef = C8840D4C14F6F37300665CD4 /* gyro_audio_glal.c */; };
-		C8840D5514F6F37300665CD4 /* gyro_video_glal.c in Sources */ = {isa = PBXBuildFile; fileRef = C8840D4D14F6F37300665CD4 /* gyro_video_glal.c */; };
-		C8840D5614F6F37300665CD4 /* gyro_log.c in Sources */ = {isa = PBXBuildFile; fileRef = C8840D4E14F6F37300665CD4 /* gyro_log.c */; };
-		C8840D5714F6F37300665CD4 /* gyro_matrix_stack.c in Sources */ = {isa = PBXBuildFile; fileRef = C8840D4F14F6F37300665CD4 /* gyro_matrix_stack.c */; };
-		C8840D5814F6F37300665CD4 /* gyro_system.c in Sources */ = {isa = PBXBuildFile; fileRef = C8840D5014F6F37300665CD4 /* gyro_system.c */; };
-		C8840D5914F6F37300665CD4 /* gyro_texture.c in Sources */ = {isa = PBXBuildFile; fileRef = C8840D5114F6F37300665CD4 /* gyro_texture.c */; };
-		C8840D5A14F6F37300665CD4 /* gyro_tracking.c in Sources */ = {isa = PBXBuildFile; fileRef = C8840D5214F6F37300665CD4 /* gyro_tracking.c */; };
-		C8840D5B14F6F37300665CD4 /* gyro_wav.c in Sources */ = {isa = PBXBuildFile; fileRef = C8840D5314F6F37300665CD4 /* gyro_wav.c */; };
-		C8840D6914F6F38300665CD4 /* gyro_input_ios.c in Sources */ = {isa = PBXBuildFile; fileRef = C8840D5D14F6F38300665CD4 /* gyro_input_ios.c */; };
-		C8840D6A14F6F38300665CD4 /* gyro_system_ios.m in Sources */ = {isa = PBXBuildFile; fileRef = C8840D5E14F6F38300665CD4 /* gyro_system_ios.m */; };
-		C8840D6B14F6F38300665CD4 /* gyro_texture_ios.c in Sources */ = {isa = PBXBuildFile; fileRef = C8840D5F14F6F38300665CD4 /* gyro_texture_ios.c */; };
-		C8840D6C14F6F38300665CD4 /* gyro_timer_ios.c in Sources */ = {isa = PBXBuildFile; fileRef = C8840D6014F6F38300665CD4 /* gyro_timer_ios.c */; };
-		C8840D6D14F6F38300665CD4 /* gyro_tracking_ios.m in Sources */ = {isa = PBXBuildFile; fileRef = C8840D6114F6F38300665CD4 /* gyro_tracking_ios.m */; };
-		C8840D6E14F6F38300665CD4 /* gyro_video_ios.c in Sources */ = {isa = PBXBuildFile; fileRef = C8840D6214F6F38300665CD4 /* gyro_video_ios.c */; };
-		C8840D6F14F6F38300665CD4 /* ios_gl_controller.m in Sources */ = {isa = PBXBuildFile; fileRef = C8840D6314F6F38300665CD4 /* ios_gl_controller.m */; };
-		C8840D7014F6F38300665CD4 /* ios_image.m in Sources */ = {isa = PBXBuildFile; fileRef = C8840D6414F6F38300665CD4 /* ios_image.m */; };
-		C8840D7114F6F38300665CD4 /* ios_log.m in Sources */ = {isa = PBXBuildFile; fileRef = C8840D6514F6F38300665CD4 /* ios_log.m */; };
-		C8840D7214F6F38300665CD4 /* ios_mainwin.m in Sources */ = {isa = PBXBuildFile; fileRef = C8840D6614F6F38300665CD4 /* ios_mainwin.m */; };
-		C8840D7314F6F38300665CD4 /* ios_video.m in Sources */ = {isa = PBXBuildFile; fileRef = C8840D6714F6F38300665CD4 /* ios_video.m */; };
-		C8840D7914F6F39C00665CD4 /* gyro_matrix_soft.c in Sources */ = {isa = PBXBuildFile; fileRef = C8840D7814F6F39C00665CD4 /* gyro_matrix_soft.c */; };
-		C8A6A114158BF6E0008A636C /* gyro_kinetic_collision.c in Sources */ = {isa = PBXBuildFile; fileRef = C8A6A112158BF6E0008A636C /* gyro_kinetic_collision.c */; };
-		C8A6A115158BF6E0008A636C /* gyro_kinetic_collision.c in Sources */ = {isa = PBXBuildFile; fileRef = C8A6A112158BF6E0008A636C /* gyro_kinetic_collision.c */; };
-		C8A6A116158BF6E0008A636C /* gyro_kinetic_physics.c in Sources */ = {isa = PBXBuildFile; fileRef = C8A6A113158BF6E0008A636C /* gyro_kinetic_physics.c */; };
-		C8A6A117158BF6E0008A636C /* gyro_kinetic_physics.c in Sources */ = {isa = PBXBuildFile; fileRef = C8A6A113158BF6E0008A636C /* gyro_kinetic_physics.c */; };
-		C8B2148014F939D800E82D05 /* gyro_file.h in Headers */ = {isa = PBXBuildFile; fileRef = C8B2147F14F939D800E82D05 /* gyro_file.h */; };
-		C8B2148214F93BB600E82D05 /* gyro_file_ios.m in Sources */ = {isa = PBXBuildFile; fileRef = C8B2148114F93BB600E82D05 /* gyro_file_ios.m */; };
-		C8B2148314F96F6D00E82D05 /* bootstrap.m in Sources */ = {isa = PBXBuildFile; fileRef = C8840D5C14F6F38300665CD4 /* bootstrap.m */; };
-		C8C8E36A15682F9400C4293D /* gyro_input_x86.c in Sources */ = {isa = PBXBuildFile; fileRef = C8C8E36315682F9400C4293D /* gyro_input_x86.c */; };
-		C8C8E36B15682F9400C4293D /* gyro_system_x86.c in Sources */ = {isa = PBXBuildFile; fileRef = C8C8E36415682F9400C4293D /* gyro_system_x86.c */; };
-		C8C8E36C15682F9400C4293D /* gyro_texture_x86.c in Sources */ = {isa = PBXBuildFile; fileRef = C8C8E36515682F9400C4293D /* gyro_texture_x86.c */; };
-		C8C8E36D15682F9400C4293D /* gyro_timer_x86.c in Sources */ = {isa = PBXBuildFile; fileRef = C8C8E36615682F9400C4293D /* gyro_timer_x86.c */; };
-		C8C8E36E15682F9400C4293D /* gyro_tracking_x86.c in Sources */ = {isa = PBXBuildFile; fileRef = C8C8E36715682F9400C4293D /* gyro_tracking_x86.c */; };
-		C8C8E36F15682F9400C4293D /* gyro_video_x86.c in Sources */ = {isa = PBXBuildFile; fileRef = C8C8E36815682F9400C4293D /* gyro_video_x86.c */; };
-		C8C8E37015682F9400C4293D /* gyro_wav_x86.c in Sources */ = {isa = PBXBuildFile; fileRef = C8C8E36915682F9400C4293D /* gyro_wav_x86.c */; };
-		C8C8E37115682FA200C4293D /* gyro_matrix_soft.c in Sources */ = {isa = PBXBuildFile; fileRef = C8840D7814F6F39C00665CD4 /* gyro_matrix_soft.c */; };
-		C8C8E37415682FB500C4293D /* gyro_video_glal.c in Sources */ = {isa = PBXBuildFile; fileRef = C8840D4D14F6F37300665CD4 /* gyro_video_glal.c */; };
-		C8C8E37515682FB700C4293D /* gyro_audio_glal.c in Sources */ = {isa = PBXBuildFile; fileRef = C8840D4C14F6F37300665CD4 /* gyro_audio_glal.c */; };
-		C8C8E37615682FBA00C4293D /* gyro_log.c in Sources */ = {isa = PBXBuildFile; fileRef = C8840D4E14F6F37300665CD4 /* gyro_log.c */; };
-		C8C8E37715682FBC00C4293D /* gyro_matrix_stack.c in Sources */ = {isa = PBXBuildFile; fileRef = C8840D4F14F6F37300665CD4 /* gyro_matrix_stack.c */; };
-		C8C8E37815682FBF00C4293D /* gyro_system.c in Sources */ = {isa = PBXBuildFile; fileRef = C8840D5014F6F37300665CD4 /* gyro_system.c */; };
-		C8C8E37915682FC100C4293D /* gyro_texture.c in Sources */ = {isa = PBXBuildFile; fileRef = C8840D5114F6F37300665CD4 /* gyro_texture.c */; };
-		C8C8E37A15682FC300C4293D /* gyro_tracking.c in Sources */ = {isa = PBXBuildFile; fileRef = C8840D5214F6F37300665CD4 /* gyro_tracking.c */; };
-		C8C8E37B15682FC500C4293D /* gyro_wav.c in Sources */ = {isa = PBXBuildFile; fileRef = C8840D5314F6F37300665CD4 /* gyro_wav.c */; };
 		C8C8E384156834E800C4293D /* libpng.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8C8E380156834E800C4293D /* libpng.framework */; };
 		C8C8E385156834E900C4293D /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8C8E381156834E800C4293D /* SDL.framework */; };
 		C8C8E3891568371300C4293D /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C8C8E3881568371300C4293D /* OpenGL.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		C87E490B15717839003B67A7 /* gyro_asset_bank.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gyro_asset_bank.h; path = ../../include/gyro_asset_bank.h; sourceTree = "<group>"; };
-		C87E490E15717858003B67A7 /* gyro_asset_bank.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_asset_bank.c; path = ../../source/gyro_asset_bank.c; sourceTree = "<group>"; };
-		C881679315728CC400461044 /* dc */ = {isa = PBXFileReference; lastKnownFileType = folder; name = dc; path = ../../include/dc; sourceTree = "<group>"; };
-		C881679515728CF300461044 /* gyro_audio_dc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = gyro_audio_dc.c; path = ../../source/dc/gyro_audio_dc.c; sourceTree = "<group>"; };
-		C881679615728CF300461044 /* gyro_input_dc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = gyro_input_dc.c; path = ../../source/dc/gyro_input_dc.c; sourceTree = "<group>"; };
-		C881679715728CF300461044 /* gyro_system_dc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = gyro_system_dc.c; path = ../../source/dc/gyro_system_dc.c; sourceTree = "<group>"; };
-		C881679815728CF300461044 /* gyro_texture_dc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = gyro_texture_dc.c; path = ../../source/dc/gyro_texture_dc.c; sourceTree = "<group>"; };
-		C881679915728CF300461044 /* gyro_timer_dc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = gyro_timer_dc.c; path = ../../source/dc/gyro_timer_dc.c; sourceTree = "<group>"; };
-		C881679A15728CF300461044 /* gyro_video_dc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = gyro_video_dc.c; path = ../../source/dc/gyro_video_dc.c; sourceTree = "<group>"; };
-		C881679B15728CF300461044 /* gyro_wav_dc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = gyro_wav_dc.c; path = ../../source/dc/gyro_wav_dc.c; sourceTree = "<group>"; };
+		0FA25A0018D6251900F6012D /* gyro_asset_bank.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gyro_asset_bank.c; sourceTree = "<group>"; };
+		0FA25A0118D6251900F6012D /* gyro_asset_bank.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gyro_asset_bank.h; sourceTree = "<group>"; };
+		0FA25A0218D6251900F6012D /* gyro_matrix_stack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gyro_matrix_stack.c; sourceTree = "<group>"; };
+		0FA25A0318D6251900F6012D /* gyro_shader.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gyro_shader.c; sourceTree = "<group>"; };
+		0FA25A0418D6251900F6012D /* gyro_system.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gyro_system.c; sourceTree = "<group>"; };
+		0FA25A0518D6251900F6012D /* gyro_texture.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gyro_texture.c; sourceTree = "<group>"; };
+		0FA25A0618D6251900F6012D /* gyro_wav.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gyro_wav.c; sourceTree = "<group>"; };
+		0FA25A1518D6251900F6012D /* gyro_audio_glal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gyro_audio_glal.c; sourceTree = "<group>"; };
+		0FA25A1618D6251900F6012D /* gyro_lighting_glal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gyro_lighting_glal.c; sourceTree = "<group>"; };
+		0FA25A1718D6251900F6012D /* gyro_ogg_glal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gyro_ogg_glal.c; sourceTree = "<group>"; };
+		0FA25A1818D6251900F6012D /* gyro_shaders_glal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gyro_shaders_glal.c; sourceTree = "<group>"; };
+		0FA25A1918D6251900F6012D /* gyro_shaders_glal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gyro_shaders_glal.h; sourceTree = "<group>"; };
+		0FA25A1A18D6251900F6012D /* gyro_video_glal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gyro_video_glal.c; sourceTree = "<group>"; };
+		0FA25A1B18D6251900F6012D /* gyro_video_glal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = gyro_video_glal.h; sourceTree = "<group>"; };
+		0FA25A1C18D6251900F6012D /* gyro_wav_glal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gyro_wav_glal.c; sourceTree = "<group>"; };
+		0FA25A1E18D6251900F6012D /* fixedFunctionTextured.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = fixedFunctionTextured.fsh; sourceTree = "<group>"; };
+		0FA25A1F18D6251900F6012D /* fixedFunctionTextured.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = fixedFunctionTextured.vsh; sourceTree = "<group>"; };
+		0FA25A2018D6251900F6012D /* fixedFunctionUntextured.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = fixedFunctionUntextured.fsh; sourceTree = "<group>"; };
+		0FA25A2118D6251900F6012D /* fixedFunctionUntextured.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = fixedFunctionUntextured.vsh; sourceTree = "<group>"; };
+		0FA25A2218D6251900F6012D /* pixelLighting.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = pixelLighting.fsh; sourceTree = "<group>"; };
+		0FA25A2318D6251900F6012D /* pixelLighting.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = pixelLighting.vsh; sourceTree = "<group>"; };
+		0FA25A2418D6251900F6012D /* shadowMap.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = shadowMap.fsh; sourceTree = "<group>"; };
+		0FA25A2518D6251900F6012D /* shadowMap.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = shadowMap.vsh; sourceTree = "<group>"; };
+		0FA25A2618D6251900F6012D /* vertexLighting.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = vertexLighting.fsh; sourceTree = "<group>"; };
+		0FA25A2718D6251900F6012D /* vertexLighting.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = vertexLighting.vsh; sourceTree = "<group>"; };
+		0FA25A2818D6251900F6012D /* vertexLightingDirectional.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = vertexLightingDirectional.fsh; sourceTree = "<group>"; };
+		0FA25A2918D6251900F6012D /* vertexLightingDirectional.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = vertexLightingDirectional.vsh; sourceTree = "<group>"; };
+		0FA25A2C18D6251900F6012D /* bootstrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = bootstrap.m; sourceTree = "<group>"; };
+		0FA25A2D18D6251900F6012D /* gyro_file_ios.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = gyro_file_ios.m; sourceTree = "<group>"; };
+		0FA25A2F18D6251900F6012D /* gyro_input_ios.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gyro_input_ios.c; sourceTree = "<group>"; };
+		0FA25A3118D6251900F6012D /* gyro_system_ios.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gyro_system_ios.c; sourceTree = "<group>"; };
+		0FA25A3218D6251900F6012D /* gyro_system_ios.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = gyro_system_ios.m; sourceTree = "<group>"; };
+		0FA25A3318D6251900F6012D /* gyro_texture_ios.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gyro_texture_ios.c; sourceTree = "<group>"; };
+		0FA25A3418D6251900F6012D /* gyro_timer_ios.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gyro_timer_ios.c; sourceTree = "<group>"; };
+		0FA25A3518D6251900F6012D /* gyro_tracking.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gyro_tracking.c; sourceTree = "<group>"; };
+		0FA25A3818D6251900F6012D /* gyro_tracking_ios.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = gyro_tracking_ios.m; sourceTree = "<group>"; };
+		0FA25A3918D6251900F6012D /* gyro_video_ios.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gyro_video_ios.c; sourceTree = "<group>"; };
+		0FA25A3B18D6251900F6012D /* gyro_wav_ios.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gyro_wav_ios.c; sourceTree = "<group>"; };
+		0FA25A3F18D6251900F6012D /* ios_image.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ios_image.m; sourceTree = "<group>"; };
+		0FA25A4118D6251900F6012D /* ios_log.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ios_log.m; sourceTree = "<group>"; };
+		0FA25A4818D6251900F6012D /* gyro_kinetic_collision.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gyro_kinetic_collision.c; sourceTree = "<group>"; };
+		0FA25A4918D6251900F6012D /* gyro_kinetic_physics.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = gyro_kinetic_physics.c; sourceTree = "<group>"; };
+		0FA25AE818D6253700F6012D /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
+		0FA25AE918D6253700F6012D /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		0FA25BB718D7CE7300F6012D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
+		0FA25BC518D7D78900F6012D /* libGyroAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = libGyroAppDelegate.m; sourceTree = "<group>"; };
+		0FA25BCD18D7DA3900F6012D /* MainGLViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainGLViewController.m; sourceTree = "<group>"; };
+		0FA25BD118D7E03A00F6012D /* MainGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainGLView.m; sourceTree = "<group>"; };
 		C8840CCC14F6E71000665CD4 /* libLibGyroiOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libLibGyroiOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C8840CCF14F6E71000665CD4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C8840CD314F6E71000665CD4 /* LibGyroiOS-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "LibGyroiOS-Prefix.pch"; sourceTree = "<group>"; };
@@ -98,58 +109,6 @@
 		C8840CED14F6E8F200665CD4 /* libGyroOSX-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "libGyroOSX-Info.plist"; path = "../libGyroOSX/libGyroOSX-Info.plist"; sourceTree = "<group>"; };
 		C8840CEF14F6E8F200665CD4 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		C8840CF114F6E8F200665CD4 /* libGyroOSX-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "libGyroOSX-Prefix.pch"; path = "../libGyroOSX/libGyroOSX-Prefix.pch"; sourceTree = "<group>"; };
-		C8840D1614F6F1D500665CD4 /* glal */ = {isa = PBXFileReference; lastKnownFileType = folder; name = glal; path = ../../include/glal; sourceTree = "<group>"; };
-		C8840D1714F6F1D500665CD4 /* gyro_audio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gyro_audio.h; path = ../../include/gyro_audio.h; sourceTree = "<group>"; };
-		C8840D1814F6F1D500665CD4 /* gyro_defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gyro_defines.h; path = ../../include/gyro_defines.h; sourceTree = "<group>"; };
-		C8840D1914F6F1D500665CD4 /* gyro_input.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gyro_input.h; path = ../../include/gyro_input.h; sourceTree = "<group>"; };
-		C8840D1A14F6F1D500665CD4 /* gyro_log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gyro_log.h; path = ../../include/gyro_log.h; sourceTree = "<group>"; };
-		C8840D1B14F6F1D500665CD4 /* gyro_math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gyro_math.h; path = ../../include/gyro_math.h; sourceTree = "<group>"; };
-		C8840D1C14F6F1D500665CD4 /* gyro_matrix_stack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gyro_matrix_stack.h; path = ../../include/gyro_matrix_stack.h; sourceTree = "<group>"; };
-		C8840D1D14F6F1D500665CD4 /* gyro_matrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gyro_matrix.h; path = ../../include/gyro_matrix.h; sourceTree = "<group>"; };
-		C8840D1E14F6F1D500665CD4 /* gyro_platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gyro_platform.h; path = ../../include/gyro_platform.h; sourceTree = "<group>"; };
-		C8840D1F14F6F1D500665CD4 /* gyro_system.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gyro_system.h; path = ../../include/gyro_system.h; sourceTree = "<group>"; };
-		C8840D2014F6F1D500665CD4 /* gyro_texture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gyro_texture.h; path = ../../include/gyro_texture.h; sourceTree = "<group>"; };
-		C8840D2114F6F1D500665CD4 /* gyro_timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gyro_timer.h; path = ../../include/gyro_timer.h; sourceTree = "<group>"; };
-		C8840D2214F6F1D500665CD4 /* gyro_tracking_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gyro_tracking_internal.h; path = ../../include/gyro_tracking_internal.h; sourceTree = "<group>"; };
-		C8840D2314F6F1D500665CD4 /* gyro_tracking.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gyro_tracking.h; path = ../../include/gyro_tracking.h; sourceTree = "<group>"; };
-		C8840D2414F6F1D500665CD4 /* gyro_video.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gyro_video.h; path = ../../include/gyro_video.h; sourceTree = "<group>"; };
-		C8840D2514F6F1D500665CD4 /* gyro_wav.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gyro_wav.h; path = ../../include/gyro_wav.h; sourceTree = "<group>"; };
-		C8840D2614F6F1D500665CD4 /* gyro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gyro.h; path = ../../include/gyro.h; sourceTree = "<group>"; };
-		C8840D2714F6F1D500665CD4 /* ios */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ios; path = ../../include/ios; sourceTree = "<group>"; };
-		C8840D2814F6F1D500665CD4 /* kinetic */ = {isa = PBXFileReference; lastKnownFileType = folder; name = kinetic; path = ../../include/kinetic; sourceTree = "<group>"; };
-		C8840D3914F6F1DF00665CD4 /* soft */ = {isa = PBXFileReference; lastKnownFileType = folder; name = soft; path = ../../include/soft; sourceTree = "<group>"; };
-		C8840D4C14F6F37300665CD4 /* gyro_audio_glal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_audio_glal.c; path = ../../source/glal/gyro_audio_glal.c; sourceTree = "<group>"; };
-		C8840D4D14F6F37300665CD4 /* gyro_video_glal.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_video_glal.c; path = ../../source/glal/gyro_video_glal.c; sourceTree = "<group>"; };
-		C8840D4E14F6F37300665CD4 /* gyro_log.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_log.c; path = ../../source/gyro_log.c; sourceTree = "<group>"; };
-		C8840D4F14F6F37300665CD4 /* gyro_matrix_stack.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_matrix_stack.c; path = ../../source/gyro_matrix_stack.c; sourceTree = "<group>"; };
-		C8840D5014F6F37300665CD4 /* gyro_system.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_system.c; path = ../../source/gyro_system.c; sourceTree = "<group>"; };
-		C8840D5114F6F37300665CD4 /* gyro_texture.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_texture.c; path = ../../source/gyro_texture.c; sourceTree = "<group>"; };
-		C8840D5214F6F37300665CD4 /* gyro_tracking.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_tracking.c; path = ../../source/gyro_tracking.c; sourceTree = "<group>"; };
-		C8840D5314F6F37300665CD4 /* gyro_wav.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_wav.c; path = ../../source/gyro_wav.c; sourceTree = "<group>"; };
-		C8840D5C14F6F38300665CD4 /* bootstrap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = bootstrap.m; path = ../../source/ios/bootstrap.m; sourceTree = "<group>"; };
-		C8840D5D14F6F38300665CD4 /* gyro_input_ios.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_input_ios.c; path = ../../source/ios/gyro_input_ios.c; sourceTree = "<group>"; };
-		C8840D5E14F6F38300665CD4 /* gyro_system_ios.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = gyro_system_ios.m; path = ../../source/ios/gyro_system_ios.m; sourceTree = "<group>"; };
-		C8840D5F14F6F38300665CD4 /* gyro_texture_ios.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_texture_ios.c; path = ../../source/ios/gyro_texture_ios.c; sourceTree = "<group>"; };
-		C8840D6014F6F38300665CD4 /* gyro_timer_ios.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_timer_ios.c; path = ../../source/ios/gyro_timer_ios.c; sourceTree = "<group>"; };
-		C8840D6114F6F38300665CD4 /* gyro_tracking_ios.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = gyro_tracking_ios.m; path = ../../source/ios/gyro_tracking_ios.m; sourceTree = "<group>"; };
-		C8840D6214F6F38300665CD4 /* gyro_video_ios.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_video_ios.c; path = ../../source/ios/gyro_video_ios.c; sourceTree = "<group>"; };
-		C8840D6314F6F38300665CD4 /* ios_gl_controller.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ios_gl_controller.m; path = ../../source/ios/ios_gl_controller.m; sourceTree = "<group>"; };
-		C8840D6414F6F38300665CD4 /* ios_image.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ios_image.m; path = ../../source/ios/ios_image.m; sourceTree = "<group>"; };
-		C8840D6514F6F38300665CD4 /* ios_log.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ios_log.m; path = ../../source/ios/ios_log.m; sourceTree = "<group>"; };
-		C8840D6614F6F38300665CD4 /* ios_mainwin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ios_mainwin.m; path = ../../source/ios/ios_mainwin.m; sourceTree = "<group>"; };
-		C8840D6714F6F38300665CD4 /* ios_video.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ios_video.m; path = ../../source/ios/ios_video.m; sourceTree = "<group>"; };
-		C8840D7814F6F39C00665CD4 /* gyro_matrix_soft.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_matrix_soft.c; path = ../../source/soft/gyro_matrix_soft.c; sourceTree = "<group>"; };
-		C8A6A112158BF6E0008A636C /* gyro_kinetic_collision.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_kinetic_collision.c; path = ../../source/kinetic/gyro_kinetic_collision.c; sourceTree = "<group>"; };
-		C8A6A113158BF6E0008A636C /* gyro_kinetic_physics.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_kinetic_physics.c; path = ../../source/kinetic/gyro_kinetic_physics.c; sourceTree = "<group>"; };
-		C8B2147F14F939D800E82D05 /* gyro_file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gyro_file.h; path = ../../include/gyro_file.h; sourceTree = "<group>"; };
-		C8B2148114F93BB600E82D05 /* gyro_file_ios.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = gyro_file_ios.m; path = ../../source/ios/gyro_file_ios.m; sourceTree = "<group>"; };
-		C8C8E36315682F9400C4293D /* gyro_input_x86.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_input_x86.c; path = ../../source/x86/gyro_input_x86.c; sourceTree = "<group>"; };
-		C8C8E36415682F9400C4293D /* gyro_system_x86.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_system_x86.c; path = ../../source/x86/gyro_system_x86.c; sourceTree = "<group>"; };
-		C8C8E36515682F9400C4293D /* gyro_texture_x86.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_texture_x86.c; path = ../../source/x86/gyro_texture_x86.c; sourceTree = "<group>"; };
-		C8C8E36615682F9400C4293D /* gyro_timer_x86.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_timer_x86.c; path = ../../source/x86/gyro_timer_x86.c; sourceTree = "<group>"; };
-		C8C8E36715682F9400C4293D /* gyro_tracking_x86.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_tracking_x86.c; path = ../../source/x86/gyro_tracking_x86.c; sourceTree = "<group>"; };
-		C8C8E36815682F9400C4293D /* gyro_video_x86.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_video_x86.c; path = ../../source/x86/gyro_video_x86.c; sourceTree = "<group>"; };
-		C8C8E36915682F9400C4293D /* gyro_wav_x86.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gyro_wav_x86.c; path = ../../source/x86/gyro_wav_x86.c; sourceTree = "<group>"; };
 		C8C8E380156834E800C4293D /* libpng.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libpng.framework; path = ../lib/osx/libpng.framework; sourceTree = "<group>"; };
 		C8C8E381156834E800C4293D /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL.framework; path = ../lib/osx/SDL.framework; sourceTree = "<group>"; };
 		C8C8E3881568371300C4293D /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = ../../../../../../System/Library/Frameworks/OpenGL.framework; sourceTree = "<group>"; };
@@ -160,6 +119,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0FA25AEA18D6253700F6012D /* OpenAL.framework in Frameworks */,
+				0FA25AEB18D6253700F6012D /* OpenGLES.framework in Frameworks */,
 				C8840CD014F6E71000665CD4 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -168,6 +129,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0FA25BB818D7CE7300F6012D /* Cocoa.framework in Frameworks */,
 				C8C8E384156834E800C4293D /* libpng.framework in Frameworks */,
 				C8C8E385156834E900C4293D /* SDL.framework in Frameworks */,
 				C8C8E3891568371300C4293D /* OpenGL.framework in Frameworks */,
@@ -177,25 +139,102 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		C881679415728CCB00461044 /* dc */ = {
+		0FA259FE18D6251900F6012D /* source */ = {
 			isa = PBXGroup;
 			children = (
-				C881679515728CF300461044 /* gyro_audio_dc.c */,
-				C881679615728CF300461044 /* gyro_input_dc.c */,
-				C881679715728CF300461044 /* gyro_system_dc.c */,
-				C881679815728CF300461044 /* gyro_texture_dc.c */,
-				C881679915728CF300461044 /* gyro_timer_dc.c */,
-				C881679A15728CF300461044 /* gyro_video_dc.c */,
-				C881679B15728CF300461044 /* gyro_wav_dc.c */,
+				0FA259FF18D6251900F6012D /* common */,
+				0FA25A1418D6251900F6012D /* glal */,
+				0FA25A2A18D6251900F6012D /* ios */,
+				0FA25A4718D6251900F6012D /* kinetic */,
 			);
-			name = dc;
+			path = source;
+			sourceTree = "<group>";
+		};
+		0FA259FF18D6251900F6012D /* common */ = {
+			isa = PBXGroup;
+			children = (
+				0FA25A0018D6251900F6012D /* gyro_asset_bank.c */,
+				0FA25A0118D6251900F6012D /* gyro_asset_bank.h */,
+				0FA25A0218D6251900F6012D /* gyro_matrix_stack.c */,
+				0FA25A0318D6251900F6012D /* gyro_shader.c */,
+				0FA25A0418D6251900F6012D /* gyro_system.c */,
+				0FA25A0518D6251900F6012D /* gyro_texture.c */,
+				0FA25A0618D6251900F6012D /* gyro_wav.c */,
+			);
+			path = common;
+			sourceTree = "<group>";
+		};
+		0FA25A1418D6251900F6012D /* glal */ = {
+			isa = PBXGroup;
+			children = (
+				0FA25A1518D6251900F6012D /* gyro_audio_glal.c */,
+				0FA25A1618D6251900F6012D /* gyro_lighting_glal.c */,
+				0FA25A1718D6251900F6012D /* gyro_ogg_glal.c */,
+				0FA25A1818D6251900F6012D /* gyro_shaders_glal.c */,
+				0FA25A1918D6251900F6012D /* gyro_shaders_glal.h */,
+				0FA25A1A18D6251900F6012D /* gyro_video_glal.c */,
+				0FA25A1B18D6251900F6012D /* gyro_video_glal.h */,
+				0FA25A1C18D6251900F6012D /* gyro_wav_glal.c */,
+				0FA25A1D18D6251900F6012D /* shaders */,
+			);
+			path = glal;
+			sourceTree = "<group>";
+		};
+		0FA25A1D18D6251900F6012D /* shaders */ = {
+			isa = PBXGroup;
+			children = (
+				0FA25A1E18D6251900F6012D /* fixedFunctionTextured.fsh */,
+				0FA25A1F18D6251900F6012D /* fixedFunctionTextured.vsh */,
+				0FA25A2018D6251900F6012D /* fixedFunctionUntextured.fsh */,
+				0FA25A2118D6251900F6012D /* fixedFunctionUntextured.vsh */,
+				0FA25A2218D6251900F6012D /* pixelLighting.fsh */,
+				0FA25A2318D6251900F6012D /* pixelLighting.vsh */,
+				0FA25A2418D6251900F6012D /* shadowMap.fsh */,
+				0FA25A2518D6251900F6012D /* shadowMap.vsh */,
+				0FA25A2618D6251900F6012D /* vertexLighting.fsh */,
+				0FA25A2718D6251900F6012D /* vertexLighting.vsh */,
+				0FA25A2818D6251900F6012D /* vertexLightingDirectional.fsh */,
+				0FA25A2918D6251900F6012D /* vertexLightingDirectional.vsh */,
+			);
+			path = shaders;
+			sourceTree = "<group>";
+		};
+		0FA25A2A18D6251900F6012D /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				0FA25A2C18D6251900F6012D /* bootstrap.m */,
+				0FA25A2D18D6251900F6012D /* gyro_file_ios.m */,
+				0FA25A2F18D6251900F6012D /* gyro_input_ios.c */,
+				0FA25A3118D6251900F6012D /* gyro_system_ios.c */,
+				0FA25A3218D6251900F6012D /* gyro_system_ios.m */,
+				0FA25A3318D6251900F6012D /* gyro_texture_ios.c */,
+				0FA25A3418D6251900F6012D /* gyro_timer_ios.c */,
+				0FA25A3518D6251900F6012D /* gyro_tracking.c */,
+				0FA25A3818D6251900F6012D /* gyro_tracking_ios.m */,
+				0FA25A3918D6251900F6012D /* gyro_video_ios.c */,
+				0FA25A3B18D6251900F6012D /* gyro_wav_ios.c */,
+				0FA25A3F18D6251900F6012D /* ios_image.m */,
+				0FA25A4118D6251900F6012D /* ios_log.m */,
+				0FA25BC518D7D78900F6012D /* libGyroAppDelegate.m */,
+				0FA25BCD18D7DA3900F6012D /* MainGLViewController.m */,
+				0FA25BD118D7E03A00F6012D /* MainGLView.m */,
+			);
+			path = ios;
+			sourceTree = "<group>";
+		};
+		0FA25A4718D6251900F6012D /* kinetic */ = {
+			isa = PBXGroup;
+			children = (
+				0FA25A4818D6251900F6012D /* gyro_kinetic_collision.c */,
+				0FA25A4918D6251900F6012D /* gyro_kinetic_physics.c */,
+			);
+			path = kinetic;
 			sourceTree = "<group>";
 		};
 		C8840CC114F6E70F00665CD4 = {
 			isa = PBXGroup;
 			children = (
-				C8840CDE14F6E8AB00665CD4 /* include */,
-				C8840CDD14F6E89E00665CD4 /* source */,
+				0FA259FE18D6251900F6012D /* source */,
 				C8840CD214F6E71000665CD4 /* MetaDataBullshit */,
 				C8840CCE14F6E71000665CD4 /* Frameworks */,
 				C8840CCD14F6E71000665CD4 /* Products */,
@@ -214,6 +253,7 @@
 		C8840CCE14F6E71000665CD4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0FA25BB718D7CE7300F6012D /* Cocoa.framework */,
 				C8C8E37F156834B400C4293D /* libGyroiOS */,
 				C8C8E37E156834B000C4293D /* libGyroOSX */,
 			);
@@ -228,118 +268,6 @@
 			);
 			name = MetaDataBullshit;
 			path = LibGyroiOS;
-			sourceTree = "<group>";
-		};
-		C8840CDD14F6E89E00665CD4 /* source */ = {
-			isa = PBXGroup;
-			children = (
-				C881679415728CCB00461044 /* dc */,
-				C8C8E36215682EE500C4293D /* soft */,
-				C8C8E36115682ED900C4293D /* x86 */,
-				C8C8E36015682ECD00C4293D /* kinetic */,
-				C8C8E35F15682EC600C4293D /* ios */,
-				C8C8E35E15682EBC00C4293D /* glal */,
-				C8840D4E14F6F37300665CD4 /* gyro_log.c */,
-				C8840D4F14F6F37300665CD4 /* gyro_matrix_stack.c */,
-				C8840D5014F6F37300665CD4 /* gyro_system.c */,
-				C87E490E15717858003B67A7 /* gyro_asset_bank.c */,
-				C8840D5114F6F37300665CD4 /* gyro_texture.c */,
-				C8840D5214F6F37300665CD4 /* gyro_tracking.c */,
-				C8840D5314F6F37300665CD4 /* gyro_wav.c */,
-			);
-			name = source;
-			path = LibGyroiOS;
-			sourceTree = "<group>";
-		};
-		C8840CDE14F6E8AB00665CD4 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				C881679315728CC400461044 /* dc */,
-				C8840D3914F6F1DF00665CD4 /* soft */,
-				C8840D1614F6F1D500665CD4 /* glal */,
-				C8840D1714F6F1D500665CD4 /* gyro_audio.h */,
-				C8840D1814F6F1D500665CD4 /* gyro_defines.h */,
-				C8B2147F14F939D800E82D05 /* gyro_file.h */,
-				C87E490B15717839003B67A7 /* gyro_asset_bank.h */,
-				C8840D1914F6F1D500665CD4 /* gyro_input.h */,
-				C8840D1A14F6F1D500665CD4 /* gyro_log.h */,
-				C8840D1B14F6F1D500665CD4 /* gyro_math.h */,
-				C8840D1C14F6F1D500665CD4 /* gyro_matrix_stack.h */,
-				C8840D1D14F6F1D500665CD4 /* gyro_matrix.h */,
-				C8840D1E14F6F1D500665CD4 /* gyro_platform.h */,
-				C8840D1F14F6F1D500665CD4 /* gyro_system.h */,
-				C8840D2014F6F1D500665CD4 /* gyro_texture.h */,
-				C8840D2114F6F1D500665CD4 /* gyro_timer.h */,
-				C8840D2214F6F1D500665CD4 /* gyro_tracking_internal.h */,
-				C8840D2314F6F1D500665CD4 /* gyro_tracking.h */,
-				C8840D2414F6F1D500665CD4 /* gyro_video.h */,
-				C8840D2514F6F1D500665CD4 /* gyro_wav.h */,
-				C8840D2614F6F1D500665CD4 /* gyro.h */,
-				C8840D2714F6F1D500665CD4 /* ios */,
-				C8840D2814F6F1D500665CD4 /* kinetic */,
-			);
-			name = include;
-			path = LibGyroiOS;
-			sourceTree = "<group>";
-		};
-		C8C8E35E15682EBC00C4293D /* glal */ = {
-			isa = PBXGroup;
-			children = (
-				C8840D4D14F6F37300665CD4 /* gyro_video_glal.c */,
-				C8840D4C14F6F37300665CD4 /* gyro_audio_glal.c */,
-			);
-			name = glal;
-			sourceTree = "<group>";
-		};
-		C8C8E35F15682EC600C4293D /* ios */ = {
-			isa = PBXGroup;
-			children = (
-				C8B2148114F93BB600E82D05 /* gyro_file_ios.m */,
-				C8840D5E14F6F38300665CD4 /* gyro_system_ios.m */,
-				C8840D5F14F6F38300665CD4 /* gyro_texture_ios.c */,
-				C8840D6014F6F38300665CD4 /* gyro_timer_ios.c */,
-				C8840D6114F6F38300665CD4 /* gyro_tracking_ios.m */,
-				C8840D6214F6F38300665CD4 /* gyro_video_ios.c */,
-				C8840D6314F6F38300665CD4 /* ios_gl_controller.m */,
-				C8840D6414F6F38300665CD4 /* ios_image.m */,
-				C8840D6514F6F38300665CD4 /* ios_log.m */,
-				C8840D6614F6F38300665CD4 /* ios_mainwin.m */,
-				C8840D6714F6F38300665CD4 /* ios_video.m */,
-				C8840D5D14F6F38300665CD4 /* gyro_input_ios.c */,
-				C8840D5C14F6F38300665CD4 /* bootstrap.m */,
-			);
-			name = ios;
-			sourceTree = "<group>";
-		};
-		C8C8E36015682ECD00C4293D /* kinetic */ = {
-			isa = PBXGroup;
-			children = (
-				C8A6A112158BF6E0008A636C /* gyro_kinetic_collision.c */,
-				C8A6A113158BF6E0008A636C /* gyro_kinetic_physics.c */,
-			);
-			name = kinetic;
-			sourceTree = "<group>";
-		};
-		C8C8E36115682ED900C4293D /* x86 */ = {
-			isa = PBXGroup;
-			children = (
-				C8C8E36315682F9400C4293D /* gyro_input_x86.c */,
-				C8C8E36415682F9400C4293D /* gyro_system_x86.c */,
-				C8C8E36515682F9400C4293D /* gyro_texture_x86.c */,
-				C8C8E36615682F9400C4293D /* gyro_timer_x86.c */,
-				C8C8E36715682F9400C4293D /* gyro_tracking_x86.c */,
-				C8C8E36815682F9400C4293D /* gyro_video_x86.c */,
-				C8C8E36915682F9400C4293D /* gyro_wav_x86.c */,
-			);
-			name = x86;
-			sourceTree = "<group>";
-		};
-		C8C8E36215682EE500C4293D /* soft */ = {
-			isa = PBXGroup;
-			children = (
-				C8840D7814F6F39C00665CD4 /* gyro_matrix_soft.c */,
-			);
-			name = soft;
 			sourceTree = "<group>";
 		};
 		C8C8E37C1568340400C4293D /* libGyroOSX */ = {
@@ -373,6 +301,8 @@
 		C8C8E37F156834B400C4293D /* libGyroiOS */ = {
 			isa = PBXGroup;
 			children = (
+				0FA25AE818D6253700F6012D /* OpenAL.framework */,
+				0FA25AE918D6253700F6012D /* OpenGLES.framework */,
 				C8840CCF14F6E71000665CD4 /* Foundation.framework */,
 				C8840CE814F6E8F200665CD4 /* AppKit.framework */,
 				C8840CE914F6E8F200665CD4 /* CoreData.framework */,
@@ -388,24 +318,9 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C8840D2914F6F1D500665CD4 /* gyro_audio.h in Headers */,
-				C8840D2A14F6F1D500665CD4 /* gyro_defines.h in Headers */,
-				C8840D2B14F6F1D500665CD4 /* gyro_input.h in Headers */,
-				C8840D2C14F6F1D500665CD4 /* gyro_log.h in Headers */,
-				C8840D2D14F6F1D500665CD4 /* gyro_math.h in Headers */,
-				C8840D2E14F6F1D500665CD4 /* gyro_matrix_stack.h in Headers */,
-				C8840D2F14F6F1D500665CD4 /* gyro_matrix.h in Headers */,
-				C8840D3014F6F1D500665CD4 /* gyro_platform.h in Headers */,
-				C8840D3114F6F1D500665CD4 /* gyro_system.h in Headers */,
-				C8840D3214F6F1D500665CD4 /* gyro_texture.h in Headers */,
-				C8840D3314F6F1D500665CD4 /* gyro_timer.h in Headers */,
-				C8840D3414F6F1D500665CD4 /* gyro_tracking_internal.h in Headers */,
-				C8840D3514F6F1D600665CD4 /* gyro_tracking.h in Headers */,
-				C8840D3614F6F1D600665CD4 /* gyro_video.h in Headers */,
-				C8840D3714F6F1D600665CD4 /* gyro_wav.h in Headers */,
-				C8840D3814F6F1D600665CD4 /* gyro.h in Headers */,
-				C8B2148014F939D800E82D05 /* gyro_file.h in Headers */,
-				C87E490C15717839003B67A7 /* gyro_asset_bank.h in Headers */,
+				0FA25AA218D6251900F6012D /* gyro_shaders_glal.h in Headers */,
+				0FA25A8E18D6251900F6012D /* gyro_asset_bank.h in Headers */,
+				0FA25AA418D6251900F6012D /* gyro_video_glal.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -413,7 +328,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C87E490D15717839003B67A7 /* gyro_asset_bank.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -460,6 +374,9 @@
 /* Begin PBXProject section */
 		C8840CC314F6E70F00665CD4 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0510;
+			};
 			buildConfigurationList = C8840CC614F6E70F00665CD4 /* Build configuration list for PBXProject "LibGyro" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
@@ -494,31 +411,36 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C8B2148314F96F6D00E82D05 /* bootstrap.m in Sources */,
-				C8840D5414F6F37300665CD4 /* gyro_audio_glal.c in Sources */,
-				C8840D5514F6F37300665CD4 /* gyro_video_glal.c in Sources */,
-				C8840D5614F6F37300665CD4 /* gyro_log.c in Sources */,
-				C8840D5714F6F37300665CD4 /* gyro_matrix_stack.c in Sources */,
-				C8840D5814F6F37300665CD4 /* gyro_system.c in Sources */,
-				C8840D5914F6F37300665CD4 /* gyro_texture.c in Sources */,
-				C8840D5A14F6F37300665CD4 /* gyro_tracking.c in Sources */,
-				C8840D5B14F6F37300665CD4 /* gyro_wav.c in Sources */,
-				C8840D6914F6F38300665CD4 /* gyro_input_ios.c in Sources */,
-				C8840D6A14F6F38300665CD4 /* gyro_system_ios.m in Sources */,
-				C8840D6B14F6F38300665CD4 /* gyro_texture_ios.c in Sources */,
-				C8840D6C14F6F38300665CD4 /* gyro_timer_ios.c in Sources */,
-				C8840D6D14F6F38300665CD4 /* gyro_tracking_ios.m in Sources */,
-				C8840D6E14F6F38300665CD4 /* gyro_video_ios.c in Sources */,
-				C8840D6F14F6F38300665CD4 /* ios_gl_controller.m in Sources */,
-				C8840D7014F6F38300665CD4 /* ios_image.m in Sources */,
-				C8840D7114F6F38300665CD4 /* ios_log.m in Sources */,
-				C8840D7214F6F38300665CD4 /* ios_mainwin.m in Sources */,
-				C8840D7314F6F38300665CD4 /* ios_video.m in Sources */,
-				C8840D7914F6F39C00665CD4 /* gyro_matrix_soft.c in Sources */,
-				C8B2148214F93BB600E82D05 /* gyro_file_ios.m in Sources */,
-				C87E490F15717858003B67A7 /* gyro_asset_bank.c in Sources */,
-				C8A6A114158BF6E0008A636C /* gyro_kinetic_collision.c in Sources */,
-				C8A6A116158BF6E0008A636C /* gyro_kinetic_physics.c in Sources */,
+				0FA25A8F18D6251900F6012D /* gyro_matrix_stack.c in Sources */,
+				0FA25AAA18D6251900F6012D /* gyro_input_ios.c in Sources */,
+				0FA25AA518D6251900F6012D /* gyro_wav_glal.c in Sources */,
+				0FA25AA818D6251900F6012D /* gyro_file_ios.m in Sources */,
+				0FA25BC718D7D78900F6012D /* libGyroAppDelegate.m in Sources */,
+				0FA25A9F18D6251900F6012D /* gyro_lighting_glal.c in Sources */,
+				0FA25AAC18D6251900F6012D /* gyro_system_ios.c in Sources */,
+				0FA25AB018D6251900F6012D /* gyro_tracking.c in Sources */,
+				0FA25BCF18D7DA3900F6012D /* MainGLViewController.m in Sources */,
+				0FA25A9E18D6251900F6012D /* gyro_audio_glal.c in Sources */,
+				0FA25A9318D6251900F6012D /* gyro_wav.c in Sources */,
+				0FA25AAF18D6251900F6012D /* gyro_timer_ios.c in Sources */,
+				0FA25A9018D6251900F6012D /* gyro_shader.c in Sources */,
+				0FA25A8D18D6251900F6012D /* gyro_asset_bank.c in Sources */,
+				0FA25AC218D6251900F6012D /* gyro_kinetic_collision.c in Sources */,
+				0FA25AAE18D6251900F6012D /* gyro_texture_ios.c in Sources */,
+				0FA25AB418D6251900F6012D /* gyro_video_ios.c in Sources */,
+				0FA25ABA18D6251900F6012D /* ios_image.m in Sources */,
+				0FA25A9118D6251900F6012D /* gyro_system.c in Sources */,
+				0FA25AA318D6251900F6012D /* gyro_video_glal.c in Sources */,
+				0FA25AA118D6251900F6012D /* gyro_shaders_glal.c in Sources */,
+				0FA25BD318D7E03A00F6012D /* MainGLView.m in Sources */,
+				0FA25AA018D6251900F6012D /* gyro_ogg_glal.c in Sources */,
+				0FA25AC318D6251900F6012D /* gyro_kinetic_physics.c in Sources */,
+				0FA25AAD18D6251900F6012D /* gyro_system_ios.m in Sources */,
+				0FA25AB318D6251900F6012D /* gyro_tracking_ios.m in Sources */,
+				0FA25AA718D6251900F6012D /* bootstrap.m in Sources */,
+				0FA25ABC18D6251900F6012D /* ios_log.m in Sources */,
+				0FA25A9218D6251900F6012D /* gyro_texture.c in Sources */,
+				0FA25AB618D6251900F6012D /* gyro_wav_ios.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -526,25 +448,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C8C8E36A15682F9400C4293D /* gyro_input_x86.c in Sources */,
-				C8C8E36B15682F9400C4293D /* gyro_system_x86.c in Sources */,
-				C8C8E36C15682F9400C4293D /* gyro_texture_x86.c in Sources */,
-				C8C8E37815682FBF00C4293D /* gyro_system.c in Sources */,
-				C8C8E37515682FB700C4293D /* gyro_audio_glal.c in Sources */,
-				C8C8E37115682FA200C4293D /* gyro_matrix_soft.c in Sources */,
-				C8C8E37915682FC100C4293D /* gyro_texture.c in Sources */,
-				C8C8E36D15682F9400C4293D /* gyro_timer_x86.c in Sources */,
-				C8C8E37715682FBC00C4293D /* gyro_matrix_stack.c in Sources */,
-				C8C8E37A15682FC300C4293D /* gyro_tracking.c in Sources */,
-				C8C8E36E15682F9400C4293D /* gyro_tracking_x86.c in Sources */,
-				C8C8E37615682FBA00C4293D /* gyro_log.c in Sources */,
-				C8C8E37415682FB500C4293D /* gyro_video_glal.c in Sources */,
-				C8C8E37B15682FC500C4293D /* gyro_wav.c in Sources */,
-				C8C8E36F15682F9400C4293D /* gyro_video_x86.c in Sources */,
-				C8C8E37015682F9400C4293D /* gyro_wav_x86.c in Sources */,
-				C87E491015717858003B67A7 /* gyro_asset_bank.c in Sources */,
-				C8A6A115158BF6E0008A636C /* gyro_kinetic_collision.c in Sources */,
-				C8A6A117158BF6E0008A636C /* gyro_kinetic_physics.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -567,7 +470,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -577,7 +481,7 @@
 					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_VERSION = "";
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -587,7 +491,8 @@
 					"\"$(SRCROOT)/../include/glal\"",
 					"\"$(SRCROOT)/../include/kinetic\"",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -596,10 +501,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_VERSION = com.apple.compilers.llvmgcc42;
+				GCC_VERSION = "";
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -609,7 +515,7 @@
 					"\"$(SRCROOT)/../include/glal\"",
 					"\"$(SRCROOT)/../include/kinetic\"",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -618,7 +524,10 @@
 		C8840CDA14F6E71000665CD4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer: Andrew Apperley (4LQSZX3G72)";
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				DSTROOT = /tmp/LibGyroiOS.dst;
+				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_FRAMEWORKS_DIR)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "LibGyroiOS/LibGyroiOS-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -632,9 +541,23 @@
 					"\"$(SRCROOT)/../include/glal\"",
 					"\"$(SRCROOT)/../include/kinetic\"",
 					"\"$(SRCROOT)/../include/ios\"",
+					"\"/System/Library/Frameworks/OpenAL.framework/headers\"",
+					"\"/System/Library/Frameworks/OpenGLES.framework/headers\"",
+					"\"$(SRCROOT)/../include/common\"",
+					"\"$(SRCROOT)/**",
 				);
-				OTHER_LDFLAGS = "-ObjC";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/lib/osx",
+					"$(PROJECT_DIR)/lib/win32",
+				);
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "3A9708AF-364C-4C91-95CC-29C4DE897415";
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -642,7 +565,9 @@
 		C8840CDB14F6E71000665CD4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer: Andrew Apperley (4LQSZX3G72)";
 				DSTROOT = /tmp/LibGyroiOS.dst;
+				FRAMEWORK_SEARCH_PATHS = "$(DEVELOPER_FRAMEWORKS_DIR)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "LibGyroiOS/LibGyroiOS-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = "\"GYRO_PLATFORM=GYRO_PLATFORM_iOS\"";
@@ -652,9 +577,22 @@
 					"\"$(SRCROOT)/../include/glal\"",
 					"\"$(SRCROOT)/../include/kinetic\"",
 					"\"$(SRCROOT)/../include/ios\"",
+					"\"/System/Library/Frameworks/OpenAL.framework/headers\"",
+					"\"/System/Library/Frameworks/OpenGLES.framework/headers\"",
+					"\"$(SRCROOT)/../include/common\"",
+					"\"$(SRCROOT)/**",
 				);
-				OTHER_LDFLAGS = "-ObjC";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/lib/osx",
+					"$(PROJECT_DIR)/lib/win32",
+				);
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-all_load",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "3A9708AF-364C-4C91-95CC-29C4DE897415";
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
@@ -662,7 +600,7 @@
 		C8840CF614F6E8F200665CD4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COMBINE_HIDPI_IMAGES = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -685,8 +623,13 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/../lib/osx/SDL.framework/Headers\"",
 					"\"/System/Library/Frameworks/OpenGL.framework/headers\"",
+					"\"/System/Library/Frameworks/Cocoa.framework/headers\"",
 				);
 				INFOPLIST_FILE = "libGyroOSX/libGyroOSX-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/lib/osx",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -698,7 +641,7 @@
 		C8840CF714F6E8F200665CD4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -718,8 +661,13 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/../lib/osx/SDL.framework/Headers\"",
 					"\"/System/Library/Frameworks/OpenGL.framework/headers\"",
+					"\"/System/Library/Frameworks/Cocoa.framework/headers\"",
 				);
 				INFOPLIST_FILE = "libGyroOSX/libGyroOSX-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/lib/osx",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
