@@ -36,6 +36,9 @@ endif()
 list(APPEND CMAKE_MODULE_PATH "${ES_GYRO_DIR}/scripts/cmake/modules")
 list(APPEND CMAKE_MODULE_PATH "${ES_SCRIPTS_DIR}/cmake/modules")
 
+option(ES_BUILD_GAMMA "Build ESGamma" ON)
+option(ES_BUILD_TOOLKIT "Build ESToolkit" OFF)
+
 #
 # Modules/macros
 #
@@ -119,18 +122,25 @@ add_definitions(-DGYRO_PLATFORM=${GYRO_PLATFORM})
 
 find_package(Threads REQUIRED)
 
-include("${ES_CONTRIB_DIR}/CMakeLists.txt")
-
-# libGyro
-add_subdirectory(libGyro)
-
-# OOLua
-add_subdirectory(OOLua)
-add_dependencies(OOLua lua52)
-
 # Bring in AssetIO variables
 include("${ES_ASSETIO_DIR}/CMakeLists.txt")
 
-# ESGamma
-add_subdirectory(ESGamma)
-add_dependencies(ESGamma libGyro OOLua lua52)
+if(ES_BUILD_GAMMA)
+    include("${ES_CONTRIB_DIR}/CMakeLists.txt")
+
+    # libGyro
+    add_subdirectory(libGyro)
+
+    # OOLua
+    add_subdirectory(OOLua)
+    add_dependencies(OOLua lua52)
+
+    # ESGamma
+    add_subdirectory(ESGamma)
+    add_dependencies(ESGamma libGyro OOLua lua52)
+endif()
+
+# ESToolkit
+if(ES_BUILD_TOOLKIT)
+    add_subdirectory(ESToolkit/ESToolkit)
+endif()

@@ -133,6 +133,8 @@ set(gyro_SOURCES
 	${GY_SOURCE_DIR}/glal/gyro_video_glal.c
 	${GY_SOURCE_DIR}/glal/gyro_video_glal.h
 	${GY_SOURCE_DIR}/glal/gyro_wav_glal.c
+        ${GY_SOURCE_DIR}/glal/tinycthread.c
+        ${GY_SOURCE_DIR}/glal/tinycthread.h
 
     ${GY_SOURCE_DIR}/kinetic/gyro_kinetic_collision.c
     ${GY_SOURCE_DIR}/kinetic/gyro_kinetic_physics.c
