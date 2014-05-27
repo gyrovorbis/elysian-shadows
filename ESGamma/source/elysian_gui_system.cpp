@@ -13,6 +13,53 @@
 
 namespace elysian {
 
+Font* MenuText::_fonts[2];
+
+void MenuText::recursiveRender(void) {
+	GYVector4 localVert = { _relPos.x, _relPos.y, 1.0f, 1.0f };
+	GYVector4 worldVert;
+
+	gyMatMultVec(&localVert, &worldVert, 1);
+
+	gyMatPush();
+	gyMatLoadIdentity();
+
+	_fonts[_type]->transform.setPos(worldVert.x, worldVert.y);
+	_fonts[_type]->transform.setPosZ(worldVert.z);
+	_fonts[_type]->transform.setScale(1.0f, 1.0f);
+	_fonts[_type]->setColor(_color);
+	_fonts[_type]->drawString(Font::NO_FORMAT, _align, _text);
+
+	gyMatPop();
+
+}
+
+MenuEntity::~MenuEntity(void) {
+	//recursively delete children
+	for(auto it = _childWidgets.begin(); it < _childWidgets.end(); ++it) delete *it;
+}
+
+void MenuEntity::recursiveRender(void) {
+	GYVector4 localVert = { transform._pos.x, transform._pos.y, transform._pos.z, 1.0f };
+	GYVector4 worldVert;
+
+	if(_sizeType == SIZE_ABSOLUTE) {
+		gyMatMultVec(&localVert, &worldVert, 1);
+		gyMatPush();
+		gyMatLoadIdentity();
+		gyMatTranslate(worldVert.x-transform._pos.x, worldVert.y-transform._pos.y, worldVert.z-transform._pos.z);
+	}
+
+	Entity::render();
+
+	gyMatPush();
+	Entity::transform.apply();
+	for(auto it = _childWidgets.begin(); it < _childWidgets.end(); ++it) (*it)->recursiveRender();
+	gyMatPop();
+
+	if(_sizeType == SIZE_ABSOLUTE) gyMatPop();
+}
+
 const GYVector2 GuiSystem::_combatTextGravity = ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_GRAVITY;
 
 GuiSystem::GuiSystem(void): 
@@ -31,6 +78,9 @@ bool GuiSystem::loadAssets(void) {
 
 	success &= twcen.loadTextData(ELYSIAN_FONT_IMAGE_PATH_TWCEN, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_TWCEN);
 	success &= verdana.loadTextData(ELYSIAN_FONT_IMAGE_PATH_VERDANA, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_VERDANA);
+
+	MenuText::_fonts[0] = &twcen;
+	MenuText::_fonts[1] = &verdana;
 
 	gyVidResolution(&_projWidth, &_projHeight);
 
@@ -61,6 +111,7 @@ void GuiSystem::update(void) {
 void GuiSystem::renderOverlay(void) {
 	adventureLog.render(twcen);
 	_renderDebugOverlay();
+	_renderMenuWidget();
 }
 
 void GuiSystem::_printDebugLine(const char *title, const char *str, ...) {
@@ -136,6 +187,19 @@ void GuiSystem::addCombatText(const char*const text, const GYColor4 color, const
 
 }
 
+void GuiSystem::_renderMenuWidget(void) {
+	if(!_menuWidget) return;
+
+	gyMatPush();
+	gyMatLoadIdentity();
+	gyMatTranslate(_projWidth*0.5f, _projHeight*0.5f, 50.0f);
+	gyMatScale(_projWidth, _projHeight, 1.0f);
+
+	_menuWidget->recursiveRender();
+
+	gyMatPop();
+
+}
 
 
 

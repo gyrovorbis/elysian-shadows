@@ -1,11 +1,11 @@
-#include "gyro_video.h"
-#include "glal/gyro_video_glal.h"
-#include "ios/gyro_gles_ios.h"
-#include "glal/gyro_gl_glal.h"
+#include "gyro_video_api.h"
+#include "gyro_video_glal.h"
+#include "gyro_gles_ios.h"
+#include "gyro_glal.h"
 
-int gyVidInit(const GYVidInitParams *const params) {
-    //gyVidOglInit(1280, 720, 1280, 720);
-    return 1; 
+int gyVidInit(const struct _GYVidInitParams *const params) {
+    gyVidOglInit(1280, 720, 1280, 720);
+    return 1;
 }
 
 int gyVidUninit() {

@@ -5,6 +5,7 @@
 #include "elysian_font.hpp"
 #include "elysian_adventure_log.hpp"
 #include "elysian_mem_pool.hpp"
+#include "elysian_entity.hpp"
 
 #include <gyro.h>
 
@@ -21,6 +22,52 @@
 #define ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_GRAVITY		GYVector2 { 0.0f, 0.4f }
 
 namespace elysian {
+
+	class GuiSystem;
+
+	class MenuWidget {
+	public:
+		virtual			~MenuWidget(void)		= default;
+		virtual void	recursiveRender(void)	= 0;
+	};
+
+	class MenuText: public MenuWidget {
+		friend class GuiSystem;
+	private:
+		static Font*	_fonts[2];
+		char			_text[100];
+		GYVector2		_relPos		= { 0.0f, 0.0f };
+		unsigned		_type		= 0;
+		GYColor4		_color		= { 255, 255, 255, 255 };
+		Font::ALIGNMENT _align		= Font::L_ALIGN;
+	public:
+		virtual ~MenuText(void)	override {}
+
+		void setRelPos(const float x, const float y);
+		void setFontType(const unsigned type);
+		void setColor(const GYColor4 color);
+		void setAlignment(const Font::ALIGNMENT align);
+		void setText(const char*const text);
+
+		virtual void recursiveRender(void) override;
+	};
+
+	class MenuEntity: public MenuWidget, public Entity {
+	public:
+		enum SIZE_TYPE { SIZE_RELATIVE, SIZE_ABSOLUTE };
+	private:
+		Pool<MenuWidget*> _childWidgets = Pool<MenuWidget*>(10);
+		SIZE_TYPE _sizeType				= SIZE_RELATIVE;
+
+	public:
+		virtual ~MenuEntity(void);
+
+		void addChildWidget(MenuWidget*const widget);
+		void removeChildWidget(MenuWidget*const widget);
+		void setSizeType(const SIZE_TYPE type);
+		virtual void recursiveRender(void) override;
+
+	};
 
 
     class GuiSystem: public System {
@@ -40,9 +87,12 @@ namespace elysian {
 
 		unsigned int _projWidth, _projHeight;
 
+		MenuWidget* _menuWidget = nullptr;
+
 
 		void _printDebugLine(const char*title, const char*str, ...);
 		void _renderDebugOverlay(void);
+		void _renderMenuWidget(void);
 	public:
 
 		GuiSystem(void);
@@ -58,6 +108,9 @@ namespace elysian {
 
 		void setDebugOverLayEnabled(const bool enabled);
 
+		void setMenuWidget(MenuWidget*const widget);
+		void clearMenuWidget(void);
+
 		AdventureLog	adventureLog;
 		Font			verdana;
 		Font			twcen;
@@ -68,7 +121,19 @@ namespace elysian {
 
 	// ====== INLINEZ ======
 
+	inline void MenuText::setRelPos(const float x, const float y) { _relPos.x = x; _relPos.y = y; }
+	inline void MenuText::setFontType(const unsigned type) { _type = type; }
+	inline void MenuText::setColor(const GYColor4 color) { _color = color; }
+	inline void MenuText::setAlignment(const Font::ALIGNMENT align) { _align = align; }
+	inline void MenuText::setText(const char * const text) { strcpy(_text, text); }
+
+	inline void MenuEntity::addChildWidget(MenuWidget*const widget) { _childWidgets.claimFreeEntry() = widget; }
+	inline void MenuEntity::setSizeType(const SIZE_TYPE type) { _sizeType = type; }
+	inline void MenuEntity::removeChildWidget(MenuWidget*const widget) { _childWidgets.removeEntry(widget); }
+
 	inline void GuiSystem::setDebugOverLayEnabled(const bool enabled) { _debugOverlayEnabled = enabled; }
+	inline void GuiSystem::setMenuWidget(MenuWidget * const widget) { _menuWidget = widget; }
+	inline void GuiSystem::clearMenuWidget(void) { _menuWidget = nullptr; }
 
 	
 }

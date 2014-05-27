@@ -4,6 +4,7 @@
 #include "elysian_lua_wrappers.hpp"
 #include "elysian_collision_system.hpp"
 #include "elysian_camera_system.hpp"
+#include "elysian_gui_system.hpp"
 #include <cmath>
 
 namespace elysian {
@@ -83,6 +84,8 @@ void CombatSystem::_processCurrentCombatAction(void) {
 }
 
 //MACRO THESE FUNCTION NAMES
+
+
 void CombatSystem::resolveCombatAction(OOLUA::Lua_table_ref action, Combat*const src, Combat*const target) {
 	OOLUA::Lua_table_ref statMods;
 
@@ -100,12 +103,51 @@ void CombatSystem::resolveCombatAction(OOLUA::Lua_table_ref action, Combat*const
 	_callFunction<void>(nullptr, statMods);
 
 	_processCurrentCombatAction();
-
 }
 
+
+void CombatSystem::sendStatusModifier(Combat* const target, CombatStatus* const modifier) {
+#if 0
+	//not a valid combat target
+	if(target->getDmgType() != Combat::DMG_TARGET && target->getDmgType() != Combat::DMG_SOURCE_TARGET) return;
+
+	//LuaManager->onCombatReceiveStatsModifier(target->getEntity(), modifier);
+
+	target->applyStatus(modifier);
+
+	_curActionRes.initialVel = GYVector2 { 0.0f, -10.0f };
+	if(_curActionRes.contact) {
+		_curActionRes.initialVel = _curActionRes.contact->getNormal();
+		gyVec2ScaleAccum(&_curActionRes.initialVel, _curActionRes.contact->closingVel);
+		//reverse the direction if normal is from point-of-reference of the other colliding body
+		if(_curActionRes.contact->getCollidable(0) != target->getEntity()->getCollidable()) {
+			gyVec2ScaleAccum(&_curActionRes.initialVel, -1.0f);
+		}
+	}
+
+	//emit combat text from target
+	_emitCombatModifierText(target, modifier);
+
+	//check for particle emission
+	if(_curActionRes.contact && target->getAttrib()->isParticleEmitter()) {
+		//emit from POC with registered color and separating vel intensity
+		//getPartSys()->emitFromPoint(0, _curActionRes.contact->getWorldPos(), )
+	}
+
+	//check if dead
+	if(target->getStatus()->getHp() <= 0) {
+		_killCombatant(target);
+	}
+#endif
+}
+
+
 void CombatSystem::_dealCollisionDamage(Combat *const src, Combat *const target, CollisionContact* contact) {
+	CombatStatus modifier;
 	_curActionRes.contact = contact;
-	resolveCombatAction(src->getActionTable(), src, target);
+	//luaSystem->onCombatTargetCollision(src, &modifier);
+	//resolveCombatAction(src->getActionTable(), src, target);
+	sendStatusModifier(target, &modifier);
 }
 
 void CombatSystem::update(void) {
@@ -131,5 +173,23 @@ void CombatSystem::update(void) {
 	}*/
 }
 
+void CombatSystem::_emitCombatModifierText(const Combat*const target, const CombatStatus& modifier) {
+#if 0
+	auto emitIntegerAttrib = [&](const int attrib, const GYColor4 posColor, const GYVector4 negColor) {
+		char buff[20];
 
+		//check if the attribute was modified
+		if(attrib != 0) {
+			sprintf(buff, "%d", abs(attrib));
+			getGuiSys()->addCombatText(buff, (attrib > 0)? posColor : negColor, target->getEntity()->transform._pos, _curActionRes.initialVel);
+		}
+	};
+
+	emitIntegerAttrib(modifier.getHp(), GYColor4 { 255, 0, 0, 255 }, GYColor4 { 0, 255, 0, 255 });
+	emitIntegerAttrib(modifier.getMp(), GYColor4 { 200, 100, 0, 255 }, GYColor4 { 0, 0, 255, 255 });
+
+	//emit icons for status ailments!
+#endif
+
+}
 }

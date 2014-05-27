@@ -43,6 +43,8 @@ namespace elysian {
 		_mainState->register_class<CombatReceipt>();
 		_mainState->register_class<CombatAttrib>();
 		_mainState->register_class<Combat>();
+		OOLUA::register_class<MenuText>(*_mainState);
+		_mainState->register_class<MenuEntity>();
 		_mainState->register_class<ParticleEmitterAttrib>();
 		_mainState->register_class<ParticleEmitter>();
 		OOLUA::register_class<LuaBehavior>(*_mainState);
@@ -525,6 +527,23 @@ OOLUA_EXPORT_FUNCTIONS(Combat,
 					   setDmgActive,
 					   setCollisionFlags)
 
+OOLUA_EXPORT_FUNCTIONS_CONST(MenuWidget)
+OOLUA_EXPORT_FUNCTIONS(MenuWidget)
+
+OOLUA_EXPORT_FUNCTIONS(MenuText,
+					   setRelPos,
+					   setFontType,
+					   setColor,
+					   setAlignment,
+					   setText)
+OOLUA_EXPORT_FUNCTIONS_CONST(MenuText)
+
+OOLUA_EXPORT_FUNCTIONS(MenuEntity,
+					   addChildWidget,
+					   setSizeType,
+					   removeChildWidget)
+OOLUA_EXPORT_FUNCTIONS_CONST(MenuEntity)
+
 
 EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(Behavior,
 								   addTrigger,
@@ -673,7 +692,9 @@ OOLUA_EXPORT_FUNCTIONS_CONST(ParticleSystem,
 							 getAttrib)
 
 OOLUA_EXPORT_FUNCTIONS(GuiSystem,
-					   addCombatText)
+					   addCombatText,
+					   setMenuWidget,
+					   clearMenuWidget)
 OOLUA_EXPORT_FUNCTIONS_CONST(GuiSystem)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(DaySystem,

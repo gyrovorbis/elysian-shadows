@@ -12,6 +12,7 @@ namespace elysian {
 
 	class Entity;
 	class Combat;
+	class CombatStatus;
 
 	class CombatReceipt {
 	private:
@@ -41,6 +42,7 @@ namespace elysian {
 			CollisionContact*	contact	= nullptr;
 			Combat*				src		= nullptr;
 			Combat*				target	= nullptr;
+			GYVector2			initialVel = { 0.0f, 0.0f };
 		} _curActionRes;
 
 		Pool<Entity*>	_combatants;
@@ -48,6 +50,7 @@ namespace elysian {
 
 		void _dealCollisionDamage(Combat*const src, Combat*const target, CollisionContact* contact);
 		void _processCurrentCombatAction(void);
+		void _emitCombatModifierText(const Combat*const target, const CombatStatus& modifier);
 	public:
 		virtual ~CombatSystem(void) = default;
 
@@ -68,6 +71,8 @@ namespace elysian {
 		void resolveCombatAction(OOLUA::Lua_table_ref action,
 								 Combat*const src,
 								 Combat*const target);
+
+		void sendStatusModifier(Combat*const target, CombatStatus*const modifier);
 	};
 
 

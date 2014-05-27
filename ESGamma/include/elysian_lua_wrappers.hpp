@@ -96,6 +96,9 @@ namespace OOLUA
 	typedef elysian::DialogScreen				DialogScreen;
 	typedef elysian::DialogText					DialogText;
 	typedef elysian::DialogPrompt				DialogPrompt;
+	typedef elysian::MenuWidget					MenuWidget;
+	typedef elysian::MenuText					MenuText;
+	typedef elysian::MenuEntity					MenuEntity;
 	typedef elysian::CombatAttrib				CombatAttrib;
 	typedef elysian::CombatReceipt				CombatReceipt;
 	typedef elysian::Combat						Combat;
@@ -714,6 +717,27 @@ OOLUA_PROXY(Combat, Component)
 	OOLUA_MEM_FUNC(void, setCollisionFlags, uint32_t)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(MenuWidget)
+	OOLUA_TAGS (
+		No_public_constructors,
+		No_public_destructor
+	)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(MenuText, MenuWidget)
+	OOLUA_MEM_FUNC(void, setRelPos, float, float)
+	OOLUA_MEM_FUNC(void, setFontType, unsigned)
+	OOLUA_MEM_FUNC(void, setColor, GYColor4)
+	OOLUA_MEM_FUNC(void, setAlignment, elysian::Font::ALIGNMENT)
+	OOLUA_MEM_FUNC(void, setText, const char*)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(MenuEntity, MenuWidget, Entity)
+	OOLUA_MEM_FUNC(void, addChildWidget, MenuWidget*)
+	OOLUA_MEM_FUNC(void, setSizeType, MenuEntity::SIZE_TYPE)
+	OOLUA_MEM_FUNC(void, removeChildWidget, MenuWidget*)
+OOLUA_PROXY_END
+
 OOLUA_PROXY(Behavior, Component)
 	OOLUA_TAGS (
 		No_public_constructors,
@@ -953,6 +977,8 @@ OOLUA_PROXY(GuiSystem)
 		No_public_destructor
 	)
 	OOLUA_MEM_FUNC(void, addCombatText, const char*, GYColor4, const GYVector2&, const GYVector2&)
+	OOLUA_MEM_FUNC(void, setMenuWidget, MenuWidget*)
+	OOLUA_MEM_FUNC(void, clearMenuWidget)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CameraKeyFrame)
@@ -1153,6 +1179,17 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 	s->register_class_static<Direction>("DIR4_RIGHT", Direction::DIR4_RIGHT);
 	s->register_class_static<Direction>("DIR4_UP", Direction::DIR4_UP);
 	s->register_class_static<Direction>("DIR4_DOWN", Direction::DIR4_DOWN);
+
+	//Font Alignment
+	typedef OOLUA::MenuText MenuText;
+	s->register_class_static<MenuText>("L_ALIGN", elysian::Font::L_ALIGN);
+	s->register_class_static<MenuText>("R_ALIGN", elysian::Font::R_ALIGN);
+	s->register_class_static<MenuText>("C_ALIGN", elysian::Font::C_ALIGN);
+
+	//MenuEntity Size Type
+	typedef OOLUA::MenuEntity MenuEntity;
+	s->register_class_static<MenuEntity>("SIZE_ABSOLUTE", MenuEntity::SIZE_ABSOLUTE);
+	s->register_class_static<MenuEntity>("SIZE_RELATIVE", MenuEntity::SIZE_RELATIVE);
 }
 
 
