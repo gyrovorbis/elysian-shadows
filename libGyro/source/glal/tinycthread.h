@@ -223,7 +223,9 @@ int mtx_lock(mtx_t *mtx);
 
 /** NOT YET IMPLEMENTED.
 */
+/*
 int mtx_timedlock(mtx_t *mtx, const struct timespec *ts);
+*/
 
 /** Try to lock the given mutex.
 * The specified mutex shall support either test and return or timeout. If the
