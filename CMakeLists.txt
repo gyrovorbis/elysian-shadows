@@ -37,6 +37,7 @@ list(APPEND CMAKE_MODULE_PATH "${ES_GYRO_DIR}/scripts/cmake/modules")
 list(APPEND CMAKE_MODULE_PATH "${ES_SCRIPTS_DIR}/cmake/modules")
 
 option(ES_BUILD_GAMMA "Build ESGamma" ON)
+option(ES_BUILD_WITH_ASSETS "Build ESGamma with assets" ON)
 option(ES_BUILD_TOOLKIT "Build ESToolkit" OFF)
 
 #
