@@ -45,9 +45,8 @@ int gyVidInit(const GYVidInitParams *const params) {
 	eglQuerySurface(display, surface, EGL_WIDTH, &w);
 	eglQuerySurface(display, surface, EGL_HEIGHT, &h);
 
-	gyVidOglInit(w, h, w, h);
-	check_gl_error();
-	return 1;
+    gyVidOglInit(w, h, w, h);
+    return 1;
 }
 
 int gyVidUninit(void) {
@@ -68,15 +67,11 @@ int gyVidUninit(void) {
 }
 
 void gyVidSceneBegin(void) {
-	check_gl_error();
-	//glClearColor(0.5f, 0.75f, 0.6f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-	polyCount = 0;
-	check_gl_error();
+    //glClearColor(0.5f, 0.75f, 0.6f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    polyCount = 0;
 }
 
 void gyVidSceneEnd(void) {
-	check_gl_error();
-	eglSwapBuffers(display, surface);
-	check_gl_error();
+    eglSwapBuffers(display, surface);
 }
