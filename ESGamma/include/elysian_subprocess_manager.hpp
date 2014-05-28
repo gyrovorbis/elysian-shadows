@@ -197,20 +197,20 @@ protected:
   };
 
   // recursive tuple_element definition
-  template <size_t _Index, class _P, class _This, class... _Rest>
-  struct SubProcessManagerSubProcessElement<_Index, SubProcessManager<_P, _This, _Rest...>>
-	: public SubProcessManagerSubProcessElement<_Index - 1, SubProcessManager<_P, _Rest...> >
+  template <size_t _Index, class P, class _This, class... _Rest>
+  struct SubProcessManagerSubProcessElement<_Index, SubProcessManager<P, _This, _Rest...>>
+    : public SubProcessManagerSubProcessElement<_Index - 1, SubProcessManager<P, _Rest...> >
   {
   };
 
 
   // get reference to _Index element of tuple
-  template<size_t _Index, typename _P, class... _Types> inline
-	typename SubProcessManagerSubProcessElement<_Index, SubProcessManager<_P, _Types...>>::type
-	get(SubProcessManager<_P, _Types...>& _SubProcessManager)
+  template<size_t _Index, typename P, class... _Types> inline
+    typename SubProcessManagerSubProcessElement<_Index, SubProcessManager<P, _Types...>>::type
+    get(SubProcessManager<P, _Types...>& _SubProcessManager)
   {
-	typedef typename SubProcessManagerSubProcessElement<_Index, SubProcessManager<_P, _Types...>>::_Ttype _Ttype;
-	return (((_Ttype&) _SubProcessManager)._Myfirst);
+    typedef typename SubProcessManagerSubProcessElement<_Index, SubProcessManager<P, _Types...>>::_Ttype _Ttype;
+    return (((_Ttype&) _SubProcessManager)._Myfirst);
   }
 
 
