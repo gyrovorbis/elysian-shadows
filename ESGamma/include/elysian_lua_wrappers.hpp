@@ -725,6 +725,8 @@ OOLUA_PROXY(Combat, Component)
 	OOLUA_MEM_FUNC(void, setDmgType, Combat::DMG_TYPE)
 	OOLUA_MEM_FUNC(void, setDmgActive, bool)
 	OOLUA_MEM_FUNC(void, setCollisionFlags, uint32_t)
+    OOLUA_MEM_FUNC_CONST(CombatStatus, getStatus)
+    OOLUA_MEM_FUNC(void, setStatus, const CombatStatus&)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(MenuWidget)
