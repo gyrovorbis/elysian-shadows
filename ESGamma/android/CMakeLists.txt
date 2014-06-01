@@ -32,4 +32,3 @@ add_custom_command(TARGET ESGamma
     WORKING_DIRECTORY ${build_SRC}
     COMMENT "Executing Gradle to build APK..."
 )
-add_dependencies(ESGamma fetch_assets)
