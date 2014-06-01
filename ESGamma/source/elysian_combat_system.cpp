@@ -6,6 +6,7 @@
 #include "elysian_camera_system.hpp"
 #include "elysian_gui_system.hpp"
 #include "elysian_behavior_system.hpp"
+#include "elysian_audio_system.hpp"
 #include <cmath>
 
 namespace elysian {
@@ -44,11 +45,17 @@ void CombatSystem::onCollisionExit(Collidable*const bodyA, Collidable*const body
 void CombatSystem::addCombatant(Entity& entity) {
 	getCameraSys()->addEntity(&entity);
 	getBehavSys()->callTrigger(&entity, Behavior::ON_COMBAT_ENTER);
+	if(_bgmDynamic) getAudioSys()->morphIntoBgmTrack(_bgmCombatTrack, 0.5f);
+	_combatants.claimFreeEntry() = &entity;
 }
 
 void CombatSystem::removeCombatant(Entity& entity) {
 	getBehavSys()->callTrigger(&entity, Behavior::ON_COMBAT_EXIT);
 	getCameraSys()->removeEntity(&entity);
+	_combatants.removeEntry(&entity);
+	if(_combatants.size() == 0 && _bgmDynamic) {
+		getAudioSys()->morphIntoBgmTrack(0, 0.5f);
+	}
 }
 
 void CombatSystem::killCombatant(Entity& entity) {

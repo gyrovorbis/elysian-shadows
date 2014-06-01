@@ -724,9 +724,10 @@ OOLUA_EXPORT_FUNCTIONS(CombatSystem,
 					   addCombatant,
 					   removeCombatant,
 					   killCombatant,
-					   setBgmTensionLevel,
                        resolveCombatAction,
-                       sendStatusModifier)
+					   sendStatusModifier,
+					   setBgmCombatTrack,
+					   setBgmDynamic)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(CameraKeyFrame)
 OOLUA_EXPORT_FUNCTIONS(CameraKeyFrame,

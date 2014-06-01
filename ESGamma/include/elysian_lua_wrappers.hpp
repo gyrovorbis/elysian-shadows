@@ -977,9 +977,10 @@ OOLUA_PROXY(CombatSystem)
 	OOLUA_MEM_FUNC(void, addCombatant, Entity&)
 	OOLUA_MEM_FUNC(void, removeCombatant, Entity&)
 	OOLUA_MEM_FUNC(void, killCombatant, Entity&)
-	OOLUA_MEM_FUNC(void, setBgmTensionLevel, unsigned)
 	OOLUA_MEM_FUNC(void, resolveCombatAction, Lua_table_ref, Combat*, Combat*)
     OOLUA_MEM_FUNC(void, sendStatusModifier, Combat*, CombatStatus*)
+	OOLUA_MEM_FUNC(void, setBgmCombatTrack, unsigned)
+	OOLUA_MEM_FUNC(void, setBgmDynamic, bool)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(GuiSystem)
