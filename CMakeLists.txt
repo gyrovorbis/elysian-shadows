@@ -37,6 +37,7 @@ list(APPEND CMAKE_MODULE_PATH "${ES_GYRO_DIR}/scripts/cmake/modules")
 list(APPEND CMAKE_MODULE_PATH "${ES_SCRIPTS_DIR}/cmake/modules")
 
 option(ES_BUILD_GAMMA "Build ESGamma" ON)
+option(ES_BUILD_WITH_ASSETS "Build ESGamma with assets" ON)
 option(ES_BUILD_TOOLKIT "Build ESToolkit" OFF)
 
 #
@@ -61,6 +62,8 @@ find_host_package(Git)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	set(ES_TARGET_OS "darwin")
+elseif(ANDROID)
+	set(ES_TARGET_OS "android")
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	set(ES_TARGET_OS "linux")
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
