@@ -32,3 +32,15 @@ add_custom_command(TARGET ESGamma
     WORKING_DIRECTORY ${build_SRC}
     COMMENT "Executing Gradle to build APK..."
 )
+
+install(
+    TARGETS ESGamma
+    RUNTIME DESTINATION bin
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+)
+
+install(
+    DIRECTORY ${build_SRC}/apk
+    DESTINATION bin
+)
