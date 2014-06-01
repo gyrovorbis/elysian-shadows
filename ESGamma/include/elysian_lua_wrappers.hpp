@@ -979,6 +979,7 @@ OOLUA_PROXY(CombatSystem)
 	OOLUA_MEM_FUNC(void, killCombatant, Entity&)
 	OOLUA_MEM_FUNC(void, setBgmTensionLevel, unsigned)
 	OOLUA_MEM_FUNC(void, resolveCombatAction, Lua_table_ref, Combat*, Combat*)
+    OOLUA_MEM_FUNC(void, sendStatusModifier, Combat*, CombatStatus*)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(GuiSystem)
@@ -1100,6 +1101,11 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 	s->register_class_static<Behavior>("ON_COLLISION_EXIT", Behavior::ON_COLLISION_EXIT);
 	s->register_class_static<Behavior>("ON_EXAMINE", Behavior::ON_EXAMINE);
 	s->register_class_static<Behavior>("ON_DIALOG", Behavior::ON_DIALOG);
+    s->register_class_static<Behavior>("ON_COMBAT_ENTER", Behavior::ON_COMBAT_ENTER);
+    s->register_class_static<Behavior>("ON_COMBAT_EXIT", Behavior::ON_COMBAT_EXIT);
+    s->register_class_static<Behavior>("ON_COMBAT_DEATH", Behavior::ON_COMBAT_DEATH);
+    s->register_class_static<Behavior>("ON_COMBAT_RECEIVE_STATUS_MODIFIER", Behavior::ON_COMBAT_RECEIVE_STATUS_MODIFIER);
+    s->register_class_static<Behavior>("ON_COMBAT_TARGET_COLLISION_ENTER", Behavior::ON_COMBAT_TARGET_COLLISION_ENTER);
 
 	//Tile::COLLIDER_TYPE
 	typedef OOLUA::Tile Tile;
