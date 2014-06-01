@@ -25,7 +25,7 @@ add_custom_command(TARGET ESGamma
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR} ${build_SRC}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${build_SRC}/src/main/assets
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${ES_ASSETS_SRC} ${build_SRC}/src/main/assets
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${ES_ASSETS_DIR} ${build_SRC}/src/main/assets
     COMMAND ${CMAKE_COMMAND} -E make_directory ${build_SRC}/src/main/jniLibs/armeabi-v7a
     COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:ESGamma> ${build_SRC}/src/main/jniLibs/armeabi-v7a/$<TARGET_FILE_NAME:ESGamma>
     COMMAND ${ES_ROOT_DIR}/tools/gradle/gradlew ${GRADLE_ARGS} ${gradleTask}

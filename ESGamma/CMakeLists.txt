@@ -14,19 +14,6 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
-# Get game assets
-if(ES_BUILD_WITH_ASSETS)
-    include(ExternalProject2)
-    set(ES_ASSETS_SRC "${CMAKE_CURRENT_BINARY_DIR}/fetch_assets/src/fetch_assets")
-    ExternalProject_Add(fetch_assets
-        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/fetch_assets
-        GIT_REPOSITORY git@internal.invalid:esdev/es_assets.git
-        CONFIGURE_COMMAND echo "configured."
-        BUILD_COMMAND echo "built."
-        INSTALL_COMMAND echo "installed."
-    )
-endif()
-
 #
 # ESGamma
 #
@@ -139,9 +126,8 @@ else()
         )
         if(ES_BUILD_WITH_ASSETS)
             add_custom_command(TARGET ESGamma POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_directory ${ES_ASSETS_SRC} ${CMAKE_CURRENT_BINARY_DIR}/ESGamma.app/Contents/Resources/assets
+                COMMAND ${CMAKE_COMMAND} -E copy_directory ${ES_ASSETS_DIR} ${CMAKE_CURRENT_BINARY_DIR}/ESGamma.app/Contents/Resources/assets
             )
-            add_dependencies(ESGamma fetch_assets)
         endif()
     else()
         add_executable(ESGamma
@@ -154,7 +140,7 @@ else()
             target_link_libraries(ESGamma ${CMAKE_DL_LIBS} fluidsynth)
         endif()
         if(ES_BUILD_WITH_ASSETS)
-            install(DIRECTORY ${ES_ASSETS_SRC} DESTINATION bin/assets)
+            install(DIRECTORY ${ES_ASSETS_DIR} DESTINATION bin/assets)
         endif()
     endif()
     target_link_libraries(ESGamma ${ESGamma_LIBRARIES})
