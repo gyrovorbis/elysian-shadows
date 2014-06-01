@@ -46,7 +46,8 @@ namespace elysian {
 		} _curActionRes;
 
 		Pool<Entity*>	_combatants;
-		unsigned		_bgmTensionLevel = 0;
+		unsigned		_bgmCombatTrack = 1;
+		bool			_bgmDynamic		= true;
 
 		void _dealCollisionDamage(Combat*const src, Combat*const target, Collidable* bodyB, CollisionContact* contact);
 		void _processCurrentCombatAction(void);
@@ -66,7 +67,8 @@ namespace elysian {
 		void removeCombatant(Entity& entity);
 		void killCombatant(Entity& entity);
 
-		void setBgmTensionLevel(const unsigned level);
+		void setBgmDynamic(const bool enabled=true);
+		void setBgmCombatTrack(const unsigned track);
 
 		void resolveCombatAction(OOLUA::Lua_table_ref action,
 								 Combat*const src,
@@ -80,7 +82,8 @@ namespace elysian {
 
 	// ======== INLINEZ =========
 
-	inline void CombatSystem::setBgmTensionLevel(const unsigned level) { _bgmTensionLevel = level; }
+	inline void CombatSystem::setBgmCombatTrack(const unsigned track) { _bgmCombatTrack = track; }
+	inline void CombatSystem::setBgmDynamic(const bool enabled) { _bgmDynamic = enabled; }
 
 	inline void CombatReceipt::setText(const char* text) { strcpy(_text, text); }
 	inline void CombatReceipt::setTextColor(const GYColor4 &textColor) { _textColor = textColor; }

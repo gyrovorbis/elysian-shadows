@@ -433,7 +433,7 @@ namespace elysian {
 	}
 
 	void AudioSystem::morphIntoBgmTrack(const unsigned track, const float secs) {
-		if(_streamChannels[StreamChannel::Type::BGM].track == track) return;
+		if(_streamChannels[StreamChannel::Type::BGM].track == track || !_bgmTracks[track]) return;
 
 		//gyAudOggSync(_streamChannels[StreamChannel::Type::BGM].ogg, _bgmTracks[track]);
 		fadeOutBgmTrack(secs);
@@ -447,7 +447,7 @@ namespace elysian {
 
 
 	void AudioSystem::fadeIntoBgmTrack(const unsigned track, const float secs) {
-		if(_streamChannels[StreamChannel::Type::BGM].track == track) return;
+		if(_streamChannels[StreamChannel::Type::BGM].track == track || !_bgmTracks[track]) return;
 		_globalStates[TYPE_BGM].state = GlobalState::FADE_OUT;
 		_globalStates[TYPE_BGM].newTrack = track;
 		_globalStates[TYPE_BGM].fadeTime = secs;
