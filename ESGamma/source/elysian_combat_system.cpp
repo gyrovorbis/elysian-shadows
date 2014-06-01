@@ -62,8 +62,12 @@ void CombatSystem::killCombatant(Entity& entity) {
 	getBehavSys()->callTrigger(&entity, Behavior::ON_COMBAT_DEATH);
 	//removeCombatant(entity); //don't call that or we call the ON_EXIT trigger
 	getCameraSys()->removeEntity(&entity);
-	getCurArea()->removeEntity(&entity);
-	delete &entity;
+	_combatants.removeEntry(&entity);
+	if(_combatants.size() == 0 && _bgmDynamic) {
+		getAudioSys()->morphIntoBgmTrack(0, 0.5f);
+	}
+	//getCurArea()->removeEntity(&entity);
+	//delete &entity;
 }
 
 void CombatSystem::_processCurrentCombatAction(void) {
@@ -189,8 +193,9 @@ void CombatSystem::update(void) {
 	}*/
 }
 
-//void GuiSystem::addCombatText(const char*const text, const GYColor4 color, const GYVector2& pos, const GYVector2& vel)
-
+/* Needs to gracefully handle the case where there are multiple modifiers.
+ * Queue them so they aren't immediately shit out ontop of each other, looking like dick.
+ */
 void CombatSystem::_emitCombatModifierText(const Combat*const target, const CombatStatus& modifier) {
 	auto emitIntegerAttrib = [&](const int attrib, const GYColor4 posColor, const GYColor4 negColor) {
 		char buff[20];
