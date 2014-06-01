@@ -111,7 +111,8 @@ namespace elysian {
 		uint32_t				getCollisionFlags(void) const;
 		bool					getDmgActive(void) const;
 		void					setDmgActive(const bool active);
-		const CombatStatus&		getStatus(void) const;
+        CombatStatus    		getStatus(void) const;
+        void                    setStatus(const CombatStatus& status);
 		void					applyStatus(const CombatStatus& rvalue);
 
 	};
@@ -173,7 +174,8 @@ namespace elysian {
 	inline uint32_t Combat::getCollisionFlags(void) const { return _collisionFlags; }
 	inline bool Combat::getDmgActive(void) const { return _dmgActive; }
 	inline void Combat::setDmgActive(const bool active) { _dmgActive = active; }
-	inline const CombatStatus& Combat::getStatus(void) const { return _status; }
+    inline CombatStatus Combat::getStatus(void) const { return _status; }
+    inline void Combat::setStatus(const CombatStatus& status) {_status = status; }
 	inline void	Combat::applyStatus(const CombatStatus& rvalue) { _status.applyCombatStatus(rvalue); }
 }
 

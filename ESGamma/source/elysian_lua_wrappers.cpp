@@ -40,7 +40,8 @@ namespace elysian {
 		_mainState->register_class<DialogPrompt>();
 		_mainState->register_class<Dialog>();
 		_mainState->register_class<Examinable>();
-		_mainState->register_class<CombatReceipt>();
+        _mainState->register_class<CombatStatus>();
+        _mainState->register_class<CombatReceipt>();
 		_mainState->register_class<CombatAttrib>();
 		_mainState->register_class<Combat>();
 		OOLUA::register_class<MenuText>(*_mainState);
@@ -525,7 +526,8 @@ OOLUA_EXPORT_FUNCTIONS(CombatStatus,
 					   setHp,
 					   setMp)
 
-OOLUA_EXPORT_FUNCTIONS_CONST(Combat)
+OOLUA_EXPORT_FUNCTIONS_CONST(Combat,
+                              getStatus)
 OOLUA_EXPORT_FUNCTIONS(Combat,
 					   setSelfTable,
 					   setActionTable,
@@ -534,7 +536,8 @@ OOLUA_EXPORT_FUNCTIONS(Combat,
 					   setAttrib,
 					   setDmgType,
 					   setDmgActive,
-					   setCollisionFlags)
+                       setCollisionFlags,
+                       setStatus)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(MenuWidget)
 OOLUA_EXPORT_FUNCTIONS(MenuWidget)

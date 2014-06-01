@@ -155,7 +155,7 @@ void CombatSystem::_dealCollisionDamage(Combat *const src, Combat *const target,
 	CombatStatus modifier;
 	_curActionRes.contact = contact;
 	getBehavSys()->onCombatTargetCollisionEnter(src->getEntity(), contact, bodyB, &modifier);
-	resolveCombatAction(src->getActionTable(), src, target);
+    //resolveCombatAction(src->getActionTable(), src, target);
 	sendStatusModifier(target, &modifier);
 }
 
