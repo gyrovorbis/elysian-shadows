@@ -136,49 +136,36 @@ static unsigned char *load_png(GYFile *f, image_t *img)
 
 static GLuint create_texture_png(const char *filename, GLenum st, GLenum min, GLenum mag, unsigned* const success)
 {
-	GYFile *f;
-	image_t img;
-	unsigned char *pixels;
-	GLuint id;
-	if(!gyFileOpen(filename, "rb", &f)) {
-		*success = 0;
-		return 0;
-	}
-	pixels = load_png(f, &img);
-	if(!pixels) {
-		*success = 0;
-		return 0;
-	}
-	gyFileClose(&f);
-	check_gl_error();
-	glGenTextures(1, &id);
-	check_gl_error();
-	if(id == 0) { /* no texture ID */
-		gyPrintf("CANT GET A TEXTURE ID\n");
-		*success = 0;
-		return 0;
-	}
-	glBindTexture(GL_TEXTURE_2D, id);
-	check_gl_error();
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, min);
-	check_gl_error();
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mag);
-	check_gl_error();
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, st);
-	check_gl_error();
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, st);
-	check_gl_error();
-	gyPrintf("img.components = %d\n", img.components);
-	gyPrintf("img.width = %d\n", img.width);
-	gyPrintf("img.height = %d\n", img.height);
-	gyPrintf("img.format = %d\n", img.format);
-	glTexImage2D(GL_TEXTURE_2D, 0, img.format, img.width, img.height, 0, img.format, GL_UNSIGNED_BYTE, pixels);
-	check_gl_error();
-	glBindTexture(GL_TEXTURE_2D, 0);
-	check_gl_error();
-	free(pixels);
-	*success = 1;
-	return id;
+    GYFile *f;
+    image_t img;
+    unsigned char *pixels;
+    GLuint id;
+    if(!gyFileOpen(filename, "rb", &f)) {
+        *success = 0;
+        return 0;
+    }
+    pixels = load_png(f, &img);
+    if(!pixels) {
+        *success = 0;
+        return 0;
+    }
+    gyFileClose(&f);
+    glGenTextures(1, &id);
+    if(id == 0) { /* no texture ID */
+        gyPrintf("CANT GET A TEXTURE ID\n");
+        *success = 0;
+        return 0;
+    }
+    glBindTexture(GL_TEXTURE_2D, id);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, min);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mag);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, st);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, st);
+    glTexImage2D(GL_TEXTURE_2D, 0, img.format, img.width, img.height, 0, img.format, GL_UNSIGNED_BYTE, pixels);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    free(pixels);
+    *success = 1;
+    return id;
 };
 
 int _gyVidTexAlloc(GYTexture *const tex, const unsigned width, const unsigned height) {
