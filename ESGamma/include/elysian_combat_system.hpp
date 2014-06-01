@@ -48,7 +48,7 @@ namespace elysian {
 		Pool<Entity*>	_combatants;
 		unsigned		_bgmTensionLevel = 0;
 
-		void _dealCollisionDamage(Combat*const src, Combat*const target, CollisionContact* contact);
+		void _dealCollisionDamage(Combat*const src, Combat*const target, Collidable* bodyB, CollisionContact* contact);
 		void _processCurrentCombatAction(void);
 		void _emitCombatModifierText(const Combat*const target, const CombatStatus& modifier);
 	public:
@@ -64,7 +64,7 @@ namespace elysian {
 
 		void addCombatant(Entity& entity);
 		void removeCombatant(Entity& entity);
-		void killCombatant(Entity*const entity);
+		void killCombatant(Entity& entity);
 
 		void setBgmTensionLevel(const unsigned level);
 

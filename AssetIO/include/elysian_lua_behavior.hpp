@@ -71,6 +71,11 @@ namespace elysian {
 		virtual void		onCollisionExit(Collidable* const collidable) override;
 		virtual void		onExamine(Entity* entity) override;
 		virtual void		onDialog(const unsigned screen, const int option) override;
+		virtual void		onCombatEnter(void) override;
+		virtual void		onCombatExit(void) override;
+		virtual void		onCombatDeath(void) override;
+		virtual void		onCombatReceiveStatusModifier(CombatStatus*const modifier) override;
+		virtual void		onCombatTargetCollisionEnter(CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier) override;
 		
 		int					getSelfTableRef(void) const;
 #ifdef ELYSIAN_ENGINE

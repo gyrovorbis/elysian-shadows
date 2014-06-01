@@ -100,6 +100,7 @@ namespace OOLUA
 	typedef elysian::MenuText					MenuText;
 	typedef elysian::MenuEntity					MenuEntity;
 	typedef elysian::CombatAttrib				CombatAttrib;
+	typedef elysian::CombatStatus				CombatStatus;
 	typedef elysian::CombatReceipt				CombatReceipt;
 	typedef elysian::Combat						Combat;
 	typedef elysian::ParticleEmitterAttrib		ParticleEmitterAttrib;
@@ -701,6 +702,14 @@ OOLUA_PROXY_END
 OOLUA_PROXY(CombatAttrib)
 	OOLUA_MEM_FUNC(void, setTypeFlags, uint32_t)
 	OOLUA_MEM_FUNC(void, setTypeAgainstFlags, uint32_t)
+	OOLUA_MEM_FUNC(void, setParticleAttrib, ParticleEmitterAttrib*)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(CombatStatus)
+	OOLUA_MEM_FUNC(void, setHp, int)
+	OOLUA_MEM_FUNC(void, setMp, int)
+	OOLUA_MEM_FUNC_CONST(int, getHp)
+	OOLUA_MEM_FUNC_CONST(int, getMp)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Combat, Component)
@@ -967,7 +976,7 @@ OOLUA_PROXY(CombatSystem)
 	)
 	OOLUA_MEM_FUNC(void, addCombatant, Entity&)
 	OOLUA_MEM_FUNC(void, removeCombatant, Entity&)
-	OOLUA_MEM_FUNC(void, killCombatant, Entity*)
+	OOLUA_MEM_FUNC(void, killCombatant, Entity&)
 	OOLUA_MEM_FUNC(void, setBgmTensionLevel, unsigned)
 	OOLUA_MEM_FUNC(void, resolveCombatAction, Lua_table_ref, Combat*, Combat*)
 OOLUA_PROXY_END

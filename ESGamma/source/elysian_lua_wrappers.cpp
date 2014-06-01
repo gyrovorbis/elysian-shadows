@@ -515,7 +515,15 @@ OOLUA_EXPORT_FUNCTIONS(CombatReceipt,
 OOLUA_EXPORT_FUNCTIONS_CONST(CombatAttrib)
 OOLUA_EXPORT_FUNCTIONS(CombatAttrib,
 					   setTypeFlags,
-					   setTypeAgainstFlags)
+					   setTypeAgainstFlags,
+					   setParticleAttrib)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(CombatStatus,
+							 getMp,
+							 getHp)
+OOLUA_EXPORT_FUNCTIONS(CombatStatus,
+					   setHp,
+					   setMp)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(Combat)
 OOLUA_EXPORT_FUNCTIONS(Combat,

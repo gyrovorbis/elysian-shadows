@@ -22,6 +22,7 @@ namespace elysian {
 		virtual void onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) override;
 		
 		//Uniform events
+		void callTrigger(Entity*const entity, const Behavior::TRIGGER trigger);
 		void callTriggers(const Behavior::TRIGGER trigger);
 
 		//Subsystem-specific events
@@ -30,6 +31,9 @@ namespace elysian {
 		//void onCollisionExit(Entity *const entity, Collidable *const collidable);
 		void onExamine(Entity *const entity1, Entity *const entity2);
 		void onDialog(Entity *const entity, const unsigned screen, const int option);
+		void onCombatReceiveStatusModifier(Entity*const entity, CombatStatus*const modifier);
+		void onCombatTargetCollisionEnter(Entity*const entity, CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier);
+
 		
 	};
 	
@@ -86,6 +90,17 @@ namespace elysian {
 		}
 	}
 
+	inline void BehaviorSystem::callTrigger(Entity * const entity, const Behavior::TRIGGER trigger) {
+		auto end = entity->getBehaviors().end();
+		for(auto it = entity->getBehaviors().begin();
+			it != end;
+			++it)
+		{
+			if(it->second->getTriggers() & trigger) {
+				it->second->callTrigger(trigger);
+			}
+		}
+	}
 
 	inline void BehaviorSystem::callTriggers(const Behavior::TRIGGER trigger) {
 		auto end = _curArea->behaviors.end();
@@ -95,6 +110,30 @@ namespace elysian {
 		{
 			if((*it)->getTriggers() & trigger) {
 				(*it)->callTrigger(trigger);
+			}
+		}
+	}
+
+	inline void BehaviorSystem::onCombatReceiveStatusModifier(Entity*const entity, CombatStatus*const modifier) {
+		auto end = entity->getBehaviors().end();
+		for(auto it = entity->getBehaviors().begin();
+			it != end;
+			++it)
+		{
+			if(it->second->getTriggers() & Behavior::ON_COMBAT_RECEIVE_STATUS_MODIFIER) {
+				it->second->onCombatReceiveStatusModifier(modifier);
+			}
+		}
+	}
+
+	inline void BehaviorSystem::onCombatTargetCollisionEnter(Entity*const entity, CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier) {
+		auto end = entity->getBehaviors().end();
+		for(auto it = entity->getBehaviors().begin();
+			it != end;
+			++it)
+		{
+			if(it->second->getTriggers() & Behavior::ON_COMBAT_TARGET_COLLISION_ENTER) {
+				it->second->onCombatTargetCollisionEnter(contact, collidable, modifier);
 			}
 		}
 	}

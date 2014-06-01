@@ -5,6 +5,7 @@
 #include "elysian_collision_system.hpp"
 #include "elysian_camera_system.hpp"
 #include "elysian_gui_system.hpp"
+#include "elysian_behavior_system.hpp"
 #include <cmath>
 
 namespace elysian {
@@ -19,7 +20,7 @@ void CombatSystem::onCollisionEnter(Collidable*const bodyA, Collidable*const bod
 	auto* combatB = bodyB->getEntity()->getCombat();
 	if(!combatB || !(combatB->getAttrib()->getTypeFlags() & combatA->getAttrib()->getTypeAgainstFlags())) return;
 
-	_dealCollisionDamage(combatA, combatB, contact);
+	_dealCollisionDamage(combatA, combatB, bodyB, contact);
 }
 
 void CombatSystem::onCollide(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) {
@@ -28,7 +29,7 @@ void CombatSystem::onCollide(Collidable*const bodyA, Collidable*const bodyB, Col
 	auto* combatB = bodyB->getEntity()->getCombat();
 	if(!combatB || !(combatB->getAttrib()->getTypeFlags() & combatA->getAttrib()->getTypeAgainstFlags())) return;
 
-	_dealCollisionDamage(combatA, combatB, contact);
+	_dealCollisionDamage(combatA, combatB, bodyB, contact);
 }
 
 void CombatSystem::onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) {
@@ -37,19 +38,25 @@ void CombatSystem::onCollisionExit(Collidable*const bodyA, Collidable*const body
 	auto* combatB = bodyB->getEntity()->getCombat();
 	if(!combatB || !(combatB->getAttrib()->getTypeFlags() & combatA->getAttrib()->getTypeAgainstFlags())) return;
 
-	_dealCollisionDamage(combatA, combatB, nullptr);
+	_dealCollisionDamage(combatA, combatB, bodyB, nullptr);
 }
 
 void CombatSystem::addCombatant(Entity& entity) {
 	getCameraSys()->addEntity(&entity);
+	getBehavSys()->callTrigger(&entity, Behavior::ON_COMBAT_ENTER);
 }
 
 void CombatSystem::removeCombatant(Entity& entity) {
+	getBehavSys()->callTrigger(&entity, Behavior::ON_COMBAT_EXIT);
 	getCameraSys()->removeEntity(&entity);
 }
 
-void CombatSystem::killCombatant(Entity * const /*entity*/) {
-
+void CombatSystem::killCombatant(Entity& entity) {
+	getBehavSys()->callTrigger(&entity, Behavior::ON_COMBAT_DEATH);
+	//removeCombatant(entity); //don't call that or we call the ON_EXIT trigger
+	getCameraSys()->removeEntity(&entity);
+	getCurArea()->removeEntity(&entity);
+	delete &entity;
 }
 
 void CombatSystem::_processCurrentCombatAction(void) {
@@ -107,46 +114,48 @@ void CombatSystem::resolveCombatAction(OOLUA::Lua_table_ref action, Combat*const
 
 
 void CombatSystem::sendStatusModifier(Combat* const target, CombatStatus* const modifier) {
-#if 0
 	//not a valid combat target
 	if(target->getDmgType() != Combat::DMG_TARGET && target->getDmgType() != Combat::DMG_SOURCE_TARGET) return;
 
-	//LuaManager->onCombatReceiveStatsModifier(target->getEntity(), modifier);
+	getBehavSys()->onCombatReceiveStatusModifier(target->getEntity(), modifier);
 
-	target->applyStatus(modifier);
+	target->applyStatus(*modifier);
 
 	_curActionRes.initialVel = GYVector2 { 0.0f, -10.0f };
 	if(_curActionRes.contact) {
-		_curActionRes.initialVel = _curActionRes.contact->getNormal();
-		gyVec2ScaleAccum(&_curActionRes.initialVel, _curActionRes.contact->closingVel);
+		_curActionRes.contact->getNormal(_curActionRes.initialVel);
+		//gyVec2ScaleAccum(&_curActionRes.initialVel, _curActionRes.contact->getClosingVel());
 		//reverse the direction if normal is from point-of-reference of the other colliding body
-		if(_curActionRes.contact->getCollidable(0) != target->getEntity()->getCollidable()) {
-			gyVec2ScaleAccum(&_curActionRes.initialVel, -1.0f);
-		}
+		//if(_curActionRes.contact->getCollidable(0) != target->getEntity()->getCollidable()) {
+		//	gyVec2ScaleAccum(&_curActionRes.initialVel, -1.0f);
+		//}
 	}
 
 	//emit combat text from target
-	_emitCombatModifierText(target, modifier);
+	_emitCombatModifierText(target, *modifier);
 
 	//check for particle emission
-	if(_curActionRes.contact && target->getAttrib()->isParticleEmitter()) {
+	if(_curActionRes.contact && target->getAttrib()->getParticleAttrib()) {
+		GYVector3 point;
+		getPartSys()->setAttrib(2, target->getAttrib()->getParticleAttrib());
+		_curActionRes.contact->getWorldPos(*(GYVector2*)&point);
+		point.z = target->getEntity()->transform._pos.z + 8.0f;
 		//emit from POC with registered color and separating vel intensity
-		//getPartSys()->emitFromPoint(0, _curActionRes.contact->getWorldPos(), )
+		getPartSys()->emitFromPoint(2, point, tan(point.y/point.x), 4000);
 	}
 
 	//check if dead
-	if(target->getStatus()->getHp() <= 0) {
-		_killCombatant(target);
+	if(target->getStatus().getHp() <= 0) {
+		killCombatant(*target->getEntity());
 	}
-#endif
 }
 
 
-void CombatSystem::_dealCollisionDamage(Combat *const src, Combat *const target, CollisionContact* contact) {
+void CombatSystem::_dealCollisionDamage(Combat *const src, Combat *const target, Collidable* bodyB, CollisionContact* contact) {
 	CombatStatus modifier;
 	_curActionRes.contact = contact;
-	//luaSystem->onCombatTargetCollision(src, &modifier);
-	//resolveCombatAction(src->getActionTable(), src, target);
+	getBehavSys()->onCombatTargetCollisionEnter(src->getEntity(), contact, bodyB, &modifier);
+	resolveCombatAction(src->getActionTable(), src, target);
 	sendStatusModifier(target, &modifier);
 }
 
@@ -173,15 +182,16 @@ void CombatSystem::update(void) {
 	}*/
 }
 
+//void GuiSystem::addCombatText(const char*const text, const GYColor4 color, const GYVector2& pos, const GYVector2& vel)
+
 void CombatSystem::_emitCombatModifierText(const Combat*const target, const CombatStatus& modifier) {
-#if 0
-	auto emitIntegerAttrib = [&](const int attrib, const GYColor4 posColor, const GYVector4 negColor) {
+	auto emitIntegerAttrib = [&](const int attrib, const GYColor4 posColor, const GYColor4 negColor) {
 		char buff[20];
 
 		//check if the attribute was modified
 		if(attrib != 0) {
 			sprintf(buff, "%d", abs(attrib));
-			getGuiSys()->addCombatText(buff, (attrib > 0)? posColor : negColor, target->getEntity()->transform._pos, _curActionRes.initialVel);
+			getGuiSys()->addCombatText(buff, (attrib > 0)? posColor : negColor, *(GYVector2*)&target->getEntity()->transform._pos, _curActionRes.initialVel);
 		}
 	};
 
@@ -189,7 +199,6 @@ void CombatSystem::_emitCombatModifierText(const Combat*const target, const Comb
 	emitIntegerAttrib(modifier.getMp(), GYColor4 { 200, 100, 0, 255 }, GYColor4 { 0, 0, 255, 255 });
 
 	//emit icons for status ailments!
-#endif
-
 }
+
 }

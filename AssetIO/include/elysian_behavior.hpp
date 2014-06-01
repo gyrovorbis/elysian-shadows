@@ -15,6 +15,7 @@ namespace elysian {
 	class Entity;
 	class Collidable;
 	class CollisionContact;
+	class CombatStatus;
 	
 	class Behavior: public Component {
 		friend class Entity;
@@ -34,22 +35,27 @@ namespace elysian {
 	public:
 		//64 triggers max, currently
 		enum TRIGGER {
-			ON_SCRIPT_CREATE	= 1,
-			ON_SCRIPT_DESTROY	= 1<<1,
-			ON_CREATE			= 1<<2,
-			ON_DESTROY			= 1<<3,
-			ON_LOAD				= 1<<4,
-			ON_UNLOAD			= 1<<5,
-			ON_ENTER			= 1<<6,
-			ON_EXIT				= 1<<7,
-			ON_UPDATE			= 1<<8,
-			ON_RENDER			= 1<<9,
-			ON_COLLIDE			= 1<<10,
-			ON_COLLISION_ENTER	= 1<<11,
-			ON_COLLISION_EXIT	= 1<<12,
-			ON_EXAMINE			= 1<<13,
-			ON_DIALOG			= 1<<14,
-			TRIGGER_MAX			= 1<<15
+			ON_SCRIPT_CREATE					= 1,
+			ON_SCRIPT_DESTROY					= 1<<1,
+			ON_CREATE							= 1<<2,
+			ON_DESTROY							= 1<<3,
+			ON_LOAD								= 1<<4,
+			ON_UNLOAD							= 1<<5,
+			ON_ENTER							= 1<<6,
+			ON_EXIT								= 1<<7,
+			ON_UPDATE							= 1<<8,
+			ON_RENDER							= 1<<9,
+			ON_COLLIDE							= 1<<10,
+			ON_COLLISION_ENTER					= 1<<11,
+			ON_COLLISION_EXIT					= 1<<12,
+			ON_EXAMINE							= 1<<13,
+			ON_DIALOG							= 1<<14,
+			ON_COMBAT_ENTER						= 1<<15,
+			ON_COMBAT_EXIT						= 1<<16,
+			ON_COMBAT_DEATH						= 1<<17,
+			ON_COMBAT_RECEIVE_STATUS_MODIFIER	= 1<<18,
+			ON_COMBAT_TARGET_COLLISION_ENTER	= 1<<19,
+			TRIGGER_MAX							= 1<<20
 		};
 
 		static const char* triggerNameFromFlag(const uint64_t flag);
@@ -74,6 +80,11 @@ namespace elysian {
 		virtual void onCollisionExit(Collidable* const collidable);
 		virtual void onExamine(Entity* entity);
 		virtual void onDialog(const unsigned screen, const int option);
+		virtual void onCombatEnter(void);
+		virtual void onCombatExit(void);
+		virtual void onCombatDeath(void);
+		virtual void onCombatReceiveStatusModifier(CombatStatus*const modifier);
+		virtual void onCombatTargetCollisionEnter(CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier);
 
 		void		callTrigger(const TRIGGER trigger);
 
@@ -126,6 +137,12 @@ namespace elysian {
 				return onUpdate();
 			case ON_RENDER:
 				return onRender();
+			case ON_COMBAT_ENTER:
+				return onCombatEnter();
+			case ON_COMBAT_EXIT:
+				return onCombatExit();
+			case ON_COMBAT_DEATH:
+				return onCombatDeath();
 			default: //these have no business being called here
 				assert(false);
 				return;

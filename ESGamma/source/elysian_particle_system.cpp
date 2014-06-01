@@ -9,18 +9,20 @@ namespace elysian {
 
 ParticleSystem::ParticleSystem(void) {
 	for(unsigned i = 0; i < ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_COUNT; ++i) {
-		_emitters[i].setAttrib(new ParticleEmitterAttrib);
+		_defaultAttribs[i] = new ParticleEmitterAttrib;
+		_emitters[i].setAttrib(_defaultAttribs[i]);
 		_emitters[i].allocatePool(ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_POOL_SIZE);
 	}
+}
+
+ParticleSystem::~ParticleSystem(void) {
+	for(unsigned i = 0; i < ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_COUNT; ++i) delete _defaultAttribs[i];
 }
 
 void ParticleSystem::emitFromPoint(const unsigned index, const GYVector3& pos, const float angle, const unsigned intensity) {
 	_emitters[index].emitFromPoint(pos, angle, intensity);
 }
 
-ParticleEmitterAttrib* ParticleSystem::getAttrib(const unsigned index) const {
-	return _emitters[index].getAttrib();
-}
 
 void ParticleSystem::resizePool(const unsigned index, const unsigned size) {
 	_emitters[index].allocatePool(size);

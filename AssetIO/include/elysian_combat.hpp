@@ -9,12 +9,14 @@
 
 namespace elysian {
 
+	class ParticleEmitterAttrib;
+
 	class CombatAttrib {
 	private:
-		GYColor4	_particleColor	= { 255, 255, 255, 255 };
-		uint32_t	_typeFlags			= ~0x0;
-		uint32_t	_typeAgainstFlags	= ~0x0;
-		bool		_particleEmitter	= false;
+		//GYColor4				_particleColor		= { 255, 255, 255, 255 };
+		uint32_t				_typeFlags			= ~0x0;
+		uint32_t				_typeAgainstFlags	= ~0x0;
+		ParticleEmitterAttrib*	_particleAttrib		= nullptr;
 
 	public:
 
@@ -22,10 +24,10 @@ namespace elysian {
 		uint32_t getTypeAgainstFlags(void) const;
 		void setTypeFlags(const uint32_t flags);
 		void setTypeAgainstFlags(const uint32_t flags);
-		bool isParticleEmitter(void) const;
-		void setParticleEmitter(const bool val);
-		GYColor4 getParticleColor(void) const;
-		void setParticleColor(const GYColor4 color);
+		ParticleEmitterAttrib* getParticleAttrib(void) const;
+		void setParticleAttrib(ParticleEmitterAttrib*const attrib);
+		//GYColor4 getParticleColor(void) const;
+		//void setParticleColor(const GYColor4 color);
 	};
 
 	class CombatStatus {
@@ -48,8 +50,8 @@ namespace elysian {
 
 		void				applyCombatStatus(const CombatStatus& rvalue);
 
-		int				getHp(void) const;
-		int				getMp(void) const;
+		int					getHp(void) const;
+		int					getMp(void) const;
 		STATUS_EFFECT_STATE getPoison(void) const;
 		STATUS_EFFECT_STATE getSleep(void) const;
 		STATUS_EFFECT_STATE getConfusion(void) const;
@@ -121,10 +123,10 @@ namespace elysian {
 	inline uint32_t CombatAttrib::getTypeAgainstFlags(void) const { return _typeAgainstFlags; }
 	inline void CombatAttrib::setTypeFlags(const uint32_t flags) { _typeFlags = flags; }
 	inline void CombatAttrib::setTypeAgainstFlags(const uint32_t flags) { _typeAgainstFlags = flags; }
-	inline bool CombatAttrib::isParticleEmitter(void) const { return _particleEmitter; }
-	inline void CombatAttrib::setParticleEmitter(const bool val) { _particleEmitter = val; }
-	inline GYColor4 CombatAttrib::getParticleColor(void) const { return _particleColor; }
-	inline void CombatAttrib::setParticleColor(const GYColor4 color) { _particleColor = color; }
+	inline ParticleEmitterAttrib* CombatAttrib::getParticleAttrib(void) const { return _particleAttrib; }
+	inline void CombatAttrib::setParticleAttrib(ParticleEmitterAttrib* attrib) { _particleAttrib = attrib; }
+	//inline GYColor4 CombatAttrib::getParticleColor(void) const { return _particleColor; }
+	//inline void CombatAttrib::setParticleColor(const GYColor4 color) { _particleColor = color; }
 
 	inline void CombatStatus::applyCombatStatus(const CombatStatus& rvalue) {
 		auto checkApplyStatusEffect = [](STATUS_EFFECT_STATE& lvalue,

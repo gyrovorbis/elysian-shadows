@@ -250,5 +250,39 @@ void LuaBehavior::onDialog(const unsigned screen, const int option) {
 #endif
 }
 
+void LuaBehavior::onCombatEnter(void) {
+#ifdef ELYSIAN_ENGINE
+	_PROTECTED(_callTrigger<void>("onCombatEnter", _ooSelfTableRef));
+#endif
+}
+
+void LuaBehavior::onCombatExit(void) {
+#ifdef ELYSIAN_ENGINE
+	_PROTECTED(_callTrigger<void>("onCombatExit", _ooSelfTableRef));
+#endif
+}
+
+void LuaBehavior::onCombatDeath(void) {
+#ifdef ELYSIAN_ENGINE
+	_PROTECTED(_callTrigger<void>("onCombatDeath", _ooSelfTableRef));
+#endif
+}
+
+void LuaBehavior::onCombatReceiveStatusModifier(CombatStatus*const modifier) {
+	(void)modifier;
+#ifdef ELYSIAN_ENGINE
+	_PROTECTED(_callTrigger<void>("onCombatReceiveStatusModifier", _ooSelfTableRef, modifier));
+#endif
+}
+
+void LuaBehavior::onCombatTargetCollisionEnter(CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier) {
+	(void)contact;
+	(void)collidable;
+	(void)modifier;
+#ifdef ELYSIAN_ENGINE
+	_PROTECTED(_callTrigger<void>("onCombatTargetCollisionEnter", _ooSelfTableRef, contact, collidable, modifier));
+#endif
+}
+
 
 }
