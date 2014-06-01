@@ -59,6 +59,8 @@ find_host_package(Git)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	set(GY_TARGET_OS "darwin")
+elseif(ANDROID)
+	set(GY_TARGET_OS "android")
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	set(GY_TARGET_OS "linux")
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
