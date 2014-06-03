@@ -38,6 +38,7 @@ list(APPEND CMAKE_MODULE_PATH "${ES_SCRIPTS_DIR}/cmake/modules")
 
 option(ES_BUILD_GAMMA "Build ESGamma" ON)
 option(ES_BUILD_WITH_ASSETS "Build ESGamma with assets" ON)
+option(ES_BUNDLE_ASSETS "Physically copy assets to be bundled with ESGamma" OFF)
 option(ES_BUILD_TOOLKIT "Build ESToolkit" OFF)
 
 #

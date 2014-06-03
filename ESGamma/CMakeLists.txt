@@ -125,9 +125,16 @@ else()
             MACOSX_BUNDLE_LONG_VERSION_STRING ${es_VERSION_FULL}
         )
         if(ES_BUILD_WITH_ASSETS)
-            add_custom_command(TARGET ESGamma POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy_directory ${ES_ASSETS_DIR} ${CMAKE_CURRENT_BINARY_DIR}/ESGamma.app/Contents/Resources/assets
-            )
+            if(ES_BUNDLE_ASSETS)
+                add_custom_command(TARGET ESGamma POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E copy_directory ${ES_ASSETS_DIR} ${CMAKE_CURRENT_BINARY_DIR}/ESGamma.app/Contents/Resources/assets
+                )
+            else()
+                add_custom_command(TARGET ESGamma POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/ESGamma.app/Contents/Resources
+                    COMMAND ${CMAKE_COMMAND} -E create_symlink ${ES_ASSETS_DIR} ${CMAKE_CURRENT_BINARY_DIR}/ESGamma.app/Contents/Resources/assets
+                )
+            endif()
         endif()
     else()
         add_executable(ESGamma
@@ -140,7 +147,14 @@ else()
             target_link_libraries(ESGamma ${CMAKE_DL_LIBS} fluidsynth)
         endif()
         if(ES_BUILD_WITH_ASSETS)
-            install(DIRECTORY ${ES_ASSETS_DIR} DESTINATION bin/assets)
+            if(ES_BUNDLE_ASSETS OR NOT UNIX)
+                install(DIRECTORY ${ES_ASSETS_DIR} DESTINATION bin/assets)
+            else()
+                add_custom_command(TARGET ESGamma POST_BUILD
+                    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/ESGamma.app/Contents/Resources
+                    COMMAND ${CMAKE_COMMAND} -E create_symlink ${ES_ASSETS_DIR} ${CMAKE_CURRENT_BINARY_DIR}/ESGamma.app/Contents/Resources/assets
+                )
+            endif()
         endif()
     endif()
     target_link_libraries(ESGamma ${ESGamma_LIBRARIES})
