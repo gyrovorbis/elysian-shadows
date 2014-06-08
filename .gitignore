@@ -1,0 +1,134 @@
+
+# /bin/
+
+# /examples/
+
+# /examples/basic/
+
+# /examples/basic/vs2010/
+
+# /include/
+
+# /include/dc/
+
+# /include/glal/
+
+# /include/ios/
+
+# /include/psp/
+
+# /include/soft/
+
+# /include/template/
+
+# /include/x86/
+
+# /lib/
+
+# /lib/dc/
+
+# /lib/ios/
+
+# /lib/linux/
+
+# /lib/osx/
+
+# /lib/psp/
+
+# /lib/win32/
+
+# /lib/win32/gl/
+
+# /lib/win32/libpng/
+
+# /lib/win32/sdl/
+
+# /qtcreator/
+
+# /source/
+
+# /source/dc/
+
+# /source/glal/
+
+# /source/ios/
+
+# /source/psp/
+
+# /source/soft/
+
+# /source/template/
+
+# /source/x86/
+
+# /tools/
+
+# /tools/dc/
+
+# /tools/dc/palsync/
+
+# /tools/dc/texconv/
+
+# /vs2010/
+
+# /xcode4/
+
+# /xcode4/LibGyroOSX/
+
+# /xcode4/LibGyroOSX/en.lproj/
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.a
+*.so
+build/*
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
+*.rar
+*.tar
+*.zip
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
+lua_debug.txt
+gamma_debug.txt
+gamma_args.txt
+
+# OS generated files #
+######################
+.DS_Store?
+.DS_Store
+ehthumbs.db
+Icon?
+Thumbs.db
+*~
+*.swp
+
+*.pro.user
+
+Project
+
+# Meta Object Code #
+####################
+moc_*
+
+# Documentation #
+#################
+Docs/Documentation/
+
+# CMake generated
+out/
+CMakeLists.txt.user
