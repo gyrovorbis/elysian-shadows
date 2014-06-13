@@ -83,12 +83,12 @@ namespace elysian {
 			return static_cast<T*>(this)->renderObjectEntry(entry, z);
         }
         
-        void _beginObjectList(void) const {
-			static_cast<const T*>(this)->beginObjectList();
+		void _beginObjectList(void) {
+			static_cast<T*>(this)->beginObjectList();
         }
         
-        void _endObjectList(void) const {
-			static_cast<const T*>(this)->endObjectList();
+		void _endObjectList(void) {
+			static_cast<T*>(this)->endObjectList();
         }
 
         //Entity interface
@@ -260,22 +260,33 @@ namespace elysian {
 		for(unsigned i = 0; i < _depthBuffMaxHeight; ++i) {
 
 			_beginRenderNextTileRow();
+			_beginObjectList();
 
 			_renderDepthBuffTileRow(i, NORMAL_FLAT);
+			_endObjectList();
 
 			_renderCustomPassAtElev(i);
 
-			//Entities come first, since they are always above the lowest point on the object
-			//float entityZDelta = 0.0f;
-			for(unsigned j = 0; j < _entityCount[i]; ++j) {
-				//_entityBuff[i][j].zCoord += entityZDelta;
-				_renderEntityEntry(_entityBuff[i][j]);
-				//Give each entity a tiny delta to prevent duplicate z from same y coord
-				//entityZDelta += ELYSIAN_DEPTH_BUFFER_ENTITY_ENTITY_MIN_Z_OFFSET;
-			}
+			//if(_entityCount[i]) {
+				//_endObjectList();
+
+				//Entities come first, since they are always above the lowest point on the object
+				//float entityZDelta = 0.0f;
+				for(unsigned j = 0; j < _entityCount[i]; ++j) {
+					//_entityBuff[i][j].zCoord += entityZDelta;
+					_renderEntityEntry(_entityBuff[i][j]);
+					//Give each entity a tiny delta to prevent duplicate z from same y coord
+					//entityZDelta += ELYSIAN_DEPTH_BUFFER_ENTITY_ENTITY_MIN_Z_OFFSET;
+				}
+
+				//_beginObjectList();
+
+			//}
 
 			//_beginRenderNextTileRow();
+			_beginObjectList();
 			_renderDepthBuffTileRow(i, NORMAL_FRONT);
+			_endObjectList();
                       
 		}
 		//_enableDepthTest();
@@ -359,7 +370,7 @@ namespace elysian {
 	inline void MapDepthBuffer<T, O, E>::_renderDepthBuffTileRow(const unsigned int i, const NORMAL_TYPE normalType) {
 		//Tiles - rendered with Z at the BOTTOM of the map tile location
 
-		_beginObjectList();
+		//_beginObjectList();
 
 		LightSystem*const	lightSys			= getLightSys();
 
@@ -379,7 +390,7 @@ namespace elysian {
 			}
 		}
 
-		_endObjectList();
+	//	_endObjectList();
 
 	}
     

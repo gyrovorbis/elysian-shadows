@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <gyro.h>
 #include "elysian_asset.hpp"
+#include "elysian_level.hpp"
 
 #define ELYSIAN_MAP_BOUNDARY_CHECKS false //PLEASE, GOD, TAKE ME OUT BEFORE RELEASE!!!!!!
 #define ELYSIAN_AREA_USE_INIT_LUA	true
@@ -39,6 +40,8 @@
 													value &= ~(ELYSIAN_##t##_ENTRY_##a##_BIT_MASK << ELYSIAN_##t##_ENTRY_##a##_BIT_POS); \
 													(value) |= ((unsigned)(v) << ELYSIAN_##t##_ENTRY_##a##_BIT_POS); \
 												} while(0)
+
+#define ELYSIAN_MAP_ENTRY_TO_VBO_INDEX(l, x, y) ((l*height*width + y*width + x)*4)
 
 #ifdef ELYSIAN_MAP_BOUNDARY_CHECKS
 #	define ELYSIAN_AREA_PROTECTED_MAP_ACCESS(t) ((t < mapEntryCount)? tiles[t] : tiles[0])
@@ -90,6 +93,13 @@ namespace elysian {
 		bool		getNormal(void) const;
 	};
 
+	struct VboEntry {
+		GYVector4	vert;
+		GYTexCoord2	texCoord;
+		GYColor4	color;
+	};
+
+
     struct Area: public Asset {
 		//Entity data
 		std::vector<Entity*>			entities;
@@ -126,6 +136,11 @@ namespace elysian {
 		unsigned			mapEntryCount	= 0;
 		unsigned			layerEntryCount	= 0;
 
+#ifdef GYRO_GLAL
+		GLuint vboBuff;
+#endif
+
+		Area(void);
         ~Area(void);
 
 		unsigned short getMapWidth(void) const { return width; }
@@ -161,6 +176,10 @@ namespace elysian {
 		bool		loadEntities(const char *const filename);
 		bool		saveEntities(const char *const filename);
 
+#ifdef GYRO_GLAL
+		void		populateVbo(void);
+#endif
+
 	};
 
 	// ==== INLINEZ ====
@@ -187,7 +206,40 @@ namespace elysian {
 		return ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x);
 	}
 	inline void Area::setTileEntry(const unsigned l, const unsigned x, const unsigned y, const TileEntry e) {
+
+		const GYTexCoord2*const coords = gyVidTexCoordArrayFromFrame(&level->tileSheet->_coord->texCoord[e.getIndex()],
+																		   e.getOrient());
+
+		VboEntry entry[4] = {
+			{
+				GYVector4  { x*32.0f-16.0f, y*32.0f-16.0f, e.getElev()*32.0f + ((e.getNormal())? 32.0f : 0.0f), 1.0f },
+				GYTexCoord2 { coords[0].u, coords[0].v },
+				GYColor4 { 255, 255, 255, 255 }
+			},
+			{
+				GYVector4  { x*32.0f+16.0f, y*32.0f-16.0f, e.getElev()*32.0f + ((e.getNormal())? 32.0f : 0.0f), 1.0f },
+				GYTexCoord2 { coords[1].u, coords[1].v },
+				GYColor4 { 255, 255, 255, 255 }
+			},
+			{
+				GYVector4 { x*32.0f-16.0f, y*32.0f+16.0f, e.getElev()*32.0f, 1.0f },
+				GYTexCoord2 { coords[2].u, coords[2].v },
+				GYColor4 { 255, 255, 255, 255 }
+			},
+			{
+				GYVector4 { x*32.0f+16.0f, y*32.0f+16.0f, e.getElev()*32.0f, 1.0f },
+				GYTexCoord2 { coords[3].u, coords[3].v },
+				GYColor4 { 255, 255, 255, 255 }
+			}
+		};
+
 		ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
+
+		glBindBuffer(GL_ARRAY_BUFFER, vboBuff);
+		glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_MAP_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(VboEntry), sizeof(VboEntry)*4, (void*)entry);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 	}
 	inline TileEntry Area::getL1TileEntry(const unsigned x, const unsigned y) const {
 		return ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tiles, y*width + x);

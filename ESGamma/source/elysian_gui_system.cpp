@@ -135,6 +135,8 @@ void GuiSystem::_renderDebugOverlay(void) {
 	twcen.transform._pos.y = 100.0f;
 	twcen.transform._pos.z = 50.0f;
 
+	twcen.startBatchRender();
+
 	_printDebugLine("FPS:", "%.2f", getTimerSys()->getFramerate());
 	_printDebugLine("Verts:", "%d", gyVidVertexRenderCount());
 	_printDebugLine("Uniform Uploads:", "%d", getLightSys()->getShaderUniformChangesLastFrame());
@@ -158,6 +160,8 @@ void GuiSystem::_renderDebugOverlay(void) {
 						getPartySys()->getPartyLeader()->transform._pos.y,
 						getPartySys()->getPartyLeader()->transform._pos.z);
 	}
+
+	twcen.endBatchRender();
 
 }
 

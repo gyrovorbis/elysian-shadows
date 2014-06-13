@@ -81,18 +81,20 @@ void Font::drawString(const FORMAT format, const ALIGNMENT align, const char *co
 
 	i = 0;
 
-	gyVidTexBind(_tex);
-	if(_color.a == 255) gyVidAlphaLevel(GY_ALPHA_PUNCHTHRU);
-    else gyVidAlphaLevel(GY_ALPHA_FULL);
-	//gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
-	gyVidQuadListBegin(&_color);
+	if(!_batching) {
+		gyVidTexBind(_tex);
+		if(_color.a == 255) gyVidAlphaLevel(GY_ALPHA_PUNCHTHRU);
+		else gyVidAlphaLevel(GY_ALPHA_FULL);
+		//gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
+		gyVidQuadListBegin(&_color);
+	}
 
 	while (buffer[i] != '\0') {
 		//Iterates through the buffer, drawing characters
 		_renderChar(format, currentX, currentY, buffer, i);
 	}
 
-	gyVidQuadListEnd();
+	if(!_batching) gyVidQuadListEnd();
 }
 
 //	void RenderCharacter(FONT_FORMAT format, float &currentX, float &currentY, char *str, int &i);

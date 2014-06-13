@@ -25,7 +25,7 @@ class Font;
 	class AdventureLog: public System {
 	public:
 		//Types of strings that may be pushed into the log
-		enum TEXT_TYPE  { TEXT_DEBUG, TEXT_LUA_DEBUG, TEXT_NORMAL, TEXT_NOTICE, TEXT_ERROR };
+		enum TEXT_TYPE  { TEXT_DEBUG, TEXT_LUA_DEBUG, TEXT_NORMAL, TEXT_NOTICE, TEXT_ERROR, TEXT_MAX };
 		//States that the log can be in
 		enum LOG_STATE { WAIT, FADE, SCROLL };
 		//Exit states

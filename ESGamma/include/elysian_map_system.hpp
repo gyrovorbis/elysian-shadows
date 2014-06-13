@@ -10,6 +10,12 @@
 #include "elysian_renderable.hpp"
 #include "elysian_particle_system.hpp"
 #include <gyro.h>
+
+#ifdef GYRO_GLAL
+#	include <glal/gyro_shaders_glal.h>
+
+#define ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE	100000
+#endif
 /*
 //Objects have integer zCoords, force Entities to floats to prevent duplicate z
 #define ELYSIAN_DEPTH_BUFFER_ENTITY_OBJECT_MIN_Y_OFFSET 0.001f
@@ -34,6 +40,8 @@ namespace elysian {
 		public MapDepthBuffer<MapSystem, MapDepthBuffEntry, GammaEntityDepthBuffEntry> 
 	{ 
 	private:
+		unsigned	_stripIndexArray[ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE];
+		unsigned	_stripIndexArraySize = 0;
 		static const GYColor4 _tileColor;
 		bool _renderLayer[4];
         //animation
@@ -62,10 +70,10 @@ namespace elysian {
 
         void getOnscreenTileRegion(unsigned &startX, unsigned &startY, unsigned &endX, unsigned &endY) const;
         float getBaseZCoord(void) const;
-		void getObjectLayerEntry(const unsigned x, const unsigned y, MapDepthBuffEntry &entry) const;
-        void renderObjectEntry(const MapDepthBuffEntry &entry, const float z) const;
-        void beginObjectList(void) const;
-        void endObjectList(void) const;
+		void getObjectLayerEntry(const unsigned x, const unsigned y, MapDepthBuffEntry &entry);
+		void renderObjectEntry(const MapDepthBuffEntry &entry, const float z);
+		void beginObjectList(void);
+		void endObjectList(void);
 		unsigned getEntityCount(void) const;
 		bool getOnscreenEntity(const unsigned index, GammaEntityDepthBuffEntry &entry, NORMAL_TYPE &normalType, float &lowestY, float &zCoord) const;
         void renderEntityEntry(const GammaEntityDepthBuffEntry &entry) const;
@@ -100,19 +108,19 @@ namespace elysian {
 		return ZCoordConstants::mapBase;
 	}
 	
-	inline void MapSystem::getObjectLayerEntry(const unsigned /*x*/, const unsigned /*y*/, MapDepthBuffEntry &entry) const {
+	inline void MapSystem::getObjectLayerEntry(const unsigned /*x*/, const unsigned /*y*/, MapDepthBuffEntry &entry) {
 		entry.mapEntry = _curArea->getTileEntry(entry.layer, entry.x, entry.y);
 		entry.lights = getLightSys()->getLightMapEntryMapCoord(entry.y, entry.x);
 	}
 	
-	inline void MapSystem::renderObjectEntry(const MapDepthBuffEntry &entry, const float z) const {
+	inline void MapSystem::renderObjectEntry(const MapDepthBuffEntry &entry, const float z) {
 		if(!entry.mapEntry.value) return; //Do not render tile 0, even if the depth buff algorithm tries to.
 		if(!_renderLayer[entry.layer]) return; //Don't render if this layer has been toggled off.
 		float delta = 0;//(entry.renderPass);
 
-		gyMatPush();
+		//gyMatPush();
 
-		gyVidRectTexOrient(entry.mapEntry.getOrient());
+		//gyVidRectTexOrient(entry.mapEntry.getOrient());
 
 	//	if(entry.lightState == MapDepthBuffEntry::LIGHT_STATE::PARTIAL) {
 			//glBlendFunc(GL_ONE, GL_ONE);
@@ -121,23 +129,60 @@ namespace elysian {
 		static bool blended = false;
 
 		if(entry.renderPass > 1 && !blended) {
+			endObjectList();
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 			blended = true;
 		}
 		else if(entry.renderPass == 1 && blended) {
+			endObjectList();
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			blended = false;
 		}
 #if 1
-		if(entry.mapEntry.getNormal()) {
-			gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta, 32.0f, 32.0f, 32.0f);
-			gyVidRectNormalType(GY_RECT_NORMAL_FRONT);
-		} else {
-			gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta, 32.0f, 32.0f, 1.0f);
+		static GY_RECT_NORMAL_TYPE normalType = GY_RECT_NORMAL_FLAT;
+		GY_RECT_NORMAL_TYPE newNormal = entry.mapEntry.getNormal() ? GY_RECT_NORMAL_FLAT : GY_RECT_NORMAL_FRONT;
+
+		if(newNormal != normalType) {
+			endObjectList();
+			//gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta, 32.0f, 32.0f, 32.0f);
+			gyVidRectNormalType(newNormal);
+			normalType = newNormal;
+		}
+		/*} else {
+		//	gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta, 32.0f, 32.0f, 1.0f);
 			gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
+		}*/
+
+		/*glBindBuffer(GL_ARRAY_BUFFER, getCurArea()->vboBuff);
+		glVertexAttribPointer(curLightShader->attribLoc[SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(VboEntry), 0);
+		glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_POS]);
+		glVertexAttribPointer(curLightShader->attribLoc[SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(4*sizeof(float)));
+		glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_TEX_COORD]);
+		glVertexAttribPointer(curLightShader->attribLoc[SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VboEntry), (void*)(6*sizeof(float)));
+		glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_COLOR]);*/
+
+		const unsigned int indexBase = (entry.layer*getCurArea()->height*getCurArea()->width +
+						   entry.y*getCurArea()->width + entry.x)*4;
+
+		unsigned int indices[4] = { indexBase, indexBase+1,indexBase+2, indexBase+3};
+
+		if(_stripIndexArraySize) {
+			_stripIndexArray[_stripIndexArraySize]		= _stripIndexArray[_stripIndexArraySize-1];
+			_stripIndexArray[_stripIndexArraySize+1]	= indices[0];
+			_stripIndexArraySize += 2;
 		}
 
-		gyVidRect(_animTiles[entry.mapEntry.getIndex()].curIndex);
+		for(unsigned i = 0; i < 4; ++i) _stripIndexArray[_stripIndexArraySize+i] = indices[i];
+
+		_stripIndexArraySize += 4;
+
+		//glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		//glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT, (void*)indexes);
+
+		//glDrawArrays(GL_TRIANGLE_STRIP, indexBase, 4);
+
+		//gyVidRect(_animTiles[entry.mapEntry.getIndex()].curIndex);
 #else
 		if(entry.mapEntry.getElev() > 0) {
 			gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta-32.0f, 32.0f, 32.0f, 32.0f);
@@ -159,19 +204,32 @@ namespace elysian {
 		} else {
 			gyVidRect(_animTiles[((TileEntry *)&entry.mapEntry)->getIndex()].curIndex);
 		}*/
-		gyMatPop();
+	//	gyMatPop();
 	}
 	
-	inline void MapSystem::beginObjectList(void) const {
+	inline void MapSystem::beginObjectList(void) {
 		gyVidMaterialBind(nullptr);
 		gyVidTexBind(_curLevel->tileSheet);
 		gyVidNormalMapBind(_curLevel->normalSheet);
 		gyVidSpecularMapBind(_curLevel->specularSheet);
-		gyVidQuadListBegin(&_tileColor);
+		//gyVidQuadListBegin(&_tileColor);
+		glBindBuffer(GL_ARRAY_BUFFER, getCurArea()->vboBuff);
+		glVertexAttribPointer(curLightShader->attribLoc[SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(VboEntry), 0);
+		glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_POS]);
+		glVertexAttribPointer(curLightShader->attribLoc[SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(4*sizeof(float)));
+		glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_TEX_COORD]);
+		glVertexAttribPointer(curLightShader->attribLoc[SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VboEntry), (void*)(6*sizeof(float)));
+		glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_COLOR]);
 	}
 	
-	inline void MapSystem::endObjectList(void) const {
-		gyVidQuadListEnd();
+	inline void MapSystem::endObjectList(void) {
+
+		glDrawElements(GL_TRIANGLE_STRIP, _stripIndexArraySize, GL_UNSIGNED_INT, (void*)_stripIndexArray);
+		_stripIndexArraySize = 0;
+		//glDrawArrays(GL_TRIANGLE_STRIP, indexBase, 4);
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		//gyVidQuadListEnd();
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 	

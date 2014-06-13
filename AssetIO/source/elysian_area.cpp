@@ -36,7 +36,15 @@ void Area::removeEntity(Entity *entity) {
 	}
 }
 
+Area::Area(void) {
+#ifdef GYRO_GLAL
+#endif
+}
+
 Area::~Area(void) {
+#ifdef GYRO_GLAL
+	glDeleteBuffers(1, &vboBuff);
+#endif
 	//DELETE COMPONENT/ENTITY SHIT@!!!!
 	dbgprintf(LOG_VERBOSE, "Area::~Area(%s) - FIX FOR WARPS LEAKING MEMORY!! -- Entity Data?", name);
 	freeMap();
@@ -153,6 +161,8 @@ bool Area::loadMap(const char *const filename) {
 	gyFileRead(fp, tiles, sizeof(TileEntry) * width * height * ELYSIAN_AREA_MAP_LAYERS, NULL);
 
 	gyFileClose(&fp);
+
+	populateVbo();
     dbgPop();
 	return true;
 }
@@ -240,5 +250,53 @@ bool Area::saveEntities(const char *const /*filename*/) {
 #endif
 	return true;
 }
+
+#ifdef GYRO_GLAL
+void Area::populateVbo(void) {
+
+	glGenBuffers(1, &vboBuff);
+
+	VboEntry* data = (VboEntry*)malloc(sizeof(VboEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS*4);
+	VboEntry* curPtr = data;
+	const GYTexCoord2* coords;
+
+	for(unsigned z = 0; z < ELYSIAN_AREA_MAP_LAYERS; ++z) {
+		for(unsigned y = 0; y < height; ++y) {
+			for(unsigned x = 0; x < width; ++x) {
+				TileEntry tileEntry = getTileEntry(z, x, y);
+
+				coords = gyVidTexCoordArrayFromFrame(&level->tileSheet->_coord->texCoord[tileEntry.getIndex()],
+																				   tileEntry.getOrient());
+
+				curPtr[0].vert = GYVector4 { x*32.0f-16.0f, y*32.0f-16.0f, tileEntry.getElev()*32.0f + ((tileEntry.getNormal())? 32.0f : 0.0f), 1.0f };
+				curPtr[0].color = GYColor4 { 255, 255, 255, 255 };
+				curPtr[0].texCoord = coords[0];
+
+				curPtr[1].vert = GYVector4 { x*32.0f+16.0f, y*32.0f-16.0f, tileEntry.getElev()*32.0f + ((tileEntry.getNormal())? 32.0f : 0.0f), 1.0f };
+				curPtr[1].color = GYColor4 { 255, 255, 255, 255 };
+				curPtr[1].texCoord = coords[1];
+
+				curPtr[2].vert = GYVector4 { x*32.0f-16.0f, y*32.0f+16.0f, tileEntry.getElev()*32.0f, 1.0f };
+				curPtr[2].color = GYColor4 { 255, 255, 255, 255 };
+				curPtr[2].texCoord = coords[2];
+
+				curPtr[3].vert = GYVector4 { x*32.0f+16.0f, y*32.0f+16.0f, tileEntry.getElev()*32.0f, 1.0f };
+				curPtr[3].color = GYColor4 { 255, 255, 255, 255 };
+				curPtr[3].texCoord = coords[3];
+
+				curPtr += 4;
+
+			}
+		}
+	}
+
+	glBindBuffer(GL_ARRAY_BUFFER, vboBuff);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(VboEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS*4, data, GL_STATIC_DRAW);
+
+	free(data);
+}
+
+#endif
+
 
 }

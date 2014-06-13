@@ -5,7 +5,6 @@
 
 namespace elysian {
 
-//tolua_begin
 	class Font: public Sprite {
 	public:
 		enum ALIGNMENT	{ C_ALIGN, L_ALIGN, R_ALIGN };
@@ -16,18 +15,39 @@ namespace elysian {
 		void drawString(const FORMAT format, const ALIGNMENT align, const char *str);
 
 		unsigned int getStringPixelWidth(const char *string);
-//tolua_end
 		
 		void drawStringf(const FORMAT format, const ALIGNMENT align, const char *str, ...);
 
+		void startBatchRender(void);
+		void endBatchRender(void);
+
 		//virtual void render(void); //we can reimplement this with a stored string for RenderableObject polymorphic compatability
 	private:
+
+		bool _batching = false;
 		bool _loadCharacterWidths(const char *const widthFile);
 		unsigned short _charWidth[128];
 		
 		void _renderChar(const FORMAT format, float &curX, float &curY, const char *const str, int &i);
 		
-	}; //tolua_export
+	};
+
+
+	// ====== INLINEZ =====
+
+
+	inline void Font::startBatchRender(void) {
+		_batching = true;
+		gyVidTexBind(_tex);
+		if(_color.a == 255) gyVidAlphaLevel(GY_ALPHA_PUNCHTHRU);
+		else gyVidAlphaLevel(GY_ALPHA_FULL);
+		//gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
+		gyVidQuadListBegin(&_color);
+	}
+	inline void Font::endBatchRender(void) {
+		_batching = false;
+		gyVidQuadListEnd();
+	}
 }
 
 #endif
