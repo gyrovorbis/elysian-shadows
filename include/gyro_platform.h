@@ -33,6 +33,7 @@ extern "C" {
 
 #   define GYRO_ENDIAN					GYRO_ENDIAN_LITTLE
 #	define GYRO_CACHE_BLOCK_SIZE
+#	define GYRO_GLAL
 
 #	define GYRO_AUDIO_PLATFORM_INCLUDE	"glal/gyro_audio_glal.inl"
 #	define GYRO_INPUT_PLATFORM_INCLUDE	"x86/gyro_input_x86.inl"
@@ -59,11 +60,13 @@ extern "C" {
 #elif GYRO_PLATFORM == GYRO_PLATFORM_PSP
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_iOS
-	#   define GYRO_ENDIAN GYRO_ENDIAN_LITTLE
-	#   define GYRO_MATH_SOFTWARE
-	#   define GYRO_MATRIX_SOFTWARE
+#	define GYRO_GLAL
+#   define GYRO_ENDIAN GYRO_ENDIAN_LITTLE
+#   define GYRO_MATH_SOFTWARE
+#   define GYRO_MATRIX_SOFTWARE
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_ANDROID
+#	define GYRO_GLAL
 #	define GYRO_ENDIAN						GYRO_ENDIAN_LITTLE
 #	define GYRO_AUDIO_PLATFORM_INCLUDE		"glal/gyro_audio_glal.inl"
 #	define GYRO_INPUT_PLATFORM_INCLUDE		"android/gyro_input_android.inl"
