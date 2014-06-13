@@ -136,7 +136,8 @@ void GuiSystem::_renderDebugOverlay(void) {
 	twcen.transform._pos.z = 50.0f;
 
 	_printDebugLine("FPS:", "%.2f", getTimerSys()->getFramerate());
-	_printDebugLine("Poly Count:", "%d", gyVidPolyCount());
+	_printDebugLine("Verts:", "%d", gyVidVertexRenderCount());
+	_printDebugLine("Uniform Uploads:", "%d", getLightSys()->getShaderUniformChangesLastFrame());
 	_printDebugLine("Textures:", "%d", gyVidTexAmount());
 	_printDebugLine("Texture MBytes:", "%f", gyVidTexBytes()/1024.0f/1024.0f);
 	twcen.transform._pos.y += 25.0f;

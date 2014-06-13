@@ -77,7 +77,7 @@ private:
                         return index;
                     }
                 }
-                assert(0);
+				//assert(0);
 			} else {
 
                 auto searchFreeIndex = [&](unsigned& index, const unsigned start, const unsigned end) {
@@ -105,12 +105,12 @@ private:
                     return _startSearchIndex;
                 }
 
-                assert(0);
+				//assert(0);
 
 			}
 		}
 
-        assert(0);
+		//assert(0);
         return 0;
     }
 

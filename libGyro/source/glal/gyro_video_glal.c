@@ -66,7 +66,12 @@ typedef struct _GYCamera {
  *
  */
 
-static const GYCamera _defaultCamera;
+static const GYCamera	_defaultCamera;
+static GYVector4		_stripVerts[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE];
+static GYColor4			_stripColors[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE];
+static GYTexCoord2		_stripTexCoords[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE];
+static GYVector4		_modelViewVertices[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE];
+unsigned				curStripSize = 0;
 
 //Shared video state variables
 const GYVector3*			tangentVector			= &_rectTangents[0];
@@ -83,9 +88,9 @@ static unsigned int			_projHeight				= 0;
 static GY_RECT_TEX_ORIENT	_rectTexOrient			= GY_RECT_TEX_ORIENT_NORMAL;
 static GY_RECT_NORMAL_TYPE	_normalType				= GY_RECT_NORMAL_FLAT;
 static GYColor4				_curQuadListColor[4]	= { {0, 0, 0, 0} };
-unsigned					polyCount				= 0;
+unsigned					vertexRenderCount				= 0;
 
-unsigned gyVidPolyCount(void) { return polyCount; }
+unsigned gyVidVertexRenderCount(void) { return vertexRenderCount; }
 
 void gyVidResolution(unsigned int *const projWidth, unsigned int *const projHeight) {
 	*projWidth = _projWidth; *projHeight = _projHeight;
@@ -148,15 +153,16 @@ void gyVidRectTexOrient(const GY_RECT_TEX_ORIENT orient) {
 	_rectTexOrient = orient;
 }
 
-void gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsigned int startIndex, const unsigned int amount) {
-	GYVector4 modelViewVertices[amount];
-
-	gyMatMultVec(vertexArray, modelViewVertices, amount);
-
-	glVertexAttribPointer(curLightShader->attribLoc[SHADER_POS], 4, GL_FLOAT, GL_FALSE, 0, modelViewVertices);
+static inline void _gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsigned int startIndex, const unsigned int amount) {
+	glVertexAttribPointer(curLightShader->attribLoc[SHADER_POS], 4, GL_FLOAT, GL_FALSE, 0, vertexArray);
 	glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_POS]);
 	glDrawArrays(GL_TRIANGLE_STRIP, startIndex, amount);
-	++polyCount;
+	vertexRenderCount += amount;
+}
+
+void gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsigned int startIndex, const unsigned int amount) {
+	gyMatMultVec(vertexArray, _modelViewVertices, amount);
+	_gyVidTriangleStrip(_modelViewVertices, startIndex, amount);
 }
 
 void gyVidColorArray(const struct _GYColor4 *const ptr) {
@@ -165,7 +171,7 @@ void gyVidColorArray(const struct _GYColor4 *const ptr) {
 }
 
 void gyVidTexCoordArray(const struct _GYTexCoord2 *const ptr) {
-	assert(curTex); //You should not be submitting this to the untextured shader, dumbass!
+	//assert(curTex); //You should not be submitting this to the untextured shabut in der, dumbass!
 	glVertexAttribPointer(curLightShader->attribLoc[SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, 0, ptr);
 	glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_TEX_COORD]);
 }
@@ -215,13 +221,13 @@ void gyVidQuadListBegin(const GYColor4 *const color) {
 	_curQuadListColor[1] = *color;
 	_curQuadListColor[2] = *color;
 	_curQuadListColor[3] = *color;
-	GYColor4 colours = *color;
-	(void)colours;
 }
 
-//Don't do shit. Lolz.
 void gyVidQuadListEnd(void) {
-
+	gyVidTexCoordArray(_stripTexCoords);
+	gyVidColorArray(_stripColors);
+	_gyVidTriangleStrip(_modelViewVertices, 0, curStripSize);
+	curStripSize = 0;
 }
 
 // ==== HIGH-LEVEL API ====
@@ -229,6 +235,7 @@ void gyVidQuadListEnd(void) {
 
 void gyVidRectNormalType(const GY_RECT_NORMAL_TYPE type) {
 	if(type != _normalType) {	//prevent unecessary updates
+		glalStripComboBreaker();
 		_normalType = type;
 		normalVector = &_rectNormals[type];
 		glUniform3fv(curLightShader->uniformLoc[SHADER_NORMAL], 1, (float*)normalVector);
@@ -239,21 +246,47 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
 	const GYTexCoord2* coord;
 	const GYVector3* tangent;
 
-	if(curTex && frame != -1) {
-		coord = gyVidTexCoordArrayFromFrame(&curTex->_coord->texCoord[frame], _rectTexOrient);
-		gyVidTexCoordArray(coord);
-		_rectTexOrient = GY_RECT_TEX_ORIENT_NORMAL; //reset after each rect
-	}
-
-	gyVidColorArray(_curQuadListColor);
-
 	tangent = &_rectTangents[_rectTexOrient];
-	if(tangent != tangentVector) {
+	if(tangent != tangentVector) { //FUCKING COMBO BREAKER, SUBMIT THE BITCH!!!!
+		glalStripComboBreaker();
 		tangentVector = tangent;
 		glUniform3fv(curLightShader->uniformLoc[SHADER_TANGENT], 1, (float*)tangent);
 	}
 
-	gyVidTriangleStrip(verts, 0, 4);
+	if(curStripSize) {
+		gyMatMultVec(verts, &_modelViewVertices[curStripSize+2], 4);
+		//_stripTexCoords[curStripSize+1] = _stripTexCoords[curStripSize];
+		//_stripColors[curStripSize+1] = _stripColors[curStripSize];
+		_modelViewVertices[curStripSize] = _modelViewVertices[curStripSize-1];
+
+		//_stripTexCoords[curStripSize+2] = coord[1];
+		//_stripColors[curStripSize+2] = _curQuadListColor[0];
+		_modelViewVertices[curStripSize+1] = _modelViewVertices[curStripSize+2];
+		curStripSize += 2;
+	} else {
+		gyMatMultVec(verts, &_modelViewVertices[curStripSize], 4);
+	}
+
+	if(curTex && frame != -1) {
+		GYTexCoord2 (*texCoord)[4] = &_stripTexCoords[curStripSize];
+		coord = gyVidTexCoordArrayFromFrame(&curTex->_coord->texCoord[frame], _rectTexOrient);
+		//gyVidTexCoordArray(coord);
+		memcpy(&_stripTexCoords[curStripSize], coord, sizeof(GYTexCoord2)*4);
+		_rectTexOrient = GY_RECT_TEX_ORIENT_NORMAL; //reset after each rect
+	}
+
+	//gyVidColorArray(_curQuadListColor);
+	//memcpy(&_stripColors[curStripSize], _curQuadListColor, sizeof(GYColor4)*4);
+	for(unsigned i = 0; i < 4; ++i) _stripColors[curStripSize+i] = _curQuadListColor[i];
+	GYColor4 (*stripColors)[4] = &_stripColors[curStripSize];
+
+	//memcpy(&_stripVerts[curStripSize], verts, sizeof(GYVector4)*4);
+	//GYVector4 (*stripVerts)[4] = &_stripVerts[curStripSize];
+	//gyVidTriangleStrip(verts, 0, 4);
+	//gyMatMultVec(verts, &_modelViewVertices[curStripSize], 4);
+	curStripSize += 4;
+
+	assert(curStripSize < GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE);
 }
 
 void gyVidRect(const int frame) {

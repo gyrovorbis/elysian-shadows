@@ -200,15 +200,16 @@ void Engine::render(void) {
 			gyVidProjectionCustomMatrix(projectionMatrix);
 			//gyVidProjectionDefaultMatrix(); */
 			_cameraSystem->pushViewProjMatrix();
-
+#if GYRO_PLATFORM == GYRO_PLATFORM_x86
 			_lightSystem->shadowRenderPasses();
+#endif
 			//_lightSystem->addLightSourcesToScene();
 
 			_mapSystem->render();
 
 			_lightSystem->render();
 
-			 _collisionSystem->render();
+			 //_collisionSystem->render();
 			// _particleSystem->render();
 
 

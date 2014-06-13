@@ -11,9 +11,11 @@
 namespace elysian {
 
 void GameInput::translate(const GYInput &platInput, GameInput &gameInput) {
-#if GYRO_PLATFORM == GYRO_PLATFORM_x86
+#if GYRO_PLATFORM == GYRO_PLATFORM_x86 || GYRO_PLATFORM == GYRO_PLATFORM_ANDROID
 
+#	if GYRO_PLATFORM == GYRO_PLATFORM_x86
 	if(platInput.keyTapped[GY_KEY_ESC]) exit(0);
+#	endif
 
 	for(unsigned i = 0; i < GY_KEY_LAST; ++i) {
 		if(platInput.keyDown[i]) gameInput.setDown((GameInput::BUTTON)i);

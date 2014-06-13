@@ -101,6 +101,7 @@ namespace elysian {
 					/*gyVidTexCoordArray(gyVidTexCoordArrayFromFrame(&_spriteAttrib->_tex->_coord->texCoord[_frame],
 																	_texOrient));*/
 				gyVidQuad(localVerts, _frame);
+				//gyVidRect(_frame);
 				gyVidQuadListEnd();
 				break;
 			default: break;//the fuck is wrong with you, son?

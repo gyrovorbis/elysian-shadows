@@ -84,6 +84,7 @@ void Font::drawString(const FORMAT format, const ALIGNMENT align, const char *co
 	gyVidTexBind(_tex);
 	if(_color.a == 255) gyVidAlphaLevel(GY_ALPHA_PUNCHTHRU);
     else gyVidAlphaLevel(GY_ALPHA_FULL);
+	//gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
 	gyVidQuadListBegin(&_color);
 
 	while (buffer[i] != '\0') {

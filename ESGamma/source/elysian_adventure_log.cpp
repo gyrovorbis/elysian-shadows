@@ -184,14 +184,14 @@ void AdventureLog::render(Font &font) {
 		font.setColor(r, g, b, 255);
 		if(i == _startIndex) {
 			float tempAlpha = 1.0f - _fadeCounter;	
-			font.setAlpha(tempAlpha*_baseAlpha*255.0F);
+			font.setAlpha(tempAlpha*_baseAlpha*255.0f);
 		}
-		else font.setAlpha(_baseAlpha*255.0F);
+		else font.setAlpha(_baseAlpha*255.0f);
 		font.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, "%s", _log[i]);
     }
     
     quad.transform.setPos(ELYSIAN_ADV_LOG_X, ELYSIAN_ADV_LOG_Y, ELYSIAN_ADV_LOG_Z+2);
-	quad.transform.setSize(ELYSIAN_ADV_LOG_W, ELYSIAN_ADV_LOG_H/3.0f);
+	quad.transform.setSize(ELYSIAN_ADV_LOG_W, ELYSIAN_ADV_LOG_H /3.0f );
 	quad.setVertexColor(0, topColor.r, topColor.g, topColor.b, topColor.a); quad.setVertexColor(1, topColor.r, topColor.g, topColor.b, topColor.a);
 	quad.setVertexColor(3, bottomColor.r, bottomColor.g, bottomColor.b, bottomColor.a); quad.setVertexColor(2, bottomColor.r, bottomColor.g, bottomColor.b, bottomColor.a);
 	//quad.setColorVertical(0.0f, 0.0f, 1.0f, 0.0f, 0.7f, 1.0f);
@@ -204,8 +204,8 @@ void AdventureLog::render(Font &font) {
 	font.transform.setPos(225, ELYSIAN_ADV_LOG_Y+7, ELYSIAN_ADV_LOG_Z+3);
 	//font.setAlpha(_baseAlpha);
 	font.setColor(255, 255, 255, 255);
-	font.setAlpha(_baseAlpha*255.0F);
-	font.drawString(Font::NO_FORMAT, Font::L_ALIGN, "Adventure Log"); 
+	font.setAlpha(_baseAlpha*255.0);
+	font.drawString(Font::NO_FORMAT, Font::L_ALIGN, "Adventure Log");
 	//font.DrawString(0, ADV_LOG_X+15, ADV_LOG_Y, ADV_LOG_Z+3, 1, 1, 1, L_ALIGN, "Adventure Log");
 }
 

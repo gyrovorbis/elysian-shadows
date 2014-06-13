@@ -13,6 +13,7 @@ namespace elysian {
 			{255, 255, 255, 255},
 			{255, 255, 255, 255}
 		};//_color inherited from Rect is an implied _vertColor[4];
+
 		const static GYVector4 _verts[4];
 
 		virtual void submit(void) override {
