@@ -131,6 +131,7 @@ void gyVidLightSourceAdd(GYLightSource* const light) {
 
 	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
 		if(lightsEnabled[i] == 0) {
+			glalStripComboBreaker();
 			lightSources[i] = light;
 			_addLightUniform(i, light);
 			lightsEnabled[i] = 1;
@@ -144,6 +145,7 @@ void gyVidLightSourceRemove(const GYLightSource* const light) {
 	--lightSourceCount;
 	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
 		if(lightSources[i] == light) {
+			glalStripComboBreaker();
 			lightsEnabled[i] = 0;
 			glUniform1i(curLightShader->lightsUniformLoc[i][SHADER_LIGHT_ENABLED], 0);
 			break;
@@ -154,6 +156,7 @@ void gyVidLightSourceRemove(const GYLightSource* const light) {
 void gyVidLightSourceReplace(const GYLightSource*const old, GYLightSource*const next) {
 	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
 		if(lightSources[i] == old) {
+			glalStripComboBreaker();
 			lightSources[i] = next;
 			_addLightUniform(i, next);
 			break;
