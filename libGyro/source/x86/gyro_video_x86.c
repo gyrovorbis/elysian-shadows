@@ -61,7 +61,7 @@ int gyVidUninit(void) {
 
 void gyVidSceneBegin(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-	polyCount = 0;
+	vertexRenderCount = 0;
 }
 
 void gyVidSceneEnd(void) {
