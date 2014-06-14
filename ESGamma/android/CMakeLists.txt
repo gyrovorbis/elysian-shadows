@@ -23,6 +23,7 @@ set(GRADLE_ARGS
 make_directory(${build_SRC})
 add_custom_command(TARGET ESGamma
     POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${build_SRC}
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR} ${build_SRC}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${build_SRC}/src/main/assets
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${ES_ASSETS_DIR} ${build_SRC}/src/main/assets
