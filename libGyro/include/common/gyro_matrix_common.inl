@@ -138,9 +138,9 @@ static inline void gyVec3CrossProd(GYVector3* const dest, const GYVector3* const
 
 static inline void gyVec3AddScaled(GYVector3*const dest, const GYVector3*const vec, const float scalar)
 {
-    dest->x = scalar * vec->x;
-    dest->y = scalar * vec->y;
-    dest->z = scalar * vec->z;
+    dest->x += scalar * vec->x;
+    dest->y += scalar * vec->y;
+    dest->z += scalar * vec->z;
 }
 
 static inline void gyVec3ScaleAccum(GYVector3*const dest, const float scalar)
