@@ -589,7 +589,9 @@ bool Debug::parseArguments(void) {
 		pop();
 		//Recursively reinvoke argument-based initialization
 		return parseArguments(argc+1, argv);
-	}
+    } else {
+        printf(CRITICAL, "gamma_args.txt not found! Shitting pants!");
+    }
 	return false;
 }
 

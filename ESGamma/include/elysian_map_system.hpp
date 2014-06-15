@@ -43,6 +43,7 @@ namespace elysian {
 		unsigned	_stripIndexArray[ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE];
 		unsigned	_stripIndexArraySize = 0;
 		static const GYColor4 _tileColor;
+        static GY_RECT_NORMAL_TYPE _curNormalType;
 		bool _renderLayer[4];
         //animation
 		//toggles
@@ -139,14 +140,13 @@ namespace elysian {
 			blended = false;
 		}
 #if 1
-		static GY_RECT_NORMAL_TYPE normalType = GY_RECT_NORMAL_FLAT;
 		GY_RECT_NORMAL_TYPE newNormal = entry.mapEntry.getNormal() ? GY_RECT_NORMAL_FLAT : GY_RECT_NORMAL_FRONT;
 
-		if(newNormal != normalType) {
+        if(newNormal != _curNormalType) {
 			endObjectList();
 			//gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta, 32.0f, 32.0f, 32.0f);
 			gyVidRectNormalType(newNormal);
-			normalType = newNormal;
+            _curNormalType = newNormal;
 		}
 		/*} else {
 		//	gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta, 32.0f, 32.0f, 1.0f);
@@ -212,6 +212,8 @@ namespace elysian {
 		gyVidTexBind(_curLevel->tileSheet);
 		gyVidNormalMapBind(_curLevel->normalSheet);
 		gyVidSpecularMapBind(_curLevel->specularSheet);
+        gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
+        _curNormalType = GY_RECT_NORMAL_FLAT;
 		//gyVidQuadListBegin(&_tileColor);
 		glBindBuffer(GL_ARRAY_BUFFER, getCurArea()->vboBuff);
 		glVertexAttribPointer(curLightShader->attribLoc[SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(VboEntry), 0);
