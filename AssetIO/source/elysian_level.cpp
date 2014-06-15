@@ -83,7 +83,7 @@ namespace elysian {
 													   ELYSIAN_TILE_HEIGHT)))
 		{
 			success = false;
-			dbgprintf(LOG_CRITICAL, "Fine. Don't bumpmap your shit.");
+            //dbgprintf(LOG_CRITICAL, "Fine. Don't bumpmap your shit.");
 		}
 		dbgPop();
 
@@ -99,7 +99,7 @@ namespace elysian {
 													   ELYSIAN_TILE_HEIGHT)))
 		{
 			success = false;
-			dbgprintf(LOG_CRITICAL, "No specular sheet? Aight.");
+            //dbgprintf(LOG_CRITICAL, "No specular sheet? Aight.");
 		}
 		dbgPop();
 

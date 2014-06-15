@@ -132,7 +132,7 @@ void CombatSystem::sendStatusModifier(Combat* const target, CombatStatus* const 
 
 	target->applyStatus(*modifier);
 
-	_curActionRes.initialVel = GYVector2 { 0.0f, -10.0f };
+    _curActionRes.initialVel = GYVector2 { 0.0f, -3.0f };
 	if(_curActionRes.contact) {
 		_curActionRes.contact->getNormal(_curActionRes.initialVel);
 		//gyVec2ScaleAccum(&_curActionRes.initialVel, _curActionRes.contact->getClosingVel());
@@ -207,8 +207,8 @@ void CombatSystem::_emitCombatModifierText(const Combat*const target, const Comb
 		}
 	};
 
-	emitIntegerAttrib(modifier.getHp(), GYColor4 { 255, 0, 0, 255 }, GYColor4 { 0, 255, 0, 255 });
-	emitIntegerAttrib(modifier.getMp(), GYColor4 { 200, 100, 0, 255 }, GYColor4 { 0, 0, 255, 255 });
+    emitIntegerAttrib(modifier.getHp(), GYColor4 { 0, 255, 0, 255 }, GYColor4 { 255, 0, 0, 255 });
+    emitIntegerAttrib(modifier.getMp(), GYColor4 { 0, 0, 255, 255 }, GYColor4 { 200, 100, 0, 255 });
 
 	//emit icons for status ailments!
 }

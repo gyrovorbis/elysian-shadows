@@ -243,7 +243,7 @@ namespace elysian {
 			entry.entity = &entity;
 			normalType = entity.getNormalType();
 			lowestY = entity.getDepthBaseY();
-			zCoord = entity.transform._pos.z;
+            zCoord = entity.transform._pos.z;
 			return true;
 		}
 		return false;

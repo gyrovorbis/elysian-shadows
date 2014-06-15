@@ -47,7 +47,7 @@ void RigidBody::integrate(const float deltaTime) {
 
 	gyIntegrate(this,
 				stat,
-				deltaTime,
+                deltaTime,
 				&_entity->transform._pos,
 				&_entity->transform._orientZ);
 

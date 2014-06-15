@@ -96,20 +96,19 @@ void Engine::update(void) {
 			_lightSystem->update();
 			_audioSystem->update();
 
-			_rigidBodySystem->applyForces();
+            _rigidBodySystem->applyForces();
 			_rigidBodySystem->integrate();
-			_collisionSystem->prepareGeometry();
-			_rigidBodySystem->integrate3D();
-			_collisionSystem->update();
-			_rigidBodySystem->update();
-			_rigidBodySystem->resolveContactVelocities();
-			_rigidBodySystem->breakRigidBodies();
+            _collisionSystem->prepareGeometry();
+            _rigidBodySystem->integrate3D();
+            _collisionSystem->update();
+            _rigidBodySystem->update();
+            _rigidBodySystem->resolveContactVelocities();
+            _rigidBodySystem->breakRigidBodies();
 
 			_timerSystem->update();
 			_mapSystem->update();
 			_characterSystem->update();
 			_animationSystem->update();
-			//warpSystem->Update();
 			_guiSystem->update();
 			_warpSystem->update();
 			_particleSystem->update();
@@ -117,10 +116,7 @@ void Engine::update(void) {
 			_dialogSystem->update();
 			_combatSystem->update();
 
-			//conversationSystem->Update();
 			_behaviorSystem->callTriggers(Behavior::ON_UPDATE);
-			//collisionSystem->DetectCollisions();
-//
 			break;
 
 
@@ -201,19 +197,19 @@ void Engine::render(void) {
 			//gyVidProjectionDefaultMatrix(); */
 			_cameraSystem->pushViewProjMatrix();
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
-			_lightSystem->shadowRenderPasses();
+            _lightSystem->shadowRenderPasses();
 #endif
-			//_lightSystem->addLightSourcesToScene();
+           // _lightSystem->addLightSourcesToScene();
 
 			_mapSystem->render();
 
 			_lightSystem->render();
 
-			 //_collisionSystem->render();
-			// _particleSystem->render();
+             _collisionSystem->render();
+             _particleSystem->render();
 
 
-			 _lightSystem->removeLightSourcesFromScene();
+             _lightSystem->removeLightSourcesFromScene();
 
 			 _guiSystem->render();
 

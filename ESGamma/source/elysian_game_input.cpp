@@ -18,11 +18,43 @@ void GameInput::translate(const GYInput &platInput, GameInput &gameInput) {
 #	endif
 
 	for(unsigned i = 0; i < GY_KEY_LAST; ++i) {
-		if(platInput.keyDown[i]) gameInput.setDown((GameInput::BUTTON)i);
-		else gameInput.setUp((GameInput::BUTTON)i);
 
-		gameInput.keyTapped[i] = platInput.keyTapped[i];
+        switch((GameInput::BUTTON)i) {
+#   if GYRO_PLATFORM == GYRO_PLATFORM_ANDROID
+
+        case GameInput::BUT_A:
+            if(platInput.keyDown[i]) gameInput.setDown(GameInput::BUT_J);
+            else gameInput.setUp(GameInput::BUT_J);
+            break;
+
+        case GameInput::BUT_O:
+            if(platInput.keyDown[i]) gameInput.setDown(GameInput::BUT_I);
+            else gameInput.setUp(GameInput::BUT_I);
+            break;
+ /*
+        case GameInput::BUT_Y:
+            if(platInput.keyDown[i]) gameInput.setDown((GameInput::BUTTON)i);
+            else gameInput.setUp((GameInput::BUTTON)i);
+            break;
+        case GameInput::BUT_U:
+            if(platInput.keyDown[i]) gameInput.setDown((GameInput::BUTTON)i);
+            else gameInput.setUp((GameInput::BUTTON)i);
+            break;
+
+*/
+#   endif
+
+        default:
+            if(platInput.keyDown[i]) gameInput.setDown((GameInput::BUTTON)i);
+            else gameInput.setUp((GameInput::BUTTON)i);
+
+            break;
+        }
+
+       gameInput.keyTapped[i] = platInput.keyTapped[i];
 	}
+
+
 #elif GYRO_PLATFORM == GYRO_PLATFORM_DC
     for(unsigned i = 0; i < GameInput::BUT_MAX; ++i) gameInput.setUp((GameInput::BUTTON)i);
     

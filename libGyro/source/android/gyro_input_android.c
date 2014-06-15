@@ -13,8 +13,8 @@
 #include "internal_android.h"
 
 static inline void _SetKeyDown(GYInput *const input, const GY_ANDROID_KEY key) {
+	if(!input->keyDown[key]) input->keyTapped[key] = 1;
     input->keyDown[key] = 1;
-    input->keyTapped[key] = 1;
 }
 
 static inline void _SetKeyUp(GYInput *const input, const GY_ANDROID_KEY key) {

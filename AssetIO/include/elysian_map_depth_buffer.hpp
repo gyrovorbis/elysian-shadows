@@ -341,6 +341,8 @@ namespace elysian {
 		if(!_objectBuffImmediateCount) return;
 
 		//Make a pass through immediate tile multiplass buffer
+        _endObjectList();
+        _beginObjectList();
 		_lightsRendered |= _lightsActive = lightSys->startLightPass(lightsLeft);
 		for(unsigned j = 0; j < _objectBuffImmediateCount; ++j) {
 			_renderOrQueueTileEntry(j, _objectBuffImmediate[j]);
@@ -352,6 +354,8 @@ namespace elysian {
 			_queued = 0;
 			_curRow = _nextRow;
 			_nextRow = !_curRow;
+            _endObjectList();
+            _beginObjectList();
 			_lightsRendered |= _lightsActive = lightSys->startLightPass(lightsLeft);
 			for(unsigned j = 0; j < count; ++j) {
 				_renderOrQueueTileEntry(j, _objectBuffImmediate[_queue[_curRow][j]]);
@@ -384,6 +388,8 @@ namespace elysian {
 			_queued = 0;
 			_curRow = _nextRow;
 			_nextRow = !_curRow;
+            _endObjectList();
+            _beginObjectList();
 			_lightsRendered |= _lightsActive = lightSys->startLightPass(_objectRowLights[normalType][i]);
 			for(unsigned j = 0; j < count; ++j) {
 				_renderOrQueueTileEntry(j, _objectBuff[i][_queue[_curRow][j]]);

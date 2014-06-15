@@ -95,6 +95,7 @@ bool LuaBehavior::loadScript(const char *file, const OOLUA::Lua_table_ref paramT
     dbgPush();
 	if(_script) {
 		dbgprintf(LOG_CRITICAL, "Already has a script loaded!");
+        dbgPop();
 		return false;
 	}
 
@@ -151,6 +152,7 @@ bool LuaBehavior::loadScript(const char *file, const OOLUA::Lua_table_ref paramT
 	}
 
 #endif
+    dbgPop();
 	return true;
 }
 

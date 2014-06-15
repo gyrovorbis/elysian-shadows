@@ -227,7 +227,7 @@ void LightSystem::shadowRenderPasses(void) {
 	gyVidLightSourceEndShadowPasses();
 	gyVidSetGlobalAmbience(&_globalAmbience);
 
-	//_sortOnscreenLights();
+    _sortOnscreenLights();
 }
 
 void LightSystem::addLightSourcesToScene(void) {
