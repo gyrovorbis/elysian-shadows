@@ -19,15 +19,14 @@ void GameInput::translate(const GYInput &platInput, GameInput &gameInput) {
 
 	for(unsigned i = 0; i < GY_KEY_LAST; ++i) {
 
-        switch((GameInput::BUTTON)i) {
-#   if GYRO_PLATFORM == GYRO_PLATFORM_ANDROID
-
-        case GameInput::BUT_A:
+        switch(i) {
+ #if 0
+        case GY_KEY_A:
             if(platInput.keyDown[i]) gameInput.setDown(GameInput::BUT_J);
             else gameInput.setUp(GameInput::BUT_J);
             break;
 
-        case GameInput::BUT_O:
+        case GY_KEY_O:
             if(platInput.keyDown[i]) gameInput.setDown(GameInput::BUT_I);
             else gameInput.setUp(GameInput::BUT_I);
             break;
@@ -42,7 +41,7 @@ void GameInput::translate(const GYInput &platInput, GameInput &gameInput) {
             break;
 
 */
-#   endif
+           #endif
 
         default:
             if(platInput.keyDown[i]) gameInput.setDown((GameInput::BUTTON)i);
