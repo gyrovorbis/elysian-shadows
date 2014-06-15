@@ -17,7 +17,7 @@ void gyIntegrate(struct _GYKinetic *kin,
 
 	//Calculate linear acceleration with force input
 	kin->prevAccel.x = kin->accel.x;
-	kin->prevAccel.y = kin->accel.y;
+    kin->prevAccel.y = kin->accel.y;// - kin->accel.z;
 	kin->prevAccel.z = kin->accel.z;
 
 	gyVec3AddScaled(&kin->prevAccel, &kin->forceAccum, attrib->inverseMass);
@@ -38,7 +38,9 @@ void gyIntegrate(struct _GYKinetic *kin,
 	kin->rot *= powf(attrib->angDamping, deltaTime);
 
 	//Update position from linear velocity
-	gyVec3AddScaled(pos, &kin->vel, deltaTime);
+
+    GYVector3 vel = { kin->vel.x, kin->vel.y-kin->vel.z, kin->vel.z };
+    gyVec3AddScaled(pos, &vel, deltaTime);
 
 	//Update orientation from rotation
 	*orient += kin->rot * deltaTime;

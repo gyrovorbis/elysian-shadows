@@ -27,6 +27,9 @@ namespace elysian {
 
 	//Abstraction for particles and rigidBodies to share force generators
 	class ForceTarget: protected GYKinetic {
+    protected:
+        bool				_onGround		= true;
+
 	public:
 		enum TARGET_TYPE { TARGET_PARTICLE, TARGET_RIGID_BODY };
 
@@ -37,6 +40,10 @@ namespace elysian {
 		virtual const GYStatic*		getStaticAttrib(void) const			= 0;
 		//virtual void		integrate(const float deltaTime)	= 0; nevermind, fuck it.
 
+        bool                    	getOnGround(void) const;
+        void                        setOnGround(const bool val);
+
+        void                        applyZForce(const GYVector3& force);
 		void						applyForce(const GYVector3& force);
 		void						applyForceToPoint(const GYVector2& loc, const GYVector2& force);
 		const GYVector3&			getVelocity(void) const;
@@ -51,13 +58,13 @@ namespace elysian {
 	private:
 		float				_tileDamping	= 1.0f;
 		bool				_active			= true;
-		bool				_onGround		= true;
+
 		RigidBodyAttrib*	_attrib			= nullptr;
 		float				_durability		= -1.0f;
 		CollisionContact*	_breakContact	= nullptr;
 	public:
 
-		RigidBody(Entity& entity);
+                RigidBody(Entity& entity);
 		virtual ~RigidBody(void) override = default;
 
 		//reimplemented from Component
@@ -79,8 +86,6 @@ namespace elysian {
 		float				getTileDamping(void) const;
 		void				setAttrib(RigidBodyAttrib*const attrib);
 		RigidBodyAttrib*	getAttrib(void) const;
-		bool				getOnGround(void) const;
-		void				setOnGround(const bool val);
 		float				getDurability(void) const;
 		void				setDurability(const float val);
 		CollisionContact*	getBreakContact(void) const;
@@ -99,6 +104,8 @@ namespace elysian {
 	inline const GYVector3&	ForceTarget::getVelocity(void) const { return vel; }
 	inline void	ForceTarget::setVelocity(const GYVector3& _vel) { vel = _vel; }
 	inline void ForceTarget::setRotation(const float rotation) { rot = rotation; }
+    inline bool ForceTarget::getOnGround(void) const { return _onGround; }
+    inline void ForceTarget::setOnGround(const bool val) { _onGround = val; }
 	inline void ForceTarget::clearKinetic(void) {
 		GYKinetic* kinetic = static_cast<GYKinetic*>(this);
 		memset(kinetic, 0, sizeof(GYKinetic));
@@ -109,9 +116,7 @@ namespace elysian {
 	inline void RigidBody::setAttrib(RigidBodyAttrib*const attrib) { _attrib = attrib; _durability = _attrib->getBaseDurability();}
 	inline void RigidBody::setActive(const bool val) { _active = val; }
 	inline float RigidBody::getDurability(void) const { return _durability; }
-	inline void RigidBody::setDurability(const float val) { _durability = val; }
-	inline bool RigidBody::getOnGround(void) const { return _onGround; }
-	inline void RigidBody::setOnGround(const bool val) { _onGround = val; }
+    inline void RigidBody::setDurability(const float val) { _durability = val; }
 	inline CollisionContact* RigidBody::getBreakContact(void) const { return _breakContact; }
 	inline void	RigidBody::setBreakContact(CollisionContact*const contact) { _breakContact = contact; }
 

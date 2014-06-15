@@ -95,14 +95,13 @@ namespace elysian {
 				break;
 			case PrimAttrib::SPRITE:
 				gyVidAlphaLevel((_spriteAttrib->_color.a == 255)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
-				gyVidQuadListBegin(&_spriteAttrib->_color);
+                gyVidQuadListBegin(&_spriteAttrib->_color);
 				if(_frame == -1) gyVidTexCoordArray(_texCoord);
-				else gyVidRectTexOrient(_texOrient);
-					/*gyVidTexCoordArray(gyVidTexCoordArrayFromFrame(&_spriteAttrib->_tex->_coord->texCoord[_frame],
-																	_texOrient));*/
-				gyVidQuad(localVerts, _frame);
-				//gyVidRect(_frame);
-				gyVidQuadListEnd();
+                else gyVidRectTexOrient(_texOrient);
+
+                //gyVidQuad(localVerts, _frame);
+                gyVidRect(_frame);
+                gyVidQuadListEnd();
 				break;
 			default: break;//the fuck is wrong with you, son?
 			}

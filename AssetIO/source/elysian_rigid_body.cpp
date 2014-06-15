@@ -40,10 +40,20 @@ RigidBody::RigidBody(Entity& entity):
 
 void RigidBody::integrate(const float deltaTime) {
 	if(!_active) return;
-	GYStatic*const stat = getEntity()->getCollidable()->getAttrib()->getStaticAttrib();
 
-	stat->angDamping *= _tileDamping;
-	stat->damping *= _tileDamping;
+    float baseDamping;
+    float angDamping;
+    GYStatic*const stat = getEntity()->getCollidable()->getAttrib()->getStaticAttrib();
+
+    if(_onGround) {
+        stat->angDamping    *= _tileDamping;
+        stat->damping       *= _tileDamping;
+    } else {
+      /*  angDamping          = stat->angDamping;
+        baseDamping         = stat->damping;
+        stat->angDamping    = stat->zDamping;
+        stat->damping       = stat->zDamping;*/
+    }
 
 	gyIntegrate(this,
 				stat,
@@ -51,8 +61,14 @@ void RigidBody::integrate(const float deltaTime) {
 				&_entity->transform._pos,
 				&_entity->transform._orientZ);
 
-	stat->angDamping /= _tileDamping;
-	stat->damping /= _tileDamping;
+    if(_onGround) {
+        stat->angDamping    /= _tileDamping;
+        stat->damping       /= _tileDamping;
+    } else {
+       /* stat->damping       = baseDamping;
+        stat->angDamping    = angDamping;*/
+
+    }
 
 }
 

@@ -23,7 +23,7 @@ namespace elysian {
 
 	class GravityForceGenerator: public ForceGenerator {
 	private:
-		GYVector3 _accel = GYVector3 { 0.0f, 0.0f, -2000.0f };
+        GYVector3 _accel = GYVector3 { 0.0f, /*2000.0f*/0.0f, -2000.0f };
 	public:
 		virtual			~GravityForceGenerator(void) = default;
 		void			setAccel(const GYVector3& accel);

@@ -163,13 +163,21 @@ void Character::throwHeldEntity(void) {
 
 void Character::jump(void) {
 	GYVector3 force = ELYSIAN_CHAR_JUMP_DEFAULT_FORCE;
+    RigidBody*const rb = _entity->getRigidBody();
 
 	if(_heldEntity) {
 		gyVec3ScaleAccum(&force, getHeldEntityForceDampFactor());
 	}
 
 	gyVec3ScaleAccum(&force, 1.0f/_deltaTime);
-	_entity->getRigidBody()->applyForce(force);
+
+
+    rb->setOnGround(false);
+
+   // force.y /= rb->getStaticAttrib()->damping;
+   // force.y *= rb->getStaticAttrib()->zDamping;
+
+    rb->applyForce(force);
 
 }
 

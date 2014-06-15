@@ -675,9 +675,12 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable, c
 #endif
 		for(unsigned char elev = startElev; elev <= endElev; ++elev) {
 
-			for(unsigned i = 0; i < 4; ++i)
-				collidable._collider.box.worldVert[i].y = worldVertsOrig[i].y;// - ((float)elev*32.0f);//-(int)worldVertsOrig[i].z%32;
+            const float zOffset = worldVertsOrig[3].z - ((int)startElev*32);
 
+			for(unsigned i = 0; i < 4; ++i)
+                collidable._collider.box.worldVert[i].y = worldVertsOrig[i].y;// - ((float)(elev-startElev)*32.0f);//-(int)worldVertsOrig[i].z%32;
+
+#if 1
 			for(int y = startY/32-(elev-startElev)-1; y <= endY/32-(elev-startElev)+1; ++y) {
 				if(y < 0) continue;
 				for(int x = startX/32; x <= endX/32+1; ++x) {
@@ -685,11 +688,26 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable, c
 					gyMatPush();
 					gyMatLoadIdentity();
 					//gyMatTranslateScale(x*32.0f, y*32.0f, 5.0f, 32.0f, 32.0f, 32.0f);
-					gyMatTranslateScale(x*32.0f, (y+(elev-startElev))*32.0f, 5.0f, 32.0f, 32.0f, 32.0f);
+                    gyMatTranslateScale(x*32.0f, (y+(elev-startElev))*32.0f-zOffset, 5.0f, 32.0f, 32.0f, 32.0f);
 					_detectEntityTileCollisionFine(collidable, x, y, elev);
 					gyMatPop();
 				}
 			}
+#else
+            for(int y = startY/32-(elev-startElev); y <= endY/32-(elev-startElev)+1; ++y) {
+                if(y < 0) continue;
+                for(int x = startX/32; x <= endX/32+1; ++x) {
+
+                    gyMatPush();
+                    gyMatLoadIdentity();
+                    //gyMatTranslateScale(x*32.0f, y*32.0f, 5.0f, 32.0f, 32.0f, 32.0f);
+                    gyMatTranslateScale(x*32.0f,  y*32.0f/*-zOffset*/, 5.0f, 32.0f, 32.0f, 32.0f);
+                    _detectEntityTileCollisionFine(collidable, x, y, elev);
+                    gyMatPop();
+                }
+            }
+
+#endif
 		}
 		break;
 

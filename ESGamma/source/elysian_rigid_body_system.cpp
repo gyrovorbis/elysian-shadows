@@ -316,21 +316,25 @@ void RigidBodySystem::integrate3D(void) {
 		float zTop = 0.0f;
 
 		const unsigned elev = /*(worldPos.z == 0.0f)? 0 :*/ (worldPos.z)/32;
-		worldPos.y += 32.0f; /*it->getEntity()->getCollidable()->getAttrib()->getRelSize().y*
+        float zOffset = worldPos.z - elev*32.0f;
+        worldPos.y += 32.0f + zOffset;
+        /*it->getEntity()->getCollidable()->getAttrib()->getRelSize().y*
 				it->getEntity()->transform._size.y * it->getEntity()->transform._scale.y;*/
 
 
 			for(i = 0; i < 3; ++i) {
-				for(unsigned j = 1; j < 2; ++j) {
+                for(unsigned j = 0; j < 1; ++j) {
 					//if(found) break;
 
-				entry = getCurArea()->getTileEntry(i, (worldPos.x+16.0f)/32, (worldPos.y+16.0f)/32/*+elev*/-j/*-1*/);
+                entry = getCurArea()->getTileEntry(i, (worldPos.x+16.0f)/32, (worldPos.y)/32/*+elev*/-1/*-1*/);
 
 
 				//if(!(j == 0 && entry.getNormal()) && !(j == 0 && !entry.getNormal())) {
 
 
 					if(getCurLevel()->getTile(entry.getIndex())->standOn) {
+
+                        if(entry.getNormal() && ((int)worldPos.y+16)/32 > ((int)worldPos.y/32)) continue;
 
 
 						float newTop = (entry.getElev()*32 + (entry.getNormal()? 32.0f : 0.0f) );
@@ -353,14 +357,21 @@ void RigidBodySystem::integrate3D(void) {
 
 		//if(found) {
 				//it->getAttrib()->setForceMask(0);
-			if(collidable->getEntity()->transform._pos.z <= zTop) {
+            if(collidable->getEntity()->transform._pos.z <= zTop) {
+               float zDiff = zTop - collidable->getEntity()->transform._pos.z;
 				collidable->getEntity()->transform._pos.z = zTop;
+
+                //We have to remove the same amount of yVelocity we're removing from the Z in this perspective.
+                collidable->getEntity()->transform._pos.y -= zDiff;
+
 				GYVector3 vel = it->getVelocity();
-				vel.z = 0.0f;
+                //if(vel.z <= 0.0f && !it->getOnGround()) vel.y += vel.z;
+                vel.z = 0.0f;
 				it->setVelocity(vel);
 				//Debug::printf(Debug::CRITICAL, "Resting");
 				collidable->getEntity()->getCollidable()->update();
 				it->setOnGround(true);
+             //   it->getAttrib()->setForceMask(0);
 
 				//collidable->setResolvePenetration(false);
 				//it->_restingOnTile = true;
@@ -368,7 +379,7 @@ void RigidBodySystem::integrate3D(void) {
 
 		} else {
 			//Debug::printf(Debug::CRITICAL, "Falling");
-			it->getAttrib()->setForceMask(1);
+        //	it->getAttrib()->setForceMask(1);
 			it->setOnGround(false);
 			//collidable->setResolvePenetration(true);
 		//	it->_restingOnTile = false;

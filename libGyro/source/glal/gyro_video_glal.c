@@ -81,6 +81,7 @@ float						viewZOrient				= 0.0f;
 float						viewScale				= 0.0f;
 const GYTexture*			curTex					= 0;
 const GYCamera*				curCamera				= &_defaultCamera;
+const GYTexCoord2*           curTexCoordPtr          = NULL;
 
 //Private video state variables
 static unsigned int			_projWidth				= 0;
@@ -158,6 +159,8 @@ static inline void _gyVidTriangleStrip(const struct _GYVector4 *const vertexArra
 	glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_POS]);
 	glDrawArrays(GL_TRIANGLE_STRIP, startIndex, amount);
 	vertexRenderCount += amount;
+
+    curTexCoordPtr = NULL;
 }
 
 void gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsigned int startIndex, const unsigned int amount) {
@@ -174,6 +177,7 @@ void gyVidTexCoordArray(const struct _GYTexCoord2 *const ptr) {
 	//assert(curTex); //You should not be submitting this to the untextured shabut in der, dumbass!
 	glVertexAttribPointer(curLightShader->attribLoc[SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, 0, ptr);
 	glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_TEX_COORD]);
+    curTexCoordPtr = ptr;
 }
 
 /*
@@ -228,6 +232,7 @@ void gyVidQuadListEnd(void) {
 	gyVidColorArray(_stripColors);
 	_gyVidTriangleStrip(_modelViewVertices, 0, curStripSize);
 	curStripSize = 0;
+    curTexCoordPtr = NULL;
 }
 
 // ==== HIGH-LEVEL API ====
@@ -267,9 +272,9 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
 		gyMatMultVec(verts, &_modelViewVertices[curStripSize], 4);
 	}
 
-	if(curTex && frame != -1) {
-		GYTexCoord2 (*texCoord)[4] = &_stripTexCoords[curStripSize];
-		coord = gyVidTexCoordArrayFromFrame(&curTex->_coord->texCoord[frame], _rectTexOrient);
+    if(curTex) {
+        coord = (frame != -1)? gyVidTexCoordArrayFromFrame(&curTex->_coord->texCoord[frame], _rectTexOrient) :
+                               curTexCoordPtr;
 		//gyVidTexCoordArray(coord);
 		memcpy(&_stripTexCoords[curStripSize], coord, sizeof(GYTexCoord2)*4);
 		_rectTexOrient = GY_RECT_TEX_ORIENT_NORMAL; //reset after each rect
@@ -278,7 +283,7 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
 	//gyVidColorArray(_curQuadListColor);
 	//memcpy(&_stripColors[curStripSize], _curQuadListColor, sizeof(GYColor4)*4);
 	for(unsigned i = 0; i < 4; ++i) _stripColors[curStripSize+i] = _curQuadListColor[i];
-	GYColor4 (*stripColors)[4] = &_stripColors[curStripSize];
+
 
 	//memcpy(&_stripVerts[curStripSize], verts, sizeof(GYVector4)*4);
 	//GYVector4 (*stripVerts)[4] = &_stripVerts[curStripSize];
