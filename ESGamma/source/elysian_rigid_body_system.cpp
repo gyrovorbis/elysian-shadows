@@ -1,3 +1,4 @@
+#include <cassert>
 #include "elysian_rigid_body_system.hpp"
 #include "elysian_area.hpp"
 #include "elysian_collision_system.hpp"
@@ -15,10 +16,44 @@ namespace elysian {
 RigidBodySystem::RigidBodySystem(void) {
 	_gravityGenerator.setForceMask(0x1);
 	addForce(&_gravityGenerator);
+
+    for(unsigned i = 0; i < ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_SIZE; ++i) {
+        _shardPool[i].setIterator(ShardPool::iterator(&_shardPool, i));
+    }
 }
 
 void RigidBodySystem::update(void) {
+    const float deltaTime = getTimerSys()->getDeltaTime();
+    auto &rigidBodies = getCurArea()->rigidBodies;
+
+  //  for(auto rb : rigidBodies) {
+    //    rb->setOnGround(false);
+   // }
+
 	_updateContacts();
+
+    int toFree = ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_SIZE -_shardPool.size();
+    toFree = (toFree >= ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_IDEAL_FREE_COUNT)? 0 :
+                ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_IDEAL_FREE_COUNT - toFree;
+
+    //update shards
+    for(auto* shard = _shardHead; shard != nullptr; shard = shard->getNext()) {
+        //remove shards whose time has run out
+
+        switch(shard->update(deltaTime)) {
+        case RigidBodyShard::STATE_DONE:
+            _removeShard(_shardHead);
+        case RigidBodyShard::STATE_FADE_OUT:
+            --toFree;
+            break;
+        default:
+            if(toFree > 0) {
+                shard->startFade(deltaTime);
+                --toFree;
+            }
+            break;
+        }
+    }
 }
 
 void RigidBodySystem::applyForce(ForceGenerator*const force) {
@@ -64,6 +99,101 @@ void RigidBodySystem::_updateContacts(void) {
 
 }
 
+void RigidBodySystem::_resolveContactZVelocities(void) {
+    const float deltaTime = getTimerSys()->getDeltaTime();
+
+    for(unsigned i = 0; i < _contactCount; ++i) {
+
+        if(_contactPool[i]->getResolveZ()) {
+            Collidable* col;
+            Collidable* col2;
+            float zDepth = _contactPool[i]->getZDepth();
+
+            if(_contactPool[i]->getZDepth() > 0.0f) {
+                col = _contactPool[i]->_bodyB;
+                col2 = _contactPool[i]->_bodyA;
+            } else {
+                col = _contactPool[i]->_bodyA;
+                col2 = _contactPool[i]->_bodyB;
+            }
+
+            if(col) {
+                GYVector3 vel = col->getEntity()->getRigidBody()->getVelocity();
+
+                if(vel.z < 0.0f) {
+                    vel.z *= -1.0f * col->getAttrib()->getStaticAttrib()->zCoeffOfRest;
+                    if(col2) vel.z *= col2->getAttrib()->getStaticAttrib()->zCoeffOfRest;
+
+                    //Worst-cast, 30fps escape vel, slow as shit!
+                    //const float escapeVelocity = zDepth/(1.0f/30.0f)/powf(col->getAttrib()->getStaticAttrib()->zDamping, (1.0f/30.0f));
+
+                    if(fabs(vel.z) < ELYSIAN_RIGID_BODY_RESTING_CONTACT_ESCAPE_VELOCITY) {
+                        col->getEntity()->getRigidBody()->accel.z = 0.0f;
+                        vel.z = 0.0f;
+
+                        col->getEntity()->getRigidBody()->setOnGround(true);
+
+                        //Do NOT push shit out of contact! Push it to the edge, and let it chill!
+                        if(zDepth > 0.0f) {
+                            zDepth -= ELYSIAN_COLLISION_CONTACT_Z_DEPTH_EPSILON;
+                        } else {
+                            zDepth += ELYSIAN_COLLISION_CONTACT_Z_DEPTH_EPSILON;
+                        }
+                        col->getEntity()->transform._pos.z += fabs(zDepth);
+                        col->getEntity()->transform._pos.y -= fabs(zDepth);
+                    }
+
+                    col->getEntity()->getRigidBody()->setVelocity(vel);
+                   // if(col2 && !col2->getEntity()->getRigidBody()->getOnGround()) apply downward velocity to neighbor underneath
+
+                    //Check zImpulse for shattering top body
+                    if(col->getEntity()->getRigidBody()->getAttrib()->isBreakable()) {
+                        const float zImpulse = fabs(vel.z * col->getAttrib()->getStaticAttrib()->damping.z);
+                        auto* rb = col->getEntity()->getRigidBody();
+                        if(zImpulse >= rb->getDurability()) {
+                            rb->setDurability(rb->getDurability() - zImpulse);
+                            rb->setBreakContact(_contactPool[i]);
+                        }
+                    }
+
+                    //Check zImpulse for shattering bottom body
+                    if(col2) {
+                        if(col2->getEntity()->getRigidBody()->getAttrib()->isBreakable()) {
+                            const float zImpulse = fabs(vel.z * col2->getAttrib()->getStaticAttrib()->damping.z);
+                            auto* rb = col2->getEntity()->getRigidBody();
+                            if(zImpulse >= rb->getDurability()) {
+                                rb->setDurability(rb->getDurability() - zImpulse);
+                                rb->setBreakContact(_contactPool[i]);
+                                GYVector3 vel2 = rb->getVelocity();
+                                vel2.z += vel.z;
+                                rb->setVelocity(vel2);
+                            }
+                        }
+                    }
+
+                } else if(vel.z == 0.0f) {
+                    col->getEntity()->getRigidBody()->setOnGround(true);
+
+                    //Inherit velocity from entity below you. RIDE THAT BITCH!
+                    if(col2) {
+                        GYVector3 vel = col->getEntity()->getRigidBody()->getVelocity();
+                        GYVector3 inheritedVel = col2->getEntity()->getRigidBody()->getVelocity();
+                        gyVec2ScaleAccum((GYVector2*)&inheritedVel, 1.0f - col->getAttrib()->getStaticAttrib()->damping.z);
+                        gyVec2AddAccum((GYVector2*)&vel, (GYVector2*)&inheritedVel);
+                        //col->getEntity()->getRigidBody()->setVelocity(vel);
+                    }
+                }
+             }
+            _contactPool[i]->deltaVel = 0.0f;
+        }
+    }
+
+
+}
+
+
+
+
 void RigidBodySystem::resolveContactVelocities(void) {
 	const float deltaTime = getTimerSys()->getDeltaTime();
 	GYVector2 velDelta[2];
@@ -75,6 +205,8 @@ void RigidBodySystem::resolveContactVelocities(void) {
 		_velResIter = 0;
 		return;
 	}
+
+    _resolveContactZVelocities();
 
 	unsigned iter;
 	for(iter = 0; iter < ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS; ++iter) {
@@ -95,6 +227,7 @@ void RigidBodySystem::resolveContactVelocities(void) {
 			break; //EPSILAAAAWN
 		}
 
+
 		gyContactResolveVelocity(_contactPool[maxIndex], velDelta, rotDelta);
 
 		//========= STOLEN FROM LIBGYRO VELOCITY RESOLUTION =======
@@ -103,21 +236,28 @@ void RigidBodySystem::resolveContactVelocities(void) {
 					_contactPool[maxIndex]->getCollidable(1)->getEntity()->getRigidBody() :
 					nullptr;
 
-		float dampingA = powf(rbA->getEntity()->getCollidable()->getAttrib()->getStaticAttrib()->damping, deltaTime);
-		float dampingB = (rbB)? powf(rbB->getEntity()->getCollidable()->getAttrib()->getStaticAttrib()->damping, deltaTime) : 1.0f;
+        //float dampingA = powf(rbA->getEntity()->getCollidable()->getAttrib()->getStaticAttrib()->damping, deltaTime);
+        //float dampingB = (rbB)? powf(rbB->getEntity()->getCollidable()->getAttrib()->getStaticAttrib()->damping, deltaTime) : 1.0f;
 
 		gyVec2AddAccum((GYVector2*)&rbA->vel, &velDelta[0]);
 		rbA->rot += rotDelta[0];
-		float mag = gyVec2Magnitude(&velDelta[0]) * dampingB;
+
+        GYVector2 dampedVel = velDelta[0];
+
+        if(rbB) gyVec2CompProdAccum(&dampedVel, (GYVector2*)&rbB->getEntity()->getCollidable()->getAttrib()->getStaticAttrib()->damping);
+        float mag = gyVec2Magnitude(&dampedVel);
 		if(mag >= rbA->getDurability()) {
 			rbA->setDurability(rbA->getDurability() - mag);
 			rbA->setBreakContact(_contactPool[maxIndex]);
 		}
 
 		if(rbB) {
+            dampedVel = velDelta[1];
 			gyVec2AddAccum((GYVector2*)&rbB->vel, &velDelta[1]);
 			rbB->rot += rotDelta[1];
-			float mag = gyVec2Magnitude(&velDelta[1]) * dampingA;
+
+            gyVec2CompProdAccum(&dampedVel, (GYVector2*)&rbA->getEntity()->getCollidable()->getAttrib()->getStaticAttrib()->damping);
+            float mag = gyVec2Magnitude(&velDelta[1]);
 			if(mag >= rbB->getDurability()) {
 				rbB->setDurability(rbB->getDurability() - mag);
 				rbB->setBreakContact(_contactPool[maxIndex]);
@@ -230,6 +370,16 @@ void RigidBodySystem::integrate(void) {
 
 }
 
+bool RigidBodySystem::_checkEntityEntity3D(const unsigned i) {
+    RigidBody* rbA = _curArea->rigidBodies[i];
+/*
+    for(unsigned i = 0; i < rbA->getEntity()->getCollidable()->getContactCount(); ++i) {
+        Collidable* colA =
+
+    }*/
+
+}
+
 void RigidBodySystem::integrate3D(void) {
 	const float deltaTime = getTimerSys()->getDeltaTime();
 	CollisionSystem*const colSys = getCollisionSys();
@@ -291,8 +441,7 @@ void RigidBodySystem::integrate3D(void) {
 		auto* collidable = it->getEntity()->getCollidable();
 
 		GYVector3 vel = it->getVelocity();
-		if(vel.z > 0.0f) continue;
-
+        if(vel.z > 0.0f/* || it->getOnGround()*/) continue;
 /*
 		if(collidable->getEntity()->transform._pos.z <= 0.0f) {
 			GYVector3 vel = it->getVelocity();
@@ -365,19 +514,36 @@ void RigidBodySystem::integrate3D(void) {
                 collidable->getEntity()->transform._pos.y -= zDiff;
 
 				GYVector3 vel = it->getVelocity();
+                vel.z *= -1.0f * collidable->getAttrib()->getStaticAttrib()->zCoeffOfRest;
+
                 //if(vel.z <= 0.0f && !it->getOnGround()) vel.y += vel.z;
-                vel.z = 0.0f;
-				it->setVelocity(vel);
-				//Debug::printf(Debug::CRITICAL, "Resting");
-				collidable->getEntity()->getCollidable()->update();
-				it->setOnGround(true);
+
+                if(fabs(vel.z) < ELYSIAN_RIGID_BODY_RESTING_CONTACT_ESCAPE_VELOCITY) {
+
+                    vel.z = 0.0f;
+
+                    //Debug::printf(Debug::CRITICAL, "Resting");
+                    collidable->getEntity()->getCollidable()->update();
+                    it->setOnGround(true);
+
+                }
+
+                it->setVelocity(vel);
+
+                //Check zImpulse for shattering
+                const float zImpulse = fabs(vel.z * collidable->getAttrib()->getStaticAttrib()->damping.z);
+                auto* rb = collidable->getEntity()->getRigidBody();
+                if(zImpulse >= rb->getDurability()) {
+                    it->setDurability(it->getDurability() - zImpulse);
+                    it->setBreakContact(nullptr);
+                }
              //   it->getAttrib()->setForceMask(0);
 
 				//collidable->setResolvePenetration(false);
 				//it->_restingOnTile = true;
 		//	}
 
-		} else {
+        } else { // if(!it->getOnGround()){
 			//Debug::printf(Debug::CRITICAL, "Falling");
         //	it->getAttrib()->setForceMask(1);
 			it->setOnGround(false);
@@ -425,12 +591,16 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
 	unsigned row = 0;
 	unsigned col = 0;
 
+
+    //CollisionContact* contact = rigidBody->getBreakContact();
+    //const bool bodyA = (!contact || contact->_bodyA == rigidBody->getEntity()->getCollidable())? true : false;
+
 	auto _createAndAddShard = [&](Entity*const entity, const float x, const float y, const float xinc, const float yinc) {
-		Entity* shard = &_shardPool.claimFreeEntry();
+        Entity* shard = _claimShard();
 
 		shard->transform._pos.x = entity->transform._pos.x - 0.5f*width + x + 0.5f*xinc;
 		shard->transform._pos.y = entity->transform._pos.y - 0.5f*height + y + 0.5f*yinc;
-		shard->transform._pos.z = entity->transform._pos.z;
+        shard->transform._pos.z = entity->transform._pos.z + (ySize*yinc-y);
 		shard->setNormalType(entity->getNormalType());
 		/*if(entity->getNormalType() == NORMAL_FRONT) {
 			shard->transform._pos.y = entity->transform._pos.y - 0.5f*entity->transform._size.y; + y;
@@ -442,11 +612,14 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
 		}*/
 
 
-		shard->transform.setSize(xinc, yinc);
+        shard->transform.setSize(xinc, yinc, 9.0f);
 
-		if(!shard->getRenderable()) shard->addRenderable();
+        if(!shard->getRenderable()) {
+            auto* renderable = shard->addRenderable();
+            renderable->setSpriteAttrib(new SpriteAttrib);
+        }
 		auto* attrib = entity->getRenderable()->getSpriteAttrib();
-		shard->getRenderable()->setSpriteAttrib(attrib);
+        *shard->getRenderable()->getSpriteAttrib() = *attrib;
 
 		GYTexCoordFrame* coord = &attrib->getTexture()->_coord->texCoord[entity->getRenderable()->getFrame()];
 
@@ -483,26 +656,69 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
 
 		*shard->getRigidBody()->getAttrib() = *entity->getRigidBody()->getAttrib();
 		shard->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass *= ySize*xSize;
+        shard->getCollidable()->getAttrib()->getStaticAttrib()->invMomOfInertia = 1/5000000.0f * ySize*xSize;
+        shard->getCollidable()->getAttrib()->getStaticAttrib()->angDamping = 0.1f;
+        gyVec2ScaleAccum((GYVector2*)&shard->getCollidable()->getAttrib()->getStaticAttrib()->damping, 1.0f/(ySize * xSize));
+        shard->getCollidable()->getAttrib()->getStaticAttrib()->zCoeffOfRest = 0.0f;
 
 		shard->getRigidBody()->getAttrib()->setBreakable(false);
+        shard->getRigidBody()->getAttrib()->setCanHold(false);
+        shard->getRigidBody()->clearKinetic();
 
 		GYVector3 velDir = entity->getRigidBody()->getVelocity();
+        //Z AXIS STAYS NEGATIVE!!!!
+        //if(bodyA) gyVec2ScaleAccum((GYVector2*)&velDir, -1.0f);
 		//gyVec3Normalize(&velDir);
 		//float mag = gyVec3Magnitude(&entity->getRigidBody()->getVelocity());
 		//gyVec3Scale(&velDir, &velDir, xSize*ySize*mag);
 
+#if 1
+        GYVector3 localPos;
+        gyVec3Sub(&localPos, &shard->transform._pos, &entity->transform._pos);
+        //gyVec3Sub(&localPos, &entity->transform._pos, &shard->transform._pos);
+       //gyVec3Normalize(&velDir);
+        //float crossProd = gyVec3DotProd(&localPos, &velDir);
 
-		GYVector2 localPos;
-		gyVec2Sub(&localPos, (GYVector2*)&shard->transform._pos, (GYVector2*)&entity->transform._pos);
-		gyVec2Normalize(&localPos);
-		float crossProd = gyVec2DotProd(&localPos, (GYVector2*)&velDir);
+        float maxDist = powf(entity->transform._size.x*entity->transform._scale.x*0.5f, 2.0f);
+        maxDist += powf(entity->transform._size.y*entity->transform._scale.y*0.5f, 2.0f);
+        float maxDist3 = maxDist + powf(entity->transform._size.y*entity->transform._scale.y*0.5f, 2.0f);
+       // maxDist += powf(entity->transform._size.y*entity->transform._scale.y, 2.0f); //z axis
+        maxDist = gySqrt(maxDist);
+        maxDist3 = gySqrt(maxDist3);
 
-		gyVec2Scale((GYVector2*)&velDir, &localPos, crossProd);
+        float posMag = gyVec2Magnitude((GYVector2*)&localPos);
+        float posMag3 = gyVec3Magnitude(&localPos);
+        gyVec3Normalize(&localPos);
+        float velMag = gyVec3MagAndNormalize(&velDir);
+
+        float rot = gyVec2ScalarCrossProd((GYVector2*)&localPos, (GYVector2*)&velDir);
+        shard->getRigidBody()->setRotation(rot*(posMag/maxDist)*velMag);
+
+        float totalMag = (posMag3/maxDist3)*velMag*gyVec3DotProd(&localPos, &velDir);//*posMag;
+
+        //gyVec3Scale(&velDir, &localPos, crossProd);
+
+        gyVec3AddScaled(&velDir, &localPos, totalMag);
 
 		shard->getRigidBody()->setVelocity(velDir);
 
+#else
 
-		getCurArea()->addEntity(shard);
+        GYVector3 localPos;
+        gyVec3Sub(&localPos, &shard->transform._pos, &entity->transform._pos);
+        //gyVec3Sub(&localPos, &entity->transform._pos, &shard->transform._pos);
+        float mag = gyVec3Magnitude(&localPos);
+        //gyVec3Normalize(&localPos);
+//        float crossProd = gyVec3DotProd(&localPos, &velDir);
+
+
+
+        //gyVec3ScaleAccum(&velDir, -1.0f/(ySize*xSize));
+        gyVec3AddScaled(&velDir, &localPos, 1.0f/mag);
+
+        shard->getRigidBody()->setVelocity(velDir);
+
+#endif
 
 	};
 

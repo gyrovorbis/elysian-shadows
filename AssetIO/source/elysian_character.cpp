@@ -76,9 +76,11 @@ void Character::move(const GYVector2 &dist) {
 	if(gyVec2IsZero(&dist)) return;
 	GYVector2 totalForce = dist;
 
+#if 0
 	if(_heldEntity) {
 		gyVec2Scale(&totalForce, &dist, getHeldEntityForceDampFactor());
 	}
+#endif
 
 	_entity->getRigidBody()->applyForce(GYVector3{ totalForce.x, totalForce.y, 0.0f });
 	//_entity->transform.translate(dist);
@@ -130,11 +132,14 @@ void Character::setHeldEntity(Entity * const entity) {
 
 	_heldEntity = entity;
 	if(entity) {
-		entity->getRigidBody()->setActive(false);
-		entity->getRigidBody()->clearKinetic();
-		entity->getCollidable()->setActive(false);
-		_entity->getAnimation()->addChildEntity(entity, ELYSIAN_CHAR_ANIM_CHILD_SEQ_HELD);
-
+        if(!entity->getRigidBody()->getAttrib()->canHold()) {
+            _heldEntity = nullptr;
+        } else {
+            entity->getRigidBody()->setActive(false);
+            entity->getRigidBody()->clearKinetic();
+            entity->getCollidable()->setActive(false);
+            _entity->getAnimation()->addChildEntity(entity, ELYSIAN_CHAR_ANIM_CHILD_SEQ_HELD);
+        }
 	}
 
 }
@@ -142,21 +147,60 @@ void Character::setHeldEntity(Entity * const entity) {
 void Character::throwHeldEntity(void) {
 	if(!_heldEntity) return;
 
-	GYVector3 throwForce = {
+    GYVector3 startPosOffset;
+    GYVector3 velocity;
+    GYVector3 throwForce = ELYSIAN_CHAR_THROW_DEFAULT_FORCE;/*{
 		_lastMoveDir.x,
-		_lastMoveDir.y,
+        _lastMoveDir.y,
         //0.8f
         0.1f
-	};
-	gyVec3Scale(&throwForce, &throwForce, 300000.0f/_deltaTime);
+    };*/
+   // gyVec3Scale(&throwForce, &throwForce, 1.0f/_deltaTime);
+    gyVec3ScaleAccum(&throwForce, 1.0f/_heldEntity->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass);
+
+    switch(_faceDir) {
+    case Direction::DIR4_UP:
+        startPosOffset = GYVector3 { 0.0f, -0.5f*_entity->getCollidable()->getWorldSize().y-0.5f*_heldEntity->getCollidable()->getWorldSize().y, 0.0f };
+        break;
+    case Direction::DIR4_DOWN:
+        startPosOffset = GYVector3 { 0.0f, 0.5f*_entity->getCollidable()->getWorldSize().y+0.5f*_heldEntity->getCollidable()->getWorldSize().y, 0.0f };
+        break;
+    case Direction::DIR4_LEFT:
+        startPosOffset = GYVector3 { -0.5f*_entity->getCollidable()->getWorldSize().x-0.5f*_heldEntity->getCollidable()->getWorldSize().x, 0.0f, 0.0f };
+        break;
+    case Direction::DIR4_RIGHT:
+        startPosOffset = GYVector3 { 0.5f*_entity->getCollidable()->getWorldSize().x+0.5f*_heldEntity->getCollidable()->getWorldSize().x, 0.0f, 0.0f };
+        break;
+    default:
+        break;
+
+    }
+
+    //_heldEntity->setDepthBaseY(_entity->getDepthBaseY());
+
+
+    float yOffset = _entity->getDepthBaseY() - _heldEntity->getDepthBaseY();
+    _heldEntity->getTransform()._pos.z = _entity->getTransform()._pos.z + yOffset;
+    //_heldEntity->getTransform()._pos.y -
+
+    gyVec3AddAccum(&_heldEntity->getTransform()._pos, &startPosOffset);
+
+
+            //_entity->getTransform()._pos.y; /*+ 0.5f* _entity->getTransform()._size.y * _entity->getTransform()._scale.y*/
+          //  + 0.5f* _heldEntity->getTransform()._size.y * _heldEntity->getTransform()._scale.y;
+     //   _heldEntity->getTransform()._pos.z = _entity->getTransform()._pos.z;
+    //  _heldEntity->getTransform()._pos.y -= (_heldEntity->getTransform()._pos.z - _entity->getTransform()._pos.z);
 
 	//Set give the object its parent's initial velocity
 	_heldEntity->getRigidBody()->clearKinetic();
-	_heldEntity->getRigidBody()->setVelocity(_entity->getRigidBody()->getVelocity());
+    velocity = _entity->getRigidBody()->getVelocity();
+    gyVec3ScaleAccum(&velocity, 2.0f);
+
+    _heldEntity->getRigidBody()->setVelocity(velocity);
 	_entity->getRigidBody()->clearKinetic();
 
 	//Also apply a force to "throw" the bitch in the direction we're facing
-	_heldEntity->getRigidBody()->applyForce(throwForce);
+    if(_movedThisFrame) _heldEntity->getRigidBody()->applyForce(throwForce);
 
 	setHeldEntity(nullptr);
 }
@@ -165,9 +209,11 @@ void Character::jump(void) {
 	GYVector3 force = ELYSIAN_CHAR_JUMP_DEFAULT_FORCE;
     RigidBody*const rb = _entity->getRigidBody();
 
+#if 0
 	if(_heldEntity) {
 		gyVec3ScaleAccum(&force, getHeldEntityForceDampFactor());
 	}
+#endif
 
 	gyVec3ScaleAccum(&force, 1.0f/_deltaTime);
 

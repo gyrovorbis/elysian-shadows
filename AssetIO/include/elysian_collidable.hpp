@@ -40,6 +40,14 @@ namespace elysian {
 		inline void addCheckAgainst(const uint32_t flag) { checkAgainst |= flag; }
 	};
 
+    class CollidableStaticAttrib: public GYStatic {
+    public:
+        CollidableStaticAttrib(void);
+        void setDamping(const float xy);
+        void setZDamping(const float z);
+        void setDamping3f(const float x, const float y, const float z);
+    };
+
 
 class CollidableAttrib {
 friend class Collidable;
@@ -49,17 +57,17 @@ public:
 	
 	CollisionFlags flags;
 	
-	CollidableAttrib(void);
+    CollidableAttrib(void) = default;
 	inline GY_COLLIDER_TYPE getColliderType(void) const { return _type; }
 	inline void setColliderType(const GY_COLLIDER_TYPE type) { _type = type; }
-	inline void setRelPos(const float x, const float y) { _relPos.x = x; _relPos.y = y; }
-	inline void setRelSize(const float x, const float y) { _relSize.x = x; _relSize.y = y; }
+    inline void setRelPos(const float x, const float y, const float z) { _relPos.x = x; _relPos.y = y; _relPos.z; }
+    inline void setRelSize(const float x, const float y, const float z) { _relSize.x = x; _relSize.y = y; _relSize.z = z; }
 	inline const GYVector3& getRelSize(void) const { return _relSize; }
-	inline GYStatic *getStaticAttrib(void) { return &_staticAttrib; }
+    inline CollidableStaticAttrib *getStaticAttrib(void) { return &_staticAttrib; }
 	inline CollisionFlags *getFlags(void) { return &flags; }
 	
 private:
-        GYStatic _staticAttrib;
+        CollidableStaticAttrib  _staticAttrib;
 		GYVector3 _relPos		= { 0.0f, 0.0f, 0.0f };
 		GYVector3 _relSize		= { 1.0f, 1.0f, 1.0f };
 		GY_COLLIDER_TYPE _type	= GY_COLLIDER_AABB;
@@ -75,6 +83,7 @@ private:
 	public:
 		enum ZTRAN_STATE { ZTRAN_INACTIVE, ZTRAN_ACTIVE };
 	protected:
+        GYVector3           _worldSize          = { 1.0f, 1.0f, 1.0f, };
 		unsigned			_contactCount		= 0;
 		CollidableAttrib*	_attrib				= nullptr;
 		unsigned			_zTranTileX			= 0;
@@ -122,6 +131,7 @@ private:
 		inline void setContactEventMonitorMask(const uint32_t t) { _eventMonitorMask = t; }
 		inline GYCollider* getCollider(void) { return &_collider.col; }
 		const GYVector3& getWorldPos(void) const;
+        const GYVector3& getWorldSize(void) const { return _worldSize; }
 		inline void setActive(const bool val) { _active = val; }
 	};
 
@@ -135,10 +145,12 @@ private:
 #ifdef ELYSIAN_ENGINE
 		friend class CollisionSystem;
 		friend class RigidBodySystem;
-		Collidable* _bodyA			= nullptr;
-		Collidable* _bodyB			= nullptr;
-		bool _resolvePen			= true;
-		uint32_t _eventMonitorMask	= 0;
+        Collidable* _bodyA              = nullptr;
+        Collidable* _bodyB          	= nullptr;
+        float       _zDepth             = 0.0f;
+        uint32_t    _eventMonitorMask	= 0;
+        bool        _resolvePen			= true;
+        bool        _resolveZ           = false;
 #endif
 
 		void _calculatePenetrationInternals(void);
@@ -154,23 +166,30 @@ private:
 		float			getClosingVel(void) const;
 		float			getDeltaVel(void) const;
 		float			getDepth(void) const;
-
-
+        void            setZDepth(const float depth);
+        float           getZDepth(void) const;
+        void            setResolveZ(const bool val=true);
+        bool            getResolveZ(void) const;
 	};
 
 
 	// ======== INLINEZ ========
 
-	inline const GYVector3& Collidable::getWorldPos(void) const { return _collider.col.worldPos; }
+    inline CollidableStaticAttrib::CollidableStaticAttrib(void):
+        GYStatic {
+            { 0.5f, 0.5f, 0.5f },   //damping
+            1.0f/3000.0f,           //invMass
+            0.1f,                   //angDamping
+            0.0f,                   //coeffOfRest
+            0.0f,                   //invMomOfInertia
+            0.0f                    //zCoeffOfRest
+        } {}
+    inline void CollidableStaticAttrib::setDamping(const float xy) { damping.x = damping.y = xy; }
+    inline void CollidableStaticAttrib::setDamping3f(const float x, const float y, const float z) { damping.x = x; damping.y = y; damping.z = z; }
+    inline void CollidableStaticAttrib::setZDamping(const float z) { damping.z = z; }
 
-	inline CollidableAttrib::CollidableAttrib(void) {
-		_staticAttrib.inverseMass = 1.0f/3000.0f;
-		_staticAttrib.angDamping = 1.0f;
-		_staticAttrib.damping = 1.0f;
-		_staticAttrib.coeffOfRest = 0.0f;
-		_staticAttrib.invMomOfInertia = 0.0f;
-        _staticAttrib.zDamping = 0.5f;
-	}
+
+	inline const GYVector3& Collidable::getWorldPos(void) const { return _collider.col.worldPos; }
 
 	inline Collidable* CollisionContact::getCollidable(const unsigned index) const { return (index == 0)? _bodyA : _bodyB; }
 	inline const GYStatic* CollisionContact::getStaticAttrib(const unsigned index) const { return staticAttrib[index]; }
@@ -181,6 +200,10 @@ private:
 	inline float CollisionContact::getClosingVel(void) const { return closingVel; }
 	inline float CollisionContact::getDeltaVel(void) const { return deltaVel; }
 	inline float CollisionContact::getDepth(void) const { return depth; }
+    inline void CollisionContact::setZDepth(const float depth) { _zDepth = depth; }
+    inline float CollisionContact::getZDepth(void) const { return _zDepth; }
+    inline void CollisionContact::setResolveZ(const bool val) { _resolveZ = val; }
+    inline bool CollisionContact::getResolveZ(void) const { return _resolveZ; }
 
 
 }

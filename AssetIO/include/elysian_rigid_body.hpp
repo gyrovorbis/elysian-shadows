@@ -14,6 +14,7 @@ namespace elysian {
 		uint32_t	_forceMask		= ~0x0;
 		bool		_breakable		= false;
 		float		_baseDurability = -1;
+        bool        _canHold        = true;
 
 	public:
 		uint32_t	getForceMask(void) const;
@@ -22,13 +23,13 @@ namespace elysian {
 		bool		isBreakable(void) const;
 		float		getBaseDurability(void) const;
 		void		setBaseDurability(const float val);
-
+        bool        canHold(void) const;
+        void        setCanHold(const bool val=true);
 	};
 
 	//Abstraction for particles and rigidBodies to share force generators
 	class ForceTarget: protected GYKinetic {
     protected:
-        bool				_onGround		= true;
 
 	public:
 		enum TARGET_TYPE { TARGET_PARTICLE, TARGET_RIGID_BODY };
@@ -104,8 +105,8 @@ namespace elysian {
 	inline const GYVector3&	ForceTarget::getVelocity(void) const { return vel; }
 	inline void	ForceTarget::setVelocity(const GYVector3& _vel) { vel = _vel; }
 	inline void ForceTarget::setRotation(const float rotation) { rot = rotation; }
-    inline bool ForceTarget::getOnGround(void) const { return _onGround; }
-    inline void ForceTarget::setOnGround(const bool val) { _onGround = val; }
+    inline bool ForceTarget::getOnGround(void) const { return (bool)resting; }
+    inline void ForceTarget::setOnGround(const bool val) { resting = (int)val; }
 	inline void ForceTarget::clearKinetic(void) {
 		GYKinetic* kinetic = static_cast<GYKinetic*>(this);
 		memset(kinetic, 0, sizeof(GYKinetic));
@@ -128,6 +129,8 @@ namespace elysian {
 	inline void RigidBodyAttrib::setBreakable(const bool val) { _breakable = val; }
 	inline float RigidBodyAttrib::getBaseDurability(void) const { return _baseDurability; }
 	inline void RigidBodyAttrib::setBaseDurability(const float val) { _baseDurability = val; }
+    inline bool RigidBodyAttrib::canHold(void) const { return _canHold; }
+    inline void RigidBodyAttrib::setCanHold(const bool val) { _canHold = val; }
 
 
 

@@ -24,8 +24,11 @@ void CollisionContact::_calculateVelocityInternals(const float deltaTime) {
 void Collidable::update(void) {
 #ifdef ELYSIAN_ENGINE
 	if(!_active) return;
-	static const GYVector4 origin = { 0.0f, 0.0f, 0.0f, 1.0f };
-	GYVector4 worldPos;
+    static const GYVector4 localVecs[2] = {
+        { 0.0f, 0.0f, 0.0f, 1.0f }, //position
+        { 1.0f, 1.0f, 1.0f, 1.0f }  //size
+    };
+    GYVector4 worldVecs[2];
 	/* This is necessary to ensure that if the attribute geometry was dynamically changed,
 		the runtime data is updated to reflect it. Keep shit synced. */
 	_collider.col.type = _attrib->_type; 
@@ -33,13 +36,17 @@ void Collidable::update(void) {
 	//Calculate world vertices for collider
 	gyMatPush();
 	gyMatLoadIdentity();
-	_entity->transform.apply();
-	gyMatTranslateScale(_attrib->_relPos.x, _attrib->_relPos.y, _attrib->_relPos.z, _attrib->_relSize.x, _attrib->_relSize.y, _attrib->_relSize.z);
-	gyMatMultVec(&origin, &worldPos, 1);
+    _entity->transform.apply();
+    gyMatTranslateScale(_attrib->_relPos.x, _attrib->_relPos.y, _attrib->_relPos.z,
+                        _attrib->_relSize.x, _attrib->_relSize.y, _attrib->_relSize.z);
+    gyMatMultVec(localVecs, worldVecs, 2);
 	gyCalcWorldVert(&_collider.col);
-	gyMatPop();
+    gyMatPop();
 
-	_collider.col.worldPos = *(GYVector3*)&worldPos;
+    _collider.col.worldPos = *(GYVector3*)&worldVecs[0];
+    gyVec3Sub(&_worldSize, (GYVector3*)&_collider.box.worldVert[2], (GYVector3*)&_collider.box.worldVert[0]);
+    _worldSize.z *= -1.0f;
+
 #endif
 }
     

@@ -44,6 +44,7 @@ namespace elysian {
 				{-0.5f, 0.5f, 0.0f, 1.0f},
 				{0.5f, 0.5f, 0.0f, 1.0f}
 			};
+            GYColor4 colorArray[4];
 
 			gyVidTexBind(_spriteAttrib->_tex);
 			gyVidNormalMapBind(_normalMap);
@@ -94,12 +95,18 @@ namespace elysian {
 				gyVidTriangleStrip(localVerts, 0, 4);
 				break;
 			case PrimAttrib::SPRITE:
-				gyVidAlphaLevel((_spriteAttrib->_color.a == 255)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
-                gyVidQuadListBegin(&_spriteAttrib->_color);
-				if(_frame == -1) gyVidTexCoordArray(_texCoord);
-                else gyVidRectTexOrient(_texOrient);
 
-                //gyVidQuad(localVerts, _frame);
+                //gyVidAlphaLevel((_spriteAttrib->_color.a == 255)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
+                gyVidQuadListBegin(&_spriteAttrib->_color);
+
+                if(_frame == -1) {
+                    //for(unsigned i = 0; i < 4; ++i) colorArray[i] = _spriteAttrib->_color;
+                    gyVidTexCoordArray(_texCoord);
+                    //gyVidColorArray(colorArray);
+                } else {
+                    gyVidRectTexOrient(_texOrient);
+                }
+
                 gyVidRect(_frame);
                 gyVidQuadListEnd();
 				break;

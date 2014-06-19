@@ -5,6 +5,7 @@
 #include "elysian_mem_pool.hpp"
 #include "elysian_sprite_attrib.hpp"
 #include "elysian_rigid_body.hpp"
+#include "elysian_collidable.hpp"
 
 #define ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_POOL_SIZE	5000
 
@@ -14,7 +15,7 @@ namespace elysian {
 	class Material;
 	class ForceGenerator;
 
-	class ParticleEmitterAttrib: public SpriteAttrib, public GYStatic {
+    class ParticleEmitterAttrib: public SpriteAttrib, public CollidableStaticAttrib {
 		friend class ParticleEmitterInternals;
 	private:
 		GYVector3	_acceleration		= GYVector3 { 0.0f, 0.0f, 0.0f };
@@ -65,10 +66,10 @@ namespace elysian {
 		//bool		active = false;
 
 		//reimplemented from ForceTarget
-		virtual TARGET_TYPE			getTargetType(void)	const override;
-		virtual float				getOrientation(void) const override;
-		virtual const GYVector3&	getPosition(void) const override;
-		virtual const GYStatic*		getStaticAttrib(void) const override;
+        virtual TARGET_TYPE                     getTargetType(void)	const override;
+        virtual float                           getOrientation(void) const override;
+        virtual const GYVector3&                getPosition(void) const override;
+        virtual const GYStatic*             	getStaticAttrib(void) const override;
 
 		void integrate(const float deltaTime);
 	};

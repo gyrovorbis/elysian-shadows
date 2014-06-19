@@ -5,6 +5,16 @@
 
 namespace elysian {
 
+GravityForceGenerator::GravityForceGenerator(void) {
+    gyGravityForceSet(&_accel);
+}
+
+void GravityForceGenerator::setAccel(const GYVector3 &accel) {
+    _accel = accel;
+    gyGravityForceSet(&_accel);
+}
+
+
 void GravityForceGenerator::applyForce(ForceTarget * const target, const float /*deltaTime*/) {
 	GYVector3 force;
 	const GYStatic* attrib = target->getStaticAttrib();
@@ -15,7 +25,8 @@ void GravityForceGenerator::applyForce(ForceTarget * const target, const float /
 
     //if(target->getOnGround()) force.y = 0.0f;
 
-	target->applyForce(force);
+    if(!target->getOnGround())
+        target->applyForce(force);
 
 }
 

@@ -29,7 +29,7 @@ namespace elysian {
         _mainState->register_class<LightAttrib>();
 		_mainState->register_class<Animation>();
 		_mainState->register_class<CollisionFlags>();
-		_mainState->register_class<GYStatic>();
+        OOLUA::register_class<CollidableStaticAttrib>(*_mainState);
 		_mainState->register_class<CollidableAttrib>();
 		_mainState->register_class<CollisionContact>();
 		_mainState->register_class<Collidable>();
@@ -157,13 +157,15 @@ OOLUA_EXPORT_FUNCTIONS_CONST(LuaEventCallback)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(GYWav)
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(GYWav)
 
-EXPORT_OOLUA_FUNCTIONS_9_NON_CONST(InstanceTransform,
+EXPORT_OOLUA_FUNCTIONS_11_NON_CONST(InstanceTransform,
 									setPos2f,
 									setPos3f,
 									translate2f,
 									translate3f,
-									setSize2f,
-									setScale2f,
+                                    setSize2f,
+                                    setScale2f,
+                                    setSize3f,
+                                    setScale3f,
 									setOrientZ,
 									rotate,
 									scale2f)
@@ -330,17 +332,21 @@ EXPORT_OOLUA_FUNCTIONS_0_CONST(CollisionFlags)
 OOLUA_EXPORT_FUNCTIONS_CONST(GYStatic,
 							getInverseMass,
 							getCoeffOfRest,
-							getDamping,
+                            getZCoeffOfRest,
 							getInvMomOfInertia,
-							getAngDamping,
-							getZDamping)
+                            getAngDamping)
 OOLUA_EXPORT_FUNCTIONS(GYStatic,
 						setInverseMass,
 						setCoeffOfRest,
-						setDamping,
+                        setZCoeffOfRest,
 						setInvMomOfInertia,
-						setAngDamping,
-					   setZDamping)
+                        setAngDamping)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(CollidableStaticAttrib)
+OOLUA_EXPORT_FUNCTIONS(CollidableStaticAttrib,
+                       setDamping,
+                       setZDamping,
+                       setDamping3f)
 
 EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(CollidableAttrib,
 								   setColliderType,

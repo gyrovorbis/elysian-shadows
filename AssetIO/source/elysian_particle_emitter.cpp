@@ -10,14 +10,7 @@
 
 namespace elysian {
 
-ParticleEmitterAttrib::ParticleEmitterAttrib(void):
-	GYStatic({1.0f/500.0f,
-			 1.0f,
-			 0.99f,
-			 1.0f/5000.0f,
-			 0.99f,
-			 0.99f
-	}) {}
+ParticleEmitterAttrib::ParticleEmitterAttrib(void) {}
 
 ParticleEmitterAttrib::~ParticleEmitterAttrib(void) {
 	delete _material;

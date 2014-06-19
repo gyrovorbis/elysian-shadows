@@ -176,9 +176,6 @@ void PartySystem::processInput(const GameInput &input) {
 		if(_characterParty.size() != 0) _checkExamine(_characterParty[0]);
 	}
 
-	if(input.getTapped(GameInput::BUT_N)) {
-		if(_characterParty.size() != 0) _checkPickup(_characterParty[0]);
-	}
 
 	if(input.getTapped(GameInput::BUT_I)) {
 		if(_characterParty.size() != 0) _characterParty[0]->getCharacter()->jump();
@@ -247,6 +244,10 @@ void PartySystem::processInput(const GameInput &input) {
 		//getAudioSys()->setSfxChannelLooping(0, false);
 		entity->getAnimation()->setSpeedMultiplier(1.0f);
 	}
+
+    if(input.getTapped(GameInput::BUT_N)) {
+        if(_characterParty.size() != 0) _checkPickup(_characterParty[0]);
+    }
 }
 
 void PartySystem::_checkPickup(Entity * const leader) const {
@@ -261,8 +262,10 @@ void PartySystem::_checkPickup(Entity * const leader) const {
 				++it)
 			{
 				if(getCollisionSys()->checkCollision(*leader, *(*it)->getEntity())) {
-					leader->getCharacter()->setHeldEntity((*it)->getEntity());
-					break;
+                    if((*it)->getEntity()->getRigidBody()->getAttrib()->canHold()) {
+                        leader->getCharacter()->setHeldEntity((*it)->getEntity());
+                        break;
+                    }
 				}
 			}
 		}

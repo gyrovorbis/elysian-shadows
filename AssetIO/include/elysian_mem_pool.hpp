@@ -121,13 +121,15 @@ public:
         friend class Pool;
     private:
 
-        Pool<T>& _parent;
-        unsigned _index;
+        Pool<T>* _parent    = nullptr;
+        unsigned _index     = 0;
 
     public:
 
+        iterator(void) = default;
+
         iterator(Pool<T>*const parent, const unsigned index):
-            _parent(*parent), _index(index) {}
+            _parent(parent), _index(index) {}
 
     /*    bool operator != (const iterator& other) const {
             return (_index != other._index);
@@ -141,7 +143,7 @@ public:
 		T& operator*(void) const;
 
         const iterator& operator++(void) {
-            while(!_parent._used[++_index]);
+            while(!_parent->_used[++_index]);
 
             return *this;
         }
@@ -167,6 +169,8 @@ public:
         free(_used);
         delete[] _entries;
     }
+
+    T& operator[] (const int index) { return _entries[index]; }
 
     iterator begin(void) {
         for(unsigned i = 0; i < _endIndex; ++i) {
@@ -263,7 +267,7 @@ inline T* Pool<T>::iterator::operator ->(void) const {
 
 template<typename T>
 inline T& Pool<T>::iterator::operator *(void) const {
-	return _parent._entries[_index];
+    return _parent->_entries[_index];
 }
 
 

@@ -366,30 +366,121 @@ void CollisionSystem::detectEntityCollision(const unsigned i) {
 			
 		//Return if collision flags don't match OR
 		//if both are on different z-planes.
-		if(!(bodyA->getAttrib()->flags.checkAgainst & bodyB->getAttrib()->flags.type) ||
-			bodyA->getEntity()->getElev() != bodyB->getEntity()->getElev()) continue;
+        if(!(bodyA->getAttrib()->flags.checkAgainst & bodyB->getAttrib()->flags.type)
+                /* || bodyA->getEntity()->getElev() != bodyB->getEntity()->getElev() */) continue;
+
+        //solve for overlapping z/elevation region
+        float aBot = bodyA->getCollider()->worldPos.z;
+        float aTop = aBot + bodyA->getWorldSize().z;
+
+        float bBot = bodyB->getCollider()->worldPos.z;
+        float bTop = bBot + bodyB->getWorldSize().z;
+
+        float zBot = -1.0f;
+        float zTop = -1.0f;
+        bool zTopFound = false;
+        bool zBotFound = false;
+
+        if(aTop >= bBot && aTop <= bTop) {
+            zTopFound = true;
+            zTop = aTop;
+        }
+        else if(bTop >= aBot && bTop <= aTop) {
+            zTop = bTop;
+            zTopFound = true;
+        }
+
+        if(aBot <= bTop && aBot >= bBot) {
+            zBotFound = true;
+            zBot = aBot;
+        }
+        else if(bBot <= aTop && bBot >= aBot) {
+            zBotFound = true;
+            zBot = bBot;
+        }
+
+        //No overlap!
+        if(!zTopFound || !zBotFound) continue;
+
+        if(zBot == aBot) {
+            //adjustments go to bodyB
+            float zOffset = aBot - bBot;
+            if(zOffset > bodyB->getWorldSize().z) zOffset = bodyB->getWorldSize().z;
+            if(bodyB->getCollider()->type == GY_COLLIDER_AABB || bodyB->getCollider()->type == GY_COLLIDER_OBB) {
+                for(unsigned i = 0; i < 4; ++i) ((GYBoxCollider*)bodyB->getCollider())->worldVert[i].y -= zOffset;
+            }
+        } else if(zBot == bBot) {
+            //adjustments go to bodyA
+            float zOffset = bBot - aBot;
+            if(zOffset > bodyA->getWorldSize().z) zOffset = bodyA->getWorldSize().z;
+            if(bodyA->getCollider()->type == GY_COLLIDER_AABB || bodyA->getCollider()->type == GY_COLLIDER_OBB) {
+                for(unsigned i = 0; i < 4; ++i) ((GYBoxCollider*)bodyA->getCollider())->worldVert[i].y -= zOffset;
+            }
+        }
+
 
 		if(gyCollision(&bodyB->_collider.col, bodyB->getAttrib()->getStaticAttrib(), &_contactPool[_contactAmount], &swapFlag)) {
 			++bodyA->_contactCount;
 			++bodyB->_contactCount;
+
+           float zDiff;// =  (zTop == aTop)? (aTop-bBot) : -((bTop-aBot));
+
 			if(!swapFlag) { 
 				_contactPool[_contactAmount]._bodyA = bodyA;
 				_contactPool[_contactAmount]._bodyB = bodyB;
+
+                if(zTop == aTop && zBot == bBot) {
+                    zDiff = aTop-bBot;
+                } else if(zTop == bTop && zBot == aBot) {
+                    zDiff = aBot-bTop;
+                } else zDiff = 32.0f;
+
 			}
 			else {
 				_contactPool[_contactAmount]._bodyB = bodyA;
 				_contactPool[_contactAmount]._bodyA = bodyB;
+
+                if(zTop == aTop && zBot == bBot) {
+                    zDiff = aBot-bTop;
+                } else if(zTop == bTop && zBot == aBot) {
+                    zDiff = aTop-bBot;
+                } else zDiff = 32.0f;
 			}
 
 			_contactPool[_contactAmount]._resolvePen		= bodyA->_resolvePen && bodyB->_resolvePen;
 			_contactPool[_contactAmount]._eventMonitorMask	= (bodyA->_eventMonitorMask | bodyB->_eventMonitorMask);
+
+        //    float zDiff = zTop-zBot;
+
+            _contactPool[_contactAmount].setZDepth(zDiff);
 			
 			//Emit onCollide trigger for any entitjjies with this component
-			//getBehavSys()->onCollide(bodyA->getEntity(), bodyB);
+            //getBehavSys()->onCollide(bodyA->getEntity(), bodyB);
 			//getBehavSys()->onCollide(bodyB->getEntity(), bodyA)
+
 			
-			if(++_contactAmount == ELYSIAN_COLLISION_CONTACT_LIST_SIZE) break; //MAXXED OUT -- NOT GOOD ENOUGH
+            if(++_contactAmount == ELYSIAN_COLLISION_CONTACT_LIST_SIZE) {
+                assert(0);
+                break; //MAXXED OUT -- NOT GOOD ENOUGH
+            }
 		}
+
+        if(zBot == aBot) {
+            //adjustments go to bodyB
+            float zOffset = aBot - bBot;
+            if(zOffset > bodyB->getWorldSize().z) zOffset = bodyB->getWorldSize().z;
+            if(bodyB->getCollider()->type == GY_COLLIDER_AABB || bodyB->getCollider()->type == GY_COLLIDER_OBB) {
+                for(unsigned i = 0; i < 4; ++i) ((GYBoxCollider*)bodyB->getCollider())->worldVert[i].y += zOffset;
+            }
+        } else if(zBot == bBot) {
+            //adjustments go to bodyA
+            float zOffset = bBot - aBot;
+            if(zOffset > bodyA->getWorldSize().z) zOffset = bodyA->getWorldSize().z;
+            if(bodyA->getCollider()->type == GY_COLLIDER_AABB || bodyA->getCollider()->type == GY_COLLIDER_OBB) {
+                for(unsigned i = 0; i < 4; ++i) ((GYBoxCollider*)bodyA->getCollider())->worldVert[i].y += zOffset;
+            }
+        }
+
 	}
 }
 
@@ -401,8 +492,10 @@ inline void CollisionSystem::_detectCollidableColliderCollision(Collidable &coll
 		_contactPool[_contactAmount]._bodyA = &collidable;
 		_contactPool[_contactAmount]._bodyB = nullptr;
 		_contactPool[_contactAmount]._eventMonitorMask = 0;
+        _contactPool[_contactAmount].setZDepth(32.0f);
 		_contactPool[_contactAmount++]._resolvePen = collidable._resolvePen;
 		++collidable._contactCount;
+        if(_contactAmount == ELYSIAN_COLLISION_CONTACT_LIST_SIZE) assert(0);
 	}
 }
 
@@ -754,17 +847,86 @@ bool CollisionSystem::resolvePenetration(void) {
 		//this can probably be lowered quite a bit once point of contact is fucking correct
 		//Debug::printf(Debug::VERBOSE, "-------------POSITION ITERATION - %d-------", iter);
 
+        //Resolve the Z direction first!
+        if(fabs(_contactPool[deepestIndex].getZDepth()) <= ELYSIAN_COLLISION_CONTACT_Z_DEPTH_MAX /*&& fabs(_contactPool[deepestIndex].getZDepth()) >= 1.0f*/) {
+
+            //if(fabs(_contactPool[deepestIndex].getZDepth()) > 1.0f) {
+            /*   if(_contactPool[deepestIndex].getZDepth() > 0) {
+                   if(_contactPool[deepestIndex]._bodyB) {
+                       _contactPool[deepestIndex]._bodyB->getEntity()->transform._pos.z += _contactPool[deepestIndex].getZDepth();//;-0.5f;
+                       _contactPool[deepestIndex]._bodyB->getEntity()->transform._pos.y -= _contactPool[deepestIndex].getZDepth();//-0.5f;
+                   }
+               } else {
+                   _contactPool[deepestIndex]._bodyA->getEntity()->transform._pos.z += _contactPool[deepestIndex].getZDepth();//+0.5f;
+                   _contactPool[deepestIndex]._bodyA->getEntity()->transform._pos.y -= _contactPool[deepestIndex].getZDepth();//+0.5f;
+               }*/
+        //   }
+               _contactPool[deepestIndex].depth = 0.0f;
+               _contactPool[deepestIndex].setResolveZ(true);
+               //Update all other contacts, nigga!
+               continue;
+        } else _contactPool[deepestIndex].setResolveZ(false);
+
+
 		//printf("ABOUT TO RESOLVE DEEPEST - %d, %f", deep
 		gyResolvePenetration(&_contactPool[deepestIndex], posDelta, rotDir, orientDelta); //maybe must update its own shit
 
+        CollisionContact *con = &_contactPool[deepestIndex];
+
+
 /**** TAKEN FROM C PENETRATION RESOLUTION *****/
-		CollisionContact *con = &_contactPool[deepestIndex];
-		gyVec2AddAccum((GYVector2*)&con->_bodyA->getEntity()->transform._pos, &posDelta[0]);
+        auto applyDamp = [](GYVector2 delta[2], CollisionContact* contact) {
+            const GYVector2* damping[2] = {
+                (const GYVector2*)&contact->_bodyA->getAttrib()->getStaticAttrib()->damping,
+                (const GYVector2*)((contact->_bodyB)? &contact->_bodyB->getAttrib()->getStaticAttrib()->damping : nullptr)
+            };
+            unsigned fucked[2] = {0};
+            unsigned i;
+
+            for(i = 0; i < 2; ++i) {
+                if(!damping[i]) break;
+                unsigned n = !i;
+
+                //Try to force the other body to resolve the X penetration
+                if(damping[i]->x == 0.0f) {
+                   ++fucked[0];
+                    if(damping[n]) delta[n].x -= delta[i].x;
+                    delta[i].x = 0.0f;
+                }
+
+                //Try to force the other body to resolve the Y penetration
+                if(damping[i]->y == 0.0f) {
+                   ++fucked[1];
+                    if(damping[n]) delta[n].y -= delta[i].y;
+                    delta[i].y = 0.0f;
+                }
+            }
+
+            GYVector2 newNormal = contact->normal;
+
+            //Can't move in the X direction
+            if(fucked[0] == i) {
+                newNormal.x = 0.0f;
+            }
+            //Can't move in the Y direction
+            if(fucked[1] == i) {
+                newNormal.y = 0.0f;
+            }
+
+            contact->depth = gyVec2DotProd(&contact->normal, &newNormal) * contact->depth;
+            contact->normal = newNormal;
+
+        };
+
+        applyDamp(posDelta, con);
+
+        gyVec2AddAccum((GYVector2*)&con->_bodyA->getEntity()->transform._pos, &posDelta[0]);
         //con->_bodyA->getEntity()->move(posDelta[0]);
 		con->_bodyA->getEntity()->transform._orientZ += orientDelta[0];
 
 		if(con->staticAttrib[1]) {
-			gyVec2AddAccum((GYVector2*)&con->_bodyB->getEntity()->transform._pos, &posDelta[1]);
+            //applyDamp(dampedDelta, posDelta[1], con->_bodyB->getAttrib()->getStaticAttrib()->damping);
+            gyVec2AddAccum((GYVector2*)&con->_bodyB->getEntity()->transform._pos, &posDelta[1]);
             //con->_bodyB->getEntity()->move(posDelta[1]);
 			con->_bodyB->getEntity()->transform._orientZ += orientDelta[1];
 		}
@@ -822,10 +984,6 @@ bool CollisionSystem::resolvePenetration(void) {
 	return true; 
 }
 
-
-bool CollisionSystem::resolveVelocities(void) {
-	return true;
-}
 /*
 void CollisionSystem::ResolveContacts(void) {
 	ResolvePenetration();

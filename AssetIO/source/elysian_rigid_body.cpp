@@ -14,7 +14,8 @@ ForceTarget::ForceTarget(void):
 		{ 0.0f, 0.0f, 0.0f },		//forceAccum
 		0.0f,				//rot
 		0.0f,				//angAccel
-		0.0f				//torqueAccum
+        0.0f,				//torqueAccum
+        0                   //resting
 	}
 {
 }
@@ -45,9 +46,9 @@ void RigidBody::integrate(const float deltaTime) {
     float angDamping;
     GYStatic*const stat = getEntity()->getCollidable()->getAttrib()->getStaticAttrib();
 
-    if(_onGround) {
+    if(resting) {
         stat->angDamping    *= _tileDamping;
-        stat->damping       *= _tileDamping;
+        gyVec2ScaleAccum((GYVector2*)&stat->damping, _tileDamping);
     } else {
       /*  angDamping          = stat->angDamping;
         baseDamping         = stat->damping;
@@ -61,9 +62,9 @@ void RigidBody::integrate(const float deltaTime) {
 				&_entity->transform._pos,
 				&_entity->transform._orientZ);
 
-    if(_onGround) {
+    if(resting) {
         stat->angDamping    /= _tileDamping;
-        stat->damping       /= _tileDamping;
+        gyVec2ScaleAccum((GYVector2*)&stat->damping, 1.0f/_tileDamping);
     } else {
        /* stat->damping       = baseDamping;
         stat->angDamping    = angDamping;*/

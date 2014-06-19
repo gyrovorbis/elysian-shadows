@@ -15,7 +15,8 @@
 #define ELYSIAN_CHAR_ANIM_SEQ_WALK_RIGHT	"WalkRight"
 #define ELYSIAN_CHAR_ANIM_CHILD_SEQ_HELD	"HeldEntity"
 
-#define ELYSIAN_CHAR_JUMP_DEFAULT_FORCE		GYVector3{ 0.0f, /*-330000.0f*/ 0.0f, 330000.0f };
+#define ELYSIAN_CHAR_JUMP_DEFAULT_FORCE         GYVector3 { 0.0f, /*-330000.0f*/ 0.0f, 330000.0f }
+#define ELYSIAN_CHAR_THROW_DEFAULT_FORCE		GYVector3 { 0.0f, /*2000.0f*/0.0f, 25000.0f }
 
 namespace elysian {
 

@@ -222,7 +222,8 @@ namespace elysian {
 			//float worldZCoord = (ZCoordConstants::mapBase + (elev)*32.0f);//-(((float)entityBase/32.0f)-((int)entityBase/32));
 
 			//calculate relative Z coord
-			float relZCoord = ((entityBase+16.0f)-mapStartY)/32.0f + (int)((int)(zCoord+16)/32);
+            //float relZCoord = ((entityBase+16.0f)-mapStartY)/32.0f + (int)((int)(zCoord+16)/32);
+            float relZCoord = ((entityBase+16.0f)-mapStartY)/32.0f + (zCoord)/32.0f;
 			//Add depth buffer entry
 			unsigned zIndex = (unsigned)relZCoord;
 			if(zIndex >= _depthBuffMaxHeight) zIndex = _depthBuffMaxHeight-1;

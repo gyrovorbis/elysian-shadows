@@ -80,6 +80,7 @@ namespace OOLUA
 	typedef elysian::Animation					Animation;
 	typedef elysian::CollisionFlags				CollisionFlags;
 	typedef elysian::CollidableAttrib			CollidableAttrib;
+    typedef elysian::CollidableStaticAttrib     CollidableStaticAttrib;
 	typedef elysian::CollisionContact			CollisionContact;
 	typedef elysian::Collidable					Collidable;
 	typedef elysian::RigidBodyAttrib			RigidBodyAttrib;
@@ -236,8 +237,10 @@ OOLUA_PROXY(InstanceTransform)
 	OOLUA_MEM_FUNC_RENAME(setPos3f, void, setPos, float, float, float)
 	OOLUA_MEM_FUNC_RENAME(translate2f, void, translate, float, float)
 	OOLUA_MEM_FUNC_RENAME(translate3f, void, translate, float, float, float)
-	OOLUA_MEM_FUNC_RENAME(setSize2f, void, setSize, float, float)
-	OOLUA_MEM_FUNC_RENAME(setScale2f, void, setScale, float, float)
+    OOLUA_MEM_FUNC_RENAME(setSize3f, void, setSize, float, float, float)
+    OOLUA_MEM_FUNC_RENAME(setScale3f, void, setScale, float, float, float)
+    OOLUA_MEM_FUNC_RENAME(setSize2f, void, setSize, float, float)
+    OOLUA_MEM_FUNC_RENAME(setScale2f, void, setScale, float, float)
 	OOLUA_MEM_FUNC(void, setOrientZ, float)
 	OOLUA_MEM_FUNC(void, rotate, float)
 	OOLUA_MEM_FUNC_RENAME(scale2f, void, scale, float, float)
@@ -457,19 +460,30 @@ OOLUA_PROXY(GYStatic)
 	)
 	OOLUA_MGET_MSET(inverseMass, getInverseMass, setInverseMass)
 	OOLUA_MGET_MSET(coeffOfRest, getCoeffOfRest, setCoeffOfRest)
-	OOLUA_MGET_MSET(damping, getDamping, setDamping)
+    OOLUA_MGET_MSET(zCoeffOfRest, getZCoeffOfRest, setZCoeffOfRest)
+    //OOLUA_MGET_MSET(damping, getDamping, setDamping)
 	OOLUA_MGET_MSET(invMomOfInertia, getInvMomOfInertia, setInvMomOfInertia)
 	OOLUA_MGET_MSET(angDamping, getAngDamping, setAngDamping)
-	OOLUA_MGET_MSET(zDamping, getZDamping, setZDamping)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(CollidableStaticAttrib, GYStatic)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MEM_FUNC(void, setDamping, float)
+    OOLUA_MEM_FUNC(void, setZDamping, float)
+    OOLUA_MEM_FUNC(void, setDamping3f, float, float, float)
+
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CollidableAttrib)
 	OOLUA_MEM_FUNC_CONST(GY_COLLIDER_TYPE, getColliderType)
 	OOLUA_MEM_FUNC(void, setColliderType, GY_COLLIDER_TYPE)
-	OOLUA_MEM_FUNC(void, setRelPos, float, float)
-	OOLUA_MEM_FUNC(void, setRelSize, float, float)
+    OOLUA_MEM_FUNC(void, setRelPos, float, float, float)
+    OOLUA_MEM_FUNC(void, setRelSize, float, float, float)
 	OOLUA_MEM_FUNC(CollisionFlags*, getFlags)
-	OOLUA_MEM_FUNC(GYStatic*, getStaticAttrib)
+    OOLUA_MEM_FUNC(CollidableStaticAttrib*, getStaticAttrib)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CollisionContact)

@@ -45,6 +45,7 @@ namespace elysian {
 		static const GYColor4 _tileColor;
         static GY_RECT_NORMAL_TYPE _curNormalType;
 		bool _renderLayer[4];
+        bool _blendFunc = false;
         //animation
 		//toggles
 		bool _animate;
@@ -127,17 +128,15 @@ namespace elysian {
 			//glBlendFunc(GL_ONE, GL_ONE);
 		//}
 
-		static bool blended = false;
-
-		if(entry.renderPass > 1 && !blended) {
+        if(entry.renderPass > 1 && !_blendFunc) {
 			endObjectList();
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-			blended = true;
+            _blendFunc = true;
 		}
-		else if(entry.renderPass == 1 && blended) {
+        else if(entry.renderPass == 1 && _blendFunc) {
 			endObjectList();
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			blended = false;
+            _blendFunc = false;
 		}
 #if 1
 		GY_RECT_NORMAL_TYPE newNormal = entry.mapEntry.getNormal() ? GY_RECT_NORMAL_FLAT : GY_RECT_NORMAL_FRONT;
@@ -222,6 +221,8 @@ namespace elysian {
 		glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_TEX_COORD]);
 		glVertexAttribPointer(curLightShader->attribLoc[SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VboEntry), (void*)(6*sizeof(float)));
 		glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_COLOR]);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        _blendFunc = false;
 	}
 	
 	inline void MapSystem::endObjectList(void) {
@@ -233,6 +234,7 @@ namespace elysian {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		//gyVidQuadListEnd();
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        _blendFunc = false;
 	}
 	
 	inline unsigned MapSystem::getEntityCount(void) const {

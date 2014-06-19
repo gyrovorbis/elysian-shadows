@@ -58,6 +58,7 @@ void Entity::render(void) {
 	if(_particleEmitter) _particleEmitter->render();
 	if(!_renderable) return;
 	gyMatPush();
+    float oldZ = transform._size.z;
 	if(_normalType == NORMAL_FRONT) {
 		transform._size.z = transform._size.y;
 		//transform._size.y = 400.0f;
@@ -70,6 +71,7 @@ void Entity::render(void) {
 	_renderable->render();
 	_renderable->endRender();
 	gyMatPop();
+    transform._size.z = oldZ;
 #endif
 }
 

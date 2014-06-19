@@ -61,6 +61,7 @@ namespace elysian {
 		void setShadowVolume(const bool v);
 		bool isShadowVolume(void) const;
 		void setShadowDepth(const float depth);
+        float getShadowDepth(void) const;
         
 		Renderable*			addRenderable(void);
 		Animation*			addAnimation(void);
@@ -108,6 +109,7 @@ namespace elysian {
 		void removeLuaBehavior(char const* scriptName);
         
         float getDepthBaseY(void) const;
+        void setDepthBaseY(const float base);
 
 #ifdef ELYSIAN_ENGINE
 		OOLUA::Lua_table_ref& getSelfTable(void);
@@ -162,10 +164,12 @@ namespace elysian {
 	inline auto Entity::getNormalType(void) const -> NORMAL_TYPE { return _normalType; }
 	inline void Entity::setNormalType(const NORMAL_TYPE normal) { _normalType = normal; }
 	inline float Entity::getDepthBaseY(void) const { return (transform._pos.y + 0.5f * transform._size.y * transform._scale.y); }
+    inline void Entity::setDepthBaseY(const float base) { transform._pos.y = base - 0.5f * transform._size.y * transform._scale.y; }
 	inline std::map<char const *, Behavior*, ltstr>& Entity::getBehaviors(void) { return _behavior; }
 	inline void Entity::setShadowVolume(const bool v) { _shadowVolume = v; }
 	inline bool Entity::isShadowVolume(void) const { return _shadowVolume; }
 	inline void Entity::setShadowDepth(const float depth) { _shadowDepth = depth; }
+    inline float Entity::getShadowDepth(void) const { return _shadowDepth; }
 
 }
 

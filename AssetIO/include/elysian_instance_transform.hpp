@@ -74,7 +74,7 @@ namespace elysian {
 		void setPosZ(const float z) { _pos.z = z; }
 		float getPosZ(void) const { return _pos.z; }
 
-		//void setSize(const float x, const float y, const float z) { _size.x = x; _size.y = y; _size.z = z; }
+        void setSize(const float x, const float y, const float z) { _size.x = x; _size.y = y; _size.z = z; }
 		void setSize(const float x, const float y) { _size.x = x; _size.y = y; }
 		//void setSize(const GYVector3& size) { _size = size; }
 		void getSize(float& x, float& y) const { x = _size.x; y = _size.y; }

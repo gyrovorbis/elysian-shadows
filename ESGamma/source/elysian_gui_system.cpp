@@ -10,6 +10,7 @@
 #include "elysian_lua_manager.hpp"
 #include "elysian_light_system.hpp"
 #include "elysian_rigid_body_system.hpp"
+#include "elysian_rigid_body.hpp"
 
 namespace elysian {
 
@@ -159,6 +160,10 @@ void GuiSystem::_renderDebugOverlay(void) {
 						getPartySys()->getPartyLeader()->transform._pos.x,
 						getPartySys()->getPartyLeader()->transform._pos.y,
 						getPartySys()->getPartyLeader()->transform._pos.z);
+        _printDebugLine("player.resting:", "%d",
+                        getPartySys()->getPartyLeader()->getRigidBody()->getOnGround());
+        _printDebugLine("player.contacts:", "%d",
+                        getPartySys()->getPartyLeader()->getCollidable()->getContactCount());
 	}
 
 	twcen.endBatchRender();
