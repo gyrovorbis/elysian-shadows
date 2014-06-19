@@ -31,7 +31,7 @@ int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth,
 
 static inline void glalStripComboBreaker(void) {
 	if(curStripSize) {
-		gyVidQuadListEnd();
+        gyVidQuadListEnd();
 	}
 }
 

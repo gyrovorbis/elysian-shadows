@@ -174,6 +174,22 @@ static inline float gyVec3Magnitude(const GYVector3*const vec) {
 	return gySqrt(vec->x*vec->x + vec->y*vec->y + vec->z*vec->z);
 }
 
+static inline float gyVec2MagAndNormalize(GYVector2*const v) {
+    float mag = gySqrt(v->x*v->x + v->y*v->y);
+    v->x /= mag;
+    v->y /= mag;
+    return mag;
+}
+
+
+static inline float gyVec3MagAndNormalize(GYVector3*const v) {
+    float mag = gySqrt(v->x*v->x + v->y*v->y + v->z*v->z);
+    v->x /= mag;
+    v->y /= mag;
+    v->z /= mag;
+    return mag;
+}
+
 
 static inline void gyVec2AddScaled(GYVector2* const dst, const GYVector2* src, const float scalar) {
 	dst->x += src->x * scalar;
@@ -232,6 +248,10 @@ static inline void gyVec3ScaleAccum(GYVector3*const dest, const float scalar) {
 
 static inline float gyVec2DotProd(const GYVector2 *const src1, const GYVector2 *const src2) {
 	return (src1->x*src2->x + src1->y*src2->y);
+}
+
+static inline float gyVec3DotProd(const GYVector3 *const src1, const GYVector3 *const src2) {
+    return (src1->x*src2->x + src1->y*src2->y + src1->z*src2->z);
 }
 
 static inline void gyVec2Normalize(GYVector2 *const v) {
