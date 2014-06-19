@@ -6,6 +6,12 @@
 #include "kinetic/gyro_kinetic_kinetic.h"
 #include <gyro_system_api.h>
 
+static GYVector3 _gravityForce = { 0.0f, 0.0f, 0.0f };
+
+void gyGravityForceSet(GYVector3* force) {
+    _gravityForce = *force;
+}
+
 //void gyIntegrate(void *collider, struct _GYKinetic *kin, const struct _GYStatic *stat);
 
 void gyIntegrate(struct _GYKinetic *kin,
@@ -20,34 +26,50 @@ void gyIntegrate(struct _GYKinetic *kin,
     kin->prevAccel.y = kin->accel.y;// - kin->accel.z;
 	kin->prevAccel.z = kin->accel.z;
 
-	gyVec3AddScaled(&kin->prevAccel, &kin->forceAccum, attrib->inverseMass);
+    GYVector3 newForce;
+    gyVec3Scale(&newForce, &kin->forceAccum, attrib->inverseMass);
 
-	//Calculate angular acceleration from torque input
-	kin->angAccel = kin->torqueAccum * attrib->invMomOfInertia;
+    //Don't apply gravity this frame if body is just sitting here chilling... for stability.
+   // if(!(kin->resting && newForce.x == _gravityForce.x && newForce.y == _gravityForce.y && newForce.z == _gravityForce.z)) {
 
-	//Update linear velocity from linear acceleration (and impulse?)
-	gyVec3AddScaled(&kin->vel, &kin->prevAccel, deltaTime);
+        gyVec3AddScaled(&kin->prevAccel, &kin->forceAccum, attrib->inverseMass);
 
-	//Update rotation from angular acceleration (and impulsive torque?)
-	kin->rot += kin->angAccel * deltaTime;
+        //Calculate angular acceleration from torque input
+        kin->angAccel = kin->torqueAccum * attrib->invMomOfInertia;
+
+        //Update linear velocity from linear acceleration (and impulse?)
+        gyVec3AddScaled(&kin->vel, &kin->prevAccel, deltaTime);
+        //Update rotation from angular acceleration (and impulsive torque?)
+        kin->rot += kin->angAccel * deltaTime;
+
+  //  } else {
+   //     printf("TROLOLOLO");
+   // }
+
+     GYVector3 dampFactors;
+     dampFactors.x = powf(attrib->damping.x, deltaTime);
+     dampFactors.y = (attrib->damping.y == attrib->damping.x)? dampFactors.x :
+                                                                powf(attrib->damping.y, deltaTime);
+     dampFactors.z = (attrib->damping.z == attrib->damping.x)? dampFactors.x :
+                                                                powf(attrib->damping.z, deltaTime);
+     const float angDampFactor = powf(attrib->angDamping, deltaTime);
+
+
 
 	//Damp (impose drag) DO NOT DAMP THE Z AXIS!!!
 	//gyVec3ScaleAccum(&kin->vel, attrib->damping);
-	gyVec2ScaleAccum((GYVector2*)&kin->vel, powf(attrib->damping, deltaTime));
-	kin->vel.z *= powf(attrib->zDamping, deltaTime);
-	kin->rot *= powf(attrib->angDamping, deltaTime);
+    gyVec3CompProdAccum(&kin->vel, &dampFactors);
+    kin->rot *= angDampFactor;
 
 	//Update position from linear velocity
-
     GYVector3 vel = { kin->vel.x, kin->vel.y-kin->vel.z, kin->vel.z };
     gyVec3AddScaled(pos, &vel, deltaTime);
 
 	//Update orientation from rotation
 	*orient += kin->rot * deltaTime;
 
-	gyVec2ScaleAccum((GYVector2*)&kin->vel, powf(attrib->damping, deltaTime));
-	kin->vel.z *= powf(attrib->zDamping, deltaTime);
-	kin->rot *= powf(attrib->angDamping, deltaTime);
+    gyVec3CompProdAccum(&kin->vel, &dampFactors);
+    kin->rot *= angDampFactor;
 
 	//IMPOSE DRAG AGAIN?
 	//Calculate Derived Data

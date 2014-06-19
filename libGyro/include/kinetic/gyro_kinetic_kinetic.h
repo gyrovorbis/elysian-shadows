@@ -15,6 +15,7 @@ typedef struct _GYKinetic {
 	float rot;
 	float angAccel;
 	float torqueAccum;
+    int resting;
 } GYKinetic;
 
 #ifdef __cplusplus

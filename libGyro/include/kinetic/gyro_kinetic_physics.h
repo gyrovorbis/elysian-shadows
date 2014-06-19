@@ -42,6 +42,8 @@ void gyApplyForce(struct _GYKinetic *kin, const GYVector2 *force);
 void gyApplyPointForce(struct _GYKinetic *kin, const GYVector2 *force, const GYVector2 *point);
 //apply global damp (that doesn't fuck with individual damp values)? Very good idea
 
+void gyGravityForceSet(GYVector3* force);
+
 #ifdef __cplusplus
 }
 #endif

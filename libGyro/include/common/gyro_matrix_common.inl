@@ -59,6 +59,22 @@ static inline void gyMatStore(GYMatrix4 *mat) {
     memcpy(mat, _curMat, sizeof(GYMatrix4));
 }
 
+static inline float gyVec2MagAndNormalize(GYVector2*const v) {
+    float mag = gySqrt(v->x*v->x + v->y*v->y);
+    v->x /= mag;
+    v->y /= mag;
+    return mag;
+}
+
+
+static inline float gyVec3MagAndNormalize(GYVector3*const v) {
+    float mag = gySqrt(v->x*v->x + v->y*v->y + v->z*v->z);
+    v->x /= mag;
+    v->y /= mag;
+    v->z /= mag;
+    return mag;
+}
+
 static inline void gyVec2Clear(GYVector2 *const vec) { vec->x = vec->y = 0.0f; }
 
 static inline int gyVec2IsZero(const GYVector2* const vec) { return (vec->x == 0.0f && vec->y == 0.0f); }
@@ -86,6 +102,10 @@ static inline void gyVec2Scale(GYVector2 *const dst, const GYVector2 *const src,
     dst->x = src->x * scalar;
     dst->y = src->y * scalar;
 }
+static inline float gyVec3DotProd(const GYVector3 *const src1, const GYVector3 *const src2) {
+    return (src1->x*src2->x + src1->y*src2->y + src1->z*src2->z);
+}
+
 
 static inline void gyVec2ScaleAccum(GYVector2* const src, const float scalar) {
     src->x *= scalar; src->y *= scalar;
