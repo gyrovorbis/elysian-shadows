@@ -20,7 +20,7 @@ const GYMatrix4 shadowTexCoordBiasMat = {
 const static GYMaterial _defaultMaterial = {
 	{ 1.0f, 1.0f, 1.0f, 1.0f },
 	{ 1.0f, 1.0f, 1.0f, 1.0f },
-	{ 0.0f, 0.0f, 0.0f, 1.0f },
+    { 1.0f, 1.0f, 1.0f, 1.0f },
 	{ 1.0f, 1.0f, 1.0f, 1.0f },
 	1.0f
 };
