@@ -899,7 +899,7 @@ OOLUA_PROXY(RigidBodySystem)
 		No_public_constructors,
 		No_public_destructor
 	)
-	OOLUA_MEM_FUNC(void, addForce, ForceGenerator*)
+    OOLUA_MEM_FUNC(void, addForce, cpp_in_p<ForceGenerator*>)
 	OOLUA_MEM_FUNC(void, applyForce, ForceGenerator*)
 	OOLUA_MEM_FUNC(void, removeForce, ForceGenerator*)
 	OOLUA_MEM_FUNC(void, clearForces)
