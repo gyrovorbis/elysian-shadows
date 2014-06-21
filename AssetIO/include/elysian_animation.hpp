@@ -9,8 +9,8 @@
 #include <vector>
 #include <map>
 
-#define ELYSIAN_ANIMATION_SEQUENCE_NAME_SIZE 50
-#define ELYSIAN_ANIMATION_MAX_CHILDREN		5
+#define ELYSIAN_ANIMATION_SEQUENCE_NAME_SIZE    50
+#define ELYSIAN_ANIMATION_MAX_CHILDREN          10
 
 namespace elysian {
 
