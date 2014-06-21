@@ -474,7 +474,15 @@ OOLUA_EXPORT_FUNCTIONS(ParticleEmitterAttrib,
 					   loadSpecularMap,
 					   setMaterial,
 					   setForceMask,
-					   setIntensityFactor)
+                       setIntensityFactor,
+                       setStartSize,
+                       setEndSize,
+                       setEndColor,
+                       setAnimGridSize,
+                       setAnimGridIndex,
+                       setAnimFrameDuration,
+                       setStick,
+                       loadNormalMap)
 OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitterAttrib);
 
 OOLUA_EXPORT_FUNCTIONS(ParticleEmitter,
