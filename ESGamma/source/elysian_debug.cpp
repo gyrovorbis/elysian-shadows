@@ -376,7 +376,7 @@ void Debug::processInput(GameInput& input) {
             attrib->setStartSize(32);
             attrib->setEndSize(32);
             attrib->setColor(10, 10, 255, 10);
-            attrib->setEndColor(GYColor4{0, 0, 255, 255});
+            attrib->setEndColor(GYColor4{0, 0, 255, 100});
             attrib->setAnimGridSize(2, 2);
             attrib->setAnimGridIndex(0, 0, 0);
             attrib->setAnimGridIndex(0, 1, 1);
