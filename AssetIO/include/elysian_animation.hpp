@@ -75,6 +75,7 @@ namespace elysian {
 		std::map<const char*, ChildAnimationSequence*, ltstr>	_sequences;
 		GYVector3												_globalOffset = { 0.0f, 0.0f, 0.0f };
 		char													_name[ELYSIAN_ANIMATION_SEQUENCE_NAME_SIZE];
+        bool                                                    _inheritSpeedMultiplier = false;
 	public:
 								ChildAnimation(const char* name);
 								~ChildAnimation(void);
@@ -82,6 +83,7 @@ namespace elysian {
 		ChildAnimationSequence* getSequence(const char* name);
 		const char*				getName(void);
 		void					setGlobalOffset(const float x, const float y, const float z);
+        void                    setInheritSpeedMultiplier(const bool val);
 	};
 
 	class ChildAnimationAttrib {
@@ -201,6 +203,7 @@ namespace elysian {
 		_sequences[seq->getName()] = seq;
 		return seq;
 	}
+    inline void ChildAnimation::setInheritSpeedMultiplier(const bool val) { _inheritSpeedMultiplier = val; }
 	inline ChildAnimationSequence* ChildAnimation::getSequence(const char *name) {
 		auto it = _sequences.find(name);
 		return (it == _sequences.end())? nullptr : it->second;
@@ -244,8 +247,6 @@ namespace elysian {
 	inline void Animation::setLooping(const bool val) { _looping = val; }
 	inline void Animation::setChildPivot(const float x, const float y) { _childPivot.x = x; _childPivot.y = y; }
 	inline const GYVector2& Animation::getChildPivot(void) const { return _childPivot; }
-	inline void Animation::setSpeedMultiplier(const float factor) { _speedMultiplier = factor; }
-
 
 
 }

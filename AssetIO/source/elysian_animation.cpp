@@ -48,6 +48,15 @@ void Animation::removeChildEntity(const Entity* const entity) {
 	}
 }
 
+void Animation::setSpeedMultiplier(const float factor) {
+    for(auto it = _children->begin(); it < _children->end(); ++it) {
+        if((*it).anim && (*it).anim->_inheritSpeedMultiplier) {
+            (*it).entity->getAnimation()->setSpeedMultiplier(factor);
+        }
+    }
+    _speedMultiplier = factor;
+}
+
 void Animation::_updateChildren(void) {
 	if(!_children || _children->size() == 0) return;
 
