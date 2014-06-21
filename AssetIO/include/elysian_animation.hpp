@@ -4,6 +4,7 @@
 #include "elysian_component.hpp"
 #include "elysian_stl_algorithm.hpp"
 #include "elysian_mem_pool.hpp"
+#include "elysian_event_monitor.hpp"
 #include <gyro.h>
 #include <vector>
 #include <map>
@@ -117,6 +118,7 @@ namespace elysian {
 		AnimationAttrib*		_attrib				= nullptr;
 		ChildAnimationAttrib*	_childAttrib		= nullptr;
 		AnimationSequence*		_currentSequence	= nullptr;
+        EventMonitor*           _monitor            = nullptr;
 		float					_speedMultiplier	= 1.0f;
 		float					_timer				= 0.0f;
 		unsigned int			_currentFrame		= 0;
@@ -136,9 +138,9 @@ namespace elysian {
 		virtual bool removeFromLevel(void) override;
 
 #ifdef ELYSIAN_ENGINE
-		void update(const float deltaTime);
-		void playAnimation(const char *name);
-		void stopAnimation(void);
+        void        update(const float deltaTime);
+        void        playAnimation(const char *name, EventMonitor*const monitor = nullptr);
+        void        stopAnimation(void);
 #endif
 		
 		AnimationAttrib*		getAttrib(void) const;

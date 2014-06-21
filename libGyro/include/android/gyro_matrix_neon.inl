@@ -5,7 +5,7 @@
 extern GYMatrix4 _curMat;
 
 inline static void brighten_neon(unsigned char* src, unsigned char* dst, int numPixels, int intensity) {
-__asm volatile (
+__asm volatile ( 
               "\t mov r4, #0\n"
               "\t vdup.8 d1, %3\n"
               "Lloop2:\n"
@@ -23,7 +23,7 @@ __asm volatile (
 }
 
 
-#if 0
+#if 1
 static inline void gyMatMultMat(GYMatrix4 res, const GYMatrix4 _curMat, const GYMatrix4 mat) {
 
         res[0][0] = _curMat[0][0]*mat[0][0] + _curMat[1][0]*mat[0][1]+ _curMat[2][0]*mat[0][2]+ _curMat[3][0]*mat[0][3];
@@ -52,6 +52,8 @@ static inline void gyMatMultMat(GYMatrix4 res, const GYMatrix4 _curMat, const GY
 
 
 static inline void gyMatMultMat(GYMatrix4 res, const GYMatrix4 _curMat, const GYMatrix4 mat) {
+
+#if 1
   __asm__ __volatile__ 
     ("vldmia   %[A],  { q4-q7 }             \n\t" 
      "vldmia   %[B],  { q8-q11}             \n\t" 
@@ -78,7 +80,35 @@ static inline void gyMatMultMat(GYMatrix4 res, const GYMatrix4 _curMat, const GY
       "d16","d17","d18","d19","d20","d21","d22","d23"); 
       
 }
+#else
+  __asm volatile (
+    // result = first column of B x first row of A
+    "vmul.f32 %q0, %q4, %e8[0]\n\t" // %e
+    "vmul.f32 %q1, %q4, %e9[0]\n\t"
+    "vmul.f32 %q2, %q4, %e10[0]\n\t"
+    "vmul.f32 %q3, %q4, %e11[0]\n\t"
+    // result += second column of B x second row of A
+    "vmla.f32 %q0, %q5, %e8[1]\n\t"
+    "vmla.f32 %q1, %q5, %e9[1]\n\t"
+    "vmla.f32 %q2, %q5, %e10[1]\n\t"
+    "vmla.f32 %q3, %q5, %e11[1]\n\t"
+    // result += third column of B x third row of A
+    "vmla.f32 %q0, %q6, %f8[0]\n\t"
+    "vmla.f32 %q1, %q6, %f9[0]\n\t"
+    "vmla.f32 %q2, %q6, %f10[0]\n\t"
+    "vmla.f32 %q3, %q6, %f11[0]\n\t"
+    // result += last column of B x last row of A
+    "vmla.f32 %q0, %q7, %f8[1]\n\t"
+    "vmla.f32 %q1, %q7, %f9[1]\n\t"
+    "vmla.f32 %q2, %q7, %f10[1]\n\t"
+    "vmla.f32 %q3, %q7, %f11[1]\n\t"
+    : "=w" (result[0]), "=w" (result[1]), "=w" (result[2]), "=w" (result[3])
+    :  "w" (b[0]), "w" (b[1]), "w" (b[2]), "w" (b[3]),
+       "w" (a[0]), "w" (a[1]), "w" (a[2]), "w" (a[3])
+    :   
+    );  
 
+#endif
 
 #endif 
 
@@ -174,6 +204,9 @@ static inline float gyVec3Magnitude(const GYVector3*const vec) {
 }
 
 static inline void gyVec3Add(GYVector3* const dest, const GYVector3* const v1, const GYVector3* const v2) {
+
+
+
     dest->x = v1->x + v2->x;
     dest->y = v1->y + v2->y;
     dest->z = v1->z + v2->z;
