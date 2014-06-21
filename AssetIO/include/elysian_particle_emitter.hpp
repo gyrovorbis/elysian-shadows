@@ -1,6 +1,7 @@
 #ifndef ELYSIAN_PARTICLE_EMITTER_HPP
 #define ELYSIAN_PARTICLE_EMITTER_HPP
 
+#include <cassert>
 #include "elysian_component.hpp"
 #include "elysian_mem_pool.hpp"
 #include "elysian_sprite_attrib.hpp"
@@ -8,6 +9,8 @@
 #include "elysian_collidable.hpp"
 
 #define ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_POOL_SIZE	5000
+#define ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_WIDTH            10
+#define ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_HEIGHT           10
 
 namespace elysian {
 
@@ -18,36 +21,45 @@ namespace elysian {
     class ParticleEmitterAttrib: public SpriteAttrib, public CollidableStaticAttrib {
 		friend class ParticleEmitterInternals;
 	private:
-		GYVector3	_acceleration		= GYVector3 { 0.0f, 0.0f, 0.0f };
+        int         _animGrid[ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_HEIGHT][ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_WIDTH] = { {-1} };
+        unsigned    _animGridWidth      = 0;
+        unsigned    _animGridHeight     = 0;
+        unsigned    _animFrameDuration  = 0;
+
+        unsigned    _startSize          = 3;
+        unsigned    _endSize            = 3;
+
+        GYColor4    _endColor           = { 255, 255, 255, 255 };
+
+        GYVector3	_acceleration		= { 0.0f, 0.0f, 0.0f };
 		Material*	_material			= nullptr;
 		GYTexture*	_specularMap		= nullptr;
-		//float		_angularDamping		= 0.99f;
+        GYTexture*  _normalMap          = nullptr;
 		float		_intensityFactor	= 1.0f;
 		unsigned	_maxLife			= 100;
-		unsigned	_size				= 3;
-		//unsigned	_intensity			= 100; //for periodically generated particles, dunno if it should be here or not
-		bool		_fadeOut			= true;
-		bool		_stick				= true;
-		unsigned	_minFrame			= 0;
-		unsigned	_maxFrame			= 0;
 		uint32_t	_forceMask			= ~0x0;
+        bool		_stick				= true;
+
 	public:
 
-				ParticleEmitterAttrib(void);
-		virtual ~ParticleEmitterAttrib(void) override;
+                    ParticleEmitterAttrib(void);
+        virtual     ~ParticleEmitterAttrib(void) override;
 
-		void setAcceleration(const GYVector3& accel);
-		//void setAngularDamping(const float factor);
-		void setMaxLife(const unsigned life); //number of frames since birth that it lives
-		void setSize(const unsigned newSize); // 1 = 1x1 square
-		void setFadeOut(const bool val);
-		void setFrameRange(const unsigned min, const unsigned max);
-		void setMaterial(Material*const material);
-		void loadSpecularMap(const char*const path, const unsigned width, const unsigned height);
-		uint32_t getForceMask(void) const;
-		void setForceMask(const uint32_t mask);
-		void setStick(const bool val);
-		void setIntensityFactor(const float factor);
+        void        setAcceleration(const GYVector3& accel);
+        void        setMaxLife(const unsigned life); //number of frames since birth that it lives
+        void        setStartSize(const unsigned size); // 1 = 1x1 square
+        void        setEndSize(const unsigned size);
+        void        setEndColor(const GYColor4 color);
+        void        setAnimGridSize(const unsigned w, const unsigned h);
+        void        setAnimGridIndex(const unsigned row, const unsigned col, int index);
+        void        setAnimFrameDuration(const unsigned frame);
+        void        setMaterial(Material*const material);
+        void        loadSpecularMap(const char*const path, const unsigned width, const unsigned height);
+        void        loadNormalMap(const char*const path, const unsigned width, const unsigned height);
+        uint32_t    getForceMask(void) const;
+        void        setForceMask(const uint32_t mask);
+        void        setStick(const bool val);
+        void        setIntensityFactor(const float factor);
 	};
 
 	class Particle: public ForceTarget {
@@ -60,18 +72,17 @@ namespace elysian {
 		unsigned				size;
 		unsigned				frame;
 		GYColor4				color;
+        unsigned                animRow;
 		int						zIndex;
 		bool					flat;
 
-		//bool		active = false;
-
 		//reimplemented from ForceTarget
-        virtual TARGET_TYPE                     getTargetType(void)	const override;
-        virtual float                           getOrientation(void) const override;
-        virtual const GYVector3&                getPosition(void) const override;
-        virtual const GYStatic*             	getStaticAttrib(void) const override;
+        virtual TARGET_TYPE         getTargetType(void)	const override;
+        virtual float               getOrientation(void) const override;
+        virtual const GYVector3&    getPosition(void) const override;
+        virtual const GYStatic*     getStaticAttrib(void) const override;
 
-		void integrate(const float deltaTime);
+        void                        integrate(const float deltaTime);
 	};
 
 	class ParticleEmitterInternals {
@@ -102,18 +113,18 @@ namespace elysian {
 
 	class ParticleEmitter: public Component, public ParticleEmitterInternals {
 	public:
-		ParticleEmitter(Entity& entity);
-		virtual ~ParticleEmitter(void) override = default;
+                        ParticleEmitter(Entity& entity);
+        virtual         ~ParticleEmitter(void) override = default;
 
 		//reimplemented from component
-		virtual bool canAddTo(Entity& entity) override;
-		virtual bool load(FILE* file) override;
-		virtual bool save(FILE* file) override;
-		virtual bool addToLevel(void) override;
-		virtual bool removeFromLevel(void) override;
-		virtual TYPE getType(void) const override;
+        virtual bool    canAddTo(Entity& entity) override;
+        virtual bool    load(FILE* file) override;
+        virtual bool    save(FILE* file) override;
+        virtual bool    addToLevel(void) override;
+        virtual bool    removeFromLevel(void) override;
+        virtual TYPE    getType(void) const override;
 
-		void emitFromEntity(const GYVector3& pos, const float angle, const unsigned intensity);
+        void            emitFromEntity(const GYVector3& pos, const float angle, const unsigned intensity);
 	};
 
 
@@ -121,6 +132,18 @@ namespace elysian {
 
 	inline uint32_t ParticleEmitterAttrib::getForceMask(void) const { return _forceMask; }
 	inline void ParticleEmitterAttrib::setForceMask(const uint32_t mask) { _forceMask = mask; }
+    inline void ParticleEmitterAttrib::setStartSize(const unsigned size) { _startSize = size; }
+    inline void ParticleEmitterAttrib::setEndSize(const unsigned size) { _endSize = size; }
+    inline void ParticleEmitterAttrib::setEndColor(const GYColor4 color) { _endColor = color; }
+    inline void ParticleEmitterAttrib::setAnimGridSize(const unsigned w, const unsigned h) {
+        _animGridWidth = w; _animGridHeight = h;
+        assert(w <= ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_WIDTH);
+        assert(h <= ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_HEIGHT);
+    }
+    inline void ParticleEmitterAttrib::setAnimGridIndex(const unsigned row, const unsigned col, int index) {
+        _animGrid[row][col] = index;
+    }
+    inline void ParticleEmitterAttrib::setAnimFrameDuration(const unsigned duration) { _animFrameDuration = duration; }
 
 	inline void ParticleEmitterAttrib::setAcceleration(const GYVector3& accel) {
 		_acceleration = accel;
@@ -132,24 +155,17 @@ namespace elysian {
 		_maxLife = life;
 	}
 
-	inline void ParticleEmitterAttrib::setSize(const unsigned newSize) {
-		_size = newSize;
-	}
-
-	inline void ParticleEmitterAttrib::setFadeOut(const bool val) {
-		_fadeOut = val;
-	}
-
-	inline void ParticleEmitterAttrib::setFrameRange(const unsigned min, const unsigned max) {
-		_minFrame = min; _maxFrame = max;
-	}
-
 	inline void ParticleEmitterAttrib::setMaterial(Material * const material) { _material = material; }
 
 	inline void ParticleEmitterAttrib::loadSpecularMap(const char*const path, const unsigned width, const unsigned height) {
 		if(_specularMap) gyVidTexDestroy(_specularMap);
 		_specularMap = gyVidTexCreate(path, width, height);
 	}
+
+    inline void ParticleEmitterAttrib::loadNormalMap(const char*const path, const unsigned width, const unsigned height) {
+        if(_normalMap) gyVidTexDestroy(_normalMap);
+        _normalMap = gyVidTexCreate(path, width, height);
+    }
 
 	inline void ParticleEmitterAttrib::setStick(const bool val) { _stick = val; }
 

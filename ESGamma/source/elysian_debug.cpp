@@ -365,18 +365,33 @@ void Debug::processInput(GameInput& input) {
 
 		static bool once = true;
 		static ParticleEmitter* emitter;
+        static Entity* entity;
 
 		if(once) {
-			Entity* entity = getCurArea()->findEntity("Julien");
-			getPartSys()->getAttrib(0)->loadTexture("item/legacyItems/star.PNG", 32, 32, 32, 32);
-			emitter = entity->addParticleEmitter();
-			emitter->setAttrib(getPartSys()->getAttrib(0));
-			getPartSys()->getAttrib(0)->setSize(32);
+            auto* attrib = new ParticleEmitterAttrib();//getPartSys()->getAttrib(0);
+            entity = getCurArea()->findEntity("Julien");
+            attrib->loadTexture("/assets/item/ruinsPot.png", 32, 64, 32, 32);
+            emitter = entity->addParticleEmitter();
+            emitter->setAttrib(attrib);
+            attrib->setStartSize(32);
+            attrib->setEndSize(32);
+            attrib->setColor(10, 10, 255, 10);
+            attrib->setEndColor(GYColor4{0, 0, 255, 255});
+            attrib->setAnimGridSize(2, 2);
+            attrib->setAnimGridIndex(0, 0, 0);
+            attrib->setAnimGridIndex(0, 1, 1);
+            attrib->setAnimGridIndex(1, 0, 1);
+            attrib->setAnimGridIndex(1, 1, 0);
+            attrib->setAnimFrameDuration(5);
+            attrib->setMaxLife(60);
+            //getPartSys()->getAttrib(0)->setSize(32);
 			//getPartSys()->getAttrib(0)->setFrameRange(10, 13);
-			once = false;
+            once = false;
 		}
 
-		emitter->emitFromEntity( GYVector3 { 0.0f, 0.0f, 0.0f }, theta, intensity*10);
+        emitter->emitFromEntity( GYVector3 { 0.0f, 0.0f, 3.0f }, theta, 1);
+        //getPartSys()->emitFromPoint(0, entity->transform._pos, theta, intensity*10);
+       // void emitFromPoint(const unsigned index, const GYVector3& pos, const float angle, const unsigned intensity);
 		  // getPartSys()->emitFromPoint(0, GYVector3 { entity->transform._pos.x+5, entity->transform._pos.y, 500.0f}, theta, intensity);
 
 //		getGuiSys()->addCombatText("10", GYColor4 { 255, 0, 0, 255}, GYVector2 { entity->transform._pos.x, entity->transform._pos.y}, GYVector2 { 0.5f, -5.0f});

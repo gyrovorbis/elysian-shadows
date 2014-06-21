@@ -126,8 +126,8 @@ void PartySystem::processInput(const GameInput &input) {
 				getAudioSys()->setSfxChannelPitch(0, 2.0f);
 				_moveSpeed = ELYSIAN_PARTY_SYSTEM_DASH_SPEED;
 				getPartyLeader()->getAnimation()->setSpeedMultiplier(3.0f);
-				getPartSys()->getAttrib(0)->setSize(3);
-				getPartSys()->getAttrib(0)->setFadeOut(true);
+//				getPartSys()->getAttrib(0)->setSize(3);
+//				getPartSys()->getAttrib(0)->setFadeOut(true);
 				getPartSys()->getAttrib(0)->setAcceleration(GYVector3{ 0.0f, -70.0f, /*7.0f*//*6.5f*/ });
 				getPartSys()->getAttrib(0)->setForceMask(0);
 				getPartSys()->getAttrib(0)->setMaxLife(30);

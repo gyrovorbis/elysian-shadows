@@ -645,8 +645,6 @@ OOLUA_PROXY_END
 OOLUA_PROXY(ParticleEmitterAttrib, SpriteAttrib, GYStatic)
 	OOLUA_MFUNC(setAcceleration)
 	OOLUA_MFUNC(setMaxLife)
-	OOLUA_MFUNC(setSize)
-	OOLUA_MEM_FUNC(void, setFrameRange, unsigned, unsigned)
 	OOLUA_MEM_FUNC(void, setMaterial, cpp_in_p<Material*>)
 	OOLUA_MEM_FUNC(void, loadSpecularMap, const char*, unsigned, unsigned)
 	OOLUA_MEM_FUNC(void, setForceMask, uint32_t)

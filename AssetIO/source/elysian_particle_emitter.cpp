@@ -14,7 +14,8 @@ ParticleEmitterAttrib::ParticleEmitterAttrib(void) {}
 
 ParticleEmitterAttrib::~ParticleEmitterAttrib(void) {
 	delete _material;
-	delete _specularMap;
+    gyVidTexDestroy(_normalMap);
+    gyVidTexDestroy(_specularMap);
 }
 
 auto Particle::getTargetType(void)	const -> TARGET_TYPE { return TARGET_PARTICLE; }
@@ -48,21 +49,17 @@ void ParticleEmitterInternals::emitFromPointInDir(const GYVector3& pos, const GY
 		part->position.x = pos.x + ((rand() % 6) - 3);
 		part->position.y = pos.y + ((rand() % 6) - 3);
 		part->position.z = pos.z + ((rand() % 6) - 3);
-		part->life = _attrib->_maxLife - (rand() % ((int)((float)scaledIntensity/20.0f) + 1));
+        part->life = _attrib->_maxLife;// - (rand() % ((int)((float)scaledIntensity/20.0f) + 1));
 
-		if(_attrib->_minFrame != _attrib->_maxFrame) { //use range
-			part->frame = rand()%(_attrib->_maxFrame-_attrib->_minFrame)+_attrib->_minFrame;
-		} else { //use static
-			part->frame = _attrib->getFrame();
-		}
+        part->animRow = (_attrib->_animGridHeight > 1)? rand()%(_attrib->_animGridHeight-1) : 0;
+        part->frame = _attrib->_animGrid[part->animRow][0];
 
 		if(part->life <= 0) part->life = 1;
-		part->size = _attrib->_size;
-		if(part->size < 1) part->size = 1;
-		//if(part->size > 200) part->size = 200;
+        part->size = _attrib->_startSize;
 
 		const float angleRatio = angle/360.0f;
-		const int randomMag = angleRatio*(scaledIntensity/(float)(rand()%14 + 10));
+        int randomMag = angleRatio*(scaledIntensity/(float)(rand()%14 + 10));
+        if(randomMag == 0) randomMag = 1;
 		const int halfRandomMag = 0.5f * randomMag;
 
 		GYVector3 dirOffset = {
@@ -78,9 +75,9 @@ void ParticleEmitterInternals::emitFromPointInDir(const GYVector3& pos, const GY
 		//relAngle = angle + ((float)(rand()%50)-25)*(M_PI/180.0f);
 		//part->orientation = relAngle;
 
-		GYVector3 velocity = { dir.x * (float)scaledIntensity/(float)(rand()%14 + 10),
-						  dir.y * (float)scaledIntensity/(float)(rand()%14 + 10),
-									  dir.z * (float)scaledIntensity/(float)(rand()%14 + 10) };
+        GYVector3 velocity = {  dir.x * (float)scaledIntensity/(float)(rand()%14 + 10),
+                                dir.y * (float)scaledIntensity/(float)(rand()%14 + 10),
+                                dir.z * (float)scaledIntensity/(float)(rand()%14 + 10) };
 
 		GYVector3 finalVel;
 		gyVec3Add(&finalVel, &velocity, &dirOffset);
@@ -152,17 +149,34 @@ void ParticleEmitterInternals::update(const CameraState*const cam, const float d
 			continue;
 		}
 
-		if(--(*it).life == 0) {
+        if(--(*it).life == 0) {
 			_pool.remove(it);
 			continue;
 		}
 		
+        //Calculate depth buffer internals
 		(*it).zIndex = (((*it).position.y - 0.5f*(*it).size)-(float)cam->scrStartY)/32.0f + ((*it).position.z-ZCoordConstants::mapBase)/32.0f;
 		if((*it).zIndex < 0) (*it).zIndex = 0;
 		if((*it).zIndex >= ELYSIAN_DEPTH_BUFFER_HEIGHT) (*it).zIndex = ELYSIAN_DEPTH_BUFFER_HEIGHT;
 
-		if(_attrib->_fadeOut) (*it).color.a = 255.0f*((float)(*it).life/(float)_attrib->_maxLife);
-	}
+        const int curLife = _attrib->_maxLife - (*it).life;
+
+        //Linearly interpolate shit
+        GYRO_LINEAR_INTERP((*it).size, _attrib->_startSize, _attrib->_endSize, _attrib->_maxLife, curLife);
+
+        GYRO_LINEAR_INTERP((*it).color.a, _attrib->getColor().a, _attrib->_endColor.a, _attrib->_maxLife, curLife);
+        GYRO_LINEAR_INTERP((*it).color.r, _attrib->getColor().r, _attrib->_endColor.r, _attrib->_maxLife, curLife);
+        GYRO_LINEAR_INTERP((*it).color.g, _attrib->getColor().g, _attrib->_endColor.g, _attrib->_maxLife, curLife);
+        GYRO_LINEAR_INTERP((*it).color.b, _attrib->getColor().b, _attrib->_endColor.b, _attrib->_maxLife, curLife);
+
+        unsigned animCol;
+        unsigned animDuration = (_attrib->_animFrameDuration > 0)? _attrib->_animFrameDuration : _attrib->_maxLife;
+        if(_attrib->getTexture()) {
+            GYRO_LINEAR_INTERP(animCol, 0, _attrib->_animGridWidth, animDuration, curLife);
+            animCol %= _attrib->_animGridWidth;
+            (*it).frame = _attrib->_animGrid[(*it).animRow][animCol];
+        }
+    }
 }
 
 void ParticleEmitterInternals::applyForce(ForceGenerator*const force, const float deltaTime) {

@@ -471,8 +471,6 @@ OOLUA_EXPORT_FUNCTIONS_CONST(LightSource)
 OOLUA_EXPORT_FUNCTIONS(ParticleEmitterAttrib,
 					   setAcceleration,
 					   setMaxLife,
-					   setSize,
-					   setFrameRange,
 					   loadSpecularMap,
 					   setMaterial,
 					   setForceMask,
