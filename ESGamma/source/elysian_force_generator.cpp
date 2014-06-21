@@ -21,9 +21,9 @@ void GravityForceGenerator::applyForce(ForceTarget * const target, const float /
 	const float invMass = attrib->inverseMass;
 	if(invMass == 0.0f) return;
 
-	gyVec3Scale(&force, &_accel, 1.0f/invMass);
+    gyVec3Scale(&force, &_accel, 1.0f/invMass);
 
-    //if(target->getOnGround()) force.y = 0.0f;
+    if(target->getOnGround()) force.y = 0.0f;
 
     if(!target->getOnGround())
         target->applyForce(force);

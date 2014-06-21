@@ -63,7 +63,7 @@ void Entity::render(void) {
 		transform._size.z = transform._size.y;
 		//transform._size.y = 400.0f;
 	} else {
-		transform._pos.z += _shadowDepth;
+        //transform._pos.z += _shadowDepth;
 	}
 	transform.apply();
 	_renderable->beginRender();

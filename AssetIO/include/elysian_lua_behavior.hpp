@@ -69,6 +69,7 @@ namespace elysian {
 		virtual void		onCollide(CollisionContact*const contact, Collidable* const collidable) override;
 		virtual void		onCollisionEnter(CollisionContact*const contact, Collidable* const collidable) override;
 		virtual void		onCollisionExit(Collidable* const collidable) override;
+        virtual void        onShatter(CollisionContact*const contact) override;
 		virtual void		onExamine(Entity* entity) override;
 		virtual void		onDialog(const unsigned screen, const int option) override;
 		virtual void		onCombatEnter(void) override;
@@ -86,7 +87,7 @@ namespace elysian {
 
 	//======= INLINEZ ======
 	
-	inline const char* LuaBehavior::getBehavName(void) const { return ELYSIAN_LUA_BEHAVIOR_NAME; }
+    inline const char* LuaBehavior::getBehavName(void) const { return _script->getPath(); }
 	//inline int LuaBehavior::getSelfTableRef(void) const { return _selfTableRef; }
 
 

@@ -47,7 +47,7 @@ namespace elysian {
         void                        applyZForce(const GYVector3& force);
 		void						applyForce(const GYVector3& force);
 		void						applyForceToPoint(const GYVector2& loc, const GYVector2& force);
-		const GYVector3&			getVelocity(void) const;
+        GYVector3       			getVelocity(void) const;
 		void						setVelocity(const GYVector3& _vel);
 		void						setRotation(const float rotation);
 		void						clearKinetic(void);
@@ -102,7 +102,7 @@ namespace elysian {
 
 
 	// ========= INLINEZ ==========
-	inline const GYVector3&	ForceTarget::getVelocity(void) const { return vel; }
+    inline GYVector3 ForceTarget::getVelocity(void) const { return vel; }
 	inline void	ForceTarget::setVelocity(const GYVector3& _vel) { vel = _vel; }
 	inline void ForceTarget::setRotation(const float rotation) { rot = rotation; }
     inline bool ForceTarget::getOnGround(void) const { return (bool)resting; }

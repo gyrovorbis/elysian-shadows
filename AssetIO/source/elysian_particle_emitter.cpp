@@ -136,7 +136,8 @@ void ParticleEmitterInternals::update(const CameraState*const cam, const float d
 		if((*it).position.z > ZCoordConstants::mapBase+1) {
 			gyVec3Scale(&bullshitGravity, &_attrib->_acceleration, deltaTime);
 
-			gyVec3Add(&newVel, &(*it).getVelocity(), &bullshitGravity);
+            GYVector3 vel = (*it).getVelocity();
+            gyVec3Add(&newVel, &vel, &bullshitGravity);
 			(*it).setVelocity(newVel);
 			//integrate
 			(*it).integrate(deltaTime);

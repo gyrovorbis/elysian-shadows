@@ -130,10 +130,12 @@ bool LuaBehavior::loadScript(const char *file, const OOLUA::Lua_table_ref paramT
 			lua_setfield(*_mainState, -2, "__index");						//metatable[__index] = parentSelfTable;
 			lua_setmetatable(*_mainState, -2);								//setmetatable(selfTable, metatable);
 
-		} else { //initialize self.selfEntity if parent
+        } else { //initialize self.selfEntity and self.selfBehav if parent
 
 			OOLUA::push(*_mainState, getEntity());							//push parent entity
-			lua_setfield(*_mainState, -2, "selfEntity");					//selfTable.selfEntity = entity
+            lua_setfield(*_mainState, -2, "selfEntity");					//selfTable.selfBehav = entity
+            OOLUA::push(*_mainState, this);                                 //push parent entity
+            lua_setfield(*_mainState, -2, "selfBehav");                     //selfTable.selfBeahv
 		}
 
 		_script = _scriptHierarchy[curIndex];
@@ -234,6 +236,13 @@ void LuaBehavior::onCollisionExit(elysian::Collidable *collidable) {
 	(void)collidable;
 #ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onCollisionExit", _ooSelfTableRef, collidable));
+#endif
+}
+
+void LuaBehavior::onShatter(CollisionContact* contact) {
+    (void)contact;
+#ifdef ELYSIAN_ENGINE
+    _PROTECTED(_callTrigger<void>("onShatter", _ooSelfTableRef, contact));
 #endif
 }
 

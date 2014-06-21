@@ -55,7 +55,8 @@ namespace elysian {
 			ON_COMBAT_DEATH						= 1<<17,
 			ON_COMBAT_RECEIVE_STATUS_MODIFIER	= 1<<18,
 			ON_COMBAT_TARGET_COLLISION_ENTER	= 1<<19,
-			TRIGGER_MAX							= 1<<20
+            ON_SHATTER                          = 1<<20,
+            TRIGGER_MAX							= 1<<21
 		};
 
 		static const char* triggerNameFromFlag(const uint64_t flag);
@@ -77,6 +78,7 @@ namespace elysian {
         virtual void onRender(void);
 		virtual void onCollide(CollisionContact*const contact, Collidable* const collidable);
 		virtual void onCollisionEnter(CollisionContact*const contact, Collidable* const collidable);
+        virtual void onShatter(CollisionContact*const contact);
 		virtual void onCollisionExit(Collidable* const collidable);
 		virtual void onExamine(Entity* entity);
 		virtual void onDialog(const unsigned screen, const int option);

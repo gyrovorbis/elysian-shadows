@@ -33,6 +33,7 @@ namespace elysian {
 		void onDialog(Entity *const entity, const unsigned screen, const int option);
 		void onCombatReceiveStatusModifier(Entity*const entity, CombatStatus*const modifier);
 		void onCombatTargetCollisionEnter(Entity*const entity, CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier);
+        void onShatter(Entity*const entity, CollisionContact*const contact);
 
 		
 	};
@@ -125,6 +126,18 @@ namespace elysian {
 			}
 		}
 	}
+
+    inline void BehaviorSystem::onShatter(Entity*const entity, CollisionContact* contact) {
+        auto end = entity->getBehaviors().end();
+        for(auto it = entity->getBehaviors().begin();
+            it != end;
+            ++it)
+        {
+            if(it->second->getTriggers() & Behavior::ON_SHATTER) {
+                it->second->onShatter(contact);
+            }
+        }
+    }
 
 	inline void BehaviorSystem::onCombatTargetCollisionEnter(Entity*const entity, CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier) {
 		auto end = entity->getBehaviors().end();

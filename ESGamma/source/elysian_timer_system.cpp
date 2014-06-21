@@ -24,6 +24,12 @@ TimerSystem::TimerSystem(void):
 	_minFramerate(1.0f/MIN_FRAMERATE), 
 	_buffIndex(0) 
 {
+
+    auto& proc = get<SUBPROC_TIMER_EVENT_POOL> ( static_cast<SubProcessManager<TimerSystem,
+                                              TimerEventPool>& >(*this));
+
+    proc.start(this);
+
 	for(unsigned i = 0; i < DELTA_TIME_CIRC_BUFFER_SIZE; ++i) {
 		_deltaTimeCircBuffer[i] = _realDeltaCircBuffer[i] = _minFramerate;
 	}
@@ -84,6 +90,8 @@ void TimerSystem::update(void) {
 	if(++_buffIndex >= DELTA_TIME_CIRC_BUFFER_SIZE) _buffIndex = 0; 
 
 	_totalTime += _deltaTime;
+
+    updateSubProcesses(_deltaTime);
 }
 
 }

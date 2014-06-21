@@ -433,7 +433,7 @@ void CollisionSystem::detectEntityCollision(const unsigned i) {
                     zDiff = aTop-bBot;
                 } else if(zTop == bTop && zBot == aBot) {
                     zDiff = aBot-bTop;
-                } else zDiff = 32.0f;
+                } else zDiff = 100.0f;
 
 			}
 			else {
@@ -444,7 +444,7 @@ void CollisionSystem::detectEntityCollision(const unsigned i) {
                     zDiff = aBot-bTop;
                 } else if(zTop == bTop && zBot == aBot) {
                     zDiff = aTop-bBot;
-                } else zDiff = 32.0f;
+                } else zDiff = 100.0f;
 			}
 
 			_contactPool[_contactAmount]._resolvePen		= bodyA->_resolvePen && bodyB->_resolvePen;

@@ -81,6 +81,7 @@ void Behavior::onExit(void) { dbgprintf(LOG_CRITICAL, "Behavior::onExit() - Unim
 void Behavior::onUpdate(void) { dbgprintf(LOG_CRITICAL, "Behavior::onUpdate() - Unimplemented for '%s'.\n", getBehavName()); }
 void Behavior::onRender(void) { dbgprintf(LOG_CRITICAL, "Behavior::onRender() - Unimplemented for '%s'.\n", getBehavName()); }
 void Behavior::onCollide(CollisionContact*const /*contact*/,Collidable* const /*collidable*/) { dbgprintf(LOG_CRITICAL, "Behavior::onCollide() - Unimplemented for '%s'.\n", getBehavName()); }
+void Behavior::onShatter(CollisionContact*const /*contact*/) { dbgprintf(LOG_CRITICAL, "Behavior::onShatter() - Unimplemented for '%s'.\n", getBehavName()); }
 void Behavior::onCollisionEnter(CollisionContact*const /*contact*/,Collidable* const /*collidable*/) { dbgprintf(LOG_CRITICAL, "Behavior::onCollisionEnter() - Unimplemented for '%s'.\n", getBehavName()); }
 void Behavior::onCollisionExit(Collidable* const /*collidable*/) { dbgprintf(LOG_CRITICAL, "Behavior::onCollisionExit() - Unimplemented for '%s'.\n", getBehavName()); }
 void Behavior::onExamine(Entity* /*entity*/) { dbgprintf(LOG_CRITICAL, "Behavior::onExamine() - Unimplemented for '%s'.\n", getBehavName()); }
@@ -152,6 +153,7 @@ void Behavior::removeTrigger(TRIGGER flag) {
 	case ON_COLLIDE:
 	case ON_COLLISION_ENTER:
 	case ON_COLLISION_EXIT:
+        if(!(_triggerBits & (ON_COLLIDE | ON_COLLISION_ENTER | ON_COLLISION_EXIT)))
 		getEntity()->getCollidable()->setContactEventMonitorMask(
 					getEntity()->getCollidable()->getContactEventMonitorMask()
 					& ~ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_BEHAVIOR_MASK);

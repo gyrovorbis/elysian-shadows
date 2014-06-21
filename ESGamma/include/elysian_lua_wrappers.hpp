@@ -293,19 +293,19 @@ OOLUA_PROXY(Entity, RenderableObject)
 	OOLUA_MEM_FUNC(ParticleEmitter*, addParticleEmitter)
 	OOLUA_MEM_FUNC(Behavior*, addBehavior, const char*)
 	OOLUA_MEM_FUNC(LuaBehavior*, addLuaBehavior, const char*, OOLUA::Lua_table_ref)
-	OOLUA_MEM_FUNC_CONST(Renderable*, getRenderable)
-	OOLUA_MEM_FUNC_CONST(Animation*, getAnimation)
-	OOLUA_MEM_FUNC_CONST(Collidable*, getCollidable)
-	OOLUA_MEM_FUNC_CONST(RigidBody*, getRigidBody)
-	OOLUA_MEM_FUNC_CONST(Character*, getCharacter)
-	OOLUA_MEM_FUNC_CONST(Warp*, getWarp)
-	OOLUA_MEM_FUNC_CONST(AudioSource*, getAudioSource)
-	OOLUA_MEM_FUNC_CONST(LightSource*, getLightSource)
-	OOLUA_MEM_FUNC_CONST(Examinable*, getExaminable)
-	OOLUA_MEM_FUNC_CONST(Combat*, getCombat)
-	OOLUA_MEM_FUNC_CONST(ParticleEmitter*, getParticleEmitter)
-	OOLUA_MEM_FUNC_CONST(Behavior*, getBehavior, const char*)
-	OOLUA_MEM_FUNC_CONST(LuaBehavior*, getLuaBehavior, const char*)
+    OOLUA_MEM_FUNC_CONST(maybe_null<Renderable*>, getRenderable)
+    OOLUA_MEM_FUNC_CONST(maybe_null<Animation*>, getAnimation)
+    OOLUA_MEM_FUNC_CONST(maybe_null<Collidable*>, getCollidable)
+    OOLUA_MEM_FUNC_CONST(maybe_null<RigidBody*>, getRigidBody)
+    OOLUA_MEM_FUNC_CONST(maybe_null<Character*>, getCharacter)
+    OOLUA_MEM_FUNC_CONST(maybe_null<Warp*>, getWarp)
+    OOLUA_MEM_FUNC_CONST(maybe_null<AudioSource*>, getAudioSource)
+    OOLUA_MEM_FUNC_CONST(maybe_null<LightSource*>, getLightSource)
+    OOLUA_MEM_FUNC_CONST(maybe_null<Examinable*>, getExaminable)
+    OOLUA_MEM_FUNC_CONST(maybe_null<Combat*>, getCombat)
+    OOLUA_MEM_FUNC_CONST(maybe_null<ParticleEmitter*>, getParticleEmitter)
+    OOLUA_MEM_FUNC_CONST(maybe_null<Behavior*>, getBehavior, const char*)
+    OOLUA_MEM_FUNC_CONST(maybe_null<LuaBehavior*>, getLuaBehavior, const char*)
 	OOLUA_MEM_FUNC(void, removeRenderable)
 	OOLUA_MEM_FUNC(void, removeAnimation)
 	OOLUA_MEM_FUNC(void, removeCollidable)
@@ -537,6 +537,8 @@ OOLUA_PROXY(RigidBody, Component, ForceTarget)
 	OOLUA_MEM_FUNC_CONST(RigidBodyAttrib*, getAttrib)
 	OOLUA_MEM_FUNC(void, setDurability, float)
 	OOLUA_MEM_FUNC_CONST(float, getDurability)
+    OOLUA_MEM_FUNC_CONST(GYVector3, getVelocity)
+    OOLUA_MEM_FUNC(void, setVelocity, const GYVector3&)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ForceGenerator)
@@ -874,6 +876,7 @@ OOLUA_PROXY(TimerSystem)
 	OOLUA_MFUNC_CONST(getCurrentFrameTicks)
 	OOLUA_MFUNC_CONST(getDeltaTime)
 	OOLUA_MFUNC_CONST(getTotalTime)
+    OOLUA_MEM_FUNC(void, startTimerEvent, float, EventMonitor*)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(LevelSystem)
@@ -1005,7 +1008,7 @@ OOLUA_PROXY(GuiSystem)
 		No_public_destructor
 	)
 	OOLUA_MEM_FUNC(void, addCombatText, const char*, GYColor4, const GYVector2&, const GYVector2&)
-	OOLUA_MEM_FUNC(void, setMenuWidget, MenuWidget*)
+    OOLUA_MEM_FUNC(void, setMenuWidget, cpp_in_p<MenuWidget*>)
 	OOLUA_MEM_FUNC(void, clearMenuWidget)
 OOLUA_PROXY_END
 
@@ -1121,6 +1124,7 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
     s->register_class_static<Behavior>("ON_COMBAT_ENTER", Behavior::ON_COMBAT_ENTER);
     s->register_class_static<Behavior>("ON_COMBAT_EXIT", Behavior::ON_COMBAT_EXIT);
     s->register_class_static<Behavior>("ON_COMBAT_DEATH", Behavior::ON_COMBAT_DEATH);
+    s->register_class_static<Behavior>("ON_SHATTER", Behavior::ON_SHATTER);
     s->register_class_static<Behavior>("ON_COMBAT_RECEIVE_STATUS_MODIFIER", Behavior::ON_COMBAT_RECEIVE_STATUS_MODIFIER);
     s->register_class_static<Behavior>("ON_COMBAT_TARGET_COLLISION_ENTER", Behavior::ON_COMBAT_TARGET_COLLISION_ENTER);
 

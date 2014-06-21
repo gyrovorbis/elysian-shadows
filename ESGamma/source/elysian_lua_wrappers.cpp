@@ -389,10 +389,12 @@ OOLUA_EXPORT_FUNCTIONS_CONST(ForceTarget)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(RigidBody,
 							 getDurability,
-							 getAttrib)
+                             getAttrib,
+                             getVelocity)
 OOLUA_EXPORT_FUNCTIONS(RigidBody,
 					   setAttrib,
-					   setDurability)
+                       setDurability,
+                       setVelocity)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(ForceGenerator)
 OOLUA_EXPORT_FUNCTIONS(ForceGenerator,
@@ -630,7 +632,8 @@ OOLUA_EXPORT_FUNCTIONS_CONST(TimerSystem,
 								getCurrentFrameTicks,
 								getDeltaTime,
 								getTotalTime)
-OOLUA_EXPORT_FUNCTIONS(TimerSystem)
+OOLUA_EXPORT_FUNCTIONS(TimerSystem,
+                       startTimerEvent)
 
 
 OOLUA_EXPORT_FUNCTIONS(PartySystem,
