@@ -22,10 +22,15 @@ void gySinCos(const float theta, float *const psin, float *const pcos);
 float gySqrt(const float val);
 #endif
 
+#define GYRO_LINEAR_INTERP(cur, prev, next, interval, elapsed) do { \
+                                                                    cur = (float)((float)prev + (float)((float)next-(float)prev)*(float)((float)elapsed/(float)interval)); \
+                                                                } while(0)
+
+
 
 //This could so be SIMD accelerated to all fuck for vectors.
 static inline void gyLinearInterp(float* current, const unsigned int count, const float *previous, const float *next, const float interval, const float elapsed) {
-	for(unsigned i = 0; i < count; ++i) current[i] = (previous[i] + (next[i]-previous[i])/(interval/elapsed));
+    for(unsigned i = 0; i < count; ++i) current[i] = (previous[i] + (next[i]-previous[i])*(elapsed/interval));
 }
 
 #ifdef __cplusplus
