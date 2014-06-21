@@ -23,7 +23,7 @@ __asm volatile (
 }
 
 
-#if 1
+#if 0
 static inline void gyMatMultMat(GYMatrix4 res, const GYMatrix4 _curMat, const GYMatrix4 mat) {
 
         res[0][0] = _curMat[0][0]*mat[0][0] + _curMat[1][0]*mat[0][1]+ _curMat[2][0]*mat[0][2]+ _curMat[3][0]*mat[0][3];
@@ -54,30 +54,102 @@ static inline void gyMatMultMat(GYMatrix4 res, const GYMatrix4 _curMat, const GY
 static inline void gyMatMultMat(GYMatrix4 res, const GYMatrix4 _curMat, const GYMatrix4 mat) {
 
 #if 1
-  __asm__ __volatile__ 
-    ("vldmia   %[A],  { q4-q7 }             \n\t" 
-     "vldmia   %[B],  { q8-q11}             \n\t" 
-     "vmul.f32   q0,   q8,    d8[0]         \n\t" 
-     "vmul.f32   q1,   q8,   d10[0]         \n\t" 
-     "vmul.f32   q2,   q8,   d12[0]         \n\t" 
-     "vmul.f32   q3,   q8,   d14[0]         \n\t" 
-     "vmla.f32   q0,   q9,    d8[1]         \n\t" 
-     "vmla.f32   q1,   q9,   d10[1]         \n\t" 
-     "vmla.f32   q2,   q9,   d12[1]         \n\t" 
-     "vmla.f32   q3,   q9,   d14[1]         \n\t" 
-     "vmla.f32   q0,  q10,    d9[0]         \n\t" 
-     "vmla.f32   q1,  q10,   d11[0]         \n\t" 
-     "vmla.f32   q2,  q10,   d13[0]         \n\t" 
-     "vmla.f32   q3,  q10,   d15[0]         \n\t" 
-     "vmla.f32   q0,  q11,    d9[1]         \n\t" 
-     "vmla.f32   q1,  q11,   d11[1]         \n\t" 
-     "vmla.f32   q2,  q11,   d13[1]         \n\t" 
-     "vmla.f32   q3,  q11,   d15[1]         \n\t" 
-     "vstmia   %[R],  { q0-q3 }             \n\t" 
-     :[R]"+r" (res), [A]"+r" (_curMat), [B]"+r" (mat) 
-     ::"memory","d0","d1","d2","d3","d4","d5","d6","d7", 
-      "d8","d9","d10","d11","d12","d13","d14","d15", 
-      "d16","d17","d18","d19","d20","d21","d22","d23"); 
+
+    #if 0
+
+
+
+
+
+
+    .macro mul_col_s16 res_d, col_d
+    vmull.s16   q12, d16, \col_d[0]         @ multiply col element 0 by matrix col 0
+    vmlal.s16   q12, d17, \col_d[1]         @ multiply-acc col element 1 by matrix col 1
+    vmlal.s16   q12, d18, \col_d[2]         @ multiply-acc col element 2 by matrix col 2
+    vmlal.s16   q12, d19, \col_d[3]         @ multiply-acc col element 3 by matrix col 3
+    vqrshrn.s32 \res_d, q12, #14            @ shift right and narrow accumulator into
+                                            @  Q1.14 fixed point format, with saturation
+    .endm
+
+@
+@ matrix_mul_fixed:
+@ Calculate 4x4 (matrix 0) * (matrix 1) and store to result 4x4 matrix.
+@  matrix 0, matrix 1 and result pointers can be the same,
+@  ie. my_matrix = my_matrix * my_matrix is possible
+@
+@ r0 = pointer to 4x4 result matrix, Q1.14 fixed point, column major order
+@ r1 = pointer to 4x4 matrix 0, Q1.14 fixed point, column major order
+@ r2 = pointer to 4x4 matrix 1, Q1.14 fixed point, column major order
+@
+
+    .global matrix_mul_fixed
+matrix_mul_fixed:
+    vld1.16     {d16-d19}, [r1]             @ load sixteen elements of matrix 0
+    vld1.16     {d0-d3}, [r2]               @ load sixteen elements of matrix 1
+
+    mul_col_s16 d4, d0                      @ matrix 0 * matrix 1 col 0
+    mul_col_s16 d5, d1                      @ matrix 0 * matrix 1 col 1
+    mul_col_s16 d6, d2                      @ matrix 0 * matrix 1 col 2
+    mul_col_s16 d7, d3                      @ matrix 0 * matrix 1 col 3
+
+    vst1.16     {d4-d7}, [r0]               @ store sixteen elements of result
+
+    mov         pc, lr                      @ return to caller
+
+
+
+
+
+      #else
+
+  __asm__ __volatile__  
+    (
+
+    "vld1.32     {d16-d19}, [%[A]]!   \n"//         @ load first eight elements of matrix 0
+    "vld1.32     {d20-d23}, [%[A]]!   \n"      //   @ load second eight elements of matrix 0
+    "vld1.32     {d0-d3}, [%[B]]!       \n"    //   @ load first eight elements of matrix 1
+    "vld1.32     {d4-d7}, [%[B]]!    \n"        //  @ load second eight elements of matrix 1
+
+
+    //PIPELINE STALLS -- SLOWER
+    //"vldmia   %[A],  { q8-q11 }             \n\t" 
+    //"vldmia   %[B],  { q0-q3 }             \n\t" 
+
+    "vmul.f32    q12, q8, d0[0] \n"            // @ rslt col0  = (mat0 col0) * (mat1 col0 elt0)
+    "vmul.f32    q13, q8, d2[0]    \n"         // @ rslt col1  = (mat0 col0) * (mat1 col1 elt0)
+    "vmul.f32    q14, q8, d4[0]    \n"         // @ rslt col2  = (mat0 col0) * (mat1 col2 elt0)
+    "vmul.f32    q15, q8, d6[0]    \n"         // @ rslt col3  = (mat0 col0) * (mat1 col3 elt0)
+
+    "vmla.f32    q12, q9, d0[1]    \n"         // @ rslt col0 += (mat0 col1) * (mat1 col0 elt1)
+    "vmla.f32    q13, q9, d2[1]      \n"       // @ rslt col1 += (mat0 col1) * (mat1 col1 elt1)
+    "vmla.f32    q14, q9, d4[1]     \n"        // @ rslt col2 += (mat0 col1) * (mat1 col2 elt1)
+    "vmla.f32    q15, q9, d6[1]     \n"        // @ rslt col3 += (mat0 col1) * (mat1 col3 elt1)
+
+    "vmla.f32    q12, q10, d1[0]    \n"        // @ rslt col0 += (mat0 col2) * (mat1 col0 elt2)
+    "vmla.f32    q13, q10, d3[0]    \n"        // @ rslt col1 += (mat0 col2) * (mat1 col1 elt2)
+    "vmla.f32    q14, q10, d5[0]    \n"        // @ rslt col2 += (mat0 col2) * (mat1 col2 elt2)
+    "vmla.f32    q15, q10, d7[0]     \n"       // @ rslt col3 += (mat0 col2) * (mat1 col2 elt2)
+
+    "vmla.f32    q12, q11, d1[1]     \n"       // @ rslt col0 += (mat0 col3) * (mat1 col0 elt3)
+    "vmla.f32    q13, q11, d3[1]     \n"      //  @ rslt col1 += (mat0 col3) * (mat1 col1 elt3)
+    "vmla.f32    q14, q11, d5[1]      \n"     //  @ rslt col2 += (mat0 col3) * (mat1 col2 elt3)
+    "vmla.f32    q15, q11, d7[1]      \n"     //  @ rslt col3 += (mat0 col3) * (mat1 col3 elt3)
+
+    //"vst1.32     {d24-d27}, [%[R]]!    \n"      //  @ store first eight elements of result
+    //"vst1.32     {d28-d31}, [%[R]]!    \n"      //  @ store second eight elements of result
+
+    "vstmia   %[R],  { q12-q15 }             \n\t" 
+
+
+    : [R]"+r" (res)
+     : [A]"r" (_curMat), [B]"r" (mat) 
+     : "memory","d0","d1","d2","d3","d4","d5","d6","d7", 
+      //"d8","d9","d10","d11","d12","d13","d14","d15", 
+      "d16","d17","d18","d19","d20","d21","d22","d23",
+      "d24", "d25", "d26", "d27", "d28", "d29", "d30", "d31"); 
+
+    
+#endif
       
 }
 #else
@@ -113,14 +185,63 @@ static inline void gyMatMultMat(GYMatrix4 res, const GYMatrix4 _curMat, const GY
 #endif 
 
 static inline void gyMatApply(const GYMatrix4 mat) {
-    GYMatrix4 result;
-    gyMatMultMat(result, _curMat, mat);
-    memcpy(_curMat, result, sizeof(GYMatrix4));
+#if 1
+  //  GYMatrix4 result;
+    gyMatMultMat(_curMat, _curMat, mat);
+   // memcpy(_curMat, result, sizeof(GYMatrix4));
+#else
+
+ __asm__ __volatile__ 
+    (//"vld1.32     {d16-d19}, [%[A]]!   \n"//         @ load first eight elements of matrix 0
+     //"vld1.32     {d20-d23}, [%[A]]!   \n"      //   @ load second eight elements of matrix 0
+    //"vld1.32     {d0-d3}, [%[B]]!       \n"    //   @ load first eight elements of matrix 1
+    //"vld1.32     {d4-d7}, [%[B]]!    \n"        //  @ load second eight elements of matrix 1
+
+    //"vldmia   %[A],  { q8-q11 }             \n\t" 
+    //"vldmia   %[B],  { q0-q3 }             \n\t" 
+
+
+
+    "vmul.f32    q12, q8, d0[0] \n"            // @ rslt col0  = (mat0 col0) * (mat1 col0 elt0)
+    "vmul.f32    q13, q8, d2[0]    \n"         // @ rslt col1  = (mat0 col0) * (mat1 col1 elt0)
+    "vmul.f32    q14, q8, d4[0]    \n"         // @ rslt col2  = (mat0 col0) * (mat1 col2 elt0)
+    "vmul.f32    q15, q8, d6[0]    \n"         // @ rslt col3  = (mat0 col0) * (mat1 col3 elt0)
+
+    "vmla.f32    q12, q9, d0[1]    \n"         // @ rslt col0 += (mat0 col1) * (mat1 col0 elt1)
+    "vmla.f32    q13, q9, d2[1]      \n"       // @ rslt col1 += (mat0 col1) * (mat1 col1 elt1)
+    "vmla.f32    q14, q9, d4[1]     \n"        // @ rslt col2 += (mat0 col1) * (mat1 col2 elt1)
+    "vmla.f32    q15, q9, d6[1]     \n"        // @ rslt col3 += (mat0 col1) * (mat1 col3 elt1)
+
+    "vmla.f32    q12, q10, d1[0]    \n"        // @ rslt col0 += (mat0 col2) * (mat1 col0 elt2)
+    "vmla.f32    q13, q10, d3[0]    \n"        // @ rslt col1 += (mat0 col2) * (mat1 col1 elt2)
+    "vmla.f32    q14, q10, d5[0]    \n"        // @ rslt col2 += (mat0 col2) * (mat1 col2 elt2)
+    "vmla.f32    q15, q10, d7[0]     \n"       // @ rslt col3 += (mat0 col2) * (mat1 col2 elt2)
+
+    "vmla.f32    q12, q11, d1[1]     \n"       // @ rslt col0 += (mat0 col3) * (mat1 col0 elt3)
+    "vmla.f32    q13, q11, d3[1]     \n"      //  @ rslt col1 += (mat0 col3) * (mat1 col1 elt3)
+    "vmla.f32    q14, q11, d5[1]      \n"     //  @ rslt col2 += (mat0 col3) * (mat1 col2 elt3)
+    "vmla.f32    q15, q11, d7[1]      \n"     //  @ rslt col3 += (mat0 col3) * (mat1 col3 elt3)
+
+    //"vst1.32     {d24-d27}, [%[R]]!    \n"      //  @ store first eight elements of result
+    //"vst1.32     {d28-d31}, [%[R]]!    \n"      //  @ store second eight elements of result
+
+    "vstmia   %[R],  { q12-q15 }             \n\t" 
+
+
+    : [R]"+r" (_curMat)
+     : [A]"r" (mat) 
+     :"memory","d0","d1","d2","d3","d4","d5","d6","d7", 
+      //"d8","d9","d10","d11","d12","d13","d14","d15", 
+      "d16","d17","d18","d19","d20","d21","d22","d23",
+      "d24", "d25", "d26", "d27", "d28", "d29", "d30", "d31"); 
+
+#endif
+
 }
 
 
-static inline void gyMatMultVec(const GYVector4 *const src, GYVector4 *const dest, const unsigned int count) {
-
+static inline void gyMatMultVec(const GYVector4 *src, GYVector4 * dest, unsigned int count) {
+#if 1
     float res[4];
     unsigned int i;
     for(i = 0; i < count; ++i) {
@@ -132,7 +253,61 @@ static inline void gyMatMultVec(const GYVector4 *const src, GYVector4 *const des
 
         memcpy(dest+i, res, sizeof(float)*4);
     }
+#else
 
+
+  __asm__ __volatile__  
+    (
+
+    "vld1.32     {d0-d3}, [%[A]]!       \n"    //   @ load first eight elements of matrix 1
+    "vld1.32     {d4-d7}, [%[A]]!    \n"        //  @ load second eight elements of matrix 1
+    "mov r3, %[R]\n"
+
+
+    //PIPELINE STALLS -- SLOWER
+    //"vldmia   %[A],  { q8-q11 }             \n\t" 
+    //"vldmia   %[B],  { q0-q3 }             \n\t" 
+    ".loop:              \n"
+
+    "vld1.32     {d16-d17}, [%[B]]! \n"
+
+
+
+    //"sub         %[C], %[C], #1 \n"
+    "vmul.f32    q12, q8, d0[0] \n"            // @ rslt col0  = (mat0 col0) * (mat1 col0 elt0)
+    "vmla.f32    q12, q8, d2[0]    \n"         // @ rslt col1  = (mat0 col0) * (mat1 col1 elt0)
+    "vmla.f32    q12, q8, d4[0]    \n"         // @ rslt col2  = (mat0 col0) * (mat1 col2 elt0)
+    "vmla.f32    q12, q8, d6[0]    \n"         // @ rslt col3  = (mat0 col0) * (mat1 col3 elt0)
+
+    //"vst1.32     {d24-d27}, [%[R]]!    \n"      //  @ store first eight elements of result
+    //"vst1.32     {d28-d31}, [%[R]]!    \n"      //  @ store second eight elements of result
+
+    //"vstmia   %[R],  { q12-q15 }             \n\t" 
+
+
+
+    "vst1.32     {d24-d25}, [ r3@16 ]!    \n"      //  @ store first eight elements of result
+    //"vstmia   %[R],  { q12 }             \n\t" 
+    //"add %[R], %[R], #16 \n"
+    //"cmp          %[C], #0\n"
+    
+    //"bgt        loop        \n"
+    "subs %[C], %[C], $1 \n"
+    "bne .loop \n"
+    //dec count
+    //jump not equal to 0 to loop
+    //write if there is a delayed branch slot
+
+
+
+    :[R]"+r" (dest), [B]"+r" (src),  [C]"+r"(count)
+     : [A]"r" (_curMat)
+     : "memory","d0","d1","d2","d3","d4","d5","d6","d7", "r3"
+      //"d8","d9","d10","d11","d12","d13","d14","d15", 
+      "d16","d17",//"d18","d19","d20","d21","d22","d23",
+      "d24", "d25");//, "d26", "d27", "d28", "d29", "d30", "d31"); 
+
+#endif
 }
 
 static inline void gyMatLoad(GYMatrix4 *mat) {
@@ -220,6 +395,8 @@ static inline void gyVec3Sub(GYVector3* const dest, const GYVector3* const v1, c
 
 static inline void gyVec3Scale(GYVector3*const dest, GYVector3*const source, const float scalar)
 {
+
+    //VDUP - duplicate scalar to all vector
     dest->x = source->x * scalar;
     dest->y = source->y * scalar;
     dest->z = source->z * scalar;
@@ -303,10 +480,40 @@ static inline void gyVec2RotOrigin(GYVector2 *const dest, const GYVector2 *const
 
     
 static inline void gyVec4Add(GYVector4* const dest, const GYVector4* const v1, const GYVector4* const v2) {
+#if 1
     dest->x = v1->x + v2->x;
     dest->y = v1->y + v2->y;
     dest->z = v1->z + v2->z;
     dest->w = v1->w + v2->w;
+#else 
+__asm__ __volatile__ 
+    ("vldmia   %[A],  { q4-q7 }             \n\t" 
+     "vldmia   %[B],  { q8-q11}             \n\t" 
+     "vmul.f32   q0,   q8,    d8[0]         \n\t" 
+     "vmul.f32   q1,   q8,   d10[0]         \n\t" 
+     "vmul.f32   q2,   q8,   d12[0]         \n\t" 
+     "vmul.f32   q3,   q8,   d14[0]         \n\t" 
+     "vmla.f32   q0,   q9,    d8[1]         \n\t" 
+     "vmla.f32   q1,   q9,   d10[1]         \n\t" 
+     "vmla.f32   q2,   q9,   d12[1]         \n\t" 
+     "vmla.f32   q3,   q9,   d14[1]         \n\t" 
+     "vmla.f32   q0,  q10,    d9[0]         \n\t" 
+     "vmla.f32   q1,  q10,   d11[0]         \n\t" 
+     "vmla.f32   q2,  q10,   d13[0]         \n\t" 
+     "vmla.f32   q3,  q10,   d15[0]         \n\t" 
+     "vmla.f32   q0,  q11,    d9[1]         \n\t" 
+     "vmla.f32   q1,  q11,   d11[1]         \n\t" 
+     "vmla.f32   q2,  q11,   d13[1]         \n\t" 
+     "vmla.f32   q3,  q11,   d15[1]         \n\t" 
+     "vstmia   %[R],  { q0-q3 }             \n\t" 
+     :[R]"+r" (dest), [A]"+r" (v1), [B]"+r" (v2) 
+     ::"memory","d0","d1","d2","d3","d4","d5","d6","d7", 
+      "d8","d9","d10","d11","d12","d13","d14","d15", 
+      "d16","d17","d18","d19","d20","d21","d22","d23"); 
+      
+}
+
+#endif
 }
     
 static inline void gyVec4Sub(GYVector4* const dest, const GYVector4* const v1, const GYVector4* const v2) {
