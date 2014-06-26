@@ -17,6 +17,7 @@ namespace elysian {
 	class Entity;
 
 	struct AnimationFrame {
+
 		GYVector2			offset;
 		float				duration;
 		unsigned int		spriteFrame;
