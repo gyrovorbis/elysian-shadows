@@ -166,7 +166,10 @@ namespace elysian {
 			ptr += ptr_inc;
 			sscanf(ptr, "%hd%n", &tileset[i].nextIndex, &ptr_inc);
 			ptr += ptr_inc;
-			tileset[i].standOn = true;
+            sscanf(ptr, "%d%n", (int*)&tileset[i].standOn, &ptr_inc);
+            ptr += ptr_inc;
+            sscanf(ptr, "%d%n", (int*)&tileset[i].transparency, &ptr_inc);
+            ptr += ptr_inc;
 		}
 
 		free(buffer);

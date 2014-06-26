@@ -29,6 +29,7 @@ namespace elysian {
 		bool animated = false;
 
 		bool standOn = true;
+        bool transparency = false;
 
 		GYWav* walkSfx = nullptr;
 		GYWav* hitSfx = nullptr;
@@ -50,6 +51,8 @@ namespace elysian {
 		uint16_t getNextIndex(void) const;
 		void setWalkSfx(GYWav* const wav);
 		void setHitSfx(GYWav* const wav);
+        bool getTransparency(void) const;
+        void setTransparency(const bool v);
 
 		static COLLIDER_TYPE combineColliders(const COLLIDER_TYPE col1, const COLLIDER_TYPE col2);
 		static COLLIDER_TYPE reorientCollider(const COLLIDER_TYPE collider, const GY_RECT_TEX_ORIENT orient);
@@ -57,6 +60,9 @@ namespace elysian {
 	};
     
 	// ====== INLINEZ ======
+
+    inline bool Tile::getTransparency(void) const { return transparency; }
+    inline void Tile::setTransparency(const bool v) { transparency = v; }
 
 	inline void Tile::setWalkSfx(GYWav* const wav) { walkSfx = wav; }
 	inline void Tile::setHitSfx(GYWav* const wav) { hitSfx = wav; }
