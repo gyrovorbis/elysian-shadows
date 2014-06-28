@@ -406,7 +406,7 @@ void RigidBodySystem::resolveContactVelocities(void) {
 
 	_velResIter = iter;
 
-	if(iter == ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS) Debug::printf(Debug::CRITICAL, "OUT OF VELOCITY ITERATIONS!", iter);
+    //if(iter == ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS) Debug::printf(Debug::CRITICAL, "OUT OF VELOCITY ITERATIONS!", iter);
 
 	//Debug::printf(Debug::VERBOSE, "ITER - %d", iter);
 

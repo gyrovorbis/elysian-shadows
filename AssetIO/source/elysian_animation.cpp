@@ -48,6 +48,17 @@ void Animation::removeChildEntity(const Entity* const entity) {
 	}
 }
 
+void Animation::setSpeedMultiplier(const float factor) {
+    if(_children) {
+        for(auto it = _children->begin(); it < _children->end(); ++it) {
+            if((*it).anim && (*it).anim->_inheritSpeedMultiplier) {
+                (*it).entity->getAnimation()->setSpeedMultiplier(factor);
+            }
+        }
+    }
+    _speedMultiplier = factor;
+}
+
 void Animation::_updateChildren(void) {
 	if(!_children || _children->size() == 0) return;
 
@@ -170,13 +181,19 @@ void Animation::update(const float deltaTime) {
 
 	_timer += deltaTime * _speedMultiplier;
 	if(_timer >= _currentSequence->_frames[_currentFrame].duration) {
-		if(_currentSequence->_frames.size() <= ++_currentFrame) _currentFrame = 0;
+        if(_currentSequence->_frames.size() <= ++_currentFrame) {
+            _currentFrame = 0;
+            if(!_looping) _isActive = false;
+            if(_monitor) {
+                _monitor->onFinish();
+                _monitor = nullptr;
+            }
+        }
 		_timer = 0.0f;
 
 		_entity->getRenderable()->setOffset(_currentSequence->_frames[_currentFrame].offset);
 		_entity->getRenderable()->setFrame(_currentSequence->_frames[_currentFrame].spriteFrame);
 		_entity->getRenderable()->setTexOrient(_currentSequence->_frames[_currentFrame].texOrient);
-		if(!_looping) _isActive = false;
 	} else if(_currentSequence->getLinearInterpolation()) {
 		GYVector2 offset;
 
@@ -188,7 +205,11 @@ void Animation::update(const float deltaTime) {
 	}
 }
 
-void Animation::playAnimation(const char *name) {
+void Animation::playAnimation(const char *name, EventMonitor*const monitor) {
+
+    //assert((_attrib->_sequences.find(name) != _attrib->_sequences.end()));
+    if((_attrib->_sequences.find(name) == _attrib->_sequences.end())) return;
+    if(_isActive && _attrib->_sequences[name] == _currentSequence) return;
 
 	if(_children) {
 		for(auto it = _children->begin(); it < _children->end(); ++it) {
@@ -196,19 +217,17 @@ void Animation::playAnimation(const char *name) {
 		}
 	}
 
-	//assert((_attrib->_sequences.find(name) != _attrib->_sequences.end()));
-	if((_attrib->_sequences.find(name) == _attrib->_sequences.end())) return;
-	if(_isActive && _attrib->_sequences[name] == _currentSequence) return;
-
 	_currentFrame = 0;
 	_timer = 0.0f;
 	_currentSequence = _attrib->_sequences[name];
 	_isActive = true;
+    _monitor = monitor;
 
 	//Begin initial animation frame immediately!
 	_entity->getRenderable()->setOffset(_currentSequence->_frames[0].offset);
 	_entity->getRenderable()->setFrame(_currentSequence->_frames[0].spriteFrame);
 	_entity->getRenderable()->setTexOrient(_currentSequence->_frames[0].texOrient);
+    if(monitor) monitor->onStart();
 }
 
 void Animation::stopAnimation(void) {
