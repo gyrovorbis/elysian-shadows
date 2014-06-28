@@ -1014,8 +1014,8 @@ OOLUA_PROXY(GuiSystem)
 		No_public_destructor
 	)
 	OOLUA_MEM_FUNC(void, addCombatText, const char*, GYColor4, const GYVector2&, const GYVector2&)
-    OOLUA_MEM_FUNC(void, setMenuWidget, cpp_in_p<MenuWidget*>)
-	OOLUA_MEM_FUNC(void, clearMenuWidget)
+	OOLUA_MEM_FUNC(void, setFgMenuWidget, cpp_in_p<MenuWidget*>)
+	OOLUA_MEM_FUNC(void, clearFgMenuWidget)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CameraKeyFrame)

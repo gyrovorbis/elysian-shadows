@@ -23,6 +23,7 @@ typedef enum _GY_RECT_NORMAL_TYPE { GY_RECT_NORMAL_FLAT, GY_RECT_NORMAL_FRONT, G
 void gyVidTexBind(const struct _GYTexture *const tex);
 void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev);
 void gyVidResolution(unsigned int *const width, unsigned int *const height);
+void gyVidClearColor(const GYColor4 color);
 
 //Camera API
 void gyVidCamUpdate(const struct _GYCamera *const cam);

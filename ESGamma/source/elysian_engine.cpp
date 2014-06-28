@@ -195,6 +195,7 @@ void Engine::render(void) {
 			//glDepthRange(0, 1);
 			gyVidProjectionCustomMatrix(projectionMatrix);
 			//gyVidProjectionDefaultMatrix(); */
+			_guiSystem->renderBackground();
 			_cameraSystem->pushViewProjMatrix();
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
             _lightSystem->shadowRenderPasses();
@@ -217,7 +218,7 @@ void Engine::render(void) {
 
 			//Begin rendering overlays
 			_warpSystem->render();
-			_guiSystem->renderOverlay();
+			_guiSystem->renderForeground();
 			_dialogSystem->render();
 
 			gyVidSceneEnd();

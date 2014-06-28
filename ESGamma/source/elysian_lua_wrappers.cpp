@@ -720,8 +720,8 @@ OOLUA_EXPORT_FUNCTIONS_CONST(ParticleSystem,
 
 OOLUA_EXPORT_FUNCTIONS(GuiSystem,
 					   addCombatText,
-					   setMenuWidget,
-					   clearMenuWidget)
+					   setFgMenuWidget,
+					   clearFgMenuWidget)
 OOLUA_EXPORT_FUNCTIONS_CONST(GuiSystem)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(DaySystem,

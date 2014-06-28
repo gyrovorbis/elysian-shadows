@@ -87,12 +87,13 @@ namespace elysian {
 
 		unsigned int _projWidth, _projHeight;
 
-		MenuWidget* _menuWidget = nullptr;
+		MenuWidget* _fgMenuWidget = nullptr;
+		MenuWidget*	_bgMenuWidget = nullptr;
 
 
 		void _printDebugLine(const char*title, const char*str, ...);
 		void _renderDebugOverlay(void);
-		void _renderMenuWidget(void);
+		void _renderMenuWidget(MenuWidget* widget);
 	public:
 
 		GuiSystem(void);
@@ -100,7 +101,8 @@ namespace elysian {
 		bool loadAssets(void);
 		void update(void);
 		//void Render(void);
-		void renderOverlay(void);
+		void renderBackground(void);
+		void renderForeground(void);
 		void render(void);
 		inline void getResolution(unsigned int &width, unsigned int &height) const { width = _projWidth; height = _projHeight; }
 
@@ -108,8 +110,11 @@ namespace elysian {
 
 		void setDebugOverLayEnabled(const bool enabled);
 
-		void setMenuWidget(MenuWidget*const widget);
-		void clearMenuWidget(void);
+		void setFgMenuWidget(MenuWidget*const widget);
+		void clearFgMenuWidget(void);
+
+		void setBgMenuWidget(MenuWidget*const widget);
+		void clearBgMenuWidget(void);
 
 		AdventureLog	adventureLog;
 		Font			verdana;
@@ -132,10 +137,12 @@ namespace elysian {
 	inline void MenuEntity::removeChildWidget(MenuWidget*const widget) { _childWidgets.removeEntry(widget); }
 
 	inline void GuiSystem::setDebugOverLayEnabled(const bool enabled) { _debugOverlayEnabled = enabled; }
-	inline void GuiSystem::setMenuWidget(MenuWidget * const widget) { _menuWidget = widget; }
-	inline void GuiSystem::clearMenuWidget(void) { _menuWidget = nullptr; }
 
-	
+	inline void GuiSystem::setFgMenuWidget(MenuWidget * const widget) { _fgMenuWidget = widget; }
+	inline void GuiSystem::clearFgMenuWidget(void) { _fgMenuWidget = nullptr; }
+	inline void GuiSystem::setBgMenuWidget(MenuWidget * const widget) { _bgMenuWidget = widget; }
+	inline void GuiSystem::clearBgMenuWidget(void) { _bgMenuWidget = nullptr; }
+
 }
 
 #endif

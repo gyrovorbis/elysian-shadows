@@ -82,8 +82,8 @@ namespace elysian {
 													   ELYSIAN_TILE_WIDTH,
 													   ELYSIAN_TILE_HEIGHT)))
 		{
-			success = false;
-            //dbgprintf(LOG_CRITICAL, "Fine. Don't bumpmap your shit.");
+			//success = false;
+			dbgprintf(LOG_VERBOSE, "Fine. Don't bumpmap your shit.");
 		}
 		dbgPop();
 
@@ -98,19 +98,16 @@ namespace elysian {
 													   ELYSIAN_TILE_WIDTH,
 													   ELYSIAN_TILE_HEIGHT)))
 		{
-			success = false;
-            //dbgprintf(LOG_CRITICAL, "No specular sheet? Aight.");
+			//success = false;
+			dbgprintf(LOG_VERBOSE, "No specular sheet? Aight.");
 		}
 		dbgPop();
 
-
-
-#	ifdef ELYSIAN_ENGINE
 		strcpy(buffer, dir);
 		strcat(buffer, ELYSIAN_LEVEL_INIT_LUA_PATH);
 		LuaManager::runScriptSandbox(buffer);
-#	endif
 
+		gyVidClearColor(clearColor);
 #endif
 		dbgPop();
 		return success;
