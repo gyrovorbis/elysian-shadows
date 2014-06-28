@@ -89,7 +89,16 @@ static unsigned int			_projHeight				= 0;
 static GY_RECT_TEX_ORIENT	_rectTexOrient			= GY_RECT_TEX_ORIENT_NORMAL;
 static GY_RECT_NORMAL_TYPE	_normalType				= GY_RECT_NORMAL_FLAT;
 static GYColor4				_curQuadListColor[4]	= { {0, 0, 0, 0} };
-unsigned					vertexRenderCount				= 0;
+unsigned					vertexRenderCount		= 0;
+GYVector4					_clearColor				= { 0.0f, 0.0f, 0.0f, 1.0f };
+
+void gyVidClearColor(const GYColor4 color) {
+	_clearColor.x = (float)color.r*255.0f;
+	_clearColor.y = (float)color.g*255.0f;
+	_clearColor.z = (float)color.b*255.0f;
+	_clearColor.w = (float)color.a*255.0f;
+	glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
+}
 
 unsigned gyVidVertexRenderCount(void) { return vertexRenderCount; }
 
@@ -122,7 +131,7 @@ int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth,
     _projWidth = projWidth;
     _projHeight = projHeight;
 
-    glClearColor(0, 0, 0, 0);
+	glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
 	glClearDepthf(1.0f);
     glDepthFunc(GL_LEQUAL);
 	glEnable(GL_BLEND);
