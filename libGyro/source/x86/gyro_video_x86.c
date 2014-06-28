@@ -60,7 +60,8 @@ int gyVidUninit(void) {
 }
 
 void gyVidSceneBegin(void) {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	//This might be reesting shit, might not need to clear all of this.
+	glClear(GL_COLOR_BUFFER_BIT);// | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	vertexRenderCount = 0;
 }
 
