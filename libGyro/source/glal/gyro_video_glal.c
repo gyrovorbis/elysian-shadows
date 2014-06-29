@@ -90,7 +90,7 @@ static GY_RECT_TEX_ORIENT	_rectTexOrient			= GY_RECT_TEX_ORIENT_NORMAL;
 static GY_RECT_NORMAL_TYPE	_normalType				= GY_RECT_NORMAL_FLAT;
 static GYColor4				_curQuadListColor[4]	= { {0, 0, 0, 0} };
 unsigned					vertexRenderCount		= 0;
-GYVector4					_clearColor				= { 0.0f, 0.0f, 0.0f, 1.0f };
+GYVector4					_clearColor				= { 0.0f, 0.0f, 0.0f, 0.0f };
 
 void gyVidClearColor(const GYColor4 color) {
 	_clearColor.x = (float)color.r*255.0f;
@@ -132,14 +132,12 @@ int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth,
     _projHeight = projHeight;
 
 	glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
-	glClearDepthf(1.0f);
-    glDepthFunc(GL_LEQUAL);
-	glEnable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
+	//glClearDepthf(1.0f);
+	//glDepthFunc(GL_LEQUAL);
+	//glEnable(GL_BLEND);
+	//glEnable(GL_DEPTH_TEST);
 	glViewport(0, 0, viewWidth, viewHeight);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS)​;
-   // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glalLoadDefaultShaders();
 	gyVidSetDefaultShaderProgram();
