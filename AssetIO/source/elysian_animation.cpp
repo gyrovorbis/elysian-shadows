@@ -98,8 +98,10 @@ void Animation::_updateChildren(void) {
 				}
 			} else { //assuming to use global defaults
 				offset = childEntry->anim->_globalOffset;
-				zOrient = 0.0f;
+				//zOrient = 0.0f;
 			}
+
+			if(childEntry->anim->_inheritScale) childTransform->_scale = parentTransform->_scale;
 		}
 
 		gyMatPush();

@@ -78,6 +78,7 @@ namespace elysian {
 		GYVector3												_globalOffset = { 0.0f, 0.0f, 0.0f };
 		char													_name[ELYSIAN_ANIMATION_SEQUENCE_NAME_SIZE];
         bool                                                    _inheritSpeedMultiplier = false;
+		bool													_inheritScale	= true;
 	public:
 								ChildAnimation(const char* name);
 								~ChildAnimation(void);
@@ -86,6 +87,7 @@ namespace elysian {
 		const char*				getName(void);
 		void					setGlobalOffset(const float x, const float y, const float z);
         void                    setInheritSpeedMultiplier(const bool val);
+		void					setInheritScale(const bool val);
 	};
 
 	class ChildAnimationAttrib {
@@ -200,6 +202,7 @@ namespace elysian {
 	inline bool ChildAnimationSequence::getLinearInterpolation(void) const { return _linearInterpolation; }
 
 	inline ChildAnimation::ChildAnimation(const char* name) { strcpy(_name, name); }
+	inline void ChildAnimation::setInheritScale(const bool val) { _inheritScale = val; }
 	inline const char* ChildAnimation::getName(void) { return _name; }
 	inline ChildAnimationSequence* ChildAnimation::addSequence(const char *name) {
 		ChildAnimationSequence*const seq = new ChildAnimationSequence(name);

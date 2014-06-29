@@ -408,6 +408,7 @@ OOLUA_PROXY(ChildAnimation)
 	OOLUA_MEM_FUNC(ChildAnimationSequence*, addSequence, const char*)
 	OOLUA_MEM_FUNC(void, setGlobalOffset, float, float, float)
     OOLUA_MEM_FUNC(void, setInheritSpeedMultiplier, bool)
+	OOLUA_MEM_FUNC(void, setInheritScale, bool)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ChildAnimationAttrib)
@@ -1017,6 +1018,9 @@ OOLUA_PROXY(GuiSystem)
 	OOLUA_MEM_FUNC(void, addCombatText, const char*, GYColor4, const GYVector2&, const GYVector2&)
 	OOLUA_MEM_FUNC(void, setFgMenuWidget, cpp_in_p<MenuWidget*>)
 	OOLUA_MEM_FUNC(void, clearFgMenuWidget)
+	OOLUA_MEM_FUNC(void, setBgMenuWidget, cpp_in_p<MenuWidget*>)
+	OOLUA_MEM_FUNC(void, clearBgMenuWidget)
+	OOLUA_MEM_FUNC(void, setClearColor)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CameraKeyFrame)

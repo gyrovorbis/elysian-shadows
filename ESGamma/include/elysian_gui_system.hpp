@@ -98,6 +98,8 @@ namespace elysian {
 
 		GuiSystem(void);
 
+		void setClearColor(const GYColor4 color);
+
 		bool loadAssets(void);
 		void update(void);
 		//void Render(void);
@@ -142,6 +144,8 @@ namespace elysian {
 	inline void GuiSystem::clearFgMenuWidget(void) { _fgMenuWidget = nullptr; }
 	inline void GuiSystem::setBgMenuWidget(MenuWidget * const widget) { _bgMenuWidget = widget; }
 	inline void GuiSystem::clearBgMenuWidget(void) { _bgMenuWidget = nullptr; }
+
+	inline void GuiSystem::setClearColor(const GYColor4 color) { gyVidClearColor(color); }
 
 }
 

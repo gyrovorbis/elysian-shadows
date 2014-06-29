@@ -52,7 +52,7 @@ namespace elysian {
 			gyVidMaterialBind(_material);
 
 			//Why aren't we just pushing another matrix to handle this?
-			if(_spriteAttrib->_tex && _frame != -1) {
+		/*	if(_spriteAttrib->_tex && _frame != -1) {
 				const GYVector2 *size = (GYVector2*)&_entity->transform._size;
 				const GYTexCoordFrame *fr = &_spriteAttrib->_tex->_coord->texCoord[_frame];
 				const float locX = ((float) fr->spriteWidth / size->x)/2.0f;
@@ -69,7 +69,7 @@ namespace elysian {
 				localVerts[3].x = locX + _offset.x;
 				localVerts[3].y = locY + _offset.y;
 			//	localVerts[0].z = -locY + _offset.y;
-			}
+			}*/
 
 			//branch assumes shit will usually be depth buffered
 			if(getEntity()->getNormalType() != NORMAL_FRONT) {
