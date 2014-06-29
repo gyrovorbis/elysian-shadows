@@ -1020,7 +1020,7 @@ OOLUA_PROXY(GuiSystem)
 	OOLUA_MEM_FUNC(void, clearFgMenuWidget)
 	OOLUA_MEM_FUNC(void, setBgMenuWidget, cpp_in_p<MenuWidget*>)
 	OOLUA_MEM_FUNC(void, clearBgMenuWidget)
-	OOLUA_MEM_FUNC(void, setClearColor)
+	OOLUA_MEM_FUNC(void, setClearColor, GYColor4)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CameraKeyFrame)

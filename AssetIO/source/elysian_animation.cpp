@@ -22,10 +22,14 @@ void Animation::addChildEntity(Entity*const entity, const char*animName) {
 
 	entry.entity		= entity;
 	entry.anim			= _childAttrib->getAnimation(animName);
-	if(entry.anim)
-		entry.seq			= entry.anim->getSequence(_currentSequence->getName());
-	if(entry.seq)
-		entry.frame		= entry.seq->getFrame(_currentFrame);
+	assert(entry.anim);
+	entry.seq			= (entry.anim && _currentSequence)?
+								entry.anim->getSequence(_currentSequence->getName()) :
+								nullptr;
+	entry.frame			= (entry.seq)?
+								entry.seq->getFrame(_currentFrame) :
+								nullptr;
+
 	entry.frIndex		= _currentFrame;
 }
 
@@ -179,8 +183,6 @@ bool Animation::removeFromLevel(void) {
 void Animation::update(const float deltaTime) {
 	if(!_isActive || !_currentSequence) return;
 
-	_updateChildren();
-
 	_timer += deltaTime * _speedMultiplier;
 	if(_timer >= _currentSequence->_frames[_currentFrame].duration) {
         if(_currentSequence->_frames.size() <= ++_currentFrame) {
@@ -205,31 +207,37 @@ void Animation::update(const float deltaTime) {
 		_entity->getRenderable()->setOffset(offset);
 
 	}
+
+	_updateChildren();
 }
 
 void Animation::playAnimation(const char *name, EventMonitor*const monitor) {
 
     //assert((_attrib->_sequences.find(name) != _attrib->_sequences.end()));
     if((_attrib->_sequences.find(name) == _attrib->_sequences.end())) return;
-    if(_isActive && _attrib->_sequences[name] == _currentSequence) return;
+
+	if(!_isActive || _attrib->_sequences[name] != _currentSequence) {
+
+		_currentFrame = 0;
+		_timer = 0.0f;
+		_currentSequence = _attrib->_sequences[name];
+		_isActive = true;
+		_monitor = monitor;
+
+		//Begin initial animation frame immediately!
+		_entity->getRenderable()->setOffset(_currentSequence->_frames[0].offset);
+		_entity->getRenderable()->setFrame(_currentSequence->_frames[0].spriteFrame);
+		_entity->getRenderable()->setTexOrient(_currentSequence->_frames[0].texOrient);
+		if(monitor) monitor->onStart();
+	}
 
 	if(_children) {
 		for(auto it = _children->begin(); it < _children->end(); ++it) {
 			if((*it).entity->getAnimation()) (*it).entity->getAnimation()->playAnimation(name);
 		}
+		//_updateChildren();
 	}
 
-	_currentFrame = 0;
-	_timer = 0.0f;
-	_currentSequence = _attrib->_sequences[name];
-	_isActive = true;
-    _monitor = monitor;
-
-	//Begin initial animation frame immediately!
-	_entity->getRenderable()->setOffset(_currentSequence->_frames[0].offset);
-	_entity->getRenderable()->setFrame(_currentSequence->_frames[0].spriteFrame);
-	_entity->getRenderable()->setTexOrient(_currentSequence->_frames[0].texOrient);
-    if(monitor) monitor->onStart();
 }
 
 void Animation::stopAnimation(void) {
