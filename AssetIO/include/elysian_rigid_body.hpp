@@ -39,10 +39,7 @@ namespace elysian {
 		virtual float				getOrientation(void) const			= 0;
 		virtual const GYVector3&	getPosition(void) const				= 0;
 		virtual const GYStatic*		getStaticAttrib(void) const			= 0;
-		//virtual void		integrate(const float deltaTime)	= 0; nevermind, fuck it.
-
-        bool                    	getOnGround(void) const;
-        void                        setOnGround(const bool val);
+        virtual bool               	getRestingOnBody(void) const        = 0;
 
         void                        applyZForce(const GYVector3& force);
 		void						applyForce(const GYVector3& force);
@@ -53,9 +50,12 @@ namespace elysian {
 		void						clearKinetic(void);
 	};
 
+//DELETE ME
+    class CollisionSystem;
 
 	class RigidBody: public Component, public ForceTarget {
 		friend class RigidBodySystem;
+        friend class CollisionSystem;
 	private:
 		float				_tileDamping	= 1.0f;
 		bool				_active			= true;
@@ -81,6 +81,7 @@ namespace elysian {
 		virtual float				getOrientation(void) const override;
 		virtual const GYVector3&	getPosition(void) const override;
 		virtual const GYStatic*		getStaticAttrib(void) const override;
+        virtual bool                getRestingOnBody(void) const override;
 
 		void				setActive(const bool val);
 		void				setTileDamping(const float factor);
@@ -105,9 +106,11 @@ namespace elysian {
     inline GYVector3 ForceTarget::getVelocity(void) const { return vel; }
 	inline void	ForceTarget::setVelocity(const GYVector3& _vel) { vel = _vel; }
 	inline void ForceTarget::setRotation(const float rotation) { rot = rotation; }
+#if 0
     inline bool ForceTarget::getOnGround(void) const { return (bool)resting; }
     inline void ForceTarget::setOnGround(const bool val) { resting = (int)val; }
-	inline void ForceTarget::clearKinetic(void) {
+#endif
+    inline void ForceTarget::clearKinetic(void) {
 		GYKinetic* kinetic = static_cast<GYKinetic*>(this);
 		memset(kinetic, 0, sizeof(GYKinetic));
 	}

@@ -161,7 +161,7 @@ void GuiSystem::_renderDebugOverlay(void) {
 						getPartySys()->getPartyLeader()->transform._pos.y,
 						getPartySys()->getPartyLeader()->transform._pos.z);
         _printDebugLine("player.resting:", "%d",
-                        getPartySys()->getPartyLeader()->getRigidBody()->getOnGround());
+                        getPartySys()->getPartyLeader()->getCollidable()->getRestingOnBody());
         _printDebugLine("player.contacts:", "%d",
                         getPartySys()->getPartyLeader()->getCollidable()->getContactCount());
 	}

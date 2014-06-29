@@ -75,12 +75,14 @@ namespace elysian {
         unsigned                animRow;
 		int						zIndex;
 		bool					flat;
+        bool                    resting;
 
 		//reimplemented from ForceTarget
         virtual TARGET_TYPE         getTargetType(void)	const override;
         virtual float               getOrientation(void) const override;
         virtual const GYVector3&    getPosition(void) const override;
         virtual const GYStatic*     getStaticAttrib(void) const override;
+        virtual bool                getRestingOnBody(void) const override;
 
         void                        integrate(const float deltaTime);
 	};

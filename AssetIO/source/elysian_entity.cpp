@@ -259,7 +259,7 @@ void Entity::renderShadowVolume(void) {
 #ifdef ELYSIAN_ENGINE
 void Entity::move(const GYVector2& dist) {
     if(_character) _character->move(dist);
-	else gyVec2AddAccum((GYVector2*)&transform._pos, &dist);
+    else gyVec2AddAccum((GYVector2*)&transform._pos, &dist);
 }
 #endif
 

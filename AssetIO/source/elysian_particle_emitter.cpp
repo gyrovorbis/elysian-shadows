@@ -22,9 +22,11 @@ auto Particle::getTargetType(void)	const -> TARGET_TYPE { return TARGET_PARTICLE
 float Particle::getOrientation(void) const { return orientation; }
 const GYVector3& Particle::getPosition(void) const { return position; }
 const GYStatic* Particle::getStaticAttrib(void) const { return static_cast<const GYStatic*>(attrib); }
+bool Particle::getRestingOnBody(void) const { return resting; }
 
 void Particle::integrate(const float deltaTime) {
-	gyIntegrate(static_cast<GYKinetic*>(this),
+    if(!resting)
+        gyIntegrate(static_cast<GYKinetic*>(this),
 				attrib,
 				deltaTime,
 				&position,
@@ -44,6 +46,7 @@ void ParticleEmitterInternals::emitFromPointInDir(const GYVector3& pos, const GY
 
 		part->clearKinetic();
 
+        part->resting = false;
 		part->attrib = _attrib;
 		part->flat = (rand()%2 == 1);
 		part->position.x = pos.x + ((rand() % 6) - 3);
@@ -140,6 +143,7 @@ void ParticleEmitterInternals::update(const CameraState*const cam, const float d
 			(*it).integrate(deltaTime);
 		} else if(_attrib->_stick){
 			(*it).position.z = ZCoordConstants::mapBase+1;
+            (*it).resting = true;
 		} else { //we don't stick
 			_pool.remove(it);
 		}

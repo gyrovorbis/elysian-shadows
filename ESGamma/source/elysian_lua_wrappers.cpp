@@ -430,7 +430,8 @@ EXPORT_OOLUA_FUNCTIONS_2_CONST(Character,
 							   isFacing)
 
 OOLUA_EXPORT_FUNCTIONS(CharacterSystem,
-					   walkToWayPoint)
+                       walkToWayPoint,
+                       moveToWayPoint)
 OOLUA_EXPORT_FUNCTIONS_CONST(CharacterSystem)
 
 EXPORT_OOLUA_FUNCTIONS_6_NON_CONST(Warp,

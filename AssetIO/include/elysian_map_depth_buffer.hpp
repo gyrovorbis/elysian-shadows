@@ -9,18 +9,18 @@
 #include "elysian_light_system.hpp"
 
 //Maximum elevation height an object can have
-#define ELYSIAN_DEPTH_BUFFER_OBJECT_ELEVATION_MAX 15
+#define ELYSIAN_DEPTH_BUFFER_OBJECT_ELEVATION_MAX 31
 //Objects have integer zCoords, force Entities to floats to prevent duplicate z
 #define ELYSIAN_DEPTH_BUFFER_ENTITY_OBJECT_MIN_Y_OFFSET 0.001f
 //Applied to every entity at the same buffer index to prevent duplicate z
 #define ELYSIAN_DEPTH_BUFFER_ENTITY_ENTITY_MIN_Z_OFFSET 0.001f
 //This needs to be at least as tall as the rendered map area? Not really?
-#define ELYSIAN_DEPTH_BUFFER_HEIGHT ELYSIAN_AREA_MAP_HEIGHT
+#define ELYSIAN_DEPTH_BUFFER_HEIGHT (ELYSIAN_AREA_MAP_HEIGHT+ELYSIAN_DEPTH_BUFFER_OBJECT_ELEVATION_MAX)
 //This needs to be at LEAST as wide as the rendered map area? Not really?
 #if GYRO_PLATFORM == GYRO_PLATFORM_DC
 #   define ELYSIAN_DEPTH_BUFFER_OBJECT_WIDTH 100
 #else
-#   define ELYSIAN_DEPTH_BUFFER_OBJECT_WIDTH ELYSIAN_AREA_MAP_WIDTH*3
+#   define ELYSIAN_DEPTH_BUFFER_OBJECT_WIDTH ELYSIAN_AREA_MAP_WIDTH*30
 #endif
 //Guess this could be a bit smaller? Maybe?
 #define ELYSIAN_DEPTH_BUFFER_ENTITY_WIDTH 100

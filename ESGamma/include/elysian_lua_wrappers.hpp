@@ -591,7 +591,8 @@ OOLUA_TAGS (
 	No_public_constructors,
 	No_public_destructor
 )
-OOLUA_MEM_FUNC(void, walkToWayPoint, Character*, float, float, EventMonitor*)
+OOLUA_MEM_FUNC(void, walkToWayPoint, Entity*, float, float, EventMonitor*)
+OOLUA_MEM_FUNC(void, moveToWayPoint, Entity*, float, float, float, EventMonitor*)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Warp, Component)

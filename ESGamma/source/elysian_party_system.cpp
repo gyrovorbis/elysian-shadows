@@ -184,12 +184,12 @@ void PartySystem::processInput(const GameInput &input) {
 
 	_footStepTimer += getTimerSys()->getDeltaTime();
 	if(_wasOnGround) {
-		if(!entity->getRigidBody()->getOnGround()) {
+        if(!entity->getCollidable()->getRestingOnBody()) {
 			getAudioSys()->setSfxChannelGain(0, 0.0f);
 			_wasOnGround = false;
 		}
 	} else {
-		if(entity->getRigidBody()->getOnGround()) {
+        if(entity->getCollidable()->getRestingOnBody()) {
 			getAudioSys()->setSfxChannelGain(0, 1.0f);
 			_wasOnGround = true;
 		}

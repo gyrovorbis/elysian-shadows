@@ -176,7 +176,7 @@ void CollisionSystem::renderTileColliders(void) const {
 	unsigned playerElev = getPartySys()->getPartyLeader()->getElev();
 	Collidable &col = *getPartySys()->getPartyLeader()->getCollidable();
 
-	gyVidTexBind(NULL);
+    gyVidTexBind(nullptr);
 	gyVidAlphaLevel(GY_ALPHA_FULL);
 	getMapSys()->getOnscreenTileRegion(startX, startY, endX, endY);
 	for(unsigned y = startY; y <= endY; ++y) {
@@ -347,10 +347,73 @@ void CollisionSystem::detectCollisions(void) {
 
 	for(i = 0; i < _curArea->collidables.size(); ++i) {
 		if(!_curArea->collidables[i]->_active) continue;
+       // _detectEntityTileZCollisionCoarse(*_curArea->collidables[i]);
 		detectEntityCollision(i);
-		if(_curArea->collidables[i]->getAttrib()->getFlags()->checkAgainst & CollisionFlags::TILE)
-			_detectEntityTileCollisionCoarse(*_curArea->collidables[i]);
+        if(_curArea->collidables[i]->getAttrib()->getFlags()->checkAgainst & CollisionFlags::TILE) {
+            _detectEntityTileCollisionCoarse(*_curArea->collidables[i]);
+        }
 	} 
+}
+
+void CollisionSystem::_detectEntityTileZCollisionCoarse(Collidable &collidable) {
+#if 0
+    GYVector3 worldPos = collidable.getCenterWorldPos();
+    float zTop = 0.0f;
+    bool found = false;
+
+    const unsigned elev = /*(worldPos.z == 0.0f)? 0 :*/ (worldPos.z)/32;
+    float zOffset = worldPos.z - elev*32.0f;
+    worldPos.y += 32.0f + zOffset;
+    /*it->getEntity()->getCollidable()->getAttrib()->getRelSize().y*
+            it->getEntity()->transform._size.y * it->getEntity()->transform._scale.y;*/
+
+
+        for(int i = 0; i < 3; ++i) {
+            for(unsigned j = 0; j < 1; ++j) {
+                //if(found) break;
+
+            TileEntry entry = getCurArea()->getTileEntry(i, (worldPos.x+16.0f)/32, (worldPos.y)/32/*+elev*/-1/*-1*/);
+
+
+            //if(!(j == 0 && entry.getNormal()) && !(j == 0 && !entry.getNormal())) {
+
+
+                if(getCurLevel()->getTile(entry.getIndex())->standOn) {
+
+                    if(entry.getNormal() && ((int)worldPos.y+16)/32 > ((int)worldPos.y/32)) continue;
+
+
+                    float newTop = (entry.getElev()*32 + (entry.getNormal()? 32.0f : 0.0f) );
+
+
+                    if(newTop > zTop && (fabs(newTop-worldPos.z) <= ELYSIAN_COLLISION_CONTACT_Z_DEPTH_MAX)) {
+                        zTop = newTop;
+                        //found = true;
+                    }
+                }
+            //}
+            }
+
+        }
+
+        if((collidable.getEntity()->transform._pos.z <= zTop)) {
+            _contactPool[_contactAmount]._bodyA = &collidable;
+            _contactPool[_contactAmount].staticAttrib[0] = collidable.getAttrib()->getStaticAttrib();
+            _contactPool[_contactAmount].staticAttrib[1] = nullptr;
+            _contactPool[_contactAmount]._bodyB = nullptr;
+            _contactPool[_contactAmount]._eventMonitorMask = 0;
+            _contactPool[_contactAmount].depth = 0.0f;
+            _contactPool[_contactAmount].setZDepth(worldPos.z-zTop-1.0f);
+            _contactPool[_contactAmount++]._resolvePen = collidable._resolvePen;
+            ++collidable._contactCount;
+            if(_contactAmount == ELYSIAN_COLLISION_CONTACT_LIST_SIZE) assert(0);
+           // collidable.update();
+        }
+
+
+    //}
+
+#endif
 }
 
 //Looks correct algorithmically.
@@ -492,7 +555,7 @@ inline void CollisionSystem::_detectCollidableColliderCollision(Collidable &coll
 		_contactPool[_contactAmount]._bodyA = &collidable;
 		_contactPool[_contactAmount]._bodyB = nullptr;
 		_contactPool[_contactAmount]._eventMonitorMask = 0;
-        _contactPool[_contactAmount].setZDepth(32.0f);
+        _contactPool[_contactAmount].setZDepth(ELYSIAN_COLLISION_CONTACT_Z_DEPTH_MAX+1.0f);
 		_contactPool[_contactAmount++]._resolvePen = collidable._resolvePen;
 		++collidable._contactCount;
         if(_contactAmount == ELYSIAN_COLLISION_CONTACT_LIST_SIZE) assert(0);
@@ -504,16 +567,13 @@ void CollisionSystem::_detectEntityTileCollisionFine(Collidable &collidable, con
 	GYBoxCollider boxCollider;
 	TileEntry tileEntry[3];
 	Tile::COLLIDER_TYPE colType = Tile::COLLIDER_NONE;
-	bool isTileAtElev = false;
 
 	tileEntry[0] = _curArea->getL1TileEntry(x, y);
-	tileEntry[1] = _curArea->getL2TileEntry(x, y);
+    tileEntry[1] = _curArea->getL2TileEntry(x, y);
 	tileEntry[2] = _curArea->getL3TileEntry(x, y);
 
 		//Iterate over tile layers and combine their colliders
 		for(unsigned i = 0; i < 3; ++i) {
-			//Only look at colliders on the entity's z-plane
-		//	unsigned EntityElev = collidable.getEntity()->getElev();
 
 	#if 0
 			if(tileEntry[i].getElev() > EntityElev + 1 ||
@@ -527,7 +587,6 @@ void CollisionSystem::_detectEntityTileCollisionFine(Collidable &collidable, con
 			colType2 = Tile::reorientCollider(colType2, tileEntry[i].getOrient());
 			//Combine and accumulate
 			colType = Tile::combineColliders(colType, colType2);
-			if(tileEntry[i].getElev() == elev) isTileAtElev = true;
 		}
 
 		//Do not allow collider to move to location without a tile at its elevation
@@ -538,8 +597,8 @@ void CollisionSystem::_detectEntityTileCollisionFine(Collidable &collidable, con
 		boxCollider.collider.type = GY_COLLIDER_AABB;
 
 		//SKETCHY!!!
-		boxCollider.collider.worldPos.x = x*32.0f;
-		boxCollider.collider.worldPos.y = y*32.0f;
+        //boxCollider.collider.worldPos.x = x*32.0f;
+        //boxCollider.collider.worldPos.y = y*32.0f;
 
 		switch(colType) {
 		case Tile::COLLIDER_NONE:
@@ -548,61 +607,61 @@ void CollisionSystem::_detectEntityTileCollisionFine(Collidable &collidable, con
 			gyMatPush();
 			_applyTileColliderTransform(Tile::COLLIDER_HALF_N);
 			gyCalcBoxWorldVert(&boxCollider);
-			_detectCollidableColliderCollision(collidable, boxCollider.collider);
+            _detectCollidableColliderCollision(collidable, boxCollider.collider);
 			gyMatPop();
 			_applyTileColliderTransform(Tile::COLLIDER_QUAD_SE);
 			gyCalcBoxWorldVert(&boxCollider);
-			_detectCollidableColliderCollision(collidable, boxCollider.collider);
+            _detectCollidableColliderCollision(collidable, boxCollider.collider);
 			break;
 		case Tile::COLLIDER_L_NW:
 			gyMatPush();
 			_applyTileColliderTransform(Tile::COLLIDER_HALF_N);
 			gyCalcBoxWorldVert(&boxCollider);
-			_detectCollidableColliderCollision(collidable, boxCollider.collider);
+            _detectCollidableColliderCollision(collidable, boxCollider.collider);
 			gyMatPop();
 			_applyTileColliderTransform(Tile::COLLIDER_QUAD_SW);
 			gyCalcBoxWorldVert(&boxCollider);
-			_detectCollidableColliderCollision(collidable, boxCollider.collider);
+            _detectCollidableColliderCollision(collidable, boxCollider.collider);
 			break;
 		case Tile::COLLIDER_L_SW:
 			gyMatPush();
 			_applyTileColliderTransform(Tile::COLLIDER_HALF_S);
 			gyCalcBoxWorldVert(&boxCollider);
-			_detectCollidableColliderCollision(collidable, boxCollider.collider);
+            _detectCollidableColliderCollision(collidable, boxCollider.collider);
 			gyMatPop();
 			_applyTileColliderTransform(Tile::COLLIDER_QUAD_NW);
 			gyCalcBoxWorldVert(&boxCollider);
-			_detectCollidableColliderCollision(collidable, boxCollider.collider);
+            _detectCollidableColliderCollision(collidable, boxCollider.collider);
 			break;
 		case Tile::COLLIDER_L_SE:
 			gyMatPush();
 			_applyTileColliderTransform(Tile::COLLIDER_HALF_S);
 			gyCalcBoxWorldVert(&boxCollider);
-			_detectCollidableColliderCollision(collidable, boxCollider.collider);
+            _detectCollidableColliderCollision(collidable, boxCollider.collider);
 			gyMatPop();
 			_applyTileColliderTransform(Tile::COLLIDER_QUAD_NE);
 			gyCalcBoxWorldVert(&boxCollider);
-			_detectCollidableColliderCollision(collidable, boxCollider.collider);
+            _detectCollidableColliderCollision(collidable, boxCollider.collider);
 			break;
 		case Tile::COLLIDER_QUADS_SE_NW:
 			gyMatPush();
 			_applyTileColliderTransform(Tile::COLLIDER_QUAD_SE);
 			gyCalcBoxWorldVert(&boxCollider);
-			_detectCollidableColliderCollision(collidable, boxCollider.collider);
+            _detectCollidableColliderCollision(collidable, boxCollider.collider);
 			gyMatPop();
 			_applyTileColliderTransform(Tile::COLLIDER_QUAD_NW);
 			gyCalcBoxWorldVert(&boxCollider);
-			_detectCollidableColliderCollision(collidable, boxCollider.collider);
+            _detectCollidableColliderCollision(collidable, boxCollider.collider);
 			break;
 		case Tile::COLLIDER_QUADS_SW_NE:
 			gyMatPush();
 			_applyTileColliderTransform(Tile::COLLIDER_QUAD_SW);
 			gyCalcBoxWorldVert(&boxCollider);
-			_detectCollidableColliderCollision(collidable, boxCollider.collider);
+            _detectCollidableColliderCollision(collidable, boxCollider.collider);
 			gyMatPop();
 			_applyTileColliderTransform(Tile::COLLIDER_QUAD_NE);
 			gyCalcBoxWorldVert(&boxCollider);
-			_detectCollidableColliderCollision(collidable, boxCollider.collider);
+            _detectCollidableColliderCollision(collidable, boxCollider.collider);
 			break;
 		case Tile::COLLIDER_FULL:
 		case Tile::COLLIDER_HALF_S:
@@ -615,7 +674,7 @@ void CollisionSystem::_detectEntityTileCollisionFine(Collidable &collidable, con
 		case Tile::COLLIDER_QUAD_SW:
 			_applyTileColliderTransform(colType);
 			gyCalcBoxWorldVert(&boxCollider);
-			_detectCollidableColliderCollision(collidable, boxCollider.collider);
+            _detectCollidableColliderCollision(collidable, boxCollider.collider);
 			break;
 		default:
 			break;
@@ -782,7 +841,7 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable, c
 					gyMatLoadIdentity();
 					//gyMatTranslateScale(x*32.0f, y*32.0f, 5.0f, 32.0f, 32.0f, 32.0f);
                     gyMatTranslateScale(x*32.0f, (y+(elev-startElev))*32.0f-zOffset, 5.0f, 32.0f, 32.0f, 32.0f);
-					_detectEntityTileCollisionFine(collidable, x, y, elev);
+                    _detectEntityTileCollisionFine(collidable, x, y, elev);
 					gyMatPop();
 				}
 			}
@@ -811,12 +870,7 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable, c
 
 bool CollisionSystem::resolvePenetration(void) {
 
-	GYVector2 posDelta[2];
-	//GYVector2 velDelta[2]
-	GYVector2 rotDir[2]; //Apparently rotDir isn't really used? What in fuck's cunt? 
-	float orientDelta[2];
-	//float rotDelta[2];
-	GYVector2 cp;
+
 	//float deltaTime = getTimerSys()->getDeltaTime();
 	unsigned i, j;
 
@@ -831,19 +885,35 @@ bool CollisionSystem::resolvePenetration(void) {
 	unsigned iter;
 	for(iter = 0; iter < ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS; ++iter) {
 
-		float deepest = -1.0f;
-		int deepestIndex = -1;
+        float   deepest         = -1.0f;
+        float   deepestZ        = 0.0f;
+        int     deepestIndex    = -1;
+        int     deepestZIndex   = -1;
 
 		for(j = 0; j < _contactAmount; ++j) {
 			//reevaluate penetration depth
+            float fabsZDepth = fabs(_contactPool[j]._zDepth);
+            if(fabsZDepth > deepestZ && fabsZDepth <= ELYSIAN_COLLISION_CONTACT_Z_DEPTH_MAX) {
+                deepestZ = fabsZDepth;
+                deepestZIndex = j;
+            }
 			if(_contactPool[j].depth > deepest && _contactPool[j]._resolvePen) {
 				deepestIndex = j;
 				deepest = _contactPool[j].depth;
 			}
 		}
 		
-		if(deepest <= ELYSIAN_COLLISION_CONTACT_PENETRATION_EPSILON) break; //EPSILAAAAWN
-		if(deepestIndex == -1) break; //no more candidates for resolution
+        if(deepestZ > ELYSIAN_COLLISION_CONTACT_Z_DEPTH_EPSILON) {
+            _resolveZPenetration(&_contactPool[deepestZIndex]);
+        } else if(deepest > ELYSIAN_COLLISION_CONTACT_PENETRATION_EPSILON) {
+            _resolveXYPenetration(&_contactPool[deepestIndex]);
+        } else {
+            break; //shit has all been resolved!
+        }
+
+#if 0
+        //if(deepest <= ELYSIAN_COLLISION_CONTACT_PENETRATION_EPSILON) break; //EPSILAAAAWN
+        //if(deepestIndex == -1) break; //no more candidates for resolution
 		//this can probably be lowered quite a bit once point of contact is fucking correct
 		//Debug::printf(Debug::VERBOSE, "-------------POSITION ITERATION - %d-------", iter);
 
@@ -869,120 +939,283 @@ bool CollisionSystem::resolvePenetration(void) {
 
 
 		//printf("ABOUT TO RESOLVE DEEPEST - %d, %f", deep
-		gyResolvePenetration(&_contactPool[deepestIndex], posDelta, rotDir, orientDelta); //maybe must update its own shit
 
-        CollisionContact *con = &_contactPool[deepestIndex];
-
-
-/**** TAKEN FROM C PENETRATION RESOLUTION *****/
-        auto applyDamp = [](GYVector2 delta[2], CollisionContact* contact) {
-            const GYVector2* damping[2] = {
-                (const GYVector2*)&contact->_bodyA->getAttrib()->getStaticAttrib()->damping,
-                (const GYVector2*)((contact->_bodyB)? &contact->_bodyB->getAttrib()->getStaticAttrib()->damping : nullptr)
-            };
-            unsigned fucked[2] = {0};
-            unsigned i;
-
-            for(i = 0; i < 2; ++i) {
-                if(!damping[i]) break;
-                unsigned n = !i;
-
-                //Try to force the other body to resolve the X penetration
-                if(damping[i]->x == 0.0f) {
-                   ++fucked[0];
-                    if(damping[n]) delta[n].x -= delta[i].x;
-                    delta[i].x = 0.0f;
-                }
-
-                //Try to force the other body to resolve the Y penetration
-                if(damping[i]->y == 0.0f) {
-                   ++fucked[1];
-                    if(damping[n]) delta[n].y -= delta[i].y;
-                    delta[i].y = 0.0f;
-                }
-            }
-
-            GYVector2 newNormal = contact->normal;
-
-            //Can't move in the X direction
-            if(fucked[0] == i) {
-                newNormal.x = 0.0f;
-            }
-            //Can't move in the Y direction
-            if(fucked[1] == i) {
-                newNormal.y = 0.0f;
-            }
-
-            contact->depth = gyVec2DotProd(&contact->normal, &newNormal) * contact->depth;
-            contact->normal = newNormal;
-
-        };
-
-        applyDamp(posDelta, con);
-
-        gyVec2AddAccum((GYVector2*)&con->_bodyA->getEntity()->transform._pos, &posDelta[0]);
-        //con->_bodyA->getEntity()->move(posDelta[0]);
-		con->_bodyA->getEntity()->transform._orientZ += orientDelta[0];
-
-		if(con->staticAttrib[1]) {
-            //applyDamp(dampedDelta, posDelta[1], con->_bodyB->getAttrib()->getStaticAttrib()->damping);
-            gyVec2AddAccum((GYVector2*)&con->_bodyB->getEntity()->transform._pos, &posDelta[1]);
-            //con->_bodyB->getEntity()->move(posDelta[1]);
-			con->_bodyB->getEntity()->transform._orientZ += orientDelta[1];
-		}
-		
-/**** /TAKEN FROM C PENETRATION RESOLUTION *****/
-
-		//printf("pen - %f\n", _conPool[deepestIndex]._depth);
-		//printf("posDelta[0] = <%f, %f> posDelta[1] = <%f, %f>\n", posDelta[0].x, posDelta[0].y, posDelta[1].x, posDelta[1].y);
-		
-		//update ALL contacts affected by this resolution
-		for(j = 0; j < _contactAmount; ++j) {
-			if(_contactPool[j].collider[0] == _contactPool[deepestIndex].collider[0]) {
-				gyVec2RotOrigin(&cp, &_contactPool[j].objPos[0], orientDelta[0]);
-				gyVec2SubFrom(&cp, &_contactPool[j].objPos[0]);
-				gyVec2AddAccum(&cp, &posDelta[0]);
-				//printf("0 - 0, cp = <%f, %f>\n", cp.x, cp.y);
-				_contactPool[j].depth -= gyVec2DotProd(&cp, &_contactPool[j].normal);
-				//printf("depth - %f\n", _contactPool[j].depth);
-				
-			}
-			else if(_contactPool[j].collider[0] == _contactPool[deepestIndex].collider[1]) {
-				gyVec2RotOrigin(&cp, &_contactPool[j].objPos[0], orientDelta[1]);
-				gyVec2SubFrom(&cp, &_contactPool[j].objPos[0]);
-				gyVec2AddAccum(&cp, &posDelta[1]);
-				//printf("0 - 1, cp = <%f, %f>\n", cp.x, cp.y);
-				_contactPool[j].depth -= gyVec2DotProd(&cp, &_contactPool[j].normal);
-				//printf("depth - %f\n", _contactPool[j].depth);
-			}
-			
-			//if(THERE IS EVEN A COLINDEX[1]) {
-			if(_contactPool[j].collider[1] && _contactPool[j].collider[1] == _contactPool[deepestIndex].collider[0]) {
-				gyVec2RotOrigin(&cp, &_contactPool[j].objPos[1], orientDelta[0]);
-				gyVec2SubFrom(&cp, &_contactPool[j].objPos[1]);
-				gyVec2AddAccum(&cp, &posDelta[0]);
-				//printf("1 - 0, cp = <%f, %f>\n", cp.x, cp.y);
-				_contactPool[j].depth += gyVec2DotProd(&cp, &_contactPool[j].normal);
-				//printf("depth - %f\n", _contactPool[j].depth);
-			}
-			else if(_contactPool[j].collider[1] && _contactPool[j].collider[1] == _contactPool[deepestIndex].collider[1]) {
-				gyVec2RotOrigin(&cp, &_contactPool[j].objPos[1], orientDelta[1]);
-				gyVec2SubFrom(&cp, &_contactPool[j].objPos[1]);
-				gyVec2AddAccum(&cp, &posDelta[1]);
-				//printf("1 - 1, cp = <%f, %f>\n", cp.x, cp.y);
-				_contactPool[j].depth += gyVec2DotProd(&cp, &_contactPool[j].normal);
-				//printf("depth - %f\n", _contactPool[j].depth);
-				
-			}
-		}
+        _resolveXYPenetration(&_contactPool[deepestIndex]);
+#endif
 	}
 
 	_conResIter = iter;
 
-//	if(iter == ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS) Debug::printf(Debug::CRITICAL, "OUT OF PENETRATION ITERATIONS!", iter);
+    if(iter == ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS) Debug::printf(Debug::CRITICAL, "OUT OF PENETRATION ITERATIONS!", iter);
 
 	return true; 
 }
+
+void CollisionSystem::_resolveZPenetration(CollisionContact * const contact) {
+    Collidable* col[2], *newCol[2];
+    float totalInertia = 0.0f;
+    float deltaZ[2], linearInertia[2];
+    float coeff[2], newCoeff[2];
+    unsigned bodyToCol[2];
+   // GYCollider* collider[2];
+
+    if(!contact->_bodyB) {
+        contact->_zDepth = 0.0f;
+        return;
+    }
+
+    float zDepth = contact->getZDepth();
+
+    if(contact->getZDepth() > 0.0f) {
+        col[0] = contact->_bodyB;
+        col[1] = contact->_bodyA;
+        bodyToCol[0] = 1;
+        bodyToCol[1] = 0;
+        coeff[0] = -1.0f;
+        coeff[1] = 1.0f;
+    } else {
+        col[0] = contact->_bodyA;
+        col[1] = contact->_bodyB;
+        bodyToCol[0] = 0;
+        bodyToCol[1] = 1;
+        coeff[0] = 1.0f;
+        coeff[1] = -1.0f;
+    }
+
+    //zDepth = fabs(zDepth);
+
+    //Do NOT push shit out of contact! Push it to the edge, and let it chill!
+    if(zDepth > 0.0f) {
+        zDepth -= ELYSIAN_COLLISION_CONTACT_Z_DEPTH_EPSILON;
+    } else {
+        zDepth += ELYSIAN_COLLISION_CONTACT_Z_DEPTH_EPSILON;
+    }
+
+    totalInertia += linearInertia[0] = col[0]->getAttrib()->getStaticAttrib()->inverseMass;
+    totalInertia += linearInertia[1] = /*((col[1]->getStackedOnGround())? 0.0f :*/ col[1]->getAttrib()->getStaticAttrib()->inverseMass;
+    //ADD ROTATIONAL INERTIA HERE!?!?
+    totalInertia = 1.0f/totalInertia;
+
+    for(unsigned i = 0; i < 2; ++i) {
+        deltaZ[i] = zDepth * linearInertia[i] * totalInertia * coeff[i];
+        col[i]->getEntity()->transform._pos.z -= deltaZ[i];
+        col[i]->getEntity()->transform._pos.y += deltaZ[i];
+    }
+
+    GYVector3 vel = col[0]->getEntity()->getRigidBody()->getVelocity();
+
+    if(vel.z <= 0.0f) {
+    col[0]->setRestingOnBody(true);
+    if(col[1]->getStackedOnGround()) col[0]->setStackedOnGround(true);
+    }
+ /*   GYVector3 vel = col[0]->getEntity()->getRigidBody()->getVelocity();
+    vel.z = 0.0f;
+
+    if(vel.z < 0.0f) {
+    col[0]->getEntity()->getRigidBody()->setVelocity(vel);
+    col[0]->getEntity()->getRigidBody()->accel.z = 0.0f;
+}*/
+
+    //Update all contacts!
+    for(unsigned j = 0; j < _contactAmount; ++j) {
+        CollisionContact* adjContact = &_contactPool[j];
+        if(adjContact == contact) continue;
+#if 0
+        if(adjContact->_bodyA == contact->_bodyA) {
+
+
+        } else if(adjContact->_bodyB == contact->_bodyA) {
+
+        }
+
+
+        if(adjContact->_bodyB == contact->_bodyA) {
+
+        } else if(adjContact->_bodyB == contact->_bodyB) {
+
+        }
+
+#else
+        if(adjContact->getZDepth() > 0.0f) {
+            newCol[0] = adjContact->_bodyB;
+            newCol[1] = adjContact->_bodyA;
+            newCoeff[0] = -1.0f;
+            newCoeff[1] = 1.0f;
+        } else {
+            newCol[0] = adjContact->_bodyA;
+            newCol[1] = adjContact->_bodyB;
+            newCoeff[0] = 1.0f;
+            newCoeff[1] = -1.0f;
+        }
+
+      /*  for(unsigned k = 0; k < 2; ++k) {
+            for(unsigned l = 0; l < 2; ++l) {
+                if(newCol[k] == col[l]) {
+                    //if(k == l) contact->_zDepth += deltaZ[l];
+                    //else contact->_zDepth -= deltaZ[l];
+                    adjContact->_zDepth -= deltaZ[l] * coeff[k] * coeff[l];
+                }
+            }
+        }*/
+#if 0
+        if(adjContact->_bodyA == contact->_bodyA) {
+            adjContact->_zDepth -= deltaZ[bodyToCol[0]];
+        } else if(adjContact->_bodyA == contact->_bodyB) {
+            adjContact->_zDepth += deltaZ[bodyToCol[1]];
+        }
+
+        if(adjContact->_bodyB == contact->_bodyA) {
+            adjContact->_zDepth += deltaZ[bodyToCol[0]];
+        } else if(adjContact->_bodyB == contact->_bodyB) {
+            adjContact->_zDepth -= deltaZ[bodyToCol[1]];
+        }
+
+        if(newCol[1] == col[0]) {
+            /*if(!newCol[0]->getRestingOnBody())*/ newCol[0]->setRestingOnBody(col[0]->getRestingOnBody());
+            /*if(!newCol[0]->getStackedOnGround())*/ newCol[0]->setStackedOnGround(col[0]->getStackedOnGround());
+       }
+#endif
+
+
+#endif
+#if 0
+        if(newCol[0] == col[0]) {
+            adjContact->_zDepth += fabs(deltaZ[0]) * newCoeff[0];
+        } else if(newCol[0] == col[1]) {
+            adjContact->_zDepth += fabs(deltaZ[1]) * newCoeff[0];
+
+        }
+
+        if(newCol[1] == col[0]) {
+            adjContact->_zDepth += fabs(deltaZ[0]) * newCoeff[1];
+            newCol[0]->setRestingOnBody(col[0]->getRestingOnBody());
+            newCol[0]->setStackedOnGround(col[0]->getStackedOnGround());
+        } else if(newCol[1] == col[1]) {
+            adjContact->_zDepth += fabs(deltaZ[1]) * newCoeff[1];
+        }
+
+#endif
+    }
+
+   //contact->setResolveZ(true);
+    contact->_zDepth -= zDepth;
+    contact->depth = 0.0f;
+}
+
+void CollisionSystem::_resolveXYPenetration(CollisionContact * const con) {
+    GYVector2 posDelta[2];
+    //GYVector2 velDelta[2]
+    GYVector2 rotDir[2]; //Apparently rotDir isn't really used? What in fuck's cunt?
+    float orientDelta[2];
+    //float rotDelta[2];
+    GYVector2 cp;
+
+    auto applyDamp = [](GYVector2 delta[2], CollisionContact* _contact) {
+        const GYVector2* damping[2] = {
+            (const GYVector2*)&_contact->_bodyA->getAttrib()->getStaticAttrib()->damping,
+            (const GYVector2*)((_contact->_bodyB)? &_contact->_bodyB->getAttrib()->getStaticAttrib()->damping : nullptr)
+        };
+        unsigned fucked[2] = {0};
+        unsigned i;
+
+        for(i = 0; i < 2; ++i) {
+            if(!damping[i]) break;
+            unsigned n = !i;
+
+            //Try to force the other body to resolve the X penetration
+            if(damping[i]->x == 0.0f) {
+               ++fucked[0];
+                if(damping[n]) delta[n].x -= delta[i].x;
+                delta[i].x = 0.0f;
+            }
+
+            //Try to force the other body to resolve the Y penetration
+            if(damping[i]->y == 0.0f) {
+               ++fucked[1];
+                if(damping[n]) delta[n].y -= delta[i].y;
+                delta[i].y = 0.0f;
+            }
+        }
+
+        GYVector2 newNormal = _contact->normal;
+
+        //Can't move in the X direction
+        if(fucked[0] == i) {
+            newNormal.x = 0.0f;
+        }
+        //Can't move in the Y direction
+        if(fucked[1] == i) {
+            newNormal.y = 0.0f;
+        }
+
+        _contact->depth = gyVec2DotProd(&_contact->normal, &newNormal) * _contact->depth;
+        _contact->normal = newNormal;
+
+    };
+
+    gyResolvePenetration(con, posDelta, rotDir, orientDelta); //maybe must update its own shit
+
+    applyDamp(posDelta, con);
+
+    gyVec2AddAccum((GYVector2*)&con->_bodyA->getEntity()->transform._pos, &posDelta[0]);
+    //con->_bodyA->getEntity()->move(posDelta[0]);
+    con->_bodyA->getEntity()->transform._orientZ += orientDelta[0];
+
+    if(con->staticAttrib[1]) {
+        //applyDamp(dampedDelta, posDelta[1], con->_bodyB->getAttrib()->getStaticAttrib()->damping);
+        gyVec2AddAccum((GYVector2*)&con->_bodyB->getEntity()->transform._pos, &posDelta[1]);
+        //con->_bodyB->getEntity()->move(posDelta[1]);
+        con->_bodyB->getEntity()->transform._orientZ += orientDelta[1];
+    }
+
+/**** /TAKEN FROM C PENETRATION RESOLUTION *****/
+
+    //printf("pen - %f\n", _conPool[deepestIndex]._depth);
+    //printf("posDelta[0] = <%f, %f> posDelta[1] = <%f, %f>\n", posDelta[0].x, posDelta[0].y, posDelta[1].x, posDelta[1].y);
+
+    //update ALL contacts affected by this resolution
+    for(unsigned j = 0; j < _contactAmount; ++j) {
+        if(_contactPool[j].collider[0] == con->collider[0]) {
+            gyVec2RotOrigin(&cp, &_contactPool[j].objPos[0], orientDelta[0]);
+            gyVec2SubFrom(&cp, &_contactPool[j].objPos[0]);
+            gyVec2AddAccum(&cp, &posDelta[0]);
+            //printf("0 - 0, cp = <%f, %f>\n", cp.x, cp.y);
+            _contactPool[j].depth -= gyVec2DotProd(&cp, &_contactPool[j].normal);
+            //printf("depth - %f\n", _contactPool[j].depth);
+
+        }
+        else if(_contactPool[j].collider[0] == con->collider[1]) {
+            gyVec2RotOrigin(&cp, &_contactPool[j].objPos[0], orientDelta[1]);
+            gyVec2SubFrom(&cp, &_contactPool[j].objPos[0]);
+            gyVec2AddAccum(&cp, &posDelta[1]);
+            //printf("0 - 1, cp = <%f, %f>\n", cp.x, cp.y);
+            _contactPool[j].depth -= gyVec2DotProd(&cp, &_contactPool[j].normal);
+            //printf("depth - %f\n", _contactPool[j].depth);
+        }
+
+        //if(THERE IS EVEN A COLINDEX[1]) {
+        if(_contactPool[j].collider[1] && _contactPool[j].collider[1] == con->collider[0]) {
+            gyVec2RotOrigin(&cp, &_contactPool[j].objPos[1], orientDelta[0]);
+            gyVec2SubFrom(&cp, &_contactPool[j].objPos[1]);
+            gyVec2AddAccum(&cp, &posDelta[0]);
+            //printf("1 - 0, cp = <%f, %f>\n", cp.x, cp.y);
+            _contactPool[j].depth += gyVec2DotProd(&cp, &_contactPool[j].normal);
+            //printf("depth - %f\n", _contactPool[j].depth);
+        }
+        else if(_contactPool[j].collider[1] && _contactPool[j].collider[1] == con->collider[1]) {
+            gyVec2RotOrigin(&cp, &_contactPool[j].objPos[1], orientDelta[1]);
+            gyVec2SubFrom(&cp, &_contactPool[j].objPos[1]);
+            gyVec2AddAccum(&cp, &posDelta[1]);
+            //printf("1 - 1, cp = <%f, %f>\n", cp.x, cp.y);
+            _contactPool[j].depth += gyVec2DotProd(&cp, &_contactPool[j].normal);
+            //printf("depth - %f\n", _contactPool[j].depth);
+
+        }
+    }
+
+}
+
+
 
 /*
 void CollisionSystem::ResolveContacts(void) {

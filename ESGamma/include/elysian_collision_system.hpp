@@ -13,7 +13,7 @@
 #define ELYSIAN_COLLISION_PREV_CONTACT_LIST_SIZE			1000
 #define ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS 1000
 #define ELYSIAN_COLLISION_CONTACT_PENETRATION_EPSILON		0.8f
-#define ELYSIAN_COLLISION_CONTACT_Z_DEPTH_EPSILON          1.0f
+#define ELYSIAN_COLLISION_CONTACT_Z_DEPTH_EPSILON           1.0f
 #define ELYSIAN_COLLISION_CONTACT_Z_DEPTH_MAX               16.0f
 
 namespace elysian {
@@ -69,16 +69,19 @@ namespace elysian {
 		void renderEntities(void);
 		void detectEntityCollision(const unsigned i);
 		void detectTerrainCollision(Collidable &col);
-		bool resolvePenetration(void); //true if resolved, false if ran out of attempts
-		bool resolveVelocities(void);
+        bool resolvePenetration(void); //true if resolved, false if ran out of attempts
 
+        void _resolveZPenetration(CollisionContact*const contact);
+        void _resolveXYPenetration(CollisionContact*const contact);
 
 		void _checkTriggers(void);
         void _applyTileColliderTransform(const Tile::COLLIDER_TYPE colType) const;
 
-		void _detectCollidableColliderCollision(Collidable &collidable, GYCollider &collider);
-		void _detectEntityTileCollisionFine(Collidable &collidable, const unsigned x, const unsigned y, const unsigned char elev);
-		void _detectEntityTileCollisionCoarse(Collidable &collidable, const ENTITY_TILE_CHECK checkFlag=ENTITY_TILE_CHECK_VOLUME);
+        void _detectCollidableColliderCollision(Collidable &collidable, GYCollider &collider);
+        void _detectEntityTileCollisionFine(Collidable &collidable, const unsigned x, const unsigned y, const unsigned char elev);
+        void _detectEntityTileZCollisionCoarse(Collidable &collidable);
+        void _detectEntityTileCollisionCoarse(Collidable &collidable, const ENTITY_TILE_CHECK checkFlag=ENTITY_TILE_CHECK_VOLUME);
+
 
 	public:
 

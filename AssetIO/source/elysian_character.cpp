@@ -218,7 +218,7 @@ void Character::jump(void) {
 	gyVec3ScaleAccum(&force, 1.0f/_deltaTime);
 
 
-    rb->setOnGround(false);
+    getEntity()->getCollidable()->setRestingOnBody(false);
 
    // force.y /= rb->getStaticAttrib()->damping;
    // force.y *= rb->getStaticAttrib()->zDamping;

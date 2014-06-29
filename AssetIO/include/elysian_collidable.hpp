@@ -89,9 +89,12 @@ private:
 		unsigned			_zTranTileX			= 0;
 		unsigned			_zTranTileY			= 0;
 		ZTRAN_STATE			_zTranState			= ZTRAN_INACTIVE;
+        bool                _stackedOnGround    = false;
+        bool                _restingOnBody      = false;
 		bool				_onZTran			= false;
 		bool				_resolvePen			= true;
 		bool				_active				= true;
+
 		uint32_t			_eventMonitorMask	= 0;
 
 		union { 
@@ -133,6 +136,10 @@ private:
 		const GYVector3& getWorldPos(void) const;
         const GYVector3& getWorldSize(void) const { return _worldSize; }
 		inline void setActive(const bool val) { _active = val; }
+        bool            getRestingOnBody(void) const;
+        void            setRestingOnBody(const bool v);
+        bool            getStackedOnGround(void) const;
+        void            setStackedOnGround(const bool v);
 	};
 
 	/*
@@ -145,8 +152,9 @@ private:
 #ifdef ELYSIAN_ENGINE
 		friend class CollisionSystem;
 		friend class RigidBodySystem;
-        Collidable* _bodyA              = nullptr;
-        Collidable* _bodyB          	= nullptr;
+       // Collidable* _body[2]            = nullptr;
+        Collidable* _bodyA = nullptr;
+        Collidable* _bodyB = nullptr;
         float       _zDepth             = 0.0f;
         uint32_t    _eventMonitorMask	= 0;
         bool        _resolvePen			= true;
@@ -170,10 +178,16 @@ private:
         float           getZDepth(void) const;
         void            setResolveZ(const bool val=true);
         bool            getResolveZ(void) const;
+        void            updateRelativeZDepth(const unsigned body, const float zDelta);
 	};
 
 
 	// ======== INLINEZ ========
+
+    inline bool Collidable::getStackedOnGround(void) const { return _stackedOnGround; }
+    inline bool Collidable::getRestingOnBody(void) const { return _restingOnBody; }
+    inline void Collidable::setStackedOnGround(const bool v) { _stackedOnGround = v; }
+    inline void Collidable::setRestingOnBody(const bool v) { _restingOnBody = v; }
 
     inline CollidableStaticAttrib::CollidableStaticAttrib(void):
         GYStatic {
@@ -204,6 +218,19 @@ private:
     inline float CollisionContact::getZDepth(void) const { return _zDepth; }
     inline void CollisionContact::setResolveZ(const bool val) { _resolveZ = val; }
     inline bool CollisionContact::getResolveZ(void) const { return _resolveZ; }
+
+    inline void CollisionContact::updateRelativeZDepth(const unsigned body, const float zDelta) {
+   /*     Collidable* col[2];
+
+        float coeff;
+
+        if(body == _body[0]) coeff = 1.0f;
+        else coeff = -1.0f;
+
+
+*/
+
+    }
 
 
 }

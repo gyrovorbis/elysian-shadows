@@ -77,6 +77,7 @@ auto RigidBody::getTargetType(void) const -> TARGET_TYPE { return TARGET_RIGID_B
 float RigidBody::getOrientation(void) const { return getEntity()->transform._orientZ; }
 const GYVector3& RigidBody::getPosition(void) const { return getEntity()->transform._pos; }
 const GYStatic* RigidBody::getStaticAttrib(void) const { return getEntity()->getCollidable()->getAttrib()->getStaticAttrib(); }
+bool RigidBody::getRestingOnBody(void) const { return getEntity()->getCollidable()->getRestingOnBody(); }
 
 bool RigidBody::canAddTo(Entity& entity) {
 	return (entity.getCollidable());
