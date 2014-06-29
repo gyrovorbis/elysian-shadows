@@ -904,7 +904,7 @@ OOLUA_PROXY(RigidBodySystem)
     OOLUA_MEM_FUNC(void, addForce, cpp_in_p<ForceGenerator*>)
 	OOLUA_MEM_FUNC(void, applyForce, ForceGenerator*)
 	OOLUA_MEM_FUNC(void, removeForce, ForceGenerator*)
-	OOLUA_MEM_FUNC(void, clearForces)
+    OOLUA_MEM_FUNC(void, clearForces)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(LightSystem)
@@ -1020,7 +1020,7 @@ OOLUA_PROXY(GuiSystem)
 	OOLUA_MEM_FUNC(void, clearFgMenuWidget)
 	OOLUA_MEM_FUNC(void, setBgMenuWidget, cpp_in_p<MenuWidget*>)
 	OOLUA_MEM_FUNC(void, clearBgMenuWidget)
-	OOLUA_MEM_FUNC(void, setClearColor)
+    OOLUA_MEM_FUNC(void, setClearColor, GYColor4)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CameraKeyFrame)
