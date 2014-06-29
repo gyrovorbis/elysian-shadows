@@ -56,7 +56,7 @@ static const GYMaterial*	_currentMaterial								= &_defaultMaterial;
 static GYVector4			_globalAmbience									= { 0.0f, 0.0f, 0.0f, 1.0f };
 static const GYTexture*		_normalMap										= NULL;
 static const GYTexture*		_specularMap									= NULL;
-GYVector3					camWorldPos									= { 0.0f, 0.0f, 0.0f };
+GYVector3					camWorldPos										= { 0.0f, 0.0f, 0.0f };
 
 // ==== INTERNAL STATE ===
 GYShaderProgram*			_curShaderProg		= NULL;

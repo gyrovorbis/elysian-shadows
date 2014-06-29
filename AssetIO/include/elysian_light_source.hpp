@@ -99,7 +99,7 @@ namespace elysian {
 			{ 0.0f, 0.0f, 0.0f, 0.0f }, //pos
 			{ 0.0f, -0.0f, 0.00f },		//dir
 			360.0f,						//cutoff
-			GY_LIGHT_SPOT,				//type
+			GY_LIGHT_POINT,				//type
 			&LightAttrib::defaultProperties,
 			&_camState,
 			nullptr

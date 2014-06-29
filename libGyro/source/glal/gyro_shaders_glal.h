@@ -4,7 +4,7 @@
 #include <glal/gyro_glal.h>
 #include <gyro_shader_api.h>
 
-#define GLAL_SHADOW_MAP_SIZE	1024
+#define GLAL_SHADOW_MAP_SIZE	512
 
 #ifdef __cplusplus
 extern "C" {

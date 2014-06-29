@@ -30,10 +30,10 @@ int gyVidInit(const GYVidInitParams *const params) {
 		break;
 	}
 
-    glfwWindowHint(GLFW_RED_BITS, 5);
-    glfwWindowHint(GLFW_GREEN_BITS, 5);
-    glfwWindowHint(GLFW_BLUE_BITS, 5);
-    glfwWindowHint(GLFW_DEPTH_BITS, 16);
+	//glfwWindowHint(GLFW_RED_BITS, 5);
+	//glfwWindowHint(GLFW_GREEN_BITS, 5);
+	//glfwWindowHint(GLFW_BLUE_BITS, 5);
+	glfwWindowHint(GLFW_DEPTH_BITS, 16);
     glfwWindowHint(GLFW_RESIZABLE, (params->prop & GY_WIN_RESIZABLE) ? 1 : 0);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
@@ -61,7 +61,7 @@ int gyVidUninit(void) {
 
 void gyVidSceneBegin(void) {
 	//This might be reesting shit, might not need to clear all of this.
-	glClear(GL_COLOR_BUFFER_BIT);// | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	vertexRenderCount = 0;
 }
 

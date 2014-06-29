@@ -107,7 +107,6 @@ namespace elysian {
 		strcat(buffer, ELYSIAN_LEVEL_INIT_LUA_PATH);
 		LuaManager::runScriptSandbox(buffer);
 
-		gyVidClearColor(clearColor);
 #endif
 		dbgPop();
 		return success;

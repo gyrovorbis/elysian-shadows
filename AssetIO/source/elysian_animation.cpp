@@ -22,7 +22,7 @@ void Animation::addChildEntity(Entity*const entity, const char*animName) {
 
 	entry.entity		= entity;
 	entry.anim			= _childAttrib->getAnimation(animName);
-	assert(entry.anim);
+	//assert(entry.anim);
 	entry.seq			= (entry.anim && _currentSequence)?
 								entry.anim->getSequence(_currentSequence->getName()) :
 								nullptr;

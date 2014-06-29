@@ -31,7 +31,6 @@ namespace elysian {
 		char			path	[ELYSIAN_LEVEL_PATH_SIZE];
 		char			name	[ELYSIAN_LEVEL_NAME_SIZE];
 		char            string	[ELYSIAN_LEVEL_STRING_SIZE];
-		GYColor4		clearColor = { 0, 0, 0, 255 };
 #ifdef ELYSIAN_ENGINE
 		GYTexture*		tileSheet			= nullptr;
 		GYTexture*		normalSheet			= nullptr;
