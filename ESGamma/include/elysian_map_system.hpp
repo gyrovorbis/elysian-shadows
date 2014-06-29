@@ -236,7 +236,7 @@ namespace elysian {
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		//gyVidQuadListEnd();
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         _blendFunc = false;
 	}
 	
