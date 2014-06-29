@@ -109,10 +109,14 @@ void GuiSystem::update(void) {
 	}
 }
 
-void GuiSystem::renderOverlay(void) {
+void GuiSystem::renderBackground(void) {
+	_renderMenuWidget(_bgMenuWidget);
+}
+
+void GuiSystem::renderForeground(void) {
 	adventureLog.render(twcen);
 	_renderDebugOverlay();
-	_renderMenuWidget();
+	_renderMenuWidget(_fgMenuWidget);
 }
 
 void GuiSystem::_printDebugLine(const char *title, const char *str, ...) {
@@ -197,15 +201,15 @@ void GuiSystem::addCombatText(const char*const text, const GYColor4 color, const
 
 }
 
-void GuiSystem::_renderMenuWidget(void) {
-	if(!_menuWidget) return;
+void GuiSystem::_renderMenuWidget(MenuWidget* widget) {
+	if(!widget) return;
 
 	gyMatPush();
 	gyMatLoadIdentity();
 	gyMatTranslate(_projWidth*0.5f, _projHeight*0.5f, 50.0f);
 	gyMatScale(_projWidth, _projHeight, 1.0f);
 
-	_menuWidget->recursiveRender();
+	widget->recursiveRender();
 
 	gyMatPop();
 

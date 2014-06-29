@@ -221,9 +221,10 @@ namespace elysian {
 		glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_TEX_COORD]);
 		glVertexAttribPointer(curLightShader->attribLoc[SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VboEntry), (void*)(6*sizeof(float)));
 		glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_COLOR]);
-        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        gyVidAlphaLevel(GY_ALPHA_NONE);
-        glDisable(GL_DEPTH_TEST);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+
+		//glDisable(GL_DEPTH_TEST);
         //glDisable(GL_ALPHA_TEST);
         _blendFunc = false;
 	}
@@ -236,8 +237,9 @@ namespace elysian {
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		//gyVidQuadListEnd();
+		gyVidAlphaLevel(GY_ALPHA_FULL);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        _blendFunc = false;
+	   _blendFunc = false;
 	}
 	
 	inline unsigned MapSystem::getEntityCount(void) const {

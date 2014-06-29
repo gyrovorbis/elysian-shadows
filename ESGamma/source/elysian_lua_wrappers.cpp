@@ -293,7 +293,8 @@ OOLUA_EXPORT_FUNCTIONS_CONST(ChildAnimationSequence)
 OOLUA_EXPORT_FUNCTIONS(ChildAnimation,
                         addSequence,
                        setGlobalOffset,
-                       setInheritSpeedMultiplier)
+					   setInheritSpeedMultiplier,
+					   setInheritScale)
 OOLUA_EXPORT_FUNCTIONS_CONST(ChildAnimation)
 
 
@@ -722,8 +723,11 @@ OOLUA_EXPORT_FUNCTIONS_CONST(ParticleSystem,
 
 OOLUA_EXPORT_FUNCTIONS(GuiSystem,
 					   addCombatText,
-					   setMenuWidget,
-					   clearMenuWidget)
+					   setFgMenuWidget,
+					   clearFgMenuWidget,
+					   setBgMenuWidget,
+					   clearBgMenuWidget,
+					   setClearColor)
 OOLUA_EXPORT_FUNCTIONS_CONST(GuiSystem)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(DaySystem,
