@@ -468,7 +468,9 @@ OOLUA_EXPORT_FUNCTIONS(LightSource,
 					   setSpotCutoffAngle,
 					   setAttrib,
 					   getAttrib,
-					   setShadowCaster)
+
+                       setShadowCaster,
+                       setRelativePos)
 OOLUA_EXPORT_FUNCTIONS_CONST(LightSource)
 
 OOLUA_EXPORT_FUNCTIONS(ParticleEmitterAttrib,

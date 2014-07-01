@@ -24,8 +24,8 @@ GYLightProperties LightAttrib::defaultProperties = {
 	{ 0.0f, 0.0f, 0.0f, 1.0f },
 	{ 0.0f, 0.0f, 0.0f, 1.0f },
 	{ 0.0f, 0.0f, 0.0f, 1.0f },
-	{ 0.00005f, 0.00005f, 0.00005f },
-	1.0f,
+    { 0.00005f, 0.00005f, 0.00005f },
+    1.0f,
 	200.0f
 };
 
@@ -40,7 +40,7 @@ void LightAttrib::setAttenuationFactors(const GYVector3& vec) {
 
 
 	attenuationFactors = vec;
-	_radius = root1;
+    _radius = 1000.0f;//root1;
 }
 
 //reimplemented from component
@@ -66,13 +66,23 @@ void LightSource::setLightType(const GY_LIGHT_TYPE _type) {
 }
 
 void LightSource::update(void) {
+    static const GYVector4 localVec = { 0.0f, 0.0f, 0.0f, 1.0f };
 	if(type == GY_LIGHT_POINT || type == GY_LIGHT_SPOT) {
+
+        gyMatPush();
+        gyMatLoadIdentity();
+        _entity->transform.apply();
+        gyMatTranslate(_relPos.x, _relPos.y, _relPos.z);
+        gyMatMultVec(&localVec, &position, 1);
+        gyMatPop();
+
+        /*
 		position = {
 			getEntity()->transform._pos.x,//-200.0f,
-			getEntity()->transform._pos.y,//-200.0f,
-			getEntity()->transform._pos.z+32.0f,
+            getEntity()->transform._pos.y,//-200.0f,
+            getEntity()->transform._pos.z,
 			1.0f
-		};
+        };*/
 	}
 }
 

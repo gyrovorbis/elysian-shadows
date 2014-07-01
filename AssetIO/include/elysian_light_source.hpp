@@ -39,7 +39,8 @@ namespace elysian {
 #ifdef ELYSIAN_ENGINE
 		CameraState _camState;
 #endif
-		bool _shadowCaster = false;
+        bool            _shadowCaster = false;
+        GYVector3       _relPos = { 0.0f, 0.0f, 0.0f };
 
 	public:
 
@@ -63,6 +64,7 @@ namespace elysian {
 		void setShadowCaster(const bool val);
 		bool isShadowCaster(void) const;
 		void updateBoundingVolume(const CameraState*const cam, const GY_CUBE_MAP_FACE face);
+        void setRelativePos(const float x, const float y, const float z);
 
 		LightAttrib& getAttrib(void);
 #ifdef ELYSIAN_ENGINE
@@ -112,6 +114,7 @@ namespace elysian {
 	inline LightAttrib& LightSource::getAttrib(void) { return *static_cast<LightAttrib*>(properties); }
 	inline void LightSource::setShadowCaster(const bool val) { _shadowCaster = val; }
 	inline bool LightSource::isShadowCaster(void) const { return _shadowCaster; }
+    inline void LightSource::setRelativePos(const float x, const float y, const float z) { _relPos.x = x; _relPos.y = y; _relPos.z = z; }
 
 
 #ifdef ELYSIAN_ENGINE

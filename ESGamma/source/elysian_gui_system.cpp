@@ -110,10 +110,12 @@ void GuiSystem::update(void) {
 }
 
 void GuiSystem::renderBackground(void) {
+    if(!_debugOverlayEnabled) return;
 	_renderMenuWidget(_bgMenuWidget);
 }
 
 void GuiSystem::renderForeground(void) {
+    if(!_debugOverlayEnabled) return;
 	adventureLog.render(twcen);
 	_renderDebugOverlay();
 	_renderMenuWidget(_fgMenuWidget);

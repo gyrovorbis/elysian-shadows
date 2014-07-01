@@ -33,7 +33,7 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
 
 	switch(type) {
 	case GY_LIGHT_DIRECTIONAL:
-		light->spotCutoffAngle = 360.0f; //Shader needs this for correct texture coords
+        //light->spotCutoffAngle = 360.0f; //Shader needs this for correct texture coords
 	case GY_LIGHT_SPOT:
 		glBindTexture(GL_TEXTURE_2D, internals->shadowMap);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
