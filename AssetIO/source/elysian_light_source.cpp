@@ -120,13 +120,13 @@ void LightSource::updateBoundingVolume(const CameraState *const cam, const GY_CU
 		thisCam->updateBoundingSubregions(*cam);
 	} else { // GY_LIGHT_POINT
 
-		const float halfW = properties->_radius;//maxDist*0.5f;
+		const float halfW = 2000;//properties->_radius;//maxDist*0.5f;
 
 		vol->ntl.x = position.x - halfW; vol->ntl.y = position.y - halfW;
 		vol->ntr.x = position.x + halfW; vol->ntr.y = position.y - halfW;
 		vol->nbl.x = position.x - halfW; vol->nbl.y = position.y + halfW;
 		vol->nbr.x = position.x + halfW; vol->nbr.y = position.y + halfW;
-
+/*
 		switch(face) {
 		case GY_CUBE_MAP_RIGHT:
 			vol->ntl.x += halfW;
@@ -159,17 +159,22 @@ void LightSource::updateBoundingVolume(const CameraState *const cam, const GY_CU
 		case GY_CUBE_MAP_TOP:
 		default:
 			break;
-		}
+		}*/
 
 	}
-
+//*thisCam = *cam;
 	vol->ftl = vol->ntl;
 	vol->ftr = vol->ntr;
 	vol->fbl = vol->nbl;
 	vol->fbr = vol->nbr;
 
+		thisCam->updateBoundingSubregions(*cam);
+/*
+	thisCam->scrStartX = 0; thisCam->scrStartY = 0;
+	thisCam->scrEndX = 199*32; thisCam->scrEndY = 199*32;
+	thisCam->tileStartX = 0; thisCam->tileStartY = 0;
+	thisCam->tileEndX = 199; thisCam->tileEndY = 199;*/
 
-	thisCam->updateBoundingSubregions(*cam);
 
 
 }

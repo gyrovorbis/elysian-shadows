@@ -29,7 +29,7 @@ void LightSystem::_addToLightMap(LightSource*const src) {
 	}
 }
 
-unsigned LightSystem::getLightCount(void) const { return _curArea->lightSources.size(); }
+unsigned LightSystem::getLightCount(void) const { return (_shadowPass)? 0 :  _curArea->lightSources.size(); }
 
 void LightSystem::update(void) {
 	const auto sources = _curArea->lightSources;
@@ -178,6 +178,7 @@ void LightSystem::shadowRenderPasses(void) {
 	_onscreenLightCount = 0;
 	memset(_lightMap, 0, sizeof(_lightMap));
 
+	_shadowPass = true;
 	gyVidLightSourceBeginShadowPasses();
 	camSys->pushState();
 
@@ -195,8 +196,8 @@ void LightSystem::shadowRenderPasses(void) {
 			if(it->isShadowCaster()) {
 				gyVidLightSourceBeginShadowPass(it, GY_CUBE_MAP_FACE_MAX);
 				getCameraSys()->setCurrentCameraState(it->getCameraState());
-                //_renderShadowVolumes();
-                getMapSys()->render();
+				//_renderShadowVolumes();
+				getMapSys()->render();
             }
 			_addToLightMap(it);
 			break;
@@ -213,8 +214,8 @@ void LightSystem::shadowRenderPasses(void) {
 							//it->getCameraState()->updateBoundingSubregions(*cam);
 
 							getCameraSys()->setCurrentCameraState(it->getCameraState());
-                            //_renderShadowVolumes();
-                            getMapSys()->render();
+							//_renderShadowVolumes();
+							getMapSys()->render();
 
 						}
 						_addToLightMap(it);
@@ -228,7 +229,7 @@ void LightSystem::shadowRenderPasses(void) {
 	camSys->popState();
 	gyVidLightSourceEndShadowPasses();
 	gyVidSetGlobalAmbience(&_globalAmbience);
-
+	_shadowPass = false;
     _sortOnscreenLights();
 }
 
@@ -304,10 +305,9 @@ uint32_t LightSystem::startLightPass(uint32_t& lightsLeft) {
 	unsigned		addLightsCount			= bitCount(addLights);
 	//Lights we're removing
 	uint32_t		removedLights			= (_activeLights&(~keepActiveLights));
-	unsigned removedLightsCount				= bitCount(removedLights);
+	unsigned		removedLightsCount		= bitCount(removedLights);
 
 	if(!lightsLeft) return 0;
-
 
 	//If we're either adding or removing lights, state change
 	if(addLightsCount != 0 /*|| removedLightsCount != 0 || keepActiveLightCount != GYRO_VIDEO_LIGHT_SOURCES_MAX*/) {

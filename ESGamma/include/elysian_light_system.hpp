@@ -15,6 +15,7 @@ class LightSource;
 struct CameraState;
 
 class LightSystem: public System {
+	bool			_shadowPass		= false;
 	bool			_enabled		= true;
 	bool			_renderDebug	= false;
 	GYVector4		_globalAmbience = { 0.0f, 0.0f, 0.0f, 1.0f };
@@ -71,11 +72,11 @@ inline uint32_t LightSystem::getLightMapEntryScreenCoord(const unsigned y, const
 }*/
 
 inline uint32_t LightSystem::getLightMapEntryMapCoord(const unsigned y, const unsigned x) const {
-	return _lightMap[y-_screenTileYOffset][x-_screenTileXOffset];
+	return (_shadowPass)? 0 :_lightMap[y-_screenTileYOffset][x-_screenTileXOffset];
 }
 
 inline unsigned LightSystem::getOnscreenLightCount(void) const {
-	return _onscreenLightCount;
+	return (_shadowPass)? 0 : _onscreenLightCount;
 }
 
 inline unsigned LightSystem::getShaderUniformChangesLastFrame(void) const {

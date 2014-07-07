@@ -202,6 +202,7 @@ void gyVidTexBind(const GYTexture *const tex) {
 	static int wasEnabled = 0;
 	int enabled = 1;
 
+	glActiveTexture(GL_TEXTURE0);
 	if(tex) {
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, *(GLuint *)&tex->_data);
@@ -210,7 +211,7 @@ void gyVidTexBind(const GYTexture *const tex) {
 		glDisable(GL_TEXTURE_2D);
 	}
 	curTex = tex;
-	if(enabled != wasEnabled) glUniform1i(curLightShader->uniformLoc[SHADER_TEXTURE_ENABLED], enabled);
+	/*if(enabled != wasEnabled)*/ glUniform1i(curLightShader->uniformLoc[SHADER_TEXTURE_ENABLED], enabled);
 	wasEnabled = enabled;
 }
 

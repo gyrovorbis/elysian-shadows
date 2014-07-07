@@ -208,8 +208,11 @@ namespace elysian {
 	
 	inline void MapSystem::beginObjectList(void) {
 		gyVidMaterialBind(nullptr);
+		gyVidTexBind(nullptr);
 		gyVidTexBind(_curLevel->tileSheet);
+		gyVidNormalMapBind(nullptr);
 		gyVidNormalMapBind(_curLevel->normalSheet);
+		gyVidSpecularMapBind(nullptr);
 		gyVidSpecularMapBind(_curLevel->specularSheet);
         gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
         _curNormalType = GY_RECT_NORMAL_FLAT;
@@ -222,6 +225,7 @@ namespace elysian {
 		glVertexAttribPointer(curLightShader->attribLoc[SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VboEntry), (void*)(6*sizeof(float)));
 		glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_COLOR]);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		gyVidAlphaLevel(GY_ALPHA_FULL);
 
 
 		//glDisable(GL_DEPTH_TEST);
@@ -237,7 +241,7 @@ namespace elysian {
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		//gyVidQuadListEnd();
-		gyVidAlphaLevel(GY_ALPHA_FULL);
+		//gyVidAlphaLevel(GY_ALPHA_FULL);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	   _blendFunc = false;
 	}
@@ -265,13 +269,13 @@ namespace elysian {
 	}
 
 	inline void MapSystem::disableDepthTest(void) const {
-		glDisable(GL_DEPTH_TEST);
+		//glDisable(GL_DEPTH_TEST);
 		//glEnable(GL_POLYGON_OFFSET_FILL);
 		//glPolygonOffset(10.0f, 10.0f);
 	}
 
 	inline void MapSystem::enableDepthTest(void) const {
-		glEnable(GL_DEPTH_TEST);
+		//glEnable(GL_DEPTH_TEST);
 		//glDisable(GL_POLYGON_OFFSET_FILL);
 	}
 
