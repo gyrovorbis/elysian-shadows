@@ -3,10 +3,10 @@
 #include "elysian_camera_system.hpp"
 #include "elysian_area.hpp"
 #include "elysian_entity.hpp"
+#include "elysian_level.hpp"
+#include "elysian_map_system.hpp"
 #include <gyro_shader_api.h>
 #include <cfloat>
-
-#include "elysian_level.hpp"
 
 namespace elysian {
 
@@ -195,8 +195,9 @@ void LightSystem::shadowRenderPasses(void) {
 			if(it->isShadowCaster()) {
 				gyVidLightSourceBeginShadowPass(it, GY_CUBE_MAP_FACE_MAX);
 				getCameraSys()->setCurrentCameraState(it->getCameraState());
-				_renderShadowVolumes();
-			}
+                //_renderShadowVolumes();
+                getMapSys()->render();
+            }
 			_addToLightMap(it);
 			break;
 		case GY_LIGHT_POINT:
@@ -212,7 +213,8 @@ void LightSystem::shadowRenderPasses(void) {
 							//it->getCameraState()->updateBoundingSubregions(*cam);
 
 							getCameraSys()->setCurrentCameraState(it->getCameraState());
-							_renderShadowVolumes();
+                            //_renderShadowVolumes();
+                            getMapSys()->render();
 
 						}
 						_addToLightMap(it);
