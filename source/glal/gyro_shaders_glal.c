@@ -179,14 +179,15 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
 	shader->attribLoc[SHADER_POS]						= _protectedAttribQuery(shader->program, "aPosition");
 	shader->uniformLoc[SHADER_PROJ_VIEW_MAT]			= _protectedUniformQuery(shader->program, "uProjViewMat");
 
-	if(!light) return; //the rest is lighting only
+	shader->attribLoc[SHADER_TEX_COORD]					= _protectedAttribQuery(shader->program, "aTexCoord");
+	shader->uniformLoc[SHADER_TEXTURE_ENABLED]			= _protectedUniformQuery(shader->program, "uTextureEnabled");
 
-	shader->attribLoc[SHADER_COLOR]		= _protectedAttribQuery(shader->program, "aColor");
-	shader->attribLoc[SHADER_TEX_COORD] = _protectedAttribQuery(shader->program, "aTexCoord");
+	shader->attribLoc[SHADER_COLOR]						= _protectedAttribQuery(shader->program, "aColor");
+
+	if(!light) return; //the rest is lighting only
 
 	//poll for global uniform locations
 	shader->uniformLoc[SHADER_CAM_WORLD_POS]			= _protectedUniformQuery(shader->program, "uCamWorldPos");
-	shader->uniformLoc[SHADER_TEXTURE_ENABLED]			= _protectedUniformQuery(shader->program, "uTextureEnabled");
 	shader->uniformLoc[SHADER_NORMAL]					= _protectedUniformQuery(shader->program, "uNormal");
 	shader->uniformLoc[SHADER_TANGENT]					= _protectedUniformQuery(shader->program, "uTangent");
 	shader->uniformLoc[SHADER_AMBIENCE]					= _protectedUniformQuery(shader->program, "uAmbience");
