@@ -84,6 +84,7 @@ void LevelSystem::_onAreaEnter(void) {
 	getPartySys()->addPartyToArea();
 	getDaySys()->onAreaEnter();
 	getAudioSys()->update();
+    getCollisionSys()->onAreaEnter();
 
 	getBehavSys()->callTriggers(Behavior::ON_ENTER);
 }
@@ -96,7 +97,7 @@ void LevelSystem::_onAreaExit(void) {
 	}
 	//Clean up current area
 	getPartySys()->removePartyFromArea();
-	getCollisionSys()->clearContacts();
+    getCollisionSys()->onAreaExit();
 	getMapSys()->resetAnimation();
 }
 

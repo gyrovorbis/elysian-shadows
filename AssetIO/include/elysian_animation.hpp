@@ -11,42 +11,61 @@
 
 #define ELYSIAN_ANIMATION_SEQUENCE_NAME_SIZE    50
 #define ELYSIAN_ANIMATION_MAX_CHILDREN          10
+#define ELYSIAN_ANIMATION_STATE_COUNT_MAX       10
+#define ELYSIAN_ANIMATION_STATE_LENGTH_MAX      20
 
 namespace elysian {
 
 	class Entity;
 
 	struct AnimationFrame {
-
 		GYVector2			offset;
 		float				duration;
 		unsigned int		spriteFrame;
 		GY_RECT_TEX_ORIENT	texOrient;
 	};
 
-	class AnimationSequence { 
-		friend class Animation;
-	private:
-		char						_name[ELYSIAN_ANIMATION_SEQUENCE_NAME_SIZE];
-		bool						_linearInterpolation = true;
-		std::vector<AnimationFrame> _frames;
-					AnimationSequence(void) = default;
-	public:
-					AnimationSequence(const char* name);
-		const char*	getName(void);
-		void		addFrame(const float xOffset, const float yOffset, const float duration,
-							 const unsigned int sheetIndex, const GY_RECT_TEX_ORIENT texOrient);
-		void		setLinearInterpolation(const bool val);
-		bool		getLinearInterpolation(void) const;
-	};
+    template<typename P, typename T>
+    class AnimationSequenceBase {
+    protected:
+        std::map<const char*, P*, ltstr> _sequences;
+        std::vector<T>                                      _frames;
+        char                                                _name[ELYSIAN_ANIMATION_SEQUENCE_NAME_SIZE];
+        bool                                                _linearInterpolation = true;
+                        AnimationSequenceBase(void) = default;
 
-	class AnimationAttrib {
-		friend class Animation;
-	private:
-		std::map<const char*, AnimationSequence*, ltstr> _sequences;
+    public:
+                        AnimationSequenceBase(const char* name);
+        const char*     getName(void) const;
+        P*              addSequence(const char* name);
+        void            addFrame(const T&& frame);
+        const P*        getSequence(const char*name) const;
+        const P*        getSequenceInclusive(const char*name) const;
+        const T*        getFrame(const unsigned index) const;
+        bool            getLinearInterpolation(void) const;
+        void            setLinearInterpolation(const bool val);
+        unsigned        getFrameCount(void) const;
+    };
+
+
+    class AnimationSequence:
+            public AnimationSequenceBase<AnimationSequence, AnimationFrame>
+    {
+        friend class Animation;
+    protected:
+
+                            AnimationSequence(void) = default;
 	public:
-		AnimationSequence*	addSequence(const char *name);
-							~AnimationAttrib(void);
+                            AnimationSequence(const char* name);
+        void                addFrame(const float xOffset, const float yOffset, const float duration,
+                                    const unsigned int sheetIndex, const GY_RECT_TEX_ORIENT texOrient);
+    };
+
+    class AnimationAttrib: public AnimationSequence {
+		friend class Animation;
+
+	public:
+        ~AnimationAttrib(void);
 	};
 
 	struct ChildAnimationFrame {
@@ -54,37 +73,26 @@ namespace elysian {
 		float		zOrient;
 	};
 
-	class ChildAnimationSequence {
+    class ChildAnimationSequence:
+            public AnimationSequenceBase<ChildAnimationSequence, ChildAnimationFrame>  {
 		friend class Animation;
-	private:
-		char								_name[ELYSIAN_ANIMATION_SEQUENCE_NAME_SIZE];
-		std::vector<ChildAnimationFrame>	_frames;
-		bool								_linearInterpolation	= true;
+
 	public:
 								ChildAnimationSequence(const char* name);
-		const char*				getName(void);
 		void					addFrame(const float x, const float y, const float z, const float theta);
-		ChildAnimationFrame*	getFrame(const unsigned index);
-		void					setLinearInterpolation(const bool val);
-		bool					getLinearInterpolation(void) const;
 
 	};
 
 	//Subcomponent of Animation
-	class ChildAnimation {
+    class ChildAnimation: public ChildAnimationSequence {
 		friend class Animation;
-	private:
-		std::map<const char*, ChildAnimationSequence*, ltstr>	_sequences;
+    private:
 		GYVector3												_globalOffset = { 0.0f, 0.0f, 0.0f };
-		char													_name[ELYSIAN_ANIMATION_SEQUENCE_NAME_SIZE];
         bool                                                    _inheritSpeedMultiplier = false;
 		bool													_inheritScale	= true;
 	public:
 								ChildAnimation(const char* name);
 								~ChildAnimation(void);
-		ChildAnimationSequence* addSequence(const char* name);
-		ChildAnimationSequence* getSequence(const char* name);
-		const char*				getName(void);
 		void					setGlobalOffset(const float x, const float y, const float z);
         void                    setInheritSpeedMultiplier(const bool val);
 		void					setInheritScale(const bool val);
@@ -102,35 +110,61 @@ namespace elysian {
 
 	};
 
+    typedef CharArrayPoolEntry<ELYSIAN_ANIMATION_STATE_LENGTH_MAX> AnimStateEntry;
 
-	class Animation: public Component { 
+
+    template<typename S, typename T>
+    struct AnimationStateStack {
+    friend class Animation;
+    protected:
+        const S*          stateStack[ELYSIAN_ANIMATION_STATE_COUNT_MAX] = { nullptr };
+        unsigned          stackDepth = 0;
+        const S*          currentSequence = nullptr;
+        const T*          currentFrame    = nullptr;
+        unsigned          currentIndex    = 0;
+
+    public:
+        void setStackBottomState(const S* bottom);
+
+        template <typename A>
+        const A*   getStackBottomState(void) const;
+
+        void setSequence(const char* name);
+        void updateState(const Pool<AnimStateEntry>& states);
+        void setCurrentIndex(const unsigned index);
+        unsigned getPreviousIndex(void) const;
+        void advanceFrame(void);
+    };
+
+
+    class Animation: public Component,
+                     public AnimationStateStack<AnimationSequence, AnimationFrame>
+    {
         friend class Entity;
 	protected:
 
-		struct ChildAnimEntry {
+        struct ChildAnimEntry:
+                public AnimationStateStack<ChildAnimationSequence, ChildAnimationFrame>
+        {
 			Entity*					entity			= nullptr;
-			ChildAnimation*			anim			= nullptr;
-			ChildAnimationSequence* seq				= nullptr;
-			ChildAnimationFrame*	frame			= 0;
-			float					timer			= 0.0f;
-			unsigned				frIndex			= 0;
+            Animation*              animComp        = nullptr;
 		};
 
+        Pool<AnimStateEntry>    _statePool          = Pool<AnimStateEntry>(ELYSIAN_ANIMATION_MAX_CHILDREN);
 		GYVector2				_childPivot			= GYVector2 { 0.0f, 0.0f };
 		Pool<ChildAnimEntry>*	_children			= nullptr;
-		AnimationAttrib*		_attrib				= nullptr;
 		ChildAnimationAttrib*	_childAttrib		= nullptr;
-		AnimationSequence*		_currentSequence	= nullptr;
         EventMonitor*           _monitor            = nullptr;
 		float					_speedMultiplier	= 1.0f;
 		float					_timer				= 0.0f;
-		unsigned int			_currentFrame		= 0;
 		bool					_isActive			= false;
 		bool					_looping			= true;
+        AnimationAttrib*        _attrib             = nullptr;
 		
 				Animation(Entity& parent);
 		virtual ~Animation(void) override;
 		void	_updateChildren(void);
+        void    _updateStates(void);
 
 	public:
 		virtual bool load(FILE* file) override;
@@ -139,6 +173,10 @@ namespace elysian {
 		virtual TYPE getType(void) const override;
 		virtual bool addToLevel(void) override;
 		virtual bool removeFromLevel(void) override;
+
+        void        addState    (const char* state);
+        void        removeState (const char* state);
+        void        replaceState(const char* oldState, const char* newState);
 
 #ifdef ELYSIAN_ENGINE
         void        update(const float deltaTime);
@@ -161,59 +199,38 @@ namespace elysian {
 		void					addChildEntity(Entity*const entity, const char*animName);
 		void					removeChildEntity(const char*animName);
 		void					removeChildEntity(const Entity* entity);
+        //const AnimationSequence* getSequence(const char* name);
 	};
 
 
 	// ====== INLINEZ ======
 
-	inline AnimationSequence::AnimationSequence(const char* name) { strcpy(_name, name); }
-	inline const char *AnimationSequence::getName(void) { return _name; }
+    inline AnimationSequence::AnimationSequence(const char* name): AnimationSequenceBase(name) { }
 	inline void AnimationSequence::addFrame(const float xOffset, const float yOffset, const float duration,
 											const unsigned int frame, const GY_RECT_TEX_ORIENT texOrient) {
-		_frames.push_back(AnimationFrame {
+        AnimationSequenceBase::addFrame(AnimationFrame {
 			GYVector2 { xOffset, yOffset },
 			duration,
 			frame,
 			texOrient
 		});
 	}
-	inline void AnimationSequence::setLinearInterpolation(const bool val) { _linearInterpolation = val; }
-	inline bool AnimationSequence::getLinearInterpolation(void) const { return _linearInterpolation; }
-
-	inline AnimationSequence* AnimationAttrib::addSequence(const char *name) {
-		AnimationSequence *const seq = new AnimationSequence(name);
-		_sequences[seq->getName()] = seq;
-		return seq;
-	}
 	inline AnimationAttrib::~AnimationAttrib(void) {
 		for(auto it: _sequences) delete it.second;
 	}
 
-	inline ChildAnimationSequence::ChildAnimationSequence(const char* name) { strcpy(_name, name); }
-	inline const char* ChildAnimationSequence::getName(void) { return _name; }
+    inline ChildAnimationSequence::ChildAnimationSequence(const char* name): AnimationSequenceBase(name) { }
 	inline void ChildAnimationSequence::addFrame(const float x, const float y, const float z, const float theta) {
-		_frames.push_back(ChildAnimationFrame{
+        AnimationSequenceBase::addFrame(ChildAnimationFrame{
 			GYVector3 { x, y, z },
 			theta,
 		});
 	}
-	inline ChildAnimationFrame* ChildAnimationSequence::getFrame(const unsigned index) { return &_frames[index]; }
-	inline void ChildAnimationSequence::setLinearInterpolation(const bool val) { _linearInterpolation = val; }
-	inline bool ChildAnimationSequence::getLinearInterpolation(void) const { return _linearInterpolation; }
 
-	inline ChildAnimation::ChildAnimation(const char* name) { strcpy(_name, name); }
+    inline ChildAnimation::ChildAnimation(const char* name): ChildAnimationSequence(name) {  }
 	inline void ChildAnimation::setInheritScale(const bool val) { _inheritScale = val; }
-	inline const char* ChildAnimation::getName(void) { return _name; }
-	inline ChildAnimationSequence* ChildAnimation::addSequence(const char *name) {
-		ChildAnimationSequence*const seq = new ChildAnimationSequence(name);
-		_sequences[seq->getName()] = seq;
-		return seq;
-	}
     inline void ChildAnimation::setInheritSpeedMultiplier(const bool val) { _inheritSpeedMultiplier = val; }
-	inline ChildAnimationSequence* ChildAnimation::getSequence(const char *name) {
-		auto it = _sequences.find(name);
-		return (it == _sequences.end())? nullptr : it->second;
-	}
+
 	inline ChildAnimation::~ChildAnimation(void) {
 		for(auto it: _sequences) delete it.second;
 	}
@@ -236,10 +253,11 @@ namespace elysian {
 	}
 
 	inline Animation::Animation(Entity& parent): Component(parent) {}
-	inline AnimationAttrib* Animation::getAttrib(void) const { return _attrib; }
+    inline AnimationAttrib* Animation::getAttrib(void) const { return _attrib; }
 	inline ChildAnimationAttrib* Animation::getChildAttrib(void) const { return _childAttrib; }
 	inline void Animation::setAttrib(AnimationAttrib* attributes) {
-		_attrib = attributes;
+        setStackBottomState(attributes);
+        _attrib = attributes;
 	}
 	inline void Animation::setChildAttrib(ChildAnimationAttrib *childAttrib) {
 		_childAttrib = childAttrib;
@@ -248,12 +266,131 @@ namespace elysian {
 		}
 	}
 	inline bool Animation::isActive(void) const { return _isActive; }
-	inline unsigned Animation::getCurrentFrame(void) const { return _currentFrame; }
+    inline unsigned Animation::getCurrentFrame(void) const { return currentIndex; }
 	inline bool Animation::isLooping(void) const { return _looping; }
 	inline void Animation::setLooping(const bool val) { _looping = val; }
 	inline void Animation::setChildPivot(const float x, const float y) { _childPivot.x = x; _childPivot.y = y; }
-	inline const GYVector2& Animation::getChildPivot(void) const { return _childPivot; }
+    inline const GYVector2& Animation::getChildPivot(void) const { return _childPivot; }\
 
+    template<typename P, typename T>
+    inline AnimationSequenceBase<P, T>::AnimationSequenceBase(const char*name) {
+        strcpy(_name, name);
+    }
+
+    template<typename P, typename T>
+    inline const char* AnimationSequenceBase<P, T>::getName(void) const {
+        return _name;
+    }
+
+    template<typename P, typename T>
+    inline P* AnimationSequenceBase<P, T>::addSequence(const char* name) {
+        P*const seq = new P(name);
+        _sequences[seq->getName()] = seq;
+        return seq;
+    }
+
+    template<typename P, typename T>
+    inline void AnimationSequenceBase<P, T>::addFrame(const T&& frame) {
+        _frames.push_back(frame);
+    }
+
+    template<typename P, typename T>
+    inline const T* AnimationSequenceBase<P, T>::getFrame(const unsigned index) const {
+        return (index < _frames.size())? &_frames[index] : nullptr;
+    }
+
+    template<typename P, typename T>
+    inline void AnimationSequenceBase<P, T>::setLinearInterpolation(const bool v) {
+        _linearInterpolation = v;
+    }
+
+    template<typename P, typename T>
+    inline bool AnimationSequenceBase<P, T>::getLinearInterpolation(void) const {
+        return _linearInterpolation;
+    }
+
+    template<typename P, typename T>
+    inline const P* AnimationSequenceBase<P, T>::getSequence(const char* name) const {
+        auto it = _sequences.find(name);
+        return (it == _sequences.end())? nullptr : it->second;
+    }
+
+    template<typename P, typename T>
+    inline const P* AnimationSequenceBase<P, T>::getSequenceInclusive(const char* name) const {
+        return (strcmp(_name, name) == 0)? static_cast<const P*>(this) : getSequence(name);
+    }
+
+    template<typename P, typename T>
+    inline unsigned AnimationSequenceBase<P, T>::getFrameCount(void) const {
+        return _frames.size();
+    }
+
+    template<typename S, typename T>
+    inline void AnimationStateStack<S,T>::setCurrentIndex(const unsigned index) {
+        assert(currentSequence);
+     //   if(currentSequence) {
+            const unsigned frameCount = currentSequence->getFrameCount();
+            currentIndex = (frameCount > 0)? index % frameCount : 0;
+            currentFrame = currentSequence->getFrame(currentIndex);
+      //  } else {
+           // currentIndex = 0;
+           // currentFrame = nullptr;
+       // }
+    }
+
+    template<typename S, typename T>
+    inline unsigned AnimationStateStack<S,T>::getPreviousIndex(void) const {
+        assert(currentSequence);
+        if(currentIndex > 0) {
+            return currentIndex-1;
+        } else {
+            const unsigned frameCount = currentSequence->getFrameCount();
+            return (frameCount)? frameCount-1 : 0;
+        }
+    }
+
+    template<typename S, typename T>
+    inline void AnimationStateStack<S,T>::advanceFrame(void) {
+        assert(currentSequence);
+        if(++currentIndex >= currentSequence->getFrameCount()) {
+            currentIndex = 0;
+        }
+        currentFrame = currentSequence->getFrame(currentIndex);
+    }
+
+    template<typename S, typename T> template<typename A>
+    inline const A* AnimationStateStack<S, T>::getStackBottomState(void) const { return static_cast<const A*>(stateStack[0]); }
+    template<typename S, typename T>
+    inline void AnimationStateStack<S, T>::setStackBottomState(const S* bottom) { return stateStack[0] = bottom; }
+
+    template<typename S, typename T>
+    inline void AnimationStateStack<S, T>::setSequence(const char* name) {
+        if(currentSequence && strcmp(currentSequence->getName(), name) == 0) return; //no change
+
+        const S* seq = stateStack[stackDepth]->getSequence(name);
+        if(!seq && stateStack[stackDepth]->getFrameCount() > 0) {
+            seq = stateStack[stackDepth];
+        } else if(!seq) {
+
+            //work backwards and try to find deepest (most specialized) version of sequence
+            for(int i = stackDepth-1; i >= 0; --i) {
+                seq = stateStack[i]->getSequence(name);
+                if(seq) {
+                    break;
+                }
+            }
+        }
+
+        currentSequence = seq;
+        if(seq) {
+            currentIndex = 0;//(seq->getFrame(currentIndex))?
+                    currentIndex : 0;
+            currentFrame = seq->getFrame(currentIndex);
+        } else {
+            currentIndex = 0;
+            currentFrame = nullptr;
+        }
+    }
 
 }
 

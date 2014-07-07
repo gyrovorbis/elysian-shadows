@@ -6,6 +6,7 @@
 #include <gyro.h>
 #include "elysian_asset.hpp"
 #include "elysian_level.hpp"
+#include "elysian_mem_pool.hpp"
 
 #define ELYSIAN_MAP_BOUNDARY_CHECKS false //PLEASE, GOD, TAKE ME OUT BEFORE RELEASE!!!!!!
 #define ELYSIAN_AREA_USE_INIT_LUA	true
@@ -98,7 +99,6 @@ namespace elysian {
 		GYTexCoord2	texCoord;
 		GYColor4	color;
 	};
-
 
     struct Area: public Asset {
 		//Entity data

@@ -4,9 +4,12 @@
 #include "elysian_instance_transform.hpp"
 #include "elysian_generic.hpp"
 #include "elysian_rigid_body.hpp"
+#include "elysian_collision_system.hpp"
 
 
 namespace elysian {
+
+CollisionSystem* Collidable::_colSys = nullptr;
 
 void CollisionContact::_calculatePenetrationInternals(void) {
 	gyContactCalculatePenetrationInternals(this,
@@ -46,6 +49,8 @@ void Collidable::update(void) {
     _collider.col.worldPos = *(GYVector3*)&worldVecs[0];
     gyVec3Sub(&_worldSize, (GYVector3*)&_collider.box.worldVert[2], (GYVector3*)&_collider.box.worldVert[0]);
     _worldSize.z *= -1.0f;
+
+    _updateSortSweepAABB();
 
 #endif
 }
@@ -141,13 +146,53 @@ bool Collidable::save(FILE* /*file*/) {
 
 //O(1)
 bool Collidable::addToLevel(void) {
+    _sortSweepAABB = _colSys->addSortSweepCollidable();
+    _sortSweepAABB->collidable = this;
+    _updateSortSweepAABB();
 	_curArea->collidables.push_back(this);
         return true;
 }
 
 //O(n)
 bool Collidable::removeFromLevel(void) {
+    _colSys->removeSortSweepCollidable(_sortSweepAABB);
     return containerEraseOnMatch(this, _curArea->collidables);
 }
+
+void Collidable::_updateSortSweepAABB(void) {
+    float startX = (_curArea->width)*32.0f;
+    float endX = 0;
+    float startY = (_curArea->height)*32.0f;
+    float endY = 0;
+    auto checkBoundary = [&](GYVector4& vert) {
+        if(vert.x < startX) startX = vert.x;
+        if(vert.x > endX) endX = vert.x;
+        if(vert.y < startY) startY = vert.y;
+        if(vert.y > endY) endY = vert.y;
+    };
+
+    for(unsigned i = 0; i < 4; ++i) checkBoundary(_collider.box.worldVert[i]);
+
+    _sortSweepAABB->min[0] = startX;
+    _sortSweepAABB->max[0] = endX;
+
+#if ELYSIAN_SORT_SWEEP_DIMENSIONS >= 2
+    _sortSweepAABB->min[1] = startY;
+    _sortSweepAABB->max[1] = endY;
+#   if ELYSIAN_SORT_SWEEP_DIMENSIONS >= 3
+    _sortSweepAABB->min[2] = _collider.box.worldVert[3].z;
+    _sortSweepAABB->max[2] = _collider.box.worldVert[0].z;
+#   endif
+
+#endif
+}
+
+bool Collidable::checkFullCollision(Collidable* col) {
+    return _colSys->detectCollidableCollidableCollision(this, col);
+}
+
+template<>
+unsigned SortSweepCollidable::curIndex = 0;
+
 
 }

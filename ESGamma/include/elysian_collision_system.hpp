@@ -4,9 +4,11 @@
 #include <map>
 #include <gyro.h>
 #include <gyro_kinetic.h>
+#include <elysian_mem_pool.hpp>
 #include "elysian_system.hpp"
 #include "elysian_tile.hpp"
 #include "elysian_collidable.hpp"
+#include "elysian_sort_sweep.hpp"
 
 #define ELYSIAN_COLLISION_SYSTEM_PROTECTED					true
 #define ELYSIAN_COLLISION_CONTACT_LIST_SIZE					1000
@@ -51,7 +53,8 @@ namespace elysian {
 		};
 	private:
 		std::map<uint32_t, CollisionContactEventMonitor*> _contactMonitors;
-		CollisionContact _contactPool[ELYSIAN_COLLISION_CONTACT_LIST_SIZE];
+        SortSweepPool       _sortSweepPool;
+        CollisionContact    _contactPool[ELYSIAN_COLLISION_CONTACT_LIST_SIZE];
 		
 		/* Stores minimal collision information from the previous frame ONLY for
 		 * entities that have collision triggers */
@@ -84,12 +87,14 @@ namespace elysian {
 
 
 	public:
-
+             CollisionSystem(void);
 		void prepareGeometry(void);
 		void detectCollisions(void);
 		void update(void);
 		void render(void); 
         void renderTileColliders(void) const;
+        void onAreaEnter(void);
+        void onAreaExit(void);
 		//void PrepareGeometry(void);
 		//void DetectCollisions(void);
 		//void ResolveContacts(void);
@@ -106,7 +111,10 @@ namespace elysian {
 		bool checkCollision(const Entity &entity1, const Entity &entity2) const;
 		bool checkCollision(const Collidable &col1, const Collidable &col2) const;
 		bool previouslyColliding(const Collidable &col1, const Collidable &col2) const;
-		
+
+        SortSweepCollidable*  addSortSweepCollidable(void);
+        void            removeSortSweepCollidable(SortSweepCollidable* body);
+        bool            detectCollidableCollidableCollision(Collidable* col1, Collidable* col2);
 	};
 
 
@@ -134,6 +142,14 @@ namespace elysian {
 	inline unsigned CollisionSystem::getContactCount(void) const { return _contactAmount; }
 	inline CollisionContact* CollisionSystem::getContact(const unsigned index) { return &_contactPool[index]; }
 	inline unsigned CollisionSystem::getPenResIterUsed(void) const { return _conResIter; }
+
+    inline SortSweepCollidable* CollisionSystem::addSortSweepCollidable(void) {
+        return &_sortSweepPool.claimFreeEntry();
+    }
+
+    inline void CollisionSystem::removeSortSweepCollidable(SortSweepCollidable* body) {
+        _sortSweepPool.removeAABB(*body);
+    }
 
 }
 

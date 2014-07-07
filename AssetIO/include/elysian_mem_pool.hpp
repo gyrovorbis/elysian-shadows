@@ -31,7 +31,7 @@ namespace elysian {
 
 template <typename T>
 class Pool {
-private:
+protected:
 
     //internal state to reduce time complexities
     unsigned    _usedCount          = 0;
@@ -131,9 +131,13 @@ public:
         iterator(Pool<T>*const parent, const unsigned index):
             _parent(parent), _index(index) {}
 
-    /*    bool operator != (const iterator& other) const {
+        bool operator != (const iterator& other) const {
             return (_index != other._index);
-        }*/
+        }
+
+        bool operator == (const iterator& other) const {
+            return (_index == other._index);
+        }
 
         bool operator < (const iterator& other) const {
             return (_index < other._index);
@@ -148,6 +152,45 @@ public:
             return *this;
         }
     };
+
+
+
+    class const_iterator {
+        friend class Pool;
+    private:
+
+        const Pool<T>* _parent    = nullptr;
+        unsigned _index     = 0;
+
+    public:
+
+        const_iterator(void) = default;
+
+        const_iterator(const Pool<T>*const parent, const unsigned index):
+            _parent(parent), _index(index) {}
+
+        bool operator != (const const_iterator& other) const {
+            return (_index != other._index);
+        }
+
+        bool operator == (const const_iterator& other) const {
+            return (_index == other._index);
+        }
+
+        bool operator < (const const_iterator& other) const {
+            return (_index < other._index);
+        }
+
+       // T* operator->(void) const;
+        const T& operator*(void) const;
+
+        const const_iterator& operator++(void) {
+            while(!_parent->_used[++_index]);
+
+            return *this;
+        }
+    };
+
 
     Pool(const unsigned maxCapacity = ELYSIAN_MEM_POOL_DEFAULT_MAX_CAPACITY,
          const unsigned freeIndexSize = ELYSIAN_MEM_POOL_DEFAULT_FREE_INDEX_CAPACITY):
@@ -179,9 +222,39 @@ public:
         return iterator(this, _endIndex);
     }
 
+    const_iterator begin(void) const {
+        for(unsigned i = 0; i < _endIndex; ++i) {
+            if(_used[i]) return const_iterator(this, i);
+        }
+        return const_iterator(this, _endIndex);
+    }
+
     iterator end(void) {
         return iterator(this, _endIndex);
     }
+
+    const_iterator end(void) const {
+        return const_iterator(this, _endIndex);
+    }
+
+    iterator find(const T& entry) {
+        for(auto it = begin(); it < end(); ++it) {
+            if(_entries[it._index] == entry) {
+                return it;
+            }
+        }
+        return end();
+    }
+
+    const_iterator find(const T& entry) const {
+        for(auto it = begin(); it < end(); ++it) {
+            if(_entries[it._index] == entry) {
+                return it;
+            }
+        }
+        return end();
+    }
+
 
     T& claimFreeEntry(void) {
         return _entries[_claimFreeIndex()];
@@ -190,7 +263,6 @@ public:
 
     void insertEntry(const T& entry) {
         _entries[_claimFreeIndex()] = entry;
-
     }
 
 	//Way slower than doing it with the iterator... but k.
@@ -204,6 +276,7 @@ public:
 	}
 
     void remove(const iterator it) {
+
         if(_freeCacheCount < _freeIndicesSize) {
             for(unsigned i = 0; i < _freeIndicesSize; ++i) {
                 if(_freeIndices[i] == -1) {
@@ -225,6 +298,26 @@ public:
             for(unsigned i = 0; i < _freeIndicesSize; ++i) _freeIndices[i] = -1;
         }
     }
+
+    void removeEntryContiguous(const T& entry) {
+        for(auto it = begin(); it < end(); ++it) {
+            if(&_entries[it._index] == &entry) {
+                removeContiguous(it);
+                return;
+            }
+        }
+    }
+
+    void removeContiguous(const iterator it) {
+        //close gap in array
+        for(unsigned i = it._index; i < _endIndex-1; ++i) {
+            _entries[i] = _entries[i+1];
+            _used[i] = _used[i+1];
+        }
+        _used[_endIndex--] = false;
+        --_usedCount;
+    }
+
 
     void resize(const unsigned size) {
         T *old_entries = _entries;
@@ -270,9 +363,43 @@ inline T& Pool<T>::iterator::operator *(void) const {
     return _parent->_entries[_index];
 }
 
+template<typename T>
+inline const T& Pool<T>::const_iterator::operator *(void) const {
+    return _parent->_entries[_index];
+}
+
+template<unsigned size>
+struct CharArrayPoolEntry {
+    char string[size] = { 0 };
+
+    CharArrayPoolEntry(void) = default;
+
+    CharArrayPoolEntry(const char* str) {
+        strcpy(string, str);
+    }
+
+    CharArrayPoolEntry(const CharArrayPoolEntry& rhs) {
+        strcpy(string, rhs.string);
+    }
+
+    CharArrayPoolEntry& operator= (const CharArrayPoolEntry& rhs) {
+        strcpy(string, rhs.string);
+    }
+
+    bool operator== (const CharArrayPoolEntry& rhs) {
+         return (strcmp(string, rhs.string) == 0);
+    }
+
+    void setString(const char* str) {
+        strcpy(string, str);
+    }
+
+    const char* getString(void) const {
+        return string;
+    }
+};
 
 
 }
-
 
 #endif // ELYSIAN_MEM_POOL_HPP

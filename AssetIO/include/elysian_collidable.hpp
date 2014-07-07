@@ -5,7 +5,7 @@
 #include <gyro.h>
 #include <cstring>
 #include <kinetic/gyro_kinetic.h>
-
+#include "elysian_sort_sweep.hpp"
 #include "elysian_component.hpp"
 
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_BEHAVIOR_MASK	(1<<0)
@@ -13,6 +13,8 @@
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_COMBAT_MASK		(1<<2)
 
 namespace elysian {
+
+    class CollisionSystem;
 
 	struct CollisionFlags { 
 		inline CollisionFlags(void): checkAgainst(~0x0), type(~0x0) {}
@@ -83,6 +85,8 @@ private:
 	public:
 		enum ZTRAN_STATE { ZTRAN_INACTIVE, ZTRAN_ACTIVE };
 	protected:
+        static CollisionSystem* _colSys;
+
         GYVector3           _worldSize          = { 1.0f, 1.0f, 1.0f, };
 		unsigned			_contactCount		= 0;
 		CollidableAttrib*	_attrib				= nullptr;
@@ -94,6 +98,7 @@ private:
 		bool				_onZTran			= false;
 		bool				_resolvePen			= true;
 		bool				_active				= true;
+        SortSweepCollidable* _sortSweepAABB     = nullptr;
 
 		uint32_t			_eventMonitorMask	= 0;
 
@@ -109,6 +114,7 @@ private:
 		{}
 
 		virtual ~Collidable(void) {}
+        void    _updateSortSweepAABB(void);
 		
 	public:        
 		virtual bool load(FILE* file);
@@ -140,6 +146,10 @@ private:
         void            setRestingOnBody(const bool v);
         bool            getStackedOnGround(void) const;
         void            setStackedOnGround(const bool v);
+        void            setSortSweepAABB(SortSweepCollidable* sweep);
+
+        bool            checkAABBCollision(Collidable* col);
+        bool            checkFullCollision(Collidable* col);
 	};
 
 	/*
@@ -227,9 +237,22 @@ private:
         if(body == _body[0]) coeff = 1.0f;
         else coeff = -1.0f;
 
-
 */
 
+    }
+
+    inline bool Collidable::checkAABBCollision(Collidable* col) {
+        SortSweepCollidable* b = col->_sortSweepAABB;
+        auto* a = _sortSweepAABB;
+
+        return (((a->min[0] > b->min[0] && a->min[0] < b->max[0]) || (b->min[0] > a->min[0] && b->min[0] < a->max[0])) &&
+                ((a->min[1] > b->min[1] && a->min[1] < b->max[1]) || (b->min[1] > a->min[1] && b->min[1] < a->max[1])));// &&
+               // ((a->min[2] > b->min[2] && a->min[2] < b->max[2]) || (b->min[2] > a->min[2] && b->min[2] < a->max[2])));
+    }
+\
+
+    inline void Collidable::setSortSweepAABB(SortSweepCollidable* sweep) {
+        _sortSweepAABB = sweep;
     }
 
 

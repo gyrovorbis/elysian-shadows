@@ -10,11 +10,6 @@ namespace elysian {
 
 	struct Level;
 	struct Area;
-    /*
-    class LevelSystemMonitorEvent {
-        virtual void
-
-    };*/
 
 	class LevelSystem: public System { 
 	private:

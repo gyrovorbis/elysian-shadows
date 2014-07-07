@@ -386,6 +386,7 @@ OOLUA_PROXY(AnimationSequence)
 		No_public_destructor
 	)
 	OOLUA_MEM_FUNC(void, addFrame, float, float, float, unsigned, GY_RECT_TEX_ORIENT)
+    OOLUA_MEM_FUNC(AnimationSequence*, addSequence, const char*)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(AnimationAttrib)
@@ -398,6 +399,7 @@ OOLUA_PROXY(ChildAnimationSequence)
 		No_public_destructor
 	)
 	OOLUA_MEM_FUNC(void, addFrame, float, float, float, float)
+    OOLUA_MEM_FUNC(ChildAnimationSequence*, addSequence, const char*)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ChildAnimation)

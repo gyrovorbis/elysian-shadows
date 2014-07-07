@@ -139,8 +139,11 @@ void Character::setHeldEntity(Entity * const entity) {
             entity->getRigidBody()->clearKinetic();
             entity->getCollidable()->setActive(false);
             _entity->getAnimation()->addChildEntity(entity, ELYSIAN_CHAR_ANIM_CHILD_SEQ_HELD);
+            _entity->getAnimation()->addState("Hold");
         }
-	}
+    } else {
+        _entity->getAnimation()->removeState("Hold");
+    }
 
 }
 
