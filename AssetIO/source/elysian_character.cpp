@@ -39,16 +39,16 @@ void Character::faceDir(const Direction::DIR4 dir) {
 		Animation *animComp = _entity->getAnimation();
 		switch(dir) {
 			case Direction::DIR4_UP:
-				animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_STAND_UP);
+				animComp->playAnimation("Up");
 				break;
 			case Direction::DIR4_DOWN:
-				animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_STAND_DOWN);
+				animComp->playAnimation("Down");
 				break;
 			case Direction::DIR4_LEFT:
-				animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_STAND_LEFT);
+				animComp->playAnimation("Left");
 				break;
 			case Direction::DIR4_RIGHT:
-				animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_STAND_RIGHT);
+				animComp->playAnimation("Right");
 				break;
 			default:
 				break;
@@ -85,6 +85,7 @@ void Character::move(const GYVector2 &dist) {
 	_entity->getRigidBody()->applyForce(GYVector3{ totalForce.x, totalForce.y, 0.0f });
 	//_entity->transform.translate(dist);
 	_movedThisFrame = true;
+	_entity->getAnimation()->replaceState("Stand", "Walk");
 
 	Direction::DIR4 dir = Direction::fromVector(totalForce);
 
@@ -94,16 +95,16 @@ void Character::move(const GYVector2 &dist) {
 		if((_walkAnimInterp && _faceDir == dir) || !_walkAnimInterp) {
 			switch(dir) {
 				case Direction::DIR4_UP:
-					animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_WALK_UP);
+					animComp->playAnimation("Up");
 					break;
 				case Direction::DIR4_DOWN:
-					animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_WALK_DOWN);
+					animComp->playAnimation("Down");
 					break;
 				case Direction::DIR4_LEFT:
-					animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_WALK_LEFT);
+					animComp->playAnimation("Left");
 					break;
 				case Direction::DIR4_RIGHT:
-					animComp->playAnimation(ELYSIAN_CHAR_ANIM_SEQ_WALK_RIGHT);
+					animComp->playAnimation("Right");
 					break;
 				default:
 					break;
@@ -117,6 +118,7 @@ void Character::move(const GYVector2 &dist) {
 
 void Character::update(void) {
 	if(!_movedThisFrame) {
+		_entity->getAnimation()->replaceState("Walk", "Stand");
 		faceDir(_faceDir);
 		//_entity->getRigidBody()->setVelocity(GYVector3{ 0.0f, 0.0f, 0.0f });
 	}

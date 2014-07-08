@@ -323,7 +323,7 @@ namespace elysian {
 					//if(!curMapEntry.mapEntry.getValue()) continue; //not the blank object
 					int elevation = curMapEntry.mapEntry.getElev();//-1;
 
-					if(elevation == 0 && !curMapEntry.mapEntry.getNormal()) { //render tile immediately at elevation -1 (below entities)
+					if(elevation == 0 && !curMapEntry.mapEntry.getPlane()) { //render tile immediately at elevation -1 (below entities)
 						//Immediate render, or buffer if it requires multiple passes
 						_renderOrBufferImmediateTileEntry(curMapEntry);
 					} else { //Add to depth buffer if elevated
@@ -381,7 +381,7 @@ namespace elysian {
 
 		_lightsRendered |= _lightsActive = lightSys->startLightPass(_objectRowLights[normalType][i]);
 		for(unsigned j = 0; j < _objectCount[i]; ++j) {
-			if(_objectBuff[i][j].mapEntry.getNormal() == normalType)
+			if(_objectBuff[i][j].mapEntry.getPlane() == normalType)
 				_renderOrQueueTileEntry(j, _objectBuff[i][j]);
 		}
 		while(_queued) {

@@ -436,6 +436,9 @@ OOLUA_PROXY(Animation, Component)
 	OOLUA_MEM_FUNC(void, setCurrentFrame, const unsigned)
 	OOLUA_MEM_FUNC(void, setChildPivot, float, float)
 	OOLUA_MEM_FUNC(void, setSpeedMultiplier, float)
+	OOLUA_MEM_FUNC(void, addState, const char*)
+	OOLUA_MEM_FUNC(void, removeState, const char*)
+	OOLUA_MEM_FUNC(void, replaceState, const char*, const char*)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(AnimationSystem)

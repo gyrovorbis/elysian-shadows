@@ -33,8 +33,8 @@
 #define ELYSIAN_TILE_ENTRY_INDEX_BIT_MASK	0x01ff
 #define ELYSIAN_TILE_ENTRY_ZTRAN_BIT_POS	31
 #define ELYSIAN_TILE_ENTRY_ZTRAN_BIT_MASK	0x0001
-#define ELYSIAN_TILE_ENTRY_NORMAL_BIT_POS	30
-#define ELYSIAN_TILE_ENTRY_NORMAL_BIT_MASK	0x0001
+#define ELYSIAN_TILE_ENTRY_PLANE_BIT_POS	17
+#define ELYSIAN_TILE_ENTRY_PLANE_BIT_MASK	0x000f
 
 #define ELYSIAN_MAP_ENTRY_GET_ATTRIB(t ,a)		((value >> ELYSIAN_##t##_ENTRY_##a##_BIT_POS) & ELYSIAN_##t##_ENTRY_##a##_BIT_MASK)
 #define ELYSIAN_MAP_ENTRY_SET_ATTRIB(t, a, v)	do { \
@@ -86,12 +86,14 @@ namespace elysian {
 		TileEntry(void);
 		TileEntry(const uint32_t val);
 
-		void		setIndex(const uint16_t i);
-		uint16_t	getIndex(void) const;
-		void		setZTran(const bool z);
-		bool		getZTran(void) const;
-		void		setNormal(const bool n);
-		bool		getNormal(void) const;
+		void					setIndex(const uint16_t i);
+		uint16_t				getIndex(void) const;
+		void					setZTran(const bool z);
+		bool					getZTran(void) const;
+		void					setPlane(const GY_RECT_PLANE_TYPE n);
+		GY_RECT_PLANE_TYPE		getPlane(void) const;
+		bool					getNormal(void) const;
+		void					setNormal(const bool val);
 	};
 
 	struct VboEntry {
@@ -199,8 +201,10 @@ namespace elysian {
 	inline void TileEntry::setIndex(const uint16_t i) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, INDEX, i); }
 	inline bool TileEntry::getZTran(void) const { return ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, ZTRAN); }
 	inline void TileEntry::setZTran(const bool z) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, ZTRAN, z); }
-	inline bool TileEntry::getNormal(void) const { return ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, NORMAL); }
-	inline void TileEntry::setNormal(const bool n) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, NORMAL, n); }
+	inline GY_RECT_PLANE_TYPE TileEntry::getPlane(void) const { return (GY_RECT_PLANE_TYPE)ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, PLANE); }
+	inline void TileEntry::setPlane(const GY_RECT_PLANE_TYPE n) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, PLANE, n); }
+	inline bool TileEntry::getNormal(void) const { return (bool)ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, PLANE); }
+	inline void TileEntry::setNormal(const bool v) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, PLANE, v); }
 
 	inline TileEntry Area::getTileEntry(const unsigned l, const unsigned x, const unsigned y) const {
 		return ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x);
@@ -212,22 +216,22 @@ namespace elysian {
 
 		VboEntry entry[4] = {
 			{
-				GYVector4  { x*32.0f-16.0f, y*32.0f-16.0f, e.getElev()*32.0f + ((e.getNormal())? 32.0f : 0.0f), 1.0f },
+				GYVector4  { x*32.0f-16.0f, y*32.0f-((e.getPlane())? -16.0f : 16.0f)+e.getElev()*32.0f, e.getElev()*32.0f + ((e.getPlane())? 32.0f : 0.0f), 1.0f },
 				GYTexCoord2 { coords[0].u, coords[0].v },
 				GYColor4 { 255, 255, 255, 255 }
 			},
 			{
-				GYVector4  { x*32.0f+16.0f, y*32.0f-16.0f, e.getElev()*32.0f + ((e.getNormal())? 32.0f : 0.0f), 1.0f },
+				GYVector4  { x*32.0f+16.0f, y*32.0f-((e.getPlane())? -16.0f : 16.0f)+e.getElev()*32.0f, e.getElev()*32.0f + ((e.getPlane())? 32.0f : 0.0f), 1.0f },
 				GYTexCoord2 { coords[1].u, coords[1].v },
 				GYColor4 { 255, 255, 255, 255 }
 			},
 			{
-				GYVector4 { x*32.0f-16.0f, y*32.0f+16.0f, e.getElev()*32.0f, 1.0f },
+				GYVector4 { x*32.0f-16.0f, y*32.0f+((e.getPlane())? 16.0f : 16.0f) +e.getElev()*32.0f, e.getElev()*32.0f, 1.0f },
 				GYTexCoord2 { coords[2].u, coords[2].v },
 				GYColor4 { 255, 255, 255, 255 }
 			},
 			{
-				GYVector4 { x*32.0f+16.0f, y*32.0f+16.0f, e.getElev()*32.0f, 1.0f },
+				GYVector4 { x*32.0f+16.0f, y*32.0f+((e.getPlane())? 16.0f : 16.0f) +  e.getElev()*32.0f, e.getElev()*32.0f, 1.0f },
 				GYTexCoord2 { coords[3].u, coords[3].v },
 				GYColor4 { 255, 255, 255, 255 }
 			}

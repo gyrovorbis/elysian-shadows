@@ -268,19 +268,19 @@ void Area::populateVbo(void) {
 				coords = gyVidTexCoordArrayFromFrame(&level->tileSheet->_coord->texCoord[tileEntry.getIndex()],
 																				   tileEntry.getOrient());
 
-				curPtr[0].vert = GYVector4 { x*32.0f-16.0f, y*32.0f-16.0f, tileEntry.getElev()*32.0f + ((tileEntry.getNormal())? 32.0f : 0.0f), 1.0f };
+				curPtr[0].vert = GYVector4 { x*32.0f-16.0f, y*32.0f-((tileEntry.getNormal())? -16.0f : 16.0f)+tileEntry.getElev()*32.0f, tileEntry.getElev()*32.0f + ((tileEntry.getNormal())? 32.0f : 0.0f), 1.0f };
 				curPtr[0].color = GYColor4 { 255, 255, 255, 255 };
 				curPtr[0].texCoord = coords[0];
 
-				curPtr[1].vert = GYVector4 { x*32.0f+16.0f, y*32.0f-16.0f, tileEntry.getElev()*32.0f + ((tileEntry.getNormal())? 32.0f : 0.0f), 1.0f };
+				curPtr[1].vert = GYVector4 { x*32.0f+16.0f, y*32.0f-((tileEntry.getNormal())? -16.0f : 16.0f)+tileEntry.getElev()*32.0f, tileEntry.getElev()*32.0f + ((tileEntry.getNormal())? 32.0f : 0.0f), 1.0f };
 				curPtr[1].color = GYColor4 { 255, 255, 255, 255 };
 				curPtr[1].texCoord = coords[1];
 
-				curPtr[2].vert = GYVector4 { x*32.0f-16.0f, y*32.0f+16.0f, tileEntry.getElev()*32.0f, 1.0f };
+				curPtr[2].vert = GYVector4 { x*32.0f-16.0f, y*32.0f+((tileEntry.getNormal())?16.0f : 16.0f) +tileEntry.getElev()*32.0f, tileEntry.getElev()*32.0f, 1.0f };
 				curPtr[2].color = GYColor4 { 255, 255, 255, 255 };
 				curPtr[2].texCoord = coords[2];
 
-				curPtr[3].vert = GYVector4 { x*32.0f+16.0f, y*32.0f+16.0f, tileEntry.getElev()*32.0f, 1.0f };
+				curPtr[3].vert = GYVector4 { x*32.0f+16.0f, y*32.0f+((tileEntry.getNormal())? 16.0f : 16.0f)+tileEntry.getElev()*32.0f, tileEntry.getElev()*32.0f, 1.0f };
 				curPtr[3].color = GYColor4 { 255, 255, 255, 255 };
 				curPtr[3].texCoord = coords[3];
 

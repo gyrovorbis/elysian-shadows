@@ -139,7 +139,7 @@ namespace elysian {
             _blendFunc = false;
 		}
 #if 1
-		GY_RECT_NORMAL_TYPE newNormal = entry.mapEntry.getNormal() ? GY_RECT_NORMAL_FLAT : GY_RECT_NORMAL_FRONT;
+		GY_RECT_NORMAL_TYPE newNormal = entry.mapEntry.getPlane() ? GY_RECT_NORMAL_FLAT : GY_RECT_NORMAL_FRONT;
 
         if(newNormal != _curNormalType) {
 			endObjectList();

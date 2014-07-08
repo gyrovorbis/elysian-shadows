@@ -198,7 +198,7 @@ void Engine::render(void) {
 			_guiSystem->renderBackground();
 			_cameraSystem->pushViewProjMatrix();
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
-           // _lightSystem->shadowRenderPasses();
+			_lightSystem->shadowRenderPasses();
 #endif
            // _lightSystem->addLightSourcesToScene();
 

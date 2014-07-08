@@ -186,7 +186,7 @@ CameraSystem::CameraSystem(void) {
 	//Initialize default camera
 	gyVidResolution(&w, &h);
 	gyVidCamOrthoProj(_curState, 0.0f, (float)w, (float)h, 0.0f, -999.0f, 1000.0f);
-	gyVidCamOrthoLookAt(_curState, &_curState->_keyFrame._pos, 1.0f, 0.0f, 0.0f);
+	gyVidCamOrthoLookAt(_curState, &_curState->_keyFrame._pos, 1.0f, 0.0f, _curState->_keyFrame._xOrient);
 
 	memcpy(_uiCamera.viewMat, identity4, sizeof(GYMatrix4));
 	gyVidCamOrthoProj(&_uiCamera, 0.0f, (float)w, (float)h, 0.0f, -999.0f, 1000.0f);
@@ -343,6 +343,14 @@ void CameraSystem::update(void) {
 		//gyVidProjectionDefaultMatrix();
 		//gyVidCameraSetViewCenter(&_curState->pos, _curState->scale, _curState->zOrient);
 		gyVidCamOrthoLookAt(_curState, &_curState->_keyFrame._pos, _curState->_keyFrame._scale*_curState->staticScale, _curState->_keyFrame._zOrient, _curState->_keyFrame._xOrient);
+
+		gyMatPush();
+		gyMatLoad(&_curState->projViewMat);
+		gyMatShearZ(0.0f, -1.0f);
+
+		gyMatStore(&_curState->projViewMat);
+		gyMatPop();
+
 
 	} else { //PERSPECTIVE PROJECTION
 

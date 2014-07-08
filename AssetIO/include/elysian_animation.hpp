@@ -327,7 +327,8 @@ namespace elysian {
 
     template<typename S, typename T>
     inline void AnimationStateStack<S,T>::setCurrentIndex(const unsigned index) {
-        assert(currentSequence);
+		if(!currentSequence) return;
+		//assert(currentSequence);
      //   if(currentSequence) {
             const unsigned frameCount = currentSequence->getFrameCount();
             currentIndex = (frameCount > 0)? index % frameCount : 0;

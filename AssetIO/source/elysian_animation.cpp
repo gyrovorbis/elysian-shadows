@@ -332,10 +332,12 @@ void Animation::playAnimation(const char *name, EventMonitor*const monitor) {
         setCurrentIndex(0);
 
         //Begin initial animation frame immediately!
-        _entity->getRenderable()->setOffset(currentFrame->offset);
-        _entity->getRenderable()->setFrame(currentFrame->spriteFrame);
-        _entity->getRenderable()->setTexOrient(currentFrame->texOrient);
-        if(monitor) monitor->onStart();
+		if(currentFrame) {
+			_entity->getRenderable()->setOffset(currentFrame->offset);
+			_entity->getRenderable()->setFrame(currentFrame->spriteFrame);
+			_entity->getRenderable()->setTexOrient(currentFrame->texOrient);
+			if(monitor) monitor->onStart();
+		}
     }
 
 	if(_children) {
