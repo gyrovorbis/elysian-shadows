@@ -38,6 +38,7 @@ static const GYVector4 _rectVerts[GY_RECT_NORMAL_MAX][4] = {
 		{-0.5f, 0.5f, 0.0f, 1.0f},
 		{0.5f, 0.5f, 0.0f, 1.0f}
 	},
+ #if 0
 	//FRONT
 	{
 		{-0.5f, -0.5f, 1.0f, 1.0f},
@@ -45,6 +46,15 @@ static const GYVector4 _rectVerts[GY_RECT_NORMAL_MAX][4] = {
 		{-0.5f, 0.5f, 0.0f, 1.0f},
 		{0.5f, 0.5f, 0.0f, 1.0f}
 	}
+#else
+	//FRONT
+	{
+		{-0.5f, 0.0f, 1.0f, 1.0f},
+		{0.5f, 0.0f, 1.0f, 1.0f},
+		{-0.5f, 0.0f, 0.0f, 1.0f},
+		{0.5f, 0.0f, 0.0f, 1.0f}
+	}
+   #endif
 };
 
 /*
