@@ -43,13 +43,18 @@ void Animation::removeState(const char* state) {
 
 void Animation::replaceState(const char *oldState, const char *newState) {
     auto it = _statePool.find(AnimStateEntry(oldState));
+	auto itNew = _statePool.find(AnimStateEntry(newState));
 
-    if(it == _statePool.end()) { //never even had the old state
-        return addState(newState);
-    }
+	if(itNew == _statePool.end()) {
 
-    (*it).setString(newState);
-    _updateStates();
+		if(it == _statePool.end()) { //never even had the old state
+			return addState(newState);
+		}
+
+		(*it).setString(newState);
+		_updateStates();
+
+	}
 
     if(_children) {
         for(auto it = _children->begin(); it < _children->end(); ++it) {

@@ -304,8 +304,19 @@ void CameraSystem::processInput(const GameInput& input) {
 
 		}
 		if(input.getDown(GameInput::BUT_D)) {
-
 			translate(GYVector3{ 5.0f, 0.0f, 0.0f});
+		}
+
+		if(input.getDown(GameInput::BUT_Z)) {
+			_curState->dir.y -= 0.01f;
+			_curState->dir.z += 0.01f;
+			gyVec3Normalize(&_curState->dir);
+		}
+
+		if(input.getDown(GameInput::BUT_X)) {
+			_curState->dir.y += 0.01f;
+			_curState->dir.z -= 0.01f;
+			gyVec3Normalize(&_curState->dir);
 		}
 	}
 #endif

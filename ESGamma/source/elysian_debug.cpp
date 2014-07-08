@@ -503,9 +503,9 @@ void Debug::processInput(GameInput& input) {
 			gyVec3Normalize(&dirVec);
 			//lightSrc->setDirection(dirVec);
 			LightAttrib* attrib = new LightAttrib;
-			attrib->setAmbientColor(GYVector4{ 0.2f, 0.0f, 0.2f, 1.0f});
-			attrib->setDiffuseColor(GYVector4 { 0.0f, 0.0f, 4.0f, 1.0f });
-			attrib->setSpecularColor(GYVector4{ 0.0f, 2.0f, 4.0f, 1.0f});
+			attrib->setAmbientColor(GYVector4{ 0.1f, 0.1f, 0.1f, 1.0f});
+			attrib->setDiffuseColor(GYVector4 { 0.0f, 0.0f, 2.0f, 1.0f });
+			attrib->setSpecularColor(GYVector4{ 0.0f, 1.0f, 1.0f, 1.0f});
 			lightSrc->setAttrib(attrib);
 #if 0
 			lightSrc->setLightType(LightSource::LIGHT_DIRECTIONAL);
@@ -513,7 +513,7 @@ void Debug::processInput(GameInput& input) {
 			lightSrc->setLightType(GY_LIGHT_POINT);
 			lightSrc->setSpotCutoffAngle(360.0f);
 			lightSrc->setShadowCaster(true);
-			attrib->setAttenuationFactors(GYVector3{ 0.0005f, 0.00005f, 0.00005f });
+			attrib->setAttenuationFactors(GYVector3{ 0.00001f, 0.00001f, 0.00001f });
 
 			Debug::printf(VERBOSE, "Adding light - %d", count);
 

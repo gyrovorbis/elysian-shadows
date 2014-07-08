@@ -40,6 +40,7 @@ public:
 	void shadowRenderPasses(void);
 	unsigned getLightCount(void) const;
 	unsigned getOnscreenLightCount(void) const;
+	bool	isShadowPass(void) const;
 
 	void addLightSourcesToScene(void);
 	void removeLightSourcesFromScene(void);
@@ -82,6 +83,8 @@ inline unsigned LightSystem::getOnscreenLightCount(void) const {
 inline unsigned LightSystem::getShaderUniformChangesLastFrame(void) const {
 	return _shaderUniformChangesLastFrame;
 }
+
+inline bool LightSystem::isShadowPass(void) const { return _shadowPass; }
 
 }
 
