@@ -123,6 +123,9 @@ void Character::update(void) {
 		//_entity->getRigidBody()->setVelocity(GYVector3{ 0.0f, 0.0f, 0.0f });
 	}
 	else _movedThisFrame = false;
+
+    //Set falling animation state
+    if(_entity->getRigidBody()->getVelocity().z < 0.0f) _entity->getAnimation()->replaceState("Jump", "Fall");
 }
 
 void Character::setHeldEntity(Entity * const entity) {
@@ -230,6 +233,7 @@ void Character::jump(void) {
 
     rb->applyForce(force);
 
+    _entity->getAnimation()->replaceState("Fall", "Jump");
 }
 
 

@@ -39,6 +39,7 @@ namespace elysian {
 		unsigned	_maxLife			= 100;
 		uint32_t	_forceMask			= ~0x0;
         bool		_stick				= true;
+        bool        _randomStartFrame   = false;
 
 	public:
 
@@ -60,6 +61,7 @@ namespace elysian {
         void        setForceMask(const uint32_t mask);
         void        setStick(const bool val);
         void        setIntensityFactor(const float factor);
+        void        setRandomStartFrame(const bool val);
 	};
 
 	class Particle: public ForceTarget {
@@ -170,6 +172,8 @@ namespace elysian {
     }
 
 	inline void ParticleEmitterAttrib::setStick(const bool val) { _stick = val; }
+
+    inline void ParticleEmitterAttrib::setRandomStartFrame(const bool val) { _randomStartFrame = val; }
 
 }
 
