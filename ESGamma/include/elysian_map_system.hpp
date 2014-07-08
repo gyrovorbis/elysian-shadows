@@ -228,7 +228,7 @@ namespace elysian {
 		gyVidAlphaLevel(GY_ALPHA_FULL);
 
 
-		//glDisable(GL_DEPTH_TEST);
+        glDisable(GL_DEPTH_TEST);
         //glDisable(GL_ALPHA_TEST);
         _blendFunc = false;
 	}
