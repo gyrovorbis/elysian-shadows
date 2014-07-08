@@ -77,10 +77,10 @@ typedef struct _GYCamera {
  */
 
 static const GYCamera	_defaultCamera;
-static GYVector4		_stripVerts[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE] __attribute__((aligned(32)));
-static GYColor4			_stripColors[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE] __attribute__((aligned(32)));
-static GYTexCoord2		_stripTexCoords[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE] __attribute__((aligned(32)));
-static GYVector4		_modelViewVertices[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE] __attribute__((aligned(32)));
+static GYVector4		_stripVerts[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]         __attribute__((aligned(32)));
+static GYColor4			_stripColors[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]        __attribute__((aligned(32)));
+static GYTexCoord2		_stripTexCoords[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]     __attribute__((aligned(32)));
+static GYVector4		_modelViewVertices[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]  __attribute__((aligned(32)));
 unsigned				curStripSize = 0;
 
 //Shared video state variables
