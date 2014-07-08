@@ -54,8 +54,8 @@ void ParticleEmitterInternals::emitFromPointInDir(const GYVector3& pos, const GY
 		part->position.z = pos.z + ((rand() % 6) - 3);
         part->life = _attrib->_maxLife;// - (rand() % ((int)((float)scaledIntensity/20.0f) + 1));
 
-        part->animRow = (_attrib->_animGridHeight > 1)? rand()%(_attrib->_animGridHeight-1) : 0;
-        part->frame = _attrib->_animGrid[part->animRow][0];
+        part->animRow = (_attrib->_animGridHeight > 1)? rand()%(_attrib->_animGridHeight) : 0;
+        part->frame = _attrib->_animGrid[part->animRow][(_attrib->_randomStartFrame)? rand()%_attrib->_animGridWidth : 0];
 
 		if(part->life <= 0) part->life = 1;
         part->size = _attrib->_startSize;

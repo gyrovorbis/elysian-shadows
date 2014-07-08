@@ -278,9 +278,10 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Renderable,
 						   getQuadSpriteAttrib,
 						   getMaterial)
 
-EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(AnimationSequence,
+EXPORT_OOLUA_FUNCTIONS_3_NON_CONST(AnimationSequence,
                                    addFrame,
-                                   addSequence)
+                                   addSequence,
+                                   setLinearInterpolation)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(AnimationSequence)
 
 EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(AnimationAttrib,
@@ -289,7 +290,8 @@ EXPORT_OOLUA_FUNCTIONS_0_CONST(AnimationAttrib)
 
 OOLUA_EXPORT_FUNCTIONS(ChildAnimationSequence,
                                    addFrame,
-                                    addSequence)
+                                    addSequence,
+                                    setLinearInterpolation)
 OOLUA_EXPORT_FUNCTIONS_CONST(ChildAnimationSequence)
 
 OOLUA_EXPORT_FUNCTIONS(ChildAnimation,
@@ -489,7 +491,8 @@ OOLUA_EXPORT_FUNCTIONS(ParticleEmitterAttrib,
                        setAnimGridIndex,
                        setAnimFrameDuration,
                        setStick,
-                       loadNormalMap)
+                       loadNormalMap,
+                       setRandomStartFrame)
 OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitterAttrib);
 
 OOLUA_EXPORT_FUNCTIONS(ParticleEmitter,

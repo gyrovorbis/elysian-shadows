@@ -387,6 +387,7 @@ OOLUA_PROXY(AnimationSequence)
 	)
 	OOLUA_MEM_FUNC(void, addFrame, float, float, float, unsigned, GY_RECT_TEX_ORIENT)
     OOLUA_MEM_FUNC(AnimationSequence*, addSequence, const char*)
+    OOLUA_MEM_FUNC(void, setLinearInterpolation, bool)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(AnimationAttrib)
@@ -400,6 +401,7 @@ OOLUA_PROXY(ChildAnimationSequence)
 	)
 	OOLUA_MEM_FUNC(void, addFrame, float, float, float, float)
     OOLUA_MEM_FUNC(ChildAnimationSequence*, addSequence, const char*)
+    OOLUA_MEM_FUNC(void, setLinearInterpolation, bool)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ChildAnimation)
@@ -663,6 +665,7 @@ OOLUA_PROXY(ParticleEmitterAttrib, SpriteAttrib, GYStatic)
     OOLUA_MEM_FUNC(void, setAnimFrameDuration, unsigned)
     OOLUA_MEM_FUNC(void, setStick, bool)
     OOLUA_MEM_FUNC(void, loadNormalMap, const char*, unsigned, unsigned)
+    OOLUA_MEM_FUNC(void, setRandomStartFrame, bool)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ParticleEmitter, Component)
