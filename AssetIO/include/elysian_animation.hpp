@@ -366,7 +366,7 @@ namespace elysian {
 
     template<typename S, typename T>
     inline void AnimationStateStack<S, T>::setSequence(const char* name) {
-        if(currentSequence && strcmp(currentSequence->getName(), name) == 0) return; //no change
+		//if(currentSequence && strcmp(currentSequence->getName(), name) == 0) return; //no change
 
         const S* seq = stateStack[stackDepth]->getSequence(name);
         if(!seq && stateStack[stackDepth]->getFrameCount() > 0) {
@@ -385,7 +385,7 @@ namespace elysian {
         currentSequence = seq;
         if(seq) {
             currentIndex = 0;//(seq->getFrame(currentIndex))?
-                    currentIndex : 0;
+					//currentIndex : 0;
             currentFrame = seq->getFrame(currentIndex);
         } else {
             currentIndex = 0;

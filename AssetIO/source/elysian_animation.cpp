@@ -10,11 +10,12 @@ namespace elysian {
 //----NONSTATIC----
 
 void Animation::addState(const char* state) {
-    if(_statePool.find(AnimStateEntry(state)) != _statePool.end()) return;
+	if(_statePool.find(AnimStateEntry(state)) == _statePool.end()) {
 
-    AnimStateEntry& entry = _statePool.claimFreeEntry();
-    entry.setString(state);
-    _updateStates();
+		AnimStateEntry& entry = _statePool.claimFreeEntry();
+		entry.setString(state);
+		_updateStates();
+	}
 
     if(_children) {
         for(auto it = _children->begin(); it < _children->end(); ++it) {
@@ -27,6 +28,7 @@ void Animation::addState(const char* state) {
 
 void Animation::removeState(const char* state) {
     auto it = _statePool.find(AnimStateEntry(state));
+
     if(it != _statePool.end()) {
         _statePool.remove(it);
         _updateStates();
@@ -54,6 +56,8 @@ void Animation::replaceState(const char *oldState, const char *newState) {
 		(*it).setString(newState);
 		_updateStates();
 
+	} else if(it != _statePool.end()) { //we can still remove the old state
+		return removeState(oldState);
 	}
 
     if(_children) {
