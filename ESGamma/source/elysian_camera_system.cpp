@@ -185,7 +185,7 @@ CameraSystem::CameraSystem(void) {
 
 	//Initialize default camera
 	gyVidResolution(&w, &h);
-	gyVidCamOrthoProj(_curState, 0.0f, (float)w, (float)h, 0.0f, -999.0f, 1000.0f);
+	gyVidCamOrthoProj(_curState, 0.0f, (float)w, (float)h, 0.0f, -999.0f, 0.0f);
 	gyVidCamOrthoLookAt(_curState, &_curState->_keyFrame._pos, 1.0f, 0.0f, _curState->_keyFrame._xOrient);
 
 	memcpy(_uiCamera.viewMat, identity4, sizeof(GYMatrix4));
