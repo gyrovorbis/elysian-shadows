@@ -36,8 +36,8 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
         //light->spotCutoffAngle = 360.0f; //Shader needs this for correct texture coords
 	case GY_LIGHT_SPOT:
 		glBindTexture(GL_TEXTURE_2D, internals->shadowMap);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 #if !defined(ANDROID) /* TODO: FIXME */
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
@@ -211,6 +211,7 @@ void glalGetDirectionalLightViewMatrix(GYMatrix4 dest, const GYLightSource*const
 	gyMatPush();
 	gyMatLoadIdentity();
 
+	//gyMatScale(2.0f, 2.0f, 1.0f);
 	gyMatTranslate(GLAL_SHADOW_MAP_SIZE*0.5f, GLAL_SHADOW_MAP_SIZE*0.5f, 0.0f);
 
 	gyVidLookAtMat(temp,
@@ -221,6 +222,7 @@ void glalGetDirectionalLightViewMatrix(GYMatrix4 dest, const GYLightSource*const
 	gyMatApply(temp);
 
 	gyMatTranslate(-camWorldPos.x, -camWorldPos.y, -camWorldPos.z);
+	//gyMatScale(2.0f, 2.0f, 1.0f);
 
 	gyMatStore((void*)dest);
 	gyMatPop();
