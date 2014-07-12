@@ -1141,14 +1141,17 @@ void CollisionSystem::_resolveZPenetration(CollisionContact * const contact) {
     vel[1] = col[1]->getEntity()->getRigidBody()->getVelocity();
 
     bool resting = false;
-    if(vel[0].z <= 0.0f && vel[1].z <= 0.0f) {
+    if(vel[0].z <= 0.0f /*&& vel[1].z <= 0.0f*/) {
         col[0]->setRestingOnBody(true);
+        //GYVector3 newVel = vel[0];
+        //newVel.z = 0;
+        //col[0]->getEntity()->getRigidBody()->setVelocity(newVel);
         if(col[1]->getStackedOnGround()) col[0]->setStackedOnGround(true);
         resting = true;
     }
 
 
-    if(col[0]->getEntity()->getRigidBody()->getAttrib()->isBreakable() && !resting) {
+    if(col[0]->getEntity()->getRigidBody()->getAttrib()->isBreakable()) {
         const float zImpulse = fabs(vel[1].z /* col[0]->getAttrib()->getStaticAttrib()->damping.z*/);
         auto* rb = col[0]->getEntity()->getRigidBody();
         if(zImpulse >= rb->getDurability()) {
@@ -1157,7 +1160,7 @@ void CollisionSystem::_resolveZPenetration(CollisionContact * const contact) {
         }
     }
 
-    if(col[1]->getEntity()->getRigidBody()->getAttrib()->isBreakable() && !resting) {
+    if(col[1]->getEntity()->getRigidBody()->getAttrib()->isBreakable()) {
         const float zImpulse = fabs(vel[0].z /*col[1]->getAttrib()->getStaticAttrib()->damping.z*/);
         auto* rb = col[1]->getEntity()->getRigidBody();
         if(zImpulse >= rb->getDurability()) {
