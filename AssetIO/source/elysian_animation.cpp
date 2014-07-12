@@ -229,7 +229,7 @@ void Animation::_updateChildren(void) {
 		gyMatPush();
 		gyMatLoadIdentity();
 
-		gyMatTranslateScale(parentTransform->_pos.x +  (offset.x * parentTransform->_size.x*parentTransform->_scale.x),
+		gyMatTranslateScale(parentTransform->_pos.x +  (offset.x *parentTransform->_size.x*parentTransform->_scale.x),
 					   parentTransform->_pos.y + (offset.y*parentTransform->_size.y*parentTransform->_scale.y) ,
 					   parentTransform->_pos.z + (offset.z*parentTransform->_size.z*parentTransform->_scale.z),
 					   childTransform->_size.x*childTransform->_scale.x, childTransform->_size.y*childTransform->_scale.y,  childTransform->_size.z*childTransform->_scale.z);

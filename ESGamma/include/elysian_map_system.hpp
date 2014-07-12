@@ -244,6 +244,9 @@ namespace elysian {
 		//gyVidQuadListEnd();
 		//gyVidAlphaLevel(GY_ALPHA_FULL);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		if(getLightSys()->isShadowPass()) glEnable(GL_DEPTH_TEST);
+		else glDisable(GL_DEPTH_TEST);
+
 	   _blendFunc = false;
 	}
 	
