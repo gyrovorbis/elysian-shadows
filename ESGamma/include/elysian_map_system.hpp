@@ -256,14 +256,14 @@ namespace elysian {
 
 	inline bool MapSystem::getOnscreenEntity(const unsigned index, GammaEntityDepthBuffEntry &entry, NORMAL_TYPE &normalType, float &lowestY, float& zCoord) const {
 		Entity &entity = *(_curArea->entities)[index];
-		if(getCameraSys()->isOnscreen(entity)) {
+        //if(getCameraSys()->isOnscreen(entity)) {
 			entry.entity = &entity;
 			normalType = entity.getNormalType();
 			lowestY = entity.getDepthBaseY();
             zCoord = entity.transform._pos.z;
 			return true;
-		}
-		return false;
+        //}
+        //return false;
 	}
 	
 	inline void MapSystem::renderEntityEntry(const GammaEntityDepthBuffEntry &entry) const {

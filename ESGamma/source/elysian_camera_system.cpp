@@ -337,7 +337,7 @@ void CameraSystem::update(void) {
 	if(_curState->focalEntity) {
 		_curState->_keyFrame._pos = GYVector3 {
 			_curState->focalEntity->transform._pos.x,
-			_curState->focalEntity->transform._pos.y,
+            _curState->focalEntity->transform._pos.y - _curState->focalEntity->transform._pos.z,
 			/*_curState->focalEntity->transform.getPosZ()*/-ZCoordConstants::mapBase,
 			//0.0f
 		};

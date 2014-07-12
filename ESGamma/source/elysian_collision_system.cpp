@@ -604,14 +604,14 @@ void CollisionSystem::detectEntityCollision(const unsigned i) {
             float zOffset = aBot - bBot;
             if(zOffset > bodyB->getWorldSize().z) zOffset = bodyB->getWorldSize().z;
             if(bodyB->getCollider()->type == GY_COLLIDER_AABB || bodyB->getCollider()->type == GY_COLLIDER_OBB) {
-                for(unsigned i = 0; i < 4; ++i) ((GYBoxCollider*)bodyB->getCollider())->worldVert[i].y -= zOffset;
+              //  for(unsigned i = 0; i < 4; ++i) ((GYBoxCollider*)bodyB->getCollider())->worldVert[i].y -= zOffset;
             }
         } else if(zBot == bBot) {
             //adjustments go to bodyA
             float zOffset = bBot - aBot;
             if(zOffset > bodyA->getWorldSize().z) zOffset = bodyA->getWorldSize().z;
             if(bodyA->getCollider()->type == GY_COLLIDER_AABB || bodyA->getCollider()->type == GY_COLLIDER_OBB) {
-                for(unsigned i = 0; i < 4; ++i) ((GYBoxCollider*)bodyA->getCollider())->worldVert[i].y -= zOffset;
+              //  for(unsigned i = 0; i < 4; ++i) ((GYBoxCollider*)bodyA->getCollider())->worldVert[i].y -= zOffset;
             }
         }
 
@@ -667,14 +667,14 @@ void CollisionSystem::detectEntityCollision(const unsigned i) {
             float zOffset = aBot - bBot;
             if(zOffset > bodyB->getWorldSize().z) zOffset = bodyB->getWorldSize().z;
             if(bodyB->getCollider()->type == GY_COLLIDER_AABB || bodyB->getCollider()->type == GY_COLLIDER_OBB) {
-                for(unsigned i = 0; i < 4; ++i) ((GYBoxCollider*)bodyB->getCollider())->worldVert[i].y += zOffset;
+              //  for(unsigned i = 0; i < 4; ++i) ((GYBoxCollider*)bodyB->getCollider())->worldVert[i].y += zOffset;
             }
         } else if(zBot == bBot) {
             //adjustments go to bodyA
             float zOffset = bBot - aBot;
             if(zOffset > bodyA->getWorldSize().z) zOffset = bodyA->getWorldSize().z;
             if(bodyA->getCollider()->type == GY_COLLIDER_AABB || bodyA->getCollider()->type == GY_COLLIDER_OBB) {
-                for(unsigned i = 0; i < 4; ++i) ((GYBoxCollider*)bodyA->getCollider())->worldVert[i].y += zOffset;
+               // for(unsigned i = 0; i < 4; ++i) ((GYBoxCollider*)bodyA->getCollider())->worldVert[i].y += zOffset;
             }
         }
 
@@ -967,15 +967,15 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable, c
                 collidable._collider.box.worldVert[i].y = worldVertsOrig[i].y;// - ((float)(elev-startElev)*32.0f);//-(int)worldVertsOrig[i].z%32;
 
 #if 1
-			for(int y = startY/32-(elev-startElev)-1; y <= endY/32-(elev-startElev)+1; ++y) {
+            for(int y = startY/32-(elev-startElev)-1; y <= endY/32-(elev-startElev)+1; ++y) {
 				if(y < 0) continue;
 				for(int x = startX/32; x <= endX/32+1; ++x) {
 
 					gyMatPush();
 					gyMatLoadIdentity();
 					//gyMatTranslateScale(x*32.0f, y*32.0f, 5.0f, 32.0f, 32.0f, 32.0f);
-                    gyMatTranslateScale(x*32.0f, (y+(elev-startElev))*32.0f-zOffset, 5.0f, 32.0f, 32.0f, 32.0f);
-                    _detectEntityTileCollisionFine(collidable, x, y, elev);
+                    gyMatTranslateScale(x*32.0f, (y/*+(elev-startElev)*/)*32.0f-zOffset, 5.0f, 32.0f, 32.0f, 32.0f);
+                    _detectEntityTileCollisionFine(collidable, x, y-elev, elev);
 					gyMatPop();
 				}
 			}
@@ -1133,15 +1133,40 @@ void CollisionSystem::_resolveZPenetration(CollisionContact * const contact) {
     for(unsigned i = 0; i < 2; ++i) {
         deltaZ[i] = zDepth * linearInertia[i] * totalInertia * coeff[i];
         col[i]->getEntity()->transform._pos.z -= deltaZ[i];
-        col[i]->getEntity()->transform._pos.y += deltaZ[i];
+       // col[i]->getEntity()->transform._pos.y += deltaZ[i];
     }
 
-    GYVector3 vel = col[0]->getEntity()->getRigidBody()->getVelocity();
+    GYVector3 vel[2];
+    vel[0] = col[0]->getEntity()->getRigidBody()->getVelocity();
+    vel[1] = col[1]->getEntity()->getRigidBody()->getVelocity();
 
-    if(vel.z <= 0.0f) {
-    col[0]->setRestingOnBody(true);
-    if(col[1]->getStackedOnGround()) col[0]->setStackedOnGround(true);
+    bool resting = false;
+    if(vel[0].z <= 0.0f && vel[1].z <= 0.0f) {
+        col[0]->setRestingOnBody(true);
+        if(col[1]->getStackedOnGround()) col[0]->setStackedOnGround(true);
+        resting = true;
     }
+
+
+    if(col[0]->getEntity()->getRigidBody()->getAttrib()->isBreakable() && !resting) {
+        const float zImpulse = fabs(vel[1].z /* col[0]->getAttrib()->getStaticAttrib()->damping.z*/);
+        auto* rb = col[0]->getEntity()->getRigidBody();
+        if(zImpulse >= rb->getDurability()) {
+            rb->setDurability(rb->getDurability() - zImpulse);
+            rb->setBreakContact(contact);
+        }
+    }
+
+    if(col[1]->getEntity()->getRigidBody()->getAttrib()->isBreakable() && !resting) {
+        const float zImpulse = fabs(vel[0].z /*col[1]->getAttrib()->getStaticAttrib()->damping.z*/);
+        auto* rb = col[1]->getEntity()->getRigidBody();
+        if(zImpulse >= rb->getDurability()) {
+            rb->setDurability(rb->getDurability() - zImpulse);
+            rb->setBreakContact(contact);
+        }
+    }
+
+
  /*   GYVector3 vel = col[0]->getEntity()->getRigidBody()->getVelocity();
     vel.z = 0.0f;
 
