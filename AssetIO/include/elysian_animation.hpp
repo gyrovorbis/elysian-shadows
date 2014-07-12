@@ -362,7 +362,7 @@ namespace elysian {
     template<typename S, typename T> template<typename A>
     inline const A* AnimationStateStack<S, T>::getStackBottomState(void) const { return static_cast<const A*>(stateStack[0]); }
     template<typename S, typename T>
-    inline void AnimationStateStack<S, T>::setStackBottomState(const S* bottom) { return stateStack[0] = bottom; }
+    inline void AnimationStateStack<S, T>::setStackBottomState(const S* bottom) { stateStack[0] = bottom; }
 
     template<typename S, typename T>
     inline void AnimationStateStack<S, T>::setSequence(const char* name) {
