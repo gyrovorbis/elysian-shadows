@@ -62,7 +62,7 @@ void gyIntegrate(struct _GYKinetic *kin,
     kin->rot *= angDampFactor;
 
 	//Update position from linear velocity
-    GYVector3 vel = { kin->vel.x, kin->vel.y-kin->vel.z, kin->vel.z };
+    GYVector3 vel = { kin->vel.x, kin->vel.y/*-kin->vel.z*/, kin->vel.z };
     gyVec3AddScaled(pos, &vel, deltaTime);
 
 	//Update orientation from rotation
