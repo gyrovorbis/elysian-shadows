@@ -208,7 +208,7 @@ void GuiSystem::_renderMenuWidget(MenuWidget* widget) {
 
 	gyMatPush();
 	gyMatLoadIdentity();
-	gyMatTranslate(_projWidth*0.5f, _projHeight*0.5f, 50.0f);
+    gyMatTranslate(_projWidth*0.5f, _projHeight*0.5f, 20.0f);
 	gyMatScale(_projWidth, _projHeight, 1.0f);
 
 	widget->recursiveRender();
