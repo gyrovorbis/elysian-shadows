@@ -129,11 +129,11 @@ namespace elysian {
         template <typename A>
         const A*   getStackBottomState(void) const;
 
-        void setSequence(const char* name);
-        void updateState(const Pool<AnimStateEntry>& states);
-        void setCurrentIndex(const unsigned index);
-        unsigned getPreviousIndex(void) const;
-        void advanceFrame(void);
+        void        setSequence(const char* name);
+        void        updateState(const Pool<AnimStateEntry>& states);
+        void        setCurrentIndex(const unsigned index);
+        unsigned    getPreviousIndex(void) const;
+        void        advanceFrame(void);
     };
 
 
