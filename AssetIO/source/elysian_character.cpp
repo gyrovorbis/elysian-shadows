@@ -146,6 +146,8 @@ void Character::setHeldEntity(Entity * const entity) {
             _entity->getAnimation()->addChildEntity(entity, ELYSIAN_CHAR_ANIM_CHILD_SEQ_HELD);
             _entity->getAnimation()->removeState("Walk");
             _entity->getAnimation()->removeState("Stand");
+            _entity->getAnimation()->removeState("Jump");
+            _entity->getAnimation()->removeState("Fall");
             _entity->getAnimation()->addState("Hold");
         }
     } else {

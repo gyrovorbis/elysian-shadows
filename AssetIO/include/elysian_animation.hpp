@@ -270,7 +270,7 @@ namespace elysian {
 	inline bool Animation::isLooping(void) const { return _looping; }
 	inline void Animation::setLooping(const bool val) { _looping = val; }
 	inline void Animation::setChildPivot(const float x, const float y) { _childPivot.x = x; _childPivot.y = y; }
-    inline const GYVector2& Animation::getChildPivot(void) const { return _childPivot; }\
+    inline const GYVector2& Animation::getChildPivot(void) const { return _childPivot; }
 
     template<typename P, typename T>
     inline AnimationSequenceBase<P, T>::AnimationSequenceBase(const char*name) {
