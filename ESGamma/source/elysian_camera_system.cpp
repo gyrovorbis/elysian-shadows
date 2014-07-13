@@ -13,7 +13,7 @@ void CameraState::updateBoundingRegions(const int xMin, const int xMax, const in
 	int startY	= yMax;
 	int endX	= xMin;
 	int endY	= yMin;
-
+#if 0
 	auto checkPointBounds = [&](const GYVector3& point) {
 		if(point.x < (float)startX) startX = (int)point.x;
 		else if(point.x > (float)endX) endX = (int)point.x;
@@ -22,14 +22,14 @@ void CameraState::updateBoundingRegions(const int xMin, const int xMax, const in
 	};
 
 	//Find X/Y extremes given each vertex to create bounding box
-	checkPointBounds(viewVolume.ftr);
-	checkPointBounds(viewVolume.ftl);
-	checkPointBounds(viewVolume.fbr);
-	checkPointBounds(viewVolume.fbl);
-	checkPointBounds(viewVolume.ntr);
-	checkPointBounds(viewVolume.ntl);
-	checkPointBounds(viewVolume.nbr);
-	checkPointBounds(viewVolume.nbl);
+    checkPointBounds(viewVolume.ftr);
+    checkPointBounds(viewVolume.ftl);
+    checkPointBounds(viewVolume.fbr);
+    checkPointBounds(viewVolume.fbl);
+    checkPointBounds(viewVolume.ntr);
+    checkPointBounds(viewVolume.ntl);
+    checkPointBounds(viewVolume.nbr);
+    checkPointBounds(viewVolume.nbl);
 
 	if(startX < 0) startX = 0;
 	if(startY < 0) startY = 0;
@@ -55,6 +55,9 @@ void CameraState::updateBoundingRegions(const int xMin, const int xMax, const in
 		--tileEndY;
 		if(tileEndY == 0) break;
 	}
+
+#endif
+
 }
 
 void CameraState::updateBoundingSubregions(const CameraState &cam) {
@@ -343,12 +346,25 @@ void CameraSystem::update(void) {
 		};
 	}
 
-	_curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
+#if 0
+    _curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
+
+#else
+    _curState->tileStartX = 0;
+    _curState->tileStartY = 0;
+    _curState->tileEndX = getCurArea()->getMapWidth()-1;
+    _curState->tileEndY = getCurArea()->getMapHeight()-1;
+    _curState->scrStartX = 0;
+    _curState->scrStartY = 0;
+    _curState->scrEndX = getCurArea()->getMapWidth()*32.0f;
+    _curState->scrEndY = getCurArea()->getMapHeight()*32.0f;
+
+#endif
 
 	if(_curState->projType == GY_PROJECTION_ORTHO) {
-		//if(_dynamic) {
+        //if(_dynamic) {
 			_updateState(_curState, deltaTime);
-			_curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
+        //    _curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
 	//	}
 
 		//gyVidProjectionDefaultMatrix();
@@ -357,7 +373,7 @@ void CameraSystem::update(void) {
 
 		gyMatPush();
 		gyMatLoad(&_curState->projViewMat);
-		gyMatShearZ(0.0f, -1.0f);
+        gyMatShearZ(0.0f, -1.0f);
 
 		gyMatStore(&_curState->projViewMat);
 		gyMatPop();

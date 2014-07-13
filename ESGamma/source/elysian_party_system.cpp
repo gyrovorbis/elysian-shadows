@@ -31,6 +31,7 @@ PartySystem::~PartySystem() {
 
 void PartySystem::update(void) {//VOIDICATE
 	_tapTimer += getTimerSys()->getDeltaTime();
+    _dashPartTimer += getTimerSys()->getDeltaTime();
 	//if(_playableParty.size() < 1) return;
 	updatePartyPaths();
 }
@@ -66,6 +67,28 @@ void PartySystem::processInput(const GameInput &input) {
 		return;
 	}*/
 
+    auto endDash = [&](void) {
+        getPartyLeader()->getAnimation()->setSpeedMultiplier(1.0f);
+        getAudioSys()->setSfxChannelPitch(0, 1.0f);
+        _dashing = false;
+        _moveSpeed = ELYSIAN_PARTY_SYSTEM_WALK_SPEED;
+        _tapTimer = 0.0f;
+    };
+
+    auto emitDashParticles = [&](void) {
+        getPartSys()->getAttrib(0)->setAcceleration(GYVector3{ 0.0f, -70.0f, /*7.0f*//*6.5f*/ });
+        getPartSys()->getAttrib(0)->setForceMask(0);
+        getPartSys()->getAttrib(0)->setEndColor(GYColor4 { 255, 255, 255, 0});
+        getPartSys()->getAttrib(0)->setColor(255, 255, 255, 100);
+        getPartSys()->getAttrib(0)->setMaxLife(30);
+        getPartSys()->getAttrib(0)->setStick(false);
+        GYVector3 pos = getPartyLeader()->transform._pos;
+        pos.z += 5.0f;
+        pos.y = getPartyLeader()->getDepthBaseY();
+        getPartSys()->emitFromPoint(0, pos, _dashPartAngle, 500);
+        _dashPartTimer = 0.0f;
+    };
+
 	auto updateDash = [&](const GameInput::BUTTON but) {
 		bool updateTappedButton = true;
 
@@ -87,35 +110,31 @@ void PartySystem::processInput(const GameInput &input) {
 					if(but == GameInput::BUT_DPAD_L) stop = true;
 					  break;
 				default: break;
-
 			}
 
 			if(stop) {
-				getPartyLeader()->getAnimation()->setSpeedMultiplier(1.0f);
-				getAudioSys()->setSfxChannelPitch(0, 1.0f);
-				_dashing = false;
-				_moveSpeed = ELYSIAN_PARTY_SYSTEM_WALK_SPEED;
+                endDash();
 			} else {
 				updateTappedButton = false;
 			}
 		} else {
 			if(but == _lastDpadTapped && _tapTimer <= _dashTapTimeWindow) {
-				float angle;
+                //float angle;
 
 				switch(_lastDpadTapped) {
 					case GameInput::BUT_DPAD_U:
-					  angle = M_PI*0.5f;
+                      _dashPartAngle = M_PI*0.5f;
 						break;
 					case GameInput::BUT_DPAD_D:
-						angle = -M_PI*0.5f;
+                        _dashPartAngle = -M_PI*0.5f;
 						 break;
 
 					case GameInput::BUT_DPAD_L:
-						angle = 0.0f;
+                        _dashPartAngle = 0.0f;
 						break;
 
 					case GameInput::BUT_DPAD_R:
-						angle = -M_PI;
+                        _dashPartAngle = -M_PI;
 						  break;
 
 					default: break;
@@ -124,19 +143,11 @@ void PartySystem::processInput(const GameInput &input) {
 
 				_dashing = true;
 				getAudioSys()->setSfxChannelPitch(0, 2.0f);
-				_moveSpeed = ELYSIAN_PARTY_SYSTEM_DASH_SPEED;
-				getPartyLeader()->getAnimation()->setSpeedMultiplier(3.0f);
+                _moveSpeed = _dashSpeed;
+                getPartyLeader()->getAnimation()->setSpeedMultiplier(_dashAnimSpeedMultiplier);
 //				getPartSys()->getAttrib(0)->setSize(3);
 //				getPartSys()->getAttrib(0)->setFadeOut(true);
-				getPartSys()->getAttrib(0)->setAcceleration(GYVector3{ 0.0f, -70.0f, /*7.0f*//*6.5f*/ });
-				getPartSys()->getAttrib(0)->setForceMask(0);
-				getPartSys()->getAttrib(0)->setMaxLife(30);
-				getPartSys()->getAttrib(0)->setStick(false);
-				GYVector3 pos = getPartyLeader()->transform._pos;
-				pos.z += 5.0f;
-				pos.y = getPartyLeader()->getDepthBaseY();
-				getPartSys()->emitFromPoint(0, pos, angle, 500);
-
+                emitDashParticles();
 				//Debug::printf(Debug::VERBOSE, "DASHING!!!");
 			}
 		}
@@ -145,6 +156,11 @@ void PartySystem::processInput(const GameInput &input) {
 		_tapTimer = 0.0f;
 	};
 
+    if(_dashDuration != 0.0f && _tapTimer > _dashDuration) {
+        endDash();
+    } else if(_dashing && _dashPartTimer >= _dashPartInterval) {
+        emitDashParticles();
+    }
 
 	
 	if(input.getDown(GameInput::BUT_DPAD_U)){

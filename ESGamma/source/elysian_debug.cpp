@@ -200,10 +200,10 @@ void Debug::processInput(GameInput& input) {
 
 	//Camera zoom
 	if(input.getDown(GameInput::BUT_W)){
-		_engine->_cameraSystem->staticScale(0.7f);
-	}
+        _engine->_cameraSystem->staticScale(0.9f*60.0f*getTimerSys()->getDeltaTime());
+    }
 	if(input.getDown(GameInput::BUT_S)){
-		_engine->_cameraSystem->staticScale(1.3f);
+        _engine->_cameraSystem->staticScale(1.1f*60.0f*getTimerSys()->getDeltaTime());
 	}
 
 	if(input.getTapped(GameInput::BUT_0)) {
@@ -262,18 +262,18 @@ void Debug::processInput(GameInput& input) {
 
 
 	if(input.getDown(GameInput::BUT_Q)){
-		_engine->_cameraSystem->rotateZ(0.2f);
+        _engine->_cameraSystem->rotateZ(0.1f*60.0f*getTimerSys()->getDeltaTime());
 	}
 	if(input.getDown(GameInput::BUT_A)){
-		_engine->_cameraSystem->rotateZ(-0.2f);
+        _engine->_cameraSystem->rotateZ(-0.1f*60.0f*getTimerSys()->getDeltaTime());
 	}
 
 	if(input.getDown(GameInput::BUT_E)) {
-		_engine->_cameraSystem->rotateX(-0.2f);
+        _engine->_cameraSystem->rotateX(-0.1f*getTimerSys()->getDeltaTime());
 	}
 
 	if(input.getDown(GameInput::BUT_D)) {
-		_engine->_cameraSystem->rotateX(0.2f);
+        _engine->_cameraSystem->rotateX(0.1f*getTimerSys()->getDeltaTime());
 	}
 
 

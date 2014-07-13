@@ -201,6 +201,9 @@ void ParticleEmitterInternals::render(void) {
 	gyVidAlphaLevel(GY_ALPHA_FULL);
 	gyVidRectNormalType(GY_RECT_NORMAL_FRONT);
 
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+
 	//loop unroll my bitch ass
 
 	for(auto it = _pool.begin(); it < _pool.end(); ++it) {
@@ -224,6 +227,9 @@ void ParticleEmitterInternals::renderAtElev(const unsigned char elev) {
 	gyVidTexBind(_attrib->getTexture());
 	gyVidMaterialBind(_attrib->_material);
 	gyVidAlphaLevel(GY_ALPHA_FULL);
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
 
 	//loop unroll my bitch ass
 
