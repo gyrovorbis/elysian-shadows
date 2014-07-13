@@ -244,6 +244,9 @@ namespace elysian {
 		//gyVidQuadListEnd();
 		//gyVidAlphaLevel(GY_ALPHA_FULL);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		if(getLightSys()->isShadowPass()) glEnable(GL_DEPTH_TEST);
+		else glDisable(GL_DEPTH_TEST);
+
 	   _blendFunc = false;
 	}
 	
@@ -253,14 +256,14 @@ namespace elysian {
 
 	inline bool MapSystem::getOnscreenEntity(const unsigned index, GammaEntityDepthBuffEntry &entry, NORMAL_TYPE &normalType, float &lowestY, float& zCoord) const {
 		Entity &entity = *(_curArea->entities)[index];
-		if(getCameraSys()->isOnscreen(entity)) {
+        //if(getCameraSys()->isOnscreen(entity)) {
 			entry.entity = &entity;
 			normalType = entity.getNormalType();
 			lowestY = entity.getDepthBaseY();
             zCoord = entity.transform._pos.z;
 			return true;
-		}
-		return false;
+        //}
+        //return false;
 	}
 	
 	inline void MapSystem::renderEntityEntry(const GammaEntityDepthBuffEntry &entry) const {

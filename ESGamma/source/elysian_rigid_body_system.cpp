@@ -271,7 +271,7 @@ void RigidBodySystem::resolveContactVelocities(void) {
 		return;
 	}
 
-    _resolveContactZVelocities();
+   // _resolveContactZVelocities();
 
 	unsigned iter;
 	for(iter = 0; iter < ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS; ++iter) {
@@ -535,7 +535,9 @@ void RigidBodySystem::integrate3D(void) {
 
 		const unsigned elev = /*(worldPos.z == 0.0f)? 0 :*/ (worldPos.z)/32;
         float zOffset = worldPos.z - elev*32.0f;
-        worldPos.y += 32.0f + zOffset;
+        worldPos.y += 32.0f;//zOffset;
+        //worldPos.y -= (worldPos.z);
+
         /*it->getEntity()->getCollidable()->getAttrib()->getRelSize().y*
 				it->getEntity()->transform._size.y * it->getEntity()->transform._scale.y;*/
 
@@ -544,7 +546,7 @@ void RigidBodySystem::integrate3D(void) {
                 for(unsigned j = 0; j < 1; ++j) {
 					//if(found) break;
 
-                entry = getCurArea()->getTileEntry(i, (worldPos.x+16.0f)/32, (worldPos.y)/32/*+elev*/-1/*-1*/);
+                entry = getCurArea()->getTileEntry(i, (worldPos.x+16.0f)/32, (worldPos.y)/32-elev-1);
 
 
 				//if(!(j == 0 && entry.getNormal()) && !(j == 0 && !entry.getNormal())) {
@@ -552,7 +554,7 @@ void RigidBodySystem::integrate3D(void) {
 
 					if(getCurLevel()->getTile(entry.getIndex())->standOn) {
 
-                        if(entry.getNormal() && ((int)worldPos.y+16)/32 > ((int)worldPos.y/32)) continue;
+                        if(entry.getNormal() && ((int)worldPos.y+16)/32 > ((int)worldPos.y/32)) continue; //bottom half of a normal, standon
 
 
 						float newTop = (entry.getElev()*32 + (entry.getNormal()? 32.0f : 0.0f) );
@@ -580,7 +582,7 @@ void RigidBodySystem::integrate3D(void) {
 				collidable->getEntity()->transform._pos.z = zTop;
 
                 //We have to remove the same amount of yVelocity we're removing from the Z in this perspective.
-                collidable->getEntity()->transform._pos.y -= zDiff;
+               // collidable->getEntity()->transform._pos.y -= zDiff;
 
 				GYVector3 vel = it->getVelocity();
                 vel.z *= -1.0f * collidable->getAttrib()->getStaticAttrib()->zCoeffOfRest;
@@ -673,7 +675,7 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
 		shard->transform._pos.x = entity->transform._pos.x - 0.5f*width + x + 0.5f*xinc;
 		shard->transform._pos.y = entity->transform._pos.y - 0.5f*height + y + 0.5f*yinc;
         shard->transform._pos.z = entity->transform._pos.z + (ySize*yinc-y);
-		shard->setNormalType(entity->getNormalType());
+		shard->setNormalType((NORMAL_TYPE)(rand()%2==1));
 		/*if(entity->getNormalType() == NORMAL_FRONT) {
 			shard->transform._pos.y = entity->transform._pos.y - 0.5f*entity->transform._size.y; + y;
 			//shard->transform._pos.z = (ySize-row)*16.0f;

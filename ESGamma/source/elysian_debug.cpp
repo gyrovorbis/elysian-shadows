@@ -504,7 +504,7 @@ void Debug::processInput(GameInput& input) {
 			//lightSrc->setDirection(dirVec);
 			LightAttrib* attrib = new LightAttrib;
 			attrib->setAmbientColor(GYVector4{ 0.1f, 0.1f, 0.1f, 1.0f});
-			attrib->setDiffuseColor(GYVector4 { 0.0f, 0.0f, 2.0f, 1.0f });
+            attrib->setDiffuseColor(GYVector4 { 0.0f, 0.0f, 1.0f, 1.0f });
 			attrib->setSpecularColor(GYVector4{ 0.0f, 1.0f, 1.0f, 1.0f});
 			lightSrc->setAttrib(attrib);
 #if 0

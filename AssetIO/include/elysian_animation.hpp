@@ -10,9 +10,9 @@
 #include <map>
 
 #define ELYSIAN_ANIMATION_SEQUENCE_NAME_SIZE    50
-#define ELYSIAN_ANIMATION_MAX_CHILDREN          10
-#define ELYSIAN_ANIMATION_STATE_COUNT_MAX       10
-#define ELYSIAN_ANIMATION_STATE_LENGTH_MAX      20
+#define ELYSIAN_ANIMATION_MAX_CHILDREN          99
+#define ELYSIAN_ANIMATION_STATE_COUNT_MAX       99
+#define ELYSIAN_ANIMATION_STATE_LENGTH_MAX      50
 
 namespace elysian {
 
@@ -129,11 +129,11 @@ namespace elysian {
         template <typename A>
         const A*   getStackBottomState(void) const;
 
-        void setSequence(const char* name);
-        void updateState(const Pool<AnimStateEntry>& states);
-        void setCurrentIndex(const unsigned index);
-        unsigned getPreviousIndex(void) const;
-        void advanceFrame(void);
+        void        setSequence(const char* name);
+        void        updateState(const Pool<AnimStateEntry>& states);
+        void        setCurrentIndex(const unsigned index);
+        unsigned    getPreviousIndex(void) const;
+        void        advanceFrame(void);
     };
 
 
