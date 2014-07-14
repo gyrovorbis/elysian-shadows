@@ -434,11 +434,12 @@ void Debug::processInput(GameInput& input) {
 		entity->transform.setScale(1.0f, 1.0f);
 		entity->transform.setSize(128.0f, 128.0f);
 		entity->setElev(0);
-		entity->setNormalType(NORMAL_FRONT);
+        entity->setPlaneType(GY_RECT_PLANE_FRONT);
 		Renderable* render = entity->addRenderable();
 #if 1
 		QuadSpriteAttrib* attrib = new QuadSpriteAttrib;
-		attrib->setVertexColor(0, 255, 0, 0, 255);
+        attrib->setVertexColor(0, 255, 0,
+                               0, 255);
 		attrib->setVertexColor(1, 0, 255, 0, 100);
 		attrib->setVertexColor(2, 0, 0, 255, 255);
 		attrib->setVertexColor(3, 255, 255, 0, 255);

@@ -675,7 +675,7 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
 		shard->transform._pos.x = entity->transform._pos.x - 0.5f*width + x + 0.5f*xinc;
 		shard->transform._pos.y = entity->transform._pos.y - 0.5f*height + y + 0.5f*yinc;
         shard->transform._pos.z = entity->transform._pos.z + (ySize*yinc-y);
-		shard->setNormalType((NORMAL_TYPE)(rand()%2==1));
+        //shard->setPlaneType((GY_RECT_TEX_PLANE)(rand()%2==1));
 		/*if(entity->getNormalType() == NORMAL_FRONT) {
 			shard->transform._pos.y = entity->transform._pos.y - 0.5f*entity->transform._size.y; + y;
 			//shard->transform._pos.z = (ySize-row)*16.0f;

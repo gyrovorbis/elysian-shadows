@@ -199,7 +199,7 @@ void ParticleEmitterInternals::render(void) {
 	gyVidTexBind(_attrib->getTexture());
 	gyVidMaterialBind(_attrib->_material);
 	gyVidAlphaLevel(GY_ALPHA_FULL);
-	gyVidRectNormalType(GY_RECT_NORMAL_FRONT);
+    gyVidRectPlaneType(GY_RECT_PLANE_FRONT);
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_BLEND);
@@ -238,7 +238,7 @@ void ParticleEmitterInternals::renderAtElev(const unsigned char elev) {
 		//Check if we are within the range of this level of elevation
 		if((*it).zIndex != elev)  continue;
 
-		gyVidRectNormalType((*it).flat? GY_RECT_NORMAL_FLAT : GY_RECT_NORMAL_FRONT);
+        gyVidRectPlaneType((*it).flat? GY_RECT_PLANE_BOTTOM : GY_RECT_PLANE_FRONT);
 
 		gyMatPush();
 		gyVidQuadListBegin(&(*it).color);

@@ -11,10 +11,16 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 //OPENGL/OPENGL_ES COMMONS, BITCHES!
-static const GYVector3 _rectNormals[GY_RECT_NORMAL_MAX] = {
+static const GYVector3 _planeNormals[GY_RECT_PLANE_MAX] = {
 	{ 0.0f, 0.0f, 1.0f },
-	{ 0.0f, 1.0f, 1.0f }
+    { 0.0f, 1.0f, 1.0f },
+    { -1.0f, 0.0f, 0.0f },
+    { 1.0f, 0.0f, 0.0f },
+    { 0.0f, 0.0f, 0.0f },
+    { 0.0f, 0.0f, 0.0f },
+    { 0.0f, 0.0f, 0.0f }
 };
 
 static const GYVector3 _rectTangents[GY_RECT_TEX_ORIENT_MAX] = {
@@ -29,8 +35,7 @@ static const GYVector3 _rectTangents[GY_RECT_TEX_ORIENT_MAX] = {
 		{ 0.0f, -1.0f, 0.0f },
 		{ 0.0f, 1.0f, 0.0f }
 };
-
-static const GYVector4 _rectVerts[GY_RECT_NORMAL_MAX][4] = {
+static const GYVector4 _rectVerts[GY_RECT_PLANE_MAX][4] = {
 	//FLAT
 	{
 		{-0.5f, -0.5f, 0.0f, 1.0f},
@@ -53,8 +58,43 @@ static const GYVector4 _rectVerts[GY_RECT_NORMAL_MAX][4] = {
 		{0.5f, 0.5f, 1.0f, 1.0f},
 		{-0.5f, 0.5f, 0.0f, 1.0f},
 		{0.5f, 0.5f, 0.0f, 1.0f}
-	}
+    },
    #endif
+    //LEFT
+    {
+        {-0.5f, -0.5f, 1.0f, 1.0f},
+        {-0.5f, 0.5f, 1.0f, 1.0f},
+        {-0.5f, -0.5f, 0.0f, 1.0f},
+        {-0.5f, 0.5f, 0.0f, 1.0f}
+    },
+    //RIGHT
+    {
+        {0.5f, -0.5f, 1.0f, 1.0f},
+        {0.5f, 0.5f, 1.0f, 1.0f},
+        {0.5f, -0.5f, 0.0f, 1.0f},
+        {0.5f, 0.5f, 0.0f, 1.0f}
+    },
+    //FRONT_SLOPE_45
+    {
+        {-0.5f, -0.5f, 1.0f, 1.0f},
+        {0.5f, -0.5f, 1.0f, 1.0f},
+        {-0.5f, 0.5f, 0.0f, 1.0f},
+        {0.5f, 0.5f, 0.0f, 1.0f}
+    },
+    //LEFT_SLOPE_45
+    {
+        {0.5f, -0.5f, 1.0f, 1.0f},
+        {0.5f, 0.5f, 1.0f, 1.0f},
+        {0.5f, -0.5f, 0.0f, 1.0f},
+        {0.5f, 0.5f, 0.0f, 1.0f}
+    },
+    //RIGHT_SLOPE_45
+    {
+        {0.5f, -0.5f, 1.0f, 1.0f},
+        {0.5f, 0.5f, 1.0f, 1.0f},
+        {0.5f, -0.5f, 0.0f, 1.0f},
+        {0.5f, 0.5f, 0.0f, 1.0f}
+    },
 };
 
 /*
@@ -85,19 +125,19 @@ unsigned				curStripSize = 0;
 
 //Shared video state variables
 const GYVector3*			tangentVector			= &_rectTangents[0];
-const GYVector3*			normalVector			= &_rectNormals[0];
+const GYVector3*			normalVector			= &_planeNormals[0];
 //GYVector4					viewPosition			= { 0.0f, 0.0f, 0.0f, 0.0f };
 float						viewZOrient				= 0.0f;
 float						viewScale				= 0.0f;
 const GYTexture*			curTex					= 0;
 const GYCamera*				curCamera				= &_defaultCamera;
-const GYTexCoord2*           curTexCoordPtr          = NULL;
+const GYTexCoord2*          curTexCoordPtr          = NULL;
 
 //Private video state variables
 static unsigned int			_projWidth				= 0;
 static unsigned int			_projHeight				= 0;
 static GY_RECT_TEX_ORIENT	_rectTexOrient			= GY_RECT_TEX_ORIENT_NORMAL;
-static GY_RECT_NORMAL_TYPE	_normalType				= GY_RECT_NORMAL_FLAT;
+static GY_RECT_PLANE_TYPE	_planeType				= GY_RECT_PLANE_BOTTOM;
 static GYColor4				_curQuadListColor[4]	= { {0, 0, 0, 0} };
 unsigned					vertexRenderCount		= 0;
 GYVector4					_clearColor				= { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -256,13 +296,13 @@ void gyVidQuadListEnd(void) {
 // ==== HIGH-LEVEL API ====
 // (glorified wrappers around low-level API)
 
-void gyVidRectNormalType(const GY_RECT_NORMAL_TYPE type) {
-	if(type != _normalType) {	//prevent unecessary updates
+void gyVidRectPlaneType(const GY_RECT_PLANE_TYPE type) {
+    //if(type != _planeType) {	//prevent unecessary updates
 		glalStripComboBreaker();
-		_normalType = type;
-		normalVector = &_rectNormals[type];
+        _planeType = type;
+        normalVector = &_planeNormals[type];
 		glUniform3fv(curLightShader->uniformLoc[SHADER_NORMAL], 1, (float*)normalVector);
-	}
+    //}
 }
 
 void gyVidQuad(const GYVector4 *const verts, const int frame) {
@@ -313,7 +353,7 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
 }
 
 void gyVidRect(const int frame) {
-	gyVidQuad(_rectVerts[_normalType], frame);
+    gyVidQuad(_rectVerts[_planeType], frame);
 }
 
 

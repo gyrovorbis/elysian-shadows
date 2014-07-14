@@ -29,7 +29,7 @@ void WarpSystem::initialize(void) {
 
 void WarpSystem::render(void) {
 	//glDisable(GL_DEPTH_TEST);
-	gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
+    gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
 	_screenRect.render(); 
 
 }

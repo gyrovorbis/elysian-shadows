@@ -214,11 +214,11 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
 						removeParticleEmitter,
 						removeBehavior,
 						removeLuaBehavior,
-						setNormalType,
 						setSelfTable,
 						getSelfTable,
 						setShadowDepth,
-						setShadowVolume)
+                        setShadowVolume,
+                       setPlaneType)
 OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getName,
 								getElev,
@@ -234,8 +234,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getCombat,
 								getParticleEmitter,
 								getBehavior,
-								getLuaBehavior,
-								getNormalType)
+                                getLuaBehavior)
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(PrimAttrib)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(PrimAttrib)

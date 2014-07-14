@@ -223,7 +223,7 @@ namespace elysian {
 
 			//calculate relative Z coord
             //float relZCoord = ((entityBase+16.0f)-mapStartY)/32.0f + (int)((int)(zCoord+16)/32);
-            float relZCoord = ((entityBase+16.0f)-mapStartY)/32.0f + (zCoord)/32.0f;
+            float relZCoord = ((entityBase)-mapStartY)/32.0f;//-1;// + (zCoord)/32.0f;
 			//Add depth buffer entry
 			unsigned zIndex = (unsigned)relZCoord;
 			if(zIndex >= _depthBuffMaxHeight) zIndex = _depthBuffMaxHeight-1;
@@ -363,7 +363,7 @@ namespace elysian {
 			}
 		}
 
-		_endObjectList();
+        _endObjectList();
 	}
 
 	template<typename T, typename O, typename E>
@@ -381,7 +381,7 @@ namespace elysian {
 
 		_lightsRendered |= _lightsActive = lightSys->startLightPass(_objectRowLights[normalType][i]);
 		for(unsigned j = 0; j < _objectCount[i]; ++j) {
-			if(_objectBuff[i][j].mapEntry.getPlane() == normalType)
+            if(_objectBuff[i][j].mapEntry.getNormal() == normalType)
 				_renderOrQueueTileEntry(j, _objectBuff[i][j]);
 		}
 		while(_queued) {

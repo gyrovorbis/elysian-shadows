@@ -278,8 +278,8 @@ OOLUA_PROXY(Entity, RenderableObject)
 	OOLUA_MEM_FUNC_CONST(const char *, getName)
 	OOLUA_MEM_FUNC(void, setElev, const unsigned char)
 	OOLUA_MEM_FUNC_CONST(unsigned char, getElev)
-	OOLUA_MFUNC_CONST(getNormalType)
-	OOLUA_MFUNC(setNormalType)
+//	OOLUA_MFUNC_CONST(getNormalType)
+//	OOLUA_MFUNC(setNormalType)
 	OOLUA_MEM_FUNC(Renderable*, addRenderable)
 	OOLUA_MEM_FUNC(Animation*, addAnimation)
 	OOLUA_MEM_FUNC(Collidable*, addCollidable)
@@ -323,6 +323,7 @@ OOLUA_PROXY(Entity, RenderableObject)
 	OOLUA_MEM_FUNC(void, setSelfTable, Lua_table_ref)
 	OOLUA_MEM_FUNC(void, setShadowDepth, float)
 	OOLUA_MEM_FUNC(void, setShadowVolume, bool)
+    OOLUA_MEM_FUNC(void, setPlaneType, GY_RECT_PLANE_TYPE)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Component)
@@ -1095,6 +1096,12 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 	s->register_class_static<gyro>("LIGHT_DIRECTIONAL", GY_LIGHT_DIRECTIONAL);
 	s->register_class_static<gyro>("LIGHT_SPOT", GY_LIGHT_SPOT);
 	s->register_class_static<gyro>("LIGHT_POINT", GY_LIGHT_POINT);
+
+    s->register_class_static<gyro>("RECT_PLANE_BOTTOM", GY_RECT_PLANE_BOTTOM);
+    s->register_class_static<gyro>("RECT_PLANE_FRONT", GY_RECT_PLANE_FRONT);
+    s->register_class_static<gyro>("RECT_PLANE_LEFT", GY_RECT_PLANE_LEFT);
+    s->register_class_static<gyro>("RECT_PLANE_RIGHT", GY_RECT_PLANE_RIGHT);
+
 
 	//Entity::DEPTH_TYPE
 	typedef OOLUA::Entity Entity;

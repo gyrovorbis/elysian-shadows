@@ -59,7 +59,7 @@ void Entity::render(void) {
 	if(!_renderable) return;
 	gyMatPush();
     float oldZ = transform._size.z;
-	if(_normalType == NORMAL_FRONT) {
+    if(_planeType == GY_RECT_PLANE_FRONT) {
 		transform._size.z = transform._size.y;
 		//transform._size.y = 400.0f;
 	} else {
@@ -190,7 +190,7 @@ void Entity::renderShadowVolume(void) {
 		transform._size.y*transform._scale.y*0.5f
 	};
 
-	if(_normalType == NORMAL_FRONT) {
+    if(_planeType == GY_RECT_PLANE_FRONT) {
 		const float shearFactor = halfSize.z/halfSize.y;
 
 		gyMatTranslate(transform._pos.x,

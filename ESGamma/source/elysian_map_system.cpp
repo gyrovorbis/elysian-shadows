@@ -15,7 +15,7 @@
 namespace elysian {
 
 	const GYColor4 MapSystem::_tileColor = { 255, 255, 255, 255 }; //I s'pose this could be configurable?
-    GY_RECT_NORMAL_TYPE MapSystem::_curNormalType = GY_RECT_NORMAL_FLAT;
+    GY_RECT_PLANE_TYPE MapSystem::_curPlaneType = GY_RECT_PLANE_BOTTOM;
 
 	MapSystem::MapSystem(void): 
 		_animate(true) { 

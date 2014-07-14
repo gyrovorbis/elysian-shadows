@@ -145,10 +145,10 @@ namespace elysian {
 		Area(void);
         ~Area(void);
 
-		unsigned short getMapWidth(void) const { return width; }
-		unsigned short getMapHeight(void) const { return height; }
-		const char* getName(void) const { return name; }
-		const char* getPath(void) const { return path; }
+        unsigned short  getMapWidth(void) const { return width; }
+        unsigned short  getMapHeight(void) const { return height; }
+        const char*     getName(void) const { return name; }
+        const char*     getPath(void) const { return path; }
 
 		//Slower than layer-specific accessors, but loop-friendly
 		TileEntry	getTileEntry(const unsigned l, const unsigned x, const unsigned y) const;
@@ -180,6 +180,7 @@ namespace elysian {
 
 #ifdef GYRO_GLAL
 		void		populateVbo(void);
+        void        vboEntryFromTileEntry(VboEntry*const vboEntry, const TileEntry *const tileEntry, const unsigned x, const unsigned y);
 #endif
 
 	};
@@ -203,39 +204,163 @@ namespace elysian {
 	inline void TileEntry::setZTran(const bool z) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, ZTRAN, z); }
 	inline GY_RECT_PLANE_TYPE TileEntry::getPlane(void) const { return (GY_RECT_PLANE_TYPE)ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, PLANE); }
 	inline void TileEntry::setPlane(const GY_RECT_PLANE_TYPE n) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, PLANE, n); }
-	inline bool TileEntry::getNormal(void) const { return (bool)ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, PLANE); }
+    inline bool TileEntry::getNormal(void) const {
+        GY_RECT_PLANE_TYPE plane = (GY_RECT_PLANE_TYPE)ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, PLANE);
+
+        switch(plane) {
+            case GY_RECT_PLANE_FRONT: return true;
+            default: return false;
+        }
+
+    }
 	inline void TileEntry::setNormal(const bool v) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, PLANE, v); }
 
 	inline TileEntry Area::getTileEntry(const unsigned l, const unsigned x, const unsigned y) const {
 		return ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x);
 	}
+
+    inline void Area::vboEntryFromTileEntry(VboEntry * const vboEntry, const TileEntry * const tileEntry, const unsigned x, const unsigned y) {
+
+        const GYTexCoord2*const coords = gyVidTexCoordArrayFromFrame(&level->tileSheet->_coord->texCoord[tileEntry->getIndex()],
+                                                                           tileEntry->getOrient());
+
+        switch(tileEntry->getPlane()) {
+
+        case GY_RECT_PLANE_FRONT:
+            vboEntry[0] = {
+                GYVector4  { x*32.0f-16.0f, y*32.0f + 16.0f +tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f + 32.0f, 1.0f },
+                GYTexCoord2 { coords[0].u, coords[0].v },
+                GYColor4 { 255, 255, 255, 255 }
+            };
+            vboEntry[1] = {
+                GYVector4  { x*32.0f+16.0f, y*32.0f + 16.0f + tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f + 32.0f, 1.0f },
+                GYTexCoord2 { coords[1].u, coords[1].v },
+                GYColor4 { 255, 255, 255, 255 }
+            };
+            vboEntry[2] = {
+                GYVector4 { x*32.0f-16.0f, y*32.0f+ 16.0f + tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f, 1.0f },
+                GYTexCoord2 { coords[2].u, coords[2].v },
+                GYColor4 { 255, 255, 255, 255 }
+            };
+            vboEntry[3] = {
+                GYVector4 { x*32.0f+16.0f, y*32.0f+ 16.0f +  tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f, 1.0f },
+                GYTexCoord2 { coords[3].u, coords[3].v },
+                GYColor4 { 255, 255, 255, 255 }
+            };
+
+
+            break;
+
+        case GY_RECT_PLANE_LEFT:
+            vboEntry[0] = {
+                GYVector4  { x*32.0f-16.0f, y*32.0f - 16.0f +tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f + 32.0f, 1.0f },
+                GYTexCoord2 { coords[0].u, coords[0].v },
+                GYColor4 { 255, 255, 255, 255 }
+            };
+            vboEntry[1] = {
+                GYVector4  { x*32.0f-16.0f, y*32.0f + 16.0f + tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f + 32.0f, 1.0f },
+                GYTexCoord2 { coords[1].u, coords[1].v },
+                GYColor4 { 255, 255, 255, 255 }
+            };
+            vboEntry[2] = {
+                GYVector4 { x*32.0f-16.0f, y*32.0f- 16.0f + tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f, 1.0f },
+                GYTexCoord2 { coords[2].u, coords[2].v },
+                GYColor4 { 255, 255, 255, 255 }
+            };
+            vboEntry[3] = {
+                GYVector4 { x*32.0f-16.0f, y*32.0f+ 16.0f +  tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f, 1.0f },
+                GYTexCoord2 { coords[3].u, coords[3].v },
+                GYColor4 { 255, 255, 255, 255 }
+            };
+
+
+            break;
+
+        case GY_RECT_PLANE_RIGHT:
+
+            vboEntry[0] = {
+                GYVector4  { x*32.0f+16.0f, y*32.0f - 16.0f +tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f + 32.0f, 1.0f },
+                GYTexCoord2 { coords[0].u, coords[0].v },
+                GYColor4 { 255, 255, 255, 255 }
+            };
+            vboEntry[1] = {
+                GYVector4  { x*32.0f+16.0f, y*32.0f + 16.0f + tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f + 32.0f, 1.0f },
+                GYTexCoord2 { coords[1].u, coords[1].v },
+                GYColor4 { 255, 255, 255, 255 }
+            };
+            vboEntry[2] = {
+                GYVector4 { x*32.0f+16.0f, y*32.0f- 16.0f + tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f, 1.0f },
+                GYTexCoord2 { coords[2].u, coords[2].v },
+                GYColor4 { 255, 255, 255, 255 }
+            };
+            vboEntry[3] = {
+                GYVector4 { x*32.0f+16.0f, y*32.0f+ 16.0f +  tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f, 1.0f },
+                GYTexCoord2 { coords[3].u, coords[3].v },
+                GYColor4 { 255, 255, 255, 255 }
+            };
+
+
+            break;
+
+        case GY_RECT_PLANE_FRONT_SLOPE_45:
+            vboEntry[0] = {
+                GYVector4  { x*32.0f-16.0f, (y)*32.0f - 16.0f , tileEntry->getElev()*32.0f + 32.0f, 1.0f },
+                GYTexCoord2 { coords[0].u, coords[0].v },
+                GYColor4 { 255, 255, 255, 255 }
+            };
+            vboEntry[1] = {
+                GYVector4  { x*32.0f+16.0f, y*32.0f - 16.0f, tileEntry->getElev()*32.0f + 32.0f, 1.0f },
+                GYTexCoord2 { coords[1].u, coords[1].v },
+                GYColor4 { 255, 255, 255, 255 }
+            };
+            vboEntry[2] = {
+                GYVector4 { x*32.0f-16.0f, y*32.0f+ 16.0f, tileEntry->getElev()*32.0f, 1.0f },
+                GYTexCoord2 { coords[2].u, coords[2].v },
+                GYColor4 { 255, 255, 255, 255 }
+            };
+            vboEntry[3] = {
+                GYVector4 { x*32.0f+16.0f, y*32.0f+ 16.0f, tileEntry->getElev()*32.0f, 1.0f },
+                GYTexCoord2 { coords[3].u, coords[3].v },
+                GYColor4 { 255, 255, 255, 255 }
+            };
+
+
+            break;
+
+        case GY_RECT_PLANE_BOTTOM:
+        default:
+
+            vboEntry[0] = {
+                GYVector4  { x*32.0f-16.0f, y*32.0f - 16.0f +tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f, 1.0f },
+                GYTexCoord2 { coords[0].u, coords[0].v },
+                GYColor4 { 255, 255, 255, 255 }
+            };
+            vboEntry[1] = {
+                GYVector4  { x*32.0f+16.0f, y*32.0f - 16.0f + tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f, 1.0f },
+                GYTexCoord2 { coords[1].u, coords[1].v },
+                GYColor4 { 255, 255, 255, 255 }
+            };
+            vboEntry[2] = {
+                GYVector4 { x*32.0f-16.0f, y*32.0f+ 16.0f + tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f, 1.0f },
+                GYTexCoord2 { coords[2].u, coords[2].v },
+                GYColor4 { 255, 255, 255, 255 }
+            };
+            vboEntry[3] = {
+                GYVector4 { x*32.0f+16.0f, y*32.0f+ 16.0f +  tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f, 1.0f },
+                GYTexCoord2 { coords[3].u, coords[3].v },
+                GYColor4 { 255, 255, 255, 255 }
+            };
+
+            break;
+
+        }
+
+    }
+
 	inline void Area::setTileEntry(const unsigned l, const unsigned x, const unsigned y, const TileEntry e) {
+        VboEntry entry[4];
 
-		const GYTexCoord2*const coords = gyVidTexCoordArrayFromFrame(&level->tileSheet->_coord->texCoord[e.getIndex()],
-																		   e.getOrient());
-
-		VboEntry entry[4] = {
-			{
-				GYVector4  { x*32.0f-16.0f, y*32.0f-((e.getPlane())? -16.0f : 16.0f)+e.getElev()*32.0f, e.getElev()*32.0f + ((e.getPlane())? 32.0f : 0.0f), 1.0f },
-				GYTexCoord2 { coords[0].u, coords[0].v },
-				GYColor4 { 255, 255, 255, 255 }
-			},
-			{
-				GYVector4  { x*32.0f+16.0f, y*32.0f-((e.getPlane())? -16.0f : 16.0f)+e.getElev()*32.0f, e.getElev()*32.0f + ((e.getPlane())? 32.0f : 0.0f), 1.0f },
-				GYTexCoord2 { coords[1].u, coords[1].v },
-				GYColor4 { 255, 255, 255, 255 }
-			},
-			{
-				GYVector4 { x*32.0f-16.0f, y*32.0f+((e.getPlane())? 16.0f : 16.0f) +e.getElev()*32.0f, e.getElev()*32.0f, 1.0f },
-				GYTexCoord2 { coords[2].u, coords[2].v },
-				GYColor4 { 255, 255, 255, 255 }
-			},
-			{
-				GYVector4 { x*32.0f+16.0f, y*32.0f+((e.getPlane())? 16.0f : 16.0f) +  e.getElev()*32.0f, e.getElev()*32.0f, 1.0f },
-				GYTexCoord2 { coords[3].u, coords[3].v },
-				GYColor4 { 255, 255, 255, 255 }
-			}
-		};
+        vboEntryFromTileEntry(entry, &e, x, y);
 
 		ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
 

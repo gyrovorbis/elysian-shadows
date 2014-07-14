@@ -56,8 +56,8 @@ namespace elysian {
 
 		void setElev(const unsigned char e);
 		unsigned char getElev(void) const;
-		NORMAL_TYPE getNormalType(void) const;
-		void setNormalType(const NORMAL_TYPE normal);
+        GY_RECT_PLANE_TYPE getPlaneType(void) const;
+        void setPlaneType(const GY_RECT_PLANE_TYPE plane);
 		void setShadowVolume(const bool v);
 		bool isShadowVolume(void) const;
 		void setShadowDepth(const float depth);
@@ -126,7 +126,7 @@ namespace elysian {
 		unsigned char		_elev				= 0;
 		bool				_shadowVolume		= false;
 		float				_shadowDepth		= 16.0f;
-		NORMAL_TYPE			_normalType			= NORMAL_FRONT;
+        GY_RECT_PLANE_TYPE  _planeType			= GY_RECT_PLANE_FRONT;
 		bool				_active				= false;
 		Renderable*			_renderable			= nullptr;
 		Animation*			_animation			= nullptr;
@@ -161,9 +161,20 @@ namespace elysian {
 
 	inline void Entity::setElev(const unsigned char e) { transform._pos.z = (float)e*32.0f; }
 	inline unsigned char Entity::getElev(void) const { return transform._pos.z/32.0f; }
-	inline auto Entity::getNormalType(void) const -> NORMAL_TYPE { return _normalType; }
-	inline void Entity::setNormalType(const NORMAL_TYPE normal) { _normalType = normal; }
-	inline float Entity::getDepthBaseY(void) const { return (transform._pos.y + 0.5f * transform._size.y * transform._scale.y); }
+    inline GY_RECT_PLANE_TYPE Entity::getPlaneType(void) const  { return _planeType; }
+    inline void Entity::setPlaneType(const GY_RECT_PLANE_TYPE plane) { _planeType = plane; }
+    inline float Entity::getDepthBaseY(void) const {
+        switch(_planeType) {
+        case GY_RECT_PLANE_LEFT:
+        case GY_RECT_PLANE_RIGHT:
+            return transform._pos.y - 32.0f;
+
+        default:
+           return  (transform._pos.y  + 0.5f * transform._size.y * transform._scale.y + 16.0f);
+        }
+    }
+
+     //   return (transform._pos.y); /* + 0.5f * transform._size.y * transform._scale.y);*/ }
    // inline void Entity::setDepthBaseY(const float base) { transform._pos.y = base - 0.5f * transform._size.y * transform._scale.y; }
 	inline std::map<char const *, Behavior*, ltstr>& Entity::getBehaviors(void) { return _behavior; }
 	inline void Entity::setShadowVolume(const bool v) { _shadowVolume = v; }

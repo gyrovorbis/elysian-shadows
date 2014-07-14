@@ -43,7 +43,7 @@ namespace elysian {
 		unsigned	_stripIndexArray[ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE];
 		unsigned	_stripIndexArraySize = 0;
 		static const GYColor4 _tileColor;
-        static GY_RECT_NORMAL_TYPE _curNormalType;
+        static GY_RECT_PLANE_TYPE _curPlaneType;
 		bool _renderLayer[4];
         bool _blendFunc = false;
         //animation
@@ -139,13 +139,13 @@ namespace elysian {
             _blendFunc = false;
 		}
 #if 1
-		GY_RECT_NORMAL_TYPE newNormal = entry.mapEntry.getPlane() ? GY_RECT_NORMAL_FLAT : GY_RECT_NORMAL_FRONT;
+        GY_RECT_PLANE_TYPE newPlane = entry.mapEntry.getPlane();
 
-        if(newNormal != _curNormalType) {
+        if(newPlane != _curPlaneType) {
 			endObjectList();
 			//gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta, 32.0f, 32.0f, 32.0f);
-			gyVidRectNormalType(newNormal);
-            _curNormalType = newNormal;
+            gyVidRectPlaneType(newPlane);
+            _curPlaneType = newPlane;
 		}
 		/*} else {
 		//	gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta, 32.0f, 32.0f, 1.0f);
@@ -214,8 +214,8 @@ namespace elysian {
 		gyVidNormalMapBind(_curLevel->normalSheet);
 		gyVidSpecularMapBind(nullptr);
 		gyVidSpecularMapBind(_curLevel->specularSheet);
-        gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
-        _curNormalType = GY_RECT_NORMAL_FLAT;
+        gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
+        _curPlaneType = GY_RECT_PLANE_BOTTOM;
 		//gyVidQuadListBegin(&_tileColor);
 		glBindBuffer(GL_ARRAY_BUFFER, getCurArea()->vboBuff);
 		glVertexAttribPointer(curLightShader->attribLoc[SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(VboEntry), 0);
@@ -258,7 +258,7 @@ namespace elysian {
 		Entity &entity = *(_curArea->entities)[index];
         //if(getCameraSys()->isOnscreen(entity)) {
 			entry.entity = &entity;
-			normalType = entity.getNormalType();
+            normalType = (NORMAL_TYPE)entity.getPlaneType();
 			lowestY = entity.getDepthBaseY();
             zCoord = entity.transform._pos.z;
 			return true;

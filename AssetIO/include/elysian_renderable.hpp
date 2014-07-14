@@ -74,12 +74,14 @@ namespace elysian {
 			gyMatTranslate(_offset.x, _offset.y, 0.0f);
 
 			//branch assumes shit will usually be depth buffered
-			if(getEntity()->getNormalType() != NORMAL_FRONT) {
+        /*	if(getEntity()->getNormalType() != NORMAL_FRONT) {
 				localVerts[0].z = localVerts[1].z = 0.0f;
-				gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
+                gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
 			} else {
-				gyVidRectNormalType(GY_RECT_NORMAL_FRONT);
-			}
+                gyVidRectPlaneType(GY_RECT_PLANE_FRONT);
+            }*/
+
+            gyVidRectPlaneType(_entity->getPlaneType());
 
 			//Submit vertices
 			switch(_spriteAttrib->getType()) {

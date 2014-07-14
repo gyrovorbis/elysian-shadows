@@ -135,7 +135,7 @@ namespace elysian {
 	inline void MenuText::setAlignment(const Font::ALIGNMENT align) { _align = align; }
 	inline void MenuText::setText(const char * const text) { strcpy(_text, text); }
 
-    inline MenuEntity::MenuEntity(void) { setNormalType(NORMAL_FLAT); }
+    inline MenuEntity::MenuEntity(void) { setPlaneType(GY_RECT_PLANE_BOTTOM); }
 	inline void MenuEntity::addChildWidget(MenuWidget*const widget) { _childWidgets.claimFreeEntry() = widget; }
 	inline void MenuEntity::setSizeType(const SIZE_TYPE type) { _sizeType = type; }
 	inline void MenuEntity::removeChildWidget(MenuWidget*const widget) { _childWidgets.removeEntry(widget); }
