@@ -28,11 +28,13 @@ typedef enum _GY_RECT_PLANE_TYPE {
 	GY_RECT_PLANE_MAX
 } GY_RECT_PLANE_TYPE;
 
+/*
 typedef enum _GY_RECT_NORMAL_TYPE {
 	GY_RECT_NORMAL_FLAT,
 	GY_RECT_NORMAL_FRONT,
 	GY_RECT_NORMAL_MAX
 } GY_RECT_NORMAL_TYPE;
+*/
 
 //Internal state
 void gyVidTexBind(const struct _GYTexture *const tex);
@@ -56,7 +58,7 @@ void gyVidQuadListBegin(const GYColor4 *const color);
 void gyVidQuadListEnd(void);
 void gyVidQuad(const struct _GYVector4 *const verts, const int frame);
 void gyVidRectTexOrient(const GY_RECT_TEX_ORIENT orient);
-void gyVidRectNormalType(const GY_RECT_NORMAL_TYPE type);
+void gyVidRectPlaneType(const GY_RECT_PLANE_TYPE type);
 void gyVidRect(const int frame);
 
 //Triangle strip API 
