@@ -9,6 +9,8 @@
 #include "elysian_zcoords.hpp"
 #include "elysian_renderable.hpp"
 #include "elysian_particle_system.hpp"
+#include "elysian_mem_pool.hpp"
+#include "elysian_entity.hpp"
 #include <gyro.h>
 
 #ifdef GYRO_GLAL
@@ -16,6 +18,9 @@
 
 #define ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE	100000
 #endif
+
+#define ELYSIAN_MAP_SYSTEM_ONSCREEN_ENTITY_POOL_SIZE	1000
+
 /*
 //Objects have integer zCoords, force Entities to floats to prevent duplicate z
 #define ELYSIAN_DEPTH_BUFFER_ENTITY_OBJECT_MIN_Y_OFFSET 0.001f
@@ -40,8 +45,9 @@ namespace elysian {
 		public MapDepthBuffer<MapSystem, MapDepthBuffEntry, GammaEntityDepthBuffEntry> 
 	{ 
 	private:
-		unsigned	_stripIndexArray[ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE];
-		unsigned	_stripIndexArraySize = 0;
+		Pool<Entity*>				_onscreenEntityPool	= Pool<Entity*>(ELYSIAN_MAP_SYSTEM_ONSCREEN_ENTITY_POOL_SIZE);
+		unsigned					_stripIndexArray[ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE];
+		unsigned					_stripIndexArraySize = 0;
 		static const GYColor4 _tileColor;
         static GY_RECT_PLANE_TYPE _curPlaneType;
 		bool _renderLayer[4];
@@ -76,7 +82,7 @@ namespace elysian {
 		void renderObjectEntry(const MapDepthBuffEntry &entry, const float z);
 		void beginObjectList(void);
 		void endObjectList(void);
-		unsigned getEntityCount(void) const;
+		unsigned getEntityCount(void);
 		bool getOnscreenEntity(const unsigned index, GammaEntityDepthBuffEntry &entry, NORMAL_TYPE &normalType, float &lowestY, float &zCoord) const;
         void renderEntityEntry(const GammaEntityDepthBuffEntry &entry) const;
 		void disableDepthTest(void) const;
@@ -250,12 +256,24 @@ namespace elysian {
 	   _blendFunc = false;
 	}
 	
-	inline unsigned MapSystem::getEntityCount(void) const {
-		return _curArea->entities.size();
+	inline unsigned MapSystem::getEntityCount(void) {
+		_onscreenEntityPool.clear();
+		auto& entities = _curArea->entities;
+
+		for(auto entity : entities) {
+			if(getLightSys()->isShadowPass() && entity->isShadowVolume()) {
+				_onscreenEntityPool.claimFreeEntry() = entity;
+			} else if(!getLightSys()->isShadowPass()) {
+				_onscreenEntityPool.claimFreeEntry() = entity;
+			}
+
+		}
+
+		return _onscreenEntityPool.size();
 	}
 
 	inline bool MapSystem::getOnscreenEntity(const unsigned index, GammaEntityDepthBuffEntry &entry, NORMAL_TYPE &normalType, float &lowestY, float& zCoord) const {
-		Entity &entity = *(_curArea->entities)[index];
+		Entity &entity = *(_onscreenEntityPool)[index];
         //if(getCameraSys()->isOnscreen(entity)) {
 			entry.entity = &entity;
             normalType = (NORMAL_TYPE)entity.getPlaneType();

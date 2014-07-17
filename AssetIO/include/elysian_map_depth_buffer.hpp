@@ -92,8 +92,8 @@ namespace elysian {
         }
 
         //Entity interface
-		unsigned _getEntityCount(void) const {
-			return static_cast<const T*>(this)->getEntityCount();
+		unsigned _getEntityCount(void) {
+			return static_cast<T*>(this)->getEntityCount();
 		}
 		
 		bool _getOnscreenEntity(const unsigned index, E &entry, NORMAL_TYPE &normalType, float &lowestY, float &zCoord) const {

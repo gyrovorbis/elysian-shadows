@@ -215,6 +215,8 @@ public:
 
     T& operator[] (const int index) { return _entries[index]; }
 
+	const T& operator[] (const int index) const { return _entries[index]; }
+
     iterator begin(void) {
         for(unsigned i = 0; i < _endIndex; ++i) {
             if(_used[i]) return iterator(this, i);
