@@ -487,7 +487,7 @@ void Debug::processInput(GameInput& input) {
 	sprintf(buff, "LightSrc[%d]", count);
 
 			Entity* entity = julien;
-			entity->getRenderable()->getSpriteAttrib()->setAlpha(0);
+		//	--entity->getRenderable()->getSpriteAttrib()->setAlpha(0);
 		//	entity->setName(buff);
 			entity->setShadowVolume(false);
 			//entity->transform.setSize(1.0f, 1.0f, 1.0f);
@@ -500,7 +500,7 @@ void Debug::processInput(GameInput& input) {
 			//entity->transform.setPos(600, 600);
 			//entity->setDepthType(DEPTH_BUFFERED);
 			src = lightSrc = entity->addLightSource();
-			lightSrc->setRelativePos(0.0f, 0.0f, 2.0f);
+			//lightSrc->setRelativePos(0.0f, 0.0f, 2.0f);
 			gyVec3Normalize(&dirVec);
 			//lightSrc->setDirection(dirVec);
 			LightAttrib* attrib = new LightAttrib;
@@ -508,11 +508,10 @@ void Debug::processInput(GameInput& input) {
             attrib->setDiffuseColor(GYVector4 { 0.0f, 0.0f, 1.0f, 1.0f });
 			attrib->setSpecularColor(GYVector4{ 0.0f, 1.0f, 1.0f, 1.0f});
 			lightSrc->setAttrib(attrib);
-#if 0
-			lightSrc->setLightType(LightSource::LIGHT_DIRECTIONAL);
-#else
-			lightSrc->setLightType(GY_LIGHT_POINT);
-			lightSrc->setSpotCutoffAngle(360.0f);
+
+
+			lightSrc->setLightType(GY_LIGHT_SPOT);
+			lightSrc->setSpotCutoffAngle(45.0f);
 			lightSrc->setShadowCaster(true);
 			attrib->setAttenuationFactors(GYVector3{ 0.00001f, 0.00001f, 0.00001f });
 
@@ -537,8 +536,6 @@ void Debug::processInput(GameInput& input) {
 		}
 
 			++count;
-
-#endif
 
 
 	}
