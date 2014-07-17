@@ -85,7 +85,6 @@ void gyVidLightSourceUninit(GYLightSource* const light) {
 	free(light->_data);
 }
 
-
 void _addLightUniform(const unsigned index, const GYLightSource*const light) {
 	_LightInternals* internals = light->_data;
 
