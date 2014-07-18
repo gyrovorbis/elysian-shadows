@@ -318,12 +318,12 @@ void Debug::processInput(GameInput& input) {
 		static bool enabled = false;
 		enabled = !enabled;
 		getGuiSys()->setDebugOverLayEnabled(enabled);
-		/*
-		if(intensity != 0) --intensity;
+
+		//if(intensity != 0) --intensity;
 		dirVec.z -= 0.1f;
 		gyVec3Normalize(&dirVec);
 		src->setDirection(dirVec);
-		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);*/
+		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
 	}
 	if(input.getDown(GameInput::BUT_7)) {
 		++size;

@@ -311,15 +311,15 @@ void CameraSystem::processInput(const GameInput& input) {
 		}
 
 		if(input.getDown(GameInput::BUT_Z)) {
-			_curState->dir.y -= 0.01f;
-			_curState->dir.z += 0.01f;
-			gyVec3Normalize(&_curState->dir);
+			_curState->_keyFrame._dir.y -= 0.01f;
+			_curState->_keyFrame._dir.z += 0.01f;
+			gyVec3Normalize(&_curState->_keyFrame._dir);
 		}
 
 		if(input.getDown(GameInput::BUT_X)) {
-			_curState->dir.y += 0.01f;
-			_curState->dir.z -= 0.01f;
-			gyVec3Normalize(&_curState->dir);
+			_curState->_keyFrame._dir.y += 0.01f;
+			_curState->_keyFrame._dir.z -= 0.01f;
+			gyVec3Normalize(&_curState->_keyFrame._dir);
 		}
 	}
 #endif
@@ -396,7 +396,7 @@ void CameraSystem::update(void) {
 
 		//Create View Matrix
 		const GYVector3 zeroPos = { 0.0f, 0.0f, 0.0f };
-		gyVidCamFrustumLookAt(_curState, &zeroPos, &_curState->dir, &_curState->up);
+		gyVidCamFrustumLookAt(_curState, &zeroPos, &_curState->_keyFrame._dir, &_curState->up);
 		//gyVidLookAtMat(camMat, 0.0f, 0.0f, 0.0f,
 					 //  _curState->dir.x, _curState->dir.y, _curState->dir.z,
 					 //  _curState->up.x, _curState->up.y, _curState->up.z);

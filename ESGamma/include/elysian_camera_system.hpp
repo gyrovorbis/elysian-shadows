@@ -29,6 +29,7 @@ namespace elysian {
 		friend struct CameraState;
 	private:
 
+		GYVector3	_dir = GYVector3 { 0.0f, 1.0f, 1.0f };
 		GYVector3	_pos = GYVector3 { 0.0f, 0.0f, -ZCoordConstants::mapBase };
 		float		_scale = 1.0f;
 		float		_zOrient = 0.0f;
@@ -38,6 +39,7 @@ namespace elysian {
 		void setScale(const float scale);
 		void setZOrient(const float zOrient);
 		void setXOrient(const float xOrient);
+		void setDir(const float x, const float y, const float z);
 
 		float getScale(void) const;
 
@@ -53,7 +55,7 @@ namespace elysian {
 		std::vector<Entity*> entities;
 
 		CameraKeyFrame		_keyFrame;
-		GYVector3 dir		= { 0.0f, 1.0f, 1.0f };
+		//GYVector3 dir		= { 0.0f, 1.0f, 1.0f };
 		GYVector3 up		= { 0.0f, 0.0f, 1.0f };
 		float staticScale	= 1.0f;
 
@@ -229,7 +231,7 @@ namespace elysian {
 		void setPerspectiveFrustum(const float fov, const float aspect, const float znear, const float zfar);
 
 		void setDirection(const GYVector3 &dir) {
-			_curState->dir = dir;
+			_curState->_keyFrame._dir = dir;
 		}
 
 		void setUpDirection(const GYVector3 &dir) {
@@ -303,6 +305,9 @@ namespace elysian {
 	}
 	inline void CameraKeyFrame::setZOrient(const float zOrient) { _zOrient = zOrient; }
 	inline void CameraKeyFrame::setXOrient(const float xOrient) { _xOrient = xOrient; }
+	inline void CameraKeyFrame::setDir(const float x, const float y, const float z) {
+		_dir.x = x; _dir.y = y; _dir.z = z;
+	}
 
 	inline void CameraKeyFrame::linearInterpolate(const CameraKeyFrame& startKeyFrame, const CameraKeyFrame& endKeyFrame,
 										const float interval, const float elapsed) {
@@ -312,6 +317,12 @@ namespace elysian {
 		gyLinearInterp((float*)&_pos.x, 6,
 					   (float*)&startKeyFrame._pos.x, (float*)&endKeyFrame._pos.x,
 					   interval, elapsed);
+
+		gyLinearInterp((float*)&_dir.x, 3,
+					   (float*)&startKeyFrame._dir.x, (float*)&endKeyFrame._dir.x,
+					   interval, elapsed);
+
+		gyVec3Normalize(&_dir);
 /*
 		gyLinearInterp((float*)&_scale, 1,
 					   (float*)&startKeyFrame._scale, (float*)&endKeyFrame._scale,
