@@ -767,7 +767,8 @@ OOLUA_EXPORT_FUNCTIONS(CameraKeyFrame,
 					   setPos,
 					   setScale,
 					   setZOrient,
-					   setXOrient)
+					   setXOrient,
+					   setDir)
 
 OOLUA_EXPORT_FUNCTIONS(CameraSystem,
 					   scale,

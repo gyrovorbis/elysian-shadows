@@ -1036,6 +1036,7 @@ OOLUA_PROXY_END
 
 OOLUA_PROXY(CameraKeyFrame)
 	OOLUA_MEM_FUNC(void, setPos, float, float, float)
+	OOLUA_MEM_FUNC(void, setDir, float, float, float)
 	OOLUA_MEM_FUNC(void, setScale, float)
 	OOLUA_MEM_FUNC(void, setZOrient, float)
 	OOLUA_MEM_FUNC(void, setXOrient, float)
