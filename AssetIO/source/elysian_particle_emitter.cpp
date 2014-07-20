@@ -98,9 +98,9 @@ void ParticleEmitterInternals::emitFromPointInDir(const GYVector3& pos, const GY
 */
 
 		part->color = _attrib->getColor();
-		part->color.r += (rand()%6)-3;
-		part->color.g += (rand()%6)-3;
-		part->color.b += (rand()%6)-3;
+        //part->color.r += (rand()%6)-3;
+        //part->color.g += (rand()%6)-3;
+        //part->color.b += (rand()%6)-3;
 
 
 	}
