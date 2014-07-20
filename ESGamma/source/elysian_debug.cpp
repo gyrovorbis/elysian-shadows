@@ -197,12 +197,13 @@ void Debug::processInput(GameInput& input) {
 	static float theta = 0.0f;
 	static unsigned size = 3;
 	static unsigned intensity = 200;
+    static bool freeCam = false;
 
 	//Camera zoom
-	if(input.getDown(GameInput::BUT_W)){
+    if(input.getDown(GameInput::BUT_W) && ! input.getDown(GameInput::BUT_LALT)){
         _engine->_cameraSystem->staticScale(0.9f*60.0f*getTimerSys()->getDeltaTime());
     }
-	if(input.getDown(GameInput::BUT_S)){
+    if(input.getDown(GameInput::BUT_S) && !input.getDown(GameInput::BUT_LALT)){
         _engine->_cameraSystem->staticScale(1.1f*60.0f*getTimerSys()->getDeltaTime());
 	}
 
@@ -260,19 +261,32 @@ void Debug::processInput(GameInput& input) {
 	//EVERYTHING BEYOND THIS POINT IS IN FALCO'S DEBUG KEYSPACE!!!!
 	if(!input.getDown(GameInput::BUT_LALT)) return;
 
+    if(input.getDown(GameInput::BUT_W) && freeCam){
 
-	if(input.getDown(GameInput::BUT_Q)){
+        _engine->_cameraSystem->translate(GYVector3{0.0f, -3.0f, 0.0f});
+    }
+    if(input.getDown(GameInput::BUT_S) && freeCam){
+        _engine->_cameraSystem->translate(GYVector3{0.0f, 3.0f, 0.0f});
+    }
+    if(input.getDown(GameInput::BUT_A) && freeCam){
+        _engine->_cameraSystem->translate(GYVector3{-3.0f, 0.0f, 0.0f});
+    }
+    if(input.getDown(GameInput::BUT_D) && freeCam){
+        _engine->_cameraSystem->translate(GYVector3{3.0f, 0.0f, 0.0f});
+    }
+
+    if(input.getDown(GameInput::BUT_Q) && !freeCam){
         _engine->_cameraSystem->rotateZ(0.1f*60.0f*getTimerSys()->getDeltaTime());
 	}
-	if(input.getDown(GameInput::BUT_A)){
+    if(input.getDown(GameInput::BUT_A) && !freeCam){
         _engine->_cameraSystem->rotateZ(-0.1f*60.0f*getTimerSys()->getDeltaTime());
 	}
 
-	if(input.getDown(GameInput::BUT_E)) {
+    if(input.getDown(GameInput::BUT_E) && !freeCam) {
         _engine->_cameraSystem->rotateX(-0.1f*getTimerSys()->getDeltaTime());
 	}
 
-	if(input.getDown(GameInput::BUT_D)) {
+    if(input.getDown(GameInput::BUT_D) && !freeCam) {
         _engine->_cameraSystem->rotateX(0.1f*getTimerSys()->getDeltaTime());
 	}
 
@@ -321,8 +335,8 @@ void Debug::processInput(GameInput& input) {
 
 		//if(intensity != 0) --intensity;
 		dirVec.z -= 0.1f;
-		gyVec3Normalize(&dirVec);
-		src->setDirection(dirVec);
+        //gyVec3Normalize(&dirVec);
+        //src->setDirection(dirVec);
 		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
 	}
 	if(input.getDown(GameInput::BUT_7)) {
@@ -355,10 +369,16 @@ void Debug::processInput(GameInput& input) {
 	}
 
 	if(input.getTapped(GameInput::BUT_R)) {
-		static bool renderDebug = false;
-		renderDebug = !renderDebug;
+        freeCam = !freeCam;
+        static Entity* julien = getCurArea()->findEntity("Julien");
+#if 0
 		getLightSys()->setRenderDebugEnabled(renderDebug);
 		printf(VERBOSE, "LightSystem::renderShadowVolumes = %d", renderDebug);
+#else
+        if(freeCam) getCameraSys()->setFollowEntity(nullptr);
+        else getCameraSys()->setFollowEntity(julien);
+
+#endif
 	}
 
     if(input.getDown(GameInput::BUT_U)) {

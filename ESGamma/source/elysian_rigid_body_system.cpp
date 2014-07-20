@@ -674,17 +674,16 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
 
 		shard->transform._pos.x = entity->transform._pos.x - 0.5f*width + x + 0.5f*xinc;
 		shard->transform._pos.y = entity->transform._pos.y - 0.5f*height + y + 0.5f*yinc;
-        shard->transform._pos.z = entity->transform._pos.z + (ySize*yinc-y);
-        //shard->setPlaneType((GY_RECT_TEX_PLANE)(rand()%2==1));
-		/*if(entity->getNormalType() == NORMAL_FRONT) {
-			shard->transform._pos.y = entity->transform._pos.y - 0.5f*entity->transform._size.y; + y;
-			//shard->transform._pos.z = (ySize-row)*16.0f;
+        shard->transform._pos.z = entity->transform._pos.z;// + (ySize*yinc-y);
+        shard->setPlaneType(GY_RECT_PLANE_FRONT);
+        if(entity->getPlaneType() == GY_RECT_PLANE_FRONT) {
+            shard->transform._pos.y = entity->transform._pos.y + 0.5f*entity->transform._size.y;// + y;
+            shard->transform._pos.z += (ySize-row)*16.0f;
 		} else {
 			shard->transform._pos.y = entity->transform._pos.y - 0.5f*entity->transform._size.y + y;
 			shard->transform._pos.z = entity->transform._pos.z;
 
-		}*/
-
+        }
 
         shard->transform.setSize(xinc, yinc, 9.0f);
 
@@ -730,7 +729,7 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
 
 		*shard->getRigidBody()->getAttrib() = *entity->getRigidBody()->getAttrib();
 		shard->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass *= ySize*xSize;
-        shard->getCollidable()->getAttrib()->getStaticAttrib()->invMomOfInertia = 1/5000000.0f * 16.0f;
+        shard->getCollidable()->getAttrib()->getStaticAttrib()->invMomOfInertia = 0;//1/5000000.0f * 16.0f;
         shard->getCollidable()->getAttrib()->getStaticAttrib()->angDamping = 0.1f;
         gyVec2ScaleAccum((GYVector2*)&shard->getCollidable()->getAttrib()->getStaticAttrib()->damping, 1.0f/(ySize * xSize));
         shard->getCollidable()->getAttrib()->getStaticAttrib()->damping.z = 0.5f;
@@ -807,12 +806,10 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
         gyVec3Normalize(&localPosDir);
 
         float rot = gyVec2ScalarCrossProd((GYVector2*)&localPosDir, (GYVector2*)&normal);
-        shard->getRigidBody()->setRotation(-rot*(posMag/maxDist)*velMag);
+        shard->getRigidBody()->setRotation(-rot*(posMag));
 
         float baseDurability = entity->getRigidBody()->getAttrib()->getBaseDurability();
         float durability = entity->getRigidBody()->getDurability();
-
-
 
 
         //gyVec3ScaleAccum(&localPosDir, -1.0f);
@@ -821,7 +818,7 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
         float velmag = gyVec3MagAndNormalize(&velDirNorm);
 
 
-        float totalMag = /*(posMag3/maxDist3) */  gyVec3DotProd((GYVector3*)&normal, (GYVector3*)&localPosDir) * velmag; /* gyVec3DotProd(&localPosDir, &normal);*/  /* gyVec3DotProd(&velDirNorm, &normal) */ /* gyVec3DotProd(&localPosDir, &velDirNorm) * */
+        float totalMag = /*(posMag3/maxDist3) */  gyVec3DotProd((GYVector3*)&velDirNorm, (GYVector3*)&localPosDir) * velmag; /* gyVec3DotProd(&localPosDir, &normal);*/  /* gyVec3DotProd(&velDirNorm, &normal) */ /* gyVec3DotProd(&localPosDir, &velDirNorm) * */
                // gyVec3CrossProd((GYVector2*)&localPos, (GYVector2*)&normal);//((baseDurability-durability)/baseDurability);
        // totalMag /= ySize*xSize;
         //float velMag = gyVec3MagAndNormalize(&velDir);
@@ -835,7 +832,9 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
 
         //gyVec3CrossProd(&localPosDir, &localPosDir, &normal);
 
+        float localVel = gyVec3DotProd(&velDirNorm, &localPosDir);
         gyVec3ScaleAccum(&localPosDir, totalMag);
+        gyVec3AddScaled(&localPosDir, &velDir, localVel);
 
         shard->getRigidBody()->setVelocity(localPosDir);
 

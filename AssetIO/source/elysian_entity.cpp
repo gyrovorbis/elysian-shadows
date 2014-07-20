@@ -65,8 +65,22 @@ void Entity::render(void) {
 	} else {
         //transform._pos.z += _shadowDepth;
 	}
-	transform.apply();
-	_renderable->beginRender();
+
+    if(_planeType == GY_RECT_PLANE_BOTTOM) {
+        transform.apply();
+    } else {
+
+        gyMatTranslate(transform._pos.x, transform._pos.y, transform._pos.z);
+        gyMatScale(transform._size.x*transform._scale.x, transform._size.y*transform._scale.y, transform._size.z*transform._scale.z);
+        gyMatTranslate(0.0f, 0.0f, 0.5f);
+        gyMatRotate(transform._orientZ, 0.0f, 1.0f, 0.0f);
+        gyMatTranslate(0.0f, 0.0f, -0.5f);
+
+
+    }
+
+
+    _renderable->beginRender();
 	//if(_depthType == DEPTH_BUFFERED) transform._size.y = transform._size.z;
 	_renderable->render();
 	_renderable->endRender();
