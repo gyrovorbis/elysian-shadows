@@ -202,7 +202,7 @@ void LightSystem::shadowRenderPasses(void) {
 			_addToLightMap(it);
 			break;
 		case GY_LIGHT_POINT:
-			if(cam->isWithinScreenRegion(it->position.x, it->position.y, it->getAttrib().getRadius(), it->getAttrib().getRadius())) {
+			//if(cam->isWithinScreenRegion(it->position.x, it->position.y, it->getAttrib().getRadius(), it->getAttrib().getRadius())) {
 				_onscreenLights[_onscreenLightCount++] = it;
 
 					for(unsigned i = GY_CUBE_MAP_RIGHT; i < GY_CUBE_MAP_FACE_MAX; ++i) {
@@ -211,7 +211,7 @@ void LightSystem::shadowRenderPasses(void) {
 						if(it->isShadowCaster()) {
 							gyVidLightSourceBeginShadowPass(it, (GY_CUBE_MAP_FACE)i);
 
-							//it->getCameraState()->updateBoundingSubregions(*cam);
+							it->getCameraState()->updateBoundingSubregions(*cam);
 
 							getCameraSys()->setCurrentCameraState(it->getCameraState());
 							//_renderShadowVolumes();
@@ -221,7 +221,7 @@ void LightSystem::shadowRenderPasses(void) {
 						_addToLightMap(it);
 					}
 
-			}
+			//}
 			break;
 		}
 	}

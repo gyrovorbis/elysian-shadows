@@ -520,18 +520,18 @@ void Debug::processInput(GameInput& input) {
 			//entity->transform.setPos(600, 600);
 			//entity->setDepthType(DEPTH_BUFFERED);
 			src = lightSrc = entity->addLightSource();
+			lightSrc->setLightType(GY_LIGHT_POINT);
 			//lightSrc->setRelativePos(0.0f, 0.0f, 2.0f);
 			gyVec3Normalize(&dirVec);
 			//lightSrc->setDirection(dirVec);
 			LightAttrib* attrib = new LightAttrib;
-			attrib->setAmbientColor(GYVector4{ 0.1f, 0.1f, 0.1f, 1.0f});
-            attrib->setDiffuseColor(GYVector4 { 0.0f, 0.0f, 1.0f, 1.0f });
-			attrib->setSpecularColor(GYVector4{ 0.0f, 1.0f, 1.0f, 1.0f});
+			attrib->setAmbientColor(GYVector4{ 0.1f, 0.1f, 0.1f, 0.0f});
+			attrib->setDiffuseColor(GYVector4 { 0.0f, 0.0f, 1.0f, 0.0f });
+			attrib->setSpecularColor(GYVector4{ 0.0f, 1.0f, 1.0f, 0.0f});
 			lightSrc->setAttrib(attrib);
 
 
-			lightSrc->setLightType(GY_LIGHT_SPOT);
-			lightSrc->setSpotCutoffAngle(45.0f);
+			//lightSrc->setSpotCutoffAngle(45.0f);
 			lightSrc->setShadowCaster(true);
 			attrib->setAttenuationFactors(GYVector3{ 0.00001f, 0.00001f, 0.00001f });
 
