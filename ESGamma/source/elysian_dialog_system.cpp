@@ -397,7 +397,7 @@ void DialogSystem::closeDialog(void) {
 	_posState = POS_BOTTOM;
 	//_mainCanvas.transform.setPosition(_mainCanvas.transform._pos.x, 430.0f);
 	//_mainCanvas.transform._pos.y = 430.0f;
-	getGuiSys()->adventureLog.enable();
+	//getGuiSys()->adventureLog.enable();
 }
 
 void DialogSystem::_updateCamera(void) {

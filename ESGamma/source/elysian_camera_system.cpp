@@ -299,7 +299,7 @@ void CameraSystem::processInput(const GameInput& input) {
 		}
 		if(input.getDown(GameInput::BUT_A)) {
 
-			translate(GYVector3{ -5.0f, 0.0f, 0.0f});
+			translate(GYVector3{ -2.0f, 0.0f, 0.0f});
 		}
 		if(input.getDown(GameInput::BUT_S)) {
 
@@ -307,7 +307,7 @@ void CameraSystem::processInput(const GameInput& input) {
 
 		}
 		if(input.getDown(GameInput::BUT_D)) {
-			translate(GYVector3{ 5.0f, 0.0f, 0.0f});
+			translate(GYVector3{ 2.0f, 0.0f, 0.0f});
 		}
 
 		if(input.getDown(GameInput::BUT_Z)) {
