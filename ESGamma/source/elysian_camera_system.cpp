@@ -162,8 +162,8 @@ void CameraSystem::_updateState(CameraState*const state, const float /*deltaTime
 
 		//Check if we need to bother updating
 		if(fabs(nextScale - interp.getEndKeyFrame()._scale) > ELYSIAN_CAMERA_STATE_SCALE_INTERP_EPSILON) {
-			Debug::printf(Debug::VERBOSE, "SCALE - %f", nextScale);
-			Debug::printf(Debug::VERBOSE, "<%f, %f>", scaleX, scaleY);
+            //Debug::printf(Debug::VERBOSE, "SCALE - %f", nextScale);
+            //Debug::printf(Debug::VERBOSE, "<%f, %f>", scaleX, scaleY);
 
 			//curInterp.startScaleInterp(_keyFrame._scale, nextScale, 4.0f);
 			setScale(nextScale, 4.0f);

@@ -202,8 +202,11 @@ void CombatSystem::_emitCombatModifierText(const Combat*const target, const Comb
 
 		//check if the attribute was modified
 		if(attrib != 0) {
+            GYVector2 pos = *(GYVector2*)&target->getEntity()->transform._pos;
+            pos.y -= 0.7f*target->getEntity()->transform._pos.z;
+
 			sprintf(buff, "%d", abs(attrib));
-			getGuiSys()->addCombatText(buff, (attrib > 0)? posColor : negColor, *(GYVector2*)&target->getEntity()->transform._pos, _curActionRes.initialVel);
+            getGuiSys()->addCombatText(buff, (attrib > 0)? posColor : negColor, pos, _curActionRes.initialVel);
 		}
 	};
 
