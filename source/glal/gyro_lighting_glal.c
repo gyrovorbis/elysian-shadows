@@ -142,9 +142,9 @@ void gyVidLightSourceAdd(GYLightSource* const light) {
 }
 
 void gyVidLightSourceRemove(const GYLightSource* const light) {
-	--lightSourceCount;
 	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
 		if(lightSources[i] == light) {
+			--lightSourceCount;
 			glalStripComboBreaker();
 			lightsEnabled[i] = 0;
 			glUniform1i(curLightShader->lightsUniformLoc[i][SHADER_LIGHT_ENABLED], 0);
