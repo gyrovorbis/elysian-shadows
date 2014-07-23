@@ -218,8 +218,8 @@ void LightSystem::shadowRenderPasses(void) {
 							getMapSys()->render();
 
 						}
-						_addToLightMap(it);
 					}
+					_addToLightMap(it);
 
 			//}
 			break;
@@ -230,7 +230,7 @@ void LightSystem::shadowRenderPasses(void) {
 	gyVidLightSourceEndShadowPasses();
 	gyVidSetGlobalAmbience(&_globalAmbience);
 	_shadowPass = false;
-    _sortOnscreenLights();
+	//_sortOnscreenLights();
 }
 
 void LightSystem::addLightSourcesToScene(void) {
