@@ -593,6 +593,7 @@ OOLUA_PROXY(Character, Component)
 	OOLUA_MEM_FUNC(void, setAnimate, bool)
 	OOLUA_MEM_FUNC_CONST(bool, isFacing, const Entity&)
 	OOLUA_MEM_FUNC_CONST(Direction::DIR4, getFaceDir)
+    OOLUA_MEM_FUNC(void, setWalkForce, float)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CharacterSystem)
@@ -1057,6 +1058,7 @@ OOLUA_PROXY(CameraSystem)
 	OOLUA_MEM_FUNC(void, setDynamic, bool)
 	OOLUA_MEM_FUNC(void, pushPerspectiveState)
 	OOLUA_MEM_FUNC(void, popState)
+    OOLUA_MEM_FUNC(void, shake, const GYVector3&, unsigned, float, bool, EventMonitor*)
 OOLUA_PROXY_END
 
 

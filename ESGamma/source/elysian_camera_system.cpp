@@ -5,8 +5,15 @@
 #include "elysian_game_input.hpp"
 #include "elysian_timer_system.hpp"
 #include "elysian_debug.hpp"
+#include "elysian_generic.hpp"
 
 namespace elysian {
+
+// ===== STATIC MEMBERS =====
+
+CameraSystem* CameraShakeSubProcess::_cameraSys = nullptr;
+
+// ===== INSTANCE MEMBERS =====
 
 void CameraState::updateBoundingRegions(const int xMin, const int xMax, const int yMin, const int yMax) {
 	int startX	= xMax;
@@ -186,9 +193,11 @@ CameraSystem::CameraSystem(void) {
 	};
 	unsigned w, h;
 
+    CameraShakeSubProcess::_cameraSys = this;
+
 	//Initialize default camera
 	gyVidResolution(&w, &h);
-	gyVidCamOrthoProj(_curState, 0.0f, (float)w, (float)h, 0.0f, -999.0f, 0.0f);
+    gyVidCamOrthoProj(_curState, 0.0f, (float)w, (float)h, 0.0f, -999.0f, 1000.0f);
 	gyVidCamOrthoLookAt(_curState, &_curState->_keyFrame._pos, 1.0f, 0.0f, _curState->_keyFrame._xOrient);
 
 	memcpy(_uiCamera.viewMat, identity4, sizeof(GYMatrix4));
@@ -248,7 +257,7 @@ void CameraSystem::processInput(const GameInput& input) {
 		if(_debugActive) { //enable
 			//_debugState.focalEntity = _curState->focalEntity;
 
-			_debugState._keyFrame._pos = GYVector3 {
+            _debugState._keyFrame._pos = GYVector3 {
 				_curState->_keyFrame._pos.x,
 				_curState->_keyFrame._pos.y,
 				ZCoordConstants::mapBase+150.0f
@@ -335,17 +344,6 @@ void CameraSystem::update(void) {
 
 	if(_customState) return;
 
-
-	//Follow entities
-	if(_curState->focalEntity) {
-		_curState->_keyFrame._pos = GYVector3 {
-			_curState->focalEntity->transform._pos.x,
-            _curState->focalEntity->transform._pos.y - _curState->focalEntity->transform._pos.z,
-			/*_curState->focalEntity->transform.getPosZ()*/-ZCoordConstants::mapBase,
-			//0.0f
-		};
-	}
-
 #if 0
     _curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
 
@@ -362,6 +360,20 @@ void CameraSystem::update(void) {
 #endif
 
 	if(_curState->projType == GY_PROJECTION_ORTHO) {
+        //Follow entities
+        if(_curState->focalEntity) {
+            _curState->_keyFrame._pos = GYVector3 {
+                _curState->focalEntity->transform._pos.x,
+                _curState->focalEntity->transform._pos.y - _curState->focalEntity->transform._pos.z,
+                /*_curState->focalEntity->transform.getPosZ()*/-ZCoordConstants::mapBase,
+                //0.0f
+            };
+        } else {
+            _curState->_keyFrame._pos = GYVector3 { 0.0f, 0.0f, 0.0f };
+        }
+
+        gyVec3AddAccum(&_curState->_keyFrame._pos, &_curState->_keyFrame._offset);
+
         //if(_dynamic) {
 			_updateState(_curState, deltaTime);
         //    _curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
@@ -369,7 +381,7 @@ void CameraSystem::update(void) {
 
 		//gyVidProjectionDefaultMatrix();
 		//gyVidCameraSetViewCenter(&_curState->pos, _curState->scale, _curState->zOrient);
-		gyVidCamOrthoLookAt(_curState, &_curState->_keyFrame._pos, _curState->_keyFrame._scale*_curState->staticScale, _curState->_keyFrame._zOrient, _curState->_keyFrame._xOrient);
+        gyVidCamOrthoLookAt(_curState, &_curState->_keyFrame._pos, _curState->_keyFrame._scale*_curState->staticScale, _curState->_keyFrame._zOrient, _curState->_keyFrame._xOrient);
 
 		gyMatPush();
 		gyMatLoad(&_curState->projViewMat);
@@ -425,7 +437,7 @@ void CameraSystem::update(void) {
 		gyMatScale(1.0f, 1.0f, -1.0f);
 		gyMatTranslate(-_curState->entity->transform._pos.x, -_curState->entity->transform._pos.y+30.0f, -(_curState->entity->getElev()+1)*32.0f-ZCoordConstants::mapBase);
 		gyMatStore(&camMat);
-		gyMatPop();*/
+        gyMatPop();*/
 
 
 #endif
@@ -434,7 +446,7 @@ void CameraSystem::update(void) {
 		}
 	}
 
-	gyVidSetCamWorldPos(&_curState->_keyFrame._pos);
+    gyVidSetCamWorldPos(&_curState->_keyFrame._pos);
 
 
 }
@@ -479,8 +491,6 @@ bool CameraSystem::isOnscreen(const Entity &entity) {
 }
 
 
-
-
 void CameraSystem::isEntityWithinViewVolume(const Entity& /*entity*/) const {
 
 }
@@ -488,6 +498,54 @@ void CameraSystem::isEntityWithinViewVolume(const Entity& /*entity*/) const {
 void CameraSystem::isTileWithinViewVolume(const unsigned /*l*/, const unsigned /*x*/, const unsigned /*y*/) const {
 
 }
+
+void CameraShakeSubProcess::onStart(void) {}
+
+// ===== CameraShakeSubProcess ======
+void CameraShakeSubProcess::_startNextKeyFrame(void) {
+    CameraKeyFrame keyFrame = _cameraSys->getKeyFrame();
+    GYVector3 translation;
+    float time;
+    float newMag = _magnitude;
+    const float zeroMag = 0.0f;
+
+    if(_fade) {
+        gyLinearInterp(&newMag, 1,
+                       &_magnitude, &zeroMag,
+                       _duration, _elapsedTime);
+    }
+
+    switch(_state) {
+    case MOVE_ORIG:
+        translation = { 0.0f, 0.0f, 0.0f };
+        time = _timePerOscillation*0.25f;
+        break;
+    case MOVE_POS:
+        gyVec3Scale(&translation, &_displacement, 0.5f*newMag);
+        time = _timePerOscillation*0.25f;
+        break;
+    case MOVE_NEG:
+        gyVec3Scale(&translation, &_displacement, -0.5f*newMag);
+        time = _timePerOscillation*0.5f;
+        break;
+    default: assert(0); //Ya dun fucked up!
+    }
+
+    keyFrame.setOffset(translation);
+    _cameraSys->moveToKeyFrame(keyFrame, time, this);
+}
+
+void CameraShakeSubProcess::onFinish(void) {
+    if(incrementEnum(_state) == MOVE_MAX) {
+        _state = MOVE_POS;
+        if(--_oscillations == 0) {
+            stop(_cameraSys);
+            return;
+        }
+    }
+    _startNextKeyFrame();
+}
+
 
 
 

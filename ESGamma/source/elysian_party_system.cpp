@@ -71,7 +71,7 @@ void PartySystem::processInput(const GameInput &input) {
         getPartyLeader()->getAnimation()->setSpeedMultiplier(1.0f);
         getAudioSys()->setSfxChannelPitch(0, 1.0f);
         _dashing = false;
-        _moveSpeed = ELYSIAN_PARTY_SYSTEM_WALK_SPEED;
+        _moveSpeed = ELYSIAN_CHAR_WALK_DEFAULT_FORCE;
         _tapTimer = 0.0f;
     };
 
@@ -255,7 +255,7 @@ void PartySystem::processInput(const GameInput &input) {
 		}
 
 		_dashing = false;
-		_moveSpeed = ELYSIAN_PARTY_SYSTEM_WALK_SPEED;
+        _moveSpeed = ELYSIAN_CHAR_WALK_DEFAULT_FORCE;
 		//_curWalkSfx = nullptr;
 		//getAudioSys()->setSfxChannelLooping(0, false);
 		entity->getAnimation()->setSpeedMultiplier(1.0f);

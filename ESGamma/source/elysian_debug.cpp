@@ -256,6 +256,8 @@ void Debug::processInput(GameInput& input) {
 			_engine->_guiSystem->adventureLog.enable();
 			printf(VERBOSE, "Enable GUI Layer");
 		}
+        GYVector3 disp = { 200.0f, 0.0f, 0.0f };
+        _cameraSystem->shake(disp, 30, 3.0f, true);
 	}
 
 	//EVERYTHING BEYOND THIS POINT IS IN FALCO'S DEBUG KEYSPACE!!!!

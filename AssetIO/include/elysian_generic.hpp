@@ -20,4 +20,12 @@ namespace elysian {
         haystack.erase(new_last, old_last);
         return true;
     }
+
+    template<typename T>
+    inline T incrementEnum(T& val) {
+        unsigned intVal = (unsigned) val;
+        ++intVal;
+        val = static_cast<T>(intVal);
+        return val;
+    }
 }

@@ -29,13 +29,15 @@ namespace elysian {
 		friend struct CameraState;
 	private:
 
-		GYVector3	_dir = GYVector3 { 0.0f, 1.0f, 1.0f };
-		GYVector3	_pos = GYVector3 { 0.0f, 0.0f, -ZCoordConstants::mapBase };
-		float		_scale = 1.0f;
-		float		_zOrient = 0.0f;
-		float		_xOrient = 0.0f;
+        GYVector3	_dir        = GYVector3 { 0.0f, 1.0f, 1.0f };
+        GYVector3   _offset     = GYVector3 { 0.0f, 0.0f, 0.0f };
+        GYVector3	_pos        = GYVector3 { 0.0f, 0.0f, -ZCoordConstants::mapBase };
+        float		_scale      = 1.0f;
+        float		_zOrient    = 0.0f;
+        float		_xOrient    = 0.0f;
 	public:
 		void setPos(const float x, const float y, const float z);
+        void setOffset(const GYVector3& vec);
 		void setScale(const float scale);
 		void setZOrient(const float zOrient);
 		void setXOrient(const float xOrient);
@@ -46,6 +48,44 @@ namespace elysian {
 		void linearInterpolate(const CameraKeyFrame& startKeyFrame, const CameraKeyFrame& endKeyFrame,
 							   const float interval, const float elapsed);
 	};
+
+    class CameraShakeSubProcess:
+            public MonitorableSubProcess<CameraShakeSubProcess, CameraSystem>,
+            public EventMonitor
+    {
+        friend class CameraSystem;
+    private:
+        enum MOVE_STATE { MOVE_POS, MOVE_NEG, MOVE_ORIG, MOVE_MAX };
+
+        static CameraSystem*    _cameraSys;
+
+        GYVector3               _displacement;
+        unsigned                _oscillations;
+        float                   _duration;
+        float                   _elapsedTime;
+        float                   _timePerOscillation;
+        float                   _magnitude;
+        MOVE_STATE              _state;
+        bool                    _fade;
+
+        void                    _startNextKeyFrame(void);
+
+    public:
+        void            setDisplacement(const GYVector3& disp);
+        void            setDuration(const float dur);
+        void            setOscillations(const unsigned osc);
+        void            setFade(const bool fade);
+
+        //Overridden from MonitorableSubProcess
+        void            _start(CameraSystem*const sys);
+        void            _stop(CameraSystem*const sys);
+        void            _update(CameraSystem*const sys, const float deltaTime);
+
+        //Overridden from EventMonitor
+        virtual void	onStart(void)   override;
+        virtual void	onFinish(void)  override;
+
+    };
 
 	typedef LinearInterpolatorSubProcess<CameraKeyFrame, CameraSystem> CameraKeyFrameLinearInterpolator;
 
@@ -86,7 +126,8 @@ namespace elysian {
 
 	class CameraSystem:
 			public SubProcessManager<CameraSystem,
-									CameraKeyFrameLinearInterpolator>,
+                                    CameraKeyFrameLinearInterpolator,
+                                    CameraShakeSubProcess>,
 			public System
 	{
 		friend CameraKeyFrameLinearInterpolator;
@@ -115,7 +156,7 @@ namespace elysian {
 		void _updateState(CameraState*const state, const float deltaTime);
 
 	public:
-		enum SUBPROC_ID { SUBPROC_KEY_FR_INTERP };
+        enum SUBPROC_ID { SUBPROC_KEY_FR_INTERP, SUBPROC_CAM_SHAKE };
 
 		CameraSystem(void);
 
@@ -165,14 +206,14 @@ namespace elysian {
 					_curState->entities.erase(_curState->entities.begin()+i);
 					return;
 				}
-		}
+        }
 
 		void setPosition(const GYVector3 &pos) {
 			_curState->_keyFrame._pos = pos;
 		}
 
 		void translate(const GYVector3 &dist) {
-			gyVec3Add(&_curState->_keyFrame._pos, &_curState->_keyFrame._pos, &dist);
+            gyVec3Add(&_curState->_keyFrame._pos, &_curState->_keyFrame._pos, &dist);
 		}
 
 		void scale(const float factor, const float time=0.0f, EventMonitor*const monitor=nullptr) {
@@ -188,6 +229,8 @@ namespace elysian {
 		}
 
 		void moveToKeyFrame(const CameraKeyFrame& frame, const float time=0.0f, EventMonitor*const monitor=nullptr);
+
+        void shake(const GYVector3& displacement, unsigned int oscillations, const float time, const bool fade=false, EventMonitor*const monitor=nullptr);
 
 		void staticScale(const float factor) {
 			_curState->staticScale *= factor;
@@ -214,8 +257,7 @@ namespace elysian {
 		}
 
 		void setScale(const float factor, const float time=0.0f, EventMonitor*const monitor=nullptr) {
-            auto &interp = get<SUBPROC_KEY_FR_INTERP > ( static_cast<SubProcessManager<CameraSystem,
-                                                      CameraKeyFrameLinearInterpolator>& >(*this));
+            auto &interp = get<SUBPROC_KEY_FR_INTERP > ( static_cast<SubProcParent&>(*this));
 
 			if(interp.getProcState() == PROC_STATE_RUNNING) return;
 
@@ -311,6 +353,9 @@ namespace elysian {
 	inline void CameraKeyFrame::setDir(const float x, const float y, const float z) {
 		_dir.x = x; _dir.y = y; _dir.z = z;
 	}
+    inline void CameraKeyFrame::setOffset(const GYVector3 &vec) {
+        _offset = vec;
+    }
 
 	inline void CameraKeyFrame::linearInterpolate(const CameraKeyFrame& startKeyFrame, const CameraKeyFrame& endKeyFrame,
 										const float interval, const float elapsed) {
@@ -324,6 +369,10 @@ namespace elysian {
 		gyLinearInterp((float*)&_dir.x, 3,
 					   (float*)&startKeyFrame._dir.x, (float*)&endKeyFrame._dir.x,
 					   interval, elapsed);
+
+        gyLinearInterp((float*)&_offset.x, 3,
+                       (float*)&startKeyFrame._offset.x, (float*)&endKeyFrame._offset.x,
+                       interval, elapsed);
 
 		gyVec3Normalize(&_dir);
 /*
@@ -356,9 +405,39 @@ namespace elysian {
         auto &interp = get<SUBPROC_KEY_FR_INTERP>(static_cast<SubProcParent&>(*this));
 		interp.setKeyFrames(&_curState->_keyFrame, frame);
 		interp.setTimeInterval(time);
+        interp.setEventMonitor(monitor);
 		interp.start(this);
-		interp.setEventMonitor(monitor);
 	}
+
+    inline void CameraSystem::shake(const GYVector3& displacement, unsigned int oscillations, const float time, const bool fade, EventMonitor*const monitor) {
+       auto &camShake = get<SUBPROC_CAM_SHAKE>(static_cast<SubProcParent& >(*this));
+       camShake.setDisplacement(displacement);
+       camShake.setOscillations(oscillations);
+       camShake.setDuration(time);
+       camShake.setFade(fade);
+       camShake.setEventMonitor(monitor);
+       camShake.start(this);
+    }
+
+    //===== CameraShakeSubProcess Inlinez =====
+
+    inline void CameraShakeSubProcess::setDisplacement(const GYVector3& disp) { _displacement = disp; }
+    inline void CameraShakeSubProcess::setDuration(const float dur) { _duration = dur; }
+    inline void CameraShakeSubProcess::setOscillations(const unsigned osc) { _oscillations = osc; }
+    inline void CameraShakeSubProcess::setFade(const bool fade) { _fade = fade; }
+    inline void CameraShakeSubProcess::_start(CameraSystem*const sys) {
+        _timePerOscillation = (float)(_duration / ((float)_oscillations));
+        _state = MOVE_POS;
+        _elapsedTime = 0.0f;
+        _magnitude = gyVec3MagAndNormalize(&_displacement);
+        _startNextKeyFrame();
+    }
+    inline void CameraShakeSubProcess::_stop(CameraSystem*const sys) {}
+    inline void CameraShakeSubProcess::_update(CameraSystem*const sys, const float deltaTime) {
+        _elapsedTime += deltaTime;
+        if(_elapsedTime >= _duration) _elapsedTime = _duration;
+    }
+
 
 
 

@@ -15,6 +15,7 @@
 #define ELYSIAN_CHAR_ANIM_SEQ_WALK_RIGHT	"WalkRight"
 #define ELYSIAN_CHAR_ANIM_CHILD_SEQ_HELD	"HeldEntity"
 
+#define ELYSIAN_CHAR_WALK_DEFAULT_FORCE         48000000.0f
 #define ELYSIAN_CHAR_JUMP_DEFAULT_FORCE         GYVector3 { 0.0f, /*-330000.0f*/ 0.0f, 330000.0f }
 #define ELYSIAN_CHAR_THROW_DEFAULT_FORCE		GYVector3 { 0.0f, /*2000.0f*/0.0f, 25000.0f }
 
@@ -41,6 +42,7 @@ namespace elysian {
 		GYVector2			_lastMoveDir		= { 0.0f, 0.0f };
 		bool				_walkAnimInterp		= true;
 		bool				_animate			= true;
+        float               _walkForce          = ELYSIAN_CHAR_WALK_DEFAULT_FORCE;
 		static float		_deltaTime;
 		//Direction::DIR4		_prevDir			= Direction::DIR4_CENTER;
 
@@ -66,6 +68,8 @@ namespace elysian {
 		void			throwHeldEntity(void);
 		Entity*			getHeldEntity(void) const;
 		void			jump(void);
+        void            setWalkForce(const float force);
+        float           getWalkForce(void) const;
 
 #ifdef ELYSIAN_ENGINE
 		void update(void);
@@ -109,7 +113,8 @@ namespace elysian {
 
 #endif
 
-
+    inline void Character::setWalkForce(const float force) { _walkForce = force; }
+    inline float Character::getWalkForce(void) const { return _walkForce; }
 }
 
 #endif

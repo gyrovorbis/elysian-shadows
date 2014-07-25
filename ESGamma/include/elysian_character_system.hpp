@@ -7,7 +7,6 @@
 #include "elysian_character.hpp"
 #include "elysian_rigid_body.hpp"
 
-#define ELYSIAN_CHARACTER_WALK_SPEED 18000000.0f
 #define ELYSIAN_CHARACTER_SYSTEM_WAYPOINT_INTERP_POOL_SIZE	50
 
 namespace elysian {
@@ -76,11 +75,12 @@ namespace elysian {
 		if(mag <= 4.0f) {
 			stop(sys);
 		} else {
-            gyVec3Scale(&dist, &_dir, ELYSIAN_CHARACTER_WALK_SPEED*deltaTime);
             //charComp->move(dist);
             if(_walk) {
+                gyVec3Scale(&dist, &_dir, _entity->getCharacter()->getWalkForce()*deltaTime);
                 _entity->move(*(GYVector2*)&dist);
             } else {
+                gyVec3Scale(&dist, &_dir, ELYSIAN_CHAR_WALK_DEFAULT_FORCE*deltaTime);
                 //gyVec3AddAccum(&_entity->transform._pos, &dist);
                 _entity->getRigidBody()->applyForce(dist);
             }

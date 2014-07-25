@@ -427,11 +427,12 @@ OOLUA_EXPORT_FUNCTIONS(ExplosionForceGenerator,
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Direction)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(Direction)
 
-EXPORT_OOLUA_FUNCTIONS_4_NON_CONST(Character,
+EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(Character,
 								   faceEntity,
 								   faceDir,
 								   move,
-								   setAnimate)
+                                   setAnimate,
+                                   setWalkForce)
 EXPORT_OOLUA_FUNCTIONS_2_CONST(Character,
 							   getFaceDir,
 							   isFacing)
@@ -777,7 +778,8 @@ OOLUA_EXPORT_FUNCTIONS(CameraSystem,
 					   setBoundaries,
 					   setDynamic,
 					   pushPerspectiveState,
-					   popState)
+                       popState,
+                       shake)
 OOLUA_EXPORT_FUNCTIONS_CONST(CameraSystem,
 					   addEntity,
 					   removeEntity,
