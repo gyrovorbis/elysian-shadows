@@ -595,6 +595,7 @@ OOLUA_PROXY(Character, Component)
 	OOLUA_MEM_FUNC_CONST(Direction::DIR4, getFaceDir)
     OOLUA_MEM_FUNC(void, setWalkForce, float)
     OOLUA_MEM_FUNC(void, setDashMultiplier, float)
+    OOLUA_MEM_FUNC(void, setDashing, bool)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CharacterSystem)
