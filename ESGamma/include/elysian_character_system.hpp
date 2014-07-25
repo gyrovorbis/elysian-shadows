@@ -77,8 +77,8 @@ namespace elysian {
 		} else {
             //charComp->move(dist);
             if(_walk) {
-                gyVec3Scale(&dist, &_dir, _entity->getCharacter()->getWalkForce()*deltaTime);
-                _entity->move(*(GYVector2*)&dist);
+                //gyVec3Scale(&dist, &_dir, _entity->getCharacter()->getWalkForce()*deltaTime);
+                _entity->getCharacter()->walk(*(GYVector2*)&dist);
             } else {
                 gyVec3Scale(&dist, &_dir, ELYSIAN_CHAR_WALK_DEFAULT_FORCE*deltaTime);
                 //gyVec3AddAccum(&_entity->transform._pos, &dist);
