@@ -12,7 +12,7 @@ namespace elysian {
 	class DaySystem: public System {
 	private:
 		GYVector3		_axis			= GYVector3 { 0.0f, 1.0f, -1.0f };
-		GYVector4		_baseDir		= GYVector4 { -1.0f, 0.0f, 0.0f, 1.0f };
+        GYVector4		_baseDir		= GYVector4 { 0.0f, 0.0f, 1.0f, 1.0f };
 //		float			_angle			= 0.0f;
 		float			_time			= 0.0f;
 
