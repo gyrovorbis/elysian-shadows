@@ -181,6 +181,7 @@ namespace elysian {
 #ifdef GYRO_GLAL
 		void		populateVbo(void);
         void        vboEntryFromTileEntry(VboEntry*const vboEntry, const TileEntry *const tileEntry, const unsigned x, const unsigned y);
+        void        animateVboTileEntry(const unsigned l, const unsigned x, const unsigned y, const uint16_t index);
 #endif
 
 	};
@@ -354,7 +355,14 @@ namespace elysian {
             break;
 
         }
+    }
 
+    inline void Area::animateVboTileEntry(const unsigned l, const unsigned x, const unsigned y, const uint16_t index) {
+        TileEntry e = getTileEntry(l, x, y);
+        const uint16_t oldIndex = e.getIndex();
+        e.setIndex(index);
+        setTileEntry(l, x, y, e);
+        ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x).setIndex(oldIndex);
     }
 
 	inline void Area::setTileEntry(const unsigned l, const unsigned x, const unsigned y, const TileEntry e) {

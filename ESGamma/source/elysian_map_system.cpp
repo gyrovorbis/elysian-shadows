@@ -46,6 +46,19 @@ namespace elysian {
 				if(_animTiles[i].elapsedTime >= curTile.animTime) {
 					_animTiles[i].curIndex = curTile.nextIndex;
 					_animTiles[i].elapsedTime = 0.0f;
+
+                    //FUCKING KILL ME!!!!!!!!!!!!!!!!!!!!!1111111
+                    for(unsigned l = 0; l < 3; ++l) {
+                        for(unsigned y = 0; y < getCurArea()->height; ++y) {
+                            for(unsigned x = 0; x < getCurArea()->width; ++x) {
+                                if(getCurArea()->getTileEntry(l, x, y).getIndex() == i) {
+                                    getCurArea()->animateVboTileEntry(l, x, y, curTile.nextIndex);
+                                }
+                            }
+                        }
+                    }
+
+
 				}
 			}
 		}
