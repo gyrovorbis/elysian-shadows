@@ -12,7 +12,7 @@ namespace elysian {
 	class DaySystem: public System {
 	private:
 		GYVector3		_axis			= GYVector3 { 0.0f, 1.0f, -1.0f };
-        GYVector4		_baseDir		= GYVector4 { 0.0f, 0.0f, 1.0f, 1.0f };
+        GYVector4		_baseDir		= GYVector4 { -1.0f, 0.0f, 0.0f, 1.0f };
 //		float			_angle			= 0.0f;
 		float			_time			= 0.0f;
 
@@ -46,6 +46,7 @@ namespace elysian {
 		LightAttrib*	getSunLightAttrib(void) const;
 		void			setSunEnabled(const bool val);
 		void			setTimeDilation(const float multiplier);
+        void            setTimeOfDay(const float time);
 		void			addSeconds(const float seconds);
 		unsigned		getHours(void) const;
 		unsigned		getMinutes(void) const;
@@ -71,6 +72,20 @@ namespace elysian {
 	inline unsigned DaySystem::getHours(void) const { return _hours; }
 	inline unsigned DaySystem::getMinutes(void) const { return _minutes; }
 	inline void DaySystem::addSeconds(const float seconds) { _curSecs += seconds; }
+
+    inline void DaySystem::setTimeOfDay(const float time) {
+        const float normTime = time/_hoursPerDay;
+
+        //We have to advance a day!
+        if(normTime < _time) {
+            _time += (_secsPerDay-_time) + normTime;
+        } else {
+            _time += (normTime-_time);
+        }
+
+        //update second counter
+        _curSecs = _time*_secsPerDay;
+    }
 
 
 }

@@ -14,7 +14,7 @@ void DaySystem::update(void) {
 
 	if(_curSecs >= _secsPerDay) {
 		_curSecs -= _secsPerDay;
-		Debug::printf(Debug::VERBOSE, "DAY WENT BY");
+        //Debug::printf(Debug::VERBOSE, "DAY WENT BY");
 		++_days;
 	}
 
@@ -23,7 +23,7 @@ void DaySystem::update(void) {
 	_hours = _minutes/60.0f;
 	_minutes %= 60;
 
-	const float theta = _time * 2.0f * M_PI;
+    const float theta = _time*2.0f*M_PI - 0.5f*M_PI;
 
 	GYVector4 dir;
 
