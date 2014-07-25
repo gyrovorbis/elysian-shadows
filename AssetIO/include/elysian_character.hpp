@@ -16,6 +16,7 @@
 #define ELYSIAN_CHAR_ANIM_CHILD_SEQ_HELD	"HeldEntity"
 
 #define ELYSIAN_CHAR_WALK_DEFAULT_FORCE         48000000.0f
+#define ELYSIAN_CHAR_DASH_DEFAULT_MULTIPLIER    5.0f
 #define ELYSIAN_CHAR_JUMP_DEFAULT_FORCE         GYVector3 { 0.0f, /*-330000.0f*/ 0.0f, 330000.0f }
 #define ELYSIAN_CHAR_THROW_DEFAULT_FORCE		GYVector3 { 0.0f, /*2000.0f*/0.0f, 25000.0f }
 
@@ -37,12 +38,15 @@ namespace elysian {
 		Character(Entity& entity);
 		virtual ~Character(void) override		= default;
 
-		bool				_movedThisFrame		= false;
 		Direction::DIR4		_faceDir			= Direction::DIR4_CENTER;
 		GYVector2			_lastMoveDir		= { 0.0f, 0.0f };
+        float               _walkForce          = ELYSIAN_CHAR_WALK_DEFAULT_FORCE;
+        float               _dashMultiplier     = ELYSIAN_CHAR_DASH_DEFAULT_MULTIPLIER;
 		bool				_walkAnimInterp		= true;
 		bool				_animate			= true;
-        float               _walkForce          = ELYSIAN_CHAR_WALK_DEFAULT_FORCE;
+        bool				_movedThisFrame		= false;
+        bool                _dashing            = false;
+
 		static float		_deltaTime;
 		//Direction::DIR4		_prevDir			= Direction::DIR4_CENTER;
 
@@ -70,10 +74,15 @@ namespace elysian {
 		void			jump(void);
         void            setWalkForce(const float force);
         float           getWalkForce(void) const;
+        void            setDashMultiplier(const float mult);
+        float           getDashMultiplier(void) const;
+        bool            isDashing(void) const;
+        void            setDashing(const bool val);
 
 #ifdef ELYSIAN_ENGINE
 		void update(void);
 		void move(const GYVector2& vec);
+        void walk(const GYVector2& dir);
 		void faceDir(const Direction::DIR4 dir);
 		void faceEntity(Entity& entity);
 #endif
@@ -83,20 +92,20 @@ namespace elysian {
 	// ====== INLINEZ ======
 
 	inline Character::Character(Entity& entity): Component(entity) {}
-
-	inline Direction::DIR4 Character::getFaceDir(void) const {
-		return _faceDir;
-	}
+    inline void Character::setDashMultiplier(const float mult) { _dashMultiplier = mult; }
+    inline float Character::getDashMultiplier(void) const { return _dashMultiplier; }
+    inline bool Character::isDashing(void) const { return _dashing; }
+    inline Direction::DIR4 Character::getFaceDir(void) const { return _faceDir; }
+    inline void Character::setWalkAnimInterp(const bool val) { _walkAnimInterp = val; }
+    inline Entity* Character::getHeldEntity(void) const { return _heldEntity; }
+    inline void Character::setWalkForce(const float force) { _walkForce = force; }
+    inline float Character::getWalkForce(void) const { return _walkForce; }
 
 	inline bool Character::isFacing(const Entity &entity) const {
 		GYVector2 distVec;
 		gyVec2Sub(&distVec, (GYVector2*)&entity.transform._pos, (GYVector2*)&_entity->transform._pos);
 		return (_faceDir == Direction::fromVector(distVec));
 	}
-
-	inline void Character::setWalkAnimInterp(const bool val) { _walkAnimInterp = val; }
-
-	inline Entity* Character::getHeldEntity(void) const { return _heldEntity; }
 
 
 #ifdef ELYSIAN_ENGINE
@@ -110,11 +119,8 @@ namespace elysian {
 		faceDir(Direction::fromVector(dist));
 	}
 
-
 #endif
 
-    inline void Character::setWalkForce(const float force) { _walkForce = force; }
-    inline float Character::getWalkForce(void) const { return _walkForce; }
 }
 
 #endif

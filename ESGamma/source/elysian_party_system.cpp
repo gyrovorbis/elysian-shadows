@@ -70,8 +70,7 @@ void PartySystem::processInput(const GameInput &input) {
     auto endDash = [&](void) {
         getPartyLeader()->getAnimation()->setSpeedMultiplier(1.0f);
         getAudioSys()->setSfxChannelPitch(0, 1.0f);
-        _dashing = false;
-        _moveSpeed = ELYSIAN_CHAR_WALK_DEFAULT_FORCE;
+        getPartyLeader()->getCharacter()->setDashing(false);
         _tapTimer = 0.0f;
     };
 
@@ -141,10 +140,8 @@ void PartySystem::processInput(const GameInput &input) {
 
 				}
 
-				_dashing = true;
+                getPartyLeader()->getCharacter()->setDashing(true);
 				getAudioSys()->setSfxChannelPitch(0, 2.0f);
-                _moveSpeed = _dashSpeed;
-                getPartyLeader()->getAnimation()->setSpeedMultiplier(_dashAnimSpeedMultiplier);
 //				getPartSys()->getAttrib(0)->setSize(3);
 //				getPartSys()->getAttrib(0)->setFadeOut(true);
                 emitDashParticles();
@@ -242,23 +239,17 @@ void PartySystem::processInput(const GameInput &input) {
 		//}
 
 
-
-		gyVec2ScaleAccum(&moveDist, getTimerSys()->getDeltaTime()*_moveSpeed);
-		entity->getCharacter()->move(moveDist);
+        entity->getCharacter()->walk(moveDist);
 	} else {
 		if(_footStepSfxLooping && _footStepTimer >= ELYSIAN_PARTY_SYSTEM_FOOT_STEP_SFX_TIME) {
 			getAudioSys()->setSfxChannelGain(0, 0.0f);
 			_footStepSfxLooping = false;
 		}
-		if(_moveSpeed == ELYSIAN_PARTY_SYSTEM_DASH_SPEED) {
+        if(getPartyLeader()->getCharacter()->isDashing()) {
 			getAudioSys()->setSfxChannelPitch(0, 1.0f);
 		}
 
-		_dashing = false;
-        _moveSpeed = ELYSIAN_CHAR_WALK_DEFAULT_FORCE;
-		//_curWalkSfx = nullptr;
-		//getAudioSys()->setSfxChannelLooping(0, false);
-		entity->getAnimation()->setSpeedMultiplier(1.0f);
+        getPartyLeader()->getCharacter()->setDashing(false);
 	}
 
     if(input.getTapped(GameInput::BUT_N)) {

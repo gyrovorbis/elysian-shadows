@@ -34,6 +34,11 @@ bool Character::removeFromLevel(void) {
 
 #ifdef ELYSIAN_ENGINE
 
+void Character::setDashing(const bool val) {
+    _dashing = val;
+    _entity->getAnimation()->setSpeedMultiplier(val? _dashMultiplier : 1.0f);
+}
+
 void Character::faceDir(const Direction::DIR4 dir) {
 	if(_animate) {
 		Animation *animComp = _entity->getAnimation();
@@ -70,6 +75,15 @@ float Character::getHeldEntityForceDampFactor(void) {
 	if(invParent+invChild == 0.0f) return 0.0f;
 
 	return (invChild/(invChild+invParent));
+}
+
+void Character::walk(const GYVector2 &dir) {
+    GYVector2 dist = dir;
+    float mag = _walkForce * _deltaTime;
+    mag *= (_dashing)? _dashMultiplier : 1.0f;
+    gyVec2Normalize(&dist);
+    gyVec2ScaleAccum(&dist, mag);
+    move(dist);
 }
 
 void Character::move(const GYVector2 &dist) {

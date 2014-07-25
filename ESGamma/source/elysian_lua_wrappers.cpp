@@ -427,12 +427,13 @@ OOLUA_EXPORT_FUNCTIONS(ExplosionForceGenerator,
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Direction)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(Direction)
 
-EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(Character,
+EXPORT_OOLUA_FUNCTIONS_6_NON_CONST(Character,
 								   faceEntity,
 								   faceDir,
 								   move,
                                    setAnimate,
-                                   setWalkForce)
+                                   setWalkForce,
+                                   setDashMultiplier)
 EXPORT_OOLUA_FUNCTIONS_2_CONST(Character,
 							   getFaceDir,
 							   isFacing)

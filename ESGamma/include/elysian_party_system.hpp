@@ -6,8 +6,6 @@
 #include "elysian_game_input.hpp"
 #include "elysian_character.hpp"
 
-#define ELYSIAN_PARTY_SYSTEM_DASH_SPEED (5.0f*ELYSIAN_CHAR_WALK_DEFAULT_FORCE)
-
 #define ELYSIAN_PARTY_SYSTEM_FOOT_STEP_SFX_TIME	0.3f
 #define ELYSIAN_PARTY_SYSTEM_DASH_PART_TIME_INTERVAL 0.5f
 
@@ -44,8 +42,6 @@ namespace elysian {
 		//dash state variables
         bool				_dashing                    = false;
         GameInput::BUTTON	_lastDpadTapped             = GameInput::BUT_0;
-        float				_moveSpeed                  = ELYSIAN_CHAR_WALK_DEFAULT_FORCE;
-        float               _dashSpeed                  = ELYSIAN_PARTY_SYSTEM_DASH_SPEED;
         float               _dashPartInterval           = ELYSIAN_PARTY_SYSTEM_DASH_PART_TIME_INTERVAL;
         float               _dashDuration               = 0.25f;
         float				_tapTimer                   = 0.0f;

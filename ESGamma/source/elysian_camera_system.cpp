@@ -390,10 +390,17 @@ void CameraSystem::update(void) {
 		gyMatStore(&_curState->projViewMat);
 		gyMatPop();
 
+        gyVidSetCamWorldPos(&_curState->_keyFrame._pos);
+
 
 	} else { //PERSPECTIVE PROJECTION
 
 	if(_curState == &_debugState) {
+        GYVector3 worldPos;
+
+        gyVec3Add(&worldPos, &_curState->_keyFrame._pos, &_curState->_keyFrame._offset);
+
+
 		/*	_debugState.pos = GYVector3{
 				-_curState->focalEntity->transform._pos.x,
 				-_curState->focalEntity->transform._pos.y+30.0f,
@@ -402,7 +409,7 @@ void CameraSystem::update(void) {
 
 
 			//gyVidCamFrustumLookAt(_curState, &pos, &_curState->dir, &_curState->up);
-		gyVidSetCamWorldPos(&_curState->_keyFrame._pos);
+        //gyVidSetCamWorldPos(&_curState->_keyFrame._pos);
 
 		gyMatPush();
 
@@ -415,11 +422,13 @@ void CameraSystem::update(void) {
 		gyMatLoad(&_curState->viewMat);
 
 		gyMatScale(1.0f, 1.0f, -1.0f);
-		gyMatTranslate(-_curState->_keyFrame._pos.x, -_curState->_keyFrame._pos.y, -_curState->_keyFrame._pos.z);
+        gyMatTranslate(-worldPos.x, -worldPos.y, -worldPos.z);
 		gyMatStore(&_curState->viewMat);
 		gyMatPop();
 
 		gyMatMultMat(_curState->projViewMat, _curState->projMat, _curState->viewMat);
+
+        gyVidSetCamWorldPos(&worldPos);
 
 #if 0
 /*
@@ -445,8 +454,6 @@ void CameraSystem::update(void) {
 
 		}
 	}
-
-    gyVidSetCamWorldPos(&_curState->_keyFrame._pos);
 
 
 }
