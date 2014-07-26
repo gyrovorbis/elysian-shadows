@@ -209,6 +209,7 @@ void gyVidCamUpdate(const GYCamera *const cam) {
 
 void gyVidRectTexOrient(const GY_RECT_TEX_ORIENT orient) {
 	_rectTexOrient = orient;
+    const GYVector3* tangent;
 }
 
 static inline void _gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsigned int startIndex, const unsigned int amount) {
@@ -307,14 +308,16 @@ void gyVidRectPlaneType(const GY_RECT_PLANE_TYPE type) {
 
 void gyVidQuad(const GYVector4 *const verts, const int frame) {
 	const GYTexCoord2* coord;
-	const GYVector3* tangent;
+
+    const GYVector3* tangent;
 
 	tangent = &_rectTangents[_rectTexOrient];
-	if(tangent != tangentVector) { //FUCKING COMBO BREAKER, SUBMIT THE BITCH!!!!
+    if(tangent != tangentVector) { //FUCKING COMBO BREAKER, SUBMIT THE BITCH!!!!
 		glalStripComboBreaker();
 		tangentVector = tangent;
 		glUniform3fv(curLightShader->uniformLoc[SHADER_TANGENT], 1, (float*)tangent);
-	}
+    }
+
 
 	if(curStripSize) {
 		gyMatMultVec(verts, &_modelViewVertices[curStripSize+2], 4);
@@ -336,6 +339,14 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
 		//gyVidTexCoordArray(coord);
 		memcpy(&_stripTexCoords[curStripSize], coord, sizeof(GYTexCoord2)*4);
 		_rectTexOrient = GY_RECT_TEX_ORIENT_NORMAL; //reset after each rect
+        tangent = &_rectTangents[_rectTexOrient];
+        if(tangent != tangentVector) { //FUCKING COMBO BREAKER, SUBMIT THE BITCH!!!!
+            glalStripComboBreaker();
+            tangentVector = tangent;
+            glUniform3fv(curLightShader->uniformLoc[SHADER_TANGENT], 1, (float*)tangent);
+        }
+
+
 	}
 
 	//gyVidColorArray(_curQuadListColor);
