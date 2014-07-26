@@ -348,10 +348,20 @@ void CameraSystem::update(void) {
     _curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
 
 #else
-    _curState->tileStartX = 0;
-    _curState->tileStartY = 0;
-    _curState->tileEndX = getCurArea()->getMapWidth()-1;
-    _curState->tileEndY = getCurArea()->getMapHeight()-1;
+
+
+
+    int startX = _curState->_keyFrame._pos.x/32.0f - 25;
+    if(startX < 0) startX = 0;
+    _curState->tileStartX = startX;
+    int startY = _curState->_keyFrame._pos.y/32.0f - 25;
+    if(startY < 0) startY = 0;
+    _curState->tileStartY = startY;
+    _curState->tileEndX = _curState->_keyFrame._pos.x/32.0f + 25;
+    if(_curState->tileEndX > getCurArea()->getMapWidth()-1) _curState->tileEndX = getCurArea()->getMapWidth()-1;
+    _curState->tileEndY = _curState->_keyFrame._pos.y/32.0f + 25;
+    if(_curState->tileEndY > getCurArea()->getMapHeight()-1) _curState->tileEndX = getCurArea()->getMapHeight()-1;
+
     _curState->scrStartX = 0;
     _curState->scrStartY = 0;
     _curState->scrEndX = getCurArea()->getMapWidth()*32.0f;

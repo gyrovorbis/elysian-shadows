@@ -296,14 +296,14 @@ namespace elysian {
 		CameraState* getCurrentState(void) const { return _curState; }
 
 		void getVisibleTileRegion(unsigned& startX, unsigned& startY, unsigned& endX, unsigned& endY) const {
-			//startX = _curState->tileStartX; endX = _curState->tileEndX;
-			//startY = _curState->tileStartY; endY = _curState->tileEndY;
+            startX = _curState->tileStartX; endX = _curState->tileEndX;
+            startY = _curState->tileStartY; endY = _curState->tileEndY;
 			//startX = 0; startY = 0;
 			//endX = 49; endY = 49;
-			startX = 0;
-			startY = 0;
-			endX = getCurArea()->width-1;
-			endY = getCurArea()->height-1;
+            //startX = 0;
+            //startY = 0;
+            //endX = getCurArea()->width-1;
+            //endY = getCurArea()->height-1;
 		}
 
 		void pushViewMatrixToStack(void);
