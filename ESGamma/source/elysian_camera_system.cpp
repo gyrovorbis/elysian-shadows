@@ -360,7 +360,7 @@ void CameraSystem::update(void) {
     _curState->tileEndX = _curState->_keyFrame._pos.x/32.0f + 25;
     if(_curState->tileEndX > getCurArea()->getMapWidth()-1) _curState->tileEndX = getCurArea()->getMapWidth()-1;
     _curState->tileEndY = _curState->_keyFrame._pos.y/32.0f + 25;
-    if(_curState->tileEndY > getCurArea()->getMapHeight()-1) _curState->tileEndX = getCurArea()->getMapHeight()-1;
+    if(_curState->tileEndY > getCurArea()->getMapHeight()-1) _curState->tileEndY = getCurArea()->getMapHeight()-1;
 
     _curState->scrStartX = 0;
     _curState->scrStartY = 0;
