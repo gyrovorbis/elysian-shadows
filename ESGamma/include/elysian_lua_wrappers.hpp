@@ -927,6 +927,7 @@ OOLUA_PROXY(LightSystem)
 		No_public_destructor
 	)
 	OOLUA_MFUNC(setGlobalAmbientColor)
+    OOLUA_MEM_FUNC(void, interpLightAttrib, float, const LightAttrib&, LightAttrib*, EventMonitor*)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(AudioSystem)

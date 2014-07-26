@@ -13,6 +13,11 @@ namespace elysian {
 LightSystem::LightSystem(void) {
 	setGlobalAmbientColor(_globalAmbience);
 	//gyVidLightingSetEnable(1);
+
+    auto& proc = get<SUBPROC_ATTRIB_INTERP_POOL> ( static_cast<SubProcessManager<LightSystem,
+                                              LightAttribInterpPool>& >(*this));
+
+    proc.start(this);
 }
 
 
@@ -32,6 +37,9 @@ void LightSystem::_addToLightMap(LightSource*const src) {
 unsigned LightSystem::getLightCount(void) const { return (_shadowPass)? 0 :  _curArea->lightSources.size(); }
 
 void LightSystem::update(void) {
+    const float deltaTime = getTimerSys()->getDeltaTime();
+    updateSubProcesses(deltaTime);
+
 	const auto sources = _curArea->lightSources;
 	for(auto it : sources) {
 		it->update();

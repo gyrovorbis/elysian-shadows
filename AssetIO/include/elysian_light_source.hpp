@@ -30,7 +30,11 @@ namespace elysian {
 		void setComputeDistanceAttenuation(const bool val);
 
 		float getRadius(void) const;
+
+        void linearInterpolate(const LightAttrib& startKeyFrame, const LightAttrib& endKeyFrame,
+                               const float interval, const float elapsed);
 	};
+
 
 	class LightSource: public Component, private GYLightSource {
 		friend class LightSystem;
@@ -123,6 +127,15 @@ namespace elysian {
 	}
 
 #endif
+
+    inline void LightAttrib::linearInterpolate(const LightAttrib& startKeyFrame, const LightAttrib& endKeyFrame,
+                           const float interval, const float elapsed)
+    {
+        //So fucking type unsafe, but so fucking awesome...
+        gyLinearInterp((float*)&ambientColor.x, 16,
+                       (float*)&startKeyFrame.ambientColor.x, (float*)&endKeyFrame.ambientColor.x,
+                       interval, elapsed);
+    }
 
 }
 

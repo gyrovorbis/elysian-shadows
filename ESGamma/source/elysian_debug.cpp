@@ -256,9 +256,15 @@ void Debug::processInput(GameInput& input) {
 			_engine->_guiSystem->adventureLog.enable();
 			printf(VERBOSE, "Enable GUI Layer");
 		}
-        GYVector3 disp = { 200.0f, 0.0f, 0.0f };
-        _cameraSystem->shake(disp, 30, 3.0f, true);
-	}
+        //GYVector3 disp = { 200.0f, 0.0f, 0.0f };
+        //_cameraSystem->shake(disp, 30, 3.0f, true);
+        //LightAttrib attrib;
+        //attrib.setAmbientColor(GYVector4 { 1.0f, 0.0f, 0.0f, 1.0f});
+        //attrib.setDiffuseColor(GYVector4 { 0.0f, 1.0f, 0.0f, 1.0f});
+        //attrib.setSpecularColor(GYVector4 { 0.0f, 0.0f, 1.0f, 1.0f});
+        //_lightSystem->interpLightAttrib(5.0f, attrib, _daySystem->getSunLightAttrib());
+
+    }
 
 	//EVERYTHING BEYOND THIS POINT IS IN FALCO'S DEBUG KEYSPACE!!!!
 	if(!input.getDown(GameInput::BUT_LALT)) return;
