@@ -93,7 +93,8 @@ void gyVidNormalMapBind(const GYTexture * const tex) {
 		enabled = 0;
 		glDisable(GL_TEXTURE_2D);
 	}
-	if(enabled != wasEnabled) glUniform1i(curLightShader->uniformLoc[SHADER_NORMAL_MAP_ENABLED], enabled);
+    //if(enabled != wasEnabled)
+        glUniform1i(curLightShader->uniformLoc[SHADER_NORMAL_MAP_ENABLED], enabled);
 	_normalMap = tex;
 	glActiveTexture(GL_TEXTURE0);
 
