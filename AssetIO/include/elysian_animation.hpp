@@ -134,6 +134,7 @@ namespace elysian {
         void        setCurrentIndex(const unsigned index);
         unsigned    getPreviousIndex(void) const;
         void        advanceFrame(void);
+        void        clear(void);
     };
 
 
@@ -187,7 +188,7 @@ namespace elysian {
 		AnimationAttrib*		getAttrib(void) const;
 		ChildAnimationAttrib*	getChildAttrib(void) const;
 		void					setSpeedMultiplier(const float factor);
-		void					setAttrib(AnimationAttrib* attributes);
+        void					setAttrib(AnimationAttrib* attributes);
 		void					setChildAttrib(ChildAnimationAttrib* childAttrib);
 		bool					isActive(void) const;
 		unsigned				getCurrentFrame(void) const;
@@ -255,7 +256,8 @@ namespace elysian {
 	inline Animation::Animation(Entity& parent): Component(parent) {}
     inline AnimationAttrib* Animation::getAttrib(void) const { return _attrib; }
 	inline ChildAnimationAttrib* Animation::getChildAttrib(void) const { return _childAttrib; }
-	inline void Animation::setAttrib(AnimationAttrib* attributes) {
+    inline void Animation::setAttrib(AnimationAttrib* attributes) {
+        clear();
         setStackBottomState(attributes);
         _attrib = attributes;
 	}
@@ -323,6 +325,15 @@ namespace elysian {
     template<typename P, typename T>
     inline unsigned AnimationSequenceBase<P, T>::getFrameCount(void) const {
         return _frames.size();
+    }
+
+    template<typename S, typename T>
+    inline void AnimationStateStack<S,T>::clear(void) {
+        currentIndex    = 0;
+        stackDepth      = 0;
+        currentSequence = nullptr;
+        currentFrame    = nullptr;
+        for(unsigned i = 0; i < ELYSIAN_ANIMATION_STATE_COUNT_MAX; ++i) stateStack[i] = nullptr;
     }
 
     template<typename S, typename T>
