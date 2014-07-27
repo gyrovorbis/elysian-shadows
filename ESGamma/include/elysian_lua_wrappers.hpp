@@ -849,6 +849,8 @@ OOLUA_PROXY(TileEntry, MapEntry)
 	OOLUA_MEM_FUNC(void, setZTran, bool)
 	OOLUA_MEM_FUNC(void, setNormal, bool)
 	OOLUA_MEM_FUNC_CONST(bool, getNormal)
+    OOLUA_MEM_FUNC_CONST(GY_RECT_PLANE_TYPE, getPlane)
+    OOLUA_MEM_FUNC(void, setPlane, GY_RECT_PLANE_TYPE)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Area)

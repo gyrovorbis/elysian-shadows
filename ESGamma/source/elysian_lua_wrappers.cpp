@@ -620,14 +620,16 @@ EXPORT_OOLUA_FUNCTIONS_3_CONST(MapEntry,
 								getOrient,
 								getElev)
 
-EXPORT_OOLUA_FUNCTIONS_3_NON_CONST(TileEntry,
+OOLUA_EXPORT_FUNCTIONS(TileEntry,
 									setIndex,
 									setZTran,
-									setNormal)
-EXPORT_OOLUA_FUNCTIONS_3_CONST(TileEntry,
+                                    setNormal,
+                                    setPlane)
+OOLUA_EXPORT_FUNCTIONS_CONST(TileEntry,
 								getIndex,
 								getZTran,
-								getNormal)
+                                getNormal,
+                                getPlane)
 
 EXPORT_OOLUA_FUNCTIONS_5_CONST(Area,
 									getName,

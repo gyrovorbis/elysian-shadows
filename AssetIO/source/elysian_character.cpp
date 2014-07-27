@@ -78,6 +78,7 @@ float Character::getHeldEntityForceDampFactor(void) {
 }
 
 void Character::walk(const GYVector2 &dir) {
+    if(gyVec2IsZero(&dir)) return;
     GYVector2 dist = dir;
     float mag = _walkForce * _deltaTime;
     mag *= (_dashing)? _dashMultiplier : 1.0f;
