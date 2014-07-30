@@ -497,7 +497,8 @@ OOLUA_EXPORT_FUNCTIONS(ParticleEmitterAttrib,
                        setAnimFrameDuration,
                        setStick,
                        loadNormalMap,
-                       setRandomStartFrame)
+                       setRandomStartFrame,
+                       setShadowVolume)
 OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitterAttrib);
 
 OOLUA_EXPORT_FUNCTIONS(ParticleEmitter,

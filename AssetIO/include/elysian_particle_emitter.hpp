@@ -40,6 +40,7 @@ namespace elysian {
 		uint32_t	_forceMask			= ~0x0;
         bool		_stick				= true;
         bool        _randomStartFrame   = false;
+        bool        _shadowVolume       = true;
 
 	public:
 
@@ -62,7 +63,8 @@ namespace elysian {
         void        setStick(const bool val);
         void        setIntensityFactor(const float factor);
         void        setRandomStartFrame(const bool val);
-	};
+        void        setShadowVolume(const bool val);
+    };
 
 	class Particle: public ForceTarget {
 	public:
@@ -135,6 +137,7 @@ namespace elysian {
 	// ====== INLINEZ =====
 
 	inline uint32_t ParticleEmitterAttrib::getForceMask(void) const { return _forceMask; }
+    inline void ParticleEmitterAttrib::setShadowVolume(const bool val) { _shadowVolume = val; }
 	inline void ParticleEmitterAttrib::setForceMask(const uint32_t mask) { _forceMask = mask; }
     inline void ParticleEmitterAttrib::setStartSize(const unsigned size) { _startSize = size; }
     inline void ParticleEmitterAttrib::setEndSize(const unsigned size) { _endSize = size; }

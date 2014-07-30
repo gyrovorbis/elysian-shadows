@@ -17,6 +17,11 @@ GYLightSource*		lightSources[GYRO_VIDEO_LIGHT_SOURCES_MAX]		= { NULL };
 unsigned			lightSourceCount								= 0;
 int					lightingEnabled									= 1;
 int					lightsEnabled[GYRO_VIDEO_LIGHT_SOURCES_MAX]		= { 0 };
+static int          _shadowPass                                     = 0;
+
+int gyVidLightSourceShadowPass(void) {
+    return _shadowPass;
+}
 
 void gyVidLightingSetEnable(const int enabled) {
 	lightingEnabled = enabled;
@@ -339,6 +344,7 @@ void gyVidLightSourceBeginShadowPasses(void) {
 	gyVidSetCurrentShaderProgram(_shadowMapShader.program);
 	//glalDefaultShadersLoadUniforms();
 	curLightShader = &_shadowMapShader;
+    _shadowPass = 1;
 }
 
 
@@ -442,6 +448,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 }
 
 void gyVidLightSourceEndShadowPasses(void) {
+    _shadowPass = 0;
 	gyVidSetDefaultShaderProgram();
 	//glalDefaultShadersLoadUniforms();
 	curLightShader = &_lightingShader;

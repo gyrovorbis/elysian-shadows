@@ -192,6 +192,7 @@ void ParticleEmitterInternals::applyForce(ForceGenerator*const force, const floa
 }
 
 void ParticleEmitterInternals::render(void) {
+    if(gyVidShadowPass() && !_attrib->_shadowVolume) return;
 
 	//Probably could be optimized as shit to not bother using
 	//internal matrix stack!
@@ -224,6 +225,7 @@ void ParticleEmitterInternals::render(void) {
 }
 
 void ParticleEmitterInternals::renderAtElev(const unsigned char elev) {
+    if(gyVidShadowPass() && !_attrib->_shadowVolume) return;
 	gyVidTexBind(_attrib->getTexture());
 	gyVidMaterialBind(_attrib->_material);
 	gyVidAlphaLevel(GY_ALPHA_FULL);
