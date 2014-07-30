@@ -92,11 +92,11 @@ void gyVidSetGlobalAmbience(const struct _GYVector4*const color);
 
 //Shadow Multipass Rendering
 int gyVidBeginNextShadowPass(void);
-
+int gyVidShadowPass(void);
 
 //Shader manipulation
 void gyVidSetCurrentShaderProgram(struct _GYShaderProgram*const program);
-void gyVidSetDefaultShaderProgram();
+void gyVidSetDefaultShaderProgram(void);
 
 void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type);
 void gyVidLightSourceUninit(GYLightSource* const light);
