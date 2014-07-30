@@ -673,7 +673,7 @@ OOLUA_PROXY(ParticleEmitterAttrib, SpriteAttrib, GYStatic)
     OOLUA_MEM_FUNC(void, setStick, bool)
     OOLUA_MEM_FUNC(void, loadNormalMap, const char*, unsigned, unsigned)
     OOLUA_MEM_FUNC(void, setRandomStartFrame, bool)
-    OOLUA_MEM_FUNC(void, setShadowVoluem, bool)
+    OOLUA_MEM_FUNC(void, setShadowVolume, bool)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ParticleEmitter, Component)
