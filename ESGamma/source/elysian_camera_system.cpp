@@ -282,14 +282,14 @@ void CameraSystem::processInput(const GameInput& input) {
 			//GYVector3 delta = { 0.0f, 0.0f, -0.01f};
 			//gyVec3Add(&_curState->dir, &_curState->dir, &delta);
 			//gyVec3Normalize(&_curState->dir);
-			translate(dist);
+            translateOffset(dist);
 		}
 		if(input.getDown(GameInput::BUT_L)) {
 			GYVector3 dist = { 0.0f, 0.0f, -5.0f };
 			//GYVector3 delta = { 0.0f, 0.0f, 0.01f };
 			//gyVec3Add(&_curState->dir, &_curState->dir, &delta);
 			//gyVec3Normalize(&_curState->dir);
-			translate(dist);
+            translateOffset(dist);
 		}
 		if(input.getDown(GameInput::BUT_DPAD_L)) {
 			//GYVector3 delta = { -0.01f, 0.0f, 0.0f };
@@ -303,20 +303,20 @@ void CameraSystem::processInput(const GameInput& input) {
 		}
 
 		if(input.getDown(GameInput::BUT_W)) {
-			translate(GYVector3{ 0.0f, -5.0f, 0.0f});
+            translateOffset(GYVector3{ 0.0f, -5.0f, 0.0f});
 
 		}
 		if(input.getDown(GameInput::BUT_A)) {
 
-			translate(GYVector3{ -2.0f, 0.0f, 0.0f});
+            translateOffset(GYVector3{ -2.0f, 0.0f, 0.0f});
 		}
 		if(input.getDown(GameInput::BUT_S)) {
 
-			translate(GYVector3{ 0.0f, 5.0f, 0.0f});
+            translateOffset(GYVector3{ 0.0f, 5.0f, 0.0f});
 
 		}
 		if(input.getDown(GameInput::BUT_D)) {
-			translate(GYVector3{ 2.0f, 0.0f, 0.0f});
+            translateOffset(GYVector3{ 2.0f, 0.0f, 0.0f});
 		}
 
 		if(input.getDown(GameInput::BUT_Z)) {
@@ -344,8 +344,15 @@ void CameraSystem::update(void) {
 
 	if(_customState) return;
 
-#if 0
-    _curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
+#if 1
+   // _curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
+    _curState->tileStartX = _curState->tileStartY = 0;
+    _curState->tileEndX = getCurArea()->getMapWidth()-1;
+    _curState->tileEndY = getCurArea()->getMapHeight()-1;
+    _curState->scrStartX = 0;
+    _curState->scrStartY = 0;
+    _curState->scrEndX = getCurArea()->getMapWidth()*32.0f;
+    _curState->scrEndY = getCurArea()->getMapHeight()*32.0f;
 
 #else
 
@@ -407,6 +414,15 @@ void CameraSystem::update(void) {
 
 	if(_curState == &_debugState) {
         GYVector3 worldPos;
+
+        if(_curState->focalEntity) {
+            _curState->_keyFrame._pos = GYVector3 {
+                _curState->focalEntity->transform._pos.x,
+                _curState->focalEntity->transform._pos.y +200.0f,
+                /*_curState->focalEntity->transform.getPosZ()*/-ZCoordConstants::mapBase+200.0f,
+                //0.0f
+            };
+        }
 
         gyVec3Add(&worldPos, &_curState->_keyFrame._pos, &_curState->_keyFrame._offset);
 

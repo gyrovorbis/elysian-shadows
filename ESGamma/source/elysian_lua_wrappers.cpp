@@ -784,7 +784,8 @@ OOLUA_EXPORT_FUNCTIONS(CameraSystem,
 					   setDynamic,
 					   pushPerspectiveState,
                        popState,
-                       shake)
+                       shake,
+                       setFollowEntity)
 OOLUA_EXPORT_FUNCTIONS_CONST(CameraSystem,
 					   addEntity,
 					   removeEntity,

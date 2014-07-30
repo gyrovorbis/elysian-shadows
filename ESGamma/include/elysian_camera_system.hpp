@@ -216,6 +216,10 @@ namespace elysian {
             gyVec3Add(&_curState->_keyFrame._pos, &_curState->_keyFrame._pos, &dist);
 		}
 
+        void translateOffset(const GYVector3& dist) {
+            gyVec3AddAccum(&_curState->_keyFrame._offset, &dist);
+        }
+
 		void scale(const float factor, const float time=0.0f, EventMonitor*const monitor=nullptr) {
             auto &interp = get<SUBPROC_KEY_FR_INTERP>(static_cast<SubProcParent& >(*this));
 			//if(interp.getProcState() == PROC_STATE_RUNNING)
