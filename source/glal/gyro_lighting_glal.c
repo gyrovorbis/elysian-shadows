@@ -19,7 +19,7 @@ int					lightingEnabled									= 1;
 int					lightsEnabled[GYRO_VIDEO_LIGHT_SOURCES_MAX]		= { 0 };
 static int          _shadowPass                                     = 0;
 
-int gyVidLightSourceShadowPass(void) {
+int gyVidShadowPass(void) {
     return _shadowPass;
 }
 
