@@ -677,7 +677,7 @@ OOLUA_PROXY(ParticleEmitterAttrib, SpriteAttrib, GYStatic)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ParticleEmitter, Component)
-	OOLUA_TAGS (
+    OOLUA_TAGS (
 		No_public_constructors,
 		No_public_destructor
 	)
