@@ -437,7 +437,8 @@ OOLUA_EXPORT_FUNCTIONS(Character,
                                     setDashing)
 OOLUA_EXPORT_FUNCTIONS_CONST(Character,
 							   getFaceDir,
-							   isFacing)
+                               isFacing,
+                                getHeldEntity)
 
 OOLUA_EXPORT_FUNCTIONS(CharacterSystem,
                        walkToWayPoint,

@@ -596,6 +596,7 @@ OOLUA_PROXY(Character, Component)
     OOLUA_MEM_FUNC(void, setWalkForce, float)
     OOLUA_MEM_FUNC(void, setDashMultiplier, float)
     OOLUA_MEM_FUNC(void, setDashing, bool)
+    OOLUA_MEM_FUNC_CONST(Entity*, getHeldEntity)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CharacterSystem)
