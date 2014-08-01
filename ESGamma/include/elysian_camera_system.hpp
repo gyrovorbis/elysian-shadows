@@ -36,14 +36,20 @@ namespace elysian {
         float		_zOrient    = 0.0f;
         float		_xOrient    = 0.0f;
 	public:
-		void setPos(const float x, const float y, const float z);
-        void setOffset(const GYVector3& vec);
-		void setScale(const float scale);
-		void setZOrient(const float zOrient);
-		void setXOrient(const float xOrient);
-		void setDir(const float x, const float y, const float z);
+        void    setPos(const float x, const float y, const float z);
+        void    setOffset(const GYVector3& vec);
+        void    setOffset(const float x, const float y, const float z);
+        void    setScale(const float scale);
+        void    setZOrient(const float zOrient);
+        void    setXOrient(const float xOrient);
+        void    setDir(const float x, const float y, const float z);
 
-		float getScale(void) const;
+        void    getPos(float& x, float& y, float& z) const;
+        void    getOffset(float&x, float& y, float& z) const;
+        float   getScale(void) const;
+        float   getZOrient(void) const;
+        float   getXOrient(void) const;
+        void    getDir(float& x, float& y, float& z) const;
 
 		void linearInterpolate(const CameraKeyFrame& startKeyFrame, const CameraKeyFrame& endKeyFrame,
 							   const float interval, const float elapsed);
@@ -442,7 +448,12 @@ namespace elysian {
         if(_elapsedTime >= _duration) _elapsedTime = _duration;
     }
 
-
+    inline void CameraKeyFrame::setOffset(const float x, const float y, const float z) { _offset.x = x; _offset.y = y; _offset.z = z; }
+    inline void CameraKeyFrame::getPos(float& x, float& y, float& z) const { x = _pos.x; y = _pos.y; z = _pos.z; }
+    inline void CameraKeyFrame::getOffset(float& x, float& y, float& z) const { x = _offset.x; y = _offset.y; z = _offset.z; }
+    inline float CameraKeyFrame::getZOrient(void) const { return _zOrient; }
+    inline float CameraKeyFrame::getXOrient(void) const { return _xOrient; }
+    inline void CameraKeyFrame::getDir(float& x, float& y, float& z) const { x = _dir.x; y = _dir.y; z = _dir.z; }
 
 
 	

@@ -1044,10 +1044,17 @@ OOLUA_PROXY_END
 
 OOLUA_PROXY(CameraKeyFrame)
 	OOLUA_MEM_FUNC(void, setPos, float, float, float)
+    OOLUA_MEM_FUNC_CONST(void, getPos, out_p<float&>, out_p<float&>, out_p<float&>)
 	OOLUA_MEM_FUNC(void, setDir, float, float, float)
+    OOLUA_MEM_FUNC_CONST(void, getDir, out_p<float&>, out_p<float&>, out_p<float&>)
+    OOLUA_MEM_FUNC(void, setOffset, float, float, float)
+    OOLUA_MEM_FUNC_CONST(void, getOffset, out_p<float&>, out_p<float&>, out_p<float&>)
 	OOLUA_MEM_FUNC(void, setScale, float)
+    OOLUA_MEM_FUNC_CONST(float, getScale)
 	OOLUA_MEM_FUNC(void, setZOrient, float)
+    OOLUA_MEM_FUNC_CONST(float, getZOrient)
 	OOLUA_MEM_FUNC(void, setXOrient, float)
+    OOLUA_MEM_FUNC_CONST(float, getXOrient)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CameraSystem)
