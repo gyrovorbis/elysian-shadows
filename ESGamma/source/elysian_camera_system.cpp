@@ -203,7 +203,8 @@ CameraSystem::CameraSystem(void) {
 	memcpy(_uiCamera.viewMat, identity4, sizeof(GYMatrix4));
 	gyVidCamOrthoProj(&_uiCamera, 0.0f, (float)w, (float)h, 0.0f, -999.0f, 1000.0f);
 
-	gyVidCamFrustum(&_debugState, 45.0f, w/h, 0.5f, 900.0f);
+    gyVidCamFrustum(&_debugState, 45.0f, 1.0f, 0.5f, 900.0f);
+    //gyVidCamFrustum(&_debugState, 45.0f, w/h, 0.5f, 900.0f);
 	//_debugState.dir = { 0.0f, 1.0f, 1.0f };
 
 	_states[0] = &_internalStates[0];
@@ -447,7 +448,12 @@ void CameraSystem::update(void) {
 					 //  _curState->up.x, _curState->up.y, _curState->up.z);
 		gyMatLoad(&_curState->viewMat);
 
+
+
 		gyMatScale(1.0f, 1.0f, -1.0f);
+
+        gyMatShearZ(0.0f, -1.0f);
+
         gyMatTranslate(-worldPos.x, -worldPos.y, -worldPos.z);
 		gyMatStore(&_curState->viewMat);
 		gyMatPop();
