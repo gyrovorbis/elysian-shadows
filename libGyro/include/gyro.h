@@ -1,8 +1,6 @@
 #ifndef GYRO_H
 #define GYRO_H
 
-#define GYRO_LIB_VERSION "1.5.6"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
