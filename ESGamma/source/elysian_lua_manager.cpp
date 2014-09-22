@@ -1,6 +1,7 @@
 #include "elysian_lua_manager.hpp"
 #include "elysian_lua_script.hpp"
 #include "elysian_lua_wrappers.hpp"
+#include "luatables.h"
 #include "elysian_debug.hpp"
 
 namespace elysian {
@@ -335,6 +336,20 @@ bool LuaManager::initialize(void) {
 	_registerWrappers();
 
 	runString(_rPrint);
+
+    LuaTable ltable = LuaTable::fromFile("/assets/testTable.lua");
+
+    std::string name = ltable["name"];
+    double pass = ltable["password"];
+    double num9 = ltable[9];
+    double embedded = ltable["table2"]["y"];
+    ltable["reestTitties"] = 73.0;
+
+
+    Debug::printf(Debug::CRITICAL, "%s, %f, %f, %f\n", name.c_str(), pass, num9, embedded);
+   // ltable[]
+
+    Debug::printf(Debug::CRITICAL, "%s", ltable.serialize().c_str());
 
     Debug::pop();
 	return true;

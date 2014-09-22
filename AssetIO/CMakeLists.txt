@@ -25,6 +25,8 @@ set(AssetIO_SOURCES
 	${AssetIO_SOURCE_DIR}/elysian_tile.cpp
 	${AssetIO_SOURCE_DIR}/elysian_warp.cpp
 	${AssetIO_SOURCE_DIR}/elysian_zcoords.cpp
+	${AssetIO_SOURCE_DIR}/elysian_lua_table_model.cpp
+	${AssetIO_SOURCE_DIR}/luatables.cc
 )
 
 set(AssetIO_INCLUDES
@@ -64,4 +66,6 @@ set(AssetIO_INCLUDES
 	${AssetIO_INCLUDE_DIR}/elysian_tile.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_warp.hpp
 	${AssetIO_INCLUDE_DIR}/elysian_zcoords.hpp
+	${AssetIO_INCLUDE_DIR}/elysian_lua_table_model.hpp
+	${AssetIO_INCLUDE_DIR}/luatables.h
 )

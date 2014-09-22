@@ -44,12 +44,12 @@ ESToolkit::ESToolkit(QWidget *parent):
 {
 
 	// VERY IMPROTANT GLOBAL STATE/STATIC INITIALIZATION
-    assert(gyFileInit("ESTeam", "ESGamma"));
+    assert(gyFileInit("ESTeam", "ESTk"));
 	Debug::getInstance();
 	AssetManager::_assets = &_assets;
 	elysian::Behavior::staticConstructor();
 
-    const QString verString = QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" \"Levoamphetamine\" Release");
+    const QString verString = QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" \"Sex and Candy\" Release");
 	const char* platString =
 #ifdef __APPLE__
 	"OSX";

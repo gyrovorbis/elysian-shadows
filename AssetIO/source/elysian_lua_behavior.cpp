@@ -153,6 +153,9 @@ bool LuaBehavior::loadScript(const char *file, const OOLUA::Lua_table_ref paramT
 		parentSelfTableRef = selfTableRef;
 	}
 
+#else
+    (void)paramTable;
+
 #endif
     dbgPop();
 	return true;
@@ -220,6 +223,7 @@ void LuaBehavior::onExit(void) {
 	
 void LuaBehavior::onCollide(CollisionContact*const contact, elysian::Collidable *collidable) {
 	(void)collidable;
+    (void)contact;
 #ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onCollide", _ooSelfTableRef, contact, collidable));
 #endif
@@ -227,6 +231,7 @@ void LuaBehavior::onCollide(CollisionContact*const contact, elysian::Collidable 
 
 void LuaBehavior::onCollisionEnter(CollisionContact*const contact, elysian::Collidable *collidable) {
 	(void)collidable;
+    (void)contact;
 #ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onCollisionEnter", _ooSelfTableRef, contact, collidable));
 #endif

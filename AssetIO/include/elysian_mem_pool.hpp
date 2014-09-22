@@ -324,7 +324,7 @@ public:
     void resize(const unsigned size) {
         T *old_entries = _entries;
         _entries = new T[size];
-        memcpy(reinterpret_cast<T*>(_entries), reinterpret_cast<const T*>(old_entries), sizeof(T) * _maxSize);
+        memcpy(reinterpret_cast<void*>(_entries), reinterpret_cast<const void*>(old_entries), sizeof(T) * _maxSize);
         delete[] old_entries;
         _maxSize = size;
         _used    = (bool*)realloc(_used, sizeof(bool) * (size+1));

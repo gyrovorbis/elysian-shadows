@@ -102,7 +102,9 @@ SOURCES += source/asset/project.cpp \
     source/asset/elysianTileWrapper.cpp \
     ../../AssetIO/source/elysian_particle_emitter.cpp \
     ../../AssetIO/source/elysian_rigid_body.cpp \
-    ../../AssetIO/source/elysian_combat.cpp
+    ../../AssetIO/source/elysian_combat.cpp \
+    ../../AssetIO/source/elysian_lua_table_model.cpp \
+    ../../AssetIO/source/luatables.cc
 HEADERS += include/asset/project.h \
     include/asset/level.h \
     include/asset/entity.h \
@@ -198,7 +200,9 @@ HEADERS += include/asset/project.h \
     include/asset/elysianTileWrapper.h \
     ../../AssetIO/include/elysian_particle_emitter.hpp \
     ../../AssetIO/include/elysian_combat.hpp \
-    ../../AssetIO/include/elysian_rigid_body.hpp
+    ../../AssetIO/include/elysian_rigid_body.hpp \
+    ../../AssetIO/include/luatables.h \
+    ../../AssetIO/include/elysian_lua_table_model.hpp
 
 FORMS += form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \

@@ -14,7 +14,7 @@ namespace elysian {
 
 	class AudioSource: public Component {
 	public:
-		AudioSource(Entity& entity);
+                AudioSource(Entity& entity);
 		virtual ~AudioSource(void) override;
 
 		//reimplemented from component

@@ -20,12 +20,12 @@ namespace elysian {
 
 	public:
 
-		uint32_t getTypeFlags(void) const;
-		uint32_t getTypeAgainstFlags(void) const;
-		void setTypeFlags(const uint32_t flags);
-		void setTypeAgainstFlags(const uint32_t flags);
-		ParticleEmitterAttrib* getParticleAttrib(void) const;
-		void setParticleAttrib(ParticleEmitterAttrib*const attrib);
+        uint32_t                getTypeFlags(void) const;
+        uint32_t                getTypeAgainstFlags(void) const;
+        void                    setTypeFlags(const uint32_t flags);
+        void                    setTypeAgainstFlags(const uint32_t flags);
+        ParticleEmitterAttrib*  getParticleAttrib(void) const;
+        void                    setParticleAttrib(ParticleEmitterAttrib*const attrib);
 		//GYColor4 getParticleColor(void) const;
 		//void setParticleColor(const GYColor4 color);
 	};
