@@ -217,6 +217,11 @@ void GuiSystem::_renderMenuWidget(MenuWidget* widget) {
 
 }
 
+void GuiSystem::toggleAdvLog(void) {
+    if(adventureLog.isEnabled()) adventureLog.disable();
+    else adventureLog.enable();
+}
+
 
 
 

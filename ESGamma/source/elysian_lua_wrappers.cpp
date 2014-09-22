@@ -744,7 +744,8 @@ OOLUA_EXPORT_FUNCTIONS(GuiSystem,
 					   clearFgMenuWidget,
 					   setBgMenuWidget,
 					   clearBgMenuWidget,
-					   setClearColor)
+                       setClearColor,
+                       toggleAdvLog)
 OOLUA_EXPORT_FUNCTIONS_CONST(GuiSystem)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(DaySystem,

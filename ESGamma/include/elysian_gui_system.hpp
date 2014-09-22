@@ -119,6 +119,8 @@ namespace elysian {
 		void setBgMenuWidget(MenuWidget*const widget);
 		void clearBgMenuWidget(void);
 
+        void toggleAdvLog(void);
+
 		AdventureLog	adventureLog;
 		Font			verdana;
 		Font			twcen;
