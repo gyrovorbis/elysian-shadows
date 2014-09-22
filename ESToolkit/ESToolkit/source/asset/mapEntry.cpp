@@ -7,6 +7,7 @@ bool TileEntry::renderFlipRot	= false;
 bool TileEntry::renderElev		= false;
 bool TileEntry::renderColliders = false;
 bool TileEntry::renderZTran		= false;
+bool TileEntry::renderPlane    = false;
 
 void TileEntry::renderCollider(QPainter *const painter, const elysian::Tile::COLLIDER_TYPE collider) {
 	static const QColor fillColor(0, 0, 255, 80);
@@ -138,6 +139,42 @@ void TileEntry::renderDecoration(QPainter *const painter, const unsigned /*x*/, 
 		painter->fillRect(QRect(-16, -16, 32, 32), brush);
 	}
 
+    if(renderPlane) {
+        GY_RECT_PLANE_TYPE plane = getPlane();
+
+        if(plane != GY_RECT_PLANE_BOTTOM) {
+            QString str;
+
+            switch(plane) {
+                case GY_RECT_PLANE_FRONT:
+                    str = QString("F");
+                    break;
+                case GY_RECT_PLANE_LEFT:
+                    str = QString("L");
+                    break;
+                case GY_RECT_PLANE_RIGHT:
+                    str = QString("R");
+                    break;
+                case GY_RECT_PLANE_FRONT_SLOPE_45:
+                    str = QString("F45");
+                    break;
+                case GY_RECT_PLANE_LEFT_SLOPE_45:
+                    str = QString("L45");
+                    break;
+                case GY_RECT_PLANE_RIGHT_SLOPE_45:
+                    str = QString("R45");
+                    break;
+                default:
+                    Q_ASSERT(false);
+            }
+            painter->drawText(rect, Qt::AlignCenter, str);
+
+            QColor color(Qt::white);
+            color.setAlpha(100);
+            painter->fillRect(rect, color);
+        }
+    }
+
 	//MapEntry attrib
 	if(renderIndeces) {
 		unsigned index = getIndex();
@@ -191,5 +228,5 @@ void TileEntry::renderDecoration(QPainter *const painter, const unsigned /*x*/, 
 		painter->fillRect(rect, color);
 		painter->drawText(rect, Qt::AlignCenter, QString::number(elev));
 
-	}
+    }
 }

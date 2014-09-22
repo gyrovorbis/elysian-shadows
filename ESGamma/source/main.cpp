@@ -23,7 +23,7 @@ GYAppCbRet Init(int argc, char **argv) {
 	(void)argv;
 
 	/* The File subsystem needs to be initialized before anything else, ideally */
-	gyFileInit("ESTeam", "ESGamma");
+    gyFileInit("ESTeam", "ESGamma");
 
 	debug = &Debug::getInstance();
 	char verString[50];

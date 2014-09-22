@@ -10,6 +10,8 @@
 #include <QStatusBar>
 #include <QDebug>
 
+#include <gyro_file_api.h>
+
 #include "area.h"
 #include "debug.h"
 #include "level.h"
@@ -42,11 +44,12 @@ ESToolkit::ESToolkit(QWidget *parent):
 {
 
 	// VERY IMPROTANT GLOBAL STATE/STATIC INITIALIZATION
+    assert(gyFileInit("ESTeam", "ESGamma"));
 	Debug::getInstance();
 	AssetManager::_assets = &_assets;
 	elysian::Behavior::staticConstructor();
 
-	const QString verString = QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" \"Audacious Cuntwhisp\" Release");
+    const QString verString = QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" \"Levoamphetamine\" Release");
 	const char* platString =
 #ifdef __APPLE__
 	"OSX";
@@ -65,6 +68,7 @@ ESToolkit::ESToolkit(QWidget *parent):
 	_sheetManager = new SheetManager(/*this*/);
 	_engineDialog = new EngineDialog(/*this*/);
 	_engineSettingsDialog = new EngineSettingsDialog(/*this*/);
+    connect(_engineSettingsDialog, SIGNAL(enginePathx86Changed(QString)), _engineDialog, SLOT(onEnginePathx86Changed(QString)));
 	connect(_engineSettingsDialog, SIGNAL(dcIpChanged(QString)), _engineDialog, SLOT(OnDreamcastIpChanged(QString)));
 	connect(_engineSettingsDialog, SIGNAL(dcMacChanged(QString)), _engineDialog, SLOT(OnDreamcastMacChanged(QString)));
 	connect(_engineSettingsDialog, SIGNAL(sudoPswdChanged(QString)), _engineDialog, SLOT(OnSudoPswdChanged(QString)));
@@ -253,6 +257,12 @@ void ESToolkit::closeEvent(QCloseEvent *event) {
 	else {
 		event->ignore();
 	}
+
+    //_assetDockWidget->clearTreeView();
+    //MEMORY LEAK, BUT TEMPORARY FIX FOR DOUBLE DELETING AREA/LEVEL IN ~TREEWIDGETITEM
+    removeDockWidget(_assetDockWidget);
+    _assetDockWidget->setParent(nullptr);
+
 }
 
 //Synch menuBar with the state of the currentEntity
@@ -547,6 +557,9 @@ void ESToolkit::OnSubLayerVisibilityChanged(int index, bool visible)
 	case 10:
 		TileEntry::renderFlipRot = visible;
 		break;
+    case 11:
+        TileEntry::renderPlane = visible;
+        break;
 	default:
 		break;
 	}
@@ -824,21 +837,25 @@ void ESToolkit::on_actionEntityAttachWarp_triggered() {
 	((Entity *)_assets.getCurrentSelection())->AttachWarp();
 }
 
+#if 0
 void ESToolkit::on_actionEntityAttachItem_triggered() {
    ((Entity *)_assets.getCurrentSelection())->AttachItem();
 }
 
-void ESToolkit::on_actionEntityAttachCharacter_triggered() {
-	((Entity *)_assets.getCurrentSelection())->AttachCharacter();
-}
 
 void ESToolkit::on_actionEntityAttachFriendly_triggered() {
-	((Entity *)_assets.getCurrentSelection())->AttachFriendly();
+    ((Entity *)_assets.getCurrentSelection())->AttachFriendly();
 }
 
 void ESToolkit::on_actionEntityAttachEnemy_triggered() {
    ((Entity *)_assets.getCurrentSelection())->AttachEnemy();
 }
+#endif
+
+void ESToolkit::on_actionEntityAttachCharacter_triggered() {
+	((Entity *)_assets.getCurrentSelection())->AttachCharacter();
+}
+
 
 void ESToolkit::on_actionEntityRemoveRenderable_triggered() {
 	((Entity *)_assets.getCurrentSelection())->RemoveRenderable();
@@ -856,20 +873,22 @@ void ESToolkit::on_actionEntityRemoveWarp_triggered() {
 	((Entity *)_assets.getCurrentSelection())->RemoveWarp();
 }
 
+#if 0
 void ESToolkit::on_actionEntityRemoveItem_triggered() {
 	((Entity *)_assets.getCurrentSelection())->RemoveItem();
 }
 
-void ESToolkit::on_actionEntityRemoveCharacter_triggered() {
-	((Entity *)_assets.getCurrentSelection())->RemoveCharacter();
-}
-
 void ESToolkit::on_actionEntityRemoveFriendly_triggered() {
-	((Entity *)_assets.getCurrentSelection())->RemoveFriendly();
+    ((Entity *)_assets.getCurrentSelection())->RemoveFriendly();
 }
 
 void ESToolkit::on_actionEntityRemoveEnemy_triggered() {
-	((Entity *)_assets.getCurrentSelection())->RemoveEnemy();
+    ((Entity *)_assets.getCurrentSelection())->RemoveEnemy();
+}
+#endif
+
+void ESToolkit::on_actionEntityRemoveCharacter_triggered() {
+	((Entity *)_assets.getCurrentSelection())->RemoveCharacter();
 }
 
 void ESToolkit::on_actionAreaRemove_triggered() {
@@ -958,7 +977,7 @@ void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *cons
 		 _ui->mapView->createSelectionItemGroup();
 		 static_cast<TileSelectable *>(selection)->populateModel();
 		 _selectionDockWidget->SetSelectionModel(static_cast<TileSelectable *>(selection));
-		 if(static_cast<TileSelectable *>(selection)->getSize() == 1) _selectionDockWidget->ExpandSelectionTree();
+         /*if(static_cast<TileSelectable *>(selection)->getSize() == 1)*/ _selectionDockWidget->ExpandSelectionTree();
 		 selection->installSelectionViewCustomDelegates(_selectionDockWidget->getSelectionTreeWidget());
 		_selectionDockWidget->SetSelectionTreeWidget();
 		break;
@@ -1011,7 +1030,7 @@ void ESToolkit::on_actionFileNewArea_triggered() {
 
 void ESToolkit::OnProjectRemoved() {
 	ToogleProjectActions(false);
-	_assetDockWidget->ClearTreeView();
+    _assetDockWidget->clearTreeView();
 	_assetDockWidget->setEnabled(false);
   //  _entityDockWidget->setEnabled(false);
 	_layerDockWidget->ToggleDefaultItem(false);
@@ -1339,4 +1358,25 @@ void ESToolkit::on_actionScreenshot_triggered(void) {
 	image.save(fileBase+QString::number(num)+QString(".png"));
 
 	_ui->mapView->scale(10.0f, 10.0f);
+}
+
+
+void ESToolkit::on_actionScatter_triggered()
+{
+    if(_assets.getCurrentLevel()) _assets.getCurrentLevel()->scatterTileNormalMaps();
+}
+
+void ESToolkit::on_actionGather_triggered()
+{
+    if(_assets.getCurrentLevel()) _assets.getCurrentLevel()->gatherTileNormalMaps();
+}
+
+void ESToolkit::on_actionScatter_2_triggered()
+{
+    if(_assets.getCurrentLevel()) _assets.getCurrentLevel()->scatterTileSpecularMaps();
+}
+
+void ESToolkit::on_actionGather_2_triggered()
+{
+    if(_assets.getCurrentLevel()) _assets.getCurrentLevel()->gatherTileSpecularMaps();
 }

@@ -26,10 +26,7 @@
 #include "animation.h"
 #include "collidable.h"
 #include "character.h"
-#include "item.h"
 #include "warp.h"
-#include "friendly.h"
-#include "enemy.h"
 #include "renderable.h"
 #include <cmath>
 
@@ -45,10 +42,11 @@ Entity::Entity(elysian::Entity &entity): _elysianEntity(&entity),
 	}
     if(_elysianEntity->getAnimation()) _animation = new Animation(_elysianEntity->getAnimation());
     if(_elysianEntity->getCollidable()) _collidable = new Collidable(_elysianEntity->getCollidable());
+
     if(_elysianEntity->getCharacter()) _character = new Character(_elysianEntity->getCharacter());
-    if(_elysianEntity->getFriendly()) _friendly = new Friendly(_elysianEntity->getFriendly());
-    if(_elysianEntity->getEnemy()) _enemy = new Enemy(_elysianEntity->getEnemy());
-    if(_elysianEntity->getItem()) _item = new Item(_elysianEntity->getItem());
+//    if(_elysianEntity->getFriendly()) _friendly = new Friendly(_elysianEntity->getFriendly());
+//    if(_elysianEntity->getEnemy()) _enemy = new Enemy(_elysianEntity->getEnemy());
+//    if(_elysianEntity->getItem()) _item = new Item(_elysianEntity->getItem());
     if(_elysianEntity->getWarp()) _warp = new Warp(_elysianEntity->getWarp());
 
 	InitializeUI();
@@ -228,10 +226,10 @@ void Entity::InitializeUI(void) {
 	if(_animation) _compToolBox->addItem(_animation, "Animation");
 	if(_collidable) _compToolBox->addItem(_collidable, "Collidable");
 	if(_character) _compToolBox->addItem(_character, "Character");
-	if(_friendly) _compToolBox->addItem(_friendly, "Friendly");
-	if(_enemy) _compToolBox->addItem(_enemy, "Enemy");
-	if(_item) _compToolBox->addItem(_item, "Item");
-	if(_warp) _compToolBox->addItem(_warp, "Warp");
+//	if(_friendly) _compToolBox->addItem(_friendly, "Friendly");
+//	if(_enemy) _compToolBox->addItem(_enemy, "Enemy");
+//	if(_item) _compToolBox->addItem(_item, "Item");
+//	if(_warp) _compToolBox->addItem(_warp, "Warp");
 
 	_mainLayout->addWidget(_compToolBox);
 	//_mainLayout->addStretch(-1);
@@ -515,6 +513,7 @@ bool Entity::AttachWarp() {
     }
 }
 
+#if 0
 bool Entity::AttachItem() {
 	elysian::Item *comp;
 
@@ -571,6 +570,7 @@ bool Entity::AttachEnemy() {
         return false;
     }
 }
+#endif
 
 bool Entity::RemoveRenderable() {
 	if(!_renderable) {
@@ -618,20 +618,6 @@ bool Entity::RemoveCollidable() {
     return true;
 }
 
-bool Entity::RemoveItem() {
-    if(!_item) {
-        QMessageBox::critical(this, tr("Error!"), tr("Item component isn't attached!"));
-        return false;
-    }
-    _compToolBox->removeItem(_compToolBox->indexOf(_item));
-    Component *temp = _item;
-    _item = NULL;
-    emit ComponentRemoved(this, temp);
-	_elysianEntity->removeItem();
-    delete temp;
-    return true;
-}
-
 bool Entity::RemoveWarp() {
     if(!_warp) {
         QMessageBox::critical(this, tr("Error!"), tr("Warp component isn't attached!"));
@@ -660,7 +646,7 @@ bool Entity::RemoveCharacter() {
     _character = NULL;
     return true;
 }
-
+#if 0
 bool Entity::RemoveFriendly() {
     if(!_friendly) {
         QMessageBox::critical(this, tr("Error!"), tr("Friendly component isn't attached!"));
@@ -688,6 +674,22 @@ bool Entity::RemoveEnemy() {
     delete temp;
     return true;
 }
+
+bool Entity::RemoveItem() {
+    if(!_item) {
+        QMessageBox::critical(this, tr("Error!"), tr("Item component isn't attached!"));
+        return false;
+    }
+    _compToolBox->removeItem(_compToolBox->indexOf(_item));
+    Component *temp = _item;
+    _item = NULL;
+    emit ComponentRemoved(this, temp);
+    _elysianEntity->removeItem();
+    delete temp;
+    return true;
+}
+
+#endif
 
 Renderable *Entity::getRenderable() const { return _renderable; }
 Animation *Entity::getAnimation() const { return _animation; }

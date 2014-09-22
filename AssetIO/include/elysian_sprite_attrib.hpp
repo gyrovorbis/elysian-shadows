@@ -28,7 +28,9 @@ namespace elysian {
 		inline GYTexture* getTexture(void) const { return _tex; }
 
 		virtual ~SpriteAttrib(void) {
+#ifdef ELYSIAN_ENGINE
 			gyVidTexDestroy(_tex);
+#endif
 		}
 
 		inline void submitHeader(void) {
@@ -49,7 +51,9 @@ namespace elysian {
 
 		virtual void submitVerts(GYVector4* verts = nullptr) {
 			(void)verts;
+#ifdef ELYSIAN_ENGINE
 			gyVidRect(_frame);
+#endif
 		}
 
 		inline void setTexCoord(const unsigned index, const float u, const float v) {

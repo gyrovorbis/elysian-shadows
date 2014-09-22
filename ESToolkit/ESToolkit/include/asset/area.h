@@ -133,7 +133,7 @@ inline uint32_t Area::getTileValue(const QPoint loc, const Assets::LAYER_TYPE la
 	case Assets::LAYER_TILE3:
 		return _elysianArea.getL3TileEntry(loc.x(), loc.y()).getValue();
 	case Assets::LAYER_LIGHT:
-		return _elysianArea.getLightEntry(loc.x(), loc.y()).getValue();
+//		return _elysianArea.getLightEntry(loc.x(), loc.y()).getValue();
 	default:
 		break;
 	}
@@ -153,7 +153,7 @@ inline void Area::setTileValue(const QPoint loc, const Assets::LAYER_TYPE layer,
 		_elysianArea.setL3TileEntry(loc.x(), loc.y(), elysian::TileEntry(value));
 		break;
 	case Assets::LAYER_LIGHT:
-		_elysianArea.setLightEntry(loc.x(), loc.y(), elysian::LightEntry(value));
+        //_elysianArea.setLightEntry(loc.x(), loc.y(), elysian::LightEntry(value));
 		break;
 	default:
 		break;

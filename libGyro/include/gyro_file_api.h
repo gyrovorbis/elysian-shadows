@@ -6,6 +6,10 @@
 
 #include "gyro_platform.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum _GYPathType {
     /*
      * Path that houses user-specific data for this application.
@@ -39,5 +43,9 @@ int gyFileLength(GYFile *fp, size_t *len);
 int gyFileTell(GYFile *fp, long int *pos);
 
 int gyFileClose(GYFile **fp);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -44,7 +44,7 @@ inline const QPixmap MapViewTileGraphicsItem::_getTilePixmap(const TileEntry ent
 inline const TileSelection<TileEntry> *MapViewTileGraphicsItem::_getTileSelection(void) const {
 	return (getCurrentSelectionType() == Selectable::TILE)?
                 reinterpret_cast<const TileSelection<TileEntry>* >(static_cast<const TileSelectable *>(getCurrentSelection())) :
-				NULL;
+                nullptr;
 }
 
 inline TileEntry MapViewTileGraphicsItem::getTileEntry(const unsigned x, const unsigned y) const {

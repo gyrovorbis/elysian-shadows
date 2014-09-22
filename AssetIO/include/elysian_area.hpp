@@ -220,6 +220,7 @@ namespace elysian {
 		return ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x);
 	}
 
+#ifdef GYRO_GLAL
     inline void Area::vboEntryFromTileEntry(VboEntry * const vboEntry, const TileEntry * const tileEntry, const unsigned x, const unsigned y) {
 
         const GYTexCoord2*const coords = gyVidTexCoordArrayFromFrame(&level->tileSheet->_coord->texCoord[tileEntry->getIndex()],
@@ -378,6 +379,8 @@ namespace elysian {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	}
+#endif
+
 	inline TileEntry Area::getL1TileEntry(const unsigned x, const unsigned y) const {
 		return ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tiles, y*width + x);
 	}

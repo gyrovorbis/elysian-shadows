@@ -11,6 +11,7 @@
 #include "elysian_particle_system.hpp"
 #include "elysian_mem_pool.hpp"
 #include "elysian_entity.hpp"
+#include "elysian_light_system.hpp"
 #include <gyro.h>
 
 #ifdef GYRO_GLAL
@@ -67,38 +68,40 @@ namespace elysian {
 		} _animTiles[ELYSIAN_TILESHEET_TILES];
        
 	public:
-		MapSystem(void);
+                    MapSystem(void);
         
-		void update(void);
-		void renderOverlay(void);
-		void resetAnimation(void);
+        void        update(void);
+        void        renderOverlay(void);
+        void        resetAnimation(void);
 		//void dbgDump(void);
 
 		//=== MapDepthBuffer Implementation ===
 
-        void getOnscreenTileRegion(unsigned &startX, unsigned &startY, unsigned &endX, unsigned &endY) const;
-        float getBaseZCoord(void) const;
-		void getObjectLayerEntry(const unsigned x, const unsigned y, MapDepthBuffEntry &entry);
-		void renderObjectEntry(const MapDepthBuffEntry &entry, const float z);
-		void beginObjectList(void);
-		void endObjectList(void);
-		unsigned getEntityCount(void);
-		bool getOnscreenEntity(const unsigned index, GammaEntityDepthBuffEntry &entry, NORMAL_TYPE &normalType, float &lowestY, float &zCoord) const;
-        void renderEntityEntry(const GammaEntityDepthBuffEntry &entry) const;
-		void disableDepthTest(void) const;
-		void enableDepthTest(void) const;
-		void renderCustomPassAtElev(const unsigned char elev) const;
+        void        getOnscreenTileRegion(unsigned &startX, unsigned &startY, unsigned &endX, unsigned &endY) const;
+        float       getBaseZCoord(void) const;
+        void        getObjectLayerEntry(const unsigned x, const unsigned y, MapDepthBuffEntry &entry);
+        void        renderObjectEntry(const MapDepthBuffEntry &entry, const float z);
+        void        beginObjectList(void);
+        void        endObjectList(void);
+        unsigned    getEntityCount(void);
+        bool        getOnscreenEntity(const unsigned index, GammaEntityDepthBuffEntry &entry, NORMAL_TYPE &normalType, float &lowestY, float &zCoord) const;
+        void        renderEntityEntry(const GammaEntityDepthBuffEntry &entry) const;
+        void        disableDepthTest(void) const;
+        void        enableDepthTest(void) const;
+        void        renderCustomPassAtElev(const unsigned char elev) const;
+        uint32_t    startLightPass(uint32_t& lightsLeft);
+        uint32_t    getLightCount(void) const;
 
 
 		//=== /MapDepthBuffer Implementation ===
 
 		//Toggles
-		bool toggleRenderLayer(const unsigned layer);
-		bool getAnimate(void) const;
-		void setAnimate(const bool v);
-		bool getRenderTileLayer(const unsigned short int layer) const;
-		void setRenderTileLayer(const unsigned short int layer, const bool v);
-        unsigned getRenderCount(void) const { return _renderCount; }
+        bool        toggleRenderLayer(const unsigned layer);
+        bool        getAnimate(void) const;
+        void        setAnimate(const bool v);
+        bool        getRenderTileLayer(const unsigned short int layer) const;
+        void        setRenderTileLayer(const unsigned short int layer, const bool v);
+        unsigned    getRenderCount(void) const { return _renderCount; }
 
 	};
 
@@ -305,6 +308,8 @@ namespace elysian {
 		getPartSys()->renderAtElev(elev);
 	}
 
+    inline uint32_t MapSystem::startLightPass(uint32_t& lightsLeft) { return getLightSys()->startLightPass(lightsLeft); }
+    inline uint32_t MapSystem::getLightCount(void) const { return getLightSys()->getLightCount(); }
 }
 
 #endif

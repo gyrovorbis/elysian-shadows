@@ -10,18 +10,28 @@
 #define ENGINE_DIALOG_START_Y			"200"
 
 //Binary paths
-#define ENGINE_DIALOG_WIN_PATH			"ESGamma.exe"
-#define ENGINE_DIALOG_OSX_PATH			"ESGamma.app"
-#define ENGINE_DIALOG_LINUX_PATH		"./ESGamma"
-#define ENGINE_DIALOG_DC_PATH			"bin/ESGammaDC.elf"
+#define ENGINE_DIALOG_WIN_PATH			"../ESGamma.exe"
+#define ENGINE_DIALOG_OSX_PATH			"../ESGamma.app"
+#define ENGINE_DIALOG_LINUX_PATH		"../ESGamma"
+#define ENGINE_DIALOG_DC_PATH			"../bin/ESGammaDC.elf"
+
 
 //DC-Tool binary paths
 #ifdef Q_OS_WIN
-#	define ENGINE_DIALOG_DCTOOL_PATH	"bin/dc-tool-win.exe"
+#	define ENGINE_DIALOG_DEFAULT_PATH	ENGINE_DIALOG_WIN_PATH
 #elif defined(Q_OS_MAC)
-#	define ENGINE_DIALOG_DCTOOL_PATH	"bin/dc-tool-osx"
+#	define ENGINE_DIALOG_DEFAULT_PATH	ENGINE_DIALOG_OSX_PATH
 #elif defined(Q_OS_LINUX)
-#	define ENGINE_DIALOG_DCTOOL_PATH	"bin/dc-tool-linux"
+#	define ENGINE_DIALOG_DEFAULT_PATH	ENGINE_DIALOG_LINUX_PATH
+#endif
+
+//DC-Tool binary paths
+#ifdef Q_OS_WIN
+#	define ENGINE_DIALOG_DCTOOL_PATH	"../bin/dc-tool-win.exe"
+#elif defined(Q_OS_MAC)
+#	define ENGINE_DIALOG_DCTOOL_PATH	"../bin/dc-tool-osx"
+#elif defined(Q_OS_LINUX)
+#	define ENGINE_DIALOG_DCTOOL_PATH	"../bin/dc-tool-linux"
 #endif
 
 class QListWidget;
@@ -58,6 +68,7 @@ private:
 
     //Settings
     QString _sudoPswd;
+    QString _enginePathx86;
 
     //Dreamcast-specific settings
     QString _dcMacAddr;
@@ -81,6 +92,7 @@ public slots:
     void OnDreamcastIpChanged(QString string);
     void OnDreamcastMacChanged(QString string);
     void OnSudoPswdChanged(QString string);
+    void onEnginePathx86Changed(QString path);
 
 
 public:

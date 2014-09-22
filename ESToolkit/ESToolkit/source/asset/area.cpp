@@ -48,7 +48,7 @@ Area::Area(Level *const level):
 	//Must allocate a map in case this map is to be saved before it is loaded.
 	_elysianArea.allocMap();
 	memset(_elysianArea.tiles, 0, sizeof(elysian::TileEntry)*_elysianArea.width*_elysianArea.height*ELYSIAN_AREA_MAP_LAYERS);
-	memset(_elysianArea.lights, 0, sizeof(elysian::LightEntry)*_elysianArea.width*_elysianArea.height);
+    //memset(_elysianArea.lights, 0, sizeof(elysian::LightEntry)*_elysianArea.width*_elysianArea.height);
 	strcpy(_elysianArea.name, "untitled");
     strcpy(_elysianArea.string, "untitled");
     connect(&_undoStack, SIGNAL(cleanChanged(bool)), this, SLOT(onUndoCleanStateChanged(bool)));

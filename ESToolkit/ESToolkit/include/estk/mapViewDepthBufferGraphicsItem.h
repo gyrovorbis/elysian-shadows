@@ -27,18 +27,20 @@ private:
 public:
 
 	//=== Implemented from elysian::MapDepthBuffer ===
-
-	void getOnscreenTileRegion(unsigned &startX, unsigned &startY, unsigned &endX, unsigned &endY) const;
-	float getBaseZCoord(void) const;
-	void getObjectLayerEntry(const unsigned x, const unsigned y, ESTkTileDepthBuffEntry &entry);
-	void renderObjectEntry(const ESTkTileDepthBuffEntry &entry, const float z);
-	void beginObjectList(void) const;
-	void endObjectList(void) const;
-	unsigned getEntityCount(void) const;
-	bool getOnscreenEntity(const unsigned index, ESTkEntityDepthBuffEntry &entry, elysian::DEPTH_TYPE &type, float &lowestY, unsigned char &elev) const;
-	void renderEntityEntry(ESTkEntityDepthBuffEntry &entry);
-    void enableDepthTest(void) const;
-    void disableDepthTest(void) const;
+    void        getOnscreenTileRegion(unsigned &startX, unsigned &startY, unsigned &endX, unsigned &endY) const;
+    float       getBaseZCoord(void) const;
+    void        getObjectLayerEntry(const unsigned x, const unsigned y, ESTkTileDepthBuffEntry &entry);
+    void        renderObjectEntry(const ESTkTileDepthBuffEntry &entry, const float z);
+    void        beginObjectList(void);
+    void        endObjectList(void);
+    unsigned    getEntityCount(void);
+    bool        getOnscreenEntity(const unsigned index, ESTkEntityDepthBuffEntry &entry, elysian::NORMAL_TYPE &normalType, float &lowestY, float &zCoord) const;
+    void        renderEntityEntry(const ESTkEntityDepthBuffEntry &entry) const;
+    void        disableDepthTest(void) const;
+    void        enableDepthTest(void) const;
+    void        renderCustomPassAtElev(const unsigned char elev) const;
+    uint32_t    startLightPass(uint32_t& lightsLeft);
+    uint32_t    getLightCount(void) const;
 
 	//=== /Implemened from elysian::MapDepthBuffer ===
 
@@ -68,6 +70,7 @@ inline float MapViewDepthBufferGraphicsItem::getBaseZCoord(void) const {
 
 inline void MapViewDepthBufferGraphicsItem::getObjectLayerEntry(const unsigned x, const unsigned y, ESTkTileDepthBuffEntry &entry) {
 	_currentLayer = (Assets::LAYER_TYPE)entry.layer;
+    entry.lights = 0;
 	entry.drawStyle = (getAssets()->getCurrentLayer() == _currentLayer)? _getTileDrawStyle(x, y) : DRAW_NORMAL;
 	entry.mapEntry = _getTileEntryFromDrawStyle(x, y, entry.drawStyle);
 }
@@ -84,23 +87,15 @@ inline void MapViewDepthBufferGraphicsItem::renderObjectEntry(const ESTkTileDept
 	_curPainter->restore();
 }
 
-inline void MapViewDepthBufferGraphicsItem::beginObjectList(void) const {
-	//Tk doesn't use batch texture submission
-}
-
-inline void MapViewDepthBufferGraphicsItem::endObjectList(void) const {
-	//Tk doesn't use batch texture submission
-}
-
-inline unsigned MapViewDepthBufferGraphicsItem::getEntityCount(void) const {
+inline unsigned MapViewDepthBufferGraphicsItem::getEntityCount(void) {
 	return _curEntities->count();
 }
 
-inline bool MapViewDepthBufferGraphicsItem::getOnscreenEntity(const unsigned index, ESTkEntityDepthBuffEntry &entry, elysian::DEPTH_TYPE &type, float &lowestY, unsigned char &elev) const {
+inline bool MapViewDepthBufferGraphicsItem::getOnscreenEntity(const unsigned index, ESTkEntityDepthBuffEntry &entry, elysian::NORMAL_TYPE &type, float &lowestY, float &elev) const {
 	Entity &entity = *(*_curEntities)[index];
 		if(true) { //CHECK IF NIGGER IS ONSCREEN
 			entry.entity = &entity;
-			type = entity.getElysianEntity()->getDepthType();
+            type = (elysian::NORMAL_TYPE)entity.getElysianEntity()->getPlaneType();
 			lowestY = entity.getElysianEntity()->getDepthBaseY();
 			elev = entity.getElysianEntity()->getElev();
 			return true;
@@ -108,13 +103,24 @@ inline bool MapViewDepthBufferGraphicsItem::getOnscreenEntity(const unsigned ind
 		return false;
 }
 
-inline void MapViewDepthBufferGraphicsItem::renderEntityEntry(ESTkEntityDepthBuffEntry &/*entry*/) {
+inline void MapViewDepthBufferGraphicsItem::renderEntityEntry(const ESTkEntityDepthBuffEntry &/*entry*/) const {
 	//entry.entity->paint(_curPainter, NULL, NULL);
 }
 
 inline void MapViewDepthBufferGraphicsItem::enableDepthTest(void) const { }
 
 
-void MapViewDepthBufferGraphicsItem::disableDepthTest(void) const {}
+inline void MapViewDepthBufferGraphicsItem::disableDepthTest(void) const {}
+
+inline uint32_t MapViewDepthBufferGraphicsItem::getLightCount(void) const { return 0; }
+
+inline uint32_t MapViewDepthBufferGraphicsItem::startLightPass(uint32_t& lightsLeft) { return lightsLeft = 0; }
+
+inline void MapViewDepthBufferGraphicsItem::beginObjectList(void) { return; }
+inline void MapViewDepthBufferGraphicsItem::endObjectList(void) { return; }
+
+inline void MapViewDepthBufferGraphicsItem::renderCustomPassAtElev(const unsigned char /*elev*/) const { return; }
+
+
 
 #endif // MAPVIEWDEPTHBUFFERTILEGRAPHICSITEM_H

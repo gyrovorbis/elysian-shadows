@@ -17,9 +17,9 @@
 
 //====STATIC====
 
-QGraphicsRectItem *Level::_sheetViewTileParent = NULL;
-CheckeredAlphaRectGraphicsItem *::Level::_bgRectItem = NULL;
-SelectionScene *Level::_sheetViewScene = NULL;
+QGraphicsRectItem *Level::_sheetViewTileParent          = nullptr;
+CheckeredAlphaRectGraphicsItem *::Level::_bgRectItem    = nullptr;
+SelectionScene *Level::_sheetViewScene                  = nullptr;
 
 bool Level::initializeScene(const SourceView *const view, bool horiz) {
 	static bool initialized = false;
@@ -118,6 +118,9 @@ Level::Level(Project *const project):
 {
     strcpy(_elysianLevel.name, "untitled");
     strcpy(_elysianLevel.string, "untitled");
+
+    for(unsigned i = 0; i < ELYSIAN_TILESHEET_TILES; ++i) _elysianTileWrappers[i].initialize(this, &_elysianLevel.tileset[i], i);
+
 }
 
 Level::~Level() {
@@ -456,6 +459,8 @@ bool Level::load(const QString loc) {
 
 	success &= _elysianLevel.load(dir.absolutePath().toStdString().c_str());
 
+    success &= _loadMetaData(loc);
+
     if(!dir.cd("area")) {
 		Debug::Log(Debug::CRITICAL, "No area directory!");
 		Debug::Pop();
@@ -479,6 +484,7 @@ bool Level::save(void) {
 	Debug::Push();
 	//Save elysian::Level
 	success &= _elysianLevel.save(_location.toStdString().c_str());
+    success &= _saveMetaData(_location);
 	Debug::Pop();
 	return success;
 }
@@ -582,6 +588,9 @@ bool Level::saveAs(const QString dir) {
 	//Save elysian::Level
 	success &= _elysianLevel.save(dir.toStdString().c_str());
 
+    //Save ESTk metadata
+    success &= _saveMetaData(dir);
+
 	//Create area directory if it doesn't already exist
     if(!qdir.exists(dir+"/area")) {
 		Debug::Log(Debug::VERBOSE, "Creating 'area' directory");
@@ -648,6 +657,243 @@ void Level::onComponentRemoved(Area *const area, Entity *const entity, Component
 void Level::onAreaRenamed(const QString oldName, const QString newName) {
 	emit areaRenamed(oldName, newName);
 }
+
+bool Level::_saveMetaData(const QString dir) {
+    QDir qdir;
+    Debug::Log(Debug::VERBOSE, "Saving level metadata");
+    Debug::Push();
+
+    if(!qdir.exists(dir+"/estk")) {
+        Debug::Log(Debug::VERBOSE, "Creating 'estk' directory");
+        Debug::Push();
+        if(!qdir.mkdir(dir+"/estk")) {
+            Debug::Log(Debug::CRITICAL, "Could not create 'estk' directory!");
+            Debug::Pop();
+            Debug::Pop();
+            return false;
+        }
+        Debug::Pop();
+    }
+
+    FILE *file = fopen(QString(dir+"/estk/"+ESTK_LEVEL_METADATA_TILESET).toStdString().c_str(), "wb");
+    if(!file) {
+        Debug::Log(Debug::CRITICAL, "Could not open estkTileset.bin for writing!");
+        Debug::Pop();
+        return false;
+    }
+
+    fwrite(_normalMapEnabled, sizeof(_normalMapEnabled), 1, file);
+    fwrite(_specularMapEnabled, sizeof(_specularMapEnabled), 1, file);
+
+    fclose(file);
+
+
+    Debug::Pop();
+    return true;
+}
+
+bool Level::_loadMetaData(const QString dir) {
+    QDir qdir;
+    Debug::Log(Debug::VERBOSE, "Loading level metadata");
+    Debug::Push();
+
+
+    if(!qdir.exists(dir+"/estk")) {
+        Debug::Log(Debug::VERBOSE, "'estk' directory not present");
+        Debug::Pop();
+        return true;
+    }
+
+    FILE *file = fopen(QString(dir+"/estk/"+ESTK_LEVEL_METADATA_TILESET).toStdString().c_str(), "rb");
+    if(!file) {
+        Debug::Log(Debug::CRITICAL, "Could not open estkTileset.bin for reading!");
+        Debug::Pop();
+        return false;
+    }
+
+    fread(_normalMapEnabled, sizeof(_normalMapEnabled), 1, file);
+    fread(_specularMapEnabled, sizeof(_specularMapEnabled), 1, file);
+
+    fclose(file);
+
+    Debug::Pop();
+
+    return true;
+}
+
+bool Level::_scatterMaps(const bool normal) {
+    bool success = true;
+    QString path = getLocation();
+    path = path+"/estk/"+QString((normal)? ESTK_LEVEL_NORMAL_MAPS_DIRECTORY : ESTK_LEVEL_SPECULAR_MAPS_DIRECTORY);
+
+    //generate normalMaps folder
+    QDir qdir;
+    Debug::Log(Debug::VERBOSE, "Scattering tilesheet maps");
+    Debug::Push();
+
+
+    if(!qdir.exists(path)) {
+        Debug::Log(Debug::VERBOSE, "Creating 'maps' directory");
+        Debug::Push();
+
+        if(!qdir.mkdir(path)) {
+            Debug::Log(Debug::CRITICAL, "Could not create 'maps' directory!");
+            Debug::Pop();
+            Debug::Pop();
+
+            return false;
+        }
+        Debug::Pop();
+    }
+
+    for(unsigned i = 0; i < ELYSIAN_TILESHEET_TILES; ++i) {
+        if(((normal)? _normalMapEnabled[i] : _specularMapEnabled[i])) {
+            QString file = path+QString("/tile%1.png").arg(i);
+            QImage image(40, 40, QImage::Format_ARGB32);
+            image.fill(QColor(0, 0, 0, 0));
+            QPainter painter(&image);
+
+            painter.drawPixmap(4, 4, _tileSheet[i]->getPixmap());
+
+            //Top and bottom borders
+            for(unsigned x = 4; x <= 35; ++x) {
+                //top
+                QRgb pixel = image.pixel(x, 4);
+                for(unsigned y = 0; y < 4; ++y) {
+                    image.setPixel(x, y, pixel);
+                }
+
+                //bottom
+                pixel = image.pixel(x, 35);
+                for(unsigned y = 36; y < 40; ++y) {
+                    image.setPixel(x, y, pixel);
+                }
+            }
+
+            for(unsigned y = 4; y <= 35; ++y) {
+                //left
+                QRgb pixel = image.pixel(4, y);
+                for(unsigned x = 0; x < 4; ++x) {
+                    image.setPixel(x, y, pixel);
+                }
+
+                //right
+                pixel = image.pixel(35, y);
+                for(unsigned x = 36; x < 40; ++x) {
+                    image.setPixel(x, y, pixel);
+                }
+
+            }
+
+            //top left corner
+            QRgb pixel = image.pixel(4, 4);
+            for(unsigned y = 0; y < 4; ++y)
+                for(unsigned x = 0; x < 4; ++x)
+                    image.setPixel(x, y, pixel);
+
+            //top right corner
+            pixel = image.pixel(35, 4);
+            for(unsigned y = 0; y < 4; ++y)
+                for(unsigned x = 36; x < 40; ++x)
+                    image.setPixel(x, y, pixel);
+
+            //bottom left corner
+            pixel = image.pixel(4, 35);
+            for(unsigned y = 36; y < 40; ++y)
+                for(unsigned x = 0; x < 4; ++x)
+                    image.setPixel(x, y, pixel);
+
+            //bottom right corner
+            pixel = image.pixel(35, 35);
+            for(unsigned y = 36; y < 40; ++y)
+                for(unsigned x = 36; x < 40; ++x)
+                    image.setPixel(x, y, pixel);
+
+            image.save(file);
+        }
+    }
+
+    Debug::Pop();
+    return success;
+}
+
+bool Level::_gatherMaps(const bool normal) {
+    bool success = true;
+    QString path = getLocation();
+    path = path+"/estk/"+QString((normal)? ESTK_LEVEL_NORMAL_MAPS_DIRECTORY : ESTK_LEVEL_SPECULAR_MAPS_DIRECTORY);
+    QVector<TileImage *> normalMaps;
+    QRect clipRect(4, 4, 32, 32);
+
+    QPixmap blankMap(32, 32);
+    blankMap.fill(normal? QColor(128, 128, 255, 255) : QColor(0, 0, 0, 255));
+    TileImage blankImage(blankMap);
+
+    //generate normalMaps folder
+    QDir qdir;
+    Debug::Log(Debug::VERBOSE, "Gathering tilesheet maps");
+    Debug::Push();
+
+    if(!qdir.exists(path)) {
+        Debug::Log(Debug::CRITICAL, "'maps' folder not found!");
+        Debug::Push();
+        return false;
+    }
+
+    for(unsigned i = 0; i < ELYSIAN_TILESHEET_TILES; ++i) {
+        if(_normalMapEnabled[i]) {
+            QString file = path+((normal)? QString("/tile%1_normal.png").arg(i) : QString("/tile%1_specular.png").arg(i));
+            QImage image;
+            if(!image.load(file)) {
+                Debug::Log(Debug::CRITICAL, QString("Could not open ")+file);
+                normalMaps.push_back(&blankImage);
+                success = false;
+
+            } else {
+                QPixmap pixmap = QPixmap::fromImage(image.copy(clipRect));
+                TileImage* image = new TileImage(pixmap);
+                normalMaps.push_back(image);
+            }
+
+        } else {
+            normalMaps.push_back(&blankImage);
+        }
+    }
+
+    //Divide tilesheets!!!
+    success &= TileSheetUtilities::GenerateTileSheet(getLocation()+((normal)? QString("/tile/normalsheet.png") : QString("/tile/specularsheet.png")), 512, 1024, 32, 32, normalMaps);
+
+    //clear resources!
+    for(unsigned i = 0; i < ELYSIAN_TILESHEET_TILES; ++i) {
+        //make fucking sure we ain't deleting the static image
+        if(((normal)? _normalMapEnabled[i] : _specularMapEnabled[i]) && normalMaps[i] != &blankImage) {
+            delete normalMaps[i];
+        }
+    }
+
+    Debug::Push();
+    return success;
+}
+
+
+// ========= SPECULAR/NORMAL MAP GENERATION ===========
+
+bool Level::scatterTileNormalMaps(void) {
+    return _scatterMaps(true);
+}
+
+bool Level::gatherTileNormalMaps(void) {
+   return _gatherMaps(true);
+}
+
+
+bool Level::scatterTileSpecularMaps(void) {
+    return _scatterMaps(false);
+}
+
+bool Level::gatherTileSpecularMaps(void) {
+    return _gatherMaps(false);
+}
+
 
 
 

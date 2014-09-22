@@ -443,6 +443,7 @@ bool RigidBodySystem::_checkEntityEntity3D(const unsigned i) {
 
     }*/
 
+    return false;
 }
 
 void RigidBodySystem::integrate3D(void) {

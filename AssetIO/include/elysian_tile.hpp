@@ -25,34 +25,36 @@ namespace elysian {
             COLLIDER_MAX
 		} colliderType = COLLIDER_NONE;
 
-		uint16_t nextIndex = 0; //tile to turn into after animTime has elapsed
-		bool animated = false;
+        uint16_t    nextIndex = 0; //tile to turn into after animTime has elapsed
+        bool        animated = false;
 
-		bool standOn = true;
-        bool transparency = false;
+        bool        standOn = true;
+        bool        transparency = false;
 
-		GYWav* walkSfx = nullptr;
-		GYWav* hitSfx = nullptr;
+        GYWav*      walkSfx = nullptr;
+        GYWav*      hitSfx = nullptr;
 
 		static const COLLIDER_TYPE colliderReorientLUT[COLLIDER_MAX][GY_RECT_TEX_ORIENT_MAX];
 
-		~Tile(void);
+                    ~Tile(void);
         
-		unsigned getColliderType(void) const;
-		void setColliderType(const unsigned type);
+        unsigned    getColliderType(void) const;
+        void        setColliderType(const unsigned type);
 
-		void setAnimated(const bool v);
-		bool getAnimated(void) const;
-		float getDamping(void) const;
-		void setDamping(const float factor);
-		void setAnimTime(const float t);
-		float getAnimTime(void) const;
-		void setNextIndex(const uint16_t i);
-		uint16_t getNextIndex(void) const;
-		void setWalkSfx(GYWav* const wav);
-		void setHitSfx(GYWav* const wav);
-        bool getTransparency(void) const;
-        void setTransparency(const bool v);
+        void        setAnimated(const bool v);
+        bool        getAnimated(void) const;
+        float       getDamping(void) const;
+        void        setDamping(const float factor);
+        void        setAnimTime(const float t);
+        float       getAnimTime(void) const;
+        void        setNextIndex(const uint16_t i);
+        uint16_t    getNextIndex(void) const;
+        void        setWalkSfx(GYWav* const wav);
+        void        setHitSfx(GYWav* const wav);
+        bool        getTransparency(void) const;
+        void        setTransparency(const bool v);
+        bool        getStandOn(void) const;
+        void        setStandOn(const bool v);
 
 		static COLLIDER_TYPE combineColliders(const COLLIDER_TYPE col1, const COLLIDER_TYPE col2);
 		static COLLIDER_TYPE reorientCollider(const COLLIDER_TYPE collider, const GY_RECT_TEX_ORIENT orient);
@@ -60,6 +62,9 @@ namespace elysian {
 	};
     
 	// ====== INLINEZ ======
+
+    inline bool Tile::getStandOn(void) const { return standOn; }
+    inline void Tile::setStandOn(const bool v) { standOn = v; }
 
     inline bool Tile::getTransparency(void) const { return transparency; }
     inline void Tile::setTransparency(const bool v) { transparency = v; }

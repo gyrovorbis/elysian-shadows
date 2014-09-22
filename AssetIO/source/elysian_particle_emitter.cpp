@@ -2,10 +2,13 @@
 #include "elysian_area.hpp"
 #include "elysian_generic.hpp"
 #include "elysian_entity.hpp"
-#include "elysian_camera_system.hpp"
 #include "elysian_material.hpp"
-#include "elysian_force_generator.hpp"
-#include "elysian_debug.hpp"
+
+#ifdef ELYSIAN_ENGINE
+#   include "elysian_debug.hpp"
+#   include "elysian_force_generator.hpp"
+#   include "elysian_camera_system.hpp"
+#endif
 
 
 namespace elysian {
@@ -14,8 +17,10 @@ ParticleEmitterAttrib::ParticleEmitterAttrib(void) {}
 
 ParticleEmitterAttrib::~ParticleEmitterAttrib(void) {
 	delete _material;
+#ifdef ELYSIAN_ENGINE
     gyVidTexDestroy(_normalMap);
     gyVidTexDestroy(_specularMap);
+#endif
 }
 
 auto Particle::getTargetType(void)	const -> TARGET_TYPE { return TARGET_PARTICLE; }
@@ -25,12 +30,16 @@ const GYStatic* Particle::getStaticAttrib(void) const { return static_cast<const
 bool Particle::getRestingOnBody(void) const { return resting; }
 
 void Particle::integrate(const float deltaTime) {
+#ifdef ELYSIAN_ENGINE
     if(!resting)
         gyIntegrate(static_cast<GYKinetic*>(this),
 				attrib,
 				deltaTime,
 				&position,
 				&orientation);
+#else
+    (void)deltaTime;
+#endif
 }
 
 void ParticleEmitterInternals::emitFromPointInDir(const GYVector3& pos, const GYVector3& dir, const unsigned intensity, float angle) {
@@ -124,6 +133,7 @@ void ParticleEmitterInternals::emitFromPoint(const GYVector3 &pos, const float a
 
 }
 
+#ifdef ELYSIAN_ENGINE
 void ParticleEmitterInternals::update(const CameraState*const cam, const float deltaTime) {
 	GYVector3 newVel;
 	//Check for periodic emission!
@@ -181,11 +191,11 @@ void ParticleEmitterInternals::update(const CameraState*const cam, const float d
             (*it).frame = _attrib->_animGrid[(*it).animRow][animCol];
         }
     }
+
 }
 
 void ParticleEmitterInternals::applyForce(ForceGenerator*const force, const float deltaTime) {
 	for(auto it = _pool.begin(); it < _pool.end(); ++it) {
-
 		force->applyForce(&(*it), deltaTime);
 	}
 
@@ -257,6 +267,24 @@ void ParticleEmitterInternals::renderAtElev(const unsigned char elev) {
 	}
 }
 
+void ParticleEmitter::emitFromEntity(const GYVector3 &pos, const float angle, const unsigned intensity) {
+    GYVector4 localPos = { pos.x, pos.y, pos.z, 1.0f };
+    GYVector4 worldPos;
+
+    gyMatPush();
+    gyMatLoadIdentity();
+
+    _entity->transform.apply();
+
+    gyMatMultVec(&localPos, &worldPos, 1);
+    gyMatPop();
+
+    emitFromPoint(*(GYVector3*)&worldPos, angle, intensity);
+
+}
+
+#endif
+
 ParticleEmitterAttrib* ParticleEmitterInternals::getAttrib(void) const {
 	return _attrib;
 }
@@ -273,22 +301,6 @@ ParticleEmitterInternals::~ParticleEmitterInternals(void) {}
 
 
 ParticleEmitter::ParticleEmitter(Entity& entity): Component(entity) {}
-
-void ParticleEmitter::emitFromEntity(const GYVector3 &pos, const float angle, const unsigned intensity) {
-	GYVector4 localPos = { pos.x, pos.y, pos.z, 1.0f };
-	GYVector4 worldPos;
-
-	gyMatPush();
-	gyMatLoadIdentity();
-
-	_entity->transform.apply();
-
-	gyMatMultVec(&localPos, &worldPos, 1);
-	gyMatPop();
-
-	emitFromPoint(*(GYVector3*)&worldPos, angle, intensity);
-
-}
 
 bool ParticleEmitter::addToLevel(void) {
 	_curArea->particleEmitters.push_back(this);

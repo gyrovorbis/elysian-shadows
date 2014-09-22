@@ -14,7 +14,7 @@ class AssetDockWidget : public QDockWidget
 public:
     explicit AssetDockWidget(QWidget *parent = 0);
     ~AssetDockWidget();
-    void ClearTreeView();
+    void clearTreeView(void);
 signals:
     void UncheckMe(int);
 protected:

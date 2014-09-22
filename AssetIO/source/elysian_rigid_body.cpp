@@ -39,11 +39,12 @@ RigidBody::RigidBody(Entity& entity):
 
 {}
 
+#ifdef ELYSIAN_ENGINE
 void RigidBody::integrate(const float deltaTime) {
 	if(!_active) return;
 
-    float baseDamping;
-    float angDamping;
+    //float baseDamping;
+    //float angDamping;
     GYStatic*const stat = getEntity()->getCollidable()->getAttrib()->getStaticAttrib();
 
     if(resting) {
@@ -70,8 +71,8 @@ void RigidBody::integrate(const float deltaTime) {
         stat->angDamping    = angDamping;*/
 
     }
-
 }
+#endif
 
 auto RigidBody::getTargetType(void) const -> TARGET_TYPE { return TARGET_RIGID_BODY; }
 float RigidBody::getOrientation(void) const { return getEntity()->transform._orientZ; }

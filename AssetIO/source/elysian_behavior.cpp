@@ -89,8 +89,8 @@ void Behavior::onDialog(const unsigned /*screen*/, const int /*option*/) { dbgpr
 void Behavior::onCombatEnter(void) { dbgprintf(LOG_CRITICAL, "Behavior::onCombatEnter() - Unimplemented for '%s'.\n", getBehavName()); }
 void Behavior::onCombatExit(void) { dbgprintf(LOG_CRITICAL, "Behavior::onCombatExit() - Unimplemented for '%s'.\n", getBehavName()); }
 void Behavior::onCombatDeath(void) { dbgprintf(LOG_CRITICAL, "Behavior::onCombatDeath() - Unimplemented for '%s'.\n", getBehavName()); }
-void Behavior::onCombatReceiveStatusModifier(CombatStatus*const modifier) { dbgprintf(LOG_CRITICAL, "Behavior::onCombatReceiveStatusModifier() - Unimplemented for '%s'.\n", getBehavName()); }
-void Behavior::onCombatTargetCollisionEnter(CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier) { dbgprintf(LOG_CRITICAL, "Behavior::onCombatTargetCollisionEnter() - Unimplemented for '%s'.\n", getBehavName()); }
+void Behavior::onCombatReceiveStatusModifier(CombatStatus*const /*modifier*/) { dbgprintf(LOG_CRITICAL, "Behavior::onCombatReceiveStatusModifier() - Unimplemented for '%s'.\n", getBehavName()); }
+void Behavior::onCombatTargetCollisionEnter(CollisionContact*const /*contact*/, Collidable*const /*collidable*/, CombatStatus*const /*modifier*/) { dbgprintf(LOG_CRITICAL, "Behavior::onCombatTargetCollisionEnter() - Unimplemented for '%s'.\n", getBehavName()); }
 
 void Behavior::addTrigger(TRIGGER flag) {
 	std::map<const char*, Behavior*, ltstr>& behaviors = getEntity()->getBehaviors();

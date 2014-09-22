@@ -4,24 +4,32 @@
 #include "elysian_instance_transform.hpp"
 #include "elysian_generic.hpp"
 #include "elysian_rigid_body.hpp"
-#include "elysian_collision_system.hpp"
 
+#ifdef ELYSIAN_ENGINE
+    #include "elysian_collision_system.hpp"
+#endif
 
 namespace elysian {
 
 CollisionSystem* Collidable::_colSys = nullptr;
 
 void CollisionContact::_calculatePenetrationInternals(void) {
+#ifdef ELYSIAN_ENGINE
 	gyContactCalculatePenetrationInternals(this,
 										   (GYVector2*)&_bodyA->getCenterWorldPos(),
 										   (_bodyB)? (GYVector2*)&_bodyB->getCenterWorldPos() : nullptr);
+#endif
 }
 
 void CollisionContact::_calculateVelocityInternals(const float deltaTime) {
+#ifdef ELYSIAN_ENGINE
 	gyContactCalculateVelocityInternals(this,
 										(GYKinetic*)_bodyA->getEntity()->getRigidBody(),
 										(_bodyB)? (GYKinetic*)_bodyB->getEntity()->getRigidBody() : nullptr,
 										deltaTime);
+#else
+    (void)deltaTime;
+#endif
 }
 
 void Collidable::update(void) {
@@ -146,8 +154,10 @@ bool Collidable::save(FILE* /*file*/) {
 
 //O(1)
 bool Collidable::addToLevel(void) {
+#ifdef ELYSIAN_ENGINE
     _sortSweepAABB = _colSys->addSortSweepCollidable();
     _sortSweepAABB->collidable = this;
+#endif
     _updateSortSweepAABB();
 	_curArea->collidables.push_back(this);
         return true;
@@ -155,7 +165,9 @@ bool Collidable::addToLevel(void) {
 
 //O(n)
 bool Collidable::removeFromLevel(void) {
+#ifdef ELYSIAN_ENGINE
     _colSys->removeSortSweepCollidable(_sortSweepAABB);
+#endif
     return containerEraseOnMatch(this, _curArea->collidables);
 }
 
@@ -173,8 +185,10 @@ void Collidable::_updateSortSweepAABB(void) {
 
     for(unsigned i = 0; i < 4; ++i) checkBoundary(_collider.box.worldVert[i]);
 
+#ifdef ELYSIAN_ENGINE
     _sortSweepAABB->min[0] = startX;
     _sortSweepAABB->max[0] = endX;
+#endif
 
 #if ELYSIAN_SORT_SWEEP_DIMENSIONS >= 2
     _sortSweepAABB->min[1] = startY;
@@ -187,12 +201,13 @@ void Collidable::_updateSortSweepAABB(void) {
 #endif
 }
 
+#ifdef ELYSIAN_ENGINE
 bool Collidable::checkFullCollision(Collidable* col) {
     return _colSys->detectCollidableCollidableCollision(this, col);
 }
 
 template<>
 unsigned SortSweepCollidable::curIndex = 0;
-
+#endif
 
 }

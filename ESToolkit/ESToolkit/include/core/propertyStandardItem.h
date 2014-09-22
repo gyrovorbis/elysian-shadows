@@ -2,6 +2,7 @@
 #define PROPERTY_STANDARD_ITEM_H
 
 #include <QStandardItem>
+#include <QVector>
 #include <QIcon>
 #include <QDebug>
 #include "undoItem.h"
@@ -12,7 +13,8 @@
   standard item can be shared between a model and undoItems.
 */
 class ESTkStandardItem: public QStandardItem {
-private:
+protected:
+    QVector<ESTkStandardItem*> _children;
 	unsigned _refCount;
 public:
 	ESTkStandardItem(void):
@@ -23,6 +25,15 @@ public:
 	void release(void) { if(--_refCount == 0) delete this; }
 	unsigned getRefCount(void) const { return _refCount; }
 	virtual UndoItem::TYPE getUndoItemType(void) const = 0;
+
+    virtual void forceUpdate(void) {
+        emitDataChanged();
+        for(auto it : _children) {
+            it->forceUpdate();
+        }
+    }
+
+    void addChildItem(ESTkStandardItem*const item) { _children.push_back(item); }
 };
 
 template <bool UndoRedo, typename T, typename C>
@@ -72,6 +83,11 @@ public:
 
 	}
 
+    virtual void forceUpdate(void) override {
+        ESTkStandardItem::forceUpdate();
+        if(_updateIcon) setIcon((_objInst->*_updateIcon)((_objInst->*_getAccessor)()));
+    }
+
     void unignoreCheck(void) { _ignoreCheck = false; }
 
 	virtual UndoItem::TYPE getUndoItemType(void) const override { return _undoType; }
@@ -84,8 +100,8 @@ public:
 	 */
 	void updateInternalObjectData(const T &value) {
 		(_objInst->*_setAccessor)(value);
-		if(_updateIcon) setIcon((_objInst->*_updateIcon)(value));
-		emitDataChanged(); //signal for view to update
+        forceUpdate(); //signal for view to update
+
 	}
 
 	virtual QVariant data(int role) const override {

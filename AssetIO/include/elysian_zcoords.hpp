@@ -4,7 +4,7 @@
 #include "elysian_area.hpp"
 
 //This needs to be at least as tall as the rendered map area? Not really?
-#define ELYSIAN_DEPTH_BUFFER_HEIGHT ELYSIAN_AREA_MAP_HEIGHT
+//#define ELYSIAN_DEPTH_BUFFER_HEIGHT ELYSIAN_AREA_MAP_HEIGHT
 
 //Background Layers
 #define ELYSIAN_ZCOORD_BG_1				1.0f

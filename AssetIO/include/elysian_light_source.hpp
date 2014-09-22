@@ -43,40 +43,37 @@ namespace elysian {
 #ifdef ELYSIAN_ENGINE
 		CameraState _camState;
 #endif
-        bool            _shadowCaster = false;
         GYVector3       _relPos = { 0.0f, 0.0f, 0.0f };
-
+        bool            _shadowCaster = false;
 	public:
 
-		LightSource(Entity& entity);
-		virtual ~LightSource(void) override;
+                        LightSource(Entity& entity);
+        virtual         ~LightSource(void) override;
 
 		//reimplemented from component
-		virtual bool canAddTo(Entity& entity) override;
-		virtual bool load(FILE* file) override;
-		virtual bool save(FILE* file) override;
-		virtual bool addToLevel(void) override;
-		virtual bool removeFromLevel(void) override;
-		virtual TYPE getType(void) const override;
+        virtual bool    canAddTo(Entity& entity) override;
+        virtual bool    load(FILE* file) override;
+        virtual bool    save(FILE* file) override;
+        virtual bool    addToLevel(void) override;
+        virtual bool    removeFromLevel(void) override;
+        virtual TYPE    getType(void) const override;
 
-		void setLightType(const GY_LIGHT_TYPE _type);
-		GY_LIGHT_TYPE getLightType(void) const;
-		void setDirection(const GYVector3& dir);
-		void setSpotCutoffAngle(const float angle);
-		void setAttrib(const LightAttrib* const attrib);
-		const GYVector4& getPosition(void) const;
-		void setShadowCaster(const bool val);
-		bool isShadowCaster(void) const;
-		void updateBoundingVolume(const CameraState*const cam, const GY_CUBE_MAP_FACE face);
-        void setRelativePos(const float x, const float y, const float z);
+        void            setLightType(const GY_LIGHT_TYPE _type);
+        GY_LIGHT_TYPE   getLightType(void) const;
+        void            setDirection(const GYVector3& dir);
+        void            setSpotCutoffAngle(const float angle);
+        void            setAttrib(const LightAttrib* const attrib);
+        const           GYVector4& getPosition(void) const;
+        void            setShadowCaster(const bool val);
+        bool            isShadowCaster(void) const;
+        void            setRelativePos(const float x, const float y, const float z);
 
-		LightAttrib& getAttrib(void);
+        LightAttrib&    getAttrib(void);
 #ifdef ELYSIAN_ENGINE
-		CameraState* getCameraState(void);
+        void            updateBoundingVolume(const CameraState*const cam, const GY_CUBE_MAP_FACE face);
+        CameraState*    getCameraState(void);
+        void            update(void);
 #endif
-
-		void update(void);
-
 	};
 
 	inline void LightAttrib::setAmbientColor(const GYVector4& color) {
@@ -107,7 +104,11 @@ namespace elysian {
 			360.0f,						//cutoff
 			GY_LIGHT_POINT,				//type
 			&LightAttrib::defaultProperties,
+#ifdef ELYSIAN_ENGINE
 			&_camState,
+#else
+            nullptr,
+#endif
 			nullptr
 	}) { gyVec3Normalize(&direction);  }
 	inline void LightSource::setAttrib(const LightAttrib* const attrib) { properties = (GYLightProperties*)attrib; }

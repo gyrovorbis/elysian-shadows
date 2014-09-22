@@ -579,10 +579,11 @@ Behavior* Entity::addBehavior(const char *name) {
 	return attachBehavior(Behavior::create(name, *this));
 }
 
+#ifdef ELYSIAN_ENGINE
 LuaBehavior* Entity::addLuaBehavior(const char *name, const OOLUA::Lua_table_ref paramTable) {
 	return static_cast<LuaBehavior*>(attachBehavior(new LuaBehavior(*this, name, paramTable)));
 }
-
+#endif
      
 Behavior *Entity::attachBehavior(Behavior *behav) {
 	//Check for duplicate behaviors.

@@ -31,11 +31,11 @@ GYLightProperties LightAttrib::defaultProperties = {
 
 void LightAttrib::setAttenuationFactors(const GYVector3& vec) {
 	//quadtratic coefficients
-	const float a = vec.z;
-	const float b = vec.y;
-	const float c = (-1.0f/ELYSIAN_LIGHT_SOURCE_ATTENUATION_EPISOLON + vec.x);
+    //const float a = vec.z;
+    //const float b = vec.y;
+    //const float c = (-1.0f/ELYSIAN_LIGHT_SOURCE_ATTENUATION_EPISOLON + vec.x);
 
-	const float root1 = (-b + sqrt(b*b - 4.0f*a*c))/(2.0f*a);
+//	const float root1 = (-b + sqrt(b*b - 4.0f*a*c))/(2.0f*a);
 	//const float root2 = (-b - sqrt(b*b - 4.0f*a*c))/(2.0f*a);
 
 
@@ -57,7 +57,11 @@ bool LightSource::removeFromLevel(void) {
 	return true;
 }
 
-void LightSource::setLightType(const GY_LIGHT_TYPE _type) {
+void LightSource::setLightType(const GY_LIGHT_TYPE
+#ifdef ELYSIAN_ENGINE
+                               _type
+#endif
+                               ) {
 	if(type == GY_LIGHT_DIRECTIONAL) position.w = 0.0f;
 
 #ifdef ELYSIAN_ENGINE
@@ -65,6 +69,7 @@ void LightSource::setLightType(const GY_LIGHT_TYPE _type) {
 #endif
 }
 
+#ifdef ELYSIAN_ENGINE
 void LightSource::update(void) {
     static const GYVector4 localVec = { 0.0f, 0.0f, 0.0f, 1.0f };
 	if(type == GY_LIGHT_POINT || type == GY_LIGHT_SPOT) {
@@ -85,7 +90,9 @@ void LightSource::update(void) {
         };*/
 	}
 }
+#endif
 
+#ifdef ELYSIAN_ENGINE
 void LightSource::updateBoundingVolume(const CameraState *const cam, const GY_CUBE_MAP_FACE face) {
 	CameraState* thisCam = static_cast<CameraState*>(camera);
 	GYViewVolume* vol = &thisCam->viewVolume;
@@ -175,8 +182,7 @@ void LightSource::updateBoundingVolume(const CameraState *const cam, const GY_CU
 	thisCam->tileStartX = 0; thisCam->tileStartY = 0;
 	thisCam->tileEndX = 199; thisCam->tileEndY = 199;*/
 
-
-
 }
+#endif
 
 }

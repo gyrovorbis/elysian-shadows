@@ -4,9 +4,10 @@
 #include <cassert>
 #include <cstring>
 #include "elysian_area.hpp"
-#include "elysian_system.hpp"
 #include "elysian_zcoords.hpp"
-#include "elysian_light_system.hpp"
+
+//#include "elysian_system.hpp"
+//#include "elysian_light_system.hpp"
 
 //Maximum elevation height an object can have
 #define ELYSIAN_DEPTH_BUFFER_OBJECT_ELEVATION_MAX 31
@@ -62,7 +63,7 @@ namespace elysian {
      E - EntityDepthBuffEntry type      - MUST inherit from EntityDepthBuffEntry!
      */
     template<typename T, typename O, typename E>
-	class MapDepthBuffer: public elysian::System {
+    class MapDepthBuffer {
     private:
         
         //General interface
@@ -115,6 +116,14 @@ namespace elysian {
 		void _enableDepthTest(void) const {
 			static_cast<const T*>(this)->enableDepthTest();
 		}
+
+        uint32_t _getLightCount(void) const {
+            return static_cast<const T*>(this)->getLightCount();
+        }
+
+        uint32_t _startLightPass(uint32_t& lightsLeft) {
+            return static_cast<T*>(this)->startLightPass(lightsLeft);
+        }
 
 		//Culling functions
 		//Just cull in getObjectLayerEntry and getOnscreenEntity?
@@ -296,9 +305,8 @@ namespace elysian {
 	// ==== QUEUE AND IMMEDIATE RENDER TILES ====
 	template<typename T, typename O, typename E>
 	inline void MapDepthBuffer<T, O, E>::_processTiles(void) {
-		LightSystem*const	lightSys			= getLightSys();
 		uint32_t			lightsLeft			= 0;
-		const uint32_t		onscreenLights		= lightSys->getLightCount();
+        const uint32_t		onscreenLights		= _getLightCount();
 		_lightsRendered = 0;
 
 		_objectBuffImmediateCount = 0;
@@ -307,7 +315,7 @@ namespace elysian {
 
 		_beginObjectList();
 
-		_lightsRendered |= _lightsActive = lightSys->startLightPass(lightsLeft);
+        _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
 		for(unsigned j = _scrStartY; j <= _scrEndY; ++j) {
 			for(unsigned i = _scrStartX; i <= _scrEndX; ++i) {
 				for(unsigned k = 0; k < 3; ++k) {
@@ -344,7 +352,7 @@ namespace elysian {
 		//Make a pass through immediate tile multiplass buffer
         _endObjectList();
         _beginObjectList();
-		_lightsRendered |= _lightsActive = lightSys->startLightPass(lightsLeft);
+        _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
 		for(unsigned j = 0; j < _objectBuffImmediateCount; ++j) {
 			_renderOrQueueTileEntry(j, _objectBuffImmediate[j]);
 		}
@@ -357,7 +365,7 @@ namespace elysian {
 			_nextRow = !_curRow;
             _endObjectList();
             _beginObjectList();
-			_lightsRendered |= _lightsActive = lightSys->startLightPass(lightsLeft);
+            _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
 			for(unsigned j = 0; j < count; ++j) {
 				_renderOrQueueTileEntry(j, _objectBuffImmediate[_queue[_curRow][j]]);
 			}
@@ -377,9 +385,7 @@ namespace elysian {
 
 		//_beginObjectList();
 
-		LightSystem*const	lightSys			= getLightSys();
-
-		_lightsRendered |= _lightsActive = lightSys->startLightPass(_objectRowLights[normalType][i]);
+        _lightsRendered |= _lightsActive = _startLightPass(_objectRowLights[normalType][i]);
 		for(unsigned j = 0; j < _objectCount[i]; ++j) {
             if(_objectBuff[i][j].mapEntry.getNormal() == normalType)
 				_renderOrQueueTileEntry(j, _objectBuff[i][j]);
@@ -391,7 +397,7 @@ namespace elysian {
 			_nextRow = !_curRow;
             _endObjectList();
             _beginObjectList();
-			_lightsRendered |= _lightsActive = lightSys->startLightPass(_objectRowLights[normalType][i]);
+            _lightsRendered |= _lightsActive = _startLightPass(_objectRowLights[normalType][i]);
 			for(unsigned j = 0; j < count; ++j) {
 				_renderOrQueueTileEntry(j, _objectBuff[i][_queue[_curRow][j]]);
 			}

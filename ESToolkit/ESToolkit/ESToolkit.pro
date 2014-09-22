@@ -67,9 +67,6 @@ SOURCES += source/asset/project.cpp \
     source/asset/animation.cpp \
     source/asset/character.cpp \
     source/asset/collidable.cpp \
-    source/asset/enemy.cpp \
-    source/asset/friendly.cpp \
-    source/asset/item.cpp \
     source/asset/renderable.cpp \
     source/asset/warp.cpp \
     source/core/propertyStackModel.cpp \
@@ -91,13 +88,9 @@ SOURCES += source/asset/project.cpp \
     ../../AssetIO/source/elysian_lua_behavior.cpp \
     ../../AssetIO/source/elysian_level_manager.cpp \
     ../../AssetIO/source/elysian_level.cpp \
-    ../../AssetIO/source/elysian_item.cpp \
-    ../../AssetIO/source/elysian_friendly.cpp \
     ../../AssetIO/source/elysian_examinable.cpp \
     ../../AssetIO/source/elysian_entity.cpp \
-    ../../AssetIO/source/elysian_enemy.cpp \
     ../../AssetIO/source/elysian_dialog.cpp \
-    ../../AssetIO/source/elysian_component.cpp \
     ../../AssetIO/source/elysian_collidable.cpp \
     ../../AssetIO/source/elysian_character.cpp \
     ../../AssetIO/source/elysian_behavior.cpp \
@@ -105,7 +98,11 @@ SOURCES += source/asset/project.cpp \
     ../../AssetIO/source/elysian_area.cpp \
     ../../AssetIO/source/elysian_animation.cpp \
     ../../AssetIO/source/elysian_audio_source.cpp \
-    ../../AssetIO/source/elysian_light_source.cpp
+    ../../AssetIO/source/elysian_light_source.cpp \
+    source/asset/elysianTileWrapper.cpp \
+    ../../AssetIO/source/elysian_particle_emitter.cpp \
+    ../../AssetIO/source/elysian_rigid_body.cpp \
+    ../../AssetIO/source/elysian_combat.cpp
 HEADERS += include/asset/project.h \
     include/asset/level.h \
     include/asset/entity.h \
@@ -149,9 +146,6 @@ HEADERS += include/asset/project.h \
     include/asset/character.h \
     include/asset/collidable.h \
     include/asset/component.h \
-    include/asset/enemy.h \
-    include/asset/friendly.h \
-    include/asset/item.h \
     include/asset/renderable.h \
     include/asset/sprite.h \
     include/asset/warp.h \
@@ -180,23 +174,16 @@ HEADERS += include/asset/project.h \
     ../../AssetIO/include/elysian_sprite_attrib.hpp \
     ../../AssetIO/include/elysian_renderable_object.hpp \
     ../../AssetIO/include/elysian_renderable.hpp \
-    ../../AssetIO/include/elysian_rect_attrib.hpp \
     ../../AssetIO/include/elysian_quad_sprite_attrib.hpp \
-    ../../AssetIO/include/elysian_quad_attrib.hpp \
     ../../AssetIO/include/elysian_prim_attrib.hpp \
-    ../../AssetIO/include/elysian_pool.hpp \
     ../../AssetIO/include/elysian_model_attrib.hpp \
     ../../AssetIO/include/elysian_map_depth_buffer.hpp \
     ../../AssetIO/include/elysian_lua_behavior.hpp \
-    ../../AssetIO/include/elysian_linked_list.hpp \
     ../../AssetIO/include/elysian_level_manager.hpp \
     ../../AssetIO/include/elysian_level.hpp \
-    ../../AssetIO/include/elysian_item.hpp \
     ../../AssetIO/include/elysian_instance_transform.hpp \
-    ../../AssetIO/include/elysian_friendly.hpp \
     ../../AssetIO/include/elysian_examinable.hpp \
     ../../AssetIO/include/elysian_entity.hpp \
-    ../../AssetIO/include/elysian_enemy.hpp \
     ../../AssetIO/include/elysian_direction.hpp \
     ../../AssetIO/include/elysian_dialog.hpp \
     ../../AssetIO/include/elysian_cstr_map.hpp \
@@ -208,6 +195,10 @@ HEADERS += include/asset/project.h \
     ../../AssetIO/include/elysian_area.hpp \
     ../../AssetIO/include/elysian_animation.hpp \
     ../../AssetIO/include/elysian_audio_source.hpp \
+    include/asset/elysianTileWrapper.h \
+    ../../AssetIO/include/elysian_particle_emitter.hpp \
+    ../../AssetIO/include/elysian_combat.hpp \
+    ../../AssetIO/include/elysian_rigid_body.hpp
 
 FORMS += form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \
@@ -219,6 +210,7 @@ FORMS += form/estk/sheetdockwidget.ui \
     form/widget/historyDockWidget.ui \
     form/dialog/engineSettings.ui \
     form/sheetManager/sheetManagerFileDockWidget.ui
+
 
 #Create windows manifest requesting ESTk to be run as admin (to run dc-tool as admin)
 #win32 {
@@ -261,3 +253,16 @@ linux {
       }
 }
 
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../libGyro/qtcreator/libGyro/release/ -llibGyro
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../libGyro/qtcreator/libGyro/debug/ -llibGyro
+else:unix: LIBS += -L$$OUT_PWD/../../libGyro/qtcreator/libGyro/ -llibGyro
+
+INCLUDEPATH += $$PWD/../../libGyro/qtcreator/libGyro
+DEPENDPATH += $$PWD/../../libGyro/qtcreator/libGyro
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../libGyro/qtcreator/libGyro/release/liblibGyro.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../libGyro/qtcreator/libGyro/debug/liblibGyro.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../libGyro/qtcreator/libGyro/release/libGyro.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../libGyro/qtcreator/libGyro/debug/libGyro.lib
+else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../libGyro/qtcreator/libGyro/liblibGyro.a

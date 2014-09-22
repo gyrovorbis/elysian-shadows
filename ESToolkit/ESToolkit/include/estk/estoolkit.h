@@ -83,17 +83,11 @@ private slots:
 	//void on_actionFileExportCurrentArea_triggered();
     void on_actionLevelRemove_triggered();
     void on_actionAreaRemove_triggered();
-    void on_actionEntityRemoveEnemy_triggered();
-    void on_actionEntityRemoveFriendly_triggered();
     void on_actionEntityRemoveCharacter_triggered();
-    void on_actionEntityRemoveItem_triggered();
     void on_actionEntityRemoveWarp_triggered();
     void on_actionEntityRemoveCollidable_triggered();
     void on_actionEntityRemoveAnimation_triggered();
-    void on_actionEntityAttachEnemy_triggered();
-    void on_actionEntityAttachFriendly_triggered();
     void on_actionEntityAttachCharacter_triggered();
-    void on_actionEntityAttachItem_triggered();
     void on_actionEntityAttachWarp_triggered();
     void on_actionEntityAttachCollidable_triggered();
     void on_actionEntityAttachAnimation_triggered();
@@ -159,6 +153,9 @@ private slots:
 	void on_actionZ_Transitional_toggled(bool arg1);
 	void on_actionHorizontal_SheetView_triggered(bool checked);
     void on_actionScreenshot_triggered();
-
+    void on_actionScatter_triggered();
+    void on_actionGather_triggered();
+    void on_actionScatter_2_triggered();
+    void on_actionGather_2_triggered();
 };
 #endif // ESTOOLKIT_H

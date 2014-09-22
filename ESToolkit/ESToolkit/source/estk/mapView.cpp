@@ -147,6 +147,11 @@ void MapView::keyPressEvent(QKeyEvent *event) {
 			case Qt::Key_Z:
 				terSel->toggleZTransitional();
 				createSelectionItemGroup();
+                break;
+            case Qt::Key_N:
+                terSel->toggleNormalFace();
+                createSelectionItemGroup();
+                break;
 			}
 		}
 	}

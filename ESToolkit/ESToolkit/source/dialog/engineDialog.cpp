@@ -8,6 +8,7 @@
 #include <QTreeWidgetItem>
 #include <QDebug>
 #include <QRadioButton>
+#include <fstream>
 
 #include "engineDialog.h"
 #include "assets.h"
@@ -82,6 +83,10 @@ EngineDialog::EngineDialog(QWidget *parent): QMainWindow(parent), _currentType(E
     connect(_engine, SIGNAL(started()), this, SLOT(OnStart()));
     connect(_engine, SIGNAL(readyReadStandardOutput()), this, SLOT(OnReadyReadStandardOutput()));
 	connect(_engine, SIGNAL(error(QProcess::ProcessError)), this, SLOT(OnError(QProcess::ProcessError)));
+
+    //Load from file through settings dialog
+    //_enginePathx86 = ENGINE_DIALOG_DEFAULT_PATH;
+
 }
 
 bool EngineDialog::Invoke(const ENGINE_TYPE type) {
@@ -108,11 +113,11 @@ bool EngineDialog::Invoke(const ENGINE_TYPE type) {
     switch(type) {
     case ENGINE_PC:
 #ifdef Q_OS_WIN
-		_engine->start(ENGINE_DIALOG_WIN_PATH);
+        _engine->start(_enginePathx86);
 #elif defined(Q_OS_LINUX)
-		_engine->start(ENGINE_DIALOG_LINUX_PATH);
+        _engine->start(_enginePathx86);
 #elif defined(Q_OS_MAC)
-		_engine->start(ENGINE_DIALOG_OSX_PATH);
+        _engine->start(_enginePathx86);
 #endif
         break;
     case ENGINE_DC:
@@ -295,4 +300,8 @@ void EngineDialog::getStartPos(unsigned &x, unsigned &y) const {
 void EngineDialog::setStartPos(const unsigned x, const unsigned y) {
     _startPosXEdit->setText(QString::number(x));
     _startPosYEdit->setText(QString::number(y));
+}
+
+void EngineDialog::onEnginePathx86Changed(QString path) {
+    _enginePathx86 = path;
 }

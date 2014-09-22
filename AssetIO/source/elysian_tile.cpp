@@ -30,8 +30,10 @@ GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_270,
 namespace elysian {
 
 Tile::~Tile(void) {
+#ifdef ELYSIAN_ENGINE
 	gyAudWavDestroy(walkSfx);
-	gyAudWavDestroy(hitSfx);
+    gyAudWavDestroy(hitSfx);
+#endif
 }
 
 const Tile::COLLIDER_TYPE Tile::colliderReorientLUT[COLLIDER_MAX][GY_RECT_TEX_ORIENT_MAX] =

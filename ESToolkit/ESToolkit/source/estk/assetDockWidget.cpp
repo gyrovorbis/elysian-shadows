@@ -14,7 +14,7 @@ AssetDockWidget::~AssetDockWidget()
     delete ui;
 }
 
-void AssetDockWidget::ClearTreeView()
+void AssetDockWidget::clearTreeView()
 {
     ui->_assetTreeWidget->clear();
 }

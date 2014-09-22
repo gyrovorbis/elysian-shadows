@@ -162,7 +162,9 @@ bool Area::loadMap(const char *const filename) {
 
 	gyFileClose(&fp);
 
+#ifdef ELYSIAN_ENGINE
 	populateVbo();
+#endif
     dbgPop();
 	return true;
 }

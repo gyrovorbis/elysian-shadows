@@ -44,7 +44,7 @@ namespace elysian {
 				{-0.5f, 0.5f, 0.0f, 1.0f},
 				{0.5f, 0.5f, 0.0f, 1.0f}
 			};
-            GYColor4 colorArray[4];
+            //GYColor4 colorArray[4];
 
 			gyVidTexBind(_spriteAttrib->_tex);
 			gyVidNormalMapBind(_normalMap);

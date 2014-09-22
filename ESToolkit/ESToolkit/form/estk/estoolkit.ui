@@ -141,8 +141,24 @@
     <property name="title">
      <string>Level</string>
     </property>
+    <widget class="QMenu" name="menuNormal_Maps">
+     <property name="title">
+      <string>Normal Maps</string>
+     </property>
+     <addaction name="actionScatter"/>
+     <addaction name="actionGather"/>
+    </widget>
+    <widget class="QMenu" name="menuSpecular_Maps">
+     <property name="title">
+      <string>Specular Maps</string>
+     </property>
+     <addaction name="actionScatter_2"/>
+     <addaction name="actionGather_2"/>
+    </widget>
     <addaction name="actionLevelRemove"/>
     <addaction name="actionLevelReloadSheets"/>
+    <addaction name="menuNormal_Maps"/>
+    <addaction name="menuSpecular_Maps"/>
    </widget>
    <widget class="QMenu" name="menuArea">
     <property name="title">
@@ -912,6 +928,26 @@
   <action name="actionScreenshot">
    <property name="text">
     <string>Dump to PNG</string>
+   </property>
+  </action>
+  <action name="actionScatter">
+   <property name="text">
+    <string>Scatter</string>
+   </property>
+  </action>
+  <action name="actionGather">
+   <property name="text">
+    <string>Gather</string>
+   </property>
+  </action>
+  <action name="actionScatter_2">
+   <property name="text">
+    <string>Scatter</string>
+   </property>
+  </action>
+  <action name="actionGather_2">
+   <property name="text">
+    <string>Gather</string>
    </property>
   </action>
  </widget>

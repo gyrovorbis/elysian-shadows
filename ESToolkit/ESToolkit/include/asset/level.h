@@ -8,6 +8,13 @@
 #include "elysian_level.hpp"
 #include "elysian_level_manager.hpp"
 #include "assets.h"
+#include "elysianTileWrapper.h"
+
+#define ESTK_LEVEL_METADATA_DIRECTORY   "estk"
+#define ESTK_LEVEL_METADATA_TILESET     "estkTileset.bin"
+
+#define ESTK_LEVEL_NORMAL_MAPS_DIRECTORY    "normalMaps"
+#define ESTK_LEVEL_SPECULAR_MAPS_DIRECTORY  "specularMaps"
 
 class QGraphicsRectItem;
 
@@ -28,6 +35,7 @@ class Level: public PropertyStackModel, public TreeNode, public elysian::LevelMa
 
     Q_OBJECT
 private:
+    ElysianTileWrapper _elysianTileWrappers[ELYSIAN_TILESHEET_TILES];
 	Project *_project;
 	QVector<TileImage *> _tileSheet;
 	QVector<Area *> _area;
@@ -35,8 +43,18 @@ private:
     bool _active, _open, _validSheets;
     elysian::Level _elysianLevel;
 
+    bool _normalMapEnabled[ELYSIAN_TILESHEET_TILES] = { false };
+    bool _specularMapEnabled[ELYSIAN_TILESHEET_TILES] = { false };
+
+    bool _saveMetaData(const QString dir);
+    bool _loadMetaData(const QString dir);
+
 	virtual bool deactivate(void);
 	void connectSlots(Area *area);
+
+    bool _gatherMaps(const bool normal=true);
+    bool _scatterMaps(const bool normal=true);
+
 public:
 	Project *getProject(void) const { return _project; }
 	void setName(const QString str);
@@ -75,6 +93,12 @@ public:
     Area *getFirstArea() const;
 	elysian::Level *getElysianLevel(void) { return &_elysianLevel; }
 	elysian::Tile *getElysianTile(const uint16_t index);
+    ElysianTileWrapper* getElysianTileWrapper(const uint16_t index);
+
+    void setSpecularMapEnabled(const unsigned index, const bool val);
+    void setNormalMapEnabled(const unsigned index, const bool val);
+    bool getSpecularMapEnabled(const unsigned index) const;
+    bool getNormalMapEnabled(const unsigned index) const;
 
 	bool load(const QString loc);
 	bool save(void);
@@ -93,7 +117,13 @@ public:
 
 	virtual void populateModel(void);
 	bool generateTileSheet(const QString location);
-	bool saveTileSheet(void);
+
+    bool scatterTileNormalMaps(void);
+    bool gatherTileNormalMaps(void);
+    bool scatterTileSpecularMaps(void);
+    bool gatherTileSpecularMaps(void);
+
+    bool saveTileSheet(void);
 	void clearAllStacks(void);
 
 	virtual Selectable::TYPE getType(void) const { return Selectable::LEVEL; }
@@ -119,6 +149,16 @@ signals:
 	void levelRenamed(const QString oldName, const QString newName);
 
 };
+
+
+
+//======= INLINEZ ======
+
+inline void Level::setSpecularMapEnabled(const unsigned index, const bool val) { _specularMapEnabled[index] = val; }
+inline void Level::setNormalMapEnabled(const unsigned index, const bool val) { _normalMapEnabled[index] = val; }
+inline bool Level::getSpecularMapEnabled(const unsigned index) const { return _specularMapEnabled[index]; }
+inline bool Level::getNormalMapEnabled(const unsigned index) const { return _normalMapEnabled[index]; }
+inline ElysianTileWrapper* Level::getElysianTileWrapper(const uint16_t index) { return &_elysianTileWrappers[index]; }
 
 
 #endif // LEVEL_H

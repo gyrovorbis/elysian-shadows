@@ -5,8 +5,11 @@
 #include <gyro.h>
 #include <cstring>
 #include <kinetic/gyro_kinetic.h>
-#include "elysian_sort_sweep.hpp"
 #include "elysian_component.hpp"
+
+#ifdef ELYSIAN_ENGINE
+    #include "elysian_sort_sweep.hpp"
+#endif
 
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_BEHAVIOR_MASK	(1<<0)
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_WARP_MASK		(1<<1)
@@ -62,7 +65,7 @@ public:
     CollidableAttrib(void) = default;
 	inline GY_COLLIDER_TYPE getColliderType(void) const { return _type; }
 	inline void setColliderType(const GY_COLLIDER_TYPE type) { _type = type; }
-    inline void setRelPos(const float x, const float y, const float z) { _relPos.x = x; _relPos.y = y; _relPos.z; }
+    inline void setRelPos(const float x, const float y, const float z) { _relPos.x = x; _relPos.y = y; _relPos.z = z; /* was fucked? No setting of Z?*/ }
     inline void setRelSize(const float x, const float y, const float z) { _relSize.x = x; _relSize.y = y; _relSize.z = z; }
 	inline const GYVector3& getRelSize(void) const { return _relSize; }
     inline CollidableStaticAttrib *getStaticAttrib(void) { return &_staticAttrib; }
@@ -88,18 +91,19 @@ private:
         static CollisionSystem* _colSys;
 
         GYVector3           _worldSize          = { 1.0f, 1.0f, 1.0f, };
-		unsigned			_contactCount		= 0;
 		CollidableAttrib*	_attrib				= nullptr;
-		unsigned			_zTranTileX			= 0;
-		unsigned			_zTranTileY			= 0;
-		ZTRAN_STATE			_zTranState			= ZTRAN_INACTIVE;
+#ifdef ELYSIAN_ENGINE
+        SortSweepCollidable* _sortSweepAABB     = nullptr;
+#endif
+        unsigned			_zTranTileX			= 0;
+        unsigned			_zTranTileY			= 0;
+        unsigned			_contactCount		= 0;
+        ZTRAN_STATE			_zTranState			= ZTRAN_INACTIVE;
         bool                _stackedOnGround    = false;
         bool                _restingOnBody      = false;
-		bool				_onZTran			= false;
-		bool				_resolvePen			= true;
-		bool				_active				= true;
-        SortSweepCollidable* _sortSweepAABB     = nullptr;
-
+        bool				_onZTran			= false;
+        bool				_resolvePen			= true;
+        bool				_active				= true;
 		uint32_t			_eventMonitorMask	= 0;
 
 		union { 
@@ -146,10 +150,11 @@ private:
         void            setRestingOnBody(const bool v);
         bool            getStackedOnGround(void) const;
         void            setStackedOnGround(const bool v);
+#ifdef ELYSIAN_ENGINE
         void            setSortSweepAABB(SortSweepCollidable* sweep);
-
         bool            checkAABBCollision(Collidable* col);
         bool            checkFullCollision(Collidable* col);
+#endif
 	};
 
 	/*
@@ -159,7 +164,6 @@ private:
 	*/
 
 	class CollisionContact: private GYContact {
-#ifdef ELYSIAN_ENGINE
 		friend class CollisionSystem;
 		friend class RigidBodySystem;
        // Collidable* _body[2]            = nullptr;
@@ -169,7 +173,6 @@ private:
         uint32_t    _eventMonitorMask	= 0;
         bool        _resolvePen			= true;
         bool        _resolveZ           = false;
-#endif
 
 		void _calculatePenetrationInternals(void);
 		void _calculateVelocityInternals(const float deltaTime);
@@ -229,7 +232,7 @@ private:
     inline void CollisionContact::setResolveZ(const bool val) { _resolveZ = val; }
     inline bool CollisionContact::getResolveZ(void) const { return _resolveZ; }
 
-    inline void CollisionContact::updateRelativeZDepth(const unsigned body, const float zDelta) {
+    inline void CollisionContact::updateRelativeZDepth(const unsigned /*body*/, const float /*zDelta*/) {
    /*     Collidable* col[2];
 
         float coeff;
@@ -241,6 +244,7 @@ private:
 
     }
 
+#ifdef ELYSIAN_ENGINE
     inline bool Collidable::checkAABBCollision(Collidable* col) {
         SortSweepCollidable* b = col->_sortSweepAABB;
         auto* a = _sortSweepAABB;
@@ -254,7 +258,7 @@ private:
     inline void Collidable::setSortSweepAABB(SortSweepCollidable* sweep) {
         _sortSweepAABB = sweep;
     }
-
+#endif
 
 }
 

@@ -7,6 +7,9 @@
 #	include <lua5.2/lua.hpp>
 #else
 #	define LUA_NOREF 0
+namespace OOLUA {
+    typedef unsigned Lua_table_ref;
+}
 #endif
 
 #define ELYSIAN_LUA_BEHAVIOR_NAME				"LuaBehavior"
@@ -43,7 +46,11 @@ namespace elysian {
 
 		void				_selfTableDump(void);
 #endif
-							LuaBehavior(Entity &entity, const char *script, const OOLUA::Lua_table_ref paramTable);
+                            LuaBehavior(Entity &entity, const char *script
+#ifdef ELYSIAN_ENGINE
+                                        ,const OOLUA::Lua_table_ref paramTable
+#endif
+                            );
 							~LuaBehavior(void);
 	public:
 
@@ -87,7 +94,13 @@ namespace elysian {
 
 	//======= INLINEZ ======
 	
-    inline const char* LuaBehavior::getBehavName(void) const { return _script->getPath(); }
+    inline const char* LuaBehavior::getBehavName(void) const {
+#ifdef ELYSIAN_ENGINE
+        return _script->getPath();
+#else
+        return nullptr;
+#endif
+    }
 	//inline int LuaBehavior::getSelfTableRef(void) const { return _selfTableRef; }
 
 
