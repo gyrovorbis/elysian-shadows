@@ -57,7 +57,8 @@ namespace elysian {
 		enum SIZE_TYPE { SIZE_RELATIVE, SIZE_ABSOLUTE };
 	private:
 		Pool<MenuWidget*> _childWidgets = Pool<MenuWidget*>(10);
-		SIZE_TYPE _sizeType				= SIZE_RELATIVE;
+        //SIZE_TYPE _sizeType				= SIZE_ABSOLUTE;
+        SIZE_TYPE _sizeType				= SIZE_RELATIVE;
 
 	public:
                 MenuEntity(void);
