@@ -337,12 +337,12 @@ bool LuaManager::initialize(void) {
 
 	runString(_rPrint);
 
-    LuaTable ltable = LuaTable::fromFile("/assets/testTable.lua");
+   /* LuaTable ltable = LuaTable::fromFile("/assets/testTable.lua");
 
     std::string name = ltable["name"];
     double pass = ltable["password"];
     double num9 = ltable[9];
-    double embedded = ltable["table2"]["y"];
+    double embedded = ltable"y"["table2"][];
     ltable["reestTitties"] = 73.0;
 
 
@@ -350,7 +350,7 @@ bool LuaManager::initialize(void) {
    // ltable[]
 
     Debug::printf(Debug::CRITICAL, "%s", ltable.serialize().c_str());
-
+    */
     Debug::pop();
 	return true;
 }

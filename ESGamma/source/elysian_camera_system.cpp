@@ -452,7 +452,7 @@ void CameraSystem::update(void) {
 
 		gyMatScale(1.0f, 1.0f, -1.0f);
 
-       // gyMatShearZ(0.0f, -1.0f);
+       gyMatShearZ(0.0f, -1.0f);
 
         gyMatTranslate(-worldPos.x, -worldPos.y, -worldPos.z);
 		gyMatStore(&_curState->viewMat);
