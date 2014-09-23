@@ -1042,7 +1042,7 @@ OOLUA_PROXY(GuiSystem)
 	OOLUA_MEM_FUNC(void, clearBgMenuWidget)
 	OOLUA_MEM_FUNC(void, setClearColor, GYColor4)
     OOLUA_MEM_FUNC(void, toggleAdvLog)
-    OOLUA_MEM_FUNC_CONST(void, getResolution, unsigned&, unsigned&)
+    OOLUA_MEM_FUNC_CONST(void, getResolution, out_p<unsigned&>, out_p<unsigned&>)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CameraKeyFrame)
