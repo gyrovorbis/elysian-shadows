@@ -124,6 +124,8 @@ namespace elysian {
 		static void					_cStackDump(void);
 		static void					_runtimeStackDump(void);
 
+        static int                 _stackDepth(void);
+
 	public:
 
 		static bool					initialize(void);
@@ -177,6 +179,10 @@ namespace elysian {
 		static void pull(lua_State* const /*state*/) {}
 	};
 
+
+    inline int LuaManager::_stackDepth(void) {
+        return _mainState->stack_count();
+    }
 
 }
 

@@ -10,7 +10,7 @@
 namespace elysian {
 
 	//Throwing C++ linear algebra wrappers in here until I figure out something better to do with the...
-	class Vector2: public GYVector2 {
+/*	class Vector2: public GYVector2 {
 	public:
 		inline Vector2(void) = default;
 		inline Vector2(const float x, const float y):
@@ -38,6 +38,7 @@ namespace elysian {
 			GYColor4({a, r, g, b}) {}
 
 	};
+    */
 
 
 /*
