@@ -15,6 +15,8 @@
 #define ELYSIAN_FONT_WIDTH_PATH_VERDANA             ASSETS_VROOT "/font/verdana_width.txt"
 #define ELYSIAN_FONT_IMAGE_PATH_TWCEN               ASSETS_VROOT "/font/twcen.png"
 #define ELYSIAN_FONT_WIDTH_PATH_TWCEN               ASSETS_VROOT "/font/twcen_width.txt"
+#define ELYSIAN_FONT_IMAGE_PATH_PRAGMATA18          ASSETS_VROOT "/font/pragmata18.png"
+#define ELYSIAN_FONT_WIDTH_PATH_PRAGMATA18          ASSETS_VROOT "/font/pragmata18_width.txt"
 
 #define ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_MAX_CHARS    50
 #define ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_POOL_SIZE    30
@@ -34,7 +36,7 @@ namespace elysian {
 	class MenuText: public MenuWidget {
 		friend class GuiSystem;
 	private:
-		static Font*	_fonts[2];
+        static Font*	_fonts[3];
 		char			_text[100];
 		GYVector2		_relPos		= { 0.0f, 0.0f };
 		unsigned		_type		= 0;
@@ -56,7 +58,8 @@ namespace elysian {
 	public:
 		enum SIZE_TYPE { SIZE_RELATIVE, SIZE_ABSOLUTE };
 	private:
-		Pool<MenuWidget*> _childWidgets = Pool<MenuWidget*>(10);
+        Pool<MenuWidget*> _childWidgets = Pool<MenuWidget*>(30);
+        //Pool<MenuWidget*> _childWidgets = Pool<MenuWidget*>(10);
         //SIZE_TYPE _sizeType				= SIZE_ABSOLUTE;
         SIZE_TYPE _sizeType				= SIZE_RELATIVE;
 
@@ -125,6 +128,7 @@ namespace elysian {
 		AdventureLog	adventureLog;
 		Font			verdana;
 		Font			twcen;
+        Font            pragmata18;
 
 	};
 
