@@ -27,7 +27,7 @@ namespace elysian {
 		_mainState->register_class<ChildAnimationAttrib>();
 		_mainState->register_class<ChildAnimation>();
         _mainState->register_class<LightAttrib>();
-		_mainState->register_class<Animation>();
+        _mainState->register_class<Animation>();
 		_mainState->register_class<CollisionFlags>();
         OOLUA::register_class<CollidableStaticAttrib>(*_mainState);
 		_mainState->register_class<CollidableAttrib>();

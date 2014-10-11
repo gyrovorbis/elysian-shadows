@@ -128,6 +128,7 @@ namespace OOLUA
 	struct No_public_constructors{};
 	struct No_public_destructor{};
 	struct Register_class_enums{};
+    struct Instanced_Metatable{};
 } // namespace OOLUA
 /**@}*/
 #endif //OOLUA_PROXY_TAGS_H_
