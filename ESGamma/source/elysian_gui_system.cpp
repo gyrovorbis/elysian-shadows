@@ -14,7 +14,7 @@
 
 namespace elysian {
 
-Font* MenuText::_fonts[2];
+Font* MenuText::_fonts[3];
 
 void MenuText::recursiveRender(void) {
 	GYVector4 localVert = { _relPos.x, _relPos.y, 1.0f, 1.0f };
@@ -79,9 +79,11 @@ bool GuiSystem::loadAssets(void) {
 
 	success &= twcen.loadTextData(ELYSIAN_FONT_IMAGE_PATH_TWCEN, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_TWCEN);
 	success &= verdana.loadTextData(ELYSIAN_FONT_IMAGE_PATH_VERDANA, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_VERDANA);
+    success &= pragmata18.loadTextData(ELYSIAN_FONT_IMAGE_PATH_PRAGMATA18, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_PRAGMATA18);
 
 	MenuText::_fonts[0] = &twcen;
 	MenuText::_fonts[1] = &verdana;
+    MenuText::_fonts[2] = &pragmata18;
 
 	gyVidResolution(&_projWidth, &_projHeight);
 
@@ -116,7 +118,7 @@ void GuiSystem::renderBackground(void) {
 
 void GuiSystem::renderForeground(void) {
 	//if(!_debugOverlayEnabled) return;
-	adventureLog.render(twcen);
+    adventureLog.render(twcen);
 	_renderDebugOverlay();
 	_renderMenuWidget(_fgMenuWidget);
 }
@@ -128,38 +130,38 @@ void GuiSystem::_printDebugLine(const char *title, const char *str, ...) {
 	vsprintf(buffer,str,argptr);
 	va_end(argptr);
 
-	twcen.transform._pos.y += 25.0f;
-	twcen.transform._pos.x = _projWidth-200.0f;
-	twcen.drawStringf(Font::NO_FORMAT, Font::R_ALIGN, title);
-	twcen.transform._pos.x = _projWidth-185.0f;
-	twcen.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, buffer);
+    twcen.transform._pos.y += 25.0f;
+    twcen.transform._pos.x = _projWidth-200.0f;
+    twcen.drawStringf(Font::NO_FORMAT, Font::R_ALIGN, title);
+    twcen.transform._pos.x = _projWidth-185.0f;
+    twcen.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, buffer);
 }
 
 void GuiSystem::_renderDebugOverlay(void) {
 	if(!_debugOverlayEnabled) return;
 
-	twcen.setColor(0, 255, 100, 255);
-	twcen.transform._pos.y = 100.0f;
-	twcen.transform._pos.z = 50.0f;
+    twcen.setColor(0, 255, 100, 255);
+    twcen.transform._pos.y = 100.0f;
+    twcen.transform._pos.z = 50.0f;
 
-	twcen.startBatchRender();
+    twcen.startBatchRender();
 
 	_printDebugLine("FPS:", "%.2f", getTimerSys()->getFramerate());
 	_printDebugLine("Verts:", "%d", gyVidVertexRenderCount());
 	_printDebugLine("Uniform Uploads:", "%d", getLightSys()->getShaderUniformChangesLastFrame());
 	_printDebugLine("Textures:", "%d", gyVidTexAmount());
 	_printDebugLine("Texture MBytes:", "%f", gyVidTexBytes()/1024.0f/1024.0f);
-	twcen.transform._pos.y += 25.0f;
+    twcen.transform._pos.y += 25.0f;
 	_printDebugLine("Onscreen Lights:", "%d", getLightSys()->getOnscreenLightCount());
 	_printDebugLine("Entities:", "%d", getCurArea()->entities.size());
 	_printDebugLine("Contacts:", "%d", getCollisionSys()->getContactCount());
 	_printDebugLine("Pen Res Iter:", "%d", getCollisionSys()->getPenResIterUsed());
 	_printDebugLine("Vel Res Iter:", "%d", getRigidBodySys()->getVelResIterUsed());
-	twcen.transform._pos.y += 25.0f;
+    twcen.transform._pos.y += 25.0f;
 	_printDebugLine("Lua Scripts:", "%d", LuaManager::getScriptCount());
 	_printDebugLine("Lua Script Instances:", "%d", LuaManager::getScriptInstances());
 	_printDebugLine("Lua MBytes:", "%f", LuaManager::getKbytesUsed()/1024.0f);
-	twcen.transform._pos.y += 25.0f;
+    twcen.transform._pos.y += 25.0f;
 	_printDebugLine("Game Time:", "%d:%d:%d", getDaySys()->getDays(), getDaySys()->getHours(), getDaySys()->getMinutes());
 	if(getPartySys()->getPartyLeader()) {
 		_printDebugLine("player.pos:", "<%.2f, %.2f, %.2f>",
@@ -172,7 +174,7 @@ void GuiSystem::_renderDebugOverlay(void) {
                         getPartySys()->getPartyLeader()->getCollidable()->getContactCount());
 	}
 
-	twcen.endBatchRender();
+    twcen.endBatchRender();
 
 }
 
