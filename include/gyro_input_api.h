@@ -1,11 +1,11 @@
 #ifndef GYRO_INPUT_H
 #define GYRO_INPUT_H
 
+#include "gyro_platform.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "gyro_platform.h"
 
 struct _GYInput;
 

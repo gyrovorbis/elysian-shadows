@@ -1,12 +1,12 @@
 #ifndef GYRO_VIDEO_H
 #define GYRO_VIDEO_H
 
+#include "gyro_texture_api.h"
+#include "gyro_matrix_api.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "gyro_texture_api.h"
-#include "gyro_matrix_api.h"
 
 struct _GYVidInitParams;
 struct _GYCamera;

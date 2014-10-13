@@ -1,12 +1,12 @@
 #ifndef GYRO_AUDIO_H
 #define GYRO_AUDIO_H
 
+#include "gyro_defines.h"
+#include "gyro_platform.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "gyro_defines.h"
-#include "gyro_platform.h"
 
 struct _GYAudioSource;
 struct _GYWav;

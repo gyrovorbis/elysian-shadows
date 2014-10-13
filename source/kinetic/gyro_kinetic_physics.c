@@ -4,7 +4,6 @@
 #include "kinetic/gyro_kinetic_contact.h"
 #include "kinetic/gyro_kinetic_collider.h"
 #include "kinetic/gyro_kinetic_kinetic.h"
-#include <gyro_system_api.h>
 
 static GYVector3 _gravityForce = { 0.0f, 0.0f, 0.0f };
 
