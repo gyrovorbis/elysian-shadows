@@ -1,8 +1,6 @@
 #include <string.h>
 #include "elysian_level.hpp"
-#ifdef ELYSIAN_ENGINE
-#	include "elysian_lua_manager.hpp"
-#endif
+#include "elysian_lua_manager.hpp"
 
 using namespace std;
 
@@ -38,11 +36,9 @@ namespace elysian {
 	static char buffer[ELYSIAN_LEVEL_PATH_SIZE+50];
 
 	Level::~Level(void) {
-#ifdef ELYSIAN_ENGINE
 		gyVidTexDestroy(tileSheet);
 		gyVidTexDestroy(normalSheet);
 		gyVidTexDestroy(specularSheet);
-#endif
 	}
 
 	bool Level::load(const char *const dir) {
@@ -56,7 +52,6 @@ namespace elysian {
 		strcat(buffer, ELYSIAN_TILESET_PATH);
 		success &= loadTileset(buffer);
 
-#ifdef ELYSIAN_ENGINE
 		strcpy(buffer, dir);
 		strcat(buffer, ELYSIAN_TILESHEET_PATH);
 		dbgprintf(LOG_VERBOSE, "Level::LoadTileSheet(%s)", buffer);
@@ -107,7 +102,6 @@ namespace elysian {
 		strcat(buffer, ELYSIAN_LEVEL_INIT_LUA_PATH);
 		LuaManager::runScriptSandbox(buffer);
 
-#endif
 		dbgPop();
 		return success;
 	}

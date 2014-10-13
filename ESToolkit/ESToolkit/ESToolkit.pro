@@ -9,6 +9,67 @@ QMAKE_CXXFLAGS += -std=c++11 -msse
 DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt
 CONFIG += c++11
 
+win32 {
+	LIBS += -L../../lib/win32 \
+		-llua52 \
+		-L../../../libGyro/lib/win32 \
+		-lopengl32 \
+		-lopenal32.dll \
+		-lglu32 \
+		-lz \
+		-lz.dll \
+		-lmingw32 \
+		-logg \
+		-lvorbis \
+		#-lvorbis.dll \
+		-lvorbisenc \
+		#-lvorbisenc.dll \
+		-lvorbisfile \
+		-lglew32 \
+		-lglew32.dll \
+		#-lvorbisfile.dll \
+		-mconsole \
+		-L../../ESGamma/lib/osx
+		-llua52
+}
+
+macx {
+  LIBS +=  -L../../libGyro/lib/osx \
+	-framework OpenGL \
+	-framework OpenAL \
+	-lz \
+	-F../../ESGamma/lib/osx \
+	-L../../ESGamma/lib/osx \
+	-llua52 \
+	-framework Foundation \
+	-framework Cocoa \
+	-lobjc \
+	-logg \
+	-lvorbis \
+	-lvorbisenc \
+	-lvorbisfile \
+	-L../../ESGamma/lib/osx  \
+	-llua52
+}
+
+linux {
+	LIBS += \
+		-llua5.2 \
+		-lGL \
+		-lopenal \
+		-lGLU \
+		-lz \
+		-logg \
+		-lvorbis \
+		-lvorbisenc \
+		-lvorbisfile \
+		-lX11 \
+		-lpthread \
+		-L../../ESGamma/lib/osx  \
+		-llua52
+}
+
+
 ICON = resource/images/estk.icns
 
 DEPENDPATH += include/asset \
@@ -31,7 +92,11 @@ INCLUDEPATH += include/asset \
     include/widget \
     ../../AssetIO/include \
     ../../libGyro/include \
-    ../../libGyro/include/kinetic
+	../../libGyro/include/kinetic \
+	../../ESGamma/lib/include \
+	../../ESGamma/include \
+	../../OOLua/include
+
 
 SOURCES += source/asset/project.cpp \
     source/asset/level.cpp \
@@ -104,7 +169,41 @@ SOURCES += source/asset/project.cpp \
     ../../AssetIO/source/elysian_rigid_body.cpp \
     ../../AssetIO/source/elysian_combat.cpp \
     ../../AssetIO/source/elysian_lua_table_model.cpp \
-    ../../AssetIO/source/luatables.cc
+	../../AssetIO/source/luatables.cc \
+	../../ESGamma/source/elysian_lua_manager.cpp \
+    ../../ESGamma/source/elysian_adventure_log.cpp \
+    ../../ESGamma/source/elysian_animation_system.cpp \
+    ../../ESGamma/source/elysian_audio_system.cpp \
+    ../../ESGamma/source/elysian_behavior_system.cpp \
+    ../../ESGamma/source/elysian_camera_system.cpp \
+    ../../ESGamma/source/elysian_character_system.cpp \
+    ../../ESGamma/source/elysian_collision_system.cpp \
+    ../../ESGamma/source/elysian_combat_system.cpp \
+    ../../ESGamma/source/elysian_day_system.cpp \
+    ../../ESGamma/source/elysian_debug.cpp \
+    ../../ESGamma/source/elysian_dialog_system.cpp \
+    ../../ESGamma/source/elysian_engine.cpp \
+    ../../ESGamma/source/elysian_event_monitor.cpp \
+    ../../ESGamma/source/elysian_examinable_system.cpp \
+    ../../ESGamma/source/elysian_font.cpp \
+    ../../ESGamma/source/elysian_force_generator.cpp \
+    ../../ESGamma/source/elysian_game_input.cpp \
+    ../../ESGamma/source/elysian_gui_system.cpp \
+    ../../ESGamma/source/elysian_level_system.cpp \
+    ../../ESGamma/source/elysian_light_system.cpp \
+    ../../ESGamma/source/elysian_lua_script.cpp \
+    ../../ESGamma/source/elysian_lua_singleton.cpp \
+    ../../ESGamma/source/elysian_lua_wrappers.cpp \
+    ../../ESGamma/source/elysian_map_system.cpp \
+    ../../ESGamma/source/elysian_particle_system.cpp \
+    ../../ESGamma/source/elysian_party_system.cpp \
+    ../../ESGamma/source/elysian_quad_attrib.cpp \
+    ../../ESGamma/source/elysian_rigid_body_system.cpp \
+    ../../ESGamma/source/elysian_sort_sweep.cpp \
+    ../../ESGamma/source/elysian_system.cpp \
+    ../../ESGamma/source/elysian_timer_system.cpp \
+    ../../ESGamma/source/elysian_warp_system.cpp
+
 HEADERS += include/asset/project.h \
     include/asset/level.h \
     include/asset/entity.h \
@@ -202,7 +301,14 @@ HEADERS += include/asset/project.h \
     ../../AssetIO/include/elysian_combat.hpp \
     ../../AssetIO/include/elysian_rigid_body.hpp \
     ../../AssetIO/include/luatables.h \
-    ../../AssetIO/include/elysian_lua_table_model.hpp
+    ../../AssetIO/include/elysian_lua_table_model.hpp \
+    ../../ESGamma/source/elysian_debug.cpp.orig \
+    ../../ESGamma/source/elysian_engine.cpp.orig \
+    ../../ESGamma/source/elysian_light_system.cpp.orig \
+    ../../ESGamma/source/elysian_lua_wrappers.cpp.orig \
+    ../../ESGamma/source/elysian_system.cpp.orig \
+    ../../AssetIO/include/elysian_light_source.hpp \
+    include/asset/luaTableStandardItemModel.h
 
 FORMS += form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \
@@ -270,3 +376,16 @@ else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../l
 else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../libGyro/qtcreator/libGyro/release/libGyro.lib
 else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../libGyro/qtcreator/libGyro/debug/libGyro.lib
 else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../libGyro/qtcreator/libGyro/liblibGyro.a
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../OOLua/qtcreator/OOLua/release/ -lOOLua
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../OOLua/qtcreator/OOLua/debug/ -lOOLua
+else:unix: LIBS += -L$$OUT_PWD/../../OOLua/qtcreator/OOLua/ -lOOLua
+
+INCLUDEPATH += $$PWD/../../OOLua/qtcreator/OOLua
+DEPENDPATH += $$PWD/../../OOLua/qtcreator/OOLua
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../OOLua/qtcreator/OOLua/release/libOOLua.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../OOLua/qtcreator/OOLua/debug/libOOLua.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../OOLua/qtcreator/OOLua/release/OOLua.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../OOLua/qtcreator/OOLua/debug/OOLua.lib
+else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../OOLua/qtcreator/OOLua/libOOLua.a

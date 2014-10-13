@@ -2,9 +2,7 @@
 #include "elysian_area.hpp"
 #include "elysian_level.hpp"
 #include "elysian_entity.hpp"
-#ifdef ELYSIAN_ENGINE
 #include "elysian_lua_manager.hpp"
-#endif
 
 using namespace std;
 
@@ -108,11 +106,9 @@ bool Area::load(const char *const dir, const Level *lev) {
 	success &= loadEntities(buffer);
 
 #ifdef ELYSIAN_AREA_USE_INIT_LUA
-#	ifdef ELYSIAN_ENGINE
 	strcpy(buffer, dir);
 	strcat(buffer, ELYSIAN_AREA_INIT_LUA_PATH);
 	LuaManager::runScriptSandbox(buffer);
-#	endif
 #endif
 
     dbgPop();
@@ -162,9 +158,7 @@ bool Area::loadMap(const char *const filename) {
 
 	gyFileClose(&fp);
 
-#ifdef ELYSIAN_ENGINE
 	populateVbo();
-#endif
     dbgPop();
 	return true;
 }

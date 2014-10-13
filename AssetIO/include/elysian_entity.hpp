@@ -4,15 +4,14 @@
 #include <vector>
 #include <map>
 
+#include <oolua.h>
+
 #include "elysian_renderable_object.hpp"
 #include "elysian_asset.hpp"
 #include "elysian_stl_algorithm.hpp"
 #include "elysian_component.hpp"
 #include "elysian_area.hpp"
 #include "elysian_map_depth_buffer.hpp"
-#ifdef ELYSIAN_ENGINE
-#	include <oolua.h>
-#endif
 
 #define ELYSIAN_ENTITY_NAME_SIZE	100
 #define ELYSIAN_ENTITY_NAME_DEFAULT	"Untitled"
@@ -101,9 +100,9 @@ namespace elysian {
  
 		Behavior* addBehavior(char const* behaviorName);
         Behavior* getBehavior(char const* constbehaviorName) const;
-#ifdef ELYSIAN_ENGINE
+
 		LuaBehavior* addLuaBehavior(char const* scriptName, const OOLUA::Lua_table_ref paramTable);
-#endif
+
 		LuaBehavior* getLuaBehavior(char const* scriptName) const;
 		std::map<char const *, Behavior*, ltstr>& getBehaviors(void);
 
@@ -113,10 +112,8 @@ namespace elysian {
         float getDepthBaseY(void) const;
         void setDepthBaseY(const float base);
 
-#ifdef ELYSIAN_ENGINE
 		OOLUA::Lua_table_ref& getSelfTable(void);
 		void setSelfTable(const OOLUA::Lua_table_ref self);
-#endif
         
 	protected:
 		
@@ -141,16 +138,13 @@ namespace elysian {
 		LightSource*		_lightSource		= nullptr;
 		ParticleEmitter*	_particleEmitter	= nullptr;
 		Combat*				_combat				= nullptr;
-#ifdef ELYSIAN_ENGINE
 		OOLUA::Lua_table_ref	_selfTable;
-#endif
 		
 		bool		attachComponent(Component* const comp);
 		Behavior*	attachBehavior(Behavior *const behav);
 		void		reested(void); //default for failed deserialization attempts
     }; 
 
-#ifdef ELYSIAN_ENGINE
 		inline OOLUA::Lua_table_ref& Entity::getSelfTable(void) {
 			return _selfTable;
 		}
@@ -158,8 +152,6 @@ namespace elysian {
 		inline void Entity::setSelfTable(const OOLUA::Lua_table_ref self) {
 			_selfTable = self;
 		}
-#endif
-
 
 	inline void Entity::setElev(const unsigned char e) { transform._pos.z = (float)e*32.0f; }
 	inline unsigned char Entity::getElev(void) const { return transform._pos.z/32.0f; }

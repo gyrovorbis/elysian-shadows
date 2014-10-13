@@ -141,7 +141,7 @@ void Engine::update(void) {
 
 void Engine::processInput(void) {
 
-	gyInputPoll(&_platInput);
+    gyInputPoll(&_platInput);
 	GameInput::translate(_platInput, _gameInput);
 	Debug::getInstance().processInput(_gameInput);
 

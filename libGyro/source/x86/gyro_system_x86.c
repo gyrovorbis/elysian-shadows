@@ -1,9 +1,9 @@
 #include <gyro_system_api.h>
 #include "gyro_defines.h"
-#include <x86/gyro_glfw_x86.inl>
+//#include <x86/gyro_glfw_x86.inl>
 #include "../glal/gyro_video_glal.h"
-#include "stdio.h"
-#include "stdarg.h"
+#include <stdio.h>
+#include <stdarg.h>
 
 #include "../common/gyro_system_callbacks.h"
 
@@ -95,13 +95,17 @@ int gySysInit(void) {
 	_gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86 [%s] v%s", platString, GYRO_LIB_VERSION);
 	gyDebugSigInit();
 	_checkCPUCapabilities();
+#if GYRO_PLATFORM == GYRO_PLATFORM_x86
 	glfwInit();
+#endif
 
     return 1;
 }
 
 int gySysUninit(void) {
+#if GYRO_PLATFORM == GYRO_PLATFORM_x86
     glfwTerminate();
+#endif
 	return 1;
 }
 

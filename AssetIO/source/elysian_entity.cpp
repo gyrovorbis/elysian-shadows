@@ -54,7 +54,6 @@ Entity::~Entity(void) {
 }
 
 void Entity::render(void) {
-#ifdef ELYSIAN_ENGINE
 	if(_particleEmitter) _particleEmitter->render();
 	if(!_renderable) return;
 	gyMatPush();
@@ -86,16 +85,10 @@ void Entity::render(void) {
 	_renderable->endRender();
 	gyMatPop();
     transform._size.z = oldZ;
-#endif
 }
 
 #if 0
-	void Entity::renderAtZ(const float
-#ifdef ELYSIAN_ENGINE
-						   z
-#endif
-						   ) {
-#ifdef ELYSIAN_ENGINE
+    void Entity::renderAtZ(const float z) {
         if(!_renderable) return;
         gyMatPush();
         float oldZ = transform._posZ;
@@ -106,12 +99,10 @@ void Entity::render(void) {
         _renderable->render();
         _renderable->endRender();
         gyMatPop();
-#endif
 	}
 #endif
 
 void Entity::renderShadowVolume(void) {
-#ifdef ELYSIAN_ENGINE
 /*
 	static const float verts[17*4] = {
 		-1,  1,  1, 1.0f,
@@ -229,6 +220,7 @@ void Entity::renderShadowVolume(void) {
 #else
 
 
+
 	GYVector3 halfSize = {
 		transform._size.x*transform._scale.x*0.5f,
 		_shadowDepth*0.5f,
@@ -267,15 +259,13 @@ void Entity::renderShadowVolume(void) {
 
 	gyMatPop();
 
-#endif
+
 }
     
-#ifdef ELYSIAN_ENGINE
 void Entity::move(const GYVector2& dist) {
     if(_character) _character->move(dist);
     else gyVec2AddAccum((GYVector2*)&transform._pos, &dist);
 }
-#endif
 
 
 bool Entity::activate(void) {
@@ -462,7 +452,7 @@ bool Entity::load(FILE* /*file*/) { //Deserialization
 				break;
 			default:
 				dbgprintf(LOG_CRITICAL, "Unknown component type %d!", compType);
-				comp = NULL;
+                comp = NULL;
 				break;
 		}
 		
@@ -579,11 +569,9 @@ Behavior* Entity::addBehavior(const char *name) {
 	return attachBehavior(Behavior::create(name, *this));
 }
 
-#ifdef ELYSIAN_ENGINE
 LuaBehavior* Entity::addLuaBehavior(const char *name, const OOLUA::Lua_table_ref paramTable) {
 	return static_cast<LuaBehavior*>(attachBehavior(new LuaBehavior(*this, name, paramTable)));
 }
-#endif
      
 Behavior *Entity::attachBehavior(Behavior *behav) {
 	//Check for duplicate behaviors.
@@ -592,15 +580,15 @@ Behavior *Entity::attachBehavior(Behavior *behav) {
 	if(it != _behavior.end()) {
 		dbgprintf(LOG_CRITICAL, "Entity::AddBehavior(%s) - Already attached!", behav->getBehavName());
 		delete behav;
-		return NULL;
+        return NULL;
 	}
 #endif
 
 	//Check for prereqs
-	if(!behav->canAddTo(*this)) {
+    if(!behav->canAddTo(*this) || !behav->getBehavName()) {
 		dbgprintf(LOG_CRITICAL, "Could not attach behavior!");
 		delete behav;
-		return NULL;
+        return nullptr;
 	}
 	
 	//Attach using its own typeName as a key (so that it never leaves scope), fixing the reast mentioned above.
@@ -616,7 +604,7 @@ Behavior *Entity::attachBehavior(Behavior *behav) {
 }
 
 LuaBehavior *Entity::getLuaBehavior(const char*script) const {
-	return static_cast<LuaBehavior*>(getBehavior(script));
+    return static_cast<LuaBehavior*>(getBehavior(script));
 }
 
 void Entity::removeLuaBehavior(const char *script) {
@@ -627,7 +615,7 @@ Behavior *Entity::getBehavior(const char *behaviorName) const {
 	std::map<const char *, Behavior*, ltstr>::const_iterator it = _behavior.find(behaviorName);
 	if(it == _behavior.end()) {
 		dbgprintf(LOG_CRITICAL, "Behavior::getBehavior(%s) - Not attached!", behaviorName);
-		return NULL;
+        return NULL;
 	}
 	else return it->second;
 }
@@ -666,21 +654,21 @@ bool Entity::attachComponent(Component *comp) {
 }
 
 Renderable* Entity::addRenderable(void) {
-	if(_renderable) return NULL;
+    if(_renderable) return NULL;
 	_renderable = new Renderable(*this);
-	return _renderable = attachComponent(_renderable)? _renderable : NULL;
+    return _renderable = attachComponent(_renderable)? _renderable : NULL;
 }
 
 Animation *Entity::addAnimation(void) {
-	if(_animation) return NULL;
+    if(_animation) return NULL;
 	_animation = new Animation(*this);
-	return _animation = attachComponent(_animation)? _animation : NULL;
+    return _animation = attachComponent(_animation)? _animation : NULL;
 }
 
 Collidable *Entity::addCollidable(void) {
-	if(_collidable) return NULL;
+    if(_collidable) return NULL;
 	_collidable = new Collidable(*this);
-	return _collidable = attachComponent(_collidable)? _collidable : NULL;
+    return _collidable = attachComponent(_collidable)? _collidable : NULL;
 }
 
 RigidBody *Entity::addRigidBody(void) {
@@ -690,39 +678,39 @@ RigidBody *Entity::addRigidBody(void) {
 }
 
 Character *Entity::addCharacter(void) {
-	if(_character) return NULL;
+    if(_character) return NULL;
 	_character = new Character(*this);
-	return _character = attachComponent(_character)? _character : NULL;
+    return _character = attachComponent(_character)? _character : NULL;
 }
 
 Warp *Entity::addWarp(void) {
-	if(_warp) return NULL;
+    if(_warp) return NULL;
 	_warp = new Warp(*this);
-	return _warp = attachComponent(_warp)? _warp : NULL;
+    return _warp = attachComponent(_warp)? _warp : NULL;
 }
 
 Examinable *Entity::addExaminable(void) {
-	if(_examinable) return NULL;
+    if(_examinable) return NULL;
 	_examinable = new Examinable(*this);
-	return _examinable = attachComponent(_examinable)? _examinable : NULL;
+    return _examinable = attachComponent(_examinable)? _examinable : NULL;
 }
 
 AudioSource *Entity::addAudioSource(void) {
-	if(_audioSource) return NULL;
+    if(_audioSource) return NULL;
 	_audioSource = new AudioSource(*this);
-	return _audioSource = attachComponent(_audioSource)? _audioSource : NULL;
+    return _audioSource = attachComponent(_audioSource)? _audioSource : NULL;
 }
 
 LightSource *Entity::addLightSource(void) {
 	if(_lightSource) return nullptr;
 	_lightSource = new LightSource(*this);
-	return _lightSource = attachComponent(_lightSource)? _lightSource : NULL;
+    return _lightSource = attachComponent(_lightSource)? _lightSource : NULL;
 }
 
 ParticleEmitter *Entity::addParticleEmitter(void) {
 	if(_particleEmitter) return nullptr;
 	_particleEmitter = new ParticleEmitter(*this);
-	return _particleEmitter = attachComponent(_particleEmitter)? _particleEmitter : NULL;
+    return _particleEmitter = attachComponent(_particleEmitter)? _particleEmitter : NULL;
 }
 
 Combat *Entity::addCombat(void) {
@@ -738,7 +726,7 @@ void Entity::removeRenderable(void) {
 		_componentActive[Component::RENDERABLE] = false;
 	}
 	delete _renderable;
-	_renderable = NULL;
+    _renderable = NULL;
 }
 
 void Entity::removeAnimation(void) {
@@ -747,7 +735,7 @@ void Entity::removeAnimation(void) {
 		_componentActive[Component::ANIMATION] = false;
 	}
 	delete _animation;
-	_animation = NULL;
+    _animation = NULL;
 }
 
 void Entity::removeCollidable(void) {
@@ -756,7 +744,7 @@ void Entity::removeCollidable(void) {
 		_componentActive[Component::COLLIDABLE] = false;
 	}
 	delete _collidable;
-	_collidable = NULL;
+    _collidable = NULL;
 }
 
 void Entity::removeRigidBody(void) {
@@ -774,7 +762,7 @@ void Entity::removeCharacter(void) {
 		_componentActive[Component::CHARACTER] = false;
 	}
 	delete _character;
-	_character = NULL;
+    _character = NULL;
 	
 }
 void Entity::removeWarp(void) {
@@ -783,7 +771,7 @@ void Entity::removeWarp(void) {
 		_componentActive[Component::WARP] = false;
 	}
 	delete _warp;
-	_warp = NULL;
+    _warp = NULL;
 }
 
 void Entity::removeExaminable(void) {
@@ -792,7 +780,7 @@ void Entity::removeExaminable(void) {
 		_componentActive[Component::EXAMINABLE] = false;
 	}
 	delete _examinable;
-	_examinable = NULL;
+    _examinable = NULL;
 }
 
 void Entity::removeAudioSource(void) {
@@ -801,7 +789,7 @@ void Entity::removeAudioSource(void) {
 		_componentActive[Component::AUDIO_SOURCE] = false;
 	}
 	delete _audioSource;
-	_audioSource = NULL;
+    _audioSource = NULL;
 }
 
 void Entity::removeLightSource(void) {

@@ -79,13 +79,11 @@ namespace elysian {
         bool            isDashing(void) const;
         void            setDashing(const bool val);
 
-#ifdef ELYSIAN_ENGINE
 		void update(void);
 		void move(const GYVector2& vec);
         void walk(const GYVector2& dir);
 		void faceDir(const Direction::DIR4 dir);
 		void faceEntity(Entity& entity);
-#endif
 	};
 
 
@@ -107,9 +105,6 @@ namespace elysian {
 		return (_faceDir == Direction::fromVector(distVec));
 	}
 
-
-#ifdef ELYSIAN_ENGINE
-
 	inline void Character::setAnimate(const bool val) { _animate = val; }
 
 
@@ -118,8 +113,6 @@ namespace elysian {
 		gyVec2Sub(&dist, (GYVector2*)&entity.transform._pos, (GYVector2*)&_entity->transform._pos);
 		faceDir(Direction::fromVector(dist));
 	}
-
-#endif
 
 }
 

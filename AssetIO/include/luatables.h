@@ -112,13 +112,13 @@ struct LuaTableNode {
 	LuaTable stackQueryTable();
 	LuaTable stackCreateLuaTable();
 
-	std::vector<LuaKey> getKeyStack();
+    std::vector<LuaKey>&& getKeyStack();
 	std::string keyStackToString();
 
 	bool exists();
 	void remove();
 	size_t length();
-	std::vector<LuaKey> keys();
+    std::vector<LuaKey>&& keys();
 
 	// Templates for setters and getters. Can be specialized for custom
 	// types.

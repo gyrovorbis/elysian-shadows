@@ -31,11 +31,11 @@ namespace elysian {
 		char			path	[ELYSIAN_LEVEL_PATH_SIZE];
 		char			name	[ELYSIAN_LEVEL_NAME_SIZE];
 		char            string	[ELYSIAN_LEVEL_STRING_SIZE];
-#ifdef ELYSIAN_ENGINE
+
 		GYTexture*		tileSheet			= nullptr;
 		GYTexture*		normalSheet			= nullptr;
 		GYTexture*		specularSheet		= nullptr;
-#endif
+
 		unsigned short	tileAmount	= ELYSIAN_TILESHEET_TILES;
 		
         //lookup tables of attributes

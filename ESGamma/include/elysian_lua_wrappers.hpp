@@ -40,6 +40,7 @@
 #include "elysian_lua_wrappers.hpp"
 #include "elysian_animation_system.hpp"
 #include "elysian_character_system.hpp"
+#include "elysian_camera_system.hpp"
 
 /* IT'S NOT SAFE TO GO ALONE! TAKE THIS HEADER FILE. IT WILL HELP
  * YOU ON YOUR JOURNEY!

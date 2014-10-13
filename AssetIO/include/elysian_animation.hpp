@@ -9,13 +9,7 @@
 #include "elysian_stl_algorithm.hpp"
 #include "elysian_mem_pool.hpp"
 
-#ifdef ELYSIAN_ENGINE
-    #include "elysian_event_monitor.hpp"
-#else
-    namespace elysian {
-        typedef void EventMonitor;
-    }
-#endif
+#include "elysian_event_monitor.hpp"
 
 #define ELYSIAN_ANIMATION_SEQUENCE_NAME_SIZE    50
 #define ELYSIAN_ANIMATION_MAX_CHILDREN          100
@@ -173,9 +167,8 @@ namespace elysian {
 				Animation(Entity& parent);
 		virtual ~Animation(void) override;
         void    _updateStates(void);
-#ifdef ELYSIAN_ENGINE
         void	_updateChildren(void);
-#endif
+
 	public:
 		virtual bool load(FILE* file) override;
 		virtual bool save(FILE* file) override;
@@ -188,11 +181,9 @@ namespace elysian {
         void        removeState (const char* state);
         void        replaceState(const char* oldState, const char* newState);
 
-#ifdef ELYSIAN_ENGINE
         void        update(const float deltaTime);
         void        playAnimation(const char *name, EventMonitor*const monitor = nullptr);
         void        stopAnimation(void);
-#endif
 		
 		AnimationAttrib*		getAttrib(void) const;
 		ChildAnimationAttrib*	getChildAttrib(void) const;

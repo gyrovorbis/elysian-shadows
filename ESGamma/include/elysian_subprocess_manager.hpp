@@ -72,7 +72,7 @@ private:
 	Pool<T> _pool = Pool<T>(C);
 
 public:
-	inline void _start(M* const m) {
+    inline void _start(M* const /*m*/) {
 		/*for(auto it = _pool.begin(); it < _pool.end(); ++it) {
 			(*it).start(m);
 		}*/

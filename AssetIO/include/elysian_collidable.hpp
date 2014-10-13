@@ -6,10 +6,7 @@
 #include <cstring>
 #include <kinetic/gyro_kinetic.h>
 #include "elysian_component.hpp"
-
-#ifdef ELYSIAN_ENGINE
-    #include "elysian_sort_sweep.hpp"
-#endif
+#include "elysian_sort_sweep.hpp"
 
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_BEHAVIOR_MASK	(1<<0)
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_WARP_MASK		(1<<1)
@@ -81,10 +78,9 @@ private:
 	
 	class Collidable: public Component {
         friend class Entity;
-#ifdef ELYSIAN_ENGINE
 		friend class CollisionSystem;
 		friend class RigidBodySystem;
-#endif
+
 	public:
 		enum ZTRAN_STATE { ZTRAN_INACTIVE, ZTRAN_ACTIVE };
 	protected:
@@ -92,9 +88,8 @@ private:
 
         GYVector3           _worldSize          = { 1.0f, 1.0f, 1.0f, };
 		CollidableAttrib*	_attrib				= nullptr;
-#ifdef ELYSIAN_ENGINE
         SortSweepCollidable* _sortSweepAABB     = nullptr;
-#endif
+
         unsigned			_zTranTileX			= 0;
         unsigned			_zTranTileY			= 0;
         unsigned			_contactCount		= 0;
@@ -150,11 +145,11 @@ private:
         void            setRestingOnBody(const bool v);
         bool            getStackedOnGround(void) const;
         void            setStackedOnGround(const bool v);
-#ifdef ELYSIAN_ENGINE
+
         void            setSortSweepAABB(SortSweepCollidable* sweep);
         bool            checkAABBCollision(Collidable* col);
         bool            checkFullCollision(Collidable* col);
-#endif
+
 	};
 
 	/*
@@ -244,7 +239,6 @@ private:
 
     }
 
-#ifdef ELYSIAN_ENGINE
     inline bool Collidable::checkAABBCollision(Collidable* col) {
         SortSweepCollidable* b = col->_sortSweepAABB;
         auto* a = _sortSweepAABB;
@@ -258,7 +252,6 @@ private:
     inline void Collidable::setSortSweepAABB(SortSweepCollidable* sweep) {
         _sortSweepAABB = sweep;
     }
-#endif
 
 }
 

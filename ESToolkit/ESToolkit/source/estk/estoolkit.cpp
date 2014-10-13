@@ -37,6 +37,9 @@
 #include "historyDockWidget.h"
 #include "selectionDockWidget.h"
 
+#include "luaTableStandardItemModel.h"
+#include "luatables.h"
+
 ESToolkit::ESToolkit(QWidget *parent):
 	QMainWindow(parent),
 	_ui(new Ui::ESToolkit),
@@ -970,7 +973,7 @@ void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *cons
 	case Selectable::AREA:
 		_selectionDockWidget->SetSelectionTreeWidget();
 		static_cast<Area *>(selection)->populateModel();
-		_selectionDockWidget->SetSelectionModel(static_cast<Area *>(selection));
+        _selectionDockWidget->SetSelectionModel(static_cast<Area *>(selection));
 		_selectionDockWidget->ExpandSelectionTree();
 		break;
 	case Selectable::TILE:
@@ -993,6 +996,12 @@ void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *cons
 		//_ui->mapView->SetCenter((Entity *)selection);
 		break;
 		case Selectable::EMPTY:
+
+
+        /*if(static_cast<TileSelectable *>(selection)->getSize() == 1)*/ //_selectionDockWidget->ExpandSelectionTree();
+      //  selection->installSelectionViewCustomDelegates(_selectionDockWidget->getSelectionTreeWidget());
+       //_selectionDockWidget->SetSelectionTreeWidget();
+
 		//_selectionDockWidget->SetSelectionWidget(NULL);
 		//crap pants?
 		 break;
@@ -1072,6 +1081,7 @@ void ESToolkit::on_actionMac_OS_X_triggered()
 void ESToolkit::on_actionDreamcast_triggered()
 {
 	m_activePlatform->setIcon(_ui->actionDreamcast->icon());
+
 }
 
 void ESToolkit::on_actionIPhone_iPad_triggered()
@@ -1240,6 +1250,16 @@ void ESToolkit::on_actionPaste_triggered()
 
 void ESToolkit::on_actionDefault_Transform_triggered()
 {
+
+    const char* luaExpr = "tablet = { [1] = 2, [4] = 5, doucheWad = { x = 4, y = 5} } return tablet";
+
+    LuaTable ltable = LuaTable::fromLuaExpression(luaExpr);
+
+    auto* lmodel = new LuaTableStackModel(ltable.ref());
+    lmodel->populateModel();
+
+    _selectionDockWidget->SetSelectionModel(lmodel);
+
 	_ui->mapView->defaultTransform();
 
 }

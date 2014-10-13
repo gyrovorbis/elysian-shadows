@@ -39,7 +39,6 @@ RigidBody::RigidBody(Entity& entity):
 
 {}
 
-#ifdef ELYSIAN_ENGINE
 void RigidBody::integrate(const float deltaTime) {
 	if(!_active) return;
 
@@ -72,7 +71,6 @@ void RigidBody::integrate(const float deltaTime) {
 
     }
 }
-#endif
 
 auto RigidBody::getTargetType(void) const -> TARGET_TYPE { return TARGET_RIGID_BODY; }
 float RigidBody::getOrientation(void) const { return getEntity()->transform._orientZ; }

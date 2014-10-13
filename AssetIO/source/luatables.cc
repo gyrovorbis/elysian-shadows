@@ -402,7 +402,7 @@ void create_key_stack (lua_State *L, std::vector<LuaKey> key_stack) {
 //
 // LuaTableNode
 //
-std::vector<LuaKey> LuaTableNode::getKeyStack() {
+std::vector<LuaKey>&& LuaTableNode::getKeyStack() {
 	std::vector<LuaKey> result;
 
 	const LuaTableNode *node_ptr = this;
@@ -412,7 +412,7 @@ std::vector<LuaKey> LuaTableNode::getKeyStack() {
 		node_ptr = node_ptr->parent;
 	} while (node_ptr != NULL);
 
-	return result;	
+    return std::move(result);
 }
 
 std::string LuaTableNode::keyStackToString() {
@@ -531,7 +531,7 @@ size_t LuaTableNode::length() {
 	return result;
 }
 
-std::vector<LuaKey> LuaTableNode::keys() {
+std::vector<LuaKey>&& LuaTableNode::keys() {
 	std::vector<LuaKey> result;
 
 	if (stackQueryValue()) {
@@ -558,7 +558,7 @@ std::vector<LuaKey> LuaTableNode::keys() {
 
 	stackRestore();
 
-	return result;
+    return std::move(result);
 }
 
 

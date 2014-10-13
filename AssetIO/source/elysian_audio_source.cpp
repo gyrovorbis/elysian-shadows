@@ -19,7 +19,6 @@ namespace elysian {
 	}
 
 	void AudioSource::update(void) {
-#ifdef ELYSIAN_ENGINE
 		if(_src) {
 			if(gyAudSourceIsPlaying(_src)) {
 				gyAudSourceSetfv(_src, GY_SOURCE_POS, &_entity->transform._pos);
@@ -29,7 +28,6 @@ namespace elysian {
 				_src = nullptr;
 			}
 		}
-#endif
 	}
 
 	//O(1)

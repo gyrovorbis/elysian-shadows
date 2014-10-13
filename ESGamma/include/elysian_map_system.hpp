@@ -124,7 +124,7 @@ namespace elysian {
 		entry.lights = getLightSys()->getLightMapEntryMapCoord(entry.y, entry.x);
 	}
 	
-	inline void MapSystem::renderObjectEntry(const MapDepthBuffEntry &entry, const float z) {
+    inline void MapSystem::renderObjectEntry(const MapDepthBuffEntry &entry, const float /*z*/) {
 		if(!entry.mapEntry.value) return; //Do not render tile 0, even if the depth buff algorithm tries to.
 		if(!_renderLayer[entry.layer]) return; //Don't render if this layer has been toggled off.
 		float delta = 0;//(entry.renderPass);

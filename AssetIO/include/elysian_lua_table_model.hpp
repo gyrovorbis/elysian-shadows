@@ -2,7 +2,7 @@
 #define ELYSIAN_LUA_TABLE_MODEL_H
 
 #include "luatables.h"
-#include "../../ESGamma/include/elysian_lua_manager.hpp"
+#include "elysian_lua_manager.hpp"
 
 namespace elysian {
 
@@ -65,7 +65,7 @@ template<typename P, class... _Types> class LuaTableProxy;
     const char*const LuaTableFieldProxy<P, T, N, G, S>::Set;
 
     template<typename P>
-    class LuaTableProxy<P>: public LuaManager/*: public LuaTable*/ {
+    class LuaTableProxy<P>: public LuaTable {
     protected:
 
         inline bool _pushFieldProxyValue(const char *key, lua_State *state) { return false; }
@@ -109,13 +109,10 @@ template<typename P, class... _Types> class LuaTableProxy;
         static LuaTable _ooluaNewIndexTable;
 
         static inline void _registerPropertyProxyField(lua_State* l, const bool get=true) {
-
             lua_getfield(l, -2, get? _MyFirst.Get : _MyFirst.Set);
             lua_setfield(l, -2, _MyFirst.key);
 
             ParentType::_registerPropertyProxyField(l, get);
-
-           //
 
         }
 

@@ -42,7 +42,8 @@ void Area::updateScene(void) {
 Area::Area(Level *const level):
     _level(level),
     _active(false),
-    _open(false){
+    _open(false)
+{
 
 	_elysianArea.width = _elysianArea.height = 50;
 	//Must allocate a map in case this map is to be saved before it is loaded.
@@ -178,17 +179,19 @@ bool Area::load(const QString dir) {
 
 	//Allocated a dummy map upon construction, have to free before loading.
 	_elysianArea.freeMap();
-	success &= _elysianArea.load(dir.toStdString().c_str());
+    success &= _elysianArea.load(dir.toStdString().c_str(), _level->getElysianLevel());
 
 	Debug::Log(Debug::VERBOSE, "Creating Toolkit Entities from elysian::Entities.");
 	Debug::Push();
-	for(unsigned int i = 0; i < _elysianArea.entities.size(); ++i) {
+#if 0
+    for(unsigned int i = 0; i < _elysianArea.entities.size(); ++i) {
 		Debug::Logf(Debug::VERBOSE, "Entity #%d - %s.", i, _elysianArea.entities[i]->getName());
 		Entity *tempEntity = new Entity(*_elysianArea.entities[i]);
 		connectSlots(tempEntity);
 		_entities.push_back(tempEntity);
 		//tempEntity->setParentItem(_entityParent);
 	}
+#endif
 	Debug::Pop();
 
 	_curArea = tempCurArea;

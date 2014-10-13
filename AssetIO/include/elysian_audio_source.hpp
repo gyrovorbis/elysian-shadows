@@ -2,9 +2,7 @@
 #define ELYSIAN_AUDIO_SOURCE_HPP
 
 #include "elysian_component.hpp"
-#ifdef ELYSIAN_ENGINE
-#	include "elysian_audio_system.hpp"
-#endif
+#include "elysian_audio_system.hpp"
 #include <gyro_wav_api.h>
 #include <gyro_audio_api.h>
 
@@ -88,7 +86,6 @@ namespace elysian {
 
 	inline void AudioSource::playWav(const GYWav* const wav) {
 		(void)wav;
-#ifdef ELYSIAN_ENGINE
 		//Reserve a channel if we haven't already
 		if(!_src) {
 			_src = _audioSys->reserveChannel(this);
@@ -99,43 +96,33 @@ namespace elysian {
 		gyAudSourceSetf(_src, GY_SOURCE_PITCH, _pitch);
 		gyAudSourceSeti(_src, GY_SOURCE_LOOPING, _looping);
 		gyAudSourcePlayWav(_src, wav);
-#endif
 	}
 
 	inline void AudioSource::stop(void) {
-#ifdef ELYSIAN_ENGINE
 		if(_src) {
 			gyAudSourceStop(_src);
 			//give the bitch back if we're done with it
 			_audioSys->releaseChannel(_src);
 			_src = nullptr;
 		}
-#endif
 	}
 
 	inline void AudioSource::play(void) { playWav(_wav); }
 
 	inline void AudioSource::setGain(const float val) {
 		_gain = val;
-#ifdef ELYSIAN_ENGINE
 		if(_src) gyAudSourceSetf(_src, GY_SOURCE_GAIN, val);
-#endif
 	}
 
 	inline void AudioSource::setPitch(const float val) {
 		_pitch = val;
-#ifdef ELYSIAN_ENGINE
 		if(_src) gyAudSourceSetf(_src, GY_SOURCE_PITCH, val);
-#endif
 	}
 
 	inline void AudioSource::setLooping(const bool val)  {
 		_looping = val;
-#ifdef ELSYSIAN_ENGINE
 		if(_src) gyAudSourceSeti(_src, GY_SOURCE_LOOPING, val);
-#endif
 	}
-
 
 	inline void AudioSource::setAudioSys(AudioSystem* const sys) {
 		_audioSys = sys;

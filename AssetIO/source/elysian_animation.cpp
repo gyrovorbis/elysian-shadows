@@ -179,7 +179,6 @@ void Animation::setSpeedMultiplier(const float factor) {
     _speedMultiplier = factor;
 }
 
-#ifdef ELYSIAN_ENGINE
 void Animation::_updateChildren(void) {
 	if(!_children || _children->size() == 0) return;
 
@@ -264,7 +263,6 @@ void Animation::_updateChildren(void) {
 */
 	}
 }
-#endif
 
 bool Animation::load(FILE* /*file*/) {
 	return true;
@@ -299,7 +297,6 @@ bool Animation::removeFromLevel(void) {
     return containerEraseOnMatch(this, _curArea->animations);
 }
 
-#ifdef ELYSIAN_ENGINE
 
 void Animation::update(const float deltaTime) {
     if(!_isActive || !currentSequence) return;
@@ -391,7 +388,5 @@ void Animation::setCurrentFrame(const unsigned frame) {
     }*/
 
 }
-
-#endif
 
 }

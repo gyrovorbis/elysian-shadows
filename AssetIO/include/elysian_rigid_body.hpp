@@ -94,9 +94,8 @@ namespace elysian {
 		void				setBreakContact(CollisionContact*const contact);
 
 		//GYKinetic rigid bodies internal
-#ifdef ELYSIAN_ENGINE
 		void integrate(const float deltaTime);
-#endif
+
 		//GYKinetic rigid bodies external
 		//void applyForceMask(const uint32_t mask, const GYVector2& force);
 

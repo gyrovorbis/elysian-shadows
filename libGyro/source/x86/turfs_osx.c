@@ -3,6 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if GYRO_PLATFORM == GYRO_PLATFORM_x86
+#define TURFS_ASSET_DIR "../assets"
+#else
+#endif
+
 #include <common/turfs.h>
 
 #include "../common/internal.h"
@@ -60,7 +65,9 @@ static int s__get_assets_path(char **path, size_t *len)
         strcpy(temp_path, "./");
     }
     //strcat(temp_path, "../Resources/assets");
+#if GYRO_PLATFORM == GYRO_PLATFORM_x86
     strcat(temp_path, "../assets");
+#endif
     *path = realpath(temp_path, NULL);
     if (*path == NULL) {
         return 0;

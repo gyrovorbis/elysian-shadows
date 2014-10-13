@@ -138,9 +138,7 @@ namespace elysian {
 		unsigned			mapEntryCount	= 0;
 		unsigned			layerEntryCount	= 0;
 
-#ifdef GYRO_GLAL
 		GLuint vboBuff;
-#endif
 
 		Area(void);
         ~Area(void);

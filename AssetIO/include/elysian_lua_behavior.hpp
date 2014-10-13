@@ -2,15 +2,7 @@
 #define ELYSIAN_LUA_BEHAVIOR_HPP
 
 #include "elysian_behavior.hpp"
-#ifdef ELYSIAN_ENGINE
-#	include "elysian_lua_manager.hpp"
-#	include <lua5.2/lua.hpp>
-#else
-#	define LUA_NOREF 0
-namespace OOLUA {
-    typedef unsigned Lua_table_ref;
-}
-#endif
+#include "elysian_lua_manager.hpp"
 
 #define ELYSIAN_LUA_BEHAVIOR_NAME				"LuaBehavior"
 #define ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH	5
@@ -21,12 +13,7 @@ namespace elysian {
 	class LuaBehaviorScript;
 	class Collidable;
 
-    class LuaBehavior: 
-		public Behavior
-#ifdef ELYSIAN_ENGINE
-		,public LuaManager
-#endif
-	{
+    class LuaBehavior: public Behavior, public LuaManager {
 	friend class Entity;
 	protected:
 		LuaBehaviorScript*	_scriptHierarchy[ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH]		= { nullptr };
@@ -35,7 +22,7 @@ namespace elysian {
 		//int					_selfTableRef = LUA_NOREF;
 
 		unsigned			_hierarchyDepth = 0;
-#ifdef ELYSIAN_ENGINE
+
 		OOLUA::Lua_table_ref _ooSelfTableRefHierarchy[ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH];
 		OOLUA::Lua_table_ref* _ooSelfTableRef = nullptr;
 
@@ -45,12 +32,7 @@ namespace elysian {
 		}
 
 		void				_selfTableDump(void);
-#endif
-                            LuaBehavior(Entity &entity, const char *script
-#ifdef ELYSIAN_ENGINE
-                                        ,const OOLUA::Lua_table_ref paramTable
-#endif
-                            );
+                            LuaBehavior(Entity &entity, const char *script, const OOLUA::Lua_table_ref paramTable);
 							~LuaBehavior(void);
 	public:
 
@@ -86,20 +68,16 @@ namespace elysian {
 		virtual void		onCombatTargetCollisionEnter(CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier) override;
 		
 		int					getSelfTableRef(void) const;
-#ifdef ELYSIAN_ENGINE
+
 		OOLUA::Lua_table_ref& getSelfTable(void) { return *_ooSelfTableRef; }
-#endif
+
     };
 
 
 	//======= INLINEZ ======
 	
     inline const char* LuaBehavior::getBehavName(void) const {
-#ifdef ELYSIAN_ENGINE
-        return _script->getPath();
-#else
-        return nullptr;
-#endif
+        return (_script)? _script->getPath() : nullptr;
     }
 	//inline int LuaBehavior::getSelfTableRef(void) const { return _selfTableRef; }
 

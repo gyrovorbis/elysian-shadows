@@ -4,36 +4,26 @@
 #include "elysian_instance_transform.hpp"
 #include "elysian_generic.hpp"
 #include "elysian_rigid_body.hpp"
-
-#ifdef ELYSIAN_ENGINE
-    #include "elysian_collision_system.hpp"
-#endif
+#include "elysian_collision_system.hpp"
 
 namespace elysian {
 
 CollisionSystem* Collidable::_colSys = nullptr;
 
 void CollisionContact::_calculatePenetrationInternals(void) {
-#ifdef ELYSIAN_ENGINE
 	gyContactCalculatePenetrationInternals(this,
 										   (GYVector2*)&_bodyA->getCenterWorldPos(),
 										   (_bodyB)? (GYVector2*)&_bodyB->getCenterWorldPos() : nullptr);
-#endif
 }
 
 void CollisionContact::_calculateVelocityInternals(const float deltaTime) {
-#ifdef ELYSIAN_ENGINE
 	gyContactCalculateVelocityInternals(this,
 										(GYKinetic*)_bodyA->getEntity()->getRigidBody(),
 										(_bodyB)? (GYKinetic*)_bodyB->getEntity()->getRigidBody() : nullptr,
 										deltaTime);
-#else
-    (void)deltaTime;
-#endif
 }
 
 void Collidable::update(void) {
-#ifdef ELYSIAN_ENGINE
 	if(!_active) return;
     static const GYVector4 localVecs[2] = {
         { 0.0f, 0.0f, 0.0f, 1.0f }, //position
@@ -60,11 +50,9 @@ void Collidable::update(void) {
 
     _updateSortSweepAABB();
 
-#endif
 }
     
 void Collidable::render(void) {
-#ifdef ELYSIAN_ENGINE
     const static GYColor4 color = { 0, 0, 255, 128 };
 	const static GYColor4 colColor =  { 255, 0, 0, 128 };
     
@@ -96,7 +84,6 @@ void Collidable::render(void) {
 
 	gyVidQuadListEnd();
 
-#endif    
 }
      
 bool Collidable::load(FILE* /*file*/) {
@@ -154,10 +141,8 @@ bool Collidable::save(FILE* /*file*/) {
 
 //O(1)
 bool Collidable::addToLevel(void) {
-#ifdef ELYSIAN_ENGINE
     _sortSweepAABB = _colSys->addSortSweepCollidable();
     _sortSweepAABB->collidable = this;
-#endif
     _updateSortSweepAABB();
 	_curArea->collidables.push_back(this);
         return true;
@@ -165,9 +150,7 @@ bool Collidable::addToLevel(void) {
 
 //O(n)
 bool Collidable::removeFromLevel(void) {
-#ifdef ELYSIAN_ENGINE
     _colSys->removeSortSweepCollidable(_sortSweepAABB);
-#endif
     return containerEraseOnMatch(this, _curArea->collidables);
 }
 
@@ -185,10 +168,8 @@ void Collidable::_updateSortSweepAABB(void) {
 
     for(unsigned i = 0; i < 4; ++i) checkBoundary(_collider.box.worldVert[i]);
 
-#ifdef ELYSIAN_ENGINE
     _sortSweepAABB->min[0] = startX;
     _sortSweepAABB->max[0] = endX;
-#endif
 
 #if ELYSIAN_SORT_SWEEP_DIMENSIONS >= 2
     _sortSweepAABB->min[1] = startY;
@@ -197,17 +178,14 @@ void Collidable::_updateSortSweepAABB(void) {
     _sortSweepAABB->min[2] = _collider.box.worldVert[3].z;
     _sortSweepAABB->max[2] = _collider.box.worldVert[0].z;
 #   endif
-
 #endif
 }
 
-#ifdef ELYSIAN_ENGINE
 bool Collidable::checkFullCollision(Collidable* col) {
     return _colSys->detectCollidableCollidableCollision(this, col);
 }
 
 template<>
 unsigned SortSweepCollidable::curIndex = 0;
-#endif
 
 }
