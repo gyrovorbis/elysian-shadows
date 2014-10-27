@@ -55,19 +55,35 @@ class PropertyStandardItem: public ESTkStandardItem {
 	template<bool TUndoRedo, typename TT, typename CC>
 	friend struct _PropertyStandardItem;
 private:
-	C *const _objInst;
-	T (C::*const _getAccessor)(void) const;
-	void (C::*const _setAccessor)(const T);
-	QIcon (C::*const _updateIcon)(const T) const;
+    C * _objInst;
+    T (C::* _getAccessor)(void) const;
+    void (C::* _setAccessor)(const T);
+    QIcon (C::* _updateIcon)(const T) const;
 	QUndoStack *_undoStack;
 	UndoItem::TYPE _undoType;
     bool _ignoreCheck;
 	//unsigned _refCount;
+protected:
+    PropertyStandardItem(void) = default;
+    void _latentInit(C *const object, T (C::*const get)(void)const,
+                     void (C::*const set)(const T)=nullptr,
+                     const UndoItem::TYPE undoType=UndoItem::TYPE_SIZE,
+                     QUndoStack *stack=nullptr, QIcon (C::*const ico)(const T)const=nullptr)
+    {
+        _objInst = object;
+        _getAccessor = get;
+        _setAccessor = set;
+        _updateIcon = ico;
+        _undoStack = stack;
+        _undoType = undoType;
+        _ignoreCheck = true;
+    }
+
 public:
 	PropertyStandardItem(C *const object, T (C::*const get)(void)const,
-						 void (C::*const set)(const T)=NULL,
+                         void (C::*const set)(const T)=nullptr,
 						 const UndoItem::TYPE undoType=UndoItem::TYPE_SIZE,
-						 QUndoStack *stack=NULL, QIcon (C::*const ico)(const T)const=NULL):
+                         QUndoStack *stack=nullptr, QIcon (C::*const ico)(const T)const=nullptr):
 		_objInst(object),
 		_getAccessor(get),
 		_setAccessor(set),

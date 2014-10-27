@@ -56,6 +56,10 @@ static int s__get_assets_path(char **path, size_t *len)
     char temp_path[2048];
     char *ptr;
     memset(temp_path, 0, sizeof temp_path);
+#if GYRO_PLATFORM == GYRO_PLATFORM_Qt
+
+    *path = "../assets";
+#else
     strncpy(temp_path, NXArgv[0], sizeof temp_path);
     if (strlen(temp_path)) {
         ptr = &temp_path[strlen(temp_path)];
@@ -64,11 +68,11 @@ static int s__get_assets_path(char **path, size_t *len)
     } else {
         strcpy(temp_path, "./");
     }
-    //strcat(temp_path, "../Resources/assets");
-#if GYRO_PLATFORM == GYRO_PLATFORM_x86
-    strcat(temp_path, "../assets");
-#endif
+    strcat(temp_path, "../Resources/assets");
     *path = realpath(temp_path, NULL);
+#endif
+
+
     if (*path == NULL) {
         return 0;
     }

@@ -160,7 +160,7 @@ void Assets::setCurrentLevel(Level *const level) {
     if(level) {
 		level->activate();
         if(level->getFirstArea()) setCurrentArea(level->getFirstArea()->getName());
-        else setCurrentArea(NULL);
+        else setCurrentArea(nullptr);
     }
     else setCurrentArea(NULL);
 	//Debug::Log(Debug::VERBOSE, "!!!!!!EMIT CURRENT LEVEL " +( (level)? level->getName() : "NULL"));
@@ -184,12 +184,12 @@ void Assets::setCurrentProject(Project *const project) {
     if(project) {
 		project->activate();
         if(project->getFirstLevel()) setCurrentLevel(project->getFirstLevel()->getName());
-        else setCurrentLevel(NULL);
+        else setCurrentLevel(nullptr);
         QDir::setCurrent(m_project->getLocation());
     }
 
     else {
-        setCurrentLevel(NULL);
+        setCurrentLevel(nullptr);
     }
 	//Debug::Log(Debug::VERBOSE, "!!!!!EMIT CURRENT PROJECT - " + ((project)? project->getName() : "NULL"));
 	emit projectChanged(project);
@@ -201,10 +201,10 @@ Project *Assets::getProject(const QString /*name*/) const {
 
 Project *Assets::loadProject(const QString directory) {
     //for(QMap<QString, Project *>::iterator it = _project.begin(); it != _project.end(); ++it) {
-    if(m_project != NULL) {
+    if(m_project != nullptr) {
         if(m_project->getLocation() == directory) {
-            QMessageBox::critical(NULL, tr("Error!"), tr("The project is already open!\n"));
-            return NULL;
+            QMessageBox::critical(nullptr, tr("Error!"), tr("The project is already open!\n"));
+            return nullptr;
         }
     }
 
@@ -220,7 +220,7 @@ Project *Assets::loadProject(const QString directory) {
 
     delete proj;
 	Debug::Logf(Debug::VERBOSE, "Could not load project %s!\n", directory.toStdString().c_str());
-    return NULL;
+    return nullptr;
 }
 
 bool Assets::saveProject(const QString name) const {

@@ -98,9 +98,11 @@ namespace elysian {
 		}
 		dbgPop();
 
+#ifdef ELYSIAN_ENGINE
 		strcpy(buffer, dir);
 		strcat(buffer, ELYSIAN_LEVEL_INIT_LUA_PATH);
 		LuaManager::runScriptSandbox(buffer);
+#endif
 
 		dbgPop();
 		return success;

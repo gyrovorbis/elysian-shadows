@@ -81,7 +81,8 @@ DEPENDPATH += include/asset \
     include/widget \
     ../../AssetIO/include \
     ../../libGyro/include \
-    ../../libGyro/include/kinetic
+	../../libGyro/include/kinetic \
+	../../ESGamma/include
 
 INCLUDEPATH += include/asset \
     include/core \
@@ -202,7 +203,8 @@ SOURCES += source/asset/project.cpp \
     ../../ESGamma/source/elysian_sort_sweep.cpp \
     ../../ESGamma/source/elysian_system.cpp \
     ../../ESGamma/source/elysian_timer_system.cpp \
-    ../../ESGamma/source/elysian_warp_system.cpp
+    ../../ESGamma/source/elysian_warp_system.cpp \
+    source/dialog/luaExplorerDialog.cpp
 
 HEADERS += include/asset/project.h \
     include/asset/level.h \
@@ -308,7 +310,8 @@ HEADERS += include/asset/project.h \
     ../../ESGamma/source/elysian_lua_wrappers.cpp.orig \
     ../../ESGamma/source/elysian_system.cpp.orig \
     ../../AssetIO/include/elysian_light_source.hpp \
-    include/asset/luaTableStandardItemModel.h
+    include/asset/luaTableStandardItemModel.h \
+    include/dialog/luaExplorerDialog.h
 
 FORMS += form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \
@@ -319,7 +322,8 @@ FORMS += form/estk/sheetdockwidget.ui \
     form/sheetManager/sheetmanager.ui \
     form/widget/historyDockWidget.ui \
     form/dialog/engineSettings.ui \
-    form/sheetManager/sheetManagerFileDockWidget.ui
+    form/sheetManager/sheetManagerFileDockWidget.ui \
+    form/dialog/luaExplorer.ui
 
 
 #Create windows manifest requesting ESTk to be run as admin (to run dc-tool as admin)

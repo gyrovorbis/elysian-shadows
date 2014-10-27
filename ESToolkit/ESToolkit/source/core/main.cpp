@@ -13,48 +13,6 @@
 #include "elysian_engine.hpp"
 #include "elysian_debug.hpp"
 
-elysian::Engine *engine;
-elysian::Debug *debug;
-
-void GammaInit(void) {
-    /* The File subsystem needs to be initialized before anything else, ideally */
-    gyFileInit("ESTeam", "ESGamma");
-
-    debug = &elysian::Debug::getInstance();
-    char verString[50];
-
-    debug->parseArguments();
-    strcpy(verString, "ESGamma v");
-    strcat(verString, GYRO_LIB_VERSION);
-
-    GYVidInitParams vidParams =
-#if GYRO_PLATFORM == GYRO_PLATFORM_x86 || GYRO_PLATFORM == GYRO_PLATFORM_Qt
-    { (GY_VID_RESOLUTION)debug->getCmdLineArgs().resolution, GY_WIN_RESIZABLE, 480, 270, 1280, 720, verString, "icon.bmp"};
-#elif GYRO_PLATFORM == GYRO_PLATFORM_ANDROID
-    { GY_VID_1280x720, GY_WIN_FULLSCREEN, 1280, 720, 1280, 720 };
-#elif GYRO_PLATFORM == GYRO_PLATFORM_iOS
-    { 0 };
-#elif GYRO_PLATFORM == GYRO_PLATFORM_DC
-    { 0 };
-#else
-    { 0 };
-
-#endif
-
-    gySysInit();
-    //gyVidInit(&vidParams);
-    gyAudInit();
-    //gyInputInit();
-    //gyTimerInit();
-
-    engine = new elysian::Engine;
-
-    engine->loadAssets();
-    debug->setEngine(*engine);
-    //debug->sandboxInit();
-    debug->initializeEngine();
-
-}
 
 GYAppCbRet Init(int argc, char **argv) {
     QRectF rect;
@@ -80,8 +38,6 @@ GYAppCbRet Init(int argc, char **argv) {
     splash.show();
 
     ESToolkit w;
-
-    GammaInit();
 
     //QApplication::setWindowIcon(QIcon(":/estk/images/estk.ico"));
 

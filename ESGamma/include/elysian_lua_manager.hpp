@@ -8,10 +8,13 @@
 #include "elysian_debug.hpp"
 
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
-#	define ELYSIAN_LUA_DEBUG true
+#	define ELYSIAN_LUA_DEBUG                            true
+#   define ELYSIAN_LUA_STACK_BALANCE_RECURSIVE_DEPTH     100
 //#	define OOLUA_DEBUG_CHECKS 1
 #else
 #	define ELYSIAN_LUA_DEBUG false
+#	define ELYSIAN_LUA_DEBUG                            true
+#   define ELYSIAN_LUA_STACK_BALANCE_RECURSIVE_DEPTH     100
 #endif
 
 namespace elysian {
@@ -38,6 +41,10 @@ namespace elysian {
 		
 		static std::map<const char *, LuaScript *, ltstr> _scripts;
 		static int _errorCode;
+#ifdef ELYSIAN_LUA_DEBUG
+        static int _stackBalanceTop[ELYSIAN_LUA_STACK_BALANCE_RECURSIVE_DEPTH];
+        static int _stackBalanceRecursiveDepth;
+#endif
 		static const char _rPrint[];
 
 		static void _errorprintf(const char *const string, ...);
@@ -113,8 +120,6 @@ namespace elysian {
 									LuaManager(void);
 		static void					_showError(void);
 		static int					_getErrorCode(void);
-		static void					_rPrintByIndex(const int index, const unsigned depth, const char* name);
-		static void					_rPrintByRef(const int ref, const unsigned depth, const char* name);
 		
 		static void					_protectedCall(const int nargs, const int nresults, LuaScript *script);
 		static LuaScript*			_createScriptFromExisting(const char* const file);
@@ -124,7 +129,12 @@ namespace elysian {
 		static void					_cStackDump(void);
 		static void					_runtimeStackDump(void);
 
-        static int                 _stackDepth(void);
+        static int                  _stackDepth(void);
+
+#ifdef ELYSIAN_LUA_DEBUG
+        static void                 _stackBalanceBegin();
+        static void                 _stackBalanceEnd();
+#endif
 
 	public:
 
@@ -144,6 +154,9 @@ namespace elysian {
 		static unsigned				getScriptCount(void);
 		static unsigned				getScriptInstances(void);
 		static unsigned				getKbytesUsed(void);
+
+        static void					rPrintByIndex(const int index, const unsigned depth, const char* name);
+        static void					rPrintByRef(const int ref, const unsigned depth, const char* name);
 
 	};
 
@@ -182,6 +195,15 @@ namespace elysian {
 
     inline int LuaManager::_stackDepth(void) {
         return _mainState->stack_count();
+    }
+
+    inline void LuaManager::_stackBalanceBegin(void) {
+        assert(_stackBalanceRecursiveDepth < ELYSIAN_LUA_STACK_BALANCE_RECURSIVE_DEPTH-1);
+        _stackBalanceTop[_stackBalanceRecursiveDepth++] = _stackDepth();
+    }
+
+    inline void LuaManager::_stackBalanceEnd(void) {
+        assert(_stackBalanceTop[--_stackBalanceRecursiveDepth] == _stackDepth());
     }
 
 }

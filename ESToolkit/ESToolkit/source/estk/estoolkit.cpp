@@ -37,15 +37,17 @@
 #include "historyDockWidget.h"
 #include "selectionDockWidget.h"
 
+#include "elysian_engine.hpp"
+#include "elysian_debug.hpp"
 #include "luaTableStandardItemModel.h"
 #include "luatables.h"
+#include "luaExplorerDialog.h"
 
 ESToolkit::ESToolkit(QWidget *parent):
 	QMainWindow(parent),
 	_ui(new Ui::ESToolkit),
 	_ignoreAreaTabChange(false)
 {
-
 	// VERY IMPROTANT GLOBAL STATE/STATIC INITIALIZATION
     assert(gyFileInit("ESTeam", "ESTk"));
 	Debug::getInstance();
@@ -68,9 +70,10 @@ ESToolkit::ESToolkit(QWidget *parent):
 	setWindowTitle(verString);
 
 	//Instantiate external dialogs/tools
-	_sheetManager = new SheetManager(/*this*/);
-	_engineDialog = new EngineDialog(/*this*/);
-	_engineSettingsDialog = new EngineSettingsDialog(/*this*/);
+    _sheetManager           = new SheetManager(/*this*/);
+    _engineDialog           = new EngineDialog(/*this*/);
+    _engineSettingsDialog   = new EngineSettingsDialog(/*this*/);
+    _luaExplorerDialog      = new LuaExplorerDialog(/*this*/);
     connect(_engineSettingsDialog, SIGNAL(enginePathx86Changed(QString)), _engineDialog, SLOT(onEnginePathx86Changed(QString)));
 	connect(_engineSettingsDialog, SIGNAL(dcIpChanged(QString)), _engineDialog, SLOT(OnDreamcastIpChanged(QString)));
 	connect(_engineSettingsDialog, SIGNAL(dcMacChanged(QString)), _engineDialog, SLOT(OnDreamcastMacChanged(QString)));
@@ -209,6 +212,8 @@ ESToolkit::ESToolkit(QWidget *parent):
 	ReadSettings();
 
 	setMouseTracking(true);
+
+    _engineInitialize();
 }
 
 ESToolkit::~ESToolkit(void) {
@@ -218,8 +223,54 @@ ESToolkit::~ESToolkit(void) {
 	_areaTabBar->disconnect();
 	_assetDockWidget->disconnect();
 	_assets.disconnect();
+
+    delete _sheetManager;
+    delete _engineDialog;
+    delete _engineSettingsDialog;
+    delete _luaExplorerDialog;
 	delete _ui;
 }
+
+void ESToolkit::_engineInitialize(void) {
+    /* The File subsystem needs to be initialized before anything else, ideally */
+    gyFileInit("ESTeam", "ESGamma");
+
+    _debug = &elysian::Debug::getInstance();
+    char verString[50];
+
+    _debug->parseArguments();
+    strcpy(verString, "ESGamma v");
+    strcat(verString, GYRO_LIB_VERSION);
+
+    GYVidInitParams vidParams =
+#if GYRO_PLATFORM == GYRO_PLATFORM_x86 || GYRO_PLATFORM == GYRO_PLATFORM_Qt
+    { (GY_VID_RESOLUTION)_debug->getCmdLineArgs().resolution, GY_WIN_RESIZABLE, 480, 270, 1280, 720, verString, "icon.bmp"};
+#elif GYRO_PLATFORM == GYRO_PLATFORM_ANDROID
+    { GY_VID_1280x720, GY_WIN_FULLSCREEN, 1280, 720, 1280, 720 };
+#elif GYRO_PLATFORM == GYRO_PLATFORM_iOS
+    { 0 };
+#elif GYRO_PLATFORM == GYRO_PLATFORM_DC
+    { 0 };
+#else
+    { 0 };
+
+#endif
+
+    gySysInit();
+    //gyVidInit(&vidParams);
+    gyAudInit();
+    //gyInputInit();
+    //gyTimerInit();
+
+}
+
+void ESToolkit::_engineLoadAssets(void) {
+    _debug->setEngine(*_engine);
+    _engine = new elysian::Engine;
+    _engine->loadAssets();
+    _debug->sandboxInit();
+}
+
 
 void ESToolkit::changeEvent(QEvent *e){
 	QMainWindow::changeEvent(e);
@@ -425,7 +476,7 @@ void ESToolkit::ReadSettings()
 	_ui->actionSelection_View->setChecked(true);
 	_ui->actionHistory_View->setChecked(true);
 
-	_assets.setCurrentProject(NULL);
+    _assets.setCurrentProject(nullptr);
 
 	QSettings settings;
 	QString savedSettings = settings.value("settings", "").toString();
@@ -761,7 +812,7 @@ void ESToolkit::on_actionFileOpenProject_triggered(){
 	Project *proj = _assets.loadProject(dir);
 
 	// ENABLE ALL UI VIEWS
-	if(proj != NULL) {
+    if(proj != nullptr) {
 		ToogleProjectActions(true);
 		_assetDockWidget->setEnabled(true);
 	   // _entityDockWidget->setEnabled(true);
@@ -776,6 +827,8 @@ void ESToolkit::on_actionFileOpenProject_triggered(){
 
 	_assets.setCurrentProject(proj);
 	_assets.setCurrentSelection(_assets.getCurrentArea());
+
+    _engineLoadAssets();
 	//_ui->mapView->setFocus();
 
 }
@@ -958,7 +1011,7 @@ void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *cons
 	_ui->mapView->deleteSelectionItemGroup();
 	/* Must be cleared after every selection change so that the model isn't pointing
 	  to a deleted TerrainSelection */
-	_selectionDockWidget->SetSelectionModel(NULL);
+    _selectionDockWidget->SetSelectionModel(nullptr);
 	_selectionDockWidget->restoreSelectionTreeWidgetDefaultItemDelegate();
 
 	switch(type) {
@@ -1250,17 +1303,32 @@ void ESToolkit::on_actionPaste_triggered()
 
 void ESToolkit::on_actionDefault_Transform_triggered()
 {
+    static bool inited = false;
+    static LuaTableStackModel* lmodel;
+    static OOLUA::Lua_table_ref *ref;
 
-    const char* luaExpr = "tablet = { [1] = 2, [4] = 5, doucheWad = { x = 4, y = 5} } return tablet";
+    if(!inited) {
+        lua_pushglobaltable(*_mainState);
+        lua_getfield(*_mainState, -1, "tablet");
 
-    LuaTable ltable = LuaTable::fromLuaExpression(luaExpr);
+        ref = new OOLUA::Lua_table_ref;
+        ref->pull(*_mainState);
+        lua_pop(*_mainState, 1);
 
-    auto* lmodel = new LuaTableStackModel(ltable.ref());
-    lmodel->populateModel();
+        //LuaTable ltable = LuaTable::fromLuaExpression(luaExpr);
+        elysian::LuaManager::rPrintByRef(ref->ref(), 99, "");
+        lmodel = new LuaTableStackModel(ref->ref());
+        lmodel->populateModel();
+        inited = true;
+    }
+
+    //_luaExplorerDialog->setLuaTableStackModel(_assets.getCurArea());
+    _luaExplorerDialog->setModel(_assets.getCurrentArea());
+    _luaExplorerDialog->show();
 
     _selectionDockWidget->SetSelectionModel(lmodel);
 
-	_ui->mapView->defaultTransform();
+    //_ui->mapView->defaultTransform();
 
 }
 

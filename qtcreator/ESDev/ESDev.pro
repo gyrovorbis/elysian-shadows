@@ -1,0 +1,16 @@
+TEMPLATE = subdirs
+CONFIG += ordered
+CONFIG += console
+
+
+SUBDIRS +=  ../../ESToolkit/ESToolkit \
+	../../libGyro/qtcreator/libGyro \
+	../../OOLua/qtcreator/OOLua
+#    ../../ESGamma/qtcreator/ESGamma
+
+
+#ESGamma.depends += libGyro \
+ #       OOLua
+ESToolkit.depends = libGyro \
+	OOLua
+

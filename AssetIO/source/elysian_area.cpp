@@ -105,10 +105,12 @@ bool Area::load(const char *const dir, const Level *lev) {
 	strcat(buffer, ELYSIAN_AREA_ENTITY_PATH);
 	success &= loadEntities(buffer);
 
+#if 0
 #ifdef ELYSIAN_AREA_USE_INIT_LUA
 	strcpy(buffer, dir);
 	strcat(buffer, ELYSIAN_AREA_INIT_LUA_PATH);
 	LuaManager::runScriptSandbox(buffer);
+#endif
 #endif
 
     dbgPop();

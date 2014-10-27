@@ -149,7 +149,7 @@ void LuaBehavior::_selfTableDump(void) {
 
 	for(int i = _hierarchyDepth-1; i >= 0; --i) {
 		sprintf(selfDisplay, "self[%d]", _hierarchyDepth-1-i);
-		_rPrintByRef(_ooSelfTableRefHierarchy[i].ref(), 0, selfDisplay);
+        rPrintByRef(_ooSelfTableRefHierarchy[i].ref(), 0, selfDisplay);
 	}
 }
 

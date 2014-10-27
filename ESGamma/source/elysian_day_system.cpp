@@ -63,6 +63,7 @@ void DaySystem::onAreaExit(void) {
 }
 
 DaySystem::DaySystem(void) {
+#ifdef ELYSIAN_ENGINE
 	GYVector3 dir3 = { _baseDir.x, _baseDir.y, _baseDir.z };
 	_sunLightAttrib = new LightAttrib;
 	_sunLightAttrib->setAmbientColor(GYVector4{0.5f, 0.5f, 0.5f, 1.0f});
@@ -77,7 +78,7 @@ DaySystem::DaySystem(void) {
 	_sunLightSrc->setDirection(dir3);
 	_sunLightSrc->setShadowCaster(true);
 	_sunLightSrc->setAttrib(_sunLightAttrib);
-
+#endif
 }
 
 DaySystem::~DaySystem(void) {

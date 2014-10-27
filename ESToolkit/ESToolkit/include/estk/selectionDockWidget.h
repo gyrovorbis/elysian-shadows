@@ -16,7 +16,7 @@ class SelectionDockWidget : public QDockWidget
     Q_OBJECT
     
 public:
-    explicit SelectionDockWidget(QWidget *parent = 0);
+    explicit SelectionDockWidget(QWidget *parent = nullptr);
     ~SelectionDockWidget();
     void SetSelectionWidget(QWidget *widget);
     void SetSelectionTreeWidget();

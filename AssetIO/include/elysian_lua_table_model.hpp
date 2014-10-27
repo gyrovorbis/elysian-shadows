@@ -285,11 +285,11 @@ template<typename P, class... _Types> class LuaTableProxy;
 
 
             _propertyProxyIndexTable.push(l);
-            LuaManager::_rPrintByIndex(-2, 999, "IndexTable");
+            LuaManager::rPrintByIndex(-2, 999, "IndexTable");
             lua_pop(l, 1);
 
             _propertyProxyNewIndexTable.push(l);
-            LuaManager::_rPrintByIndex(-2, 999, "NewIndexTable");
+            LuaManager::rPrintByIndex(-2, 999, "NewIndexTable");
             lua_pop(l, 1);
 
             assert(LuaManager::_stackDepth() == 0);
@@ -305,7 +305,7 @@ template<typename P, class... _Types> class LuaTableProxy;
             lua_pushcfunction(l, &_indexMetaMethodCFunction);
             lua_setfield(l, -2, "__index");
 
-            LuaManager::_rPrintByIndex(-2, 999, "instance meta");
+            LuaManager::rPrintByIndex(-2, 999, "instance meta");
             _staticMetaTable.pull(*LuaManager::_mainState);
 
             assert(LuaManager::_stackDepth() == 0);
@@ -328,7 +328,7 @@ template<typename P, class... _Types> class LuaTableProxy;
 
             lua_pushcfunction(l, &_indexMetaMethodCFunction);
             lua_setfield(l, -2, "__index");
-            LuaManager::_rPrintByIndex(-2, 999, "orig");
+            LuaManager::rPrintByIndex(-2, 999, "orig");
 
             lua_pushcfunction(l, &_newIndexMetaMethodCFunction);
             lua_setfield(l, -2, "__newindex");

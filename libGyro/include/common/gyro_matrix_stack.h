@@ -30,9 +30,8 @@ void gyMatPush(void);
 void gyMatPop(void);
 void gyMatLoadIdentity(void);*/
 
-
-extern GYMatrix4 _matStack[GYRO_MATH_MATRIX_STACK_DEPTH];
 extern unsigned int _curStackFr;
+extern GYMatrix4 _matStack[GYRO_MATH_MATRIX_STACK_DEPTH];
 extern GYMatrix4 _identityMat;
 extern GYMatrix4 _translationMat;
 extern GYMatrix4 _scaleMat;
