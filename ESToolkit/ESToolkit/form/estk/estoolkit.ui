@@ -92,6 +92,7 @@
       <string>Open</string>
      </property>
      <addaction name="actionFileOpenProject"/>
+     <addaction name="actionPrevious_Project"/>
     </widget>
     <widget class="QMenu" name="menuSave">
      <property name="title">
@@ -948,6 +949,14 @@
   <action name="actionGather_2">
    <property name="text">
     <string>Gather</string>
+   </property>
+  </action>
+  <action name="actionPrevious_Project">
+   <property name="text">
+    <string>Previous Project</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
  </widget>
