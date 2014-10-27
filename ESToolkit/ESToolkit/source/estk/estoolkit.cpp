@@ -456,6 +456,7 @@ void ESToolkit::WriteSettings()
 	_engineDialog->getStartPos(x, y);
 	settings.setValue("engineStartPosX", x);
 	settings.setValue("engineStartPosY", y);
+	settings.setValue("previousProject", _assets.getProjectDir());
 }
 
 void ESToolkit::ReadSettings()
@@ -801,10 +802,7 @@ void ESToolkit::on_actionFileQuit_triggered() {
 	QCoreApplication::exit(0);
 }
 
-void ESToolkit::on_actionFileOpenProject_triggered(){
-
-	QString dir =  QFileDialog::getExistingDirectory(this, tr("Locate Project Directory"), "./", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-
+void ESToolkit::_openProjectDir(const QString dir) {
 	if(dir=="") {
 		return;
 	}
@@ -812,7 +810,7 @@ void ESToolkit::on_actionFileOpenProject_triggered(){
 	Project *proj = _assets.loadProject(dir);
 
 	// ENABLE ALL UI VIEWS
-    if(proj != nullptr) {
+	if(proj != nullptr) {
 		ToogleProjectActions(true);
 		_assetDockWidget->setEnabled(true);
 	   // _entityDockWidget->setEnabled(true);
@@ -828,13 +826,15 @@ void ESToolkit::on_actionFileOpenProject_triggered(){
 	_assets.setCurrentProject(proj);
 	_assets.setCurrentSelection(_assets.getCurrentArea());
 
-    _engineLoadAssets();
+	_engineLoadAssets();
 	//_ui->mapView->setFocus();
-
 }
 
-void ESToolkit::on_actionFileCloseProject_triggered()
-{
+void ESToolkit::on_actionFileOpenProject_triggered(void) {
+	_openProjectDir(QFileDialog::getExistingDirectory(this, tr("Locate Project Directory"), "./", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks));
+}
+
+void ESToolkit::on_actionFileCloseProject_triggered(void) {
 	//emit CloseProject
 	_assets.removeProject(_assets.getCurrentProject()->getName());
 }
@@ -1309,11 +1309,11 @@ void ESToolkit::on_actionDefault_Transform_triggered()
 
     if(!inited) {
         lua_pushglobaltable(*_mainState);
-        lua_getfield(*_mainState, -1, "tablet");
+		//lua_getfield(*_mainState, -1, "tablet");
 
         ref = new OOLUA::Lua_table_ref;
         ref->pull(*_mainState);
-        lua_pop(*_mainState, 1);
+		//lua_pop(*_mainState, 1);
 
         //LuaTable ltable = LuaTable::fromLuaExpression(luaExpr);
         elysian::LuaManager::rPrintByRef(ref->ref(), 99, "");
@@ -1322,8 +1322,8 @@ void ESToolkit::on_actionDefault_Transform_triggered()
         inited = true;
     }
 
-    //_luaExplorerDialog->setLuaTableStackModel(_assets.getCurArea());
-    _luaExplorerDialog->setModel(_assets.getCurrentArea());
+	//_luaExplorerDialog->setLuaTableStackModel(_assets.getCurArea());
+	_luaExplorerDialog->setModel(lmodel);
     _luaExplorerDialog->show();
 
     _selectionDockWidget->SetSelectionModel(lmodel);
@@ -1449,22 +1449,25 @@ void ESToolkit::on_actionScreenshot_triggered(void) {
 }
 
 
-void ESToolkit::on_actionScatter_triggered()
-{
+void ESToolkit::on_actionScatter_triggered(void) {
     if(_assets.getCurrentLevel()) _assets.getCurrentLevel()->scatterTileNormalMaps();
 }
 
-void ESToolkit::on_actionGather_triggered()
-{
+void ESToolkit::on_actionGather_triggered(void) {
     if(_assets.getCurrentLevel()) _assets.getCurrentLevel()->gatherTileNormalMaps();
 }
 
-void ESToolkit::on_actionScatter_2_triggered()
-{
+void ESToolkit::on_actionScatter_2_triggered(void) {
     if(_assets.getCurrentLevel()) _assets.getCurrentLevel()->scatterTileSpecularMaps();
 }
 
-void ESToolkit::on_actionGather_2_triggered()
-{
+void ESToolkit::on_actionGather_2_triggered(void) {
     if(_assets.getCurrentLevel()) _assets.getCurrentLevel()->gatherTileSpecularMaps();
+}
+
+void ESToolkit::on_actionPrevious_Project_triggered(void) {
+	QSettings settings;
+	QString savedSettings = settings.value("settings", "").toString();
+	QString projectDir = settings.value("previousProject", "").toString();
+	_openProjectDir(projectDir);
 }

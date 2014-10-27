@@ -43,11 +43,12 @@ public:
             ESToolkit(QWidget *parent = nullptr);
     virtual ~ESToolkit(void);
 protected:
-    void changeEvent(QEvent *e);
-    void closeEvent(QCloseEvent *event);
+	virtual void changeEvent(QEvent *e);
+	virtual void closeEvent(QCloseEvent *event);
 
     void _engineInitialize(void);
     void _engineLoadAssets(void);
+	void _openProjectDir(const QString dir);
 private:
     Assets                  _assets;
     QUndoGroup              _undoGroup;
@@ -171,5 +172,6 @@ private slots:
     void on_actionGather_triggered();
     void on_actionScatter_2_triggered();
     void on_actionGather_2_triggered();
+	void on_actionPrevious_Project_triggered();
 };
 #endif // ESTOOLKIT_H
