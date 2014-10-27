@@ -6,6 +6,9 @@
 #include "elysian_asset.hpp"
 #include "elysian_tile.hpp"
 
+#include "elysian_asset_typedefs.hpp"
+
+
 #define ELYSIAN_LEVEL_NAME_SIZE				50
 #define ELYSIAN_LEVEL_STRING_SIZE			50
 #define ELYSIAN_LEVEL_PATH_SIZE				200
@@ -24,12 +27,13 @@
 #define ELYSIAN_TILE_WIDTH					32
 #define ELYSIAN_TILE_HEIGHT					32
 
+
 namespace elysian {
 
-    struct Level: public Asset {
+    struct LevelBase: public Asset {
 		Tile			tileset	[ELYSIAN_TILESHEET_TILES];
 		char			path	[ELYSIAN_LEVEL_PATH_SIZE];
-		char			name	[ELYSIAN_LEVEL_NAME_SIZE];
+        char			name	[ELYSIAN_LEVEL_NAME_SIZE];
 		char            string	[ELYSIAN_LEVEL_STRING_SIZE];
 
 		GYTexture*		tileSheet			= nullptr;
@@ -46,10 +50,10 @@ namespace elysian {
 
 		Tile*			getTile(const uint16_t index);
 		unsigned short	getTileAmount(void) const;
-		const char*		getName(void) const;
+        const char*		getDirName(void) const;
 		const char*		getPath(void) const;
 
-				~Level(void);
+                ~LevelBase(void);
 		bool	load(const char *const dir);
 		bool	save(const char *const dir);
 		bool	loadTileset(const char *const filename);
@@ -57,24 +61,21 @@ namespace elysian {
     };
 
 
-
-
-
 	// ==== INLINEZ ====
 
-		inline Tile *Level::getTile(const uint16_t index) { 
+        inline Tile *LevelBase::getTile(const uint16_t index) {
 			return &tileset[index];
 		}
 
-		inline unsigned short Level::getTileAmount(void) const {
+        inline unsigned short LevelBase::getTileAmount(void) const {
 			return tileAmount;
 		}
-		
-		inline const char *Level::getName(void) const {
+
+        inline const char *LevelBase::getDirName(void) const {
 			return name;
 		}
 
-		inline const char *Level::getPath(void) const {
+        inline const char *LevelBase::getPath(void) const {
 			return path;
 		}
 

@@ -1,12 +1,12 @@
 #include "elysian_particle_emitter.hpp"
 #include "elysian_area.hpp"
 #include "elysian_generic.hpp"
-#include "elysian_entity.hpp"
 #include "elysian_material.hpp"
 #include "elysian_debug.hpp"
 #include "elysian_force_generator.hpp"
 #include "elysian_camera_system.hpp"
-
+#include "elysian_asset_typedefs.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 
 namespace elysian {
 
@@ -271,7 +271,7 @@ void ParticleEmitter::emitFromEntity(const GYVector3 &pos, const float angle, co
     gyMatPush();
     gyMatLoadIdentity();
 
-    _entity->transform.apply();
+    _entity->_transform.apply();
 
     gyMatMultVec(&localPos, &worldPos, 1);
     gyMatPop();

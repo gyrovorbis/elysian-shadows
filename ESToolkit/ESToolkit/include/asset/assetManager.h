@@ -4,11 +4,13 @@
 #include "selectable.h"
 #include "assets.h"
 
+class TkLevel;
+typedef TkLevel Level;
+
 class Assets;
 class ESToolkit;
 class Selectable;
 class Project;
-class Level;
 class Area;
 
 class AssetManager {

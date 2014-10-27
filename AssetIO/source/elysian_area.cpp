@@ -1,8 +1,9 @@
 #include <string.h>
 #include "elysian_area.hpp"
 #include "elysian_level.hpp"
-#include "elysian_entity.hpp"
 #include "elysian_lua_manager.hpp"
+#include "elysian_asset_typedefs.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 
 using namespace std;
 
@@ -156,7 +157,7 @@ bool Area::loadMap(const char *const filename) {
 
 	allocMap();
 
-	gyFileRead(fp, tiles, sizeof(TileEntry) * width * height * ELYSIAN_AREA_MAP_LAYERS, NULL);
+    gyFileRead(fp, tiles, sizeof(TileEntry) * width * height * ELYSIAN_AREA_MAP_LAYERS, nullptr);
 
 	gyFileClose(&fp);
 
@@ -251,7 +252,7 @@ bool Area::saveEntities(const char *const /*filename*/) {
 
 #ifdef GYRO_GLAL
 void Area::populateVbo(void) {
-
+#ifdef ELYSIAN_ENGINE
 	glGenBuffers(1, &vboBuff);
 
 	VboEntry* data = (VboEntry*)malloc(sizeof(VboEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS*4);
@@ -275,6 +276,7 @@ void Area::populateVbo(void) {
 	glBufferData(GL_ARRAY_BUFFER, sizeof(VboEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS*4, data, GL_STATIC_DRAW);
 
 	free(data);
+#endif
 }
 
 #endif

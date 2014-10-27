@@ -1,8 +1,9 @@
 #include <algorithm>
 #include "elysian_audio_source.hpp"
 #include "elysian_area.hpp"
-#include "elysian_entity.hpp"
 #include "elysian_generic.hpp"
+#include "elysian_asset_typedefs.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 
 namespace elysian {
 
@@ -21,7 +22,7 @@ namespace elysian {
 	void AudioSource::update(void) {
 		if(_src) {
 			if(gyAudSourceIsPlaying(_src)) {
-				gyAudSourceSetfv(_src, GY_SOURCE_POS, &_entity->transform._pos);
+                gyAudSourceSetfv(_src, GY_SOURCE_POS, &_entity->_transform._pos);
 			} else {
 				//give the bitch back if we're done with it
 				_audioSys->releaseChannel(_src);

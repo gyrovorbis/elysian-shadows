@@ -11,7 +11,8 @@
 
 class SheetManagerTileSelection;
 struct SourceSheetEntry;
-class Level;
+class TkLevel;
+typedef TkLevel Level;
 
 class SheetManagerAssets: public QObject {
 	Q_OBJECT

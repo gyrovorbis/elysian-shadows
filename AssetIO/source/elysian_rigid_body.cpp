@@ -1,8 +1,9 @@
 #include "elysian_rigid_body.hpp"
-#include "elysian_entity.hpp"
 #include <kinetic/gyro_kinetic.h>
 #include "elysian_collidable.hpp"
 #include "elysian_generic.hpp"
+#include "elysian_asset_typedefs.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 
 namespace elysian {
 
@@ -59,8 +60,8 @@ void RigidBody::integrate(const float deltaTime) {
 	gyIntegrate(this,
 				stat,
                 deltaTime,
-				&_entity->transform._pos,
-				&_entity->transform._orientZ);
+                &_entity->_transform._pos,
+                &_entity->_transform._orientZ);
 
     if(resting) {
         stat->angDamping    /= _tileDamping;
@@ -73,8 +74,8 @@ void RigidBody::integrate(const float deltaTime) {
 }
 
 auto RigidBody::getTargetType(void) const -> TARGET_TYPE { return TARGET_RIGID_BODY; }
-float RigidBody::getOrientation(void) const { return getEntity()->transform._orientZ; }
-const GYVector3& RigidBody::getPosition(void) const { return getEntity()->transform._pos; }
+float RigidBody::getOrientation(void) const { return getEntity()->_transform._orientZ; }
+const GYVector3& RigidBody::getPosition(void) const { return getEntity()->_transform._pos; }
 const GYStatic* RigidBody::getStaticAttrib(void) const { return getEntity()->getCollidable()->getAttrib()->getStaticAttrib(); }
 bool RigidBody::getRestingOnBody(void) const { return getEntity()->getCollidable()->getRestingOnBody(); }
 

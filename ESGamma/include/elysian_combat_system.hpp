@@ -7,10 +7,12 @@
 #include "elysian_mem_pool.hpp"
 #include "elysian_collision_system.hpp"
 #include "elysian_gui_system.hpp"
+#include "elysian_asset_typedefs.hpp"
+
+ELYSIAN_ASSET_TYPEDEF(Entity)
 
 namespace elysian {
 
-	class Entity;
 	class Combat;
 	class CombatStatus;
 

@@ -5,7 +5,8 @@
 #include "elysian_tile.hpp"
 #include "assetManager.h"
 
-class Level;
+class TkLevel;
+typedef TkLevel Level;
 
 /*
   We have to do this to hook elysian::Tile to PropertyStandardItem and add attributes

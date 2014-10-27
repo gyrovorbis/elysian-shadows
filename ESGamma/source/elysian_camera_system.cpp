@@ -137,8 +137,8 @@ void CameraSystem::_updateState(CameraState*const state, const float /*deltaTime
 		float newYDist = 0.5f*minHeight;
 
 		auto fitEntity = [&](const Entity*const entity) {
-			float xDist = fabs(entity->transform._pos.x-state->_keyFrame._pos.x);
-			float yDist = fabs(entity->transform._pos.y-state->_keyFrame._pos.y);
+            float xDist = fabs(entity->_transform._pos.x-state->_keyFrame._pos.x);
+            float yDist = fabs(entity->_transform._pos.y-state->_keyFrame._pos.y);
 
 			//we can fit this fucker onscreen
 			if(xDist <= maxXDist && yDist <= maxYDist) {
@@ -381,8 +381,8 @@ void CameraSystem::update(void) {
         //Follow entities
         if(_curState->focalEntity) {
             _curState->_keyFrame._pos = GYVector3 {
-                _curState->focalEntity->transform._pos.x,
-                _curState->focalEntity->transform._pos.y - _curState->focalEntity->transform._pos.z,
+                _curState->focalEntity->_transform._pos.x,
+                _curState->focalEntity->_transform._pos.y - _curState->focalEntity->_transform._pos.z,
                 /*_curState->focalEntity->transform.getPosZ()*/-ZCoordConstants::mapBase,
                 //0.0f
             };
@@ -418,8 +418,8 @@ void CameraSystem::update(void) {
 
         if(_curState->focalEntity) {
             _curState->_keyFrame._pos = GYVector3 {
-                _curState->focalEntity->transform._pos.x,
-                _curState->focalEntity->transform._pos.y +200.0f,
+                _curState->focalEntity->_transform._pos.x,
+                _curState->focalEntity->_transform._pos.y +200.0f,
                 /*_curState->focalEntity->transform.getPosZ()*/-ZCoordConstants::mapBase+200.0f,
                 //0.0f
             };
@@ -512,20 +512,20 @@ void CameraSystem::transform(GYVector4* dest, const GYVector4* src) {
 
 bool CameraSystem::isOnscreen(const Entity &entity) {
 	
-	if(entity.transform._orientZ == 0.0f) { //Entities without rotation
-		return ((entity.transform._pos.x + 0.5f*entity.transform._size.x >= _curState->scrStartX &&
-				entity.transform._pos.x - 0.5f*entity.transform._size.x <= _curState->scrEndX) &&
-				(entity.transform._pos.y + 0.5f*entity.transform._size.y >= _curState->scrStartY &&
-				entity.transform._pos.y - 0.5f*entity.transform._size.y <= _curState->scrEndY));
+    if(entity._transform._orientZ == 0.0f) { //Entities without rotation
+        return ((entity._transform._pos.x + 0.5f*entity._transform._size.x >= _curState->scrStartX &&
+                entity._transform._pos.x - 0.5f*entity._transform._size.x <= _curState->scrEndX) &&
+                (entity._transform._pos.y + 0.5f*entity._transform._size.y >= _curState->scrStartY &&
+                entity._transform._pos.y - 0.5f*entity._transform._size.y <= _curState->scrEndY));
 	} else { //Entities with rotation
 		//Approximate region by bounding as a square with largest dimension
-		float bigSide = (entity.transform._size.x > entity.transform._size.y)? 
-			0.5f*entity.transform._size.x : 0.5f*entity.transform._size.y;
+        float bigSide = (entity._transform._size.x > entity._transform._size.y)?
+            0.5f*entity._transform._size.x : 0.5f*entity._transform._size.y;
 
-		return ((entity.transform._pos.x + bigSide >= _curState->scrStartX &&
-				entity.transform._pos.x - bigSide <= _curState->scrEndX) &&
-				(entity.transform._pos.y + bigSide >= _curState->scrStartY &&
-				entity.transform._pos.y - bigSide <= _curState->scrEndY));
+        return ((entity._transform._pos.x + bigSide >= _curState->scrStartX &&
+                entity._transform._pos.x - bigSide <= _curState->scrEndX) &&
+                (entity._transform._pos.y + bigSide >= _curState->scrStartY &&
+                entity._transform._pos.y - bigSide <= _curState->scrEndY));
 	}
 }
 

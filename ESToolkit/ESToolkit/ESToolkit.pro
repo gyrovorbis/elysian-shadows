@@ -204,7 +204,8 @@ SOURCES += source/asset/project.cpp \
     ../../ESGamma/source/elysian_system.cpp \
     ../../ESGamma/source/elysian_timer_system.cpp \
     ../../ESGamma/source/elysian_warp_system.cpp \
-    source/dialog/luaExplorerDialog.cpp
+    source/dialog/luaExplorerDialog.cpp \
+    source/core/rowsJoinerProxyModel.cpp
 
 HEADERS += include/asset/project.h \
     include/asset/level.h \
@@ -311,7 +312,9 @@ HEADERS += include/asset/project.h \
     ../../ESGamma/source/elysian_system.cpp.orig \
     ../../AssetIO/include/elysian_light_source.hpp \
     include/asset/luaTableStandardItemModel.h \
-    include/dialog/luaExplorerDialog.h
+    include/dialog/luaExplorerDialog.h \
+    include/core/rowsJoinerProxyModel.h \
+    ../../AssetIO/include/elysian_asset_typedefs.hpp
 
 FORMS += form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \

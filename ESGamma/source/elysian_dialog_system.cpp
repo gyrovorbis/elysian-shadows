@@ -37,8 +37,8 @@ DialogSystem::DialogSystem(void) {
 	unsigned width, height;
 	getGuiSys()->getResolution(width, height);
 
-	_mainCanvas.transform.setSize(640.0f, 100.0f);
-	_mainCanvas.transform.setPos(((float)width)*0.5f, (float)height- (float)height*ELYSIAN_DIALOG_SYSTEM_MARGIN_SIZE - 50.0f, 6.0f);
+    _mainCanvas._transform.setSize(640.0f, 100.0f);
+    _mainCanvas._transform.setPos(((float)width)*0.5f, (float)height- (float)height*ELYSIAN_DIALOG_SYSTEM_MARGIN_SIZE - 50.0f, 6.0f);
 	_mainCanvas.setVertexColor(0, canvColor1);
 	_mainCanvas.setVertexColor(1, canvColor2);
 	_mainCanvas.setVertexColor(2, canvColor3);
@@ -80,7 +80,7 @@ void DialogSystem::render(void) {
 
 	if(!_curDialog) return;
 
-	GYVector3 basePos = _mainCanvas.transform._pos;
+    GYVector3 basePos = _mainCanvas._transform._pos;
 
 	//There is an ongoing conversation.
 	float alpha = fabs(basePos.y-240.0f)/110.0f;
@@ -91,7 +91,7 @@ void DialogSystem::render(void) {
 		//Render Text
 		for(unsigned int i = 0; i <= _currentLine; ++i) {
 			getGuiSys()->twcen.setAlpha(255*alpha);
-			getGuiSys()->twcen.transform.setPos(basePos.x-(_mainCanvas.transform._size.x/2.0f)+30.0f, basePos.y-(_mainCanvas.transform._size.y/2.0f)+35.0f+25.0f*i, _mainCanvas.transform._pos.z+1);
+            getGuiSys()->twcen._transform.setPos(basePos.x-(_mainCanvas._transform._size.x/2.0f)+30.0f, basePos.y-(_mainCanvas._transform._size.y/2.0f)+35.0f+25.0f*i, _mainCanvas._transform._pos.z+1);
 			if(i != _currentLine) getGuiSys()->twcen.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, "%s", _textLines[i]);
 			else {
 				strncpy(buffer, _textLines[i], _currentCharacter);
@@ -104,17 +104,17 @@ void DialogSystem::render(void) {
 		//Render Nametag
 		if(_curDialog && _boxState != BOX_INPUT && _curScreen.screen->getEntity()) {//Check top or bottom
 			GYVector3 screenPos;
-			getCameraSys()->transform(&screenPos, &_curScreen.screen->getEntity()->transform._pos);
+            getCameraSys()->transform(&screenPos, &_curScreen.screen->getEntity()->_transform._pos);
 			getGuiSys()->verdana.setAlpha(alpha*255);
 			switch(_posState) {
 				case POS_BOTTOM:
-					getGuiSys()->verdana.transform.setPos(screenPos.x, basePos.y-(_mainCanvas.transform._size.y/2.0f)+5.0f, _mainCanvas.transform._pos.z+1);
+                    getGuiSys()->verdana._transform.setPos(screenPos.x, basePos.y-(_mainCanvas._transform._size.y/2.0f)+5.0f, _mainCanvas._transform._pos.z+1);
 					getGuiSys()->verdana.drawStringf(Font::NO_FORMAT, Font::C_ALIGN, "%s", _curScreen.screen->getEntity()->getName());
 					break;
 				case POS_MOVE_DOWN:
 					break;
 				case POS_TOP:
-					getGuiSys()->verdana.transform.setPos(screenPos.x, basePos.y+(_mainCanvas.transform._size.y/2.0f)+5.0f, _mainCanvas.transform._pos.z+1);
+                    getGuiSys()->verdana._transform.setPos(screenPos.x, basePos.y+(_mainCanvas._transform._size.y/2.0f)+5.0f, _mainCanvas._transform._pos.z+1);
 					getGuiSys()->verdana.drawStringf(Font::NO_FORMAT, Font::C_ALIGN, "%s", _curScreen.screen->getEntity()->getName());
 					break;
 				case POS_MOVE_UP:
@@ -133,13 +133,13 @@ void DialogSystem::render(void) {
 				maxLen = getGuiSys()->twcen.getStringPixelWidth(_curScreen.prompt->getOptionText(i));
 		}
 
-		_optionBox.transform.setSize(maxLen+10.0f, _curScreen.prompt->getOptionCount()*25.0f+10.0f);
+        _optionBox._transform.setSize(maxLen+10.0f, _curScreen.prompt->getOptionCount()*25.0f+10.0f);
 		if(_posState == POS_TOP)
-		_optionBox.transform.setPos((4.0f/5.0f)*_mainCanvas.transform._size.x-0.5f*_optionBox.transform._size.x, _mainCanvas.transform._pos.y+0.5*_optionBox.transform._size.y);
+        _optionBox._transform.setPos((4.0f/5.0f)*_mainCanvas._transform._size.x-0.5f*_optionBox._transform._size.x, _mainCanvas._transform._pos.y+0.5*_optionBox._transform._size.y);
 		else
-		_optionBox.transform.setPos((4.0f/5.0f)*_mainCanvas.transform._size.x-0.5f*_optionBox.transform._size.x, _mainCanvas.transform._pos.y-0.5*_optionBox.transform._size.y);
+        _optionBox._transform.setPos((4.0f/5.0f)*_mainCanvas._transform._size.x-0.5f*_optionBox._transform._size.x, _mainCanvas._transform._pos.y-0.5*_optionBox._transform._size.y);
 
-		_optionBox.transform._pos.z = _mainCanvas.transform._pos.z+2;
+        _optionBox._transform._pos.z = _mainCanvas._transform._pos.z+2;
 		/*
 
 		switch(_posState) {
@@ -155,18 +155,18 @@ void DialogSystem::render(void) {
 		//_optionBox.setAlpha(0.5f, 0.5f, 0.5f, 0.5f);
 		_optionBox.render();
 		//Render options
-		getGuiSys()->twcen.transform._pos.z += 3.0f;
+        getGuiSys()->twcen._transform._pos.z += 3.0f;
 		for(unsigned int i = 0; i < _curScreen.prompt->getOptionCount(); ++i) {
 		//	if(_posState == POS_TOP)
-			getGuiSys()->twcen.transform.setPos(_optionBox.transform._pos.x-0.5*_optionBox.transform._size.x+15.0f, _optionBox.transform._pos.y-0.5*_optionBox.transform._size.y + 25.0+ i*25.0f);
+            getGuiSys()->twcen._transform.setPos(_optionBox._transform._pos.x-0.5*_optionBox._transform._size.x+15.0f, _optionBox._transform._pos.y-0.5*_optionBox._transform._size.y + 25.0+ i*25.0f);
 		//	else
 			//guiSystem->twcen.transform.setPosition(_optionBox.transform.getPosition().x-0.5*_optionBox.transform.getSize().x+15.0f, _optionBox.transform.getPosition().y-0.5*_optionBox.transform.getSize().y + 25.0+ i*25.0f);
 			getGuiSys()->twcen.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, "%s", _curScreen.prompt->getOptionText(i));
 		}
 		//Render cursor
-		_cursor.transform._pos.z = _mainCanvas.transform._pos.z+3;
-		_cursor.transform.setSize(_optionBox.transform._size.x, 25.0f);
-		_cursor.transform.setPos(_optionBox.transform._pos.x-0.5f*_optionBox.transform._size.x+0.5f*_cursor.transform._size.x, _optionBox.transform._pos.y-0.5f*_optionBox.transform._size.y+25.0f*_currentOption+0.5f*_cursor.transform._size.y+5.0f);
+        _cursor._transform._pos.z = _mainCanvas._transform._pos.z+3;
+        _cursor._transform.setSize(_optionBox._transform._size.x, 25.0f);
+        _cursor._transform.setPos(_optionBox._transform._pos.x-0.5f*_optionBox._transform._size.x+0.5f*_cursor._transform._size.x, _optionBox._transform._pos.y-0.5f*_optionBox._transform._size.y+25.0f*_currentOption+0.5f*_cursor._transform._size.y+5.0f);
 		_cursor.render();
 
 	}
@@ -181,10 +181,10 @@ void DialogSystem::update(void) {
 		FacePlayer();
 
 		GYVector3 curPos;
-		getCameraSys()->transform(&curPos, &_curScreen.screen->getEntity()->transform._pos);
+        getCameraSys()->transform(&curPos, &_curScreen.screen->getEntity()->_transform._pos);
 
 		GYVector3 dist;
-		gyVec3Sub(&dist, &getPartySys()->getCharacterPartyMember(0u)->transform._pos, &_curScreen.screen->getEntity()->transform._pos);
+        gyVec3Sub(&dist, &getPartySys()->getCharacterPartyMember(0u)->_transform._pos, &_curScreen.screen->getEntity()->_transform._pos);
 		if(fabs(dist.x) > _maxNonmodalDist.x || fabs(dist.y) > _maxNonmodalDist.y) {
 			_prevScreen.screen = _curScreen.screen;
 			_curScreen.screen = nullptr;
@@ -195,11 +195,11 @@ void DialogSystem::update(void) {
 		unsigned width, height;
 		getGuiSys()->getResolution(width, height);
 
-		_mainCanvas.transform._pos.x = curPos.x;
-		if(_mainCanvas.transform._pos.x- _mainCanvas.transform._size.x*0.5f < 0)
-			_mainCanvas.transform._pos.x = _mainCanvas.transform._size.x*0.5f;
-		else if (_mainCanvas.transform._pos.x + _mainCanvas.transform._size.x*0.5f > width)
-			_mainCanvas.transform._pos.x = width - _mainCanvas.transform._size.x*0.5f;
+        _mainCanvas._transform._pos.x = curPos.x;
+        if(_mainCanvas._transform._pos.x- _mainCanvas._transform._size.x*0.5f < 0)
+            _mainCanvas._transform._pos.x = _mainCanvas._transform._size.x*0.5f;
+        else if (_mainCanvas._transform._pos.x + _mainCanvas._transform._size.x*0.5f > width)
+            _mainCanvas._transform._pos.x = width - _mainCanvas._transform._size.x*0.5f;
 
 		const float yEntityTop = (float)height*ELYSIAN_DIALOG_SYSTEM_DIST_MARGIN_SIZE;
 		const float yEntityBottom = (float)height;// - (float)height*ELYSIAN_DIALOG_SYSTEM_DIST_MARGIN_SIZE;
@@ -215,28 +215,28 @@ void DialogSystem::update(void) {
 				if(curPos.y < yEntityTop) _posState = POS_MOVE_DOWN;
 				break;
 			case POS_MOVE_UP:
-				if(_mainCanvas.transform._pos.y <= yTop) {
-					_mainCanvas.transform.setPos(_mainCanvas.transform._pos.x, yTop);
+                if(_mainCanvas._transform._pos.y <= yTop) {
+                    _mainCanvas._transform.setPos(_mainCanvas._transform._pos.x, yTop);
 					_posState = POS_TOP;
 				}
 				else if(curPos.y < yTop) _posState = POS_MOVE_DOWN;
 				else {
-					float alpha = fabs(_mainCanvas.transform._pos.y-240.0f)/600.0f;// - 0.8f;
+                    float alpha = fabs(_mainCanvas._transform._pos.y-240.0f)/600.0f;// - 0.8f;
 					if(alpha < 0.0f) alpha = 0.0f;
-					_mainCanvas.transform.translate(0.0f, -(350.0f-130.0f)*getTimerSys()->getDeltaTime()*2.0f);
+                    _mainCanvas._transform.translate(0.0f, -(350.0f-130.0f)*getTimerSys()->getDeltaTime()*2.0f);
 					_mainCanvas.setVerticesAlpha(alpha*255, alpha*255, alpha*255, alpha*255);
 				}
 				break;
 			case POS_MOVE_DOWN:
-				if(_mainCanvas.transform._pos.y >= yBottom) {
-					_mainCanvas.transform.setPos(_mainCanvas.transform._pos.x, yBottom);
+                if(_mainCanvas._transform._pos.y >= yBottom) {
+                    _mainCanvas._transform.setPos(_mainCanvas._transform._pos.x, yBottom);
 					_posState = POS_BOTTOM;
 				}
 				else if(curPos.y > yBottom) _posState = POS_MOVE_UP;
 				else {
-					float alpha = fabs(_mainCanvas.transform._pos.y-240.0f)/600.0f;// - 0.8f;
+                    float alpha = fabs(_mainCanvas._transform._pos.y-240.0f)/600.0f;// - 0.8f;
 					if(alpha < 0.0f) alpha = 0.0f;
-					_mainCanvas.transform.translate(0.0f, (350.0f-130.0f)*getTimerSys()->getDeltaTime()*2.0f);
+                    _mainCanvas._transform.translate(0.0f, (350.0f-130.0f)*getTimerSys()->getDeltaTime()*2.0f);
 					_mainCanvas.setVerticesAlpha(alpha*255, alpha*255, alpha*255, alpha*255);
 				}
 				break;

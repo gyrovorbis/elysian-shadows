@@ -39,7 +39,7 @@ public:
         _key(key)
     {
         PropertyStandardItem<TVal, LuaTableFieldItem<TVal, TKey>>::_latentInit(this, &LuaTableFieldItem<TVal, TKey>::getValue, &LuaTableFieldItem<TVal, TKey>::setValue, UndoItem::LUA_TABLE_FIELD_ITEM, nullptr);
-        qDebug() << "FieldItem(" << key << ")";
+       // qDebug() << "FieldItem(" << key << ")";
     }
 
     TVal getValue(void) const;
@@ -66,7 +66,7 @@ protected:
         lua_pushvalue(*_mainState, -2);
         OOLUA::pull(*_mainState, key);
         //lua_pop(*_mainState, 1);
-        qDebug() << "KEY - " << key;
+       // qDebug() << "KEY - " << key;
 
         switch(valueType) {
         case LUA_TSTRING:
@@ -87,7 +87,7 @@ protected:
     void _addTableFields(lua_State*const state, const OOLUA::Lua_table_ref& tableRef) {
         OOLUA::Table curTable(tableRef);
 
-        qDebug() << "oolua_pairs_begin ";
+    //    qDebug() << "oolua_pairs_begin ";
                    // _stackBalanceBegin();
         oolua_pairs(curTable) {
             const int valueType   = lua_type(*_mainState, -1);
@@ -159,7 +159,7 @@ protected:
         } oolua_pairs_end()
 
 
-                qDebug() << "oolua_pairs_end";
+             //   qDebug() << "oolua_pairs_end";
         //_cStackDump();
 
     }

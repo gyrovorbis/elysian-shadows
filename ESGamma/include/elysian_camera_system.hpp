@@ -6,6 +6,7 @@
 #include "elysian_subprocess_manager.hpp"
 #include "elysian_timer_system.hpp"
 #include "elysian_zcoords.hpp"
+#include "elysian_asset_typedefs.hpp"
 
 #include <stdlib.h>
 
@@ -17,9 +18,10 @@
 #define ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE		0.1f
 #define ELYSIAN_CAMERA_STATE_SCALE_INTERP_EPSILON	0.01f
 
+ELYSIAN_ASSET_TYPEDEF(Entity)
+
 namespace elysian {
 	
-	class Entity;
 	class GameInput;
 	class CameraSystem;
 	struct CameraState;

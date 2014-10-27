@@ -77,7 +77,8 @@ private:
 };
 	
 	class Collidable: public Component {
-        friend class Entity;
+        friend Entity;
+        friend class EntityBase;
 		friend class CollisionSystem;
 		friend class RigidBodySystem;
 

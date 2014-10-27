@@ -8,11 +8,13 @@ namespace elysian {
     struct TileEntry;
 }
 
-class Entity;
+class TkEntity;
+typedef TkEntity Entity;
 template<typename T>
 class TileSelection;
 class Project;
-class Level;
+class TkLevel;
+typedef TkLevel Level;
 class Area;
 
 /*

@@ -5,8 +5,9 @@
 #include <stdint.h>
 #include <gyro.h>
 #include "elysian_asset.hpp"
-#include "elysian_level.hpp"
 #include "elysian_mem_pool.hpp"
+#include "elysian_asset_typedefs.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_level.hpp", "level.h")
 
 #define ELYSIAN_MAP_BOUNDARY_CHECKS false //PLEASE, GOD, TAKE ME OUT BEFORE RELEASE!!!!!!
 #define ELYSIAN_AREA_USE_INIT_LUA	true
@@ -52,10 +53,11 @@
 #	define ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(l, t) l[t]
 #endif
 
+ELYSIAN_ASSET_TYPEDEF(Level)
+ELYSIAN_ASSET_TYPEDEF(Entity)
+
 namespace elysian {
 
-    struct Level;
-    class Entity;
 	class Renderable;
     class Animation;
     class Collidable;

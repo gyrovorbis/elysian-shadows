@@ -3,12 +3,15 @@
 
 #include <vector>
 #include "elysian_system.hpp"
+#include "elysian_asset_typedefs.hpp"
 
 #include <gyro.h>
 
+ELYSIAN_ASSET_TYPEDEF(Level)
+
+
 namespace elysian {
 
-	struct Level;
 	struct Area;
 
 	class LevelSystem: public System { 

@@ -5,14 +5,15 @@
 #include <gyro_wav_api.h>
 #include <gyro_ogg_api.h>
 #include "elysian_system.hpp"
+#include "elysian_asset_typedefs.hpp"
 
 #define ELYSIAN_AUDIO_CHANNELS			32
 #define ELYSIAN_AUDIO_REFERENCE_DIST	10
 #define ELYSIAN_AUDIO_ZSCALE			32.0f
 
-namespace elysian {
+ELYSIAN_ASSET_TYPEDEF(Entity)
 
-	class Entity;
+namespace elysian {
 	class AudioSource;
 
 	class AudioSystem: public System {

@@ -11,7 +11,8 @@
 namespace elysian {
 	
 	class Warp: public Component {
-		friend class Entity;
+        friend class EntityBase;
+        friend Entity;
 		friend class WarpSystem;
 	private:
 		

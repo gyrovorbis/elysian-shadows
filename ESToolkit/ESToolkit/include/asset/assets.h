@@ -6,11 +6,14 @@
 #include "elysian_level_manager.hpp"
 #include "selectable.h"
 
+class TkLevel;
+typedef TkLevel Level;
+
 class Project;
-class Level;
 class Area;
 class Component;
-class Entity;
+class TkEntity;
+typedef TkEntity Entity;
 
 
 class Assets: public QObject, public elysian::LevelManager {

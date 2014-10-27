@@ -2,15 +2,16 @@
 #define ELYSIAN_RENDERABLE_HPP
 
 #include "elysian_component.hpp"
-#include "elysian_entity.hpp"
 #include "elysian_quad_sprite_attrib.hpp"
 #include "elysian_material.hpp"
+#include "elysian_asset_typedefs.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 #include <gyro_video_api.h>
 
 namespace elysian {
 
 	class Renderable: public Component {
-	friend class Entity;
+    friend class EntityBase;
 	private:
 		GYTexCoord2			_texCoord[4];
 		Material*			_material		= nullptr;

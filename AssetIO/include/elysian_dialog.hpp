@@ -3,14 +3,15 @@
 
 #include <gyro_matrix_api.h>
 #include <vector>
+#include "elysian_asset_typedefs.hpp"
 
 #define ELYSIAN_DIALOG_SCREEN_TEXT_BUFFER_SIZE			500
 #define ELYSIAN_DIALOG_PROMPT_OPTION_TEXT_BUFFER_SIZE	100
 #define ELYSIAN_DIALOG_PROMPT_MAX_OPTION_COUNT			6
 
-namespace elysian {
+ELYSIAN_ASSET_TYPEDEF(Entity)
 
-	class Entity;
+namespace elysian {
 
 	class DialogScreen {
 	public:

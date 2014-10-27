@@ -35,13 +35,13 @@ namespace elysian {
 
 	static char buffer[ELYSIAN_LEVEL_PATH_SIZE+50];
 
-	Level::~Level(void) {
+    LevelBase::~LevelBase(void) {
 		gyVidTexDestroy(tileSheet);
 		gyVidTexDestroy(normalSheet);
 		gyVidTexDestroy(specularSheet);
 	}
 
-	bool Level::load(const char *const dir) {
+    bool LevelBase::load(const char *const dir) {
 		bool success = true;
 
 		dbgprintf(LOG_VERBOSE, "Level::Load(%s)", dir);
@@ -108,7 +108,7 @@ namespace elysian {
 		return success;
 	}
 
-	bool Level::save(const char *const dir) {
+    bool LevelBase::save(const char *const dir) {
 		bool success = true;
 
 		dbgprintf(LOG_VERBOSE, "Level::save(%s)", dir);
@@ -122,7 +122,7 @@ namespace elysian {
 		return success;
 	}
 
-	bool Level::loadTileset(const char *const filename) {
+    bool LevelBase::loadTileset(const char *const filename) {
 		GYFile *fp;
 		char *buffer, *ptr;
 		int ptr_inc = 0;
@@ -170,7 +170,7 @@ namespace elysian {
 		return true;
 	}
 
-	bool Level::saveTileset(const char *const filename) {
+    bool LevelBase::saveTileset(const char *const filename) {
 		FILE* file = fopen(filename, "w");
 
 		dbgprintf(LOG_VERBOSE, "Level::saveTileset(%s)", filename);

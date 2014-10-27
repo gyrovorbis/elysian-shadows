@@ -5,14 +5,15 @@
 #include "assetManager.h"
 
 class Area;
-class Entity;
+class TkEntity;
+typedef TkEntity Entity;
 
 class EntityTreeWidget: public QTreeWidget, public AssetManager {
     Q_OBJECT
 private:
     Area *_curArea;
 public:
-    EntityTreeWidget(QWidget *parent=0);
+    EntityTreeWidget(QWidget *parent=nullptr);
 public slots:
     void OnAreaChange(Area * const area);
     void OnAddEntity(Project *const project, Level *const level, Area *const area, Entity *const entity);

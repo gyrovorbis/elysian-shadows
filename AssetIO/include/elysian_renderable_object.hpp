@@ -6,9 +6,9 @@
 namespace elysian {
 
 	struct RenderableObject {
-		InstanceTransform transform;
+        InstanceTransform _transform;
 		virtual void render(void) = 0;
-		InstanceTransform &getTransform(void) { return transform; }
+        InstanceTransform &getTransform(void) { return _transform; }
 	};
 }
 

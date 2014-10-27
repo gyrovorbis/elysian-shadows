@@ -12,7 +12,7 @@ bool Font::loadTextData(const char* const img_file, int sheet_width, int sheet_h
     Debug::printf(Debug::VERBOSE, "Font::Load(%s, %s)", img_file, width_file);
     Debug::push();
 
-	transform.setSize(16.0f, 32.0f);
+    _transform.setSize(16.0f, 32.0f);
 
 	//CHECK IF TEXTURE IS EVER LOADED
 	if(!(_tex = gyVidTexCreateSheetUniform(img_file, sheet_width, sheet_height, sprite_width, sprite_height))) {
@@ -64,19 +64,19 @@ void Font::drawStringf(const FORMAT format, const ALIGNMENT align, const char *c
 
 void Font::drawString(const FORMAT format, const ALIGNMENT align, const char *const buffer) {
 	int i;
-	float currentX = transform._pos.x;
-	float currentY = transform._pos.y;
+    float currentX = _transform._pos.x;
+    float currentY = _transform._pos.y;
 	int temp = 0;
 
 	if(align == C_ALIGN) {
 		temp = getStringPixelWidth(buffer);
-		currentX = (transform._pos.x - (temp/2)-8);
+        currentX = (_transform._pos.x - (temp/2)-8);
 	}
 	else if(align == R_ALIGN) {
 		for(i = 0; i < (int)strlen(buffer); ++i) {
 			temp += _charWidth[(int)buffer[i]]+2;
 		}
-		currentX = (transform._pos.x - temp - 16);
+        currentX = (_transform._pos.x - temp - 16);
 	}
 
 	i = 0;
@@ -124,8 +124,8 @@ void Font::_renderChar(const FORMAT /*format*/, float &current_x, float &current
 			//this->setFrame((int)str[i]);
 
 			gyMatPush();
-			transform.setPos(current_x, current_y);
-			transform.apply();
+            _transform.setPos(current_x, current_y);
+            _transform.apply();
 			gyVidRect((int)str[i]);
 			gyMatPop();
 

@@ -42,6 +42,7 @@
 #include "luaTableStandardItemModel.h"
 #include "luatables.h"
 #include "luaExplorerDialog.h"
+#include "rowsJoinerProxyModel.h"
 
 ESToolkit::ESToolkit(QWidget *parent):
 	QMainWindow(parent),
@@ -533,11 +534,11 @@ void ESToolkit::OnAreaRenamed(const QString /*oldName*/, const QString /*newName
 
 	while(_areaTabBar->count()) _areaTabBar->removeTab(0);
 	for(unsigned int i = 0; i < _assets.getCurrentLevel()->getAreaAmount(); ++i) {
-		_areaTabBar->addTab(_assets.getCurrentLevel()->getAreaByIndex(i)->getName());
+        _areaTabBar->addTab(_assets.getCurrentLevel()->getAreaByIndex(i)->getNodeName());
 	}
 
 	for(int i = 0; i < _areaTabBar->count(); ++i) {
-		if(_areaTabBar->tabText(i) == _assets.getCurrentArea()->getName()) _areaTabBar->setCurrentIndex(i);
+        if(_areaTabBar->tabText(i) == _assets.getCurrentArea()->getNodeName()) _areaTabBar->setCurrentIndex(i);
 	}
 
 	_ignoreAreaTabChange = false;
@@ -550,7 +551,7 @@ void ESToolkit::OnAddArea(Project *const /*project*/, Level *const level, Area *
 
 	if(level == _assets.getCurrentLevel()) { //Don't bother updating the tabs otherwise
 		_ignoreAreaTabChange = true;
-		_areaTabBar->addTab(area->getName());
+        _areaTabBar->addTab(area->getNodeName());
 		_ignoreAreaTabChange = false;
 	}
 }
@@ -560,7 +561,7 @@ void ESToolkit::OnRemoveArea(Project *const /*project*/, Level *const level, Are
 
 	if(level == _assets.getCurrentLevel()) { //Don't bother updating the tabs otherwise
 		for(int i = 0; i < _areaTabBar->count(); ++i) {
-			if(_areaTabBar->tabText(i) == area->getName()) {
+            if(_areaTabBar->tabText(i) == area->getNodeName()) {
 				_ignoreAreaTabChange = true;
 				_areaTabBar->removeTab(i);
 				_ignoreAreaTabChange = false;
@@ -572,7 +573,7 @@ void ESToolkit::OnRemoveArea(Project *const /*project*/, Level *const level, Are
 
 void ESToolkit::OnTabChanged(int index) {
 	if(_ignoreAreaTabChange) return;
-	if(_assets.getCurrentArea() && _assets.getCurrentArea()->getName() == _areaTabBar->tabText(index)) return;
+    if(_assets.getCurrentArea() && _assets.getCurrentArea()->getNodeName() == _areaTabBar->tabText(index)) return;
 	_assets.setCurrentArea(_areaTabBar->tabText(index));
 }
 
@@ -707,7 +708,7 @@ void ESToolkit::OnAreaChanged(Area *const area) {
 	//Update tabs
 	if(area) {
 		for(int i = 0; i < _areaTabBar->count(); ++i) {
-			if(_areaTabBar->tabText(i) == area->getName()) _areaTabBar->setCurrentIndex(i);
+            if(_areaTabBar->tabText(i) == area->getNodeName()) _areaTabBar->setCurrentIndex(i);
 		}
 	}
 	_ui->mapView->deleteSelectionItemGroup();
@@ -748,7 +749,7 @@ void ESToolkit::OnLevelChanged(Level *const level) {
 		while(_areaTabBar->count()) _areaTabBar->removeTab(0);
 
 		for(unsigned int i = 0; i < _assets.getCurrentLevel()->getAreaAmount(); ++i) {
-			_areaTabBar->addTab(_assets.getCurrentLevel()->getAreaByIndex(i)->getName());
+            _areaTabBar->addTab(_assets.getCurrentLevel()->getAreaByIndex(i)->getNodeName());
 		}
 		//_areaTabBar->setCurrentIndex(0);
 		_ignoreAreaTabChange = false;
@@ -836,7 +837,7 @@ void ESToolkit::on_actionFileOpenProject_triggered(){
 void ESToolkit::on_actionFileCloseProject_triggered()
 {
 	//emit CloseProject
-	_assets.removeProject(_assets.getCurrentProject()->getName());
+    _assets.removeProject(_assets.getCurrentProject()->getNodeName());
 }
 
 void ESToolkit::on_actionFileSaveCurrentProject_triggered() {
@@ -878,19 +879,19 @@ void ESToolkit::on_actionEntityRemove_triggered() {
 }
 
 void ESToolkit::on_actionEntityAttachRenderable_triggered() {
-	((Entity *)_assets.getCurrentSelection())->AttachRenderable();
+//	((Entity *)_assets.getCurrentSelection())->AttachRenderable();
 }
 
 void ESToolkit::on_actionEntityAttachAnimation_triggered() {
-	((Entity *)_assets.getCurrentSelection())->AttachAnimation();
+//	((Entity *)_assets.getCurrentSelection())->AttachAnimation();
 }
 
 void ESToolkit::on_actionEntityAttachCollidable_triggered() {
-	((Entity *)_assets.getCurrentSelection())->AttachCollidable();
+//	((Entity *)_assets.getCurrentSelection())->AttachCollidable();
 }
 
 void ESToolkit::on_actionEntityAttachWarp_triggered() {
-	((Entity *)_assets.getCurrentSelection())->AttachWarp();
+//	((Entity *)_assets.getCurrentSelection())->AttachWarp();
 }
 
 #if 0
@@ -909,24 +910,24 @@ void ESToolkit::on_actionEntityAttachEnemy_triggered() {
 #endif
 
 void ESToolkit::on_actionEntityAttachCharacter_triggered() {
-	((Entity *)_assets.getCurrentSelection())->AttachCharacter();
+//	((Entity *)_assets.getCurrentSelection())->AttachCharacter();
 }
 
 
 void ESToolkit::on_actionEntityRemoveRenderable_triggered() {
-	((Entity *)_assets.getCurrentSelection())->RemoveRenderable();
+//	((Entity *)_assets.getCurrentSelection())->RemoveRenderable();
 }
 
 void ESToolkit::on_actionEntityRemoveAnimation_triggered() {
-	((Entity *)_assets.getCurrentSelection())->RemoveAnimation();
+//	((Entity *)_assets.getCurrentSelection())->RemoveAnimation();
 }
 
 void ESToolkit::on_actionEntityRemoveCollidable_triggered() {
-	((Entity *)_assets.getCurrentSelection())->RemoveCollidable();
+//	((Entity *)_assets.getCurrentSelection())->RemoveCollidable();
 }
 
 void ESToolkit::on_actionEntityRemoveWarp_triggered() {
-	((Entity *)_assets.getCurrentSelection())->RemoveWarp();
+//	((Entity *)_assets.getCurrentSelection())->RemoveWarp();
 }
 
 #if 0
@@ -944,7 +945,7 @@ void ESToolkit::on_actionEntityRemoveEnemy_triggered() {
 #endif
 
 void ESToolkit::on_actionEntityRemoveCharacter_triggered() {
-	((Entity *)_assets.getCurrentSelection())->RemoveCharacter();
+//	((Entity *)_assets.getCurrentSelection())->RemoveCharacter();
 }
 
 void ESToolkit::on_actionAreaRemove_triggered() {
@@ -952,7 +953,7 @@ void ESToolkit::on_actionAreaRemove_triggered() {
 		return;
 	}
 
-	QString name = _assets.getCurrentArea()->getName();
+    QString name = _assets.getCurrentArea()->getNodeName();
 	if(_assets.getCurrentSelection() == _assets.getCurrentArea()) _selectionDockWidget->SetSelectionModel(NULL);
 	_assets.setCurrentArea(NULL);
 	_assets.getCurrentLevel()->removeArea(name);
@@ -965,7 +966,7 @@ void ESToolkit::on_actionLevelRemove_triggered() {
 		return;
 	}
 
-	QString name = _assets.getCurrentLevel()->getName();
+    QString name = _assets.getCurrentLevel()->getNodeName();
 	if(_assets.getCurrentSelection() == _assets.getCurrentLevel()) _selectionDockWidget->SetSelectionModel(NULL);
 	_assets.setCurrentLevel(NULL);
 	_assets.getCurrentProject()->removeLevel(name);
@@ -1326,7 +1327,11 @@ void ESToolkit::on_actionDefault_Transform_triggered()
     _luaExplorerDialog->setModel(_assets.getCurrentArea());
     _luaExplorerDialog->show();
 
-    _selectionDockWidget->SetSelectionModel(lmodel);
+    RowsJoinerProxy* proxy = new RowsJoinerProxy(nullptr);
+    proxy->insertSourceModel(lmodel);
+    proxy->insertSourceModel(_assets.getCurrentArea());
+
+    _selectionDockWidget->SetSelectionModel(proxy);
 
     //_ui->mapView->defaultTransform();
 

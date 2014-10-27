@@ -5,7 +5,6 @@
 #include "elysian_timer_system.hpp"
 #include "elysian_party_system.hpp"
 #include "elysian_day_system.hpp"
-#include "elysian_entity.hpp"
 #include "elysian_collision_system.hpp"
 #include "elysian_lua_manager.hpp"
 #include "elysian_light_system.hpp"
@@ -25,9 +24,9 @@ void MenuText::recursiveRender(void) {
 	gyMatPush();
 	gyMatLoadIdentity();
 
-	_fonts[_type]->transform.setPos(worldVert.x, worldVert.y);
-	_fonts[_type]->transform.setPosZ(worldVert.z);
-	_fonts[_type]->transform.setScale(1.0f, 1.0f);
+    _fonts[_type]->_transform.setPos(worldVert.x, worldVert.y);
+    _fonts[_type]->_transform.setPosZ(worldVert.z);
+    _fonts[_type]->_transform.setScale(1.0f, 1.0f);
 	_fonts[_type]->setColor(_color);
 	_fonts[_type]->drawString(Font::NO_FORMAT, _align, _text);
 
@@ -41,20 +40,20 @@ MenuEntity::~MenuEntity(void) {
 }
 
 void MenuEntity::recursiveRender(void) {
-	GYVector4 localVert = { transform._pos.x, transform._pos.y, transform._pos.z, 1.0f };
+    GYVector4 localVert = { _transform._pos.x, _transform._pos.y, _transform._pos.z, 1.0f };
 	GYVector4 worldVert;
 
 	if(_sizeType == SIZE_ABSOLUTE) {
 		gyMatMultVec(&localVert, &worldVert, 1);
 		gyMatPush();
 		gyMatLoadIdentity();
-		gyMatTranslate(worldVert.x-transform._pos.x, worldVert.y-transform._pos.y, worldVert.z-transform._pos.z);
+        gyMatTranslate(worldVert.x-_transform._pos.x, worldVert.y-_transform._pos.y, worldVert.z-_transform._pos.z);
 	}
 
 	Entity::render();
 
 	gyMatPush();
-	Entity::transform.apply();
+    Entity::_transform.apply();
 	for(auto it = _childWidgets.begin(); it < _childWidgets.end(); ++it) (*it)->recursiveRender();
 	gyMatPop();
 
@@ -130,10 +129,10 @@ void GuiSystem::_printDebugLine(const char *title, const char *str, ...) {
 	vsprintf(buffer,str,argptr);
 	va_end(argptr);
 
-    twcen.transform._pos.y += 25.0f;
-    twcen.transform._pos.x = _projWidth-200.0f;
+    twcen._transform._pos.y += 25.0f;
+    twcen._transform._pos.x = _projWidth-200.0f;
     twcen.drawStringf(Font::NO_FORMAT, Font::R_ALIGN, title);
-    twcen.transform._pos.x = _projWidth-185.0f;
+    twcen._transform._pos.x = _projWidth-185.0f;
     twcen.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, buffer);
 }
 
@@ -141,8 +140,8 @@ void GuiSystem::_renderDebugOverlay(void) {
 	if(!_debugOverlayEnabled) return;
 
     twcen.setColor(0, 255, 100, 255);
-    twcen.transform._pos.y = 100.0f;
-    twcen.transform._pos.z = 50.0f;
+    twcen._transform._pos.y = 100.0f;
+    twcen._transform._pos.z = 50.0f;
 
     twcen.startBatchRender();
 
@@ -151,23 +150,23 @@ void GuiSystem::_renderDebugOverlay(void) {
 	_printDebugLine("Uniform Uploads:", "%d", getLightSys()->getShaderUniformChangesLastFrame());
 	_printDebugLine("Textures:", "%d", gyVidTexAmount());
 	_printDebugLine("Texture MBytes:", "%f", gyVidTexBytes()/1024.0f/1024.0f);
-    twcen.transform._pos.y += 25.0f;
+    twcen._transform._pos.y += 25.0f;
 	_printDebugLine("Onscreen Lights:", "%d", getLightSys()->getOnscreenLightCount());
 	_printDebugLine("Entities:", "%d", getCurArea()->entities.size());
 	_printDebugLine("Contacts:", "%d", getCollisionSys()->getContactCount());
 	_printDebugLine("Pen Res Iter:", "%d", getCollisionSys()->getPenResIterUsed());
 	_printDebugLine("Vel Res Iter:", "%d", getRigidBodySys()->getVelResIterUsed());
-    twcen.transform._pos.y += 25.0f;
+    twcen._transform._pos.y += 25.0f;
 	_printDebugLine("Lua Scripts:", "%d", LuaManager::getScriptCount());
 	_printDebugLine("Lua Script Instances:", "%d", LuaManager::getScriptInstances());
 	_printDebugLine("Lua MBytes:", "%f", LuaManager::getKbytesUsed()/1024.0f);
-    twcen.transform._pos.y += 25.0f;
+    twcen._transform._pos.y += 25.0f;
 	_printDebugLine("Game Time:", "%d:%d:%d", getDaySys()->getDays(), getDaySys()->getHours(), getDaySys()->getMinutes());
 	if(getPartySys()->getPartyLeader()) {
 		_printDebugLine("player.pos:", "<%.2f, %.2f, %.2f>",
-						getPartySys()->getPartyLeader()->transform._pos.x,
-						getPartySys()->getPartyLeader()->transform._pos.y,
-						getPartySys()->getPartyLeader()->transform._pos.z);
+                        getPartySys()->getPartyLeader()->_transform._pos.x,
+                        getPartySys()->getPartyLeader()->_transform._pos.y,
+                        getPartySys()->getPartyLeader()->_transform._pos.z);
         _printDebugLine("player.resting:", "%d",
                         getPartySys()->getPartyLeader()->getCollidable()->getRestingOnBody());
         _printDebugLine("player.contacts:", "%d",
@@ -181,9 +180,9 @@ void GuiSystem::_renderDebugOverlay(void) {
 
 void GuiSystem::render(void) {
 	for(auto it = _combatText.begin(); it < _combatText.end(); ++it) {
-		twcen.transform._pos.x = (*it).pos.x;
-		twcen.transform._pos.y = (*it).pos.y;
-		twcen.transform._pos.z = 50.0f;
+        twcen._transform._pos.x = (*it).pos.x;
+        twcen._transform._pos.y = (*it).pos.y;
+        twcen._transform._pos.z = 50.0f;
 
 		twcen.setColor((*it).color);
 		twcen.setAlpha((*it).color.a);

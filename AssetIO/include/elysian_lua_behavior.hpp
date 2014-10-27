@@ -3,18 +3,20 @@
 
 #include "elysian_behavior.hpp"
 #include "elysian_lua_manager.hpp"
+#include "elysian_asset_typedefs.hpp"
 
 #define ELYSIAN_LUA_BEHAVIOR_NAME				"LuaBehavior"
 #define ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH	5
 
+ELYSIAN_ASSET_TYPEDEF(Entity)
+
 namespace elysian {
 
-	class Entity;
 	class LuaBehaviorScript;
 	class Collidable;
 
     class LuaBehavior: public Behavior, public LuaManager {
-	friend class Entity;
+    friend class BaseEntity;
 	protected:
 		LuaBehaviorScript*	_scriptHierarchy[ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH]		= { nullptr };
 		//int					_selfTableRefHierarchy[ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH]	= { LUA_NOREF };
@@ -32,9 +34,9 @@ namespace elysian {
 		}
 
 		void				_selfTableDump(void);
-                            LuaBehavior(Entity &entity, const char *script, const OOLUA::Lua_table_ref paramTable);
-							~LuaBehavior(void);
 	public:
+                            LuaBehavior(Entity &entity, const char *script, const OOLUA::Lua_table_ref paramTable);
+                            virtual ~LuaBehavior(void) override;
 
 		bool				loadScript(const char *file, const OOLUA::Lua_table_ref paramTable);
 		

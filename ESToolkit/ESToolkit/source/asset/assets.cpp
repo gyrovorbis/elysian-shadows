@@ -159,7 +159,7 @@ void Assets::setCurrentLevel(Level *const level) {
     _currentLevel = level;
     if(level) {
 		level->activate();
-        if(level->getFirstArea()) setCurrentArea(level->getFirstArea()->getName());
+        if(level->getFirstArea()) setCurrentArea(level->getFirstArea()->getNodeName());
         else setCurrentArea(nullptr);
     }
     else setCurrentArea(NULL);
@@ -183,7 +183,7 @@ void Assets::setCurrentProject(Project *const project) {
 
     if(project) {
 		project->activate();
-        if(project->getFirstLevel()) setCurrentLevel(project->getFirstLevel()->getName());
+        if(project->getFirstLevel()) setCurrentLevel(project->getFirstLevel()->getNodeName());
         else setCurrentLevel(nullptr);
         QDir::setCurrent(m_project->getLocation());
     }
@@ -224,7 +224,7 @@ Project *Assets::loadProject(const QString directory) {
 }
 
 bool Assets::saveProject(const QString name) const {
-	if(m_project->getName() == name) return m_project->save();
+    if(m_project->getNodeName() == name) return m_project->save();
 	Debug::Logf(Debug::VERBOSE, "Project %s does not exist!", name.toStdString().c_str());
     return false;
 }
@@ -236,7 +236,7 @@ Project *Assets::getFirstProject(void) const {
 
 bool Assets::removeProject(const QString name) {
     //for(QMap<QString, Project *>::iterator it = _project.begin(); it != _project.end(); ++it) {
-        if(m_project->getName() == name) {
+        if(m_project->getNodeName() == name) {
             setCurrentProject(NULL);
 			emit projectRemoved(m_project);
 			emit projectRemoveUI();
@@ -255,9 +255,9 @@ bool Assets::removeProject(const QString name) {
 }
 
 void Assets::onChildProjectActivating(Project *const project, Level *const level, Area *const area) {
-    if(m_project != project) setCurrentProject(project->getName());
-    if(level && _currentLevel != level) setCurrentLevel(level->getName());
-    if(area && _currentArea != area) setCurrentArea(area->getName());
+    if(m_project != project) setCurrentProject(project->getNodeName());
+    if(level && _currentLevel != level) setCurrentLevel(level->getNodeName());
+    if(area && _currentArea != area) setCurrentArea(area->getNodeName());
 }
 
 void Assets::onAreaAdded(Project *const project, Level *const level, Area *const area) {

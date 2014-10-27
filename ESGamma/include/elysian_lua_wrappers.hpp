@@ -827,8 +827,8 @@ OOLUA_PROXY(Level)
 		No_public_destructor
 	)
 	OOLUA_MEM_FUNC(Tile*, getTile, uint16_t)
-	OOLUA_MEM_FUNC_CONST(unsigned short, getTileAmount)
-	OOLUA_MEM_FUNC_CONST(const char*, getName)
+    //OOLUA_MEM_FUNC_CONST(unsigned short, getTileAmount)
+    OOLUA_MEM_FUNC_CONST(const char*, getDirName)
 	OOLUA_MEM_FUNC_CONST(const char*, getPath)
 OOLUA_PROXY_END
 

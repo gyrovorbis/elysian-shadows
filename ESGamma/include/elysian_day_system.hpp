@@ -2,10 +2,12 @@
 #define ELYSIAN_DAY_SYSTEM_HPP
 
 #include "elysian_system.hpp"
+#include "elysian_asset_typedefs.hpp"
+
+ELYSIAN_ASSET_TYPEDEF(Entity)
 
 namespace elysian {
 
-	class Entity;
 	class LightSource;
 	class LightAttrib;
 

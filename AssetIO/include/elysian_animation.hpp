@@ -8,6 +8,7 @@
 #include "elysian_component.hpp"
 #include "elysian_stl_algorithm.hpp"
 #include "elysian_mem_pool.hpp"
+#include "elysian_asset_typedefs.hpp"
 
 #include "elysian_event_monitor.hpp"
 
@@ -16,9 +17,9 @@
 #define ELYSIAN_ANIMATION_STATE_COUNT_MAX       100
 #define ELYSIAN_ANIMATION_STATE_LENGTH_MAX      50
 
-namespace elysian {
+ELYSIAN_ASSET_TYPEDEF(Entity)
 
-	class Entity;
+namespace elysian {
 
 	struct AnimationFrame {
 		GYVector2			offset;
@@ -143,7 +144,7 @@ namespace elysian {
     class Animation: public Component,
                      public AnimationStateStack<AnimationSequence, AnimationFrame>
     {
-        friend class Entity;
+        friend class EntityBase;
 	protected:
 
         struct ChildAnimEntry:

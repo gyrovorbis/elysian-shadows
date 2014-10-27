@@ -182,7 +182,7 @@ void Animation::setSpeedMultiplier(const float factor) {
 void Animation::_updateChildren(void) {
 	if(!_children || _children->size() == 0) return;
 
-	InstanceTransform*	parentTransform = &getEntity()->transform;
+    InstanceTransform*	parentTransform = &getEntity()->_transform;
 	InstanceTransform*	childTransform;
 	Animation*			childAnim;
 	ChildAnimEntry*		childEntry;
@@ -192,7 +192,7 @@ void Animation::_updateChildren(void) {
 	for(auto it = _children->begin(); it < _children->end(); ++it) {
 		childEntry = &(*it);
         childAnim = childEntry->animComp;
-		childTransform = &childEntry->entity->transform;
+        childTransform = &childEntry->entity->_transform;
 
 		GYVector3 offset = { 0.0f, 0.0f, 0.0f };
 		float zOrient = 0.0f;

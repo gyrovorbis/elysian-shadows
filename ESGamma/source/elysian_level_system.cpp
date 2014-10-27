@@ -30,7 +30,7 @@ bool LevelSystem::switchLevel(const char *const dir) {
 	int index;
 	Level *lev;
 
-	if(_curLevel) strcpy(_prevLevelPath, _curLevel->getName());
+    if(_curLevel) strcpy(_prevLevelPath, _curLevel->getDirName());
 
 	if((index = getLevelIndex(dir)) >= 0) {
 		_curLevel = level[index];

@@ -12,7 +12,6 @@
 #   define ELYSIAN_LUA_STACK_BALANCE_RECURSIVE_DEPTH     100
 //#	define OOLUA_DEBUG_CHECKS 1
 #else
-#	define ELYSIAN_LUA_DEBUG false
 #	define ELYSIAN_LUA_DEBUG                            true
 #   define ELYSIAN_LUA_STACK_BALANCE_RECURSIVE_DEPTH     100
 #endif

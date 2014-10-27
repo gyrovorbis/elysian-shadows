@@ -1,13 +1,16 @@
 #ifndef ELYSIAN_COMPONENT_HPP
 #define ELYSIAN_COMPONENT_HPP
 
+#include "elysian_asset_typedefs.hpp"
 #include "elysian_asset.hpp"
 
+ELYSIAN_ASSET_TYPEDEF(Entity)
+
 namespace elysian {
-	class Entity;
-	
+
 	class Component: public Asset { 
-		friend class Entity;
+        friend Entity;
+        friend class EntityBase;
 	public:
 		
 		enum TYPE { 
@@ -38,9 +41,9 @@ namespace elysian {
 		inline Entity* getEntity(void) const { return _entity; }
 		
 	protected:
-		virtual ~Component(void) { }
-		inline Component(Entity& parent): _entity(&parent) { }
-		inline Component(void) { }
+        virtual ~Component(void) = default;
+        inline Component(Entity& parent): _entity(&parent) { }
+        inline Component(void) = default;
 		Entity* _entity;
 		
 	}; 

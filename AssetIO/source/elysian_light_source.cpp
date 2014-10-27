@@ -1,6 +1,7 @@
 #include "elysian_light_source.hpp"
-#include "elysian_entity.hpp"
 #include "elysian_generic.hpp"
+#include "elysian_asset_typedefs.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 #include <cfloat>
 
 namespace elysian {
@@ -67,7 +68,7 @@ void LightSource::update(void) {
 
         gyMatPush();
         gyMatLoadIdentity();
-        _entity->transform.apply();
+        _entity->_transform.apply();
         gyMatTranslate(_relPos.x, _relPos.y, _relPos.z);
         gyMatMultVec(&localVec, &position, 1);
         gyMatPop();

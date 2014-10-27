@@ -2,21 +2,22 @@
 #define ELYSIAN_PARTY_SYSTEM_HPP
 
 #include <vector>
+#include <gyro.h>
 #include "elysian_system.hpp"
 #include "elysian_game_input.hpp"
 #include "elysian_character.hpp"
+#include "elysian_asset_typedefs.hpp"
 
 #define ELYSIAN_PARTY_SYSTEM_FOOT_STEP_SFX_TIME	0.3f
 #define ELYSIAN_PARTY_SYSTEM_DASH_PART_TIME_INTERVAL 0.5f
 
-#include <gyro.h>
-
 #define ELYSIAN_PARTY_PATH	"party/party.txt"
+
+ELYSIAN_ASSET_TYPEDEF(Entity)
 
 namespace elysian {
 
 	class GameInput;
-	class Entity;
 	
 	class PartySystem: public System { 
 	private:

@@ -17,13 +17,13 @@
 
 //====STATIC====
 
-QGraphicsRectItem *Level::_sheetViewTileParent          = nullptr;
-CheckeredAlphaRectGraphicsItem *::Level::_bgRectItem    = nullptr;
-SelectionScene *Level::_sheetViewScene                  = nullptr;
+QGraphicsRectItem *TkLevel::_sheetViewTileParent          = nullptr;
+CheckeredAlphaRectGraphicsItem *::TkLevel::_bgRectItem    = nullptr;
+SelectionScene *TkLevel::_sheetViewScene                  = nullptr;
 
-bool Level::initializeScene(const SourceView *const view, bool horiz) {
+bool TkLevel::initializeScene(const SourceView *const view, bool horiz) {
 	static bool initialized = false;
-	static SheetViewTileGraphicsItem ***tileItem = NULL;
+    static SheetViewTileGraphicsItem ***tileItem = nullptr;
 
 	if(initialized) {
 		//This should clean up everything in the scene
@@ -100,17 +100,17 @@ bool Level::initializeScene(const SourceView *const view, bool horiz) {
 	return true;
 }
 
-void Level::addBgRectItem(void) {
+void TkLevel::addBgRectItem(void) {
 	_sheetViewScene->addItem(_bgRectItem);
 }
 
-void Level::updateScenes(void) {
+void TkLevel::updateScenes(void) {
 	_sheetViewScene->update();
 }
 
 //====NONSTATIC====
 
-Level::Level(Project *const project):
+TkLevel::TkLevel(Project *const project):
     _project(project),
     _active(false),
     _open(false),
@@ -123,7 +123,7 @@ Level::Level(Project *const project):
 
 }
 
-Level::~Level() {
+TkLevel::~TkLevel() {
 	close();
 
 	for(int i = 0; i < _area.size(); ++i) {
@@ -132,7 +132,7 @@ Level::~Level() {
     _area.clear();
 }
 
-bool Level::duplicate(void) {
+bool TkLevel::duplicate(void) {
     unsigned num = 1;
     QString name(_name);
 
@@ -144,7 +144,7 @@ bool Level::duplicate(void) {
 }
 
 
-void Level::populateModel(void) {
+void TkLevel::populateModel(void) {
 
 	clearStack();
 
@@ -152,7 +152,7 @@ void Level::populateModel(void) {
 
 	pushLabel("Level");
 
-	addProperty("name", new PropertyStandardItem<QString, Level>(this, &Level::getName, &Level::setName));
+    addProperty("name", new PropertyStandardItem<QString, Level>(this, &Level::getNodeName, &Level::setNodeName));
     addProperty("path", new PropertyStandardItem<QString, Level>(this, &Level::getLocation));
 	addProperty("display", new PropertyStandardItem<QString, Level>(this, &Level::getString, &Level::setString));
 
@@ -162,7 +162,7 @@ void Level::populateModel(void) {
 }
 
 
-void Level::setName(const QString str) {
+void TkLevel::setNodeName(const QString str) {
 	QString newLocation;
 	bool renamed = false;
 	QString name = str;
@@ -197,7 +197,7 @@ void Level::setName(const QString str) {
 		renamed = true;
 	}
 
-	TreeNode::setName(name);
+    TreeNode::setNodeName(name);
 	_location = newLocation;
 	strcpy(_elysianLevel.name, name.toStdString().c_str());
 	strcpy(_elysianLevel.path, _location.toStdString().c_str());
@@ -205,23 +205,23 @@ void Level::setName(const QString str) {
 	if(renamed) emit levelRenamed(oldName, name);
 }
 
-void Level::setLocation(const QString loc) {
+void TkLevel::setLocation(const QString loc) {
    _location = loc;
 
    QStringList splitList = _location.split("/");
-   setName(splitList.last());
+   setNodeName(splitList.last());
 }
 
-QString Level::getLocation() const {
+QString TkLevel::getLocation() const {
     return _location;
 }
 
-elysian::Tile *Level::getElysianTile(const uint16_t index) {
+elysian::Tile *TkLevel::getElysianTile(const uint16_t index) {
 	return &_elysianLevel.tileset[index];
 }
 
 
-void Level::connectSlots(Area *area) {
+void TkLevel::connectSlots(Area *area) {
 	connect(area, SIGNAL(activating(Area *const)), this, SLOT(activateByArea(Area*const)));
 	connect(area, SIGNAL(entityAdded(Area*const, Entity*const)), this, SLOT(onEntityAdded(Area*const, Entity*const)));
 	connect(area, SIGNAL(entityRemoved(Area*const, Entity*const)), this, SLOT(onEntityRemoved(Area*const, Entity*const)));
@@ -235,16 +235,16 @@ void Level::OnChildAreaActivating(Area *const area) {
     Activate(area);
 }*/
 
-bool Level::activate(void) {
+bool TkLevel::activate(void) {
 	_sheetViewScene->addItem(_bgRectItem);
 	return activateByArea(NULL);
 }
 
-bool Level::activateByArea(Area *const area) {
+bool TkLevel::activateByArea(Area *const area) {
 	 //Debug::Log(Debug::VERBOSE, "Level[%s].Activate()\n", getName().toStdString().c_str());
 	if(!_open) open();
     if(!_active) {
-        _curLevel = &_elysianLevel;
+        _curLevel = (elysian::Level*)&_elysianLevel;
     }
 	emit activating(this, area);
     /* If there is anything that is not persistent to be added to the
@@ -257,8 +257,8 @@ bool Level::activateByArea(Area *const area) {
     return true;
 }
 
-bool Level::deactivate(void) {
-	Debug::Logf(Debug::VERBOSE, "Level[%s].Deactivate()\n", getName().toStdString().c_str());
+bool TkLevel::deactivate(void) {
+    Debug::Logf(Debug::VERBOSE, "Level[%s].Deactivate()\n", getNodeName().toStdString().c_str());
     /* If there is anything that is not persistent to be removed from the
        object/tilesheet scenes, do it now.
     */
@@ -271,7 +271,7 @@ bool Level::deactivate(void) {
 // Will ALWAYS return false if valid sheets are already there.
 // To regenerate sheets, first delete the contents of
 //_objectSheet and _tileSheet, set valid sheets to false, then call this.
-bool Level::generateTileSheet(const QString location){
+bool TkLevel::generateTileSheet(const QString location){
 	bool success = true;
 
     if(_validSheets) {
@@ -290,13 +290,13 @@ bool Level::generateTileSheet(const QString location){
     return success;
 }
 
-void Level::clearAllStacks(void) {
+void TkLevel::clearAllStacks(void) {
     for(unsigned int a = 0; a < getAreaAmount(); ++a) {
 		getAreaByIndex(a)->getUndoStack().clear();
     }
 }
 
-bool Level::open(void) {
+bool TkLevel::open(void) {
 	//Debug::Log(Debug::VERBOSE, "Level[%s].Open()\n", getName().toStdString().c_str());
     bool success = true;
 	if(_open) close();
@@ -316,7 +316,7 @@ bool Level::open(void) {
     return success;
 }
 
-bool Level::close(void) {
+bool TkLevel::close(void) {
     if(!_open) return true;
 	if(_active) deactivate();
 	for(int i = 0; i < _tileSheet.size(); ++i) delete _tileSheet[i];
@@ -325,7 +325,7 @@ bool Level::close(void) {
     return true;
 }
 
-Area *Level::newArea(void) {
+Area *TkLevel::newArea(void) {
 	QString name("new_area");
     unsigned int num = 1;
 
@@ -342,7 +342,7 @@ Area *Level::newArea(void) {
     return ar;
 }
 
-Area *Level::newArea(const QString n) {
+Area *TkLevel::newArea(const QString n) {
     QString name(n);
     unsigned int num = 1;
 
@@ -361,20 +361,20 @@ Area *Level::newArea(const QString n) {
 
 
 
-Area *Level::getArea(const QString name) {
+Area *TkLevel::getArea(const QString name) {
 	for(int i = 0; i < _area.size(); ++i) {
-		if(_area[i]->getName() == name) return _area[i];
+        if(_area[i]->getNodeName() == name) return _area[i];
     }
     return NULL;
 }
 
-unsigned int Level::getAreaAmount(void) const { return _area.size(); }
+unsigned int TkLevel::getAreaAmount(void) const { return _area.size(); }
 
-Area *Level::getAreaByIndex(const unsigned int index) {
+Area *TkLevel::getAreaByIndex(const unsigned int index) {
     return (index < (unsigned)_area.size())? _area[index] : NULL;
 }
 
-Area *Level::loadArea(const QString name) {
+Area *TkLevel::loadArea(const QString name) {
     QString directory(_location);
     directory.append("/area/");
     directory.append(name);
@@ -396,11 +396,11 @@ Area *Level::loadArea(const QString name) {
     return NULL;
 }
 
-bool Level::removeArea(const QString name) {
+bool TkLevel::removeArea(const QString name) {
     bool success = true;
 
 	for(int i = 0; i < _area.size(); ++i) {
-		if(_area[i]->getName() == name) {
+        if(_area[i]->getNodeName() == name) {
 			Area *temp = _area[i];
 			_area.erase(_area.begin() + i);
 			if(!FileUtilities::RemoveDir(temp->getLocation())) {
@@ -412,13 +412,13 @@ bool Level::removeArea(const QString name) {
             return success;
         }
     }
-	Debug::Logf(Debug::CRITICAL, "Area %s could not be removed!\n", getName().toStdString().c_str());
+    Debug::Logf(Debug::CRITICAL, "Area %s could not be removed!\n", getNodeName().toStdString().c_str());
     return false;
 }
 
-Area *Level::getFirstArea(void) const { return (_area.size() > 0)? _area[0] : NULL; }
+Area *TkLevel::getFirstArea(void) const { return (_area.size() > 0)? _area[0] : NULL; }
 
-Area *Level::importArea(const QString dir) {
+Area *TkLevel::importArea(const QString dir) {
     if(getArea(QStringList(dir.split("/")).last())) {
         Debug::Log(Debug::CRITICAL, "An area of the same name already exists within the current level!");
         return NULL;
@@ -434,16 +434,16 @@ Area *Level::importArea(const QString dir) {
     return area;
 }
 
-bool Level::load(const QString loc) {
+bool TkLevel::load(const QString loc) {
     QDir dir(loc);
     bool success = true;
     elysian::Level *tempCurLevel = _curLevel;
-    _curLevel = &_elysianLevel;
+    _curLevel = (elysian::Level*)&_elysianLevel;
 
 	Debug::Logf(Debug::VERBOSE, "Level::Load(%s)", loc.toStdString().c_str());
 	Debug::Push();
 
-    setName(dir.dirName());
+    setNodeName(dir.dirName());
     _location = loc;
 
 	Debug::Log(Debug::VERBOSE, "Verifying Tilesheet");
@@ -478,7 +478,7 @@ bool Level::load(const QString loc) {
 }
 
 //Does not save children. Just attrib to current location
-bool Level::save(void) {
+bool TkLevel::save(void) {
 	bool success = true;
 	Debug::Log(Debug::VERBOSE, QString("Level::Save(void)"));
 	Debug::Push();
@@ -490,7 +490,7 @@ bool Level::save(void) {
 }
 
 
-bool Level::saveAll(void) {
+bool TkLevel::saveAll(void) {
 	Debug::Log(Debug::VERBOSE, QString("Level::SaveAll("+_location+")"));
 	Debug::Push();
     //export to default save location
@@ -499,7 +499,7 @@ bool Level::saveAll(void) {
 	return success;
 }
 
-bool Level::saveTileSheet(void) {
+bool TkLevel::saveTileSheet(void) {
 	return TileSheetUtilities::GenerateTileSheet(_location+ELYSIAN_TILESHEET_PATH,
 												 ELYSIAN_TILESHEET_WIDTH,
 												 ELYSIAN_TILESHEET_HEIGHT,
@@ -508,7 +508,7 @@ bool Level::saveTileSheet(void) {
 												 _tileSheet);
 }
 
-bool Level::saveAs(const QString dir) {
+bool TkLevel::saveAs(const QString dir) {
     bool success = true;
     bool newLoc = (_location != dir)? true : false;
     QDir qdir;
@@ -606,7 +606,7 @@ bool Level::saveAs(const QString dir) {
 
 	//Save areas
 	for(int i = 0; i < _area.size(); ++i) {
-		success &= _area[i]->saveAs(dir+"/area/"+_area[i]->getName());
+        success &= _area[i]->saveAs(dir+"/area/"+_area[i]->getNodeName());
     }
 
 	Debug::Pop();
@@ -616,7 +616,7 @@ bool Level::saveAs(const QString dir) {
 //VisualTile *Level::getTileSheet(const unsigned int index) const { return _tileSheet[index]; }
 //VisualTile *Level::getObjectSheet(const unsigned int index) const { return _objectSheet[index]; }
 
-bool Level::reloadSheets(void) {
+bool TkLevel::reloadSheets(void) {
 	Debug::Log(Debug::VERBOSE, "Reloading Sheets");
 	Debug::Push();
 	close();
@@ -625,8 +625,8 @@ bool Level::reloadSheets(void) {
     return true;
 }
 
-QString Level::getString(void) const { return _elysianLevel.string; }
-void Level::setString(const QString str) {
+QString TkLevel::getString(void) const { return _elysianLevel.string; }
+void TkLevel::setString(const QString str) {
 	if(str.isEmpty()) {
 		return;
 	}
@@ -634,31 +634,31 @@ void Level::setString(const QString str) {
 }
 
 
-bool Level::isActive(void) const { return _active; }
-bool Level::isOpen(void) const { return _open; }
-bool Level::validSheets(void) const { return _validSheets; }
+bool TkLevel::isActive(void) const { return _active; }
+bool TkLevel::isOpen(void) const { return _open; }
+bool TkLevel::validSheets(void) const { return _validSheets; }
 
-void Level::onEntityAdded(Area *const area, Entity *const entity) {
+void TkLevel::onEntityAdded(Area *const area, Entity *const entity) {
 	emit entityAdded(this, area, entity);
 }
 
-void Level::onEntityRemoved(Area *const area, Entity *const entity) {
+void TkLevel::onEntityRemoved(Area *const area, Entity *const entity) {
 	emit entityRemoved(this, area, entity);
 }
 
-void Level::onComponentAttached(Area *const area, Entity *const entity, Component *const comp) {
+void TkLevel::onComponentAttached(Area *const area, Entity *const entity, Component *const comp) {
 	emit componentAttached(this, area, entity, comp);
 }
 
-void Level::onComponentRemoved(Area *const area, Entity *const entity, Component *const comp) {
+void TkLevel::onComponentRemoved(Area *const area, Entity *const entity, Component *const comp) {
 	emit componentRemoved(this, area, entity, comp);
 }
 
-void Level::onAreaRenamed(const QString oldName, const QString newName) {
+void TkLevel::onAreaRenamed(const QString oldName, const QString newName) {
 	emit areaRenamed(oldName, newName);
 }
 
-bool Level::_saveMetaData(const QString dir) {
+bool TkLevel::_saveMetaData(const QString dir) {
     QDir qdir;
     Debug::Log(Debug::VERBOSE, "Saving level metadata");
     Debug::Push();
@@ -692,7 +692,7 @@ bool Level::_saveMetaData(const QString dir) {
     return true;
 }
 
-bool Level::_loadMetaData(const QString dir) {
+bool TkLevel::_loadMetaData(const QString dir) {
     QDir qdir;
     Debug::Log(Debug::VERBOSE, "Loading level metadata");
     Debug::Push();
@@ -721,7 +721,7 @@ bool Level::_loadMetaData(const QString dir) {
     return true;
 }
 
-bool Level::_scatterMaps(const bool normal) {
+bool TkLevel::_scatterMaps(const bool normal) {
     bool success = true;
     QString path = getLocation();
     path = path+"/estk/"+QString((normal)? ESTK_LEVEL_NORMAL_MAPS_DIRECTORY : ESTK_LEVEL_SPECULAR_MAPS_DIRECTORY);
@@ -817,7 +817,7 @@ bool Level::_scatterMaps(const bool normal) {
     return success;
 }
 
-bool Level::_gatherMaps(const bool normal) {
+bool TkLevel::_gatherMaps(const bool normal) {
     bool success = true;
     QString path = getLocation();
     path = path+"/estk/"+QString((normal)? ESTK_LEVEL_NORMAL_MAPS_DIRECTORY : ESTK_LEVEL_SPECULAR_MAPS_DIRECTORY);
@@ -877,20 +877,20 @@ bool Level::_gatherMaps(const bool normal) {
 
 // ========= SPECULAR/NORMAL MAP GENERATION ===========
 
-bool Level::scatterTileNormalMaps(void) {
+bool TkLevel::scatterTileNormalMaps(void) {
     return _scatterMaps(true);
 }
 
-bool Level::gatherTileNormalMaps(void) {
+bool TkLevel::gatherTileNormalMaps(void) {
    return _gatherMaps(true);
 }
 
 
-bool Level::scatterTileSpecularMaps(void) {
+bool TkLevel::scatterTileSpecularMaps(void) {
     return _scatterMaps(false);
 }
 
-bool Level::gatherTileSpecularMaps(void) {
+bool TkLevel::gatherTileSpecularMaps(void) {
     return _gatherMaps(false);
 }
 

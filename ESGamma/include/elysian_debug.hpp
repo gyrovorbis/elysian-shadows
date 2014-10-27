@@ -6,6 +6,7 @@
 #include <gyro.h>
 #include "elysian_asset.hpp"
 #include "elysian_system.hpp"
+#include "elysian_asset_typedefs.hpp"
 
 #define ASSETS_VROOT						"/assets"
 
@@ -20,11 +21,12 @@
 
 using namespace std;
 
+ELYSIAN_ASSET_TYPEDEF(Entity)
+
 namespace elysian {
 
 	class Engine;
 	class GameInput;
-	class Entity;
 
 	class Debug: public System {
 	public:

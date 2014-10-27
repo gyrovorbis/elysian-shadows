@@ -1132,7 +1132,7 @@ void CollisionSystem::_resolveZPenetration(CollisionContact * const contact) {
 
     for(unsigned i = 0; i < 2; ++i) {
         deltaZ[i] = zDepth * linearInertia[i] * totalInertia * coeff[i];
-        col[i]->getEntity()->transform._pos.z -= deltaZ[i];
+        col[i]->getEntity()->_transform._pos.z -= deltaZ[i];
        // col[i]->getEntity()->transform._pos.y += deltaZ[i];
     }
 
@@ -1319,15 +1319,15 @@ void CollisionSystem::_resolveXYPenetration(CollisionContact * const con) {
 
     applyDamp(posDelta, con);
 
-    gyVec2AddAccum((GYVector2*)&con->_bodyA->getEntity()->transform._pos, &posDelta[0]);
+    gyVec2AddAccum((GYVector2*)&con->_bodyA->getEntity()->_transform._pos, &posDelta[0]);
     //con->_bodyA->getEntity()->move(posDelta[0]);
-    con->_bodyA->getEntity()->transform._orientZ += orientDelta[0];
+    con->_bodyA->getEntity()->_transform._orientZ += orientDelta[0];
 
     if(con->staticAttrib[1]) {
         //applyDamp(dampedDelta, posDelta[1], con->_bodyB->getAttrib()->getStaticAttrib()->damping);
-        gyVec2AddAccum((GYVector2*)&con->_bodyB->getEntity()->transform._pos, &posDelta[1]);
+        gyVec2AddAccum((GYVector2*)&con->_bodyB->getEntity()->_transform._pos, &posDelta[1]);
         //con->_bodyB->getEntity()->move(posDelta[1]);
-        con->_bodyB->getEntity()->transform._orientZ += orientDelta[1];
+        con->_bodyB->getEntity()->_transform._orientZ += orientDelta[1];
     }
 
 /**** /TAKEN FROM C PENETRATION RESOLUTION *****/
