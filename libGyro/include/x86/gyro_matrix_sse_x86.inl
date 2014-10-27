@@ -98,14 +98,14 @@ static inline void gyMatStore(GYMatrix4 *mat) {
 	memcpy(mat, _curMat, sizeof(GYMatrix4));
 }
 
-static inline void gyVec4Add(GYVector4* const dest, const GYVector4* const v1, const GYVector4* const v2) {
+static inline void gyVec4Add(void* const dest, const void* const v1, const void* const v2) {
 	const __m128 s1 = _mm_load_ps((float*)v1);
 	const __m128 s2 = _mm_load_ps((float*)v2);
 	const __m128 d = _mm_add_ps(s1, s2);
 	_mm_store_ps((float*)dest, d);
 }
 
-static inline void gyVec4Sub(GYVector4* const dest, const GYVector4* const v1, const GYVector4* const v2) {
+static inline void gyVec4Sub(void* const dest, const void* const v1, const void* const v2) {
    // assert(((unsigned long)dest & 15) == 0);
 	const __m128 s1 = _mm_load_ps((float*)v1);
 	const __m128 s2 = _mm_load_ps((float*)v2);
@@ -113,186 +113,198 @@ static inline void gyVec4Sub(GYVector4* const dest, const GYVector4* const v1, c
 	_mm_store_ps((float*)dest, d);
 }
 
-static inline void gyVec4Mult(GYVector4* const dest, const GYVector4* const v1, const GYVector4* const v2) {
+static inline void gyVec4Mult(void* const dest, const void* const v1, const void* const v2) {
 	const __m128 s1 = _mm_load_ps((float*)v1);
 	const __m128 s2 = _mm_load_ps((float*)v2);
 	const __m128 d = _mm_mul_ps(s1, s2);
 	_mm_store_ps((float*)dest, d);
 }
 
-static inline void gyVec4Div(GYVector4* const dest, const GYVector4* const v1, const GYVector4* const v2) {
+static inline void gyVec4Div(void* const dest, const void* const v1, const void* const v2) {
 	const __m128 s1 = _mm_load_ps((float*)v1);
 	const __m128 s2 = _mm_load_ps((float*)v2);
 	const __m128 d = _mm_div_ps(s1, s2);
 	_mm_store_ps((float*)dest, d);
 }
 
-static inline void gyVec4Scale(GYVector4* const dest, const GYVector4* const v1, const float s) {
+static inline void gyVec4Scale(void* const dest, const void* const v1, const float s) {
 	const __m128 s1 = _mm_load_ps((float*)v1);
 	const __m128 s2 = _mm_set1_ps(s);
 	const __m128 d = _mm_mul_ps(s1, s2);
 	_mm_store_ps((float*)dest, d);
 }
 
+#define VEC2(a) ((GYVector2*)a)
+#define VEC3(a) ((GYVector3*)a)
+#define VEC4(a) ((GYVector4*)a)
 
-static inline void gyVec2Clear(GYVector2 *const vec) { vec->x = vec->y = 0.0f; }
+//=========== VECTOR 2 ==============
 
-static inline int gyVec2IsZero(const GYVector2* const vec) { return (vec->x == 0.0f && vec->y == 0.0f); }
+static inline void gyVec2Clear(void *const vec) { VEC2(vec)->x = VEC2(vec)->y = 0.0f; }
 
-static inline void gyVec2Add(GYVector2* const dest, const GYVector2* const v1, const GYVector2* const v2) {
-	dest->x = v1->x + v2->x;
-	dest->y = v1->y + v2->y;
+static inline int gyVec2IsZero(const void* const vec) { return ( VEC2(vec)->x == 0.0f && VEC2(vec)->y == 0.0f); }
+
+static inline void gyVec2Add(void* const dest, const void* const v1, const void* const v2) {
+    VEC2(dest)->x = VEC2(v1)->x + VEC2(v2)->x;
+    VEC2(dest)->y = VEC2(v1)->y + VEC2(v2)->y;
 }
 
-static inline void gyVec2Sub(GYVector2* const dest, const GYVector2* const v1, const GYVector2* const v2) {
-	dest->x = v1->x - v2->x;
-	dest->y = v1->y - v2->y;
+static inline void gyVec2Sub(void* const dest, const void* const v1, const void* const v2) {
+    VEC2(dest)->x = VEC2(v1)->x - VEC2(v2)->x;
+    VEC2(dest)->y = VEC2(v1)->y - VEC2(v2)->y;
 }
 
-static inline void gyVec2SubFrom(GYVector2 *const dest, const GYVector2 *const val) {
-	dest->x -= val->x; dest->y -= val->y;
+static inline void gyVec2SubFrom(void *const dest, const void *const val) {
+    VEC2(dest)->x -= VEC2(val)->x; VEC2(dest)->y -= VEC2(val)->y;
 }
 
-static inline void gyVec2AddAccum(GYVector2* const dest, const GYVector2* const src) {
-	dest->x += src->x; dest->y += src->y;
+static inline void gyVec2AddAccum(void* const dest, const void* const src) {
+    VEC2(dest)->x += VEC2(src)->x; VEC2(dest)->y += VEC2(src)->y;
 }
 
-static inline void gyVec2Scale(GYVector2 *const dst, const GYVector2 *const src, const float scalar) {
-	dst->x = src->x * scalar;
-	dst->y = src->y * scalar;
+static inline void gyVec2Scale(void *const dst, const void *const src, const float scalar) {
+    VEC2(dst)->x = VEC2(src)->x * scalar;
+    VEC2(dst)->y = VEC2(src)->y * scalar;
 }
 
-static inline void gyVec2ScaleAccum(GYVector2* const src, const float scalar) {
-	src->x *= scalar; src->y *= scalar;
+static inline void gyVec2ScaleAccum(void* const src, const float scalar) {
+    VEC2(src)->x *= scalar; VEC2(src)->y *= scalar;
 }
 
-static inline float gyVec2Magnitude(const GYVector2*const vec) {
-	return gySqrt(vec->x*vec->x + vec->y*vec->y);
+static inline float gyVec2Magnitude(const void*const vec) {
+    return gySqrt( (VEC2(vec)->x * VEC2(vec)->x) + (VEC2(vec)->y * VEC2(vec)->y) );
 }
 
-static inline float gyVec3Magnitude(const GYVector3*const vec) {
-	return gySqrt(vec->x*vec->x + vec->y*vec->y + vec->z*vec->z);
+static inline float gyVec2MagAndNormalize(void*const v) {
+    float mag = gySqrt( (VEC2(v)->x * VEC2(v)->x) + (VEC2(v)->y * VEC2(v)->y) );
+    VEC2(v)->x /= mag;
+    VEC2(v)->y /= mag;
+    return mag;
 }
 
-static inline float gyVec2MagAndNormalize(GYVector2*const v) {
-    float mag = gySqrt(v->x*v->x + v->y*v->y);
-    v->x /= mag;
-    v->y /= mag;
+static inline void gyVec2CompProdAccum(void* const dest, const void* const src) {
+    VEC2(dest)->x *= VEC2(src)->x; VEC2(dest)->y *= VEC2(src)->y;
+}
+
+static inline void gyVec2AddScaled(void* const dst, const void* src, const float scalar) {
+    VEC2(dst)->x += VEC2(src)->x * scalar;
+    VEC2(dst)->y += VEC2(src)->y * scalar;
+}
+
+
+static inline float gyVec2DotProd(const void *const src1, const void *const src2) {
+    return (VEC2(src1)->x * VEC2(src2)->x + VEC2(src1)->y * VEC2(src2)->y);
+}
+
+static inline void gyVec2Normalize(void *const v) {
+    float mag = gySqrt( (VEC2(v)->x * VEC2(v)->x) + (VEC2(v)->y * VEC2(v)->y) );
+    VEC2(v)->x /= mag;
+    VEC2(v)->y /= mag;
+}
+
+static inline float gyVec2ScalarCrossProd(const void *const src1, const void *const src2) {
+    GYVector2 perp;
+    perp.x = VEC2(src1)->y;
+    perp.y = -VEC2(src1)->x;
+    return gyVec2DotProd(&perp, src2);
+}
+
+static inline void gyVec2VectorCrossProd(void *const dest, const void *const vec, const float scalar) {
+    VEC2(dest)->x = VEC2(vec)->y * scalar;
+    VEC2(dest)->y = -VEC2(vec)->x * scalar;
+}
+
+static inline void gyVec2RotOrigin(void *const dest, const void *const src, const float angle) {
+    float psin, pcos;
+    gySinCos(angle, &psin, &pcos);
+    VEC2(dest)->x = VEC2(src)->x*pcos - VEC2(src)->x*psin;
+    VEC2(dest)->y = VEC2(src)->y*psin + VEC2(src)->y*pcos;
+}
+
+
+//=========== VECTOR 3 ==============
+
+static inline float gyVec3Magnitude(const void*const vec) {
+    return gySqrt( (VEC3(vec)->x * VEC3(vec)->x) + (VEC3(vec)->y * VEC3(vec)->y) + (VEC3(vec)->z * VEC3(vec)->z) );
+}
+
+
+static inline float gyVec3MagAndNormalize(void*const v) {
+    float mag = gySqrt( (VEC3(v)->x * VEC3(v)->x) + (VEC3(v)->y * VEC3(v)->y) + (VEC3(v)->z * VEC3(v)->z) );
+    VEC3(v)->x /= mag;
+    VEC3(v)->y /= mag;
+    VEC3(v)->z /= mag;
     return mag;
 }
 
 
-static inline float gyVec3MagAndNormalize(GYVector3*const v) {
-    float mag = gySqrt(v->x*v->x + v->y*v->y + v->z*v->z);
-    v->x /= mag;
-    v->y /= mag;
-    v->z /= mag;
-    return mag;
+static inline void gyVec3Add(void* const dest, const void* const v1, const void* const v2) {
+    VEC3(dest)->x = VEC3(v1)->x + VEC3(v2)->x;
+    VEC3(dest)->y = VEC3(v1)->y + VEC3(v2)->y;
+    VEC3(dest)->z = VEC3(v1)->z + VEC3(v2)->z;
 }
 
-
-static inline void gyVec2AddScaled(GYVector2* const dst, const GYVector2* src, const float scalar) {
-	dst->x += src->x * scalar;
-	dst->y += src->y * scalar;
-
+static inline void gyVec3Sub(void* const dest, const void* const v1, const void* const v2) {
+    VEC3(dest)->x = VEC3(v1)->x - VEC3(v2)->x;
+    VEC3(dest)->y = VEC3(v1)->y - VEC3(v2)->y;
+    VEC3(dest)->z = VEC3(v1)->z - VEC3(v2)->z;
 }
 
-static inline void gyVec3Add(GYVector3* const dest, const GYVector3* const v1, const GYVector3* const v2) {
-	dest->x = v1->x + v2->x;
-	dest->y = v1->y + v2->y;
-	dest->z = v1->z + v2->z;
+static inline void gyVec3Scale(void*const dest, const void*const source, const float scalar) {
+    VEC3(dest)->x = VEC3(source)->x * scalar;
+    VEC3(dest)->y = VEC3(source)->y * scalar;
+    VEC3(dest)->z = VEC3(source)->z * scalar;
 }
 
-static inline void gyVec3Sub(GYVector3* const dest, const GYVector3* const v1, const GYVector3* const v2) {
-	dest->x = v1->x - v2->x;
-	dest->y = v1->y - v2->y;
-	dest->z = v1->z - v2->z;
+static inline void gyVec3AddAccum(void* const dest, const void* const src) {
+    VEC3(dest)->x += VEC3(src)->x; VEC3(dest)->y += VEC3(src)->y; VEC3(dest)->z += VEC3(src)->z;
 }
 
-static inline void gyVec3Scale(GYVector3*const dest, const GYVector3*const source, const float scalar) {
-	dest->x = source->x * scalar;
-	dest->y = source->y * scalar;
-	dest->z = source->z * scalar;
+static inline void gyVec3CompProdAccum(void* const dest, const void* const src) {
+    VEC3(dest)->x *= VEC3(src)->x; VEC3(dest)->y *= VEC3(src)->y; VEC3(dest)->z *= VEC3(src)->z;
 }
 
-static inline void gyVec3AddAccum(GYVector3* const dest, const GYVector3* const src) {
-	dest->x += src->x; dest->y += src->y; dest->z += src->z;
+static inline void gyVec3CrossProd(void* const dest, const void* const src1, const void* const src2) {
+    VEC3(dest)->x = VEC3(src1)->y*VEC3(src2)->z - VEC3(src1)->z*VEC3(src2)->y;
+    VEC3(dest)->y = VEC3(src1)->z*VEC3(src2)->x - VEC3(src1)->x*VEC3(src2)->z;
+    VEC3(dest)->z = VEC3(src1)->x*VEC3(src2)->y - VEC3(src1)->y*VEC3(src2)->x;
 }
 
-static inline void gyVec3CompProdAccum(GYVector3* const dest, const GYVector3* const src) {
-	dest->x *= src->x; dest->y *= src->y; dest->z *= src->z;
-}
-
-static inline void gyVec2CompProdAccum(GYVector2* const dest, const GYVector2* const src) {
-	dest->x *= src->x; dest->y *= src->y;
-}
-
-static inline void gyVec3CrossProd(GYVector3* const dest, const GYVector3* const src1, const GYVector3* const src2) {
-	dest->x = src1->y*src2->z - src1->z*src2->y;
-	dest->y = src1->z*src2->x - src1->x*src2->z;
-	dest->z = src1->x*src2->y - src1->y*src2->x;
-}
-
-static inline void gyVec3AddScaled(GYVector3*const dest, const GYVector3*const vec,
+static inline void gyVec3AddScaled(void*const dest, const void*const vec,
 														 const float scalar) {
-	dest->x += scalar*vec->x;
-	dest->y += scalar*vec->y;
-	dest->z += scalar*vec->z;
+    VEC3(dest)->x += scalar * VEC3(vec)->x;
+    VEC3(dest)->y += scalar * VEC3(vec)->y;
+    VEC3(dest)->z += scalar * VEC3(vec)->z;
 }
 
-static inline void gyVec3ScaleAccum(GYVector3*const dest, const float scalar) {
-	dest->x *= scalar;
-	dest->y *= scalar;
-	dest->z *= scalar;
+static inline void gyVec3ScaleAccum(void*const dest, const float scalar) {
+    VEC3(dest)->x *= scalar;
+    VEC3(dest)->y *= scalar;
+    VEC3(dest)->z *= scalar;
 }
 
-static inline float gyVec2DotProd(const GYVector2 *const src1, const GYVector2 *const src2) {
-	return (src1->x*src2->x + src1->y*src2->y);
+static inline float gyVec3DotProd(const void *const src1, const void *const src2) {
+    return (VEC3(src1)->x*VEC3(src2)->x + VEC3(src1)->y*VEC3(src2)->y + VEC3(src1)->z*VEC3(src2)->z);
 }
 
-static inline float gyVec3DotProd(const GYVector3 *const src1, const GYVector3 *const src2) {
-    return (src1->x*src2->x + src1->y*src2->y + src1->z*src2->z);
+static inline void gyVec3Normalize(void *const v) {
+    float mag = gySqrt( (VEC3(v)->x * VEC3(v)->x) + (VEC3(v)->y * VEC3(v)->y) + (VEC3(v)->z * VEC3(v)->z) );
+    VEC3(v)->x /= mag;
+    VEC3(v)->y /= mag;
+    VEC3(v)->z /= mag;
 }
 
-static inline void gyVec2Normalize(GYVector2 *const v) {
-	float mag = gySqrt(v->x*v->x + v->y*v->y);
-	v->x /= mag;
-	v->y /= mag;
+
+static inline void gyVec4Normalize(void *const v) {
+    float mag = gySqrt( (VEC4(v)->x * VEC4(v)->x) + (VEC4(v)->y * VEC4(v)->y) + (VEC4(v)->z * VEC4(v)->z) + (VEC4(v)->w * VEC4(v)->w) );
+    VEC4(v)->x /= mag;
+    VEC4(v)->y /= mag;
+    VEC4(v)->z /= mag;
+    VEC4(v)->w /= mag;
 }
 
-static inline void gyVec4Normalize(GYVector4 *const v) {
-	float mag = gySqrt(v->x*v->x + v->y*v->y + v->z*v->z + v->w*v->w);
-	v->x /= mag;
-	v->y /= mag;
-	v->z /= mag;
-	v->w /= mag;
-}
 
-static inline void gyVec3Normalize(GYVector3 *const v) {
-	float mag = gySqrt(v->x*v->x + v->y*v->y + v->z*v->z);
-	v->x /= mag;
-	v->y /= mag;
-	v->z /= mag;
-}
 
-static inline float gyVec2ScalarCrossProd(const GYVector2 *const src1, const GYVector2 *const src2) {
-	GYVector2 perp;
-	perp.x = src1->y;
-	perp.y = -src1->x;
-	return gyVec2DotProd(&perp, src2);
-}
-
-static inline void gyVec2VectorCrossProd(GYVector2 *const dest, const GYVector2 *const vec, const float scalar) {
-	dest->x = vec->y * scalar;
-	dest->y = -vec->x * scalar;
-}
-
-static inline void gyVec2RotOrigin(GYVector2 *const dest, const GYVector2 *const src, const float angle) {
-	float psin, pcos;
-	gySinCos(angle, &psin, &pcos);
-	dest->x = src->x*pcos - src->x*psin;
-	dest->y = src->y*psin + src->y*pcos;
-}
 /*
 
 static inline float gyVec4Magnitude(GYVector4*const dest, GYVector4*const src) {
