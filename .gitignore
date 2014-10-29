@@ -137,8 +137,8 @@ CMakeLists.txt.user
 #############################################
 ESToolkit.app/*
 ESGamma.app/*
-ESToolkit/ESToolkit/.qmake.stash
-ESToolkit/ESToolkit/qrc_resource.cpp
+#ESToolkit/ESToolkit/.qmake.stash
+#ESToolkit/ESToolkit/qrc_resource.cpp
 libGyro/qtcreator/*
 qtcreator/*
 shadowRenderPasses
