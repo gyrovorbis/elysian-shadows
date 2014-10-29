@@ -100,8 +100,8 @@ bool EngineDialog::Invoke(const ENGINE_TYPE type) {
 
     _engine->setWorkingDirectory(getAssets()->getCurrentProject()->getLocation());
 	//relative level and area paths are hacked to FUCK!
-	args << "-l" << QString("level/")+getAssets()->getCurrentLevel()->getName();
-	args << "-a" << QString("level/")+getAssets()->getCurrentLevel()->getName()+QString("/area/")+getAssets()->getCurrentArea()->getName();
+    args << "-l" << QString("level/")+getAssets()->getCurrentLevel()->getNodeName();
+    args << "-a" << QString("level/")+getAssets()->getCurrentLevel()->getNodeName()+QString("/area/")+getAssets()->getCurrentArea()->getNodeName();
 	args << "-x" << _startPosXEdit->text() << "-y" << _startPosYEdit->text();
     args << "-r" << QString::number(_resolution);
 

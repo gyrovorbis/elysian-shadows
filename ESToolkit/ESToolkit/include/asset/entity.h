@@ -4,6 +4,8 @@
 #include <QGraphicsRectItem>
 #include "treenode.h"
 #include "assetManager.h"
+#include "elysian_asset_typedefs.hpp"
+#include "elysian_entity.hpp"
 
 class QPainter;
 class QToolBox;
@@ -30,14 +32,14 @@ class Item;
 class Character;
 class Friendly;
 class Enemy;
+class TkEntity;
+typedef TkEntity Entity;
 
-namespace elysian {
-	class Entity;
-}
 
-class Entity: public QWidget, public TreeNode, public QGraphicsRectItem, public AssetManager {
+class TkEntity: public QWidget, public TreeNode, public QGraphicsRectItem, public elysian::EntityBase {
     friend class ESToolkit;
     Q_OBJECT
+
 protected:
     //encapsulated (although memory is still managed by elysian::Area)
 	elysian::Entity *_elysianEntity;
@@ -55,8 +57,7 @@ private:
 
 	//QList<Behavior *> _behavior;
 
-    /*
-	  WIDGETS for BASE ENTITY attributes:
+    /*  WIDGETS for BASE ENTITY attributes:
 	  name, transform
 	  PROBABLY want to redo this in designer?
     */
@@ -71,10 +72,11 @@ private:
     QCheckBox *_snapsToGrid;
 
     bool _gridSnap;
-	void InitializeUI(void);
-	void PopulateWidgets(void);
+    //void InitializeUI(void);
+    //void PopulateWidgets(void);
 
 public slots:
+    /*
 	void OnNameChange(void);
 	void OnPosXChange(void);
 	void OnPosYChange(void);
@@ -85,7 +87,7 @@ public slots:
 	void OnScaleYChange(void);
 	void OnOrientZChange(void);
     void OnGridSnapChange(int state);
-	virtual void UpdateRect(void);
+    virtual void UpdateRect(void);*/
 
 
 	/*
@@ -108,18 +110,24 @@ public slots:
 
 
 public:
-	Entity(elysian::Entity &parent);
-	virtual ~Entity(void) override;
+
+    using elysian::EntityBase::render;
+    using elysian::EntityBase::move;
+
+    TkEntity(void) = default;
+    TkEntity(elysian::Entity &parent);
+    virtual ~TkEntity(void) override = default;
 
 	//Selectable
 	virtual Selectable::TYPE getType(void) const { return Selectable::ENTITY; }
 	virtual TreeNode::ITEM_TYPE getTreeWidgetItemType(void) { return ITEM_ENTITY; }
 
 	//Should "technically" be decoupled. See .cpp for comment.
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-	virtual bool activate(void) override;
-	virtual bool deactivate(void) override;
+    //void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    virtual bool activate(void) override { elysian::EntityBase::activate(); }
+    virtual bool deactivate(void) override { elysian::EntityBase::deactivate(); }
 
+    /*
 	void setPos(float x, float y);
 	void setPos(float x, float y, float z);
 	void setPosZ(float z);
@@ -150,9 +158,10 @@ public:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     void keyPressEvent(QKeyEvent *);
     void focusInEvent(QFocusEvent *);
-
+*/
 	elysian::Entity *getElysianEntity(void) const;
-	Renderable *getRenderable(void) const;
+#if 0
+    Renderable *getRenderable(void) const;
 	Animation *getAnimation(void) const;
 	Collidable *getCollidable(void) const;
 	Warp *getWarp(void) const;
@@ -160,12 +169,16 @@ public:
 	Character *getCharacter(void) const;
 	Friendly *getFriendly(void) const;
 	Enemy *getEnemy(void) const;
+#endif
 
 signals:
     void ComponentAttached(Entity *const entity, Component *const comp);
     void ComponentRemoved(Entity *const entity, Component *const comp);
 
-
 };
+
+inline elysian::Entity *Entity::getElysianEntity() const { return _elysianEntity; }
+
+
 
 #endif // ENTITY_H

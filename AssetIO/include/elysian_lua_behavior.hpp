@@ -2,32 +2,21 @@
 #define ELYSIAN_LUA_BEHAVIOR_HPP
 
 #include "elysian_behavior.hpp"
-#ifdef ELYSIAN_ENGINE
-#	include "elysian_lua_manager.hpp"
-#	include <lua5.2/lua.hpp>
-#else
-#	define LUA_NOREF 0
-namespace OOLUA {
-    typedef unsigned Lua_table_ref;
-}
-#endif
+#include "elysian_lua_manager.hpp"
+#include "elysian_asset_typedefs.hpp"
 
 #define ELYSIAN_LUA_BEHAVIOR_NAME				"LuaBehavior"
 #define ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH	5
 
+ELYSIAN_ASSET_TYPEDEF(Entity)
+
 namespace elysian {
 
-	class Entity;
 	class LuaBehaviorScript;
 	class Collidable;
 
-    class LuaBehavior: 
-		public Behavior
-#ifdef ELYSIAN_ENGINE
-		,public LuaManager
-#endif
-	{
-	friend class Entity;
+    class LuaBehavior: public Behavior, public LuaManager {
+    friend class BaseEntity;
 	protected:
 		LuaBehaviorScript*	_scriptHierarchy[ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH]		= { nullptr };
 		//int					_selfTableRefHierarchy[ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH]	= { LUA_NOREF };
@@ -35,7 +24,7 @@ namespace elysian {
 		//int					_selfTableRef = LUA_NOREF;
 
 		unsigned			_hierarchyDepth = 0;
-#ifdef ELYSIAN_ENGINE
+
 		OOLUA::Lua_table_ref _ooSelfTableRefHierarchy[ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH];
 		OOLUA::Lua_table_ref* _ooSelfTableRef = nullptr;
 
@@ -45,14 +34,9 @@ namespace elysian {
 		}
 
 		void				_selfTableDump(void);
-#endif
-                            LuaBehavior(Entity &entity, const char *script
-#ifdef ELYSIAN_ENGINE
-                                        ,const OOLUA::Lua_table_ref paramTable
-#endif
-                            );
-							~LuaBehavior(void);
 	public:
+                            LuaBehavior(Entity &entity, const char *script, const OOLUA::Lua_table_ref paramTable);
+                            virtual ~LuaBehavior(void) override;
 
 		bool				loadScript(const char *file, const OOLUA::Lua_table_ref paramTable);
 		
@@ -86,20 +70,16 @@ namespace elysian {
 		virtual void		onCombatTargetCollisionEnter(CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier) override;
 		
 		int					getSelfTableRef(void) const;
-#ifdef ELYSIAN_ENGINE
+
 		OOLUA::Lua_table_ref& getSelfTable(void) { return *_ooSelfTableRef; }
-#endif
+
     };
 
 
 	//======= INLINEZ ======
 	
     inline const char* LuaBehavior::getBehavName(void) const {
-#ifdef ELYSIAN_ENGINE
-        return _script->getPath();
-#else
-        return nullptr;
-#endif
+        return (_script)? _script->getPath() : nullptr;
     }
 	//inline int LuaBehavior::getSelfTableRef(void) const { return _selfTableRef; }
 

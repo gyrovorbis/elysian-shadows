@@ -3,12 +3,15 @@
 
 #include <vector>
 #include "elysian_system.hpp"
+#include "elysian_asset_typedefs.hpp"
 
 #include <gyro.h>
 
+ELYSIAN_ASSET_TYPEDEF(Level)
+
+
 namespace elysian {
 
-	struct Level;
 	struct Area;
 
 	class LevelSystem: public System { 
@@ -25,7 +28,7 @@ namespace elysian {
 	public:
 
         static const unsigned MAX_LEVELS_LOADED = 1;
-#if GYRO_PLATFORM == GYRO_PLATFORM_x86 || GYRO_PLATFORM == GYRO_PLATFORM_ANDROID || GYRO_PLATFORM == GYRO_PLATFORM_iOS
+#if GYRO_PLATFORM == GYRO_PLATFORM_x86 || GYRO_PLATFORM == GYRO_PLATFORM_ANDROID || GYRO_PLATFORM == GYRO_PLATFORM_iOS || GYRO_PLATFORM == GYRO_PLATFORM_Qt
 		static const unsigned MAX_AREAS_LOADED = 1;
 #elif GYRO_PLATFORM == GYRO_PLATFORM_PSP
         static const unsigned MAX_AREAS_LOADED = 2;

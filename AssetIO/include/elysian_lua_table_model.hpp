@@ -2,7 +2,7 @@
 #define ELYSIAN_LUA_TABLE_MODEL_H
 
 #include "luatables.h"
-#include "../../ESGamma/include/elysian_lua_manager.hpp"
+#include "elysian_lua_manager.hpp"
 
 namespace elysian {
 
@@ -65,7 +65,7 @@ template<typename P, class... _Types> class LuaTableProxy;
     const char*const LuaTableFieldProxy<P, T, N, G, S>::Set;
 
     template<typename P>
-    class LuaTableProxy<P>: public LuaManager/*: public LuaTable*/ {
+    class LuaTableProxy<P>: public LuaTable {
     protected:
 
         inline bool _pushFieldProxyValue(const char *key, lua_State *state) { return false; }
@@ -109,13 +109,10 @@ template<typename P, class... _Types> class LuaTableProxy;
         static LuaTable _ooluaNewIndexTable;
 
         static inline void _registerPropertyProxyField(lua_State* l, const bool get=true) {
-
             lua_getfield(l, -2, get? _MyFirst.Get : _MyFirst.Set);
             lua_setfield(l, -2, _MyFirst.key);
 
             ParentType::_registerPropertyProxyField(l, get);
-
-           //
 
         }
 
@@ -288,11 +285,11 @@ template<typename P, class... _Types> class LuaTableProxy;
 
 
             _propertyProxyIndexTable.push(l);
-            LuaManager::_rPrintByIndex(-2, 999, "IndexTable");
+            LuaManager::rPrintByIndex(-2, 999, "IndexTable");
             lua_pop(l, 1);
 
             _propertyProxyNewIndexTable.push(l);
-            LuaManager::_rPrintByIndex(-2, 999, "NewIndexTable");
+            LuaManager::rPrintByIndex(-2, 999, "NewIndexTable");
             lua_pop(l, 1);
 
             assert(LuaManager::_stackDepth() == 0);
@@ -308,7 +305,7 @@ template<typename P, class... _Types> class LuaTableProxy;
             lua_pushcfunction(l, &_indexMetaMethodCFunction);
             lua_setfield(l, -2, "__index");
 
-            LuaManager::_rPrintByIndex(-2, 999, "instance meta");
+            LuaManager::rPrintByIndex(-2, 999, "instance meta");
             _staticMetaTable.pull(*LuaManager::_mainState);
 
             assert(LuaManager::_stackDepth() == 0);
@@ -331,7 +328,7 @@ template<typename P, class... _Types> class LuaTableProxy;
 
             lua_pushcfunction(l, &_indexMetaMethodCFunction);
             lua_setfield(l, -2, "__index");
-            LuaManager::_rPrintByIndex(-2, 999, "orig");
+            LuaManager::rPrintByIndex(-2, 999, "orig");
 
             lua_pushcfunction(l, &_newIndexMetaMethodCFunction);
             lua_setfield(l, -2, "__newindex");

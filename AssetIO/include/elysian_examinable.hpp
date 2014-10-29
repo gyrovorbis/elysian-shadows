@@ -3,11 +3,13 @@
 
 #include "elysian_component.hpp"
 #include "elysian_direction.hpp"
+#include "elysian_asset_typedefs.hpp"
+
+ELYSIAN_ASSET_TYPEDEF(Entity)
 
 namespace elysian {
 
 	class Dialog;
-	class Entity;
 
 	class Examinable: public Component {
 	private:

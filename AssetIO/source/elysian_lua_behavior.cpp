@@ -1,9 +1,5 @@
 #include "elysian_lua_behavior.hpp"
-//#include <initializer_list>
-
-#ifdef ELYSIAN_ENGINE
-#	include "elysian_lua_wrappers.hpp"
-#endif 
+#include "elysian_lua_wrappers.hpp"
 
 #ifdef ELYSIAN_LUA_DEBUG
 #	define _PROTECTED(a) \
@@ -21,24 +17,14 @@ namespace elysian {
 
 LuaBehavior::LuaBehavior(Entity &entity,
                          const char *
-#ifdef ELYSIAN_ENGINE
 						 script,
-						 const OOLUA::Lua_table_ref paramTable
-#endif
-                         ):
-	Behavior(entity)
+						 const OOLUA::Lua_table_ref paramTable):
+                         Behavior(entity)
 {
-#ifdef ELYSIAN_ENGINE
-
 	loadScript(script, paramTable);
-	
-#endif
-
 }
 	
 LuaBehavior::~LuaBehavior(void) {
-#ifdef ELYSIAN_ENGINE
-
 	//Traverse hierarchy from BOTTOM TO TOP cleaning shit up
 	//    - Call onDestroy if script implements it (NOT if behavior uses it)
 	//    - OOLUA will delete selfTables automatically
@@ -49,7 +35,6 @@ LuaBehavior::~LuaBehavior(void) {
 	}
 
 	LuaManager::unloadBehaviorScript(*_script);
-#endif
 }
 
 bool LuaBehavior::load(FILE* /*file*/) {
@@ -99,7 +84,6 @@ bool LuaBehavior::loadScript(const char *file, const OOLUA::Lua_table_ref paramT
 		return false;
 	}
 
-#ifdef ELYSIAN_ENGINE
 	_script = LuaManager::loadBehaviorScript(file);
 
 	//Climb hierarchy and create top-down list
@@ -153,123 +137,89 @@ bool LuaBehavior::loadScript(const char *file, const OOLUA::Lua_table_ref paramT
 		parentSelfTableRef = selfTableRef;
 	}
 
-#else
     (void)paramTable;
 
-#endif
     dbgPop();
 	return true;
 }
 
-#ifdef ELYSIAN_ENGINE
 void LuaBehavior::_selfTableDump(void) {
 	char selfDisplay[20] = {0};
 	Debug::luaPrint("**** BEHAVIOR SELF TABLE DUMP ****");
 
 	for(int i = _hierarchyDepth-1; i >= 0; --i) {
 		sprintf(selfDisplay, "self[%d]", _hierarchyDepth-1-i);
-		_rPrintByRef(_ooSelfTableRefHierarchy[i].ref(), 0, selfDisplay);
+        rPrintByRef(_ooSelfTableRefHierarchy[i].ref(), 0, selfDisplay);
 	}
 }
-#endif
 
 void LuaBehavior::onUpdate(void) {
-#ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onUpdate", _ooSelfTableRef));
-#endif
 }
 
 void LuaBehavior::onRender(void) {
-#ifdef ELYSIAN_ENGINE
 
-#endif
 }
 
 void LuaBehavior::onCreate(void) {
-#ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onCreate", _ooSelfTableRef));
-#endif
 }
 
 void LuaBehavior::onDestroy(void) {
-#ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onDestroy", _ooSelfTableRef));
-#endif
 }
 
 void LuaBehavior::onLoad(void) {
-#ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onLoad", _ooSelfTableRef));
-#endif
 }
 
 void LuaBehavior::onUnload(void) {
-#ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onUnload", _ooSelfTableRef));
-#endif
 }
 
 void LuaBehavior::onEnter(void) {
-#ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onEnter", _ooSelfTableRef));
-#endif
 }
 
 void LuaBehavior::onExit(void) {
-#ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onExit", _ooSelfTableRef));
-#endif
 }
 	
 void LuaBehavior::onCollide(CollisionContact*const contact, elysian::Collidable *collidable) {
 	(void)collidable;
     (void)contact;
-#ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onCollide", _ooSelfTableRef, contact, collidable));
-#endif
 }
 
 void LuaBehavior::onCollisionEnter(CollisionContact*const contact, elysian::Collidable *collidable) {
 	(void)collidable;
     (void)contact;
-#ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onCollisionEnter", _ooSelfTableRef, contact, collidable));
-#endif
 }
 
 void LuaBehavior::onCollisionExit(elysian::Collidable *collidable) {
 	(void)collidable;
-#ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onCollisionExit", _ooSelfTableRef, collidable));
-#endif
 }
 
 void LuaBehavior::onShatter(CollisionContact* contact) {
     (void)contact;
-#ifdef ELYSIAN_ENGINE
     _PROTECTED(_callTrigger<void>("onShatter", _ooSelfTableRef, contact));
-#endif
 }
 
 void LuaBehavior::onExamine(Entity* entity) {
 	(void)entity;
-#ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onExamine", _ooSelfTableRef, entity));
-#endif
 }
 
 void LuaBehavior::onDialog(const unsigned screen, const int option) {
 	(void)screen;
 	(void)option;
-#ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onDialog", _ooSelfTableRef, screen, option));
-#endif
 }
 
 void LuaBehavior::onCombatEnter(void) {
-#ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onCombatEnter", _ooSelfTableRef));
-#endif
 }
 
 void LuaBehavior::onCombatExit(void) {

@@ -30,12 +30,10 @@
 #include "renderable.h"
 #include <cmath>
 
-
-Entity::Entity(elysian::Entity &entity): _elysianEntity(&entity),
+TkEntity::TkEntity(elysian::Entity &entity): _elysianEntity(&entity),
 	_renderable(NULL), _animation(NULL), _collidable(NULL),_warp(NULL),_item(NULL), _character(NULL), _friendly(NULL), _enemy(NULL),
-    _gridSnap(false) {
-
-	//generate toolkit components from elysian components
+    _gridSnap(false) {	//generate toolkit components from elysian components
+#if 0
 	if(_elysianEntity->getRenderable()) {
 		_renderable = new Renderable(_elysianEntity->getRenderable());
 		QObject::connect(_renderable, SIGNAL(PrimitiveUpdate()), this, SLOT(UpdateRect()));
@@ -84,13 +82,11 @@ Entity::Entity(elysian::Entity &entity): _elysianEntity(&entity),
     setFlag(ItemIgnoresParentOpacity,true);
 
     UpdateRect();
+#endif
 }
 
-Entity::~Entity() {
-    //deallocate image? Not if it's shared? Do I care enough to share it?
 
-}
-
+#if 0
 QVariant Entity::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == ItemPositionChange && scene()) {
@@ -699,5 +695,7 @@ Warp *Entity::getWarp() const { return _warp; }
 Character *Entity::getCharacter() const { return _character; }
 Friendly *Entity::getFriendly() const { return _friendly; }
 Enemy *Entity::getEnemy() const { return _enemy; }
-elysian::Entity *Entity::getElysianEntity() const { return _elysianEntity; }
+
+
+#endif
 

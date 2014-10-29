@@ -40,6 +40,7 @@
 #include "elysian_lua_wrappers.hpp"
 #include "elysian_animation_system.hpp"
 #include "elysian_character_system.hpp"
+#include "elysian_camera_system.hpp"
 
 /* IT'S NOT SAFE TO GO ALONE! TAKE THIS HEADER FILE. IT WILL HELP
  * YOU ON YOUR JOURNEY!
@@ -292,7 +293,7 @@ OOLUA_PROXY(Entity, RenderableObject)
 	OOLUA_MEM_FUNC(Combat*, addCombat)
 	OOLUA_MEM_FUNC(ParticleEmitter*, addParticleEmitter)
 	OOLUA_MEM_FUNC(Behavior*, addBehavior, const char*)
-	OOLUA_MEM_FUNC(LuaBehavior*, addLuaBehavior, const char*, OOLUA::Lua_table_ref)
+    OOLUA_MEM_FUNC(maybe_null<LuaBehavior*>, addLuaBehavior, const char*, OOLUA::Lua_table_ref)
     OOLUA_MEM_FUNC_CONST(maybe_null<Renderable*>, getRenderable)
     OOLUA_MEM_FUNC_CONST(maybe_null<Animation*>, getAnimation)
     OOLUA_MEM_FUNC_CONST(maybe_null<Collidable*>, getCollidable)
@@ -826,8 +827,8 @@ OOLUA_PROXY(Level)
 		No_public_destructor
 	)
 	OOLUA_MEM_FUNC(Tile*, getTile, uint16_t)
-	OOLUA_MEM_FUNC_CONST(unsigned short, getTileAmount)
-	OOLUA_MEM_FUNC_CONST(const char*, getName)
+    //OOLUA_MEM_FUNC_CONST(unsigned short, getTileAmount)
+    OOLUA_MEM_FUNC_CONST(const char*, getDirName)
 	OOLUA_MEM_FUNC_CONST(const char*, getPath)
 OOLUA_PROXY_END
 
@@ -1398,5 +1399,72 @@ static inline int gyroWavCreate(lua_State *const vm) {
 static inline int gyroWavDestroy(lua_State *const vm) {
 	OOLUA_C_FUNCTION(int, gyAudWavDestroy, GYWav*)
 }
+
+static inline int gyroMatPush(lua_State *const vm) {
+    OOLUA_C_FUNCTION(void, gyMatPush)
+}
+
+//===== GYRO MATRIX STACK ====
+
+static inline int gyroMatPop(lua_State*const vm) {
+    OOLUA_C_FUNCTION(void, gyMatPop)
+}
+
+static inline int gyroMatLoadIdentity(lua_State*const vm) {
+    OOLUA_C_FUNCTION(void, gyMatLoadIdentity)
+}
+
+static inline int gyroMatTranslate(lua_State*const vm) {
+    OOLUA_C_FUNCTION(void, gyMatTranslate, const float, const float, const float)
+}
+
+static inline int gyroMatRotateZ(lua_State*const vm) {
+    OOLUA_C_FUNCTION(void, gyMatRotateZ, const float)
+}
+
+static inline int gyroMatScale(lua_State*const vm) {
+    OOLUA_C_FUNCTION(void, gyMatScale, const float, const float, const float)
+}
+
+static inline int gyroMatTranslateScale(lua_State*const vm) {
+    OOLUA_C_FUNCTION(void, gyMatTranslateScale, const float, const float, const float, const float, const float, const float)
+}
+
+/*
+static inline int gyroMatInstance(lua_State*const vm) {
+    OOLUA_C_FUNCTION(void, gyMatInstance, const GYInstMat *const)
+}
+*/
+
+static inline int gyroMatRotate(lua_State*const vm) {
+    OOLUA_C_FUNCTION(void, gyMatRotate, const float, const float, const float, const float)
+}
+
+static inline int gyroMatShearZ(lua_State*const vm) {
+    OOLUA_C_FUNCTION(void, gyMatShearZ, const float, const float)
+}
+
+//==== GYRO VECTOR MATH ====
+/*
+static inline int gyroMatMultMat(lua_State*const vm) {
+    OOLUA_C_FUNCTION(void, gyMatMultMat, GYMatrix4, const GYMatrix4, const GYMatrix4)
+}*/
+/*
+static inline int gyroMatMultVec(lua_State*const vm) {
+    OOLUA_C_FUNCTION(void, gyMatMultVec, const GYVector4*const, GYVector4*, const unsigned)
+}
+
+static inline int gyroVec4Add(lua_State*const vm) {
+    OOLUA_C_FUNCTION(void, gyVec4Add, void*, const void* const, const void* const)
+}*/
+/*
+static inline int gyroVec4Mult(lua_State*const vm) {
+    OOLUA_C_FUNCTION(void, gyVec4Mult, const void*const, const void* const)
+}
+
+static inline int gyroVec4Add(lua_State*const vm) {
+    OOLUA_C_FUNCTION(void, gyVec4Add, void*, const void* const, const void* const)
+}*/
+
 
 #endif

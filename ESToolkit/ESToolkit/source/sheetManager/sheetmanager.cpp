@@ -197,14 +197,14 @@ SheetManager::~SheetManager(void) {
 void SheetManager::initialize(const bool gl, const bool autoScroll) {
 	Assets &assets = *AssetManager::getAssets();
 
-	if(_destLevelDropdown->text() == assets.getCurrentLevel()->getName() || _assets.getUndoStack()->count()) return;
+    if(_destLevelDropdown->text() == assets.getCurrentLevel()->getNodeName() || _assets.getUndoStack()->count()) return;
 
 	//_assets.setCurrentLevel(assets.getCurrentLevel());
 	//_assets.setCurrentTileType(assets.getCurrentLayerTileType());
 	_historyDockWidget->SetActiveStack(_assets.getUndoStack());
 	_ignoreSheetTabChange = true;
 
-	_destLevelDropdown->setText(assets.getCurrentLevel()->getName());
+    _destLevelDropdown->setText(assets.getCurrentLevel()->getNodeName());
 
 	_ui->actionEnable_OpenGL->setChecked(gl);
 	on_actionEnable_OpenGL_triggered();
@@ -213,7 +213,7 @@ void SheetManager::initialize(const bool gl, const bool autoScroll) {
 
 
 	for(int l = 0; l < _destLevelActions.size(); ++l) {
-		if(_destLevelActions[l]->text() == assets.getCurrentLevel()->getName()) {
+        if(_destLevelActions[l]->text() == assets.getCurrentLevel()->getNodeName()) {
 			_destLevelActions[l]->setChecked(true);
 			changeActiveLevel(_destLevelActions[l]);
 		}
@@ -297,13 +297,13 @@ void SheetManager::changeActiveLevel(QAction *action) {
 
 void SheetManager::onLevelAdded(Project *const /*project*/, Level *const level) {
 	//destination
-	QAction *levelAction = new QAction(level->getName(), this);
+    QAction *levelAction = new QAction(level->getNodeName(), this);
 	levelAction->setCheckable(true);
 	_destLevelMenu->addAction(levelAction);
 	_destLevelGroup->addAction(levelAction);
 	_destLevelActions.push_back(levelAction);
 	//source
-	levelAction = new QAction(level->getName(), this);
+    levelAction = new QAction(level->getNodeName(), this);
 	levelAction->setCheckable(true);
 	_srcLevelMenu->addAction(levelAction);
 	_srcLevelGroup->addAction(levelAction);
@@ -313,7 +313,7 @@ void SheetManager::onLevelAdded(Project *const /*project*/, Level *const level) 
 void SheetManager::onLevelRemoved(Project *const /*project*/, Level *const level) {
 	//destination
 	for(int i = 0; i < _destLevelActions.size(); ++i) {
-		if(_destLevelActions[i]->text() == level->getName()) {
+        if(_destLevelActions[i]->text() == level->getNodeName()) {
 			delete _destLevelActions[i];
 			_destLevelActions.remove(i);
 			break;
@@ -321,7 +321,7 @@ void SheetManager::onLevelRemoved(Project *const /*project*/, Level *const level
 	}
 	//source
 	for(int i = 0; i < _srcLevelActions.size(); ++i) {
-		if(_srcLevelActions[i]->text() == level->getName()) {
+        if(_srcLevelActions[i]->text() == level->getNodeName()) {
 			delete _srcLevelActions[i];
 			_srcLevelActions.remove(i);
 			break;

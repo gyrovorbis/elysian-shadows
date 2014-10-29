@@ -169,7 +169,7 @@ bool DestView<T>::_populatePlaceTileGroupRegionFill(const TileSelection<T> *cons
 //Deletes the fucker if it already exists for reallocation!
 template<typename T>
 void DestView<T>::createSelectionItemGroup(void) {
-	if(_selItemGroup){ delete _selItemGroup; _selItemGroup = NULL; /*return;*/}
+    if(_selItemGroup){ delete _selItemGroup; _selItemGroup = nullptr; /*return;*/}
 
 	TileSelection<T> *tileSel = _getTileSelection();
 	if(!tileSel) return;

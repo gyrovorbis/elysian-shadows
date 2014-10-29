@@ -6,9 +6,7 @@
 #include <gyro_shader_api.h>
 #include <gyro_video_api.h>
 #include "elysian_component.hpp"
-#ifdef ELYSIAN_ENGINE
-#	include "elysian_camera_system.hpp"
-#endif
+#include "elysian_camera_system.hpp"
 
 namespace elysian {
 
@@ -40,9 +38,7 @@ namespace elysian {
 		friend class LightSystem;
 		friend class Engine;
 
-#ifdef ELYSIAN_ENGINE
-		CameraState _camState;
-#endif
+        CameraState     _camState;
         GYVector3       _relPos = { 0.0f, 0.0f, 0.0f };
         bool            _shadowCaster = false;
 	public:
@@ -69,11 +65,11 @@ namespace elysian {
         void            setRelativePos(const float x, const float y, const float z);
 
         LightAttrib&    getAttrib(void);
-#ifdef ELYSIAN_ENGINE
+
         void            updateBoundingVolume(const CameraState*const cam, const GY_CUBE_MAP_FACE face);
         CameraState*    getCameraState(void);
         void            update(void);
-#endif
+
 	};
 
 	inline void LightAttrib::setAmbientColor(const GYVector4& color) {
@@ -104,12 +100,8 @@ namespace elysian {
 			360.0f,						//cutoff
 			GY_LIGHT_POINT,				//type
 			&LightAttrib::defaultProperties,
-#ifdef ELYSIAN_ENGINE
 			&_camState,
-#else
-            nullptr,
-#endif
-			nullptr
+            nullptr
 	}) { gyVec3Normalize(&direction);  }
 	inline void LightSource::setAttrib(const LightAttrib* const attrib) { properties = (GYLightProperties*)attrib; }
 	inline void LightSource::setDirection(const GYVector3& dir) { gyVec3Normalize(&direction); direction = dir; }
@@ -122,12 +114,9 @@ namespace elysian {
     inline void LightSource::setRelativePos(const float x, const float y, const float z) { _relPos.x = x; _relPos.y = y; _relPos.z = z; }
 
 
-#ifdef ELYSIAN_ENGINE
 	inline CameraState* LightSource::getCameraState(void) {
 		return &_camState;
 	}
-
-#endif
 
     inline void LightAttrib::linearInterpolate(const LightAttrib& startKeyFrame, const LightAttrib& endKeyFrame,
                            const float interval, const float elapsed)

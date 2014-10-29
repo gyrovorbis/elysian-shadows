@@ -4,18 +4,20 @@
 #include <vector>
 #include <map>
 
+#include <oolua.h>
+
+#include "elysian_asset_typedefs.hpp"
 #include "elysian_renderable_object.hpp"
 #include "elysian_asset.hpp"
 #include "elysian_stl_algorithm.hpp"
 #include "elysian_component.hpp"
 #include "elysian_area.hpp"
 #include "elysian_map_depth_buffer.hpp"
-#ifdef ELYSIAN_ENGINE
-#	include <oolua.h>
-#endif
 
 #define ELYSIAN_ENTITY_NAME_SIZE	100
 #define ELYSIAN_ENTITY_NAME_DEFAULT	"Untitled"
+
+ELYSIAN_ASSET_TYPEDEF(Entity)
 
 namespace elysian {
 
@@ -31,37 +33,37 @@ namespace elysian {
 	class ParticleEmitter;
 	class Combat;
 	class Behavior;
-	class LuaBehavior;
-	
-    class Entity: public RenderableObject, public Asset {
+    class LuaBehavior;
+
+    class EntityBase: public RenderableObject, public Asset {
 	public:
 
-				Entity(void)	= default;
-		virtual ~Entity(void);
+                            EntityBase(void)	= default;
+        virtual             ~EntityBase(void);
 		
-		bool load(FILE* file);
-		bool save(FILE* file);
+        bool                load(FILE* file);
+        bool                save(FILE* file);
 
-		virtual void render(void) override;
-        void renderAtZ(const float z); //reested?
-		void renderShadowVolume(void);
+        virtual void        render(void) override;
+        void                renderAtZ(const float z); //reested?
+        void                renderShadowVolume(void);
 
-		bool activate(void);
-		bool deactivate(void);
+        bool                activate(void);
+        bool                deactivate(void);
         
-        void move(const GYVector2& dist);
+        void                move(const GYVector2& dist);
         
-        void setName(char const* const newName) { strcpy(_name, newName); }
-        const char *getName(void) const { return _name; }
+        void                setName(char const* const newName) { strcpy(_name, newName); }
+        const char*         getName(void) const { return _name; }
 
-		void setElev(const unsigned char e);
-		unsigned char getElev(void) const;
-        GY_RECT_PLANE_TYPE getPlaneType(void) const;
-        void setPlaneType(const GY_RECT_PLANE_TYPE plane);
-		void setShadowVolume(const bool v);
-		bool isShadowVolume(void) const;
-		void setShadowDepth(const float depth);
-        float getShadowDepth(void) const;
+        void                setElev(const unsigned char e);
+        unsigned char       getElev(void) const;
+        GY_RECT_PLANE_TYPE  getPlaneType(void) const;
+        void                setPlaneType(const GY_RECT_PLANE_TYPE plane);
+        void                setShadowVolume(const bool v);
+        bool                isShadowVolume(void) const;
+        void                setShadowDepth(const float depth);
+        float               getShadowDepth(void) const;
         
 		Renderable*			addRenderable(void);
 		Animation*			addAnimation(void);
@@ -87,36 +89,35 @@ namespace elysian {
 		ParticleEmitter*	getParticleEmitter(void) const { return _particleEmitter; }
 		Combat*				getCombat(void) const { return _combat; }
 
-		void removeRenderable(void);
-		void removeAnimation(void);
-		void removeCollidable(void);
-		void removeRigidBody(void);
-		void removeCharacter(void);
-		void removeWarp(void);
-		void removeExaminable(void);
-		void removeAudioSource(void);
-		void removeLightSource(void);
-		void removeParticleEmitter(void);
-		void removeCombat(void);
+        void                removeRenderable(void);
+        void                removeAnimation(void);
+        void                removeCollidable(void);
+        void                removeRigidBody(void);
+        void                removeCharacter(void);
+        void                removeWarp(void);
+        void                removeExaminable(void);
+        void                removeAudioSource(void);
+        void                removeLightSource(void);
+        void                removeParticleEmitter(void);
+        void                removeCombat(void);
  
-		Behavior* addBehavior(char const* behaviorName);
-        Behavior* getBehavior(char const* constbehaviorName) const;
-#ifdef ELYSIAN_ENGINE
-		LuaBehavior* addLuaBehavior(char const* scriptName, const OOLUA::Lua_table_ref paramTable);
-#endif
-		LuaBehavior* getLuaBehavior(char const* scriptName) const;
-		std::map<char const *, Behavior*, ltstr>& getBehaviors(void);
+        Behavior*           addBehavior(char const* behaviorName);
+        Behavior*           getBehavior(char const* constbehaviorName) const;
 
-		void removeBehavior(char const* behaviorName);
-		void removeLuaBehavior(char const* scriptName);
+        LuaBehavior*        addLuaBehavior(char const* scriptName, const OOLUA::Lua_table_ref paramTable);
+
+        LuaBehavior*        getLuaBehavior(char const* scriptName) const;
+        std::map<char const *, Behavior*, ltstr>&
+                            getBehaviors(void);
+
+        void                removeBehavior(char const* behaviorName);
+        void                removeLuaBehavior(char const* scriptName);
         
-        float getDepthBaseY(void) const;
-        void setDepthBaseY(const float base);
+        float               getDepthBaseY(void) const;
+        void                setDepthBaseY(const float base);
 
-#ifdef ELYSIAN_ENGINE
 		OOLUA::Lua_table_ref& getSelfTable(void);
-		void setSelfTable(const OOLUA::Lua_table_ref self);
-#endif
+        void                setSelfTable(const OOLUA::Lua_table_ref self);
         
 	protected:
 		
@@ -141,48 +142,57 @@ namespace elysian {
 		LightSource*		_lightSource		= nullptr;
 		ParticleEmitter*	_particleEmitter	= nullptr;
 		Combat*				_combat				= nullptr;
-#ifdef ELYSIAN_ENGINE
 		OOLUA::Lua_table_ref	_selfTable;
-#endif
 		
+
+        template<typename T>
+        T* _addComponent(T*& comp);
+        template<typename T>
+        void _removeComponent(T*& comp);
+
 		bool		attachComponent(Component* const comp);
 		Behavior*	attachBehavior(Behavior *const behav);
 		void		reested(void); //default for failed deserialization attempts
     }; 
 
-#ifdef ELYSIAN_ENGINE
-		inline OOLUA::Lua_table_ref& Entity::getSelfTable(void) {
+
+
+
+
+
+    //=========== INLINEZ =========
+
+
+        inline OOLUA::Lua_table_ref& EntityBase::getSelfTable(void) {
 			return _selfTable;
 		}
 
-		inline void Entity::setSelfTable(const OOLUA::Lua_table_ref self) {
+        inline void EntityBase::setSelfTable(const OOLUA::Lua_table_ref self) {
 			_selfTable = self;
 		}
-#endif
 
-
-	inline void Entity::setElev(const unsigned char e) { transform._pos.z = (float)e*32.0f; }
-	inline unsigned char Entity::getElev(void) const { return transform._pos.z/32.0f; }
-    inline GY_RECT_PLANE_TYPE Entity::getPlaneType(void) const  { return _planeType; }
-    inline void Entity::setPlaneType(const GY_RECT_PLANE_TYPE plane) { _planeType = plane; }
-    inline float Entity::getDepthBaseY(void) const {
+    inline void EntityBase::setElev(const unsigned char e) { _transform._pos.z = (float)e*32.0f; }
+    inline unsigned char EntityBase::getElev(void) const { return _transform._pos.z/32.0f; }
+    inline GY_RECT_PLANE_TYPE EntityBase::getPlaneType(void) const  { return _planeType; }
+    inline void EntityBase::setPlaneType(const GY_RECT_PLANE_TYPE plane) { _planeType = plane; }
+    inline float EntityBase::getDepthBaseY(void) const {
         switch(_planeType) {
         case GY_RECT_PLANE_LEFT:
         case GY_RECT_PLANE_RIGHT:
-            return transform._pos.y - 32.0f;
+            return _transform._pos.y - 32.0f;
 
         default:
-           return  (transform._pos.y  + 0.5f * transform._size.y * transform._scale.y + 16.0f);
+           return  (_transform._pos.y  + 0.5f * _transform._size.y * _transform._scale.y + 16.0f);
         }
     }
 
      //   return (transform._pos.y); /* + 0.5f * transform._size.y * transform._scale.y);*/ }
    // inline void Entity::setDepthBaseY(const float base) { transform._pos.y = base - 0.5f * transform._size.y * transform._scale.y; }
-	inline std::map<char const *, Behavior*, ltstr>& Entity::getBehaviors(void) { return _behavior; }
-	inline void Entity::setShadowVolume(const bool v) { _shadowVolume = v; }
-	inline bool Entity::isShadowVolume(void) const { return _shadowVolume; }
-	inline void Entity::setShadowDepth(const float depth) { _shadowDepth = depth; }
-    inline float Entity::getShadowDepth(void) const { return _shadowDepth; }
+    inline std::map<char const *, Behavior*, ltstr>& EntityBase::getBehaviors(void) { return _behavior; }
+    inline void EntityBase::setShadowVolume(const bool v) { _shadowVolume = v; }
+    inline bool EntityBase::isShadowVolume(void) const { return _shadowVolume; }
+    inline void EntityBase::setShadowDepth(const float depth) { _shadowDepth = depth; }
+    inline float EntityBase::getShadowDepth(void) const { return _shadowDepth; }
 
 }
 

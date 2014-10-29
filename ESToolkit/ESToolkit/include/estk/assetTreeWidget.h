@@ -6,7 +6,8 @@
 
 class TreeNode;
 class Project;
-class Level;
+class TkLevel;
+typedef TkLevel Level;
 class Area;
 
 class AssetTreeWidget: public QTreeWidget, public AssetManager {

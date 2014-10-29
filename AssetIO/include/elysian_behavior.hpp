@@ -6,19 +6,21 @@
 #include <cassert>
 #include "elysian_component.hpp"
 #include "elysian_stl_algorithm.hpp"
+#include "elysian_asset_typedefs.hpp"
 
 #define ELYSIAN_BEHAVIOR_NAME_SIZE 100
+
+ELYSIAN_ASSET_TYPEDEF(Entity)
 
 namespace elysian {
 	
 	struct ltstr;
-	class Entity;
 	class Collidable;
 	class CollisionContact;
 	class CombatStatus;
 	
 	class Behavior: public Component {
-		friend class Entity;
+        friend class BaseEntity;
 	private:
 		static const Component::TYPE _type = Component::BEHAVIOR;
 		static std::map<const char*, Behavior* (*)(Entity&), ltstr> _creators;
@@ -28,11 +30,12 @@ namespace elysian {
 		static void registerCreator(const char*typeName, Behavior* (*const func)(Entity&));
 		
 		Behavior(Entity& parent);
-		virtual ~Behavior(void) override;
 		
 		uint64_t _triggerBits = 0;
 		
 	public:
+        virtual ~Behavior(void) override;
+
 		//64 triggers max, currently
 		enum TRIGGER {
 			ON_SCRIPT_CREATE					= 1,

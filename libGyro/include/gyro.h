@@ -1,11 +1,12 @@
 #ifndef GYRO_H
 #define GYRO_H
 
+#include "gyro_platform.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "gyro_platform.h"
 #include "gyro_defines.h"
 #include "gyro_math_api.h"
 #include "gyro_matrix_api.h"

@@ -1,14 +1,13 @@
 #include "elysian_light_source.hpp"
-#include "elysian_entity.hpp"
 #include "elysian_generic.hpp"
+#include "elysian_asset_typedefs.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 #include <cfloat>
 
 namespace elysian {
 
 LightSource::~LightSource(void) {
-#ifdef ELYSIAN_ENGINE
 	gyVidLightSourceUninit(static_cast<GYLightSource*>(this));
-#endif
 }
 
 /*
@@ -57,26 +56,19 @@ bool LightSource::removeFromLevel(void) {
 	return true;
 }
 
-void LightSource::setLightType(const GY_LIGHT_TYPE
-#ifdef ELYSIAN_ENGINE
-                               _type
-#endif
-                               ) {
+void LightSource::setLightType(const GY_LIGHT_TYPE _type) {
 	if(type == GY_LIGHT_DIRECTIONAL) position.w = 0.0f;
 
-#ifdef ELYSIAN_ENGINE
 	gyVidLightSourceInit(static_cast<GYLightSource*>(this), _type);
-#endif
 }
 
-#ifdef ELYSIAN_ENGINE
 void LightSource::update(void) {
     static const GYVector4 localVec = { 0.0f, 0.0f, 0.0f, 1.0f };
 	if(type == GY_LIGHT_POINT || type == GY_LIGHT_SPOT) {
 
         gyMatPush();
         gyMatLoadIdentity();
-        _entity->transform.apply();
+        _entity->_transform.apply();
         gyMatTranslate(_relPos.x, _relPos.y, _relPos.z);
         gyMatMultVec(&localVec, &position, 1);
         gyMatPop();
@@ -90,9 +82,7 @@ void LightSource::update(void) {
         };*/
 	}
 }
-#endif
 
-#ifdef ELYSIAN_ENGINE
 void LightSource::updateBoundingVolume(const CameraState *const cam, const GY_CUBE_MAP_FACE face) {
 	CameraState* thisCam = static_cast<CameraState*>(camera);
 	GYViewVolume* vol = &thisCam->viewVolume;
@@ -183,6 +173,5 @@ void LightSource::updateBoundingVolume(const CameraState *const cam, const GY_CU
 	thisCam->tileEndX = 199; thisCam->tileEndY = 199;*/
 
 }
-#endif
 
 }

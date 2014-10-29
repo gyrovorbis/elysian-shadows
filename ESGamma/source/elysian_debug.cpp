@@ -163,8 +163,8 @@ bool Debug::sandboxInit(void) {
 	LuaManager::runScriptSandbox(ELYSIAN_GLOBAL_INIT_LUA_PATH);
 	Entity* leader = getPartySys()->getPartyLeader();
 	if(leader) {
-		leader->transform.setPos(_cmdLineArgs.x, _cmdLineArgs.y);
-		leader->transform._size.z = 64.0f;
+        leader->_transform.setPos(_cmdLineArgs.x, _cmdLineArgs.y);
+        leader->_transform._size.z = 64.0f;
 	}
 
 	//LightSource* lightSrc = leader->addLightSource();
@@ -458,9 +458,9 @@ void Debug::processInput(GameInput& input) {
 	if(input.getTapped(GameInput::BUT_T)) {
 		Entity *entity = new Entity;
 		entity->setName("DICKMITE");
-		entity->transform.setPos(200.0F, 200.0f);
-		entity->transform.setScale(1.0f, 1.0f);
-		entity->transform.setSize(128.0f, 128.0f);
+        entity->_transform.setPos(200.0F, 200.0f);
+        entity->_transform.setScale(1.0f, 1.0f);
+        entity->_transform.setSize(128.0f, 128.0f);
 		entity->setElev(0);
         entity->setPlaneType(GY_RECT_PLANE_FRONT);
 		Renderable* render = entity->addRenderable();

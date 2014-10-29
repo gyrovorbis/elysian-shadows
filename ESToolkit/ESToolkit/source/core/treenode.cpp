@@ -1,6 +1,6 @@
 #include "treenode.h"
 
-void TreeNode::setName(const QString name) {
+void TreeNode::setNodeName(const QString name) {
     _name = name;
 
     if(_hasChanged == true) {
@@ -26,8 +26,6 @@ void TreeNode::setChanged(bool clean)
     }
 }
 
-TreeNode::TreeNode() : _hasChanged(false) {}
-
-QString TreeNode::getName() const {
+QString TreeNode::getNodeName() const {
     return _name;
 }

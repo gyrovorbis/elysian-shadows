@@ -1,6 +1,5 @@
 #include <gyro_video_api.h>
 #include <gyro_texture_api.h>
-#include <gyro_audio_api.h>
 #include <gyro_system_api.h>
 #include <gyro_shader_api.h>
 #include "gyro_video_glal.h"

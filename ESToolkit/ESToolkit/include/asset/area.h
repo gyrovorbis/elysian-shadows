@@ -21,9 +21,11 @@
 class QPainter;
 class QPoint;
 
-class Entity;
+class TkEntity;
+typedef TkEntity Entity;
 class Component;
-class Level;
+class TkLevel;
+typedef TkLevel Level;
 class SourceView;
 class CheckeredAlphaRectGraphicsItem;
 class MapViewDepthBufferGraphicsItem;
@@ -59,15 +61,15 @@ public:
 	static bool inactiveTransparency;
 
 	Area(Level *const level);
-	~Area(void);
+    virtual ~Area(void);
 
 	bool load(const QString dir);
 	bool save(void);
 
-	Level *getLevel(void) const { return _level; }
-	QUndoStack &getUndoStack(void);
+    Level* getLevel(void) const { return _level; }
+    QUndoStack& getUndoStack(void);
 	elysian::Area &getElysianArea(void);
-	void setName(const QString str);
+    void setNodeName(const QString str);
     void setLocation(const QString loc);
 	void setString(const QString str);
 	QString getString(void) const;

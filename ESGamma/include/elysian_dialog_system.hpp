@@ -4,6 +4,7 @@
 #include "elysian_system.hpp"
 #include "elysian_dialog.hpp"
 #include "elysian_quad_sprite.hpp"
+#include "elysian_asset_typedefs.hpp"
 #include <gyro_wav_api.h>
 
 #define ELSYIAN_DIALOG_SYSTEM_CHAR_APPEAR_TIME	0.05f
@@ -15,11 +16,12 @@
 #define ELYSIAN_DIALOG_SYSTEM_SCROLL_DOWN_SFX	"/assets/audio/sfx/SFX_DialogScrollDown_1.wav"
 #define ELYSIAN_DIALOG_SYSTEM_SCROLL_UP_SFX		"/assets/audio/sfx/SFX_DialogScrollUp_1.wav"
 
+ELYSIAN_ASSET_TYPEDEF(Entity)
+
 namespace elysian {
 
 	class Dialog;
 	class GameInput;
-	class Entity;
 	class EventMonitor;
 
 	class DialogSystem: public System {

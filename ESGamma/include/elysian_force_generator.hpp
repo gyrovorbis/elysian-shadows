@@ -4,12 +4,13 @@
 #include <gyro_math_api.h>
 #include <gyro_matrix_api.h>
 #include <stdint.h>
+#include "elysian_asset_typedefs.hpp"
+
+ELYSIAN_ASSET_TYPEDEF(Entity)
 
 namespace elysian {
 
 	class ForceTarget;
-	class Entity;
-
 	class ForceGenerator {
 	private:
 		uint32_t		_forceMask = ~0x0;

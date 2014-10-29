@@ -1,10 +1,9 @@
 #include <string.h>
 #include "elysian_area.hpp"
 #include "elysian_level.hpp"
-#include "elysian_entity.hpp"
-#ifdef ELYSIAN_ENGINE
 #include "elysian_lua_manager.hpp"
-#endif
+#include "elysian_asset_typedefs.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 
 using namespace std;
 
@@ -107,12 +106,12 @@ bool Area::load(const char *const dir, const Level *lev) {
 	strcat(buffer, ELYSIAN_AREA_ENTITY_PATH);
 	success &= loadEntities(buffer);
 
+#if 0
 #ifdef ELYSIAN_AREA_USE_INIT_LUA
-#	ifdef ELYSIAN_ENGINE
 	strcpy(buffer, dir);
 	strcat(buffer, ELYSIAN_AREA_INIT_LUA_PATH);
 	LuaManager::runScriptSandbox(buffer);
-#	endif
+#endif
 #endif
 
     dbgPop();
@@ -158,13 +157,11 @@ bool Area::loadMap(const char *const filename) {
 
 	allocMap();
 
-	gyFileRead(fp, tiles, sizeof(TileEntry) * width * height * ELYSIAN_AREA_MAP_LAYERS, NULL);
+    gyFileRead(fp, tiles, sizeof(TileEntry) * width * height * ELYSIAN_AREA_MAP_LAYERS, nullptr);
 
 	gyFileClose(&fp);
 
-#ifdef ELYSIAN_ENGINE
 	populateVbo();
-#endif
     dbgPop();
 	return true;
 }
@@ -255,7 +252,7 @@ bool Area::saveEntities(const char *const /*filename*/) {
 
 #ifdef GYRO_GLAL
 void Area::populateVbo(void) {
-
+#ifdef ELYSIAN_ENGINE
 	glGenBuffers(1, &vboBuff);
 
 	VboEntry* data = (VboEntry*)malloc(sizeof(VboEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS*4);
@@ -279,6 +276,7 @@ void Area::populateVbo(void) {
 	glBufferData(GL_ARRAY_BUFFER, sizeof(VboEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS*4, data, GL_STATIC_DRAW);
 
 	free(data);
+#endif
 }
 
 #endif

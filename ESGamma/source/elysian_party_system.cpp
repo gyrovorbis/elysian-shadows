@@ -81,7 +81,7 @@ void PartySystem::processInput(const GameInput &input) {
         getPartSys()->getAttrib(0)->setColor(255, 255, 255, 100);
         getPartSys()->getAttrib(0)->setMaxLife(30);
         getPartSys()->getAttrib(0)->setStick(false);
-        GYVector3 pos = getPartyLeader()->transform._pos;
+        GYVector3 pos = getPartyLeader()->_transform._pos;
         pos.z += 5.0f;
         pos.y = getPartyLeader()->getDepthBaseY();
         getPartSys()->emitFromPoint(0, pos, _dashPartAngle, 500);
@@ -396,11 +396,11 @@ bool PartySystem::removePlayableFromParty(const unsigned int slot) {
 	
 	//update character positions
 	if(_characterParty.size() > 0) {
-		for(unsigned int i = _characterParty.size()-1; i > 0; --i) _characterParty[i]->transform._pos = _characterParty[i-1]->transform._pos;
-		_characterParty[0]->transform._pos = _playableParty[_playableParty.size()-1]->transform._pos;
+        for(unsigned int i = _characterParty.size()-1; i > 0; --i) _characterParty[i]->_transform._pos = _characterParty[i-1]->_transform._pos;
+        _characterParty[0]->_transform._pos = _playableParty[_playableParty.size()-1]->_transform._pos;
 	}
 	//update playable positions
-	for(unsigned int i = _playableParty.size()-1; i > slot; --i) _playableParty[i]->transform._pos = _playableParty[i-1]->transform._pos;
+    for(unsigned int i = _playableParty.size()-1; i > slot; --i) _playableParty[i]->_transform._pos = _playableParty[i-1]->_transform._pos;
 
 	
 	_playableParty.erase(_playableParty.begin() + slot);
@@ -446,7 +446,7 @@ bool PartySystem::addCharacterToParty(Entity *entity) {
 	}
 	//Debug::printf(Debug::VERBOSE, "%s has joined the party!", entity->getName());
 	_characterParty.push_back(entity);
-	if( _characterParty.size() > 1) entity->transform.setPos(_partyPathPoint[_partyPathPoint.size()-1]);
+    if( _characterParty.size() > 1) entity->_transform.setPos(_partyPathPoint[_partyPathPoint.size()-1]);
 	if(_playableParty.size() == 0 && _characterParty.size() == 1) getCameraSys()->setFollowEntity(entity);
 	_resizePartyPathPoints();
 	return true;
@@ -481,7 +481,7 @@ bool PartySystem::removeCharacterFromParty(const unsigned int slot) {
 	}
 	Debug::printf(Debug::VERBOSE, "%s has left the party!", _characterParty[slot]->getName());
 	//update positions
-	for(unsigned int i = _characterParty.size()-1; i > slot; --i) _characterParty[i]->transform._pos = _characterParty[i-1]->transform._pos;
+    for(unsigned int i = _characterParty.size()-1; i > slot; --i) _characterParty[i]->_transform._pos = _characterParty[i-1]->_transform._pos;
 	_characterParty.erase(_characterParty.begin() + slot);
 	_resizePartyPathPoints();
 	//for(unsigned int i = slot; i < _characterParty.size(); ++i) _characterParty[i]->transform.setPosition(_partyPathPoint[_partyPathPoint.size()-2]);
@@ -516,7 +516,7 @@ void PartySystem::_resizePartyPathPoints(void) {
 	if(pathPointAmount > (int)_partyPathPoint.size()) {
 		GYVector2 lastPoint;
 		if(_partyPathPoint.size() == 0) {
-			lastPoint = (_playableParty.size() != 0)? GYVector2 {_playableParty[0]->transform._pos.x, _playableParty[0]->transform._pos.y } : GYVector2 {_characterParty[0]->transform._pos.x, _characterParty[0]->transform._pos.y };
+            lastPoint = (_playableParty.size() != 0)? GYVector2 {_playableParty[0]->_transform._pos.x, _playableParty[0]->_transform._pos.y } : GYVector2 {_characterParty[0]->_transform._pos.x, _characterParty[0]->_transform._pos.y };
 		} else {
 			lastPoint = _partyPathPoint[_partyPathPoint.size()-1];
 		}
@@ -541,10 +541,10 @@ void PartySystem::updatePartyPaths(void) {
 
 	//Keep distance between party
 	if(_playableParty.size()) {
-		if(fabs(_partyPathPoint[0].x - _playableParty[0]->transform._pos.x) < 2.50f && fabs(_partyPathPoint[0].y - _playableParty[0]->transform._pos.y) < 2.0f) return;
+        if(fabs(_partyPathPoint[0].x - _playableParty[0]->_transform._pos.x) < 2.50f && fabs(_partyPathPoint[0].y - _playableParty[0]->_transform._pos.y) < 2.0f) return;
 	}
 	else if(_characterParty.size()) {
-		if(fabs(_partyPathPoint[0].x - _characterParty[0]->transform._pos.x) < 2.0f && fabs(_partyPathPoint[0].y - _characterParty[0]->transform._pos.y) < 2.0f) return;
+        if(fabs(_partyPathPoint[0].x - _characterParty[0]->_transform._pos.x) < 2.0f && fabs(_partyPathPoint[0].y - _characterParty[0]->_transform._pos.y) < 2.0f) return;
 	}
 
 	//update chain of points
@@ -553,7 +553,7 @@ void PartySystem::updatePartyPaths(void) {
 	}
 	
 	//add leader's current position
-	_partyPathPoint[0] = (_playableParty.size() > 0)? GYVector2{_playableParty[0]->transform._pos.x, _playableParty[0]->transform._pos.y } : GYVector2 {_characterParty[0]->transform._pos.x, _characterParty[0]->transform._pos.y };
+    _partyPathPoint[0] = (_playableParty.size() > 0)? GYVector2{_playableParty[0]->_transform._pos.x, _playableParty[0]->_transform._pos.y } : GYVector2 {_characterParty[0]->_transform._pos.x, _characterParty[0]->_transform._pos.y };
 
 	unsigned int currentIndex = 2;
 	//update playables

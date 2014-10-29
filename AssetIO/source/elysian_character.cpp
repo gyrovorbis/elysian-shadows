@@ -1,10 +1,11 @@
 #include "elysian_character.hpp"
-#include "elysian_entity.hpp"
 #include "elysian_area.hpp"
 #include "elysian_animation.hpp"
 #include "elysian_generic.hpp"
 #include "elysian_rigid_body.hpp"
 #include "elysian_collidable.hpp"
+#include "elysian_asset_typedefs.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 
 namespace elysian {
 
@@ -31,8 +32,6 @@ bool Character::addToLevel(void) {
 bool Character::removeFromLevel(void) {
     return containerEraseOnMatch(this, _curArea->characters);
 }
-
-#ifdef ELYSIAN_ENGINE
 
 void Character::setDashing(const bool val) {
     _dashing = val;
@@ -91,11 +90,9 @@ void Character::move(const GYVector2 &dist) {
 	if(gyVec2IsZero(&dist)) return;
 	GYVector2 totalForce = dist;
 
-#if 0
 	if(_heldEntity) {
 		gyVec2Scale(&totalForce, &dist, getHeldEntityForceDampFactor());
 	}
-#endif
 
 	_entity->getRigidBody()->applyForce(GYVector3{ totalForce.x, totalForce.y, 0.0f });
 	//_entity->transform.translate(dist);
@@ -236,11 +233,9 @@ void Character::jump(void) {
 	GYVector3 force = ELYSIAN_CHAR_JUMP_DEFAULT_FORCE;
     RigidBody*const rb = _entity->getRigidBody();
 
-#if 0
 	if(_heldEntity) {
 		gyVec3ScaleAccum(&force, getHeldEntityForceDampFactor());
 	}
-#endif
 
 	gyVec3ScaleAccum(&force, 1.0f/_deltaTime);
 
@@ -254,9 +249,6 @@ void Character::jump(void) {
 
     _entity->getAnimation()->replaceState("Fall", "Jump");
 }
-
-
-#endif
 
 
 }

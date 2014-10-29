@@ -134,8 +134,8 @@ void AdventureLog::render(Font &font) {
 	static GYColor4 canvasColor = { 0, 0, 0, 0 };
     
     //Draw Canvas for log strings
-	quad.transform.setPos(ELYSIAN_ADV_LOG_X, ELYSIAN_ADV_LOG_Y+11+0.5f*(22*(_endIndex-_startIndex+1)-_yOffset-22), ELYSIAN_ADV_LOG_Z);
-	quad.transform.setSize(430.0f, 22.0f*(_endIndex-_startIndex+1)-_yOffset-22.0f);
+    quad._transform.setPos(ELYSIAN_ADV_LOG_X, ELYSIAN_ADV_LOG_Y+11+0.5f*(22*(_endIndex-_startIndex+1)-_yOffset-22), ELYSIAN_ADV_LOG_Z);
+    quad._transform.setSize(430.0f, 22.0f*(_endIndex-_startIndex+1)-_yOffset-22.0f);
 	for(unsigned i = 0; i < 4; ++i) quad.setVertexColor(i, canvasColor.r, canvasColor.g, canvasColor.b, canvasColor.a);
 	quad.setVerticesAlpha(0.8f*_baseAlpha*255.0f, 0.8f*_baseAlpha*255.0f, 0.3f*_baseAlpha*255.0f, 0.3f*_baseAlpha*255.0f);
 	quad.render();
@@ -180,7 +180,7 @@ void AdventureLog::render(Font &font) {
 				break;
 		}
 		
-		font.transform.setPos(X_COORD, Y_COORD1+ yCoord2, Z_COORD);
+        font._transform.setPos(X_COORD, Y_COORD1+ yCoord2, Z_COORD);
 		font.setColor(r, g, b, 255);
 		if(i == _startIndex) {
 			float tempAlpha = 1.0f - _fadeCounter;	
@@ -190,8 +190,8 @@ void AdventureLog::render(Font &font) {
 		font.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, "%s", _log[i]);
     }
     
-    quad.transform.setPos(ELYSIAN_ADV_LOG_X, ELYSIAN_ADV_LOG_Y, ELYSIAN_ADV_LOG_Z+2);
-	quad.transform.setSize(ELYSIAN_ADV_LOG_W, ELYSIAN_ADV_LOG_H /3.0f );
+    quad._transform.setPos(ELYSIAN_ADV_LOG_X, ELYSIAN_ADV_LOG_Y, ELYSIAN_ADV_LOG_Z+2);
+    quad._transform.setSize(ELYSIAN_ADV_LOG_W, ELYSIAN_ADV_LOG_H /3.0f );
 	quad.setVertexColor(0, topColor.r, topColor.g, topColor.b, topColor.a); quad.setVertexColor(1, topColor.r, topColor.g, topColor.b, topColor.a);
 	quad.setVertexColor(3, bottomColor.r, bottomColor.g, bottomColor.b, bottomColor.a); quad.setVertexColor(2, bottomColor.r, bottomColor.g, bottomColor.b, bottomColor.a);
 	//quad.setColorVertical(0.0f, 0.0f, 1.0f, 0.0f, 0.7f, 1.0f);
@@ -201,7 +201,7 @@ void AdventureLog::render(Font &font) {
     //renderer.drawTransparentQuad(ADV_LOG_X, ADV_LOG_Y, ADV_LOG_Z+2, 430, 22, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	//font.setPosition(ADV_LOG_X+15, ADV_LOG_Y);
 	//font.setAlpha(1.0f, 1.0f,1.0f, 1.0f);
-	font.transform.setPos(225, ELYSIAN_ADV_LOG_Y+7, ELYSIAN_ADV_LOG_Z+3);
+    font._transform.setPos(225, ELYSIAN_ADV_LOG_Y+7, ELYSIAN_ADV_LOG_Z+3);
 	//font.setAlpha(_baseAlpha);
 	font.setColor(255, 255, 255, 255);
 	font.setAlpha(_baseAlpha*255.0);

@@ -150,7 +150,7 @@ void CombatSystem::sendStatusModifier(Combat* const target, CombatStatus* const 
 		GYVector3 point;
 		getPartSys()->setAttrib(2, target->getAttrib()->getParticleAttrib());
 		_curActionRes.contact->getWorldPos(*(GYVector2*)&point);
-		point.z = target->getEntity()->transform._pos.z + 8.0f;
+        point.z = target->getEntity()->_transform._pos.z + 8.0f;
 		//emit from POC with registered color and separating vel intensity
 		getPartSys()->emitFromPoint(2, point, tan(point.y/point.x), 4000);
 	}
@@ -202,8 +202,8 @@ void CombatSystem::_emitCombatModifierText(const Combat*const target, const Comb
 
 		//check if the attribute was modified
 		if(attrib != 0) {
-            GYVector2 pos = *(GYVector2*)&target->getEntity()->transform._pos;
-            pos.y -= 0.7f*target->getEntity()->transform._pos.z;
+            GYVector2 pos = *(GYVector2*)&target->getEntity()->_transform._pos;
+            pos.y -= 0.7f*target->getEntity()->_transform._pos.z;
 
 			sprintf(buff, "%d", abs(attrib));
             getGuiSys()->addCombatText(buff, (attrib > 0)? posColor : negColor, pos, _curActionRes.initialVel);

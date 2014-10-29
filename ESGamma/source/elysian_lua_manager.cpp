@@ -9,8 +9,10 @@ namespace elysian {
 
 //static members
 std::map<const char*, LuaScript*, ltstr>	LuaManager::_scripts;
-OOLUA::Script*								LuaManager::_mainState = nullptr;
-int											LuaManager::_errorCode = 0;
+OOLUA::Script*								LuaManager::_mainState                                                  = nullptr;
+int											LuaManager::_errorCode                                                  = 0;
+int                                         LuaManager::_stackBalanceTop[ELYSIAN_LUA_STACK_BALANCE_RECURSIVE_DEPTH] = { 0 };
+int                                         LuaManager::_stackBalanceRecursiveDepth                                 = 0;
 const char									LuaManager::_rPrint[] =
 	"function rPrint(s, l, i) -- recursive Print (structure, limit, indent)\n"
 		"l = (l) or 100; i = i or \"\";	-- default item limit, indent string\n"
@@ -47,7 +49,7 @@ void LuaManager::_showError(void) {
 	lua_pop(*_mainState, 1); //pop error string off the stack
 }
 
-void LuaManager::_rPrintByIndex(const int index, const unsigned depth, const char* name) {
+void LuaManager::rPrintByIndex(const int index, const unsigned depth, const char* name) {
 	lua_getglobal(*_mainState, "rPrint");						//push function
 	lua_pushvalue(*_mainState, index);							//push table to print
 	if(depth) lua_pushnumber(*_mainState, depth);				//push depth if given
@@ -57,10 +59,10 @@ void LuaManager::_rPrintByIndex(const int index, const unsigned depth, const cha
 	lua_pop(*_mainState, 1);									//pop return value
 }
 
-void LuaManager::_rPrintByRef(const int ref, const unsigned depth, const char* name) {
+void LuaManager::rPrintByRef(const int ref, const unsigned depth, const char* name) {
 	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, ref);			//push ref onto stack
 	int index = lua_gettop(*_mainState);						//get index of ref
-	_rPrintByIndex(index, depth, name);							//invoke by ref
+    rPrintByIndex(index, depth, name);							//invoke by ref
 	lua_pop(*_mainState, 1);									//pop ref from stack
 }
 
@@ -109,7 +111,7 @@ void LuaManager::_cStackDump (void) {
 
 	for (i = 1; i <= top; ++i) {  /* repeat for each level */
 		sprintf(varDisplayString, "_cStack[%d]", i);
-		_rPrintByIndex(i, 0, varDisplayString);
+        rPrintByIndex(i, 0, varDisplayString);
 	}
 
 	Debug::pop();
@@ -162,7 +164,7 @@ void LuaManager::_runtimeStackDump(void) {
 
 			int stackIndex = lua_gettop(*_mainState);
 			sprintf(displayName, "_local[%d][%d] [%s]", stackLevel, localIndex, localVarName);
-			_rPrintByIndex(stackIndex, 0, displayName);
+            rPrintByIndex(stackIndex, 0, displayName);
 
 			lua_pop(*_mainState, 1);
 

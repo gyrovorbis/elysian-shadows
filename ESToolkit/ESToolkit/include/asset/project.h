@@ -7,10 +7,11 @@
 #include "treenode.h"
 #include "propertyStackModel.h"
 
-class Level;
+class TkLevel;
 class Area;
 class Assets;
-class Entity;
+class TkEntity;
+typedef TkEntity Entity;
 class Component;
 
 class Project: public PropertyStackModel, public TreeNode {
@@ -18,11 +19,11 @@ class Project: public PropertyStackModel, public TreeNode {
     friend class Assets;
 private:
 
-	QVector<Level *> _level;
+    QVector<TkLevel *> _level;
     QString _location;
     bool _active;
 	virtual bool deactivate(void);
-	void connectSlots(Level *const level);
+    void connectSlots(TkLevel *const level);
 
 public:
 	Project(void);
@@ -36,20 +37,20 @@ public:
 	virtual bool activate(void);
 	bool isActive(void);
 
-	Level *newLevel(void);
-	Level *newLevel(const QString n);
-	Level *loadLevel(const QString name); //assumed to be within current project, so directory is not necessary
+    TkLevel *newLevel(void);
+    TkLevel *newLevel(const QString n);
+    TkLevel *loadLevel(const QString name); //assumed to be within current project, so directory is not necessary
 	bool saveLevel(const QString name);
 	bool removeLevel(const QString name);
     unsigned int getLevelAmount() const;
-    Level *getLevel(const QString name);
-    Level *getLevelByIndex(const unsigned int index);
-	Level *getFirstLevel(void) const;
+    TkLevel *getLevel(const QString name);
+    TkLevel *getLevelByIndex(const unsigned int index);
+    TkLevel *getFirstLevel(void) const;
 
 	bool load(const QString loc);
 	bool save(void);
 
-	Level *importLevel(const QString dir);
+    TkLevel *importLevel(const QString dir);
 	bool saveAs(const QString dir);
 
 	void clearUndoStacks(void);
@@ -58,7 +59,7 @@ public:
 	virtual TreeNode::ITEM_TYPE getTreeWidgetItemType(void) { return ITEM_PROJECT; }
 
 private slots:
-	  bool activateByLevel(Level *const level, Area *const area);
+      bool activateByLevel(Level *const level, Area *const area);
 	  void onAreaAdded(Level *const level, Area *const area);
 	  void onAreaRenamed(const QString oldName, const QString newName);
 	  void onAreaRemoved(Level *const level, Area *const area);

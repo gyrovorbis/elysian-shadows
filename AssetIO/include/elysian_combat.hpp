@@ -3,9 +3,7 @@
 
 #include <gyro_video_api.h>
 #include "elysian_component.hpp"
-#ifdef ELYSIAN_ENGINE
-#	include <oolua.h>
-#endif
+#include <oolua.h>
 
 namespace elysian {
 
@@ -74,10 +72,9 @@ namespace elysian {
 
 	private:
 
-#ifdef ELYSIAN_ENGINE
 		OOLUA::Lua_table_ref	_selfTable;
 		OOLUA::Lua_table_ref	_actionTable;
-#endif
+
 		CombatStatus			_status;
 		CombatAttrib*			_attrib			= nullptr;
 		DMG_TYPE				_dmgType		= DMG_NONE;
@@ -96,12 +93,11 @@ namespace elysian {
 		virtual bool removeFromLevel(void) override;
 		virtual TYPE getType(void) const override;
 
-#ifdef ELYSIAN_ENGINE
+
 		void					setSelfTable(OOLUA::Lua_table_ref self);
 		OOLUA::Lua_table_ref&	getSelfTable(void);
 		void					setActionTable(OOLUA::Lua_table_ref self);
 		OOLUA::Lua_table_ref&	getActionTable(void);
-#endif
 
 		DMG_TYPE				getDmgType(void) const;
 		void					setDmgType(const DMG_TYPE type);
@@ -158,14 +154,10 @@ namespace elysian {
 	inline void	CombatStatus::setConfusion(const STATUS_EFFECT_STATE state) { _confusion = state; }
 
 
-#ifdef ELYSIAN_ENGINE
-
 	inline void	Combat::setSelfTable(OOLUA::Lua_table_ref self) { _selfTable = self; }
 	inline OOLUA::Lua_table_ref& Combat::getSelfTable(void) { return _selfTable; }
 	inline void	Combat::setActionTable(OOLUA::Lua_table_ref self) { _actionTable = self; }
 	inline OOLUA::Lua_table_ref& Combat::getActionTable(void) { return _actionTable; }
-
-#endif
 
 	inline auto	Combat::getDmgType(void) const -> DMG_TYPE { return _dmgType; }
 	inline CombatAttrib* Combat::getAttrib(void) const { return _attrib; }

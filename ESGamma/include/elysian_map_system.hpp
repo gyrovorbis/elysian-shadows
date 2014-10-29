@@ -4,7 +4,6 @@
 #include "elysian_system.hpp"
 #include "elysian_camera_system.hpp"
 #include "elysian_map_depth_buffer.hpp"
-#include "elysian_entity.hpp"
 #include "elysian_level.hpp"
 #include "elysian_zcoords.hpp"
 #include "elysian_renderable.hpp"
@@ -12,6 +11,8 @@
 #include "elysian_mem_pool.hpp"
 #include "elysian_entity.hpp"
 #include "elysian_light_system.hpp"
+#include "elysian_asset_typedefs.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 #include <gyro.h>
 
 #ifdef GYRO_GLAL
@@ -124,7 +125,7 @@ namespace elysian {
 		entry.lights = getLightSys()->getLightMapEntryMapCoord(entry.y, entry.x);
 	}
 	
-	inline void MapSystem::renderObjectEntry(const MapDepthBuffEntry &entry, const float z) {
+    inline void MapSystem::renderObjectEntry(const MapDepthBuffEntry &entry, const float /*z*/) {
 		if(!entry.mapEntry.value) return; //Do not render tile 0, even if the depth buff algorithm tries to.
 		if(!_renderLayer[entry.layer]) return; //Don't render if this layer has been toggled off.
 		float delta = 0;//(entry.renderPass);
@@ -281,7 +282,7 @@ namespace elysian {
 			entry.entity = &entity;
             normalType = (NORMAL_TYPE)entity.getPlaneType();
 			lowestY = entity.getDepthBaseY();
-            zCoord = entity.transform._pos.z;
+            zCoord = entity._transform._pos.z;
 			return true;
         //}
         //return false;
@@ -290,7 +291,7 @@ namespace elysian {
 	inline void MapSystem::renderEntityEntry(const GammaEntityDepthBuffEntry &entry) const {
 		//entry.entity->renderAtZ(entry.zCoord);
 		//entry.entity->transform.setPosZ(entry.zCoordWorld);
-		entry.entity->render();
+        entry.entity->render();
 	}
 
 	inline void MapSystem::disableDepthTest(void) const {

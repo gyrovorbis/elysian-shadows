@@ -578,9 +578,9 @@ void RigidBodySystem::integrate3D(void) {
 
 		//if(found) {
 				//it->getAttrib()->setForceMask(0);
-            if(collidable->getEntity()->transform._pos.z <= zTop) {
-               float zDiff = zTop - collidable->getEntity()->transform._pos.z;
-				collidable->getEntity()->transform._pos.z = zTop;
+            if(collidable->getEntity()->_transform._pos.z <= zTop) {
+               float zDiff = zTop - collidable->getEntity()->_transform._pos.z;
+                collidable->getEntity()->_transform._pos.z = zTop;
 
                 //We have to remove the same amount of yVelocity we're removing from the Z in this perspective.
                // collidable->getEntity()->transform._pos.y -= zDiff;
@@ -673,20 +673,20 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
 	auto _createAndAddShard = [&](Entity*const entity, const float x, const float y, const float xinc, const float yinc) {
         Entity* shard = _claimShard();
 
-		shard->transform._pos.x = entity->transform._pos.x - 0.5f*width + x + 0.5f*xinc;
-		shard->transform._pos.y = entity->transform._pos.y - 0.5f*height + y + 0.5f*yinc;
-        shard->transform._pos.z = entity->transform._pos.z;// + (ySize*yinc-y);
+        shard->_transform._pos.x = entity->_transform._pos.x - 0.5f*width + x + 0.5f*xinc;
+        shard->_transform._pos.y = entity->_transform._pos.y - 0.5f*height + y + 0.5f*yinc;
+        shard->_transform._pos.z = entity->_transform._pos.z;// + (ySize*yinc-y);
         shard->setPlaneType(GY_RECT_PLANE_FRONT);
         if(entity->getPlaneType() == GY_RECT_PLANE_FRONT) {
-            shard->transform._pos.y = entity->transform._pos.y + 0.5f*entity->transform._size.y;// + y;
-            shard->transform._pos.z += (ySize-row)*16.0f;
+            shard->_transform._pos.y = entity->_transform._pos.y + 0.5f*entity->_transform._size.y;// + y;
+            shard->_transform._pos.z += (ySize-row)*16.0f;
 		} else {
-			shard->transform._pos.y = entity->transform._pos.y - 0.5f*entity->transform._size.y + y;
-			shard->transform._pos.z = entity->transform._pos.z;
+            shard->_transform._pos.y = entity->_transform._pos.y - 0.5f*entity->_transform._size.y + y;
+            shard->_transform._pos.z = entity->_transform._pos.z;
 
         }
 
-        shard->transform.setSize(xinc, yinc, 9.0f);
+        shard->_transform.setSize(xinc, yinc, 9.0f);
 
         if(!shard->getRenderable()) {
             auto* renderable = shard->addRenderable();
@@ -782,15 +782,15 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
 
 #if 1
         GYVector3 localPos;
-        gyVec3Sub(&localPos, &shard->transform._pos, &entity->transform._pos);
+        gyVec3Sub(&localPos, &shard->_transform._pos, &entity->_transform._pos);
      //   gyVec3ScaleAccum(&localPos, -1.0f);
         //gyVec3Sub(&localPos, &entity->transform._pos, &shard->transform._pos);
        //gyVec3Normalize(&velDir);
         //float crossProd = gyVec3DotProd(&localPos, &velDir);
 
-        float maxDist = powf(entity->transform._size.x*entity->transform._scale.x*0.5f, 2.0f);
-        maxDist += powf(entity->transform._size.y*entity->transform._scale.y*0.5f, 2.0f);
-        float maxDist3 = maxDist + powf(entity->transform._size.y*entity->transform._scale.y*0.5f, 2.0f);
+        float maxDist = powf(entity->_transform._size.x*entity->_transform._scale.x*0.5f, 2.0f);
+        maxDist += powf(entity->_transform._size.y*entity->_transform._scale.y*0.5f, 2.0f);
+        float maxDist3 = maxDist + powf(entity->_transform._size.y*entity->_transform._scale.y*0.5f, 2.0f);
        // maxDist += powf(entity->transform._size.y*entity->transform._scale.y, 2.0f); //z axis
         maxDist = gySqrt(maxDist);
         maxDist3 = gySqrt(maxDist3);

@@ -5,6 +5,7 @@
 #include <QUndoGroup>
 #include <gyro_system_api.h>
 #include "assets.h"
+#include "elysian_lua_manager.hpp"
 
 #define ESTOOLKIT_VERSION				GYRO_LIB_VERSION
 
@@ -16,6 +17,11 @@ namespace Ui {
 	class ESToolkit;
 }
 
+namespace elysian {
+    class Engine;
+    class Debug;
+}
+
 class EngineDialog;
 class AssetDockWidget;
 class EntityDockWidget;
@@ -25,43 +31,52 @@ class SelectionDockWidget;
 class HistoryDockWidget;
 class SheetManager;
 class EngineSettingsDialog;
+class LuaExplorerDialog;
 
 namespace Ui {
     class ESToolkit;
 }
 
-class ESToolkit : public QMainWindow {
+class ESToolkit : public QMainWindow, public elysian::LuaManager {
     Q_OBJECT
 public:
-    ESToolkit(QWidget *parent = 0);
-    ~ESToolkit();
+            ESToolkit(QWidget *parent = nullptr);
+    virtual ~ESToolkit(void);
 protected:
-    void changeEvent(QEvent *e);
-    void closeEvent(QCloseEvent *event);
+	virtual void changeEvent(QEvent *e);
+	virtual void closeEvent(QCloseEvent *event);
+
+    void _engineInitialize(void);
+    void _engineLoadAssets(void);
+	void _openProjectDir(const QString dir);
 private:
-    Ui::ESToolkit *_ui;
+    Assets                  _assets;
+    QUndoGroup              _undoGroup;
+    elysian::Engine*        _engine;
+    elysian::Debug *        _debug;
 
-    QTabBar *_areaTabBar;
-    bool _ignoreAreaTabChange;
+    Ui::ESToolkit*          _ui;
 
-    AssetDockWidget *_assetDockWidget;
-    EntityDockWidget *_entityDockWidget;
-    LayerDockWidget *_layerDockWidget;
-    SheetDockWidget *_sheetDockWidget;
-    SelectionDockWidget *_selectionDockWidget;
-    HistoryDockWidget *_historyDockWidget;
+    QTabBar*                _areaTabBar;
+    bool                    _ignoreAreaTabChange;
 
-    EngineDialog *_engineDialog;
-    EngineSettingsDialog *_engineSettingsDialog;
-    SheetManager *_sheetManager;
+    AssetDockWidget*        _assetDockWidget;
+    EntityDockWidget*       _entityDockWidget;
+    LayerDockWidget*        _layerDockWidget;
+    SheetDockWidget*        _sheetDockWidget;
+    SelectionDockWidget*    _selectionDockWidget;
+    HistoryDockWidget*      _historyDockWidget;
 
-    Assets _assets;
+    EngineDialog*           _engineDialog;
+    EngineSettingsDialog*   _engineSettingsDialog;
+    SheetManager*           _sheetManager;
+    LuaExplorerDialog*      _luaExplorerDialog;
 
-    QToolButton *m_activePlatform;
-    QActionGroup *m_platformActionGroup;
-    QActionGroup *m_transformActionGroup;
+    QToolButton*            m_activePlatform;
+    QActionGroup*           m_platformActionGroup;
+    QActionGroup*           m_transformActionGroup;
 
-    QUndoGroup _undoGroup;
+
 
     void SyncEntityMenuBar(const Entity *const entity);
     void ToogleProjectActions(bool enabled);
@@ -157,5 +172,6 @@ private slots:
     void on_actionGather_triggered();
     void on_actionScatter_2_triggered();
     void on_actionGather_2_triggered();
+	void on_actionPrevious_Project_triggered();
 };
 #endif // ESTOOLKIT_H

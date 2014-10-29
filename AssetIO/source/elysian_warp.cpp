@@ -2,6 +2,8 @@
 #include "elysian_entity.hpp"
 #include "elysian_area.hpp"
 #include "elysian_generic.hpp"
+#include "elysian_asset_typedefs.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 
 namespace elysian {
 

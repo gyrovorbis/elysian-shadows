@@ -1,8 +1,6 @@
 #include <string.h>
 #include "elysian_level.hpp"
-#ifdef ELYSIAN_ENGINE
-#	include "elysian_lua_manager.hpp"
-#endif
+#include "elysian_lua_manager.hpp"
 
 using namespace std;
 
@@ -37,15 +35,13 @@ namespace elysian {
 
 	static char buffer[ELYSIAN_LEVEL_PATH_SIZE+50];
 
-	Level::~Level(void) {
-#ifdef ELYSIAN_ENGINE
+    LevelBase::~LevelBase(void) {
 		gyVidTexDestroy(tileSheet);
 		gyVidTexDestroy(normalSheet);
 		gyVidTexDestroy(specularSheet);
-#endif
 	}
 
-	bool Level::load(const char *const dir) {
+    bool LevelBase::load(const char *const dir) {
 		bool success = true;
 
 		dbgprintf(LOG_VERBOSE, "Level::Load(%s)", dir);
@@ -56,7 +52,6 @@ namespace elysian {
 		strcat(buffer, ELYSIAN_TILESET_PATH);
 		success &= loadTileset(buffer);
 
-#ifdef ELYSIAN_ENGINE
 		strcpy(buffer, dir);
 		strcat(buffer, ELYSIAN_TILESHEET_PATH);
 		dbgprintf(LOG_VERBOSE, "Level::LoadTileSheet(%s)", buffer);
@@ -103,16 +98,17 @@ namespace elysian {
 		}
 		dbgPop();
 
+#ifdef ELYSIAN_ENGINE
 		strcpy(buffer, dir);
 		strcat(buffer, ELYSIAN_LEVEL_INIT_LUA_PATH);
 		LuaManager::runScriptSandbox(buffer);
-
 #endif
+
 		dbgPop();
 		return success;
 	}
 
-	bool Level::save(const char *const dir) {
+    bool LevelBase::save(const char *const dir) {
 		bool success = true;
 
 		dbgprintf(LOG_VERBOSE, "Level::save(%s)", dir);
@@ -126,7 +122,7 @@ namespace elysian {
 		return success;
 	}
 
-	bool Level::loadTileset(const char *const filename) {
+    bool LevelBase::loadTileset(const char *const filename) {
 		GYFile *fp;
 		char *buffer, *ptr;
 		int ptr_inc = 0;
@@ -174,7 +170,7 @@ namespace elysian {
 		return true;
 	}
 
-	bool Level::saveTileset(const char *const filename) {
+    bool LevelBase::saveTileset(const char *const filename) {
 		FILE* file = fopen(filename, "w");
 
 		dbgprintf(LOG_VERBOSE, "Level::saveTileset(%s)", filename);

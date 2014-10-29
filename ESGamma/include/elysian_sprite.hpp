@@ -56,7 +56,7 @@ namespace elysian {
 
 		void render(void) {
 			gyMatPush();
-			transform.apply();
+            _transform.apply();
 
 			submit();
 

@@ -3,7 +3,8 @@
 
 #include "elysian_component.hpp"
 #include "elysian_direction.hpp"
-#include "elysian_entity.hpp"
+#include "elysian_asset_typedefs.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 
 #define ELYSIAN_CHAR_ANIM_SEQ_STAND_UP		"StandUp"
 #define ELYSIAN_CHAR_ANIM_SEQ_STAND_DOWN	"StandDown"
@@ -29,7 +30,8 @@ namespace elysian {
 	};
 
 	class Character: public Component {
-        friend class Entity;
+        friend class EntityBase;
+        friend Entity;
 		friend class CharacterSystem;
 	private:
 		static const Component::TYPE _type		= Component::CHARACTER;
@@ -79,13 +81,11 @@ namespace elysian {
         bool            isDashing(void) const;
         void            setDashing(const bool val);
 
-#ifdef ELYSIAN_ENGINE
 		void update(void);
 		void move(const GYVector2& vec);
         void walk(const GYVector2& dir);
 		void faceDir(const Direction::DIR4 dir);
 		void faceEntity(Entity& entity);
-#endif
 	};
 
 
@@ -103,23 +103,18 @@ namespace elysian {
 
 	inline bool Character::isFacing(const Entity &entity) const {
 		GYVector2 distVec;
-		gyVec2Sub(&distVec, (GYVector2*)&entity.transform._pos, (GYVector2*)&_entity->transform._pos);
+        gyVec2Sub(&distVec, (GYVector2*)&entity._transform._pos, (GYVector2*)&_entity->_transform._pos);
 		return (_faceDir == Direction::fromVector(distVec));
 	}
-
-
-#ifdef ELYSIAN_ENGINE
 
 	inline void Character::setAnimate(const bool val) { _animate = val; }
 
 
 	inline void Character::faceEntity(Entity &entity) {
 		GYVector2 dist;
-		gyVec2Sub(&dist, (GYVector2*)&entity.transform._pos, (GYVector2*)&_entity->transform._pos);
+        gyVec2Sub(&dist, (GYVector2*)&entity._transform._pos, (GYVector2*)&_entity->_transform._pos);
 		faceDir(Direction::fromVector(dist));
 	}
-
-#endif
 
 }
 

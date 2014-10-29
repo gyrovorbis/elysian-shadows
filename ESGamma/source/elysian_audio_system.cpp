@@ -51,7 +51,7 @@ namespace elysian {
 
 		//the fuck do we do otherwise?
 		if(player) {
-			_listenerPos = { player->transform._pos.x, player->transform._pos.y, player->transform._pos.z };
+            _listenerPos = { player->_transform._pos.x, player->_transform._pos.y, player->_transform._pos.z };
 			gyAudListenerSetPos(&_listenerPos);
 		}
 

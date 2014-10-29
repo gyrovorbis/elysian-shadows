@@ -107,8 +107,8 @@ namespace elysian {
     }
 
 
-    inline void TimerEventSubprocess::_start(TimerSystem* sys) { _elapsedTime = 0.0f; }
-    inline void TimerEventSubprocess::_stop(TimerSystem* sys) {}
+    inline void TimerEventSubprocess::_start(TimerSystem* /*sys*/) { _elapsedTime = 0.0f; }
+    inline void TimerEventSubprocess::_stop(TimerSystem* /*sys*/) {}
     inline void TimerEventSubprocess::_update(TimerSystem* sys, const float deltaTime) {
         _elapsedTime += deltaTime;
         if(_elapsedTime > _duration) stop(sys);

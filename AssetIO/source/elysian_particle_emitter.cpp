@@ -1,15 +1,12 @@
 #include "elysian_particle_emitter.hpp"
 #include "elysian_area.hpp"
 #include "elysian_generic.hpp"
-#include "elysian_entity.hpp"
 #include "elysian_material.hpp"
-
-#ifdef ELYSIAN_ENGINE
-#   include "elysian_debug.hpp"
-#   include "elysian_force_generator.hpp"
-#   include "elysian_camera_system.hpp"
-#endif
-
+#include "elysian_debug.hpp"
+#include "elysian_force_generator.hpp"
+#include "elysian_camera_system.hpp"
+#include "elysian_asset_typedefs.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 
 namespace elysian {
 
@@ -17,10 +14,10 @@ ParticleEmitterAttrib::ParticleEmitterAttrib(void) {}
 
 ParticleEmitterAttrib::~ParticleEmitterAttrib(void) {
 	delete _material;
-#ifdef ELYSIAN_ENGINE
+
     gyVidTexDestroy(_normalMap);
     gyVidTexDestroy(_specularMap);
-#endif
+
 }
 
 auto Particle::getTargetType(void)	const -> TARGET_TYPE { return TARGET_PARTICLE; }
@@ -30,16 +27,16 @@ const GYStatic* Particle::getStaticAttrib(void) const { return static_cast<const
 bool Particle::getRestingOnBody(void) const { return resting; }
 
 void Particle::integrate(const float deltaTime) {
-#ifdef ELYSIAN_ENGINE
+
     if(!resting)
         gyIntegrate(static_cast<GYKinetic*>(this),
 				attrib,
 				deltaTime,
 				&position,
 				&orientation);
-#else
+
     (void)deltaTime;
-#endif
+
 }
 
 void ParticleEmitterInternals::emitFromPointInDir(const GYVector3& pos, const GYVector3& dir, const unsigned intensity, float angle) {
@@ -133,7 +130,7 @@ void ParticleEmitterInternals::emitFromPoint(const GYVector3 &pos, const float a
 
 }
 
-#ifdef ELYSIAN_ENGINE
+
 void ParticleEmitterInternals::update(const CameraState*const cam, const float deltaTime) {
 	GYVector3 newVel;
 	//Check for periodic emission!
@@ -282,7 +279,7 @@ void ParticleEmitter::emitFromEntity(const GYVector3 &pos, const float angle, co
     gyMatPush();
     gyMatLoadIdentity();
 
-    _entity->transform.apply();
+    _entity->_transform.apply();
 
     gyMatMultVec(&localPos, &worldPos, 1);
     gyMatPop();
@@ -291,7 +288,6 @@ void ParticleEmitter::emitFromEntity(const GYVector3 &pos, const float angle, co
 
 }
 
-#endif
 
 ParticleEmitterAttrib* ParticleEmitterInternals::getAttrib(void) const {
 	return _attrib;

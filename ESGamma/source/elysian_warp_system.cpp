@@ -18,7 +18,7 @@ namespace elysian {
 WarpSystem::WarpSystem(void): 
 	_currentWarp()
 {
-	_screenRect.transform._pos.z = ZCoordConstants::warpOverlay;
+    _screenRect._transform._pos.z = ZCoordConstants::warpOverlay;
 	_screenRect.setColor(0, 0, 0, 0);
 }
 
@@ -39,8 +39,8 @@ void WarpSystem::update(void) {
 
 	//Update overlay size to match the current screen resolution
 	getGuiSys()->getResolution(width, height);
-	_screenRect.transform.setPos(width/2.0f, height/2.0f);
-	_screenRect.transform.setSize(width, height);
+    _screenRect._transform.setPos(width/2.0f, height/2.0f);
+    _screenRect._transform.setSize(width, height);
 	
 	switch(_state) {
 		case CHECK_WARP:
@@ -52,7 +52,7 @@ void WarpSystem::update(void) {
 		case WARP:
 			if(_currentWarp._changeLevel) getLevelSys()->switchLevel(_currentWarp._levelPath);
 			if(_currentWarp._changeArea) getLevelSys()->switchArea(_currentWarp._areaPath);
-			getPartySys()->getPartyLeader()->transform.setPos(_currentWarp._toPosition);
+            getPartySys()->getPartyLeader()->_transform.setPos(_currentWarp._toPosition);
 			getPartySys()->getPartyLeader()->setElev(_currentWarp._toElev);
 			_state = FADE_IN;
 			if(_currentWarp._obliqueTran) {

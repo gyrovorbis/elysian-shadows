@@ -104,12 +104,10 @@ namespace elysian {
 		void setAttrib(ParticleEmitterAttrib*const attrib);
 		ParticleEmitterAttrib* getAttrib(void) const;
 
-#ifdef ELYSIAN_ENGINE
 		void applyForce(ForceGenerator*const force, const float deltaTime);
 		void update(const CameraState*const state, const float deltaTime);
 		void render(void);
 		void renderAtElev(const unsigned char elev);
-#endif
 
 		//emitter functions
 		void emitFromPoint(const GYVector3& pos, const float angle, const unsigned intensity);
@@ -131,9 +129,9 @@ namespace elysian {
         virtual bool    addToLevel(void) override;
         virtual bool    removeFromLevel(void) override;
         virtual TYPE    getType(void) const override;
-#ifdef ELYSIAN_ENGINE
+
         void            emitFromEntity(const GYVector3& pos, const float angle, const unsigned intensity);
-#endif
+
 	};
 
 

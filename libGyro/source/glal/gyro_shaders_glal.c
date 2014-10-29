@@ -2,12 +2,12 @@
 #include <gyro_video_api.h>
 #include <gyro_shader_api.h>
 #include <gyro_texture_api.h>
-#include <gyro_system_api.h>
 #include <gyro_defines.h>
 #include <stdio.h>
 
 #include "gyro_video_glal.h"
 #include "gyro_shaders_glal.h"
+#include "gyro_system_api.h"
 
 const GYMatrix4 shadowTexCoordBiasMat = {
 	{ 0.5f, 0.0f, 0.0f, 0.0f },

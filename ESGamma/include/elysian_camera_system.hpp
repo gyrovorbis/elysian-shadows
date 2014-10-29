@@ -6,6 +6,7 @@
 #include "elysian_subprocess_manager.hpp"
 #include "elysian_timer_system.hpp"
 #include "elysian_zcoords.hpp"
+#include "elysian_asset_typedefs.hpp"
 
 #include <stdlib.h>
 
@@ -17,9 +18,10 @@
 #define ELYSIAN_CAMERA_STATE_ENTITY_MARGIN_SIZE		0.1f
 #define ELYSIAN_CAMERA_STATE_SCALE_INTERP_EPSILON	0.01f
 
+ELYSIAN_ASSET_TYPEDEF(Entity)
+
 namespace elysian {
 	
-	class Entity;
 	class GameInput;
 	class CameraSystem;
 	struct CameraState;
@@ -435,15 +437,15 @@ namespace elysian {
     inline void CameraShakeSubProcess::setDuration(const float dur) { _duration = dur; }
     inline void CameraShakeSubProcess::setOscillations(const unsigned osc) { _oscillations = osc; }
     inline void CameraShakeSubProcess::setFade(const bool fade) { _fade = fade; }
-    inline void CameraShakeSubProcess::_start(CameraSystem*const sys) {
+    inline void CameraShakeSubProcess::_start(CameraSystem*const /*sys*/) {
         _timePerOscillation = (float)(_duration / ((float)_oscillations));
         _state = MOVE_POS;
         _elapsedTime = 0.0f;
         _magnitude = gyVec3MagAndNormalize(&_displacement);
         _startNextKeyFrame();
     }
-    inline void CameraShakeSubProcess::_stop(CameraSystem*const sys) {}
-    inline void CameraShakeSubProcess::_update(CameraSystem*const sys, const float deltaTime) {
+    inline void CameraShakeSubProcess::_stop(CameraSystem*const /* sys */) {}
+    inline void CameraShakeSubProcess::_update(CameraSystem*const /*sys*/, const float deltaTime) {
         _elapsedTime += deltaTime;
         if(_elapsedTime >= _duration) _elapsedTime = _duration;
     }

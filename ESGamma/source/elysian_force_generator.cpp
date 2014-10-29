@@ -1,7 +1,8 @@
 #include "elysian_force_generator.hpp"
 #include "elysian_rigid_body.hpp"
-#include "elysian_entity.hpp"
 #include "elysian_collidable.hpp"
+#include "elysian_asset_typedefs.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 
 namespace elysian {
 
@@ -33,7 +34,7 @@ void ImplosionForceGenerator::applyForce(ForceTarget * const target, const float
 
 	//if(_focalEntity == body->getEntity()) return;
 
-	gyVec3Sub(&dir, (GYVector3*)&_focalEntity->transform._pos, (GYVector3*)&target->getPosition());
+    gyVec3Sub(&dir, (GYVector3*)&_focalEntity->_transform._pos, (GYVector3*)&target->getPosition());
 
 	distance = gyVec3Magnitude(&dir);
 
@@ -54,7 +55,7 @@ void ExplosionForceGenerator::applyForce(ForceTarget * const target, const float
 
 	//if(_focalEntity == body->getEntity()) return;
 
-	gyVec3Sub(&dir, (GYVector3*)&pos3, (GYVector3*)&_focalEntity->transform._pos);
+    gyVec3Sub(&dir, (GYVector3*)&pos3, (GYVector3*)&_focalEntity->_transform._pos);
 
 	distance = gyVec3Magnitude(&dir);
 

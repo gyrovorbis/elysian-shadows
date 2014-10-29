@@ -16,7 +16,7 @@ Project::~Project(void) {
     _level.clear();
 }
 
-void Project::connectSlots(Level *const level) {
+void Project::connectSlots(TkLevel *const level) {
 	connect(level, SIGNAL(activating(Level *const, Area *const)), this, SLOT(activateByLevel(Level *const, Area *const)));
 	connect(level, SIGNAL(areaAdded(Level *const, Area *const)), this, SLOT(onAreaAdded(Level *const, Area *const)));
 	connect(level, SIGNAL(areaRenamed(QString,QString)), this, SLOT(onAreaRenamed(QString,QString)));
@@ -35,7 +35,7 @@ void Project::populateModel(void) {
 Level *Project::newLevel(void) {
 	QString name("new_level");
     unsigned int num = 1;
-	Level *lev = new Level(this);
+    TkLevel *lev = new TkLevel(this);
 	connectSlots(lev);
 
     while(getLevel(name+QString::number(num))) {
@@ -52,7 +52,7 @@ Level *Project::newLevel(void) {
 Level *Project::newLevel(const QString n) {
     QString name(n);
     unsigned int num = 1;
-	Level *lev = new Level(this);
+    TkLevel *lev = new TkLevel(this);
 	connectSlots(lev);
 
     while(getLevel(name+QString::number(num))) {
@@ -75,7 +75,7 @@ Level *Project::loadLevel(const QString name) {
 	Debug::Log(Debug::VERBOSE, QString("Project::LoadLevel("+directory+")"));
 	Debug::Push();
 
-	Level *lev = new Level(this);
+    TkLevel *lev = new TkLevel(this);
 	connectSlots(lev);
 	if(lev->load(directory)) {
         //ConnectSlots(lev);
@@ -101,28 +101,28 @@ bool Project::saveLevel(const QString name) {
     return false;
 }
 
-Level *Project::getFirstLevel() const {
-	return (_level.size() > 0)? _level.first() : NULL;
+TkLevel *Project::getFirstLevel() const {
+    return (_level.size() > 0)? _level.first() : nullptr;
 }
 
-Level *Project::getLevel(const QString name)  {
+TkLevel *Project::getLevel(const QString name)  {
 	for(int i = 0; i < _level.size(); ++i) {
-		if(_level[i]->getName() == name) return _level[i];
+        if(_level[i]->getNodeName() == name) return _level[i];
     }
-    return NULL;
+    return nullptr;
 }
 
 unsigned int Project::getLevelAmount(void) const { return _level.size(); }
 
-Level *Project::getLevelByIndex(const unsigned int index) {
-    return (index < (unsigned)_level.size())? _level[index] : NULL;
+TkLevel *Project::getLevelByIndex(const unsigned int index) {
+    return (index < (unsigned)_level.size())? _level[index] : nullptr;
 }
 
 bool Project::removeLevel(const QString name) {
     bool success = true;
 
 	for(int i = 0; i < _level.size(); ++i) {
-		if(_level[i]->getName() == name) {
+        if(_level[i]->getNodeName() == name) {
 			Level *temp = _level[i];
 			_level.erase(_level.begin() + i);
 			if(!FileUtilities::RemoveDir(temp->getLocation())) {
@@ -160,7 +160,7 @@ bool Project::load(const QString loc) {
     _location = loc;
 
     if(!dir.cd("level")) {
-		Debug::Logf(Debug::CRITICAL, "No 'level' folder!", getName().toStdString().c_str());
+        Debug::Logf(Debug::CRITICAL, "No 'level' folder!", getNodeName().toStdString().c_str());
         QDir::setCurrent(prevWorkingDir);
 		Debug::Pop();
         return false;
@@ -190,10 +190,10 @@ bool Project::save(void) {
 Level *Project::importLevel(const QString dir) {
     if(getLevel(QStringList(dir.split("/")).last())) {
         Debug::Log(Debug::CRITICAL, "A level of the same name already exists within the current project!");
-        return NULL;
+        return nullptr;
     }
 
-	Level *level = new Level(this);
+    TkLevel *level = new TkLevel(this);
 	connectSlots(level);
 	level->load(dir);
     level->setLocation(_location + "/level/" + QStringList(dir.split("/")).last());
@@ -242,7 +242,7 @@ bool Project::saveAs(const QString dir) {
     }
 
 	for(int i = 0; i < _level.size(); ++i) {
-		success &= _level[i]->saveAs(dir+"/level/"+_level[i]->getName());
+        success &= _level[i]->saveAs(dir+"/level/"+_level[i]->getNodeName());
     }
 
     Debug::Pop();
@@ -257,7 +257,7 @@ void Project::clearUndoStacks(void)
 }
 
 bool Project::activate(void) {
-	return activateByLevel(NULL, NULL);
+    return activateByLevel(nullptr, nullptr);
 }
 
 bool Project::activateByLevel(Level *const level, Area *const area) {
@@ -297,7 +297,7 @@ void Project::onAreaRemoved(Level *const level, Area *const area) {
 
 void Project::setName(const QString name) {
     QString newLocation;
-    TreeNode::setName(name);
+    TreeNode::setNodeName(name);
 
     //Update folder location
     QStringList splitList = _location.split("/");
@@ -313,7 +313,7 @@ void Project::setLocation(const QString loc) {
    _location = loc;
 
    QStringList splitList = _location.split("/");
-   TreeNode::setName(splitList.last());
+   TreeNode::setNodeName(splitList.last());
 }
 
 QString Project::getLocation(void) const {

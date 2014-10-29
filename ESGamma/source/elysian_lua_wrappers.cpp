@@ -608,9 +608,9 @@ EXPORT_OOLUA_FUNCTIONS_1_CONST(Tile,
 
 EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(Level,
 									getTile)
-EXPORT_OOLUA_FUNCTIONS_3_CONST(Level,
-								getTileAmount,
-								getName,
+EXPORT_OOLUA_FUNCTIONS_2_CONST(Level,
+                                //getTileAmount,
+                                getDirName,
 								getPath)
 
 EXPORT_OOLUA_FUNCTIONS_3_NON_CONST(MapEntry,

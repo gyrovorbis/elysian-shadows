@@ -58,7 +58,7 @@ namespace elysian {
 	// ======= INLINEZ =======
 
 	inline void WalkToWayPointSubProcess::_start(CharacterSystem* sys) {
-        gyVec3Sub(&_dir, &_endPos, &_entity->transform._pos);
+        gyVec3Sub(&_dir, &_endPos, &_entity->_transform._pos);
         gyVec3Normalize(&_dir);
 	}
 
@@ -67,7 +67,7 @@ namespace elysian {
 	inline void WalkToWayPointSubProcess::_update(CharacterSystem* sys, const float deltaTime) {
         GYVector3 dist;
 
-        gyVec3Sub(&dist, &_endPos, &_entity->transform._pos);
+        gyVec3Sub(&dist, &_endPos, &_entity->_transform._pos);
         float mag = gyVec3Magnitude(&dist);
 
         gyVec3Scale(&_dir, &dist, 1.0f/mag);
@@ -90,7 +90,7 @@ namespace elysian {
     inline void WalkToWayPointSubProcess::setWayPoint(Entity* entity, const float endX, const float endY) {
         _entity = entity;
 		_endPos.x = endX; _endPos.y = endY;
-        _endPos.z = entity->transform._pos.z;
+        _endPos.z = entity->_transform._pos.z;
         _walk = true;
 	}
 

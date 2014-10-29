@@ -23,13 +23,14 @@ class TileImage;
 class SheetViewTileGraphicsItem;
 class Area;
 class AssetManager;
-class Entity;
+class TkEntity;
+typedef TkEntity Entity;
 class Component;
 class SelectionScene;
 class SourceView;
 class CheckeredAlphaRectGraphicsItem;
 
-class Level: public PropertyStackModel, public TreeNode, public elysian::LevelManager {
+class TkLevel: public PropertyStackModel, public TreeNode, public elysian::LevelBase {
     friend class Assets;
 	friend class TileManagerDialog;
 
@@ -41,7 +42,7 @@ private:
 	QVector<Area *> _area;
     QString _location;
     bool _active, _open, _validSheets;
-    elysian::Level _elysianLevel;
+    elysian::LevelBase _elysianLevel;
 
     bool _normalMapEnabled[ELYSIAN_TILESHEET_TILES] = { false };
     bool _specularMapEnabled[ELYSIAN_TILESHEET_TILES] = { false };
@@ -57,7 +58,7 @@ private:
 
 public:
 	Project *getProject(void) const { return _project; }
-	void setName(const QString str);
+    void setNodeName(const QString str);
     void setLocation(const QString loc);
 	QString getLocation(void) const;
     QString getString(void) const;
@@ -74,8 +75,8 @@ public:
 	static CheckeredAlphaRectGraphicsItem *_bgRectItem;
 	static SelectionScene *_sheetViewScene;
 
-	Level(Project *const project);
-    ~Level();
+    TkLevel(Project *const project=nullptr);
+    virtual ~TkLevel(void);
 	unsigned int getAreaAmount(void) const;
 	inline unsigned char getTileAmount(void) const {  return _tileSheet.size(); }
 
@@ -91,7 +92,7 @@ public:
 	bool saveArea(const QString name) const;
 	bool removeArea(const QString name);
     Area *getFirstArea() const;
-	elysian::Level *getElysianLevel(void) { return &_elysianLevel; }
+    elysian::LevelBase* getElysianLevel(void) { return (elysian::LevelBase*)&_elysianLevel; }
 	elysian::Tile *getElysianTile(const uint16_t index);
     ElysianTileWrapper* getElysianTileWrapper(const uint16_t index);
 
@@ -150,15 +151,17 @@ signals:
 
 };
 
+typedef TkLevel Level;
+
 
 
 //======= INLINEZ ======
 
-inline void Level::setSpecularMapEnabled(const unsigned index, const bool val) { _specularMapEnabled[index] = val; }
-inline void Level::setNormalMapEnabled(const unsigned index, const bool val) { _normalMapEnabled[index] = val; }
-inline bool Level::getSpecularMapEnabled(const unsigned index) const { return _specularMapEnabled[index]; }
-inline bool Level::getNormalMapEnabled(const unsigned index) const { return _normalMapEnabled[index]; }
-inline ElysianTileWrapper* Level::getElysianTileWrapper(const uint16_t index) { return &_elysianTileWrappers[index]; }
+inline void TkLevel::setSpecularMapEnabled(const unsigned index, const bool val) { _specularMapEnabled[index] = val; }
+inline void TkLevel::setNormalMapEnabled(const unsigned index, const bool val) { _normalMapEnabled[index] = val; }
+inline bool TkLevel::getSpecularMapEnabled(const unsigned index) const { return _specularMapEnabled[index]; }
+inline bool TkLevel::getNormalMapEnabled(const unsigned index) const { return _normalMapEnabled[index]; }
+inline ElysianTileWrapper* TkLevel::getElysianTileWrapper(const uint16_t index) { return &_elysianTileWrappers[index]; }
 
 
 #endif // LEVEL_H

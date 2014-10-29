@@ -13,11 +13,11 @@
 #include "mapViewDepthBufferGraphicsItem.h"
 
 //====STATIC====
-SelectionScene *Area::editorScene = NULL;
+SelectionScene *Area::editorScene = nullptr;
 unsigned int Area::_currentSceneWidth = 0;
 unsigned int Area::_currentSceneHeight = 0;
 bool Area::inactiveTransparency = false;
-MapViewDepthBufferGraphicsItem	*Area::_depthBuffGraphicsItem = NULL;
+MapViewDepthBufferGraphicsItem	*Area::_depthBuffGraphicsItem = nullptr;
 
 bool Area::staticConstructor(const SourceView *const view) {
 	editorScene = new SelectionScene;
@@ -42,7 +42,8 @@ void Area::updateScene(void) {
 Area::Area(Level *const level):
     _level(level),
     _active(false),
-    _open(false){
+    _open(false)
+{
 
 	_elysianArea.width = _elysianArea.height = 50;
 	//Must allocate a map in case this map is to be saved before it is loaded.
@@ -69,7 +70,7 @@ void Area::populateModel(void) {
 
 	pushLabel("Area");
 
-	addProperty("name", new PropertyStandardItem<QString, Area, true>(this, &Area::getName, &Area::setName, UndoItem::AREA_RENAME, &_undoStack));
+    addProperty("name", new PropertyStandardItem<QString, Area, true>(this, &Area::getNodeName, &Area::setNodeName, UndoItem::AREA_RENAME, &_undoStack));
 	addProperty("path", new PropertyStandardItem<QString, Area>(this, &Area::getLocation));
 	addProperty("display", new PropertyStandardItem<QString, Area, true>(this, &Area::getString, &Area::setString, UndoItem::AREA_STRING, &_undoStack));
 
@@ -82,7 +83,7 @@ void Area::populateModel(void) {
 
 }
 
-void Area::setName(const QString str) {
+void Area::setNodeName(const QString str) {
 	QString newLocation;
 	bool _renamed = false;
 	QString oldName = _name;
@@ -117,7 +118,7 @@ void Area::setName(const QString str) {
 		_renamed = true;
 	}
 
-	TreeNode::setName(name);
+    TreeNode::setNodeName(name);
 	_location = newLocation;
 	strcpy(_elysianArea.name, name.toStdString().c_str());
 	strcpy(_elysianArea.path, _location.toStdString().c_str());
@@ -141,7 +142,7 @@ void Area::setLocation(const QString loc) {
 	_location = loc;
 
 	QStringList splitList = _location.split("/");
-	setName(splitList.last());
+    setNodeName(splitList.last());
 }
 
 void Area::setString(const QString str) {
@@ -173,22 +174,24 @@ bool Area::load(const QString dir) {
 	Debug::Logf(Debug::VERBOSE, "Area::Load(%s)", dir.toStdString().c_str());
 	Debug::Push();
 
-	setName(QDir(dir).dirName());
+    setNodeName(QDir(dir).dirName());
 	_location = dir;
 
 	//Allocated a dummy map upon construction, have to free before loading.
 	_elysianArea.freeMap();
-	success &= _elysianArea.load(dir.toStdString().c_str());
+    success &= _elysianArea.load(dir.toStdString().c_str(), (elysian::Level*)_level->getElysianLevel());
 
 	Debug::Log(Debug::VERBOSE, "Creating Toolkit Entities from elysian::Entities.");
 	Debug::Push();
-	for(unsigned int i = 0; i < _elysianArea.entities.size(); ++i) {
+#if 0
+    for(unsigned int i = 0; i < _elysianArea.entities.size(); ++i) {
 		Debug::Logf(Debug::VERBOSE, "Entity #%d - %s.", i, _elysianArea.entities[i]->getName());
 		Entity *tempEntity = new Entity(*_elysianArea.entities[i]);
 		connectSlots(tempEntity);
 		_entities.push_back(tempEntity);
 		//tempEntity->setParentItem(_entityParent);
 	}
+#endif
 	Debug::Pop();
 
 	_curArea = tempCurArea;

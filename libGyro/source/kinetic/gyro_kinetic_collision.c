@@ -2,7 +2,6 @@
 #include "kinetic/gyro_kinetic_contact.h"
 #include "kinetic/gyro_kinetic_static.h"
 #include <gyro_matrix_api.h>
-#include <gyro_system_api.h>
 
 const GYVector4 gyBoxLocalVerts[4] = {
 	{ -0.5f, -0.5f, 1.0f, 1.0f },
