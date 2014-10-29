@@ -142,4 +142,5 @@ ESGamma.app/*
 libGyro/qtcreator/*
 qtcreator/*
 shadowRenderPasses
+*qmake.stash
 toolkit_debug.txt
