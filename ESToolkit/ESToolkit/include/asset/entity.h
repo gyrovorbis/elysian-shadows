@@ -42,7 +42,7 @@ class TkEntity: public QWidget, public TreeNode, public QGraphicsRectItem, publi
 
 protected:
     //encapsulated (although memory is still managed by elysian::Area)
-	elysian::Entity *_elysianEntity;
+    //elysian::Entity *_elysianEntity;
 private:
 
     /* COMPONENTS */
@@ -55,19 +55,19 @@ private:
     Friendly *_friendly;
     Enemy *_enemy;
 
-	//QList<Behavior *> _behavior;
+    //QList<Behavior *> _behavior;
 
     /*  WIDGETS for BASE ENTITY attributes:
-	  name, transform
-	  PROBABLY want to redo this in designer?
+      name, transform
+      PROBABLY want to redo this in designer?
     */
-	QToolBox *_compToolBox;
-	QWidget *_entityTab;
-	QVBoxLayout *_mainLayout, *_entityBaseLayout;
-	QGridLayout *_entityLayout;
-	QLabel *_nameLabel, *_transLabel, *_posLabel, *_sizeLabel, *_scaleLabel, *_orientLabel;
+    QToolBox *_compToolBox;
+    QWidget *_entityTab;
+    QVBoxLayout *_mainLayout, *_entityBaseLayout;
+    QGridLayout *_entityLayout;
+    QLabel *_nameLabel, *_transLabel, *_posLabel, *_sizeLabel, *_scaleLabel, *_orientLabel;
     QLabel *_xLabel, *_yLabel, *_zLabel;
-	QLineEdit *_nameEdit, *_posXEdit, *_posYEdit, *_posZEdit, *_sizeXEdit, *_sizeYEdit,
+    QLineEdit *_nameEdit, *_posXEdit, *_posYEdit, *_posZEdit, *_sizeXEdit, *_sizeYEdit,
         *_scaleXEdit, *_scaleYEdit, *_orientZEdit;
     QCheckBox *_snapsToGrid;
 
@@ -77,20 +77,20 @@ private:
 
 public slots:
     /*
-	void OnNameChange(void);
-	void OnPosXChange(void);
-	void OnPosYChange(void);
-	void OnPosZChange(void);
-	void OnSizeXChange(void);
-	void OnSizeYChange(void);
-	void OnScaleXChange(void);
-	void OnScaleYChange(void);
-	void OnOrientZChange(void);
+    void OnNameChange(void);
+    void OnPosXChange(void);
+    void OnPosYChange(void);
+    void OnPosZChange(void);
+    void OnSizeXChange(void);
+    void OnSizeYChange(void);
+    void OnScaleXChange(void);
+    void OnScaleYChange(void);
+    void OnOrientZChange(void);
     void OnGridSnapChange(int state);
     virtual void UpdateRect(void);*/
 
 
-	/*
+    /*
     void OnTextureLocChange();
     void OnSheetWidthChange();
     void OnSheetHeightChange();
@@ -106,17 +106,20 @@ public slots:
     void OnColor3Change();
     void OnColor4Change();
     void OnClickBrowseSheet();
-	void OnReloadSheet();*/
+    void OnReloadSheet();*/
 
 
 public:
 
     using elysian::EntityBase::render;
     using elysian::EntityBase::move;
+    using elysian::EntityBase::setName;
 
     TkEntity(void) = default;
     TkEntity(elysian::Entity &parent);
     virtual ~TkEntity(void) override = default;
+
+    void setName(const QString name);
 
 	//Selectable
 	virtual Selectable::TYPE getType(void) const { return Selectable::ENTITY; }
@@ -124,42 +127,42 @@ public:
 
 	//Should "technically" be decoupled. See .cpp for comment.
     //void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    virtual bool activate(void) override { elysian::EntityBase::activate(); }
-    virtual bool deactivate(void) override { elysian::EntityBase::deactivate(); }
+    virtual bool activate(void) override { return elysian::EntityBase::activate(); }
+    virtual bool deactivate(void) override { return elysian::EntityBase::deactivate(); }
 
     /*
-	void setPos(float x, float y);
-	void setPos(float x, float y, float z);
-	void setPosZ(float z);
+    void setPos(float x, float y);
+    void setPos(float x, float y, float z);
+    void setPosZ(float z);
     void setSize(float x, float y);
     void setScale(float x, float y);
-	void setOrientZ(float angle);
+    void setOrientZ(float angle);
 
-	bool AttachRenderable(void);
-	bool AttachAnimation(void);
-	bool AttachCollidable(void);
-	bool AttachWarp(void);
-	bool AttachItem(void);
-	bool AttachCharacter(void);
-	bool AttachFriendly(void);
-	bool AttachEnemy(void);
-	bool AttachConversation(void);
+    bool AttachRenderable(void);
+    bool AttachAnimation(void);
+    bool AttachCollidable(void);
+    bool AttachWarp(void);
+    bool AttachItem(void);
+    bool AttachCharacter(void);
+    bool AttachFriendly(void);
+    bool AttachEnemy(void);
+    bool AttachConversation(void);
 
-	bool RemoveRenderable(void);
-	bool RemoveAnimation(void);
-	bool RemoveCollidable(void);
-	bool RemoveWarp(void);
-	bool RemoveItem(void);
-	bool RemoveCharacter(void);
-	bool RemoveFriendly(void);
-	bool RemoveEnemy(void);
-	bool RemoveConversation(void);
+    bool RemoveRenderable(void);
+    bool RemoveAnimation(void);
+    bool RemoveCollidable(void);
+    bool RemoveWarp(void);
+    bool RemoveItem(void);
+    bool RemoveCharacter(void);
+    bool RemoveFriendly(void);
+    bool RemoveEnemy(void);
+    bool RemoveConversation(void);
 
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
     void keyPressEvent(QKeyEvent *);
     void focusInEvent(QFocusEvent *);
 */
-	elysian::Entity *getElysianEntity(void) const;
+    elysian::Entity* getElysianEntity(void);
 #if 0
     Renderable *getRenderable(void) const;
 	Animation *getAnimation(void) const;
@@ -177,7 +180,12 @@ signals:
 
 };
 
-inline elysian::Entity *Entity::getElysianEntity() const { return _elysianEntity; }
+inline elysian::Entity* Entity::getElysianEntity(void) { return this; }
+inline void Entity::setName(const QString name) {
+    ((elysian::EntityBase*)this)->setName(name.toStdString().c_str());
+    elysian::EntityBase::setName(name.toStdString().c_str());
+    setNodeName(name);
+}
 
 
 

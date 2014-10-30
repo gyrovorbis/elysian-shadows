@@ -4,20 +4,19 @@
 #include <QDockWidget>
 
 namespace Ui {
-class EntityDockWidget;
+    class EntityDockWidget;
 }
 
-class EntityDockWidget : public QDockWidget
-{
+class EntityDockWidget : public QDockWidget {
     Q_OBJECT
     
 public:
-    explicit EntityDockWidget(QWidget *parent = 0);
-    ~EntityDockWidget();
+    explicit EntityDockWidget(QWidget *parent = nullptr);
+    virtual ~EntityDockWidget(void) override;
 signals:
     void UncheckMe(int);
 protected:
-    void closeEvent(QCloseEvent *event);
+    virtual void closeEvent(QCloseEvent *event) override;
 private:
     Ui::EntityDockWidget *ui;
 };

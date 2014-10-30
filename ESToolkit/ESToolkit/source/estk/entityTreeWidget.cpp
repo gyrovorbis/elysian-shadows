@@ -16,8 +16,8 @@ void EntityTreeWidget::OnAreaChange(Area *const area) {
 	//Debug::Log(Debug::VERBOSE, "Area change - %s", area->getName().toStdString().c_str());
     while(topLevelItemCount()) takeTopLevelItem(0);
     if(!area) return;
-	QVector<Entity *> entities = area->getEntities();
-	for(int i = 0; i < entities.count(); ++i) {
+    auto& entities = area->getEntities();
+    for(int i = 0; i < entities.size(); ++i) {
 	  //  Debug::Log(Debug::VERBOSE, "Trying to add - %s", area->entity[i]->getName().toStdString().c_str());
 		addTopLevelItem((QTreeWidgetItem *)entities[i]);
     }

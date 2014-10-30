@@ -29,8 +29,10 @@ typedef TkLevel Level;
 class SourceView;
 class CheckeredAlphaRectGraphicsItem;
 class MapViewDepthBufferGraphicsItem;
+class TkArea;
+typedef TkArea Area;
 
-class Area: public PropertyStackModel, public TreeNode, public elysian::LevelManager {
+class TkArea: public PropertyStackModel, public TreeNode, public elysian::AreaBase {
     Q_OBJECT
 	friend class Assets;
 private:
@@ -38,9 +40,8 @@ private:
     static unsigned int _currentSceneWidth, _currentSceneHeight;
 	static MapViewDepthBufferGraphicsItem	*_depthBuffGraphicsItem;
 
-	elysian::Area _elysianArea;
 	QUndoStack _undoStack;
-	QVector<Entity *> _entities;
+    //QVector<Entity *> _entities;
 	QString _location;
 	QGraphicsRectItem *_bgRect;
 	Level *_level;
@@ -58,10 +59,15 @@ private slots:
 public slots:
 	void onUndoCleanStateChanged(bool changed);
 public:
+    using AreaBase::getTileEntry;
+    using AreaBase::setTileEntry;
+    using AreaBase::load;
+    using AreaBase::save;
+
 	static bool inactiveTransparency;
 
-	Area(Level *const level);
-    virtual ~Area(void);
+    TkArea(Level *const level=nullptr);
+    virtual ~TkArea(void) override;
 
 	bool load(const QString dir);
 	bool save(void);
@@ -94,7 +100,7 @@ public:
 	Entity *getFirstEntity(void) const;
 	bool deleteEntity(QString name);
 	bool deleteEntity(Entity *const entity);
-	QVector<Entity *> &getEntities(void);
+    std::vector<Entity *>& getEntities(void);
 
 	static SelectionScene *editorScene;
 
@@ -129,11 +135,10 @@ inline uint32_t Area::getTileValue(const QPoint loc, const Assets::LAYER_TYPE la
 	Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
 	switch(layer) {
 	case Assets::LAYER_TILE1:
-		return _elysianArea.getL1TileEntry(loc.x(), loc.y()).getValue();
-	case Assets::LAYER_TILE2:
-		return _elysianArea.getL2TileEntry(loc.x(), loc.y()).getValue();
+        return getL1TileEntry(loc.x(), loc.y()).getValue();	case Assets::LAYER_TILE2:
+        return getL2TileEntry(loc.x(), loc.y()).getValue();
 	case Assets::LAYER_TILE3:
-		return _elysianArea.getL3TileEntry(loc.x(), loc.y()).getValue();
+        return getL3TileEntry(loc.x(), loc.y()).getValue();
 	case Assets::LAYER_LIGHT:
 //		return _elysianArea.getLightEntry(loc.x(), loc.y()).getValue();
 	default:
@@ -146,13 +151,13 @@ inline void Area::setTileValue(const QPoint loc, const Assets::LAYER_TYPE layer,
 	Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
 	switch(layer) {
 	case Assets::LAYER_TILE1:
-		_elysianArea.setL1TileEntry(loc.x(), loc.y(), elysian::TileEntry(value));
+        setL1TileEntry(loc.x(), loc.y(), elysian::TileEntry(value));
 		break;
 	case Assets::LAYER_TILE2:
-		_elysianArea.setL2TileEntry(loc.x(), loc.y(), elysian::TileEntry(value));
+        setL2TileEntry(loc.x(), loc.y(), elysian::TileEntry(value));
 		break;
 	case Assets::LAYER_TILE3:
-		_elysianArea.setL3TileEntry(loc.x(), loc.y(), elysian::TileEntry(value));
+        setL3TileEntry(loc.x(), loc.y(), elysian::TileEntry(value));
 		break;
 	case Assets::LAYER_LIGHT:
         //_elysianArea.setLightEntry(loc.x(), loc.y(), elysian::LightEntry(value));
@@ -166,13 +171,13 @@ inline void Area::setTileEntry(const QPoint loc, const Assets::LAYER_TYPE layer,
 	Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
 	switch(layer) {
 	case Assets::LAYER_TILE1:
-		_elysianArea.setL1TileEntry(loc.x(), loc.y(), entry);
+        setL1TileEntry(loc.x(), loc.y(), entry);
 		break;
 	case Assets::LAYER_TILE2:
-		_elysianArea.setL2TileEntry(loc.x(), loc.y(), entry);
+        setL2TileEntry(loc.x(), loc.y(), entry);
 		break;
 	case Assets::LAYER_TILE3:
-		_elysianArea.setL3TileEntry(loc.x(), loc.y(), entry);
+        setL3TileEntry(loc.x(), loc.y(), entry);
 		break;
 	default:
 		break;
@@ -183,13 +188,13 @@ inline TileEntry Area::getTileEntry(const QPoint loc, const Assets::LAYER_TYPE l
 	Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
 	switch(layer) {
 	case Assets::LAYER_TILE1:
-		return TileEntry(_elysianArea.getL1TileEntry(loc.x(), loc.y()).getValue());
+        return TileEntry(getL1TileEntry(loc.x(), loc.y()).getValue());
 		break;
 	case Assets::LAYER_TILE2:
-		return TileEntry(_elysianArea.getL2TileEntry(loc.x(), loc.y()).getValue());
+        return TileEntry(getL2TileEntry(loc.x(), loc.y()).getValue());
 		break;
 	case Assets::LAYER_TILE3:
-		return TileEntry(_elysianArea.getL3TileEntry(loc.x(), loc.y()).getValue());
+        return TileEntry(getL3TileEntry(loc.x(), loc.y()).getValue());
 		break;
 	default:
 		break;
@@ -200,9 +205,11 @@ inline TileEntry Area::getTileEntry(const QPoint loc, const Assets::LAYER_TYPE l
 inline uint16_t Area::getTileIndex(const QPoint loc, const Assets::LAYER_TYPE layer) const { return getTileEntry(loc, layer).getIndex(); }
 inline GY_RECT_TEX_ORIENT Area::getTileOrient(const QPoint loc, const Assets::LAYER_TYPE layer) const { return getTileEntry(loc, layer).getOrient(); }
 inline unsigned char Area::getTileElev(const QPoint loc, const Assets::LAYER_TYPE layer) const { return getTileEntry(loc, layer).getElev(); }
-inline unsigned short Area::getMapHeight(void) const { return _elysianArea.height; }
-inline unsigned short Area::getMapWidth(void) const { return _elysianArea.width; }
-inline QVector<Entity *> &Area::getEntities(void) { return _entities; }
+inline unsigned short Area::getMapHeight(void) const { return height; }
+inline unsigned short Area::getMapWidth(void) const { return width; }
+inline std::vector<Entity*>& Area::getEntities(void) { return entities; }
+inline bool Area::isOpen(void) const { return _open; }
+inline bool Area::isActive(void) const { return _active; }
 
 
 #endif // AREA_H

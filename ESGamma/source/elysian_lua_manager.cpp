@@ -27,7 +27,6 @@ const char									LuaManager::_rPrint[] =
 		"return l\n"
 	"end\n";
 
-LuaManager::LuaManager(void) {}
 
 //Dumps to debug log and LUA_ERROR_FILE
 void LuaManager::_errorprintf(const char *const string, ...) {
@@ -390,32 +389,38 @@ bool LuaManager::initialize(void) {
     std::string name = ltable["name"];
     double pass = ltable["password"];
     double num9 = ltable[9];
-    double embedded = ltable"y"["table2"][];
+   //double embedded = ltable"y"["table2"][];
     ltable["reestTitties"] = 73.0;
-
+*/
     //Lua32BitMask mask;
     //OOLUA::push(*_mainState, &mask);
 
-    Vector2Proxy testVec;
-    Vector2Proxy::registerProxyMetaTable<GYVector2>(*_mainState);
-
-    const char* testScr = "print(\"testest\") rPrint(GYVector2) veccy = GYVector2.new() veccy.y = 12 veccy:setX(32) print(\"and the val is \", veccy.x, veccy:getY())";
-
-    runString(testScr);
-
-    const char* test = "print(\"LOLOLOLOLOLOLOLOLOLOL\")";
+    const char* test = "rPrint(GYVector2, 99, \"OrigVector2\")";
     runString(test);
 
 
+    //Vector2Proxy testVec;
+    Vector2Proxy::registerProxyMetaTable<GYVector2>(*_mainState);
+
+    test = "rPrint(GYVector2, 99, \"NewVector2\")";
+    runString(test);
+
+//veccy:setX(32)
+    const char* testScr = "print(\"testest\")  veccy = GYVector2.new() veccy:setX(7) veccy:setY(45) print(veccy:getX(), veccy.x, veccy:getY())";
+
+    runString(testScr);
+
+   // const char* test = "print(\"LOLOLOLOLOLOLOLOLOLOL\")";
+  //  runString(test);
 
    // lua_getfield(l, -1, "width");
 //    OOLUA::pull(l, width);
 
-    Debug::printf(Debug::CRITICAL, "%s, %f, %f, %f\n", name.c_str(), pass, num9, embedded);
+   // Debug::printf(Debug::CRITICAL, "%s, %f, %f, %f\n", name.c_str(), pass, num9, embedded);
    // ltable[]
 
-    Debug::printf(Debug::CRITICAL, "%s", ltable.serialize().c_str());
-    */
+    //Debug::printf(Debug::CRITICAL, "%s", ltable.serialize().c_str());
+
     Debug::pop();
 	return true;
 }

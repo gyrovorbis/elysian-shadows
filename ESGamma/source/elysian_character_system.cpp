@@ -1,8 +1,8 @@
 #include "elysian_character_system.hpp"
 #include "elysian_character.hpp"
-#include "elysian_area.hpp"
 #include "elysian_debug.hpp"
 #include "elysian_timer_system.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
 
 namespace elysian {
 

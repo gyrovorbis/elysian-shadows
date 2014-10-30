@@ -22,7 +22,7 @@ class MapViewDepthBufferGraphicsItem:
 										ESTkEntityDepthBuffEntry> {
 private:
 	QPainter *_curPainter;
-	QVector<Entity *> *_curEntities;
+    std::vector<Entity*>* _curEntities;
 
 public:
 
@@ -88,7 +88,7 @@ inline void MapViewDepthBufferGraphicsItem::renderObjectEntry(const ESTkTileDept
 }
 
 inline unsigned MapViewDepthBufferGraphicsItem::getEntityCount(void) {
-	return _curEntities->count();
+    return _curEntities->size();
 }
 
 inline bool MapViewDepthBufferGraphicsItem::getOnscreenEntity(const unsigned index, ESTkEntityDepthBuffEntry &entry, elysian::NORMAL_TYPE &type, float &lowestY, float &elev) const {

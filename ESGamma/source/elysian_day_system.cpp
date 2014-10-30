@@ -3,6 +3,7 @@
 #include "elysian_entity.hpp"
 #include "elysian_light_source.hpp"
 #include "elysian_debug.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
 
 namespace elysian {
 

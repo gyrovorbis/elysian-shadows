@@ -15,7 +15,8 @@ class TileSelection;
 class Project;
 class TkLevel;
 typedef TkLevel Level;
-class Area;
+class TkArea;
+typedef TkArea Area;
 
 /*
   Abstract base class for Selectables.

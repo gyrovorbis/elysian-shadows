@@ -634,7 +634,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(TileEntry,
                                 getPlane)
 
 EXPORT_OOLUA_FUNCTIONS_5_CONST(Area,
-									getName,
+                                    getDirName,
 									getPath,
 									getTileEntry,
 									getMapWidth,

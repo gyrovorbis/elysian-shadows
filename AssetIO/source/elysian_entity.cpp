@@ -9,7 +9,6 @@
 #include "elysian_collidable.hpp"
 #include "elysian_character.hpp"
 #include "elysian_warp.hpp"
-#include "elysian_area.hpp"
 #include "elysian_stl_algorithm.hpp"
 #include "elysian_lua_behavior.hpp"
 #include "elysian_examinable.hpp"
@@ -18,6 +17,7 @@
 #include "elysian_particle_emitter.hpp"
 #include "elysian_rigid_body.hpp"
 #include "elysian_combat.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
 
 using namespace std;
 

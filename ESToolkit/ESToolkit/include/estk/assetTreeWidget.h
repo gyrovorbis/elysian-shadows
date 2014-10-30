@@ -8,7 +8,8 @@ class TreeNode;
 class Project;
 class TkLevel;
 typedef TkLevel Level;
-class Area;
+class TkArea;
+typedef TkArea Area;
 
 class AssetTreeWidget: public QTreeWidget, public AssetManager {
     Q_OBJECT

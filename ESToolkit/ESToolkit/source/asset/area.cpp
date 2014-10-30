@@ -13,11 +13,11 @@
 #include "mapViewDepthBufferGraphicsItem.h"
 
 //====STATIC====
-SelectionScene *Area::editorScene = nullptr;
-unsigned int Area::_currentSceneWidth = 0;
-unsigned int Area::_currentSceneHeight = 0;
-bool Area::inactiveTransparency = false;
-MapViewDepthBufferGraphicsItem	*Area::_depthBuffGraphicsItem = nullptr;
+SelectionScene *Area::editorScene                               = nullptr;
+unsigned int Area::_currentSceneWidth                           = 0;
+unsigned int Area::_currentSceneHeight                          = 0;
+bool Area::inactiveTransparency                                 = false;
+MapViewDepthBufferGraphicsItem	*Area::_depthBuffGraphicsItem   = nullptr;
 
 bool Area::staticConstructor(const SourceView *const view) {
 	editorScene = new SelectionScene;
@@ -39,23 +39,23 @@ void Area::updateScene(void) {
 
 //====NONSTATIC====
 
-Area::Area(Level *const level):
+TkArea::TkArea(Level *const level):
     _level(level),
     _active(false),
     _open(false)
 {
 
-	_elysianArea.width = _elysianArea.height = 50;
+    width = height = 50;
 	//Must allocate a map in case this map is to be saved before it is loaded.
-	_elysianArea.allocMap();
-	memset(_elysianArea.tiles, 0, sizeof(elysian::TileEntry)*_elysianArea.width*_elysianArea.height*ELYSIAN_AREA_MAP_LAYERS);
+    allocMap();
+    memset(tiles, 0, sizeof(elysian::TileEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS);
     //memset(_elysianArea.lights, 0, sizeof(elysian::LightEntry)*_elysianArea.width*_elysianArea.height);
-	strcpy(_elysianArea.name, "untitled");
-    strcpy(_elysianArea.string, "untitled");
+    strcpy(dir, "untitled");
+    strcpy(string, "untitled");
     connect(&_undoStack, SIGNAL(cleanChanged(bool)), this, SLOT(onUndoCleanStateChanged(bool)));
 }
 
-Area::~Area(void) {
+TkArea::~TkArea(void) {
 	close();
 }
 
@@ -120,8 +120,8 @@ void Area::setNodeName(const QString str) {
 
     TreeNode::setNodeName(name);
 	_location = newLocation;
-	strcpy(_elysianArea.name, name.toStdString().c_str());
-	strcpy(_elysianArea.path, _location.toStdString().c_str());
+    strcpy(dir, name.toStdString().c_str());
+    strcpy(path, _location.toStdString().c_str());
 
 	if(_renamed) emit renamed(oldName, name);
 }
@@ -147,11 +147,11 @@ void Area::setLocation(const QString loc) {
 
 void Area::setString(const QString str) {
 	if(str.isEmpty()) return;
-	strcpy(_elysianArea.string, str.toStdString().c_str());
+    strcpy(string, str.toStdString().c_str());
 }
 
 QString Area::getString(void) const {
-	return QString(_elysianArea.string);
+    return QString(string);
 }
 
 int Area::getUndoStackCount(void) {
@@ -170,7 +170,7 @@ void Area::connectSlots(Entity *const entity) {
 bool Area::load(const QString dir) {
 	bool success = true;
 	elysian::Area *tempCurArea = _curArea;
-	_curArea = &_elysianArea;
+    _curArea = this;
 	Debug::Logf(Debug::VERBOSE, "Area::Load(%s)", dir.toStdString().c_str());
 	Debug::Push();
 
@@ -178,8 +178,8 @@ bool Area::load(const QString dir) {
 	_location = dir;
 
 	//Allocated a dummy map upon construction, have to free before loading.
-	_elysianArea.freeMap();
-    success &= _elysianArea.load(dir.toStdString().c_str(), (elysian::Level*)_level->getElysianLevel());
+    freeMap();
+    success &= AreaBase::load(dir.toStdString().c_str(), (elysian::Level*)_level->getElysianLevel());
 
 	Debug::Log(Debug::VERBOSE, "Creating Toolkit Entities from elysian::Entities.");
 	Debug::Push();
@@ -277,7 +277,7 @@ bool Area::saveAs(const QString dir) {
 #endif
 
 	//save elysian::Area
-	success &= _elysianArea.save(dir.toStdString().c_str());
+    success &= AreaBase::save(dir.toStdString().c_str());
 
     Debug::Pop();
 	return success;
@@ -286,13 +286,13 @@ bool Area::saveAs(const QString dir) {
 bool Area::activate(void) {
 	if(!_open) open();
 	if(!_active) {
-		_curArea = &_elysianArea;
+        _curArea = this;
 
 		editorScene->addItem(_bgRect);
         resizeEditorScene();
-        editorScene->setSceneRect(QRect(-48,-48,32*_elysianArea.width+64, 32*_elysianArea.height+64));
+        editorScene->setSceneRect(QRect(-48,-48,32*width+64, 32*height+64));
 
-		for(int i = 0; i < _entities.size(); ++i) editorScene->addItem(_entities[i]);
+        for(int i = 0; i < entities.size(); ++i) editorScene->addItem(entities[i]);
 		//editorScene->addItem(_entityParent);
 		_active = true;
 	}
@@ -305,7 +305,7 @@ bool Area::deactivate(void) {
 
 	editorScene->removeItem(_bgRect);
 
-	for(int i = 0; i < _entities.size(); ++i) editorScene->removeItem(_entities[i]);
+    for(int i = 0; i < entities.size(); ++i) editorScene->removeItem(entities[i]);
 	//editorScene->removeItem(_entityParent);
 	_active = false;
 	return true;
@@ -317,7 +317,7 @@ bool Area::open(void) {
 	resizeEditorScene();
 
 	_bgRect = new CheckeredAlphaRectGraphicsItem;
-	_bgRect->setRect(QRect(-16, -16, 32*_elysianArea.width, 32*_elysianArea.height));
+    _bgRect->setRect(QRect(-16, -16, 32*width, 32*height));
 	_bgRect->setZValue(-1);
 
 	//Populate Entities
@@ -340,37 +340,39 @@ bool Area::close(void) {
 	return true;
 }
 
-Entity *Area::newEntity(void) {
-	elysian::Entity *editorEntity = new elysian::Entity;
-	_elysianArea.addEntity(editorEntity);
-	Entity *toolkitEntity = new Entity(*editorEntity);
-	connectSlots(toolkitEntity);
-	_entities.push_back(toolkitEntity);
-	//_elysianArea.entity.push_back(editorEntity);
-	//toolkitEntity->setParentItem(_entityParent);
-	if(_active) editorScene->addItem(toolkitEntity);
-	emit entityAdded(this, toolkitEntity);
-	return toolkitEntity;
+//can't really be called unless it's being added to the current Area? Guess that's cool?
+Entity* Area::newEntity(void) {
+    auto* entity = new Entity;
+
+    QString name("Untitled");
+    unsigned int num = 1;
+
+    entity->activate();
+    connectSlots(entity);
+    while(findEntity(QString(name+QString::number(num)).toStdString().c_str())) {
+        ++num;
+    }
+    name += QString::number(num);
+    entity->setName(name);
+
+    if(_active) editorScene->addItem(entity);
+    emit entityAdded(this, entity);
+    return entity;
 }
 
 bool Area::deleteEntity(const QString name) {
-	for(int i = 0; i < _entities.size(); ++i) {
-		if(_entities[i]->getName() == name) return deleteEntity(_entities[i]);
+    for(int i = 0; i < entities.size(); ++i) {
+        if(entities[i]->getName() == name) return deleteEntity(entities[i]);
 	}
 	return false;
 }
 
 bool Area::deleteEntity(Entity *const pentity) {
-	for(int i = 0; i < _entities.size(); ++i) {
-		if(_entities[i] == pentity) {
+    for(int i = 0; i < entities.size(); ++i) {
+        if(entities[i] == pentity) {
 			emit entityRemoved(this, pentity);
 
-			for(unsigned int j = 0; j < _elysianArea.entities.size(); ++j) {
-				if(_entities[i]->getElysianEntity() == _elysianArea.entities[j]) {
-					_elysianArea.entities.erase(_elysianArea.entities.begin()+j);
-				}
-			}
-			_entities.erase(_entities.begin()+i);
+            removeEntity(entities[i]);
 			delete pentity;
 			return true;
 		}
@@ -379,31 +381,28 @@ bool Area::deleteEntity(Entity *const pentity) {
 }
 
 void Area::setMapWidth(const unsigned short w) {
-	const unsigned short width = (w <= ELYSIAN_AREA_MAP_WIDTH)? (w < 30)? 30 : w : ELYSIAN_AREA_MAP_WIDTH;
+    const unsigned short _width = (w <= ELYSIAN_AREA_MAP_WIDTH)? (w < 30)? 30 : w : ELYSIAN_AREA_MAP_WIDTH;
 	//_elysianArea.width = width;
-	_elysianArea.resizeMap(width, _elysianArea.height);
+    resizeMap(_width, height);
 	if(isActive()) { //We have to resize the scene for the current area
 		resizeEditorScene();
 	}
-	_bgRect->setRect(QRect(-16, -16, 32*_elysianArea.width, 32*_elysianArea.height));
-	editorScene->setSceneRect(QRect(-16,-16,32*_elysianArea.width, 32*_elysianArea.height));
+    _bgRect->setRect(QRect(-16, -16, 32*width, 32*height));
+    editorScene->setSceneRect(QRect(-16,-16,32*width, 32*height));
 }
 
 void Area::setMapHeight(const unsigned short h) {
-	const unsigned short height = (h <= ELYSIAN_AREA_MAP_HEIGHT)? (h < 30)? 30 : h : ELYSIAN_AREA_MAP_HEIGHT;
-	_elysianArea.resizeMap(_elysianArea.width, height);
+    const unsigned short _height = (h <= ELYSIAN_AREA_MAP_HEIGHT)? (h < 30)? 30 : h : ELYSIAN_AREA_MAP_HEIGHT;
+    resizeMap(width, _height);
 	if(isActive()) { //We have to resize the scene for the current area
 		resizeEditorScene();
 	}
-	_bgRect->setRect(QRect(-16, -16, 32*_elysianArea.width, 32*_elysianArea.height));
-	editorScene->setSceneRect(QRect(-16,-16,32*_elysianArea.width, 32*_elysianArea.height));
+    _bgRect->setRect(QRect(-16, -16, 32*width, 32*height));
+    editorScene->setSceneRect(QRect(-16,-16,32*width, 32*height));
 }
 
-bool Area::isOpen(void) const { return _open; }
-bool Area::isActive(void) const { return _active; }
-
-Entity *Area::getFirstEntity(void) const {
-	return (_entities.empty())? NULL : _entities[0];
+Entity* Area::getFirstEntity(void) const {
+    return (entities.empty())? nullptr : entities[0];
 }
 
 void Area::onComponentAttached(Entity *const entity, Component *const comp) {
@@ -422,8 +421,8 @@ QUndoStack &Area::getUndoStack(void) {
 	return _undoStack;
 }
 
-elysian::Area &Area::getElysianArea(void) {
-	return _elysianArea;
+elysian::Area& Area::getElysianArea(void) {
+    return *this;
 }
 
 

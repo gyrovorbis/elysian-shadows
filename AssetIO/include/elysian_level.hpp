@@ -33,7 +33,7 @@ namespace elysian {
     struct LevelBase: public Asset {
 		Tile			tileset	[ELYSIAN_TILESHEET_TILES];
 		char			path	[ELYSIAN_LEVEL_PATH_SIZE];
-        char			name	[ELYSIAN_LEVEL_NAME_SIZE];
+        char			dir     [ELYSIAN_LEVEL_NAME_SIZE];
 		char            string	[ELYSIAN_LEVEL_STRING_SIZE];
 
 		GYTexture*		tileSheet			= nullptr;
@@ -72,7 +72,7 @@ namespace elysian {
 		}
 
         inline const char *LevelBase::getDirName(void) const {
-			return name;
+            return dir;
 		}
 
         inline const char *LevelBase::getPath(void) const {

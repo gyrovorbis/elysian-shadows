@@ -134,8 +134,8 @@ ESToolkit::ESToolkit(QWidget *parent):
 	addDockWidget(Qt::LeftDockWidgetArea, _assetDockWidget);
 
 	// create/initialize ENTITY dock and widget
-	//_entityDockWidget = new EntityDockWidget(this);
-	//addDockWidget(Qt::LeftDockWidgetArea, _entityDockWidget);
+    _entityDockWidget = new EntityDockWidget(this);
+    addDockWidget(Qt::LeftDockWidgetArea, _entityDockWidget);
 
 	// create/initialize LAYER dock and widget
 	_layerDockWidget = new LayerDockWidget(this);
@@ -201,7 +201,7 @@ ESToolkit::ESToolkit(QWidget *parent):
 	connect(_layerDockWidget, SIGNAL(ActiveLayerChanged(int)), this, SLOT(OnActiveLayerChanged(int)));
 	connect(_layerDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
 	connect(_assetDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
-	//connect(_entityDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
+    connect(_entityDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
 	connect(_sheetDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
 	connect(_sheetDockWidget, SIGNAL(ReleaseFocus()), this, SLOT(GiveMapViewFocus()));
 	connect(_sheetDockWidget, SIGNAL(ExitPanMode()), this, SLOT(ExitPanMode()));
@@ -817,7 +817,7 @@ void ESToolkit::_openProjectDir(const QString dir) {
 	   // _entityDockWidget->setEnabled(true);
 		_layerDockWidget->ToggleDefaultItem(true);
 		_layerDockWidget->setEnabled(true);
-		_sheetDockWidget->CenterSheetView(0, 0);
+        _sheetDockWidget->CenterSheetView(0, 0);
 		_sheetDockWidget->setEnabled(true);
 		_selectionDockWidget->setEnabled(true);
 		_historyDockWidget->setEnabled(true);
@@ -1310,11 +1310,11 @@ void ESToolkit::on_actionDefault_Transform_triggered()
 
     if(!inited) {
         lua_pushglobaltable(*_mainState);
-		//lua_getfield(*_mainState, -1, "tablet");
+        lua_getfield(*_mainState, -1, "tablet");
 
         ref = new OOLUA::Lua_table_ref;
         ref->pull(*_mainState);
-		//lua_pop(*_mainState, 1);
+        lua_pop(*_mainState, 1);
 
         //LuaTable ltable = LuaTable::fromLuaExpression(luaExpr);
         elysian::LuaManager::rPrintByRef(ref->ref(), 99, "");

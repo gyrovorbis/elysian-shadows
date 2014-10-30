@@ -861,7 +861,7 @@ OOLUA_PROXY(Area)
 		No_public_constructors,
 		No_public_destructor
 	)
-	OOLUA_MEM_FUNC_CONST(const char*, getName)
+    OOLUA_MEM_FUNC_CONST(const char*, getDirName)
 	OOLUA_MEM_FUNC_CONST(const char*, getPath)
 	OOLUA_MEM_FUNC_CONST(TileEntry, getTileEntry, unsigned, unsigned, unsigned)
 	OOLUA_MEM_FUNC(void, setTileEntry, unsigned, unsigned, unsigned, TileEntry)
@@ -1302,9 +1302,9 @@ static inline int print(lua_State* const l) {
 				strcat(string, curString);
 				break;
 			default:
-			/*	curString = lua_typename(l, t);
-				strcat(string, curString);*/
-				continue;
+                curString = lua_typename(l, t);
+                strcat(string, curString);
+
 		}
 
 		strcat(string, " ");

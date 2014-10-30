@@ -1,5 +1,4 @@
 #include "elysian_warp_system.hpp"
-#include "elysian_area.hpp"
 #include "elysian_camera_system.hpp"
 #include "elysian_warp.hpp"
 #include "elysian_party_system.hpp"
@@ -12,6 +11,7 @@
 #include "elysian_collision_system.hpp"
 #include "elysian_gui_system.hpp"
 #include "elysian_zcoords.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
 
 namespace elysian {
 

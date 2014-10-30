@@ -104,7 +104,7 @@ namespace elysian {
 		GYColor4	color;
 	};
 
-    struct Area: public Asset {
+    struct AreaBase: public Asset {
 		//Entity data
 		std::vector<Entity*>			entities;
 
@@ -122,8 +122,8 @@ namespace elysian {
 		std::vector<Combat*>			combats;
 		std::vector<Behavior*>			behaviors;
 		
-		char name[ELYSIAN_AREA_NAME_SIZE];		//name of area directory
-		char path[ELYSIAN_AREA_PATH_SIZE];
+        char dir[ELYSIAN_AREA_NAME_SIZE];		//name of area directory
+        char path[ELYSIAN_AREA_PATH_SIZE];
 		char string[ELYSIAN_AREA_STRING_SIZE];	//in-game area name
 
 		//map - tile layers
@@ -142,12 +142,12 @@ namespace elysian {
 
 		GLuint vboBuff;
 
-		Area(void);
-        ~Area(void);
+        AreaBase(void);
+        ~AreaBase(void);
 
         unsigned short  getMapWidth(void) const { return width; }
         unsigned short  getMapHeight(void) const { return height; }
-        const char*     getName(void) const { return name; }
+        const char*     getDirName(void) const { return dir; }
         const char*     getPath(void) const { return path; }
 
 		//Slower than layer-specific accessors, but loop-friendly
@@ -216,12 +216,12 @@ namespace elysian {
     }
 	inline void TileEntry::setNormal(const bool v) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, PLANE, v); }
 
-	inline TileEntry Area::getTileEntry(const unsigned l, const unsigned x, const unsigned y) const {
+    inline TileEntry AreaBase::getTileEntry(const unsigned l, const unsigned x, const unsigned y) const {
 		return ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x);
 	}
 
 #ifdef GYRO_GLAL
-    inline void Area::vboEntryFromTileEntry(VboEntry * const vboEntry, const TileEntry * const tileEntry, const unsigned x, const unsigned y) {
+    inline void AreaBase::vboEntryFromTileEntry(VboEntry * const vboEntry, const TileEntry * const tileEntry, const unsigned x, const unsigned y) {
 
         const GYTexCoord2*const coords = gyVidTexCoordArrayFromFrame(&level->tileSheet->_coord->texCoord[tileEntry->getIndex()],
                                                                            tileEntry->getOrient());
@@ -358,7 +358,7 @@ namespace elysian {
         }
     }
 
-    inline void Area::animateVboTileEntry(const unsigned l, const unsigned x, const unsigned y, const uint16_t index) {
+    inline void AreaBase::animateVboTileEntry(const unsigned l, const unsigned x, const unsigned y, const uint16_t index) {
         TileEntry e = getTileEntry(l, x, y);
         const uint16_t oldIndex = e.getIndex();
         e.setIndex(index);
@@ -366,7 +366,7 @@ namespace elysian {
         ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x).setIndex(oldIndex);
     }
 
-	inline void Area::setTileEntry(const unsigned l, const unsigned x, const unsigned y, const TileEntry e) {
+    inline void AreaBase::setTileEntry(const unsigned l, const unsigned x, const unsigned y, const TileEntry e) {
         VboEntry entry[4];
 
         vboEntryFromTileEntry(entry, &e, x, y);
@@ -381,22 +381,22 @@ namespace elysian {
 	}
 #endif
 
-	inline TileEntry Area::getL1TileEntry(const unsigned x, const unsigned y) const {
+    inline TileEntry AreaBase::getL1TileEntry(const unsigned x, const unsigned y) const {
 		return ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tiles, y*width + x);
 	}
-	inline void Area::setL1TileEntry(const unsigned x, const unsigned y, const TileEntry e) {
+    inline void AreaBase::setL1TileEntry(const unsigned x, const unsigned y, const TileEntry e) {
 		ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tiles, y*width + x) = e;
 	}
-	inline TileEntry Area::getL2TileEntry(const unsigned x, const unsigned y) const {
+    inline TileEntry AreaBase::getL2TileEntry(const unsigned x, const unsigned y) const {
 		return ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tileLayer2, y*width + x);
 	}
-	inline void Area::setL2TileEntry(const unsigned x, const unsigned y, const TileEntry e) {
+    inline void AreaBase::setL2TileEntry(const unsigned x, const unsigned y, const TileEntry e) {
 		ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tileLayer2, y*width + x) = e;
 	}
-	inline TileEntry Area::getL3TileEntry(const unsigned x, const unsigned y) const {
+    inline TileEntry AreaBase::getL3TileEntry(const unsigned x, const unsigned y) const {
 		return ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tileLayer3, y*width + x);
 	}
-	inline void Area::setL3TileEntry(const unsigned x, const unsigned y, const TileEntry e) {
+    inline void AreaBase::setL3TileEntry(const unsigned x, const unsigned y, const TileEntry e) {
 		ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tileLayer3, y*width + x) = e;
 	}
 

@@ -27,7 +27,7 @@ namespace elysian {
 		
 		Warp(Entity &parent);
 		Warp(void);
-		virtual ~Warp(void);
+        virtual ~Warp(void) override = default;
 		
 	public:
 		void setToPos(const float x, const float y, const unsigned char elev);

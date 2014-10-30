@@ -4,10 +4,11 @@
 #include "elysian_asset_typedefs.hpp"
 
 ELYSIAN_ASSET_TYPEDEF(Level)
+ELYSIAN_ASSET_TYPEDEF(Area)
 
 namespace elysian {
 
-    struct Area;
+    //struct Area;
     //struct Level;
 
 	class LevelManager { 

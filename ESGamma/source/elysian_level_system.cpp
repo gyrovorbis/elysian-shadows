@@ -54,7 +54,7 @@ bool LevelSystem::switchArea(const char *const dir) {
 
 	_onAreaExit();
 
-	if(_curArea) strcpy(_prevAreaPath, _curArea->getName());
+    if(_curArea) strcpy(_prevAreaPath, _curArea->getDirName());
 	
 	//Check if new area has already been loaded
 	if((index = getAreaIndex(dir)) >= 0) {
@@ -91,7 +91,7 @@ void LevelSystem::_onAreaEnter(void) {
 
 
 void LevelSystem::_onAreaExit(void) {
-	if(_curArea != NULL) { //Can't call that if no area has been loaded yet.
+    if(_curArea != nullptr) { //Can't call that if no area has been loaded yet.
 		getBehavSys()->callTriggers(Behavior::ON_EXIT);
 		getDaySys()->onAreaExit();
 	}

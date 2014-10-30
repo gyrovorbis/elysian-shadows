@@ -1,10 +1,10 @@
 #include <cassert>
 
 #include "elysian_animation.hpp"
-#include "elysian_area.hpp"
 #include "elysian_entity.hpp"
 #include "elysian_renderable.hpp"
 #include "elysian_generic.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
 
 namespace elysian {
 

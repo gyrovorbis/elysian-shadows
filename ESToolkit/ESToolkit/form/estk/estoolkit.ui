@@ -131,6 +131,7 @@
     <addaction name="actionSheet_View"/>
     <addaction name="actionHistory_View"/>
     <addaction name="actionSelection_View"/>
+    <addaction name="actionEntity_View"/>
     <addaction name="separator"/>
     <addaction name="actionReset_Layout"/>
     <addaction name="separator"/>
@@ -165,6 +166,7 @@
     <property name="title">
      <string>Area</string>
     </property>
+    <addaction name="actionAreaAddEntity"/>
     <addaction name="actionAreaRemove"/>
     <addaction name="separator"/>
     <addaction name="actionScreenshot"/>

@@ -1,5 +1,4 @@
 #include "elysian_particle_emitter.hpp"
-#include "elysian_area.hpp"
 #include "elysian_generic.hpp"
 #include "elysian_material.hpp"
 #include "elysian_debug.hpp"
@@ -7,6 +6,7 @@
 #include "elysian_camera_system.hpp"
 #include "elysian_asset_typedefs.hpp"
 #include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
 
 namespace elysian {
 

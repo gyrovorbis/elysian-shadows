@@ -166,12 +166,7 @@ protected:
 
 public:
 
-
-
-
     LuaTableStackModel(const int ref): _luaRef(*_mainState, ref) {}
-
-
 
     virtual void populateModel(void);
 };
@@ -180,7 +175,6 @@ public:
 
 inline void LuaTableStackModel::populateModel(void) {
 
-    qDebug() << "Begin population.";
     //Debug::Logf(Debug::CRITICAL, "BEGIN POPULATION!");
     _addTableFields(*_mainState, _luaRef);
 

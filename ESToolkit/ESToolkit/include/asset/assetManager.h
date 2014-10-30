@@ -11,7 +11,8 @@ class Assets;
 class ESToolkit;
 class Selectable;
 class Project;
-class Area;
+class TkArea;
+typedef TkArea Area;
 
 class AssetManager {
 friend class ESToolkit;

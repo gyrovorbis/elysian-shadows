@@ -9,7 +9,7 @@ using namespace std;
 
 namespace elysian {
 
-Entity* Area::findEntity(const char *name) {
+Entity* AreaBase::findEntity(const char *name) {
 	for(std::vector<Entity*>::iterator it = entities.begin();
 		it != entities.end(); ++it) {
 			if(strcmp(name, (*it)->getName()) == 0) 
@@ -18,12 +18,12 @@ Entity* Area::findEntity(const char *name) {
 	return nullptr;
 }
 
-void Area::addEntity(Entity *entity) {
-	//entities.push_back(entity);
-	entity->activate();
+void AreaBase::addEntity(Entity *entity) {
+    entities.push_back(entity);
+    entity->activate();
 }
 
-void Area::removeEntity(Entity *entity) {
+void AreaBase::removeEntity(Entity *entity) {
 	entity->deactivate();
 	for(std::vector<Entity*>::iterator it = entities.begin();
 		it != entities.end(); ++it)
@@ -35,21 +35,21 @@ void Area::removeEntity(Entity *entity) {
 	}
 }
 
-Area::Area(void) {
+AreaBase::AreaBase(void) {
 #ifdef GYRO_GLAL
 #endif
 }
 
-Area::~Area(void) {
+AreaBase::~AreaBase(void) {
 #ifdef GYRO_GLAL
 	glDeleteBuffers(1, &vboBuff);
 #endif
 	//DELETE COMPONENT/ENTITY SHIT@!!!!
-	dbgprintf(LOG_VERBOSE, "Area::~Area(%s) - FIX FOR WARPS LEAKING MEMORY!! -- Entity Data?", name);
+    dbgprintf(LOG_VERBOSE, "Area::~Area(%s) - FIX FOR WARPS LEAKING MEMORY!! -- Entity Data?", dir);
 	freeMap();
 }
 
-void Area::allocMap(void) {
+void AreaBase::allocMap(void) {
 	tiles = (TileEntry *)malloc(sizeof(TileEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS);
 	tileLayer2 = tiles + width*height;
 	tileLayer3 = tiles + width*height*2;
@@ -57,11 +57,11 @@ void Area::allocMap(void) {
 	layerEntryCount = width*height;
 }
 
-void Area::freeMap(void) {
+void AreaBase::freeMap(void) {
 	free(tiles);
 }
 
-void Area::resizeMap(const unsigned w, const unsigned h) {
+void AreaBase::resizeMap(const unsigned w, const unsigned h) {
 	TileEntry *ntiles = (TileEntry *)malloc(sizeof(TileEntry)*w*h*ELYSIAN_AREA_MAP_LAYERS);
 
 	memset(ntiles, 0, sizeof(TileEntry)*w*h*ELYSIAN_AREA_MAP_LAYERS);
@@ -89,7 +89,7 @@ void Area::resizeMap(const unsigned w, const unsigned h) {
 
 static char buffer[ELYSIAN_AREA_PATH_SIZE+50];
 
-bool Area::load(const char *const dir, const Level *lev) {
+bool AreaBase::load(const char *const dir, const Level *lev) {
     bool success = true;
 
     dbgprintf(LOG_VERBOSE, "Area::Load(%s)", dir);
@@ -118,7 +118,7 @@ bool Area::load(const char *const dir, const Level *lev) {
 	return success;
 }
 
-bool Area::save(const char *const dir) {
+bool AreaBase::save(const char *const dir) {
 	bool success = true;
 
 	dbgprintf(LOG_VERBOSE, "Area::Save(%s)", dir);
@@ -139,7 +139,7 @@ bool Area::save(const char *const dir) {
 	return success;
 }
 
-bool Area::loadMap(const char *const filename) {
+bool AreaBase::loadMap(const char *const filename) {
 	GYFile *fp;
 	dbgprintf(LOG_VERBOSE, "Area::LoadMap(%s)", filename);
     dbgPush();
@@ -150,10 +150,10 @@ bool Area::loadMap(const char *const filename) {
 		return false;
 	}
 
-	gyFileRead(fp, name, sizeof name, NULL);
-	gyFileRead(fp, string, sizeof string, NULL);
-	gyFileRead(fp, &width, sizeof width, NULL);
-	gyFileRead(fp, &height, sizeof height, NULL);
+    gyFileRead(fp, dir, sizeof dir, nullptr);
+    gyFileRead(fp, string, sizeof string, nullptr);
+    gyFileRead(fp, &width, sizeof width, nullptr);
+    gyFileRead(fp, &height, sizeof height, nullptr);
 
 	allocMap();
 
@@ -166,7 +166,7 @@ bool Area::loadMap(const char *const filename) {
 	return true;
 }
 
-bool Area::saveMap(const char *const filename) {
+bool AreaBase::saveMap(const char *const filename) {
 	dbgprintf(LOG_VERBOSE, "Area::SaveMap(%s)", filename);
 	dbgPush();
 
@@ -183,7 +183,7 @@ bool Area::saveMap(const char *const filename) {
         return false;
 	}
 
-	fwrite(name, sizeof(name), 1, file);
+    fwrite(dir, sizeof(dir), 1, file);
 	fwrite(string, sizeof(string), 1, file);
 	fwrite(&width, sizeof(width), 1, file);
 	fwrite(&height, sizeof(height), 1, file);
@@ -195,7 +195,7 @@ bool Area::saveMap(const char *const filename) {
 	return true;
 }
 
-bool Area::loadEntities(const char *const /*filename*/) {
+bool AreaBase::loadEntities(const char *const /*filename*/) {
 #if 0
 	ifstream file(gyFilePath(filename));
 	Entity *currentEntity;
@@ -227,7 +227,7 @@ bool Area::loadEntities(const char *const /*filename*/) {
 	return true;
 }
 
-bool Area::saveEntities(const char *const /*filename*/) {
+bool AreaBase::saveEntities(const char *const /*filename*/) {
 #if 0
 	ofstream file(gyFilePath(filename));
 	dbgprintf(LOG_VERBOSE, "Area::SaveEntities(%s)", filename);
@@ -251,7 +251,7 @@ bool Area::saveEntities(const char *const /*filename*/) {
 }
 
 #ifdef GYRO_GLAL
-void Area::populateVbo(void) {
+void AreaBase::populateVbo(void) {
 #ifdef ELYSIAN_ENGINE
 	glGenBuffers(1, &vboBuff);
 

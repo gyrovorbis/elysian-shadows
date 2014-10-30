@@ -8,11 +8,9 @@
 #include <gyro.h>
 
 ELYSIAN_ASSET_TYPEDEF(Level)
-
+ELYSIAN_ASSET_TYPEDEF(Area)
 
 namespace elysian {
-
-	struct Area;
 
 	class LevelSystem: public System { 
 	private:

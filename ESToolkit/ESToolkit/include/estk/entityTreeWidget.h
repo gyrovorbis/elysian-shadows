@@ -4,7 +4,8 @@
 #include <QTreeWidget>
 #include "assetManager.h"
 
-class Area;
+class TkArea;
+typedef TkArea Area;
 class TkEntity;
 typedef TkEntity Entity;
 

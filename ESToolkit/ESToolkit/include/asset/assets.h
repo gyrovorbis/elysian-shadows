@@ -10,7 +10,8 @@ class TkLevel;
 typedef TkLevel Level;
 
 class Project;
-class Area;
+class TkArea;
+typedef TkArea Area;
 class Component;
 class TkEntity;
 typedef TkEntity Entity;

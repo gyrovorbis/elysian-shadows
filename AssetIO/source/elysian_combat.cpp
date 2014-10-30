@@ -1,9 +1,9 @@
 #include "elysian_combat.hpp"
-#include "elysian_area.hpp"
 #include "elysian_generic.hpp"
 #include "elysian_collidable.hpp"
 #include "elysian_asset_typedefs.hpp"
 #include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
 
 namespace elysian {
 

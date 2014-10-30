@@ -21,7 +21,6 @@ class QGraphicsRectItem;
 class Project;
 class TileImage;
 class SheetViewTileGraphicsItem;
-class Area;
 class AssetManager;
 class TkEntity;
 typedef TkEntity Entity;
@@ -29,6 +28,8 @@ class Component;
 class SelectionScene;
 class SourceView;
 class CheckeredAlphaRectGraphicsItem;
+class TkArea;
+typedef TkArea Area;
 
 class TkLevel: public PropertyStackModel, public TreeNode, public elysian::LevelBase {
     friend class Assets;

@@ -14,6 +14,7 @@
 #include "elysian_mem_pool.hpp"
 #include "elysian_force_generator.hpp"
 #include "elysian_renderable.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
 
 #define ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_SIZE               500
 #define ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_FADEOUT_TIME       5.0f

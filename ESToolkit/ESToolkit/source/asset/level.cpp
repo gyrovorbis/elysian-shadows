@@ -116,7 +116,7 @@ TkLevel::TkLevel(Project *const project):
     _open(false),
     _validSheets(false)
 {
-    strcpy(_elysianLevel.name, "untitled");
+    strcpy(_elysianLevel.dir, "untitled");
     strcpy(_elysianLevel.string, "untitled");
 
     for(unsigned i = 0; i < ELYSIAN_TILESHEET_TILES; ++i) _elysianTileWrappers[i].initialize(this, &_elysianLevel.tileset[i], i);
@@ -199,7 +199,7 @@ void TkLevel::setNodeName(const QString str) {
 
     TreeNode::setNodeName(name);
 	_location = newLocation;
-	strcpy(_elysianLevel.name, name.toStdString().c_str());
+    strcpy(_elysianLevel.dir, name.toStdString().c_str());
 	strcpy(_elysianLevel.path, _location.toStdString().c_str());
 
 	if(renamed) emit levelRenamed(oldName, name);
@@ -237,7 +237,7 @@ void Level::OnChildAreaActivating(Area *const area) {
 
 bool TkLevel::activate(void) {
 	_sheetViewScene->addItem(_bgRectItem);
-	return activateByArea(NULL);
+    return activateByArea(nullptr);
 }
 
 bool TkLevel::activateByArea(Area *const area) {
@@ -365,13 +365,13 @@ Area *TkLevel::getArea(const QString name) {
 	for(int i = 0; i < _area.size(); ++i) {
         if(_area[i]->getNodeName() == name) return _area[i];
     }
-    return NULL;
+    return nullptr;
 }
 
 unsigned int TkLevel::getAreaAmount(void) const { return _area.size(); }
 
 Area *TkLevel::getAreaByIndex(const unsigned int index) {
-    return (index < (unsigned)_area.size())? _area[index] : NULL;
+    return (index < (unsigned)_area.size())? _area[index] : nullptr;
 }
 
 Area *TkLevel::loadArea(const QString name) {

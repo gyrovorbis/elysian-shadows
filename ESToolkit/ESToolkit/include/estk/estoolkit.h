@@ -43,8 +43,8 @@ public:
             ESToolkit(QWidget *parent = nullptr);
     virtual ~ESToolkit(void);
 protected:
-	virtual void changeEvent(QEvent *e);
-	virtual void closeEvent(QCloseEvent *event);
+    virtual void changeEvent(QEvent *e) override;
+    virtual void closeEvent(QCloseEvent *event) override;
 
     void _engineInitialize(void);
     void _engineLoadAssets(void);

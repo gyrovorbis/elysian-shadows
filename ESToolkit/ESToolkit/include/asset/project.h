@@ -8,7 +8,8 @@
 #include "propertyStackModel.h"
 
 class TkLevel;
-class Area;
+class TkArea;
+typedef TkArea Area;
 class Assets;
 class TkEntity;
 typedef TkEntity Entity;

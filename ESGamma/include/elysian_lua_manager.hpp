@@ -116,7 +116,7 @@ namespace elysian {
 			return _callFunction<RType>(script, parameters...);
 		}
 
-									LuaManager(void);
+                                    LuaManager(void) = default;
 		static void					_showError(void);
 		static int					_getErrorCode(void);
 		

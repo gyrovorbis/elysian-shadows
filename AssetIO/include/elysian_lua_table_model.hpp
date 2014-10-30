@@ -105,8 +105,10 @@ template<typename P, class... _Types> class LuaTableProxy;
 
         static LuaTable _propertyProxyIndexTable;
         static LuaTable _propertyProxyNewIndexTable;
-        static LuaTable _ooluaIndexTable;
-        static LuaTable _ooluaNewIndexTable;
+        static LuaTable _ooluaIndexTable;               //OOLUA's default index metamethod table
+        static LuaTable _ooluaNewIndexTable;            //OOLUA's default new index metamethod table
+        static LuaTable _staticMetaTable;
+        LuaTable _protoTable;
 
         static inline void _registerPropertyProxyField(lua_State* l, const bool get=true) {
             lua_getfield(l, -2, get? _MyFirst.Get : _MyFirst.Set);
@@ -136,8 +138,6 @@ template<typename P, class... _Types> class LuaTableProxy;
 
         }
 
-        static LuaTable _staticMetaTable;
-
         inline void _registerFieldProxyIndex(lua_State* l, const int tableIndex) {
         //    lua_pushstring(l, _MyFirst.key);
         //    lua_pushlightuserdata(l, upvalue);
@@ -163,55 +163,71 @@ template<typename P, class... _Types> class LuaTableProxy;
 
         //CRTP Overridable?
         static int _metaMethodCFunction(lua_State *l, LuaTable& ooluaIndexTable, LuaTable& propertyIndexTable, const bool newIndex) {
-
-            LuaManager::_cStackDump();
+            char key[200];
 
             //stack state
             //1 - table ref
             //2 - key
+            //(3) - arg [__newIndex only]
 
             //1) try protoTable if exists
+            //2) try staticMetaTable
+            //3) try propertyMetaTable if exists
 
-            const char* key = lua_tostring(l, 2);
+            strcpy(key, lua_tostring(l, 2));
             assert(key);
 
-            Debug::printf(Debug::VERBOSE, "LuaTableProxy::__indexMetaMethod[%s]!", key);
 
             GYVector2 *obj = OOLUA::INTERNAL::check_index_no_const<GYVector2>(l, 1);
+
+            lua_remove(l, 2);
 
             //check the oolua methods table first!
             ooluaIndexTable.push(l);
             lua_getfield(l, -1, key);
+            lua_remove(l, -2);
             if(!lua_isnil(l, -1)) {
+                //++argCount;
                 lua_remove(l, -2);
-
+                Debug::printf(Debug::VERBOSE, "regular lookup!");
+                LuaManager::_cStackDump();
 
                 return 1;
 
-                Debug::printf(Debug::VERBOSE, "regular lookup!");
             } else {
 
+            lua_remove(l, -1);
             propertyIndexTable.push(l);
             lua_getfield(l, -1, key);
+            lua_remove(l, -2);
             if(lua_isnil(l, -1)) {
-                //lua_remove(l, -2);
-                return 0;
-
+                lua_pop(l, lua_gettop(l));
                 Debug::printf(Debug::VERBOSE, "SHIT HAS TOTALLY REESTED");
+                return 0;
+            } else {
+                lua_insert(l, 1);
             }
 
+
+            lua_remove(l, 2);
             OOLUA::push(l, obj);
-            if(newIndex) lua_pushvalue(l, 3);
+            lua_insert(l, 2);
+          //  if(newIndex) lua_pushvalue(l, 3);
             LuaManager::_protectedCall(newIndex? 2 : 1, newIndex? 0 : 1, nullptr);
+
+            Debug::printf(Debug::VERBOSE, "PROTECTED[%s] - %s, NEWX - %f", newIndex? "SET" : "GET", key, obj->x);
+            LuaManager::_cStackDump();
 
            // double x = LuaManager::_callFunction<double>(nullptr, obj);
 
-            Debug::printf(Debug::VERBOSE, "PROPERTY LOOKUP x = %f", obj->x);
+            //Debug::printf(Debug::VERBOSE, "PROPERTY LOOKUP x = %f", obj->x);
 
-            lua_remove(l, -2);
+            //lua_remove(l, -2);
+         //  assert(LuaManager::_stackDepth() == 0);
+
 
             //OOLUA::push(l, x);
-            return 1;
+            return newIndex? 0 : 1;
 
             }
 
@@ -262,8 +278,6 @@ template<typename P, class... _Types> class LuaTableProxy;
 #endif
         }
 
-        LuaTable _protoTable;
-
     public:
 
         //set metatable
@@ -280,9 +294,7 @@ template<typename P, class... _Types> class LuaTableProxy;
         //do any kind of static registration bullshit for fields
         template<typename Proxy=P>
         static void registerProxyMetaTable(lua_State *l) {
-
             _registerPropertyMetaMethodTables(l);
-
 
             _propertyProxyIndexTable.push(l);
             LuaManager::rPrintByIndex(-2, 999, "IndexTable");
@@ -298,9 +310,7 @@ template<typename P, class... _Types> class LuaTableProxy;
            // LuaManager::_rPrintByIndex(-2, 999, "ProxyFieldTable");
 
             Debug::printf(Debug::VERBOSE, "Registering shit!");
-
-
-
+/*
             lua_newtable(*LuaManager::_mainState);
             lua_pushcfunction(l, &_indexMetaMethodCFunction);
             lua_setfield(l, -2, "__index");
@@ -310,12 +320,10 @@ template<typename P, class... _Types> class LuaTableProxy;
 
             assert(LuaManager::_stackDepth() == 0);
 
-            Debug::printf(Debug::VERBOSE, "Created metatable!");
+            Debug::printf(Debug::VERBOSE, "Created metatable!"); */
 
 
             assert(OOLUA::INTERNAL::class_name_is_already_registered(*LuaManager::_mainState, OOLUA::Proxy_class<Proxy>::class_name));
-
-
 
 //            lua_getglobal(*LuaManager::_mainState, OOLUA::Proxy_class<Proxy>::class_name);
             luaL_getmetatable(*LuaManager::_mainState, OOLUA::Proxy_class<Proxy>::class_name);//methods mt
@@ -328,7 +336,7 @@ template<typename P, class... _Types> class LuaTableProxy;
 
             lua_pushcfunction(l, &_indexMetaMethodCFunction);
             lua_setfield(l, -2, "__index");
-            LuaManager::rPrintByIndex(-2, 999, "orig");
+           // LuaManager::rPrintByIndex(-2, 999, "orig");
 
             lua_pushcfunction(l, &_newIndexMetaMethodCFunction);
             lua_setfield(l, -2, "__newindex");

@@ -4,7 +4,6 @@
 #include "elysian_system.hpp"
 #include "elysian_camera_system.hpp"
 #include "elysian_map_depth_buffer.hpp"
-#include "elysian_level.hpp"
 #include "elysian_zcoords.hpp"
 #include "elysian_renderable.hpp"
 #include "elysian_particle_system.hpp"
@@ -13,6 +12,8 @@
 #include "elysian_light_system.hpp"
 #include "elysian_asset_typedefs.hpp"
 #include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
+
 #include <gyro.h>
 
 #ifdef GYRO_GLAL

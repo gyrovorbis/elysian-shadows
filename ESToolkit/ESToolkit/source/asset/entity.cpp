@@ -30,13 +30,13 @@
 #include "renderable.h"
 #include <cmath>
 
-TkEntity::TkEntity(elysian::Entity &entity): _elysianEntity(&entity),
+TkEntity::TkEntity(elysian::Entity &entity):
 	_renderable(NULL), _animation(NULL), _collidable(NULL),_warp(NULL),_item(NULL), _character(NULL), _friendly(NULL), _enemy(NULL),
     _gridSnap(false) {	//generate toolkit components from elysian components
 #if 0
 	if(_elysianEntity->getRenderable()) {
 		_renderable = new Renderable(_elysianEntity->getRenderable());
-		QObject::connect(_renderable, SIGNAL(PrimitiveUpdate()), this, SLOT(UpdateRect()));
+        QObject::connect(_renderable, SIGNAL(PrimitiveUpdahte()), this, SLOT(UpdateRect()));
 	}
     if(_elysianEntity->getAnimation()) _animation = new Animation(_elysianEntity->getAnimation());
     if(_elysianEntity->getCollidable()) _collidable = new Collidable(_elysianEntity->getCollidable());

@@ -1,15 +1,14 @@
 #include "elysian_warp.hpp"
 #include "elysian_entity.hpp"
-#include "elysian_area.hpp"
 #include "elysian_generic.hpp"
 #include "elysian_asset_typedefs.hpp"
 #include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
 
 namespace elysian {
 
 Warp::Warp(Entity& parent): Component(parent), _changeArea(false), _changeLevel(false) {}
 Warp::Warp(void): _changeArea(false), _changeLevel(false) {}
-Warp::~Warp(void) {}
 
 
 bool Warp::canAddTo(Entity& entity) {
