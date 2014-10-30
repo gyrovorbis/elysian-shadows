@@ -132,3 +132,15 @@ Docs/Documentation/
 # CMake generated
 out/
 CMakeLists.txt.user
+
+#Annoying shit sitting in our git directory #
+#############################################
+ESToolkit.app/*
+ESGamma.app/*
+#ESToolkit/ESToolkit/.qmake.stash
+#ESToolkit/ESToolkit/qrc_resource.cpp
+#libGyro/qtcreator/*
+#qtcreator/*
+shadowRenderPasses
+*qmake.stash
+toolkit_debug.txt

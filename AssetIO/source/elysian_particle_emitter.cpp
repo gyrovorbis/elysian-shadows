@@ -205,6 +205,10 @@ void ParticleEmitterInternals::render(void) {
 	//internal matrix stack!
 
 	gyVidTexBind(_attrib->getTexture());
+
+    //gyVidNormalMapBind(_attrib->_normalMap);
+    //gyVidSpecularMapBind(_attrib->_specularMap);
+
 	gyVidMaterialBind(_attrib->_material);
 	gyVidAlphaLevel(GY_ALPHA_FULL);
     gyVidRectPlaneType(GY_RECT_PLANE_FRONT);
@@ -234,7 +238,11 @@ void ParticleEmitterInternals::render(void) {
 void ParticleEmitterInternals::renderAtElev(const unsigned char elev) {
     if(gyVidShadowPass() && !_attrib->_shadowVolume) return;
 	gyVidTexBind(_attrib->getTexture());
-	gyVidMaterialBind(_attrib->_material);
+
+    //gyVidNormalMapBind(_attrib->_normalMap);
+    //gyVidSpecularMapBind(_attrib->_specularMap);
+
+    gyVidMaterialBind(_attrib->_material);
 	gyVidAlphaLevel(GY_ALPHA_FULL);
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
