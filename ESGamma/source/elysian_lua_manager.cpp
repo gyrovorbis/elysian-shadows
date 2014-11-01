@@ -359,8 +359,8 @@ const char Vector2::ySetName[];
 typedef LuaTableFieldProxy<Vector2, double, Vector2::xStringName, Vector2::xGetName, Vector2::xSetName> VectorXFieldProxy;
 typedef LuaTableFieldProxy<Vector2, double, Vector2::yStringName, Vector2::yGetName, Vector2::ySetName> VectorYFieldProxy;
 
-class Vector2Proxy: public Vector2, public LuaTableProxy<Vector2Proxy, VectorXFieldProxy, VectorYFieldProxy> {
-friend class Vector2;
+class Vector2Proxy: public Vex2, public LuaTableProxy<Vector2Proxy, VectorXFieldProxy, VectorYFieldProxy> {
+friend class Vex2;
 friend class LuaTableProxy<Vector2Proxy, VectorXFieldProxy>;
     //double _width = 55.0f;
 
@@ -400,13 +400,13 @@ bool LuaManager::initialize(void) {
 
 
     //Vector2Proxy testVec;
-    Vector2Proxy::registerProxyMetaTable<GYVector2>(*_mainState);
+    Vector2Proxy::registerProxyMetaTable<Vex2>(*_mainState);
 
     test = "rPrint(GYVector2, 99, \"NewVector2\")";
     runString(test);
 
 //veccy:setX(32)
-    const char* testScr = "print(\"testest\")  veccy = GYVector2.new() veccy:setX(7) veccy:setY(45) print(veccy:getX(), veccy.x, veccy:getY())";
+    const char* testScr = "print(\"testest\")  veccy = Vex2.new() veccy:setX(7) veccy.x = 12 veccy:setY(45) veccy.y = 13 print(veccy:getX(), veccy.y, veccy:getY(), veccy.x)";
 
     runString(testScr);
 

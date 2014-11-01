@@ -115,13 +115,12 @@ template<typename P, class... _Types> class LuaTableProxy;
             lua_setfield(l, -2, _MyFirst.key);
 
             ParentType::_registerPropertyProxyField(l, get);
-
         }
 
 
         static inline void _registerPropertyMetaMethodTables(lua_State* l) {
 
-            lua_getglobal(l, "GYVector2");
+            lua_getglobal(l, "Vex2");
 
             lua_newtable(l);
             _registerPropertyProxyField(l, true);
@@ -153,11 +152,11 @@ template<typename P, class... _Types> class LuaTableProxy;
         }
 
         static int _indexMetaMethodCFunction(lua_State *l) {
-            _metaMethodCFunction(l, _ooluaIndexTable, _propertyProxyIndexTable, false);
+            return _metaMethodCFunction(l, _ooluaIndexTable, _propertyProxyIndexTable, false);
         }
 
         static int _newIndexMetaMethodCFunction(lua_State *l) {
-            _metaMethodCFunction(l, _ooluaNewIndexTable, _propertyProxyNewIndexTable, true);
+            return _metaMethodCFunction(l, _ooluaNewIndexTable, _propertyProxyNewIndexTable, true);
         }
 
 
@@ -177,8 +176,7 @@ template<typename P, class... _Types> class LuaTableProxy;
             strcpy(key, lua_tostring(l, 2));
             assert(key);
 
-
-            GYVector2 *obj = OOLUA::INTERNAL::check_index_no_const<GYVector2>(l, 1);
+          //  Vex2*obj = OOLUA::INTERNAL::check_index_no_const<Vex2>(l, 1);
 
             lua_remove(l, 2);
 
@@ -188,7 +186,7 @@ template<typename P, class... _Types> class LuaTableProxy;
             lua_remove(l, -2);
             if(!lua_isnil(l, -1)) {
                 //++argCount;
-                lua_remove(l, -2);
+                lua_remove(l, 1);
                 Debug::printf(Debug::VERBOSE, "regular lookup!");
                 LuaManager::_cStackDump();
 
@@ -196,38 +194,34 @@ template<typename P, class... _Types> class LuaTableProxy;
 
             } else {
 
-            lua_remove(l, -1);
-            propertyIndexTable.push(l);
-            lua_getfield(l, -1, key);
-            lua_remove(l, -2);
-            if(lua_isnil(l, -1)) {
-                lua_pop(l, lua_gettop(l));
-                Debug::printf(Debug::VERBOSE, "SHIT HAS TOTALLY REESTED");
-                return 0;
-            } else {
-                lua_insert(l, 1);
-            }
+                lua_remove(l, -1);
+                propertyIndexTable.push(l);
+                lua_getfield(l, -1, key);
+                lua_remove(l, -2);
+                if(lua_isnil(l, -1)) {
+                    lua_pop(l, lua_gettop(l));
+                    Debug::printf(Debug::VERBOSE, "SHIT HAS TOTALLY REESTED");
+                    //return 0;
+                    //LOOKUP INTO OOLUA'S base checker metamethod
 
 
-            lua_remove(l, 2);
-            OOLUA::push(l, obj);
-            lua_insert(l, 2);
-          //  if(newIndex) lua_pushvalue(l, 3);
-            LuaManager::_protectedCall(newIndex? 2 : 1, newIndex? 0 : 1, nullptr);
 
-            Debug::printf(Debug::VERBOSE, "PROTECTED[%s] - %s, NEWX - %f", newIndex? "SET" : "GET", key, obj->x);
-            LuaManager::_cStackDump();
-
-           // double x = LuaManager::_callFunction<double>(nullptr, obj);
-
-            //Debug::printf(Debug::VERBOSE, "PROPERTY LOOKUP x = %f", obj->x);
-
-            //lua_remove(l, -2);
-         //  assert(LuaManager::_stackDepth() == 0);
+                } else {
+                    lua_insert(l, 1);
 
 
-            //OOLUA::push(l, x);
-            return newIndex? 0 : 1;
+                //lua_remove(l, 2);
+                //OOLUA::push(l, obj);
+               // lua_insert(l, 2);
+              //  if(newIndex) lua_pushvalue(l, 3);
+                LuaManager::_protectedCall(newIndex? 2 : 1, newIndex? 0 : 1, nullptr);
+
+               Debug::printf(Debug::VERBOSE, "PROTECTED[%s] - %s", newIndex? "SET" : "GET", key);
+                LuaManager::_cStackDump();
+
+
+                return newIndex? 0 : 1;
+                }
 
             }
 
@@ -239,14 +233,6 @@ template<typename P, class... _Types> class LuaTableProxy;
       //      if(reinterpret_cast<ThisType*>(obj)->_pushFieldProxyValue(key, l)) {
         //        return 1;
  //           }
-
-
-
-
-
-
-
-
 
      #else
             //lookup into property fields by name
@@ -325,8 +311,8 @@ template<typename P, class... _Types> class LuaTableProxy;
 
             assert(OOLUA::INTERNAL::class_name_is_already_registered(*LuaManager::_mainState, OOLUA::Proxy_class<Proxy>::class_name));
 
-//            lua_getglobal(*LuaManager::_mainState, OOLUA::Proxy_class<Proxy>::class_name);
-            luaL_getmetatable(*LuaManager::_mainState, OOLUA::Proxy_class<Proxy>::class_name);//methods mt
+//          lua_getglobal(*LuaManager::_mainState, OOLUA::Proxy_class<Proxy>::class_name);
+            luaL_getmetatable(*LuaManager::_mainState, OOLUA::Proxy_class<Proxy>::class_name); //userdata metatable
 
             lua_getfield(l, -1, "__index");
             _ooluaIndexTable.pull(l);
