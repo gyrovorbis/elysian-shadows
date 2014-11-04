@@ -406,7 +406,7 @@ bool LuaManager::initialize(void) {
     runString(test);
 
 //veccy:setX(32)
-    const char* testScr = "print(\"testest\")  veccy = Vex2.new() veccy:setX(7) veccy.x = 12 veccy:setY(45) veccy.y = 13 print(veccy:getX(), veccy.y, veccy:getY(), veccy.x)";
+	const char* testScr = "print(\"testest\")  veccy = Vex2.new() veccy:setX(7) veccy.x = 12 veccy:setY(45) veccy.y = 13 print(veccy:getX(), veccy.y, veccy:getY(), veccy.x) for k, v in pairs(veccy) do print(\"LOL\",k,v) end";
 
     runString(testScr);
 

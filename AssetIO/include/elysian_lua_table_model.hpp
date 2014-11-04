@@ -151,17 +151,63 @@ template<typename P, class... _Types> class LuaTableProxy;
            // _registerFieldProxyNewIndex(tableIndex);
         }
 
-        static int _indexMetaMethodCFunction(lua_State *l) {
+		static int _indexMetaMethodCFunction(lua_State* l) {
             return _metaMethodCFunction(l, _ooluaIndexTable, _propertyProxyIndexTable, false);
         }
 
-        static int _newIndexMetaMethodCFunction(lua_State *l) {
+		static int _newIndexMetaMethodCFunction(lua_State* l) {
             return _metaMethodCFunction(l, _ooluaNewIndexTable, _propertyProxyNewIndexTable, true);
         }
 
+		static int _nextMetaMethodCFunction(lua_State* l) {
+			//Debug::printf(Debug::VERBOSE, "INVOKED!!!");
+			//LuaManager::_cStackDump();
+
+			//lua_remove(l, -2);
+
+			_propertyProxyIndexTable.push(l);
+			lua_insert(l, -2);
+
+			const int retVal = lua_next(l, -2);
+			if(retVal) {
+				//Debug::printf(Debug::VERBOSE, "NEXTNEXT  INVOKED!!!");
+				//LuaManager::_cStackDump();
+				lua_pushvalue(l, 1);
+
+				LuaManager::_protectedCall(1, 1, nullptr);
+
+				//lua_remove(l, 1);
+				//lua_remove(l, 1);
+
+				//Debug::printf(Debug::VERBOSE, "RETVAL - %d", retVal);
+				//LuaManager::_cStackDump();
+
+			}
+
+			lua_remove(l, 1);
+			lua_remove(l, 1);
+
+
+			return retVal? 2 : 0;
+
+		}
+
+		static int _pairsMetaMethodCFunction(lua_State* l) {
+			//Debug::printf(Debug::VERBOSE, "__PAIRS INVOKED!!!");
+			//LuaManager::_cStackDump();
+
+			lua_pushcfunction(l, &_nextMetaMethodCFunction);
+			lua_insert(l, 1);
+			lua_pushnil(l);
+
+			//Debug::printf(Debug::VERBOSE, "LEAVING PAIRS!!!");
+			//LuaManager::_cStackDump();
+
+			return 3;
+		}
 
         //CRTP Overridable?
-        static int _metaMethodCFunction(lua_State *l, LuaTable& ooluaIndexTable, LuaTable& propertyIndexTable, const bool newIndex) {
+		static int _metaMethodCFunction(lua_State* l, LuaTable& ooluaIndexTable, LuaTable& propertyIndexTable, const bool newIndex) {
             char key[200];
 
             //stack state
@@ -326,6 +372,9 @@ template<typename P, class... _Types> class LuaTableProxy;
 
             lua_pushcfunction(l, &_newIndexMetaMethodCFunction);
             lua_setfield(l, -2, "__newindex");
+
+			lua_pushcfunction(l, &_pairsMetaMethodCFunction);
+			lua_setfield(l, -2, "__pairs");
 
             lua_pop(*LuaManager::_mainState, 1);
 
