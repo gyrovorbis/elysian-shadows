@@ -1311,14 +1311,15 @@ void ESToolkit::on_actionDefault_Transform_triggered()
     if(!inited) {
         lua_pushglobaltable(*_mainState);
         lua_getfield(*_mainState, -1, "tablet");
+        const int ref = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
 
-        ref = new OOLUA::Lua_table_ref;
-        ref->pull(*_mainState);
-        lua_pop(*_mainState, 1);
+        //ref = new OOLUA::Lua_table_ref;
+        //ref->pull(*_mainState);
+        //lua_pop(*_mainState, 1);
 
         //LuaTable ltable = LuaTable::fromLuaExpression(luaExpr);
-        elysian::LuaManager::rPrintByRef(ref->ref(), 99, "");
-        lmodel = new LuaTableStackModel(ref->ref());
+        elysian::LuaManager::rPrintByRef(ref, 99, "");
+        lmodel = new LuaTableStackModel(ref);
         lmodel->populateModel();
         inited = true;
     }

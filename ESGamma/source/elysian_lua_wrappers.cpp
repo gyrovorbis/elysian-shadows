@@ -10,7 +10,6 @@ namespace elysian {
 		//Register classes and structs
 		_mainState->register_class<Lua32BitMask>();
 		_mainState->register_class<LuaBehaviorScriptAttrib>();
-        _mainState->register_class<Vex2>();
 		_mainState->register_class<GYVector2>();
 		_mainState->register_class<GYVector3>();
 		_mainState->register_class<GYVector4>();
@@ -131,10 +130,6 @@ OOLUA_EXPORT_FUNCTIONS_CONST(LuaBehaviorScriptAttrib)
 
 EXPORT_OOLUA_FUNCTIONS_2_CONST(GYVector2, getX, getY)
 EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(GYVector2, setX, setY)
-
-EXPORT_OOLUA_FUNCTIONS_2_CONST(Vex2, getX, getY)
-EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(Vex2, setX, setY)
-
 
 OOLUA_EXPORT_FUNCTIONS(GYVector3, setX, setY, setZ)
 OOLUA_EXPORT_FUNCTIONS_CONST(GYVector3, getX, getY, getZ)

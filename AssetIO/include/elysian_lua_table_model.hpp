@@ -67,31 +67,11 @@ template<typename P, class... _Types> class LuaTableProxy;
     template<typename P>
     class LuaTableProxy<P>: public LuaTable {
     protected:
-
-        inline bool _pushFieldProxyValue(const char *key, lua_State *state) { return false; }
-        inline void _registerFieldProxyIndex(lua_State*, const int) {
-
-        }
-
-        inline void _registerFieldProxyNewIndex(lua_State*, const int) {
-
-        }
-
-        static inline void _registerPropertyProxyField(lua_State* l, const bool get=true) {
-            return;
-        }
+        inline bool         _pushFieldProxyValue(const char *key, lua_State *state) { return false; }
+        inline void         _registerFieldProxyIndex(lua_State*, const int) {}
+        inline void         _registerFieldProxyNewIndex(lua_State*, const int) {}
+        static inline void  _registerPropertyProxyField(lua_State* l, const bool get=true) {}
     };
-    /*
-
-    // recursive tuple definition
-    template<typename P, class _This,
-             class... _Rest>
-      class SubProcessManager<P, _This, _Rest...>
-      : public SubProcessManager<P, _Rest...>
-    {
-          friend _This;
-          */
-
 
     template <typename P, class _This, class... _Rest>
     class LuaTableProxy<P, _This, _Rest...>:
@@ -101,14 +81,14 @@ template<typename P, class... _Types> class LuaTableProxy;
         typedef LuaTableProxy<P, _This, _Rest...>    ThisType;
         //friend _This;
     protected:
-        static _This _MyFirst;
+        static _This    _MyFirst;
 
         static LuaTable _propertyProxyIndexTable;
         static LuaTable _propertyProxyNewIndexTable;
         static LuaTable _ooluaIndexTable;               //OOLUA's default index metamethod table
         static LuaTable _ooluaNewIndexTable;            //OOLUA's default new index metamethod table
         static LuaTable _staticMetaTable;
-        LuaTable _protoTable;
+        LuaTable        _protoTable;
 
         static inline void _registerPropertyProxyField(lua_State* l, const bool get=true) {
             lua_getfield(l, -2, get? _MyFirst.Get : _MyFirst.Set);
@@ -119,8 +99,7 @@ template<typename P, class... _Types> class LuaTableProxy;
 
 
         static inline void _registerPropertyMetaMethodTables(lua_State* l) {
-
-            lua_getglobal(l, "Vex2");
+            lua_getglobal(l, OOLUA::Proxy_class<P>::class_name);
 
             lua_newtable(l);
             _registerPropertyProxyField(l, true);
@@ -151,6 +130,39 @@ template<typename P, class... _Types> class LuaTableProxy;
            // _registerFieldProxyNewIndex(tableIndex);
         }
 
+        inline static int _nextMetaMethodCFunction(lua_State* l) {
+            //Debug::printf(Debug::VERBOSE, "INVOKED!!!");
+            //LuaManager::_cStackDump();
+
+            //lua_remove(l, -2);
+
+            _propertyProxyIndexTable.push(l);
+            lua_insert(l, -2);
+
+            const int retVal = lua_next(l, -2);
+            if(retVal) {
+                //Debug::printf(Debug::VERBOSE, "NEXTNEXT  INVOKED!!!");
+                //LuaManager::_cStackDump();
+                lua_pushvalue(l, 1);
+
+                LuaManager::_protectedCall(1, 1, nullptr);
+
+                //lua_remove(l, 1);
+                //lua_remove(l, 1);
+
+                //Debug::printf(Debug::VERBOSE, "RETVAL - %d", retVal);
+                //LuaManager::_cStackDump();
+
+            }
+
+            lua_remove(l, 1);
+            lua_remove(l, 1);
+
+
+            return retVal? 2 : 0;
+
+        }
+
 		static int _indexMetaMethodCFunction(lua_State* l) {
             return _metaMethodCFunction(l, _ooluaIndexTable, _propertyProxyIndexTable, false);
         }
@@ -158,39 +170,6 @@ template<typename P, class... _Types> class LuaTableProxy;
 		static int _newIndexMetaMethodCFunction(lua_State* l) {
             return _metaMethodCFunction(l, _ooluaNewIndexTable, _propertyProxyNewIndexTable, true);
         }
-
-		static int _nextMetaMethodCFunction(lua_State* l) {
-			//Debug::printf(Debug::VERBOSE, "INVOKED!!!");
-			//LuaManager::_cStackDump();
-
-			//lua_remove(l, -2);
-
-			_propertyProxyIndexTable.push(l);
-			lua_insert(l, -2);
-
-			const int retVal = lua_next(l, -2);
-			if(retVal) {
-				//Debug::printf(Debug::VERBOSE, "NEXTNEXT  INVOKED!!!");
-				//LuaManager::_cStackDump();
-				lua_pushvalue(l, 1);
-
-				LuaManager::_protectedCall(1, 1, nullptr);
-
-				//lua_remove(l, 1);
-				//lua_remove(l, 1);
-
-				//Debug::printf(Debug::VERBOSE, "RETVAL - %d", retVal);
-				//LuaManager::_cStackDump();
-
-			}
-
-			lua_remove(l, 1);
-			lua_remove(l, 1);
-
-
-			return retVal? 2 : 0;
-
-		}
 
 		static int _pairsMetaMethodCFunction(lua_State* l) {
 			//Debug::printf(Debug::VERBOSE, "__PAIRS INVOKED!!!");
@@ -376,6 +355,9 @@ template<typename P, class... _Types> class LuaTableProxy;
 			lua_pushcfunction(l, &_pairsMetaMethodCFunction);
 			lua_setfield(l, -2, "__pairs");
 
+            lua_pushcfunction(l, &_nextMetaMethodCFunction);
+            lua_setfield(l, -2, "__next");
+
             lua_pop(*LuaManager::_mainState, 1);
 
           //  _staticMetaTable.push(*LuaManager::_mainState);
@@ -437,10 +419,6 @@ template<typename P, class... _Types> class LuaTableProxy;
 
     template <typename P, class _This, class... _Rest>
     LuaTable LuaTableProxy<P, _This, _Rest...>::_propertyProxyNewIndexTable;
-
-
-
-
 
 }
 

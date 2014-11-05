@@ -168,27 +168,9 @@ OOLUA_PROXY(LuaBehaviorScriptAttrib)
 	OOLUA_MFUNC(addSupportedTrigger)
 OOLUA_PROXY_END
 
-class Vex2: public GYVector2 {
-                       public:
-    void setX(const float val) { x = val; }
-    void setY(const float val) { y = val; }
-    float getX(void) const { return x; }
-    float getY(void) const { return y; }
-};
-
 OOLUA_PROXY(GYVector2)
     OOLUA_MGET_MSET(x, getX, setX)
     OOLUA_MGET_MSET(y, getY, setY)
-OOLUA_PROXY_END
-
-OOLUA_PROXY(Vex2)
-
-    OOLUA_MEM_FUNC_CONST(float, getX)
-    OOLUA_MEM_FUNC_CONST(float, getY)
-    OOLUA_MEM_FUNC(void, setX, float)
-    OOLUA_MEM_FUNC(void, setY, float)
-    //OOLUA_MGET_MSET(x, getX, setX)
-    //OOLUA_MGET_MSET(y, getY, setY)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(GYVector3)

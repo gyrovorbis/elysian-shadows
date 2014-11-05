@@ -305,16 +305,47 @@ HEADERS += include/asset/project.h \
     ../../AssetIO/include/elysian_rigid_body.hpp \
     ../../AssetIO/include/luatables.h \
     ../../AssetIO/include/elysian_lua_table_model.hpp \
-    ../../ESGamma/source/elysian_debug.cpp.orig \
-    ../../ESGamma/source/elysian_engine.cpp.orig \
-    ../../ESGamma/source/elysian_light_system.cpp.orig \
-    ../../ESGamma/source/elysian_lua_wrappers.cpp.orig \
-    ../../ESGamma/source/elysian_system.cpp.orig \
     ../../AssetIO/include/elysian_light_source.hpp \
     include/asset/luaTableStandardItemModel.h \
     include/dialog/luaExplorerDialog.h \
     include/core/rowsJoinerProxyModel.h \
-    ../../AssetIO/include/elysian_asset_typedefs.hpp
+    ../../AssetIO/include/elysian_asset_typedefs.hpp \
+    ../../ESGamma/include/elysian_adventure_log.hpp \
+    ../../ESGamma/include/elysian_animation_system.hpp \
+    ../../ESGamma/include/elysian_audio_system.hpp \
+    ../../ESGamma/include/elysian_behavior_system.hpp \
+    ../../ESGamma/include/elysian_camera_system.hpp \
+    ../../ESGamma/include/elysian_character_system.hpp \
+    ../../ESGamma/include/elysian_collision_system.hpp \
+    ../../ESGamma/include/elysian_combat_system.hpp \
+    ../../ESGamma/include/elysian_day_system.hpp \
+    ../../ESGamma/include/elysian_debug.hpp \
+    ../../ESGamma/include/elysian_dialog_system.hpp \
+    ../../ESGamma/include/elysian_engine.hpp \
+    ../../ESGamma/include/elysian_event_monitor.hpp \
+    ../../ESGamma/include/elysian_examinable_system.hpp \
+    ../../ESGamma/include/elysian_font.hpp \
+    ../../ESGamma/include/elysian_force_generator.hpp \
+    ../../ESGamma/include/elysian_game_input.hpp \
+    ../../ESGamma/include/elysian_gui_system.hpp \
+    ../../ESGamma/include/elysian_level_system.hpp \
+    ../../ESGamma/include/elysian_light_system.hpp \
+    ../../ESGamma/include/elysian_lua_manager.hpp \
+    ../../ESGamma/include/elysian_lua_script.hpp \
+    ../../ESGamma/include/elysian_lua_singleton.hpp \
+    ../../ESGamma/include/elysian_lua_wrappers.hpp \
+    ../../ESGamma/include/elysian_map_system.hpp \
+    ../../ESGamma/include/elysian_model.hpp \
+    ../../ESGamma/include/elysian_particle_system.hpp \
+    ../../ESGamma/include/elysian_party_system.hpp \
+    ../../ESGamma/include/elysian_quad_sprite.hpp \
+    ../../ESGamma/include/elysian_rigid_body_system.hpp \
+    ../../ESGamma/include/elysian_sort_sweep.hpp \
+    ../../ESGamma/include/elysian_sprite.hpp \
+    ../../ESGamma/include/elysian_subprocess_manager.hpp \
+    ../../ESGamma/include/elysian_system.hpp \
+    ../../ESGamma/include/elysian_timer_system.hpp \
+    ../../ESGamma/include/elysian_warp_system.hpp
 
 FORMS += form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \
