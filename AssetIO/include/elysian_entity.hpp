@@ -13,6 +13,7 @@
 #include "elysian_component.hpp"
 #include "elysian_area.hpp"
 #include "elysian_map_depth_buffer.hpp"
+#include "elysian_lua_table_proxy.hpp"
 
 #define ELYSIAN_ENTITY_NAME_SIZE	100
 #define ELYSIAN_ENTITY_NAME_DEFAULT	"Untitled"
@@ -35,8 +36,15 @@ namespace elysian {
 	class Behavior;
     class LuaBehavior;
 
-    class EntityBase: public RenderableObject, public Asset {
+	class EntityBase: public RenderableObject, public Asset, public LuaTableProxy<EntityBase, Entity> {
 	public:
+
+		ELYSIAN_LUA_PROXY_FIELDS_BEGIN(4)
+			ELYSIAN_LUA_PROXY_FIELD(name, getName, setName),
+			ELYSIAN_LUA_PROXY_FIELD(elev, getElev, setElev),
+			ELYSIAN_LUA_PROXY_FIELD(planeType, getPlaneType, setPlaneType),
+			ELYSIAN_LUA_PROXY_FIELD(shadowVolume, getShadowVolume, setShadowVolume)
+		ELYSIAN_LUA_PROXY_FIELDS_END()
 
                             EntityBase(void)	= default;
         virtual             ~EntityBase(void);

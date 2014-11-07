@@ -17,6 +17,7 @@ namespace elysian {
 		OOLUA::register_class<LuaEventCallback>(*_mainState);
 		_mainState->register_class<InstanceTransform>();
 		OOLUA::register_class<Entity>(*_mainState);
+		EntityBase::registerProxyMetaTable(*_mainState);
 		OOLUA::register_class<QuadSpriteAttrib>(*_mainState);
 		_mainState->register_class<Component>();
 		_mainState->register_class<Material>();
