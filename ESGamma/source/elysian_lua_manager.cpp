@@ -3,7 +3,7 @@
 #include "elysian_lua_wrappers.hpp"
 #include "luatables.h"
 #include "elysian_debug.hpp"
-#include "elysian_lua_table_model.hpp"
+#include "elysian_lua_table_proxy.hpp"
 
 namespace elysian {
 
@@ -327,50 +327,6 @@ bool LuaManager::unloadScript(LuaScript &script) {
 	return false;
 }
 
-
-
-class Vector2: public GYVector2 {
-
-public:
-    static constexpr const char xStringName[] = "x";
-    static constexpr const char xSetName[] = "setX";
-    static constexpr const char xGetName[] = "getX";
-    static constexpr const char yStringName[] = "y";
-    static constexpr const char ySetName[] = "setY";
-    static constexpr const char yGetName[] = "getY";
-
-    double getX(void) const { Debug::printf(Debug::VERBOSE, "getX() - %f", x); return x; }
-    void setY(const double _y) { y = _y; Debug::printf(Debug::VERBOSE, "setY(%f)", y); }
-
-    double getY(void) const { Debug::printf(Debug::VERBOSE, "getY() - %f",y); return y; }
-    void setX(const double _y) { x = _y; Debug::printf(Debug::VERBOSE, "setX(%f)", x); }
-
-
-};
-
-const char Vector2::xStringName[];
-const char Vector2::xGetName[];
-const char Vector2::xSetName[];
-const char Vector2::yStringName[];
-const char Vector2::yGetName[];
-const char Vector2::ySetName[];
-
-
-typedef LuaTableFieldProxy<Vector2, double, Vector2::xStringName, Vector2::xGetName, Vector2::xSetName> VectorXFieldProxy;
-typedef LuaTableFieldProxy<Vector2, double, Vector2::yStringName, Vector2::yGetName, Vector2::ySetName> VectorYFieldProxy;
-
-class Vector2Proxy: public GYVector2, public LuaTableProxy<GYVector2, VectorXFieldProxy, VectorYFieldProxy> {
-friend class LuaTableProxy<Vector2Proxy, VectorXFieldProxy>;
-    //double _width = 55.0f;
-
-public:
-
-   // double getWidth(void) { Debug::printf(Debug::VERBOSE, "getWidth() - %f", _width); return _width; }
-   //void setWidth(const double w) { _width = w; Debug::printf(Debug::VERBOSE, "setWidth(%f)", w); }
-
-};
-
-
 bool LuaManager::initialize(void) {
 	Debug::printf(Debug::VERBOSE, "LuaManager::initialize() - Initializing main Lua state.");
     Debug::push();
@@ -382,43 +338,6 @@ bool LuaManager::initialize(void) {
 	_registerWrappers();
 
 	runString(_rPrint);
-
-   /* LuaTable ltable = LuaTable::fromFile("/assets/testTable.lua");
-
-    std::string name = ltable["name"];
-    double pass = ltable["password"];
-    double num9 = ltable[9];
-   //double embedded = ltable"y"["table2"][];
-    ltable["reestTitties"] = 73.0;
-*/
-    //Lua32BitMask mask;
-    //OOLUA::push(*_mainState, &mask);
-
-    const char* test = "rPrint(GYVector2, 99, \"OrigVector2\")";
-    runString(test);
-
-
-    //Vector2Proxy testVec;
-    Vector2Proxy::registerProxyMetaTable(*_mainState);
-
-    test = "rPrint(GYVector2, 99, \"NewVector2\")";
-    runString(test);
-
-//veccy:setX(32)
-    const char* testScr = "print(\"testest\")  veccy = GYVector2.new() veccy:setX(7) veccy.x = 12 veccy:setY(45) veccy.y = 13 print(veccy:getX(), veccy.y, veccy:getY(), veccy.x) for k, v in pairs(veccy) do print(\"LOL\",k,v) end";
-
-    runString(testScr);
-
-   // const char* test = "print(\"LOLOLOLOLOLOLOLOLOLOL\")";
-  //  runString(test);
-
-   // lua_getfield(l, -1, "width");
-//    OOLUA::pull(l, width);
-
-   // Debug::printf(Debug::CRITICAL, "%s, %f, %f, %f\n", name.c_str(), pass, num9, embedded);
-   // ltable[]
-
-    //Debug::printf(Debug::CRITICAL, "%s", ltable.serialize().c_str());
 
     Debug::pop();
 	return true;
@@ -453,21 +372,6 @@ void LuaManager::dumpStats(void) {
 	LuaBehaviorScriptAttrib* attrib;
 	uint64_t triggers;
 	int kbytes;
-
-	/*
-	 *
-	 *	class LuaBehaviorScriptAttrib {
-	private:
-		uint64_t	_triggers				= 0;
-		char		_parentPath[200]		= {0};
-		bool		_hasParent				= false;
-	public:
-		uint64_t getSupportedTriggers(void) const { return _triggers; }
-		const char* getParentPath(void) const { return _parentPath; }
-		void addSupportedTrigger(const Behavior::TRIGGER trigger) { _triggers |= trigger; }
-		void inheritFromBehavior(const char*const path) { _hasParent = true; strcpy(_parentPath, path); }
-		bool hasParent(void) const { return _hasParent; }
-		*/
 
 	kbytes = lua_gc(*_mainState, LUA_GCCOUNT, 0);
 
