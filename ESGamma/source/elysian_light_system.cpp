@@ -58,7 +58,7 @@ void LightSystem::setEnabled(const bool val) {
 	gyVidLightingSetEnable(val);
 }
 
-
+#ifdef ELYSIAN_ENGINE
 static void renderCube(float x, float y, float z,
 					   float sx, float sy, float sz,
 					   float /*rotz*/) {
@@ -120,7 +120,7 @@ static void renderCube(float x, float y, float z,
 	gyMatPop();
 }
 
-
+#endif
 
 void LightSystem::_renderShadowVolumes(void) {
 

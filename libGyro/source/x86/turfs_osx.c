@@ -57,7 +57,7 @@ static int s__get_assets_path(char **path, size_t *len)
     char *ptr;
     memset(temp_path, 0, sizeof temp_path);
 #if GYRO_PLATFORM == GYRO_PLATFORM_Qt
-
+	(void)ptr;
     *path = "../assets";
 #else
     strncpy(temp_path, NXArgv[0], sizeof temp_path);

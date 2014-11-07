@@ -98,8 +98,6 @@ protected:
 			//userdata iteration
              [&](void) -> bool {
                 if(nextMetamethod) {
-                    const int depth = lua_gettop(state);
-
                     lua_pushvalue(state, -2);
                     lua_insert(state, -3);
 

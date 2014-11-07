@@ -292,7 +292,7 @@ bool Area::activate(void) {
         resizeEditorScene();
         editorScene->setSceneRect(QRect(-48,-48,32*width+64, 32*height+64));
 
-        for(int i = 0; i < entities.size(); ++i) editorScene->addItem(entities[i]);
+		for(size_t i = 0; i < entities.size(); ++i) editorScene->addItem(entities[i]);
 		//editorScene->addItem(_entityParent);
 		_active = true;
 	}
@@ -305,7 +305,7 @@ bool Area::deactivate(void) {
 
 	editorScene->removeItem(_bgRect);
 
-    for(int i = 0; i < entities.size(); ++i) editorScene->removeItem(entities[i]);
+	for(size_t i = 0; i < entities.size(); ++i) editorScene->removeItem(entities[i]);
 	//editorScene->removeItem(_entityParent);
 	_active = false;
 	return true;
@@ -361,14 +361,14 @@ Entity* Area::newEntity(void) {
 }
 
 bool Area::deleteEntity(const QString name) {
-    for(int i = 0; i < entities.size(); ++i) {
+	for(size_t i = 0; i < entities.size(); ++i) {
         if(entities[i]->getName() == name) return deleteEntity(entities[i]);
 	}
 	return false;
 }
 
 bool Area::deleteEntity(Entity *const pentity) {
-    for(int i = 0; i < entities.size(); ++i) {
+	for(size_t i = 0; i < entities.size(); ++i) {
         if(entities[i] == pentity) {
 			emit entityRemoved(this, pentity);
 

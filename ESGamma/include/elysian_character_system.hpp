@@ -57,12 +57,12 @@ namespace elysian {
 
 	// ======= INLINEZ =======
 
-	inline void WalkToWayPointSubProcess::_start(CharacterSystem* sys) {
+	inline void WalkToWayPointSubProcess::_start(CharacterSystem* /*sys*/) {
         gyVec3Sub(&_dir, &_endPos, &_entity->_transform._pos);
         gyVec3Normalize(&_dir);
 	}
 
-    inline void WalkToWayPointSubProcess::_stop(CharacterSystem* sys) {}
+	inline void WalkToWayPointSubProcess::_stop(CharacterSystem* /*sys*/) {}
 
 	inline void WalkToWayPointSubProcess::_update(CharacterSystem* sys, const float deltaTime) {
         GYVector3 dist;

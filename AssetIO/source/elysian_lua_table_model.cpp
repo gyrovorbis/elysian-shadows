@@ -1,4 +1,4 @@
-#include "elysian_lua_table_model.hpp"
+#include "elysian_lua_table_proxy.hpp"
 
 namespace elysian {
 

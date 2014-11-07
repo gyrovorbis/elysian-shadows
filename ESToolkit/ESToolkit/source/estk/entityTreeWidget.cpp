@@ -17,7 +17,7 @@ void EntityTreeWidget::OnAreaChange(Area *const area) {
     while(topLevelItemCount()) takeTopLevelItem(0);
     if(!area) return;
     auto& entities = area->getEntities();
-    for(int i = 0; i < entities.size(); ++i) {
+	for(size_t i = 0; i < entities.size(); ++i) {
 	  //  Debug::Log(Debug::VERBOSE, "Trying to add - %s", area->entity[i]->getName().toStdString().c_str());
 		addTopLevelItem((QTreeWidgetItem *)entities[i]);
     }

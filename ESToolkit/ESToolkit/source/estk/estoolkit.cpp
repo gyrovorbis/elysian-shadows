@@ -243,6 +243,7 @@ void ESToolkit::_engineInitialize(void) {
     strcpy(verString, "ESGamma v");
     strcat(verString, GYRO_LIB_VERSION);
 
+#if 0
     GYVidInitParams vidParams =
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86 || GYRO_PLATFORM == GYRO_PLATFORM_Qt
     { (GY_VID_RESOLUTION)_debug->getCmdLineArgs().resolution, GY_WIN_RESIZABLE, 480, 270, 1280, 720, verString, "icon.bmp"};
@@ -255,6 +256,7 @@ void ESToolkit::_engineInitialize(void) {
 #else
     { 0 };
 
+#endif
 #endif
 
     gySysInit();
@@ -1306,7 +1308,6 @@ void ESToolkit::on_actionDefault_Transform_triggered()
 {
     static bool inited = false;
     static LuaTableStackModel* lmodel;
-    static OOLUA::Lua_table_ref *ref;
 
     if(!inited) {
         lua_pushglobaltable(*_mainState);

@@ -50,7 +50,7 @@ GYAppCbRet Init(int argc, char **argv) {
     QTimer::singleShot(0, &w, SLOT(showMaximized()));
 #endif
 
-    int execVal = a.exec();
+	a.exec();
 
     return GY_RET_CONTINUE;
 }

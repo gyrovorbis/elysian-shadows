@@ -71,8 +71,8 @@ void CombatSystem::killCombatant(Entity& entity) {
 }
 
 void CombatSystem::_processCurrentCombatAction(void) {
-	GYVector2 vel;
-	GYVector3 pos3;
+	//GYVector2 vel;
+	//GYVector3 pos3;
 
 //	if(_curActionRes.contact) {
 //		//Calculate combatText velocity

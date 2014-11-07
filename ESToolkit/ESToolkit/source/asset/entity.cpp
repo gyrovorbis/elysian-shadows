@@ -30,8 +30,8 @@
 #include "renderable.h"
 #include <cmath>
 
-TkEntity::TkEntity(elysian::Entity &entity):
-	_renderable(NULL), _animation(NULL), _collidable(NULL),_warp(NULL),_item(NULL), _character(NULL), _friendly(NULL), _enemy(NULL),
+TkEntity::TkEntity(elysian::Entity& /*entity*/):
+	_renderable(nullptr), _animation(nullptr), _collidable(nullptr),_warp(nullptr),_item(nullptr), _character(nullptr), _friendly(nullptr), _enemy(nullptr),
     _gridSnap(false) {	//generate toolkit components from elysian components
 #if 0
 	if(_elysianEntity->getRenderable()) {

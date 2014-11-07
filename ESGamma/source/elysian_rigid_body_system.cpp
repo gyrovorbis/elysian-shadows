@@ -25,7 +25,7 @@ RigidBodySystem::RigidBodySystem(void) {
 
 void RigidBodySystem::update(void) {
     const float deltaTime = getTimerSys()->getDeltaTime();
-    auto &rigidBodies = getCurArea()->rigidBodies;
+	//auto &rigidBodies = getCurArea()->rigidBodies;
 
 	_updateContacts();
 
@@ -97,7 +97,7 @@ void RigidBodySystem::_updateContacts(void) {
 }
 
 void RigidBodySystem::_resolveContactZVelocities(void) {
-    const float deltaTime = getTimerSys()->getDeltaTime();
+	//const float deltaTime = getTimerSys()->getDeltaTime();
 
     for(unsigned i = 0; i < _contactCount; ++i) {
 
@@ -107,9 +107,9 @@ void RigidBodySystem::_resolveContactZVelocities(void) {
 
             float totalImpulse = 0.0f;
             bool topResolved = false;
-            bool botResolved = false;
+			//bool botResolved = false;
 
-            float zDepth = _contactPool[i]->getZDepth();
+			//float zDepth = _contactPool[i]->getZDepth();
 
             if(_contactPool[i]->getZDepth() > 0.0f) {
                 colTop = _contactPool[i]->_bodyB;
@@ -435,8 +435,8 @@ void RigidBodySystem::integrate(void) {
 
 }
 
-bool RigidBodySystem::_checkEntityEntity3D(const unsigned i) {
-    RigidBody* rbA = _curArea->rigidBodies[i];
+bool RigidBodySystem::_checkEntityEntity3D(const unsigned /*i*/) {
+	//RigidBody* rbA = _curArea->rigidBodies[i];
 /*
     for(unsigned i = 0; i < rbA->getEntity()->getCollidable()->getContactCount(); ++i) {
         Collidable* colA =
@@ -447,8 +447,8 @@ bool RigidBodySystem::_checkEntityEntity3D(const unsigned i) {
 }
 
 void RigidBodySystem::integrate3D(void) {
-	const float deltaTime = getTimerSys()->getDeltaTime();
-	CollisionSystem*const colSys = getCollisionSys();
+//	const float deltaTime = getTimerSys()->getDeltaTime();
+//	CollisionSystem*const colSys = getCollisionSys();
 	auto rigidBodies = getCurArea()->rigidBodies;
 
 #if 0
@@ -535,7 +535,7 @@ void RigidBodySystem::integrate3D(void) {
 		float zTop = 0.0f;
 
 		const unsigned elev = /*(worldPos.z == 0.0f)? 0 :*/ (worldPos.z)/32;
-        float zOffset = worldPos.z - elev*32.0f;
+		//float zOffset = worldPos.z - elev*32.0f;
         worldPos.y += 32.0f;//zOffset;
         //worldPos.y -= (worldPos.z);
 
@@ -579,7 +579,7 @@ void RigidBodySystem::integrate3D(void) {
 		//if(found) {
 				//it->getAttrib()->setForceMask(0);
             if(collidable->getEntity()->_transform._pos.z <= zTop) {
-               float zDiff = zTop - collidable->getEntity()->_transform._pos.z;
+			   //float zDiff = zTop - collidable->getEntity()->_transform._pos.z;
                 collidable->getEntity()->_transform._pos.z = zTop;
 
                 //We have to remove the same amount of yVelocity we're removing from the Z in this perspective.
@@ -796,9 +796,9 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
         maxDist3 = gySqrt(maxDist3);
 
         float posMag = gyVec2Magnitude((GYVector2*)&localPos);
-        float posMag3 = gyVec3Magnitude(&localPos);
+		//float posMag3 = gyVec3Magnitude(&localPos);
         //
-       float velMag = gyVec3Magnitude(&velDir);
+	   //float velMag = gyVec3Magnitude(&velDir);
 
         GYVector3 normal = getContactNormal();
 
@@ -809,8 +809,8 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
         float rot = gyVec2ScalarCrossProd((GYVector2*)&localPosDir, (GYVector2*)&normal);
         shard->getRigidBody()->setRotation(-rot*(posMag));
 
-        float baseDurability = entity->getRigidBody()->getAttrib()->getBaseDurability();
-        float durability = entity->getRigidBody()->getDurability();
+		//float baseDurability = entity->getRigidBody()->getAttrib()->getBaseDurability();
+		//float durability = entity->getRigidBody()->getDurability();
 
 
         //gyVec3ScaleAccum(&localPosDir, -1.0f);

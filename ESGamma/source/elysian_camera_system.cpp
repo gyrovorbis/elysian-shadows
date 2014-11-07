@@ -16,10 +16,17 @@ CameraSystem* CameraShakeSubProcess::_cameraSys = nullptr;
 // ===== INSTANCE MEMBERS =====
 
 void CameraState::updateBoundingRegions(const int xMin, const int xMax, const int yMin, const int yMax) {
+#if 0
 	int startX	= xMax;
 	int startY	= yMax;
 	int endX	= xMin;
 	int endY	= yMin;
+#else
+	(void)xMin;
+	(void)xMax;
+	(void)yMin;
+	(void)yMax;
+#endif
 #if 0
 	auto checkPointBounds = [&](const GYVector3& point) {
 		if(point.x < (float)startX) startX = (int)point.x;

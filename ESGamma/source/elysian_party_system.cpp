@@ -75,7 +75,7 @@ void PartySystem::processInput(const GameInput &input) {
     };
 
     auto emitDashParticles = [&](void) {
-        getPartSys()->getAttrib(0)->setAcceleration(GYVector3{ 0.0f, -70.0f, /*7.0f*//*6.5f*/ });
+		getPartSys()->getAttrib(0)->setAcceleration(GYVector3{ 0.0f, -70.0f, 7.0f/*7.0f*//*6.5f*/ });
         getPartSys()->getAttrib(0)->setForceMask(0);
         getPartSys()->getAttrib(0)->setEndColor(GYColor4 { 255, 255, 255, 0});
         getPartSys()->getAttrib(0)->setColor(255, 255, 255, 100);

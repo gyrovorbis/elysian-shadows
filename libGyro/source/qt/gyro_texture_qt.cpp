@@ -10,11 +10,13 @@
 int _gyVidTexAlloc(GYTexture *const tex, const unsigned width, const unsigned height) {
     (void)width;
     (void)height;
+	(void)tex;
 
     return 1;
 }
 
 int _gyVidTexFree(GYTexture *const tex) {
+	(void)tex;
     return 1;
 }
 

@@ -12,17 +12,7 @@ struct timeval tv1,tv2;
 
 namespace elysian {
 
-TimerSystem::TimerSystem(void): 
-	_totalTime(0.0f),
-	_totalTicks(0),
-	_prevFrameTicks(0),
-	_curFrameTicks(0),
-	_deltaTime(0.0f),
-	_enableMaxFramerate(ENABLE_MAX_FRAMERATE), 
-	_enableMinFramerate(ENABLE_MIN_FRAMERATE), 
-	_maxFramerate(1.0f/MAX_FRAMERATE),
-	_minFramerate(1.0f/MIN_FRAMERATE), 
-	_buffIndex(0) 
+TimerSystem::TimerSystem(void)
 {
 
     auto& proc = get<SUBPROC_TIMER_EVENT_POOL> ( static_cast<SubProcessManager<TimerSystem,

@@ -84,7 +84,7 @@ void LightSource::update(void) {
 	}
 }
 
-void LightSource::updateBoundingVolume(const CameraState *const cam, const GY_CUBE_MAP_FACE face) {
+void LightSource::updateBoundingVolume(const CameraState *const cam, const GY_CUBE_MAP_FACE /*face*/) {
 	CameraState* thisCam = static_cast<CameraState*>(camera);
 	GYViewVolume* vol = &thisCam->viewVolume;
 

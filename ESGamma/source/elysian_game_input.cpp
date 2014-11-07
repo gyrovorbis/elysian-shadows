@@ -10,7 +10,7 @@
 
 namespace elysian {
 
-void GameInput::translate(const GYInput &platInput, GameInput &gameInput) {
+void GameInput::translate(const GYInput& platInput, GameInput& gameInput) {
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86 || GYRO_PLATFORM == GYRO_PLATFORM_ANDROID
 
 #	if GYRO_PLATFORM == GYRO_PLATFORM_x86
@@ -136,7 +136,10 @@ void GameInput::translate(const GYInput &platInput, GameInput &gameInput) {
         }
         
     }
-    
+
+#else
+	(void)platInput;
+	(void)gameInput;
 #endif
 }
 

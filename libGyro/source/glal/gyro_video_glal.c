@@ -116,7 +116,7 @@ typedef struct _GYCamera {
  */
 
 static const GYCamera	_defaultCamera;
-static GYVector4		_stripVerts[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]         __attribute__((aligned(32)));
+//static GYVector4		_stripVerts[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]         __attribute__((aligned(32)));
 static GYColor4			_stripColors[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]        __attribute__((aligned(32)));
 static GYTexCoord2		_stripTexCoords[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]     __attribute__((aligned(32)));
 static GYVector4		_modelViewVertices[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]  __attribute__((aligned(32)));
@@ -208,7 +208,7 @@ void gyVidCamUpdate(const GYCamera *const cam) {
 
 void gyVidRectTexOrient(const GY_RECT_TEX_ORIENT orient) {
 	_rectTexOrient = orient;
-    const GYVector3* tangent;
+	//const GYVector3* tangent;
 }
 
 static inline void _gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsigned int startIndex, const unsigned int amount) {

@@ -360,7 +360,7 @@ void CollisionSystem::detectCollisions(void) {
     //_sortSweepPool.sortAndSweep();
 }
 
-void CollisionSystem::_detectEntityTileZCollisionCoarse(Collidable &collidable) {
+void CollisionSystem::_detectEntityTileZCollisionCoarse(Collidable& /*collidable*/) {
 #if 0
     GYVector3 worldPos = collidable.getCenterWorldPos();
     float zTop = 0.0f;
@@ -937,8 +937,8 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable, c
 	if(endElev < 0) startElev = 0;
 	else if(endElev > ELYSIAN_MAP_ENTRY_ELEV_MAX) endElev = ELYSIAN_MAP_ENTRY_ELEV_MAX;
 
-	const char diffElev = endElev - startElev;
-	const int sizeY = endY - startY;
+	//const char diffElev = endElev - startElev;
+	//const int sizeY = endY - startY;
 
 	switch(collidable.getAttrib()->getColliderType()) {
 	case GY_COLLIDER_AABB:
