@@ -11,6 +11,7 @@
 
 #define ELYSIAN_LUA_PROXY_FIELDS_END() };
 
+<<<<<<< HEAD
 #define ELYSIAN_LUA_PROXY_FIELD_READ_WRITE(f, g, s) { #f, #g, #s },
 #define ELYSIAN_LUA_PROXY_FIELD_READ_ONLY(f, g) { #f, #g, nullptr },
 
@@ -21,6 +22,13 @@
 #define ELYSIAN_LUA_PROXY_FIELDS_EXPORT(c) \
 	const unsigned				c::_proxyFieldCount; \
     const LuaTableFieldProxy	c::_proxyFields[];
+=======
+#define ELYSIAN_LUA_PROXY_FIELD(f, g, s) { #f, #g, #s },
+
+#define ELYSIAN_LUA_PROXY_FIELDS_EXPORT(c) \
+	const unsigned				c::_proxyFieldCount; \
+	const LuaTableFieldProxy	c::_proxyFields[];
+>>>>>>> 4bef88b0b54eaaeba91d5b8ad59d942bf762aeff
 
 namespace elysian {
 

@@ -24,6 +24,13 @@ namespace elysian {
 
 		inline Renderable(Entity &parent): Component(parent) {}
 	public:
+
+		ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+			ELYSIAN_LUA_PROXY_FIELD(frame, getFrame, setFrame)
+			ELYSIAN_LUA_PROXY_TABLE(offset, getOffset, setOffset)
+			ELYSIAN_LUA_PROXY_TABLE(texOrient, getTexOrient, setTexOrient)
+		ELYSIAN_LUA_PROXY_FIELDS_END()
+
 		static const GYVector4 flatRectVerts[4];
 		static const GYVector4 depthRectVerts[4];
 
@@ -124,12 +131,12 @@ namespace elysian {
 			//gyVidQuadListEnd();
 		}
 
-		inline unsigned getFrame(void) const { return _frame; }
-		inline void setFrame(const unsigned fr) { _frame = fr; }
-		inline void setOffset(const GYVector2 &offset) { _offset = offset; }
-		inline void getOffset(GYVector2 &offset) const { offset = _offset; } 
-		inline void setTexOrient(const GY_RECT_TEX_ORIENT texOrient) { _texOrient = texOrient; }
-		inline GY_RECT_TEX_ORIENT getTexOrient(void) const { return _texOrient; }
+		inline unsigned				getFrame(void) const { return _frame; }
+		inline void					setFrame(const unsigned fr) { _frame = fr; }
+		inline void					setOffset(const GYVector2 &offset) { _offset = offset; }
+		inline void					getOffset(GYVector2 &offset) const { offset = _offset; }
+		inline void					setTexOrient(const GY_RECT_TEX_ORIENT texOrient) { _texOrient = texOrient; }
+		inline GY_RECT_TEX_ORIENT	getTexOrient(void) const { return _texOrient; }
 
 		inline SpriteAttrib *getSpriteAttrib(void) const { return _spriteAttrib; }
 		inline QuadSpriteAttrib* getQuadSpriteAttrib(void) const { return static_cast<QuadSpriteAttrib*>(_spriteAttrib); }

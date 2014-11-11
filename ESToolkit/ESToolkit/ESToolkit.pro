@@ -205,7 +205,8 @@ SOURCES += source/asset/project.cpp \
     ../../ESGamma/source/elysian_timer_system.cpp \
     ../../ESGamma/source/elysian_warp_system.cpp \
     source/dialog/luaExplorerDialog.cpp \
-    source/core/rowsJoinerProxyModel.cpp
+    source/core/rowsJoinerProxyModel.cpp \
+    ../../AssetIO/source/elysian_instance_transform.cpp
 
 HEADERS += include/asset/project.h \
     include/asset/level.h \
