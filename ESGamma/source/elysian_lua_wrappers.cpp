@@ -11,11 +11,14 @@ namespace elysian {
 		_mainState->register_class<Lua32BitMask>();
 		_mainState->register_class<LuaBehaviorScriptAttrib>();
 		_mainState->register_class<GYVector2>();
+        Vector2Proxy::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<GYVector3>();
+        Vector3Proxy::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<GYVector4>();
         _mainState->register_class<GYColor4>();
 		OOLUA::register_class<LuaEventCallback>(*_mainState);
 		_mainState->register_class<InstanceTransform>();
+        InstanceTransform::registerProxyMetaTable(*_mainState);
 		OOLUA::register_class<Entity>(*_mainState);
 		EntityBase::registerProxyMetaTable(*_mainState);
 		OOLUA::register_class<QuadSpriteAttrib>(*_mainState);
@@ -169,9 +172,9 @@ OOLUA_EXPORT_FUNCTIONS(InstanceTransform,
 									setOrientZ,
 									rotate,
 									scale2f,
-									getSizeVec,
-									getScaleVec,
-									getPosVec)
+                                    getPostVec,
+                                    getSizeVec,
+                                    getScaleVec)
 OOLUA_EXPORT_FUNCTIONS_CONST(InstanceTransform,
 								apply,
 								getPos2f,
@@ -238,7 +241,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getParticleEmitter,
 								getBehavior,
 								getLuaBehavior,
-								getShadowVolume,
+                                isShadowVolume,
 								getPlaneType,
 								getShadowDepth)
 

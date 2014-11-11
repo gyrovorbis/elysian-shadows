@@ -77,6 +77,8 @@ protected:
             return new LuaTableFieldItem<bool, TKey>(tableRef, key);
 		case LUA_TUSERDATA:
 			return new QStandardItem(QString("userdata"));
+        case LUA_TNIL:
+            return new QStandardItem(QString("nil"));
         default:
             return new QStandardItem(QString("function"));
 
@@ -103,6 +105,9 @@ protected:
 
                     lua_getmetatable(state, _oolua_table_index_);
 
+                    qDebug() << "BOUT TO CALL __NEXT";
+                    LuaManager::_cStackDump();
+
                     lua_getfield(state, -1, "__next");
                     lua_insert(state, -4);
                     lua_pop(state, 1);
@@ -112,19 +117,11 @@ protected:
                         lua_pop(state, 2);
                         return false;
                     } else return true;
-<<<<<<< HEAD
                 } else {
                     lua_pop(state, 1);
                     return false;
                 }
              }
-=======
-				} else {
-					lua_pop(state, 2);
-					return false;
-				}
-            }
->>>>>>> 4bef88b0b54eaaeba91d5b8ad59d942bf762aeff
         };
 
         lua_rawgeti(state, LUA_REGISTRYINDEX, tableRef);
@@ -151,13 +148,9 @@ protected:
             lua_pop(state, 2);
 
 			//If current value is iterable, recurse over its k,v pairs
-<<<<<<< HEAD
+
             if(valueType == LUA_TTABLE || valueType == LUA_TUSERDATA) {
                 pushLabel(keyName, (valueType == LUA_TTABLE)? new QStandardItem(QString("table")) : new QStandardItem(QString("userdata")) );
-=======
-			if(valueType == LUA_TTABLE || (valueType == LUA_TUSERDATA)) {
-                pushLabel(keyName);
->>>>>>> 4bef88b0b54eaaeba91d5b8ad59d942bf762aeff
 
                 lua_pushvalue(*_mainState, -1);
                 _addTableFields(*_mainState, luaL_ref(*_mainState, LUA_REGISTRYINDEX));

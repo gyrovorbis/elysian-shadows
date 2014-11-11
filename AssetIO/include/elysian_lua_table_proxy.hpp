@@ -11,24 +11,16 @@
 
 #define ELYSIAN_LUA_PROXY_FIELDS_END() };
 
-<<<<<<< HEAD
 #define ELYSIAN_LUA_PROXY_FIELD_READ_WRITE(f, g, s) { #f, #g, #s },
 #define ELYSIAN_LUA_PROXY_FIELD_READ_ONLY(f, g) { #f, #g, nullptr },
 
 #define ELYSIAN_LUA_PROXY_FIELD_GET_MACRO(_1, _2, _3, NAME, ...) NAME
 #define ELYSIAN_LUA_PROXY_FIELD(...) ELYSIAN_LUA_PROXY_FIELD_GET_MACRO(__VA_ARGS__, ELYSIAN_LUA_PROXY_FIELD_READ_WRITE, ELYSIAN_LUA_PROXY_FIELD_READ_ONLY)(__VA_ARGS__)
 
-
 #define ELYSIAN_LUA_PROXY_FIELDS_EXPORT(c) \
 	const unsigned				c::_proxyFieldCount; \
     const LuaTableFieldProxy	c::_proxyFields[];
-=======
-#define ELYSIAN_LUA_PROXY_FIELD(f, g, s) { #f, #g, #s },
 
-#define ELYSIAN_LUA_PROXY_FIELDS_EXPORT(c) \
-	const unsigned				c::_proxyFieldCount; \
-	const LuaTableFieldProxy	c::_proxyFields[];
->>>>>>> 4bef88b0b54eaaeba91d5b8ad59d942bf762aeff
 
 namespace elysian {
 
@@ -50,14 +42,16 @@ namespace elysian {
 		static LuaTable _ooluaIndexTable;               //OOLUA's default index metamethod table
 		static LuaTable _ooluaNewIndexTable;            //OOLUA's default new index metamethod table
 		static LuaTable _staticMetaTable;
-		LuaTable        _protoTable;
+        //LuaTable        _protoTable;
 
 		static inline void _registerPropertyMetaMethodTables(lua_State* l) {
 			lua_getglobal(l, OOLUA::Proxy_class<T>::class_name);
+            LuaManager::rPrintByIndex(-2, 99, OOLUA::Proxy_class<T>::class_name);
 
 			//Register property pairs for index table <K=field, V=getFunc>
 			lua_newtable(l);
 			for(unsigned i = 0; i < P::_proxyFieldCount; ++i) {
+                Debug::printf(Debug::VERBOSE, "SHIT <%s, %s>", P::_proxyFields[i].key, P::_proxyFields[i].get);
 				lua_getfield(l, -2, P::_proxyFields[i].get);
 				lua_setfield(l, -2, P::_proxyFields[i].key);
 			}
@@ -79,6 +73,9 @@ namespace elysian {
 		inline static int _nextMetaMethodCFunction(lua_State* l) {
 			_propertyProxyIndexTable.push(l);
 			lua_insert(l, -2);
+
+            Debug::printf(Debug::VERBOSE, "NEXTMETAMETHOD()");
+            LuaManager::_cStackDump();
 
 			//Proxies userdata iteration to built-in next iterator on index table
 			const int retVal = lua_next(l, -2);

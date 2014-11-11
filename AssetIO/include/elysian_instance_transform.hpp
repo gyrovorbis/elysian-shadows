@@ -6,50 +6,44 @@
 #include <gyro_video_api.h>
 
 #include "elysian_asset.hpp"
-//#include "elysian_lua_table_proxy.hpp"
+#include "elysian_lua_table_proxy.hpp"
 
 namespace elysian {
 
-	//Throwing C++ linear algebra wrappers in here until I figure out something better to do with the...
-/*	class Vector2: public GYVector2 {
-	public:
-		inline Vector2(void) = default;
-		inline Vector2(const float x, const float y):
-			GYVector2({x, y}) {}
-	};
+    struct Vector2Proxy: public GYVector2, public LuaTableProxy<Vector2Proxy, GYVector2> {
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN(2)
+            ELYSIAN_LUA_PROXY_FIELD(x, getX, setX)
+            ELYSIAN_LUA_PROXY_FIELD(y, getY, setY)
+        ELYSIAN_LUA_PROXY_FIELDS_END()
+    };
 
-	class Vector3: public GYVector3 {
-	public:
-		inline Vector3(void) = default;
-		inline Vector3(const float x, const float y, const float z):
-			GYVector3({x, y, z}) {}
-	};
-
-	class Vector4: public GYVector4 {
-	public:
-		inline Vector4(void) = default;
-		inline Vector4(const float x, const float y, const float z, const float w):
-			GYVector4({x, y, z, w}) {}
-	};
-
-	class Color4: public GYColor4 {
-	public:
-		inline Color4(void) = default;
-		inline Color4(const unsigned char a, const unsigned char r, const unsigned char g, const unsigned char b):
-			GYColor4({a, r, g, b}) {}
-
-	};
-    */
-
+    struct Vector3Proxy: public GYVector3, public LuaTableProxy<Vector3Proxy, GYVector3> {
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN(3)
+            ELYSIAN_LUA_PROXY_FIELD(x, getX, setX)
+            ELYSIAN_LUA_PROXY_FIELD(y, getY, setY)
+            ELYSIAN_LUA_PROXY_FIELD(z, getZ, setZ)
+        ELYSIAN_LUA_PROXY_FIELDS_END()
+    };
 
 /*
 	Essentially a thin, inlined-to-fuck, OO C++ wrapper around LibGyro's InstanceMat() operation.
 */
-	/*class*/ struct InstanceTransform: public GYInstMat, public Asset {
+    struct InstanceTransform:
+            public GYInstMat,
+            public Asset,
+            public LuaTableProxy<InstanceTransform>
+    {
 		//This is public for overhead reduction, but the accessors are safer.
 		//Lua should treat this as a class
 	
-	public:
+
+
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN(2)
+            ELYSIAN_LUA_PROXY_FIELD(orientZ, getOrientZ, setOrientZ)
+            //ELYSIAN_LUA_PROXY_FIELD(size, getSizeVec)
+            //ELYSIAN_LUA_PROXY_FIELD(scale, getScaleVec)
+            ELYSIAN_LUA_PROXY_FIELD(zeta, getPostVec)
+        ELYSIAN_LUA_PROXY_FIELDS_END()
 
 	InstanceTransform(void):
 		GYInstMat({
@@ -59,11 +53,14 @@ namespace elysian {
 			0.0f,
 			nullptr
 		}) {}
+
 		void apply(void) const {
-#ifdef ELYSIAN_ENGINE
 			gyMatInstance(this);
-#endif
 		}
+
+        GYVector3& getPostVec(void);
+        GYVector3& getSizeVec(void);
+        GYVector3& getScaleVec(void);
 
 		void setPos(const float x, const float y, const float z) { _pos.x = x; _pos.y = y; _pos.z = z; }
 		void setPos(const float x, const float y) { _pos.x = x; _pos.y = y; }
@@ -118,6 +115,18 @@ namespace elysian {
 						   interval, elapsed);
 		}
 	};
+
+
+
+
+
+    // ====== INLINEZ ======
+
+    inline GYVector3& InstanceTransform::getPostVec(void) { return _pos; }
+    inline GYVector3& InstanceTransform::getSizeVec(void) { return _size; }
+    inline GYVector3& InstanceTransform::getScaleVec(void) { return _scale; }
+
+
 
 }
 

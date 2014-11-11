@@ -39,12 +39,12 @@ namespace elysian {
 	class EntityBase: public RenderableObject, public Asset, public LuaTableProxy<EntityBase, Entity> {
 	public:
 
-		ELYSIAN_LUA_PROXY_FIELDS_BEGIN(6)
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN(6)
 			ELYSIAN_LUA_PROXY_FIELD(name, getName, setName)
 			ELYSIAN_LUA_PROXY_FIELD(elev, getElev, setElev)
 			ELYSIAN_LUA_PROXY_FIELD(planeType, getPlaneType, setPlaneType)
 			ELYSIAN_LUA_PROXY_FIELD(shadowVolume, isShadowVolume, setShadowVolume)
-			ELYSIAN_LUA_PROXY_FIELD(renderable, getRenderable)
+            ELYSIAN_LUA_PROXY_FIELD(renderable, getRenderable)
 			ELYSIAN_LUA_PROXY_FIELD(transform, getTransform)
 		ELYSIAN_LUA_PROXY_FIELDS_END()
 

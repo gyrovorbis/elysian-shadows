@@ -330,14 +330,13 @@ bool LuaManager::unloadScript(LuaScript &script) {
 bool LuaManager::initialize(void) {
 	Debug::printf(Debug::VERBOSE, "LuaManager::initialize() - Initializing main Lua state.");
     Debug::push();
-    
+
 	_mainState = new OOLUA::Script; 
 	Debug::printf(Debug::VERBOSE, "Opening standard libs");
 	luaL_openlibs(*_mainState);
 	Debug::printf(Debug::VERBOSE, "Registering wrappers");
+    runString(_rPrint);
 	_registerWrappers();
-
-	runString(_rPrint);
 
     Debug::pop();
 	return true;

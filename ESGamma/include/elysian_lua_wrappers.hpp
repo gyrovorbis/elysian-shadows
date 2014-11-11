@@ -248,9 +248,9 @@ OOLUA_PROXY(InstanceTransform)
 	OOLUA_MEM_FUNC_CONST_RENAME(getSize2f, void, getSize, out_p<float&>, out_p<float&>)
 	OOLUA_MEM_FUNC_CONST_RENAME(getScale2f, void, getScale, out_p<float&>, out_p<float&>)
 	OOLUA_MEM_FUNC_CONST(float, getOrientZ)
-	OOLUA_MEM_FUNC(GYVector2&, getPosVec)
-	OOLUA_MEM_FUNC(GYVector2& getSizeVec)
-	OOLUA_MEM_FUNC(GYVector2& getScaleVec)
+    OOLUA_MEM_FUNC(GYVector3&, getPostVec)
+    OOLUA_MEM_FUNC(GYVector3&, getSizeVec)
+    OOLUA_MEM_FUNC(GYVector3&, getScaleVec)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(RenderableObject)
@@ -330,7 +330,7 @@ OOLUA_PROXY(Entity, RenderableObject)
     OOLUA_MEM_FUNC(void, setPlaneType, GY_RECT_PLANE_TYPE)
 	OOLUA_MEM_FUNC_CONST(GY_RECT_PLANE_TYPE, getPlaneType)
 	OOLUA_MEM_FUNC_CONST(float, getShadowDepth)
-	OOLUA_MEM_FUNC_CONST(bool, shadowVolume)
+    OOLUA_MEM_FUNC_CONST(bool, isShadowVolume)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Component)
