@@ -6,6 +6,7 @@
 #include <gyro_video_api.h>
 
 #include "elysian_asset.hpp"
+//#include "elysian_lua_table_proxy.hpp"
 
 namespace elysian {
 

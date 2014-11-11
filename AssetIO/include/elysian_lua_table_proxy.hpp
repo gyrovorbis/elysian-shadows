@@ -11,11 +11,16 @@
 
 #define ELYSIAN_LUA_PROXY_FIELDS_END() };
 
-#define ELYSIAN_LUA_PROXY_FIELD(f, g, s) { #f, #g, #s }
+#define ELYSIAN_LUA_PROXY_FIELD_READ_WRITE(f, g, s) { #f, #g, #s },
+#define ELYSIAN_LUA_PROXY_FIELD_READ_ONLY(f, g) { #f, #g, nullptr },
 
-#define ELYSIAN_LUA_PROXY_FIELDS_EXPORT(c, n) \
+#define ELYSIAN_LUA_PROXY_FIELD_GET_MACRO(_1, _2, _3, NAME, ...) NAME
+#define ELYSIAN_LUA_PROXY_FIELD(...) ELYSIAN_LUA_PROXY_FIELD_GET_MACRO(__VA_ARGS__, ELYSIAN_LUA_PROXY_FIELD_READ_WRITE, ELYSIAN_LUA_PROXY_FIELD_READ_ONLY)(__VA_ARGS__)
+
+
+#define ELYSIAN_LUA_PROXY_FIELDS_EXPORT(c) \
 	const unsigned				c::_proxyFieldCount; \
-	const LuaTableFieldProxy	c::_proxyFields[n];
+    const LuaTableFieldProxy	c::_proxyFields[];
 
 namespace elysian {
 
@@ -53,6 +58,7 @@ namespace elysian {
 			//Register property pairs for newIndex table <K=field, V=setFunc>
 			lua_newtable(l);
 			for(unsigned i = 0; i < P::_proxyFieldCount; ++i) {
+                if(P::_proxyFields[i].set == nullptr) continue; //read-only attribute!
 				lua_getfield(l, -2, P::_proxyFields[i].set);
 				lua_setfield(l, -2, P::_proxyFields[i].key);
 			}

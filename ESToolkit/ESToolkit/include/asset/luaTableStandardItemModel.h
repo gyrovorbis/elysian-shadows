@@ -112,8 +112,11 @@ protected:
                         lua_pop(state, 2);
                         return false;
                     } else return true;
-				} else return false;
-            }
+                } else {
+                    lua_pop(state, 1);
+                    return false;
+                }
+             }
         };
 
         lua_rawgeti(state, LUA_REGISTRYINDEX, tableRef);
@@ -140,8 +143,8 @@ protected:
             lua_pop(state, 2);
 
 			//If current value is iterable, recurse over its k,v pairs
-			if(valueType == LUA_TTABLE || (valueType == LUA_TUSERDATA && nextMetamethod)) {
-                pushLabel(keyName);
+            if(valueType == LUA_TTABLE || valueType == LUA_TUSERDATA) {
+                pushLabel(keyName, (valueType == LUA_TTABLE)? new QStandardItem(QString("table")) : new QStandardItem(QString("userdata")) );
 
                 lua_pushvalue(*_mainState, -1);
                 _addTableFields(*_mainState, luaL_ref(*_mainState, LUA_REGISTRYINDEX));
@@ -163,7 +166,7 @@ protected:
                     addProperty(keyName, valueItem);
                     break;
                 case LUA_TTABLE:
-                    valueItem = new QStandardItem(QString("Table"));
+                    valueItem = new QStandardItem(QString("table"));
                     addProperty(keyName, valueItem);
                     break;
 				case LUA_TUSERDATA:
