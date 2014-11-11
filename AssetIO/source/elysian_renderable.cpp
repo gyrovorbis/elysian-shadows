@@ -5,6 +5,8 @@
 
 namespace elysian {
 
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(Renderable)
+
 const GYVector4 Renderable::depthRectVerts[4] = {
 	{-0.5f, -0.5f, 1.0f, 1.0f},
 	{0.5f, -0.5f, 1.0f, 1.0f},

@@ -112,7 +112,10 @@ protected:
                         lua_pop(state, 2);
                         return false;
                     } else return true;
-				} else return false;
+				} else {
+					lua_pop(state, 2);
+					return false;
+				}
             }
         };
 
@@ -140,7 +143,7 @@ protected:
             lua_pop(state, 2);
 
 			//If current value is iterable, recurse over its k,v pairs
-			if(valueType == LUA_TTABLE || (valueType == LUA_TUSERDATA && nextMetamethod)) {
+			if(valueType == LUA_TTABLE || (valueType == LUA_TUSERDATA)) {
                 pushLabel(keyName);
 
                 lua_pushvalue(*_mainState, -1);

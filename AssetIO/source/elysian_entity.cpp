@@ -23,7 +23,7 @@ using namespace std;
 
 namespace elysian {
 
-ELYSIAN_LUA_PROXY_FIELDS_EXPORT(EntityBase, 4)
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(EntityBase)
 
 void EntityBase::reested(void) {
 	dbgprintf(LOG_VERBOSE, "Entity::Reested(%s) - Dereesting entity!", _name);

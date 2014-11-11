@@ -157,7 +157,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(LuaEventCallback)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(GYWav)
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(GYWav)
 
-EXPORT_OOLUA_FUNCTIONS_11_NON_CONST(InstanceTransform,
+OOLUA_EXPORT_FUNCTIONS(InstanceTransform,
 									setPos2f,
 									setPos3f,
 									translate2f,
@@ -168,8 +168,11 @@ EXPORT_OOLUA_FUNCTIONS_11_NON_CONST(InstanceTransform,
                                     setScale3f,
 									setOrientZ,
 									rotate,
-									scale2f)
-EXPORT_OOLUA_FUNCTIONS_6_CONST(InstanceTransform,
+									scale2f,
+									getSizeVec,
+									getScaleVec,
+									getPosVec)
+OOLUA_EXPORT_FUNCTIONS_CONST(InstanceTransform,
 								apply,
 								getPos2f,
 								getPos3f,
@@ -234,7 +237,10 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getCombat,
 								getParticleEmitter,
 								getBehavior,
-                                getLuaBehavior)
+								getLuaBehavior,
+								getShadowVolume,
+								getPlaneType,
+								getShadowDepth)
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(PrimAttrib)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(PrimAttrib)

@@ -6,6 +6,7 @@
 #include <gyro_video_api.h>
 
 #include "elysian_asset.hpp"
+#include "elysian_lua_table_proxy.hpp"
 
 namespace elysian {
 
@@ -40,15 +41,37 @@ namespace elysian {
 	};
     */
 
+	struct Vector2: public GYVector2, public LuaTableProxy<Vector2, GYVector2> {
+		ELYSIAN_LUA_PROXY_FIELDS_BEGIN(2)
+			ELYSIAN_LUA_PROXY_FIELD(x, getX, setX)
+			ELYSIAN_LUA_PROXY_FIELD(y, getY, setY)
+		ELYSIAN_LUA_PROXY_FIELDS_END()
+
+		float	getX(void) const;
+		float	getY(void) const;
+		void	setX(const float val);
+		void	setY(const float val);
+	};
 
 /*
 	Essentially a thin, inlined-to-fuck, OO C++ wrapper around LibGyro's InstanceMat() operation.
 */
-	/*class*/ struct InstanceTransform: public GYInstMat, public Asset {
+	/*class*/ struct InstanceTransform:
+			public GYInstMat,
+			public Asset,
+			public LuaTableProxy<InstanceTransform>
+	{
+		ELYSIAN_LUA_PROXY_FIELDS_BEGIN(4)
+			ELYSIAN_LUA_PROXY_FIELD(pos, getPosVec)
+			ELYSIAN_LUA_PROXY_FIELD(size, getSizeVec)
+			ELYSIAN_LUA_PROXY_FIELD(scale, getScaleVec)
+			ELYSIAN_LUA_PROXY_FIELD(orientZ, getOrientZ, setOrientZ)
+		ELYSIAN_LUA_PROXY_FIELDS_END()
+
+
+
 		//This is public for overhead reduction, but the accessors are safer.
 		//Lua should treat this as a class
-	
-	public:
 
 	InstanceTransform(void):
 		GYInstMat({
@@ -63,6 +86,10 @@ namespace elysian {
 			gyMatInstance(this);
 #endif
 		}
+
+		GYVector2& getPosVec(void);
+		GYVector2& getSizeVec(void);
+		GYVector2& getScaleVec(void);
 
 		void setPos(const float x, const float y, const float z) { _pos.x = x; _pos.y = y; _pos.z = z; }
 		void setPos(const float x, const float y) { _pos.x = x; _pos.y = y; }
@@ -117,6 +144,21 @@ namespace elysian {
 						   interval, elapsed);
 		}
 	};
+
+
+
+
+	// ======== INLINEZ ========
+
+	inline float Vector2::getX(void) const { return x; }
+	inline float Vector2::getY(void) const { return y; }
+	inline void Vector2::setX(const float val) { x = val; }
+	inline void Vector2::setY(const float val) { y = val; }
+
+
+	GYVector2& InstanceTransform::getPosVec(void) { return _pos; }
+	GYVector2& InstanceTransform::getSizeVec(void) { return _size; }
+	GYVector2& InstanceTransform::getScaleVec(void) { return _scale; }
 
 }
 

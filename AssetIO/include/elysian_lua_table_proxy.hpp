@@ -11,11 +11,11 @@
 
 #define ELYSIAN_LUA_PROXY_FIELDS_END() };
 
-#define ELYSIAN_LUA_PROXY_FIELD(f, g, s) { #f, #g, #s }
+#define ELYSIAN_LUA_PROXY_FIELD(f, g, s) { #f, #g, #s },
 
-#define ELYSIAN_LUA_PROXY_FIELDS_EXPORT(c, n) \
+#define ELYSIAN_LUA_PROXY_FIELDS_EXPORT(c) \
 	const unsigned				c::_proxyFieldCount; \
-	const LuaTableFieldProxy	c::_proxyFields[n];
+	const LuaTableFieldProxy	c::_proxyFields[];
 
 namespace elysian {
 
