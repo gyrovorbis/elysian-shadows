@@ -8,7 +8,6 @@
 #include <QRectF>
 #include <initializer_list>
 #include <iostream>
-#include "luaTableStandardItemModel.h"
 
 #include "elysian_engine.hpp"
 #include "elysian_debug.hpp"

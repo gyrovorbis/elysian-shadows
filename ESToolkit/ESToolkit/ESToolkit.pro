@@ -306,7 +306,6 @@ HEADERS += include/asset/project.h \
     ../../AssetIO/include/elysian_rigid_body.hpp \
     ../../AssetIO/include/luatables.h \
     ../../AssetIO/include/elysian_light_source.hpp \
-    include/asset/luaTableStandardItemModel.h \
     include/dialog/luaExplorerDialog.h \
     include/core/rowsJoinerProxyModel.h \
     ../../AssetIO/include/elysian_asset_typedefs.hpp \
@@ -346,7 +345,8 @@ HEADERS += include/asset/project.h \
     ../../ESGamma/include/elysian_system.hpp \
     ../../ESGamma/include/elysian_timer_system.hpp \
     ../../ESGamma/include/elysian_warp_system.hpp \
-    ../../AssetIO/include/elysian_lua_table_proxy.hpp
+    ../../AssetIO/include/elysian_lua_table_proxy.hpp \
+    include/asset/luaTableStackModel.h
 
 FORMS += form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \

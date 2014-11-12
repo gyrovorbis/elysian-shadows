@@ -342,20 +342,23 @@ bool Area::close(void) {
 
 //can't really be called unless it's being added to the current Area? Guess that's cool?
 Entity* Area::newEntity(void) {
-    auto* entity = new Entity;
+	Entity* entity = new Entity;
 
     QString name("Untitled");
     unsigned int num = 1;
 
-    entity->activate();
-    connectSlots(entity);
     while(findEntity(QString(name+QString::number(num)).toStdString().c_str())) {
         ++num;
     }
     name += QString::number(num);
     entity->setName(name);
+	connectSlots(entity);
 
-    if(_active) editorScene->addItem(entity);
+	if(_active) {
+		entity->activate();
+		editorScene->addItem(entity);
+
+	}
     emit entityAdded(this, entity);
     return entity;
 }

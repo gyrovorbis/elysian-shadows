@@ -81,8 +81,8 @@ void RowsJoinerProxy::insertSourceModel(QAbstractItemModel * m, int idx)
 
     connect(m,  SIGNAL(dataChanged(QModelIndex,QModelIndex)),
             this, SLOT(s_dataChanged(QModelIndex,QModelIndex)));
-    connect(m,  SIGNAL(modelReset()),
-            this, SLOT(s_modelReset()));
+	connect(m,  SIGNAL(modelReset()),
+			this, SLOT(s_modelReset()));
 
     connect(m,    SIGNAL(layoutAboutToBeChanged()),
             this, SIGNAL(layoutAboutToBeChanged()));
@@ -411,11 +411,16 @@ void RowsJoinerProxy::s_dataChanged(QModelIndex tl, QModelIndex br)
 
 void RowsJoinerProxy::s_modelReset()
 {
-    beginResetModel();
-    d->columnCount = -1;
-    d->rowCount = -1;
-    d->tops.clear();
-    endResetModel();
+	if(!_ignoreReset) {
+		beginResetModel();
+		d->columnCount = -1;
+		d->rowCount = -1;
+		d->tops.clear();
+		_ignoreReset = true;
+		endResetModel();
+		_ignoreReset = false;
+	}
+
 }
 
 void RowsJoinerProxy::s_destroyed(QObject * obj)

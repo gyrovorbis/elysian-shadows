@@ -79,14 +79,23 @@ namespace elysian {
 
 			//Proxies userdata iteration to built-in next iterator on index table
 			const int retVal = lua_next(l, -2);
+
 			if(retVal) {
-				lua_pushvalue(l, 1);
+				lua_pushvalue(l, -3);
 
 				LuaManager::_protectedCall(1, 1, nullptr);
+				Debug::printf(Debug::CRITICAL, "RETURNED TRUE!!!!!!!!!");
+				LuaManager::_cStackDump();
+
+				lua_remove(l, -3);
+				lua_remove(l, -3);
+			} else {
+				Debug::printf(Debug::CRITICAL, "RETURNED FALSE!!!!!!!!!");
+				LuaManager::_cStackDump();
+				lua_pop(l, 1);
 			}
 
-			lua_remove(l, 1);
-			lua_remove(l, 1);
+			//lua_remove(l, 1);
 
 			//Return <Key, Value> pair or nothing on stack
 			return retVal? 2 : 0;

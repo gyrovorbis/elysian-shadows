@@ -6,21 +6,7 @@
 #include "assetManager.h"
 #include "elysian_asset_typedefs.hpp"
 #include "elysian_entity.hpp"
-
-class QPainter;
-class QToolBox;
-class QLabel;
-class QLineEdit;
-class QCheckBox;
-class QVBoxLayout;
-class QHBoxLayout;
-class QPushButton;
-class QGridLayout;
-class QColorDialog;
-class QFileDialog;
-class QDirIterator;
-class QFile;
-class QMessageBox;
+#include "rowsJoinerProxyModel.h"
 
 class Sprite;
 class Component;
@@ -33,81 +19,56 @@ class Character;
 class Friendly;
 class Enemy;
 class TkEntity;
+class LuaTableStackModel;
 typedef TkEntity Entity;
 
-
-class TkEntity: public QWidget, public TreeNode, public QGraphicsRectItem, public elysian::EntityBase {
+class TkEntity:
+		public RowsJoinerProxy,
+	/*	public QWidget, */
+		public TreeNode,
+		public QGraphicsRectItem,
+		public elysian::EntityBase
+{
     friend class ESToolkit;
     Q_OBJECT
 
 protected:
-    //encapsulated (although memory is still managed by elysian::Area)
-    //elysian::Entity *_elysianEntity;
+	LuaTableStackModel*			_entityModel	= nullptr;
+	int							_luaRef			= LUA_NOREF;
+
 private:
 
     /* COMPONENTS */
-	Renderable *_renderable;
-	Animation *_animation;
-    Collidable *_collidable;
-    Warp *_warp;
-    Item *_item;
-    Character *_character;
-    Friendly *_friendly;
-    Enemy *_enemy;
-
+/*	Renderable*		_renderable;
+	Animation *		_animation;
+	Collidable*		_collidable;
+	Warp*			_warp;
+	Item*			_item;
+	Character*		_character;
+	Friendly*		_friendly;
+	Enemy*			_enemy;
+*/
     //QList<Behavior *> _behavior;
 
     /*  WIDGETS for BASE ENTITY attributes:
       name, transform
       PROBABLY want to redo this in designer?
     */
-    QToolBox *_compToolBox;
+	//QToolBox *_compToolBox;
     QWidget *_entityTab;
-    QVBoxLayout *_mainLayout, *_entityBaseLayout;
-    QGridLayout *_entityLayout;
-    QLabel *_nameLabel, *_transLabel, *_posLabel, *_sizeLabel, *_scaleLabel, *_orientLabel;
-    QLabel *_xLabel, *_yLabel, *_zLabel;
+	//QVBoxLayout *_mainLayout, *_entityBaseLayout;
+	//QGridLayout *_entityLayout;
+	//QLabel *_nameLabel, *_transLabel, *_posLabel, *_sizeLabel, *_scaleLabel, *_orientLabel;
+	//QLabel *_xLabel, *_yLabel, *_zLabel;
     QLineEdit *_nameEdit, *_posXEdit, *_posYEdit, *_posZEdit, *_sizeXEdit, *_sizeYEdit,
         *_scaleXEdit, *_scaleYEdit, *_orientZEdit;
-    QCheckBox *_snapsToGrid;
+	//QCheckBox *_snapsToGrid;
 
     bool _gridSnap;
     //void InitializeUI(void);
     //void PopulateWidgets(void);
 
 public slots:
-    /*
-    void OnNameChange(void);
-    void OnPosXChange(void);
-    void OnPosYChange(void);
-    void OnPosZChange(void);
-    void OnSizeXChange(void);
-    void OnSizeYChange(void);
-    void OnScaleXChange(void);
-    void OnScaleYChange(void);
-    void OnOrientZChange(void);
-    void OnGridSnapChange(int state);
-    virtual void UpdateRect(void);*/
-
-
-    /*
-    void OnTextureLocChange();
-    void OnSheetWidthChange();
-    void OnSheetHeightChange();
-    void OnSpriteWidthChange();
-    void OnSpriteHeightChange();
-    void OnStartFrameChange();
-    void OnClickSwatch1();
-    void OnClickSwatch2();
-    void OnClickSwatch3();
-    void OnClickSwatch4();
-    void OnColor1Change();
-    void OnColor2Change();
-    void OnColor3Change();
-    void OnColor4Change();
-    void OnClickBrowseSheet();
-    void OnReloadSheet();*/
-
 
 public:
 
@@ -115,11 +76,11 @@ public:
     using elysian::EntityBase::move;
     using elysian::EntityBase::setName;
 
-    TkEntity(void) = default;
-    TkEntity(elysian::Entity &parent);
-    virtual ~TkEntity(void) override = default;
+			TkEntity(void);
+	virtual ~TkEntity(void) override;
 
     void setName(const QString name);
+	void populateModel(void);
 
 	//Selectable
 	virtual Selectable::TYPE getType(void) const { return Selectable::ENTITY; }
@@ -130,38 +91,6 @@ public:
     virtual bool activate(void) override { return elysian::EntityBase::activate(); }
     virtual bool deactivate(void) override { return elysian::EntityBase::deactivate(); }
 
-    /*
-    void setPos(float x, float y);
-    void setPos(float x, float y, float z);
-    void setPosZ(float z);
-    void setSize(float x, float y);
-    void setScale(float x, float y);
-    void setOrientZ(float angle);
-
-    bool AttachRenderable(void);
-    bool AttachAnimation(void);
-    bool AttachCollidable(void);
-    bool AttachWarp(void);
-    bool AttachItem(void);
-    bool AttachCharacter(void);
-    bool AttachFriendly(void);
-    bool AttachEnemy(void);
-    bool AttachConversation(void);
-
-    bool RemoveRenderable(void);
-    bool RemoveAnimation(void);
-    bool RemoveCollidable(void);
-    bool RemoveWarp(void);
-    bool RemoveItem(void);
-    bool RemoveCharacter(void);
-    bool RemoveFriendly(void);
-    bool RemoveEnemy(void);
-    bool RemoveConversation(void);
-
-    QVariant itemChange(GraphicsItemChange change, const QVariant &value);
-    void keyPressEvent(QKeyEvent *);
-    void focusInEvent(QFocusEvent *);
-*/
     elysian::Entity* getElysianEntity(void);
 #if 0
     Renderable *getRenderable(void) const;
@@ -181,12 +110,12 @@ signals:
 };
 
 inline elysian::Entity* Entity::getElysianEntity(void) { return this; }
+
 inline void Entity::setName(const QString name) {
     ((elysian::EntityBase*)this)->setName(name.toStdString().c_str());
     elysian::EntityBase::setName(name.toStdString().c_str());
     setNodeName(name);
 }
-
 
 
 #endif // ENTITY_H

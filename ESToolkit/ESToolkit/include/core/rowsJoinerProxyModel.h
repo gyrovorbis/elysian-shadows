@@ -60,6 +60,7 @@ private slots:
 private:
     class Private;
     Private * d;
+	bool	_ignoreReset = false;
 };
 
 

@@ -39,7 +39,7 @@
 
 #include "elysian_engine.hpp"
 #include "elysian_debug.hpp"
-#include "luaTableStandardItemModel.h"
+#include "luaTableStackModel.h"
 #include "luatables.h"
 #include "luaExplorerDialog.h"
 #include "rowsJoinerProxyModel.h"
@@ -1045,7 +1045,10 @@ void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *cons
 		SyncEntityMenuBar(static_cast<Entity *>(selection));
 
 		//Update Entity View
-		_selectionDockWidget->SetSelectionWidget((QWidget *)(Entity *)selection);
+		_selectionDockWidget->SetSelectionTreeWidget();
+		//static_cast<Entity*>(selection)->populateModel();
+		_selectionDockWidget->SetSelectionModel(static_cast<Entity*>(selection));
+		_selectionDockWidget->ExpandSelectionTree();
 
 		//center on entity
 		_ui->mapView->centerOn((Entity *)selection);

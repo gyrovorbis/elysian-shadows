@@ -28,11 +28,31 @@
 #include "character.h"
 #include "warp.h"
 #include "renderable.h"
+#include "luaTableStackModel.h"
+#include "elysian_lua_wrappers.hpp"
 #include <cmath>
 
-TkEntity::TkEntity(elysian::Entity& /*entity*/):
-	_renderable(nullptr), _animation(nullptr), _collidable(nullptr),_warp(nullptr),_item(nullptr), _character(nullptr), _friendly(nullptr), _enemy(nullptr),
-    _gridSnap(false) {	//generate toolkit components from elysian components
+TkEntity::TkEntity(void):
+	RowsJoinerProxy(nullptr),
+	/*_renderable(nullptr),
+	_animation(nullptr),
+	_collidable(nullptr),
+	_warp(nullptr),
+	_item(nullptr),
+	_character(nullptr),
+	_friendly(nullptr),
+	_enemy(nullptr),*/
+	_gridSnap(false)
+{	//generate toolkit components from elysian components
+
+	OOLUA::push(*_mainState, this);
+	_luaRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
+
+	_entityModel = new LuaTableStackModel(_luaRef);
+	_entityModel->populateModel();
+	insertSourceModel(_entityModel);
+
+
 #if 0
 	if(_elysianEntity->getRenderable()) {
 		_renderable = new Renderable(_elysianEntity->getRenderable());
@@ -83,6 +103,11 @@ TkEntity::TkEntity(elysian::Entity& /*entity*/):
 
     UpdateRect();
 #endif
+}
+
+TkEntity::~TkEntity(void) {
+	delete _entityModel;
+	luaL_unref(*_mainState, LUA_REGISTRYINDEX, _luaRef);
 }
 
 

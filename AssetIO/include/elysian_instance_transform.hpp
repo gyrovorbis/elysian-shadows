@@ -35,14 +35,12 @@ namespace elysian {
     {
 		//This is public for overhead reduction, but the accessors are safer.
 		//Lua should treat this as a class
-	
 
-
-        ELYSIAN_LUA_PROXY_FIELDS_BEGIN(2)
+		ELYSIAN_LUA_PROXY_FIELDS_BEGIN(4)
             ELYSIAN_LUA_PROXY_FIELD(orientZ, getOrientZ, setOrientZ)
-            //ELYSIAN_LUA_PROXY_FIELD(size, getSizeVec)
-            //ELYSIAN_LUA_PROXY_FIELD(scale, getScaleVec)
-            ELYSIAN_LUA_PROXY_FIELD(zeta, getPostVec)
+			ELYSIAN_LUA_PROXY_FIELD(size, getSizeVec)
+			ELYSIAN_LUA_PROXY_FIELD(scale, getScaleVec)
+			ELYSIAN_LUA_PROXY_FIELD(zeta, getPostVec)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
 	InstanceTransform(void):

@@ -95,7 +95,7 @@ protected:
         std::function<bool()> iterFunc[2] = {
 			//table iteration
 			[&](void) -> bool {
-                return (bool)lua_next(state, _oolua_table_index_);
+				return (bool)lua_next(state, _oolua_table_index_);
             },
 			//userdata iteration
              [&](void) -> bool {
@@ -103,10 +103,10 @@ protected:
                     lua_pushvalue(state, -2);
                     lua_insert(state, -3);
 
-                    lua_getmetatable(state, _oolua_table_index_);
+					lua_getmetatable(state, _oolua_table_index_);
 
-                    qDebug() << "BOUT TO CALL __NEXT";
-                    LuaManager::_cStackDump();
+					//qDebug() << "BOUT TO CALL __NEXT";
+					//LuaManager::_cStackDump();
 
                     lua_getfield(state, -1, "__next");
                     lua_insert(state, -4);
@@ -114,11 +114,11 @@ protected:
 					LuaManager::_protectedCall(2, 2, nullptr);
 
 					if(lua_isnil(state, -2)) {
-                        lua_pop(state, 2);
+						lua_pop(state, 2);
                         return false;
                     } else return true;
                 } else {
-                    lua_pop(state, 1);
+					lua_pop(state, 1);
                     return false;
                 }
              }
@@ -189,8 +189,8 @@ protected:
             lua_pop(state, 1);
         }
 
-		//Pop table/userdata being iterated over
-        lua_pop(state, 1);
+		//Pop table/userdata
+		lua_pop(state, 1);
 
     }
 

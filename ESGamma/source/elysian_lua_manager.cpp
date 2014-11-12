@@ -110,7 +110,7 @@ void LuaManager::_cStackDump (void) {
 
 	for (i = 1; i <= top; ++i) {  /* repeat for each level */
 		sprintf(varDisplayString, "_cStack[%d]", i);
-        rPrintByIndex(i, 0, varDisplayString);
+		rPrintByIndex(i, 3, varDisplayString);
 	}
 
 	Debug::pop();
