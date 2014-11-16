@@ -87,7 +87,7 @@
 
 #	define GYRO_SYSTEM_PLATFORM_INCLUDE     "glal/gyro_glal.h"
 #	define GYRO_VIDEO_PLATFORM_INCLUDE      "x86/gyro_video_x86.inl"
-#	define GYRO_TEXTURE_PLATFORM_INCLUDE    "glal/gyro_texture_glal.inl"
+#	define GYRO_TEXTURE_PLATFORM_INCLUDE    "qt/gyro_texture_qt.inl"
 #	define GYRO_MATH_PLATFORM_INCLUDE       "x86/gyro_math_sse_x86.inl"
 #	define GYRO_MATRIX_PLATFORM_INCLUDE     "x86/gyro_matrix_sse_x86.inl"
 #	define GYRO_AUDIO_PLATFORM_INCLUDE      "glal/gyro_audio_glal.inl"
@@ -102,7 +102,7 @@
 
     static inline void gyInputPoll(GYInput*const input) { (void)input;}
 
-    static inline void gyVidSceneBegin() { }
+    static inline void gyVidSceneBegin() {  }
 
     static inline void gyVidSceneEnd() { }
 

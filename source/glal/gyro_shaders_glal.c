@@ -86,7 +86,7 @@ void gyVidNormalMapBind(const GYTexture * const tex) {
 	int enabled = 1;
 
 	glActiveTexture(GL_TEXTURE1);
-	if(tex) {
+    if(tex && tex->_data) {
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, *(GLuint *)&tex->_data);
 	} else {
@@ -106,7 +106,7 @@ void gyVidSpecularMapBind(const GYTexture * const tex) {
 	int enabled = 1;
 
 	glActiveTexture(GL_TEXTURE2);
-	if(tex) {
+    if(tex && tex->_data) {
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, *(GLuint *)&tex->_data);
 	} else {

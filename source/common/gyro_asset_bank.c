@@ -6,6 +6,8 @@ static GYAssetBankEntry* _gyAssetBankFindEntry(const GYAssetBank *const bank, co
 	GYAssetBankEntry *entry = bank->_head;
 	*prev = 0;
 
+    if(!entry || !entry->_payload) return NULL;
+
 	if(bank->_comparator) { //user-specified comparator
 		for(; entry; entry = entry->_next) {
 			if(bank->_comparator(entry->_payload, data)) return entry;

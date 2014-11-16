@@ -18,12 +18,12 @@ struct _GYTexture* gyVidTexCreate(const char *const filename, const unsigned int
 const struct _GYTexCoord2* gyVidTexCoordArrayFromFrame(const struct _GYTexCoordFrame*const frame,
 													   const GY_RECT_TEX_ORIENT orient);
 
-int gyVidTexDestroy(struct _GYTexture *const tex);
-unsigned int gyVidTexAmount(void);
-unsigned gyVidTexBytes(void);
-int gyVidTexClear(void);
-int gyVidTexReloadAll(void);
-void gyVidTexWalkthrough(void);
+int             gyVidTexDestroy(struct _GYTexture *const tex);
+unsigned int    gyVidTexAmount(void);
+unsigned        gyVidTexBytes(void);
+int             gyVidTexClear(void);
+int             gyVidTexReloadAll(void);
+void            gyVidTexWalkthrough(void);
 
 
 #ifdef __cplusplus

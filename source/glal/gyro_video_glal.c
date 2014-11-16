@@ -253,7 +253,7 @@ void gyVidTexBind(const GYTexture *const tex) {
 	int enabled = 1;
 
 	glActiveTexture(GL_TEXTURE0);
-	if(tex) {
+    if(tex && tex->_data) {
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, *(GLuint *)&tex->_data);
 	} else {
