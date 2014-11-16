@@ -5,7 +5,7 @@
 #include <QRect>
 #include "destView.h"
 #include "assetManager.h"
-#include "elysian_area.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
 
 class MapView : public DestView<TileEntry>, public AssetManager  {
 private:

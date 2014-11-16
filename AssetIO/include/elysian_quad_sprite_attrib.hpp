@@ -17,9 +17,9 @@ namespace elysian {
 		const static GYVector4 _verts[4];
 
 		virtual void submit(void) override {
-#ifdef ELYSIAN_ENGINE
+
 			submitVerts();
-#endif
+
 		}
 
 		void setVertexColor(const unsigned short index, const GYColor4 color) {

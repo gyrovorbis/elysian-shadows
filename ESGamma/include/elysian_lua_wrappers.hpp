@@ -5,7 +5,8 @@
 
 #include <gyro.h>
 #include "elysian_renderable_object.hpp"
-#include "elysian_entity.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
 #include "elysian_debug.hpp"
 #include "elysian_renderable.hpp"
 #include "elysian_animation.hpp"
@@ -16,8 +17,7 @@
 #include "elysian_examinable.hpp"
 #include "elysian_lua_behavior.hpp"
 #include "elysian_lua_singleton.hpp"
-#include "elysian_level.hpp"
-#include "elysian_area.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_level.hpp", "level.h")
 #include "elysian_game_input.hpp"
 #include "elysian_party_system.hpp"
 #include "elysian_timer_system.hpp"
@@ -41,6 +41,7 @@
 #include "elysian_animation_system.hpp"
 #include "elysian_character_system.hpp"
 #include "elysian_camera_system.hpp"
+#include "elysian_lua_table_proxy.hpp"
 
 /* IT'S NOT SAFE TO GO ALONE! TAKE THIS HEADER FILE. IT WILL HELP
  * YOU ON YOUR JOURNEY!
@@ -248,9 +249,12 @@ OOLUA_PROXY(InstanceTransform)
 	OOLUA_MEM_FUNC_CONST_RENAME(getSize2f, void, getSize, out_p<float&>, out_p<float&>)
 	OOLUA_MEM_FUNC_CONST_RENAME(getScale2f, void, getScale, out_p<float&>, out_p<float&>)
 	OOLUA_MEM_FUNC_CONST(float, getOrientZ)
-    OOLUA_MEM_FUNC(GYVector3&, getPostVec)
+    OOLUA_MEM_FUNC(GYVector3&, getPosVec)
     OOLUA_MEM_FUNC(GYVector3&, getSizeVec)
     OOLUA_MEM_FUNC(GYVector3&, getScaleVec)
+    OOLUA_MEM_FUNC(void, setSizeVec, const OOLUA::Lua_table_ref)
+    OOLUA_MEM_FUNC(void, setScaleVec, const OOLUA::Lua_table_ref)
+    OOLUA_MEM_FUNC(void, setPosVec, const OOLUA::Lua_table_ref)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(RenderableObject)
@@ -331,6 +335,7 @@ OOLUA_PROXY(Entity, RenderableObject)
 	OOLUA_MEM_FUNC_CONST(GY_RECT_PLANE_TYPE, getPlaneType)
 	OOLUA_MEM_FUNC_CONST(float, getShadowDepth)
     OOLUA_MEM_FUNC_CONST(bool, isShadowVolume)
+    OOLUA_MEM_FUNC(void, setTransform, const OOLUA::Lua_table_ref)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Component)

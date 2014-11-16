@@ -1,11 +1,11 @@
 #include "elysian_level_system.hpp"
-#include "elysian_level.hpp"
-#include "elysian_area.hpp"
-#include "elysian_entity.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_level.hpp", "level.h")
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
+#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tkMapSystem.h")
 #include "elysian_party_system.hpp"
 #include "elysian_behavior_system.hpp"
 #include "elysian_collision_system.hpp"
-#include "elysian_map_system.hpp"
 #include "elysian_audio_system.hpp"
 #include "elysian_day_system.hpp"
 #include "elysian_debug.hpp"

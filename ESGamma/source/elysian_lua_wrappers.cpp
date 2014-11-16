@@ -1,8 +1,6 @@
 #include "elysian_lua_wrappers.hpp"
 #include "elysian_lua_manager.hpp"
 
-#include "elysian_entity.hpp"
-
 namespace elysian {
 
 	void LuaManager::_registerWrappers(void) {
@@ -172,9 +170,12 @@ OOLUA_EXPORT_FUNCTIONS(InstanceTransform,
 									setOrientZ,
 									rotate,
 									scale2f,
-                                    getPostVec,
+                                    getPosVec,
                                     getSizeVec,
-                                    getScaleVec)
+                                    getScaleVec,
+                                    setPosVec,
+                                    setSizeVec,
+                                    setScaleVec)
 OOLUA_EXPORT_FUNCTIONS_CONST(InstanceTransform,
 								apply,
 								getPos2f,
@@ -224,7 +225,8 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
 						getSelfTable,
 						setShadowDepth,
                         setShadowVolume,
-                       setPlaneType)
+                       setPlaneType,
+                       setTransform)
 OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getName,
 								getElev,
@@ -243,7 +245,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getLuaBehavior,
                                 isShadowVolume,
 								getPlaneType,
-								getShadowDepth)
+                                getShadowDepth)
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(PrimAttrib)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(PrimAttrib)

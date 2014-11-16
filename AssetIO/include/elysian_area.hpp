@@ -178,11 +178,10 @@ namespace elysian {
 		bool		loadEntities(const char *const filename);
 		bool		saveEntities(const char *const filename);
 
-#ifdef GYRO_GLAL
+
 		void		populateVbo(void);
         void        vboEntryFromTileEntry(VboEntry*const vboEntry, const TileEntry *const tileEntry, const unsigned x, const unsigned y);
         void        animateVboTileEntry(const unsigned l, const unsigned x, const unsigned y, const uint16_t index);
-#endif
 
 	};
 
@@ -220,7 +219,7 @@ namespace elysian {
 		return ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x);
 	}
 
-#ifdef GYRO_GLAL
+
     inline void AreaBase::vboEntryFromTileEntry(VboEntry * const vboEntry, const TileEntry * const tileEntry, const unsigned x, const unsigned y) {
 
         const GYTexCoord2*const coords = gyVidTexCoordArrayFromFrame(&level->tileSheet->_coord->texCoord[tileEntry->getIndex()],
@@ -379,7 +378,6 @@ namespace elysian {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	}
-#endif
 
     inline TileEntry AreaBase::getL1TileEntry(const unsigned x, const unsigned y) const {
 		return ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tiles, y*width + x);

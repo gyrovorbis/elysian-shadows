@@ -23,39 +23,12 @@ namespace elysian {
 	protected:
 		GYTexture* _tex;
 		unsigned spriteWidth, spriteHeight;//, frame;
-
-#ifndef ELYSIAN_ENGINE //Define basic texture functionality for non-libGyro platforms
-		static GYTexture* _TkTexCreate(const char* filename, const unsigned sheetWidth, const unsigned sheetHeight, const unsigned spriteWidth, const unsigned spriteHeight) {
-                        if(spriteWidth == 0 || spriteHeight == 0) return NULL;
-                        GYTexture *tex = new GYTexture;
-                        unsigned int x_tiles = (unsigned int)(sheetWidth / spriteWidth);
-                        unsigned int y_tiles = (unsigned int)(sheetHeight / spriteHeight);
-			strcpy(tex->filename, filename);
-			tex->_coord = new GYTexCoordSheet;
-			tex->_coord->sheetWidth = sheetWidth;
-			tex->_coord->sheetHeight = sheetHeight;
-			tex->_coord->spriteWidth = spriteWidth;
-			tex->_coord->spriteHeight = spriteHeight;
-			tex->_coord->frames = x_tiles * y_tiles;
-			return tex;
-		}
-
-		static bool _TkTexDestroy(GYTexture* const tex) {
-			delete tex->_coord;
-			delete tex;
-			return true;
-		}
-#endif
 	public:
-		TexturedAttrib(void): _tex(NULL) { }
+        TexturedAttrib(void): _tex(nullptr) { }
 
 		~TexturedAttrib(void) {
 			if(_tex) {
-#ifdef ELYSIAN_ENGINE
 				gyVidTexDestroy(_tex);
-#else
-				_TkTexDestroy(_tex);
-#endif
 			}
 		}
 
@@ -66,35 +39,24 @@ namespace elysian {
 
 		void loadTexture(const char* filename, const unsigned sheetWidth, const unsigned sheetHeight, const unsigned spriteWidth, const unsigned spriteHeight) {
 			if(_tex) {
-#ifdef ELYSIAN_ENGINE
+
 				gyVidTexDestroy(_tex);
-#else
-				_TkTexDestroy(_tex);
-#endif
+
 			}
 
-#ifdef ELYSIAN_ENGINE
 			_tex = gyVidTexCreateSheetUniform(filename, sheetWidth, sheetHeight, spriteWidth, spriteHeight);
-#else
-			_tex = _TkTexCreate(filename, sheetWidth, sheetHeight, spriteWidth, spriteHeight);
-#endif
+
 		}
 
 
 		void loadTexture(const char* filename, const unsigned sheetWidth, const unsigned sheetHeight) {
 				if(_tex) {
-#ifdef ELYSIAN_ENGINE
 				gyVidTexDestroy(_tex);
-#else
-				_TkTexDestroy(_tex);
-#endif
+
 			}
 
-#ifdef ELYSIAN_ENGINE
 			_tex = gyVidTexCreateSheet(filename, sheetWidth, sheetHeight);
-#else
-			_tex = _TkTexCreate(filename, sheetWidth, sheetHeight, spriteWidth, spriteHeight);
-#endif
+
 
 		}
 
@@ -114,11 +76,8 @@ namespace elysian {
 			dbgprintf(LOG_VERBOSE, "_texPath - %s", filename);
 			dbgprintf(LOG_VERBOSE, "_sheetSize - <%d, %d>, _spriteSize - <%d, %d>",  sheetWidth, sheetHeight, spriteWidth, spriteHeight);
 			//dbgprintf(LOG_VERBOSE, "_frame - %d", _curFrame);
-#ifdef ELYSIAN_ENGINE
 			_tex = gyVidTexCreateSheetUniform(filename, sheetWidth, sheetHeight, spriteWidth, spriteHeight);
-#else
-			_tex = _TkTexCreate(filename, sheetWidth, sheetHeight, spriteWidth, spriteHeight);
-#endif
+
 			dbgPop();
 			return true;
 #endif

@@ -2,7 +2,7 @@
 #define ELYSIAN_LIGHT_SYSTEM_H
 
 #include "elysian_system.hpp"
-#include "elysian_area.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
 #include "elysian_subprocess_manager.hpp"
 #include "elysian_light_source.hpp"
 #include <gyro_matrix_api.h>
@@ -27,7 +27,7 @@ namespace elysian {
         bool			_shadowPass		= false;
         bool			_enabled		= true;
         bool			_renderDebug	= false;
-        GYVector4		_globalAmbience = { 0.0f, 0.0f, 0.0f, 1.0f };
+        GYVector4		_globalAmbience = { 1.0f, 1.0f, 1.0f, 1.0f };
         unsigned		_onscreenLightCount	= 0;
         LightSource*	_onscreenLights[ELYSIAN_LIGHT_SYSTEM_MAX_LIGHTS_ONSCREEN] = { nullptr };
         uint32_t		_lightMap[ELYSIAN_LIGHT_SYSTEM_LIGHT_MAP_HEIGHT][ELYSIAN_LIGHT_SYSTEM_LIGHT_MAP_WIDTH] = { {0} };

@@ -1,7 +1,7 @@
 #include <QDir>
 #include <QMessageBox>
-
-#include "elysian_entity.hpp"
+#include "elysian_asset_typedefs.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 
 #include "area.h"
 #include "level.h"
@@ -351,7 +351,7 @@ Entity* Area::newEntity(void) {
         ++num;
     }
     name += QString::number(num);
-    entity->setName(name);
+    entity->setName(name.toStdString().c_str());
 	connectSlots(entity);
 
 	if(_active) {

@@ -3,7 +3,7 @@
 #include "elysian_asset.hpp"
 #include "elysian_component.hpp"
 #include "elysian_behavior.hpp"
-#include "elysian_entity.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 #include "elysian_renderable.hpp"
 #include "elysian_animation.hpp"
 #include "elysian_collidable.hpp"
@@ -18,12 +18,15 @@
 #include "elysian_rigid_body.hpp"
 #include "elysian_combat.hpp"
 #include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
+#include "elysian_lua_wrappers.hpp"
 
 using namespace std;
 
 namespace elysian {
 
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(EntityBase)
+
+void EntityBase::setTransform(const OOLUA::Lua_table_ref valTable) { _transform.fromTable(valTable); }
 
 void EntityBase::reested(void) {
 	dbgprintf(LOG_VERBOSE, "Entity::Reested(%s) - Dereesting entity!", _name);

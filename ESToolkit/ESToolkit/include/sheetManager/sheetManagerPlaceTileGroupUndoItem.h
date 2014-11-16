@@ -1,7 +1,7 @@
 #ifndef SHEET_MANAGER_PLACE_TILE_GROUP_UNDO_ITEM_H
 #define SHEET_MANAGER_PLACE_TILE_GROUP_UNDO_ITEM_H
 
-#include "elysian_level.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_level.hpp", "level.h")
 #include "tileGroupUndoItem.h"
 #include "sheetManager.h"
 #include "sheetManagerAssets.h"

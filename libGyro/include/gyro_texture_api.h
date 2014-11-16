@@ -43,15 +43,15 @@ typedef struct _GYTexture {
 } GYTexture;
 
 
-//===PLATFORM SPECIFIC PRIVATE====
-int _gyVidTexAlloc(GYTexture *const tex, const unsigned width, const unsigned height);
-int _gyVidTexFree(GYTexture *const tex);
-
 #include "common/gyro_texture_common.h"
 
 #ifdef GYRO_TEXTURE_PLATFORM_INCLUDE
 #	include GYRO_TEXTURE_PLATFORM_INCLUDE
 #endif
+
+//===PLATFORM SPECIFIC PRIVATE====
+int _gyVidTexAlloc(GYTexture *const tex, const unsigned width, const unsigned height);
+int _gyVidTexFree(GYTexture *const tex);
 
 #ifdef __cplusplus
 }

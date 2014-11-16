@@ -3,35 +3,35 @@
 #include "elysian_debug.hpp"
 #include <gyro.h>
 
-#include "elysian_level.hpp"
-#include "elysian_area.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_level.hpp", "level.h")
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
 #include "elysian_camera_system.hpp"
 #include "elysian_timer_system.hpp"
 #include "elysian_font.hpp"
 #include "elysian_gui_system.hpp"
 #include "elysian_zcoords.hpp"
-#include "elysian_entity.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 
 namespace elysian {
 
-	const GYColor4 MapSystem::_tileColor = { 255, 255, 255, 255 }; //I s'pose this could be configurable?
-    GY_RECT_PLANE_TYPE MapSystem::_curPlaneType = GY_RECT_PLANE_BOTTOM;
+    const GYColor4      MapSystemBase::_tileColor = { 255, 255, 255, 255 }; //I s'pose this could be configurable?
+    GY_RECT_PLANE_TYPE  MapSystemBase::_curPlaneType = GY_RECT_PLANE_BOTTOM;
 
-	MapSystem::MapSystem(void): 
+    MapSystemBase::MapSystemBase(void):
 		_animate(true) { 
 		for(unsigned i = 0; i < 4; ++i) _renderLayer[i] = true;
 		//for(unsigned int i = 0; i < 256; ++i) _currentTile[i] = _currentObject[i] = i;
 	}
 		
 
-	void MapSystem::update(void) {
+    void MapSystemBase::update(void) {
 		//Update entity elevation
 		//Update entity z transitionals
 
 		updateAnimation();
 	}
 
-	void MapSystem::updateAnimation(void) {
+    void MapSystemBase::updateAnimation(void) {
 		//Cache time since last frame
 		float deltaTime = getTimerSys()->getDeltaTime();
 
@@ -64,7 +64,7 @@ namespace elysian {
 		}
 	}
 
-	void MapSystem::resetAnimation(void) {
+    void MapSystemBase::resetAnimation(void) {
 		for(unsigned i = 0; i < ELYSIAN_TILESHEET_TILES; ++i) {
 			_animTiles[i].elapsedTime = 0.0f;
 			_animTiles[i].curIndex = i;
@@ -93,7 +93,7 @@ namespace elysian {
 		
 
 	//Debug toggle this shit?
-	void MapSystem::renderOverlay(void) {
+    void MapSystemBase::renderOverlay(void) {
 		//void DrawString(CAMERA camera, FORMAT format, ALIGNMENT align, const char *str, ...);
 		//guiSystem->verdana.setColor(gyro::GREEN);
 		/*guiSystem->verdana.setAlpha(1.0f, 1.0f, 1.0f, 1.0f);
@@ -105,10 +105,10 @@ namespace elysian {
 		guiSystem->verdana.DrawString(Font::NO_CAMERA, Font::NO_FORMAT, Font::L_ALIGN, "End -   <%d, %d>", endX, endY);*/
 	}
 
-	bool MapSystem::getAnimate(void) const { return _animate; }
-	void MapSystem::setAnimate(const bool v) { _animate = v; }
+    bool MapSystemBase::getAnimate(void) const { return _animate; }
+    void MapSystemBase::setAnimate(const bool v) { _animate = v; }
 
-	bool MapSystem::toggleRenderLayer(const unsigned layer) {
+    bool MapSystemBase::toggleRenderLayer(const unsigned layer) {
 		return (_renderLayer[layer] = !_renderLayer[layer]);
 
 	}

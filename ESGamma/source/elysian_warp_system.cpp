@@ -7,7 +7,7 @@
 #include "elysian_timer_system.hpp"
 #include "elysian_level_system.hpp"
 #include "elysian_instance_transform.hpp"
-#include "elysian_entity.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 #include "elysian_collision_system.hpp"
 #include "elysian_gui_system.hpp"
 #include "elysian_zcoords.hpp"

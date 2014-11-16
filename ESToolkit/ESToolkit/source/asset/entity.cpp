@@ -16,7 +16,7 @@
 #include <QKeyEvent>
 
 #include "entity.h"
-#include "elysian_entity.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 #include "area.h"
 #include "debug.h"
 #include "sprite.h"

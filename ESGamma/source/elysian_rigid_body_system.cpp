@@ -1,13 +1,13 @@
 #include <cassert>
 #include "elysian_rigid_body_system.hpp"
-#include "elysian_area.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
 #include "elysian_collision_system.hpp"
 #include "elysian_rigid_body.hpp"
 #include "elysian_timer_system.hpp"
-#include "elysian_entity.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 #include "elysian_force_generator.hpp"
 #include "elysian_debug.hpp"
-#include "elysian_level.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_level.hpp", "level.h")
 #include "elysian_particle_system.hpp"
 #include "elysian_renderable.hpp"
 #include "elysian_behavior_system.hpp"

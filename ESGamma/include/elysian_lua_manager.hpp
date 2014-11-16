@@ -45,6 +45,7 @@ namespace elysian {
         static int _stackBalanceRecursiveDepth;
 #endif
 		static const char _rPrint[];
+        static const char _serializeTable[];
 
 		static void _errorprintf(const char *const string, ...);
 		static void _registerWrappers(void);
@@ -161,19 +162,21 @@ namespace elysian {
 
 	inline void LuaManager::_protectedCall(const int nargs, const int nresults, LuaScript *script) {
 #ifdef ELYSIAN_LUA_DEBUG
-		lua_pushcfunction(*_mainState, &LuaManager::_traceBack);
-		lua_insert(*_mainState, 1);
-		if((_errorCode = lua_pcall(*_mainState, nargs, nresults, 1)) != 0) {
-			if(script) {
+        if(script) {
+            lua_pushcfunction(*_mainState, &LuaManager::_traceBack);
+            lua_insert(*_mainState, 1);
+        }
+        if((_errorCode = lua_pcall(*_mainState, nargs, nresults, script? 1 : 0)) != 0) {
+            if(script) {
+                lua_remove(*_mainState, 1);
 				script->setError();
-				lua_remove(*_mainState, 1);
 				_cStackDump();
 				lua_remove(*_mainState, lua_gettop(*_mainState));		//clean up stack after reesting
 				_envDump(script);
 				dumpStats();
-			}
+            }
 		} else {
-			lua_remove(*_mainState, 1); //remove c traceback function from bottom of stack
+            if(script) lua_remove(*_mainState, 1); //remove c traceback function from bottom of stack
 		}
 #else	//ain't NOBODY got time for debug overhead!
 		lua_call(*_mainState, nargs, nresults);

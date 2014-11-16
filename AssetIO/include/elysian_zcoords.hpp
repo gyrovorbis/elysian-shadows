@@ -1,7 +1,8 @@
 #ifndef ELYSIAN_ZCOORDS_HPP
 #define ELYSIAN_ZCOORDS_HPP
 
-#include "elysian_area.hpp"
+#include "elysian_asset_typedefs.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
 
 //This needs to be at least as tall as the rendered map area? Not really?
 //#define ELYSIAN_DEPTH_BUFFER_HEIGHT ELYSIAN_AREA_MAP_HEIGHT

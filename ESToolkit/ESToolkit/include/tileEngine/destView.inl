@@ -220,7 +220,7 @@ void DestView<T>::deleteSelectionItemGroup(void) {
 	_fillingRegion = false;
 	scene()->clearSelection();
 	delete _selItemGroup;
-	_selItemGroup=NULL;
+    _selItemGroup = nullptr;
 	scene()->update();
 
 	_sceneSelectionSizeLabel->setText(QString("0, 0"));

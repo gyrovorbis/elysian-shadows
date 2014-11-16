@@ -3,7 +3,6 @@
 
 #include "elysian_engine.hpp"
 #include "elysian_level_system.hpp"
-#include "elysian_map_system.hpp"
 #include "elysian_debug.hpp"
 #include "elysian_camera_system.hpp"
 #include "elysian_game_input.hpp"
@@ -19,7 +18,8 @@
 #include "elysian_lua_manager.hpp"
 #include "elysian_behavior_system.hpp"
 #include "elysian_light_system.hpp"
-#include "elysian_entity.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
+#include ELYSIAN_ASSET_HEADER("elysian_map_sytem.hpp", "tkMapSystem.h")
 #include "elysian_light_source.hpp"
 #include "elysian_particle_system.hpp"
 #include "elysian_day_system.hpp"
@@ -171,7 +171,26 @@ void Engine::processInput(void) {
 }
 
 void Engine::render(void) {
+#if 1
+                _lightSystem->shadowRenderPasses();
+    gyVidSceneBegin();
 
+    //_cameraSystem->pushViewProjMatrix();
+    gyMatLoadIdentity();
+    gyMatPush();
+
+    gyMatTranslateScale(100.0f, 100.0f, 100.0f, 500.0f, 500.0f, 40.0f);
+    auto color  = GYColor4{ 0, 0, 255, 255};
+    gyVidQuadListBegin(&color);
+    gyVidRect(0);
+
+    gyMatPop();
+
+    gyVidSceneEnd();
+    //_cameraSystem->popViewProjMatrix();
+    gyVidQuadListEnd();
+
+#else
 	switch(System::_engineState) {
 		default:
 			gyVidSceneBegin();
@@ -201,7 +220,7 @@ void Engine::render(void) {
 			_lightSystem->shadowRenderPasses();
 #endif
            // _lightSystem->addLightSourcesToScene();
-
+/*
 			_mapSystem->render();
 
 			_lightSystem->render();
@@ -212,17 +231,19 @@ void Engine::render(void) {
 
              _lightSystem->removeLightSourcesFromScene();
 
-			 _guiSystem->render();
+             _guiSystem->render();*/
 
 			_cameraSystem->popViewProjMatrix();
 
 			//Begin rendering overlays
-			_warpSystem->render();
+            _warpSystem->render();
 			_guiSystem->renderForeground();
-			_dialogSystem->render();
+            //_dialogSystem->render();
 
 			gyVidSceneEnd();
 	}
+
+#endif
 }
 
 Engine::~Engine(void) { 

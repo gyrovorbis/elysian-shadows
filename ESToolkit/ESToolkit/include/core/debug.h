@@ -39,7 +39,7 @@ public:
 
 	static void deleteInstance(void) { //clean you singleton shit up
 		delete _window;
-		_window = NULL;
+        _window = nullptr;
 	}
 
 public slots:

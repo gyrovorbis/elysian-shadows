@@ -1,5 +1,5 @@
 #include "elysian_camera_system.hpp"
-#include "elysian_entity.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 #include "elysian_gui_system.hpp"
 #include "elysian_game_input.hpp"
 #include "elysian_timer_system.hpp"

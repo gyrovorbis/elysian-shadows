@@ -1,7 +1,7 @@
 #include <cassert>
 
 #include "elysian_animation.hpp"
-#include "elysian_entity.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 #include "elysian_renderable.hpp"
 #include "elysian_generic.hpp"
 #include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")

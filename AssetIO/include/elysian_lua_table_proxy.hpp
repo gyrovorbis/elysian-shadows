@@ -3,13 +3,15 @@
 
 #include "luatables.h"
 #include "elysian_lua_manager.hpp"
+#include <QDebug>
 
 //DSL for autogenerating proxy fields
-#define ELYSIAN_LUA_PROXY_FIELDS_BEGIN(n) \
-	static constexpr unsigned			_proxyFieldCount = n; \
-	static constexpr LuaTableFieldProxy _proxyFields[n] = {
+#define ELYSIAN_LUA_PROXY_FIELDS_BEGIN() \
+    static constexpr LuaTableFieldProxy _proxyFields[] = {
+    //static constexpr unsigned			_proxyFieldCount = n;
 
-#define ELYSIAN_LUA_PROXY_FIELDS_END() };
+#define ELYSIAN_LUA_PROXY_FIELDS_END() }; \
+    static constexpr unsigned _proxyFieldCount = sizeof(_proxyFields) / sizeof(LuaTableFieldProxy);
 
 #define ELYSIAN_LUA_PROXY_FIELD_READ_WRITE(f, g, s) { #f, #g, #s },
 #define ELYSIAN_LUA_PROXY_FIELD_READ_ONLY(f, g) { #f, #g, nullptr },
@@ -21,6 +23,15 @@
 	const unsigned				c::_proxyFieldCount; \
     const LuaTableFieldProxy	c::_proxyFields[];
 
+/*
+#define ELYSIAN_OOLUA_PROXY_METHODS() \
+    OOLUA_MEM_FUNC(void, fromTable, const OOLUA::Lua_table_ref&)
+
+#define ELYSIAN_OOLUA_PROXY_METHODS_EXPORT() \
+    fromTable
+
+#define ELYSIAN_OOLUA_PROXY_METHODS_CONST_EXPORT()
+*/
 
 namespace elysian {
 
@@ -44,14 +55,16 @@ namespace elysian {
 		static LuaTable _staticMetaTable;
         //LuaTable        _protoTable;
 
-		static inline void _registerPropertyMetaMethodTables(lua_State* l) {
+        static inline void  _registerPropertyMetaMethodTables(lua_State* l) {
 			lua_getglobal(l, OOLUA::Proxy_class<T>::class_name);
             LuaManager::rPrintByIndex(-2, 99, OOLUA::Proxy_class<T>::class_name);
 
 			//Register property pairs for index table <K=field, V=getFunc>
 			lua_newtable(l);
+            qDebug() << "PROXY FIELD COUNT " << P::_proxyFieldCount;
+
 			for(unsigned i = 0; i < P::_proxyFieldCount; ++i) {
-                Debug::printf(Debug::VERBOSE, "SHIT <%s, %s>", P::_proxyFields[i].key, P::_proxyFields[i].get);
+                Debug::printf(Debug::VERBOSE, "GET ACCESSOR - <%s, %s>", P::_proxyFields[i].key, P::_proxyFields[i].get);
 				lua_getfield(l, -2, P::_proxyFields[i].get);
 				lua_setfield(l, -2, P::_proxyFields[i].key);
 			}
@@ -61,6 +74,7 @@ namespace elysian {
 			lua_newtable(l);
 			for(unsigned i = 0; i < P::_proxyFieldCount; ++i) {
                 if(P::_proxyFields[i].set == nullptr) continue; //read-only attribute!
+                Debug::printf(Debug::VERBOSE, "SET ACCESSOR - <%s, %s>", P::_proxyFields[i].key, P::_proxyFields[i].set);
 				lua_getfield(l, -2, P::_proxyFields[i].set);
 				lua_setfield(l, -2, P::_proxyFields[i].key);
 			}
@@ -70,37 +84,132 @@ namespace elysian {
 
 		}
 
-		inline static int _nextMetaMethodCFunction(lua_State* l) {
-			_propertyProxyIndexTable.push(l);
-			lua_insert(l, -2);
+        inline static int _getNextKey(lua_State* l) {
+            char key[100];
+            int index = -1;
 
-            Debug::printf(Debug::VERBOSE, "NEXTMETAMETHOD()");
-            LuaManager::_cStackDump();
+            if(lua_isstring(l, -1)) {
+                strcpy(key, lua_tostring(l, -1));
+                lua_pop(l, 1);
+;
+                for(unsigned i = 0; i < P::_proxyFieldCount; ++i) {
+                    if(strcmp(key, P::_proxyFields[i].key) == 0) {
+                        index = i;
+                        break;
+                    }
+                }
 
-			//Proxies userdata iteration to built-in next iterator on index table
-			const int retVal = lua_next(l, -2);
+                //Not even a valid key!
+                if(index == -1) {
+                    assert(0);
+                    return 0;
+                //We're at the end!
+                } else if(index == P::_proxyFieldCount-1) {
+                    lua_pushnil(l);
+                    return 1;
+                //Return next key
+                } else {
+                    qDebug() << "NEXT KEY " << P::_proxyFields[index+1].key;
+                    lua_pushstring(l, P::_proxyFields[index+1].key);
+                    return 1;
+                }
+            //assume this is a nil index, and we want the first key.
+            } else {
+                qDebug() << "FIRST KEY " << P::_proxyFields[0].key;
+                lua_pop(l, 1);
+                lua_pushstring(l, P::_proxyFields[0].key);
+                return 1;
+            }
+        }
 
-			if(retVal) {
-				lua_pushvalue(l, -3);
+        inline static int _iNextMetaMethodCFunction(lua_State* l) {
+            if(lua_isnil(l, -2)) {
+                qDebug() << "__NEXT called with NIL";
+                lua_pop(l, 2);
+                return 0;
+            } else {
+                qDebug() << "_iNextMetaMethodCFunction()";
+            }
 
-				LuaManager::_protectedCall(1, 1, nullptr);
-				Debug::printf(Debug::CRITICAL, "RETURNED TRUE!!!!!!!!!");
-				LuaManager::_cStackDump();
+            unsigned index = lua_tonumber(l, -1);
+            qDebug() << "IPAIRS INDEX " << index;
+            lua_pop(l, 1);
+            if(++index > P::_proxyFieldCount) {
+                lua_pop(l, 1);
+                lua_pushnil(l);
+                return 1;
+            }
 
-				lua_remove(l, -3);
-				lua_remove(l, -3);
-			} else {
-				Debug::printf(Debug::CRITICAL, "RETURNED FALSE!!!!!!!!!");
-				LuaManager::_cStackDump();
-				lua_pop(l, 1);
-			}
+            lua_pushnumber(l, index);
 
-			//lua_remove(l, 1);
+            _propertyProxyIndexTable.push(l);
+            lua_pushstring(l, P::_proxyFields[index-1].key);
 
-			//Return <Key, Value> pair or nothing on stack
-			return retVal? 2 : 0;
+            lua_rawget(l, -2);
 
-		}
+            if(!lua_isnil(l, -1)) {
+                qDebug() << "found field!";
+                lua_pushvalue(l, -4);
+
+                LuaManager::_protectedCall(1, 1, nullptr);
+
+                lua_remove(l, -4);
+                lua_remove(l, -2);
+
+                return 2;
+            } else {
+                qDebug() << "COULDNT FIND FIELD";
+            }
+
+            lua_pop(l, lua_gettop(l));
+            return 0;
+
+        }
+
+
+        inline static int _nextMetaMethodCFunction(lua_State* l) {
+            if(lua_isnil(l, -2)) {
+                qDebug() << "__NEXT called with NIL";
+                lua_pop(l, 2);
+                return 0;
+            } else {
+                qDebug() << "_nextMetaMethodCFunction()";
+            }
+
+            if(_getNextKey(l)) {
+                qDebug() << "getNextKey() - true";
+                lua_pushvalue(l, -1);
+
+                _propertyProxyIndexTable.push(l);
+                lua_insert(l, -2);
+                lua_rawget(l, -2);
+
+                if(!lua_isnil(l, -1)) {
+                    qDebug() << "found field!";
+                    lua_pushvalue(l, -4);
+
+                    LuaManager::_protectedCall(1, 1, nullptr);
+
+                    lua_remove(l, -4);
+                    lua_remove(l, -2);
+
+                    return 2;
+                } else qDebug() << "couldn't find field!";
+            } else {
+                qDebug() << "getNextKey() - FALSE";
+            }
+
+            lua_pop(l, lua_gettop(l));
+            return 0;
+
+        }
+
+
+        static int _lengthMetaMethodCFunction(lua_State* l) {
+            lua_pop(l, lua_gettop(l));
+            lua_pushinteger(l, P::_proxyFieldCount);
+            return 1;
+        }
 
 		static int _indexMetaMethodCFunction(lua_State* l) {
 			return _metaMethodCFunction(l, _ooluaIndexTable, _propertyProxyIndexTable, false);
@@ -121,6 +230,20 @@ namespace elysian {
 
 			return 3;
 		}
+
+        static int _ipairsMetaMethodCFunction(lua_State* l) {
+            //Pushes onto Lua stack:
+            //1 - Userdata iterator function
+            //2 - Userdata
+            //3 - nil (first key)
+            lua_pushcfunction(l, &_iNextMetaMethodCFunction);
+            lua_insert(l, 1);
+            lua_pushnumber(l, 0);
+
+            qDebug() << "IPAIRS";
+
+            return 3;
+        }
 
 		//CRTP Overridable?
 		static int _metaMethodCFunction(lua_State* l, LuaTable& ooluaIndexTable, LuaTable& propertyIndexTable, const bool newIndex) {
@@ -189,13 +312,14 @@ namespace elysian {
 		static void registerProxyMetaTable(lua_State *l) {
 			_registerPropertyMetaMethodTables(l);
 
-
 			assert(OOLUA::INTERNAL::class_name_is_already_registered(*LuaManager::_mainState, OOLUA::Proxy_class<T>::class_name));
 
 			luaL_getmetatable(*LuaManager::_mainState, OOLUA::Proxy_class<T>::class_name); //userdata metatable
 
 			//Save OOLUA's method table for later
 			lua_getfield(l, -1, "__index");
+            lua_pushcfunction(l, &_luaFromTableCFunction);
+            lua_setfield(l, -2, "fromTable");
 			_ooluaIndexTable.pull(l);
 
 			//Save OOLUA's method table for later
@@ -214,15 +338,74 @@ namespace elysian {
 			lua_pushcfunction(l, &_pairsMetaMethodCFunction);
 			lua_setfield(l, -2, "__pairs");
 
+            lua_pushcfunction(l, &_ipairsMetaMethodCFunction);
+            lua_setfield(l, -2, "__ipairs");
+
 			//Create a new __next metamethod for internal iteration
 			lua_pushcfunction(l, &_nextMetaMethodCFunction);
 			lua_setfield(l, -2, "__next");
+
+            lua_pushcfunction(l, &_lengthMetaMethodCFunction);
+            lua_setfield(l, -2, "__len");
+
+            //Create a new __next metamethod for internal iteration
+            //_propertyProxyIndexTable.push(l);
+            //lua_setfield(l, -2, "__properties");
+
+            //lua_pushcfunction(l, &_getNextKey);
+            //lua_setfield(l, -2, "__nextkey");
 
 			lua_pop(*LuaManager::_mainState, 1);
 
 			assert(LuaManager::_stackDepth() == 0);
 
 		}
+
+        static int _luaFromTableCFunction(lua_State*const state) {
+            qDebug() << "!!!!!IN THE C FUNCTION!";
+
+            lua_pushnil(state);
+            while (lua_next(state, -2) != 0) {
+
+                _propertyProxyNewIndexTable.push(state);
+                lua_pushvalue(state, -3);
+
+                lua_rawget(state, -2);
+                if(!lua_isnil(state, -1)) {
+                    qDebug() << "found field!";
+                    lua_pushvalue(state, -6);
+                    lua_pushvalue(state, -4);
+
+                    LuaManager::_protectedCall(2, 0, nullptr);
+                    qDebug() << "returned";
+
+                    lua_pop(state, 1);
+
+                } else {
+                    qDebug() << "DIDNT FIND FIELD";
+                    lua_pop(state, 2);
+                }
+
+                //pop value
+                lua_pop(state, 1);
+            }
+
+            //pop table
+            lua_pop(state, lua_gettop(state));
+            return 0;
+        }
+
+        void fromTable(OOLUA::Lua_table_ref ref) {
+            lua_State*const state = *LuaManager::_mainState;
+
+            OOLUA::push(state, static_cast<T*>(static_cast<P*>(this)));
+            //OOLUA::push(state, static_cast<T*>(this));
+            ref.push(state);
+
+            lua_pushcfunction(state, &_luaFromTableCFunction);
+            lua_insert(state, -3);
+            LuaManager::_protectedCall(2, 0, nullptr);
+        }
 
 	};
 

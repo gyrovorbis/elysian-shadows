@@ -49,10 +49,12 @@ protected:
     void _engineInitialize(void);
     void _engineLoadAssets(void);
 	void _openProjectDir(const QString dir);
+public:
+        elysian::Engine*        _engine;
 private:
     Assets                  _assets;
     QUndoGroup              _undoGroup;
-    elysian::Engine*        _engine;
+
     elysian::Debug *        _debug;
 
     Ui::ESToolkit*          _ui;

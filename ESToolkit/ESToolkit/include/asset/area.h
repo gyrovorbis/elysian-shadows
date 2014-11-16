@@ -5,10 +5,10 @@
 #include <stdint.h>
 #include <QUndoStack>
 #include <gyro.h>
-
+#include "elysian_asset_typedefs.hpp"
 #include "elysian_area.hpp"
 #include "elysian_level_manager.hpp"
-
+#include "level.h"
 #include "treenode.h"
 #include "selectionScene.h"
 #include "assets.h"
@@ -93,8 +93,8 @@ public:
 	uint16_t getTileIndex(const QPoint loc, const Assets::LAYER_TYPE layer) const;
 	GY_RECT_TEX_ORIENT getTileOrient(const QPoint loc, const Assets::LAYER_TYPE layer) const;
 	unsigned char getTileElev(const QPoint loc, const Assets::LAYER_TYPE layer) const;
-	void setTileEntry(const QPoint loc, const Assets::LAYER_TYPE layer, const TileEntry entry);
-	TileEntry getTileEntry(const QPoint loc, const Assets::LAYER_TYPE layer) const;
+    void setTileEntry(const QPoint loc, const Assets::LAYER_TYPE layer, const TileEntry entry);
+    TileEntry getTileEntry(const QPoint loc, const Assets::LAYER_TYPE layer) const;
 
 	Entity *newEntity(void);
 	Entity *getFirstEntity(void) const;

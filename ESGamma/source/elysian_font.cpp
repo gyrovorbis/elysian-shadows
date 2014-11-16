@@ -13,7 +13,7 @@ bool Font::loadTextData(const char* const img_file, int sheet_width, int sheet_h
     Debug::push();
 
     _transform.setSize(16.0f, 32.0f);
-
+/*
 	//CHECK IF TEXTURE IS EVER LOADED
 	if(!(_tex = gyVidTexCreateSheetUniform(img_file, sheet_width, sheet_height, sprite_width, sprite_height))) {
 		Debug::printf(Debug::CRITICAL, "Font::Load(%s): Unable to load sheet texture!", img_file);
@@ -24,7 +24,7 @@ bool Font::loadTextData(const char* const img_file, int sheet_width, int sheet_h
 		Debug::printf(Debug::CRITICAL, "Font::LoadCharacterWidths(%s): could not open file!", width_file);
 		success = false;
 	}
-
+*/
     Debug::pop();
 	return success;
 }

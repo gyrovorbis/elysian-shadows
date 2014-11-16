@@ -6,24 +6,24 @@
 #include "elysian_animation.hpp"
 #include "elysian_zcoords.hpp"
 #include "elysian_party_system.hpp"
-#include "elysian_entity.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 #include "elysian_renderable.hpp"
 #include "elysian_sprite_attrib.hpp"
 #include "elysian_debug.hpp"
 #include "elysian_level_system.hpp"
 #include "elysian_engine.hpp"
 #include "elysian_game_input.hpp"
-#include "elysian_map_system.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tkMapSystem.h")
 #include "elysian_camera_system.hpp"
-#include "elysian_entity.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 #include "elysian_character.hpp"
 #include "elysian_party_system.hpp"
-#include "elysian_area.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
 #include "elysian_gui_system.hpp"
 #include "elysian_animation.hpp"
 #include "elysian_behavior_system.hpp"
 #include "elysian_collision_system.hpp"
-#include "elysian_level.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_level.hpp", "level.h")
 #include "elysian_adventure_log.hpp"
 #include "elysian_lua_behavior.hpp"
 #include "elysian_audio_source.hpp"
@@ -34,6 +34,7 @@
 #include "elysian_dialog_system.hpp"
 #include "elysian_event_monitor.hpp"
 #include "elysian_rigid_body_system.hpp"
+#include "debug.h"
 
 namespace elysian {
 

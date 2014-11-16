@@ -1,7 +1,7 @@
 #include "elysian_examinable_system.hpp"
 #include "elysian_dialog_system.hpp"
 #include "elysian_party_system.hpp"
-#include "elysian_area.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
 #include "elysian_game_input.hpp"
 #include "elysian_examinable.hpp"
 #include "elysian_character.hpp"

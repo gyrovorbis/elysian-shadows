@@ -14,6 +14,9 @@ typedef enum _GY_DEBUG_LEVEL { GY_DEBUG_VERBOSE, GY_DEBUG_CRITICAL, GY_DEBUG_FAT
 int gySysInit(void);
 int gySysUninit(void);
 
+int gyDebugInit(void);
+int gyDebugUninit(void);
+
 void gyPrintf(const char *const str, ...);
 
 typedef enum {

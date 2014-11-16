@@ -11,6 +11,7 @@
 #include <QGridLayout>
 #include <QCheckBox>
 #include <iostream>
+#include <gyro_system_api.h>
 //ESTK
 #include "debug.h"
 
@@ -69,7 +70,7 @@ Debug::Debug(void) {
     connect(_assetioCheckBox, SIGNAL(clicked(bool)), this, SLOT(OnClickAssetioCheckBox(bool)));
 
 	//Register QDebug callback
-    qInstallMessageHandler(&logQ);
+    //qInstallMessageHandler(&logQ);
 	//Register AssetIO debug interface!
 	elysian::Asset::setDebugStack(&_assetioDebug);
 
@@ -176,14 +177,15 @@ void Debug::Log(Debug::LEVEL flag, QString msg, Debug::SOURCE src) {
 			it = it->parent();
 		} while(it);
 
-                //If we've returned to the top level with a pending error,
-                //pop the log for the user to see.
-                if(_curParent == _treeWidget->invisibleRootItem() && _pendingError) {
-                        getInstance().show();
-                }
+        //If we've returned to the top level with a pending error,
+        //pop the log for the user to see.
+        if(_curParent == _treeWidget->invisibleRootItem() && _pendingError) {
+                getInstance().show();
+        }
 	}
 
 	_treeWidget->scrollToBottom();
+    //gyPrintf(msg.toStdString().c_str());
 
 }
 

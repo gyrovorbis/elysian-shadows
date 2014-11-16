@@ -18,19 +18,19 @@ namespace elysian {
 	public:
 		//Not super efficient, but since each rect needs its own color, header must be resubmitted...
 		virtual void submit(void) override {
-	#ifdef ELYSIAN_ENGINE
+
 			submitHeader();
 			gyVidRect(_frame);
 			submitFinish();
-	#endif
+
 		}
 
 		inline GYTexture* getTexture(void) const { return _tex; }
 
 		virtual ~SpriteAttrib(void) {
-#ifdef ELYSIAN_ENGINE
+
 			gyVidTexDestroy(_tex);
-#endif
+
 		}
 
 		inline void submitHeader(void) {
@@ -51,9 +51,9 @@ namespace elysian {
 
 		virtual void submitVerts(GYVector4* verts = nullptr) {
 			(void)verts;
-#ifdef ELYSIAN_ENGINE
+
 			gyVidRect(_frame);
-#endif
+
 		}
 
 		inline void setTexCoord(const unsigned index, const float u, const float v) {

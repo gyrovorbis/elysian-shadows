@@ -1,5 +1,5 @@
-#ifndef GYRO_TEXTURE_GLAL_H
-#define GYRO_TEXTURE_GLAL_H
+#ifndef GYRO_TEXTURE_GLAL_INL
+#define GYRO_TEXTURE_GLAL_INL
 
 #include <stdint.h>
 

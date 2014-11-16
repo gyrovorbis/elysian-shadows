@@ -84,6 +84,8 @@ static void _checkCPUCapabilities(void) {
 void gyDebugSigInit(void);
 
 int gySysInit(void) {
+    //gyDebugInit();
+
   const char* platString =
 #ifdef __APPLE__
   "OSX";
@@ -106,9 +108,12 @@ int gySysUninit(void) {
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
     glfwTerminate();
 #endif
+
+    //gyDebugUninit();
 	return 1;
 }
 
+#if 0
 void gyPrintf(const char *const str, ...) {
 	va_list argptr;
 	static char buffer[GYRO_PRINTF_BUFFER_SIZE];
@@ -120,6 +125,7 @@ void gyPrintf(const char *const str, ...) {
     fprintf(stdout, "%s", buffer);
 	fflush(stdout);
 }
+#endif
 
 unsigned int gySysStatsVram(void) {
 	return 0;

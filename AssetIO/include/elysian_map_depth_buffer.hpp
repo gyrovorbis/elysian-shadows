@@ -3,7 +3,7 @@
 
 #include <cassert>
 #include <cstring>
-#include "elysian_area.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
 #include "elysian_zcoords.hpp"
 
 //#include "elysian_system.hpp"

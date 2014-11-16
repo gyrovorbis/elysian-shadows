@@ -1,20 +1,18 @@
 #include "elysian_light_system.hpp"
 #include "elysian_light_source.hpp"
 #include "elysian_camera_system.hpp"
-#include "elysian_area.hpp"
-#include "elysian_entity.hpp"
-#include "elysian_level.hpp"
-#include "elysian_map_system.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
+#include ELYSIAN_ASSET_HEADER("elysian_level.hpp", "level.h")
+#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tkMapSystem.h")
 #include <gyro_shader_api.h>
 #include <cfloat>
 
 namespace elysian {
 
 LightSystem::LightSystem(void) {
-#ifdef ELYSIAN_ENGINE
 	setGlobalAmbientColor(_globalAmbience);
-#endif
-	//gyVidLightingSetEnable(1);
+    gyVidLightingSetEnable(1);
 
     auto& proc = get<SUBPROC_ATTRIB_INTERP_POOL> ( static_cast<SubProcessManager<LightSystem,
                                               LightAttribInterpPool>& >(*this));
@@ -58,7 +56,6 @@ void LightSystem::setEnabled(const bool val) {
 	gyVidLightingSetEnable(val);
 }
 
-#ifdef ELYSIAN_ENGINE
 static void renderCube(float x, float y, float z,
 					   float sx, float sy, float sz,
 					   float /*rotz*/) {
@@ -120,7 +117,6 @@ static void renderCube(float x, float y, float z,
 	gyMatPop();
 }
 
-#endif
 
 void LightSystem::_renderShadowVolumes(void) {
 
@@ -238,7 +234,7 @@ void LightSystem::shadowRenderPasses(void) {
 
 	camSys->popState();
 	gyVidLightSourceEndShadowPasses();
-	gyVidSetGlobalAmbience(&_globalAmbience);
+    gyVidSetGlobalAmbience(&_globalAmbience);
 	_shadowPass = false;
 	//_sortOnscreenLights();
 }

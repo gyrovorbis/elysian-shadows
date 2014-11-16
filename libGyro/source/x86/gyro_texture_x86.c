@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-#include <png.h>
+//#include <png.h>
 #include <stdio.h>
 #include <gyro_file_api.h>
 #include <gyro_texture_api.h>

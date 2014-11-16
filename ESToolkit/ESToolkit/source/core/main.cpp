@@ -12,10 +12,12 @@
 #include "elysian_engine.hpp"
 #include "elysian_debug.hpp"
 
-
 GYAppCbRet Init(int argc, char **argv) {
+
     QRectF rect;
     rect.setSize(QSizeF(2.0f, 5.0f));
+
+
 
     QApplication a(argc, argv);
     a.setOrganizationName("Elysian Shadows");
@@ -23,6 +25,9 @@ GYAppCbRet Init(int argc, char **argv) {
     a.setApplicationName("ESTk");
     a.setWindowIcon(QIcon(":/estk/images/estk.ico"));
     a.setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
+    gyDebugInit();
+    gyPrintf("test");
+    qDebug() << "DBGTEST";
 
     QPixmap splashScreen(":/splash/images/splashScreen.png");
     QPainter painter(&splashScreen);
@@ -37,6 +42,7 @@ GYAppCbRet Init(int argc, char **argv) {
     splash.show();
 
     ESToolkit w;
+
 
     //QApplication::setWindowIcon(QIcon(":/estk/images/estk.ico"));
 

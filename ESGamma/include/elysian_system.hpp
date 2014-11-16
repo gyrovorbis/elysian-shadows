@@ -4,9 +4,10 @@
 #include "elysian_level_manager.hpp"
 #include <gyro.h>
 
+ELYSIAN_ASSET_TYPEDEF(MapSystem)
+
 namespace elysian {
 	class LevelSystem;
-	class MapSystem;
 	class CameraSystem;
 	class AnimationSystem;
 	class CharacterSystem;

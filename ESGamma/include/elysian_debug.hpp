@@ -4,6 +4,7 @@
 #include <cstring>
 #include <stdio.h>
 #include <gyro.h>
+//#include <QDebug>
 #include "elysian_asset.hpp"
 #include "elysian_system.hpp"
 #include "elysian_asset_typedefs.hpp"

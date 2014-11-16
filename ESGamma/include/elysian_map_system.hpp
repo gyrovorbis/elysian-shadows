@@ -8,7 +8,7 @@
 #include "elysian_renderable.hpp"
 #include "elysian_particle_system.hpp"
 #include "elysian_mem_pool.hpp"
-#include "elysian_entity.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 #include "elysian_light_system.hpp"
 #include "elysian_asset_typedefs.hpp"
 #include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
@@ -34,6 +34,9 @@
 //Guess this could be a bit smaller? Maybe?
 #define ELYSIAN_DEPTH_BUFFER_ENTITY_WIDTH 20
 */
+
+ELYSIAN_ASSET_TYPEDEF(MapSystem)
+
 namespace elysian {
 
 	struct Tile;
@@ -42,8 +45,8 @@ namespace elysian {
 	struct GammaEntityDepthBuffEntry: public EntityDepthBuffEntry {
 		Entity *entity;
 	};
-    
-	class MapSystem: 
+
+    class MapSystemBase:
 		public System, 
 		public MapDepthBuffer<MapSystem, MapDepthBuffEntry, GammaEntityDepthBuffEntry> 
 	{ 
@@ -70,7 +73,7 @@ namespace elysian {
 		} _animTiles[ELYSIAN_TILESHEET_TILES];
        
 	public:
-                    MapSystem(void);
+                    MapSystemBase(void);
         
         void        update(void);
         void        renderOverlay(void);
@@ -113,20 +116,20 @@ namespace elysian {
 //-----INLINEZ-----
 
 	
-	inline void MapSystem::getOnscreenTileRegion(unsigned &startX, unsigned &startY, unsigned &endX, unsigned &endY) const {
+    inline void MapSystemBase::getOnscreenTileRegion(unsigned &startX, unsigned &startY, unsigned &endX, unsigned &endY) const {
 		getCameraSys()->getVisibleTileRegion(startX, startY, endX, endY);
 	}
 	
-	inline float MapSystem::getBaseZCoord(void) const {
+    inline float MapSystemBase::getBaseZCoord(void) const {
 		return ZCoordConstants::mapBase;
 	}
 	
-	inline void MapSystem::getObjectLayerEntry(const unsigned /*x*/, const unsigned /*y*/, MapDepthBuffEntry &entry) {
+    inline void MapSystemBase::getObjectLayerEntry(const unsigned /*x*/, const unsigned /*y*/, MapDepthBuffEntry &entry) {
 		entry.mapEntry = _curArea->getTileEntry(entry.layer, entry.x, entry.y);
 		entry.lights = getLightSys()->getLightMapEntryMapCoord(entry.y, entry.x);
 	}
 	
-    inline void MapSystem::renderObjectEntry(const MapDepthBuffEntry &entry, const float /*z*/) {
+    inline void MapSystemBase::renderObjectEntry(const MapDepthBuffEntry &entry, const float /*z*/) {
 		if(!entry.mapEntry.value) return; //Do not render tile 0, even if the depth buff algorithm tries to.
 		if(!_renderLayer[entry.layer]) return; //Don't render if this layer has been toggled off.
 //		float delta = 0;//(entry.renderPass);
@@ -217,7 +220,7 @@ namespace elysian {
 	//	gyMatPop();
 	}
 	
-	inline void MapSystem::beginObjectList(void) {
+    inline void MapSystemBase::beginObjectList(void) {
 		gyVidMaterialBind(nullptr);
 		gyVidTexBind(nullptr);
 		gyVidTexBind(_curLevel->tileSheet);
@@ -245,7 +248,7 @@ namespace elysian {
         _blendFunc = false;
 	}
 	
-	inline void MapSystem::endObjectList(void) {
+    inline void MapSystemBase::endObjectList(void) {
 
 		glDrawElements(GL_TRIANGLE_STRIP, _stripIndexArraySize, GL_UNSIGNED_INT, (void*)_stripIndexArray);
 		_stripIndexArraySize = 0;
@@ -261,7 +264,7 @@ namespace elysian {
 	   _blendFunc = false;
 	}
 	
-	inline unsigned MapSystem::getEntityCount(void) {
+    inline unsigned MapSystemBase::getEntityCount(void) {
 		_onscreenEntityPool.clear();
 		auto& entities = _curArea->entities;
 
@@ -277,7 +280,7 @@ namespace elysian {
 		return _onscreenEntityPool.size();
 	}
 
-	inline bool MapSystem::getOnscreenEntity(const unsigned index, GammaEntityDepthBuffEntry &entry, NORMAL_TYPE &normalType, float &lowestY, float& zCoord) const {
+    inline bool MapSystemBase::getOnscreenEntity(const unsigned index, GammaEntityDepthBuffEntry &entry, NORMAL_TYPE &normalType, float &lowestY, float& zCoord) const {
 		Entity &entity = *(_onscreenEntityPool)[index];
         //if(getCameraSys()->isOnscreen(entity)) {
 			entry.entity = &entity;
@@ -289,29 +292,29 @@ namespace elysian {
         //return false;
 	}
 	
-	inline void MapSystem::renderEntityEntry(const GammaEntityDepthBuffEntry &entry) const {
+    inline void MapSystemBase::renderEntityEntry(const GammaEntityDepthBuffEntry &entry) const {
 		//entry.entity->renderAtZ(entry.zCoord);
 		//entry.entity->transform.setPosZ(entry.zCoordWorld);
         entry.entity->render();
 	}
 
-	inline void MapSystem::disableDepthTest(void) const {
+    inline void MapSystemBase::disableDepthTest(void) const {
 		//glDisable(GL_DEPTH_TEST);
 		//glEnable(GL_POLYGON_OFFSET_FILL);
 		//glPolygonOffset(10.0f, 10.0f);
 	}
 
-	inline void MapSystem::enableDepthTest(void) const {
+    inline void MapSystemBase::enableDepthTest(void) const {
 		//glEnable(GL_DEPTH_TEST);
 		//glDisable(GL_POLYGON_OFFSET_FILL);
 	}
 
-	inline void MapSystem::renderCustomPassAtElev(const unsigned char elev) const {
+    inline void MapSystemBase::renderCustomPassAtElev(const unsigned char elev) const {
 		getPartSys()->renderAtElev(elev);
 	}
 
-    inline uint32_t MapSystem::startLightPass(uint32_t& lightsLeft) { return getLightSys()->startLightPass(lightsLeft); }
-    inline uint32_t MapSystem::getLightCount(void) const { return getLightSys()->getLightCount(); }
+    inline uint32_t MapSystemBase::startLightPass(uint32_t& lightsLeft) { return getLightSys()->startLightPass(lightsLeft); }
+    inline uint32_t MapSystemBase::getLightCount(void) const { return getLightSys()->getLightCount(); }
 }
 
 #endif

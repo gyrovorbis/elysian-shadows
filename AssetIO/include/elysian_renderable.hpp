@@ -25,7 +25,7 @@ namespace elysian {
 		inline Renderable(Entity &parent): Component(parent) {}
 	public:
 
-        ELYSIAN_LUA_PROXY_FIELDS_BEGIN(3)
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
 			ELYSIAN_LUA_PROXY_FIELD(frame, getFrame, setFrame)
             ELYSIAN_LUA_PROXY_FIELD(offset, getOffset, setOffset)
             ELYSIAN_LUA_PROXY_FIELD(texOrient, getTexOrient, setTexOrient)

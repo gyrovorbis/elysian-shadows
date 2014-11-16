@@ -10,9 +10,7 @@ namespace elysian {
 		PrimAttrib::TYPE getType(void) const { return PrimAttrib::MODEL; }
 
 		void submit(void) {
-#ifdef ELYSIAN_ENGINE
 
-#endif
 		}
 
 		bool load(FILE* file) {

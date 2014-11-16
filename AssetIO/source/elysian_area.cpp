@@ -1,6 +1,7 @@
 #include <string.h>
-#include "elysian_area.hpp"
-#include "elysian_level.hpp"
+#include "elysian_asset_typedefs.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
+#include ELYSIAN_ASSET_HEADER("elysian_level.hpp", "level.h")
 #include "elysian_lua_manager.hpp"
 #include "elysian_asset_typedefs.hpp"
 #include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
@@ -41,9 +42,7 @@ AreaBase::AreaBase(void) {
 }
 
 AreaBase::~AreaBase(void) {
-#ifdef GYRO_GLAL
 	glDeleteBuffers(1, &vboBuff);
-#endif
 	//DELETE COMPONENT/ENTITY SHIT@!!!!
     dbgprintf(LOG_VERBOSE, "Area::~Area(%s) - FIX FOR WARPS LEAKING MEMORY!! -- Entity Data?", dir);
 	freeMap();
@@ -161,7 +160,7 @@ bool AreaBase::loadMap(const char *const filename) {
 
 	gyFileClose(&fp);
 
-	populateVbo();
+    //populateVbo();
     dbgPop();
 	return true;
 }
@@ -250,10 +249,10 @@ bool AreaBase::saveEntities(const char *const /*filename*/) {
 	return true;
 }
 
-#ifdef GYRO_GLAL
 void AreaBase::populateVbo(void) {
-#ifdef ELYSIAN_ENGINE
 	glGenBuffers(1, &vboBuff);
+
+    Debug::printf(Debug::VERBOSE, "VBO BUFF - %d", vboBuff);
 
 	VboEntry* data = (VboEntry*)malloc(sizeof(VboEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS*4);
 	VboEntry* curPtr = data;
@@ -273,13 +272,21 @@ void AreaBase::populateVbo(void) {
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, vboBuff);
+    int glErr = glGetError();
+       if (glErr != GL_NO_ERROR)
+       {
+           printf("ERROR GL - %d", glErr); }
+
 	glBufferData(GL_ARRAY_BUFFER, sizeof(VboEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS*4, data, GL_STATIC_DRAW);
 
-	free(data);
-#endif
-}
+    glErr = glGetError();
+       if (glErr != GL_NO_ERROR)
+       {
+           Debug::printf(Debug::VERBOSE, "glError in file %d",   glErr);
+       }
 
-#endif
+	free(data);
+}
 
 
 }

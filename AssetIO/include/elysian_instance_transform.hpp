@@ -11,14 +11,14 @@
 namespace elysian {
 
     struct Vector2Proxy: public GYVector2, public LuaTableProxy<Vector2Proxy, GYVector2> {
-        ELYSIAN_LUA_PROXY_FIELDS_BEGIN(2)
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(x, getX, setX)
             ELYSIAN_LUA_PROXY_FIELD(y, getY, setY)
         ELYSIAN_LUA_PROXY_FIELDS_END()
     };
 
     struct Vector3Proxy: public GYVector3, public LuaTableProxy<Vector3Proxy, GYVector3> {
-        ELYSIAN_LUA_PROXY_FIELDS_BEGIN(3)
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(x, getX, setX)
             ELYSIAN_LUA_PROXY_FIELD(y, getY, setY)
             ELYSIAN_LUA_PROXY_FIELD(z, getZ, setZ)
@@ -36,11 +36,11 @@ namespace elysian {
 		//This is public for overhead reduction, but the accessors are safer.
 		//Lua should treat this as a class
 
-		ELYSIAN_LUA_PROXY_FIELDS_BEGIN(4)
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(orientZ, getOrientZ, setOrientZ)
-			ELYSIAN_LUA_PROXY_FIELD(size, getSizeVec)
-			ELYSIAN_LUA_PROXY_FIELD(scale, getScaleVec)
-			ELYSIAN_LUA_PROXY_FIELD(zeta, getPostVec)
+            ELYSIAN_LUA_PROXY_FIELD(size, getSizeVec, setSizeVec)
+            ELYSIAN_LUA_PROXY_FIELD(scale, getScaleVec, setScaleVec)
+            ELYSIAN_LUA_PROXY_FIELD(pos, getPosVec, setPosVec)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
 	InstanceTransform(void):
@@ -56,9 +56,12 @@ namespace elysian {
 			gyMatInstance(this);
 		}
 
-        GYVector3& getPostVec(void);
+        GYVector3& getPosVec(void);
         GYVector3& getSizeVec(void);
         GYVector3& getScaleVec(void);
+        void setPosVec(const OOLUA::Lua_table_ref valTable);
+        void setSizeVec(const OOLUA::Lua_table_ref valTable);
+        void setScaleVec(const OOLUA::Lua_table_ref valTable);
 
 		void setPos(const float x, const float y, const float z) { _pos.x = x; _pos.y = y; _pos.z = z; }
 		void setPos(const float x, const float y) { _pos.x = x; _pos.y = y; }
@@ -120,10 +123,9 @@ namespace elysian {
 
     // ====== INLINEZ ======
 
-    inline GYVector3& InstanceTransform::getPostVec(void) { return _pos; }
+    inline GYVector3& InstanceTransform::getPosVec(void) { return _pos; }
     inline GYVector3& InstanceTransform::getSizeVec(void) { return _size; }
     inline GYVector3& InstanceTransform::getScaleVec(void) { return _scale; }
-
 
 
 }

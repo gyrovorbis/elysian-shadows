@@ -11,7 +11,7 @@
 #include "elysian_asset.hpp"
 #include "elysian_stl_algorithm.hpp"
 #include "elysian_component.hpp"
-#include "elysian_area.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
 #include "elysian_map_depth_buffer.hpp"
 #include "elysian_lua_table_proxy.hpp"
 
@@ -43,13 +43,13 @@ namespace elysian {
 	{
 	public:
 
-		ELYSIAN_LUA_PROXY_FIELDS_BEGIN(6)
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
 			ELYSIAN_LUA_PROXY_FIELD(name, getName, setName)
 			ELYSIAN_LUA_PROXY_FIELD(elev, getElev, setElev)
 			ELYSIAN_LUA_PROXY_FIELD(planeType, getPlaneType, setPlaneType)
 			ELYSIAN_LUA_PROXY_FIELD(shadowVolume, isShadowVolume, setShadowVolume)
-			ELYSIAN_LUA_PROXY_FIELD(renderable, getRenderable)
-			ELYSIAN_LUA_PROXY_FIELD(transform, getTransform)
+            ELYSIAN_LUA_PROXY_FIELD(renderable, getRenderable)
+            ELYSIAN_LUA_PROXY_FIELD(transform, getTransform, setTransform)
 		ELYSIAN_LUA_PROXY_FIELDS_END()
 
                             EntityBase(void)	= default;
@@ -69,6 +69,8 @@ namespace elysian {
         
         void                setName(char const* const newName) { strcpy(_name, newName); }
         const char*         getName(void) const { return _name; }
+
+        void                setTransform(const OOLUA::Lua_table_ref valTable);
 
         void                setElev(const unsigned char e);
         unsigned char       getElev(void) const;

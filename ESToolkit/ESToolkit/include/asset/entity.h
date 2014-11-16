@@ -75,11 +75,14 @@ public:
     using elysian::EntityBase::render;
     using elysian::EntityBase::move;
     using elysian::EntityBase::setName;
+    using elysian::EntityBase::setTransform;
+    //using elysian::LuaTableProxy<elysian::EntityBase, Entity>::fromTable;
 
 			TkEntity(void);
 	virtual ~TkEntity(void) override;
 
     void setName(const QString name);
+    void setName(char const*const name);
 	void populateModel(void);
 
 	//Selectable
@@ -109,9 +112,13 @@ signals:
 
 };
 
-inline elysian::Entity* Entity::getElysianEntity(void) { return this; }
+inline elysian::Entity* TkEntity::getElysianEntity(void) { return this; }
 
-inline void Entity::setName(const QString name) {
+inline void TkEntity::setName(char const * const name) {
+    setName(QString(name));
+}
+
+inline void TkEntity::setName(const QString name) {
     ((elysian::EntityBase*)this)->setName(name.toStdString().c_str());
     elysian::EntityBase::setName(name.toStdString().c_str());
     setNodeName(name);
