@@ -139,7 +139,7 @@ SOURCES += \
     ../../source/glal/gyro_audio_glal.c \
     ../../source/glal/gyro_wav_glal.c \
     ../../source/glal/tinycthread.c \
-    ../../source/x86/gyro_system_x86.c \
+	../../source/x86/gyro_system_glfw_x86.c \
     ../../source/x86/gyro_matrix_x86.c \
 	../../source/qt/gyro_texture_qt.cpp \
 	../../source/glal/gyro_ogg_glal.c \
