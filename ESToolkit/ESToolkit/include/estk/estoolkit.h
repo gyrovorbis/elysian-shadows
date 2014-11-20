@@ -45,7 +45,7 @@ public:
 protected:
     virtual void changeEvent(QEvent *e) override;
     virtual void closeEvent(QCloseEvent *event) override;
-
+public:
     void _engineInitialize(void);
     void _engineLoadAssets(void);
 	void _openProjectDir(const QString dir);

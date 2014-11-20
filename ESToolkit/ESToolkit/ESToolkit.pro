@@ -96,7 +96,8 @@ INCLUDEPATH += include/asset \
 	../../libGyro/include/kinetic \
 	../../ESGamma/lib/include \
 	../../ESGamma/include \
-	../../OOLua/include
+	../../OOLua/include \
+	../../../../../Qt5.2.0/5.2.0/clang_64/examples/opengl/cube/
 
 
 SOURCES += source/asset/project.cpp \
@@ -207,7 +208,8 @@ SOURCES += source/asset/project.cpp \
     source/dialog/luaExplorerDialog.cpp \
     source/core/rowsJoinerProxyModel.cpp \
     ../../AssetIO/source/elysian_instance_transform.cpp \
-    source/estk/tkMapSystem.cpp
+    source/estk/tkMapSystem.cpp \
+    ../../../../../Qt5.2.0/5.2.0/clang_64/examples/opengl/cube/geometryengine.cpp
 
 HEADERS += include/asset/project.h \
     include/asset/level.h \
@@ -348,7 +350,8 @@ HEADERS += include/asset/project.h \
     ../../ESGamma/include/elysian_warp_system.hpp \
     ../../AssetIO/include/elysian_lua_table_proxy.hpp \
     include/asset/luaTableStackModel.h \
-    include/estk/tkMapSystem.h
+    include/estk/tkMapSystem.h \
+    ../../../../../Qt5.2.0/5.2.0/clang_64/examples/opengl/cube/geometryengine.h
 
 FORMS += form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \

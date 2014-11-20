@@ -17,8 +17,6 @@ GYAppCbRet Init(int argc, char **argv) {
     QRectF rect;
     rect.setSize(QSizeF(2.0f, 5.0f));
 
-
-
     QApplication a(argc, argv);
     a.setOrganizationName("Elysian Shadows");
     a.setOrganizationDomain("elysianshadows.com");
@@ -38,21 +36,20 @@ GYAppCbRet Init(int argc, char **argv) {
     painter.drawText(25,82,QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" \"Sex and Candy\" Release"));
     painter.drawText(25,190,"http://elysianshadows.com/tkreleasenotes"); /* This is an invalid URL!!!! */
 
-    QSplashScreen splash(splashScreen, Qt::WindowStaysOnTopHint);
-    splash.show();
+	QSplashScreen splash(splashScreen, Qt::WindowStaysOnTopHint);
+	splash.show();
 
     ESToolkit w;
-
 
     //QApplication::setWindowIcon(QIcon(":/estk/images/estk.ico"));
 
 // We don't want to wait for the splash screen whilst debugging. --Sara.
 #ifdef QT_NO_DEBUG
-    QTimer::singleShot(2500, &splash, SLOT(close()));
-    QTimer::singleShot(2500, &w, SLOT(showMaximized()));
+	QTimer::singleShot(2500, &splash, SLOT(close()));
+	QTimer::singleShot(2500, &w, SLOT(showMaximized()));
 #else
     QTimer::singleShot(1000, &splash, SLOT(close()));
-    QTimer::singleShot(0, &w, SLOT(showMaximized()));
+	QTimer::singleShot(0, &w, SLOT(showMaximized()));
 #endif
 
 	a.exec();

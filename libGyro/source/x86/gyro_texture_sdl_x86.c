@@ -1,10 +1,35 @@
-#include <stdlib.h>
-#include <string.h>
-//#include <png.h>
-#include <stdio.h>
-#include <gyro_file_api.h>
+/*
+ Copyright (c) 2011, MyStackTrace Team
+ All rights reserved.
+ 
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ * Redistributions of source code must retain the above copyright
+ notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in the
+ documentation and/or other materials provided with the distribution.
+ * Neither the name of the MyStackTrace Team nor the
+ names of its contributors may be used to endorse or promote products
+ derived from this software without specific prior written permission.
+ 
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+#include "stdlib.h"
+#include "string.h"
+#include "png.h"
+#include "stdio.h"
 #include <gyro_texture_api.h>
-//#include <x86/gyro_glfw_x86.inl>
 #include "glal/gyro_glal.h"
 
 typedef struct image_s
@@ -15,81 +40,62 @@ typedef struct image_s
 	int components;
 } image_t;
 
-static void __png_read_data_from_stream(png_structp png_ptr, png_bytep out_bytes, png_size_t byte_count)
+static unsigned char *load_png(FILE *f, image_t *img)
 {
-    GYFile *file;
-    size_t bytes_read = 0;
-    file = png_get_io_ptr(png_ptr);
-    if (file == NULL) {
-        return;
-    }
-    gyFileRead(file, out_bytes, byte_count, &bytes_read);
-    if (bytes_read != byte_count) {
-        return;
-    }
-}
-
-static unsigned char *load_png(GYFile *f, image_t *img)
-{
-    png_byte header[8];
 	png_structp png_ptr;
-	unsigned int sig_read = 8;
+	unsigned int sig_read = 0;
 	png_uint_32 width, height;
 	int bit_depth, colour_type, interlace_type;
 	png_infop info_ptr;
-    png_infop end_info;
 	unsigned int i = 0;
 	int rowbytes;
 	unsigned char *pixels;
 	png_bytep *row_pointers;
-
-    gyFileRead(f, header, 8, NULL);
-    if (png_sig_cmp(header, 0, 8)) {
-        return NULL;
-    }
+    
 	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-	if(!png_ptr) {
+    
+	if(!png_ptr)
+	{
 		return NULL;
 	}
-    info_ptr = png_create_info_struct(png_ptr);
-    if (!info_ptr) {
-        png_destroy_read_struct(&png_ptr, NULL, NULL);
-        return NULL;
-    }
-    end_info = png_create_info_struct(png_ptr);
-    if (!end_info) {
-        png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-    }
-    if (setjmp(png_jmpbuf(png_ptr))) {
-        png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-        return NULL;
-    }
-    png_set_read_fn(png_ptr, f, __png_read_data_from_stream);
+    
+	png_init_io(png_ptr, f);
+	info_ptr = png_create_info_struct(png_ptr);
+    
+	if(!info_ptr)
+	{
+		png_destroy_read_struct(&png_ptr, NULL, NULL);
+		return NULL;
+	}
+    
 	png_set_sig_bytes(png_ptr, sig_read);
 	png_read_info(png_ptr, info_ptr);
 	bit_depth = png_get_bit_depth(png_ptr, info_ptr);
 	colour_type = png_get_color_type(png_ptr, info_ptr);
-	if(bit_depth == 16) {
+    
+	if(bit_depth == 16)
 		png_set_strip_16(png_ptr);
-    } else if(bit_depth < 8) {
+	else if(bit_depth < 8)
 		png_set_packing(png_ptr);
-    }
-	if(colour_type == PNG_COLOR_TYPE_PALETTE) {
+    
+	if(colour_type == PNG_COLOR_TYPE_PALETTE)
 		png_set_palette_to_rgb(png_ptr);
-    }
-	if(colour_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) {
+    
+	if(colour_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
 		png_set_expand_gray_1_2_4_to_8(png_ptr);
-    }
-	if(png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)) {
+	if(png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
 		png_set_tRNS_to_alpha(png_ptr);
-    }
+    
 	png_read_update_info(png_ptr, info_ptr);
 	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth,
                  &colour_type, &interlace_type, NULL, NULL);
+    
 	img->height = height;
 	img->width = width;
 	img->bit_depth = bit_depth;
-	switch(colour_type) {
+    
+	switch(colour_type)
+	{
 		case PNG_COLOR_TYPE_GRAY:
 			img->format = GL_LUMINANCE;
 			img->components = 1;
@@ -109,58 +115,71 @@ static unsigned char *load_png(GYFile *f, image_t *img)
 		default:
 			img->format = GL_RGB;
 			img->components = 3;
-	}
-	rowbytes = png_get_rowbytes(png_ptr, info_ptr);
-	pixels = malloc(sizeof(char) * rowbytes * height);
-	if(!pixels) {
-		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
+	};
+    
+	rowbytes = (int)png_get_rowbytes(png_ptr, info_ptr);
+    
+	pixels = (unsigned char *)malloc(sizeof(char) * rowbytes * height);
+    
+	if(!pixels)
+	{
+		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 		return NULL;
 	}
-	row_pointers = malloc(sizeof(png_bytep) * height);
-	if(!row_pointers) {
-		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-        free(pixels);
+    
+	row_pointers = (png_bytep*)malloc(sizeof(png_bytep)*height);
+	if(!row_pointers)
+	{
+		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 		return NULL;
 	}
-    for(i = 0; i < height; i++) {
+    
+        for(i = 0; i < height; i++)
 		row_pointers[i] = (pixels + i * rowbytes);
-    }
+    
 	png_read_image(png_ptr, row_pointers);
 	png_read_end(png_ptr, info_ptr);
-	png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
+    
+	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 	free(row_pointers);
+    
 	return pixels;
 };
 
 static GLuint create_texture_png(const char *filename, GLenum st, GLenum min, GLenum mag, unsigned* const success)
 {
-    GYFile *f;
+	FILE *f = fopen(filename, "rb");
 	image_t img;
 	unsigned char *pixels;
 	GLuint id;
-	if(!gyFileOpen(filename, "rb", &f)) {
+
+	if(!f) //no image file
+	{
 		*success = 0;
-		return 0;
+		return -1;
 	}
 	pixels = load_png(f, &img);
-	if(!pixels) {
+	if(!pixels) //no pixels
+	{
 		*success = 0;
-		return 0;
+		return -1;
 	}
-    gyFileClose(&f);
+	fclose(f);
+
 	glGenTextures(1, &id);
-	if(id == 0) { /* no texture ID */
+	if(id == 0) { //no texture ID
 		*success = 0;
-		return 0;
+		return -1;
 	}
 	glBindTexture(GL_TEXTURE_2D, id);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, min);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mag);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, st);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, st);
-	glTexImage2D(GL_TEXTURE_2D, 0, img.format, img.width, img.height, 0, img.format, GL_UNSIGNED_BYTE, pixels);
+	glTexImage2D(GL_TEXTURE_2D, 0, img.components, img.width, img.height, 0, img.format, GL_UNSIGNED_BYTE, pixels);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	free(pixels);
+
 	*success = 1;
 	return id;
 };

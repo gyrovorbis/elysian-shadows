@@ -280,7 +280,7 @@ void ESToolkit::_engineLoadAssets(void) {
     _engine->getMapSys()->engine = _engine;
     _engine->getMapSys()->show();
    // _engine->loadAssets();
-    _debug->sandboxInit();
+	//_debug->sandboxInit();
 }
 
 
@@ -822,10 +822,8 @@ void ESToolkit::_openProjectDir(const QString dir) {
     QDir::setCurrent(dir);
     _engineLoadAssets();
 
-
+	_engine->getMapSys()->makeCurrent();
 	Project *proj = _assets.loadProject(dir);
-
-    _engine->getMapSys()->makeCurrent();
 
     _assets.setCurrentProject(proj);
     _assets.setCurrentSelection(_assets.getCurrentArea());

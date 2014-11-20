@@ -4,8 +4,8 @@
 #ifdef ELYSIAN_ENGINE
 #   define ELYSIAN_ASSET_TYPEDEF(type) \
         namespace elysian { \
-            class type##Base;
-            typedef type##Base type; \
+			class type##Base; \
+			typedef ##type##Base type; \
         }
 
 #   define ELYSIAN_ASSET_HEADER(gamma, tk) gamma
