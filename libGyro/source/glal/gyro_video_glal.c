@@ -181,16 +181,26 @@ int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth,
     _projHeight = projHeight;
 
 	glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
-	//glClearDepthf(1.0f);
-	//glDepthFunc(GL_LEQUAL);
-	//glEnable(GL_BLEND);
+   // glClearDepthf(1.0f);
+    //glDepthFunc(GL_LEQUAL);
+    //glEnable(GL_BLEND);
 	//glEnable(GL_DEPTH_TEST);
+    // Enable depth buffer
+//    glEnable(GL_DEPTH_TEST);
+
+    // Enable back face culling
+    //glEnable(GL_CULL_FACE);
 	glViewport(0, 0, viewWidth, viewHeight);
+
+    static int once = 0;
+    if(!once) {
 	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glalLoadDefaultShaders();
-	gyVidSetDefaultShaderProgram();
-	glalDefaultShadersLoadUniforms();
+        glalLoadDefaultShaders();
+        gyVidSetDefaultShaderProgram();
+        glalDefaultShadersLoadUniforms();
+        once = 1;
+    }
 
     return 1;
 }
@@ -213,8 +223,23 @@ void gyVidRectTexOrient(const GY_RECT_TEX_ORIENT orient) {
 
 static inline void _gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsigned int startIndex, const unsigned int amount) {
 	glVertexAttribPointer(curLightShader->attribLoc[SHADER_POS], 4, GL_FLOAT, GL_FALSE, 0, vertexArray);
+    GLenum glErr = glGetError();
+    if (glErr != GL_NO_ERROR)
+    {
+        gyPrintf("glError in file - vertAttrib");
+    }
 	glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_POS]);
+    glErr = glGetError();
+    if (glErr != GL_NO_ERROR)
+    {
+        gyPrintf("glError in file enableVertAttribArray");
+    }
 	glDrawArrays(GL_TRIANGLE_STRIP, startIndex, amount);
+    glErr = glGetError();
+       if (glErr != GL_NO_ERROR)
+       {
+           gyPrintf("glError in file gldrawArrays");
+       }
 	vertexRenderCount += amount;
 
     curTexCoordPtr = NULL;
@@ -286,7 +311,7 @@ void gyVidQuadListBegin(const GYColor4 *const color) {
 }
 
 void gyVidQuadListEnd(void) {
-	gyVidTexCoordArray(_stripTexCoords);
+    if(curTex) gyVidTexCoordArray(_stripTexCoords);
 	gyVidColorArray(_stripColors);
 	_gyVidTriangleStrip(_modelViewVertices, 0, curStripSize);
 	curStripSize = 0;
