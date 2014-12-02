@@ -91,16 +91,10 @@
 #	define GYRO_MATH_PLATFORM_INCLUDE       "x86/gyro_math_sse_x86.inl"
 #	define GYRO_MATRIX_PLATFORM_INCLUDE     "x86/gyro_matrix_sse_x86.inl"
 #	define GYRO_AUDIO_PLATFORM_INCLUDE      "glal/gyro_audio_glal.inl"
+#	define GYRO_INPUT_PLATFORM_INCLUDE      "x86/gyro_input_x86.inl"
 
 
 //===== FUCKING HACK REEST - DESTROY ME =====
-
-    typedef struct _GYInput {
-
-    } GYInput;
-
-
-    static inline void gyInputPoll(GYInput*const input) { (void)input;}
 
     static inline void gyVidSceneBegin() {  }
 
