@@ -3,6 +3,7 @@
 
 #include "elysian_system.hpp"
 #include "elysian_asset_typedefs.hpp"
+#include <gyro_matrix_api.h>
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 

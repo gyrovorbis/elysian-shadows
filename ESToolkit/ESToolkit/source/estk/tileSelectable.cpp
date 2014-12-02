@@ -10,7 +10,7 @@
 
 // ===== STATIC MEMBERS =====
 
-TileSelectableSelectionViewDelegate *TileSelectable::_selectionViewDelegate = nullptr;
+TileSelectableSelectionViewDelegate* TileSelectable::_selectionViewDelegate = nullptr;
 
 // ===== INSTANCE MEMBERS =====
 
@@ -80,8 +80,10 @@ TileSelectable::TileSelectable(const QList<QGraphicsItem *> &items, Area *const 
 	_level(lev),
 	_area(area)
 {
+    Q_ASSERT(0); //shouldn't be using this constructor
 	if(!_selectionViewDelegate) _selectionViewDelegate = new TileSelectableSelectionViewDelegate;
     _populateTileIndicesList();
+    //updateSceneSelection();
 }
 
 
@@ -95,19 +97,28 @@ TileSelectable::TileSelectable(const QRect &region, bool selectionArray[][ELYSIA
 
 	_allocArrays(_entry, _inSelection, _width, _height);
 
+    _prevEntry = new TileEntry* [_height];
+    for(unsigned y = 0; y < _height; ++y){
+        _prevEntry[y] = new TileEntry[_width];
+    }
+
 	for(unsigned j = 0; j < _height; ++j) {
 		for(unsigned i = 0; i < _width; ++i) {
 			//uint16_t tileValue = area->getTileValue(QPoint(region.topLeft().x()+i, region.topLeft().y()+j), layer);
-			_entry[j][i] = area->getTileEntry(QPoint(region.topLeft().x()+i, region.topLeft().y()+j), layer);
-			_inSelection[j][i] = selectionArray[region.topLeft().y()+j][region.topLeft().x()+i];
+            _prevEntry[j][i] = _entry[j][i] = area->getTileEntry(QPoint(region.topLeft().x()+i, region.topLeft().y()+j), layer);
+            _inSelection[j][i] = selectionArray[region.topLeft().y()+j][region.topLeft().x()+i];
 			//_index[j][i] = ELYSIAN_MAP_INDEX_FROM_VALUE(tileValue);
 			//_orient[j][i] = ELYSIAN_MAP_ORIENT_FROM_VALUE(tileValue);
 
 		}
 	}
 
+    _sceneX = region.topLeft().x();
+    _sceneY = region.topLeft().y();
+
 	if(!_selectionViewDelegate) _selectionViewDelegate = new TileSelectableSelectionViewDelegate;
     _populateTileIndicesList();
+    updateSceneSelection(region.topLeft().x(), region.topLeft().y());
 }
 
 TileSelectable::TileSelectable(const TileSelectable &rval):
@@ -422,5 +433,75 @@ void TileSelectable::setSpecularMapEnabled(const bool val) {
                                                           _groupSpecularSet,
                                                           _groupSpecular,
                                                           UndoItem::TILE_GROUP_SPECULAR_MAP));
+}
+
+void TileSelectable::updateSceneSelection(const unsigned sceneX, const unsigned sceneY) {
+    if(sceneX == _sceneX && sceneY == _sceneY) return;
+
+#if 0
+    //Refresh old selection region to clear selection from VBO
+    if(_prevSceneX != -1 && _prevSceneY != -1)
+    for(unsigned y = prevSceneStartY; y <= prevSceneEndY; ++y) {
+        for(unsigned x = prevSceneStartX; x <= prevSceneEndX; ++x) {
+            //Don't bother if tile is part of new selection
+            if(x >= sceneX && x <= sceneEndX && y >= sceneY && y <= sceneEndY)
+                continue;
+            _area->setTileEntry(_layer, x, y, _area->getTileEntry(_layer,w x, y));
+        }
+    }
+
+
+    for(unsigned y = 0; y < _height; ++y) {
+        for(unsigned x = 0; x < _width; ++x) {
+            if(_inSelection[y][x]) {
+                _area->setVboEntry(&_entry[y][x], _layer, x+sceneX, y+sceneY);
+            }
+        }
+    }
+#endif
+
+   clearSceneSelection();
+
+   _sceneX             = sceneX/32;
+   _sceneY             = sceneY/32;
+
+    for(unsigned y = 0; y < _height; ++y) {
+        for(unsigned x = 0; x < _width; ++x) {
+            if(_inSelection[y][x]) {
+                if(_area->isValidTileEntry(x+_sceneX, y+_sceneY)) {
+                    _prevEntry[y][x] = _area->getTileEntry(_layer, x+_sceneX, y+_sceneY);
+                    _area->setTileEntry(_layer, x+_sceneX, y+_sceneY, _entry[y][x]);
+                }
+            }
+        }
+    }
+}
+
+void TileSelectable::clearSceneSelection(void) {
+    _prevSceneX = _sceneX;
+    _prevSceneY = _sceneY;
+    _sceneX = -1;
+    _sceneY = -1;
+    if(_prevSceneX != -1 && _prevSceneY != -1) {
+        for(unsigned y = 0; y < _height; ++y) {
+            for(unsigned x = 0; x < _width; ++x) {
+                 if(_area->isValidTileEntry(x+_prevSceneX, y+_prevSceneY))
+                if(_inSelection[y][x]) {
+                    _area->setTileEntry(_layer, x+_prevSceneX, y+_prevSceneY, _prevEntry[y][x]);
+                }
+            }
+        }
+    }
+}
+
+
+void TileSelectable::clearPrevSceneSelection(void) {
+    for(unsigned y = 0; y < _height; ++y) {
+        for(unsigned x = 0; x < _width; ++x) {
+            if(_inSelection[y][x]) {
+                _prevEntry[y][x] = _entry[y][x];
+            }
+        }
+    }
 }
 

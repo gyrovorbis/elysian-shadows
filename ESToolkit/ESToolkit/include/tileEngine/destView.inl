@@ -7,10 +7,7 @@
 #include "elysian_zcoords.hpp"
 
 template<typename T>
-DestView<T>::DestView(QWidget *parent): SourceView(parent), _selItemGroup(NULL), _selClipboard(NULL),
-	_fillingRegion(false), _placedTileGroup(false), _prevXOffset(0), _prevYOffset(0), _selectionChanged(true) {
-}
-
+DestView<T>::DestView(QWidget *parent): SourceView(parent) {}
 template<typename T>
 void DestView<T>::_sceneSelectionAddRect(const QRectF &rect) {
 	_selectingPath = _selectedPath;
@@ -94,7 +91,7 @@ void DestView<T>::placeSelection(void) {
 	if(tilesAdded) _getUndoStack()->push(groupCmd);
 	else delete groupCmd;
 
-	scene()->update();
+    _forceSceneUpdate();
 }
 
 /*
@@ -218,10 +215,10 @@ void DestView<T>::createSelectionItemGroup(void) {
 template<typename T>
 void DestView<T>::deleteSelectionItemGroup(void) {
 	_fillingRegion = false;
-	scene()->clearSelection();
+    if(scene()) scene()->clearSelection();
 	delete _selItemGroup;
     _selItemGroup = nullptr;
-	scene()->update();
+    _forceSceneUpdate();
 
 	_sceneSelectionSizeLabel->setText(QString("0, 0"));
 }
@@ -249,14 +246,15 @@ void DestView<T>::mousePressEvent(QMouseEvent *event) {
 
 	if(event->button() == Qt::LeftButton && !(event->modifiers() &= Qt::ControlModifier)) {
 		if(_selItemGroup) placeSelection();
-		else setDragMode(ScrollHandDrag);
+        else { _startPan(); }
 		//event->ignore();
 		//return;
 	}
 	else if(event->button() == Qt::MidButton) {
 		QMouseEvent fooledya(event->type(), event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers());
-		setDragMode(ScrollHandDrag);
-		QGraphicsView::mousePressEvent(&fooledya);
+        //setDragMode(ScrollHandDrag);
+        //_panning = true;
+        QGraphicsView::mousePressEvent(&fooledya);
 	} else QGraphicsView::mousePressEvent(event);
 
 	if(event->buttons() & Qt::LeftButton && (event->modifiers() &= Qt::ControlModifier)) {
@@ -268,9 +266,9 @@ void DestView<T>::mousePressEvent(QMouseEvent *event) {
 	if(event->button() == Qt::RightButton) {
 		if(_selItemGroup) {
 			delete _selItemGroup;
-			_selItemGroup=NULL;
+            _selItemGroup = nullptr;
 		}
-		setDragMode(NoDrag);
+        _endPan();
 
 		_startRegionSelection(event);
 		//event->accept();
@@ -295,6 +293,11 @@ void DestView<T>::mouseReleaseEvent(QMouseEvent *event) {
 	if(event->button() == Qt::LeftButton && _fillingRegion) {
 		_endRegionFill(event);
 	}
+
+    if((event->button() == Qt::LeftButton || event->button() == Qt::MidButton) && _panning) {
+        _endPan();
+    }
+
 
 	if( !(event->modifiers() &= Qt::ControlModifier) ) {
 		disableSelectionPlacementMerge();
@@ -330,8 +333,8 @@ void DestView<T>::keyPressEvent (QKeyEvent *event)  {
 template<typename T>
 void DestView<T>::keyReleaseEvent (QKeyEvent *event)  {
 	if(event->key() == Qt::Key_Control) {
-		if(isSelecting()) _endRegionSelection(NULL);
-		else if(isFillingRegion()) _endRegionFill(NULL);
+        if(isSelecting()) _endRegionSelection(nullptr);
+        else if(isFillingRegion()) _endRegionFill(nullptr);
 	}
 	//else QGraphicsView::keyReleaseEvent(event);
 
@@ -341,9 +344,9 @@ void DestView<T>::keyReleaseEvent (QKeyEvent *event)  {
 template<typename T>
 void DestView<T>::mouseMoveEvent(QMouseEvent *event) {
 	_lastMouseEvent = QMouseEvent(*event);
-	//_curMousePos = mapToScene(event->pos());
+    //_curMousePos = _mapViewPosToScenePos(event->pos());
 	_viewMousePos = event->pos();
-	//_sceneMousePos = mapToScene(_viewMousePos);
+    //_sceneMousePos = _mapViewPosToScenePos(_viewMousePos);
 	_updateSceneMousePos();
 
 /*	if(_autoScrollEnabled && dragMode() != ScrollHandDrag) {
@@ -373,16 +376,16 @@ template<typename T>
 void DestView<T>::scrollContentsBy(int dx, int dy) {
 	//necessary to prevent fragmenting on scroll,
 	//& to allow selection to continue to follow mouse (don't think this part works with scale)
-	/*if(_selItemGroup){
-		//_curMousePos -= mapToScene(QPoint(dx, dy));
+    /*if(_selItemGroup){
+        //_curMousePos -= _mapViewPosToScenePos(QPoint(dx, dy));
 		_curMousePos -= QPoint(dx, dy);
 
 		_selItemGroup->setPos(QPointF(_curMousePos.x(),_curMousePos.y()));
 		_selItemGroup->update();
-	}*/
+    }*/
 	//updateSelectionItemGroup();
-	QGraphicsView::scrollContentsBy(dx, dy);
-	if(scene()) scene()->update();
+    QGraphicsView::scrollContentsBy(dx, dy);
+    _forceSceneUpdate();
 }
 
 template<typename T>
@@ -392,10 +395,10 @@ void DestView<T>::_startRegionFill(QMouseEvent *event) {
 	if(!_fillingRegion) {
 		_fillingRegion = true;
 
-		_fillFixedPivot = _fillCurrentPivot = mapToScene(event->pos());
+        _fillFixedPivot = _fillCurrentPivot = _mapViewPosToScenePos(event->pos());
 	}
 	else {
-		_fillCurrentPivot = mapToScene(event->pos());
+        _fillCurrentPivot = _mapViewPosToScenePos(event->pos());
 	}
 
 }
@@ -403,7 +406,7 @@ void DestView<T>::_startRegionFill(QMouseEvent *event) {
 template<typename T>
 void DestView<T>::_updateRegionFill(QMouseEvent *event) {
 	if(_fillingRegion) {
-		_sceneSelectionUpdateLastRect(getRect(_fillCurrentPivot, mapToScene(event->pos())));
+        _sceneSelectionUpdateLastRect(getRect(_fillCurrentPivot, _mapViewPosToScenePos(event->pos())));
 	}
 }
 
@@ -412,7 +415,7 @@ void DestView<T>::_endRegionFill(QMouseEvent *event) {
 	if(!_fillingRegion) return;
 
 	if(event) {
-		_sceneSelectionAddRect(getRect(_fillCurrentPivot, mapToScene(event->pos())));
+        _sceneSelectionAddRect(getRect(_fillCurrentPivot, _mapViewPosToScenePos(event->pos())));
 
 		/* Unfortunately, the new, correct region-fill cannot handle staggered region filling!
 		  Because of laying on different sides of dynamic pivot
@@ -474,7 +477,7 @@ void DestView<T>::selectionCut(void) {
 		delete _selClipboard;
 		_selClipboard = _copyConstructTileSelection(*terSel);
 		deleteSelectionItemGroup();
-		_setTileSelection(NULL);
+        _setTileSelection(nullptr);
 	}
 }
 
@@ -482,6 +485,6 @@ template<typename T>
 void DestView<T>::selectionPaste(void) {
 	if(_selClipboard) {
 		_setTileSelection(_selClipboard);
-		_selClipboard = NULL;
+        _selClipboard = nullptr;
 	}
 }

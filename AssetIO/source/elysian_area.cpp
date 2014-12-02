@@ -35,11 +35,11 @@ void AreaBase::removeEntity(Entity *entity) {
 		}
 	}
 }
-
+/*
 AreaBase::AreaBase(void) {
 #ifdef GYRO_GLAL
 #endif
-}
+}*/
 
 AreaBase::~AreaBase(void) {
 	glDeleteBuffers(1, &vboBuff);
@@ -88,13 +88,14 @@ void AreaBase::resizeMap(const unsigned w, const unsigned h) {
 
 static char buffer[ELYSIAN_AREA_PATH_SIZE+50];
 
-bool AreaBase::load(const char *const dir, const Level *lev) {
+bool AreaBase::load(const char *const dir) {
+    assert(level);
+
     bool success = true;
 
     dbgprintf(LOG_VERBOSE, "Area::Load(%s)", dir);
     dbgPush();
     
-    level = lev;
 	strcpy(path, dir);
     
 	strcpy(buffer, dir);
@@ -250,6 +251,8 @@ bool AreaBase::saveEntities(const char *const /*filename*/) {
 }
 
 void AreaBase::populateVbo(void) {
+    if(vboPopulated) return;
+
 	glGenBuffers(1, &vboBuff);
 
     Debug::printf(Debug::VERBOSE, "VBO BUFF - %d", vboBuff);
@@ -286,6 +289,8 @@ void AreaBase::populateVbo(void) {
        }
 
 	free(data);
+
+    vboPopulated = true;
 }
 
 

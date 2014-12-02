@@ -69,6 +69,11 @@ _LightingShaderProgram*		curLightShader		= &_lightingShader;
 void gyVidSetCurrentShaderProgram(struct _GYShaderProgram*const program) {
 	_curShaderProg = program;
 	glUseProgram(program->program);
+        GLenum glErr = glGetError();
+    if (glErr != GL_NO_ERROR)
+    {
+            _gyLog(GY_DEBUG_CRITICAL, "glError in file %d!!", program->program);
+    }
 }
 
 void gyVidSetDefaultShaderProgram(void) {
@@ -256,12 +261,13 @@ void glalLoadDefaultShaders(void) {
 	//GYShader* vertShader = gyShaderCreate("/Users/Falco/Documents/ESDev/libGyro/source/glal/shaders/pixelLighting.vsh");
 	//GYShader* fragShader = gyShaderCreate("/Users/Falco/Documents/ESDev/libGyro/source/glal/shaders/pixelLighting.fsh");
 	_lightingShader.program = gyShaderProgramCreate(vertShader, fragShader);
+    _gyLog(GY_DEBUG_CRITICAL, "LIGHTING SHADER - %d", _lightingShader.program->program);
 	_queryLightingShader(&_lightingShader, 1);
-
+/*
 	vertShader = gyShaderCreate("/assets/shaders/shadowMap.vsh");
 	fragShader = gyShaderCreate("/assets/shaders/shadowMap.fsh");
 	_shadowMapShader.program = gyShaderProgramCreate(vertShader, fragShader);
-	_queryLightingShader(&_shadowMapShader, 0);
+    _queryLightingShader(&_shadowMapShader, 0);*/
 }
 
 void glalDefaultShadersLoadUniforms(void) {
@@ -427,6 +433,10 @@ int _gyVidShaderProgramCreate(GYShaderProgram* program) {
 		glDeleteProgram(program->program);
 		return 0;
 	}
+
+    glDetachShader(program->program, program->vertShader->shader);
+    glDetachShader(program->program, program->fragShader->shader);
+
 	return 1;
 }
 

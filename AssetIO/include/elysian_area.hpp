@@ -53,6 +53,7 @@
 #	define ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(l, t) l[t]
 #endif
 
+ELYSIAN_ASSET_TYPEDEF(Area)
 ELYSIAN_ASSET_TYPEDEF(Level)
 ELYSIAN_ASSET_TYPEDEF(Entity)
 
@@ -133,16 +134,17 @@ namespace elysian {
 		TileEntry*			tileLayer2		= nullptr;
 		TileEntry*			tileLayer3		= nullptr;
 
-		const Level*		level			= nullptr;
+        Level*              level			= nullptr;
 
 		unsigned short int	width			= 0;
 		unsigned short int	height			= 0;
 		unsigned			mapEntryCount	= 0;
 		unsigned			layerEntryCount	= 0;
 
-		GLuint vboBuff;
+        GLuint              vboBuff         = 0;
+        bool                vboPopulated    = false;
 
-        AreaBase(void);
+        //AreaBase(void);
         ~AreaBase(void);
 
         unsigned short  getMapWidth(void) const { return width; }
@@ -153,14 +155,16 @@ namespace elysian {
 		//Slower than layer-specific accessors, but loop-friendly
 		TileEntry	getTileEntry(const unsigned l, const unsigned x, const unsigned y) const;
 		void		setTileEntry(const unsigned l, const unsigned x, const unsigned y, const TileEntry e);
+        bool        isValidTileEntry(const unsigned x, const unsigned y) const;
 		//Faster lookups
+#if 0
 		TileEntry	getL1TileEntry(const unsigned x, const unsigned y) const;
 		void		setL1TileEntry(const unsigned x, const unsigned y, const TileEntry e);
 		TileEntry	getL2TileEntry(const unsigned x, const unsigned y) const;
 		void		setL2TileEntry(const unsigned x, const unsigned y, const TileEntry e);
 		TileEntry	getL3TileEntry(const unsigned x, const unsigned y) const;
 		void		setL3TileEntry(const unsigned x, const unsigned y, const TileEntry e);
-
+#endif
 		//entity management
 		void		addEntity(Entity *entity);
 		void		removeEntity(Entity *entity);
@@ -170,7 +174,9 @@ namespace elysian {
 		void		freeMap(void);
 		void		resizeMap(const unsigned w, const unsigned h);
 
-		bool		load(const char *const dir, const Level *lev=NULL);
+        void        setLevel(Level*const lev);
+        Level*      getLevel(void) const;
+        bool		load(const char *const dir);
 		bool		save(const char *const dir);
 
 		bool		loadMap(const char *const filename);
@@ -180,7 +186,8 @@ namespace elysian {
 
 
 		void		populateVbo(void);
-        void        vboEntryFromTileEntry(VboEntry*const vboEntry, const TileEntry *const tileEntry, const unsigned x, const unsigned y);
+        void        setVboEntry(const TileEntry*const tileEntry, const unsigned l, const unsigned x, const unsigned y) const;
+        void        vboEntryFromTileEntry(VboEntry*const vboEntry, const TileEntry *const tileEntry, const unsigned x, const unsigned y) const;
         void        animateVboTileEntry(const unsigned l, const unsigned x, const unsigned y, const uint16_t index);
 
 	};
@@ -220,7 +227,7 @@ namespace elysian {
 	}
 
 
-    inline void AreaBase::vboEntryFromTileEntry(VboEntry * const vboEntry, const TileEntry * const tileEntry, const unsigned x, const unsigned y) {
+    inline void AreaBase::vboEntryFromTileEntry(VboEntry * const vboEntry, const TileEntry * const tileEntry, const unsigned x, const unsigned y) const {
 
         const GYTexCoord2*const coords = gyVidTexCoordArrayFromFrame(&level->tileSheet->_coord->texCoord[tileEntry->getIndex()],
                                                                            tileEntry->getOrient());
@@ -379,6 +386,7 @@ namespace elysian {
 
 	}
 
+#if 0
     inline TileEntry AreaBase::getL1TileEntry(const unsigned x, const unsigned y) const {
 		return ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tiles, y*width + x);
 	}
@@ -397,6 +405,27 @@ namespace elysian {
     inline void AreaBase::setL3TileEntry(const unsigned x, const unsigned y, const TileEntry e) {
 		ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tileLayer3, y*width + x) = e;
 	}
+#endif
+
+    inline void AreaBase::setLevel(Level * const lev) { level = lev; }
+
+    inline Level* AreaBase::getLevel(void) const { return level; }
+
+    inline void AreaBase::setVboEntry(const TileEntry*const tileEntry, const unsigned l, const unsigned x, const unsigned y) const {
+        VboEntry entry[4];
+
+        vboEntryFromTileEntry(entry, tileEntry, x, y);
+
+        //ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
+
+        glBindBuffer(GL_ARRAY_BUFFER, vboBuff);
+        glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_MAP_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(VboEntry), sizeof(VboEntry)*4, (void*)entry);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    }
+
+     inline bool AreaBase::isValidTileEntry(const unsigned x, const unsigned y) const { return (x < width && y < height); }
 
 }
 

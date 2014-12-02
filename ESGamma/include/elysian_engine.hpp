@@ -9,16 +9,18 @@ namespace elysian {
 	class Engine: public System {
 		friend class Debug;
 	private:
-		GYInput _platInput;
-		GameInput _gameInput;
+        GYInput     _platInput;
+        GameInput   _gameInput;
 		
 	public:
-		Engine(void);
-		~Engine(void);
-		void update(void);
-		bool loadAssets(void);
-		void processInput(void);
-		void render(void);
+                Engine(void);
+                ~Engine(void);
+
+        bool    loadAssets(void);
+
+        void    update(void);
+        void    processInput(void);
+        void    render(void);
 	};
 
 }

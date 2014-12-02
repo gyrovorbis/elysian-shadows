@@ -12,10 +12,19 @@ int _gyVidTexAlloc(GYTexture *const tex, const unsigned width, const unsigned he
     (void)height;
     const QGLContext* current = QGLContext::currentContext();
 
+    QPixmap pixmap(tex->filename);
+    pixmap = pixmap.transformed(QTransform().scale(1, -1));
+
+
     qDebug() << "CONTEXT - " << current;
 
  //   tex->_pixmap = QPixmap(QString(tex->filename));
-    tex->_data = (void*)((QGLContext*)current)->bindTexture(QPixmap(QString(tex->filename)), GL_TEXTURE_2D);
+    *(int*)&tex->_data = ((QGLContext*)current)->bindTexture(pixmap, GL_TEXTURE_2D);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+      //  glTexImage2D(GL_TEXTURE_2D, 0, img.format, img.width, img.height, 0, img.format, GL_UNSIGNED_BYTE, pixels);
 
     qDebug() << "TEXTURE " << tex->_data;
 

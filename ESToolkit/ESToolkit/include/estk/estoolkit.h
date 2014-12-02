@@ -32,6 +32,7 @@ class HistoryDockWidget;
 class SheetManager;
 class EngineSettingsDialog;
 class LuaExplorerDialog;
+class EngineGLSceneWidget;
 
 namespace Ui {
     class ESToolkit;
@@ -49,11 +50,10 @@ public:
     void _engineInitialize(void);
     void _engineLoadAssets(void);
 	void _openProjectDir(const QString dir);
-public:
-        elysian::Engine*        _engine;
 private:
     Assets                  _assets;
     QUndoGroup              _undoGroup;
+    EngineGLSceneWidget*    _engineGLView;
 
     elysian::Debug *        _debug;
 
@@ -81,7 +81,7 @@ private:
 
 
     void SyncEntityMenuBar(const Entity *const entity);
-    void ToogleProjectActions(bool enabled);
+    void toggleProjectActions(bool enabled);
     bool MaybeSave();
     void WriteSettings();
     void ReadSettings();

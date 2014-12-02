@@ -160,6 +160,7 @@ namespace elysian {
 		int						_rightBoundary	=	-1;
 
 		bool					_dynamic		= true;
+        bool                    _boundByMap     = true;
 
 		void _updateState(CameraState*const state, const float deltaTime);
 
@@ -167,6 +168,10 @@ namespace elysian {
         enum SUBPROC_ID { SUBPROC_KEY_FR_INTERP, SUBPROC_CAM_SHAKE };
 
 		CameraSystem(void);
+
+        void initializeProjMatrix(void);
+        bool isBoundByMap(void) const;
+        void setBoundByMap(const bool val);
 
 		void pushCustomCameraState(CameraState*const state) {
 			++_depth;
@@ -229,7 +234,7 @@ namespace elysian {
         }
 
 		void scale(const float factor, const float time=0.0f, EventMonitor*const monitor=nullptr) {
-            auto &interp = get<SUBPROC_KEY_FR_INTERP>(static_cast<SubProcParent& >(*this));
+            auto &interp = get<SUBPROC_KEY_FR_INTERP>(static_cast<SubProcParent&>(*this));
 			//if(interp.getProcState() == PROC_STATE_RUNNING)
 
 			CameraKeyFrame frame = getKeyFrame();
@@ -324,6 +329,9 @@ namespace elysian {
 		//Transforms a WORLD COORDINATE vector into SCREEN COORDINATES
 		void transform(GYVector3* dest, const GYVector3* src);
 		void transform(GYVector4* dest, const GYVector4* src);
+
+        //Transforms a SCREEN COORDINATE vector into WORLD COORDINATES
+        void inverseTransform(GYVector3* dest, const GYVector3* src);
 
 		void update(void);
 
@@ -456,6 +464,21 @@ namespace elysian {
     inline float CameraKeyFrame::getZOrient(void) const { return _zOrient; }
     inline float CameraKeyFrame::getXOrient(void) const { return _xOrient; }
     inline void CameraKeyFrame::getDir(float& x, float& y, float& z) const { x = _dir.x; y = _dir.y; z = _dir.z; }
+
+    inline bool CameraSystem::isBoundByMap(void) const { return _boundByMap; }
+    inline void CameraSystem::setBoundByMap(const bool val) { _boundByMap = val; }
+
+    //doesn't take camera rotation into account yet!
+    inline void CameraSystem::inverseTransform(GYVector3 *dest, const GYVector3 *src) {
+        unsigned w, h;
+        gyVidResolution(&w, &h);
+        auto screenOffset = GYVector3 { (float)w, (float)h, 0.0f };
+
+        *dest = *src;
+        gyVec3AddScaled(dest, &screenOffset, -0.5f);
+        gyVec3ScaleAccum(dest, 1.0f/_curState->_keyFrame.getScale());
+        gyVec3AddAccum(dest, &_curState->_keyFrame._pos);
+    }
 
 
 	

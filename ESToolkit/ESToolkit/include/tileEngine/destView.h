@@ -10,25 +10,27 @@ class TileSelection;
 template<typename T>
 class PlaceTileGroupUndoItem;
 
+
 template<typename T>
 class DestView : public SourceView  {
 protected:
-	QGraphicsItemGroup *_selItemGroup;
-	TileSelection<T> *_selClipboard;
+    QGraphicsItemGroup* _selItemGroup       = nullptr;
+    TileSelection<T>*   _selClipboard       = nullptr;
 
-	QVector<QRectF> _tileSelectionRects;
-	QPainterPath _fillPath;
-	QPointF _fillFixedPivot;
-	QPointF _fillCurrentPivot;
-	bool _fillingRegion;
+    QVector<QRectF>     _tileSelectionRects;
+    QPainterPath        _fillPath;
+    QPointF             _fillFixedPivot;
+    QPointF             _fillCurrentPivot;
+    bool                _fillingRegion      = false;
 
 	//Undo/redo extra data to retreive ID dynamically
-	bool _placedTileGroup;
-	int _placeTileGroupID;
+    bool                _placedTileGroup    = false;
+    int                 _placeTileGroupID;
 
 	//Tile selection placement state
-	int _prevXOffset, _prevYOffset;
-	bool _selectionChanged;
+    int                 _prevXOffset        = 0;
+    int                 _prevYOffset        = 0;
+    bool                _selectionChanged   = true;
 
 	//Tile Region Filling Logic
 	void _startRegionFill(QMouseEvent *event);
@@ -44,19 +46,19 @@ protected:
 	virtual void _sceneSelectionClear(void);
 
 	//Overridable DestView functionality
-	virtual TileSelection<T> *_getTileSelection(void) const = 0;
-	virtual void _setTileSelection(TileSelection<T> *const sel) = 0;
-	virtual QUndoStack *_getUndoStack(void) const = 0;
-	virtual PlaceTileGroupUndoItem<T> *_createPlaceTileGroup(void) = 0;
-	virtual TileSelection<T> *_copyConstructTileSelection(const TileSelection<T> &rval) const = 0;
+    virtual TileSelection<T>*           _getTileSelection(void) const = 0;
+    virtual void                        _setTileSelection(TileSelection<T> *const sel) = 0;
+    virtual QUndoStack*                 _getUndoStack(void) const = 0;
+    virtual PlaceTileGroupUndoItem<T>*  _createPlaceTileGroup(void) = 0;
+    virtual TileSelection<T>*           _copyConstructTileSelection(const TileSelection<T> &rval) const = 0;
 
 public:
-	explicit DestView(QWidget *parent = 0);
+    explicit DestView(QWidget *parent = nullptr);
 
-	inline QPointF getFillFixedPivot(void) const { return _fillFixedPivot; }
-	inline QPointF getFillCurrentPivot(void) const { return _fillCurrentPivot; }
-	inline bool isFillingRegion(void) const { return _fillingRegion; }
-	inline void setSelectionChanged(const bool val) { _selectionChanged = val; }
+    inline QPointF  getFillFixedPivot(void) const { return _fillFixedPivot; }
+    inline QPointF  getFillCurrentPivot(void) const { return _fillCurrentPivot; }
+    inline bool     isFillingRegion(void) const { return _fillingRegion; }
+    inline void     setSelectionChanged(const bool val) { _selectionChanged = val; }
 
 	/* Needs to be invoked whenever a terrain selection is made to
 	   create the selection in the view. */

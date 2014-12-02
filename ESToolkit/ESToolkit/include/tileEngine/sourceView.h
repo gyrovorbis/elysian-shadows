@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QTimer>
 #include <QMouseEvent>
+#include <gyro_matrix_api.h>
 
 class SourceView : public QGraphicsView {
 	Q_OBJECT
@@ -18,26 +19,31 @@ protected:
 	QPointF _fixedPivot;
     //pivot of current rectangular region within selection
 	QPointF _currentPivot;
-    bool _selecting = false;
+    bool _selecting                     = false;
+
+    //Panning
+    GYVector3   _baseTranslation          = { 0.0f, 0.0f, 0.0f };
+    bool        _panning                  = false;
+    QPoint      _panPivot;
 
 	QPointF _currentCenterPoint;
 
-    bool _autoScrollEnabled = true;
-    QTimer *_autoScrollTimer = new QTimer(this);
-    QMouseEvent _lastMouseEvent = QMouseEvent(QEvent::None, QPoint(),
+    bool _autoScrollEnabled             = true;
+    QTimer *_autoScrollTimer            = new QTimer(this);
+    QMouseEvent _lastMouseEvent         = QMouseEvent(QEvent::None, QPoint(),
                                               Qt::LeftButton,
                                               Qt::RightButton,
                                               Qt::ControlModifier);
 
-    QLabel *_sceneMousePosLabel = new QLabel;
-    QLabel *_sceneMouseTileLabel = new QLabel;
-    QLabel *_sceneSelectionSizeLabel = new QLabel;
-    QLabel *_zoomLabel = new QLabel;
+    QLabel *_sceneMousePosLabel         = new QLabel;
+    QLabel *_sceneMouseTileLabel        = new QLabel;
+    QLabel *_sceneSelectionSizeLabel    = new QLabel;
+    QLabel *_zoomLabel                  = new QLabel;
 
 	void _updateSceneMousePos(void);
 
 public:
-    explicit SourceView(QWidget *parent = 0);
+    explicit SourceView(QWidget *parent = nullptr);
 
 	inline QLabel *getSceneMousePosLabel(void) const { return _sceneMousePosLabel; }
 	inline QLabel *getSceneMouseTileLabel(void) const { return _sceneMouseTileLabel; }
@@ -54,11 +60,11 @@ public:
 		_panMouseButton = pan;
 	 }
 
-	 QPointF getSceneMousePos(void) const { return _sceneMousePos; }
-	 void setCenter(const QPointF &centerPoint);
+     QPointF        getSceneMousePos(void) const { return _sceneMousePos; }
+     void           setCenter(const QPointF &centerPoint);
 	 inline QPointF getCenter(void) const { return _currentCenterPoint; }
 
-	 inline bool isSelecting(void) const { return _selecting; }
+     inline bool    isSelecting(void) const { return _selecting; }
 	 inline QPointF getSelectionFixedPivot(void) const { return _fixedPivot; }
 	 inline QPointF getSelectionCurrentPivot(void) const { return _currentPivot; }
 
@@ -96,6 +102,11 @@ protected:
        this behavior is MapView, because it uses a custom, optimized-to-shit selection mechanism.
      */
 
+     virtual QPointF _mapViewPosToScenePos(const QPoint viewPos) const;
+     virtual void    _startPan(void);
+     virtual void    _endPan(void);
+     virtual void    _forceSceneUpdate(void);
+
      //adds a rectangular region to the current scene selection
      virtual void _sceneSelectionAddRect(const QRectF &rect);
      //updates the latest-added rectangular region within the current scene selection
@@ -114,7 +125,6 @@ protected:
 	 virtual void _externalSelectionCreate(void) = 0;
      //logic for clearing external selection container
 	 virtual void _externalSelectionClear(void) = 0;
-
 
 };
 

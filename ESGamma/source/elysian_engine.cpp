@@ -19,7 +19,7 @@
 #include "elysian_behavior_system.hpp"
 #include "elysian_light_system.hpp"
 #include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
-#include ELYSIAN_ASSET_HEADER("elysian_map_sytem.hpp", "tkMapSystem.h")
+#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tkMapSystem.h")
 #include "elysian_light_source.hpp"
 #include "elysian_particle_system.hpp"
 #include "elysian_day_system.hpp"
@@ -34,32 +34,39 @@ namespace elysian {
 Engine::Engine(void) {
 	srand(time(nullptr));
 
-	LuaManager::initialize();
-		
-	//allocate systems
-	_levelSystem		= new LevelSystem;
-	_mapSystem			= new MapSystem;
-	_cameraSystem		= new CameraSystem;
-	_animationSystem	= new AnimationSystem;
-	_characterSystem	= new CharacterSystem;
-	_partySystem		= new PartySystem;
-	_timerSystem		= new TimerSystem;
-	_warpSystem			= new WarpSystem;
-	_collisionSystem	= new CollisionSystem;
-	_rigidBodySystem	= new RigidBodySystem;
-	_guiSystem			= new GuiSystem;
-	_behaviorSystem		= new BehaviorSystem;
-	_audioSystem		= new AudioSystem;
-	_lightSystem		= new LightSystem;
-	_particleSystem		= new ParticleSystem;
-	_daySystem			= new DaySystem;
-	_examinableSystem	= new ExaminableSystem;
-	_dialogSystem		= new DialogSystem;
-	_combatSystem		= new CombatSystem;
+    //gyDebugInit();
+    //gySysInit();
+  //  gyVidInit();
+    //gyAudInit();
+    gyInputInit();
+   // gyTimerInit();
 
-	_behaviorSystem->initialize();
-	_warpSystem->initialize();
-	_combatSystem->initialize();
+    LuaManager::initialize();
+		
+    //allocate systems
+    _levelSystem		= new LevelSystem;
+    _mapSystem			= new MapSystem;
+    _cameraSystem		= new CameraSystem;
+    _animationSystem	= new AnimationSystem;
+    _characterSystem	= new CharacterSystem;
+    _partySystem		= new PartySystem;
+    _timerSystem		= new TimerSystem;
+    _warpSystem			= new WarpSystem;
+    _collisionSystem	= new CollisionSystem;
+    _rigidBodySystem	= new RigidBodySystem;
+    _guiSystem			= new GuiSystem;
+    _behaviorSystem		= new BehaviorSystem;
+    _audioSystem		= new AudioSystem;
+    _lightSystem		= new LightSystem;
+    _particleSystem		= new ParticleSystem;
+    _daySystem			= new DaySystem;
+    _examinableSystem	= new ExaminableSystem;
+    _dialogSystem		= new DialogSystem;
+    _combatSystem		= new CombatSystem;
+
+    _behaviorSystem->initialize();
+    _warpSystem->initialize();
+    _combatSystem->initialize();
 
 	//register Lua dependencies
 	Singletons::setGameInput(&_gameInput);
@@ -70,6 +77,8 @@ Engine::Engine(void) {
 
 bool Engine::loadAssets(void) {
     bool success = true;
+
+    _cameraSystem->initializeProjMatrix();
     
 	Debug::printf(Debug::VERBOSE, "Engine::LoadAssets()");
 	Debug::push();
@@ -171,26 +180,7 @@ void Engine::processInput(void) {
 }
 
 void Engine::render(void) {
-#if 1
-                _lightSystem->shadowRenderPasses();
-    gyVidSceneBegin();
 
-    //_cameraSystem->pushViewProjMatrix();
-    gyMatLoadIdentity();
-    gyMatPush();
-
-    gyMatTranslateScale(100.0f, 100.0f, 100.0f, 500.0f, 500.0f, 40.0f);
-    auto color  = GYColor4{ 0, 0, 255, 255};
-    gyVidQuadListBegin(&color);
-    gyVidRect(0);
-
-    gyMatPop();
-
-    gyVidSceneEnd();
-    //_cameraSystem->popViewProjMatrix();
-    gyVidQuadListEnd();
-
-#else
 	switch(System::_engineState) {
 		default:
 			gyVidSceneBegin();
@@ -219,8 +209,8 @@ void Engine::render(void) {
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
 			_lightSystem->shadowRenderPasses();
 #endif
-           // _lightSystem->addLightSourcesToScene();
-/*
+          //  _lightSystem->addLightSourcesToScene();
+
 			_mapSystem->render();
 
 			_lightSystem->render();
@@ -229,9 +219,9 @@ void Engine::render(void) {
              _particleSystem->render();
 
 
-             _lightSystem->removeLightSourcesFromScene();
+           //  _lightSystem->removeLightSourcesFromScene();
 
-             _guiSystem->render();*/
+             _guiSystem->render();
 
 			_cameraSystem->popViewProjMatrix();
 
@@ -242,8 +232,6 @@ void Engine::render(void) {
 
 			gyVidSceneEnd();
 	}
-
-#endif
 }
 
 Engine::~Engine(void) { 

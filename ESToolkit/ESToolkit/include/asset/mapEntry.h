@@ -27,7 +27,7 @@ struct TileEntry: public elysian::TileEntry, public AssetManager {
 	static bool renderColliders;
 	static bool renderZTran;
     static bool renderPlane;
-	inline TileEntry(void) {}
+    inline TileEntry(void) = default;
 	inline TileEntry(const elysian::TileEntry e): elysian::TileEntry(e.value) {}
 	inline TileEntry(const uint32_t val): elysian::TileEntry(val) {}
 	void renderDecoration(QPainter *const painter, const unsigned x, const unsigned y) const;

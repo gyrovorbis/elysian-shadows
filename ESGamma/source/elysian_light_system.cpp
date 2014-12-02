@@ -56,7 +56,7 @@ void LightSystem::setEnabled(const bool val) {
 	gyVidLightingSetEnable(val);
 }
 
-static void renderCube(float x, float y, float z,
+void LightSystem::renderCube(float x, float y, float z,
 					   float sx, float sy, float sz,
 					   float /*rotz*/) {
 	static const float verts[17*4] = {

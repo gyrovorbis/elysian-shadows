@@ -14,12 +14,14 @@
 #include "fileUtilities.h"
 #include "propertyStandardItem.h"
 #include "checkeredAlphaRectGraphicsItem.h"
+#include "elysian_level_system.hpp"
 
 //====STATIC====
 
 QGraphicsRectItem *TkLevel::_sheetViewTileParent          = nullptr;
 CheckeredAlphaRectGraphicsItem *::TkLevel::_bgRectItem    = nullptr;
 SelectionScene *TkLevel::_sheetViewScene                  = nullptr;
+Project* TkLevel::_curProj                                = nullptr;
 
 bool TkLevel::initializeScene(const SourceView *const view, bool horiz) {
 	static bool initialized = false;
@@ -116,14 +118,14 @@ TkLevel::TkLevel(Project *const project):
     _open(false),
     _validSheets(false)
 {
-    strcpy(_elysianLevel.dir, "untitled");
-    strcpy(_elysianLevel.string, "untitled");
+    strcpy(dir, "untitled");
+    strcpy(string, "untitled");
 
-    for(unsigned i = 0; i < ELYSIAN_TILESHEET_TILES; ++i) _elysianTileWrappers[i].initialize(this, &_elysianLevel.tileset[i], i);
+    for(unsigned i = 0; i < ELYSIAN_TILESHEET_TILES; ++i) _elysianTileWrappers[i].initialize(this, &tileset[i], i);
 
 }
 
-TkLevel::~TkLevel() {
+TkLevel::~TkLevel(void) {
 	close();
 
 	for(int i = 0; i < _area.size(); ++i) {
@@ -199,8 +201,8 @@ void TkLevel::setNodeName(const QString str) {
 
     TreeNode::setNodeName(name);
 	_location = newLocation;
-    strcpy(_elysianLevel.dir, name.toStdString().c_str());
-	strcpy(_elysianLevel.path, _location.toStdString().c_str());
+    strcpy(dir, name.toStdString().c_str());
+    strcpy(path, _location.toStdString().c_str());
 
 	if(renamed) emit levelRenamed(oldName, name);
 }
@@ -217,7 +219,7 @@ QString TkLevel::getLocation() const {
 }
 
 elysian::Tile *TkLevel::getElysianTile(const uint16_t index) {
-	return &_elysianLevel.tileset[index];
+    return &tileset[index];
 }
 
 
@@ -244,7 +246,7 @@ bool TkLevel::activateByArea(Area *const area) {
 	 //Debug::Log(Debug::VERBOSE, "Level[%s].Activate()\n", getName().toStdString().c_str());
 	if(!_open) open();
     if(!_active) {
-        _curLevel = (elysian::Level*)&_elysianLevel;
+        _curLevel = this;
     }
 	emit activating(this, area);
     /* If there is anything that is not persistent to be added to the
@@ -382,9 +384,15 @@ Area *TkLevel::loadArea(const QString name) {
 	Debug::Log(Debug::VERBOSE, QString("Level::LoadArea("+directory+")"));
 	Debug::Push();
 
-	Area *area = new Area(this);
-	connectSlots(area);
-	if(area->load(directory)) {
+    Level *tempCurLevel = _curLevel;
+    _curLevel = this;
+
+    Area* area = getLevelSys()->loadArea(directory.toStdString().c_str());//new Area(this);
+
+    _curLevel = tempCurLevel;
+
+    //connectSlots(area);
+    if(area) {
 		_area.push_back(area);
 		emit areaAdded(this, area);
 		Debug::Pop();
@@ -393,7 +401,7 @@ Area *TkLevel::loadArea(const QString name) {
 
 	delete area;
 	Debug::Pop();
-    return NULL;
+    return nullptr;
 }
 
 bool TkLevel::removeArea(const QString name) {
@@ -421,12 +429,12 @@ Area *TkLevel::getFirstArea(void) const { return (_area.size() > 0)? _area[0] : 
 Area *TkLevel::importArea(const QString dir) {
     if(getArea(QStringList(dir.split("/")).last())) {
         Debug::Log(Debug::CRITICAL, "An area of the same name already exists within the current level!");
-        return NULL;
+        return nullptr;
     }
 
 	Area *area = new Area(this);
 	connectSlots(area);
-	area->load(dir);
+    area->load(dir.toStdString().c_str());
     area->setLocation(_location + "/area/" + QStringList(dir.split("/")).last());
 	area->save();
 	_area.push_back(area);
@@ -437,8 +445,9 @@ Area *TkLevel::importArea(const QString dir) {
 bool TkLevel::load(const QString loc) {
     QDir dir(loc);
     bool success = true;
-    elysian::Level *tempCurLevel = _curLevel;
-    _curLevel = (elysian::Level*)&_elysianLevel;
+
+    _project = _curProj;
+    _project->connectSlots(this);
 
 	Debug::Logf(Debug::VERBOSE, "Level::Load(%s)", loc.toStdString().c_str());
 	Debug::Push();
@@ -457,7 +466,7 @@ bool TkLevel::load(const QString loc) {
 	Debug::Pop();
     _validSheets = success;
 
-	success &= _elysianLevel.load(dir.absolutePath().toStdString().c_str());
+    success &= LevelBase::load(dir.absolutePath().toStdString().c_str());
 
     success &= _loadMetaData(loc);
 
@@ -472,7 +481,6 @@ bool TkLevel::load(const QString loc) {
 		success &= (loadArea(areas[j]))? true : false;
     }
 
-    _curLevel = tempCurLevel;
 	Debug::Pop();
 	return true;//success;
 }
@@ -483,7 +491,7 @@ bool TkLevel::save(void) {
 	Debug::Log(Debug::VERBOSE, QString("Level::Save(void)"));
 	Debug::Push();
 	//Save elysian::Level
-	success &= _elysianLevel.save(_location.toStdString().c_str());
+    success &= getElysianLevel()->save(_location.toStdString().c_str());
     success &= _saveMetaData(_location);
 	Debug::Pop();
 	return success;
@@ -586,7 +594,7 @@ bool TkLevel::saveAs(const QString dir) {
 	}
 
 	//Save elysian::Level
-	success &= _elysianLevel.save(dir.toStdString().c_str());
+    success &= getElysianLevel()->save(dir.toStdString().c_str());
 
     //Save ESTk metadata
     success &= _saveMetaData(dir);
@@ -625,12 +633,12 @@ bool TkLevel::reloadSheets(void) {
     return true;
 }
 
-QString TkLevel::getString(void) const { return _elysianLevel.string; }
+QString TkLevel::getString(void) const { return string; }
 void TkLevel::setString(const QString str) {
 	if(str.isEmpty()) {
 		return;
 	}
-	strcpy(_elysianLevel.string, str.toStdString().c_str());
+    strcpy(string, str.toStdString().c_str());
 }
 
 

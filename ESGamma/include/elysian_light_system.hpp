@@ -45,6 +45,10 @@ namespace elysian {
 
     public:
 
+        void renderCube(float x, float y, float z,
+                               float sx, float sy, float sz,
+                               float /*rotz*/);
+
                     LightSystem(void);
         void        shadowRenderPasses(void);
         unsigned    getLightCount(void) const;

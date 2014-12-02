@@ -4,7 +4,7 @@
 
 template<typename T>
 TileGraphicsItem<T>::TileGraphicsItem(const TYPE type): _type(type), _renderTile0(false), _flipRotBits(true) {
-	_view.src = NULL;
+    _view.src = nullptr;
 	setFlag(QGraphicsItem::ItemIsSelectable, true);
 	setAcceptHoverEvents(true);
 }
@@ -46,6 +46,31 @@ QRectF TileGraphicsItem<T>::boundingRect(void) const {
 	return QRectF(-16.0f, -16.0f, 32.0f, 32.0f);
 }
 
+
+template<typename T>
+typename TileGraphicsItem<T>::DRAW_STYLE TileGraphicsItem<T>::_getTileDrawState(void) const {
+    //Uglier and faster
+    const TileSelection<T> *tileSel = _getTileSelection();
+    const QPointF mouseLoc = _view.src->getSceneMousePos();
+
+    if(tileSel) {
+        //Region Fill
+        if(_view.dst->isFillingRegion()) {
+            return DRAW_FILLING;
+        //Selection
+        } else {
+            return DRAW_SELECTION;
+        }
+    }
+
+    //Selecting
+    if(_view.src->isSelecting()) {
+        return DRAW_SELECTING;
+    }
+
+    return DRAW_NORMAL;
+}
+
 template<typename T>
 typename TileGraphicsItem<T>::DRAW_STYLE TileGraphicsItem<T>::_getTileDrawStyle(const unsigned x, const unsigned y) const {
 #if 0
@@ -82,7 +107,7 @@ typename TileGraphicsItem<T>::DRAW_STYLE TileGraphicsItem<T>::_getTileDrawStyle(
 
 	//Selecting
 	if(_view.src->isSelecting()) {
-		if(_isSelectedWithinView(x, y)) {
+        if(_isSelectedWithinView(x, y)) {
 			return DRAW_SELECTING;
 		}
 	}
@@ -99,14 +124,14 @@ T TileGraphicsItem<T>::_getTileEntryFromDrawStyle(const unsigned x, const unsign
 	switch(style) {
 	default:
 		Q_ASSERT(0);
-	case DRAW_SELECTION:
-		mouseLoc = _view.src->getSceneMousePos();
-		return _getTileSelection()->getEntry(x, y, mouseLoc);
 	case DRAW_FILLING:
 		mouseLoc = _view.src->getSceneMousePos();
 		fillPivot = _view.dst->getFillFixedPivot();
 		return _getTileSelection()->getFillEntry(x, y, fillPivot, mouseLoc);
-	case DRAW_SELECTING:
+    case DRAW_SELECTION:
+        //mouseLoc = _view.src->getSceneMousePos();
+        //return _getTileSelection()->getEntry(x, y, mouseLoc);
+    case DRAW_SELECTING:
 	case DRAW_NORMAL:
 		return getTileEntry(x, y);
 	}

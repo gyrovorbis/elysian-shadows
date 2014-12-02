@@ -6,12 +6,17 @@
 #include "area.h"
 #include "entity.h"
 #include "debug.h"
+#include "elysian_engine.hpp"
+#include "elysian_level_system.hpp"
+#include "elysian_map_system.hpp"
+#include "tkMapSystem.h"
 
 //====STATIC MEMBERS====
 
 Area *Assets::_currentArea = nullptr;
 Level *Assets::_currentLevel = nullptr;
 Project *Assets::m_project = nullptr;
+elysian::Engine* Assets::_engine = nullptr;
 Selectable *Assets::_currentSelection = nullptr;
 Selectable::TYPE Assets::_currentSelectionType = Selectable::EMPTY;
 Assets::LAYER_TYPE Assets::_currentLayer = Assets::LAYER_TILE1;
@@ -26,6 +31,7 @@ void Assets::setCurrentSelection(Selectable *const selection) {
 
 	_currentSelectionType = (!selection)? Selectable::EMPTY : selection->getType();
 	_currentSelection = selection;
+
 	emit selectionChanged(_currentSelectionType, _currentSelection);
 
 	//prevent fucking memory leaks!
@@ -51,7 +57,7 @@ QString Assets::formatFileName(const QString string) {
 
 QString Assets::getProjectDir(void)
 {
-    if(m_project != NULL) {
+    if(m_project != nullptr) {
         return m_project->getLocation();
     }
 
@@ -90,7 +96,7 @@ Assets::~Assets(void) {
     //for(QMap<QString, Project *>::iterator it = _project.begin(); it != _project.end(); ++it) {
       //  delete it.value();
     //}
-    if(m_project != NULL) {
+    if(m_project) {
         delete m_project;
         m_project->clear();
     }
@@ -98,11 +104,13 @@ Assets::~Assets(void) {
 }
 
 void Assets::setLayerVisible(const Assets::LAYER_TYPE type, bool flag) {
-	_layerVisible[type] = flag;
+    //_layerVisible[type] = flag;
+    if(type <= 2) _engine->getMapSys()->setRenderTileLayer(type, flag);
+    _layerVisible[type] = flag;
 }
 
 bool Assets::getLayerVisible(const Assets::LAYER_TYPE type) const {
-	return _layerVisible[type];
+    return (type <= 2)? _engine->getMapSys()->getRenderTileLayer(type) : _layerVisible[type];
 }
 
 bool Assets::setCurrentArea(const QString name) {
@@ -128,14 +136,15 @@ void Assets::setCurrentArea(Area *const area) {
 	if(_currentArea) _currentArea->deactivate();
     _currentArea = area;
     if(area) {
+        _engine->getLevelSys()->switchArea(area->getPath());
 		area->activate();
 		emit areaChanged(_currentArea);
 		if(area->getFirstEntity()) setCurrentSelection(area->getFirstEntity());
-		else setCurrentSelection((Entity*)NULL);
+        else setCurrentSelection((Entity*)nullptr);
     }
     else {
 		emit areaChanged(_currentArea);
-		setCurrentSelection((Entity*)NULL);
+        setCurrentSelection((Entity*)nullptr);
     }
 }
 
@@ -157,12 +166,14 @@ bool Assets::setCurrentLevel(const QString name) {
 void Assets::setCurrentLevel(Level *const level) {
 	if(_currentLevel) _currentLevel->deactivate();
     _currentLevel = level;
+
     if(level) {
+    _engine->getLevelSys()->switchLevel(level->getPath());
 		level->activate();
         if(level->getFirstArea()) setCurrentArea(level->getFirstArea()->getNodeName());
         else setCurrentArea(nullptr);
     }
-    else setCurrentArea(NULL);
+    else setCurrentArea(nullptr);
 	//Debug::Log(Debug::VERBOSE, "!!!!!!EMIT CURRENT LEVEL " +( (level)? level->getName() : "NULL"));
 	emit levelChanged(level);
 }
@@ -211,12 +222,27 @@ Project *Assets::loadProject(const QString directory) {
     Project *proj = new Project;
 	connectSlots(proj);
 
+    elysian::Behavior::staticConstructor();
+    elysian::Debug::getInstance().setEngine(*_engine);
+
+    _engine = new elysian::Engine;
+
+
+    _engine->loadAssets();
+    elysian::Debug::getInstance().sandboxInit();
+
+    //_engine->getMapSys()->makeCurrent();
+
+
 	if(proj->load(directory)) {
         //ConnectSlots(proj);
         m_project = proj;
-		emit projectAdded(proj);
+        emit projectAdded(proj);
+
+       // _engine->getMapSys()->show();
         return proj;
     }
+
 
     delete proj;
 	Debug::Logf(Debug::VERBOSE, "Could not load project %s!\n", directory.toStdString().c_str());
@@ -237,7 +263,7 @@ Project *Assets::getFirstProject(void) const {
 bool Assets::removeProject(const QString name) {
     //for(QMap<QString, Project *>::iterator it = _project.begin(); it != _project.end(); ++it) {
         if(m_project->getNodeName() == name) {
-            setCurrentProject(NULL);
+            setCurrentProject(nullptr);
 			emit projectRemoved(m_project);
 			emit projectRemoveUI();
 

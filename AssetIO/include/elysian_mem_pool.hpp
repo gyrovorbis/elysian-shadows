@@ -4,7 +4,7 @@
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
-#include <vector>
+#include <functional>
 
 namespace elysian {
 
@@ -29,8 +29,12 @@ namespace elysian {
  * efficient in certain (hopefully most) cases.
  */
 
-template <typename T>
+template <bool replacement, typename T>
+struct _PoolReplacementPolicy;
+
+template <typename T, bool replacement=false>
 class Pool {
+    friend struct _PoolReplacementPolicy<replacement, T>;
 protected:
 
     //internal state to reduce time complexities
@@ -41,15 +45,19 @@ protected:
     unsigned    _startSearchIndex   = 0;
 
     //actual storage
-    int             *_freeIndices       = nullptr;
-    T               *_entries           = nullptr;
-    bool            *_used              = nullptr;
+    int*            _freeIndices       = nullptr;
+    T*              _entries           = nullptr;
+    bool*           _used              = nullptr;
     unsigned        _maxSize            = ELYSIAN_MEM_POOL_DEFAULT_MAX_CAPACITY;
     unsigned        _freeIndicesSize    = ELYSIAN_MEM_POOL_DEFAULT_FREE_INDEX_CAPACITY;
 
-
     unsigned _claimFreeIndex(void) {
-		if(_usedCount == _maxSize) return 1;
+        //Out of space
+        if(_usedCount == _maxSize) {
+           // return _PoolReplacementPolicy<replacement, T>::findDirtyIndex(this);
+        }
+
+        //We have space left!
 
 		if(_sequential) {
             //grab next index
@@ -248,6 +256,14 @@ public:
         return end();
     }
 
+    iterator findByComparator(const std::function<bool(const T& entry)> comparator) {
+        auto it = begin();
+        for(; it < end(); ++it) {
+            if(comparator(*(it))) return it;
+        }
+        return it;
+    }
+
     const_iterator find(const T& entry) const {
         for(auto it = begin(); it < end(); ++it) {
             if(_entries[it._index] == entry) {
@@ -290,6 +306,8 @@ public:
         }
 
         _used[it._index] = false;
+        _entries[it._index].~T();
+        new (&_entries[it._index]) T();
 
         if(--_usedCount == 0) {
             _startSearchIndex = 0;
@@ -316,6 +334,8 @@ public:
             _entries[i] = _entries[i+1];
             _used[i] = _used[i+1];
         }
+        _entries[_endIndex].~T();
+        new (&_entries[_endIndex]) T();
         _used[_endIndex--] = false;
         --_usedCount;
     }
@@ -354,19 +374,42 @@ public:
 
 };
 
+template<typename T>
+struct _PoolReplacementPolicy<true, T> {
+    static inline unsigned findDirtyIndex(const Pool<T, true>*const pool) {
+        //Search through entries with custom comparator to find best fit entry for replacement
+        unsigned current = 0;
+        for(unsigned i = 1; i < pool->_maxSize; ++i) {
+            if(pool->_entries[current] < pool->_entries[i]) {
+                current = i;
+            }
+        }
+        pool->_entries[current].~T();
+        new (&pool->_entries[current]) T();
+        return current;
+    }
+};
+
+template<bool replacement, typename T>
+struct _PoolReplacementPolicy {
+    static inline unsigned findDirtyIndex(const Pool<T, replacement>*const /*pool*/) {
+        return 1;
+    }
+};
+
 /*
 template<typename T>
 inline T* Pool<T>::iterator::operator ->(void) const {
     return &_parent._entries[_index];
 }*/
 
-template<typename T>
-inline T& Pool<T>::iterator::operator *(void) const {
+template<typename T, bool replacement>
+inline T& Pool<T, replacement>::iterator::operator *(void) const {
     return _parent->_entries[_index];
 }
 
-template<typename T>
-inline const T& Pool<T>::const_iterator::operator *(void) const {
+template<typename T, bool replacement>
+inline const T& Pool<T, replacement>::const_iterator::operator *(void) const {
     return _parent->_entries[_index];
 }
 
@@ -400,7 +443,6 @@ struct CharArrayPoolEntry {
         return string;
     }
 };
-
 
 }
 

@@ -96,6 +96,8 @@ namespace elysian {
 			return instance;
 		}
 
+        static void initialize(void);
+
 		//static void setAdvLogWrap(const bool val=true) { _advLogWrap = val; }
 		static void setEngine(Engine &eng) { _engine = &eng; }
 		static void setLevel(const LEVEL level) { _level = level; }

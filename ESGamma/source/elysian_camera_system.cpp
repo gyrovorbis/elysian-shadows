@@ -107,10 +107,12 @@ void CameraSystem::_updateState(CameraState*const state, const float /*deltaTime
 	boundLeft += (float)width/_curState->_keyFrame._scale*0.5f;
 	boundRight -= (float)width/_curState->_keyFrame._scale*0.5f;
 
-	if(state->_keyFrame._pos.y < boundTop) _curState->_keyFrame._pos.y = boundTop;
-	if(state->_keyFrame._pos.y > boundBottom) _curState->_keyFrame._pos.y = boundBottom;
-	if(state->_keyFrame._pos.x < boundLeft) _curState->_keyFrame._pos.x = boundLeft;
-	if(state->_keyFrame._pos.x > boundRight) _curState->_keyFrame._pos.x = boundRight;
+    if(_boundByMap) {
+        if(state->_keyFrame._pos.y < boundTop) _curState->_keyFrame._pos.y = boundTop;
+        if(state->_keyFrame._pos.y > boundBottom) _curState->_keyFrame._pos.y = boundBottom;
+        if(state->_keyFrame._pos.x < boundLeft) _curState->_keyFrame._pos.x = boundLeft;
+        if(state->_keyFrame._pos.x > boundRight) _curState->_keyFrame._pos.x = boundRight;
+    }
 
 	if(!_dynamic) return;
 
@@ -192,29 +194,33 @@ void CameraSystem::_updateState(CameraState*const state, const float /*deltaTime
 
 
 CameraSystem::CameraSystem(void) {
-	static const GYMatrix4 identity4 = {
-		{ 1.0f, 0.0f, 0.0f, 0.0f },
-		{ 0.0f, 1.0f, 0.0f, 0.0f },
-		{ 0.0f, 0.0f, 1.0f, 0.0f },
-		{ 0.0f, 0.0f, 0.0f, 1.0f }
-	};
-	unsigned w, h;
-
     CameraShakeSubProcess::_cameraSys = this;
 
-	//Initialize default camera
-	gyVidResolution(&w, &h);
-    gyVidCamOrthoProj(_curState, 0.0f, (float)w, (float)h, 0.0f, -999.0f, 1000.0f);
-	gyVidCamOrthoLookAt(_curState, &_curState->_keyFrame._pos, 1.0f, 0.0f, _curState->_keyFrame._xOrient);
+    //initializeProjMatrix();
 
-	memcpy(_uiCamera.viewMat, identity4, sizeof(GYMatrix4));
-	gyVidCamOrthoProj(&_uiCamera, 0.0f, (float)w, (float)h, 0.0f, -999.0f, 1000.0f);
-
-    gyVidCamFrustum(&_debugState, 45.0f, 1.0f, 0.5f, 900.0f);
-    //gyVidCamFrustum(&_debugState, 45.0f, w/h, 0.5f, 900.0f);
-	//_debugState.dir = { 0.0f, 1.0f, 1.0f };
 
 	_states[0] = &_internalStates[0];
+}
+
+void CameraSystem::initializeProjMatrix(void) {
+    static const GYMatrix4 identity4 = {
+        { 1.0f, 0.0f, 0.0f, 0.0f },
+        { 0.0f, 1.0f, 0.0f, 0.0f },
+        { 0.0f, 0.0f, 1.0f, 0.0f },
+        { 0.0f, 0.0f, 0.0f, 1.0f }
+    };
+    unsigned w, h;
+    //Initialize default camera
+    gyVidResolution(&w, &h);
+    //w = 640; h = 480;
+    gyVidCamOrthoProj(_curState, 0.0f, (float)w, (float)h, 0.0f, -999.0f, 1000.0f);
+    gyVidCamOrthoLookAt(_curState, &_curState->_keyFrame._pos, 1.0f, 0.0f, _curState->_keyFrame._xOrient);
+
+    memcpy(_uiCamera.viewMat, identity4, sizeof(GYMatrix4));
+    gyVidCamOrthoProj(&_uiCamera, 0.0f, (float)w, (float)h, 0.0f, -999.0f, 1000.0f);
+
+    gyVidCamFrustum(&_debugState, 45.0f, 1.0f, 0.5f, 900.0f);
+
 }
 
 void CameraSystem::pushViewProjMatrix(void) {
@@ -394,7 +400,7 @@ void CameraSystem::update(void) {
                 //0.0f
             };
         } else {
-            _curState->_keyFrame._pos = GYVector3 { 0.0f, 0.0f, 0.0f };
+        //    _curState->_keyFrame._pos = GYVector3 { 0.0f, 0.0f, 0.0f };
         }
 
         gyVec3AddAccum(&_curState->_keyFrame._pos, &_curState->_keyFrame._offset);
@@ -503,7 +509,7 @@ void CameraSystem::transform(GYVector3* dest, const GYVector3* src) {
 	GYVector4 out;
 
 	gyMatPush();
-	gyMatLoadIdentity();
+    //gyMatLoadIdentity();
 	gyMatLoad(&_curState->viewMat);
 	gyMatMultVec(&in, &out, 1);
 	gyMatPop();

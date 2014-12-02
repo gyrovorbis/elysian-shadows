@@ -148,6 +148,11 @@ Debug::~Debug(void) {
 #endif
 }
 
+void Debug::initialize(void) {
+    gyDebugInit();
+    getInstance();
+}
+
 LightSource* lightSrc;
 #if 1
 GYVector3 dirVec = { 0.0f, 1.0f, 1.0f };

@@ -17,17 +17,22 @@ class TileSelectable:
         public PropertyStackModel
 {
 private:
-    QVector<uint16_t> _tileIndices;
-	Assets::LAYER_TYPE _layer;
-	Level *const _level;
-	Area *const _area;
-    GY_RECT_PLANE_TYPE _planeType = GY_RECT_PLANE_BOTTOM;
+    QVector<uint16_t>                           _tileIndices;
+    Assets::LAYER_TYPE                          _layer            = Assets::LAYER_TILE1;
+    Level* const                                _level            = nullptr;
+    Area* const                                 _area             = nullptr;
+    GY_RECT_PLANE_TYPE                          _planeType        = GY_RECT_PLANE_BOTTOM;
 
-    ESTkStandardItem *_groupCol         = nullptr;
-    ESTkStandardItem *_groupStandOn     = nullptr;
-    ESTkStandardItem *_groupTrans       = nullptr;
-    ESTkStandardItem *_groupNormal      = nullptr;
-    ESTkStandardItem *_groupSpecular    = nullptr;
+    int                                         _prevSceneX       = -1;
+    int                                         _prevSceneY       = -1;
+    int                                         _sceneX           = -1;
+    int                                         _sceneY           = -1;
+
+    ESTkStandardItem*                           _groupCol         = nullptr;
+    ESTkStandardItem*                           _groupStandOn     = nullptr;
+    ESTkStandardItem*                           _groupTrans       = nullptr;
+    ESTkStandardItem*                           _groupNormal      = nullptr;
+    ESTkStandardItem*                           _groupSpecular    = nullptr;
 
     std::function<QString (uint16_t)>           _groupColGet;
     std::function<void (uint16_t, QString)>     _groupColSet;
@@ -47,7 +52,7 @@ private:
 
 
 	//Shared delegate instance for displaying all TileSelectables
-	static TileSelectableSelectionViewDelegate *_selectionViewDelegate;
+    static TileSelectableSelectionViewDelegate* _selectionViewDelegate;
 
 protected:
 
@@ -76,10 +81,11 @@ protected:
 
 
     template<typename T>
-    T _getTileGroupProperty(const std::function<T (uint16_t index)> operation, const T defaultValue) const;
+    T       _getTileGroupProperty(const std::function<T (uint16_t index)> operation, const T defaultValue) const;
 
-    void _populateTileIndicesList(void);
+    void    _populateTileIndicesList(void);
 
+    TileEntry** _prevEntry       = nullptr;
 public:
 
 	//Main constructor--based on QGraphicsItems that have been selected within the scene
@@ -89,10 +95,14 @@ public:
 	//MEGA reesty constructor to optimize creation from MapView
 	TileSelectable(const QRect &region, bool selectionArray[][ELYSIAN_AREA_MAP_WIDTH], Area *const area, Level *const lev, const Assets::LAYER_TYPE layer);
 
-    virtual void populateModel(void) override;
-    virtual void installSelectionViewCustomDelegates(QAbstractItemView *const view) override;
-	Assets::LAYER_TYPE getTileLayer(void) const { return _layer; }
-    virtual Selectable::TYPE getType(void) const override { return Selectable::TILE; }
+    virtual void                populateModel(void) override;
+    virtual void                installSelectionViewCustomDelegates(QAbstractItemView *const view) override;
+    Assets::LAYER_TYPE          getTileLayer(void) const { return _layer; }
+    virtual Selectable::TYPE    getType(void) const override { return Selectable::TILE; }
+
+    void    updateSceneSelection(const unsigned sceneX, const unsigned sceneY);
+    void    clearSceneSelection(void);
+    void    clearPrevSceneSelection(void);
 
     //MapEntry modifiers
     void    elevateUp(void);

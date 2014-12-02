@@ -105,6 +105,10 @@ namespace elysian {
 			static_cast<T*>(this)->renderEntityEntry(entry);
 		}
 
+        void _renderCustomPassImmediate(void) {
+             static_cast<T*>(this)->renderCustomPassImmediate();
+        }
+
 		void _renderCustomPassAtElev(const unsigned char elev) const {
 			static_cast<const T*>(this)->renderCustomPassAtElev(elev);
 		}
@@ -124,6 +128,8 @@ namespace elysian {
         uint32_t _startLightPass(uint32_t& lightsLeft) {
             return static_cast<T*>(this)->startLightPass(lightsLeft);
         }
+
+    protected:
 
 		//Culling functions
 		//Just cull in getObjectLayerEntry and getOnscreenEntity?
@@ -347,31 +353,34 @@ namespace elysian {
 			}
 		}
 
-		if(!_objectBuffImmediateCount) return;
+        if(_objectBuffImmediateCount) {
 
-		//Make a pass through immediate tile multiplass buffer
-        _endObjectList();
-        _beginObjectList();
-        _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
-		for(unsigned j = 0; j < _objectBuffImmediateCount; ++j) {
-			_renderOrQueueTileEntry(j, _objectBuffImmediate[j]);
-		}
-
-		//Continue making light passes until there are no more immediate tiles queued
-		while(_queued) {
-			const unsigned count = _queued;
-			_queued = 0;
-			_curRow = _nextRow;
-			_nextRow = !_curRow;
+            //Make a pass through immediate tile multiplass buffer
             _endObjectList();
             _beginObjectList();
             _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
-			for(unsigned j = 0; j < count; ++j) {
-				_renderOrQueueTileEntry(j, _objectBuffImmediate[_queue[_curRow][j]]);
-			}
-		}
+            for(unsigned j = 0; j < _objectBuffImmediateCount; ++j) {
+                _renderOrQueueTileEntry(j, _objectBuffImmediate[j]);
+            }
+
+            //Continue making light passes until there are no more immediate tiles queued
+            while(_queued) {
+                const unsigned count = _queued;
+                _queued = 0;
+                _curRow = _nextRow;
+                _nextRow = !_curRow;
+                _endObjectList();
+                _beginObjectList();
+                _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
+                for(unsigned j = 0; j < count; ++j) {
+                    _renderOrQueueTileEntry(j, _objectBuffImmediate[_queue[_curRow][j]]);
+                }
+            }
+
+        }
 
         _endObjectList();
+        _renderCustomPassImmediate();
 	}
 
 	template<typename T, typename O, typename E>

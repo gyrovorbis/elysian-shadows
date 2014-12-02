@@ -16,7 +16,8 @@ namespace elysian {
 									InstanceTransformLinearInterpolator,
 									InstanceTransformLinearInterpolator,
 									InstanceTransformLinearInterpolator>,
-			public System {
+            public System
+    {
 
 		enum SUBPROCS { SUBPROC_XFORM_INTERP_1 };
 

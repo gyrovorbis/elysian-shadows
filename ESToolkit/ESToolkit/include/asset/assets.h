@@ -16,6 +16,10 @@ class Component;
 class TkEntity;
 typedef TkEntity Entity;
 
+namespace elysian {
+    class Engine;
+}
+
 
 class Assets: public QObject, public elysian::LevelManager {
     Q_OBJECT
@@ -53,6 +57,8 @@ public:
 	Project *loadProject(const QString directory);
 	bool saveProject(const QString name) const;
 	bool removeProject(const QString name);
+
+    elysian::Engine* getEngine(void) const;
 
     //static bool VerifyDirectory(const QString dir);
 	static QString formatFileName(const QString name);
@@ -96,7 +102,8 @@ private slots:
 	void onComponentRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
 
 private:
-    static Project *m_project;
+    static Project* m_project;
+    static elysian::Engine* _engine;
 
     //Current state
     static Area *_currentArea;
@@ -108,6 +115,15 @@ private:
 
 	void connectSlots(Project *const project);
 };
+
+
+
+
+
+// ==== INLINEZ=======
+
+inline elysian::Engine* Assets::getEngine(void) const { return _engine; }
+
 
 
 #endif // ASSETMANAGER_H

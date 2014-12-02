@@ -11,7 +11,7 @@
 #include <QDebug>
 
 #include <gyro_file_api.h>
-#include "tkMapSystem.h"
+#include "engineGLSceneWidget.h"
 
 #include "area.h"
 #include "debug.h"
@@ -44,6 +44,7 @@
 #include "luatables.h"
 #include "luaExplorerDialog.h"
 #include "rowsJoinerProxyModel.h"
+#include "tkMapSystem.h"
 
 ESToolkit::ESToolkit(QWidget *parent):
 	QMainWindow(parent),
@@ -52,9 +53,10 @@ ESToolkit::ESToolkit(QWidget *parent):
 {
 	// VERY IMPROTANT GLOBAL STATE/STATIC INITIALIZATION
     assert(gyFileInit("ESTeam", "ESTk"));
-	Debug::getInstance();
+        //elysian::Behavior::staticConstructor();
+    Debug::getInstance();
 	AssetManager::_assets = &_assets;
-	elysian::Behavior::staticConstructor();
+    //elysian::Behavior::staticConstructor();
 
     const QString verString = QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" \"Sex and Candy\" Release");
 	const char* platString =
@@ -181,10 +183,10 @@ ESToolkit::ESToolkit(QWidget *parent):
 	Area::staticConstructor(_ui->mapView);
     _sheetDockWidget->SetSheetScene(Level::_sheetViewScene);
 	_sheetDockWidget->getSourceView()->setEnabled(false);
-	_ui->mapView->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
-    _ui->mapView->setScene(Area::editorScene);
+    _ui->mapView->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
+    //_ui->mapView->setScene(Area::editorScene);
 	_ui->mapView->setFocus();
-	//setFocusPolicy(Qt::ClickFocus);
+    setFocusPolicy(Qt::ClickFocus);
 
 	//CONNECT ASSET SIGNALS/SLOTS TO MAIN UI
 	connect(&_assets, SIGNAL(projectRemoveUI()), this, SLOT(OnProjectRemoved()));
@@ -275,12 +277,7 @@ void ESToolkit::_engineInitialize(void) {
 }
 
 void ESToolkit::_engineLoadAssets(void) {
-    _debug->setEngine(*_engine);
-    _engine = new elysian::Engine;
-    _engine->getMapSys()->engine = _engine;
-    _engine->getMapSys()->show();
-   // _engine->loadAssets();
-	//_debug->sandboxInit();
+
 }
 
 
@@ -423,7 +420,7 @@ void ESToolkit::SyncEntityMenuBar(const Entity *const /*entity*/) {
 #endif
 }
 
-void ESToolkit::ToogleProjectActions(bool enabled)
+void ESToolkit::toggleProjectActions(bool enabled)
 {
 	_ui->actionFileSaveCurrentProject->setEnabled(enabled);
 	_ui->actionSelect->setEnabled(enabled);
@@ -473,7 +470,7 @@ void ESToolkit::WriteSettings()
 
 void ESToolkit::ReadSettings()
 {
-	ToogleProjectActions(true);
+    toggleProjectActions(true);
 	_assetDockWidget->setEnabled(false);
   //  _entityDockWidget->setEnabled(false);
 	_layerDockWidget->setEnabled(false);
@@ -537,7 +534,7 @@ void ESToolkit::ReadSettings()
 	on_actionHorizontal_SheetView_triggered(sheetViewHorizontal);
 
 
-	ToogleProjectActions(false);
+    toggleProjectActions(false);
 
 }
 
@@ -730,7 +727,7 @@ void ESToolkit::OnAreaChanged(Area *const area) {
 	//boundingRect.setBottom(boundingRect.getBottom()+16.0f);
 	//boundingRect.setRight(boundingRect.getRight()+16.0f);
 	//Area::editorScene->setSceneRect();
-	_ui->mapView->scene()->update();
+    if(_ui->mapView->scene()) _ui->mapView->scene()->update();
 }
 
 void ESToolkit::OnLevelChanged(Level *const level) {
@@ -818,21 +815,29 @@ void ESToolkit::_openProjectDir(const QString dir) {
 	if(dir=="") {
 		return;
 	}
-
+            qDebug() << "WORKING DIR - " << dir;
     QDir::setCurrent(dir);
-    _engineLoadAssets();
+    auto* viewport = _engineGLView = new EngineGLSceneWidget(QGLFormat(QGL::SampleBuffers | QGL::DirectRendering));
+    viewport->setMouseTracking(true);
+    _ui->mapView->setViewport(viewport);
 
-	_engine->getMapSys()->makeCurrent();
+  _engineGLView->makeCurrent();
 	Project *proj = _assets.loadProject(dir);
+    _assets.getEngine()->getMapSys()->setView(_ui->mapView);
+  _engineGLView->update();
 
     _assets.setCurrentProject(proj);
     _assets.setCurrentSelection(_assets.getCurrentArea());
+
+    _engineGLView->startRenderTimer();
+
+
+    //elysian::Debug::getInstance()._curArea = _assets.getCurrentArea();
     //_assets.getCurrentArea()->populateVbo();
-        _engine->getMapSys()->updateGL();
 
         // ENABLE ALL UI VIEWS
     if(proj) {
-		ToogleProjectActions(true);
+        toggleProjectActions(true);
 		_assetDockWidget->setEnabled(true);
 	   // _entityDockWidget->setEnabled(true);
 		_layerDockWidget->ToggleDefaultItem(true);
@@ -1113,7 +1118,7 @@ void ESToolkit::on_actionFileNewArea_triggered() {
 }
 
 void ESToolkit::OnProjectRemoved() {
-	ToogleProjectActions(false);
+    toggleProjectActions(false);
     _assetDockWidget->clearTreeView();
 	_assetDockWidget->setEnabled(false);
   //  _entityDockWidget->setEnabled(false);
@@ -1121,26 +1126,20 @@ void ESToolkit::OnProjectRemoved() {
 	_layerDockWidget->setEnabled(false);
 	_sheetDockWidget->setEnabled(false);
 	_historyDockWidget->setEnabled(false);
-	_selectionDockWidget->setWidget(NULL);
+    _selectionDockWidget->setWidget(nullptr);
 	_selectionDockWidget->setEnabled(false);
 	_ui->mapView->deleteSelectionItemGroup();
 	_ui->mapView->setEnabled(false);
 }
 
 void ESToolkit::on_actionEnable_OpenGL_triggered() {
-	if(!glUtilities::glSupported()) return;
-
-    static int num = 0;
-
-    if(_ui->actionEnable_OpenGL->isChecked() && ++num >= 2) {
-        _engine->getMapSys()->updateGL();
-    }
+//	if(!glUtilities::glSupported()) return;
 
 return;
-    _ui->mapView->setViewport((_ui->actionEnable_OpenGL->isChecked())? new QGLWidget : new QWidget);
+    _ui->mapView->setViewport((_ui->actionEnable_OpenGL->isChecked())? _engineGLView : new QWidget);
 	_ui->mapView->setMouseTracking(true);
 	_ui->mapView->viewport()->setMouseTracking(true);
-	_sheetDockWidget->getSourceView()->setViewport((_ui->actionEnable_OpenGL->isChecked())? new QGLWidget : new QWidget);
+    _sheetDockWidget->getSourceView()->setViewport((_ui->actionEnable_OpenGL->isChecked())? new QGLWidget  : new QWidget);
 	_sheetDockWidget->getSourceView()->setMouseTracking(true);
 	_sheetDockWidget->getSourceView()->viewport()->setMouseTracking(true);
 
@@ -1336,9 +1335,9 @@ void ESToolkit::on_actionPaste_triggered()
 
 void ESToolkit::on_actionDefault_Transform_triggered()
 {
-    static bool inited = false;
-    static LuaTableStackModel* lmodel;
-
+   // static bool inited = false;
+   // static LuaTableStackModel* lmodel;
+#if 0
     if(!inited) {
         lua_pushglobaltable(*_mainState);
         lua_getfield(*_mainState, -1, "tablet");
@@ -1374,6 +1373,11 @@ void ESToolkit::on_actionDefault_Transform_triggered()
     LuaManager::_protectedCall(3, 1, nullptr);
     elysian::Debug::printf(elysian::Debug::VERBOSE, lua_tostring(*_mainState, -1));
     lua_pop(*_mainState, 1);
+
+#endif
+
+
+    _assets.getEngine()->getCameraSys()->moveToKeyFrame(elysian::CameraKeyFrame());
 
     //_ui->mapView->defaultTransform();
 

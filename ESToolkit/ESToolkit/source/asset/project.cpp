@@ -6,6 +6,7 @@
 #include "level.h"
 #include "debug.h"
 #include "fileUtilities.h"
+#include "elysian_level_system.hpp"
 
 Project::Project(void): _active(false) {}
 
@@ -75,9 +76,12 @@ Level *Project::loadLevel(const QString name) {
 	Debug::Log(Debug::VERBOSE, QString("Project::LoadLevel("+directory+")"));
 	Debug::Push();
 
-    TkLevel *lev = new TkLevel(this);
-	connectSlots(lev);
-	if(lev->load(directory)) {
+    Level::_curProj = this;
+
+    Level *lev = getLevelSys()->loadLevel(directory.toStdString().c_str());
+
+    //connectSlots(lev);
+    if(lev) {
         //ConnectSlots(lev);
 		_level.push_back(lev);
 		emit levelAdded(this, lev);
@@ -87,7 +91,7 @@ Level *Project::loadLevel(const QString name) {
 
 	delete lev;
 	Debug::Pop();
-	return NULL;
+    return nullptr;
 }
 
 //This looks like a mistake...

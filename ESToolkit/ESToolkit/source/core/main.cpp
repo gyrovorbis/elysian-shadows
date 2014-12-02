@@ -23,7 +23,7 @@ GYAppCbRet Init(int argc, char **argv) {
     a.setApplicationName("ESTk");
     a.setWindowIcon(QIcon(":/estk/images/estk.ico"));
     a.setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
-    gyDebugInit();
+
     gyPrintf("test");
     qDebug() << "DBGTEST";
 

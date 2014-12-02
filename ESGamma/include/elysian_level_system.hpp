@@ -1,51 +1,240 @@
 #ifndef ELYSIAN_LEVEL_SYSTEM_HPP
 #define ELYSIAN_LEVEL_SYSTEM_HPP
 
-#include <vector>
 #include "elysian_system.hpp"
 #include "elysian_asset_typedefs.hpp"
+#include "elysian_mem_pool.hpp"
+#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
+#include ELYSIAN_ASSET_HEADER("elysian_level.hpp", "level.h")
 
-#include <gyro.h>
+
+#include <vector>
+
+#if GYRO_PLATFORM == GYRO_PLATFORM_x86 || GYRO_PLATFORM == GYRO_PLATFORM_ANDROID || GYRO_PLATFORM == GYRO_PLATFORM_iOS
+#   define ELYSIAN_LEVELS_LOADED_MAX    1
+#   define ELYSIAN_AREAS_LOADED_MAX     3
+
+#elif GYRO_PLATFORM == GYRO_PLATFORM_Qt
+#   define ELYSIAN_LEVELS_LOADED_MAX    100
+#   define ELYSIAN_AREAS_LOADED_MAX     300
+
+#elif GYRO_PLATFORM == GYRO_PLATFORM_DC
+#   define ELYSIAN_LEVELS_LOADED_MAX    1
+#   define ELYSIAN_AREAS_LOADED_MAX     1
+
+#endif
+
 
 ELYSIAN_ASSET_TYPEDEF(Level)
 ELYSIAN_ASSET_TYPEDEF(Area)
 
 namespace elysian {
 
-	class LevelSystem: public System { 
+
+
+
+    template <typename T>
+    class ZoneManager: public System {
+    private:
+
+        struct TimeStampEntry {
+            T       zone;
+            float   timestamp;
+            friend bool operator< (const TimeStampEntry& e1, const TimeStampEntry& e2);
+        };
+
+        typedef Pool<TimeStampEntry, true> ZonePool;
+
+        ZonePool _entries = ZonePool(ELYSIAN_LEVELS_LOADED_MAX, 1);
+        char     _prevPath[GYRO_PATH_MAX_SIZE] = { 0 };
+
+    protected:
+
+        typename ZonePool::iterator  _findZone(const char*const dir);
+
+        //Compile-time polymorphic via template specializations!
+        void                onLoadZone(void);
+        void                onUnloadZone(void);
+        void                onEnterZone(void);
+        void                onExitZone(void);
+
+        T*                  getCurZone(void);
+        void                setCurZone(T*const zone);
+
+    public:
+        T*          getZone(const char*const dir);
+        T*          loadZone(const char*const dir);
+        bool        unloadZone(const char*const dir);
+        bool        switchZone(const char*const dir);
+        const char* getPrevZonePath(void) const;
+    };
+
+    class LevelSystem: public System {
+        friend class ZoneManager<Area>;
+        friend class ZoneManager<Level>;
+
 	private:
-		char _prevAreaPath[GYRO_PATH_MAX_SIZE]	= { 0 };
-		char _prevLevelPath[GYRO_PATH_MAX_SIZE] = { 0 };
 
-		std::vector<Level*> level;
-		std::vector<Area*>  area;
+        //ZoneManager<Area>    _areaManager;
+        //ZoneManager<Level>    _levelManager;
 
-		void _onAreaEnter(void);
-		void _onAreaExit(void);
+        char            _prevAreaPath[GYRO_PATH_MAX_SIZE]   = { 0 };
+        char            _prevLevelPath[GYRO_PATH_MAX_SIZE]  = { 0 };
+
+        void            _onAreaEnter(void);
+        void            _onAreaExit(void);
+
+        int             _getLevelIndex(const char *const dir) const;
+        int             _getAreaIndex(const char *const dir) const;
 		
 	public:
 
-        static const unsigned MAX_LEVELS_LOADED = 1;
-#if GYRO_PLATFORM == GYRO_PLATFORM_x86 || GYRO_PLATFORM == GYRO_PLATFORM_ANDROID || GYRO_PLATFORM == GYRO_PLATFORM_iOS || GYRO_PLATFORM == GYRO_PLATFORM_Qt
-		static const unsigned MAX_AREAS_LOADED = 1;
-#elif GYRO_PLATFORM == GYRO_PLATFORM_PSP
-        static const unsigned MAX_AREAS_LOADED = 2;
-#elif GYRO_PLATFORM == GYRO_PLATFORM_DC
-        static const unsigned MAX_AREAS_LOADED = 1;
-#endif
-		
+    private:
 
-		int getLevelIndex(const char *const dir) const;
-		int getAreaIndex(const char *const dir) const;
+            std::vector<Level*> level;
+            std::vector<Area*>  area;
 
-		bool switchLevel(const char *const dir);
-		bool switchArea(const char *const dir);
+        public:
 
-		const char* getPrevLevelPath(void) const { return _prevLevelPath; }
-		const char* getPrevAreaPath(void) const { return _prevAreaPath; }
+            static const unsigned MAX_LEVELS_LOADED = 1;
+    #if GYRO_PLATFORM == GYRO_PLATFORM_x86 || GYRO_PLATFORM == GYRO_PLATFORM_iOS
+            static const unsigned MAX_AREAS_LOADED = 1;
+    #elif GYRO_PLATFORM == GYRO_PLATFORM_PSP
+            static const unsigned MAX_AREAS_LOADED = 2;
+    #elif GYRO_PLATFORM == GYRO_PLATFORM_DC
+            static const unsigned MAX_AREAS_LOADED = 1;
+    #endif
 
-		void walkthrough(void); //Print currently loaded assets
+
+            int getLevelIndex(const char *const dir) const;
+            int getAreaIndex(const char *const dir) const;
+
+
+
+        Level*           loadLevel(const char*const dir);
+        Area*            loadArea(const char*const dir);
+
+        bool            unloadLevel(const char*const dir);
+        bool            unloadArea(const char*const dir);
+
+        bool            switchLevel(const char *const dir);
+        bool            switchArea(const char *const dir);
+
+        const char*     getPrevLevelPath(void) const { return _prevLevelPath; }
+        const char*     getPrevAreaPath(void) const { return _prevAreaPath; }
+
+        void            walkthrough(void); //Print currently loaded assets
 	};
+
+
+
+
+
+
+
+
+
+
+
+
+    // ==== INLINEZ =====
+/*
+    inline Area* LevelSystem::loadArea(const char * const dir) {
+        return _loadZone<Area>(dir);
+    }
+
+    inline Level* LevelSystem::loadLevel(const char * const dir) {
+        return _loadZone<Level>(dir);
+    }
+
+    template<typename T>
+    inline bool operator< (const LevelSystem::TimeStampEntry<T>& e1, const LevelSystem::TimeStampEntry<T>& e2) {
+        return (e1.timestamp < e2.timestamp);
+    }
+
+    template<typename T>
+    inline TimeStampEntry<T>::iterator LevelSystem::ZoneManager<T>::_findZone(const char * const dir) {
+        auto lambda = [&](const TimeStampEntry<T>& entry) {
+            return (strcmp(dir, entry.name) == 0);
+        };
+        return _entries.findByComparator(lambda);
+    }
+
+    template<typename T>
+    inline T* LevelSystem::ZoneManager<T>::loadZone(const char*const dir) {
+        TimeStampEntry<T>* entry;
+
+        entry = &_entries.claimFreeEntry();
+
+        entry->zone.load(dir);
+        entry->timestamp = getTimerSys()->getTotalTicks();
+
+        return entry->zone;
+    }
+
+    template<typename T>
+    inline T* LevelSystem::ZoneManager<T>::getZone(const char * const dir) {
+        auto it = _findZone(dir);
+        return it < _entries.end()? (*it) : nullptr;
+    }
+
+    template<typename T>
+    inline bool LevelSystem::ZoneManager<T>::unloadZone(const char*const dir) {
+        if(_findZone(dir) < _entries.end()) {
+            _entries.remove(it);
+            return true;
+        }
+        return false;
+    }
+
+    template<typename T>
+    inline const char* LevelSystem::ZoneManager<T>::getPrevZonePath(void) {
+        return _prevPath;
+    }
+
+    template<typename T>
+    inline bool LevelSystem::ZoneManager<T>::switchZone(const char*const dir) {
+        auto* zone = getZone(dir);
+
+        if(!zone) {
+            zone = loadZone(dir);
+        }
+
+        strcpy(_prevPath, getCurZone()->path);
+
+    }
+
+    template<>
+    void ZoneManager<Area>::onLoadZone(void) {
+
+    }
+
+    template<>
+    void ZoneManager<Area>::onUnloadZone(void) {
+
+    }
+
+    template<>
+    void ZoneManager<Area>::onEnterZone(void) {
+
+    }
+
+    template<>
+    void ZoneManager<Area>::onExitZone(void) {
+
+    }
+
+    template<>
+    void ZoneManager<Area>::getCurZone(void) {
+
+    }
+
+    template<>
+    void ZoneManager<Area>::setCurZone(void) {
+
+    }
+*/
+
 
 }
 

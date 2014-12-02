@@ -6,20 +6,13 @@
 #include "area.h"
 #include "elysian_zcoords.hpp"
 #include "entity.h"
-
-struct ESTkTileDepthBuffEntry: public elysian::MapDepthBuffEntry {
-	TileGraphicsItem<TileEntry>::DRAW_STYLE drawStyle;
-};
-
-struct ESTkEntityDepthBuffEntry: public elysian::EntityDepthBuffEntry {
-	Entity *entity;
-};
+#include "tkMapSystem.h"
 
 class MapViewDepthBufferGraphicsItem:
 		public MapViewTileGraphicsItem,
 		public elysian::MapDepthBuffer<MapViewDepthBufferGraphicsItem,
-										ESTkTileDepthBuffEntry,
-										ESTkEntityDepthBuffEntry> {
+                                        TkMapDepthBuffEntryImpl,
+                                        TkEntityDepthBuffEntryImpl> {
 private:
 	QPainter *_curPainter;
     std::vector<Entity*>* _curEntities;
@@ -29,15 +22,16 @@ public:
 	//=== Implemented from elysian::MapDepthBuffer ===
     void        getOnscreenTileRegion(unsigned &startX, unsigned &startY, unsigned &endX, unsigned &endY) const;
     float       getBaseZCoord(void) const;
-    void        getObjectLayerEntry(const unsigned x, const unsigned y, ESTkTileDepthBuffEntry &entry);
-    void        renderObjectEntry(const ESTkTileDepthBuffEntry &entry, const float z);
+    void        getObjectLayerEntry(const unsigned x, const unsigned y, TkMapDepthBuffEntryImpl &entry);
+    void        renderObjectEntry(const TkMapDepthBuffEntryImpl &entry, const float z);
     void        beginObjectList(void);
     void        endObjectList(void);
     unsigned    getEntityCount(void);
-    bool        getOnscreenEntity(const unsigned index, ESTkEntityDepthBuffEntry &entry, elysian::NORMAL_TYPE &normalType, float &lowestY, float &zCoord) const;
-    void        renderEntityEntry(const ESTkEntityDepthBuffEntry &entry) const;
+    bool        getOnscreenEntity(const unsigned index, TkEntityDepthBuffEntryImpl &entry, elysian::NORMAL_TYPE &normalType, float &lowestY, float &zCoord) const;
+    void        renderEntityEntry(const TkEntityDepthBuffEntryImpl &entry) const;
     void        disableDepthTest(void) const;
     void        enableDepthTest(void) const;
+    void        renderCustomPassImmediate(void);
     void        renderCustomPassAtElev(const unsigned char elev) const;
     uint32_t    startLightPass(uint32_t& lightsLeft);
     uint32_t    getLightCount(void) const;
@@ -56,6 +50,8 @@ public:
 };
 
 
+inline void MapViewDepthBufferGraphicsItem::renderCustomPassImmediate(void) { }
+
 inline void MapViewDepthBufferGraphicsItem::getOnscreenTileRegion(unsigned &startX, unsigned &startY, unsigned &endX, unsigned &endY) const {
 	QRect renderRegion = getVisibleTileRegion();
 	startX	= renderRegion.left();
@@ -68,14 +64,14 @@ inline float MapViewDepthBufferGraphicsItem::getBaseZCoord(void) const {
 	return elysian::ZCoordConstants::mapBase;
 }
 
-inline void MapViewDepthBufferGraphicsItem::getObjectLayerEntry(const unsigned x, const unsigned y, ESTkTileDepthBuffEntry &entry) {
+inline void MapViewDepthBufferGraphicsItem::getObjectLayerEntry(const unsigned x, const unsigned y, TkMapDepthBuffEntryImpl &entry) {
 	_currentLayer = (Assets::LAYER_TYPE)entry.layer;
     entry.lights = 0;
 	entry.drawStyle = (getAssets()->getCurrentLayer() == _currentLayer)? _getTileDrawStyle(x, y) : DRAW_NORMAL;
 	entry.mapEntry = _getTileEntryFromDrawStyle(x, y, entry.drawStyle);
 }
 
-inline void MapViewDepthBufferGraphicsItem::renderObjectEntry(const ESTkTileDepthBuffEntry &entry, const float /*z*/)  {
+inline void MapViewDepthBufferGraphicsItem::renderObjectEntry(const TkMapDepthBuffEntryImpl &entry, const float /*z*/)  {
 	if(!getAssets()->getLayerVisible((Assets::LAYER_TYPE)entry.layer)) return;
 	Assets::LAYER_TYPE curLayer = getAssets()->getCurrentLayer();
 
@@ -91,7 +87,7 @@ inline unsigned MapViewDepthBufferGraphicsItem::getEntityCount(void) {
     return _curEntities->size();
 }
 
-inline bool MapViewDepthBufferGraphicsItem::getOnscreenEntity(const unsigned index, ESTkEntityDepthBuffEntry &entry, elysian::NORMAL_TYPE &type, float &lowestY, float &elev) const {
+inline bool MapViewDepthBufferGraphicsItem::getOnscreenEntity(const unsigned index, TkEntityDepthBuffEntryImpl &entry, elysian::NORMAL_TYPE &type, float &lowestY, float &elev) const {
 	Entity &entity = *(*_curEntities)[index];
 		if(true) { //CHECK IF NIGGER IS ONSCREEN
 			entry.entity = &entity;
@@ -103,7 +99,7 @@ inline bool MapViewDepthBufferGraphicsItem::getOnscreenEntity(const unsigned ind
 		return false;
 }
 
-inline void MapViewDepthBufferGraphicsItem::renderEntityEntry(const ESTkEntityDepthBuffEntry &/*entry*/) const {
+inline void MapViewDepthBufferGraphicsItem::renderEntityEntry(const TkEntityDepthBuffEntryImpl &/*entry*/) const {
 	//entry.entity->paint(_curPainter, NULL, NULL);
 }
 

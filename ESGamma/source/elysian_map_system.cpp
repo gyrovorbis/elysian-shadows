@@ -1,8 +1,9 @@
-#include "elysian_map_system.hpp"
+
 #include "elysian_collision_system.hpp"
 #include "elysian_debug.hpp"
 #include <gyro.h>
 
+#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tkMapSystem.h")
 #include ELYSIAN_ASSET_HEADER("elysian_level.hpp", "level.h")
 #include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
 #include "elysian_camera_system.hpp"
@@ -13,105 +14,6 @@
 #include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 
 namespace elysian {
-
-    const GYColor4      MapSystemBase::_tileColor = { 255, 255, 255, 255 }; //I s'pose this could be configurable?
-    GY_RECT_PLANE_TYPE  MapSystemBase::_curPlaneType = GY_RECT_PLANE_BOTTOM;
-
-    MapSystemBase::MapSystemBase(void):
-		_animate(true) { 
-		for(unsigned i = 0; i < 4; ++i) _renderLayer[i] = true;
-		//for(unsigned int i = 0; i < 256; ++i) _currentTile[i] = _currentObject[i] = i;
-	}
-		
-
-    void MapSystemBase::update(void) {
-		//Update entity elevation
-		//Update entity z transitionals
-
-		updateAnimation();
-	}
-
-    void MapSystemBase::updateAnimation(void) {
-		//Cache time since last frame
-		float deltaTime = getTimerSys()->getDeltaTime();
-
-		for(unsigned i = 0; i < ELYSIAN_TILESHEET_TILES; ++i) {
-			if(_curLevel->tileset[_animTiles[i].curIndex].animated) {
-				Tile& curTile = _curLevel->tileset[_animTiles[i].curIndex];
-				
-				//update timer
-				_animTiles[i].elapsedTime += deltaTime;
-				
-				//Change tile index and reset timer
-				if(_animTiles[i].elapsedTime >= curTile.animTime) {
-					_animTiles[i].curIndex = curTile.nextIndex;
-					_animTiles[i].elapsedTime = 0.0f;
-
-                    //FUCKING KILL ME!!!!!!!!!!!!!!!!!!!!!1111111
-                    for(unsigned l = 0; l < 3; ++l) {
-                        for(unsigned y = 0; y < getCurArea()->height; ++y) {
-                            for(unsigned x = 0; x < getCurArea()->width; ++x) {
-                                if(getCurArea()->getTileEntry(l, x, y).getIndex() == i) {
-                                    getCurArea()->animateVboTileEntry(l, x, y, curTile.nextIndex);
-                                }
-                            }
-                        }
-                    }
-
-
-				}
-			}
-		}
-	}
-
-    void MapSystemBase::resetAnimation(void) {
-		for(unsigned i = 0; i < ELYSIAN_TILESHEET_TILES; ++i) {
-			_animTiles[i].elapsedTime = 0.0f;
-			_animTiles[i].curIndex = i;
-		}
-	}
-
-/* VERY FUCKING TIME-CRITICAL. THAT'S WHY IT LOOKS LIKE SHIT. 
-   We are purposely avoiding the matrix stack. Those calculations
-   aren't necessary for the tiny bit of simple translation this 
-   rendering needs.
-
-   The Dreamcast handles Z ordering in hardware, so it's faster to render both tile
-   and object layers together.
-   OpenGL makes us do it, so every layer has to be rendered independently for proper
-   Z-ordering.
- 
-   AWPTIMIZE
-   - no more checking if layer is being rendered MID LOOP
-   - Don't look shit up through _curArea anymore
-   - Vector instructions for the additions?
-   - Check value, not index for empty tiles
-   - Your "floating point" additions are probably fucking reested. Since the map can be sparse, you can skip those
-     operations most of the time by just calculating per position instead of accumulating.
-	*/
-	//MapSystem::render(); -- Delegated to DepthBuffer now!
-		
-
-	//Debug toggle this shit?
-    void MapSystemBase::renderOverlay(void) {
-		//void DrawString(CAMERA camera, FORMAT format, ALIGNMENT align, const char *str, ...);
-		//guiSystem->verdana.setColor(gyro::GREEN);
-		/*guiSystem->verdana.setAlpha(1.0f, 1.0f, 1.0f, 1.0f);
-		guiSystem->verdana.transform.setPosition(32.0f, 200.0f);
-		guiSystem->verdana.DrawString(Font::NO_CAMERA, Font::NO_FORMAT, Font::L_ALIGN, "Render Calls - %d", total);
-		guiSystem->verdana.transform.setPosition(32.0f, 220.0f);
-		guiSystem->verdana.DrawString(Font::NO_CAMERA, Font::NO_FORMAT, Font::L_ALIGN, "Start - <%d, %d>", startX, startY);
-		guiSystem->verdana.transform.setPosition(32.0f, 240.0f);
-		guiSystem->verdana.DrawString(Font::NO_CAMERA, Font::NO_FORMAT, Font::L_ALIGN, "End -   <%d, %d>", endX, endY);*/
-	}
-
-    bool MapSystemBase::getAnimate(void) const { return _animate; }
-    void MapSystemBase::setAnimate(const bool v) { _animate = v; }
-
-    bool MapSystemBase::toggleRenderLayer(const unsigned layer) {
-		return (_renderLayer[layer] = !_renderLayer[layer]);
-
-	}
 
 //Took animation into account!
 #if 0

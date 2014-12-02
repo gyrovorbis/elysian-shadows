@@ -10,12 +10,24 @@
 
 #   define ELYSIAN_ASSET_HEADER(gamma, tk) gamma
 #else
-#   define ELYSIAN_ASSET_TYPEDEF(type) \
-        class Tk##type; \
+
+
+
+
+#   define ELYSIAN_ASSET_TYPEDEF_GENERIC(name, type) \
+        type Tk##name; \
         namespace elysian { \
-            typedef Tk##type type; \
+            typedef Tk##name name; \
         }
+
+#   define ELYSIAN_ASSET_TYPEDEF_CLASS(name) ELYSIAN_ASSET_TYPEDEF_GENERIC(name, class)
+
+#define ELYSIAN_ASSET_TYPEDEF_GET_MACRO(_1, _2, NAME, ...) NAME
+#define ELYSIAN_ASSET_TYPEDEF(...) ELYSIAN_ASSET_TYPEDEF_GET_MACRO(__VA_ARGS__, ELYSIAN_ASSET_TYPEDEF_GENERIC, ELYSIAN_ASSET_TYPEDEF_CLASS)(__VA_ARGS__)
+
+
 #   define ELYSIAN_ASSET_HEADER(gamma, tk) tk
+
 #endif
 
 

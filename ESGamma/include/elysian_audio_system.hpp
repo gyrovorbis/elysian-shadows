@@ -4,6 +4,7 @@
 #include <gyro_audio_api.h>
 #include <gyro_wav_api.h>
 #include <gyro_ogg_api.h>
+#include <gyro_matrix_api.h>
 #include "elysian_system.hpp"
 #include "elysian_asset_typedefs.hpp"
 

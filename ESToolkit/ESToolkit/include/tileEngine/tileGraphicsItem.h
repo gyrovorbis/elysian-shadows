@@ -16,13 +16,13 @@ template<typename T>
 class TileGraphicsItem: public QGraphicsRectItem {
 public:
 	enum TYPE { TYPE_SOURCE, TYPE_DEST };
-	enum DRAW_STYLE { DRAW_NORMAL, DRAW_SELECTING, DRAW_SELECTION, DRAW_FILLING };
+    enum DRAW_STYLE { DRAW_NORMAL, DRAW_SELECTING, DRAW_SELECTION, DRAW_FILLING, DRAW_MAX };
 protected:
 	unsigned _x, _y;
 
 	union {
-		const SourceView *src;
-		const DestView<T> *dst;
+        const SourceView*   src;
+        const DestView<T>*  dst;
 	} _view;
 
 	TYPE _type;
@@ -35,6 +35,7 @@ protected:
 	bool _isTileSelection(const unsigned x, const unsigned y) const;
 
 	DRAW_STYLE _getTileDrawStyle(const unsigned x, const unsigned y) const;
+    DRAW_STYLE _getTileDrawState(void) const;
 	T _getTileEntryFromDrawStyle(const unsigned x, const unsigned y, const DRAW_STYLE style) const;
 
 	void _renderTile(QPainter *const painter, const T entry, const DRAW_STYLE style, const unsigned x, const unsigned y, const bool decorate);

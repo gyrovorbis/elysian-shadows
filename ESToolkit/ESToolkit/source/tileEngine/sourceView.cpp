@@ -50,14 +50,19 @@ SourceView::SourceView(QWidget *parent):
 }
 
 void SourceView::_updateSceneMousePos(void) {
-	_sceneMousePos = mapToScene(_viewMousePos);
+    _sceneMousePos = _mapViewPosToScenePos(_viewMousePos);
 	_sceneMousePosLabel->setText(QString::number((int)_sceneMousePos.x()) + QString(", ") + QString::number((int)_sceneMousePos.y()));
 	_sceneMouseTileLabel->setText(QString::number(((int)_sceneMousePos.x()+16)/32) + QString(", ") + QString::number(((int)_sceneMousePos.y()+16)/32)
 		+ QString(" [") + QString::number((int)((_sceneMousePos.x()+16)/32)*32) + QString(", ") + QString::number((int)((_sceneMousePos.y()+16)/32)*32) + QString("]"));
 }
 
 void SourceView::setCenter(const QPointF &centerPoint) {
-	QRectF visibleArea = mapToScene(rect()).boundingRect();
+    QRectF visibleArea;
+    visibleArea.setBottomLeft(_mapViewPosToScenePos(rect().bottomLeft()));
+    visibleArea.setBottomRight(_mapViewPosToScenePos(rect().bottomRight()));
+    visibleArea.setTopLeft(_mapViewPosToScenePos(rect().topLeft()));
+    visibleArea.setTopRight(_mapViewPosToScenePos(rect().topRight()));
+
 
 		//Get the scene area
 		QRectF sceneBounds = sceneRect();
@@ -172,17 +177,17 @@ void SourceView::drawForeground(QPainter *painter, const QRectF &rect) {
 void SourceView::mousePressEvent(QMouseEvent *event){
 	//setFocus(Qt::MouseFocusReason);
 	if(event->button() == _selMouseButton) {
-		setDragMode(NoDrag);
 		_startRegionSelection(event);
-		emit exitPanMode();
+        _endPan();
 	}
 	else if(event->button() == Qt::MidButton) {
 		QMouseEvent fooledya(event->type(), event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers());
-		setDragMode(ScrollHandDrag);
-		_startRegionSelection(event);
-		QGraphicsView::mousePressEvent(&fooledya);
+        //_startPan();
+        setDragMode(ScrollHandDrag);
+        _startRegionSelection(event);
+        QGraphicsView::mousePressEvent(&fooledya);
 	} else QGraphicsView::mousePressEvent(event);
-	if(event->button() == _panMouseButton) setDragMode(ScrollHandDrag);
+    if(event->button() == _panMouseButton) { _startPan(); }
 
 	event->ignore();
 	QGraphicsView::mousePressEvent(event);
@@ -190,13 +195,28 @@ void SourceView::mousePressEvent(QMouseEvent *event){
 
 void SourceView::keyReleaseEvent(QKeyEvent *event){
 	if(event->key() == Qt::Key_Control) {
-		_endRegionSelection(NULL);
+        _endRegionSelection(nullptr);
 	}
 
    //else QGraphicsView::keyReleaseEvent(event);
 	event->ignore();
 }
 
+void SourceView::_startPan(void) {
+    if(!_panning) {
+        //setDragMode(ScrollHandDrag);
+        _panning    = true;
+        _panPivot   = _viewMousePos;
+    }
+}
+
+void SourceView::_endPan(void) {
+    if(_panning) {
+        _panning = false;
+        emit exitPanMode();
+        setDragMode(NoDrag);
+    }
+}
 
 void SourceView::mouseMoveEvent(QMouseEvent *event) {
 	_lastMouseEvent = QMouseEvent(*event);
@@ -222,6 +242,9 @@ void SourceView::mouseReleaseEvent(QMouseEvent *event) {
 		QMouseEvent fooledya(event->type(), event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers());
 		QGraphicsView::mouseReleaseEvent(&fooledya);
 	} else QGraphicsView::mousePressEvent(event);
+
+    if(event->button() == _panMouseButton) _endPan();
+
 	event->ignore();
 	QGraphicsView::mouseReleaseEvent(event);
 }
@@ -236,27 +259,27 @@ void SourceView::wheelEvent(QWheelEvent *event) {
 }
 
 void SourceView::_startRegionSelection(QMouseEvent * event) {
-	if(!scene()) return;
+    //if(!scene()) return;
 
 	if(!_selecting) { //Begin a new selection
 		_externalSelectionClear();
 		_selecting = true;
 
-		_fixedPivot = _currentPivot = mapToScene(event->pos());
+        _fixedPivot = _currentPivot = _mapViewPosToScenePos(event->pos());
 
 		//Prime the rect stack.
 		//_sceneSelectionAddRect(getRect(QPointF(-100.0f, -100.0f), QPointF(-100.0f, -100.0f)));
 
 	}
 	else { //Continue a new selection -- move pivot (staggered selection)
-		//_selectedPath.moveTo(mapToScene(event->pos()));
-		_currentPivot = mapToScene(event->pos());
+        //_selectedPath.moveTo(_mapViewPosToScenePos(event->pos()));
+        _currentPivot = _mapViewPosToScenePos(event->pos());
 	}
 }
 
 void SourceView::_updateRegionSelection(QMouseEvent * event) {
 	if(_selecting) {
-		QPointF scenePos = mapToScene(event->pos());
+        QPointF scenePos = _mapViewPosToScenePos(event->pos());
 		_sceneSelectionUpdateLastRect(getRect(_currentPivot, scenePos));
 
 		//Update StatusBar label
@@ -273,7 +296,7 @@ void SourceView::_endRegionSelection(QMouseEvent *event) {
 	if(!_selecting) return; //Not that this should ever happen...
 
 	if(event) {
-		_sceneSelectionAddRect(getRect(_currentPivot, mapToScene(event->pos())));
+        _sceneSelectionAddRect(getRect(_currentPivot, _mapViewPosToScenePos(event->pos())));
 
 		if((event->modifiers() &= Qt::ControlModifier)) {
 			return; //Continue selection for staggered selection
@@ -289,6 +312,10 @@ void SourceView::_endRegionSelection(QMouseEvent *event) {
 ////////////////////////////////////////////////////////
 //========DEFAULT VIRTUAL IMPLEMENTATIONS==============
 ////////////////////////////////////////////////////////
+
+QPointF SourceView::_mapViewPosToScenePos(const QPoint viewPos) const {
+    return mapToScene(viewPos);
+}
 
 // ===== INTERNAL SELECTION =====
 
@@ -309,6 +336,10 @@ void SourceView::_sceneSelectionUpdateLastRect(const QRectF &rect) {
 void SourceView::_sceneSelectionClear(void) {
 	_selectingPath = _selectedPath = QPainterPath();
 	scene()->clearSelection();
+}
+
+void SourceView::_forceSceneUpdate(void) {
+    scene()->update();
 }
 
 

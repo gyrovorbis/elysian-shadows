@@ -702,9 +702,9 @@ void CollisionSystem::_detectEntityTileCollisionFine(Collidable &collidable, con
 	TileEntry tileEntry[3];
 	Tile::COLLIDER_TYPE colType = Tile::COLLIDER_NONE;
 
-	tileEntry[0] = _curArea->getL1TileEntry(x, y);
-    tileEntry[1] = _curArea->getL2TileEntry(x, y);
-	tileEntry[2] = _curArea->getL3TileEntry(x, y);
+    tileEntry[0] = _curArea->getTileEntry(0, x, y);
+    tileEntry[1] = _curArea->getTileEntry(1, x, y);
+    tileEntry[2] = _curArea->getTileEntry(2, x, y);
 
 		//Iterate over tile layers and combine their colliders
 		for(unsigned i = 0; i < 3; ++i) {

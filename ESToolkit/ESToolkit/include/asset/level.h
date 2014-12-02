@@ -9,6 +9,7 @@
 #include "elysian_level_manager.hpp"
 #include "assets.h"
 #include "elysianTileWrapper.h"
+#include "elysian_system.hpp"
 
 #define ESTK_LEVEL_METADATA_DIRECTORY   "estk"
 #define ESTK_LEVEL_METADATA_TILESET     "estkTileset.bin"
@@ -31,9 +32,11 @@ class CheckeredAlphaRectGraphicsItem;
 class TkArea;
 typedef TkArea Area;
 
-class TkLevel: public PropertyStackModel, public TreeNode, public elysian::LevelBase {
+class TkLevel: public PropertyStackModel, public TreeNode, public elysian::LevelBase, public elysian::System {
     friend class Assets;
 	friend class TileManagerDialog;
+    friend class Project;
+    friend class TkArea;
 
     Q_OBJECT
 private:
@@ -42,8 +45,8 @@ private:
 	QVector<TileImage *> _tileSheet;
 	QVector<Area *> _area;
     QString _location;
+    static Project* _curProj;
     bool _active, _open, _validSheets;
-    elysian::LevelBase _elysianLevel;
 
     bool _normalMapEnabled[ELYSIAN_TILESHEET_TILES] = { false };
     bool _specularMapEnabled[ELYSIAN_TILESHEET_TILES] = { false };
@@ -93,7 +96,7 @@ public:
 	bool saveArea(const QString name) const;
 	bool removeArea(const QString name);
     Area *getFirstArea() const;
-    elysian::LevelBase* getElysianLevel(void) { return (elysian::LevelBase*)&_elysianLevel; }
+    elysian::LevelBase* getElysianLevel(void) { return (elysian::LevelBase*)this; }
 	elysian::Tile *getElysianTile(const uint16_t index);
     ElysianTileWrapper* getElysianTileWrapper(const uint16_t index);
 

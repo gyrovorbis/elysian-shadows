@@ -28,7 +28,7 @@ bool Area::staticConstructor(const SourceView *const view) {
 	_depthBuffGraphicsItem->setView(view);
 
 	resizeEditorScene();
-	editorScene->addItem(_depthBuffGraphicsItem);
+    //editorScene->addItem(_depthBuffGraphicsItem);
 
 	return true;
 }
@@ -40,7 +40,6 @@ void Area::updateScene(void) {
 //====NONSTATIC====
 
 TkArea::TkArea(Level *const level):
-    _level(level),
     _active(false),
     _open(false)
 {
@@ -101,12 +100,12 @@ void Area::setNodeName(const QString str) {
 	//Already has a name, so we have to rename it
 	if(!_name.isEmpty())  {
 
-		if(_level->getArea(name)) {
-			QMessageBox::critical(NULL, tr("Error!"), tr("An area with that name already exists in the current level!\n"));
+        if(level->getArea(name)) {
+            QMessageBox::critical(nullptr, tr("Error!"), tr("An area with that name already exists in the current level!\n"));
 			return;
 		}
 
-		QString areaDir = _level->getLocation();
+        QString areaDir = level->getLocation();
 		areaDir.append("/area");
 
 		QDir dir(areaDir);
@@ -130,11 +129,11 @@ bool Area::duplicate(void) {
     unsigned num = 1;
     QString name(_name);
 
-    while(_level->getArea(_name+QString::number(num))) ++num;
+    while(level->getArea(_name+QString::number(num))) ++num;
 
     saveAs(_location+QString::number(num));
 
-    return _level->loadArea(name + QString::number(num));
+    return level->loadArea(name + QString::number(num));
 }
 
 
@@ -167,19 +166,24 @@ void Area::connectSlots(Entity *const entity) {
 	connect(entity, SIGNAL(componentRemoved(Entity*const,Component*const)), this, SLOT(onComponentRemoved(Entity*const,Component*const)));
 }
 
-bool Area::load(const QString dir) {
+bool TkArea::load(const char*const str) {
+    setLevel(_curLevel);
+    level->connectSlots(this);
+    QString dir(str);
 	bool success = true;
-	elysian::Area *tempCurArea = _curArea;
+    Area *tempCurArea = _curArea;
     _curArea = this;
 	Debug::Logf(Debug::VERBOSE, "Area::Load(%s)", dir.toStdString().c_str());
 	Debug::Push();
 
-    setNodeName(QDir(dir).dirName());
 	_location = dir;
 
 	//Allocated a dummy map upon construction, have to free before loading.
-    freeMap();
-    success &= AreaBase::load(dir.toStdString().c_str(), (elysian::Level*)_level->getElysianLevel());
+    //freeMap();
+    success &= AreaBase::load(dir.toStdString().c_str());
+    //level = _level;
+
+    setNodeName(QDir(dir).dirName());
 
 	Debug::Log(Debug::VERBOSE, "Creating Toolkit Entities from elysian::Entities.");
 	Debug::Push();
@@ -204,7 +208,7 @@ bool Area::save(void) {
 	Debug::Log(Debug::VERBOSE, QString("Area::Save("+_location+")"));
 	Debug::Push();
 	//Save parent level
-	success &= _level->save();
+    success &= level->save();
 	//export to previous save location
 	success &= saveAs(_location);
 	_undoStack.setClean();
@@ -288,11 +292,11 @@ bool Area::activate(void) {
 	if(!_active) {
         _curArea = this;
 
-		editorScene->addItem(_bgRect);
-        resizeEditorScene();
-        editorScene->setSceneRect(QRect(-48,-48,32*width+64, 32*height+64));
+        //editorScene->addItem(_bgRect);
+        //resizeEditorScene();
+        //editorScene->setSceneRect(QRect(-48,-48,32*width+64, 32*height+64));
 
-		for(size_t i = 0; i < entities.size(); ++i) editorScene->addItem(entities[i]);
+        //for(size_t i = 0; i < entities.size(); ++i) editorScene->addItem(entities[i]);
 		//editorScene->addItem(_entityParent);
 		_active = true;
 	}
@@ -303,9 +307,9 @@ bool Area::activate(void) {
 bool Area::deactivate(void) {
 	if(!_active) return false;
 
-	editorScene->removeItem(_bgRect);
+    //editorScene->removeItem(_bgRect);
 
-	for(size_t i = 0; i < entities.size(); ++i) editorScene->removeItem(entities[i]);
+    //for(size_t i = 0; i < entities.size(); ++i) editorScene->removeItem(entities[i]);
 	//editorScene->removeItem(_entityParent);
 	_active = false;
 	return true;

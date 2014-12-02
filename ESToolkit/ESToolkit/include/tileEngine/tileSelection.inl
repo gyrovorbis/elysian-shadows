@@ -128,8 +128,8 @@ void TileSelection<T>::_freeArrays(T **&entry, bool **&selection, unsigned /*wid
 	delete[] selection;
 	delete[] entry;
 
-	selection = NULL;
-	entry = NULL;
+    selection = nullptr;
+    entry = nullptr;
 }
 
 // ---- SELECTION MODIFICATION ----

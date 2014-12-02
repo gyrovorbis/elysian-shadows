@@ -6,6 +6,7 @@
 
 #include "treenode.h"
 #include "propertyStackModel.h"
+#include "elysian_system.hpp"
 
 class TkLevel;
 class TkArea;
@@ -15,9 +16,10 @@ class TkEntity;
 typedef TkEntity Entity;
 class Component;
 
-class Project: public PropertyStackModel, public TreeNode {
+class Project: public PropertyStackModel, public TreeNode, public elysian::System {
     Q_OBJECT
     friend class Assets;
+    friend class TkLevel;
 private:
 
     QVector<TkLevel *> _level;
