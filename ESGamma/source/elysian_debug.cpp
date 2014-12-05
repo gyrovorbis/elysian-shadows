@@ -13,7 +13,8 @@
 #include "elysian_level_system.hpp"
 #include "elysian_engine.hpp"
 #include "elysian_game_input.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tkMapSystem.h")
+//#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tkMapSystem.h")
+#include "tkMapSystem.h"
 #include "elysian_camera_system.hpp"
 #include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 #include "elysian_character.hpp"

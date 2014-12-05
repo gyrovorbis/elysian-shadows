@@ -14,6 +14,7 @@ class PlaceTileGroupUndoItem;
 template<typename T>
 class DestView : public SourceView  {
 protected:
+
     QGraphicsItemGroup* _selItemGroup       = nullptr;
     TileSelection<T>*   _selClipboard       = nullptr;
 
@@ -37,8 +38,8 @@ protected:
 	void _updateRegionFill(QMouseEvent *event);
 	void _endRegionFill(QMouseEvent *event);
 
-	bool _populatePlaceTileGroup(const TileSelection<T> *const terSel, PlaceTileGroupUndoItem<T> *const groupCmd) const;
-	bool _populatePlaceTileGroupRegionFill(const TileSelection<T> *const terSel, PlaceTileGroupUndoItem<T> *const groupCmd) const;
+	virtual bool _populatePlaceTileGroup(const TileSelection<T> *const terSel, PlaceTileGroupUndoItem<T> *const groupCmd) const;
+	virtual bool _populatePlaceTileGroupRegionFill(const TileSelection<T> *const terSel, PlaceTileGroupUndoItem<T> *const groupCmd) const;
 
 	//Overridden SourceView functionality
 	virtual void _sceneSelectionAddRect(const QRectF &rect);

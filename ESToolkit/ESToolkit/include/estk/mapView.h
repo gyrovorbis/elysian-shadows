@@ -7,15 +7,19 @@
 #include "assetManager.h"
 #include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
 
+class MapViewPlaceTileGroupUndoItem;
+
 class MapView : public DestView<TileEntry>, public AssetManager  {
+	Q_OBJECT
 private:
+	typedef Assets::LAYER_TYPE LAYER_TYPE;
     bool _tileSelectionArray[ELYSIAN_AREA_MAP_HEIGHT][ELYSIAN_AREA_MAP_WIDTH] = {{false}};
 
     //the timer id of a 30ms draw refresh
-    int _refreshTimerHandle = 30;
+	int								_refreshTimerHandle = 30;
 
-	void _populatePlaceTileGroup(const TileSelection<TileEntry> *const terSel, PlaceTileGroupUndoItem<TileEntry> *const groupCmd) const;
-	void _populatePlaceTileGroupRegionFill(const TileSelection<TileEntry> *const terSel, PlaceTileGroupUndoItem<TileEntry> *const groupCmd) const;
+	MapViewPlaceTileGroupUndoItem*	_curUndoItem		= nullptr;
+
 	void _tileSelectionArrayUpdate(void);
 
 	//SourceView virtual implementation
@@ -35,6 +39,9 @@ private:
     virtual QUndoStack*                         _getUndoStack(void) const override;
     virtual PlaceTileGroupUndoItem<TileEntry>*  _createPlaceTileGroup(void) override;
     virtual TileSelection<TileEntry>*           _copyConstructTileSelection(const TileSelection<TileEntry> &rval) const override;
+	virtual bool								_populatePlaceTileGroup(const TileSelection<TileEntry> *const terSel, PlaceTileGroupUndoItem<TileEntry> *const groupCmd) const override;
+	virtual bool								_populatePlaceTileGroupRegionFill(const TileSelection<TileEntry> *const terSel, PlaceTileGroupUndoItem<TileEntry> *const groupCmd) const override;
+
 
 public:
     explicit    MapView(QWidget *parent = nullptr);
@@ -49,6 +56,11 @@ public:
     virtual void timerEvent(QTimerEvent *event) override;
     virtual void keyPressEvent(QKeyEvent *event) override;
     virtual void scrollContentsBy(int dx, int dy) override {}
+
+public slots:
+
+	void onAreaChange(Area* const area);
+	void onLayerChange(LAYER_TYPE type);
 };
 
 #endif

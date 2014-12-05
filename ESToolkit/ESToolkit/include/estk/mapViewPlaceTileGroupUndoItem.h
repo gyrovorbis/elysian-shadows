@@ -2,15 +2,21 @@
 #define MAPVIEW_PLACE_TILE_GROUP_UNDO_ITEM_H
 
 #include "tileGroupUndoItem.h"
+#include "tileSelectable.h"
 
 class MapViewPlaceTileGroupUndoItem: public PlaceTileGroupUndoItem<TileEntry> {
 private:
-	Area *const _area;
-	const Assets::LAYER_TYPE _layer;
+	Area*					_area		= nullptr;
+	Assets::LAYER_TYPE		_layer		= Assets::LAYER_MAX;
+	unsigned				_width		= 0;
+	unsigned				_height		= 0;
+	bool					_skipFirst	= false;
 public:
 
-	inline MapViewPlaceTileGroupUndoItem(Area *const area, const Assets::LAYER_TYPE layer):
-	PlaceTileGroupUndoItem<TileEntry>::PlaceTileGroupUndoItem(UndoItem::PLACE_TILE), _area(area), _layer(layer) { }
+	inline MapViewPlaceTileGroupUndoItem(Area *const area=nullptr, const Assets::LAYER_TYPE layer=Assets::LAYER_MAX):
+	PlaceTileGroupUndoItem<TileEntry>::PlaceTileGroupUndoItem(UndoItem::PLACE_TILE), _area(area), _layer(layer) {
+
+	}
 
 	virtual bool _withinBoundaries(const QPoint loc) const {
 		//This can't be right?
@@ -20,6 +26,7 @@ public:
 
 	virtual TileEntry _getOldTileData(const QPoint loc) const {
 		return _area->getTileEntry(loc, _layer);
+		//return _prevEntry[loc.y()-_sceneY][loc.x()-_sceneX];
 	}
 
 	virtual void undo(void) {
@@ -27,16 +34,76 @@ public:
 			//_area->setTileValue(i.key(), _layer, ELYSIAN_MAP_TERRAIN_PACK_VALUE(i.value().oldData.index, i.value().oldData.orient));
 			_area->setTileEntry(i.key(), _layer, i.value().oldData);
 		}
-		_area->editorScene->update();
+		//_area->editorScene->update();
 	}
 
 	virtual void redo(void) {
-		for(QMap<QPoint, UndoEntry>::const_iterator i = _undoGroup.begin(); i != _undoGroup.end(); ++i) {
-			//_area->setTileValue(i.key(), _layer, ELYSIAN_MAP_TERRAIN_PACK_VALUE(i.value().newData.index, i.value().newData.orient));
-			_area->setTileEntry(i.key(), _layer, i.value().newData);
+		if(_skipFirst) { //assume changes have already been applied to map from updating
+			_skipFirst = false;
+		} else {
+			for(QMap<QPoint, UndoEntry>::const_iterator i = _undoGroup.begin(); i != _undoGroup.end(); ++i) {
+				//_area->setTileValue(i.key(), _layer, ELYSIAN_MAP_TERRAIN_PACK_VALUE(i.value().newData.index, i.value().newData.orient));
+				_area->setTileEntry(i.key(), _layer, i.value().newData);
+			}
 		}
-		_area->editorScene->update();
+		//_area->editorScene->update();
 	}
+
+	void beginUpdateEntries(void) {
+		for(auto& it : _undoGroup) {
+			it.dirty = true;
+		}
+	}
+
+	void endUpdateEntries(void) {
+		for(auto it = _undoGroup.begin(); it != _undoGroup.end(); ++it) {
+			if(it.value().dirty) {
+				_area->setTileEntry(it.key(), _layer, it.value().oldData);
+			} else if(it.value().changed) {
+				_area->setTileEntry(it.key(), _layer, it.value().newData);
+			}
+		}
+
+		for(auto it = _undoGroup.begin(); it != _undoGroup.end(); ++it)
+			if(it.value().dirty)
+				_undoGroup.erase(it);
+	}
+
+	void clearEntries(void) {
+		undo();
+		_undoGroup.clear();
+	}
+
+	void refreshOldData(void) {
+		for(auto it = _undoGroup.begin(); it != _undoGroup.end(); ++it) {
+			it.value().dirty = false;
+			it.value().oldData = _getOldTileData(it.key());
+		}
+	}
+
+	void setLayer(const Assets::LAYER_TYPE layer) {
+		if(_undoGroup.size() && _layer != layer) {
+			undo();
+			_layer = layer;
+			refreshOldData();
+			endUpdateEntries();
+		} else {
+			_layer = layer;
+		}
+	}
+
+	void setArea(Area*const area) {
+		if(_undoGroup.size() && _area != area) {
+			undo();
+			_area = area;
+			refreshOldData();
+			endUpdateEntries();
+		} else {
+			_area = area;
+		}
+	}
+
+
 };
 
 #endif // MAPVIEWPLACETILEGROUPUNDOITEM_H

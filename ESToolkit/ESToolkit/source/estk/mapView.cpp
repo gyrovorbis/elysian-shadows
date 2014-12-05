@@ -16,9 +16,20 @@
 
 MapView::MapView(QWidget *parent): DestView<TileEntry>::DestView(parent) {
     setMouseTracking(true);
-    startTimer(30);
+
+	_curUndoItem = new MapViewPlaceTileGroupUndoItem();
+
+	connect(getAssets(), SIGNAL(areaChanged(Area*const)), this, SLOT(onAreaChange(Area*const)));
+	connect(getAssets(), SIGNAL(layerChanged(LAYER_TYPE)), this, SLOT(onLayerChange(LAYER_TYPE)));
 }
 
+void MapView::onLayerChange(Assets::LAYER_TYPE type) {
+	_curUndoItem->setLayer(type);
+}
+
+void MapView::onAreaChange(Area * const area) {
+	_curUndoItem->setArea(area);
+}
 
 TileSelection<TileEntry> *MapView::_getTileSelection(void) const {
 	return static_cast<TileSelectable*> (
@@ -37,10 +48,10 @@ void MapView::_tileSelectionArrayUpdate(void) {
 
 	//iterate through rectangles and create selection
 	for(int k = 0; k < _tileSelectionRects.size(); ++k) {
-        int startX = (_tileSelectionRects[k].topLeft().x()+32)/32;
-        int startY = (_tileSelectionRects[k].topLeft().y()+32)/32;
-        int endX = (_tileSelectionRects[k].bottomRight().x()+32)/32;
-        int endY = (_tileSelectionRects[k].bottomRight().y()+32)/32;
+		int startX = (_tileSelectionRects[k].topLeft().x()+16)/32;
+		int startY = (_tileSelectionRects[k].topLeft().y()+16)/32;
+		int endX = (_tileSelectionRects[k].bottomRight().x()+16)/32;
+		int endY = (_tileSelectionRects[k].bottomRight().y()+16)/32;
 
 		//clamp region to map boundaries
 		if(startX < 0) startX = 0;
@@ -53,6 +64,21 @@ void MapView::_tileSelectionArrayUpdate(void) {
 			for(int i = startX; i <= endX; ++i) {
 				_tileSelectionArray[j][i] = true;
 			}
+		}
+
+		if(isFillingRegion()) {
+			_curUndoItem->beginUpdateEntries();
+			for(int j = startY; j <= endY; ++j) {
+				for(int i = startX; i <= endX; ++i) {
+					if(_tileSelectionArray[j][i]) {
+						auto* sel = static_cast<TileSelectable*>(_getTileSelection());
+						auto newTileEntry = sel->getFillEntry(i, j, _fillFixedPivot, getSceneMousePos());
+						if(sel->isWithinSelectionFill(i, j, _fillFixedPivot, getSceneMousePos()))
+						_curUndoItem->addTile(QPoint(i, j), newTileEntry);
+					}
+				}
+			}
+			_curUndoItem->endUpdateEntries();
 		}
 	}
 }
@@ -93,9 +119,9 @@ void MapView::_externalSelectionCreate(void) {
 	int endY = 0;
 
 	for(int i = 0; i < _tileSelectionRects.size(); ++i) {
-		if(startX > (_tileSelectionRects[i].topLeft().x()+16)/32) startX =  (_tileSelectionRects[i].topLeft().x()+16)/32;
+		if(startX > (_tileSelectionRects[i].topLeft().x()+16)/32)	startX =  (_tileSelectionRects[i].topLeft().x()+16)/32;
 		if(endX < (_tileSelectionRects[i].bottomRight().x()+16)/32) endX = (_tileSelectionRects[i].bottomRight().x()+16)/32;
-		if(startY > (_tileSelectionRects[i].topLeft().y()+16)/32) startY = (_tileSelectionRects[i].topLeft().y()+16)/32;
+		if(startY > (_tileSelectionRects[i].topLeft().y()+16)/32)	startY = (_tileSelectionRects[i].topLeft().y()+16)/32;
 		if(endY < (_tileSelectionRects[i].bottomRight().y()+16)/32) endY = (_tileSelectionRects[i].bottomRight().y()+16)/32;
     }
 	if(startX < 0) startX = 0;
@@ -106,7 +132,7 @@ void MapView::_externalSelectionCreate(void) {
 }
 
 void MapView::_externalSelectionClear(void) {
-    if(_getTileSelection()) static_cast<TileSelectable*>(_getTileSelection())->clearSceneSelection();
+	_curUndoItem->clearEntries();
     setCurrentSelection(nullptr);
 }
 
@@ -119,8 +145,9 @@ QUndoStack* MapView::_getUndoStack(void) const {
 }
 
 PlaceTileGroupUndoItem<TileEntry>* MapView::_createPlaceTileGroup(void) {
-     if(_getTileSelection()) static_cast<TileSelectable*>(_getTileSelection())->clearPrevSceneSelection();
-	return new MapViewPlaceTileGroupUndoItem(getCurrentArea(), getAssets()->getCurrentLayer());
+	 auto* curGroup = _curUndoItem;
+	 _curUndoItem = new MapViewPlaceTileGroupUndoItem(getAssets()->getCurrentArea(), getAssets()->getCurrentLayer());
+	return curGroup;
 }
 
 TileSelection<TileEntry>* MapView::_copyConstructTileSelection(const TileSelection<TileEntry>& rval) const {
@@ -182,10 +209,22 @@ void MapView::mouseMoveEvent(QMouseEvent *event) {
 
     DestView<TileEntry>::mouseMoveEvent(event);
 
-    if(_selItemGroup) {
-        static_cast<TileSelectable*>(_getTileSelection())->updateSceneSelection(_sceneMousePos.x(), _sceneMousePos.y());
-    }
+	if(_selItemGroup && !isFillingRegion()) {
+		auto *sel = static_cast<TileSelectable*>(_getTileSelection());
+		unsigned w, h;
+		sel->getSelectionArea(w, h);
 
+		_curUndoItem->beginUpdateEntries();
+		for(int j = 0; j < h; ++j) {
+			for(int i = 0; i < w; ++i) {
+				auto newTileEntry = sel->getEntry(i, j);
+				if(sel->isWithinSelection(i, j))
+					_curUndoItem->addTile(QPoint(i+(getSceneMousePos().x()+16)/32, j+(getSceneMousePos().y()+16)/32), newTileEntry);
+			}
+		}
+
+		_curUndoItem->endUpdateEntries();
+	}
 
     if(_panning) {
         float scale = getAssets()->getEngine()->getCameraSys()->getKeyFrame().getScale();
@@ -221,3 +260,14 @@ void MapView::_startPan(void) {
 void MapView::_endPan(void) {
     DestView<TileEntry>::_endPan();
 }
+
+
+bool MapView::_populatePlaceTileGroup(const TileSelection<TileEntry> *const terSel, PlaceTileGroupUndoItem<TileEntry> *const groupCmd) const {
+	return true;
+}
+
+bool MapView::_populatePlaceTileGroupRegionFill(const TileSelection<TileEntry> *const terSel, PlaceTileGroupUndoItem<TileEntry> *const groupCmd) const {
+	return true;
+}
+
+

@@ -4,7 +4,6 @@
 #include "assetManager.h"
 #include <QGLWidget>
 
-#include "geometryengine.h"
 #include <QGLWidget>
 #include <QGLFunctions>
 #include <QMatrix4x4>
@@ -23,54 +22,42 @@ class EngineGLSceneWidget:
 public:
 
         void startRenderTimer(void);
+		void advanceFrame(void);
+		void play(void);
+		void stop(void);
+		bool isPlaying(void) const;
 
-        QBasicTimer timer;
-
-        EngineGLSceneWidget(const QGLFormat & format, QWidget * parent = 0, const QGLWidget * shareWidget = 0, Qt::WindowFlags f = 0);
-        ~EngineGLSceneWidget(void);
-
-#if 1
-        QGLShaderProgram program;
-        GeometryEngine geometries;
-
-        GLuint texture;
-
-        QMatrix4x4 projection;
-
-        QVector2D mousePressPosition;
-        QVector3D rotationAxis;
-        qreal angularSpeed;
-        QQuaternion rotation;
+		explicit EngineGLSceneWidget(const QGLFormat& format, QWidget* parent = 0, const QGLWidget* shareWidget = 0, Qt::WindowFlags f = 0);
+		virtual ~EngineGLSceneWidget(void);
 
 
 protected:
-    unsigned _width     = 0;
-    unsigned _height    = 0;
+	QBasicTimer _timer;
+	unsigned	_width			= 0;
+	unsigned	_height			= 0;
+	bool		_playing		= false;
+	bool		_advanceFrame	= false;
+
 
     //reimplemented from QGLWidget
     virtual void initializeGL(void) override;
     virtual void resizeGL(int w, int h) override;
     virtual void paintGL(void) override;
-    virtual void timerEvent(QTimerEvent *e) override;
-
-
-
-#else
-
-protected:
-	void timerEvent(QTimerEvent *e);
-
-	void initializeGL();
-	void resizeGL(int w, int h);
-
-	void initShaders();
-
-
-private:
-
-
-#endif
+	virtual void timerEvent(QTimerEvent* e) override;
 };
 
+
+
+
+
+
+
+
+// ===== INLINEZ =====
+
+inline void EngineGLSceneWidget::advanceFrame(void) { _advanceFrame = true; }
+inline bool EngineGLSceneWidget::isPlaying(void) const { return _playing; }
+inline void EngineGLSceneWidget::stop(void) { _playing = false; }
+inline void EngineGLSceneWidget::play(void) { _playing = true; }
 
 #endif // TK_MAP_SYSTEM_H

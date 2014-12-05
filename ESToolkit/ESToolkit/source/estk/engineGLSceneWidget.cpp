@@ -34,7 +34,7 @@ void EngineGLSceneWidget::initializeGL(void) {
 }
 
 void EngineGLSceneWidget::startRenderTimer(void) {
-    timer.start(12, this);
+	_timer.start(12, this);
 }
 
 
@@ -73,10 +73,13 @@ void EngineGLSceneWidget::resizeGL(int w, int h) {
 }
 
 void EngineGLSceneWidget::paintGL(void) {
+	if(!getCurrentArea()) return;
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
      //   qDebug() << "VERSION " << (char*)glGetString(GL_VERSION);
     //makeCurrent();
     //qDebug() << isValid();
+
 
 
 
@@ -140,12 +143,16 @@ void EngineGLSceneWidget::paintGL(void) {
     //    getLightSys()->renderCube(i, i, i, i*10, i*10, i*10, 0);
 
 #else
-    getAssets()->getEngine()->getCameraSys()->setFollowEntity(nullptr);
-     getAssets()->getEngine()->getCameraSys()->setDynamic(false);
-     getAssets()->getEngine()->getCameraSys()->setBoundByMap(false);
-    getAssets()->getEngine()->update();
-    getAssets()->getEngine()->processInput();
-    getAssets()->getEngine()->render();
+	if(_playing || _advanceFrame) {
+		getAssets()->getEngine()->update();
+		getAssets()->getEngine()->processInput();
+		_advanceFrame = false;
+	}
+
+	getAssets()->getEngine()->getCameraSys()->setFollowEntity(nullptr);
+	getAssets()->getEngine()->getCameraSys()->setDynamic(false);
+	getAssets()->getEngine()->getCameraSys()->setBoundByMap(false);
+	getAssets()->getEngine()->render();
 
 #endif
 
@@ -159,6 +166,6 @@ void EngineGLSceneWidget::paintGL(void) {
 
 
 
-EngineGLSceneWidget::~EngineGLSceneWidget()
+EngineGLSceneWidget::~EngineGLSceneWidget(void)
 {
 }

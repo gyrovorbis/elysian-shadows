@@ -336,7 +336,7 @@ bool LuaManager::initialize(void) {
 	luaL_openlibs(*_mainState);
 	Debug::printf(Debug::VERBOSE, "Registering wrappers");
     runString(_rPrint);
-    runScriptSandbox("../assets/scripts/utils/serialize.lua");
+	runScriptSandbox("/assets/scripts/utils/serialize.lua");
 	_registerWrappers();
 
     Debug::pop();

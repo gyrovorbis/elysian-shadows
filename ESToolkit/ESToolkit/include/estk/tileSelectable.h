@@ -85,11 +85,10 @@ protected:
 
     void    _populateTileIndicesList(void);
 
-    TileEntry** _prevEntry       = nullptr;
 public:
 
 	//Main constructor--based on QGraphicsItems that have been selected within the scene
-	TileSelectable(const QList<QGraphicsItem *> &items, Area *const area, Level *const lev, const Assets::LAYER_TYPE layer);
+	TileSelectable(const QList<QGraphicsItem *>& items, Area *const area, Level *const lev, const Assets::LAYER_TYPE layer);
 	//Copy constructor
 	TileSelectable(const TileSelectable &rval);
 	//MEGA reesty constructor to optimize creation from MapView
@@ -99,10 +98,12 @@ public:
     virtual void                installSelectionViewCustomDelegates(QAbstractItemView *const view) override;
     Assets::LAYER_TYPE          getTileLayer(void) const { return _layer; }
     virtual Selectable::TYPE    getType(void) const override { return Selectable::TILE; }
+	TileEntry					getPrevEntry(const unsigned x, const unsigned y) const;
+	void						getScenePos(unsigned& x, unsigned& y) const;
 
-    void    updateSceneSelection(const unsigned sceneX, const unsigned sceneY);
-    void    clearSceneSelection(void);
-    void    clearPrevSceneSelection(void);
+	//void    updateSceneSelection(const unsigned sceneX, const unsigned sceneY);
+	//void    clearSceneSelection(void);
+	//void    clearPrevSceneSelection(void);
 
     //MapEntry modifiers
     void    elevateUp(void);
@@ -127,6 +128,10 @@ public:
 };
 
 // ====== INLINEZ ======
+
+inline void TileSelectable::getScenePos(unsigned &x, unsigned &y) const {
+	x = _sceneX; y = _sceneY;
+}
 
 template<typename T>
 inline T TileSelectable::_getTileGroupProperty(const std::function<T (uint16_t index)> operation, const T defaultValue) const {

@@ -97,15 +97,10 @@ TileSelectable::TileSelectable(const QRect &region, bool selectionArray[][ELYSIA
 
 	_allocArrays(_entry, _inSelection, _width, _height);
 
-    _prevEntry = new TileEntry* [_height];
-    for(unsigned y = 0; y < _height; ++y){
-        _prevEntry[y] = new TileEntry[_width];
-    }
-
 	for(unsigned j = 0; j < _height; ++j) {
 		for(unsigned i = 0; i < _width; ++i) {
 			//uint16_t tileValue = area->getTileValue(QPoint(region.topLeft().x()+i, region.topLeft().y()+j), layer);
-            _prevEntry[j][i] = _entry[j][i] = area->getTileEntry(QPoint(region.topLeft().x()+i, region.topLeft().y()+j), layer);
+			_entry[j][i] = area->getTileEntry(QPoint(region.topLeft().x()+i, region.topLeft().y()+j), layer);
             _inSelection[j][i] = selectionArray[region.topLeft().y()+j][region.topLeft().x()+i];
 			//_index[j][i] = ELYSIAN_MAP_INDEX_FROM_VALUE(tileValue);
 			//_orient[j][i] = ELYSIAN_MAP_ORIENT_FROM_VALUE(tileValue);
@@ -118,7 +113,7 @@ TileSelectable::TileSelectable(const QRect &region, bool selectionArray[][ELYSIA
 
 	if(!_selectionViewDelegate) _selectionViewDelegate = new TileSelectableSelectionViewDelegate;
     _populateTileIndicesList();
-    updateSceneSelection(region.topLeft().x(), region.topLeft().y());
+	//updateSceneSelection(region.topLeft().x(), region.topLeft().y());
 }
 
 TileSelectable::TileSelectable(const TileSelectable &rval):
@@ -434,8 +429,9 @@ void TileSelectable::setSpecularMapEnabled(const bool val) {
                                                           _groupSpecular,
                                                           UndoItem::TILE_GROUP_SPECULAR_MAP));
 }
-
+/*
 void TileSelectable::updateSceneSelection(const unsigned sceneX, const unsigned sceneY) {
+//	return;
     if(sceneX == _sceneX && sceneY == _sceneY) return;
 
 #if 0
@@ -462,8 +458,8 @@ void TileSelectable::updateSceneSelection(const unsigned sceneX, const unsigned 
 
    clearSceneSelection();
 
-   _sceneX             = sceneX/32;
-   _sceneY             = sceneY/32;
+   _sceneX             = (sceneX+16)/32;
+   _sceneY             = (sceneY+16)/32;
 
     for(unsigned y = 0; y < _height; ++y) {
         for(unsigned x = 0; x < _width; ++x) {
@@ -504,4 +500,5 @@ void TileSelectable::clearPrevSceneSelection(void) {
         }
     }
 }
+*/
 

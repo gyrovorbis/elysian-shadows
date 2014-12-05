@@ -45,6 +45,7 @@
 #include "luaExplorerDialog.h"
 #include "rowsJoinerProxyModel.h"
 #include "tkMapSystem.h"
+#include "elysian_light_source.hpp"
 
 ESToolkit::ESToolkit(QWidget *parent):
 	QMainWindow(parent),
@@ -816,7 +817,7 @@ void ESToolkit::_openProjectDir(const QString dir) {
 		return;
 	}
             qDebug() << "WORKING DIR - " << dir;
-    QDir::setCurrent(dir);
+	QDir::setCurrent(dir);
     auto* viewport = _engineGLView = new EngineGLSceneWidget(QGLFormat(QGL::SampleBuffers | QGL::DirectRendering));
     viewport->setMouseTracking(true);
     _ui->mapView->setViewport(viewport);
@@ -1176,6 +1177,7 @@ void ESToolkit::on_actionIPhone_iPad_triggered()
 
 void ESToolkit::on_actionInvoke_triggered()
 {
+#if 0
 	if(!_assets.getCurrentArea() || !_assets.getCurrentLevel() || !_assets.getCurrentProject()) return;
 
 	_assets.getCurrentArea()->save();
@@ -1193,6 +1195,7 @@ void ESToolkit::on_actionInvoke_triggered()
 	}
 	else if(_ui->actionIPhone_iPad->isChecked())
 		_engineDialog->Invoke(EngineDialog::ENGINE_iOS);
+#endif
 }
 
 void ESToolkit::on_actionAsset_View_triggered(bool checked)
@@ -1521,4 +1524,49 @@ void ESToolkit::on_actionPrevious_Project_triggered(void) {
 	QString savedSettings = settings.value("settings", "").toString();
 	QString projectDir = settings.value("previousProject", "").toString();
 	_openProjectDir(projectDir);
+}
+
+void ESToolkit::on_actionInvoke_triggered(bool checked)
+{
+	if(checked) {
+		_engineGLView->play();
+	} else {
+		_engineGLView->stop();
+	}
+}
+
+
+
+void ESToolkit::on_actionAdvance_Frame_triggered()
+{
+	static bool once = false;
+	static GYVector4 color[4] = {
+		{ 10.0f, 0.0f, 0.0f, 1.5f },
+		{ 0.0f, 0.0f, 10.0f, 1.5f },
+		{ 0.0f, 10.0f, 0.0f, 1.5f },
+		{ 0.0f, 10.0f, 10.0f, 1.5f }
+
+	};
+
+	if(!once) {
+		for(unsigned i = 0; i < 4; ++i) {
+			Entity *entity = new Entity;
+			entity->getTransform().setPos(150.0f*i, 150.0f*i, 100.0f);
+			auto* src = entity->addLightSource();
+			src->setLightType(GY_LIGHT_POINT);
+			src->setShadowCaster(true);
+			auto* attrib = new elysian::LightAttrib;
+			attrib->setDiffuseColor(color[i]);
+			attrib->setSpecularColor(color[i]);
+			//attrib->setAmbientColor(color[i]);
+			src->setAttrib(attrib);
+
+			_assets.getCurArea()->addEntity(entity);
+		}
+
+		once = true;
+	}
+
+
+	_engineGLView->advanceFrame();
 }

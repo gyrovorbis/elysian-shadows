@@ -245,6 +245,7 @@
    <addaction name="actionReset_Layout"/>
    <addaction name="separator"/>
    <addaction name="actionInvoke"/>
+   <addaction name="actionAdvance_Frame"/>
   </widget>
   <action name="actionFileQuit">
    <property name="text">
@@ -523,6 +524,9 @@
    </property>
   </action>
   <action name="actionInvoke">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="../../resource/resource.qrc">
      <normaloff>:/toolbar/images/invokeIcon.png</normaloff>
@@ -532,7 +536,7 @@
     <string>Invoke...</string>
    </property>
    <property name="toolTip">
-    <string>Invoke Engine...</string>
+    <string>Play current level</string>
    </property>
   </action>
   <action name="actionNix">
@@ -959,6 +963,17 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionAdvance_Frame">
+   <property name="text">
+    <string>Advance Frame</string>
+   </property>
+   <property name="toolTip">
+    <string>Run engine's next frame</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>

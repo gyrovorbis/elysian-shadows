@@ -293,10 +293,10 @@ protected:
                     LuaManager::_protectedCall(2, 2, nullptr);
 
                     if((retVal = !lua_isnil(state, -2))) {
-                        qDebug() << "SHITS PRISTINE!";
+						//qDebug() << "SHITS PRISTINE!";
                     } else {
                         lua_pop(state, 2);
-                        qDebug() << "SHIT WAS NOT NIL!";
+					   // qDebug() << "SHIT WAS NOT NIL!";
                     }
 
                 } else {

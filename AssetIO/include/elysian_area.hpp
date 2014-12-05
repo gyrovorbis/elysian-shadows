@@ -192,6 +192,10 @@ namespace elysian {
 
 	};
 
+	inline bool operator== (const TileEntry& t1, const TileEntry& t2) {
+		return (t1.value == t2.value);
+	}
+
 	// ==== INLINEZ ====
 
 	inline MapEntry::MapEntry(void): value(0) {}

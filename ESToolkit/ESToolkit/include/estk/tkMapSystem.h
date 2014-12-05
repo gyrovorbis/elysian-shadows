@@ -90,9 +90,9 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
             if(entry.drawStyle == DRAW_NORMAL /* || !entry.mapEntry.getIndex()*/) continue;
             gyVidRectPlaneType(entry.mapEntry.getPlane());
             gyMatPush();
-            gyMatLoadIdentity();
-            gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f, entry.mapEntry.getElev()*32.0f+33.0f, 32.0f, 32.0f, 1.0f);
-            gyVidRect(0);
+			gyMatLoadIdentity();
+			gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f /*+ entry.mapEntry.getElev()*32.0f */, entry.mapEntry.getElev()*32.0f+1.0, 32.0f, 32.0f, 1.0f);
+			gyVidRect(0);
             gyMatPop();
         }
         gyVidQuadListEnd();
@@ -101,7 +101,7 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
 }
 
 
-inline void TkMapSystem::getObjectLayerEntry(const unsigned x, const unsigned y, TkMapDepthBuffEntryImpl &entry) {
+inline void TkMapSystem::getObjectLayerEntry(const unsigned x, const unsigned y, TkMapDepthBuffEntryImpl& entry) {
 #if 1
     _currentLayer   = (Assets::LAYER_TYPE)entry.layer;
     entry.lights    = getLightSys()->getLightMapEntryMapCoord(entry.y, entry.x);

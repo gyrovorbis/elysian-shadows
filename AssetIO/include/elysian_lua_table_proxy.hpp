@@ -124,15 +124,15 @@ namespace elysian {
 
         inline static int _iNextMetaMethodCFunction(lua_State* l) {
             if(lua_isnil(l, -2)) {
-                qDebug() << "__NEXT called with NIL";
+				//qDebug() << "__NEXT called with NIL";
                 lua_pop(l, 2);
                 return 0;
             } else {
-                qDebug() << "_iNextMetaMethodCFunction()";
+				//qDebug() << "_iNextMetaMethodCFunction()";
             }
 
             unsigned index = lua_tonumber(l, -1);
-            qDebug() << "IPAIRS INDEX " << index;
+			//qDebug() << "IPAIRS INDEX " << index;
             lua_pop(l, 1);
             if(++index > P::_proxyFieldCount) {
                 lua_pop(l, 1);
@@ -148,7 +148,7 @@ namespace elysian {
             lua_rawget(l, -2);
 
             if(!lua_isnil(l, -1)) {
-                qDebug() << "found field!";
+				//qDebug() << "found field!";
                 lua_pushvalue(l, -4);
 
                 LuaManager::_protectedCall(1, 1, nullptr);
@@ -158,7 +158,7 @@ namespace elysian {
 
                 return 2;
             } else {
-                qDebug() << "COULDNT FIND FIELD";
+			   // qDebug() << "COULDNT FIND FIELD";
             }
 
             lua_pop(l, lua_gettop(l));
@@ -169,15 +169,15 @@ namespace elysian {
 
         inline static int _nextMetaMethodCFunction(lua_State* l) {
             if(lua_isnil(l, -2)) {
-                qDebug() << "__NEXT called with NIL";
+			   // qDebug() << "__NEXT called with NIL";
                 lua_pop(l, 2);
                 return 0;
             } else {
-                qDebug() << "_nextMetaMethodCFunction()";
+			   // qDebug() << "_nextMetaMethodCFunction()";
             }
 
             if(_getNextKey(l)) {
-                qDebug() << "getNextKey() - true";
+			   // qDebug() << "getNextKey() - true";
                 lua_pushvalue(l, -1);
 
                 _propertyProxyIndexTable.push(l);
@@ -185,7 +185,7 @@ namespace elysian {
                 lua_rawget(l, -2);
 
                 if(!lua_isnil(l, -1)) {
-                    qDebug() << "found field!";
+				  //  qDebug() << "found field!";
                     lua_pushvalue(l, -4);
 
                     LuaManager::_protectedCall(1, 1, nullptr);
@@ -194,9 +194,9 @@ namespace elysian {
                     lua_remove(l, -2);
 
                     return 2;
-                } else qDebug() << "couldn't find field!";
+				} else;// qDebug() << "couldn't find field!";
             } else {
-                qDebug() << "getNextKey() - FALSE";
+			 //   qDebug() << "getNextKey() - FALSE";
             }
 
             lua_pop(l, lua_gettop(l));
@@ -240,7 +240,7 @@ namespace elysian {
             lua_insert(l, 1);
             lua_pushnumber(l, 0);
 
-            qDebug() << "IPAIRS";
+		   // qDebug() << "IPAIRS";
 
             return 3;
         }
@@ -362,7 +362,7 @@ namespace elysian {
 		}
 
         static int _luaFromTableCFunction(lua_State*const state) {
-            qDebug() << "!!!!!IN THE C FUNCTION!";
+		//    qDebug() << "!!!!!IN THE C FUNCTION!";
 
             lua_pushnil(state);
             while (lua_next(state, -2) != 0) {
@@ -372,17 +372,17 @@ namespace elysian {
 
                 lua_rawget(state, -2);
                 if(!lua_isnil(state, -1)) {
-                    qDebug() << "found field!";
+				  //  qDebug() << "found field!";
                     lua_pushvalue(state, -6);
                     lua_pushvalue(state, -4);
 
                     LuaManager::_protectedCall(2, 0, nullptr);
-                    qDebug() << "returned";
+				 //   qDebug() << "returned";
 
                     lua_pop(state, 1);
 
                 } else {
-                    qDebug() << "DIDNT FIND FIELD";
+			  //      qDebug() << "DIDNT FIND FIELD";
                     lua_pop(state, 2);
                 }
 

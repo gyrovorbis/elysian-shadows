@@ -4,7 +4,8 @@
 #include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
 #include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 #include ELYSIAN_ASSET_HEADER("elysian_level.hpp", "level.h")
-#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tkMapSystem.h")
+//#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tkMapSystem.h")
+#include "tkMapSystem.h"
 #include <gyro_shader_api.h>
 #include <cfloat>
 

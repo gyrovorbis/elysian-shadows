@@ -96,8 +96,7 @@ INCLUDEPATH += include/asset \
 	../../libGyro/include/kinetic \
 	../../ESGamma/lib/include \
 	../../ESGamma/include \
-	../../OOLua/include \
-	../../../../../Qt5.2.0/5.2.0/clang_64/examples/opengl/cube/
+	../../OOLua/include
 
 
 SOURCES += source/asset/project.cpp \
@@ -208,7 +207,6 @@ SOURCES += source/asset/project.cpp \
     source/dialog/luaExplorerDialog.cpp \
     source/core/rowsJoinerProxyModel.cpp \
     ../../AssetIO/source/elysian_instance_transform.cpp \
-    geometryengine.cpp \
     source/estk/engineGLSceneWidget.cpp \
     source/estk/tkMapSystem.cpp
 
@@ -351,7 +349,6 @@ HEADERS += include/asset/project.h \
     ../../ESGamma/include/elysian_warp_system.hpp \
     ../../AssetIO/include/elysian_lua_table_proxy.hpp \
     include/asset/luaTableStackModel.h \
-    geometryengine.h \
     include/estk/engineGLSceneWidget.h \
     include/estk/tkMapSystem.h
 

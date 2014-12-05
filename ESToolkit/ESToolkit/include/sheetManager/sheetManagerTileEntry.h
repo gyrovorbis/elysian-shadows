@@ -7,6 +7,7 @@
 class QPainter;
 
 class SheetManagerTileEntry {
+	friend bool operator== (SheetManagerTileEntry& e1, SheetManagerTileEntry& e2);
 private:
 	QPixmap _pixmap;
 	GY_RECT_TEX_ORIENT _orient;
@@ -29,6 +30,12 @@ public:
 	void renderDecoration(QPainter *const /*painter*/, const unsigned /*x*/, const unsigned /*y*/) const { }
 
 };
+
+inline bool operator== (const SheetManagerTileEntry& e1, const SheetManagerTileEntry& e2)
+{
+	//return (e1._pixmap == e2._pixmap && e1._index == e2._index && e1._orient == e2._orient);
+	return false;
+}
 
 
 #endif // SHEETMANAGERTILEENTRY_H

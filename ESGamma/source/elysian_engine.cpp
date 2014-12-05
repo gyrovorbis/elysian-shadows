@@ -19,7 +19,8 @@
 #include "elysian_behavior_system.hpp"
 #include "elysian_light_system.hpp"
 #include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
-#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tkMapSystem.h")
+//#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tkMapSystem.h")
+#include "tkMapSystem.h"
 #include "elysian_light_source.hpp"
 #include "elysian_particle_system.hpp"
 #include "elysian_day_system.hpp"
@@ -209,7 +210,7 @@ void Engine::render(void) {
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
 			_lightSystem->shadowRenderPasses();
 #endif
-          //  _lightSystem->addLightSourcesToScene();
+			_lightSystem->addLightSourcesToScene();
 
 			_mapSystem->render();
 
@@ -219,7 +220,7 @@ void Engine::render(void) {
              _particleSystem->render();
 
 
-           //  _lightSystem->removeLightSourcesFromScene();
+			 _lightSystem->removeLightSourcesFromScene();
 
              _guiSystem->render();
 

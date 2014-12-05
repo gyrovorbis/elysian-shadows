@@ -175,5 +175,7 @@ private slots:
     void on_actionScatter_2_triggered();
     void on_actionGather_2_triggered();
 	void on_actionPrevious_Project_triggered();
+	void on_actionInvoke_triggered(bool checked);
+	void on_actionAdvance_Frame_triggered();
 };
 #endif // ESTOOLKIT_H

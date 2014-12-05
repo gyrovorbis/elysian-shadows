@@ -37,7 +37,10 @@ protected:
 
 	//Structure representing past and future data for each tile location
 	struct UndoEntry {
-		T oldData, newData;
+		T oldData;
+		T newData;
+		bool dirty		= false;
+		bool changed	= true;
 	};
 	//Map of every tile location set by this action
 	QMap<QPoint, UndoEntry> _undoGroup;
@@ -61,13 +64,20 @@ public:
 		const typename QMap<QPoint, UndoEntry>::iterator i = _undoGroup.find(loc);
 		//Entry already exists. Keep old data and override new data
 		if(i != _undoGroup.end()) {
-			i.value().newData = newData;
+			if(i.value().newData == newData) {
+				i.value().changed = false;
+			} else {
+				i.value().changed = true;
+				i.value().newData	= newData;
+			}
+
+			i.value().dirty		= false;
 		}
 		else { //Create new entry
 			UndoEntry newEntry;
-			newEntry.newData = newData;
-			newEntry.oldData = _getOldTileData(loc);
-			_undoGroup[loc] = newEntry;
+			newEntry.newData	= newData;
+			newEntry.oldData	= _getOldTileData(loc);
+			_undoGroup[loc]		= newEntry;
 		}
 		return true;
 	}
