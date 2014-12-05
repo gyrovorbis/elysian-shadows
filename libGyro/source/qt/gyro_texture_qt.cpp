@@ -10,13 +10,19 @@
 int _gyVidTexAlloc(GYTexture *const tex, const unsigned width, const unsigned height) {
     (void)width;
     (void)height;
-    const QGLContext* current = QGLContext::currentContext();
+	const QGLContext* current = QGLContext::currentContext();
 
-    QPixmap pixmap(tex->filename);
-    pixmap = pixmap.transformed(QTransform().scale(1, -1));
+	QString fileName = tex->filename;
 
+	QStringList list = fileName.split("/");
+	if(list[1] == "assets") {
+		qDebug() << fileName;
+		fileName = fileName.remove("/assets/");
+		qDebug() << fileName;
+	}
 
-    qDebug() << "CONTEXT - " << current;
+	QPixmap pixmap(fileName);
+	pixmap = pixmap.transformed(QTransform().scale(1, -1));
 
  //   tex->_pixmap = QPixmap(QString(tex->filename));
     *(int*)&tex->_data = ((QGLContext*)current)->bindTexture(pixmap, GL_TEXTURE_2D);
@@ -25,8 +31,6 @@ int _gyVidTexAlloc(GYTexture *const tex, const unsigned width, const unsigned he
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
       //  glTexImage2D(GL_TEXTURE_2D, 0, img.format, img.width, img.height, 0, img.format, GL_UNSIGNED_BYTE, pixels);
-
-    qDebug() << "TEXTURE " << tex->_data;
 
     return *(int*)&tex->_data;
 }
