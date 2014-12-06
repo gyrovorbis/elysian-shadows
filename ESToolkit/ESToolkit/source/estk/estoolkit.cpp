@@ -46,6 +46,7 @@
 #include "rowsJoinerProxyModel.h"
 #include "tkMapSystem.h"
 #include "elysian_light_source.hpp"
+#include "entitySelectable.h"
 
 ESToolkit::ESToolkit(QWidget *parent):
 	QMainWindow(parent),
@@ -637,7 +638,7 @@ void ESToolkit::OnActiveLayerChanged(int index) {
    switch(index) {
 	case 1:
 		//_layerDockWidget->SetCurrentLayerIndex();
-		OnLayerChanged(Assets::LAYER_LIGHT);
+		OnLayerChanged(Assets::LAYER_ENTITY);
 		break;
 	case 2:
 		OnLayerChanged(Assets::LAYER_TILE3);
@@ -1064,16 +1065,16 @@ void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *cons
 		break;
 	case Selectable::ENTITY:
 		//Update Menu Bar
-		SyncEntityMenuBar(static_cast<Entity *>(selection));
+		//SyncEntityMenuBar(static_cast<Entity *>(selection));
 
 		//Update Entity View
 		_selectionDockWidget->SetSelectionTreeWidget();
 		//static_cast<Entity*>(selection)->populateModel();
-		_selectionDockWidget->SetSelectionModel(static_cast<Entity*>(selection));
+		_selectionDockWidget->SetSelectionModel(static_cast<EntitySelectable*>(selection));
 		_selectionDockWidget->ExpandSelectionTree();
 
 		//center on entity
-		_ui->mapView->centerOn((Entity *)selection);
+		//_ui->mapView->centerOn((Entity *)selection);
 		//_ui->mapView->SetCenter((Entity *)selection);
 		break;
 		case Selectable::EMPTY:

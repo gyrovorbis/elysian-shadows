@@ -10,6 +10,7 @@
 #include "elysian_level_system.hpp"
 #include "elysian_map_system.hpp"
 #include "tkMapSystem.h"
+#include "entitySelectable.h"
 
 //====STATIC MEMBERS====
 
@@ -139,7 +140,7 @@ void Assets::setCurrentArea(Area *const area) {
         _engine->getLevelSys()->switchArea(area->getPath());
 		area->activate();
 		emit areaChanged(_currentArea);
-		if(area->getFirstEntity()) setCurrentSelection(area->getFirstEntity());
+		if(area->getFirstEntity()) setCurrentSelection(new EntitySelectable(area->getFirstEntity()));
         else setCurrentSelection((Entity*)nullptr);
     }
     else {

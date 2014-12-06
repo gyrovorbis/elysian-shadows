@@ -51,7 +51,7 @@ template<typename T>
 typename TileGraphicsItem<T>::DRAW_STYLE TileGraphicsItem<T>::_getTileDrawState(void) const {
     //Uglier and faster
     const TileSelection<T> *tileSel = _getTileSelection();
-    const QPointF mouseLoc = _view.src->getSceneMousePos();
+	//const QPointF mouseLoc = _view.src->getSceneMousePos();
 
     if(tileSel) {
         //Region Fill

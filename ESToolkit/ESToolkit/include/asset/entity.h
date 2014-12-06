@@ -86,7 +86,7 @@ public:
 	void populateModel(void);
 
 	//Selectable
-	virtual Selectable::TYPE getType(void) const { return Selectable::ENTITY; }
+	virtual Selectable::TYPE	getType(void) const { return Selectable::ENTITY; }
 	virtual TreeNode::ITEM_TYPE getTreeWidgetItemType(void) { return ITEM_ENTITY; }
 
 	//Should "technically" be decoupled. See .cpp for comment.

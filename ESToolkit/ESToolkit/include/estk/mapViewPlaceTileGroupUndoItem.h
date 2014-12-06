@@ -8,8 +8,6 @@ class MapViewPlaceTileGroupUndoItem: public PlaceTileGroupUndoItem<TileEntry> {
 private:
 	Area*					_area		= nullptr;
 	Assets::LAYER_TYPE		_layer		= Assets::LAYER_MAX;
-	unsigned				_width		= 0;
-	unsigned				_height		= 0;
 	bool					_skipFirst	= false;
 public:
 

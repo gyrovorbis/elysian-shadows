@@ -31,7 +31,7 @@ public:
 
 };
 
-inline bool operator== (const SheetManagerTileEntry& e1, const SheetManagerTileEntry& e2)
+inline bool operator== (const SheetManagerTileEntry& /*e1*/, const SheetManagerTileEntry& /*e2*/)
 {
 	//return (e1._pixmap == e2._pixmap && e1._index == e2._index && e1._orient == e2._orient);
 	return false;

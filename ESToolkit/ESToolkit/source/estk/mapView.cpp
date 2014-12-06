@@ -12,10 +12,14 @@
 #include "elysian_engine.hpp"
 #include "elysian_camera_system.hpp"
 #include "engineGLSceneWidget.h"
+#include "elysian_collidable.hpp"
+#include "entity.h"
+#include "entitySelectable.h"
 
 
 MapView::MapView(QWidget *parent): DestView<TileEntry>::DestView(parent) {
     setMouseTracking(true);
+	setEventMask(ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK);
 
 	_curUndoItem = new MapViewPlaceTileGroupUndoItem();
 
@@ -24,10 +28,12 @@ MapView::MapView(QWidget *parent): DestView<TileEntry>::DestView(parent) {
 }
 
 void MapView::onLayerChange(Assets::LAYER_TYPE type) {
+	//update current undoGroupItem
 	_curUndoItem->setLayer(type);
 }
 
 void MapView::onAreaChange(Area * const area) {
+	//update current undoGroupItem
 	_curUndoItem->setArea(area);
 }
 
@@ -35,6 +41,42 @@ TileSelection<TileEntry> *MapView::_getTileSelection(void) const {
 	return static_cast<TileSelectable*> (
                 (getCurrentSelectionType() == Selectable::TILE)? getCurrentSelection() : nullptr
 	);
+}
+
+void MapView::_entitySelectionUpdate(void) {
+	TkEntity* entity;
+
+	for(auto &it: _selectionColliders) {
+		getCurrentArea()->removeEntity(it);
+	}
+
+	while(_selectionColliders.size() < _tileSelectionRects.size()) {
+		entity = new TkEntity;
+		auto* collid = entity->addCollidable();
+		collid->setContactEventMonitorMask(ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK);
+		_selectionColliders.push_back(entity);
+	}
+
+	for(int k = 0; k < _tileSelectionRects.size(); ++k) {
+		auto& rect = _tileSelectionRects[k];
+		auto midPt = rect.bottomRight() - rect.topLeft();
+		midPt /= 2.0f;
+
+		entity = _selectionColliders[k];
+		entity->getTransform().setPos(midPt.x(), midPt.y(), 10.0f);
+		entity->getTransform().setSize(rect.width(), rect.height());
+		getCurrentArea()->addEntity(_selectionColliders[k]);
+	}
+
+}
+
+void MapView::_entitySelectableCreate(void) {
+	auto* select = new EntitySelectable;
+	for(auto it = _selectedEntities.begin(); it != _selectedEntities.end(); ++it) {
+		select->addEntity(*it);
+	}
+	_selectedEntities.clear();
+	getAssets()->setCurrentSelection(select);
 }
 
 void MapView::_tileSelectionArrayUpdate(void) {
@@ -79,6 +121,10 @@ void MapView::_tileSelectionArrayUpdate(void) {
 				}
 			}
 			_curUndoItem->endUpdateEntries();
+		}
+
+		if(getAssets()->getCurrentLayer() == Assets::LAYER_ENTITY) {
+			_entitySelectionUpdate();
 		}
 	}
 }
@@ -215,8 +261,8 @@ void MapView::mouseMoveEvent(QMouseEvent *event) {
 		sel->getSelectionArea(w, h);
 
 		_curUndoItem->beginUpdateEntries();
-		for(int j = 0; j < h; ++j) {
-			for(int i = 0; i < w; ++i) {
+		for(unsigned j = 0; j < h; ++j) {
+			for(unsigned i = 0; i < w; ++i) {
 				auto newTileEntry = sel->getEntry(i, j);
 				if(sel->isWithinSelection(i, j))
 					_curUndoItem->addTile(QPoint(i+(getSceneMousePos().x()+16)/32, j+(getSceneMousePos().y()+16)/32), newTileEntry);
@@ -238,6 +284,14 @@ void MapView::mouseMoveEvent(QMouseEvent *event) {
         getAssets()->getEngine()->getCameraSys()->getKeyFrame().getPos(x, y, z);
     }
 
+}
+
+void MapView::mouseReleaseEvent(QMouseEvent *event) {
+	if(getAssets()->getCurrentLayer() == Assets::LAYER_ENTITY) {
+		_entitySelectableCreate();
+	}
+
+	DestView<TileEntry>::mouseReleaseEvent(event);
 }
 
 void MapView::_forceSceneUpdate(void) {
@@ -262,12 +316,28 @@ void MapView::_endPan(void) {
 }
 
 
-bool MapView::_populatePlaceTileGroup(const TileSelection<TileEntry> *const terSel, PlaceTileGroupUndoItem<TileEntry> *const groupCmd) const {
+bool MapView::_populatePlaceTileGroup(const TileSelection<TileEntry> *const /*terSel*/, PlaceTileGroupUndoItem<TileEntry> *const /*groupCmd*/) const {
 	return true;
 }
 
-bool MapView::_populatePlaceTileGroupRegionFill(const TileSelection<TileEntry> *const terSel, PlaceTileGroupUndoItem<TileEntry> *const groupCmd) const {
+bool MapView::_populatePlaceTileGroupRegionFill(const TileSelection<TileEntry> *const /*terSel*/, PlaceTileGroupUndoItem<TileEntry> *const /*groupCmd*/) const {
 	return true;
 }
 
+void MapView::scrollContentsBy(int /*dx*/, int /*dy*/) {
 
+}
+
+void MapView::onCollisionEnter(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) {
+	_selectedEntities.push_back(bodyB->getEntity());
+}
+
+void MapView::onCollide(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) {
+
+}
+
+void MapView::onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) {
+	for(auto it = _selectedEntities.begin(); it != _selectedEntities.end(); ++it) {
+		_selectedEntities.erase(it);
+	}
+}

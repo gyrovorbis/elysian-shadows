@@ -5,22 +5,36 @@
 #include <QRect>
 #include "destView.h"
 #include "assetManager.h"
-#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
+#include "area.h"
+#include "elysian_collision_system.hpp"
 
+#define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK	(1<<31)
+
+class TkEntity;
 class MapViewPlaceTileGroupUndoItem;
 
-class MapView : public DestView<TileEntry>, public AssetManager  {
+class MapView : public DestView<TileEntry>,
+				public AssetManager,
+				public elysian::CollisionContactEventMonitor  {
 	Q_OBJECT
 private:
-	typedef Assets::LAYER_TYPE LAYER_TYPE;
+	typedef Assets::LAYER_TYPE			LAYER_TYPE;
+	typedef elysian::Collidable			Collidable;
+	typedef elysian::CollisionContact	CollisionContact;
+
     bool _tileSelectionArray[ELYSIAN_AREA_MAP_HEIGHT][ELYSIAN_AREA_MAP_WIDTH] = {{false}};
 
     //the timer id of a 30ms draw refresh
 	int								_refreshTimerHandle = 30;
 
 	MapViewPlaceTileGroupUndoItem*	_curUndoItem		= nullptr;
+	QVector<TkEntity*>				_selectionColliders;
+	QVector<TkEntity*>				_selectedEntities;
 
+	//Internal selection management
 	void _tileSelectionArrayUpdate(void);
+	void _entitySelectionUpdate(void);
+	void _entitySelectableCreate(void);
 
 	//SourceView virtual implementation
     virtual void    _sceneSelectionAddRect(const QRectF &rect) override;
@@ -42,6 +56,10 @@ private:
 	virtual bool								_populatePlaceTileGroup(const TileSelection<TileEntry> *const terSel, PlaceTileGroupUndoItem<TileEntry> *const groupCmd) const override;
 	virtual bool								_populatePlaceTileGroupRegionFill(const TileSelection<TileEntry> *const terSel, PlaceTileGroupUndoItem<TileEntry> *const groupCmd) const override;
 
+	//elysian::CollisionContactMonitor virtual implementation
+	virtual void onCollisionEnter(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) override;
+	virtual void onCollide(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) override;
+	virtual void onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) override;
 
 public:
     explicit    MapView(QWidget *parent = nullptr);
@@ -52,10 +70,11 @@ public:
 
     //QGraphicsView virtual implementation
     virtual void mouseMoveEvent(QMouseEvent *event) override;
+	virtual void mouseReleaseEvent(QMouseEvent* event) override;
     virtual void wheelEvent(QWheelEvent* event) override;
     virtual void timerEvent(QTimerEvent *event) override;
     virtual void keyPressEvent(QKeyEvent *event) override;
-    virtual void scrollContentsBy(int dx, int dy) override {}
+	virtual void scrollContentsBy(int dx, int dy) override;
 
 public slots:
 

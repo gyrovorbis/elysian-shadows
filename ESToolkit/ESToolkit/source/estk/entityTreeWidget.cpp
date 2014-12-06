@@ -3,6 +3,7 @@
 #include "entity.h"
 #include "debug.h"
 #include "assets.h"
+#include "entitySelectable.h"
 
 EntityTreeWidget::EntityTreeWidget(QWidget *parent): QTreeWidget(parent) {
 	connect(getAssets(), SIGNAL(areaChanged(Area*const)), this, SLOT(OnAreaChange(Area*const)));
@@ -33,18 +34,23 @@ void EntityTreeWidget::OnRemoveEntity(Project *const /*project*/, Level *const /
 
 void EntityTreeWidget::OnEntitySelected(QTreeWidgetItem *current, QTreeWidgetItem *previous) {
     if(current == previous) return;
-	getAssets()->setCurrentSelection((Entity *)current);
+	getAssets()->setCurrentSelection(new EntitySelectable(static_cast<TkEntity*>(current)));
   //  Debug::Log(Debug::VERBOSE, "Trying to add fucking - %s", ((Entity *)current)->getName().toStdString().c_str());
  //DO IN MAIN WINDOW   setWidget((QWidget *)((Entity *)current));
 }
 
 void EntityTreeWidget::OnSelectionChanged(const Selectable::TYPE type, Selectable *const selection) {
+	EntitySelectable* entities;
+
 	switch(type) {
 	default:
-		setCurrentItem(NULL);
+		setCurrentItem(nullptr);
 		break;
 	case Selectable::ENTITY:
-		setCurrentItem((Entity *)selection);
+		entities = static_cast<EntitySelectable*>(selection);
+		for(auto it = entities->getEntities().begin(); it != entities->getEntities().end(); ++it) {
+			setCurrentItem(static_cast<TkEntity*>(*it));
+		}
 		break;
 	}
 }

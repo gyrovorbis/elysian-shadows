@@ -22,7 +22,7 @@
   <property name="minimumSize">
    <size>
     <width>100</width>
-    <height>100</height>
+    <height>101</height>
    </size>
   </property>
   <property name="styleSheet">
@@ -123,16 +123,16 @@ height: 24px;
       </column>
       <item>
        <property name="text">
-        <string>Light Layer</string>
+        <string>Entity Layer</string>
        </property>
        <property name="whatsThis">
         <string>1</string>
        </property>
        <property name="checkState">
-        <enum>Unchecked</enum>
+        <enum>Checked</enum>
        </property>
        <property name="flags">
-        <set>ItemIsSelectable|ItemIsUserCheckable</set>
+        <set>ItemIsSelectable|ItemIsUserCheckable|ItemIsEnabled</set>
        </property>
       </item>
       <item>

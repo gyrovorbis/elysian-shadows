@@ -39,7 +39,7 @@ void Area::updateScene(void) {
 
 //====NONSTATIC====
 
-TkArea::TkArea(Level *const level):
+TkArea::TkArea(Level *const /*level*/):
     _active(false),
     _open(false)
 {

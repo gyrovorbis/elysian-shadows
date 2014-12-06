@@ -208,7 +208,8 @@ SOURCES += source/asset/project.cpp \
     source/core/rowsJoinerProxyModel.cpp \
     ../../AssetIO/source/elysian_instance_transform.cpp \
     source/estk/engineGLSceneWidget.cpp \
-    source/estk/tkMapSystem.cpp
+    source/estk/tkMapSystem.cpp \
+    source/estk/entitySelectable.cpp
 
 HEADERS += include/asset/project.h \
     include/asset/level.h \
@@ -350,7 +351,8 @@ HEADERS += include/asset/project.h \
     ../../AssetIO/include/elysian_lua_table_proxy.hpp \
     include/asset/luaTableStackModel.h \
     include/estk/engineGLSceneWidget.h \
-    include/estk/tkMapSystem.h
+    include/estk/tkMapSystem.h \
+    include/estk/entitySelectable.h
 
 FORMS += form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \

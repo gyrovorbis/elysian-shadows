@@ -8,8 +8,9 @@ namespace elysian {
     struct TileEntry;
 }
 
-class TkEntity;
-typedef TkEntity Entity;
+class EntitySelectable;
+//class TkEntity;
+//typedef TkEntity Entity;
 template<typename T>
 class TileSelection;
 class Project;
@@ -36,15 +37,15 @@ public:
 	enum TYPE { EMPTY, PROJECT, LEVEL, AREA, TILE, ENTITY };
 
 	union Union {
-		Selectable *base;
-		TileSelection<elysian::TileEntry> *terrain;
-		Entity *entity;
-		Area *area;
-		Level *level;
-		Project *project;
+		Selectable* base;
+		TileSelection<elysian::TileEntry>* terrain;
+		EntitySelectable* entity;
+		Area* area;
+		Level* level;
+		Project* project;
 	};
 
-	Selectable(void);
+			Selectable(void);
 	virtual ~Selectable(void) {}
 	virtual TYPE getType(void) const=0;
 	virtual void installSelectionViewCustomDelegates(QAbstractItemView *const /*view*/) {}
