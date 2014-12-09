@@ -3,12 +3,14 @@
 #include <gyro.h>
 #include <sys/time.h>
 
+#if 0
 /* copied from mpbench */
 #define TIMER_CLEAR  (tv1.tv_sec = tv1.tv_usec = tv2.tv_sec = tv2.tv_usec = 0)
 #define TIMER_START   gettimeofday(&tv1, (struct timezone*)0)
 #define TIMER_ELAPSED ((tv2.tv_usec-tv1.tv_usec)+((tv2.tv_sec-tv1.tv_sec)*1000000))
 #define TIMER_STOP    gettimeofday(&tv2, (struct timezone*)0)
 struct timeval tv1,tv2;
+#endif
 
 namespace elysian {
 
@@ -24,14 +26,14 @@ TimerSystem::TimerSystem(void)
 		_deltaTimeCircBuffer[i] = _realDeltaCircBuffer[i] = _minFramerate;
 	}
 
-	TIMER_CLEAR;
-	TIMER_START;
+    //TIMER_CLEAR;
+    //TIMER_START;
 }
 
 void TimerSystem::update(void) {
 	float delta;
 
-	TIMER_STOP;
+    //TIMER_STOP;
 
 	//MS since last frame
 	_prevFrameTicks = _curFrameTicks;
@@ -45,12 +47,12 @@ void TimerSystem::update(void) {
 	//Calculate delta (sec)
 	//_deltaTime = (_curFrameTicks - _prevFrameTicks)/1000.0f;
 #if 1
-	delta = ((float)TIMER_ELAPSED)/1000000.0f;
+    delta = ((float)gyTimerTicks())/1000000.0f;
 #else
 	delta = 1/60.0f;
 #endif
-	TIMER_CLEAR;
-	TIMER_START;
+    //TIMER_CLEAR;
+    //TIMER_START;
 	//return;
 
 	_realDeltaCircBuffer[_buffIndex] = delta;

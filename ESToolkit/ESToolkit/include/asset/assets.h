@@ -15,6 +15,7 @@ typedef TkArea Area;
 class Component;
 class TkEntity;
 typedef TkEntity Entity;
+struct MapChange;
 
 namespace elysian {
     class Engine;
@@ -72,6 +73,7 @@ signals:
 	void areaChanged(Area *const area);
 	void levelChanged(Level *const level);
 	void projectChanged(Project *const project);
+    void engineInitialize(void);
 
 	void areaAdded(Project *const project, Level *const level, Area *const area);
 	void areaRenamed(const QString oldName, const QString newName);
@@ -86,6 +88,7 @@ signals:
 	void entityRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity);
 	void componentAttached(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
 	void componentRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
+    void mapChanged(Area*const area, const QVector<MapChange>& changes);
 
 	void projectRemoveUI();
 private slots:
@@ -100,6 +103,7 @@ private slots:
 	void onEntityRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity);
 	void onComponentAttached(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
 	void onComponentRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
+    void onMapChanged(Area*const area, const QVector<MapChange>& changes);
 
 private:
     static Project* m_project;

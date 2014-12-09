@@ -27,6 +27,7 @@ void Project::connectSlots(TkLevel *const level) {
 	connect(level, SIGNAL(entityRemoved(Level*const,Area*const,Entity*const)), this, SLOT(onRemoveEntity(Level*const,Area*const,Entity*const)));
 	connect(level, SIGNAL(componentAttached(Level*const,Area*const,Entity*const,Component*const)), this, SLOT(onComponentAttached(Level*const,Area*const,Entity*const,Component*const)));
 	connect(level, SIGNAL(componentRemoved(Level*const,Area*const,Entity*const,Component*const)), this, SLOT(onComponentRemoved(Level*const,Area*const,Entity*const,Component*const)));
+    connect(level, SIGNAL(mapChanged(Area*const,const QVector<MapChange>&)), this, SLOT(onMapChanged(Area*const,const QVector<MapChange>&)));
 }
 
 void Project::populateModel(void) {
@@ -344,4 +345,8 @@ void Project::onAreaRenamed(const QString oldName, const QString newName) {
 
 void Project::onLevelRenamed(const QString oldName, const QString newName) {
 	emit levelRenamed(oldName, newName);
+}
+
+void Project::onMapChanged(Area * const area, const QVector<MapChange>& changes) {
+    emit mapChanged(area, changes);
 }

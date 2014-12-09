@@ -29,6 +29,14 @@ class SourceView;
 class CheckeredAlphaRectGraphicsItem;
 class MapViewDepthBufferGraphicsItem;
 
+struct MapChange {
+    QPoint              loc;
+    TileEntry           oldEntry;
+    TileEntry           newEntry;
+    Assets::LAYER_TYPE  layer;
+};
+
+
 ELYSIAN_ASSET_TYPEDEF(Area)
 
 class TkArea: public PropertyStackModel, public TreeNode, public elysian::AreaBase {
@@ -36,18 +44,24 @@ class TkArea: public PropertyStackModel, public TreeNode, public elysian::AreaBa
 	friend class Assets;
 private:
 	//Scene Data
-    static unsigned int _currentSceneWidth, _currentSceneHeight;
-	static MapViewDepthBufferGraphicsItem	*_depthBuffGraphicsItem;
+    static unsigned                         _currentSceneWidth;
+    static unsigned                         _currentSceneHeight;
+    static MapViewDepthBufferGraphicsItem*  _depthBuffGraphicsItem;
+    static SelectionScene*                  _editorScene;
+    static bool                             _inactiveTransparency;
 
-	QUndoStack _undoStack;
-    //QVector<Entity *> _entities;
-	QString _location;
-	QGraphicsRectItem *_bgRect;
-	bool _active, _open;
+    QVector<MapChange>  _mapChanges;
+    QUndoStack          _undoStack;
+    QString             _location;
+    QGraphicsRectItem*  _bgRect;
+    bool                _active         = false;
+    bool                _open           = false;
+    bool                _emitMapChange  = true;
+    bool                _batchMapUpdate = false;
 
 	virtual bool activate(void);
 	virtual bool deactivate(void);
-	void connectSlots(Entity *const entity);
+    void         connectSlots(Entity *const entity);
 
 
 private slots:
@@ -57,60 +71,66 @@ private slots:
 public slots:
 	void onUndoCleanStateChanged(bool changed);
 public:
+
     using AreaBase::getTileEntry;
     using AreaBase::setTileEntry;
     using AreaBase::load;
-	static bool inactiveTransparency;
 
-    TkArea(Level *const level=nullptr);
-    virtual ~TkArea(void) override;
+                        TkArea(Level *const level=nullptr);
+    virtual             ~TkArea(void) override;
 
-    bool load(const char*const str);
-	bool save(void);
+    bool                load(const char*const str);
+    bool                save(void);
 
-    QUndoStack& getUndoStack(void);
-	elysian::Area &getElysianArea(void);
-    void setNodeName(const QString str);
-    void setLocation(const QString loc);
-	void setString(const QString str);
-	QString getString(void) const;
-    void setMapWidth(const unsigned short w);
-    void setMapHeight(const unsigned short h);
-	int getUndoStackCount(void);
-	bool saveAs(const QString dir);
-    bool duplicate(void);
+    QUndoStack&         getUndoStack(void);
+    elysian::Area&      getElysianArea(void);
+    void                setNodeName(const QString str);
+    void                setLocation(const QString loc);
+    void                setString(const QString str);
+    QString             getString(void) const;
+    void                setMapWidth(const unsigned short w);
+    void                setMapHeight(const unsigned short h);
+    int                 getUndoStackCount(void);
+    bool                saveAs(const QString dir);
+    bool                duplicate(void);
 
-	QString getLocation(void) const;
-    unsigned short getMapWidth(void) const;
-    unsigned short getMapHeight(void) const;
-	uint32_t getTileValue(const QPoint loc, const Assets::LAYER_TYPE layer) const;
-	void setTileValue(const QPoint loc, const Assets::LAYER_TYPE layer, const uint32_t value);
-	uint16_t getTileIndex(const QPoint loc, const Assets::LAYER_TYPE layer) const;
-	GY_RECT_TEX_ORIENT getTileOrient(const QPoint loc, const Assets::LAYER_TYPE layer) const;
-	unsigned char getTileElev(const QPoint loc, const Assets::LAYER_TYPE layer) const;
-    void setTileEntry(const QPoint loc, const Assets::LAYER_TYPE layer, const TileEntry entry);
-    TileEntry getTileEntry(const QPoint loc, const Assets::LAYER_TYPE layer) const;
+    QString             getLocation(void) const;
+    unsigned short      getMapWidth(void) const;
+    unsigned short      getMapHeight(void) const;
 
-	Entity *newEntity(void);
-	Entity *getFirstEntity(void) const;
-	bool deleteEntity(QString name);
-	bool deleteEntity(Entity *const entity);
-    std::vector<Entity *>& getEntities(void);
+    uint32_t            getTileValue(const QPoint loc, const Assets::LAYER_TYPE layer) const;
+    void                setTileValue(const QPoint loc, const Assets::LAYER_TYPE layer, const uint32_t value);
+    uint16_t            getTileIndex(const QPoint loc, const Assets::LAYER_TYPE layer) const;
+    GY_RECT_TEX_ORIENT  getTileOrient(const QPoint loc, const Assets::LAYER_TYPE layer) const;
+    unsigned char       getTileElev(const QPoint loc, const Assets::LAYER_TYPE layer) const;
+    void                setTileEntry(const QPoint loc, const Assets::LAYER_TYPE layer, const TileEntry entry);
+    TileEntry           getTileEntry(const QPoint loc, const Assets::LAYER_TYPE layer) const;
+    void                beginMapUpdate(void);
+    void                endMapUpdate(void);
+    void                setEmitMapChange(const bool value);
 
-	static SelectionScene *editorScene;
 
-	static bool staticConstructor(const SourceView *const view);
-	static void resizeEditorScene(void);
-	static void updateScene(void);
+    Entity*             newEntity(void);
+    Entity*             getFirstEntity(void) const;
+    bool                deleteEntity(QString name);
+    bool                deleteEntity(Entity *const entity);
+    std::vector<Entity*>& getEntities(void);
 
-	virtual void populateModel(void);
+    static bool         staticConstructor(const SourceView *const view);
+    static void         resizeEditorScene(void);
+    static void         updateScene(void);
+    static bool         getInactiveTransparency(void);
+    static void         setInactiveTransparency(const bool val);
+    static SelectionScene* getEditorScene(void);
 
-	bool open(void);
-	bool close(void);
-	bool isOpen(void) const;
-	bool isActive(void) const;
+    virtual void        populateModel(void);
 
-	virtual Selectable::TYPE getType(void) const { return Selectable::AREA; }
+    bool                open(void);
+    bool                close(void);
+    bool                isOpen(void) const;
+    bool                isActive(void) const;
+
+    virtual Selectable::TYPE    getType(void) const { return Selectable::AREA; }
 	virtual TreeNode::ITEM_TYPE getTreeWidgetItemType(void) { return ITEM_AREA; }
 
 signals:
@@ -120,9 +140,11 @@ signals:
 	void componentAttached(Area *const area, Entity *const entity, Component *const comp);
 	void componentRemoved(Area *const area, Entity *const entity, Component *const comp);
 	void renamed(const QString oldName, const QString newName);
+    void mapChanged(Area*const area, const QVector<MapChange>& changes);
 };
 
 typedef TkArea Area;
+
 
 
 
@@ -135,12 +157,44 @@ inline uint32_t TkArea::getTileValue(const QPoint loc, const Assets::LAYER_TYPE 
 
 inline void TkArea::setTileValue(const QPoint loc, const Assets::LAYER_TYPE layer, const uint32_t value) {
 	Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
-    setTileEntry((unsigned)layer, loc.x(), loc.y(), elysian::TileEntry(value));
+    MapChange change;
+
+    if(_emitMapChange) {
+        change.oldEntry = getTileEntry(loc.x(), loc.y(), layer);
+        change.newEntry = TileEntry(value);
+        change.loc      = loc;
+        change.layer    = layer;
+        _mapChanges.push_back(change);
+
+        if(!_batchMapUpdate) {
+            emit mapChanged(this, _mapChanges);
+            _mapChanges.clear();
+        }
+    }
+
+    setTileEntry((unsigned)layer, loc.x(), loc.y(), TileEntry(value));
 }
 
 inline void TkArea::setTileEntry(const QPoint loc, const Assets::LAYER_TYPE layer, const TileEntry entry) {
 	Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
+    MapChange change;
+
+    if(_emitMapChange) {
+        change.oldEntry = getTileEntry(loc.x(), loc.y(), layer);
+        change.newEntry = entry;
+        change.loc      = loc;
+        change.layer    = layer;
+        _mapChanges.push_back(change);
+
+        if(!_batchMapUpdate) {
+            emit mapChanged(this, _mapChanges);
+            _mapChanges.clear();
+        }
+    }
+
     setTileEntry((unsigned)layer, loc.x(), loc.y(), entry);
+
+
 }
 
 inline TileEntry TkArea::getTileEntry(const QPoint loc, const Assets::LAYER_TYPE layer) const {
@@ -156,6 +210,18 @@ inline unsigned short TkArea::getMapWidth(void) const { return width; }
 inline std::vector<Entity*>& TkArea::getEntities(void) { return entities; }
 inline bool TkArea::isOpen(void) const { return _open; }
 inline bool TkArea::isActive(void) const { return _active; }
+inline void TkArea::setEmitMapChange(const bool value) { _emitMapChange = value; }
+inline void TkArea::beginMapUpdate(void) { _batchMapUpdate = true; }
+inline void TkArea::endMapUpdate(void) {
+    _batchMapUpdate = false;
+    if(_emitMapChange) {
+        emit mapChanged(this, _mapChanges);
+        _mapChanges.clear();
+    }
+}
+inline bool TkArea::getInactiveTransparency(void) { return _inactiveTransparency; }
+inline void TkArea::setInactiveTransparency(const bool val) { _inactiveTransparency = val; }
+inline SelectionScene* TkArea::getEditorScene(void) { return _editorScene; }
 
 
 #endif // AREA_H

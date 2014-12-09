@@ -28,22 +28,26 @@ public:
 	}
 
 	virtual void undo(void) {
+        _area->beginMapUpdate();
 		for(QMap<QPoint, UndoEntry>::const_iterator i = _undoGroup.begin(); i != _undoGroup.end(); ++i) {
 			//_area->setTileValue(i.key(), _layer, ELYSIAN_MAP_TERRAIN_PACK_VALUE(i.value().oldData.index, i.value().oldData.orient));
 			_area->setTileEntry(i.key(), _layer, i.value().oldData);
 		}
+        _area->endMapUpdate();
 		//_area->editorScene->update();
 	}
 
 	virtual void redo(void) {
-		if(_skipFirst) { //assume changes have already been applied to map from updating
-			_skipFirst = false;
-		} else {
+        //if(_skipFirst) { //assume changes have already been applied to map from updating
+        //	_skipFirst = false;
+        //} else {
+            _area->beginMapUpdate();
 			for(QMap<QPoint, UndoEntry>::const_iterator i = _undoGroup.begin(); i != _undoGroup.end(); ++i) {
 				//_area->setTileValue(i.key(), _layer, ELYSIAN_MAP_TERRAIN_PACK_VALUE(i.value().newData.index, i.value().newData.orient));
 				_area->setTileEntry(i.key(), _layer, i.value().newData);
 			}
-		}
+            _area->endMapUpdate();
+        //}
 		//_area->editorScene->update();
 	}
 
@@ -54,6 +58,7 @@ public:
 	}
 
 	void endUpdateEntries(void) {
+        _area->beginMapUpdate();
 		for(auto it = _undoGroup.begin(); it != _undoGroup.end(); ++it) {
 			if(it.value().dirty) {
 				_area->setTileEntry(it.key(), _layer, it.value().oldData);
@@ -65,7 +70,9 @@ public:
 		for(auto it = _undoGroup.begin(); it != _undoGroup.end(); ++it)
 			if(it.value().dirty)
 				_undoGroup.erase(it);
-	}
+
+        _area->endMapUpdate();
+    }
 
 	void clearEntries(void) {
 		undo();
@@ -101,6 +108,40 @@ public:
 		}
 	}
 
+    void onMapChanged(const QVector<MapChange>& changes) {
+        if(!_undoGroup.size()) return;
+
+        int count = changes.size();
+
+        for(int i = 0; i < count; ++i) {
+
+            auto entry = _undoGroup.find(changes[i].loc);
+
+            if(entry != _undoGroup.end() && changes[i].layer == _layer) {
+                entry.value().oldData = changes[i].newEntry;
+                _area->setTileEntry(entry.key(), _layer, entry.value().newData);
+            }
+
+        }
+    }
+
+#if 0
+        for(auto it = _undoGroup.begin(); it != _undoGroup.end(); ++it) {
+
+            //updated outside scene
+            auto entry = _area->getTileEntry(it.key(), _layer);
+            if(entry.getValue() != it.value().newData.getValue()) {
+                it.value().oldData = entry;                                 //maintain actual tile value
+                _area->setTileEntry(it.key(), _layer, it.value().newData);    //update selected tile
+            }
+
+            //if(it.value().newData.getValue() == 0) {
+            //    qDebug() << "UPDATING A ZERO!!!!";
+            //}
+
+        }
+    }
+#endif
 
 };
 

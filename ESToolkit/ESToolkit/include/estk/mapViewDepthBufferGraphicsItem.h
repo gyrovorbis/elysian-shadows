@@ -77,7 +77,7 @@ inline void MapViewDepthBufferGraphicsItem::renderObjectEntry(const TkMapDepthBu
 
 	_curPainter->save();
 	_curPainter->translate(entry.x*32, entry.y*32);
-	if(Area::inactiveTransparency && entry.layer != (unsigned)curLayer) _curPainter->setOpacity(0.5f);
+    if(Area::getInactiveTransparency() && entry.layer != (unsigned)curLayer) _curPainter->setOpacity(0.5f);
 	_renderTile(_curPainter, TileEntry(entry.mapEntry.value), entry.drawStyle, entry.x, entry.y,
 				(curLayer == (Assets::LAYER_TYPE)entry.layer));
 	_curPainter->restore();

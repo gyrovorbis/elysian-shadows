@@ -40,7 +40,7 @@ Engine::Engine(void) {
   //  gyVidInit();
     //gyAudInit();
     gyInputInit();
-   // gyTimerInit();
+    gyTimerInit();
 
     LuaManager::initialize();
 		
@@ -128,6 +128,13 @@ void Engine::update(void) {
 
 			_behaviorSystem->callTriggers(Behavior::ON_UPDATE);
 			break;
+
+        case System::ENGINE_ESTK_STOP:
+            _cameraSystem->update();
+            _lightSystem->update();
+            _timerSystem->update();
+            _mapSystem->update();
+        break;
 
 
 #if 0
@@ -236,6 +243,9 @@ void Engine::render(void) {
 }
 
 Engine::~Engine(void) { 
+
+    gyInputUninit();
+    gyTimerUninit();
 
 	LuaManager::uninitialize();
 	delete _combatSystem;

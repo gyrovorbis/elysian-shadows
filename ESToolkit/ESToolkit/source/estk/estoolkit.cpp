@@ -607,8 +607,8 @@ void ESToolkit::OnSubLayerVisibilityChanged(int index, bool visible)
 		TileEntry::renderColliders = visible;
 		Level::updateScenes();
 		break;
-	case 6:
-		Area::inactiveTransparency = visible;
+    case 6:
+        Area::setInactiveTransparency(visible);
 		break;
 	case 7:
 		TileEntry::renderElev = visible;
@@ -1486,11 +1486,11 @@ void ESToolkit::keyPressEvent(QKeyEvent *event) {
 void ESToolkit::on_actionScreenshot_triggered(void) {
 	//Area::editorScene->setSceneRect(Area::editorScene->itemsBoundingRect());                          // Re-shrink the scene to it's bounding contents
 	_ui->mapView->scale(0.1f, 0.1f);
-	QImage image(Area::editorScene->sceneRect().size().toSize(), QImage::Format_ARGB32);              // Create the image with the exact size of the shrunk scene
+    QImage image(Area::getEditorScene()->sceneRect().size().toSize(), QImage::Format_ARGB32);              // Create the image with the exact size of the shrunk scene
 	image.fill(Qt::transparent);                                                                      // Start all pixels transparent
 
 	QPainter painter(&image);
-	Area::editorScene->render(&painter);
+    Area::getEditorScene()->render(&painter);
 
 	QDir dir("");
 	if(!dir.exists("screenshots")) dir.mkdir("screenshots");
@@ -1550,9 +1550,14 @@ void ESToolkit::on_actionAdvance_Frame_triggered()
 	};
 
 	if(!once) {
-		for(unsigned i = 0; i < 4; ++i) {
-			Entity *entity = new Entity;
-			entity->getTransform().setPos(150.0f*i, 150.0f*i, 100.0f);
+        Entity* entity;
+
+        entity = _assets.getCurArea()->findEntity("Julien");
+        qDebug() << "JULIEN COLLIDER" << entity->getCollidable();
+
+        for(unsigned i = 0; i < 3; ++i) {
+            entity = new Entity;
+            entity->getTransform().setPos(300.0f*i, 300.0f*i, 100.0f);
 			auto* src = entity->addLightSource();
 			src->setLightType(GY_LIGHT_POINT);
 			src->setShadowCaster(true);

@@ -334,7 +334,7 @@ namespace elysian {
 					render tile 0 decorations when selecting/selected/filling. It's moleculary
 					slower, but it's at least a clean solution.
 					*/
-					//if(!curMapEntry.mapEntry.getValue()) continue; //not the blank object
+                    if(!curMapEntry.mapEntry.getIndex()) continue; //not the blank object
 					int elevation = curMapEntry.mapEntry.getElev();//-1;
 
 					if(elevation == 0 && !curMapEntry.mapEntry.getPlane()) { //render tile immediately at elevation -1 (below entities)

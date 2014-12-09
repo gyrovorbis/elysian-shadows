@@ -267,6 +267,7 @@ void DestView<T>::mousePressEvent(QMouseEvent *event) {
 		if(_selItemGroup) {
 			delete _selItemGroup;
             _selItemGroup = nullptr;
+            _sceneSelectionClear();
 		}
         _endPan();
 
@@ -336,39 +337,43 @@ void DestView<T>::keyReleaseEvent (QKeyEvent *event)  {
         if(isSelecting()) _endRegionSelection(nullptr);
         else if(isFillingRegion()) _endRegionFill(nullptr);
 	}
-	//else QGraphicsView::keyReleaseEvent(event);
+    else QGraphicsView::keyReleaseEvent(event);
 
 	event->ignore();
 }
 
 template<typename T>
 void DestView<T>::mouseMoveEvent(QMouseEvent *event) {
-	_lastMouseEvent = QMouseEvent(*event);
+    if(event) {
+        _lastMouseEvent = QMouseEvent(*event);
     //_curMousePos = _mapViewPosToScenePos(event->pos());
-	_viewMousePos = event->pos();
+        _viewMousePos = event->pos();
     //_sceneMousePos = _mapViewPosToScenePos(_viewMousePos);
-	_updateSceneMousePos();
+    }
+    _updateSceneMousePos();
 
 /*	if(_autoScrollEnabled && dragMode() != ScrollHandDrag) {
 		autoScrollLogic(event);
 	}*/
 
-	if(event->buttons()&Qt::RightButton && !_fillingRegion) {
-		_updateRegionSelection(event);
-	}
+    if(event) {
+        if(event->buttons()&Qt::RightButton && !_fillingRegion) {
+            _updateRegionSelection(event);
+        }
 
-	if(event->buttons() == Qt::LeftButton && _selItemGroup && !_fillingRegion) {
-		placeSelection();
-	}
+        if(event->buttons() == Qt::LeftButton && _selItemGroup && !_fillingRegion) {
+            placeSelection();
+        }
 
-	if(event->buttons()&Qt::LeftButton) {
-		_updateRegionFill(event);
-	}
+        if(event->buttons()&Qt::LeftButton) {
+            _updateRegionFill(event);
+        }
+    }
 
 	updateSelectionItemGroup();
 
 	//event->ignore();
-	QGraphicsView::mouseMoveEvent(event);
+    if(event) QGraphicsView::mouseMoveEvent(event);
 }
 
 

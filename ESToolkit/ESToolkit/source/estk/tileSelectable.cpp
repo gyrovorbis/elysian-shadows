@@ -80,7 +80,7 @@ TileSelectable::TileSelectable(const QList<QGraphicsItem *> &items, Area *const 
 	_level(lev),
 	_area(area)
 {
-    Q_ASSERT(0); //shouldn't be using this constructor
+    //Q_ASSERT(0); //shouldn't be using this constructor
 	if(!_selectionViewDelegate) _selectionViewDelegate = new TileSelectableSelectionViewDelegate;
     _populateTileIndicesList();
     //updateSceneSelection();
@@ -107,9 +107,6 @@ TileSelectable::TileSelectable(const QRect &region, bool selectionArray[][ELYSIA
 
 		}
 	}
-
-    _sceneX = region.topLeft().x();
-    _sceneY = region.topLeft().y();
 
 	if(!_selectionViewDelegate) _selectionViewDelegate = new TileSelectableSelectionViewDelegate;
     _populateTileIndicesList();

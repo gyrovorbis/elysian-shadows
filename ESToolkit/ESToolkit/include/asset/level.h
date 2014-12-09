@@ -31,6 +31,7 @@ class SourceView;
 class CheckeredAlphaRectGraphicsItem;
 class TkArea;
 typedef TkArea Area;
+struct MapChange;
 
 class TkLevel: public PropertyStackModel, public TreeNode, public elysian::LevelBase, public elysian::System {
     friend class Assets;
@@ -141,6 +142,7 @@ private slots:
 	void onComponentAttached(Area *const area, Entity *const entity, Component *const comp);
 	void onComponentRemoved(Area *const area, Entity *const entity, Component *const comp);
 	void onAreaRenamed(const QString oldName, const QString newName);
+    void onMapChanged(Area*const area, const QVector<MapChange>& changes);
 
 signals:
 	void activating(Level *const level, Area *const area);
@@ -152,6 +154,7 @@ signals:
 	void componentRemoved(Level *const level, Area *const area, Entity *const entity, Component *const comp);
 	void areaRenamed(const QString oldName, const QString newName);
 	void levelRenamed(const QString oldName, const QString newName);
+    void mapChanged(Area*const area, const QVector<MapChange>& changes);
 
 };
 

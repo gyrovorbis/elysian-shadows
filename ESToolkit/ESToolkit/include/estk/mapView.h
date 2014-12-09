@@ -10,6 +10,11 @@
 
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK	(1<<31)
 
+class Project;
+class TkLevel;
+typedef TkLevel Level;
+class TkArea;
+typedef TkArea Area;
 class TkEntity;
 class MapViewPlaceTileGroupUndoItem;
 
@@ -27,14 +32,19 @@ private:
     //the timer id of a 30ms draw refresh
 	int								_refreshTimerHandle = 30;
 
-	MapViewPlaceTileGroupUndoItem*	_curUndoItem		= nullptr;
 	QVector<TkEntity*>				_selectionColliders;
 	QVector<TkEntity*>				_selectedEntities;
+    MapViewPlaceTileGroupUndoItem*	_curUndoItem		= nullptr;
+    TkEntity*                       _cursorEntity       = nullptr;
+    TkEntity*                       _underCursorEntity  = nullptr;
+    bool                            _entityDrag         = false;
 
 	//Internal selection management
 	void _tileSelectionArrayUpdate(void);
 	void _entitySelectionUpdate(void);
 	void _entitySelectableCreate(void);
+    bool _entityAddToSelection(TkEntity*const entity);
+    bool _entityRemoveFromSelection(TkEntity*const entity);
 
 	//SourceView virtual implementation
     virtual void    _sceneSelectionAddRect(const QRectF &rect) override;
@@ -71,6 +81,7 @@ public:
     //QGraphicsView virtual implementation
     virtual void mouseMoveEvent(QMouseEvent *event) override;
 	virtual void mouseReleaseEvent(QMouseEvent* event) override;
+    virtual void mousePressEvent(QMouseEvent *event) override;
     virtual void wheelEvent(QWheelEvent* event) override;
     virtual void timerEvent(QTimerEvent *event) override;
     virtual void keyPressEvent(QKeyEvent *event) override;
@@ -78,8 +89,10 @@ public:
 
 public slots:
 
+    void onEngineInitialize(void);
 	void onAreaChange(Area* const area);
 	void onLayerChange(LAYER_TYPE type);
+    void onMapChange(Area*const area, const QVector<MapChange>& changes);
 };
 
 #endif

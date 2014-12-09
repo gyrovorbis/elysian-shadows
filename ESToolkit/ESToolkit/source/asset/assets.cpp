@@ -85,6 +85,7 @@ void Assets::connectSlots(Project *const project) {
 	connect(project, SIGNAL(entityRemoved(Project*const,Level*const,Area*const,Entity*const)), this, SLOT(onEntityRemoved(Project*const,Level*const,Area*const,Entity*const)));
 	connect(project, SIGNAL(componentAttached(Project*const,Level*const,Area*const,Entity*const,Component*const)), this, SLOT(onComponentAttached(Project*const,Level*const,Area*const,Entity*const,Component*const)));
 	connect(project, SIGNAL(componentRemoved(Project*const,Level*const,Area*const,Entity*const,Component*const)), this, SLOT(onComponentRemoved(Project*const,Level*const,Area*const,Entity*const,Component*const)));
+    connect(project, SIGNAL(mapChanged(Area*const,const QVector<MapChange>&)), this, SLOT(onMapChanged(Area*const,const QVector<MapChange>&)));
 }
 
 //====NONSTATIC====
@@ -231,6 +232,9 @@ Project *Assets::loadProject(const QString directory) {
 
     _engine->loadAssets();
     elysian::Debug::getInstance().sandboxInit();
+    _engine->setEngineState(elysian::System::ENGINE_ESTK_STOP);
+
+    emit engineInitialize();
 
     //_engine->getMapSys()->makeCurrent();
 
@@ -327,4 +331,7 @@ void Assets::onLevelRenamed(const QString oldName, const QString newName) {
 	emit levelRenamed(oldName, newName);
 }
 
+void Assets::onMapChanged(Area * const area, const QVector<MapChange>& changes) {
+    emit mapChanged(area, changes);
+}
 

@@ -18,6 +18,8 @@ public:
 	virtual TYPE		getType(void) const override;
 	QVector<TkEntity*>& getEntities(void);
 
+    void                translate(const float x, const float y);
+
 };
 
 #endif // ENTITY_SELECTABLE_H

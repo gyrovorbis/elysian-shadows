@@ -15,6 +15,7 @@ class Assets;
 class TkEntity;
 typedef TkEntity Entity;
 class Component;
+struct MapChange;
 
 class Project: public PropertyStackModel, public TreeNode, public elysian::System {
     Q_OBJECT
@@ -71,6 +72,7 @@ private slots:
 	  void onRemoveEntity(Level *const level, Area *const area, Entity *const entity);
 	  void onComponentAttached(Level *const level, Area *const area, Entity *const entity, Component *const comp);
 	  void onComponentRemoved(Level *const level, Area *const area, Entity *const entity, Component *const comp);
+      void onMapChanged(Area* const area, const QVector<MapChange>& changes);
 
 signals:
 	void activating(Project *const project, Level *const level, Area *const area);
@@ -84,7 +86,7 @@ signals:
 	void entityRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity);
 	void componentAttached(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
 	void componentRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
-
+    void mapChanged(Area * const area, const QVector<MapChange>& changes);
 };
 
 #endif // PROJECT_H

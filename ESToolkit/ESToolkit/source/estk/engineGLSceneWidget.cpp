@@ -34,7 +34,7 @@ void EngineGLSceneWidget::initializeGL(void) {
 }
 
 void EngineGLSceneWidget::startRenderTimer(void) {
-	_timer.start(12, this);
+    _timer.start(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this);
 }
 
 

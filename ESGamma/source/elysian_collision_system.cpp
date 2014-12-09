@@ -1094,6 +1094,8 @@ void CollisionSystem::_resolveZPenetration(CollisionContact * const contact) {
     unsigned bodyToCol[2];
    // GYCollider* collider[2];
 
+    if(!contact->_resolvePen) return;
+
     if(!contact->_bodyB) {
         contact->_zDepth = 0.0f;
         return;

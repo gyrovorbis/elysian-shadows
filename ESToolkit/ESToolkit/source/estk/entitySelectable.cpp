@@ -25,3 +25,8 @@ void EntitySelectable::removeEntity(TkEntity * const entity) {
 	}
 	removeSourceModel(entity);
 }
+
+void EntitySelectable::translate(const float x, const float y) {
+    for(auto& it : _entities) it->getTransform().translate(x, y);
+
+}

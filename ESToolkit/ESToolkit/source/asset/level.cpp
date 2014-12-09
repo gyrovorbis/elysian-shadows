@@ -230,6 +230,7 @@ void TkLevel::connectSlots(Area *area) {
 	connect(area, SIGNAL(componentAttached(Area*const,Entity*const,Component*const)), this, SLOT(onComponentAttached(Area*const,Entity*const,Component*const)));
 	connect(area, SIGNAL(componentRemoved(Area*const,Entity*const,Component*const)), this, SLOT(onComponentRemoved(Area*const,Entity*const,Component*const)));
 	connect(area, SIGNAL(renamed(QString,QString)), this, SLOT(onAreaRenamed(QString,QString)));
+    connect(area, SIGNAL(mapChanged(Area*const,const QVector<MapChange>&)), this, SLOT(onMapChanged(Area*const,const QVector<MapChange>&)));
 }
 
 /*
@@ -664,6 +665,10 @@ void TkLevel::onComponentRemoved(Area *const area, Entity *const entity, Compone
 
 void TkLevel::onAreaRenamed(const QString oldName, const QString newName) {
 	emit areaRenamed(oldName, newName);
+}
+
+void TkLevel::onMapChanged(Area * const area, const QVector<MapChange>& changes) {
+    emit mapChanged(area, changes);
 }
 
 bool TkLevel::_saveMetaData(const QString dir) {

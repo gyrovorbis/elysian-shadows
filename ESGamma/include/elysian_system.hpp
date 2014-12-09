@@ -29,7 +29,7 @@ namespace elysian {
 
 	class System: public LevelManager {
 	public:
-		enum ENGINE_STATE { ENGINE_NORMAL, ENGINE_WARPING, ENGINE_CONVERSATION, ENGINE_MODAL_CONVERSATION, ENGINE_CAMERA_DEBUG };
+        enum ENGINE_STATE { ENGINE_NORMAL, ENGINE_WARPING, ENGINE_CONVERSATION, ENGINE_MODAL_CONVERSATION, ENGINE_CAMERA_DEBUG, ENGINE_ESTK_STOP };
 		friend class Engine;
 		friend class Debug;
 
@@ -77,10 +77,11 @@ namespace elysian {
 		static DialogSystem*		getDialogSys(void) { return _dialogSystem; }
 		static CombatSystem*		getCombatSys(void) { return _combatSystem; }
 		static BehaviorSystem*		getBehavSys(void) { return _behaviorSystem; }
-		static bool getProcessInput(void) { return _processInput; }
-		static void setProcessInput(const bool in=true) { _processInput = in; }
+
+        static bool         getProcessInput(void) { return _processInput; }
+        static void         setProcessInput(const bool in=true) { _processInput = in; }
 		static ENGINE_STATE getEngineState(void) { return _engineState; }
-		static void setEngineState(const ENGINE_STATE state) { _engineState = state; }
+        static void         setEngineState(const ENGINE_STATE state) { _engineState = state; }
 
 		//virtual void DebugDump()=0;
 	};

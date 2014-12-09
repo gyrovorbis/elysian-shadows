@@ -13,15 +13,15 @@
 #include "mapViewDepthBufferGraphicsItem.h"
 
 //====STATIC====
-SelectionScene *Area::editorScene                               = nullptr;
-unsigned int Area::_currentSceneWidth                           = 0;
-unsigned int Area::_currentSceneHeight                          = 0;
-bool Area::inactiveTransparency                                 = false;
-MapViewDepthBufferGraphicsItem	*Area::_depthBuffGraphicsItem   = nullptr;
+SelectionScene*                 Area::_editorScene              = nullptr;
+unsigned int                    Area::_currentSceneWidth        = 0;
+unsigned int                    Area::_currentSceneHeight       = 0;
+bool                            Area::_inactiveTransparency     = false;
+MapViewDepthBufferGraphicsItem* Area::_depthBuffGraphicsItem    = nullptr;
 
 bool Area::staticConstructor(const SourceView *const view) {
-	editorScene = new SelectionScene;
-	editorScene->setSceneRect(0,0,2,2);
+    _editorScene = new SelectionScene;
+    _editorScene->setSceneRect(0,0,2,2);
 
     //Allocate a MapViewTerrainItem for 4 different layers
 	_depthBuffGraphicsItem = new MapViewDepthBufferGraphicsItem;
@@ -34,15 +34,12 @@ bool Area::staticConstructor(const SourceView *const view) {
 }
 
 void Area::updateScene(void) {
-	editorScene->update();
+    _editorScene->update();
 }
 
 //====NONSTATIC====
 
-TkArea::TkArea(Level *const /*level*/):
-    _active(false),
-    _open(false)
-{
+TkArea::TkArea(Level *const /*level*/) {
 
     width = height = 50;
 	//Must allocate a map in case this map is to be saved before it is loaded.
@@ -360,7 +357,7 @@ Entity* Area::newEntity(void) {
 
 	if(_active) {
 		entity->activate();
-		editorScene->addItem(entity);
+        _editorScene->addItem(entity);
 
 	}
     emit entityAdded(this, entity);
@@ -395,7 +392,7 @@ void Area::setMapWidth(const unsigned short w) {
 		resizeEditorScene();
 	}
     _bgRect->setRect(QRect(-16, -16, 32*width, 32*height));
-    editorScene->setSceneRect(QRect(-16,-16,32*width, 32*height));
+    _editorScene->setSceneRect(QRect(-16,-16,32*width, 32*height));
 }
 
 void Area::setMapHeight(const unsigned short h) {
@@ -405,7 +402,7 @@ void Area::setMapHeight(const unsigned short h) {
 		resizeEditorScene();
 	}
     _bgRect->setRect(QRect(-16, -16, 32*width, 32*height));
-    editorScene->setSceneRect(QRect(-16,-16,32*width, 32*height));
+    _editorScene->setSceneRect(QRect(-16,-16,32*width, 32*height));
 }
 
 Entity* Area::getFirstEntity(void) const {

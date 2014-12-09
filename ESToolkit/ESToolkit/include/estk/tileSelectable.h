@@ -23,11 +23,6 @@ private:
     Area* const                                 _area             = nullptr;
     GY_RECT_PLANE_TYPE                          _planeType        = GY_RECT_PLANE_BOTTOM;
 
-    int                                         _prevSceneX       = -1;
-    int                                         _prevSceneY       = -1;
-    int                                         _sceneX           = -1;
-    int                                         _sceneY           = -1;
-
     ESTkStandardItem*                           _groupCol         = nullptr;
     ESTkStandardItem*                           _groupStandOn     = nullptr;
     ESTkStandardItem*                           _groupTrans       = nullptr;
@@ -129,9 +124,6 @@ public:
 
 // ====== INLINEZ ======
 
-inline void TileSelectable::getScenePos(unsigned &x, unsigned &y) const {
-	x = _sceneX; y = _sceneY;
-}
 
 template<typename T>
 inline T TileSelectable::_getTileGroupProperty(const std::function<T (uint16_t index)> operation, const T defaultValue) const {

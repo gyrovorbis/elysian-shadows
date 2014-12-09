@@ -13,6 +13,8 @@
 #include <QGLShaderProgram>
 #include <QGLFunctions>
 
+#define TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME   (5)
+
 class EngineGLSceneWidget:
         public QGLWidget,
         public AssetManager,
