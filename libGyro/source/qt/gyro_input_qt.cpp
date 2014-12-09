@@ -2,6 +2,19 @@
 #include <QApplication>
 #include <QKeyEvent>
 
+static unsigned _keyTappedFrames[GY_KEY_LAST] = { 0 };
+
+static inline void _updateKeyTaps(GYInput& input) {
+    for(unsigned k = 0; k < GY_KEY_LAST; ++k) {
+        if(input.keyTapped[k]) {
+            if(++_keyTappedFrames[k] > 1) {
+                input.keyTapped[k] = 0;
+                _keyTappedFrames[k] = 0;
+            }
+        } else _keyTappedFrames[k] = 0;
+    }
+
+}
 
 static inline GY_X86_KEY _TranslateFromQt(const int keyCode) {
     switch(keyCode) {
@@ -116,8 +129,8 @@ static inline GY_X86_KEY _TranslateFromQt(const int keyCode) {
 }
 
 static inline void _setKeyDown(GYInput *const input, const GY_X86_KEY key) {
+    input->keyTapped[key] = !input->keyDown[key];
     input->keyDown[key] = 1;
-    input->keyTapped[key] = 1;
 }
 
 static inline void _setKeyUp(GYInput *const input, const GY_X86_KEY key) {
@@ -143,12 +156,12 @@ public:
         case QEvent::KeyPress:
             _setKeyDown(this, _TranslateFromQt(keyEvent->key()));
 
-            return true;
+            return false;
 
         case QEvent::KeyRelease:
             _setKeyUp(this, _TranslateFromQt(keyEvent->key()));
 
-            return true;
+            return false;
 
 
         default:
@@ -175,6 +188,7 @@ int gyInputUninit(void) {
 }
 
 void gyInputPoll(GYInput*const input) {
+    _updateKeyTaps(*_inputFilter);
     *input = *(GYInput*)_inputFilter;
 
 }
