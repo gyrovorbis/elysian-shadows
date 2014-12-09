@@ -7,9 +7,10 @@
 extern "C" {
 #endif
     
-int gyTimerInit(void);
-unsigned long int gyTimerTicks(void);
-void gyTimerSleep(const unsigned long duration);
+int                 gyTimerInit(void);
+int                 gyTimerUninit(void);
+unsigned long int   gyTimerTicks(void);
+void                gyTimerSleep(const unsigned long duration);
 
 #ifdef GYRO_TIMER_PLATFORM_INCLUDE
 #	include GYRO_TIMER_PLATFORM_INCLUDE
