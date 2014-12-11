@@ -129,8 +129,8 @@ T TileGraphicsItem<T>::_getTileEntryFromDrawStyle(const unsigned x, const unsign
 		fillPivot = _view.dst->getFillFixedPivot();
 		return _getTileSelection()->getFillEntry(x, y, fillPivot, mouseLoc);
     case DRAW_SELECTION:
-        //mouseLoc = _view.src->getSceneMousePos();
-        //return _getTileSelection()->getEntry(x, y, mouseLoc);
+        mouseLoc = _view.src->getSceneMousePos();
+        return _getTileSelection()->getEntry(x, y, mouseLoc);
     case DRAW_SELECTING:
 	case DRAW_NORMAL:
 		return getTileEntry(x, y);

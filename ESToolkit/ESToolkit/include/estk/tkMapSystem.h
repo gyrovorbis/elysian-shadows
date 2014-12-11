@@ -24,13 +24,13 @@ class TkMapSystem:  public MapViewTileGraphicsItem,
     friend class ESToolkit;
 
 protected:
-    void        _renderCustomPass(const unsigned count, const TkMapDepthBuffEntryImpl array[]) const;
+    void        _renderCustomPass(const unsigned count, const TkMapDepthBuffEntryImpl array[], const elysian::NORMAL_TYPE normalType) const;
 
 public:
     using       elysian::MapSystemBase<TkMapSystem, TkMapDepthBuffEntryImpl, TkEntityDepthBuffEntryImpl>::update;
 
     void        renderCustomPassImmediate(void);
-    void        renderCustomPassAtElev(const unsigned char elev) const;
+    void        renderCustomPassAtElev(const unsigned char elev, const elysian::NORMAL_TYPE normalType) const;
     void        getObjectLayerEntry(const unsigned x, const unsigned y, TkMapDepthBuffEntryImpl &entry);
 
 };
@@ -52,19 +52,27 @@ inline void TkMapSystem::renderCustomPassImmediate(void) {
 
                 if(elevation == 0 && !curMapEntry.mapEntry.getPlane()) { //render tile immediately at elevation -1 (below entities)
                     //Immediate render, or buffer if it requires multiple passes
-                    _renderCustomPass(1, &curMapEntry);
+                    _renderCustomPass(1, &curMapEntry, elysian::NORMAL_FLAT);
                 }
             }
         }
     }
 }
 
-inline void TkMapSystem::renderCustomPassAtElev(const unsigned char elev) const {
-    _renderCustomPass(_objectCount[elev], _objectBuff[elev]);
-    MapSystemBase::renderCustomPassAtElev(elev);
+inline void TkMapSystem::renderCustomPassAtElev(const unsigned char elev, const elysian::NORMAL_TYPE normalType) const {
+    MapSystemBase::renderCustomPassAtElev(elev, normalType);
+    _renderCustomPass(_objectCount[elev], _objectBuff[elev], normalType);
 }
 
-inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDepthBuffEntryImpl array[]) const {
+/*
+ *   GYVector4  { x*32.0f-16.0f, y*32.0f - 16.0f +tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f, 1.0f },
+                GYTexCoord2 { coords[0].u, coords[0].v },
+                GYColor4 { 255, 255, 255, 255 }
+
+                */
+
+
+inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDepthBuffEntryImpl array[], const elysian::NORMAL_TYPE normalType) const {
     //DRAW_NORMAL, DRAW_SELECTING, DRAW_SELECTION, DRAW_FILLING, DRAW_MAX
 
     GYColor4 decorColors[DRAW_MAX] = {
@@ -91,8 +99,10 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
             gyVidRectPlaneType(entry.mapEntry.getPlane());
             gyMatPush();
 			gyMatLoadIdentity();
-			gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f /*+ entry.mapEntry.getElev()*32.0f */, entry.mapEntry.getElev()*32.0f+1.0, 32.0f, 32.0f, 1.0f);
-			gyVidRect(0);
+            if(normalType == elysian::NORMAL_FLAT)
+                gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f+1.0f, entry.mapEntry.getElev()*32.0f+1.0f, 32.0f, 32.0f, 32.0f);
+            else gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f+33.0f, entry.mapEntry.getElev()*32.0f+33.0f, 32.0f, 32.0f, 32.0f);
+            gyVidRect(0);
             gyMatPop();
         }
         gyVidQuadListEnd();

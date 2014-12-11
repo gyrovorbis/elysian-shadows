@@ -37,10 +37,10 @@ protected:
 
 	//Structure representing past and future data for each tile location
 	struct UndoEntry {
-		T oldData;
-		T newData;
-		bool dirty		= false;
-		bool changed	= true;
+        T       oldData;
+        T       newData;
+        bool    dirty		= false;
+        bool    changed     = true;
 	};
 	//Map of every tile location set by this action
 	QMap<QPoint, UndoEntry> _undoGroup;

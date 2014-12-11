@@ -9,6 +9,26 @@ MapViewTileGraphicsItem::MapViewTileGraphicsItem(void):
 }
 
 
+TileEntry MapViewTileGraphicsItem::_getTileEntryFromDrawStyle(const unsigned x, const unsigned y, const DRAW_STYLE style) const {
+    QPointF mouseLoc;
+    QPointF fillPivot;
+
+    switch(style) {
+    default:
+        Q_ASSERT(0);
+    case DRAW_FILLING:
+        mouseLoc = _view.src->getSceneMousePos();
+        fillPivot = _view.dst->getFillFixedPivot();
+        return _getTileSelection()->getFillEntry(x, y, fillPivot, mouseLoc);
+    case DRAW_SELECTION:
+        //mouseLoc = _view.src->getSceneMousePos();
+        //return _getTileSelection()->getEntry(x, y, mouseLoc);
+    case DRAW_SELECTING:
+    case DRAW_NORMAL:
+        return getTileEntry(x, y);
+    }
+}
+
 QRectF MapViewTileGraphicsItem::boundingRect(void) const {
 	return getCurrentArea() ? QRectF(-16.0f, -16.0f, getCurrentArea()->getMapWidth()*32.0f, getCurrentArea()->getMapHeight()*32.0f)
 							: QRectF(-16.0f, -16.0f, 32.0f, 32.0f) ;

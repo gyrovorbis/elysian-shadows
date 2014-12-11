@@ -109,8 +109,8 @@ namespace elysian {
              static_cast<T*>(this)->renderCustomPassImmediate();
         }
 
-		void _renderCustomPassAtElev(const unsigned char elev) const {
-			static_cast<const T*>(this)->renderCustomPassAtElev(elev);
+        void _renderCustomPassAtElev(const unsigned char elev, const NORMAL_TYPE normalType) const {
+            static_cast<const T*>(this)->renderCustomPassAtElev(elev, normalType);
 		}
 
 		void _disableDepthTest(void) const {
@@ -281,7 +281,7 @@ namespace elysian {
 			_renderDepthBuffTileRow(i, NORMAL_FLAT);
 			_endObjectList();
 
-			_renderCustomPassAtElev(i);
+            _renderCustomPassAtElev(i, NORMAL_FLAT);
 
 			//if(_entityCount[i]) {
 				//_endObjectList();
@@ -303,6 +303,8 @@ namespace elysian {
 			_beginObjectList();
 			_renderDepthBuffTileRow(i, NORMAL_FRONT);
 			_endObjectList();
+
+            _renderCustomPassAtElev(i, NORMAL_FRONT);
                       
 		}
 		//_enableDepthTest();

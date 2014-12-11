@@ -231,7 +231,7 @@ void CollisionSystem::renderTileColliders(void) const {
 			if(colType == Tile::COLLIDER_NONE && !isZTran) continue;
 
 			gyMatPush();
-			gyMatTranslateScale(x*32.0f, y*32.0f, ZCoordConstants::tileDecor, 32.0f, 32.0f, 1.0f);
+            gyMatTranslateScale(x*32.0f, y*32.0f + ZCoordConstants::tileDecor, ZCoordConstants::tileDecor, 32.0f, 32.0f, 1.0f);
 			
 			if(isZTran) {
 				gyVidQuadListBegin(&zTranColor);

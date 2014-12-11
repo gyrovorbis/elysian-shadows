@@ -64,10 +64,11 @@ void DestView<T>::placeSelection(void) {
 		Check to see if we are making a placement in the same location without having changed the selection.
 		This logic is reesty with regionFilling, so we only use it for normal placement. --Falco
 	 */
+    //STILL FUCKING REESTED!!!111
 	if(!_fillingRegion) {
 		int new_x_offset = (int(_sceneMousePos.x()+16)/32);
 		int new_y_offset = (int(_sceneMousePos.y()+16)/32);
-		if(new_x_offset == _prevXOffset && new_y_offset == _prevYOffset && !_selectionChanged)
+        if(new_x_offset == _prevXOffset && new_y_offset == _prevYOffset && !_selectionChanged)
 			return; //we are most likely trying to lay the same shit.
 
 		//Update previous state variables

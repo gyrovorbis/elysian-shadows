@@ -47,7 +47,9 @@ void MapView::onAreaChange(Area * const area) {
 
 void MapView::onMapChange(Area*const area, const QVector<MapChange>& changes) {
     area->setEmitMapChange(false);
-    if(getAssets()->getCurrentArea() == area) _curUndoItem->onMapChanged(changes);
+    if(getAssets()->getCurrentArea() == area) {
+        _curUndoItem->onMapChanged(changes);
+    }
     area->setEmitMapChange(true);
 }
 
@@ -268,25 +270,28 @@ void MapView::keyPressEvent(QKeyEvent* event) {
 			switch(event->key()) {
 			case Qt::Key_Equal:
 				terSel->elevateFromBase();
-				createSelectionItemGroup(); //force update region
+                //createSelectionItemGroup(); //force update region
 				break;
 			case Qt::Key_Plus:
 				terSel->elevateUp();
-				createSelectionItemGroup(); //force update region
+                //createSelectionItemGroup(); //force update region
 				break;
 			case Qt::Key_Minus:
 				terSel->elevateDown();
-				createSelectionItemGroup(); //force update region
-				break;
+                //createSelectionItemGroup(); //force update region
+                break;
 			case Qt::Key_Z:
+
 				terSel->toggleZTransitional();
-				createSelectionItemGroup();
+                //createSelectionItemGroup();
+
                 break;
             case Qt::Key_N:
                 terSel->toggleNormalFace();
-                createSelectionItemGroup();
+                //createSelectionItemGroup();
                 break;
 			}
+            mouseMoveEvent(nullptr);
 		}
 	}
 }

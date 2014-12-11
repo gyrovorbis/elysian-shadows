@@ -13,9 +13,11 @@ class MapViewTileGraphicsItem: public TileGraphicsItem<TileEntry>, public AssetM
 protected:
 	Assets::LAYER_TYPE _currentLayer;
 
-	virtual bool _isSelectedWithinView(const unsigned x=0, const unsigned y=0) const;
-	virtual const QPixmap _getTilePixmap(const TileEntry entry, const bool selection=0) const;
-	virtual const TileSelection<TileEntry> *_getTileSelection(void) const;
+    virtual bool                            _isSelectedWithinView(const unsigned x=0, const unsigned y=0) const;
+    virtual const QPixmap                   _getTilePixmap(const TileEntry entry, const bool selection=0) const;
+    virtual const TileSelection<TileEntry>* _getTileSelection(void) const;
+    virtual TileEntry                       _getTileEntryFromDrawStyle(const unsigned x, const unsigned y, const DRAW_STYLE style) const;
+
 
 public:
 	MapViewTileGraphicsItem(void);

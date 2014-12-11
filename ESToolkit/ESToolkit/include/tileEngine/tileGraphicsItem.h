@@ -36,7 +36,7 @@ protected:
 
 	DRAW_STYLE _getTileDrawStyle(const unsigned x, const unsigned y) const;
     DRAW_STYLE _getTileDrawState(void) const;
-	T _getTileEntryFromDrawStyle(const unsigned x, const unsigned y, const DRAW_STYLE style) const;
+    virtual T _getTileEntryFromDrawStyle(const unsigned x, const unsigned y, const DRAW_STYLE style) const;
 
 	void _renderTile(QPainter *const painter, const T entry, const DRAW_STYLE style, const unsigned x, const unsigned y, const bool decorate);
 	void _renderFlipRotPixmap(QPainter *const painter, const QPixmap &pixmap, const GY_RECT_TEX_ORIENT orient);

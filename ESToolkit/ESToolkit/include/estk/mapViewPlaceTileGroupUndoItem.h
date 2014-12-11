@@ -111,6 +111,7 @@ public:
     void onMapChanged(const QVector<MapChange>& changes) {
         if(!_undoGroup.size()) return;
 
+        bool changed = false;
         int count = changes.size();
 
         for(int i = 0; i < count; ++i) {

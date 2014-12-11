@@ -37,7 +37,6 @@ protected:
 	QBasicTimer _timer;
 	unsigned	_width			= 0;
 	unsigned	_height			= 0;
-	bool		_playing		= false;
 	bool		_advanceFrame	= false;
 
 
@@ -57,9 +56,7 @@ protected:
 
 // ===== INLINEZ =====
 
-inline void EngineGLSceneWidget::advanceFrame(void) { _advanceFrame = true; }
-inline bool EngineGLSceneWidget::isPlaying(void) const { return _playing; }
-inline void EngineGLSceneWidget::stop(void) { _playing = false; }
-inline void EngineGLSceneWidget::play(void) { _playing = true; }
+
+
 
 #endif // TK_MAP_SYSTEM_H

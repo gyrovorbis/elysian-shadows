@@ -11,8 +11,22 @@
 EngineGLSceneWidget::EngineGLSceneWidget(const QGLFormat &format, QWidget *parent, const QGLWidget *shareWidget, Qt::WindowFlags f):
     QGLWidget(format, parent, shareWidget, f) {
     makeCurrent();
-
 }
+
+void EngineGLSceneWidget::stop(void) {
+    getAssets()->getEngine()->setEngineState(elysian::Engine::ENGINE_ESTK_STOP);
+}
+
+void EngineGLSceneWidget::play(void) {
+    getAssets()->getEngine()->setEngineState(elysian::Engine::ENGINE_NORMAL);
+}
+
+void EngineGLSceneWidget::advanceFrame(void) {
+    _advanceFrame = true;
+    getAssets()->getEngine()->setEngineState(elysian::Engine::ENGINE_NORMAL);
+}
+
+bool EngineGLSceneWidget::isPlaying(void) const { return getAssets()->getEngine()->getEngineState() != elysian::System::ENGINE_ESTK_STOP; }
 
 void EngineGLSceneWidget::initializeGL(void) {
     makeCurrent();
@@ -143,11 +157,12 @@ void EngineGLSceneWidget::paintGL(void) {
     //    getLightSys()->renderCube(i, i, i, i*10, i*10, i*10, 0);
 
 #else
-	if(_playing || _advanceFrame) {
-		getAssets()->getEngine()->update();
-		getAssets()->getEngine()->processInput();
-		_advanceFrame = false;
-	}
+    getAssets()->getEngine()->update();
+    getAssets()->getEngine()->processInput();
+    if(_advanceFrame) {
+        _advanceFrame = false;
+        getAssets()->getEngine()->setEngineState(elysian::System::ENGINE_ESTK_STOP);
+    }
 
 	getAssets()->getEngine()->getCameraSys()->setFollowEntity(nullptr);
 	getAssets()->getEngine()->getCameraSys()->setDynamic(false);

@@ -32,7 +32,7 @@ public:
     void        disableDepthTest(void) const;
     void        enableDepthTest(void) const;
     void        renderCustomPassImmediate(void);
-    void        renderCustomPassAtElev(const unsigned char elev) const;
+    void        renderCustomPassAtElev(const unsigned char elev, const elysian::NORMAL_TYPE normalType) const;
     uint32_t    startLightPass(uint32_t& lightsLeft);
     uint32_t    getLightCount(void) const;
 
@@ -115,7 +115,7 @@ inline uint32_t MapViewDepthBufferGraphicsItem::startLightPass(uint32_t& lightsL
 inline void MapViewDepthBufferGraphicsItem::beginObjectList(void) { return; }
 inline void MapViewDepthBufferGraphicsItem::endObjectList(void) { return; }
 
-inline void MapViewDepthBufferGraphicsItem::renderCustomPassAtElev(const unsigned char /*elev*/) const { return; }
+inline void MapViewDepthBufferGraphicsItem::renderCustomPassAtElev(const unsigned char /*elev*/, const elysian::NORMAL_TYPE /*type*/) const { return; }
 
 
 

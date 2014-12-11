@@ -236,7 +236,7 @@ void Debug::processInput(GameInput& input) {
 		default: break;
 		}
 	}
-
+/*
 	if(input.getTapped(GameInput::BUT_1)) {
 		bool render = _engine->_mapSystem->toggleRenderLayer(0);
 		printf(VERBOSE, "Render Layer 1 - %s", (render)? "enabled" : "disabled");
@@ -248,7 +248,7 @@ void Debug::processInput(GameInput& input) {
 	if(input.getTapped(GameInput::BUT_3)) {
 		bool render = _engine->_mapSystem->toggleRenderLayer(2);
 		printf(VERBOSE, "Render Layer 3 - %s", (render)? "enabled" : "disabled");
-	}
+    }*/
 	if(input.getTapped(GameInput::BUT_4)) {
 		bool render = _engine->_mapSystem->toggleRenderLayer(3);
 		printf(VERBOSE, "Render Layer 4 - %s", (render)? "enabled" : "disabled");
