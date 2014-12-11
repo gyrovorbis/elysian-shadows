@@ -2,16 +2,23 @@
 #include <QApplication>
 #include <QKeyEvent>
 
-static unsigned _keyTappedFrames[GY_KEY_LAST] = { 0 };
+static unsigned _keyDownFrames[GY_KEY_LAST] = { 0 };
 
 static inline void _updateKeyTaps(GYInput& input) {
+
     for(unsigned k = 0; k < GY_KEY_LAST; ++k) {
-        if(input.keyTapped[k]) {
-            if(++_keyTappedFrames[k] > 1) {
+
+        if(input.keyDown[k]) {
+            if(_keyDownFrames[k] >= 1) {
                 input.keyTapped[k] = 0;
-                _keyTappedFrames[k] = 0;
+            } else {
+                ++_keyDownFrames[k];
+                input.keyTapped[k] = 1;
             }
-        } else _keyTappedFrames[k] = 0;
+        } else {
+            _keyDownFrames[k] = 0;
+            input.keyTapped[k] = 0;
+        }
     }
 
 }
@@ -129,13 +136,11 @@ static inline GY_X86_KEY _TranslateFromQt(const int keyCode) {
 }
 
 static inline void _setKeyDown(GYInput *const input, const GY_X86_KEY key) {
-    input->keyTapped[key] = !input->keyDown[key];
     input->keyDown[key] = 1;
 }
 
 static inline void _setKeyUp(GYInput *const input, const GY_X86_KEY key) {
     input->keyDown[key] = 0;
-    input->keyTapped[key] = 0;
 }
 
 

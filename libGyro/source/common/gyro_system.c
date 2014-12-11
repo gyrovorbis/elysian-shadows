@@ -68,7 +68,7 @@ int gyro_entry_point(int argc, char **argv)
 				break;
 			}
 		}
-		if (gy_appDrawCb != NULL) {
+        if (gy_appDrawCb != NULL) {
 			if (!gy_appDrawCb()) {
 				break;
 			}
