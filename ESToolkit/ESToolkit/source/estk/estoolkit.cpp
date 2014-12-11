@@ -1381,7 +1381,12 @@ void ESToolkit::on_actionDefault_Transform_triggered()
 #endif
 
 
-    _assets.getEngine()->getCameraSys()->moveToKeyFrame(elysian::CameraKeyFrame());
+	elysian::CameraKeyFrame keyFrame;
+	unsigned w, h;
+	gyVidResolution(&w, &h);
+	keyFrame.setPos(w*0.5f, h*0.5f);
+
+	_assets.getEngine()->getCameraSys()->moveToKeyFrame(keyFrame);
 
     //_ui->mapView->defaultTransform();
 

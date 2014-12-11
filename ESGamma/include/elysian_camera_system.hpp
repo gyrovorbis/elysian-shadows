@@ -39,6 +39,7 @@ namespace elysian {
         float		_xOrient    = 0.0f;
 	public:
         void    setPos(const float x, const float y, const float z);
+		void	setPos(const float x, const float y);
         void    setOffset(const GYVector3& vec);
         void    setOffset(const float x, const float y, const float z);
         void    setScale(const float scale);
@@ -110,7 +111,7 @@ namespace elysian {
 		//dynamic camera boundaries
 		float maxScale		= 5.0f;
 		float minScale		= 0.5f;
-		float baseScale		= 1.5f;
+		float baseScale		= 1.0f;
 
 		//Visible Tile Region
 		unsigned tileStartX	= 0;
@@ -460,7 +461,8 @@ namespace elysian {
 
     inline void CameraKeyFrame::setOffset(const float x, const float y, const float z) { _offset.x = x; _offset.y = y; _offset.z = z; }
     inline void CameraKeyFrame::getPos(float& x, float& y, float& z) const { x = _pos.x; y = _pos.y; z = _pos.z; }
-    inline void CameraKeyFrame::getOffset(float& x, float& y, float& z) const { x = _offset.x; y = _offset.y; z = _offset.z; }
+	inline void CameraKeyFrame::setPos(const float x, const float y) { _pos.x = x; _pos.y = y; }
+	inline void CameraKeyFrame::getOffset(float& x, float& y, float& z) const { x = _offset.x; y = _offset.y; z = _offset.z; }
     inline float CameraKeyFrame::getZOrient(void) const { return _zOrient; }
     inline float CameraKeyFrame::getXOrient(void) const { return _xOrient; }
     inline void CameraKeyFrame::getDir(float& x, float& y, float& z) const { x = _dir.x; y = _dir.y; z = _dir.z; }

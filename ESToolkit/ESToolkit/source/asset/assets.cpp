@@ -107,7 +107,7 @@ Assets::~Assets(void) {
 
 void Assets::setLayerVisible(const Assets::LAYER_TYPE type, bool flag) {
     //_layerVisible[type] = flag;
-    if(type <= 2) _engine->getMapSys()->setRenderTileLayer(type, flag);
+	if(type <= 3) _engine->getMapSys()->setRenderTileLayer(type, flag);
     _layerVisible[type] = flag;
 }
 

@@ -59,7 +59,7 @@ namespace elysian {
 		Pool<Entity*>				_onscreenEntityPool	= Pool<Entity*>(ELYSIAN_MAP_SYSTEM_ONSCREEN_ENTITY_POOL_SIZE);
 		unsigned					_stripIndexArray[ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE];
 		unsigned					_stripIndexArraySize = 0;
-		static const GYColor4 _tileColor;
+		static const GYColor4		_tileColor;
         static GY_RECT_PLANE_TYPE _curPlaneType;
 		bool _renderLayer[4];
         bool _blendFunc = false;
@@ -281,6 +281,7 @@ namespace elysian {
 	
     template<typename P, typename T, typename E>
     inline unsigned MapSystemBase<P, T, E>::getEntityCount(void) {
+		if(!_renderLayer[3]) return 0;
 		_onscreenEntityPool.clear();
 		auto& entities = _curArea->entities;
 
