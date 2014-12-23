@@ -224,6 +224,8 @@ Project *Assets::loadProject(const QString directory) {
     Project *proj = new Project;
 	connectSlots(proj);
 
+    gyTimerInit();
+
     elysian::Behavior::staticConstructor();
     elysian::Debug::getInstance().setEngine(*_engine);
 

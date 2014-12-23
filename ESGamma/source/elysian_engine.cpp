@@ -39,8 +39,6 @@ Engine::Engine(void) {
     //gySysInit();
   //  gyVidInit();
     //gyAudInit();
-    gyInputInit();
-    gyTimerInit();
 
     LuaManager::initialize();
 		
@@ -71,6 +69,7 @@ Engine::Engine(void) {
 
 	//register Lua dependencies
 	Singletons::setGameInput(&_gameInput);
+    Singletons::setMouseInput(&_mouseInput);
 	Singletons::setDebug(&Debug::getInstance());
 
 	memset(&_platInput, 0, sizeof(GYInput));
@@ -159,6 +158,7 @@ void Engine::update(void) {
 void Engine::processInput(void) {
 
     gyInputPoll(&_platInput);
+    _mouseInput.poll();
 	GameInput::translate(_platInput, _gameInput);
 	Debug::getInstance().processInput(_gameInput);
 

@@ -56,6 +56,7 @@ namespace elysian {
 		OOLUA::register_class<TileEntry>(*_mainState);
 		_mainState->register_class<Area>();
 		_mainState->register_class<GameInput>();
+        _mainState->register_class<MouseInput>();
 		_mainState->register_class<PartySystem>();
 		_mainState->register_class<TimerSystem>();
 		_mainState->register_class<Singletons>();
@@ -90,6 +91,7 @@ namespace elysian {
 		_mainState->register_class_static<Singletons>("getCurArea", &Singletons_getCurArea);
 		_mainState->register_class_static<Singletons>("getCurLevel", &Singletons_getCurLevel);
 		_mainState->register_class_static<Singletons>("getGameInput", &Singletons_getGameInput);
+        _mainState->register_class_static<Singletons>("getMouseInput", &Singletons_getMouseInput);
 		_mainState->register_class_static<Singletons>("setProcessInput", &Singletons_setProcessInput);
 		_mainState->register_class_static<Singletons>("getAnimSys", &Singletons_getAnimationSystem);
 		_mainState->register_class_static<Singletons>("getPartySys", &Singletons_getPartySystem);
@@ -662,6 +664,14 @@ EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(GameInput,
 EXPORT_OOLUA_FUNCTIONS_2_CONST(GameInput,
 								getDown,
 								getTapped)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(MouseInput,
+                             getTapped,
+                             getDown,
+                             getScreenPos,
+                             getScrollWheel)
+
+OOLUA_EXPORT_FUNCTIONS(MouseInput)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(TimerSystem,
 								getTotalTicks,

@@ -116,6 +116,7 @@ namespace OOLUA
 	typedef elysian::TileEntry					TileEntry;
 	typedef elysian::Area						Area;
 	typedef elysian::GameInput					GameInput;
+    typedef elysian::MouseInput                 MouseInput;
 	typedef elysian::Singletons					Singletons;
 	typedef elysian::AnimationSystem			AnimationSystem;
 	typedef elysian::LightAttrib				LightAttrib;
@@ -894,6 +895,17 @@ OOLUA_PROXY(GameInput)
 	OOLUA_MEM_FUNC(void, setDown, GameInput::BUTTON)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(MouseInput)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MEM_FUNC_CONST(bool, getTapped, GY_MOUSE_BUTTON)
+    OOLUA_MEM_FUNC_CONST(bool, getDown, GY_MOUSE_BUTTON)
+    OOLUA_MEM_FUNC_CONST(void, getScreenPos, GYVector2&)
+    OOLUA_MEM_FUNC_CONST(void, getScrollWheel, GYVector2&)
+OOLUA_PROXY_END
+
 OOLUA_PROXY(PartySystem)
 	OOLUA_TAGS (
 		No_public_constructors,
@@ -1135,6 +1147,9 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
     s->register_class_static<gyro>("RECT_PLANE_LEFT", GY_RECT_PLANE_LEFT);
     s->register_class_static<gyro>("RECT_PLANE_RIGHT", GY_RECT_PLANE_RIGHT);
 
+    s->register_class_static<gyro>("MOUSE_BUT_LEFT", GY_MOUSE_BUT_LEFT);
+    s->register_class_static<gyro>("MOUSE_BUT_RIGHT", GY_MOUSE_BUT_RIGHT);
+    s->register_class_static<gyro>("MOUSE_BUT_MIDDLE", GY_MOUSE_BUT_MIDDLE);
 
 	//Entity::DEPTH_TYPE
 	typedef OOLUA::Entity Entity;
@@ -1341,6 +1356,10 @@ static inline int Singletons_getCurLevel(lua_State* const vm) {
 
 static inline int Singletons_getGameInput(lua_State* const vm) {
 	OOLUA_C_FUNCTION_0(elysian::GameInput*, elysian::Singletons::getGameInput)
+}
+
+static inline int Singletons_getMouseInput(lua_State* const vm) {
+    OOLUA_C_FUNCTION_0(elysian::MouseInput*, elysian::Singletons::getMouseInput)
 }
 
 static inline int Singletons_setProcessInput(lua_State* const vm) {

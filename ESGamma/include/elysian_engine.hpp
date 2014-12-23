@@ -10,6 +10,7 @@ namespace elysian {
 		friend class Debug;
 	private:
         GYInput     _platInput;
+        MouseInput  _mouseInput;
         GameInput   _gameInput;
 		
 	public:

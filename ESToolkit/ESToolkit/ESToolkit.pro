@@ -11,7 +11,7 @@ CONFIG += c++11
 
 win32 {
 	LIBS += -L../../lib/win32 \
-		-llua52 \
+		#-llua52 \
 		-L../../../libGyro/lib/win32 \
 		-lopengl32 \
 		-lopenal32.dll \
@@ -30,7 +30,7 @@ win32 {
 		#-lvorbisfile.dll \
 		-mconsole \
 		-L../../ESGamma/lib/osx
-		-llua52
+		#-llua52
 }
 
 macx {
@@ -48,8 +48,8 @@ macx {
 	-lvorbis \
 	-lvorbisenc \
 	-lvorbisfile \
-	-L../../ESGamma/lib/osx  \
-	-llua52
+	-L../../ESGamma/lib/osx
+	#-llua52
 }
 
 linux {
@@ -66,7 +66,7 @@ linux {
 		-lX11 \
 		-lpthread \
 		-L../../ESGamma/lib/osx  \
-		-llua52
+		#-llua52
 }
 
 
@@ -96,7 +96,8 @@ INCLUDEPATH += include/asset \
 	../../libGyro/include/kinetic \
 	../../ESGamma/lib/include \
 	../../ESGamma/include \
-	../../OOLua/include
+	../../OOLua/include \
+	../../Lua5.2/include
 
 
 SOURCES += source/asset/project.cpp \
@@ -434,3 +435,16 @@ else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../O
 else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../OOLua/qtcreator/OOLua/release/OOLua.lib
 else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../OOLua/qtcreator/OOLua/debug/OOLua.lib
 else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../OOLua/qtcreator/OOLua/libOOLua.a
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../Lua5.2/qtcreator/Lua5_2/release/ -lLua5_2
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../Lua5.2/qtcreator/Lua5_2/debug/ -lLua5_2
+else:unix: LIBS += -L$$OUT_PWD/../../Lua5.2/qtcreator/Lua5_2/ -lLua5_2
+
+INCLUDEPATH += $$PWD/../../Lua5.2/qtcreator/Lua5_2
+DEPENDPATH += $$PWD/../../Lua5.2/qtcreator/Lua5_2
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Lua5.2/qtcreator/Lua5_2/release/libLua5_2.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Lua5.2/qtcreator/Lua5_2/debug/libLua5_2.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Lua5.2/qtcreator/Lua5_2/release/Lua5_2.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Lua5.2/qtcreator/Lua5_2/debug/Lua5_2.lib
+else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../Lua5.2/qtcreator/Lua5_2/libLua5_2.a

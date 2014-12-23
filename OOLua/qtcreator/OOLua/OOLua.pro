@@ -18,7 +18,7 @@ macx {
 
 
 INCLUDEPATH += ../../include \
-    ../../../ESGamma/lib/include
+	../../../Lua5.2/include
 
 DEPENDPATH += ../../include
 

@@ -1424,7 +1424,7 @@ bool CollisionSystem::checkCollision(const Collidable &col1, const Collidable &c
 }
     
     CollisionSystem::RENDER_LAYER CollisionSystem::cycleRenderLayer(void) {
-		_renderLayer = (_renderLayer+1 == RENDER_MAX)? RENDER_DISABLED : (RENDER_LAYER)(_renderLayer+1);
+        _renderLayer = (_renderLayer+1 == RENDER_MAX)? RENDER_LAYER_1 : (RENDER_LAYER)(_renderLayer+1);
 		return _renderLayer;
 	}
 

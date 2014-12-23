@@ -273,7 +273,6 @@ void ESToolkit::_engineInitialize(void) {
     gySysInit();
     //gyVidInit(&vidParams);
     gyAudInit();
-    //gyInputInit();
     //gyTimerInit();
 
 }
@@ -590,6 +589,7 @@ void ESToolkit::OnTabChanged(int index) {
 
 void ESToolkit::OnSubLayerVisibilityChanged(int index, bool visible)
 {
+
 	switch(index) {
 	case 1:
 		_assets.setLayerVisible(Assets::LAYER_LIGHT, visible);
@@ -612,9 +612,11 @@ void ESToolkit::OnSubLayerVisibilityChanged(int index, bool visible)
 		break;
 	case 7:
 		TileEntry::renderElev = visible;
+        if(visible) _assets.getEngine()->getMapSys()->setTileDecor(TkMapSystem::TILE_DECOR_ELEV);
 		break;
 	case 8:
 		TileEntry::renderIndeces = visible;
+        if(visible) _assets.getEngine()->getMapSys()->setTileDecor(TkMapSystem::TILE_DECOR_INDEX);
 		Level::updateScenes();
 		break;
 	case 9:
@@ -622,13 +624,18 @@ void ESToolkit::OnSubLayerVisibilityChanged(int index, bool visible)
 		break;
 	case 10:
 		TileEntry::renderFlipRot = visible;
+        if(visible) _assets.getEngine()->getMapSys()->setTileDecor(TkMapSystem::TILE_DECOR_ORIENT);
 		break;
     case 11:
         TileEntry::renderPlane = visible;
+        if(visible) _assets.getEngine()->getMapSys()->setTileDecor(TkMapSystem::TILE_DECOR_PLANE);
         break;
 	default:
 		break;
 	}
+
+    if(!Area::getInactiveTransparency() && !TileEntry::renderElev && !TileEntry::renderIndeces && !TileEntry::renderFlipRot && !TileEntry::renderPlane)
+        _assets.getEngine()->getMapSys()->setTileDecor(TkMapSystem::TILE_DECOR_NONE);
 
 	_layerDockWidget->setCurrentLayer(_assets.getCurrentLayer());
 	Area::updateScene();
@@ -642,12 +649,15 @@ void ESToolkit::OnActiveLayerChanged(int index) {
 		break;
 	case 2:
 		OnLayerChanged(Assets::LAYER_TILE3);
+        if(TileEntry::renderColliders) _assets.getEngine()->getCollisionSys()->setRenderLayer(elysian::CollisionSystem::RENDER_LAYER_3);
 		break;
 	case 3:
 		OnLayerChanged(Assets::LAYER_TILE2);
+        if(TileEntry::renderColliders) _assets.getEngine()->getCollisionSys()->setRenderLayer(elysian::CollisionSystem::RENDER_LAYER_2);
 		break;
 	case 4:
 		OnLayerChanged(Assets::LAYER_TILE1);
+        if(TileEntry::renderColliders) _assets.getEngine()->getCollisionSys()->setRenderLayer(elysian::CollisionSystem::RENDER_LAYER_1);
 		break;
 	default:
 	   //Fucking LayerTreeWidget just set the current item to an item
@@ -817,11 +827,17 @@ void ESToolkit::_openProjectDir(const QString dir) {
 	if(dir=="") {
 		return;
 	}
-            qDebug() << "WORKING DIR - " << dir;
+
 	QDir::setCurrent(dir);
     auto* viewport = _engineGLView = new EngineGLSceneWidget(QGLFormat(QGL::SampleBuffers | QGL::DirectRendering));
+
     viewport->setMouseTracking(true);
     _ui->mapView->setViewport(viewport);
+
+    GYInputInitParams inputParams = {
+        static_cast<QGraphicsView*>(_ui->mapView)
+    };
+    gyInputInit(&inputParams);
 
   _engineGLView->makeCurrent();
 	Project *proj = _assets.loadProject(dir);
@@ -896,7 +912,7 @@ void ESToolkit::on_actionDebugViewLog_triggered()
 }
 
 void ESToolkit::on_actionEntityRemove_triggered() {
-	if(QMessageBox::critical(NULL, tr("Warning!"), tr("Are you SURE that you want to permanently delete the current entity?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
+    if(QMessageBox::critical(nullptr, tr("Warning!"), tr("Are you SURE that you want to permanently delete the current entity?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
 		return;
 	}
 
@@ -980,20 +996,20 @@ void ESToolkit::on_actionAreaRemove_triggered() {
 
     QString name = _assets.getCurrentArea()->getNodeName();
     if(_assets.getCurrentSelection() == _assets.getCurrentArea()) _selectionDockWidget->SetSelectionModel(nullptr);
-	_assets.setCurrentArea(NULL);
+    _assets.setCurrentArea(nullptr);
 	_assets.getCurrentLevel()->removeArea(name);
 	_assets.setCurrentArea(_assets.getCurrentLevel()->getFirstArea());
 }
 
 
 void ESToolkit::on_actionLevelRemove_triggered() {
-	if(QMessageBox::critical(NULL, tr("Warning!"), tr("Are you SURE that you want to permanently delete the current level?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
+    if(QMessageBox::critical(nullptr, tr("Warning!"), tr("Are you SURE that you want to permanently delete the current level?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
 		return;
 	}
 
     QString name = _assets.getCurrentLevel()->getNodeName();
     if(_assets.getCurrentSelection() == _assets.getCurrentLevel()) _selectionDockWidget->SetSelectionModel(nullptr);
-	_assets.setCurrentLevel(NULL);
+    _assets.setCurrentLevel(nullptr);
 	_assets.getCurrentProject()->removeLevel(name);
 	_assets.setCurrentLevel(_assets.getCurrentProject()->getFirstLevel());
 }
@@ -1435,10 +1451,11 @@ void ESToolkit::on_actionFlip_Rotation_toggled(bool arg1)
 void ESToolkit::on_actionIndeces_toggled(bool arg1)
 {
 	if(arg1) {
-		_ui->actionElevation->setChecked(false);
+        _ui->actionElevation->setChecked(false);
 		_ui->actionFlip_Rotation->setChecked(false);
 	}
 	TileEntry::renderIndeces = arg1;
+
 	Area::updateScene();
 	Level::updateScenes();
 }
@@ -1447,6 +1464,11 @@ void ESToolkit::on_actionIndeces_toggled(bool arg1)
 void ESToolkit::on_actionSolidity_toggled(bool arg1)
 {
 	TileEntry::renderColliders = arg1;
+    if(arg1) {
+        _assets.getEngine()->getCollisionSys()->setRenderLayer((elysian::CollisionSystem::RENDER_LAYER)_assets.getCurrentLayer());
+    } else {
+       // _assets.getEngine()->getCollisionSys()->setRenderLayer(elysian::CollisionSystem::RENDER_DISABLED);
+    }
 	Area::updateScene();
 	Level::updateScenes();
 }

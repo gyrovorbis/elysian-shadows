@@ -4,6 +4,7 @@
 #include "elysian_map_system.hpp"
 #include "elysian_asset_typedefs.hpp"
 #include "mapViewTileGraphicsItem.h"
+#include "elysian_gui_system.hpp"
 #include "assets.h"
 
 ELYSIAN_ASSET_TYPEDEF(MapSystem)
@@ -22,17 +23,25 @@ class TkMapSystem:  public MapViewTileGraphicsItem,
                     public elysian::MapSystemBase<TkMapSystem, TkMapDepthBuffEntryImpl, TkEntityDepthBuffEntryImpl>
 {
     friend class ESToolkit;
+public:
+    enum TILE_DECOR_TYPE { TILE_DECOR_NONE, TILE_DECOR_INDEX, TILE_DECOR_ELEV, TILE_DECOR_ORIENT, TILE_DECOR_PLANE, TILE_DECOR_MAX };
 
 protected:
+    TILE_DECOR_TYPE _tileDecor = TILE_DECOR_NONE;
+    bool            _planeDecor = false;
+
     void        _renderCustomPass(const unsigned count, const TkMapDepthBuffEntryImpl array[], const elysian::NORMAL_TYPE normalType) const;
 
 public:
     using       elysian::MapSystemBase<TkMapSystem, TkMapDepthBuffEntryImpl, TkEntityDepthBuffEntryImpl>::update;
 
+    //static polymorphic elysian::MapDepthBuffer CRTP overrides
     void        renderCustomPassImmediate(void);
     void        renderCustomPassAtElev(const unsigned char elev, const elysian::NORMAL_TYPE normalType) const;
     void        getObjectLayerEntry(const unsigned x, const unsigned y, TkMapDepthBuffEntryImpl &entry);
 
+    void        setTileDecor(const TILE_DECOR_TYPE type);
+    void        setPlaneDecor(const bool val);
 };
 
 
@@ -75,22 +84,95 @@ inline void TkMapSystem::renderCustomPassAtElev(const unsigned char elev, const 
 inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDepthBuffEntryImpl array[], const elysian::NORMAL_TYPE normalType) const {
     //DRAW_NORMAL, DRAW_SELECTING, DRAW_SELECTION, DRAW_FILLING, DRAW_MAX
 
-    GYColor4 decorColors[DRAW_MAX] = {
+    static const GYColor4 selectionDecorColors[DRAW_MAX] = {
         { 0, 0, 0, 0 },
         { 255, 255, 0, 100 },
         { 255, 0, 255, 100},
         { 0, 255, 255, 100}
     };
+//    enum TILE_DECOR_TYPE { TILE_DECOR_NONE, TILE_DECOR_INDEX, TILE_DECOR_ELEV, TILE_DECOR_ORIENT, TILE_DECOR_PLANE, TILE_DECOR_MAX };
+    /*
+    static const GYColor4 elevDecorColors[TILE_DECOR_MAX] = {
+        { 0, 0, 0, 0 },
+        { },
+        {},
+        {},
+        {}
+    };*/
 
+    static const char* orientDecorStrs[GY_RECT_TEX_ORIENT_MAX] = {
+        "", "H", "V", "R90", "R180", "R270", "HR90", "HR270"
+    };
+
+    static const char* planeDecorStrs[GY_RECT_PLANE_MAX] = {
+        "B", "F", "L", "R", "F45", "L45", "R45"
+    };
+
+    uint16_t            tileIndex;
+    GY_RECT_PLANE_TYPE  tilePlane;
+    GY_RECT_TEX_ORIENT  tileOrient;
+    unsigned char       tileElev;
+
+    if(_tileDecor != TILE_DECOR_NONE) {
+        gyVidAlphaLevel(GY_ALPHA_NONE);
+        auto& twcen = getGuiSys()->twcen;
+        twcen.setColor(255, 255, 255, 255);
+        twcen._transform.setSize(16.0f, 32.0f, 16.0f);
+        for(unsigned i = 0; i < count; ++i) {
+            auto& entry = array[i];
+            if(!entry.mapEntry.getIndex() || entry.layer != getAssets()->getCurrentLayer()) continue;
+            if(normalType == elysian::NORMAL_FLAT) twcen._transform.setPos(entry.x*32.0f+16.0, entry.y*32.0f + entry.mapEntry.getElev()*32.0f+1.0f+8.0f, entry.mapEntry.getElev()*32.0f+1.0f);
+            else twcen._transform.setPos(entry.x*32.0f+16.0, entry.y*32.0f + entry.mapEntry.getElev()*32.0f+33.0f+8.0f, entry.mapEntry.getElev()*32.0f+33.0f);
+
+            switch(_tileDecor) {
+
+            case TILE_DECOR_INDEX:
+                tileIndex = entry.mapEntry.getIndex();
+                if(tileIndex) twcen.drawStringf(elysian::Font::NO_FORMAT, elysian::Font::C_ALIGN, "%d", tileIndex);
+                break;
+            case TILE_DECOR_ELEV:
+                tileElev = entry.mapEntry.getElev();
+                if(tileElev) twcen.drawStringf(elysian::Font::NO_FORMAT, elysian::Font::C_ALIGN, "%d", tileElev);
+                break;
+            case TILE_DECOR_ORIENT:
+                tileOrient = entry.mapEntry.getOrient();
+                if(tileOrient != GY_RECT_TEX_ORIENT_NORMAL) twcen.drawString(elysian::Font::NO_FORMAT, elysian::Font::C_ALIGN, orientDecorStrs[(int)tileOrient]);
+                break;
+            case TILE_DECOR_PLANE:
+                tilePlane = entry.mapEntry.getPlane();
+                if(tilePlane != GY_RECT_PLANE_BOTTOM) twcen.drawString(elysian::Font::NO_FORMAT, elysian::Font::C_ALIGN, planeDecorStrs[(int)tilePlane]);
+                break;
+            default:
+                break;
+            }
+        }
+    }
+
+   /*
+   font._transform.setPos(X_COORD, Y_COORD1+ yCoord2, Z_COORD);
+   font.setColor(r, g, b, 255);
+   if(i == _startIndex) {
+       float tempAlpha = 1.0f - _fadeCounter;
+       font.setAlpha(tempAlpha*_baseAlpha*255.0f);
+   }
+   else font.setAlpha(_baseAlpha*255.0f);
+   font.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, "%s", _log[i]);
+*/
+
+    //twcen._transform.setSize();
+
+    gyVidTexBind(nullptr);
+    gyVidNormalMapBind(nullptr);
+    gyVidSpecularMapBind(nullptr);
+    gyVidAlphaLevel(GY_ALPHA_FULL);
+
+
+    //Tile selection decoration
     auto drawStyle = _getTileDrawState();
-
     if(drawStyle != DRAW_NORMAL) {
-        GYColor4 color = decorColors[drawStyle];
+        GYColor4 color = selectionDecorColors[drawStyle];
         //GYVector4 { x*32.0f+16.0f, y*32.0f+ 16.0f +  tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f, 1.0f },
-        gyVidTexBind(nullptr);
-        gyVidNormalMapBind(nullptr);
-        gyVidSpecularMapBind(nullptr);
-        gyVidAlphaLevel(GY_ALPHA_FULL);
+
         glEnable(GL_DEPTH_TEST);
         gyVidQuadListBegin(&color);
         for(unsigned i = 0; i < count; ++i) {
@@ -122,5 +204,8 @@ inline void TkMapSystem::getObjectLayerEntry(const unsigned x, const unsigned y,
     entry.drawStyle = (getAssets()->getCurrentLayer() == entry.layer)? _getTileDrawStyle(x, y) : DRAW_NORMAL;
 #endif
 }
+
+inline void TkMapSystem::setTileDecor(const TILE_DECOR_TYPE type) { _tileDecor = type; }
+inline void TkMapSystem::setPlaneDecor(const bool val) { _planeDecor = val; }
 
 #endif // TK_MAP_SYSTEM_H

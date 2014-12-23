@@ -39,11 +39,11 @@ namespace elysian {
 		friend class RigidBodySystem;
 	public:
 		enum RENDER_LAYER {
-			RENDER_DISABLED,
 			RENDER_LAYER_1,
 			RENDER_LAYER_2,
 			RENDER_LAYER_3,
 			RENDER_COMBINED,
+            RENDER_DISABLED,
 			RENDER_MAX
         };
 		enum ENTITY_TILE_CHECK {
@@ -106,7 +106,8 @@ namespace elysian {
 		CollisionContact* getContact(const unsigned index);
 
 		void setEnabled(const bool enabled);
-		RENDER_LAYER cycleRenderLayer(void);
+        RENDER_LAYER    cycleRenderLayer(void);
+        void            setRenderLayer(const RENDER_LAYER layer);
 
 		bool checkCollision(const Entity &entity1, const Entity &entity2) const;
 		bool checkCollision(const Collidable &col1, const Collidable &col2) const;
@@ -149,6 +150,10 @@ namespace elysian {
 
     inline void CollisionSystem::removeSortSweepCollidable(SortSweepCollidable* body) {
         _sortSweepPool.removeAABB(*body);
+    }
+
+    inline void CollisionSystem::setRenderLayer(const RENDER_LAYER layer) {
+        _renderLayer = layer;
     }
 
 }

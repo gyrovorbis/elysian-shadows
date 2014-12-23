@@ -1,9 +1,22 @@
 #ifndef ELYSIAN_GAME_INPUT_HPP
 #define ELYSIAN_GAME_INPUT_HPP
 
-#include <gyro.h>
+#include <gyro_input_api.h>
 
 namespace elysian {
+
+    class MouseInput: public GYMouse {
+    public:
+        MouseInput(void);
+
+        bool getTapped(const GY_MOUSE_BUTTON button) const;
+        bool getDown(const GY_MOUSE_BUTTON button) const;
+        void getScreenPos(GYVector2& pos) const;
+        void getScrollWheel(GYVector2& dir) const;
+
+        void poll(void);
+
+    };
 
 	class GameInput { 
 	public:
@@ -37,6 +50,23 @@ namespace elysian {
 		bool invalidKey(BUTTON key) const;
 
 	};
+
+
+
+
+
+
+
+
+
+
+    // ========= INLINEZ ===========
+    inline MouseInput::MouseInput(void) { memset(this, 0, sizeof(MouseInput)); }
+    inline bool MouseInput::getTapped(const GY_MOUSE_BUTTON button) const { return butTapped[button]; }
+    inline bool MouseInput::getDown(const GY_MOUSE_BUTTON button) const { return butDown[button]; }
+    inline void MouseInput::getScreenPos(GYVector2& pos) const { pos = screenPos; }
+    inline void MouseInput::getScrollWheel(GYVector2& dir) const { dir = scrollWheel; }
+    inline void MouseInput::poll(void) { gyMousePoll(this); }
 
 }
 

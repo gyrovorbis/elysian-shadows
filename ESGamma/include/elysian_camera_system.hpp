@@ -163,16 +163,16 @@ namespace elysian {
 		bool					_dynamic		= true;
         bool                    _boundByMap     = true;
 
-		void _updateState(CameraState*const state, const float deltaTime);
+        void                    _updateState(CameraState*const state, const float deltaTime);
 
 	public:
-        enum SUBPROC_ID { SUBPROC_KEY_FR_INTERP, SUBPROC_CAM_SHAKE };
+        enum    SUBPROC_ID { SUBPROC_KEY_FR_INTERP, SUBPROC_CAM_SHAKE };
 
-		CameraSystem(void);
+                CameraSystem(void);
 
-        void initializeProjMatrix(void);
-        bool isBoundByMap(void) const;
-        void setBoundByMap(const bool val);
+        void    initializeProjMatrix(void);
+        bool    isBoundByMap(void) const;
+        void    setBoundByMap(const bool val);
 
 		void pushCustomCameraState(CameraState*const state) {
 			++_depth;

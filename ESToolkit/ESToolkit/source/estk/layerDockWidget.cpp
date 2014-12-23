@@ -80,6 +80,8 @@ void LayerDockWidget::on_m_layerTreeWidget_itemChanged(QTreeWidgetItem *item, in
 			//flip/rot
 			ui->m_layerTreeWidget->topLevelItem(4)->child(5)->setCheckState(0, Qt::Unchecked);
 			emit LayerVisibilityChanged(10, false);
+            ui->m_layerTreeWidget->topLevelItem(4)->child(6)->setCheckState(0, Qt::Unchecked);
+           emit LayerVisibilityChanged(11, false);
 			break;
 		case 10: //flip/rot
 			//elevation
@@ -88,11 +90,20 @@ void LayerDockWidget::on_m_layerTreeWidget_itemChanged(QTreeWidgetItem *item, in
 			//indeces
 			ui->m_layerTreeWidget->topLevelItem(4)->child(3)->setCheckState(0, Qt::Unchecked);
 			emit LayerVisibilityChanged(8, false);
+            //normal dir
+            ui->m_layerTreeWidget->topLevelItem(4)->child(6)->setCheckState(0, Qt::Unchecked);
+           emit LayerVisibilityChanged(11, false);
 			break;
         case 11: //normal dir
             //elevation
-           // ui->m_layerTreeWidget->topLevelItem(4)->child(2)->setCheckState(0, Qt::Unchecked);
-           // emit LayerVisibilityChanged(7, false);
+            ui->m_layerTreeWidget->topLevelItem(4)->child(2)->setCheckState(0, Qt::Unchecked);
+           emit LayerVisibilityChanged(7, false);
+            //indeces
+            ui->m_layerTreeWidget->topLevelItem(4)->child(3)->setCheckState(0, Qt::Unchecked);
+           emit LayerVisibilityChanged(8, false);
+            //flip/rot
+            ui->m_layerTreeWidget->topLevelItem(4)->child(5)->setCheckState(0, Qt::Unchecked);
+           emit LayerVisibilityChanged(10, false);
             break;
 		}
 	}
