@@ -14,7 +14,7 @@
 #define ELYSIAN_DEBUG_FILE					"gamma_debug.txt"
 #define ELYSIAN_LUA_DEBUG_FILE				"lua_debug.txt"
 #define ELYSIAN_DEBUG_ARG_FILE				ASSETS_VROOT "/gamma_args.txt"
-#define ELYSIAN_GLOBAL_INIT_LUA_PATH		"../assets/global_init.lua"
+#define ELYSIAN_GLOBAL_INIT_LUA_PATH		"/assets/global_init.lua"
 #define ELYSIAN_DEBUG_LOG_LEVEL_DEFAULT		Debug::VERBOSE
 #define ELYSIAN_DEBUG_LIBGYRO_LEVEL_DEFAULT GY_DEBUG_VERBOSE
 #define ELYSIAN_DEBUG_LEVEL_DEFAULT			ASSETS_VROOT "/level/Loren_Beta2"
