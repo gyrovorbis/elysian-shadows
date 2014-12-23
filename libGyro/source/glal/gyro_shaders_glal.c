@@ -70,10 +70,10 @@ void gyVidSetCurrentShaderProgram(struct _GYShaderProgram*const program) {
 	_curShaderProg = program;
 	glUseProgram(program->program);
         GLenum glErr = glGetError();
-    if (glErr != GL_NO_ERROR)
+ /*   if (glErr != GL_NO_ERROR)
     {
             _gyLog(GY_DEBUG_CRITICAL, "glError in file %d!!", program->program);
-    }
+    }*/
 }
 
 void gyVidSetDefaultShaderProgram(void) {
@@ -263,11 +263,11 @@ void glalLoadDefaultShaders(void) {
 	_lightingShader.program = gyShaderProgramCreate(vertShader, fragShader);
     _gyLog(GY_DEBUG_CRITICAL, "LIGHTING SHADER - %d", _lightingShader.program->program);
 	_queryLightingShader(&_lightingShader, 1);
-/*
+
 	vertShader = gyShaderCreate("/assets/shaders/shadowMap.vsh");
 	fragShader = gyShaderCreate("/assets/shaders/shadowMap.fsh");
 	_shadowMapShader.program = gyShaderProgramCreate(vertShader, fragShader);
-    _queryLightingShader(&_shadowMapShader, 0);*/
+    _queryLightingShader(&_shadowMapShader, 0);
 }
 
 void glalDefaultShadersLoadUniforms(void) {

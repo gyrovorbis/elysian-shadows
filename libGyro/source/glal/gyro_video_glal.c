@@ -224,22 +224,22 @@ void gyVidRectTexOrient(const GY_RECT_TEX_ORIENT orient) {
 static inline void _gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsigned int startIndex, const unsigned int amount) {
 	glVertexAttribPointer(curLightShader->attribLoc[SHADER_POS], 4, GL_FLOAT, GL_FALSE, 0, vertexArray);
     GLenum glErr = glGetError();
-    if (glErr != GL_NO_ERROR)
+   /* if (glErr != GL_NO_ERROR)
     {
         gyPrintf("glError in file - vertAttrib");
-    }
+    }*/
 	glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_POS]);
-    glErr = glGetError();
+  /*  glErr = glGetError();
     if (glErr != GL_NO_ERROR)
     {
         gyPrintf("glError in file enableVertAttribArray");
-    }
+    }*/
 	glDrawArrays(GL_TRIANGLE_STRIP, startIndex, amount);
-    glErr = glGetError();
+    /*glErr = glGetError();
        if (glErr != GL_NO_ERROR)
        {
            gyPrintf("glError in file gldrawArrays");
-       }
+       }*/
 	vertexRenderCount += amount;
 
     curTexCoordPtr = NULL;
