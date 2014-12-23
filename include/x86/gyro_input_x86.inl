@@ -5,6 +5,10 @@
 extern "C" {
 #endif
 
+typedef struct _GYInputInitParams {
+    void* viewWidget;
+} GYInputInitParams;
+
 //Two goddamn layers of translation? Christ.
 typedef enum _GY_X86_KEY {
             GY_KEY_NONE=-1, GY_KEY_A, GY_KEY_B, GY_KEY_C, GY_KEY_D, GY_KEY_E, GY_KEY_F, GY_KEY_G, GY_KEY_H, GY_KEY_I, GY_KEY_J, GY_KEY_K, GY_KEY_L, GY_KEY_M, GY_KEY_N, GY_KEY_O, GY_KEY_P,
