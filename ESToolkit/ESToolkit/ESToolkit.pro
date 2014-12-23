@@ -40,14 +40,14 @@ macx {
 	-lz \
 	-F../../ESGamma/lib/osx \
 	-L../../ESGamma/lib/osx \
-	-llua52 \
+        #-llua52 \
 	-framework Foundation \
 	-framework Cocoa \
 	-lobjc \
-	-logg \
-	-lvorbis \
-	-lvorbisenc \
-	-lvorbisfile \
+        -logg \
+        -lvorbis \
+        -lvorbisenc \
+        -lvorbisfile \
 	-L../../ESGamma/lib/osx
 	#-llua52
 }
