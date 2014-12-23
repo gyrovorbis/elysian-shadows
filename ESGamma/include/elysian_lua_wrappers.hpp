@@ -1308,6 +1308,16 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 
 // ======= C GLOBAL AND C++ STATIC FUNCTION WRAPPERS ======
 
+static inline int dbgPush(lua_State* const l) {
+    Debug::push();
+    return 0;
+}
+
+static inline int dbgPop(lua_State* const l) {
+    Debug::pop();
+    return 0;
+}
+
 static inline int print(lua_State* const l) {
 	char string[GYRO_PRINTF_BUFFER_SIZE] = {0};
 	unsigned n = lua_gettop(l);
@@ -1339,7 +1349,7 @@ static inline int print(lua_State* const l) {
 
 	elysian::Debug::luaPrint(string);
 
-	return 1;
+    return 0;
 }
 
 static inline int Singletons_getLevelSystem(lua_State* const vm) {

@@ -35,6 +35,11 @@ namespace elysian {
 
 		void				_selfTableDump(void);
 	public:
+
+      /*  ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+            ELYSIAN_LUA_PROXY_FIELD(self, getSelfTable)
+        ELYSIAN_LUA_PROXY_FIELDS_END()
+*/
                             LuaBehavior(Entity &entity, const char *script, const OOLUA::Lua_table_ref paramTable);
                             virtual ~LuaBehavior(void) override;
 

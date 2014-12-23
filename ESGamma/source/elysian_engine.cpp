@@ -133,6 +133,7 @@ void Engine::update(void) {
             _lightSystem->update();
             _timerSystem->update();
             _mapSystem->update();
+            _guiSystem->update();
         break;
 
 
@@ -214,9 +215,9 @@ void Engine::render(void) {
 			//gyVidProjectionDefaultMatrix(); */
 			_guiSystem->renderBackground();
 			_cameraSystem->pushViewProjMatrix();
-#if GYRO_PLATFORM == GYRO_PLATFORM_x86
+//#if GYRO_PLATFORM == GYRO_PLATFORM_x86
 			_lightSystem->shadowRenderPasses();
-#endif
+//#endif
 			_lightSystem->addLightSourcesToScene();
 
 			_mapSystem->render();

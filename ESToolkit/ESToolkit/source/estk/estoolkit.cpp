@@ -1611,9 +1611,9 @@ void ESToolkit::on_actionAdvance_Frame_triggered()
         entity = _assets.getCurArea()->findEntity("Julien");
         qDebug() << "JULIEN COLLIDER" << entity->getCollidable();
 
-        for(unsigned i = 0; i < 3; ++i) {
-            entity = new Entity;
-            entity->getTransform().setPos(300.0f*i, 300.0f*i, 100.0f);
+        for(unsigned i = 0; i < 1; ++i) {
+            //tity = new Entity;
+            //entity->getTransform().setPos(900.0f*i, 900.0f*i, 100.0f);
 			auto* src = entity->addLightSource();
 			src->setLightType(GY_LIGHT_POINT);
 			src->setShadowCaster(true);

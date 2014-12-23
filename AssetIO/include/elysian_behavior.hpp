@@ -4,6 +4,7 @@
 #include <map>
 #include <stdint.h>
 #include <cassert>
+//#include "elysian_lua_table_proxy.hpp"
 #include "elysian_component.hpp"
 #include "elysian_stl_algorithm.hpp"
 #include "elysian_asset_typedefs.hpp"
@@ -34,6 +35,11 @@ namespace elysian {
 		uint64_t _triggerBits = 0;
 		
 	public:
+
+       /* ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+            ELYSIAN_LUA_PROXY_FIELD(triggers, getTriggers)
+        ELYSIAN_LUA_PROXY_FIELDS_END()*/
+
         virtual ~Behavior(void) override;
 
 		//64 triggers max, currently

@@ -88,6 +88,8 @@ namespace elysian {
 
 		//Register C and static member functions
 		lua_register(*_mainState, "print", &print);
+        lua_register(*_mainState, "dbgPush", &dbgPush);
+        lua_register(*_mainState, "dbgPop", &dbgPop);
 		_mainState->register_class_static<Singletons>("getCurArea", &Singletons_getCurArea);
 		_mainState->register_class_static<Singletons>("getCurLevel", &Singletons_getCurLevel);
 		_mainState->register_class_static<Singletons>("getGameInput", &Singletons_getGameInput);

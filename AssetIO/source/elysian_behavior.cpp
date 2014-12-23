@@ -8,6 +8,8 @@
 
 namespace elysian {
 
+//ELYSIAN_LUA_PROXY_FIELDS_EXPORT(Behavior)
+
 //----STATIC----
 
 std::map<const char *, Behavior* (*)(Entity&), ltstr> Behavior::_creators;

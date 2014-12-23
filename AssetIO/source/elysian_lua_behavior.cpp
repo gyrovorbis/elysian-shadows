@@ -15,6 +15,8 @@
 
 namespace elysian {
 
+//ELYSIAN_LUA_PROXY_FIELDS_EXPORT(LuaBehavior)
+
 LuaBehavior::LuaBehavior(Entity &entity,
                          const char *
 						 script,
