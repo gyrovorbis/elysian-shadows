@@ -1,13 +1,13 @@
 #include <gyro_input_api.h>
 #include <QApplication>
 #include <QKeyEvent>
+#include <QGraphicsView>
 
 static unsigned _keyDownFrames[GY_KEY_LAST] = { 0 };
+static unsigned _mouseButDownFrames[GY_MOUSE_BUT_MAX] = { 0 };
 
 static inline void _updateKeyTaps(GYInput& input) {
-
     for(unsigned k = 0; k < GY_KEY_LAST; ++k) {
-
         if(input.keyDown[k]) {
             if(_keyDownFrames[k] >= 1) {
                 input.keyTapped[k] = 0;
@@ -20,7 +20,35 @@ static inline void _updateKeyTaps(GYInput& input) {
             input.keyTapped[k] = 0;
         }
     }
+}
 
+
+static inline void _updateMouseButTaps(GYMouse& input) {
+    for(unsigned k = 0; k < GY_MOUSE_BUT_MAX; ++k) {
+        if(input.butDown[k]) {
+            if(_mouseButDownFrames[k] >= 1) {
+                input.butTapped[k] = 0;
+            } else {
+                ++_mouseButDownFrames[k];
+                input.butTapped[k] = 1;
+            }
+        } else {
+            _mouseButDownFrames[k] = 0;
+            input.butTapped[k] = 0;
+        }
+    }
+}
+
+static inline GY_MOUSE_BUTTON _TranslateMouseButtonFromQt(const Qt::MouseButton button) {
+    switch(button) {
+    case Qt::LeftButton:
+         return GY_MOUSE_BUT_LEFT;
+    case Qt::RightButton:
+        return GY_MOUSE_BUT_RIGHT;
+    case Qt::MidButton:
+        return GY_MOUSE_BUT_MIDDLE;
+    default: return GY_MOUSE_BUT_NONE;
+    }
 }
 
 static inline GY_X86_KEY _TranslateFromQt(const int keyCode) {
@@ -144,56 +172,86 @@ static inline void _setKeyUp(GYInput *const input, const GY_X86_KEY key) {
 }
 
 
-class EventFilter: public QObject, public GYInput {
+class EventFilter: public QObject, public GYInput, public GYMouse {
 
 public:
 
     EventFilter(void) {
         memset((GYInput*)this, 0, sizeof(GYInput));
+        memset((GYMouse*)this, 0, sizeof(GYMouse));
     }
+
     virtual ~EventFilter(void) = default;
 
     virtual bool eventFilter(QObject* object, QEvent* event) override {
-        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+        QKeyEvent*      keyEvent = static_cast<QKeyEvent*>(event);
+        QMouseEvent*    mouseEvent = static_cast<QMouseEvent*>(event);
+        QWheelEvent*    wheelEvent = static_cast<QWheelEvent*>(event);
 
 
         switch(event->type()) {
         case QEvent::KeyPress:
             _setKeyDown(this, _TranslateFromQt(keyEvent->key()));
-
-            return false;
+            break;
 
         case QEvent::KeyRelease:
             _setKeyUp(this, _TranslateFromQt(keyEvent->key()));
+            break;
 
-            return false;
+        case QEvent::MouseMove:
+            screenPos.x = mouseEvent->pos().x();
+            screenPos.y = mouseEvent->pos().y();
+            break;
 
+         case QEvent::MouseButtonPress:
+            butDown[_TranslateMouseButtonFromQt(mouseEvent->button())] = 1;
+            break;
+
+        case QEvent::MouseButtonRelease:
+            butDown[_TranslateMouseButtonFromQt(mouseEvent->button())] = 0;
+            break;
+
+        case QEvent::Wheel:
+            scrollWheel.x = wheelEvent->angleDelta().x();
+            scrollWheel.y = wheelEvent->angleDelta().y();
+            break;
 
         default:
-            return false;
+            break;
 
         }
+
+        return false;
 
     }
 
 };
 
-static EventFilter* _inputFilter;
+static EventFilter*         _inputFilter;
+static GYInputInitParams    _initParams;
 
-int gyInputInit(void) {
+int gyInputInit(const GYInputInitParams*const params) {
     _inputFilter = new EventFilter;
-    QApplication::instance()->installEventFilter(_inputFilter);
+    _initParams = *params;
+    ((QGraphicsView*)_initParams.viewWidget)->installEventFilter(_inputFilter);
     return 1;
 }
 
 int gyInputUninit(void) {
-    QApplication::instance()->removeEventFilter(_inputFilter);
+     ((QGraphicsView*)_initParams.viewWidget)->removeEventFilter(_inputFilter);
+    //QApplication::instance()->removeEventFilter(_inputFilter);
     delete _inputFilter;
     return 1;
 }
 
 void gyInputPoll(GYInput*const input) {
     _updateKeyTaps(*_inputFilter);
-    *input = *(GYInput*)_inputFilter;
 
+    *input = *(GYInput*)_inputFilter;
+}
+
+void gyMousePoll(GYMouse*const mouse) {
+    _updateMouseButTaps(*_inputFilter);
+    *mouse = *(GYMouse*)_inputFilter;
+    _inputFilter->scrollWheel.x = _inputFilter->scrollWheel.y = 0.0f;
 }
