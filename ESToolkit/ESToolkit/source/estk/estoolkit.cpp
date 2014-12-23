@@ -14,7 +14,7 @@
 #include "engineGLSceneWidget.h"
 
 #include "area.h"
-#include "debug.h"
+#include "elysian_debug.hpp"
 #include "level.h"
 #include "assets.h"
 #include "entity.h"
@@ -146,9 +146,24 @@ ESToolkit::ESToolkit(QWidget *parent):
 	_layerDockWidget = new LayerDockWidget(this);
 	addDockWidget(Qt::LeftDockWidgetArea, _layerDockWidget);
 
+
+#if 0
 	// create/initialize SHEET dock and widget
 	_sheetDockWidget = new SheetDockWidget(this);
 	addDockWidget(Qt::BottomDockWidgetArea, _sheetDockWidget);
+#else
+    _sheetDockWidget = new SheetDockWidget;
+    auto* bottomDockWidget = new QDockWidget;
+    auto* bottomDockLayout = new QVBoxLayout;
+    auto* tabWidget = new QTabWidget;
+    bottomDockLayout->addWidget(tabWidget);
+    tabWidget->addTab(_sheetDockWidget->getSourceView(), "Tilesheet");
+    tabWidget->addTab(Debug::getCentralWidget(), "Console");
+    tabWidget->setTabPosition(QTabWidget::South);
+    bottomDockWidget->setWidget(tabWidget);
+    addDockWidget(Qt::BottomDockWidgetArea, bottomDockWidget);
+
+#endif
 
 	// create/initialize SELECTION dock and widget
 	_selectionDockWidget = new SelectionDockWidget(this);
@@ -189,6 +204,20 @@ ESToolkit::ESToolkit(QWidget *parent):
     //_ui->mapView->setScene(Area::editorScene);
 	_ui->mapView->setFocus();
     setFocusPolicy(Qt::ClickFocus);
+
+    //Initialize log console and menu actions
+    _ui->actionLibGyro->setChecked(true);
+    Debug::setFilter(Debug::LIBGYRO, true);
+    _ui->actionEngine->setChecked(true);
+    Debug::setFilter(Debug::ENGINE, true);
+    _ui->actionLua->setChecked(true);
+    Debug::setFilter(Debug::LUA, true);
+    _ui->actionToolkit->setChecked(true);
+    Debug::setFilter(Debug::TOOLKIT, true);
+    _ui->actionQt->setChecked(true);
+    Debug::setFilter(Debug::SOURCE_QT, true);
+    _ui->actionCommands->setChecked(true);
+    Debug::setFilter(Debug::COMMAND, true);
 
 	//CONNECT ASSET SIGNALS/SLOTS TO MAIN UI
 	connect(&_assets, SIGNAL(projectRemoveUI()), this, SLOT(OnProjectRemoved()));
@@ -884,7 +913,7 @@ void ESToolkit::on_actionFileCloseProject_triggered(void) {
 void ESToolkit::on_actionFileSaveCurrentProject_triggered() {
 	//check failure!
 	Debug::Log(Debug::VERBOSE, "ESToolkit::on_actionFileSaveCurrentProject_triggered");
-	Debug::Push();
+    Debug::push();
 	_assets.getCurrentProject()->save();
 	//_assets.getCurrentProject()->ClearUndoStacks();
 }
@@ -908,7 +937,7 @@ void ESToolkit::on_actionAreaAddEntity_triggered() {
 
 void ESToolkit::on_actionDebugViewLog_triggered()
 {
-	Debug::getInstance().show();
+    //Debug::getInstance().show();
 }
 
 void ESToolkit::on_actionEntityRemove_triggered() {
@@ -1602,4 +1631,39 @@ void ESToolkit::on_actionAdvance_Frame_triggered()
 
 
 	_engineGLView->advanceFrame();
+}
+
+void ESToolkit::on_actionClear_triggered()
+{
+    Debug::clear();
+}
+
+void ESToolkit::on_actionLibGyro_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::LIBGYRO, arg1);
+}
+
+void ESToolkit::on_actionEngine_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::ENGINE, arg1);
+}
+
+void ESToolkit::on_actionToolkit_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::TOOLKIT, arg1);
+}
+
+void ESToolkit::on_actionLua_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::LUA, arg1);
+}
+
+void ESToolkit::on_actionQt_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::SOURCE_QT, arg1);
+}
+
+void ESToolkit::on_actionCommands_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::COMMAND, arg1);
 }

@@ -4,6 +4,7 @@
 #include "elysian_level_manager.hpp"
 
 ELYSIAN_ASSET_TYPEDEF(MapSystem)
+ELYSIAN_ASSET_TYPEDEF(Debug)
 
 namespace elysian {
 	class LevelSystem;
@@ -31,7 +32,7 @@ namespace elysian {
 	public:
         enum ENGINE_STATE { ENGINE_NORMAL, ENGINE_WARPING, ENGINE_CONVERSATION, ENGINE_MODAL_CONVERSATION, ENGINE_CAMERA_DEBUG, ENGINE_ESTK_STOP };
 		friend class Engine;
-		friend class Debug;
+        friend class DebugBase;
 
 	private:
 		static ENGINE_STATE _engineState;

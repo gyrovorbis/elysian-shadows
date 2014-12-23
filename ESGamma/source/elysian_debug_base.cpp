@@ -35,21 +35,26 @@
 #include "elysian_dialog_system.hpp"
 #include "elysian_event_monitor.hpp"
 #include "elysian_rigid_body_system.hpp"
-#include "debug.h"
+#include "elysian_debug_base.hpp"
 
 namespace elysian {
 
 //======STATIC MEMBERS=====
 
-FILE*				Debug::_dbgFile;
-FILE*				Debug::_luaDbgFile;
-Engine*				Debug::_engine = nullptr;
-unsigned int		Debug::_stackDepth = 0;
-Debug::LEVEL		Debug::_level = ELYSIAN_DEBUG_LOG_LEVEL_DEFAULT;
-Debug::ADV_LOG_WRAP Debug::_advLogWrap = Debug::ADV_LOG_LUA;
+FILE*				DebugBase::_dbgFile;
+FILE*				DebugBase::_luaDbgFile;
+Engine*				DebugBase::_engine = nullptr;
+unsigned int		DebugBase::_stackDepth = 0;
+Debug::LEVEL		DebugBase::_level = ELYSIAN_DEBUG_LOG_LEVEL_DEFAULT;
+Debug::ADV_LOG_WRAP DebugBase::_advLogWrap = Debug::ADV_LOG_LUA;
+
+//Invoked by LibGyro (callback function)
+void DebugBase::libGyroPrintf(const GY_DEBUG_LEVEL level, const char* const str) { Debug::writeLog(LIBGYRO, (LEVEL)level, str); }
+//Invoked by Lua (always VERBOSE, not silenced with the rest)
+void DebugBase::luaPrint(const char *string) { Debug::writeLog(LUA, VERBOSE, string); }
 
 // Central endpoint for all debug log calls
-void Debug::writeLog(const Debug::SOURCE source, const Debug::LEVEL level, const char *const str) {
+void DebugBase::writeLog(const DebugBase::SOURCE source, const DebugBase::LEVEL level, const char *const str) {
 	static char buffer[ELYSIAN_DEBUG_BUFFER_SIZE];
 	//only log events that are as important or more important than the current level
 	if(level < _level && source != LUA) return;
@@ -65,7 +70,7 @@ void Debug::writeLog(const Debug::SOURCE source, const Debug::LEVEL level, const
 		strcat(buffer, ELYSIAN_DEBUG_PREFIX_FATAL);
 		break;
 	case CRITICAL:
-		strcat(buffer, ELYSIAN_DEBUG_PREFIX_CRITICAL);
+        strcat(buffer, ELYSIAN_DEBUG_PREFIX_CRITICAL);
 		break;
 	case VERBOSE: //no prefix
 	default:
@@ -114,7 +119,7 @@ void Debug::writeLog(const Debug::SOURCE source, const Debug::LEVEL level, const
 }
 
 // Invoked for non AssetIO Engine logging
-void Debug::printf(const Debug::LEVEL level, const char *const string, ...) {
+void DebugBase::printf(const Debug::LEVEL level, const char *const string, ...) {
 	char buffer[ELYSIAN_DEBUG_BUFFER_SIZE];
 	va_list argptr;
 	//early-out
@@ -123,12 +128,12 @@ void Debug::printf(const Debug::LEVEL level, const char *const string, ...) {
 	va_start(argptr,string);
 	vsprintf(buffer, string, argptr);
 	va_end(argptr);
-	writeLog(ENGINE, level, buffer);
+    Debug::writeLog(ENGINE, level, buffer);
 }
 
 //=====NONSTATIC MEMBERS=====
 
-Debug::Debug(void):
+DebugBase::DebugBase(void):
 	_nextFrame(true)
 {
 	//Register debug callback with LibGyro
@@ -139,17 +144,17 @@ Debug::Debug(void):
 	_dbgFile = fopen(ELYSIAN_DEBUG_FILE, "w");
 	_luaDbgFile = fopen(ELYSIAN_LUA_DEBUG_FILE, "w");
 #endif
-	printf(VERBOSE, "-----Debug Initialized-----");
+    //printf(VERBOSE, "-----Debug Initialized-----");
 }
 
-Debug::~Debug(void) {
+DebugBase::~DebugBase(void) {
 #if !defined(ANDROID)
 	fclose(_luaDbgFile);
 	fclose(_dbgFile);
 #endif
 }
 
-void Debug::initialize(void) {
+void DebugBase::initialize(void) {
     gyDebugInit();
     getInstance();
 }
@@ -162,7 +167,7 @@ GYVector3 dirVec = { 0.0f, 0.0f, -1.0f };
 
 #endif
 
-bool Debug::sandboxInit(void) {
+bool DebugBase::sandboxInit(void) {
 	//Fuck the current loading paradigm. Initialization happens here for now.
 	printf(VERBOSE, "Debug::sandboxInit()");
 	push();
@@ -181,17 +186,17 @@ bool Debug::sandboxInit(void) {
 }
 
 
-void Debug::renderOverlay(void) {
+void DebugBase::renderOverlay(void) {
 	//if(terrainSysDebug) terrainSystem->RenderOverlays();
 	//if(cameraSysDebug) cameraSystem->RenderOverlays();
 	//BLAH BLAH ETC
 }
 
-void Debug::render(void) {
+void DebugBase::render(void) {
 
 }
 
-void Debug::update(void) {
+void DebugBase::update(void) {
 
 }
 
@@ -199,7 +204,7 @@ static LightSource* src;
 
 static EventCallback callback;
 
-void Debug::processInput(GameInput& input) {
+void DebugBase::processInput(GameInput& input) {
 
 	static float theta = 0.0f;
 	static unsigned size = 3;
@@ -604,7 +609,7 @@ void Debug::processInput(GameInput& input) {
 }
 
 #define ARG_LIMIT 20
-bool Debug::parseArguments(void) {
+bool DebugBase::parseArguments(void) {
 	int argc = 0;
 	char argBuff[ARG_LIMIT][100];
 	char *argv[ARG_LIMIT];
@@ -647,7 +652,7 @@ bool Debug::parseArguments(void) {
 	return false;
 }
 
-bool Debug::parseArguments(int argc, char *argv[]) {
+bool DebugBase::parseArguments(int argc, char *argv[]) {
 	if(argc <= 1) return parseArguments(); //default init
 
 	printf(VERBOSE, "Debug::parseArguments(%d, char *argv[])", argc);
@@ -688,7 +693,7 @@ bool Debug::parseArguments(int argc, char *argv[]) {
 }
 
 
-bool Debug::initializeEngine(void) {
+bool DebugBase::initializeEngine(void) {
 	if(_cmdLineArgs.level) _engine->_levelSystem->switchLevel(_cmdLineArgs.level);
 	if(_cmdLineArgs.area) _engine->_levelSystem->switchArea(_cmdLineArgs.area);
 	return true;

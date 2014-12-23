@@ -6,7 +6,7 @@
 
 #include "level.h"
 #include "project.h"
-#include "debug.h"
+#include "elysian_debug.hpp"
 #include "tileSheetUtilities.h"
 #include "sheetViewTileGraphicsItem.h"
 #include "tileImage.h"
@@ -383,7 +383,7 @@ Area *TkLevel::loadArea(const QString name) {
     directory.append(name);
 
 	Debug::Log(Debug::VERBOSE, QString("Level::LoadArea("+directory+")"));
-	Debug::Push();
+    Debug::push();
 
     Level *tempCurLevel = _curLevel;
     _curLevel = this;
@@ -396,12 +396,12 @@ Area *TkLevel::loadArea(const QString name) {
     if(area) {
 		_area.push_back(area);
 		emit areaAdded(this, area);
-		Debug::Pop();
+        Debug::pop();
         return area;
     }
 
 	delete area;
-	Debug::Pop();
+    Debug::pop();
     return nullptr;
 }
 
@@ -451,20 +451,20 @@ bool TkLevel::load(const QString loc) {
     _project->connectSlots(this);
 
 	Debug::Logf(Debug::VERBOSE, "Level::Load(%s)", loc.toStdString().c_str());
-	Debug::Push();
+    Debug::push();
 
     setNodeName(dir.dirName());
     _location = loc;
 
 	Debug::Log(Debug::VERBOSE, "Verifying Tilesheet");
-	Debug::Push();
+    Debug::push();
 	if(!TileSheetUtilities::VerifyImageSize(loc+ELYSIAN_TILESHEET_PATH,
 											ELYSIAN_TILESHEET_WIDTH,
 											ELYSIAN_TILESHEET_HEIGHT)) {
 		Debug::Log(Debug::CRITICAL, "tilesheet.png either could not be opened or is not 512x1024!");
         success = false;
     }
-	Debug::Pop();
+    Debug::pop();
     _validSheets = success;
 
     success &= LevelBase::load(dir.absolutePath().toStdString().c_str());
@@ -473,7 +473,7 @@ bool TkLevel::load(const QString loc) {
 
     if(!dir.cd("area")) {
 		Debug::Log(Debug::CRITICAL, "No area directory!");
-		Debug::Pop();
+        Debug::pop();
 		return false;
     }
 
@@ -482,7 +482,7 @@ bool TkLevel::load(const QString loc) {
 		success &= (loadArea(areas[j]))? true : false;
     }
 
-	Debug::Pop();
+    Debug::pop();
 	return true;//success;
 }
 
@@ -490,21 +490,21 @@ bool TkLevel::load(const QString loc) {
 bool TkLevel::save(void) {
 	bool success = true;
 	Debug::Log(Debug::VERBOSE, QString("Level::Save(void)"));
-	Debug::Push();
+    Debug::push();
 	//Save elysian::Level
     success &= getElysianLevel()->save(_location.toStdString().c_str());
     success &= _saveMetaData(_location);
-	Debug::Pop();
+    Debug::pop();
 	return success;
 }
 
 
 bool TkLevel::saveAll(void) {
 	Debug::Log(Debug::VERBOSE, QString("Level::SaveAll("+_location+")"));
-	Debug::Push();
+    Debug::push();
     //export to default save location
 	bool success = saveAs(_location);
-	Debug::Pop();
+    Debug::pop();
 	return success;
 }
 
@@ -523,28 +523,28 @@ bool TkLevel::saveAs(const QString dir) {
     QDir qdir;
 
 	Debug::Log(Debug::VERBOSE, QString("Level::Export("+dir+")"));
-	Debug::Push();
+    Debug::push();
 
 	//Save As and destionation already exists
 	if(newLoc && qdir.exists(dir)) {
 		Debug::Log(Debug::VERBOSE, "Folder already exists");
-		Debug::Push();
+        Debug::push();
         if(QMessageBox::critical(NULL, tr("Warning!"), tr("A directory of the same name already exists at the specified location. Overwrite?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
             if(!qdir.rmdir(dir)) {
 				Debug::Log(Debug::CRITICAL, "Could not remove existing directory!");
-				Debug::Pop();
-				Debug::Pop();
+                Debug::pop();
+                Debug::pop();
 				return false;
             }
 			else {
 				Debug::Log(Debug::VERBOSE, "Successfully deleted existing directory.");
-				Debug::Pop();
+                Debug::pop();
 			}
         }
         else {
 			Debug::Log(Debug::VERBOSE, "Canceled overwrite.");
-			Debug::Pop();
-			Debug::Pop();
+            Debug::pop();
+            Debug::pop();
 			return true;
         }
     }
@@ -552,27 +552,27 @@ bool TkLevel::saveAs(const QString dir) {
 	//Create level root if it doesn't already exist
    if(!qdir.exists(dir)) { //generate main level directory if it doesn't already exist
 	   Debug::Log(Debug::VERBOSE, "Creating root directory");
-	   Debug::Push();
+       Debug::push();
         if(!qdir.mkdir(dir)) {
 			Debug::Log(Debug::CRITICAL, "Could not create directory!");
-			Debug::Pop();
-			Debug::Pop();
+            Debug::pop();
+            Debug::pop();
 			return false;
         }
-		Debug::Pop();
+        Debug::pop();
     }
 
    //Create tile directory if it doesn't already exist
 	if(!qdir.exists(dir+"/tile")) {
 		Debug::Log(Debug::VERBOSE, "Creating tile directory");
-		Debug::Push();
+        Debug::push();
 		if(!qdir.mkdir(dir+"/tile")) {
 			Debug::Log(Debug::CRITICAL, "Could not create directory!");
-			Debug::Pop();
-			Debug::Pop();
+            Debug::pop();
+            Debug::pop();
 			return false;
         }
-		Debug::Pop();
+        Debug::pop();
     }
 	//Dynamically regenerate tilesheet if it's currently open or is being saved to a new location
 	if(_open || (!newLoc && !QFile::exists(dir+ELYSIAN_TILESHEET_PATH))) { // Dynamically regenerate sheet for open level and new levels
@@ -586,12 +586,12 @@ bool TkLevel::saveAs(const QString dir) {
 	//Copy tilesheet if it hasn't been opened and already exists
 	else if(!_open && newLoc) { // Copy existing sheet from previous directory to new directory
 		Debug::Log(Debug::VERBOSE, "Copying terrainsheet.png");
-		Debug::Push();
+        Debug::push();
 		if(!QFile::copy(_location+ELYSIAN_TILESHEET_PATH, dir+ELYSIAN_TILESHEET_PATH)) {
 			Debug::Log(Debug::CRITICAL, "Could not copy terrainsheet.png");
 			success = false;
         }
-		Debug::Pop();
+        Debug::pop();
 	}
 
 	//Save elysian::Level
@@ -603,14 +603,14 @@ bool TkLevel::saveAs(const QString dir) {
 	//Create area directory if it doesn't already exist
     if(!qdir.exists(dir+"/area")) {
 		Debug::Log(Debug::VERBOSE, "Creating 'area' directory");
-		Debug::Push();
+        Debug::push();
         if(!qdir.mkdir(dir+"/area")) {
 			Debug::Log(Debug::CRITICAL, "Could not create 'area' directory!");
-			Debug::Pop();
-			Debug::Pop();
+            Debug::pop();
+            Debug::pop();
 			return false;
         }
-		Debug::Pop();
+        Debug::pop();
     }
 
 	//Save areas
@@ -618,7 +618,7 @@ bool TkLevel::saveAs(const QString dir) {
         success &= _area[i]->saveAs(dir+"/area/"+_area[i]->getNodeName());
     }
 
-	Debug::Pop();
+    Debug::pop();
     return success;
 }
 
@@ -627,10 +627,10 @@ bool TkLevel::saveAs(const QString dir) {
 
 bool TkLevel::reloadSheets(void) {
 	Debug::Log(Debug::VERBOSE, "Reloading Sheets");
-	Debug::Push();
+    Debug::push();
 	close();
 	open();
-	Debug::Pop();
+    Debug::pop();
     return true;
 }
 
@@ -674,24 +674,24 @@ void TkLevel::onMapChanged(Area * const area, const QVector<MapChange>& changes)
 bool TkLevel::_saveMetaData(const QString dir) {
     QDir qdir;
     Debug::Log(Debug::VERBOSE, "Saving level metadata");
-    Debug::Push();
+    Debug::push();
 
     if(!qdir.exists(dir+"/estk")) {
         Debug::Log(Debug::VERBOSE, "Creating 'estk' directory");
-        Debug::Push();
+        Debug::push();
         if(!qdir.mkdir(dir+"/estk")) {
             Debug::Log(Debug::CRITICAL, "Could not create 'estk' directory!");
-            Debug::Pop();
-            Debug::Pop();
+            Debug::pop();
+            Debug::pop();
             return false;
         }
-        Debug::Pop();
+        Debug::pop();
     }
 
     FILE *file = fopen(QString(dir+"/estk/"+ESTK_LEVEL_METADATA_TILESET).toStdString().c_str(), "wb");
     if(!file) {
         Debug::Log(Debug::CRITICAL, "Could not open estkTileset.bin for writing!");
-        Debug::Pop();
+        Debug::pop();
         return false;
     }
 
@@ -701,26 +701,26 @@ bool TkLevel::_saveMetaData(const QString dir) {
     fclose(file);
 
 
-    Debug::Pop();
+    Debug::pop();
     return true;
 }
 
 bool TkLevel::_loadMetaData(const QString dir) {
     QDir qdir;
     Debug::Log(Debug::VERBOSE, "Loading level metadata");
-    Debug::Push();
+    Debug::push();
 
 
     if(!qdir.exists(dir+"/estk")) {
         Debug::Log(Debug::VERBOSE, "'estk' directory not present");
-        Debug::Pop();
+        Debug::pop();
         return true;
     }
 
     FILE *file = fopen(QString(dir+"/estk/"+ESTK_LEVEL_METADATA_TILESET).toStdString().c_str(), "rb");
     if(!file) {
         Debug::Log(Debug::CRITICAL, "Could not open estkTileset.bin for reading!");
-        Debug::Pop();
+        Debug::pop();
         return false;
     }
 
@@ -729,7 +729,7 @@ bool TkLevel::_loadMetaData(const QString dir) {
 
     fclose(file);
 
-    Debug::Pop();
+    Debug::pop();
 
     return true;
 }
@@ -742,21 +742,21 @@ bool TkLevel::_scatterMaps(const bool normal) {
     //generate normalMaps folder
     QDir qdir;
     Debug::Log(Debug::VERBOSE, "Scattering tilesheet maps");
-    Debug::Push();
+    Debug::push();
 
 
     if(!qdir.exists(path)) {
         Debug::Log(Debug::VERBOSE, "Creating 'maps' directory");
-        Debug::Push();
+        Debug::push();
 
         if(!qdir.mkdir(path)) {
             Debug::Log(Debug::CRITICAL, "Could not create 'maps' directory!");
-            Debug::Pop();
-            Debug::Pop();
+            Debug::pop();
+            Debug::pop();
 
             return false;
         }
-        Debug::Pop();
+        Debug::pop();
     }
 
     for(unsigned i = 0; i < ELYSIAN_TILESHEET_TILES; ++i) {
@@ -826,7 +826,7 @@ bool TkLevel::_scatterMaps(const bool normal) {
         }
     }
 
-    Debug::Pop();
+    Debug::pop();
     return success;
 }
 
@@ -844,11 +844,11 @@ bool TkLevel::_gatherMaps(const bool normal) {
     //generate normalMaps folder
     QDir qdir;
     Debug::Log(Debug::VERBOSE, "Gathering tilesheet maps");
-    Debug::Push();
+    Debug::push();
 
     if(!qdir.exists(path)) {
         Debug::Log(Debug::CRITICAL, "'maps' folder not found!");
-        Debug::Push();
+        Debug::push();
         return false;
     }
 
@@ -883,7 +883,7 @@ bool TkLevel::_gatherMaps(const bool normal) {
         }
     }
 
-    Debug::Push();
+    Debug::push();
     return success;
 }
 

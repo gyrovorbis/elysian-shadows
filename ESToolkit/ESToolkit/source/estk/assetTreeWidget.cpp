@@ -2,7 +2,7 @@
 #include <QMessageBox>
 #include "assetTreeWidget.h"
 #include "treenode.h"
-#include "debug.h"
+#include "elysian_debug.hpp"
 #include "area.h"
 #include "project.h"
 #include "level.h"

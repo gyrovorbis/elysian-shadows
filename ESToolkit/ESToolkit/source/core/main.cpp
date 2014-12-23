@@ -3,7 +3,7 @@
 #include <QTimer>
 #include <QSplashScreen>
 #include "estoolkit.h"
-#include "debug.h"
+#include "elysian_debug.hpp"
 #include <QDebug>
 #include <QRectF>
 #include <initializer_list>

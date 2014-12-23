@@ -112,7 +112,6 @@ SOURCES += source/asset/project.cpp \
     source/core/selectable.cpp \
     source/core/main.cpp \
     source/core/fileUtilities.cpp \
-    source/core/debug.cpp \
     source/estk/tileSelectable.cpp \
     source/estk/sheetViewTileGraphicsItem.cpp \
     source/estk/sheetView.cpp \
@@ -182,7 +181,6 @@ SOURCES += source/asset/project.cpp \
     ../../ESGamma/source/elysian_collision_system.cpp \
     ../../ESGamma/source/elysian_combat_system.cpp \
     ../../ESGamma/source/elysian_day_system.cpp \
-    ../../ESGamma/source/elysian_debug.cpp \
     ../../ESGamma/source/elysian_dialog_system.cpp \
     ../../ESGamma/source/elysian_engine.cpp \
     ../../ESGamma/source/elysian_event_monitor.cpp \
@@ -210,7 +208,9 @@ SOURCES += source/asset/project.cpp \
     ../../AssetIO/source/elysian_instance_transform.cpp \
     source/estk/engineGLSceneWidget.cpp \
     source/estk/tkMapSystem.cpp \
-    source/estk/entitySelectable.cpp
+    source/estk/entitySelectable.cpp \
+    ../../ESGamma/source/elysian_debug_base.cpp \
+    source/core/tkDebug.cpp
 
 HEADERS += include/asset/project.h \
     include/asset/level.h \
@@ -224,7 +224,6 @@ HEADERS += include/asset/project.h \
     include/core/selectionScene.h \
     include/core/selectable.h \
     include/core/fileUtilities.h \
-    include/core/debug.h \
     include/estk/tileSelectable.h \
     include/estk/sheetViewTileGraphicsItem.h \
     include/estk/sheetView.h \
@@ -322,7 +321,6 @@ HEADERS += include/asset/project.h \
     ../../ESGamma/include/elysian_collision_system.hpp \
     ../../ESGamma/include/elysian_combat_system.hpp \
     ../../ESGamma/include/elysian_day_system.hpp \
-    ../../ESGamma/include/elysian_debug.hpp \
     ../../ESGamma/include/elysian_dialog_system.hpp \
     ../../ESGamma/include/elysian_engine.hpp \
     ../../ESGamma/include/elysian_event_monitor.hpp \
@@ -353,7 +351,10 @@ HEADERS += include/asset/project.h \
     include/asset/luaTableStackModel.h \
     include/estk/engineGLSceneWidget.h \
     include/estk/tkMapSystem.h \
-    include/estk/entitySelectable.h
+    include/estk/entitySelectable.h \
+    include/core/tkDebug.h \
+	../../ESGamma/include/elysian_debug_base.hpp \
+	../../ESGamma/include/elysian_debug.hpp
 
 FORMS += form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \

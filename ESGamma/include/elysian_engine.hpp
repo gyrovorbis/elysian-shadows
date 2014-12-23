@@ -3,11 +3,14 @@
 
 #include "elysian_game_input.hpp"
 #include "elysian_system.hpp"
+#include "elysian_asset_typedefs.hpp"
+
+ELYSIAN_ASSET_TYPEDEF(Debug)
 
 namespace elysian {
 	
 	class Engine: public System {
-		friend class Debug;
+        friend Debug;
 	private:
         GYInput     _platInput;
         MouseInput  _mouseInput;

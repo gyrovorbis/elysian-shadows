@@ -5,7 +5,7 @@
 #include "level.h"
 #include "area.h"
 #include "entity.h"
-#include "debug.h"
+#include "elysian_debug.hpp"
 #include "elysian_engine.hpp"
 #include "elysian_level_system.hpp"
 #include "elysian_map_system.hpp"

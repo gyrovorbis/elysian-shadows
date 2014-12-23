@@ -4,7 +4,7 @@
 
 #include "project.h"
 #include "level.h"
-#include "debug.h"
+#include "elysian_debug.hpp"
 #include "fileUtilities.h"
 #include "elysian_level_system.hpp"
 
@@ -75,7 +75,7 @@ Level *Project::loadLevel(const QString name) {
     directory.append(name);
 
 	Debug::Log(Debug::VERBOSE, QString("Project::LoadLevel("+directory+")"));
-	Debug::Push();
+    Debug::push();
 
     Level::_curProj = this;
 
@@ -86,12 +86,12 @@ Level *Project::loadLevel(const QString name) {
         //ConnectSlots(lev);
 		_level.push_back(lev);
 		emit levelAdded(this, lev);
-		Debug::Pop();
+        Debug::pop();
 		return lev;
     }
 
 	delete lev;
-	Debug::Pop();
+    Debug::pop();
     return nullptr;
 }
 
@@ -145,14 +145,14 @@ bool Project::removeLevel(const QString name) {
 
 bool Project::load(const QString loc) {
 	Debug::Log(Debug::VERBOSE, QString("Project::Load(" + loc + ")"));
-	Debug::Push();
+    Debug::push();
 
     QDir dir(loc);
     bool success = true;
 
     if(!dir.isReadable()) {
 		Debug::Log(Debug::CRITICAL, "Directory is not readable!");
-		Debug::Pop();
+        Debug::pop();
 		return false;
     }
 
@@ -167,7 +167,7 @@ bool Project::load(const QString loc) {
     if(!dir.cd("level")) {
         Debug::Logf(Debug::CRITICAL, "No 'level' folder!", getNodeName().toStdString().c_str());
         QDir::setCurrent(prevWorkingDir);
-		Debug::Pop();
+        Debug::pop();
         return false;
     }
 
@@ -179,16 +179,16 @@ bool Project::load(const QString loc) {
     }
 
     QDir::setCurrent(prevWorkingDir);
-	Debug::Pop();
+    Debug::pop();
 	return true;//success;
 }
 
 bool Project::save(void) {
 	Debug::Log(Debug::VERBOSE, QString("Project::Save(" + _location + ")"));
-	Debug::Push();
+    Debug::push();
 	//Saving is just exporting to the same location.
 	bool success = saveAs(_location);
-	Debug::Pop();
+    Debug::pop();
 	return success;
 }
 
@@ -214,26 +214,26 @@ bool Project::saveAs(const QString dir) {
     QDir qdir;
 
 	Debug::Log(Debug::VERBOSE, QString("Project::Save("+dir+")"));
-	Debug::Push();
+    Debug::push();
 
     if(newLoc && qdir.exists(dir)) { //Are we overriding another existing folder for a save as?
         if(QMessageBox::critical(NULL, tr("Warning!"), tr("A directory of the same name already exists at the specified location. Overwrite?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
             if(!qdir.rmdir(dir)) {
 				Debug::Log(Debug::CRITICAL, "Could not remove existing directory!\n");
-				Debug::Pop();
+                Debug::pop();
 				return false;
             }
         }
         else {
 			Debug::Log(Debug::VERBOSE, "Overwrite canceled.");
-			Debug::Pop();
+            Debug::pop();
 			return true; //They didn't want to overwrite, not an error.
         }
     }
    if(!qdir.exists(dir)) { //generate main project directory if it doesn't already exist
         if(!qdir.mkdir(dir)) {
 			Debug::Log(Debug::CRITICAL, "Could not create root directory!");
-			Debug::Pop();
+            Debug::pop();
 			return false;
         }
     }
@@ -241,7 +241,7 @@ bool Project::saveAs(const QString dir) {
     if(!qdir.exists(dir + "/level")) {
         if(!qdir.mkdir(dir + "/level")) {
 			Debug::Log(Debug::CRITICAL, "Could not create 'level' directory!");
-			Debug::Pop();
+            Debug::pop();
 			return false;
         }
     }
@@ -250,7 +250,7 @@ bool Project::saveAs(const QString dir) {
         success &= _level[i]->saveAs(dir+"/level/"+_level[i]->getNodeName());
     }
 
-    Debug::Pop();
+    Debug::pop();
     return success;
 }
 

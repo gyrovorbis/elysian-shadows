@@ -18,7 +18,7 @@
 #include "entity.h"
 #include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 #include "area.h"
-#include "debug.h"
+#include "elysian_debug.hpp"
 #include "sprite.h"
 #include "component.h"
 #include "assets.h"

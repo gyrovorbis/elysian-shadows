@@ -6,8 +6,11 @@
 #include <gyro_system_api.h>
 #include "assets.h"
 #include "elysian_lua_manager.hpp"
+#include "elysian_asset_typedefs.hpp"
 
 #define ESTOOLKIT_VERSION				GYRO_LIB_VERSION
+
+ELYSIAN_ASSET_TYPEDEF(Debug)
 
 class QToolButton;
 class QActionGroup;
@@ -19,7 +22,6 @@ namespace Ui {
 
 namespace elysian {
     class Engine;
-    class Debug;
 }
 
 class EngineDialog;
@@ -68,6 +70,7 @@ private:
     SheetDockWidget*        _sheetDockWidget;
     SelectionDockWidget*    _selectionDockWidget;
     HistoryDockWidget*      _historyDockWidget;
+    QTabWidget*             _bottomTabWidget;
 
     EngineDialog*           _engineDialog;
     EngineSettingsDialog*   _engineSettingsDialog;
@@ -177,5 +180,12 @@ private slots:
 	void on_actionPrevious_Project_triggered();
 	void on_actionInvoke_triggered(bool checked);
 	void on_actionAdvance_Frame_triggered();
+    void on_actionClear_triggered();
+    void on_actionLibGyro_toggled(bool arg1);
+    void on_actionEngine_toggled(bool arg1);
+    void on_actionToolkit_toggled(bool arg1);
+    void on_actionLua_toggled(bool arg1);
+    void on_actionQt_toggled(bool arg1);
+    void on_actionCommands_toggled(bool arg1);
 };
 #endif // ESTOOLKIT_H

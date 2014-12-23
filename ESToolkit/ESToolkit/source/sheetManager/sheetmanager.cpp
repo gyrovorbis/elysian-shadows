@@ -11,7 +11,7 @@
 #include <QFileSystemWatcher>
 #include <QPushButton>
 
-#include "debug.h"
+#include "elysian_debug.hpp"
 #include "sheetManager.h"
 #include "ui_sheetmanager.h"
 #include "sheetManagerFileDockWidget.h"
@@ -368,10 +368,10 @@ SourceSheetEntry *SheetManager::_createSourceSheetEntry(const QString filename, 
 	unsigned sheetWidth, sheetHeight;
 
 	Debug::Logf(Debug::VERBOSE, "SheetManager::_createSourceSheetEntry(%s)", filename.toStdString().c_str());
-	Debug::Push();
+    Debug::push();
 
 	if(!TileSheetUtilities::GetImageSize(filename, sheetWidth, sheetHeight)) {
-		entry = NULL;
+        entry = nullptr;
 	}
 	else {
 		if(sheetWidth%32 != 0 || sheetHeight%32 != 0) {
@@ -411,7 +411,7 @@ SourceSheetEntry *SheetManager::_createSourceSheetEntry(const QString filename, 
 		}
 	}
 
-	Debug::Pop();
+    Debug::pop();
 	return entry;
 }
 
@@ -514,7 +514,7 @@ bool SheetManager::saveOrDiscard(bool canCancel) {
 bool SheetManager::_save(void) {
 
 	Debug::Logf(Debug::VERBOSE, "SheetManager::_save(%s)", _destLevelDropdown->text().toStdString().c_str());
-	Debug::Push();
+    Debug::push();
 
 	Level *const level = AssetManager::getAssets()->getCurrentProject()->getLevel(_destLevelDropdown->text());
 	SheetManagerAssets::DestSheetEntry &tileDestEntry = _assets.getDestSheetEntry();
@@ -529,7 +529,7 @@ bool SheetManager::_save(void) {
 
 
 	if(!retVal) Debug::Logf(Debug::CRITICAL, "Could not save sheet!");
-	Debug::Pop();
+    Debug::pop();
 	return retVal;
 }
 

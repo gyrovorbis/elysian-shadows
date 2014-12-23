@@ -7,7 +7,7 @@
 #include "elysian_lua_table_proxy.hpp"
 #include "propertyStackModel.h"
 #include "propertyStandardItem.h"
-#include "debug.h"
+#include "elysian_debug.hpp"
 
 class LuaTableStackModel;
 

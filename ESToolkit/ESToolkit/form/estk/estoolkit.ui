@@ -171,13 +171,6 @@
     <addaction name="separator"/>
     <addaction name="actionScreenshot"/>
    </widget>
-   <widget class="QMenu" name="menuDebug">
-    <property name="title">
-     <string>Debug</string>
-    </property>
-    <addaction name="actionDebugViewLog"/>
-    <addaction name="separator"/>
-   </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="enabled">
      <bool>true</bool>
@@ -207,13 +200,32 @@
     <addaction name="separator"/>
     <addaction name="actionEngine_Settings"/>
    </widget>
+   <widget class="QMenu" name="menuConsole">
+    <property name="title">
+     <string>Console</string>
+    </property>
+    <widget class="QMenu" name="menuFilters">
+     <property name="title">
+      <string>Filters</string>
+     </property>
+     <addaction name="actionLibGyro"/>
+     <addaction name="actionEngine"/>
+     <addaction name="actionToolkit"/>
+     <addaction name="actionLua"/>
+     <addaction name="actionQt"/>
+     <addaction name="actionCommands"/>
+    </widget>
+    <addaction name="separator"/>
+    <addaction name="actionClear"/>
+    <addaction name="menuFilters"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuLevel"/>
    <addaction name="menuArea"/>
    <addaction name="menuEngine"/>
-   <addaction name="menuDebug"/>
+   <addaction name="menuConsole"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="windowTitle">
@@ -974,6 +986,59 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionClear">
+   <property name="text">
+    <string>Clear</string>
+   </property>
+  </action>
+  <action name="actionLibGyro">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>libGyro</string>
+   </property>
+  </action>
+  <action name="actionEngine">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Engine</string>
+   </property>
+  </action>
+  <action name="actionToolkit">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Toolkit</string>
+   </property>
+  </action>
+  <action name="actionLua">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Lua</string>
+   </property>
+  </action>
+  <action name="actionQt">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Qt</string>
+   </property>
+  </action>
+  <action name="actionCommands">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Commands</string>
    </property>
   </action>
  </widget>

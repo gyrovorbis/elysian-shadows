@@ -5,7 +5,7 @@
 
 #include "area.h"
 #include "level.h"
-#include "debug.h"
+#include "elysian_debug.hpp"
 #include "entity.h"
 #include "propertyStandardItem.h"
 #include "checkeredAlphaRectGraphicsItem.h"
@@ -171,7 +171,7 @@ bool TkArea::load(const char*const str) {
     Area *tempCurArea = _curArea;
     _curArea = this;
 	Debug::Logf(Debug::VERBOSE, "Area::Load(%s)", dir.toStdString().c_str());
-	Debug::Push();
+    Debug::push();
 
 	_location = dir;
 
@@ -183,7 +183,7 @@ bool TkArea::load(const char*const str) {
     setNodeName(QDir(dir).dirName());
 
 	Debug::Log(Debug::VERBOSE, "Creating Toolkit Entities from elysian::Entities.");
-	Debug::Push();
+    Debug::push();
 #if 0
     for(unsigned int i = 0; i < _elysianArea.entities.size(); ++i) {
 		Debug::Logf(Debug::VERBOSE, "Entity #%d - %s.", i, _elysianArea.entities[i]->getName());
@@ -193,23 +193,23 @@ bool TkArea::load(const char*const str) {
 		//tempEntity->setParentItem(_entityParent);
 	}
 #endif
-	Debug::Pop();
+    Debug::pop();
 
 	_curArea = tempCurArea;
-	Debug::Pop();
+    Debug::pop();
 	return true;//success;
 }
 
 bool Area::save(void) {
 	bool success = true;
 	Debug::Log(Debug::VERBOSE, QString("Area::Save("+_location+")"));
-	Debug::Push();
+    Debug::push();
 	//Save parent level
     success &= level->save();
 	//export to previous save location
 	success &= saveAs(_location);
 	_undoStack.setClean();
-	Debug::Pop();
+    Debug::pop();
 	return success;
 }
 
@@ -219,40 +219,40 @@ bool Area::saveAs(const QString dir) {
 	QDir qdir;
 
 	Debug::Log(Debug::VERBOSE, QString("Area::Export("+dir+")"));
-	Debug::Push();
+    Debug::push();
 
 	//Check Save As and directory already exists
 	if(newLoc && qdir.exists(dir)) {
 		Debug::Log(Debug::VERBOSE, "Directory already exists!");
-		Debug::Push();
+        Debug::push();
 		if(QMessageBox::critical(NULL, tr("Warning!"), tr("A directory of the same name already exists at the specified location. Overwrite?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
 			if(!qdir.rmdir(dir)) {
 				Debug::Log(Debug::CRITICAL, "Could not delete existing directory!");
-				Debug::Pop();
-				Debug::Pop();
+                Debug::pop();
+                Debug::pop();
 				return false;
 			}
 		}
 		else {
 			Debug::Log(Debug::VERBOSE, "Directory overwrite canceled.");
-			Debug::Pop();
-			Debug::Pop();
+            Debug::pop();
+            Debug::pop();
 			return true; //User canceled, still a success
 		}
-		Debug::Pop();
+        Debug::pop();
 	}
 
 	//create main area directory if it doesn't already exist
 	if(!qdir.exists(dir)) {
 		Debug::Log(Debug::VERBOSE, "Creating root directory");
-		Debug::Push();
+        Debug::push();
 		if(!qdir.mkdir(dir)) {
 			Debug::Log(Debug::CRITICAL, "Could not create directory!");
-			Debug::Pop();
-			Debug::Pop();
+            Debug::pop();
+            Debug::pop();
 			return false; //no point in proceeding
 		}
-		Debug::Pop();
+        Debug::pop();
 	}
 
 /*
@@ -280,7 +280,7 @@ bool Area::saveAs(const QString dir) {
 	//save elysian::Area
     success &= AreaBase::save(dir.toStdString().c_str());
 
-    Debug::Pop();
+    Debug::pop();
 	return success;
 }
 

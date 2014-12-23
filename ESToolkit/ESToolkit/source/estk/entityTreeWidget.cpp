@@ -1,7 +1,7 @@
 #include "entityTreeWidget.h"
 #include "area.h"
 #include "entity.h"
-#include "debug.h"
+#include "elysian_debug.hpp"
 #include "assets.h"
 #include "entitySelectable.h"
 
