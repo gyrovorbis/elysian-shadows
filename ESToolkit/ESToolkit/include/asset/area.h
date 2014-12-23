@@ -59,8 +59,6 @@ private:
     bool                _emitMapChange  = true;
     bool                _batchMapUpdate = false;
 
-	virtual bool activate(void);
-	virtual bool deactivate(void);
     void         connectSlots(Entity *const entity);
 
 
@@ -78,6 +76,9 @@ public:
 
                         TkArea(Level *const level=nullptr);
     virtual             ~TkArea(void) override;
+
+    virtual bool activate(void);
+    virtual bool deactivate(void);
 
     bool                load(const char*const str);
     bool                save(void);

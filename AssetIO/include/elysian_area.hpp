@@ -143,6 +143,7 @@ namespace elysian {
 
         GLuint              vboBuff         = 0;
         bool                vboPopulated    = false;
+        bool                activated       = false;
 
         //AreaBase(void);
         ~AreaBase(void);
@@ -183,7 +184,7 @@ namespace elysian {
 		bool		saveMap(const char *const filename);
 		bool		loadEntities(const char *const filename);
 		bool		saveEntities(const char *const filename);
-
+        void        activate(void);
 
 		void		populateVbo(void);
         void        setVboEntry(const TileEntry*const tileEntry, const unsigned l, const unsigned x, const unsigned y) const;

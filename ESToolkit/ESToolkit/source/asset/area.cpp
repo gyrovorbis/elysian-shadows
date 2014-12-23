@@ -288,6 +288,7 @@ bool Area::activate(void) {
 	if(!_open) open();
 	if(!_active) {
         _curArea = this;
+        AreaBase::activate();
 
         //editorScene->addItem(_bgRect);
         //resizeEditorScene();

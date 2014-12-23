@@ -15,7 +15,7 @@ CXX           = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefau
 DEFINES       = 
 CFLAGS        = -pipe -g -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -mmacosx-version-min=10.6 -Wall -W $(DEFINES)
 CXXFLAGS      = -pipe -g -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -mmacosx-version-min=10.6 -Wall -W $(DEFINES)
-INCPATH       = -I/Users/falcogirgis/Qt/5.3/clang_64/mkspecs/macx-clang -I. -I../../include -I../../include/lua -I../../../libGyro/include -I.
+INCPATH       = -I/Users/falcogirgis/Qt/5.3/clang_64/mkspecs/macx-clang -I. -I../../include -I../../include/lua -I../../../libGyro/include
 AR            = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar cq
 RANLIB        = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib -s
 QMAKE         = /Users/falcogirgis/Qt/5.3/clang_64/bin/qmake
@@ -773,7 +773,8 @@ lmem.o: ../../source/lmem.c ../../include/lua/lua.h \
 		../../include/lua/lgc.h
 	$(CC) -c $(CFLAGS) $(INCPATH) -o lmem.o ../../source/lmem.c
 
-loadlib.o: ../../source/loadlib.c ../../include/lua/lua.h \
+loadlib.o: ../../source/loadlib.c ../../../libGyro/include/common/turfs.h \
+		../../include/lua/lua.h \
 		../../include/lua/luaconf.h \
 		../../include/lua/lauxlib.h \
 		../../include/lua/lualib.h

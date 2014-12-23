@@ -1,5 +1,5 @@
 /*
-** $Id: loadlib.c,v 1.111 2012/05/30 12:33:44 roberto Exp $
+** $Id: loadlib.c,v 1.111.1.1 2013/04/12 18:48:47 roberto Exp $
 ** Dynamic library loader for Lua
 ** See Copyright Notice in lua.h
 **
@@ -20,6 +20,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+//#include <turfs/turfs.h>
+#include <common/turfs.h>
 
 #define loadlib_c
 #define LUA_LIB
@@ -328,9 +330,11 @@ static int ll_loadlib (lua_State *L) {
 
 
 static int readable (const char *filename) {
-  FILE *f = fopen(filename, "r");  /* try to open file */
-  if (f == NULL) return 0;  /* open failed */
-  fclose(f);
+  turfs_fp f;
+  turfs_ret ret;
+  ret = turfs_file_open(filename, "r", &f); /* try to open file */
+  if (ret != TURFS_RET_OK || f == NULL) return 0; /* open failed */
+  turfs_file_close(&f);
   return 1;
 }
 

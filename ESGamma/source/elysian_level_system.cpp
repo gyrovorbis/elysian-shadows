@@ -84,6 +84,7 @@ bool LevelSystem::switchArea(const char *const dir) {
         getPartySys()->addPartyToArea();
         getBehavSys()->callTriggers(Behavior::ON_ENTER);
         _curArea->populateVbo();
+        _curArea->activate();
         return true;
     }
 
@@ -101,6 +102,7 @@ bool LevelSystem::switchArea(const char *const dir) {
     ar->load(dir);
     area.push_back(ar);
     ar->populateVbo();
+    ar->activate();
     getBehavSys()->callTriggers(Behavior::ON_LOAD);
     getPartySys()->addPartyToArea();
     getBehavSys()->callTriggers(Behavior::ON_ENTER);

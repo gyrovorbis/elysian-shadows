@@ -106,14 +106,6 @@ bool AreaBase::load(const char *const dir) {
 	strcat(buffer, ELYSIAN_AREA_ENTITY_PATH);
 	success &= loadEntities(buffer);
 
-#if 1
-#ifdef ELYSIAN_AREA_USE_INIT_LUA
-	strcpy(buffer, dir);
-	strcat(buffer, ELYSIAN_AREA_INIT_LUA_PATH);
-	LuaManager::runScriptSandbox(buffer);
-#endif
-#endif
-
     dbgPop();
 	return success;
 }
@@ -291,6 +283,21 @@ void AreaBase::populateVbo(void) {
 	free(data);
 
     vboPopulated = true;
+}
+
+void AreaBase::activate(void) {
+    if(activated) return;
+
+
+#if 1
+#ifdef ELYSIAN_AREA_USE_INIT_LUA
+    strcpy(buffer, dir);
+    strcat(buffer, ELYSIAN_AREA_INIT_LUA_PATH);
+    LuaManager::runScriptSandbox(buffer);
+#endif
+#endif
+
+    activated = true;
 }
 
 
