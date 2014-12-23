@@ -16,10 +16,13 @@ void gyPrintf(const char *const str, ...) {
     vsprintf(buffer, str, argptr);
     va_end(argptr);
 
-    QString qBuff(buffer);
-    qBuff.chop(1);
+    printf(buffer);
+    fflush(stdout);
 
-    qDebug() << qBuff;
+    //QString qBuff(buffer);
+    //qBuff.chop(1);
+
+    //qDebug() << qBuff;
 }
 
 int gyDebugUninit(void) {
