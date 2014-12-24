@@ -20,3 +20,8 @@ void EntityDockWidget::closeEvent(QCloseEvent *event)
     emit UncheckMe(1);
     event->accept();
 }
+
+
+EntityTreeWidget* EntityDockWidget::getTreeWidget(void) {
+    return ui->m_entityTreeWidget;
+}

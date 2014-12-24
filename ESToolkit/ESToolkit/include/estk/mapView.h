@@ -45,6 +45,8 @@ private:
 	void _entitySelectableCreate(void);
     bool _entityAddToSelection(TkEntity*const entity);
     bool _entityRemoveFromSelection(TkEntity*const entity);
+    void _entityClearSelection(void);
+    bool _entityIsSceneSelected(const TkEntity*const entity) const;
 
 	//SourceView virtual implementation
     virtual void    _sceneSelectionAddRect(const QRectF &rect) override;

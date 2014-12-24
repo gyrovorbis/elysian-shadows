@@ -126,6 +126,10 @@ namespace elysian {
         std::map<char const *, Behavior*, ltstr>&
                             getBehaviors(void);
 
+        void                setParentEntity(Entity*const parent);
+        Entity*             getParentEntity(void) const;
+        Entity*             getTopParentEntity(void);
+
         void                removeBehavior(char const* behaviorName);
         void                removeLuaBehavior(char const* scriptName);
         
@@ -142,6 +146,7 @@ namespace elysian {
         
         std::map<char const *, Behavior*, ltstr> _behavior;
 
+        Entity*             _parent             = nullptr;
 		unsigned char		_elev				= 0;
 		bool				_shadowVolume		= false;
 		float				_shadowDepth		= 16.0f;
@@ -165,6 +170,8 @@ namespace elysian {
         T* _addComponent(T*& comp);
         template<typename T>
         void _removeComponent(T*& comp);
+
+        void _renderRelative(void);
 
 		bool		attachComponent(Component* const comp);
 		Behavior*	attachBehavior(Behavior *const behav);
@@ -209,6 +216,9 @@ namespace elysian {
     inline bool EntityBase::isShadowVolume(void) const { return _shadowVolume; }
     inline void EntityBase::setShadowDepth(const float depth) { _shadowDepth = depth; }
     inline float EntityBase::getShadowDepth(void) const { return _shadowDepth; }
+    inline void EntityBase::setParentEntity(Entity * const parent) { _parent = parent; }
+    inline Entity* EntityBase::getParentEntity(void) const { return _parent; }
+
 
 }
 

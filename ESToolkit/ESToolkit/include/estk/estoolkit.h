@@ -122,6 +122,7 @@ private slots:
 
     //----CONNECTED MANUALLY----
     void OnProjectRemoved();
+    void onEntityTreeWidgetLayerChange();
     void OnAddArea(Project *const project, Level *const level, Area *const area);
 	void OnAreaRenamed(const QString oldName, const QString newName);
     void OnRemoveArea(Project *const project, Level *const level, Area *const area);

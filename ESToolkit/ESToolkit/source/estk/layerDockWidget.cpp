@@ -2,6 +2,7 @@
 #include <QCloseEvent>
 #include "layerDockWidget.h"
 #include "ui_layerdockwidget.h"
+#include "assets.h"
 
 LayerDockWidget::LayerDockWidget(QWidget *parent) :
     QDockWidget(parent),
@@ -10,7 +11,9 @@ LayerDockWidget::LayerDockWidget(QWidget *parent) :
     ui->setupUi(this);
 	//ui->m_layerTreeWidget->expandAll();
 	ui->m_layerTreeWidget->setCurrentItem(ui->m_layerTreeWidget->topLevelItem(3));
-	emit ActiveLayerChanged(4);
+    _emitActiveLayerChanged(4);
+
+    connect(getAssets(), SIGNAL(layerChanged(LAYER_TYPE)), this, SLOT(setCurrentLayer(LAYER_TYPE)));
 }
 
 LayerDockWidget::~LayerDockWidget()
@@ -24,7 +27,7 @@ void LayerDockWidget::ToggleDefaultItem(bool selected)
         ui->m_layerTreeWidget->clearSelection();
 		//ui->m_layerTreeWidget->setCurrentItem(ui->m_layerTreeWidget->itemBelow(ui->m_layerTreeWidget->topLevelItem(0)));
 		ui->m_layerTreeWidget->setCurrentItem(ui->m_layerTreeWidget->topLevelItem(3));
-		emit ActiveLayerChanged(4);
+        _emitActiveLayerChanged(4);
     }
 
     else {
@@ -123,7 +126,7 @@ void LayerDockWidget::on_m_layerTreeWidget_currentItemChanged(QTreeWidgetItem *c
 		//ui->m_layerTreeWidget->setCurrentItem(ui->m_layerTreeWidget->topLevelItem(0)->child(1));
 	}
 #endif
-	emit ActiveLayerChanged(current->whatsThis(0).toInt());
+    _emitActiveLayerChanged(current->whatsThis(0).toInt());
 
 }
 
@@ -138,7 +141,9 @@ int LayerDockWidget::GetCurrentLayerIndex()
     return ui->m_layerTreeWidget->currentItem()->whatsThis(0).toInt();
 }
 
-void LayerDockWidget::setCurrentLayer(const Assets::LAYER_TYPE layer) {
+void LayerDockWidget::setCurrentLayer(const LAYER_TYPE layer) {
+    if(_causedChange) return;
+
 	int index;
 	switch(layer) {
 	case Assets::LAYER_TILE1:
@@ -152,14 +157,15 @@ void LayerDockWidget::setCurrentLayer(const Assets::LAYER_TYPE layer) {
 	case Assets::LAYER_TILE3:
 		index = 1;
 		break;
+    case Assets::LAYER_ENTITY:
 	case Assets::LAYER_LIGHT:
 		index = 0;
 		break;
 	default:
 		index = 0;
-		Q_ASSERT(false);
+//		Q_ASSERT(false);
 	}
-	ui->m_layerTreeWidget->setCurrentItem(NULL);
+    ui->m_layerTreeWidget->setCurrentItem(nullptr);
 	ui->m_layerTreeWidget->setCurrentItem(ui->m_layerTreeWidget->topLevelItem(index));
 /*
 	for(int i = 0; i < ui->m_layerTreeWidget->topLevelItemCount(); ++i) {

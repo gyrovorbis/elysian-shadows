@@ -57,7 +57,8 @@ void CollisionSystem::_checkTriggers(void) {
 
 			for(unsigned i = 0; i < 32; ++i) {
 				if( !(curMask = (curContact._eventMonitorMask & (1<<i))) ) continue;
-				auto monitor = _contactMonitors[curMask];
+                auto* monitor = _contactMonitors[curMask];
+                if(!monitor) continue;
 
 				if(curMask & curContact._bodyA->_eventMonitorMask) {
 					if(!prevCollision) monitor->onCollisionEnter(curContact._bodyA, curContact._bodyB, &curContact);
@@ -80,8 +81,10 @@ void CollisionSystem::_checkTriggers(void) {
 		if(!checkCollision(colA, colB)) {
 			for(unsigned i = 0; i < 32; ++i) {
 				curMask = (1<<i);
-				if(curMask & colA._eventMonitorMask) _contactMonitors[curMask]->onCollisionExit(&colA, &colB);
-				if(curMask & colB._eventMonitorMask) _contactMonitors[curMask]->onCollisionExit(&colB, &colA);
+                auto* monitor = _contactMonitors[curMask];
+                if(!monitor) continue;
+                if(curMask & colA._eventMonitorMask) monitor->onCollisionExit(&colA, &colB);
+                if(curMask & colB._eventMonitorMask) monitor->onCollisionExit(&colB, &colA);
 			}
 		}
 	}

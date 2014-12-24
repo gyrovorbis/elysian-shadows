@@ -13,6 +13,7 @@ class EntityTreeWidget: public QTreeWidget, public AssetManager {
     Q_OBJECT
 private:
     Area *_curArea;
+    //bool _ignoreLayerChange = true;
 public:
     EntityTreeWidget(QWidget *parent=nullptr);
 public slots:
@@ -21,6 +22,10 @@ public slots:
     void OnRemoveEntity(Project *const project, Level *const level, Area *const area, Entity *const entity);
     void OnEntitySelected(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 	void OnSelectionChanged(const Selectable::TYPE, Selectable *const);
+    //void onLayerChange(const Assets::LAYER_TYPE layer);
+
+signals:
+    void entityLayerActivate(void);
 
 };
 

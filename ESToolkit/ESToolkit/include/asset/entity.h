@@ -22,6 +22,12 @@ class TkEntity;
 class LuaTableStackModel;
 typedef TkEntity Entity;
 
+namespace elysian {
+    class CollidableAttrib;
+    class SpriteAttrib;
+    class Material;
+}
+
 class TkEntity:
 		public RowsJoinerProxy,
 	/*	public QWidget, */
@@ -30,11 +36,26 @@ class TkEntity:
 		public elysian::EntityBase
 {
     friend class ESToolkit;
+    friend class elysian::EntityBase;
     Q_OBJECT
+
+public:
+    enum SELECTION_STATE { SELECTION_NONE, SELECTION_SELECTING, SELECTION_SELECTED };
 
 protected:
 	LuaTableStackModel*			_entityModel	= nullptr;
 	int							_luaRef			= LUA_NOREF;
+
+    static bool                         _staticInit;
+    static elysian::CollidableAttrib*   _selColliderAttrib;
+
+    bool                                _selectable;
+    elysian::SpriteAttrib*              _selSpriteAttrib;
+    elysian::Collidable*                _selectionCollider;
+    elysian::Renderable*                _selectionRenderable;
+    SELECTION_STATE                     _selectionState = SELECTION_NONE;
+
+    void _renderRelative(void);
 
 private:
 
@@ -78,11 +99,14 @@ public:
     using elysian::EntityBase::setTransform;
     //using elysian::LuaTableProxy<elysian::EntityBase, Entity>::fromTable;
 
-			TkEntity(void);
+            TkEntity();
+            TkEntity(const bool selectable);
 	virtual ~TkEntity(void) override;
 
     void setName(const QString name);
     void setName(char const*const name);
+    void setSelectionState(const SELECTION_STATE state);
+    SELECTION_STATE getSelectionState(void) const;
 	void populateModel(void);
 
 	//Selectable
@@ -91,8 +115,8 @@ public:
 
 	//Should "technically" be decoupled. See .cpp for comment.
     //void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
-    virtual bool activate(void) override { return elysian::EntityBase::activate(); }
-    virtual bool deactivate(void) override { return elysian::EntityBase::deactivate(); }
+    virtual bool activate(void) override;
+    virtual bool deactivate(void) override;
 
     elysian::Entity* getElysianEntity(void);
 #if 0
@@ -123,6 +147,8 @@ inline void TkEntity::setName(const QString name) {
     elysian::EntityBase::setName(name.toStdString().c_str());
     setNodeName(name);
 }
+
+inline auto TkEntity::getSelectionState(void) const -> SELECTION_STATE { return _selectionState; }
 
 
 #endif // ENTITY_H

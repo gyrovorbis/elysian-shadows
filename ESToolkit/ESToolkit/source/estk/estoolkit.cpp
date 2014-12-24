@@ -47,6 +47,7 @@
 #include "tkMapSystem.h"
 #include "elysian_light_source.hpp"
 #include "entitySelectable.h"
+#include "entityTreeWidget.h"
 
 ESToolkit::ESToolkit(QWidget *parent):
 	QMainWindow(parent),
@@ -236,6 +237,7 @@ ESToolkit::ESToolkit(QWidget *parent):
 	connect(_layerDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
 	connect(_assetDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
     connect(_entityDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
+    connect(_entityDockWidget->getTreeWidget(), SIGNAL(entityLayerActivate()), this, SLOT(onEntityTreeWidgetLayerChange()));
 	connect(_sheetDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
 	connect(_sheetDockWidget, SIGNAL(ReleaseFocus()), this, SLOT(GiveMapViewFocus()));
 	connect(_sheetDockWidget, SIGNAL(ExitPanMode()), this, SLOT(ExitPanMode()));
@@ -724,6 +726,8 @@ void ESToolkit::OnLayerChanged(Assets::LAYER_TYPE newLayer) {
 		break;
 	}
 #endif
+    if(_assets.getCurrentLayer() == Assets::LAYER_ENTITY && _assets.getCurrentLayer() != newLayer) _assets.setCurrentSelection(nullptr);
+
 	_assets.setCurrentLayer(newLayer);
 
 	//Force update for sake of solidity
@@ -1592,6 +1596,10 @@ void ESToolkit::on_actionInvoke_triggered(bool checked)
 	}
 }
 
+void ESToolkit::onEntityTreeWidgetLayerChange(void) {
+    OnActiveLayerChanged(1); //force entity layer
+    _layerDockWidget->setCurrentLayer(Assets::LAYER_ENTITY);
+}
 
 
 void ESToolkit::on_actionAdvance_Frame_triggered()

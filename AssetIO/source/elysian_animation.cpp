@@ -139,6 +139,7 @@ void Animation::addChildEntity(Entity*const entity, const char*animName) {
 
     assert(childAnim && !_children->isFull());
 
+    entity->setParentEntity(getEntity());
 	ChildAnimEntry& entry = _children->claimFreeEntry();
     entry.setStackBottomState(childAnim);
     entry.entity            = entity;
@@ -152,15 +153,17 @@ void Animation::removeChildEntity(const char *animName) {
 	for(auto it = _children->begin(); it < _children->end(); ++it) {
         if((*it).getStackBottomState<ChildAnimation>() && strcmp((*it).getStackBottomState<ChildAnimation>()->getName(), animName) == 0) {
 			_children->remove(it);
+            (*it).entity->setParentEntity(nullptr);
 			return;
 		}
 	}
 }
 
-void Animation::removeChildEntity(const Entity* const entity) {
+void Animation::removeChildEntity(Entity* const entity) {
 	for(auto it = _children->begin(); it < _children->end(); ++it) {
 		if((*it).entity == entity) {
 			_children->remove(it);
+            entity->setParentEntity(nullptr);
 			return;
 		}
 	}

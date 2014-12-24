@@ -33,6 +33,9 @@ void Assets::setCurrentSelection(Selectable *const selection) {
 	_currentSelectionType = (!selection)? Selectable::EMPTY : selection->getType();
 	_currentSelection = selection;
 
+    if(oldSelection) oldSelection->setCurrentSelection(false);
+    if(_currentSelection) _currentSelection->setCurrentSelection(true);
+
 	emit selectionChanged(_currentSelectionType, _currentSelection);
 
 	//prevent fucking memory leaks!
