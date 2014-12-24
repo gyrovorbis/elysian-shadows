@@ -31,6 +31,9 @@ bool EngineGLSceneWidget::isPlaying(void) const { return getAssets()->getEngine(
 void EngineGLSceneWidget::initializeGL(void) {
     makeCurrent();
     initializeGLFunctions(context());
+
+    unsigned parentWidth    = parentWidget()->size().width();
+    unsigned parentHeight   = parentWidget()->size().height();
    // initializeOpenGLFunctions();
    // initializeGLFunctions();
         qDebug() << "VERSION " << (char*)glGetString(GL_VERSION) <<"SCIZOR" << (char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
@@ -38,7 +41,8 @@ void EngineGLSceneWidget::initializeGL(void) {
     qDebug() << "C++ CONTEXT - " << context();
     //updateGL();
 
-   // gyVidOglInit(640, 480, 640, 480);
+    gyVidOglInit(parentWidth, parentHeight, parentWidth, parentHeight);
+     if(getAssets()->getEngine()) getAssets()->getEngine()->getCameraSys()->initializeProjMatrix();
 
     //initTextures();
      //   geometries.init();

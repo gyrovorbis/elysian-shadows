@@ -858,7 +858,7 @@ void ESToolkit::_openProjectDir(const QString dir) {
 	}
 
 	QDir::setCurrent(dir);
-    auto* viewport = _engineGLView = new EngineGLSceneWidget(QGLFormat(QGL::SampleBuffers | QGL::DirectRendering));
+    auto* viewport = _engineGLView = new EngineGLSceneWidget(QGLFormat()/*QGLFormat(QGL::SampleBuffers | QGL::DirectRendering)*/);
 
     viewport->setMouseTracking(true);
     _ui->mapView->setViewport(viewport);

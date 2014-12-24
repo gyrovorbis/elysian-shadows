@@ -291,7 +291,7 @@ void AreaBase::activate(void) {
 
 #if 1
 #ifdef ELYSIAN_AREA_USE_INIT_LUA
-    strcpy(buffer, dir);
+    strcpy(buffer, path); //dir);
     strcat(buffer, ELYSIAN_AREA_INIT_LUA_PATH);
     LuaManager::runScriptSandbox(buffer);
 #endif

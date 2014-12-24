@@ -14,6 +14,9 @@
 
 GYAppCbRet Init(int argc, char **argv) {
 
+    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps, false);
+    QApplication::setAttribute(Qt::AA_Use96Dpi, true);
+
     QRectF rect;
     rect.setSize(QSizeF(2.0f, 5.0f));
 
