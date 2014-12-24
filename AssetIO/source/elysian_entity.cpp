@@ -28,6 +28,12 @@ ELYSIAN_LUA_PROXY_FIELDS_EXPORT(EntityBase)
 
 void EntityBase::setTransform(const OOLUA::Lua_table_ref valTable) { _transform.fromTable(valTable); }
 
+Entity* EntityBase::getTopParentEntity(void) {
+    Entity* it = static_cast<Entity*>(this);
+    for(; it->_parent; it = it->_parent);
+    return it;
+}
+
 void EntityBase::reested(void) {
 	dbgprintf(LOG_VERBOSE, "Entity::Reested(%s) - Dereesting entity!", _name);
 	//SHED COMPONENTS GRACEFULLY
@@ -83,13 +89,17 @@ void EntityBase::render(void) {
 
     }
 
+    static_cast<Entity*>(this)->_renderRelative();
 
-    _renderable->beginRender();
-	//if(_depthType == DEPTH_BUFFERED) transform._size.y = transform._size.z;
-	_renderable->render();
-	_renderable->endRender();
 	gyMatPop();
     _transform._size.z = oldZ;
+}
+
+void EntityBase::_renderRelative(void) {
+    _renderable->beginRender();
+    //if(_depthType == DEPTH_BUFFERED) transform._size.y = transform._size.z;
+    _renderable->render();
+    _renderable->endRender();
 }
 
 #if 0

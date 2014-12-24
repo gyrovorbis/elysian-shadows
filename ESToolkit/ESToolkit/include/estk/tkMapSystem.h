@@ -86,9 +86,9 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
 
     static const GYColor4 selectionDecorColors[DRAW_MAX] = {
         { 0, 0, 0, 0 },
-        { 255, 255, 0, 100 },
-        { 255, 0, 255, 100},
-        { 0, 255, 255, 100}
+        { 0, 255, 255, 100 },
+        { 255, 255, 0, 100},
+        { 255, 0, 255, 100}
     };
 //    enum TILE_DECOR_TYPE { TILE_DECOR_NONE, TILE_DECOR_INDEX, TILE_DECOR_ELEV, TILE_DECOR_ORIENT, TILE_DECOR_PLANE, TILE_DECOR_MAX };
     /*

@@ -32,8 +32,15 @@
 #include "elysian_lua_wrappers.hpp"
 #include <cmath>
 
-TkEntity::TkEntity(void):
+elysian::CollidableAttrib* TkEntity::_selColliderAttrib;
+//elysian::Material* TkEntity::_selMaterial;
+bool TkEntity::_staticInit = false;
+
+TkEntity::TkEntity(void): TkEntity(true) {}
+
+TkEntity::TkEntity(const bool selectable):
 	RowsJoinerProxy(nullptr),
+    _selectable(selectable),
 	/*_renderable(nullptr),
 	_animation(nullptr),
 	_collidable(nullptr),
@@ -51,6 +58,23 @@ TkEntity::TkEntity(void):
 	_entityModel = new LuaTableStackModel(_luaRef);
 	_entityModel->populateModel();
 	insertSourceModel(_entityModel);
+
+    if(selectable) {
+        if(!_staticInit) {
+
+            _selColliderAttrib = new elysian::CollidableAttrib;
+            _selColliderAttrib->getFlags()->resetType();
+            _selColliderAttrib->getFlags()->addType(elysian::CollisionFlags::CURSOR);
+            _staticInit = true;
+        }
+
+        _selectionCollider = new elysian::Collidable(*this);
+        _selectionCollider->setAttrib(_selColliderAttrib);
+        _selectionCollider->setResolvePenetration(false);
+        _selectionRenderable = new elysian::Renderable(*this);
+        _selSpriteAttrib = new elysian::SpriteAttrib;
+        _selectionRenderable->setSpriteAttrib(_selSpriteAttrib);
+    }
 
 
 #if 0
@@ -723,4 +747,46 @@ Enemy *Entity::getEnemy() const { return _enemy; }
 
 
 #endif
+
+void TkEntity::setSelectionState(const SELECTION_STATE state) {
+    if(!_selectable) return;
+    _selectionState = state;
+
+    switch(state) {
+        case SELECTION_SELECTED:
+            _selSpriteAttrib->setColor(255, 255, 0, 100);
+            break;
+        case SELECTION_SELECTING:
+            _selSpriteAttrib->setColor(0, 255, 255, 100);
+            break;
+    default: break;
+    }
+}
+
+bool TkEntity::activate(void) {
+    if(!_active && _selectable) {
+        _selectionCollider->addToLevel();
+        _selectionRenderable->addToLevel();
+    }
+
+    return elysian::EntityBase::activate();
+}
+
+bool TkEntity::deactivate(void) {
+    if(_active && _selectable) {
+        _selectionCollider->removeFromLevel();
+        _selectionRenderable->removeFromLevel();
+    }
+    return elysian::EntityBase::deactivate();
+}
+
+void TkEntity::_renderRelative(void) {
+    if(_selectionState != SELECTION_NONE) {
+        _selectionRenderable->beginRender();
+        //if(_depthType == DEPTH_BUFFERED) transform._size.y = transform._size.z;
+        _selectionRenderable->render();
+        _selectionRenderable->endRender();
+    }
+    elysian::EntityBase::_renderRelative();
+}
 

@@ -8,10 +8,13 @@
 #include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
 #include <gyro_video_api.h>
 
+ELYSIAN_ASSET_TYPEDEF(Entity)
+
 namespace elysian {
 
 	class Renderable: public Component {
     friend class EntityBase;
+    friend Entity;
 	private:
 		GYTexCoord2			_texCoord[4];
 		Material*			_material		= nullptr;

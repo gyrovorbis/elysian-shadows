@@ -164,6 +164,7 @@ namespace elysian {
 		bool					_isActive			= false;
 		bool					_looping			= true;
         AnimationAttrib*        _attrib             = nullptr;
+        Entity*                 _parent             = nullptr;
 		
 				Animation(Entity& parent);
 		virtual ~Animation(void) override;
@@ -199,8 +200,8 @@ namespace elysian {
 		void					setChildPivot(const float x, const float y);
 		const GYVector2&		getChildPivot(void) const;
 		void					addChildEntity(Entity*const entity, const char*animName);
-		void					removeChildEntity(const char*animName);
-		void					removeChildEntity(const Entity* entity);
+        void					removeChildEntity(const char*animName);
+        void					removeChildEntity(Entity* entity);
         //const AnimationSequence* getSequence(const char* name);
 	};
 

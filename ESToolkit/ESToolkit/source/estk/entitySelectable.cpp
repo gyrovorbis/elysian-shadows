@@ -12,6 +12,7 @@ QVector<TkEntity*>& EntitySelectable::getEntities(void) {
 }
 
 void EntitySelectable::addEntity(TkEntity * const entity) {
+    if(!entity) return;
 	_entities.push_back(entity);
 	insertSourceModel(entity);
 }
@@ -28,5 +29,8 @@ void EntitySelectable::removeEntity(TkEntity * const entity) {
 
 void EntitySelectable::translate(const float x, const float y) {
     for(auto& it : _entities) it->getTransform().translate(x, y);
+}
 
+void EntitySelectable::setCurrentSelection(const bool val) {
+    for(auto& it : _entities) it->setSelectionState(val? TkEntity::SELECTION_SELECTED : TkEntity::SELECTION_NONE);
 }

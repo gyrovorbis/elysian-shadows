@@ -49,6 +49,8 @@ public:
 	virtual ~Selectable(void) {}
 	virtual TYPE getType(void) const=0;
 	virtual void installSelectionViewCustomDelegates(QAbstractItemView *const /*view*/) {}
+
+    virtual void setCurrentSelection(const bool /*val*/) {}
 };
 
 

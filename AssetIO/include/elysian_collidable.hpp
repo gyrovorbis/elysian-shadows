@@ -30,6 +30,7 @@ namespace elysian {
 			FRIENDLY	= 1<<7,
 			ENEMY		= 1<<8,
 			PLAYER		= 1<<9,
+            CURSOR      = 1<<10,
 		//MOAR BITS
 			ALL			= ~0x0
 		};

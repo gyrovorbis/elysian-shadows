@@ -20,6 +20,8 @@ public:
 
     void                translate(const float x, const float y);
 
+    virtual void        setCurrentSelection(const bool val) override;
+
 };
 
 #endif // ENTITY_SELECTABLE_H

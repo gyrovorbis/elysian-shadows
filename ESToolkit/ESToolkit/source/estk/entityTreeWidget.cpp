@@ -11,6 +11,7 @@ EntityTreeWidget::EntityTreeWidget(QWidget *parent): QTreeWidget(parent) {
 	connect(getAssets(), SIGNAL(selectionChanged(const Selectable::TYPE, Selectable *const)), this, SLOT(OnSelectionChanged(const Selectable::TYPE, Selectable *const)));
 	connect(getAssets(), SIGNAL(entityAdded(Project*const,Level*const,Area*const,Entity*const)), this, SLOT(OnAddEntity(Project*const,Level*const,Area*const,Entity*const)));
 	connect(getAssets(), SIGNAL(entityRemoved(Project*const,Level*const,Area*const,Entity*const)), this, SLOT(OnRemoveEntity(Project*const,Level*const,Area*const,Entity*const)));
+    //onnect(getAssets(), SIGNAL(layerChanged(Assets::LAYER_TYPE)), this, SLOT(onLayerChange(Assets::LAYER_TYPE)));
 }
 
 void EntityTreeWidget::OnAreaChange(Area *const area) {
@@ -23,6 +24,18 @@ void EntityTreeWidget::OnAreaChange(Area *const area) {
 		addTopLevelItem((QTreeWidgetItem *)entities[i]);
     }
 }
+/*
+void EntityTreeWidget::onLayerChange(const Assets::LAYER_TYPE layer) {
+    if(_ignoreLayerChange) return;
+
+    if(Assets::LAYER_TYPE == Assets::LAYER_ENTITY) {
+
+    } else {
+        setCurrentItem(nullptr);
+    }
+    getAssets()->setCurrentSelection(new EntitySelectable(static_cast<TkEntity*>(current)));
+
+}*/
 
 void EntityTreeWidget::OnAddEntity(Project *const /*project*/, Level *const /*level*/, Area *const area, Entity *const entity) {
     if(area == getCurrentArea()) addTopLevelItem((QTreeWidgetItem *)entity);
@@ -51,6 +64,9 @@ void EntityTreeWidget::OnSelectionChanged(const Selectable::TYPE type, Selectabl
 		for(auto it = entities->getEntities().begin(); it != entities->getEntities().end(); ++it) {
 			setCurrentItem(static_cast<TkEntity*>(*it));
 		}
+        //_ignoreLayerChange = true;
+        if(getAssets()->getCurrentLayer() != Assets::LAYER_ENTITY) emit entityLayerActivate();
+        //ignoreLayerChange = false;
 		break;
 	}
 }

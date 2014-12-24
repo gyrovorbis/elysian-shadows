@@ -100,6 +100,7 @@ namespace elysian {
 		//void ResolveContacts(void);
 
 		void registerContactEventMonitor(const uint32_t mask, CollisionContactEventMonitor*const monitor);
+        void unregisterContactEventMonitor(const uint32_t mask);
 		void clearContacts(void);
 		unsigned getContactCount(void) const;
 		unsigned getPenResIterUsed(void) const;
@@ -126,6 +127,9 @@ namespace elysian {
 	inline void CollisionSystem::registerContactEventMonitor(const uint32_t mask, CollisionContactEventMonitor * const monitor) {
 		_contactMonitors[mask] = monitor;
 	}
+    inline void CollisionSystem::unregisterContactEventMonitor(const uint32_t mask) {
+        _contactMonitors.erase(mask);
+    }
 	inline void CollisionSystem::clearContacts(void) { _contactAmount = 0; _prevContactAmount = 0; }
 	inline void CollisionSystem::setEnabled(const bool enabled) { _enabled = enabled; }
 
