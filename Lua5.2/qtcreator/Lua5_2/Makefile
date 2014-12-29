@@ -15,7 +15,7 @@ CXX           = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefau
 DEFINES       = 
 CFLAGS        = -pipe -g -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -mmacosx-version-min=10.6 -Wall -W $(DEFINES)
 CXXFLAGS      = -pipe -g -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -mmacosx-version-min=10.6 -Wall -W $(DEFINES)
-INCPATH       = -I/Users/tyler/Qt5.3.2/5.3/clang_64/mkspecs/macx-clang -I. -I../../include -I../../include/lua -I../../../libGyro/include
+INCPATH       = -I/Users/tyler/Qt5.3.2/5.3/clang_64/mkspecs/macx-clang -I. -I../../include -I../../include/lua -I../../../libGyro/include -I.
 AR            = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar cq
 RANLIB        = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib -s
 QMAKE         = /Users/tyler/Qt5.3.2/5.3/clang_64/bin/qmake
