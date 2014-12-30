@@ -542,6 +542,7 @@
    <property name="icon">
     <iconset resource="../../resource/resource.qrc">
      <normaloff>:/toolbar/images/invokeIcon.png</normaloff>
+     <normalon>:/toolbar/images/stopIcon.png</normalon>
      <activeoff>:/toolbar/images/invokeIconColor.png</activeoff>:/toolbar/images/invokeIcon.png</iconset>
    </property>
    <property name="text">
@@ -978,6 +979,10 @@
    </property>
   </action>
   <action name="actionAdvance_Frame">
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/advanceFrameIcon.png</normaloff>:/toolbar/images/advanceFrameIcon.png</iconset>
+   </property>
    <property name="text">
     <string>Advance Frame</string>
    </property>

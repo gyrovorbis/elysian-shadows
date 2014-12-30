@@ -48,6 +48,8 @@
         <file>images/sheet-view-ratio-color.png</file>
         <file>images/toggle-autoscroll.png</file>
         <file>images/toggle-autoscroll-color.png</file>
+        <file>images/advanceFrameIcon.png</file>
+        <file>images/stopIcon.png</file>
     </qresource>
     <qresource prefix="/splash">
         <file>images/splashScreen.png</file>

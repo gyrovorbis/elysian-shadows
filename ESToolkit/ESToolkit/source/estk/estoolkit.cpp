@@ -467,6 +467,7 @@ void ESToolkit::toggleProjectActions(bool enabled)
 	_ui->actionHorizontal_SheetView->setEnabled(enabled);
 	_ui->actionDefault_Transform->setEnabled(enabled);
 	_ui->actionReset_Layout->setEnabled(enabled);
+    _ui->actionAdvance_Frame->setEnabled(enabled);
 	m_activePlatform->setEnabled(enabled);
 }
 
@@ -485,7 +486,7 @@ void ESToolkit::WriteSettings()
 	settings.setValue("state", saveState());
 	settings.setValue("projectDir", _assets.getProjectDir());
 	settings.setValue("assetDock", _assetDockWidget->isVisible());
-   // settings.setValue("entityDock", _entityDockWidget->isVisible());
+    settings.setValue("entityDock", _entityDockWidget->isVisible());
 	settings.setValue("layerDock", _layerDockWidget->isVisible());
 	settings.setValue("sheetDock", _sheetDockWidget->isVisible());
 	settings.setValue("selectionDock", _selectionDockWidget->isVisible());
@@ -504,7 +505,7 @@ void ESToolkit::ReadSettings()
 {
     toggleProjectActions(true);
 	_assetDockWidget->setEnabled(false);
-  //  _entityDockWidget->setEnabled(false);
+    _entityDockWidget->setEnabled(false);
 	_layerDockWidget->setEnabled(false);
 	_sheetDockWidget->setEnabled(false);
 	_selectionDockWidget->setEnabled(false);
@@ -891,7 +892,7 @@ void ESToolkit::_openProjectDir(const QString dir) {
     if(proj) {
         toggleProjectActions(true);
 		_assetDockWidget->setEnabled(true);
-	   // _entityDockWidget->setEnabled(true);
+        _entityDockWidget->setEnabled(true);
 		_layerDockWidget->ToggleDefaultItem(true);
 		_layerDockWidget->setEnabled(true);
         _sheetDockWidget->CenterSheetView(0, 0);
@@ -1173,7 +1174,7 @@ void ESToolkit::OnProjectRemoved() {
     toggleProjectActions(false);
     _assetDockWidget->clearTreeView();
 	_assetDockWidget->setEnabled(false);
-  //  _entityDockWidget->setEnabled(false);
+    _entityDockWidget->setEnabled(false);
 	_layerDockWidget->ToggleDefaultItem(false);
 	_layerDockWidget->setEnabled(false);
 	_sheetDockWidget->setEnabled(false);
@@ -1257,7 +1258,7 @@ void ESToolkit::on_actionAsset_View_triggered(bool checked)
 
 void ESToolkit::on_actionEntity_View_triggered(bool checked)
 {
-   // _entityDockWidget->setVisible(checked);
+    _entityDockWidget->setVisible(checked);
 	_ui->actionEntity_View->setChecked(checked);
 }
 
@@ -1295,14 +1296,14 @@ void ESToolkit::on_actionReset_Layout_triggered()
 		_assetDockWidget->setVisible(true);
 		_ui->actionAsset_View->setChecked(true);
 	}
-/*
+
 	if(dockWidgetArea(_entityDockWidget) != Qt::LeftDockWidgetArea || _entityDockWidget->isFloating() || !_entityDockWidget->isVisible()) {
 		_entityDockWidget->setFloating(false);
 		removeDockWidget(_entityDockWidget);
 		addDockWidget(Qt::LeftDockWidgetArea, _entityDockWidget);
 		_entityDockWidget->setVisible(true);
 		_ui->actionEntity_View->setChecked(true);
-	}*/
+    }
 
 	if(dockWidgetArea(_layerDockWidget) != Qt::LeftDockWidgetArea || _layerDockWidget->isFloating() || !_layerDockWidget->isVisible()) {
 		_layerDockWidget->setFloating(false);
@@ -1435,9 +1436,8 @@ void ESToolkit::on_actionDefault_Transform_triggered()
 	unsigned w, h;
 	gyVidResolution(&w, &h);
 	keyFrame.setPos(w*0.5f, h*0.5f);
-
 	_assets.getEngine()->getCameraSys()->moveToKeyFrame(keyFrame);
-
+    _assets.getEngine()->getCameraSys()->setStaticScale(1.0f);
     //_ui->mapView->defaultTransform();
 
 }
@@ -1605,6 +1605,7 @@ void ESToolkit::onEntityTreeWidgetLayerChange(void) {
 
 void ESToolkit::on_actionAdvance_Frame_triggered()
 {
+#if 0 //random debug reest. :D
 	static bool once = false;
 	static GYVector4 color[4] = {
 		{ 10.0f, 0.0f, 0.0f, 1.5f },
@@ -1637,7 +1638,7 @@ void ESToolkit::on_actionAdvance_Frame_triggered()
 
 		once = true;
 	}
-
+#endif
 
 	_engineGLView->advanceFrame();
 }

@@ -213,10 +213,10 @@ void DebugBase::processInput(GameInput& input) {
 
 	//Camera zoom
     if(input.getDown(GameInput::BUT_W) && ! input.getDown(GameInput::BUT_LALT)){
-        _engine->_cameraSystem->staticScale(0.9f*60.0f*getTimerSys()->getDeltaTime());
+        _engine->_cameraSystem->staticScale(0.95f);
     }
     if(input.getDown(GameInput::BUT_S) && !input.getDown(GameInput::BUT_LALT)){
-        _engine->_cameraSystem->staticScale(1.1f*60.0f*getTimerSys()->getDeltaTime());
+        _engine->_cameraSystem->staticScale(1.05f);
 	}
 
 	if(input.getTapped(GameInput::BUT_0)) {
