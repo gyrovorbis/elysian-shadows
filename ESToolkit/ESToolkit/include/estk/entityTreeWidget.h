@@ -16,12 +16,13 @@ private:
     //bool _ignoreLayerChange = true;
 public:
     EntityTreeWidget(QWidget *parent=nullptr);
-public slots:
+private slots:
     void OnAreaChange(Area * const area);
     void OnAddEntity(Project *const project, Level *const level, Area *const area, Entity *const entity);
     void OnRemoveEntity(Project *const project, Level *const level, Area *const area, Entity *const entity);
     void OnEntitySelected(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 	void OnSelectionChanged(const Selectable::TYPE, Selectable *const);
+    void onEntityParented(Entity*const child, Entity*const parent);
     //void onLayerChange(const Assets::LAYER_TYPE layer);
 
 signals:

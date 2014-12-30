@@ -277,7 +277,7 @@ void DestView<T>::mousePressEvent(QMouseEvent *event) {
 		return;
 	}
 
-	//event->ignore();
+    event->ignore();
 	QGraphicsView::mousePressEvent(event);
 }
 
@@ -373,8 +373,10 @@ void DestView<T>::mouseMoveEvent(QMouseEvent *event) {
 
 	updateSelectionItemGroup();
 
-	//event->ignore();
-    if(event) QGraphicsView::mouseMoveEvent(event);
+    if(event) {
+        event->ignore();
+        QGraphicsView::mouseMoveEvent(event);
+    }
 }
 
 

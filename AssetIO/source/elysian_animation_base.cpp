@@ -10,7 +10,7 @@ namespace elysian {
 
 //----NONSTATIC----
 
-void Animation::addState(const char* state) {
+void AnimationBase::addState(const char* state) {
 	if(_statePool.find(AnimStateEntry(state)) == _statePool.end()) {
 
 		AnimStateEntry& entry = _statePool.claimFreeEntry();
@@ -27,7 +27,7 @@ void Animation::addState(const char* state) {
     }
 }
 
-void Animation::removeState(const char* state) {
+void AnimationBase::removeState(const char* state) {
     auto it = _statePool.find(AnimStateEntry(state));
 
     if(it != _statePool.end()) {
@@ -44,7 +44,7 @@ void Animation::removeState(const char* state) {
     }
 }
 
-void Animation::replaceState(const char *oldState, const char *newState) {
+void AnimationBase::replaceState(const char *oldState, const char *newState) {
     auto it = _statePool.find(AnimStateEntry(oldState));
 	auto itNew = _statePool.find(AnimStateEntry(newState));
 
@@ -71,7 +71,7 @@ void Animation::replaceState(const char *oldState, const char *newState) {
 
 }
 
-void Animation::_updateStates(void) {
+void AnimationBase::_updateStates(void) {
     updateState(_statePool);
 
     if(_children) {
@@ -127,14 +127,14 @@ void AnimationStateStack<S, T>::updateState(const Pool<AnimStateEntry>& states) 
 }
 
 
-Animation::~Animation(void) {
+AnimationBase::~AnimationBase(void) {
 	delete _children;
 }
 
-Component::TYPE Animation::getType(void) const { return Component::ANIMATION; }
+Component::TYPE AnimationBase::getType(void) const { return Component::ANIMATION; }
 
 
-void Animation::addChildEntity(Entity*const entity, const char*animName) {
+void AnimationBase::addChildEntity(Entity*const entity, const char*animName) {
     ChildAnimation* childAnim = _childAttrib->getAnimation(animName);
 
     assert(childAnim && !_children->isFull());
@@ -149,7 +149,7 @@ void Animation::addChildEntity(Entity*const entity, const char*animName) {
 
 }
 
-void Animation::removeChildEntity(const char *animName) {
+void AnimationBase::removeChildEntity(const char *animName) {
 	for(auto it = _children->begin(); it < _children->end(); ++it) {
         if((*it).getStackBottomState<ChildAnimation>() && strcmp((*it).getStackBottomState<ChildAnimation>()->getName(), animName) == 0) {
 			_children->remove(it);
@@ -159,7 +159,7 @@ void Animation::removeChildEntity(const char *animName) {
 	}
 }
 
-void Animation::removeChildEntity(Entity* const entity) {
+void AnimationBase::removeChildEntity(Entity* const entity) {
 	for(auto it = _children->begin(); it < _children->end(); ++it) {
 		if((*it).entity == entity) {
 			_children->remove(it);
@@ -169,7 +169,7 @@ void Animation::removeChildEntity(Entity* const entity) {
 	}
 }
 
-void Animation::setSpeedMultiplier(const float factor) {
+void AnimationBase::setSpeedMultiplier(const float factor) {
     if(_children) {
         for(auto it = _children->begin(); it < _children->end(); ++it) {
             auto* childAnim = (*it).getStackBottomState<ChildAnimation>();
@@ -182,7 +182,7 @@ void Animation::setSpeedMultiplier(const float factor) {
     _speedMultiplier = factor;
 }
 
-void Animation::_updateChildren(void) {
+void AnimationBase::_updateChildren(void) {
 	if(!_children || _children->size() == 0) return;
 
     InstanceTransform*	parentTransform = &getEntity()->_transform;
@@ -267,31 +267,31 @@ void Animation::_updateChildren(void) {
 	}
 }
 
-bool Animation::load(FILE* /*file*/) {
+bool AnimationBase::load(FILE* /*file*/) {
 	return true;
 }
 
-bool Animation::save(FILE* /*file*/) {
+bool AnimationBase::save(FILE* /*file*/) {
 	return true;
 }
 
-bool Animation::canAddTo(Entity &parent) {
+bool AnimationBase::canAddTo(Entity &parent) {
     return (parent.getRenderable());
 }
 
 //O(1)
-bool Animation::addToLevel(void) {
+bool AnimationBase::addToLevel(void) {
 	if(_children)
 	for(auto it = _children->begin(); it < _children->end(); ++it) {
 		auto childEntry = &(*it);
 		_curArea->addEntity(childEntry->entity);
 	}
-	_curArea->animations.push_back(this);
+    _curArea->animations.push_back(static_cast<Animation*>(this));
 	return true;
 }
 
 //O(n)
-bool Animation::removeFromLevel(void) {
+bool AnimationBase::removeFromLevel(void) {
 	if(_children)
 	for(auto it = _children->begin(); it < _children->end(); ++it) {
 		auto childEntry = &(*it);
@@ -301,7 +301,7 @@ bool Animation::removeFromLevel(void) {
 }
 
 
-void Animation::update(const float deltaTime) {
+void AnimationBase::update(const float deltaTime) {
     if(!_isActive || !currentSequence) return;
 
         _timer += deltaTime * _speedMultiplier;
@@ -334,7 +334,7 @@ void Animation::update(const float deltaTime) {
 }
 
 
-void Animation::playAnimation(const char *name, EventMonitor*const monitor) {
+void AnimationBase::playAnimation(const char *name, EventMonitor*const monitor) {
 
     if(!_isActive || !currentSequence || strcmp(name, currentSequence->getName()) != 0) {
         setSequence(name);
@@ -360,7 +360,7 @@ void Animation::playAnimation(const char *name, EventMonitor*const monitor) {
 
 }
 
-void Animation::stopAnimation(void) {
+void AnimationBase::stopAnimation(void) {
     if(currentSequence) {
         setCurrentIndex(0);
         _timer = 0.0f;
@@ -375,7 +375,7 @@ void Animation::stopAnimation(void) {
 	_isActive = false;
 }
 
-void Animation::setCurrentFrame(const unsigned frame) {
+void AnimationBase::setCurrentFrame(const unsigned frame) {
     setCurrentIndex(frame);
 	_timer = 0.0f;
     if(currentFrame) {

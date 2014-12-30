@@ -11,6 +11,7 @@ EntityTreeWidget::EntityTreeWidget(QWidget *parent): QTreeWidget(parent) {
 	connect(getAssets(), SIGNAL(selectionChanged(const Selectable::TYPE, Selectable *const)), this, SLOT(OnSelectionChanged(const Selectable::TYPE, Selectable *const)));
 	connect(getAssets(), SIGNAL(entityAdded(Project*const,Level*const,Area*const,Entity*const)), this, SLOT(OnAddEntity(Project*const,Level*const,Area*const,Entity*const)));
 	connect(getAssets(), SIGNAL(entityRemoved(Project*const,Level*const,Area*const,Entity*const)), this, SLOT(OnRemoveEntity(Project*const,Level*const,Area*const,Entity*const)));
+    connect(getAssets(), SIGNAL(entityParented(Entity*const,Entity*const)), this, SLOT(onEntityParented(Entity*const,Entity*const)));
     //onnect(getAssets(), SIGNAL(layerChanged(Assets::LAYER_TYPE)), this, SLOT(onLayerChange(Assets::LAYER_TYPE)));
 }
 
@@ -69,4 +70,14 @@ void EntityTreeWidget::OnSelectionChanged(const Selectable::TYPE type, Selectabl
         //ignoreLayerChange = false;
 		break;
 	}
+}
+
+void EntityTreeWidget::onEntityParented(Entity * const child, Entity * const parent) {
+    if(static_cast<QTreeWidgetItem*>(child)->parent()) {
+        static_cast<QTreeWidgetItem*>(child)->parent()->removeChild(child);
+    }
+
+    if(parent) {
+        parent->addChild(child);
+    }
 }

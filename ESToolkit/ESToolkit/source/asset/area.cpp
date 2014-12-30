@@ -161,6 +161,7 @@ QString Area::getLocation(void) const {
 void Area::connectSlots(Entity *const entity) {
 	connect(entity, SIGNAL(componentAttached(Entity*const,Component*const)), this, SLOT(onComponentAttached(Entity*const,Component*const)));
 	connect(entity, SIGNAL(componentRemoved(Entity*const,Component*const)), this, SLOT(onComponentRemoved(Entity*const,Component*const)));
+    connect(entity, SIGNAL(entityParented(Entity*const,Entity*const)), this, SLOT(onEntityParented(Entity*const,Entity*const)));
 }
 
 bool TkArea::load(const char*const str) {
@@ -430,4 +431,7 @@ elysian::Area& Area::getElysianArea(void) {
     return *this;
 }
 
+void TkArea::onEntityParented(Entity * const child, Entity * const parent) {
+    emit entityParented(child, parent);
+}
 

@@ -23,7 +23,7 @@
 #include "component.h"
 #include "assets.h"
 #include "project.h"
-#include "animation.h"
+#include "elysian_animation.hpp"
 #include "collidable.h"
 #include "character.h"
 #include "warp.h"
@@ -790,3 +790,6 @@ void TkEntity::_renderRelative(void) {
     elysian::EntityBase::_renderRelative();
 }
 
+void TkEntity::onEntityParented(Entity * const child, Entity * const parent) {
+    emit entityParented(child, parent);
+}

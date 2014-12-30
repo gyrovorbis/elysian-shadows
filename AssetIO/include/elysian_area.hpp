@@ -57,11 +57,11 @@
 ELYSIAN_ASSET_TYPEDEF(Area)
 ELYSIAN_ASSET_TYPEDEF(Level)
 ELYSIAN_ASSET_TYPEDEF(Entity)
+ELYSIAN_ASSET_TYPEDEF(Animation)
 
 namespace elysian {
 
 	class Renderable;
-    class Animation;
     class Collidable;
 	class RigidBody;
     class Character;

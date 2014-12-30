@@ -1,11 +1,9 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
-#include <QWidget>
 #include "elysian_component.hpp"
 
-class Component: public QWidget {
-    Q_OBJECT
+class Component {
 public:
 	virtual elysian::Component::TYPE getType() const = 0;
 

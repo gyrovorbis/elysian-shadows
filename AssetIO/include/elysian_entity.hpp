@@ -19,11 +19,11 @@
 #define ELYSIAN_ENTITY_NAME_DEFAULT	"Untitled"
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
+ELYSIAN_ASSET_TYPEDEF(Animation)
 
 namespace elysian {
 
 	class Renderable;
-    class Animation;
     class Collidable;
 	class RigidBody;
 	class Character;

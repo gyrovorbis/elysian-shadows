@@ -89,6 +89,7 @@ signals:
 	void componentAttached(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
 	void componentRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
     void mapChanged(Area*const area, const QVector<MapChange>& changes);
+    void entityParented(Entity*const child, Entity*const parent);
 
 	void projectRemoveUI();
 private slots:
@@ -104,6 +105,7 @@ private slots:
 	void onComponentAttached(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
 	void onComponentRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
     void onMapChanged(Area*const area, const QVector<MapChange>& changes);
+    void onEntityParented(Entity*const child, Entity*const parent);
 
 private:
     static Project* m_project;

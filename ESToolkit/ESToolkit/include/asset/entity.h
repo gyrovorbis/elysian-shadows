@@ -7,12 +7,12 @@
 #include "elysian_asset_typedefs.hpp"
 #include "elysian_entity.hpp"
 #include "rowsJoinerProxyModel.h"
+#include "elysian_asset_typedefs.hpp"
 
 class Sprite;
 class Component;
 class Renderable;
 class Collidable;
-class Animation;
 class Warp;
 class Item;
 class Character;
@@ -20,7 +20,8 @@ class Friendly;
 class Enemy;
 class TkEntity;
 class LuaTableStackModel;
-typedef TkEntity Entity;
+ELYSIAN_ASSET_TYPEDEF(Entity)
+ELYSIAN_ASSET_TYPEDEF(Animation)
 
 namespace elysian {
     class CollidableAttrib;
@@ -90,6 +91,7 @@ private:
     //void PopulateWidgets(void);
 
 public slots:
+    void onEntityParented(Entity*const child, Entity*const parent);
 
 public:
 
@@ -133,6 +135,7 @@ public:
 signals:
     void ComponentAttached(Entity *const entity, Component *const comp);
     void ComponentRemoved(Entity *const entity, Component *const comp);
+    void entityParented(Entity*const child, Entity*const parent);
 
 };
 
