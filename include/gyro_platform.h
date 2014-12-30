@@ -96,10 +96,17 @@
 
 //===== FUCKING HACK REEST - DESTROY ME =====
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
     static inline void gyVidSceneBegin() {  }
 
     static inline void gyVidSceneEnd() { }
 
+#ifdef __cplusplus
+}
+#endif
 // =============== / END REEST ==============
 
 

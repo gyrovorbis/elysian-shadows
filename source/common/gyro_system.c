@@ -54,6 +54,7 @@ void gySysRegisterAppQuit(GYAppQuitCb quit_cb)
 	gy_appQuitCb = quit_cb;
 }
 
+#if GYRO_PLATFORM != GYRO_PLATFORM_Qt
 int gyro_entry_point(int argc, char **argv)
 {
 	gyro_main();
@@ -81,3 +82,4 @@ int gyro_entry_point(int argc, char **argv)
 	}
 	return 0;
 }
+#endif

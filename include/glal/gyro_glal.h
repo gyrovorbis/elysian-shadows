@@ -3,10 +3,6 @@
 
 #include "gyro_platform.h"
 
-#ifdef WIN32
- // :D Mmmmmm
-#include <windows.h>
-#endif
 //this is no good
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
 #	ifdef __APPLE__
@@ -30,13 +26,16 @@
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_Qt
 
-#   include <gl.h>
-
-
 #	ifdef __APPLE__
+#       include <gl.h>
 #		include <OpenAL/al.h>
 #		include <OpenAL/alc.h>
 #	else
+#       include <windows.h>
+#       include <GL/glew.h>
+#       include <GL/gl.h>
+#       include <GL/glu.h>
+#
 #       define AL_LIBTYPE_STATIC
 #		include <AL/al.h>
 #       include <AL/alc.h>

@@ -2,6 +2,16 @@
 #include <string.h>
 #include <assert.h>
 
+
+#ifdef _WIN32
+#   define MM_LOAD_ALIGN(a)         _mm_loadu_ps(a)
+#   define MM_STORE_ALIGN(a, b)     _mm_storeu_ps(a, b)
+#else
+#   define MM_LOAD_ALIGN(a)         _mm_load_ps(a)
+#   define MM_STORE_ALIGN(a, b)     _mm_store_ps(a, b)
+#endif
+
+
 extern GYMatrix4 _curMat;
 
 static inline void gyMatMultMat(GYMatrix4 dMat, const GYMatrix4 sMat1, const GYMatrix4 sMat2) {
@@ -31,15 +41,15 @@ static inline void gyMatMultMat(GYMatrix4 dMat, const GYMatrix4 sMat1, const GYM
 
 	for (i = 0; i < 16; i += 4) {
 	//unroll the first step of the loop to avoid having to initialize dest_line to zero
-		src1_line = _mm_load_ps((float*)sMat1);									//first column
+        src1_line = MM_LOAD_ALIGN((float*)sMat1);									//first column
 		src2_line = _mm_set1_ps(((float*)sMat2)[i]);									//initialize vector to first index of ith column
 		dest_line = _mm_mul_ps(src1_line, src2_line);								//multiply
 		for (j = 1; j < 4; j++) {
-			src1_line = _mm_load_ps(& (((float*)sMat1) [j<<2]) );					//jth column vector
+            src1_line = MM_LOAD_ALIGN(& (((float*)sMat1) [j<<2]) );					//jth column vector
 			src2_line = _mm_set1_ps( ((float*)sMat2) [i+j] );							//initialized to value of mat[i][j]
 			dest_line = _mm_add_ps(_mm_mul_ps(src1_line, src2_line), dest_line);	//multiply and accumulate column vector
 		}
-		_mm_store_ps(& (((float*)dMat)[i]) , dest_line);								//store column vector
+        MM_STORE_ALIGN(& (((float*)dMat)[i]) , dest_line);								//store column vector
 	}
 
 #endif
@@ -74,16 +84,16 @@ static inline void gyMatMultVec(const GYVector4 *const src, GYVector4 *const des
 
 	//Unravel first iteration of the loop for dat optimization
 	for(j = 0; j < count; ++j) {													//iterate over every vertex
-		src1_line = _mm_load_ps( (float*)_curMat );									//load first column vector
+        src1_line = MM_LOAD_ALIGN( (float*)_curMat );									//load first column vector
 		src2_line = _mm_set1_ps( ((float*)src)[j<<2] );								//initialize vector to value of first element
 		dest_line = _mm_mul_ps(src1_line, src2_line);								//multiply
 
 		for (i=1; i < 4; ++i) {
-			src1_line = _mm_load_ps(& ( ((float*)_curMat)[i<<2]) );					//load ith column vector
+            src1_line = MM_LOAD_ALIGN(& ( ((float*)_curMat)[i<<2]) );					//load ith column vector
 			src2_line = _mm_set1_ps( ((float*)src)[(j<<2) + i] );					//initialize vector to value of ith element
 			dest_line = _mm_add_ps(_mm_mul_ps(src1_line, src2_line), dest_line);	//multiply and accumulate
 		}
-		_mm_store_ps((float*)(&dest[j]) , dest_line);								//store column vector
+        MM_STORE_ALIGN((float*)(&dest[j]) , dest_line);								//store column vector
 	}
 
 
@@ -99,39 +109,39 @@ static inline void gyMatStore(GYMatrix4 *mat) {
 }
 
 static inline void gyVec4Add(void* const dest, const void* const v1, const void* const v2) {
-	const __m128 s1 = _mm_load_ps((float*)v1);
-	const __m128 s2 = _mm_load_ps((float*)v2);
+    const __m128 s1 = MM_LOAD_ALIGN((float*)v1);
+    const __m128 s2 = MM_LOAD_ALIGN((float*)v2);
 	const __m128 d = _mm_add_ps(s1, s2);
-	_mm_store_ps((float*)dest, d);
+    MM_STORE_ALIGN((float*)dest, d);
 }
 
 static inline void gyVec4Sub(void* const dest, const void* const v1, const void* const v2) {
    // assert(((unsigned long)dest & 15) == 0);
-	const __m128 s1 = _mm_load_ps((float*)v1);
-	const __m128 s2 = _mm_load_ps((float*)v2);
+    const __m128 s1 = MM_LOAD_ALIGN((float*)v1);
+    const __m128 s2 = MM_LOAD_ALIGN((float*)v2);
 	const __m128 d = _mm_sub_ps(s1, s2);
-	_mm_store_ps((float*)dest, d);
+    MM_STORE_ALIGN((float*)dest, d);
 }
 
 static inline void gyVec4Mult(void* const dest, const void* const v1, const void* const v2) {
-	const __m128 s1 = _mm_load_ps((float*)v1);
-	const __m128 s2 = _mm_load_ps((float*)v2);
+    const __m128 s1 = MM_LOAD_ALIGN((float*)v1);
+    const __m128 s2 = MM_LOAD_ALIGN((float*)v2);
 	const __m128 d = _mm_mul_ps(s1, s2);
-	_mm_store_ps((float*)dest, d);
+    MM_STORE_ALIGN((float*)dest, d);
 }
 
 static inline void gyVec4Div(void* const dest, const void* const v1, const void* const v2) {
-	const __m128 s1 = _mm_load_ps((float*)v1);
-	const __m128 s2 = _mm_load_ps((float*)v2);
+    const __m128 s1 = MM_LOAD_ALIGN((float*)v1);
+    const __m128 s2 = MM_LOAD_ALIGN((float*)v2);
 	const __m128 d = _mm_div_ps(s1, s2);
-	_mm_store_ps((float*)dest, d);
+    MM_STORE_ALIGN((float*)dest, d);
 }
 
 static inline void gyVec4Scale(void* const dest, const void* const v1, const float s) {
-	const __m128 s1 = _mm_load_ps((float*)v1);
+    const __m128 s1 = MM_LOAD_ALIGN((float*)v1);
 	const __m128 s2 = _mm_set1_ps(s);
 	const __m128 d = _mm_mul_ps(s1, s2);
-	_mm_store_ps((float*)dest, d);
+    MM_STORE_ALIGN((float*)dest, d);
 }
 
 #define VEC2(a) ((GYVector2*)a)
@@ -312,10 +322,10 @@ static inline float gyVec4Magnitude(GYVector4*const dest, GYVector4*const src) {
 }
 
 static inline void gyVec4Normalize(GYVector4*const dest, GYVector4*const src) {
-	const __m128 s1 = _mm_load_ps((float*)src);
+    const __m128 s1 = MM_LOAD_ALIGN((float*)src);
 //	const float mag = gyVec4Magnitude(src);
 //	const __m128 m = _mm_load_ss(&mag);
 //	const __m128 r = _mm_div_ps(s1, m);
-//	_mm_store_ps((float*)dest, r);
+//	MM_STORE_ALIGN((float*)dest, r);
 }
 */

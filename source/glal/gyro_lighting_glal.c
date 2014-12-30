@@ -4,6 +4,7 @@
 #include "gyro_shaders_glal.h"
 #include "gyro_video_glal.h"
 #include "gyro_system_api.h"
+#include "glal/gyro_glal.h"
 #include <stdio.h>
 
 const static GLenum _shadowMapTexUnits[GYRO_VIDEO_LIGHT_SOURCES_MAX] = {

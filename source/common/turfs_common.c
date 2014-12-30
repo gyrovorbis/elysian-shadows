@@ -44,8 +44,8 @@ TURFSAPI turfs_silph_scope(const char *vpath, char **path, size_t *len, turfs_pa
     size_t vlen = strlen(vpath);
     size_t asset_len, userdata_len;
     if (vpath[0] != '/') {
-        /* Absolute paths only */
-        return TURFS_RET_INVALID_ARGS;
+        /* Absolute paths only --NO EDDIE, DIPSHIT. */
+        //return TURFS_RET_INVALID_ARGS;
     }
     turfs_virtual_path(TURFS_PATH_ASSETS, &asset_vpath, &asset_len);
     if (asset_vpath != NULL && vlen > asset_len + 1) {
