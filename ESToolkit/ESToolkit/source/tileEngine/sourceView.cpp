@@ -39,7 +39,7 @@ SourceView::SourceView(QWidget *parent):
 	setFocusPolicy(Qt::StrongFocus);
 	setMouseTracking(true);
 	viewport()->setMouseTracking(true);
-	_sceneMousePosLabel->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+    _sceneMousePosLabel->setFrameStyle(QFrame::Panel | QFrame::Sunken);
 	_sceneMouseTileLabel->setFrameStyle(QFrame::Panel | QFrame::Sunken);
 	_sceneSelectionSizeLabel->setFrameStyle(QFrame::Panel | QFrame::Sunken);
 	_zoomLabel->setFrameStyle(QFrame::Panel | QFrame::Sunken);

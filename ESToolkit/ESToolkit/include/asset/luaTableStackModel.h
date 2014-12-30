@@ -11,18 +11,22 @@
 
 class LuaTableStackModel;
 
-//Template specialization allowing OOLUA to push a QString to Lua as a character array
-template<>
-inline bool OOLUA::STRING::push<QString>(lua_State* state, QString const& string) {
-    return OOLUA::push(state, string.toStdString().c_str());
-}
+namespace OOLUA {
+    namespace STRING {
+        //Template specialization allowing OOLUA to push a QString to Lua as a character array
+        template<>
+        inline bool push<QString>(lua_State* state, QString const& string) {
+            return OOLUA::push(state, string.toStdString().c_str());
+        }
 
-//Template specialization allowing OOLUA to pull a character array from Lua as a QString
-template<>
-inline bool OOLUA::STRING::pull<QString>(lua_State* state, QString& string) {
-    string = lua_tostring(state, -1);
-    lua_pop(state, 1);
-    return (string.isNull())? true : false;
+        //Template specialization allowing OOLUA to pull a character array from Lua as a QString
+        template<>
+        inline bool pull<QString>(lua_State* state, QString& string) {
+            string = lua_tostring(state, -1);
+            lua_pop(state, 1);
+            return (string.isNull())? true : false;
+        }
+    }
 }
 
 //QStandardItem representing a Lua k,v pair
@@ -290,7 +294,7 @@ protected:
                     metamethod.push(state);
                     lua_insert(state, -3);
 
-                    LuaManager::_protectedCall(2, 2, nullptr);
+                    _protectedCall(2, 2, nullptr);
 
                     if((retVal = !lua_isnil(state, -2))) {
 						//qDebug() << "SHITS PRISTINE!";

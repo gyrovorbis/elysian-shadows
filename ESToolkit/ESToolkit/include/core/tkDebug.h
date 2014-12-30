@@ -1,10 +1,10 @@
 #ifndef TK_DEBUG_H
 #define TK_DEBUG_H
 
+#include "elysian_debug_base.hpp"
 #include <QObject>
 #include <fstream>
 #include "elysian_asset.hpp"
-#include "elysian_debug_base.hpp"
 
 #define DEBUG_LOG_PATH                  "toolkit_debug.txt"
 #define DEBUG_QT_BUFF_SIZE              50000

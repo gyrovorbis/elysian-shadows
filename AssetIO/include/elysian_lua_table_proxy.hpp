@@ -20,8 +20,8 @@
 #define ELYSIAN_LUA_PROXY_FIELD(...) ELYSIAN_LUA_PROXY_FIELD_GET_MACRO(__VA_ARGS__, ELYSIAN_LUA_PROXY_FIELD_READ_WRITE, ELYSIAN_LUA_PROXY_FIELD_READ_ONLY)(__VA_ARGS__)
 
 #define ELYSIAN_LUA_PROXY_FIELDS_EXPORT(c) \
-	const unsigned				c::_proxyFieldCount; \
-    const LuaTableFieldProxy	c::_proxyFields[];
+    constexpr unsigned				c::_proxyFieldCount; \
+    constexpr LuaTableFieldProxy	c::_proxyFields[];
 
 /*
 #define ELYSIAN_OOLUA_PROXY_METHODS() \

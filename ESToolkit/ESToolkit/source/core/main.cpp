@@ -1,8 +1,8 @@
+#include <QSplashScreen>
+#include "estoolkit.h"
 #include <QApplication>
 #include <QPainter>
 #include <QTimer>
-#include <QSplashScreen>
-#include "estoolkit.h"
 #include "elysian_debug.hpp"
 #include <QDebug>
 #include <QRectF>
@@ -14,8 +14,10 @@
 
 GYAppCbRet Init(int argc, char **argv) {
 
-    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps, false);
-    QApplication::setAttribute(Qt::AA_Use96Dpi, true);
+    QApplication::setAttribute(Qt::AA_SynthesizeMouseForUnhandledTouchEvents, false);
+    QApplication::setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, false);
+    //    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps, false);
+//    QApplication::setAttribute(Qt::AA_Use96Dpi, true);
 
     QRectF rect;
     rect.setSize(QSizeF(2.0f, 5.0f));
@@ -40,7 +42,7 @@ GYAppCbRet Init(int argc, char **argv) {
     painter.drawText(25,190,"http://elysianshadows.com/tkreleasenotes"); /* This is an invalid URL!!!! */
 
 	QSplashScreen splash(splashScreen, Qt::WindowStaysOnTopHint);
-	splash.show();
+    //splash.show();
 
     ESToolkit w;
 
@@ -51,8 +53,8 @@ GYAppCbRet Init(int argc, char **argv) {
 	QTimer::singleShot(2500, &splash, SLOT(close()));
 	QTimer::singleShot(2500, &w, SLOT(showMaximized()));
 #else
-    QTimer::singleShot(1000, &splash, SLOT(close()));
-	QTimer::singleShot(0, &w, SLOT(showMaximized()));
+    //QTimer::singleShot(1000, &splash, SLOT(close()));
+    QTimer::singleShot(0, &w, SLOT(showMaximized()));
 #endif
 
 	a.exec();
@@ -63,6 +65,7 @@ GYAppCbRet Init(int argc, char **argv) {
 
 
 
-void gyro_main(void) {
-    gySysRegisterAppInit(&Init);
+int main(int argc, char* argv[]) {
+    return Init(argc, argv);
+    //gySysRegisterAppInit(&Init);
 }

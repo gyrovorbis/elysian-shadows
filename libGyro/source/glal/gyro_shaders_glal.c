@@ -8,6 +8,7 @@
 #include "gyro_video_glal.h"
 #include "gyro_shaders_glal.h"
 #include "gyro_system_api.h"
+#include "glal/gyro_glal.h"
 
 const GYMatrix4 shadowTexCoordBiasMat = {
 	{ 0.5f, 0.0f, 0.0f, 0.0f },
@@ -363,11 +364,12 @@ int _gyVidShaderCreate(GYShader* shader) {
 	}
     gyFileLength(file, &charCount);
 	programSource = malloc(sizeof(char) * charCount + 1);
+    memset(programSource, 0, sizeof(char)*charCount+1);
     gyFileRead(file, programSource, charCount, NULL);
-	programSource[charCount] = '\0';
+    programSource[charCount-1] = '\0';
     gyFileClose(&file);
 
-	glShaderSource(shader->shader, 1, (const char*const*)&programSource, NULL);
+    glShaderSource(shader->shader, 1, (const char*const*)&programSource, &charCount);
 	glCompileShader(shader->shader);
 
 	glGetShaderiv(shader->shader, GL_COMPILE_STATUS, &compiled);

@@ -1,9 +1,9 @@
 #ifndef ESTOOLKIT_H
 #define ESTOOLKIT_H
 
+#include <gyro_system_api.h>
 #include <QMainWindow>
 #include <QUndoGroup>
-#include <gyro_system_api.h>
 #include "assets.h"
 #include "elysian_lua_manager.hpp"
 #include "elysian_asset_typedefs.hpp"

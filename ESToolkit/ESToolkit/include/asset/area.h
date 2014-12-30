@@ -2,9 +2,9 @@
 #ifndef AREA_H
 #define AREA_H
 
+#include <gyro.h>
 #include <stdint.h>
 #include <QUndoStack>
-#include <gyro.h>
 #include "elysian_asset_typedefs.hpp"
 #include "elysian_area.hpp"
 #include "level.h"

@@ -51,7 +51,6 @@ SOURCES += \
     ../../source/ltablib.c \
     ../../source/ltm.c \
     ../../source/lua.c \
-    ../../source/luac.c \
     ../../source/lundump.c \
     ../../source/lvm.c \
     ../../source/lzio.c

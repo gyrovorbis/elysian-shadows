@@ -12,7 +12,7 @@
 namespace elysian {
 
 LightSystem::LightSystem(void) {
-	setGlobalAmbientColor(_globalAmbience);
+    setGlobalAmbientColor(_globalAmbience);
     gyVidLightingSetEnable(1);
 
     auto& proc = get<SUBPROC_ATTRIB_INTERP_POOL> ( static_cast<SubProcessManager<LightSystem,

@@ -9,66 +9,6 @@ QMAKE_CXXFLAGS += -std=c++11 -msse
 DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt
 CONFIG += c++11
 
-win32 {
-	LIBS += -L../../lib/win32 \
-		#-llua52 \
-		-L../../../libGyro/lib/win32 \
-		-lopengl32 \
-		-lopenal32.dll \
-		-lglu32 \
-		-lz \
-		-lz.dll \
-		-lmingw32 \
-		-logg \
-		-lvorbis \
-		#-lvorbis.dll \
-		-lvorbisenc \
-		#-lvorbisenc.dll \
-		-lvorbisfile \
-		-lglew32 \
-		-lglew32.dll \
-		#-lvorbisfile.dll \
-		-mconsole \
-		-L../../ESGamma/lib/osx
-		#-llua52
-}
-
-macx {
-  LIBS +=  -L../../libGyro/lib/osx \
-	-framework OpenGL \
-	-framework OpenAL \
-	-lz \
-	-F../../ESGamma/lib/osx \
-	-L../../ESGamma/lib/osx \
-        #-llua52 \
-	-framework Foundation \
-	-framework Cocoa \
-	-lobjc \
-        -logg \
-        -lvorbis \
-        -lvorbisenc \
-        -lvorbisfile \
-	-L../../ESGamma/lib/osx
-	#-llua52
-}
-
-linux {
-	LIBS += \
-		-llua5.2 \
-		-lGL \
-		-lopenal \
-		-lGLU \
-		-lz \
-		-logg \
-		-lvorbis \
-		-lvorbisenc \
-		-lvorbisfile \
-		-lX11 \
-		-lpthread \
-		-L../../ESGamma/lib/osx  \
-		#-llua52
-}
-
 
 ICON = resource/images/estk.icns
 
@@ -449,3 +389,66 @@ else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../L
 else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Lua5.2/qtcreator/Lua5_2/release/Lua5_2.lib
 else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Lua5.2/qtcreator/Lua5_2/debug/Lua5_2.lib
 else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../Lua5.2/qtcreator/Lua5_2/libLua5_2.a
+
+
+win32 {
+        QMAKE_CFLAGS += -msse -std=c99
+        INCLUDEPATH += ../../libGyro/lib/win32
+        LIBS += -L../../lib/win32 \
+                #-llua52 \
+                -L../../libGyro/lib/win32 \
+                -lopengl32 \
+                -lopenal32.dll \
+                -lglu32 \
+                -lz \
+                -lz.dll \
+               # -lmingw32 \
+                -logg \
+                -lvorbis \
+                #-lvorbis.dll \
+                -lvorbisenc \
+                #-lvorbisenc.dll \
+                -lvorbisfile \
+                -lglew32 \
+                -lglew32.dll \
+                #-lvorbisfile.dll \
+                -L../../ESGamma/lib/osx
+                #-mconsole
+                #-llua52
+}
+
+macx {
+  LIBS +=  -L../../libGyro/lib/osx \
+        -framework OpenGL \
+        -framework OpenAL \
+        -lz \
+        -F../../ESGamma/lib/osx \
+        -L../../ESGamma/lib/osx \
+        #-llua52 \
+        -framework Foundation \
+        -framework Cocoa \
+        -lobjc \
+        -logg \
+        -lvorbis \
+        -lvorbisenc \
+        -lvorbisfile \
+        -L../../ESGamma/lib/osx
+        #-llua52
+}
+
+linux {
+        LIBS += \
+                -llua5.2 \
+                -lGL \
+                -lopenal \
+                -lGLU \
+                -lz \
+                -logg \
+                -lvorbis \
+                -lvorbisenc \
+                -lvorbisfile \
+                -lX11 \
+                -lpthread \
+                -L../../ESGamma/lib/osx  \
+                #-llua52
+}

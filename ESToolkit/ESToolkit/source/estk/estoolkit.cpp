@@ -1,3 +1,4 @@
+#include "area.h"
 #include <QGLWidget>
 #include <QSizePolicy>
 #include <QToolButton>
@@ -13,7 +14,6 @@
 #include <gyro_file_api.h>
 #include "engineGLSceneWidget.h"
 
-#include "area.h"
 #include "elysian_debug.hpp"
 #include "level.h"
 #include "assets.h"
@@ -862,7 +862,7 @@ void ESToolkit::_openProjectDir(const QString dir) {
 	}
 
 	QDir::setCurrent(dir);
-    auto* viewport = _engineGLView = new EngineGLSceneWidget(QGLFormat()/*QGLFormat(QGL::SampleBuffers | QGL::DirectRendering)*/);
+    auto* viewport = _engineGLView = new EngineGLSceneWidget(QGLFormat(QGL::SampleBuffers | QGL::DirectRendering));
 
     viewport->setMouseTracking(true);
     _ui->mapView->setViewport(viewport);
@@ -873,6 +873,7 @@ void ESToolkit::_openProjectDir(const QString dir) {
     gyInputInit(&inputParams);
 
   _engineGLView->makeCurrent();
+ // _engineGLView->update();
 	Project *proj = _assets.loadProject(dir);
     _assets.getEngine()->getMapSys()->setView(_ui->mapView);
   _engineGLView->update();
@@ -1105,7 +1106,7 @@ void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *cons
 		_selectionDockWidget->ExpandSelectionTree();
 		break;
 	case Selectable::TILE:
-		 _ui->mapView->createSelectionItemGroup();
+         //_ui->mapView->createSelectionItemGroup();
 		 static_cast<TileSelectable *>(selection)->populateModel();
 		 _selectionDockWidget->SetSelectionModel(static_cast<TileSelectable *>(selection));
          /*if(static_cast<TileSelectable *>(selection)->getSize() == 1)*/ _selectionDockWidget->ExpandSelectionTree();

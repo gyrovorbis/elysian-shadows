@@ -5,20 +5,17 @@
 #include <QGLWidget>
 
 #include <QGLWidget>
-#include <QGLFunctions>
 #include <QMatrix4x4>
 #include <QQuaternion>
 #include <QVector2D>
 #include <QBasicTimer>
 #include <QGLShaderProgram>
-#include <QGLFunctions>
 
 #define TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME   (5)
 
 class EngineGLSceneWidget:
         public QGLWidget,
-        public AssetManager,
-        public QGLFunctions
+        public AssetManager
 {
     Q_OBJECT
 public:

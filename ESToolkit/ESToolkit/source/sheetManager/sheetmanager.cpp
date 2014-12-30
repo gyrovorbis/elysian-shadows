@@ -1,3 +1,4 @@
+#include "area.h"
 #include <QMenu>
 #include <QActionGroup>
 #include <QToolButton>
@@ -18,7 +19,6 @@
 #include "historyDockWidget.h"
 #include "project.h"
 #include "level.h"
-#include "area.h"
 #include "tileSheetUtilities.h"
 #include "sheetManagerSourceTileGraphicsItem.h"
 #include "tileImage.h"

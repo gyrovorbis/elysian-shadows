@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <gyro_platform.h>
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -47,6 +48,26 @@ TURFSAPI turfs_quit(void)
     return TURFS_RET_OK;
 }
 
+#if GYRO_PLATFORM == GYRO_PLATFORM_Qt
+static int s__get_assets_path(char **path, size_t *len)
+{
+    char temp_path[2048];
+    char *ptr;
+    memset(temp_path, 0, sizeof temp_path);
+    (void)ptr;
+    *path = "../assets";
+
+
+    if (*path == NULL) {
+        return 0;
+    }
+    if (len != NULL) {
+        *len = strlen(*path);
+    }
+    return 1;
+}
+#else
+
 static int s__get_assets_path(char **path, size_t *len)
 {
     char temp_path[2048];
@@ -71,6 +92,9 @@ static int s__get_assets_path(char **path, size_t *len)
     }
     return 1;
 }
+
+#endif
+
 
 static int s__get_userdata_path(char **path, size_t *len)
 {

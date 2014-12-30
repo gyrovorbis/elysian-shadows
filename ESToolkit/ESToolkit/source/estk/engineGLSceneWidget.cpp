@@ -1,16 +1,16 @@
-
-
-#include "engineGLSceneWidget.h"
+#include "elysian_camera_system.hpp"
 #include <gyro_video_api.h>
+#include "engineGLSceneWidget.h"
 #include <glal/gyro_video_glal.h>
 #include "elysian_engine.hpp"
-#include "elysian_camera_system.hpp"
+
 #include <QMouseEvent>
 
 
 EngineGLSceneWidget::EngineGLSceneWidget(const QGLFormat &format, QWidget *parent, const QGLWidget *shareWidget, Qt::WindowFlags f):
     QGLWidget(format, parent, shareWidget, f) {
     makeCurrent();
+    gyVidOglInit(1280, 720, 1280, 720);
 }
 
 void EngineGLSceneWidget::stop(void) {
@@ -30,7 +30,7 @@ bool EngineGLSceneWidget::isPlaying(void) const { return getAssets()->getEngine(
 
 void EngineGLSceneWidget::initializeGL(void) {
     makeCurrent();
-    initializeGLFunctions(context());
+    //sinitializeGLFunctions(context());
 
     unsigned parentWidth    = parentWidget()->size().width();
     unsigned parentHeight   = parentWidget()->size().height();

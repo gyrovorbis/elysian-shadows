@@ -1,9 +1,10 @@
 #ifndef ELYSIAN_AREA_HPP
 #define ELYSIAN_AREA_HPP
 
+#include "glal/gyro_glal.h"
+#include <gyro_video_api.h>
 #include <vector>
 #include <stdint.h>
-#include <gyro.h>
 #include "elysian_asset.hpp"
 #include "elysian_mem_pool.hpp"
 #include "elysian_asset_typedefs.hpp"

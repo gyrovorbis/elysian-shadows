@@ -3,7 +3,6 @@
 
 #include "gyro_defines.h"
 #include "gyro_matrix_api.h"
-#include "glal/gyro_glal.h"
 
 #define GYRO_VIDEO_LIGHT_SOURCES_MAX 4
 
@@ -69,7 +68,7 @@ typedef struct _GYShaderProgram {
 	char		path[GYRO_PATH_MAX_SIZE];
 	GYShader*	vertShader;
 	GYShader*	fragShader;
-    GLuint		program;
+    int 		program;
 } GYShaderProgram;
 
 //Lighting API

@@ -29,7 +29,7 @@ bool TkDebug::_pendingError = false;
 unsigned TkDebug::_stackDepth = 0;
 std::ofstream* TkDebug::_outfile;
 char TkDebug::_qtDebugBuff[DEBUG_QT_BUFF_SIZE];
-const char TkDebug::_srcEnumToStr[TkDebug::SOURCE_MAX][50];
+constexpr char TkDebug::_srcEnumToStr[TkDebug::SOURCE_MAX][50];
 bool TkDebug::_filterEnabled[TkDebug::SOURCE_MAX] = { true };
 QVector<QString> TkDebug::_commandHistory;
 int TkDebug::_commandHistoryIndex;

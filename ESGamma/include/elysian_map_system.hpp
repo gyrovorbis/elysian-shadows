@@ -1,6 +1,7 @@
 #ifndef ELYSIAN_TERRAIN_SYSTEM_HPP
 #define ELYSIAN_TERRAIN_SYSTEM_HPP
 
+#include "glal/gyro_glal.h"
 #include "elysian_system.hpp"
 #include "elysian_camera_system.hpp"
 #include "elysian_map_depth_buffer.hpp"
@@ -246,7 +247,7 @@ namespace elysian {
         _curPlaneType = GY_RECT_PLANE_BOTTOM;
 		//gyVidQuadListBegin(&_tileColor);
 		glBindBuffer(GL_ARRAY_BUFFER, getCurArea()->vboBuff);
-		glVertexAttribPointer(curLightShader->attribLoc[SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(VboEntry), 0);
+        ::glVertexAttribPointer(curLightShader->attribLoc[SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(VboEntry), 0);
 		glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_POS]);
 		glVertexAttribPointer(curLightShader->attribLoc[SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(4*sizeof(float)));
 		glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_TEX_COORD]);
