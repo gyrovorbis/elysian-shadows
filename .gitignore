@@ -144,4 +144,5 @@ ESToolkit/ESToolkit/qrc_resource.cpp
 #qtcreator/*
 shadowRenderPasses
 *qmake.stash
+Lua5.2/qtcreator/Lua5_2/Makefile
 toolkit_debug.txt
