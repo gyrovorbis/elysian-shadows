@@ -14,7 +14,8 @@ INCLUDEPATH += ../../include \
 
 win32 {
         INCLUDEPATH +=  ../../lib/win32
-		QMAKE_CFLAGS += -msse #-std=c99
+                QMAKE_CXXFLAGS += -msse
+                QMAKE_CFLAGS += -msse -std=c99
 		SOURCES +=	../../source/x86/turfs_windows.c
 }
 

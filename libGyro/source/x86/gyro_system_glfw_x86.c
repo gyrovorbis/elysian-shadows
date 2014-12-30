@@ -213,7 +213,9 @@ void gyDebugSigInit(void) {
 #endif
 }
 
-int main(int argc, char **argv)
+#if GYRO_PLATFORM != GYRO_PLATFORM_Qt
+int main(int argc, char *argv[])
 {
 	return gyro_entry_point(argc, argv);
 }
+#endif

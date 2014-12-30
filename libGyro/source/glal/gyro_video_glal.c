@@ -160,23 +160,6 @@ int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth,
 	//gyVidOrthoProjMat(projectionMatrix, pleft, pright, pbottom, ptop, pnear, pfar);
 	//gyVidCamOrthoProj(&_defaultCamera, pleft, pright, pbottom, ptop, pnear, pfar);
 
-//God fucking damnit, Windows....
-#ifdef _WIN32
-    _gyLog(GY_DEBUG_VERBOSE, "Initializing GLEW...");
-    GLenum err = glewInit();
-    if (err != GLEW_OK) {
-      /* Problem: glewInit failed, something is seriously wrong. */
-        _gyLog(GY_DEBUG_CRITICAL, "\tError: %s", glewGetErrorString(err));
-    }
-
-    if(GLEW_VERSION_2_1) {
-        _gyLog(GY_DEBUG_VERBOSE, "\tOpenGL 2.1 Extensions detected");
-    } else {
-        _gyLog(GY_DEBUG_CRITICAL, "\tOpenGL 2.1 Extensions NOT detected! Prepare for crash!");
-    }
-
-#endif
-
     _projWidth = projWidth;
     _projHeight = projHeight;
 
@@ -195,6 +178,23 @@ int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth,
     static int once = 0;
     if(!once) {
 	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        //God fucking damnit, Windows....
+        #ifdef _WIN32
+            _gyLog(GY_DEBUG_VERBOSE, "Initializing GLEW...");
+            GLenum err = glewInit();
+            if (err != GLEW_OK) {
+              /* Problem: glewInit failed, something is seriously wrong. */
+                _gyLog(GY_DEBUG_CRITICAL, "\tError: %s", glewGetErrorString(err));
+            }
+
+            if(GLEW_VERSION_2_1) {
+                _gyLog(GY_DEBUG_VERBOSE, "\tOpenGL 2.1 Extensions detected");
+            } else {
+                _gyLog(GY_DEBUG_CRITICAL, "\tOpenGL 2.1 Extensions NOT detected! Prepare for crash!");
+            }
+
+        #endif
 
         glalLoadDefaultShaders();
         gyVidSetDefaultShaderProgram();
