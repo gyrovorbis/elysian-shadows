@@ -135,5 +135,5 @@ out/
 CMakeLists.txt.user
 
 #ESTk generated
-################
-**/estk/**
+#################
+level/**/estk/
