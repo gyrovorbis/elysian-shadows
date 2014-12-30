@@ -231,6 +231,7 @@ void TkLevel::connectSlots(Area *area) {
 	connect(area, SIGNAL(componentRemoved(Area*const,Entity*const,Component*const)), this, SLOT(onComponentRemoved(Area*const,Entity*const,Component*const)));
 	connect(area, SIGNAL(renamed(QString,QString)), this, SLOT(onAreaRenamed(QString,QString)));
     connect(area, SIGNAL(mapChanged(Area*const,const QVector<MapChange>&)), this, SLOT(onMapChanged(Area*const,const QVector<MapChange>&)));
+    connect(area, SIGNAL(entityParented(Entity*const,Entity*const)), this, SLOT(onEntityParented(Entity*const,Entity*const)));
 }
 
 /*
@@ -905,6 +906,10 @@ bool TkLevel::scatterTileSpecularMaps(void) {
 
 bool TkLevel::gatherTileSpecularMaps(void) {
     return _gatherMaps(false);
+}
+
+void TkLevel::onEntityParented(Entity * const child, Entity * const parent) {
+    emit entityParented(child, parent);
 }
 
 

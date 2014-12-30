@@ -18,7 +18,8 @@
         type Tk##name; \
         namespace elysian { \
             typedef Tk##name name; \
-        }
+        } \
+        typedef Tk##name name;
 
 #   define ELYSIAN_ASSET_TYPEDEF_CLASS(name) ELYSIAN_ASSET_TYPEDEF_GENERIC(name, class)
 

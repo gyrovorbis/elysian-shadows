@@ -70,7 +70,6 @@ SOURCES += source/asset/project.cpp \
     source/sheetManager/sheetmanager.cpp \
     source/tileEngine/sourceView.cpp \
     source/widget/historyDockWidget.cpp \
-    source/asset/animation.cpp \
     source/asset/character.cpp \
     source/asset/collidable.cpp \
     source/asset/renderable.cpp \
@@ -102,7 +101,6 @@ SOURCES += source/asset/project.cpp \
     ../../AssetIO/source/elysian_behavior.cpp \
     ../../AssetIO/source/elysian_asset.cpp \
     ../../AssetIO/source/elysian_area.cpp \
-    ../../AssetIO/source/elysian_animation.cpp \
     ../../AssetIO/source/elysian_audio_source.cpp \
     ../../AssetIO/source/elysian_light_source.cpp \
     source/asset/elysianTileWrapper.cpp \
@@ -150,7 +148,9 @@ SOURCES += source/asset/project.cpp \
     source/estk/tkMapSystem.cpp \
     source/estk/entitySelectable.cpp \
     ../../ESGamma/source/elysian_debug_base.cpp \
-    source/core/tkDebug.cpp
+    source/core/tkDebug.cpp \
+    ../../AssetIO/source/elysian_animation_base.cpp \
+    source/asset/tkAnimation.cpp
 
 HEADERS += include/asset/project.h \
     include/asset/level.h \
@@ -190,7 +190,6 @@ HEADERS += include/asset/project.h \
     include/tileEngine/selectionItemGroup.h \
     include/tileEngine/destView.h \
     include/widget/historyDockWidget.h \
-    include/asset/animation.h \
     include/asset/character.h \
     include/asset/collidable.h \
     include/asset/component.h \
@@ -241,7 +240,6 @@ HEADERS += include/asset/project.h \
     ../../AssetIO/include/elysian_behavior.hpp \
     ../../AssetIO/include/elysian_asset.hpp \
     ../../AssetIO/include/elysian_area.hpp \
-    ../../AssetIO/include/elysian_animation.hpp \
     ../../AssetIO/include/elysian_audio_source.hpp \
     include/asset/elysianTileWrapper.h \
     ../../AssetIO/include/elysian_particle_emitter.hpp \
@@ -294,7 +292,10 @@ HEADERS += include/asset/project.h \
     include/estk/entitySelectable.h \
     include/core/tkDebug.h \
 	../../ESGamma/include/elysian_debug_base.hpp \
-	../../ESGamma/include/elysian_debug.hpp
+	../../ESGamma/include/elysian_debug.hpp \
+    ../../AssetIO/include/elysian_animation_base.hpp \
+    ../../AssetIO/include/elysian_animation.hpp \
+    include/asset/tkAnimation.h
 
 FORMS += form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \

@@ -89,6 +89,7 @@ void Assets::connectSlots(Project *const project) {
 	connect(project, SIGNAL(componentAttached(Project*const,Level*const,Area*const,Entity*const,Component*const)), this, SLOT(onComponentAttached(Project*const,Level*const,Area*const,Entity*const,Component*const)));
 	connect(project, SIGNAL(componentRemoved(Project*const,Level*const,Area*const,Entity*const,Component*const)), this, SLOT(onComponentRemoved(Project*const,Level*const,Area*const,Entity*const,Component*const)));
     connect(project, SIGNAL(mapChanged(Area*const,const QVector<MapChange>&)), this, SLOT(onMapChanged(Area*const,const QVector<MapChange>&)));
+    connect(project, SIGNAL(entityParented(Entity*const,Entity*const)), this, SLOT(onEntityParented(Entity*const,Entity*const)));
 }
 
 //====NONSTATIC====
@@ -338,5 +339,9 @@ void Assets::onLevelRenamed(const QString oldName, const QString newName) {
 
 void Assets::onMapChanged(Area * const area, const QVector<MapChange>& changes) {
     emit mapChanged(area, changes);
+}
+
+void Assets::onEntityParented(Entity * const child, Entity * const parent) {
+    emit entityParented(child, parent);
 }
 

@@ -23,14 +23,14 @@ Renderable::~Renderable(void) { delete _sheet; }
 void Renderable::ReloadSpriteSheet(void) {
     if(_texEdit->text().isEmpty() || _sprWEdit->text().isEmpty() || _sprHEdit->text().isEmpty() || _frameEdit->text().isEmpty()) return;
     _sheet->Reload(_texEdit->text(), _sprWEdit->text().toUInt(), _sprHEdit->text().toUInt());
-    emit PrimitiveUpdate();
+    //emit PrimitiveUpdate();
 }
-
+/*
 void Renderable::OnSetColorR(void) { setColor(_rEdit->text().toFloat(), _gEdit->text().toFloat(), _bEdit->text().toFloat(), _aEdit->text().toFloat());}
 void Renderable::OnSetColorG(void) { setColor(_rEdit->text().toFloat(), _gEdit->text().toFloat(), _bEdit->text().toFloat(), _aEdit->text().toFloat());}
 void Renderable::OnSetColorB(void) { setColor(_rEdit->text().toFloat(), _gEdit->text().toFloat(), _bEdit->text().toFloat(), _aEdit->text().toFloat());}
 void Renderable::OnSetColorA(void) { setColor(_rEdit->text().toFloat(), _gEdit->text().toFloat(), _bEdit->text().toFloat(), _aEdit->text().toFloat());}
-
+*/
 //elysian::Primitive::TYPE Renderable::getPrimType(void) const { /*return _elysianRenderable->getPrimType();*/ }
 
 GYColor4 Renderable::getColor(void) const {
@@ -45,9 +45,8 @@ QPixmap* Renderable::getCurrentFramePixmap(void) const {
 }
 
 void Renderable::getSpriteSize(unsigned &width, unsigned &height) const { _sheet->getSpriteSize(width, height); }
-
-void Renderable::OnSetTextured(bool /*val*/) {
 #if 0
+void Renderable::OnSetTextured(bool /*val*/) {
 
 	val = _texCheckBox->isChecked(); //don't trust that fucking parameter
 
@@ -76,7 +75,7 @@ void Renderable::OnSetTextured(bool /*val*/) {
 		delete _sheet;
 		_sheet = NULL;
 	}
-#endif
+
 }
 
 void Renderable::OnSetTexturedPath() {
@@ -96,7 +95,7 @@ void Renderable::OnSetFrame() {
 }
 void Renderable::OnSwatchClick() {
 	QColor color(255, 255, 255, 255);
-	color = QColorDialog::getColor(color, this, "Rect Color", QColorDialog::ShowAlphaChannel);
+//	color = QColorDialog::getColor(color, this, "Rect Color", QColorDialog::ShowAlphaChannel);
 
 	if(color.isValid()) {
 		float a = color.alphaF();
@@ -110,7 +109,7 @@ void Renderable::OnSwatchClick() {
 void Renderable::OnBrowseClick() {
 	QString filename;
 
-	filename = QFileDialog::getOpenFileName(this, tr("Select PNG Image"), getAssets()->getCurrentProject()->getLocation(), tr("Image Files (*.png)"));
+//	filename = QFileDialog::getOpenFileName(this, tr("Select PNG Image"), getAssets()->getCurrentProject()->getLocation(), tr("Image Files (*.png)"));
 
 	if(filename.isEmpty()) return;
 
@@ -118,7 +117,7 @@ void Renderable::OnBrowseClick() {
 	QString relativePath = projectDir.relativeFilePath(filename);
 
 	if(relativePath.contains("..")) {
-		QMessageBox::critical(this, tr("Warning!"), tr("Image file is not located within the project directory! It will now be copied into the current Area directory."));
+    //	QMessageBox::critical(this, tr("Warning!"), tr("Image file is not located within the project directory! It will now be copied into the current Area directory."));
 
 		QFile imgFile(filename);
 		QString newLocation = getAssets()->getCurrentArea()->getLocation();
@@ -127,7 +126,7 @@ void Renderable::OnBrowseClick() {
 		newLocation.append(splitList.last());
 
 		if(!imgFile.copy(newLocation)) {
-			QMessageBox::critical(this, tr("Error!"), tr("Image file could not be copied to area directory! A file with that name already exists!"));
+    //		QMessageBox::critical(this, tr("Error!"), tr("Image file could not be copied to area directory! A file with that name already exists!"));
 		}
 
 		relativePath = projectDir.relativeFilePath(newLocation);
@@ -140,6 +139,7 @@ void Renderable::OnBrowseClick() {
 	_shWEdit->setText(QString::number(width));
 	_shHEdit->setText(QString::number(height));
 }
+#endif
 
 
 void Renderable::InitializeUI(void) {
@@ -209,7 +209,7 @@ void Renderable::InitializeUI(void) {
 	_mainLayout->addLayout(_colorLayout);
 	_mainLayout->addLayout(_texLayout);
 	_mainLayout->insertStretch(-1);
-	setLayout(_mainLayout);
+    //setLayout(_mainLayout);
 }
 
 void Renderable::PopulateUI(void) {
@@ -257,7 +257,7 @@ Renderable::Renderable(elysian::Renderable *const comp): _elysianRenderable(comp
 	}
 #endif
 	//Connect sigs and slawts
-	connect(_rEdit, SIGNAL(editingFinished()), this, SLOT(OnSetColorR()));
+/*	connect(_rEdit, SIGNAL(editingFinished()), this, SLOT(OnSetColorR()));
 	connect(_gEdit, SIGNAL(editingFinished()), this, SLOT(OnSetColorG()));
 	connect(_bEdit, SIGNAL(editingFinished()), this, SLOT(OnSetColorB()));
 	connect(_aEdit, SIGNAL(editingFinished()), this, SLOT(OnSetColorA()));
@@ -268,14 +268,14 @@ Renderable::Renderable(elysian::Renderable *const comp): _elysianRenderable(comp
 	connect(_frameEdit, SIGNAL(editingFinished()), this, SLOT(OnSetFrame()));
 	connect(_swatchBut, SIGNAL(clicked()), this, SLOT(OnSwatchClick()));
 	connect(_browseBut, SIGNAL(clicked()), this, SLOT(OnBrowseClick()));
-	connect(_reloadBut, SIGNAL(clicked()), this, SLOT(OnReloadClick()));
+    connect(_reloadBut, SIGNAL(clicked()), this, SLOT(OnReloadClick())); */
 
 	PopulateUI();
 }
-
+/*
 void Renderable::OnReloadClick() {
 	ReloadSpriteSheet();
-}
+}*/
 
 void Renderable::setColor(float r, float g, float b, float a) {
 	QString aStr = QString::number(a, 'g', 4);
@@ -288,5 +288,5 @@ void Renderable::setColor(float r, float g, float b, float a) {
 	if(_rEdit->text() != rStr) _rEdit->setText(rStr);
 	if(_gEdit->text() != gStr) _gEdit->setText(gStr);
 	if(_bEdit->text() != bStr) _bEdit->setText(bStr);
-	emit PrimitiveUpdate(); //Signal the entity to update its geometry
+    //emit PrimitiveUpdate(); //Signal the entity to update its geometry
 }

@@ -25,7 +25,6 @@ namespace elysian {
 
 //ONLY ENCAPSULATING/HANDLING RECT AND SPRITE PRIMITIVES!!!!
 class Renderable: public Component, public AssetManager {
-	Q_OBJECT
 private:
 	elysian::Renderable *_elysianRenderable;
 	SpriteSheet *_sheet;
@@ -45,7 +44,7 @@ private:
 	QCheckBox *_texCheckBox;
 
     void ReloadSpriteSheet(void);
-
+/*
 public slots:
 
     void OnSetColorR(void);
@@ -65,7 +64,7 @@ public slots:
 	void OnReloadClick();
 
 signals:
-	void PrimitiveUpdate();
+    void PrimitiveUpdate(); */
 
 public:
 

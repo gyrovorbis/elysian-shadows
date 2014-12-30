@@ -143,6 +143,7 @@ private slots:
 	void onComponentRemoved(Area *const area, Entity *const entity, Component *const comp);
 	void onAreaRenamed(const QString oldName, const QString newName);
     void onMapChanged(Area*const area, const QVector<MapChange>& changes);
+    void onEntityParented(Entity*const child, Entity*const parent);
 
 signals:
 	void activating(Level *const level, Area *const area);
@@ -155,6 +156,7 @@ signals:
 	void areaRenamed(const QString oldName, const QString newName);
 	void levelRenamed(const QString oldName, const QString newName);
     void mapChanged(Area*const area, const QVector<MapChange>& changes);
+    void entityParented(Entity*const child, Entity*const parent);
 
 };
 

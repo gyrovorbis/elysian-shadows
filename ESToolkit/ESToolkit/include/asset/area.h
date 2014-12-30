@@ -65,6 +65,7 @@ private:
 private slots:
 	void onComponentAttached(Entity *const entity, Component *const comp);
 	void onComponentRemoved(Entity *const entity, Component *const comp);
+    void onEntityParented(Entity*const child, Entity*const parent);
 
 public slots:
 	void onUndoCleanStateChanged(bool changed);
@@ -142,6 +143,7 @@ signals:
 	void componentRemoved(Area *const area, Entity *const entity, Component *const comp);
 	void renamed(const QString oldName, const QString newName);
     void mapChanged(Area*const area, const QVector<MapChange>& changes);
+    void entityParented(Entity*const child, Entity*const parent);
 };
 
 typedef TkArea Area;
