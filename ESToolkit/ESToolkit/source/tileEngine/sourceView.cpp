@@ -113,7 +113,7 @@ void SourceView::defaultTransform() {
 }
 
 void SourceView::autoScrollLogic(void) {
-	if(!underMouse() || !isEnabled()) return;
+    if(!underMouse() || !isEnabled()) return;
 
 	if(_autoScrollEnabled && dragMode() == NoDrag) {
 
@@ -129,8 +129,8 @@ void SourceView::autoScrollLogic(void) {
 		const int innerHeight = viewport()->size().height();
 		//if(verticalScrollBar()) innerWidth -= verticalScrollBar()->width();
 		//if(horizontalScrollBar()) innerHeight -= horizontalScrollBar()->height();
-		const int scrollAreaX = innerWidth/30;
-		const int scrollAreaY = innerHeight/30;
+        const int scrollAreaX = innerWidth/20;
+        const int scrollAreaY = innerHeight/20;
 		const int rightBoundary = innerWidth-scrollAreaX;
 		const int bottomBoundary = innerHeight-scrollAreaY;
 		const float xScrollMultiplier = MAX_SCROLL_AMOUNT_PER_FRAME/scrollAreaX;
@@ -204,7 +204,7 @@ void SourceView::keyReleaseEvent(QKeyEvent *event){
 
 void SourceView::_startPan(void) {
     if(!_panning) {
-        //setDragMode(ScrollHandDrag);
+        setDragMode(ScrollHandDrag);
         _panning    = true;
         _panPivot   = _viewMousePos;
     }
