@@ -42,6 +42,7 @@ protected:
     virtual void resizeGL(int w, int h) override;
     virtual void paintGL(void) override;
 	virtual void timerEvent(QTimerEvent* e) override;
+    virtual QSize sizeHint(void) const;
 };
 
 

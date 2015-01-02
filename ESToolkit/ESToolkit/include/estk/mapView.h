@@ -39,6 +39,8 @@ private:
     TkEntity*                       _underCursorEntity  = nullptr;
     bool                            _entityDrag         = false;
 
+    void _updateScrollBars(void);
+
 	//Internal selection management
 	void _tileSelectionArrayUpdate(void);
 	void _entitySelectionUpdate(void);

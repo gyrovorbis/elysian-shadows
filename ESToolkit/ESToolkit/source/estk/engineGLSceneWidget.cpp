@@ -188,3 +188,10 @@ void EngineGLSceneWidget::paintGL(void) {
 EngineGLSceneWidget::~EngineGLSceneWidget(void)
 {
 }
+
+QSize EngineGLSceneWidget::sizeHint(void) const {
+    if(getAssets()->getCurArea()) {
+        return QSize(getAssets()->getCurArea()->getMapWidth()*32.0f, getAssets()->getCurArea()->getMapHeight()*32.0f);
+    }
+    return QSize(10,10);
+}

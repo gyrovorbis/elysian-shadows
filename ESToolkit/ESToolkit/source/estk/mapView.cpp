@@ -47,7 +47,10 @@ void MapView::onAreaChange(Area * const area) {
     //move over cursor entity
 
     if(getAssets()->getCurrentArea()) getAssets()->getCurrentArea()->removeEntity(_cursorEntity);
-    if(area) area->addEntity(_cursorEntity);
+    if(area) {
+        area->addEntity(_cursorEntity);
+        _updateScrollBars();
+    }
 
     _entityClearSelection();
     _underCursorEntity = nullptr;
@@ -421,8 +424,8 @@ bool MapView::_populatePlaceTileGroupRegionFill(const TileSelection<TileEntry> *
 	return true;
 }
 
-void MapView::scrollContentsBy(int /*dx*/, int /*dy*/) {
-
+void MapView::scrollContentsBy(int dx, int dy) {
+    getAssets()->getEngine()->getCameraSys()->translate(GYVector3 { (float)dx, (float)dy, 0.0f });
 }
 
 inline void MapView::_entityClearSelection(void) {
@@ -497,6 +500,26 @@ void MapView::onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) {
         }
         _underCursorEntity = nullptr;
     }
+}
 
+void MapView::_updateScrollBars(void) {
+    QSize viewSize = viewport()->size();
+    QSize sceneSize(getAssets()->getCurArea()->getMapWidth() * 32.0f, getAssets()->getCurArea()->getMapHeight() * 32.0f);
+
+    verticalScrollBar()->setEnabled(true);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    verticalScrollBar()->setVisible(true);
+    horizontalScrollBar()->setEnabled(true);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    horizontalScrollBar()->setVisible(true);
+
+    verticalScrollBar()->setPageStep(viewSize.height());
+    horizontalScrollBar()->setPageStep(viewSize.width());
+
+    verticalScrollBar()->setRange(0, sceneSize.height()-viewSize.height());
+    horizontalScrollBar()->setRange(0, sceneSize.width()-viewSize.width());
 
 }
+
+
+
