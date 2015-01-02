@@ -53,7 +53,7 @@ GYAppCbRet Init(int argc, char **argv) {
 	QTimer::singleShot(2500, &splash, SLOT(close()));
 	QTimer::singleShot(2500, &w, SLOT(showMaximized()));
 #else
-    //QTimer::singleShot(1000, &splash, SLOT(close()));
+    QTimer::singleShot(1000, &splash, SLOT(close()));
     QTimer::singleShot(0, &w, SLOT(showMaximized()));
 #endif
 
