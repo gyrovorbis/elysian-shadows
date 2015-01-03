@@ -49,7 +49,7 @@ void MapView::onAreaChange(Area * const area) {
     if(getAssets()->getCurrentArea()) getAssets()->getCurrentArea()->removeEntity(_cursorEntity);
     if(area) {
         area->addEntity(_cursorEntity);
-        _updateScrollBars();
+        //_updateScrollBars();
     }
 
     _entityClearSelection();
@@ -283,30 +283,28 @@ void MapView::timerEvent(QTimerEvent* event) {
 }
 
 void MapView::keyPressEvent(QKeyEvent* event) {
-	DestView<TileEntry>::keyPressEvent(event);
+    DestView<TileEntry>::keyPressEvent(event);
 
 	//Check for MapView-specific key events
 	if(_selItemGroup) {
         TileSelectable *terSel = static_cast<TileSelectable*>(_getTileSelection());
 		if(terSel) {
-			switch(event->key()) {
-			case Qt::Key_Equal:
+            switch(event->key()) {
+            case Qt::Key_Equal:
 				terSel->elevateFromBase();
                 //createSelectionItemGroup(); //force update region
 				break;
-			case Qt::Key_Plus:
+            case Qt::Key_Plus:
 				terSel->elevateUp();
                 //createSelectionItemGroup(); //force update region
 				break;
-			case Qt::Key_Minus:
+            case Qt::Key_Minus:
 				terSel->elevateDown();
                 //createSelectionItemGroup(); //force update region
                 break;
 			case Qt::Key_Z:
-
 				terSel->toggleZTransitional();
                 //createSelectionItemGroup();
-
                 break;
             case Qt::Key_N:
                 terSel->toggleNormalFace();
@@ -331,13 +329,14 @@ void MapView::wheelEvent(QWheelEvent* event) {
 }
 
 void MapView::mouseMoveEvent(QMouseEvent *event) {
+    auto* sel = static_cast<TileSelectable*>(_getTileSelection());
     auto p1 = _panPivot-_viewMousePos;
 
     DestView<TileEntry>::mouseMoveEvent(event);
     if(_cursorEntity) _cursorEntity->getTransform().setPos(_sceneMousePos.x(), _sceneMousePos.y());
 
-	if(_selItemGroup && !isFillingRegion()) {
-		auto *sel = static_cast<TileSelectable*>(_getTileSelection());
+    if(sel && !isFillingRegion()) {
+
 		unsigned w, h;
 		sel->getSelectionArea(w, h);
 
@@ -520,6 +519,14 @@ void MapView::_updateScrollBars(void) {
     horizontalScrollBar()->setRange(0, sceneSize.width()-viewSize.width());
 
 }
+
+void MapView::createSelectionItemGroup(void) {
+    _selItemGroup = new SelectionItemGroup;
+}
+
+void MapView::updateSelectionItemGroup(void) { }
+
+void MapView::deleteSelectionItemGroup(void) { _selItemGroup = nullptr; }
 
 
 

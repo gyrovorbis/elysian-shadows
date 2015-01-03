@@ -91,6 +91,11 @@ public:
     virtual void keyPressEvent(QKeyEvent *event) override;
 	virtual void scrollContentsBy(int dx, int dy) override;
 
+    //DestView virtual implementation
+    virtual void createSelectionItemGroup(void) override;
+    virtual void updateSelectionItemGroup(void) override;
+    virtual void deleteSelectionItemGroup(void) override;
+
 public slots:
 
     void onEngineInitialize(void);

@@ -1107,7 +1107,7 @@ void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *cons
 		_selectionDockWidget->ExpandSelectionTree();
 		break;
 	case Selectable::TILE:
-         //_ui->mapView->createSelectionItemGroup();
+         _ui->mapView->createSelectionItemGroup();
 		 static_cast<TileSelectable *>(selection)->populateModel();
 		 _selectionDockWidget->SetSelectionModel(static_cast<TileSelectable *>(selection));
          /*if(static_cast<TileSelectable *>(selection)->getSize() == 1)*/ _selectionDockWidget->ExpandSelectionTree();

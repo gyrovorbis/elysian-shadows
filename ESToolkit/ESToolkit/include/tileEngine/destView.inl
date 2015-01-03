@@ -266,8 +266,7 @@ void DestView<T>::mousePressEvent(QMouseEvent *event) {
 
 	if(event->button() == Qt::RightButton) {
 		if(_selItemGroup) {
-			delete _selItemGroup;
-            _selItemGroup = nullptr;
+            deleteSelectionItemGroup();
             _sceneSelectionClear();
 		}
         _endPan();
@@ -330,6 +329,7 @@ void DestView<T>::keyPressEvent (QKeyEvent *event)  {
 		}
 	}
 	event->ignore();
+    QGraphicsView::keyPressEvent(event);
 }
 
 template<typename T>

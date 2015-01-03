@@ -63,9 +63,9 @@ public:
 
 	/* Needs to be invoked whenever a terrain selection is made to
 	   create the selection in the view. */
-	void createSelectionItemGroup(void);
-	void deleteSelectionItemGroup(void);
-	void updateSelectionItemGroup(void);
+    virtual void createSelectionItemGroup(void);
+    virtual void deleteSelectionItemGroup(void);
+    virtual void updateSelectionItemGroup(void);
 
 	void placeSelection(void);
 	void disableSelectionPlacementMerge(void);
