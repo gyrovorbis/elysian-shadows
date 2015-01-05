@@ -3,7 +3,7 @@
 
 #include "sheetDockWidget.h"
 #include "ui_sheetdockwidget.h"
-#include "level.h"
+#include "elysian_level.hpp"
 #include "sourceView.h"
 
 SheetDockWidget::SheetDockWidget(QWidget *parent) :

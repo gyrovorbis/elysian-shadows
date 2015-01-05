@@ -1,7 +1,7 @@
 #include "renderable.h"
 #include "sprite.h"
 #include "project.h"
-#include "area.h"
+#include "elysian_area.hpp"
 #include "elysian_renderable.hpp"
 //#include "elysian_rect_prim.hpp"
 //#include "elysian_sprite_prim.hpp"

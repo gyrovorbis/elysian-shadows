@@ -2,7 +2,7 @@
 #define ELYSIAN_DEBUG_HPP
 
 #ifdef ELYSIAN_ENGINE
-#   include "debug_base.hpp"
+#   include "elysian_debug_base.hpp"
 namespace elysian {
     typedef DebugBase Debug;
 }

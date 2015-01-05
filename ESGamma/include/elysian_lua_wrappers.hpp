@@ -5,8 +5,8 @@
 
 #include <gyro.h>
 #include "elysian_renderable_object.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
-#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
+#include "elysian_entity.hpp"
+#include "elysian_area.hpp"
 #include "elysian_debug.hpp"
 #include "elysian_renderable.hpp"
 #include "elysian_animation.hpp"
@@ -17,7 +17,7 @@
 #include "elysian_examinable.hpp"
 #include "elysian_lua_behavior.hpp"
 #include "elysian_lua_singleton.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_level.hpp", "level.h")
+#include "elysian_level.hpp"
 #include "elysian_game_input.hpp"
 #include "elysian_party_system.hpp"
 #include "elysian_timer_system.hpp"
@@ -1308,12 +1308,12 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 
 // ======= C GLOBAL AND C++ STATIC FUNCTION WRAPPERS ======
 
-static inline int dbgPush(lua_State* const l) {
+static inline int dbgPush(lua_State* const /*l*/) {
     Debug::push();
     return 0;
 }
 
-static inline int dbgPop(lua_State* const l) {
+static inline int dbgPop(lua_State* const /*l*/) {
     Debug::pop();
     return 0;
 }

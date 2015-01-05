@@ -3,9 +3,9 @@
 #include "assetTreeWidget.h"
 #include "treenode.h"
 #include "elysian_debug.hpp"
-#include "area.h"
+#include "elysian_area.hpp"
 #include "project.h"
-#include "level.h"
+#include "elysian_level.hpp"
 #include "assets.h"
 
 AssetTreeWidget::AssetTreeWidget(QWidget *parent): QTreeWidget(parent), _ignoreItemChange(false), _prev(NULL) {

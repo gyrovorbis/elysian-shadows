@@ -1,12 +1,12 @@
 #include "elysian_collision_system.hpp"
 #include "elysian_collidable.hpp"
 #include "elysian_camera_system.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_level.hpp", "level.h")
-#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
-#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
+#include "elysian_level.hpp"
+#include "elysian_area.hpp"
+#include "elysian_entity.hpp"
 #include "elysian_debug.hpp"
 //#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tkMapSystem.h")
-#include "tkMapSystem.h"
+#include "elysian_map_system.hpp"
 #include "elysian_timer_system.hpp"
 #include "elysian_zcoords.hpp"
 #include "elysian_party_system.hpp"
@@ -914,7 +914,7 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable, c
 	};
 
 	GYVector4 worldVertsOrig[4];
-	float sizeZ = 0.0f;
+    //float sizeZ = 0.0f;
 	char startElev;
 	char endElev;
 	memcpy(worldVertsOrig, collidable._collider.box.worldVert, sizeof(worldVertsOrig));
@@ -923,7 +923,7 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable, c
 	case ENTITY_TILE_CHECK_VOLUME:
 		startElev	=	(worldVertsOrig[3].z)/32;
 		endElev		=	(worldVertsOrig[0].z)/32;
-		sizeZ = worldVertsOrig[0].z-worldVertsOrig[3].z;
+        //sizeZ = worldVertsOrig[0].z-worldVertsOrig[3].z;
 		break;
 	case ENTITY_TILE_CHECK_BOTTOM:
 		endElev		=	(worldVertsOrig[0].z-16.0f-1.0f)/32+1;
@@ -1090,11 +1090,13 @@ bool CollisionSystem::resolvePenetration(void) {
 }
 
 void CollisionSystem::_resolveZPenetration(CollisionContact * const contact) {
-    Collidable* col[2], *newCol[2];
+    Collidable* col[2];
+    //Collidable *newCol[2];
     float totalInertia = 0.0f;
     float deltaZ[2], linearInertia[2];
-    float coeff[2], newCoeff[2];
-    unsigned bodyToCol[2];
+    float coeff[2];
+    //float newCoeff[2];
+    //unsigned bodyToCol[2];
    // GYCollider* collider[2];
 
     if(!contact->_resolvePen) return;
@@ -1109,15 +1111,15 @@ void CollisionSystem::_resolveZPenetration(CollisionContact * const contact) {
     if(contact->getZDepth() > 0.0f) {
         col[0] = contact->_bodyB;
         col[1] = contact->_bodyA;
-        bodyToCol[0] = 1;
-        bodyToCol[1] = 0;
+       // bodyToCol[0] = 1;
+       // bodyToCol[1] = 0;
         coeff[0] = -1.0f;
         coeff[1] = 1.0f;
     } else {
         col[0] = contact->_bodyA;
         col[1] = contact->_bodyB;
-        bodyToCol[0] = 0;
-        bodyToCol[1] = 1;
+        //bodyToCol[0] = 0;
+        //bodyToCol[1] = 1;
         coeff[0] = 1.0f;
         coeff[1] = -1.0f;
     }
@@ -1146,14 +1148,14 @@ void CollisionSystem::_resolveZPenetration(CollisionContact * const contact) {
     vel[0] = col[0]->getEntity()->getRigidBody()->getVelocity();
     vel[1] = col[1]->getEntity()->getRigidBody()->getVelocity();
 
-    bool resting = false;
+    //bool resting = false;
     if(vel[0].z <= 0.0f /*&& vel[1].z <= 0.0f*/) {
         col[0]->setRestingOnBody(true);
         //GYVector3 newVel = vel[0];
         //newVel.z = 0;
         //col[0]->getEntity()->getRigidBody()->setVelocity(newVel);
         if(col[1]->getStackedOnGround()) col[0]->setStackedOnGround(true);
-        resting = true;
+       // resting = true;
     }
 
 
@@ -1205,15 +1207,15 @@ void CollisionSystem::_resolveZPenetration(CollisionContact * const contact) {
 
 #else
         if(adjContact->getZDepth() > 0.0f) {
-            newCol[0] = adjContact->_bodyB;
-            newCol[1] = adjContact->_bodyA;
-            newCoeff[0] = -1.0f;
-            newCoeff[1] = 1.0f;
+          //  newCol[0] = adjContact->_bodyB;
+           // newCol[1] = adjContact->_bodyA;
+           // newCoeff[0] = -1.0f;
+          //  newCoeff[1] = 1.0f;
         } else {
-            newCol[0] = adjContact->_bodyA;
-            newCol[1] = adjContact->_bodyB;
-            newCoeff[0] = 1.0f;
-            newCoeff[1] = -1.0f;
+          //  newCol[0] = adjContact->_bodyA;
+           // newCol[1] = adjContact->_bodyB;
+          //  newCoeff[0] = 1.0f;
+          //  newCoeff[1] = -1.0f;
         }
 
       /*  for(unsigned k = 0; k < 2; ++k) {

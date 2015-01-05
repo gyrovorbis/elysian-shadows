@@ -2,7 +2,7 @@
 #include "elysian_character.hpp"
 #include "elysian_debug.hpp"
 #include "elysian_timer_system.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
+#include "elysian_area.hpp"
 
 namespace elysian {
 

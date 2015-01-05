@@ -1,7 +1,7 @@
 #include "elysian_renderable.hpp"
 #include "elysian_generic.hpp"
 #include "elysian_asset_typedefs.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
+#include "elysian_area.hpp"
 
 namespace elysian {
 

@@ -14,7 +14,7 @@
 #include "elysian_mem_pool.hpp"
 #include "elysian_force_generator.hpp"
 #include "elysian_renderable.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
+#include "elysian_area.hpp"
 
 #define ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_SIZE               0
 #define ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_FADEOUT_TIME       5.0f
@@ -23,7 +23,7 @@
 namespace elysian {
 
 	class RigidBody;
-	class CollisionContact;
+    class CollisionContact;
 	class ForceGenerator;
     class RigidBodyShard;
     typedef Pool<RigidBodyShard> ShardPool;

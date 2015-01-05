@@ -13,8 +13,8 @@
 #include "engineDialog.h"
 #include "assets.h"
 #include "project.h"
-#include "level.h"
-#include "area.h"
+#include "elysian_level.hpp"
+#include "elysian_area.hpp"
 
 EngineDialog::EngineDialog(QWidget *parent): QMainWindow(parent), _currentType(ENGINE_PC) {
 	QWidget *centralWidget = new QWidget;

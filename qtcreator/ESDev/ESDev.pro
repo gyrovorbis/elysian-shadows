@@ -3,10 +3,10 @@ CONFIG += ordered
 CONFIG += console
 
 
-SUBDIRS +=  ../../ESToolkit/ESToolkit \
-	../../libGyro/qtcreator/libGyro \
+SUBDIRS +=  ../../libGyro/qtcreator/libGyro \
 	../../Lua5.2/qtcreator/Lua5_2 \
-	../../OOLua/qtcreator/OOLua
+        ../../OOLua/qtcreator/OOLua \
+        ../../ESToolkit/ESToolkit \
 #    ../../ESGamma/qtcreator/ESGamma
 
 

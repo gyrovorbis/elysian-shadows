@@ -1,6 +1,6 @@
 #include <QPainter>
 #include "sheetManagerDestTileGraphicsItem.h"
-#include "level.h"
+#include "elysian_level.hpp"
 #include "tileImage.h"
 #include "sheetManagerTileSelection.h"
 #include "sheetManagerAssets.h"

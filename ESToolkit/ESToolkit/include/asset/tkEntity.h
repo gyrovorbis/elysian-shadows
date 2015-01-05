@@ -1,11 +1,11 @@
-#ifndef ENTITY_H
-#define ENTITY_H
+#ifndef TK_ENTITY_H
+#define TK_ENTITY_H
 
 #include <QGraphicsRectItem>
 #include "treenode.h"
 #include "assetManager.h"
 #include "elysian_asset_typedefs.hpp"
-#include "elysian_entity.hpp"
+#include "elysian_entity_base.hpp"
 #include "rowsJoinerProxyModel.h"
 #include "elysian_asset_typedefs.hpp"
 

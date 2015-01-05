@@ -2,14 +2,14 @@
 #include <QMessageBox>
 #include "assets.h"
 #include "project.h"
-#include "level.h"
-#include "area.h"
-#include "entity.h"
+#include "elysian_level.hpp"
+#include "tkArea.h"
+#include "elysian_entity.hpp"
 #include "elysian_debug.hpp"
 #include "elysian_engine.hpp"
 #include "elysian_level_system.hpp"
 #include "elysian_map_system.hpp"
-#include "tkMapSystem.h"
+#include "elysian_map_system.hpp"
 #include "entitySelectable.h"
 
 //====STATIC MEMBERS====
@@ -131,26 +131,32 @@ bool Assets::setCurrentArea(const QString name) {
     }
     Debug::Log(Debug::CRITICAL, "Could not set current area to %s!\n", name.toStdString().c_str());
     return false;*/
-    if(!_currentLevel) return false;
+    if(!_currentLevel) {
+        setCurrentArea(nullptr);
+        return false;
+    }
     Area *area = _currentLevel->getArea(name);
-    if(!area) return false;
+    if(!area) {
+        setCurrentArea(nullptr);
+        return false;
+    }
     setCurrentArea(area);
     return true;
 }
 
 void Assets::setCurrentArea(Area *const area) {
-	if(_currentArea) _currentArea->deactivate();
+   // if(_currentArea) _currentArea->deactivate();
     _currentArea = area;
     if(area) {
         _engine->getLevelSys()->switchArea(area->getPath());
-		area->activate();
+        //area->activate();
 		emit areaChanged(_currentArea);
 		if(area->getFirstEntity()) setCurrentSelection(new EntitySelectable(area->getFirstEntity()));
-        else setCurrentSelection((Entity*)nullptr);
+        else setCurrentSelection((EntitySelectable*)nullptr);
     }
     else {
 		emit areaChanged(_currentArea);
-        setCurrentSelection((Entity*)nullptr);
+        setCurrentSelection((EntitySelectable*)nullptr);
     }
 }
 
@@ -170,12 +176,12 @@ bool Assets::setCurrentLevel(const QString name) {
 }
 
 void Assets::setCurrentLevel(Level *const level) {
-	if(_currentLevel) _currentLevel->deactivate();
+   // if(_currentLevel) _currentLevel->deactivate();
     _currentLevel = level;
 
     if(level) {
-    _engine->getLevelSys()->switchLevel(level->getPath());
-		level->activate();
+        _engine->getLevelSys()->switchLevel(level->getPath());
+    //	level->activate();
         if(level->getFirstArea()) setCurrentArea(level->getFirstArea()->getNodeName());
         else setCurrentArea(nullptr);
     }

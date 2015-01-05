@@ -2,7 +2,7 @@
 #define ELYSIAN_LIGHT_SYSTEM_H
 
 #include "elysian_system.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
+#include "elysian_area.hpp"
 #include "elysian_subprocess_manager.hpp"
 #include "elysian_light_source.hpp"
 #include <gyro_matrix_api.h>

@@ -1,5 +1,5 @@
 #include "mapViewTileGraphicsItem.h"
-#include "area.h"
+#include "elysian_area.hpp"
 
 MapViewTileGraphicsItem::MapViewTileGraphicsItem(void):
 	TileGraphicsItem<TileEntry>::TileGraphicsItem(TileGraphicsItem<TileEntry>::TYPE_DEST),

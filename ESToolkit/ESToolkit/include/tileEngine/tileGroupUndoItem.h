@@ -6,7 +6,7 @@
 
 #include "gyro.h"
 #include "undoItem.h"
-#include "area.h"
+#include "tkArea.h"
 
 //Implicitly used as comparator for map of QPoints
 inline bool operator<(const QPoint &p1, const QPoint &p2) {

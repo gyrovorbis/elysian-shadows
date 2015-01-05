@@ -1,11 +1,11 @@
 #include "elysian_light_system.hpp"
 #include "elysian_light_source.hpp"
 #include "elysian_camera_system.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
-#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
-#include ELYSIAN_ASSET_HEADER("elysian_level.hpp", "level.h")
+#include "elysian_area.hpp"
+#include "elysian_entity.hpp"
+#include "elysian_level.hpp"
 //#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tkMapSystem.h")
-#include "tkMapSystem.h"
+#include "elysian_map_system.hpp"
 #include <gyro_shader_api.h>
 #include <cfloat>
 

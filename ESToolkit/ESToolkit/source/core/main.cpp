@@ -14,10 +14,10 @@
 
 GYAppCbRet Init(int argc, char **argv) {
 
-    QApplication::setAttribute(Qt::AA_SynthesizeMouseForUnhandledTouchEvents, false);
-    QApplication::setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, false);
-    //    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps, false);
-//    QApplication::setAttribute(Qt::AA_Use96Dpi, true);
+    //QApplication::setAttribute(Qt::AA_SynthesizeMouseForUnhandledTouchEvents, false);
+    //QApplication::setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, false);
+    //QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps, false);
+    //QApplication::setAttribute(Qt::AA_Use96Dpi, true);
 
     QRectF rect;
     rect.setSize(QSizeF(2.0f, 5.0f));
@@ -29,9 +29,6 @@ GYAppCbRet Init(int argc, char **argv) {
     a.setWindowIcon(QIcon(":/estk/images/estk.ico"));
     a.setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
 
-    gyPrintf("test");
-    qDebug() << "DBGTEST";
-
     QPixmap splashScreen(":/splash/images/splashScreen.png");
     QPainter painter(&splashScreen);
     painter.setPen(QPen(QColor(225, 202, 251)));
@@ -42,7 +39,7 @@ GYAppCbRet Init(int argc, char **argv) {
     painter.drawText(25,190,"http://elysianshadows.com/tkreleasenotes"); /* This is an invalid URL!!!! */
 
 	QSplashScreen splash(splashScreen, Qt::WindowStaysOnTopHint);
-    //splash.show();
+
 
     ESToolkit w;
 
@@ -50,10 +47,11 @@ GYAppCbRet Init(int argc, char **argv) {
 
 // We don't want to wait for the splash screen whilst debugging. --Sara.
 #ifdef QT_NO_DEBUG
+    splash.show();
 	QTimer::singleShot(2500, &splash, SLOT(close()));
 	QTimer::singleShot(2500, &w, SLOT(showMaximized()));
 #else
-    QTimer::singleShot(1000, &splash, SLOT(close()));
+   //QTimer::singleShot(1000, &splash, SLOT(close()));
     QTimer::singleShot(0, &w, SLOT(showMaximized()));
 #endif
 

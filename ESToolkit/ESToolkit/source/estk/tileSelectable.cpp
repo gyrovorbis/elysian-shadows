@@ -3,8 +3,8 @@
 
 #include "tileSelectable.h"
 #include "tileSelectableSelectionViewDelegate.h"
-#include "area.h"
-#include "level.h"
+#include "tkArea.h"
+#include "elysian_level.hpp"
 #include "tileImage.h"
 #include "propertyStandardItem.h"
 

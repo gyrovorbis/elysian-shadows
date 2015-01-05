@@ -3,10 +3,10 @@
 
 #include "mapViewTileGraphicsItem.h"
 #include "elysian_map_depth_buffer.hpp"
-#include "area.h"
+#include "elysian_area.hpp"
 #include "elysian_zcoords.hpp"
-#include "entity.h"
-#include "tkMapSystem.h"
+#include "elysian_entity.hpp"
+#include "elysian_map_system.hpp"
 
 class MapViewDepthBufferGraphicsItem:
 		public MapViewTileGraphicsItem,

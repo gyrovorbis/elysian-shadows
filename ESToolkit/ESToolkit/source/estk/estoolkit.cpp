@@ -1,4 +1,4 @@
-#include "area.h"
+#include "elysian_area.hpp"
 #include <QGLWidget>
 #include <QSizePolicy>
 #include <QToolButton>
@@ -15,9 +15,9 @@
 #include "engineGLSceneWidget.h"
 
 #include "elysian_debug.hpp"
-#include "level.h"
+#include "elysian_level.hpp"
 #include "assets.h"
-#include "entity.h"
+#include "elysian_entity.hpp"
 #include "project.h"
 #include "estoolkit.h"
 #include "ui_estoolkit.h"
@@ -44,7 +44,7 @@
 #include "luatables.h"
 #include "luaExplorerDialog.h"
 #include "rowsJoinerProxyModel.h"
-#include "tkMapSystem.h"
+#include "elysian_map_system.hpp"
 #include "elysian_light_source.hpp"
 #include "entitySelectable.h"
 #include "entityTreeWidget.h"
@@ -1160,6 +1160,7 @@ void ESToolkit::on_actionFileNewLevel_triggered() {
 
 	//QMessageBox::critical(this, tr("Error!"), tr("This feature won't be implemented until ESTkV1.5.2. Do it manually. ;)"));
 	Level *newLev = _assets.getCurrentProject()->newLevel();
+    _assets.setCurrentArea(nullptr);
 	_assets.setCurrentLevel(newLev);
 	_assets.setCurrentSelection(newLev);
 }

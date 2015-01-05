@@ -7,11 +7,11 @@
 #include "elysian_timer_system.hpp"
 #include "elysian_level_system.hpp"
 #include "elysian_instance_transform.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
+#include "elysian_entity.hpp"
 #include "elysian_collision_system.hpp"
 #include "elysian_gui_system.hpp"
 #include "elysian_zcoords.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
+#include "elysian_area.hpp"
 
 namespace elysian {
 

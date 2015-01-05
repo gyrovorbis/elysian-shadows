@@ -3,16 +3,16 @@
 #include "elysian_debug.hpp"
 #include <gyro.h>
 
-#include "tkMapSystem.h"
+#include "elysian_map_system.hpp"
 //#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tkMapSystem.h")
-#include ELYSIAN_ASSET_HEADER("elysian_level.hpp", "level.h")
-#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
+#include "elysian_level.hpp"
+#include "elysian_area.hpp"
 #include "elysian_camera_system.hpp"
 #include "elysian_timer_system.hpp"
 #include "elysian_font.hpp"
 #include "elysian_gui_system.hpp"
 #include "elysian_zcoords.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
+#include "elysian_entity.hpp"
 
 namespace elysian {
 

@@ -1,6 +1,6 @@
 #include "elysian_combat_system.hpp"
 #include "elysian_combat.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
+#include "elysian_area.hpp"
 #include "elysian_lua_wrappers.hpp"
 #include "elysian_collision_system.hpp"
 #include "elysian_camera_system.hpp"

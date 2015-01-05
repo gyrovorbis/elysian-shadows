@@ -105,7 +105,7 @@ void EngineGLSceneWidget::paintGL(void) {
     //gyVidSetDefaultShaderProgram();
     //getAssets()->getEngine()->getCameraSys()->update();
 
-    auto worldPos = GYVector3 { 0.0, 0.0, 1.0 };
+    //auto worldPos = GYVector3 { 0.0, 0.0, 1.0 };
 
     //gyVidSetCamWorldPos(&worldPos);
 

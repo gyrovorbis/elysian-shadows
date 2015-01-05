@@ -1,12 +1,11 @@
 #include <QDir>
 #include <QMessageBox>
 #include "elysian_asset_typedefs.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
-
-#include "area.h"
-#include "level.h"
+#include "elysian_entity.hpp"
+#include "tkArea.h"
+#include "elysian_level.hpp"
 #include "elysian_debug.hpp"
-#include "entity.h"
+#include "elysian_entity.hpp"
 #include "propertyStandardItem.h"
 #include "checkeredAlphaRectGraphicsItem.h"
 #include "sourceView.h"
@@ -39,8 +38,8 @@ void Area::updateScene(void) {
 
 //====NONSTATIC====
 
-TkArea::TkArea(Level *const /*level*/) {
-
+TkArea::TkArea(Level *const lev) {
+    this->level = lev;
     width = height = 50;
 	//Must allocate a map in case this map is to be saved before it is loaded.
     allocMap();
@@ -178,7 +177,7 @@ bool TkArea::load(const char*const str) {
 
 	//Allocated a dummy map upon construction, have to free before loading.
     //freeMap();
-    success &= AreaBase::load(dir.toStdString().c_str());
+
     //level = _level;
 
     setNodeName(QDir(dir).dirName());
@@ -300,7 +299,7 @@ bool Area::activate(void) {
 		_active = true;
 	}
 	emit activating(this);
-	return true;
+    return true;
 }
 
 bool Area::deactivate(void) {
@@ -315,17 +314,20 @@ bool Area::deactivate(void) {
 }
 
 bool Area::open(void) {
+    bool success = true;
 	if(_open) return false;
 
-	resizeEditorScene();
+    success &= AreaBase::load(_location.toStdString().c_str());
 
+	resizeEditorScene();
+/*
 	_bgRect = new CheckeredAlphaRectGraphicsItem;
     _bgRect->setRect(QRect(-16, -16, 32*width, 32*height));
 	_bgRect->setZValue(-1);
-
+*/
 	//Populate Entities
 	_open = true;
-	return true;
+    return success;
 }
 
 bool Area::close(void) {

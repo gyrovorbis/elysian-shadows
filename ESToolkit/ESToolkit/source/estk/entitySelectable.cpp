@@ -1,5 +1,5 @@
 #include "entitySelectable.h"
-#include "entity.h"
+#include "elysian_entity.hpp"
 
 EntitySelectable::EntitySelectable(TkEntity*const entity): RowsJoinerProxy(nullptr) {
 	addEntity(entity);

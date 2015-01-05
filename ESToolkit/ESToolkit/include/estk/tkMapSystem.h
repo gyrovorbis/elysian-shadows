@@ -1,7 +1,7 @@
 #ifndef TK_MAP_SYSTEM_H
 #define TK_MAP_SYSTEM_H
 
-#include "elysian_map_system.hpp"
+#include "elysian_map_system_base.hpp"
 #include "elysian_asset_typedefs.hpp"
 #include "mapViewTileGraphicsItem.h"
 #include "elysian_gui_system.hpp"

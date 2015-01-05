@@ -7,7 +7,7 @@
 #include "mapView.h"
 #include "tileImage.h"
 #include "tileSelectable.h"
-#include "level.h"
+#include "elysian_level.hpp"
 
 class MapViewTileGraphicsItem: public TileGraphicsItem<TileEntry>, public AssetManager {
 protected:

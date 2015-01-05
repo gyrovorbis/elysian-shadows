@@ -1,4 +1,4 @@
-#include "area.h"
+#include "elysian_area.hpp"
 #include <QMenu>
 #include <QActionGroup>
 #include <QToolButton>
@@ -18,7 +18,7 @@
 #include "sheetManagerFileDockWidget.h"
 #include "historyDockWidget.h"
 #include "project.h"
-#include "level.h"
+#include "elysian_level.hpp"
 #include "tileSheetUtilities.h"
 #include "sheetManagerSourceTileGraphicsItem.h"
 #include "tileImage.h"

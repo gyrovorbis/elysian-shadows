@@ -67,9 +67,10 @@ public:
 			}
 		}
 
-		for(auto it = _undoGroup.begin(); it != _undoGroup.end(); ++it)
+        for(auto it = _undoGroup.begin(); it != _undoGroup.end();)
 			if(it.value().dirty)
-				_undoGroup.erase(it);
+                it = _undoGroup.erase(it);
+            else ++it;
 
         _area->endMapUpdate();
     }
@@ -111,7 +112,7 @@ public:
     void onMapChanged(const QVector<MapChange>& changes) {
         if(!_undoGroup.size()) return;
 
-        bool changed = false;
+        //bool changed = false;
         int count = changes.size();
 
         for(int i = 0; i < count; ++i) {

@@ -5,7 +5,7 @@
 #include "elysian_quad_sprite_attrib.hpp"
 #include "elysian_material.hpp"
 #include "elysian_asset_typedefs.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
+#include "elysian_entity.hpp"
 #include <gyro_video_api.h>
 
 ELYSIAN_ASSET_TYPEDEF(Entity)

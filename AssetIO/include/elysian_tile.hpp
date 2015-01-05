@@ -540,6 +540,7 @@ namespace elysian {
 			assert(0);
 		}
 
+        return COLLIDER_NONE;
 	}
     
 }

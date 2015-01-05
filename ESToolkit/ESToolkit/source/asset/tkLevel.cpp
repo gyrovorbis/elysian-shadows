@@ -4,13 +4,13 @@
 #include <QDebug>
 #include <QTime>
 
-#include "level.h"
+#include "elysian_level.hpp"
 #include "project.h"
 #include "elysian_debug.hpp"
 #include "tileSheetUtilities.h"
 #include "sheetViewTileGraphicsItem.h"
 #include "tileImage.h"
-#include "area.h"
+#include "tkArea.h"
 #include "fileUtilities.h"
 #include "propertyStandardItem.h"
 #include "checkeredAlphaRectGraphicsItem.h"
@@ -240,7 +240,7 @@ void Level::OnChildAreaActivating(Area *const area) {
 }*/
 
 bool TkLevel::activate(void) {
-	_sheetViewScene->addItem(_bgRectItem);
+    _sheetViewScene->addItem(_bgRectItem);
     return activateByArea(nullptr);
 }
 
@@ -262,11 +262,11 @@ bool TkLevel::activateByArea(Area *const area) {
 }
 
 bool TkLevel::deactivate(void) {
-    Debug::Logf(Debug::VERBOSE, "Level[%s].Deactivate()\n", getNodeName().toStdString().c_str());
+    Debug::Logf(Debug::VERBOSE, "Level[%s].deactivate()\n", getNodeName().toStdString().c_str());
     /* If there is anything that is not persistent to be removed from the
        object/tilesheet scenes, do it now.
     */
-
+    //elysian::Level::deactivate();
 	_sheetViewScene->removeItem(_bgRectItem);
 
     return true;
@@ -303,7 +303,12 @@ void TkLevel::clearAllStacks(void) {
 bool TkLevel::open(void) {
 	//Debug::Log(Debug::VERBOSE, "Level[%s].Open()\n", getName().toStdString().c_str());
     bool success = true;
-	if(_open) close();
+    if(_open) return false;
+
+    QDir dir(_location);
+    success &= LevelBase::load(dir.absolutePath().toStdString().c_str());
+
+    success &= _loadMetaData(_location);
 
 	if(!TileSheetUtilities::DivideTileSheet(_location+ELYSIAN_TILESHEET_PATH,
 											ELYSIAN_TILESHEET_WIDTH,
@@ -340,6 +345,7 @@ Area *TkLevel::newArea(void) {
     }
     name += QString::number(num);
     ar->setLocation(_location+"/area/"+name);
+    //ar->setLevel(this);
 	_area.push_back(ar);
 	ar->save();
 	emit areaAdded(this, ar);
@@ -467,10 +473,6 @@ bool TkLevel::load(const QString loc) {
     }
     Debug::pop();
     _validSheets = success;
-
-    success &= LevelBase::load(dir.absolutePath().toStdString().c_str());
-
-    success &= _loadMetaData(loc);
 
     if(!dir.cd("area")) {
 		Debug::Log(Debug::CRITICAL, "No area directory!");

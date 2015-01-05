@@ -2,7 +2,7 @@
 #include "elysian_rigid_body.hpp"
 #include "elysian_collidable.hpp"
 #include "elysian_asset_typedefs.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
+#include "elysian_entity.hpp"
 
 namespace elysian {
 

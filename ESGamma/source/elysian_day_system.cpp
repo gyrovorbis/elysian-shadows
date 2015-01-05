@@ -2,8 +2,8 @@
 #include "elysian_timer_system.hpp"
 #include "elysian_light_source.hpp"
 #include "elysian_debug.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
-#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
+#include "elysian_area.hpp"
+#include "elysian_entity.hpp"
 namespace elysian {
 
 void DaySystem::update(void) {

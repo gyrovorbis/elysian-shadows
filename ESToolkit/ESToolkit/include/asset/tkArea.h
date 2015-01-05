@@ -1,13 +1,13 @@
 
-#ifndef AREA_H
-#define AREA_H
+#ifndef TK_AREA_H
+#define TK_AREA_H
 
 #include <gyro.h>
 #include <stdint.h>
 #include <QUndoStack>
 #include "elysian_asset_typedefs.hpp"
-#include "elysian_area.hpp"
-#include "level.h"
+#include "elysian_area_base.hpp"
+#include "elysian_level.hpp"
 #include "treenode.h"
 #include "selectionScene.h"
 #include "assets.h"

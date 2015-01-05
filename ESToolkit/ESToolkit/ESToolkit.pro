@@ -5,7 +5,7 @@
 TARGET = ESToolkit
 TEMPLATE = app
 QT		+= opengl
-QMAKE_CXXFLAGS += -std=c++11 -msse
+QMAKE_CXXFLAGS += -std=c++11 -msse -Wno-unused-local-typedefs -Wno-empty-body
 DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt
 CONFIG += c++11
 
@@ -21,8 +21,8 @@ DEPENDPATH += include/asset \
     include/widget \
     ../../AssetIO/include \
     ../../libGyro/include \
-	../../libGyro/include/kinetic \
-	../../ESGamma/include
+    ../../libGyro/include/kinetic \
+    ../../ESGamma/include
 
 INCLUDEPATH += include/asset \
     include/core \
@@ -41,11 +41,8 @@ INCLUDEPATH += include/asset \
 
 
 SOURCES += source/asset/project.cpp \
-    source/asset/level.cpp \
-    source/asset/entity.cpp \
     source/asset/assets.cpp \
     source/asset/assetManager.cpp \
-    source/asset/area.cpp \
     source/core/undoItem.cpp \
     source/core/treenode.cpp \
     source/core/tileSheetUtilities.cpp \
@@ -92,15 +89,12 @@ SOURCES += source/asset/project.cpp \
     ../../AssetIO/source/elysian_renderable.cpp \
     ../../AssetIO/source/elysian_lua_behavior.cpp \
     ../../AssetIO/source/elysian_level_manager.cpp \
-    ../../AssetIO/source/elysian_level.cpp \
     ../../AssetIO/source/elysian_examinable.cpp \
-    ../../AssetIO/source/elysian_entity.cpp \
     ../../AssetIO/source/elysian_dialog.cpp \
     ../../AssetIO/source/elysian_collidable.cpp \
     ../../AssetIO/source/elysian_character.cpp \
     ../../AssetIO/source/elysian_behavior.cpp \
     ../../AssetIO/source/elysian_asset.cpp \
-    ../../AssetIO/source/elysian_area.cpp \
     ../../AssetIO/source/elysian_audio_source.cpp \
     ../../AssetIO/source/elysian_light_source.cpp \
     source/asset/elysianTileWrapper.cpp \
@@ -132,7 +126,6 @@ SOURCES += source/asset/project.cpp \
     ../../ESGamma/source/elysian_lua_script.cpp \
     ../../ESGamma/source/elysian_lua_singleton.cpp \
     ../../ESGamma/source/elysian_lua_wrappers.cpp \
-    ../../ESGamma/source/elysian_map_system.cpp \
     ../../ESGamma/source/elysian_particle_system.cpp \
     ../../ESGamma/source/elysian_party_system.cpp \
     ../../ESGamma/source/elysian_quad_attrib.cpp \
@@ -150,14 +143,18 @@ SOURCES += source/asset/project.cpp \
     ../../ESGamma/source/elysian_debug_base.cpp \
     source/core/tkDebug.cpp \
     ../../AssetIO/source/elysian_animation_base.cpp \
-    source/asset/tkAnimation.cpp
+    source/asset/tkAnimation.cpp \
+    source/asset/tkArea.cpp \
+    ../../AssetIO/source/elysian_area_base.cpp \
+    ../../AssetIO/source/elysian_level_base.cpp \
+    source/asset/tkLevel.cpp \
+    ../../AssetIO/source/elysian_entity_base.cpp \
+    source/asset/tkEntity.cpp \
+    ../../ESGamma/source/elysian_map_system_base.cpp
 
 HEADERS += include/asset/project.h \
-    include/asset/level.h \
-    include/asset/entity.h \
     include/asset/assets.h \
     include/asset/assetManager.h \
-    include/asset/area.h \
     include/core/undoItem.h \
     include/core/treenode.h \
     include/core/tileSheetUtilities.h \
@@ -227,10 +224,8 @@ HEADERS += include/asset/project.h \
     ../../AssetIO/include/elysian_map_depth_buffer.hpp \
     ../../AssetIO/include/elysian_lua_behavior.hpp \
     ../../AssetIO/include/elysian_level_manager.hpp \
-    ../../AssetIO/include/elysian_level.hpp \
     ../../AssetIO/include/elysian_instance_transform.hpp \
     ../../AssetIO/include/elysian_examinable.hpp \
-    ../../AssetIO/include/elysian_entity.hpp \
     ../../AssetIO/include/elysian_direction.hpp \
     ../../AssetIO/include/elysian_dialog.hpp \
     ../../AssetIO/include/elysian_cstr_map.hpp \
@@ -239,7 +234,6 @@ HEADERS += include/asset/project.h \
     ../../AssetIO/include/elysian_character.hpp \
     ../../AssetIO/include/elysian_behavior.hpp \
     ../../AssetIO/include/elysian_asset.hpp \
-    ../../AssetIO/include/elysian_area.hpp \
     ../../AssetIO/include/elysian_audio_source.hpp \
     include/asset/elysianTileWrapper.h \
     ../../AssetIO/include/elysian_particle_emitter.hpp \
@@ -273,7 +267,6 @@ HEADERS += include/asset/project.h \
     ../../ESGamma/include/elysian_lua_script.hpp \
     ../../ESGamma/include/elysian_lua_singleton.hpp \
     ../../ESGamma/include/elysian_lua_wrappers.hpp \
-    ../../ESGamma/include/elysian_map_system.hpp \
     ../../ESGamma/include/elysian_model.hpp \
     ../../ESGamma/include/elysian_particle_system.hpp \
     ../../ESGamma/include/elysian_party_system.hpp \
@@ -295,7 +288,18 @@ HEADERS += include/asset/project.h \
 	../../ESGamma/include/elysian_debug.hpp \
     ../../AssetIO/include/elysian_animation_base.hpp \
     ../../AssetIO/include/elysian_animation.hpp \
-    include/asset/tkAnimation.h
+    include/asset/tkAnimation.h \
+    ../../AssetIO/include/elysian_area_base.hpp \
+    include/asset/tkArea.h \
+    ../../AssetIO/include/elysian_level_base.hpp \
+    ../../AssetIO/include/elysian_area.hpp \
+    ../../AssetIO/include/elysian_level.hpp \
+    include/asset/tkLevel.h \
+    ../../AssetIO/include/elysian_entity_base.hpp \
+    include/asset/tkEntity.h \
+    ../../AssetIO/include/elysian_entity.hpp \
+    ../../ESGamma/include/elysian_map_system_base.hpp \
+    ../../ESGamma/include/elysian_map_system.hpp
 
 FORMS += form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \

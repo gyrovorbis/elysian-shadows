@@ -6,7 +6,7 @@
 #include "elysian_adventure_log.hpp"
 #include "elysian_mem_pool.hpp"
 #include "elysian_asset_typedefs.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
+#include "elysian_entity.hpp"
 
 #include <gyro.h>
 

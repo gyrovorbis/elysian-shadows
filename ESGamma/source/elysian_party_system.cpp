@@ -1,6 +1,6 @@
 #include "elysian_party_system.hpp"
 #include "elysian_debug.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
+#include "elysian_entity.hpp"
 #include "elysian_character.hpp"
 #include "elysian_game_input.hpp"
 #include "elysian_camera_system.hpp"
@@ -11,7 +11,7 @@
 #include "elysian_examinable.hpp"
 #include "elysian_behavior_system.hpp"
 #include "elysian_particle_system.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_level.hpp", "level.h")
+#include "elysian_level.hpp"
 #include "elysian_audio_system.hpp"
 
 namespace elysian {

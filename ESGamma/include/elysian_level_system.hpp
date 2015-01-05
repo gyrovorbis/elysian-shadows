@@ -4,8 +4,8 @@
 #include "elysian_system.hpp"
 #include "elysian_asset_typedefs.hpp"
 #include "elysian_mem_pool.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
-#include ELYSIAN_ASSET_HEADER("elysian_level.hpp", "level.h")
+#include "tkArea.h"
+#include "elysian_level.hpp"
 
 
 #include <vector>
@@ -40,7 +40,7 @@ namespace elysian {
         struct TimeStampEntry {
             T       zone;
             float   timestamp;
-            friend bool operator< (const TimeStampEntry& e1, const TimeStampEntry& e2);
+            //friend bool operator< (const TimeStampEntry& e1, const TimeStampEntry& e2);
         };
 
         typedef Pool<TimeStampEntry, true> ZonePool;
@@ -95,15 +95,6 @@ namespace elysian {
             std::vector<Area*>  area;
 
         public:
-
-            static const unsigned MAX_LEVELS_LOADED = 1;
-    #if GYRO_PLATFORM == GYRO_PLATFORM_x86 || GYRO_PLATFORM == GYRO_PLATFORM_iOS
-            static const unsigned MAX_AREAS_LOADED = 1;
-    #elif GYRO_PLATFORM == GYRO_PLATFORM_PSP
-            static const unsigned MAX_AREAS_LOADED = 2;
-    #elif GYRO_PLATFORM == GYRO_PLATFORM_DC
-            static const unsigned MAX_AREAS_LOADED = 1;
-    #endif
 
 
             int getLevelIndex(const char *const dir) const;

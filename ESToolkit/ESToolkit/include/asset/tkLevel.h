@@ -1,11 +1,11 @@
-#ifndef LEVEL_H
-#define LEVEL_H
+#ifndef TK_LEVEL_H
+#define TK_LEVEL_H
 //QT
 #include <QString>
 #include <QVector>
 #include "propertyStackModel.h"
 #include "treenode.h"
-#include "elysian_level.hpp"
+#include "elysian_level_base.hpp"
 #include "elysian_level_manager.hpp"
 #include "assets.h"
 #include "elysianTileWrapper.h"
@@ -55,13 +55,13 @@ private:
     bool _saveMetaData(const QString dir);
     bool _loadMetaData(const QString dir);
 
-	virtual bool deactivate(void);
 	void connectSlots(Area *area);
 
     bool _gatherMaps(const bool normal=true);
     bool _scatterMaps(const bool normal=true);
 
 public:
+    virtual bool deactivate(void);
 	Project *getProject(void) const { return _project; }
     void setNodeName(const QString str);
     void setLocation(const QString loc);

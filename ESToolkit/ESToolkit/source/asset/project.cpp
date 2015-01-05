@@ -3,7 +3,7 @@
 #include <QMessageBox>
 
 #include "project.h"
-#include "level.h"
+#include "elysian_level.hpp"
 #include "elysian_debug.hpp"
 #include "fileUtilities.h"
 #include "elysian_level_system.hpp"
@@ -175,7 +175,7 @@ bool Project::load(const QString loc) {
     QStringList levels = dir.entryList(QDir::AllDirs);
 
     //skip two for '.' and '..'
-	for(int i=2;i < levels.size(); ++i) {
+    for(int i=2;i < levels.size(); ++i) {
 		success &= (loadLevel(levels[i]))? true : false;
     }
 

@@ -1,12 +1,12 @@
 #include "elysian_dialog_system.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
+#include "elysian_entity.hpp"
 #include "elysian_dialog.hpp"
 #include "elysian_game_input.hpp"
 #include "elysian_debug.hpp"
 #include "elysian_collidable.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
+#include "elysian_entity.hpp"
 #include "elysian_party_system.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
+#include "elysian_area.hpp"
 #include "elysian_gui_system.hpp"
 #include "elysian_camera_system.hpp"
 #include "elysian_timer_system.hpp"

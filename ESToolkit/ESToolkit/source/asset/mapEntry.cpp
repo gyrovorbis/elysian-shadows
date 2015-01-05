@@ -1,6 +1,6 @@
 #include <QPainter>
 #include "mapEntry.h"
-#include "level.h"
+#include "elysian_level.hpp"
 
 bool TileEntry::renderIndeces	= false;
 bool TileEntry::renderFlipRot	= false;

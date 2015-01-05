@@ -1,9 +1,9 @@
 #include "elysian_examinable.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
+#include "elysian_entity.hpp"
 #include "elysian_generic.hpp"
 #include "elysian_dialog.hpp"
 #include "elysian_asset_typedefs.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
+#include "elysian_area.hpp"
 
 namespace elysian {
 

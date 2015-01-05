@@ -2,7 +2,7 @@
 #define MAP_ENTRY_H
 
 #include "elysian_asset_typedefs.hpp"
-#include "elysian_area.hpp"
+#include "elysian_area_base.hpp"
 #include "elysian_tile.hpp"
 #include "assetManager.h"
 

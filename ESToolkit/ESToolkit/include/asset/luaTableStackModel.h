@@ -110,7 +110,7 @@ protected:
 			//userdata iteration
              [&](void) -> bool {
                 if(nextMetamethod) {
-                    qDebug() << "ENTER __NEXT LAMBDA";
+                    //qDebug() << "ENTER __NEXT LAMBDA";
                     LuaManager::_cStackDump();
                     lua_pushvalue(state, -2);
                     //lua_rawgeti(state, LUA_REGISTRYINDEX, tableRef);
@@ -120,11 +120,11 @@ protected:
 
                     if(lua_type(*_mainState, -1) != LUA_TTABLE) {
 
-                        qDebug() << "CALLING __NEXT ON NONTABLE";
+                        //qDebug() << "CALLING __NEXT ON NONTABLE";
 
 
                     } else {
-                        qDebug() << "CALLING NEXT ON TABLE";
+                        //qDebug() << "CALLING NEXT ON TABLE";
                     }
                     LuaManager::_cStackDump();
                     lua_getfield(state, -1, "__next");
@@ -137,16 +137,16 @@ protected:
                     lua_remove(state, -3);
 
 					if(lua_isnil(state, -2)) {
-                        qDebug() << "__NEXT() - ISNIL";
+                        //qDebug() << "__NEXT() - ISNIL";
                         LuaManager::_cStackDump();
 						lua_pop(state, 2);
                         return false;
                     } else {
-                        qDebug() << "__NEXT - TRUE";
+                       // qDebug() << "__NEXT - TRUE";
                         return true;
                     }
                 } else {
-                    qDebug() << "__NEXT - Not found!";
+                   // qDebug() << "__NEXT - Not found!";
                     lua_pop(state, 1);
                     return false;
                 }
@@ -156,7 +156,7 @@ protected:
         _oolua_table_index_ = lua_gettop(state);
         lua_pushnil(state);
 
-        qDebug() << "BEGIN REF(" << tableRef << ")";
+      //  qDebug() << "BEGIN REF(" << tableRef << ")";
         //lua_rawgeti(state, LUA_REGISTRYINDEX, tableRef);
 
         isUserdata = (lua_type(*_mainState, -2) == LUA_TUSERDATA);
@@ -165,17 +165,17 @@ protected:
             lua_getmetatable(*_mainState, -2);
             lua_getfield(*_mainState, -1, "__next");
             nextMetamethod = (!lua_isnil(*_mainState, -1));
-            qDebug() << "IS USERDATA";
+           // qDebug() << "IS USERDATA";
             lua_pop(*_mainState, 2);
             if(!nextMetamethod) {
-                qDebug() << "HAS NO NEXT METAMETHOD";
+               // qDebug() << "HAS NO NEXT METAMETHOD";
                 lua_pop(*_mainState, 1);
                 return;
             } else {
-                qDebug() << "NEXT METAMETHOD";
+              //  qDebug() << "NEXT METAMETHOD";
             }
         } else {
-            qDebug() << "NOT USERDATA";
+          //  qDebug() << "NOT USERDATA";
         }
 
 		//Iterate over table/userdata
@@ -189,7 +189,7 @@ protected:
 
             lua_pop(state, 2);
 
-            qDebug() << "keyName -" << keyName <<", iterNum - " << iterNum;
+          //  qDebug() << "keyName -" << keyName <<", iterNum - " << iterNum;
 
 			//If current value is iterable, recurse over its k,v pairs
 
@@ -197,7 +197,7 @@ protected:
                 pushLabel(keyName, (valueType == LUA_TTABLE)? new QStandardItem(QString("table")) : new QStandardItem(QString("userdata")) );
 
                 lua_pushvalue(*_mainState, -1);
-                qDebug() << "keyName - TABLE/USERDATA RECURSE";
+               // qDebug() << "keyName - TABLE/USERDATA RECURSE";
                 _addTableFields(*_mainState, luaL_ref(*_mainState, LUA_REGISTRYINDEX));
                 //lua_pop(*_mainState, 1);
 
@@ -206,27 +206,27 @@ protected:
             } else {
                 switch(keyType) {
                 case LUA_TSTRING:
-                    qDebug() << "STRING KEY ADD";
+                   // qDebug() << "STRING KEY ADD";
                     valueItem = _createTableFieldItemFromStack<QString>(tableRef);
                     addProperty(keyName, valueItem);
                     break;
                 case LUA_TNUMBER:
-                    qDebug() << "NUMBER KEY ADD";
+                   // qDebug() << "NUMBER KEY ADD";
                     valueItem = _createTableFieldItemFromStack<float>(tableRef);
                     addProperty(keyName, valueItem);
                     break;
                 case LUA_TBOOLEAN:
-                    qDebug() << "BOOL KEY ADD";
+                  //  qDebug() << "BOOL KEY ADD";
                     valueItem = _createTableFieldItemFromStack<bool>(tableRef);
                     addProperty(keyName, valueItem);
                     break;
                 case LUA_TTABLE:
-                    qDebug() << "TABLE KEY ADD";
+                   // qDebug() << "TABLE KEY ADD";
                     valueItem = new QStandardItem(QString("table"));
                     addProperty(keyName, valueItem);
                     break;
 				case LUA_TUSERDATA:
-                    qDebug() << "USERDATA KEY ADD";
+                  //  qDebug() << "USERDATA KEY ADD";
 					valueItem = new QStandardItem(QString("userdata"));
 					addProperty(keyName, valueItem);
 					break;
@@ -237,13 +237,13 @@ protected:
                 }
            }
 
-            qDebug() << "popped value for " << keyName;
+           // qDebug() << "popped value for " << keyName;
             lua_pop(state, 1);
             LuaManager::_cStackDump();
 			//Pop value, leave key
         }
 
-        qDebug() << "popping userdata for " << tableRef;
+      //  qDebug() << "popping userdata for " << tableRef;
 		//Pop table/userdata
         //lua_pop(state, 1);
         LuaManager::_cStackDump();
@@ -262,18 +262,18 @@ protected:
         using namespace elysian;
         using elysian::Debug;
 
-        elysian::Debug::printf(elysian::Debug::VERBOSE, "_addTableFields(%d)", tableRef);
+      //  elysian::Debug::printf(elysian::Debug::VERBOSE, "_addTableFields(%d)", tableRef);
         elysian::Debug::push();
 
         //Helper lambda function for uniform iteration over tables and userdata
         std::function<bool()> iterFunc[2] = {
             //table iteration
             [&](void) -> bool {
-                elysian::Debug::printf(elysian::Debug::VERBOSE, "lua_next()");
+              //  elysian::Debug::printf(elysian::Debug::VERBOSE, "lua_next()");
                 elysian::Debug::push();
 
                 bool retVal = (bool)lua_next(state, -2);
-                elysian::Debug::printf(elysian::Debug::VERBOSE, "RetVal - %d", retVal);
+            //    elysian::Debug::printf(elysian::Debug::VERBOSE, "RetVal - %d", retVal);
 
                 elysian::Debug::pop();
                 return retVal;
@@ -282,10 +282,10 @@ protected:
             //userdata iteration
              [&](void) -> bool {
                 bool retVal = false;
-                elysian::Debug::printf(elysian::Debug::VERBOSE, "meta.__next()");
+             //   elysian::Debug::printf(elysian::Debug::VERBOSE, "meta.__next()");
                 elysian::Debug::push();
 
-               elysian::Debug::printf(elysian::Debug::VERBOSE, "nextMetamethod - %d", nextMetamethod);
+            //   elysian::Debug::printf(elysian::Debug::VERBOSE, "nextMetamethod - %d", nextMetamethod);
                if(nextMetamethod) {
 
                     lua_pushvalue(state, -2);
@@ -307,7 +307,7 @@ protected:
                     lua_pop(state, 1);
                 }
 
-                elysian::Debug::printf(elysian::Debug::VERBOSE, "RetVal - %d", retVal);
+              //  elysian::Debug::printf(elysian::Debug::VERBOSE, "RetVal - %d", retVal);
                 elysian::Debug::pop();
                 return retVal;
             }
@@ -334,7 +334,7 @@ protected:
                 //propTableRef.push(*_mainState);
                 //lua_insert(*_mainState, -2);
 
-                elysian::Debug::printf(elysian::Debug::VERBOSE, "Pushed __property table!", nextMetamethod);
+              // elysian::Debug::printf(elysian::Debug::VERBOSE, "Pushed __property table!", nextMetamethod);
 
             } else {
                 lua_pop(*_mainState, 2);
@@ -356,7 +356,7 @@ protected:
 
             lua_pop(state, 4);
 
-            elysian::Debug::printf(elysian::Debug::VERBOSE, "[%d] - <%s, %s>", iterNum, keyName.toStdString().c_str(), valueName.toStdString().c_str());
+           // elysian::Debug::printf(elysian::Debug::VERBOSE, "[%d] - <%s, %s>", iterNum, keyName.toStdString().c_str(), valueName.toStdString().c_str());
             elysian::Debug::push();
 
             //If current value is iterable, recurse over its k,v pairs
@@ -417,7 +417,7 @@ protected:
         //LuaManager::_cStackDump();
 */
 
-        elysian::Debug::printf(elysian::Debug::VERBOSE, "%d - Popping userdata!", tableRef);
+       //elysian::Debug::printf(elysian::Debug::VERBOSE, "%d - Popping userdata!", tableRef);
         elysian::Debug::pop();
 
 

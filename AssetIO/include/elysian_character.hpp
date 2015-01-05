@@ -4,7 +4,7 @@
 #include "elysian_component.hpp"
 #include "elysian_direction.hpp"
 #include "elysian_asset_typedefs.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
+#include "elysian_entity.hpp"
 
 #define ELYSIAN_CHAR_ANIM_SEQ_STAND_UP		"StandUp"
 #define ELYSIAN_CHAR_ANIM_SEQ_STAND_DOWN	"StandDown"

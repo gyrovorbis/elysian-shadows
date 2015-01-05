@@ -377,7 +377,7 @@ void LuaManager::dumpStats(void) {
 
 
 	Debug::luaPrint("**** LUAMANAGER STATS DUMP ****");
-	sprintf(buffer, "\tTotal scripts loaded:\t%ld", _scripts.size());
+    sprintf(buffer, "\tTotal scripts loaded:\t%d", (unsigned)_scripts.size());
 	Debug::luaPrint(buffer);
 	sprintf(buffer, "\tMemory Usage:\t%fMB", (float)kbytes/1024.0f);
 	Debug::luaPrint(buffer);

@@ -6,14 +6,14 @@
 #include "mapView.h"
 #include "selectionItemGroup.h"
 #include "tileSelectable.h"
-#include "area.h"
+#include "elysian_area.hpp"
 #include "mapViewPlaceTileGroupUndoItem.h"
 #include "assets.h"
 #include "elysian_engine.hpp"
 #include "elysian_camera_system.hpp"
 #include "engineGLSceneWidget.h"
 #include "elysian_collidable.hpp"
-#include "entity.h"
+#include "elysian_entity.hpp"
 #include "entitySelectable.h"
 #include "elysian_renderable.hpp"
 #include "elysian_animation.hpp"
@@ -479,7 +479,7 @@ void MapView::onCollisionEnter(Collidable*const bodyA, Collidable*const bodyB, C
 
 }
 
-void MapView::onCollide(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* /*contact*/) {
+void MapView::onCollide(Collidable*const /*bodyA*/, Collidable*const /*bodyB*/, CollisionContact* /*contact*/) {
 
 }
 

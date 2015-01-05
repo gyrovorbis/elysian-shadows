@@ -109,13 +109,13 @@ namespace elysian {
                     return 1;
                 //Return next key
                 } else {
-                    qDebug() << "NEXT KEY " << P::_proxyFields[index+1].key;
+                    //qDebug() << "NEXT KEY " << P::_proxyFields[index+1].key;
                     lua_pushstring(l, P::_proxyFields[index+1].key);
                     return 1;
                 }
             //assume this is a nil index, and we want the first key.
             } else {
-                qDebug() << "FIRST KEY " << P::_proxyFields[0].key;
+                //qDebug() << "FIRST KEY " << P::_proxyFields[0].key;
                 lua_pop(l, 1);
                 lua_pushstring(l, P::_proxyFields[0].key);
                 return 1;

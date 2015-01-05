@@ -5,8 +5,8 @@
 #include "elysian_behavior.hpp"
 #include "elysian_collision_system.hpp"
 #include "elysian_asset_typedefs.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
-#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
+#include "elysian_entity.hpp"
+#include "elysian_area.hpp"
 
 namespace elysian {
 

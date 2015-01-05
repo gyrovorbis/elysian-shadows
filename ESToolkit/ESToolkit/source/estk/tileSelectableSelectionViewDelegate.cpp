@@ -2,8 +2,8 @@
 #include <QCheckBox>
 #include "tileSelectableSelectionViewDelegate.h"
 #include "assets.h"
-#include "level.h"
-#include "area.h"
+#include "elysian_level.hpp"
+#include "elysian_area.hpp"
 #include "propertyStandardItem.h"
 
 //===== STATIC MEMBERS =====

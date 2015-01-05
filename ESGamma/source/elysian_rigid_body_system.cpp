@@ -1,13 +1,13 @@
 #include <cassert>
 #include "elysian_rigid_body_system.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_area.hpp", "area.h")
+#include "elysian_area.hpp"
 #include "elysian_collision_system.hpp"
 #include "elysian_rigid_body.hpp"
 #include "elysian_timer_system.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
+#include "elysian_entity.hpp"
 #include "elysian_force_generator.hpp"
 #include "elysian_debug.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_level.hpp", "level.h")
+#include "elysian_level.hpp"
 #include "elysian_particle_system.hpp"
 #include "elysian_renderable.hpp"
 #include "elysian_behavior_system.hpp"
@@ -106,7 +106,7 @@ void RigidBodySystem::_resolveContactZVelocities(void) {
             Collidable* colBot;
 
             float totalImpulse = 0.0f;
-            bool topResolved = false;
+            //bool topResolved = false;
 			//bool botResolved = false;
 
 			//float zDepth = _contactPool[i]->getZDepth();
@@ -148,7 +148,7 @@ void RigidBodySystem::_resolveContactZVelocities(void) {
                         colTop->getEntity()->transform._pos.y -= fabs(zDepth);*/
                     } else {
                         totalImpulse += fabs(prevVel.z - vel.z);
-                        topResolved = true;
+                        //topResolved = true;
                     }
 
                     colTop->getEntity()->getRigidBody()->setVelocity(vel);

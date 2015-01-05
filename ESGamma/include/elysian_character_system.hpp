@@ -3,7 +3,7 @@
 
 #include "elysian_system.hpp"
 #include "elysian_subprocess_manager.hpp"
-#include ELYSIAN_ASSET_HEADER("elysian_entity.hpp", "entity.h")
+#include "elysian_entity.hpp"
 #include "elysian_character.hpp"
 #include "elysian_rigid_body.hpp"
 

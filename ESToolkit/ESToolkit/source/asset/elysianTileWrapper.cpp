@@ -1,8 +1,8 @@
 #include "elysianTileWrapper.h"
-#include "level.h"
-#include "area.h"
+#include "elysian_level.hpp"
+#include "elysian_area.hpp"
 
-QIcon **ElysianTileWrapper::_icons = NULL;
+QIcon **ElysianTileWrapper::_icons = nullptr;
 
 void ElysianTileWrapper::allocIcons(void) {
     if(_icons) return;
