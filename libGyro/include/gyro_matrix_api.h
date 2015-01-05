@@ -9,11 +9,11 @@ extern "C" {
 #endif
 
 //Column-Major
-typedef float GYMatrix4[4][4] GYRO_MATRIX4_ALIGN
+typedef float GYMatrix4[4][4] GYRO_MATRIX4_ALIGN;
 
 typedef struct _GYVector4 {
     float x, y, z, w;
-} GYVector4 GYRO_VECTOR4_ALIGN
+} GYRO_VECTOR4_ALIGN GYVector4;
 
 typedef struct _GYVector3 {
     float x, y, z;

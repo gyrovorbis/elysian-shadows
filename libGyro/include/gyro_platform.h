@@ -82,8 +82,8 @@
 #elif GYRO_PLATFORM == GYRO_PLATFORM_Qt
 
 #   define                                  GYRO_GLAL
-#	define GYRO_MATRIX4_ALIGN			__attribute__ ((aligned (16)));
-#	define GYRO_VECTOR4_ALIGN			__attribute__ ((aligned (16)));
+#	define GYRO_MATRIX4_ALIGN			__attribute__ ((aligned (16)))
+#	define GYRO_VECTOR4_ALIGN			__attribute__ ((aligned (16)))
 
 #	define GYRO_SYSTEM_PLATFORM_INCLUDE     "glal/gyro_glal.h"
 #	define GYRO_VIDEO_PLATFORM_INCLUDE      "x86/gyro_video_x86.inl"
