@@ -16,9 +16,9 @@ int _gyVidTexAlloc(GYTexture *const tex, const unsigned width, const unsigned he
 
 	QStringList list = fileName.split("/");
 	if(list[1] == "assets") {
-		qDebug() << fileName;
+        //qDebug() << fileName;
 		fileName = fileName.remove("/assets/");
-		qDebug() << fileName;
+        //qDebug() << fileName;
 	}
 
 	QPixmap pixmap(fileName);
