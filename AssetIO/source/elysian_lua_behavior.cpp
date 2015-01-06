@@ -188,35 +188,26 @@ void LuaBehavior::onExit(void) {
 }
 	
 void LuaBehavior::onCollide(CollisionContact*const contact, elysian::Collidable *collidable) {
-	(void)collidable;
-    (void)contact;
 	_PROTECTED(_callTrigger<void>("onCollide", _ooSelfTableRef, contact, collidable));
 }
 
 void LuaBehavior::onCollisionEnter(CollisionContact*const contact, elysian::Collidable *collidable) {
-	(void)collidable;
-    (void)contact;
 	_PROTECTED(_callTrigger<void>("onCollisionEnter", _ooSelfTableRef, contact, collidable));
 }
 
 void LuaBehavior::onCollisionExit(elysian::Collidable *collidable) {
-	(void)collidable;
 	_PROTECTED(_callTrigger<void>("onCollisionExit", _ooSelfTableRef, collidable));
 }
 
 void LuaBehavior::onShatter(CollisionContact* contact) {
-    (void)contact;
     _PROTECTED(_callTrigger<void>("onShatter", _ooSelfTableRef, contact));
 }
 
 void LuaBehavior::onExamine(Entity* entity) {
-	(void)entity;
 	_PROTECTED(_callTrigger<void>("onExamine", _ooSelfTableRef, entity));
 }
 
 void LuaBehavior::onDialog(const unsigned screen, const int option) {
-	(void)screen;
-	(void)option;
 	_PROTECTED(_callTrigger<void>("onDialog", _ooSelfTableRef, screen, option));
 }
 
@@ -225,31 +216,27 @@ void LuaBehavior::onCombatEnter(void) {
 }
 
 void LuaBehavior::onCombatExit(void) {
-#ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onCombatExit", _ooSelfTableRef));
-#endif
 }
 
 void LuaBehavior::onCombatDeath(void) {
-#ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onCombatDeath", _ooSelfTableRef));
-#endif
 }
 
 void LuaBehavior::onCombatReceiveStatusModifier(CombatStatus*const modifier) {
-	(void)modifier;
-#ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onCombatReceiveStatusModifier", _ooSelfTableRef, modifier));
-#endif
 }
 
 void LuaBehavior::onCombatTargetCollisionEnter(CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier) {
-	(void)contact;
-	(void)collidable;
-	(void)modifier;
-#ifdef ELYSIAN_ENGINE
 	_PROTECTED(_callTrigger<void>("onCombatTargetCollisionEnter", _ooSelfTableRef, contact, collidable, modifier));
-#endif
+}
+
+void LuaBehavior::onTkSelect(void) {
+    _PROTECTED(_callTrigger<void>("onTkSelect", _ooSelfTableRef));
+}
+
+void LuaBehavior::onTkUnselect(void) {
+    _PROTECTED(_callTrigger<void>("onTkUnselect", _ooSelfTableRef));
 }
 
 

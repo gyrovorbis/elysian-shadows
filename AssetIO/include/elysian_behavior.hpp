@@ -65,7 +65,9 @@ namespace elysian {
 			ON_COMBAT_RECEIVE_STATUS_MODIFIER	= 1<<18,
 			ON_COMBAT_TARGET_COLLISION_ENTER	= 1<<19,
             ON_SHATTER                          = 1<<20,
-            TRIGGER_MAX							= 1<<21
+            ON_TK_SELECT                        = 1<<21,
+            ON_TK_UNSELECT                      = 1<<22,
+            TRIGGER_MAX							= 1<<23
 		};
 
 		static const char* triggerNameFromFlag(const uint64_t flag);
@@ -96,6 +98,10 @@ namespace elysian {
 		virtual void onCombatDeath(void);
 		virtual void onCombatReceiveStatusModifier(CombatStatus*const modifier);
 		virtual void onCombatTargetCollisionEnter(CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier);
+
+        //ESTk Triggers
+        virtual void onTkSelect(void);
+        virtual void onTkUnselect(void);
 
 		void		callTrigger(const TRIGGER trigger);
 
@@ -154,6 +160,10 @@ namespace elysian {
 				return onCombatExit();
 			case ON_COMBAT_DEATH:
 				return onCombatDeath();
+            case ON_TK_SELECT:
+                return onTkSelect();
+            case ON_TK_UNSELECT:
+                return onTkUnselect();
 			default: //these have no business being called here
 				assert(false);
 				return;
