@@ -247,9 +247,11 @@ bool TkLevel::activate(void) {
 bool TkLevel::activateByArea(Area *const area) {
 	 //Debug::Log(Debug::VERBOSE, "Level[%s].Activate()\n", getName().toStdString().c_str());
 	if(!_open) open();
-    if(!_active) {
-        _curLevel = this;
-    }
+    //if(_active) {
+     //   return false;
+    //}
+    _curLevel = this;
+    //_active = true;
 	emit activating(this, area);
     /* If there is anything that is not persistent to be added to the
        object/tilesheet scenes, do it now.
@@ -268,6 +270,7 @@ bool TkLevel::deactivate(void) {
     */
     //elysian::Level::deactivate();
 	_sheetViewScene->removeItem(_bgRectItem);
+    //_active = false;
 
     return true;
 }

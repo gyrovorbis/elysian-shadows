@@ -108,6 +108,9 @@ namespace elysian {
         bool            unloadLevel(const char*const dir);
         bool            unloadArea(const char*const dir);
 
+        void            addArea(Area*const area);
+        void            addLevel(Level*const level);
+
         bool            switchLevel(const char *const dir);
         bool            switchArea(const char *const dir);
 
@@ -118,6 +121,15 @@ namespace elysian {
 	};
 
 
+
+    //======== INLINEZ =========
+    inline void LevelSystem::addArea(Area * const area) {
+        this->area.push_back(area);
+    }
+
+    inline void LevelSystem::addLevel(Level * const level) {
+        this->level.push_back(level);
+    }
 
 
 

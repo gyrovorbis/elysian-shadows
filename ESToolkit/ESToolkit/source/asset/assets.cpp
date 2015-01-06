@@ -146,6 +146,7 @@ bool Assets::setCurrentArea(const QString name) {
 
 void Assets::setCurrentArea(Area *const area) {
    // if(_currentArea) _currentArea->deactivate();
+    //if(_currentArea == area) return;
     _currentArea = area;
     if(area) {
         _engine->getLevelSys()->switchArea(area->getPath());
@@ -177,6 +178,7 @@ bool Assets::setCurrentLevel(const QString name) {
 
 void Assets::setCurrentLevel(Level *const level) {
    // if(_currentLevel) _currentLevel->deactivate();
+    //if(_currentLevel == level) return;
     _currentLevel = level;
 
     if(level) {
