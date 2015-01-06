@@ -236,7 +236,7 @@ void Renderable::PopulateUI(void) {
 #endif
 }
 
-Renderable::Renderable(elysian::Renderable *const comp): _elysianRenderable(comp), _sheet(NULL) {
+Renderable::Renderable(elysian::Renderable *const /*comp*/):  _sheet(NULL) {
 #if 0
 	InitializeUI();
 

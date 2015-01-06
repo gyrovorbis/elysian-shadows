@@ -22,7 +22,7 @@ void EntityTreeWidget::OnAreaChange(Area *const area) {
     auto& entities = area->getEntities();
 	for(size_t i = 0; i < entities.size(); ++i) {
 	  //  Debug::Log(Debug::VERBOSE, "Trying to add - %s", area->entity[i]->getName().toStdString().c_str());
-		addTopLevelItem((QTreeWidgetItem *)entities[i]);
+        /*if(!entities[i]->getParentEntity())*/ addTopLevelItem((QTreeWidgetItem *)entities[i]);
     }
 }
 /*
@@ -39,7 +39,7 @@ void EntityTreeWidget::onLayerChange(const Assets::LAYER_TYPE layer) {
 }*/
 
 void EntityTreeWidget::OnAddEntity(Project *const /*project*/, Level *const /*level*/, Area *const area, Entity *const entity) {
-    if(area == getCurrentArea()) addTopLevelItem((QTreeWidgetItem *)entity);
+   if(area == getCurrentArea()) addTopLevelItem((QTreeWidgetItem *)entity);
 }
 
 void EntityTreeWidget::OnRemoveEntity(Project *const /*project*/, Level *const /*level*/, Area *const area, Entity *const entity) {

@@ -51,6 +51,7 @@ TkEntity::TkEntity(const bool selectable):
 	_enemy(nullptr),*/
 	_gridSnap(false)
 {	//generate toolkit components from elysian components
+    setName(elysian::EntityBase::_name);
 
 	OOLUA::push(*_mainState, this);
 	_luaRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);

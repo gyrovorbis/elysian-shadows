@@ -19,8 +19,15 @@ void TkAnimation::removeChildEntity(const char *animName) {
 
 void TkAnimation::addChildEntity(Entity*const entity, const char*animName) {
     elysian::AnimationBase::addChildEntity(entity, animName);
+    QTreeWidgetItem*    item = static_cast<QTreeWidgetItem*>(entity);
 
-    if(static_cast<QTreeWidgetItem*>(entity)->parent()) static_cast<QTreeWidgetItem*>(entity)->parent()->removeChild(entity);
+    if(item->parent()) {
+        item->parent()->removeChild(entity);
+    }
+    QTreeWidget*        tree = item->treeWidget();
+
+    if(tree) tree->takeTopLevelItem(tree->indexOfTopLevelItem(item));
+
     getEntity()->addChild(entity);
 }
 

@@ -78,8 +78,11 @@ public:
                         TkArea(Level *const level=nullptr);
     virtual             ~TkArea(void) override;
 
-    virtual bool activate(void);
-    virtual bool deactivate(void);
+    //elysian::EntityBase overrides
+    void                addEntity(Entity *entity);
+    void                removeEntity(Entity *entity);
+    virtual bool        activate(void);
+    virtual bool        deactivate(void);
 
     bool                load(const char*const str);
     bool                save(void);
@@ -225,6 +228,8 @@ inline void TkArea::endMapUpdate(void) {
 inline bool TkArea::getInactiveTransparency(void) { return _inactiveTransparency; }
 inline void TkArea::setInactiveTransparency(const bool val) { _inactiveTransparency = val; }
 inline SelectionScene* TkArea::getEditorScene(void) { return _editorScene; }
+
+
 
 
 #endif // AREA_H

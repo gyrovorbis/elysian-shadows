@@ -26,14 +26,14 @@ namespace elysian {
 //ONLY ENCAPSULATING/HANDLING RECT AND SPRITE PRIMITIVES!!!!
 class Renderable: public Component, public AssetManager {
 private:
-	elysian::Renderable *_elysianRenderable;
+//	elysian::Renderable *_elysianRenderable;
 	SpriteSheet *_sheet;
-
+/*
 	union ElysianPrimitive {
 		elysian::SpritePrim *elysianSprite;
 		elysian::RectPrim *elysianRect;
 	}_elysianPrim;
-
+*/
 	QVBoxLayout *_mainLayout;
 	QGridLayout *_colorLayout, *_texLayout;
 	QLabel *_colorLabel, *_rLabel, *_gLabel, *_bLabel, *_aLabel, *_texLabel, *_sizeLabel,

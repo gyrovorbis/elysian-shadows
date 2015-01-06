@@ -197,7 +197,7 @@ bool TkArea::load(const char*const str) {
 
 	_curArea = tempCurArea;
     Debug::pop();
-	return true;//success;
+    return success;//success;
 }
 
 bool Area::save(void) {
@@ -435,5 +435,16 @@ elysian::Area& Area::getElysianArea(void) {
 
 void TkArea::onEntityParented(Entity * const child, Entity * const parent) {
     emit entityParented(child, parent);
+}
+
+void TkArea::addEntity(Entity *entity) {
+    elysian::AreaBase::addEntity(entity);
+    //Only give a shit about top-level entities
+   /* if(!static_cast<QTreeWidgetItem*>(entity)->treeWidget())*/ emit entityAdded(this, entity);
+}
+
+void TkArea::removeEntity(Entity *entity) {
+    elysian::AreaBase::removeEntity(entity);
+ /*   if(!static_cast<QTreeWidgetItem*>(entity)->treeWidget())*/ emit entityRemoved(this, entity);
 }
 

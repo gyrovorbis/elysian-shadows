@@ -8,7 +8,7 @@ class MapViewPlaceTileGroupUndoItem: public PlaceTileGroupUndoItem<TileEntry> {
 private:
 	Area*					_area		= nullptr;
 	Assets::LAYER_TYPE		_layer		= Assets::LAYER_MAX;
-	bool					_skipFirst	= false;
+//	bool					_skipFirst	= false;
 public:
 
 	inline MapViewPlaceTileGroupUndoItem(Area *const area=nullptr, const Assets::LAYER_TYPE layer=Assets::LAYER_MAX):

@@ -79,7 +79,8 @@ void MapView::onEngineInitialize(void) {
     collid->setAttrib(colAttrib);
     collid->setResolvePenetration(false);
     collid->setContactEventMonitorMask(ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK);
-    _cursorEntity->getTransform().setSize(2.0f, 2.0f, 100.0f);
+    _cursorEntity->getTransform().setSize(2.0f, 2.0f, 300.0f);
+    _cursorEntity->setName("ESTkCursor");
 }
 
 TileSelection<TileEntry> *MapView::_getTileSelection(void) const {
@@ -98,6 +99,7 @@ void MapView::_entitySelectionUpdate(void) {
 	while(_selectionColliders.size() < _tileSelectionRects.size()) {
         entity = new TkEntity(false);
         entity->setPlaneType(GY_RECT_PLANE_BOTTOM);
+        entity->setName("ESTkEntitySelection");
 		auto* collid = entity->addCollidable();
         auto* render = entity->addRenderable();
         auto* sprAttrib = new elysian::SpriteAttrib;
