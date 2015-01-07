@@ -41,12 +41,12 @@ namespace elysian {
         ELYSIAN_LUA_PROXY_FIELDS_END()
 */
                             LuaBehavior(Entity &entity, const char *script, const OOLUA::Lua_table_ref paramTable);
-                            virtual ~LuaBehavior(void) override;
+        virtual             ~LuaBehavior(void) override;
 
 		bool				loadScript(const char *file, const OOLUA::Lua_table_ref paramTable);
 		
         template<typename RType, typename... PTypes>
-        RType _callLuaFunction(const char* funcName, PTypes... parameters) const;
+        RType               _callLuaFunction(const char* funcName, PTypes... parameters) const;
 		
 		//overridden from component
 		virtual bool		load(FILE* file) override;
@@ -73,6 +73,10 @@ namespace elysian {
 		virtual void		onCombatDeath(void) override;
 		virtual void		onCombatReceiveStatusModifier(CombatStatus*const modifier) override;
 		virtual void		onCombatTargetCollisionEnter(CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier) override;
+
+        //ESTk triggers
+        virtual void        onTkSelect(void) override;
+        virtual void        onTkUnselect(void) override;
 		
 		int					getSelfTableRef(void) const;
 

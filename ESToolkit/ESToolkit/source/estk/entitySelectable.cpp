@@ -1,5 +1,7 @@
 #include "entitySelectable.h"
 #include "elysian_entity.hpp"
+#include "elysian_engine.hpp"
+#include "elysian_behavior_system.hpp"
 
 EntitySelectable::EntitySelectable(TkEntity*const entity): RowsJoinerProxy(nullptr) {
 	addEntity(entity);
@@ -32,5 +34,8 @@ void EntitySelectable::translate(const float x, const float y) {
 }
 
 void EntitySelectable::setCurrentSelection(const bool val) {
-    for(auto& it : _entities) it->setSelectionState(val? TkEntity::SELECTION_SELECTED : TkEntity::SELECTION_NONE);
+    for(auto& it : _entities) {
+        it->setSelectionState(val? TkEntity::SELECTION_SELECTED : TkEntity::SELECTION_NONE);
+        getAssets()->getEngine()->getBehavSys()->callTrigger(it, val? elysian::Behavior::ON_TK_SELECT : elysian::Behavior::ON_TK_UNSELECT);
+    }
 }

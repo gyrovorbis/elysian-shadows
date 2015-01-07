@@ -955,6 +955,7 @@ OOLUA_PROXY(LightSystem)
 		No_public_destructor
 	)
 	OOLUA_MFUNC(setGlobalAmbientColor)
+    OOLUA_MEM_FUNC_CONST(void, getGlobalAmbientColor, GYVector4&)
     OOLUA_MEM_FUNC(void, interpLightAttrib, float, const LightAttrib&, LightAttrib*, EventMonitor*)
 OOLUA_PROXY_END
 
@@ -1203,6 +1204,8 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
     s->register_class_static<Behavior>("ON_SHATTER", Behavior::ON_SHATTER);
     s->register_class_static<Behavior>("ON_COMBAT_RECEIVE_STATUS_MODIFIER", Behavior::ON_COMBAT_RECEIVE_STATUS_MODIFIER);
     s->register_class_static<Behavior>("ON_COMBAT_TARGET_COLLISION_ENTER", Behavior::ON_COMBAT_TARGET_COLLISION_ENTER);
+    s->register_class_static<Behavior>("ON_TK_SELECT", Behavior::ON_TK_SELECT);
+    s->register_class_static<Behavior>("ON_TK_UNSELECT", Behavior::ON_TK_UNSELECT);
 
 	//Tile::COLLIDER_TYPE
 	typedef OOLUA::Tile Tile;

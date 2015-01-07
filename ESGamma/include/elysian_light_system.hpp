@@ -62,6 +62,7 @@ namespace elysian {
         void        render(void);
 
         void        setGlobalAmbientColor(const GYVector4& color);
+        void        getGlobalAmbientColor(GYVector4& color) const;
 
         void        setEnabled(const bool val);
 
@@ -110,6 +111,10 @@ namespace elysian {
         subProc.setTimeInterval(duration);
         subProc.setEventMonitor(monitor);
         subProc.start(this);
+    }
+
+    inline void LightSystem::getGlobalAmbientColor(GYVector4& color) const {
+        color = _globalAmbience;
     }
 
 }

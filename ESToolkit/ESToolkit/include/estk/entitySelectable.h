@@ -3,11 +3,12 @@
 
 #include "selectable.h"
 #include "rowsJoinerProxyModel.h"
+#include "assetManager.h"
 #include <QVector>
 
 class TkEntity;
 
-class EntitySelectable: public Selectable, public RowsJoinerProxy {
+class EntitySelectable: public Selectable, public RowsJoinerProxy, public AssetManager {
 private:
 	QVector<TkEntity*> _entities;
 
