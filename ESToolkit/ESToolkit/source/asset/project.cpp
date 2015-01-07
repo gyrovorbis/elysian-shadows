@@ -6,6 +6,7 @@
 #include "elysian_level.hpp"
 #include "elysian_debug.hpp"
 #include "fileUtilities.h"
+#include "elysian_engine.hpp"
 #include "elysian_level_system.hpp"
 
 Project::Project(void): _active(false) {}
@@ -35,23 +36,6 @@ void Project::populateModel(void) {
 
 }
 
-Level *Project::newLevel(void) {
-	QString name("new_level");
-    unsigned int num = 1;
-    TkLevel *lev = new TkLevel(this);
-	connectSlots(lev);
-
-    while(getLevel(name+QString::number(num))) {
-        ++num;
-    }
-
-    name += QString::number(num);
-    lev->setLocation(_location+"/level/"+name);
-	_level.push_back(lev);
-	lev->saveAll();
-	emit levelAdded(this, lev);
-    return lev;
-}
 Level *Project::newLevel(const QString n) {
     QString name(n);
     unsigned int num = 1;
@@ -66,6 +50,7 @@ Level *Project::newLevel(const QString n) {
     lev->setLocation(_location+"/level/"+name);
 	_level.push_back(lev);
 	lev->saveAll();
+    getAssets()->getEngine()->getLevelSys()->addLevel(lev);
 	emit levelAdded(this, lev);
     return lev;
 }
@@ -130,8 +115,9 @@ bool Project::removeLevel(const QString name) {
 	for(int i = 0; i < _level.size(); ++i) {
         if(_level[i]->getNodeName() == name) {
 			Level *temp = _level[i];
+            getAssets()->getEngine()->getLevelSys()->removeLevel(temp);
 			_level.erase(_level.begin() + i);
-			if(!FileUtilities::RemoveDir(temp->getLocation())) {
+            if(!FileUtilities::removeDir(temp->getLocation())) {
 				Debug::Logf(Debug::CRITICAL, "! - Could not delete directory '%s'\n", temp->getLocation().toStdString().c_str());
                 success = false;
             }

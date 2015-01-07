@@ -16,21 +16,21 @@
 namespace elysian {
 
 int LevelSystem::getLevelIndex(const char *const dir) const {
-    for(unsigned int i = 0; i < level.size(); ++i)
-        if(strcmp(level[i]->path, dir) == 0) return i;
+    for(unsigned int i = 0; i < _level.size(); ++i)
+        if(strcmp(_level[i]->path, dir) == 0) return i;
     return -1;
 }
 
 int LevelSystem::getAreaIndex(const char *const dir) const {
-    for(unsigned int i = 0; i < area.size(); ++i)
-        if(strcmp(area[i]->path, dir) == 0) return i;
+    for(unsigned int i = 0; i < _area.size(); ++i)
+        if(strcmp(_area[i]->path, dir) == 0) return i;
     return -1;
 }
 
 Level* LevelSystem::loadLevel(const char * const dir) {
     auto* lev = new Level;
     lev->load(dir);
-    level.push_back(lev);
+    _level.push_back(lev);
     return lev;
 }
 
@@ -38,7 +38,7 @@ Area* LevelSystem::loadArea(const char * const dir) {
     auto* ar = new Area;//(dir, *curLevel);
     ar->setLevel(_curLevel);
     ar->load(dir);
-    area.push_back(ar);
+    _area.push_back(ar);
     return ar;
 }
 
@@ -52,20 +52,20 @@ bool LevelSystem::switchLevel(const char *const dir) {
     }
 
     if((index = getLevelIndex(dir)) >= 0) {
-        level[index]->activate();
-        _curLevel = level[index];
+        _level[index]->activate();
+        _curLevel = _level[index];
         return true;
     }
 
-    if(level.size() >= ELYSIAN_LEVELS_LOADED_MAX) {
-        delete level[0];
-        level.erase(level.begin());
+    if(_level.size() >= ELYSIAN_LEVELS_LOADED_MAX) {
+        delete _level[0];
+        _level.erase(_level.begin());
     }
     lev = new Level;
     _curLevel = lev;
     lev->load(dir);
     lev->activate();
-    level.push_back(lev);
+    _level.push_back(lev);
     return true;
 }
 
@@ -86,7 +86,7 @@ bool LevelSystem::switchArea(const char *const dir) {
 
     //Check if new area has already been loaded
     if((index = getAreaIndex(dir)) >= 0) {
-        _curArea = area[index];
+        _curArea = _area[index];
         getPartySys()->addPartyToArea();
         getBehavSys()->callTriggers(Behavior::ON_ENTER);
         _curArea->activate();
@@ -94,10 +94,10 @@ bool LevelSystem::switchArea(const char *const dir) {
     }
 
     //Check if we need to free an area before loading the next one
-    if(area.size() >= ELYSIAN_AREAS_LOADED_MAX) {
+    if(_area.size() >= ELYSIAN_AREAS_LOADED_MAX) {
         getBehavSys()->callTriggers(Behavior::ON_UNLOAD);
-        delete area[0];
-        area.erase(area.begin());
+        delete _area[0];
+        _area.erase(_area.begin());
     }
 
     //Allocate new area and switch to it
@@ -105,7 +105,7 @@ bool LevelSystem::switchArea(const char *const dir) {
     _curArea = ar;
     ar->setLevel(_curLevel);
     ar->load(dir);
-    area.push_back(ar);
+    _area.push_back(ar);
     ar->activate();
     getBehavSys()->callTriggers(Behavior::ON_LOAD);
     getPartySys()->addPartyToArea();

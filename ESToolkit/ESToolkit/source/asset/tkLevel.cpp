@@ -15,6 +15,8 @@
 #include "propertyStandardItem.h"
 #include "checkeredAlphaRectGraphicsItem.h"
 #include "elysian_level_system.hpp"
+#include "elysian_engine.hpp"
+#include "elysian_level_system.hpp"
 
 //====STATIC====
 
@@ -134,13 +136,20 @@ TkLevel::~TkLevel(void) {
     _area.clear();
 }
 
+
 bool TkLevel::duplicate(void) {
     unsigned num = 1;
     QString name(_name);
 
     while(_project->getLevel(_name+QString::number(num))) ++num;
 
-    saveAs(_location+QString::number(num));
+
+    if(!FileUtilities::copyDir(_location, _project->getLocation() + "/level/" + name+QString::number(num))) {
+        QMessageBox::critical(nullptr, "Error!", "Could not copy level directory!");
+        return false;
+    }
+
+    //saveAs(_location+QString::number(num));
 
     return _project->loadLevel(name + QString::number(num));
 }
@@ -337,24 +346,6 @@ bool TkLevel::close(void) {
     return true;
 }
 
-Area *TkLevel::newArea(void) {
-	QString name("new_area");
-    unsigned int num = 1;
-
-	Area *ar = new Area(this);
-	connectSlots(ar);
-    while(getArea(name+QString::number(num))) {
-        ++num;
-    }
-    name += QString::number(num);
-    ar->setLocation(_location+"/area/"+name);
-    //ar->setLevel(this);
-	_area.push_back(ar);
-	ar->save();
-	emit areaAdded(this, ar);
-    return ar;
-}
-
 Area *TkLevel::newArea(const QString n) {
     QString name(n);
     unsigned int num = 1;
@@ -368,6 +359,7 @@ Area *TkLevel::newArea(const QString n) {
     ar->setLocation(_location+"/area/"+name);
 	_area.push_back(ar);
 	ar->save();
+    getAssets()->getEngine()->getLevelSys()->addArea(ar);
 	emit areaAdded(this, ar);
     return ar;
 }
@@ -421,8 +413,9 @@ bool TkLevel::removeArea(const QString name) {
 	for(int i = 0; i < _area.size(); ++i) {
         if(_area[i]->getNodeName() == name) {
 			Area *temp = _area[i];
+            getAssets()->getEngine()->getLevelSys()->removeArea(temp);
 			_area.erase(_area.begin() + i);
-			if(!FileUtilities::RemoveDir(temp->getLocation())) {
+            if(!FileUtilities::removeDir(temp->getLocation())) {
 				Debug::Logf(Debug::CRITICAL, "! - Could not delete directory '%s'\n", temp->getLocation().toStdString().c_str());
                 success = false;
             }

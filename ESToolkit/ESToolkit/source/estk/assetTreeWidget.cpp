@@ -7,6 +7,8 @@
 #include "project.h"
 #include "elysian_level.hpp"
 #include "assets.h"
+#include "elysian_engine.hpp"
+#include "elysian_level_system.hpp"
 
 AssetTreeWidget::AssetTreeWidget(QWidget *parent): QTreeWidget(parent), _ignoreItemChange(false), _prev(NULL) {
 	setContextMenuPolicy(Qt::CustomContextMenu);
@@ -84,36 +86,42 @@ void AssetTreeWidget::onCustomContextMenuRequested(QPoint point) {
 
 	switch(treeNode->getTreeWidgetItemType()) {
 	case TreeNode::ITEM_PROJECT:
-		actions.push_back(new QAction("Add Level", NULL));
-		menu = new QMenu("Project", NULL);
+        actions.push_back(new QAction("Add Level", nullptr));
+        menu = new QMenu("Project", nullptr);
 		result = menu->exec(actions, mapToGlobal(point));
 		if(result) {
 			Project *project = static_cast<Project*>(treeNode);
 			if(result->text() == QString("Add Level")) {
-				project->newLevel();
+                auto* newLev = project->newLevel();
+                //getAssets()->getEngine()->getLevelSys()->addLevel(newLev);
+                getAssets()->setCurrentArea(nullptr);
+                getAssets()->setCurrentLevel(newLev);
+                getAssets()->setCurrentSelection(newLev);
 			}
 		}
 		break;
 
 	case TreeNode::ITEM_LEVEL:
-        actions.push_back(new QAction("Add Area", NULL));
-        actions.push_back(new QAction("Duplicate", NULL));
-		actions.push_back(new QAction("Remove", NULL));
-		menu = new QMenu("Level", NULL);
+        actions.push_back(new QAction("Add Area", nullptr));
+        actions.push_back(new QAction("Duplicate", nullptr));
+        actions.push_back(new QAction("Remove", nullptr));
+        menu = new QMenu("Level", nullptr);
 		result = menu->exec(actions, mapToGlobal(point));
 		if(result) {
 			Level *level = static_cast<Level*>(treeNode);
 			if(result->text() == QString("Add Area")) {
-				level->newArea();
+                auto* newArea = level->newArea();
+                //getAssets()->getEngine()->getLevelSys()->addArea(newArea);
+                getAssets()->setCurrentArea(newArea);
+                getAssets()->setCurrentSelection(newArea);
 			} else if(result->text() == QString("Remove")) {
-				if(QMessageBox::critical(NULL, tr("Warning!"), tr("Are you SURE that you want to permanently delete the selected level?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
+                if(QMessageBox::critical(nullptr, tr("Warning!"), tr("Are you SURE that you want to permanently delete the selected level?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
 					return;
 				}
 
 				Project *project = level->getProject();
-                getAssets()->setCurrentLevel(nullptr);
+                getAssets()->setCurrentLevel(project->getFirstLevel());
                 project->removeLevel(level->getNodeName());
-				getAssets()->setCurrentLevel(project->getFirstLevel());
             } else if(result->text() == QString("Duplicate")) {
                 level->duplicate();
             }
@@ -121,20 +129,20 @@ void AssetTreeWidget::onCustomContextMenuRequested(QPoint point) {
 		break;
 
 	case TreeNode::ITEM_AREA:
-		actions.push_back(new QAction("Remove", NULL));
-        actions.push_back(new QAction("Duplicate", NULL));
-		menu = new QMenu("Area", NULL);
+        actions.push_back(new QAction("Remove", nullptr));
+        actions.push_back(new QAction("Duplicate", nullptr));
+        menu = new QMenu("Area", nullptr);
 		result = menu->exec(actions, mapToGlobal(point));
 		if(result) {
 			Area *area = static_cast<Area*>(treeNode);
 			if(result->text() == QString("Remove")) {
-				if(QMessageBox::critical(NULL, tr("Warning!"), tr("Are you SURE that you want to permanently delete the selected area?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
+                if(QMessageBox::critical(nullptr, tr("Warning!"), tr("Are you SURE that you want to permanently delete the selected area?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
 					return;
 				}
 				Level *level = area->getLevel();
-				getAssets()->setCurrentArea(NULL);
+                getAssets()->setCurrentArea(nullptr);
+                getAssets()->setCurrentArea(level->getFirstArea());
                 level->removeArea(area->getNodeName());
-				getAssets()->setCurrentArea(level->getFirstArea());
             } else if(result->text() == QString("Duplicate")) {
                 area->duplicate();
             }

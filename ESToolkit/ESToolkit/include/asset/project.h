@@ -7,6 +7,7 @@
 #include "treenode.h"
 #include "propertyStackModel.h"
 #include "elysian_system.hpp"
+#include "assetManager.h"
 
 class TkLevel;
 class TkArea;
@@ -17,7 +18,7 @@ typedef TkEntity Entity;
 class Component;
 struct MapChange;
 
-class Project: public PropertyStackModel, public TreeNode, public elysian::System {
+class Project: public PropertyStackModel, public TreeNode, public elysian::System, public AssetManager {
     Q_OBJECT
     friend class Assets;
     friend class TkLevel;
@@ -41,8 +42,7 @@ public:
 	virtual bool activate(void);
 	bool isActive(void);
 
-    TkLevel *newLevel(void);
-    TkLevel *newLevel(const QString n);
+    TkLevel *newLevel(const QString n=QString("new_level"));
     TkLevel *loadLevel(const QString name); //assumed to be within current project, so directory is not necessary
 	bool saveLevel(const QString name);
 	bool removeLevel(const QString name);

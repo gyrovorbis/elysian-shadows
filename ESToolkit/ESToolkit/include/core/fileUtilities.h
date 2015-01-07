@@ -6,7 +6,8 @@
 class FileUtilities {
 public:
 
-	static bool RemoveDir(const QString dirName);
+    static bool removeDir(const QString dirName);
+    static bool copyDir(const QString &srcFilePath, const QString &tgtFilePath);
 
 };
 

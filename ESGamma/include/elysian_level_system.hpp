@@ -91,25 +91,26 @@ namespace elysian {
 
     private:
 
-            std::vector<Level*> level;
-            std::vector<Area*>  area;
+            std::vector<Level*> _level;
+            std::vector<Area*>  _area;
 
         public:
 
 
-            int getLevelIndex(const char *const dir) const;
-            int getAreaIndex(const char *const dir) const;
+        int             getLevelIndex(const char *const dir) const;
+        int             getAreaIndex(const char *const dir) const;
 
-
-
-        Level*           loadLevel(const char*const dir);
-        Area*            loadArea(const char*const dir);
+        Level*          loadLevel(const char*const dir);
+        Area*           loadArea(const char*const dir);
 
         bool            unloadLevel(const char*const dir);
         bool            unloadArea(const char*const dir);
 
         void            addArea(Area*const area);
         void            addLevel(Level*const level);
+
+        void            removeArea(Area*const area);
+        void            removeLevel(Level*const level);
 
         bool            switchLevel(const char *const dir);
         bool            switchArea(const char *const dir);
@@ -124,13 +125,30 @@ namespace elysian {
 
     //======== INLINEZ =========
     inline void LevelSystem::addArea(Area * const area) {
-        this->area.push_back(area);
+        _area.push_back(area);
     }
 
     inline void LevelSystem::addLevel(Level * const level) {
-        this->level.push_back(level);
+        _level.push_back(level);
     }
 
+    inline void LevelSystem::removeArea(Area * const area) {
+        for(auto it = _area.begin(); it != _area.end(); ++it) {
+            if(*it == area) {
+                _area.erase(it);
+                return;
+            }
+        }
+    }
+
+    inline void LevelSystem::removeLevel(Level * const level) {
+        for(auto it = _level.begin(); it != _level.end(); ++it) {
+            if(*it == level) {
+                _level.erase(it);
+                return;
+            }
+        }
+    }
 
 
 

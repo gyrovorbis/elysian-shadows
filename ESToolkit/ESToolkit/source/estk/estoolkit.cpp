@@ -1161,7 +1161,7 @@ void ESToolkit::on_actionFileNewLevel_triggered() {
 
 	//QMessageBox::critical(this, tr("Error!"), tr("This feature won't be implemented until ESTkV1.5.2. Do it manually. ;)"));
 	Level *newLev = _assets.getCurrentProject()->newLevel();
-    _assets.getEngine()->getLevelSys()->addLevel(newLev);
+    //_assets.getEngine()->getLevelSys()->addLevel(newLev);
     _assets.setCurrentArea(nullptr);
 	_assets.setCurrentLevel(newLev);
 	_assets.setCurrentSelection(newLev);
@@ -1169,7 +1169,7 @@ void ESToolkit::on_actionFileNewLevel_triggered() {
 
 void ESToolkit::on_actionFileNewArea_triggered() {
 	Area *newArea = _assets.getCurrentLevel()->newArea();
-    _assets.getEngine()->getLevelSys()->addArea(newArea);
+    //_assets.getEngine()->getLevelSys()->addArea(newArea);
 	_assets.setCurrentArea(newArea);
 	_assets.setCurrentSelection(newArea);
 }

@@ -33,7 +33,7 @@ class TkArea;
 typedef TkArea Area;
 struct MapChange;
 
-class TkLevel: public PropertyStackModel, public TreeNode, public elysian::LevelBase, public elysian::System {
+class TkLevel: public PropertyStackModel, public TreeNode, public elysian::LevelBase, public elysian::System, public AssetManager {
     friend class Assets;
 	friend class TileManagerDialog;
     friend class Project;
@@ -89,8 +89,7 @@ public:
 		return (index < _tileSheet.size())? _tileSheet[index] : NULL;
 	}
 
-	Area *newArea(void);
-	Area *newArea(QString name);
+    Area *newArea(QString name=QString("new_area"));
     Area *getArea(const QString name);
     Area *getAreaByIndex(const unsigned int index);
 	Area *loadArea(const QString name);

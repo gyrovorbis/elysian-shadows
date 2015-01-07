@@ -10,6 +10,7 @@
 #include "checkeredAlphaRectGraphicsItem.h"
 #include "sourceView.h"
 #include "mapViewDepthBufferGraphicsItem.h"
+#include "fileUtilities.h"
 
 //====STATIC====
 SelectionScene*                 Area::_editorScene              = nullptr;
@@ -106,7 +107,7 @@ void Area::setNodeName(const QString str) {
 
 		QDir dir(areaDir);
 		if(!dir.rename(_name, name)) {
-			QMessageBox::critical(NULL, tr("Error!"), tr("Unable to rename the directory!\n"));
+            QMessageBox::critical(nullptr, tr("Error!"), tr("Unable to rename the directory!\n"));
 			return;
 		}
 
@@ -127,7 +128,11 @@ bool Area::duplicate(void) {
 
     while(level->getArea(_name+QString::number(num))) ++num;
 
-    saveAs(_location+QString::number(num));
+    if(!FileUtilities::copyDir(_location, level->getLocation() + "/area/" + name+QString::number(num))) {
+        QMessageBox::critical(nullptr, "Error!", "Could not copy area directory!");
+        return false;
+    }
+    //saveAs(_location+QString::number(num));
 
     return level->loadArea(name + QString::number(num));
 }
@@ -335,7 +340,7 @@ bool Area::close(void) {
 	if(!_open) return true;
 	if(_active) deactivate();
 
-	delete _bgRect;
+    //delete _bgRect;
 
 	//Remove them from the _entityParent, so they aren't deleted with it.
 	//  for(unsigned int i = 0; i < entity.size(); ++i) entity[i]->setParent(NULL);

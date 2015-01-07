@@ -913,8 +913,8 @@ OOLUA_PROXY(PartySystem)
 	)
 	OOLUA_MEM_FUNC(bool, addCharacterToParty, cpp_in_p<Entity*>)
 	OOLUA_MEM_FUNC(bool, removeCharacterFromParty, in_out_p<const Entity*>)
-	OOLUA_MEM_FUNC_CONST(Entity*, getPartyLeader)
-	OOLUA_MEM_FUNC_CONST(Entity*, getCharacterPartyMember, unsigned)
+    OOLUA_MEM_FUNC_CONST(maybe_null<Entity*>, getPartyLeader)
+    OOLUA_MEM_FUNC_CONST(maybe_null<Entity*>, getCharacterPartyMember, unsigned)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(TimerSystem)
