@@ -21,6 +21,7 @@
 #include "project.h"
 #include "estoolkit.h"
 #include "ui_estoolkit.h"
+#include "ui_sheetdockwidget.h"
 #include "assetManager.h"
 #include "engineDialog.h"
 #include "tileSelectable.h"
@@ -148,24 +149,10 @@ ESToolkit::ESToolkit(QWidget *parent):
 	_layerDockWidget = new LayerDockWidget(this);
 	addDockWidget(Qt::LeftDockWidgetArea, _layerDockWidget);
 
-
-#if 0
-	// create/initialize SHEET dock and widget
-	_sheetDockWidget = new SheetDockWidget(this);
-	addDockWidget(Qt::BottomDockWidgetArea, _sheetDockWidget);
-#else
-    _sheetDockWidget = new SheetDockWidget;
-    auto* bottomDockWidget = new QDockWidget;
-    auto* bottomDockLayout = new QVBoxLayout;
-    auto* tabWidget = new QTabWidget;
-    bottomDockLayout->addWidget(tabWidget);
-    tabWidget->addTab(_sheetDockWidget->getSourceView(), "Tilesheet");
-    tabWidget->addTab(Debug::getCentralWidget(), "Console");
-    tabWidget->setTabPosition(QTabWidget::South);
-    bottomDockWidget->setWidget(tabWidget);
-    addDockWidget(Qt::BottomDockWidgetArea, bottomDockWidget);
-
-#endif
+    // create/initialize SHEET dock and widget
+    _sheetDockWidget        = new SheetDockWidget;
+    _sheetDockWidget->getUi()->sheetTabWidget->addTab(Debug::getCentralWidget(), "Console");
+    addDockWidget(Qt::BottomDockWidgetArea, _sheetDockWidget);
 
 	// create/initialize SELECTION dock and widget
 	_selectionDockWidget = new SelectionDockWidget(this);

@@ -27,17 +27,19 @@ public:
     enum TILE_DECOR_TYPE { TILE_DECOR_NONE, TILE_DECOR_INDEX, TILE_DECOR_ELEV, TILE_DECOR_ORIENT, TILE_DECOR_PLANE, TILE_DECOR_MAX };
 
 protected:
-    TILE_DECOR_TYPE _tileDecor = TILE_DECOR_NONE;
-    bool            _planeDecor = false;
+    TILE_DECOR_TYPE             _tileDecor = TILE_DECOR_NONE;
+    bool                        _planeDecor = false;
+    static elysian::Material*   _selMat;
+    static elysian::Material*   _bgMat;
 
     void        _renderCustomPass(const unsigned count, const TkMapDepthBuffEntryImpl array[], const elysian::NORMAL_TYPE normalType) const;
-
+    void        _renderMapBorders(void) const;
 public:
     using       elysian::MapSystemBase<TkMapSystem, TkMapDepthBuffEntryImpl, TkEntityDepthBuffEntryImpl>::update;
 
     //static polymorphic elysian::MapDepthBuffer CRTP overrides
     void        renderCustomPassImmediate(void);
-    void        renderCustomPassAtElev(const unsigned char elev, const elysian::NORMAL_TYPE normalType) const;
+    void        renderCustomPassAtElev(const int elev, const elysian::NORMAL_TYPE normalType) const;
     void        getObjectLayerEntry(const unsigned x, const unsigned y, TkMapDepthBuffEntryImpl &entry);
 
     void        setTileDecor(const TILE_DECOR_TYPE type);
@@ -68,9 +70,10 @@ inline void TkMapSystem::renderCustomPassImmediate(void) {
     }
 }
 
-inline void TkMapSystem::renderCustomPassAtElev(const unsigned char elev, const elysian::NORMAL_TYPE normalType) const {
+inline void TkMapSystem::renderCustomPassAtElev(const int elev, const elysian::NORMAL_TYPE normalType) const {
     MapSystemBase::renderCustomPassAtElev(elev, normalType);
-    _renderCustomPass(_objectCount[elev], _objectBuff[elev], normalType);
+    if(elev != -1) _renderCustomPass(_objectCount[elev], _objectBuff[elev], normalType);
+    else           _renderMapBorders();
 }
 
 /*
@@ -82,6 +85,7 @@ inline void TkMapSystem::renderCustomPassAtElev(const unsigned char elev, const 
 
 
 inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDepthBuffEntryImpl array[], const elysian::NORMAL_TYPE normalType) const {
+    if(getLightSys()->isShadowPass()) return;
     //DRAW_NORMAL, DRAW_SELECTING, DRAW_SELECTION, DRAW_FILLING, DRAW_MAX
 
     static const GYColor4 selectionDecorColors[DRAW_MAX] = {
@@ -207,5 +211,36 @@ inline void TkMapSystem::getObjectLayerEntry(const unsigned x, const unsigned y,
 
 inline void TkMapSystem::setTileDecor(const TILE_DECOR_TYPE type) { _tileDecor = type; }
 inline void TkMapSystem::setPlaneDecor(const bool val) { _planeDecor = val; }
+
+inline void TkMapSystem::_renderMapBorders(void) const {
+    if(getLightSys()->isShadowPass()) return;
+
+    GYColor4 color = { 255, 255, 255, 100 };
+    float xPos  =  (_scrStartX + _scrEndX)*16.0f;
+    float yPos  =  (_scrStartY + _scrEndY)*16.0f;
+    float xSize =  (_scrEndX - _scrStartX)*32.0f + 32.0f;
+    float ySize =  (_scrEndY - _scrStartY)*32.0f + 32.0f;
+
+    if(xSize <= 0.0f || ySize <= 0.0f) return;
+
+    gyVidTexBind(nullptr);
+    gyVidMaterialBind(nullptr);
+    gyVidNormalMapBind(nullptr);
+    gyVidSpecularMapBind(nullptr);
+    gyVidAlphaLevel(GY_ALPHA_FULL);
+    glEnable(GL_DEPTH_TEST);
+
+    gyVidQuadListBegin(&color);
+
+    gyMatPush();
+    gyMatLoadIdentity();
+    gyMatTranslateScale(xPos, yPos, 1.0f, xSize, ySize, ySize);
+    gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
+    gyVidRect(0);
+    gyMatPop();
+
+    gyVidQuadListEnd();
+    glDisable(GL_DEPTH_TEST);
+}
 
 #endif // TK_MAP_SYSTEM_H

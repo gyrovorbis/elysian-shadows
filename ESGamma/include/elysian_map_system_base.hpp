@@ -100,7 +100,7 @@ namespace elysian {
         void        disableDepthTest(void) const;
         void        enableDepthTest(void) const;
         void        renderCustomPassImmediate(void);
-        void        renderCustomPassAtElev(const unsigned char elev, const NORMAL_TYPE normalType) const;
+        void        renderCustomPassAtElev(const int elev, const NORMAL_TYPE normalType) const;
         uint32_t    startLightPass(uint32_t& lightsLeft);
         uint32_t    getLightCount(void) const;
 
@@ -332,8 +332,8 @@ namespace elysian {
 	}
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::renderCustomPassAtElev(const unsigned char elev, const NORMAL_TYPE normalType) const {
-        if(normalType == NORMAL_FLAT) getPartSys()->renderAtElev(elev);
+    inline void MapSystemBase<P, T, E>::renderCustomPassAtElev(const int elev, const NORMAL_TYPE normalType) const {
+        if(normalType == NORMAL_FLAT && elev != -1) getPartSys()->renderAtElev(elev);
 	}
 
     template<typename P, typename T, typename E>

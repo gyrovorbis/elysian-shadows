@@ -138,7 +138,6 @@ SOURCES += source/asset/project.cpp \
     source/core/rowsJoinerProxyModel.cpp \
     ../../AssetIO/source/elysian_instance_transform.cpp \
     source/estk/engineGLSceneWidget.cpp \
-    source/estk/tkMapSystem.cpp \
     source/estk/entitySelectable.cpp \
     ../../ESGamma/source/elysian_debug_base.cpp \
     source/core/tkDebug.cpp \

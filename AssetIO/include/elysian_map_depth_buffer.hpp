@@ -109,7 +109,7 @@ namespace elysian {
              static_cast<T*>(this)->renderCustomPassImmediate();
         }
 
-        void _renderCustomPassAtElev(const unsigned char elev, const NORMAL_TYPE normalType) const {
+        void _renderCustomPassAtElev(const int elev, const NORMAL_TYPE normalType) const {
             static_cast<const T*>(this)->renderCustomPassAtElev(elev, normalType);
 		}
 
@@ -221,12 +221,12 @@ namespace elysian {
         
         // ==== QUEUE AND IMMEDIATE RENDER ENTITIES ==== 
         
-		const float mapStartY = _scrStartY*32.0f;
-		const unsigned entityCount = _getEntityCount();
-        E entityEntry;
-		NORMAL_TYPE normalType;
-        float entityBase;
-		float zCoord;
+        const float     mapStartY   = _scrStartY*32.0f;
+        const unsigned  entityCount = _getEntityCount();
+        E               entityEntry;
+        NORMAL_TYPE     normalType;
+        float           entityBase;
+        float           zCoord;
         
 		//Determine entity Z coord and add to buff
 		//If PERFECTLY tile-aligned, add a delta/epsilon to prevent duplicate Zing - or don't bother? Doesn't matter?
@@ -321,9 +321,12 @@ namespace elysian {
 
 		for(unsigned i = 0; i < onscreenLights; ++i) lightsLeft |= (1<<i);
 
-		_beginObjectList();
-
         _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
+
+        _renderCustomPassAtElev(-1, NORMAL_FLAT);
+
+        _beginObjectList();
+
 		for(unsigned j = _scrStartY; j <= _scrEndY; ++j) {
 			for(unsigned i = _scrStartX; i <= _scrEndX; ++i) {
 				for(unsigned k = 0; k < 3; ++k) {
@@ -382,6 +385,7 @@ namespace elysian {
         }
 
         _endObjectList();
+
         _renderCustomPassImmediate();
 	}
 

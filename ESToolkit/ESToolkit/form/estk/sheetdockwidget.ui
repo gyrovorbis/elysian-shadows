@@ -12,8 +12,8 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>100</width>
-    <height>101</height>
+    <width>145</width>
+    <height>142</height>
    </size>
   </property>
   <property name="features">
@@ -26,7 +26,10 @@
    <string>Sheet View</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
     <property name="leftMargin">
      <number>0</number>
     </property>
@@ -40,10 +43,42 @@
      <number>0</number>
     </property>
     <item>
-     <widget class="SheetView" name="m_tileSelectionView">
-      <property name="resizeAnchor">
-       <enum>QGraphicsView::AnchorViewCenter</enum>
+     <widget class="QTabWidget" name="sheetTabWidget">
+      <property name="tabPosition">
+       <enum>QTabWidget::South</enum>
       </property>
+      <widget class="QWidget" name="sheetView">
+       <attribute name="title">
+        <string>Tilesheet</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <layout class="QVBoxLayout" name="sheetViewLayout">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="SheetView" name="m_tileSelectionView"/>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>

@@ -67,9 +67,10 @@ private:
     AssetDockWidget*        _assetDockWidget;
     EntityDockWidget*       _entityDockWidget;
     LayerDockWidget*        _layerDockWidget;
-    SheetDockWidget*        _sheetDockWidget;
+    SheetDockWidget*        _sheetDockWidget;       //Not used anymore
     SelectionDockWidget*    _selectionDockWidget;
     HistoryDockWidget*      _historyDockWidget;
+    QDockWidget*            _bottomDockWidget;
     QTabWidget*             _bottomTabWidget;
 
     EngineDialog*           _engineDialog;

@@ -15,11 +15,12 @@ class SheetDockWidget : public QDockWidget
     Q_OBJECT
     
 public:
-    explicit SheetDockWidget(QWidget *parent = 0);
+    explicit SheetDockWidget(QWidget *parent = nullptr);
     void UpdateSheetView();
     void CenterSheetView(qreal x, qreal y);
     void SetSheetScene(QGraphicsScene *scene);
 	void setViewEnabled(const bool val);
+    Ui::SheetDockWidget* getUi(void) const;
 
     ~SheetDockWidget();
 
@@ -33,5 +34,9 @@ protected:
 private:
     Ui::SheetDockWidget *ui;
 };
+
+
+//======= INLINEZ ========
+inline Ui::SheetDockWidget* SheetDockWidget::getUi(void) const { return ui; }
 
 #endif // SHEETDOCKWIDGET_H

@@ -400,8 +400,8 @@ void Area::setMapWidth(const unsigned short w) {
 	if(isActive()) { //We have to resize the scene for the current area
 		resizeEditorScene();
 	}
-    _bgRect->setRect(QRect(-16, -16, 32*width, 32*height));
-    _editorScene->setSceneRect(QRect(-16,-16,32*width, 32*height));
+    //_bgRect->setRect(QRect(-16, -16, 32*width, 32*height));
+    //_editorScene->setSceneRect(QRect(-16,-16,32*width, 32*height));
 }
 
 void Area::setMapHeight(const unsigned short h) {
@@ -410,8 +410,8 @@ void Area::setMapHeight(const unsigned short h) {
 	if(isActive()) { //We have to resize the scene for the current area
 		resizeEditorScene();
 	}
-    _bgRect->setRect(QRect(-16, -16, 32*width, 32*height));
-    _editorScene->setSceneRect(QRect(-16,-16,32*width, 32*height));
+    //_bgRect->setRect(QRect(-16, -16, 32*width, 32*height));
+    //_editorScene->setSceneRect(QRect(-16,-16,32*width, 32*height));
 }
 
 Entity* Area::getFirstEntity(void) const {
