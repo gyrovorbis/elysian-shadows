@@ -311,7 +311,7 @@ void gyVidQuadListBegin(const GYColor4 *const color) {
 }
 
 void gyVidQuadListEnd(void) {
-    if(curTex) gyVidTexCoordArray(_stripTexCoords);
+    gyVidTexCoordArray(_stripTexCoords);
 	gyVidColorArray(_stripColors);
 	_gyVidTriangleStrip(_modelViewVertices, 0, curStripSize);
 	curStripSize = 0;
