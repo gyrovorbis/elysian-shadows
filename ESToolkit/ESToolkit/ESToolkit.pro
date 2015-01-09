@@ -5,7 +5,7 @@
 TARGET = ESToolkit
 TEMPLATE = app
 QT		+= opengl
-QMAKE_CXXFLAGS += -std=c++11 -msse -Wno-unused-local-typedefs -Wno-empty-body
+QMAKE_CXXFLAGS += -std=c++11 -msse -Wno-unused-local-typedefs -Wno-empty-body -Wno-unknown-warning-option
 DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt
 CONFIG += c++11
 

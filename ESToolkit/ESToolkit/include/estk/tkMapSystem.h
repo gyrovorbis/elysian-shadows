@@ -221,7 +221,7 @@ inline void TkMapSystem::_renderMapBorders(void) const {
     float xSize =  (_scrEndX - _scrStartX)*32.0f + 32.0f;
     float ySize =  (_scrEndY - _scrStartY)*32.0f + 32.0f;
 
-    if(xSize <= 0.0f || ySize <= 0.0f) return;
+    //if(xSize <= 0.0f || ySize <= 0.0f) return;
 
     gyVidTexBind(nullptr);
     gyVidMaterialBind(nullptr);
@@ -230,13 +230,15 @@ inline void TkMapSystem::_renderMapBorders(void) const {
     gyVidAlphaLevel(GY_ALPHA_FULL);
     glEnable(GL_DEPTH_TEST);
 
+    gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
     gyVidQuadListBegin(&color);
 
+    gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
     gyMatPush();
     gyMatLoadIdentity();
     gyMatTranslateScale(xPos, yPos, 1.0f, xSize, ySize, ySize);
-    gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
     gyVidRect(0);
+    //gyVidRect(0);
     gyMatPop();
 
     gyVidQuadListEnd();

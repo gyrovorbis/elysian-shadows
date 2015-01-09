@@ -322,6 +322,7 @@ namespace elysian {
 		for(unsigned i = 0; i < onscreenLights; ++i) lightsLeft |= (1<<i);
 
         _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         _renderCustomPassAtElev(-1, NORMAL_FLAT);
 
