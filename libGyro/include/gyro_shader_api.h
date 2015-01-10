@@ -4,7 +4,8 @@
 #include "gyro_defines.h"
 #include "gyro_matrix_api.h"
 
-#define GYRO_VIDEO_LIGHT_SOURCES_MAX 4
+#define GYRO_VIDEO_LIGHT_SOURCES_MAX 10
+//#define GYRO_VIDEO_LIGHT_SOURCES_MAX 4
 
 #ifdef __cplusplus
 extern "C" {
