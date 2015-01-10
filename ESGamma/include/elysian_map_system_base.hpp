@@ -79,6 +79,10 @@ namespace elysian {
 		} _animTiles[ELYSIAN_TILESHEET_TILES];
        
 	public:
+
+        static void staticInitialize(void);
+        static void staticUninitialize(void);
+
                     MapSystemBase(void);
         
         void        update(void);
@@ -455,8 +459,13 @@ namespace elysian {
     template<typename P, typename T, typename E>
     inline bool MapSystemBase<P, T, E>::toggleRenderLayer(const unsigned layer) {
         return (_renderLayer[layer] = !_renderLayer[layer]);
-
     }
+
+    template<typename P, typename T, typename E>
+    inline void MapSystemBase<P, T, E>::staticInitialize(void) {}
+
+    template<typename P, typename T, typename E>
+    inline void MapSystemBase<P, T, E>::staticUninitialize(void) {}
 
 
 }

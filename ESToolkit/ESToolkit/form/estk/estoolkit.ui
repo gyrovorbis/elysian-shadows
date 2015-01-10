@@ -127,6 +127,7 @@
     <addaction name="separator"/>
     <addaction name="actionReset_Layout"/>
     <addaction name="separator"/>
+    <addaction name="actionMap_Background"/>
    </widget>
    <widget class="QMenu" name="menuLevel">
     <property name="enabled">
@@ -1036,6 +1037,14 @@
    </property>
    <property name="text">
     <string>Commands</string>
+   </property>
+  </action>
+  <action name="actionMap_Background">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Map Background</string>
    </property>
   </action>
  </widget>

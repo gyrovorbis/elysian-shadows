@@ -189,5 +189,6 @@ private slots:
     void on_actionLua_toggled(bool arg1);
     void on_actionQt_toggled(bool arg1);
     void on_actionCommands_toggled(bool arg1);
+    void on_actionMap_Background_toggled(bool arg1);
 };
 #endif // ESTOOLKIT_H

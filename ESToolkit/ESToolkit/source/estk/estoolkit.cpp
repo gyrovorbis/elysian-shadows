@@ -482,6 +482,7 @@ void ESToolkit::WriteSettings()
 	settings.setValue("autoScrollEnabled", _ui->actionToggle_AutoScroll->isChecked());
 	settings.setValue("sheetViewHorizontal", _ui->actionHorizontal_SheetView->isChecked());
 	settings.setValue("engineResolution", _engineDialog->getResolution());
+    settings.setValue("renderMapBackground", TkMapSystem::getRenderMapBackground());
 	unsigned x, y;
 	_engineDialog->getStartPos(x, y);
 	settings.setValue("engineStartPosX", x);
@@ -518,6 +519,7 @@ void ESToolkit::ReadSettings()
 	bool glEnabled = settings.value("glEnabled", true).toBool();
 	bool autoScrollEnabled = settings.value("autoScrollEnabled", true).toBool();
 	_engineDialog->setResolution(settings.value("engineResolution", 0).toUInt());
+    bool renderMapBg = settings.value("renderMapBackground", false).toBool();
 	unsigned x = settings.value("engineStartPosX", 0).toUInt();
 	unsigned y = settings.value("engineStartPosY", 0).toUInt();
 	_engineDialog->setStartPos(x, y);
@@ -552,6 +554,7 @@ void ESToolkit::ReadSettings()
 	_ui->actionToggle_AutoScroll->setChecked(autoScrollEnabled);
 	on_actionToggle_AutoScroll_triggered();
 	_ui->actionHorizontal_SheetView->setChecked(sheetViewHorizontal);
+    _ui->actionMap_Background->setChecked(renderMapBg);
 	on_actionHorizontal_SheetView_triggered(sheetViewHorizontal);
 
 
@@ -1667,4 +1670,9 @@ void ESToolkit::on_actionQt_toggled(bool arg1)
 void ESToolkit::on_actionCommands_toggled(bool arg1)
 {
     Debug::setFilter(Debug::COMMAND, arg1);
+}
+
+void ESToolkit::on_actionMap_Background_toggled(bool arg1)
+{
+    TkMapSystem::setRenderMapBackground(arg1);
 }

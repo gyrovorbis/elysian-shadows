@@ -22,7 +22,7 @@ namespace elysian {
 		GYTexture*			_specularMap	= nullptr;
 		SpriteAttrib*		_spriteAttrib	= nullptr;	//Prefab-able attributes
 		int					_frame			= 0;			//for animation
-		GYVector2			_offset			= {0.0f, 0.0f};	//texture offset from base transform (local coords)
+        GYVector2			_offset			= {0.0f, 0.0f};	//texture offset from base transform (local coords)
 		GY_RECT_TEX_ORIENT	_texOrient		= GY_RECT_TEX_ORIENT_NORMAL;
 
 		inline Renderable(Entity &parent): Component(parent) {}
@@ -77,12 +77,12 @@ namespace elysian {
 				localVerts[2].x = -locX + _offset.x;
 				localVerts[2].y = locY + _offset.y;
 			//	localVerts[0].z = -locY + _offset.y;
-				localVerts[3].x = locX + _offset.x;
+                localVerts[3].x = locX + _offset.x;
 				localVerts[3].y = locY + _offset.y;
 			//	localVerts[0].z = -locY + _offset.y;
 			}*/
 
-			gyMatTranslate(_offset.x, _offset.y, 0.0f);
+            gyMatTranslate(_offset.x, _offset.y, 0.0f);
 
 			//branch assumes shit will usually be depth buffered
         /*	if(getEntity()->getNormalType() != NORMAL_FRONT) {
@@ -136,8 +136,8 @@ namespace elysian {
 
 		inline unsigned				getFrame(void) const { return _frame; }
 		inline void					setFrame(const unsigned fr) { _frame = fr; }
-		inline void					setOffset(const GYVector2 &offset) { _offset = offset; }
-		inline void					getOffset(GYVector2 &offset) const { offset = _offset; }
+        inline void					setOffset(const GYVector2 &offset) { _offset = offset; }
+        inline void					getOffset(GYVector2 &offset) const { offset = _offset; }
 		inline void					setTexOrient(const GY_RECT_TEX_ORIENT texOrient) { _texOrient = texOrient; }
 		inline GY_RECT_TEX_ORIENT	getTexOrient(void) const { return _texOrient; }
 

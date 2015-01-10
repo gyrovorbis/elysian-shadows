@@ -23,12 +23,14 @@ class TkMapSystem:  public MapViewTileGraphicsItem,
                     public elysian::MapSystemBase<TkMapSystem, TkMapDepthBuffEntryImpl, TkEntityDepthBuffEntryImpl>
 {
     friend class ESToolkit;
+    typedef elysian::MapSystemBase<TkMapSystem, TkMapDepthBuffEntryImpl, TkEntityDepthBuffEntryImpl> MapSystemBase;
 public:
     enum TILE_DECOR_TYPE { TILE_DECOR_NONE, TILE_DECOR_INDEX, TILE_DECOR_ELEV, TILE_DECOR_ORIENT, TILE_DECOR_PLANE, TILE_DECOR_MAX };
 
 protected:
-    TILE_DECOR_TYPE             _tileDecor = TILE_DECOR_NONE;
-    bool                        _planeDecor = false;
+    TILE_DECOR_TYPE             _tileDecor              = TILE_DECOR_NONE;
+    bool                        _planeDecor             = false;
+    static bool                 _renderMapBackground;
     static elysian::Material*   _selMat;
     static elysian::Material*   _bgMat;
 
@@ -37,6 +39,9 @@ protected:
 public:
     using       elysian::MapSystemBase<TkMapSystem, TkMapDepthBuffEntryImpl, TkEntityDepthBuffEntryImpl>::update;
 
+    static void staticInitialize(void);
+    static void staticUninitialize(void);
+
     //static polymorphic elysian::MapDepthBuffer CRTP overrides
     void        renderCustomPassImmediate(void);
     void        renderCustomPassAtElev(const int elev, const elysian::NORMAL_TYPE normalType) const;
@@ -44,8 +49,9 @@ public:
 
     void        setTileDecor(const TILE_DECOR_TYPE type);
     void        setPlaneDecor(const bool val);
+    static void setRenderMapBackground(const bool val);
+    static bool getRenderMapBackground(void);
 };
-
 
 // ====== INLINEZ =====
 
@@ -165,15 +171,16 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
 
     //twcen._transform.setSize();
 
-    gyVidTexBind(nullptr);
-    gyVidNormalMapBind(nullptr);
-    gyVidSpecularMapBind(nullptr);
-    gyVidAlphaLevel(GY_ALPHA_FULL);
-
 
     //Tile selection decoration
     auto drawStyle = _getTileDrawState();
     if(drawStyle != DRAW_NORMAL) {
+        gyVidTexBind(nullptr);
+        gyVidNormalMapBind(nullptr);
+        gyVidSpecularMapBind(nullptr);
+        gyVidAlphaLevel(GY_ALPHA_FULL);
+        gyVidMaterialBind(&_selMat[drawStyle]);
+
         GYColor4 color = selectionDecorColors[drawStyle];
         //GYVector4 { x*32.0f+16.0f, y*32.0f+ 16.0f +  tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f, 1.0f },
 
@@ -186,7 +193,8 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
             gyMatPush();
 			gyMatLoadIdentity();
             if(normalType == elysian::NORMAL_FLAT)
-                gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f+1.0f, entry.mapEntry.getElev()*32.0f+1.0f, 32.0f, 32.0f, 32.0f);
+                //Had to add the offset of +3.0f to get the decoration above tiles. Could be potentially reested.
+                gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f+3.0f, entry.mapEntry.getElev()*32.0f+3.0f, 32.0f, 32.0f, 32.0f);
             else gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f+33.0f, entry.mapEntry.getElev()*32.0f+33.0f, 32.0f, 32.0f, 32.0f);
             gyVidRect(0);
             gyMatPop();
@@ -211,38 +219,7 @@ inline void TkMapSystem::getObjectLayerEntry(const unsigned x, const unsigned y,
 
 inline void TkMapSystem::setTileDecor(const TILE_DECOR_TYPE type) { _tileDecor = type; }
 inline void TkMapSystem::setPlaneDecor(const bool val) { _planeDecor = val; }
-
-inline void TkMapSystem::_renderMapBorders(void) const {
-    if(getLightSys()->isShadowPass()) return;
-
-    GYColor4 color = { 255, 255, 255, 100 };
-    float xPos  =  (_scrStartX + _scrEndX)*16.0f;
-    float yPos  =  (_scrStartY + _scrEndY)*16.0f;
-    float xSize =  (_scrEndX - _scrStartX)*32.0f + 32.0f;
-    float ySize =  (_scrEndY - _scrStartY)*32.0f + 32.0f;
-
-    //if(xSize <= 0.0f || ySize <= 0.0f) return;
-
-    gyVidTexBind(nullptr);
-    gyVidMaterialBind(nullptr);
-    gyVidNormalMapBind(nullptr);
-    gyVidSpecularMapBind(nullptr);
-    gyVidAlphaLevel(GY_ALPHA_FULL);
-    glEnable(GL_DEPTH_TEST);
-
-    gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
-    gyVidQuadListBegin(&color);
-
-    gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
-    gyMatPush();
-    gyMatLoadIdentity();
-    gyMatTranslateScale(xPos, yPos, 1.0f, xSize, ySize, ySize);
-    gyVidRect(0);
-    //gyVidRect(0);
-    gyMatPop();
-
-    gyVidQuadListEnd();
-    glDisable(GL_DEPTH_TEST);
-}
+inline void TkMapSystem::setRenderMapBackground(const bool val) { _renderMapBackground = val; }
+inline bool TkMapSystem::getRenderMapBackground(void) { return _renderMapBackground; }
 
 #endif // TK_MAP_SYSTEM_H

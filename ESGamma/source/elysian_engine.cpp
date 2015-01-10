@@ -66,6 +66,7 @@ Engine::Engine(void) {
     _behaviorSystem->initialize();
     _warpSystem->initialize();
     _combatSystem->initialize();
+    MapSystem::staticInitialize();
 
 	//register Lua dependencies
 	Singletons::setGameInput(&_gameInput);
@@ -244,6 +245,8 @@ void Engine::render(void) {
 }
 
 Engine::~Engine(void) { 
+
+    MapSystem::staticUninitialize();
 
     gyInputUninit();
     gyTimerUninit();

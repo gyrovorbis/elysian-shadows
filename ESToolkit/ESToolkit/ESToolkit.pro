@@ -149,7 +149,8 @@ SOURCES += source/asset/project.cpp \
     source/asset/tkLevel.cpp \
     ../../AssetIO/source/elysian_entity_base.cpp \
     source/asset/tkEntity.cpp \
-    ../../ESGamma/source/elysian_map_system_base.cpp
+    ../../ESGamma/source/elysian_map_system_base.cpp \
+    source/estk/tkMapSystem.cpp
 
 HEADERS += include/asset/project.h \
     include/asset/assets.h \
