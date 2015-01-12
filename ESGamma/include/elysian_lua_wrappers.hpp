@@ -374,6 +374,11 @@ OOLUA_PROXY(Material)
 	OOLUA_MEM_FUNC(void, setSpecularColor, const GYVector4&)
 	OOLUA_MEM_FUNC(void, setEmissiveColor, const GYVector4&)
 	OOLUA_MEM_FUNC(void, setShininess, float)
+    OOLUA_MEM_FUNC_CONST(void, getAmbientColor, GYVector4&)
+    OOLUA_MEM_FUNC_CONST(void, getDiffuseColor, GYVector4&)
+    OOLUA_MEM_FUNC_CONST(void, getSpecularColor, GYVector4&)
+    OOLUA_MEM_FUNC_CONST(void, getEmissiveColor, GYVector4&)
+    OOLUA_MEM_FUNC_CONST(float, getShininess)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Renderable, Component)
@@ -654,6 +659,11 @@ OOLUA_PROXY(LightAttrib)
 	OOLUA_MEM_FUNC(void, setSpecularColor, const GYVector4&)
 	OOLUA_MEM_FUNC(void, setAttenuationFactors, const GYVector3&)
 	OOLUA_MEM_FUNC(void, setSpotExponent, const float)
+    OOLUA_MEM_FUNC_CONST(void, getAmbientColor, GYVector4&)
+    OOLUA_MEM_FUNC_CONST(void, getDiffuseColor, GYVector4&)
+    OOLUA_MEM_FUNC_CONST(void, getSpecularColor, GYVector4&)
+    OOLUA_MEM_FUNC_CONST(void, getAttenuationFactors, GYVector3&)
+    OOLUA_MEM_FUNC_CONST(float, getSpotExponent)
 	//OOLUA_MEM_FUNC(void, setComputeDistanceAttenuation, const bool)
 OOLUA_PROXY_END
 
@@ -669,6 +679,10 @@ OOLUA_PROXY(LightSource, Component)
 	OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<const LightAttrib*>)
 	OOLUA_MEM_FUNC(LightAttrib&, getAttrib)
 	OOLUA_MFUNC(setShadowCaster)
+    OOLUA_MEM_FUNC_CONST(void, getDirection, GYVector3&)
+    OOLUA_MEM_FUNC_CONST(float, getSpotCutoffAngle)
+    OOLUA_MEM_FUNC_CONST(GY_LIGHT_TYPE, getLightType)
+    OOLUA_MEM_FUNC_CONST(bool, isShadowCaster)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ParticleEmitterAttrib, SpriteAttrib, GYStatic)
@@ -951,7 +965,7 @@ OOLUA_PROXY_END
 
 OOLUA_PROXY(LightSystem)
 	OOLUA_TAGS (
-		No_public_constructors,
+        No_public_constructors,
 		No_public_destructor
 	)
 	OOLUA_MFUNC(setGlobalAmbientColor)

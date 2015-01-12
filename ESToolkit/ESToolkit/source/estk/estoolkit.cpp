@@ -1020,11 +1020,14 @@ void ESToolkit::on_actionAreaRemove_triggered() {
 		return;
 	}
 
-    QString name = _assets.getCurrentArea()->getNodeName();
     if(_assets.getCurrentSelection() == _assets.getCurrentArea()) _selectionDockWidget->SetSelectionModel(nullptr);
+
+    auto* area = _assets.getCurrentArea();
+    Level *level = area->getLevel();
     _assets.setCurrentArea(nullptr);
-	_assets.getCurrentLevel()->removeArea(name);
-	_assets.setCurrentArea(_assets.getCurrentLevel()->getFirstArea());
+    level->removeArea(area->getNodeName());
+    _assets.setCurrentArea(level->getFirstArea());
+
 }
 
 

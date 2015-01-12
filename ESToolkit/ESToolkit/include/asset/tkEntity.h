@@ -8,6 +8,7 @@
 #include "elysian_entity_base.hpp"
 #include "rowsJoinerProxyModel.h"
 #include "elysian_asset_typedefs.hpp"
+#include "assetManager.h"
 
 class Sprite;
 class Component;
@@ -34,7 +35,8 @@ class TkEntity:
 	/*	public QWidget, */
 		public TreeNode,
 		public QGraphicsRectItem,
-		public elysian::EntityBase
+        public elysian::EntityBase,
+        public AssetManager
 {
     friend class ESToolkit;
     friend class elysian::EntityBase;

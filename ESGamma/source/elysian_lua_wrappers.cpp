@@ -270,13 +270,19 @@ EXPORT_OOLUA_FUNCTIONS_1_CONST(QuadSpriteAttrib,
 EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(QuadSpriteAttrib,
 								   setVertexColor,
 								   setVerticesAlpha)
+
 OOLUA_EXPORT_FUNCTIONS(Material,
 					   setShininess,
 					   setAmbientColor,
 					   setDiffuseColor,
 					   setSpecularColor,
 					   setEmissiveColor)
-OOLUA_EXPORT_FUNCTIONS_CONST(Material)
+OOLUA_EXPORT_FUNCTIONS_CONST(Material,
+                             getAmbientColor,
+                             getDiffuseColor,
+                             getSpecularColor,
+                             getEmissiveColor,
+                             getShininess)
 
 OOLUA_EXPORT_FUNCTIONS(Renderable,
 					   setFrame,
@@ -485,7 +491,12 @@ OOLUA_EXPORT_FUNCTIONS(LightAttrib,
 					   setSpecularColor,
 					   setAttenuationFactors,
 					   setSpotExponent)
-OOLUA_EXPORT_FUNCTIONS_CONST(LightAttrib)
+OOLUA_EXPORT_FUNCTIONS_CONST(LightAttrib,
+                             getAmbientColor,
+                             getDiffuseColor,
+                             getSpecularColor,
+                             getAttenuationFactors,
+                             getSpotExponent)
 
 OOLUA_EXPORT_FUNCTIONS(LightSource,
 					   setLightType,
@@ -493,10 +504,13 @@ OOLUA_EXPORT_FUNCTIONS(LightSource,
 					   setSpotCutoffAngle,
 					   setAttrib,
 					   getAttrib,
-
                        setShadowCaster,
                        setRelativePos)
-OOLUA_EXPORT_FUNCTIONS_CONST(LightSource)
+OOLUA_EXPORT_FUNCTIONS_CONST(LightSource,
+                             getDirection,
+                             getSpotCutoffAngle,
+                             getLightType,
+                             isShadowCaster)
 
 OOLUA_EXPORT_FUNCTIONS(ParticleEmitterAttrib,
 					   setAcceleration,

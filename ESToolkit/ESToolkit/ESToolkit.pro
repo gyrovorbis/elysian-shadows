@@ -299,7 +299,8 @@ HEADERS += include/asset/project.h \
     include/asset/tkEntity.h \
     ../../AssetIO/include/elysian_entity.hpp \
     ../../ESGamma/include/elysian_map_system_base.hpp \
-    ../../ESGamma/include/elysian_map_system.hpp
+    ../../ESGamma/include/elysian_map_system.hpp \
+    ../../AssetIO/include/elysian_material.hpp
 
 FORMS += form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \

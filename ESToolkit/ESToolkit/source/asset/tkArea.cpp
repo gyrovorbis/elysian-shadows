@@ -291,7 +291,8 @@ bool Area::saveAs(const QString dir) {
 
 bool Area::activate(void) {
 	if(!_open) open();
-	if(!_active) {
+    emit activating(this);
+    if(!_active) {
         _curArea = this;
         AreaBase::activate();
 
@@ -303,7 +304,6 @@ bool Area::activate(void) {
 		//editorScene->addItem(_entityParent);
 		_active = true;
 	}
-	emit activating(this);
     return true;
 }
 

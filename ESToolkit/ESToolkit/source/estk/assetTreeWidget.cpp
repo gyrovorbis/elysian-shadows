@@ -120,8 +120,9 @@ void AssetTreeWidget::onCustomContextMenuRequested(QPoint point) {
 				}
 
 				Project *project = level->getProject();
-                getAssets()->setCurrentLevel(project->getFirstLevel());
+                getAssets()->setCurrentArea(nullptr);
                 project->removeLevel(level->getNodeName());
+                getAssets()->setCurrentLevel(project->getFirstLevel());
             } else if(result->text() == QString("Duplicate")) {
                 level->duplicate();
             }
@@ -141,8 +142,8 @@ void AssetTreeWidget::onCustomContextMenuRequested(QPoint point) {
 				}
 				Level *level = area->getLevel();
                 getAssets()->setCurrentArea(nullptr);
-                getAssets()->setCurrentArea(level->getFirstArea());
                 level->removeArea(area->getNodeName());
+                getAssets()->setCurrentArea(level->getFirstArea());
             } else if(result->text() == QString("Duplicate")) {
                 area->duplicate();
             }

@@ -51,6 +51,11 @@ bool LevelSystem::switchLevel(const char *const dir) {
         strcpy(_prevLevelPath, _curLevel->dir);
     }
 
+    if(!dir) {
+        _curLevel = nullptr;
+        return false;
+    }
+
     if((index = getLevelIndex(dir)) >= 0) {
         _level[index]->activate();
         _curLevel = _level[index];
@@ -73,14 +78,21 @@ bool LevelSystem::switchArea(const char *const dir) {
     int index;
     Area *ar;
 
-    //Clean up current area
-    getPartySys()->removePartyFromArea();
+
     if(_curArea != nullptr) { //Can't call that if no area has been loaded yet.
+        //Clean up current area
+        getPartySys()->removePartyFromArea();
         getBehavSys()->callTriggers(Behavior::ON_EXIT);
         _curArea->deactivate();
+        getCollisionSys()->clearContacts();
+        getMapSys()->resetAnimation();
     }
-    getCollisionSys()->clearContacts();
-    getMapSys()->resetAnimation();
+
+
+    if(!dir) {
+        _curArea = nullptr;
+        return false;
+    }
 
     if(_curArea) strcpy(_prevAreaPath, _curArea->dir);
 
