@@ -484,15 +484,17 @@ void DestView<T>::selectionCut(void) {
 	if(terSel) {
 		delete _selClipboard;
 		_selClipboard = _copyConstructTileSelection(*terSel);
-		deleteSelectionItemGroup();
+        deleteSelectionItemGroup();
         _setTileSelection(nullptr);
-	}
+        _sceneSelectionClear();
+    }
 }
 
 template<typename T>
 void DestView<T>::selectionPaste(void) {
 	if(_selClipboard) {
 		_setTileSelection(_selClipboard);
+        mouseMoveEvent(nullptr);
         _selClipboard = nullptr;
 	}
 }

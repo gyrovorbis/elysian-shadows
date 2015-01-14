@@ -83,6 +83,10 @@ void MapView::onEngineInitialize(void) {
     _cursorEntity->setName("ESTkCursor");
 }
 
+void MapView::onEngineUpdated(void) {
+    _zoomLabel->setText(QString::number((int)(getAssets()->getEngine()->getCameraSys()->getKeyFrame().getScale()*getAssets()->getEngine()->getCameraSys()->getStaticScale()*100.0f))+QString("%"));
+}
+
 TileSelection<TileEntry> *MapView::_getTileSelection(void) const {
 	return static_cast<TileSelectable*> (
                 (getCurrentSelectionType() == Selectable::TILE)? getCurrentSelection() : nullptr
@@ -169,6 +173,12 @@ void MapView::_tileSelectionArrayUpdate(void) {
 		if(startY < 0) startY = 0;
 		else if(startY >= getCurrentArea()->getMapHeight()) startY = getCurrentArea()->getMapHeight()-1;
 
+        if(endX < 0) endX = 0;
+        else if(endX >= getCurrentArea()->getMapWidth()) endX = getCurrentArea()->getMapWidth()-1;
+        if(endY < 0) endY = 0;
+        else if(endY >= getCurrentArea()->getMapHeight()) endY = getCurrentArea()->getMapHeight()-1;
+
+
 		//sync array with rectangular selection
 		for(int j = startY; j <= endY; ++j) {
 			for(int i = startX; i <= endX; ++i) {
@@ -234,9 +244,9 @@ void MapView::_externalSelectionCreate(void) {
 	if(_tileSelectionRects.size() <= 0) return;
     if(getAssets()->getCurrentLayer() == Assets::LAYER_ENTITY) return _entitySelectableCreate();
 
-	int startX = ELYSIAN_AREA_MAP_WIDTH;
+    int startX = ELYSIAN_AREA_MAP_WIDTH-2;
 	int endX = 0;
-	int startY = ELYSIAN_AREA_MAP_HEIGHT;
+    int startY = ELYSIAN_AREA_MAP_HEIGHT-2;
 	int endY = 0;
 
 	for(int i = 0; i < _tileSelectionRects.size(); ++i) {
@@ -245,8 +255,10 @@ void MapView::_externalSelectionCreate(void) {
 		if(startY > (_tileSelectionRects[i].topLeft().y()+16)/32)	startY = (_tileSelectionRects[i].topLeft().y()+16)/32;
 		if(endY < (_tileSelectionRects[i].bottomRight().y()+16)/32) endY = (_tileSelectionRects[i].bottomRight().y()+16)/32;
     }
-	if(startX < 0) startX = 0;
+    if(startX < 0) startX = 0;
 	if(startY < 0) startY = 0;
+    if(endX >= getAssets()->getCurrentArea()->width-1) endX = getAssets()->getCurrentArea()->width-2;
+    if(endY >= getAssets()->getCurrentArea()->height-1) endY = getAssets()->getCurrentArea()->height-2;
 
 	TileSelectable *selection = new TileSelectable(QRect(startX, startY, endX-startX+1, endY-startY+1), _tileSelectionArray, getCurrentArea(), getCurrentLevel(), getAssets()->getCurrentLayer());
     setCurrentSelection(selection);
@@ -260,6 +272,7 @@ void MapView::_externalSelectionClear(void) {
 }
 
 void MapView::_setTileSelection(TileSelection<TileEntry>* const sel) {
+    if(sel && getAssets()->getCurrentLayer() == Assets::LAYER_ENTITY) getAssets()->setCurrentLayer(Assets::LAYER_TILE1);
 	setCurrentSelection(static_cast<TileSelectable *>(sel));
 }
 
@@ -315,7 +328,7 @@ void MapView::keyPressEvent(QKeyEvent* event) {
 			}
             mouseMoveEvent(nullptr);
 		}
-	}
+    }
 }
 
 void MapView::wheelEvent(QWheelEvent* event) {
@@ -324,13 +337,16 @@ void MapView::wheelEvent(QWheelEvent* event) {
     //scale(delta, delta);
     getAssets()->getEngine()->getCameraSys()->scale(delta);
     _updateSceneMousePos();
-    _zoomLabel->setText(QString::number((int)(getAssets()->getEngine()->getCameraSys()->getKeyFrame().getScale()*100.0f))+QString("%"));
+    //_zoomLabel->setText(QString::number((int)(getAssets()->getEngine()->getCameraSys()->getKeyFrame().getScale()*getAssets()->getEngine()->getCameraSys()->getStaticScale()*100.0f))+QString("%"));
     mouseMoveEvent(nullptr);
 
     event->ignore();
 }
 
 void MapView::mouseMoveEvent(QMouseEvent *event) {
+    //DIRTY-ASS HACK TO KEEP SHIT SYNCED WITH ENGINE
+    //_zoomLabel->setText(QString::number((int)(getAssets()->getEngine()->getCameraSys()->getKeyFrame().getScale()*getAssets()->getEngine()->getCameraSys()->getStaticScale()*100.0f))+QString("%"));
+
     auto* sel = static_cast<TileSelectable*>(_getTileSelection());
     auto p1 = _panPivot-_viewMousePos;
 
@@ -355,7 +371,7 @@ void MapView::mouseMoveEvent(QMouseEvent *event) {
         getAssets()->getCurrentArea()->setEmitMapChange(true);
     }
 
-    float scale = getAssets()->getEngine()->getCameraSys()->getKeyFrame().getScale();
+    float scale = getAssets()->getEngine()->getCameraSys()->getKeyFrame().getScale() * getAssets()->getEngine()->getCameraSys()->getStaticScale();
     auto p2 = _panPivot-_viewMousePos;
     auto delta = p2 - p1;
     delta /= scale;
@@ -528,7 +544,9 @@ void MapView::createSelectionItemGroup(void) {
 
 void MapView::updateSelectionItemGroup(void) { }
 
-void MapView::deleteSelectionItemGroup(void) { _selItemGroup = nullptr; }
+void MapView::deleteSelectionItemGroup(void) {
+    _selItemGroup = nullptr;
+}
 
 
 

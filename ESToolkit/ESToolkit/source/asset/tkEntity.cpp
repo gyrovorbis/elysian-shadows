@@ -30,6 +30,8 @@
 #include "renderable.h"
 #include "luaTableStackModel.h"
 #include "elysian_lua_wrappers.hpp"
+#include "elysian_engine.hpp"
+#include "elysian_light_system.hpp"
 #include <cmath>
 
 elysian::CollidableAttrib* TkEntity::_selColliderAttrib;
@@ -774,7 +776,7 @@ bool TkEntity::activate(void) {
 }
 
 bool TkEntity::deactivate(void) {
-    if(_active && _selectable) {
+    if(_active && _selectable && !getAssets()->getEngine()->getLightSys()->isShadowPass()) {
         _selectionCollider->removeFromLevel();
         _selectionRenderable->removeFromLevel();
     }

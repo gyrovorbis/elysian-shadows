@@ -180,6 +180,8 @@ void EngineGLSceneWidget::paintGL(void) {
 
 //engine->update();
   //  engine->render();
+
+    emit engineUpdated();
 }
 
 

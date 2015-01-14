@@ -148,12 +148,12 @@ void Assets::setCurrentArea(Area *const area) {
    // if(_currentArea) _currentArea->deactivate();
     //if(_currentArea == area) return;
     _currentArea = area;
+    _engine->getLevelSys()->switchArea(area? area->getPath() : nullptr);
     if(area) {
-        _engine->getLevelSys()->switchArea(area->getPath());
         //area->activate();
 		emit areaChanged(_currentArea);
-		if(area->getFirstEntity()) setCurrentSelection(new EntitySelectable(area->getFirstEntity()));
-        else setCurrentSelection((EntitySelectable*)nullptr);
+        //if(area->getFirstEntity()) setCurrentSelection(new EntitySelectable(area->getFirstEntity()));
+        setCurrentSelection((EntitySelectable*)nullptr);
     }
     else {
 		emit areaChanged(_currentArea);
@@ -181,8 +181,8 @@ void Assets::setCurrentLevel(Level *const level) {
     //if(_currentLevel == level) return;
     _currentLevel = level;
 
+    _engine->getLevelSys()->switchLevel(level? level->getPath() : nullptr);
     if(level) {
-        _engine->getLevelSys()->switchLevel(level->getPath());
     //	level->activate();
         if(level->getFirstArea()) setCurrentArea(level->getFirstArea()->getNodeName());
         else setCurrentArea(nullptr);

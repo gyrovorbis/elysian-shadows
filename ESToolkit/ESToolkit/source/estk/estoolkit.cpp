@@ -87,6 +87,7 @@ ESToolkit::ESToolkit(QWidget *parent):
 	connect(_engineSettingsDialog, SIGNAL(dcIpChanged(QString)), _engineDialog, SLOT(OnDreamcastIpChanged(QString)));
 	connect(_engineSettingsDialog, SIGNAL(dcMacChanged(QString)), _engineDialog, SLOT(OnDreamcastMacChanged(QString)));
 	connect(_engineSettingsDialog, SIGNAL(sudoPswdChanged(QString)), _engineDialog, SLOT(OnSudoPswdChanged(QString)));
+
 	_engineSettingsDialog->restoreSettings();
 
 	_areaTabBar = new QTabBar(this);
@@ -661,7 +662,7 @@ void ESToolkit::OnSubLayerVisibilityChanged(int index, bool visible)
         _assets.getEngine()->getMapSys()->setTileDecor(TkMapSystem::TILE_DECOR_NONE);
 
 	_layerDockWidget->setCurrentLayer(_assets.getCurrentLayer());
-	Area::updateScene();
+    //Area::updateScene();
 }
 
 void ESToolkit::OnActiveLayerChanged(int index) {
@@ -688,7 +689,7 @@ void ESToolkit::OnActiveLayerChanged(int index) {
 	   QTimer::singleShot(10, this, SLOT(updateLayerTreeWidget()));
 		break;
 	}
-	Area::updateScene();
+    //Area::updateScene();
 }
 
 /*
@@ -855,6 +856,7 @@ void ESToolkit::_openProjectDir(const QString dir) {
 
 	QDir::setCurrent(dir);
     auto* viewport = _engineGLView = new EngineGLSceneWidget(QGLFormat(QGL::SampleBuffers | QGL::DirectRendering));
+    connect(viewport, SIGNAL(engineUpdated()), _ui->mapView, SLOT(onEngineUpdated()));
 
     viewport->setMouseTracking(true);
     _ui->mapView->setViewport(viewport);
@@ -1020,11 +1022,14 @@ void ESToolkit::on_actionAreaRemove_triggered() {
 		return;
 	}
 
-    QString name = _assets.getCurrentArea()->getNodeName();
     if(_assets.getCurrentSelection() == _assets.getCurrentArea()) _selectionDockWidget->SetSelectionModel(nullptr);
+
+    auto* area = _assets.getCurrentArea();
+    Level *level = area->getLevel();
     _assets.setCurrentArea(nullptr);
-	_assets.getCurrentLevel()->removeArea(name);
-	_assets.setCurrentArea(_assets.getCurrentLevel()->getFirstArea());
+    level->removeArea(area->getNodeName());
+    _assets.setCurrentArea(level->getFirstArea());
+
 }
 
 

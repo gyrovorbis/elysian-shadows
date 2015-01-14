@@ -89,10 +89,12 @@ public:
 
 	void setLayer(const Assets::LAYER_TYPE layer) {
 		if(_undoGroup.size() && _layer != layer) {
-			undo();
+            _area->setEmitMapChange(false);
+            undo();
 			_layer = layer;
-			refreshOldData();
-			endUpdateEntries();
+            refreshOldData();
+            endUpdateEntries();
+            _area->setEmitMapChange(true);
 		} else {
 			_layer = layer;
 		}
@@ -100,10 +102,12 @@ public:
 
 	void setArea(Area*const area) {
 		if(_undoGroup.size() && _area != area) {
-			undo();
+            _area->setEmitMapChange(false);
+            undo();
 			_area = area;
 			refreshOldData();
 			endUpdateEntries();
+            _area->setEmitMapChange(true);
 		} else {
 			_area = area;
 		}
