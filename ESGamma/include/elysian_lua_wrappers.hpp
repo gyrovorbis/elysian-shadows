@@ -812,9 +812,9 @@ OOLUA_PROXY(MenuText, MenuWidget)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(MenuEntity, MenuWidget, Entity)
-	OOLUA_MEM_FUNC(void, addChildWidget, MenuWidget*)
+    OOLUA_MEM_FUNC(void, addChildWidget, cpp_in_p<MenuWidget*>)
 	OOLUA_MEM_FUNC(void, setSizeType, MenuEntity::SIZE_TYPE)
-	OOLUA_MEM_FUNC(void, removeChildWidget, MenuWidget*)
+    OOLUA_MEM_FUNC(void, removeChildWidget, in_out_p<MenuWidget*>)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Behavior, Component)

@@ -192,18 +192,32 @@ void TkLevel::setNodeName(const QString str) {
 	if(!_name.isEmpty())  {
 
 		if(_project->getLevel(name)) {
-			QMessageBox::critical(NULL, tr("Error!"), tr("A level with that name already exists in the current project!\n"));
+            QMessageBox::critical(nullptr, tr("Error!"), tr("A level with that name already exists in the current project!\n"));
 			return;
 		}
 
 		QString levDir = _project->getLocation();
 		levDir.append("/level");
 
-		QDir dir(levDir);
-		if(!dir.rename(_name, name)) {
-			QMessageBox::critical(NULL, tr("Error!"), tr("Unable to rename the directory!\n"));
-			return;
-		}
+        //Fucking Qt rename dir doesn't work on Windows?!
+#if 1
+        QDir dir(levDir);
+        if(!dir.rename(_location, newLocation)) {
+            QMessageBox::critical(nullptr, tr("Error!"), tr("Unable to rename the directory!\n"));
+            return;
+        }
+#else
+        if(!FileUtilities::copyDir(_location, newLocation)) {
+            QMessageBox::critical(nullptr, "Error!", "Could not copy level directory!");
+            return;
+        }
+
+        if(!FileUtilities::removeDir(_location)) {
+            QMessageBox::critical(nullptr, "Error!", "Could not delete directory.");
+            return;
+        }
+
+#endif
 
 		renamed = true;
 	}
