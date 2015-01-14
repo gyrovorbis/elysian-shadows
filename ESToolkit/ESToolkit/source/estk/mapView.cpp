@@ -260,6 +260,7 @@ void MapView::_externalSelectionClear(void) {
 }
 
 void MapView::_setTileSelection(TileSelection<TileEntry>* const sel) {
+    if(sel && getAssets()->getCurrentLayer() == Assets::LAYER_ENTITY) getAssets()->setCurrentLayer(Assets::LAYER_TILE1);
 	setCurrentSelection(static_cast<TileSelectable *>(sel));
 }
 
@@ -528,7 +529,9 @@ void MapView::createSelectionItemGroup(void) {
 
 void MapView::updateSelectionItemGroup(void) { }
 
-void MapView::deleteSelectionItemGroup(void) { _selItemGroup = nullptr; }
+void MapView::deleteSelectionItemGroup(void) {
+    _selItemGroup = nullptr;
+}
 
 
 

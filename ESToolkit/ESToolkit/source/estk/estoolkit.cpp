@@ -661,7 +661,7 @@ void ESToolkit::OnSubLayerVisibilityChanged(int index, bool visible)
         _assets.getEngine()->getMapSys()->setTileDecor(TkMapSystem::TILE_DECOR_NONE);
 
 	_layerDockWidget->setCurrentLayer(_assets.getCurrentLayer());
-	Area::updateScene();
+    //Area::updateScene();
 }
 
 void ESToolkit::OnActiveLayerChanged(int index) {
@@ -688,7 +688,7 @@ void ESToolkit::OnActiveLayerChanged(int index) {
 	   QTimer::singleShot(10, this, SLOT(updateLayerTreeWidget()));
 		break;
 	}
-	Area::updateScene();
+    //Area::updateScene();
 }
 
 /*

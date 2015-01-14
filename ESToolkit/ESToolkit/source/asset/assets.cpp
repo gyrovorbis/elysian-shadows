@@ -152,8 +152,8 @@ void Assets::setCurrentArea(Area *const area) {
     if(area) {
         //area->activate();
 		emit areaChanged(_currentArea);
-		if(area->getFirstEntity()) setCurrentSelection(new EntitySelectable(area->getFirstEntity()));
-        else setCurrentSelection((EntitySelectable*)nullptr);
+        //if(area->getFirstEntity()) setCurrentSelection(new EntitySelectable(area->getFirstEntity()));
+        setCurrentSelection((EntitySelectable*)nullptr);
     }
     else {
 		emit areaChanged(_currentArea);

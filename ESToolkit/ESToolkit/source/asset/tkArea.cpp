@@ -395,21 +395,31 @@ bool Area::deleteEntity(Entity *const pentity) {
 
 void Area::setMapWidth(const unsigned short w) {
     const unsigned short _width = (w <= ELYSIAN_AREA_MAP_WIDTH)? (w < 30)? 30 : w : ELYSIAN_AREA_MAP_WIDTH;
+
+    if(w < width && QMessageBox::critical(nullptr, tr("Warning!"), tr("This operation cannot be undone! Continue?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
+        return;
+    }
+
 	//_elysianArea.width = width;
     resizeMap(_width, height);
-	if(isActive()) { //We have to resize the scene for the current area
+    /*if(isActive()) { //We have to resize the scene for the current area
 		resizeEditorScene();
-	}
+    }*/
     //_bgRect->setRect(QRect(-16, -16, 32*width, 32*height));
     //_editorScene->setSceneRect(QRect(-16,-16,32*width, 32*height));
 }
 
 void Area::setMapHeight(const unsigned short h) {
     const unsigned short _height = (h <= ELYSIAN_AREA_MAP_HEIGHT)? (h < 30)? 30 : h : ELYSIAN_AREA_MAP_HEIGHT;
+
+    if(h < height && QMessageBox::critical(nullptr, tr("Warning!"), tr("This operation cannot be undone! Continue?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
+        return;
+    }
+
     resizeMap(width, _height);
-	if(isActive()) { //We have to resize the scene for the current area
+    /*if(isActive()) { //We have to resize the scene for the current area
 		resizeEditorScene();
-	}
+    }*/
     //_bgRect->setRect(QRect(-16, -16, 32*width, 32*height));
     //_editorScene->setSceneRect(QRect(-16,-16,32*width, 32*height));
 }

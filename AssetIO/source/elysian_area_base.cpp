@@ -76,13 +76,20 @@ void AreaBase::resizeMap(const unsigned w, const unsigned h) {
 
 	freeMap();
 
-	tiles = ntiles;
-	tileLayer2 = tiles + w*h;
-	tileLayer3 = tiles + w*h*2;
-	width = w;
-	height = h;
-	mapEntryCount = w*h*ELYSIAN_AREA_MAP_LAYERS;
+    tiles           = ntiles;
+    tileLayer2      = tiles + w*h;
+    tileLayer3      = tiles + w*h*2;
+    width           = w;
+    height          = h;
+    mapEntryCount   = w*h*ELYSIAN_AREA_MAP_LAYERS;
 	layerEntryCount = w*h;
+
+    //gotta repopulate map VBO
+    if(activated) {
+        glDeleteBuffers(1, &vboBuff);
+        vboPopulated = false;
+        populateVbo();
+    }
 
 }
 
