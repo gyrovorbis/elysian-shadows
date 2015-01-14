@@ -54,12 +54,19 @@ namespace elysian {
         const char*		getDirName(void) const;
 		const char*		getPath(void) const;
 
-                ~LevelBase(void);
-		bool	load(const char *const dir);
-		bool	save(const char *const dir);
-		bool	loadTileset(const char *const filename);
-		bool	saveTileset(const char *const filename);
+                        ~LevelBase(void);
+        bool            load(const char *const dir);
+        bool            save(const char *const dir);
+        bool            loadTileset(const char *const filename);
+        bool            saveTileset(const char *const filename);
     };
+
+
+
+
+
+
+
 
 
 	// ==== INLINEZ ====

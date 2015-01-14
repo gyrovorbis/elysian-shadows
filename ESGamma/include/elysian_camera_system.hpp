@@ -258,6 +258,8 @@ namespace elysian {
 			_curState->staticScale = factor;
 		}
 
+        float getStaticScale(void) const { return _curState->staticScale; }
+
 		void rotateZ(const float delta) {
 			_curState->_keyFrame._zOrient += delta;
 		}
@@ -478,7 +480,7 @@ namespace elysian {
 
         *dest = *src;
         gyVec3AddScaled(dest, &screenOffset, -0.5f);
-        gyVec3ScaleAccum(dest, 1.0f/_curState->_keyFrame.getScale());
+        gyVec3ScaleAccum(dest, 1.0f/(_curState->_keyFrame.getScale()*_curState->staticScale));
         gyVec3AddAccum(dest, &_curState->_keyFrame._pos);
     }
 

@@ -87,6 +87,7 @@ ESToolkit::ESToolkit(QWidget *parent):
 	connect(_engineSettingsDialog, SIGNAL(dcIpChanged(QString)), _engineDialog, SLOT(OnDreamcastIpChanged(QString)));
 	connect(_engineSettingsDialog, SIGNAL(dcMacChanged(QString)), _engineDialog, SLOT(OnDreamcastMacChanged(QString)));
 	connect(_engineSettingsDialog, SIGNAL(sudoPswdChanged(QString)), _engineDialog, SLOT(OnSudoPswdChanged(QString)));
+
 	_engineSettingsDialog->restoreSettings();
 
 	_areaTabBar = new QTabBar(this);
@@ -855,6 +856,7 @@ void ESToolkit::_openProjectDir(const QString dir) {
 
 	QDir::setCurrent(dir);
     auto* viewport = _engineGLView = new EngineGLSceneWidget(QGLFormat(QGL::SampleBuffers | QGL::DirectRendering));
+    connect(viewport, SIGNAL(engineUpdated()), _ui->mapView, SLOT(onEngineUpdated()));
 
     viewport->setMouseTracking(true);
     _ui->mapView->setViewport(viewport);

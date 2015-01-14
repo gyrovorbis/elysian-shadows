@@ -523,12 +523,13 @@ bool SheetManager::_save(void) {
 
 	for(unsigned i = 0; i < 512; ++i) level->getTileImage(i)->setPixmap(reorientPixmap(tileDestEntry.tileEntry[i].getPixmap(), tileDestEntry.tileEntry[i].getOrient()));
 	retVal = level->saveTileSheet();
+    retVal &= level->reloadSheets();
 	//Without this, we can't lay the same selection in the previous location, even though it may have been undone
 	_ui->_destView->setSelectionChanged(true);
-	_assets.getUndoStack()->setClean();
+    _assets.getUndoStack()->setClean();
 
 
-	if(!retVal) Debug::Logf(Debug::CRITICAL, "Could not save sheet!");
+    if(!retVal) Debug::Logf(Debug::CRITICAL, "Could not reload sheet!");
     Debug::pop();
 	return retVal;
 }

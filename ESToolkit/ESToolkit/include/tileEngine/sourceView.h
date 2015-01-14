@@ -84,7 +84,7 @@ signals:
 	 void exitPanMode(void);
 
 protected slots:
-	void autoScrollLogic(void);
+    void autoScrollLogic(void);
 
 protected:
 
@@ -94,7 +94,7 @@ protected:
 	 //SELECTION EVENT PROCESSING
 	 void _startRegionSelection(QMouseEvent *event);
 	 void _endRegionSelection(QMouseEvent *event);
-	 void _updateRegionSelection(QMouseEvent *event);
+     void _updateRegionSelection(QMouseEvent *event);
 
      /* INTERNAL SELECTION
        These complex-as-shit functions are for abstracting the actual selection "mechanism" away

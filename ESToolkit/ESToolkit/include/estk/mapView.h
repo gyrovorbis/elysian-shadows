@@ -99,6 +99,7 @@ public:
 public slots:
 
     void onEngineInitialize(void);
+    void onEngineUpdated(void);
 	void onAreaChange(Area* const area);
 	void onLayerChange(LAYER_TYPE type);
     void onMapChange(Area*const area, const QVector<MapChange>& changes);

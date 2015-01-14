@@ -17,6 +17,7 @@
 #include "elysian_level_system.hpp"
 #include "elysian_engine.hpp"
 #include "elysian_level_system.hpp"
+#include <gyro_texture_api.h>
 
 //====STATIC====
 
@@ -291,7 +292,6 @@ bool TkLevel::deactivate(void) {
     /* If there is anything that is not persistent to be removed from the
        object/tilesheet scenes, do it now.
     */
-    //elysian::Level::deactivate();
 	_sheetViewScene->removeItem(_bgRectItem);
     //_active = false;
 
@@ -356,6 +356,9 @@ bool TkLevel::close(void) {
 	if(_active) deactivate();
 	for(int i = 0; i < _tileSheet.size(); ++i) delete _tileSheet[i];
 	_tileSheet.clear();
+    gyVidTexReload(tileSheet);
+    gyVidTexReload(normalSheet);
+    gyVidTexReload(specularSheet);
     _open = false;
     return true;
 }

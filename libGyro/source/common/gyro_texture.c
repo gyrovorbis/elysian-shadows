@@ -16,12 +16,12 @@ static GYTexCoord2 _texFrameCoords[4];
 
 //Used internally for searches/construction
 typedef struct _GYTexEntryDat {
-	const char *const file;
+    const char* const file;
 	unsigned sheetWidth, sheetHeight;
 	unsigned spriteWidth, spriteHeight;
 } GYTexEntryDat;
 
-static GYTexCoordSheet *_LoadSheetCoords(const GYTexEntryDat *const data) {
+static GYTexCoordSheet* _LoadSheetCoords(const GYTexEntryDat *const data) {
 	char fname[GYRO_PATH_MAX_SIZE];
 	GYFile *file;
     size_t file_size = 0;
@@ -190,17 +190,17 @@ static int _TexDestructor(void *const payload) {
 
 static GYAssetBank _texBank = { 0, 0, 0, &_TexComparator, &_TexConstructor, &_TexDestructor };
 
-GYTexture *gyVidTexCreateSheetUniform(const char *const filename, const unsigned int sheetWidth, const unsigned int sheetHeight, const unsigned int spriteWidth, const unsigned int spriteHeight) {
+GYTexture* gyVidTexCreateSheetUniform(const char *const filename, const unsigned int sheetWidth, const unsigned int sheetHeight, const unsigned int spriteWidth, const unsigned int spriteHeight) {
 	GYTexEntryDat data = { filename, sheetWidth, sheetHeight, spriteWidth, spriteHeight };
 	return gyAssetBankInsert(&_texBank, &data);
 }
 
-GYTexture *gyVidTexCreateSheet(const char *const filename, const unsigned width, const unsigned height) {
+GYTexture* gyVidTexCreateSheet(const char *const filename, const unsigned width, const unsigned height) {
 	GYTexEntryDat data = { filename, width, height, 0, 0 };
 	return gyAssetBankInsert(&_texBank, &data);
 }
 
-GYTexture *gyVidTexCreate(const char *const filename, const unsigned width, const unsigned height) {
+GYTexture* gyVidTexCreate(const char *const filename, const unsigned width, const unsigned height) {
 	GYTexEntryDat data = { filename, width, height, width, height };
 	return gyAssetBankInsert(&_texBank, &data);
 }
@@ -232,21 +232,28 @@ unsigned gyVidTexBytes(void) {
 	return totalBytes;
 }
 
+int gyVidTexReload(struct _GYTexture * const tex) {
+    unsigned int success = 1;
+    unsigned int width, height;
+    if(!tex) return 0;
+
+    width   = tex->_coord->sheetWidth;
+    height  = tex->_coord->sheetHeight;
+    success &= _gyVidTexFree(tex);
+    success &= _gyVidTexAlloc(tex, width, height);
+    return success;
+}
+
 /*I hate to fucking do this, but SDL forces us with window resizing...
 	ughhghg --Falco */
 int gyVidTexReloadAll(void) {
 	unsigned int success = 1;
-	unsigned int width, height;
+
 	GYAssetBankEntry *entry = _texBank._head;
-	GYTexture *tex;
 	for(; entry; entry = entry->_next) {
-		tex = entry->_payload;
-		if(!tex) continue;
-		width = tex->_coord->sheetWidth;
-		height = tex->_coord->sheetHeight;
-		success &= _gyVidTexFree(tex);
-		success &= _gyVidTexAlloc(tex, width, height);
+        success &= gyVidTexReload(entry->_payload);
 	}
+
 	return success;
 }
 
