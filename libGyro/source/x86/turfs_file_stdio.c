@@ -99,7 +99,7 @@ TURFSAPI turfs_file_eof(turfs_fp fp)
 
 TURFSAPI turfs_file_close(turfs_fp *fp)
 {
-    if (fp == NULL || *fp == NULL || (*fp)->fp)  {
+    if (fp == NULL || *fp == NULL || !(*fp)->fp)  {
         return TURFS_RET_INVALID_ARGS;
     }
     if (fclose((*fp)->fp)) {
