@@ -56,10 +56,10 @@ static GYTexCoordSheet* _LoadSheetCoords(const GYTexEntryDat *const data) {
 		coord->texCoord[i].spriteWidth = w;
 		coord->texCoord[i].spriteHeight = h;
 #if GYRO_PLATFORM != GYRO_PLATFORM_DC
-		coord->texCoord[i].topLeft.u = ((float)x/(float)data->sheetWidth);
-		coord->texCoord[i].topLeft.v = ((float)y/(float)data->sheetHeight);
-		coord->texCoord[i].botRight.u = ((float)(x+w)/(float)data->sheetWidth);
-		coord->texCoord[i].botRight.v = ((float)(y+h)/(float)data->sheetHeight);
+        coord->texCoord[i].topLeft.u = ((float)((float)x+1.5f)/(float)data->sheetWidth);
+        coord->texCoord[i].topLeft.v = ((float)((float)y+1.5f)/(float)data->sheetHeight);
+        coord->texCoord[i].botRight.u = ((float)((float)x+w-1.5f)/(float)data->sheetWidth);
+        coord->texCoord[i].botRight.v = ((float)((float)y+h-1.5f)/(float)data->sheetHeight);
 #else	//Pack the bitches on Dreamcast
 		coord->texCoord[i].topLeft.uv = PVR_PACK_16BIT_UV((float)x/(float)data->sheetWidth, (float)y/(float)data->sheetHeight);
 		coord->texCoord[i].botRight.uv = PVR_PACK_16BIT_UV((float)(x+w)/(float)data->sheetWidth, (float)(y+h)/(float)data->sheetHeight);
@@ -99,7 +99,7 @@ static void *_TexCoordConstructor(void *const data) {
 	// Allocate x_tiles * y_tiles coordinates
 	coord->frames = x_tiles * y_tiles;
 	coord->texCoord = malloc(sizeof(GYTexCoordFrame)*coord->frames);
-
+#if 1
 	for(i = 0; i < y_tiles; ++i) {
 		v = v_inc*i;
 		for (j = 0; j < x_tiles; ++j) {
@@ -110,10 +110,10 @@ static void *_TexCoordConstructor(void *const data) {
 			coord->texCoord[index].spriteHeight = texData->spriteHeight;
 //GAAAAAY, but it must be done...
 #if GYRO_PLATFORM != GYRO_PLATFORM_DC
-			coord->texCoord[index].topLeft.u = (u);
-			coord->texCoord[index].topLeft.v = (v);
-			coord->texCoord[index].botRight.u = (u+u_inc);
-			coord->texCoord[index].botRight.v = (v+v_inc);
+            coord->texCoord[index].topLeft.u = (u+0.0005f);
+            coord->texCoord[index].topLeft.v = (v+0.0005f);
+            coord->texCoord[index].botRight.u = (u+u_inc-0.0005f);
+            coord->texCoord[index].botRight.v = (v+v_inc-0.0005f);
 #else	//Pack the bitches on Dreamcast
 			coord->texCoord[index].topLeft.uv = PVR_PACK_16BIT_UV(u, v);
 			coord->texCoord[index].botRight.uv = PVR_PACK_16BIT_UV((u+u_inc), (v+v_inc));
@@ -122,6 +122,23 @@ static void *_TexCoordConstructor(void *const data) {
 #endif
 		}
 	}
+#else
+    float sprW = texData->spriteWidth;
+    float sprH = texData->spriteHeight;
+    float shW = texData->sheetWidth;
+    float shH = texData->sheetHeight;
+    for(i = 0; i < y_tiles; ++i) {
+        for (j = 0; j < x_tiles; ++j) {
+            index = j+(i*x_tiles);
+            float x = j;
+            float y = i;
+            coord->texCoord[index].topLeft.u = ((float)((float)x*sprW)/(float)shW);
+            coord->texCoord[index].topLeft.v = ((float)((float)y*sprH)/(float)shH);
+            coord->texCoord[index].botRight.u = ((float)((float)(x+1.0f)*(sprW)/(float)shW));
+            coord->texCoord[index].botRight.v = ((float)((float)(y+1.0f)*(sprH)/(float)shH));
+        }
+    }
+#endif
 
 	return coord;
 }
