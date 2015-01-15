@@ -73,6 +73,7 @@ namespace elysian {
         LightAttrib&        getAttrib(void);
         void                getDirection(GYVector3& dir) const;
         float               getSpotCutoffAngle(void) const;
+        void                getRelativePos(GYVector3& pos) const;
 
         void                updateBoundingVolume(const CameraState*const cam, const GY_CUBE_MAP_FACE face);
         CameraState*        getCameraState(void);
@@ -128,6 +129,7 @@ namespace elysian {
     inline void LightSource::setRelativePos(const float x, const float y, const float z) { _relPos.x = x; _relPos.y = y; _relPos.z = z; }
     inline void LightSource::getDirection(GYVector3& dir) const { dir = direction; }
     inline float LightSource::getSpotCutoffAngle(void) const { return spotCutoffAngle; }
+    inline void LightSource::getRelativePos(GYVector3 &pos) const { pos = _relPos; }
 
 	inline CameraState* LightSource::getCameraState(void) {
 		return &_camState;

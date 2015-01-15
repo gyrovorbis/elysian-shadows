@@ -242,6 +242,7 @@ Project *Assets::loadProject(const QString directory) {
     elysian::Debug::getInstance().setEngine(*_engine);
 
     _engine = new elysian::Engine;
+    elysian::Debug::setEngine(*_engine);
 
 
     _engine->loadAssets();

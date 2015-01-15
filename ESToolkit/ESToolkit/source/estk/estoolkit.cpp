@@ -91,9 +91,11 @@ ESToolkit::ESToolkit(QWidget *parent):
 	_engineSettingsDialog->restoreSettings();
 
 	_areaTabBar = new QTabBar(this);
-	QVBoxLayout *boxLayout = qobject_cast<QVBoxLayout*>(_ui->centralWidget->layout());
+    QGridLayout *boxLayout = qobject_cast<QGridLayout*>(_ui->centralWidget->layout());
 	Q_ASSERT(boxLayout);
-	boxLayout->insertWidget(0, _areaTabBar, 0, Qt::AlignLeft);
+    //boxLayout->insertWidget(0, _areaTabBar, 0, Qt::AlignLeft);
+    boxLayout->addWidget(_areaTabBar, 0, 0, Qt::AlignLeft | Qt::AlignCenter);
+    boxLayout->addItem(new QSpacerItem(0, 0), 2, 0,  Qt::AlignBottom);
 
 	// set action groups here
 	m_platformActionGroup = new QActionGroup(_ui->menuSelect_Platform);
@@ -484,6 +486,7 @@ void ESToolkit::WriteSettings()
 	settings.setValue("sheetViewHorizontal", _ui->actionHorizontal_SheetView->isChecked());
 	settings.setValue("engineResolution", _engineDialog->getResolution());
     settings.setValue("renderMapBackground", TkMapSystem::getRenderMapBackground());
+    settings.setValue("mapViewRes", _mapViewRes);
 	unsigned x, y;
 	_engineDialog->getStartPos(x, y);
 	settings.setValue("engineStartPosX", x);
@@ -524,6 +527,8 @@ void ESToolkit::ReadSettings()
 	unsigned x = settings.value("engineStartPosX", 0).toUInt();
 	unsigned y = settings.value("engineStartPosY", 0).toUInt();
 	_engineDialog->setStartPos(x, y);
+    MAP_VIEW_RES mapViewRes = (MAP_VIEW_RES)settings.value("mapViewRes", MAP_VIEW_RES_DYNAMIC).toInt();
+    _setMapViewResolution(mapViewRes);
 
 	//bool assetVisibility = settings.value("assetDock", true).toBool();
 	//bool entityVisibility = settings.value("entityDock", true).toBool();
@@ -1544,6 +1549,7 @@ void ESToolkit::keyPressEvent(QKeyEvent *event) {
 }
 
 void ESToolkit::on_actionScreenshot_triggered(void) {
+#if 0
 	//Area::editorScene->setSceneRect(Area::editorScene->itemsBoundingRect());                          // Re-shrink the scene to it's bounding contents
 	_ui->mapView->scale(0.1f, 0.1f);
     QImage image(Area::getEditorScene()->sceneRect().size().toSize(), QImage::Format_ARGB32);              // Create the image with the exact size of the shrunk scene
@@ -1561,6 +1567,15 @@ void ESToolkit::on_actionScreenshot_triggered(void) {
 	image.save(fileBase+QString::number(num)+QString(".png"));
 
 	_ui->mapView->scale(10.0f, 10.0f);
+#else
+    QDir dir("");
+    if(!dir.exists("screenshots")) dir.mkdir("screenshots");
+    QString fileBase("screenshots/estkScreenshot");
+    unsigned num = 1;
+
+    while(QFile::exists(fileBase+QString::number(num)+QString(".png"))) ++num;
+    _engineGLView->grabFrameBuffer().save(fileBase+QString::number(num)+QString(".png"));
+#endif
 }
 
 
@@ -1680,4 +1695,65 @@ void ESToolkit::on_actionCommands_toggled(bool arg1)
 void ESToolkit::on_actionMap_Background_toggled(bool arg1)
 {
     TkMapSystem::setRenderMapBackground(arg1);
+}
+
+void ESToolkit::on_action480p_toggled(bool arg1)
+{
+    _setMapViewResolution(MAP_VIEW_RES_480P);
+}
+
+void ESToolkit::on_action720p_toggled(bool arg1)
+{
+    _setMapViewResolution(MAP_VIEW_RES_720P);
+}
+
+void ESToolkit::on_actionDynamic_toggled(bool arg1)
+{
+    _setMapViewResolution(MAP_VIEW_RES_DYNAMIC);
+}
+
+void ESToolkit::_setMapViewResolution(const MAP_VIEW_RES res) {
+    static const unsigned sizes[MAP_VIEW_RES_MAX][2][2] = {
+        { { 640,  480  }, { 640,  480 } },
+        { { 1280, 720  }, { 1280, 720 } },
+        { { 9999, 9999 }, { 0,    0  }  }
+    };
+
+    _mapViewRes = res;
+    _ui->mapView->setMaximumSize(sizes[res][0][0], sizes[res][0][1]);
+    _ui->mapView->setMinimumSize(sizes[res][1][0], sizes[res][1][1]);
+    _ui->mapView->adjustSize();
+
+    _ui->action480p->blockSignals(true);
+    _ui->action720p->blockSignals(true);
+    _ui->actionDynamic->blockSignals(true);
+
+    _ui->action480p->setEnabled(true);
+    _ui->action720p->setEnabled(true);
+    _ui->actionDynamic->setEnabled(true);
+
+    _ui->action480p->setChecked(false);
+    _ui->action720p->setChecked(false);
+    _ui->actionDynamic->setChecked(false);
+
+    switch(res) {
+    case MAP_VIEW_RES_480P:
+        _ui->action480p->setChecked(true);
+        _ui->action480p->setEnabled(false);
+        break;
+    case MAP_VIEW_RES_720P:
+        _ui->action720p->setChecked(true);
+        _ui->action720p->setEnabled(false);
+        break;
+    case MAP_VIEW_RES_DYNAMIC:
+    default:
+        _ui->actionDynamic->setChecked(true);
+        _ui->actionDynamic->setEnabled(false);
+        break;
+    }
+
+    _ui->action480p->blockSignals(false);
+    _ui->action720p->blockSignals(false);
+    _ui->actionDynamic->blockSignals(false);
+
 }

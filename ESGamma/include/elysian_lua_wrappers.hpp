@@ -683,6 +683,7 @@ OOLUA_PROXY(LightSource, Component)
     OOLUA_MEM_FUNC_CONST(float, getSpotCutoffAngle)
     OOLUA_MEM_FUNC_CONST(GY_LIGHT_TYPE, getLightType)
     OOLUA_MEM_FUNC_CONST(bool, isShadowCaster)
+    OOLUA_MEM_FUNC_CONST(void, getRelativePos, GYVector3&)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ParticleEmitterAttrib, SpriteAttrib, GYStatic)

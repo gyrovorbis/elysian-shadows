@@ -82,7 +82,15 @@ private:
     QActionGroup*           m_platformActionGroup;
     QActionGroup*           m_transformActionGroup;
 
+    enum MAP_VIEW_RES {
+        MAP_VIEW_RES_480P,
+        MAP_VIEW_RES_720P,
+        MAP_VIEW_RES_DYNAMIC,
+        MAP_VIEW_RES_MAX
+    } _mapViewRes = MAP_VIEW_RES_DYNAMIC;
 
+    void                _resizeMapView(void);
+    void                _setMapViewResolution(const MAP_VIEW_RES res);
 
     void SyncEntityMenuBar(const Entity *const entity);
     void toggleProjectActions(bool enabled);
@@ -190,5 +198,8 @@ private slots:
     void on_actionQt_toggled(bool arg1);
     void on_actionCommands_toggled(bool arg1);
     void on_actionMap_Background_toggled(bool arg1);
+    void on_action480p_toggled(bool arg1);
+    void on_action720p_toggled(bool arg1);
+    void on_actionDynamic_toggled(bool arg1);
 };
 #endif // ESTOOLKIT_H

@@ -128,6 +128,8 @@ void AdventureLog::update(void) {
 void AdventureLog::render(Font &font) {
 	if(_exitState == EXIT_DISABLED) return;
 	
+    gyVidAlphaLevel(GY_ALPHA_FULL);
+
 	static QuadSprite quad;
 	static GYColor4 topColor = { 0, 0, 255, 255 };
 	static GYColor4 bottomColor = { 0, 155, 255, 255 };

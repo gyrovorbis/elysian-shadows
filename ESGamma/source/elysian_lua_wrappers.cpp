@@ -510,7 +510,8 @@ OOLUA_EXPORT_FUNCTIONS_CONST(LightSource,
                              getDirection,
                              getSpotCutoffAngle,
                              getLightType,
-                             isShadowCaster)
+                             isShadowCaster,
+                             getRelativePos)
 
 OOLUA_EXPORT_FUNCTIONS(ParticleEmitterAttrib,
 					   setAcceleration,
