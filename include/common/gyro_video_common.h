@@ -131,12 +131,12 @@ static inline void gyVidCamOrthoLookAt(GYCamera *cam, const GYVector3* pos, cons
 	gyMatPush();
 	gyMatLoadIdentity();
 	gyVidResolution(&scrWidth, &scrHeight);
-	gyMatTranslate((float)scrWidth*0.5f, (float)scrHeight*0.5f, 0.0f);
-	gyMatScale(scale, scale, 1.0f);
-	gyMatRotate(rotX, 1.0f, 0.0f, 0.0f);
-	gyMatRotateZ(rotZ);
+    gyMatTranslate((float)scrWidth*0.5f, (float)scrHeight*0.5f, 0.0f);
+    gyMatScale(scale, scale, 1.0f);
+    gyMatRotate(rotX, 1.0f, 0.0f, 0.0f);
+    gyMatRotateZ(rotZ);
 
-	gyMatTranslate(-pos->x, -pos->y, (rotX == 0)? 0.0f : -pos->z);
+    gyMatTranslate(floor(-pos->x*scale)/scale, floor(-pos->y*scale)/scale, (rotX == 0)? 0.0f : -pos->z);
 
 
 	gyMatStore(&cam->viewMat);
