@@ -9,6 +9,7 @@
 #include "elysian_stl_algorithm.hpp"
 #include "elysian_mem_pool.hpp"
 #include "elysian_asset_typedefs.hpp"
+#include "elysian_lua_table_proxy.hpp"
 
 #include "elysian_event_monitor.hpp"
 
@@ -148,8 +149,10 @@ namespace elysian {
     };
 
 
-    class AnimationBase: public Component,
-                        public AnimationStateStack<AnimationSequence, AnimationFrame>
+    class AnimationBase:
+            public Component,
+            public AnimationStateStack<AnimationSequence, AnimationFrame>,
+            public LuaTableProxy<AnimationBase, Animation>
     {
         friend Entity;
         friend class EntityBase;
@@ -179,7 +182,10 @@ namespace elysian {
         void    _updateStates(void);
         void	_updateChildren(void);
 
-	public:
+    public:
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+        ELYSIAN_LUA_PROXY_FIELDS_END()
+
 		virtual bool load(FILE* file) override;
 		virtual bool save(FILE* file) override;
 		virtual bool canAddTo(Entity& entity) override;

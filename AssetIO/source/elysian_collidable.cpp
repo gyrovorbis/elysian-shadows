@@ -9,6 +9,8 @@
 
 namespace elysian {
 
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(Collidable)
+
 CollisionSystem* Collidable::_colSys = nullptr;
 
 void CollisionContact::_calculatePenetrationInternals(void) {

@@ -1697,17 +1697,17 @@ void ESToolkit::on_actionMap_Background_toggled(bool arg1)
     TkMapSystem::setRenderMapBackground(arg1);
 }
 
-void ESToolkit::on_action480p_toggled(bool arg1)
+void ESToolkit::on_action480p_toggled(bool /*arg1*/)
 {
     _setMapViewResolution(MAP_VIEW_RES_480P);
 }
 
-void ESToolkit::on_action720p_toggled(bool arg1)
+void ESToolkit::on_action720p_toggled(bool /*arg1*/)
 {
     _setMapViewResolution(MAP_VIEW_RES_720P);
 }
 
-void ESToolkit::on_actionDynamic_toggled(bool arg1)
+void ESToolkit::on_actionDynamic_toggled(bool /*arg1*/)
 {
     _setMapViewResolution(MAP_VIEW_RES_DYNAMIC);
 }

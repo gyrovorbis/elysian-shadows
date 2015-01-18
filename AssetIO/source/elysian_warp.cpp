@@ -6,6 +6,8 @@
 
 namespace elysian {
 
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(Warp)
+
 Warp::Warp(Entity& parent): Component(parent), _changeArea(false), _changeLevel(false) {}
 Warp::Warp(void): _changeArea(false), _changeLevel(false) {}
 

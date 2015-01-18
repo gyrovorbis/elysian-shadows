@@ -4,6 +4,7 @@
 #include "elysian_component.hpp"
 #include "elysian_direction.hpp"
 #include "elysian_asset_typedefs.hpp"
+#include "elysian_lua_table_proxy.hpp"
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 
@@ -11,7 +12,10 @@ namespace elysian {
 
 	class Dialog;
 
-	class Examinable: public Component {
+    class Examinable:
+        public Component,
+        public LuaTableProxy<Examinable>
+    {
 	private:
 		Dialog*			_dialog				= nullptr;
 		bool			_isDialogActive		= false;
@@ -20,6 +24,9 @@ namespace elysian {
 		Direction::DIR4 _dir				= Direction::DIR4_ANY;
 
 	public:
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+        ELYSIAN_LUA_PROXY_FIELDS_END()
+
 						Examinable(Entity& parent);
 
 		//overridden from Component

@@ -5,6 +5,7 @@
 #include "elysian_direction.hpp"
 #include "elysian_asset_typedefs.hpp"
 #include "elysian_entity.hpp"
+#include "elysian_lua_table_proxy.hpp"
 
 #define ELYSIAN_CHAR_ANIM_SEQ_STAND_UP		"StandUp"
 #define ELYSIAN_CHAR_ANIM_SEQ_STAND_DOWN	"StandDown"
@@ -29,7 +30,10 @@ namespace elysian {
 		//bool _canHold = true;
 	};
 
-	class Character: public Component {
+    class Character:
+        public Component,
+        public LuaTableProxy<Character>
+    {
         friend class EntityBase;
         friend Entity;
 		friend class CharacterSystem;
@@ -57,6 +61,9 @@ namespace elysian {
 		Entity* _heldEntity = nullptr;
 		
 	public:
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+        ELYSIAN_LUA_PROXY_FIELDS_END()
+
 		virtual bool load(FILE* file) override;
 		virtual bool save(FILE* file) override;
 		virtual bool canAddTo(Entity& entity) override { return (entity.getAnimation() && entity.getRigidBody()); }

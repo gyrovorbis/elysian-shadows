@@ -6,13 +6,16 @@
 #include "elysian_material.hpp"
 #include "elysian_asset_typedefs.hpp"
 #include "elysian_entity.hpp"
+#include "elysian_lua_table_proxy.hpp"
 #include <gyro_video_api.h>
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 
 namespace elysian {
 
-	class Renderable: public Component {
+    class Renderable:
+            public Component,
+            public LuaTableProxy<Renderable> {
     friend class EntityBase;
     friend Entity;
 	private:

@@ -8,6 +8,8 @@
 
 namespace elysian {
 
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(AnimationBase)
+
 //----NONSTATIC----
 
 void AnimationBase::addState(const char* state) {

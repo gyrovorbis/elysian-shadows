@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <kinetic/gyro_kinetic.h>
 #include "elysian_component.hpp"
+#include "elysian_lua_table_proxy.hpp"
 
 namespace elysian {
 
@@ -53,7 +54,11 @@ namespace elysian {
 //DELETE ME
     class CollisionSystem;
 
-	class RigidBody: public Component, public ForceTarget {
+    class RigidBody:
+        public Component,
+        public ForceTarget,
+        public LuaTableProxy<RigidBody>
+    {
 		friend class RigidBodySystem;
         friend class CollisionSystem;
 	private:
@@ -64,6 +69,9 @@ namespace elysian {
 		float				_durability		= -1.0f;
 		CollisionContact*	_breakContact	= nullptr;
 	public:
+
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+        ELYSIAN_LUA_PROXY_FIELDS_END()
 
                 RigidBody(Entity& entity);
 		virtual ~RigidBody(void) override = default;

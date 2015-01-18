@@ -772,4 +772,59 @@ void EntityBase::removeCombat(void) {
     _removeComponent<Combat>(_combat);
 }
 
+template<typename T>
+void EntityBase::_setComponent(T*& comp, const OOLUA::Lua_table_ref valTable) {
+    if(comp) {
+        _removeComponent<T>(comp);
+    }
+    comp = _addComponent<T>(comp);
+    comp->fromTable(valTable);
+}
+
+void EntityBase::setRenderable(const OOLUA::Lua_table_ref valTable) {
+    _setComponent<Renderable>(_renderable, valTable);
+}
+
+void EntityBase::setAnimation(const OOLUA::Lua_table_ref valTable) {
+    _setComponent<Animation>(_animation, valTable);
+}
+
+void EntityBase::setCollidable(const OOLUA::Lua_table_ref valTable) {
+    _setComponent<Collidable>(_collidable, valTable);
+}
+
+void EntityBase::setRigidBody(const OOLUA::Lua_table_ref valTable) {
+    _setComponent<RigidBody>(_rigidBody, valTable);
+}
+
+void EntityBase::setCharacter(const OOLUA::Lua_table_ref valTable) {
+    _setComponent<Character>(_character, valTable);
+}
+
+void EntityBase::setWarp(const OOLUA::Lua_table_ref valTable) {
+    _setComponent<Warp>(_warp, valTable);
+}
+
+void EntityBase::setExaminable(const OOLUA::Lua_table_ref valTable) {
+    _setComponent<Examinable>(_examinable, valTable);
+}
+
+void EntityBase::setLightSource(const OOLUA::Lua_table_ref valTable) {
+    _setComponent<LightSource>(_lightSource, valTable);
+}
+
+void EntityBase::setAudioSource(const OOLUA::Lua_table_ref valTable) {
+    _setComponent<AudioSource>(_audioSource, valTable);
+}
+
+void EntityBase::setParticleEmitter(const OOLUA::Lua_table_ref valTable) {
+    _setComponent<ParticleEmitter>(_particleEmitter, valTable);
+}
+
+void EntityBase::setCombat(const OOLUA::Lua_table_ref valTable) {
+    _setComponent<Combat>(_combat, valTable);
+}
+
+
+
 }

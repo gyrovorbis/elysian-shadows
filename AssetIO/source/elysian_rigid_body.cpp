@@ -8,6 +8,8 @@
 
 namespace elysian {
 
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(RigidBody)
+
 ForceTarget::ForceTarget(void):
 	GYKinetic {
 		{ 0.0f, 0.0f, 0.0f },		//vel

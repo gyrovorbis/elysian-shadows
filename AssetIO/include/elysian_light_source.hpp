@@ -1,12 +1,13 @@
 #ifndef ELYSIAN_LIGHT_SOURCE_HPP
 #define ELYSIAN_LIGHT_SOURCE_HPP
 
-#define ELYSIAN_LIGHT_SOURCE_ATTENUATION_EPISOLON	0.1f
-
 #include <gyro_shader_api.h>
 #include <gyro_video_api.h>
 #include "elysian_component.hpp"
 #include "elysian_camera_system.hpp"
+#include "elysian_lua_table_proxy.hpp"
+
+#define ELYSIAN_LIGHT_SOURCE_ATTENUATION_EPISOLON	0.1f
 
 namespace elysian {
 
@@ -40,7 +41,11 @@ namespace elysian {
 	};
 
 
-	class LightSource: public Component, private GYLightSource {
+    class LightSource:
+            public Component,
+            private GYLightSource,
+            public LuaTableProxy<LightSource>
+    {
 		friend class LightSystem;
 		friend class Engine;
 
@@ -48,6 +53,8 @@ namespace elysian {
         GYVector3           _relPos = { 0.0f, 0.0f, 0.0f };
         bool                _shadowCaster = false;
 	public:
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+        ELYSIAN_LUA_PROXY_FIELDS_END()
 
                             LightSource(Entity& entity);
         virtual             ~LightSource(void) override;

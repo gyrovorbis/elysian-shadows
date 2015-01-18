@@ -3,6 +3,7 @@
 
 #include <gyro_video_api.h>
 #include "elysian_component.hpp"
+#include "elysian_lua_table_proxy.hpp"
 #include <oolua.h>
 
 namespace elysian {
@@ -61,8 +62,14 @@ namespace elysian {
 		void				setConfusion(const STATUS_EFFECT_STATE state);
 	};
 
-	class Combat: public Component {
+    class Combat:
+        public Component,
+        public LuaTableProxy<Combat>
+    {
 	public:
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+        ELYSIAN_LUA_PROXY_FIELDS_END()
+
 		enum COLLISION_FLAGS {
 			ON_COLLIDE			= (1<<0),
 			ON_COLLISION_ENTER	= (1<<1),

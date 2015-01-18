@@ -7,6 +7,8 @@
 
 namespace elysian {
 
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(Combat)
+
 Combat::Combat(Entity &entity): Component(entity) {}
 
 bool Combat::canAddTo(Entity& entity) { return entity.getCollidable(); }

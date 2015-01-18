@@ -3,6 +3,7 @@
 
 #include "elysian_component.hpp"
 #include "elysian_audio_system.hpp"
+#include "elysian_lua_table_proxy.hpp"
 #include <gyro_wav_api.h>
 #include <gyro_audio_api.h>
 
@@ -10,8 +11,15 @@ namespace elysian {
 
 	class AudioSystem;
 
-	class AudioSource: public Component {
+    class AudioSource:
+        public Component,
+        public LuaTableProxy<AudioSource>
+    {
 	public:
+
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+        ELYSIAN_LUA_PROXY_FIELDS_END()
+
                 AudioSource(Entity& entity);
 		virtual ~AudioSource(void) override;
 

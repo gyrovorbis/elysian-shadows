@@ -7,6 +7,7 @@
 #include "elysian_sprite_attrib.hpp"
 #include "elysian_rigid_body.hpp"
 #include "elysian_collidable.hpp"
+#include "elysian_lua_table_proxy.hpp"
 
 #define ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_POOL_SIZE	5000
 #define ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_WIDTH            10
@@ -117,8 +118,15 @@ namespace elysian {
 
 
 
-	class ParticleEmitter: public Component, public ParticleEmitterInternals {
+    class ParticleEmitter:
+        public Component,
+        public ParticleEmitterInternals,
+        public LuaTableProxy<ParticleEmitter>
+    {
 	public:
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+        ELYSIAN_LUA_PROXY_FIELDS_END()
+
                         ParticleEmitter(Entity& entity);
         virtual         ~ParticleEmitter(void) override = default;
 

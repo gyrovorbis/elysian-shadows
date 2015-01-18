@@ -44,12 +44,21 @@ namespace elysian {
 	public:
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
-			ELYSIAN_LUA_PROXY_FIELD(name, getName, setName)
-			ELYSIAN_LUA_PROXY_FIELD(elev, getElev, setElev)
-			ELYSIAN_LUA_PROXY_FIELD(planeType, getPlaneType, setPlaneType)
-			ELYSIAN_LUA_PROXY_FIELD(shadowVolume, isShadowVolume, setShadowVolume)
-            ELYSIAN_LUA_PROXY_FIELD(renderable, getRenderable)
-            ELYSIAN_LUA_PROXY_FIELD(transform, getTransform, setTransform)
+            ELYSIAN_LUA_PROXY_FIELD(name,               getName,                setName)
+            ELYSIAN_LUA_PROXY_FIELD(elev,               getElev,                setElev)
+            ELYSIAN_LUA_PROXY_FIELD(planeType,          getPlaneType,           setPlaneType)
+            ELYSIAN_LUA_PROXY_FIELD(shadowVolume,       isShadowVolume,         setShadowVolume)
+            ELYSIAN_LUA_PROXY_FIELD(transform,          getTransform,           setTransform)
+            ELYSIAN_LUA_PROXY_FIELD(renderable,         getRenderable,          setRenderable)
+            ELYSIAN_LUA_PROXY_FIELD(animation,          getAnimation,           setAnimation)
+            ELYSIAN_LUA_PROXY_FIELD(collidable,         getCollidable,          setCollidable)
+            ELYSIAN_LUA_PROXY_FIELD(rigidBody,          getRigidBody,           setRigidBody)
+            ELYSIAN_LUA_PROXY_FIELD(warp,               getWarp,                setWarp)
+            ELYSIAN_LUA_PROXY_FIELD(character,          getCharacter,           setCharacter)
+            ELYSIAN_LUA_PROXY_FIELD(lightSource,        getLightSource,         setLightSource)
+            ELYSIAN_LUA_PROXY_FIELD(audioSource,        getAudioSource,         setAudioSource)
+            ELYSIAN_LUA_PROXY_FIELD(particleEmitter,    getParticleEmitter,     setParticleEmitter)
+            ELYSIAN_LUA_PROXY_FIELD(combat,             getCombat,              setCombat)
 		ELYSIAN_LUA_PROXY_FIELDS_END()
 
                             EntityBase(void)	= default;
@@ -92,6 +101,18 @@ namespace elysian {
 		LightSource*		addLightSource(void);
 		ParticleEmitter*	addParticleEmitter(void);
 		Combat*				addCombat(void);
+
+        void                setRenderable(const OOLUA::Lua_table_ref valTable);
+        void                setAnimation(const OOLUA::Lua_table_ref valTable);
+        void                setCollidable(const OOLUA::Lua_table_ref valTable);
+        void                setRigidBody(const OOLUA::Lua_table_ref valTable);
+        void                setCharacter(const OOLUA::Lua_table_ref valTable);
+        void                setWarp(const OOLUA::Lua_table_ref valTable);
+        void                setExaminable(const OOLUA::Lua_table_ref valTable);
+        void                setAudioSource(const OOLUA::Lua_table_ref valTable);
+        void                setLightSource(const OOLUA::Lua_table_ref valTable);
+        void                setParticleEmitter(const OOLUA::Lua_table_ref valTable);
+        void                setCombat(const OOLUA::Lua_table_ref valTable);
 		
 		Renderable*			getRenderable(void) const { return _renderable; }
 		Animation*			getAnimation(void) const { return _animation; }
@@ -170,6 +191,8 @@ namespace elysian {
         T* _addComponent(T*& comp);
         template<typename T>
         void _removeComponent(T*& comp);
+        template<typename T>
+        void _setComponent(T*& comp, const OOLUA::Lua_table_ref valTable);
 
         void _renderRelative(void);
 

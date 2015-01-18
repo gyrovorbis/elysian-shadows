@@ -4,13 +4,17 @@
 #include <gyro.h>
 #include <cstring>
 #include "elysian_component.hpp"
+#include "elysian_lua_table_proxy.hpp"
 
 #define ELYSIAN_WARP_AREA_PATH_MAX_CHARS 200
 #define ELYSIAN_WARP_LEVEL_PATH_MAX_CHARS 200
 
 namespace elysian {
 	
-	class Warp: public Component {
+    class Warp:
+        public Component,
+        public LuaTableProxy<Warp>
+    {
         friend class EntityBase;
         friend Entity;
 		friend class WarpSystem;
@@ -30,6 +34,9 @@ namespace elysian {
         virtual ~Warp(void) override = default;
 		
 	public:
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+        ELYSIAN_LUA_PROXY_FIELDS_END()
+
 		void setToPos(const float x, const float y, const unsigned char elev);
 		const GYVector2 &getToPos(void) const;
 		const char *getAreaPath(void) const;

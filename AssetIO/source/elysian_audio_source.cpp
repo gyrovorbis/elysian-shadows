@@ -7,6 +7,8 @@
 
 namespace elysian {
 
+    ELYSIAN_LUA_PROXY_FIELDS_EXPORT(AudioSource)
+
 	AudioSystem* AudioSource::_audioSys = nullptr;
 
 	bool AudioSource::load(FILE* /*file*/) {

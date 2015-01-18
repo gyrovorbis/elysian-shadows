@@ -7,6 +7,7 @@
 #include <kinetic/gyro_kinetic.h>
 #include "elysian_component.hpp"
 #include "elysian_sort_sweep.hpp"
+#include "elysian_lua_table_proxy.hpp"
 
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_BEHAVIOR_MASK	(1<<0)
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_WARP_MASK		(1<<1)
@@ -77,7 +78,10 @@ private:
 
 };
 	
-	class Collidable: public Component {
+    class Collidable:
+        public Component,
+        public LuaTableProxy<Collidable>
+    {
         friend Entity;
         friend class EntityBase;
 		friend class CollisionSystem;
@@ -85,6 +89,8 @@ private:
 
 	public:
 		enum ZTRAN_STATE { ZTRAN_INACTIVE, ZTRAN_ACTIVE };
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+        ELYSIAN_LUA_PROXY_FIELDS_END()
 	protected:
         static CollisionSystem* _colSys;
 

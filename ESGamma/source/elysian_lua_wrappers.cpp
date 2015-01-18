@@ -23,6 +23,7 @@ namespace elysian {
 		_mainState->register_class<Component>();
 		_mainState->register_class<Material>();
 		_mainState->register_class<Renderable>();
+        Renderable::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<AnimationSequence>();
 		_mainState->register_class<AnimationAttrib>();
 		_mainState->register_class<ChildAnimationSequence>();
@@ -30,26 +31,33 @@ namespace elysian {
 		_mainState->register_class<ChildAnimation>();
         _mainState->register_class<LightAttrib>();
         _mainState->register_class<Animation>();
+        Animation::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<CollisionFlags>();
         OOLUA::register_class<CollidableStaticAttrib>(*_mainState);
 		_mainState->register_class<CollidableAttrib>();
 		_mainState->register_class<CollisionContact>();
 		_mainState->register_class<Collidable>();
+        Collidable::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<Character>();
+        Character::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<Warp>();
+        Warp::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<DialogScreen>();
 		_mainState->register_class<DialogText>();
 		_mainState->register_class<DialogPrompt>();
 		_mainState->register_class<Dialog>();
 		_mainState->register_class<Examinable>();
+        Examinable::registerProxyMetaTable(*_mainState);
         _mainState->register_class<CombatStatus>();
         _mainState->register_class<CombatReceipt>();
 		_mainState->register_class<CombatAttrib>();
 		_mainState->register_class<Combat>();
+        Combat::registerProxyMetaTable(*_mainState);
 		OOLUA::register_class<MenuText>(*_mainState);
 		_mainState->register_class<MenuEntity>();
 		_mainState->register_class<ParticleEmitterAttrib>();
 		_mainState->register_class<ParticleEmitter>();
+        ParticleEmitter::registerProxyMetaTable(*_mainState);
 		OOLUA::register_class<LuaBehavior>(*_mainState);
 		_mainState->register_class<Tile>();
 		_mainState->register_class<Level>();
@@ -230,7 +238,20 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
 						setShadowDepth,
                         setShadowVolume,
                        setPlaneType,
-                       setTransform)
+                       setTransform,
+                       setRenderable,
+                       setAnimation,
+                       setCollidable,
+                       setRigidBody,
+                       setCharacter,
+                       setWarp,
+                       setAudioSource,
+                       setLightSource,
+                       setParticleEmitter,
+                       setCombat,
+                       setExaminable)
+
+
 OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getName,
 								getElev,

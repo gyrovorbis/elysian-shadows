@@ -7,6 +7,8 @@
 
 namespace elysian {
 
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(LightSource)
+
 LightSource::~LightSource(void) {
 	gyVidLightSourceUninit(static_cast<GYLightSource*>(this));
 }

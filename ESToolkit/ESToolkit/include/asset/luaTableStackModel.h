@@ -32,7 +32,8 @@ namespace OOLUA {
 //QStandardItem representing a Lua k,v pair
 template<typename TVal, typename TKey=QString>
 class LuaTableFieldItem:
-    public PropertyStandardItem<TVal, LuaTableFieldItem<TVal, TKey>, false>, public elysian::LuaManager
+    public PropertyStandardItem<TVal, LuaTableFieldItem<TVal, TKey>, false>,
+    public elysian::LuaManager
 {
 protected:
     const int                           _luaRef = LUA_NOREF;
@@ -443,6 +444,7 @@ inline void LuaTableStackModel::populateModel(void) {
 //Pull value from Lua table/userdata to update model
 template<typename TVal, typename TKey>
 inline TVal LuaTableFieldItem<TVal, TKey>::getValue(void) const {
+    //qDebug() << "GETVAL -" << _key;
     TVal val;
     lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
     OOLUA::push(*_mainState, _key);

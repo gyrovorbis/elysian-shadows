@@ -9,6 +9,8 @@
 
 namespace elysian {
 
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(Character)
+
 float Character::_deltaTime = 0.0f;
 
 bool Character::save(FILE* /*file*/) {

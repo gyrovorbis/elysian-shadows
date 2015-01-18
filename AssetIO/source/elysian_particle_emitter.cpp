@@ -10,6 +10,8 @@
 
 namespace elysian {
 
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(ParticleEmitter)
+
 ParticleEmitterAttrib::ParticleEmitterAttrib(void) {}
 
 ParticleEmitterAttrib::~ParticleEmitterAttrib(void) {
