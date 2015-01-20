@@ -98,6 +98,11 @@ void Behavior::onCombatTargetCollisionEnter(CollisionContact*const /*contact*/, 
 void Behavior::onTkSelect(void) { dbgprintf(LOG_CRITICAL, "Behavior::onTkSelect() - Unimplemented for '%s'.", getBehavName()); }
 void Behavior::onTkUnselect(void) { dbgprintf(LOG_CRITICAL, "Behavior::onTkUnselect() - Unimplemented for '%s'.", getBehavName()); }
 
+Behavior::Behavior(Entity& parent): Component(parent) {
+    dbgprintf(Asset::LOG_CRITICAL, "ENTITY - %s", parent.getName());
+
+}
+
 void Behavior::addTrigger(TRIGGER flag) {
 	std::map<const char*, Behavior*, ltstr>& behaviors = getEntity()->getBehaviors();
 

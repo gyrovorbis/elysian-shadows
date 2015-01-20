@@ -101,7 +101,6 @@ SOURCES += source/asset/project.cpp \
     ../../AssetIO/source/elysian_particle_emitter.cpp \
     ../../AssetIO/source/elysian_rigid_body.cpp \
     ../../AssetIO/source/elysian_combat.cpp \
-    ../../AssetIO/source/elysian_lua_table_model.cpp \
 	../../AssetIO/source/luatables.cc \
 	../../ESGamma/source/elysian_lua_manager.cpp \
     ../../ESGamma/source/elysian_adventure_log.cpp \
@@ -150,7 +149,9 @@ SOURCES += source/asset/project.cpp \
     ../../AssetIO/source/elysian_entity_base.cpp \
     source/asset/tkEntity.cpp \
     ../../ESGamma/source/elysian_map_system_base.cpp \
-    source/estk/tkMapSystem.cpp
+    source/estk/tkMapSystem.cpp \
+    source/asset/luaTableStackModel.cpp \
+    ../../AssetIO/source/elysian_lua_table_proxy_base.cpp
 
 HEADERS += include/asset/project.h \
     include/asset/assets.h \
@@ -278,7 +279,6 @@ HEADERS += include/asset/project.h \
     ../../ESGamma/include/elysian_system.hpp \
     ../../ESGamma/include/elysian_timer_system.hpp \
     ../../ESGamma/include/elysian_warp_system.hpp \
-    ../../AssetIO/include/elysian_lua_table_proxy.hpp \
     include/asset/luaTableStackModel.h \
     include/estk/engineGLSceneWidget.h \
     include/estk/tkMapSystem.h \
@@ -300,7 +300,10 @@ HEADERS += include/asset/project.h \
     ../../AssetIO/include/elysian_entity.hpp \
     ../../ESGamma/include/elysian_map_system_base.hpp \
     ../../ESGamma/include/elysian_map_system.hpp \
-    ../../AssetIO/include/elysian_material.hpp
+    ../../AssetIO/include/elysian_material.hpp \
+    ../../AssetIO/include/elysian_lua_table_proxy_base.hpp \
+    ../../AssetIO/include/elysian_lua_table_proxy.hpp \
+    include/asset/tkLuaTableProxy.h
 
 FORMS += form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \

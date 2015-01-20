@@ -60,6 +60,11 @@ void PropertyStackModel::insertHeaders(void) {
 	setHorizontalHeaderItem(1, new QStandardItem("Value"));
 }
 
+void PropertyStackModel::pushItem(QStandardItem* item) {
+    _curParent = item;
+    _curParentStack.push_back(item);
+}
+
 void PropertyStackModel::pushLabel(const QString label, QStandardItem *const item) {
 		QList<QStandardItem *> rowItems;
 		QStandardItem *labelItem = new QStandardItem(label);
@@ -78,6 +83,7 @@ void PropertyStackModel::pushLabel(const QString label, QStandardItem *const ite
 
 		_curParent->appendRow(rowItems);
 		_curParent = labelItem;
+        //_curParentStack.push_back(_curParent);
 
 		_checkPropertyStandardItemAcquire(item);
 }
@@ -87,8 +93,29 @@ void PropertyStackModel::popLabel(void) {
 		if(!_curParent) _curParent = invisibleRootItem();
 }
 
+void PropertyStackModel::popItem(void) {
+    _curParentStack.pop();
+
+    _curParent = (_curParentStack.size() > 0)? _curParentStack.back() : invisibleRootItem();
+}
+
+
+void PropertyStackModel::addRow(QStandardItem *label, QStandardItem *item) {
+        QList<QStandardItem*> rowItems;
+
+        //name
+        label->setFlags(Qt::ItemIsEnabled);
+        rowItems << label;
+\
+        //value
+        rowItems << item;
+        _curParent->appendRow(rowItems);
+        _checkPropertyStandardItemAcquire(item);
+}
+
+
 void PropertyStackModel::addProperty(const QString name, QStandardItem *const item) {
-        QList<QStandardItem *> rowItems;
+        QList<QStandardItem*> rowItems;
 
         //name
         QStandardItem *nameItem = new QStandardItem(name);

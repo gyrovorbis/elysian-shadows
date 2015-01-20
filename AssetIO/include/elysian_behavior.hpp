@@ -124,7 +124,7 @@ namespace elysian {
 	
 	//========= INLINEZ =========
 	
-	inline Behavior::Behavior(Entity& parent): Component(parent) {}
+
 	inline Behavior::~Behavior(void) { }
 	inline uint64_t Behavior::getTriggers(void) const { return _triggerBits; }
 	//inline void Behavior::addTrigger(const uint64_t flags) { _triggerBits |= flags; }

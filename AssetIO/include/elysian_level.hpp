@@ -2,7 +2,7 @@
 #define ELYSIAN_LEVEL_HPP
 
 #ifdef ELYSIAN_ENGINE
-#   include "level_base.hpp"
+#   include "elysian_level_base.hpp"
 namespace elysian {
     typedef LevelBase Level;
 }

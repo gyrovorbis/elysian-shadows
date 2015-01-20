@@ -37,22 +37,35 @@ public:
 	enum TYPE { EMPTY, PROJECT, LEVEL, AREA, TILE, ENTITY };
 
 	union Union {
-		Selectable* base;
-		TileSelection<elysian::TileEntry>* terrain;
-		EntitySelectable* entity;
-		Area* area;
-		Level* level;
-		Project* project;
+        TileSelection<elysian::TileEntry>*  terrain;
+        Selectable*                         base;
+        EntitySelectable*                   entity;
+        Area*                               area;
+        Level*                              level;
+        Project*                            project;
 	};
 
-			Selectable(void);
-	virtual ~Selectable(void) {}
-	virtual TYPE getType(void) const=0;
-	virtual void installSelectionViewCustomDelegates(QAbstractItemView *const /*view*/) {}
-
-    virtual void setCurrentSelection(const bool /*val*/) {}
+                    Selectable(void);
+    virtual         ~Selectable(void);
+    virtual TYPE    getType(void) const=0;
+    virtual void    installSelectionViewCustomDelegates(QAbstractItemView *const /*view*/);
+    virtual void    setCurrentSelection(const bool /*val*/, const Selectable*const other=nullptr);
+    virtual bool    isTemporary(void);
 };
 
+
+
+
+
+
+
+
+//===== INLINEZ ========
+
+inline bool Selectable::isTemporary(void) { return false; }
+inline void Selectable::setCurrentSelection(const bool, const Selectable * const) {}
+inline Selectable::~Selectable(void) {}
+inline void Selectable::installSelectionViewCustomDelegates(QAbstractItemView * const) { }
 
 
 

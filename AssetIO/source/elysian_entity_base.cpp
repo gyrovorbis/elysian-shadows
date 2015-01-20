@@ -618,7 +618,7 @@ Behavior *EntityBase::attachBehavior(Behavior *behav) {
 	return behav;
 }
 
-LuaBehavior *EntityBase::getLuaBehavior(const char*script) const {
+LuaBehavior* EntityBase::getLuaBehavior(const char*script) const {
     return static_cast<LuaBehavior*>(getBehavior(script));
 }
 

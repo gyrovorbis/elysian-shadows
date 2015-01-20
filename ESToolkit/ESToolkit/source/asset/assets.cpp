@@ -27,20 +27,28 @@ bool Assets::_layerVisible[Assets::LAYER_MAX] = { true };
 
 //General case
 void Assets::setCurrentSelection(Selectable *const selection) {
-	const Selectable::TYPE oldType = _currentSelectionType;
 	Selectable *const oldSelection = _currentSelection;
 
-	_currentSelectionType = (!selection)? Selectable::EMPTY : selection->getType();
-	_currentSelection = selection;
+    if(oldSelection != selection) {
 
-    if(oldSelection) oldSelection->setCurrentSelection(false);
-    if(_currentSelection) _currentSelection->setCurrentSelection(true);
+        _currentSelectionType = (!selection)? Selectable::EMPTY : selection->getType();
+        _currentSelection = selection;
 
-	emit selectionChanged(_currentSelectionType, _currentSelection);
+        if(oldSelection) {
+            oldSelection->setCurrentSelection(false, selection);
+        }
 
-	//prevent fucking memory leaks!
-	//Must be done after, in case shit is still using this data before change.
-	if(oldType == Selectable::TILE) delete oldSelection;
+        if(_currentSelection) {
+            _currentSelection->setCurrentSelection(true, oldSelection);
+        }
+
+        emit selectionChanged(_currentSelectionType, _currentSelection);
+
+        //prevent fucking memory leaks!
+        //Must be done after, in case shit is still using this data before change.
+        if(oldSelection && oldSelection->isTemporary()) delete oldSelection;
+
+    }
 }
 
 //Use a regular expression instead!

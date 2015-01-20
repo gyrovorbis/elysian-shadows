@@ -150,6 +150,8 @@ void CollisionSystem::_applyTileColliderTransform(const Tile::COLLIDER_TYPE colT
 //HARD-CODED TO ONE LAYER
 void CollisionSystem::renderTileColliders(void) const {
     gyVidMaterialBind(nullptr);
+    gyVidSpecularMapBind(nullptr);
+    gyVidNormalMapBind(nullptr);
 
 	static const GYVector4 boxLocalVerts[4] = {
 		{ -0.5f, -0.5f, 0.0f, 1.0f },

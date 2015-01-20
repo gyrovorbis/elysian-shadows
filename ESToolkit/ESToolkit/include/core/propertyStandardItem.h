@@ -77,6 +77,9 @@ protected:
         _undoStack = stack;
         _undoType = undoType;
         _ignoreCheck = true;
+
+        /*setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable |
+                 ((_setAccessor)? Qt::ItemIsEditable : Qt::NoItemFlags));*/
     }
 
 public:

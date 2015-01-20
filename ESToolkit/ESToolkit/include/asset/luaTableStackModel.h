@@ -11,6 +11,9 @@
 
 class LuaTableStackModel;
 
+Q_DECLARE_METATYPE(OOLUA::Lua_table_ref);
+Q_DECLARE_METATYPE(OOLUA::Lua_func_ref);
+
 namespace OOLUA {
     namespace STRING {
         //Template specialization allowing OOLUA to push a QString to Lua as a character array
@@ -55,11 +58,34 @@ public:
 
 };
 
-//QStandardItemModel representing a Lua table or proxied userdata
-class LuaTableStackModel: public elysian::LuaManager, public PropertyStackModel {
+//custom qVariant type required
+
+class LuaTableItem: public PropertyStandardItem<QString, LuaTableItem> {
+protected:
+    typedef PropertyStandardItem<QString, LuaTableItem> ParentType;
+
+    const int                       _luaRef         = LUA_NOREF;
+    const int                       _luaType        = LUA_TNONE;
+    mutable bool                    _populated      = false;
+    const QStandardItem*            _labelItem      = nullptr;
+    QHash<QString, QStandardItem*>  _fieldItems;
+
+private slots:
+    void    _onFieldChanged(QString field);
+
 public:
-    LuaTableStackModel*             _parent = nullptr;
-    const int                       _luaRef = LUA_NOREF;
+            LuaTableItem(const int ref, const int type, const QStandardItem* label);
+            ~LuaTableItem(void);
+
+    QString getValue(void) const;
+};
+
+//QStandardItemModel representing a Lua table or proxied userdata
+//Also needs to be a LuaTableItem!
+class LuaTableStackModel: public LuaTableItem, public elysian::LuaManager, public PropertyStackModel {
+    friend class LuaTableItem;
+public:
+    int                             _luaRef = LUA_NOREF;
 
 protected:
 
@@ -91,166 +117,6 @@ protected:
 
         }
     }
-
-#if 0
-	//Iterates over table or proxied userdata, populating model based on k,v pairs
-    void _addTableFields(lua_State*const state, const int tableRef) {
-        bool isUserdata         = false;
-        bool nextMetamethod     = false;
-        int	_oolua_table_index_ = 0;
-        int iterNum             = 0;
-
-		//Helper lambda function for uniform iteration over tables and userdata
-        std::function<bool()> iterFunc[2] = {
-			//table iteration
-			[&](void) -> bool {
-                bool retVal = (bool)lua_next(state, -2);
-                qDebug() << "Lua_next() - " << retVal;
-                return retVal;
-            },
-			//userdata iteration
-             [&](void) -> bool {
-                if(nextMetamethod) {
-                    //qDebug() << "ENTER __NEXT LAMBDA";
-                    LuaManager::_cStackDump();
-                    lua_pushvalue(state, -2);
-                    //lua_rawgeti(state, LUA_REGISTRYINDEX, tableRef);
-
-                    assert(lua_getmetatable(state, -1));
-                    //lua_remove(state, -2);
-
-                    if(lua_type(*_mainState, -1) != LUA_TTABLE) {
-
-                        //qDebug() << "CALLING __NEXT ON NONTABLE";
-
-
-                    } else {
-                        //qDebug() << "CALLING NEXT ON TABLE";
-                    }
-                    LuaManager::_cStackDump();
-                    lua_getfield(state, -1, "__next");
-                    lua_remove(state, -2);
-                    lua_insert(state, -2);
-                    lua_pushvalue(state, -3);
-
-					LuaManager::_protectedCall(2, 2, nullptr);
-
-                    lua_remove(state, -3);
-
-					if(lua_isnil(state, -2)) {
-                        //qDebug() << "__NEXT() - ISNIL";
-                        LuaManager::_cStackDump();
-						lua_pop(state, 2);
-                        return false;
-                    } else {
-                       // qDebug() << "__NEXT - TRUE";
-                        return true;
-                    }
-                } else {
-                   // qDebug() << "__NEXT - Not found!";
-                    lua_pop(state, 1);
-                    return false;
-                }
-             }
-        };
-
-        _oolua_table_index_ = lua_gettop(state);
-        lua_pushnil(state);
-
-      //  qDebug() << "BEGIN REF(" << tableRef << ")";
-        //lua_rawgeti(state, LUA_REGISTRYINDEX, tableRef);
-
-        isUserdata = (lua_type(*_mainState, -2) == LUA_TUSERDATA);
-		//Check if userdata is iterable
-        if(isUserdata) {
-            lua_getmetatable(*_mainState, -2);
-            lua_getfield(*_mainState, -1, "__next");
-            nextMetamethod = (!lua_isnil(*_mainState, -1));
-           // qDebug() << "IS USERDATA";
-            lua_pop(*_mainState, 2);
-            if(!nextMetamethod) {
-               // qDebug() << "HAS NO NEXT METAMETHOD";
-                lua_pop(*_mainState, 1);
-                return;
-            } else {
-              //  qDebug() << "NEXT METAMETHOD";
-            }
-        } else {
-          //  qDebug() << "NOT USERDATA";
-        }
-
-		//Iterate over table/userdata
-		while (iterFunc[isUserdata]()) {
-            ++iterNum;
-            const int valueType   = lua_type(*_mainState, -1);
-            const int               keyType     = lua_type(state, -2);
-            lua_pushvalue(state, -2);
-            const QString           keyName     = luaL_tolstring(state, -1, nullptr);
-            QStandardItem*          valueItem;
-
-            lua_pop(state, 2);
-
-          //  qDebug() << "keyName -" << keyName <<", iterNum - " << iterNum;
-
-			//If current value is iterable, recurse over its k,v pairs
-
-            if(valueType == LUA_TTABLE || valueType == LUA_TUSERDATA) {
-                pushLabel(keyName, (valueType == LUA_TTABLE)? new QStandardItem(QString("table")) : new QStandardItem(QString("userdata")) );
-
-                lua_pushvalue(*_mainState, -1);
-               // qDebug() << "keyName - TABLE/USERDATA RECURSE";
-                _addTableFields(*_mainState, luaL_ref(*_mainState, LUA_REGISTRYINDEX));
-                //lua_pop(*_mainState, 1);
-
-                popLabel();
-
-            } else {
-                switch(keyType) {
-                case LUA_TSTRING:
-                   // qDebug() << "STRING KEY ADD";
-                    valueItem = _createTableFieldItemFromStack<QString>(tableRef);
-                    addProperty(keyName, valueItem);
-                    break;
-                case LUA_TNUMBER:
-                   // qDebug() << "NUMBER KEY ADD";
-                    valueItem = _createTableFieldItemFromStack<float>(tableRef);
-                    addProperty(keyName, valueItem);
-                    break;
-                case LUA_TBOOLEAN:
-                  //  qDebug() << "BOOL KEY ADD";
-                    valueItem = _createTableFieldItemFromStack<bool>(tableRef);
-                    addProperty(keyName, valueItem);
-                    break;
-                case LUA_TTABLE:
-                   // qDebug() << "TABLE KEY ADD";
-                    valueItem = new QStandardItem(QString("table"));
-                    addProperty(keyName, valueItem);
-                    break;
-				case LUA_TUSERDATA:
-                  //  qDebug() << "USERDATA KEY ADD";
-					valueItem = new QStandardItem(QString("userdata"));
-					addProperty(keyName, valueItem);
-					break;
-                default:
-                    qDebug() << "DEFAULT KEY ADD";
-                    valueItem = new QStandardItem(QString("function"));
-                    break;
-                }
-           }
-
-           // qDebug() << "popped value for " << keyName;
-            lua_pop(state, 1);
-            LuaManager::_cStackDump();
-			//Pop value, leave key
-        }
-
-      //  qDebug() << "popping userdata for " << tableRef;
-		//Pop table/userdata
-        //lua_pop(state, 1);
-        LuaManager::_cStackDump();
-
-    }
-#else
 
     //Iterates over table or proxied userdata, populating model based on k,v pairs
     void _addTableFields(lua_State*const state, const int tableRef) {
@@ -363,15 +229,24 @@ protected:
             //If current value is iterable, recurse over its k,v pairs
 
             if(valueType == LUA_TTABLE || valueType == LUA_TUSERDATA) {
-                pushLabel(keyName, new QStandardItem(QString(lua_typename(state, lua_type(state, -1)))));
+
+                lua_pushvalue(*_mainState, -1);
+                int ref = luaL_ref(state, LUA_REGISTRYINDEX);
+                auto* label = new QStandardItem(keyName);
+                addRow(label, new LuaTableItem(ref, valueType, label));
+
+                //pushLabel(keyName, new QStandardItem(QString(lua_typename(state, lua_type(state, -1)))));
 
                 //lua_rawgeti(state, LUA_REGISTRYINDEX, tableRef);
-                lua_pushvalue(*_mainState, -1);
 
-                _addTableFields(*_mainState, luaL_ref(*_mainState, LUA_REGISTRYINDEX));
+                //Don't recurse, add table item to latently populate upon access!
+                //lua_pushvalue(*_mainState, -1);
+                //_addTableFields(*_mainState, luaL_ref(*_mainState, LUA_REGISTRYINDEX));
                 //lua_pop(*_mainState, 1);
 
-                popLabel();
+
+
+                //popLabel();
 
             } else {
 
@@ -425,17 +300,26 @@ protected:
 
     }
 
-#endif
-
 public:
 
-    LuaTableStackModel(const int ref): _luaRef(ref) {}
-    virtual void populateModel(void) override;
+                    LuaTableStackModel(void) = default;
+                    LuaTableStackModel(const int ref);
+
+    void            setLuaRef(const int ref);
+    virtual void    populateModel(void) override;
+private slots:
+    void            _onFieldAdded(QString field);
 };
 
 
+inline void LuaTableStackModel::_onFieldAdded(QString /*field*/) {}
+
+inline void LuaTableStackModel::setLuaRef(const int ref) { _luaRef = ref; }
+
+inline LuaTableStackModel::LuaTableStackModel(const int ref): _luaRef(ref) {}
 
 inline void LuaTableStackModel::populateModel(void) {
+    insertHeaders();
     lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
     _addTableFields(*_mainState, _luaRef);
     lua_pop(*_mainState, 1);
