@@ -6,13 +6,13 @@
 #include "gyro_system_api.h"
 #include "glal/gyro_glal.h"
 #include <stdio.h>
-
+/*
 const static GLenum _shadowMapTexUnits[GYRO_VIDEO_LIGHT_SOURCES_MAX] = {
 	GL_TEXTURE3,
 	GL_TEXTURE4,
 	GL_TEXTURE5,
 	GL_TEXTURE6
-};
+};*/
 
 GYLightSource*		lightSources[GYRO_VIDEO_LIGHT_SOURCES_MAX]		= { NULL };
 unsigned			lightSourceCount								= 0;
@@ -115,7 +115,7 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
 	 * some reason they're still cool with being bound to bullshit texture units. So
 	 * bind one to the real texture unit, and bind one to a bullshit unit based on type.
 	 */
-	glActiveTexture(_shadowMapTexUnits[index]);
+    glActiveTexture(textureMapTexUnits[SHADOW1_MAP+index]);
 	if(light->type == GY_LIGHT_POINT) {
 		glDisable(GL_TEXTURE_2D);
 		glEnable(GL_TEXTURE_CUBE_MAP);
@@ -129,7 +129,7 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
 		glUniform1i(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_SHADOW_MAP], 3+index);
 		glUniform1i(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_SHADOW_CUBE_MAP], 7+index);
 	}
-	glActiveTexture(GL_TEXTURE0);
+    glActiveTexture(textureMapTexUnits[TEXTURE_MAP]);
 }
 
 void gyVidLightSourceAdd(GYLightSource* const light) {

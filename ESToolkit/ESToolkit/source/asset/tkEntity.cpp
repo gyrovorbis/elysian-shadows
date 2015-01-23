@@ -776,7 +776,7 @@ bool TkEntity::activate(void) {
 }
 
 bool TkEntity::deactivate(void) {
-    if(_active && _selectable && !getAssets()->getEngine()->getLightSys()->isShadowPass()) {
+    if(_active && _selectable) {
         _selectionCollider->removeFromLevel();
         _selectionRenderable->removeFromLevel();
     }
@@ -784,7 +784,7 @@ bool TkEntity::deactivate(void) {
 }
 
 void TkEntity::_renderRelative(void) {
-    if(_selectionState != SELECTION_NONE) {
+    if(_selectionState != SELECTION_NONE && !getAssets()->getEngine()->getLightSys()->isShadowPass()) {
         _selectionRenderable->beginRender();
         //if(_depthType == DEPTH_BUFFERED) transform._size.y = transform._size.z;
         _selectionRenderable->render();

@@ -52,6 +52,7 @@ public:
     void _engineInitialize(void);
     void _engineLoadAssets(void);
 	void _openProjectDir(const QString dir);
+    void setMainTextureUniform(const int uniform);
 private:
     Assets                  _assets;
     QUndoGroup              _undoGroup;
@@ -201,5 +202,12 @@ private slots:
     void on_action480p_toggled(bool arg1);
     void on_action720p_toggled(bool arg1);
     void on_actionDynamic_toggled(bool arg1);
+    void on_actionReload_Shaders_triggered();
+    void on_actionTilesheet_toggled(bool arg1);
+    void on_actionNormalsheet_toggled(bool arg1);
+    void on_actionSpecularsheet_toggled(bool arg1);
+    void on_actionTile_Map_toggled(bool arg1);
+    void on_actionNormal_Map_toggled(bool arg1);
+    void on_actionSpecular_Map_toggled(bool arg1);
 };
 #endif // ESTOOLKIT_H

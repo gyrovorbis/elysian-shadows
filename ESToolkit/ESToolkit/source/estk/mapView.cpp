@@ -79,7 +79,7 @@ void MapView::onEngineInitialize(void) {
     collid->setAttrib(colAttrib);
     collid->setResolvePenetration(false);
     collid->setContactEventMonitorMask(ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK);
-    _cursorEntity->getTransform().setSize(2.0f, 2.0f, 300.0f);
+    _cursorEntity->getTransform().setSize(2.0f, 2.0f, 10.0f);
     _cursorEntity->setName("ESTkCursor");
 }
 

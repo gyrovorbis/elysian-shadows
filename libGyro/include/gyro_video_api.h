@@ -75,6 +75,13 @@ void gyVidViewFrustumMat(GYMatrix4 mat, const float fov, const float aspect, con
 									const float dx, const float dy, const float dz,
 									const float ux, const float uy, const float uz);*/
 
+
+//Optional Video debug API
+void gyVidDbgTexMapUniform(const int uniform);
+void gyVidDbgTexMappingEnabled(const int enabled);
+void gyVidDbgNormalMappingEnabled(const int enabled);
+void gyVidDbgSpeculaMappingEnabled(const int enabled);
+
 #include "common/gyro_video_common.h"
 
 

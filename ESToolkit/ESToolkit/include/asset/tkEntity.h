@@ -46,8 +46,8 @@ public:
     enum SELECTION_STATE { SELECTION_NONE, SELECTION_SELECTING, SELECTION_SELECTED };
 
 protected:
-	LuaTableStackModel*			_entityModel	= nullptr;
-	int							_luaRef			= LUA_NOREF;
+    LuaTableStackModel*                 _entityModel	= nullptr;
+    int                                 _luaRef			= LUA_NOREF;
 
     static bool                         _staticInit;
     static elysian::CollidableAttrib*   _selColliderAttrib;
@@ -103,7 +103,7 @@ public:
     using elysian::EntityBase::setTransform;
     //using elysian::LuaTableProxy<elysian::EntityBase, Entity>::fromTable;
 
-            TkEntity();
+            TkEntity(void);
             TkEntity(const bool selectable);
 	virtual ~TkEntity(void) override;
 

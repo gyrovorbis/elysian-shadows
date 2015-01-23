@@ -10,6 +10,7 @@
 #include <QMessageBox>
 #include <QStatusBar>
 #include <QDebug>
+#include <gyro_video_api.h>
 
 #include <gyro_file_api.h>
 #include "engineGLSceneWidget.h"
@@ -1756,4 +1757,75 @@ void ESToolkit::_setMapViewResolution(const MAP_VIEW_RES res) {
     _ui->action720p->blockSignals(false);
     _ui->actionDynamic->blockSignals(false);
 
+}
+
+void ESToolkit::on_actionReload_Shaders_triggered(void) {
+    gyShadersReloadAll();
+}
+
+void ESToolkit::setMainTextureUniform(const int uniform) {
+    gyVidDbgTexMapUniform(uniform);
+
+    _ui->actionTilesheet->blockSignals(true);
+    _ui->actionNormalsheet->blockSignals(true);
+    _ui->actionSpecularsheet->blockSignals(true);
+    _ui->actionTilesheet->setEnabled(true);
+    _ui->actionNormalsheet->setEnabled(true);
+    _ui->actionSpecularsheet->setEnabled(true);
+    _ui->actionTilesheet->setChecked(false);
+    _ui->actionNormalsheet->setChecked(false);
+    _ui->actionSpecularsheet->setChecked(false);
+
+
+    switch(uniform) {
+    case 0:
+        _ui->actionTilesheet->setEnabled(false);
+        _ui->actionTilesheet->setChecked(true);
+        break;
+    case 1:
+        _ui->actionNormalsheet->setEnabled(false);
+        _ui->actionNormalsheet->setChecked(true);
+        break;
+    case 2:
+        _ui->actionSpecularsheet->setEnabled(false);
+        _ui->actionSpecularsheet->setChecked(true);
+        break;
+
+    }
+
+
+    _ui->actionTilesheet->blockSignals(false);
+    _ui->actionNormalsheet->blockSignals(false);
+    _ui->actionSpecularsheet->blockSignals(false);
+}
+
+void ESToolkit::on_actionTilesheet_toggled(bool arg1)
+{
+    setMainTextureUniform(0);
+}
+
+void ESToolkit::on_actionNormalsheet_toggled(bool arg1)
+{
+    setMainTextureUniform(1);
+}
+
+void ESToolkit::on_actionSpecularsheet_toggled(bool arg1)
+{
+    setMainTextureUniform(2);
+}
+
+void ESToolkit::on_actionTile_Map_toggled(bool arg1)
+{
+    gyVidDbgTexMappingEnabled(arg1);
+}
+
+void ESToolkit::on_actionNormal_Map_toggled(bool arg1)
+{
+    gyVidDbgNormalMappingEnabled(arg1);
+}
+
+
+void ESToolkit::on_actionSpecular_Map_toggled(bool arg1)
+{
+    gyVidDbgSpeculaMappingEnabled(arg1);
 }
