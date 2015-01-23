@@ -10,6 +10,20 @@
 #include "gyro_system_api.h"
 #include "glal/gyro_glal.h"
 
+GLenum textureMapTexUnits[TEXTURE_MAP_MAX] = {
+    GL_TEXTURE0,
+    GL_TEXTURE1,
+    GL_TEXTURE2,
+    GL_TEXTURE3,
+    GL_TEXTURE4,
+    GL_TEXTURE5,
+    GL_TEXTURE6
+};
+
+int textureMapUniforms[TEXTURE_MAP_MAX] = {
+    0, 1, 2, 3, 4, 5, 6
+};
+
 const GYMatrix4 shadowTexCoordBiasMat = {
 	{ 0.5f, 0.0f, 0.0f, 0.0f },
 	{ 0.0f, 0.5f, 0.0f, 0.0f },
@@ -58,6 +72,12 @@ static GYVector4			_globalAmbience									= { 0.0f, 0.0f, 0.0f, 1.0f };
 static const GYTexture*		_normalMap										= NULL;
 static const GYTexture*		_specularMap									= NULL;
 GYVector3					camWorldPos										= { 0.0f, 0.0f, 0.0f };
+int                         textureMappingEnabled                           = 1;
+int                         normalMappingEnabled                            = 1;
+int                         specularMappingEnabled                          = 1;
+int                         textureMapActive                                = 0;
+int                         normalMapActive                                 = 0;
+int                         specularMapActive                               = 0;
 
 // ==== INTERNAL STATE ===
 GYShaderProgram*			_curShaderProg		= NULL;
@@ -81,6 +101,15 @@ void gyVidSetDefaultShaderProgram(void) {
 	gyVidSetCurrentShaderProgram(_lightingShader.program);
 }
 
+void gyVidDbgTexMappingEnabled(const int enabled) { textureMappingEnabled = enabled; }
+void gyVidDbgNormalMappingEnabled(const int enabled) { normalMappingEnabled = enabled; }
+void gyVidDbgSpeculaMappingEnabled(const int enabled) { specularMappingEnabled = enabled; }
+
+void gyVidDbgTexMapUniform(const int unit) {
+    textureMapUniforms[TEXTURE_MAP] = unit;
+    glUniform1i(curLightShader->uniformLoc[SHADER_TEXTURE_MAP], unit);
+}
+
 void gyVidSetCamWorldPos(const GYVector3*const pos) {
 	if(pos->x == camWorldPos.x && pos->y == camWorldPos.y && pos->z == camWorldPos.z) return;
 	camWorldPos = *pos;
@@ -88,42 +117,60 @@ void gyVidSetCamWorldPos(const GYVector3*const pos) {
 }
 
 void gyVidNormalMapBind(const GYTexture * const tex) {
-	static int wasEnabled = 0;
-	int enabled = 1;
+    static int wasActive = 0;
+    int active = 1;
 
-	glActiveTexture(GL_TEXTURE1);
+    glActiveTexture(textureMapTexUnits[NORMAL_MAP]);
     if(tex && tex->_data) {
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, *(GLuint *)&tex->_data);
 	} else {
-		enabled = 0;
+        active = 0;
 		glDisable(GL_TEXTURE_2D);
 	}
-    //if(enabled != wasEnabled)
-        glUniform1i(curLightShader->uniformLoc[SHADER_NORMAL_MAP_ENABLED], enabled);
-	_normalMap = tex;
-	glActiveTexture(GL_TEXTURE0);
+    //if(active != wasActive)
 
-	wasEnabled = enabled;
+    normalMapActive = active && normalMappingEnabled;
+    glUniform1i(curLightShader->uniformLoc[SHADER_NORMAL_MAP_ENABLED], normalMapActive);
+
+    if(textureMapUniforms[TEXTURE_MAP] == textureMapUniforms[NORMAL_MAP]) {
+        textureMapActive = normalMapActive;
+        curTex = tex;
+        glUniform1i(curLightShader->uniformLoc[SHADER_TEXTURE_ENABLED], normalMapActive);
+    }
+
+	_normalMap = tex;
+    glActiveTexture(textureMapTexUnits[TEXTURE_MAP]);
+
+    wasActive = active;
 }
 
 void gyVidSpecularMapBind(const GYTexture * const tex) {
-	static int wasEnabled = 0;
-	int enabled = 1;
+    static int wasActive = 0;
+    int active = 1;
 
-	glActiveTexture(GL_TEXTURE2);
+    glActiveTexture(textureMapTexUnits[SPECULAR_MAP]);
     if(tex && tex->_data) {
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, *(GLuint *)&tex->_data);
 	} else {
-		enabled = 0;
+        active = 0;
 		glDisable(GL_TEXTURE_2D);
 	}
-	if(enabled != wasEnabled) glUniform1i(curLightShader->uniformLoc[SHADER_SPECULAR_MAP_ENABLED], enabled);
-	_specularMap = tex;
-	glActiveTexture(GL_TEXTURE0);
+    //if(active != wasActive)
 
-	wasEnabled = enabled;
+    specularMapActive = active && specularMappingEnabled;
+    glUniform1i(curLightShader->uniformLoc[SHADER_SPECULAR_MAP_ENABLED], specularMapActive);
+    if(textureMapUniforms[TEXTURE_MAP] == textureMapUniforms[SPECULAR_MAP]) {
+        textureMapActive = specularMapActive;
+        curTex = tex;
+        glUniform1i(curLightShader->uniformLoc[SHADER_TEXTURE_ENABLED], specularMapActive);
+    }
+
+	_specularMap = tex;
+    glActiveTexture(textureMapTexUnits[TEXTURE_MAP]);
+
+    wasActive = active;
 }
 
 
@@ -187,6 +234,7 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
 	shader->uniformLoc[SHADER_PROJ_VIEW_MAT]			= _protectedUniformQuery(shader->program, "uProjViewMat");
 
 	shader->attribLoc[SHADER_TEX_COORD]					= _protectedAttribQuery(shader->program, "aTexCoord");
+    shader->uniformLoc[SHADER_TEXTURE_MAP]              = _protectedUniformQuery(shader->program, "uTexture");
 	shader->uniformLoc[SHADER_TEXTURE_ENABLED]			= _protectedUniformQuery(shader->program, "uTextureEnabled");
 
 	shader->attribLoc[SHADER_COLOR]						= _protectedAttribQuery(shader->program, "aColor");
@@ -257,18 +305,32 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
 
 // =========== PUBLIC INTERNAL FUNCTIONS ==========
 void glalLoadDefaultShaders(void) {
-	GYShader* vertShader = gyShaderCreate("/assets/shaders/pixelLighting.vsh");
-	GYShader* fragShader = gyShaderCreate("/assets/shaders/pixelLighting.fsh");
-	//GYShader* vertShader = gyShaderCreate("/Users/Falco/Documents/ESDev/libGyro/source/glal/shaders/pixelLighting.vsh");
-	//GYShader* fragShader = gyShaderCreate("/Users/Falco/Documents/ESDev/libGyro/source/glal/shaders/pixelLighting.fsh");
-	_lightingShader.program = gyShaderProgramCreate(vertShader, fragShader);
+    GYShader* vertShader = gyShaderCreate("/assets/shaders/pixelLighting.vsh");
+    GYShader* fragShader = gyShaderCreate("/assets/shaders/pixelLighting.fsh");
+    //GYShader* vertShader = gyShaderCreate("/Users/Falco/Documents/ESDev/libGyro/source/glal/shaders/pixelLighting.vsh");
+    //GYShader* fragShader = gyShaderCreate("/Users/Falco/Documents/ESDev/libGyro/source/glal/shaders/pixelLighting.fsh");
+    _lightingShader.program = gyShaderProgramCreate(vertShader, fragShader);
     _gyLog(GY_DEBUG_CRITICAL, "LIGHTING SHADER - %d", _lightingShader.program->program);
 	_queryLightingShader(&_lightingShader, 1);
 
-	vertShader = gyShaderCreate("/assets/shaders/shadowMap.vsh");
-	fragShader = gyShaderCreate("/assets/shaders/shadowMap.fsh");
-	_shadowMapShader.program = gyShaderProgramCreate(vertShader, fragShader);
+    vertShader = gyShaderCreate("/assets/shaders/shadowMap.vsh");
+    fragShader = gyShaderCreate("/assets/shaders/shadowMap.fsh");
+    _shadowMapShader.program = gyShaderProgramCreate(vertShader, fragShader);
     _queryLightingShader(&_shadowMapShader, 0);
+}
+
+int gyShadersReloadAll(void) {
+    int success = 1;
+    success &= gyShaderProgramDestroy(_lightingShader.program);
+    success &=gyShaderProgramDestroy(_shadowMapShader.program);
+    success &=gyShaderDestroy(_lightingShader.program->vertShader);
+    success &=gyShaderDestroy(_lightingShader.program->fragShader);
+    success &=gyShaderDestroy(_shadowMapShader.program->vertShader);
+    success &=gyShaderDestroy(_shadowMapShader.program->fragShader);
+    glalLoadDefaultShaders();
+    gyVidSetDefaultShaderProgram();
+    glalDefaultShadersLoadUniforms();
+    return success;
 }
 
 void glalDefaultShadersLoadUniforms(void) {
@@ -297,8 +359,9 @@ void glalDefaultShadersLoadUniforms(void) {
 	glUniform3fv(curLightShader->uniformLoc[SHADER_TANGENT], 1, (float*)tangentVector);
 
 	//set normal map to use texture bank 1
-	glUniform1i(curLightShader->uniformLoc[SHADER_NORMAL_MAP], 1);
-	glUniform1i(curLightShader->uniformLoc[SHADER_SPECULAR_MAP], 2);
+    glUniform1i(curLightShader->uniformLoc[SHADER_TEXTURE_MAP], textureMapUniforms[TEXTURE_MAP]);
+    glUniform1i(curLightShader->uniformLoc[SHADER_NORMAL_MAP], textureMapUniforms[NORMAL_MAP]);
+    glUniform1i(curLightShader->uniformLoc[SHADER_SPECULAR_MAP], textureMapUniforms[SPECULAR_MAP]);
 
 	//next texture banks are used for shadow maps for each light
 	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
@@ -307,9 +370,9 @@ void glalDefaultShadersLoadUniforms(void) {
 	}
 
 	//Do these not need to be physically resubmitted?
-	glUniform1i(curLightShader->uniformLoc[SHADER_TEXTURE_ENABLED], (curTex)? 1 : 0);
-	glUniform1i(curLightShader->uniformLoc[SHADER_NORMAL_MAP_ENABLED], (_normalMap)? 1 : 0);
-	glUniform1i(curLightShader->uniformLoc[SHADER_SPECULAR_MAP_ENABLED], (_specularMap)? 1 : 0);
+    glUniform1i(curLightShader->uniformLoc[SHADER_TEXTURE_ENABLED], textureMapActive);
+    glUniform1i(curLightShader->uniformLoc[SHADER_NORMAL_MAP_ENABLED], normalMapActive);
+    glUniform1i(curLightShader->uniformLoc[SHADER_SPECULAR_MAP_ENABLED], specularMapActive);
 
 	GYMatrix4 projMat;
 	GYMatrix4 finalMat;

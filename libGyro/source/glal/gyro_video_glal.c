@@ -10,11 +10,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 //OPENGL/OPENGL_ES COMMONS, BITCHES!
-static const GYVector3 _planeNormals[GY_RECT_PLANE_MAX] = {
+static GYVector3 _planeNormals[GY_RECT_PLANE_MAX] = {
 	{ 0.0f, 0.0f, 1.0f },
-    { 0.0f, 1.0f, 1.0f },
+    { 0.0f, 1.414213562, 1.414213562 },
     { -1.0f, 0.0f, 0.0f },
     { 1.0f, 0.0f, 0.0f },
     { 0.0f, 0.0f, 0.0f },
@@ -157,6 +156,8 @@ void gyVidResolution(unsigned int *const projWidth, unsigned int *const projHeig
 
 int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth, const int projHeight) {
 
+    gyVec3Normalize(&_planeNormals[GY_RECT_PLANE_FRONT]);
+
 	//gyVidOrthoProjMat(projectionMatrix, pleft, pright, pbottom, ptop, pnear, pfar);
 	//gyVidCamOrthoProj(&_defaultCamera, pleft, pright, pbottom, ptop, pnear, pfar);
 
@@ -274,20 +275,23 @@ void gyVidTangentArray(const GYVector3 *const ptr) {
 }*/
 
 void gyVidTexBind(const GYTexture *const tex) {
-	static int wasEnabled = 0;
-	int enabled = 1;
+    static int wasActive = 0;
+    int active = 1;
 
-	glActiveTexture(GL_TEXTURE0);
+    if(textureMapUniforms[TEXTURE_MAP] != 0) return; //mapped to another unit
+
+    glActiveTexture(textureMapTexUnits[TEXTURE_MAP]);
     if(tex && tex->_data) {
-		glEnable(GL_TEXTURE_2D);
+        glEnable(textureMapTexUnits[TEXTURE_MAP]);
 		glBindTexture(GL_TEXTURE_2D, *(GLuint *)&tex->_data);
 	} else {
-		enabled = 0;
-		glDisable(GL_TEXTURE_2D);
+        active = 0;
+        glDisable(textureMapTexUnits[TEXTURE_MAP]);
 	}
 	curTex = tex;
-	/*if(enabled != wasEnabled)*/ glUniform1i(curLightShader->uniformLoc[SHADER_TEXTURE_ENABLED], enabled);
-	wasEnabled = enabled;
+    textureMapActive = active && textureMappingEnabled;
+    /*if(enabled != wasEnabled)*/ glUniform1i(curLightShader->uniformLoc[SHADER_TEXTURE_ENABLED], textureMapActive);
+    wasActive = active;
 }
 
 void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
