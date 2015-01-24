@@ -4,8 +4,8 @@
 #include "gyro_defines.h"
 #include "gyro_matrix_api.h"
 
-#define GYRO_VIDEO_LIGHT_SOURCES_MAX 10
-//#define GYRO_VIDEO_LIGHT_SOURCES_MAX 4
+//#define GYRO_VIDEO_LIGHT_SOURCES_MAX 10
+#define GYRO_VIDEO_LIGHT_SOURCES_MAX 4
 
 #ifdef __cplusplus
 extern "C" {
@@ -118,6 +118,7 @@ int _gyVidShaderCreate(GYShader* shader);
 int _gyVidShaderDestroy(GYShader* shader);
 int _gyVidShaderProgramCreate(GYShaderProgram* program);
 int _gyVidShaderProgramDestroy(GYShaderProgram* program);
+int _gyVidShaderDefaultProgramLoadUniforms(void);
 
 #ifdef GYRO_SHADER_PLATFORM_INCLUDE
 #	include GYRO_SHADER_PLATFORM_INCLUDE

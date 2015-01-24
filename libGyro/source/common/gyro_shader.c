@@ -77,6 +77,7 @@ void gyShaderWalk(void);
 
 /*I hate to fucking do this, but SDL forces us with window resizing...
 	ughhghg --Falco */
+#if 0
 int gyShadersReloadAll(void) {
 	unsigned int success = 1;
 
@@ -116,6 +117,7 @@ int gyShadersReloadAll(void) {
 	return success;
 
 }
+#endif
 
 
 //==== PUBLIC API ====
@@ -134,6 +136,12 @@ int gyShaderDestroy(GYShader* shader) {
 GYShaderProgram* gyShaderProgramCreate(GYShader* vertShader, GYShader* fragShader) {
 	_ShaderProgramEntryData data = { vertShader, fragShader };
 	return gyAssetBankInsert(&_shaderProgramBank, &data);
+}
+
+int gyShaderProgramDestroy(GYShaderProgram* shader) {
+    if(!shader) return 0;
+    _ShaderProgramEntryData data = { shader->vertShader, shader->fragShader };
+    return gyAssetBankRemove(&_shaderProgramBank, &data);
 }
 
 int gyShaderDestory(GYShaderProgram* program) {

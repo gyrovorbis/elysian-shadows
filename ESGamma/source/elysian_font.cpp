@@ -83,6 +83,8 @@ void Font::drawString(const FORMAT format, const ALIGNMENT align, const char *co
 
 	if(!_batching) {
 		gyVidTexBind(_tex);
+        gyVidNormalMapBind(nullptr);
+        gyVidSpecularMapBind(nullptr);
 		if(_color.a == 255) gyVidAlphaLevel(GY_ALPHA_PUNCHTHRU);
 		else gyVidAlphaLevel(GY_ALPHA_FULL);
 		//gyVidRectNormalType(GY_RECT_NORMAL_FLAT);

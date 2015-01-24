@@ -130,6 +130,22 @@
      <addaction name="action720p"/>
      <addaction name="actionDynamic"/>
     </widget>
+    <widget class="QMenu" name="menuSheet_Texture">
+     <property name="title">
+      <string>Main Texture</string>
+     </property>
+     <addaction name="actionTilesheet"/>
+     <addaction name="actionNormalsheet"/>
+     <addaction name="actionSpecularsheet"/>
+    </widget>
+    <widget class="QMenu" name="menuActive_Textures">
+     <property name="title">
+      <string>Enable Textures</string>
+     </property>
+     <addaction name="actionTile_Map"/>
+     <addaction name="actionNormal_Map"/>
+     <addaction name="actionSpecular_Map"/>
+    </widget>
     <addaction name="actionAsset_View"/>
     <addaction name="actionLayer_View"/>
     <addaction name="actionSheet_View"/>
@@ -141,6 +157,9 @@
     <addaction name="separator"/>
     <addaction name="actionMap_Background"/>
     <addaction name="menuResolution"/>
+    <addaction name="menuSheet_Texture"/>
+    <addaction name="menuActive_Textures"/>
+    <addaction name="actionHidden_Entities"/>
    </widget>
    <widget class="QMenu" name="menuLevel">
     <property name="enabled">
@@ -203,6 +222,7 @@
     </widget>
     <addaction name="actionInvoke"/>
     <addaction name="menuSelect_Platform"/>
+    <addaction name="actionReload_Shaders"/>
     <addaction name="separator"/>
     <addaction name="actionEngine_Settings"/>
    </widget>
@@ -1082,6 +1102,82 @@
    </property>
    <property name="text">
     <string>Dynamic</string>
+   </property>
+  </action>
+  <action name="actionReload_Shaders">
+   <property name="text">
+    <string>Reload Shaders</string>
+   </property>
+  </action>
+  <action name="actionTilesheet">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Texture Map</string>
+   </property>
+  </action>
+  <action name="actionNormalsheet">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Normal Map</string>
+   </property>
+  </action>
+  <action name="actionSpecularsheet">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Specular Map</string>
+   </property>
+  </action>
+  <action name="actionTile_Map">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Texture Map</string>
+   </property>
+  </action>
+  <action name="actionNormal_Map">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Normal Map</string>
+   </property>
+  </action>
+  <action name="actionSpecular_Map">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Specular Map</string>
+   </property>
+  </action>
+  <action name="actionHidden_Entities">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Hidden Entities</string>
    </property>
   </action>
  </widget>

@@ -10,6 +10,7 @@
 #include <QMessageBox>
 #include <QStatusBar>
 #include <QDebug>
+#include <gyro_video_api.h>
 
 #include <gyro_file_api.h>
 #include "engineGLSceneWidget.h"
@@ -322,7 +323,7 @@ void ESToolkit::closeEvent(QCloseEvent *event) {
 		/*
 		if(_assets.getCurrentProject() != NULL || _assets.GetUndoStackCount() > 0) {
 
-			QMessageBox quitAlert(QMessageBox::Question, "Save Project?", "Would you like to save changes to your project before you quit?", QMessageBox::Save | QMessageBox::Cancel | QMessageBox::No);
+            QBox quitAlert(QMessageBox::Question, "Save Project?", "Would you like to save changes to your project before you quit?", QMessageBox::Save | QMessageBox::Cancel | QMessageBox::No);
 			int result = (int)quitAlert.exec();
 
 			if(result == (int)QMessageBox::Cancel) {
@@ -487,6 +488,7 @@ void ESToolkit::WriteSettings()
 	settings.setValue("engineResolution", _engineDialog->getResolution());
     settings.setValue("renderMapBackground", TkMapSystem::getRenderMapBackground());
     settings.setValue("mapViewRes", _mapViewRes);
+    settings.setValue("showHiddenEntities", _entityDockWidget->getTreeWidget()->getShowHidden());
 	unsigned x, y;
 	_engineDialog->getStartPos(x, y);
 	settings.setValue("engineStartPosX", x);
@@ -526,9 +528,11 @@ void ESToolkit::ReadSettings()
     bool renderMapBg = settings.value("renderMapBackground", false).toBool();
 	unsigned x = settings.value("engineStartPosX", 0).toUInt();
 	unsigned y = settings.value("engineStartPosY", 0).toUInt();
+    bool showHiddenEntities = settings.value("showHiddenEntities", false).toBool();
 	_engineDialog->setStartPos(x, y);
     MAP_VIEW_RES mapViewRes = (MAP_VIEW_RES)settings.value("mapViewRes", MAP_VIEW_RES_DYNAMIC).toInt();
     _setMapViewResolution(mapViewRes);
+
 
 	//bool assetVisibility = settings.value("assetDock", true).toBool();
 	//bool entityVisibility = settings.value("entityDock", true).toBool();
@@ -562,7 +566,7 @@ void ESToolkit::ReadSettings()
 	_ui->actionHorizontal_SheetView->setChecked(sheetViewHorizontal);
     _ui->actionMap_Background->setChecked(renderMapBg);
 	on_actionHorizontal_SheetView_triggered(sheetViewHorizontal);
-
+    _ui->actionHidden_Entities->setChecked(showHiddenEntities);
 
     toggleProjectActions(false);
 
@@ -858,6 +862,11 @@ void ESToolkit::_openProjectDir(const QString dir) {
 	if(dir=="") {
 		return;
 	}
+
+    if(_assets.getCurrentProject()) {
+        QMessageBox::critical(this, "You dun fucked up!", "There's already a project open, asswipe.");
+        return;
+    }
 
 	QDir::setCurrent(dir);
     auto* viewport = _engineGLView = new EngineGLSceneWidget(QGLFormat(QGL::SampleBuffers | QGL::DirectRendering));
@@ -1756,4 +1765,80 @@ void ESToolkit::_setMapViewResolution(const MAP_VIEW_RES res) {
     _ui->action720p->blockSignals(false);
     _ui->actionDynamic->blockSignals(false);
 
+}
+
+void ESToolkit::on_actionReload_Shaders_triggered(void) {
+    gyShadersReloadAll();
+}
+
+void ESToolkit::setMainTextureUniform(const int uniform) {
+    gyVidDbgTexMapUniform(uniform);
+
+    _ui->actionTilesheet->blockSignals(true);
+    _ui->actionNormalsheet->blockSignals(true);
+    _ui->actionSpecularsheet->blockSignals(true);
+    _ui->actionTilesheet->setEnabled(true);
+    _ui->actionNormalsheet->setEnabled(true);
+    _ui->actionSpecularsheet->setEnabled(true);
+    _ui->actionTilesheet->setChecked(false);
+    _ui->actionNormalsheet->setChecked(false);
+    _ui->actionSpecularsheet->setChecked(false);
+
+
+    switch(uniform) {
+    case 0:
+        _ui->actionTilesheet->setEnabled(false);
+        _ui->actionTilesheet->setChecked(true);
+        break;
+    case 1:
+        _ui->actionNormalsheet->setEnabled(false);
+        _ui->actionNormalsheet->setChecked(true);
+        break;
+    case 2:
+        _ui->actionSpecularsheet->setEnabled(false);
+        _ui->actionSpecularsheet->setChecked(true);
+        break;
+
+    }
+
+
+    _ui->actionTilesheet->blockSignals(false);
+    _ui->actionNormalsheet->blockSignals(false);
+    _ui->actionSpecularsheet->blockSignals(false);
+}
+
+void ESToolkit::on_actionTilesheet_toggled(bool arg1)
+{
+    setMainTextureUniform(0);
+}
+
+void ESToolkit::on_actionNormalsheet_toggled(bool arg1)
+{
+    setMainTextureUniform(1);
+}
+
+void ESToolkit::on_actionSpecularsheet_toggled(bool arg1)
+{
+    setMainTextureUniform(2);
+}
+
+void ESToolkit::on_actionTile_Map_toggled(bool arg1)
+{
+    gyVidDbgTexMappingEnabled(arg1);
+}
+
+void ESToolkit::on_actionNormal_Map_toggled(bool arg1)
+{
+    gyVidDbgNormalMappingEnabled(arg1);
+}
+
+
+void ESToolkit::on_actionSpecular_Map_toggled(bool arg1)
+{
+    gyVidDbgSpeculaMappingEnabled(arg1);
+}
+
+void ESToolkit::on_actionHidden_Entities_toggled(bool arg1)
+{
+    _entityDockWidget->getTreeWidget()->setShowHidden(arg1);
 }

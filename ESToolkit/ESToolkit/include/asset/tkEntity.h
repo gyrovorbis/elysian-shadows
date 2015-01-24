@@ -67,7 +67,7 @@ public:
     using elysian::EntityBase::setTransform;
     //using elysian::LuaTableProxy<elysian::EntityBase, Entity>::fromTable;
 
-            TkEntity();
+            TkEntity(void);
             TkEntity(const bool selectable);
 	virtual ~TkEntity(void) override;
 

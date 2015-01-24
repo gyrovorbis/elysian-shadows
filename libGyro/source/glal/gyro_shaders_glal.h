@@ -10,6 +10,17 @@
 extern "C" {
 #endif
 
+typedef enum __TEXTURE_UNITS {
+    TEXTURE_MAP,
+    NORMAL_MAP,
+    SPECULAR_MAP,
+    SHADOW1_MAP,
+    SHADOW2_MAP,
+    SHADOW3_MAP,
+    SHADOW4_MAP,
+    TEXTURE_MAP_MAX
+} TEXTURE_UNITS;
+
 struct _GYShaderProgram;
 
 typedef enum __SHADER_ATTRIB {
@@ -20,6 +31,7 @@ typedef enum __SHADER_ATTRIB {
 } _SHADER_ATTRIB;
 
 typedef enum __SHADER_UNIFORM {
+    SHADER_TEXTURE_MAP,
 	SHADER_TEXTURE_ENABLED,
 	SHADER_CAM_WORLD_POS,
 	SHADER_NORMAL,
@@ -80,6 +92,10 @@ extern GYLightSource*		lightSources[GYRO_VIDEO_LIGHT_SOURCES_MAX];
 extern unsigned				lightSourceCount;
 extern int					lightingEnabled;
 extern int					lightsEnabled[GYRO_VIDEO_LIGHT_SOURCES_MAX];
+extern GLenum               textureMapTexUnits[TEXTURE_MAP_MAX];
+extern int                  textureMapUniforms[TEXTURE_MAP_MAX];
+extern int                  textureMapActive;
+extern int                  textureMappingEnabled;
 
 void glalLoadDefaultShaders(void);
 void glalDefaultShadersLoadUniforms(void);

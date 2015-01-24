@@ -122,17 +122,20 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
     GY_RECT_PLANE_TYPE  tilePlane;
     GY_RECT_TEX_ORIENT  tileOrient;
     unsigned char       tileElev;
+    GY_RECT_PLANE_TYPE  planeType = normalType? GY_RECT_PLANE_FRONT : GY_RECT_PLANE_BOTTOM;
+
+    gyVidRectPlaneType(planeType);
 
     if(_tileDecor != TILE_DECOR_NONE) {
         gyVidAlphaLevel(GY_ALPHA_NONE);
         auto& twcen = getGuiSys()->twcen;
         twcen.setColor(255, 255, 255, 255);
-        twcen._transform.setSize(16.0f, 32.0f, 16.0f);
+        twcen._transform.setSize(16.0f, 32.0f, 32.0f);
         for(unsigned i = 0; i < count; ++i) {
             auto& entry = array[i];
-            if(!entry.mapEntry.getIndex() || entry.layer != getAssets()->getCurrentLayer()) continue;
+            if(!entry.mapEntry.getIndex() || entry.mapEntry.getPlane() != planeType || entry.layer != getAssets()->getCurrentLayer()) continue;
             if(normalType == elysian::NORMAL_FLAT) twcen._transform.setPos(entry.x*32.0f+16.0, entry.y*32.0f + entry.mapEntry.getElev()*32.0f+1.0f+8.0f, entry.mapEntry.getElev()*32.0f+1.0f);
-            else twcen._transform.setPos(entry.x*32.0f+16.0, entry.y*32.0f + entry.mapEntry.getElev()*32.0f+33.0f+8.0f, entry.mapEntry.getElev()*32.0f+33.0f);
+            else twcen._transform.setPos(entry.x*32.0f+16.0, entry.y*32.0f + entry.mapEntry.getElev()*32.0f/*+16.0f*/, entry.mapEntry.getElev()*32.0f-8.0f);
 
             switch(_tileDecor) {
 
@@ -188,14 +191,14 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
         gyVidQuadListBegin(&color);
         for(unsigned i = 0; i < count; ++i) {
             auto& entry = array[i];
-            if(entry.drawStyle == DRAW_NORMAL /* || !entry.mapEntry.getIndex()*/) continue;
+            if(entry.drawStyle == DRAW_NORMAL || entry.mapEntry.getPlane() != planeType/* || !entry.mapEntry.getIndex()*/) continue;
             gyVidRectPlaneType(entry.mapEntry.getPlane());
             gyMatPush();
 			gyMatLoadIdentity();
             if(normalType == elysian::NORMAL_FLAT)
                 //Had to add the offset of +3.0f to get the decoration above tiles. Could be potentially reested.
                 gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f+3.0f, entry.mapEntry.getElev()*32.0f+3.0f, 32.0f, 32.0f, 32.0f);
-            else gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f+33.0f, entry.mapEntry.getElev()*32.0f+33.0f, 32.0f, 32.0f, 32.0f);
+            else gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f, entry.mapEntry.getElev()*32.0f, 32.0f, 32.0f, 32.0f);
             gyVidRect(0);
             gyMatPop();
         }

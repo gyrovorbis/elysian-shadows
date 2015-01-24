@@ -208,8 +208,8 @@ void ParticleEmitterInternals::render(void) {
 
 	gyVidTexBind(_attrib->getTexture());
 
-    //gyVidNormalMapBind(_attrib->_normalMap);
-    //gyVidSpecularMapBind(_attrib->_specularMap);
+    gyVidNormalMapBind(_attrib->_normalMap);
+    gyVidSpecularMapBind(_attrib->_specularMap);
 
 	gyVidMaterialBind(_attrib->_material);
 	gyVidAlphaLevel(GY_ALPHA_FULL);
@@ -241,8 +241,8 @@ void ParticleEmitterInternals::renderAtElev(const unsigned char elev) {
     if(gyVidShadowPass() && !_attrib->_shadowVolume) return;
 	gyVidTexBind(_attrib->getTexture());
 
-    //gyVidNormalMapBind(_attrib->_normalMap);
-    //gyVidSpecularMapBind(_attrib->_specularMap);
+    gyVidNormalMapBind(_attrib->_normalMap);
+    gyVidSpecularMapBind(_attrib->_specularMap);
 
     gyVidMaterialBind(_attrib->_material);
 	gyVidAlphaLevel(GY_ALPHA_FULL);

@@ -77,10 +77,11 @@ void MapView::onEngineInitialize(void) {
     sprAttrib->setColor(GYColor4{ 255, 0, 0, 255});
     render->setSpriteAttrib(sprAttrib);
     collid->setAttrib(colAttrib);
+    collid->setWorldSpace(false);
     collid->setResolvePenetration(false);
     collid->setContactEventMonitorMask(ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK);
-    _cursorEntity->getTransform().setSize(2.0f, 2.0f, 300.0f);
-    _cursorEntity->setName("ESTkCursor");
+    _cursorEntity->getTransform().setSize(2.0f, 2.0f, 2.0f);
+    _cursorEntity->setName("_ESTkCursor");
 }
 
 void MapView::onEngineUpdated(void) {
@@ -103,7 +104,7 @@ void MapView::_entitySelectionUpdate(void) {
 	while(_selectionColliders.size() < _tileSelectionRects.size()) {
         entity = new TkEntity(false);
         entity->setPlaneType(GY_RECT_PLANE_BOTTOM);
-        entity->setName("ESTkEntitySelection");
+        entity->setName("_ESTkEntitySelection");
 		auto* collid = entity->addCollidable();
         auto* render = entity->addRenderable();
         auto* sprAttrib = new elysian::SpriteAttrib;
@@ -114,6 +115,7 @@ void MapView::_entitySelectionUpdate(void) {
         render->setMaterial(mat);
 
         collid->setAttrib(new elysian::CollidableAttrib);
+        collid->setWorldSpace(false);
         collid->setResolvePenetration(false);
 		collid->setContactEventMonitorMask(ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK);
 		_selectionColliders.push_back(entity);

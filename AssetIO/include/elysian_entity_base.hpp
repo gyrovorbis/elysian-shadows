@@ -159,6 +159,8 @@ namespace elysian {
 
 		OOLUA::Lua_table_ref&	getSelfTable(void);
 		void					setSelfTable(const OOLUA::Lua_table_ref self);
+        void                    pushViewTransform(void);
+        void                    popViewTransform(void);
         
 	protected:
 		
@@ -185,6 +187,7 @@ namespace elysian {
 		ParticleEmitter*	_particleEmitter	= nullptr;
 		Combat*				_combat				= nullptr;
 		OOLUA::Lua_table_ref	_selfTable;
+        static float        _oldZ;
 		
 
         template<typename T>

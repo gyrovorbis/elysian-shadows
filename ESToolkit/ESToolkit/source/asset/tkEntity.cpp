@@ -23,13 +23,18 @@ TkEntity::TkEntity(const bool selectable):
         if(!_staticInit) {
 
             _selColliderAttrib = new elysian::CollidableAttrib;
+            //_selColliderAttrib->setRelPos(0.0f, 0.0f, 0.0f);
+            //_selColliderAttrib->setRelSize(1.0f, 1.0f, 0.0f);
             _selColliderAttrib->getFlags()->resetType();
+            _selColliderAttrib->getFlags()->resetCheckAgainst();
             _selColliderAttrib->getFlags()->addType(elysian::CollisionFlags::CURSOR);
+            _selColliderAttrib->getFlags()->addCheckAgainst(elysian::CollisionFlags::CURSOR);
             _staticInit = true;
         }
 
         _selectionCollider = new elysian::Collidable(*this);
         _selectionCollider->setAttrib(_selColliderAttrib);
+        _selectionCollider->setWorldSpace(false);
         _selectionCollider->setResolvePenetration(false);
         _selectionRenderable = new elysian::Renderable(*this);
         _selSpriteAttrib = new elysian::SpriteAttrib;
@@ -74,7 +79,7 @@ bool TkEntity::activate(void) {
 }
 
 bool TkEntity::deactivate(void) {
-    if(_active && _selectable && !getAssets()->getEngine()->getLightSys()->isShadowPass()) {
+    if(_active && _selectable) {
         _selectionCollider->removeFromLevel();
         _selectionRenderable->removeFromLevel();
     }
@@ -82,7 +87,7 @@ bool TkEntity::deactivate(void) {
 }
 
 void TkEntity::_renderRelative(void) {
-    if(_selectionState != SELECTION_NONE) {
+    if(_selectionState != SELECTION_NONE && !getAssets()->getEngine()->getLightSys()->isShadowPass()) {
         _selectionRenderable->beginRender();
         //if(_depthType == DEPTH_BUFFERED) transform._size.y = transform._size.z;
         _selectionRenderable->render();
