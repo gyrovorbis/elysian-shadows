@@ -100,11 +100,17 @@ void CollisionSystem::_checkTriggers(void) {
 }
 
 void CollisionSystem::prepareGeometry(void) {
+    gyMatPush();
+    gyMatLoad(&getCameraSys()->getCurrentState()->viewMat);
+
+
 	unsigned size = _curArea->collidables.size();
 	for(unsigned i = 0; i < size; ++i) {
 		assert(_curArea->collidables[i]->getAttrib());
 		_curArea->collidables[i]->update();
 	}
+
+    gyMatPop();
 }
     
 void CollisionSystem::_applyTileColliderTransform(const Tile::COLLIDER_TYPE colType) const {
@@ -354,15 +360,22 @@ void CollisionSystem::detectCollisions(void) {
 	//reset contact counters
 	_contactAmount = 0;
 	for(; i < _curArea->collidables.size(); ++i) _curArea->collidables[i]->_contactCount = 0;
-
+    if(getEngineState() != System::ENGINE_ESTK_STOP) {
 	for(i = 0; i < _curArea->collidables.size(); ++i) {
-		if(!_curArea->collidables[i]->_active) continue;
+        if(!_curArea->collidables[i]->_active || !_curArea->collidables[i]->_worldSpace) continue;
         _detectEntityTileZCollisionCoarse(*_curArea->collidables[i]);
         detectEntityCollision(i);
         if(_curArea->collidables[i]->getAttrib()->getFlags()->checkAgainst & CollisionFlags::TILE) {
             _detectEntityTileCollisionCoarse(*_curArea->collidables[i]);
         }
 	} 
+    }
+
+    //Check GUI-layer collidables
+    for(i = 0; i < _curArea->collidables.size(); ++i) {
+        if(!_curArea->collidables[i]->_active || _curArea->collidables[i]->_worldSpace) continue;
+        detectEntityCollision(i);
+    }
     //_sortSweepPool.sortAndSweep();
 }
 
@@ -432,15 +445,6 @@ bool CollisionSystem::detectCollidableCollidableCollision(Collidable* col1, Coll
     Collidable *bodyB = col2;
     bool contact = false;
     int swapFlag;
-
-    gyColliderCurrent(&bodyA->_collider.col, bodyA->getAttrib()->getStaticAttrib());
-
-    //Return if collision flags don't match OR
-    //if both are on different z-planes.
-    if(!(bodyA->getAttrib()->flags.checkAgainst & bodyB->getAttrib()->flags.type)
-            /* || bodyA->getEntity()->getElev() != bodyB->getEntity()->getElev() */) return false;
-
-    //solve for overlapping z/elevation region
     float aBot = bodyA->getCollider()->worldPos.z;
     float aTop = aBot + bodyA->getWorldSize().z;
 
@@ -451,6 +455,20 @@ bool CollisionSystem::detectCollidableCollidableCollision(Collidable* col1, Coll
     float zTop = -1.0f;
     bool zTopFound = false;
     bool zBotFound = false;
+
+    bool worldSpace = bodyA->_worldSpace;
+
+    gyColliderCurrent(&bodyA->_collider.col, bodyA->getAttrib()->getStaticAttrib());
+
+    //Return if collision flags don't match OR
+    //if both are on different z-planes.
+    if(!(bodyA->getAttrib()->flags.checkAgainst & bodyB->getAttrib()->flags.type)
+            /* || bodyA->getEntity()->getElev() != bodyB->getEntity()->getElev() */) return false;
+
+    //worldSpace checks in 3D, screen checks in 2D
+    if(worldSpace) {
+
+    //solve for overlapping z/elevation region
 
     if(aTop >= bBot && aTop <= bTop) {
         zTopFound = true;
@@ -489,6 +507,8 @@ bool CollisionSystem::detectCollidableCollidableCollision(Collidable* col1, Coll
         }
     }
 
+    }
+
 
     if(gyCollision(&bodyB->_collider.col, bodyB->getAttrib()->getStaticAttrib(), &_contactPool[_contactAmount], &swapFlag)) {
         contact = true;
@@ -500,23 +520,26 @@ bool CollisionSystem::detectCollidableCollidableCollision(Collidable* col1, Coll
         if(!swapFlag) {
             _contactPool[_contactAmount]._bodyA = bodyA;
             _contactPool[_contactAmount]._bodyB = bodyB;
-
+if(worldSpace) {
             if(zTop == aTop && zBot == bBot) {
                 zDiff = aTop-bBot;
             } else if(zTop == bTop && zBot == aBot) {
                 zDiff = aBot-bTop;
             } else zDiff = 100.0f;
+}
 
         }
         else {
             _contactPool[_contactAmount]._bodyB = bodyA;
             _contactPool[_contactAmount]._bodyA = bodyB;
-
+if(worldSpace) {
             if(zTop == aTop && zBot == bBot) {
                 zDiff = aBot-bTop;
             } else if(zTop == bTop && zBot == aBot) {
                 zDiff = aTop-bBot;
-            } else zDiff = 100.0f;
+            }
+            else zDiff = 100.0f;
+        }
         }
 
         _contactPool[_contactAmount]._resolvePen		= bodyA->_resolvePen && bodyB->_resolvePen;
@@ -524,7 +547,7 @@ bool CollisionSystem::detectCollidableCollidableCollision(Collidable* col1, Coll
 
     //    float zDiff = zTop-zBot;
 
-        _contactPool[_contactAmount].setZDepth(zDiff);
+        _contactPool[_contactAmount].setZDepth(worldSpace? zDiff : 0.0f);
 
         //Emit onCollide trigger for any entitjjies with this component
         //getBehavSys()->onCollide(bodyA->getEntity(), bodyB);
@@ -537,6 +560,7 @@ bool CollisionSystem::detectCollidableCollidableCollision(Collidable* col1, Coll
         }
     }
 
+    if(worldSpace) {
     if(zBot == aBot) {
         //adjustments go to bodyB
         float zOffset = aBot - bBot;
@@ -552,6 +576,7 @@ bool CollisionSystem::detectCollidableCollidableCollision(Collidable* col1, Coll
             for(unsigned i = 0; i < 4; ++i) ((GYBoxCollider*)bodyA->getCollider())->worldVert[i].y += zOffset;
         }
     }
+    }
 
     return contact;
 }
@@ -561,28 +586,35 @@ void CollisionSystem::detectEntityCollision(const unsigned i) {
 	Collidable *bodyA = _curArea->collidables[i];
 	Collidable *bodyB;
 	int swapFlag;
+    float aBot, aTop;
+    float bBot, bTop;
+    float zBot, zTop;
+    bool zTopFound, zBotFound;
     
     gyColliderCurrent(&bodyA->_collider.col, bodyA->getAttrib()->getStaticAttrib());
     
 	for(unsigned j = i+1; j < _curArea->collidables.size(); ++j) {
 		bodyB = _curArea->collidables[j];
+        bool worldSpace = bodyA->_worldSpace;
 			
 		//Return if collision flags don't match OR
 		//if both are on different z-planes.
+        if(bodyB->_worldSpace != worldSpace) continue;
         if(!(bodyA->getAttrib()->flags.checkAgainst & bodyB->getAttrib()->flags.type)
                 /* || bodyA->getEntity()->getElev() != bodyB->getEntity()->getElev() */) continue;
 
+        if(worldSpace) {
         //solve for overlapping z/elevation region
-        float aBot = bodyA->getCollider()->worldPos.z;
-        float aTop = aBot + bodyA->getWorldSize().z;
+        aBot = bodyA->getCollider()->worldPos.z;
+        aTop = aBot + bodyA->getWorldSize().z;
 
-        float bBot = bodyB->getCollider()->worldPos.z;
-        float bTop = bBot + bodyB->getWorldSize().z;
+        bBot = bodyB->getCollider()->worldPos.z;
+        bTop = bBot + bodyB->getWorldSize().z;
 
-        float zBot = -1.0f;
-        float zTop = -1.0f;
-        bool zTopFound = false;
-        bool zBotFound = false;
+        zBot = -1.0f;
+        zTop = -1.0f;
+        zTopFound = false;
+        zBotFound = false;
 
         if(aTop >= bBot && aTop <= bTop) {
             zTopFound = true;
@@ -621,6 +653,7 @@ void CollisionSystem::detectEntityCollision(const unsigned i) {
             }
         }
 
+}
 
 		if(gyCollision(&bodyB->_collider.col, bodyB->getAttrib()->getStaticAttrib(), &_contactPool[_contactAmount], &swapFlag)) {
 			++bodyA->_contactCount;
@@ -632,30 +665,34 @@ void CollisionSystem::detectEntityCollision(const unsigned i) {
 				_contactPool[_contactAmount]._bodyA = bodyA;
 				_contactPool[_contactAmount]._bodyB = bodyB;
 
+                if(worldSpace) {
                 if(zTop == aTop && zBot == bBot) {
                     zDiff = aTop-bBot;
                 } else if(zTop == bTop && zBot == aBot) {
                     zDiff = aBot-bTop;
                 } else zDiff = 100.0f;
+                }
 
 			}
 			else {
 				_contactPool[_contactAmount]._bodyB = bodyA;
 				_contactPool[_contactAmount]._bodyA = bodyB;
 
+                if(worldSpace) {
                 if(zTop == aTop && zBot == bBot) {
                     zDiff = aBot-bTop;
                 } else if(zTop == bTop && zBot == aBot) {
                     zDiff = aTop-bBot;
                 } else zDiff = 100.0f;
+                }
 			}
 
-			_contactPool[_contactAmount]._resolvePen		= bodyA->_resolvePen && bodyB->_resolvePen;
+            _contactPool[_contactAmount]._resolvePen		= (bodyA->_resolvePen && bodyB->_resolvePen);
 			_contactPool[_contactAmount]._eventMonitorMask	= (bodyA->_eventMonitorMask | bodyB->_eventMonitorMask);
 
         //    float zDiff = zTop-zBot;
 
-            _contactPool[_contactAmount].setZDepth(zDiff);
+            _contactPool[_contactAmount].setZDepth(worldSpace? zDiff : 0.0f);
 			
 			//Emit onCollide trigger for any entitjjies with this component
             //getBehavSys()->onCollide(bodyA->getEntity(), bodyB);
@@ -668,6 +705,7 @@ void CollisionSystem::detectEntityCollision(const unsigned i) {
             }
 		}
 
+        if(worldSpace) {
         if(zBot == aBot) {
             //adjustments go to bodyB
             float zOffset = aBot - bBot;
@@ -682,6 +720,7 @@ void CollisionSystem::detectEntityCollision(const unsigned i) {
             if(bodyA->getCollider()->type == GY_COLLIDER_AABB || bodyA->getCollider()->type == GY_COLLIDER_OBB) {
                // for(unsigned i = 0; i < 4; ++i) ((GYBoxCollider*)bodyA->getCollider())->worldVert[i].y += zOffset;
             }
+        }
         }
 
 	}
@@ -1032,6 +1071,7 @@ bool CollisionSystem::resolvePenetration(void) {
 
 		for(j = 0; j < _contactAmount; ++j) {
 			//reevaluate penetration depth
+            if(!_contactPool[j]._resolvePen) continue;
             float fabsZDepth = fabs(_contactPool[j]._zDepth);
             if(fabsZDepth > deepestZ && fabsZDepth <= ELYSIAN_COLLISION_CONTACT_Z_DEPTH_MAX) {
                 deepestZ = fabsZDepth;

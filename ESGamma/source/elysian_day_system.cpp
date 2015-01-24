@@ -71,7 +71,7 @@ DaySystem::DaySystem(void) {
 
 
 	_sunEntity = new Entity();
-	_sunEntity->setName("Sun");
+    _sunEntity->setName("_Sun");
 	_sunLightSrc = _sunEntity->addLightSource();
 	_sunLightSrc->setLightType(GY_LIGHT_DIRECTIONAL);
 	_sunLightSrc->setDirection(dir3);

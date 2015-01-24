@@ -159,6 +159,7 @@
     <addaction name="menuResolution"/>
     <addaction name="menuSheet_Texture"/>
     <addaction name="menuActive_Textures"/>
+    <addaction name="actionHidden_Entities"/>
    </widget>
    <widget class="QMenu" name="menuLevel">
     <property name="enabled">
@@ -1169,6 +1170,14 @@
    </property>
    <property name="text">
     <string>Specular Map</string>
+   </property>
+  </action>
+  <action name="actionHidden_Entities">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Hidden Entities</string>
    </property>
   </action>
  </widget>

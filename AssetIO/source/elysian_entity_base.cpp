@@ -26,6 +26,8 @@ namespace elysian {
 
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(EntityBase)
 
+float EntityBase::_oldZ;
+
 void EntityBase::setTransform(const OOLUA::Lua_table_ref valTable) { _transform.fromTable(valTable); }
 
 Entity* EntityBase::getTopParentEntity(void) {
@@ -64,17 +66,15 @@ EntityBase::~EntityBase(void) {
 	_behavior.clear();
 }
 
-void EntityBase::render(void) {
-	if(_particleEmitter) _particleEmitter->render();
-	if(!_renderable) return;
-	gyMatPush();
-    float oldZ = _transform._size.z;
+void EntityBase::pushViewTransform(void) {
+    gyMatPush();
+    _oldZ = _transform._size.z;
     if(_planeType == GY_RECT_PLANE_FRONT) {
         _transform._size.z = _transform._size.y;
-		//transform._size.y = 400.0f;
-	} else {
+        //transform._size.y = 400.0f;
+    } else {
         //transform._pos.z += _shadowDepth;
-	}
+    }
 
     if(_planeType == GY_RECT_PLANE_BOTTOM) {
         _transform.apply();
@@ -89,10 +89,21 @@ void EntityBase::render(void) {
 
     }
 
-    static_cast<Entity*>(this)->_renderRelative();
+}
 
-	gyMatPop();
-    _transform._size.z = oldZ;
+void EntityBase::popViewTransform(void) {
+    gyMatPop();
+    _transform._size.z = _oldZ;
+}
+
+void EntityBase::render(void) {
+	if(_particleEmitter) _particleEmitter->render();
+	if(!_renderable) return;
+
+    pushViewTransform();
+    static_cast<Entity*>(this)->_renderRelative();
+    popViewTransform();
+
 }
 
 void EntityBase::_renderRelative(void) {

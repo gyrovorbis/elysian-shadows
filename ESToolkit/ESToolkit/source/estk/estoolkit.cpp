@@ -323,7 +323,7 @@ void ESToolkit::closeEvent(QCloseEvent *event) {
 		/*
 		if(_assets.getCurrentProject() != NULL || _assets.GetUndoStackCount() > 0) {
 
-			QMessageBox quitAlert(QMessageBox::Question, "Save Project?", "Would you like to save changes to your project before you quit?", QMessageBox::Save | QMessageBox::Cancel | QMessageBox::No);
+            QBox quitAlert(QMessageBox::Question, "Save Project?", "Would you like to save changes to your project before you quit?", QMessageBox::Save | QMessageBox::Cancel | QMessageBox::No);
 			int result = (int)quitAlert.exec();
 
 			if(result == (int)QMessageBox::Cancel) {
@@ -488,6 +488,7 @@ void ESToolkit::WriteSettings()
 	settings.setValue("engineResolution", _engineDialog->getResolution());
     settings.setValue("renderMapBackground", TkMapSystem::getRenderMapBackground());
     settings.setValue("mapViewRes", _mapViewRes);
+    settings.setValue("showHiddenEntities", _entityDockWidget->getTreeWidget()->getShowHidden());
 	unsigned x, y;
 	_engineDialog->getStartPos(x, y);
 	settings.setValue("engineStartPosX", x);
@@ -527,9 +528,11 @@ void ESToolkit::ReadSettings()
     bool renderMapBg = settings.value("renderMapBackground", false).toBool();
 	unsigned x = settings.value("engineStartPosX", 0).toUInt();
 	unsigned y = settings.value("engineStartPosY", 0).toUInt();
+    bool showHiddenEntities = settings.value("showHiddenEntities", false).toBool();
 	_engineDialog->setStartPos(x, y);
     MAP_VIEW_RES mapViewRes = (MAP_VIEW_RES)settings.value("mapViewRes", MAP_VIEW_RES_DYNAMIC).toInt();
     _setMapViewResolution(mapViewRes);
+
 
 	//bool assetVisibility = settings.value("assetDock", true).toBool();
 	//bool entityVisibility = settings.value("entityDock", true).toBool();
@@ -563,7 +566,7 @@ void ESToolkit::ReadSettings()
 	_ui->actionHorizontal_SheetView->setChecked(sheetViewHorizontal);
     _ui->actionMap_Background->setChecked(renderMapBg);
 	on_actionHorizontal_SheetView_triggered(sheetViewHorizontal);
-
+    _ui->actionHidden_Entities->setChecked(showHiddenEntities);
 
     toggleProjectActions(false);
 
@@ -859,6 +862,11 @@ void ESToolkit::_openProjectDir(const QString dir) {
 	if(dir=="") {
 		return;
 	}
+
+    if(_assets.getCurrentProject()) {
+        QMessageBox::critical(this, "You dun fucked up!", "There's already a project open, asswipe.");
+        return;
+    }
 
 	QDir::setCurrent(dir);
     auto* viewport = _engineGLView = new EngineGLSceneWidget(QGLFormat(QGL::SampleBuffers | QGL::DirectRendering));
@@ -1828,4 +1836,9 @@ void ESToolkit::on_actionNormal_Map_toggled(bool arg1)
 void ESToolkit::on_actionSpecular_Map_toggled(bool arg1)
 {
     gyVidDbgSpeculaMappingEnabled(arg1);
+}
+
+void ESToolkit::on_actionHidden_Entities_toggled(bool arg1)
+{
+    _entityDockWidget->getTreeWidget()->setShowHidden(arg1);
 }

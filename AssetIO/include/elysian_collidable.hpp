@@ -107,6 +107,7 @@ private:
         bool				_onZTran			= false;
         bool				_resolvePen			= true;
         bool				_active				= true;
+        bool                _worldSpace         = true;
 		uint32_t			_eventMonitorMask	= 0;
 
 		union { 
@@ -153,6 +154,8 @@ private:
         void            setRestingOnBody(const bool v);
         bool            getStackedOnGround(void) const;
         void            setStackedOnGround(const bool v);
+        bool            getWorldSpace(void) const;
+        void            setWorldSpace(const bool val);
 
         void            setSortSweepAABB(SortSweepCollidable* sweep);
         bool            checkAABBCollision(Collidable* col);
@@ -204,6 +207,8 @@ private:
     inline bool Collidable::getRestingOnBody(void) const { return _restingOnBody; }
     inline void Collidable::setStackedOnGround(const bool v) { _stackedOnGround = v; }
     inline void Collidable::setRestingOnBody(const bool v) { _restingOnBody = v; }
+    inline bool Collidable::getWorldSpace(void) const { return _worldSpace; }
+    inline void Collidable::setWorldSpace(const bool val) { _worldSpace = val; }
 
     inline CollidableStaticAttrib::CollidableStaticAttrib(void):
         GYStatic {

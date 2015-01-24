@@ -70,7 +70,7 @@ namespace elysian {
 		bool			_enabled			= true;
 
 		void renderEntities(void);
-		void detectEntityCollision(const unsigned i);
+        void detectEntityCollision(const unsigned i);
 		void detectTerrainCollision(Collidable &col);
         bool resolvePenetration(void); //true if resolved, false if ran out of attempts
 

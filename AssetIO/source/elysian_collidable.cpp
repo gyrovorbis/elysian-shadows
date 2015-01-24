@@ -33,19 +33,29 @@ void Collidable::update(void) {
         { 1.0f, 1.0f, 1.0f, 1.0f }  //size
     };
     GYVector4 worldVecs[2];
+    float oldY;
 	/* This is necessary to ensure that if the attribute geometry was dynamically changed,
 		the runtime data is updated to reflect it. Keep shit synced. */
 	_collider.col.type = _attrib->_type; 
 
 	//Calculate world vertices for collider
 	gyMatPush();
-	gyMatLoadIdentity();
-    _entity->_transform.apply();
+    if(_worldSpace) {
+        gyMatLoadIdentity();
+    } else {
+        //_entity->pushViewTransform();
+        oldY = _entity->_transform._pos.y;
+        _entity->_transform._pos.y -= _entity->_transform._pos.z;
+    }
+      _entity->_transform.apply();
+
     gyMatTranslateScale(_attrib->_relPos.x, _attrib->_relPos.y, _attrib->_relPos.z,
                         _attrib->_relSize.x, _attrib->_relSize.y, _attrib->_relSize.z);
     gyMatMultVec(localVecs, worldVecs, 2);
 	gyCalcWorldVert(&_collider.col);
-    gyMatPop();
+
+    if(!_worldSpace) _entity->_transform._pos.y = oldY;
+     gyMatPop();
 
     _collider.col.worldPos = *(GYVector3*)&worldVecs[0];
     gyVec3Sub(&_worldSize, (GYVector3*)&_collider.box.worldVert[2], (GYVector3*)&_collider.box.worldVert[0]);
@@ -59,7 +69,9 @@ void Collidable::render(void) {
     const static GYColor4 color = { 0, 0, 255, 128 };
 	const static GYColor4 colColor =  { 255, 0, 0, 128 };
     
-	gyVidTexBind(NULL);
+    gyVidTexBind(nullptr);
+    gyVidNormalMapBind(nullptr);
+    gyVidSpecularMapBind(nullptr);
 	gyVidAlphaLevel(GY_ALPHA_FULL);
     
     gyMatPush();

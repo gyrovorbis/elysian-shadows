@@ -179,7 +179,10 @@ void TileEntry::renderDecoration(QPainter *const painter, const unsigned /*x*/, 
 	if(renderIndeces) {
 		unsigned index = getIndex();
 		if(!index) return;
-		painter->drawText(rect, Qt::AlignCenter, QString::number(index));
+        QPen pen;
+        pen.setColor(Qt::white);
+        painter->setPen(pen);
+        painter->drawText(rect, Qt::AlignCenter, QString::number(index));
 
 	} else if(renderFlipRot) {
 		GY_RECT_TEX_ORIENT orient = getOrient();

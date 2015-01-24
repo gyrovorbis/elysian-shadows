@@ -12,10 +12,21 @@ typedef TkEntity Entity;
 class EntityTreeWidget: public QTreeWidget, public AssetManager {
     Q_OBJECT
 private:
-    Area *_curArea;
+    Area*               _curArea    = nullptr;
+    bool                _showHidden = false;
+    QTreeWidgetItem*    _hiddenItem = nullptr;
     //bool _ignoreLayerChange = true;
+
+protected:
+    void _addEntity(Entity* entity);
+    void _removeEntity(Entity* entity);
+
 public:
     EntityTreeWidget(QWidget *parent=nullptr);
+
+    bool getShowHidden(void) const;
+    void setShowHidden(const bool val);
+
 private slots:
     void OnAreaChange(Area * const area);
     void OnAddEntity(Project *const project, Level *const level, Area *const area, Entity *const entity);
@@ -29,5 +40,14 @@ signals:
     void entityLayerActivate(void);
 
 };
+
+
+// ======= INLINEZ ========
+inline bool EntityTreeWidget::getShowHidden(void) const {
+    return _showHidden;
+}
+
+
+
 
 #endif // ENTITY_TREEWIDGET_H

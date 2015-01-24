@@ -66,13 +66,18 @@ TkEntity::TkEntity(const bool selectable):
         if(!_staticInit) {
 
             _selColliderAttrib = new elysian::CollidableAttrib;
+            //_selColliderAttrib->setRelPos(0.0f, 0.0f, 0.0f);
+            //_selColliderAttrib->setRelSize(1.0f, 1.0f, 0.0f);
             _selColliderAttrib->getFlags()->resetType();
+            _selColliderAttrib->getFlags()->resetCheckAgainst();
             _selColliderAttrib->getFlags()->addType(elysian::CollisionFlags::CURSOR);
+            _selColliderAttrib->getFlags()->addCheckAgainst(elysian::CollisionFlags::CURSOR);
             _staticInit = true;
         }
 
         _selectionCollider = new elysian::Collidable(*this);
         _selectionCollider->setAttrib(_selColliderAttrib);
+        _selectionCollider->setWorldSpace(false);
         _selectionCollider->setResolvePenetration(false);
         _selectionRenderable = new elysian::Renderable(*this);
         _selSpriteAttrib = new elysian::SpriteAttrib;

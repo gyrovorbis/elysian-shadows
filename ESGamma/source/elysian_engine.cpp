@@ -130,6 +130,8 @@ void Engine::update(void) {
 			break;
 
         case System::ENGINE_ESTK_STOP:
+             _collisionSystem->prepareGeometry();
+             _collisionSystem->update();
             _cameraSystem->update();
             _lightSystem->update();
             _timerSystem->update();
