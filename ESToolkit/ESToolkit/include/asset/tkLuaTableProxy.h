@@ -76,7 +76,7 @@ inline void TkLuaTableProxy<P, T>::_callPropertyProxyMethod(const bool write, co
     }
     ParentType::_callPropertyProxyMethod(write, key);
     if(write) {
-        static_cast<P*>(obj)->fieldChanged(key);
+        //static_cast<P*>(obj)->fieldChanged(key);
     }
 }
 

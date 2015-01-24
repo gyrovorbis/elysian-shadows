@@ -308,7 +308,7 @@ namespace elysian {
 
 
                     //Invoke proxy accessor method
-                    P::_callPropertyProxyMethod(newIndex, key);
+                    _callPropertyProxyMethod(newIndex, key);
 
                     if(newIndex) {
                         //instance._onFieldChanged("CHANGED");
