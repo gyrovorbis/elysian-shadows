@@ -11,9 +11,6 @@
 
 class LuaTableStackModel;
 
-//use Lua to compare this shit by reference
-Q_DECLARE_METATYPE(OOLUA::Lua_table_ref);
-Q_DECLARE_METATYPE(OOLUA::Lua_func_ref);
 
 namespace OOLUA {
     namespace STRING {
@@ -72,10 +69,10 @@ protected:
     mutable bool                    _populated      = false;
     OOLUA::Lua_func_ref             _nextMetamethod;
     const QStandardItem*            _labelItem      = nullptr;
-    QHash<QString, QStandardItem*>  _fieldItems;
+    QHash<QString, ESTkStandardItem*>  _fieldItems;
 
-private slots:
-    void    _onFieldChanged(QString field);
+public slots:
+    void    onFieldChanged(QString field);
   //  void    _onFieldAdded(QString field);
 public:
             LuaTableItem(const int ref, const QStandardItem* label=nullptr);
@@ -87,7 +84,7 @@ public:
 
     //Receives key type and table reference, then creates FieldItem for pair
     template<typename TKey>
-    QStandardItem* _createTableFieldItemFromStack(const int tableRef) {
+    ESTkStandardItem* _createTableFieldItemFromStack(const int tableRef) {
         TKey key;
         QString labelName;
         const int valueType   = lua_type(*_mainState, -1);
@@ -105,11 +102,11 @@ public:
         case LUA_TBOOLEAN:
             return new LuaTableFieldItem<bool, TKey>(tableRef, key);
         case LUA_TUSERDATA:
-            return new QStandardItem(QString("userdata"));
+            return new ESTkStandardItem(QString("userdata"));
         case LUA_TNIL:
-            return new QStandardItem(QString("nil"));
+            return new ESTkStandardItem(QString("nil"));
         default:
-            return new QStandardItem(QString("function"));
+            return new ESTkStandardItem(QString("function"));
 
         }
     }
@@ -189,14 +186,13 @@ public:
             if(_proxyTable) {
 
                 _nextMetamethod.pull(*_mainState);
-#if 0
-                lua_getfield(*_mainState, -1, "__getQObject");
-                lua_insert(*_mainState, 1);
-                _protectedCall(1, 1, nullptr);
-                TkLuaTableProxyQObject* obj = static_cast<TkLuaTableProxyQObject*>(lua_touserdata(*_mainState, -1));
-                connect(obj, SIGNAL(fieldChanged(QString)), this, SLOT(_onFieldChanged(QString)));
+#if 1
+                lua_getfield(*_mainState, -1, "__connectSignals");
+                lua_pushvalue(*_mainState, 1);
+                lua_pushlightuserdata(*_mainState, static_cast<QObject*>(this));
+                _protectedCall(2, 0, nullptr);
 
-                //lua_pop(*_mainState, 2);
+                lua_pop(*_mainState, 1);
 #else
                 lua_pop(*_mainState, 1);
 #endif
@@ -222,7 +218,7 @@ public:
             const QString           keyName     = luaL_tolstring(*_mainState, -1, nullptr);
             lua_pushvalue(*_mainState, -3);
             const QString           valueName   = luaL_tolstring(*_mainState, -1, nullptr);
-            QStandardItem*          valueItem;
+            ESTkStandardItem*       valueItem;
 
             lua_pop(*_mainState, 4);
 
@@ -253,13 +249,13 @@ public:
                     valueItem = _createTableFieldItemFromStack<bool>(_luaRef);
                     break;
                 case LUA_TTABLE:
-                    valueItem = new QStandardItem(QString("table"));
+                    valueItem = new ESTkStandardItem(QString("table"));
                     break;
                 case LUA_TUSERDATA:
-                    valueItem = new QStandardItem(QString("userdata"));
+                    valueItem = new ESTkStandardItem(QString("userdata"));
                     break;
                 default:
-                    valueItem = new QStandardItem(QString("function"));
+                    valueItem = new ESTkStandardItem(QString("function"));
                     break;
                 }
 

@@ -8,6 +8,7 @@ class UndoItem: public QUndoCommand {
 public:
 	//GLOBAL LIST OF ALL UNDO TYPES IN THE TOOLKIT!
 	enum TYPE {
+        UNDO_NONE,
 		PLACE_TILE,
 		PLACE_TILE_SM,
 		AREA_RENAME,

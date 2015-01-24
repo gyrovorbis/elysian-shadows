@@ -14,6 +14,10 @@ signals:
     //Notifies Qt's GUI models to update when Lua table fields change
     void fieldChanged(const QString key);
     void fieldAdded(const QString key);
+
+public:
+    void emitFieldChanged(const QString key) { emit fieldChanged(key); }
+    void emitFieldAdded(const QString key) { emit fieldAdded(key); }
 };
 
 /* Compile-time override engine's LuaTableProxy implementation
@@ -44,7 +48,7 @@ protected:
     static void _addMetamethods(lua_State* l);
 
     //Tk-Specific metamethods
-    static int  _getQObjectLightUserdata(lua_State* l);
+    static int  _connectSignals(lua_State* l);
 
 
 public:
@@ -71,12 +75,13 @@ template <typename P, typename T>
 inline void TkLuaTableProxy<P, T>::_callPropertyProxyMethod(const bool write, const char*const key) {
     T* obj;
     if(write) {
-        lua_pushvalue(*_mainState, 1);
+        lua_pushvalue(*_mainState, 2);
         OOLUA::pull(*_mainState, obj);
+        assert(obj);
     }
     ParentType::_callPropertyProxyMethod(write, key);
     if(write) {
-        //static_cast<P*>(obj)->fieldChanged(key);
+        static_cast<TkLuaTableProxyQObject*>(static_cast<P*>(obj))->emitFieldChanged(key);
     }
 }
 
@@ -108,21 +113,28 @@ inline TkLuaTableProxy<P, T>::~TkLuaTableProxy(void) {
 }
 
 template <typename P, typename T>
-inline int TkLuaTableProxy<P, T>::_getQObjectLightUserdata(lua_State *l) {
-    T* obj;
-    OOLUA::pull(l, obj);
-    assert(obj);
-    lua_pushlightuserdata(l, static_cast<TkLuaTableProxyQObject*>(obj));
-    return 1;
+inline int TkLuaTableProxy<P, T>::_connectSignals(lua_State *l) {
+    QObject* tableItem = static_cast<QObject*>(lua_touserdata(*_mainState, -1));
+    assert(tableItem);
+    lua_pop(*_mainState, 1);
+
+    T* thisPtr;
+    OOLUA::pull(l, thisPtr);
+    const auto* thisQObj = static_cast<TkLuaTableProxyQObject*>(static_cast<P*>(thisPtr));
+    assert(thisQObj);
+
+    connect(thisQObj, SIGNAL(fieldChanged(QString)), tableItem, SLOT(onFieldChanged(QString)));
+
+    return 0;
 }
 
 template<typename P, typename T>
 inline void TkLuaTableProxy<P, T>::_addMetamethods(lua_State *l) {
     //Push our QObject retrieval function
-    lua_pushcfunction(l, &_getQObjectLightUserdata);
-    lua_setfield(l, -2, "__getQObject");
+    lua_pushcfunction(l, &_connectSignals);
+    lua_setfield(l, -2, "__connectSignals");
 
-    ParentType::_addMetaMethods(l);
+    ParentType::_addMetamethods(l);
 }
 
 #endif // TK_LUA_TABLE_PROXY_H

@@ -20,6 +20,7 @@ QString LuaTableItem::getValue(void) const {
 }
 
 
-void LuaTableItem::_onFieldChanged(QString field) {
-    model()->itemChanged(_fieldItems[field]);
+void LuaTableItem::onFieldChanged(QString field) {
+    _fieldItems[field]->emitDataChanged();
+    //model()->itemChanged(_fieldItems[field]);
 }

@@ -10,20 +10,57 @@
 
 namespace elysian {
 
-    struct Vector2Proxy: public GYVector2, public LuaTableProxy<Vector2Proxy, GYVector2> {
+    struct Vector2: public GYVector2, public LuaTableProxy<Vector2> {
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(x, getX, setX)
             ELYSIAN_LUA_PROXY_FIELD(y, getY, setY)
         ELYSIAN_LUA_PROXY_FIELDS_END()
+
+                Vector2(void);
+                Vector2(const float x, const float y);
+        float   getX(void) const;
+        float   getY(void) const;
+        void    setX(const float val);
+        void    setY(const float val);
     };
 
-    struct Vector3Proxy: public GYVector3, public LuaTableProxy<Vector3Proxy, GYVector3> {
+    struct Vector3: public GYVector3, public LuaTableProxy<Vector3> {
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(x, getX, setX)
             ELYSIAN_LUA_PROXY_FIELD(y, getY, setY)
             ELYSIAN_LUA_PROXY_FIELD(z, getZ, setZ)
         ELYSIAN_LUA_PROXY_FIELDS_END()
+
+                Vector3(void);
+                Vector3(const float x, const float y, const float z);
+        float   getX(void) const;
+        float   getY(void) const;
+        float   getZ(void) const;
+        void    setX(const float val);
+        void    setY(const float val);
+        void    setZ(const float val);
     };
+
+    struct Vector4: public GYVector4, public LuaTableProxy<Vector4> {
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+            ELYSIAN_LUA_PROXY_FIELD(x, getX, setX)
+            ELYSIAN_LUA_PROXY_FIELD(y, getY, setY)
+            ELYSIAN_LUA_PROXY_FIELD(z, getZ, setZ)
+            ELYSIAN_LUA_PROXY_FIELD(w, getW, setW)
+        ELYSIAN_LUA_PROXY_FIELDS_END()
+
+                Vector4(void);
+                Vector4(const float x, const float y, const float z, const float w);
+        float   getX(void) const;
+        float   getY(void) const;
+        float   getZ(void) const;
+        float   getW(void) const;
+        void    setX(const float val);
+        void    setY(const float val);
+        void    setZ(const float val);
+        void    setW(const float val);
+    };
+
 
 /*
 	Essentially a thin, inlined-to-fuck, OO C++ wrapper around LibGyro's InstanceMat() operation.
@@ -123,9 +160,37 @@ namespace elysian {
 
     // ====== INLINEZ ======
 
-    inline GYVector3& InstanceTransform::getPosVec(void) { return _pos; }
-    inline GYVector3& InstanceTransform::getSizeVec(void) { return _size; }
-    inline GYVector3& InstanceTransform::getScaleVec(void) { return _scale; }
+    //Vector2
+    inline Vector2::Vector2(void): GYVector2({0.0f, 0.0f}) {}
+    inline Vector2::Vector2(const float x, const float y): GYVector2({x, y}){}
+    inline float Vector2::getX(void) const { return x; }
+    inline float Vector2::getY(void) const { return y; }
+    inline void Vector2::setX(const float val) { x = val; }
+    inline void Vector2::setY(const float val) { y = val; }
+
+    inline Vector3::Vector3(void): GYVector3({0.0f, 0.0f, 0.0f}) {}
+    inline Vector3::Vector3(const float x, const float y, const float z): GYVector3({x, y, z}){}
+    inline float Vector3::getX(void) const { return x; }
+    inline float Vector3::getY(void) const { return y; }
+    inline float Vector3::getZ(void) const { return z; }
+    inline void Vector3::setX(const float val) { x = val; }
+    inline void Vector3::setY(const float val) { y = val; }
+    inline void Vector3::setZ(const float val) { z = val; }
+
+    inline Vector4::Vector4(void): GYVector4({0.0f, 0.0f, 0.0f, 0.0f}) {}
+    inline Vector4::Vector4(const float x, const float y, const float z, const float w): GYVector4({x, y, z, w}){}
+    inline float Vector4::getX(void) const { return x; }
+    inline float Vector4::getY(void) const { return y; }
+    inline float Vector4::getZ(void) const { return z; }
+    inline float Vector4::getW(void) const { return w; }
+    inline void Vector4::setX(const float val) { x = val; }
+    inline void Vector4::setY(const float val) { y = val; }
+    inline void Vector4::setZ(const float val) { z = val; }
+    inline void Vector4::setW(const float val) { w = val; }
+
+    //inline GYVector3& InstanceTransform::getPosVec(void) { return _pos; }
+    //inline GYVector3& InstanceTransform::getSizeVec(void) { return _size; }
+    //inline GYVector3& InstanceTransform::getScaleVec(void) { return _scale; }
 
 
 }

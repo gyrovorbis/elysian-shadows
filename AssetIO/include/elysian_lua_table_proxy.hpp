@@ -13,11 +13,11 @@ namespace elysian {
 #   include "tkLuaTableProxy.h"
 
 namespace elysian {
-    template <typename P, typename T=P>
+    template <typename P, typename T>
     using LuaTableProxy = TkLuaTableProxy<P, T>;
 }
 
-template <typename P, typename T=P>
+template <typename P, typename T>
 using LuaTableProxy = TkLuaTableProxy<P, T>;
 
 #endif

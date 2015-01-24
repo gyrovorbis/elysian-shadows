@@ -15,16 +15,17 @@
 class ESTkStandardItem: public QStandardItem {
 protected:
     QVector<ESTkStandardItem*> _children;
-	unsigned _refCount;
+    unsigned _refCount = 0;
 public:
-	ESTkStandardItem(void):
-		_refCount(0) {}
+    ESTkStandardItem(void) = default;
+
+    ESTkStandardItem(const QString string): QStandardItem(string) {}
 
 	virtual int type(void) const override { return QStandardItem::UserType; }
 	void acquire(void) { ++_refCount; }
 	void release(void) { if(--_refCount == 0) delete this; }
 	unsigned getRefCount(void) const { return _refCount; }
-	virtual UndoItem::TYPE getUndoItemType(void) const = 0;
+    virtual UndoItem::TYPE getUndoItemType(void) const { return UndoItem::UNDO_NONE; }
 
     virtual void forceUpdate(void) {
         emitDataChanged();
@@ -32,6 +33,8 @@ public:
             it->forceUpdate();
         }
     }
+
+    using QStandardItem::emitDataChanged;
 
     void addChildItem(ESTkStandardItem*const item) { _children.push_back(item); }
 };

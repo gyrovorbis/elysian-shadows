@@ -64,6 +64,9 @@
 
 namespace OOLUA
 {
+    typedef elysian::Vector2                    Vector2;
+    typedef elysian::Vector3                    Vector3;
+    typedef elysian::Vector4                    Vector4;
 	typedef elysian::InstanceTransform			InstanceTransform;
 	typedef elysian::RenderableObject			RenderableObject;
 	typedef elysian::Component					Component;
@@ -171,21 +174,51 @@ OOLUA_PROXY(LuaBehaviorScriptAttrib)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(GYVector2)
-    OOLUA_MGET_MSET(x, getX, setX)
-    OOLUA_MGET_MSET(y, getY, setY)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+OOLUA_PROXY_END
+
+OOLUA_PROXY(Vector2, GYVector2)
+    OOLUA_MEM_FUNC_CONST(float, getX)
+    OOLUA_MEM_FUNC_CONST(float, getY)
+    OOLUA_MEM_FUNC(void, setX, float)
+    OOLUA_MEM_FUNC(void, setY, float)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(GYVector3)
-	OOLUA_MGET_MSET(x, getX, setX)
-	OOLUA_MGET_MSET(y, getY, setY)
-	OOLUA_MGET_MSET(z, getZ, setZ)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+OOLUA_PROXY_END
+
+OOLUA_PROXY(Vector3, GYVector3)
+    OOLUA_MEM_FUNC_CONST(float, getX)
+    OOLUA_MEM_FUNC_CONST(float, getY)
+    OOLUA_MEM_FUNC_CONST(float, getZ)
+    OOLUA_MEM_FUNC(void, setX, float)
+    OOLUA_MEM_FUNC(void, setY, float)
+    OOLUA_MEM_FUNC(void, setZ, float)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(GYVector4)
-	OOLUA_MGET_MSET(x, getX, setX)
-	OOLUA_MGET_MSET(y, getY, setY)
-	OOLUA_MGET_MSET(z, getZ, setZ)
-	OOLUA_MGET_MSET(w, getW, setW)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+OOLUA_PROXY_END
+
+OOLUA_PROXY(Vector4, GYVector4)
+    OOLUA_MEM_FUNC_CONST(float, getX)
+    OOLUA_MEM_FUNC_CONST(float, getY)
+    OOLUA_MEM_FUNC_CONST(float, getZ)
+    OOLUA_MEM_FUNC_CONST(float, getW)
+    OOLUA_MEM_FUNC(void, setX, float)
+    OOLUA_MEM_FUNC(void, setY, float)
+    OOLUA_MEM_FUNC(void, setZ, float)
+    OOLUA_MEM_FUNC(void, setW, float)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(GYColor4)

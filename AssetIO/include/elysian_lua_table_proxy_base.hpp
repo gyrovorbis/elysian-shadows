@@ -33,6 +33,18 @@
 #define ELYSIAN_OOLUA_PROXY_METHODS_CONST_EXPORT()
 */
 
+
+template<typename P, typename T>
+class TkLuaTableProxy;
+
+namespace elysian {
+    template <typename P, typename T=P>
+    using LuaTableProxy = TkLuaTableProxy<P, T>;
+}
+
+template <typename P, typename T=P>
+using LuaTableProxy = TkLuaTableProxy<P, T>;
+
 namespace elysian {
 
     struct LuaTableFieldProxy {
@@ -308,7 +320,7 @@ namespace elysian {
 
 
                     //Invoke proxy accessor method
-                    _callPropertyProxyMethod(newIndex, key);
+                    LuaTableProxy<P, T>::_callPropertyProxyMethod(newIndex, key);
 
                     if(newIndex) {
                         //instance._onFieldChanged("CHANGED");
@@ -348,7 +360,7 @@ namespace elysian {
 			lua_getfield(l, -1, "__newindex");
 			_ooluaNewIndexTable.pull(l);
 
-            P::_addMetaMethods(l);
+            LuaTableProxy<P, T>::_addMetamethods(l);
 
             //Create a new __next metamethod for internal iteration
             //_propertyProxyIndexTable.push(l);
@@ -363,7 +375,7 @@ namespace elysian {
 
 		}
 
-        static void _addMetaMethods(lua_State* l) {
+        static void _addMetamethods(lua_State* l) {
             //Use our __index metamethod
             lua_pushcfunction(l, &_indexMetaMethodCFunction);
             lua_setfield(l, -2, "__index");
