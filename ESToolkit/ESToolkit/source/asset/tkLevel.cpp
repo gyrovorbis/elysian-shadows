@@ -115,6 +115,8 @@ void TkLevel::updateScenes(void) {
 
 //====NONSTATIC====
 
+QAbstractItemModel* TkLevel::getModel(void) const { return const_cast<TkLevel*>(this); }
+
 TkLevel::TkLevel(Project *const project):
     _project(project),
     _active(false),

@@ -128,7 +128,8 @@ public:
     static void         setInactiveTransparency(const bool val);
     static SelectionScene* getEditorScene(void);
 
-    virtual void        populateModel(void);
+    virtual void                populateModel(void) override;
+    virtual QAbstractItemModel* getModel(void) const override;
 
     bool                open(void);
     bool                close(void);

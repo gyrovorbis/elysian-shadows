@@ -61,6 +61,7 @@ void PropertyStackModel::insertHeaders(void) {
 }
 
 void PropertyStackModel::pushItem(QStandardItem* item) {
+    if(!item) item = invisibleRootItem();
     _curParent = item;
     _curParentStack.push_back(item);
 }

@@ -7,7 +7,7 @@
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 
-class TkAnimation: public QObject, public elysian::AnimationBase {
+class TkAnimation: public elysian::AnimationBase {
 Q_OBJECT
 public:
 

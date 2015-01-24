@@ -51,6 +51,8 @@ TkArea::TkArea(Level *const lev) {
     connect(&_undoStack, SIGNAL(cleanChanged(bool)), this, SLOT(onUndoCleanStateChanged(bool)));
 }
 
+QAbstractItemModel* TkArea::getModel(void) const { return const_cast<TkArea*>(this); }
+
 TkArea::~TkArea(void) {
 	close();
 }
@@ -366,7 +368,7 @@ Entity* Area::newEntity(void) {
 
 	if(_active) {
 		entity->activate();
-        _editorScene->addItem(entity);
+       // _editorScene->addItem(entity);
 
 	}
     emit entityAdded(this, entity);

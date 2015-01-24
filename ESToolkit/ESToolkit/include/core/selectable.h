@@ -3,6 +3,7 @@
 
 //#include "property_stack_model.h"
 class QAbstractItemView;
+class QAbstractItemModel;
 
 namespace elysian {
     struct TileEntry;
@@ -45,12 +46,13 @@ public:
         Project*                            project;
 	};
 
-                    Selectable(void);
-    virtual         ~Selectable(void);
-    virtual TYPE    getType(void) const=0;
-    virtual void    installSelectionViewCustomDelegates(QAbstractItemView *const /*view*/);
-    virtual void    setCurrentSelection(const bool /*val*/, const Selectable*const other=nullptr);
-    virtual bool    isTemporary(void);
+                                Selectable(void);
+    virtual                     ~Selectable(void);
+    virtual TYPE                getType(void) const=0;
+    virtual void                installSelectionViewCustomDelegates(QAbstractItemView *const /*view*/);
+    virtual void                setCurrentSelection(const bool /*val*/, const Selectable*const other=nullptr);
+    virtual bool                isTemporary(void);
+    virtual QAbstractItemModel* getModel(void) const = 0;
 };
 
 

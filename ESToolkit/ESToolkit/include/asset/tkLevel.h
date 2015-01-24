@@ -121,6 +121,7 @@ public:
 	bool close(void);
 
 	virtual void populateModel(void);
+    virtual QAbstractItemModel* getModel(void) const override;
 	bool generateTileSheet(const QString location);
 
     bool scatterTileNormalMaps(void);

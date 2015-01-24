@@ -43,14 +43,14 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(pos, getPosVec, setPosVec)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
-	InstanceTransform(void):
-		GYInstMat({
-			{ 100.0f, 100.0f, 0.0f },
-			{ 100.0f, 100.0f, 100.0f },
-			{ 1.0f, 1.0f, 1.0f },
-			0.0f,
-			nullptr
-		}) {}
+        InstanceTransform(void):
+            GYInstMat({
+                { 100.0f, 100.0f, 0.0f },
+                { 100.0f, 100.0f, 100.0f },
+                { 1.0f, 1.0f, 1.0f },
+                0.0f,
+                nullptr
+            }) {}
 
 		void apply(void) const {
 			gyMatInstance(this);

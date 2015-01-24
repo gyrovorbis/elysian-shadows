@@ -23,6 +23,7 @@ public:
     void                        translate(const float x, const float y);
 
     virtual void                setCurrentSelection(const bool val, const Selectable*const other) override;
+    virtual QAbstractItemModel* getModel(void) const override;
 
 };
 

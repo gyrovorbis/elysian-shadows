@@ -6,7 +6,7 @@
 #include "assetManager.h"
 #include "elysian_asset_typedefs.hpp"
 #include "elysian_entity_base.hpp"
-#include "rowsJoinerProxyModel.h"
+#include "luaTableStackModel.h"
 #include "elysian_asset_typedefs.hpp"
 #include "assetManager.h"
 
@@ -31,11 +31,8 @@ namespace elysian {
 }
 
 class TkEntity:
-		public RowsJoinerProxy,
-	/*	public QWidget, */
-		public TreeNode,
-		public QGraphicsRectItem,
         public elysian::EntityBase,
+		public TreeNode,
         public AssetManager
 {
     friend class ESToolkit;
@@ -46,8 +43,7 @@ public:
     enum SELECTION_STATE { SELECTION_NONE, SELECTION_SELECTING, SELECTION_SELECTED };
 
 protected:
-	LuaTableStackModel*			_entityModel	= nullptr;
-	int							_luaRef			= LUA_NOREF;
+    mutable LuaTableStackModel*          _luaModel   = nullptr;
 
     static bool                         _staticInit;
     static elysian::CollidableAttrib*   _selColliderAttrib;
@@ -59,38 +55,6 @@ protected:
     SELECTION_STATE                     _selectionState = SELECTION_NONE;
 
     void _renderRelative(void);
-
-private:
-
-    /* COMPONENTS */
-/*	Renderable*		_renderable;
-	Animation *		_animation;
-	Collidable*		_collidable;
-	Warp*			_warp;
-	Item*			_item;
-	Character*		_character;
-	Friendly*		_friendly;
-	Enemy*			_enemy;
-*/
-    //QList<Behavior *> _behavior;
-
-    /*  WIDGETS for BASE ENTITY attributes:
-      name, transform
-      PROBABLY want to redo this in designer?
-    */
-	//QToolBox *_compToolBox;
-    QWidget *_entityTab;
-	//QVBoxLayout *_mainLayout, *_entityBaseLayout;
-	//QGridLayout *_entityLayout;
-	//QLabel *_nameLabel, *_transLabel, *_posLabel, *_sizeLabel, *_scaleLabel, *_orientLabel;
-	//QLabel *_xLabel, *_yLabel, *_zLabel;
-    QLineEdit *_nameEdit, *_posXEdit, *_posYEdit, *_posZEdit, *_sizeXEdit, *_sizeYEdit,
-        *_scaleXEdit, *_scaleYEdit, *_orientZEdit;
-	//QCheckBox *_snapsToGrid;
-
-    bool _gridSnap;
-    //void InitializeUI(void);
-    //void PopulateWidgets(void);
 
 public slots:
     void onEntityParented(Entity*const child, Entity*const parent);
@@ -116,6 +80,7 @@ public:
 	//Selectable
 	virtual Selectable::TYPE	getType(void) const { return Selectable::ENTITY; }
 	virtual TreeNode::ITEM_TYPE getTreeWidgetItemType(void) { return ITEM_ENTITY; }
+    virtual QAbstractItemModel* getModel(void) const override;
 
 	//Should "technically" be decoupled. See .cpp for comment.
     //void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
@@ -135,8 +100,7 @@ public:
 #endif
 
 signals:
-    void ComponentAttached(Entity *const entity, Component *const comp);
-    void ComponentRemoved(Entity *const entity, Component *const comp);
+
     void entityParented(Entity*const child, Entity*const parent);
 
 };

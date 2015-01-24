@@ -18,6 +18,7 @@ QIcon TileSelectable::updateColliderIcon(const QString string) const {
     return ElysianTileWrapper::getColliderIconFromString(string);
 }
 
+QAbstractItemModel* TileSelectable::getModel(void) const { return const_cast<TileSelectable*>(this); }
 
 void TileSelectable::_populateTileIndicesList(void) {
     for(unsigned y = 0; y < _height; ++y) {

@@ -91,6 +91,7 @@ public:
 
     virtual void                populateModel(void) override;
     virtual void                installSelectionViewCustomDelegates(QAbstractItemView *const view) override;
+    virtual QAbstractItemModel* getModel(void) const override;
     Assets::LAYER_TYPE          getTileLayer(void) const { return _layer; }
     virtual Selectable::TYPE    getType(void) const override { return Selectable::TILE; }
 	TileEntry					getPrevEntry(const unsigned x, const unsigned y) const;
@@ -181,6 +182,8 @@ void TileSelectable::TileSelectableUndoItem<T>::redo(void) {
     }
     if(_item) _item->forceUpdate();
 }
+
+
 
 
 

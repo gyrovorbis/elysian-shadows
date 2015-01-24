@@ -35,6 +35,7 @@ public:
 	~Project(void); //delete all levels
 
 	virtual void populateModel(void) override;
+    virtual QAbstractItemModel* getModel(void) const override;
 
     void setName(const QString name);
     void setLocation(const QString loc);

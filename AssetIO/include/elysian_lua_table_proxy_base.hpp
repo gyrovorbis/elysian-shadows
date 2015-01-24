@@ -55,8 +55,12 @@ namespace elysian {
         //static LuaTable _staticMetaTable;
         //LuaTable        _protoTable;
 
-        inline void _onFieldAdded(const char*const key);
-        inline void _onFieldChanged(const char*const key);
+        void _onFieldAdded(const char*const key);
+        void _onFieldChanged(const char*const key);
+
+        static inline void _callPropertyProxyMethod(const bool write, const char*const /*key*/) {
+            LuaManager::_protectedCall(write? 2 : 1, write? 0 : 1, nullptr);
+        }
 
         static inline void  _registerPropertyMetaMethodTables(lua_State* l) {
 			lua_getglobal(l, OOLUA::Proxy_class<T>::class_name);
@@ -64,10 +68,10 @@ namespace elysian {
 
 			//Register property pairs for index table <K=field, V=getFunc>
 			lua_newtable(l);
-            qDebug() << "PROXY FIELD COUNT " << P::_proxyFieldCount;
+            //qDebug() << "PROXY FIELD COUNT " << P::_proxyFieldCount;
 
 			for(unsigned i = 0; i < P::_proxyFieldCount; ++i) {
-                Debug::printf(Debug::VERBOSE, "GET ACCESSOR - <%s, %s>", P::_proxyFields[i].key, P::_proxyFields[i].get);
+                //Debug::printf(Debug::VERBOSE, "GET ACCESSOR - <%s, %s>", P::_proxyFields[i].key, P::_proxyFields[i].get);
 				lua_getfield(l, -2, P::_proxyFields[i].get);
 				lua_setfield(l, -2, P::_proxyFields[i].key);
 			}
@@ -77,7 +81,7 @@ namespace elysian {
 			lua_newtable(l);
 			for(unsigned i = 0; i < P::_proxyFieldCount; ++i) {
                 if(P::_proxyFields[i].set == nullptr) continue; //read-only attribute!
-                Debug::printf(Debug::VERBOSE, "SET ACCESSOR - <%s, %s>", P::_proxyFields[i].key, P::_proxyFields[i].set);
+               // Debug::printf(Debug::VERBOSE, "SET ACCESSOR - <%s, %s>", P::_proxyFields[i].key, P::_proxyFields[i].set);
 				lua_getfield(l, -2, P::_proxyFields[i].set);
 				lua_setfield(l, -2, P::_proxyFields[i].key);
 			}
@@ -88,6 +92,8 @@ namespace elysian {
 		}
 
         inline static int _getNextKey(lua_State* l) {
+            if(P::_proxyFieldCount <= 0) return 0;
+
             char key[100];
             int index = -1;
 
@@ -297,8 +303,12 @@ namespace elysian {
 				} else {
 					lua_insert(l, 1);
 
-                    //Call proxy accessor method
-                    LuaManager::_protectedCall(newIndex? 2 : 1, newIndex? 0 : 1, nullptr);
+                    //userdata is index 2
+                   //  OOLUA::push(state, static_cast<T*>(static_cast<P*>(this)));
+
+
+                    //Invoke proxy accessor method
+                    P::_callPropertyProxyMethod(newIndex, key);
 
                     if(newIndex) {
                         //instance._onFieldChanged("CHANGED");
@@ -338,27 +348,7 @@ namespace elysian {
 			lua_getfield(l, -1, "__newindex");
 			_ooluaNewIndexTable.pull(l);
 
-			//Use our __index metamethod
-			lua_pushcfunction(l, &_indexMetaMethodCFunction);
-			lua_setfield(l, -2, "__index");
-
-			//Use our __newindex metamethod
-			lua_pushcfunction(l, &_newIndexMetaMethodCFunction);
-			lua_setfield(l, -2, "__newindex");
-
-			//Use our __pairs metamethod
-			lua_pushcfunction(l, &_pairsMetaMethodCFunction);
-			lua_setfield(l, -2, "__pairs");
-
-            lua_pushcfunction(l, &_ipairsMetaMethodCFunction);
-            lua_setfield(l, -2, "__ipairs");
-
-			//Create a new __next metamethod for internal iteration
-			lua_pushcfunction(l, &_nextMetaMethodCFunction);
-			lua_setfield(l, -2, "__next");
-
-            lua_pushcfunction(l, &_lengthMetaMethodCFunction);
-            lua_setfield(l, -2, "__len");
+            P::_addMetaMethods(l);
 
             //Create a new __next metamethod for internal iteration
             //_propertyProxyIndexTable.push(l);
@@ -372,6 +362,30 @@ namespace elysian {
 			assert(LuaManager::_stackDepth() == 0);
 
 		}
+
+        static void _addMetaMethods(lua_State* l) {
+            //Use our __index metamethod
+            lua_pushcfunction(l, &_indexMetaMethodCFunction);
+            lua_setfield(l, -2, "__index");
+
+            //Use our __newindex metamethod
+            lua_pushcfunction(l, &_newIndexMetaMethodCFunction);
+            lua_setfield(l, -2, "__newindex");
+
+            //Use our __pairs metamethod
+            lua_pushcfunction(l, &_pairsMetaMethodCFunction);
+            lua_setfield(l, -2, "__pairs");
+
+            lua_pushcfunction(l, &_ipairsMetaMethodCFunction);
+            lua_setfield(l, -2, "__ipairs");
+
+            //Create a new __next metamethod for internal iteration
+            lua_pushcfunction(l, &_nextMetaMethodCFunction);
+            lua_setfield(l, -2, "__next");
+
+            lua_pushcfunction(l, &_lengthMetaMethodCFunction);
+            lua_setfield(l, -2, "__len");
+        }
 
         static int _luaFromTableCFunction(lua_State*const state) {
 		//    qDebug() << "!!!!!IN THE C FUNCTION!";
@@ -438,10 +452,10 @@ namespace elysian {
     LuaTable LuaTableProxyBase<P, T>::_propertyProxyNewIndexTable;
 
     template <typename P, typename T>
-    inline void LuaTableProxyBase<P,T>::_onFieldAdded(const char*const key) { }
+    inline void LuaTableProxyBase<P,T>::_onFieldAdded(const char*const /*key*/) { }
 
     template <typename P, typename T>
-    inline void LuaTableProxyBase<P,T>::_onFieldChanged(const char*const key) { }
+    inline void LuaTableProxyBase<P,T>::_onFieldChanged(const char*const /*key*/) { }
 
 
 

@@ -36,6 +36,8 @@ void Project::populateModel(void) {
 
 }
 
+QAbstractItemModel* Project::getModel(void) const { return const_cast<Project*>(this); }
+
 Level *Project::newLevel(const QString n) {
     QString name(n);
     unsigned int num = 1;
