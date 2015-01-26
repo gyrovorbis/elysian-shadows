@@ -133,7 +133,7 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
 }
 
 void gyVidLightSourceAdd(GYLightSource* const light) {
-	assert(lightSourceCount < GYRO_VIDEO_LIGHT_SOURCES_MAX);
+//	assert(lightSourceCount < GYRO_VIDEO_LIGHT_SOURCES_MAX);
 
 	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
 		if(lightsEnabled[i] == 0) {
