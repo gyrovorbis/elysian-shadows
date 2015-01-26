@@ -44,9 +44,10 @@ public:
 	bool isActive(void);
 
     TkLevel *newLevel(const QString n=QString("new_level"));
+    TkLevel *reloadLevel(TkLevel* level);
     TkLevel *loadLevel(const QString name); //assumed to be within current project, so directory is not necessary
 	bool saveLevel(const QString name);
-	bool removeLevel(const QString name);
+    bool removeLevel(const QString name, const bool deleteFolder=true);
     unsigned int getLevelAmount() const;
     TkLevel *getLevel(const QString name);
     TkLevel *getLevelByIndex(const unsigned int index);

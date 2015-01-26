@@ -702,7 +702,7 @@ void CollisionSystem::detectEntityCollision(const unsigned i) {
 
 			
             if(++_contactAmount == ELYSIAN_COLLISION_CONTACT_LIST_SIZE) {
-                assert(0);
+                _contactAmount -= 2;
                 break; //MAXXED OUT -- NOT GOOD ENOUGH
             }
 		}

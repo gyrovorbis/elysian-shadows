@@ -104,9 +104,18 @@ bool AreaBase::load(const char *const dir) {
     dbgPush();
     
 	strcpy(path, dir);
+    strcpy(buffer, dir);
+
+    char* token = strtok(buffer, "/");
+    char* prevToken = token;
+    while(token) {
+        prevToken = token;
+        token = strtok(nullptr, "/");
+    }
+    strcpy(this->dir, prevToken);
     
 	strcpy(buffer, dir);
-	strcat(buffer, ELYSIAN_AREA_MAP_PATH);
+    strcat(buffer, ELYSIAN_AREA_MAP_PATH);
 	success &= loadMap(buffer);
 
 	strcpy(buffer, dir);
@@ -149,7 +158,7 @@ bool AreaBase::loadMap(const char *const filename) {
 		return false;
 	}
 
-    gyFileRead(fp, dir, sizeof dir, nullptr);
+    gyFileRead(fp, string, sizeof string, nullptr);
     gyFileRead(fp, string, sizeof string, nullptr);
     gyFileRead(fp, &width, sizeof width, nullptr);
     gyFileRead(fp, &height, sizeof height, nullptr);

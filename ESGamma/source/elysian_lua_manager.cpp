@@ -13,6 +13,7 @@ OOLUA::Script*								LuaManager::_mainState                                    
 int											LuaManager::_errorCode                                                  = 0;
 int                                         LuaManager::_stackBalanceTop[ELYSIAN_LUA_STACK_BALANCE_RECURSIVE_DEPTH] = { 0 };
 int                                         LuaManager::_stackBalanceRecursiveDepth                                 = 0;
+int                                         LuaManager::_traceBackDbgPushes                                         = 0;
 const char									LuaManager::_rPrint[] =
 	"function rPrint(s, l, i) -- recursive Print (structure, limit, indent)\n"
 		"l = (l) or 100; i = i or \"\";	-- default item limit, indent string\n"
@@ -37,15 +38,18 @@ void LuaManager::_errorprintf(const char *const string, ...) {
 	vsprintf(buffer, string, argptr); 
 	va_end(argptr); 
 
-	Debug::luaPrint(buffer);
+    Debug::luaPrint(buffer, Debug::CRITICAL);
 }
 	
 	
 void LuaManager::_showError(void) {
 	if(_errorCode == 0) return;
 	const char *errorMsg = luaL_checkstring(*_mainState, -1);
-	_errorprintf("**** LUA ERROR ****\n%s", (errorMsg)? errorMsg : "Lua error message not available");
-	lua_pop(*_mainState, 1); //pop error string off the stack
+    _errorprintf("Error Message");
+    Debug::push();
+    _errorprintf((errorMsg)? errorMsg : "Lua error message not available");
+    Debug::pop();
+    lua_pop(*_mainState, 1); //pop error string off the stack
 }
 
 void LuaManager::rPrintByIndex(const int index, const unsigned depth, const char* name) {
@@ -83,7 +87,7 @@ int LuaManager::_traceBack(lua_State *L) {
 	if (!lua_istable(L, -1)) {
 		lua_pop(L, 1);
 		return 1;
-	}
+    }
 	lua_getfield(L, -1, "traceback");
 	if (!lua_isfunction(L, -1)) {
 		lua_pop(L, 2);
@@ -93,10 +97,18 @@ int LuaManager::_traceBack(lua_State *L) {
 	lua_pushinteger(L, 2);  /* skip this function and traceback */
 	lua_call(L, 2, 1);  /* call debug.traceback */
 
+    //if(_traceBackDbgPushes) {
+      //  Debug::pop();
+      //  --_traceBackDbgPushes;
+    //}
+
+    Debug::luaPrint("***** LUA ERROR *****");
+    Debug::push();
+    //++_traceBackDbgPushes;
+
 	_showError();
 	lua_pop(*_mainState, 2); //remove debug table and original error from stack
 	_runtimeStackDump();
-
 	return 1;
 }
 
@@ -105,7 +117,7 @@ void LuaManager::_cStackDump (void) {
 	int top = lua_gettop(*_mainState);
 	char varDisplayString[200];
 
-	Debug::luaPrint("**** LUA C STACK DUMP ****");
+    Debug::luaPrint("C Stack Dump");
 	Debug::push();
 
 	for (i = 1; i <= top; ++i) {  /* repeat for each level */
@@ -119,12 +131,18 @@ void LuaManager::_cStackDump (void) {
 unsigned LuaManager::_envDump(LuaScript *scr) {
 	char envString[20] = {0};
 	unsigned envCount = 1;
-	LuaBehaviorScript* behav = static_cast<LuaBehaviorScript*>(scr);
+    bool topLevel = false;
+    LuaBehaviorScript* behav = static_cast<LuaBehaviorScript*>(scr);
+
+    static int recursions = 0;
+    int instance = recursions++;
 
 	if(scr->getType() == LuaScript::TYPE_BEHAVIOR && behav->getParent()) {
 		envCount += _envDump(behav->getParent()); //How about you fucking recurse at me?
 	} else {
-		Debug::luaPrint("**** LUA SCRIPT _ENV DUMP ****");
+        Debug::luaPrint("Script Environment Dump");
+        topLevel = true;
+        Debug::push();
 	}
 
 	lua_getglobal(*_mainState, "rPrint");
@@ -134,6 +152,12 @@ unsigned LuaManager::_envDump(LuaScript *scr) {
 	lua_pushstring(*_mainState, envString);
 	_protectedCall(3, 1, nullptr);
 	lua_pop(*_mainState, 1);
+
+
+    if(instance == 0) {
+        Debug::pop();
+        recursions = 0;
+    }
 
 	return envCount;
 
@@ -147,7 +171,8 @@ void LuaManager::_runtimeStackDump(void) {
 	const char *localVarName;
 	char displayName[200];
 
-	Debug::luaPrint("**** LUA RUNTIME STACK DUMP ****");
+    Debug::luaPrint("Runtime Stack Dump");
+    Debug::push();
 
 	//Walk up the stack
 	while(true) {
@@ -176,6 +201,8 @@ void LuaManager::_runtimeStackDump(void) {
 		localIndex = 1;
 		++stackLevel;
 	}
+
+    Debug::pop();
 
 
 
@@ -376,25 +403,27 @@ void LuaManager::dumpStats(void) {
 	kbytes = lua_gc(*_mainState, LUA_GCCOUNT, 0);
 
 
-	Debug::luaPrint("**** LUAMANAGER STATS DUMP ****");
-    sprintf(buffer, "\tTotal scripts loaded:\t%d", (unsigned)_scripts.size());
+    Debug::luaPrint("Virtual Machine Status Dump");
+    Debug::push();
+    sprintf(buffer, "Total scripts loaded:\t%d", (unsigned)_scripts.size());
 	Debug::luaPrint(buffer);
-	sprintf(buffer, "\tMemory Usage:\t%fMB", (float)kbytes/1024.0f);
+    sprintf(buffer, "Memory Usage:\t%fMB", (float)kbytes/1024.0f);
 	Debug::luaPrint(buffer);
 
-	for(auto it : _scripts) {
+    for(auto& it : _scripts) {
 
-		sprintf(buffer, "\t[%d] = %s", count, it.second->getPath());
+        sprintf(buffer, "[%d] = %s", count, it.second->getPath());
+        Debug::push();
 		Debug::luaPrint(buffer);
 
-		sprintf(buffer, "\t\trefCount = %d", it.second->getRefCount());
+        sprintf(buffer, "refCount = %d", it.second->getRefCount());
 		Debug::luaPrint(buffer);
-		sprintf(buffer, "\t\terror = %d", it.second->getError());
+        sprintf(buffer, "error = %d", it.second->getError());
 		Debug::luaPrint(buffer);
 
 		switch(it.second->getType()) {
 		case LuaScript::TYPE_SCRIPT:
-			Debug::luaPrint("\t\ttype = SCRIPT");
+            Debug::luaPrint("type = SCRIPT");
 
 			break;
 		case LuaScript::TYPE_BEHAVIOR:
@@ -402,28 +431,35 @@ void LuaManager::dumpStats(void) {
 			attrib = behav->getAttrib();
 			triggers = attrib->getSupportedTriggers();
 
-			Debug::luaPrint("\t\ttype = BEHAVIOR");
+            Debug::luaPrint("type = BEHAVIOR");
+            Debug::push();
 
-			Debug::luaPrint("\t\tattrib = ");
-			sprintf(buffer, "\t\t\tparent = %s", attrib->getParentPath());
+            Debug::luaPrint("attrib = ");
+            Debug::push();
+            sprintf(buffer, "parent = %s", attrib->getParentPath());
 			Debug::luaPrint(buffer);
 
-			Debug::luaPrint("\t\t\ttriggers = ");
+            Debug::luaPrint("triggers = ");
 			Debug::push();
 			for(unsigned i = 0; i < 64; ++i) {
 				uint64_t mask = (1<<i);
 				if(mask >= Behavior::TRIGGER_MAX) break;
 				if(triggers & mask) {
-					sprintf(buffer, "\t\t\t\t%s", Behavior::triggerNameFromFlag(triggers&mask));
+                    sprintf(buffer, "%s", Behavior::triggerNameFromFlag(triggers&mask));
 					Debug::luaPrint(buffer);
 				}
 			}
 
+            Debug::pop();
+            Debug::pop();
+            Debug::pop();
+
 			break;
 		}
-
+        Debug::pop();
 		++count;
 	}
+    Debug::pop();
 }
 
 void LuaManager::runGarbageCollector(void) {

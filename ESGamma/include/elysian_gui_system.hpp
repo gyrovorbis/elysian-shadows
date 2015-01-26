@@ -124,7 +124,7 @@ namespace elysian {
 		void setBgMenuWidget(MenuWidget*const widget);
 		void clearBgMenuWidget(void);
 
-        void toggleAdvLog(void);
+        void setAdvLogEnabled(const bool val);
 
 		AdventureLog	adventureLog;
 		Font			verdana;
@@ -156,6 +156,11 @@ namespace elysian {
 	inline void GuiSystem::clearBgMenuWidget(void) { _bgMenuWidget = nullptr; }
 
 	inline void GuiSystem::setClearColor(const GYColor4 color) { gyVidClearColor(color); }
+
+    inline void GuiSystem::setAdvLogEnabled(const bool val) {
+        adventureLog.setEnabled(val);
+    }
+
 
 }
 

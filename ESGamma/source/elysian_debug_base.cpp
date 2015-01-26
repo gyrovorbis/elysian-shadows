@@ -51,7 +51,7 @@ Debug::ADV_LOG_WRAP DebugBase::_advLogWrap = Debug::ADV_LOG_LUA;
 //Invoked by LibGyro (callback function)
 void DebugBase::libGyroPrintf(const GY_DEBUG_LEVEL level, const char* const str) { Debug::writeLog(LIBGYRO, (LEVEL)level, str); }
 //Invoked by Lua (always VERBOSE, not silenced with the rest)
-void DebugBase::luaPrint(const char *string) { Debug::writeLog(LUA, VERBOSE, string); }
+void DebugBase::luaPrint(const char *string, const LEVEL lev) { Debug::writeLog(LUA, lev, string); }
 
 // Central endpoint for all debug log calls
 void DebugBase::writeLog(const DebugBase::SOURCE source, const DebugBase::LEVEL level, const char *const str) {
@@ -169,8 +169,8 @@ GYVector3 dirVec = { 0.0f, 0.0f, -1.0f };
 
 bool DebugBase::sandboxInit(void) {
 	//Fuck the current loading paradigm. Initialization happens here for now.
-	printf(VERBOSE, "Debug::sandboxInit()");
-	push();
+    printf(VERBOSE, "LuaManager::runScriptSandbox(%s)", ELYSIAN_GLOBAL_INIT_LUA_PATH);
+    Debug::push();
 
 	LuaManager::runScriptSandbox(ELYSIAN_GLOBAL_INIT_LUA_PATH);
 	Entity* leader = getPartySys()->getPartyLeader();
@@ -181,7 +181,7 @@ bool DebugBase::sandboxInit(void) {
 
 	//LightSource* lightSrc = leader->addLightSource();
 
-	pop();
+    Debug::pop();
 	return true;
 }
 
@@ -262,10 +262,10 @@ void DebugBase::processInput(GameInput& input) {
 	//Rendering layers
 	if(input.getTapped(GameInput::BUT_5)) {
 		if(_engine->_guiSystem->adventureLog.isEnabled()) {
-			_engine->_guiSystem->adventureLog.disable();
+            _engine->_guiSystem->adventureLog.setEnabled(false);
 			printf(VERBOSE, "Disable GUI Layer");
 		} else {
-			_engine->_guiSystem->adventureLog.enable();
+            _engine->_guiSystem->adventureLog.setEnabled(true);
 			printf(VERBOSE, "Enable GUI Layer");
 		}
         //GYVector3 disp = { 200.0f, 0.0f, 0.0f };
@@ -625,7 +625,7 @@ bool DebugBase::parseArguments(void) {
 
 	if (gyFileOpen(ELYSIAN_DEBUG_ARG_FILE, "r", &file)) {
 		printf(VERBOSE, "Debug::parseArguments(void) - initializing from '%s'", ELYSIAN_DEBUG_ARG_FILE);
-		push();
+        Debug::push();
 		if (!gyFileLength(file, &buffer_len)) {
 			return 0;
 		}
@@ -643,7 +643,7 @@ bool DebugBase::parseArguments(void) {
 		}
 		free(buffer);
 		gyFileClose(&file);
-		pop();
+        Debug::pop();
 		//Recursively reinvoke argument-based initialization
 		return parseArguments(argc+1, argv);
     } else {
@@ -656,7 +656,7 @@ bool DebugBase::parseArguments(int argc, char *argv[]) {
 	if(argc <= 1) return parseArguments(); //default init
 
 	printf(VERBOSE, "Debug::parseArguments(%d, char *argv[])", argc);
-	push();
+    Debug::push();
 	for(unsigned int i = 1; i < (unsigned int)argc; ++i) {
 		if(argv[i][0] != '-') {
 			printf(CRITICAL, "! - Unrecognized command-line argument: %s", argv[i]);
@@ -688,7 +688,7 @@ bool DebugBase::parseArguments(int argc, char *argv[]) {
 				printf(CRITICAL, "! - Unrecognized command-line argument: %s", argv[i]);
 		}
 	}
-	pop();
+    Debug::pop();
 	return true;
 }
 

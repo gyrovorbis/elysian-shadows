@@ -46,6 +46,7 @@ namespace elysian {
 #endif
 		static const char _rPrint[];
         static const char _serializeTable[];
+        static int _traceBackDbgPushes;
 
 		static void _errorprintf(const char *const string, ...);
 		static void _registerWrappers(void);
@@ -174,6 +175,10 @@ namespace elysian {
 				lua_remove(*_mainState, lua_gettop(*_mainState));		//clean up stack after reesting
 				_envDump(script);
 				dumpStats();
+                //if(_traceBackDbgPushes) {
+                    Debug::pop();
+                //    --_traceBackDbgPushes;
+               // }
             }
 		} else {
             if(script) lua_remove(*_mainState, 1); //remove c traceback function from bottom of stack

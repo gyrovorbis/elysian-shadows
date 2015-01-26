@@ -89,12 +89,13 @@ public:
 		return (index < _tileSheet.size())? _tileSheet[index] : NULL;
 	}
 
-    Area *newArea(QString name=QString("new_area"));
-    Area *getArea(const QString name);
-    Area *getAreaByIndex(const unsigned int index);
-	Area *loadArea(const QString name);
+    Area* newArea(QString name=QString("new_area"));
+    Area* getArea(const QString name);
+    Area* getAreaByIndex(const unsigned int index);
+    Area* loadArea(const QString name);
+    Area* reloadArea(Area* const area);
 	bool saveArea(const QString name) const;
-	bool removeArea(const QString name);
+    bool removeArea(const QString name, const bool deleteDir=true);
     Area *getFirstArea() const;
     elysian::LevelBase* getElysianLevel(void) { return (elysian::LevelBase*)this; }
 	elysian::Tile *getElysianTile(const uint16_t index);
@@ -113,6 +114,7 @@ public:
 	Area *importArea(const QString dir);
 
 	bool reloadSheets(void);
+    bool reload(void);
 	bool validSheets(void) const;
 	bool isActive(void) const;
 	bool isOpen(void) const;

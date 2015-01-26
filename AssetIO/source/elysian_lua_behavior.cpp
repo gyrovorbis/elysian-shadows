@@ -130,10 +130,13 @@ bool LuaBehavior::loadScript(const char *file, const OOLUA::Lua_table_ref paramT
 		addTriggers(_script->getAttrib()->getSupportedTriggers());
 
 		if(_triggerBits & ON_CREATE) {
-			if(paramTable.ref() != LUA_REFNIL) //Call trigger with custom paramter table
+            dbgprintf(LOG_VERBOSE, "LuaBehavior::onCreate(%s)", _script->getPath());
+            dbgPush();
+            if(paramTable.ref() != LUA_REFNIL) //Call trigger with custom parameter table
 				_PROTECTED(_callTrigger<void>("onCreate", _ooSelfTableRef, paramTable));
 			//call basic trigger
 			else onCreate();
+            dbgPop();
 		}
 
 		parentSelfTableRef = selfTableRef;

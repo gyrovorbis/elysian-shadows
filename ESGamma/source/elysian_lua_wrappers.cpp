@@ -8,9 +8,9 @@ namespace elysian {
 		//Register classes and structs
 		_mainState->register_class<Lua32BitMask>();
 		_mainState->register_class<LuaBehaviorScriptAttrib>();
-        OOLUA::register_class<Vector2>(*_mainState);
-        OOLUA::register_class<Vector3>(*_mainState);
-        OOLUA::register_class<Vector4>(*_mainState);
+        OOLUA::register_class<GYVector2>(*_mainState);
+        OOLUA::register_class<GYVector3>(*_mainState);
+        OOLUA::register_class<GYVector4>(*_mainState);
         _mainState->register_class<GYColor4>();
 		OOLUA::register_class<LuaEventCallback>(*_mainState);
 		_mainState->register_class<InstanceTransform>();
@@ -140,20 +140,20 @@ OOLUA_EXPORT_FUNCTIONS(LuaBehaviorScriptAttrib,
 					   addSupportedTrigger)
 OOLUA_EXPORT_FUNCTIONS_CONST(LuaBehaviorScriptAttrib)
 
-EXPORT_OOLUA_FUNCTIONS_0_CONST(GYVector2)
-EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(GYVector2)
-OOLUA_EXPORT_FUNCTIONS(Vector2, setX, setY)
-OOLUA_EXPORT_FUNCTIONS_CONST(Vector2, getX, getY)
+//EXPORT_OOLUA_FUNCTIONS_0_CONST(GYVector2)
+//EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(GYVector2)
+OOLUA_EXPORT_FUNCTIONS(GYVector2, setX, setY)
+OOLUA_EXPORT_FUNCTIONS_CONST(GYVector2, getX, getY)
 
-OOLUA_EXPORT_FUNCTIONS(GYVector3)
-OOLUA_EXPORT_FUNCTIONS_CONST(GYVector3)
-OOLUA_EXPORT_FUNCTIONS(Vector3, setX, setY, setZ)
-OOLUA_EXPORT_FUNCTIONS_CONST(Vector3, getX, getY, getZ)
+//OOLUA_EXPORT_FUNCTIONS(GYVector3)
+//OOLUA_EXPORT_FUNCTIONS_CONST(GYVector3)
+OOLUA_EXPORT_FUNCTIONS(GYVector3, setX, setY, setZ)
+OOLUA_EXPORT_FUNCTIONS_CONST(GYVector3, getX, getY, getZ)
 
-OOLUA_EXPORT_FUNCTIONS(GYVector4)
-OOLUA_EXPORT_FUNCTIONS_CONST(GYVector4)
-OOLUA_EXPORT_FUNCTIONS(Vector4, setX, setY, setZ, setW)
-OOLUA_EXPORT_FUNCTIONS_CONST(Vector4, getX, getY, getZ, getW)
+//OOLUA_EXPORT_FUNCTIONS(GYVector4)
+//OOLUA_EXPORT_FUNCTIONS_CONST(GYVector4)
+OOLUA_EXPORT_FUNCTIONS(GYVector4, setX, setY, setZ, setW)
+OOLUA_EXPORT_FUNCTIONS_CONST(GYVector4, getX, getY, getZ, getW)
 
 
 OOLUA_EXPORT_FUNCTIONS(GYColor4, setA, setR, setG, setB)
@@ -803,7 +803,7 @@ OOLUA_EXPORT_FUNCTIONS(GuiSystem,
 					   setBgMenuWidget,
 					   clearBgMenuWidget,
                        setClearColor,
-                       toggleAdvLog)
+                       setAdvLogEnabled)
 OOLUA_EXPORT_FUNCTIONS_CONST(GuiSystem,
                              getResolution)
 

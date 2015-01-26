@@ -443,7 +443,7 @@ void DialogSystem::startDialog(Dialog *const dialog, EventMonitor*const monitor)
 	FacePlayer();
 	_splitText();
 	CheckModal();
-	getGuiSys()->adventureLog.disable();
+    getGuiSys()->adventureLog.setEnabled(false);
 
 }
 

@@ -44,8 +44,7 @@ namespace elysian {
         virtual             ~LuaBehavior(void) override;
 
 		bool				loadScript(const char *file, const OOLUA::Lua_table_ref paramTable);
-		
-        template<typename RType, typename... PTypes>
+		        template<typename RType, typename... PTypes>
         RType               _callLuaFunction(const char* funcName, PTypes... parameters) const;
 		
 		//overridden from component

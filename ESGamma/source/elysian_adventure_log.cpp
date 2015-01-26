@@ -211,12 +211,6 @@ void AdventureLog::render(Font &font) {
 	//font.DrawString(0, ADV_LOG_X+15, ADV_LOG_Y, ADV_LOG_Z+3, 1, 1, 1, L_ALIGN, "Adventure Log");
 }
 
-void AdventureLog::disable(void) {
-	_exitState = EXIT_FADE_OUT;
-}
 
-void AdventureLog::enable(void) {
-	_exitState = EXIT_FADE_IN;
-}
 
 }

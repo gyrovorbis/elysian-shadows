@@ -36,8 +36,7 @@ class Font;
 		
 
 		void addLine(const TEXT_TYPE lineType, const char* line);
-		void disable(void);
-		void enable(void);
+        void setEnabled(const bool val);
         bool isEnabled(void) const;
 
 	private:
@@ -62,6 +61,10 @@ class Font;
 	inline bool AdventureLog::isEnabled(void) const {
 		return (_exitState == EXIT_ACTIVE || _exitState == EXIT_FADE_IN)? true : false;
 	}
+
+    inline void AdventureLog::setEnabled(const bool val) {
+        _exitState = val? EXIT_FADE_IN : EXIT_FADE_OUT;
+    }
     
 }
 

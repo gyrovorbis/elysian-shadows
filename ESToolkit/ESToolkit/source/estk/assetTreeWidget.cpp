@@ -9,6 +9,7 @@
 #include "assets.h"
 #include "elysian_engine.hpp"
 #include "elysian_level_system.hpp"
+#include "project.h"
 
 AssetTreeWidget::AssetTreeWidget(QWidget *parent): QTreeWidget(parent), _ignoreItemChange(false), _prev(NULL) {
 	setContextMenuPolicy(Qt::CustomContextMenu);
@@ -55,15 +56,12 @@ void AssetTreeWidget::OnAddProject(Project *const project) {
 }
 
 void AssetTreeWidget::OnAreaChange(Area * const area) {
-	if(currentItem() == area) {
+    if(area && currentItem() == area) {
 		setCurrentSelection(static_cast<Selectable *>(static_cast<TreeNode *>(area)));
 		return;
 	}
 
-    //if(currentItem())
-   //Debug::Log(Debug::VERBOSE, "PreCurrItem - %s", ((Area*)currentItem())->getName().toStdString().c_str());
-    //area->setExpanded(true);
-	setCurrentItem(NULL);
+    setCurrentItem(nullptr);
 	if(area) setCurrentItem(area);
 	else setCurrentItem(getCurrentLevel());
  //   area->setSelected(true);
@@ -105,6 +103,7 @@ void AssetTreeWidget::onCustomContextMenuRequested(QPoint point) {
         actions.push_back(new QAction("Add Area", nullptr));
         actions.push_back(new QAction("Duplicate", nullptr));
         actions.push_back(new QAction("Remove", nullptr));
+        actions.push_back(new QAction("Reload", nullptr));
         menu = new QMenu("Level", nullptr);
 		result = menu->exec(actions, mapToGlobal(point));
 		if(result) {
@@ -125,6 +124,9 @@ void AssetTreeWidget::onCustomContextMenuRequested(QPoint point) {
                 getAssets()->setCurrentLevel(project->getFirstLevel());
             } else if(result->text() == QString("Duplicate")) {
                 level->duplicate();
+            } else if(result->text() == QString("Reload")) {
+               getAssets()->reloadLevel(level);
+
             }
 		}
 		break;
@@ -132,6 +134,7 @@ void AssetTreeWidget::onCustomContextMenuRequested(QPoint point) {
 	case TreeNode::ITEM_AREA:
         actions.push_back(new QAction("Remove", nullptr));
         actions.push_back(new QAction("Duplicate", nullptr));
+        actions.push_back(new QAction("Reload", nullptr));
         menu = new QMenu("Area", nullptr);
 		result = menu->exec(actions, mapToGlobal(point));
 		if(result) {
@@ -140,12 +143,17 @@ void AssetTreeWidget::onCustomContextMenuRequested(QPoint point) {
                 if(QMessageBox::critical(nullptr, tr("Warning!"), tr("Are you SURE that you want to permanently delete the selected area?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
 					return;
 				}
-				Level *level = area->getLevel();
+
+                Level* level = area->getLevel();
                 getAssets()->setCurrentArea(nullptr);
                 level->removeArea(area->getNodeName());
                 getAssets()->setCurrentArea(level->getFirstArea());
+
+
             } else if(result->text() == QString("Duplicate")) {
                 area->duplicate();
+            } else if(result->text() == QString("Reload")) {
+                getAssets()->reloadArea(area);
             }
 		}
 		break;

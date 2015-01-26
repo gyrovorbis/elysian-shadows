@@ -210,5 +210,7 @@ private slots:
     void on_actionNormal_Map_toggled(bool arg1);
     void on_actionSpecular_Map_toggled(bool arg1);
     void on_actionHidden_Entities_toggled(bool arg1);
+    void on_actionReload_triggered();
+    void on_actionReload_2_triggered();
 };
 #endif // ESTOOLKIT_H

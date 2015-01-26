@@ -42,6 +42,7 @@ TkDebug::TkDebug(void) {
     _centralWidget->setLayout(_vertLayout);
 
 	_treeWidget = new QTreeWidget;
+    _treeWidget->setAutoScroll(false);
 	_treeWidget->setColumnCount(2);
 	QStringList labels;
 	labels.append(QString("String"));
@@ -77,6 +78,7 @@ TkDebug::TkDebug(void) {
 
 	_outfile = new std::ofstream(DEBUG_LOG_PATH);
 	if(!_outfile->is_open()) qDebug() << "!!!!!- could not open Debug log file for writing!";
+
 }
 
 TkDebug::~TkDebug(void) {
@@ -128,14 +130,14 @@ void TkDebug::logQ(QtMsgType type, const QMessageLogContext &context, const QStr
 }
 
 void TkDebug::push(void) {
-	++_stackDepth;
+    //++_stackDepth;
     Q_ASSERT(_curParent);
 	_curParent = _prevItem;
     elysian::DebugBase::push();
 }
 
 void TkDebug::pop(void) {
-	--_stackDepth;
+    //--_stackDepth;
 	_curParent = _curParent->parent();
 	if(!_curParent) _curParent = _treeWidget->invisibleRootItem();
     elysian::DebugBase::pop();
@@ -173,29 +175,32 @@ void TkDebug::Log(elysian::DebugBase::LEVEL flag, QString msg, TK_SOURCE src) {
     if(flag == VERBOSE && !_filterEnabled[src]) _prevItem->setHidden(true);
 
     //ths is why shit is so slow. Retarded time complexity
-	if(flag >= Debug::CRITICAL) {
+    if(flag >= Debug::CRITICAL && src == LUA) {
 		_pendingError = true;
 		QTreeWidgetItem *it = _prevItem;
 		do {
             brush = QBrush(Qt::darkRed);
             it->setForeground(0, brush);
             it->setForeground(1, brush);
-			it->setExpanded(true);
+            it->setExpanded(true);
 			it = it->parent();
 		} while(it);
+
+        _prevItem->setSelected(true);
+        _treeWidget->scrollToItem(_prevItem);
 
         //If we've returned to the top level with a pending error,
         //pop the log for the user to see.
         //if(_curParent == _treeWidget->invisibleRootItem() && _pendingError) {
         //        getInstance().show();
         //}
-    } else if(src == LUA) {
+    } /*else if(src == LUA) {
         QTreeWidgetItem *it = _prevItem;
         do {
             it->setExpanded(true);
             it = it->parent();
         } while(it);
-    }
+    }*/
 
 	_treeWidget->scrollToBottom();
     //gyPrintf(msg.toStdString().c_str());
@@ -251,7 +256,7 @@ void TkDebug::onCommandSubmit(void) {
     parent->setExpanded(true);
     _prompt->clear();
     _resizePrompt();
-    _treeWidget->scrollToBottom();
+   // _treeWidget->scrollToBottom();
 }
 
 
@@ -260,6 +265,9 @@ bool TkDebug::eventFilter(QObject* object, QEvent* event) {
     bool retVal = false;
 
     switch(event->type()) {
+    case QEvent::Resize:
+        _resizePrompt();
+        break;
     case QEvent::KeyPress:
         switch(keyEvent->key()) {
         case Qt::Key_Up:
@@ -315,5 +323,6 @@ void TkDebug::_resizePrompt(void) {
     QFontMetrics m(_prompt->font());
     int RowHeight = m.lineSpacing();
     _prompt->setFixedHeight(nRows*RowHeight+4);
+    _treeWidget->scrollToBottom();
 }
 

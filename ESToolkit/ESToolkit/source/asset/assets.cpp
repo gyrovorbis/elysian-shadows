@@ -362,3 +362,38 @@ void Assets::onEntityParented(Entity * const child, Entity * const parent) {
     emit entityParented(child, parent);
 }
 
+Level* Assets::reloadLevel(Level* level) {
+    if(!level) level = getCurrentLevel();
+    QString levelName;
+    QString areaName;
+    if(getCurrentLevel() == level) {
+        levelName = level->getDirName();
+        areaName = getCurArea()->getDirName();
+        setCurrentArea(nullptr);
+        setCurrentLevel(nullptr);
+    }
+    level = level->getProject()->reloadLevel(level);
+    if(!areaName.isNull()) {
+        setCurrentLevel(level);
+        setCurrentArea(level->getArea(areaName));
+    } else {
+        setCurrentLevel(getCurrentLevel());
+    }
+    return level;
+}
+
+Area* Assets::reloadArea(Area* area) {
+    if(!area) area = getCurrentArea();
+    QString areaName;
+    if(getCurrentArea() == area) {
+        setCurrentArea(nullptr);
+       areaName = area->getDirName();
+   }
+   area = area->getLevel()->reloadArea(area);
+   if(!areaName.isNull()) {
+        setCurrentArea(getCurrentLevel()->getArea(areaName));
+   } else {
+        setCurrentArea(getCurrentArea());
+   }
+   return area;
+}

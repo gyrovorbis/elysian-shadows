@@ -51,6 +51,9 @@ public:
 	void setLayerVisible(const LAYER_TYPE type, bool flag=true);
 	bool getLayerVisible(const LAYER_TYPE type) const;
 
+    Level* reloadLevel(Level* level=nullptr);
+    Area* reloadArea(Area* area=nullptr);
+
     //Project *NewProject();
     //Project *NewProject(QString n);
 	Project *getFirstProject(void) const;

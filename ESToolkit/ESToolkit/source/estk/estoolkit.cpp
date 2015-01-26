@@ -1842,3 +1842,13 @@ void ESToolkit::on_actionHidden_Entities_toggled(bool arg1)
 {
     _entityDockWidget->getTreeWidget()->setShowHidden(arg1);
 }
+
+void ESToolkit::on_actionReload_triggered()
+{
+    _assets.reloadArea();
+}
+
+void ESToolkit::on_actionReload_2_triggered()
+{
+    _assets.reloadLevel();
+}

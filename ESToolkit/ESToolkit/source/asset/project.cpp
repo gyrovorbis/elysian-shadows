@@ -71,7 +71,7 @@ Level *Project::loadLevel(const QString name) {
 
     //connectSlots(lev);
     if(lev) {
-        //ConnectSlots(lev);
+        connectSlots(lev);
 		_level.push_back(lev);
 		emit levelAdded(this, lev);
         Debug::pop();
@@ -111,7 +111,7 @@ TkLevel *Project::getLevelByIndex(const unsigned int index) {
     return (index < (unsigned)_level.size())? _level[index] : nullptr;
 }
 
-bool Project::removeLevel(const QString name) {
+bool Project::removeLevel(const QString name, const bool deleteFolder) {
     bool success = true;
 
 	for(int i = 0; i < _level.size(); ++i) {
@@ -119,7 +119,7 @@ bool Project::removeLevel(const QString name) {
 			Level *temp = _level[i];
             getAssets()->getEngine()->getLevelSys()->removeLevel(temp);
 			_level.erase(_level.begin() + i);
-            if(!FileUtilities::removeDir(temp->getLocation())) {
+            if(deleteFolder && !FileUtilities::removeDir(temp->getLocation())) {
 				Debug::Logf(Debug::CRITICAL, "! - Could not delete directory '%s'\n", temp->getLocation().toStdString().c_str());
                 success = false;
             }
@@ -318,6 +318,12 @@ QString Project::getLocation(void) const {
     else {
         return "";
     }
+}
+
+TkLevel* Project::reloadLevel(TkLevel *level) {
+    QString dirName = level->getDirName();
+    removeLevel(dirName, false);
+    return loadLevel(dirName);
 }
 
 void Project::onComponentAttached(Level *const level, Area *const area, Entity *const entity, Component *const comp) {

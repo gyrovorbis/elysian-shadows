@@ -134,6 +134,7 @@ TkLevel::~TkLevel(void) {
 	close();
 
 	for(int i = 0; i < _area.size(); ++i) {
+        getAssets()->getEngine()->getLevelSys()->removeArea(_area[i]);
 		delete _area[i];
     }
     _area.clear();
@@ -426,7 +427,7 @@ Area *TkLevel::loadArea(const QString name) {
     return nullptr;
 }
 
-bool TkLevel::removeArea(const QString name) {
+bool TkLevel::removeArea(const QString name, const bool deleteDir) {
     bool success = true;
 
 	for(int i = 0; i < _area.size(); ++i) {
@@ -434,7 +435,7 @@ bool TkLevel::removeArea(const QString name) {
 			Area *temp = _area[i];
             getAssets()->getEngine()->getLevelSys()->removeArea(temp);
 			_area.erase(_area.begin() + i);
-            if(!FileUtilities::removeDir(temp->getLocation())) {
+            if(deleteDir && !FileUtilities::removeDir(temp->getLocation())) {
 				Debug::Logf(Debug::CRITICAL, "! - Could not delete directory '%s'\n", temp->getLocation().toStdString().c_str());
                 success = false;
             }
@@ -905,6 +906,27 @@ bool TkLevel::_gatherMaps(const bool normal) {
     return success;
 }
 
+bool TkLevel::reload(void) {
+    if(_open) close();
+    for(int i = 0; i < _area.size(); ++i) {
+        getAssets()->getEngine()->getLevelSys()->removeArea(_area[i]);
+        delete _area[i];
+    }
+    _area.clear();
+    disconnect();
+
+    load(_location);
+
+    if(_active) open();
+
+    return true;
+}
+
+Area* TkLevel::reloadArea(Area * const area) {
+    QString dirName = area->getDirName();
+    removeArea(dirName, false);
+    return loadArea(dirName);
+}
 
 // ========= SPECULAR/NORMAL MAP GENERATION ===========
 

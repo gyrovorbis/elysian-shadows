@@ -541,6 +541,7 @@ void MapView::_updateScrollBars(void) {
 }
 
 void MapView::createSelectionItemGroup(void) {
+    _selectionChanged = true;
     _selItemGroup = new SelectionItemGroup;
 }
 

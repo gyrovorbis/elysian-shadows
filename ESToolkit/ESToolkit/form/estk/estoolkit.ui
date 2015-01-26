@@ -182,16 +182,19 @@
      <addaction name="actionScatter_2"/>
      <addaction name="actionGather_2"/>
     </widget>
+    <addaction name="actionReload_2"/>
     <addaction name="actionLevelRemove"/>
     <addaction name="actionLevelReloadSheets"/>
     <addaction name="menuNormal_Maps"/>
     <addaction name="menuSpecular_Maps"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuArea">
     <property name="title">
      <string>Area</string>
     </property>
     <addaction name="actionAreaAddEntity"/>
+    <addaction name="actionReload"/>
     <addaction name="actionAreaRemove"/>
     <addaction name="separator"/>
     <addaction name="actionScreenshot"/>
@@ -1178,6 +1181,16 @@
    </property>
    <property name="text">
     <string>Hidden Entities</string>
+   </property>
+  </action>
+  <action name="actionReload">
+   <property name="text">
+    <string>Reload</string>
+   </property>
+  </action>
+  <action name="actionReload_2">
+   <property name="text">
+    <string>Reload</string>
    </property>
   </action>
  </widget>

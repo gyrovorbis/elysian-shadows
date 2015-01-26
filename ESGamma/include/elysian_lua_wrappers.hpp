@@ -174,26 +174,25 @@ OOLUA_PROXY(LuaBehaviorScriptAttrib)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(GYVector2)
-    OOLUA_TAGS (
-        No_public_constructors,
-        No_public_destructor
-    )
+    OOLUA_MGET_MSET(x, getX, setX)
+    OOLUA_MGET_MSET(y, getY, setY)
 OOLUA_PROXY_END
-
+/*
 OOLUA_PROXY(Vector2, GYVector2)
+
+
     OOLUA_MEM_FUNC_CONST(float, getX)
     OOLUA_MEM_FUNC_CONST(float, getY)
     OOLUA_MEM_FUNC(void, setX, float)
     OOLUA_MEM_FUNC(void, setY, float)
-OOLUA_PROXY_END
+OOLUA_PROXY_END*/
 
 OOLUA_PROXY(GYVector3)
-    OOLUA_TAGS (
-        No_public_constructors,
-        No_public_destructor
-    )
+    OOLUA_MGET_MSET(x, getX, setX)
+    OOLUA_MGET_MSET(y, getY, setY)
+    OOLUA_MGET_MSET(z, getZ, setZ)
 OOLUA_PROXY_END
-
+/*
 OOLUA_PROXY(Vector3, GYVector3)
     OOLUA_MEM_FUNC_CONST(float, getX)
     OOLUA_MEM_FUNC_CONST(float, getY)
@@ -202,14 +201,14 @@ OOLUA_PROXY(Vector3, GYVector3)
     OOLUA_MEM_FUNC(void, setY, float)
     OOLUA_MEM_FUNC(void, setZ, float)
 OOLUA_PROXY_END
-
+*/
 OOLUA_PROXY(GYVector4)
-    OOLUA_TAGS (
-        No_public_constructors,
-        No_public_destructor
-    )
+    OOLUA_MGET_MSET(x, getX, setX)
+    OOLUA_MGET_MSET(y, getY, setY)
+    OOLUA_MGET_MSET(z, getZ, setZ)
+    OOLUA_MGET_MSET(w, getW, setW)
 OOLUA_PROXY_END
-
+/*
 OOLUA_PROXY(Vector4, GYVector4)
     OOLUA_MEM_FUNC_CONST(float, getX)
     OOLUA_MEM_FUNC_CONST(float, getY)
@@ -219,7 +218,7 @@ OOLUA_PROXY(Vector4, GYVector4)
     OOLUA_MEM_FUNC(void, setY, float)
     OOLUA_MEM_FUNC(void, setZ, float)
     OOLUA_MEM_FUNC(void, setW, float)
-OOLUA_PROXY_END
+OOLUA_PROXY_END*/
 
 OOLUA_PROXY(GYColor4)
 	OOLUA_MGET_MSET(a, getA, setA)
@@ -1125,7 +1124,7 @@ OOLUA_PROXY(GuiSystem)
 	OOLUA_MEM_FUNC(void, setBgMenuWidget, cpp_in_p<MenuWidget*>)
 	OOLUA_MEM_FUNC(void, clearBgMenuWidget)
 	OOLUA_MEM_FUNC(void, setClearColor, GYColor4)
-    OOLUA_MEM_FUNC(void, toggleAdvLog)
+    OOLUA_MEM_FUNC(void, setAdvLogEnabled, bool)
     OOLUA_MEM_FUNC_CONST(void, getResolution, out_p<unsigned&>, out_p<unsigned&>)
 OOLUA_PROXY_END
 

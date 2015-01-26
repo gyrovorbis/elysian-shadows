@@ -68,7 +68,7 @@ namespace elysian {
 		//Invoked by Engine
 		static void printf(const LEVEL level, const char *const string, ...);
         //Invoked by Lua (always VERBOSE, not silenced with the rest)
-        static void luaPrint(const char *string);
+        static void luaPrint(const char *string, const LEVEL lev = VERBOSE);
 
         static void push(void) { ++_stackDepth; }
 		static void pop(void) { --_stackDepth; }
