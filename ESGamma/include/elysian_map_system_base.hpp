@@ -15,10 +15,13 @@
 #include "elysian_entity.hpp"
 #include "elysian_area.hpp"
 
-#include <gyro.h>
+#include <gyro_math_api.h>
+#include <gyro_matrix_api.h>
+#include <gyro_video_api.h>
 
 #ifdef GYRO_GLAL
 #	include <glal/gyro_shaders_glal.h>
+#   include <glal/gyro_video_glal.h>
 
 #define ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE	1000000
 #endif
@@ -61,7 +64,9 @@ namespace elysian {
 		unsigned					_stripIndexArray[ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE];
 		unsigned					_stripIndexArraySize = 0;
 		static const GYColor4		_tileColor;
-        static GY_RECT_PLANE_TYPE _curPlaneType;
+        static GY_RECT_PLANE_TYPE   _curPlaneType;
+        static GY_RECT_TEX_ORIENT   _curTexOrient;
+        static TEXTURE_FLIP         _curTexFlip;
 		bool _renderLayer[4];
         bool _blendFunc = false;
         //animation
@@ -171,11 +176,27 @@ namespace elysian {
 		}
 #if 1
         GY_RECT_PLANE_TYPE newPlane = entry.mapEntry.getPlane();
+        GY_RECT_TEX_ORIENT newOrient = entry.mapEntry.getOrient();
+        bool texOrientChanged = false;
 
-        if(newPlane != _curPlaneType) {
+        if(newOrient != _curTexOrient) {
+            endObjectList();
+            gyVidRectTexOrient(newOrient);
+            glalVidTangentUpdateUniform();
+            _curTexOrient = newOrient;
+            texOrientChanged = true;
+            TEXTURE_FLIP newFlip = glalTextureFlipFromOrient(newOrient);
+            if(newFlip != _curTexFlip) {
+                glalVidTextureFlipUpdateUniform();
+                _curTexFlip = newFlip;
+            }
+        }
+
+        if(newPlane != _curPlaneType || texOrientChanged) {
 			endObjectList();
 			//gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta, 32.0f, 32.0f, 32.0f);
             gyVidRectPlaneType(newPlane);
+            glalVidNormalUpdateUniform();
             _curPlaneType = newPlane;
 		}
 		/*} else {
@@ -358,6 +379,10 @@ namespace elysian {
     const GYColor4      MapSystemBase<P, T, E>::_tileColor = { 255, 255, 255, 255 }; //I s'pose this could be configurable?
     template<typename P, typename T, typename E>
     GY_RECT_PLANE_TYPE  MapSystemBase<P, T, E>::_curPlaneType = GY_RECT_PLANE_BOTTOM;
+    template<typename P, typename T, typename E>
+    GY_RECT_TEX_ORIENT  MapSystemBase<P, T, E>::_curTexOrient = GY_RECT_TEX_ORIENT_NORMAL;
+    template<typename P, typename T, typename E>
+    TEXTURE_FLIP  MapSystemBase<P, T, E>::_curTexFlip = TEXTURE_FLIP_NONE;
 
     template<typename P, typename T, typename E>
     inline MapSystemBase<P, T, E>::MapSystemBase(void):

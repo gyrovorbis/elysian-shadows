@@ -1,7 +1,7 @@
 #include <gyro_system_api.h>
 #include "gyro_defines.h"
 //#include <x86/gyro_glfw_x86.inl>
-#include "../glal/gyro_video_glal.h"
+#include <glal/gyro_video_glal.h>
 #include <stdio.h>
 #include <stdarg.h>
 

@@ -76,7 +76,7 @@ namespace elysian {
 
         static inline void  _registerPropertyMetaMethodTables(lua_State* l) {
 			lua_getglobal(l, OOLUA::Proxy_class<T>::class_name);
-            LuaManager::rPrintByIndex(-2, 99, OOLUA::Proxy_class<T>::class_name);
+            //LuaManager::rPrintByIndex(-2, 99, OOLUA::Proxy_class<T>::class_name);
 
 			//Register property pairs for index table <K=field, V=getFunc>
 			lua_newtable(l);

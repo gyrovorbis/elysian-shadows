@@ -1807,17 +1807,17 @@ void ESToolkit::setMainTextureUniform(const int uniform) {
     _ui->actionSpecularsheet->blockSignals(false);
 }
 
-void ESToolkit::on_actionTilesheet_toggled(bool arg1)
+void ESToolkit::on_actionTilesheet_toggled(bool /*arg1*/)
 {
     setMainTextureUniform(0);
 }
 
-void ESToolkit::on_actionNormalsheet_toggled(bool arg1)
+void ESToolkit::on_actionNormalsheet_toggled(bool /*arg1*/)
 {
     setMainTextureUniform(1);
 }
 
-void ESToolkit::on_actionSpecularsheet_toggled(bool arg1)
+void ESToolkit::on_actionSpecularsheet_toggled(bool /*arg1*/)
 {
     setMainTextureUniform(2);
 }
