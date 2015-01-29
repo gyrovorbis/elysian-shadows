@@ -5,10 +5,10 @@
 #include <gyro_defines.h>
 #include <stdio.h>
 
-#include "gyro_video_glal.h"
-#include "gyro_shaders_glal.h"
-#include "gyro_system_api.h"
-#include "glal/gyro_glal.h"
+#include <glal/gyro_video_glal.h>
+#include <glal/gyro_shaders_glal.h>
+#include <gyro_system_api.h>
+#include <glal/gyro_glal.h>
 
 GLenum textureMapTexUnits[TEXTURE_MAP_MAX] = {
     GL_TEXTURE0,
@@ -90,7 +90,7 @@ _LightingShaderProgram*		curLightShader		= &_lightingShader;
 void gyVidSetCurrentShaderProgram(struct _GYShaderProgram*const program) {
 	_curShaderProg = program;
 	glUseProgram(program->program);
-        GLenum glErr = glGetError();
+        //GLenum glErr = glGetError();
  /*   if (glErr != GL_NO_ERROR)
     {
             _gyLog(GY_DEBUG_CRITICAL, "glError in file %d!!", program->program);
@@ -237,11 +237,12 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
     shader->uniformLoc[SHADER_TEXTURE_MAP]              = _protectedUniformQuery(shader->program, "uTexture");
 	shader->uniformLoc[SHADER_TEXTURE_ENABLED]			= _protectedUniformQuery(shader->program, "uTextureEnabled");
 
-	shader->attribLoc[SHADER_COLOR]						= _protectedAttribQuery(shader->program, "aColor");
-
 	if(!light) return; //the rest is lighting only
 
+    shader->attribLoc[SHADER_COLOR]						= _protectedAttribQuery(shader->program, "aColor");
+
 	//poll for global uniform locations
+    shader->uniformLoc[SHADER_TEXTURE_FLIP]             = _protectedUniformQuery(shader->program, "uTextureFlip");
 	shader->uniformLoc[SHADER_CAM_WORLD_POS]			= _protectedUniformQuery(shader->program, "uCamWorldPos");
 	shader->uniformLoc[SHADER_NORMAL]					= _protectedUniformQuery(shader->program, "uNormal");
 	shader->uniformLoc[SHADER_TANGENT]					= _protectedUniformQuery(shader->program, "uTangent");
@@ -322,11 +323,11 @@ void glalLoadDefaultShaders(void) {
 int gyShadersReloadAll(void) {
     int success = 1;
     success &= gyShaderProgramDestroy(_lightingShader.program);
-    success &=gyShaderProgramDestroy(_shadowMapShader.program);
-    success &=gyShaderDestroy(_lightingShader.program->vertShader);
-    success &=gyShaderDestroy(_lightingShader.program->fragShader);
-    success &=gyShaderDestroy(_shadowMapShader.program->vertShader);
-    success &=gyShaderDestroy(_shadowMapShader.program->fragShader);
+    success &= gyShaderProgramDestroy(_shadowMapShader.program);
+    success &= gyShaderDestroy(_lightingShader.program->vertShader);
+    success &= gyShaderDestroy(_lightingShader.program->fragShader);
+    success &= gyShaderDestroy(_shadowMapShader.program->vertShader);
+    success &= gyShaderDestroy(_shadowMapShader.program->fragShader);
     glalLoadDefaultShaders();
     gyVidSetDefaultShaderProgram();
     glalDefaultShadersLoadUniforms();
@@ -354,6 +355,7 @@ void glalDefaultShadersLoadUniforms(void) {
 	gyVidSetGlobalAmbience(&_globalAmbience);
 	gyVidLightingSetEnable(lightingEnabled);
 
+    glUniform1i(curLightShader->uniformLoc[SHADER_TEXTURE_FLIP], textureFlip);
 	glUniform3fv(curLightShader->uniformLoc[SHADER_CAM_WORLD_POS], 1, (float*)&camWorldPos);
 	glUniform3fv(curLightShader->uniformLoc[SHADER_NORMAL], 1, (float*)normalVector);
 	glUniform3fv(curLightShader->uniformLoc[SHADER_TANGENT], 1, (float*)tangentVector);
