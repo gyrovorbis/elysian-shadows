@@ -2,37 +2,78 @@
 #include <gyro_texture_api.h>
 #include <gyro_system_api.h>
 #include <gyro_shader_api.h>
-#include "gyro_video_glal.h"
-#include "gyro_shaders_glal.h"
+#include <glal/gyro_video_glal.h>
+#include <glal/gyro_shaders_glal.h>
 
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#define SQRT_OF_2 1.414213562
+#define SQRT_OF_3 1.73205080757
+
 //OPENGL/OPENGL_ES COMMONS, BITCHES!
+
+static GYVector3 _rectNormals[GY_RECT_PLANE_MAX][GY_RECT_TEX_ORIENT_MAX] = {
+    {   //GY_RECT_PLANE_BOTTOM
+        { 0.0f, 0.0f, 1.0f }, //GY_RECT_TEX_ORIENT_NORMAL
+        { 0.0f, 0.0f, -1.0f }, //GY_RECT_TEX_ORIENT_FLIP_HORIZ
+        { 0.0f, 0.0f, -1.0f }, //GY_RECT_TEX_ORIENT_FLIP_VERT
+        { 0.0f, 0.0f, 1.0f }, //GY_RECT_TEX_ORIENT_ROT_90
+        { 0.0f, 0.0f, 1.0f }, //GY_RECT_TEX_ORIENT_ROT_180
+        { 0.0f, 0.0f, 1.0f }, //GY_RECT_TEX_ORIENT_ROT_270
+        { 0.0f, 0.0f, -1.0f }, //GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_90
+        { 0.0f, 0.0f, -1.0f }, //GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_270
+    }
+
+};
+#if 0
 static GYVector3 _planeNormals[GY_RECT_PLANE_MAX] = {
 	{ 0.0f, 0.0f, 1.0f },
-    { 0.0f, 1.414213562, 1.414213562 },
+    { 0.0f, SQRT_OF_2, SQRT_OF_2},
     { -1.0f, 0.0f, 0.0f },
     { 1.0f, 0.0f, 0.0f },
     { 0.0f, 0.0f, 0.0f },
     { 0.0f, 0.0f, 0.0f },
     { 0.0f, 0.0f, 0.0f }
 };
+#endif
 
+/*
+typedef enum _GY_RECT_TEX_ORIENT { GY_RECT_TEX_ORIENT_NORMAL, GY_RECT_TEX_ORIENT_FLIP_HORIZ, GY_RECT_TEX_ORIENT_FLIP_VERT,
+    GY_RECT_TEX_ORIENT_ROT_90, GY_RECT_TEX_ORIENT_ROT_180, GY_RECT_TEX_ORIENT_ROT_270,
+    GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_90, GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_270,
+    GY_RECT_TEX_ORIENT_MAX //not representable with 3 bits
+} GY_RECT_TEX_ORIENT;
+*/
+#if 1
 static const GYVector3 _rectTangents[GY_RECT_TEX_ORIENT_MAX] = {
-		{ 1.0f, 0.0f, 0.0f },
-		{ -1.0f, 0.0f, 0.0f },
-		{ 1.0f, 0.0f, 0.0f },
+        { 1.0f, 0.0f, 0.0f },
+        { -1.0f, 0.0f, 0.0f }, //FH
+        { 1.0, 0.0, 0.0f },  //FV
 		/* 90 degrees*/
-		{ 0.0f, 1.0f, 0.0f },
-		{ -1.0f, 0.0f, 0.0f },
-		{ 0.0f, -1.0f, 0.0f },
+        { 0.0f, -1.0f, 0.0f }, //R90
+        { -1.0f, 0.0f, 0.0f }, //R180
+        { 0.0f, 1.0f, 0.0f }, //R270
 		/* flip horiz, rot 90 */
-		{ 0.0f, -1.0f, 0.0f },
-		{ 0.0f, 1.0f, 0.0f }
+        { 0.0f, -1.0f, 0.0f }, //FHR90
+        { 0.0f, 1.0f, 0.0f }   //FHR270
 };
+#else
+static const GYVector3 _rectTangents[GY_RECT_TEX_ORIENT_MAX] = {
+        { -1.0f, 0.0f, 0.0f },
+        { 1.0f, 1.0f, -1.0f }, //FH
+        { -1.0f, 0.0f, 0.0f },  //FV
+        /* 90 degrees*/
+        { 0.0f, 1.0f, 0.0f }, //R90
+        { 1.0f, 0.0f, 0.0f }, //R180
+        { 0.0f, -1.0f, 0.0f }, //R270
+        /* flip horiz, rot 90 */
+        { 0.0f, 1.0f, 0.0f }, //FHR90
+        { 0.0f, -1.0f, 0.0f }   //FHR270
+};
+#endif
 static const GYVector4 _rectVerts[GY_RECT_PLANE_MAX][4] = {
 	//FLAT
 	{
@@ -123,13 +164,14 @@ unsigned				curStripSize = 0;
 
 //Shared video state variables
 const GYVector3*			tangentVector			= &_rectTangents[0];
-const GYVector3*			normalVector			= &_planeNormals[0];
+const GYVector3*			normalVector			= &_rectNormals[0][0];
 //GYVector4					viewPosition			= { 0.0f, 0.0f, 0.0f, 0.0f };
 float						viewZOrient				= 0.0f;
 float						viewScale				= 0.0f;
 const GYTexture*			curTex					= 0;
 const GYCamera*				curCamera				= &_defaultCamera;
 const GYTexCoord2*          curTexCoordPtr          = NULL;
+TEXTURE_FLIP                textureFlip             = TEXTURE_FLIP_NONE;
 
 //Private video state variables
 static unsigned int			_projWidth				= 0;
@@ -156,7 +198,7 @@ void gyVidResolution(unsigned int *const projWidth, unsigned int *const projHeig
 
 int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth, const int projHeight) {
 
-    gyVec3Normalize(&_planeNormals[GY_RECT_PLANE_FRONT]);
+    //gyVec3Normalize(&_planeNormals[GY_RECT_PLANE_FRONT]);
 
 	//gyVidOrthoProjMat(projectionMatrix, pleft, pright, pbottom, ptop, pnear, pfar);
 	//gyVidCamOrthoProj(&_defaultCamera, pleft, pright, pbottom, ptop, pnear, pfar);
@@ -217,14 +259,9 @@ void gyVidCamUpdate(const GYCamera *const cam) {
 	glUniformMatrix4fv(curLightShader->uniformLoc[SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)curCamera->projViewMat);
 }
 
-void gyVidRectTexOrient(const GY_RECT_TEX_ORIENT orient) {
-	_rectTexOrient = orient;
-	//const GYVector3* tangent;
-}
-
 static inline void _gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsigned int startIndex, const unsigned int amount) {
 	glVertexAttribPointer(curLightShader->attribLoc[SHADER_POS], 4, GL_FLOAT, GL_FALSE, 0, vertexArray);
-    GLenum glErr = glGetError();
+    //GLenum glErr = glGetError();
    /* if (glErr != GL_NO_ERROR)
     {
         gyPrintf("glError in file - vertAttrib");
@@ -325,25 +362,48 @@ void gyVidQuadListEnd(void) {
 // ==== HIGH-LEVEL API ====
 // (glorified wrappers around low-level API)
 
-void gyVidRectPlaneType(const GY_RECT_PLANE_TYPE type) {
-    //if(type != _planeType) {	//prevent unecessary updates
-		glalStripComboBreaker();
-        _planeType = type;
-        normalVector = &_planeNormals[type];
-		glUniform3fv(curLightShader->uniformLoc[SHADER_NORMAL], 1, (float*)normalVector);
-    //}
+void glalVidNormalUpdateUniform(void) {
+    normalVector = &_rectNormals[_planeType][_rectTexOrient];
+    glUniform3fv(curLightShader->uniformLoc[SHADER_NORMAL], 1, (float*)normalVector);
 }
 
-void gyVidQuad(const GYVector4 *const verts, const int frame) {
-	const GYTexCoord2* coord;
+void glalVidTangentUpdateUniform(void) {
+    tangentVector = &_rectTangents[_rectTexOrient];
+    glUniform3fv(curLightShader->uniformLoc[SHADER_TANGENT], 1, (float*)tangentVector);
+}
 
-    const GYVector3* tangent;
+void glalVidTextureFlipUpdateUniform(void) {
+    textureFlip = glalTextureFlipFromOrient(_rectTexOrient);
+    glUniform1i(curLightShader->uniformLoc[SHADER_TEXTURE_FLIP], textureFlip);
+}
+
+void gyVidRectPlaneType(const GY_RECT_PLANE_TYPE type) {
+    _planeType = type;
+}
+
+void gyVidRectTexOrient(const GY_RECT_TEX_ORIENT orient) {
+    _rectTexOrient = orient;
+}
+
+
+void gyVidQuad(const GYVector4 *const verts, const int frame) {
+    const GYTexCoord2*  coord;
+    const GYVector3*    tangent;
+    const GYVector3*    normal;
 
 	tangent = &_rectTangents[_rectTexOrient];
     if(tangent != tangentVector) { //FUCKING COMBO BREAKER, SUBMIT THE BITCH!!!!
-		glalStripComboBreaker();
-		tangentVector = tangent;
-		glUniform3fv(curLightShader->uniformLoc[SHADER_TANGENT], 1, (float*)tangent);
+        glalStripComboBreaker();
+        glalVidTangentUpdateUniform();
+        if(glalTextureFlipFromOrient(_rectTexOrient) != textureFlip) {
+            glalVidTextureFlipUpdateUniform();
+        }
+    }
+
+    normal = &_rectNormals[_planeType][_rectTexOrient];
+    if(normal != normalVector) {
+        glalStripComboBreaker();
+        glalVidNormalUpdateUniform();
     }
 
 
@@ -366,14 +426,6 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
                                curTexCoordPtr;
 		//gyVidTexCoordArray(coord);
 		memcpy(&_stripTexCoords[curStripSize], coord, sizeof(GYTexCoord2)*4);
-		_rectTexOrient = GY_RECT_TEX_ORIENT_NORMAL; //reset after each rect
-        tangent = &_rectTangents[_rectTexOrient];
-        if(tangent != tangentVector) { //FUCKING COMBO BREAKER, SUBMIT THE BITCH!!!!
-            glalStripComboBreaker();
-            tangentVector = tangent;
-            glUniform3fv(curLightShader->uniformLoc[SHADER_TANGENT], 1, (float*)tangent);
-        }
-
 
 	}
 
