@@ -98,7 +98,9 @@ HEADERS += \
     ../../include/common/gyro_video_common.h \
     ../../source/common/gyro_system_callbacks.h \
     ../../source/common/internal.h \
-    ../../source/glal/tinycthread.h
+    ../../source/glal/tinycthread.h \
+    ../../include/glal/gyro_shaders_glal.h \
+    ../../include/glal/gyro_video_glal.h
 
 SOURCES += \
 #    ../../source/x86/gyro_video_x86.c \

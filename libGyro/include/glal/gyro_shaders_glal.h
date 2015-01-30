@@ -10,77 +10,77 @@
 extern "C" {
 #endif
 
-typedef enum __TEXTURE_FLIP {
-    TEXTURE_FLIP_NONE,
-    TEXTURE_FLIP_HORIZ,
-    TEXTURE_FLIP_VERT
-} TEXTURE_FLIP;
+typedef enum __GLAL_TEXTURE_FLIP {
+    GLAL_TEXTURE_FLIP_NONE,
+    GLAL_TEXTURE_FLIP_HORIZ,
+    GLAL_TEXTURE_FLIP_VERT
+} GLAL_TEXTURE_FLIP;
 
-typedef enum __TEXTURE_UNITS {
-    TEXTURE_MAP,
-    NORMAL_MAP,
-    SPECULAR_MAP,
-    SHADOW1_MAP,
-    SHADOW2_MAP,
-    SHADOW3_MAP,
-    SHADOW4_MAP,
-    TEXTURE_MAP_MAX
-} TEXTURE_UNITS;
+typedef enum __GLAL_TEXTURE_UNITS {
+    GLAL_TEXTURE_MAP,
+    GLAL_NORMAL_MAP,
+    GLAL_SPECULAR_MAP,
+    GLAL_SHADOW1_MAP,
+    GLAL_SHADOW2_MAP,
+    GLAL_SHADOW3_MAP,
+    GLAL_SHADOW4_MAP,
+    GLAL_TEXTURE_MAP_MAX
+} GLAL_TEXTURE_UNITS;
 
 struct _GYShaderProgram;
 
-typedef enum __SHADER_ATTRIB {
-	SHADER_POS,
-	SHADER_COLOR,
-	SHADER_TEX_COORD,
-	SHADER_ATTRIB_MAX
-} _SHADER_ATTRIB;
+typedef enum __GLAL_SHADER_ATTRIB {
+    GLAL_SHADER_POS,
+    GLAL_SHADER_COLOR,
+    GLAL_SHADER_TEX_COORD,
+    GLAL_SHADER_ATTRIB_MAX
+} _GLAL_SHADER_ATTRIB;
 
-typedef enum __SHADER_UNIFORM {
-    SHADER_TEXTURE_MAP,
-	SHADER_TEXTURE_ENABLED,
-    SHADER_TEXTURE_FLIP,
-	SHADER_CAM_WORLD_POS,
-	SHADER_NORMAL,
-	SHADER_TANGENT,
-	SHADER_PROJ_VIEW_MAT,
-	SHADER_AMBIENCE,
-	SHADER_MATERIAL_SHININESS,
-	SHADER_LIGHTING_ENABLED,
-	SHADER_MATERIAL_AMBIENT_COLOR,
-	SHADER_MATERIAL_DIFFUSE_COLOR,
-	SHADER_MATERIAL_SPECULAR_COLOR,
-	SHADER_MATERIAL_EMISSIVE_COLOR,
-	SHADER_NORMAL_MAP_ENABLED,
-	SHADER_NORMAL_MAP,
-	SHADER_SPECULAR_MAP_ENABLED,
-	SHADER_SPECULAR_MAP,
-	SHADER_SHADOW_CUBE_MAP_PROJ_MAT,
-	SHADER_UNIFORM_MAX
-} _SHADER_UNIFORM;
+typedef enum __GLAL_SHADER_UNIFORM {
+    GLAL_SHADER_TEXTURE_MAP,
+    GLAL_SHADER_TEXTURE_ENABLED,
+    GLAL_SHADER_TEXTURE_FLIP,
+    GLAL_SHADER_CAM_WORLD_POS,
+    GLAL_SHADER_NORMAL,
+    GLAL_SHADER_TANGENT,
+    GLAL_SHADER_PROJ_VIEW_MAT,
+    GLAL_SHADER_AMBIENCE,
+    GLAL_SHADER_MATERIAL_SHININESS,
+    GLAL_SHADER_LIGHTING_ENABLED,
+    GLAL_SHADER_MATERIAL_AMBIENT_COLOR,
+    GLAL_SHADER_MATERIAL_DIFFUSE_COLOR,
+    GLAL_SHADER_MATERIAL_SPECULAR_COLOR,
+    GLAL_SHADER_MATERIAL_EMISSIVE_COLOR,
+    GLAL_SHADER_NORMAL_MAP_ENABLED,
+    GLAL_SHADER_NORMAL_MAP,
+    GLAL_SHADER_SPECULAR_MAP_ENABLED,
+    GLAL_SHADER_SPECULAR_MAP,
+    GLAL_SHADER_SHADOW_CUBE_MAP_PROJ_MAT,
+    GLAL_SHADER_UNIFORM_MAX
+} _GLAL_SHADER_UNIFORM;
 
-typedef enum __SHADER_LIGHT_UNIFORM_FIELDS {
-	SHADER_LIGHT_POS,
-	SHADER_LIGHT_AMBIENT_COLOR,
-	SHADER_LIGHT_DIFFUSE_COLOR,
-	SHADER_LIGHT_SPECULAR_COLOR,
-	SHADER_LIGHT_DIRECTION,
-	SHADER_LIGHT_ATTENUATION_FACTORS,
-	SHADER_LIGHT_SPOT_EXPONENT,
-	SHADER_LIGHT_SPOT_CUTOFF_ANGLE,
-	SHADER_LIGHT_COMPUTE_DISTANCE_ATTENUATION,
-	SHADER_LIGHT_ENABLED,
-	SHADER_LIGHT_SHADOW_MAP,
-	SHADER_LIGHT_SHADOW_CUBE_MAP,
-	SHADER_LIGHT_PROJ_VIEW_MAT,
-	SHADER_LIGHT_UNIFORMS_MAX
-} _SHADER_LIGHT_UNIFORM_FIELDS;
+typedef enum __GLAL_SHADER_LIGHT_UNIFORM_FIELDS {
+    GLAL_SHADER_LIGHT_POS,
+    GLAL_SHADER_LIGHT_AMBIENT_COLOR,
+    GLAL_SHADER_LIGHT_DIFFUSE_COLOR,
+    GLAL_SHADER_LIGHT_SPECULAR_COLOR,
+    GLAL_SHADER_LIGHT_DIRECTION,
+    GLAL_SHADER_LIGHT_ATTENUATION_FACTORS,
+    GLAL_SHADER_LIGHT_SPOT_EXPONENT,
+    GLAL_SHADER_LIGHT_SPOT_CUTOFF_ANGLE,
+    GLAL_SHADER_LIGHT_COMPUTE_DISTANCE_ATTENUATION,
+    GLAL_SHADER_LIGHT_ENABLED,
+    GLAL_SHADER_LIGHT_SHADOW_MAP,
+    GLAL_SHADER_LIGHT_SHADOW_CUBE_MAP,
+    GLAL_SHADER_LIGHT_PROJ_VIEW_MAT,
+    GLAL_SHADER_LIGHT_UNIFORMS_MAX
+} _GLAL_SHADER_LIGHT_UNIFORM_FIELDS;
 
 typedef struct __LightingShaderProgram {
 	struct _GYShaderProgram*	program;
-	GLint						attribLoc[SHADER_ATTRIB_MAX];
-	GLint						uniformLoc[SHADER_UNIFORM_MAX];
-	GLint						lightsUniformLoc[GYRO_VIDEO_LIGHT_SOURCES_MAX][SHADER_LIGHT_UNIFORMS_MAX];
+    GLint						attribLoc[GLAL_SHADER_ATTRIB_MAX];
+    GLint						uniformLoc[GLAL_SHADER_UNIFORM_MAX];
+    GLint						lightsUniformLoc[GYRO_VIDEO_LIGHT_SOURCES_MAX][GLAL_SHADER_LIGHT_UNIFORMS_MAX];
 } _LightingShaderProgram;
 
 typedef struct __LightInternals {
@@ -88,21 +88,21 @@ typedef struct __LightInternals {
 	GLuint shadowMap;
 } _LightInternals;
 
-extern GYShaderProgram*				_curShaderProg;
-extern _LightingShaderProgram		_lightingShader;
-extern _LightingShaderProgram		_shadowMapShader;
-extern _LightingShaderProgram*		curLightShader;
-extern const GYMatrix4				shadowTexCoordBiasMat;
-extern GYMatrix4					pointShadowFaceMatrices[GY_CUBE_MAP_FACE_MAX];
+extern GYShaderProgram*				glalCurShaderProg;
+extern _LightingShaderProgram		glalLightingShader;
+extern _LightingShaderProgram		glalShadowMapShader;
+extern _LightingShaderProgram*		glalCurLightShader;
+extern const GYMatrix4				glalShadowTexCoordBiasMat;
+extern GYMatrix4                    glalPointShadowFaceMatrices[];
 
-extern GYLightSource*		lightSources[GYRO_VIDEO_LIGHT_SOURCES_MAX];
-extern unsigned				lightSourceCount;
-extern int					lightingEnabled;
-extern int					lightsEnabled[GYRO_VIDEO_LIGHT_SOURCES_MAX];
-extern GLenum               textureMapTexUnits[TEXTURE_MAP_MAX];
-extern int                  textureMapUniforms[TEXTURE_MAP_MAX];
-extern int                  textureMapActive;
-extern int                  textureMappingEnabled;
+extern GYLightSource*               glalLightSources[];
+extern unsigned                     glalLightSourceCount;
+extern int                          glalLightingEnabled;
+extern int                          glalLightsEnabled[];
+extern GLenum                       glalTextureMapTexUnits[];
+extern int                          glalTextureMapUniforms[];
+extern int                          glalTextureMapActive;
+extern int                          glalTextureMappingEnabled;
 
 void glalLoadDefaultShaders(void);
 void glalDefaultShadersLoadUniforms(void);

@@ -14,43 +14,45 @@ extern "C" {
 struct _GYTexture;
 struct _GYCamera;
 
-extern const struct _GYCamera*                  curCamera;
-extern GYMatrix4				viewMatrix;
-extern float					viewZOrient;
-extern float					viewScale;
-extern GYVector3				camWorldPos;
-extern const GYVector3*                         tangentVector;
-extern const GYVector3*                         normalVector;
-extern const struct _GYTexture* curTex;
-extern unsigned					vertexRenderCount;
-extern unsigned					curStripSize;
-extern GYVector4				modelViewVertices[];
-extern GYColor4					stripColors[];
-extern GYTexCoord2				stripTexCoords[];
-extern TEXTURE_FLIP                             textureFlip;
+extern const struct _GYCamera*      glalCurCamera;
+extern GYMatrix4                    glalViewMatrix;
+extern float                        glalViewZOrient;
+extern float                        glalViewScale;
+extern GYVector3                    glalCamWorldPos;
+extern const GYVector3*             glalTangentVector;
+extern const GYVector3*             glalNormalVector;
+extern const struct _GYTexture*     glalCurTex;
+extern unsigned                     glalVertexRenderCount;
+extern unsigned                     glalCurStripSize;
+//extern GYVector4                    glalModelViewVertices[];
+//extern GYColor4                     glalStripColors[];
+//extern GYTexCoord2                  glalStripTexCoords[];
+extern GLAL_TEXTURE_FLIP            glalTextureFlip;
+extern GY_RECT_TEX_ORIENT           glalRectTexOrient;
+extern GY_RECT_PLANE_TYPE           glalPlaneType;
 
-int gyVidOglInit(const int viewWidth, const int viewHeight, const int projWidth, const int projHeight);
+int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidth, const int projHeight);
 
 void glalVidTangentUpdateUniform(void);
 void glalVidNormalUpdateUniform(void);
 void glalVidTextureFlipUpdateUniform(void);
 
 static inline void glalStripComboBreaker(void) {
-    if(curStripSize) {
+    if(glalCurStripSize) {
         gyVidQuadListEnd();
     }
 }
 
-static inline TEXTURE_FLIP glalTextureFlipFromOrient(const GY_RECT_TEX_ORIENT orient) {
+static inline GLAL_TEXTURE_FLIP glalTextureFlipFromOrientAndPlane(const GY_RECT_TEX_ORIENT orient, const GY_RECT_PLANE_TYPE plane) {
     switch(orient) {
     case GY_RECT_TEX_ORIENT_FLIP_VERT:
-        return TEXTURE_FLIP_VERT;
+        //return GLAL_TEXTURE_FLIP_VERT;
     case GY_RECT_TEX_ORIENT_FLIP_HORIZ:
     case GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_90:
     case GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_270:
-        return TEXTURE_FLIP_HORIZ;
+        return GLAL_TEXTURE_FLIP_HORIZ;
     default:
-        return TEXTURE_FLIP_NONE;
+        return GLAL_TEXTURE_FLIP_NONE;
     }
 }
 
