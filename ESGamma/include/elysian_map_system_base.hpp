@@ -64,9 +64,9 @@ namespace elysian {
 		unsigned					_stripIndexArray[ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE];
 		unsigned					_stripIndexArraySize = 0;
 		static const GYColor4		_tileColor;
-        static GY_RECT_PLANE_TYPE   _curPlaneType;
-        static GY_RECT_TEX_ORIENT   _curTexOrient;
-        static TEXTURE_FLIP         _curTexFlip;
+        //static GY_RECT_PLANE_TYPE   _curPlaneType;
+        //static GY_RECT_TEX_ORIENT   _curTexOrient;
+        //static TEXTURE_FLIP         _curTexFlip;
 		bool _renderLayer[4];
         bool _blendFunc = false;
         //animation
@@ -177,28 +177,32 @@ namespace elysian {
 #if 1
         GY_RECT_PLANE_TYPE newPlane = entry.mapEntry.getPlane();
         GY_RECT_TEX_ORIENT newOrient = entry.mapEntry.getOrient();
-        bool texOrientChanged = false;
+        bool updateFlip = false;
 
-        if(newOrient != _curTexOrient) {
+        if(newOrient != glalRectTexOrient) {
             endObjectList();
             gyVidRectTexOrient(newOrient);
             glalVidTangentUpdateUniform();
-            _curTexOrient = newOrient;
-            texOrientChanged = true;
-            TEXTURE_FLIP newFlip = glalTextureFlipFromOrient(newOrient);
-            if(newFlip != _curTexFlip) {
-                glalVidTextureFlipUpdateUniform();
-                _curTexFlip = newFlip;
-            }
+            updateFlip = true;
+
         }
 
-        if(newPlane != _curPlaneType || texOrientChanged) {
+        if(newPlane != glalPlaneType || updateFlip) {
 			endObjectList();
 			//gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta, 32.0f, 32.0f, 32.0f);
             gyVidRectPlaneType(newPlane);
             glalVidNormalUpdateUniform();
-            _curPlaneType = newPlane;
+            updateFlip = true;
 		}
+
+        if(updateFlip) {
+            GLAL_TEXTURE_FLIP newFlip = glalTextureFlipFromOrientAndPlane(newOrient, newPlane);
+            if(newFlip != glalTextureFlip) {
+                glalVidTextureFlipUpdateUniform();
+            }
+        }
+
+
 		/*} else {
 		//	gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta, 32.0f, 32.0f, 1.0f);
 			gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
@@ -262,22 +266,22 @@ namespace elysian {
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::beginObjectList(void) {
 		gyVidMaterialBind(nullptr);
-		gyVidTexBind(nullptr);
 		gyVidTexBind(_curLevel->tileSheet);
-		gyVidNormalMapBind(nullptr);
 		gyVidNormalMapBind(_curLevel->normalSheet);
-		gyVidSpecularMapBind(nullptr);
 		gyVidSpecularMapBind(_curLevel->specularSheet);
-        gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
-        _curPlaneType = GY_RECT_PLANE_BOTTOM;
+
+        //gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
+        //gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
+        //_curPlaneType = GY_RECT_PLANE_BOTTOM;
+
 		//gyVidQuadListBegin(&_tileColor);
 		glBindBuffer(GL_ARRAY_BUFFER, getCurArea()->vboBuff);
-        ::glVertexAttribPointer(curLightShader->attribLoc[SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(VboEntry), 0);
-		glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_POS]);
-		glVertexAttribPointer(curLightShader->attribLoc[SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(4*sizeof(float)));
-		glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_TEX_COORD]);
-		glVertexAttribPointer(curLightShader->attribLoc[SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VboEntry), (void*)(6*sizeof(float)));
-		glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_COLOR]);
+        ::glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(VboEntry), 0);
+        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_POS]);
+        glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(4*sizeof(float)));
+        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD]);
+        glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VboEntry), (void*)(6*sizeof(float)));
+        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR]);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		gyVidAlphaLevel(GY_ALPHA_FULL);
 
@@ -377,12 +381,12 @@ namespace elysian {
 
     template<typename P, typename T, typename E>
     const GYColor4      MapSystemBase<P, T, E>::_tileColor = { 255, 255, 255, 255 }; //I s'pose this could be configurable?
-    template<typename P, typename T, typename E>
+/*    template<typename P, typename T, typename E>
     GY_RECT_PLANE_TYPE  MapSystemBase<P, T, E>::_curPlaneType = GY_RECT_PLANE_BOTTOM;
     template<typename P, typename T, typename E>
     GY_RECT_TEX_ORIENT  MapSystemBase<P, T, E>::_curTexOrient = GY_RECT_TEX_ORIENT_NORMAL;
     template<typename P, typename T, typename E>
-    TEXTURE_FLIP  MapSystemBase<P, T, E>::_curTexFlip = TEXTURE_FLIP_NONE;
+    TEXTURE_FLIP  MapSystemBase<P, T, E>::_curTexFlip = TEXTURE_FLIP_NONE; */
 
     template<typename P, typename T, typename E>
     inline MapSystemBase<P, T, E>::MapSystemBase(void):

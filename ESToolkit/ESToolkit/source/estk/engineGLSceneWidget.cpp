@@ -10,7 +10,7 @@
 EngineGLSceneWidget::EngineGLSceneWidget(const QGLFormat &format, QWidget *parent, const QGLWidget *shareWidget, Qt::WindowFlags f):
     QGLWidget(format, parent, shareWidget, f) {
     makeCurrent();
-    gyVidOglInit(1280, 720, 1280, 720);
+    glalVidOglInit(1280, 720, 1280, 720);
 }
 
 void EngineGLSceneWidget::stop(void) {
@@ -41,7 +41,7 @@ void EngineGLSceneWidget::initializeGL(void) {
     qDebug() << "C++ CONTEXT - " << context();
     //updateGL();
 
-    gyVidOglInit(parentWidth, parentHeight, parentWidth, parentHeight);
+    glalVidOglInit(parentWidth, parentHeight, parentWidth, parentHeight);
      if(getAssets()->getEngine()) getAssets()->getEngine()->getCameraSys()->initializeProjMatrix();
 
     //initTextures();
@@ -72,7 +72,7 @@ void EngineGLSceneWidget::resizeGL(int w, int h) {
 
    // if(!once) {
            // setlocale(LC_NUMERIC, "C");
-     gyVidOglInit(w, h, w, h);
+     glalVidOglInit(w, h, w, h);
      _width = w;
      _height = h;
 

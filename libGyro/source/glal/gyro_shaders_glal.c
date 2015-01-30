@@ -10,7 +10,7 @@
 #include <gyro_system_api.h>
 #include <glal/gyro_glal.h>
 
-GLenum textureMapTexUnits[TEXTURE_MAP_MAX] = {
+GLenum glalTextureMapTexUnits[GLAL_TEXTURE_MAP_MAX] = {
     GL_TEXTURE0,
     GL_TEXTURE1,
     GL_TEXTURE2,
@@ -20,11 +20,11 @@ GLenum textureMapTexUnits[TEXTURE_MAP_MAX] = {
     GL_TEXTURE6
 };
 
-int textureMapUniforms[TEXTURE_MAP_MAX] = {
+int glalTextureMapUniforms[GLAL_TEXTURE_MAP_MAX] = {
     0, 1, 2, 3, 4, 5, 6
 };
 
-const GYMatrix4 shadowTexCoordBiasMat = {
+const GYMatrix4 glalShadowTexCoordBiasMat = {
 	{ 0.5f, 0.0f, 0.0f, 0.0f },
 	{ 0.0f, 0.5f, 0.0f, 0.0f },
 	{ 0.0f, 0.0f, 0.5f, 0.0f },
@@ -63,7 +63,7 @@ const static GYVector3 _defaultNormal = {
   0.0f, 0.0f, 1.0f
 };*/
 
-GYMatrix4 pointShadowFaceMatrices[GY_CUBE_MAP_FACE_MAX];
+GYMatrix4 glalPointShadowFaceMatrices[GY_CUBE_MAP_FACE_MAX];
 
 
 // ====== UNIFORM STATE DATA =======
@@ -71,24 +71,26 @@ static const GYMaterial*	_currentMaterial								= &_defaultMaterial;
 static GYVector4			_globalAmbience									= { 0.0f, 0.0f, 0.0f, 1.0f };
 static const GYTexture*		_normalMap										= NULL;
 static const GYTexture*		_specularMap									= NULL;
-GYVector3					camWorldPos										= { 0.0f, 0.0f, 0.0f };
-int                         textureMappingEnabled                           = 1;
-int                         normalMappingEnabled                            = 1;
-int                         specularMappingEnabled                          = 1;
-int                         textureMapActive                                = 0;
-int                         normalMapActive                                 = 0;
-int                         specularMapActive                               = 0;
+GYVector3					glalCamWorldPos									= { 0.0f, 0.0f, 0.0f };
+
+// ==== SHARED EXTERN VARIABLES ======
+int                         glalTextureMappingEnabled                       = 1;
+int                         glalNormalMappingEnabled                        = 1;
+int                         glalSpecularMappingEnabled                      = 1;
+int                         glalTextureMapActive                            = 0;
+int                         glalNormalMapActive                             = 0;
+int                         glalSpecularMapActive                           = 0;
 
 // ==== INTERNAL STATE ===
-GYShaderProgram*			_curShaderProg		= NULL;
-_LightingShaderProgram		_lightingShader;
-_LightingShaderProgram		_shadowMapShader;
-_LightingShaderProgram*		curLightShader		= &_lightingShader;
+GYShaderProgram*			glalCurShaderProg                               = NULL;
+_LightingShaderProgram		glalLightingShader;
+_LightingShaderProgram		glalShadowMapShader;
+_LightingShaderProgram*		glalCurLightShader                              = &glalLightingShader;
 
 // ====== PUBLIC LIGHTING API =======
 
 void gyVidSetCurrentShaderProgram(struct _GYShaderProgram*const program) {
-	_curShaderProg = program;
+    glalCurShaderProg = program;
 	glUseProgram(program->program);
         //GLenum glErr = glGetError();
  /*   if (glErr != GL_NO_ERROR)
@@ -98,29 +100,29 @@ void gyVidSetCurrentShaderProgram(struct _GYShaderProgram*const program) {
 }
 
 void gyVidSetDefaultShaderProgram(void) {
-	gyVidSetCurrentShaderProgram(_lightingShader.program);
+    gyVidSetCurrentShaderProgram(glalLightingShader.program);
 }
 
-void gyVidDbgTexMappingEnabled(const int enabled) { textureMappingEnabled = enabled; }
-void gyVidDbgNormalMappingEnabled(const int enabled) { normalMappingEnabled = enabled; }
-void gyVidDbgSpeculaMappingEnabled(const int enabled) { specularMappingEnabled = enabled; }
+void gyVidDbgTexMappingEnabled(const int enabled) { glalTextureMappingEnabled = enabled; }
+void gyVidDbgNormalMappingEnabled(const int enabled) { glalNormalMappingEnabled = enabled; }
+void gyVidDbgSpeculaMappingEnabled(const int enabled) { glalSpecularMappingEnabled = enabled; }
 
 void gyVidDbgTexMapUniform(const int unit) {
-    textureMapUniforms[TEXTURE_MAP] = unit;
-    glUniform1i(curLightShader->uniformLoc[SHADER_TEXTURE_MAP], unit);
+    glalTextureMapUniforms[GLAL_TEXTURE_MAP] = unit;
+    glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_MAP], unit);
 }
 
 void gyVidSetCamWorldPos(const GYVector3*const pos) {
-	if(pos->x == camWorldPos.x && pos->y == camWorldPos.y && pos->z == camWorldPos.z) return;
-	camWorldPos = *pos;
-	glUniform3fv(curLightShader->uniformLoc[SHADER_CAM_WORLD_POS], 1, (float*)&camWorldPos);
+    if(pos->x == glalCamWorldPos.x && pos->y == glalCamWorldPos.y && pos->z == glalCamWorldPos.z) return;
+    glalCamWorldPos = *pos;
+    glUniform3fv(glalCurLightShader->uniformLoc[GLAL_SHADER_CAM_WORLD_POS], 1, (float*)&glalCamWorldPos);
 }
 
 void gyVidNormalMapBind(const GYTexture * const tex) {
     static int wasActive = 0;
     int active = 1;
 
-    glActiveTexture(textureMapTexUnits[NORMAL_MAP]);
+    glActiveTexture(glalTextureMapTexUnits[GLAL_NORMAL_MAP]);
     if(tex && tex->_data) {
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, *(GLuint *)&tex->_data);
@@ -130,17 +132,17 @@ void gyVidNormalMapBind(const GYTexture * const tex) {
 	}
     //if(active != wasActive)
 
-    normalMapActive = active && normalMappingEnabled;
-    glUniform1i(curLightShader->uniformLoc[SHADER_NORMAL_MAP_ENABLED], normalMapActive);
+    glalNormalMapActive = active && glalNormalMappingEnabled;
+    glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_NORMAL_MAP_ENABLED], glalNormalMapActive);
 
-    if(textureMapUniforms[TEXTURE_MAP] == textureMapUniforms[NORMAL_MAP]) {
-        textureMapActive = normalMapActive;
-        curTex = tex;
-        glUniform1i(curLightShader->uniformLoc[SHADER_TEXTURE_ENABLED], normalMapActive);
+    if(glalTextureMapUniforms[GLAL_TEXTURE_MAP] == glalTextureMapUniforms[GLAL_NORMAL_MAP]) {
+        glalTextureMapActive = glalNormalMapActive;
+        glalCurTex = tex;
+        glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], glalNormalMapActive);
     }
 
 	_normalMap = tex;
-    glActiveTexture(textureMapTexUnits[TEXTURE_MAP]);
+    glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
 
     wasActive = active;
 }
@@ -149,7 +151,7 @@ void gyVidSpecularMapBind(const GYTexture * const tex) {
     static int wasActive = 0;
     int active = 1;
 
-    glActiveTexture(textureMapTexUnits[SPECULAR_MAP]);
+    glActiveTexture(glalTextureMapTexUnits[GLAL_SPECULAR_MAP]);
     if(tex && tex->_data) {
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, *(GLuint *)&tex->_data);
@@ -159,16 +161,16 @@ void gyVidSpecularMapBind(const GYTexture * const tex) {
 	}
     //if(active != wasActive)
 
-    specularMapActive = active && specularMappingEnabled;
-    glUniform1i(curLightShader->uniformLoc[SHADER_SPECULAR_MAP_ENABLED], specularMapActive);
-    if(textureMapUniforms[TEXTURE_MAP] == textureMapUniforms[SPECULAR_MAP]) {
-        textureMapActive = specularMapActive;
-        curTex = tex;
-        glUniform1i(curLightShader->uniformLoc[SHADER_TEXTURE_ENABLED], specularMapActive);
+    glalSpecularMapActive = active && glalSpecularMappingEnabled;
+    glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_SPECULAR_MAP_ENABLED], glalSpecularMapActive);
+    if(glalTextureMapUniforms[GLAL_TEXTURE_MAP] == glalTextureMapUniforms[GLAL_SPECULAR_MAP]) {
+        glalTextureMapActive = glalSpecularMapActive;
+        glalCurTex = tex;
+        glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], glalSpecularMapActive);
     }
 
 	_specularMap = tex;
-    glActiveTexture(textureMapTexUnits[TEXTURE_MAP]);
+    glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
 
     wasActive = active;
 }
@@ -177,12 +179,12 @@ void gyVidSpecularMapBind(const GYTexture * const tex) {
 void glalLightingInit(void) {
 
 	//Cache cube shadow map lookat matrices
-	gyVidLookAtMat(pointShadowFaceMatrices[GY_CUBE_MAP_RIGHT], 0.0, 0.0, 0.0,  1.0, 0.0, 0.0,  0.0,-1.0, 0.0); // +X
-	gyVidLookAtMat(pointShadowFaceMatrices[GY_CUBE_MAP_LEFT], 0.0, 0.0, 0.0, -1.0, 0.0, 0.0,  0.0,-1.0, 0.0); // -X
-	gyVidLookAtMat(pointShadowFaceMatrices[GY_CUBE_MAP_BOTTOM], 0.0, 0.0, 0.0,  0.0, -1.0, 0.0,  0.0,0.0, -1.0); // +Y
-	gyVidLookAtMat(pointShadowFaceMatrices[GY_CUBE_MAP_TOP], 0.0, 0.0, 0.0,  0.0, 1.0, 0.0,  0.0,0.0, 1.0); // -Y
-	gyVidLookAtMat(pointShadowFaceMatrices[GY_CUBE_MAP_BACK], 0.0, 0.0, 0.0,  0.0, 0.0, 1.0,  0.0,-1.0, 0.0); // +Z
-	gyVidLookAtMat(pointShadowFaceMatrices[GY_CUBE_MAP_FRONT], 0.0, 0.0, 0.0,  0.0, 0.0, -1.0,  0.0,1.0, 0.0); // -Z
+    gyVidLookAtMat(glalPointShadowFaceMatrices[GY_CUBE_MAP_RIGHT], 0.0, 0.0, 0.0,  1.0, 0.0, 0.0,  0.0,-1.0, 0.0); // +X
+    gyVidLookAtMat(glalPointShadowFaceMatrices[GY_CUBE_MAP_LEFT], 0.0, 0.0, 0.0, -1.0, 0.0, 0.0,  0.0,-1.0, 0.0); // -X
+    gyVidLookAtMat(glalPointShadowFaceMatrices[GY_CUBE_MAP_BOTTOM], 0.0, 0.0, 0.0,  0.0, -1.0, 0.0,  0.0,0.0, -1.0); // +Y
+    gyVidLookAtMat(glalPointShadowFaceMatrices[GY_CUBE_MAP_TOP], 0.0, 0.0, 0.0,  0.0, 1.0, 0.0,  0.0,0.0, 1.0); // -Y
+    gyVidLookAtMat(glalPointShadowFaceMatrices[GY_CUBE_MAP_BACK], 0.0, 0.0, 0.0,  0.0, 0.0, 1.0,  0.0,-1.0, 0.0); // +Z
+    gyVidLookAtMat(glalPointShadowFaceMatrices[GY_CUBE_MAP_FRONT], 0.0, 0.0, 0.0,  0.0, 0.0, -1.0,  0.0,1.0, 0.0); // -Z
 }
 
 void gyVidMaterialBind(const GYMaterial*const material) {
@@ -192,11 +194,11 @@ void gyVidMaterialBind(const GYMaterial*const material) {
 		_currentMaterial = material;
 
 		if(_currentMaterial) {
-			glUniform1f(curLightShader->uniformLoc[SHADER_MATERIAL_SHININESS], material->shininess);
-			glUniform4fv(curLightShader->uniformLoc[SHADER_MATERIAL_AMBIENT_COLOR], 1, (float*)&material->ambientColor);
-			glUniform4fv(curLightShader->uniformLoc[SHADER_MATERIAL_DIFFUSE_COLOR], 1, (float*)&material->diffuseColor);
-			glUniform4fv(curLightShader->uniformLoc[SHADER_MATERIAL_SPECULAR_COLOR], 1, (float*)&material->specularColor);
-			glUniform4fv(curLightShader->uniformLoc[SHADER_MATERIAL_EMISSIVE_COLOR], 1, (float*)&material->emissiveColor);
+            glUniform1f(glalCurLightShader->uniformLoc[GLAL_SHADER_MATERIAL_SHININESS], material->shininess);
+            glUniform4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_MATERIAL_AMBIENT_COLOR], 1, (float*)&material->ambientColor);
+            glUniform4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_MATERIAL_DIFFUSE_COLOR], 1, (float*)&material->diffuseColor);
+            glUniform4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_MATERIAL_SPECULAR_COLOR], 1, (float*)&material->specularColor);
+            glUniform4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_MATERIAL_EMISSIVE_COLOR], 1, (float*)&material->emissiveColor);
 
 		}
 	}
@@ -204,7 +206,7 @@ void gyVidMaterialBind(const GYMaterial*const material) {
 
 void gyVidSetGlobalAmbience(const GYVector4*const color) {
 	_globalAmbience = *color;
-	glUniform4fv(curLightShader->uniformLoc[SHADER_AMBIENCE], 1, (float*)color);
+    glUniform4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_AMBIENCE], 1, (float*)color);
 }
 
 //======= INTERNAL QUERY FUNCTIONS FOR DEFAULT SHADER =======
@@ -230,75 +232,75 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
 	char buff[100];
 
 	//SHARED SHADER ATTRIBS/UNIFORMS
-	shader->attribLoc[SHADER_POS]						= _protectedAttribQuery(shader->program, "aPosition");
-	shader->uniformLoc[SHADER_PROJ_VIEW_MAT]			= _protectedUniformQuery(shader->program, "uProjViewMat");
+    shader->attribLoc[GLAL_SHADER_POS]						= _protectedAttribQuery(shader->program, "aPosition");
+    shader->uniformLoc[GLAL_SHADER_PROJ_VIEW_MAT]			= _protectedUniformQuery(shader->program, "uProjViewMat");
 
-	shader->attribLoc[SHADER_TEX_COORD]					= _protectedAttribQuery(shader->program, "aTexCoord");
-    shader->uniformLoc[SHADER_TEXTURE_MAP]              = _protectedUniformQuery(shader->program, "uTexture");
-	shader->uniformLoc[SHADER_TEXTURE_ENABLED]			= _protectedUniformQuery(shader->program, "uTextureEnabled");
+    shader->attribLoc[GLAL_SHADER_TEX_COORD]					= _protectedAttribQuery(shader->program, "aTexCoord");
+    shader->uniformLoc[GLAL_SHADER_TEXTURE_MAP]              = _protectedUniformQuery(shader->program, "uTexture");
+    shader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED]			= _protectedUniformQuery(shader->program, "uTextureEnabled");
 
 	if(!light) return; //the rest is lighting only
 
-    shader->attribLoc[SHADER_COLOR]						= _protectedAttribQuery(shader->program, "aColor");
+    shader->attribLoc[GLAL_SHADER_COLOR]						= _protectedAttribQuery(shader->program, "aColor");
 
 	//poll for global uniform locations
-    shader->uniformLoc[SHADER_TEXTURE_FLIP]             = _protectedUniformQuery(shader->program, "uTextureFlip");
-	shader->uniformLoc[SHADER_CAM_WORLD_POS]			= _protectedUniformQuery(shader->program, "uCamWorldPos");
-	shader->uniformLoc[SHADER_NORMAL]					= _protectedUniformQuery(shader->program, "uNormal");
-	shader->uniformLoc[SHADER_TANGENT]					= _protectedUniformQuery(shader->program, "uTangent");
-	shader->uniformLoc[SHADER_AMBIENCE]					= _protectedUniformQuery(shader->program, "uAmbience");
-	shader->uniformLoc[SHADER_LIGHTING_ENABLED]			= _protectedUniformQuery(shader->program, "uLightingEnabled");
-	shader->uniformLoc[SHADER_NORMAL_MAP_ENABLED]		= _protectedUniformQuery(shader->program, "uNormalMapEnabled");
-	shader->uniformLoc[SHADER_NORMAL_MAP]				= _protectedUniformQuery(shader->program, "uNormalMap");
-	shader->uniformLoc[SHADER_SPECULAR_MAP_ENABLED]		= _protectedUniformQuery(shader->program, "uSpecularMapEnabled");
-	shader->uniformLoc[SHADER_SPECULAR_MAP]				= _protectedUniformQuery(shader->program, "uSpecularMap");
-	shader->uniformLoc[SHADER_SHADOW_CUBE_MAP_PROJ_MAT] = _protectedUniformQuery(shader->program, "uShadowCubeMapProjMat");
+    shader->uniformLoc[GLAL_SHADER_TEXTURE_FLIP]             = _protectedUniformQuery(shader->program, "uTextureFlip");
+    shader->uniformLoc[GLAL_SHADER_CAM_WORLD_POS]			= _protectedUniformQuery(shader->program, "uCamWorldPos");
+    shader->uniformLoc[GLAL_SHADER_NORMAL]					= _protectedUniformQuery(shader->program, "uNormal");
+    shader->uniformLoc[GLAL_SHADER_TANGENT]					= _protectedUniformQuery(shader->program, "uTangent");
+    shader->uniformLoc[GLAL_SHADER_AMBIENCE]					= _protectedUniformQuery(shader->program, "uAmbience");
+    shader->uniformLoc[GLAL_SHADER_LIGHTING_ENABLED]			= _protectedUniformQuery(shader->program, "uLightingEnabled");
+    shader->uniformLoc[GLAL_SHADER_NORMAL_MAP_ENABLED]		= _protectedUniformQuery(shader->program, "uNormalMapEnabled");
+    shader->uniformLoc[GLAL_SHADER_NORMAL_MAP]				= _protectedUniformQuery(shader->program, "uNormalMap");
+    shader->uniformLoc[GLAL_SHADER_SPECULAR_MAP_ENABLED]		= _protectedUniformQuery(shader->program, "uSpecularMapEnabled");
+    shader->uniformLoc[GLAL_SHADER_SPECULAR_MAP]				= _protectedUniformQuery(shader->program, "uSpecularMap");
+    shader->uniformLoc[GLAL_SHADER_SHADOW_CUBE_MAP_PROJ_MAT] = _protectedUniformQuery(shader->program, "uShadowCubeMapProjMat");
 
 	//poll for GYMaterial uniform locations
-	shader->uniformLoc[SHADER_MATERIAL_SHININESS]		= _protectedUniformQuery(shader->program, "uMaterial.shininess");
-	shader->uniformLoc[SHADER_MATERIAL_AMBIENT_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.ambientColor");
-	shader->uniformLoc[SHADER_MATERIAL_DIFFUSE_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.diffuseColor");
-	shader->uniformLoc[SHADER_MATERIAL_SPECULAR_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.specularColor");
-	shader->uniformLoc[SHADER_MATERIAL_EMISSIVE_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.emissiveColor");
+    shader->uniformLoc[GLAL_SHADER_MATERIAL_SHININESS]		= _protectedUniformQuery(shader->program, "uMaterial.shininess");
+    shader->uniformLoc[GLAL_SHADER_MATERIAL_AMBIENT_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.ambientColor");
+    shader->uniformLoc[GLAL_SHADER_MATERIAL_DIFFUSE_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.diffuseColor");
+    shader->uniformLoc[GLAL_SHADER_MATERIAL_SPECULAR_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.specularColor");
+    shader->uniformLoc[GLAL_SHADER_MATERIAL_EMISSIVE_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.emissiveColor");
 
 	//poll for GYLightSource uniform locations
 	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
 
 		sprintf(buff, "uLights[%d].position", i);
-		shader->lightsUniformLoc[i][SHADER_LIGHT_POS]							= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_POS]							= _protectedUniformQuery(shader->program, buff);
 
 		sprintf(buff, "uLights[%d].ambientColor", i);
-		shader->lightsUniformLoc[i][SHADER_LIGHT_AMBIENT_COLOR]					= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_AMBIENT_COLOR]					= _protectedUniformQuery(shader->program, buff);
 
 		sprintf(buff, "uLights[%d].diffuseColor", i);
-		shader->lightsUniformLoc[i][SHADER_LIGHT_DIFFUSE_COLOR]					= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_DIFFUSE_COLOR]					= _protectedUniformQuery(shader->program, buff);
 
 		sprintf(buff, "uLights[%d].specularColor", i);
-		shader->lightsUniformLoc[i][SHADER_LIGHT_SPECULAR_COLOR]				= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SPECULAR_COLOR]				= _protectedUniformQuery(shader->program, buff);
 
 		sprintf(buff, "uLights[%d].direction", i);
-		shader->lightsUniformLoc[i][SHADER_LIGHT_DIRECTION]						= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_DIRECTION]						= _protectedUniformQuery(shader->program, buff);
 
 		sprintf(buff, "uLights[%d].attenuationFactors", i);
-		shader->lightsUniformLoc[i][SHADER_LIGHT_ATTENUATION_FACTORS]			= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_ATTENUATION_FACTORS]			= _protectedUniformQuery(shader->program, buff);
 
 		sprintf(buff, "uLights[%d].spotExponent", i);
-		shader->lightsUniformLoc[i][SHADER_LIGHT_SPOT_EXPONENT]					= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SPOT_EXPONENT]					= _protectedUniformQuery(shader->program, buff);
 
 		sprintf(buff, "uLights[%d].spotCutoffAngle", i);
-		shader->lightsUniformLoc[i][SHADER_LIGHT_SPOT_CUTOFF_ANGLE]				= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SPOT_CUTOFF_ANGLE]				= _protectedUniformQuery(shader->program, buff);
 
 		sprintf(buff, "uLightsEnabled[%d]", i);
-		shader->lightsUniformLoc[i][SHADER_LIGHT_ENABLED]						= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_ENABLED]						= _protectedUniformQuery(shader->program, buff);
 
 		sprintf(buff, "uShadowMaps[%d]", i);
-		shader->lightsUniformLoc[i][SHADER_LIGHT_SHADOW_MAP]					= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SHADOW_MAP]					= _protectedUniformQuery(shader->program, buff);
 
 		sprintf(buff, "uShadowCubeMaps[%d]", i);
-		shader->lightsUniformLoc[i][SHADER_LIGHT_SHADOW_CUBE_MAP]				= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SHADOW_CUBE_MAP]				= _protectedUniformQuery(shader->program, buff);
 
 		sprintf(buff, "uLightProjViewMats[%d]", i);
-		shader->lightsUniformLoc[i][SHADER_LIGHT_PROJ_VIEW_MAT]					= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_PROJ_VIEW_MAT]					= _protectedUniformQuery(shader->program, buff);
 
 	}
 }
@@ -310,24 +312,24 @@ void glalLoadDefaultShaders(void) {
     GYShader* fragShader = gyShaderCreate("/assets/shaders/pixelLighting.fsh");
     //GYShader* vertShader = gyShaderCreate("/Users/Falco/Documents/ESDev/libGyro/source/glal/shaders/pixelLighting.vsh");
     //GYShader* fragShader = gyShaderCreate("/Users/Falco/Documents/ESDev/libGyro/source/glal/shaders/pixelLighting.fsh");
-    _lightingShader.program = gyShaderProgramCreate(vertShader, fragShader);
-    _gyLog(GY_DEBUG_CRITICAL, "LIGHTING SHADER - %d", _lightingShader.program->program);
-	_queryLightingShader(&_lightingShader, 1);
+    glalLightingShader.program = gyShaderProgramCreate(vertShader, fragShader);
+    _gyLog(GY_DEBUG_CRITICAL, "LIGHTING SHADER - %d", glalLightingShader.program->program);
+    _queryLightingShader(&glalLightingShader, 1);
 
     vertShader = gyShaderCreate("/assets/shaders/shadowMap.vsh");
     fragShader = gyShaderCreate("/assets/shaders/shadowMap.fsh");
-    _shadowMapShader.program = gyShaderProgramCreate(vertShader, fragShader);
-    _queryLightingShader(&_shadowMapShader, 0);
+    glalShadowMapShader.program = gyShaderProgramCreate(vertShader, fragShader);
+    _queryLightingShader(&glalShadowMapShader, 0);
 }
 
 int gyShadersReloadAll(void) {
     int success = 1;
-    success &= gyShaderProgramDestroy(_lightingShader.program);
-    success &= gyShaderProgramDestroy(_shadowMapShader.program);
-    success &= gyShaderDestroy(_lightingShader.program->vertShader);
-    success &= gyShaderDestroy(_lightingShader.program->fragShader);
-    success &= gyShaderDestroy(_shadowMapShader.program->vertShader);
-    success &= gyShaderDestroy(_shadowMapShader.program->fragShader);
+    success &= gyShaderProgramDestroy(glalLightingShader.program);
+    success &= gyShaderProgramDestroy(glalShadowMapShader.program);
+    success &= gyShaderDestroy(glalLightingShader.program->vertShader);
+    success &= gyShaderDestroy(glalLightingShader.program->fragShader);
+    success &= gyShaderDestroy(glalShadowMapShader.program->vertShader);
+    success &= gyShaderDestroy(glalShadowMapShader.program->fragShader);
     glalLoadDefaultShaders();
     gyVidSetDefaultShaderProgram();
     glalDefaultShadersLoadUniforms();
@@ -336,15 +338,15 @@ int gyShadersReloadAll(void) {
 
 void glalDefaultShadersLoadUniforms(void) {
 	GYLightSource* sources[GYRO_VIDEO_LIGHT_SOURCES_MAX];
-	int count = lightSourceCount;
+    int count = glalLightSourceCount;
 	const GYMaterial* material = _currentMaterial;
 	_currentMaterial = NULL;
 
-	glUniformMatrix4fv(curLightShader->uniformLoc[SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)curCamera->projViewMat);
+    glUniformMatrix4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)glalCurCamera->projViewMat);
 //	glUniform4fv(curLightShader->uniformLoc[SHADER_CAM_POS], 1, (float*)&viewPosition);
 	gyVidMaterialBind(material);
 
-	memcpy(sources, lightSources, sizeof(GYLightSource*) * count);
+    memcpy(sources, glalLightSources, sizeof(GYLightSource*) * count);
 
 	//Gid rid of them and readd
 	gyVidLightSourceClear();
@@ -353,34 +355,34 @@ void glalDefaultShadersLoadUniforms(void) {
 	}
 
 	gyVidSetGlobalAmbience(&_globalAmbience);
-	gyVidLightingSetEnable(lightingEnabled);
+    gyVidLightingSetEnable(glalLightingEnabled);
 
-    glUniform1i(curLightShader->uniformLoc[SHADER_TEXTURE_FLIP], textureFlip);
-	glUniform3fv(curLightShader->uniformLoc[SHADER_CAM_WORLD_POS], 1, (float*)&camWorldPos);
-	glUniform3fv(curLightShader->uniformLoc[SHADER_NORMAL], 1, (float*)normalVector);
-	glUniform3fv(curLightShader->uniformLoc[SHADER_TANGENT], 1, (float*)tangentVector);
+    glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_FLIP], glalTextureFlip);
+    glUniform3fv(glalCurLightShader->uniformLoc[GLAL_SHADER_CAM_WORLD_POS], 1, (float*)&glalCamWorldPos);
+    glUniform3fv(glalCurLightShader->uniformLoc[GLAL_SHADER_NORMAL], 1, (float*)glalNormalVector);
+    glUniform3fv(glalCurLightShader->uniformLoc[GLAL_SHADER_TANGENT], 1, (float*)glalTangentVector);
 
 	//set normal map to use texture bank 1
-    glUniform1i(curLightShader->uniformLoc[SHADER_TEXTURE_MAP], textureMapUniforms[TEXTURE_MAP]);
-    glUniform1i(curLightShader->uniformLoc[SHADER_NORMAL_MAP], textureMapUniforms[NORMAL_MAP]);
-    glUniform1i(curLightShader->uniformLoc[SHADER_SPECULAR_MAP], textureMapUniforms[SPECULAR_MAP]);
+    glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_MAP], glalTextureMapUniforms[GLAL_TEXTURE_MAP]);
+    glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_NORMAL_MAP], glalTextureMapUniforms[GLAL_NORMAL_MAP]);
+    glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_SPECULAR_MAP], glalTextureMapUniforms[GLAL_SPECULAR_MAP]);
 
 	//next texture banks are used for shadow maps for each light
 	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
-		glUniform1i(curLightShader->lightsUniformLoc[i][SHADER_LIGHT_SHADOW_MAP], 3+i);
-		glUniform1i(curLightShader->lightsUniformLoc[i][SHADER_LIGHT_SHADOW_CUBE_MAP], 7+i);
+        glUniform1i(glalCurLightShader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SHADOW_MAP], 3+i);
+        glUniform1i(glalCurLightShader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SHADOW_CUBE_MAP], 7+i);
 	}
 
 	//Do these not need to be physically resubmitted?
-    glUniform1i(curLightShader->uniformLoc[SHADER_TEXTURE_ENABLED], textureMapActive);
-    glUniform1i(curLightShader->uniformLoc[SHADER_NORMAL_MAP_ENABLED], normalMapActive);
-    glUniform1i(curLightShader->uniformLoc[SHADER_SPECULAR_MAP_ENABLED], specularMapActive);
+    glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], glalTextureMapActive);
+    glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_NORMAL_MAP_ENABLED], glalNormalMapActive);
+    glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_SPECULAR_MAP_ENABLED], glalSpecularMapActive);
 
 	GYMatrix4 projMat;
 	GYMatrix4 finalMat;
 	glalGetPointLightProjectionMatrix(projMat, NULL);
-	gyMatMultMat(finalMat, shadowTexCoordBiasMat, projMat);
-	glUniformMatrix4fv(curLightShader->uniformLoc[SHADER_SHADOW_CUBE_MAP_PROJ_MAT], 1, GL_FALSE, (float*)projMat); //NO TEX COORD OFFSET? WHAT THE FUCK!?
+    gyMatMultMat(finalMat, glalShadowTexCoordBiasMat, projMat);
+    glUniformMatrix4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_SHADOW_CUBE_MAP_PROJ_MAT], 1, GL_FALSE, (float*)projMat); //NO TEX COORD OFFSET? WHAT THE FUCK!?
 
 	//Initialize internal data for shadow shader
 	glalLightingInit();

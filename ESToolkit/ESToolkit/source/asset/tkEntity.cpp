@@ -87,12 +87,12 @@ bool TkEntity::deactivate(void) {
 }
 
 void TkEntity::_renderRelative(void) {
-    if(_selectionState != SELECTION_NONE && !getAssets()->getEngine()->getLightSys()->isShadowPass()) {
-        _selectionRenderable->beginRender();
+   // if(_selectionState != SELECTION_NONE && !getAssets()->getEngine()->getLightSys()->isShadowPass()) {
+       // _selectionRenderable->beginRender();
         //if(_depthType == DEPTH_BUFFERED) transform._size.y = transform._size.z;
-        _selectionRenderable->render();
-        _selectionRenderable->endRender();
-    }
+       // _selectionRenderable->render();
+       // _selectionRenderable->endRender();
+    //}
     elysian::EntityBase::_renderRelative();
 }
 

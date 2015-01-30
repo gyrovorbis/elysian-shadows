@@ -14,19 +14,19 @@ const static GLenum _shadowMapTexUnits[GYRO_VIDEO_LIGHT_SOURCES_MAX] = {
 	GL_TEXTURE6
 };*/
 
-GYLightSource*		lightSources[GYRO_VIDEO_LIGHT_SOURCES_MAX]		= { NULL };
-unsigned			lightSourceCount								= 0;
-int					lightingEnabled									= 1;
-int					lightsEnabled[GYRO_VIDEO_LIGHT_SOURCES_MAX]		= { 0 };
-static int          _shadowPass                                     = 0;
+GYLightSource*		glalLightSources[GYRO_VIDEO_LIGHT_SOURCES_MAX]		= { NULL };
+unsigned			glalLightSourceCount								= 0;
+int					glalLightingEnabled									= 1;
+int					glalLightsEnabled[GYRO_VIDEO_LIGHT_SOURCES_MAX]		= { 0 };
+static int          _shadowPass                                         = 0;
 
 int gyVidShadowPass(void) {
     return _shadowPass;
 }
 
 void gyVidLightingSetEnable(const int enabled) {
-	lightingEnabled = enabled;
-	glUniform1i(curLightShader->uniformLoc[SHADER_LIGHTING_ENABLED], enabled);
+    glalLightingEnabled = enabled;
+    glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_LIGHTING_ENABLED], enabled);
 }
 
 void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) {
@@ -94,20 +94,20 @@ void gyVidLightSourceUninit(GYLightSource* const light) {
 void _addLightUniform(const unsigned index, const GYLightSource*const light) {
 	_LightInternals* internals = light->_data;
 
-	glUniform4fv(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_POS], 1, (float*)&light->position);
-	glUniform4fv(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_AMBIENT_COLOR], 1, (float*)&light->properties->ambientColor);
-	glUniform4fv(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_DIFFUSE_COLOR], 1, (float*)&light->properties->diffuseColor);
-	glUniform4fv(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_SPECULAR_COLOR], 1, (float*)&light->properties->specularColor);
+    glUniform4fv(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_POS], 1, (float*)&light->position);
+    glUniform4fv(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_AMBIENT_COLOR], 1, (float*)&light->properties->ambientColor);
+    glUniform4fv(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_DIFFUSE_COLOR], 1, (float*)&light->properties->diffuseColor);
+    glUniform4fv(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SPECULAR_COLOR], 1, (float*)&light->properties->specularColor);
 
-	glUniform3fv(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_DIRECTION], 1, (float*)&light->direction);
-	glUniform3fv(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_ATTENUATION_FACTORS], 1, (float*)&light->properties->attenuationFactors);
+    glUniform3fv(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_DIRECTION], 1, (float*)&light->direction);
+    glUniform3fv(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_ATTENUATION_FACTORS], 1, (float*)&light->properties->attenuationFactors);
 
-	glUniform1f(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_SPOT_EXPONENT], light->properties->spotExponent);
-	glUniform1f(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_SPOT_CUTOFF_ANGLE], light->spotCutoffAngle);
+    glUniform1f(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SPOT_EXPONENT], light->properties->spotExponent);
+    glUniform1f(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SPOT_CUTOFF_ANGLE], light->spotCutoffAngle);
 
-	glUniformMatrix4fv(_lightingShader.lightsUniformLoc[index][SHADER_LIGHT_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)light->camera->projViewMat);
+    glUniformMatrix4fv(glalLightingShader.lightsUniformLoc[index][GLAL_SHADER_LIGHT_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)light->camera->projViewMat);
 
-	glUniform1i(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_ENABLED], 1);
+    glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_ENABLED], 1);
 
 	//Determine whether we're processing a point shadow's cubemap
 	/* We don't have enough texture units for all shadow and shadow cube maps to
@@ -115,33 +115,33 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
 	 * some reason they're still cool with being bound to bullshit texture units. So
 	 * bind one to the real texture unit, and bind one to a bullshit unit based on type.
 	 */
-    glActiveTexture(textureMapTexUnits[SHADOW1_MAP+index]);
+    glActiveTexture(glalTextureMapTexUnits[GLAL_SHADOW1_MAP+index]);
 	if(light->type == GY_LIGHT_POINT) {
 		glDisable(GL_TEXTURE_2D);
 		glEnable(GL_TEXTURE_CUBE_MAP);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, internals->shadowMap);
-		glUniform1i(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_SHADOW_MAP], 7+index);
-		glUniform1i(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_SHADOW_CUBE_MAP], 3+index);
+        glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_MAP], 7+index);
+        glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_CUBE_MAP], 3+index);
 	} else {
 		glDisable(GL_TEXTURE_CUBE_MAP);
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, internals->shadowMap);
-		glUniform1i(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_SHADOW_MAP], 3+index);
-		glUniform1i(curLightShader->lightsUniformLoc[index][SHADER_LIGHT_SHADOW_CUBE_MAP], 7+index);
+        glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_MAP], 3+index);
+        glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_CUBE_MAP], 7+index);
 	}
-    glActiveTexture(textureMapTexUnits[TEXTURE_MAP]);
+    glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
 }
 
 void gyVidLightSourceAdd(GYLightSource* const light) {
 //	assert(lightSourceCount < GYRO_VIDEO_LIGHT_SOURCES_MAX);
 
 	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
-		if(lightsEnabled[i] == 0) {
+        if(glalLightsEnabled[i] == 0) {
 			glalStripComboBreaker();
-			lightSources[i] = light;
+            glalLightSources[i] = light;
 			_addLightUniform(i, light);
-			lightsEnabled[i] = 1;
-			++lightSourceCount;
+            glalLightsEnabled[i] = 1;
+            ++glalLightSourceCount;
 			return;
 		}
 	}
@@ -149,11 +149,11 @@ void gyVidLightSourceAdd(GYLightSource* const light) {
 
 void gyVidLightSourceRemove(const GYLightSource* const light) {
 	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
-		if(lightSources[i] == light) {
-			--lightSourceCount;
+        if(glalLightSources[i] == light) {
+            --glalLightSourceCount;
 			glalStripComboBreaker();
-			lightsEnabled[i] = 0;
-			glUniform1i(curLightShader->lightsUniformLoc[i][SHADER_LIGHT_ENABLED], 0);
+            glalLightsEnabled[i] = 0;
+            glUniform1i(glalCurLightShader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_ENABLED], 0);
 			break;
 		}
 	}
@@ -161,9 +161,9 @@ void gyVidLightSourceRemove(const GYLightSource* const light) {
 
 void gyVidLightSourceReplace(const GYLightSource*const old, GYLightSource*const next) {
 	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
-		if(lightSources[i] == old) {
+        if(glalLightSources[i] == old) {
 			glalStripComboBreaker();
-			lightSources[i] = next;
+            glalLightSources[i] = next;
 			_addLightUniform(i, next);
 			break;
 		}
@@ -171,10 +171,10 @@ void gyVidLightSourceReplace(const GYLightSource*const old, GYLightSource*const 
 }
 
 void gyVidLightSourceClear(void) {
-	lightSourceCount = 0;
+    glalLightSourceCount = 0;
 	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
-		lightsEnabled[i] = 0;
-		glUniform1i(curLightShader->lightsUniformLoc[i][SHADER_LIGHT_ENABLED], 0);
+        glalLightsEnabled[i] = 0;
+        glUniform1i(glalCurLightShader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_ENABLED], 0);
 	}
 }
 
@@ -226,7 +226,7 @@ void glalGetDirectionalLightViewMatrix(GYMatrix4 dest, const GYLightSource*const
 
 	gyMatApply(temp);
 
-	gyMatTranslate(-camWorldPos.x, -camWorldPos.y, -camWorldPos.z);
+    gyMatTranslate(-glalCamWorldPos.x, -glalCamWorldPos.y, -glalCamWorldPos.z);
 	//gyMatScale(2.0f, 2.0f, 1.0f);
 
 	gyMatStore((void*)dest);
@@ -282,7 +282,7 @@ void glalGetPointLightViewMatrix(GYMatrix4 dest, const GYLightSource* const ligh
 	gyMatLoadIdentity();
 
 	//Create View Matrix
-	gyMatApply((void*)&pointShadowFaceMatrices[face]);
+    gyMatApply((void*)&glalPointShadowFaceMatrices[face]);
 
 	glalGetPointLightCamMatrix(camMat, lightSrc);
 
@@ -342,9 +342,9 @@ void glalGetPointLightViewVolume(GYViewVolume* const vol, GYLightSource* lightSr
 }
 
 void gyVidLightSourceBeginShadowPasses(void) {
-	gyVidSetCurrentShaderProgram(_shadowMapShader.program);
+    gyVidSetCurrentShaderProgram(glalShadowMapShader.program);
 	//glalDefaultShadersLoadUniforms();
-	curLightShader = &_shadowMapShader;
+    glalCurLightShader = &glalShadowMapShader;
     _shadowPass = 1;
 }
 
@@ -441,10 +441,10 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 	gyMatMultMat(lightProjViewMatrix, lightProjMatrix, lightViewMatrix);
 
 	//SUBMIT PROJVIEW UNIFORM TO SHADOW SHADER
-	glUniformMatrix4fv(_shadowMapShader.uniformLoc[SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)lightProjViewMatrix);
+    glUniformMatrix4fv(glalShadowMapShader.uniformLoc[GLAL_SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)lightProjViewMatrix);
 
 	//Store projection view matrix (plus bias) for next render pass
-	if(useBias) gyMatMultMat(cam->projViewMat, shadowTexCoordBiasMat, lightProjViewMatrix);
+    if(useBias) gyMatMultMat(cam->projViewMat, glalShadowTexCoordBiasMat, lightProjViewMatrix);
 
 }
 
@@ -452,8 +452,8 @@ void gyVidLightSourceEndShadowPasses(void) {
     _shadowPass = 0;
 	gyVidSetDefaultShaderProgram();
 	//glalDefaultShadersLoadUniforms();
-	curLightShader = &_lightingShader;
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glalCurLightShader = &glalLightingShader;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	unsigned width, height;
 	gyVidResolution(&width, &height);
 	glViewport(0, 0, width, height);
