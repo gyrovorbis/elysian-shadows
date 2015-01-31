@@ -154,9 +154,9 @@ typedef struct _GYCamera {
 
 static const GYCamera	_defaultCamera;
 //static GYVector4		_stripVerts[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]         __attribute__((aligned(32)));
-static GYColor4			_stripColors[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]        __attribute__((aligned(32)));
 static GYTexCoord2		_stripTexCoords[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]     __attribute__((aligned(32)));
 static GYVector4		_modelViewVertices[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]  __attribute__((aligned(32)));
+GYColor4                _stripColors[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]           __attribute__((aligned(32)));
 
 
 //Shared extern video state variables
@@ -175,10 +175,10 @@ unsigned                    glalCurStripSize            = 0;
 //Private video state variables
 static unsigned int			_projWidth				= 0;
 static unsigned int			_projHeight				= 0;
-static GYColor4				_curQuadListColor[4]	= { {0, 0, 0, 0} };
 static unsigned				_vertexRenderCount		= 0;
 static GYVector4			_clearColor				= { 0.0f, 0.0f, 0.0f, 0.0f };
 static const GYTexCoord2*   _curTexCoordPtr          = NULL;
+GYColor4				_curQuadListColor[12]	= { {0, 0, 0, 0}, { 0, 0, 0, 0}, {0,0,0,0}, {0, 0,0,0} };
 
 void gyVidClearColor(const GYColor4 color) {
 	_clearColor.x = (float)color.r*255.0f;
@@ -388,6 +388,7 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
     const GYTexCoord2*  coord;
     const GYVector3*    tangent;
     const GYVector3*    normal;
+    unsigned i;
 
     int updateFlip = 0;
 
@@ -396,14 +397,13 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
         glalStripComboBreaker();
         glalVidTangentUpdateUniform();
         updateFlip = 1;
-
     }
 
     normal = &_rectNormals[glalPlaneType][glalRectTexOrient];
     if(normal != glalNormalVector) {
         glalStripComboBreaker();
         glalVidNormalUpdateUniform();
-        updateFlip = 1;
+        //updateFlip = 1;
     }
 
     if(updateFlip && glalTextureFlipFromOrientAndPlane(glalRectTexOrient, glalPlaneType) != glalTextureFlip) {
@@ -434,8 +434,16 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
 
 	//gyVidColorArray(_curQuadListColor);
 	//memcpy(&_stripColors[curStripSize], _curQuadListColor, sizeof(GYColor4)*4);
-    for(unsigned i = 0; i < 4; ++i) _stripColors[glalCurStripSize+i] = _curQuadListColor[i];
-
+    //for(i = 0; i < 4; ++i) {
+   // memcpy(&_stripColors[glalCurStripSize], _curQuadListColor, sizeof(GYColor4)*4);
+        _stripColors[glalCurStripSize] = _curQuadListColor[0];
+       _stripColors[glalCurStripSize+1] = _curQuadListColor[1];
+       _stripColors[glalCurStripSize+2] = _curQuadListColor[2];
+       _stripColors[glalCurStripSize+3] = _curQuadListColor[3];
+        //_gyLog(GY_DEBUG_VERBOSE, "ACCESS - %d", i);
+        //_stripColors[glalCurStripSize+i] = temp;
+        //_gyLog(GY_DEBUG_VERBOSE, "DONE - %d", glalCurStripSize+i);
+//}
 
 	//memcpy(&_stripVerts[curStripSize], verts, sizeof(GYVector4)*4);
 	//GYVector4 (*stripVerts)[4] = &_stripVerts[curStripSize];
