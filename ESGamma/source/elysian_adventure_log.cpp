@@ -140,7 +140,7 @@ void AdventureLog::render(Font &font) {
     quad._transform.setSize(430.0f, 22.0f*(_endIndex-_startIndex+1)-_yOffset-22.0f);
 	for(unsigned i = 0; i < 4; ++i) quad.setVertexColor(i, canvasColor.r, canvasColor.g, canvasColor.b, canvasColor.a);
 	quad.setVerticesAlpha(0.8f*_baseAlpha*255.0f, 0.8f*_baseAlpha*255.0f, 0.3f*_baseAlpha*255.0f, 0.3f*_baseAlpha*255.0f);
-	quad.render();
+    quad.render();
 	//renderer.drawTransparentQuad(ADV_LOG_X, ADV_LOG_Y+22, ADV_LOG_Z+1, 430, 22*(endIndex-startIndex+1)+yOffset-22, 0.8f, 0, 0, 0, 0.8f, 0, 0, 0, 0.3f, 0, 0, 0, 0.3f, 0, 0, 0);
     
 	const float X_COORD		= 210;//ADV_LOG_X + 10;		//x coordinate to draw the string at (doesn't change between lines)
@@ -189,7 +189,7 @@ void AdventureLog::render(Font &font) {
 			font.setAlpha(tempAlpha*_baseAlpha*255.0f);
 		}
 		else font.setAlpha(_baseAlpha*255.0f);
-		font.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, "%s", _log[i]);
+        font.drawString(Font::NO_FORMAT, Font::L_ALIGN, _log[i]);
     }
     
     quad._transform.setPos(ELYSIAN_ADV_LOG_X, ELYSIAN_ADV_LOG_Y, ELYSIAN_ADV_LOG_Z+2);
@@ -198,7 +198,7 @@ void AdventureLog::render(Font &font) {
 	quad.setVertexColor(3, bottomColor.r, bottomColor.g, bottomColor.b, bottomColor.a); quad.setVertexColor(2, bottomColor.r, bottomColor.g, bottomColor.b, bottomColor.a);
 	//quad.setColorVertical(0.0f, 0.0f, 1.0f, 0.0f, 0.7f, 1.0f);
 	quad.setVerticesAlpha(_baseAlpha*255.0f, _baseAlpha*255.0f, _baseAlpha*255.0f, _baseAlpha*255.0f);
-	quad.render();
+    quad.render();
 	
     //renderer.drawTransparentQuad(ADV_LOG_X, ADV_LOG_Y, ADV_LOG_Z+2, 430, 22, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	//font.setPosition(ADV_LOG_X+15, ADV_LOG_Y);

@@ -420,6 +420,7 @@ win32 {
                 -lvorbisfile \
                 -lglew32 \
                 -lglew32.dll \
+                -limagehlp \
                 #-lvorbisfile.dll \
                 -L../../ESGamma/lib/osx
                 #-mconsole

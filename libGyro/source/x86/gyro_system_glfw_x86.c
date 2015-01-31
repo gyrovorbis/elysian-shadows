@@ -79,6 +79,9 @@ static void _checkCPUCapabilities(void) {
 #include <execinfo.h>
 #include <stdlib.h>
 #include <unistd.h>
+#elif defined(WIN32)
+#include <windows.h>
+#include <imagehlp.h>
 #endif
 
 void gyDebugSigInit(void);
@@ -188,9 +191,155 @@ static void gyDebugSigHandler(int sig, siginfo_t* info, void* unused) {
 
 	exit(1);
 }
+#elif defined(WIN32)
+
+const char* execPipe(char* cmd) {
+    FILE* pipe = popen(cmd, "r");
+    if (!pipe) return "PIPE ERROR!";
+    static char buffer[1280];
+    char tempBuff[129];
+    buffer[0] = 0;
+    while(!feof(pipe)) {
+        if(fgets(tempBuff, 128, pipe) != NULL)
+            strcat(buffer, tempBuff);
+    }
+    pclose(pipe);
+    return buffer;
+}
+
+/* Resolve symbol name and source location given the path to the executable
+   and an address */
+int addr2line(char const * const program_name, void const * const addr)
+{
+  char addr2line_cmd[512] = {0};
+
+  /* have addr2line map the address to the relent line in the code */
+   sprintf(addr2line_cmd,"addr2line 2>&1 -f -p -e %.256s %p", program_name, addr);
+
+  /* This will print a nicely formatted string specifying the
+     function and source line of the address */
+
+   _gyLog(GY_DEBUG_VERBOSE, execPipe(addr2line_cmd));
+   return 1;
+  //return system(addr2line_cmd);
+}
+
+void windows_print_stacktrace(CONTEXT* context)
+{
+  SymInitialize(GetCurrentProcess(), 0, 1);
+
+  STACKFRAME frame = { 0 };
+
+  /* setup initial stack frame */
+  frame.AddrPC.Offset         = context->Eip;
+  frame.AddrPC.Mode           = AddrModeFlat;
+  frame.AddrStack.Offset      = context->Esp;
+  frame.AddrStack.Mode        = AddrModeFlat;
+  frame.AddrFrame.Offset      = context->Ebp;
+  frame.AddrFrame.Mode        = AddrModeFlat;
+
+  while (StackWalk(IMAGE_FILE_MACHINE_I386 ,
+                   GetCurrentProcess(),
+                   GetCurrentThread(),
+                   &frame,
+                   context,
+                   0,
+                   SymFunctionTableAccess,
+                   SymGetModuleBase,
+                   0 ) )
+  {
+    addr2line(__argv[0], (void*)frame.AddrPC.Offset);
+  }
+
+  SymCleanup( GetCurrentProcess() );
+}
+
+static LONG WINAPI windows_exception_handler(EXCEPTION_POINTERS * ExceptionInfo)
+{
+    _gyLog(GY_DEBUG_VERBOSE, "===================================");
+  switch(ExceptionInfo->ExceptionRecord->ExceptionCode)
+  {
+    case EXCEPTION_ACCESS_VIOLATION:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_ACCESS_VIOLATION", stderr);
+      break;
+    case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_ARRAY_BOUNDS_EXCEEDED", stderr);
+      break;
+    case EXCEPTION_BREAKPOINT:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_BREAKPOINT", stderr);
+      break;
+    case EXCEPTION_DATATYPE_MISALIGNMENT:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_DATATYPE_MISALIGNMENT", stderr);
+      break;
+    case EXCEPTION_FLT_DENORMAL_OPERAND:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_DENORMAL_OPERAND", stderr);
+      break;
+    case EXCEPTION_FLT_DIVIDE_BY_ZERO:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_DIVIDE_BY_ZERO", stderr);
+      break;
+    case EXCEPTION_FLT_INEXACT_RESULT:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_INEXACT_RESULT", stderr);
+      break;
+    case EXCEPTION_FLT_INVALID_OPERATION:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_INVALID_OPERATION", stderr);
+      break;
+    case EXCEPTION_FLT_OVERFLOW:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_OVERFLOW", stderr);
+      break;
+    case EXCEPTION_FLT_STACK_CHECK:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_STACK_CHECK", stderr);
+      break;
+    case EXCEPTION_FLT_UNDERFLOW:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_UNDERFLOW", stderr);
+      break;
+    case EXCEPTION_ILLEGAL_INSTRUCTION:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_ILLEGAL_INSTRUCTION", stderr);
+      break;
+    case EXCEPTION_IN_PAGE_ERROR:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_IN_PAGE_ERROR", stderr);
+      break;
+    case EXCEPTION_INT_DIVIDE_BY_ZERO:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_INT_DIVIDE_BY_ZERO", stderr);
+      break;
+    case EXCEPTION_INT_OVERFLOW:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_INT_OVERFLOW", stderr);
+      break;
+    case EXCEPTION_INVALID_DISPOSITION:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_INVALID_DISPOSITION", stderr);
+      break;
+    case EXCEPTION_NONCONTINUABLE_EXCEPTION:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_NONCONTINUABLE_EXCEPTION", stderr);
+      break;
+    case EXCEPTION_PRIV_INSTRUCTION:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_PRIV_INSTRUCTION", stderr);
+      break;
+    case EXCEPTION_SINGLE_STEP:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_SINGLE_STEP", stderr);
+      break;
+    case EXCEPTION_STACK_OVERFLOW:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_STACK_OVERFLOW", stderr);
+      break;
+    default:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: Unrecognized Exception", stderr);
+      break;
+  }
+  //fflush(stderr);
+
+  _gyLog(GY_DEBUG_VERBOSE, "===================================");
+
+  if (EXCEPTION_STACK_OVERFLOW != ExceptionInfo->ExceptionRecord->ExceptionCode)
+  {
+      windows_print_stacktrace(ExceptionInfo->ContextRecord);
+  }
+
+  return EXCEPTION_EXECUTE_HANDLER;
+}
+
+
 #endif
 
 void gyDebugSigInit(void) {
+    _gyLog(GY_DEBUG_VERBOSE, "\tRegistering exception handler.");
 #if defined(__LINUX__) || defined(__APPLE__)
 	struct sigaction sa, so;
 
@@ -210,8 +359,13 @@ void gyDebugSigInit(void) {
 	sigaction(SIGTRAP, &sa, &so);
 	if(so.sa_handler == SIG_IGN)
 		_gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGTRAP signal handler.");
+#elif defined(WIN32)
+    SetUnhandledExceptionFilter(&windows_exception_handler);
+
 #endif
 }
+
+
 
 #if GYRO_PLATFORM != GYRO_PLATFORM_Qt
 int main(int argc, char *argv[])

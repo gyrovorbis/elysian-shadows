@@ -54,7 +54,7 @@ bool Font::_loadCharacterWidths(const char *width_file) {
 }
 
 void Font::drawStringf(const FORMAT format, const ALIGNMENT align, const char *const str, ...) {
-	char buffer[500];
+    char buffer[5000];
 	va_list argptr;
 	va_start(argptr,str);
 	vsprintf(buffer,str,argptr);
@@ -81,24 +81,26 @@ void Font::drawString(const FORMAT format, const ALIGNMENT align, const char *co
 
 	i = 0;
 
-	if(!_batching) {
+    //if(!_batching) {
 		gyVidTexBind(_tex);
         gyVidNormalMapBind(nullptr);
+        gyVidMaterialBind(nullptr);
         gyVidSpecularMapBind(nullptr);
 		if(_color.a == 255) gyVidAlphaLevel(GY_ALPHA_PUNCHTHRU);
 		else gyVidAlphaLevel(GY_ALPHA_FULL);
 		//gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
-		gyVidQuadListBegin(&_color);
         gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
         gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
-	}
+		gyVidQuadListBegin(&_color);
+
+    //}
 
 	while (buffer[i] != '\0') {
 		//Iterates through the buffer, drawing characters
 		_renderChar(format, currentX, currentY, buffer, i);
 	}
 
-	if(!_batching) gyVidQuadListEnd();
+    /*if(!_batching)*/ gyVidQuadListEnd();
 }
 
 //	void RenderCharacter(FONT_FORMAT format, float &currentX, float &currentY, char *str, int &i);
