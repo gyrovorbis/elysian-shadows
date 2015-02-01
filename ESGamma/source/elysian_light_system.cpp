@@ -238,7 +238,7 @@ void LightSystem::shadowRenderPasses(void) {
 
     camSys->popState();
 	gyVidLightSourceEndShadowPasses();
-    gyVidSetGlobalAmbience(&_globalAmbience);
+    if(_enabled) gyVidSetGlobalAmbience(&_globalAmbience);
 	_shadowPass = false;
 	//_sortOnscreenLights();
 }
