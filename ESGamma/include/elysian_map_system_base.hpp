@@ -192,11 +192,10 @@ namespace elysian {
 			//gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta, 32.0f, 32.0f, 32.0f);
             gyVidRectPlaneType(newPlane);
             glalVidNormalUpdateUniform();
-            updateFlip = true;
 		}
 
         if(updateFlip) {
-            GLAL_TEXTURE_FLIP newFlip = glalTextureFlipFromOrientAndPlane(newOrient, newPlane);
+            GLAL_TEXTURE_FLIP newFlip = glalTextureFlipFromOrientAndPlane(newOrient);
             if(newFlip != glalTextureFlip) {
                 glalVidTextureFlipUpdateUniform();
             }

@@ -4,6 +4,29 @@
 #include "elysian_lua_table_proxy_base.hpp"
 #include  <QObject>
 
+
+/*
+ * Had to move QObject signal/slot functionality to a separate class,
+ * because Qt's MOC reests on class templates...
+ */
+class TkLuaTableUserdata: public QObject {
+    Q_OBJECT
+signals:
+    //Notifies Qt's GUI models to update when Lua table fields change
+    void fieldChanged(const QString key);
+    void fieldAdded(const QString key);
+
+public:
+    void emitFieldChanged(const QString key) { emit fieldChanged(key); }
+    void emitFieldAdded(const QString key) { emit fieldAdded(key); }
+
+    static TkLuaTableUserdata*  inject(lua_State*const l, const int luaRef);
+    static int                  _gcMetamethod(lua_State*const l);
+    static int                  _indexMetamethod(lua_State*const l);
+    static int                  _newIndexMetaMethod(lua_State*const l);
+};
+
+
 /*
  * Had to move QObject signal/slot functionality to a separate class,
  * because Qt's MOC reests on class templates...

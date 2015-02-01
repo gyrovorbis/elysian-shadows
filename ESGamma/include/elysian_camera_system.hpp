@@ -173,6 +173,7 @@ namespace elysian {
         void    initializeProjMatrix(void);
         bool    isBoundByMap(void) const;
         void    setBoundByMap(const bool val);
+        bool    isDebug(void) const;
 
 		void pushCustomCameraState(CameraState*const state) {
 			++_depth;
@@ -483,6 +484,8 @@ namespace elysian {
         gyVec3ScaleAccum(dest, 1.0f/(_curState->_keyFrame.getScale()*_curState->staticScale));
         gyVec3AddAccum(dest, &_curState->_keyFrame._pos);
     }
+
+    inline bool CameraSystem::isDebug(void) const { return (_curState == &_debugState); }
 
 
 	

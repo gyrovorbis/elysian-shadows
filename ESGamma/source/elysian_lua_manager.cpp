@@ -276,9 +276,11 @@ bool LuaManager::runScriptSandbox(const char *const file, LuaScript* const scrip
 		_showError();
 		if(_errorCode == LUA_ERRFILE) {
 			_errorprintf("Could not load script file!");
-		} else {
+        }
+        /*else {
 			lua_remove(*_mainState, 1);					//take loaded chunk off of stack
-		}
+        }*/
+        lua_pop(*_mainState, lua_gettop(*_mainState));
 		if(script) script->setError();
 		return false;
 

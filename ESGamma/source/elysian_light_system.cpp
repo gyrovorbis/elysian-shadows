@@ -188,8 +188,9 @@ void LightSystem::shadowRenderPasses(void) {
 	memset(_lightMap, 0, sizeof(_lightMap));
 
 	_shadowPass = true;
+    bool dbgCam = camSys->isDebug();
 	gyVidLightSourceBeginShadowPasses();
-    camSys->pushState();
+    if(dbgCam) camSys->pushState();
 
     if(_enabled)
 	for(auto it : sources) {
@@ -236,7 +237,7 @@ void LightSystem::shadowRenderPasses(void) {
 		}
 	}
 
-    camSys->popState();
+    if(dbgCam) camSys->popState();
 	gyVidLightSourceEndShadowPasses();
     if(_enabled) gyVidSetGlobalAmbience(&_globalAmbience);
 	_shadowPass = false;
