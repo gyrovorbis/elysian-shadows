@@ -53,8 +53,10 @@ void LightSystem::setGlobalAmbientColor(const GYVector4 &color) {
 }
 
 void LightSystem::setEnabled(const bool val) {
+    GYVector4 noAmbience = GYVector4 { 1.0f, 1.0f, 1.0f, 0.0f };
 	_enabled = val;
 	gyVidLightingSetEnable(val);
+    gyVidSetGlobalAmbience(&noAmbience);
 }
 
 void LightSystem::renderCube(float x, float y, float z,
@@ -175,7 +177,7 @@ void LightSystem::render(void) {
 }
 
 void LightSystem::shadowRenderPasses(void) {
-
+    //if(!_enabled) return;
 	const auto sources	= _curArea->lightSources;
 	CameraSystem* camSys = getCameraSys();
 	CameraState* cam	= camSys->getCurrentState();
@@ -187,8 +189,9 @@ void LightSystem::shadowRenderPasses(void) {
 
 	_shadowPass = true;
 	gyVidLightSourceBeginShadowPasses();
-	camSys->pushState();
+    camSys->pushState();
 
+    if(_enabled)
 	for(auto it : sources) {
 		//if(!ONSCREEN) continue;!!!!
 		if(_onscreenLightCount >= ELYSIAN_LIGHT_SYSTEM_MAX_LIGHTS_ONSCREEN) continue;
@@ -202,9 +205,9 @@ void LightSystem::shadowRenderPasses(void) {
 
 			if(it->isShadowCaster()) {
 				gyVidLightSourceBeginShadowPass(it, GY_CUBE_MAP_FACE_MAX);
-				getCameraSys()->setCurrentCameraState(it->getCameraState());
+                //getCameraSys()->setCurrentCameraState(it->getCameraState());
 				//_renderShadowVolumes();
-				getMapSys()->render();
+                if(_shadowPassEnabled) getMapSys()->render();
             }
 			_addToLightMap(it);
 			break;
@@ -218,11 +221,11 @@ void LightSystem::shadowRenderPasses(void) {
 						if(it->isShadowCaster()) {
 							gyVidLightSourceBeginShadowPass(it, (GY_CUBE_MAP_FACE)i);
 
-							it->getCameraState()->updateBoundingSubregions(*cam);
+                            //it->getCameraState()->updateBoundingSubregions(*cam);
 
-							getCameraSys()->setCurrentCameraState(it->getCameraState());
+                            //getCameraSys()->setCurrentCameraState(it->getCameraState());
 							//_renderShadowVolumes();
-							getMapSys()->render();
+                            if(_shadowPassEnabled) getMapSys()->render();
 
 						}
 					}
@@ -233,7 +236,7 @@ void LightSystem::shadowRenderPasses(void) {
 		}
 	}
 
-	camSys->popState();
+    camSys->popState();
 	gyVidLightSourceEndShadowPasses();
     gyVidSetGlobalAmbience(&_globalAmbience);
 	_shadowPass = false;

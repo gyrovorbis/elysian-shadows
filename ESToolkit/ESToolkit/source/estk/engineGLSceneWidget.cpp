@@ -3,6 +3,7 @@
 #include "engineGLSceneWidget.h"
 #include <glal/gyro_video_glal.h>
 #include "elysian_engine.hpp"
+#include "elysian_light_system.hpp"
 
 #include <QMouseEvent>
 
@@ -12,6 +13,7 @@ EngineGLSceneWidget::EngineGLSceneWidget(const QGLFormat &format, QWidget *paren
     makeCurrent();
     glalVidOglInit(1280, 720, 1280, 720);
 }
+
 
 void EngineGLSceneWidget::stop(void) {
     getAssets()->getEngine()->setEngineState(elysian::Engine::ENGINE_ESTK_STOP);

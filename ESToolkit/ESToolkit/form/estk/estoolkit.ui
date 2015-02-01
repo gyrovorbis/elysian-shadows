@@ -146,6 +146,13 @@
      <addaction name="actionNormal_Map"/>
      <addaction name="actionSpecular_Map"/>
     </widget>
+    <widget class="QMenu" name="menuDynamic_Lighting">
+     <property name="title">
+      <string>Dynamic Lighting</string>
+     </property>
+     <addaction name="actionLights"/>
+     <addaction name="actionShadows"/>
+    </widget>
     <addaction name="actionAsset_View"/>
     <addaction name="actionLayer_View"/>
     <addaction name="actionSheet_View"/>
@@ -160,6 +167,8 @@
     <addaction name="menuSheet_Texture"/>
     <addaction name="menuActive_Textures"/>
     <addaction name="actionHidden_Entities"/>
+    <addaction name="separator"/>
+    <addaction name="menuDynamic_Lighting"/>
    </widget>
    <widget class="QMenu" name="menuLevel">
     <property name="enabled">
@@ -1191,6 +1200,28 @@
   <action name="actionReload_2">
    <property name="text">
     <string>Reload</string>
+   </property>
+  </action>
+  <action name="actionShadows">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Shadows</string>
+   </property>
+  </action>
+  <action name="actionLights">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Lights</string>
    </property>
   </action>
  </widget>

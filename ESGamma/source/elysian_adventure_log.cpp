@@ -135,6 +135,8 @@ void AdventureLog::render(Font &font) {
 	static GYColor4 bottomColor = { 0, 155, 255, 255 };
 	static GYColor4 canvasColor = { 0, 0, 0, 0 };
     
+    gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
+
     //Draw Canvas for log strings
     quad._transform.setPos(ELYSIAN_ADV_LOG_X, ELYSIAN_ADV_LOG_Y+11+0.5f*(22*(_endIndex-_startIndex+1)-_yOffset-22), ELYSIAN_ADV_LOG_Z);
     quad._transform.setSize(430.0f, 22.0f*(_endIndex-_startIndex+1)-_yOffset-22.0f);

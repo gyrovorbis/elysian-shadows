@@ -11,7 +11,7 @@
 #include <QBasicTimer>
 #include <QGLShaderProgram>
 
-#define TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME   (5)
+#define TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME   5
 
 class EngineGLSceneWidget:
         public QGLWidget,
@@ -32,10 +32,9 @@ public:
 
 protected:
     QBasicTimer     _timer;
-    unsigned        _width			= 0;
-    unsigned        _height			= 0;
-    bool            _advanceFrame	= false;
-
+    unsigned        _width              = 0;
+    unsigned        _height             = 0;
+    bool            _advanceFrame       = false;
 
     //reimplemented from QGLWidget
     virtual void    initializeGL(void) override;
@@ -46,7 +45,11 @@ protected:
 
 signals:
 
-    void engineUpdated(void);
+    void            engineUpdated(void);
+
+private slots:
+
+
 };
 
 
@@ -57,7 +60,6 @@ signals:
 
 
 // ===== INLINEZ =====
-
 
 
 

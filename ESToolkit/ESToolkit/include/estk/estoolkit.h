@@ -43,17 +43,23 @@ namespace Ui {
 class ESToolkit : public QMainWindow, public elysian::LuaManager {
     Q_OBJECT
 public:
-            ESToolkit(QWidget *parent = nullptr);
-    virtual ~ESToolkit(void);
+                    ESToolkit(QWidget *parent = nullptr);
+    virtual         ~ESToolkit(void);
 protected:
-    virtual void changeEvent(QEvent *e) override;
-    virtual void closeEvent(QCloseEvent *event) override;
+    virtual void    changeEvent(QEvent *e) override;
+    virtual void    closeEvent(QCloseEvent *event) override;
 public:
-    void _engineInitialize(void);
-    void _engineLoadAssets(void);
-	void _openProjectDir(const QString dir);
-    void setMainTextureUniform(const int uniform);
+    void            _engineInitialize(void);
+    void            _engineLoadAssets(void);
+    void            _openProjectDir(const QString dir);
+    void            setMainTextureUniform(const int uniform);
 private:
+
+    struct EngineParameters {
+        bool        shadowPassEnabled   = true;
+        bool        lightingEnabled     = true;
+    } _engineParams;
+
     Assets                  _assets;
     QUndoGroup              _undoGroup;
     EngineGLSceneWidget*    _engineGLView;
@@ -105,6 +111,7 @@ private:
 private slots:
 
     //----CONNECTED BY DESIGNER----
+    void _onEngineInitialized();
     void on_actionLevelReloadSheets_triggered();
 	//void on_actionFileImportArea_triggered();
 	//void on_actionFileImportLevel_triggered();
@@ -212,5 +219,7 @@ private slots:
     void on_actionHidden_Entities_toggled(bool arg1);
     void on_actionReload_triggered();
     void on_actionReload_2_triggered();
+    void on_actionShadows_toggled(bool arg1);
+    void on_actionLights_toggled(bool arg1);
 };
 #endif // ESTOOLKIT_H

@@ -213,6 +213,7 @@ ESToolkit::ESToolkit(QWidget *parent):
     Debug::setFilter(Debug::COMMAND, true);
 
 	//CONNECT ASSET SIGNALS/SLOTS TO MAIN UI
+    connect(&_assets, SIGNAL(engineInitialize()), this, SLOT(_onEngineInitialized()));
 	connect(&_assets, SIGNAL(projectRemoveUI()), this, SLOT(OnProjectRemoved()));
 	connect(&_assets, SIGNAL(areaChanged(Area *const)), this, SLOT(OnAreaChanged(Area *const)));
 	connect(&_assets, SIGNAL(levelChanged(Level *const)), this, SLOT(OnLevelChanged(Level *const)));
@@ -489,6 +490,8 @@ void ESToolkit::WriteSettings()
     settings.setValue("renderMapBackground", TkMapSystem::getRenderMapBackground());
     settings.setValue("mapViewRes", _mapViewRes);
     settings.setValue("showHiddenEntities", _entityDockWidget->getTreeWidget()->getShowHidden());
+    settings.setValue("shadowPassEnabled", _engineParams.shadowPassEnabled);
+    settings.setValue("lightingEnabled", _engineParams.lightingEnabled);
 	unsigned x, y;
 	_engineDialog->getStartPos(x, y);
 	settings.setValue("engineStartPosX", x);
@@ -529,10 +532,11 @@ void ESToolkit::ReadSettings()
 	unsigned x = settings.value("engineStartPosX", 0).toUInt();
 	unsigned y = settings.value("engineStartPosY", 0).toUInt();
     bool showHiddenEntities = settings.value("showHiddenEntities", false).toBool();
+    bool shadowPassEnabled = settings.value("shadowPassEnabled", true).toBool();
+    bool lightingEnabled = settings.value("lightingEnabled", true).toBool();
 	_engineDialog->setStartPos(x, y);
     MAP_VIEW_RES mapViewRes = (MAP_VIEW_RES)settings.value("mapViewRes", MAP_VIEW_RES_DYNAMIC).toInt();
     _setMapViewResolution(mapViewRes);
-
 
 	//bool assetVisibility = settings.value("assetDock", true).toBool();
 	//bool entityVisibility = settings.value("entityDock", true).toBool();
@@ -567,6 +571,8 @@ void ESToolkit::ReadSettings()
     _ui->actionMap_Background->setChecked(renderMapBg);
 	on_actionHorizontal_SheetView_triggered(sheetViewHorizontal);
     _ui->actionHidden_Entities->setChecked(showHiddenEntities);
+    _ui->actionShadows->setChecked(shadowPassEnabled);
+    _ui->actionLights->setChecked(lightingEnabled);
 
     toggleProjectActions(false);
 
@@ -1851,4 +1857,31 @@ void ESToolkit::on_actionReload_triggered()
 void ESToolkit::on_actionReload_2_triggered()
 {
     _assets.reloadLevel();
+}
+
+void ESToolkit::on_actionShadows_toggled(bool arg1)
+{
+    _engineParams.shadowPassEnabled = arg1;
+    if(_assets.getEngine()) {
+        _assets.getEngine()->getLightSys()->setShadowPassEnabled(arg1);
+    }
+}
+
+void ESToolkit::_onEngineInitialized(void) {
+    _assets.getEngine()->getLightSys()->setShadowPassEnabled(_engineParams.shadowPassEnabled);
+    _assets.getEngine()->getLightSys()->setEnabled(_engineParams.lightingEnabled);
+}
+
+void ESToolkit::on_actionLights_toggled(bool arg1)
+{
+    _engineParams.lightingEnabled = arg1;
+    if(_assets.getEngine()) {
+        _assets.getEngine()->getLightSys()->setEnabled(arg1);
+    }
+    if(!arg1) {
+        _ui->actionShadows->setEnabled(false);
+        _ui->actionShadows->setChecked(false);
+    } else {
+        _ui->actionShadows->setEnabled(true);
+    }
 }

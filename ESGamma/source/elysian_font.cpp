@@ -90,7 +90,7 @@ void Font::drawString(const FORMAT format, const ALIGNMENT align, const char *co
 		else gyVidAlphaLevel(GY_ALPHA_FULL);
 		//gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
         gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
-        gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
+        //gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
 		gyVidQuadListBegin(&_color);
 
     //}

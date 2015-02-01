@@ -119,6 +119,7 @@ void gyVidSetCamWorldPos(const GYVector3*const pos) {
 }
 
 void gyVidNormalMapBind(const GYTexture * const tex) {
+    if(!glalLightingEnabled) return;
     static int wasActive = 0;
     int active = 1;
 
@@ -148,6 +149,7 @@ void gyVidNormalMapBind(const GYTexture * const tex) {
 }
 
 void gyVidSpecularMapBind(const GYTexture * const tex) {
+    if(!glalLightingEnabled) return;
     static int wasActive = 0;
     int active = 1;
 
@@ -188,7 +190,7 @@ void glalLightingInit(void) {
 }
 
 void gyVidMaterialBind(const GYMaterial*const material) {
-
+    if(!glalLightingEnabled) return;
 	if(!material) gyVidMaterialBind(&_defaultMaterial);
 	else if(_currentMaterial != material) {
 		_currentMaterial = material;
@@ -239,7 +241,7 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
     shader->uniformLoc[GLAL_SHADER_TEXTURE_MAP]              = _protectedUniformQuery(shader->program, "uTexture");
     shader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED]			= _protectedUniformQuery(shader->program, "uTextureEnabled");
 
-	if(!light) return; //the rest is lighting only
+    //if(!light) return; //the rest is lighting only
 
     shader->attribLoc[GLAL_SHADER_COLOR]						= _protectedAttribQuery(shader->program, "aColor");
 
