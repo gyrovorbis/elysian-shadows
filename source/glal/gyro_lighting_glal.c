@@ -25,6 +25,16 @@ int gyVidShadowPass(void) {
 }
 
 void gyVidLightingSetEnable(const int enabled) {
+    GYVector4 noAmbience = { 1.0f, 1.0f, 1.0f, 0.0f };
+
+    if(!enabled) {
+        gyVidSetGlobalAmbience(&noAmbience);
+        gyVidNormalMapBind(NULL);
+        gyVidSpecularMapBind(NULL);
+        gyVidMaterialBind(NULL);
+        gyVidLightSourceClear();
+    }
+
     glalLightingEnabled = enabled;
     glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_LIGHTING_ENABLED], enabled);
 }
@@ -134,6 +144,7 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
 
 void gyVidLightSourceAdd(GYLightSource* const light) {
 //	assert(lightSourceCount < GYRO_VIDEO_LIGHT_SOURCES_MAX);
+    if(!glalLightingEnabled) return;
 
 	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
         if(glalLightsEnabled[i] == 0) {
@@ -148,6 +159,8 @@ void gyVidLightSourceAdd(GYLightSource* const light) {
 }
 
 void gyVidLightSourceRemove(const GYLightSource* const light) {
+    if(!glalLightingEnabled) return;
+
 	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
         if(glalLightSources[i] == light) {
             --glalLightSourceCount;
@@ -160,6 +173,8 @@ void gyVidLightSourceRemove(const GYLightSource* const light) {
 }
 
 void gyVidLightSourceReplace(const GYLightSource*const old, GYLightSource*const next) {
+    if(!glalLightingEnabled) return;
+
 	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
         if(glalLightSources[i] == old) {
 			glalStripComboBreaker();
