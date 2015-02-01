@@ -43,7 +43,7 @@ static inline void glalStripComboBreaker(void) {
     }
 }
 
-static inline GLAL_TEXTURE_FLIP glalTextureFlipFromOrientAndPlane(const GY_RECT_TEX_ORIENT orient, const GY_RECT_PLANE_TYPE plane) {
+static inline GLAL_TEXTURE_FLIP glalTextureFlipFromOrientAndPlane(const GY_RECT_TEX_ORIENT orient) {
     switch(orient) {
     case GY_RECT_TEX_ORIENT_FLIP_VERT:
         //return GLAL_TEXTURE_FLIP_VERT;

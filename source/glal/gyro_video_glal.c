@@ -371,7 +371,7 @@ void glalVidTangentUpdateUniform(void) {
 }
 
 void glalVidTextureFlipUpdateUniform(void) {
-    glalTextureFlip = glalTextureFlipFromOrientAndPlane(glalRectTexOrient, glalPlaneType);
+    glalTextureFlip = glalTextureFlipFromOrientAndPlane(glalRectTexOrient);
     glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_FLIP], glalTextureFlip);
 }
 
@@ -406,7 +406,7 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
         //updateFlip = 1;
     }
 
-    if(updateFlip && glalTextureFlipFromOrientAndPlane(glalRectTexOrient, glalPlaneType) != glalTextureFlip) {
+    if(updateFlip && glalTextureFlipFromOrientAndPlane(glalRectTexOrient) != glalTextureFlip) {
         glalVidTextureFlipUpdateUniform();
     }
 
