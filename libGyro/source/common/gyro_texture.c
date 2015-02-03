@@ -84,21 +84,38 @@ static void *_TexCoordConstructor(void *const data) {
 	unsigned int x_tiles = (unsigned int)(texData->sheetWidth / texData->spriteWidth);
 	unsigned int y_tiles = (unsigned int)(texData->sheetHeight / texData->spriteHeight);
 
-	float u_inc = (float)texData->spriteWidth / (float)texData->sheetWidth;
-	float v_inc = (float)texData->spriteHeight / (float)texData->sheetHeight;
+    float u_inc = ((float)texData->spriteWidth) / (float)texData->sheetWidth;
+    float v_inc = ((float)texData->spriteHeight) / (float)texData->sheetHeight;
 	unsigned int i,j,index;
 	float u,v;
 
+    const float errorX = 0.4f / ((float)texData->sheetWidth-0.4f);
+    const float errorY = 0.4f / ((float)texData->sheetHeight-0.4f);
+
+
 	//Allocate sprite coords and add entry
 	coord = malloc(sizeof(GYTexCoordSheet));
-	coord->sheetWidth = texData->sheetWidth;
-	coord->sheetHeight = texData->sheetHeight;
-	coord->spriteWidth = texData->spriteWidth;
+    coord->sheetWidth   = texData->sheetWidth;
+    coord->sheetHeight  = texData->sheetHeight;
+    coord->spriteWidth  = texData->spriteWidth;
 	coord->spriteHeight = texData->spriteHeight;
 
 	// Allocate x_tiles * y_tiles coordinates
 	coord->frames = x_tiles * y_tiles;
 	coord->texCoord = malloc(sizeof(GYTexCoordFrame)*coord->frames);
+
+    for(j = 0; j < y_tiles; ++j) {
+        for(i = 0; i < x_tiles; ++i) {
+            index = (j*x_tiles)+i;
+            coord->texCoord[index].topLeft.u    = (double)(((double)(coord->spriteWidth)*(double)i)+0.5)/(double)coord->sheetWidth;
+            coord->texCoord[index].topLeft.v    = (double)(((double)(coord->spriteHeight)*(double)j)+0.5)/(double)coord->sheetHeight;
+            coord->texCoord[index].botRight.u   = (double)(((double)(coord->spriteWidth)*(double)(i)+(coord->spriteWidth)-0.1)/(double)coord->sheetWidth);
+            coord->texCoord[index].botRight.v   = (double)(((double)(coord->spriteHeight)*(double)(j)+(coord->spriteHeight)-0.1)/(double)coord->sheetHeight);
+        }
+    }
+
+#if 0
+
 #if 1
 	for(i = 0; i < y_tiles; ++i) {
 		v = v_inc*i;
@@ -107,13 +124,18 @@ static void *_TexCoordConstructor(void *const data) {
 			index = j+(i*x_tiles);
 
 			coord->texCoord[index].spriteWidth = texData->spriteWidth;
-			coord->texCoord[index].spriteHeight = texData->spriteHeight;
+            coord->texCoord[index].spriteHeight = texData->spriteHeight;
 //GAAAAAY, but it must be done...
 #if GYRO_PLATFORM != GYRO_PLATFORM_DC
-            coord->texCoord[index].topLeft.u = (u+0.0005f);
+        /*    coord->texCoord[index].topLeft.u = (u+0.0005f);
             coord->texCoord[index].topLeft.v = (v+0.0005f);
             coord->texCoord[index].botRight.u = (u+u_inc-0.0005f);
-            coord->texCoord[index].botRight.v = (v+v_inc-0.0005f);
+            coord->texCoord[index].botRight.v = (v+v_inc-0.0005f); */
+
+            coord->texCoord[index].topLeft.u = (u+errorX);
+            coord->texCoord[index].topLeft.v = (v+errorY);
+            coord->texCoord[index].botRight.u = (u+u_inc-errorX);
+            coord->texCoord[index].botRight.v = (v+v_inc-errorY);
 #else	//Pack the bitches on Dreamcast
 			coord->texCoord[index].topLeft.uv = PVR_PACK_16BIT_UV(u, v);
 			coord->texCoord[index].botRight.uv = PVR_PACK_16BIT_UV((u+u_inc), (v+v_inc));
@@ -138,6 +160,7 @@ static void *_TexCoordConstructor(void *const data) {
             coord->texCoord[index].botRight.v = ((float)((float)(y+1.0f)*(sprH)/(float)shH));
         }
     }
+#endif
 #endif
 
 	return coord;
