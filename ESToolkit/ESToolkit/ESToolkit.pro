@@ -102,7 +102,6 @@ SOURCES += source/asset/project.cpp \
     ../../AssetIO/source/elysian_rigid_body.cpp \
     ../../AssetIO/source/elysian_combat.cpp \
 	../../AssetIO/source/luatables.cc \
-	../../ESGamma/source/elysian_lua_manager.cpp \
     ../../ESGamma/source/elysian_adventure_log.cpp \
     ../../ESGamma/source/elysian_animation_system.cpp \
     ../../ESGamma/source/elysian_audio_system.cpp \
@@ -124,7 +123,6 @@ SOURCES += source/asset/project.cpp \
     ../../ESGamma/source/elysian_light_system.cpp \
     ../../ESGamma/source/elysian_lua_script.cpp \
     ../../ESGamma/source/elysian_lua_singleton.cpp \
-    ../../ESGamma/source/elysian_lua_wrappers.cpp \
     ../../ESGamma/source/elysian_particle_system.cpp \
     ../../ESGamma/source/elysian_party_system.cpp \
     ../../ESGamma/source/elysian_quad_attrib.cpp \
@@ -151,7 +149,12 @@ SOURCES += source/asset/project.cpp \
     ../../ESGamma/source/elysian_map_system_base.cpp \
     source/estk/tkMapSystem.cpp \
     source/asset/luaTableStackModel.cpp \
-    ../../AssetIO/source/elysian_lua_table_proxy_base.cpp
+    ../../AssetIO/source/elysian_lua_table_proxy_base.cpp \
+    source/asset/tkLuaTableProxy.cpp \
+    source/estk/tkLuaWrappers.cpp \
+    ../../ESGamma/source/elysian_lua_wrappers.cpp \
+    ../../ESGamma/source/elysian_lua_manager_base.cpp \
+    source/estk/tkLuaManager.cpp
 
 HEADERS += include/asset/project.h \
     include/asset/assets.h \
@@ -264,10 +267,8 @@ HEADERS += include/asset/project.h \
     ../../ESGamma/include/elysian_gui_system.hpp \
     ../../ESGamma/include/elysian_level_system.hpp \
     ../../ESGamma/include/elysian_light_system.hpp \
-    ../../ESGamma/include/elysian_lua_manager.hpp \
     ../../ESGamma/include/elysian_lua_script.hpp \
     ../../ESGamma/include/elysian_lua_singleton.hpp \
-    ../../ESGamma/include/elysian_lua_wrappers.hpp \
     ../../ESGamma/include/elysian_model.hpp \
     ../../ESGamma/include/elysian_particle_system.hpp \
     ../../ESGamma/include/elysian_party_system.hpp \
@@ -303,7 +304,12 @@ HEADERS += include/asset/project.h \
     ../../AssetIO/include/elysian_material.hpp \
     ../../AssetIO/include/elysian_lua_table_proxy_base.hpp \
     ../../AssetIO/include/elysian_lua_table_proxy.hpp \
-    include/asset/tkLuaTableProxy.h
+    include/asset/tkLuaTableProxy.h \
+    include/estk/tkLuaWrappers.h \
+    ../../ESGamma/include/elysian_lua_wrappers.hpp \
+    ../../ESGamma/include/elysian_lua_manager_base.hpp \
+    ../../ESGamma/include/elysian_lua_manager.hpp \
+    include/estk/tkLuaManager.h
 
 FORMS += form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \

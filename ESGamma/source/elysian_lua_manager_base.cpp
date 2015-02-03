@@ -8,13 +8,13 @@
 namespace elysian {
 
 //static members
-std::map<const char*, LuaScript*, ltstr>	LuaManager::_scripts;
-OOLUA::Script*								LuaManager::_mainState                                                  = nullptr;
-int											LuaManager::_errorCode                                                  = 0;
-int                                         LuaManager::_stackBalanceTop[ELYSIAN_LUA_STACK_BALANCE_RECURSIVE_DEPTH] = { 0 };
-int                                         LuaManager::_stackBalanceRecursiveDepth                                 = 0;
-int                                         LuaManager::_traceBackDbgPushes                                         = 0;
-const char									LuaManager::_rPrint[] =
+std::map<const char*, LuaScript*, ltstr>	LuaManagerBase::_scripts;
+OOLUA::Script*								LuaManagerBase::_mainState                                                  = nullptr;
+int											LuaManagerBase::_errorCode                                                  = 0;
+int                                         LuaManagerBase::_stackBalanceTop[ELYSIAN_LUA_STACK_BALANCE_RECURSIVE_DEPTH] = { 0 };
+int                                         LuaManagerBase::_stackBalanceRecursiveDepth                                 = 0;
+int                                         LuaManagerBase::_traceBackDbgPushes                                         = 0;
+const char									LuaManagerBase::_rPrint[] =
 	"function rPrint(s, l, i) -- recursive Print (structure, limit, indent)\n"
 		"l = (l) or 100; i = i or \"\";	-- default item limit, indent string\n"
 		"if (l<1) then print \"ERROR: Item limit reached.\"; return l-1 end;\n"
@@ -30,7 +30,7 @@ const char									LuaManager::_rPrint[] =
 
 
 //Dumps to debug log and LUA_ERROR_FILE
-void LuaManager::_errorprintf(const char *const string, ...) {
+void LuaManagerBase::_errorprintf(const char *const string, ...) {
 	char buffer[ELYSIAN_DEBUG_BUFFER_SIZE]; 
 	va_list argptr;  
 
@@ -42,7 +42,7 @@ void LuaManager::_errorprintf(const char *const string, ...) {
 }
 	
 	
-void LuaManager::_showError(void) {
+void LuaManagerBase::_showError(void) {
 	if(_errorCode == 0) return;
 	const char *errorMsg = luaL_checkstring(*_mainState, -1);
     _errorprintf("Error Message");
@@ -52,24 +52,30 @@ void LuaManager::_showError(void) {
     lua_pop(*_mainState, 1); //pop error string off the stack
 }
 
-void LuaManager::rPrintByIndex(const int index, const unsigned depth, const char* name) {
+void LuaManagerBase::rPrintByIndex(const int index, const unsigned depth, const char* name) {
+    //int oldTop = lua_gettop(*_mainState);
+    lua_pushvalue(*_mainState, index);							//push table to print
 	lua_getglobal(*_mainState, "rPrint");						//push function
-	lua_pushvalue(*_mainState, index);							//push table to print
+    lua_pushvalue(*_mainState, -2);							//push table to print
 	if(depth) lua_pushnumber(*_mainState, depth);				//push depth if given
 	else lua_pushnil(*_mainState);								//push nil for default depth if not
 	lua_pushstring(*_mainState, name);							//push name of table
 	lua_call(*_mainState, 3, 1);								//call rPrint
-	lua_pop(*_mainState, 1);									//pop return value
+    lua_pop(*_mainState, 2);
+
+   // oldTop = lua_gettop(*_mainState);
+
+    //lua_pop(*_mainState, lua_gettop(*_mainState)-oldTop);									//pop return value
 }
 
-void LuaManager::rPrintByRef(const int ref, const unsigned depth, const char* name) {
+void LuaManagerBase::rPrintByRef(const int ref, const unsigned depth, const char* name) {
 	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, ref);			//push ref onto stack
-	int index = lua_gettop(*_mainState);						//get index of ref
-    rPrintByIndex(index, depth, name);							//invoke by ref
+    //int index = lua_gettop(*_mainState);						//get index of ref
+    rPrintByIndex(-1, depth, name);							//invoke by ref
 	lua_pop(*_mainState, 1);									//pop ref from stack
 }
 
-bool LuaManager::runString(const char *const string) {
+bool LuaManagerBase::runString(const char *const string) {
 	if((_errorCode = luaL_dostring(*_mainState, string)) != 0) {
 		_showError();
 		return false;
@@ -78,7 +84,7 @@ bool LuaManager::runString(const char *const string) {
 }
 
 
-int LuaManager::_traceBack(lua_State *L) {
+int LuaManagerBase::_traceBack(lua_State *L) {
 	_errorCode = 1;
 
 	if (!lua_isstring(L, 1))  /* 'message' not a string? */
@@ -112,7 +118,7 @@ int LuaManager::_traceBack(lua_State *L) {
 	return 1;
 }
 
-void LuaManager::_cStackDump (void) {
+void LuaManagerBase::_cStackDump (void) {
 	int i;
 	int top = lua_gettop(*_mainState);
 	char varDisplayString[200];
@@ -122,13 +128,13 @@ void LuaManager::_cStackDump (void) {
 
 	for (i = 1; i <= top; ++i) {  /* repeat for each level */
 		sprintf(varDisplayString, "_cStack[%d]", i);
-		rPrintByIndex(i, 3, varDisplayString);
+        rPrintByIndex(i, 10, varDisplayString);
 	}
 
 	Debug::pop();
 }
 
-unsigned LuaManager::_envDump(LuaScript *scr) {
+unsigned LuaManagerBase::_envDump(LuaScript *scr) {
 	char envString[20] = {0};
 	unsigned envCount = 1;
     bool topLevel = false;
@@ -163,7 +169,7 @@ unsigned LuaManager::_envDump(LuaScript *scr) {
 
 }
 
-void LuaManager::_runtimeStackDump(void) {
+void LuaManagerBase::_runtimeStackDump(void) {
 	lua_Debug luaDebug;
 	unsigned stackLevel = 1;
 	int localIndex = 1;
@@ -208,7 +214,7 @@ void LuaManager::_runtimeStackDump(void) {
 
 }
 
-inline LuaScript *LuaManager::_createScriptFromExisting(const char* const file) {
+inline LuaScript *LuaManagerBase::_createScriptFromExisting(const char* const file) {
 	const auto it = _scripts.find(file);
 	if(it != _scripts.end()) {
 		//already allocated
@@ -218,7 +224,7 @@ inline LuaScript *LuaManager::_createScriptFromExisting(const char* const file) 
 	return nullptr;
 }
 
-LuaBehaviorScript* LuaManager::loadBehaviorScript(const char* const file) {
+LuaBehaviorScript* LuaManagerBase::loadBehaviorScript(const char* const file) {
 
 	LuaBehaviorScript* behav = static_cast<LuaBehaviorScript*>(_createScriptFromExisting(file));
 	if(behav) return behav;
@@ -252,7 +258,7 @@ LuaBehaviorScript* LuaManager::loadBehaviorScript(const char* const file) {
 
 }
 
-LuaScript* LuaManager::loadScript(const char * const file) {
+LuaScript* LuaManagerBase::loadScript(const char * const file) {
 	LuaScript* script = _createScriptFromExisting(file);
 	if(script) return script;
 
@@ -268,7 +274,7 @@ LuaScript* LuaManager::loadScript(const char * const file) {
 }
 
 	
-bool LuaManager::runScriptSandbox(const char *const file, LuaScript* const script) {
+bool LuaManagerBase::runScriptSandbox(const char *const file, LuaScript* const script) {
 	//Check if script has already been loaded, and return its globals table
 	int ref = LUA_NOREF;
 
@@ -303,7 +309,7 @@ bool LuaManager::runScriptSandbox(const char *const file, LuaScript* const scrip
 	return true;
 }
 
-bool LuaManager::unloadBehaviorScript(LuaBehaviorScript &script) {
+bool LuaManagerBase::unloadBehaviorScript(LuaBehaviorScript &script) {
 	auto* it = &script;
 	auto* nextIt = it;
 	bool success = true;
@@ -320,7 +326,7 @@ bool LuaManager::unloadBehaviorScript(LuaBehaviorScript &script) {
 
 }
 	
-bool LuaManager::unloadScript(LuaScript &script) {
+bool LuaManagerBase::unloadScript(LuaScript &script) {
 	for(auto it = _scripts.begin();
 		it != _scripts.end();
 		++it)
@@ -356,8 +362,8 @@ bool LuaManager::unloadScript(LuaScript &script) {
 	return false;
 }
 
-bool LuaManager::initialize(void) {
-	Debug::printf(Debug::VERBOSE, "LuaManager::initialize() - Initializing main Lua state.");
+bool LuaManagerBase::initialize(void) {
+    Debug::printf(Debug::VERBOSE, "LuaManagerBase::initialize() - Initializing main Lua state.");
     Debug::push();
 
 	_mainState = new OOLUA::Script; 
@@ -365,23 +371,23 @@ bool LuaManager::initialize(void) {
 	luaL_openlibs(*_mainState);
 	Debug::printf(Debug::VERBOSE, "Registering wrappers");
     runString(_rPrint);
-	runScriptSandbox("/assets/scripts/utils/serialize.lua");
-	_registerWrappers();
+    runScriptSandbox(ELYSIAN_LUA_MANAGER_SERIALIZE_SCRIPT_PATH);
+    LuaManager::_registerWrappers();
 
     Debug::pop();
 	return true;
 }
 
-bool LuaManager::uninitialize(void) {
+bool LuaManagerBase::uninitialize(void) {
 	delete _mainState;
 	return true;
 }
 
-unsigned LuaManager::getScriptCount(void) {
+unsigned LuaManagerBase::getScriptCount(void) {
 	return _scripts.size();
 }
 
-unsigned LuaManager::getScriptInstances(void) {
+unsigned LuaManagerBase::getScriptInstances(void) {
 	unsigned count = 0;
 	for(auto it : _scripts) {
 		count += it.second->getRefCount();
@@ -389,12 +395,12 @@ unsigned LuaManager::getScriptInstances(void) {
 	return count;
 }
 
-unsigned LuaManager::getKbytesUsed(void) {
+unsigned LuaManagerBase::getKbytesUsed(void) {
 	return lua_gc(*_mainState, LUA_GCCOUNT, 0);
 }
 
 
-void LuaManager::dumpStats(void) {
+void LuaManagerBase::dumpStats(void) {
 	char buffer[100];
 	unsigned int count = 0;
 	LuaBehaviorScript* behav;
@@ -464,13 +470,13 @@ void LuaManager::dumpStats(void) {
     Debug::pop();
 }
 
-void LuaManager::runGarbageCollector(void) {
+void LuaManagerBase::runGarbageCollector(void) {
 	_mainState->gc();
 }
 
 // char encoded serialize function that is available in plaintext in
 // utils/serialize.lua. Converted using lua auto.lua serialize.lua
-const char LuaManager::_serializeTable[] = {
+const char LuaManagerBase::_serializeTable[] = {
 
     0x6c, 0x6f, 0x63, 0x61, 0x6c, 0x20, 0x66, 0x75, 0x6e, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x20, 0x69, 0x73, 0x6c,
     0x69, 0x73, 0x74, 0x20, 0x28, 0x74, 0x29, 0x0a,

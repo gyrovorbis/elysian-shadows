@@ -53,7 +53,11 @@ public:
     void            _engineLoadAssets(void);
     void            _openProjectDir(const QString dir);
     void            setMainTextureUniform(const int uniform);
+
+    static void     inspectTable(OOLUA::Lua_table_ref table);
 private:
+
+    static ESToolkit* _instance;
 
     struct EngineParameters {
         bool        shadowPassEnabled   = true;
@@ -98,6 +102,7 @@ private:
 
     void                _resizeMapView(void);
     void                _setMapViewResolution(const MAP_VIEW_RES res);
+    void                _tkLuaInitialize(void);
 
     void SyncEntityMenuBar(const Entity *const entity);
     void toggleProjectActions(bool enabled);

@@ -377,6 +377,7 @@ Level* Assets::reloadLevel(Level* level) {
         setCurrentLevel(level);
         setCurrentArea(level->getArea(areaName));
     } else {
+        //Force views and widgets to have correct selection
         setCurrentLevel(getCurrentLevel());
     }
     return level;
@@ -393,6 +394,7 @@ Area* Assets::reloadArea(Area* area) {
    if(!areaName.isNull()) {
         setCurrentArea(getCurrentLevel()->getArea(areaName));
    } else {
+       //Force views and widgets to have correct selection
         setCurrentArea(getCurrentArea());
    }
    return area;

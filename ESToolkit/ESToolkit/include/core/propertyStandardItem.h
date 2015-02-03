@@ -15,7 +15,9 @@
 class ESTkStandardItem: public QStandardItem {
 protected:
     QVector<ESTkStandardItem*> _children;
-    unsigned _refCount = 0;
+    unsigned    _refCount       = 0;
+    bool        _initialized    = false;
+    bool        _active         = false;
 public:
     ESTkStandardItem(void) = default;
 
@@ -26,6 +28,15 @@ public:
 	void release(void) { if(--_refCount == 0) delete this; }
 	unsigned getRefCount(void) const { return _refCount; }
     virtual UndoItem::TYPE getUndoItemType(void) const { return UndoItem::UNDO_NONE; }
+
+    void activate(void) {
+        if(!_active) {
+            insertingModelItem();
+            _active = true;
+        }
+    }
+
+    virtual void insertingModelItem(void) { }
 
     virtual void forceUpdate(void) {
         emitDataChanged();
@@ -65,6 +76,7 @@ private:
 	QUndoStack *_undoStack;
 	UndoItem::TYPE _undoType;
     bool _ignoreCheck;
+    bool _settingFlags = false;
 	//unsigned _refCount;
 protected:
     PropertyStandardItem(void) = default;
@@ -100,8 +112,12 @@ public:
 	  //  _refCount(0)
 	{
 
+        _settingFlags = true;
+        //Prevent the asshole from immediately fetching and latently populating tables just because
+        //flags are being set.
 		setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable |
 				 ((_setAccessor)? Qt::ItemIsEditable : Qt::NoItemFlags));
+        _settingFlags = false;
 
 	}
 
@@ -127,6 +143,7 @@ public:
 	}
 
 	virtual QVariant data(int role) const override {
+        if(_settingFlags) return QVariant();
         T data = (_objInst->*_getAccessor)();
 
         switch((Qt::ItemDataRole)role) {

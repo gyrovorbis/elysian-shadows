@@ -2,7 +2,10 @@
 
 LuaTableItem::LuaTableItem(const int ref, /*const int type,*/ const QStandardItem* label):
     _luaRef(ref), /*_luaType(type),*/ _labelItem(label)
-{
+{}
+
+
+void LuaTableItem::insertingModelItem(void) {
     ParentType::_latentInit(this, &LuaTableItem::getValue, nullptr, UndoItem::LUA_TABLE_FIELD_ITEM, nullptr);
 }
 

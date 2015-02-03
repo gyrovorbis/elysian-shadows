@@ -3,7 +3,7 @@
 
 namespace elysian {
 
-	void LuaManager::_registerWrappers(void) {
+    void LuaManagerBase::_registerWrappers(void) {
 
 		//Register classes and structs
 		_mainState->register_class<Lua32BitMask>();

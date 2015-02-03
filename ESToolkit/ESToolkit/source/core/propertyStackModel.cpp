@@ -134,6 +134,7 @@ void PropertyStackModel::_checkPropertyStandardItemAcquire(QStandardItem *const 
 	if(item && item->type() == QStandardItem::UserType) {
 		//Save item to list, to check ownership later, so we don't delete it when it's still used
 		ESTkStandardItem *property = static_cast<ESTkStandardItem *>(item);
+        property->activate();
 		property->acquire();
 		_propertyList.push_back(property);
 	}

@@ -52,11 +52,14 @@
 #include "entityTreeWidget.h"
 #include "elysian_level_system.hpp"
 
+ESToolkit* ESToolkit::_instance = nullptr;
+
 ESToolkit::ESToolkit(QWidget *parent):
 	QMainWindow(parent),
 	_ui(new Ui::ESToolkit),
 	_ignoreAreaTabChange(false)
 {
+    _instance = this;
 	// VERY IMPROTANT GLOBAL STATE/STATIC INITIALIZATION
     assert(gyFileInit("ESTeam", "ESTk"));
         //elysian::Behavior::staticConstructor();
@@ -1465,6 +1468,23 @@ void ESToolkit::on_actionToggle_AutoScroll_triggered()
 {
 	_ui->mapView->autoScrollToggle(_ui->actionToggle_AutoScroll->isChecked());
 	_sheetDockWidget->getSourceView()->autoScrollToggle(_ui->actionToggle_AutoScroll->isChecked());
+
+
+    if(_assets.getEngine()) {
+        int ref = LUA_NOREF;
+        lua_getglobal(*_mainState, "testInjectTable");
+        //rPrintByIndex(-1, 99, "RAWREF");
+
+        ref = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
+
+        rPrintByRef(ref, 99, "STARTREF");
+
+
+        LuaTableStackModel* model = new LuaTableStackModel(ref);
+        model->populateModel();
+        _selectionDockWidget->SetSelectionTreeWidget();
+        _selectionDockWidget->SetSelectionModel(model);
+    }
 }
 
 void ESToolkit::on_actionActionSecret_triggered()
@@ -1868,8 +1888,11 @@ void ESToolkit::on_actionShadows_toggled(bool arg1)
 }
 
 void ESToolkit::_onEngineInitialized(void) {
+    _tkLuaInitialize();
     _assets.getEngine()->getLightSys()->setShadowPassEnabled(_engineParams.shadowPassEnabled);
     _assets.getEngine()->getLightSys()->setEnabled(_engineParams.lightingEnabled);
+
+    //Override
 }
 
 void ESToolkit::on_actionLights_toggled(bool arg1)
@@ -1884,4 +1907,21 @@ void ESToolkit::on_actionLights_toggled(bool arg1)
     } else {
         _ui->actionShadows->setEnabled(true);
     }
+}
+
+void ESToolkit::_tkLuaInitialize(void) {
+
+
+}
+
+void ESToolkit::inspectTable(OOLUA::Lua_table_ref table) {
+    auto* self = _instance;
+
+    table.push(*_mainState);
+    int newRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
+
+    LuaTableStackModel* model = new LuaTableStackModel(newRef);
+    model->populateModel();
+    self->_selectionDockWidget->SetSelectionTreeWidget();
+    self->_selectionDockWidget->SetSelectionModel(model);
 }
