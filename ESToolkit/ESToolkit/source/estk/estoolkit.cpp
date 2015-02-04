@@ -464,7 +464,8 @@ void ESToolkit::toggleProjectActions(bool enabled)
 	_ui->actionDefault_Transform->setEnabled(enabled);
 	_ui->actionReset_Layout->setEnabled(enabled);
     _ui->actionAdvance_Frame->setEnabled(enabled);
-	m_activePlatform->setEnabled(enabled);
+    m_activePlatform->setEnabled(enabled);
+    _ui->actionManual_Camera->setEnabled(enabled);
 }
 
 bool ESToolkit::MaybeSave()
@@ -495,6 +496,7 @@ void ESToolkit::WriteSettings()
     settings.setValue("showHiddenEntities", _entityDockWidget->getTreeWidget()->getShowHidden());
     settings.setValue("shadowPassEnabled", _engineParams.shadowPassEnabled);
     settings.setValue("lightingEnabled", _engineParams.lightingEnabled);
+    settings.setValue("manualCameraEnabled", _engineParams.manualCameraEnabled);
 	unsigned x, y;
 	_engineDialog->getStartPos(x, y);
 	settings.setValue("engineStartPosX", x);
@@ -536,6 +538,7 @@ void ESToolkit::ReadSettings()
 	unsigned y = settings.value("engineStartPosY", 0).toUInt();
     bool showHiddenEntities = settings.value("showHiddenEntities", false).toBool();
     bool shadowPassEnabled = settings.value("shadowPassEnabled", true).toBool();
+    bool manualCamera = settings.value("manualCameraEnabled", false).toBool();
     bool lightingEnabled = settings.value("lightingEnabled", true).toBool();
 	_engineDialog->setStartPos(x, y);
     MAP_VIEW_RES mapViewRes = (MAP_VIEW_RES)settings.value("mapViewRes", MAP_VIEW_RES_DYNAMIC).toInt();
@@ -576,6 +579,7 @@ void ESToolkit::ReadSettings()
     _ui->actionHidden_Entities->setChecked(showHiddenEntities);
     _ui->actionShadows->setChecked(shadowPassEnabled);
     _ui->actionLights->setChecked(lightingEnabled);
+    _ui->actionManual_Camera->setChecked(manualCamera);
 
     toggleProjectActions(false);
 
@@ -1891,6 +1895,7 @@ void ESToolkit::_onEngineInitialized(void) {
     _tkLuaInitialize();
     _assets.getEngine()->getLightSys()->setShadowPassEnabled(_engineParams.shadowPassEnabled);
     _assets.getEngine()->getLightSys()->setEnabled(_engineParams.lightingEnabled);
+    _engineGLView->setCameraManualOnPlay(_engineParams.manualCameraEnabled);
 
     //Override
 }
@@ -1924,4 +1929,12 @@ void ESToolkit::inspectTable(OOLUA::Lua_table_ref table) {
     model->populateModel();
     self->_selectionDockWidget->SetSelectionTreeWidget();
     self->_selectionDockWidget->SetSelectionModel(model);
+}
+
+void ESToolkit::on_actionManual_Camera_toggled(bool arg1)
+{
+    _engineParams.manualCameraEnabled = arg1;
+    if(_engineGLView) {
+        _engineGLView->setCameraManualOnPlay(arg1);
+    }
 }

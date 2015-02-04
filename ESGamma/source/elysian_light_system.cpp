@@ -190,7 +190,10 @@ void LightSystem::shadowRenderPasses(void) {
 	_shadowPass = true;
     bool dbgCam = camSys->isDebug();
 	gyVidLightSourceBeginShadowPasses();
-    if(dbgCam) camSys->pushState();
+    if(dbgCam) {
+        camSys->pushState();
+        *camSys->getCurrentState() = *cam;
+    }
 
     if(_enabled)
 	for(auto it : sources) {

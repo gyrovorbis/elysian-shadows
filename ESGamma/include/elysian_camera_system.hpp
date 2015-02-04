@@ -151,6 +151,7 @@ namespace elysian {
 		bool					_projViewActive = false;
 		bool					_debugActive	= false;
 		bool					_customState	= false;
+        bool                    _followEnabled  = true;
 
 		unsigned				_scrWidth		= 0;
 		unsigned				_scrHeight		= 0;
@@ -174,6 +175,8 @@ namespace elysian {
         bool    isBoundByMap(void) const;
         void    setBoundByMap(const bool val);
         bool    isDebug(void) const;
+        bool    isFollowEnabled(void) const;
+        void    setFollowEnabled(const bool val);
 
 		void pushCustomCameraState(CameraState*const state) {
 			++_depth;
@@ -487,8 +490,10 @@ namespace elysian {
 
     inline bool CameraSystem::isDebug(void) const { return (_curState == &_debugState); }
 
+    inline bool CameraSystem::isFollowEnabled(void) const { return _followEnabled; }
+    inline void CameraSystem::setFollowEnabled(const bool val) { _followEnabled = val; }
 
-	
 }
+
 
 #endif

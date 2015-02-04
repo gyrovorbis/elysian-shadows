@@ -62,6 +62,7 @@ private:
     struct EngineParameters {
         bool        shadowPassEnabled   = true;
         bool        lightingEnabled     = true;
+        bool        manualCameraEnabled = false;
     } _engineParams;
 
     Assets                  _assets;
@@ -226,5 +227,6 @@ private slots:
     void on_actionReload_2_triggered();
     void on_actionShadows_toggled(bool arg1);
     void on_actionLights_toggled(bool arg1);
+    void on_actionManual_Camera_toggled(bool arg1);
 };
 #endif // ESTOOLKIT_H

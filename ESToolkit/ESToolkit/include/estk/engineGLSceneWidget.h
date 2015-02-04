@@ -25,6 +25,10 @@ public:
         void        play(void);
         void        stop(void);
         bool        isPlaying(void) const;
+        bool        isCameraManual(void) const;
+        void        setCameraManual(const bool val);
+        bool        isCameraManualOnPlay(void) const;
+        void        setCameraManualOnPlay(const bool val);
 
         explicit    EngineGLSceneWidget(const QGLFormat& format, QWidget* parent = 0, const QGLWidget* shareWidget = 0, Qt::WindowFlags f = 0);
         virtual     ~EngineGLSceneWidget(void);
@@ -35,6 +39,8 @@ protected:
     unsigned        _width              = 0;
     unsigned        _height             = 0;
     bool            _advanceFrame       = false;
+    bool            _cameraManual       = true;
+    bool            _cameraManualOnPlay = false;
 
     //reimplemented from QGLWidget
     virtual void    initializeGL(void) override;
@@ -60,6 +66,13 @@ private slots:
 
 
 // ===== INLINEZ =====
+
+inline bool EngineGLSceneWidget::isCameraManual(void) const { return _cameraManual; }
+
+inline void EngineGLSceneWidget::setCameraManual(const bool val) { _cameraManual = val; }
+
+inline bool EngineGLSceneWidget::isCameraManualOnPlay(void) const { return _cameraManualOnPlay; }
+
 
 
 

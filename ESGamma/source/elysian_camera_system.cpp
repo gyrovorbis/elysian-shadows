@@ -392,7 +392,7 @@ void CameraSystem::update(void) {
 
 	if(_curState->projType == GY_PROJECTION_ORTHO) {
         //Follow entities
-        if(_curState->focalEntity) {
+        if(_followEnabled && _curState->focalEntity) {
             _curState->_keyFrame._pos = GYVector3 {
                 _curState->focalEntity->_transform._pos.x,
                 _curState->focalEntity->_transform._pos.y - _curState->focalEntity->_transform._pos.z,

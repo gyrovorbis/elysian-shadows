@@ -296,6 +296,7 @@
    <addaction name="separator"/>
    <addaction name="actionInvoke"/>
    <addaction name="actionAdvance_Frame"/>
+   <addaction name="actionManual_Camera"/>
   </widget>
   <action name="actionFileQuit">
    <property name="text">
@@ -1222,6 +1223,17 @@
    </property>
    <property name="text">
     <string>Lights</string>
+   </property>
+  </action>
+  <action name="actionManual_Camera">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Manual Camera</string>
+   </property>
+   <property name="toolTip">
+    <string>Manual Camera Control</string>
    </property>
   </action>
  </widget>

@@ -17,10 +17,12 @@ EngineGLSceneWidget::EngineGLSceneWidget(const QGLFormat &format, QWidget *paren
 
 void EngineGLSceneWidget::stop(void) {
     getAssets()->getEngine()->setEngineState(elysian::Engine::ENGINE_ESTK_STOP);
+    _cameraManual = true;
 }
 
 void EngineGLSceneWidget::play(void) {
     getAssets()->getEngine()->setEngineState(elysian::Engine::ENGINE_NORMAL);
+    _cameraManual = _cameraManualOnPlay;
 }
 
 void EngineGLSceneWidget::advanceFrame(void) {
@@ -32,25 +34,12 @@ bool EngineGLSceneWidget::isPlaying(void) const { return getAssets()->getEngine(
 
 void EngineGLSceneWidget::initializeGL(void) {
     makeCurrent();
-    //sinitializeGLFunctions(context());
 
     unsigned parentWidth    = parentWidget()->size().width();
     unsigned parentHeight   = parentWidget()->size().height();
-   // initializeOpenGLFunctions();
-   // initializeGLFunctions();
-        qDebug() << "VERSION " << (char*)glGetString(GL_VERSION) <<"SCIZOR" << (char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
-    //getCurArea()->populateVbo();
-    qDebug() << "C++ CONTEXT - " << context();
-    //updateGL();
 
     glalVidOglInit(parentWidth, parentHeight, parentWidth, parentHeight);
      if(getAssets()->getEngine()) getAssets()->getEngine()->getCameraSys()->initializeProjMatrix();
-
-    //initTextures();
-     //   geometries.init();
-
-    // Use QBasicTimer because its faster than QTimer
-  //
 }
 
 void EngineGLSceneWidget::startRenderTimer(void) {
@@ -71,98 +60,20 @@ void EngineGLSceneWidget::timerEvent(QTimerEvent *)
 }
 
 void EngineGLSceneWidget::resizeGL(int w, int h) {
-
-   // if(!once) {
-           // setlocale(LC_NUMERIC, "C");
      glalVidOglInit(w, h, w, h);
      _width = w;
      _height = h;
 
-     // Restore system locale
-    // setlocale(LC_ALL, "");
-     //   once = true;
-   // }
  if(getAssets()->getEngine()) getAssets()->getEngine()->getCameraSys()->initializeProjMatrix();
-    //gyVidCamOrthoProj(&cam, 0.0f, (float)w, (float)h, 0.0f, -999.0f, 1000.0f);
-    //gyVidCamUpdate(&cam);
 
-    //makeCurrent();
-    //gyVidOglInit(w, h, w, h);
-    //updateGL();
-   // qDebug() << isValid();
 }
 
 void EngineGLSceneWidget::paintGL(void) {
 	if(!getCurrentArea()) return;
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-     //   qDebug() << "VERSION " << (char*)glGetString(GL_VERSION);
-    //makeCurrent();
-    //qDebug() << isValid();
-
-
-
-
-
-    //gyVidSetDefaultShaderProgram();
-    //getAssets()->getEngine()->getCameraSys()->update();
-
-    //auto worldPos = GYVector3 { 0.0, 0.0, 1.0 };
-
-    //gyVidSetCamWorldPos(&worldPos);
-
-    //gyVidSceneBegin();
-
     gyMatLoadIdentity();
 
-
-#if 0
-
-        getCameraSys()->pushViewProjMatrix();
-    auto color = GYColor4{ 255, 0, 255, 255 };
-    auto vecColor = GYVector4 { 0.2f, 0.2f, 0.2f, 0.2f };
-
-
-//for(unsigned i = 0; i < 1000; ++i)
-   // getLightSys()->renderCube(i, i, i, i*10, i*10, i*10, 0);
-
-
-    //gyVidSetGlobalAmbience(&vecColor);
-    gyMatLoadIdentity();
-
-    gyVidAlphaLevel(GY_ALPHA_FULL);
-
-    gyVidQuadListBegin(&color);
-    for(unsigned i = 0; i < 1000; ++i) {
-        gyMatPush();
-        gyMatTranslateScale(i*10, i*10, i, 10, 10, 1);
-
-        gyVidRect(0);
-        gyMatPop();
-    }
-    gyVidQuadListEnd();
-
-
-    getCameraSys()->popViewProjMatrix();
-/*
-    gyVidAlphaLevel(GY_ALPHA_FULL);
-
-    gyVidQuadListBegin(&color);
-    for(unsigned i = 0; i < 1000; ++i) {
-        gyMatPush();
-        gyMatTranslateScale(i, i, i, i*10, i*10, i);
-
-        gyVidRect(0);
-        gyMatPop();
-    }
-    gyVidQuadListEnd();
-*/
-
-
-  //  for(unsigned i = 0; i < 1000; ++i)
-    //    getLightSys()->renderCube(i, i, i, i*10, i*10, i*10, 0);
-
-#else
     getAssets()->getEngine()->update();
     getAssets()->getEngine()->processInput();
     if(_advanceFrame) {
@@ -170,32 +81,35 @@ void EngineGLSceneWidget::paintGL(void) {
         getAssets()->getEngine()->setEngineState(elysian::System::ENGINE_ESTK_STOP);
     }
 
-	getAssets()->getEngine()->getCameraSys()->setFollowEntity(nullptr);
-	getAssets()->getEngine()->getCameraSys()->setDynamic(false);
-	getAssets()->getEngine()->getCameraSys()->setBoundByMap(false);
+    if(_cameraManual) {
+        getAssets()->getEngine()->getCameraSys()->setFollowEnabled(false);
+        getAssets()->getEngine()->getCameraSys()->setDynamic(false);
+        getAssets()->getEngine()->getCameraSys()->setBoundByMap(false);
+    } else {
+        getAssets()->getEngine()->getCameraSys()->setFollowEnabled(true);
+        getAssets()->getEngine()->getCameraSys()->setDynamic(true);
+        getAssets()->getEngine()->getCameraSys()->setBoundByMap(true);
+    }
+
 	getAssets()->getEngine()->render();
-
-#endif
-
-
-    //gyVidSceneEnd();
-
-//engine->update();
-  //  engine->render();
 
     emit engineUpdated();
 }
 
-
-
-
-EngineGLSceneWidget::~EngineGLSceneWidget(void)
-{
-}
+EngineGLSceneWidget::~EngineGLSceneWidget(void){}
 
 QSize EngineGLSceneWidget::sizeHint(void) const {
     if(getAssets()->getCurArea()) {
         return QSize(getAssets()->getCurArea()->getMapWidth()*32.0f, getAssets()->getCurArea()->getMapHeight()*32.0f);
     }
     return QSize(10,10);
+}
+
+void EngineGLSceneWidget::setCameraManualOnPlay(const bool val) {
+    _cameraManualOnPlay = val;
+
+    if(getAssets()->getEngine()->getEngineState() != elysian::Engine::ENGINE_ESTK_STOP) {
+        _cameraManual = val;
+    }
+
 }
