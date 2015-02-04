@@ -247,7 +247,8 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
                        setLightSource,
                        setParticleEmitter,
                        setCombat,
-                       setExaminable)
+                       setExaminable,
+                       setPersistent)
 
 
 OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
@@ -268,7 +269,8 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getLuaBehavior,
                                 isShadowVolume,
 								getPlaneType,
-                                getShadowDepth)
+                                getShadowDepth,
+                                isPersistent)
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(PrimAttrib)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(PrimAttrib)

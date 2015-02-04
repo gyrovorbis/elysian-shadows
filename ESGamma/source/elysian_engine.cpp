@@ -238,9 +238,9 @@ void Engine::render(void) {
 			_cameraSystem->popViewProjMatrix();
 
 			//Begin rendering overlays
+            _dialogSystem->render();
             _warpSystem->render();
 			_guiSystem->renderForeground();
-            //_dialogSystem->render();
 
 			gyVidSceneEnd();
 	}

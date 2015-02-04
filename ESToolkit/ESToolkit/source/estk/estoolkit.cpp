@@ -51,6 +51,7 @@
 #include "entitySelectable.h"
 #include "entityTreeWidget.h"
 #include "elysian_level_system.hpp"
+#include "elysian_audio_system.hpp"
 
 ESToolkit* ESToolkit::_instance = nullptr;
 
@@ -466,6 +467,7 @@ void ESToolkit::toggleProjectActions(bool enabled)
     _ui->actionAdvance_Frame->setEnabled(enabled);
     m_activePlatform->setEnabled(enabled);
     _ui->actionManual_Camera->setEnabled(enabled);
+    _ui->actionEnable_Audio->setEnabled(enabled);
 }
 
 bool ESToolkit::MaybeSave()
@@ -497,6 +499,7 @@ void ESToolkit::WriteSettings()
     settings.setValue("shadowPassEnabled", _engineParams.shadowPassEnabled);
     settings.setValue("lightingEnabled", _engineParams.lightingEnabled);
     settings.setValue("manualCameraEnabled", _engineParams.manualCameraEnabled);
+    settings.setValue("audioEnabled", _engineParams.audioEnabled);
 	unsigned x, y;
 	_engineDialog->getStartPos(x, y);
 	settings.setValue("engineStartPosX", x);
@@ -539,6 +542,7 @@ void ESToolkit::ReadSettings()
     bool showHiddenEntities = settings.value("showHiddenEntities", false).toBool();
     bool shadowPassEnabled = settings.value("shadowPassEnabled", true).toBool();
     bool manualCamera = settings.value("manualCameraEnabled", false).toBool();
+    bool audioEnabled = settings.value("audioEnabled", true).toBool();
     bool lightingEnabled = settings.value("lightingEnabled", true).toBool();
 	_engineDialog->setStartPos(x, y);
     MAP_VIEW_RES mapViewRes = (MAP_VIEW_RES)settings.value("mapViewRes", MAP_VIEW_RES_DYNAMIC).toInt();
@@ -580,6 +584,7 @@ void ESToolkit::ReadSettings()
     _ui->actionShadows->setChecked(shadowPassEnabled);
     _ui->actionLights->setChecked(lightingEnabled);
     _ui->actionManual_Camera->setChecked(manualCamera);
+    _ui->actionEnable_Audio->setChecked(audioEnabled);
 
     toggleProjectActions(false);
 
@@ -1896,6 +1901,7 @@ void ESToolkit::_onEngineInitialized(void) {
     _assets.getEngine()->getLightSys()->setShadowPassEnabled(_engineParams.shadowPassEnabled);
     _assets.getEngine()->getLightSys()->setEnabled(_engineParams.lightingEnabled);
     _engineGLView->setCameraManualOnPlay(_engineParams.manualCameraEnabled);
+    _assets.getEngine()->getAudioSys()->setEnabled(_engineParams.audioEnabled);
 
     //Override
 }
@@ -1936,5 +1942,13 @@ void ESToolkit::on_actionManual_Camera_toggled(bool arg1)
     _engineParams.manualCameraEnabled = arg1;
     if(_engineGLView) {
         _engineGLView->setCameraManualOnPlay(arg1);
+    }
+}
+
+void ESToolkit::on_actionEnable_Audio_toggled(bool arg1)
+{
+    _engineParams.audioEnabled = arg1;
+    if(_assets.getEngine()) {
+        _assets.getEngine()->getAudioSys()->setEnabled(arg1);
     }
 }

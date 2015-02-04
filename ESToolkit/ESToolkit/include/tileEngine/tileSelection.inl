@@ -7,8 +7,8 @@
 
 template<typename T>
 T TileSelection<T>::getEntry(const unsigned x, const unsigned y, const QPointF &mousePos) const {
-	unsigned selX = x;
-	unsigned selY = y;
+    int selX = x;
+    int selY = y;
 	if(!mousePos.isNull()) _mapToSelectionCoords(x, y, mousePos, selX, selY);
 	return _entry[selY][selX];
 }
@@ -16,7 +16,7 @@ T TileSelection<T>::getEntry(const unsigned x, const unsigned y, const QPointF &
 
 template<typename T>
 T TileSelection<T>::getFillEntry(const int x, const int y, const QPointF &pivot, const QPointF &mousePos) const {
-	unsigned fillX, fillY;
+    unsigned fillX, fillY;
 	_mapToFillCoords(x, y, pivot, mousePos, fillX, fillY);
 	return _entry[fillY][fillX];
 }

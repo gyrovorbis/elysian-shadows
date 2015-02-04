@@ -184,7 +184,7 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
         gyVidAlphaLevel(GY_ALPHA_FULL);
         gyVidMaterialBind(&_selMat[drawStyle]);
 
-        GYColor4 color = selectionDecorColors[drawStyle];
+        const GYColor4& color = selectionDecorColors[drawStyle];
         //GYVector4 { x*32.0f+16.0f, y*32.0f+ 16.0f +  tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f, 1.0f },
 
         glEnable(GL_DEPTH_TEST);

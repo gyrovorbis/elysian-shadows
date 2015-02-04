@@ -297,6 +297,7 @@
    <addaction name="actionInvoke"/>
    <addaction name="actionAdvance_Frame"/>
    <addaction name="actionManual_Camera"/>
+   <addaction name="actionEnable_Audio"/>
   </widget>
   <action name="actionFileQuit">
    <property name="text">
@@ -1229,11 +1230,31 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/camera.png</normaloff>:/toolbar/images/camera.png</iconset>
+   </property>
    <property name="text">
     <string>Manual Camera</string>
    </property>
    <property name="toolTip">
     <string>Manual Camera Control</string>
+   </property>
+  </action>
+  <action name="actionEnable_Audio">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normalon>:/toolbar/images/audio.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Enable Audio</string>
+   </property>
+   <property name="toolTip">
+    <string>Enable/Disable Audio</string>
    </property>
   </action>
  </widget>

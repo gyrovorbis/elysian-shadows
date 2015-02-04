@@ -53,6 +53,7 @@ public:
 protected:
 	static void _mapToSelectionCoords(const int mapX, const int mapY, const QPointF &mousePos, unsigned &selX, unsigned &selY);
 	void _mapToFillCoords(int mapX, int mapY, const QPointF &pivot, const QPointF &mousePos, unsigned &fillX, unsigned &fillY) const;
+    static void _mapToSelectionCoords(const int mapX, const int mapY, const QPointF &mousePos, int &selX, int &selY);
 
 	static void _freeArrays(T **&entry, bool **&selection, unsigned width, unsigned height);
 	static void _allocArrays(T **&entry, bool **&selection, unsigned width, unsigned height);
@@ -91,8 +92,17 @@ GY_RECT_TEX_ORIENT TileSelection<T>::reorient(const GY_RECT_TEX_ORIENT orient, c
 template<typename T>
 void TileSelection<T>::_mapToSelectionCoords(const int mapX, const int mapY, const QPointF &mousePos, unsigned &selX, unsigned &selY) {
 	//Subtracts mouse offset (+16, because each tile's origin is its center)
-	selX = mapX-(int(mousePos.x()+16)/32);
-	selY = mapY-(int(mousePos.y()+16)/32);
+    selX = mapX-(int(mousePos.x()+16)/32);
+    selY = mapY-(int(mousePos.y()+16)/32);
+}
+
+template<typename T>
+void TileSelection<T>::_mapToSelectionCoords(const int mapX, const int mapY, const QPointF &mousePos, int &selX, int &selY) {
+    const int offsetX = mousePos.x() < -16.0f? -16 : 16;
+    const int offsetY = mousePos.y() < -16.0f? -16 : 16;
+    //Subtracts mouse offset (+16, because each tile's origin is its center)
+    selX = mapX-(int(mousePos.x()+offsetX)/32);
+    selY = mapY-(int(mousePos.y()+offsetY)/32);
 }
 
 //---- INSTANCE ----
@@ -124,10 +134,10 @@ unsigned TileSelection<T>::getSize(void) const {
 
 template<typename T>
 bool TileSelection<T>::isWithinSelection(const int x, const int y, const QPointF &mousePos) const {
-	unsigned selX = x;
-	unsigned selY = y;
+    int selX = x;
+    int selY = y;
 	if(!mousePos.isNull()) _mapToSelectionCoords(x, y, mousePos, selX, selY);
-	return (selX >= _width || selY >= _height)? false : _inSelection[selY][selX];
+    return (selX >= _width || selY >= _height || selY < 0 || selX < 0)? false : _inSelection[selY][selX];
 }
 
 template<typename T>

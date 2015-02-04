@@ -32,7 +32,7 @@ DialogSystem::DialogSystem(void) {
 	static GYColor4 canvColor3 = { 0, 0, 150, 255 };
 	static GYColor4 canvColor4 = { 0, 0, 150, 255 };
 	static GYColor4 optBoxColor = { 0, 0, 50, 255 };
-	static GYColor4 cursorColor = { 0, 180, 180, 255 };
+    static GYColor4 cursorColor = { 0, 180, 180, 100 };
 
 	unsigned width, height;
 	getGuiSys()->getResolution(width, height);
@@ -81,6 +81,8 @@ void DialogSystem::render(void) {
 	if(!_curDialog) return;
 
     GYVector3 basePos = _mainCanvas._transform._pos;
+
+    gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
 
 	//There is an ongoing conversation.
 	float alpha = fabs(basePos.y-240.0f)/110.0f;
@@ -397,20 +399,20 @@ void DialogSystem::closeDialog(void) {
 	_posState = POS_BOTTOM;
 	//_mainCanvas.transform.setPosition(_mainCanvas.transform._pos.x, 430.0f);
 	//_mainCanvas.transform._pos.y = 430.0f;
-	//getGuiSys()->adventureLog.enable();
+    getGuiSys()->adventureLog.setEnabled(_advLogWasEnabled);
 }
 
 void DialogSystem::_updateCamera(void) {
 
-	if(_prevScreen.screen && _prevScreen.screen->getEntity()) {
-		getCameraSys()->setBaseScale(1.5f);
-		getCameraSys()->removeEntity(_prevScreen.screen->getEntity());
-	}
+
 
 	if(_curScreen.screen && _curScreen.screen->getEntity()) {
 		getCameraSys()->setBaseScale(2.5f);
 		getCameraSys()->addEntity(_curScreen.screen->getEntity());
-	}
+    } else if(_prevScreen.screen && _prevScreen.screen->getEntity()) {
+        getCameraSys()->setBaseScale(1.5f);
+        getCameraSys()->removeEntity(_prevScreen.screen->getEntity());
+    }
 
 }
 
@@ -443,6 +445,7 @@ void DialogSystem::startDialog(Dialog *const dialog, EventMonitor*const monitor)
 	FacePlayer();
 	_splitText();
 	CheckModal();
+    _advLogWasEnabled = getGuiSys()->adventureLog.isEnabled();
     getGuiSys()->adventureLog.setEnabled(false);
 
 }

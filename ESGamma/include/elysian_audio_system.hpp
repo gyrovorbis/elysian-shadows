@@ -23,6 +23,8 @@ namespace elysian {
 					~AudioSystem(void);
 
 		void		update(void);
+        void        setEnabled(const bool val);
+        bool        isEnabled(void) const;
 
 		//WAV SFX API
 		//accept -1 for dynamic channel
@@ -145,11 +147,19 @@ namespace elysian {
 		bool				_bgmLooping			= true;
 		bool				_aux1Looping		= true;
 		bool				_aux2Looping		= true;
+        bool                _enabled            = true;
 
 
 		static unsigned _auxIndexToStreamChannel(const unsigned index);
 		static unsigned _auxIndexToTrack(const unsigned index);
 	};
+
+
+
+
+    // ====== INLINEZ =======
+
+    inline bool AudioSystem::isEnabled(void) const { return _enabled; }
 
 }
 

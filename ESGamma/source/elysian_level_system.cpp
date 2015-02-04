@@ -81,8 +81,9 @@ bool LevelSystem::switchArea(const char *const dir) {
 
     if(_curArea != nullptr) { //Can't call that if no area has been loaded yet.
         //Clean up current area
-        getPartySys()->removePartyFromArea();
         getBehavSys()->callTriggers(Behavior::ON_EXIT);
+        getPartySys()->removePartyFromArea();
+        _removePersistentEntities();
         _curArea->deactivate();
         getCollisionSys()->clearContacts();
         getMapSys()->resetAnimation();
@@ -100,8 +101,9 @@ bool LevelSystem::switchArea(const char *const dir) {
     if((index = getAreaIndex(dir)) >= 0) {
         _curArea = _area[index];
         getPartySys()->addPartyToArea();
-        getBehavSys()->callTriggers(Behavior::ON_ENTER);
+        _addPersistentEntities();
         _curArea->activate();
+        getBehavSys()->callTriggers(Behavior::ON_ENTER);
         return true;
     }
 
@@ -121,9 +123,26 @@ bool LevelSystem::switchArea(const char *const dir) {
     ar->activate();
     getBehavSys()->callTriggers(Behavior::ON_LOAD);
     getPartySys()->addPartyToArea();
+    _addPersistentEntities();
     getBehavSys()->callTriggers(Behavior::ON_ENTER);
     getAudioSys()->update();
     return true;
+}
+
+void LevelSystem::_removePersistentEntities(void) {
+    auto& entities = _curArea->entities;
+
+    for(auto& it : entities) {
+        if(it->isPersistent()) {
+            _persistentPool.claimFreeEntry() = it;
+        }
+    }
+}
+
+void LevelSystem::_addPersistentEntities(void) {
+    for(auto entity = _persistentPool.begin(); entity < _persistentPool.end(); ++entity) {
+        _curArea->addEntity(*entity);
+    }
 }
 
 

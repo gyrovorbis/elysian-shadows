@@ -80,6 +80,8 @@ namespace elysian {
 		GYWav* _scrollUpSFX		= nullptr;
 		GYWav* _scrollDownSFX	= nullptr;
 
+        bool    _advLogWasEnabled = true;
+
 	public:
 				DialogSystem(void);
 				~DialogSystem(void);

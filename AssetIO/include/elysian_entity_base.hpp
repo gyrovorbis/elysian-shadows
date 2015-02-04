@@ -48,6 +48,7 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(elev,               getElev,                setElev)
             ELYSIAN_LUA_PROXY_FIELD(planeType,          getPlaneType,           setPlaneType)
             ELYSIAN_LUA_PROXY_FIELD(shadowVolume,       isShadowVolume,         setShadowVolume)
+            ELYSIAN_LUA_PROXY_FIELD(persistent,         isPersistent,           setPersistent)
             ELYSIAN_LUA_PROXY_FIELD(transform,          getTransform,           setTransform)
             ELYSIAN_LUA_PROXY_FIELD(renderable,         getRenderable,          setRenderable)
             ELYSIAN_LUA_PROXY_FIELD(animation,          getAnimation,           setAnimation)
@@ -157,6 +158,9 @@ namespace elysian {
         float               getDepthBaseY(void) const;
         void                setDepthBaseY(const float base);
 
+        bool                isPersistent(void) const;
+        void                setPersistent(const bool val);
+
 		OOLUA::Lua_table_ref&	getSelfTable(void);
 		void					setSelfTable(const OOLUA::Lua_table_ref self);
         void                    pushViewTransform(void);
@@ -188,6 +192,7 @@ namespace elysian {
 		Combat*				_combat				= nullptr;
 		OOLUA::Lua_table_ref	_selfTable;
         static float        _oldZ;
+        bool                _persistent         = false;
 		
 
         template<typename T>
@@ -244,6 +249,9 @@ namespace elysian {
     inline float EntityBase::getShadowDepth(void) const { return _shadowDepth; }
     inline void EntityBase::setParentEntity(Entity * const parent) { _parent = parent; }
     inline Entity* EntityBase::getParentEntity(void) const { return _parent; }
+
+    inline void EntityBase::setPersistent(const bool val) { _persistent = val; }
+    inline bool EntityBase::isPersistent(void) const { return _persistent; }
 
 
 }

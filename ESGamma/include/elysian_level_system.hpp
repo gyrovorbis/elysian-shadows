@@ -10,6 +10,8 @@
 
 #include <vector>
 
+#define ELYSIAN_LEVEL_SYSTEM_PERSISTENT_ENTITY_MAX  10
+
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86 || GYRO_PLATFORM == GYRO_PLATFORM_ANDROID || GYRO_PLATFORM == GYRO_PLATFORM_iOS
 #   define ELYSIAN_LEVELS_LOADED_MAX    1
 #   define ELYSIAN_AREAS_LOADED_MAX     3
@@ -86,6 +88,9 @@ namespace elysian {
 
         int             _getLevelIndex(const char *const dir) const;
         int             _getAreaIndex(const char *const dir) const;
+
+        void            _removePersistentEntities(void);
+        void            _addPersistentEntities(void);
 		
 	public:
 
@@ -93,8 +98,8 @@ namespace elysian {
 
             std::vector<Level*> _level;
             std::vector<Area*>  _area;
-
-        public:
+            Pool<Entity*>       _persistentPool;;
+    public:
 
 
         int             getLevelIndex(const char *const dir) const;

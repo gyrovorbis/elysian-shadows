@@ -20,7 +20,7 @@ void ExaminableSystem::processInput(GameInput& input) {
 	if(input.getTapped(GameInput::BUT_J)) {
 
 		//check for examine
-		for(auto it: getCurArea()->examinables) {
+        for(auto it: getCurArea()->examinables) {
 			GYVector2 distVec;
 
             gyVec2Sub(&distVec, (GYVector2*)&partyLeader->_transform._pos, (GYVector2*)&it->getEntity()->_transform._pos);

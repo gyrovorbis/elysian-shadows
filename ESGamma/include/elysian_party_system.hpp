@@ -8,8 +8,8 @@
 #include "elysian_character.hpp"
 #include "elysian_asset_typedefs.hpp"
 
-#define ELYSIAN_PARTY_SYSTEM_FOOT_STEP_SFX_TIME	0.3f
-#define ELYSIAN_PARTY_SYSTEM_DASH_PART_TIME_INTERVAL 0.5f
+#define ELYSIAN_PARTY_SYSTEM_FOOT_STEP_SFX_TIME         0.3f
+#define ELYSIAN_PARTY_SYSTEM_DASH_PART_TIME_INTERVAL    0.5f
 
 #define ELYSIAN_PARTY_PATH	"party/party.txt"
 
@@ -29,9 +29,9 @@ namespace elysian {
 		Entity **_playable;
 		
 		//< _activePartySize is active
-		std::vector<Entity *> _playableParty;
+        std::vector<Entity*> _playableParty;
 		//ONLY active and can only contain up to _characterPartySize
-		std::vector<Entity *> _characterParty;
+        std::vector<Entity*> _characterParty;
 		
 		std::vector<GYVector2> _partyPathPoint;
 		static const unsigned int _pointsPerCharacter = 15;
@@ -56,10 +56,11 @@ namespace elysian {
         bool				_footStepSfxLooping         = false;
         GYWav*				_curWalkSfx                 = nullptr;
         bool				_wasOnGround                = true;
+        bool                _partyActive                = false;
 
 	public:
-		PartySystem(void);
-		~PartySystem(void); 
+            PartySystem(void);
+            ~PartySystem(void);
 		
 		void update(void);
 		void render(void);

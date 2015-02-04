@@ -36,7 +36,7 @@ void PartySystem::update(void) {//VOIDICATE
 	updatePartyPaths();
 }
 
-void PartySystem::render() {}
+void PartySystem::render(void) {}
 
 void PartySystem::processInput(const GameInput &input) {
 	Entity*entity = getPartyLeader();
@@ -580,17 +580,23 @@ void PartySystem::updatePartyPaths(void) {
 }
 
 void PartySystem::removePartyFromArea(void) {
-	for(unsigned int i = 0; i < _playableParty.size(); ++i) 
-		_playableParty[i]->deactivate();
-	for(unsigned int i = 0; i < _characterParty.size(); ++i)
-		_characterParty[i]->deactivate();
+    if(_partyActive) {
+        for(unsigned int i = 0; i < _playableParty.size(); ++i)
+            _playableParty[i]->deactivate();
+        for(unsigned int i = 0; i < _characterParty.size(); ++i)
+            _characterParty[i]->deactivate();
+        _partyActive = false;
+    }
 }
 
 void PartySystem::addPartyToArea(void) {
-	for(unsigned int i = 0; i < _playableParty.size(); ++i) 
-		_playableParty[i]->activate();
-	for(unsigned int i = 0; i < _characterParty.size(); ++i)
-		_characterParty[i]->activate();
+    if(!_partyActive) {
+        for(unsigned int i = 0; i < _playableParty.size(); ++i)
+            _playableParty[i]->activate();
+        for(unsigned int i = 0; i < _characterParty.size(); ++i)
+            _characterParty[i]->activate();
+        _partyActive = true;
+    }
 }
 
 

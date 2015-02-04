@@ -108,182 +108,6 @@ public:
 
         //lua_pop(*_mainState, 1); //pop value from stack
     }
-#if 0
-    //Iterates over table or proxied userdata, populating model based on k,v pairs
-    void _populateFieldItems(PropertyStackModel*const stackModel) {
-        stackModel->pushItem(const_cast<QStandardItem*>(_labelItem));
-
-        using namespace elysian;
-        using elysian::Debug;
-
-      //  elysian::Debug::printf(elysian::Debug::VERBOSE, "_addTableFields(%d)", tableRef);
-        elysian::Debug::push();
-
-        //Helper lambda function for uniform iteration over tables and userdata
-        std::function<bool()> iterFunc[2] = {
-            //table iteration
-            [&](void) -> bool {
-              //  elysian::Debug::printf(elysian::Debug::VERBOSE, "lua_next()");
-                elysian::Debug::push();
-
-                bool retVal = (bool)lua_next(*_mainState, -2);
-            //    elysian::Debug::printf(elysian::Debug::VERBOSE, "RetVal - %d", retVal);
-
-                elysian::Debug::pop();
-                return retVal;
-
-            },
-            //userdata iteration
-             [&](void) -> bool {
-                bool retVal = false;
-             //   elysian::Debug::printf(elysian::Debug::VERBOSE, "meta.__next()");
-                elysian::Debug::push();
-
-            //   elysian::Debug::printf(elysian::Debug::VERBOSE, "nextMetamethod - %d", nextMetamethod);
-               if(_proxyTable) {
-
-                    lua_pushvalue(*_mainState, -2);
-                    lua_pushvalue(*_mainState, -2);
-                    lua_remove(*_mainState, -3);
-                    _nextMetamethod.push(*_mainState);
-                    lua_insert(*_mainState, -3);
-
-                    _protectedCall(2, 2, nullptr);
-
-                    if((retVal = !lua_isnil(*_mainState, -2))) {
-                        //qDebug() << "SHITS PRISTINE!";
-                    } else {
-                        lua_pop(*_mainState, 2);
-                       // qDebug() << "SHIT WAS NOT NIL!";
-                    }
-
-                } else {
-                    lua_pop(*_mainState, 1);
-                }
-
-              //  elysian::Debug::printf(elysian::Debug::VERBOSE, "RetVal - %d", retVal);
-                elysian::Debug::pop();
-                return retVal;
-            }
-
-
-        };
-
-        lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
-        lua_pushnil(*_mainState);
-        _luaType = lua_type(*_mainState, -2);
-        //Check if userdata is iterable
-
-        //elysian::Debug::printf(elysian::Debug::VERBOSE, "isUserdata - %d", isUserdata);
-        if(_luaType == LUA_TUSERDATA) {
-            lua_getmetatable(*_mainState, -2);
-            lua_getfield(*_mainState, -1, "__next");
-            _proxyTable = (!lua_isnil(*_mainState, -1));
-
-            //elysian::Debug::printf(elysian::Debug::VERBOSE, "nextMetamethod - %d", nextMetamethod);
-            if(_proxyTable) {
-
-                _nextMetamethod.pull(*_mainState);
-#if 1
-                lua_getfield(*_mainState, -1, "__connectSignals");
-                lua_pushvalue(*_mainState, 1);
-                lua_pushlightuserdata(*_mainState, static_cast<QObject*>(this));
-                _protectedCall(2, 0, nullptr);
-
-                lua_pop(*_mainState, 1);
-#else
-                lua_pop(*_mainState, 1);
-#endif
-
-                //propTableRef.push(*_mainState);
-                //lua_insert(*_mainState, -2);
-
-              // elysian::Debug::printf(elysian::Debug::VERBOSE, "Pushed __property table!", nextMetamethod);
-
-            } else {
-
-                lua_pop(*_mainState, 2);
-                //return;
-            }
-        } else {
-            auto* ud = TkLuaTableUserdata::inject(*_mainState, _luaRef);
-            connect(ud, SIGNAL(fieldChanged(QString)), this, SLOT(onFieldChanged(QString)));
-            //connect(ud, SIGNAL(fieldAdded(QString)), this, SLOT(onFieldA)
-
-
-        }
-
-        const bool isUserdata = (_luaType == LUA_TUSERDATA);
-        //Iterate over table/userdata
-        while (iterFunc[isUserdata]()) {
-            LuaManager::_stackBalanceBegin();
-            const int valueType   = lua_type(*_mainState, -1);
-            const int               keyType     = lua_type(*_mainState, -2);
-            lua_pushvalue(*_mainState, -2);
-            const QString           keyName     = luaL_tolstring(*_mainState, -1, nullptr);
-            lua_pushvalue(*_mainState, -3);
-            const QString           valueName   = luaL_tolstring(*_mainState, -1, nullptr);
-            ESTkStandardItem*       valueItem;
-
-            lua_pop(*_mainState, 4);
-
-           elysian::Debug::printf(elysian::Debug::VERBOSE, "<%s, %s>", keyName.toStdString().c_str(), valueName.toStdString().c_str());
-            elysian::Debug::push();
-
-            //If current value is iterable, recurse over its k,v pairs
-
-            if(valueType == LUA_TTABLE || valueType == LUA_TUSERDATA) {
-
-                lua_pushvalue(*_mainState, -1);
-                int ref = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
-                auto* label = new QStandardItem(keyName);
-                valueItem = new LuaTableItem(ref, label);
-
-                stackModel->addRow(label, valueItem);
-
-            } else {
-
-                switch(keyType) {
-                case LUA_TSTRING:
-                    valueItem = _createTableFieldItemFromStack<QString>(_luaRef);
-                    break;
-                case LUA_TNUMBER:
-                    valueItem = _createTableFieldItemFromStack<float>(_luaRef);
-                    break;
-                case LUA_TBOOLEAN:
-                    valueItem = _createTableFieldItemFromStack<bool>(_luaRef);
-                    break;
-                case LUA_TTABLE:
-                    valueItem = new ESTkStandardItem(QString("table"));
-                    break;
-                case LUA_TUSERDATA:
-                    valueItem = new ESTkStandardItem(QString("userdata"));
-                    break;
-                default:
-                    valueItem = new ESTkStandardItem(QString("function"));
-                    break;
-                }
-
-                stackModel->addProperty(keyName, valueItem);
-            }
-
-            _fieldItems[keyName] = valueItem;
-
-            LuaManager::_stackBalanceEnd();
-            lua_pop(*_mainState, 1);
-            //LuaManager::_cStackDump();
-            //Pop value, leave key
-
-            elysian::Debug::pop();
-        }
-        elysian::Debug::pop();
-
-        stackModel->popItem();
-
-        lua_pop(*_mainState, 1);
-    }
-
-#else
 
     //Iterates over table or proxied userdata, populating model based on k,v pairs
     void _populateFieldItems(PropertyStackModel*const stackModel) {
@@ -293,7 +117,7 @@ public:
         using elysian::Debug;
 
       //  elysian::Debug::printf(elysian::Debug::VERBOSE, "_addTableFields(%d)", tableRef);
-        elysian::Debug::push();
+        //elysian::Debug::push();
 
         //Helper lambda function for uniform iteration over tables and userdata
 
@@ -354,8 +178,8 @@ public:
 
             lua_pop(*_mainState, 4);
 
-           elysian::Debug::printf(elysian::Debug::VERBOSE, "<%s, %s>", keyName.toStdString().c_str(), valueName.toStdString().c_str());
-            elysian::Debug::push();
+           //elysian::Debug::printf(elysian::Debug::VERBOSE, "<%s, %s>", keyName.toStdString().c_str(), valueName.toStdString().c_str());
+            //elysian::Debug::push();
 
             //If current value is iterable, recurse over its k,v pairs
 
@@ -405,17 +229,16 @@ public:
             //LuaManager::_cStackDump();
             //Pop value, leave key
 
-            elysian::Debug::pop();
+            //elysian::Debug::pop();
         } while(1);
 
-        elysian::Debug::pop();
+        //elysian::Debug::pop();
 
         stackModel->popItem();
 
         lua_pop(*_mainState, 1);
     }
 
-#endif
 };
 
 //QStandardItemModel representing a Lua table or proxied userdata
