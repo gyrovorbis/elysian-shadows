@@ -154,6 +154,31 @@ void luaV_settable (lua_State *L, const TValue *t, TValue *key, StkId val) {
         setobj2t(L, oldval, val);  /* assign new value to that entry */
         invalidateTMcache(h);
         luaC_barrierback(L, obj2gco(h), val);
+
+//****** ELYSIAN SHADOWS MODIFICATION START********
+#ifdef ELYSIAN_LUA_MODS
+        if(ttype(key) == LUA_TSHRSTR && h->metatable) {
+            const char* keyStr = svalue(key);
+            if(keyStr[0] == '_' && keyStr[1] == '_') {
+                static TString* metaStr = NULL;
+                if(!metaStr) {
+                    metaStr = luaS_new(L, "__metamethodset");
+                }
+
+                //tm = luaT_gettmbyobj(L, t, TM_NEWINDEX);
+                tm = luaH_getstr(h->metatable, metaStr);
+                /* there is a metamethod */
+                if (ttisfunction(tm)) {
+                    callTM(L, tm, t, key, val, 0);
+                    return;
+                }
+              //t = tm;  /* else repeat with 'tm' */
+              //continue;
+            }
+        }
+#endif
+//****** ELYSIAN SHADOWS MODIFICATION END********
+
         return;
       }
       /* else will try the metamethod */

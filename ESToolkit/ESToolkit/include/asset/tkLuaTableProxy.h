@@ -16,8 +16,9 @@ class TkLuaTableUserdata: public QObject {
 
 private:
     lua_State*  _lvm;
-    int         _proxyRef = LUA_NOREF;
-    int         _origRef  = LUA_NOREF;
+    int         _proxyRef   = LUA_NOREF;
+    int         _propRef    = LUA_NOREF;
+    int         _origRef    = LUA_NOREF;
 signals:
     //Notifies Qt's GUI models to update when Lua table fields change
     void    fieldChanged(const QString key) const;
@@ -33,6 +34,8 @@ public:
     int     getProxyRef(void) const;
     void    setOrigRef(const int ref);
     int     getOrigRef(void) const;
+    void    setPropRef(const int ref);
+    int     getPropRef(void) const;
 
     //static
     static TkLuaTableUserdata*  inject(lua_State*const l, const int luaRef);
@@ -111,8 +114,10 @@ public:
 
 inline void TkLuaTableUserdata::setProxyRef(const int ref) { _proxyRef = ref; }
 inline void TkLuaTableUserdata::setOrigRef(const int ref) { _origRef = ref; }
+inline void TkLuaTableUserdata::setPropRef(const int ref) { _propRef = ref; }
 inline int TkLuaTableUserdata::getOrigRef(void) const { return _origRef; }
 inline int TkLuaTableUserdata::getProxyRef(void) const { return _proxyRef; }
+inline int TkLuaTableUserdata::getPropRef(void) const { return _propRef; }
 inline TkLuaTableUserdata::TkLuaTableUserdata(lua_State * const state): QObject(nullptr), _lvm(state) {}
 inline void TkLuaTableUserdata::emitFieldAdded(const QString key) const { emit fieldAdded(key); }
 inline void TkLuaTableUserdata::emitFieldChanged(const QString key) const { emit fieldChanged(key); }

@@ -161,6 +161,8 @@ namespace elysian {
         static void					rPrintByIndex(const int index, const unsigned depth, const char* name);
         static void					rPrintByRef(const int ref, const unsigned depth, const char* name);
 
+        static bool                 getMetatable(const int index);
+
 	};
 
     inline void LuaManagerBase::_protectedCall(const int nargs, const int nresults, LuaScript *script) {
@@ -217,6 +219,10 @@ namespace elysian {
             _errorprintf("Start Depth - %d, End Depth - %d", _stackBalanceTop[_stackBalanceRecursiveDepth], _stackDepth());
             assert(false);
         }
+    }
+
+    inline bool LuaManagerBase::getMetatable(const int index) {
+        return (bool)lua_getmetatable(*_mainState, index);
     }
 
 }

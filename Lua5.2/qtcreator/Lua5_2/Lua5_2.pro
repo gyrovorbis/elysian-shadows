@@ -10,6 +10,8 @@ TARGET = Lua5_2
 TEMPLATE = lib
 CONFIG += staticlib
 
+DEFINES += ELYSIAN_LUA_MODS
+
 INCLUDEPATH += ../../include \
 	../../include/lua \
 	../../../libGyro/include

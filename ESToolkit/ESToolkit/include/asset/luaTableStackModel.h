@@ -121,8 +121,17 @@ public:
 
         //Helper lambda function for uniform iteration over tables and userdata
 
-
         lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
+
+        //add metatable
+        LuaManager::_stackBalanceBegin();
+        if(getMetatable(-1)) {
+            int metaRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
+            auto* label = new QStandardItem("__metatable");
+            auto* valueItem = new LuaTableItem(metaRef, label);
+            stackModel->addRow(label, valueItem);
+        }
+        LuaManager::_stackBalanceEnd();
 
         _luaType = lua_type(*_mainState, -1);
         //Check if userdata is iterable
@@ -136,12 +145,12 @@ public:
             connect(ud, SIGNAL(fieldChanged(QString)), this, SLOT(onFieldChanged(QString)));
         }
 
+
         lua_getglobal(*_mainState, "pairs");
         lua_pushvalue(*_mainState, -2);
         _protectedCall(1, 3, nullptr);
         lua_pushvalue(*_mainState, -3);
         lua_insert(*_mainState, -4);
-
 
         lua_pushvalue(*_mainState, -2);
         lua_insert(*_mainState, -4);
@@ -149,11 +158,11 @@ public:
         //LuaManager::_cStackDump();
 
         do {
-                       // LuaManager::_cStackDump();
+            // LuaManager::_cStackDump();
 
             _protectedCall(2, 2, nullptr);
 
-                        //LuaManager::_cStackDump();
+            //LuaManager::_cStackDump();
 
             lua_pushvalue(*_mainState, -4);
             lua_insert(*_mainState, -5);
