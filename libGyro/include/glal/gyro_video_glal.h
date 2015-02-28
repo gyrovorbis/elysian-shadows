@@ -30,6 +30,7 @@ extern GYTexCoord2                  glalStripTexCoords[];
 extern GLAL_TEXTURE_FLIP            glalTextureFlip;
 extern GY_RECT_TEX_ORIENT           glalRectTexOrient;
 extern GY_RECT_PLANE_TYPE           glalPlaneType;
+extern unsigned                     glalVertexRenderCount;
 
 int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidth, const int projHeight);
 
