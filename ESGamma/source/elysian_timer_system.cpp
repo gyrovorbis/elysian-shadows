@@ -47,7 +47,7 @@ void TimerSystem::update(void) {
 	//Calculate delta (sec)
 	//_deltaTime = (_curFrameTicks - _prevFrameTicks)/1000.0f;
 #if 1
-    delta = ((float)gyTimerTicks())/1000000.0f;
+    delta = ((float)gyTimerTicks())/1000.0f;
 #else
 	delta = 1/60.0f;
 #endif

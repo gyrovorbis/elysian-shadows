@@ -15,7 +15,7 @@ namespace elysian {
 void ExaminableSystem::processInput(GameInput& input) {
     Entity*const partyLeader = getPartySys()->getCharacterPartyMember(0u);
     Entity* curExamine = nullptr;
-    float minDist = -1.0f;
+    float minDist;
 
 	if(!partyLeader) return;
 	if(getDialogSys()->isOpen()) return;
@@ -24,16 +24,14 @@ void ExaminableSystem::processInput(GameInput& input) {
 
 		//check for examine
         for(auto it: getCurArea()->examinables) {
-			GYVector2 distVec;
 
-            gyVec2Sub(&distVec, (GYVector2*)&partyLeader->_transform._pos, (GYVector2*)&it->getEntity()->_transform._pos);
+            const float dist = gyVec3Dist(&partyLeader->_transform._pos, &it->getEntity()->_transform._pos);
 
 			//We are officially examining this motherfucker
             //if(partyLeader->getCharacter()->isFacing(*it->getEntity())) {
 
-                const float dist = gyVec2Magnitude(&distVec);
                 if(dist <= it->getMaxDist()) {
-                    if(minDist > 0.0f) {
+                    if(curExamine) {
                         if(dist < minDist) {
                             minDist = dist;
                             curExamine = it->getEntity();
@@ -47,7 +45,7 @@ void ExaminableSystem::processInput(GameInput& input) {
         }
 
         if(curExamine) {
-            if(partyLeader->getCharacter()->isFacing(curExamine) && input.getTapped(GameInput::BUT_J)) {
+            if(/*partyLeader->getCharacter()->isFacing(curExamine) &&*/ input.getTapped(GameInput::BUT_J)) {
                 getBehavSys()->getBehavSys()->onExamine(curExamine, partyLeader);
                 if(curExamine->getExaminable()->getDialog()) getDialogSys()->startDialog(curExamine->getExaminable()->getDialog());
                 curExamine = nullptr;

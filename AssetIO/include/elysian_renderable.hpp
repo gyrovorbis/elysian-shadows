@@ -33,7 +33,7 @@ namespace elysian {
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
 			ELYSIAN_LUA_PROXY_FIELD(frame, getFrame, setFrame)
-            ELYSIAN_LUA_PROXY_FIELD(offset, getOffset, setOffset)
+            //ELYSIAN_LUA_PROXY_FIELD(offset, getOffset, setOffset)
             ELYSIAN_LUA_PROXY_FIELD(texOrient, getTexOrient, setTexOrient)
 		ELYSIAN_LUA_PROXY_FIELDS_END()
 

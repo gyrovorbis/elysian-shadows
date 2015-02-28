@@ -239,7 +239,7 @@ void GuiSystem::_renderExamineEntity(void) {
 
     gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
     gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
-    pragmata18.drawString(Font::NO_FORMAT, Font::C_ALIGN, _examineEntity->getExaminable()->getDescription());
+    pragmata18.drawString(Font::NO_FORMAT, Font::C_ALIGN, _examineEntity->getDispName());
 
 }
 

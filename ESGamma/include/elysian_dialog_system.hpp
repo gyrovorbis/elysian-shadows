@@ -7,14 +7,19 @@
 #include "elysian_asset_typedefs.hpp"
 #include <gyro_wav_api.h>
 
-#define ELSYIAN_DIALOG_SYSTEM_CHAR_APPEAR_TIME	0.05f
-#define ELYSIAN_DIALOG_SYSTEM_MAX_LINES			3
+#define ELSYIAN_DIALOG_SYSTEM_CHAR_APPEAR_TIME      0.05f
+#define ELYSIAN_DIALOG_SYSTEM_MAX_LINES             3
 
-#define ELYSIAN_DIALOG_SYSTEM_MARGIN_SIZE		0.1f
-#define ELYSIAN_DIALOG_SYSTEM_DIST_MARGIN_SIZE	0.2f
+#define ELYSIAN_DIALOG_SYSTEM_MARGIN_SIZE           0.1f
+#define ELYSIAN_DIALOG_SYSTEM_DIST_MARGIN_SIZE      0.2f
 
-#define ELYSIAN_DIALOG_SYSTEM_SCROLL_DOWN_SFX	"/assets/audio/sfx/SFX_DialogScrollDown_1.wav"
-#define ELYSIAN_DIALOG_SYSTEM_SCROLL_UP_SFX		"/assets/audio/sfx/SFX_DialogScrollUp_1.wav"
+#define ELYSIAN_DIALOG_SYSTEM_WIDTH                 640.0f
+#define ELYSIAN_DIALOG_SYSTEM_HEIGHT                110.0f
+
+#define ELYSIAN_DIALOG_SYSTEM_MAX_NONMODAL_DIST     200.0f
+
+#define ELYSIAN_DIALOG_SYSTEM_SCROLL_DOWN_SFX       "/assets/audio/sfx/SFX_DialogScrollDown_1.wav"
+#define ELYSIAN_DIALOG_SYSTEM_SCROLL_UP_SFX         "/assets/audio/sfx/SFX_DialogScrollUp_1.wav"
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 
@@ -34,7 +39,7 @@ namespace elysian {
 
 
 
-		static const GYVector2 _maxNonmodalDist;
+        static const float _maxNonmodalDist;
 
 		// ==== INTERNAL DISPLAY STATE ====
 		int				_currentScreen		= 0;

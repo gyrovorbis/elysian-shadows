@@ -186,8 +186,9 @@ namespace elysian {
                // }
             } else {
                 _showError();
-                _cStackDump();
-                dumpStats();
+                //lua_remove(*_mainState, 1);
+                //_cStackDump();
+                //dumpStats();
             }
 		} else {
             if(script)

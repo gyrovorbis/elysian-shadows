@@ -20,25 +20,26 @@
 namespace elysian {
 
 //const static members
-const GYVector2 DialogSystem::_maxNonmodalDist = { 200.0f, 200.0f };
+const float DialogSystem::_maxNonmodalDist = ELYSIAN_DIALOG_SYSTEM_MAX_NONMODAL_DIST;
 const float DialogSystem::_nextCharTime = ELSYIAN_DIALOG_SYSTEM_CHAR_APPEAR_TIME;
 
 DialogSystem::DialogSystem(void) {
 	/*
 	 Set the initial values for main text canvas.4
 	*/
-	static GYColor4 canvColor1 = { 0, 0, 150, 255 };
-	static GYColor4 canvColor2 = { 0, 0, 150, 255 };
-	static GYColor4 canvColor3 = { 0, 0, 150, 255 };
-	static GYColor4 canvColor4 = { 0, 0, 150, 255 };
-	static GYColor4 optBoxColor = { 0, 0, 50, 255 };
-    static GYColor4 cursorColor = { 0, 180, 180, 100 };
+    static const GYColor4 canvColor1 = { 0, 0, 0, 255 };
+    static const GYColor4 canvColor2 = { 0, 0, 0, 255 };
+    static const GYColor4 canvColor3 = { 0, 0, 0, 255 };
+    static const GYColor4 canvColor4 = { 0, 0, 0, 255 };
+    static const GYColor4 optBoxColor = { 0, 0, 0, 255 };
+    static const GYColor4 cursorColor = { 0, 180, 180, 100 };
+    static const GYColor4 borderColor = { 100, 100, 100, 50 };
 
 	unsigned width, height;
 	getGuiSys()->getResolution(width, height);
 
-    _mainCanvas._transform.setSize(640.0f, 100.0f);
-    _mainCanvas._transform.setPos(((float)width)*0.5f, (float)height- (float)height*ELYSIAN_DIALOG_SYSTEM_MARGIN_SIZE - 50.0f, 6.0f);
+    _mainCanvas._transform.setSize(ELYSIAN_DIALOG_SYSTEM_WIDTH, ELYSIAN_DIALOG_SYSTEM_HEIGHT);
+    //_mainCanvas._transform.setPos(ELYSIAN_DIALOG_SYSTEM_WIDTH*0.5f, ELYSIAN_DIALOG_SYSTEM_HEIGHT*0.5f, 6.0f);
 	_mainCanvas.setVertexColor(0, canvColor1);
 	_mainCanvas.setVertexColor(1, canvColor2);
 	_mainCanvas.setVertexColor(2, canvColor3);
@@ -53,6 +54,20 @@ DialogSystem::DialogSystem(void) {
 	_cursor.setVertexColor(1, cursorColor);
 	_cursor.setVertexColor(2, cursorColor);
 	_cursor.setVertexColor(3, cursorColor);
+
+    _border[0].setVertexColor(0, borderColor);
+    _border[0].setVertexColor(1, borderColor);
+    _border[0].setVertexColor(2, borderColor);
+    _border[0]._transform.setSize(ELYSIAN_DIALOG_SYSTEM_WIDTH, 2.0f);
+    _border[0]._transform._pos.x = ELYSIAN_DIALOG_SYSTEM_WIDTH*0.5f;
+    _border[0].setVertexColor(3, borderColor);
+
+    _border[1].setVertexColor(0, borderColor);
+    _border[1].setVertexColor(1, borderColor);
+    _border[1].setVertexColor(2, borderColor);
+    _border[1]._transform.setSize(2.0f, ELYSIAN_DIALOG_SYSTEM_HEIGHT+2.0f);
+    _border[1]._transform._pos.x = ELYSIAN_DIALOG_SYSTEM_WIDTH+1.0f;
+    _border[1].setVertexColor(3, borderColor);
 
     _curScreen.screen = nullptr;
 }
@@ -78,11 +93,14 @@ bool DialogSystem::loadAssets(void) {
 void DialogSystem::render(void) {
 	char buffer[ELYSIAN_DIALOG_PROMPT_OPTION_TEXT_BUFFER_SIZE];
     unsigned width, height;
+    getGuiSys()->getResolution(width, height);
+
+    auto& font = getGuiSys()->pragmata18;
 
 	if(!_curDialog) return;
 
-    getGuiSys()->getResolution(width, height);
-    _mainCanvas._transform._pos.x = width*0.5f;
+    //getGuiSys()->getResolution(width, height);
+    //_mainCanvas._transform._pos.x = width*0.5f;
 
     GYVector3 basePos = _mainCanvas._transform._pos;
 
@@ -94,34 +112,36 @@ void DialogSystem::render(void) {
 	else if (alpha < 0.0f) alpha = 0.0f;
 		//Render canvas
 		_mainCanvas.render();
+        _border[0].render();
+        if(width > 640) _border[1].render();
 		//Render Text
 		for(unsigned int i = 0; i <= _currentLine; ++i) {
-			getGuiSys()->twcen.setAlpha(255*alpha);
-            getGuiSys()->twcen._transform.setPos(basePos.x-(_mainCanvas._transform._size.x/2.0f)+30.0f, basePos.y-(_mainCanvas._transform._size.y/2.0f)+35.0f+25.0f*i, _mainCanvas._transform._pos.z+1);
-			if(i != _currentLine) getGuiSys()->twcen.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, "%s", _textLines[i]);
+            font.setAlpha(255*alpha);
+            font._transform.setPos(basePos.x-(_mainCanvas._transform._size.x/2.0f)+40.0f, basePos.y-(_mainCanvas._transform._size.y/2.0f)+35.0f+25.0f*i, _mainCanvas._transform._pos.z+1);
+            if(i != _currentLine) font.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, "%s", _textLines[i]);
 			else {
 				strncpy(buffer, _textLines[i], _currentCharacter);
 				buffer[_currentCharacter] = '\0';
-				getGuiSys()->twcen.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, "%s", buffer);
+                font.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, "%s", buffer);
 				//getGuiSys()->twcen.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, "fuuuuuck", buffer);
 			}
 		}
 
 		//Render Nametag
 		if(_curDialog && _boxState != BOX_INPUT && _curScreen.screen->getEntity()) {//Check top or bottom
-			GYVector3 screenPos;
-            getCameraSys()->transform(&screenPos, &_curScreen.screen->getEntity()->_transform._pos);
-			getGuiSys()->verdana.setAlpha(alpha*255);
+            //GYVector3 screenPos;
+            //getCameraSys()->transform(&screenPos, &_curScreen.screen->getEntity()->_transform._pos);
+            font.setAlpha(alpha*255);
 			switch(_posState) {
 				case POS_BOTTOM:
-                    getGuiSys()->verdana._transform.setPos(screenPos.x, basePos.y-(_mainCanvas._transform._size.y/2.0f)+5.0f, _mainCanvas._transform._pos.z+1);
-					getGuiSys()->verdana.drawStringf(Font::NO_FORMAT, Font::C_ALIGN, "%s", _curScreen.screen->getEntity()->getName());
+                    font._transform.setPos(25.0f, basePos.y-0.5f*ELYSIAN_DIALOG_SYSTEM_HEIGHT, _mainCanvas._transform._pos.z+1);
+                    font.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, "%s", _curScreen.screen->getEntity()->getDispName());
 					break;
 				case POS_MOVE_DOWN:
 					break;
 				case POS_TOP:
-                    getGuiSys()->verdana._transform.setPos(screenPos.x, basePos.y+(_mainCanvas._transform._size.y/2.0f)+5.0f, _mainCanvas._transform._pos.z+1);
-					getGuiSys()->verdana.drawStringf(Font::NO_FORMAT, Font::C_ALIGN, "%s", _curScreen.screen->getEntity()->getName());
+                   // getGuiSys()->verdana._transform.setPos(screenPos.x, basePos.y+(_mainCanvas._transform._size.y/2.0f)+5.0f, _mainCanvas._transform._pos.z+1);
+                //	getGuiSys()->verdana.drawStringf(Font::NO_FORMAT, Font::C_ALIGN, "%s", _curScreen.screen->getEntity()->getName());
 					break;
 				case POS_MOVE_UP:
 					break;
@@ -135,8 +155,8 @@ void DialogSystem::render(void) {
 		unsigned int maxLen = 0;
 
 		for(unsigned int i = 0; i < _curScreen.prompt->getOptionCount(); ++i) {
-			if(getGuiSys()->twcen.getStringPixelWidth(_curScreen.prompt->getOptionText(i)) > maxLen)
-				maxLen = getGuiSys()->twcen.getStringPixelWidth(_curScreen.prompt->getOptionText(i));
+            if(font.getStringPixelWidth(_curScreen.prompt->getOptionText(i)) > maxLen)
+                maxLen = font.getStringPixelWidth(_curScreen.prompt->getOptionText(i));
 		}
 
         _optionBox._transform.setSize(maxLen+10.0f, _curScreen.prompt->getOptionCount()*25.0f+10.0f);
@@ -161,13 +181,13 @@ void DialogSystem::render(void) {
 		//_optionBox.setAlpha(0.5f, 0.5f, 0.5f, 0.5f);
 		_optionBox.render();
 		//Render options
-        getGuiSys()->twcen._transform._pos.z += 3.0f;
+        font._transform._pos.z += 3.0f;
 		for(unsigned int i = 0; i < _curScreen.prompt->getOptionCount(); ++i) {
 		//	if(_posState == POS_TOP)
-            getGuiSys()->twcen._transform.setPos(_optionBox._transform._pos.x-0.5*_optionBox._transform._size.x+15.0f, _optionBox._transform._pos.y-0.5*_optionBox._transform._size.y + 25.0+ i*25.0f);
+            font._transform.setPos(_optionBox._transform._pos.x-0.5*_optionBox._transform._size.x+15.0f, _optionBox._transform._pos.y-0.5*_optionBox._transform._size.y + 25.0+ i*25.0f);
 		//	else
 			//guiSystem->twcen.transform.setPosition(_optionBox.transform.getPosition().x-0.5*_optionBox.transform.getSize().x+15.0f, _optionBox.transform.getPosition().y-0.5*_optionBox.transform.getSize().y + 25.0+ i*25.0f);
-			getGuiSys()->twcen.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, "%s", _curScreen.prompt->getOptionText(i));
+            font.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, "%s", _curScreen.prompt->getOptionText(i));
 		}
 		//Render cursor
         _cursor._transform._pos.z = _mainCanvas._transform._pos.z+3;
@@ -182,31 +202,33 @@ void DialogSystem::render(void) {
 void DialogSystem::update(void) {
 	if(!_curScreen.screen) return;
 
+    unsigned width, height;
+    getGuiSys()->getResolution(width, height);
+
+    _mainCanvas._transform.setPos(ELYSIAN_DIALOG_SYSTEM_WIDTH*0.5f, (float)height-ELYSIAN_DIALOG_SYSTEM_HEIGHT*0.5f, 6.0f);
+    _border[0]._transform._pos.y = (float)height-ELYSIAN_DIALOG_SYSTEM_HEIGHT-_border[0]._transform._size.y;
+    _border[1]._transform._pos.y = height-ELYSIAN_DIALOG_SYSTEM_HEIGHT*0.5f-1.0f;
+
 	//IF WE'RE SPEAKING TO AN ENTITY ----FUCK
 	if(_curScreen.screen && _curScreen.screen->getEntity()) {
 		FacePlayer();
 
-		GYVector3 curPos;
-        getCameraSys()->transform(&curPos, &_curScreen.screen->getEntity()->_transform._pos);
+        const float dist = gyVec3Dist(&getPartySys()->getCharacterPartyMember(0u)->_transform._pos, &_curScreen.screen->getEntity()->_transform._pos);
 
-		GYVector3 dist;
-        gyVec3Sub(&dist, &getPartySys()->getCharacterPartyMember(0u)->_transform._pos, &_curScreen.screen->getEntity()->_transform._pos);
-		if(fabs(dist.x) > _maxNonmodalDist.x || fabs(dist.y) > _maxNonmodalDist.y) {
+        if(dist > _maxNonmodalDist) {
 			_prevScreen.screen = _curScreen.screen;
 			_curScreen.screen = nullptr;
 			closeDialog();
 			return;
 		}
-
-		unsigned width, height;
-		getGuiSys()->getResolution(width, height);
-
+#if 0
+/*
         _mainCanvas._transform._pos.x = curPos.x;
         if(_mainCanvas._transform._pos.x- _mainCanvas._transform._size.x*0.5f < 0)
             _mainCanvas._transform._pos.x = _mainCanvas._transform._size.x*0.5f;
         else if (_mainCanvas._transform._pos.x + _mainCanvas._transform._size.x*0.5f > width)
             _mainCanvas._transform._pos.x = width - _mainCanvas._transform._size.x*0.5f;
-
+*/
 		const float yEntityTop = (float)height*ELYSIAN_DIALOG_SYSTEM_DIST_MARGIN_SIZE;
 		const float yEntityBottom = (float)height;// - (float)height*ELYSIAN_DIALOG_SYSTEM_DIST_MARGIN_SIZE;
 
@@ -215,14 +237,14 @@ void DialogSystem::update(void) {
 
 		switch(_posState) {
 			case POS_BOTTOM:
-				if(curPos.y > yEntityBottom) _posState = POS_MOVE_UP;
+                //if(curPos.y > yEntityBottom) _posState = POS_MOVE_UP;
 				break;
 			case POS_TOP:
 				if(curPos.y < yEntityTop) _posState = POS_MOVE_DOWN;
 				break;
 			case POS_MOVE_UP:
                 if(_mainCanvas._transform._pos.y <= yTop) {
-                    _mainCanvas._transform.setPos(_mainCanvas._transform._pos.x, yTop);
+                    //_mainCanvas._transform.setPos(_mainCanvas._transform._pos.x, yTop);
 					_posState = POS_TOP;
 				}
 				else if(curPos.y < yTop) _posState = POS_MOVE_DOWN;
@@ -235,10 +257,10 @@ void DialogSystem::update(void) {
 				break;
 			case POS_MOVE_DOWN:
                 if(_mainCanvas._transform._pos.y >= yBottom) {
-                    _mainCanvas._transform.setPos(_mainCanvas._transform._pos.x, yBottom);
+                    //_mainCanvas._transform.setPos(_mainCanvas._transform._pos.x, yBottom);
 					_posState = POS_BOTTOM;
 				}
-				else if(curPos.y > yBottom) _posState = POS_MOVE_UP;
+                //else if(curPos.y > yBottom) _posState = POS_MOVE_UP;
 				else {
                     float alpha = fabs(_mainCanvas._transform._pos.y-240.0f)/600.0f;// - 0.8f;
 					if(alpha < 0.0f) alpha = 0.0f;
@@ -247,6 +269,7 @@ void DialogSystem::update(void) {
 				}
 				break;
 		}
+#endif
 
 	}
 

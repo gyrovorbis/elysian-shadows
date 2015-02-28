@@ -17,6 +17,7 @@
 
 #define ELYSIAN_ENTITY_NAME_SIZE	100
 #define ELYSIAN_ENTITY_NAME_DEFAULT	"Untitled"
+#define ELYSIAN_ENTITY_DESC_DEFAULT "No Description"
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 ELYSIAN_ASSET_TYPEDEF(Animation)
@@ -171,7 +172,7 @@ namespace elysian {
         
 	protected:
 		
-		char _name[ELYSIAN_ENTITY_NAME_SIZE]		= ELYSIAN_ENTITY_NAME_DEFAULT;
+        char _name[ELYSIAN_ENTITY_NAME_SIZE]		= ELYSIAN_ENTITY_DESC_DEFAULT;
         char _dispName[ELYSIAN_ENTITY_NAME_SIZE]    = ELYSIAN_ENTITY_NAME_DEFAULT;
 		bool _componentActive[Component::MAX_TYPE]	= { false };
         

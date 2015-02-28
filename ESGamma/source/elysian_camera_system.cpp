@@ -518,9 +518,13 @@ void CameraSystem::transform(GYVector3* dest, const GYVector3* src) {
 }
 
 void CameraSystem::transform(GYVector4* dest, const GYVector4* src) {
-	//PushTransform();
-	gyMatMultVec(src, dest, 1);
-	//PopTransform();
+/*
+    gyMatPush();
+    //gyMatLoadIdentity();
+    gyMatLoad(&_curState->viewMat);
+    gyMatMultVec(&dest, &src, 1);
+    gyMatPop();
+&*/
 }
 
 bool CameraSystem::isOnscreen(const Entity &entity) {

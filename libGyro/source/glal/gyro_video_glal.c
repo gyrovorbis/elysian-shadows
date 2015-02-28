@@ -171,11 +171,11 @@ GLAL_TEXTURE_FLIP           glalTextureFlip             = GLAL_TEXTURE_FLIP_NONE
 GY_RECT_TEX_ORIENT          glalRectTexOrient			= GY_RECT_TEX_ORIENT_NORMAL;
 GY_RECT_PLANE_TYPE          glalPlaneType				= GY_RECT_PLANE_BOTTOM;
 unsigned                    glalCurStripSize            = 0;
+unsigned    				glalVertexRenderCount		= 0;
 
 //Private video state variables
 static unsigned int			_projWidth				= 0;
 static unsigned int			_projHeight				= 0;
-static unsigned				_vertexRenderCount		= 0;
 static GYVector4			_clearColor				= { 0.0f, 0.0f, 0.0f, 0.0f };
 static const GYTexCoord2*   _curTexCoordPtr          = NULL;
 GYColor4				_curQuadListColor[12]	= { {0, 0, 0, 0}, { 0, 0, 0, 0}, {0,0,0,0}, {0, 0,0,0} };
@@ -188,7 +188,7 @@ void gyVidClearColor(const GYColor4 color) {
 	glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
 }
 
-unsigned gyVidVertexRenderCount(void) { return _vertexRenderCount; }
+unsigned gyVidVertexRenderCount(void) { return glalVertexRenderCount; }
 
 void gyVidResolution(unsigned int *const projWidth, unsigned int *const projHeight) {
 	*projWidth = _projWidth; *projHeight = _projHeight;
@@ -276,7 +276,7 @@ static inline void _gyVidTriangleStrip(const struct _GYVector4 *const vertexArra
        {
            gyPrintf("glError in file gldrawArrays");
        }*/
-    _vertexRenderCount += amount;
+    glalVertexRenderCount += amount;
 
     _curTexCoordPtr = NULL;
 }

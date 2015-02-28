@@ -184,6 +184,7 @@ public:
             // LuaManager::_cStackDump();
 
             _protectedCall(2, 2, nullptr);
+             if(lua_isnil(*_mainState, -2)) break;
 
             //LuaManager::_cStackDump();
 
@@ -193,8 +194,6 @@ public:
             lua_insert(*_mainState, -5);
 
             //LuaManager::_cStackDump();
-
-            if(lua_isnil(*_mainState, -2)) break;
 
             LuaManager::_stackBalanceBegin();
 

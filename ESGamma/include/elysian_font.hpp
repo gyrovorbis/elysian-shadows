@@ -69,6 +69,8 @@ namespace elysian {
             curWidth += _charWidth[(int)string[curIndex]] + _spacing;
         }
 
+        if(curWidth > width) --curIndex;
+
         return curIndex;
     }
 }
