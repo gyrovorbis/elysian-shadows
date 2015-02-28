@@ -143,10 +143,10 @@ void AdventureLog::render(void) {
     gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
 
     //Draw Canvas for log strings
-    quad._transform.setPos(0.6f*(float)_scrW*0.5f, ELYSIAN_ADV_LOG_Y+11+0.5f*(22*(_endIndex-_startIndex+1)-_yOffset-26), ELYSIAN_ADV_LOG_Z);
-    quad._transform.setSize(0.6f*(float)_scrW, 22.0f*(_endIndex-_startIndex+1)-_yOffset-22.0f);
+    quad._transform.setPos(0.6f*(float)_scrW*0.5f, ELYSIAN_ADV_LOG_Y+11+0.5f*(22*(_endIndex-_startIndex+1)-_yOffset-24), ELYSIAN_ADV_LOG_Z);
+    quad._transform.setSize(0.6f*(float)_scrW, 22.0f*(_endIndex-_startIndex+1)-_yOffset-18.0f);
 	for(unsigned i = 0; i < 4; ++i) quad.setVertexColor(i, canvasColor.r, canvasColor.g, canvasColor.b, canvasColor.a);
-    quad.setVerticesAlpha(0.4f*_baseAlpha*255.0f, 0.0f*_baseAlpha*255.0f, 0.0f*_baseAlpha*255.0f, 0.0f*_baseAlpha*255.0f);
+    quad.setVerticesAlpha(0.6f*_baseAlpha*255.0f, 0.0f*_baseAlpha*255.0f, 0.0f*_baseAlpha*255.0f, 0.0f*_baseAlpha*255.0f);
     quad.render();
 	//renderer.drawTransparentQuad(ADV_LOG_X, ADV_LOG_Y+22, ADV_LOG_Z+1, 430, 22*(endIndex-startIndex+1)+yOffset-22, 0.8f, 0, 0, 0, 0.8f, 0, 0, 0, 0.3f, 0, 0, 0, 0.3f, 0, 0, 0);
     
@@ -215,7 +215,7 @@ void AdventureLog::render(void) {
     //renderer.drawTransparentQuad(ADV_LOG_X, ADV_LOG_Y, ADV_LOG_Z+2, 430, 22, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	//font.setPosition(ADV_LOG_X+15, ADV_LOG_Y);
 	//font.setAlpha(1.0f, 1.0f,1.0f, 1.0f);
-    _labelFont->_transform.setPos(20, ELYSIAN_ADV_LOG_Y+6, ELYSIAN_ADV_LOG_Z+3);
+    _labelFont->_transform.setPos(20, ELYSIAN_ADV_LOG_Y+2, ELYSIAN_ADV_LOG_Z+3);
 	//font.setAlpha(_baseAlpha);
     _labelFont->setColor(255, 255, 255, 255);
     _labelFont->setAlpha(_baseAlpha*255.0);

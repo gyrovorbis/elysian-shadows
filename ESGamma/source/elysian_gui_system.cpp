@@ -87,8 +87,8 @@ bool GuiSystem::loadAssets(void) {
 
 	gyVidResolution(&_projWidth, &_projHeight);
 
-    adventureLog.setLabelFont(&verdana);
-    adventureLog.setTextFont(&twcen);
+    adventureLog.setLabelFont(&pragmata18);
+    adventureLog.setTextFont(&pragmata18);
 
     Debug::pop();
 	return success;
@@ -183,14 +183,14 @@ void GuiSystem::_renderDebugOverlay(void) {
 
 void GuiSystem::_renderCombatText(void) {
     for(auto it = _combatText.begin(); it < _combatText.end(); ++it) {
-        twcen._transform._pos.x = (*it).pos.x;
-        twcen._transform._pos.y = (*it).pos.y;
-        twcen._transform._pos.z = 50.0f;
+        pragmata18._transform._pos.x = (*it).pos.x;
+        pragmata18._transform._pos.y = (*it).pos.y;
+        pragmata18._transform._pos.z = 50.0f;
 
-        twcen.setColor((*it).color);
-        twcen.setAlpha((*it).color.a);
+        pragmata18.setColor((*it).color);
+        pragmata18.setAlpha((*it).color.a);
 
-        twcen.drawString(Font::NO_FORMAT, Font::L_ALIGN, (*it).text);
+        pragmata18.drawString(Font::NO_FORMAT, Font::C_ALIGN, (*it).text);
     }
 }
 
@@ -231,15 +231,15 @@ void GuiSystem::_renderExamineEntity(void) {
     const InstanceTransform* xform = &_examineEntity->_transform;
 
     const GYColor4 color = { 255, 255, 255, 255 };
-    twcen._transform._pos.x = xform->_pos.x;
-    twcen._transform._pos.y = xform->_pos.y + 0.5f * xform->_size.y;
-    twcen._transform._pos.z = xform->_pos.z + xform->_size.y + ELYSIAN_GUI_SYSTEM_EXAMINE_TEXT_OFFSET;
+    pragmata18._transform._pos.x = xform->_pos.x;
+    pragmata18._transform._pos.y = xform->_pos.y + 0.5f * xform->_size.y;
+    pragmata18._transform._pos.z = xform->_pos.z + xform->_size.y + ELYSIAN_GUI_SYSTEM_EXAMINE_TEXT_OFFSET;
 
-    twcen.setColor(color);
+    pragmata18.setColor(color);
 
     gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
     gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
-    twcen.drawString(Font::NO_FORMAT, Font::C_ALIGN, _examineEntity->getExaminable()->getDescription());
+    pragmata18.drawString(Font::NO_FORMAT, Font::C_ALIGN, _examineEntity->getExaminable()->getDescription());
 
 }
 
