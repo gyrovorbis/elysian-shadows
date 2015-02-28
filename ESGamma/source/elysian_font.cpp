@@ -12,7 +12,8 @@ bool Font::loadTextData(const char* const img_file, int sheet_width, int sheet_h
     Debug::printf(Debug::VERBOSE, "Font::Load(%s, %s)", img_file, width_file);
     Debug::push();
 
-    _transform.setSize(16.0f, 32.0f);
+    //_transform.setSize(16.0f, 32.0f);
+    _transform.setSize(sprite_width, sprite_height);
 
 	//CHECK IF TEXTURE IS EVER LOADED
 	if(!(_tex = gyVidTexCreateSheetUniform(img_file, sheet_width, sheet_height, sprite_width, sprite_height))) {
@@ -74,7 +75,8 @@ void Font::drawString(const FORMAT format, const ALIGNMENT align, const char *co
 	}
 	else if(align == R_ALIGN) {
 		for(i = 0; i < (int)strlen(buffer); ++i) {
-			temp += _charWidth[(int)buffer[i]]+2;
+            temp += _charWidth[(int)buffer[i]];
+            //temp += _charWidth[(int)buffer[i]]+2;
 		}
         currentX = (_transform._pos.x - temp - 16);
 	}
@@ -138,7 +140,8 @@ void Font::_renderChar(const FORMAT /*format*/, float &current_x, float &current
 			//if(camera == WITH_CAMERA) cameraSystem->RenderSprite(*this);
 			//else System::gyroVideo->RenderSprite(*this);
 
-			current_x += _charWidth[(int)str[i]]+2;
+            //current_x += _charWidth[(int)str[i]]+2;
+            current_x += _charWidth[(int)str[i]];
 			break;
 	}
 	//	}
@@ -150,7 +153,8 @@ unsigned int Font::getStringPixelWidth(const char *string) {
 	unsigned int pixels = 0;
 	unsigned int length = strlen(string);
 	for(unsigned i = 0; i < length; ++i) {
-		pixels += _charWidth[(int)string[i]]+2;
+        //pixels += _charWidth[(int)string[i]]+2;
+        pixels += _charWidth[(int)string[i]];
 	}
 	return pixels;
 }
