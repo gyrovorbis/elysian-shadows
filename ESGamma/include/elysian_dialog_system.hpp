@@ -107,7 +107,7 @@ namespace elysian {
 	   // unsigned getActiveScreenCount();
 		void	setEnabled(const bool val);
 		Dialog* getDialog(void) const;
-		bool isOpen(void) const;
+        bool    isOpen(void) const;
 
 
 

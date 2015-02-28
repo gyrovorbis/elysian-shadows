@@ -67,15 +67,12 @@ namespace elysian {
         //static LuaTable _staticMetaTable;
         //LuaTable        _protoTable;
 
-        void _onFieldAdded(const char*const key);
-        void _onFieldChanged(const char*const key);
-
         static inline void _callPropertyProxyMethod(const bool write, const char*const /*key*/) {
             LuaManager::_protectedCall(write? 2 : 1, write? 0 : 1, nullptr);
         }
 
         static inline void  _registerPropertyMetaMethodTables(lua_State* l) {
-			lua_getglobal(l, OOLUA::Proxy_class<T>::class_name);
+            LuaManager::getGlobal(OOLUA::Proxy_class<T>::class_name);
             //LuaManager::rPrintByIndex(-2, 99, OOLUA::Proxy_class<T>::class_name);
 
 			//Register property pairs for index table <K=field, V=getFunc>
@@ -360,8 +357,9 @@ namespace elysian {
 			lua_getfield(l, -1, "__newindex");
 			_ooluaNewIndexTable.pull(l);
 
+            LuaManager::_cStackDump();
             LuaTableProxy<P, T>::_addMetamethods(l);
-
+            LuaManager::_cStackDump();
             //Create a new __next metamethod for internal iteration
             //_propertyProxyIndexTable.push(l);
             //lua_setfield(l, -2, "__properties");
@@ -392,8 +390,8 @@ namespace elysian {
             lua_setfield(l, -2, "__ipairs");
 
             //Create a new __next metamethod for internal iteration
-            lua_pushcfunction(l, &_nextMetaMethodCFunction);
-            lua_setfield(l, -2, "__next");
+            //lua_pushcfunction(l, &_nextMetaMethodCFunction);
+            //lua_setfield(l, -2, "__next");
 
             lua_pushcfunction(l, &_lengthMetaMethodCFunction);
             lua_setfield(l, -2, "__len");
@@ -462,14 +460,6 @@ namespace elysian {
 
 	template <typename P, typename T>
     LuaTable LuaTableProxyBase<P, T>::_propertyProxyNewIndexTable;
-
-    template <typename P, typename T>
-    inline void LuaTableProxyBase<P,T>::_onFieldAdded(const char*const /*key*/) { }
-
-    template <typename P, typename T>
-    inline void LuaTableProxyBase<P,T>::_onFieldChanged(const char*const /*key*/) { }
-
-
 
 }
 

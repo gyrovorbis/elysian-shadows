@@ -45,6 +45,7 @@ namespace elysian {
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(name,               getName,                setName)
+            ELYSIAN_LUA_PROXY_FIELD(dispName,           getDispName,            setDispName)
             ELYSIAN_LUA_PROXY_FIELD(elev,               getElev,                setElev)
             ELYSIAN_LUA_PROXY_FIELD(planeType,          getPlaneType,           setPlaneType)
             ELYSIAN_LUA_PROXY_FIELD(shadowVolume,       isShadowVolume,         setShadowVolume)
@@ -77,8 +78,10 @@ namespace elysian {
         
         void                move(const GYVector2& dist);
         
-        void                setName(char const* const newName) { strcpy(_name, newName); }
-        const char*         getName(void) const { return _name; }
+        void                setName(const char* const newName);
+        const char*         getName(void) const;
+        void                setDispName(const char* const name);
+        const char*         getDispName(void) const;
 
         void                setTransform(const OOLUA::Lua_table_ref valTable);
 
@@ -169,6 +172,7 @@ namespace elysian {
 	protected:
 		
 		char _name[ELYSIAN_ENTITY_NAME_SIZE]		= ELYSIAN_ENTITY_NAME_DEFAULT;
+        char _dispName[ELYSIAN_ENTITY_NAME_SIZE]    = ELYSIAN_ENTITY_NAME_DEFAULT;
 		bool _componentActive[Component::MAX_TYPE]	= { false };
         
         std::map<char const *, Behavior*, ltstr> _behavior;
@@ -216,14 +220,18 @@ namespace elysian {
 
     //=========== INLINEZ =========
 
+    inline void EntityBase::setName(const char* const newName) { strcpy(_name, newName); }
+    inline const char* EntityBase::getName(void) const { return _name; }
+    inline void EntityBase::setDispName(const char* const name) { strcpy(_dispName, name); }
+    inline const char* EntityBase::getDispName(void) const { return _dispName; }
 
-        inline OOLUA::Lua_table_ref& EntityBase::getSelfTable(void) {
-			return _selfTable;
-		}
+    inline OOLUA::Lua_table_ref& EntityBase::getSelfTable(void) {
+        return _selfTable;
+    }
 
-        inline void EntityBase::setSelfTable(const OOLUA::Lua_table_ref self) {
-			_selfTable = self;
-		}
+    inline void EntityBase::setSelfTable(const OOLUA::Lua_table_ref self) {
+        _selfTable = self;
+    }
 
     inline void EntityBase::setElev(const unsigned char e) { _transform._pos.z = (float)e*32.0f; }
     inline unsigned char EntityBase::getElev(void) const { return _transform._pos.z/32.0f; }

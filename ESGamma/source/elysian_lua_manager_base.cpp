@@ -55,8 +55,8 @@ void LuaManagerBase::_showError(void) {
 void LuaManagerBase::rPrintByIndex(const int index, const unsigned depth, const char* name) {
     //int oldTop = lua_gettop(*_mainState);
     lua_pushvalue(*_mainState, index);							//push table to print
-	lua_getglobal(*_mainState, "rPrint");						//push function
-    lua_pushvalue(*_mainState, -2);							//push table to print
+    LuaManager::getGlobal("rPrint");                            //push function
+    lua_pushvalue(*_mainState, -2);                             //push table to print
 	if(depth) lua_pushnumber(*_mainState, depth);				//push depth if given
 	else lua_pushnil(*_mainState);								//push nil for default depth if not
 	lua_pushstring(*_mainState, name);							//push name of table
@@ -89,7 +89,7 @@ int LuaManagerBase::_traceBack(lua_State *L) {
 
 	if (!lua_isstring(L, 1))  /* 'message' not a string? */
 		return 1;  /* keep it intact */
-	lua_getglobal(L, "debug");
+    LuaManager::getGlobal("debug");
 	if (!lua_istable(L, -1)) {
 		lua_pop(L, 1);
 		return 1;
@@ -151,7 +151,7 @@ unsigned LuaManagerBase::_envDump(LuaScript *scr) {
         Debug::push();
 	}
 
-	lua_getglobal(*_mainState, "rPrint");
+    LuaManager::getGlobal("rPrint");
 	lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, scr->getEnvironRef());
 	lua_pushnil(*_mainState);
 	sprintf(envString, "_env[%d]", envCount-1);
@@ -294,7 +294,7 @@ bool LuaManagerBase::runScriptSandbox(const char *const file, LuaScript* const s
 		
 		lua_newtable(*_mainState);							//ENV
 		lua_newtable(*_mainState);							//metatable
-		lua_getglobal(*_mainState, "_G");					//globals table
+        LuaManager::getGlobal("_G");                        //globals table
 		lua_setfield(*_mainState, -2, "__index");			//metatable[__index] = _G;
 		lua_setmetatable(*_mainState, -2);					//setmetatable(ENV, metatable);
 		if(script) {

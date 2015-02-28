@@ -23,6 +23,9 @@
 #define ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_POOL_SIZE    30
 #define ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_LIFE         1.0f
 #define ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_GRAVITY		GYVector2 { 0.0f, 0.4f }
+#define ELYSIAN_GUI_SYSTEM_EXAMINE_TEXT_OFFSET      0.0f
+
+ELYSIAN_ASSET_TYPEDEF(Entity)
 
 namespace elysian {
 
@@ -44,15 +47,15 @@ namespace elysian {
 		GYColor4		_color		= { 255, 255, 255, 255 };
 		Font::ALIGNMENT _align		= Font::L_ALIGN;
 	public:
-		virtual ~MenuText(void)	override {}
+        virtual         ~MenuText(void)	override = default;
 
-		void setRelPos(const float x, const float y);
-		void setFontType(const unsigned type);
-		void setColor(const GYColor4 color);
-		void setAlignment(const Font::ALIGNMENT align);
-		void setText(const char*const text);
+        void            setRelPos(const float x, const float y);
+        void            setFontType(const unsigned type);
+        void            setColor(const GYColor4 color);
+        void            setAlignment(const Font::ALIGNMENT align);
+        void            setText(const char*const text);
 
-		virtual void recursiveRender(void) override;
+        virtual void    recursiveRender(void) override;
 	};
 
 	class MenuEntity: public MenuWidget, public Entity {
@@ -65,13 +68,13 @@ namespace elysian {
         SIZE_TYPE _sizeType				= SIZE_RELATIVE;
 
 	public:
-                MenuEntity(void);
-		virtual ~MenuEntity(void);
+                        MenuEntity(void);
+        virtual         ~MenuEntity(void);
 
-		void addChildWidget(MenuWidget*const widget);
-		void removeChildWidget(MenuWidget*const widget);
-		void setSizeType(const SIZE_TYPE type);
-		virtual void recursiveRender(void) override;
+        void            addChildWidget(MenuWidget*const widget);
+        void            removeChildWidget(MenuWidget*const widget);
+        void            setSizeType(const SIZE_TYPE type);
+        virtual void    recursiveRender(void) override;
 
 	};
 
@@ -89,16 +92,19 @@ namespace elysian {
 
 		Pool<CombatText>		_combatText;
 		static const GYVector2	_combatTextGravity;
-		bool					_debugOverlayEnabled			= false;
+        bool					_debugOverlayEnabled	= false;
 
-		unsigned int _projWidth, _projHeight;
+        unsigned int            _projWidth;
+        unsigned int            _projHeight;
 
-		MenuWidget* _fgMenuWidget = nullptr;
-		MenuWidget*	_bgMenuWidget = nullptr;
-
+        MenuWidget*             _fgMenuWidget           = nullptr;
+        MenuWidget*             _bgMenuWidget           = nullptr;
+        const Entity*           _examineEntity          = nullptr;
 
 		void _printDebugLine(const char*title, const char*str, ...);
 		void _renderDebugOverlay(void);
+        void _renderCombatText(void);
+        void _renderExamineEntity(void);
 		void _renderMenuWidget(MenuWidget* widget);
 	public:
 
@@ -126,10 +132,13 @@ namespace elysian {
 
         void setAdvLogEnabled(const bool val);
 
-		AdventureLog	adventureLog;
-		Font			verdana;
-		Font			twcen;
+        void            setExamineEntity(const Entity* const entity);
+        const Entity*   getExamineEntity(void) const;
+
+        Font			verdana;
+        Font			twcen;
         Font            pragmata18;
+		AdventureLog	adventureLog;
 
 	};
 
@@ -148,8 +157,9 @@ namespace elysian {
 	inline void MenuEntity::setSizeType(const SIZE_TYPE type) { _sizeType = type; }
 	inline void MenuEntity::removeChildWidget(MenuWidget*const widget) { _childWidgets.removeEntry(widget); }
 
+    inline void GuiSystem::setExamineEntity(const Entity * const entity) { _examineEntity = entity; }
+    inline const Entity* GuiSystem::getExamineEntity(void) const { return _examineEntity; }
 	inline void GuiSystem::setDebugOverLayEnabled(const bool enabled) { _debugOverlayEnabled = enabled; }
-
 	inline void GuiSystem::setFgMenuWidget(MenuWidget * const widget) { _fgMenuWidget = widget; }
 	inline void GuiSystem::clearFgMenuWidget(void) { _fgMenuWidget = nullptr; }
 	inline void GuiSystem::setBgMenuWidget(MenuWidget * const widget) { _bgMenuWidget = widget; }

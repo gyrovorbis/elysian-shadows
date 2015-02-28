@@ -19,6 +19,7 @@ public:
 
     static void initialize(void);
     static bool getMetatable(const int index);
+    //static void getGlobal(const char*const key);
 };
 
 
@@ -27,11 +28,19 @@ public:
 
 
 // ===== INLINEZ ========
+/*
+inline void TkLuaManager::getGlobal(const char * const key) {
+    lua_pushglobaltable(*_mainState);
+    lua_pushstring(*_mainState, key);
+    lua_gettable(*_mainState, -2);
+    lua_remove(*_mainState, -2);
+}*/
+
 
 /* We have to call the function from Lua, because
  * it has been overridden to respect Tk proxy metatables. */
 inline bool TkLuaManager::getMetatable(const int index) {
-    lua_getglobal(*_mainState, "getmetatable");
+    getGlobal("getmetatable");
     lua_pushvalue(*_mainState, index < 0? index-1 : index);
     _protectedCall(1, 1, nullptr);
 

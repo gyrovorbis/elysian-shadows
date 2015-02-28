@@ -20,11 +20,11 @@ namespace elysian {
 	private:
 		char _text[ELYSIAN_DIALOG_SCREEN_TEXT_BUFFER_SIZE];
 		GYVector2		_pos;
-		Entity*			_srcEntity	= nullptr; //array later
+        Entity*			_srcEntity      = nullptr; //array later
 		//BUBBLE_TYPE		_bubbleType	= BUBBLE_SPEECH;
 		SCREEN_TYPE		_screenType;
-		int				_index		= -1;
-		bool			_trigger	= false;
+        int				_index          = -1;
+        bool			_trigger        = false;
 
 	protected:
 					DialogScreen(const SCREEN_TYPE scrType, const char*const text);
@@ -85,8 +85,9 @@ namespace elysian {
 
 	class Dialog {
 	private:
-		Entity*						_triggerEntity = nullptr;
 		std::vector<DialogScreen*>	_screens;
+        Entity*						_triggerEntity  = nullptr;
+        int                         _startScreen    = 0;
 
 	public:
 						~Dialog(void);
@@ -96,6 +97,8 @@ namespace elysian {
 		DialogScreen*	getScreen(const unsigned index) const;
 		void			setTriggerEntity(Entity*const entity);
 		Entity*			getTriggerEntity(void) const;
+        int             getStartScreen(void) const;
+        void            setStartScreen(const int index);
 	};
 
 
@@ -121,6 +124,8 @@ namespace elysian {
 	inline int DialogPrompt::getOptionNextIndex(const unsigned index) const { return _options[index].nextIndex; }
 
 	//==== DIALOG INLINEZ =====
+    inline int Dialog::getStartScreen(void) const { return _startScreen; }
+    inline void Dialog::setStartScreen(const int index) { _startScreen = index; }
 	inline unsigned Dialog::getScreenCount(void) const { return _screens.size(); }
 	inline DialogScreen* Dialog::getScreen(const unsigned index) const { return _screens[index]; }
 	inline void Dialog::setTriggerEntity(Entity * const entity) { _triggerEntity = entity; }

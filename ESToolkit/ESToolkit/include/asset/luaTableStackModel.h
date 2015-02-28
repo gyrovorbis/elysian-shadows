@@ -115,6 +115,8 @@ public:
 
         using namespace elysian;
         using elysian::Debug;
+        bool iterable = false;
+        bool metatable = false;
 
       //  elysian::Debug::printf(elysian::Debug::VERBOSE, "_addTableFields(%d)", tableRef);
         //elysian::Debug::push();
@@ -122,31 +124,52 @@ public:
         //Helper lambda function for uniform iteration over tables and userdata
 
         lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
+        _luaType = lua_type(*_mainState, -1);
 
         //add metatable
+
         LuaManager::_stackBalanceBegin();
-        if(getMetatable(-1)) {
+        if((metatable = getMetatable(-1))) {
             int metaRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
             auto* label = new QStandardItem("__metatable");
             auto* valueItem = new LuaTableItem(metaRef, label);
             stackModel->addRow(label, valueItem);
         }
         LuaManager::_stackBalanceEnd();
+        LuaManager::_cStackDump();
 
-        _luaType = lua_type(*_mainState, -1);
         //Check if userdata is iterable
 
         //elysian::Debug::printf(elysian::Debug::VERBOSE, "isUserdata - %d", isUserdata);
-        if(_luaType == LUA_TUSERDATA) {
-            //check if iterable and shit
+        if(_luaType == LUA_TUSERDATA && metatable) {
+            getMetatable(-1);
+            lua_getfield(*_mainState, -1, "__connectSignals");
+            if(!lua_isnil(*_mainState, -1)) {
+                lua_pushvalue(*_mainState, -3);
+                lua_pushlightuserdata(*_mainState, static_cast<QObject*>(this));
+                _protectedCall(2, 0, nullptr);
+                iterable = true;
+            } else {
+                iterable = false;
+                lua_pop(*_mainState, 1); //pop nil
+            }
+            lua_pop(*_mainState, 1); //pop metatable
 
-        } else {
+        } else if(_luaType == LUA_TTABLE) {
+            iterable = true;
             auto* ud = TkLuaTableUserdata::inject(*_mainState, _luaRef);
             connect(ud, SIGNAL(fieldChanged(QString)), this, SLOT(onFieldChanged(QString)));
+
+        //userdata with no metatable
+        } else iterable = false;
+
+        if(!iterable) {
+            stackModel->popItem();
+            lua_pop(*_mainState, 1);
+            return;
         }
 
-
-        lua_getglobal(*_mainState, "pairs");
+        getGlobal("pairs");
         lua_pushvalue(*_mainState, -2);
         _protectedCall(1, 3, nullptr);
         lua_pushvalue(*_mainState, -3);

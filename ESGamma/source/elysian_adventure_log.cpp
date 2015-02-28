@@ -3,6 +3,7 @@
 #include "elysian_timer_system.hpp"
 #include "elysian_quad_sprite.hpp"
 #include "elysian_font.hpp"
+#include "elysian_gui_system.hpp"
 #include <string.h>
 #include <stdint.h>
 
@@ -16,6 +17,7 @@ const float AdventureLog::_exitFadeTime = 1.0f;
  is handled here: Full log and string is too big for a single line.
  */
 void AdventureLog::addLine(const TEXT_TYPE lineType, const char *line) {
+    getGuiSys()->getResolution(_scrW, _scrH);
     if(_endIndex == ELYSIAN_ADV_LOG_LINES-1) { //The entire log is COMPLETELY full. Problem.
 		
         //Manually add this to the beginning to prevent bitchy recursion:
@@ -62,6 +64,7 @@ void AdventureLog::addLine(const TEXT_TYPE lineType, const char *line) {
  */
 void AdventureLog::update(void) {
 	if(_exitState == EXIT_DISABLED) return;
+    getGuiSys()->getResolution(_scrW, _scrH);
 
 	float deltaTime = getTimerSys()->getDeltaTime();
 	
@@ -125,28 +128,30 @@ void AdventureLog::update(void) {
  yOffset is used to move everything up and resize the box when the top line
  disappears. Depending on "type[index]" is which color the text is rendered as.
  */
-void AdventureLog::render(Font &font) {
+void AdventureLog::render(void) {
 	if(_exitState == EXIT_DISABLED) return;
-	
+    char curLine[ELYSIAN_ADV_LOG_CHARS_PER_LINE];
+
     gyVidAlphaLevel(GY_ALPHA_FULL);
 
 	static QuadSprite quad;
-	static GYColor4 topColor = { 0, 0, 255, 255 };
-	static GYColor4 bottomColor = { 0, 155, 255, 255 };
+    static GYColor4 topColor = { 200, 200, 200, 255 };
+    static GYColor4 bottomColor = { 200, 200, 200, 255 };
 	static GYColor4 canvasColor = { 0, 0, 0, 0 };
     
     gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
+    gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
 
     //Draw Canvas for log strings
-    quad._transform.setPos(ELYSIAN_ADV_LOG_X, ELYSIAN_ADV_LOG_Y+11+0.5f*(22*(_endIndex-_startIndex+1)-_yOffset-22), ELYSIAN_ADV_LOG_Z);
-    quad._transform.setSize(430.0f, 22.0f*(_endIndex-_startIndex+1)-_yOffset-22.0f);
+    quad._transform.setPos(0.6f*(float)_scrW*0.5f, ELYSIAN_ADV_LOG_Y+11+0.5f*(22*(_endIndex-_startIndex+1)-_yOffset-26), ELYSIAN_ADV_LOG_Z);
+    quad._transform.setSize(0.6f*(float)_scrW, 22.0f*(_endIndex-_startIndex+1)-_yOffset-22.0f);
 	for(unsigned i = 0; i < 4; ++i) quad.setVertexColor(i, canvasColor.r, canvasColor.g, canvasColor.b, canvasColor.a);
-	quad.setVerticesAlpha(0.8f*_baseAlpha*255.0f, 0.8f*_baseAlpha*255.0f, 0.3f*_baseAlpha*255.0f, 0.3f*_baseAlpha*255.0f);
+    quad.setVerticesAlpha(0.4f*_baseAlpha*255.0f, 0.0f*_baseAlpha*255.0f, 0.0f*_baseAlpha*255.0f, 0.0f*_baseAlpha*255.0f);
     quad.render();
 	//renderer.drawTransparentQuad(ADV_LOG_X, ADV_LOG_Y+22, ADV_LOG_Z+1, 430, 22*(endIndex-startIndex+1)+yOffset-22, 0.8f, 0, 0, 0, 0.8f, 0, 0, 0, 0.3f, 0, 0, 0, 0.3f, 0, 0, 0);
     
-	const float X_COORD		= 210;//ADV_LOG_X + 10;		//x coordinate to draw the string at (doesn't change between lines)
-	const float Y_COORD1	= ELYSIAN_ADV_LOG_Y + 22 - _yOffset + 8;	//this is the *PART* of the y coord that doesn't change between lines
+    const float X_COORD		= 30;//ADV_LOG_X + 10;		//x coordinate to draw the string at (doesn't change between lines)
+    const float Y_COORD1	= ELYSIAN_ADV_LOG_Y + 22 - _yOffset + 4;	//this is the *PART* of the y coord that doesn't change between lines
 	const float Z_COORD		= ELYSIAN_ADV_LOG_Z + 1;		//same...z
 	
 	int yCoord2;	//this is the part of the y coord that changes depending on the line
@@ -184,18 +189,23 @@ void AdventureLog::render(Font &font) {
 				break;
 		}
 		
-        font._transform.setPos(X_COORD, Y_COORD1+ yCoord2, Z_COORD);
-		font.setColor(r, g, b, 255);
+        _textFont->_transform.setPos(X_COORD, Y_COORD1+ yCoord2, Z_COORD);
+        _textFont->setColor(r, g, b, 255);
 		if(i == _startIndex) {
 			float tempAlpha = 1.0f - _fadeCounter;	
-			font.setAlpha(tempAlpha*_baseAlpha*255.0f);
+            _textFont->setAlpha(tempAlpha*_baseAlpha*255.0f);
 		}
-		else font.setAlpha(_baseAlpha*255.0f);
-        font.drawString(Font::NO_FORMAT, Font::L_ALIGN, _log[i]);
+        else _textFont->setAlpha(_baseAlpha*255.0f);
+
+        const unsigned length = _textFont->stringLengthWithinWidth(_log[i], _scrW*0.6f-20.0f);
+        strncpy(curLine, _log[i], length);
+        curLine[length] = 0;
+
+        _textFont->drawString(Font::NO_FORMAT, Font::L_ALIGN, curLine);
     }
     
-    quad._transform.setPos(ELYSIAN_ADV_LOG_X, ELYSIAN_ADV_LOG_Y, ELYSIAN_ADV_LOG_Z+2);
-    quad._transform.setSize(ELYSIAN_ADV_LOG_W, ELYSIAN_ADV_LOG_H /3.0f );
+    quad._transform.setPos(0.6f*(float)_scrW*0.5f, ELYSIAN_ADV_LOG_Y+9, ELYSIAN_ADV_LOG_Z+2);
+    quad._transform.setSize(0.6f*_scrW, 1.0f );
 	quad.setVertexColor(0, topColor.r, topColor.g, topColor.b, topColor.a); quad.setVertexColor(1, topColor.r, topColor.g, topColor.b, topColor.a);
 	quad.setVertexColor(3, bottomColor.r, bottomColor.g, bottomColor.b, bottomColor.a); quad.setVertexColor(2, bottomColor.r, bottomColor.g, bottomColor.b, bottomColor.a);
 	//quad.setColorVertical(0.0f, 0.0f, 1.0f, 0.0f, 0.7f, 1.0f);
@@ -205,11 +215,11 @@ void AdventureLog::render(Font &font) {
     //renderer.drawTransparentQuad(ADV_LOG_X, ADV_LOG_Y, ADV_LOG_Z+2, 430, 22, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	//font.setPosition(ADV_LOG_X+15, ADV_LOG_Y);
 	//font.setAlpha(1.0f, 1.0f,1.0f, 1.0f);
-    font._transform.setPos(225, ELYSIAN_ADV_LOG_Y+7, ELYSIAN_ADV_LOG_Z+3);
+    _labelFont->_transform.setPos(20, ELYSIAN_ADV_LOG_Y+6, ELYSIAN_ADV_LOG_Z+3);
 	//font.setAlpha(_baseAlpha);
-	font.setColor(255, 255, 255, 255);
-	font.setAlpha(_baseAlpha*255.0);
-	font.drawString(Font::NO_FORMAT, Font::L_ALIGN, "Adventure Log");
+    _labelFont->setColor(255, 255, 255, 255);
+    _labelFont->setAlpha(_baseAlpha*255.0);
+    _labelFont->drawString(Font::NO_FORMAT, Font::L_ALIGN, "ADVENTURE LOG");
 	//font.DrawString(0, ADV_LOG_X+15, ADV_LOG_Y, ADV_LOG_Z+3, 1, 1, 1, L_ALIGN, "Adventure Log");
 }
 

@@ -248,7 +248,8 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
                        setParticleEmitter,
                        setCombat,
                        setExaminable,
-                       setPersistent)
+                       setPersistent,
+                       setDispName)
 
 
 OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
@@ -270,7 +271,8 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
                                 isShadowVolume,
 								getPlaneType,
                                 getShadowDepth,
-                                isPersistent)
+                                isPersistent,
+                                getDispName)
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(PrimAttrib)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(PrimAttrib)
@@ -580,7 +582,8 @@ OOLUA_EXPORT_FUNCTIONS_CONST(DialogPrompt)
 OOLUA_EXPORT_FUNCTIONS(Dialog,
 					   addTextScreen,
 					   addPromptScreen,
-					   setTriggerEntity)
+                       setTriggerEntity,
+                       setStartScreen)
 OOLUA_EXPORT_FUNCTIONS_CONST(Dialog)
 
 OOLUA_EXPORT_FUNCTIONS(Examinable,

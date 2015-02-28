@@ -4,7 +4,9 @@
 #include "elysian_lua_table_proxy_base.hpp"
 #include  <QObject>
 
-#define TK_LUA_TABLE_USERDATA_FIELD_KEY     "__tkUd"
+#define TK_LUA_TABLE_USERDATA_FIELD_KEY         "__tkUd"
+#define TK_LUA_TABLE_METAMETHODSET_FIELD_KEY    "__metaset"
+#define TK_LUA_TABLE_PROPERTY_TABLE_FIELD_KEY   "__prop"
 
 
 /*
@@ -15,23 +17,22 @@ class TkLuaTableUserdata: public QObject {
     Q_OBJECT
 
 private:
-    lua_State*  _lvm;
-    int         _proxyRef   = LUA_NOREF;
-    int         _propRef    = LUA_NOREF;
-    int         _origRef    = LUA_NOREF;
+    int                 _propRef    = LUA_NOREF;
+    int                 _origRef    = LUA_NOREF;
+
+    static int          _metaRef;
+    static lua_State*   _lvm;
 signals:
     //Notifies Qt's GUI models to update when Lua table fields change
     void    fieldChanged(const QString key) const;
     void    fieldAdded(const QString key) const;
 
 public:
-            TkLuaTableUserdata(lua_State*const state);
+            TkLuaTableUserdata(void);
     virtual ~TkLuaTableUserdata(void);
     void    emitFieldChanged(const QString key) const;
     void    emitFieldAdded(const QString key) const;
 
-    void    setProxyRef(const int ref);
-    int     getProxyRef(void) const;
     void    setOrigRef(const int ref);
     int     getOrigRef(void) const;
     void    setPropRef(const int ref);
@@ -41,6 +42,9 @@ public:
     static TkLuaTableUserdata*  inject(lua_State*const l, const int luaRef);
     //static bool                 hasTkUserdata(OOLUA::Lua_table_ref& ref);
 
+private:
+    static void                 _createMetatable(lua_State*const l);
+
     //metamethods
     static int                  _gcMetamethod(lua_State*const l);
     static int                  _indexMetamethod(lua_State*const l);
@@ -49,6 +53,7 @@ public:
     static int                  _ipairsMetamethod(lua_State*const l);
     static int                  _nextMetamethod(lua_State*const l);
     static int                  _lengthMetamethod(lua_State*const l);
+    static int                  _metamethodSetMetamethod(lua_State* const l);
 };
 
 
@@ -85,19 +90,15 @@ class TkLuaTableProxy:
     typedef elysian::LuaTableProxyBase<P, T> ParentType;
     friend ParentType;
 protected:
-    using               elysian::LuaManager::_mainState;
-    mutable int         _luaRef = LUA_NOREF;
+    using                       elysian::LuaManager::_mainState;
+    mutable int                 _luaRef = LUA_NOREF;
 
     //CRTP overridden from engine
-    void        _onFieldAdded(const char*const key);
-    void        _onFieldChanged(const char*const key);
-
     static void _callPropertyProxyMethod(const bool write, const char*const key);
     static void _addMetamethods(lua_State* l);
 
     //Tk-Specific metamethods
     static int  _connectSignals(lua_State* l);
-
 
 public:
 
@@ -110,25 +111,24 @@ public:
 };
 
 
+
+
+
+
+
+
+
+
 // ======== INLINEZ ======
 
-inline void TkLuaTableUserdata::setProxyRef(const int ref) { _proxyRef = ref; }
 inline void TkLuaTableUserdata::setOrigRef(const int ref) { _origRef = ref; }
 inline void TkLuaTableUserdata::setPropRef(const int ref) { _propRef = ref; }
 inline int TkLuaTableUserdata::getOrigRef(void) const { return _origRef; }
-inline int TkLuaTableUserdata::getProxyRef(void) const { return _proxyRef; }
 inline int TkLuaTableUserdata::getPropRef(void) const { return _propRef; }
-inline TkLuaTableUserdata::TkLuaTableUserdata(lua_State * const state): QObject(nullptr), _lvm(state) {}
+inline TkLuaTableUserdata::TkLuaTableUserdata(void): QObject(nullptr) {}
 inline void TkLuaTableUserdata::emitFieldAdded(const QString key) const { emit fieldAdded(key); }
 inline void TkLuaTableUserdata::emitFieldChanged(const QString key) const { emit fieldChanged(key); }
 
-
-
-template <typename P, typename T>
-inline void TkLuaTableProxy<P, T>::_onFieldAdded(const char*const key) { emit fieldAdded(key); }
-
-template <typename P, typename T>
-inline void TkLuaTableProxy<P, T>::_onFieldChanged(const char*const key) { emit fieldChanged(key); }
 
 template <typename P, typename T>
 inline void TkLuaTableProxy<P, T>::_callPropertyProxyMethod(const bool write, const char*const key) {
@@ -140,13 +140,14 @@ inline void TkLuaTableProxy<P, T>::_callPropertyProxyMethod(const bool write, co
     }
     ParentType::_callPropertyProxyMethod(write, key);
     if(write) {
-        static_cast<TkLuaTableProxyQObject*>(static_cast<P*>(obj))->emitFieldChanged(key);
+        obj->emitFieldChanged(key);
     }
 }
 
 /* Crazy-ass assignment operator to copy assign all internal object data MINUS inherited QObject data,
  * because Qt explicitly deleted its assignment operator and will shit itself.
  */
+
 template<typename P, typename T>
 inline const TkLuaTableProxy<P, T>& TkLuaTableProxy<P,T>::operator=(const TkLuaTableProxy<P, T>& rhs) {
     *static_cast<ParentType*>(this) = *static_cast<const ParentType*>(&rhs);
@@ -179,8 +180,9 @@ inline int TkLuaTableProxy<P, T>::_connectSignals(lua_State *l) {
 
     T* thisPtr;
     OOLUA::pull(l, thisPtr);
-    const auto* thisQObj = static_cast<TkLuaTableProxyQObject*>(static_cast<P*>(thisPtr));
-    assert(thisQObj);
+    assert(thisPtr);
+
+    auto* thisQObj = static_cast<QObject*>(thisPtr);
 
     connect(thisQObj, SIGNAL(fieldChanged(QString)), tableItem, SLOT(onFieldChanged(QString)));
 
@@ -195,5 +197,6 @@ inline void TkLuaTableProxy<P, T>::_addMetamethods(lua_State *l) {
 
     ParentType::_addMetamethods(l);
 }
+
 
 #endif // TK_LUA_TABLE_PROXY_H

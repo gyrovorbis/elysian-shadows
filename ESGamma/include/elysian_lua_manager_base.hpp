@@ -162,6 +162,7 @@ namespace elysian {
         static void					rPrintByRef(const int ref, const unsigned depth, const char* name);
 
         static bool                 getMetatable(const int index);
+        static void                 getGlobal(const char*const key);
 
 	};
 
@@ -183,9 +184,14 @@ namespace elysian {
                     Debug::pop();
                 //    --_traceBackDbgPushes;
                // }
+            } else {
+                _showError();
+                _cStackDump();
+                dumpStats();
             }
 		} else {
-            if(script) lua_remove(*_mainState, 1); //remove c traceback function from bottom of stack
+            if(script)
+                lua_remove(*_mainState, 1); //remove c traceback function from bottom of stack
 		}
 #else	//ain't NOBODY got time for debug overhead!
 		lua_call(*_mainState, nargs, nresults);
@@ -223,6 +229,10 @@ namespace elysian {
 
     inline bool LuaManagerBase::getMetatable(const int index) {
         return (bool)lua_getmetatable(*_mainState, index);
+    }
+
+    inline void LuaManagerBase::getGlobal(const char * const key) {
+        lua_getglobal(*_mainState, key);
     }
 
 }

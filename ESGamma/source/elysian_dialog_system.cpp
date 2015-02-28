@@ -77,8 +77,12 @@ bool DialogSystem::loadAssets(void) {
 //MAKE THESE POSITIONS RELATIVE
 void DialogSystem::render(void) {
 	char buffer[ELYSIAN_DIALOG_PROMPT_OPTION_TEXT_BUFFER_SIZE];
+    unsigned width, height;
 
 	if(!_curDialog) return;
+
+    getGuiSys()->getResolution(width, height);
+    _mainCanvas._transform._pos.x = width*0.5f;
 
     GYVector3 basePos = _mainCanvas._transform._pos;
 

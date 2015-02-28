@@ -44,8 +44,12 @@ bool Font::_loadCharacterWidths(const char *width_file) {
 	if (!gyFileRead(file, buffer, buffer_len, NULL)) {
 		return false;
 	}
-	for(int i = 0; i < 128; ++i) {
-		sscanf(ptr, "%hd%n", &_charWidth[i], &ptr_inc);
+
+    sscanf(ptr, "%hd%n", &_spacing, &ptr_inc);
+    ptr += ptr_inc;
+
+    for(int i = 1; i < 129; ++i) {
+        sscanf(ptr, "%hd%n", &_charWidth[i-1], &ptr_inc);
 		ptr += ptr_inc;
 	}
 	free(buffer);
@@ -70,11 +74,11 @@ void Font::drawString(const FORMAT format, const ALIGNMENT align, const char *co
 
 	if(align == C_ALIGN) {
 		temp = getStringPixelWidth(buffer);
-        currentX = (_transform._pos.x - (temp/2)-8);
+        currentX = (_transform._pos.x - (temp/2.0f));
 	}
 	else if(align == R_ALIGN) {
 		for(i = 0; i < (int)strlen(buffer); ++i) {
-			temp += _charWidth[(int)buffer[i]]+2;
+            temp += _charWidth[(int)buffer[i]]+_spacing;
 		}
         currentX = (_transform._pos.x - temp - 16);
 	}
@@ -138,7 +142,7 @@ void Font::_renderChar(const FORMAT /*format*/, float &current_x, float &current
 			//if(camera == WITH_CAMERA) cameraSystem->RenderSprite(*this);
 			//else System::gyroVideo->RenderSprite(*this);
 
-			current_x += _charWidth[(int)str[i]]+2;
+            current_x += _charWidth[(int)str[i]]+_spacing;
 			break;
 	}
 	//	}
@@ -150,7 +154,7 @@ unsigned int Font::getStringPixelWidth(const char *string) {
 	unsigned int pixels = 0;
 	unsigned int length = strlen(string);
 	for(unsigned i = 0; i < length; ++i) {
-		pixels += _charWidth[(int)string[i]]+2;
+        pixels += _charWidth[(int)string[i]]+_spacing;
 	}
 	return pixels;
 }

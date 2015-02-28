@@ -6,6 +6,9 @@
 #include "elysian_asset_typedefs.hpp"
 #include "elysian_lua_table_proxy.hpp"
 
+#define ELYSIAN_EXAMINABLE_DESC_LENGTH    50
+#define ELYSIAN_EXAMINABLE_DESC_DEFAULT   "No Description"
+
 ELYSIAN_ASSET_TYPEDEF(Entity)
 
 namespace elysian {
@@ -17,11 +20,14 @@ namespace elysian {
         public LuaTableProxy<Examinable>
     {
 	private:
+        char            _description[ELYSIAN_EXAMINABLE_DESC_LENGTH]
+                                            = ELYSIAN_EXAMINABLE_DESC_DEFAULT;
 		Dialog*			_dialog				= nullptr;
 		bool			_isDialogActive		= false;
 		bool			_enabled			= false;
 		float			_maxDist			= 48.0f;
 		Direction::DIR4 _dir				= Direction::DIR4_ANY;
+        bool            _hasDesc            = true;
 
 	public:
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
@@ -46,12 +52,25 @@ namespace elysian {
 		bool			isEnabled(void) const;
 		void			setRelativeDir(const Direction::DIR4 dir);
 		Direction::DIR4	getRelativeDir(void);
+        const char*     getDescription(void) const;
+        void            setDescription(const char* desc);
+        bool            hasDescription(void) const;
+        void            setHasDescription(const bool val);
 	};
+
+
+
+
+
 
 	// ====== INLINEZ =======
 
 
 	inline Examinable::Examinable(Entity& parent): Component(parent) {}
+    inline const char* Examinable::getDescription(void) const { return _description; }
+    inline void Examinable::setDescription(const char *desc) { strcpy(_description, desc); }
+    inline bool Examinable::hasDescription(void) const { return _hasDesc; }
+    inline void Examinable::setHasDescription(const bool val) { _hasDesc = val; }
 	inline Dialog* Examinable::getDialog(void) const { return _dialog; }
 	inline bool Examinable::isDialogActive(void) const { return _isDialogActive; }
 	inline void Examinable::setEnabled(const bool en) { _enabled = en; }

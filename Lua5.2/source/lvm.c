@@ -162,7 +162,7 @@ void luaV_settable (lua_State *L, const TValue *t, TValue *key, StkId val) {
             if(keyStr[0] == '_' && keyStr[1] == '_') {
                 static TString* metaStr = NULL;
                 if(!metaStr) {
-                    metaStr = luaS_new(L, "__metamethodset");
+                    metaStr = luaS_new(L, "__metaset");
                 }
 
                 //tm = luaT_gettmbyobj(L, t, TM_NEWINDEX);

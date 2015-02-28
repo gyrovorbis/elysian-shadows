@@ -137,7 +137,7 @@ bool TileSelection<T>::isWithinSelection(const int x, const int y, const QPointF
     int selX = x;
     int selY = y;
 	if(!mousePos.isNull()) _mapToSelectionCoords(x, y, mousePos, selX, selY);
-    return (selX >= _width || selY >= _height || selY < 0 || selX < 0)? false : _inSelection[selY][selX];
+    return (selX >= (int)_width || selY >= (int)_height || selY < 0 || selX < 0)? false : _inSelection[selY][selX];
 }
 
 template<typename T>

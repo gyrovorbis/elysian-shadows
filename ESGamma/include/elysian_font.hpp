@@ -3,6 +3,9 @@
 
 #include "elysian_sprite.hpp"
 
+#define ELYSIAN_FONT_SPACING_DEFAULT    2
+
+
 namespace elysian {
 
 	class Font: public Sprite {
@@ -15,6 +18,7 @@ namespace elysian {
 		void drawString(const FORMAT format, const ALIGNMENT align, const char *str);
 
 		unsigned int getStringPixelWidth(const char *string);
+        unsigned int stringLengthWithinWidth(const char*string, unsigned int width);
 		
 		void drawStringf(const FORMAT format, const ALIGNMENT align, const char *str, ...);
 
@@ -24,6 +28,7 @@ namespace elysian {
 		//virtual void render(void); //we can reimplement this with a stored string for RenderableObject polymorphic compatability
 	private:
 
+        unsigned short _spacing = ELYSIAN_FONT_SPACING_DEFAULT;
 		bool _batching = false;
 		bool _loadCharacterWidths(const char *const widthFile);
 		unsigned short _charWidth[128];
@@ -31,6 +36,11 @@ namespace elysian {
 		void _renderChar(const FORMAT format, float &curX, float &curY, const char *const str, int &i);
 		
 	};
+
+
+
+
+
 
 
 	// ====== INLINEZ =====
@@ -48,6 +58,19 @@ namespace elysian {
 		_batching = false;
 		gyVidQuadListEnd();
 	}
+
+    inline unsigned int Font::stringLengthWithinWidth(const char *const string, const unsigned int width) {
+        unsigned curWidth = 0;
+        unsigned curIndex = 0;
+        unsigned length = strlen(string);
+
+        while(curWidth < width && curIndex < length) {
+            ++curIndex;
+            curWidth += _charWidth[(int)string[curIndex]] + _spacing;
+        }
+
+        return curIndex;
+    }
 }
 
 #endif

@@ -10,6 +10,7 @@
 #include "elysian_light_system.hpp"
 #include "elysian_rigid_body_system.hpp"
 #include "elysian_rigid_body.hpp"
+#include "elysian_examinable.hpp"
 
 namespace elysian {
 
@@ -86,6 +87,9 @@ bool GuiSystem::loadAssets(void) {
 
 	gyVidResolution(&_projWidth, &_projHeight);
 
+    adventureLog.setLabelFont(&verdana);
+    adventureLog.setTextFont(&twcen);
+
     Debug::pop();
 	return success;
 }
@@ -117,7 +121,7 @@ void GuiSystem::renderBackground(void) {
 
 void GuiSystem::renderForeground(void) {
 	//if(!_debugOverlayEnabled) return;
-    adventureLog.render(twcen);
+    adventureLog.render();
 	_renderDebugOverlay();
 	_renderMenuWidget(_fgMenuWidget);
 }
@@ -177,18 +181,22 @@ void GuiSystem::_renderDebugOverlay(void) {
 
 }
 
-
-void GuiSystem::render(void) {
-	for(auto it = _combatText.begin(); it < _combatText.end(); ++it) {
+void GuiSystem::_renderCombatText(void) {
+    for(auto it = _combatText.begin(); it < _combatText.end(); ++it) {
         twcen._transform._pos.x = (*it).pos.x;
         twcen._transform._pos.y = (*it).pos.y;
         twcen._transform._pos.z = 50.0f;
 
-		twcen.setColor((*it).color);
-		twcen.setAlpha((*it).color.a);
+        twcen.setColor((*it).color);
+        twcen.setAlpha((*it).color.a);
 
-		twcen.drawString(Font::NO_FORMAT, Font::L_ALIGN, (*it).text);
-	}
+        twcen.drawString(Font::NO_FORMAT, Font::L_ALIGN, (*it).text);
+    }
+}
+
+void GuiSystem::render(void) {
+    _renderCombatText();
+    _renderExamineEntity();
 }
 
 void GuiSystem::addCombatText(const char*const text, const GYColor4 color, const GYVector2& pos, const GYVector2& vel) {
@@ -218,8 +226,22 @@ void GuiSystem::_renderMenuWidget(MenuWidget* widget) {
 
 }
 
+void GuiSystem::_renderExamineEntity(void) {
+    if(!_examineEntity) return;
+    const InstanceTransform* xform = &_examineEntity->_transform;
 
+    const GYColor4 color = { 255, 255, 255, 255 };
+    twcen._transform._pos.x = xform->_pos.x;
+    twcen._transform._pos.y = xform->_pos.y + 0.5f * xform->_size.y;
+    twcen._transform._pos.z = xform->_pos.z + xform->_size.y + ELYSIAN_GUI_SYSTEM_EXAMINE_TEXT_OFFSET;
 
+    twcen.setColor(color);
+
+    gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
+    gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
+    twcen.drawString(Font::NO_FORMAT, Font::C_ALIGN, _examineEntity->getExaminable()->getDescription());
+
+}
 
 
 }

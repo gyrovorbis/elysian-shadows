@@ -382,6 +382,8 @@ OOLUA_PROXY(Entity, RenderableObject)
     OOLUA_MEM_FUNC(void, setParticleEmitter, const OOLUA::Lua_table_ref)
     OOLUA_MEM_FUNC(void, setPersistent, const bool)
     OOLUA_MEM_FUNC_CONST(bool, isPersistent)
+    OOLUA_MEM_FUNC_CONST(const char*, getDispName)
+    OOLUA_MEM_FUNC(void, setDispName, const char*)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Component)
@@ -794,6 +796,7 @@ OOLUA_PROXY(Dialog)
 	OOLUA_MEM_FUNC(DialogText*, addTextScreen, const char*)
 	OOLUA_MEM_FUNC(DialogPrompt*, addPromptScreen, const char*)
 	OOLUA_MEM_FUNC(void, setTriggerEntity, Entity*)
+    OOLUA_MEM_FUNC(void, setStartScreen, const int)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Examinable, Component)

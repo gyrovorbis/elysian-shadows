@@ -1481,7 +1481,7 @@ void ESToolkit::on_actionToggle_AutoScroll_triggered()
 
     if(_assets.getEngine()) {
         int ref = LUA_NOREF;
-        lua_getglobal(*_mainState, "testInjectTable");
+        LuaManager::getGlobal("testInjectTable");
         //rPrintByIndex(-1, 99, "RAWREF");
 
         ref = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
