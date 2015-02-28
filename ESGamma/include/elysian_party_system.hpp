@@ -83,10 +83,13 @@ namespace elysian {
 		bool removeCharacterFromParty(const unsigned int slot);
 		
 		Entity *getPartyLeader(void) const;
+        void    setPartyLeader(Entity* entity);
 		Entity *getPlayablePartyMember(const char *name) const;
 		Entity *getPlayablePartyMember(const unsigned int slot) const;
 		Entity *getCharacterPartyMember(const char *name) const;
 		Entity *getCharacterPartyMember(const unsigned int slot) const;
+
+        int    getPartySlot(const Entity* entity);
 		
 	//	void DisablePartyFollow(); Probably going to want these pretty soon... 
 	//	void EnablePartyFollow();

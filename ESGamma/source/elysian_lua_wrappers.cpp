@@ -474,7 +474,7 @@ EXPORT_OOLUA_FUNCTIONS_0_CONST(Direction)
 OOLUA_EXPORT_FUNCTIONS(Character,
 								   faceEntity,
 								   faceDir,
-								   move,
+                                   moveByForce,
                                    setAnimate,
                                    setWalkForce,
                                    setDashMultiplier,
@@ -725,7 +725,8 @@ OOLUA_EXPORT_FUNCTIONS(TimerSystem,
 
 OOLUA_EXPORT_FUNCTIONS(PartySystem,
 						addCharacterToParty,
-						removeCharacterFromParty)
+                        removeCharacterFromParty,
+                        setPartyLeader)
 OOLUA_EXPORT_FUNCTIONS_CONST(PartySystem,
 								getPartyLeader,
 								getCharacterPartyMember)

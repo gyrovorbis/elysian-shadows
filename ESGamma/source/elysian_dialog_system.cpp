@@ -96,8 +96,11 @@ void DialogSystem::render(void) {
     getGuiSys()->getResolution(width, height);
 
     auto& font = getGuiSys()->pragmata18;
+    auto& font2 = getGuiSys()->pragmata22;
 
 	if(!_curDialog) return;
+
+    font.setColor(255, 255, 255, 255);
 
     //getGuiSys()->getResolution(width, height);
     //_mainCanvas._transform._pos.x = width*0.5f;
@@ -131,11 +134,11 @@ void DialogSystem::render(void) {
 		if(_curDialog && _boxState != BOX_INPUT && _curScreen.screen->getEntity()) {//Check top or bottom
             //GYVector3 screenPos;
             //getCameraSys()->transform(&screenPos, &_curScreen.screen->getEntity()->_transform._pos);
-            font.setAlpha(alpha*255);
+            font2.setColor(255, 255, 255, alpha*255);
 			switch(_posState) {
 				case POS_BOTTOM:
-                    font._transform.setPos(25.0f, basePos.y-0.5f*ELYSIAN_DIALOG_SYSTEM_HEIGHT, _mainCanvas._transform._pos.z+1);
-                    font.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, "%s", _curScreen.screen->getEntity()->getDispName());
+                    font2._transform.setPos(25.0f, basePos.y-0.5f*ELYSIAN_DIALOG_SYSTEM_HEIGHT, _mainCanvas._transform._pos.z+1);
+                    font2.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, "%s", _curScreen.screen->getEntity()->getDispName());
 					break;
 				case POS_MOVE_DOWN:
 					break;

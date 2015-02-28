@@ -36,7 +36,29 @@ void PartySystem::update(void) {//VOIDICATE
 	updatePartyPaths();
 }
 
+int PartySystem::getPartySlot(const Entity *entity) {
+    const size_t size = _characterParty.size();
+    for(int i = 0; i < size; ++i) {
+        if(_characterParty[i] == entity) return i;
+    }
+
+    return -1;
+}
+
 void PartySystem::render(void) {}
+
+void PartySystem::setPartyLeader(Entity *entity) {
+    //make sure fucker is in teh party
+    addCharacterToParty(entity);
+
+    int slot = getPartySlot(entity);
+    //he's already the leader
+    if(slot == 0) return;
+
+    Entity* prevLeader = getPartyLeader();
+    _characterParty[0] = entity;
+    _characterParty[slot] = prevLeader;
+}
 
 void PartySystem::processInput(const GameInput &input) {
 	Entity*entity = getPartyLeader();
@@ -419,13 +441,13 @@ Entity *PartySystem::getPlayablePartyMember(const char *name) const {
 		}
 	}
 	Debug::printf(Debug::CRITICAL, "PartySystem::getPlayableFromParty(const char[]): %s is not in the party!", name);
-	return NULL;
+    return nullptr;
 }
 
 Entity *PartySystem::getPlayablePartyMember(const unsigned int slot) const {
 	if(slot >= _playableParty.size()) {
 		Debug::printf(Debug::CRITICAL, "PartySystem::getPlayableFromParty(const uint): Invalid slot %d!", slot);
-		return NULL;
+        return nullptr;
 	}
 	return _playableParty[slot];
 }
@@ -433,17 +455,12 @@ Entity *PartySystem::getPlayablePartyMember(const unsigned int slot) const {
 
 Entity *PartySystem::getPartyLeader(void) const {
 	return (_playableParty.size() == 0)? 
-        (_characterParty.size() == 0)? NULL : _characterParty.front() : 
+        (_characterParty.size() == 0)? nullptr : _characterParty.front() :
     _playableParty.front();
 }
 
 bool PartySystem::addCharacterToParty(Entity *entity) {
-	for(unsigned int i = 0; i < _characterParty.size(); ++i) { //check if character is already in _characterParty
-		if(_characterParty[i] == entity) {
-			Debug::printf(Debug::CRITICAL, "PartySystem::AddCharacterToParty(Entity&): %s is already in the party!", entity->getName());
-			return false;
-		}
-	}
+    if(getPartySlot(entity) != -1) return false;
 	//Debug::printf(Debug::VERBOSE, "%s has joined the party!", entity->getName());
 	_characterParty.push_back(entity);
     if( _characterParty.size() > 1) entity->_transform.setPos(_partyPathPoint[_partyPathPoint.size()-1]);
@@ -564,7 +581,8 @@ void PartySystem::updatePartyPaths(void) {
 				//Debug::Print(Debug::NORMAL, "%d\n", currentIndex);
 		//Debug::Print(Debug::NORMAL, "x - %d, y - %d\n", currentIndex, currentIndex);
 		gyVec2Sub(&dist, &_partyPathPoint[currentIndex-2], &_partyPathPoint[currentIndex-1]);
-		_playableParty[i]->getCharacter()->move(dist);
+        _playableParty[i]->getCharacter()->animateWalk(dist);
+        _playableParty[i]->_transform.setPos(_partyPathPoint[currentIndex-1]);
 	}
 	//update characters
 	//--currentIndex;
@@ -575,7 +593,8 @@ void PartySystem::updatePartyPaths(void) {
 		currentIndex += _pointsPerCharacter-1;
 		//Debug::Print(Debug::NORMAL, "%d\n", currentIndex);
 		gyVec2Sub(&dist, &_partyPathPoint[currentIndex-2], &_partyPathPoint[currentIndex-1]);
-		_characterParty[i]->getCharacter()->move(dist);
+        _characterParty[i]->getCharacter()->animateWalk(dist);
+        _characterParty[i]->_transform.setPos(_partyPathPoint[currentIndex-1]);
 	}
 }
 
