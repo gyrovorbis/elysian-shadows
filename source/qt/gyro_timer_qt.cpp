@@ -6,7 +6,7 @@ static QElapsedTimer* timer = NULL;
 
 int gyTimerInit(void) {
     timer = new QElapsedTimer;
-    timer->start();
+    //timer->start();
     return 1;
 }
 
@@ -16,7 +16,7 @@ int gyTimerUninit(void) {
 }
 
 unsigned long int gyTimerTicks(void) {
-    return timer->elapsed();
+    return timer->restart();
 }
 
 

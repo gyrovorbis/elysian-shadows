@@ -164,6 +164,12 @@ static inline void gyVec2Sub(void* const dest, const void* const v1, const void*
     VEC2(dest)->y = VEC2(v1)->y - VEC2(v2)->y;
 }
 
+static inline void gyVec3Sub(void* const dest, const void* const v1, const void* const v2) {
+    VEC3(dest)->x = VEC3(v1)->x - VEC3(v2)->x;
+    VEC3(dest)->y = VEC3(v1)->y - VEC3(v2)->y;
+    VEC3(dest)->z = VEC3(v1)->z - VEC3(v2)->z;
+}
+
 static inline void gyVec2SubFrom(void *const dest, const void *const val) {
     VEC2(dest)->x -= VEC2(val)->x; VEC2(dest)->y -= VEC2(val)->y;
 }
@@ -179,6 +185,23 @@ static inline void gyVec2Scale(void *const dst, const void *const src, const flo
 
 static inline void gyVec2ScaleAccum(void* const src, const float scalar) {
     VEC2(src)->x *= scalar; VEC2(src)->y *= scalar;
+}
+
+static inline float gyVec2Dist(const void*const v1, const void*const v2) {
+    GYVector2 dist;
+    gyVec2Sub(&dist, v1, v2);
+    dist.x *= dist.x;
+    dist.y *= dist.y;
+    return gySqrt(dist.x + dist.y);
+}
+
+static inline float gyVec3Dist(const void*const v1, const void*const v2) {
+    GYVector3 dist;
+    gyVec3Sub(&dist, v1, v2);
+    dist.x *= dist.x;
+    dist.y *= dist.y;
+    dist.z *= dist.z;
+    return gySqrt(dist.x + dist.y + dist.z);
 }
 
 static inline float gyVec2Magnitude(const void*const vec) {
@@ -252,12 +275,6 @@ static inline void gyVec3Add(void* const dest, const void* const v1, const void*
     VEC3(dest)->x = VEC3(v1)->x + VEC3(v2)->x;
     VEC3(dest)->y = VEC3(v1)->y + VEC3(v2)->y;
     VEC3(dest)->z = VEC3(v1)->z + VEC3(v2)->z;
-}
-
-static inline void gyVec3Sub(void* const dest, const void* const v1, const void* const v2) {
-    VEC3(dest)->x = VEC3(v1)->x - VEC3(v2)->x;
-    VEC3(dest)->y = VEC3(v1)->y - VEC3(v2)->y;
-    VEC3(dest)->z = VEC3(v1)->z - VEC3(v2)->z;
 }
 
 static inline void gyVec3Scale(void*const dest, const void*const source, const float scalar) {

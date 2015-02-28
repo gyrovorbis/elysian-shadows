@@ -95,7 +95,7 @@
 
 
 //===== FUCKING HACK REEST - DESTROY ME =====
-
+/*
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -105,7 +105,7 @@ extern "C" {
     static inline void gyVidSceneEnd() { }
 
 #ifdef __cplusplus
-}
+}*/
 #endif
 // =============== / END REEST ==============
 
@@ -117,5 +117,3 @@ extern "C" {
 //}
 //#endif
 
-
-#endif
