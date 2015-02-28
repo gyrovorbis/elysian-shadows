@@ -91,7 +91,7 @@ bool GuiSystem::loadAssets(void) {
 
 	gyVidResolution(&_projWidth, &_projHeight);
 
-    adventureLog.setLabelFont(&pragmata18);
+    adventureLog.setLabelFont(&pragmata22);
     adventureLog.setTextFont(&pragmata18);
 
     Debug::pop();
@@ -138,9 +138,9 @@ void GuiSystem::_printDebugLine(const char *title, const char *str, ...) {
 	va_end(argptr);
 
     pragmata18._transform._pos.y += 25.0f;
-    pragmata18._transform._pos.x = _projWidth-200.0f;
+    pragmata18._transform._pos.x = _projWidth-250.0f;
     pragmata18.drawStringf(Font::NO_FORMAT, Font::R_ALIGN, title);
-    pragmata18._transform._pos.x = _projWidth-185.0f;
+    pragmata18._transform._pos.x = _projWidth-235.0f;
     pragmata18.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, buffer);
 }
 

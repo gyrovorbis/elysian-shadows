@@ -85,10 +85,48 @@ void Character::walk(const GYVector2 &dir) {
     mag *= (_dashing)? _dashMultiplier : 1.0f;
     gyVec2Normalize(&dist);
     gyVec2ScaleAccum(&dist, mag);
-    move(dist);
+    moveByForce(dist);
 }
 
-void Character::move(const GYVector2 &dist) {
+void Character::moveByDist(const GYVector2 &dist) {
+    _entity->_transform.translate(dist);
+    animateWalk(dist);
+}
+
+void Character::animateWalk(const GYVector2 &moveVec) {
+    _movedThisFrame = true;
+    _entity->getAnimation()->replaceState("Stand", "Walk");
+
+    Direction::DIR4 dir = Direction::fromVector(moveVec);
+
+    if(_animate) {
+        Animation *animComp = _entity->getAnimation();
+
+        if((_walkAnimInterp && _faceDir == dir) || !_walkAnimInterp) {
+            switch(dir) {
+                case Direction::DIR4_UP:
+                    animComp->playAnimation("Up");
+                    break;
+                case Direction::DIR4_DOWN:
+                    animComp->playAnimation("Down");
+                    break;
+                case Direction::DIR4_LEFT:
+                    animComp->playAnimation("Left");
+                    break;
+                case Direction::DIR4_RIGHT:
+                    animComp->playAnimation("Right");
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    _faceDir = dir;
+    //gyVec2Scale(&_lastMoveDir, &totalForce, 1.0f/gyVec2Magnitude(&totalForce));
+}
+
+void Character::moveByForce(const GYVector2 &dist) {
 	if(gyVec2IsZero(&dist)) return;
 	GYVector2 totalForce = dist;
 
@@ -98,36 +136,8 @@ void Character::move(const GYVector2 &dist) {
 
 	_entity->getRigidBody()->applyForce(GYVector3{ totalForce.x, totalForce.y, 0.0f });
 	//_entity->transform.translate(dist);
-	_movedThisFrame = true;
-	_entity->getAnimation()->replaceState("Stand", "Walk");
+    animateWalk(dist);
 
-	Direction::DIR4 dir = Direction::fromVector(totalForce);
-
-	if(_animate) {
-		Animation *animComp = _entity->getAnimation();
-
-		if((_walkAnimInterp && _faceDir == dir) || !_walkAnimInterp) {
-			switch(dir) {
-				case Direction::DIR4_UP:
-					animComp->playAnimation("Up");
-					break;
-				case Direction::DIR4_DOWN:
-					animComp->playAnimation("Down");
-					break;
-				case Direction::DIR4_LEFT:
-					animComp->playAnimation("Left");
-					break;
-				case Direction::DIR4_RIGHT:
-					animComp->playAnimation("Right");
-					break;
-				default:
-					break;
-			}
-		}
-	}
-
-	_faceDir = dir;
-	gyVec2Scale(&_lastMoveDir, &totalForce, 1.0f/gyVec2Magnitude(&totalForce));
 }
 
 void Character::update(void) {

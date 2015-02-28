@@ -41,7 +41,7 @@ namespace elysian {
 		static const Component::TYPE _type		= Component::CHARACTER;
 		
 	protected:
-		Character(Entity& entity);
+                Character(Entity& entity);
 		virtual ~Character(void) override		= default;
 
 		Direction::DIR4		_faceDir			= Direction::DIR4_CENTER;
@@ -64,12 +64,12 @@ namespace elysian {
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
-		virtual bool load(FILE* file) override;
-		virtual bool save(FILE* file) override;
-		virtual bool canAddTo(Entity& entity) override { return (entity.getAnimation() && entity.getRigidBody()); }
-		virtual bool addToLevel(void) override;
-		virtual bool removeFromLevel(void) override;
-		virtual Component::TYPE getType(void) const override { return Component::CHARACTER; }
+        virtual bool    load(FILE* file) override;
+        virtual bool    save(FILE* file) override;
+        virtual bool    canAddTo(Entity& entity) override { return (entity.getAnimation() && entity.getRigidBody()); }
+        virtual bool    addToLevel(void) override;
+        virtual bool    removeFromLevel(void) override;
+        virtual auto    getType(void) const -> TYPE override { return Component::CHARACTER; }
 
 		Direction::DIR4 getFaceDir(void) const;
 		bool			isFacing(const Entity& entity) const;
@@ -88,11 +88,13 @@ namespace elysian {
         bool            isDashing(void) const;
         void            setDashing(const bool val);
 
-		void update(void);
-		void move(const GYVector2& vec);
-        void walk(const GYVector2& dir);
-		void faceDir(const Direction::DIR4 dir);
-		void faceEntity(Entity& entity);
+        void            update(void);
+        void            moveByDist(const GYVector2& dist);
+        void            moveByForce(const GYVector2& vec);
+        void            walk(const GYVector2& dir);
+        void            faceDir(const Direction::DIR4 dir);
+        void            faceEntity(Entity& entity);
+        void            animateWalk(const GYVector2& moveVec);
 	};
 
 
