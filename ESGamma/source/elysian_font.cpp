@@ -12,7 +12,8 @@ bool Font::loadTextData(const char* const img_file, int sheet_width, int sheet_h
     Debug::printf(Debug::VERBOSE, "Font::Load(%s, %s)", img_file, width_file);
     Debug::push();
 
-    _transform.setSize(16.0f, 32.0f);
+    //_transform.setSize(16.0f, 32.0f);
+    _transform.setSize(sprite_width, sprite_height);
 
 	//CHECK IF TEXTURE IS EVER LOADED
 	if(!(_tex = gyVidTexCreateSheetUniform(img_file, sheet_width, sheet_height, sprite_width, sprite_height))) {

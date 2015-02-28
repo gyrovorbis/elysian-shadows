@@ -14,7 +14,7 @@
 
 namespace elysian {
 
-Font* MenuText::_fonts[3];
+Font* MenuText::_fonts[5];
 
 void MenuText::recursiveRender(void) {
 	GYVector4 localVert = { _relPos.x, _relPos.y, 1.0f, 1.0f };
@@ -80,10 +80,14 @@ bool GuiSystem::loadAssets(void) {
 	success &= twcen.loadTextData(ELYSIAN_FONT_IMAGE_PATH_TWCEN, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_TWCEN);
 	success &= verdana.loadTextData(ELYSIAN_FONT_IMAGE_PATH_VERDANA, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_VERDANA);
     success &= pragmata18.loadTextData(ELYSIAN_FONT_IMAGE_PATH_PRAGMATA18, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_PRAGMATA18);
+    success &= pragmata22.loadTextData(ELYSIAN_FONT_IMAGE_PATH_PRAGMATA22, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_PRAGMATA22);
+    success &= pragmata26.loadTextData(ELYSIAN_FONT_IMAGE_PATH_PRAGMATA26, 512, 512, 32, 32,ELYSIAN_FONT_WIDTH_PATH_PRAGMATA26);
 
 	MenuText::_fonts[0] = &twcen;
 	MenuText::_fonts[1] = &verdana;
     MenuText::_fonts[2] = &pragmata18;
+    MenuText::_fonts[3] = &pragmata22;
+    MenuText::_fonts[4] = &pragmata26;
 
 	gyVidResolution(&_projWidth, &_projHeight);
 
@@ -133,38 +137,38 @@ void GuiSystem::_printDebugLine(const char *title, const char *str, ...) {
 	vsprintf(buffer,str,argptr);
 	va_end(argptr);
 
-    twcen._transform._pos.y += 25.0f;
-    twcen._transform._pos.x = _projWidth-200.0f;
-    twcen.drawStringf(Font::NO_FORMAT, Font::R_ALIGN, title);
-    twcen._transform._pos.x = _projWidth-185.0f;
-    twcen.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, buffer);
+    pragmata18._transform._pos.y += 25.0f;
+    pragmata18._transform._pos.x = _projWidth-200.0f;
+    pragmata18.drawStringf(Font::NO_FORMAT, Font::R_ALIGN, title);
+    pragmata18._transform._pos.x = _projWidth-185.0f;
+    pragmata18.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, buffer);
 }
 
 void GuiSystem::_renderDebugOverlay(void) {
 	if(!_debugOverlayEnabled) return;
 
-    twcen.setColor(0, 255, 100, 255);
-    twcen._transform._pos.y = 100.0f;
-    twcen._transform._pos.z = 50.0f;
+    pragmata18.setColor(0, 255, 100, 255);
+    pragmata18._transform._pos.y = 100.0f;
+    pragmata18._transform._pos.z = 50.0f;
 
-    twcen.startBatchRender();
+    pragmata18.startBatchRender();
 
 	_printDebugLine("FPS:", "%.2f", getTimerSys()->getFramerate());
 	_printDebugLine("Verts:", "%d", gyVidVertexRenderCount());
 	_printDebugLine("Uniform Uploads:", "%d", getLightSys()->getShaderUniformChangesLastFrame());
 	_printDebugLine("Textures:", "%d", gyVidTexAmount());
 	_printDebugLine("Texture MBytes:", "%f", gyVidTexBytes()/1024.0f/1024.0f);
-    twcen._transform._pos.y += 25.0f;
+    pragmata18._transform._pos.y += 25.0f;
 	_printDebugLine("Onscreen Lights:", "%d", getLightSys()->getOnscreenLightCount());
 	_printDebugLine("Entities:", "%d", getCurArea()->entities.size());
 	_printDebugLine("Contacts:", "%d", getCollisionSys()->getContactCount());
 	_printDebugLine("Pen Res Iter:", "%d", getCollisionSys()->getPenResIterUsed());
 	_printDebugLine("Vel Res Iter:", "%d", getRigidBodySys()->getVelResIterUsed());
-    twcen._transform._pos.y += 25.0f;
+    pragmata18._transform._pos.y += 25.0f;
 	_printDebugLine("Lua Scripts:", "%d", LuaManager::getScriptCount());
 	_printDebugLine("Lua Script Instances:", "%d", LuaManager::getScriptInstances());
 	_printDebugLine("Lua MBytes:", "%f", LuaManager::getKbytesUsed()/1024.0f);
-    twcen._transform._pos.y += 25.0f;
+    pragmata18._transform._pos.y += 25.0f;
 	_printDebugLine("Game Time:", "%d:%d:%d", getDaySys()->getDays(), getDaySys()->getHours(), getDaySys()->getMinutes());
 	if(getPartySys()->getPartyLeader()) {
 		_printDebugLine("player.pos:", "<%.2f, %.2f, %.2f>",
@@ -177,20 +181,20 @@ void GuiSystem::_renderDebugOverlay(void) {
                         getPartySys()->getPartyLeader()->getCollidable()->getContactCount());
 	}
 
-    twcen.endBatchRender();
+    pragmata18.endBatchRender();
 
 }
 
 void GuiSystem::_renderCombatText(void) {
     for(auto it = _combatText.begin(); it < _combatText.end(); ++it) {
-        pragmata18._transform._pos.x = (*it).pos.x;
-        pragmata18._transform._pos.y = (*it).pos.y;
-        pragmata18._transform._pos.z = 50.0f;
+        pragmata22._transform._pos.x = (*it).pos.x;
+        pragmata22._transform._pos.y = (*it).pos.y;
+        pragmata22._transform._pos.z = 50.0f;
 
-        pragmata18.setColor((*it).color);
-        pragmata18.setAlpha((*it).color.a);
+        pragmata22.setColor((*it).color);
+        pragmata22.setAlpha((*it).color.a);
 
-        pragmata18.drawString(Font::NO_FORMAT, Font::C_ALIGN, (*it).text);
+        pragmata22.drawString(Font::NO_FORMAT, Font::C_ALIGN, (*it).text);
     }
 }
 
