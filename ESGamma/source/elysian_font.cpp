@@ -75,13 +75,13 @@ void Font::drawString(const FORMAT format, const ALIGNMENT align, const char *co
 
 	if(align == C_ALIGN) {
 		temp = getStringPixelWidth(buffer);
-        currentX = (_transform._pos.x - (temp/2.0f));
-	}
-	else if(align == R_ALIGN) {
+        currentX = (_transform._pos.x - (int)(temp/2.0f));
+    }
+    else if(align == R_ALIGN) {
 		for(i = 0; i < (int)strlen(buffer); ++i) {
             temp += _charWidth[(int)buffer[i]]+_spacing;
 		}
-        currentX = (_transform._pos.x - temp - 16);
+        currentX = (_transform._pos.x - temp);
 	}
 
 	i = 0;
