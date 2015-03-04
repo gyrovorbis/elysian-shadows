@@ -357,9 +357,9 @@ namespace elysian {
 			lua_getfield(l, -1, "__newindex");
 			_ooluaNewIndexTable.pull(l);
 
-            LuaManager::_cStackDump();
+            //LuaManager::_cStackDump();
             LuaTableProxy<P, T>::_addMetamethods(l);
-            LuaManager::_cStackDump();
+            //LuaManager::_cStackDump();
             //Create a new __next metamethod for internal iteration
             //_propertyProxyIndexTable.push(l);
             //lua_setfield(l, -2, "__properties");

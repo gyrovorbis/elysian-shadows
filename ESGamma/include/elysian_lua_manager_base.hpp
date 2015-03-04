@@ -135,12 +135,11 @@ namespace elysian {
         static int                  _stackDepth(void);
 
 #ifdef ELYSIAN_LUA_DEBUG
-        static void                 _stackBalanceBegin();
-        static void                 _stackBalanceEnd();
 #endif
 
 	public:
-
+        static void                 _stackBalanceBegin();
+        static void                 _stackBalanceEnd();
 		static bool					initialize(void);
 		static bool					uninitialize(void);
 		

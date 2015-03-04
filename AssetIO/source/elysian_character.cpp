@@ -91,6 +91,9 @@ void Character::walk(const GYVector2 &dir) {
 void Character::moveByDist(const GYVector2 &dist) {
     _entity->_transform.translate(dist);
     animateWalk(dist);
+
+    _lastMoveDir = GYVector3 { dist.x, dist.y, 0.0f };
+    gyVec2Normalize(&_lastMoveDir);
 }
 
 void Character::animateWalk(const GYVector2 &moveVec) {
@@ -137,7 +140,8 @@ void Character::moveByForce(const GYVector2 &dist) {
 	_entity->getRigidBody()->applyForce(GYVector3{ totalForce.x, totalForce.y, 0.0f });
 	//_entity->transform.translate(dist);
     animateWalk(dist);
-
+    _lastMoveDir = GYVector3 { dist.x, dist.y, 0.0f };
+    gyVec2Normalize(&_lastMoveDir);
 }
 
 void Character::update(void) {

@@ -186,6 +186,8 @@ void GuiSystem::_renderDebugOverlay(void) {
 }
 
 void GuiSystem::_renderCombatText(void) {
+    gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
+    gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
     for(auto it = _combatText.begin(); it < _combatText.end(); ++it) {
         pragmata22._transform._pos.x = (*it).pos.x;
         pragmata22._transform._pos.y = (*it).pos.y;

@@ -17,7 +17,7 @@ namespace elysian {
 
     class LuaBehavior: public Behavior, public LuaManager {
     friend class BaseEntity;
-	protected:
+    protected:
 		LuaBehaviorScript*	_scriptHierarchy[ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH]		= { nullptr };
 		//int					_selfTableRefHierarchy[ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH]	= { LUA_NOREF };
 		LuaBehaviorScript*	_script = nullptr;
@@ -29,9 +29,17 @@ namespace elysian {
 		OOLUA::Lua_table_ref* _ooSelfTableRef = nullptr;
 
 		template<typename RType, typename... PTypes>
-		RType _callTrigger(const char*const triggerName, PTypes... parameters) {
-			return _callGlobalFunction<RType>(triggerName, _script, parameters...);
+        RType _callTriggerByIndex(const uint64_t trigger, PTypes... parameters) {
+            lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());
+            lua_rawgeti(*_mainState, -1, trigger);
+            lua_remove(*_mainState, -2);
+            return _callFunction<RType>(_script, parameters...);
 		}
+
+        template<typename RType, typename... PTypes>
+        RType _callTriggerByName(const char* funcName, PTypes... parameters) {
+            return _callGlobalFunction<RType>(funcName, _script, parameters...);
+        }
 
 		void				_selfTableDump(void);
 	public:
@@ -72,6 +80,8 @@ namespace elysian {
 		virtual void		onCombatDeath(void) override;
 		virtual void		onCombatReceiveStatusModifier(CombatStatus*const modifier) override;
 		virtual void		onCombatTargetCollisionEnter(CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier) override;
+        virtual void        onButtonPress(const GameInput::BUTTON button) override;
+        virtual void        onButtonRelease(const GameInput::BUTTON button) override;
 
         //ESTk triggers
         virtual void        onTkSelect(void) override;

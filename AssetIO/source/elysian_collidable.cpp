@@ -66,6 +66,7 @@ void Collidable::update(void) {
 }
     
 void Collidable::render(void) {
+    if(!_worldSpace) return;
     const static GYColor4 color = { 0, 0, 255, 128 };
 	const static GYColor4 colColor =  { 255, 0, 0, 128 };
     
@@ -73,7 +74,8 @@ void Collidable::render(void) {
     gyVidNormalMapBind(nullptr);
     gyVidSpecularMapBind(nullptr);
 	gyVidAlphaLevel(GY_ALPHA_FULL);
-    
+    gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
+
     gyMatPush();
         
     gyVidQuadListBegin((_contactCount == 0)? &color : &colColor);
@@ -84,7 +86,7 @@ void Collidable::render(void) {
     gyVidQuadListEnd();
     
 	/* ==== DEBUG CODE ==== */
-
+#if 0
 	gyVidQuadListBegin(&colColor);
 
 	gyMatPush(); //Render bottom of entity
@@ -98,6 +100,7 @@ void Collidable::render(void) {
 	gyMatPop();
 
 	gyVidQuadListEnd();
+#endif
 
 }
      

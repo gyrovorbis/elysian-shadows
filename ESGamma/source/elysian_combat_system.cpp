@@ -30,7 +30,7 @@ void CombatSystem::onCollide(Collidable*const bodyA, Collidable*const bodyB, Col
 	auto* combatB = bodyB->getEntity()->getCombat();
 	if(!combatB || !(combatB->getAttrib()->getTypeFlags() & combatA->getAttrib()->getTypeAgainstFlags())) return;
 
-	_dealCollisionDamage(combatA, combatB, bodyB, contact);
+    //_dealCollisionDamage(combatA, combatB, bodyB, contact);
 }
 
 void CombatSystem::onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) {
@@ -39,17 +39,19 @@ void CombatSystem::onCollisionExit(Collidable*const bodyA, Collidable*const body
 	auto* combatB = bodyB->getEntity()->getCombat();
 	if(!combatB || !(combatB->getAttrib()->getTypeFlags() & combatA->getAttrib()->getTypeAgainstFlags())) return;
 
-	_dealCollisionDamage(combatA, combatB, bodyB, nullptr);
+    //_dealCollisionDamage(combatA, combatB, bodyB, nullptr);
 }
 
 void CombatSystem::addCombatant(Entity& entity) {
 	getCameraSys()->addEntity(&entity);
+    entity.getCombat()->setInCombat(true);
 	getBehavSys()->callTrigger(&entity, Behavior::ON_COMBAT_ENTER);
 	if(_bgmDynamic) getAudioSys()->morphIntoBgmTrack(_bgmCombatTrack, 0.5f);
 	_combatants.claimFreeEntry() = &entity;
 }
 
 void CombatSystem::removeCombatant(Entity& entity) {
+    entity.getCombat()->setInCombat(false);
 	getBehavSys()->callTrigger(&entity, Behavior::ON_COMBAT_EXIT);
 	getCameraSys()->removeEntity(&entity);
 	_combatants.removeEntry(&entity);
@@ -60,6 +62,7 @@ void CombatSystem::removeCombatant(Entity& entity) {
 
 void CombatSystem::killCombatant(Entity& entity) {
 	getBehavSys()->callTrigger(&entity, Behavior::ON_COMBAT_DEATH);
+    entity.getCombat()->setInCombat(false);
 	//removeCombatant(entity); //don't call that or we call the ON_EXIT trigger
 	getCameraSys()->removeEntity(&entity);
 	_combatants.removeEntry(&entity);
@@ -103,7 +106,7 @@ void CombatSystem::_processCurrentCombatAction(void) {
 
 //MACRO THESE FUNCTION NAMES
 
-
+#if 0
 void CombatSystem::resolveCombatAction(OOLUA::Lua_table_ref action, Combat*const src, Combat*const target) {
 	OOLUA::Lua_table_ref statMods;
 
@@ -122,15 +125,16 @@ void CombatSystem::resolveCombatAction(OOLUA::Lua_table_ref action, Combat*const
 
 	_processCurrentCombatAction();
 }
+#endif
 
 
-void CombatSystem::sendStatusModifier(Combat* const target, CombatStatus* const modifier) {
+void CombatSystem::sendStatusModifier(Combat* const target, CombatStatusModifier* const modifier) {
 	//not a valid combat target
 	if(target->getDmgType() != Combat::DMG_TARGET && target->getDmgType() != Combat::DMG_SOURCE_TARGET) return;
 
 	getBehavSys()->onCombatReceiveStatusModifier(target->getEntity(), modifier);
 
-	target->applyStatus(*modifier);
+    target->applyModifier(*modifier);
 
     _curActionRes.initialVel = GYVector2 { 0.0f, -3.0f };
 	if(_curActionRes.contact) {
@@ -163,7 +167,7 @@ void CombatSystem::sendStatusModifier(Combat* const target, CombatStatus* const 
 
 
 void CombatSystem::_dealCollisionDamage(Combat *const src, Combat *const target, Collidable* bodyB, CollisionContact* contact) {
-	CombatStatus modifier;
+    CombatStatusModifier modifier;
 	_curActionRes.contact = contact;
 	getBehavSys()->onCombatTargetCollisionEnter(src->getEntity(), contact, bodyB, &modifier);
     //resolveCombatAction(src->getActionTable(), src, target);
@@ -171,26 +175,30 @@ void CombatSystem::_dealCollisionDamage(Combat *const src, Combat *const target,
 }
 
 void CombatSystem::update(void) {
-/*	std::vector<Combat*>& combats = getCurArea()->combats;
+    auto* leader = getPartySys()->getPartyLeader();
+    const auto& playerPos = leader->_transform._pos;
 
-	for(unsigned i = 0; i < combats.size(); ++i) {
 
-		if(combats[i]->getDmgType() == Combat::DMG_SOURCE) {
-			for(unsigned j = 0; j < combats.size(); ++j) {
-				if(i == j) continue;
+    for(auto&it : getCurArea()->combats) {
+        if(it == leader->getCombat()) continue;
+        const float dist = gyVec3Dist(&playerPos, &it->getEntity()->_transform._pos);
 
-				if(combats[j]->getDmgType() == Combat::DMG_TARGET &&
-						(combats[i]->getAttrib()->getTypeAgainstFlags() & combats[j]->getAttrib()->getTypeFlags())) {
+        //Check for deaggro
+        if(it->isInCombat()) {
+            if(dist > it->getDeaggroDist()) removeCombatant(*it->getEntity());
+        //Check for aggro
+        } else {
+            if(dist < it->getAggroDist()) addCombatant(*it->getEntity());
+        }
+    }
 
-					if(getCollisionSys()->checkCollision(*combats[i]->getEntity()->getCollidable(), *combats[j]->getEntity()->getCollidable()))
-						_dealCollisionDamage(combats[i], combats[j]);
+    //Check whether we should add or remove leader (PARTY EVENTUALLY)
+    if(leader && leader->getCombat()->isInCombat() && _combatants.size() == 1) {
+        removeCombatant(*leader);
+    } else if(_combatants.size() > 0 && !leader->getCombat()->isInCombat()) {
+        addCombatant(*leader);
+    }
 
-				}
-			}
-
-		}
-
-	}*/
 }
 
 /* Needs to gracefully handle the case where there are multiple modifiers.

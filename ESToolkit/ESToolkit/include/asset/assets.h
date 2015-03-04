@@ -30,11 +30,11 @@ public:
     Assets();
     ~Assets();
 
-    Selectable *getCurrentSelection(void) const { return _currentSelection; }
-    Area *getCurrentArea(void) const { return _currentArea; }
-    Level *getCurrentLevel(void) const { return _currentLevel; }
-    Project *getCurrentProject(void) const { return m_project; }
-    LAYER_TYPE getCurrentLayer(void) const { return _currentLayer; }
+    Selectable* getCurrentSelection(void) const { return _currentSelection; }
+    Area*       getCurrentArea(void) const { return _currentArea; }
+    Level*      getCurrentLevel(void) const { return _currentLevel; }
+    Project*    getCurrentProject(void) const { return m_project; }
+    LAYER_TYPE  getCurrentLayer(void) const { return _currentLayer; }
 
     Selectable::TYPE getCurrentSelectionType(void) const { return _currentSelectionType; }
 
@@ -53,6 +53,7 @@ public:
 
     Level* reloadLevel(Level* level=nullptr);
     Area* reloadArea(Area* area=nullptr);
+    Project* reloadProject(void);
 
     //Project *NewProject();
     //Project *NewProject(QString n);

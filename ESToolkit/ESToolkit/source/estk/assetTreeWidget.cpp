@@ -85,6 +85,7 @@ void AssetTreeWidget::onCustomContextMenuRequested(QPoint point) {
 	switch(treeNode->getTreeWidgetItemType()) {
 	case TreeNode::ITEM_PROJECT:
         actions.push_back(new QAction("Add Level", nullptr));
+        actions.push_back(new QAction("Reload", nullptr));
         menu = new QMenu("Project", nullptr);
 		result = menu->exec(actions, mapToGlobal(point));
 		if(result) {
@@ -95,7 +96,9 @@ void AssetTreeWidget::onCustomContextMenuRequested(QPoint point) {
                 getAssets()->setCurrentArea(nullptr);
                 getAssets()->setCurrentLevel(newLev);
                 getAssets()->setCurrentSelection(newLev);
-			}
+            } else if(result->text() == QString("Reload")) {
+                getAssets()->reloadProject();
+            }
 		}
 		break;
 

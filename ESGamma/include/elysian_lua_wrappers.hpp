@@ -107,6 +107,7 @@ namespace OOLUA
 	typedef elysian::MenuEntity					MenuEntity;
 	typedef elysian::CombatAttrib				CombatAttrib;
 	typedef elysian::CombatStatus				CombatStatus;
+    typedef elysian::CombatStatusModifier       CombatStatusModifier;
 	typedef elysian::CombatReceipt				CombatReceipt;
 	typedef elysian::Combat						Combat;
 	typedef elysian::ParticleEmitterAttrib		ParticleEmitterAttrib;
@@ -662,6 +663,7 @@ OOLUA_PROXY(Character, Component)
     OOLUA_MEM_FUNC(void, setDashMultiplier, float)
     OOLUA_MEM_FUNC(void, setDashing, bool)
     OOLUA_MEM_FUNC_CONST(Entity*, getHeldEntity)
+    OOLUA_MEM_FUNC_CONST(const GYVector3&, getLastMoveDir)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CharacterSystem)
@@ -826,6 +828,12 @@ OOLUA_PROXY(CombatStatus)
 	OOLUA_MEM_FUNC(void, setMp, int)
 	OOLUA_MEM_FUNC_CONST(int, getHp)
 	OOLUA_MEM_FUNC_CONST(int, getMp)
+    OOLUA_MEM_FUNC_CONST(bool, hasStatusEffect, const CombatStatus::STATUS_EFFECT)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(CombatStatusModifier, CombatStatus)
+    OOLUA_MEM_FUNC(void, addStatusEffect, const int)
+    OOLUA_MEM_FUNC(void, removeStatusEffect, const int)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Combat, Component)
@@ -1113,8 +1121,8 @@ OOLUA_PROXY(CombatSystem)
 	OOLUA_MEM_FUNC(void, addCombatant, Entity&)
 	OOLUA_MEM_FUNC(void, removeCombatant, Entity&)
 	OOLUA_MEM_FUNC(void, killCombatant, Entity&)
-	OOLUA_MEM_FUNC(void, resolveCombatAction, Lua_table_ref, Combat*, Combat*)
-    OOLUA_MEM_FUNC(void, sendStatusModifier, Combat*, CombatStatus*)
+    //OOLUA_MEM_FUNC(void, resolveCombatAction, Lua_table_ref, Combat*, Combat*)
+    OOLUA_MEM_FUNC(void, sendStatusModifier, Combat*, CombatStatusModifier*)
 	OOLUA_MEM_FUNC(void, setBgmCombatTrack, unsigned)
 	OOLUA_MEM_FUNC(void, setBgmDynamic, bool)
 OOLUA_PROXY_END
@@ -1245,6 +1253,12 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 	s->register_class_static<Combat>("ON_COLLISION_ENTER", Combat::ON_COLLISION_ENTER);
 	s->register_class_static<Combat>("ON_COLLISION_EXIT", Combat::ON_COLLISION_EXIT);
 
+    //CombatStatus::STATUS_EFFECT
+    typedef OOLUA::CombatStatus CombatStatus;
+    s->register_class_static<CombatStatus>("POISON", CombatStatus::POISON);
+    s->register_class_static<CombatStatus>("CONFUSION", CombatStatus::CONFUSION);
+    s->register_class_static<CombatStatus>("SLEEP", CombatStatus::SLEEP);
+
 	//Behavior::TRIGGER
 	typedef OOLUA::Behavior Behavior;
 	s->register_class_static<Behavior>("ON_SCRIPT_CREATE", Behavior::ON_SCRIPT_CREATE);
@@ -1268,8 +1282,37 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
     s->register_class_static<Behavior>("ON_SHATTER", Behavior::ON_SHATTER);
     s->register_class_static<Behavior>("ON_COMBAT_RECEIVE_STATUS_MODIFIER", Behavior::ON_COMBAT_RECEIVE_STATUS_MODIFIER);
     s->register_class_static<Behavior>("ON_COMBAT_TARGET_COLLISION_ENTER", Behavior::ON_COMBAT_TARGET_COLLISION_ENTER);
+    s->register_class_static<Behavior>("ON_BUTTON_PRESS", Behavior::ON_BUTTON_PRESS);
+    s->register_class_static<Behavior>("ON_BUTTON_RELEASE", Behavior::ON_BUTTON_RELEASE);
     s->register_class_static<Behavior>("ON_TK_SELECT", Behavior::ON_TK_SELECT);
     s->register_class_static<Behavior>("ON_TK_UNSELECT", Behavior::ON_TK_UNSELECT);
+
+    s->register_class_static<Behavior>("ON_SCRIPT_CREATE_INDEX", Behavior::ON_SCRIPT_CREATE_INDEX);
+    s->register_class_static<Behavior>("ON_SCRIPT_DESTROY_INDEX", Behavior::ON_SCRIPT_DESTROY_INDEX);
+    s->register_class_static<Behavior>("ON_CREATE_INDEX", Behavior::ON_CREATE_INDEX);
+    s->register_class_static<Behavior>("ON_DESTROY_INDEX", Behavior::ON_DESTROY_INDEX);
+    s->register_class_static<Behavior>("ON_LOAD_INDEX", Behavior::ON_LOAD_INDEX);
+    s->register_class_static<Behavior>("ON_UNLOAD_INDEX", Behavior::ON_UNLOAD_INDEX);
+    s->register_class_static<Behavior>("ON_ENTER_INDEX", Behavior::ON_ENTER_INDEX);
+    s->register_class_static<Behavior>("ON_EXIT_INDEX", Behavior::ON_EXIT_INDEX);
+    s->register_class_static<Behavior>("ON_UPDATE_INDEX", Behavior::ON_UPDATE_INDEX);
+    s->register_class_static<Behavior>("ON_RENDER_INDEX", Behavior::ON_RENDER_INDEX);
+    s->register_class_static<Behavior>("ON_COLLIDE_INDEX", Behavior::ON_COLLIDE_INDEX);
+    s->register_class_static<Behavior>("ON_COLLISION_ENTER_INDEX", Behavior::ON_COLLISION_ENTER_INDEX);
+    s->register_class_static<Behavior>("ON_COLLISION_EXIT_INDEX", Behavior::ON_COLLISION_EXIT_INDEX);
+    s->register_class_static<Behavior>("ON_EXAMINE_INDEX", Behavior::ON_EXAMINE_INDEX);
+    s->register_class_static<Behavior>("ON_DIALOG_INDEX", Behavior::ON_DIALOG_INDEX);
+    s->register_class_static<Behavior>("ON_COMBAT_ENTER_INDEX", Behavior::ON_COMBAT_ENTER_INDEX);
+    s->register_class_static<Behavior>("ON_COMBAT_EXIT_INDEX", Behavior::ON_COMBAT_EXIT_INDEX);
+    s->register_class_static<Behavior>("ON_COMBAT_DEATH_INDEX", Behavior::ON_COMBAT_DEATH_INDEX);
+    s->register_class_static<Behavior>("ON_SHATTER_INDEX", Behavior::ON_SHATTER_INDEX);
+    s->register_class_static<Behavior>("ON_COMBAT_RECEIVE_STATUS_MODIFIER_INDEX", Behavior::ON_COMBAT_RECEIVE_STATUS_MODIFIER_INDEX);
+    s->register_class_static<Behavior>("ON_COMBAT_TARGET_COLLISION_ENTER_INDEX", Behavior::ON_COMBAT_TARGET_COLLISION_ENTER_INDEX);
+    s->register_class_static<Behavior>("ON_BUTTON_PRESS_INDEX", Behavior::ON_BUTTON_PRESS_INDEX);
+    s->register_class_static<Behavior>("ON_BUTTON_RELEASE_INDEX", Behavior::ON_BUTTON_RELEASE_INDEX);
+    s->register_class_static<Behavior>("ON_TK_SELECT_INDEX", Behavior::ON_TK_SELECT_INDEX);
+    s->register_class_static<Behavior>("ON_TK_UNSELECT_INDEX", Behavior::ON_TK_UNSELECT_INDEX);
+    s->register_class_static<Behavior>("TRIGGER_MAX_INDEX", Behavior::TRIGGER_MAX_INDEX);
 
 	//Tile::COLLIDER_TYPE
 	typedef OOLUA::Tile Tile;

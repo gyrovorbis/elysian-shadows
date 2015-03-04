@@ -280,6 +280,7 @@ void RigidBodySystem::resolveContactVelocities(void) {
 
 		for(j = 0; j < _contactCount; ++j) {
 
+            if(!_contactPool[j]->_resolvePen) continue;
 			//reevaluate penetration depth
 			if(_contactPool[j]->deltaVel > max) {
 				maxIndex = j;

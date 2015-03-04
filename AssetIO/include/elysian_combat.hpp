@@ -6,9 +6,13 @@
 #include "elysian_lua_table_proxy.hpp"
 #include <oolua.h>
 
+#define ELYSIAN_COMBAT_AGGRO_DIST_DEFAULT      200.0f
+#define ELYSIAN_COMBAT_DEAGGRO_DIST_DEFAULT    400.0f
+
 namespace elysian {
 
 	class ParticleEmitterAttrib;
+    class CombatStatusModifier;
 
 	class CombatAttrib {
 	private:
@@ -29,38 +33,51 @@ namespace elysian {
 		//void setParticleColor(const GYColor4 color);
 	};
 
+    //The only combat-related variables the engine has knowledge of
 	class CombatStatus {
 	public:
-		enum STATUS_EFFECT_STATE {
-			STATUS_EFFECT_NONE,
-			STATUS_EFFECT_ENABLE,
-			STATUS_EFFECT_DISABLE
-		};
+        enum STATUS_EFFECT {
+            POISON                  = 1,
+            CONFUSION               = 1<<1,
+            SLEEP                   = 1<<2,
+            MAX                     = 1<<23,
+            STATUS_EFFECT_ALL       = ~0
+        };
 
-	private:
+    protected:
+        int             _maxHp                  = 100;
+        int				_hp                     = 100;
+        int             _maxMp                  = 10;
+        int				_mp                     = 10;
+        //USE STATUS BITFLAGS!!!111
+        uint64_t        _statusEffects          = 0;
 
-		int				_hp				= 0;
-		int				_mp				= 0;
-		STATUS_EFFECT_STATE	_poison		= STATUS_EFFECT_NONE;
-		STATUS_EFFECT_STATE	_sleep		= STATUS_EFFECT_NONE;
-		STATUS_EFFECT_STATE	_confusion	= STATUS_EFFECT_NONE;
 
 	public:
-
-		void				applyCombatStatus(const CombatStatus& rvalue);
-
-		int					getHp(void) const;
-		int					getMp(void) const;
-		STATUS_EFFECT_STATE getPoison(void) const;
-		STATUS_EFFECT_STATE getSleep(void) const;
-		STATUS_EFFECT_STATE getConfusion(void) const;
-
-		void				setHp(const int hp);
-		void				setMp(const int mp);
-		void				setPoison(const STATUS_EFFECT_STATE state);
-		void				setSleep(const STATUS_EFFECT_STATE state);
-		void				setConfusion(const STATUS_EFFECT_STATE state);
+        void			applyModifier(const CombatStatusModifier& rvalue);
+        bool            hasStatusEffect(const STATUS_EFFECT effect) const;
+        int				getHp(void) const;
+        int             getMaxHp(void) const;
+        int				getMp(void) const;
+        int             getMaxMp(void) const;
+        void            setHp(const int val);
+        void            setMaxHp(const int val);
+        void            setMp(const int val);
+        void            setMaxMp(const int val);
+        void            setStatusEffects(const uint64_t effects);
+        uint64_t        getStatusEffects(void) const;
 	};
+
+
+    class CombatStatusModifier: public CombatStatus {
+        friend class CombatStatus;
+    protected:
+        uint64_t        _addRemoveStatusEffects        = 0;
+
+    public:
+        void            addStatusEffect(const int effect);
+        void            removeStatusEffect(const int effect);
+    };
 
     class Combat:
         public Component,
@@ -86,8 +103,11 @@ namespace elysian {
 		CombatAttrib*			_attrib			= nullptr;
 		DMG_TYPE				_dmgType		= DMG_NONE;
 		uint32_t				_collisionFlags	= ON_COLLISION_ENTER;
+        float                   _aggroDist      = ELYSIAN_COMBAT_AGGRO_DIST_DEFAULT;
+        float                   _deaggroDist    = ELYSIAN_COMBAT_DEAGGRO_DIST_DEFAULT;
 		bool					_dmgActive		= true;
-	public:
+        bool                    _inCombat       = false;
+    public:
 
 				Combat(Entity& entity);
 		virtual ~Combat(void) override = default;
@@ -116,7 +136,14 @@ namespace elysian {
 		void					setDmgActive(const bool active);
         CombatStatus    		getStatus(void) const;
         void                    setStatus(const CombatStatus& status);
-		void					applyStatus(const CombatStatus& rvalue);
+        void					applyModifier(const CombatStatusModifier& rvalue);
+
+        void                    setInCombat(const bool val);
+        bool                    isInCombat(void) const;
+        void                    setAggroDist(const float dist);
+        float                   getAggroDist(void) const;
+        void                    setDeaggroDist(const float dist);
+        float                   getDeaggroDist(void) const;
 
 	};
 
@@ -132,34 +159,39 @@ namespace elysian {
 	//inline GYColor4 CombatAttrib::getParticleColor(void) const { return _particleColor; }
 	//inline void CombatAttrib::setParticleColor(const GYColor4 color) { _particleColor = color; }
 
-	inline void CombatStatus::applyCombatStatus(const CombatStatus& rvalue) {
-		auto checkApplyStatusEffect = [](STATUS_EFFECT_STATE& lvalue,
-									const STATUS_EFFECT_STATE rvalue)
-		{
-			if(rvalue != STATUS_EFFECT_NONE) {
-				lvalue = rvalue;
-			}
-		};
-
+    inline void CombatStatus::applyModifier(const CombatStatusModifier& rvalue) {
 		_hp += rvalue._hp;
 		_mp += rvalue._mp;
-		checkApplyStatusEffect(_poison, rvalue._poison);
-		checkApplyStatusEffect(_sleep, rvalue._sleep);
-		checkApplyStatusEffect(_confusion, rvalue._confusion);
+
+        const uint64_t effectsToAdd     = (rvalue._statusEffects&rvalue._addRemoveStatusEffects);
+        const uint64_t effectsToRemove  = (rvalue._statusEffects&(~rvalue._addRemoveStatusEffects));
+
+        _statusEffects |= effectsToAdd;
+        _statusEffects &= ~effectsToRemove;
+
 	}
 
 	inline int CombatStatus::getHp(void) const { return _hp; }
+    inline int CombatStatus::getMaxHp(void) const { return _maxHp; }
 	inline int CombatStatus::getMp(void) const { return _mp; }
-	inline auto CombatStatus::getPoison(void) const -> STATUS_EFFECT_STATE { return _poison; }
-	inline auto CombatStatus::getSleep(void) const -> STATUS_EFFECT_STATE { return _sleep; }
-	inline auto CombatStatus::getConfusion(void) const -> STATUS_EFFECT_STATE { return _confusion; }
-
+    inline int CombatStatus::getMaxMp(void) const { return _maxMp; }
+    inline void CombatStatus::setStatusEffects(const uint64_t effects) { _statusEffects = effects; }
+    inline uint64_t CombatStatus::getStatusEffects(void) const { return _statusEffects; }
+    inline bool CombatStatus::hasStatusEffect(const STATUS_EFFECT effect) const { return (_statusEffects&effect); }
 	inline void	CombatStatus::setHp(const int hp) { _hp = hp; }
+    inline void CombatStatus::setMaxHp(const int val) { _maxHp = val; }
 	inline void	CombatStatus::setMp(const int mp) { _mp = mp; }
-	inline void	CombatStatus::setPoison(const STATUS_EFFECT_STATE state) { _poison = state; }
-	inline void	CombatStatus::setSleep(const STATUS_EFFECT_STATE state) { _sleep = state; }
-	inline void	CombatStatus::setConfusion(const STATUS_EFFECT_STATE state) { _confusion = state; }
+    inline void CombatStatus::setMaxMp(const int val) { _maxMp = val; }
 
+    inline void CombatStatusModifier::addStatusEffect(const int effect) {
+        _statusEffects |= effect;
+        _addRemoveStatusEffects |= effect;
+    }
+
+    inline void CombatStatusModifier::removeStatusEffect(const int effect) {
+        _statusEffects |= effect;
+        _addRemoveStatusEffects &= ~effect;
+    }
 
 	inline void	Combat::setSelfTable(OOLUA::Lua_table_ref self) { _selfTable = self; }
 	inline OOLUA::Lua_table_ref& Combat::getSelfTable(void) { return _selfTable; }
@@ -175,7 +207,14 @@ namespace elysian {
 	inline void Combat::setDmgActive(const bool active) { _dmgActive = active; }
     inline CombatStatus Combat::getStatus(void) const { return _status; }
     inline void Combat::setStatus(const CombatStatus& status) {_status = status; }
-	inline void	Combat::applyStatus(const CombatStatus& rvalue) { _status.applyCombatStatus(rvalue); }
+    inline void	Combat::applyModifier(const CombatStatusModifier& rvalue) { _status.applyModifier(rvalue); }
+    inline void Combat::setInCombat(const bool val) { _inCombat = val; }
+    inline bool Combat::isInCombat(void) const { return _inCombat; }
+    inline void Combat::setAggroDist(const float dist) { _aggroDist = dist; }
+    inline float Combat::getAggroDist(void) const { return _aggroDist; }
+    inline void Combat::setDeaggroDist(const float dist) { _deaggroDist = dist; }
+    inline float Combat::getDeaggroDist(void) const { return _deaggroDist; }
+
 }
 
 

@@ -2,6 +2,7 @@
 #define ELYSIAN_GAME_INPUT_HPP
 
 #include <gyro_input_api.h>
+#include "elysian_system.hpp"
 
 namespace elysian {
 
@@ -18,7 +19,7 @@ namespace elysian {
 
     };
 
-	class GameInput { 
+    class GameInput: public System {
 	public:
 		enum BUTTON { 
             BUT_NONE, BUT_A, BUT_B, BUT_C, BUT_D, BUT_E, BUT_F, BUT_G, BUT_H, BUT_I, BUT_J, BUT_K, BUT_L, BUT_M, BUT_N, BUT_O, BUT_P,

@@ -5,6 +5,8 @@
 
 #define ELYSIAN_LUA_SCRIPT_PATH_SIZE 200
 
+struct lua_State;
+
 namespace elysian {
 	
 	/*
@@ -60,7 +62,7 @@ namespace elysian {
         LuaBehaviorScript*			getParent(void) const;
         LuaBehaviorScriptAttrib*	getAttrib(void);
         void						setParent(LuaBehaviorScript* const parent);
-
+        void                        cacheTriggers(lua_State*const state);
 	};
 
 

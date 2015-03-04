@@ -136,7 +136,7 @@ public:
             stackModel->addRow(label, valueItem);
         }
         LuaManager::_stackBalanceEnd();
-        LuaManager::_cStackDump();
+        //LuaManager::_cStackDump();
 
         //Check if userdata is iterable
 

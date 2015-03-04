@@ -237,6 +237,7 @@ LuaBehaviorScript* LuaManagerBase::loadBehaviorScript(const char* const file) {
 	}
 
 	_callGlobalFunction<void>("setScriptAttrib", behav, behav->getAttrib());
+    behav->cacheTriggers(*_mainState);
 
 	if(behav->getAttrib()->hasParent()) {
 		behav->setParent(loadBehaviorScript(behav->getAttrib()->getParentPath()));
@@ -379,7 +380,8 @@ bool LuaManagerBase::initialize(void) {
 }
 
 bool LuaManagerBase::uninitialize(void) {
-	delete _mainState;
+    //delete _mainState;
+    _scripts.clear();
 	return true;
 }
 

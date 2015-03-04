@@ -230,5 +230,6 @@ private slots:
     void on_actionLights_toggled(bool arg1);
     void on_actionManual_Camera_toggled(bool arg1);
     void on_actionEnable_Audio_toggled(bool arg1);
+    void on_actionReloadProject_triggered();
 };
 #endif // ESTOOLKIT_H

@@ -188,7 +188,7 @@ namespace elysian {
     inline void Vector4::setZ(const float val) { z = val; }
     inline void Vector4::setW(const float val) { w = val; }
 
-    //inline GYVector3& InstanceTransform::getPosVec(void) { return _pos; }
+    inline GYVector3& InstanceTransform::getPosVec(void) { return _pos; }
     //inline GYVector3& InstanceTransform::getSizeVec(void) { return _size; }
     //inline GYVector3& InstanceTransform::getScaleVec(void) { return _scale; }
 
