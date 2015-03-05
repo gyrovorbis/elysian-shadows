@@ -511,13 +511,13 @@ Entity *PartySystem::getCharacterPartyMember(const char *name) const {
 			return _characterParty[i];
 		}
 	}
-	Debug::printf(Debug::CRITICAL, "PartySystem::getCharacterPartyMember(const char[]): %s is not in the party!", name);
+    //Debug::printf(Debug::CRITICAL, "PartySystem::getCharacterPartyMember(const char[]): %s is not in the party!", name);
 	return NULL;
 }
 
 Entity *PartySystem::getCharacterPartyMember(const unsigned int slot) const {
 	if(slot >= _characterParty.size()) {
-		Debug::printf(Debug::CRITICAL, "PartySystem::getCharacterPartyMember(const uint): %d is an invalid slot!", slot);
+        //Debug::printf(Debug::CRITICAL, "PartySystem::getCharacterPartyMember(const uint): %d is an invalid slot!", slot);
 		return NULL;
 	}
 	return _characterParty[slot];
