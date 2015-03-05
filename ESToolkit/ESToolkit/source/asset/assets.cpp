@@ -399,3 +399,28 @@ Area* Assets::reloadArea(Area* area) {
    }
    return area;
 }
+
+Project* Assets::reloadProject(void) {
+    if(!m_project) return nullptr;
+    const QString areaName = _curArea->getDirName();
+    const QString levelName = _curLevel->getDirName();
+    const QString projPath = m_project->getLocation();
+
+    setCurrentArea(nullptr);
+    setCurrentLevel(nullptr);
+    setCurrentProject(nullptr);
+
+    delete m_project;
+    delete _engine;
+
+    auto* proj = loadProject(projPath);
+
+    if(!levelName.isNull()) {
+        auto* lev = proj->getLevel(levelName);
+        setCurrentLevel(lev);
+        if(!areaName.isNull()) {
+            setCurrentArea(lev->getArea(areaName));
+        }
+    }
+    return proj;
+}

@@ -46,7 +46,7 @@ namespace elysian {
 		_mainState->register_class<Dialog>();
 		_mainState->register_class<Examinable>();
         Examinable::registerProxyMetaTable(*_mainState);
-        _mainState->register_class<CombatStatus>();
+        OOLUA::register_class<CombatStatusModifier>(*_mainState);
         _mainState->register_class<CombatReceipt>();
 		_mainState->register_class<CombatAttrib>();
 		_mainState->register_class<Combat>();
@@ -185,14 +185,15 @@ OOLUA_EXPORT_FUNCTIONS(InstanceTransform,
                                     setScale3f,
 									setOrientZ,
 									rotate,
-                                    scale2f)
+                                    scale2f,
+                                    getPosVec)
 OOLUA_EXPORT_FUNCTIONS_CONST(InstanceTransform,
 								apply,
 								getPos2f,
 								getPos3f,
 								getSize2f,
 								getScale2f,
-								getOrientZ)
+                                getOrientZ)
 
 EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(RenderableObject,
 									getTransform)
@@ -482,7 +483,8 @@ OOLUA_EXPORT_FUNCTIONS(Character,
 OOLUA_EXPORT_FUNCTIONS_CONST(Character,
 							   getFaceDir,
                                isFacing,
-                                getHeldEntity)
+                               getHeldEntity,
+                                getLastMoveDir)
 
 OOLUA_EXPORT_FUNCTIONS(CharacterSystem,
                        walkToWayPoint,
@@ -606,10 +608,16 @@ OOLUA_EXPORT_FUNCTIONS(CombatAttrib,
 
 OOLUA_EXPORT_FUNCTIONS_CONST(CombatStatus,
 							 getMp,
-							 getHp)
+                             getHp,
+                             hasStatusEffect)
 OOLUA_EXPORT_FUNCTIONS(CombatStatus,
 					   setHp,
 					   setMp)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(CombatStatusModifier)
+OOLUA_EXPORT_FUNCTIONS(CombatStatusModifier,
+                       addStatusEffect,
+                       removeStatusEffect)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(Combat,
                               getStatus)
@@ -832,7 +840,7 @@ OOLUA_EXPORT_FUNCTIONS(CombatSystem,
 					   addCombatant,
 					   removeCombatant,
 					   killCombatant,
-                       resolveCombatAction,
+                       //resolveCombatAction,
 					   sendStatusModifier,
 					   setBgmCombatTrack,
 					   setBgmDynamic)

@@ -247,14 +247,14 @@ void Engine::render(void) {
 }
 
 Engine::~Engine(void) { 
+    //SHIT ALL NEEDS SOME WORK
+   // MapSystem::staticUninitialize();
 
-    MapSystem::staticUninitialize();
+    //gyInputUninit();
+    //gyTimerUninit();
 
-    gyInputUninit();
-    gyTimerUninit();
-
-	LuaManager::uninitialize();
-	delete _combatSystem;
+    LuaManager::uninitialize();
+/*	delete _combatSystem;
 	delete _dialogSystem;
 	delete _examinableSystem;
 	delete _daySystem;
@@ -271,7 +271,7 @@ Engine::~Engine(void) {
 	delete _rigidBodySystem;
 	delete _collisionSystem;
 	delete _guiSystem;
-	delete _behaviorSystem;
+    delete _behaviorSystem;*/
 	
 
 }

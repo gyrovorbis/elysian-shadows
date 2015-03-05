@@ -45,7 +45,7 @@ namespace elysian {
 		virtual ~Character(void) override		= default;
 
 		Direction::DIR4		_faceDir			= Direction::DIR4_CENTER;
-		GYVector2			_lastMoveDir		= { 0.0f, 0.0f };
+        GYVector3			_lastMoveDir		= { 0.0f, 0.0f, 0.0f };
         float               _walkForce          = ELYSIAN_CHAR_WALK_DEFAULT_FORCE;
         float               _dashMultiplier     = ELYSIAN_CHAR_DASH_DEFAULT_MULTIPLIER;
 		bool				_walkAnimInterp		= true;
@@ -64,37 +64,38 @@ namespace elysian {
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
-        virtual bool    load(FILE* file) override;
-        virtual bool    save(FILE* file) override;
-        virtual bool    canAddTo(Entity& entity) override { return (entity.getAnimation() && entity.getRigidBody()); }
-        virtual bool    addToLevel(void) override;
-        virtual bool    removeFromLevel(void) override;
-        virtual auto    getType(void) const -> TYPE override { return Component::CHARACTER; }
+        virtual bool        load(FILE* file) override;
+        virtual bool        save(FILE* file) override;
+        virtual bool        canAddTo(Entity& entity) override { return (entity.getAnimation() && entity.getRigidBody()); }
+        virtual bool        addToLevel(void) override;
+        virtual bool        removeFromLevel(void) override;
+        virtual auto        getType(void) const -> TYPE override { return Component::CHARACTER; }
 
-		Direction::DIR4 getFaceDir(void) const;
-		bool			isFacing(const Entity& entity) const;
-		void			setWalkAnimInterp(const bool val);
-		void			setAnimate(const bool val);
+        Direction::DIR4     getFaceDir(void) const;
+        const GYVector3&    getLastMoveDir(void) const;
+        bool                isFacing(const Entity& entity) const;
+        void                setWalkAnimInterp(const bool val);
+        void                setAnimate(const bool val);
 
-		void			setHeldEntity(Entity*const entity);
-		float			getHeldEntityForceDampFactor(void);
-		void			throwHeldEntity(void);
-		Entity*			getHeldEntity(void) const;
-		void			jump(void);
-        void            setWalkForce(const float force);
-        float           getWalkForce(void) const;
-        void            setDashMultiplier(const float mult);
-        float           getDashMultiplier(void) const;
-        bool            isDashing(void) const;
-        void            setDashing(const bool val);
+        void                setHeldEntity(Entity*const entity);
+        float               getHeldEntityForceDampFactor(void);
+        void                throwHeldEntity(void);
+        Entity*             getHeldEntity(void) const;
+        void                jump(void);
+        void                setWalkForce(const float force);
+        float               getWalkForce(void) const;
+        void                setDashMultiplier(const float mult);
+        float               getDashMultiplier(void) const;
+        bool                isDashing(void) const;
+        void                setDashing(const bool val);
 
-        void            update(void);
-        void            moveByDist(const GYVector2& dist);
-        void            moveByForce(const GYVector2& vec);
-        void            walk(const GYVector2& dir);
-        void            faceDir(const Direction::DIR4 dir);
-        void            faceEntity(Entity& entity);
-        void            animateWalk(const GYVector2& moveVec);
+        void                update(void);
+        void                moveByDist(const GYVector2& dist);
+        void                moveByForce(const GYVector2& vec);
+        void                walk(const GYVector2& dir);
+        void                faceDir(const Direction::DIR4 dir);
+        void                faceEntity(Entity& entity);
+        void                animateWalk(const GYVector2& moveVec);
 	};
 
 
@@ -109,6 +110,7 @@ namespace elysian {
     inline Entity* Character::getHeldEntity(void) const { return _heldEntity; }
     inline void Character::setWalkForce(const float force) { _walkForce = force; }
     inline float Character::getWalkForce(void) const { return _walkForce; }
+    inline const GYVector3& Character::getLastMoveDir(void) const { return _lastMoveDir; }
 
 	inline bool Character::isFacing(const Entity &entity) const {
 		GYVector2 distVec;

@@ -36,6 +36,8 @@ namespace elysian {
 		void onCombatReceiveStatusModifier(Entity*const entity, CombatStatus*const modifier);
 		void onCombatTargetCollisionEnter(Entity*const entity, CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier);
         void onShatter(Entity*const entity, CollisionContact*const contact);
+        void onButtonPress(const GameInput::BUTTON button);
+        void onButtonRelease(const GameInput::BUTTON button);
 
 		
 	};
@@ -137,6 +139,24 @@ namespace elysian {
         {
             if(it->second->getTriggers() & Behavior::ON_SHATTER) {
                 it->second->onShatter(contact);
+            }
+        }
+    }
+
+    inline void BehaviorSystem::onButtonPress(const GameInput::BUTTON button) {
+        for(auto& it : getCurArea()->behaviors)
+        {
+            if(it->getTriggers() & Behavior::ON_BUTTON_PRESS) {
+                it->onButtonPress(button);
+            }
+        }
+    }
+
+    inline void BehaviorSystem::onButtonRelease(const GameInput::BUTTON button) {
+        for(auto& it : getCurArea()->behaviors)
+        {
+            if(it->getTriggers() & Behavior::ON_BUTTON_RELEASE) {
+                it->onButtonRelease(button);
             }
         }
     }

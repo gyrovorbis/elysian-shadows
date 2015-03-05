@@ -46,7 +46,7 @@ FILE*				DebugBase::_luaDbgFile;
 Engine*				DebugBase::_engine = nullptr;
 unsigned int		DebugBase::_stackDepth = 0;
 Debug::LEVEL		DebugBase::_level = ELYSIAN_DEBUG_LOG_LEVEL_DEFAULT;
-Debug::ADV_LOG_WRAP DebugBase::_advLogWrap = Debug::ADV_LOG_LUA;
+Debug::ADV_LOG_WRAP DebugBase::_advLogWrap = Debug::ADV_LOG_OFF;
 
 //Invoked by LibGyro (callback function)
 void DebugBase::libGyroPrintf(const GY_DEBUG_LEVEL level, const char* const str) { Debug::writeLog(LIBGYRO, (LEVEL)level, str); }
@@ -95,27 +95,28 @@ void DebugBase::writeLog(const DebugBase::SOURCE source, const DebugBase::LEVEL 
 #endif
 	gyPrintf(buffer); //use the "preferred" IO of each platform
 
-
+    if(_advLogWrap != ADV_LOG_OFF) {
 	AdventureLog::TEXT_TYPE advType;
 
 	switch(source) {
-	case LUA:
-		advType = AdventureLog::TEXT_LUA_DEBUG;
-		break;
-	default:
-		advType = AdventureLog::TEXT_NORMAL;
-	}
-	if(level == CRITICAL || level == FATAL) advType = AdventureLog::TEXT_ERROR;
+        case LUA:
+            advType = AdventureLog::TEXT_LUA_DEBUG;
+            break;
+        default:
+            advType = AdventureLog::TEXT_NORMAL;
+        }
+        if(level == CRITICAL || level == FATAL) advType = AdventureLog::TEXT_ERROR;
 
-	//Check to see if this kind of output is being wrapped to the Adventure Log
-	if(level == CRITICAL || level == FATAL ||
-			_advLogWrap == ADV_LOG_ALL ||
-			(_advLogWrap == ADV_LOG_LUA && source == LUA))
-	{
-		//characters that the adventure log cannot display--shouldn't it handle this? Not debug? No shit.
-		for(unsigned int i = 0; i < strlen(buffer); ++i) if(buffer[i] == '\n' || buffer[i] == '\t') buffer[i] = ' ';
-		if(_engine) getGuiSys()->adventureLog.addLine(advType, buffer);
-	}
+        //Check to see if this kind of output is being wrapped to the Adventure Log
+        if(level == CRITICAL || level == FATAL ||
+                _advLogWrap == ADV_LOG_ALL ||
+                (_advLogWrap == ADV_LOG_LUA && source == LUA))
+        {
+            //characters that the adventure log cannot display--shouldn't it handle this? Not debug? No shit.
+            for(unsigned int i = 0; i < strlen(buffer); ++i) if(buffer[i] == '\n' || buffer[i] == '\t') buffer[i] = ' ';
+            if(_engine) getGuiSys()->adventureLog.addLine(advType, buffer);
+        }
+    }
 }
 
 // Invoked for non AssetIO Engine logging

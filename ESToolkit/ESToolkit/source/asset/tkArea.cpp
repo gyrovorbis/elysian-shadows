@@ -54,6 +54,7 @@ TkArea::TkArea(Level *const lev) {
 QAbstractItemModel* TkArea::getModel(void) const { return const_cast<TkArea*>(this); }
 
 TkArea::~TkArea(void) {
+    deactivate();
 	close();
 }
 

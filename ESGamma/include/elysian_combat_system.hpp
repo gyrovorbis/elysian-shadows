@@ -15,6 +15,7 @@ namespace elysian {
 
 	class Combat;
 	class CombatStatus;
+    class CombatStatusModifier;
 
 	class CombatReceipt {
 	private:
@@ -72,12 +73,16 @@ namespace elysian {
 		void setBgmDynamic(const bool enabled=true);
 		void setBgmCombatTrack(const unsigned track);
 
-		void resolveCombatAction(OOLUA::Lua_table_ref action,
+        /*void resolveCombatAction(OOLUA::Lua_table_ref action,
 								 Combat*const src,
-								 Combat*const target);
+                                 Combat*const target);*/
 
-		void sendStatusModifier(Combat*const target, CombatStatus*const modifier);
+        void sendStatusModifier(Combat*const target, CombatStatusModifier*const modifier);
 	};
+
+
+
+
 
 
 

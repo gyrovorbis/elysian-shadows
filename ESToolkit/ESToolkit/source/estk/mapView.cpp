@@ -76,6 +76,10 @@ void MapView::onEngineInitialize(void) {
     render->setMaterial(mat);
     sprAttrib->setColor(GYColor4{ 255, 0, 0, 255});
     render->setSpriteAttrib(sprAttrib);
+    colAttrib->getFlags()->resetType();
+    colAttrib->getFlags()->addType(elysian::CollisionFlags::CURSOR);
+    colAttrib->getFlags()->resetCheckAgainst();
+    colAttrib->getFlags()->addCheckAgainst(elysian::CollisionFlags::CURSOR);
     collid->setAttrib(colAttrib);
     collid->setWorldSpace(false);
     collid->setResolvePenetration(false);

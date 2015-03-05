@@ -468,6 +468,7 @@ void ESToolkit::toggleProjectActions(bool enabled)
     m_activePlatform->setEnabled(enabled);
     _ui->actionManual_Camera->setEnabled(enabled);
     _ui->actionEnable_Audio->setEnabled(enabled);
+    _ui->actionReloadProject->setEnabled(enabled);
 }
 
 bool ESToolkit::MaybeSave()
@@ -901,8 +902,7 @@ void ESToolkit::_openProjectDir(const QString dir) {
   _engineGLView->makeCurrent();
  // _engineGLView->update();
 	Project *proj = _assets.loadProject(dir);
-    _assets.getEngine()->getMapSys()->setView(_ui->mapView);
-  _engineGLView->update();
+    _engineGLView->update();
 
     _assets.setCurrentProject(proj);
     _assets.setCurrentSelection(_assets.getCurrentArea());
@@ -1897,6 +1897,7 @@ void ESToolkit::on_actionShadows_toggled(bool arg1)
 }
 
 void ESToolkit::_onEngineInitialized(void) {
+    _assets.getEngine()->getMapSys()->setView(_ui->mapView);
     _tkLuaInitialize();
     _assets.getEngine()->getLightSys()->setShadowPassEnabled(_engineParams.shadowPassEnabled);
     _assets.getEngine()->getLightSys()->setEnabled(_engineParams.lightingEnabled);
@@ -1951,4 +1952,11 @@ void ESToolkit::on_actionEnable_Audio_toggled(bool arg1)
     if(_assets.getEngine()) {
         _assets.getEngine()->getAudioSys()->setEnabled(arg1);
     }
+}
+
+
+void ESToolkit::on_actionReloadProject_triggered(void)
+{
+    TkDebug::clear();
+    _assets.reloadProject();
 }

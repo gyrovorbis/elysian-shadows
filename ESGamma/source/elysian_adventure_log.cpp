@@ -143,8 +143,8 @@ void AdventureLog::render(void) {
     gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
 
     //Draw Canvas for log strings
-    quad._transform.setPos(0.6f*(float)_scrW*0.5f, ELYSIAN_ADV_LOG_Y+11+0.5f*(22*(_endIndex-_startIndex+1)-_yOffset-24), ELYSIAN_ADV_LOG_Z);
-    quad._transform.setSize(0.6f*(float)_scrW, 22.0f*(_endIndex-_startIndex+1)-_yOffset-18.0f);
+    quad._transform.setPos(0.6f*(float)_scrW*0.5f, ELYSIAN_ADV_LOG_Y+11+0.5f*(22*(_endIndex-_startIndex+1)-_yOffset-6), ELYSIAN_ADV_LOG_Z);
+    quad._transform.setSize(0.6f*(float)_scrW, 22.0f*(_endIndex-_startIndex+1)-_yOffset);
 	for(unsigned i = 0; i < 4; ++i) quad.setVertexColor(i, canvasColor.r, canvasColor.g, canvasColor.b, canvasColor.a);
     quad.setVerticesAlpha(0.6f*_baseAlpha*255.0f, 0.0f*_baseAlpha*255.0f, 0.0f*_baseAlpha*255.0f, 0.0f*_baseAlpha*255.0f);
     quad.render();
@@ -162,7 +162,7 @@ void AdventureLog::render(void) {
 	
 	//Draw all strings between the start and ending indices.
     for(int i = _startIndex; i <= _endIndex-1; ++i) {
-		yCoord2 = 22 * (i-_startIndex);
+        yCoord2 = 22 * (i-_startIndex) + 10;
         switch(_type[i]) {
             case TEXT_DEBUG:
 				r = 255;

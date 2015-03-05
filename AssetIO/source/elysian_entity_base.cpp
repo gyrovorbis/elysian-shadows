@@ -289,7 +289,7 @@ void EntityBase::renderShadowVolume(void) {
 }
     
 void EntityBase::move(const GYVector2& dist) {
-    if(_character) _character->moveByDist(dist);
+    if(_character) _character->moveByForce(dist);
     else gyVec2AddAccum((GYVector2*)&_transform._pos, &dist);
 }
 

@@ -1,5 +1,6 @@
 #include "elysian_game_input.hpp"
 #include "elysian_debug.hpp"
+#include "elysian_behavior_system.hpp"
 
 /*
  The Translate() function is for mapping platform-specific input devices
@@ -45,12 +46,17 @@ void GameInput::translate(const GYInput& platInput, GameInput& gameInput) {
 
         default:
             if(platInput.keyDown[i]) gameInput.setDown((GameInput::BUTTON)i);
-            else gameInput.setUp((GameInput::BUTTON)i);
+            else {
+                bool changed = gameInput.getDown((GameInput::BUTTON)i);
+                gameInput.setUp((GameInput::BUTTON)i);
+                if(changed) getBehavSys()->onButtonRelease((GameInput::BUTTON)i);
+            }
 
             break;
         }
 
        gameInput.keyTapped[i] = platInput.keyTapped[i];
+       if(gameInput.keyTapped[i]) getBehavSys()->onButtonPress((GameInput::BUTTON)i);
 	}
 
 

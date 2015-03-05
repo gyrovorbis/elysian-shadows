@@ -22,11 +22,11 @@ PartySystem::PartySystem(void)
 {}
 
 PartySystem::~PartySystem() {
-	for(unsigned int i = 0; i < _playableAmount; ++i) {
-		delete _playable[i];
-	}
+    //for(unsigned int i = 0; i < _playableAmount; ++i) {
+        //delete _playable[i];
+    //}
 	
-	delete[] _playable;
+//	delete[] _playable;
 }
 
 void PartySystem::update(void) {//VOIDICATE
@@ -38,7 +38,7 @@ void PartySystem::update(void) {//VOIDICATE
 
 int PartySystem::getPartySlot(const Entity *entity) {
     const size_t size = _characterParty.size();
-    for(int i = 0; i < size; ++i) {
+    for(size_t i = 0; i < size; ++i) {
         if(_characterParty[i] == entity) return i;
     }
 
@@ -428,7 +428,7 @@ bool PartySystem::removePlayableFromParty(const unsigned int slot) {
 	_playableParty.erase(_playableParty.begin() + slot);
 	if(slot == 0) {
 		if(_playableParty.size() > 0) getCameraSys()->setFollowEntity(_playableParty[0]);
-		else getCameraSys()->setFollowEntity(NULL);
+        else getCameraSys()->setFollowEntity(nullptr);
 	}
 	_resizePartyPathPoints();
 	return true;
@@ -518,7 +518,7 @@ Entity *PartySystem::getCharacterPartyMember(const char *name) const {
 Entity *PartySystem::getCharacterPartyMember(const unsigned int slot) const {
 	if(slot >= _characterParty.size()) {
         //Debug::printf(Debug::CRITICAL, "PartySystem::getCharacterPartyMember(const uint): %d is an invalid slot!", slot);
-		return NULL;
+        return nullptr;
 	}
 	return _characterParty[slot];
 }

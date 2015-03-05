@@ -109,10 +109,17 @@
      <addaction name="actionFileNewLevel"/>
      <addaction name="actionFileNewArea"/>
     </widget>
+    <widget class="QMenu" name="menuReload">
+     <property name="title">
+      <string>Reload</string>
+     </property>
+     <addaction name="actionReloadProject"/>
+    </widget>
     <addaction name="menuNew"/>
     <addaction name="separator"/>
     <addaction name="menuOpen"/>
     <addaction name="menuClose"/>
+    <addaction name="menuReload"/>
     <addaction name="separator"/>
     <addaction name="menuSave"/>
     <addaction name="separator"/>
@@ -718,9 +725,6 @@
    <property name="toolTip">
     <string>Reset Layout</string>
    </property>
-   <property name="shortcut">
-    <string>Ctrl+R</string>
-   </property>
   </action>
   <action name="actionSelect">
    <property name="checkable">
@@ -1255,6 +1259,14 @@
    </property>
    <property name="toolTip">
     <string>Enable/Disable Audio</string>
+   </property>
+  </action>
+  <action name="actionReloadProject">
+   <property name="text">
+    <string>Project</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>

@@ -8,6 +8,7 @@
 #include "elysian_component.hpp"
 #include "elysian_stl_algorithm.hpp"
 #include "elysian_asset_typedefs.hpp"
+#include "elysian_game_input.hpp"
 
 #define ELYSIAN_BEHAVIOR_NAME_SIZE 100
 
@@ -40,39 +41,98 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(triggers, getTriggers)
         ELYSIAN_LUA_PROXY_FIELDS_END()*/
 
-        virtual ~Behavior(void) override;
+        virtual ~Behavior(void) override = default;
+
+        enum TRIGGER_INDEX {
+            ON_SCRIPT_CREATE_INDEX,
+            ON_SCRIPT_DESTROY_INDEX,
+            ON_CREATE_INDEX,
+            ON_DESTROY_INDEX,
+            ON_LOAD_INDEX,
+            ON_UNLOAD_INDEX,
+            ON_ENTER_INDEX,
+            ON_EXIT_INDEX,
+            ON_UPDATE_INDEX,
+            ON_RENDER_INDEX,
+            ON_COLLIDE_INDEX,
+            ON_COLLISION_ENTER_INDEX,
+            ON_COLLISION_EXIT_INDEX,
+            ON_EXAMINE_INDEX,
+            ON_DIALOG_INDEX,
+            ON_COMBAT_ENTER_INDEX,
+            ON_COMBAT_EXIT_INDEX,
+            ON_COMBAT_DEATH_INDEX,
+            ON_COMBAT_RECEIVE_STATUS_MODIFIER_INDEX,
+            ON_COMBAT_TARGET_COLLISION_ENTER_INDEX,
+            ON_SHATTER_INDEX,
+            ON_BUTTON_PRESS_INDEX,
+            ON_BUTTON_RELEASE_INDEX,
+            TRIGGER_MAX_INDEX,
+            //ESTk-only trigers
+            ON_TK_SELECT_INDEX=62,
+            ON_TK_UNSELECT_INDEX=63
+        };
 
 		//64 triggers max, currently
-		enum TRIGGER {
-			ON_SCRIPT_CREATE					= 1,
-			ON_SCRIPT_DESTROY					= 1<<1,
-			ON_CREATE							= 1<<2,
-			ON_DESTROY							= 1<<3,
-			ON_LOAD								= 1<<4,
-			ON_UNLOAD							= 1<<5,
-			ON_ENTER							= 1<<6,
-			ON_EXIT								= 1<<7,
-			ON_UPDATE							= 1<<8,
-			ON_RENDER							= 1<<9,
-			ON_COLLIDE							= 1<<10,
-			ON_COLLISION_ENTER					= 1<<11,
-			ON_COLLISION_EXIT					= 1<<12,
-			ON_EXAMINE							= 1<<13,
-			ON_DIALOG							= 1<<14,
-			ON_COMBAT_ENTER						= 1<<15,
-			ON_COMBAT_EXIT						= 1<<16,
-			ON_COMBAT_DEATH						= 1<<17,
-			ON_COMBAT_RECEIVE_STATUS_MODIFIER	= 1<<18,
-			ON_COMBAT_TARGET_COLLISION_ENTER	= 1<<19,
-            ON_SHATTER                          = 1<<20,
-            ON_TK_SELECT                        = 1<<21,
-            ON_TK_UNSELECT                      = 1<<22,
-            TRIGGER_MAX							= 1<<23
-		};
+        enum TRIGGER {
+            ON_SCRIPT_CREATE					= 1ul<<ON_SCRIPT_CREATE_INDEX,
+            ON_SCRIPT_DESTROY					= 1ul<<ON_SCRIPT_DESTROY_INDEX,
+            ON_CREATE							= 1ul<<ON_CREATE_INDEX,
+            ON_DESTROY							= 1ul<<ON_DESTROY_INDEX,
+            ON_LOAD								= 1ul<<ON_LOAD_INDEX,
+            ON_UNLOAD							= 1ul<<ON_UNLOAD_INDEX,
+            ON_ENTER							= 1ul<<ON_ENTER_INDEX,
+            ON_EXIT								= 1ul<<ON_EXIT_INDEX,
+            ON_UPDATE							= 1ul<<ON_UPDATE_INDEX,
+            ON_RENDER							= 1ul<<ON_RENDER_INDEX,
+            ON_COLLIDE							= 1ul<<ON_COLLIDE_INDEX,
+            ON_COLLISION_ENTER					= 1ul<<ON_COLLISION_ENTER_INDEX,
+            ON_COLLISION_EXIT					= 1ul<<ON_COLLISION_EXIT_INDEX,
+            ON_EXAMINE							= 1ul<<ON_EXAMINE_INDEX,
+            ON_DIALOG							= 1ul<<ON_DIALOG_INDEX,
+            ON_COMBAT_ENTER						= 1ul<<ON_COMBAT_ENTER_INDEX,
+            ON_COMBAT_EXIT						= 1ul<<ON_COMBAT_EXIT_INDEX,
+            ON_COMBAT_DEATH						= 1ul<<ON_COMBAT_DEATH_INDEX,
+            ON_COMBAT_RECEIVE_STATUS_MODIFIER	= 1ul<<ON_COMBAT_RECEIVE_STATUS_MODIFIER_INDEX,
+            ON_COMBAT_TARGET_COLLISION_ENTER	= 1ul<<ON_COMBAT_TARGET_COLLISION_ENTER_INDEX,
+            ON_SHATTER                          = 1ul<<ON_SHATTER_INDEX,
+            ON_BUTTON_PRESS                     = 1ul<<ON_BUTTON_PRESS_INDEX,
+            ON_BUTTON_RELEASE                   = 1ul<<ON_BUTTON_RELEASE_INDEX,
+            TRIGGER_MAX							= 1ul<<TRIGGER_MAX_INDEX,//1<<23,
+            //ESTk-only trigers
+            ON_TK_SELECT                        = 1ull<<ON_TK_SELECT_INDEX,
+            ON_TK_UNSELECT                      = 1ull<<ON_TK_UNSELECT_INDEX
+        };
+
+        constexpr static const char* triggerStrings[] = {
+            "onScriptCreate",
+            "onScriptDestroy",
+            "onCreate",
+            "onDestroy",
+            "onLoad",
+            "onUnload",
+            "onEnter",
+            "onExit",
+            "onUpdate",
+            "onRender",
+            "onCollide",
+            "onCollisionEnter",
+            "onCollisionExit",
+            "onExamine",
+            "onDialog",
+            "onCombatEnter",
+            "onCombatExit",
+            "onCombatDeath",
+            "onCombatReceiveStatusModifier",
+            "onCombatTargetCollisionEnter",
+            "onShatter",
+            "onButtonPress",
+            "onButtonRelease"
+        };
 
 		static const char* triggerNameFromFlag(const uint64_t flag);
 
-		virtual const char *getBehavName(void) const = 0;
+        virtual const char* getBehavName(void) const = 0;
 		
 		static Behavior* create(const char* typeName, Entity& parent);
         
@@ -96,6 +156,8 @@ namespace elysian {
 		virtual void onCombatEnter(void);
 		virtual void onCombatExit(void);
 		virtual void onCombatDeath(void);
+        virtual void onButtonPress(const GameInput::BUTTON button);
+        virtual void onButtonRelease(const GameInput::BUTTON button);
 		virtual void onCombatReceiveStatusModifier(CombatStatus*const modifier);
 		virtual void onCombatTargetCollisionEnter(CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier);
 
@@ -124,8 +186,6 @@ namespace elysian {
 	
 	//========= INLINEZ =========
 	
-
-	inline Behavior::~Behavior(void) { }
 	inline uint64_t Behavior::getTriggers(void) const { return _triggerBits; }
 	//inline void Behavior::addTrigger(const uint64_t flags) { _triggerBits |= flags; }
 	//inline void Behavior::setTriggers(const uint64_t flags) { _triggerBits = flags; }
