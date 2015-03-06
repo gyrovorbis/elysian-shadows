@@ -360,7 +360,7 @@ void gyDebugSigInit(void) {
 	if(so.sa_handler == SIG_IGN)
 		_gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGTRAP signal handler.");
 #elif defined(WIN32)
-    SetUnhandledExceptionFilter(&windows_exception_handler);
+    //SetUnhandledExceptionFilter(&windows_exception_handler);
 
 #endif
 }

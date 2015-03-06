@@ -13,7 +13,7 @@ bool Font::loadTextData(const char* const img_file, int sheet_width, int sheet_h
     Debug::push();
 
     //_transform.setSize(16.0f, 32.0f);
-    _transform.setSize(sprite_width, sprite_height);
+    _transform.setSize((float)sprite_width, (float)sprite_height);
 
 	//CHECK IF TEXTURE IS EVER LOADED
 	if(!(_tex = gyVidTexCreateSheetUniform(img_file, sheet_width, sheet_height, sprite_width, sprite_height))) {
@@ -79,7 +79,7 @@ void Font::drawString(const FORMAT format, const ALIGNMENT align, const char *co
     }
     else if(align == R_ALIGN) {
 		for(i = 0; i < (int)strlen(buffer); ++i) {
-            temp += _charWidth[(int)buffer[i]]+_spacing;
+            temp += _charWidth[(int)buffer[i]];
 		}
         currentX = (_transform._pos.x - temp);
 	}
