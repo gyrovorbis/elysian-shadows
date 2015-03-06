@@ -53,7 +53,7 @@ namespace elysian {
 		bool			_bgmDynamic		= true;
 
 		void _dealCollisionDamage(Combat*const src, Combat*const target, Collidable* bodyB, CollisionContact* contact);
-		void _processCurrentCombatAction(void);
+        void _processCurrentCombatAction(CollisionContact*const contact, Combat*const target);
 		void _emitCombatModifierText(const Combat*const target, const CombatStatus& modifier);
 	public:
 		virtual ~CombatSystem(void) = default;

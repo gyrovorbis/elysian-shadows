@@ -17,6 +17,7 @@ const float AdventureLog::_exitFadeTime = 1.0f;
  is handled here: Full log and string is too big for a single line.
  */
 void AdventureLog::addLine(const TEXT_TYPE lineType, const char *line) {
+    setEnabled(true);
     getGuiSys()->getResolution(_scrW, _scrH);
     if(_endIndex == ELYSIAN_ADV_LOG_LINES-1) { //The entire log is COMPLETELY full. Problem.
 		
@@ -37,8 +38,8 @@ void AdventureLog::addLine(const TEXT_TYPE lineType, const char *line) {
         _startIndex = 0;
     }
 	//Hack as fuck. FIXME!!!
-	if(_endIndex - _startIndex > 5) {
-		_startIndex += (_endIndex-_startIndex)-5;
+    if(_endIndex - _startIndex > ELYSIAN_ADV_LOG_MAX_LINES_DISPLAYABLE) {
+        _startIndex += (_endIndex-_startIndex)-ELYSIAN_ADV_LOG_MAX_LINES_DISPLAYABLE;
 	}
     const size_t length = strlen(line);
     if(length >= ELYSIAN_ADV_LOG_CHARS_PER_LINE) { //Shit, we got a problem!
@@ -73,14 +74,14 @@ void AdventureLog::update(void) {
         switch(_state) {
             case WAIT: //We're waiting a few frames before we get rid of the old stuff.
                 _waitCounter += deltaTime;
-                if(_waitCounter >= 0.5f/*ADV_LOG_FRAMES_PER_NEWLINE*/) { //Time to get rid of top line
+                if(_waitCounter >= ELYISAN_ADV_LOG_PAUSE_TIME) { //Time to get rid of top line
 					_state = FADE;
 					//fadeCounter = 0;
                 }
                 break;
 			case FADE:
 				_fadeCounter += deltaTime*3.0f;
-				if(_fadeCounter >= 1.0f) {
+                if(_fadeCounter >= 1.0f) {
 					_state = SCROLL;
 					_fadeCounter = 1.0f;
 					//yOffset = 0;
@@ -94,6 +95,7 @@ void AdventureLog::update(void) {
 					++_startIndex;
 					_yOffset = 0;
 					_fadeCounter = 0.0f;
+                    if(_startIndex == _endIndex) setEnabled(false);
                 } 
                 break;
 			default:
@@ -219,7 +221,7 @@ void AdventureLog::render(void) {
 	//font.setAlpha(_baseAlpha);
     _labelFont->setColor(255, 255, 255, 255);
     _labelFont->setAlpha(_baseAlpha*255.0);
-    _labelFont->drawString(Font::NO_FORMAT, Font::L_ALIGN, "ADVENTURE LOG");
+    _labelFont->drawString(Font::NO_FORMAT, Font::L_ALIGN, _label);
 	//font.DrawString(0, ADV_LOG_X+15, ADV_LOG_Y, ADV_LOG_Z+3, 1, 1, 1, L_ALIGN, "Adventure Log");
 }
 

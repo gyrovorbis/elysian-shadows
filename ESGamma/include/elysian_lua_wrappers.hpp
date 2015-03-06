@@ -527,6 +527,8 @@ OOLUA_PROXY(CollisionFlags)
 	OOLUA_MEM_FUNC(void, resetCheckAgainst)
 	OOLUA_MEM_FUNC(void, addType, uint32_t)
 	OOLUA_MEM_FUNC(void, addCheckAgainst, uint32_t)
+    OOLUA_MEM_FUNC_CONST(uint32_t, getType)
+    OOLUA_MEM_FUNC_CONST(uint32_t, getTypeAgainst)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(GYStatic)
@@ -602,6 +604,7 @@ OOLUA_PROXY(ForceTarget)
 	)
 	OOLUA_MEM_FUNC(void, applyForce, const GYVector3&)
 	OOLUA_MEM_FUNC(void, applyForceToPoint, const GYVector2&, const GYVector2&)
+    OOLUA_MEM_FUNC(void, clearKinetic)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(RigidBody, Component, ForceTarget)
@@ -810,22 +813,19 @@ OOLUA_PROXY(Examinable, Component)
 	OOLUA_MEM_FUNC(void, setMaxDist, float)
 OOLUA_PROXY_END
 
-OOLUA_PROXY(CombatReceipt)
-	OOLUA_MEM_FUNC(void, setText, const char*)
-	OOLUA_MEM_FUNC(void, setTextColor, const GYColor4&)
-	OOLUA_MEM_FUNC(void, setPartColor, const GYColor4&)
-	OOLUA_MEM_FUNC(void, setPartIntensityFactor, float)
-OOLUA_PROXY_END
-
 OOLUA_PROXY(CombatAttrib)
 	OOLUA_MEM_FUNC(void, setTypeFlags, uint32_t)
 	OOLUA_MEM_FUNC(void, setTypeAgainstFlags, uint32_t)
 	OOLUA_MEM_FUNC(void, setParticleAttrib, ParticleEmitterAttrib*)
+    OOLUA_MEM_FUNC_CONST(uint32_t, getTypeFlags)
+    OOLUA_MEM_FUNC_CONST(uint32_t, getTypeAgainstFlags)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CombatStatus)
 	OOLUA_MEM_FUNC(void, setHp, int)
 	OOLUA_MEM_FUNC(void, setMp, int)
+    OOLUA_MEM_FUNC(void, setMaxHp, int)
+    OOLUA_MEM_FUNC(void, setMaxMp, int)
 	OOLUA_MEM_FUNC_CONST(int, getHp)
 	OOLUA_MEM_FUNC_CONST(int, getMp)
     OOLUA_MEM_FUNC_CONST(bool, hasStatusEffect, const CombatStatus::STATUS_EFFECT)
@@ -846,11 +846,13 @@ OOLUA_PROXY(Combat, Component)
 	OOLUA_MEM_FUNC(Lua_table_ref&, getSelfTable)
 	OOLUA_MEM_FUNC(Lua_table_ref&, getActionTable)
 	OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<CombatAttrib*>)
+    OOLUA_MEM_FUNC_CONST(CombatAttrib*, getAttrib)
 	OOLUA_MEM_FUNC(void, setDmgType, Combat::DMG_TYPE)
 	OOLUA_MEM_FUNC(void, setDmgActive, bool)
 	OOLUA_MEM_FUNC(void, setCollisionFlags, uint32_t)
     OOLUA_MEM_FUNC_CONST(CombatStatus, getStatus)
     OOLUA_MEM_FUNC(void, setStatus, const CombatStatus&)
+    OOLUA_MEM_FUNC(void, setTargetType, const Combat::TARGET_TYPE)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(MenuWidget)
@@ -1139,6 +1141,7 @@ OOLUA_PROXY(GuiSystem)
 	OOLUA_MEM_FUNC(void, clearBgMenuWidget)
 	OOLUA_MEM_FUNC(void, setClearColor, GYColor4)
     OOLUA_MEM_FUNC(void, setAdvLogEnabled, bool)
+    OOLUA_MEM_FUNC(void, addVictoryText, const GYVector2&, const char*)
     OOLUA_MEM_FUNC_CONST(void, getResolution, out_p<unsigned&>, out_p<unsigned&>)
 OOLUA_PROXY_END
 
@@ -1249,6 +1252,12 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 	s->register_class_static<Combat>("DMG_SOURCE", Combat::DMG_SOURCE);
 	s->register_class_static<Combat>("DMG_TARGET", Combat::DMG_TARGET);
 	s->register_class_static<Combat>("DMG_SOURCE_TARGET", Combat::DMG_SOURCE_TARGET);
+
+    s->register_class_static<Combat>("TARGET_NONE", Combat::TARGET_NONE);
+    s->register_class_static<Combat>("TARGET_PARTY", Combat::TARGET_PARTY);
+    s->register_class_static<Combat>("TARGET_FRIENDLY", Combat::TARGET_FRIENDLY);
+    s->register_class_static<Combat>("TARGET_ENEMY", Combat::TARGET_ENEMY);
+
 	s->register_class_static<Combat>("ON_COLLIDE", Combat::ON_COLLIDE);
 	s->register_class_static<Combat>("ON_COLLISION_ENTER", Combat::ON_COLLISION_ENTER);
 	s->register_class_static<Combat>("ON_COLLISION_EXIT", Combat::ON_COLLISION_EXIT);
@@ -1428,37 +1437,50 @@ static inline int dbgPop(lua_State* const /*l*/) {
     return 0;
 }
 
-static inline int print(lua_State* const l) {
-	char string[GYRO_PRINTF_BUFFER_SIZE] = {0};
-	unsigned n = lua_gettop(l);
-	const char *curString;
+static inline const char* luaGetVariableString(lua_State* const l) {
+    static char string[GYRO_PRINTF_BUFFER_SIZE] = {0};
+    unsigned n = lua_gettop(l);
+    const char *curString;
 
-	for(unsigned i = 1; i <= n; ++i) {
-		int t = lua_type(l, i);
+    string[0] = 0;
+    for(unsigned i = 1; i <= n; ++i) {
+        int t = lua_type(l, i);
 
-		switch(t) {
-			case LUA_TSTRING:
-			case LUA_TNUMBER:
-			//case LUA_TBOOLEAN:
-				curString = lua_tostring(l, i);
-				strcat(string, curString);
-				break;
-			case LUA_TBOOLEAN:
-				curString = (lua_toboolean(l, i))? "true" : "false";
-				strcat(string, curString);
-				break;
-			default:
+        switch(t) {
+            case LUA_TSTRING:
+            case LUA_TNUMBER:
+            //case LUA_TBOOLEAN:
+                curString = lua_tostring(l, i);
+                strcat(string, curString);
+                break;
+            case LUA_TBOOLEAN:
+                curString = (lua_toboolean(l, i))? "true" : "false";
+                strcat(string, curString);
+                break;
+            default:
                 curString = lua_typename(l, t);
                 strcat(string, curString);
 
-		}
+        }
 
-		strcat(string, " ");
+        strcat(string, " ");
 
-	}
+    }
 
-	elysian::Debug::luaPrint(string);
+    return string;
 
+}
+
+static inline int print(lua_State* const l) {
+
+
+    elysian::Debug::luaPrint(luaGetVariableString(l));
+
+    return 0;
+}
+
+static inline int printAdvLog(lua_State* const l) {
+    elysian::Singletons::getGuiSys()->adventureLog.addLine(elysian::AdventureLog::TEXT_NORMAL, luaGetVariableString(l));
     return 0;
 }
 

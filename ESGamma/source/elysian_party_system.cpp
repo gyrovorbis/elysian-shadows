@@ -94,6 +94,7 @@ void PartySystem::processInput(const GameInput &input) {
         getAudioSys()->setSfxChannelPitch(0, 1.0f);
         getPartyLeader()->getCharacter()->setDashing(false);
         _tapTimer = 0.0f;
+        _lastDpadTapped = GameInput::BUT_NONE;
     };
 
     auto emitDashParticles = [&](void) {
@@ -130,14 +131,16 @@ void PartySystem::processInput(const GameInput &input) {
 				case GameInput::BUT_DPAD_R:
 					if(but == GameInput::BUT_DPAD_L) stop = true;
 					  break;
-				default: break;
+                default: break;
 			}
 
-			if(stop) {
+            if(stop || _tapTimer > _dashTapTimeWindow) {
                 endDash();
-			} else {
-				updateTappedButton = false;
-			}
+                _lastDpadTapped = GameInput::BUT_NONE;
+                updateTappedButton = false;
+            } //else {
+                //updateTappedButton = false;
+        //	}
 		} else {
 			if(but == _lastDpadTapped && _tapTimer <= _dashTapTimeWindow) {
                 //float angle;
@@ -181,7 +184,10 @@ void PartySystem::processInput(const GameInput &input) {
         emitDashParticles();
     }
 
-	
+    if(_lastDpadTapped != GameInput::BUT_NONE) {
+        //if(!input.getDown(_lastDpadTapped)) endDash();
+    }
+
 	if(input.getDown(GameInput::BUT_DPAD_U)){
 		if(input.getTapped(GameInput::BUT_DPAD_U)) updateDash(GameInput::BUT_DPAD_U);
 		gyVec2AddAccum(&moveDist, &upMove);

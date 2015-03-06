@@ -21,11 +21,12 @@ namespace elysian {
                 ~Engine(void);
 
         bool    loadAssets(void);
+        ENGINE_STATE getState(void);
 
         void    update(void);
         void    processInput(void);
         void    render(void);
-	};
+    };
 
 }
 

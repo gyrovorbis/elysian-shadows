@@ -46,9 +46,10 @@ namespace elysian {
 
     protected:
         int             _maxHp                  = 100;
-        int				_hp                     = 100;
-        int             _maxMp                  = 10;
-        int				_mp                     = 10;
+        int				_hp                     = 0;
+        int             _maxMp                  = 100;
+        int				_mp                     = 0;
+        int             _exp                    = 0;
         //USE STATUS BITFLAGS!!!111
         uint64_t        _statusEffects          = 0;
 
@@ -59,6 +60,8 @@ namespace elysian {
         int				getHp(void) const;
         int             getMaxHp(void) const;
         int				getMp(void) const;
+        void            setExp(const int exp);
+        int             getExp(void) const;
         int             getMaxMp(void) const;
         void            setHp(const int val);
         void            setMaxHp(const int val);
@@ -93,6 +96,7 @@ namespace elysian {
 			ON_COLLISION_EXIT	= (1<<2)
 		};
 		enum DMG_TYPE { DMG_NONE, DMG_SOURCE, DMG_TARGET, DMG_SOURCE_TARGET };
+        enum TARGET_TYPE { TARGET_NONE, TARGET_PARTY, TARGET_ENEMY, TARGET_FRIENDLY, TARGET_MAX };
 
 	private:
 
@@ -105,6 +109,7 @@ namespace elysian {
 		uint32_t				_collisionFlags	= ON_COLLISION_ENTER;
         float                   _aggroDist      = ELYSIAN_COMBAT_AGGRO_DIST_DEFAULT;
         float                   _deaggroDist    = ELYSIAN_COMBAT_DEAGGRO_DIST_DEFAULT;
+        TARGET_TYPE             _targetType     = TARGET_NONE;
 		bool					_dmgActive		= true;
         bool                    _inCombat       = false;
     public:
@@ -134,6 +139,8 @@ namespace elysian {
 		uint32_t				getCollisionFlags(void) const;
 		bool					getDmgActive(void) const;
 		void					setDmgActive(const bool active);
+        TARGET_TYPE             getTargetType(void) const;
+        void                    setTargetType(const TARGET_TYPE type);
         CombatStatus    		getStatus(void) const;
         void                    setStatus(const CombatStatus& status);
         void					applyModifier(const CombatStatusModifier& rvalue);
@@ -182,6 +189,8 @@ namespace elysian {
     inline void CombatStatus::setMaxHp(const int val) { _maxHp = val; }
 	inline void	CombatStatus::setMp(const int mp) { _mp = mp; }
     inline void CombatStatus::setMaxMp(const int val) { _maxMp = val; }
+    inline int CombatStatus::getExp(void) const { return _exp; }
+    inline void CombatStatus::setExp(const int exp) { _exp = exp; }
 
     inline void CombatStatusModifier::addStatusEffect(const int effect) {
         _statusEffects |= effect;
@@ -199,6 +208,8 @@ namespace elysian {
 	inline OOLUA::Lua_table_ref& Combat::getActionTable(void) { return _actionTable; }
 
 	inline auto	Combat::getDmgType(void) const -> DMG_TYPE { return _dmgType; }
+    inline auto Combat::getTargetType(void) const ->TARGET_TYPE { return _targetType; }
+    inline void Combat::setTargetType(const TARGET_TYPE type) { _targetType = type; }
 	inline CombatAttrib* Combat::getAttrib(void) const { return _attrib; }
 	inline void Combat::setAttrib(CombatAttrib* attrib) { _attrib = attrib; }
 	inline void Combat::setCollisionFlags(const uint32_t flags) { _collisionFlags = flags; }

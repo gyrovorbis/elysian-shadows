@@ -9,7 +9,7 @@
 #include "elysian_asset_typedefs.hpp"
 
 #define ELYSIAN_PARTY_SYSTEM_FOOT_STEP_SFX_TIME         0.3f
-#define ELYSIAN_PARTY_SYSTEM_DASH_PART_TIME_INTERVAL    0.5f
+#define ELYSIAN_PARTY_SYSTEM_DASH_PART_TIME_INTERVAL    0.1f
 
 #define ELYSIAN_PARTY_PATH	"party/party.txt"
 
@@ -44,7 +44,7 @@ namespace elysian {
         bool				_dashing                    = false;
         GameInput::BUTTON	_lastDpadTapped             = GameInput::BUT_0;
         float               _dashPartInterval           = ELYSIAN_PARTY_SYSTEM_DASH_PART_TIME_INTERVAL;
-        float               _dashDuration               = 0.25f;
+        float               _dashDuration               = 0.2f;
         float				_tapTimer                   = 0.0f;
         float				_dashTapTimeWindow          = 0.3f;
         float               _dashPartTimer              = 0.0f;

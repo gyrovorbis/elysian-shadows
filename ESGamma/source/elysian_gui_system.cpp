@@ -11,10 +11,49 @@
 #include "elysian_rigid_body_system.hpp"
 #include "elysian_rigid_body.hpp"
 #include "elysian_examinable.hpp"
+#include "elysian_combat.hpp"
 
 namespace elysian {
 
 Font* MenuText::_fonts[5];
+const float GuiSystem::VictoryText::stateTime[GuiSystem::VictoryText::STATE_MAX];
+
+GuiSystem::CombatStatusIndicator::CombatStatusIndicator(void) {
+    _healthMeter[0].setColor(80, 50, 25, 150);
+    _healthMeter[1].setColor(255, 170, 85, 255);
+
+    _healthMeter[0]._transform.setSize(30.0f, 6.0f);
+    _healthMeter[1]._transform.setSize(28.0f, 4.0f);
+}
+
+void GuiSystem::CombatStatusIndicator::update(void) {
+        const CombatStatus stats = _entity->getCombat()->getStatus();
+        const float hp      = stats.getHp();
+        const float maxHp   = stats.getMaxHp();
+
+        const static GYColor4 _colors[Combat::TARGET_MAX][2] = {
+          { { 0, 0, 0, 0 }, { 0, 0, 0, 0 } },
+          { { 25, 50, 80, 150 }, { 85, 170, 255, 255 } },
+          { { 80, 50, 25, 150 }, { 255, 170, 85, 255 } },
+          { { 25, 80, 50, 0 }, { 85, 255, 170, 255 } }
+        };
+
+        _healthMeter[0].setColor(_colors[_entity->getCombat()->getTargetType()][0]);
+        _healthMeter[1].setColor(_colors[_entity->getCombat()->getTargetType()][1]);
+
+        _healthMeter[0]._transform._pos.x = _healthMeter[1]._transform._pos.x = _entity->_transform._pos.x;
+        _healthMeter[0]._transform._pos.y = _entity->_transform._pos.y - _entity->_transform._size.y*0.5f;
+        _healthMeter[1]._transform._pos.y = _healthMeter[0]._transform._pos.y;
+
+        assert(stats.getMaxHp());
+        _healthMeter[1]._transform._size.x = ( hp / maxHp ) * 28.0f;
+        _healthMeter[1]._transform._pos.x = _healthMeter[0]._transform._pos.x - 0.5f* (28.0f - _healthMeter[1]._transform._size.x);
+}
+
+inline void GuiSystem::CombatStatusIndicator::render(void) {
+    _healthMeter[0].render();
+    _healthMeter[1].render();
+}
 
 void MenuText::recursiveRender(void) {
 	GYVector4 localVert = { _relPos.x, _relPos.y, 1.0f, 1.0f };
@@ -116,6 +155,24 @@ void GuiSystem::update(void) {
 			_combatText.remove(it);
 		}
 	}
+
+    //update VictoryText
+    for(auto it = _victoryText.begin(); it < _victoryText.end(); ++it) {
+        (*it).timer += deltaTime;
+
+        if((*it).timer >= GuiSystem::VictoryText::stateTime[(*it).state]) {
+            if((*it).state == VictoryText::STATE_FADE) {
+                (*it).state = VictoryText::STATE_INACTIVE;
+                _victoryText.remove(it);
+            }
+            (*it).state = (VictoryText::STATE)((*it).state + 1);
+            (*it).timer = 0.0f;
+        }
+    }
+
+    for(auto it = _combatStatIndicator.begin(); it < _combatStatIndicator.end(); ++it) {
+        if((*it).getEntity()) (*it).update();
+    }
 }
 
 void GuiSystem::renderBackground(void) {
@@ -203,6 +260,49 @@ void GuiSystem::_renderCombatText(void) {
 void GuiSystem::render(void) {
     _renderCombatText();
     _renderExamineEntity();
+    for(auto it = _combatStatIndicator.begin(); it < _combatStatIndicator.end(); ++it) {
+        if((*it).getEntity()) (*it).render();
+    }
+
+    //update VictoryText
+    GYColor4 textColor = { 255, 255, 255, 255 };
+    for(auto it = _victoryText.begin(); it < _victoryText.end(); ++it) {
+       char buffer[ELYSIAN_GUI_SYSTEM_VICTORY_TEXT_MAX_CHARS];
+        const float percentage =  (*it).timer / VictoryText::stateTime[(*it).state];
+        pragmata18._transform._pos.x = (*it).pos.x;
+        pragmata18._transform._pos.y = (*it).pos.y;
+        pragmata18._transform._pos.z = 50.0f;
+
+        strcpy(buffer, (*it).string);
+
+        float timePerChar = VictoryText::stateTime[(*it).state];
+        unsigned totalChars = strlen(buffer);
+        timePerChar /= (float)totalChars;
+        unsigned chars = (*it).timer/timePerChar;
+
+        switch((*it).state) {
+        case VictoryText::STATE_FADE:
+            chars = totalChars - (*it).timer/timePerChar;
+            //textColor.a = (float)255.0f * (1.0f - percentage);
+            pragmata18._transform._pos.y += percentage*32.0f;
+            for(unsigned i = 0; i < chars; ++i) {
+                buffer[i] = buffer[totalChars-chars+i];
+            }
+            buffer[chars] = 0;
+            break;
+        default: break;
+        case VictoryText::STATE_BOUNCE:
+            chars = (*it).timer/timePerChar;
+            buffer[chars] = 0;
+            //textColor.a = (float)255.0f * (percentage);
+            pragmata18._transform._pos.y += (1.0f-percentage)*32.0f;
+            break;
+
+        }
+
+        pragmata18.setColor(textColor);
+        pragmata18.drawString(Font::NO_FORMAT, Font::C_ALIGN, buffer);
+    }
 }
 
 void GuiSystem::addCombatText(const char*const text, const GYColor4 color, const GYVector2& pos, const GYVector2& vel) {

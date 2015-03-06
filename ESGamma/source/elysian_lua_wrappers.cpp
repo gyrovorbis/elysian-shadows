@@ -47,7 +47,6 @@ namespace elysian {
 		_mainState->register_class<Examinable>();
         Examinable::registerProxyMetaTable(*_mainState);
         OOLUA::register_class<CombatStatusModifier>(*_mainState);
-        _mainState->register_class<CombatReceipt>();
 		_mainState->register_class<CombatAttrib>();
 		_mainState->register_class<Combat>();
         Combat::registerProxyMetaTable(*_mainState);
@@ -94,6 +93,7 @@ namespace elysian {
 
 		//Register C and static member functions
 		lua_register(*_mainState, "print", &print);
+        lua_register(*_mainState, "printAdvLog", &printAdvLog);
         lua_register(*_mainState, "dbgPush", &dbgPush);
         lua_register(*_mainState, "dbgPop", &dbgPop);
 		_mainState->register_class_static<Singletons>("getCurArea", &Singletons_getCurArea);
@@ -374,12 +374,14 @@ OOLUA_EXPORT_FUNCTIONS_CONST(AnimationSystem)
 OOLUA_EXPORT_FUNCTIONS(AnimationSystem,
 					   linearInterpTransform)
 
-EXPORT_OOLUA_FUNCTIONS_4_NON_CONST(CollisionFlags,
+OOLUA_EXPORT_FUNCTIONS(CollisionFlags,
 								   resetType,
 								   resetCheckAgainst,
 								   addType,
 								   addCheckAgainst)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(CollisionFlags)
+OOLUA_EXPORT_FUNCTIONS_CONST(CollisionFlags,
+                               getType,
+                               getTypeAgainst)
 
 
 OOLUA_EXPORT_FUNCTIONS_CONST(GYStatic,
@@ -437,7 +439,8 @@ OOLUA_EXPORT_FUNCTIONS(RigidBodyAttrib,
 
 OOLUA_EXPORT_FUNCTIONS(ForceTarget,
 					   applyForce,
-					   applyForceToPoint)
+                       applyForceToPoint,
+                       clearKinetic)
 OOLUA_EXPORT_FUNCTIONS_CONST(ForceTarget)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(RigidBody,
@@ -593,25 +596,22 @@ OOLUA_EXPORT_FUNCTIONS(Examinable,
 					   setMaxDist)
 OOLUA_EXPORT_FUNCTIONS_CONST(Examinable)
 
-OOLUA_EXPORT_FUNCTIONS_CONST(CombatReceipt)
-OOLUA_EXPORT_FUNCTIONS(CombatReceipt,
-					   setText,
-					   setTextColor,
-					   setPartColor,
-					   setPartIntensityFactor)
-
-OOLUA_EXPORT_FUNCTIONS_CONST(CombatAttrib)
+OOLUA_EXPORT_FUNCTIONS_CONST(CombatAttrib,
+                             getTypeFlags,
+                             getTypeAgainstFlags)
 OOLUA_EXPORT_FUNCTIONS(CombatAttrib,
 					   setTypeFlags,
 					   setTypeAgainstFlags,
-					   setParticleAttrib)
+                       setParticleAttrib)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(CombatStatus,
 							 getMp,
                              getHp,
                              hasStatusEffect)
 OOLUA_EXPORT_FUNCTIONS(CombatStatus,
-					   setHp,
+                       setHp,
+                       setMaxHp,
+                       setMaxMp,
 					   setMp)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(CombatStatusModifier)
@@ -620,7 +620,8 @@ OOLUA_EXPORT_FUNCTIONS(CombatStatusModifier,
                        removeStatusEffect)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(Combat,
-                              getStatus)
+                              getStatus,
+                             getAttrib)
 OOLUA_EXPORT_FUNCTIONS(Combat,
 					   setSelfTable,
 					   setActionTable,
@@ -630,7 +631,8 @@ OOLUA_EXPORT_FUNCTIONS(Combat,
 					   setDmgType,
 					   setDmgActive,
                        setCollisionFlags,
-                       setStatus)
+                       setStatus,
+                       setTargetType)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(MenuWidget)
 OOLUA_EXPORT_FUNCTIONS(MenuWidget)
@@ -817,7 +819,8 @@ OOLUA_EXPORT_FUNCTIONS(GuiSystem,
 					   setBgMenuWidget,
 					   clearBgMenuWidget,
                        setClearColor,
-                       setAdvLogEnabled)
+                       setAdvLogEnabled,
+                       addVictoryText)
 OOLUA_EXPORT_FUNCTIONS_CONST(GuiSystem,
                              getResolution)
 

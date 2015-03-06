@@ -11,6 +11,7 @@
 #include "elysian_map_system.hpp"
 #include "elysian_map_system.hpp"
 #include "entitySelectable.h"
+#include "elysian_party_system.hpp"
 
 //====STATIC MEMBERS====
 
@@ -405,6 +406,13 @@ Project* Assets::reloadProject(void) {
     const QString areaName = _curArea->getDirName();
     const QString levelName = _curLevel->getDirName();
     const QString projPath = m_project->getLocation();
+    const elysian::System::ENGINE_STATE engineState = _engine->getEngineState();
+    const Entity* partyLeader = _engine->getPartySys()->getPartyLeader();
+    GYVector3 playerPos;
+
+    if(partyLeader) {
+        playerPos = partyLeader->_transform._pos;
+    }
 
     setCurrentArea(nullptr);
     setCurrentLevel(nullptr);
@@ -422,5 +430,8 @@ Project* Assets::reloadProject(void) {
             setCurrentArea(lev->getArea(areaName));
         }
     }
+
+    _engine->setEngineState(engineState);
+    if(partyLeader) _engine->getPartySys()->getPartyLeader()->_transform._pos = playerPos;
     return proj;
 }

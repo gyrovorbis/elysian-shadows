@@ -8,19 +8,21 @@ namespace elysian {
 
 class Font;
 
-#define ELYSIAN_ADV_LOG_LINES 100
-#define ELYSIAN_ADV_LOG_CHARS_PER_LINE 1000
-#define ELYSIAN_ADV_LOG_MAX_LINES_ONSCREEN 2
-#define ELYSIAN_ADV_LOG_FRAMES_PER_NEWLINE 15
+#define ELYSIAN_ADV_LOG_LINES                   100
+#define ELYSIAN_ADV_LOG_CHARS_PER_LINE          1000
+#define ELYSIAN_ADV_LOG_MAX_LINES_ONSCREEN      0
+#define ELYSIAN_ADV_LOG_MAX_LINES_DISPLAYABLE   2
+#define ELYSIAN_ADV_LOG_FRAMES_PER_NEWLINE      15
+#define ELYISAN_ADV_LOG_PAUSE_TIME              10.0f
 
-#define ELYSIAN_ADV_LOG_X 409.0f4
-#define ELYSIAN_ADV_LOG_Y 27.0f
-#define ELYSIAN_ADV_LOG_Z 600.0f
-#define ELYSIAN_ADV_LOG_W 430.0f
-#define ELYSIAN_ADV_LOG_H 22.0f
+#define ELYSIAN_ADV_LOG_X                       409.0f4
+#define ELYSIAN_ADV_LOG_Y                       27.0f
+#define ELYSIAN_ADV_LOG_Z                       600.0f
+#define ELYSIAN_ADV_LOG_W                       430.0f
+#define ELYSIAN_ADV_LOG_H                       22.0f
 
 #define ELYSIAN_ADV_LOG_LABEL_LENGTH    20
-#define ELYSIAN_ADV_LOG_LABEL_DEFAULT   "ADVENTURE LOG"
+#define ELYSIAN_ADV_LOG_LABEL_DEFAULT   "COMBAT LOG"
 	/*
 	 Master class for the Adventure Log. Call AddLine to add your line
 	 to the logfile. Update and Draw are expecting to be called once
@@ -56,7 +58,7 @@ class Font;
                                     = ELYSIAN_ADV_LOG_LABEL_DEFAULT;
 
         LOG_STATE   _state			= WAIT;
-        LOG_EXIT    _exitState		= EXIT_ACTIVE;
+        LOG_EXIT    _exitState		= EXIT_DISABLED;
         float       _baseAlpha		= 1.0f;
         int         _startIndex		= 0;
         int         _endIndex		= 0;

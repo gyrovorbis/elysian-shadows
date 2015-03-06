@@ -74,8 +74,8 @@ void Font::drawString(const FORMAT format, const ALIGNMENT align, const char *co
 	int temp = 0;
 
 	if(align == C_ALIGN) {
-		temp = getStringPixelWidth(buffer);
-        currentX = (_transform._pos.x - (int)(temp/2.0f));
+        temp = getStringPixelWidth(buffer);
+        currentX = (_transform._pos.x - (int)(temp/2.0f)) + 0.5f*_charWidth[buffer[0]];
     }
     else if(align == R_ALIGN) {
 		for(i = 0; i < (int)strlen(buffer); ++i) {

@@ -151,7 +151,8 @@ void ParticleEmitterInternals::update(const CameraState*const cam, const float d
 			//integrate
 			(*it).integrate(deltaTime);
 		} else if(_attrib->_stick){
-			(*it).position.z = ZCoordConstants::mapBase+1;
+            (*it).position.z = ZCoordConstants::mapBase+0.01;
+            (*it).zIndex = 0;
             (*it).resting = true;
 		} else { //we don't stick
 			_pool.remove(it);
@@ -168,9 +169,11 @@ void ParticleEmitterInternals::update(const CameraState*const cam, const float d
 		}
 		
         //Calculate depth buffer internals
-		(*it).zIndex = (((*it).position.y - 0.5f*(*it).size)-(float)cam->scrStartY)/32.0f + ((*it).position.z-ZCoordConstants::mapBase)/32.0f;
-		if((*it).zIndex < 0) (*it).zIndex = 0;
-		if((*it).zIndex >= ELYSIAN_DEPTH_BUFFER_HEIGHT) (*it).zIndex = ELYSIAN_DEPTH_BUFFER_HEIGHT;
+        if(!(*it).resting) {
+            (*it).zIndex = (((*it).position.y - 0.5f*(*it).size)-(float)cam->scrStartY)/32.0f + ((*it).position.z-ZCoordConstants::mapBase)/32.0f;
+            if((*it).zIndex < 0) (*it).zIndex = 0;
+            if((*it).zIndex >= ELYSIAN_DEPTH_BUFFER_HEIGHT) (*it).zIndex = ELYSIAN_DEPTH_BUFFER_HEIGHT;
+        }
 
         const int curLife = _attrib->_maxLife - (*it).life;
 

@@ -21,7 +21,14 @@ void CombatSystem::onCollisionEnter(Collidable*const bodyA, Collidable*const bod
 	auto* combatB = bodyB->getEntity()->getCombat();
 	if(!combatB || !(combatB->getAttrib()->getTypeFlags() & combatA->getAttrib()->getTypeAgainstFlags())) return;
 
+    if(!(combatA->getDmgType() == Combat::DMG_SOURCE || combatA->getDmgType() == Combat::DMG_SOURCE_TARGET) ||
+            !((combatB->getDmgType() == Combat::DMG_TARGET || combatB->getDmgType() == Combat::DMG_SOURCE_TARGET))) return;
+
+    Debug::printf(Debug::VERBOSE, "A PREFLAGS %d", bodyA->getContactEventMonitorMask());
+    Debug::printf(Debug::VERBOSE, "B PREFLAGS %d", bodyB->getContactEventMonitorMask());
 	_dealCollisionDamage(combatA, combatB, bodyB, contact);
+    Debug::printf(Debug::VERBOSE, "A POSTFLAGS %d", bodyA->getContactEventMonitorMask());
+    Debug::printf(Debug::VERBOSE, "B POSTFLAGS %d", bodyB->getContactEventMonitorMask());
 }
 
 void CombatSystem::onCollide(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) {
@@ -48,6 +55,7 @@ void CombatSystem::addCombatant(Entity& entity) {
 	getBehavSys()->callTrigger(&entity, Behavior::ON_COMBAT_ENTER);
 	if(_bgmDynamic) getAudioSys()->morphIntoBgmTrack(_bgmCombatTrack, 0.5f);
 	_combatants.claimFreeEntry() = &entity;
+    if(entity.getCombat()->getTargetType() != Combat::TARGET_NONE) getGuiSys()->addCombatStatsEntity(&entity);
 }
 
 void CombatSystem::removeCombatant(Entity& entity) {
@@ -58,6 +66,7 @@ void CombatSystem::removeCombatant(Entity& entity) {
 	if(_combatants.size() == 0 && _bgmDynamic) {
 		getAudioSys()->morphIntoBgmTrack(0, 0.5f);
 	}
+    if(entity.getCombat()->getTargetType() != Combat::TARGET_NONE) getGuiSys()->removeCombatStatsEntity(&entity);
 }
 
 void CombatSystem::killCombatant(Entity& entity) {
@@ -69,40 +78,53 @@ void CombatSystem::killCombatant(Entity& entity) {
 	if(_combatants.size() == 0 && _bgmDynamic) {
 		getAudioSys()->morphIntoBgmTrack(0, 0.5f);
 	}
+    /*
+    if(entity.getCombat()->getTargetType() == Combat::TARGET_ENEMY) {
+        GYVector2 pos = *(GYVector2*)&entity._transform._pos;
+        pos.y += 0.5f*entity._transform._size.y;
+
+        getGuiSys()->addVictoryText(*(GYVector2*)&entity._transform._pos, "10 EXP");
+    }*/
+    if(entity.getCombat()->getTargetType() != Combat::TARGET_NONE) {
+        getGuiSys()->removeCombatStatsEntity(&entity);
+    }
+
 	//getCurArea()->removeEntity(&entity);
 	//delete &entity;
 }
 
-void CombatSystem::_processCurrentCombatAction(void) {
-	//GYVector2 vel;
-	//GYVector3 pos3;
+#if 0
+void CombatSystem::_processCurrentCombatAction(CollisionContact*const contact, Combat*const target) {
+    GYVector2 vel;
+    GYVector3 pos3;
 
-//	if(_curActionRes.contact) {
-//		//Calculate combatText velocity
-//		_curActionRes.contact->getNormal(vel);
-//		gyVec2ScaleAccum(&vel, _curActionRes.contact->getClosingVel());
-//		if(_curActionRes.contact->getCollidable(1) == _curActionRes.target->getEntity()->getCollidable())
-//			gyVec2ScaleAccum(&vel, -1.0f);
+    if(contact) {
+        //Calculate combatText velocity
+        contact->getNormal(vel);
+        gyVec2ScaleAccum(&vel, contact->getClosingVel());
+        if(contact->getCollidable(1) == target->getEntity()->getCollidable())
+            gyVec2ScaleAccum(&vel, -1.0f);
 
-//		//Add combat text to PoC
-//		_curActionRes.contact->getWorldPos(*(GYVector2*)&pos3);
-//		getGuiSys()->addCombatText(_curActionRes.receipt->getText(), _curActionRes.receipt->getTextColor(), *(GYVector2*)&pos3, vel);
+        //Add combat text to PoC
+        //_curActionRes.contact->getWorldPos(*(GYVector2*)&pos3);
+        //getGuiSys()->addCombatText(_curActionRes.receipt->getText(), _curActionRes.receipt->getTextColor(), *(GYVector2*)&pos3, vel);
 
-//		//Emit particles from PoC
-//		getPartSys()->getAttrib(2)->setColor(_curActionRes.receipt->getPartColor());
-//		pos3.z = _curActionRes.target->getEntity()->getElev()*32.0f;
-//		const float angle = tan(vel.y/vel.x);
-//		getPartSys()->emitFromPoint(2, pos3, angle, _curActionRes.contact->getClosingVel()*_curActionRes.receipt->getPartIntensityFactor());
+        //Emit particles from PoC
+        getPartSys()->getAttrib(2)->setColor(GYColor4{ 255, 0, 0, 255});
+        pos3.z = target->getEntity()->getElev()*32.0f;
+        const float angle = tan(vel.y/vel.x);
+        getPartSys()->emitFromPoint(2, pos3, angle, contact->getClosingVel()*100.0);
 
-//	}
+    }
 
 	//Reset everything
-	_curActionRes.contact	= nullptr;
-	_curActionRes.receipt	= nullptr;
-	_curActionRes.src		= nullptr;
-	_curActionRes.target	= nullptr;
+//	_curActionRes.contact	= nullptr;
+//	_curActionRes.receipt	= nullptr;
+//	_curActionRes.src		= nullptr;
+//	_curActionRes.target	= nullptr;
 
 }
+#endif
 
 //MACRO THESE FUNCTION NAMES
 
@@ -170,7 +192,7 @@ void CombatSystem::_dealCollisionDamage(Combat *const src, Combat *const target,
     CombatStatusModifier modifier;
 	_curActionRes.contact = contact;
 	getBehavSys()->onCombatTargetCollisionEnter(src->getEntity(), contact, bodyB, &modifier);
-    //resolveCombatAction(src->getActionTable(), src, target);
+    //resolveCombatAction(src->getActionTable(), src, target);]
 	sendStatusModifier(target, &modifier);
 }
 
@@ -180,7 +202,7 @@ void CombatSystem::update(void) {
 
 
     for(auto&it : getCurArea()->combats) {
-        if(it == leader->getCombat()) continue;
+        if(it == leader->getCombat() || it->getTargetType() == Combat::TARGET_NONE) continue;
         const float dist = gyVec3Dist(&playerPos, &it->getEntity()->_transform._pos);
 
         //Check for deaggro
@@ -211,15 +233,24 @@ void CombatSystem::_emitCombatModifierText(const Combat*const target, const Comb
 		//check if the attribute was modified
 		if(attrib != 0) {
             GYVector2 pos = *(GYVector2*)&target->getEntity()->_transform._pos;
-            pos.y -= 0.7f*target->getEntity()->_transform._pos.z;
+            pos.y += 0.5f*target->getEntity()->_transform._size.y;
+            //pos.y -= 0.7f*target->getEntity()->_transform._pos.z;
+
+            //GYVector2 newVel = { _curActionRes.initialVel.x * 0.5f, _curActionRes.initialVel.y *0.5f };
+
 
 			sprintf(buff, "%d", abs(attrib));
             getGuiSys()->addCombatText(buff, (attrib > 0)? posColor : negColor, pos, _curActionRes.initialVel);
 		}
 	};
 
-    emitIntegerAttrib(modifier.getHp(), GYColor4 { 0, 255, 0, 255 }, GYColor4 { 255, 0, 0, 255 });
-    emitIntegerAttrib(modifier.getMp(), GYColor4 { 0, 0, 255, 255 }, GYColor4 { 200, 100, 0, 255 });
+    if(target->getTargetType() == Combat::TARGET_PARTY || target->getTargetType() == Combat::TARGET_FRIENDLY) {
+        emitIntegerAttrib(modifier.getHp(), GYColor4 { 100, 255, 100, 255 }, GYColor4 { 255, 100, 100, 255 });
+        emitIntegerAttrib(modifier.getMp(), GYColor4 { 100, 100, 255, 255 }, GYColor4 { 200, 100, 50, 255 });
+    } else {
+        emitIntegerAttrib(modifier.getHp(), GYColor4 { 100, 255, 100, 255 }, GYColor4 { 255, 255, 255, 255 });
+        emitIntegerAttrib(modifier.getMp(), GYColor4 { 100, 100, 255, 255 }, GYColor4 { 200, 100, 50, 255 });
+    }
 
 	//emit icons for status ailments!
 }

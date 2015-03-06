@@ -42,6 +42,8 @@ namespace elysian {
 		inline void resetCheckAgainst(void) { checkAgainst = 0; }
 		inline void addType(const uint32_t flag) { type |= flag; }
 		inline void addCheckAgainst(const uint32_t flag) { checkAgainst |= flag; }
+        inline uint32_t getType(void) const { return type; }
+        inline uint32_t getTypeAgainst(void) const { return checkAgainst; }
 	};
 
     class CollidableStaticAttrib: public GYStatic {

@@ -26,8 +26,15 @@
 #define ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_MAX_CHARS    50
 #define ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_POOL_SIZE    30
 #define ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_LIFE         1.0f
-#define ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_GRAVITY		GYVector2 { 0.0f, 0.4f }
+#define ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_GRAVITY		GYVector2 { 0.0f, 0.1f }
+
+#define ELYSIAN_GUI_SYSTEM_VICTORY_TEXT_MAX_CHARS   20
+
 #define ELYSIAN_GUI_SYSTEM_EXAMINE_TEXT_OFFSET      0.0f
+
+#define ELYSIAN_GUI_SYSTEM_EXP_TEXT_BOUNCE_TIME     0.3f
+#define ELYSIAN_GUI_SYSTEM_EXP_TEXT_STICK_TIME      3.0f
+#define ELYSIAN_GUI_SYSTEM_EXP_TEXT_FADE_TIME       0.3f
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 
@@ -86,6 +93,18 @@ namespace elysian {
     class GuiSystem: public System {
 	private:
 
+        class CombatStatusIndicator {
+        private:
+            Sprite          _healthMeter[2];
+            const Entity*   _entity = nullptr;
+        public:
+                            CombatStatusIndicator(void);
+            const Entity*   getEntity(void) const;
+            void            setEntity(const Entity*const entity);
+            void            update(void);
+            void            render(void);
+        };
+
         struct CombatText {
             char        text[ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_MAX_CHARS];
             GYColor4    color;
@@ -94,50 +113,71 @@ namespace elysian {
             float       timer;
 		};
 
-		Pool<CombatText>		_combatText;
-		static const GYVector2	_combatTextGravity;
-        bool					_debugOverlayEnabled	= false;
+        struct VictoryText {
+            enum STATE { STATE_INACTIVE, STATE_BOUNCE, STATE_STICK, STATE_FADE, STATE_MAX };
+            constexpr const static float stateTime[STATE_MAX] = {
+                0.0f,
+                ELYSIAN_GUI_SYSTEM_EXP_TEXT_BOUNCE_TIME,
+                ELYSIAN_GUI_SYSTEM_EXP_TEXT_STICK_TIME,
+                ELYSIAN_GUI_SYSTEM_EXP_TEXT_FADE_TIME
+            };
 
-        unsigned int            _projWidth;
-        unsigned int            _projHeight;
+            char        string[ELYSIAN_GUI_SYSTEM_VICTORY_TEXT_MAX_CHARS];
+            GYVector2   pos;
+            float       timer     = 0.0f;
+            STATE       state     = STATE_INACTIVE;
+        };
 
-        MenuWidget*             _fgMenuWidget           = nullptr;
-        MenuWidget*             _bgMenuWidget           = nullptr;
-        const Entity*           _examineEntity          = nullptr;
+        Pool<CombatStatusIndicator> _combatStatIndicator;
+        Pool<CombatText>            _combatText;
+        Pool<VictoryText>           _victoryText;
+        static const GYVector2      _combatTextGravity;
+        bool                        _debugOverlayEnabled	= false;
 
-		void _printDebugLine(const char*title, const char*str, ...);
-		void _renderDebugOverlay(void);
-        void _renderCombatText(void);
-        void _renderExamineEntity(void);
-		void _renderMenuWidget(MenuWidget* widget);
+        unsigned int                _projWidth;
+        unsigned int                _projHeight;
+
+        MenuWidget*                 _fgMenuWidget           = nullptr;
+        MenuWidget*                 _bgMenuWidget           = nullptr;
+        const Entity*               _examineEntity          = nullptr;
+
+        void            _printDebugLine(const char*title, const char*str, ...);
+        void            _renderDebugOverlay(void);
+        void            _renderCombatText(void);
+        void            _renderExamineEntity(void);
+        void            _renderMenuWidget(MenuWidget* widget);
 	public:
 
-		GuiSystem(void);
+                        GuiSystem(void);
 
-		void setClearColor(const GYColor4 color);
+        void            setClearColor(const GYColor4 color);
 
-		bool loadAssets(void);
-		void update(void);
-		//void Render(void);
-		void renderBackground(void);
-		void renderForeground(void);
-		void render(void);
-		inline void getResolution(unsigned int &width, unsigned int &height) const { width = _projWidth; height = _projHeight; }
+        bool            loadAssets(void);
+        void            update(void);
+        void            renderBackground(void);
+        void            renderForeground(void);
+        void            render(void);
+        void            getResolution(unsigned int &width, unsigned int &height) const;
 
-		void addCombatText(const char*const text, const GYColor4 color, const GYVector2& pos, const GYVector2& vel);
+        void            addCombatText(const char*const text, const GYColor4 color, const GYVector2& pos, const GYVector2& vel);
 
-		void setDebugOverLayEnabled(const bool enabled);
+        void            setDebugOverLayEnabled(const bool enabled);
 
-		void setFgMenuWidget(MenuWidget*const widget);
-		void clearFgMenuWidget(void);
+        void            setFgMenuWidget(MenuWidget*const widget);
+        void            clearFgMenuWidget(void);
 
-		void setBgMenuWidget(MenuWidget*const widget);
-		void clearBgMenuWidget(void);
+        void            setBgMenuWidget(MenuWidget*const widget);
+        void            clearBgMenuWidget(void);
 
-        void setAdvLogEnabled(const bool val);
+        void            setAdvLogEnabled(const bool val);
 
         void            setExamineEntity(const Entity* const entity);
         const Entity*   getExamineEntity(void) const;
+
+        void            addCombatStatsEntity(const Entity*const entity);
+        void            removeCombatStatsEntity(const Entity*const entity);
+
+        void            addVictoryText(const GYVector2& pos, const char*const string);
 
         Font			verdana;
         Font			twcen;
@@ -170,14 +210,39 @@ namespace elysian {
 	inline void GuiSystem::clearFgMenuWidget(void) { _fgMenuWidget = nullptr; }
 	inline void GuiSystem::setBgMenuWidget(MenuWidget * const widget) { _bgMenuWidget = widget; }
 	inline void GuiSystem::clearBgMenuWidget(void) { _bgMenuWidget = nullptr; }
-
 	inline void GuiSystem::setClearColor(const GYColor4 color) { gyVidClearColor(color); }
-
     inline void GuiSystem::setAdvLogEnabled(const bool val) {
         adventureLog.setEnabled(val);
     }
+    inline void GuiSystem::getResolution(unsigned int &width, unsigned int &height) const { width = _projWidth; height = _projHeight; }
 
+    inline const Entity* GuiSystem::CombatStatusIndicator::getEntity(void) const { return _entity; }
+    inline void GuiSystem::CombatStatusIndicator::setEntity(const Entity * const entity) { _entity = entity; }
 
+    inline void GuiSystem::addVictoryText(const GYVector2& pos, const char*const string) {
+        auto& vic   = _victoryText.claimFreeEntry();
+        vic.timer   = 0.0f;
+        vic.pos     = pos;
+        strcpy(vic.string, string);
+        vic.state   = VictoryText::STATE_BOUNCE;
+    }
+
+    inline void GuiSystem::addCombatStatsEntity(const Entity * const entity) {
+        auto& indicator = _combatStatIndicator.claimFreeEntry();
+        indicator.setEntity(entity);
+        indicator.update();
+    }
+
+    inline void GuiSystem::removeCombatStatsEntity(const Entity * const entity) {
+       auto it = _combatStatIndicator.findByComparator([&](const CombatStatusIndicator& indicator) {
+            return (indicator.getEntity() == entity);
+        });
+
+       if(it != _combatStatIndicator.end()) {
+           (*it).setEntity(nullptr);
+           _combatStatIndicator.remove(it);
+       }
+    }
 }
 
 #endif
