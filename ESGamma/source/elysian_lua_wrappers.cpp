@@ -742,7 +742,8 @@ OOLUA_EXPORT_FUNCTIONS(PartySystem,
                         setPartyLeader)
 OOLUA_EXPORT_FUNCTIONS_CONST(PartySystem,
 								getPartyLeader,
-                                getCharacterPartyMember)
+                                getCharacterPartyMember,
+                                getPartySize)
 
 OOLUA_EXPORT_FUNCTIONS(LevelSystem)
 OOLUA_EXPORT_FUNCTIONS_CONST(LevelSystem,

@@ -89,6 +89,8 @@ namespace elysian {
         Entity *getCharacterPartyMember(const char *name) const;
         Entity *getCharacterPartyMember(const unsigned int slot) const;
 
+        unsigned getPartySize(void) const;
+
         int    getPartySlot(const Entity* entity);
 		
 	//	void DisablePartyFollow(); Probably going to want these pretty soon... 
@@ -106,6 +108,12 @@ namespace elysian {
 		
 	};
 
+
+
+
+    //============= INLINEZ ===============
+
+     inline unsigned PartySystem::getPartySize(void) const { return _characterParty.size(); }
 }
 
 #endif

@@ -103,6 +103,10 @@ extern GLenum                       glalTextureMapTexUnits[];
 extern int                          glalTextureMapUniforms[];
 extern int                          glalTextureMapActive;
 extern int                          glalTextureMappingEnabled;
+extern int                          glalNormalMappingEnabled;
+extern int                          glalSpecularMappingEnabled;
+extern int                          glalNormalMapActive;
+extern int                          glalSpecularMapActive;
 
 void glalLoadDefaultShaders(void);
 void glalDefaultShadersLoadUniforms(void);

@@ -2,6 +2,6 @@
 
 namespace elysian {
 
-Asset::DebugStack* Asset::_dbgPtr = NULL;
+Asset::DebugStack* Asset::_dbgPtr = nullptr;
 
 }

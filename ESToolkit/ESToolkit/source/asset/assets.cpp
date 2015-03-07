@@ -414,6 +414,9 @@ Project* Assets::reloadProject(void) {
         playerPos = partyLeader->_transform._pos;
     }
 
+    emit projectRemoved(m_project);
+
+    setCurrentSelection(nullptr);
     setCurrentArea(nullptr);
     setCurrentLevel(nullptr);
     setCurrentProject(nullptr);
@@ -422,6 +425,7 @@ Project* Assets::reloadProject(void) {
     delete _engine;
 
     auto* proj = loadProject(projPath);
+    emit projectAdded(m_project);
 
     if(!levelName.isNull()) {
         auto* lev = proj->getLevel(levelName);

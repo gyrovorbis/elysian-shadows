@@ -991,6 +991,7 @@ OOLUA_PROXY(PartySystem)
 	OOLUA_MEM_FUNC(bool, removeCharacterFromParty, in_out_p<const Entity*>)
     OOLUA_MEM_FUNC_CONST(maybe_null<Entity*>, getPartyLeader)
     OOLUA_MEM_FUNC_CONST(maybe_null<Entity*>, getCharacterPartyMember, unsigned)
+    OOLUA_MEM_FUNC_CONST(unsigned, getPartySize)
     OOLUA_MEM_FUNC(void, setPartyLeader, Entity*const)
 OOLUA_PROXY_END
 

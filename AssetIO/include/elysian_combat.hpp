@@ -167,6 +167,9 @@ namespace elysian {
 		_hp += rvalue._hp;
 		_mp += rvalue._mp;
 
+        if(_hp < 0) _hp = 0;
+        if(_mp < 0) _mp = 0;
+
         const uint64_t effectsToAdd     = (rvalue._statusEffects&rvalue._addRemoveStatusEffects);
         const uint64_t effectsToRemove  = (rvalue._statusEffects&(~rvalue._addRemoveStatusEffects));
 
