@@ -445,6 +445,7 @@ OOLUA_PROXY(Renderable, Component)
 	OOLUA_MFUNC_CONST(getMaterial)
 	OOLUA_MFUNC(loadNormalMap)
 	OOLUA_MEM_FUNC(void, loadSpecularMap, const char*, unsigned, unsigned)
+    OOLUA_MEM_FUNC(void, setTexCoord, const unsigned, const float, const float)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(AnimationSequence)

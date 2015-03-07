@@ -146,7 +146,7 @@ namespace elysian {
 
 		inline SpriteAttrib *getSpriteAttrib(void) const { return _spriteAttrib; }
 		inline QuadSpriteAttrib* getQuadSpriteAttrib(void) const { return static_cast<QuadSpriteAttrib*>(_spriteAttrib); }
-		inline void setSpriteAttrib(SpriteAttrib *const attrib) { _spriteAttrib = attrib; if(attrib) _frame = attrib->_frame;}
+        inline void setSpriteAttrib(SpriteAttrib *const attrib) { _spriteAttrib = attrib; if(attrib && _frame != -1) _frame = attrib->_frame; }
 
 		inline void setMaterial(Material*const material) {
 			_material = material;

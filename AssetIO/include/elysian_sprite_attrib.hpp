@@ -9,7 +9,7 @@ namespace elysian {
 	class SpriteAttrib: public PrimAttrib {
 		friend class Renderable;
 	protected:
-		GYTexCoord2	_texCoords[4];
+        GYTexCoord2	_texCoords[4];
 		GYTexture*	_tex			= nullptr;
 		unsigned	_spriteWidth	= 0;
 		unsigned	_spriteHeight	= 0;
@@ -42,7 +42,7 @@ namespace elysian {
 			gyVidQuadListBegin(&_color);
 			if(_frame == -1) gyVidTexCoordArray(_texCoords);
 
-		}
+        }
 
 		inline void submitFinish(void) {
 			gyVidQuadListEnd();
@@ -56,14 +56,14 @@ namespace elysian {
 
 		}
 
-		inline void setTexCoord(const unsigned index, const float u, const float v) {
+        inline void setTexCoord(const unsigned index, const float u, const float v) {
 			_texCoords[index].u = u; _texCoords[index].v = v;
 			_frame = -1;
 		}
 
 		inline void getTexCoord(const unsigned index, float &u, float &v) {
 			u = _texCoords[index].u; v = _texCoords[index].v;
-		}
+        }
 
 		void setColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a) { _color.r = r; _color.g = g; _color.b = b; _color.a = a; }
 		void setColor(const GYColor4& color) { _color = color; }

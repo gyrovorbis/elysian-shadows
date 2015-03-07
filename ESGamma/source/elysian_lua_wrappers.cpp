@@ -314,7 +314,8 @@ OOLUA_EXPORT_FUNCTIONS(Renderable,
 					   setSpriteAttrib,
 					   loadNormalMap,
 					   loadSpecularMap,
-					   setMaterial)
+                       setMaterial,
+                       setTexCoord)
 OOLUA_EXPORT_FUNCTIONS_CONST(Renderable,
 						   getFrame,
 						   getOffset,
