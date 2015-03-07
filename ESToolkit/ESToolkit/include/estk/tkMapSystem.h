@@ -128,7 +128,7 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
 
     if(_tileDecor != TILE_DECOR_NONE) {
         gyVidAlphaLevel(GY_ALPHA_NONE);
-        auto& twcen = getGuiSys()->twcen;
+        auto& twcen = getGuiSys()->pragmata18;
         twcen.setColor(255, 255, 255, 255);
         twcen._transform.setSize(16.0f, 32.0f, 32.0f);
         for(unsigned i = 0; i < count; ++i) {
@@ -141,19 +141,19 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
 
             case TILE_DECOR_INDEX:
                 tileIndex = entry.mapEntry.getIndex();
-                if(tileIndex) twcen.drawStringf(elysian::Font::NO_FORMAT, elysian::Font::C_ALIGN, "%d", tileIndex);
+                if(tileIndex) twcen.drawStringf(elysian::Font::C_ALIGN, "%d", tileIndex);
                 break;
             case TILE_DECOR_ELEV:
                 tileElev = entry.mapEntry.getElev();
-                if(tileElev) twcen.drawStringf(elysian::Font::NO_FORMAT, elysian::Font::C_ALIGN, "%d", tileElev);
+                if(tileElev) twcen.drawStringf(elysian::Font::C_ALIGN, "%d", tileElev);
                 break;
             case TILE_DECOR_ORIENT:
                 tileOrient = entry.mapEntry.getOrient();
-                if(tileOrient != GY_RECT_TEX_ORIENT_NORMAL) twcen.drawString(elysian::Font::NO_FORMAT, elysian::Font::C_ALIGN, orientDecorStrs[(int)tileOrient]);
+                if(tileOrient != GY_RECT_TEX_ORIENT_NORMAL) twcen.drawString(elysian::Font::C_ALIGN, orientDecorStrs[(int)tileOrient]);
                 break;
             case TILE_DECOR_PLANE:
                 tilePlane = entry.mapEntry.getPlane();
-                if(tilePlane != GY_RECT_PLANE_BOTTOM) twcen.drawString(elysian::Font::NO_FORMAT, elysian::Font::C_ALIGN, planeDecorStrs[(int)tilePlane]);
+                if(tilePlane != GY_RECT_PLANE_BOTTOM) twcen.drawString(elysian::Font::C_ALIGN, planeDecorStrs[(int)tilePlane]);
                 break;
             default:
                 break;

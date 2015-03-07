@@ -739,7 +739,7 @@ OOLUA_EXPORT_FUNCTIONS(PartySystem,
                         setPartyLeader)
 OOLUA_EXPORT_FUNCTIONS_CONST(PartySystem,
 								getPartyLeader,
-								getCharacterPartyMember)
+                                getCharacterPartyMember)
 
 OOLUA_EXPORT_FUNCTIONS(LevelSystem)
 OOLUA_EXPORT_FUNCTIONS_CONST(LevelSystem,
@@ -820,9 +820,11 @@ OOLUA_EXPORT_FUNCTIONS(GuiSystem,
 					   clearBgMenuWidget,
                        setClearColor,
                        setAdvLogEnabled,
-                       addVictoryText)
+                       addVictoryText,
+                       setFontColorPaletteEntry)
 OOLUA_EXPORT_FUNCTIONS_CONST(GuiSystem,
-                             getResolution)
+                             getResolution,
+                             getFontColorPaletteEntry)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(DaySystem,
 							 getDays,

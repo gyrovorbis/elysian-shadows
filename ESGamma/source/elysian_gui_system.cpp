@@ -68,7 +68,7 @@ void MenuText::recursiveRender(void) {
     _fonts[_type]->_transform.setPosZ(worldVert.z);
     _fonts[_type]->_transform.setScale(1.0f, 1.0f);
 	_fonts[_type]->setColor(_color);
-	_fonts[_type]->drawString(Font::NO_FORMAT, _align, _text);
+    _fonts[_type]->drawString(_align, _text);
 
 	gyMatPop();
 
@@ -196,9 +196,9 @@ void GuiSystem::_printDebugLine(const char *title, const char *str, ...) {
 
     pragmata18._transform._pos.y += 25.0f;
     pragmata18._transform._pos.x = _projWidth-250.0f;
-    pragmata18.drawStringf(Font::NO_FORMAT, Font::R_ALIGN, title);
-    pragmata18._transform._pos.x = _projWidth-235.0f;
-    pragmata18.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, buffer);
+    pragmata18.drawStringf(Font::R_ALIGN, title);
+    pragmata18._transform._pos.x = _projWidth-230.0f;
+    pragmata18.drawStringf(Font::L_ALIGN, buffer);
 }
 
 void GuiSystem::_renderDebugOverlay(void) {
@@ -210,9 +210,9 @@ void GuiSystem::_renderDebugOverlay(void) {
 
     pragmata18.startBatchRender();
 
-	_printDebugLine("FPS:", "%.2f", getTimerSys()->getFramerate());
-	_printDebugLine("Verts:", "%d", gyVidVertexRenderCount());
-	_printDebugLine("Uniform Uploads:", "%d", getLightSys()->getShaderUniformChangesLastFrame());
+    _printDebugLine("FPS:", "%.2f", getTimerSys()->getFramerate());
+    _printDebugLine("Verts:", "%d", gyVidVertexRenderCount());
+    _printDebugLine("Uniform Uploads:", "%d", getLightSys()->getShaderUniformChangesLastFrame());
 	_printDebugLine("Textures:", "%d", gyVidTexAmount());
 	_printDebugLine("Texture MBytes:", "%f", gyVidTexBytes()/1024.0f/1024.0f);
     pragmata18._transform._pos.y += 25.0f;
@@ -253,7 +253,7 @@ void GuiSystem::_renderCombatText(void) {
         pragmata22.setColor((*it).color);
         pragmata22.setAlpha((*it).color.a);
 
-        pragmata22.drawString(Font::NO_FORMAT, Font::C_ALIGN, (*it).text);
+        pragmata22.drawString(Font::C_ALIGN, (*it).text);
     }
 }
 
@@ -301,7 +301,7 @@ void GuiSystem::render(void) {
         }
 
         pragmata18.setColor(textColor);
-        pragmata18.drawString(Font::NO_FORMAT, Font::C_ALIGN, buffer);
+        pragmata18.drawString(Font::C_ALIGN, buffer);
     }
 }
 
@@ -345,7 +345,7 @@ void GuiSystem::_renderExamineEntity(void) {
 
     gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
     gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
-    pragmata18.drawString(Font::NO_FORMAT, Font::C_ALIGN, _examineEntity->getDispName());
+    pragmata18.drawString(Font::C_ALIGN, _examineEntity->getDispName());
 
 }
 

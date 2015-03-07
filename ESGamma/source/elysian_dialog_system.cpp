@@ -121,11 +121,11 @@ void DialogSystem::render(void) {
 		for(unsigned int i = 0; i <= _currentLine; ++i) {
             font.setAlpha(255*alpha);
             font._transform.setPos(basePos.x-(_mainCanvas._transform._size.x/2.0f)+40.0f, basePos.y-(_mainCanvas._transform._size.y/2.0f)+35.0f+25.0f*i, _mainCanvas._transform._pos.z+1);
-            if(i != _currentLine) font.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, "%s", _textLines[i]);
+            if(i != _currentLine) font.drawString(Font::L_ALIGN, _textLines[i]);
 			else {
 				strncpy(buffer, _textLines[i], _currentCharacter);
 				buffer[_currentCharacter] = '\0';
-                font.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, "%s", buffer);
+                font.drawString(Font::L_ALIGN, buffer);
 				//getGuiSys()->twcen.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, "fuuuuuck", buffer);
 			}
 		}
@@ -138,7 +138,7 @@ void DialogSystem::render(void) {
 			switch(_posState) {
 				case POS_BOTTOM:
                     font2._transform.setPos(25.0f, basePos.y-0.5f*ELYSIAN_DIALOG_SYSTEM_HEIGHT, _mainCanvas._transform._pos.z+1);
-                    font2.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, "%s", _curScreen.screen->getEntity()->getDispName());
+                    font2.drawString(Font::L_ALIGN, _curScreen.screen->getEntity()->getDispName());
 					break;
 				case POS_MOVE_DOWN:
 					break;
@@ -190,7 +190,7 @@ void DialogSystem::render(void) {
             font._transform.setPos(_optionBox._transform._pos.x-0.5*_optionBox._transform._size.x+15.0f, _optionBox._transform._pos.y-0.5*_optionBox._transform._size.y + 25.0+ i*25.0f);
 		//	else
 			//guiSystem->twcen.transform.setPosition(_optionBox.transform.getPosition().x-0.5*_optionBox.transform.getSize().x+15.0f, _optionBox.transform.getPosition().y-0.5*_optionBox.transform.getSize().y + 25.0+ i*25.0f);
-            font.drawStringf(Font::NO_FORMAT, Font::L_ALIGN, "%s", _curScreen.prompt->getOptionText(i));
+            font.drawString(Font::L_ALIGN, _curScreen.prompt->getOptionText(i));
 		}
 		//Render cursor
         _cursor._transform._pos.z = _mainCanvas._transform._pos.z+3;

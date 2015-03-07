@@ -816,7 +816,7 @@ OOLUA_PROXY_END
 OOLUA_PROXY(CombatAttrib)
 	OOLUA_MEM_FUNC(void, setTypeFlags, uint32_t)
 	OOLUA_MEM_FUNC(void, setTypeAgainstFlags, uint32_t)
-	OOLUA_MEM_FUNC(void, setParticleAttrib, ParticleEmitterAttrib*)
+    OOLUA_MEM_FUNC(void, setParticleAttrib, cpp_in_p<ParticleEmitterAttrib*>)
     OOLUA_MEM_FUNC_CONST(uint32_t, getTypeFlags)
     OOLUA_MEM_FUNC_CONST(uint32_t, getTypeAgainstFlags)
 OOLUA_PROXY_END
@@ -1143,6 +1143,8 @@ OOLUA_PROXY(GuiSystem)
     OOLUA_MEM_FUNC(void, setAdvLogEnabled, bool)
     OOLUA_MEM_FUNC(void, addVictoryText, const GYVector2&, const char*)
     OOLUA_MEM_FUNC_CONST(void, getResolution, out_p<unsigned&>, out_p<unsigned&>)
+    OOLUA_MEM_FUNC_CONST(GYColor4, getFontColorPaletteEntry, const unsigned)
+    OOLUA_MEM_FUNC(void, setFontColorPaletteEntry, const unsigned, const GYColor4)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CameraKeyFrame)

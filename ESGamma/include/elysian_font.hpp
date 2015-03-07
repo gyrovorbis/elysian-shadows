@@ -3,37 +3,46 @@
 
 #include "elysian_sprite.hpp"
 
-#define ELYSIAN_FONT_SPACING_DEFAULT    2
+#define ELYSIAN_FONT_BUFFER_SIZE                200
+#define ELYSIAN_FONT_SPACING_DEFAULT            2
 
+#define ELYSIAN_FONT_MARKUP_SIGNAL_CHAR         '~'
+
+#define ELYSIAN_FONT_MARKUP_COLOR_CHAR          'c'
+#define ELYSIAN_FONT_MARKUP_COLOR_PALETTE_SIZE  50
 
 namespace elysian {
 
 	class Font: public Sprite {
 	public:
+
 		enum ALIGNMENT	{ C_ALIGN, L_ALIGN, R_ALIGN };
-		enum FORMAT		{ NO_FORMAT, FORMATTED };
-		//enum CAMERA		{ NO_CAMERA, WITH_CAMERA};
 		
-		bool loadTextData(const char* const imgFile, int sheetWidth, int sheetHeight, int spriteWidth, int spriteHeight, const char* const widthFile);
-		void drawString(const FORMAT format, const ALIGNMENT align, const char *str);
+        bool            loadTextData(const char* const imgFile, const int sheetWidth, const int sheetHeight, const int spriteWidth, const int spriteHeight, const char* const widthFile);
+        void            drawString(const ALIGNMENT align, const char *str);
 
-		unsigned int getStringPixelWidth(const char *string);
-        unsigned int stringLengthWithinWidth(const char*string, unsigned int width);
+        unsigned        getStringPixelWidth(const char *string);
+        unsigned        stringLengthWithinWidth(const char*string, const unsigned int width);
 		
-		void drawStringf(const FORMAT format, const ALIGNMENT align, const char *str, ...);
+        void            drawStringf(const ALIGNMENT align, const char *str, ...);
 
-		void startBatchRender(void);
-		void endBatchRender(void);
+        void            startBatchRender(void);
+        void            endBatchRender(void);
 
-		//virtual void render(void); //we can reimplement this with a stored string for RenderableObject polymorphic compatability
+        static GYColor4 getColorPaletteEntry(const unsigned index);
+        static void     setColorPaletteEntry(const unsigned index, const GYColor4 color);
+
 	private:
 
-        unsigned short _spacing = ELYSIAN_FONT_SPACING_DEFAULT;
-		bool _batching = false;
-		bool _loadCharacterWidths(const char *const widthFile);
-		unsigned short _charWidth[128];
-		
-		void _renderChar(const FORMAT format, float &curX, float &curY, const char *const str, int &i);
+        static GYColor4 _colorPalette[ELYSIAN_FONT_MARKUP_COLOR_PALETTE_SIZE];
+        unsigned short  _charWidth[128];
+        unsigned short  _spacing = ELYSIAN_FONT_SPACING_DEFAULT;
+        bool            _batching = false;
+
+        bool            _loadCharacterWidths(const char *const widthFile);
+        void            _renderChar(float &curX, float &curY, const char *const str, int &i);
+
+        void            _processColorMarkup(const char*const string, int &index);
 		
 	};
 
@@ -72,6 +81,24 @@ namespace elysian {
         if(curWidth > width) --curIndex;
 
         return curIndex;
+    }
+
+    inline GYColor4 Font::getColorPaletteEntry(const unsigned index) { return _colorPalette[index]; }
+    inline void Font::setColorPaletteEntry(const unsigned index, const GYColor4 color) { _colorPalette[index] = color; }
+
+    inline void Font::_processColorMarkup(const char*const string, int &index) {
+        unsigned paletteEntry   = (unsigned)(string[++index] - 48) * 10;
+        paletteEntry            += (unsigned)(string[++index] - 48);
+
+        GYColor4 color = _colorPalette[paletteEntry];
+        color.a = _color.a;
+        setColor(color);
+
+        //We have to end the current quad list and start another.
+        gyVidQuadListEnd();
+        if(_color.a == 255) gyVidAlphaLevel(GY_ALPHA_PUNCHTHRU);
+        else gyVidAlphaLevel(GY_ALPHA_FULL);
+        gyVidQuadListBegin(&_color);
     }
 }
 

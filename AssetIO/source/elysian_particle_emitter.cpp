@@ -189,7 +189,8 @@ void ParticleEmitterInternals::update(const CameraState*const cam, const float d
         unsigned animDuration = (_attrib->_animFrameDuration > 0)? _attrib->_animFrameDuration : _attrib->_maxLife;
         if(_attrib->getTexture()) {
             GYRO_LINEAR_INTERP(animCol, 0, _attrib->_animGridWidth, animDuration, curLife);
-            animCol %= _attrib->_animGridWidth;
+            if(_attrib->_animGridWidth != 0) animCol %= _attrib->_animGridWidth;
+            else animCol = 0;
             (*it).frame = _attrib->_animGrid[(*it).animRow][animCol];
         }
     }

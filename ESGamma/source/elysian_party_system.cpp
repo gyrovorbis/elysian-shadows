@@ -518,7 +518,7 @@ Entity *PartySystem::getCharacterPartyMember(const char *name) const {
 		}
 	}
     //Debug::printf(Debug::CRITICAL, "PartySystem::getCharacterPartyMember(const char[]): %s is not in the party!", name);
-	return NULL;
+    return NULL;
 }
 
 Entity *PartySystem::getCharacterPartyMember(const unsigned int slot) const {

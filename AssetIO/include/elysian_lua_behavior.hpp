@@ -31,7 +31,9 @@ namespace elysian {
 		template<typename RType, typename... PTypes>
         RType _callTriggerByIndex(const uint64_t trigger, PTypes... parameters) {
             lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());
-            lua_rawgeti(*_mainState, -1, trigger);
+            lua_pushinteger(*_mainState, trigger);
+            lua_gettable(*_mainState, -2);      //must invoke metamethods for behavior inheritance
+            //lua_rawgeti(*_mainState, -1, trigger);
             lua_remove(*_mainState, -2);
             return _callFunction<RType>(_script, parameters...);
 		}

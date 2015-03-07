@@ -203,7 +203,7 @@ void AdventureLog::render(void) {
         strncpy(curLine, _log[i], length);
         curLine[length] = 0;
 
-        _textFont->drawString(Font::NO_FORMAT, Font::L_ALIGN, curLine);
+        _textFont->drawString(Font::L_ALIGN, curLine);
     }
     
     quad._transform.setPos(0.6f*(float)_scrW*0.5f, ELYSIAN_ADV_LOG_Y+9, ELYSIAN_ADV_LOG_Z+2);
@@ -221,7 +221,7 @@ void AdventureLog::render(void) {
 	//font.setAlpha(_baseAlpha);
     _labelFont->setColor(255, 255, 255, 255);
     _labelFont->setAlpha(_baseAlpha*255.0);
-    _labelFont->drawString(Font::NO_FORMAT, Font::L_ALIGN, _label);
+    _labelFont->drawString(Font::L_ALIGN, _label);
 	//font.DrawString(0, ADV_LOG_X+15, ADV_LOG_Y, ADV_LOG_Z+3, 1, 1, 1, L_ALIGN, "Adventure Log");
 }
 

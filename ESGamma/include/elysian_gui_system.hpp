@@ -23,12 +23,12 @@
 #define ELYSIAN_FONT_IMAGE_PATH_PRAGMATA26          ASSETS_VROOT "/font/pragmata26.png"
 #define ELYSIAN_FONT_WIDTH_PATH_PRAGMATA26          ASSETS_VROOT "/font/pragmata26_width.txt"
 
-#define ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_MAX_CHARS    50
+#define ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_MAX_CHARS    20
 #define ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_POOL_SIZE    30
 #define ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_LIFE         1.0f
 #define ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_GRAVITY		GYVector2 { 0.0f, 0.1f }
 
-#define ELYSIAN_GUI_SYSTEM_VICTORY_TEXT_MAX_CHARS   20
+#define ELYSIAN_GUI_SYSTEM_VICTORY_TEXT_MAX_CHARS   50
 
 #define ELYSIAN_GUI_SYSTEM_EXAMINE_TEXT_OFFSET      0.0f
 
@@ -179,6 +179,9 @@ namespace elysian {
 
         void            addVictoryText(const GYVector2& pos, const char*const string);
 
+        GYColor4        getFontColorPaletteEntry(const unsigned index) const;
+        void            setFontColorPaletteEntry(const unsigned index, const GYColor4 color);
+
         Font			verdana;
         Font			twcen;
         Font            pragmata18;
@@ -243,6 +246,10 @@ namespace elysian {
            _combatStatIndicator.remove(it);
        }
     }
+
+    inline GYColor4 GuiSystem::getFontColorPaletteEntry(const unsigned index) const { return Font::getColorPaletteEntry(index); }
+    inline void GuiSystem::setFontColorPaletteEntry(const unsigned index, const GYColor4 color) { Font::setColorPaletteEntry(index, color); }
+
 }
 
 #endif
