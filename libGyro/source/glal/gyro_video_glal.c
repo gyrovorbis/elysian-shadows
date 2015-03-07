@@ -51,7 +51,6 @@ static const GYVector3 _rectTangents[GY_RECT_TEX_ORIENT_MAX] = {
         { 0.0f, 1.0f, 0.0f }   //FHR270
 };
 
-#if 0
 static GYVector3 _planeNormals[GY_RECT_PLANE_MAX] = {
 	{ 0.0f, 0.0f, 1.0f },
     { 0.0f, SQRT_OF_2, SQRT_OF_2},
@@ -61,7 +60,7 @@ static GYVector3 _planeNormals[GY_RECT_PLANE_MAX] = {
     { 0.0f, 0.0f, 0.0f },
     { 0.0f, 0.0f, 0.0f }
 };
-#endif
+
 
 /*
 typedef enum _GY_RECT_TEX_ORIENT { GY_RECT_TEX_ORIENT_NORMAL, GY_RECT_TEX_ORIENT_FLIP_HORIZ, GY_RECT_TEX_ORIENT_FLIP_VERT,
@@ -80,7 +79,7 @@ static const GYVector4 _rectVerts[GY_RECT_PLANE_MAX][4] = {
 		{0.5f, 0.5f, 0.0f, 1.0f}
 	},
  #if 0
-	//FRONT
+    //FRONT
 	{
 		{-0.5f, -0.5f, 1.0f, 1.0f},
 		{0.5f, -0.5f, 1.0f, 1.0f},
@@ -361,7 +360,7 @@ void gyVidQuadListEnd(void) {
 // (glorified wrappers around low-level API)
 
 void glalVidNormalUpdateUniform(void) {
-    glalNormalVector = &_rectNormals[glalPlaneType][glalRectTexOrient];
+    glalNormalVector = !glalNormalMapActive? &_planeNormals[glalPlaneType] : &_rectNormals[glalPlaneType][glalRectTexOrient];
     glUniform3fv(glalCurLightShader->uniformLoc[GLAL_SHADER_NORMAL], 1, (float*)glalNormalVector);
 }
 
@@ -399,7 +398,7 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
         updateFlip = 1;
     }
 
-    normal = &_rectNormals[glalPlaneType][glalRectTexOrient];
+    normal = !glalNormalMapActive? &_planeNormals[glalPlaneType] : &_rectNormals[glalPlaneType][glalRectTexOrient];
     if(normal != glalNormalVector) {
         glalStripComboBreaker();
         glalVidNormalUpdateUniform();
