@@ -607,6 +607,8 @@ OOLUA_EXPORT_FUNCTIONS(CombatAttrib,
 OOLUA_EXPORT_FUNCTIONS_CONST(CombatStatus,
 							 getMp,
                              getHp,
+                             getMaxHp,
+                             getMaxMp,
                              hasStatusEffect)
 OOLUA_EXPORT_FUNCTIONS(CombatStatus,
                        setHp,

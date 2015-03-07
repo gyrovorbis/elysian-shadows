@@ -49,7 +49,6 @@ namespace elysian {
         int				_hp                     = 0;
         int             _maxMp                  = 100;
         int				_mp                     = 0;
-        int             _exp                    = 0;
         //USE STATUS BITFLAGS!!!111
         uint64_t        _statusEffects          = 0;
 
@@ -60,8 +59,6 @@ namespace elysian {
         int				getHp(void) const;
         int             getMaxHp(void) const;
         int				getMp(void) const;
-        void            setExp(const int exp);
-        int             getExp(void) const;
         int             getMaxMp(void) const;
         void            setHp(const int val);
         void            setMaxHp(const int val);
@@ -189,8 +186,6 @@ namespace elysian {
     inline void CombatStatus::setMaxHp(const int val) { _maxHp = val; }
 	inline void	CombatStatus::setMp(const int mp) { _mp = mp; }
     inline void CombatStatus::setMaxMp(const int val) { _maxMp = val; }
-    inline int CombatStatus::getExp(void) const { return _exp; }
-    inline void CombatStatus::setExp(const int exp) { _exp = exp; }
 
     inline void CombatStatusModifier::addStatusEffect(const int effect) {
         _statusEffects |= effect;

@@ -6,7 +6,7 @@
 
 namespace elysian {
 
-GYColor4 Font::_colorPalette[ELYSIAN_FONT_MARKUP_COLOR_PALETTE_SIZE] = { GYColor4 { 255, 255, 255, 255 } };
+GYColor4 Font::_colorPalette[ELYSIAN_FONT_MARKUP_COLOR_PALETTE_SIZE] = { GYColor4 { 255, 255, 255, 255 }, GYColor4 { 0, 0, 0, 0 } };
 
 bool Font::loadTextData(const char*const imgFile, const int sheetWidth, const int sheetHeight, const int spriteWidth, const int spriteHeight, const char*const widthFile) {
 	bool success = true;

@@ -828,6 +828,8 @@ OOLUA_PROXY(CombatStatus)
     OOLUA_MEM_FUNC(void, setMaxMp, int)
 	OOLUA_MEM_FUNC_CONST(int, getHp)
 	OOLUA_MEM_FUNC_CONST(int, getMp)
+    OOLUA_MEM_FUNC_CONST(int, getMaxHp)
+    OOLUA_MEM_FUNC_CONST(int, getMaxMp)
     OOLUA_MEM_FUNC_CONST(bool, hasStatusEffect, const CombatStatus::STATUS_EFFECT)
 OOLUA_PROXY_END
 
