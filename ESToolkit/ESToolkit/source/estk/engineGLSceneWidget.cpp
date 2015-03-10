@@ -83,7 +83,7 @@ static void _initSpineShit(void) {
        // drawable->timeScale = 1;
 
         skeleton->x = 320;
-        skeleton->y = 200;
+        skeleton->y = 500;
         spSkeleton_updateWorldTransform(skeleton);
 
         spAnimationState_setAnimationByName(state, 0, "walk", true);

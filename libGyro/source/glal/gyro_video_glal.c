@@ -272,7 +272,7 @@ static inline void _gyVidTriangleStrip(const struct _GYVector4 *const vertexArra
     {
         gyPrintf("glError in file enableVertAttribArray");
     }*/
-	glDrawArrays(GL_TRIANGLE_STRIP, startIndex, amount);
+    glDrawArrays(GL_TRIANGLE_STRIP, startIndex, amount);
     /*glErr = glGetError();
        if (glErr != GL_NO_ERROR)
        {
@@ -498,8 +498,11 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
     GYVertex*                   vertex = startVertex;
     //int                         i;
     //int                         index;
+    const float                 zEpsilon = 1.0f;
+    float                       zOffset;
 
     for (int i = 0; i < skeleton->slotsCount; ++i) {
+    //for (int i = skeleton->slotsCount-1; i >= 0; --i) {
         startVertex = &_vertexQueue[0];
         vertex = startVertex;
 
@@ -507,6 +510,8 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
         attachment = slot->attachment;
         if (!attachment) continue;
         texture = NULL;
+        zOffset = zEpsilon * (float)i;
+
         if (attachment->type == SP_ATTACHMENT_REGION) {
             regionAttachment = (spRegionAttachment*)attachment;
             texture = (GYTexture*)((spAtlasRegion*)regionAttachment->rendererObject)->page->rendererObject;
@@ -524,37 +529,39 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
 
             vertex->x = worldVertices[SP_VERTEX_X1];
             vertex->y = worldVertices[SP_VERTEX_Y1];
-            vertex->z = 80.0f;
+            vertex->z = 80.0f + zOffset;
             vertex->w = 1.0f;
-            vertex->u = regionAttachment->uvs[SP_VERTEX_X1] * width;
-            vertex->v = regionAttachment->uvs[SP_VERTEX_Y1] * height;
+            vertex->u = regionAttachment->uvs[SP_VERTEX_X1];// * width;
+            vertex->v = regionAttachment->uvs[SP_VERTEX_Y1];// * height;
             vertex->color = *(float*)&color;
             ++vertex;
 
             vertex->x = worldVertices[SP_VERTEX_X2];
             vertex->y = worldVertices[SP_VERTEX_Y2];
-            vertex->z = 80.0f;
+            vertex->z = 80.0f + zOffset;
             vertex->w = 1.0f;
-            vertex->u = regionAttachment->uvs[SP_VERTEX_X2] * width;
-            vertex->v = regionAttachment->uvs[SP_VERTEX_Y2] * height;
+            vertex->u = regionAttachment->uvs[SP_VERTEX_X2];// * width;
+            vertex->v = regionAttachment->uvs[SP_VERTEX_Y2];// * height;
             vertex->color = *(float*)&color;
             ++vertex;
 
             vertex->x = worldVertices[SP_VERTEX_X3];
             vertex->y = worldVertices[SP_VERTEX_Y3];
-            vertex->z = 80.0f;
+            vertex->z = 80.0f + zOffset;
             vertex->w = 1.0f;
-            vertex->u = regionAttachment->uvs[SP_VERTEX_X3] * width;
-            vertex->v = regionAttachment->uvs[SP_VERTEX_Y3] * height;
+            vertex->u = regionAttachment->uvs[SP_VERTEX_X3];// * width;
+            vertex->v = regionAttachment->uvs[SP_VERTEX_Y3];// * height;
             vertex->color = *(float*)&color;
             ++vertex;
 
+
+
             vertex->x = worldVertices[SP_VERTEX_X4];
             vertex->y = worldVertices[SP_VERTEX_Y4];
-            vertex->z = 80.0f;
+            vertex->z = 80.0f + zOffset;
             vertex->w = 1.0f;
-            vertex->u = regionAttachment->uvs[SP_VERTEX_X4] * width;
-            vertex->v = regionAttachment->uvs[SP_VERTEX_Y4] * height;
+            vertex->u = regionAttachment->uvs[SP_VERTEX_X4];// * width;
+            vertex->v = regionAttachment->uvs[SP_VERTEX_Y4];// * height;
             vertex->color = *(float*)&color;
             ++vertex;
 
@@ -564,12 +571,14 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
             texture = (GYTexture*)((spAtlasRegion*)mesh->rendererObject)->page->rendererObject;
             spMeshAttachment_computeWorldVertices(mesh, slot, worldVertices);
 
-            GYColor4 color = {
+          /*  GYColor4 color = {
                 (unsigned char)(skeleton->r * slot->r * 255),
                 (unsigned char)(skeleton->g * slot->g * 255),
                 (unsigned char)(skeleton->b * slot->b * 255),
                 (unsigned char)(skeleton->a * slot->a * 255)
-            };
+            };*/
+
+            GYColor4 color = { 255, 0, 0, 255 };
 
             width = texture->width;
             height = texture->height;
@@ -577,10 +586,10 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
                 int index = mesh->triangles[j] << 1;
                 vertex->x = worldVertices[index];
                 vertex->y = worldVertices[index + 1];
-                vertex->z = 80.0f;
+                vertex->z = 80.0f + zOffset;
                 vertex->w = 1.0f;
-                vertex->u = mesh->uvs[index] * width;
-                vertex->v = mesh->uvs[index + 1] * height;
+                vertex->u = mesh->uvs[index];// * width;
+                vertex->v = mesh->uvs[index + 1];// * height;
                 vertex->color = *(float*)&color;
                 ++vertex;
             }
@@ -604,24 +613,40 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
                 int index = skinnedMesh->triangles[j] << 1;
                 vertex->x = worldVertices[index];
                 vertex->y = worldVertices[index + 1];
-                vertex->z = 80.0f;
+                vertex->z = 80.0f + zOffset;
                 vertex->w = 1.0f;
-                vertex->u = skinnedMesh->uvs[index] * width;
-                vertex->v = skinnedMesh->uvs[index + 1] * height;
+                vertex->u = skinnedMesh->uvs[index];// * width;
+                vertex->v = skinnedMesh->uvs[index + 1];// * height;
                 vertex->color = *(float*)&color;
                 ++vertex;
             }
         }
 
+
+    if(texture) {
+        static int lastAdditive = 0;
+
+        gyVidAlphaLevel(GY_ALPHA_FULL);
+
+       // if(slot->data->additiveBlending != lastAdditive) {
+        if(slot->data->additiveBlending) {
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+        } else {
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        }
+        lastAdditive = slot->data->additiveBlending;
+
         gyVidNormalMapBind(NULL);
         gyVidSpecularMapBind(NULL);
         gyVidMaterialBind(NULL);
 
-        gyVidTexBind(texture);
-        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD]);
-        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR]);
-        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_POS]);
+        glEnable(GL_DEPTH_TEST);
 
+        gyVidTexBind(texture);
+
+        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_POS]);
+        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR]);
+        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD]);
 
         float* rawPtr = (float*)startVertex;
 
@@ -629,19 +654,15 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
         glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (rawPtr+4));
         glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GYVertex), (rawPtr+6));
         int count = (int)vertex-(int)startVertex;
-        glDrawArrays(GL_TRIANGLES, 0, count);
-
-        /*if (texture) {
-            gyVidTexBind(texture);
-
-            BlendMode blend = slot->data->additiveBlending ? BlendAdd : BlendAlpha;
-            if (states.blendMode != blend) {
-                target.draw(*vertexArray, states);
-                vertexArray->clear();
-                states.blendMode = blend;
-            }
-        }*/
+        assert(count < GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE);
+        glDrawArrays(attachment->type == SP_ATTACHMENT_REGION? GL_QUADS : GL_TRIANGLES, 0, count);
+        glalVertexRenderCount += count;
+        }
+   // }
     }
+
+
+
    // target.draw(*vertexArray, states);
 }
 
