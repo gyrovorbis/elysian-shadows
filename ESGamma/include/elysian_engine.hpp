@@ -25,7 +25,7 @@ namespace elysian {
 
         void    update(void);
         void    processInput(void);
-        void    render(void);
+        void    render(void (*func)(void));
     };
 
 }

@@ -115,7 +115,7 @@ private:
 
 	virtual void keyPressEvent(QKeyEvent *event) override;
 
-private slots:
+private Q_SLOTS:
 
     //----CONNECTED BY DESIGNER----
     void _onEngineInitialized();

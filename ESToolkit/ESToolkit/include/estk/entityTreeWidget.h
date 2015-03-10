@@ -27,7 +27,7 @@ public:
     bool getShowHidden(void) const;
     void setShowHidden(const bool val);
 
-private slots:
+private Q_SLOTS:
     void OnAreaChange(Area * const area);
     void OnAddEntity(Project *const project, Level *const level, Area *const area, Entity *const entity);
     void OnRemoveEntity(Project *const project, Level *const level, Area *const area, Entity *const entity);
@@ -36,7 +36,7 @@ private slots:
     void onEntityParented(Entity*const child, Entity*const parent);
     //void onLayerChange(const Assets::LAYER_TYPE layer);
 
-signals:
+Q_SIGNALS:
     void entityLayerActivate(void);
 
 };

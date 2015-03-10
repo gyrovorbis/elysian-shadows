@@ -122,7 +122,7 @@ void Area::setNodeName(const QString str) {
     strcpy(dir, name.toStdString().c_str());
     strcpy(path, _location.toStdString().c_str());
 
-	if(_renamed) emit renamed(oldName, name);
+	if(_renamed) Q_EMIT renamed(oldName, name);
 }
 
 bool Area::duplicate(void) {
@@ -294,7 +294,7 @@ bool Area::saveAs(const QString dir) {
 
 bool Area::activate(void) {
 	if(!_open) open();
-    emit activating(this);
+    Q_EMIT activating(this);
     if(!_active) {
         _curArea = this;
         AreaBase::activate();
@@ -372,7 +372,7 @@ Entity* Area::newEntity(void) {
        // _editorScene->addItem(entity);
 
 	}
-    emit entityAdded(this, entity);
+    Q_EMIT entityAdded(this, entity);
     return entity;
 }
 
@@ -386,7 +386,7 @@ bool Area::deleteEntity(const QString name) {
 bool Area::deleteEntity(Entity *const pentity) {
 	for(size_t i = 0; i < entities.size(); ++i) {
         if(entities[i] == pentity) {
-			emit entityRemoved(this, pentity);
+			Q_EMIT entityRemoved(this, pentity);
 
             removeEntity(entities[i]);
 			delete pentity;
@@ -432,11 +432,11 @@ Entity* Area::getFirstEntity(void) const {
 }
 
 void Area::onComponentAttached(Entity *const entity, Component *const comp) {
-	emit componentAttached(this, entity, comp);
+	Q_EMIT componentAttached(this, entity, comp);
 }
 
 void Area::onComponentRemoved(Entity *const entity, Component *const comp) {
-	emit componentRemoved(this, entity, comp);
+	Q_EMIT componentRemoved(this, entity, comp);
 }
 
 void Area::onUndoCleanStateChanged(bool clean) {
@@ -452,17 +452,17 @@ elysian::Area& Area::getElysianArea(void) {
 }
 
 void TkArea::onEntityParented(Entity * const child, Entity * const parent) {
-    emit entityParented(child, parent);
+    Q_EMIT entityParented(child, parent);
 }
 
 void TkArea::addEntity(Entity *entity) {
     elysian::AreaBase::addEntity(entity);
     //Only give a shit about top-level entities
-   /* if(!static_cast<QTreeWidgetItem*>(entity)->treeWidget())*/ emit entityAdded(this, entity);
+   /* if(!static_cast<QTreeWidgetItem*>(entity)->treeWidget())*/ Q_EMIT entityAdded(this, entity);
 }
 
 void TkArea::removeEntity(Entity *entity) {
     elysian::AreaBase::removeEntity(entity);
- /*   if(!static_cast<QTreeWidgetItem*>(entity)->treeWidget())*/ emit entityRemoved(this, entity);
+ /*   if(!static_cast<QTreeWidgetItem*>(entity)->treeWidget())*/ Q_EMIT entityRemoved(this, entity);
 }
 

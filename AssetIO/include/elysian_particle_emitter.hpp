@@ -110,9 +110,9 @@ namespace elysian {
 		void render(void);
 		void renderAtElev(const unsigned char elev);
 
-		//emitter functions
-		void emitFromPoint(const GYVector3& pos, const float angle, const unsigned intensity);
-		void emitFromPointInDir(const GYVector3& pos, const GYVector3& dir, const unsigned intensity, const float angle);
+        //Q_EMITter functions
+        void Q_EMITFromPoint(const GYVector3& pos, const float angle, const unsigned intensity);
+        void Q_EMITFromPointInDir(const GYVector3& pos, const GYVector3& dir, const unsigned intensity, const float angle);
 	//	void fallFromSky(void);
 	};
 
@@ -138,7 +138,7 @@ namespace elysian {
         virtual bool    removeFromLevel(void) override;
         virtual TYPE    getType(void) const override;
 
-        void            emitFromEntity(const GYVector3& pos, const float angle, const unsigned intensity);
+        void            Q_EMITFromEntity(const GYVector3& pos, const float angle, const unsigned intensity);
 
 	};
 
@@ -173,14 +173,14 @@ namespace elysian {
 
 	inline void ParticleEmitterAttrib::setMaterial(Material * const material) { _material = material; }
 
-	inline void ParticleEmitterAttrib::loadSpecularMap(const char*const path, const unsigned width, const unsigned height) {
+    inline void ParticleEmitterAttrib::loadSpecularMap(const char*const path, const unsigned /*width*/, const unsigned /*height*/) {
 		if(_specularMap) gyVidTexDestroy(_specularMap);
-		_specularMap = gyVidTexCreate(path, width, height);
+        _specularMap = gyVidTexCreate(path);
 	}
 
-    inline void ParticleEmitterAttrib::loadNormalMap(const char*const path, const unsigned width, const unsigned height) {
+    inline void ParticleEmitterAttrib::loadNormalMap(const char*const path, const unsigned /*width*/, const unsigned /*height*/) {
         if(_normalMap) gyVidTexDestroy(_normalMap);
-        _normalMap = gyVidTexCreate(path, width, height);
+        _normalMap = gyVidTexCreate(path);
     }
 
 	inline void ParticleEmitterAttrib::setStick(const bool val) { _stick = val; }

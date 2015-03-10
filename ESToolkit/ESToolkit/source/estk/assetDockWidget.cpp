@@ -21,6 +21,6 @@ void AssetDockWidget::clearTreeView()
 
 void AssetDockWidget::closeEvent(QCloseEvent *event)
 {
-    emit UncheckMe(0);
+    Q_EMIT UncheckMe(0);
     event->accept();
 }

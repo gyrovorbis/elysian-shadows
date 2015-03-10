@@ -77,7 +77,7 @@ void EntityTreeWidget::OnSelectionChanged(const Selectable::TYPE type, Selectabl
 			setCurrentItem(static_cast<TkEntity*>(*it));
 		}
         //_ignoreLayerChange = true;
-        if(getAssets()->getCurrentLayer() != Assets::LAYER_ENTITY) emit entityLayerActivate();
+        if(getAssets()->getCurrentLayer() != Assets::LAYER_ENTITY) Q_EMIT entityLayerActivate();
         //ignoreLayerChange = false;
 		break;
 	}

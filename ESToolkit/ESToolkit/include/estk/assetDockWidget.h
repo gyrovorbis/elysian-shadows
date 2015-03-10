@@ -15,7 +15,7 @@ public:
     explicit AssetDockWidget(QWidget *parent = 0);
     ~AssetDockWidget();
     void clearTreeView(void);
-signals:
+Q_SIGNALS:
     void UncheckMe(int);
 protected:
     void closeEvent(QCloseEvent *event);

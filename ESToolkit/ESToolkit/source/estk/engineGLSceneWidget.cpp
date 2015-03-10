@@ -1,3 +1,4 @@
+
 #include "elysian_camera_system.hpp"
 #include <gyro_video_api.h>
 #include "engineGLSceneWidget.h"
@@ -6,6 +7,8 @@
 #include "elysian_light_system.hpp"
 
 #include <QMouseEvent>
+#include <spine/spine.h>
+//#undef QT_NO_KEYWORDS
 
 
 EngineGLSceneWidget::EngineGLSceneWidget(const QGLFormat &format, QWidget *parent, const QGLWidget *shareWidget, Qt::WindowFlags f):
@@ -32,6 +35,9 @@ void EngineGLSceneWidget::advanceFrame(void) {
 
 bool EngineGLSceneWidget::isPlaying(void) const { return getAssets()->getEngine()->getEngineState() != elysian::System::ENGINE_ESTK_STOP; }
 
+
+
+
 void EngineGLSceneWidget::initializeGL(void) {
     makeCurrent();
 
@@ -40,6 +46,49 @@ void EngineGLSceneWidget::initializeGL(void) {
 
     glalVidOglInit(parentWidth, parentHeight, parentWidth, parentHeight);
      if(getAssets()->getEngine()) getAssets()->getEngine()->getCameraSys()->initializeProjMatrix();
+
+
+
+}
+
+spAtlas* atlas;
+spSkeletonData* skeletonData;
+spSkeleton* skeleton;
+spAnimationState* state;
+spSkeletonJson* json;
+spAnimationStateData* stateData;
+
+
+static void _initSpineShit(void) {
+
+
+    atlas = spAtlas_createFromFile("/assets/raptor.atlas", 0);
+    json = spSkeletonJson_create(atlas);
+    json->scale = 0.5f;
+    skeletonData = spSkeletonJson_readSkeletonDataFile(json, "/assets/raptor.json");
+    if (!skeletonData) {
+       printf("Error: %s\n", json->error);
+       exit(0);
+    }
+   spSkeletonJson_dispose(json);
+
+   spBone_setYDown(true);
+
+//         SkeletonDrawable* drawable = new SkeletonDrawable(skeletonData);
+        skeleton = spSkeleton_create(skeletonData);
+
+        stateData = spAnimationStateData_create(skeletonData);
+        state = spAnimationState_create(stateData);
+
+       // drawable->timeScale = 1;
+
+        skeleton->x = 320;
+        skeleton->y = 200;
+        spSkeleton_updateWorldTransform(skeleton);
+
+        spAnimationState_setAnimationByName(state, 0, "walk", true);
+        spAnimationState_setAnimationByName(state, 1, "empty", false);
+        spAnimationState_addAnimationByName(state, 1, "gungrab", false, 2);
 }
 
 void EngineGLSceneWidget::startRenderTimer(void) {
@@ -68,8 +117,26 @@ void EngineGLSceneWidget::resizeGL(int w, int h) {
 
 }
 
+static void _renderSpineShit(void) {
+        gyVidSkeleton(skeleton);
+
+}
+
 void EngineGLSceneWidget::paintGL(void) {
 	if(!getCurrentArea()) return;
+
+    static bool once = false;
+    if(!once) {
+        _initSpineShit();
+        once = true;
+    }
+
+    float deltaTime = getAssets()->getEngine()->getTimerSys()->getDeltaTime();
+    spSkeleton_update(skeleton, deltaTime);
+    spAnimationState_update(state, deltaTime * 1.0f);
+    spAnimationState_apply(state, skeleton);
+    spSkeleton_updateWorldTransform(skeleton);
+
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gyMatLoadIdentity();
@@ -91,9 +158,9 @@ void EngineGLSceneWidget::paintGL(void) {
         getAssets()->getEngine()->getCameraSys()->setBoundByMap(true);
     }
 
-	getAssets()->getEngine()->render();
+    getAssets()->getEngine()->render(&_renderSpineShit);
 
-    emit engineUpdated();
+    Q_EMIT engineUpdated();
 }
 
 EngineGLSceneWidget::~EngineGLSceneWidget(void){}

@@ -17,7 +17,7 @@ EntityDockWidget::~EntityDockWidget()
 
 void EntityDockWidget::closeEvent(QCloseEvent *event)
 {
-    emit UncheckMe(1);
+    Q_EMIT UncheckMe(1);
     event->accept();
 }
 

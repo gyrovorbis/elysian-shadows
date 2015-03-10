@@ -21,19 +21,19 @@ public:
     void ToggleDefaultItem(bool selected);
     int GetCurrentLayerIndex();
 	void setTopLevelItemCheckState(const unsigned index, const bool value);
-public slots:
+public Q_SLOTS:
         void setCurrentLayer(const LAYER_TYPE layer);
-signals:
+Q_SIGNALS:
     void ActiveLayerChanged(int index);
 	void LayerVisibilityChanged(int index, bool visible);
     void UncheckMe(int);
-private slots:
+private Q_SLOTS:
     void on_m_layerTreeWidget_itemChanged(QTreeWidgetItem *item, int column);
     void on_m_layerTreeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 protected:
     void closeEvent(QCloseEvent *event);
 private:
-    void _emitActiveLayerChanged(int index);
+    void _Q_EMITActiveLayerChanged(int index);
     Ui::LayerDockWidget *ui;
     bool    _causedChange;
 };
@@ -44,9 +44,9 @@ private:
 
 //======= INLINEZ ======
 
-inline void LayerDockWidget::_emitActiveLayerChanged(int index) {
+inline void LayerDockWidget::_Q_EMITActiveLayerChanged(int index) {
     _causedChange = true;
-    emit ActiveLayerChanged(index);
+    Q_EMIT ActiveLayerChanged(index);
     _causedChange = false;
 }
 

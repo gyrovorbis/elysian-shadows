@@ -44,7 +44,7 @@ void SheetManagerFileDockWidget::on_m_fileTreeView_doubleClicked(const QModelInd
 	if(m_fileModel->isDir(index)) return;
     //ADD: open file up in sheet manager
 
-	emit imageSelected(m_fileModel->filePath(index));
+	Q_EMIT imageSelected(m_fileModel->filePath(index));
 }
 
 void SheetManagerFileDockWidget::on_m_fileTreeView_collapsed(const QModelIndex &/*index*/)

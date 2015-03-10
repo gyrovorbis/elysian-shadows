@@ -97,5 +97,5 @@ void TkEntity::_renderRelative(void) {
 }
 
 void TkEntity::onEntityParented(Entity * const child, Entity * const parent) {
-    emit entityParented(child, parent);
+    Q_EMIT entityParented(child, parent);
 }

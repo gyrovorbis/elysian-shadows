@@ -97,7 +97,7 @@ void PartySystem::processInput(const GameInput &input) {
         _lastDpadTapped = GameInput::BUT_NONE;
     };
 
-    auto emitDashParticles = [&](void) {
+    auto Q_EMITDashParticles = [&](void) {
 		getPartSys()->getAttrib(0)->setAcceleration(GYVector3{ 0.0f, -70.0f, 7.0f/*7.0f*//*6.5f*/ });
         getPartSys()->getAttrib(0)->setForceMask(0);
         getPartSys()->getAttrib(0)->setEndColor(GYColor4 { 255, 255, 255, 0});
@@ -107,7 +107,7 @@ void PartySystem::processInput(const GameInput &input) {
         GYVector3 pos = getPartyLeader()->_transform._pos;
         pos.z += 5.0f;
         pos.y = getPartyLeader()->getDepthBaseY();
-        getPartSys()->emitFromPoint(0, pos, _dashPartAngle, 500);
+        getPartSys()->Q_EMITFromPoint(0, pos, _dashPartAngle, 500);
         _dashPartTimer = 0.0f;
     };
 
@@ -169,7 +169,7 @@ void PartySystem::processInput(const GameInput &input) {
 				getAudioSys()->setSfxChannelPitch(0, 2.0f);
 //				getPartSys()->getAttrib(0)->setSize(3);
 //				getPartSys()->getAttrib(0)->setFadeOut(true);
-                emitDashParticles();
+                Q_EMITDashParticles();
 				//Debug::printf(Debug::VERBOSE, "DASHING!!!");
 			}
 		}
@@ -181,7 +181,7 @@ void PartySystem::processInput(const GameInput &input) {
     if(_dashDuration != 0.0f && _tapTimer > _dashDuration) {
         endDash();
     } else if(_dashing && _dashPartTimer >= _dashPartInterval) {
-        emitDashParticles();
+        Q_EMITDashParticles();
     }
 
     if(_lastDpadTapped != GameInput::BUT_NONE) {

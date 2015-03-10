@@ -4,6 +4,7 @@
 #include <gyro_shader_api.h>
 #include <glal/gyro_video_glal.h>
 #include <glal/gyro_shaders_glal.h>
+#include <spine/spine.h>
 
 #include <assert.h>
 #include <stdio.h>
@@ -155,7 +156,8 @@ static const GYCamera	_defaultCamera;
 //static GYVector4		_stripVerts[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]         __attribute__((aligned(32)));
 static GYTexCoord2		_stripTexCoords[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]     __attribute__((aligned(32)));
 static GYVector4		_modelViewVertices[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]  __attribute__((aligned(32)));
-GYColor4                _stripColors[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]           __attribute__((aligned(32)));
+GYColor4                _stripColors[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]        __attribute__((aligned(32)));
+static GYVertex         _vertexQueue[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE];
 
 
 //Shared extern video state variables
@@ -176,8 +178,9 @@ unsigned    				glalVertexRenderCount		= 0;
 static unsigned int			_projWidth				= 0;
 static unsigned int			_projHeight				= 0;
 static GYVector4			_clearColor				= { 0.0f, 0.0f, 0.0f, 0.0f };
-static const GYTexCoord2*   _curTexCoordPtr          = NULL;
-GYColor4				_curQuadListColor[12]	= { {0, 0, 0, 0}, { 0, 0, 0, 0}, {0,0,0,0}, {0, 0,0,0} };
+static const GYTexCoord2*   _curTexCoordPtr         = NULL;
+GYColor4				_curQuadListColor[12]       = { {0, 0, 0, 0}, { 0, 0, 0, 0}, {0,0,0,0}, {0, 0,0,0} };
+static unsigned int         _vertexQueueSize         = 0;
 
 void gyVidClearColor(const GYColor4 color) {
 	_clearColor.x = (float)color.r*255.0f;
@@ -479,35 +482,166 @@ void gyVidCamFrustum(GYCamera* const cam, const float fov, const float aspect, c
 
 }
 
+//FUCKING GAY!!!! TRANSFORM IN PLACE!!!
+static float worldVertices[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE];
+//Spine interop
+void gyVidSkeleton(const spSkeleton*const skeleton) {
+    spSlot*                     slot;
+    spAttachment*               attachment;
+    GYTexture*                  texture;
+    spRegionAttachment*         regionAttachment;
+    spMeshAttachment*           mesh;
+    spSkinnedMeshAttachment*    skinnedMesh;
+    float                       width, height;
+    //GYColor4                    color;
+    GYVertex*                   startVertex = &_vertexQueue[0];
+    GYVertex*                   vertex = startVertex;
+    //int                         i;
+    //int                         index;
+
+    for (int i = 0; i < skeleton->slotsCount; ++i) {
+        startVertex = &_vertexQueue[0];
+        vertex = startVertex;
+
+        slot = skeleton->drawOrder[i];
+        attachment = slot->attachment;
+        if (!attachment) continue;
+        texture = NULL;
+        if (attachment->type == SP_ATTACHMENT_REGION) {
+            regionAttachment = (spRegionAttachment*)attachment;
+            texture = (GYTexture*)((spAtlasRegion*)regionAttachment->rendererObject)->page->rendererObject;
+            spRegionAttachment_computeWorldVertices(regionAttachment, slot->bone, worldVertices);
+
+            GYColor4 color = {
+                (unsigned char)(skeleton->r * slot->r * 255),
+                (unsigned char)(skeleton->g * slot->g * 255),
+                (unsigned char)(skeleton->b * slot->b * 255),
+                (unsigned char)(skeleton->a * slot->a * 255)
+            };
+
+            width = texture->width;
+            height = texture->height;
+
+            vertex->x = worldVertices[SP_VERTEX_X1];
+            vertex->y = worldVertices[SP_VERTEX_Y1];
+            vertex->z = 80.0f;
+            vertex->w = 1.0f;
+            vertex->u = regionAttachment->uvs[SP_VERTEX_X1] * width;
+            vertex->v = regionAttachment->uvs[SP_VERTEX_Y1] * height;
+            vertex->color = *(float*)&color;
+            ++vertex;
+
+            vertex->x = worldVertices[SP_VERTEX_X2];
+            vertex->y = worldVertices[SP_VERTEX_Y2];
+            vertex->z = 80.0f;
+            vertex->w = 1.0f;
+            vertex->u = regionAttachment->uvs[SP_VERTEX_X2] * width;
+            vertex->v = regionAttachment->uvs[SP_VERTEX_Y2] * height;
+            vertex->color = *(float*)&color;
+            ++vertex;
+
+            vertex->x = worldVertices[SP_VERTEX_X3];
+            vertex->y = worldVertices[SP_VERTEX_Y3];
+            vertex->z = 80.0f;
+            vertex->w = 1.0f;
+            vertex->u = regionAttachment->uvs[SP_VERTEX_X3] * width;
+            vertex->v = regionAttachment->uvs[SP_VERTEX_Y3] * height;
+            vertex->color = *(float*)&color;
+            ++vertex;
+
+            vertex->x = worldVertices[SP_VERTEX_X4];
+            vertex->y = worldVertices[SP_VERTEX_Y4];
+            vertex->z = 80.0f;
+            vertex->w = 1.0f;
+            vertex->u = regionAttachment->uvs[SP_VERTEX_X4] * width;
+            vertex->v = regionAttachment->uvs[SP_VERTEX_Y4] * height;
+            vertex->color = *(float*)&color;
+            ++vertex;
+
+        } else if (attachment->type == SP_ATTACHMENT_MESH) {
+            mesh = (spMeshAttachment*)attachment;
+            //if (mesh->verticesCount > SPINE_MESH_VERTEX_COUNT_MAX) continue;
+            texture = (GYTexture*)((spAtlasRegion*)mesh->rendererObject)->page->rendererObject;
+            spMeshAttachment_computeWorldVertices(mesh, slot, worldVertices);
+
+            GYColor4 color = {
+                (unsigned char)(skeleton->r * slot->r * 255),
+                (unsigned char)(skeleton->g * slot->g * 255),
+                (unsigned char)(skeleton->b * slot->b * 255),
+                (unsigned char)(skeleton->a * slot->a * 255)
+            };
+
+            width = texture->width;
+            height = texture->height;
+            for (int j = 0; j < mesh->trianglesCount; ++j) { //loop unroll?
+                int index = mesh->triangles[j] << 1;
+                vertex->x = worldVertices[index];
+                vertex->y = worldVertices[index + 1];
+                vertex->z = 80.0f;
+                vertex->w = 1.0f;
+                vertex->u = mesh->uvs[index] * width;
+                vertex->v = mesh->uvs[index + 1] * height;
+                vertex->color = *(float*)&color;
+                ++vertex;
+            }
+
+        } else if (attachment->type == SP_ATTACHMENT_SKINNED_MESH) {
+            skinnedMesh = (spSkinnedMeshAttachment*)attachment;
+           // if (mesh->uvsCount > SPINE_MESH_VERTEX_COUNT_MAX) continue;
+            texture = (GYTexture*)((spAtlasRegion*)skinnedMesh->rendererObject)->page->rendererObject;
+            spSkinnedMeshAttachment_computeWorldVertices(skinnedMesh, slot, worldVertices);
+
+            GYColor4 color = {
+                (unsigned char)(skeleton->r * slot->r * 255),
+                (unsigned char)(skeleton->g * slot->g * 255),
+                (unsigned char)(skeleton->b * slot->b * 255),
+                (unsigned char)(skeleton->a * slot->a * 255)
+            };
+
+            width = texture->width;
+            height = texture->height;
+            for (int j = 0; j < skinnedMesh->trianglesCount; ++j) { //loop unroll?
+                int index = skinnedMesh->triangles[j] << 1;
+                vertex->x = worldVertices[index];
+                vertex->y = worldVertices[index + 1];
+                vertex->z = 80.0f;
+                vertex->w = 1.0f;
+                vertex->u = skinnedMesh->uvs[index] * width;
+                vertex->v = skinnedMesh->uvs[index + 1] * height;
+                vertex->color = *(float*)&color;
+                ++vertex;
+            }
+        }
+
+        gyVidNormalMapBind(NULL);
+        gyVidSpecularMapBind(NULL);
+        gyVidMaterialBind(NULL);
+
+        gyVidTexBind(texture);
+        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD]);
+        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR]);
+        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_POS]);
 
 
-/*
- *Every possible way to orient a texture's UV coords (3 bits)
-typedef enum _GY_RECT_TEX_ORIENT { GY_RECT_TEX_ORIENT_NORMAL, GY_RECT_TEX_ORIENT_FLIP_HORIZ, GY_RECT_TEX_ORIENT_FLIP_VERT,
-	GY_RECT_TEX_ORIENT_ROT_90, GY_RECT_TEX_ORIENT_ROT_180, GY_RECT_TEX_ORIENT_ROT_270,
-	GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_90, GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_270,
-	GY_RECT_TEX_ORIENT_MAX //not representable with 3 bits
-} GY_RECT_TEX_ORIENT;
+        float* rawPtr = (float*)startVertex;
 
-*/
+        glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(GYVertex), (rawPtr));
+        glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (rawPtr+4));
+        glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GYVertex), (rawPtr+6));
+        int count = (int)vertex-(int)startVertex;
+        glDrawArrays(GL_TRIANGLES, 0, count);
 
+        /*if (texture) {
+            gyVidTexBind(texture);
 
-
-
-/*
-//Every possible way to orient a texture's UV coords (3 bits)
-typedef enum _GY_RECT_TEX_ORIENT { GY_RECT_TEX_ORIENT_NORMAL, GY_RECT_TEX_ORIENT_FLIP_HORIZ, GY_RECT_TEX_ORIENT_FLIP_VERT,
-	GY_RECT_TEX_ORIENT_ROT_90, GY_RECT_TEX_ORIENT_ROT_180, GY_RECT_TEX_ORIENT_ROT_270,
-	GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_90, GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_270,
-	GY_RECT_TEX_ORIENT_MAX //not representable with 3 bits
-} GY_RECT_TEX_ORIENT;
-
-
-
-const GYVector4 _rectTangents[1][GY_RECT_TEX_ORIENT_MAX] = {
-
-
-} */
-
-
+            BlendMode blend = slot->data->additiveBlending ? BlendAdd : BlendAlpha;
+            if (states.blendMode != blend) {
+                target.draw(*vertexArray, states);
+                vertexArray->clear();
+                states.blendMode = blend;
+            }
+        }*/
+    }
+   // target.draw(*vertexArray, states);
+}
 

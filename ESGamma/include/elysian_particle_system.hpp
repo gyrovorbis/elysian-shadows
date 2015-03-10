@@ -14,7 +14,7 @@ namespace elysian {
 
 	class ParticleSystem: public System {
 	private:
-		ParticleEmitterInternals	_emitters[ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_COUNT];
+		ParticleEmitterInternals	_Q_EMITters[ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_COUNT];
 		ParticleEmitterAttrib*		_defaultAttribs[ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_COUNT];
 
 	public:
@@ -26,8 +26,8 @@ namespace elysian {
 		void renderAtElev(const unsigned elev);
 		void applyForce(ForceGenerator*const forceGen);
 
-		//Internal particle emitters
-		void emitFromPoint(const unsigned index, const GYVector3& pos, const float angle, const unsigned intensity);
+		//Internal particle Q_EMITters
+		void Q_EMITFromPoint(const unsigned index, const GYVector3& pos, const float angle, const unsigned intensity);
 		ParticleEmitterAttrib *getAttrib(const unsigned index) const;
 		void setAttrib(const unsigned index, ParticleEmitterAttrib*const attrib);
 		void resizePool(const unsigned index, const unsigned size);
@@ -38,11 +38,11 @@ namespace elysian {
 	// ==== INLINEZ =====
 
 	inline ParticleEmitterAttrib* ParticleSystem::getAttrib(const unsigned index) const {
-		return _emitters[index].getAttrib();
+		return _Q_EMITters[index].getAttrib();
 	}
 
 	inline void ParticleSystem::setAttrib(const unsigned index, ParticleEmitterAttrib * const attrib) {
-		_emitters[index].setAttrib((attrib)? attrib : _defaultAttribs[index]);
+		_Q_EMITters[index].setAttrib((attrib)? attrib : _defaultAttribs[index]);
 	}
 
 

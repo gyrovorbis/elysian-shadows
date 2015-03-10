@@ -11,7 +11,7 @@ void TkAnimation::removeChildEntity(const char *animName) {
         if((*it).getStackBottomState<elysian::ChildAnimation>() && strcmp((*it).getStackBottomState<elysian::ChildAnimation>()->getName(), animName) == 0) {
             _children->remove(it);
             (*it).entity->setParentEntity(nullptr);
-            emit entityParented((*it).entity, nullptr);
+            Q_EMIT entityParented((*it).entity, nullptr);
             return;
         }
     }

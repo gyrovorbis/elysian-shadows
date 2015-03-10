@@ -23,7 +23,7 @@ Renderable::~Renderable(void) { delete _sheet; }
 void Renderable::ReloadSpriteSheet(void) {
     if(_texEdit->text().isEmpty() || _sprWEdit->text().isEmpty() || _sprHEdit->text().isEmpty() || _frameEdit->text().isEmpty()) return;
     _sheet->Reload(_texEdit->text(), _sprWEdit->text().toUInt(), _sprHEdit->text().toUInt());
-    //emit PrimitiveUpdate();
+    //Q_EMIT PrimitiveUpdate();
 }
 /*
 void Renderable::OnSetColorR(void) { setColor(_rEdit->text().toFloat(), _gEdit->text().toFloat(), _bEdit->text().toFloat(), _aEdit->text().toFloat());}
@@ -91,7 +91,7 @@ void Renderable::OnSetSpriteHeight() {
 
 void Renderable::OnSetFrame() {
 	_sheet->setFrame(_frameEdit->text().toUInt());
-	emit PrimitiveUpdate();
+	Q_EMIT PrimitiveUpdate();
 }
 void Renderable::OnSwatchClick() {
 	QColor color(255, 255, 255, 255);
@@ -288,5 +288,5 @@ void Renderable::setColor(float r, float g, float b, float a) {
 	if(_rEdit->text() != rStr) _rEdit->setText(rStr);
 	if(_gEdit->text() != gStr) _gEdit->setText(gStr);
 	if(_bEdit->text() != bStr) _bEdit->setText(bStr);
-    //emit PrimitiveUpdate(); //Signal the entity to update its geometry
+    //Q_EMIT PrimitiveUpdate(); //Signal the entity to update its geometry
 }

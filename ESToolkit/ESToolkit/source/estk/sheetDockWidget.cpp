@@ -46,6 +46,6 @@ SourceView *SheetDockWidget::getSourceView(void) const {
 
 void SheetDockWidget::closeEvent(QCloseEvent *event)
 {
-    emit UncheckMe(3);
+    Q_EMIT UncheckMe(3);
     event->accept();
 }

@@ -84,7 +84,7 @@ void EngineSettingsDialog::setDcIp(QString ip) {
         return;
     } else  {
         _dcIpAddr=ip;
-        emit dcIpChanged(_dcIpAddr);
+        Q_EMIT dcIpChanged(_dcIpAddr);
     }
 }
 void EngineSettingsDialog::setDcMac(QString mac) {
@@ -93,7 +93,7 @@ void EngineSettingsDialog::setDcMac(QString mac) {
         return;
     } else  {
         _dcMacAddr=mac;
-        emit dcMacChanged(_dcMacAddr);
+        Q_EMIT dcMacChanged(_dcMacAddr);
     }
 }
 void EngineSettingsDialog::setSudoPswd(QString pswd) {
@@ -102,7 +102,7 @@ void EngineSettingsDialog::setSudoPswd(QString pswd) {
         return;
     } else  {
         _sudoPswd=pswd;
-        emit sudoPswdChanged(_sudoPswd);
+        Q_EMIT sudoPswdChanged(_sudoPswd);
     }
 }
 
@@ -113,7 +113,7 @@ void EngineSettingsDialog::setEnginePathx86(QString path) {
     } else  {
         _enginePathx86=path;
         if(_ui->gammaBin_edit->text() != path) _ui->gammaBin_edit->setText(path);
-        emit enginePathx86Changed(path);
+        Q_EMIT enginePathx86Changed(path);
     }
 }
 

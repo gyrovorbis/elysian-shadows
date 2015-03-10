@@ -20,7 +20,7 @@ public:
     ~HistoryDockWidget();
     void SetActiveStack(QUndoStack *stack);
     void SetActiveGroup(QUndoGroup *group);
-signals:
+Q_SIGNALS:
     void UncheckMe(int);
 protected:
     void closeEvent(QCloseEvent *event);

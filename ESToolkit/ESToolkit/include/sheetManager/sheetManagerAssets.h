@@ -50,12 +50,12 @@ public:
 	inline void setCurrentSelection(SheetManagerTileSelection *const sel) {
 		delete _curSel;
 		_curSel = sel;
-		emit onCurrentSelectionChanged(sel);
+		Q_EMIT onCurrentSelectionChanged(sel);
 	}
 	inline void setCurrentLevel(Level *const level) { _curLevel = level; }
 	inline void setCurrentSourceSheetEntry(const SourceSheetEntry *const sheet) { _curSrcSheet = sheet; }
 
-signals:
+Q_SIGNALS:
 	void onCurrentSelectionChanged(SheetManagerTileSelection *const selection);
 
 };

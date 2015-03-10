@@ -65,7 +65,7 @@ protected:
     const QStandardItem*                _labelItem      = nullptr;
     QHash<QString, ESTkStandardItem*>   _fieldItems;
 
-public slots:
+public Q_SLOTS:
     void    onFieldChanged(QString field);
   //  void    _onFieldAdded(QString field);
 public:

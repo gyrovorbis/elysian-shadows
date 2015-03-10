@@ -96,7 +96,7 @@ public:
     virtual void updateSelectionItemGroup(void) override;
     virtual void deleteSelectionItemGroup(void) override;
 
-public slots:
+public Q_SLOTS:
 
     void onEngineInitialize(void);
     void onEngineUpdated(void);

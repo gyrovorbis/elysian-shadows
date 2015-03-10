@@ -336,8 +336,8 @@ int TkLuaTableUserdata::_newIndexMetamethod(lua_State* l) {
     lua_getfield(l, -1, TK_LUA_TABLE_USERDATA_FIELD_KEY);
     ud = static_cast<TkLuaTableUserdata*>(lua_touserdata(l, -1));
 
-    if(newKey)  ud->emitFieldAdded(lua_tostring(l, 2));
-    else        ud->emitFieldChanged(lua_tostring(l, 2));
+    if(newKey)  ud->Q_EMITFieldAdded(lua_tostring(l, 2));
+    else        ud->Q_EMITFieldChanged(lua_tostring(l, 2));
 
     return 0;
 #else
@@ -373,8 +373,8 @@ int TkLuaTableUserdata::_newIndexMetamethod(lua_State* l) {
 
     //notify Qt that shit has gone down
 
-    if(newKey)              ud->emitFieldAdded(lua_tostring(l, 2));
-    else if(valueChange)    ud->emitFieldChanged(lua_tostring(l, 2));
+    if(newKey)              ud->Q_EMITFieldAdded(lua_tostring(l, 2));
+    else if(valueChange)    ud->Q_EMITFieldChanged(lua_tostring(l, 2));
 
     //lua_pop(l, 5);
 
@@ -567,8 +567,8 @@ int TkLuaTableUserdata::_metamethodSetMetamethod(lua_State * const l) {
 
     //notify Qt that shit has gone down
 
-    if(newKey)              ud->emitFieldAdded(lua_tostring(l, 2));
-    else if(valueChange)    ud->emitFieldChanged(lua_tostring(l, 2));
+    if(newKey)              ud->Q_EMITFieldAdded(lua_tostring(l, 2));
+    else if(valueChange)    ud->Q_EMITFieldChanged(lua_tostring(l, 2));
 
     //lua_pop(l, 5);
 

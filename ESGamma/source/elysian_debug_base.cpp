@@ -405,15 +405,15 @@ void DebugBase::processInput(GameInput& input) {
     if(input.getDown(GameInput::BUT_U)) {
 
 		static bool once = true;
-		static ParticleEmitter* emitter;
+		static ParticleEmitter* Q_EMITter;
         static Entity* entity;
 
 		if(once) {
             auto* attrib = new ParticleEmitterAttrib();//getPartSys()->getAttrib(0);
             entity = getCurArea()->findEntity("Julien");
             attrib->loadTexture("/assets/item/ruinsPot.png", 32, 64, 32, 32);
-            emitter = entity->addParticleEmitter();
-            emitter->setAttrib(attrib);
+            Q_EMITter = entity->addParticleEmitter();
+            Q_EMITter->setAttrib(attrib);
             attrib->setStartSize(32);
             attrib->setEndSize(32);
             attrib->setColor(10, 10, 255, 10);
@@ -430,10 +430,10 @@ void DebugBase::processInput(GameInput& input) {
             once = false;
 		}
 
-        emitter->emitFromEntity( GYVector3 { 0.0f, 0.0f, 3.0f }, theta, 1);
-        //getPartSys()->emitFromPoint(0, entity->transform._pos, theta, intensity*10);
-       // void emitFromPoint(const unsigned index, const GYVector3& pos, const float angle, const unsigned intensity);
-		  // getPartSys()->emitFromPoint(0, GYVector3 { entity->transform._pos.x+5, entity->transform._pos.y, 500.0f}, theta, intensity);
+        Q_EMITter->Q_EMITFromEntity( GYVector3 { 0.0f, 0.0f, 3.0f }, theta, 1);
+        //getPartSys()->Q_EMITFromPoint(0, entity->transform._pos, theta, intensity*10);
+       // void Q_EMITFromPoint(const unsigned index, const GYVector3& pos, const float angle, const unsigned intensity);
+		  // getPartSys()->Q_EMITFromPoint(0, GYVector3 { entity->transform._pos.x+5, entity->transform._pos.y, 500.0f}, theta, intensity);
 
 //		getGuiSys()->addCombatText("10", GYColor4 { 255, 0, 0, 255}, GYVector2 { entity->transform._pos.x, entity->transform._pos.y}, GYVector2 { 0.5f, -5.0f});
 

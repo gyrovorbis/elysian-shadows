@@ -132,7 +132,7 @@ public:
 
 	/*
 		Function ultimately called to update the internally encapsulated object's value.
-		Invokes the set accessor, updates its icon (if required), then signals an update
+		Invokes the set accessor, updates its icon (if required), then Q_SIGNALS an update
 		to the view. No undo/redo logic is handled at this level. This should only be
 		directly invoked by UndoProperty to prevent infinite undo/redo command generation.
 	 */

@@ -50,7 +50,7 @@ public:
     static void setFilter(const TK_SOURCE src, const bool enabled);
     static void clear(void);
 
-public slots:
+public Q_SLOTS:
 
     void onCommandSubmit();
 

@@ -49,11 +49,11 @@ protected:
     virtual void    timerEvent(QTimerEvent* e) override;
     virtual QSize   sizeHint(void) const;
 
-signals:
+Q_SIGNALS:
 
     void            engineUpdated(void);
 
-private slots:
+private Q_SLOTS:
 
 
 };

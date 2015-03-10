@@ -137,7 +137,7 @@ public:
 	virtual Selectable::TYPE getType(void) const { return Selectable::LEVEL; }
 	virtual TreeNode::ITEM_TYPE getTreeWidgetItemType(void) { return ITEM_LEVEL; }
 
-private slots:
+private Q_SLOTS:
 	bool activateByArea(Area * const area);
 	void onEntityAdded(Area *const area, Entity *const entity);
 	void onEntityRemoved(Area *const area, Entity *const entity);
@@ -147,7 +147,7 @@ private slots:
     void onMapChanged(Area*const area, const QVector<MapChange>& changes);
     void onEntityParented(Entity*const child, Entity*const parent);
 
-signals:
+Q_SIGNALS:
 	void activating(Level *const level, Area *const area);
 	void areaAdded(Level *const level, Area *const area);
 	void areaRemoved(Level *const level, Area *const area);

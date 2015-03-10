@@ -304,7 +304,7 @@ int	RowsJoinerProxy::rowCount(const QModelIndex & p) const
     if (!p.isValid()) {
         if (d->rowCount <0) {
             d->rowCount =0;
-            foreach(QAbstractItemModel * m, d->models)
+            Q_FOREACH(QAbstractItemModel * m, d->models)
                 d->rowCount += m->rowCount();
         }
         return d->rowCount;
@@ -326,7 +326,7 @@ int	RowsJoinerProxy::columnCount(const QModelIndex & p) const
     if (!p.isValid()) {
         if (d->columnCount <0) {
             d->columnCount = 0;
-            foreach(QAbstractItemModel * m, d->models)
+            Q_FOREACH(QAbstractItemModel * m, d->models)
                 d->columnCount = qMax(d->columnCount, m->columnCount());
         }
         return d->columnCount;
@@ -406,7 +406,7 @@ void RowsJoinerProxy::s_dataChanged(QModelIndex tl, QModelIndex br)
 {
     QModelIndex p_tl = mapFromSource(tl);
     QModelIndex p_br = mapFromSource(br);
-    emit dataChanged(p_tl, p_br);
+    Q_EMIT dataChanged(p_tl, p_br);
 }
 
 void RowsJoinerProxy::s_modelReset()
@@ -425,7 +425,7 @@ void RowsJoinerProxy::s_modelReset()
 
 void RowsJoinerProxy::s_destroyed(QObject * obj)
 {
-    foreach(QAbstractItemModel * m, d->models) {
+    Q_FOREACH(QAbstractItemModel * m, d->models) {
         if (m == obj) {
             beginResetModel();
             d->models.removeAll(m);

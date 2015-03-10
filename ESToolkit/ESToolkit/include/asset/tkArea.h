@@ -56,18 +56,18 @@ private:
     QGraphicsRectItem*  _bgRect;
     bool                _active         = false;
     bool                _open           = false;
-    bool                _emitMapChange  = true;
+    bool                _Q_EMITMapChange  = true;
     bool                _batchMapUpdate = false;
 
     void         connectSlots(Entity *const entity);
 
 
-private slots:
+private Q_SLOTS:
 	void onComponentAttached(Entity *const entity, Component *const comp);
 	void onComponentRemoved(Entity *const entity, Component *const comp);
     void onEntityParented(Entity*const child, Entity*const parent);
 
-public slots:
+public Q_SLOTS:
 	void onUndoCleanStateChanged(bool changed);
 public:
 
@@ -139,7 +139,7 @@ public:
     virtual Selectable::TYPE    getType(void) const { return Selectable::AREA; }
 	virtual TreeNode::ITEM_TYPE getTreeWidgetItemType(void) { return ITEM_AREA; }
 
-signals:
+Q_SIGNALS:
 	void activating(Area *const area);
 	void entityAdded(Area *const area, Entity *const entity);
 	void entityRemoved(Area *const area, Entity *const entity);
@@ -166,7 +166,7 @@ inline void TkArea::setTileValue(const QPoint loc, const Assets::LAYER_TYPE laye
 	Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
     MapChange change;
 
-    if(_emitMapChange) {
+    if(_Q_EMITMapChange) {
         change.oldEntry = getTileEntry(loc.x(), loc.y(), layer);
         change.newEntry = TileEntry(value);
         change.loc      = loc;
@@ -174,7 +174,7 @@ inline void TkArea::setTileValue(const QPoint loc, const Assets::LAYER_TYPE laye
         _mapChanges.push_back(change);
 
         if(!_batchMapUpdate) {
-            emit mapChanged(this, _mapChanges);
+            Q_EMIT mapChanged(this, _mapChanges);
             _mapChanges.clear();
         }
     }
@@ -186,7 +186,7 @@ inline void TkArea::setTileEntry(const QPoint loc, const Assets::LAYER_TYPE laye
 	Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
     MapChange change;
 
-    if(_emitMapChange) {
+    if(_Q_EMITMapChange) {
         change.oldEntry = getTileEntry(loc.x(), loc.y(), layer);
         change.newEntry = entry;
         change.loc      = loc;
@@ -194,7 +194,7 @@ inline void TkArea::setTileEntry(const QPoint loc, const Assets::LAYER_TYPE laye
         _mapChanges.push_back(change);
 
         if(!_batchMapUpdate) {
-            emit mapChanged(this, _mapChanges);
+            Q_EMIT mapChanged(this, _mapChanges);
             _mapChanges.clear();
         }
     }
@@ -217,12 +217,12 @@ inline unsigned short TkArea::getMapWidth(void) const { return width; }
 inline std::vector<Entity*>& TkArea::getEntities(void) { return entities; }
 inline bool TkArea::isOpen(void) const { return _open; }
 inline bool TkArea::isActive(void) const { return _active; }
-inline void TkArea::setEmitMapChange(const bool value) { _emitMapChange = value; }
+inline void TkArea::setEmitMapChange(const bool value) { _Q_EMITMapChange = value; }
 inline void TkArea::beginMapUpdate(void) { _batchMapUpdate = true; }
 inline void TkArea::endMapUpdate(void) {
     _batchMapUpdate = false;
-    if(_emitMapChange) {
-        emit mapChanged(this, _mapChanges);
+    if(_Q_EMITMapChange) {
+        Q_EMIT mapChanged(this, _mapChanges);
         _mapChanges.clear();
     }
 }

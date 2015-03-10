@@ -12,7 +12,7 @@ class EngineSettingsDialog : public QDialog {
     Q_PROPERTY(QString _dcMacAddr READ getDcMac WRITE setDcMac NOTIFY dcMacChanged)
     Q_PROPERTY(QString _sudoPswd READ getSudoPswd WRITE setSudoPswd NOTIFY sudoPswdChanged)
     Q_PROPERTY(QString _enginePathx86 READ getEnginePathx86 WRITE setEnginePathx86 NOTIFY enginePathx86Changed)
-signals:
+Q_SIGNALS:
     void dcIpChanged(QString);
     void dcMacChanged(QString);
     void sudoPswdChanged(QString);
@@ -35,13 +35,13 @@ public:
 private:
     Ui::engine_settings_dialog *_ui;
     QString _dcIpAddr, _dcMacAddr, _sudoPswd, _enginePathx86;
-public slots:
+public Q_SLOTS:
     void syncDcIp();
     void syncDcMac();
     void syncSudoPswd();
     void syncEnginePathx86();
 
-private slots:
+private Q_SLOTS:
       void onDone();
       void onEnginePathx86Default();
       void onEnginePathx86Browse();

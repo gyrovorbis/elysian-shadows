@@ -201,16 +201,16 @@ static void *_TexConstructor(void *const data) {
 	}
 
 	//platform-specific texture allocation
-	if(!_gyVidTexAlloc(tex, texData->sheetWidth, texData->sheetHeight)) {
+    if(!_gyVidTexAlloc(tex)) {
 		_gyLog(GY_DEBUG_CRITICAL, "Could not load texture! - %s", texData->file);
 		free(tex);
 		return NULL;
 	}
 
-	tex->_coord = (!texData->spriteWidth || !texData->spriteHeight)?
-		_LoadSheetCoords(texData) :
+    tex->_coord = (texData->sheetWidth == 0)? NULL : //(!texData->spriteWidth || !texData->spriteHeight)?
+        //_LoadSheetCoords(texData) :
 		gyAssetBankInsert(&_texCoordBank, texData);
-	assert(tex->_coord);
+    //assert(tex->_coord);
 	return tex;
 }
 
@@ -240,8 +240,8 @@ GYTexture* gyVidTexCreateSheet(const char *const filename, const unsigned width,
 	return gyAssetBankInsert(&_texBank, &data);
 }
 
-GYTexture* gyVidTexCreate(const char *const filename, const unsigned width, const unsigned height) {
-	GYTexEntryDat data = { filename, width, height, width, height };
+GYTexture* gyVidTexCreate(const char *const filename) {
+    GYTexEntryDat data = { filename, 0, 0, 0, 0 };
 	return gyAssetBankInsert(&_texBank, &data);
 }
 
@@ -277,10 +277,8 @@ int gyVidTexReload(struct _GYTexture * const tex) {
     unsigned int width, height;
     if(!tex) return 0;
 
-    width   = tex->_coord->sheetWidth;
-    height  = tex->_coord->sheetHeight;
     success &= _gyVidTexFree(tex);
-    success &= _gyVidTexAlloc(tex, width, height);
+    success &= _gyVidTexAlloc(tex);
     return success;
 }
 

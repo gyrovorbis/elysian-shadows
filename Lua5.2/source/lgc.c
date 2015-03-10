@@ -691,7 +691,7 @@ static GCObject **sweeplist (lua_State *L, GCObject **p, lu_mem count);
 static void sweepthread (lua_State *L, lua_State *L1) {
   if (L1->stack == NULL) return;  /* stack not completely built yet */
   sweepwholelist(L, &L1->openupval);  /* sweep open upvalues */
-  luaE_freeCI(L1);  /* free extra CallInfo slots */
+  luaE_freeCI(L1);  /* free extra CallInfo Q_SLOTS */
   /* should not change the stack during an emergency gc cycle */
   if (G(L)->gckind != KGC_EMERGENCY)
     luaD_shrinkstack(L1);

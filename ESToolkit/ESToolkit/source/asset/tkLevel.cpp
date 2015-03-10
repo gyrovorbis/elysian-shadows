@@ -231,7 +231,7 @@ void TkLevel::setNodeName(const QString str) {
     strcpy(dir, name.toStdString().c_str());
     strcpy(path, _location.toStdString().c_str());
 
-	if(renamed) emit levelRenamed(oldName, name);
+	if(renamed) Q_EMIT levelRenamed(oldName, name);
 }
 
 void TkLevel::setLocation(const QString loc) {
@@ -279,7 +279,7 @@ bool TkLevel::activateByArea(Area *const area) {
     //}
     _curLevel = this;
     //_active = true;
-	emit activating(this, area);
+	Q_EMIT activating(this, area);
     /* If there is anything that is not persistent to be added to the
        object/tilesheet scenes, do it now.
     */
@@ -380,7 +380,7 @@ Area *TkLevel::newArea(const QString n) {
 	_area.push_back(ar);
 	ar->save();
     getAssets()->getEngine()->getLevelSys()->addArea(ar);
-	emit areaAdded(this, ar);
+	Q_EMIT areaAdded(this, ar);
     return ar;
 }
 
@@ -417,7 +417,7 @@ Area *TkLevel::loadArea(const QString name) {
     //connectSlots(area);
     if(area) {
 		_area.push_back(area);
-		emit areaAdded(this, area);
+		Q_EMIT areaAdded(this, area);
         Debug::pop();
         return area;
     }
@@ -439,7 +439,7 @@ bool TkLevel::removeArea(const QString name, const bool deleteDir) {
 				Debug::Logf(Debug::CRITICAL, "! - Could not delete directory '%s'\n", temp->getLocation().toStdString().c_str());
                 success = false;
             }
-			emit areaRemoved(this, temp);
+			Q_EMIT areaRemoved(this, temp);
             delete temp;
             return success;
         }
@@ -462,7 +462,7 @@ Area *TkLevel::importArea(const QString dir) {
     area->setLocation(_location + "/area/" + QStringList(dir.split("/")).last());
 	area->save();
 	_area.push_back(area);
-	emit areaAdded(this, area);
+	Q_EMIT areaAdded(this, area);
     return area;
 }
 
@@ -667,27 +667,27 @@ bool TkLevel::isOpen(void) const { return _open; }
 bool TkLevel::validSheets(void) const { return _validSheets; }
 
 void TkLevel::onEntityAdded(Area *const area, Entity *const entity) {
-	emit entityAdded(this, area, entity);
+	Q_EMIT entityAdded(this, area, entity);
 }
 
 void TkLevel::onEntityRemoved(Area *const area, Entity *const entity) {
-	emit entityRemoved(this, area, entity);
+	Q_EMIT entityRemoved(this, area, entity);
 }
 
 void TkLevel::onComponentAttached(Area *const area, Entity *const entity, Component *const comp) {
-	emit componentAttached(this, area, entity, comp);
+	Q_EMIT componentAttached(this, area, entity, comp);
 }
 
 void TkLevel::onComponentRemoved(Area *const area, Entity *const entity, Component *const comp) {
-	emit componentRemoved(this, area, entity, comp);
+	Q_EMIT componentRemoved(this, area, entity, comp);
 }
 
 void TkLevel::onAreaRenamed(const QString oldName, const QString newName) {
-	emit areaRenamed(oldName, newName);
+	Q_EMIT areaRenamed(oldName, newName);
 }
 
 void TkLevel::onMapChanged(Area * const area, const QVector<MapChange>& changes) {
-    emit mapChanged(area, changes);
+    Q_EMIT mapChanged(area, changes);
 }
 
 bool TkLevel::_saveMetaData(const QString dir) {
@@ -948,7 +948,7 @@ bool TkLevel::gatherTileSpecularMaps(void) {
 }
 
 void TkLevel::onEntityParented(Entity * const child, Entity * const parent) {
-    emit entityParented(child, parent);
+    Q_EMIT entityParented(child, parent);
 }
 
 

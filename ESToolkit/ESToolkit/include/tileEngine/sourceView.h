@@ -79,11 +79,11 @@ public:
      virtual void wheelEvent(QWheelEvent *event) override;
 
 
-signals:
+Q_SIGNALS:
 	 void releaseFocus(void);
 	 void exitPanMode(void);
 
-protected slots:
+protected Q_SLOTS:
     void autoScrollLogic(void);
 
 protected:

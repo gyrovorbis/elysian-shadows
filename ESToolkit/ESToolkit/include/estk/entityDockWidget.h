@@ -17,7 +17,7 @@ public:
     virtual ~EntityDockWidget(void) override;
 
     EntityTreeWidget* getTreeWidget(void);
-signals:
+Q_SIGNALS:
     void UncheckMe(int);
 protected:
     virtual void closeEvent(QCloseEvent *event) override;

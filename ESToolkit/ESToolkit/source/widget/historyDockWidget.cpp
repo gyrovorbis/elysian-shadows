@@ -40,6 +40,6 @@ void HistoryDockWidget::SetActiveGroup(QUndoGroup *group)
 
 void HistoryDockWidget::closeEvent(QCloseEvent *event)
 {
-    emit UncheckMe(4);
+    Q_EMIT UncheckMe(4);
     event->accept();
 }

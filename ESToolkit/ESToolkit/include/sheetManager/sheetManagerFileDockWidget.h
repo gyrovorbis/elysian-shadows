@@ -18,10 +18,10 @@ public:
 	explicit SheetManagerFileDockWidget(QWidget *parent = 0);
 	~SheetManagerFileDockWidget();
 
-signals:
+Q_SIGNALS:
 	void imageSelected(const QString img);
 
-private slots:
+private Q_SLOTS:
     void on_m_fileTreeView_doubleClicked(const QModelIndex &index);
 
     void on_m_fileTreeView_collapsed(const QModelIndex &index);

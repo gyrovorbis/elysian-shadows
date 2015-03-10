@@ -24,7 +24,7 @@ public:
     void SetSelectionModel(QAbstractItemModel *model);
     void ExpandSelectionTree();
 	QTreeView *getSelectionTreeWidget(void);
-signals:
+Q_SIGNALS:
     void UncheckMe(int);
 protected:
     void closeEvent(QCloseEvent *event);

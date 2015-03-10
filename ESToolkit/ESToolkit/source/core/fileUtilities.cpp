@@ -40,7 +40,7 @@ bool FileUtilities::copyDir(const QString &srcFilePath,
             return false;
         QDir sourceDir(srcFilePath);
         QStringList fileNames = sourceDir.entryList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden | QDir::System);
-        foreach (const QString &fileName, fileNames) {
+        Q_FOREACH (const QString &fileName, fileNames) {
             const QString newSrcFilePath
                     = srcFilePath + QLatin1Char('/') + fileName;
             const QString newTgtFilePath

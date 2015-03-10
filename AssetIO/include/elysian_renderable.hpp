@@ -156,14 +156,14 @@ namespace elysian {
 			return _material;
 		}
 
-		inline void loadNormalMap(const char*const path, const unsigned width, const unsigned height) {
+        inline void loadNormalMap(const char*const path, const unsigned /*width*/, const unsigned /*height*/) {
 			if(_normalMap) gyVidTexDestroy(_normalMap);
-			_normalMap = gyVidTexCreate(path, width, height);
+            _normalMap = gyVidTexCreate(path);
 		}
 
-		inline void loadSpecularMap(const char*const path, const unsigned width, const unsigned height) {
+        inline void loadSpecularMap(const char*const path, const unsigned /*width*/, const unsigned /*height*/) {
 			if(_specularMap) gyVidTexDestroy(_specularMap);
-			_specularMap = gyVidTexCreate(path, width, height);
+            _specularMap = gyVidTexCreate(path);
 		}
 
 		inline void setTexCoord(const unsigned index, const float u, const float v) {

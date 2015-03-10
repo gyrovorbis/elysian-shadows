@@ -937,7 +937,7 @@ void ESToolkit::on_actionFileOpenProject_triggered(void) {
 }
 
 void ESToolkit::on_actionFileCloseProject_triggered(void) {
-	//emit CloseProject
+	//Q_EMIT CloseProject
     _assets.removeProject(_assets.getCurrentProject()->getNodeName());
 }
 

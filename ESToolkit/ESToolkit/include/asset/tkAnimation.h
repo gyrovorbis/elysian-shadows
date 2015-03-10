@@ -19,7 +19,7 @@ public:
     void	removeChildEntity(Entity* entity);
 
 
-signals:
+Q_SIGNALS:
     void entityParented(Entity*const child, Entity*const parent);
 };
 

@@ -53,7 +53,7 @@ Level *Project::newLevel(const QString n) {
 	_level.push_back(lev);
 	lev->saveAll();
     getAssets()->getEngine()->getLevelSys()->addLevel(lev);
-	emit levelAdded(this, lev);
+    Q_EMIT levelAdded(this, lev);
     return lev;
 }
 
@@ -73,7 +73,7 @@ Level *Project::loadLevel(const QString name) {
     if(lev) {
         connectSlots(lev);
 		_level.push_back(lev);
-		emit levelAdded(this, lev);
+        Q_EMIT levelAdded(this, lev);
         Debug::pop();
 		return lev;
     }
@@ -123,7 +123,7 @@ bool Project::removeLevel(const QString name, const bool deleteFolder) {
 				Debug::Logf(Debug::CRITICAL, "! - Could not delete directory '%s'\n", temp->getLocation().toStdString().c_str());
                 success = false;
             }
-			emit levelRemoved(this, temp);
+            Q_EMIT levelRemoved(this, temp);
             delete temp;
             return success;
         }
@@ -193,7 +193,7 @@ Level *Project::importLevel(const QString dir) {
     level->setLocation(_location + "/level/" + QStringList(dir.split("/")).last());
 	level->saveAll();
 	_level.push_back(level);
-	emit levelAdded(this, level);
+    Q_EMIT levelAdded(this, level);
     return level;
 }
 
@@ -259,16 +259,16 @@ bool Project::activateByLevel(Level *const level, Area *const area) {
     if(!_active) {
         _active = true;
     }
-	emit activating(this, level, area);
+    Q_EMIT activating(this, level, area);
     return true;
 }
 
 void Project::onAddEntity(Level *const level, Area *const area, Entity *const entity) {
-	emit entityAdded(this, level, area, entity);
+    Q_EMIT entityAdded(this, level, area, entity);
 }
 
 void Project::onRemoveEntity(Level *const level, Area *const area, Entity *const entity) {
-	emit entityRemoved(this, level, area, entity);
+    Q_EMIT entityRemoved(this, level, area, entity);
 }
 
 bool Project::deactivate(void) {
@@ -282,11 +282,11 @@ bool Project::isActive(void) { return _active; }
 
 
 void Project::onAreaAdded(Level *const level, Area *const area) {
-	emit areaAdded(this, level, area);
+    Q_EMIT areaAdded(this, level, area);
 }
 
 void Project::onAreaRemoved(Level *const level, Area *const area) {
-	emit areaRemoved(this, level, area);
+    Q_EMIT areaRemoved(this, level, area);
 }
 
 void Project::setName(const QString name) {
@@ -327,25 +327,25 @@ TkLevel* Project::reloadLevel(TkLevel *level) {
 }
 
 void Project::onComponentAttached(Level *const level, Area *const area, Entity *const entity, Component *const comp) {
-	emit componentAttached(this, level, area, entity, comp);
+    Q_EMIT componentAttached(this, level, area, entity, comp);
 }
 
 void Project::onComponentRemoved(Level *const level, Area *const area, Entity *const entity, Component *const comp) {
-	emit componentRemoved(this, level, area, entity, comp);
+    Q_EMIT componentRemoved(this, level, area, entity, comp);
 }
 
 void Project::onAreaRenamed(const QString oldName, const QString newName) {
-	emit areaRenamed(oldName, newName);
+    Q_EMIT areaRenamed(oldName, newName);
 }
 
 void Project::onLevelRenamed(const QString oldName, const QString newName) {
-	emit levelRenamed(oldName, newName);
+    Q_EMIT levelRenamed(oldName, newName);
 }
 
 void Project::onMapChanged(Area * const area, const QVector<MapChange>& changes) {
-    emit mapChanged(area, changes);
+    Q_EMIT mapChanged(area, changes);
 }
 
 void Project::onEntityParented(Entity * const child, Entity * const parent) {
-    emit entityParented(child, parent);
+    Q_EMIT entityParented(child, parent);
 }

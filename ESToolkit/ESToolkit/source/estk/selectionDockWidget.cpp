@@ -55,7 +55,7 @@ void SelectionDockWidget::SizeColumnsToDefault()
 
 void SelectionDockWidget::closeEvent(QCloseEvent *event)
 {
-    emit UncheckMe(5);
+    Q_EMIT UncheckMe(5);
     event->accept();
 }
 

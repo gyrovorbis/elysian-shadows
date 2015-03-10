@@ -191,7 +191,7 @@ void Engine::processInput(void) {
 	}
 }
 
-void Engine::render(void) {
+void Engine::render(void (*func)(void)) {
 
 	switch(System::_engineState) {
 		default:
@@ -229,7 +229,7 @@ void Engine::render(void) {
 
              _collisionSystem->render();
              _particleSystem->render();
-
+            func();
 
 			 _lightSystem->removeLightSourcesFromScene();
 
@@ -238,6 +238,7 @@ void Engine::render(void) {
 			_cameraSystem->popViewProjMatrix();
 
 			//Begin rendering overlays
+            func();
             _dialogSystem->render();
             _warpSystem->render();
 			_guiSystem->renderForeground();

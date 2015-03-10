@@ -56,7 +56,7 @@ protected:
 
     void _renderRelative(void);
 
-public slots:
+public Q_SLOTS:
     void onEntityParented(Entity*const child, Entity*const parent);
 
 public:
@@ -99,7 +99,7 @@ public:
 	Enemy *getEnemy(void) const;
 #endif
 
-signals:
+Q_SIGNALS:
 
     void entityParented(Entity*const child, Entity*const parent);
 

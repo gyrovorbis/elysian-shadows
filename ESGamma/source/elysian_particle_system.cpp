@@ -10,8 +10,8 @@ namespace elysian {
 ParticleSystem::ParticleSystem(void) {
 	for(unsigned i = 0; i < ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_COUNT; ++i) {
 		_defaultAttribs[i] = new ParticleEmitterAttrib;
-		_emitters[i].setAttrib(_defaultAttribs[i]);
-		_emitters[i].allocatePool(ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_POOL_SIZE);
+		_Q_EMITters[i].setAttrib(_defaultAttribs[i]);
+		_Q_EMITters[i].allocatePool(ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_POOL_SIZE);
 	}
 }
 
@@ -19,27 +19,27 @@ ParticleSystem::~ParticleSystem(void) {
 	for(unsigned i = 0; i < ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_COUNT; ++i) delete _defaultAttribs[i];
 }
 
-void ParticleSystem::emitFromPoint(const unsigned index, const GYVector3& pos, const float angle, const unsigned intensity) {
-	_emitters[index].emitFromPoint(pos, angle, intensity);
+void ParticleSystem::Q_EMITFromPoint(const unsigned index, const GYVector3& pos, const float angle, const unsigned intensity) {
+	_Q_EMITters[index].Q_EMITFromPoint(pos, angle, intensity);
 }
 
 
 void ParticleSystem::resizePool(const unsigned index, const unsigned size) {
-	_emitters[index].allocatePool(size);
+	_Q_EMITters[index].allocatePool(size);
 }
 
 void ParticleSystem::update(void) {
 	const float deltaTime = getTimerSys()->getDeltaTime();
 	CameraState* state = getCameraSys()->getCurrentState();
 
-	//Update internal emitters
+	//Update internal Q_EMITters
 	for(unsigned i = 0; i < ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_COUNT; ++i) {
-		_emitters[i].update(state, deltaTime);
+		_Q_EMITters[i].update(state, deltaTime);
 	}
 
-	//update entity emitters
-	auto emitters = getCurArea()->particleEmitters;
-	for(auto it : emitters) {
+	//update entity Q_EMITters
+	auto Q_EMITters = getCurArea()->particleEmitters;
+	for(auto it : Q_EMITters) {
 		it->update(state, deltaTime);
 	}
 }
@@ -47,14 +47,14 @@ void ParticleSystem::update(void) {
 void ParticleSystem::applyForce(ForceGenerator * const forceGen) {
 	const float deltaTime = getTimerSys()->getDeltaTime();
 
-	//Update internal emitters
+	//Update internal Q_EMITters
 	for(unsigned i = 0; i < ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_COUNT; ++i) {
-		if(forceGen->getForceMask() & _emitters[i].getAttrib()->getForceMask()) _emitters[i].applyForce(forceGen, deltaTime);
+		if(forceGen->getForceMask() & _Q_EMITters[i].getAttrib()->getForceMask()) _Q_EMITters[i].applyForce(forceGen, deltaTime);
 	}
 
-	//update entity emitters
-	auto emitters = getCurArea()->particleEmitters;
-	for(auto it : emitters) {
+	//update entity Q_EMITters
+	auto Q_EMITters = getCurArea()->particleEmitters;
+	for(auto it : Q_EMITters) {
 		if(forceGen->getForceMask() & it->getAttrib()->getForceMask()) it->applyForce(forceGen, deltaTime);
 	}
 }
@@ -62,19 +62,19 @@ void ParticleSystem::applyForce(ForceGenerator * const forceGen) {
 
 void ParticleSystem::render(void) {
 
-	//render internal emitters
+	//render internal Q_EMITters
 	for(unsigned i = 0; i < ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_COUNT; ++i) {
-		_emitters[i].render();
+		_Q_EMITters[i].render();
 	}
 
-	//render entity emitters (no, entities do this)
+	//render entity Q_EMITters (no, entities do this)
 }
 
 
 void ParticleSystem::renderAtElev(const unsigned elev) {
-	//render internal emitters
+	//render internal Q_EMITters
 	for(unsigned i = 0; i < ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_COUNT; ++i) {
-		_emitters[i].renderAtElev(elev);
+		_Q_EMITters[i].renderAtElev(elev);
 	}
 
 }

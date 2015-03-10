@@ -14,7 +14,7 @@ struct _GYTexture* gyVidTexCreateSheetUniform(const char *const filename,
 											const unsigned spriteWidth,
 											const unsigned spriteHeight);
 struct _GYTexture* gyVidTexCreateSheet(const char *const filename, const unsigned width, const unsigned height);
-struct _GYTexture* gyVidTexCreate(const char *const filename, const unsigned int width, const unsigned int height);
+struct _GYTexture* gyVidTexCreate(const char *const filename);
 const struct _GYTexCoord2* gyVidTexCoordArrayFromFrame(const struct _GYTexCoordFrame*const frame,
 													   const GY_RECT_TEX_ORIENT orient);
 

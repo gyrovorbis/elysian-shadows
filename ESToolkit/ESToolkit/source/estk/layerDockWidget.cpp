@@ -11,7 +11,7 @@ LayerDockWidget::LayerDockWidget(QWidget *parent) :
     ui->setupUi(this);
 	//ui->m_layerTreeWidget->expandAll();
 	ui->m_layerTreeWidget->setCurrentItem(ui->m_layerTreeWidget->topLevelItem(3));
-    _emitActiveLayerChanged(4);
+    _Q_EMITActiveLayerChanged(4);
 
     connect(getAssets(), SIGNAL(layerChanged(LAYER_TYPE)), this, SLOT(setCurrentLayer(LAYER_TYPE)));
 }
@@ -27,7 +27,7 @@ void LayerDockWidget::ToggleDefaultItem(bool selected)
         ui->m_layerTreeWidget->clearSelection();
 		//ui->m_layerTreeWidget->setCurrentItem(ui->m_layerTreeWidget->itemBelow(ui->m_layerTreeWidget->topLevelItem(0)));
 		ui->m_layerTreeWidget->setCurrentItem(ui->m_layerTreeWidget->topLevelItem(3));
-        _emitActiveLayerChanged(4);
+        _Q_EMITActiveLayerChanged(4);
     }
 
     else {
@@ -57,56 +57,56 @@ void LayerDockWidget::on_m_layerTreeWidget_itemChanged(QTreeWidgetItem *item, in
 #endif
 
     if(item->checkState(0) == Qt::Unchecked) {
-		emit LayerVisibilityChanged(item->whatsThis(0).toInt(), false);
+		Q_EMIT LayerVisibilityChanged(item->whatsThis(0).toInt(), false);
     }
 
     else {
-		emit LayerVisibilityChanged(item->whatsThis(0).toInt(), true);
+		Q_EMIT LayerVisibilityChanged(item->whatsThis(0).toInt(), true);
 
 		//handle mutually-exclusive decorations
 		switch(item->whatsThis(0).toInt()) {
 		case 7: //elevation
 			//indeces
 			ui->m_layerTreeWidget->topLevelItem(4)->child(3)->setCheckState(0, Qt::Unchecked);
-			emit LayerVisibilityChanged(8, false);
+			Q_EMIT LayerVisibilityChanged(8, false);
 			//flip/rot
 			ui->m_layerTreeWidget->topLevelItem(4)->child(5)->setCheckState(0, Qt::Unchecked);
-			emit LayerVisibilityChanged(10, false);
+			Q_EMIT LayerVisibilityChanged(10, false);
             //normal
            // ui->m_layerTreeWidget->topLevelItem(4)->child(6)->setCheckState(0, Qt::Unchecked);
-          //  emit LayerVisibilityChanged(11, false);
+          //  Q_EMIT LayerVisibilityChanged(11, false);
 			break;
 		case 8: //indeces
 			//elevation
 			ui->m_layerTreeWidget->topLevelItem(4)->child(2)->setCheckState(0, Qt::Unchecked);
-			emit LayerVisibilityChanged(7, false);
+			Q_EMIT LayerVisibilityChanged(7, false);
 			//flip/rot
 			ui->m_layerTreeWidget->topLevelItem(4)->child(5)->setCheckState(0, Qt::Unchecked);
-			emit LayerVisibilityChanged(10, false);
+			Q_EMIT LayerVisibilityChanged(10, false);
             ui->m_layerTreeWidget->topLevelItem(4)->child(6)->setCheckState(0, Qt::Unchecked);
-           emit LayerVisibilityChanged(11, false);
+           Q_EMIT LayerVisibilityChanged(11, false);
 			break;
 		case 10: //flip/rot
 			//elevation
 			ui->m_layerTreeWidget->topLevelItem(4)->child(2)->setCheckState(0, Qt::Unchecked);
-			emit LayerVisibilityChanged(7, false);
+			Q_EMIT LayerVisibilityChanged(7, false);
 			//indeces
 			ui->m_layerTreeWidget->topLevelItem(4)->child(3)->setCheckState(0, Qt::Unchecked);
-			emit LayerVisibilityChanged(8, false);
+			Q_EMIT LayerVisibilityChanged(8, false);
             //normal dir
             ui->m_layerTreeWidget->topLevelItem(4)->child(6)->setCheckState(0, Qt::Unchecked);
-           emit LayerVisibilityChanged(11, false);
+           Q_EMIT LayerVisibilityChanged(11, false);
 			break;
         case 11: //normal dir
             //elevation
             ui->m_layerTreeWidget->topLevelItem(4)->child(2)->setCheckState(0, Qt::Unchecked);
-           emit LayerVisibilityChanged(7, false);
+           Q_EMIT LayerVisibilityChanged(7, false);
             //indeces
             ui->m_layerTreeWidget->topLevelItem(4)->child(3)->setCheckState(0, Qt::Unchecked);
-           emit LayerVisibilityChanged(8, false);
+           Q_EMIT LayerVisibilityChanged(8, false);
             //flip/rot
             ui->m_layerTreeWidget->topLevelItem(4)->child(5)->setCheckState(0, Qt::Unchecked);
-           emit LayerVisibilityChanged(10, false);
+           Q_EMIT LayerVisibilityChanged(10, false);
             break;
 		}
 	}
@@ -126,13 +126,13 @@ void LayerDockWidget::on_m_layerTreeWidget_currentItemChanged(QTreeWidgetItem *c
 		//ui->m_layerTreeWidget->setCurrentItem(ui->m_layerTreeWidget->topLevelItem(0)->child(1));
 	}
 #endif
-    _emitActiveLayerChanged(current->whatsThis(0).toInt());
+    _Q_EMITActiveLayerChanged(current->whatsThis(0).toInt());
 
 }
 
 void LayerDockWidget::closeEvent(QCloseEvent *event)
 {
-    emit UncheckMe(2);
+    Q_EMIT UncheckMe(2);
     event->accept();
 }
 

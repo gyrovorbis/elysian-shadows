@@ -213,7 +213,7 @@ void SourceView::_startPan(void) {
 void SourceView::_endPan(void) {
     if(_panning) {
         _panning = false;
-        emit exitPanMode();
+        Q_EMIT exitPanMode();
         setDragMode(NoDrag);
     }
 }
@@ -236,7 +236,7 @@ void SourceView::mouseReleaseEvent(QMouseEvent *event) {
 		_endRegionSelection(event);
 		/*It's VERY important that we don't release focus while CTRL is down!
 		  Staggered selection will reest! --FG */
-		if(!(event->modifiers() &= Qt::ControlModifier)) emit releaseFocus();
+		if(!(event->modifiers() &= Qt::ControlModifier)) Q_EMIT releaseFocus();
 	}
 	else if(event->button() == Qt::MidButton) {
 		QMouseEvent fooledya(event->type(), event->pos(), Qt::LeftButton, Qt::LeftButton, event->modifiers());

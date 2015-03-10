@@ -255,7 +255,7 @@ static int searchvar (FuncState *fs, TString *n) {
 
 /*
   Mark block where variable at given level was defined
-  (to emit close instructions later).
+  (to Q_EMIT close instructions later).
 */
 static void markupval (FuncState *fs, int level) {
   BlockCnt *bl = fs->bl;

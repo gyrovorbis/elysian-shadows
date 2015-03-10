@@ -18,10 +18,10 @@ private:
 	QTreeWidgetItem *_prev;
 public:
     AssetTreeWidget(QWidget *parent=0);
-private slots:
+private Q_SLOTS:
 	void OnCurrentItemChanged(QTreeWidgetItem * current, int index);
 	void onCustomContextMenuRequested(QPoint point);
-public slots:
+public Q_SLOTS:
     void OnAddArea(Project *const project, Level * const level, Area * const area);
     void OnAddLevel(Project * const project, Level * const level);
     void OnAddProject(Project * const project);

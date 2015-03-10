@@ -43,7 +43,7 @@ void Assets::setCurrentSelection(Selectable *const selection) {
             _currentSelection->setCurrentSelection(true, oldSelection);
         }
 
-        emit selectionChanged(_currentSelectionType, _currentSelection);
+        Q_EMIT selectionChanged(_currentSelectionType, _currentSelection);
 
         //prevent fucking memory leaks!
         //Must be done after, in case shit is still using this data before change.
@@ -135,7 +135,7 @@ bool Assets::setCurrentArea(const QString name) {
         _currentArea->Activate();
         if(_currentArea->entity.size() > 0) setCurrentEntity(_currentArea->entity.first());
         else setCurrentEntity(NULL);
-        emit AreaChanged(_currentArea);
+        Q_EMIT AreaChanged(_currentArea);
         return true;
     }
     Debug::Log(Debug::CRITICAL, "Could not set current area to %s!\n", name.toStdString().c_str());
@@ -160,12 +160,12 @@ void Assets::setCurrentArea(Area *const area) {
     _engine->getLevelSys()->switchArea(area? area->getPath() : nullptr);
     if(area) {
         //area->activate();
-		emit areaChanged(_currentArea);
+		Q_EMIT areaChanged(_currentArea);
         //if(area->getFirstEntity()) setCurrentSelection(new EntitySelectable(area->getFirstEntity()));
         setCurrentSelection((EntitySelectable*)nullptr);
     }
     else {
-		emit areaChanged(_currentArea);
+		Q_EMIT areaChanged(_currentArea);
         setCurrentSelection((EntitySelectable*)nullptr);
     }
 }
@@ -173,7 +173,7 @@ void Assets::setCurrentArea(Area *const area) {
 
 void Assets::setCurrentLayer(const LAYER_TYPE type) {
     _currentLayer=type;
-	emit layerChanged(type);
+	Q_EMIT layerChanged(type);
 }
 
 bool Assets::setCurrentLevel(const QString name) {
@@ -198,7 +198,7 @@ void Assets::setCurrentLevel(Level *const level) {
     }
     else setCurrentArea(nullptr);
 	//Debug::Log(Debug::VERBOSE, "!!!!!!EMIT CURRENT LEVEL " +( (level)? level->getName() : "NULL"));
-	emit levelChanged(level);
+	Q_EMIT levelChanged(level);
 }
 
 bool Assets::setCurrentProject(const QString name) {
@@ -226,7 +226,7 @@ void Assets::setCurrentProject(Project *const project) {
         setCurrentLevel(nullptr);
     }
 	//Debug::Log(Debug::VERBOSE, "!!!!!EMIT CURRENT PROJECT - " + ((project)? project->getName() : "NULL"));
-	emit projectChanged(project);
+	Q_EMIT projectChanged(project);
 }
 
 Project *Assets::getProject(const QString /*name*/) const {
@@ -258,7 +258,7 @@ Project *Assets::loadProject(const QString directory) {
     elysian::Debug::getInstance().sandboxInit();
     _engine->setEngineState(elysian::System::ENGINE_ESTK_STOP);
 
-    emit engineInitialize();
+    Q_EMIT engineInitialize();
 
     //_engine->getMapSys()->makeCurrent();
 
@@ -266,7 +266,7 @@ Project *Assets::loadProject(const QString directory) {
 	if(proj->load(directory)) {
         //ConnectSlots(proj);
         m_project = proj;
-        emit projectAdded(proj);
+        Q_EMIT projectAdded(proj);
 
        // _engine->getMapSys()->show();
         return proj;
@@ -293,8 +293,8 @@ bool Assets::removeProject(const QString name) {
     //for(QMap<QString, Project *>::iterator it = _project.begin(); it != _project.end(); ++it) {
         if(m_project->getNodeName() == name) {
             setCurrentProject(nullptr);
-			emit projectRemoved(m_project);
-			emit projectRemoveUI();
+			Q_EMIT projectRemoved(m_project);
+			Q_EMIT projectRemoveUI();
 
             Project *temp = m_project;
             //_project.erase(it);
@@ -316,51 +316,51 @@ void Assets::onChildProjectActivating(Project *const project, Level *const level
 }
 
 void Assets::onAreaAdded(Project *const project, Level *const level, Area *const area) {
-	emit areaAdded(project, level, area);
+	Q_EMIT areaAdded(project, level, area);
 }
 
 void Assets::onAreaRemoved(Project *const project, Level *const level, Area *const area) {
-	emit areaRemoved(project, level, area);
+	Q_EMIT areaRemoved(project, level, area);
 }
 
 void Assets::onLevelAdded(Project *const project, Level *const level) {
-	emit levelAdded(project, level);
+	Q_EMIT levelAdded(project, level);
 }
 
 void Assets::onLevelRemoved(Project *const project, Level *const level) {
-	emit levelRemoved(project, level);
+	Q_EMIT levelRemoved(project, level);
 }
 
 void Assets::onEntityAdded(Project *const project, Level *const level, Area *const area, Entity *const entity) {
-	emit entityAdded(project, level, area, entity);
+	Q_EMIT entityAdded(project, level, area, entity);
 }
 
 void Assets::onEntityRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity) {
-	emit entityRemoved(project, level, area, entity);
+	Q_EMIT entityRemoved(project, level, area, entity);
 }
 
 void Assets::onComponentAttached(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp) {
-	emit componentAttached(project, level, area, entity, comp);
+	Q_EMIT componentAttached(project, level, area, entity, comp);
 }
 
 void Assets::onComponentRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp) {
-	emit componentRemoved(project, level, area, entity, comp);
+	Q_EMIT componentRemoved(project, level, area, entity, comp);
 }
 
 void Assets::onAreaRenamed(const QString oldName, const QString newName) {
-	emit areaRenamed(oldName, newName);
+	Q_EMIT areaRenamed(oldName, newName);
 }
 
 void Assets::onLevelRenamed(const QString oldName, const QString newName) {
-	emit levelRenamed(oldName, newName);
+	Q_EMIT levelRenamed(oldName, newName);
 }
 
 void Assets::onMapChanged(Area * const area, const QVector<MapChange>& changes) {
-    emit mapChanged(area, changes);
+    Q_EMIT mapChanged(area, changes);
 }
 
 void Assets::onEntityParented(Entity * const child, Entity * const parent) {
-    emit entityParented(child, parent);
+    Q_EMIT entityParented(child, parent);
 }
 
 Level* Assets::reloadLevel(Level* level) {
@@ -414,7 +414,7 @@ Project* Assets::reloadProject(void) {
         playerPos = partyLeader->_transform._pos;
     }
 
-    emit projectRemoved(m_project);
+    Q_EMIT projectRemoved(m_project);
 
     setCurrentSelection(nullptr);
     setCurrentArea(nullptr);
@@ -425,7 +425,7 @@ Project* Assets::reloadProject(void) {
     delete _engine;
 
     auto* proj = loadProject(projPath);
-    emit projectAdded(m_project);
+    Q_EMIT projectAdded(m_project);
 
     if(!levelName.isNull()) {
         auto* lev = proj->getLevel(levelName);

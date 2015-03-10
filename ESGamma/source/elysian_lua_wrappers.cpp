@@ -562,9 +562,9 @@ OOLUA_EXPORT_FUNCTIONS(ParticleEmitterAttrib,
 OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitterAttrib);
 
 OOLUA_EXPORT_FUNCTIONS(ParticleEmitter,
-					   emitFromPoint,
-					   emitFromPointInDir,
-					   emitFromEntity,
+					   Q_EMITFromPoint,
+					   Q_EMITFromPointInDir,
+					   Q_EMITFromEntity,
 					   setAttrib,
 					   allocatePool)
 OOLUA_EXPORT_FUNCTIONS_CONST(ParticleEmitter)
@@ -812,7 +812,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(AudioSystem,
 							 getAuxTrackTime)
 
 OOLUA_EXPORT_FUNCTIONS(ParticleSystem,
-					   emitFromPoint)
+					   Q_EMITFromPoint)
 OOLUA_EXPORT_FUNCTIONS_CONST(ParticleSystem,
 							 getAttrib)
 

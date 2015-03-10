@@ -59,10 +59,10 @@ public:
 protected:
 	//virtual void closeEvent(QCloseEvent *const event);
 	virtual void closeEvent(QCloseEvent *event);
-/*signals:
+/*Q_SIGNALS:
 	void activeLayerChanged(const int index);*/
 
-private slots:
+private Q_SLOTS:
 	bool _openSourceSheet(const QString filename);
 
 	void changeActiveLevel(QAction *action);

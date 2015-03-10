@@ -78,7 +78,7 @@ private:
     unsigned _resolution = 0;
 
 
-private slots:
+private Q_SLOTS:
 	void OnReadyReadStandardOutput(void);
 	void OnClickClose(void);
 	void OnClickClear(void);
@@ -88,7 +88,7 @@ private slots:
     void OnFinish(int result);
     void onResolutionRadioButtonsClicked(bool checked);
 
-public slots:
+public Q_SLOTS:
     void OnDreamcastIpChanged(QString string);
     void OnDreamcastMacChanged(QString string);
     void OnSudoPswdChanged(QString string);

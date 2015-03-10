@@ -22,7 +22,7 @@ private:
 
     static int          _metaRef;
     static lua_State*   _lvm;
-signals:
+Q_SIGNALS:
     //Notifies Qt's GUI models to update when Lua table fields change
     void    fieldChanged(const QString key) const;
     void    fieldAdded(const QString key) const;
@@ -30,8 +30,8 @@ signals:
 public:
             TkLuaTableUserdata(void);
     virtual ~TkLuaTableUserdata(void);
-    void    emitFieldChanged(const QString key) const;
-    void    emitFieldAdded(const QString key) const;
+    void    Q_EMITFieldChanged(const QString key) const;
+    void    Q_EMITFieldAdded(const QString key) const;
 
     void    setOrigRef(const int ref);
     int     getOrigRef(void) const;
@@ -63,14 +63,14 @@ private:
  */
 class TkLuaTableProxyQObject: public QObject {
     Q_OBJECT
-signals:
+Q_SIGNALS:
     //Notifies Qt's GUI models to update when Lua table fields change
     void fieldChanged(const QString key);
     void fieldAdded(const QString key);
 
 public:
-    void emitFieldChanged(const QString key) { emit fieldChanged(key); }
-    void emitFieldAdded(const QString key) { emit fieldAdded(key); }
+    void Q_EMITFieldChanged(const QString key) { Q_EMIT fieldChanged(key); }
+    void Q_EMITFieldAdded(const QString key) { Q_EMIT fieldAdded(key); }
 };
 
 /* Compile-time override engine's LuaTableProxy implementation
@@ -126,8 +126,8 @@ inline void TkLuaTableUserdata::setPropRef(const int ref) { _propRef = ref; }
 inline int TkLuaTableUserdata::getOrigRef(void) const { return _origRef; }
 inline int TkLuaTableUserdata::getPropRef(void) const { return _propRef; }
 inline TkLuaTableUserdata::TkLuaTableUserdata(void): QObject(nullptr) {}
-inline void TkLuaTableUserdata::emitFieldAdded(const QString key) const { emit fieldAdded(key); }
-inline void TkLuaTableUserdata::emitFieldChanged(const QString key) const { emit fieldChanged(key); }
+inline void TkLuaTableUserdata::Q_EMITFieldAdded(const QString key) const { Q_EMIT fieldAdded(key); }
+inline void TkLuaTableUserdata::Q_EMITFieldChanged(const QString key) const { Q_EMIT fieldChanged(key); }
 
 
 template <typename P, typename T>
@@ -140,7 +140,7 @@ inline void TkLuaTableProxy<P, T>::_callPropertyProxyMethod(const bool write, co
     }
     ParentType::_callPropertyProxyMethod(write, key);
     if(write) {
-        obj->emitFieldChanged(key);
+        obj->Q_EMITFieldChanged(key);
     }
 }
 

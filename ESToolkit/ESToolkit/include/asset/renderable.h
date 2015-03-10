@@ -45,7 +45,7 @@ private:
 
     void ReloadSpriteSheet(void);
 /*
-public slots:
+public Q_SLOTS:
 
     void OnSetColorR(void);
     void OnSetColorG(void);
@@ -63,7 +63,7 @@ public slots:
 	void OnBrowseClick();
 	void OnReloadClick();
 
-signals:
+Q_SIGNALS:
     void PrimitiveUpdate(); */
 
 public:

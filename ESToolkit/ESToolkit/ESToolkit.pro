@@ -6,7 +6,7 @@ TARGET = ESToolkit
 TEMPLATE = app
 QT		+= opengl
 QMAKE_CXXFLAGS += -std=c++11 -msse -Wno-unused-local-typedefs -Wno-empty-body -Wno-unknown-warning-option
-DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt
+DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt QT_NO_KEYWORDS
 CONFIG += c++11
 
 
@@ -22,7 +22,8 @@ DEPENDPATH += include/asset \
     ../../AssetIO/include \
     ../../libGyro/include \
     ../../libGyro/include/kinetic \
-    ../../ESGamma/include
+	../../ESGamma/include \
+	../../Spine/include
 
 INCLUDEPATH += include/asset \
     include/core \
@@ -37,7 +38,8 @@ INCLUDEPATH += include/asset \
 	../../ESGamma/lib/include \
 	../../ESGamma/include \
 	../../OOLua/include \
-	../../Lua5.2/include
+	../../Lua5.2/include \
+	../../Spine/include
 
 
 SOURCES += source/asset/project.cpp \
@@ -98,7 +100,7 @@ SOURCES += source/asset/project.cpp \
     ../../AssetIO/source/elysian_audio_source.cpp \
     ../../AssetIO/source/elysian_light_source.cpp \
     source/asset/elysianTileWrapper.cpp \
-    ../../AssetIO/source/elysian_particle_emitter.cpp \
+	../../AssetIO/source/elysian_particle_emitter.cpp \
     ../../AssetIO/source/elysian_rigid_body.cpp \
     ../../AssetIO/source/elysian_combat.cpp \
 	../../AssetIO/source/luatables.cc \
@@ -240,7 +242,7 @@ HEADERS += include/asset/project.h \
     ../../AssetIO/include/elysian_asset.hpp \
     ../../AssetIO/include/elysian_audio_source.hpp \
     include/asset/elysianTileWrapper.h \
-    ../../AssetIO/include/elysian_particle_emitter.hpp \
+	../../AssetIO/include/elysian_particle_emitter.hpp \
     ../../AssetIO/include/elysian_combat.hpp \
     ../../AssetIO/include/elysian_rigid_body.hpp \
     ../../AssetIO/include/luatables.h \
@@ -404,6 +406,20 @@ else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../L
 else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Lua5.2/qtcreator/Lua5_2/release/Lua5_2.lib
 else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Lua5.2/qtcreator/Lua5_2/debug/Lua5_2.lib
 else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../Lua5.2/qtcreator/Lua5_2/libLua5_2.a
+
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../Spine/qtcreator/Spine/release/ -lSpine
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../Spine/qtcreator/Spine/debug/ -lSpine
+else:unix: LIBS += -L$$OUT_PWD/../../Spine/qtcreator/Spine/ -lSpine
+
+INCLUDEPATH += $$PWD/../../Spine/qtcreator/Spine
+DEPENDPATH += $$PWD/../../Spine/qtcreator/Spine
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Spine/qtcreator/Spine/release/libSpine.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Spine/qtcreator/Spine/debug/libSpine.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Spine/qtcreator/Spine/release/Spine.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Spine/qtcreator/Spine/debug/Spine.lib
+else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../Spine/qtcreator/Spine/libSpine.a
 
 
 win32 {

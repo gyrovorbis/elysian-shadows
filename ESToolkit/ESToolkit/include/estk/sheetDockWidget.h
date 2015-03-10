@@ -25,7 +25,7 @@ public:
     ~SheetDockWidget();
 
 	SourceView *getSourceView(void) const;
-signals:
+Q_SIGNALS:
     void UncheckMe(int);
     void ReleaseFocus();
     void ExitPanMode();

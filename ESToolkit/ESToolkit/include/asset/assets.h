@@ -70,7 +70,7 @@ public:
 	QString getProjectDir();
 	int getUndoStackCount();
 
-signals:
+Q_SIGNALS:
     //void EntityChanged(Entity *const entity);
 	void selectionChanged(const Selectable::TYPE type, Selectable *const selection);
 	void layerChanged(LAYER_TYPE type);
@@ -96,7 +96,7 @@ signals:
     void entityParented(Entity*const child, Entity*const parent);
 
 	void projectRemoveUI();
-private slots:
+private Q_SLOTS:
 	void onChildProjectActivating(Project *const project, Level *const level, Area *const area);
 	void onAreaAdded(Project *const project, Level *const level, Area *const area);
 	void onAreaRenamed(const QString oldName, const QString newName);

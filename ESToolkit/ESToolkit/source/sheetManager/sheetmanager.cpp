@@ -536,7 +536,7 @@ bool SheetManager::_save(void) {
 
 
 
-//========QT Designer slots========
+//========QT Designer Q_SLOTS========
 
 
 void SheetManager::on_actionCut_triggered(void) {

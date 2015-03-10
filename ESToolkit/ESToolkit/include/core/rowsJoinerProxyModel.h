@@ -48,7 +48,7 @@ public:
         return m->setData(mapToSource(i),v,r);
     }
 
-private slots:
+private Q_SLOTS:
     void s_rowsAboutToBeInserted(QModelIndex, int, int);
     void s_rowsAboutToBeRemoved(QModelIndex, int, int);
     void s_rowsInserted(QModelIndex, int, int);
