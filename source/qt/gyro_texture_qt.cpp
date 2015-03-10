@@ -7,9 +7,7 @@
 #include <QDebug>
 #include <cassert>
 
-int _gyVidTexAlloc(GYTexture *const tex, const unsigned width, const unsigned height) {
-    (void)width;
-    (void)height;
+int _gyVidTexAlloc(GYTexture *const tex) {
 	const QGLContext* current = QGLContext::currentContext();
 
 	QString fileName = tex->filename;
@@ -22,6 +20,9 @@ int _gyVidTexAlloc(GYTexture *const tex, const unsigned width, const unsigned he
 	}
 
 	QPixmap pixmap(fileName);
+    tex->width = pixmap.width();
+    tex->height = pixmap.height();
+
 	pixmap = pixmap.transformed(QTransform().scale(1, -1));
 
  //   tex->_pixmap = QPixmap(QString(tex->filename));

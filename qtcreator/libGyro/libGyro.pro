@@ -8,7 +8,8 @@ CONFIG -= app_bundle
 DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt
 
 INCLUDEPATH += ../../include \
-				../../source/x86/png
+				../../source/x86/png \
+				../../../Spine/include
 
 #==========PLATFORM-SPECIFIC BULLSHIT==========
 
