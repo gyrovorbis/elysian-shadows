@@ -36,6 +36,8 @@ typedef struct _GYTexCoordSheet {
 typedef struct _GYTexture {
 	char					filename[GYRO_PATH_MAX_SIZE];
 	unsigned				bytes;
+    unsigned                width;
+    unsigned                height;
 	GY_TEX_BPP				bpp;
 	GY_TEX_PAL				palette;
 	GYTexCoordSheet*		_coord;
@@ -50,7 +52,7 @@ typedef struct _GYTexture {
 #endif
 
 //===PLATFORM SPECIFIC PRIVATE====
-int _gyVidTexAlloc(GYTexture *const tex, const unsigned width, const unsigned height);
+int _gyVidTexAlloc(GYTexture *const tex);
 int _gyVidTexFree(GYTexture *const tex);
 
 #ifdef __cplusplus

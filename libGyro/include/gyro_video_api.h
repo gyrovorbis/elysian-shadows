@@ -15,6 +15,13 @@ typedef struct _GYColor4 {
 	unsigned char r, g, b, a;
 } GYColor4;
 
+typedef struct _GYVertex {
+    float   x, y, z, w;
+    float   u, v;
+    float    color;
+ //   float    padding;
+} GYVertex;
+
 typedef enum _GY_ALPHA_LEVEL { GY_ALPHA_NONE, GY_ALPHA_PUNCHTHRU, GY_ALPHA_FULL } GY_ALPHA_LEVEL;
 
 typedef enum _GY_RECT_PLANE_TYPE {
@@ -47,11 +54,11 @@ void gyVidCamUpdate(const struct _GYCamera *const cam);
 void gyVidSetCamWorldPos(const GYVector3*const pos);
 
 //General Video API
-int gyVidInit(const struct _GYVidInitParams *const params); //MUST SET PROJWIDTH/PROJHEIGHT
-int gyVidUninit(void);
-void gyVidSceneBegin(void);
-void gyVidSceneEnd(void);
-unsigned gyVidVertexRenderCount(void);
+int         gyVidInit(const struct _GYVidInitParams *const params); //MUST SET PROJWIDTH/PROJHEIGHT
+int         gyVidUninit(void);
+void        gyVidSceneBegin(void);
+void        gyVidSceneEnd(void);
+unsigned    gyVidVertexRenderCount(void);
 
 //Quad API
 void gyVidQuadListBegin(const GYColor4 *const color);
@@ -67,6 +74,11 @@ void gyVidTexCoordArray(const struct _GYTexCoord2 *const ptr);
 //void gyVidNormalArray(const struct _GYVector3 *const ptr);
 //void gyVidTangentArray(const struct _GYVector3 *const ptr);
 void gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsigned startIndex, const unsigned amount);
+
+//Spine interop
+struct spSkeleton;
+void gyVidSkeleton(const struct spSkeleton*const skeleton);
+
 
 
 //CHANGE THIS INTO ONE SHARED FUNCTION, NOT PLATFORM-SPECIFIC!!!

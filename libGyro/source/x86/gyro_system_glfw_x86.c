@@ -349,7 +349,7 @@ void gyDebugSigInit(void) {
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags			= SA_SIGINFO;
 
-	/* Attach signals. */
+	/* Attach Q_SIGNALS. */
 	sigaction(SIGSEGV, &sa, &so);
 	if(so.sa_handler == SIG_IGN)
 		_gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGSEGV signal handler.");
