@@ -93,7 +93,7 @@ static const GYVector4 _rectVerts[GY_RECT_PLANE_MAX][4] = {
 		{-0.5f, 0.5f, 1.0f, 1.0f},
 		{0.5f, 0.5f, 1.0f, 1.0f},
 		{-0.5f, 0.5f, 0.0f, 1.0f},
-		{0.5f, 0.5f, 0.0f, 1.0f}
+        {0.5f, 0.5f, 0.0f, 1.0f}
     },
    #endif
     //LEFT
@@ -501,6 +501,12 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
     const float                 zEpsilon = 1.0f;
     float                       zOffset;
 
+    gyVidNormalMapBind(NULL);
+    gyVidSpecularMapBind(NULL);
+    gyVidMaterialBind(NULL);
+
+    glEnable(GL_DEPTH_TEST);
+
     for (int i = 0; i < skeleton->slotsCount; ++i) {
     //for (int i = skeleton->slotsCount-1; i >= 0; --i) {
         startVertex = &_vertexQueue[0];
@@ -636,11 +642,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
         }
         lastAdditive = slot->data->additiveBlending;
 
-        gyVidNormalMapBind(NULL);
-        gyVidSpecularMapBind(NULL);
-        gyVidMaterialBind(NULL);
 
-        glEnable(GL_DEPTH_TEST);
 
         gyVidTexBind(texture);
 
@@ -661,7 +663,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
    // }
     }
 
-
+    glDisable(GL_DEPTH_TEST);
 
    // target.draw(*vertexArray, states);
 }
