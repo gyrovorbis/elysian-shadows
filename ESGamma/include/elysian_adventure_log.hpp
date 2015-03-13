@@ -14,6 +14,7 @@ class Font;
 #define ELYSIAN_ADV_LOG_MAX_LINES_DISPLAYABLE   2
 #define ELYSIAN_ADV_LOG_FRAMES_PER_NEWLINE      15
 #define ELYISAN_ADV_LOG_PAUSE_TIME              10.0f
+#define ELYSIAN_ADV_LOG_DEFAULT_FADE_TIME       1.0f
 
 #define ELYSIAN_ADV_LOG_X                       409.0f4
 #define ELYSIAN_ADV_LOG_Y                       27.0f
@@ -42,15 +43,17 @@ class Font;
 		
 
 		void addLine(const TEXT_TYPE lineType, const char* line);
-        void setEnabled(const bool val);
+        //void setEnabled(const bool val);
         bool isEnabled(void) const;
+        void fade(const float time, const bool enabled=false);
+
 
         void setLabel(const char*label);
         void setLabelFont(Font*const font);
         void setTextFont(Font*const font);
 
 	private:
-		static const float _exitFadeTime;
+        //static const float _exitFadeTime;
 		
         char        _log[ELYSIAN_ADV_LOG_LINES][ELYSIAN_ADV_LOG_CHARS_PER_LINE];
         TEXT_TYPE   _type[ELYSIAN_ADV_LOG_LINES];
@@ -65,6 +68,7 @@ class Font;
         float       _yOffset		= 0;
         float       _waitCounter	= 0.0f;
         float       _fadeCounter	= 0.0f;
+        float       _exitFadeTime   = 0.0f;
         Font*       _labelFont      = nullptr;
         Font*       _textFont       = nullptr;
         unsigned    _scrW;
@@ -89,8 +93,9 @@ class Font;
 		return (_exitState == EXIT_ACTIVE || _exitState == EXIT_FADE_IN)? true : false;
 	}
 
-    inline void AdventureLog::setEnabled(const bool val) {
-        _exitState = val? EXIT_FADE_IN : EXIT_FADE_OUT;
+    inline void AdventureLog::fade(const float time, const bool enabled) {
+        _exitState = enabled? EXIT_FADE_IN : EXIT_FADE_OUT;
+        _exitFadeTime = time;
     }
     
 }

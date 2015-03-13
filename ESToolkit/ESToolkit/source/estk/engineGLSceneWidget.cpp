@@ -118,7 +118,7 @@ void EngineGLSceneWidget::resizeGL(int w, int h) {
 }
 
 static void _renderSpineShit(void) {
-        gyVidSkeleton(skeleton);
+      //  gyVidSkeleton(skeleton);
 
 }
 

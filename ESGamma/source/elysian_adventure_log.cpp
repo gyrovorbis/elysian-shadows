@@ -9,7 +9,7 @@
 
 namespace elysian {
 
-const float AdventureLog::_exitFadeTime = 1.0f;
+//const float AdventureLog::_exitFadeTime = 1.0f;
 
 /*
  Does a good deal more than just copy the line to the Adventure Log. 
@@ -17,7 +17,7 @@ const float AdventureLog::_exitFadeTime = 1.0f;
  is handled here: Full log and string is too big for a single line.
  */
 void AdventureLog::addLine(const TEXT_TYPE lineType, const char *line) {
-    setEnabled(true);
+    fade(ELYSIAN_ADV_LOG_DEFAULT_FADE_TIME, true);
     getGuiSys()->getResolution(_scrW, _scrH);
     if(_endIndex == ELYSIAN_ADV_LOG_LINES-1) { //The entire log is COMPLETELY full. Problem.
 		
@@ -95,7 +95,7 @@ void AdventureLog::update(void) {
 					++_startIndex;
 					_yOffset = 0;
 					_fadeCounter = 0.0f;
-                    if(_startIndex == _endIndex) setEnabled(false);
+                    if(_startIndex == _endIndex) fade(ELYSIAN_ADV_LOG_DEFAULT_FADE_TIME, false);
                 } 
                 break;
 			default:

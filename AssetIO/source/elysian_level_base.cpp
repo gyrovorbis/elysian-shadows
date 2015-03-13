@@ -191,6 +191,8 @@ namespace elysian {
 			fprintf(file, "%d\n", tileset[i].animated);
 			fprintf(file, "%f\n", tileset[i].animTime);
 			fprintf(file, "%d\n", tileset[i].nextIndex);
+            fprintf(file, "%d\n", (int)tileset[i].standOn);
+            fprintf(file, "%d\n", (int)tileset[i].transparency);
 		}
 
 		fclose(file);

@@ -28,6 +28,7 @@
 #include "elysian_examinable_system.hpp"
 #include "elysian_rigid_body_system.hpp"
 #include "elysian_combat_system.hpp"
+#include "elysian_skeleton_system.hpp"
 #include "glal/gyro_glal.h"
 
 namespace elysian {
@@ -62,6 +63,7 @@ Engine::Engine(void) {
     _examinableSystem	= new ExaminableSystem;
     _dialogSystem		= new DialogSystem;
     _combatSystem		= new CombatSystem;
+    _skeletonSystem     = new SkeletonSystem;
 
     _behaviorSystem->initialize();
     _warpSystem->initialize();
@@ -118,6 +120,7 @@ void Engine::update(void) {
 			_timerSystem->update();
 			_mapSystem->update();
 			_characterSystem->update();
+            _skeletonSystem->update();
 			_animationSystem->update();
 			_guiSystem->update();
 			_warpSystem->update();
@@ -272,6 +275,7 @@ Engine::~Engine(void) {
 	delete _rigidBodySystem;
 	delete _collisionSystem;
 	delete _guiSystem;
+    delete _skeletonSystem;
     delete _behaviorSystem;*/
 	
 

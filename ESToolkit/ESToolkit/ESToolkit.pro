@@ -156,7 +156,9 @@ SOURCES += source/asset/project.cpp \
     source/estk/tkLuaWrappers.cpp \
     ../../ESGamma/source/elysian_lua_wrappers.cpp \
     ../../ESGamma/source/elysian_lua_manager_base.cpp \
-    source/estk/tkLuaManager.cpp
+    source/estk/tkLuaManager.cpp \
+    ../../AssetIO/source/elysian_skeleton.cpp \
+    ../../ESGamma/source/elysian_skeleton_system.cpp
 
 HEADERS += include/asset/project.h \
     include/asset/assets.h \
@@ -311,7 +313,9 @@ HEADERS += include/asset/project.h \
     ../../ESGamma/include/elysian_lua_wrappers.hpp \
     ../../ESGamma/include/elysian_lua_manager_base.hpp \
     ../../ESGamma/include/elysian_lua_manager.hpp \
-    include/estk/tkLuaManager.h
+    include/estk/tkLuaManager.h \
+    ../../AssetIO/include/elysian_skeleton.hpp \
+    ../../ESGamma/include/elysian_skeleton_system.hpp
 
 FORMS += form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \

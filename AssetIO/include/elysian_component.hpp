@@ -25,6 +25,7 @@ namespace elysian {
 			LIGHT_SOURCE,
 			PARTICLE_EMITTER,
 			COMBAT,
+            SKELETON,
 			MAX_TYPE, 
 			BEHAVIOR 
 		};

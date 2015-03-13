@@ -46,6 +46,15 @@ namespace elysian {
 			_vertColor[0].a = a2; _vertColor[1].a = a3; _vertColor[2].a = a4; _color.a = a1;
 		}
 
+        void setVertexAlpha(const unsigned short index, const float alpha) {
+            if(index > 0) {
+                _vertColor[index-1].a = alpha;
+            } else {
+                _color.a = alpha;
+            }
+        }
+        float getVertexAlpha(const unsigned short index) const { return (index > 0)? _vertColor[index-1].a : _color.a; }
+
 
 		virtual void submitVerts(GYVector4 *verts = nullptr) {
 			//We got some serious fucking design issues if this shit ain't true.

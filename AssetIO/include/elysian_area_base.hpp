@@ -71,6 +71,7 @@ namespace elysian {
 	class LightSource;
 	class ParticleEmitter;
 	class Combat;
+    class Skeleton;
 	class Behavior;
 
 	struct MapEntry {
@@ -122,6 +123,7 @@ namespace elysian {
 		std::vector<LightSource*>		lightSources;
 		std::vector<ParticleEmitter*>	particleEmitters;
 		std::vector<Combat*>			combats;
+        std::vector<Skeleton*>          skeletons;
 		std::vector<Behavior*>			behaviors;
 		
         char dir[ELYSIAN_AREA_NAME_SIZE];		//name of area directory

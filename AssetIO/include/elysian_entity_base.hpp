@@ -36,6 +36,7 @@ namespace elysian {
 	class Combat;
 	class Behavior;
     class LuaBehavior;
+    class Skeleton;
 
 	class EntityBase:
 			public RenderableObject,
@@ -106,6 +107,7 @@ namespace elysian {
 		LightSource*		addLightSource(void);
 		ParticleEmitter*	addParticleEmitter(void);
 		Combat*				addCombat(void);
+        Skeleton*           addSkeleton(void);
 
         void                setRenderable(const OOLUA::Lua_table_ref valTable);
         void                setAnimation(const OOLUA::Lua_table_ref valTable);
@@ -130,6 +132,7 @@ namespace elysian {
 		LightSource*		getLightSource(void) const { return _lightSource; }
 		ParticleEmitter*	getParticleEmitter(void) const { return _particleEmitter; }
 		Combat*				getCombat(void) const { return _combat; }
+        Skeleton*           getSkeleton(void) const { return (Skeleton*)_renderable; }
 
         void                removeRenderable(void);
         void                removeAnimation(void);
@@ -142,6 +145,7 @@ namespace elysian {
         void                removeLightSource(void);
         void                removeParticleEmitter(void);
         void                removeCombat(void);
+        void                removeSkeleton(void);
  
         Behavior*           addBehavior(char const* behaviorName);
         Behavior*           getBehavior(char const* constbehaviorName) const;

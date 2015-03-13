@@ -429,7 +429,8 @@ void DialogSystem::closeDialog(void) {
 	_posState = POS_BOTTOM;
 	//_mainCanvas.transform.setPosition(_mainCanvas.transform._pos.x, 430.0f);
 	//_mainCanvas.transform._pos.y = 430.0f;
-    getGuiSys()->adventureLog.setEnabled(_advLogWasEnabled);
+    //getGuiSys()->adventureLog.setEnabled(_advLogWasEnabled);
+    getGuiSys()->fadeFgLayer(1.0f, true);
 }
 
 void DialogSystem::_updateCamera(void) {
@@ -476,8 +477,8 @@ void DialogSystem::startDialog(Dialog *const dialog, EventMonitor*const monitor)
 	_splitText();
 	CheckModal();
     _advLogWasEnabled = getGuiSys()->adventureLog.isEnabled();
-    getGuiSys()->adventureLog.setEnabled(false);
-
+    //getGuiSys()->adventureLog.setEnabled(false);
+    getGuiSys()->fadeFgLayer(1.0f, false);
 }
 
 

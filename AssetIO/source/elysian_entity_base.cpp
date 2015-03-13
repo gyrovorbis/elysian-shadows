@@ -728,6 +728,10 @@ Combat *EntityBase::addCombat(void) {
     return _addComponent<Combat>(_combat);
 }
 
+Skeleton* EntityBase::addSkeleton(void) {
+    //return _addComponent<Skeleton>(_renderable);
+}
+
 template<typename T>
 void EntityBase::_removeComponent(T*& comp) {
     if(comp && _active) {
@@ -781,6 +785,10 @@ void EntityBase::removeParticleEmitter(void) {
 
 void EntityBase::removeCombat(void) {
     _removeComponent<Combat>(_combat);
+}
+
+void EntityBase::removeSkeleton(void) {
+
 }
 
 template<typename T>

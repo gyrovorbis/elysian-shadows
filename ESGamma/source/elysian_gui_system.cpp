@@ -12,6 +12,7 @@
 #include "elysian_rigid_body.hpp"
 #include "elysian_examinable.hpp"
 #include "elysian_combat.hpp"
+#include "elysian_renderable.hpp"
 
 namespace elysian {
 
@@ -55,9 +56,13 @@ inline void GuiSystem::CombatStatusIndicator::render(void) {
     _healthMeter[1].render();
 }
 
-void MenuText::recursiveRender(void) {
+void MenuText::recursiveRender(const float fadeAlpha) {
 	GYVector4 localVert = { _relPos.x, _relPos.y, 1.0f, 1.0f };
 	GYVector4 worldVert;
+
+    const float baseAlpha = _color.a;
+    //_fonts[_type]->setAlpha(baseAlpha*fadeAlpha);
+    _color.a = baseAlpha*fadeAlpha;
 
 	gyMatMultVec(&localVert, &worldVert, 1);
 
@@ -72,6 +77,8 @@ void MenuText::recursiveRender(void) {
 
 	gyMatPop();
 
+    //_fonts[_type]->setAlpha(baseAlpha);
+    _color.a = baseAlpha;
 }
 
 MenuEntity::~MenuEntity(void) {
@@ -79,9 +86,12 @@ MenuEntity::~MenuEntity(void) {
 	for(auto it = _childWidgets.begin(); it < _childWidgets.end(); ++it) delete *it;
 }
 
-void MenuEntity::recursiveRender(void) {
+void MenuEntity::recursiveRender(const float fadeAlpha) {
     GYVector4 localVert = { _transform._pos.x, _transform._pos.y, _transform._pos.z, 1.0f };
 	GYVector4 worldVert;
+    float baseAlpha[4];
+    QuadSpriteAttrib* quadSprite= nullptr;
+    unsigned attribType = 0;
 
 	if(_sizeType == SIZE_ABSOLUTE) {
 		gyMatMultVec(&localVert, &worldVert, 1);
@@ -90,14 +100,38 @@ void MenuEntity::recursiveRender(void) {
         gyMatTranslate(worldVert.x-_transform._pos.x, worldVert.y-_transform._pos.y, worldVert.z-_transform._pos.z);
 	}
 
+    //Update alpha for fade
+    if(fadeAlpha != 1.0f && getRenderable()) {
+        quadSprite = getRenderable()->getQuadSpriteAttrib();
+        if(quadSprite->getType() == PrimAttrib::QUAD_SPRITE) {
+            for(unsigned i = 0; i < 4; ++i) {
+                baseAlpha[i] = quadSprite->getVertexAlpha(i);
+                quadSprite->setVertexAlpha(i, baseAlpha[i]*fadeAlpha);
+            }
+            attribType = 2;
+        } else {
+            baseAlpha[0] = quadSprite->getAlpha();
+            quadSprite->setAlpha(baseAlpha[0]*fadeAlpha);
+            attribType = 1;
+        }
+    }
+
 	Entity::render();
 
 	gyMatPush();
     Entity::_transform.apply();
-	for(auto it = _childWidgets.begin(); it < _childWidgets.end(); ++it) (*it)->recursiveRender();
+    for(auto it = _childWidgets.begin(); it < _childWidgets.end(); ++it) (*it)->recursiveRender(fadeAlpha);
 	gyMatPop();
 
 	if(_sizeType == SIZE_ABSOLUTE) gyMatPop();
+
+    //set alpha back to base
+    if(attribType == 1) {
+        quadSprite->setAlpha(baseAlpha[0]);
+    } else if(attribType == 2) {
+        for(unsigned i = 0; i < 4; ++i) quadSprite->setVertexAlpha(i, baseAlpha[i]);
+    }
+
 }
 
 const GYVector2 GuiSystem::_combatTextGravity = ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_GRAVITY;
@@ -142,6 +176,29 @@ void GuiSystem::update(void) {
 	adventureLog.update();
 
 	const float deltaTime = getTimerSys()->getDeltaTime();
+
+    //update internal fade state if fading in or out
+    if(_fgFadeTime != 0.0f) _fgFadeElapsed += deltaTime;
+    switch(_fgFadeState) {
+    case FADE_OUT:
+        if(_fgFadeElapsed >= _fgFadeTime) {
+            _fgFadeState = FADE_DISABLED;
+            _fgFadeAlpha = 0.0f;
+            _fgFadeTime = 0.0f;
+        } else {
+            _fgFadeAlpha = 1.0f - (_fgFadeElapsed/_fgFadeTime);
+        }
+        break;
+    case FADE_IN:
+        if(_fgFadeElapsed >= _fgFadeTime) {
+            _fgFadeState = FADE_ENABLED;
+            _fgFadeAlpha = 1.0f;
+            _fgFadeTime = 0.0f;
+        } else {
+            _fgFadeAlpha = (_fgFadeElapsed/_fgFadeTime);
+        }
+    default: break;
+    }
 
 	//update CombatText
 	for(auto it = _combatText.begin(); it < _combatText.end(); ++it) {
@@ -326,7 +383,7 @@ void GuiSystem::_renderMenuWidget(MenuWidget* widget) {
     gyMatTranslate(_projWidth*0.5f, _projHeight*0.5f, 20.0f);
 	gyMatScale(_projWidth, _projHeight, 1.0f);
 
-	widget->recursiveRender();
+    widget->recursiveRender(_fgFadeAlpha);
 
 	gyMatPop();
 

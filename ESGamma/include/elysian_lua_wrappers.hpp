@@ -289,6 +289,8 @@ OOLUA_PROXY(InstanceTransform)
     OOLUA_MEM_FUNC(void, setSizeVec, const OOLUA::Lua_table_ref)
     OOLUA_MEM_FUNC(void, setScaleVec, const OOLUA::Lua_table_ref)
     OOLUA_MEM_FUNC(void, setPosVec, const OOLUA::Lua_table_ref)
+    OOLUA_MEM_FUNC_CONST(float, getPosZ)
+    OOLUA_MEM_FUNC(void, setPosZ, const float)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(RenderableObject)

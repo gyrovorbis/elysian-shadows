@@ -45,7 +45,7 @@ namespace elysian {
 	class MenuWidget {
 	public:
 		virtual			~MenuWidget(void)		= default;
-		virtual void	recursiveRender(void)	= 0;
+        virtual void	recursiveRender(const float alpha)	= 0;
 	};
 
 	class MenuText: public MenuWidget {
@@ -66,7 +66,7 @@ namespace elysian {
         void            setAlignment(const Font::ALIGNMENT align);
         void            setText(const char*const text);
 
-        virtual void    recursiveRender(void) override;
+        virtual void    recursiveRender(const float alpha) override;
 	};
 
 	class MenuEntity: public MenuWidget, public Entity {
@@ -85,7 +85,7 @@ namespace elysian {
         void            addChildWidget(MenuWidget*const widget);
         void            removeChildWidget(MenuWidget*const widget);
         void            setSizeType(const SIZE_TYPE type);
-        virtual void    recursiveRender(void) override;
+        virtual void    recursiveRender(const float alpha) override;
 
 	};
 
@@ -128,6 +128,8 @@ namespace elysian {
             STATE       state     = STATE_INACTIVE;
         };
 
+        enum FADE_STATE { FADE_ENABLED, FADE_OUT, FADE_DISABLED, FADE_IN };
+
         Pool<CombatStatusIndicator> _combatStatIndicator;
         Pool<CombatText>            _combatText;
         Pool<VictoryText>           _victoryText;
@@ -140,6 +142,13 @@ namespace elysian {
         MenuWidget*                 _fgMenuWidget           = nullptr;
         MenuWidget*                 _bgMenuWidget           = nullptr;
         const Entity*               _examineEntity          = nullptr;
+
+
+        FADE_STATE                  _fgFadeState            = FADE_ENABLED;
+        float                       _fgFadeElapsed          = 0.0f;
+        float                       _fgFadeTime             = 0.0f;
+        float                       _fgFadeAlpha            = 1.0f;
+        float                       _fgFadeAlphaStart       = 1.0f;
 
         void            _printDebugLine(const char*title, const char*str, ...);
         void            _renderDebugOverlay(void);
@@ -158,19 +167,13 @@ namespace elysian {
         void            renderForeground(void);
         void            render(void);
         void            getResolution(unsigned int &width, unsigned int &height) const;
-
         void            addCombatText(const char*const text, const GYColor4 color, const GYVector2& pos, const GYVector2& vel);
-
         void            setDebugOverLayEnabled(const bool enabled);
-
         void            setFgMenuWidget(MenuWidget*const widget);
         void            clearFgMenuWidget(void);
-
         void            setBgMenuWidget(MenuWidget*const widget);
         void            clearBgMenuWidget(void);
-
         void            setAdvLogEnabled(const bool val);
-
         void            setExamineEntity(const Entity* const entity);
         const Entity*   getExamineEntity(void) const;
 
@@ -182,6 +185,9 @@ namespace elysian {
         GYColor4        getFontColorPaletteEntry(const unsigned index) const;
         void            setFontColorPaletteEntry(const unsigned index, const GYColor4 color);
 
+        void            fadeFgLayer(const float time, const bool enabled=false); // doesn't affect AdventureLog!
+        FADE_STATE      getFgFadeState(void) const;
+
         Font			verdana;
         Font			twcen;
         Font            pragmata18;
@@ -190,6 +196,11 @@ namespace elysian {
 		AdventureLog	adventureLog;
 
 	};
+
+
+
+
+
 
 
 
@@ -215,7 +226,7 @@ namespace elysian {
 	inline void GuiSystem::clearBgMenuWidget(void) { _bgMenuWidget = nullptr; }
 	inline void GuiSystem::setClearColor(const GYColor4 color) { gyVidClearColor(color); }
     inline void GuiSystem::setAdvLogEnabled(const bool val) {
-        adventureLog.setEnabled(val);
+        adventureLog.fade(2.0f, val);
     }
     inline void GuiSystem::getResolution(unsigned int &width, unsigned int &height) const { width = _projWidth; height = _projHeight; }
 
@@ -249,6 +260,16 @@ namespace elysian {
 
     inline GYColor4 GuiSystem::getFontColorPaletteEntry(const unsigned index) const { return Font::getColorPaletteEntry(index); }
     inline void GuiSystem::setFontColorPaletteEntry(const unsigned index, const GYColor4 color) { Font::setColorPaletteEntry(index, color); }
+
+    //Probably isn't graceful if you fade in/out while already fading... whatever for now.
+    inline void GuiSystem::fadeFgLayer(const float time, const bool enabled) {
+        _fgFadeState = enabled? FADE_IN : FADE_OUT;
+        _fgFadeTime = time;
+        _fgFadeAlphaStart = _fgFadeAlpha;
+    }
+
+    inline auto GuiSystem::getFgFadeState(void) const -> FADE_STATE { return _fgFadeState; }
+
 
 }
 

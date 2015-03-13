@@ -186,14 +186,16 @@ OOLUA_EXPORT_FUNCTIONS(InstanceTransform,
 									setOrientZ,
 									rotate,
                                     scale2f,
-                                    getPosVec)
+                                    getPosVec,
+                                    setPosZ)
 OOLUA_EXPORT_FUNCTIONS_CONST(InstanceTransform,
 								apply,
 								getPos2f,
 								getPos3f,
 								getSize2f,
 								getScale2f,
-                                getOrientZ)
+                                getOrientZ,
+                                getPosZ)
 
 EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(RenderableObject,
 									getTransform)

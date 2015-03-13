@@ -263,10 +263,12 @@ void DebugBase::processInput(GameInput& input) {
 	//Rendering layers
 	if(input.getTapped(GameInput::BUT_5)) {
 		if(_engine->_guiSystem->adventureLog.isEnabled()) {
-            _engine->_guiSystem->adventureLog.setEnabled(false);
-			printf(VERBOSE, "Disable GUI Layer");
+            //_engine->_guiSystem->adventureLog.setEnabled(false);
+            _engine->_guiSystem->fadeFgLayer(1.0f, false);
+            printf(VERBOSE, "Disable GUI Layer");
 		} else {
-            _engine->_guiSystem->adventureLog.setEnabled(true);
+            //_engine->_guiSystem->adventureLog.setEnabled(true);
+            _engine->_guiSystem->fadeFgLayer(1.0f, true);
 			printf(VERBOSE, "Enable GUI Layer");
 		}
         //GYVector3 disp = { 200.0f, 0.0f, 0.0f };

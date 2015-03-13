@@ -134,8 +134,8 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
         for(unsigned i = 0; i < count; ++i) {
             auto& entry = array[i];
             if(!entry.mapEntry.getIndex() || entry.mapEntry.getPlane() != planeType || entry.layer != getAssets()->getCurrentLayer()) continue;
-            if(normalType == elysian::NORMAL_FLAT) twcen._transform.setPos(entry.x*32.0f+16.0, entry.y*32.0f + entry.mapEntry.getElev()*32.0f+1.0f+8.0f, entry.mapEntry.getElev()*32.0f+1.0f);
-            else twcen._transform.setPos(entry.x*32.0f+16.0, entry.y*32.0f + entry.mapEntry.getElev()*32.0f/*+16.0f*/, entry.mapEntry.getElev()*32.0f-8.0f);
+            if(normalType == elysian::NORMAL_FLAT) twcen._transform.setPos(entry.x*32.0f/*+16.0*/, entry.y*32.0f + entry.mapEntry.getElev()*32.0f+1.0f/*+8.0f*/, entry.mapEntry.getElev()*32.0f+1.0f);
+            else twcen._transform.setPos(entry.x*32.0f/*+16.0*/, entry.y*32.0f + entry.mapEntry.getElev()*32.0f/*+16.0f*/, entry.mapEntry.getElev()*32.0f-8.0f);
 
             switch(_tileDecor) {
 

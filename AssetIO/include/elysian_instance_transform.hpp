@@ -75,9 +75,9 @@ namespace elysian {
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(orientZ, getOrientZ, setOrientZ)
-            ELYSIAN_LUA_PROXY_FIELD(size, getSizeVec, setSizeVec)
-            ELYSIAN_LUA_PROXY_FIELD(scale, getScaleVec, setScaleVec)
-            ELYSIAN_LUA_PROXY_FIELD(pos, getPosVec, setPosVec)
+            ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_BEGIN(pos)
+                ELYSIAN_LUA_PROXY_FIELD(z, getPosZ, setPosZ)
+            ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_END()
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
         InstanceTransform(void):

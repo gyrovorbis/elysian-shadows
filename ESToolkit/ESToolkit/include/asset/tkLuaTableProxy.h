@@ -30,8 +30,8 @@ Q_SIGNALS:
 public:
             TkLuaTableUserdata(void);
     virtual ~TkLuaTableUserdata(void);
-    void    Q_EMITFieldChanged(const QString key) const;
-    void    Q_EMITFieldAdded(const QString key) const;
+    void    emitFieldChanged(const QString key) const;
+    void    emitFieldAdded(const QString key) const;
 
     void    setOrigRef(const int ref);
     int     getOrigRef(void) const;
@@ -69,8 +69,8 @@ Q_SIGNALS:
     void fieldAdded(const QString key);
 
 public:
-    void Q_EMITFieldChanged(const QString key) { Q_EMIT fieldChanged(key); }
-    void Q_EMITFieldAdded(const QString key) { Q_EMIT fieldAdded(key); }
+    void emitFieldChanged(const QString key) { Q_EMIT fieldChanged(key); }
+    void emitFieldAdded(const QString key) { Q_EMIT fieldAdded(key); }
 };
 
 /* Compile-time override engine's LuaTableProxy implementation
@@ -126,8 +126,8 @@ inline void TkLuaTableUserdata::setPropRef(const int ref) { _propRef = ref; }
 inline int TkLuaTableUserdata::getOrigRef(void) const { return _origRef; }
 inline int TkLuaTableUserdata::getPropRef(void) const { return _propRef; }
 inline TkLuaTableUserdata::TkLuaTableUserdata(void): QObject(nullptr) {}
-inline void TkLuaTableUserdata::Q_EMITFieldAdded(const QString key) const { Q_EMIT fieldAdded(key); }
-inline void TkLuaTableUserdata::Q_EMITFieldChanged(const QString key) const { Q_EMIT fieldChanged(key); }
+inline void TkLuaTableUserdata::emitFieldAdded(const QString key) const { Q_EMIT fieldAdded(key); }
+inline void TkLuaTableUserdata::emitFieldChanged(const QString key) const { Q_EMIT fieldChanged(key); }
 
 
 template <typename P, typename T>
@@ -140,7 +140,7 @@ inline void TkLuaTableProxy<P, T>::_callPropertyProxyMethod(const bool write, co
     }
     ParentType::_callPropertyProxyMethod(write, key);
     if(write) {
-        obj->Q_EMITFieldChanged(key);
+        obj->emitFieldChanged(key);
     }
 }
 
