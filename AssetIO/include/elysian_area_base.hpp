@@ -19,7 +19,7 @@
 #define ELYSIAN_AREA_NAME_SIZE		50
 #define ELYSIAN_AREA_STRING_SIZE	50
 #define ELYSIAN_AREA_PATH_SIZE		200
-#define ELYSIAN_AREA_MAP_PATH		"/map.txt"
+#define ELYSIAN_AREA_MAP_PATH		"/map.bin"
 #define ELYSIAN_AREA_ENTITY_PATH	"/entity.txt"
 #define ELYSIAN_AREA_INIT_LUA_PATH	"/area_init.lua"
 #define ELYSIAN_MAP_ENTRY_ELEV_MAX	31
