@@ -17,7 +17,7 @@
 namespace elysian {
 
 Font* MenuText::_fonts[5];
-const float GuiSystem::VictoryText::stateTime[GuiSystem::VictoryText::STATE_MAX];
+constexpr const float GuiSystem::VictoryText::stateTime[GuiSystem::VictoryText::STATE_MAX];
 
 GuiSystem::CombatStatusIndicator::CombatStatusIndicator(void) {
     _healthMeter[0].setColor(80, 50, 25, 150);

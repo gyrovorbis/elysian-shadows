@@ -8,6 +8,7 @@ INCLUDEPATH += ../../include \
 				../../../libGyro/include
 
 DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt
+QMAKE_CFLAGS += -msse -std=c99
 
 SOURCES += \
     ../../src/spine/Animation.c \
