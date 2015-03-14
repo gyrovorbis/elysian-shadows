@@ -113,7 +113,7 @@ void CombatSystem::_processCurrentCombatAction(CollisionContact*const contact, C
         getPartSys()->getAttrib(2)->setColor(GYColor4{ 255, 0, 0, 255});
         pos3.z = target->getEntity()->getElev()*32.0f;
         const float angle = tan(vel.y/vel.x);
-        getPartSys()->Q_EMITFromPoint(2, pos3, angle, contact->getClosingVel()*100.0);
+        getPartSys()->emitFromPoint(2, pos3, angle, contact->getClosingVel()*100.0);
 
     }
 
@@ -168,8 +168,8 @@ void CombatSystem::sendStatusModifier(Combat* const target, CombatStatusModifier
 		//}
 	}
 
-	//Q_EMIT combat text from target
-	_Q_EMITCombatModifierText(target, *modifier);
+    //Emit combat text from target
+    _emitCombatModifierText(target, *modifier);
 
 	//check for particle emission
 	if(_curActionRes.contact && target->getAttrib()->getParticleAttrib()) {
@@ -177,8 +177,8 @@ void CombatSystem::sendStatusModifier(Combat* const target, CombatStatusModifier
 		getPartSys()->setAttrib(2, target->getAttrib()->getParticleAttrib());
 		_curActionRes.contact->getWorldPos(*(GYVector2*)&point);
         point.z = target->getEntity()->_transform._pos.z + 8.0f;
-		//Q_EMIT from POC with registered color and separating vel intensity
-		getPartSys()->Q_EMITFromPoint(2, point, tan(point.y/point.x), 4000);
+        //Emit from POC with registered color and separating vel intensity
+        getPartSys()->emitFromPoint(2, point, tan(point.y/point.x), 4000);
 	}
 
 	//check if dead
@@ -226,8 +226,8 @@ void CombatSystem::update(void) {
 /* Needs to gracefully handle the case where there are multiple modifiers.
  * Queue them so they aren't immediately shit out ontop of each other, looking like dick.
  */
-void CombatSystem::_Q_EMITCombatModifierText(const Combat*const target, const CombatStatus& modifier) {
-	auto Q_EMITIntegerAttrib = [&](const int attrib, const GYColor4 posColor, const GYColor4 negColor) {
+void CombatSystem::_emitCombatModifierText(const Combat*const target, const CombatStatus& modifier) {
+    auto emitIntegerAttrib = [&](const int attrib, const GYColor4 posColor, const GYColor4 negColor) {
 		char buff[20];
 
 		//check if the attribute was modified
@@ -245,14 +245,14 @@ void CombatSystem::_Q_EMITCombatModifierText(const Combat*const target, const Co
 	};
 
     if(target->getTargetType() == Combat::TARGET_PARTY || target->getTargetType() == Combat::TARGET_FRIENDLY) {
-        Q_EMITIntegerAttrib(modifier.getHp(), GYColor4 { 100, 255, 100, 255 }, GYColor4 { 255, 100, 100, 255 });
-        Q_EMITIntegerAttrib(modifier.getMp(), GYColor4 { 100, 100, 255, 255 }, GYColor4 { 200, 100, 50, 255 });
+        emitIntegerAttrib(modifier.getHp(), GYColor4 { 100, 255, 100, 255 }, GYColor4 { 255, 100, 100, 255 });
+        emitIntegerAttrib(modifier.getMp(), GYColor4 { 100, 100, 255, 255 }, GYColor4 { 200, 100, 50, 255 });
     } else {
-        Q_EMITIntegerAttrib(modifier.getHp(), GYColor4 { 100, 255, 100, 255 }, GYColor4 { 255, 255, 255, 255 });
-        Q_EMITIntegerAttrib(modifier.getMp(), GYColor4 { 100, 100, 255, 255 }, GYColor4 { 200, 100, 50, 255 });
+        emitIntegerAttrib(modifier.getHp(), GYColor4 { 100, 255, 100, 255 }, GYColor4 { 255, 255, 255, 255 });
+        emitIntegerAttrib(modifier.getMp(), GYColor4 { 100, 100, 255, 255 }, GYColor4 { 200, 100, 50, 255 });
     }
 
-	//Q_EMIT icons for status ailments!
+    //Emit icons for status ailments!
 }
 
 }

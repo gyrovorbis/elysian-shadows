@@ -829,9 +829,9 @@ OOLUA_PROXY(ParticleEmitter, Component)
 	)
 	OOLUA_MEM_FUNC(void, allocatePool, unsigned)
 	OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<ParticleEmitterAttrib*>)
-	OOLUA_MEM_FUNC(void, Q_EMITFromPoint, const GYVector3&, float, unsigned)
-	OOLUA_MEM_FUNC(void, Q_EMITFromEntity, const GYVector3&, float, unsigned)
-	OOLUA_MEM_FUNC(void, Q_EMITFromPointInDir, const GYVector3&, const GYVector3&, unsigned, float)
+    OOLUA_MEM_FUNC(void, emitFromPoint, const GYVector3&, float, unsigned)
+    OOLUA_MEM_FUNC(void, emitFromEntity, const GYVector3&, float, unsigned)
+    OOLUA_MEM_FUNC(void, emitFromPointInDir, const GYVector3&, const GYVector3&, unsigned, float)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(DialogScreen)
@@ -1156,7 +1156,7 @@ OOLUA_PROXY(ParticleSystem)
 		No_public_constructors,
 		No_public_destructor
 	)
-	OOLUA_MFUNC(Q_EMITFromPoint)
+    OOLUA_MFUNC(emitFromPoint)
 	OOLUA_MFUNC_CONST(getAttrib)
 OOLUA_PROXY_END
 

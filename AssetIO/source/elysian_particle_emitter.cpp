@@ -41,7 +41,7 @@ void Particle::integrate(const float deltaTime) {
 
 }
 
-void ParticleEmitterInternals::Q_EMITFromPointInDir(const GYVector3& pos, const GYVector3& dir, const unsigned intensity, float angle) {
+void ParticleEmitterInternals::emitFromPointInDir(const GYVector3& pos, const GYVector3& dir, const unsigned intensity, float angle) {
 	Particle* part;
 
 	if(_pool.isFull()) return;
@@ -115,7 +115,7 @@ void ParticleEmitterInternals::Q_EMITFromPointInDir(const GYVector3& pos, const 
 
 }
 
-void ParticleEmitterInternals::Q_EMITFromPoint(const GYVector3 &pos, const float angle, const unsigned intensity) {
+void ParticleEmitterInternals::emitFromPoint(const GYVector3 &pos, const float angle, const unsigned intensity) {
 	float relAngle;
 	float sinTheta, cosTheta;
 
@@ -128,7 +128,7 @@ void ParticleEmitterInternals::Q_EMITFromPoint(const GYVector3 &pos, const float
 		cosTheta, sinTheta, -sinTheta
 	};
 
-	Q_EMITFromPointInDir(pos, dir, intensity, 180.0f);
+    emitFromPointInDir(pos, dir, intensity, 180.0f);
 
 }
 
@@ -278,7 +278,7 @@ void ParticleEmitterInternals::renderAtElev(const unsigned char elev) {
 	}
 }
 
-void ParticleEmitter::Q_EMITFromEntity(const GYVector3 &pos, const float angle, const unsigned intensity) {
+void ParticleEmitter::emitFromEntity(const GYVector3 &pos, const float angle, const unsigned intensity) {
     GYVector4 localPos = { pos.x, pos.y, pos.z, 1.0f };
     GYVector4 worldPos;
 
@@ -290,7 +290,7 @@ void ParticleEmitter::Q_EMITFromEntity(const GYVector3 &pos, const float angle, 
     gyMatMultVec(&localPos, &worldPos, 1);
     gyMatPop();
 
-    Q_EMITFromPoint(*(GYVector3*)&worldPos, angle, intensity);
+    emitFromPoint(*(GYVector3*)&worldPos, angle, intensity);
 
 }
 
