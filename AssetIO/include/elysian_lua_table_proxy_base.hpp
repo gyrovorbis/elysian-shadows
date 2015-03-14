@@ -79,9 +79,11 @@ namespace elysian {
             lua_pushvalue(l, lua_upvalueindex(1));
             lua_pushvalue(l, -2);
             lua_gettable(l, -2);
-            assert(!lua_isnil(l, -1));
-            lua_getfield(l, -4, "__ud");
-            _callPropertyProxyMethod(false, nullptr);
+            //assert(!lua_isnil(l, -1));
+            if(!lua_isnil(l, -1)) {
+                lua_getfield(l, -4, "__ud");
+                _callPropertyProxyMethod(false, nullptr);
+            }
             return 1;
         }
 
@@ -106,42 +108,44 @@ namespace elysian {
         inline static int _getNextKey(lua_State* l) {
             if(P::_proxyFieldCount <= 0) return 0;
 
-            char key[ELYSIAN_LUA_PROXY_FIELD_KEY_MAX_SIZE];
-            int parentIndex = lua_tointeger(l, lua_upvalueindex(2)); //-1 means parent is top-level
-            int currentIndex = -1;
-            int nextIndex = -1;
-            int depth = 0;
+            char    key[ELYSIAN_LUA_PROXY_FIELD_KEY_MAX_SIZE];
+            int     parentIndex     = lua_tointeger(l, lua_upvalueindex(2)); //-1 means parent is top-level
+            int     currentIndex    = -1;
+            int     nextIndex       = -1;
+            int     depth           = 0;
 
-            auto findNextIndexAtDepth = [&](const int startIndex, const unsigned startDepth) {
-                int tableDepth = startDepth;
+            auto findNextIndexAtDepth = [&](const int startIndex, const int startDepth, int &currentDepth) {
 
                 for(int i = startIndex+1; i < (int)P::_proxyFieldCount; ++i) {
                     switch(P::_proxyFields[i].flags) {
                     case LuaTableFieldProxy::FLAG_VTABLE_BEGIN:
-                        ++tableDepth;
+                        if(currentDepth == (int)startDepth) {
+                            ++currentDepth;
+                            return i;
+                        }
                         break;
                     case LuaTableFieldProxy::FLAG_VTABLE_END:
-                        if(--tableDepth < (int)startDepth) return -1;
+                        if(--currentDepth < (int)startDepth) return -1;
                         break;
                     case LuaTableFieldProxy::FLAG_NONE:
-                        if(tableDepth == (int)startDepth) return i;
+                        if(currentDepth == (int)startDepth) return i;
                     default: break;
                     }
                 }
                 return -1;
             };
 
-            for(int i = 0; i <= parentIndex; ++i) { //figure out how deep the start index is
+            for(int i = 0; i <= parentIndex; ++i) { //figure out table depth of parent table
                 switch(P::_proxyFields[i].flags) {
                 case LuaTableFieldProxy::FLAG_VTABLE_BEGIN:
                     ++depth;
                     break;
                 case LuaTableFieldProxy::FLAG_VTABLE_END:
                     --depth;
+                case LuaTableFieldProxy::FLAG_NONE:
                 default: break;
                 }
             }
-
 
             if(lua_isstring(l, -1)) {
                 strcpy(key, lua_tostring(l, -1));
@@ -149,13 +153,13 @@ namespace elysian {
 
                 bool found = false;
                 currentIndex = parentIndex;
-                while((currentIndex = findNextIndexAtDepth(currentIndex, depth)) != -1) {
+                int currentDepth = depth;
+                while((currentIndex = findNextIndexAtDepth(currentIndex, depth, currentDepth)) != -1) {
                     if(strcmp(key, P::_proxyFields[currentIndex].key) == 0) {
-                        nextIndex = findNextIndexAtDepth(currentIndex, depth);
+                        nextIndex = findNextIndexAtDepth(currentIndex, depth, currentDepth);
                         found = true;
                         break;
                     }
-                    //++currentIndex;
                 }
 
                 //Never even found the starting key! Must be invalid, and it ain't NIL!
@@ -182,8 +186,9 @@ namespace elysian {
             }
         }
 
-
         static inline int _nextMetaMethodCFunction(lua_State*const l) {
+            const bool isVirtual = (lua_tointeger(l, lua_upvalueindex(2)) != -1);
+
             if(lua_isnil(l, -2)) {
                // qDebug() << "__NEXT called with NIL";
                 lua_pop(l, 2);
@@ -204,6 +209,10 @@ namespace elysian {
                 if(!lua_isnil(l, -1)) {
                   //  qDebug() << "found field!";
                     lua_pushvalue(l, -4);
+                    if(isVirtual) {
+                        lua_getfield(l, -1, "__ud");
+                        lua_remove(l, -2);
+                    }
 
                     LuaManager::_protectedCall(1, 1, nullptr);
 
@@ -231,15 +240,18 @@ namespace elysian {
             lua_pushvalue(l, lua_upvalueindex(1));
             lua_pushcclosure(l, &_indexVirtualTableProxyMetamethod, 1);
             lua_setfield(l, -2, "__index");
-            lua_pushvalue(l, lua_upvalueindex(1));
+            lua_pushvalue(l, lua_upvalueindex(3));
             lua_pushcclosure(l, &_newIndexVirtualTableProxyMetamethod, 1);
             lua_setfield(l, -2, "__newindex");
             lua_pushvalue(l, lua_upvalueindex(1));
             lua_pushvalue(l, lua_upvalueindex(2));
             lua_pushcclosure(l, &_nextMetaMethodCFunction, 2);
             lua_setfield(l, -2, "__next");
+            lua_pushvalue(l, lua_upvalueindex(1));
+            lua_pushvalue(l, lua_upvalueindex(2));
+            lua_pushcclosure(l, &_pairsMetaMethodCFunction, 2);
+            lua_setfield(l, -2, "__pairs");
             //SET ANY OTHER METAMETHODS
-
             lua_setmetatable(l, -2);
 
             return 1;
@@ -252,7 +264,7 @@ namespace elysian {
         static inline void  _registerPropertyMetaMethodTables(lua_State* l) {
             unsigned tableDepth = 0;
             LuaManager::getGlobal(OOLUA::Proxy_class<T>::class_name); //push OOLUA methods table
-
+#if 0
             //LuaManager::rPrintByIndex(-2, 99, OOLUA::Proxy_class<T>::class_name);
 
 			//Register property pairs for index table <K=field, V=getFunc>
@@ -283,20 +295,61 @@ namespace elysian {
                     lua_setfield(l, -2, P::_proxyFields[i].key);
                 }
             }
-            assert(tableDepth == 0);
+            assert(tableDepth == 0); // YOUR SHIT IS MALFORMED, NIGGER. USE MY DSL RIGHT FOR FUCK'S SAKE.
             LuaManager::rPrintByIndex(-1, 99, OOLUA::Proxy_class<T>::class_name);
 			_propertyProxyIndexTable.pull(l);
 
 			//Register property pairs for newIndex table <K=field, V=setFunc>
 			lua_newtable(l);
+
 			for(unsigned i = 0; i < P::_proxyFieldCount; ++i) {
                 if(P::_proxyFields[i].set == nullptr) continue; //read-only attribute!
                // Debug::printf(Debug::VERBOSE, "SET ACCESSOR - <%s, %s>", P::_proxyFields[i].key, P::_proxyFields[i].set);
 				lua_getfield(l, -2, P::_proxyFields[i].set);
 				lua_setfield(l, -2, P::_proxyFields[i].key);
 			}
-			_propertyProxyNewIndexTable.pull(l);
+            _propertyProxyNewIndexTable.pull(l);
+#else
 
+            //Register property pairs for index table <K=field, V=getFunc>
+            lua_newtable(l); //get table
+            lua_newtable(l); //set table
+            //qDebug() << "PROXY FIELD COUNT " << P::_proxyFieldCount;
+
+            for(unsigned i = 0; i < P::_proxyFieldCount; ++i) {
+                if(P::_proxyFields[i].key) qDebug() << "Examining Proxy for" << P::_proxyFields[i].key;
+
+                switch(P::_proxyFields[i].flags) {
+                case LuaTableFieldProxy::FLAG_VTABLE_BEGIN:
+                    lua_newtable(l); //__index metatable for virtual table
+                    lua_newtable(l); //__newindex metatable for virtual table
+                    lua_pushvalue(l, -2);   //upvalue #1, __index for virtual table
+                    lua_pushinteger(l, i);  //upvalue #2, starting index of virtual table properties
+                    lua_pushvalue(l, -3);   //upvalue #3 __newindex for virtual table
+                    lua_pushcclosure(l, &_createVirtualTableProxy, 3);
+                    ++tableDepth;
+                    lua_setfield(l, -3-(tableDepth*2), P::_proxyFields[i].key);
+                    //lua_pushvalue(l, -1);
+                    //lua_setfield(l, -2, "__index"); //set metatable's __index metamethod to itself
+                    break;
+                case LuaTableFieldProxy::FLAG_VTABLE_END:
+                    --tableDepth;
+                    lua_pop(l, 2);
+                    break;
+                default:
+                    lua_getfield(l, -3-(tableDepth*2), P::_proxyFields[i].get); //get field from OOLUA methods table
+                    lua_setfield(l, -3, P::_proxyFields[i].key);
+                    if(P::_proxyFields[i].set) {
+                        lua_getfield(l, -3-(tableDepth*2), P::_proxyFields[i].set); //get field from OOLUA methods table
+                        lua_setfield(l, -2, P::_proxyFields[i].key);
+                    }
+                }
+            }
+            assert(tableDepth == 0); // YOUR SHIT IS MALFORMED, NIGGER. USE MY DSL RIGHT FOR FUCK'S SAKE.
+#endif
+
+            _propertyProxyNewIndexTable.pull(l);
+            _propertyProxyIndexTable.pull(l);
 			lua_pop(l, 1);
 
 		}
@@ -364,12 +417,12 @@ namespace elysian {
 			//1 - Userdata iterator function
 			//2 - Userdata
 			//3 - nil (first key)
-            lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _propertyProxyIndexTable.ref());
-            lua_pushinteger(*_mainState, -1);
+            //lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _propertyProxyIndexTable.ref());
+            lua_pushvalue(*_mainState, lua_upvalueindex(1));
+            lua_pushvalue(*_mainState, lua_upvalueindex(2));
             lua_pushcclosure(l, &_nextMetaMethodCFunction, 2);
 			lua_insert(l, 1);
 			lua_pushnil(l);
-
 			return 3;
 		}
 
@@ -507,7 +560,9 @@ namespace elysian {
             lua_setfield(l, -2, "__newindex");
 
             //Use our __pairs metamethod
-            lua_pushcfunction(l, &_pairsMetaMethodCFunction);
+            lua_rawgeti(l, LUA_REGISTRYINDEX, _propertyProxyIndexTable.ref());
+            lua_pushinteger(l, -1);
+            lua_pushcclosure(l, &_pairsMetaMethodCFunction, 2);
             lua_setfield(l, -2, "__pairs");
 
             lua_pushcfunction(l, &_ipairsMetaMethodCFunction);

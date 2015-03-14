@@ -15,7 +15,7 @@ CXX           = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefau
 DEFINES       = -DGYRO_PLATFORM=GYRO_PLATFORM_Qt
 CFLAGS        = -pipe -g -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -mmacosx-version-min=10.6 -Wall -W $(DEFINES)
 CXXFLAGS      = -pipe -g -fPIC -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -mmacosx-version-min=10.6 -Wall -W $(DEFINES)
-INCPATH       = -I/Users/falcogirgis/Qt/5.3/clang_64/mkspecs/macx-clang -I. -I../../include -I../../../libGyro/include
+INCPATH       = -I/Users/falcogirgis/Qt/5.3/clang_64/mkspecs/macx-clang -I. -I../../include -I../../../libGyro/include -I.
 AR            = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar cq
 RANLIB        = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib -s
 QMAKE         = /Users/falcogirgis/Qt/5.3/clang_64/bin/qmake

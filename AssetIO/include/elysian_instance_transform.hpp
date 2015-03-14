@@ -15,13 +15,18 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(x, getX, setX)
             ELYSIAN_LUA_PROXY_FIELD(y, getY, setY)
         ELYSIAN_LUA_PROXY_FIELDS_END()
+        GYVector2*  _ptr;
 
-                Vector2(void);
-                Vector2(const float x, const float y);
-        float   getX(void) const;
-        float   getY(void) const;
-        void    setX(const float val);
-        void    setY(const float val);
+                    Vector2(void);
+                    Vector2(const float x, const float y);
+                    Vector2(GYVector2*const vec2);
+                    Vector2(const Vector2& other);
+                    ~Vector2(void) = default;
+
+        float       getX(void) const;
+        float       getY(void) const;
+        void        setX(const float val) const;
+        void        setY(const float val) const;
     };
 
     struct Vector3: public GYVector3, public LuaTableProxy<Vector3> {
@@ -31,14 +36,20 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(z, getZ, setZ)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
-                Vector3(void);
-                Vector3(const float x, const float y, const float z);
-        float   getX(void) const;
-        float   getY(void) const;
-        float   getZ(void) const;
-        void    setX(const float val);
-        void    setY(const float val);
-        void    setZ(const float val);
+        GYVector3*  _ptr;
+
+                    Vector3(void);
+                    Vector3(const float x, const float y, const float z);
+                    Vector3(GYVector3*const vec3);
+                    Vector3(const Vector3& other);
+                    ~Vector3(void) = default;
+
+        float       getX(void) const;
+        float       getY(void) const;
+        float       getZ(void) const;
+        void        setX(const float val) const;
+        void        setY(const float val) const;
+        void        setZ(const float val) const;
     };
 
     struct Vector4: public GYVector4, public LuaTableProxy<Vector4> {
@@ -49,16 +60,22 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(w, getW, setW)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
-                Vector4(void);
-                Vector4(const float x, const float y, const float z, const float w);
-        float   getX(void) const;
-        float   getY(void) const;
-        float   getZ(void) const;
-        float   getW(void) const;
-        void    setX(const float val);
-        void    setY(const float val);
-        void    setZ(const float val);
-        void    setW(const float val);
+        GYVector4*  _ptr;
+
+                    Vector4(void);
+                    Vector4(const float x, const float y, const float z, const float w);
+                    Vector4(GYVector4*const vec4);
+                    Vector4(const Vector4& other);
+                    ~Vector4(void) = default;
+
+        float       getX(void) const;
+        float       getY(void) const;
+        float       getZ(void) const;
+        float       getW(void) const;
+        void        setX(const float val) const;
+        void        setY(const float val) const;
+        void        setZ(const float val) const;
+        void        setW(const float val) const;
     };
 
 
@@ -76,8 +93,21 @@ namespace elysian {
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(orientZ, getOrientZ, setOrientZ)
             ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_BEGIN(pos)
+                ELYSIAN_LUA_PROXY_FIELD(x, getPosX, setPosX)
+                ELYSIAN_LUA_PROXY_FIELD(y, getPosY, setPosY)
                 ELYSIAN_LUA_PROXY_FIELD(z, getPosZ, setPosZ)
             ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_END()
+            ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_BEGIN(size)
+                ELYSIAN_LUA_PROXY_FIELD(x, getSizeX, setSizeX)
+                ELYSIAN_LUA_PROXY_FIELD(y, getSizeY, setSizeY)
+                ELYSIAN_LUA_PROXY_FIELD(z, getSizeZ, setSizeZ)
+            ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_END()
+            ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_BEGIN(scale)
+                ELYSIAN_LUA_PROXY_FIELD(x, getScaleX, setScaleX)
+                ELYSIAN_LUA_PROXY_FIELD(y, getScaleY, setScaleY)
+                ELYSIAN_LUA_PROXY_FIELD(z, getScaleZ, setScaleZ)
+            ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_END()
+
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
         InstanceTransform(void):
@@ -108,8 +138,27 @@ namespace elysian {
 		void getPos(float& x, float& y, float& z) const { x = _pos.x; y = _pos.y; z = _pos.z; }
 		void getPos(GYVector3& pos) const { pos.x = _pos.x; pos.y = _pos.y; pos.z = _pos.z; }
 		void getPos(GYVector2& pos) const { pos.x = _pos.x; pos.y = _pos.y; }
+
 		void setPosZ(const float z) { _pos.z = z; }
 		float getPosZ(void) const { return _pos.z; }
+        void setPosX(const float x) { _pos.x = x; }
+        float getPosX(void) const { return _pos.x; }
+        void setPosY(const float y) { _pos.y = y; }
+        float getPosY(void) const { return _pos.y; }
+
+        void setSizeZ(const float z) { _size.z = z; }
+        float getSizeZ(void) const { return _size.z; }
+        void setSizeX(const float x) { _size.x = x; }
+        float getSizeX(void) const { return _size.x; }
+        void setSizeY(const float y) { _size.y = y; }
+        float getSizeY(void) const { return _size.y; }
+
+        void setScaleZ(const float z) { _scale.z = z; }
+        float getScaleZ(void) const { return _scale.z; }
+        void setScaleX(const float x) { _scale.x = x; }
+        float getScaleX(void) const { return _scale.x; }
+        void setScaleY(const float y) { _scale.y = y; }
+        float getScaleY(void) const { return _scale.y; }
 
         void setSize(const float x, const float y, const float z) { _size.x = x; _size.y = y; _size.z = z; }
 		void setSize(const float x, const float y) { _size.x = x; _size.y = y; }
@@ -161,32 +210,60 @@ namespace elysian {
     // ====== INLINEZ ======
 
     //Vector2
-    inline Vector2::Vector2(void): GYVector2({0.0f, 0.0f}) {}
-    inline Vector2::Vector2(const float x, const float y): GYVector2({x, y}){}
-    inline float Vector2::getX(void) const { return x; }
-    inline float Vector2::getY(void) const { return y; }
-    inline void Vector2::setX(const float val) { x = val; }
-    inline void Vector2::setY(const float val) { y = val; }
+    inline Vector2::Vector2(void): Vector2(0.0f, 0.0f) {}
+    inline Vector2::Vector2(const float x, const float y): GYVector2({x, y}), _ptr(this) {}
+    inline Vector2::Vector2(GYVector2 * const vec2): _ptr(vec2) {}
+    inline Vector2::Vector2(const Vector2 &other) {
+        if(other._ptr != &other) {
+            _ptr = other._ptr;
+        } else {
+            *(GYVector2*)this = *(const GYVector2*)&other;
+            _ptr = this;
+        }
+    }
+    inline float Vector2::getX(void) const { return _ptr->x; }
+    inline float Vector2::getY(void) const { return _ptr->y; }
+    inline void Vector2::setX(const float val) const { _ptr->x = val; }
+    inline void Vector2::setY(const float val) const { _ptr->y = val; }
 
-    inline Vector3::Vector3(void): GYVector3({0.0f, 0.0f, 0.0f}) {}
-    inline Vector3::Vector3(const float x, const float y, const float z): GYVector3({x, y, z}){}
-    inline float Vector3::getX(void) const { return x; }
-    inline float Vector3::getY(void) const { return y; }
-    inline float Vector3::getZ(void) const { return z; }
-    inline void Vector3::setX(const float val) { x = val; }
-    inline void Vector3::setY(const float val) { y = val; }
-    inline void Vector3::setZ(const float val) { z = val; }
+    inline Vector3::Vector3(void): Vector3(0.0f, 0.0f, 0.0f) {}
+    inline Vector3::Vector3(const float x, const float y, const float z): GYVector3({x, y, z}), _ptr(this) {}
+    inline Vector3::Vector3(const Vector3 &other) {
+        if(other._ptr != &other) {
+            _ptr = other._ptr;
+        } else {
+            *(GYVector3*)this = *(const GYVector3*)&other;
+            _ptr = this;
+        }
+    }
+    inline Vector3::Vector3(GYVector3 * const vec3): _ptr(vec3) {}
 
-    inline Vector4::Vector4(void): GYVector4({0.0f, 0.0f, 0.0f, 0.0f}) {}
-    inline Vector4::Vector4(const float x, const float y, const float z, const float w): GYVector4({x, y, z, w}){}
-    inline float Vector4::getX(void) const { return x; }
-    inline float Vector4::getY(void) const { return y; }
-    inline float Vector4::getZ(void) const { return z; }
-    inline float Vector4::getW(void) const { return w; }
-    inline void Vector4::setX(const float val) { x = val; }
-    inline void Vector4::setY(const float val) { y = val; }
-    inline void Vector4::setZ(const float val) { z = val; }
-    inline void Vector4::setW(const float val) { w = val; }
+    inline float Vector3::getX(void) const { return _ptr->x; }
+    inline float Vector3::getY(void) const { return _ptr->y; }
+    inline float Vector3::getZ(void) const { return _ptr->z; }
+    inline void Vector3::setX(const float val) const { _ptr->x = val; }
+    inline void Vector3::setY(const float val) const { _ptr->y = val; }
+    inline void Vector3::setZ(const float val) const { _ptr->z = val; }
+
+    inline Vector4::Vector4(void): Vector4(0.0f, 0.0f, 0.0f, 0.0f) {}
+    inline Vector4::Vector4(const float x, const float y, const float z, const float w): GYVector4({x, y, z, w}), _ptr(this){}
+    inline Vector4::Vector4(const Vector4 &other) {
+        if(other._ptr != &other) {
+            _ptr = other._ptr;
+        } else {
+            *(GYVector4*)this = *(const GYVector4*)&other;
+            _ptr = this;
+        }
+    }
+    inline Vector4::Vector4(GYVector4 * const vec4): _ptr(vec4) {}
+    inline float Vector4::getX(void) const { return _ptr->x; }
+    inline float Vector4::getY(void) const { return _ptr->y; }
+    inline float Vector4::getZ(void) const { return _ptr->z; }
+    inline float Vector4::getW(void) const { return _ptr->w; }
+    inline void Vector4::setX(const float val) const { _ptr->x = val; }
+    inline void Vector4::setY(const float val) const { _ptr->y = val; }
+    inline void Vector4::setZ(const float val) const { _ptr->z = val; }
+    inline void Vector4::setW(const float val) const { _ptr->w = val; }
 
     inline GYVector3& InstanceTransform::getPosVec(void) { return _pos; }
     //inline GYVector3& InstanceTransform::getSizeVec(void) { return _size; }

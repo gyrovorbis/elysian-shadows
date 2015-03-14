@@ -131,9 +131,10 @@ public:
         LuaManager::_stackBalanceBegin();
         if((metatable = getMetatable(-1))) {
             int metaRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
-            auto* label = new QStandardItem("__metatable");
+            (void)metaRef;
+           /* auto* label = new QStandardItem("__metatable");
             auto* valueItem = new LuaTableItem(metaRef, label);
-            stackModel->addRow(label, valueItem);
+            stackModel->addRow(label, valueItem);*/
         }
         LuaManager::_stackBalanceEnd();
         //LuaManager::_cStackDump();

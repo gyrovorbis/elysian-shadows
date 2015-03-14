@@ -31,7 +31,7 @@ void CombatSystem::onCollisionEnter(Collidable*const bodyA, Collidable*const bod
     Debug::printf(Debug::VERBOSE, "B POSTFLAGS %d", bodyB->getContactEventMonitorMask());
 }
 
-void CombatSystem::onCollide(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) {
+void CombatSystem::onCollide(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* /*contact*/) {
 	auto* combatA = bodyA->getEntity()->getCombat();
 	if(!(combatA->getCollisionFlags() & Combat::ON_COLLIDE) || !combatA->getDmgActive()) return;
 	auto* combatB = bodyB->getEntity()->getCombat();

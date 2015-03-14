@@ -730,6 +730,7 @@ Combat *EntityBase::addCombat(void) {
 
 Skeleton* EntityBase::addSkeleton(void) {
     //return _addComponent<Skeleton>(_renderable);
+    return nullptr;
 }
 
 template<typename T>

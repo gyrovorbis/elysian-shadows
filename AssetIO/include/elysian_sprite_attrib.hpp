@@ -2,11 +2,16 @@
 #define ELYSIAN_SPRITE_ATTRIB_HPP
 
 #include "elysian_prim_attrib.hpp"
-#include <gyro.h>
+#include "elysian_lua_table_proxy.hpp"
+#include "elysian_color.hpp"
+#include <gyro_video_api.h>
 
 namespace elysian {
 
-	class SpriteAttrib: public PrimAttrib {
+    class SpriteAttrib:
+            public PrimAttrib,
+            public LuaTableProxy<SpriteAttrib>
+    {
 		friend class Renderable;
 	protected:
         GYTexCoord2	_texCoords[4];
@@ -16,6 +21,13 @@ namespace elysian {
 		int			_frame			= 0;
 		GYColor4	_color			= {255, 255, 255, 255};
 	public:
+
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+            ELYSIAN_LUA_PROXY_FIELD(frame, getFrame, setFrame)
+            ELYSIAN_LUA_PROXY_FIELD(texture, getTexPath)
+            ELYSIAN_LUA_PROXY_FIELD(color, getColor4)
+        ELYSIAN_LUA_PROXY_FIELDS_END()
+
 		//Not super efficient, but since each rect needs its own color, header must be resubmitted...
 		virtual void submit(void) override {
 
@@ -26,6 +38,15 @@ namespace elysian {
 		}
 
 		inline GYTexture* getTexture(void) const { return _tex; }
+
+        inline unsigned char getColorR(void) const { return _color.r; }
+        inline unsigned char getColorG(void) const { return _color.g; }
+        inline unsigned char getColorB(void) const { return _color.b; }
+        inline unsigned char getColorA(void) const { return _color.a; }
+        inline void setColorR(const unsigned char r) { _color.r = r; }
+        inline void setColorG(const unsigned char g) { _color.g = g; }
+        inline void setColorB(const unsigned char b) { _color.b = b; }
+        inline void setColorA(const unsigned char a) { _color.a = a; }
 
 		virtual ~SpriteAttrib(void) {
 
@@ -64,6 +85,8 @@ namespace elysian {
 		inline void getTexCoord(const unsigned index, float &u, float &v) {
 			u = _texCoords[index].u; v = _texCoords[index].v;
         }
+
+        Color4 getColor4(void) { return Color4(&_color); }
 
 		void setColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a) { _color.r = r; _color.g = g; _color.b = b; _color.a = a; }
 		void setColor(const GYColor4& color) { _color = color; }

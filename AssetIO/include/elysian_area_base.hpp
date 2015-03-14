@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_AREA_BASE_HPP
 #define ELYSIAN_AREA_BASE_HPP
 
-#include "glal/gyro_glal.h"
+#include <glal/gyro_glal.h>
 #include <gyro_video_api.h>
 #include <vector>
 #include <stdint.h>

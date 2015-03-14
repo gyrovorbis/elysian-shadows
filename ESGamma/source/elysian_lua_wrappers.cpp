@@ -11,15 +11,26 @@ namespace elysian {
         OOLUA::register_class<GYVector2>(*_mainState);
         OOLUA::register_class<GYVector3>(*_mainState);
         OOLUA::register_class<GYVector4>(*_mainState);
+        OOLUA::register_class<Vector2>(*_mainState);
+        Vector2::registerProxyMetaTable(*_mainState);
+        OOLUA::register_class<Vector3>(*_mainState);
+        Vector3::registerProxyMetaTable(*_mainState);
+        OOLUA::register_class<Vector4>(*_mainState);
+        Vector4::registerProxyMetaTable(*_mainState);
         _mainState->register_class<GYColor4>();
+        _mainState->register_class<Color4>();
+        Color4::registerProxyMetaTable(*_mainState);
 		OOLUA::register_class<LuaEventCallback>(*_mainState);
 		_mainState->register_class<InstanceTransform>();
         InstanceTransform::registerProxyMetaTable(*_mainState);
 		OOLUA::register_class<Entity>(*_mainState);
 		EntityBase::registerProxyMetaTable(*_mainState);
-		OOLUA::register_class<QuadSpriteAttrib>(*_mainState);
+        _mainState->register_class<SpriteAttrib>();
+        SpriteAttrib::registerProxyMetaTable(*_mainState);
+        _mainState->register_class<QuadSpriteAttrib>();
 		_mainState->register_class<Component>();
 		_mainState->register_class<Material>();
+        Material::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<Renderable>();
         Renderable::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<AnimationSequence>();
@@ -28,6 +39,7 @@ namespace elysian {
 		_mainState->register_class<ChildAnimationAttrib>();
 		_mainState->register_class<ChildAnimation>();
         _mainState->register_class<LightAttrib>();
+        LightAttrib::registerProxyMetaTable(*_mainState);
         _mainState->register_class<Animation>();
         Animation::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<CollisionFlags>();
@@ -69,6 +81,7 @@ namespace elysian {
 		_mainState->register_class<GYWav>();
 		_mainState->register_class<AudioSource>();
 		_mainState->register_class<LightSource>();
+        LightSource::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<RigidBodyAttrib>();
 		_mainState->register_class<ForceTarget>();
 		_mainState->register_class<RigidBody>();
@@ -145,19 +158,30 @@ OOLUA_EXPORT_FUNCTIONS_CONST(LuaBehaviorScriptAttrib)
 OOLUA_EXPORT_FUNCTIONS(GYVector2, setX, setY)
 OOLUA_EXPORT_FUNCTIONS_CONST(GYVector2, getX, getY)
 
+OOLUA_EXPORT_FUNCTIONS(Vector2)
+OOLUA_EXPORT_FUNCTIONS_CONST(Vector2, getX, getY, setX, setY)
+
 //OOLUA_EXPORT_FUNCTIONS(GYVector3)
 //OOLUA_EXPORT_FUNCTIONS_CONST(GYVector3)
 OOLUA_EXPORT_FUNCTIONS(GYVector3, setX, setY, setZ)
 OOLUA_EXPORT_FUNCTIONS_CONST(GYVector3, getX, getY, getZ)
+
+OOLUA_EXPORT_FUNCTIONS(Vector3)
+OOLUA_EXPORT_FUNCTIONS_CONST(Vector3, getX, getY, getZ, setX, setY, setZ)
 
 //OOLUA_EXPORT_FUNCTIONS(GYVector4)
 //OOLUA_EXPORT_FUNCTIONS_CONST(GYVector4)
 OOLUA_EXPORT_FUNCTIONS(GYVector4, setX, setY, setZ, setW)
 OOLUA_EXPORT_FUNCTIONS_CONST(GYVector4, getX, getY, getZ, getW)
 
+OOLUA_EXPORT_FUNCTIONS(Vector4)
+OOLUA_EXPORT_FUNCTIONS_CONST(Vector4, getX, getY, getZ, getW, setX, setY, setZ, setW)
 
 OOLUA_EXPORT_FUNCTIONS(GYColor4, setA, setR, setG, setB)
 OOLUA_EXPORT_FUNCTIONS_CONST(GYColor4, getA, getR, getG, getB)
+
+OOLUA_EXPORT_FUNCTIONS(Color4)
+OOLUA_EXPORT_FUNCTIONS_CONST(Color4, getA, getR, getG, getB, setA, setR, setG, setB)
 
 OOLUA_EXPORT_FUNCTIONS(EventMonitor)
 OOLUA_EXPORT_FUNCTIONS_CONST(EventMonitor)
@@ -187,7 +211,15 @@ OOLUA_EXPORT_FUNCTIONS(InstanceTransform,
 									rotate,
                                     scale2f,
                                     getPosVec,
-                                    setPosZ)
+                                    setPosZ,
+                                    setPosY,
+                                    setPosX,
+                                    setSizeX,
+                                    setSizeY,
+                                    setSizeZ,
+                                    setScaleX,
+                                    setScaleY,
+                                    setScaleZ)
 OOLUA_EXPORT_FUNCTIONS_CONST(InstanceTransform,
 								apply,
 								getPos2f,
@@ -195,7 +227,15 @@ OOLUA_EXPORT_FUNCTIONS_CONST(InstanceTransform,
 								getSize2f,
 								getScale2f,
                                 getOrientZ,
-                                getPosZ)
+                                getPosZ,
+                                getPosY,
+                                getPosX,
+                                getSizeX,
+                                getSizeY,
+                                getSizeZ,
+                                getScaleX,
+                                getScaleY,
+                                getScaleZ)
 
 EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(RenderableObject,
 									getTransform)
@@ -280,16 +320,27 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(PrimAttrib)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(PrimAttrib)
 
-EXPORT_OOLUA_FUNCTIONS_6_NON_CONST(SpriteAttrib,
+OOLUA_EXPORT_FUNCTIONS(SpriteAttrib,
 								   setFrame,
 								   setColor,
 								   setAlpha,
 								   loadTexture,
 								   loadSheet,
-								   setTexCoord)
-EXPORT_OOLUA_FUNCTIONS_2_CONST(SpriteAttrib,
+                                   setTexCoord,
+                                   setColorR,
+                                   setColorG,
+                                   setColorB,
+                                   setColorA,
+                                    getColor4)
+OOLUA_EXPORT_FUNCTIONS_CONST(SpriteAttrib,
 							   getColor,
-							   getAlpha)
+                               getAlpha,
+                                getTexPath,
+                             getColorR,
+                             getColorG,
+                             getColorB,
+                             getColorA,
+                             getFrame)
 
 EXPORT_OOLUA_FUNCTIONS_1_CONST(QuadSpriteAttrib,
 							   getVertexColor)
@@ -302,14 +353,17 @@ OOLUA_EXPORT_FUNCTIONS(Material,
 					   setAmbientColor,
 					   setDiffuseColor,
 					   setSpecularColor,
-					   setEmissiveColor)
+                       setEmissiveColor,
+                       getAmbient,
+                       getDiffuse,
+                       getEmissive,
+                       getSpecular)
 OOLUA_EXPORT_FUNCTIONS_CONST(Material,
                              getAmbientColor,
                              getDiffuseColor,
                              getSpecularColor,
                              getEmissiveColor,
                              getShininess)
-
 OOLUA_EXPORT_FUNCTIONS(Renderable,
 					   setFrame,
 					   setOffset,
@@ -317,13 +371,17 @@ OOLUA_EXPORT_FUNCTIONS(Renderable,
 					   loadNormalMap,
 					   loadSpecularMap,
                        setMaterial,
-                       setTexCoord)
+                       setTexCoord,
+                       setTexOrient,
+                       getOffset)
 OOLUA_EXPORT_FUNCTIONS_CONST(Renderable,
 						   getFrame,
-						   getOffset,
 						   getSpriteAttrib,
 						   getQuadSpriteAttrib,
-						   getMaterial)
+                           getMaterial,
+                             getNormalMapPath,
+                             getSpecularMapPath,
+                             getTexOrient)
 
 EXPORT_OOLUA_FUNCTIONS_3_NON_CONST(AnimationSequence,
                                    addFrame,
@@ -521,7 +579,11 @@ OOLUA_EXPORT_FUNCTIONS(LightAttrib,
 					   setDiffuseColor,
 					   setSpecularColor,
 					   setAttenuationFactors,
-					   setSpotExponent)
+                       setSpotExponent,
+                       getAmbient,
+                       getDiffuse,
+                       getSpecular,
+                       getAttenuation)
 OOLUA_EXPORT_FUNCTIONS_CONST(LightAttrib,
                              getAmbientColor,
                              getDiffuseColor,
@@ -536,7 +598,8 @@ OOLUA_EXPORT_FUNCTIONS(LightSource,
 					   setAttrib,
 					   getAttrib,
                        setShadowCaster,
-                       setRelativePos)
+                       setRelativePos,
+                       getRelPos)
 OOLUA_EXPORT_FUNCTIONS_CONST(LightSource,
                              getDirection,
                              getSpotCutoffAngle,

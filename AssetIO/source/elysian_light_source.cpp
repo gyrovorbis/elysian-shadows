@@ -7,6 +7,7 @@
 
 namespace elysian {
 
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(LightAttrib)
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(LightSource)
 
 LightSource::~LightSource(void) {

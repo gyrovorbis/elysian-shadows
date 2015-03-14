@@ -9,10 +9,6 @@
 #define TK_LUA_TABLE_PROPERTY_TABLE_FIELD_KEY   "__prop"
 
 
-/*
- * Had to move QObject signal/slot functionality to a separate class,
- * because Qt's MOC reests on class templates...
- */
 class TkLuaTableUserdata: public QObject {
     Q_OBJECT
 

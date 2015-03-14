@@ -19,23 +19,6 @@
 #define ELYSIAN_LUA_MANAGER_SERIALIZE_SCRIPT_PATH       "/assets/scripts/utils/serialize.lua"
 
 namespace elysian {
-
-//1) rearchitect to support threads gracefully
-//2) figure out why shit's reesting with coroutines
-
-/*
-	//Architecture
-	//LuaThread encapsulating state and offering all debug functionality
-	//Managers can retrieve main state
-	class LuaThread: public LuaManager {
-		OOLUA::Script* _state = nullptr;
-
-
-
-
-
-
-	};*/
 	
     class LuaManagerBase {
     protected:
@@ -47,13 +30,14 @@ namespace elysian {
         static int _stackBalanceRecursiveDepth;
 #endif
 		static const char _rPrint[];
-        static const char _serializeTable[];
+        //static const char _serializeTable[];
         static int _traceBackDbgPushes;
 
 		static void _errorprintf(const char *const string, ...);
 		static void _registerWrappers(void);
 
-		//==== TEMPLATE INTERNALS ====
+        //================== TEMPLATE INTERNALS =====================
+
 		template<class Type>
 		static void __pushArg(Type& arg) {
 			OOLUA::push(*_mainState, arg);
@@ -92,7 +76,7 @@ namespace elysian {
 			}
 		};
 
-		//==== /TEMPLATE INTERNALS ====
+        //============== /TEMPLATE INTERNALS ==================
 
 	
 	protected:

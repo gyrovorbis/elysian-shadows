@@ -33,8 +33,12 @@ namespace elysian {
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
 			ELYSIAN_LUA_PROXY_FIELD(frame, getFrame, setFrame)
-            //ELYSIAN_LUA_PROXY_FIELD(offset, getOffset, setOffset)
             ELYSIAN_LUA_PROXY_FIELD(texOrient, getTexOrient, setTexOrient)
+            ELYSIAN_LUA_PROXY_FIELD(spriteAttrib, getSpriteAttrib)
+            ELYSIAN_LUA_PROXY_FIELD(normalMap, getNormalMapPath)
+            ELYSIAN_LUA_PROXY_FIELD(specularMap, getSpecularMapPath)
+            ELYSIAN_LUA_PROXY_FIELD(material, getMaterial)
+            ELYSIAN_LUA_PROXY_FIELD(offset, getOffset)
 		ELYSIAN_LUA_PROXY_FIELDS_END()
 
         virtual bool        canAddTo(Entity& /*entity*/);
@@ -54,8 +58,9 @@ namespace elysian {
         void				setFrame(const unsigned fr);
         void				setOffset(const GYVector2 &offset);
         void				getOffset(GYVector2 &offset) const;
+        Vector2             getOffset(void);
         void				setTexOrient(const GY_RECT_TEX_ORIENT texOrient);
-        GY_RECT_TEX_ORIENT	getTexOrient(void) const;
+        int             	getTexOrient(void) const;
 
         SpriteAttrib*       getSpriteAttrib(void) const;
         QuadSpriteAttrib*   getQuadSpriteAttrib(void) const;
@@ -67,6 +72,9 @@ namespace elysian {
         void                loadNormalMap(const char*const path, const unsigned /*width*/, const unsigned /*height*/);
         void                loadSpecularMap(const char*const path, const unsigned /*width*/, const unsigned /*height*/);
         void                setTexCoord(const unsigned index, const float u, const float v);
+
+        const char*         getNormalMapPath(void) const;
+        const char*         getSpecularMapPath(void) const;
 		
 	};
 
@@ -87,12 +95,13 @@ namespace elysian {
     inline void	Renderable::setOffset(const GYVector2 &offset) { _offset = offset; }
     inline void	Renderable::getOffset(GYVector2 &offset) const { offset = _offset; }
     inline void	Renderable::setTexOrient(const GY_RECT_TEX_ORIENT texOrient) { _texOrient = texOrient; }
-    inline GY_RECT_TEX_ORIENT Renderable::getTexOrient(void) const { return _texOrient; }
+    inline int Renderable::getTexOrient(void) const { return _texOrient; }
     inline SpriteAttrib* Renderable::getSpriteAttrib(void) const { return _spriteAttrib; }
     inline QuadSpriteAttrib* Renderable::getQuadSpriteAttrib(void) const { return static_cast<QuadSpriteAttrib*>(_spriteAttrib); }
     inline void Renderable::setSpriteAttrib(SpriteAttrib *const attrib) { _spriteAttrib = attrib; if(attrib && _frame != -1) _frame = attrib->_frame; }
     inline void Renderable::setMaterial(Material*const material) { _material = material; }
     inline Material* Renderable::getMaterial(void) const { return _material;}
+    inline Vector2 Renderable::getOffset(void) { return Vector2(&_offset); }
 
     inline void Renderable::loadNormalMap(const char*const path, const unsigned /*width*/, const unsigned /*height*/) {
         if(_normalMap) gyVidTexDestroy(_normalMap);
@@ -107,7 +116,13 @@ namespace elysian {
         _texCoord[index].u = u; _texCoord[index].v = v;
     }
 
+    inline const char* Renderable::getNormalMapPath(void) const {
+        return _normalMap ? _normalMap->filename : "none";
+    }
 
+    inline const char* Renderable::getSpecularMapPath(void) const {
+        return _specularMap ? _specularMap->filename : "none";
+    }
 
 
 

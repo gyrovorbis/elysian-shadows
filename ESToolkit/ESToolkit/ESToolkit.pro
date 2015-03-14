@@ -158,7 +158,10 @@ SOURCES += source/asset/project.cpp \
     ../../ESGamma/source/elysian_lua_manager_base.cpp \
     source/estk/tkLuaManager.cpp \
     ../../AssetIO/source/elysian_skeleton.cpp \
-    ../../ESGamma/source/elysian_skeleton_system.cpp
+    ../../ESGamma/source/elysian_skeleton_system.cpp \
+    ../../AssetIO/source/elysian_sprite_attrib.cpp \
+    ../../AssetIO/source/elysian_color.cpp \
+    ../../AssetIO/source/elysian_material.cpp
 
 HEADERS += include/asset/project.h \
     include/asset/assets.h \
@@ -315,7 +318,8 @@ HEADERS += include/asset/project.h \
     ../../ESGamma/include/elysian_lua_manager.hpp \
     include/estk/tkLuaManager.h \
     ../../AssetIO/include/elysian_skeleton.hpp \
-    ../../ESGamma/include/elysian_skeleton_system.hpp
+    ../../ESGamma/include/elysian_skeleton_system.hpp \
+    ../../AssetIO/include/elysian_color.hpp
 
 FORMS += form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \

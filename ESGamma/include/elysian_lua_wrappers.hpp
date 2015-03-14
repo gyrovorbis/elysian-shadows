@@ -67,6 +67,7 @@ namespace OOLUA
     typedef elysian::Vector2                    Vector2;
     typedef elysian::Vector3                    Vector3;
     typedef elysian::Vector4                    Vector4;
+    typedef elysian::Color4                     Color4;
 	typedef elysian::InstanceTransform			InstanceTransform;
 	typedef elysian::RenderableObject			RenderableObject;
 	typedef elysian::Component					Component;
@@ -178,54 +179,75 @@ OOLUA_PROXY(GYVector2)
     OOLUA_MGET_MSET(x, getX, setX)
     OOLUA_MGET_MSET(y, getY, setY)
 OOLUA_PROXY_END
-/*
-OOLUA_PROXY(Vector2, GYVector2)
 
-
+OOLUA_PROXY(Vector2)
+    OOLUA_CTORS(
+        OOLUA_CTOR(const float, const float)
+    )
     OOLUA_MEM_FUNC_CONST(float, getX)
     OOLUA_MEM_FUNC_CONST(float, getY)
-    OOLUA_MEM_FUNC(void, setX, float)
-    OOLUA_MEM_FUNC(void, setY, float)
-OOLUA_PROXY_END*/
+    OOLUA_MEM_FUNC_CONST(void, setX, float)
+    OOLUA_MEM_FUNC_CONST(void, setY, float)
+OOLUA_PROXY_END
 
 OOLUA_PROXY(GYVector3)
     OOLUA_MGET_MSET(x, getX, setX)
     OOLUA_MGET_MSET(y, getY, setY)
     OOLUA_MGET_MSET(z, getZ, setZ)
 OOLUA_PROXY_END
-/*
-OOLUA_PROXY(Vector3, GYVector3)
+
+OOLUA_PROXY(Vector3)
+    OOLUA_CTORS(
+        OOLUA_CTOR(const float, const float, const float)
+    )
     OOLUA_MEM_FUNC_CONST(float, getX)
     OOLUA_MEM_FUNC_CONST(float, getY)
     OOLUA_MEM_FUNC_CONST(float, getZ)
-    OOLUA_MEM_FUNC(void, setX, float)
-    OOLUA_MEM_FUNC(void, setY, float)
-    OOLUA_MEM_FUNC(void, setZ, float)
+    OOLUA_MEM_FUNC_CONST(void, setX, float)
+    OOLUA_MEM_FUNC_CONST(void, setY, float)
+    OOLUA_MEM_FUNC_CONST(void, setZ, float)
 OOLUA_PROXY_END
-*/
+
 OOLUA_PROXY(GYVector4)
     OOLUA_MGET_MSET(x, getX, setX)
     OOLUA_MGET_MSET(y, getY, setY)
     OOLUA_MGET_MSET(z, getZ, setZ)
     OOLUA_MGET_MSET(w, getW, setW)
 OOLUA_PROXY_END
-/*
-OOLUA_PROXY(Vector4, GYVector4)
+
+OOLUA_PROXY(Vector4)
+    OOLUA_CTORS(
+        OOLUA_CTOR(const float, const float, const float, const float)
+    )
     OOLUA_MEM_FUNC_CONST(float, getX)
     OOLUA_MEM_FUNC_CONST(float, getY)
     OOLUA_MEM_FUNC_CONST(float, getZ)
     OOLUA_MEM_FUNC_CONST(float, getW)
-    OOLUA_MEM_FUNC(void, setX, float)
-    OOLUA_MEM_FUNC(void, setY, float)
-    OOLUA_MEM_FUNC(void, setZ, float)
-    OOLUA_MEM_FUNC(void, setW, float)
-OOLUA_PROXY_END*/
+    OOLUA_MEM_FUNC_CONST(void, setX, float)
+    OOLUA_MEM_FUNC_CONST(void, setY, float)
+    OOLUA_MEM_FUNC_CONST(void, setZ, float)
+    OOLUA_MEM_FUNC_CONST(void, setW, float)
+OOLUA_PROXY_END
 
 OOLUA_PROXY(GYColor4)
 	OOLUA_MGET_MSET(a, getA, setA)
 	OOLUA_MGET_MSET(r, getR, setR)
 	OOLUA_MGET_MSET(g, getG, setG)
 	OOLUA_MGET_MSET(b, getB, setB)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(Color4)
+    OOLUA_CTORS(
+        OOLUA_CTOR(const unsigned char, const unsigned char, const unsigned char, const unsigned char)
+    )
+    OOLUA_MEM_FUNC_CONST(unsigned char, getR)
+    OOLUA_MEM_FUNC_CONST(unsigned char, getG)
+    OOLUA_MEM_FUNC_CONST(unsigned char, getB)
+    OOLUA_MEM_FUNC_CONST(unsigned char, getA)
+    OOLUA_MEM_FUNC_CONST(void, setR, const unsigned char)
+    OOLUA_MEM_FUNC_CONST(void, setG, const unsigned char)
+    OOLUA_MEM_FUNC_CONST(void, setB, const unsigned char)
+    OOLUA_MEM_FUNC_CONST(void, setA, const unsigned char)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(GYWav)
@@ -291,7 +313,23 @@ OOLUA_PROXY(InstanceTransform)
     OOLUA_MEM_FUNC(void, setPosVec, const OOLUA::Lua_table_ref)
     OOLUA_MEM_FUNC_CONST(float, getPosZ)
     OOLUA_MEM_FUNC(void, setPosZ, const float)
-OOLUA_PROXY_END
+    OOLUA_MEM_FUNC_CONST(float, getPosX)
+    OOLUA_MEM_FUNC(void, setPosX, const float)
+    OOLUA_MEM_FUNC_CONST(float, getPosY)
+    OOLUA_MEM_FUNC(void, setPosY, const float)
+    OOLUA_MEM_FUNC_CONST(float, getSizeZ)
+    OOLUA_MEM_FUNC(void, setSizeZ, const float)
+    OOLUA_MEM_FUNC_CONST(float, getSizeX)
+    OOLUA_MEM_FUNC(void, setSizeX, const float)
+    OOLUA_MEM_FUNC_CONST(float, getSizeY)
+    OOLUA_MEM_FUNC(void, setSizeY, const float)
+    OOLUA_MEM_FUNC_CONST(float, getScaleZ)
+    OOLUA_MEM_FUNC(void, setScaleZ, const float)
+    OOLUA_MEM_FUNC_CONST(float, getScaleX)
+    OOLUA_MEM_FUNC(void, setScaleX, const float)
+    OOLUA_MEM_FUNC_CONST(float, getScaleY)
+    OOLUA_MEM_FUNC(void, setScaleY, const float)
+    OOLUA_PROXY_END
 
 OOLUA_PROXY(RenderableObject)
 	OOLUA_TAGS (
@@ -403,9 +441,20 @@ OOLUA_PROXY_END
 
 OOLUA_PROXY(SpriteAttrib, PrimAttrib)
 	OOLUA_MEM_FUNC(void, setFrame, unsigned)
+    OOLUA_MEM_FUNC_CONST(int, getFrame)
 	OOLUA_MEM_FUNC(void, setColor, unsigned char, unsigned char, unsigned char, unsigned char)
 	OOLUA_MEM_FUNC_CONST(void, getColor, out_p<unsigned char&>, out_p<unsigned char&>, out_p<unsigned char&>, out_p<unsigned char&>)
 	OOLUA_MEM_FUNC_CONST(unsigned char, getAlpha)
+    OOLUA_MEM_FUNC_CONST(const char*, getTexPath)
+    OOLUA_MEM_FUNC_CONST(unsigned char, getColorR)
+    OOLUA_MEM_FUNC_CONST(unsigned char, getColorG)
+    OOLUA_MEM_FUNC_CONST(unsigned char, getColorB)
+    OOLUA_MEM_FUNC_CONST(unsigned char, getColorA)
+    OOLUA_MEM_FUNC(Color4, getColor4)
+    OOLUA_MEM_FUNC(void, setColorR, const unsigned char)
+    OOLUA_MEM_FUNC(void, setColorG, const unsigned char)
+    OOLUA_MEM_FUNC(void, setColorB, const unsigned char)
+    OOLUA_MEM_FUNC(void, setColorA, const unsigned char)
 	OOLUA_MEM_FUNC(void, setAlpha, unsigned char)
 	OOLUA_MEM_FUNC(void, loadTexture, const char *, unsigned, unsigned, unsigned, unsigned)
 	OOLUA_MEM_FUNC(void, loadSheet, const char *, unsigned, unsigned)
@@ -429,6 +478,10 @@ OOLUA_PROXY(Material)
     OOLUA_MEM_FUNC_CONST(void, getSpecularColor, GYVector4&)
     OOLUA_MEM_FUNC_CONST(void, getEmissiveColor, GYVector4&)
     OOLUA_MEM_FUNC_CONST(float, getShininess)
+    OOLUA_MEM_FUNC(Vector4, getEmissive)
+    OOLUA_MEM_FUNC(Vector4, getDiffuse)
+    OOLUA_MEM_FUNC(Vector4, getAmbient)
+    OOLUA_MEM_FUNC(Vector4, getSpecular)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Renderable, Component)
@@ -436,18 +489,22 @@ OOLUA_PROXY(Renderable, Component)
 		No_public_constructors,
 		No_public_destructor
 	)
-	OOLUA_MEM_FUNC_CONST(void, getOffset, GYVector2&)
+    OOLUA_MEM_FUNC(Vector2, getOffset)
 	OOLUA_MEM_FUNC(void, setOffset, const GYVector2&)
 	OOLUA_MEM_FUNC_CONST(unsigned, getFrame)
 	OOLUA_MEM_FUNC(void, setFrame, unsigned)
-	OOLUA_MEM_FUNC_CONST(SpriteAttrib*, getSpriteAttrib)
+    OOLUA_MEM_FUNC_CONST(int, getTexOrient)
+    OOLUA_MEM_FUNC(void, setTexOrient, GY_RECT_TEX_ORIENT)
+    OOLUA_MEM_FUNC_CONST(maybe_null<SpriteAttrib*>, getSpriteAttrib)
 	OOLUA_MEM_FUNC_CONST(QuadSpriteAttrib*, getQuadSpriteAttrib)
 	OOLUA_MEM_FUNC(void, setSpriteAttrib, cpp_in_p<SpriteAttrib*>)
 	OOLUA_MEM_FUNC(void, setMaterial, cpp_in_p<Material*>)
-	OOLUA_MFUNC_CONST(getMaterial)
+    OOLUA_MEM_FUNC_CONST(maybe_null<Material*>, getMaterial)
 	OOLUA_MFUNC(loadNormalMap)
 	OOLUA_MEM_FUNC(void, loadSpecularMap, const char*, unsigned, unsigned)
     OOLUA_MEM_FUNC(void, setTexCoord, const unsigned, const float, const float)
+    OOLUA_MEM_FUNC_CONST(const char*, getNormalMapPath)
+    OOLUA_MEM_FUNC_CONST(const char*, getSpecularMapPath)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(AnimationSequence)
@@ -719,6 +776,10 @@ OOLUA_PROXY(LightAttrib)
     OOLUA_MEM_FUNC_CONST(void, getSpecularColor, GYVector4&)
     OOLUA_MEM_FUNC_CONST(void, getAttenuationFactors, GYVector3&)
     OOLUA_MEM_FUNC_CONST(float, getSpotExponent)
+    OOLUA_MEM_FUNC(Vector4, getAmbient)
+    OOLUA_MEM_FUNC(Vector4, getDiffuse)
+    OOLUA_MEM_FUNC(Vector4, getSpecular)
+    OOLUA_MEM_FUNC(Vector3, getAttenuation)
 	//OOLUA_MEM_FUNC(void, setComputeDistanceAttenuation, const bool)
 OOLUA_PROXY_END
 
@@ -732,13 +793,14 @@ OOLUA_PROXY(LightSource, Component)
     OOLUA_MEM_FUNC(void, setRelativePos, float, float, float)
 	OOLUA_MEM_FUNC(void, setSpotCutoffAngle, const float)
 	OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<const LightAttrib*>)
-	OOLUA_MEM_FUNC(LightAttrib&, getAttrib)
+    OOLUA_MEM_FUNC(maybe_null<LightAttrib*>, getAttrib)
 	OOLUA_MFUNC(setShadowCaster)
     OOLUA_MEM_FUNC_CONST(void, getDirection, GYVector3&)
     OOLUA_MEM_FUNC_CONST(float, getSpotCutoffAngle)
     OOLUA_MEM_FUNC_CONST(GY_LIGHT_TYPE, getLightType)
     OOLUA_MEM_FUNC_CONST(bool, isShadowCaster)
     OOLUA_MEM_FUNC_CONST(void, getRelativePos, GYVector3&)
+    OOLUA_MEM_FUNC(Vector3, getRelPos)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ParticleEmitterAttrib, SpriteAttrib, GYStatic)

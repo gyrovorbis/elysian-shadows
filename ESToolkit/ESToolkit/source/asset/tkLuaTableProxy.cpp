@@ -435,6 +435,7 @@ int TkLuaTableUserdata::_pairsMetamethod(lua_State*const l) {
     //2 - proxy table
     //3 - nil (first key)
     //lua_pushcfunction(l, &_nextMetamethod);
+#if 0
     LuaManager::getGlobal("next");
     lua_getfield(l, -2, TK_LUA_TABLE_USERDATA_FIELD_KEY);
     auto* ud = static_cast<TkLuaTableUserdata*>(lua_touserdata(l, -1));
@@ -443,6 +444,17 @@ int TkLuaTableUserdata::_pairsMetamethod(lua_State*const l) {
     lua_rawgeti(l, LUA_REGISTRYINDEX, ud->getPropRef());
     lua_pushnil(l);
     return 3;
+#else
+    LuaManager::getGlobal("pairs");
+    lua_getfield(l, -2, TK_LUA_TABLE_USERDATA_FIELD_KEY);
+    auto* ud = static_cast<TkLuaTableUserdata*>(lua_touserdata(l, -1));
+    assert(ud);
+    lua_pop(l, 1);
+    lua_rawgeti(l, LUA_REGISTRYINDEX, ud->getPropRef());
+    LuaManager::_protectedCall(1, 3, nullptr);
+    //lua_pushnil(l);
+    return 3;
+#endif
 }
 
 int TkLuaTableUserdata::_ipairsMetamethod(lua_State*const l) {

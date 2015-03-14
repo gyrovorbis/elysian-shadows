@@ -19,7 +19,7 @@ const char									LuaManagerBase::_rPrint[] =
 		"l = (l) or 100; i = i or \"\";	-- default item limit, indent string\n"
 		"if (l<1) then print \"ERROR: Item limit reached.\"; return l-1 end;\n"
 		"local ts = type(s);\n"
-		"if (ts ~= \"table\") then print (i,ts,s); return l-1 end\n"
+        "if (ts ~= \"table\" and not(ts == \"userdata\" and getmetatable(s) and getmetatable(s).__pairs)) then print (i,ts,s); return l-1 end\n"
 		"print (i,ts);           -- print \"table\"\n"
 		"for k,v in pairs(s) do  -- print \"[KEY] VALUE\"\n"
 			"l = rPrint(v, l, i..\"\t[\"..tostring(k)..\"]\")\n"
@@ -478,6 +478,7 @@ void LuaManagerBase::runGarbageCollector(void) {
 
 // char encoded serialize function that is available in plaintext in
 // utils/serialize.lua. Converted using lua auto.lua serialize.lua
+#if 0
 const char LuaManagerBase::_serializeTable[] = {
 
     0x6c, 0x6f, 0x63, 0x61, 0x6c, 0x20, 0x66, 0x75, 0x6e, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x20, 0x69, 0x73, 0x6c,
@@ -703,7 +704,7 @@ const char LuaManagerBase::_serializeTable[] = {
     0x72, 0x65, 0x74, 0x75, 0x72, 0x6e, 0x20, 0x73, 0x65, 0x72, 0x69, 0x61, 0x6c, 0x69, 0x7a, 0x65, 0x0a,
 };
 
-
+#endif
 
 
 
