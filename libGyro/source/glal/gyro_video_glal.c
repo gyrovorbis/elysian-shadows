@@ -179,7 +179,8 @@ static unsigned int			_projWidth				= 0;
 static unsigned int			_projHeight				= 0;
 static GYVector4			_clearColor				= { 0.0f, 0.0f, 0.0f, 0.0f };
 static const GYTexCoord2*   _curTexCoordPtr         = NULL;
-GYColor4				_curQuadListColor[12]       = { {0, 0, 0, 0}, { 0, 0, 0, 0}, {0,0,0,0}, {0, 0,0,0} };
+static const GYColor4*      _curColorArrayPtr       = NULL;
+GYColor4                    _curQuadListColor[12]       = { {0, 0, 0, 0}, { 0, 0, 0, 0}, {0,0,0,0}, {0, 0,0,0} };
 static unsigned int         _vertexQueueSize         = 0;
 
 void gyVidClearColor(const GYColor4 color) {
@@ -291,6 +292,7 @@ void gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsign
 void gyVidColorArray(const struct _GYColor4 *const ptr) {
     glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, ptr);
     glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR]);
+    _curColorArrayPtr = ptr;
 }
 
 void gyVidTexCoordArray(const struct _GYTexCoord2 *const ptr) {
@@ -349,6 +351,7 @@ void gyVidQuadListBegin(const GYColor4 *const color) {
 	_curQuadListColor[1] = *color;
 	_curQuadListColor[2] = *color;
 	_curQuadListColor[3] = *color;
+    _curColorArrayPtr = _curQuadListColor;
 }
 
 void gyVidQuadListEnd(void) {
@@ -357,6 +360,7 @@ void gyVidQuadListEnd(void) {
     _gyVidTriangleStrip(_modelViewVertices, 0, glalCurStripSize);
     glalCurStripSize = 0;
     _curTexCoordPtr = NULL;
+    _curColorArrayPtr = NULL;
 }
 
 // ==== HIGH-LEVEL API ====
@@ -438,10 +442,10 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
 	//memcpy(&_stripColors[curStripSize], _curQuadListColor, sizeof(GYColor4)*4);
     //for(i = 0; i < 4; ++i) {
    // memcpy(&_stripColors[glalCurStripSize], _curQuadListColor, sizeof(GYColor4)*4);
-        _stripColors[glalCurStripSize] = _curQuadListColor[0];
-       _stripColors[glalCurStripSize+1] = _curQuadListColor[1];
-       _stripColors[glalCurStripSize+2] = _curQuadListColor[2];
-       _stripColors[glalCurStripSize+3] = _curQuadListColor[3];
+        _stripColors[glalCurStripSize] = _curColorArrayPtr[0];
+       _stripColors[glalCurStripSize+1] = _curColorArrayPtr[1];
+       _stripColors[glalCurStripSize+2] = _curColorArrayPtr[2];
+       _stripColors[glalCurStripSize+3] = _curColorArrayPtr[3];
         //_gyLog(GY_DEBUG_VERBOSE, "ACCESS - %d", i);
         //_stripColors[glalCurStripSize+i] = temp;
         //_gyLog(GY_DEBUG_VERBOSE, "DONE - %d", glalCurStripSize+i);
