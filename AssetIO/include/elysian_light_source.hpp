@@ -75,6 +75,8 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(type, getLightType, setLightType)
             ELYSIAN_LUA_PROXY_FIELD(attrib, getAttrib)
             ELYSIAN_LUA_PROXY_FIELD(relPos, getRelPos)
+            ELYSIAN_LUA_PROXY_FIELD(spotCutoffAngle, getSpotCutoffAngle, setSpotCutoffAngle)
+            ELYSIAN_LUA_PROXY_FIELD(dir, getDir)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
                             LightSource(Entity& entity);
@@ -103,6 +105,7 @@ namespace elysian {
         float               getSpotCutoffAngle(void) const;
         void                getRelativePos(GYVector3& pos) const;
         Vector3             getRelPos(void);
+        Vector3             getDir(void);
 
         void                updateBoundingVolume(const CameraState*const cam, const GY_CUBE_MAP_FACE face);
         CameraState*        getCameraState(void);
@@ -165,6 +168,7 @@ namespace elysian {
     inline float LightSource::getSpotCutoffAngle(void) const { return spotCutoffAngle; }
     inline void LightSource::getRelativePos(GYVector3 &pos) const { pos = _relPos; }
     inline Vector3 LightSource::getRelPos(void) { return Vector3(&_relPos); }
+    inline Vector3 LightSource::getDir(void) { return Vector3(&direction); }
 
 	inline CameraState* LightSource::getCameraState(void) {
 		return &_camState;

@@ -807,6 +807,7 @@ OOLUA_PROXY(LightSource, Component)
     OOLUA_MEM_FUNC_CONST(bool, isShadowCaster)
     OOLUA_MEM_FUNC_CONST(void, getRelativePos, GYVector3&)
     OOLUA_MEM_FUNC(Vector3, getRelPos)
+    OOLUA_MEM_FUNC(Vector3, getDir)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ParticleEmitterAttrib, SpriteAttrib, CollidableStaticAttrib)

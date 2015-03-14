@@ -28,7 +28,7 @@ Behavior* Behavior::create(const char* typeName, Entity& parent) {
 	std::map<const char *, Behavior* (*)(Entity&), ltstr>::iterator it = _creators.find(typeName);
 	if(it == _creators.end()) {
 		dbgprintf(LOG_CRITICAL, "Behavior::create(%s) - No registered creator for %s.", typeName);
-		return NULL;
+        return nullptr;
 	}
 	return _creators[typeName](parent);
 }

@@ -608,7 +608,8 @@ OOLUA_EXPORT_FUNCTIONS(LightSource,
 					   getAttrib,
                        setShadowCaster,
                        setRelativePos,
-                       getRelPos)
+                       getRelPos,
+                       getDir)
 OOLUA_EXPORT_FUNCTIONS_CONST(LightSource,
                              getDirection,
                              getSpotCutoffAngle,
