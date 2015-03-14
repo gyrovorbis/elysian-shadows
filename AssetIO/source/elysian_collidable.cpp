@@ -9,6 +9,9 @@
 
 namespace elysian {
 
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(CollisionFlags)
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(CollidableStaticAttrib)
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(CollidableAttrib)
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(Collidable)
 
 CollisionSystem* Collidable::_colSys = nullptr;

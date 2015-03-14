@@ -240,7 +240,7 @@ void CollisionSystem::renderTileColliders(void) const {
 			}
 			
 
-			if(!isOnZPlane && !col._onZTran && col.getZTranState() != Collidable::ZTRAN_ACTIVE) colType = Tile::COLLIDER_FULL;
+//			if(!isOnZPlane && !col._onZTran && col.getZTranState() != Collidable::ZTRAN_ACTIVE) colType = Tile::COLLIDER_FULL;
 			if(colType == Tile::COLLIDER_NONE && !isZTran) continue;
 
 			gyMatPush();

@@ -43,8 +43,11 @@ namespace elysian {
         _mainState->register_class<Animation>();
         Animation::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<CollisionFlags>();
+        CollisionFlags::registerProxyMetaTable(*_mainState);
         OOLUA::register_class<CollidableStaticAttrib>(*_mainState);
+        CollidableStaticAttrib::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<CollidableAttrib>();
+        CollidableAttrib::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<CollisionContact>();
 		_mainState->register_class<Collidable>();
         Collidable::registerProxyMetaTable(*_mainState);
@@ -439,38 +442,39 @@ OOLUA_EXPORT_FUNCTIONS(CollisionFlags,
 								   resetType,
 								   resetCheckAgainst,
 								   addType,
-								   addCheckAgainst)
+                                   addCheckAgainst,
+                                    setType,
+                                    setTypeAgainst)
 OOLUA_EXPORT_FUNCTIONS_CONST(CollisionFlags,
                                getType,
                                getTypeAgainst)
 
-
-OOLUA_EXPORT_FUNCTIONS_CONST(GYStatic,
-							getInverseMass,
-							getCoeffOfRest,
-                            getZCoeffOfRest,
-							getInvMomOfInertia,
-                            getAngDamping)
-OOLUA_EXPORT_FUNCTIONS(GYStatic,
-						setInverseMass,
-						setCoeffOfRest,
-                        setZCoeffOfRest,
-						setInvMomOfInertia,
-                        setAngDamping)
-
-OOLUA_EXPORT_FUNCTIONS_CONST(CollidableStaticAttrib)
+OOLUA_EXPORT_FUNCTIONS_CONST(CollidableStaticAttrib,
+                             getInverseMass,
+                             getCoeffOfRest,
+                             getInvMomOfInertia,
+                             getAngDamping,
+                             getZCoeffOfRest)
 OOLUA_EXPORT_FUNCTIONS(CollidableStaticAttrib,
                        setDamping,
                        setZDamping,
-                       setDamping3f)
+                       setDamping3f,
+                       getDamping,
+                       setInverseMass,
+                       setCoeffOfRest,
+                       setInvMomOfInertia,
+                       setAngDamping,
+                       setZCoeffOfRest)
 
-EXPORT_OOLUA_FUNCTIONS_5_NON_CONST(CollidableAttrib,
+OOLUA_EXPORT_FUNCTIONS(CollidableAttrib,
 								   setColliderType,
 								   setRelPos,
 								   setRelSize,
 								   getFlags,
-								   getStaticAttrib)
-EXPORT_OOLUA_FUNCTIONS_1_CONST(CollidableAttrib,
+                                   getStaticAttrib,
+                                    getRelPos,
+                                    getRelSize)
+OOLUA_EXPORT_FUNCTIONS_CONST(CollidableAttrib,
 							   getColliderType)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(CollisionContact,
@@ -484,12 +488,17 @@ OOLUA_EXPORT_FUNCTIONS_CONST(CollisionContact,
 							 getDepth)
 OOLUA_EXPORT_FUNCTIONS(CollisionContact)
 
-EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(Collidable,
+OOLUA_EXPORT_FUNCTIONS(Collidable,
 								   setAttrib,
-								   setResolvePenetration)
-EXPORT_OOLUA_FUNCTIONS_2_CONST(Collidable,
+                                   setResolvePenetration,
+                                    setWorldSpace)
+OOLUA_EXPORT_FUNCTIONS_CONST(Collidable,
 							   getAttrib,
-							   getContactCount)
+                               getContactCount,
+                             getResolvePenetration,
+                             getWorldSpace,
+                             getStackedOnGround,
+                             getRestingOnBody)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(RigidBodyAttrib,
 							 getForceMask)

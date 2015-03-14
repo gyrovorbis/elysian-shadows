@@ -180,7 +180,7 @@ static unsigned int			_projHeight				= 0;
 static GYVector4			_clearColor				= { 0.0f, 0.0f, 0.0f, 0.0f };
 static const GYTexCoord2*   _curTexCoordPtr         = NULL;
 static const GYColor4*      _curColorArrayPtr       = NULL;
-GYColor4                    _curQuadListColor[12]       = { {0, 0, 0, 0}, { 0, 0, 0, 0}, {0,0,0,0}, {0, 0,0,0} };
+GYColor4                    _curQuadListColor[12]   = { {0, 0, 0, 0}, { 0, 0, 0, 0}, {0,0,0,0}, {0, 0,0,0} };
 static unsigned int         _vertexQueueSize         = 0;
 
 void gyVidClearColor(const GYColor4 color) {

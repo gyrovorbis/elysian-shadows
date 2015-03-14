@@ -589,22 +589,11 @@ OOLUA_PROXY(CollisionFlags)
 	OOLUA_MEM_FUNC(void, addCheckAgainst, uint32_t)
     OOLUA_MEM_FUNC_CONST(uint32_t, getType)
     OOLUA_MEM_FUNC_CONST(uint32_t, getTypeAgainst)
+    OOLUA_MEM_FUNC(void, setType, const uint32_t)
+    OOLUA_MEM_FUNC(void, setTypeAgainst, const uint32_t)
 OOLUA_PROXY_END
 
-OOLUA_PROXY(GYStatic)
-	OOLUA_TAGS (
-		No_public_constructors,
-		No_public_destructor
-	)
-	OOLUA_MGET_MSET(inverseMass, getInverseMass, setInverseMass)
-	OOLUA_MGET_MSET(coeffOfRest, getCoeffOfRest, setCoeffOfRest)
-    OOLUA_MGET_MSET(zCoeffOfRest, getZCoeffOfRest, setZCoeffOfRest)
-    //OOLUA_MGET_MSET(damping, getDamping, setDamping)
-	OOLUA_MGET_MSET(invMomOfInertia, getInvMomOfInertia, setInvMomOfInertia)
-	OOLUA_MGET_MSET(angDamping, getAngDamping, setAngDamping)
-OOLUA_PROXY_END
-
-OOLUA_PROXY(CollidableStaticAttrib, GYStatic)
+OOLUA_PROXY(CollidableStaticAttrib)
     OOLUA_TAGS (
         No_public_constructors,
         No_public_destructor
@@ -612,7 +601,17 @@ OOLUA_PROXY(CollidableStaticAttrib, GYStatic)
     OOLUA_MEM_FUNC(void, setDamping, float)
     OOLUA_MEM_FUNC(void, setZDamping, float)
     OOLUA_MEM_FUNC(void, setDamping3f, float, float, float)
-
+    OOLUA_MEM_FUNC(Vector3, getDamping)
+    OOLUA_MEM_FUNC(void, setInverseMass, const float)
+    OOLUA_MEM_FUNC(void, setCoeffOfRest, const float)
+    OOLUA_MEM_FUNC(void, setInvMomOfInertia, const float)
+    OOLUA_MEM_FUNC(void, setAngDamping, const float)
+    OOLUA_MEM_FUNC(void, setZCoeffOfRest, const float)
+    OOLUA_MEM_FUNC_CONST(float, getInverseMass)
+    OOLUA_MEM_FUNC_CONST(float, getCoeffOfRest)
+    OOLUA_MEM_FUNC_CONST(float, getInvMomOfInertia)
+    OOLUA_MEM_FUNC_CONST(float, getAngDamping)
+    OOLUA_MEM_FUNC_CONST(float, getZCoeffOfRest)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CollidableAttrib)
@@ -620,6 +619,8 @@ OOLUA_PROXY(CollidableAttrib)
 	OOLUA_MEM_FUNC(void, setColliderType, GY_COLLIDER_TYPE)
     OOLUA_MEM_FUNC(void, setRelPos, float, float, float)
     OOLUA_MEM_FUNC(void, setRelSize, float, float, float)
+    OOLUA_MEM_FUNC(Vector3, getRelPos)
+    OOLUA_MEM_FUNC(Vector3, getRelSize)
 	OOLUA_MEM_FUNC(CollisionFlags*, getFlags)
     OOLUA_MEM_FUNC(CollidableStaticAttrib*, getStaticAttrib)
 OOLUA_PROXY_END
@@ -644,10 +645,15 @@ OOLUA_PROXY(Collidable, Component)
 		No_public_constructors,
 		No_public_destructor
 	)
-	OOLUA_MEM_FUNC_CONST(CollidableAttrib*, getAttrib)
+    OOLUA_MEM_FUNC_CONST(maybe_null<CollidableAttrib*>, getAttrib)
 	OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<CollidableAttrib*>)
 	OOLUA_MEM_FUNC_CONST(unsigned, getContactCount)
 	OOLUA_MEM_FUNC(void, setResolvePenetration, bool)
+    OOLUA_MEM_FUNC_CONST(bool, getResolvePenetration)
+    OOLUA_MEM_FUNC_CONST(bool, getWorldSpace)
+    OOLUA_MEM_FUNC(void, setWorldSpace, const bool)
+    OOLUA_MEM_FUNC_CONST(bool, getStackedOnGround)
+    OOLUA_MEM_FUNC_CONST(bool, getRestingOnBody)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(RigidBodyAttrib)
@@ -803,7 +809,7 @@ OOLUA_PROXY(LightSource, Component)
     OOLUA_MEM_FUNC(Vector3, getRelPos)
 OOLUA_PROXY_END
 
-OOLUA_PROXY(ParticleEmitterAttrib, SpriteAttrib, GYStatic)
+OOLUA_PROXY(ParticleEmitterAttrib, SpriteAttrib, CollidableStaticAttrib)
 	OOLUA_MFUNC(setAcceleration)
 	OOLUA_MFUNC(setMaxLife)
 	OOLUA_MEM_FUNC(void, setMaterial, cpp_in_p<Material*>)
