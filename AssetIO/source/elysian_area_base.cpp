@@ -42,7 +42,7 @@ AreaBase::AreaBase(void) {
 }*/
 
 AreaBase::~AreaBase(void) {
-	glDeleteBuffers(1, &vboBuff);
+    glDeleteBuffers(1, &vboBuff);
 	//DELETE COMPONENT/ENTITY SHIT@!!!!
     dbgprintf(LOG_VERBOSE, "Area::~Area(%s) - FIX FOR WARPS LEAKING MEMORY!! -- Entity Data?", dir);
 	freeMap();
@@ -261,7 +261,7 @@ bool AreaBase::saveEntities(const char *const /*filename*/) {
 void AreaBase::populateVbo(void) {
     if(vboPopulated) return;
 
-	glGenBuffers(1, &vboBuff);
+    glGenBuffers(1, &vboBuff);
 
     Debug::printf(Debug::VERBOSE, "VBO BUFF - %d", vboBuff);
 
@@ -282,21 +282,9 @@ void AreaBase::populateVbo(void) {
 		}
 	}
 
-	glBindBuffer(GL_ARRAY_BUFFER, vboBuff);
-    int glErr = glGetError();
-       if (glErr != GL_NO_ERROR)
-       {
-           printf("ERROR GL - %d", glErr); }
-
+    glBindBuffer(GL_ARRAY_BUFFER, vboBuff);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(VboEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS*4, data, GL_STATIC_DRAW);
 
-    glErr = glGetError();
-       if (glErr != GL_NO_ERROR)
-       {
-           Debug::printf(Debug::VERBOSE, "glError in file %d",   glErr);
-       }
-
-	free(data);
 
     vboPopulated = true;
 }

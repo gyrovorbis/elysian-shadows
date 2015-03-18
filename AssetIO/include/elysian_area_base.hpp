@@ -105,6 +105,8 @@ namespace elysian {
 		GYVector4	vert;
 		GYTexCoord2	texCoord;
 		GYColor4	color;
+        GYVector3   normal;
+        GYVector3   tangent;
 	};
 
     struct AreaBase: public Asset {
@@ -237,9 +239,37 @@ namespace elysian {
 
     inline void AreaBase::vboEntryFromTileEntry(VboEntry * const vboEntry, const TileEntry * const tileEntry, const unsigned x, const unsigned y) const {
 
-        const GYTexCoord2*const coords = gyVidTexCoordArrayFromFrame(&level->tileSheet->_coord->texCoord[tileEntry->getIndex()],
-                                                                           tileEntry->getOrient());
+        const GY_RECT_PLANE_TYPE planeType = tileEntry->getPlane();
+        const GY_RECT_TEX_ORIENT texOrient = tileEntry->getOrient();
+        //const Tile* tile = &level->tileset[tileEntry->getIndex()];
 
+        const GYTexCoord2*const coords = gyVidTexCoordArrayFromFrame(&level->tileSheet->_coord->texCoord[tileEntry->getIndex()],
+                                                                           texOrient);
+        const GYVector4*const localVerts = glalRectVerts[planeType];
+        GYVector4 worldVerts[4];
+
+        const GYVector3*const tangent = &glalRectTangents[texOrient];
+
+        const GYVector3*const normal = glalPlaneNormalVector(level->normalSheet? 1 : 0, planeType, texOrient);
+
+        gyMatPush();
+        gyMatLoadIdentity();
+        gyMatTranslateScale(x*32.0f, y*32.0f + tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f, 32.0f, 32.0f, 32.0f);
+        gyMatMultVec(localVerts, worldVerts, 4);
+        gyMatPop();
+
+        for(unsigned i = 0; i < 4; ++i) {
+            vboEntry[i] = {
+                worldVerts[i],
+                coords[i],
+                GYColor4 { 255, 255, 255, 255 },
+                *normal,
+                *tangent
+            };
+        }
+
+
+#if 0
         switch(tileEntry->getPlane()) {
 
         case GY_RECT_PLANE_FRONT:
@@ -370,6 +400,7 @@ namespace elysian {
             break;
 
         }
+#endif
     }
 
     inline void AreaBase::animateVboTileEntry(const unsigned l, const unsigned x, const unsigned y, const uint16_t index) {
@@ -387,7 +418,7 @@ namespace elysian {
 
 		ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
 
-		glBindBuffer(GL_ARRAY_BUFFER, vboBuff);
+        glBindBuffer(GL_ARRAY_BUFFER, vboBuff);
 		glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_MAP_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(VboEntry), sizeof(VboEntry)*4, (void*)entry);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);

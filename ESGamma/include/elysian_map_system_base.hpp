@@ -160,7 +160,6 @@ namespace elysian {
             const GY_ALPHA_LEVEL          newAlpha = (entry.renderPass > 1 ||
                                                       _curLevel->tileset[entry.mapEntry.getIndex()].getTransparency())?
                                                         GY_ALPHA_FULL : GY_ALPHA_NONE;
-            bool updateZFactor = false;
 
             //Blending enabled state change
            if(newAlpha != glalAlphaLevel) {
@@ -180,6 +179,7 @@ namespace elysian {
             }
 
             //Texture orientation state change
+            /* FUCK YOU, UNIFORM CHANGES!!!!!!
             if(newOrient != glalRectTexOrient) {
                 updateZFactor = true;
                 const GYVector3* tangent = &glalRectTangents[newOrient];
@@ -199,9 +199,11 @@ namespace elysian {
                     glalVidNormalUpdateUniform(normal);
                 }
                 gyVidRectPlaneType(newPlane);
-            }
+            }*/
 
             //Normal map texture flip state change
+            gyVidRectPlaneType(newPlane);
+            gyVidRectTexOrient(newOrient);
             const float newZFactor = glalOrientNormalMapZFactor(newOrient);
             if(newZFactor != glalNormalMapZFactor) {
                 endObjectList();
@@ -227,7 +229,7 @@ namespace elysian {
         _stripIndexArray[_stripIndexArraySize+3]    = indices[3];
         _stripIndexArraySize += 4;
 }
-	
+
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::beginObjectList(void) {
 		gyVidMaterialBind(nullptr);
@@ -235,13 +237,17 @@ namespace elysian {
         gyVidNormalMapBind(_curLevel->normalSheet);
 		gyVidSpecularMapBind(_curLevel->specularSheet);
 
-		glBindBuffer(GL_ARRAY_BUFFER, getCurArea()->vboBuff);
-        ::glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(VboEntry), 0);
+        glBindBuffer(GL_ARRAY_BUFFER, getCurArea()->vboBuff);
+        glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(VboEntry), 0);
         glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_POS]);
         glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(4*sizeof(float)));
         glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD]);
         glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VboEntry), (void*)(6*sizeof(float)));
         glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR]);
+        glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(7*sizeof(float)));
+        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL]);
+        glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(10*sizeof(float)));
+        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT]);
 
         if(getLightSys()->isShadowPass()) gyVidDepthTest(true);
         else gyVidDepthTest(false);
@@ -256,7 +262,7 @@ namespace elysian {
 		_stripIndexArraySize = 0;
 		//glDrawArrays(GL_TRIANGLE_STRIP, indexBase, 4);
 
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
 		//gyVidQuadListEnd();
         gyVidAlphaLevel(GY_ALPHA_FULL);
         /*gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);

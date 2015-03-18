@@ -888,7 +888,18 @@ void ESToolkit::_openProjectDir(const QString dir) {
     }
 
 	QDir::setCurrent(dir);
-    auto* viewport = _engineGLView = new EngineGLSceneWidget(QGLFormat(QGL::SampleBuffers | QGL::DirectRendering));
+    QGLFormat fmt;
+    fmt.setDirectRendering(true);
+    fmt.setDoubleBuffer(true);
+    fmt.setDepth(false);
+    fmt.setAccum(false);
+    fmt.setOverlay(false);
+    fmt.setStencil(false);
+    fmt.setRedBufferSize(8);
+    fmt.setBlueBufferSize(8);
+    fmt.setGreenBufferSize(8);
+
+    auto* viewport = _engineGLView = new EngineGLSceneWidget(fmt);
     connect(viewport, SIGNAL(engineUpdated()), _ui->mapView, SLOT(onEngineUpdated()));
 
     viewport->setMouseTracking(true);
