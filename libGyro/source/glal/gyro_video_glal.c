@@ -149,6 +149,8 @@ static const GYCamera	_defaultCamera;
 static GYTexCoord2		_stripTexCoords[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]     __attribute__((aligned(32)));
 static GYVector4		_modelViewVertices[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]  __attribute__((aligned(32)));
 GYColor4                _stripColors[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]        __attribute__((aligned(32)));
+static GYVector3        _stripNormals[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]       __attribute__((aligned(32)));
+static GYVector3        _stripTangents[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]       __attribute__((aligned(32)));
 static GYVertex         _vertexQueue[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE];
 
 
@@ -281,6 +283,18 @@ void gyVidTexCoordArray(const struct _GYTexCoord2 *const ptr) {
     _curTexCoordPtr = ptr;
 }
 
+void gyVidTangentArray(const struct _GYVector3 *const ptr) {
+    glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, 0, ptr);
+    glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT]);
+    glalTangentVector = ptr;
+}
+
+void gyVidNormalArray(const struct _GYVector3 *const ptr) {
+    glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, 0, ptr);
+    glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL]);
+    glalNormalVector = ptr;
+}
+
 void gyVidTexBind(const GYTexture *const tex) {
     static int wasActive = 0;
     int active = 1;
@@ -358,6 +372,8 @@ void gyVidQuadListBegin(const GYColor4 *const color) {
 
 void gyVidQuadListEnd(void) {
     gyVidTexCoordArray(_stripTexCoords);
+    gyVidNormalArray(_stripNormals);
+    gyVidTangentArray(_stripTangents);
     gyVidColorArray(_stripColors);
     _gyVidTriangleStrip(_modelViewVertices, 0, glalCurStripSize);
     glalCurStripSize = 0;
@@ -371,6 +387,7 @@ void gyVidQuadListEnd(void) {
 
 /* IT'S YOUR GODDAMN JOB TO MAKE SURE THESE VECTORS ACTUALLY CHANGED BEFORE CALLING UPDATE ON THEM!
  * DON'T SUBMIT REDUNDANT DATA TO SHADER UNIFORMS, DIPSHIT! */
+/*
 void glalVidNormalUpdateUniform(const GYVector3* const normal) {
     if(gyVidShadowPass()) return;
     glalNormalVector = normal;
@@ -383,7 +400,7 @@ void glalVidTangentUpdateUniform(const GYVector3* const tangent) {
     glalTangentVector = tangent;
     glUniform3fv(glalCurLightShader->uniformLoc[GLAL_SHADER_TANGENT], 1, (float*)glalTangentVector);
     //++glalUniformChangeCount;
-}
+}*/
 
 void glalVidNormalMapZFactorUpdateUniform(const float factor) {
     if(gyVidShadowPass()) return;
@@ -409,20 +426,8 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
 
     if(!gyVidShadowPass()) {
         tangent = &glalRectTangents[glalRectTexOrient];
-        if(tangent != glalTangentVector) { //FUCKING COMBO BREAKER, SUBMIT THE BITCH!!!!
-            if(!gyVec3Compare(tangent, glalTangentVector)) {
-                glalStripComboBreaker();
-                glalVidTangentUpdateUniform(tangent);
-            }
-        }
 
         normal = glalPlaneNormalVector(glalNormalMapActive, glalPlaneType, glalRectTexOrient);
-        if(normal != glalNormalVector) {
-            if(!gyVec3Compare(normal, glalNormalVector)) {
-                glalStripComboBreaker();
-                glalVidNormalUpdateUniform(normal);
-            }
-        }
 
         //update flip flag for normal map texture flipping to correct normals in fragment shader
         zFactor = glalOrientNormalMapZFactor(glalRectTexOrient);
@@ -446,6 +451,16 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
         _stripColors[glalCurStripSize+1]    = _curColorArrayPtr[1];
         _stripColors[glalCurStripSize+2]    = _curColorArrayPtr[2];
         _stripColors[glalCurStripSize+3]    = _curColorArrayPtr[3];
+
+        _stripNormals[glalCurStripSize]         = *normal;
+        _stripNormals[glalCurStripSize+2]      = *normal;
+        _stripNormals[glalCurStripSize+3]      = *normal;
+        _stripNormals[glalCurStripSize+4]      = *normal;
+
+        _stripTangents[glalCurStripSize]         = *tangent;
+        _stripTangents[glalCurStripSize+2]      = *tangent;
+        _stripTangents[glalCurStripSize+3]      = *tangent;
+        _stripTangents[glalCurStripSize+4]      = *tangent;
     }
 
     if(glalCurTex) {
