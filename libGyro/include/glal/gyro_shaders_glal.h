@@ -1,20 +1,14 @@
 #ifndef GYRO_SHADERS_GLAL_H
 #define GYRO_SHADERS_GLAL_H
 
-#include <glal/gyro_glal.h>
 #include <gyro_shader_api.h>
+#include <glal/gyro_glal.h>
 
 #define GLAL_SHADOW_MAP_SIZE	1024
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-typedef enum __GLAL_TEXTURE_FLIP {
-    GLAL_TEXTURE_FLIP_NONE,
-    GLAL_TEXTURE_FLIP_HORIZ,
-    GLAL_TEXTURE_FLIP_VERT
-} GLAL_TEXTURE_FLIP;
 
 typedef enum __GLAL_TEXTURE_UNITS {
     GLAL_TEXTURE_MAP,
@@ -39,7 +33,7 @@ typedef enum __GLAL_SHADER_ATTRIB {
 typedef enum __GLAL_SHADER_UNIFORM {
     GLAL_SHADER_TEXTURE_MAP,
     GLAL_SHADER_TEXTURE_ENABLED,
-    GLAL_SHADER_TEXTURE_FLIP,
+    GLAL_SHADER_NORMAL_MAP_ZFACTOR,
     GLAL_SHADER_CAM_WORLD_POS,
     GLAL_SHADER_NORMAL,
     GLAL_SHADER_TANGENT,
@@ -77,7 +71,7 @@ typedef enum __GLAL_SHADER_LIGHT_UNIFORM_FIELDS {
 } _GLAL_SHADER_LIGHT_UNIFORM_FIELDS;
 
 typedef struct __LightingShaderProgram {
-	struct _GYShaderProgram*	program;
+    GYShaderProgram*            program;
     GLint						attribLoc[GLAL_SHADER_ATTRIB_MAX];
     GLint						uniformLoc[GLAL_SHADER_UNIFORM_MAX];
     GLint						lightsUniformLoc[GYRO_VIDEO_LIGHT_SOURCES_MAX][GLAL_SHADER_LIGHT_UNIFORMS_MAX];
@@ -87,6 +81,20 @@ typedef struct __LightInternals {
 	GLuint fbo;
 	GLuint shadowMap;
 } _LightInternals;
+
+typedef struct LightSourceUniforms {
+    GYMatrix4       projViewMat;
+    GYVector4       position;
+    GYVector4       ambientColor;
+    GYVector4       diffuseColor;
+    GYVector4       specularColor;
+    GYVector3       attenuationFactors;
+    GYVector3       direction;
+    float           spotExponent;
+    float           spotCutoffAngle;
+    GY_LIGHT_TYPE   type;
+    int             valid;
+} LightSourceUniforms;
 
 extern GYShaderProgram*				glalCurShaderProg;
 extern _LightingShaderProgram		glalLightingShader;

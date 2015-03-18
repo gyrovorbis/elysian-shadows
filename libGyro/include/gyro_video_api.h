@@ -35,17 +35,16 @@ typedef enum _GY_RECT_PLANE_TYPE {
 	GY_RECT_PLANE_MAX
 } GY_RECT_PLANE_TYPE;
 
-/*
-typedef enum _GY_RECT_NORMAL_TYPE {
-	GY_RECT_NORMAL_FLAT,
-	GY_RECT_NORMAL_FRONT,
-	GY_RECT_NORMAL_MAX
-} GY_RECT_NORMAL_TYPE;
-*/
+typedef enum GY_BLEND_MODE {
+    GY_BLEND_ONE_MINUS_SRC_ALPHA,
+    GY_BLEND_ONE
+} GY_BLEND_MODE;
 
 //Internal state
 void gyVidTexBind(const struct _GYTexture *const tex);
 void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev);
+void gyVidBlendMode(const GY_BLEND_MODE mode);
+void gyVidDepthTest(const int enable);
 void gyVidResolution(unsigned int *const width, unsigned int *const height);
 void gyVidClearColor(const GYColor4 color);
 
@@ -58,7 +57,6 @@ int         gyVidInit(const struct _GYVidInitParams *const params); //MUST SET P
 int         gyVidUninit(void);
 void        gyVidSceneBegin(void);
 void        gyVidSceneEnd(void);
-unsigned    gyVidVertexRenderCount(void);
 
 //Quad API
 void gyVidQuadListBegin(const GYColor4 *const color);
@@ -93,6 +91,9 @@ void gyVidDbgTexMapUniform(const int uniform);
 void gyVidDbgTexMappingEnabled(const int enabled);
 void gyVidDbgNormalMappingEnabled(const int enabled);
 void gyVidDbgSpeculaMappingEnabled(const int enabled);
+unsigned gyVidDbgVertexRenderCount(void);
+unsigned gyVidDbgShaderUniformChangeCount(void);
+unsigned gyVidDbgTextureChangeCount(void);
 
 #include "common/gyro_video_common.h"
 

@@ -37,8 +37,9 @@ int _gyVidTexAlloc(GYTexture *const tex) {
 }
 
 int _gyVidTexFree(GYTexture *const tex) {
-   // int id = reinterpret_cast<int>(tex->_data);
-   // ((QGLContext*)QGLContext::currentContext())->deleteTexture(id);
+    (void)tex;
+    long int id = reinterpret_cast<long int>(tex->_data);
+    ((QGLContext*)QGLContext::currentContext())->deleteTexture(id);
     return 1;
 }
 

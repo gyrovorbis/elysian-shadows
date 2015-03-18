@@ -1,5 +1,5 @@
-#ifndef GYRO_SHADER_H
-#define GYRO_SHADER_H
+#ifndef GYRO_SHADER_API_H
+#define GYRO_SHADER_API_H
 
 #include "gyro_defines.h"
 #include "gyro_matrix_api.h"
@@ -108,8 +108,8 @@ void gyVidLightSourceBeginShadowPasses(void);
 //Shader management
 GYShader* gyShaderCreate(const char*const path);
 int gyShaderDestroy(GYShader* shader);
+int gyShaderProgramDestroy(GYShaderProgram* program);
 GYShaderProgram* gyShaderProgramCreate(GYShader* vertShader, GYShader* fragShader);
-int gyShaderProgramDestory(GYShaderProgram* program);
 int gyShadersReloadAll(void);
 void gyShaderWalk(void);
 

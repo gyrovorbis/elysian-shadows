@@ -21,6 +21,7 @@ typedef struct _GYTexEntryDat {
 	unsigned spriteWidth, spriteHeight;
 } GYTexEntryDat;
 
+#if 0
 static GYTexCoordSheet* _LoadSheetCoords(const GYTexEntryDat *const data) {
 	char fname[GYRO_PATH_MAX_SIZE];
 	GYFile *file;
@@ -71,6 +72,7 @@ static GYTexCoordSheet* _LoadSheetCoords(const GYTexEntryDat *const data) {
     gyFileClose(&file);
 	return coord;
 }
+#endif
 
 static int _TexCoordComparator(const void *const payload, const void *const data) {
 	return (((const GYTexCoordSheet*)payload)->sheetWidth == ((GYTexEntryDat*)data)->sheetWidth && ((GYTexCoordSheet*)payload)->sheetHeight == ((GYTexEntryDat*)data)->sheetHeight &&
@@ -84,13 +86,13 @@ static void *_TexCoordConstructor(void *const data) {
 	unsigned int x_tiles = (unsigned int)(texData->sheetWidth / texData->spriteWidth);
 	unsigned int y_tiles = (unsigned int)(texData->sheetHeight / texData->spriteHeight);
 
-    float u_inc = ((float)texData->spriteWidth) / (float)texData->sheetWidth;
-    float v_inc = ((float)texData->spriteHeight) / (float)texData->sheetHeight;
+    //float u_inc = ((float)texData->spriteWidth) / (float)texData->sheetWidth;
+    //float v_inc = ((float)texData->spriteHeight) / (float)texData->sheetHeight;
 	unsigned int i,j,index;
-	float u,v;
+    //float u,v;
 
-    const float errorX = 0.4f / ((float)texData->sheetWidth-0.4f);
-    const float errorY = 0.4f / ((float)texData->sheetHeight-0.4f);
+    //const float errorX = 0.4f / ((float)texData->sheetWidth-0.4f);
+    //const float errorY = 0.4f / ((float)texData->sheetHeight-0.4f);
 
 
 	//Allocate sprite coords and add entry
@@ -274,7 +276,7 @@ unsigned gyVidTexBytes(void) {
 
 int gyVidTexReload(struct _GYTexture * const tex) {
     unsigned int success = 1;
-    unsigned int width, height;
+    //unsigned int width, height;
     if(!tex) return 0;
 
     success &= _gyVidTexFree(tex);

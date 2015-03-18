@@ -22,21 +22,32 @@ extern GYVector3                    glalCamWorldPos;
 extern const GYVector3*             glalTangentVector;
 extern const GYVector3*             glalNormalVector;
 extern const struct _GYTexture*     glalCurTex;
-extern unsigned                     glalVertexRenderCount;
 extern unsigned                     glalCurStripSize;
 extern GYVector4                    glalModelViewVertices[];
-extern GYColor4                     _stripColors[];
 extern GYTexCoord2                  glalStripTexCoords[];
-extern GLAL_TEXTURE_FLIP            glalTextureFlip;
+extern float                        glalNormalMapZFactor;
 extern GY_RECT_TEX_ORIENT           glalRectTexOrient;
 extern GY_RECT_PLANE_TYPE           glalPlaneType;
 extern unsigned                     glalVertexRenderCount;
+extern unsigned                     glalUniformChangeCount;
+extern unsigned                     glalPrevVertexRenderCount;
+extern unsigned                     glalPrevUniformChangeCount;
+extern unsigned                     glalTextureChangeCount;
+extern unsigned                     glalPrevTextureChangeCount;
+extern GY_ALPHA_LEVEL               glalAlphaLevel;
+extern GY_BLEND_MODE                glalBlendMode;
+extern int                          glalDepthTest;
+
+extern const GYVector4 glalRectVerts[GY_RECT_PLANE_MAX][4];
+extern const GYVector3 glalPlaneNormals[GY_RECT_PLANE_MAX];
+extern const GYVector3 glalRectTangents[GY_RECT_TEX_ORIENT_MAX];
+extern const GYVector3 glalPlaneNormalMapNormals[GY_RECT_PLANE_MAX][GY_RECT_TEX_ORIENT_MAX];
 
 int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidth, const int projHeight);
 
-void glalVidTangentUpdateUniform(void);
-void glalVidNormalUpdateUniform(void);
-void glalVidTextureFlipUpdateUniform(void);
+void glalVidTangentUpdateUniform(const GYVector3*const tangent);
+void glalVidNormalUpdateUniform(const GYVector3*const normal);
+void glalVidNormalMapZFactorUpdateUniform(const float factor);
 
 static inline void glalStripComboBreaker(void) {
     if(glalCurStripSize) {
@@ -44,18 +55,23 @@ static inline void glalStripComboBreaker(void) {
     }
 }
 
-static inline GLAL_TEXTURE_FLIP glalTextureFlipFromOrientAndPlane(const GY_RECT_TEX_ORIENT orient) {
+static inline float glalOrientNormalMapZFactor(const GY_RECT_TEX_ORIENT orient) {
     switch(orient) {
     case GY_RECT_TEX_ORIENT_FLIP_VERT:
         //return GLAL_TEXTURE_FLIP_VERT;
     case GY_RECT_TEX_ORIENT_FLIP_HORIZ:
     case GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_90:
     case GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_270:
-        return GLAL_TEXTURE_FLIP_HORIZ;
+        return -1.0f;
     default:
-        return GLAL_TEXTURE_FLIP_NONE;
+        return 1.0f;
     }
 }
+
+static inline const GYVector3* glalPlaneNormalVector(const int normalMapActive, const GY_RECT_PLANE_TYPE planeType, const GY_RECT_TEX_ORIENT texOrient) {
+   return (!normalMapActive)? &glalPlaneNormals[planeType] : &glalPlaneNormalMapNormals[planeType][texOrient];
+}
+
 
 #ifdef __cplusplus
 }

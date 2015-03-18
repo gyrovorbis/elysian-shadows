@@ -6,6 +6,7 @@ CONFIG += opengl
 CONFIG -= app_bundle
 #CONFIG -= qt
 DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt
+QMAKE_CXXFLAGS += -Wno-c++11-extensions -Wno-c++11-long-long
 
 INCLUDEPATH += ../../include \
 				../../source/x86/png \
