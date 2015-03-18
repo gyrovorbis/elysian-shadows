@@ -30,6 +30,12 @@
 #       include <gl.h>
 #		include <OpenAL/al.h>
 #		include <OpenAL/alc.h>
+
+//god fucking damnit.
+#define glBindVertexArray       glBindVertexArrayAPPLE
+#define glDeleteVertexArrays    glDeleteVertexArraysAPPLE
+#define glGenVertexArrays       glGenVertexArraysAPPLE
+
 #	else
 #       include <windows.h>
 #       include <GL/glew.h>

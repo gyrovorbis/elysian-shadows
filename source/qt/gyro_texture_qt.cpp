@@ -23,14 +23,12 @@ int _gyVidTexAlloc(GYTexture *const tex) {
     tex->width = pixmap.width();
     tex->height = pixmap.height();
 
-	pixmap = pixmap.transformed(QTransform().scale(1, -1));
-
  //   tex->_pixmap = QPixmap(QString(tex->filename));
-    *(int*)&tex->_data = ((QGLContext*)current)->bindTexture(pixmap, GL_TEXTURE_2D);
+    *(int*)&tex->_data = ((QGLContext*)current)->bindTexture(pixmap, GL_TEXTURE_2D, GL_RGBA,  QGLContext::NoBindOption);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
       //  glTexImage2D(GL_TEXTURE_2D, 0, img.format, img.width, img.height, 0, img.format, GL_UNSIGNED_BYTE, pixels);
 
     return *(int*)&tex->_data;
