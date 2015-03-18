@@ -165,7 +165,7 @@ void Character::setHeldEntity(Entity * const entity) {
 
 	_heldEntity = entity;
 	if(entity) {
-        if(!entity->getRigidBody()->getAttrib()->canHold()) {
+        if(!entity->getRigidBody()->getAttrib()->getCanHold()) {
             _heldEntity = nullptr;
         } else {
             entity->getRigidBody()->setActive(false);

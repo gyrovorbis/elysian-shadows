@@ -499,7 +499,7 @@ int TkLuaTableUserdata::_nextMetamethod(lua_State*const l) {
     }
     return 2;
 #else
-    const char* keyName;
+    //const char* keyName;
 
     //LuaManager::rPrintByIndex(-1, 3, "KEY");
 

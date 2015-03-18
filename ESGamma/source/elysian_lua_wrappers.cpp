@@ -86,8 +86,11 @@ namespace elysian {
 		_mainState->register_class<LightSource>();
         LightSource::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<RigidBodyAttrib>();
+        RigidBodyAttrib::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<ForceTarget>();
+        //ForceTarget::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<RigidBody>();
+        RigidBody::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<AnimationSystem>();
 		_mainState->register_class<CharacterSystem>();
 		_mainState->register_class<AudioSystem>();
@@ -501,22 +504,36 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Collidable,
                              getRestingOnBody)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(RigidBodyAttrib,
-							 getForceMask)
+                             getForceMask,
+                             getCanHold,
+                             isBreakable,
+                             getBaseDurability)
 OOLUA_EXPORT_FUNCTIONS(RigidBodyAttrib,
 					   setForceMask,
 					   setBreakable,
-					   setBaseDurability)
+                       setBaseDurability,
+                       setCanHold)
 
 OOLUA_EXPORT_FUNCTIONS(ForceTarget,
 					   applyForce,
                        applyForceToPoint,
-                       clearKinetic)
-OOLUA_EXPORT_FUNCTIONS_CONST(ForceTarget)
+                       clearKinetic,
+                       getVel,
+                       getAccel,
+                       getForceAccum,
+                       setRotation,
+                       setAngAccel,
+                       setTorqueAccum)
+OOLUA_EXPORT_FUNCTIONS_CONST(ForceTarget,
+                             getRotation,
+                             getAngAccel,
+                             getTorqueAccum)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(RigidBody,
 							 getDurability,
                              getAttrib,
-                             getVelocity)
+                             getVelocity,
+                             getTileDamping)
 OOLUA_EXPORT_FUNCTIONS(RigidBody,
 					   setAttrib,
                        setDurability,
@@ -564,14 +581,20 @@ OOLUA_EXPORT_FUNCTIONS(CharacterSystem,
                        moveToWayPoint)
 OOLUA_EXPORT_FUNCTIONS_CONST(CharacterSystem)
 
-EXPORT_OOLUA_FUNCTIONS_6_NON_CONST(Warp,
+OOLUA_EXPORT_FUNCTIONS(Warp,
 								   setToPos,
 								   setAreaPath,
 								   setLevelPath,
 								   setChangeArea,
 								   setChangeLevel,
-								   setObliqueTransition)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(Warp)
+                                   setObliqueTransition,
+                                    getToPos)
+OOLUA_EXPORT_FUNCTIONS_CONST(Warp,
+                             getAreaPath,
+                             getLevelPath,
+                             getChangeArea,
+                             getChangeLevel,
+                             getObliqueTransition)
 
  EXPORT_OOLUA_FUNCTIONS_7_NON_CONST(AudioSource,
 									 setWav,
@@ -592,7 +615,8 @@ OOLUA_EXPORT_FUNCTIONS(LightAttrib,
                        getAmbient,
                        getDiffuse,
                        getSpecular,
-                       getAttenuation)
+                       getAttenuation,
+                       getRadius)
 OOLUA_EXPORT_FUNCTIONS_CONST(LightAttrib,
                              getAmbientColor,
                              getDiffuseColor,

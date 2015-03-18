@@ -28,7 +28,6 @@ void WarpSystem::initialize(void) {
 }
 
 void WarpSystem::render(void) {
-	//glDisable(GL_DEPTH_TEST);
     gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
 	_screenRect.render(); 
 
@@ -53,7 +52,7 @@ void WarpSystem::update(void) {
 			if(_currentWarp._changeLevel) getLevelSys()->switchLevel(_currentWarp._levelPath);
 			if(_currentWarp._changeArea) getLevelSys()->switchArea(_currentWarp._areaPath);
             getPartySys()->getPartyLeader()->_transform.setPos(_currentWarp._toPosition);
-			getPartySys()->getPartyLeader()->setElev(_currentWarp._toElev);
+            //getPartySys()->getPartyLeader()->setElev(_currentWarp._toElev);
 			_state = FADE_IN;
 			if(_currentWarp._obliqueTran) {
 				CameraKeyFrame fr = getCameraSys()->getKeyFrame();

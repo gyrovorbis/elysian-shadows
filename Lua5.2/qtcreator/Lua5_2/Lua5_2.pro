@@ -10,6 +10,8 @@ TARGET = Lua5_2
 TEMPLATE = lib
 CONFIG += staticlib
 
+QMAKE_CFLAGS += -Wno-deprecated-declarations
+
 DEFINES += ELYSIAN_LUA_MODS
 
 INCLUDEPATH += ../../include \

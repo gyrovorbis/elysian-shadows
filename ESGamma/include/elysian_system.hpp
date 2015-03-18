@@ -35,9 +35,9 @@ namespace elysian {
 		friend class Engine;
         friend class DebugBase;
 
-	private:
+    private:
 		static ENGINE_STATE _engineState;
-		static bool _processInput;
+        static bool         _processInput;
 
 		static LevelSystem		*_levelSystem;
 		static MapSystem		*_mapSystem;

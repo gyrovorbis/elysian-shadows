@@ -67,7 +67,7 @@ namespace elysian {
     private:
         
         //General interface
-        void _getOnscreenTileRegion(unsigned &startX, unsigned &startY, unsigned &endX, unsigned &endY) const {
+        void _getOnscreenTileRegion(int &startX, int &startY, int &endX, int &endY) const {
             return static_cast<const T*>(this)->getOnscreenTileRegion(startX, startY, endX, endY);
         }
         
@@ -156,7 +156,7 @@ namespace elysian {
 		uint32_t _lightsRendered = 0;
 		uint32_t _lightsActive	= 0;
 
-		unsigned _scrStartX, _scrStartY, _scrEndX, _scrEndY;
+        int _scrStartX, _scrStartY, _scrEndX, _scrEndY;
 		unsigned _depthBuffMaxVisible;
 		unsigned _depthBuffMaxHeight;
 
@@ -328,8 +328,8 @@ namespace elysian {
 
         _beginObjectList();
 
-		for(unsigned j = _scrStartY; j <= _scrEndY; ++j) {
-			for(unsigned i = _scrStartX; i <= _scrEndX; ++i) {
+        for(int j = _scrStartY; j <= _scrEndY; ++j) {
+            for(int i = _scrStartX; i <= _scrEndX; ++i) {
 				for(unsigned k = 0; k < 3; ++k) {
 					O curMapEntry;
 					curMapEntry.x = i;
@@ -362,7 +362,7 @@ namespace elysian {
         if(_objectBuffImmediateCount) {
 
             //Make a pass through immediate tile multiplass buffer
-            _endObjectList();
+            _endObjectList(); //wtf?
             _beginObjectList();
             _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
             for(unsigned j = 0; j < _objectBuffImmediateCount; ++j) {

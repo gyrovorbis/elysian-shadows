@@ -33,7 +33,7 @@ namespace elysian {
 						Examinable(Entity& parent);
 
 		//overridden from Component
-		virtual bool	canAddTo(Entity& entity) override;
+        virtual bool	canAddTo(Entity& entity) const override;
 		virtual bool	load(FILE* file) override;
 		virtual bool	save(FILE* file) override;
 		virtual bool	addToLevel(void) override;
@@ -72,6 +72,8 @@ namespace elysian {
 	inline float Examinable::getMaxDist(void) const { return _maxDist; }
 	inline void Examinable::setRelativeDir(const Direction::DIR4 dir) { _dir = dir; }
 	inline auto Examinable::getRelativeDir(void) -> Direction::DIR4 { return _dir; }
+    //overridden from Component
+    inline bool Examinable::canAddTo(Entity& /*entity*/) const { return true; }
 
 }
 

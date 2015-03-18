@@ -24,7 +24,7 @@ namespace elysian {
 		virtual ~AudioSource(void) override;
 
 		//reimplemented from component
-		virtual bool canAddTo(Entity& entity) override;
+        virtual bool canAddTo(Entity& entity) const override;
 		virtual bool load(FILE* file) override;
 		virtual bool save(FILE* file) override;
 		virtual bool addToLevel(void) override;
@@ -69,7 +69,7 @@ namespace elysian {
 		gyAudSourceDestroy(_src);
 #endif
 }*/
-	inline bool AudioSource::canAddTo(Entity &/*entity*/) { return true; }
+    inline bool AudioSource::canAddTo(Entity &/*entity*/) const { return true; }
 	inline Component::TYPE AudioSource::getType(void) const { return AUDIO_SOURCE; }
 /*
 	inline void AudioSource::setWav(const GYWav* const wav) { _wav = wav; }

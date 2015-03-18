@@ -188,7 +188,7 @@ namespace elysian {
 
 		virtual bool load(FILE* file) override;
 		virtual bool save(FILE* file) override;
-		virtual bool canAddTo(Entity& entity) override;
+        virtual bool canAddTo(Entity& entity) const override;
 		virtual TYPE getType(void) const override;
 		virtual bool addToLevel(void) override;
 		virtual bool removeFromLevel(void) override;

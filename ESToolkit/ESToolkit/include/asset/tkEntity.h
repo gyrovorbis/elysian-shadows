@@ -69,6 +69,7 @@ public:
 
             TkEntity(void);
             TkEntity(const bool selectable);
+            TkEntity(const OOLUA::Lua_table_ref valTable);
 	virtual ~TkEntity(void) override;
 
     void setName(const QString name);

@@ -14,6 +14,10 @@ bool TkEntity::_staticInit = false;
 
 TkEntity::TkEntity(void): TkEntity(true) {}
 
+TkEntity::TkEntity(const OOLUA::Lua_table_ref valTable): TkEntity(false) {
+    fromTable(valTable);
+}
+
 TkEntity::TkEntity(const bool selectable):
     _selectable(selectable)
 {

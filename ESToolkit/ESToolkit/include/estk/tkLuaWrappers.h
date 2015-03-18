@@ -29,7 +29,7 @@ static inline int estk_inspectTable(lua_State* const vm) {
 }
 
 
-static inline void luaRegisterTkEnumsConstants(OOLUA::Script *s) {
+static inline void luaRegisterTkEnumsConstants(OOLUA::Script */*s*/) {
 
 }
 

@@ -260,7 +260,7 @@ void TkDebug::onCommandSubmit(void) {
 }
 
 
-bool TkDebug::eventFilter(QObject* object, QEvent* event) {
+bool TkDebug::eventFilter(QObject* /*object*/, QEvent* event) {
     QKeyEvent*      keyEvent = static_cast<QKeyEvent*>(event);
     bool retVal = false;
 

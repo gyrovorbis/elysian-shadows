@@ -66,7 +66,7 @@ namespace elysian {
 
         virtual bool        load(FILE* file) override;
         virtual bool        save(FILE* file) override;
-        virtual bool        canAddTo(Entity& entity) override { return (entity.getAnimation() && entity.getRigidBody()); }
+        virtual bool        canAddTo(Entity& entity) const override { return (entity.getAnimation() && entity.getRigidBody()); }
         virtual bool        addToLevel(void) override;
         virtual bool        removeFromLevel(void) override;
         virtual auto        getType(void) const -> TYPE override { return Component::CHARACTER; }

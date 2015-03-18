@@ -255,6 +255,9 @@ static const int ROTATE_FRAME_VALUE = 1;
 
 void _spRotateTimeline_apply (const spTimeline* timeline, spSkeleton* skeleton, float lastTime, float time, spEvent** firedEvents,
 		int* eventsCount, float alpha) {
+    (void)lastTime;
+    (void)firedEvents;
+    (void)eventsCount;
 	spBone *bone;
 	int frameIndex;
 	float prevFrameValue, frameTime, percent, amount;
@@ -313,6 +316,9 @@ static const int TRANSLATE_FRAME_Y = 2;
 
 void _spTranslateTimeline_apply (const spTimeline* timeline, spSkeleton* skeleton, float lastTime, float time,
 		spEvent** firedEvents, int* eventsCount, float alpha) {
+    (void)firedEvents;
+    (void)eventsCount;
+    (void)lastTime;
 	spBone *bone;
 	int frameIndex;
 	float prevFrameX, prevFrameY, frameTime, percent;
@@ -358,6 +364,9 @@ void spTranslateTimeline_setFrame (spTranslateTimeline* self, int frameIndex, fl
 
 void _spScaleTimeline_apply (const spTimeline* timeline, spSkeleton* skeleton, float lastTime, float time, spEvent** firedEvents,
 		int* eventsCount, float alpha) {
+    (void)lastTime;
+    (void)firedEvents;
+    (void)eventsCount;
 	spBone *bone;
 	int frameIndex;
 	float prevFrameX, prevFrameY, frameTime, percent;
@@ -405,6 +414,9 @@ static const int COLOR_FRAME_A = 4;
 
 void _spColorTimeline_apply (const spTimeline* timeline, spSkeleton* skeleton, float lastTime, float time, spEvent** firedEvents,
 		int* eventsCount, float alpha) {
+    (void)lastTime;
+    (void)firedEvents;
+    (void)eventsCount;
 	spSlot *slot;
 	int frameIndex;
 	float prevFrameR, prevFrameG, prevFrameB, prevFrameA, percent, frameTime;
@@ -468,6 +480,9 @@ void spColorTimeline_setFrame (spColorTimeline* self, int frameIndex, float time
 void _spAttachmentTimeline_apply (const spTimeline* timeline, spSkeleton* skeleton, float lastTime, float time,
 		spEvent** firedEvents, int* eventsCount, float alpha) {
 	int frameIndex;
+    (void)firedEvents;
+    (void)eventsCount;
+    (void)alpha;
 	const char* attachmentName;
 	spAttachmentTimeline* self = (spAttachmentTimeline*)timeline;
 
@@ -588,6 +603,10 @@ void spEventTimeline_setFrame (spEventTimeline* self, int frameIndex, float time
 
 void _spDrawOrderTimeline_apply (const spTimeline* timeline, spSkeleton* skeleton, float lastTime, float time,
 		spEvent** firedEvents, int* eventsCount, float alpha) {
+    (void)lastTime;
+    (void)firedEvents;
+    (void)eventsCount;
+    (void)alpha;
 	int i;
 	int frameIndex;
 	const int* drawOrderToSetupIndex;
@@ -650,6 +669,9 @@ void spDrawOrderTimeline_setFrame (spDrawOrderTimeline* self, int frameIndex, fl
 
 void _spFFDTimeline_apply (const spTimeline* timeline, spSkeleton* skeleton, float lastTime, float time, spEvent** firedEvents,
 		int* eventsCount, float alpha) {
+    (void)firedEvents;
+    (void)eventsCount;
+    (void)lastTime;
 	int frameIndex, i;
 	float percent, frameTime;
 	const float* prevVertices;
@@ -749,6 +771,9 @@ static const int IKCONSTRAINT_FRAME_MIX = 1;
 
 void _spIkConstraintTimeline_apply (const spTimeline* timeline, spSkeleton* skeleton, float lastTime, float time,
 		spEvent** firedEvents, int* eventsCount, float alpha) {
+    (void)lastTime;
+    (void)firedEvents;
+    (void)eventsCount;
 	int frameIndex;
 	float prevFrameMix, frameTime, percent, mix;
 	spIkConstraint* ikConstraint;
@@ -791,6 +816,9 @@ void spIkConstraintTimeline_setFrame (spIkConstraintTimeline* self, int frameInd
 
 void _spFlipTimeline_apply (const spTimeline* timeline, spSkeleton* skeleton, float lastTime, float time,
 		spEvent** firedEvents, int* eventsCount, float alpha) {
+    (void)firedEvents;
+    (void)eventsCount;
+    (void)alpha;
 	int frameIndex;
 	spFlipTimeline* self = (spFlipTimeline*)timeline;
 

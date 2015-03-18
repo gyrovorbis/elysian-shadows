@@ -1,13 +1,16 @@
 #ifndef ELYSIAN_WARP_HPP
 #define ELYSIAN_WARP_HPP
 
-#include <gyro.h>
 #include <cstring>
 #include "elysian_component.hpp"
 #include "elysian_lua_table_proxy.hpp"
+#include "elysian_asset_typedefs.hpp"
+#include "elysian_instance_transform.hpp"
 
-#define ELYSIAN_WARP_AREA_PATH_MAX_CHARS 200
-#define ELYSIAN_WARP_LEVEL_PATH_MAX_CHARS 200
+#define ELYSIAN_WARP_AREA_PATH_MAX_CHARS    200
+#define ELYSIAN_WARP_LEVEL_PATH_MAX_CHARS   200
+
+ELYSIAN_ASSET_TYPEDEF(Entity)
 
 namespace elysian {
 	
@@ -15,63 +18,87 @@ namespace elysian {
         public Component,
         public LuaTableProxy<Warp>
     {
-        friend class EntityBase;
         friend Entity;
+        friend class EntityBase;
 		friend class WarpSystem;
-	private:
+
 		
-	protected:
-		GYVector2		_toPosition;
-		unsigned char	_toElev = 0;
-		bool			_changeArea;
-		bool			_changeLevel;
-		bool			_obliqueTran = true;
-		char			_areaPath[ELYSIAN_WARP_AREA_PATH_MAX_CHARS];
-		char			_levelPath[ELYSIAN_WARP_LEVEL_PATH_MAX_CHARS];
+    private:
+        GYVector3               _toPosition;
+        bool                    _changeArea     = false;
+        bool                    _changeLevel    = false;
+        bool                    _obliqueTran    = true;
+        char                    _areaPath[ELYSIAN_WARP_AREA_PATH_MAX_CHARS];
+        char                    _levelPath[ELYSIAN_WARP_LEVEL_PATH_MAX_CHARS];
 		
-		Warp(Entity &parent);
-		Warp(void);
-        virtual ~Warp(void) override = default;
+                                Warp(Entity &parent);
+                                Warp(void) = default;
+        virtual                 ~Warp(void) override = default;
 		
 	public:
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+            ELYSIAN_LUA_PROXY_FIELD(toPos,              getToPos)
+            ELYSIAN_LUA_PROXY_FIELD(changeArea,         getChangeArea,          setChangeArea)
+            ELYSIAN_LUA_PROXY_FIELD(changeLevel,        getChangeLevel,         setChangeLevel)
+            ELYSIAN_LUA_PROXY_FIELD(areaPath,           getAreaPath,            setAreaPath)
+            ELYSIAN_LUA_PROXY_FIELD(levelPath,          getLevelPath,           setLevelPath)
+            ELYSIAN_LUA_PROXY_FIELD(obliqueTran,        getObliqueTransition,   setObliqueTransition)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
-		void setToPos(const float x, const float y, const unsigned char elev);
-		const GYVector2 &getToPos(void) const;
-		const char *getAreaPath(void) const;
-		void setAreaPath(const char *name);
-		const char *getLevelPath(void) const;
-		void setLevelPath(const char *name);
-		bool getChangeArea(void) const;
-		void setChangeArea(const bool flag=true);
-		bool getChangeLevel(void) const;
-		void setChangeLevel(const bool flag=true);
-		void setObliqueTransition(const bool flag=true);
+        void                    setToPos(const float x, const float y, const float z);
+        Vector3                 getToPos(void);
+        const char*             getAreaPath(void) const;
+        void                    setAreaPath(const char *name);
+        const char*             getLevelPath(void) const;
+        void                    setLevelPath(const char *name);
+        bool                    getChangeArea(void) const;
+        void                    setChangeArea(const bool flag=true);
+        bool                    getChangeLevel(void) const;
+        void                    setChangeLevel(const bool flag=true);
+        void                    setObliqueTransition(const bool flag=true);
+        bool                    getObliqueTransition(void) const;
 
-		
-		bool load(FILE* file);
-		bool save(FILE* file);
-		bool canAddTo(Entity &parent);
-		bool addToLevel(void);
-		bool removeFromLevel(void);
-		Component::TYPE getType(void) const { return Component::WARP; }
+        //Overridden from Component
+        virtual bool            load(FILE* file) override;
+        virtual bool            save(FILE* file) override;
+        virtual bool            canAddTo(Entity &parent) const override;
+        virtual bool            addToLevel(void) override;
+        virtual bool            removeFromLevel(void) override;
+        virtual TYPE            getType(void) const override;
 	};
 
-	// ====== INLINEZ ======
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // ================ INLINEZ ===================
+
+    inline Warp::Warp(Entity& parent): Component(parent) {}
 
 	inline void Warp::setObliqueTransition(const bool flag) {
 		_obliqueTran = flag;
 	}
 	
-	inline void Warp::setToPos(const float x, const float y, const unsigned char elev) {
+    inline bool Warp::getObliqueTransition(void) const { return _obliqueTran; }
+
+    inline void Warp::setToPos(const float x, const float y, const float z) {
 		_toPosition.x = x;
 		_toPosition.y = y;
-		_toElev = elev;
+        _toPosition.z = z;
 	}
 	
-	inline const GYVector2 &Warp::getToPos(void) const {
-		return _toPosition;
+    inline Vector3 Warp::getToPos(void) {
+        return Vector3(&_toPosition);
 	}
 	
 	inline const char *Warp::getAreaPath(void) const {
@@ -104,6 +131,8 @@ namespace elysian {
 	inline bool Warp::getChangeLevel(void) const {
 		return _changeLevel;
 	}
+
+    inline auto Warp::getType(void) const ->TYPE { return Component::WARP; }
 
 	
 }

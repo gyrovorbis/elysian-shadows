@@ -115,7 +115,7 @@ namespace elysian {
 		virtual ~Combat(void) override = default;
 
 		//reimplemented from component
-		virtual bool canAddTo(Entity& entity) override;
+        virtual bool canAddTo(Entity& entity) const override;
 		virtual bool load(FILE* file) override;
 		virtual bool save(FILE* file) override;
 		virtual bool addToLevel(void) override;

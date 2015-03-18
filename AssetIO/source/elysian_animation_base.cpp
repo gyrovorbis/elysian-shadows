@@ -277,7 +277,7 @@ bool AnimationBase::save(FILE* /*file*/) {
 	return true;
 }
 
-bool AnimationBase::canAddTo(Entity &parent) {
+bool AnimationBase::canAddTo(Entity &parent) const {
     return (parent.getRenderable());
 }
 

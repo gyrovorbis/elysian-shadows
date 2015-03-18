@@ -33,6 +33,7 @@
 
 spAttachment* _spAtlasAttachmentLoader_newAttachment (spAttachmentLoader* loader, spSkin* skin, spAttachmentType type,
 		const char* name, const char* path) {
+    (void)skin;
 	spAtlasAttachmentLoader* self = SUB_CAST(spAtlasAttachmentLoader, loader);
 	switch (type) {
 	case SP_ATTACHMENT_REGION: {

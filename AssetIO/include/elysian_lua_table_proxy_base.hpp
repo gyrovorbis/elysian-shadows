@@ -11,7 +11,7 @@
     //static constexpr unsigned			_proxyFieldCount = n;
 
 #define ELYSIAN_LUA_PROXY_FIELDS_END() }; \
-    static constexpr unsigned _proxyFieldCount = sizeof(_proxyFields) / sizeof(LuaTableFieldProxy);
+    static constexpr unsigned _proxyFieldCount = sizeof(_proxyFields) / sizeof(LuaTableFieldProxy); \
 
 #define ELYSIAN_LUA_PROXY_FIELD_READ_WRITE(f, g, s) { #f, #g, #s, LuaTableFieldProxy::FLAG_NONE },
 #define ELYSIAN_LUA_PROXY_FIELD_READ_ONLY(f, g) { #f, #g, nullptr, LuaTableFieldProxy::FLAG_NONE },
@@ -338,9 +338,11 @@ namespace elysian {
                     break;
                 default:
                     lua_getfield(l, -3-(tableDepth*2), P::_proxyFields[i].get); //get field from OOLUA methods table
+                    assert(!lua_isnil(l, -1)); //LUA GET ACCESSOR NOT FOUND!!!!
                     lua_setfield(l, -3, P::_proxyFields[i].key);
                     if(P::_proxyFields[i].set) {
                         lua_getfield(l, -3-(tableDepth*2), P::_proxyFields[i].set); //get field from OOLUA methods table
+                        assert(!lua_isnil(l, -1)); //LUA SET ACCESSOR NOT FOUND!!!!
                         lua_setfield(l, -2, P::_proxyFields[i].key);
                     }
                 }

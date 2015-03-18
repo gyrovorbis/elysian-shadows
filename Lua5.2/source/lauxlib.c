@@ -585,7 +585,7 @@ static const char *getF (lua_State *L, void *ud, size_t *size) {
     /* turfs_file_length reset the cursor to 0,
        so we need to put it back where we found it. */
     turfs_file_seek(lf->fp, pos, SEEK_SET);
-    if (pos >= len) return NULL;
+    if (pos >= (long)len) return NULL;
     turfs_file_read(lf->fp, lf->buff, sizeof(lf->buff), size);
   }
   return lf->buff;

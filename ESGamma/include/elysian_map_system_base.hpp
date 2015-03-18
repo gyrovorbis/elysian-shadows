@@ -1,5 +1,5 @@
-#ifndef ELYSIAN_TERRAIN_SYSTEM_BASE_HPP
-#define ELYSIAN_TERRAIN_SYSTEM_BASE_HPP
+#ifndef ELYSIAN_MAP_SYSTEM_BASE_HPP
+#define ELYSIAN_MAP_SYSTEM_BASE_HPP
 
 #include "glal/gyro_glal.h"
 #include "elysian_system.hpp"
@@ -97,7 +97,7 @@ namespace elysian {
 
 		//=== MapDepthBuffer Implementation ===
 
-        void        getOnscreenTileRegion(unsigned &startX, unsigned &startY, unsigned &endX, unsigned &endY) const;
+        void        getOnscreenTileRegion(int &startX, int &startY, int &endX, int &endY) const;
         float       getBaseZCoord(void) const;
         void        getObjectLayerEntry(const unsigned x, const unsigned y, T &entry);
         void        renderObjectEntry(const T &entry, const float z);
@@ -135,7 +135,7 @@ namespace elysian {
     inline void MapSystemBase<P, T, E>::renderCustomPassImmediate(void) { }
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::getOnscreenTileRegion(unsigned &startX, unsigned &startY, unsigned &endX, unsigned &endY) const {
+    inline void MapSystemBase<P, T, E>::getOnscreenTileRegion(int &startX, int &startY, int &endX, int &endY) const {
 		getCameraSys()->getVisibleTileRegion(startX, startY, endX, endY);
 	}
 	
@@ -152,128 +152,89 @@ namespace elysian {
 	
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::renderObjectEntry(const T& entry, const float /*z*/) {
-        //if(!entry.mapEntry.value) return; //Do not render tile 0, even if the depth buff algorithm tries to.
 		if(!_renderLayer[entry.layer]) return; //Don't render if this layer has been toggled off.
-//		float delta = 0;//(entry.renderPass);
 
-		//gyMatPush();
+        if(!gyVidShadowPass()) {
+            const GY_RECT_PLANE_TYPE      newPlane = entry.mapEntry.getPlane();
+            const GY_RECT_TEX_ORIENT      newOrient = entry.mapEntry.getOrient();
+            const GY_ALPHA_LEVEL          newAlpha = (entry.renderPass > 1 ||
+                                                      _curLevel->tileset[entry.mapEntry.getIndex()].getTransparency())?
+                                                        GY_ALPHA_FULL : GY_ALPHA_NONE;
+            bool updateZFactor = false;
 
-		//gyVidRectTexOrient(entry.mapEntry.getOrient());
+            //Blending enabled state change
+           if(newAlpha != glalAlphaLevel) {
+                endObjectList();
+                gyVidAlphaLevel(newAlpha);
+            }
 
-	//	if(entry.lightState == MapDepthBuffEntry::LIGHT_STATE::PARTIAL) {
-			//glBlendFunc(GL_ONE, GL_ONE);
-		//}
+            //Blending mode state change
+            if(entry.renderPass > 1 && glalBlendMode != GY_BLEND_ONE) {
+                endObjectList();
+                gyVidBlendMode(GY_BLEND_ONE);
+            }
+            //We don't give a fuck about blend modes when blending is off
+            else if(entry.renderPass == 1 && newAlpha == GY_ALPHA_FULL && glalBlendMode != GY_BLEND_ONE_MINUS_SRC_ALPHA) {
+                endObjectList();
+                gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
+            }
 
-        if(entry.renderPass > 1 && !_blendFunc) {
-			endObjectList();
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-            _blendFunc = true;
-		}
-        else if(entry.renderPass == 1 && _blendFunc) {
-			endObjectList();
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            _blendFunc = false;
-		}
-#if 1
-        GY_RECT_PLANE_TYPE newPlane = entry.mapEntry.getPlane();
-        GY_RECT_TEX_ORIENT newOrient = entry.mapEntry.getOrient();
-        bool updateFlip = false;
+            //Texture orientation state change
+            if(newOrient != glalRectTexOrient) {
+                updateZFactor = true;
+                const GYVector3* tangent = &glalRectTangents[newOrient];
 
-        if(newOrient != glalRectTexOrient) {
-            endObjectList();
-            gyVidRectTexOrient(newOrient);
-            glalVidTangentUpdateUniform();
-            updateFlip = true;
+                if(!gyVec3Compare(glalTangentVector, tangent)) { //tangent vector state change
+                     endObjectList();
+                     glalVidTangentUpdateUniform(tangent);
+                }
+                gyVidRectTexOrient(newOrient);
+            }
 
-        }
+            //Rect Plane state change
+            if(newPlane != glalPlaneType || updateZFactor) {
+                const GYVector3* normal = glalPlaneNormalVector(glalNormalMapActive, newPlane, newOrient);
+                if(!gyVec3Compare(glalNormalVector, normal)) { //normal vector state change
+                    endObjectList();
+                    glalVidNormalUpdateUniform(normal);
+                }
+                gyVidRectPlaneType(newPlane);
+            }
 
-        if(newPlane != glalPlaneType || updateFlip) {
-			endObjectList();
-			//gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta, 32.0f, 32.0f, 32.0f);
-            gyVidRectPlaneType(newPlane);
-            glalVidNormalUpdateUniform();
-		}
-
-        if(updateFlip) {
-            GLAL_TEXTURE_FLIP newFlip = glalTextureFlipFromOrientAndPlane(newOrient);
-            if(newFlip != glalTextureFlip) {
-                glalVidTextureFlipUpdateUniform();
+            //Normal map texture flip state change
+            const float newZFactor = glalOrientNormalMapZFactor(newOrient);
+            if(newZFactor != glalNormalMapZFactor) {
+                endObjectList();
+                glalVidNormalMapZFactorUpdateUniform(newZFactor);
             }
         }
 
+        const unsigned int indexBase = (entry.layer*getCurArea()->height*getCurArea()->width +
+                           entry.y*getCurArea()->width + entry.x)*4;
 
-		/*} else {
-		//	gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta, 32.0f, 32.0f, 1.0f);
-			gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
-		}*/
+        const unsigned int indices[4] = { indexBase, indexBase+1,indexBase+2, indexBase+3 };
 
-		/*glBindBuffer(GL_ARRAY_BUFFER, getCurArea()->vboBuff);
-		glVertexAttribPointer(curLightShader->attribLoc[SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(VboEntry), 0);
-		glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_POS]);
-		glVertexAttribPointer(curLightShader->attribLoc[SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(4*sizeof(float)));
-		glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_TEX_COORD]);
-		glVertexAttribPointer(curLightShader->attribLoc[SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VboEntry), (void*)(6*sizeof(float)));
-		glEnableVertexAttribArray(curLightShader->attribLoc[SHADER_COLOR]);*/
+        //combine previous triangle strip with this one by using degenerate triangles if we're not the first
+        if(_stripIndexArraySize) {
+            _stripIndexArray[_stripIndexArraySize]		= _stripIndexArray[_stripIndexArraySize-1];
+            _stripIndexArray[_stripIndexArraySize+1]	= indices[0];
+            _stripIndexArraySize += 2;
+        }
 
-		const unsigned int indexBase = (entry.layer*getCurArea()->height*getCurArea()->width +
-						   entry.y*getCurArea()->width + entry.x)*4;
-
-        unsigned int indices[4] = { indexBase, indexBase+1,indexBase+2, indexBase+3 };
-
-        //combine triangle strips with a degenerate triangle
-		if(_stripIndexArraySize) {
-			_stripIndexArray[_stripIndexArraySize]		= _stripIndexArray[_stripIndexArraySize-1];
-			_stripIndexArray[_stripIndexArraySize+1]	= indices[0];
-			_stripIndexArraySize += 2;
-		}
-
-		for(unsigned i = 0; i < 4; ++i) _stripIndexArray[_stripIndexArraySize+i] = indices[i];
-
-		_stripIndexArraySize += 4;
-
-		//glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		//glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_INT, (void*)indexes);
-
-		//glDrawArrays(GL_TRIANGLE_STRIP, indexBase, 4);
-
-		//gyVidRect(_animTiles[entry.mapEntry.getIndex()].curIndex);
-#else
-		if(entry.mapEntry.getElev() > 0) {
-			gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta-32.0f, 32.0f, 32.0f, 32.0f);
-			gyVidRectNormalType(GY_RECT_NORMAL_FRONT);
-					gyVidRect(_animTiles[((TileEntry *)&entry.mapEntry)->getIndex()].curIndex);
-		} else {
-			gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f, z+delta, 32.0f, 32.0f, 1.0f);
-			gyVidRectNormalType(GY_RECT_NORMAL_FLAT);
-					gyVidRect(_animTiles[((TileEntry *)&entry.mapEntry)->getIndex()].curIndex);
-		}
-#endif
-
-		//if(entry.lightState == MapDepthBuffEntry::LIGHT_STATE::PARTIAL)
-
-
-/*		if(entry.mapEntry.getElev() > 0) {
-			gyVidNormalArray(Renderable::depthNormals);
-			gyVidQuad(Renderable::depthRectVerts, _animTiles[((TileEntry *)&entry.mapEntry)->getIndex()].curIndex);
-		} else {
-			gyVidRect(_animTiles[((TileEntry *)&entry.mapEntry)->getIndex()].curIndex);
-		}*/
-	//	gyMatPop();
-	}
+        _stripIndexArray[_stripIndexArraySize]      = indices[0];
+        _stripIndexArray[_stripIndexArraySize+1]    = indices[1];
+        _stripIndexArray[_stripIndexArraySize+2]    = indices[2];
+        _stripIndexArray[_stripIndexArraySize+3]    = indices[3];
+        _stripIndexArraySize += 4;
+}
 	
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::beginObjectList(void) {
 		gyVidMaterialBind(nullptr);
 		gyVidTexBind(_curLevel->tileSheet);
-		gyVidNormalMapBind(_curLevel->normalSheet);
+        gyVidNormalMapBind(_curLevel->normalSheet);
 		gyVidSpecularMapBind(_curLevel->specularSheet);
 
-        //gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
-        //gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
-        //_curPlaneType = GY_RECT_PLANE_BOTTOM;
-
-		//gyVidQuadListBegin(&_tileColor);
 		glBindBuffer(GL_ARRAY_BUFFER, getCurArea()->vboBuff);
         ::glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(VboEntry), 0);
         glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_POS]);
@@ -281,18 +242,15 @@ namespace elysian {
         glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD]);
         glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VboEntry), (void*)(6*sizeof(float)));
         glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR]);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		gyVidAlphaLevel(GY_ALPHA_FULL);
 
-
-		if(getLightSys()->isShadowPass()) glEnable(GL_DEPTH_TEST);
-		else glDisable(GL_DEPTH_TEST);
-        //glDisable(GL_ALPHA_TEST);
-        _blendFunc = false;
+        if(getLightSys()->isShadowPass()) gyVidDepthTest(true);
+        else gyVidDepthTest(false);
 	}
 	
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::endObjectList(void) {
+
+        glalVertexRenderCount += _stripIndexArraySize;
 
 		glDrawElements(GL_TRIANGLE_STRIP, _stripIndexArraySize, GL_UNSIGNED_INT, (void*)_stripIndexArray);
 		_stripIndexArraySize = 0;
@@ -300,12 +258,10 @@ namespace elysian {
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		//gyVidQuadListEnd();
-		//gyVidAlphaLevel(GY_ALPHA_FULL);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		if(getLightSys()->isShadowPass()) glEnable(GL_DEPTH_TEST);
-		else glDisable(GL_DEPTH_TEST);
-
-	   _blendFunc = false;
+        gyVidAlphaLevel(GY_ALPHA_FULL);
+        /*gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
+        if(getLightSys()->isShadowPass()) gyVidDepthTest(true);
+        else gyVidDepthTest(false);*/
 	}
 	
     template<typename P, typename T, typename E>
@@ -315,14 +271,12 @@ namespace elysian {
 		auto& entities = _curArea->entities;
 
 		for(auto entity : entities) {
-			if(getLightSys()->isShadowPass() && entity->isShadowVolume()) {
-				_onscreenEntityPool.claimFreeEntry() = entity;
-			} else if(!getLightSys()->isShadowPass()) {
-				_onscreenEntityPool.claimFreeEntry() = entity;
+            if(getLightSys()->isShadowPass() && !entity->isShadowVolume()) {
+                continue;
 			}
-
+            if(getCameraSys()->isOnscreen(entity)) _onscreenEntityPool.claimFreeEntry() = entity;
 		}
-
+        //Debug::printf(Debug::VERBOSE, "ONSCREEN ENTITIES - %d", _onscreenEntityPool.size());
 		return _onscreenEntityPool.size();
 	}
 
@@ -348,14 +302,12 @@ namespace elysian {
 
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::disableDepthTest(void) const {
-		//glDisable(GL_DEPTH_TEST);
 		//glEnable(GL_POLYGON_OFFSET_FILL);
 		//glPolygonOffset(10.0f, 10.0f);
 	}
 
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::enableDepthTest(void) const {
-		//glEnable(GL_DEPTH_TEST);
 		//glDisable(GL_POLYGON_OFFSET_FILL);
 	}
 

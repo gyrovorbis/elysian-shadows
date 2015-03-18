@@ -175,7 +175,7 @@ namespace elysian {
 		inline void setActive(const bool val=true) { _active = val; }
 		
 		//Reimplemented from Component
-        virtual bool canAddTo(Entity& entity) override;
+        virtual bool canAddTo(Entity& entity) const override;
 		virtual bool load(FILE* file) override;
 		virtual bool save(FILE* file) override;
 		virtual bool addToLevel(void) override;
@@ -190,7 +190,7 @@ namespace elysian {
 	//inline void Behavior::addTrigger(const uint64_t flags) { _triggerBits |= flags; }
 	//inline void Behavior::setTriggers(const uint64_t flags) { _triggerBits = flags; }
 	inline Component::TYPE Behavior::getType(void) const { return Component::BEHAVIOR; }
-	inline bool Behavior::canAddTo(Entity& /*entity*/) { return true; /*for each bit, make sure entity has required components*/ }
+    inline bool Behavior::canAddTo(Entity& /*entity*/) const { return true; /*for each bit, make sure entity has required components*/ }
 
 	inline void Behavior::addTriggers(const uint64_t flags) {
 		for(unsigned i = 0; i < 64; ++i) {

@@ -14,10 +14,6 @@ namespace elysian {
 		_dialog->setTriggerEntity(_entity);
 	}
 
-	//overridden from Component
-	bool Examinable::canAddTo(Entity& /*entity*/) {
-		return true;
-	}
 
 	bool Examinable::load(FILE* /*file*/) {
 		return true;

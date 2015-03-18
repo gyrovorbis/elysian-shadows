@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_TILE_HPP
 #define ELYSIAN_TILE_HPP
 
-#include <gyro.h>
+#include <gyro_video_api.h>
 #include <kinetic/gyro_kinetic.h>
 
 #include "elysian_asset.hpp"

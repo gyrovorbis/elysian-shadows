@@ -16,7 +16,7 @@ void gyPrintf(const char *const str, ...) {
     vsprintf(buffer, str, argptr);
     va_end(argptr);
 
-    printf(buffer);
+    printf("%s", buffer);
     fflush(stdout);
 
     //QString qBuff(buffer);

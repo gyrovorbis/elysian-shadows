@@ -56,8 +56,8 @@ public:
 // ====== INLINEZ =====
 
 inline void TkMapSystem::renderCustomPassImmediate(void) {
-    for(unsigned j = _scrStartY; j <= _scrEndY; ++j) {
-        for(unsigned i = _scrStartX; i <= _scrEndX; ++i) {
+    for(int j = _scrStartY; j <= _scrEndY; ++j) {
+        for(int i = _scrStartX; i <= _scrEndX; ++i) {
             for(unsigned k = 0; k < 3; ++k) {
                 TkMapDepthBuffEntryImpl curMapEntry;
                 curMapEntry.x = i;
@@ -187,7 +187,8 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
         const GYColor4& color = selectionDecorColors[drawStyle];
         //GYVector4 { x*32.0f+16.0f, y*32.0f+ 16.0f +  tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f, 1.0f },
 
-        glEnable(GL_DEPTH_TEST);
+        //WTF?
+        gyVidDepthTest(true);
         gyVidQuadListBegin(&color);
         for(unsigned i = 0; i < count; ++i) {
             auto& entry = array[i];
@@ -203,7 +204,7 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
             gyMatPop();
         }
         gyVidQuadListEnd();
-        glDisable(GL_DEPTH_TEST);
+        gyVidDepthTest(false);
     }
 }
 

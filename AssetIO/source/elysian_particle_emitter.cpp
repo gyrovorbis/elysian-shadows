@@ -158,7 +158,7 @@ void ParticleEmitterInternals::update(const CameraState*const cam, const float d
 			_pool.remove(it);
 		}
 
-		if(!cam->isWithinScreenRegion((*it).position.x, (*it).position.y, (*it).size, (*it).size)) {
+        if(!cam->isWithinScreenRegion((*it).position.x, (*it).position.y, (*it).size, (*it).size)) {
 			_pool.remove(it);
 			continue;
 		}
@@ -210,56 +210,63 @@ void ParticleEmitterInternals::render(void) {
 	//Probably could be optimized as shit to not bother using
 	//internal matrix stack!
 
-	gyVidTexBind(_attrib->getTexture());
+    if(_pool.size() > 0) {
+        gyVidTexBind(_attrib->getTexture());
 
-    gyVidNormalMapBind(_attrib->_normalMap);
-    gyVidSpecularMapBind(_attrib->_specularMap);
+        gyVidNormalMapBind(_attrib->_normalMap);
+        gyVidSpecularMapBind(_attrib->_specularMap);
 
-	gyVidMaterialBind(_attrib->_material);
-	gyVidAlphaLevel(GY_ALPHA_FULL);
-    gyVidRectPlaneType(GY_RECT_PLANE_FRONT);
+        gyVidMaterialBind(_attrib->_material);
+        gyVidAlphaLevel(GY_ALPHA_FULL);
+        gyVidRectPlaneType(GY_RECT_PLANE_FRONT);
 
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
+        gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
+        gyVidAlphaLevel(GY_ALPHA_FULL);
 
-	//loop unroll my bitch ass
+        //loop unroll my bitch ass
 
-	for(auto it = _pool.begin(); it < _pool.end(); ++it) {
+        for(auto it = _pool.begin(); it < _pool.end(); ++it) {
 
-		gyMatPush();
-		gyVidQuadListBegin(&(*it).color);
+            gyMatPush();
+            gyVidQuadListBegin(&(*it).color);
 
-		gyMatTranslate((*it).position.x, (*it).position.y, (*it).position.z);
-		//gyMatRotateZ((*it).orientation);
-		gyMatScale((*it).size, (*it).size, (*it).size);
+            gyMatTranslate((*it).position.x, (*it).position.y, (*it).position.z);
+            //gyMatRotateZ((*it).orientation);
+            gyMatScale((*it).size, (*it).size, (*it).size);
 
-		gyVidRect((*it).frame);
+            gyVidRect((*it).frame);
 
-		gyVidQuadListEnd();
-		gyMatPop();
+            gyVidQuadListEnd();
+            gyMatPop();
 
-	}
+        }
+    }
 }
 
 void ParticleEmitterInternals::renderAtElev(const unsigned char elev) {
     if(gyVidShadowPass() && !_attrib->_shadowVolume) return;
-	gyVidTexBind(_attrib->getTexture());
-
-    gyVidNormalMapBind(_attrib->_normalMap);
-    gyVidSpecularMapBind(_attrib->_specularMap);
-
-    gyVidMaterialBind(_attrib->_material);
-	gyVidAlphaLevel(GY_ALPHA_FULL);
-
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
+    bool initialized = false;
 
 	//loop unroll my bitch ass
 
-	for(auto it = _pool.begin(); it < _pool.end(); ++it) {
+    for(auto it = _pool.begin(); it < _pool.end(); ++it) {
 
 		//Check if we are within the range of this level of elevation
 		if((*it).zIndex != elev)  continue;
+
+        if(!initialized) {
+            gyVidTexBind(_attrib->getTexture());
+
+            gyVidNormalMapBind(_attrib->_normalMap);
+            gyVidSpecularMapBind(_attrib->_specularMap);
+
+            gyVidMaterialBind(_attrib->_material);
+            gyVidAlphaLevel(GY_ALPHA_FULL);
+
+            gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
+            initialized = true;
+
+        }
 
         gyVidRectPlaneType((*it).flat? GY_RECT_PLANE_BOTTOM : GY_RECT_PLANE_FRONT);
 
@@ -323,7 +330,7 @@ bool ParticleEmitter::removeFromLevel(void) {
 }
 
 
-bool ParticleEmitter::canAddTo(Entity& /*entity*/) { return true; }
+bool ParticleEmitter::canAddTo(Entity& /*entity*/) const { return true; }
 bool ParticleEmitter::load(FILE* /*file*/) { return true; }
 bool ParticleEmitter::save(FILE* /*file*/) { return true; }
 auto ParticleEmitter::getType(void) const -> TYPE { return Component::PARTICLE_EMITTER; }

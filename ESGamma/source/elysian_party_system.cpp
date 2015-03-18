@@ -297,7 +297,7 @@ void PartySystem::_checkPickup(Entity * const leader) const {
 				++it)
 			{
 				if(getCollisionSys()->checkCollision(*leader, *(*it)->getEntity())) {
-                    if((*it)->getEntity()->getRigidBody()->getAttrib()->canHold()) {
+                    if((*it)->getEntity()->getRigidBody()->getAttrib()->getCanHold()) {
                         leader->getCharacter()->setHeldEntity((*it)->getEntity());
                         break;
                     }

@@ -63,9 +63,9 @@ Skeleton::~Skeleton(void) {
 
 
 //reimplemented from component
-bool Skeleton::canAddTo(Entity& entity) { return true; }
-bool Skeleton::load(FILE* file) { return true; }
-bool Skeleton::save(FILE* file) { return true; }
+bool Skeleton::canAddTo(Entity& /*entity*/) const { return true; }
+bool Skeleton::load(FILE* /*file*/) { return true; }
+bool Skeleton::save(FILE* /*file*/) { return true; }
 auto Skeleton::getType(void) const -> TYPE { return SKELETON; }
 bool Skeleton::addToLevel(void) {
     _curArea->skeletons.push_back(this);
@@ -78,7 +78,7 @@ bool Skeleton::removeFromLevel(void) {
 }
 
 void Skeleton::setAttrib(SkeletonAttrib * const attrib) {
-    float x, y;
+    //float x, y;
     _attrib = attrib;
     _skeleton = spSkeleton_create(attrib->_skeletonData);
     _animState = spAnimationState_create(attrib->_animStateData);

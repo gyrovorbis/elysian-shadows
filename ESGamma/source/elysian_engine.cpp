@@ -104,7 +104,6 @@ void Engine::update(void) {
 		case System::ENGINE_MODAL_CONVERSATION:
 		case System::ENGINE_CONVERSATION:
 			_partySystem->update();
-			_cameraSystem->update();
 			_lightSystem->update();
 			_audioSystem->update();
 
@@ -198,6 +197,7 @@ void Engine::render(void (*func)(void)) {
 
 	switch(System::_engineState) {
 		default:
+            _cameraSystem->update();
 			gyVidSceneBegin();
             gyMatLoadIdentity();
 
@@ -224,7 +224,7 @@ void Engine::render(void (*func)(void)) {
 //#if GYRO_PLATFORM == GYRO_PLATFORM_x86
 			_lightSystem->shadowRenderPasses();
 //#endif
-			_lightSystem->addLightSourcesToScene();
+            //_lightSystem->addLightSourcesToScene();
 
 			_mapSystem->render();
 

@@ -183,7 +183,7 @@ public:
 
     virtual ~EventFilter(void) = default;
 
-    virtual bool eventFilter(QObject* object, QEvent* event) override {
+    virtual bool eventFilter(QObject* /*object*/, QEvent* event) override {
         QKeyEvent*      keyEvent = static_cast<QKeyEvent*>(event);
         QMouseEvent*    mouseEvent = static_cast<QMouseEvent*>(event);
         QWheelEvent*    wheelEvent = static_cast<QWheelEvent*>(event);

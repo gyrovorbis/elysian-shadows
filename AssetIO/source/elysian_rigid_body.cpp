@@ -8,6 +8,8 @@
 
 namespace elysian {
 
+//ELYSIAN_LUA_PROXY_FIELDS_EXPORT(ForceTarget)
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(RigidBodyAttrib)
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(RigidBody)
 
 ForceTarget::ForceTarget(void):
@@ -37,11 +39,6 @@ void ForceTarget::applyForceToPoint(const GYVector2 &loc, const GYVector2 &force
 	torqueAccum += gyVec2ScalarCrossProd(&relPoint, &force);
 }
 
-
-RigidBody::RigidBody(Entity& entity):
-	Component(entity)
-
-{}
 
 void RigidBody::integrate(const float deltaTime) {
 	if(!_active) return;
@@ -82,7 +79,7 @@ const GYVector3& RigidBody::getPosition(void) const { return getEntity()->_trans
 const GYStatic* RigidBody::getStaticAttrib(void) const { return getEntity()->getCollidable()->getAttrib()->getStaticAttrib(); }
 bool RigidBody::getRestingOnBody(void) const { return getEntity()->getCollidable()->getRestingOnBody(); }
 
-bool RigidBody::canAddTo(Entity& entity) {
+bool RigidBody::canAddTo(Entity& entity) const {
 	return (entity.getCollidable());
 }
 

@@ -40,7 +40,7 @@ void TkMapSystem::_renderMapBorders(void) const {
     gyVidNormalMapBind(nullptr);
     gyVidSpecularMapBind(nullptr);
     gyVidAlphaLevel(GY_ALPHA_FULL);
-    glEnable(GL_DEPTH_TEST);
+    gyVidDepthTest(true);
 
     gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
     gyVidQuadListBegin(&color);
@@ -54,5 +54,5 @@ void TkMapSystem::_renderMapBorders(void) const {
     gyMatPop();
 
     gyVidQuadListEnd();
-    glDisable(GL_DEPTH_TEST);
+    gyVidDepthTest(false);
 }

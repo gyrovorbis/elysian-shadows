@@ -7,7 +7,7 @@
 #include "elysian_camera_system.hpp"
 #include "elysian_lua_table_proxy.hpp"
 
-#define ELYSIAN_LIGHT_SOURCE_ATTENUATION_EPISOLON	0.1f
+#define ELYSIAN_LIGHT_SOURCE_ATTENUATION_EPSILON	0.1f
 
 namespace elysian {
 
@@ -21,11 +21,12 @@ namespace elysian {
 	public:
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
-            ELYSIAN_LUA_PROXY_FIELD(ambient, getAmbient)
-            ELYSIAN_LUA_PROXY_FIELD(diffuse, getDiffuse)
-            ELYSIAN_LUA_PROXY_FIELD(specular, getSpecular)
-            ELYSIAN_LUA_PROXY_FIELD(attenuation, getAttenuation)
-            ELYSIAN_LUA_PROXY_FIELD(spotExponent, getSpotExponent, setSpotExponent)
+            ELYSIAN_LUA_PROXY_FIELD(ambient,        getAmbient)
+            ELYSIAN_LUA_PROXY_FIELD(diffuse,        getDiffuse)
+            ELYSIAN_LUA_PROXY_FIELD(specular,       getSpecular)
+            ELYSIAN_LUA_PROXY_FIELD(attenuation,    getAttenuation)
+            ELYSIAN_LUA_PROXY_FIELD(spotExponent,   getSpotExponent, setSpotExponent)
+            ELYSIAN_LUA_PROXY_FIELD(radius,         getRadius)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
 		LightAttrib(void):
@@ -33,28 +34,33 @@ namespace elysian {
 
 		static GYLightProperties defaultProperties;
 
-        void    setAmbientColor(const GYVector4& color);
-        void    setDiffuseColor(const GYVector4& color);
-        void    setSpecularColor(const GYVector4& color);
-        void    setAttenuationFactors(const GYVector3& vec);
-        void    setSpotExponent(const float exp);
-        void    setComputeDistanceAttenuation(const bool val);
+        void            setAmbientColor(const GYVector4& color);
+        void            setDiffuseColor(const GYVector4& color);
+        void            setSpecularColor(const GYVector4& color);
+        void            setAttenuationFactors(const GYVector3& vec);
+        void            setSpotExponent(const float exp);
+        void            setComputeDistanceAttenuation(const bool val);
 
-        void    getAmbientColor(GYVector4& color) const;
-        void    getDiffuseColor(GYVector4& color) const;
-        void    getSpecularColor(GYVector4& color) const;
-        void    getAttenuationFactors(GYVector3& vec) const;
-        float   getSpotExponent(void) const;
+        void            getAmbientColor(GYVector4& color) const;
+        void            getDiffuseColor(GYVector4& color) const;
+        void            getSpecularColor(GYVector4& color) const;
+        void            getAttenuationFactors(GYVector3& vec) const;
+        float           getSpotExponent(void) const;
 
-        Vector4 getAmbient(void);
-        Vector4 getDiffuse(void);
-        Vector4 getSpecular(void);
-        Vector3 getAttenuation(void);
+        Vector4         getAmbient(void);
+        Vector4         getDiffuse(void);
+        Vector4         getSpecular(void);
+        Vector3         getAttenuation(void);
 
-        float   getRadius(void) const;
+        float           getRadius(void);
 
-        void    linearInterpolate(const LightAttrib& startKeyFrame, const LightAttrib& endKeyFrame,
+        void            linearInterpolate(const LightAttrib& startKeyFrame, const LightAttrib& endKeyFrame,
                                const float interval, const float elapsed);
+
+    private:
+        static float    _calculateRadius(const GYVector3& attenuation);
+
+        GYVector3       _prevAttenuation = { 0.0f, 0.0f, 0.0f };
 	};
 
 
@@ -67,23 +73,23 @@ namespace elysian {
 		friend class Engine;
 
         CameraState         _camState;
-        GYVector3           _relPos = { 0.0f, 0.0f, 0.0f };
-        bool                _shadowCaster = false;
+        GYVector3           _relPos         = { 0.0f, 0.0f, 0.0f };
+        bool                _shadowCaster   = false;
 	public:
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
-            ELYSIAN_LUA_PROXY_FIELD(shadowCaster, isShadowCaster, setShadowCaster)
-            ELYSIAN_LUA_PROXY_FIELD(type, getLightType, setLightType)
-            ELYSIAN_LUA_PROXY_FIELD(attrib, getAttrib)
-            ELYSIAN_LUA_PROXY_FIELD(relPos, getRelPos)
-            ELYSIAN_LUA_PROXY_FIELD(spotCutoffAngle, getSpotCutoffAngle, setSpotCutoffAngle)
-            ELYSIAN_LUA_PROXY_FIELD(dir, getDir)
+            ELYSIAN_LUA_PROXY_FIELD(shadowCaster,       isShadowCaster,     setShadowCaster)
+            ELYSIAN_LUA_PROXY_FIELD(type,               getLightType,       setLightType)
+            ELYSIAN_LUA_PROXY_FIELD(attrib,             getAttrib)
+            ELYSIAN_LUA_PROXY_FIELD(relPos,             getRelPos)
+            ELYSIAN_LUA_PROXY_FIELD(dir,                getDir)
+            ELYSIAN_LUA_PROXY_FIELD(spotCutoffAngle,    getSpotCutoffAngle, setSpotCutoffAngle)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
                             LightSource(Entity& entity);
         virtual             ~LightSource(void) override;
 
 		//reimplemented from component
-        virtual bool        canAddTo(Entity& entity) override;
+        virtual bool        canAddTo(Entity& entity) const override;
         virtual bool        load(FILE* file) override;
         virtual bool        save(FILE* file) override;
         virtual bool        addToLevel(void) override;
@@ -113,6 +119,15 @@ namespace elysian {
 
 	};
 
+
+
+
+
+
+
+
+    // ========== INLINEZ ===============
+
 	inline void LightAttrib::setAmbientColor(const GYVector4& color) {
 		ambientColor = color;
 	}
@@ -127,10 +142,6 @@ namespace elysian {
 		spotExponent = exp;
 	}
 
-	inline float LightAttrib::getRadius(void) const {
-		return _radius;
-	}
-
     inline void LightAttrib::getAmbientColor(GYVector4& color) const { color = ambientColor; }
     inline void LightAttrib::getDiffuseColor(GYVector4& color) const { color = diffuseColor; }
     inline void LightAttrib::getSpecularColor(GYVector4& color) const { color = specularColor; }
@@ -142,7 +153,7 @@ namespace elysian {
     inline Vector4 LightAttrib::getSpecular(void) { return Vector4(&specularColor); }
     inline Vector3 LightAttrib::getAttenuation(void) { return Vector3(&attenuationFactors); }
 
-	inline bool LightSource::canAddTo(Entity &/*entity*/) { return true; }
+    inline bool LightSource::canAddTo(Entity &/*entity*/) const { return true; }
 	inline auto LightSource::getType(void) const -> TYPE { return LIGHT_SOURCE; }
 	inline LightSource::LightSource(Entity& entity):
 		Component(entity),
@@ -155,7 +166,7 @@ namespace elysian {
 			&_camState,
             nullptr
 	}) { gyVec3Normalize(&direction);  }
-	inline void LightSource::setAttrib(const LightAttrib* const attrib) { properties = (GYLightProperties*)attrib; }
+    inline void LightSource::setAttrib(const LightAttrib* const attrib) { properties = (GYLightProperties*)(attrib); }
 	inline void LightSource::setDirection(const GYVector3& dir) { gyVec3Normalize(&direction); direction = dir; }
 	inline void LightSource::setSpotCutoffAngle(const float angle) { spotCutoffAngle = angle; }
 	inline auto LightSource::getLightType(void) const -> GY_LIGHT_TYPE { return type; }

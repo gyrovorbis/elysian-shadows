@@ -310,6 +310,10 @@ static inline void gyVec3ScaleAccum(void*const dest, const float scalar) {
     VEC3(dest)->z *= scalar;
 }
 
+static inline int gyVec3Compare(const void*const src1, const void *const src2) {
+    return (VEC3(src1)->x == VEC3(src2)->x && VEC3(src1)->y == VEC3(src2)->y && VEC3(src1)->z == VEC3(src2)->z);
+}
+
 static inline float gyVec3DotProd(const void *const src1, const void *const src2) {
     return (VEC3(src1)->x*VEC3(src2)->x + VEC3(src1)->y*VEC3(src2)->y + VEC3(src1)->z*VEC3(src2)->z);
 }
@@ -330,7 +334,13 @@ static inline void gyVec4Normalize(void *const v) {
     VEC4(v)->w /= mag;
 }
 
+static inline int gyVec4Compare(const void*const src1, const void *const src2) {
+    return (VEC4(src1)->x == VEC4(src2)->x && VEC4(src1)->y == VEC4(src2)->y && VEC4(src1)->z == VEC4(src2)->z && VEC4(src1)->w == VEC4(src2)->w);
+}
 
+static inline int gyMat4Compare(const GYMatrix4 m1, const GYMatrix4 m2) {
+    return (gyVec4Compare(m1[0], m2[0]) && gyVec4Compare(m1[1], m2[1]) && gyVec4Compare(m1[2], m2[2]) && gyVec4Compare(m1[3], m2[3]));
+}
 
 /*
 

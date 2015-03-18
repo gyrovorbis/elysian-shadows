@@ -238,9 +238,10 @@ void GuiSystem::renderBackground(void) {
 }
 
 void GuiSystem::renderForeground(void) {
+    _renderDebugOverlay();
+    if(_fgFadeAlpha == 0.0f) return;
 	//if(!_debugOverlayEnabled) return;
     adventureLog.render();
-	_renderDebugOverlay();
 	_renderMenuWidget(_fgMenuWidget);
 }
 
@@ -268,9 +269,11 @@ void GuiSystem::_renderDebugOverlay(void) {
     pragmata18.startBatchRender();
 
     _printDebugLine("FPS:", "%.2f", getTimerSys()->getFramerate());
-    _printDebugLine("Verts:", "%d", gyVidVertexRenderCount());
-    _printDebugLine("Uniform Uploads:", "%d", getLightSys()->getShaderUniformChangesLastFrame());
-	_printDebugLine("Textures:", "%d", gyVidTexAmount());
+    _printDebugLine("Verts:", "%u", gyVidDbgVertexRenderCount());
+    _printDebugLine("Uniform Uploads:", "%u", gyVidDbgShaderUniformChangeCount());
+    _printDebugLine("LightSys Uploads:", "%u", getLightSys()->getShaderUniformChangesLastFrame());
+    _printDebugLine("Texture Changes:", "%u", gyVidDbgTextureChangeCount());
+    _printDebugLine("Textures:", "%u", gyVidTexAmount());
 	_printDebugLine("Texture MBytes:", "%f", gyVidTexBytes()/1024.0f/1024.0f);
     pragmata18._transform._pos.y += 25.0f;
 	_printDebugLine("Onscreen Lights:", "%d", getLightSys()->getOnscreenLightCount());

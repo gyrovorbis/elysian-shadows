@@ -74,7 +74,7 @@ namespace elysian {
         //uint32_t getLightMapEntryScreenCoord(const unsigned y, const unsigned x) const;
         uint32_t    getLightMapEntryMapCoord(const unsigned y, const unsigned x) const;
 
-        void        getLightPassTileRegion(unsigned& startX, unsigned& startY, unsigned& endX, unsigned& endY) const;
+        void        getLightPassTileRegion(int& startX, int& startY, int& endX, int& endY) const;
         uint32_t    startLightPass(uint32_t& lightsLeft);
 
         unsigned    getShaderUniformChangesLastFrame(void) const;

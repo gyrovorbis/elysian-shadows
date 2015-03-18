@@ -355,6 +355,9 @@ namespace OOLUA {
 	template<> class Proxy_class<elysian::LuaBehavior>;
 }
 OOLUA_PROXY(Entity, RenderableObject)
+    OOLUA_CTORS(
+        OOLUA_CTOR(const OOLUA::Lua_table_ref)
+    )
 	OOLUA_MEM_FUNC(void, move, const GYVector2&)
 	OOLUA_MEM_FUNC(void, setName, const char*)
 	OOLUA_MEM_FUNC_CONST(const char *, getName)
@@ -660,7 +663,11 @@ OOLUA_PROXY(RigidBodyAttrib)
 	OOLUA_MEM_FUNC(void, setForceMask, uint32_t)
 	OOLUA_MEM_FUNC_CONST(uint32_t, getForceMask)
 	OOLUA_MEM_FUNC(void, setBreakable, bool)
+    OOLUA_MEM_FUNC_CONST(bool, isBreakable)
 	OOLUA_MEM_FUNC(void, setBaseDurability, float)
+    OOLUA_MEM_FUNC_CONST(float, getBaseDurability)
+    OOLUA_MEM_FUNC(void, setCanHold, const bool)
+    OOLUA_MEM_FUNC_CONST(bool, getCanHold)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ForceTarget)
@@ -671,6 +678,15 @@ OOLUA_PROXY(ForceTarget)
 	OOLUA_MEM_FUNC(void, applyForce, const GYVector3&)
 	OOLUA_MEM_FUNC(void, applyForceToPoint, const GYVector2&, const GYVector2&)
     OOLUA_MEM_FUNC(void, clearKinetic)
+    OOLUA_MEM_FUNC(Vector3, getVel)
+    OOLUA_MEM_FUNC(Vector3, getAccel)
+    OOLUA_MEM_FUNC(Vector3, getForceAccum)
+    OOLUA_MEM_FUNC(void, setRotation, const float)
+    OOLUA_MEM_FUNC(void, setAngAccel, const float)
+    OOLUA_MEM_FUNC(void, setTorqueAccum, const float)
+    OOLUA_MEM_FUNC_CONST(float, getRotation)
+    OOLUA_MEM_FUNC_CONST(float, getAngAccel)
+    OOLUA_MEM_FUNC_CONST(float, getTorqueAccum)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(RigidBody, Component, ForceTarget)
@@ -679,11 +695,12 @@ OOLUA_PROXY(RigidBody, Component, ForceTarget)
 		No_public_destructor
 	)
 	OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<RigidBodyAttrib*>)
-	OOLUA_MEM_FUNC_CONST(RigidBodyAttrib*, getAttrib)
+    OOLUA_MEM_FUNC_CONST(maybe_null<RigidBodyAttrib*>, getAttrib)
 	OOLUA_MEM_FUNC(void, setDurability, float)
 	OOLUA_MEM_FUNC_CONST(float, getDurability)
     OOLUA_MEM_FUNC_CONST(GYVector3, getVelocity)
     OOLUA_MEM_FUNC(void, setVelocity, const GYVector3&)
+    OOLUA_MEM_FUNC_CONST(float, getTileDamping)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(ForceGenerator)
@@ -749,12 +766,18 @@ OOLUA_PROXY(Warp, Component)
 		No_public_constructors,
 		No_public_destructor
 	)
-	OOLUA_MEM_FUNC(void, setToPos, const float, const float, unsigned char)
+    OOLUA_MEM_FUNC(void, setToPos, const float, const float, const float)
+    OOLUA_MEM_FUNC(Vector3, getToPos)
 	OOLUA_MEM_FUNC(void, setAreaPath, const char*)
+    OOLUA_MEM_FUNC_CONST(const char*, getAreaPath)
 	OOLUA_MEM_FUNC(void, setLevelPath, const char*)
+    OOLUA_MEM_FUNC_CONST(const char*, getLevelPath)
 	OOLUA_MEM_FUNC(void, setChangeArea, bool)
+    OOLUA_MEM_FUNC_CONST(bool, getChangeArea)
 	OOLUA_MEM_FUNC(void, setChangeLevel, bool)
+    OOLUA_MEM_FUNC_CONST(bool, getChangeLevel)
 	OOLUA_MEM_FUNC(void, setObliqueTransition, bool)
+    OOLUA_MEM_FUNC_CONST(bool, getObliqueTransition)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(AudioSource, Component)
@@ -786,6 +809,7 @@ OOLUA_PROXY(LightAttrib)
     OOLUA_MEM_FUNC(Vector4, getDiffuse)
     OOLUA_MEM_FUNC(Vector4, getSpecular)
     OOLUA_MEM_FUNC(Vector3, getAttenuation)
+    OOLUA_MEM_FUNC(float, getRadius)
 	//OOLUA_MEM_FUNC(void, setComputeDistanceAttenuation, const bool)
 OOLUA_PROXY_END
 

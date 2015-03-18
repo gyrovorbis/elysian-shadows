@@ -97,7 +97,7 @@ static int math_fmod (lua_State *L) {
 
 static int math_modf (lua_State *L) {
   lua_Number ip;
-  lua_Number fp = l_mathop(modf)(luaL_checknumber(L, 1), &ip);
+  lua_Number fp = l_mathop(modf)(luaL_checknumber(L, 1), (double*)&ip);
   lua_pushnumber(L, ip);
   lua_pushnumber(L, fp);
   return 2;

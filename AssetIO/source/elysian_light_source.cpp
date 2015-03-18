@@ -33,17 +33,30 @@ GYLightProperties LightAttrib::defaultProperties = {
 };
 
 void LightAttrib::setAttenuationFactors(const GYVector3& vec) {
-	//quadtratic coefficients
-    //const float a = vec.z;
-    //const float b = vec.y;
-    //const float c = (-1.0f/ELYSIAN_LIGHT_SOURCE_ATTENUATION_EPISOLON + vec.x);
+    attenuationFactors = vec;
+    getRadius();
+}
 
-//	const float root1 = (-b + sqrt(b*b - 4.0f*a*c))/(2.0f*a);
-	//const float root2 = (-b - sqrt(b*b - 4.0f*a*c))/(2.0f*a);
+float LightAttrib::_calculateRadius(const GYVector3 &vec) {
+    //Quadratic coefficients
+    const float a = vec.z;
+    const float b = vec.y;
+    const float c = vec.x -(1.0f/ELYSIAN_LIGHT_SOURCE_ATTENUATION_EPSILON);
 
+    //LOLOLOL QUADRATIC EQUATION
+    const float root1 = (-b + gySqrt(b*b - 4.0f*a*c))/(2.0f*a);
+    //const float root2 = (-b - sqrt(b*b - 4.0f*a*c))/(2.0f*a); //reest root
 
-	attenuationFactors = vec;
-    _radius = 1000.0f;//root1;
+    return root1;
+}
+
+inline float LightAttrib::getRadius(void) {
+    //check if shit has changed before performing calculation
+    if(!(_prevAttenuation.x == attenuationFactors.x && _prevAttenuation.y == attenuationFactors.y && _prevAttenuation.z == attenuationFactors.z)) {
+        //cache the bitch for next time
+        _radius = _calculateRadius(attenuationFactors);
+    }
+    return _radius;
 }
 
 //reimplemented from component
@@ -77,104 +90,63 @@ void LightSource::update(void) {
         gyMatMultVec(&localVec, &position, 1);
         gyMatPop();
 
-        /*
-		position = {
-			getEntity()->transform._pos.x,//-200.0f,
-            getEntity()->transform._pos.y,//-200.0f,
-            getEntity()->transform._pos.z,
-			1.0f
-        };*/
+
 	}
 }
 
-void LightSource::updateBoundingVolume(const CameraState *const cam, const GY_CUBE_MAP_FACE /*face*/) {
+void LightSource::updateBoundingVolume(const CameraState *const cam, const GY_CUBE_MAP_FACE face) {
 	CameraState* thisCam = static_cast<CameraState*>(camera);
 	GYViewVolume* vol = &thisCam->viewVolume;
 
 	if(type == GY_LIGHT_DIRECTIONAL) {
-	/*	vol->ntl.x = FLT_MIN; vol->ntl.y = FLT_MIN;
-		vol->ntr.x = FLT_MAX; vol->ntr.y = FLT_MIN;
-		vol->nbl.x = FLT_MIN; vol->nbl.y = FLT_MAX;
-		vol->nbr.x = FLT_MAX; vol->nbr.y = FLT_MAX;
-
-		vol->ftl.x = FLT_MIN; vol->ftl.y = FLT_MIN;
-		vol->ftr.x = FLT_MAX; vol->ftr.y = FLT_MIN;
-		vol->fbl.x = FLT_MIN; vol->fbl.y = FLT_MAX;
-		vol->fbr.x = FLT_MAX; vol->fbr.y = FLT_MAX;*/
 		*thisCam = *cam;
 
-		thisCam->updateBoundingSubregions(*cam);
-
-	} else if(type == GY_LIGHT_SPOT) {
-		/*vol->ntl.x = FLT_MIN; vol->ftl.y = FLT_MIN;
-		vol->ntr.x = FLT_MAX; vol->ftr.y = FLT_MIN;
-		vol->nbl.x = FLT_MIN; vol->fbl.y = FLT_MAX;
-		vol->nbr.x = FLT_MAX; vol->fbr.y = FLT_MAX;
-
-		vol->ftl.x = FLT_MIN; vol->ftl.y = FLT_MIN;
-		vol->ftr.x = FLT_MAX; vol->ftr.y = FLT_MIN;
-		vol->fbl.x = FLT_MIN; vol->fbl.y = FLT_MAX;
-		vol->fbr.x = FLT_MAX; vol->fbr.y = FLT_MAX;*/
+    } else if(type == GY_LIGHT_SPOT) { //CALCULATE ME LATER!!!!
 
 		*thisCam = *cam;
 
-		thisCam->updateBoundingSubregions(*cam);
 	} else { // GY_LIGHT_POINT
 
-		const float halfW = 2000;//properties->_radius;//maxDist*0.5f;
 
-		vol->ntl.x = position.x - halfW; vol->ntl.y = position.y - halfW;
-		vol->ntr.x = position.x + halfW; vol->ntr.y = position.y - halfW;
-		vol->nbl.x = position.x - halfW; vol->nbl.y = position.y + halfW;
-		vol->nbr.x = position.x + halfW; vol->nbr.y = position.y + halfW;
-/*
+        const float halfW = static_cast<LightAttrib*>(properties)->getRadius();
+
+        vol->ntl.x = position.x - halfW; vol->ntl.y = position.y - halfW;
+        vol->ntr.x = position.x + halfW; vol->ntr.y = position.y - halfW;
+        vol->nbl.x = position.x - halfW; vol->nbl.y = position.y + halfW;
+        vol->nbr.x = position.x + halfW; vol->nbr.y = position.y + halfW;
+
 		switch(face) {
 		case GY_CUBE_MAP_RIGHT:
-			vol->ntl.x += halfW;
-			vol->ntr.x += halfW;
-			vol->nbl.x += halfW;
-			vol->nbr.x += halfW;
+            vol->ntl.x = vol->nbl.x = position.x;
 			break;
 		case GY_CUBE_MAP_LEFT:
-			vol->ntl.x -= halfW;
-			vol->ntr.x -= halfW;
-			vol->nbl.x -= halfW;
-			vol->nbr.x -= halfW;
+            vol->ntr.x = vol->nbr.x = position.x;
 			break;
 
 		case GY_CUBE_MAP_BACK:
-			vol->ntl.y -= halfW;
-			vol->ntr.y -= halfW;
-			vol->nbl.y -= halfW;
-			vol->nbr.y -= halfW;
+            vol->nbl.y = vol->nbr.y = position.y;
 			break;
 
 		case GY_CUBE_MAP_FRONT:
-			vol->ntl.y += halfW;
-			vol->ntr.y += halfW;
-			vol->nbl.y += halfW;
-			vol->nbr.y += halfW;
+            vol->ntl.y = vol->ntr.y = position.y;
 			break;
 
 		case GY_CUBE_MAP_BOTTOM:
 		case GY_CUBE_MAP_TOP:
 		default:
 			break;
-		}*/
+        }
 
 	}
-//*thisCam = *cam;
+
 	vol->ftl = vol->ntl;
 	vol->ftr = vol->ntr;
 	vol->fbl = vol->nbl;
 	vol->fbr = vol->nbr;
 
-		thisCam->updateBoundingSubregions(*cam);
-/*
-	thisCam->scrStartX = 0; thisCam->scrStartY = 0;
-	thisCam->scrEndX = 199*32; thisCam->scrEndY = 199*32;
-	thisCam->tileStartX = 0; thisCam->tileStartY = 0;
-	thisCam->tileEndX = 199; thisCam->tileEndY = 199;*/
+    thisCam->updateViewVolumeBoundingRegion();
+    if(type != GY_LIGHT_DIRECTIONAL) thisCam->clipBoundingRegion(*cam);
+
 
 }
 

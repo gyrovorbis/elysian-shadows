@@ -25,9 +25,12 @@ LightSystem::LightSystem(void) {
 void LightSystem::_addToLightMap(LightSource*const src) {
 	CameraState*const		 lightCam	= src->getCameraState();
 	const uint32_t			lightMask	= (1<<(_onscreenLightCount-1));
+    int startX, startY, endX, endY;
 
-	for(unsigned y = lightCam->tileStartY; y <= lightCam->tileEndY; ++y) {
-		for(unsigned x = lightCam->tileStartX; x <= lightCam->tileEndX; ++x) {
+    getCameraSys()->getVisibleTileRegion(startX, startY, endX, endY, lightCam);
+
+    for(int y = startY; y <= endY; ++y) {
+        for(int x = startX; x <= endX; ++x) {
 			const unsigned xIndex = x-_screenTileXOffset;
 			const unsigned yIndex = y-_screenTileYOffset;
 			_lightMap[yIndex][xIndex] |= lightMask;
@@ -178,22 +181,19 @@ void LightSystem::render(void) {
 
 void LightSystem::shadowRenderPasses(void) {
     //if(!_enabled) return;
-	const auto sources	= _curArea->lightSources;
-	CameraSystem* camSys = getCameraSys();
-	CameraState* cam	= camSys->getCurrentState();
-	_screenTileXOffset	= cam->tileStartX;
-	_screenTileYOffset	= cam->tileStartY;
+    const auto sources      = _curArea->lightSources;
+    CameraSystem* camSys    = getCameraSys();
+    CameraState* cam        = camSys->getCurrentState();
+    //_screenTileXOffset	= cam->tileStartX;
+    //_screenTileYOffset	= cam->tileStartY;
 
 	_onscreenLightCount = 0;
 	memset(_lightMap, 0, sizeof(_lightMap));
 
 	_shadowPass = true;
-    bool dbgCam = camSys->isDebug();
+    //bool dbgCam = camSys->isDebug();
 	gyVidLightSourceBeginShadowPasses();
-    if(dbgCam) {
-        camSys->pushState();
-        *camSys->getCurrentState() = *cam;
-    }
+    camSys->pushState();
 
     if(_enabled)
 	for(auto it : sources) {
@@ -202,45 +202,42 @@ void LightSystem::shadowRenderPasses(void) {
 
 		switch(it->getLightType()) {
 		case GY_LIGHT_SPOT:
-		//	if(!cam->isWithinScreenRegion(it->position.x, it->position.y, it->getAttrib().getRadius(), it->getAttrib().getRadius())) break;
+        if(!cam->isWithinScreenRegion(it->position.x, it->position.y, it->getAttrib()->getRadius(), it->getAttrib()->getRadius())) break;
 		case GY_LIGHT_DIRECTIONAL:
 			_onscreenLights[_onscreenLightCount++] = it;
-			it->updateBoundingVolume(cam, GY_CUBE_MAP_FACE_MAX);
+            it->updateBoundingVolume(cam, GY_CUBE_MAP_FACE_MAX);
 
 			if(it->isShadowCaster()) {
 				gyVidLightSourceBeginShadowPass(it, GY_CUBE_MAP_FACE_MAX);
-                //getCameraSys()->setCurrentCameraState(it->getCameraState());
+                getCameraSys()->setCurrentCameraState(it->getCameraState());
 				//_renderShadowVolumes();
                 if(_shadowPassEnabled) getMapSys()->render();
             }
 			_addToLightMap(it);
 			break;
 		case GY_LIGHT_POINT:
-			//if(cam->isWithinScreenRegion(it->position.x, it->position.y, it->getAttrib().getRadius(), it->getAttrib().getRadius())) {
+            if(cam->isWithinScreenRegion(it->position.x, it->position.y, it->getAttrib()->getRadius(), it->getAttrib()->getRadius())) {
 				_onscreenLights[_onscreenLightCount++] = it;
 
-					for(unsigned i = GY_CUBE_MAP_RIGHT; i < GY_CUBE_MAP_FACE_MAX; ++i) {
-						it->updateBoundingVolume(cam, (GY_CUBE_MAP_FACE)i);
+                for(unsigned i = GY_CUBE_MAP_RIGHT; i < GY_CUBE_MAP_FACE_MAX; ++i) {
+                    it->updateBoundingVolume(cam, (GY_CUBE_MAP_FACE)i);
+                    _addToLightMap(it);
 
-						if(it->isShadowCaster()) {
-							gyVidLightSourceBeginShadowPass(it, (GY_CUBE_MAP_FACE)i);
+                    if(it->isShadowCaster()) {
+                        gyVidLightSourceBeginShadowPass(it, (GY_CUBE_MAP_FACE)i);
 
-                            //it->getCameraState()->updateBoundingSubregions(*cam);
+                        getCameraSys()->setCurrentCameraState(it->getCameraState());
+                        //_renderShadowVolumes();
+                        if(_shadowPassEnabled) getMapSys()->render();
 
-                            //getCameraSys()->setCurrentCameraState(it->getCameraState());
-							//_renderShadowVolumes();
-                            if(_shadowPassEnabled) getMapSys()->render();
-
-						}
-					}
-					_addToLightMap(it);
-
-			//}
+                    }
+                }
+            }
 			break;
 		}
 	}
 
-    if(dbgCam) camSys->popState();
+    camSys->popState();
 	gyVidLightSourceEndShadowPasses();
     if(_enabled) gyVidSetGlobalAmbience(&_globalAmbience);
 	_shadowPass = false;
@@ -248,14 +245,15 @@ void LightSystem::shadowRenderPasses(void) {
 }
 
 void LightSystem::addLightSourcesToScene(void) {
+    if(gyVidShadowPass()) return;
 	const auto sources = _curArea->lightSources;
-	gyVidLightSourceClear();
 	for(auto it : sources) {
 		gyVidLightSourceAdd(it);
 	}
 }
 
 void LightSystem::removeLightSourcesFromScene(void) {
+    if(gyVidShadowPass()) return;
 	const static GYVector4 fullAmbience = GYVector4{ 1.0f, 1.0f, 1.0f, 1.0f };
 	gyVidSetGlobalAmbience(&fullAmbience);
 	_activeLights = 0;
@@ -266,28 +264,29 @@ void LightSystem::removeLightSourcesFromScene(void) {
 
 }
 
-
-void LightSystem::getLightPassTileRegion(unsigned& startX, unsigned& startY, unsigned& endX, unsigned& endY) const {
+void LightSystem::getLightPassTileRegion(int& startX, int& startY, int& endX, int& endY) const {
 	startX	= ELYSIAN_LIGHT_SYSTEM_LIGHT_MAP_WIDTH;
 	endX	= 0;
 	startY	= ELYSIAN_LIGHT_SYSTEM_LIGHT_MAP_HEIGHT;
 	endY	= 0;
-
 	uint32_t lights		= _activeLights;
+    int lightStartX, lightStartY, lightEndX, lightEndY;
 
 	for(unsigned i = 0; i < _onscreenLightCount; ++i) {
 		if(!(lights & (1<<i))) continue;
-		const CameraState*const cam = _onscreenLights[i]->getCameraState();
 
-		if(cam->tileStartX < startX)	startX = cam->tileStartX;
-		if(cam->tileEndX > endX)		endX = cam->tileEndX;
-		if(cam->tileStartY < startY)	startY = cam->tileStartY;
-		if(cam->tileEndY < endY)		endY = cam->tileEndY;
+        getCameraSys()->getVisibleTileRegion(lightStartX, lightStartY, lightEndX, lightEndY);
+
+        if(lightStartX < startX)	startX  = lightStartX;
+        if(lightEndX > endX)		endX    = lightEndX;
+        if(lightStartY < startY)	startY  = lightStartY;
+        if(lightEndY < endY)		endY    = lightEndY;
 
 	}
 }
 
 uint32_t LightSystem::startLightPass(uint32_t& lightsLeft) {
+    if(gyVidShadowPass()) return ~0;
 	//Number of enabled bits in a mask
 	auto bitCount = [&](const uint32_t mask) {
 		unsigned count = 0;
@@ -419,8 +418,10 @@ void LightSystem::_sortOnscreenLights(void) {
 
 		for(unsigned i = 0; i < _onscreenLightCount; ++i) {
 			if(used[i]) continue;
+            int sx, sy, ex, ey;
 			const CameraState* const cam = lights[i]->getCameraState();
-			const unsigned area = (cam->tileEndX-cam->tileStartX)*(cam->tileEndY-cam->tileStartY);
+            getCameraSys()->getVisibleTileRegion(sx, sy, ex, ey, cam);
+            const unsigned area = (ex-sx)*(ey-sy);
 			if(area > largestArea) {
 				largestArea = area;
 				largestIndex = i;

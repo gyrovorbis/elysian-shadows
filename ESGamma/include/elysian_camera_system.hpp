@@ -113,24 +113,17 @@ namespace elysian {
 		float minScale		= 0.5f;
 		float baseScale		= 1.0f;
 
-		//Visible Tile Region
-		unsigned tileStartX	= 0;
-		unsigned tileEndX	= 0;
-		unsigned tileStartY	= 0;
-		unsigned tileEndY	= 0;
-
 		//Bounding Geometry
 		int scrStartX	= 0;
 		int scrStartY	= 0;
 		int scrEndX		= 0;
 		int scrEndY		= 0;
 
-		void updateBoundingRegions(const int startX, const int endX, const int startY, const int endY);
-		void updateBoundingSubregions(const CameraState& cam);
+        void updateViewVolumeBoundingRegion(void);
+        void clipBoundingRegion(const int startX, const int endX, const int startY, const int endY);
+        void clipBoundingRegion(const CameraState& cam);
 
-		bool isWithinScreenRegion(const int x, const int y, const int width, const int height) const;
-
-		void update(const float deltaTime);
+        bool isWithinScreenRegion(const int x, const int y, const int width, const int height) const;
 	};
 
 	class CameraSystem:
@@ -319,15 +312,15 @@ namespace elysian {
 
 		CameraState* getCurrentState(void) const { return _curState; }
 
-		void getVisibleTileRegion(unsigned& startX, unsigned& startY, unsigned& endX, unsigned& endY) const {
-            startX = _curState->tileStartX; endX = _curState->tileEndX;
-            startY = _curState->tileStartY; endY = _curState->tileEndY;
-			//startX = 0; startY = 0;
-			//endX = 49; endY = 49;
-            //startX = 0;
-            //startY = 0;
-            //endX = getCurArea()->width-1;
-            //endY = getCurArea()->height-1;
+        bool isOnscreen(const int x, const int y, const int width, const int height) const;
+
+        void getVisibleTileRegion(int& startX, int& startY, int& endX, int& endY, const CameraState* state=nullptr) const {
+            if(!state) state = _curState;
+            startX = state->scrStartX / ELYSIAN_TILE_WIDTH; endX = state->scrEndX / ELYSIAN_TILE_WIDTH;
+            startY = state->scrStartY / ELYSIAN_TILE_HEIGHT; endY = state->scrEndY / ELYSIAN_TILE_HEIGHT;
+
+            if(++endX >= _curArea->width) endX = _curArea->width-1;
+            if(++endY >= _curArea->height) endY = _curArea->height-1;
 		}
 
 		void pushViewMatrixToStack(void);
@@ -343,9 +336,6 @@ namespace elysian {
 		void update(void);
 
 		bool isOnscreen(const Entity &entity);
-
-		void isEntityWithinViewVolume(const Entity& entity) const;
-		void isTileWithinViewVolume(const unsigned l, const unsigned x, const unsigned y) const;
 
 		void setBoundaries(const float top, const float bottom, const float left, const float right) {
 			_topBoundary = top; _bottomBoundary = bottom; _leftBoundary = left; _rightBoundary = right;
@@ -416,17 +406,29 @@ namespace elysian {
 					   interval, elapsed);*/
 	}
 
-	inline bool CameraState::isWithinScreenRegion(const int x, const int y, const int halfWidth, const int halfHeight) const {
+    inline bool CameraSystem::isOnscreen(const int x, const int y, const int halfWidth, const int halfHeight) const {
 
-		const int distX = abs((int)x-(int)_keyFrame._pos.x);
-		const int distY = abs((int)y-(int)_keyFrame._pos.y);
+        const int distX = abs((int)x-(int)_curState->_keyFrame._pos.x);
+        const int distY = abs((int)y-(int)_curState->_keyFrame._pos.y)/(_curState->_keyFrame._scale*_curState->staticScale);
 
-		const int maxDistX = halfWidth + (scrEndX-scrStartX)*0.5f;
-		const int maxDistY = halfHeight + (scrEndY-scrStartY)*0.5f;
+        const int maxDistX = (halfWidth + (_curState->scrEndX-_curState->scrStartX)*0.5f)/(_curState->_keyFrame._scale*_curState->staticScale);
+        const int maxDistY = (halfHeight + (_curState->scrEndY-_curState->scrStartY)*0.5f)/(_curState->_keyFrame._scale*_curState->staticScale);
 
-		return(distY < maxDistY && distX < maxDistX);
+        return (distY < maxDistY && distX < maxDistX);
 
 	}
+
+    inline bool CameraState::isWithinScreenRegion(const int x, const int y, const int halfWidth, const int halfHeight) const {
+
+        const int distX = abs((int)x-(int)_keyFrame._pos.x);
+        const int distY = abs((int)y-(int)_keyFrame._pos.y);
+
+        const int maxDistX = (halfWidth + (scrEndX-scrStartX)*0.5f)/(_keyFrame._scale*staticScale);
+        const int maxDistY = (halfHeight + (scrEndY-scrStartY)*0.5f)/(_keyFrame._scale*staticScale);
+
+        return (distY < maxDistY && distX < maxDistX);
+
+    }
 
 	inline void CameraSystem::moveToKeyFrame(const CameraKeyFrame &frame, const float time, EventMonitor * const monitor) {
         auto &interp = get<SUBPROC_KEY_FR_INTERP>(static_cast<SubProcParent&>(*this));

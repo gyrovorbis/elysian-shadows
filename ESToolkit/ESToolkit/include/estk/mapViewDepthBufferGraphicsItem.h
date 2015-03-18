@@ -20,7 +20,7 @@ private:
 public:
 
 	//=== Implemented from elysian::MapDepthBuffer ===
-    void        getOnscreenTileRegion(unsigned &startX, unsigned &startY, unsigned &endX, unsigned &endY) const;
+    void        getOnscreenTileRegion(int &startX, int &startY, int &endX, int &endY) const;
     float       getBaseZCoord(void) const;
     void        getObjectLayerEntry(const unsigned x, const unsigned y, TkMapDepthBuffEntryImpl &entry);
     void        renderObjectEntry(const TkMapDepthBuffEntryImpl &entry, const float z);
@@ -52,7 +52,7 @@ public:
 
 inline void MapViewDepthBufferGraphicsItem::renderCustomPassImmediate(void) { }
 
-inline void MapViewDepthBufferGraphicsItem::getOnscreenTileRegion(unsigned &startX, unsigned &startY, unsigned &endX, unsigned &endY) const {
+inline void MapViewDepthBufferGraphicsItem::getOnscreenTileRegion(int &startX, int &startY, int &endX, int &endY) const {
 	QRect renderRegion = getVisibleTileRegion();
 	startX	= renderRegion.left();
 	endX	= renderRegion.right();

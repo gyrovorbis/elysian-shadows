@@ -28,6 +28,8 @@ ELYSIAN_LUA_PROXY_FIELDS_EXPORT(EntityBase)
 
 float EntityBase::_oldZ;
 
+EntityBase::EntityBase(const OOLUA::Lua_table_ref valTable) { static_cast<Entity*>(this)->fromTable(valTable); }
+
 void EntityBase::setTransform(const OOLUA::Lua_table_ref valTable) { _transform.fromTable(valTable); }
 
 Entity* EntityBase::getTopParentEntity(void) {
@@ -794,10 +796,9 @@ void EntityBase::removeSkeleton(void) {
 
 template<typename T>
 void EntityBase::_setComponent(T*& comp, const OOLUA::Lua_table_ref valTable) {
-    if(comp) {
-        _removeComponent<T>(comp);
+    if(!comp) {
+        comp = _addComponent<T>(comp);
     }
-    comp = _addComponent<T>(comp);
     comp->fromTable(valTable);
 }
 

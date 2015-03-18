@@ -190,15 +190,15 @@ void CollisionSystem::renderTileColliders(void) const {
 	//Check if there's even an active player for solidity to be rendered relative to
 	if(!getPartySys()->getPartyLeader()) return;
 
-	unsigned startX, startY, endX, endY;
+    int startX, startY, endX, endY;
 	unsigned playerElev = getPartySys()->getPartyLeader()->getElev();
-	Collidable &col = *getPartySys()->getPartyLeader()->getCollidable();
+    //Collidable &col = *getPartySys()->getPartyLeader()->getCollidable();
 
     gyVidTexBind(nullptr);
 	gyVidAlphaLevel(GY_ALPHA_FULL);
 	getMapSys()->getOnscreenTileRegion(startX, startY, endX, endY);
-	for(unsigned y = startY; y <= endY; ++y) {
-		for(unsigned x = startX; x <= endX; ++x) {
+    for(int y = startY; y <= endY; ++y) {
+        for(int x = startX; x <= endX; ++x) {
 			unsigned startIndex, stopIndex;
 			Tile::COLLIDER_TYPE colType = Tile::COLLIDER_NONE;
 

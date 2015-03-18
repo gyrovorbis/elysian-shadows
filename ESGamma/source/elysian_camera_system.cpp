@@ -15,76 +15,57 @@ CameraSystem* CameraShakeSubProcess::_cameraSys = nullptr;
 
 // ===== INSTANCE MEMBERS =====
 
-void CameraState::updateBoundingRegions(const int xMin, const int xMax, const int yMin, const int yMax) {
-#if 0
-	int startX	= xMax;
-	int startY	= yMax;
-	int endX	= xMin;
-	int endY	= yMin;
-#else
-	(void)xMin;
-	(void)xMax;
-	(void)yMin;
-	(void)yMax;
-#endif
-#if 0
-	auto checkPointBounds = [&](const GYVector3& point) {
-		if(point.x < (float)startX) startX = (int)point.x;
-		else if(point.x > (float)endX) endX = (int)point.x;
-		if(point.y < (float)startY) startY = (int)point.y;
-		else if(point.y > (float)endY) endY = (int) point.y;
-	};
+void CameraState::updateViewVolumeBoundingRegion(void) {
+    scrStartX   = INT_MIN;
+    scrStartY   = INT_MIN;
+    scrEndX     = INT_MAX;
+    scrEndY     = INT_MAX;
 
-	//Find X/Y extremes given each vertex to create bounding box
-    checkPointBounds(viewVolume.ftr);
-    checkPointBounds(viewVolume.ftl);
-    checkPointBounds(viewVolume.fbr);
-    checkPointBounds(viewVolume.fbl);
-    checkPointBounds(viewVolume.ntr);
-    checkPointBounds(viewVolume.ntl);
-    checkPointBounds(viewVolume.nbr);
-    checkPointBounds(viewVolume.nbl);
-
-	if(startX < 0) startX = 0;
-	if(startY < 0) startY = 0;
-	if(endX < 0) endX = 0;
-	if(endY < 0) endY = 0;
-
-	//Convert from world to tile coordinates (and signed to unsigned)
-	scrStartX = (startX < xMin)? xMin : (unsigned)startX;
-	scrStartY = (startY < yMin)? yMin : (unsigned)startY;
-	scrEndX = (endX > xMax)? xMax : (unsigned)endX;
-	scrEndY = (endY > yMax)? yMax : (unsigned)endY;
-
-	//Fuckin' weird, hacky, and reesty... but okay.
-	tileStartX	= scrStartX/32;
-	tileEndX	= scrEndX/32+1;
-	while(tileEndX*32+16 > (unsigned)xMax) {
-		--tileEndX;
-		if(tileEndX == 0) break;
-	}
-	tileStartY	= scrStartY/32;
-	tileEndY	= scrEndY/32+1;
-	while(tileEndY*32+16 > (unsigned)yMax) {
-		--tileEndY;
-		if(tileEndY == 0) break;
-	}
-
-#endif
-
+    clipBoundingRegion(*this);
 }
 
-void CameraState::updateBoundingSubregions(const CameraState &cam) {
-	/**** FUCKING FIX ME!!!!! ****/
+void CameraState::clipBoundingRegion(const int xMin, const int xMax, const int yMin, const int yMax) {
+    //Clip to 0
+    const int clipXMin = (xMin < 0)? 0 : xMin;
+    const int clipYMin = (yMin < 0)? 0 : yMin;
 
-//	memcpy(&viewVolume, &cam.viewVolume, sizeof(GYViewVolume));
+    if(scrStartX < clipXMin)    scrStartX   = clipXMin;
+    if(scrEndX > xMax)          scrEndX     = xMax;
+    if(scrStartY < clipYMin)    scrStartY   = clipYMin;
+    if(scrEndY > yMax)          scrEndY     = yMax;
 
+    //tileStartX	= scrStartX/32;
+    //tileEndX	= scrEndX/32;
 
-	/***** END REEST ******/
+    //tileStartY	= scrStartY/32;
+   //tileEndY	= scrEndY/32;
+}
 
-	updateBoundingRegions(cam.scrStartX, cam.scrEndX, cam.scrStartY, cam.scrEndY);
+void CameraState::clipBoundingRegion(const CameraState &cam) {
+    int startX	= INT_MAX;
+    int startY	= INT_MAX;
+    int endX	= INT_MIN;
+    int endY	= INT_MIN;
 
+    auto checkPointBounds = [&](const GYVector3& point) {
+        if(point.x < (float)startX) startX  = (int)point.x;
+        if(point.x > (float)endX)   endX    = (int)point.x;
 
+        if(point.y < (float)startY) startY  = (int)point.y;
+        if(point.y > (float)endY)   endY     = (int)point.y;
+    };
+
+    //Find X/Y extremes given each vertex to create bounding box
+    checkPointBounds(cam.viewVolume.ftr);
+    checkPointBounds(cam.viewVolume.ftl);
+    checkPointBounds(cam.viewVolume.fbr);
+    checkPointBounds(cam.viewVolume.fbl);
+    checkPointBounds(cam.viewVolume.ntr);
+    checkPointBounds(cam.viewVolume.ntl);
+    checkPointBounds(cam.viewVolume.nbr);
+    checkPointBounds(cam.viewVolume.nbl);
+
+    clipBoundingRegion(startX, endX, startY, endY);
 }
 
 void CameraSystem::_updateState(CameraState*const state, const float /*deltaTime*/) {
@@ -102,16 +83,16 @@ void CameraSystem::_updateState(CameraState*const state, const float /*deltaTime
 	float maxHeight = boundBottom	- boundTop;
 	float maxWidth	= boundRight	- boundLeft;
 
-	boundTop += (float)height/_curState->_keyFrame._scale*0.5f;
+    boundTop    += (float)height/_curState->_keyFrame._scale*0.5f;
 	boundBottom -= (float)height/_curState->_keyFrame._scale*0.5f;
-	boundLeft += (float)width/_curState->_keyFrame._scale*0.5f;
-	boundRight -= (float)width/_curState->_keyFrame._scale*0.5f;
+    boundLeft   += (float)width/_curState->_keyFrame._scale*0.5f;
+    boundRight  -= (float)width/_curState->_keyFrame._scale*0.5f;
 
     if(_boundByMap) {
-        if(state->_keyFrame._pos.y < boundTop) _curState->_keyFrame._pos.y = boundTop;
-        if(state->_keyFrame._pos.y > boundBottom) _curState->_keyFrame._pos.y = boundBottom;
-        if(state->_keyFrame._pos.x < boundLeft) _curState->_keyFrame._pos.x = boundLeft;
-        if(state->_keyFrame._pos.x > boundRight) _curState->_keyFrame._pos.x = boundRight;
+        if(state->_keyFrame._pos.y < boundTop)      _curState->_keyFrame._pos.y = boundTop;
+        if(state->_keyFrame._pos.y > boundBottom)   _curState->_keyFrame._pos.y = boundBottom;
+        if(state->_keyFrame._pos.x < boundLeft)     _curState->_keyFrame._pos.x = boundLeft;
+        if(state->_keyFrame._pos.x > boundRight)    _curState->_keyFrame._pos.x = boundRight;
     }
 
 	if(!_dynamic) return;
@@ -220,6 +201,9 @@ void CameraSystem::initializeProjMatrix(void) {
     gyVidCamOrthoProj(&_uiCamera, 0.0f, (float)w, (float)h, 0.0f, -999.0f, 1000.0f);
 
     gyVidCamFrustum(&_debugState, 45.0f, 1.0f, 0.5f, 900.0f);
+
+    //_curState->updateViewVolumeBoundingRegion();
+    //_curState->clipBoundingRegion(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
 
 }
 
@@ -358,17 +342,8 @@ void CameraSystem::update(void) {
 
 	if(_customState) return;
 
-#if 1
-   // _curState->updateBoundingRegions(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
-    _curState->tileStartX = _curState->tileStartY = 0;
-    _curState->tileEndX = getCurArea()->getMapWidth()-1;
-    _curState->tileEndY = getCurArea()->getMapHeight()-1;
-    _curState->scrStartX = 0;
-    _curState->scrStartY = 0;
-    _curState->scrEndX = getCurArea()->getMapWidth()*32.0f;
-    _curState->scrEndY = getCurArea()->getMapHeight()*32.0f;
 
-#else
+#if 0
 
 
 
@@ -500,7 +475,9 @@ void CameraSystem::update(void) {
 		}
 	}
 
-
+    //Update camera boundaries
+   _curState->updateViewVolumeBoundingRegion();
+   _curState->clipBoundingRegion(0, getCurArea()->getMapWidth()*32, 0, getCurArea()->getMapHeight()*32);
 }
 
 //VERY INEFFICIENT. BATCH THIS BITCH! THESE DON'T WORK ANYMORE!!!!
@@ -517,7 +494,7 @@ void CameraSystem::transform(GYVector3* dest, const GYVector3* src) {
 	dest->x = out.x; dest->y = out.y; dest->z = out.z;
 }
 
-void CameraSystem::transform(GYVector4* dest, const GYVector4* src) {
+void CameraSystem::transform(GYVector4* /*dest*/, const GYVector4* /*src*/) {
 /*
     gyMatPush();
     //gyMatLoadIdentity();
@@ -527,15 +504,32 @@ void CameraSystem::transform(GYVector4* dest, const GYVector4* src) {
 &*/
 }
 
+//NEEDS TO RESPECT ELEVATION + DIFFERENT PLANE TYPES
 bool CameraSystem::isOnscreen(const Entity &entity) {
-	
+#if 0
     if(entity._transform._orientZ == 0.0f) { //Entities without rotation
-        return ((entity._transform._pos.x + 0.5f*entity._transform._size.x >= _curState->scrStartX &&
-                entity._transform._pos.x - 0.5f*entity._transform._size.x <= _curState->scrEndX) &&
-                (entity._transform._pos.y + 0.5f*entity._transform._size.y >= _curState->scrStartY &&
-                entity._transform._pos.y - 0.5f*entity._transform._size.y <= _curState->scrEndY));
+        return _curState->isWithinScreenRegion(entity._transform._pos.x, entity._transform._pos.y,
+                                    entity._transform._size.x * entity._transform._scale.x * 0.5f,
+                                    entity._transform._size.y * entity._transform._scale.y * 0.5f);
 	} else { //Entities with rotation
 		//Approximate region by bounding as a square with largest dimension
+        const float xSize = entity._transform._size.x * entity._transform._scale.x * 0.5f;
+        const float ySize = entity._transform._size.y * entity._transform._scale.y * 0.5f;
+
+        const float length = (xSize > ySize)? xSize : ySize;
+
+        return _curState->isWithinScreenRegion(entity._transform._pos.x, entity._transform._pos.y,
+                                    length,
+                                    length);
+	}
+#else
+    if(entity._transform._orientZ == 0.0f) { //Entities without rotation
+        return ((entity._transform._pos.x + 0.5f*entity._transform._size.x >= (float)_curState->scrStartX &&
+                entity._transform._pos.x - 0.5f*entity._transform._size.x <= (float)_curState->scrEndX) &&
+                (entity._transform._pos.y + 0.5f*entity._transform._size.y >= (float)_curState->scrStartY &&
+                entity._transform._pos.y - 0.5f*entity._transform._size.y <= (float)_curState->scrEndY));
+    } else { //Entities with rotation
+        //Approximate region by bounding as a square with largest dimension
         float bigSide = (entity._transform._size.x > entity._transform._size.y)?
             0.5f*entity._transform._size.x : 0.5f*entity._transform._size.y;
 
@@ -543,17 +537,10 @@ bool CameraSystem::isOnscreen(const Entity &entity) {
                 entity._transform._pos.x - bigSide <= _curState->scrEndX) &&
                 (entity._transform._pos.y + bigSide >= _curState->scrStartY &&
                 entity._transform._pos.y - bigSide <= _curState->scrEndY));
-	}
+    }
+#endif
 }
 
-
-void CameraSystem::isEntityWithinViewVolume(const Entity& /*entity*/) const {
-
-}
-
-void CameraSystem::isTileWithinViewVolume(const unsigned /*l*/, const unsigned /*x*/, const unsigned /*y*/) const {
-
-}
 
 void CameraShakeSubProcess::onStart(void) {}
 

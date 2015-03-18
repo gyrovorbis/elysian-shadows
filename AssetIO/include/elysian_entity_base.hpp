@@ -66,6 +66,7 @@ namespace elysian {
 		ELYSIAN_LUA_PROXY_FIELDS_END()
 
                             EntityBase(void)	= default;
+                            EntityBase(const OOLUA::Lua_table_ref valTable);
         virtual             ~EntityBase(void);
 		
         bool                load(FILE* file);
@@ -265,7 +266,6 @@ namespace elysian {
 
     inline void EntityBase::setPersistent(const bool val) { _persistent = val; }
     inline bool EntityBase::isPersistent(void) const { return _persistent; }
-
 
 }
 

@@ -2,9 +2,10 @@
 #define ELYSIAN_COLLIDABLE_HPP
 
 #include <stdint.h>
-#include <gyro.h>
 #include <cstring>
-#include <kinetic/gyro_kinetic.h>
+#include <kinetic/gyro_kinetic_collider.h>
+#include <kinetic/gyro_kinetic_static.h>
+#include <kinetic/gyro_kinetic_contact.h>
 #include "elysian_component.hpp"
 #include "elysian_sort_sweep.hpp"
 #include "elysian_instance_transform.hpp"
@@ -19,11 +20,10 @@ namespace elysian {
     class CollisionSystem;
 
     struct CollisionFlags: public LuaTableProxy<CollisionFlags> {
-		inline CollisionFlags(void): checkAgainst(~0x0), type(~0x0) {}
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
-            ELYSIAN_LUA_PROXY_FIELD(type, getType, setType)
-            ELYSIAN_LUA_PROXY_FIELD(typeAgainst, getTypeAgainst, setTypeAgainst)
+            ELYSIAN_LUA_PROXY_FIELD(type,           getType,        setType)
+            ELYSIAN_LUA_PROXY_FIELD(typeAgainst,    getTypeAgainst, setTypeAgainst)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
 		enum TYPE {
@@ -42,17 +42,19 @@ namespace elysian {
 			ALL			= ~0x0
 		};
 		
-        uint32_t        checkAgainst;
-        uint32_t        type;
-        inline void     resetType(void) { type = 0; }
-        inline void     resetCheckAgainst(void) { checkAgainst = 0; }
-        inline void     addType(const uint32_t flag) { type |= flag; }
-        inline void     addCheckAgainst(const uint32_t flag) { checkAgainst |= flag; }
-        inline uint32_t getType(void) const { return type; }
-        inline uint32_t getTypeAgainst(void) const { return checkAgainst; }
-        inline void     setType(const uint32_t flags) { type = flags; }
-        inline void     setTypeAgainst(const uint32_t flags) { checkAgainst = flags; }
+        uint32_t        checkAgainst    = ~0x0;
+        uint32_t        type            = ~0x0;
+
+        void            resetType(void);
+        void            resetCheckAgainst(void);
+        void            addType(const uint32_t flag);
+        void            addCheckAgainst(const uint32_t flag);
+        uint32_t        getType(void) const;
+        uint32_t        getTypeAgainst(void) const;
+        void            setType(const uint32_t flags);
+        void            setTypeAgainst(const uint32_t flags);
 	};
+
 
     class CollidableStaticAttrib:
             public GYStatic,
@@ -63,7 +65,7 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(invMass,            getInverseMass,         setInverseMass)
             ELYSIAN_LUA_PROXY_FIELD(coeffOfRest,        getCoeffOfRest,         setCoeffOfRest)
             ELYSIAN_LUA_PROXY_FIELD(invMomOfInertia,    getInvMomOfInertia,     setInvMomOfInertia)
-            ELYSIAN_LUA_PROXY_FIELD(angDamping,         getAngDamping,      setAngDamping)
+            ELYSIAN_LUA_PROXY_FIELD(angDamping,         getAngDamping,          setAngDamping)
             ELYSIAN_LUA_PROXY_FIELD(zCoeffOfRest,       getZCoeffOfRest,        setZCoeffOfRest)
             ELYSIAN_LUA_PROXY_FIELD(damping,            getDamping)
         ELYSIAN_LUA_PROXY_FIELDS_END()
@@ -87,41 +89,42 @@ namespace elysian {
     };
 
 
-class CollidableAttrib: public LuaTableProxy<CollidableAttrib> {
-friend class Collidable;
-public:
 
-ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
-    ELYSIAN_LUA_PROXY_FIELD(colliderType,       getColliderType,    setColliderType)
-    ELYSIAN_LUA_PROXY_FIELD(relPos, getRelPos)
-    ELYSIAN_LUA_PROXY_FIELD(relSize, getRelSize)
-    ELYSIAN_LUA_PROXY_FIELD(staticAttrib, getStaticAttrib)
-    ELYSIAN_LUA_PROXY_FIELD(flags, getFlags)
-ELYSIAN_LUA_PROXY_FIELDS_END()
+    class CollidableAttrib: public LuaTableProxy<CollidableAttrib> {
+    friend class Collidable;
+    public:
 
-	virtual ~CollidableAttrib(void) { printf("~CollidabAttrib - YOU STILL NEED TO FUCKING FIX ME!!!!\n"); }
-	
-	CollisionFlags flags;
-	
-    CollidableAttrib(void) = default;
-	inline GY_COLLIDER_TYPE getColliderType(void) const { return _type; }
-	inline void setColliderType(const GY_COLLIDER_TYPE type) { _type = type; }
-    inline void setRelPos(const float x, const float y, const float z) { _relPos.x = x; _relPos.y = y; _relPos.z = z; /* was fucked? No setting of Z?*/ }
-    inline void setRelSize(const float x, const float y, const float z) { _relSize.x = x; _relSize.y = y; _relSize.z = z; }
-	inline const GYVector3& getRelSize(void) const { return _relSize; }
-    inline Vector3 getRelSize(void) { return Vector3(&_relSize); }
-    inline Vector3 getRelPos(void) { return Vector3(&_relPos); }
-    inline CollidableStaticAttrib *getStaticAttrib(void) { return &_staticAttrib; }
-	inline CollisionFlags *getFlags(void) { return &flags; }
-	
-private:
+    ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+        ELYSIAN_LUA_PROXY_FIELD(colliderType,       getColliderType,    setColliderType)
+        ELYSIAN_LUA_PROXY_FIELD(relPos,             getRelPos)
+        ELYSIAN_LUA_PROXY_FIELD(relSize,            getRelSize)
+        ELYSIAN_LUA_PROXY_FIELD(staticAttrib,       getStaticAttrib)
+        ELYSIAN_LUA_PROXY_FIELD(flags,              getFlags)
+    ELYSIAN_LUA_PROXY_FIELDS_END()
+
+        CollisionFlags          flags;
+
+        virtual                 ~CollidableAttrib(void);
+                                CollidableAttrib(void) = default;
+        GY_COLLIDER_TYPE        getColliderType(void) const;
+        void                    setColliderType(const GY_COLLIDER_TYPE type);
+        void                    setRelPos(const float x, const float y, const float z);
+        void                    setRelSize(const float x, const float y, const float z);
+        const GYVector3&        getRelSize(void) const;
+        Vector3                 getRelSize(void);
+        Vector3                 getRelPos(void);
+        CollidableStaticAttrib* getStaticAttrib(void);
+        CollisionFlags*         getFlags(void);
+
+    private:
         CollidableStaticAttrib  _staticAttrib;
-		GYVector3 _relPos		= { 0.0f, 0.0f, 0.0f };
-		GYVector3 _relSize		= { 1.0f, 1.0f, 1.0f };
-		GY_COLLIDER_TYPE _type	= GY_COLLIDER_AABB;
+        GYVector3               _relPos         = { 0.0f, 0.0f, 0.0f };
+        GYVector3               _relSize		= { 1.0f, 1.0f, 1.0f };
+        GY_COLLIDER_TYPE        _type           = GY_COLLIDER_AABB;
 
-};
+    };
 	
+
     class Collidable:
         public Component,
         public LuaTableProxy<Collidable>
@@ -143,65 +146,68 @@ private:
 	protected:
         static CollisionSystem* _colSys;
 
-        GYVector3           _worldSize          = { 1.0f, 1.0f, 1.0f, };
-		CollidableAttrib*	_attrib				= nullptr;
-        SortSweepCollidable* _sortSweepAABB     = nullptr;
+        GYVector3               _worldSize          = { 1.0f, 1.0f, 1.0f, };
+        CollidableAttrib*       _attrib				= nullptr;
+        SortSweepCollidable*    _sortSweepAABB      = nullptr;
 
-        unsigned			_contactCount		= 0;
-        bool                _stackedOnGround    = false;
-        bool                _restingOnBody      = false;
-        bool				_resolvePen			= true;
-        bool				_active				= true;
-        bool                _worldSpace         = true;
-		uint32_t			_eventMonitorMask	= 0;
+        unsigned                _contactCount		= 0;
+        bool                    _stackedOnGround    = false;
+        bool                    _restingOnBody      = false;
+        bool                    _resolvePen			= true;
+        bool                    _active				= true;
+        bool                    _worldSpace         = true;
+        uint32_t                _eventMonitorMask	= 0;
 
 		union { 
-			GYCollider col;
-			GYBoxCollider box;
-			GYTriCollider tri;
-			GYCirCollider cir;
-		} _collider;
+            GYCollider          col;
+            GYBoxCollider       box;
+            GYTriCollider       tri;
+            GYCirCollider       cir;
+        }                       _collider;
 
-        inline                      Collidable(Entity &parent): Component(parent){}
+                                Collidable(Entity &parent);
 
-        virtual                     ~Collidable(void) {}
-        void                        _updateSortSweepAABB(void);
+        virtual                 ~Collidable(void) = default;
+        void                    _updateSortSweepAABB(void);
 		
 	public:        
-        virtual bool                load(FILE* file);
-        virtual bool                save(FILE* file);
-        virtual bool                canAddTo(Entity& /*entity*/) { return true; }
-        virtual bool                addToLevel(void);
-        virtual bool                removeFromLevel(void);
-        virtual Component::TYPE     getType(void) const { return Component::COLLIDABLE; }
+        //Overridden from Component
+        virtual bool            load(FILE* file) override;
+        virtual bool            save(FILE* file) override;
+        virtual bool            canAddTo(Entity& /*entity*/) const override;
+        virtual bool            addToLevel(void) override;
+        virtual bool            removeFromLevel(void) override;
+        virtual TYPE            getType(void) const override;
 
-		void update(void);
-        void render(void);
+        void                    update(void);
+        void                    render(void);
 
-        inline unsigned             getContactCount(void) const { return _contactCount; }
-        inline void                 setAttrib(CollidableAttrib *attrib) { _attrib = attrib; }
-        inline CollidableAttrib*    getAttrib(void) const { return _attrib; }
-        inline const GYVector3&     getCenterWorldPos(void) const { return _collider.col.worldPos; }
-        inline void                 setResolvePenetration(const bool v) { _resolvePen = v; }
-        inline bool                 getResolvePenetration(void) const { return _resolvePen; }
-        inline uint32_t             getContactEventMonitorMask(void) const { return _eventMonitorMask; }
-        inline void                 setContactEventMonitorMask(const uint32_t t) { _eventMonitorMask = t; }
-        inline GYCollider*          getCollider(void) { return &_collider.col; }
-        const GYVector3&            getWorldPos(void) const;
-        const GYVector3&            getWorldSize(void) const { return _worldSize; }
-        inline void                 setActive(const bool val) { _active = val; }
-        bool                        getRestingOnBody(void) const;
-        void                        setRestingOnBody(const bool v);
-        bool                        getStackedOnGround(void) const;
-        void                        setStackedOnGround(const bool v);
-        bool                        getWorldSpace(void) const;
-        void                        setWorldSpace(const bool val);
+        unsigned                getContactCount(void) const;
+        void                    setAttrib(CollidableAttrib *attrib);
+        CollidableAttrib*       getAttrib(void) const;
+        const GYVector3&        getCenterWorldPos(void) const;
+        void                    setResolvePenetration(const bool v);
+        bool                    getResolvePenetration(void) const;
+        uint32_t                getContactEventMonitorMask(void) const;
+        void                    setContactEventMonitorMask(const uint32_t t);
+        GYCollider*             getCollider(void);
+        const GYVector3&        getWorldPos(void) const;
+        const GYVector3&        getWorldSize(void) const;
+        void                    setActive(const bool val);
+        bool                    getRestingOnBody(void) const;
+        void                    setRestingOnBody(const bool v);
+        bool                    getStackedOnGround(void) const;
+        void                    setStackedOnGround(const bool v);
+        bool                    getWorldSpace(void) const;
+        void                    setWorldSpace(const bool val);
 
-        void                        setSortSweepAABB(SortSweepCollidable* sweep);
-        bool                        checkAABBCollision(Collidable* col);
-        bool                        checkFullCollision(Collidable* col);
+        void                    setSortSweepAABB(SortSweepCollidable* sweep);
+        bool                    checkAABBCollision(Collidable* col);
+        bool                    checkFullCollision(Collidable* col);
 
 	};
+
+
 
 	/*
 	Extend libKineticGyro's contact structure to maintain an association
@@ -212,16 +218,15 @@ private:
 	class CollisionContact: private GYContact {
 		friend class CollisionSystem;
 		friend class RigidBodySystem;
-       // Collidable* _body[2]            = nullptr;
-        Collidable* _bodyA = nullptr;
-        Collidable* _bodyB = nullptr;
-        float       _zDepth             = 0.0f;
-        uint32_t    _eventMonitorMask	= 0;
-        bool        _resolvePen			= true;
-        bool        _resolveZ           = false;
+        Collidable*     _bodyA              = nullptr;
+        Collidable*     _bodyB              = nullptr;
+        float           _zDepth             = 0.0f;
+        uint32_t        _eventMonitorMask	= 0;
+        bool            _resolvePen			= true;
+        bool            _resolveZ           = false;
 
-        void        _calculatePenetrationInternals(void);
-        void        _calculateVelocityInternals(const float deltaTime);
+        void            _calculatePenetrationInternals(void);
+        void            _calculateVelocityInternals(const float deltaTime);
 
 	public:
 		Collidable*		getCollidable(const unsigned index) const;
@@ -241,8 +246,54 @@ private:
 	};
 
 
-	// ======== INLINEZ ========
 
+
+
+
+
+
+
+
+
+
+
+
+	// ======== INLINEZ ========
+    inline void CollisionFlags::resetType(void) { type = 0; }
+    inline void CollisionFlags::resetCheckAgainst(void) { checkAgainst = 0; }
+    inline void CollisionFlags::addType(const uint32_t flag) { type |= flag; }
+    inline void CollisionFlags::addCheckAgainst(const uint32_t flag) { checkAgainst |= flag; }
+    inline uint32_t CollisionFlags::getType(void) const { return type; }
+    inline uint32_t CollisionFlags::getTypeAgainst(void) const { return checkAgainst; }
+    inline void CollisionFlags::setType(const uint32_t flags) { type = flags; }
+    inline void CollisionFlags::setTypeAgainst(const uint32_t flags) { checkAgainst = flags; }
+
+    inline  CollidableAttrib::~CollidableAttrib(void) { printf("~CollidabAttrib - YOU STILL NEED TO FUCKING FIX ME!!!!\n"); }
+    inline GY_COLLIDER_TYPE CollidableAttrib::getColliderType(void) const { return _type; }
+    inline void CollidableAttrib::setColliderType(const GY_COLLIDER_TYPE type) { _type = type; }
+    inline void CollidableAttrib::setRelPos(const float x, const float y, const float z) { _relPos.x = x; _relPos.y = y; _relPos.z = z; /* was fucked? No setting of Z?*/ }
+    inline void CollidableAttrib::setRelSize(const float x, const float y, const float z) { _relSize.x = x; _relSize.y = y; _relSize.z = z; }
+    inline const GYVector3& CollidableAttrib::getRelSize(void) const { return _relSize; }
+    inline Vector3 CollidableAttrib::getRelSize(void) { return Vector3(&_relSize); }
+    inline Vector3 CollidableAttrib::getRelPos(void) { return Vector3(&_relPos); }
+    inline CollidableStaticAttrib* CollidableAttrib::getStaticAttrib(void) { return &_staticAttrib; }
+    inline CollisionFlags* CollidableAttrib::getFlags(void) { return &flags; }
+
+    inline Collidable::Collidable(Entity &parent): Component(parent){}
+    inline bool Collidable::canAddTo(Entity& /*entity*/) const { return true; }
+    inline auto Collidable::getType(void) const -> TYPE { return Component::COLLIDABLE; }
+    inline unsigned Collidable::getContactCount(void) const { return _contactCount; }
+    inline void Collidable::setAttrib(CollidableAttrib *attrib) { _attrib = attrib; }
+    inline CollidableAttrib* Collidable::getAttrib(void) const { return _attrib; }
+    inline const GYVector3& Collidable::getCenterWorldPos(void) const { return _collider.col.worldPos; }
+    inline void Collidable::setResolvePenetration(const bool v) { _resolvePen = v; }
+    inline bool Collidable::getResolvePenetration(void) const { return _resolvePen; }
+    inline uint32_t Collidable::getContactEventMonitorMask(void) const { return _eventMonitorMask; }
+    inline void Collidable::setContactEventMonitorMask(const uint32_t t) { _eventMonitorMask = t; }
+    inline GYCollider* Collidable::getCollider(void) { return &_collider.col; }
+    inline const GYVector3& Collidable::getWorldPos(void) const { return _collider.col.worldPos; }
+    inline const GYVector3& Collidable::getWorldSize(void) const { return _worldSize; }
+    inline void Collidable::setActive(const bool val) { _active = val; }
     inline bool Collidable::getStackedOnGround(void) const { return _stackedOnGround; }
     inline bool Collidable::getRestingOnBody(void) const { return _restingOnBody; }
     inline void Collidable::setStackedOnGround(const bool v) { _stackedOnGround = v; }
@@ -274,7 +325,7 @@ private:
     inline float CollidableStaticAttrib::getZCoeffOfRest(void) const { return zCoeffOfRest; }
     inline void CollidableStaticAttrib::setZCoeffOfRest(const float coeff) { zCoeffOfRest = coeff; }
 
-	inline const GYVector3& Collidable::getWorldPos(void) const { return _collider.col.worldPos; }
+
 
 	inline Collidable* CollisionContact::getCollidable(const unsigned index) const { return (index == 0)? _bodyA : _bodyB; }
 	inline const GYStatic* CollisionContact::getStaticAttrib(const unsigned index) const { return staticAttrib[index]; }

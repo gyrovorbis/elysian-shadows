@@ -11,7 +11,7 @@ ELYSIAN_LUA_PROXY_FIELDS_EXPORT(Combat)
 
 Combat::Combat(Entity &entity): Component(entity) {}
 
-bool Combat::canAddTo(Entity& entity) { return entity.getCollidable(); }
+bool Combat::canAddTo(Entity& entity) const { return entity.getCollidable(); }
 bool Combat::load(FILE* /*file*/) { return true; }
 bool Combat::save(FILE* /*file*/) { return true; }
 

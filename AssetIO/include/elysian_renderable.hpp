@@ -41,7 +41,7 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(offset, getOffset)
 		ELYSIAN_LUA_PROXY_FIELDS_END()
 
-        virtual bool        canAddTo(Entity& /*entity*/);
+        virtual bool        canAddTo(Entity& /*entity*/) const override;
         virtual bool        load(FILE* file) override;
         virtual bool        save(FILE* file) override;
         virtual bool        addToLevel(void) override;
@@ -86,7 +86,7 @@ namespace elysian {
 
     //=================== INLINEZ ======================
     inline Renderable::Renderable(Entity &parent): Component(parent) {}
-    inline bool Renderable::canAddTo(Entity& /*entity*/) { return true; } //no prereqs
+    inline bool Renderable::canAddTo(Entity& /*entity*/) const { return true; } //no prereqs
     inline auto Renderable::getType(void) const -> TYPE { return Component::RENDERABLE; }
     inline void Renderable::beginRender(void) {}
     inline void Renderable::endRender(void) {}
@@ -133,35 +133,9 @@ namespace elysian {
         gyVidSpecularMapBind(_specularMap);
         gyVidMaterialBind(_material);
 
-        //Why aren't we just pushing another matrix to handle this?
-        /*if(_spriteAttrib->_tex && _frame != -1) {
-            const GYVector2 *size = (GYVector2*)&_entity->transform._size;
-            const GYTexCoordFrame *fr = &_spriteAttrib->_tex->_coord->texCoord[_frame];
-            const float locX = ((float) fr->spriteWidth / size->x)/2.0f;
-            const float locY = ((float) fr->spriteHeight / size->y)/2.0f;
-            localVerts[0].x = -locX + _offset.x;
-            localVerts[0].y = -locY + _offset.y;
-            localVerts[0].z = locY*2.0f + _offset.y;
-            localVerts[1].x = locX + _offset.x;
-            localVerts[1].y = -locY + _offset.y;
-            localVerts[1].z = locY*2.0f + _offset.y;
-            localVerts[2].x = -locX + _offset.x;
-            localVerts[2].y = locY + _offset.y;
-        //	localVerts[0].z = -locY + _offset.y;
-            localVerts[3].x = locX + _offset.x;
-            localVerts[3].y = locY + _offset.y;
-        //	localVerts[0].z = -locY + _offset.y;
-        }*/
-
         gyMatTranslate(_offset.x, _offset.y, 0.0f);
 
         //branch assumes shit will usually be depth buffered
-    /*	if(getEntity()->getNormalType() != NORMAL_FRONT) {
-            localVerts[0].z = localVerts[1].z = 0.0f;
-            gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
-        } else {
-            gyVidRectPlaneType(GY_RECT_PLANE_FRONT);
-        }*/
 
         gyVidRectPlaneType(_entity->getPlaneType());
 
