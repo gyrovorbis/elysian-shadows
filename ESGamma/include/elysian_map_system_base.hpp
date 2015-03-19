@@ -23,7 +23,6 @@
 #	include <glal/gyro_shaders_glal.h>
 #   include <glal/gyro_video_glal.h>
 
-#define ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE	1000000
 #endif
 
 #define ELYSIAN_MAP_SYSTEM_ONSCREEN_ENTITY_POOL_SIZE	1000
@@ -61,8 +60,6 @@ namespace elysian {
 	{ 
 	private:
 		Pool<Entity*>				_onscreenEntityPool	= Pool<Entity*>(ELYSIAN_MAP_SYSTEM_ONSCREEN_ENTITY_POOL_SIZE);
-		unsigned					_stripIndexArray[ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE];
-		unsigned					_stripIndexArraySize = 0;
 		static const GYColor4		_tileColor;
         //static GY_RECT_PLANE_TYPE   _curPlaneType;
         //static GY_RECT_TEX_ORIENT   _curTexOrient;
@@ -154,6 +151,9 @@ namespace elysian {
     inline void MapSystemBase<P, T, E>::renderObjectEntry(const T& entry, const float /*z*/) {
 		if(!_renderLayer[entry.layer]) return; //Don't render if this layer has been toggled off.
 
+         auto& elemArraySize = _curArea->elementsArraySize;
+         auto& elemArray     = _curArea->elementsArray;
+
         if(!gyVidShadowPass()) {
             const GY_RECT_PLANE_TYPE      newPlane = entry.mapEntry.getPlane();
             const GY_RECT_TEX_ORIENT      newOrient = entry.mapEntry.getOrient();
@@ -178,29 +178,6 @@ namespace elysian {
                 gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
             }
 
-            //Texture orientation state change
-            /* FUCK YOU, UNIFORM CHANGES!!!!!!
-            if(newOrient != glalRectTexOrient) {
-                updateZFactor = true;
-                const GYVector3* tangent = &glalRectTangents[newOrient];
-
-                if(!gyVec3Compare(glalTangentVector, tangent)) { //tangent vector state change
-                     endObjectList();
-                     glalVidTangentUpdateUniform(tangent);
-                }
-                gyVidRectTexOrient(newOrient);
-            }
-
-            //Rect Plane state change
-            if(newPlane != glalPlaneType || updateZFactor) {
-                const GYVector3* normal = glalPlaneNormalVector(glalNormalMapActive, newPlane, newOrient);
-                if(!gyVec3Compare(glalNormalVector, normal)) { //normal vector state change
-                    endObjectList();
-                    glalVidNormalUpdateUniform(normal);
-                }
-                gyVidRectPlaneType(newPlane);
-            }*/
-
             //Normal map texture flip state change
             gyVidRectPlaneType(newPlane);
             gyVidRectTexOrient(newOrient);
@@ -217,17 +194,22 @@ namespace elysian {
         const unsigned int indices[4] = { indexBase, indexBase+1,indexBase+2, indexBase+3 };
 
         //combine previous triangle strip with this one by using degenerate triangles if we're not the first
-        if(_stripIndexArraySize) {
-            _stripIndexArray[_stripIndexArraySize]		= _stripIndexArray[_stripIndexArraySize-1];
-            _stripIndexArray[_stripIndexArraySize+1]	= indices[0];
-            _stripIndexArraySize += 2;
+        if(elemArraySize) {
+            elemArray[elemArraySize]		= elemArray[elemArraySize-1];
+            elemArray[elemArraySize+1]	= indices[0];
+            elemArraySize += 2;
         }
 
-        _stripIndexArray[_stripIndexArraySize]      = indices[0];
-        _stripIndexArray[_stripIndexArraySize+1]    = indices[1];
-        _stripIndexArray[_stripIndexArraySize+2]    = indices[2];
-        _stripIndexArray[_stripIndexArraySize+3]    = indices[3];
-        _stripIndexArraySize += 4;
+        elemArray[elemArraySize]      = indices[0];
+        elemArray[elemArraySize+1]    = indices[1];
+        elemArray[elemArraySize+2]    = indices[2];
+        elemArray[elemArraySize+3]    = indices[3];
+        elemArraySize += 4;
+
+        if(elemArraySize + 6 >= ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE) {
+            endObjectList();
+            beginObjectList();
+        }
 }
 
     template<typename P, typename T, typename E>
@@ -237,32 +219,60 @@ namespace elysian {
         gyVidNormalMapBind(_curLevel->normalSheet);
 		gyVidSpecularMapBind(_curLevel->specularSheet);
 
-        glBindBuffer(GL_ARRAY_BUFFER, getCurArea()->vboBuff);
-        glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(VboEntry), 0);
-        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_POS]);
-        glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(4*sizeof(float)));
-        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD]);
-        glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VboEntry), (void*)(6*sizeof(float)));
-        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR]);
-        glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(7*sizeof(float)));
-        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL]);
-        glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(10*sizeof(float)));
-        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT]);
+        glBindBuffer(GL_ARRAY_BUFFER, _curArea->vboBuff);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo);
 
+        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_POS]);
+       glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD]);
+        if(!gyVidShadowPass()) {
+        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR]);
+        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL]);
+        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT]);
+        }
+
+            glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(VboEntry), 0);
+                glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(4*sizeof(float)));
+
+        if(!gyVidShadowPass()) {
+            glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VboEntry), (void*)(6*sizeof(float)));
+
+            glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(7*sizeof(float)));
+            glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(10*sizeof(float)));
+        }
+
+
+        //glBindVertexArray(_curArea->vao);
+        //glBindBuffer(GL_ARRAY_BUFFER, getCurArea()->vboBuff);
+        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, getCurArea()->elementVbo);
         if(getLightSys()->isShadowPass()) gyVidDepthTest(true);
         else gyVidDepthTest(false);
 	}
 	
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::endObjectList(void) {
+        int maxi;
+        glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &maxi);
+        auto& elemArraySize = _curArea->elementsArraySize;
+        auto& elemArray     = _curArea->elementsArray;
 
-        glalVertexRenderCount += _stripIndexArraySize;
+        glalVertexRenderCount += elemArraySize;
 
-		glDrawElements(GL_TRIANGLE_STRIP, _stripIndexArraySize, GL_UNSIGNED_INT, (void*)_stripIndexArray);
-		_stripIndexArraySize = 0;
+        assert(elemArraySize <= maxi);
+        assert(elemArraySize < ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, elemArraySize*sizeof(GLushort), nullptr, GL_STREAM_DRAW);
+        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort)*elemArraySize, elemArray);
+        //glBufferData(GL_ELEMENT_ARRAY_BUFFER, elemArraySize*sizeof(GLushort), &elemArray[0], GL_DYNAMIC_DRAW);
+        //glEnableClientState(GL_ELEMENT_ARRAY_BUFFER);
+        glDrawElements(GL_TRIANGLE_STRIP, elemArraySize, GL_UNSIGNED_SHORT, /*elemArray*/ nullptr);
+        //glDrawArrays(GL_TRIANGLE_STRIP, 0, elemArraySize);
+        elemArraySize = 0;
 		//glDrawArrays(GL_TRIANGLE_STRIP, indexBase, 4);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
 		//gyVidQuadListEnd();
         gyVidAlphaLevel(GY_ALPHA_FULL);
         /*gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);

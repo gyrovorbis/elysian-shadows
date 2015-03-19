@@ -12,6 +12,7 @@
 
 #define ELYSIAN_MAP_BOUNDARY_CHECKS false //PLEASE, GOD, TAKE ME OUT BEFORE RELEASE!!!!!!
 #define ELYSIAN_AREA_USE_INIT_LUA	true
+#define ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE	100000
 
 #define ELYSIAN_AREA_MAP_LAYERS		3
 #define ELYSIAN_AREA_MAP_WIDTH		200
@@ -147,8 +148,13 @@ namespace elysian {
 		unsigned			layerEntryCount	= 0;
 
         GLuint              vboBuff         = 0;
+        GLuint              elementVbo      = 0;
+        GLuint              vao             = 0;
         bool                vboPopulated    = false;
         bool                activated       = false;
+
+        GLushort    		elementsArray[ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE] __attribute__((aligned(32))) = { 1 };
+        unsigned			elementsArraySize = 0;
 
         //AreaBase(void);
         ~AreaBase(void);
