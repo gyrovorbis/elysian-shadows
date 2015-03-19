@@ -151,7 +151,7 @@ static GYVector4		_modelViewVertices[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]  __attr
 GYColor4                _stripColors[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]        __attribute__((aligned(32)));
 static GYVector3        _stripNormals[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]       __attribute__((aligned(32)));
 static GYVector3        _stripTangents[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]       __attribute__((aligned(32)));
-static GYVertex         _vertexQueue[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE];
+static GYVertex         _vertexQueue[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]        __attribute__((aligned(32)));
 
 
 //Shared extern video state variables
@@ -271,6 +271,7 @@ void gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsign
 }
 
 void gyVidColorArray(const struct _GYColor4 *const ptr) {
+    if(gyVidShadowPass()) return;
     glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, ptr);
     glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR]);
     _curColorArrayPtr = ptr;
@@ -284,12 +285,14 @@ void gyVidTexCoordArray(const struct _GYTexCoord2 *const ptr) {
 }
 
 void gyVidTangentArray(const struct _GYVector3 *const ptr) {
+    if(gyVidShadowPass()) return;
     glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, 0, ptr);
     glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT]);
     glalTangentVector = ptr;
 }
 
 void gyVidNormalArray(const struct _GYVector3 *const ptr) {
+    if(gyVidShadowPass()) return;
     glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, 0, ptr);
     glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL]);
     glalNormalVector = ptr;
@@ -304,11 +307,17 @@ void gyVidTexBind(const GYTexture *const tex) {
     if(tex != glalCurTex) {
         glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
         if(tex && tex->_data) {
-            if(!wasActive) glEnable(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
+            if(!wasActive) {
+                glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
+                glEnable(GL_TEXTURE_2D);
+            }
             glBindTexture(GL_TEXTURE_2D, *(GLuint *)&tex->_data);
         } else {
             active = 0;
-            if(wasActive) glDisable(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
+            if(wasActive) {
+                glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
+                glDisable(GL_TEXTURE_2D);
+            }
         }
         glalCurTex = tex;
         glalTextureMapActive = active && glalTextureMappingEnabled;
