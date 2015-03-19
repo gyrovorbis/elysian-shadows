@@ -30,6 +30,8 @@
 #       include <gl.h>
 #		include <OpenAL/al.h>
 #		include <OpenAL/alc.h>
+//#       include <gl3.h>
+//#       include <gl3ext.h>
 
 //god fucking damnit.
 #define glBindVertexArray       glBindVertexArrayAPPLE
