@@ -220,6 +220,8 @@ namespace elysian {
         gyVidNormalMapBind(_curLevel->normalSheet);
 		gyVidSpecularMapBind(_curLevel->specularSheet);
 
+        glBindVertexArray(_curArea->vao);
+
         glBindBuffer(GL_ARRAY_BUFFER, _curArea->vboBuff);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo);
 
@@ -262,19 +264,21 @@ namespace elysian {
         assert(elemArraySize <= maxi);
         assert(elemArraySize < ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE);
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, elemArraySize*sizeof(GLushort), nullptr, GL_DYNAMIC_DRAW);
-        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort)*elemArraySize, elemArray);
+        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo);
+
+        //glBufferData(GL_ELEMENT_ARRAY_BUFFER, elemArraySize*sizeof(GLushort), nullptr, GL_DYNAMIC_DRAW);
+        //glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort)*elemArraySize, elemArray);
         //glBufferData(GL_ELEMENT_ARRAY_BUFFER, elemArraySize*sizeof(GLushort), &elemArray[0], GL_DYNAMIC_DRAW);
+
+
         //glEnableClientState(GL_ELEMENT_ARRAY_BUFFER);
-        glDrawElements(GL_TRIANGLE_STRIP, elemArraySize, GL_UNSIGNED_SHORT, /*elemArray*/ nullptr);
+        glDrawElements(GL_TRIANGLE_STRIP, elemArraySize, GL_UNSIGNED_SHORT, elemArray /*nullptr*/);
         //glDrawArrays(GL_TRIANGLE_STRIP, 0, elemArraySize);
         elemArraySize = 0;
 		//glDrawArrays(GL_TRIANGLE_STRIP, indexBase, 4);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
 		//gyVidQuadListEnd();
         gyVidAlphaLevel(GY_ALPHA_FULL);
         /*gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
