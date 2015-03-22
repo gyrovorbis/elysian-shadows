@@ -15,11 +15,12 @@ typedef struct _GYColor4 {
 	unsigned char r, g, b, a;
 } GYColor4;
 
-typedef struct _GYVertex {
-    float   x, y, z, w;
-    float   u, v;
-    float    color;
- //   float    padding;
+typedef struct GYVertex {
+    GYVector4	pos;
+    GYTexCoord2	texCoord;
+    GYColor4	color;
+    GYVector3   normal;
+    GYVector3   tangent;
 } GYVertex;
 
 typedef enum _GY_ALPHA_LEVEL { GY_ALPHA_NONE, GY_ALPHA_PUNCHTHRU, GY_ALPHA_FULL } GY_ALPHA_LEVEL;

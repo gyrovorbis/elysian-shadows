@@ -214,7 +214,9 @@ namespace elysian {
                         lua_remove(l, -2);
                     }
 
-                    LuaManager::_protectedCall(1, 1, nullptr);
+                    if(!LuaManager::_protectedCall(1, 1, nullptr)) {
+                        return 0;
+                    }
 
                     lua_remove(l, -4);
                     lua_remove(l, -2);

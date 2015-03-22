@@ -184,7 +184,9 @@ public:
         do {
             // LuaManager::_cStackDump();
 
-            _protectedCall(2, 2, nullptr);
+            if(!_protectedCall(2, 2, nullptr)) {
+                break;
+            }
              if(lua_isnil(*_mainState, -2)) break;
 
             //LuaManager::_cStackDump();

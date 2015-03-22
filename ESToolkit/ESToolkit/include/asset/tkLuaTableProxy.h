@@ -154,7 +154,8 @@ inline const TkLuaTableProxy<P, T>& TkLuaTableProxy<P,T>::operator=(const TkLuaT
 template <typename P, typename T>
 inline int TkLuaTableProxy<P, T>::getLuaTableRef(void) const {
     if(_luaRef == LUA_NOREF) {
-        OOLUA::push(*_mainState, static_cast<const T*>(this));
+        //Cannot push a const pointer to Lua, or it'll shit every time we attempt to modify proxy from Lua runtime
+        OOLUA::push(*_mainState, const_cast<T*>(static_cast<const T*>(this)));
         _luaRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
     }
     return _luaRef;

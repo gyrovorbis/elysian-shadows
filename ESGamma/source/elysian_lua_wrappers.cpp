@@ -243,9 +243,9 @@ OOLUA_EXPORT_FUNCTIONS_CONST(InstanceTransform,
                                 getScaleY,
                                 getScaleZ)
 
-EXPORT_OOLUA_FUNCTIONS_1_NON_CONST(RenderableObject,
+OOLUA_EXPORT_FUNCTIONS(RenderableObject,
 									getTransform)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(RenderableObject)
+OOLUA_EXPORT_FUNCTIONS_CONST(RenderableObject)
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Component)
 EXPORT_OOLUA_FUNCTIONS_1_CONST(Component, getEntity)

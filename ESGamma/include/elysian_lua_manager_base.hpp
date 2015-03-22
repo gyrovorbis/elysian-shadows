@@ -108,10 +108,10 @@ namespace elysian {
 		static void					_showError(void);
 		static int					_getErrorCode(void);
 		
-		static void					_protectedCall(const int nargs, const int nresults, LuaScript *script);
+        static bool					_protectedCall(const int nargs, const int nresults, LuaScript *script);
 		static LuaScript*			_createScriptFromExisting(const char* const file);
 
-		static int					_traceBack (lua_State *L);
+        static int					_traceBack(lua_State *L);
 		static unsigned				_envDump(LuaScript* scr);
 		static void					_cStackDump(void);
 		static void					_runtimeStackDump(void);
@@ -149,7 +149,7 @@ namespace elysian {
 
 	};
 
-    inline void LuaManagerBase::_protectedCall(const int nargs, const int nresults, LuaScript *script) {
+    inline bool LuaManagerBase::_protectedCall(const int nargs, const int nresults, LuaScript *script) {
 #ifdef ELYSIAN_LUA_DEBUG
         if(script) {
             lua_pushcfunction(*_mainState, &LuaManagerBase::_traceBack);
@@ -173,10 +173,12 @@ namespace elysian {
                 //_cStackDump();
                 //dumpStats();
             }
+            return false; //shit reested
 		} else {
             if(script)
                 lua_remove(*_mainState, 1); //remove c traceback function from bottom of stack
 		}
+        return true; // shit was just fine
 #else	//ain't NOBODY got time for debug overhead!
 		lua_call(*_mainState, nargs, nresults);
 #endif

@@ -260,7 +260,7 @@ namespace elysian {
 
         glalVertexRenderCount += elemArraySize;
 
-        assert(elemArraySize <= maxi);
+        //assert(elemArraySize <= maxi);
         assert(elemArraySize < ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo);
