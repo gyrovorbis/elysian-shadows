@@ -109,6 +109,7 @@ namespace elysian {
         void        renderCustomPassAtElev(const int elev, const NORMAL_TYPE normalType) const;
         uint32_t    startLightPass(uint32_t& lightsLeft);
         uint32_t    getLightCount(void) const;
+        bool        isShadowPass(void) const;
 
 
 		//=== /MapDepthBuffer Implementation ===
@@ -464,6 +465,9 @@ namespace elysian {
 
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::staticUninitialize(void) {}
+
+    template<typename P, typename T, typename E>
+    inline bool MapSystemBase<P, T, E>::isShadowPass(void) const { return gyVidShadowPass(); }
 
 
 }

@@ -35,6 +35,7 @@ public:
     void        renderCustomPassAtElev(const unsigned char elev, const elysian::NORMAL_TYPE normalType) const;
     uint32_t    startLightPass(uint32_t& lightsLeft);
     uint32_t    getLightCount(void) const;
+    bool        isShadowPass(void) const;
 
 	//=== /Implemened from elysian::MapDepthBuffer ===
 
@@ -49,6 +50,7 @@ public:
 	}
 };
 
+inline bool MapViewDepthBufferGraphicsItem::isShadowPass(void) const { return false; }
 
 inline void MapViewDepthBufferGraphicsItem::renderCustomPassImmediate(void) { }
 

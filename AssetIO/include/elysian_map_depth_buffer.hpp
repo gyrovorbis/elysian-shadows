@@ -129,6 +129,10 @@ namespace elysian {
             return static_cast<T*>(this)->startLightPass(lightsLeft);
         }
 
+        bool _isShadowPass(void) const {
+            return static_cast<const T*>(this)->isShadowPass();
+        }
+
     protected:
 
 		//Culling functions
@@ -344,7 +348,7 @@ namespace elysian {
 
 					if(elevation == 0 && !curMapEntry.mapEntry.getPlane()) { //render tile immediately at elevation -1 (below entities)
 						//Immediate render, or buffer if it requires multiple passes
-						_renderOrBufferImmediateTileEntry(curMapEntry);
+                        if(!_isShadowPass()) _renderOrBufferImmediateTileEntry(curMapEntry);
 					} else { //Add to depth buffer if elevated
 						unsigned zCoord = j-_scrStartY+elevation;
 						//if(zCoord >= depthBuffMaxHeight) zCoord = depthBuffMaxHeight-1;
