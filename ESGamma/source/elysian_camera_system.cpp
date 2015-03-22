@@ -522,7 +522,7 @@ bool CameraSystem::isOnscreen(const Entity &entity) {
                                     length,
                                     length);
 	}
-#else
+#else/*
     if(entity._transform._orientZ == 0.0f) { //Entities without rotation
         return ((entity._transform._pos.x + 0.5f*entity._transform._size.x >= (float)_curState->scrStartX &&
                 entity._transform._pos.x - 0.5f*entity._transform._size.x <= (float)_curState->scrEndX) &&
@@ -537,7 +537,9 @@ bool CameraSystem::isOnscreen(const Entity &entity) {
                 entity._transform._pos.x - bigSide <= _curState->scrEndX) &&
                 (entity._transform._pos.y + bigSide >= _curState->scrStartY &&
                 entity._transform._pos.y - bigSide <= _curState->scrEndY));
-    }
+    }*/
+
+    return true;
 #endif
 }
 

@@ -300,35 +300,36 @@ void gyVidNormalArray(const struct _GYVector3 *const ptr) {
 
 void gyVidTexBind(const GYTexture *const tex) {
     static int wasActive = 0;
+    static int wasShadow = 0;
     int active = 1;
+    int passChange = wasShadow != gyVidShadowPass();
 
     if(glalTextureMapUniforms[GLAL_TEXTURE_MAP] != 0) return; //mapped to another unit
 
-    if(tex != glalCurTex) {
+    if(tex != glalCurTex || wasShadow != gyVidShadowPass()) {
         glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
         if(tex && tex->_data) {
-            if(!wasActive) {
-                glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
+            if(!wasActive || passChange) {
                 glEnable(GL_TEXTURE_2D);
-            }
+             }
             glBindTexture(GL_TEXTURE_2D, *(GLuint *)&tex->_data);
         } else {
             active = 0;
-            if(wasActive) {
-                glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
+            if(wasActive || passChange) {
                 glDisable(GL_TEXTURE_2D);
             }
         }
         glalCurTex = tex;
         glalTextureMapActive = active && glalTextureMappingEnabled;
-        if(glalTextureMapActive != wasActive) {
+        if(glalTextureMapActive != wasActive || passChange) {
             glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], glalTextureMapActive);
             ++glalUniformChangeCount;
         }
 
         ++glalTextureChangeCount;
         wasActive = glalTextureMapActive;
-   }
+        wasShadow = gyVidShadowPass();
+    }
 }
 
 void gyVidBlendMode(const GY_BLEND_MODE mode) {

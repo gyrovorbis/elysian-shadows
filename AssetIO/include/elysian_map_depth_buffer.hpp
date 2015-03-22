@@ -361,8 +361,8 @@ namespace elysian {
         if(_objectBuffImmediateCount) {
 
             //Make a pass through immediate tile multiplass buffer
-            _endObjectList(); //wtf?
-            _beginObjectList();
+            //_endObjectList(); //wtf?
+            //_beginObjectList();
             _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
             for(unsigned j = 0; j < _objectBuffImmediateCount; ++j) {
                 _renderOrQueueTileEntry(j, _objectBuffImmediate[j]);

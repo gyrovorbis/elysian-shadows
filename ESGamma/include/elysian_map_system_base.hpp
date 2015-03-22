@@ -214,7 +214,7 @@ namespace elysian {
 
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::beginObjectList(void) {
-		gyVidMaterialBind(nullptr);
+        gyVidMaterialBind(nullptr);
 		gyVidTexBind(_curLevel->tileSheet);
         gyVidNormalMapBind(_curLevel->normalSheet);
 		gyVidSpecularMapBind(_curLevel->specularSheet);
@@ -242,10 +242,11 @@ namespace elysian {
 
 
         //glBindVertexArray(_curArea->vao);
-        //glBindBuffer(GL_ARRAY_BUFFER, getCurArea()->vboBuff);
+      //  glBindBuffer(GL_ARRAY_BUFFER, getCurArea()->vboBuff);
         //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, getCurArea()->elementVbo);
         if(getLightSys()->isShadowPass()) gyVidDepthTest(true);
         else gyVidDepthTest(false);
+               // gyVidAlphaLevel(GY_ALPHA_FULL);
 	}
 	
     template<typename P, typename T, typename E>
@@ -261,7 +262,7 @@ namespace elysian {
         assert(elemArraySize < ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, elemArraySize*sizeof(GLushort), nullptr, GL_STREAM_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, elemArraySize*sizeof(GLushort), nullptr, GL_DYNAMIC_DRAW);
         glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort)*elemArraySize, elemArray);
         //glBufferData(GL_ELEMENT_ARRAY_BUFFER, elemArraySize*sizeof(GLushort), &elemArray[0], GL_DYNAMIC_DRAW);
         //glEnableClientState(GL_ELEMENT_ARRAY_BUFFER);
@@ -289,8 +290,9 @@ namespace elysian {
 		for(auto entity : entities) {
             if(getLightSys()->isShadowPass() && !entity->isShadowVolume()) {
                 continue;
-			}
-            if(getCameraSys()->isOnscreen(entity)) _onscreenEntityPool.claimFreeEntry() = entity;
+            } else if(getCameraSys()->isOnscreen(entity)) {
+                _onscreenEntityPool.claimFreeEntry() = entity;
+            }
 		}
         //Debug::printf(Debug::VERBOSE, "ONSCREEN ENTITIES - %d", _onscreenEntityPool.size());
 		return _onscreenEntityPool.size();

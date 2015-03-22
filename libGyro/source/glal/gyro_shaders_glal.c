@@ -62,7 +62,8 @@ GYMatrix4 glalPointShadowFaceMatrices[GY_CUBE_MAP_FACE_MAX];
 
 
 // ====== UNIFORM STATE DATA =======
-static const GYMaterial*	_currentMaterial								= &_defaultMaterial;
+static const GYMaterial*    _currentMaterial                               = &_defaultMaterial;
+static GYMaterial           _materialCache;
 static GYVector4			_globalAmbience									= { 0.0f, 0.0f, 0.0f, 1.0f };
 static const GYTexture*		_normalMap										= NULL;
 static const GYTexture*		_specularMap									= NULL;
@@ -147,7 +148,10 @@ void gyVidNormalMapBind(const GYTexture * const tex) {
         glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
 
         const float zFactor = glalOrientNormalMapZFactor(glalRectTexOrient);
-        if(zFactor != glalNormalMapZFactor) glalVidNormalMapZFactorUpdateUniform(zFactor);
+        if(zFactor != glalNormalMapZFactor) {
+            glalStripComboBreaker();
+            glalVidNormalMapZFactorUpdateUniform(zFactor);
+        }
 
     }
 
@@ -203,36 +207,38 @@ void glalLightingInit(void) {
 
 void gyVidMaterialBind(const GYMaterial*const material) {
     if(!glalLightingEnabled || gyVidShadowPass()) return;
+
 	if(!material) gyVidMaterialBind(&_defaultMaterial);
-	else if(_currentMaterial != material) {
+    else {
 
         //Check for individual state changes
-        if(!_currentMaterial || material->shininess != _currentMaterial->shininess) {
+        if(!_currentMaterial || material->shininess != _materialCache.shininess) {
             glUniform1f(glalCurLightShader->uniformLoc[GLAL_SHADER_MATERIAL_SHININESS], material->shininess);
             ++glalUniformChangeCount;
         }
 
-        if(!_currentMaterial || !gyVec4Compare(&material->ambientColor, &_currentMaterial->ambientColor)) {
+        if(!_currentMaterial || !gyVec4Compare(&material->ambientColor, &_materialCache.ambientColor)) {
             glUniform4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_MATERIAL_AMBIENT_COLOR], 1, (float*)&material->ambientColor);
             ++glalUniformChangeCount;
         }
 
-        if(!_currentMaterial || !gyVec4Compare(&material->diffuseColor, &_currentMaterial->diffuseColor)) {
+        if(!_currentMaterial || !gyVec4Compare(&material->diffuseColor, &_materialCache.diffuseColor)) {
             glUniform4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_MATERIAL_DIFFUSE_COLOR], 1, (float*)&material->diffuseColor);
             ++glalUniformChangeCount;
         }
 
-        if(!_currentMaterial || !gyVec4Compare(&material->specularColor, &_currentMaterial->specularColor)) {
+        if(!_currentMaterial || !gyVec4Compare(&material->specularColor, &_materialCache.specularColor)) {
             glUniform4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_MATERIAL_SPECULAR_COLOR], 1, (float*)&material->specularColor);
             ++glalUniformChangeCount;
         }
 
-        if(!_currentMaterial || !gyVec4Compare(&material->emissiveColor, &_currentMaterial->emissiveColor)) {
+        if(!_currentMaterial || !gyVec4Compare(&material->emissiveColor, &_materialCache.emissiveColor)) {
             glUniform4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_MATERIAL_EMISSIVE_COLOR], 1, (float*)&material->emissiveColor);
             ++glalUniformChangeCount;
         }
 
         _currentMaterial = material;
+        memcpy(&_materialCache, _currentMaterial, sizeof(GYMaterial));
 	}
 }
 
@@ -382,7 +388,7 @@ void glalDefaultShadersLoadUniforms(void) {
 
     glUniformMatrix4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)glalCurCamera->projViewMat);
 //	glUniform4fv(curLightShader->uniformLoc[SHADER_CAM_POS], 1, (float*)&viewPosition);
-	gyVidMaterialBind(material);
+    gyVidMaterialBind(material);
 
     memcpy(sources, glalLightSources, sizeof(GYLightSource*) * count);
 

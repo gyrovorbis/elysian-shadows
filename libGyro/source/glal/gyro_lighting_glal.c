@@ -193,7 +193,7 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
 	 * bind one to the real texture unit, and bind one to a bullshit unit based on type.
 	 */
     glActiveTexture(glalTextureMapTexUnits[GLAL_SHADOW1_MAP+index]);
-    if(light->type == GY_LIGHT_POINT/* && !(old && cache->type == light->type)*/) { //Point light + change
+    if(light->type == GY_LIGHT_POINT && !(old && cache->type == light->type)) { //Point light + change
 		glDisable(GL_TEXTURE_2D);
 		glEnable(GL_TEXTURE_CUBE_MAP);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, internals->shadowMap);
@@ -201,7 +201,7 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
         glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_CUBE_MAP], 3+index);
         //++glalTextureChangeCount;
         glalUniformChangeCount += 2;
-    } else if((light->type == GY_LIGHT_SPOT || light->type == GY_LIGHT_DIRECTIONAL) && !(old && (cache->type == GY_LIGHT_DIRECTIONAL || cache->type == GY_LIGHT_SPOT))) {  //Spot or Directional light + change
+    } else /*if((light->type == GY_LIGHT_SPOT || light->type == GY_LIGHT_DIRECTIONAL) && !(old && (cache->type == GY_LIGHT_DIRECTIONAL || cache->type == GY_LIGHT_SPOT)))*/ {  //Spot or Directional light + change
 		glDisable(GL_TEXTURE_CUBE_MAP);
 		glEnable(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, internals->shadowMap);

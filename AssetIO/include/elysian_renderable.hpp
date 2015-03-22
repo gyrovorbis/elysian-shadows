@@ -128,6 +128,9 @@ namespace elysian {
 
     inline void Renderable::render(void) {
 
+        if(_spriteAttrib->_color.a == 0.0f) return;
+        gyVidAlphaLevel((_spriteAttrib->_color.a == 255)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
+
         gyVidTexBind(_spriteAttrib->_tex);
         gyVidNormalMapBind(_normalMap);
         gyVidSpecularMapBind(_specularMap);
@@ -158,8 +161,6 @@ namespace elysian {
             gyVidQuadListEnd();
             break;
         case PrimAttrib::SPRITE:
-            if(_spriteAttrib->_color.a == 0.0f) return;
-            //gyVidAlphaLevel((_spriteAttrib->_color.a == 255)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
             gyVidQuadListBegin(&_spriteAttrib->_color);
 
             if(_frame == -1) {
