@@ -220,10 +220,9 @@ namespace elysian {
         gyVidNormalMapBind(_curLevel->normalSheet);
 		gyVidSpecularMapBind(_curLevel->specularSheet);
 
-        glBindVertexArray(_curArea->vao);
+        //glBindVertexArray(_curArea->vao);
 
         glBindBuffer(GL_ARRAY_BUFFER, _curArea->vboBuff);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo);
 
         glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_POS]);
        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD]);
@@ -264,7 +263,7 @@ namespace elysian {
         assert(elemArraySize <= maxi);
         assert(elemArraySize < ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE);
 
-        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo);
 
         //glBufferData(GL_ELEMENT_ARRAY_BUFFER, elemArraySize*sizeof(GLushort), nullptr, GL_DYNAMIC_DRAW);
         //glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort)*elemArraySize, elemArray);

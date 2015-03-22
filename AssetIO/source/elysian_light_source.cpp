@@ -50,7 +50,7 @@ float LightAttrib::_calculateRadius(const GYVector3 &vec) {
     return root1;
 }
 
-inline float LightAttrib::getRadius(void) {
+float LightAttrib::getRadius(void) {
     //check if shit has changed before performing calculation
     if(!(_prevAttenuation.x == attenuationFactors.x && _prevAttenuation.y == attenuationFactors.y && _prevAttenuation.z == attenuationFactors.z)) {
         //cache the bitch for next time

@@ -68,7 +68,7 @@ private:
 
     Assets                  _assets;
     QUndoGroup              _undoGroup;
-    EngineGLSceneWidget*    _engineGLView;
+    EngineGLSceneWidget*    _engineGLView   = nullptr;
 
     elysian::Debug *        _debug;
 
