@@ -184,6 +184,7 @@ static const GYTexCoord2*   _curTexCoordPtr         = NULL;
 static const GYColor4*      _curColorArrayPtr       = NULL;
 GYColor4                    _curQuadListColor[12]   = { {0, 0, 0, 0}, { 0, 0, 0, 0}, {0,0,0,0}, {0, 0,0,0} };
 //static unsigned int         _vertexQueueSize         = 0;
+GLuint                      _defaultVao[2]             = {0};
 
 void gyVidClearColor(const GYColor4 color) {
     _clearColor.x = (float)color.r*255.0f;
@@ -191,6 +192,10 @@ void gyVidClearColor(const GYColor4 color) {
     _clearColor.z = (float)color.b*255.0f;
     _clearColor.w = (float)color.a*255.0f;
     glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
+}
+
+void gyVidBindDefaultVertexArray(void) {
+    //glBindVertexArray(_defaultVao);
 }
 
 unsigned gyVidDbgVertexRenderCount(void) { return glalPrevVertexRenderCount; }
@@ -240,7 +245,27 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         glDepthFunc(GL_LESS);
         glClearDepth(1.0f);
 
+        for(unsigned i = 0; i < 2; ++i) {
+            glGenVertexArrays(1, &_defaultVao[i]);
+            glBindVertexArray(_defaultVao[i]);
 
+            glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_POS]);
+            glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD]);
+            glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, 0, _modelViewVertices);
+            glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, 0, _stripTexCoords);
+
+            if(i == 0) {
+                glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR]);
+                glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT]);
+                glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL]);
+
+                glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, _stripColors);
+                glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, 0, _stripTangents);
+                glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, 0, _stripNormals);
+            }
+        }
+
+        glBindVertexArray(0);
         once = 1;
     }
 
@@ -260,10 +285,12 @@ void gyVidCamUpdate(const GYCamera *const cam) {
 }
 
 static inline void _gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsigned int startIndex, const unsigned int amount) {
-    glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, 0, vertexArray);
-    glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_POS]);
+    //glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, 0, vertexArray);
+    //glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_POS]);
+    glBindVertexArray(_defaultVao[gyVidShadowPass()]);
     glDrawArrays(GL_TRIANGLE_STRIP, startIndex, amount);
     glalVertexRenderCount += amount;
+    glBindVertexArray(0);
     _curTexCoordPtr = NULL;
 }
 
@@ -274,29 +301,29 @@ void gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsign
 
 void gyVidColorArray(const struct _GYColor4 *const ptr) {
     if(gyVidShadowPass()) return;
-    glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, ptr);
-    glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR]);
+    //glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, ptr);
+    //glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR]);
     _curColorArrayPtr = ptr;
 }
 
 void gyVidTexCoordArray(const struct _GYTexCoord2 *const ptr) {
     //assert(curTex); //You should not be submitting this to the untextured shabut in der, dumbass!
-    glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, 0, ptr);
-    glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD]);
+    //glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, 0, ptr);
+    //glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD]);
     _curTexCoordPtr = ptr;
 }
 
 void gyVidTangentArray(const struct _GYVector3 *const ptr) {
     if(gyVidShadowPass()) return;
-    glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, 0, ptr);
-    glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT]);
+    //glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, 0, ptr);
+    //glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT]);
     glalTangentVector = ptr;
 }
 
 void gyVidNormalArray(const struct _GYVector3 *const ptr) {
     if(gyVidShadowPass()) return;
-    glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, 0, ptr);
-    glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL]);
+    //glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, 0, ptr);
+    //glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL]);
     glalNormalVector = ptr;
 }
 

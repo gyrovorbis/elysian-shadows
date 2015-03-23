@@ -26,7 +26,7 @@ int gyVidShadowPass(void) {
 }
 
 void gyVidLightingSetEnable(const int enabled) {
-    GYVector4 noAmbience = { 1.0f, 1.0f, 1.0f, 0.0f };
+    GYVector4 noAmbience = { 1.0f, 1.0f, 1.0f, 1.0f };
 
     if(glalLightingEnabled !=  enabled) {
         glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_LIGHTING_ENABLED], enabled);
@@ -445,6 +445,7 @@ void gyVidLightSourceBeginShadowPasses(void) {
 	//glalDefaultShadersLoadUniforms();
     glalCurLightShader = &glalShadowMapShader;
     _shadowPass = 1;
+    gyVidBindDefaultVertexArray();
 }
 
 
@@ -534,7 +535,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 		 _gyLog(GY_DEBUG_CRITICAL, "Binding GLAL depth texture to frame buffer has reested - %d!", status);
 		 return;
 	 }
-     gyVidDepthTest(1);
+     //gyVidDepthTest(1);
 
 	//find projView matrix
 	gyMatMultMat(lightProjViewMatrix, lightProjMatrix, lightViewMatrix);
@@ -551,6 +552,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 void gyVidLightSourceEndShadowPasses(void) {
     _shadowPass = 0;
 	gyVidSetDefaultShaderProgram();
+    gyVidBindDefaultVertexArray();
 	//glalDefaultShadersLoadUniforms();
     glalCurLightShader = &glalLightingShader;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
