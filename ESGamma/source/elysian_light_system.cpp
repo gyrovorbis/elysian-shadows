@@ -27,12 +27,16 @@ void LightSystem::_addToLightMap(LightSource*const src) {
 	const uint32_t			lightMask	= (1<<(_onscreenLightCount-1));
     int startX, startY, endX, endY;
 
-    getCameraSys()->getVisibleTileRegion(startX, startY, endX, endY, lightCam);
+    startX = startY = 0;
+    endX = _curArea->width-1;
+    endY = _curArea->height-1;
+
+    //getCameraSys()->getVisibleTileRegion(startX, startY, endX, endY, lightCam);
 
     for(int y = startY; y <= endY; ++y) {
         for(int x = startX; x <= endX; ++x) {
-			const unsigned xIndex = x-_screenTileXOffset;
-			const unsigned yIndex = y-_screenTileYOffset;
+            const unsigned xIndex = x;//-_screenTileXOffset;
+            const unsigned yIndex = y;//-_screenTileYOffset;
 			_lightMap[yIndex][xIndex] |= lightMask;
 		}
 	}
@@ -129,43 +133,7 @@ void LightSystem::_renderShadowVolumes(void) {
 	gyVidTexBind(nullptr);
 	gyVidMaterialBind(nullptr);
 	gyVidNormalMapBind(nullptr);
-/*
-	renderCube(350.0f, 150.0f, 100.0f,
-			   25.0f, 25.0f, 20.0f,
-			   0.0f);
 
-	renderCube(200.0f, 200.0f, 200.0f,
-			   25.0f, 25.0f, 40.0f,
-			   3.0f);
-
-	renderCube(400.0f, 300.0f, 100.0f,
-			   25.0f, 25.0f, 20.0f,
-			   2.14f);
-
-	renderCube(200.0f, 400.0f, 300.0f,
-			   50.0f, 50.0f, 60.0f,
-			   0.0f);
-
-	renderCube(400.0f, 400.0f, 200.0f,
-			   25.0f, 25.0f, 100.0f,
-			   0.0f);
-
-	renderCube(350.0f+600.0f, 150.0f+600.0f, 20.0f,
-			   25.0f, 25.0f, 10.0f,
-			   0.0f);
-
-	renderCube(400.0f+600.0f, 300.0f+600.0f, 20.0f,
-			   25.0f, 25.0f, 10.0f,
-			   2.14f);
-
-	renderCube(150.0f+600.0f, 750.0f, 60.0f,
-			   25.0f, 25.0f, 50.0f,
-			   0.0f);
-
-	renderCube(400.0f+600.0f, 400.0f+600.0f, 100.0f,
-			   25.0f, 25.0f, 50.0f,
-			   0.0f);
-*/
 	const auto entities = _curArea->entities;
 	for(auto it : entities) {
 		if(it->isShadowVolume()) it->renderShadowVolume();
@@ -184,8 +152,10 @@ void LightSystem::shadowRenderPasses(void) {
     const auto sources      = _curArea->lightSources;
     CameraSystem* camSys    = getCameraSys();
     CameraState* cam        = camSys->getCurrentState();
-    //_screenTileXOffset	= cam->tileStartX;
-    //_screenTileYOffset	= cam->tileStartY;
+    /*
+    getCameraSys()->getVisibleTileRegion();
+    _screenTileXOffset	= cam->_tileStartX;
+    _screenTileYOffset	= cam->_tileStartY;*/
 
 	_onscreenLightCount = 0;
 	memset(_lightMap, 0, sizeof(_lightMap));
@@ -202,7 +172,7 @@ void LightSystem::shadowRenderPasses(void) {
 
 		switch(it->getLightType()) {
 		case GY_LIGHT_SPOT:
-        if(!cam->isWithinScreenRegion(it->position.x, it->position.y, it->getAttrib()->getRadius(), it->getAttrib()->getRadius())) break;
+        if(/*!cam->isWithinScreenRegion(it->position.x, it->position.y, it->getAttrib()->getRadius(), it->getAttrib()->getRadius())*/ false) break;
 		case GY_LIGHT_DIRECTIONAL:
 			_onscreenLights[_onscreenLightCount++] = it;
             it->updateBoundingVolume(cam, GY_CUBE_MAP_FACE_MAX);
@@ -216,7 +186,7 @@ void LightSystem::shadowRenderPasses(void) {
 			_addToLightMap(it);
 			break;
 		case GY_LIGHT_POINT:
-            if(cam->isWithinScreenRegion(it->position.x, it->position.y, it->getAttrib()->getRadius(), it->getAttrib()->getRadius())) {
+            if(/*cam->isWithinScreenRegion(it->position.x, it->position.y, it->getAttrib()->getRadius(), it->getAttrib()->getRadius())*/ true) {
 				_onscreenLights[_onscreenLightCount++] = it;
 
                 for(unsigned i = GY_CUBE_MAP_RIGHT; i < GY_CUBE_MAP_FACE_MAX; ++i) {
@@ -254,7 +224,7 @@ void LightSystem::addLightSourcesToScene(void) {
 
 void LightSystem::removeLightSourcesFromScene(void) {
     if(gyVidShadowPass()) return;
-	const static GYVector4 fullAmbience = GYVector4{ 1.0f, 1.0f, 1.0f, 1.0f };
+    const static GYVector4 fullAmbience = GYVector4{ 1.0f, 1.0f, 1.0f, 0.0f };
 	gyVidSetGlobalAmbience(&fullAmbience);
 	_activeLights = 0;
 	_activeLightCount = 0;
@@ -286,7 +256,13 @@ void LightSystem::getLightPassTileRegion(int& startX, int& startY, int& endX, in
 }
 
 uint32_t LightSystem::startLightPass(uint32_t& lightsLeft) {
-    if(gyVidShadowPass()) return ~0;
+    static int call = 0;
+    if(gyVidShadowPass()) {
+        call = 0;
+        return ~0;
+    }
+    else if(!lightsLeft) return 0;
+
 	//Number of enabled bits in a mask
 	auto bitCount = [&](const uint32_t mask) {
 		unsigned count = 0;
@@ -302,13 +278,17 @@ uint32_t LightSystem::startLightPass(uint32_t& lightsLeft) {
 				return i;
 			}
 		}
-		return 0;
+        assert(0);
+        return 0;
 	};
 	//Converts index (bit position) to bitmask
 	auto indexToMask = [](const unsigned index) {
 		const uint32_t mask = (1<<index);
 		return mask;
 	};
+
+    //Debug::printf(Debug::VERBOSE, "Pass - %d", call);
+    Debug::push();
 
 	//Lights we can keep from previous pass
 	const uint32_t	keepActiveLights		= (lightsLeft&_activeLights);
@@ -320,10 +300,12 @@ uint32_t LightSystem::startLightPass(uint32_t& lightsLeft) {
 	uint32_t		removedLights			= (_activeLights&(~keepActiveLights));
 	unsigned		removedLightsCount		= bitCount(removedLights);
 
-	if(!lightsLeft) return 0;
+    //Debug::printf(Debug::VERBOSE, "keepActiveLightCount - %d", keepActiveLightCount);
+    //Debug::printf(Debug::VERBOSE, "addLightCount - %d", addLightsCount);
+    //Debug::printf(Debug::VERBOSE, "removeLightsCount - %d", removedLightsCount);
 
 	//If we're either adding or removing lights, state change
-	if(addLightsCount != 0 /*|| removedLightsCount != 0 || keepActiveLightCount != GYRO_VIDEO_LIGHT_SOURCES_MAX*/) {
+    if(addLightsCount > 0 /*|| removedLightsCount != 0 || keepActiveLightCount != GYRO_VIDEO_LIGHT_SOURCES_MAX*/) {
 		//New values we're calculating
 		uint32_t		newActiveLights = keepActiveLights;
 		unsigned		newActiveLightCount = keepActiveLightCount;
@@ -331,7 +313,7 @@ uint32_t LightSystem::startLightPass(uint32_t& lightsLeft) {
 		//Number of new lights we can actually add to this pass
 		if(addLightsCount > GYRO_VIDEO_LIGHT_SOURCES_MAX) addLightsCount = GYRO_VIDEO_LIGHT_SOURCES_MAX;
 		const int roomLeft = GYRO_VIDEO_LIGHT_SOURCES_MAX - keepActiveLightCount;
-		if(roomLeft) {
+        if(roomLeft > 0) {
 			if(roomLeft < (int)addLightsCount) addLightsCount = roomLeft;
 		} else {
 			addLightsCount = 0;
@@ -339,9 +321,11 @@ uint32_t LightSystem::startLightPass(uint32_t& lightsLeft) {
 
 		//if(removedLightsCount > addLightsCount) removedLightsCount = addLightsCount;
 
+
 		//Iterate over lights we're removing
 		for(unsigned i = 0; i < removedLightsCount; ++i) {
-			LightSource*const removedLight = _onscreenLights[pullFirstIndexFromMask(removedLights)];
+            unsigned removedIndex = pullFirstIndexFromMask(removedLights);
+            LightSource*const removedLight = _onscreenLights[removedIndex];
 
 			//Replace instead of remove, if we have a light to add
 			if(addLightsCount > 0) {
@@ -351,9 +335,11 @@ uint32_t LightSystem::startLightPass(uint32_t& lightsLeft) {
 				++newActiveLightCount;
 				--addLightsCount;
 				++_shaderUniformChangesThisFrame;
+                //Debug::printf(Debug::VERBOSE, "Replaced %d with %d", removedIndex, addedIndex);
 			} else { //Remove
 				gyVidLightSourceRemove(removedLight);
 				++_shaderUniformChangesThisFrame;
+                //Debug::printf(Debug::VERBOSE, "Removed %d", removedIndex);
 			}
 		}
 
@@ -364,18 +350,21 @@ uint32_t LightSystem::startLightPass(uint32_t& lightsLeft) {
 			gyVidLightSourceAdd(_onscreenLights[addedIndex]);
 			newActiveLights |= indexToMask(addedIndex);
 			++newActiveLightCount;
+           // Debug::printf(Debug::VERBOSE, "Added %d", addedIndex);
 			++_shaderUniformChangesThisFrame;
 		}
 
 		//Update pass state info
 		_activeLights = newActiveLights;
 		_activeLightCount = newActiveLightCount;
+        assert(newActiveLightCount == bitCount(newActiveLights));
 
 	}
 
 	//Remove current pass from mask representing lights that still need to be rendered
 	lightsLeft &= ~_activeLights;
-
+++call;
+    Debug::pop();
 	return _activeLights;
 
 }

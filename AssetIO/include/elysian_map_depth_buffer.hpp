@@ -113,12 +113,12 @@ namespace elysian {
             static_cast<const T*>(this)->renderCustomPassAtElev(elev, normalType);
 		}
 
-		void _disableDepthTest(void) const {
-			static_cast<const T*>(this)->disableDepthTest();
+        void _disableDepthTest(void) {
+            static_cast<T*>(this)->disableDepthTest();
 		}
 
-		void _enableDepthTest(void) const {
-			static_cast<const T*>(this)->enableDepthTest();
+        void _enableDepthTest(void) {
+            static_cast<T*>(this)->enableDepthTest();
 		}
 
         uint32_t _getLightCount(void) const {
@@ -171,13 +171,14 @@ namespace elysian {
 		void _renderDepthBuffEntityRow(const unsigned i);
 
 		bool _tileEntryLightPass(O& tileEntry) {
-			++tileEntry.renderPass;
 			if((tileEntry.lights | _lightsRendered) == _lightsRendered) { //it's done!
+                ++tileEntry.renderPass;
 				_renderObjectEntry(tileEntry, ZCoordConstants::mapBase+(tileEntry.mapEntry.getElev())*32.0f /*zCoordBufferedBase+i+1.0f*/); //WILL THIS WORK FOR NO ELEVATION!?
 				return true;
-			} else if((tileEntry.lights & ~_lightsRendered) == tileEntry.lights) { //can't do dick this pass
+            } else if((tileEntry.lights & ~_lightsActive) == tileEntry.lights) { //can't do dick this pass
 				return false;
 			} else { //partial render this pass
+                ++tileEntry.renderPass;
 				tileEntry.lights &= ~_lightsActive;
 				_renderObjectEntry(tileEntry, ZCoordConstants::mapBase+(tileEntry.mapEntry.getElev())*32.0f /*zCoordBufferedBase+i+1.0f*/);
 				return false;
@@ -252,9 +253,9 @@ namespace elysian {
 			_entityBuff[zIndex][_entityCount[zIndex]].zCoordRelative = relZCoord;
 
 			//render immediately
-			if(zCoord < 32.0f && normalType == NORMAL_FLAT) _renderEntityEntry(_entityBuff[zIndex][_entityCount[zIndex]]);
+          //  if(zCoord < 32.0f && normalType == NORMAL_FLAT) _renderEntityEntry(_entityBuff[zIndex][_entityCount[zIndex]]);
 			//queue and render later
-			else ++_entityCount[zIndex];
+           // else ++_entityCount[zIndex];
 
 		}
         
@@ -275,17 +276,12 @@ namespace elysian {
 		// ==== RENDER ENTITIES AND TILES QUEUED IN DEPTH BUFFER ====
 
 
-		_disableDepthTest();
 		//Iterate through depth buffers and render from lowest to highest z coord
 		for(unsigned i = 0; i < _depthBuffMaxHeight; ++i) {
 
-			_beginRenderNextTileRow();
-			_beginObjectList();
-
 			_renderDepthBuffTileRow(i, NORMAL_FLAT);
-			_endObjectList();
 
-            _renderCustomPassAtElev(i, NORMAL_FLAT);
+            //_renderCustomPassAtElev(i, NORMAL_FLAT);
 
 			//if(_entityCount[i]) {
 				//_endObjectList();
@@ -293,139 +289,152 @@ namespace elysian {
 				//Entities come first, since they are always above the lowest point on the object
 				//float entityZDelta = 0.0f;
 				for(unsigned j = 0; j < _entityCount[i]; ++j) {
-					//_entityBuff[i][j].zCoord += entityZDelta;
-					_renderEntityEntry(_entityBuff[i][j]);
+                    //_entityBuff[i][j].zCoord += entityZDelta;
+                    //_renderEntityEntry(_entityBuff[i][j]);
 					//Give each entity a tiny delta to prevent duplicate z from same y coord
-					//entityZDelta += ELYSIAN_DEPTH_BUFFER_ENTITY_ENTITY_MIN_Z_OFFSET;
+                    //entityZDelta += ELYSIAN_DEPTH_BUFFER_ENTITY_ENTITY_MIN_Z_OFFSET;
 				}
 
 				//_beginObjectList();
 
 			//}
 
-			//_beginRenderNextTileRow();
-			_beginObjectList();
 			_renderDepthBuffTileRow(i, NORMAL_FRONT);
-			_endObjectList();
 
-            _renderCustomPassAtElev(i, NORMAL_FRONT);
+            //_renderCustomPassAtElev(i, NORMAL_FRONT);
                       
 		}
-		//_enableDepthTest();
+        _enableDepthTest();
 	}
 
 	// ==== QUEUE AND IMMEDIATE RENDER TILES ====
 	template<typename T, typename O, typename E>
 	inline void MapDepthBuffer<T, O, E>::_processTiles(void) {
 		uint32_t			lightsLeft			= 0;
-        const uint32_t		onscreenLights		= _getLightCount();
+        uint32_t            onscreenLights;
+        const uint32_t		onscreenLightCount		= _getLightCount();
 		_lightsRendered = 0;
 
-		_objectBuffImmediateCount = 0;
+        for(unsigned i = 0; i < onscreenLightCount; ++i) onscreenLights |= (1<<i);
+        const bool multipass = (onscreenLights > GYRO_VIDEO_LIGHT_SOURCES_MAX);
+        const unsigned outerLayerLoopEnd = multipass? ELYSIAN_AREA_MAP_LAYERS : 1;
+        const unsigned innerLayerLoopEnd = multipass? 1 : ELYSIAN_AREA_MAP_LAYERS;
 
-		for(unsigned i = 0; i < onscreenLights; ++i) lightsLeft |= (1<<i);
 
-        _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
-
-        _renderCustomPassAtElev(-1, NORMAL_FLAT);
-
-        _beginObjectList();
-
-        for(int j = _scrStartY; j <= _scrEndY; ++j) {
-            for(int i = _scrStartX; i <= _scrEndX; ++i) {
-				for(unsigned k = 0; k < 3; ++k) {
-					O curMapEntry;
-					curMapEntry.x = i;
-					curMapEntry.y = j;
-					curMapEntry.layer = k;
-					_getObjectLayerEntry(i, j, curMapEntry);
-					/* Had to move this check to client code, because the Toolkit actually does
-					render tile 0 decorations when selecting/selected/filling. It's moleculary
-					slower, but it's at least a clean solution.
-					*/
-                    if(!curMapEntry.mapEntry.getIndex()) continue; //not the blank object
-					int elevation = curMapEntry.mapEntry.getElev();//-1;
-
-					if(elevation == 0 && !curMapEntry.mapEntry.getPlane()) { //render tile immediately at elevation -1 (below entities)
-						//Immediate render, or buffer if it requires multiple passes
-                        if(!_isShadowPass()) _renderOrBufferImmediateTileEntry(curMapEntry);
-					} else { //Add to depth buffer if elevated
-						unsigned zCoord = j-_scrStartY+elevation;
-						//if(zCoord >= depthBuffMaxHeight) zCoord = depthBuffMaxHeight-1;
-						assert(zCoord < _depthBuffMaxHeight);
-
-						_objectBuff[zCoord][_objectCount[zCoord]] = curMapEntry;
-						_objectRowLights[curMapEntry.mapEntry.getNormal()][zCoord] |= curMapEntry.lights;
-						++_objectCount[zCoord];
-					}
-				}
-			}
-		}
-
-        if(_objectBuffImmediateCount) {
-
-            //Make a pass through immediate tile multiplass buffer
-            //_endObjectList(); //wtf?
-            //_beginObjectList();
+        for(unsigned k = 0; k < outerLayerLoopEnd; ++k) {
+            _lightsRendered = 0;
+            _objectBuffImmediateCount = 0;
+            _queued = 0;
+            lightsLeft = onscreenLights;
             _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
-            for(unsigned j = 0; j < _objectBuffImmediateCount; ++j) {
-                _renderOrQueueTileEntry(j, _objectBuffImmediate[j]);
-            }
 
-            //Continue making light passes until there are no more immediate tiles queued
-            while(_queued) {
-                const unsigned count = _queued;
-                _queued = 0;
-                _curRow = _nextRow;
-                _nextRow = !_curRow;
-                _endObjectList();
-                _beginObjectList();
-                _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
-                for(unsigned j = 0; j < count; ++j) {
-                    _renderOrQueueTileEntry(j, _objectBuffImmediate[_queue[_curRow][j]]);
+            //_renderCustomPassAtElev(-1, NORMAL_FLAT);
+
+            //_enableDepthTest();
+            _beginObjectList();
+            for(int j = _scrStartY; j <= _scrEndY; ++j) {
+                for(int i = _scrStartX; i <= _scrEndX; ++i) {
+                    unsigned layer = k;
+                    do {
+                        O curMapEntry;
+                        curMapEntry.x = i;
+                        curMapEntry.y = j;
+                        curMapEntry.layer = layer;
+                        _getObjectLayerEntry(i, j, curMapEntry);
+                        /* Had to move this check to client code, because the Toolkit actually does
+                        render tile 0 decorations when selecting/selected/filling. It's moleculary
+                        slower, but it's at least a clean solution.
+                        */
+                        if(!curMapEntry.mapEntry.getIndex()) continue; //not the blank object
+                        int elevation = curMapEntry.mapEntry.getElev();//-1;
+
+                        if(elevation == 0 && !curMapEntry.mapEntry.getPlane()) { //render tile immediately at elevation -1 (below entities)
+                            //Immediate render, or buffer if it requires multiple passes
+                            if(!_isShadowPass()) _renderOrBufferImmediateTileEntry(curMapEntry);
+                        } else { //Add to depth buffer if elevated
+                            unsigned zCoord = j-_scrStartY+elevation;
+                            //if(zCoord >= depthBuffMaxHeight) zCoord = depthBuffMaxHeight-1;
+                            assert(zCoord < _depthBuffMaxHeight);
+
+                            _objectBuff[zCoord][_objectCount[zCoord]] = curMapEntry;
+                            _objectRowLights[curMapEntry.mapEntry.getNormal()][zCoord] |= curMapEntry.lights;
+                            ++_objectCount[zCoord];
+                        }
+                    } while(++layer < innerLayerLoopEnd);
                 }
             }
 
+            if(_objectBuffImmediateCount) {
+                //Make a pass through immediate tile multiplass buffer
+               // _disableDepthTest();
+                _endObjectList();
+                _beginObjectList();
+                _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
+                for(unsigned j = 0; j < _objectBuffImmediateCount; ++j) {
+                    _renderOrQueueTileEntry(j, _objectBuffImmediate[j]);
+                }
+
+                //Continue making light passes until there are no more immediate tiles queued
+                while(_queued) {
+                    const unsigned count = _queued;
+                    _queued = 0;
+                    _curRow = _nextRow;
+                    _nextRow = !_curRow;
+                    _endObjectList();
+                    _beginObjectList();
+                    _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
+                    for(unsigned j = 0; j < count; ++j) {
+                        _renderOrQueueTileEntry(j, _objectBuffImmediate[_queue[_curRow][j]]);
+                    }
+                }
+            }
         }
 
-        _endObjectList();
-
-        _renderCustomPassImmediate();
+        //_renderCustomPassImmediate();
 	}
 
 	template<typename T, typename O, typename E>
 	inline void MapDepthBuffer<T, O, E>::_beginRenderNextTileRow(void) {
-		_lightsRendered = 0;
+        //_queued = 0;
+        //_lightsRendered = 0;
 	}
 
 	template<typename T, typename O, typename E>
 	inline void MapDepthBuffer<T, O, E>::_renderDepthBuffTileRow(const unsigned int i, const NORMAL_TYPE normalType) {
 		//Tiles - rendered with Z at the BOTTOM of the map tile location
 
-		//_beginObjectList();
+        uint32_t totalLights = _objectRowLights[normalType][i];
+        const bool multipass = (totalLights > GYRO_VIDEO_LIGHT_SOURCES_MAX);
+        const unsigned outerLayerLoopEnd = multipass? ELYSIAN_AREA_MAP_LAYERS : 1;
 
-        _lightsRendered |= _lightsActive = _startLightPass(_objectRowLights[normalType][i]);
-		for(unsigned j = 0; j < _objectCount[i]; ++j) {
-            if(_objectBuff[i][j].mapEntry.getNormal() == normalType)
-				_renderOrQueueTileEntry(j, _objectBuff[i][j]);
-		}
-		while(_queued) {
-			const unsigned count = _queued;
-			_queued = 0;
-			_curRow = _nextRow;
-			_nextRow = !_curRow;
-            _endObjectList();
+        for(unsigned l = 0; l < outerLayerLoopEnd; ++l) {
             _beginObjectList();
+            _queued = 0;
+            _lightsRendered = 0;
+            _objectRowLights[normalType][i] = totalLights;
             _lightsRendered |= _lightsActive = _startLightPass(_objectRowLights[normalType][i]);
-			for(unsigned j = 0; j < count; ++j) {
-				_renderOrQueueTileEntry(j, _objectBuff[i][_queue[_curRow][j]]);
-			}
-		}
-
-	//	_endObjectList();
-
+            for(unsigned j = 0; j < _objectCount[i]; ++j) {
+                if(multipass && _objectBuff[i][j].layer != l) continue;
+                if(_objectBuff[i][j].mapEntry.getNormal() == normalType)
+                    _renderOrQueueTileEntry(j, _objectBuff[i][j]);
+            }
+            if(_queued) {
+                //_disableDepthTest();
+                while(_queued) {
+                    const unsigned count = _queued;
+                    _queued = 0;
+                    _curRow = _nextRow;
+                    _nextRow = !_curRow;
+                    _endObjectList();
+                    _beginObjectList();
+                    _lightsRendered |= _lightsActive = _startLightPass(_objectRowLights[normalType][i]);
+                    for(unsigned j = 0; j < count; ++j) {
+                        _renderOrQueueTileEntry(j, _objectBuff[i][_queue[_curRow][j]]);
+                    }
+                }
+            }
+        }
 	}
-    
 }
 
 

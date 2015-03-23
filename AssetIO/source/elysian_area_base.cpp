@@ -275,7 +275,7 @@ void AreaBase::populateVbo(void) {
 			for(unsigned x = 0; x < width; ++x) {
 				TileEntry tileEntry = getTileEntry(z, x, y);
 
-                vboEntryFromTileEntry(curPtr, &tileEntry, x, y);
+                vboEntryFromTileEntry(curPtr, &tileEntry, x, y, z);
 
 				curPtr += 4;
 

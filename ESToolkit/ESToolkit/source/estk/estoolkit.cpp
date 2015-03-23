@@ -891,13 +891,14 @@ void ESToolkit::_openProjectDir(const QString dir) {
     QGLFormat fmt;
     fmt.setDirectRendering(true);
     fmt.setDoubleBuffer(true);
-    fmt.setDepth(false);
+    fmt.setDepth(true);
     fmt.setAccum(false);
     fmt.setOverlay(false);
     fmt.setStencil(false);
     fmt.setRedBufferSize(8);
     fmt.setBlueBufferSize(8);
     fmt.setGreenBufferSize(8);
+    fmt.setDepthBufferSize(16);
 
     auto* viewport = _engineGLView = new EngineGLSceneWidget(fmt);
     connect(viewport, SIGNAL(engineUpdated()), _ui->mapView, SLOT(onEngineUpdated()));

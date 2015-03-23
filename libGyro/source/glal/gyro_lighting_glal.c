@@ -144,11 +144,11 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
         ++glalUniformChangeCount;
     }
 
-    //if(!old || !gyMat4Compare(light->camera->projViewMat, cache->projViewMat)) { //prolly expensive as fuck comparison... still cheaper than uniform change
+    if(!old || !gyMat4Compare(light->camera->projViewMat, cache->projViewMat)) { //prolly expensive as fuck comparison... still cheaper than uniform change
         glUniformMatrix4fv(glalLightingShader.lightsUniformLoc[index][GLAL_SHADER_LIGHT_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)light->camera->projViewMat);
-       //  memcpy(cache->projViewMat, light->camera->projViewMat, sizeof(GYMatrix4));
+        memcpy(cache->projViewMat, light->camera->projViewMat, sizeof(GYMatrix4));
         ++glalUniformChangeCount;
-    //}
+    }
 
     if(!old || !glalLightsEnabled[index]) {
         glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_ENABLED], 1);
@@ -163,15 +163,15 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
         }
     }
 
-   // if(light->type == GY_LIGHT_DIRECTIONAL || light->type == GY_LIGHT_SPOT) {
+    if(light->type == GY_LIGHT_DIRECTIONAL || light->type == GY_LIGHT_SPOT) {
         if(!old || !gyVec3Compare(&light->direction, &cache->direction)) {
             glUniform3fv(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_DIRECTION], 1, (float*)&light->direction);
             memcpy(&cache->direction, &light->direction, sizeof(float)*3);
             ++glalUniformChangeCount;
         }
-   // }
+    }
 
-  //  if(light->type == GY_LIGHT_SPOT || light->type) {
+   if(light->type == GY_LIGHT_SPOT || light->type == GY_LIGHT_POINT) {
         if(!old || light->properties->spotExponent != cache->spotExponent) {
             glUniform1f(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SPOT_EXPONENT], light->properties->spotExponent);
             cache->spotExponent = light->properties->spotExponent;
@@ -182,7 +182,7 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
             glUniform1f(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SPOT_CUTOFF_ANGLE], light->spotCutoffAngle);
             cache->spotCutoffAngle = light->spotCutoffAngle;
             ++glalUniformChangeCount;
-      //  }
+        }
     }
 
 
@@ -193,23 +193,27 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
 	 * bind one to the real texture unit, and bind one to a bullshit unit based on type.
 	 */
     glActiveTexture(glalTextureMapTexUnits[GLAL_SHADOW1_MAP+index]);
-    if(light->type == GY_LIGHT_POINT && !(old && cache->type == light->type)) { //Point light + change
-		glDisable(GL_TEXTURE_2D);
-		glEnable(GL_TEXTURE_CUBE_MAP);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, internals->shadowMap);
-        glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_MAP], 7+index);
-        glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_CUBE_MAP], 3+index);
-        ++glalTextureChangeCount;
-        glalUniformChangeCount += 2;
-    } else if((light->type == GY_LIGHT_SPOT || light->type == GY_LIGHT_DIRECTIONAL) && !(old && (cache->type == GY_LIGHT_DIRECTIONAL || cache->type == GY_LIGHT_SPOT))) {  //Spot or Directional light + change
-		glDisable(GL_TEXTURE_CUBE_MAP);
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, internals->shadowMap);
-        glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_MAP], 3+index);
-        glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_CUBE_MAP], 7+index);
-        ++glalTextureChangeCount;
-        glalUniformChangeCount += 2;
-	}
+    if(light->type == GY_LIGHT_POINT) { //Point light + change
+        if(!(old && cache->type == light->type)) {
+            glDisable(GL_TEXTURE_2D);
+            glEnable(GL_TEXTURE_CUBE_MAP);
+            glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_MAP], 7+index);
+            glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_CUBE_MAP], 3+index);
+            ++glalTextureChangeCount;
+            glalUniformChangeCount += 2;
+        }
+        glBindTexture(GL_TEXTURE_CUBE_MAP, internals->shadowMap);
+    } else {  //Spot or Directional light + change
+        if(!(old && (cache->type == GY_LIGHT_DIRECTIONAL || cache->type == GY_LIGHT_SPOT))) {
+            glDisable(GL_TEXTURE_CUBE_MAP);
+            glEnable(GL_TEXTURE_2D);
+            glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_MAP], 3+index);
+            glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_CUBE_MAP], 7+index);
+            ++glalTextureChangeCount;
+            glalUniformChangeCount += 2;
+        }
+        glBindTexture(GL_TEXTURE_2D, internals->shadowMap);
+    }
 
     cache->type = light->type;
     glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);

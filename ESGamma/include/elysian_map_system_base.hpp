@@ -65,7 +65,6 @@ namespace elysian {
         //static GY_RECT_TEX_ORIENT   _curTexOrient;
         //static TEXTURE_FLIP         _curTexFlip;
 		bool _renderLayer[4];
-        bool _blendFunc = false;
         //animation
 		//toggles
 		bool _animate;
@@ -103,8 +102,8 @@ namespace elysian {
         unsigned    getEntityCount(void);
         bool        getOnscreenEntity(const unsigned index, E &entry, NORMAL_TYPE &normalType, float &lowestY, float &zCoord) const;
         void        renderEntityEntry(const E &entry) const;
-        void        disableDepthTest(void) const;
-        void        enableDepthTest(void) const;
+        void        disableDepthTest(void);
+        void        enableDepthTest(void);
         void        renderCustomPassImmediate(void);
         void        renderCustomPassAtElev(const int elev, const NORMAL_TYPE normalType) const;
         uint32_t    startLightPass(uint32_t& lightsLeft);
@@ -146,6 +145,7 @@ namespace elysian {
     inline void MapSystemBase<P, T, E>::getObjectLayerEntry(const unsigned /*x*/, const unsigned /*y*/, T &entry) {
 		entry.mapEntry = _curArea->getTileEntry(entry.layer, entry.x, entry.y);
 		entry.lights = getLightSys()->getLightMapEntryMapCoord(entry.y, entry.x);
+        entry.renderPass = 0;
 	}
 	
     template<typename P, typename T, typename E>
@@ -160,23 +160,31 @@ namespace elysian {
             const GY_RECT_TEX_ORIENT      newOrient = entry.mapEntry.getOrient();
             const GY_ALPHA_LEVEL          newAlpha = (entry.renderPass > 1 ||
                                                       _curLevel->tileset[entry.mapEntry.getIndex()].getTransparency())?
-                                                        GY_ALPHA_FULL : GY_ALPHA_NONE;
+                                                        GY_ALPHA_FULL : GY_ALPHA_PUNCHTHRU;
 
             //Blending enabled state change
-           if(newAlpha != glalAlphaLevel) {
-                endObjectList();
-                gyVidAlphaLevel(newAlpha);
+            if(newAlpha != glalAlphaLevel) {
+              endObjectList();
+              gyVidAlphaLevel(newAlpha);
+              beginObjectList();
             }
 
             //Blending mode state change
-            if(entry.renderPass > 1 && glalBlendMode != GY_BLEND_ONE) {
-                endObjectList();
-                gyVidBlendMode(GY_BLEND_ONE);
+            if(entry.renderPass > 1) {
+                //endObjectList();
+                disableDepthTest();
+                /*glEnable(GL_BLEND);
+                gyVidDepthTest(false);
+                glEnable(GL_POLYGON_OFFSET_FILL);
+                glPolygonOffset(1.0f, 1.0f);
+                glDepthFunc(GL_EQUAL);*/
+                //gyVidBlendMode(GY_BLEND_ONE);
             }
             //We don't give a fuck about blend modes when blending is off
-            else if(entry.renderPass == 1 && newAlpha == GY_ALPHA_FULL && glalBlendMode != GY_BLEND_ONE_MINUS_SRC_ALPHA) {
-                endObjectList();
-                gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
+            else if(entry.renderPass == 1/*&& newAlpha == GY_ALPHA_FULL && glalBlendMode != GY_BLEND_ONE_MINUS_SRC_ALPHA*/) {
+                //endObjectList();
+                enableDepthTest();
+                //gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
             }
 
             //Normal map texture flip state change
@@ -186,6 +194,7 @@ namespace elysian {
             if(newZFactor != glalNormalMapZFactor) {
                 endObjectList();
                 glalVidNormalMapZFactorUpdateUniform(newZFactor);
+                beginObjectList();
             }
         }
 
@@ -215,6 +224,8 @@ namespace elysian {
 
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::beginObjectList(void) {
+        endObjectList();
+
         gyVidMaterialBind(nullptr);
 		gyVidTexBind(_curLevel->tileSheet);
         gyVidNormalMapBind(_curLevel->normalSheet);
@@ -242,21 +253,24 @@ namespace elysian {
             glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(10*sizeof(float)));
         }
 
+        // gyVidAlphaLevel(GY_ALPHA_FULL);
+
 
         //glBindVertexArray(_curArea->vao);
       //  glBindBuffer(GL_ARRAY_BUFFER, getCurArea()->vboBuff);
         //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, getCurArea()->elementVbo);
-        if(getLightSys()->isShadowPass()) gyVidDepthTest(true);
-        else gyVidDepthTest(false);
+        //if(getLightSys()->isShadowPass())
+         //gyVidDepthTest(true);
+
+        //else gyVidDepthTest(false);
                // gyVidAlphaLevel(GY_ALPHA_FULL);
 	}
 	
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::endObjectList(void) {
-        int maxi;
-        glGetIntegerv(GL_MAX_ELEMENTS_INDICES, &maxi);
         auto& elemArraySize = _curArea->elementsArraySize;
         auto& elemArray     = _curArea->elementsArray;
+        if(elemArraySize == 0) return;
 
         glalVertexRenderCount += elemArraySize;
 
@@ -279,7 +293,6 @@ namespace elysian {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		//gyVidQuadListEnd();
-        gyVidAlphaLevel(GY_ALPHA_FULL);
         /*gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
         if(getLightSys()->isShadowPass()) gyVidDepthTest(true);
         else gyVidDepthTest(false);*/
@@ -294,9 +307,9 @@ namespace elysian {
 		for(auto entity : entities) {
             if(getLightSys()->isShadowPass() && !entity->isShadowVolume()) {
                 continue;
-            } else if(getCameraSys()->isOnscreen(entity)) {
+            } //else if(getCameraSys()->isOnscreen(entity)) {
                 _onscreenEntityPool.claimFreeEntry() = entity;
-            }
+            //}
 		}
         //Debug::printf(Debug::VERBOSE, "ONSCREEN ENTITIES - %d", _onscreenEntityPool.size());
 		return _onscreenEntityPool.size();
@@ -323,14 +336,31 @@ namespace elysian {
 	}
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::disableDepthTest(void) const {
-		//glEnable(GL_POLYGON_OFFSET_FILL);
-		//glPolygonOffset(10.0f, 10.0f);
+    inline void MapSystemBase<P, T, E>::disableDepthTest(void) {
+        if(gyVidShadowPass()) return;
+        endObjectList();
+        beginObjectList();
+        gyVidDepthTest(false);
+        //glEnable(GL_POLYGON_OFFSET_FILL);
+        //glPolygonOffset(10.0f, 10.0f);
+        glDepthMask(GL_FALSE);
+        glDepthFunc(GL_EQUAL);
+        gyVidBlendMode(GY_BLEND_ONE);
 	}
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::enableDepthTest(void) const {
-		//glDisable(GL_POLYGON_OFFSET_FILL);
+    inline void MapSystemBase<P, T, E>::enableDepthTest(void) {
+        if(gyVidShadowPass()) return;
+        endObjectList();
+        beginObjectList();
+        //gyVidDepthTest(true);
+        glDepthMask(GL_TRUE);
+        //glEnable(GL_BLEND);
+        glDisable(GL_BLEND);
+         glDepthFunc(GL_LEQUAL);
+         //gyVidAlphaLevel(GY_ALPHA_NONE);
+        //glDisable(GL_POLYGON_OFFSET_FILL);
+        gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
 	}
 
     template<typename P, typename T, typename E>

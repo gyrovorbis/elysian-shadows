@@ -28,7 +28,7 @@ namespace elysian {
         bool            _shadowPassEnabled  = true;
         bool			_enabled            = true;
         bool			_renderDebug        = false;
-        GYVector4		_globalAmbience     = { 0.8f, 0.8f, 0.8f, 1.0f };
+        GYVector4		_globalAmbience     = { 0.0f, 0.0f, 0.0f, 0.0f };
         unsigned		_onscreenLightCount	= 0;
         LightSource*	_onscreenLights[ELYSIAN_LIGHT_SYSTEM_MAX_LIGHTS_ONSCREEN] = { nullptr };
         uint32_t		_lightMap[ELYSIAN_LIGHT_SYSTEM_LIGHT_MAP_HEIGHT][ELYSIAN_LIGHT_SYSTEM_LIGHT_MAP_WIDTH] = { {0} };
@@ -92,7 +92,7 @@ namespace elysian {
     }*/
 
     inline uint32_t LightSystem::getLightMapEntryMapCoord(const unsigned y, const unsigned x) const {
-        return (_shadowPass)? 0 :_lightMap[y-_screenTileYOffset][x-_screenTileXOffset];
+        return (_shadowPass)? 0 :_lightMap[y/*-_screenTileYOffset*/][x/*-_screenTileXOffset*/];
     }
 
     inline unsigned LightSystem::getOnscreenLightCount(void) const {

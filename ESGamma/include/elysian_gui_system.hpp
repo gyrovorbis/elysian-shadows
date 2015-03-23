@@ -265,6 +265,7 @@ namespace elysian {
     inline void GuiSystem::fadeFgLayer(const float time, const bool enabled) {
         _fgFadeState = enabled? FADE_IN : FADE_OUT;
         _fgFadeTime = time;
+        _fgFadeElapsed = 0.0f;
         _fgFadeAlphaStart = _fgFadeAlpha;
     }
 
