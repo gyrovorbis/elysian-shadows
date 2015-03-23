@@ -37,12 +37,15 @@ namespace elysian {
 		unsigned layer;
 		uint32_t lights;
 		TileEntry mapEntry;
-		unsigned renderPass = 0;
+        unsigned short renderPass = 0;
     };
     
     //Minimal base class for entity entries
     struct EntityDepthBuffEntry {
 		float zCoordRelative; //required to sort the bitches
+        uint32_t lights;
+        unsigned short renderPass;
+        bool xOverlap;
         //Entity *entity //don't need this in base anymore
     };
     
@@ -114,11 +117,11 @@ namespace elysian {
 		}
 
         void _disableDepthTest(void) {
-            static_cast<T*>(this)->disableDepthTest();
+            //static_cast<T*>(this)->disableDepthTest();
 		}
 
         void _enableDepthTest(void) {
-            static_cast<T*>(this)->enableDepthTest();
+            //static_cast<T*>(this)->enableDepthTest();
 		}
 
         uint32_t _getLightCount(void) const {
@@ -156,6 +159,7 @@ namespace elysian {
 		//Entity buffer
 		unsigned _entityCount[ELYSIAN_DEPTH_BUFFER_HEIGHT];
 		E _entityBuff[ELYSIAN_DEPTH_BUFFER_HEIGHT][ELYSIAN_DEPTH_BUFFER_ENTITY_WIDTH];
+        uint32_t _entityRowLights[ELYSIAN_DEPTH_BUFFER_HEIGHT];
 
 		uint32_t _lightsRendered = 0;
 		uint32_t _lightsActive	= 0;
@@ -221,7 +225,7 @@ namespace elysian {
 		//Clear depth buffer counters
 		memset(_objectCount, 0, sizeof(unsigned)*_depthBuffMaxHeight);
 		memset(_entityCount, 0, sizeof(unsigned)*_depthBuffMaxHeight);
-        _enableDepthTest();
+       // _enableDepthTest();
         _processTiles();
 
         // ==== QUEUE AND IMMEDIATE RENDER ENTITIES ==== 
@@ -253,9 +257,10 @@ namespace elysian {
 			_entityBuff[zIndex][_entityCount[zIndex]].zCoordRelative = relZCoord;
 
 			//render immediately
-           if(zCoord < 32.0f && normalType == NORMAL_FLAT) _renderEntityEntry(_entityBuff[zIndex][_entityCount[zIndex]]);
+           //if(zCoord < 32.0f && normalType == NORMAL_FLAT) _renderEntityEntry(_entityBuff[zIndex][_entityCount[zIndex]]);
 			//queue and render later
-            else ++_entityCount[zIndex];
+            _entityRowLights[zIndex] = (!_entityCount[zIndex])? entityEntry.lights : _entityRowLights[zIndex] | entityEntry.lights;
+            ++_entityCount[zIndex];
 		}
         
 		//Sort entity z entries per z coord (ascending order)
@@ -271,32 +276,76 @@ namespace elysian {
 				}
 			}
 		}
-        
+
+        for(unsigned j = 0; j < _depthBuffMaxHeight; ++j) {
+            if(_entityCount[j]) {
+                unsigned onscreenLights = 0;
+                if(!gyVidShadowPass()) {
+                    for(unsigned i = 0; i < 32; ++i) if(_entityRowLights[i]&(0x1<<i)) ++onscreenLights;
+                }
+                const bool multipass = (onscreenLights > GYRO_VIDEO_LIGHT_SOURCES_MAX);
+
+                for(int i = 0; i < (int)_entityCount[j]-1; ++i) {
+                    _entityBuff[j][i].xOverlap = (multipass)? true: false;
+                }
+                _entityBuff[j][_entityCount[j]-1].xOverlap = true; //always flag last as sentinel for renderer
+            }
+        }
 		// ==== RENDER ENTITIES AND TILES QUEUED IN DEPTH BUFFER ====
 
 
 		//Iterate through depth buffers and render from lowest to highest z coord
 		for(unsigned i = 0; i < _depthBuffMaxHeight; ++i) {
-
+//_enableDepthTest();
             _renderDepthBuffTileRow(i, NORMAL_FLAT);
 
             //_renderCustomPassAtElev(i, NORMAL_FLAT);
 
 			//if(_entityCount[i]) {
 				//_endObjectList();
-static_cast<T*>(this)->unbindTileBuffer();
+//static_cast<T*>(this)->unbindTileBuffer();
 				//Entities come first, since they are always above the lowest point on the object
 				//float entityZDelta = 0.0f;
-				for(unsigned j = 0; j < _entityCount[i]; ++j) {
+
+                auto*const entityRow = _entityBuff[i];
+                for(int j = 0; j < _entityCount[i]; ++j) {
+                    uint32_t lightsLeft = 0;
+                    int endIndex = j-1;
+
+                    do {
+                        lightsLeft |= entityRow[++endIndex].lights;
+                    } while(!entityRow[endIndex].xOverlap);
+
+                    do {
+                        //glalStripComboBreaker();
+                        const uint32_t activeLights = _startLightPass(lightsLeft);
+
+                        for(int k = j; k <= endIndex; ++k) {
+                            if(entityRow[k].lights/* & ~activeLights != entityRow[k].lights*/) { //we can do something this pass
+                                ++entityRow[k].renderPass;
+                                _renderEntityEntry(entityRow[k]);
+                                entityRow[k].lights &= ~activeLights;
+                            }
+                        }
+
+                    } while(lightsLeft);
+
+                    j = endIndex;
+                }
+
+                //glalStripComboBreaker();
+
                     //_entityBuff[i][j].zCoord += entityZDelta;
-                    _renderEntityEntry(_entityBuff[i][j]);
+                    //_renderEntityEntry(_entityBuff[i][j]);
 					//Give each entity a tiny delta to prevent duplicate z from same y coord
+
+
                     //entityZDelta += ELYSIAN_DEPTH_BUFFER_ENTITY_ENTITY_MIN_Z_OFFSET;
-				}
 
 				//_beginObjectList();
 
 			//}
+             //   _enableDepthTest();
 
             _renderDepthBuffTileRow(i, NORMAL_FRONT);
 

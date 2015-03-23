@@ -102,7 +102,7 @@ namespace elysian {
         void        endObjectList(void);
         unsigned    getEntityCount(void);
         bool        getOnscreenEntity(const unsigned index, E &entry, NORMAL_TYPE &normalType, float &lowestY, float &zCoord) const;
-        void        renderEntityEntry(const E &entry) const;
+        void        renderEntityEntry(const E &entry);
         void        disableDepthTest(void);
         void        enableDepthTest(void);
         void        renderCustomPassImmediate(void);
@@ -185,7 +185,7 @@ namespace elysian {
                 //gyVidBlendMode(GY_BLEND_ONE);
             }
             //We don't give a fuck about blend modes when blending is off
-            else if(entry.renderPass == 1 && _blendPass/*&& newAlpha == GY_ALPHA_FULL && glalBlendMode != GY_BLEND_ONE_MINUS_SRC_ALPHA*/) {
+            else if(entry.renderPass == 1 && _blendPass /*&& newAlpha == GY_ALPHA_FULL && glalBlendMode != GY_BLEND_ONE_MINUS_SRC_ALPHA*/) {
                 //endObjectList();
                 enableDepthTest();
                 //gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
@@ -275,7 +275,7 @@ namespace elysian {
 
         //else gyVidDepthTest(false);
                // gyVidAlphaLevel(GY_ALPHA_FULL);
-        enableDepthTest();
+        //enableDepthTest();
 	}
 
     template<typename P, typename T, typename E>
@@ -314,8 +314,8 @@ namespace elysian {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 #else
-        //glBindVertexArray(0);
-        gyVidBindDefaultVertexArray();
+        glBindVertexArray(0);
+        //gyVidBindDefaultVertexArray();
 #endif
         //enableDepthTest();
         //gyVidQuadListEnd();
@@ -346,6 +346,8 @@ namespace elysian {
 		Entity &entity = *(_onscreenEntityPool)[index];
         //if(getCameraSys()->isOnscreen(entity)) {
 			entry.entity = &entity;
+            entry.renderPass = 0;
+            entry.lights = getLightSys()->getLightMask(entity);
             normalType = (NORMAL_TYPE)entity.getPlaneType();
 			lowestY = entity.getDepthBaseY();
             zCoord = entity._transform._pos.z;
@@ -355,9 +357,28 @@ namespace elysian {
 	}
 	
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::renderEntityEntry(const E &entry) const {
+    inline void MapSystemBase<P, T, E>::renderEntityEntry(const E &entry) {
 		//entry.entity->renderAtZ(entry.zCoord);
 		//entry.entity->transform.setPosZ(entry.zCoordWorld);
+
+        if(!gyVidShadowPass()) {
+            const GY_ALPHA_LEVEL          newAlpha = (entry.renderPass > 1)?
+                                                        GY_ALPHA_FULL : GY_ALPHA_PUNCHTHRU;
+
+                //Blending enabled state change
+            if(newAlpha != glalAlphaLevel) {
+                  glalStripComboBreaker();
+                  gyVidAlphaLevel(newAlpha);
+            }
+            if(entry.renderPass > 1 && !_blendPass) {
+                glalStripComboBreaker();
+                disableDepthTest();
+            } else if(entry.renderPass == 1 && _blendPass) {
+                glalStripComboBreaker();
+                enableDepthTest();
+            }
+        }
+
         entry.entity->render();
 	}
 

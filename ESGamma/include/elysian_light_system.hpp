@@ -73,6 +73,7 @@ namespace elysian {
 
         //uint32_t getLightMapEntryScreenCoord(const unsigned y, const unsigned x) const;
         uint32_t    getLightMapEntryMapCoord(const unsigned y, const unsigned x) const;
+        uint32_t    getLightMask(const Entity& entity) const;
 
         void        getLightPassTileRegion(int& startX, int& startY, int& endX, int& endY) const;
         uint32_t    startLightPass(uint32_t& lightsLeft);
@@ -81,6 +82,17 @@ namespace elysian {
 
         void        interpLightAttrib(const float duration, const LightAttrib &newAttrib, LightAttrib*const attrib, EventMonitor*const monitor=nullptr);
     };
+
+
+
+
+
+
+
+
+
+    // ==== INLINEZ ======
+
 
 
     inline void LightSystem::setRenderDebugEnabled(const bool val) {
@@ -126,6 +138,12 @@ namespace elysian {
 
     inline bool LightSystem::getShadowPassEnabled(void) const {
         return _shadowPassEnabled;
+    }
+
+    inline uint32_t LightSystem::getLightMask(const Entity& entity) const {
+        uint32_t mask = 0;
+        for(unsigned i = 0; i < getOnscreenLightCount(); ++i) mask |= (0x1<<i);
+        return mask;
     }
 }
 

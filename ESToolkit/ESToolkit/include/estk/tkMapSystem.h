@@ -215,6 +215,7 @@ inline void TkMapSystem::getObjectLayerEntry(const unsigned x, const unsigned y,
     entry.lights    = getLightSys()->getLightMapEntryMapCoord(entry.y, entry.x);
     entry.drawStyle = (getAssets()->getCurrentLayer() == _currentLayer)? _getTileDrawStyle(x, y) : DRAW_NORMAL;
     entry.mapEntry  = _getTileEntryFromDrawStyle(x, y, entry.drawStyle);
+    entry.renderPass = 0;
 #else
     MapSystemBase<TkMapSystem, TkMapDepthBuffEntryImpl, TkEntityDepthBuffEntryImpl>::getObjectLayerEntry(x, y, entry);
     entry.drawStyle = (getAssets()->getCurrentLayer() == entry.layer)? _getTileDrawStyle(x, y) : DRAW_NORMAL;

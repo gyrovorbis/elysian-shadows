@@ -342,7 +342,7 @@ void MapView::wheelEvent(QWheelEvent* event) {
     //setTransformationAnchor();
     //scale(delta, delta);
     getAssets()->getEngine()->getCameraSys()->scale(delta);
-    _scheduleMousePosUpdate();
+    //_scheduleMousePosUpdate();
     //_zoomLabel->setText(QString::number((int)(getAssets()->getEngine()->getCameraSys()->getKeyFrame().getScale()*getAssets()->getEngine()->getCameraSys()->getStaticScale()*100.0f))+QString("%"));
     mouseMoveEvent(nullptr);
 
