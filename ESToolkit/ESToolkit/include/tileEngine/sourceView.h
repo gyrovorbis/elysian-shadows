@@ -40,6 +40,7 @@ protected:
     QLabel *_sceneSelectionSizeLabel    = new QLabel;
     QLabel *_zoomLabel                  = new QLabel;
 
+protected Q_SLOTS:
 	void _updateSceneMousePos(void);
 
 public:
@@ -102,10 +103,10 @@ protected:
        this behavior is MapView, because it uses a custom, optimized-to-shit selection mechanism.
      */
 
-     virtual QPointF _mapViewPosToScenePos(const QPoint viewPos) const;
-     virtual void    _startPan(void);
-     virtual void    _endPan(void);
-     virtual void    _forceSceneUpdate(void);
+     virtual const QPointF&     _mapViewPosToScenePos(const QPoint& viewPos, QPointF& out) const;
+     virtual void               _startPan(void);
+     virtual void               _endPan(void);
+     virtual void               _forceSceneUpdate(void);
 
      //adds a rectangular region to the current scene selection
      virtual void _sceneSelectionAddRect(const QRectF &rect);

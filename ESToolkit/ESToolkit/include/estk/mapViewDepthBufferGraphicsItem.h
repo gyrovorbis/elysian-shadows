@@ -37,6 +37,10 @@ public:
     uint32_t    getLightCount(void) const;
     bool        isShadowPass(void) const;
 
+    void        flushTileBuffer(void);
+    void        bindTileBuffer(void);
+    void        unbindTileBuffer(void);
+
 	//=== /Implemened from elysian::MapDepthBuffer ===
 
 	MapViewDepthBufferGraphicsItem(void) {}
@@ -50,6 +54,9 @@ public:
 	}
 };
 
+inline void MapViewDepthBufferGraphicsItem::flushTileBuffer(void) { }
+inline void MapViewDepthBufferGraphicsItem::bindTileBuffer(void) { }
+inline void MapViewDepthBufferGraphicsItem::unbindTileBuffer(void) { }
 inline bool MapViewDepthBufferGraphicsItem::isShadowPass(void) const { return false; }
 
 inline void MapViewDepthBufferGraphicsItem::renderCustomPassImmediate(void) { }

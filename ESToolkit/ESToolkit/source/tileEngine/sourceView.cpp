@@ -50,18 +50,25 @@ SourceView::SourceView(QWidget *parent):
 }
 
 void SourceView::_updateSceneMousePos(void) {
-    _sceneMousePos = _mapViewPosToScenePos(_viewMousePos);
-	_sceneMousePosLabel->setText(QString::number((int)_sceneMousePos.x()) + QString(", ") + QString::number((int)_sceneMousePos.y()));
-	_sceneMouseTileLabel->setText(QString::number(((int)_sceneMousePos.x()+16)/32) + QString(", ") + QString::number(((int)_sceneMousePos.y()+16)/32)
-		+ QString(" [") + QString::number((int)((_sceneMousePos.x()+16)/32)*32) + QString(", ") + QString::number((int)((_sceneMousePos.y()+16)/32)*32) + QString("]"));
+    static char buff[100];
+    _mapViewPosToScenePos(_viewMousePos, _sceneMousePos);
+
+    sprintf(buff, "%d, %d", (int)_sceneMousePos.x(), (int)_sceneMousePos.y());
+    _sceneMousePosLabel->setText(buff);
+
+    const int tileX = ((int)_sceneMousePos.x()+16)/32;
+    const int tileY = ((int)_sceneMousePos.y()+16)/32;
+    sprintf(buff, "%d, %d [%d, %d]", tileX, tileY, tileX*32, tileY*32);
+    _sceneMouseTileLabel->setText(buff);
 }
 
 void SourceView::setCenter(const QPointF &centerPoint) {
     QRectF visibleArea;
-    visibleArea.setBottomLeft(_mapViewPosToScenePos(rect().bottomLeft()));
-    visibleArea.setBottomRight(_mapViewPosToScenePos(rect().bottomRight()));
-    visibleArea.setTopLeft(_mapViewPosToScenePos(rect().topLeft()));
-    visibleArea.setTopRight(_mapViewPosToScenePos(rect().topRight()));
+    QPointF temp;
+    visibleArea.setBottomLeft(_mapViewPosToScenePos(rect().bottomLeft(), temp));
+    visibleArea.setBottomRight(_mapViewPosToScenePos(rect().bottomRight(), temp));
+    visibleArea.setTopLeft(_mapViewPosToScenePos(rect().topLeft(), temp));
+    visibleArea.setTopRight(_mapViewPosToScenePos(rect().topRight(), temp));
 
 
 		//Get the scene area
@@ -265,7 +272,7 @@ void SourceView::_startRegionSelection(QMouseEvent * event) {
 		_externalSelectionClear();
 		_selecting = true;
 
-        _fixedPivot = _currentPivot = _mapViewPosToScenePos(event->pos());
+        _fixedPivot = _mapViewPosToScenePos(event->pos(), _currentPivot);
 
 		//Prime the rect stack.
 		//_sceneSelectionAddRect(getRect(QPointF(-100.0f, -100.0f), QPointF(-100.0f, -100.0f)));
@@ -273,13 +280,14 @@ void SourceView::_startRegionSelection(QMouseEvent * event) {
 	}
 	else { //Continue a new selection -- move pivot (staggered selection)
         //_selectedPath.moveTo(_mapViewPosToScenePos(event->pos()));
-        _currentPivot = _mapViewPosToScenePos(event->pos());
+        _mapViewPosToScenePos(event->pos(), _currentPivot);
 	}
 }
 
 void SourceView::_updateRegionSelection(QMouseEvent * event) {
 	if(_selecting) {
-        QPointF scenePos = _mapViewPosToScenePos(event->pos());
+        QPointF scenePos;
+        _mapViewPosToScenePos(event->pos(), scenePos);
 		_sceneSelectionUpdateLastRect(getRect(_currentPivot, scenePos));
 
 		//Update StatusBar label
@@ -294,9 +302,10 @@ void SourceView::_updateRegionSelection(QMouseEvent * event) {
 
 void SourceView::_endRegionSelection(QMouseEvent *event) {
 	if(!_selecting) return; //Not that this should ever happen...
+    QPointF temp;
 
 	if(event) {
-        _sceneSelectionAddRect(getRect(_currentPivot, _mapViewPosToScenePos(event->pos())));
+        _sceneSelectionAddRect(getRect(_currentPivot, _mapViewPosToScenePos(event->pos(), temp)));
 
 		if((event->modifiers() &= Qt::ControlModifier)) {
 			return; //Continue selection for staggered selection
@@ -313,8 +322,9 @@ void SourceView::_endRegionSelection(QMouseEvent *event) {
 //========DEFAULT VIRTUAL IMPLEMENTATIONS==============
 ////////////////////////////////////////////////////////
 
-QPointF SourceView::_mapViewPosToScenePos(const QPoint viewPos) const {
-    return mapToScene(viewPos);
+const QPointF& SourceView::_mapViewPosToScenePos(const QPoint& viewPos, QPointF& out) const {
+    out = mapToScene(viewPos);
+    return out;
 }
 
 // ===== INTERNAL SELECTION =====

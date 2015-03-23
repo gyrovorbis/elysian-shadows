@@ -147,9 +147,9 @@ namespace elysian {
 		unsigned			mapEntryCount	= 0;
 		unsigned			layerEntryCount	= 0;
 
-        GLuint              vboBuff         = 0;
-        GLuint              elementVbo      = 0;
-        GLuint              vao             = 0;
+        GLuint              vboBuff      = 0;
+        GLuint              elementVbo   = 0;
+        GLuint              vao[2]          = {0};
         bool                vboPopulated    = false;
         bool                activated       = false;
 
@@ -199,7 +199,7 @@ namespace elysian {
 
 		void		populateVbo(void);
         void        setVboEntry(const TileEntry*const tileEntry, const unsigned l, const unsigned x, const unsigned y) const;
-        void        vboEntryFromTileEntry(VboEntry*const vboEntry, const TileEntry *const tileEntry, const unsigned x, const unsigned y, const unsigned z) const;
+        void        vboEntryFromTileEntry(VboEntry*const vboEntry, const TileEntry *const tileEntry, const unsigned x, const unsigned y) const;
         void        animateVboTileEntry(const unsigned l, const unsigned x, const unsigned y, const uint16_t index);
 
 	};
@@ -243,7 +243,7 @@ namespace elysian {
 	}
 
 
-    inline void AreaBase::vboEntryFromTileEntry(VboEntry * const vboEntry, const TileEntry * const tileEntry, const unsigned x, const unsigned y, const unsigned z) const {
+    inline void AreaBase::vboEntryFromTileEntry(VboEntry * const vboEntry, const TileEntry * const tileEntry, const unsigned x, const unsigned y) const {
     //const float zDelta = 1.1f;
         const GY_RECT_PLANE_TYPE planeType = tileEntry->getPlane();
         const GY_RECT_TEX_ORIENT texOrient = tileEntry->getOrient();
@@ -286,7 +286,7 @@ namespace elysian {
     inline void AreaBase::setTileEntry(const unsigned l, const unsigned x, const unsigned y, const TileEntry e) {
         VboEntry entry[4];
 
-        vboEntryFromTileEntry(entry, &e, x, y, l);
+        vboEntryFromTileEntry(entry, &e, x, y);
 
 		ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
 
@@ -325,7 +325,7 @@ namespace elysian {
     inline void AreaBase::setVboEntry(const TileEntry*const tileEntry, const unsigned l, const unsigned x, const unsigned y) const {
         VboEntry entry[4];
 
-        vboEntryFromTileEntry(entry, tileEntry, x, y, l);
+        vboEntryFromTileEntry(entry, tileEntry, x, y);
 
         //ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
 

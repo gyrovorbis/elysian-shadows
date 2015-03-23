@@ -221,9 +221,9 @@ namespace elysian {
 		//Clear depth buffer counters
 		memset(_objectCount, 0, sizeof(unsigned)*_depthBuffMaxHeight);
 		memset(_entityCount, 0, sizeof(unsigned)*_depthBuffMaxHeight);
+        _enableDepthTest();
+        _processTiles();
 
-		_processTiles();
-        
         // ==== QUEUE AND IMMEDIATE RENDER ENTITIES ==== 
         
         const float     mapStartY   = _scrStartY*32.0f;
@@ -253,10 +253,9 @@ namespace elysian {
 			_entityBuff[zIndex][_entityCount[zIndex]].zCoordRelative = relZCoord;
 
 			//render immediately
-          //  if(zCoord < 32.0f && normalType == NORMAL_FLAT) _renderEntityEntry(_entityBuff[zIndex][_entityCount[zIndex]]);
+           if(zCoord < 32.0f && normalType == NORMAL_FLAT) _renderEntityEntry(_entityBuff[zIndex][_entityCount[zIndex]]);
 			//queue and render later
-           // else ++_entityCount[zIndex];
-
+            else ++_entityCount[zIndex];
 		}
         
 		//Sort entity z entries per z coord (ascending order)
@@ -279,18 +278,18 @@ namespace elysian {
 		//Iterate through depth buffers and render from lowest to highest z coord
 		for(unsigned i = 0; i < _depthBuffMaxHeight; ++i) {
 
-			_renderDepthBuffTileRow(i, NORMAL_FLAT);
+            _renderDepthBuffTileRow(i, NORMAL_FLAT);
 
             //_renderCustomPassAtElev(i, NORMAL_FLAT);
 
 			//if(_entityCount[i]) {
 				//_endObjectList();
-
+static_cast<T*>(this)->unbindTileBuffer();
 				//Entities come first, since they are always above the lowest point on the object
 				//float entityZDelta = 0.0f;
 				for(unsigned j = 0; j < _entityCount[i]; ++j) {
                     //_entityBuff[i][j].zCoord += entityZDelta;
-                    //_renderEntityEntry(_entityBuff[i][j]);
+                    _renderEntityEntry(_entityBuff[i][j]);
 					//Give each entity a tiny delta to prevent duplicate z from same y coord
                     //entityZDelta += ELYSIAN_DEPTH_BUFFER_ENTITY_ENTITY_MIN_Z_OFFSET;
 				}
@@ -299,19 +298,19 @@ namespace elysian {
 
 			//}
 
-			_renderDepthBuffTileRow(i, NORMAL_FRONT);
+            _renderDepthBuffTileRow(i, NORMAL_FRONT);
 
             //_renderCustomPassAtElev(i, NORMAL_FRONT);
                       
-		}
-        _enableDepthTest();
+        }
+
 	}
 
 	// ==== QUEUE AND IMMEDIATE RENDER TILES ====
 	template<typename T, typename O, typename E>
 	inline void MapDepthBuffer<T, O, E>::_processTiles(void) {
 		uint32_t			lightsLeft			= 0;
-        uint32_t            onscreenLights;
+        uint32_t            onscreenLights      = 0;
         const uint32_t		onscreenLightCount		= _getLightCount();
 		_lightsRendered = 0;
 
@@ -320,18 +319,20 @@ namespace elysian {
         const unsigned outerLayerLoopEnd = multipass? ELYSIAN_AREA_MAP_LAYERS : 1;
         const unsigned innerLayerLoopEnd = multipass? 1 : ELYSIAN_AREA_MAP_LAYERS;
 
+        static_cast<T*>(this)->bindTileBuffer();
 
         for(unsigned k = 0; k < outerLayerLoopEnd; ++k) {
             _lightsRendered = 0;
             _objectBuffImmediateCount = 0;
             _queued = 0;
             lightsLeft = onscreenLights;
+            static_cast<T*>(this)->flushTileBuffer();
             _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
 
             //_renderCustomPassAtElev(-1, NORMAL_FLAT);
 
             //_enableDepthTest();
-            _beginObjectList();
+            //_beginObjectList();
             for(int j = _scrStartY; j <= _scrEndY; ++j) {
                 for(int i = _scrStartX; i <= _scrEndX; ++i) {
                     unsigned layer = k;
@@ -367,8 +368,7 @@ namespace elysian {
             if(_objectBuffImmediateCount) {
                 //Make a pass through immediate tile multiplass buffer
                // _disableDepthTest();
-                _endObjectList();
-                _beginObjectList();
+                static_cast<T*>(this)->flushTileBuffer();
                 _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
                 for(unsigned j = 0; j < _objectBuffImmediateCount; ++j) {
                     _renderOrQueueTileEntry(j, _objectBuffImmediate[j]);
@@ -380,8 +380,7 @@ namespace elysian {
                     _queued = 0;
                     _curRow = _nextRow;
                     _nextRow = !_curRow;
-                    _endObjectList();
-                    _beginObjectList();
+                    static_cast<T*>(this)->flushTileBuffer();
                     _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
                     for(unsigned j = 0; j < count; ++j) {
                         _renderOrQueueTileEntry(j, _objectBuffImmediate[_queue[_curRow][j]]);
@@ -390,6 +389,8 @@ namespace elysian {
             }
         }
 
+        static_cast<T*>(this)->flushTileBuffer();
+        static_cast<T*>(this)->unbindTileBuffer();
         //_renderCustomPassImmediate();
 	}
 
@@ -403,15 +404,18 @@ namespace elysian {
 	inline void MapDepthBuffer<T, O, E>::_renderDepthBuffTileRow(const unsigned int i, const NORMAL_TYPE normalType) {
 		//Tiles - rendered with Z at the BOTTOM of the map tile location
 
+        static_cast<T*>(this)->bindTileBuffer();
+
         uint32_t totalLights = _objectRowLights[normalType][i];
         const bool multipass = (totalLights > GYRO_VIDEO_LIGHT_SOURCES_MAX);
         const unsigned outerLayerLoopEnd = multipass? ELYSIAN_AREA_MAP_LAYERS : 1;
 
         for(unsigned l = 0; l < outerLayerLoopEnd; ++l) {
-            _beginObjectList();
+           // _beginObjectList();
             _queued = 0;
             _lightsRendered = 0;
             _objectRowLights[normalType][i] = totalLights;
+            static_cast<T*>(this)->flushTileBuffer();
             _lightsRendered |= _lightsActive = _startLightPass(_objectRowLights[normalType][i]);
             for(unsigned j = 0; j < _objectCount[i]; ++j) {
                 if(multipass && _objectBuff[i][j].layer != l) continue;
@@ -425,8 +429,7 @@ namespace elysian {
                     _queued = 0;
                     _curRow = _nextRow;
                     _nextRow = !_curRow;
-                    _endObjectList();
-                    _beginObjectList();
+                    static_cast<T*>(this)->flushTileBuffer();
                     _lightsRendered |= _lightsActive = _startLightPass(_objectRowLights[normalType][i]);
                     for(unsigned j = 0; j < count; ++j) {
                         _renderOrQueueTileEntry(j, _objectBuff[i][_queue[_curRow][j]]);
@@ -434,6 +437,9 @@ namespace elysian {
                 }
             }
         }
+
+        static_cast<T*>(this)->flushTileBuffer();
+        static_cast<T*>(this)->unbindTileBuffer();
 	}
 }
 

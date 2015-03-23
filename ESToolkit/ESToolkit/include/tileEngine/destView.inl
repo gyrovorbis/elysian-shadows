@@ -5,9 +5,21 @@
 #include "tileGroupUndoItem.h"
 #include "tileSelection.h"
 #include "elysian_zcoords.hpp"
+#include <QTimer>
 
 template<typename T>
-DestView<T>::DestView(QWidget *parent): SourceView(parent) {}
+DestView<T>::DestView(QWidget *parent): SourceView(parent) {
+    _mouseUpdateTimer = new QTimer(this);
+    connect(_mouseUpdateTimer, SIGNAL(timeout()), this, SLOT(_updateSceneMousePos()));
+}
+
+template<typename T>
+void DestView<T>::_scheduleMousePosUpdate(void) {
+    if(!_mouseUpdateTimer->isActive()) {
+        _mouseUpdateTimer->start(100);
+    }
+}
+
 template<typename T>
 void DestView<T>::_sceneSelectionAddRect(const QRectF &rect) {
 	_selectingPath = _selectedPath;
@@ -16,7 +28,6 @@ void DestView<T>::_sceneSelectionAddRect(const QRectF &rect) {
 	_tileSelectionRects.push_back(rect);
 	scene()->setSelectionArea(_selectingPath, Qt::IntersectsItemBoundingRect);
 }
-
 template<typename T>
 void DestView<T>::_sceneSelectionUpdateLastRect(const QRectF &rect) {
 	_selectingPath = _selectedPath;
@@ -353,7 +364,8 @@ void DestView<T>::mouseMoveEvent(QMouseEvent *event) {
         _viewMousePos = event->pos();
     //_sceneMousePos = _mapViewPosToScenePos(_viewMousePos);
     }
-    _updateSceneMousePos();
+
+    _scheduleMousePosUpdate();
 
 /*	if(_autoScrollEnabled && dragMode() != ScrollHandDrag) {
 		autoScrollLogic(event);
@@ -405,27 +417,29 @@ void DestView<T>::_startRegionFill(QMouseEvent *event) {
 	if(!_fillingRegion) {
 		_fillingRegion = true;
 
-        _fillFixedPivot = _fillCurrentPivot = _mapViewPosToScenePos(event->pos());
+        _fillFixedPivot = _mapViewPosToScenePos(event->pos(), _fillCurrentPivot);
 	}
 	else {
-        _fillCurrentPivot = _mapViewPosToScenePos(event->pos());
+        _mapViewPosToScenePos(event->pos(), _fillCurrentPivot);
 	}
 
 }
 
 template<typename T>
 void DestView<T>::_updateRegionFill(QMouseEvent *event) {
+    QPointF temp;
 	if(_fillingRegion) {
-        _sceneSelectionUpdateLastRect(getRect(_fillCurrentPivot, _mapViewPosToScenePos(event->pos())));
+        _sceneSelectionUpdateLastRect(getRect(_fillCurrentPivot, _mapViewPosToScenePos(event->pos(), temp)));
 	}
 }
 
 template<typename T>
 void DestView<T>::_endRegionFill(QMouseEvent *event) {
 	if(!_fillingRegion) return;
+    QPointF temp;
 
 	if(event) {
-        _sceneSelectionAddRect(getRect(_fillCurrentPivot, _mapViewPosToScenePos(event->pos())));
+        _sceneSelectionAddRect(getRect(_fillCurrentPivot, _mapViewPosToScenePos(event->pos(), temp)));
 
 		/* Unfortunately, the new, correct region-fill cannot handle staggered region filling!
 		  Because of laying on different sides of dynamic pivot

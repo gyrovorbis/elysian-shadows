@@ -1,7 +1,7 @@
 #ifndef DEST_VIEW_H
 #define DEST_VIEW_H
 
-#include <gyro.h>
+//#include <gyro.h>
 #include "sourceView.h"
 
 class QUndoStack;
@@ -9,11 +9,12 @@ template<typename T>
 class TileSelection;
 template<typename T>
 class PlaceTileGroupUndoItem;
-
+class QTimer;
 
 template<typename T>
 class DestView : public SourceView  {
 protected:
+    QTimer*             _mouseUpdateTimer   = nullptr;
 
     QGraphicsItemGroup* _selItemGroup       = nullptr;
     TileSelection<T>*   _selClipboard       = nullptr;
@@ -37,6 +38,8 @@ protected:
 	void _startRegionFill(QMouseEvent *event);
 	void _updateRegionFill(QMouseEvent *event);
 	void _endRegionFill(QMouseEvent *event);
+
+    void _scheduleMousePosUpdate(void);
 
 	virtual bool _populatePlaceTileGroup(const TileSelection<T> *const terSel, PlaceTileGroupUndoItem<T> *const groupCmd) const;
 	virtual bool _populatePlaceTileGroupRegionFill(const TileSelection<T> *const terSel, PlaceTileGroupUndoItem<T> *const groupCmd) const;

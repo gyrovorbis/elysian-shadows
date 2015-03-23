@@ -342,7 +342,7 @@ void MapView::wheelEvent(QWheelEvent* event) {
     //setTransformationAnchor();
     //scale(delta, delta);
     getAssets()->getEngine()->getCameraSys()->scale(delta);
-    _updateSceneMousePos();
+    _scheduleMousePosUpdate();
     //_zoomLabel->setText(QString::number((int)(getAssets()->getEngine()->getCameraSys()->getKeyFrame().getScale()*getAssets()->getEngine()->getCameraSys()->getStaticScale()*100.0f))+QString("%"));
     mouseMoveEvent(nullptr);
 
@@ -352,7 +352,6 @@ void MapView::wheelEvent(QWheelEvent* event) {
 void MapView::mouseMoveEvent(QMouseEvent *event) {
     //DIRTY-ASS HACK TO KEEP SHIT SYNCED WITH ENGINE
     //_zoomLabel->setText(QString::number((int)(getAssets()->getEngine()->getCameraSys()->getKeyFrame().getScale()*getAssets()->getEngine()->getCameraSys()->getStaticScale()*100.0f))+QString("%"));
-
     auto* sel = static_cast<TileSelectable*>(_getTileSelection());
     auto p1 = _panPivot-_viewMousePos;
 
@@ -389,7 +388,6 @@ void MapView::mouseMoveEvent(QMouseEvent *event) {
             static_cast<EntitySelectable*>(getAssets()->getCurrentSelection())->translate((float)delta.x(), (float)delta.y());
         }
     }
-
 }
 
 void MapView::mouseReleaseEvent(QMouseEvent *event) {
@@ -421,13 +419,14 @@ void MapView::_forceSceneUpdate(void) {
     //if(viewport()) static_cast<EngineGLSceneWidget*>(viewport())->updateGL();
 }
 
-QPointF MapView::_mapViewPosToScenePos(const QPoint viewPos) const {
+const QPointF& MapView::_mapViewPosToScenePos(const QPoint &viewPos, QPointF& out) const {
     GYVector3 dest;
     GYVector3 source = { (float)viewPos.x(), (float)viewPos.y(), 0.0f };
 
     getAssets()->getEngine()->getCameraSys()->inverseTransform(&dest, &source);
-
-    return QPointF(dest.x, dest.y);
+    out.setX(dest.x);
+    out.setY(dest.y);
+    return out;
 }
 
 void MapView::_startPan(void) {

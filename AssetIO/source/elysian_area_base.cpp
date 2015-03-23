@@ -261,7 +261,6 @@ bool AreaBase::saveEntities(const char *const /*filename*/) {
 void AreaBase::populateVbo(void) {
     if(vboPopulated) return;
 
- //   glGenVertexArrays(1, &vao);
   //  glBindVertexArray(vao);
 
     glGenBuffers(1, &vboBuff);
@@ -275,7 +274,7 @@ void AreaBase::populateVbo(void) {
 			for(unsigned x = 0; x < width; ++x) {
 				TileEntry tileEntry = getTileEntry(z, x, y);
 
-                vboEntryFromTileEntry(curPtr, &tileEntry, x, y, z);
+                vboEntryFromTileEntry(curPtr, &tileEntry, x, y);
 
 				curPtr += 4;
 
@@ -285,33 +284,41 @@ void AreaBase::populateVbo(void) {
 
     glBindBuffer(GL_ARRAY_BUFFER, vboBuff);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(VboEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS*4, data, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-
-/*
-    glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_POS]);
-    glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD]);
-    //glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR]);
-    //glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL]);
-    //glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT]);
+    for(unsigned i = 0; i < 2; ++i) {
+        glGenVertexArrays(1, &vao[i]);
+        glBindVertexArray(vao[i]);
 
         glBindBuffer(GL_ARRAY_BUFFER, vboBuff);
-        glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(VboEntry), 0);
-            glBindBuffer(GL_ARRAY_BUFFER, vboBuff);
-            glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(4*sizeof(float)));
 
 
-    glBindBuffer(GL_ARRAY_BUFFER, vboBuff);
+    glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_POS]);
+    glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD]);
+
+    glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(VboEntry), 0);
+    glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(4*sizeof(float)));
+
+
+    if(i == 0) {
+        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR]);
+        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL]);
+        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT]);
+
         glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VboEntry), (void*)(6*sizeof(float)));
-
         glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(7*sizeof(float)));
-            glBindBuffer(GL_ARRAY_BUFFER, vboBuff);
         glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(10*sizeof(float)));
 
-*/
+    }
+}
+
+    gyVidBindDefaultVertexArray();
+
    // glGenBuffers(1, &elementVbo);
   // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementVbo);
  //   glBufferData(GL_ELEMENT_ARRAY_BUFFER, ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE*sizeof(GLushort), &elementsArray[0], GL_DYNAMIC_DRAW);
    // glBindVertexArray(0);
+
 
     vboPopulated = true;
 }

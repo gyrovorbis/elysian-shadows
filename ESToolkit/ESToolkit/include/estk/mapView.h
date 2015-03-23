@@ -51,15 +51,15 @@ private:
     bool _entityIsSceneSelected(const TkEntity*const entity) const;
 
 	//SourceView virtual implementation
-    virtual void    _sceneSelectionAddRect(const QRectF &rect) override;
-    virtual void    _sceneSelectionUpdateLastRect(const QRectF &rect) override;
-    virtual void    _sceneSelectionClear(void) override;
-    virtual void    _externalSelectionCreate(void) override;
-    virtual void    _externalSelectionClear(void) override;
-    virtual void    _forceSceneUpdate(void) override;
-    virtual QPointF _mapViewPosToScenePos(const QPoint viewPos) const override;
-    virtual void    _startPan(void) override;
-    virtual void    _endPan(void) override;
+    virtual void            _sceneSelectionAddRect(const QRectF &rect) override;
+    virtual void            _sceneSelectionUpdateLastRect(const QRectF &rect) override;
+    virtual void            _sceneSelectionClear(void) override;
+    virtual void            _externalSelectionCreate(void) override;
+    virtual void            _externalSelectionClear(void) override;
+    virtual void            _forceSceneUpdate(void) override;
+    virtual const QPointF&  _mapViewPosToScenePos(const QPoint& viewPos, QPointF& out) const override;
+    virtual void            _startPan(void) override;
+    virtual void            _endPan(void) override;
 
 	//DestView virtual implementation
     virtual TileSelection<TileEntry>*           _getTileSelection(void) const override;
