@@ -179,7 +179,7 @@ int                         glalDepthTest               = 0;
 //Private video state variables
 static unsigned int			_projWidth				= 0;
 static unsigned int			_projHeight				= 0;
-static GYVector4			_clearColor				= { 0.0f, 0.0f, 0.0f, 0.0f };
+static GYVector4			_clearColor				= { 0.0f, 0.0f, 0.0f, 1.0f };
 static const GYTexCoord2*   _curTexCoordPtr         = NULL;
 static const GYColor4*      _curColorArrayPtr       = NULL;
 GYColor4                    _curQuadListColor[12]   = { {0, 0, 0, 0}, { 0, 0, 0, 0}, {0,0,0,0}, {0, 0,0,0} };
@@ -234,9 +234,11 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         //gyVidDepthTest(0);
         //gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
         //gyVidAlphaLevel(GY_ALPHA_NONE);
-        glDisable(GL_DEPTH_TEST);
+        glEnable(GL_DEPTH_TEST);
         glDisable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDepthFunc(GL_LESS);
+        glClearDepth(1.0f);
 
 
         once = 1;
@@ -334,35 +336,36 @@ void gyVidTexBind(const GYTexture *const tex) {
 
 void gyVidBlendMode(const GY_BLEND_MODE mode) {
     if(gyVidShadowPass()) return;
-    if(mode != glalBlendMode) {
+   // if(mode != glalBlendMode) {
         switch(mode) {
         case GY_BLEND_ONE_MINUS_SRC_ALPHA:
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             break;
         case GY_BLEND_ONE:
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+            glBlendFunc(GL_ONE, GL_ONE);
             break;
         }
         glalBlendMode = mode;
-    }
+  //  }
 }
 
 void gyVidDepthTest(const int enable) {
     int wasShadow = 0;
     int passChange = wasShadow != gyVidShadowPass();
-    if(enable != glalDepthTest || passChange) {
+    //if(enable != glalDepthTest || passChange) {
         if(!enable) glDisable(GL_DEPTH_TEST);
         else glEnable(GL_DEPTH_TEST);
+        //glDepthFunc(GL_LEQUAL);
         glalDepthTest = enable;
         wasShadow = gyVidShadowPass();
-    }
+   // }
 }
 
 void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
     if(gyVidShadowPass()) return;
 
     //Does this even do anything now that we're shader based?
-    if(lev != glalAlphaLevel) {
+   // if(lev != glalAlphaLevel) {
         switch(lev) {
         case GY_ALPHA_NONE:
         case GY_ALPHA_PUNCHTHRU:
@@ -373,7 +376,7 @@ void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
             break;
         }
         glalAlphaLevel = lev;
-    }
+  //  }
 }
 
 
