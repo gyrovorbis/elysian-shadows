@@ -291,7 +291,7 @@ static inline void _gyVidTriangleStrip(const struct _GYVector4 *const vertexArra
     //glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_POS]);
     glBindVertexArray(_defaultVao[gyVidShadowPass()]);
   //  glBindBuffer(GL_ARRAY_BUFFER, 0);
-    //glDrawArrays(GL_TRIANGLE_STRIP, startIndex, amount);
+    glDrawArrays(GL_TRIANGLE_STRIP, startIndex, amount);
     glalVertexRenderCount += amount;
     glBindVertexArray(0);
     _curTexCoordPtr = NULL;
