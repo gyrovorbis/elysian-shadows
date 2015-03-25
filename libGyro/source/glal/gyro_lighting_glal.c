@@ -59,16 +59,17 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
 	case GY_LIGHT_DIRECTIONAL:
         //light->spotCutoffAngle = 360.0f; //Shader needs this for correct texture coords
 	case GY_LIGHT_SPOT:
-        glEnable(GL_TEXTURE_2D);
-        glDisable(GL_TEXTURE_CUBE_MAP);
+        //glEnable(GL_TEXTURE_2D);
+        //glDisable(GL_TEXTURE_CUBE_MAP);
 		glBindTexture(GL_TEXTURE_2D, internals->shadowMap);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 #if !defined(ANDROID) /* TODO: FIXME */
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-        glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
-		//glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE );
+        //glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
+        glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE );
 		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
@@ -77,6 +78,7 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
 		break;
 
 	case GY_LIGHT_POINT:
+        light->spotCutoffAngle = 360.0f;
         glEnable(GL_TEXTURE_CUBE_MAP);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, internals->shadowMap);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -88,9 +90,9 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
-       // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-		glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BORDER_COLOR, 0.0f);
+        glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BORDER_COLOR, 1.0f);
 		//Does this REALLY have to have 6 faces!?
 		for (unsigned i = 0; i < GY_CUBE_MAP_FACE_MAX; ++i) {
 			//shadowDepth? lolz
@@ -544,7 +546,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
      glDepthMask(GL_TRUE);
      glEnable(GL_DEPTH_TEST);
      //glEnable(GL_BLEND);
-     glEnable(GL_BLEND);
+     //glEnable(GL_BLEND);
       glDepthFunc(GL_LESS);
      gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
 
@@ -570,6 +572,14 @@ void gyVidLightSourceEndShadowPasses(void) {
 	unsigned width, height;
 	gyVidResolution(&width, &height);
 	glViewport(0, 0, width, height);
+
+    gyVidDepthTest(0);
+     glDepthMask(GL_TRUE);
+     glDisable(GL_DEPTH_TEST);
+     //glEnable(GL_BLEND);
+     //glEnable(GL_BLEND);
+     glDepthFunc(GL_LEQUAL);
+
 
 	//glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	//glBindTexture(GL_TEXTURE_2D, 0);

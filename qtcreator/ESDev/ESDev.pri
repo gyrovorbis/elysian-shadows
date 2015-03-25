@@ -1,7 +1,7 @@
 #SPEED UP MINGW'S FUCKTARDEDLY SLOW DUMB ASS!
 win32 { 
-	QMAKE_CXX=../../../qtcreator/ESDev/ccache.exe g++
-	QMAKE_CC=../../../qtcreator/ESDev/ccache.exe gcc
+        #QMAKE_CXX=../../../qtcreator/ESDev/ccache.exe g++
+        #QMAKE_CC=../../../qtcreator/ESDev/ccache.exe gcc
 }
 
 

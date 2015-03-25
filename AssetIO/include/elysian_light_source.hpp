@@ -168,7 +168,7 @@ namespace elysian {
 	}) { gyVec3Normalize(&direction);  }
     inline void LightSource::setAttrib(const LightAttrib* const attrib) { properties = (GYLightProperties*)(attrib); }
 	inline void LightSource::setDirection(const GYVector3& dir) { gyVec3Normalize(&direction); direction = dir; }
-	inline void LightSource::setSpotCutoffAngle(const float angle) { spotCutoffAngle = angle; }
+    inline void LightSource::setSpotCutoffAngle(const float angle) { spotCutoffAngle = (type == GY_LIGHT_SPOT)? angle : 360.0f; }
 	inline auto LightSource::getLightType(void) const -> GY_LIGHT_TYPE { return type; }
 	inline const GYVector4& LightSource::getPosition(void) const { return position; }
     inline LightAttrib* LightSource::getAttrib(void) { return static_cast<LightAttrib*>(properties); }

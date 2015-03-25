@@ -257,7 +257,7 @@ namespace elysian {
 			_entityBuff[zIndex][_entityCount[zIndex]].zCoordRelative = relZCoord;
 
 			//render immediately
-           //if(zCoord < 32.0f && normalType == NORMAL_FLAT) _renderEntityEntry(_entityBuff[zIndex][_entityCount[zIndex]]);
+            if(zCoord < 32.0f && normalType == NORMAL_FLAT) _renderEntityEntry(_entityBuff[zIndex][_entityCount[zIndex]]);
 			//queue and render later
             _entityRowLights[zIndex] = (!_entityCount[zIndex])? entityEntry.lights : _entityRowLights[zIndex] | entityEntry.lights;
             ++_entityCount[zIndex];
@@ -400,7 +400,7 @@ namespace elysian {
 
                         if(elevation == 0 && !curMapEntry.mapEntry.getPlane()) { //render tile immediately at elevation -1 (below entities)
                             //Immediate render, or buffer if it requires multiple passes
-                           /* if(!_isShadowPass())*/ _renderOrBufferImmediateTileEntry(curMapEntry);
+                            if(!_isShadowPass()) _renderOrBufferImmediateTileEntry(curMapEntry);
                         } else { //Add to depth buffer if elevated
                             unsigned zCoord = j-_scrStartY+elevation;
                             //if(zCoord >= depthBuffMaxHeight) zCoord = depthBuffMaxHeight-1;

@@ -278,9 +278,6 @@ namespace elysian {
         //glBindVertexArray(_curArea->vao);
       //  glBindBuffer(GL_ARRAY_BUFFER, getCurArea()->vboBuff);
         //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, getCurArea()->elementVbo);
-        //if(getLightSys()->isShadowPass())
-         //gyVidDepthTest(true);
-
         //else gyVidDepthTest(false);
                // gyVidAlphaLevel(GY_ALPHA_FULL);
         //enableDepthTest();
@@ -342,7 +339,7 @@ namespace elysian {
 	
     template<typename P, typename T, typename E>
     inline unsigned MapSystemBase<P, T, E>::getEntityCount(void) {
-		if(!_renderLayer[3]) return 0;
+        if(!_renderLayer[3] || gyVidShadowPass()) return 0;
 		_onscreenEntityPool.clear();
 		auto& entities = _curArea->entities;
 

@@ -224,7 +224,7 @@ void LightSystem::addLightSourcesToScene(void) {
 
 void LightSystem::removeLightSourcesFromScene(void) {
     if(gyVidShadowPass()) return;
-    const static GYVector4 fullAmbience = GYVector4{ 1.0f, 1.0f, 1.0f, 0.0f };
+    const static GYVector4 fullAmbience = GYVector4{ 1.0f, 1.0f, 1.0f, 0.5f };
 	gyVidSetGlobalAmbience(&fullAmbience);
 	_activeLights = 0;
 	_activeLightCount = 0;

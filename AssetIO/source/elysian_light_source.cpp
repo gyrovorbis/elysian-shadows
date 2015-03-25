@@ -89,8 +89,6 @@ void LightSource::update(void) {
         gyMatTranslate(_relPos.x, _relPos.y, _relPos.z);
         gyMatMultVec(&localVec, &position, 1);
         gyMatPop();
-
-
 	}
 }
 
@@ -106,9 +104,7 @@ void LightSource::updateBoundingVolume(const CameraState *const cam, const GY_CU
 		*thisCam = *cam;
 
 	} else { // GY_LIGHT_POINT
-       // *thisCam = *cam;
-        *thisCam = *cam;
-    #if 0
+
         const float halfW = static_cast<LightAttrib*>(properties)->getRadius();
 
         vol->ntl.x = position.x - halfW; vol->ntl.y = position.y - halfW;
@@ -137,17 +133,19 @@ void LightSource::updateBoundingVolume(const CameraState *const cam, const GY_CU
 		default:
 			break;
         }
-#endif
-
 	}
 
-	vol->ftl = vol->ntl;
-	vol->ftr = vol->ntr;
-	vol->fbl = vol->nbl;
-	vol->fbr = vol->nbr;
 
-    thisCam->updateViewVolumeBoundingRegion();
-    if(type != GY_LIGHT_DIRECTIONAL) thisCam->clipBoundingRegion(*cam);
+
+    if(type != GY_LIGHT_DIRECTIONAL) {
+        vol->ftl = vol->ntl;
+        vol->ftr = vol->ntr;
+        vol->fbl = vol->nbl;
+        vol->fbr = vol->nbr;
+
+        thisCam->clipBoundingRegion(*cam);
+        thisCam->updateViewVolumeBoundingRegion();
+    }
 
 
 }

@@ -4,8 +4,8 @@
 # -------------------------------------------------
 include(../../qtcreator/ESDev/ESDev.pri)
 win32 {
-    QMAKE_CXX=../../qtcreator/ESDev/ccache.exe g++
-    QMAKE_CC=../../qtcreator/ESDev/ccache.exe gcc
+  #  QMAKE_CXX=../../qtcreator/ESDev/ccache.exe g++
+  #  QMAKE_CC=../../qtcreator/ESDev/ccache.exe gcc
 }
 TARGET = ESToolkit
 TEMPLATE = app
