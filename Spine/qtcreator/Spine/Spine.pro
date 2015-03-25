@@ -1,14 +1,14 @@
+include(../../../qtcreator/ESDev/ESDev.pri)
 TEMPLATE = lib
 CONFIG += staticlib
 
 CONFIG -= app_bundle
 CONFIG -= qt
+QMAKE_CFLAGS += -msse -std=c99
 
 INCLUDEPATH += ../../include \
 				../../../libGyro/include
-
-DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt
-QMAKE_CFLAGS += -msse -std=c99 -Wno-unused-parameter
+QMAKE_CFLAGS += -Wno-unused-parameter
 
 SOURCES += \
     ../../src/spine/Animation.c \

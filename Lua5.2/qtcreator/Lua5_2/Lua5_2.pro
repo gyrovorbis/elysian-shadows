@@ -3,7 +3,7 @@
 # Project created by QtCreator 2014-12-21T07:10:54
 #
 #-------------------------------------------------
-
+include(../../../qtcreator/ESDev/ESDev.pri)
 QT       -= core gui
 
 TARGET = Lua5_2

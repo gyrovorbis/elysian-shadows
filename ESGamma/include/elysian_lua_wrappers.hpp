@@ -558,7 +558,7 @@ OOLUA_PROXY(Animation, Component)
 	OOLUA_MEM_FUNC_CONST(ChildAnimationAttrib*, getChildAttrib)
 	OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<AnimationAttrib *>)
 	OOLUA_MEM_FUNC(void, setChildAttrib, cpp_in_p<ChildAnimationAttrib*>)
-    OOLUA_MEM_FUNC(void, playAnimation, const char*, EventMonitor*)
+    OOLUA_MEM_FUNC(void, playAnimation, const char*, cpp_in_p<EventMonitor*>)
 	OOLUA_MEM_FUNC(void, stopAnimation)
 	OOLUA_MEM_FUNC(void, addChildEntity, Entity*, const char*)
 	OOLUA_MEM_FUNC(void, removeChildEntity, const char*)
@@ -578,7 +578,7 @@ OOLUA_TAGS (
 	No_public_constructors,
 	No_public_destructor
 )
-OOLUA_MEM_FUNC(void, linearInterpTransform, InstanceTransform*, const InstanceTransform&, float, EventMonitor*)
+OOLUA_MEM_FUNC(void, linearInterpTransform, InstanceTransform*, const InstanceTransform&, float, cpp_in_p<EventMonitor*>)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CollisionFlags)
@@ -757,8 +757,8 @@ OOLUA_TAGS (
 	No_public_constructors,
 	No_public_destructor
 )
-OOLUA_MEM_FUNC(void, walkToWayPoint, Entity*, float, float, EventMonitor*)
-OOLUA_MEM_FUNC(void, moveToWayPoint, Entity*, float, float, float, EventMonitor*)
+OOLUA_MEM_FUNC(void, walkToWayPoint, Entity*, float, float, cpp_in_p<EventMonitor*>)
+OOLUA_MEM_FUNC(void, moveToWayPoint, Entity*, float, float, float, cpp_in_p<EventMonitor*>)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Warp, Component)
@@ -1099,7 +1099,7 @@ OOLUA_PROXY(TimerSystem)
 	OOLUA_MFUNC_CONST(getCurrentFrameTicks)
 	OOLUA_MFUNC_CONST(getDeltaTime)
 	OOLUA_MFUNC_CONST(getTotalTime)
-    OOLUA_MEM_FUNC(void, startTimerEvent, float, EventMonitor*)
+    OOLUA_MEM_FUNC(void, startTimerEvent, float, cpp_in_p<EventMonitor*>)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(LevelSystem)
@@ -1129,7 +1129,7 @@ OOLUA_PROXY(LightSystem)
 	)
 	OOLUA_MFUNC(setGlobalAmbientColor)
     OOLUA_MEM_FUNC_CONST(void, getGlobalAmbientColor, GYVector4&)
-    OOLUA_MEM_FUNC(void, interpLightAttrib, float, const LightAttrib&, LightAttrib*, EventMonitor*)
+    OOLUA_MEM_FUNC(void, interpLightAttrib, float, const LightAttrib&, LightAttrib*, cpp_in_p<EventMonitor*>)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(AudioSystem)
@@ -1211,7 +1211,7 @@ OOLUA_PROXY(DialogSystem)
 		No_public_constructors,
 		No_public_destructor
 	)
-	OOLUA_MEM_FUNC(void, startDialog, Dialog*, EventMonitor*)
+    OOLUA_MEM_FUNC(void, startDialog, Dialog*, cpp_in_p<EventMonitor*>)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CombatSystem)
@@ -1269,14 +1269,14 @@ OOLUA_PROXY(CameraSystem)
 	OOLUA_MEM_FUNC_CONST(void, addEntity, Entity*)
 	OOLUA_MEM_FUNC_CONST(void, removeEntity, Entity*)
     OOLUA_MEM_FUNC(void, setFollowEntity, Entity*)
-	OOLUA_MEM_FUNC(void, scale, float, float, EventMonitor*)
+    OOLUA_MEM_FUNC(void, scale, float, float, cpp_in_p<EventMonitor*>)
 	OOLUA_MEM_FUNC_CONST(CameraKeyFrame, getKeyFrame)
-	OOLUA_MEM_FUNC(void, moveToKeyFrame, const CameraKeyFrame&, float, EventMonitor*)
+    OOLUA_MEM_FUNC(void, moveToKeyFrame, const CameraKeyFrame&, float, cpp_in_p<EventMonitor*>)
 	OOLUA_MEM_FUNC(void, setBoundaries, float, float, float, float)
 	OOLUA_MEM_FUNC(void, setDynamic, bool)
 	OOLUA_MEM_FUNC(void, pushPerspectiveState)
 	OOLUA_MEM_FUNC(void, popState)
-    OOLUA_MEM_FUNC(void, shake, const GYVector3&, unsigned, float, bool, EventMonitor*)
+    OOLUA_MEM_FUNC(void, shake, const GYVector3&, unsigned, float, bool, cpp_in_p<EventMonitor*>)
 OOLUA_PROXY_END
 
 

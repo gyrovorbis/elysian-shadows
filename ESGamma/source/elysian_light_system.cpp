@@ -258,6 +258,7 @@ void LightSystem::getLightPassTileRegion(int& startX, int& startY, int& endX, in
 uint32_t LightSystem::startLightPass(uint32_t& lightsLeft) {
     static int call = 0;
     if(gyVidShadowPass()) {
+        lightsLeft = 0;
         call = 0;
         return ~0;
     }

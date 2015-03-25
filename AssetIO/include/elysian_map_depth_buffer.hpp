@@ -175,7 +175,7 @@ namespace elysian {
 		void _renderDepthBuffEntityRow(const unsigned i);
 
 		bool _tileEntryLightPass(O& tileEntry) {
-			if((tileEntry.lights | _lightsRendered) == _lightsRendered) { //it's done!
+            if((tileEntry.lights | _lightsRendered) == _lightsRendered || _isShadowPass()) { //it's done!
                 ++tileEntry.renderPass;
 				_renderObjectEntry(tileEntry, ZCoordConstants::mapBase+(tileEntry.mapEntry.getElev())*32.0f /*zCoordBufferedBase+i+1.0f*/); //WILL THIS WORK FOR NO ELEVATION!?
 				return true;
@@ -295,7 +295,7 @@ namespace elysian {
 
 
 		//Iterate through depth buffers and render from lowest to highest z coord
-		for(unsigned i = 0; i < _depthBuffMaxHeight; ++i) {
+        for(unsigned i = 0; i < _depthBuffMaxHeight; ++i) {
 //_enableDepthTest();
             _renderDepthBuffTileRow(i, NORMAL_FLAT);
 
@@ -321,11 +321,11 @@ namespace elysian {
                         const uint32_t activeLights = _startLightPass(lightsLeft);
 
                         for(int k = j; k <= endIndex; ++k) {
-                            if(entityRow[k].lights/* & ~activeLights != entityRow[k].lights*/) { //we can do something this pass
+                            //if(entityRow[k].lights/* & ~activeLights != entityRow[k].lights*/) { //we can do something this pass
                                 ++entityRow[k].renderPass;
                                 _renderEntityEntry(entityRow[k]);
                                 entityRow[k].lights &= ~activeLights;
-                            }
+                            //}
                         }
 
                     } while(lightsLeft);
@@ -400,7 +400,7 @@ namespace elysian {
 
                         if(elevation == 0 && !curMapEntry.mapEntry.getPlane()) { //render tile immediately at elevation -1 (below entities)
                             //Immediate render, or buffer if it requires multiple passes
-                            if(!_isShadowPass()) _renderOrBufferImmediateTileEntry(curMapEntry);
+                           /* if(!_isShadowPass())*/ _renderOrBufferImmediateTileEntry(curMapEntry);
                         } else { //Add to depth buffer if elevated
                             unsigned zCoord = j-_scrStartY+elevation;
                             //if(zCoord >= depthBuffMaxHeight) zCoord = depthBuffMaxHeight-1;

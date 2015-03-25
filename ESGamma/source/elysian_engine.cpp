@@ -244,7 +244,7 @@ void Engine::render(void (*func)(void)) {
             func();
             _dialogSystem->render();
             _warpSystem->render();
-			_guiSystem->renderForeground();
+            _guiSystem->renderForeground();
 
 			gyVidSceneEnd();
 	}

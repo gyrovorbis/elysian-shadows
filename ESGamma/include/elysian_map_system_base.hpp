@@ -238,6 +238,14 @@ namespace elysian {
 		gyVidTexBind(_curLevel->tileSheet);
         gyVidNormalMapBind(_curLevel->normalSheet);
 		gyVidSpecularMapBind(_curLevel->specularSheet);
+/*
+        if(gyVidShadowPass()) {
+            gyVidDepthTest(1);
+            glDepthMask(GL_TRUE);
+            glEnable(GL_BLEND);
+            //glDisable(GL_BLEND);
+             glDepthFunc(GL_LESS);
+        }*/
 #if 0
         //glBindVertexArray(_curArea->vao);
 
@@ -286,6 +294,14 @@ namespace elysian {
 	
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::flushTileBuffer(void) {
+
+     /*   if(gyVidShadowPass()) {
+            gyVidDepthTest(1);
+            glDepthMask(GL_TRUE);
+            glEnable(GL_BLEND);
+           // glDisable(GL_BLEND);
+             glDepthFunc(GL_LESS);
+        }*/
         auto& elemArraySize = _curArea->elementsArraySize;
         auto& elemArray     = _curArea->elementsArray;
         if(elemArraySize == 0) return;

@@ -1,3 +1,4 @@
+include(../../../qtcreator/ESDev/ESDev.pri)
 TEMPLATE = lib
 QT		+= opengl
 CONFIG += staticlib
@@ -5,8 +6,8 @@ CONFIG += console
 CONFIG += opengl
 CONFIG -= app_bundle
 #CONFIG -= qt
-DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt
 QMAKE_CXXFLAGS += -Wno-c++11-extensions -Wno-c++11-long-long
+QMAKE_CFLAGS += -msse -std=c99
 
 INCLUDEPATH += ../../include \
 				../../source/x86/png \
@@ -16,8 +17,6 @@ INCLUDEPATH += ../../include \
 
 win32 {
         INCLUDEPATH +=  ../../lib/win32
-                QMAKE_CXXFLAGS += -msse
-                QMAKE_CFLAGS += -msse -std=c99
 		SOURCES +=	../../source/x86/turfs_windows.c
 }
 
@@ -28,7 +27,6 @@ macx {
 }
 
 linux {
-    QMAKE_CFLAGS += -msse
 
     LIBS += \
         -ldynamic

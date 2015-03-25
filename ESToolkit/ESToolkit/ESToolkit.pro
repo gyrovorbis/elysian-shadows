@@ -2,13 +2,15 @@
 # Project created by QtCreator 2010-03-06T14:23:27
 # And modified to all fuck by Falco ALL THE DAYS
 # -------------------------------------------------
+include(../../qtcreator/ESDev/ESDev.pri)
+win32 {
+    QMAKE_CXX=../../qtcreator/ESDev/ccache.exe g++
+    QMAKE_CC=../../qtcreator/ESDev/ccache.exe gcc
+}
 TARGET = ESToolkit
 TEMPLATE = app
 QT		+= opengl
-QMAKE_CXXFLAGS += -std=c++11 -msse -Wno-unused-local-typedefs -Wno-empty-body -Wno-unknown-warning-option
-DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt QT_NO_KEYWORDS
-CONFIG += c++11
-
+QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-empty-body -Wno-unknown-warning-option
 
 ICON = resource/images/estk.icns
 
@@ -452,7 +454,6 @@ win32 {
                 -lglew32.dll \
                 -limagehlp \
                 #-lvorbisfile.dll \
-                -L../../ESGamma/lib/osx
                 #-mconsole
                 #-llua52
 }
@@ -489,6 +490,5 @@ linux {
                 -lvorbisfile \
                 -lX11 \
                 -lpthread \
-                -L../../ESGamma/lib/osx  \
                 #-llua52
 }

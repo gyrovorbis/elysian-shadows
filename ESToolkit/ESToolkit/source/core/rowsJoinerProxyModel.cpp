@@ -341,7 +341,7 @@ int	RowsJoinerProxy::columnCount(const QModelIndex & p) const
 
 void RowsJoinerProxy::s_rowsAboutToBeInserted(QModelIndex sp, int from, int to)
 {
-    QAbstractItemModel * m = dynamic_cast<QAbstractItemModel *>(sender());
+    QAbstractItemModel * m = qobject_cast<QAbstractItemModel *>(sender());
     if (!m) return;
     int f = from;
     int t = to;
@@ -375,7 +375,7 @@ void RowsJoinerProxy::s_rowsInserted(QModelIndex, int, int) { endInsertRows(); }
 
 void RowsJoinerProxy::s_rowsAboutToBeRemoved(QModelIndex sp, int from, int to)
 {
-    QAbstractItemModel * m = dynamic_cast<QAbstractItemModel *>(sender());
+    QAbstractItemModel * m = qobject_cast<QAbstractItemModel *>(sender());
     if (!m) return;
     int f = from;
     int t = to;

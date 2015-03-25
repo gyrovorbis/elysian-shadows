@@ -24,9 +24,9 @@ typedef struct _GYLightProperties {
 	int			computeDistanceAtte
 */
 GYLightProperties LightAttrib::defaultProperties = {
-	{ 0.0f, 0.0f, 0.0f, 1.0f },
-	{ 0.0f, 0.0f, 0.0f, 1.0f },
-	{ 0.0f, 0.0f, 0.0f, 1.0f },
+    { 0.0f, 0.0f, 0.0f, 0.0f },
+    { 0.0f, 0.0f, 0.0f, 0.0f },
+    { 0.0f, 0.0f, 0.0f, 0.0f },
     { 0.00005f, 0.00005f, 0.00005f },
     1.0f,
 	200.0f
@@ -106,8 +106,9 @@ void LightSource::updateBoundingVolume(const CameraState *const cam, const GY_CU
 		*thisCam = *cam;
 
 	} else { // GY_LIGHT_POINT
-
-
+       // *thisCam = *cam;
+        *thisCam = *cam;
+    #if 0
         const float halfW = static_cast<LightAttrib*>(properties)->getRadius();
 
         vol->ntl.x = position.x - halfW; vol->ntl.y = position.y - halfW;
@@ -136,6 +137,7 @@ void LightSource::updateBoundingVolume(const CameraState *const cam, const GY_CU
 		default:
 			break;
         }
+#endif
 
 	}
 
