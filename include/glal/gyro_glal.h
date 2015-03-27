@@ -27,16 +27,17 @@
 #elif GYRO_PLATFORM == GYRO_PLATFORM_Qt
 
 #	ifdef __APPLE__
-#       include <gl.h>
+//#       include <gl.h>
 #		include <OpenAL/al.h>
 #		include <OpenAL/alc.h>
-//#       include <gl3.h>
-//#       include <gl3ext.h>
+#       include <gl3.h>
+#       include <gl3ext.h>
+#define __gl_h_
 
 //god fucking damnit.
-#define glBindVertexArray       glBindVertexArrayAPPLE
-#define glDeleteVertexArrays    glDeleteVertexArraysAPPLE
-#define glGenVertexArrays       glGenVertexArraysAPPLE
+//#define glBindVertexArray       glBindVertexArrayAPPLE
+//#define glDeleteVertexArrays    glDeleteVertexArraysAPPLE
+//#define glGenVertexArrays       glGenVertexArraysAPPLE
 
 #	else
 #       include <windows.h>
