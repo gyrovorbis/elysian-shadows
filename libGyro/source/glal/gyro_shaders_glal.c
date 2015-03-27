@@ -119,11 +119,11 @@ void gyVidNormalMapBind(const GYTexture * const tex) {
     if(tex != _normalMap) {
         glActiveTexture(glalTextureMapTexUnits[GLAL_NORMAL_MAP]);
         if(tex && tex->_data) {
-            if(!wasActive) glEnable(GL_TEXTURE_2D);
+           // if(!wasActive) glEnable(GL_TEXTURE_2D);
             glBindTexture(GL_TEXTURE_2D, *(GLuint *)&tex->_data);
         } else {
             active = 0;
-            if(wasActive) glDisable(GL_TEXTURE_2D);
+            //if(wasActive) glDisable(GL_TEXTURE_2D);
         }
         ++glalTextureChangeCount;
 
@@ -165,11 +165,11 @@ void gyVidSpecularMapBind(const GYTexture * const tex) {
     if(tex != _specularMap) {
         glActiveTexture(glalTextureMapTexUnits[GLAL_SPECULAR_MAP]);
         if(tex && tex->_data) {
-            if(!wasActive) glEnable(GL_TEXTURE_2D);
+         //   if(!wasActive) glEnable(GL_TEXTURE_2D);
             glBindTexture(GL_TEXTURE_2D, *(GLuint *)&tex->_data);
         } else {
             if(wasActive) active = 0;
-            glDisable(GL_TEXTURE_2D);
+         //   glDisable(GL_TEXTURE_2D);
         }
         ++glalTextureChangeCount;
 

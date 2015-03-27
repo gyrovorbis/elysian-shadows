@@ -14,15 +14,6 @@ LightSource::~LightSource(void) {
 	gyVidLightSourceUninit(static_cast<GYLightSource*>(this));
 }
 
-/*
-typedef struct _GYLightProperties {
-	GYVector4	ambientColor;
-	GYVector4	diffuseColor;
-	GYVector4	specularColor;
-	GYVector3	attenuationFactors;
-	float		spotExponent;
-	int			computeDistanceAtte
-*/
 GYLightProperties LightAttrib::defaultProperties = {
     { 0.0f, 0.0f, 0.0f, 0.0f },
     { 0.0f, 0.0f, 0.0f, 0.0f },
@@ -74,8 +65,6 @@ bool LightSource::removeFromLevel(void) {
 }
 
 void LightSource::setLightType(const GY_LIGHT_TYPE _type) {
-	if(type == GY_LIGHT_DIRECTIONAL) position.w = 0.0f;
-
 	gyVidLightSourceInit(static_cast<GYLightSource*>(this), _type);
 }
 
@@ -94,7 +83,7 @@ void LightSource::update(void) {
 
 void LightSource::updateBoundingVolume(const CameraState *const cam, const GY_CUBE_MAP_FACE face) {
 	CameraState* thisCam = static_cast<CameraState*>(camera);
-	GYViewVolume* vol = &thisCam->viewVolume;
+    GYViewVolume* vol = &thisCam->viewVolume;
 
 	if(type == GY_LIGHT_DIRECTIONAL) {
 		*thisCam = *cam;
@@ -103,7 +92,7 @@ void LightSource::updateBoundingVolume(const CameraState *const cam, const GY_CU
 
 		*thisCam = *cam;
 
-	} else { // GY_LIGHT_POINT
+    } else { // GY_LIGHT_POINT
 
         const float halfW = static_cast<LightAttrib*>(properties)->getRadius();
 
@@ -135,16 +124,15 @@ void LightSource::updateBoundingVolume(const CameraState *const cam, const GY_CU
         }
 	}
 
-
-
-    if(type != GY_LIGHT_DIRECTIONAL) {
         vol->ftl = vol->ntl;
         vol->ftr = vol->ntr;
         vol->fbl = vol->nbl;
         vol->fbr = vol->nbr;
 
-        thisCam->clipBoundingRegion(*cam);
         thisCam->updateViewVolumeBoundingRegion();
+
+    if(type != GY_LIGHT_DIRECTIONAL) {
+        thisCam->clipBoundingRegion(*cam);
     }
 
 

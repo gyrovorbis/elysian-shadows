@@ -61,9 +61,6 @@ namespace elysian {
 	private:
 		Pool<Entity*>				_onscreenEntityPool	= Pool<Entity*>(ELYSIAN_MAP_SYSTEM_ONSCREEN_ENTITY_POOL_SIZE);
 		static const GYColor4		_tileColor;
-        //static GY_RECT_PLANE_TYPE   _curPlaneType;
-        //static GY_RECT_TEX_ORIENT   _curTexOrient;
-        //static TEXTURE_FLIP         _curTexFlip;
 		bool _renderLayer[4];
         //animation
 		//toggles
@@ -134,7 +131,7 @@ namespace elysian {
 //-----INLINEZ-----
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::renderCustomPassImmediate(void) { }
+    inline void MapSystemBase<P, T, E>::renderCustomPassImmediate(void) { enableDepthTest(); }
 
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::getOnscreenTileRegion(int &startX, int &startY, int &endX, int &endY) const {
@@ -157,38 +154,29 @@ namespace elysian {
     inline void MapSystemBase<P, T, E>::renderObjectEntry(const T& entry, const float /*z*/) {
 		if(!_renderLayer[entry.layer]) return; //Don't render if this layer has been toggled off.
 
-         auto& elemArraySize = _curArea->elementsArraySize;
-         auto& elemArray     = _curArea->elementsArray;
+         auto& elemArraySize = _curArea->elementsArraySize[_curArea->elementsCurSegment];
+         auto* elemArray     = &_curArea->elementsArray[_curArea->elementsCurSegment*_curArea->elementsPerSegment];
 
         if(!gyVidShadowPass()) {
             const GY_RECT_PLANE_TYPE      newPlane = entry.mapEntry.getPlane();
             const GY_RECT_TEX_ORIENT      newOrient = entry.mapEntry.getOrient();
-            const GY_ALPHA_LEVEL          newAlpha = (entry.renderPass > 1 ||
+            /*const GY_ALPHA_LEVEL          newAlpha = (entry.renderPass > 1 ||
                                                       _curLevel->tileset[entry.mapEntry.getIndex()].getTransparency())?
-                                                        GY_ALPHA_FULL : GY_ALPHA_PUNCHTHRU;
+                                                        GY_ALPHA_FULL : GY_ALPHA_NONE;*/
 
             //Blending enabled state change
-            if(newAlpha != glalAlphaLevel) {
+          /*  if(newAlpha != glalAlphaLevel) {
               flushTileBuffer();
-              gyVidAlphaLevel(newAlpha);
-            }
+             gyVidAlphaLevel(newAlpha);
+            }*/
 
             //Blending mode state change
             if(entry.renderPass > 1 && !_blendPass) {
-                //endObjectList();
                 disableDepthTest();
-                /*glEnable(GL_BLEND);
-                gyVidDepthTest(false);
-                glEnable(GL_POLYGON_OFFSET_FILL);
-                glPolygonOffset(1.0f, 1.0f);
-                glDepthFunc(GL_EQUAL);*/
-                //gyVidBlendMode(GY_BLEND_ONE);
             }
             //We don't give a fuck about blend modes when blending is off
-            else if(entry.renderPass == 1 && _blendPass /*&& newAlpha == GY_ALPHA_FULL && glalBlendMode != GY_BLEND_ONE_MINUS_SRC_ALPHA*/) {
-                //endObjectList();
+            else if(entry.renderPass == 1 && _blendPass) {
                 enableDepthTest();
-                //gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
             }
 
             //Normal map texture flip state change
@@ -219,7 +207,7 @@ namespace elysian {
         elemArray[elemArraySize+3]    = indices[3];
         elemArraySize += 4;
 
-        if(elemArraySize + 6 >= ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE) {
+        if(elemArraySize + 6 >= _curArea->elementsPerSegment) {
             flushTileBuffer();
         }
 }
@@ -232,55 +220,14 @@ namespace elysian {
 
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::bindTileBuffer(void) {
-        assert(_curArea->elementsArraySize == 0);
+      //  assert(_curArea->elementsArraySize[_curArea->elementsCurSegment] == 0);
 
         gyVidMaterialBind(nullptr);
 		gyVidTexBind(_curLevel->tileSheet);
         gyVidNormalMapBind(_curLevel->normalSheet);
 		gyVidSpecularMapBind(_curLevel->specularSheet);
-/*
-        if(gyVidShadowPass()) {
-            gyVidDepthTest(1);
-            glDepthMask(GL_TRUE);
-            glEnable(GL_BLEND);
-            //glDisable(GL_BLEND);
-             glDepthFunc(GL_LESS);
-        }*/
-#if 0
-        //glBindVertexArray(_curArea->vao);
 
-        glBindBuffer(GL_ARRAY_BUFFER, _curArea->vboBuff);
-
-        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_POS]);
-       glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD]);
-        if(!gyVidShadowPass()) {
-        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR]);
-        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL]);
-        glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT]);
-        }
-
-            glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(VboEntry), 0);
-                glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(4*sizeof(float)));
-
-        if(!gyVidShadowPass()) {
-            glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VboEntry), (void*)(6*sizeof(float)));
-
-            glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(7*sizeof(float)));
-            glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(10*sizeof(float)));
-        }
-#else
         glBindVertexArray(_curArea->vao[gyVidShadowPass()]);
-#endif
-
-        // gyVidAlphaLevel(GY_ALPHA_FULL);
-
-
-        //glBindVertexArray(_curArea->vao);
-      //  glBindBuffer(GL_ARRAY_BUFFER, getCurArea()->vboBuff);
-        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, getCurArea()->elementVbo);
-        //else gyVidDepthTest(false);
-               // gyVidAlphaLevel(GY_ALPHA_FULL);
-        //enableDepthTest();
 	}
 
     template<typename P, typename T, typename E>
@@ -291,50 +238,72 @@ namespace elysian {
 	
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::flushTileBuffer(void) {
-
-     /*   if(gyVidShadowPass()) {
-            gyVidDepthTest(1);
-            glDepthMask(GL_TRUE);
-            glEnable(GL_BLEND);
-           // glDisable(GL_BLEND);
-             glDepthFunc(GL_LESS);
-        }*/
-        auto& elemArraySize = _curArea->elementsArraySize;
-        auto& elemArray     = _curArea->elementsArray;
+        auto& elemArraySize = _curArea->elementsArraySize[_curArea->elementsCurSegment];
+        auto* elemArray     = &_curArea->elementsArray[_curArea->elementsCurSegment*_curArea->elementsPerSegment];
         if(elemArraySize == 0) return;
+
+
+        GLenum result;
+        result = glClientWaitSync(_curArea->elementsArraySyncs[_curArea->elementsCurSegment], GL_SYNC_FLUSH_COMMANDS_BIT, 100000000);
+      while(result != GL_ALREADY_SIGNALED && result != GL_CONDITION_SATISFIED) {
+          result = glClientWaitSync(_curArea->elementsArraySyncs[_curArea->elementsCurSegment], 0, 100);
+      }
+
+            //result = glClientWaitSync(_curArea->elementsArraySyncs[_curArea->elementsCurSegment], 0, 100);
+
+      //  }
+    /*    switch(result) {
+        case GL_ALREADY_SIGNALED:
+            Debug::printf(Debug::VERBOSE, "ALREADY SIGNALED");
+            break;
+        case GL_CONDITION_SATISFIED:
+                        Debug::printf(Debug::VERBOSE, "condition satisfied");
+            break;
+        case GL_TIMEOUT_EXPIRED:
+                        Debug::printf(Debug::VERBOSE, "timeout expired");
+            break;
+        case GL_WAIT_FAILED:
+                        Debug::printf(Debug::VERBOSE, "wait failed");
+break;
+        default:
+                    Debug::printf(Debug::VERBOSE, "else");
+            break;
+
+        }*/
 
         glalVertexRenderCount += elemArraySize;
 
         //assert(elemArraySize <= maxi);
-        assert(elemArraySize < ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE);
+       // assert(elemArraySize < ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE);
 
-       // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo);
+          glDeleteSync(_curArea->elementsArraySyncs[_curArea->elementsCurSegment]);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo);
+        // glBufferData(GL_ELEMENT_ARRAY_BUFFER, );
+       GLushort* ptr = (GLushort*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, (GLintptr)(_curArea->elementsPerSegment*sizeof(GLushort)*_curArea->elementsCurSegment), sizeof(GLushort)*elemArraySize, GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+       memcpy(ptr, elemArray, sizeof(GLushort)*elemArraySize);
+        glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 
-        //glBufferData(GL_ELEMENT_ARRAY_BUFFER, elemArraySize*sizeof(GLushort), nullptr, GL_DYNAMIC_DRAW);
-        //glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort)*elemArraySize, elemArray);
-        //glBufferData(GL_ELEMENT_ARRAY_BUFFER, elemArraySize*sizeof(GLushort), &elemArray[0], GL_DYNAMIC_DRAW);
+      //  glDrawElements(GL_TRIANGLE_STRIP, elemArraySize, GL_UNSIGNED_SHORT, elemArray /*nullptr*/);
 
 
-        //glEnableClientState(GL_ELEMENT_ARRAY_BUFFER);
-        glDrawElements(GL_TRIANGLE_STRIP, elemArraySize, GL_UNSIGNED_SHORT, elemArray /*nullptr*/);
+                //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elemArraySize, elemArray, GL_STREAM_DRAW);
+       // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elemArraySize, elemArray, GL_STREAM_DRAW);
+        glDrawElements(GL_TRIANGLE_STRIP, elemArraySize, GL_UNSIGNED_SHORT, (void*)(sizeof(GLushort)*_curArea->elementsPerSegment*_curArea->elementsCurSegment));
+
+        _curArea->elementsArraySyncs[_curArea->elementsCurSegment] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+
         //glDrawArrays(GL_TRIANGLE_STRIP, 0, elemArraySize);
         elemArraySize = 0;
+
+        if(++_curArea->elementsCurSegment >= ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO) {
+            _curArea->elementsCurSegment = 0;
+        }
+
 	}
 
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::unbindTileBuffer(void) {
-#if 0
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-#else
-        glBindVertexArray(0);
-        //gyVidBindDefaultVertexArray();
-#endif
-        //enableDepthTest();
-        //gyVidQuadListEnd();
-        /*gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
-        if(getLightSys()->isShadowPass()) gyVidDepthTest(true);
-        else gyVidDepthTest(false);*/
+        gyVidBindDefaultVertexArray();
     }
 	
     template<typename P, typename T, typename E>
@@ -404,6 +373,7 @@ namespace elysian {
         //glPolygonOffset(2.0f, 2.0f);
         glDepthMask(GL_FALSE);
         glDepthFunc(GL_EQUAL);
+        gyVidAlphaLevel(GY_ALPHA_FULL);
         gyVidBlendMode(GY_BLEND_ONE);
         _blendPass = true;
 	}
@@ -417,7 +387,7 @@ namespace elysian {
         //glEnable(GL_BLEND);
         //glDisable(GL_BLEND);
          glDepthFunc(GL_LEQUAL);
-         //gyVidAlphaLevel(GY_ALPHA_NONE);
+         gyVidAlphaLevel(GY_ALPHA_NONE);
         //glDisable(GL_POLYGON_OFFSET_FILL);
         gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
         _blendPass = false;

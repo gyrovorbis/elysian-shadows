@@ -14,6 +14,7 @@
 EngineGLSceneWidget::EngineGLSceneWidget(const QGLFormat &format, QWidget *parent, const QGLWidget *shareWidget, Qt::WindowFlags f):
     QGLWidget(format, parent, shareWidget, f) {
     makeCurrent();
+   // initializeGLFunctions();
     glalVidOglInit(1280, 720, 1280, 720);
 }
 
@@ -118,7 +119,7 @@ void EngineGLSceneWidget::resizeGL(int w, int h) {
 }
 
 static void _renderSpineShit(void) {
-      //  gyVidSkeleton(skeleton);
+    //    gyVidSkeleton(skeleton);
 
 }
 

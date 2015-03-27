@@ -27,16 +27,12 @@ void LightSystem::_addToLightMap(LightSource*const src) {
 	const uint32_t			lightMask	= (1<<(_onscreenLightCount-1));
     int startX, startY, endX, endY;
 
-    startX = startY = 0;
-    endX = _curArea->width-1;
-    endY = _curArea->height-1;
-
-    //getCameraSys()->getVisibleTileRegion(startX, startY, endX, endY, lightCam);
+    getCameraSys()->getVisibleTileRegion(startX, startY, endX, endY, lightCam);
 
     for(int y = startY; y <= endY; ++y) {
         for(int x = startX; x <= endX; ++x) {
-            const unsigned xIndex = x;//-_screenTileXOffset;
-            const unsigned yIndex = y;//-_screenTileYOffset;
+            const unsigned xIndex = x;
+            const unsigned yIndex = y;
 			_lightMap[yIndex][xIndex] |= lightMask;
 		}
 	}
@@ -168,6 +164,7 @@ void LightSystem::shadowRenderPasses(void) {
     if(_enabled)
 	for(auto it : sources) {
 		//if(!ONSCREEN) continue;!!!!
+        assert(_onscreenLightCount <= ELYSIAN_LIGHT_SYSTEM_MAX_LIGHTS_ONSCREEN);
 		if(_onscreenLightCount >= ELYSIAN_LIGHT_SYSTEM_MAX_LIGHTS_ONSCREEN) continue;
 
 		switch(it->getLightType()) {

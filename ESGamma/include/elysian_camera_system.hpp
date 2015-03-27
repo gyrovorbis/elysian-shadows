@@ -319,6 +319,8 @@ namespace elysian {
             startX = state->scrStartX / ELYSIAN_TILE_WIDTH; endX = state->scrEndX / ELYSIAN_TILE_WIDTH;
             startY = state->scrStartY / ELYSIAN_TILE_HEIGHT; endY = state->scrEndY / ELYSIAN_TILE_HEIGHT;
 
+            assert(startX >= 0);
+            assert(startY >= 0);
             if(++endX >= _curArea->width) endX = _curArea->width-1;
             if(++endY >= _curArea->height) endY = _curArea->height-1;
 		}

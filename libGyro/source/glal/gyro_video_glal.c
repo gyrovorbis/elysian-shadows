@@ -125,27 +125,8 @@ const GYVector4 glalRectVerts[GY_RECT_PLANE_MAX][4] = {
     },
 };
 
-/*
- * typedef struct _GYViewVolume {
-	//static enum {OUTSIDE, INTERSECT, INSIDE};
-	GYPlane pl[6];
-	GYVector3 ntl,ntr,nbl,nbr,ftl,ftr,fbl,fbr;
-	float nearD, farD, ratio, angle, tang;
-	float nw, nh, fw, fh;
-} GYViewVolume;
-
-typedef struct _GYCamera {
-	GYViewVolume		viewVolume;
-	GYMatrix4			projMat;
-	GYMatrix4			viewMat;
-	GYMatrix4			projViewMat;
-	GY_PROJECTION_TYPE	projType;
-} GYCamera;
- *
- */
 
 static const GYCamera	_defaultCamera;
-//static GYVector4		_stripVerts[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]         __attribute__((aligned(32)));
 static GYTexCoord2		_stripTexCoords[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]     __attribute__((aligned(32)));
 static GYVector4		_modelViewVertices[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]  __attribute__((aligned(32)));
 static GYColor4         _stripColors[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE]        __attribute__((aligned(32)));
@@ -195,7 +176,7 @@ void gyVidClearColor(const GYColor4 color) {
 }
 
 void gyVidBindDefaultVertexArray(void) {
-    //glBindVertexArray(_defaultVao);
+    glBindVertexArray(_defaultVao[0]);
 }
 
 unsigned gyVidDbgVertexRenderCount(void) { return glalPrevVertexRenderCount; }
@@ -246,28 +227,32 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
      //   glClearDepth(1.0f);
     //    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+        GLuint fbo;
+       // glGenFramebuffers(1, &fbo);
+      //  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
         for(unsigned i = 0; i < 2; ++i) {
-            if(i == 1) glGenVertexArrays(1, &_defaultVao[i]);
+            glGenVertexArrays(1, &_defaultVao[i]);
             glBindVertexArray(_defaultVao[i]);
 
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_POS]);
             glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD]);
-            glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, 0, (void*)&_modelViewVertices[0]);
-            glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, 0, (void*)&_stripTexCoords[0]);
+          //  glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, 0, (void*)&_modelViewVertices[0]);
+          //  glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, 0, (void*)&_stripTexCoords[0]);
 
             if(i == 0) {
                 glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR]);
                 glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT]);
                 glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL]);
 
-                glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, (void*)&_stripColors[0]);
-                glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, 0, (void*)&_stripTangents[0]);
-                glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, 0, (void*)&_stripNormals[0]);
+            //    glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, (void*)&_stripColors[0]);
+             //   glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, 0, (void*)&_stripTangents[0]);
+             //   glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, 0, (void*)&_stripNormals[0]);
             }
         }
 
-        glBindVertexArray(0);
+        glBindVertexArray(_defaultVao[0]);
         once = 1;
     }
 
@@ -289,11 +274,11 @@ void gyVidCamUpdate(const GYCamera *const cam) {
 static inline void _gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsigned int startIndex, const unsigned int amount) {
     //glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, 0, vertexArray);
     //glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_POS]);
-    glBindVertexArray(_defaultVao[gyVidShadowPass()]);
+    //glBindVertexArray(_defaultVao[gyVidShadowPass()]);
   //  glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glDrawArrays(GL_TRIANGLE_STRIP, startIndex, amount);
+   // glDrawArrays(GL_TRIANGLE_STRIP, startIndex, amount);
     glalVertexRenderCount += amount;
-    glBindVertexArray(0);
+   // glBindVertexArray(0);
     _curTexCoordPtr = NULL;
 }
 
@@ -338,35 +323,35 @@ void gyVidTexBind(const GYTexture *const tex) {
 
     if(glalTextureMapUniforms[GLAL_TEXTURE_MAP] != 0) return; //mapped to another unit
 
-  //  if(tex != glalCurTex || passChange) {
+    if(tex != glalCurTex || passChange) {
         glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
         if(tex && tex->_data) {
-           // if(!wasActive || passChange) {
-                glEnable(GL_TEXTURE_2D);
-           //  }
+            if(!wasActive || passChange) {
+               // glEnable(GL_TEXTURE_2D);
+            }
             glBindTexture(GL_TEXTURE_2D, *(GLuint *)&tex->_data);
         } else {
             active = 0;
-        //    if(wasActive || passChange) {
-                glDisable(GL_TEXTURE_2D);
-          //  }
+            if(wasActive || passChange) {
+               // glDisable(GL_TEXTURE_2D);
+            }
         }
         glalCurTex = tex;
         glalTextureMapActive = active && glalTextureMappingEnabled;
-       // if(glalTextureMapActive != wasActive || passChange) {
+        if(glalTextureMapActive != wasActive || passChange) {
             glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], glalTextureMapActive);
             ++glalUniformChangeCount;
-      //  }
+        }
 
         ++glalTextureChangeCount;
         wasActive = glalTextureMapActive;
-  //  }
+    }
     wasShadow = gyVidShadowPass();
 }
 
 void gyVidBlendMode(const GY_BLEND_MODE mode) {
     if(gyVidShadowPass()) return;
-   // if(mode != glalBlendMode) {
+    if(mode != glalBlendMode) {
         switch(mode) {
         case GY_BLEND_ONE_MINUS_SRC_ALPHA:
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -376,27 +361,27 @@ void gyVidBlendMode(const GY_BLEND_MODE mode) {
             break;
         }
         glalBlendMode = mode;
-  //  }
+    }
 }
 
 void gyVidDepthTest(const int enable) {
     if(gyVidShadowPass()) return;
-    int wasShadow = 0;
+    static int wasShadow = 0;
     int passChange = wasShadow != gyVidShadowPass();
-    //if(enable != glalDepthTest || passChange) {
+    if(enable != glalDepthTest || passChange) {
         if(!enable) glDisable(GL_DEPTH_TEST);
         else glEnable(GL_DEPTH_TEST);
         //glDepthFunc(GL_LEQUAL);
         glalDepthTest = enable;
         wasShadow = gyVidShadowPass();
-   // }
+    }
 }
 
 void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
     if(gyVidShadowPass()) return;
 
     //Does this even do anything now that we're shader based?
-   // if(lev != glalAlphaLevel) {
+    if(lev != glalAlphaLevel) {
         switch(lev) {
         case GY_ALPHA_NONE:
         case GY_ALPHA_PUNCHTHRU:
@@ -407,7 +392,7 @@ void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
             break;
         }
         glalAlphaLevel = lev;
-  //  }
+    }
 }
 
 

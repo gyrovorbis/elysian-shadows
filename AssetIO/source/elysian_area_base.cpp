@@ -42,7 +42,7 @@ AreaBase::AreaBase(void) {
 }*/
 
 AreaBase::~AreaBase(void) {
-    glDeleteBuffers(1, &vboBuff);
+    glDeleteBuffers(1, &vertexVbo);
 	//DELETE COMPONENT/ENTITY SHIT@!!!!
     dbgprintf(LOG_VERBOSE, "Area::~Area(%s) - FIX FOR WARPS LEAKING MEMORY!! -- Entity Data?", dir);
 	freeMap();
@@ -86,7 +86,7 @@ void AreaBase::resizeMap(const unsigned w, const unsigned h) {
 
     //gotta repopulate map VBO
     if(activated) {
-        glDeleteBuffers(1, &vboBuff);
+        glDeleteBuffers(1, &vertexVbo);
         vboPopulated = false;
         populateVbo();
     }
@@ -263,7 +263,7 @@ void AreaBase::populateVbo(void) {
 
   //  glBindVertexArray(vao);
 
-    glGenBuffers(1, &vboBuff);
+    glGenBuffers(1, &vertexVbo);
 
 	VboEntry* data = (VboEntry*)malloc(sizeof(VboEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS*4);
 	VboEntry* curPtr = data;
@@ -282,9 +282,16 @@ void AreaBase::populateVbo(void) {
 		}
 	}
 
-    glBindBuffer(GL_ARRAY_BUFFER, vboBuff);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(VboEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS*4, data, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glGenBuffers(1, &elementVbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementVbo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elementsPerSegment*ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO, nullptr, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    for(unsigned i = 0; i < ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO; ++i) elementsArraySyncs[i] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 
     _LightingShaderProgram* shaders[2] = {
         &glalLightingShader,
@@ -295,7 +302,8 @@ void AreaBase::populateVbo(void) {
         glGenVertexArrays(1, &vao[i]);
         glBindVertexArray(vao[i]);
 
-        glBindBuffer(GL_ARRAY_BUFFER, vboBuff);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementVbo);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
 
 
     glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_POS]);

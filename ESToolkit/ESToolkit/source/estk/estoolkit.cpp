@@ -882,6 +882,7 @@ void ESToolkit::_openProjectDir(const QString dir) {
 		return;
 	}
 
+
     if(_assets.getCurrentProject()) {
         QMessageBox::critical(this, "You dun fucked up!", "There's already a project open, asswipe.");
         return;
@@ -889,19 +890,23 @@ void ESToolkit::_openProjectDir(const QString dir) {
 
 	QDir::setCurrent(dir);
     QGLFormat fmt;
-/*
+
     fmt.setDirectRendering(true);
     fmt.setDoubleBuffer(true);
     fmt.setDepth(true);
     fmt.setAccum(false);
+   // fmt.setAlpha(true);
     fmt.setOverlay(false);
     fmt.setStencil(false);
     fmt.setRedBufferSize(8);
     fmt.setBlueBufferSize(8);
     fmt.setGreenBufferSize(8);
-    fmt.setDepthBufferSize(32);*/
+    fmt.setDepthBufferSize(32);
+    fmt.setVersion( 3, 3 );
+    fmt.setProfile( QGLFormat::CoreProfile ); // Requires >=Qt-4.8.0
+   // fmt.setAlphaBufferSize(8);
 
-    auto* viewport = _engineGLView = new EngineGLSceneWidget(QGLFormat::defaultFormat());
+    auto* viewport = _engineGLView = new EngineGLSceneWidget(fmt);
     connect(viewport, SIGNAL(engineUpdated()), _ui->mapView, SLOT(onEngineUpdated()));
 
     viewport->setMouseTracking(true);

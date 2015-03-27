@@ -10,11 +10,13 @@
 #include <QVector2D>
 #include <QBasicTimer>
 #include <QGLShaderProgram>
+#include <QGLFunctions>
 
 #define TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME   5
 
 class EngineGLSceneWidget:
         public QGLWidget,
+        protected QGLFunctions,
         public AssetManager
 {
     Q_OBJECT

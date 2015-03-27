@@ -13,6 +13,7 @@
 #define ELYSIAN_MAP_BOUNDARY_CHECKS false //PLEASE, GOD, TAKE ME OUT BEFORE RELEASE!!!!!!
 #define ELYSIAN_AREA_USE_INIT_LUA	true
 #define ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE	100000
+#define ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO             20
 
 #define ELYSIAN_AREA_MAP_LAYERS		3
 #define ELYSIAN_AREA_MAP_WIDTH		200
@@ -147,14 +148,17 @@ namespace elysian {
 		unsigned			mapEntryCount	= 0;
 		unsigned			layerEntryCount	= 0;
 
-        GLuint              vboBuff      = 0;
-        GLuint              elementVbo   = 0;
+        GLuint              vertexVbo       = 0;
+        GLuint              elementVbo      = 0;
         GLuint              vao[2]          = {0};
         bool                vboPopulated    = false;
         bool                activated       = false;
 
         GLushort    		elementsArray[ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE] __attribute__((aligned(32))) = { 1 };
-        unsigned			elementsArraySize = 0;
+        const unsigned      elementsPerSegment = ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE/ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO;
+        GLsync              elementsArraySyncs[ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO];
+        unsigned            elementsCurSegment = 0;
+        unsigned			elementsArraySize[ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO] = {0};
 
         //AreaBase(void);
         ~AreaBase(void);
@@ -290,7 +294,7 @@ namespace elysian {
 
 		ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
 
-        glBindBuffer(GL_ARRAY_BUFFER, vboBuff);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
 		glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_MAP_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(VboEntry), sizeof(VboEntry)*4, (void*)entry);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -329,7 +333,7 @@ namespace elysian {
 
         //ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
 
-        glBindBuffer(GL_ARRAY_BUFFER, vboBuff);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
         glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_MAP_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(VboEntry), sizeof(VboEntry)*4, (void*)entry);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);

@@ -104,7 +104,7 @@ namespace elysian {
     }*/
 
     inline uint32_t LightSystem::getLightMapEntryMapCoord(const unsigned y, const unsigned x) const {
-        return (_shadowPass)? 0 :_lightMap[y/*-_screenTileYOffset*/][x/*-_screenTileXOffset*/];
+        return (_shadowPass)? 0 :_lightMap[y-_screenTileYOffset][x-_screenTileXOffset];
     }
 
     inline unsigned LightSystem::getOnscreenLightCount(void) const {

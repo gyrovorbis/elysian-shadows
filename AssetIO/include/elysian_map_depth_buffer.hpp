@@ -257,7 +257,7 @@ namespace elysian {
 			_entityBuff[zIndex][_entityCount[zIndex]].zCoordRelative = relZCoord;
 
 			//render immediately
-            if(zCoord < 32.0f && normalType == NORMAL_FLAT) _renderEntityEntry(_entityBuff[zIndex][_entityCount[zIndex]]);
+           // if(zCoord < 32.0f && normalType == NORMAL_FLAT) _renderEntityEntry(_entityBuff[zIndex][_entityCount[zIndex]]);
 			//queue and render later
             _entityRowLights[zIndex] = (!_entityCount[zIndex])? entityEntry.lights : _entityRowLights[zIndex] | entityEntry.lights;
             ++_entityCount[zIndex];
@@ -298,7 +298,7 @@ namespace elysian {
         for(unsigned i = 0; i < _depthBuffMaxHeight; ++i) {
 //_enableDepthTest();
             _renderDepthBuffTileRow(i, NORMAL_FLAT);
-
+#if 0
             //_renderCustomPassAtElev(i, NORMAL_FLAT);
 
 			//if(_entityCount[i]) {
@@ -308,7 +308,7 @@ namespace elysian {
 				//float entityZDelta = 0.0f;
 
                 auto*const entityRow = _entityBuff[i];
-                for(int j = 0; j < _entityCount[i]; ++j) {
+                for(int j = 0; j < (int)_entityCount[i]; ++j) {
                     uint32_t lightsLeft = 0;
                     int endIndex = j-1;
 
@@ -321,18 +321,18 @@ namespace elysian {
                         const uint32_t activeLights = _startLightPass(lightsLeft);
 
                         for(int k = j; k <= endIndex; ++k) {
-                            //if(entityRow[k].lights/* & ~activeLights != entityRow[k].lights*/) { //we can do something this pass
+                            if((entityRow[k].lights & ~activeLights != entityRow[k].lights) || entityRow[k].renderPass == 0) { //we can do something this pass
                                 ++entityRow[k].renderPass;
                                 _renderEntityEntry(entityRow[k]);
                                 entityRow[k].lights &= ~activeLights;
-                            //}
+                            }
                         }
 
                     } while(lightsLeft);
 
                     j = endIndex;
                 }
-
+#endif
                 //glalStripComboBreaker();
 
                     //_entityBuff[i][j].zCoord += entityZDelta;
@@ -364,7 +364,7 @@ namespace elysian {
 		_lightsRendered = 0;
 
         for(unsigned i = 0; i < onscreenLightCount; ++i) onscreenLights |= (1<<i);
-        const bool multipass = (onscreenLights > GYRO_VIDEO_LIGHT_SOURCES_MAX);
+        bool multipass = (onscreenLights > GYRO_VIDEO_LIGHT_SOURCES_MAX);
         const unsigned outerLayerLoopEnd = multipass? ELYSIAN_AREA_MAP_LAYERS : 1;
         const unsigned innerLayerLoopEnd = multipass? 1 : ELYSIAN_AREA_MAP_LAYERS;
 
@@ -456,7 +456,7 @@ namespace elysian {
         static_cast<T*>(this)->bindTileBuffer();
 
         uint32_t totalLights = _objectRowLights[normalType][i];
-        const bool multipass = (totalLights > GYRO_VIDEO_LIGHT_SOURCES_MAX);
+         bool multipass = (totalLights > GYRO_VIDEO_LIGHT_SOURCES_MAX);
         const unsigned outerLayerLoopEnd = multipass? ELYSIAN_AREA_MAP_LAYERS : 1;
 
         for(unsigned l = 0; l < outerLayerLoopEnd; ++l) {
