@@ -117,6 +117,7 @@ void gyVidNormalMapBind(const GYTexture * const tex) {
     int active = 1;
 
     if(tex != _normalMap) {
+        gyVidVertexBatchFlush();
         glActiveTexture(glalTextureMapTexUnits[GLAL_NORMAL_MAP]);
         if(tex && tex->_data) {
            // if(!wasActive) glEnable(GL_TEXTURE_2D);
@@ -148,10 +149,8 @@ void gyVidNormalMapBind(const GYTexture * const tex) {
         glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
 
         const float zFactor = glalOrientNormalMapZFactor(glalRectTexOrient);
-        if(zFactor != glalNormalMapZFactor) {
-            glalStripComboBreaker();
-            glalVidNormalMapZFactorUpdateUniform(zFactor);
-        }
+        glalVidNormalMapZFactorUpdateUniform(zFactor);
+
 
     }
 
@@ -163,6 +162,7 @@ void gyVidSpecularMapBind(const GYTexture * const tex) {
     int active = 1;
 
     if(tex != _specularMap) {
+        gyVidVertexBatchFlush();
         glActiveTexture(glalTextureMapTexUnits[GLAL_SPECULAR_MAP]);
         if(tex && tex->_data) {
          //   if(!wasActive) glEnable(GL_TEXTURE_2D);
@@ -208,31 +208,52 @@ void glalLightingInit(void) {
 void gyVidMaterialBind(const GYMaterial*const material) {
     if(!glalLightingEnabled || gyVidShadowPass()) return;
 
+    int flushed = 0;
 	if(!material) gyVidMaterialBind(&_defaultMaterial);
     else {
 
         //Check for individual state changes
         if(!_currentMaterial || material->shininess != _materialCache.shininess) {
+            if(!flushed) {
+                gyVidVertexBatchFlush();
+                flushed = 1;
+            }
             glUniform1f(glalCurLightShader->uniformLoc[GLAL_SHADER_MATERIAL_SHININESS], material->shininess);
             ++glalUniformChangeCount;
         }
 
         if(!_currentMaterial || !gyVec4Compare(&material->ambientColor, &_materialCache.ambientColor)) {
+            if(!flushed) {
+                gyVidVertexBatchFlush();
+                flushed = 1;
+            }
             glUniform4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_MATERIAL_AMBIENT_COLOR], 1, (float*)&material->ambientColor);
             ++glalUniformChangeCount;
         }
 
         if(!_currentMaterial || !gyVec4Compare(&material->diffuseColor, &_materialCache.diffuseColor)) {
+            if(!flushed) {
+                gyVidVertexBatchFlush();
+                flushed = 1;
+            }
             glUniform4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_MATERIAL_DIFFUSE_COLOR], 1, (float*)&material->diffuseColor);
             ++glalUniformChangeCount;
         }
 
         if(!_currentMaterial || !gyVec4Compare(&material->specularColor, &_materialCache.specularColor)) {
+            if(!flushed) {
+                gyVidVertexBatchFlush();
+                flushed = 1;
+            }
             glUniform4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_MATERIAL_SPECULAR_COLOR], 1, (float*)&material->specularColor);
             ++glalUniformChangeCount;
         }
 
         if(!_currentMaterial || !gyVec4Compare(&material->emissiveColor, &_materialCache.emissiveColor)) {
+            if(!flushed) {
+                gyVidVertexBatchFlush();
+                flushed = 1;
+            }
             glUniform4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_MATERIAL_EMISSIVE_COLOR], 1, (float*)&material->emissiveColor);
             ++glalUniformChangeCount;
         }
