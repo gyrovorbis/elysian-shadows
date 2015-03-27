@@ -156,6 +156,8 @@ unsigned                    glalPrevTextureChangeCount  = 0;
 GY_ALPHA_LEVEL              glalAlphaLevel              = GY_ALPHA_NONE;
 GY_BLEND_MODE               glalBlendMode               = GY_BLEND_ONE_MINUS_SRC_ALPHA;
 int                         glalDepthTest               = 0;
+void                        (*glalFlushCallback)(void*) = NULL;
+void*                       glalFlushObject             = NULL;
 
 //Private video state variables
 static unsigned int			_projWidth				= 0;
@@ -177,6 +179,20 @@ void gyVidClearColor(const GYColor4 color) {
 
 void gyVidBindDefaultVertexArray(void) {
     glBindVertexArray(_defaultVao[0]);
+}
+
+void gyVidVertexBatchBegin(void (*flushCallback)(void*), void* obj) {
+    glalFlushCallback = flushCallback;
+    glalFlushObject = obj;
+}
+
+void gyVidVertexBatchEnd() {
+    glalFlushCallback = NULL;
+    glalFlushObject = NULL;
+}
+
+void gyVidVertexBatchFlush() {
+    if(glalFlushCallback) glalFlushCallback(glalFlushObject);
 }
 
 unsigned gyVidDbgVertexRenderCount(void) { return glalPrevVertexRenderCount; }
@@ -324,6 +340,7 @@ void gyVidTexBind(const GYTexture *const tex) {
     if(glalTextureMapUniforms[GLAL_TEXTURE_MAP] != 0) return; //mapped to another unit
 
     if(tex != glalCurTex || passChange) {
+        gyVidVertexBatchFlush();
         glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
         if(tex && tex->_data) {
             if(!wasActive || passChange) {
@@ -352,6 +369,7 @@ void gyVidTexBind(const GYTexture *const tex) {
 void gyVidBlendMode(const GY_BLEND_MODE mode) {
     if(gyVidShadowPass()) return;
     if(mode != glalBlendMode) {
+        gyVidVertexBatchFlush();
         switch(mode) {
         case GY_BLEND_ONE_MINUS_SRC_ALPHA:
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -369,6 +387,7 @@ void gyVidDepthTest(const int enable) {
     static int wasShadow = 0;
     int passChange = wasShadow != gyVidShadowPass();
     if(enable != glalDepthTest || passChange) {
+        gyVidVertexBatchFlush();
         if(!enable) glDisable(GL_DEPTH_TEST);
         else glEnable(GL_DEPTH_TEST);
         //glDepthFunc(GL_LEQUAL);
@@ -382,6 +401,7 @@ void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
 
     //Does this even do anything now that we're shader based?
     if(lev != glalAlphaLevel) {
+        gyVidVertexBatchFlush();
         switch(lev) {
         case GY_ALPHA_NONE:
         case GY_ALPHA_PUNCHTHRU:
@@ -438,9 +458,12 @@ void glalVidTangentUpdateUniform(const GYVector3* const tangent) {
 
 void glalVidNormalMapZFactorUpdateUniform(const float factor) {
     if(gyVidShadowPass()) return;
-    glalNormalMapZFactor = factor;
-    glUniform1f(glalCurLightShader->uniformLoc[GLAL_SHADER_NORMAL_MAP_ZFACTOR], glalNormalMapZFactor);
-    ++glalUniformChangeCount;
+    if(factor != glalNormalMapZFactor) {
+        gyVidVertexBatchFlush();
+        glalNormalMapZFactor = factor;
+        glUniform1f(glalCurLightShader->uniformLoc[GLAL_SHADER_NORMAL_MAP_ZFACTOR], glalNormalMapZFactor);
+        ++glalUniformChangeCount;
+    }
 }
 
 void gyVidRectPlaneType(const GY_RECT_PLANE_TYPE type) {
