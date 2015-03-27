@@ -894,14 +894,14 @@ void ESToolkit::_openProjectDir(const QString dir) {
     fmt.setDirectRendering(true);
     fmt.setDoubleBuffer(true);
     fmt.setDepth(true);
-    fmt.setAccum(false);
+  //  fmt.setAccum(false);
    // fmt.setAlpha(true);
     fmt.setOverlay(false);
     fmt.setStencil(false);
     fmt.setRedBufferSize(8);
     fmt.setBlueBufferSize(8);
     fmt.setGreenBufferSize(8);
-    fmt.setDepthBufferSize(32);
+    fmt.setDepthBufferSize(16);
     fmt.setVersion( 3, 3 );
     fmt.setProfile( QGLFormat::CoreProfile ); // Requires >=Qt-4.8.0
    // fmt.setAlphaBufferSize(8);

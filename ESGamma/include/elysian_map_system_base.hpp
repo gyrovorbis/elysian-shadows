@@ -112,6 +112,7 @@ namespace elysian {
         void        bindTileBuffer(void);
         void        unbindTileBuffer(void);
 
+        static void flushVertexBatchCallback(void* self);
 
 		//=== /MapDepthBuffer Implementation ===
 
@@ -125,7 +126,10 @@ namespace elysian {
 
 	};
 
-
+    template<typename P, typename T, typename E>
+    inline void MapSystemBase<P, T, E>::flushVertexBatchCallback(void* self) {
+        reinterpret_cast<MapSystemBase<P, T, E>*>(self)->flushTileBuffer();
+    }
 
 
 //-----INLINEZ-----
@@ -171,11 +175,11 @@ namespace elysian {
             }*/
 
             //Blending mode state change
-            if(entry.renderPass > 1 && !_blendPass) {
+            if(entry.renderPass > 1) {
                 disableDepthTest();
             }
             //We don't give a fuck about blend modes when blending is off
-            else if(entry.renderPass == 1 && _blendPass) {
+            else if(entry.renderPass == 1) {
                 enableDepthTest();
             }
 
@@ -184,7 +188,7 @@ namespace elysian {
             gyVidRectTexOrient(newOrient);
             const float newZFactor = glalOrientNormalMapZFactor(newOrient);
             if(newZFactor != glalNormalMapZFactor) {
-                flushTileBuffer();
+               // flushTileBuffer();
                 glalVidNormalMapZFactorUpdateUniform(newZFactor);
             }
         }
@@ -227,7 +231,9 @@ namespace elysian {
         gyVidNormalMapBind(_curLevel->normalSheet);
 		gyVidSpecularMapBind(_curLevel->specularSheet);
 
-        glBindVertexArray(_curArea->vao[gyVidShadowPass()]);
+        gyVidVertexBatchBegin(&flushVertexBatchCallback, this);
+
+       // glBindVertexArray(_curArea->vao[gyVidShadowPass()][0]);
 	}
 
     template<typename P, typename T, typename E>
@@ -241,6 +247,7 @@ namespace elysian {
         auto& elemArraySize = _curArea->elementsArraySize[_curArea->elementsCurSegment];
         auto* elemArray     = &_curArea->elementsArray[_curArea->elementsCurSegment*_curArea->elementsPerSegment];
         if(elemArraySize == 0) return;
+
 
 
         GLenum result;
@@ -277,9 +284,11 @@ break;
        // assert(elemArraySize < ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE);
 
           glDeleteSync(_curArea->elementsArraySyncs[_curArea->elementsCurSegment]);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo);
+          //  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo);
         // glBufferData(GL_ELEMENT_ARRAY_BUFFER, );
-       GLushort* ptr = (GLushort*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, (GLintptr)(_curArea->elementsPerSegment*sizeof(GLushort)*_curArea->elementsCurSegment), sizeof(GLushort)*elemArraySize, GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+        glBindVertexArray(_curArea->vao[gyVidShadowPass()][_curArea->elementsCurSegment]);
+
+       GLushort* ptr = (GLushort*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort)*elemArraySize, GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
        memcpy(ptr, elemArray, sizeof(GLushort)*elemArraySize);
         glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 
@@ -288,7 +297,7 @@ break;
 
                 //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elemArraySize, elemArray, GL_STREAM_DRAW);
        // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elemArraySize, elemArray, GL_STREAM_DRAW);
-        glDrawElements(GL_TRIANGLE_STRIP, elemArraySize, GL_UNSIGNED_SHORT, (void*)(sizeof(GLushort)*_curArea->elementsPerSegment*_curArea->elementsCurSegment));
+        glDrawElements(GL_TRIANGLE_STRIP, elemArraySize, GL_UNSIGNED_SHORT, 0);
 
         _curArea->elementsArraySyncs[_curArea->elementsCurSegment] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 
@@ -303,7 +312,7 @@ break;
 
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::unbindTileBuffer(void) {
-        gyVidBindDefaultVertexArray();
+       // gyVidBindDefaultVertexArray();
     }
 	
     template<typename P, typename T, typename E>
@@ -367,21 +376,21 @@ break;
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::disableDepthTest(void) {
         if(gyVidShadowPass()) return;
-        flushTileBuffer();
+       // flushTileBuffer();
         gyVidDepthTest(false);
         //glEnable(GL_POLYGON_OFFSET_FILL);
         //glPolygonOffset(2.0f, 2.0f);
         glDepthMask(GL_FALSE);
         glDepthFunc(GL_EQUAL);
-        gyVidAlphaLevel(GY_ALPHA_FULL);
-        gyVidBlendMode(GY_BLEND_ONE);
+       // gyVidAlphaLevel(GY_ALPHA_FULL);
+       // gyVidBlendMode(GY_BLEND_ONE);
         _blendPass = true;
 	}
 
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::enableDepthTest(void) {
         if(gyVidShadowPass()) return;
-        flushTileBuffer();
+      //  flushTileBuffer();
         gyVidDepthTest(false);
         glDepthMask(GL_TRUE);
         //glEnable(GL_BLEND);

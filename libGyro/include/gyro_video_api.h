@@ -79,6 +79,10 @@ struct spSkeleton;
 void gyVidSkeleton(const struct spSkeleton*const skeleton);
 
 
+void gyVidVertexBatchBegin(void (*flushCallback)(void*), void* obj);
+void gyVidVertexBatchEnd();
+void gyVidVertexBatchFlush();
+
 
 //CHANGE THIS INTO ONE SHARED FUNCTION, NOT PLATFORM-SPECIFIC!!!
 void gyVidViewFrustumMat(GYMatrix4 mat, const float fov, const float aspect, const float znear, const float zfar);

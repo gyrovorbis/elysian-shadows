@@ -113,48 +113,79 @@ void gyVidLightSourceUninit(GYLightSource* const light) {
 void _addLightUniform(const unsigned index, const GYLightSource*const light) {
     if(gyVidShadowPass()) return;
 
+    int flushed = 0;
+
     const GYLightSource*const   old = glalLightSources[index];
     LightSourceUniforms*const   cache = &_lightSourceUniforms[index];
     _LightInternals*            internals = light->_data;
 
     //COMMON UNIFORMS TO ALL TYPES
     if(!old || !gyVec4Compare(&light->position, &cache->position)) {
+        if(!flushed) {
+            gyVidVertexBatchFlush();
+            flushed = 1;
+        }
         glUniform4fv(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_POS], 1, (float*)&light->position);
         memcpy(&cache->position, &light->position, sizeof(float)*4);
         ++glalUniformChangeCount;
     }
 
     if(!old || !gyVec4Compare(&light->properties->ambientColor, &cache->ambientColor)) {
+        if(!flushed) {
+            gyVidVertexBatchFlush();
+            flushed = 1;
+        }
         glUniform4fv(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_AMBIENT_COLOR], 1, (float*)&light->properties->ambientColor);
         memcpy(&cache->ambientColor, &light->properties->ambientColor, sizeof(float)*4);
         ++glalUniformChangeCount;
     }
 
     if(!old || !gyVec4Compare(&light->properties->diffuseColor, &cache->diffuseColor)) {
+        if(!flushed) {
+            gyVidVertexBatchFlush();
+            flushed = 1;
+        }
         glUniform4fv(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_DIFFUSE_COLOR], 1, (float*)&light->properties->diffuseColor);
         memcpy(&cache->diffuseColor, &light->properties->diffuseColor, sizeof(float)*4);
         ++glalUniformChangeCount;
     }
 
     if(!old || !gyVec4Compare(&light->properties->specularColor, &cache->specularColor)) {
+        if(!flushed) {
+            gyVidVertexBatchFlush();
+            flushed = 1;
+        }
         glUniform4fv(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SPECULAR_COLOR], 1, (float*)&light->properties->specularColor);
         memcpy(&cache->specularColor, &light->properties->specularColor, sizeof(float)*4);
         ++glalUniformChangeCount;
     }
 
     if(!old || !gyMat4Compare(light->camera->projViewMat, cache->projViewMat)) { //prolly expensive as fuck comparison... still cheaper than uniform change
+        if(!flushed) {
+            gyVidVertexBatchFlush();
+            flushed = 1;
+        }
         glUniformMatrix4fv(glalLightingShader.lightsUniformLoc[index][GLAL_SHADER_LIGHT_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)light->camera->projViewMat);
         memcpy(cache->projViewMat, light->camera->projViewMat, sizeof(GYMatrix4));
         ++glalUniformChangeCount;
     }
 
-   // if(!old || !glalLightsEnabled[index]) {
+
+   if(!old || !glalLightsEnabled[index]) {
+       if(!flushed) {
+           gyVidVertexBatchFlush();
+           flushed = 1;
+       }
         glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_ENABLED], 1);
         ++glalUniformChangeCount;
- //   }
+    }
 
   // if(light->type == GY_LIGHT_POINT || light->type == GY_LIGHT_SPOT) {
         if(!old || !gyVec3Compare(&light->properties->attenuationFactors, &cache->attenuationFactors)) {
+            if(!flushed) {
+                gyVidVertexBatchFlush();
+                flushed = 1;
+            }
             glUniform3fv(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_ATTENUATION_FACTORS], 1, (float*)&light->properties->attenuationFactors);
             memcpy(&cache->attenuationFactors, &light->properties->attenuationFactors, sizeof(float)*3);
             ++glalUniformChangeCount;
@@ -163,6 +194,10 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
 
  //   if(light->type == GY_LIGHT_DIRECTIONAL || light->type == GY_LIGHT_SPOT) {
         if(!old || !gyVec3Compare(&light->direction, &cache->direction)) {
+            if(!flushed) {
+                gyVidVertexBatchFlush();
+                flushed = 1;
+            }
             glUniform3fv(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_DIRECTION], 1, (float*)&light->direction);
             memcpy(&cache->direction, &light->direction, sizeof(float)*3);
             ++glalUniformChangeCount;
@@ -171,12 +206,20 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
 
   // if(light->type == GY_LIGHT_SPOT || light->type == GY_LIGHT_POINT) {
         if(!old || light->properties->spotExponent != cache->spotExponent) {
+            if(!flushed) {
+                gyVidVertexBatchFlush();
+                flushed = 1;
+            }
             glUniform1f(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SPOT_EXPONENT], light->properties->spotExponent);
             cache->spotExponent = light->properties->spotExponent;
             ++glalUniformChangeCount;
         }
 
     if(!old || light->spotCutoffAngle != cache->spotCutoffAngle) {
+        if(!flushed) {
+            gyVidVertexBatchFlush();
+            flushed = 1;
+        }
             glUniform1f(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SPOT_CUTOFF_ANGLE], light->spotCutoffAngle);
             cache->spotCutoffAngle = light->spotCutoffAngle;
             ++glalUniformChangeCount;
@@ -192,26 +235,32 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
 	 */
     glActiveTexture(glalTextureMapTexUnits[GLAL_SHADOW1_MAP+index]);
     if(light->type == GY_LIGHT_POINT) { //Point light + change
-       // if(!(old && cache->type == light->type)) {
-           // glDisable(GL_TEXTURE_2D);
-          //  glEnable(GL_TEXTURE_CUBE_MAP);
+       if(!(old && cache->type == light->type)) {
+           if(!flushed) {
+               gyVidVertexBatchFlush();
+               flushed = 1;
+           }
             glBindTexture(GL_TEXTURE_CUBE_MAP, internals->shadowMap);
             glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_MAP], 7+index);
             glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_CUBE_MAP], 3+index);
             ++glalTextureChangeCount;
             glalUniformChangeCount += 2;
-        //}
+        }
 
     } else {  //Spot or Directional light + change
-        //if(!(old && (cache->type == GY_LIGHT_DIRECTIONAL || cache->type == GY_LIGHT_SPOT))) {
+        if(!(old && (cache->type == GY_LIGHT_DIRECTIONAL || cache->type == GY_LIGHT_SPOT))) {
           //  glDisable(GL_TEXTURE_CUBE_MAP);
           //  glEnable(GL_TEXTURE_2D);
+            if(!flushed) {
+                gyVidVertexBatchFlush();
+                flushed = 1;
+            }
             glBindTexture(GL_TEXTURE_2D, internals->shadowMap);
             glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_MAP], 3+index);
             glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_CUBE_MAP], 7+index);
             ++glalTextureChangeCount;
             glalUniformChangeCount += 2;
-       // }
+       }
 
     }
 
@@ -257,7 +306,6 @@ void gyVidLightSourceReplace(const GYLightSource*const old, GYLightSource*const 
 
 	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
         if(glalLightSources[i] == old && glalLightsEnabled[i]) {
-			glalStripComboBreaker();
             _addLightUniform(i, next);
             glalLightSources[i] = next;
 			break;
@@ -271,6 +319,7 @@ void gyVidLightSourceClear(void) {
 	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
         if(glalLightsEnabled[i]) {
             glalLightsEnabled[i] = 0;
+            gyVidVertexBatchFlush();
             glUniform1i(glalCurLightShader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_ENABLED], 0);
             ++glalUniformChangeCount;
         }

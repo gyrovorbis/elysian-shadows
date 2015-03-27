@@ -286,10 +286,7 @@ void AreaBase::populateVbo(void) {
 	glBufferData(GL_ARRAY_BUFFER, sizeof(VboEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS*4, data, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    glGenBuffers(1, &elementVbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementVbo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elementsPerSegment*ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO, nullptr, GL_DYNAMIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
 
     for(unsigned i = 0; i < ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO; ++i) elementsArraySyncs[i] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 
@@ -299,12 +296,15 @@ void AreaBase::populateVbo(void) {
     };
 
     for(unsigned i = 0; i < 2; ++i) {
-        glGenVertexArrays(1, &vao[i]);
-        glBindVertexArray(vao[i]);
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementVbo);
+        for(unsigned j = 0; j < ELYSIAN_MAP_SYSTEM_VAOS; ++j) {
+        glGenVertexArrays(1, &vao[i][j]);
+        glBindVertexArray(vao[i][j]);
+
+        glGenBuffers(1, &elementVbo[i][j]);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementVbo[i][j]);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elementsPerSegment*ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO, elementsArray, GL_DYNAMIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
-
 
     glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_POS]);
     glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_TEX_COORD]);
@@ -313,7 +313,7 @@ void AreaBase::populateVbo(void) {
     glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(4*sizeof(float)));
 
 
-    if(i == 0) {
+    if(i == 0) { //light VAO
         glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_COLOR]);
         glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_NORMAL]);
         glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_TANGENT]);
@@ -323,6 +323,7 @@ void AreaBase::populateVbo(void) {
         glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(10*sizeof(float)));
 
     }
+        }
 }
 
     gyVidBindDefaultVertexArray();
