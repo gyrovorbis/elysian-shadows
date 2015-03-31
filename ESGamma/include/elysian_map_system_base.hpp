@@ -68,7 +68,7 @@ namespace elysian {
         //stats
         unsigned _renderCount;
         bool    _blendPass = false;
-        
+
 		void updateAnimation(void);
 
 		//Represents the current animation state of every Tile
@@ -158,8 +158,8 @@ namespace elysian {
     inline void MapSystemBase<P, T, E>::renderObjectEntry(const T& entry, const float /*z*/) {
 		if(!_renderLayer[entry.layer]) return; //Don't render if this layer has been toggled off.
 
-         auto& elemArraySize = _curArea->elementsArraySize[_curArea->elementsCurSegment];
-         auto* elemArray     = &_curArea->elementsArray[_curArea->elementsCurSegment*_curArea->elementsPerSegment];
+         auto& elemArraySize = _curArea->elementsArraySize[0];
+         auto* elemArray     = &_curArea->elementsArray[0];
 
         if(!gyVidShadowPass()) {
             const GY_RECT_PLANE_TYPE      newPlane = entry.mapEntry.getPlane();
@@ -213,6 +213,11 @@ namespace elysian {
 
         if(elemArraySize + 6 >= _curArea->elementsPerSegment) {
             flushTileBuffer();
+            elemArraySize = 0;
+            _curArea->lastOffset = 0;
+            _curArea->lastElemArraySize = 0;
+                    glBindVertexArray(_curArea->vao[gyVidShadowPass()][0]);
+                            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*_curArea->elementsPerSegment*ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO, nullptr, GL_STREAM_DRAW);
         }
 }
 
@@ -244,17 +249,17 @@ namespace elysian {
 	
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::flushTileBuffer(void) {
-        auto& elemArraySize = _curArea->elementsArraySize[_curArea->elementsCurSegment];
-        auto* elemArray     = &_curArea->elementsArray[_curArea->elementsCurSegment*_curArea->elementsPerSegment];
+        auto& elemArraySize = _curArea->elementsArraySize[0];
+        auto* elemArray     = &_curArea->elementsArray[0];
         if(elemArraySize == 0) return;
 
 
 
         GLenum result;
-        result = glClientWaitSync(_curArea->elementsArraySyncs[_curArea->elementsCurSegment], GL_SYNC_FLUSH_COMMANDS_BIT, 100000000);
+   /*     result = glClientWaitSync(_curArea->elementsArraySyncs[_curArea->elementsCurSegment], GL_SYNC_FLUSH_COMMANDS_BIT, 100000000);
       while(result != GL_ALREADY_SIGNALED && result != GL_CONDITION_SATISFIED) {
           result = glClientWaitSync(_curArea->elementsArraySyncs[_curArea->elementsCurSegment], 0, 100);
-      }
+      }*/
 
             //result = glClientWaitSync(_curArea->elementsArraySyncs[_curArea->elementsCurSegment], 0, 100);
 
@@ -283,13 +288,13 @@ break;
         //assert(elemArraySize <= maxi);
        // assert(elemArraySize < ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE);
 
-          glDeleteSync(_curArea->elementsArraySyncs[_curArea->elementsCurSegment]);
+         // glDeleteSync(_curArea->elementsArraySyncs[_curArea->elementsCurSegment]);
           //  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo);
         // glBufferData(GL_ELEMENT_ARRAY_BUFFER, );
-        glBindVertexArray(_curArea->vao[gyVidShadowPass()][_curArea->elementsCurSegment]);
+        glBindVertexArray(_curArea->vao[gyVidShadowPass()][0]);
 
-       GLushort* ptr = (GLushort*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort)*elemArraySize, GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
-       memcpy(ptr, elemArray, sizeof(GLushort)*elemArraySize);
+       GLushort* ptr = (GLushort*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, _curArea->lastOffset, sizeof(GLushort)*(elemArraySize-_curArea->lastElemArraySize), GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+       memcpy(ptr, &elemArray[_curArea->lastElemArraySize], sizeof(GLushort)*(elemArraySize-_curArea->lastElemArraySize));
         glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 
       //  glDrawElements(GL_TRIANGLE_STRIP, elemArraySize, GL_UNSIGNED_SHORT, elemArray /*nullptr*/);
@@ -297,17 +302,18 @@ break;
 
                 //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elemArraySize, elemArray, GL_STREAM_DRAW);
        // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elemArraySize, elemArray, GL_STREAM_DRAW);
-        glDrawElements(GL_TRIANGLE_STRIP, elemArraySize, GL_UNSIGNED_SHORT, 0);
+        glDrawElements(GL_TRIANGLE_STRIP, (elemArraySize-_curArea->lastElemArraySize), GL_UNSIGNED_SHORT, (const void*)_curArea->lastOffset);
+        _curArea->lastElemArraySize = elemArraySize;
+        _curArea->lastOffset = elemArraySize*sizeof(GLushort);
 
-        _curArea->elementsArraySyncs[_curArea->elementsCurSegment] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+     //   _curArea->elementsArraySyncs[_curArea->elementsCurSegment] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 
         //glDrawArrays(GL_TRIANGLE_STRIP, 0, elemArraySize);
-        elemArraySize = 0;
-
+/*
         if(++_curArea->elementsCurSegment >= ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO) {
             _curArea->elementsCurSegment = 0;
         }
-
+*/
 	}
 
     template<typename P, typename T, typename E>

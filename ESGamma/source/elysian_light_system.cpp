@@ -334,7 +334,7 @@ uint32_t LightSystem::startLightPass(uint32_t& lightsLeft) {
 				--addLightsCount;
 				++_shaderUniformChangesThisFrame;
                 //Debug::printf(Debug::VERBOSE, "Replaced %d with %d", removedIndex, addedIndex);
-			} else { //Remove
+            } else { //Remove
 				gyVidLightSourceRemove(removedLight);
 				++_shaderUniformChangesThisFrame;
                 //Debug::printf(Debug::VERBOSE, "Removed %d", removedIndex);

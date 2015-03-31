@@ -303,7 +303,7 @@ void AreaBase::populateVbo(void) {
 
         glGenBuffers(1, &elementVbo[i][j]);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementVbo[i][j]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elementsPerSegment*ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO, elementsArray, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elementsPerSegment*ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO, elementsArray, GL_STREAM_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
 
     glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_POS]);

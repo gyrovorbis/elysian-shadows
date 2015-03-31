@@ -13,10 +13,10 @@
 #define ELYSIAN_MAP_BOUNDARY_CHECKS false //PLEASE, GOD, TAKE ME OUT BEFORE RELEASE!!!!!!
 #define ELYSIAN_AREA_USE_INIT_LUA	true
 #define ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE	100000
-#define ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO             3
+#define ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO             6
 
-#define ELYSIAN_MAP_SYSTEM_VAOS     3
-#define ELYSIAN_MAP_SYSTEM_VBOS     3
+#define ELYSIAN_MAP_SYSTEM_VAOS     6
+#define ELYSIAN_MAP_SYSTEM_VBOS     6
 
 #define ELYSIAN_AREA_MAP_LAYERS		3
 #define ELYSIAN_AREA_MAP_WIDTH		200
@@ -161,7 +161,9 @@ namespace elysian {
         const unsigned      elementsPerSegment = ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE/ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO;
         GLsync              elementsArraySyncs[ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO];
         unsigned            elementsCurSegment = 0;
-        unsigned			elementsArraySize[ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO] = {0};
+        int			elementsArraySize[ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO] = {0};
+        int lastElemArraySize = 0;
+        int lastOffset = 0;
 
         //AreaBase(void);
         ~AreaBase(void);
