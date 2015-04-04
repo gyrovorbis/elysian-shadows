@@ -3,12 +3,14 @@
 #include <QOpenGLFramebufferObject>
 #include <x86/gyro_input_x86.inl>
 #include <QOpenGLWidget>
+#include <QGraphicsView>
 
 //reested-ass hack
 extern GYInputInitParams    _initParams;
 
 void glalVidBindDefaultFbo(void) {
-    glBindFramebuffer(GL_FRAMEBUFFER, reinterpret_cast<QOpenGLWidget*>(_initParams.viewWidget)->defaultFramebufferObject());
+    //fucking disgusting.
+    glBindFramebuffer(GL_FRAMEBUFFER, static_cast<QOpenGLWidget*>(reinterpret_cast<QGraphicsView*>(_initParams.viewWidget)->viewport())->defaultFramebufferObject());
 }
 
 void gyVidSceneBegin(void) {
