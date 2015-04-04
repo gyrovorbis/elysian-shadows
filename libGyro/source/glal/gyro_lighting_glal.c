@@ -662,7 +662,7 @@ void gyVidLightSourceEndShadowPasses(void) {
 	//glalDefaultShadersLoadUniforms();
     glalCurLightShader = &glalLightingShader;
    // glFlush();
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glalVidBindDefaultFbo();
 	unsigned width, height;
 	gyVidResolution(&width, &height);
 	glViewport(0, 0, width, height);

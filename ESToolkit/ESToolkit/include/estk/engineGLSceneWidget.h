@@ -2,7 +2,6 @@
 #define ENGINE_GL_SCENE_WIDGET_H
 
 #include "assetManager.h"
-#define QT_NO_OPENGL_ES_2
 #include <QOpenGLWidget>
 #include <QMatrix4x4>
 #include <QQuaternion>

@@ -30,26 +30,25 @@ int _gyVidTexAlloc(GYTexture *const tex) {
     if(pixmap.isNull()) return 0; //fuck.
 
  //   tex->_pixmap = QPixmap(QString(tex->filename));
-    QOpenGLTexture* glTexture;
-    glTexture = new QOpenGLTexture(pixmap);
-    glTexture->bind();
+    QOpenGLTexture* glTexture = new QOpenGLTexture(pixmap);
+    glTexture->bind();/*
     //((QOpenGLContext*)current)->bindTexture(pixmap, GL_TEXTURE_2D, GL_RGBA,  QOpenGLContext::NoBindOption);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    tex->_data = (void*)glTexture->textureId();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);*/
+    tex->_data = (void*)(uintptr_t)glTexture->textureId();
       //  glTexImage2D(GL_TEXTURE_2D, 0, img.format, img.width, img.height, 0, img.format, GL_UNSIGNED_BYTE, pixels);
-    _qTextures[(GLuint)tex->_data] = glTexture;
-    return (int)tex->_data;
+    _qTextures[(GLuint)(uintptr_t)tex->_data] = glTexture;
+    return (int)(uintptr_t)tex->_data;
 }
 
 int _gyVidTexFree(GYTexture *const tex) {
     (void)tex;
     if(!tex) return 0;
-    QOpenGLTexture* qgl = _qTextures[(GLuint)tex->_data];
+    QOpenGLTexture* qgl = _qTextures[(GLuint)(uintptr_t)tex->_data];
     qgl->destroy();
-    _qTextures.remove((GLuint)tex->_data);
+    _qTextures.remove((GLuint)(uintptr_t)tex->_data);
     delete qgl;
    // long int id = reinterpret_cast<long int>(tex->_data);
     //((QOpenGLContext*)QOpenGLContext::currentContext())->deleteTexture(id);

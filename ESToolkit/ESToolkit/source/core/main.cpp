@@ -1,7 +1,7 @@
-#define QT_NO_OPENGL_ES_2 //GLEW NEEDS THIS OR IT'LL SHIT ITS DRAWS
 #include <QApplication>
 
 #include <QSplashScreen>
+#include <QSurfaceFormat>
 #include "estoolkit.h"
 #include <QPainter>
 #include <QTimer>
@@ -20,6 +20,20 @@ GYAppCbRet Init(int argc, char **argv) {
     //QApplication::setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, false);
     //QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps, false);
     //QApplication::setAttribute(Qt::AA_Use96Dpi, true);
+    QSurfaceFormat fmt;
+    fmt.setSwapBehavior(QSurfaceFormat::SwapBehavior::DoubleBuffer);
+   // fmt.setSamples(0);
+    //fmt.setStereo(false);
+   // fmt.setAlphaBufferSize(0);
+   // fmt.setStencilBufferSize(0);
+    fmt.setRedBufferSize(8);
+    fmt.setBlueBufferSize(8);
+    fmt.setGreenBufferSize(8);
+    fmt.setDepthBufferSize(8);
+    fmt.setVersion( 3, 3 );
+    fmt.setProfile( QSurfaceFormat::CoreProfile ); // Requires >=Qt-4.8.0
+    // Set the default GL format to OpenGL 3.2 Core
+    QSurfaceFormat::setDefaultFormat(fmt);
 
     QRectF rect;
     rect.setSize(QSizeF(2.0f, 5.0f));

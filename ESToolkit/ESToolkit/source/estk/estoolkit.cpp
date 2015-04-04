@@ -10,6 +10,7 @@
 #include <QStatusBar>
 #include <QDebug>
 #include <gyro_video_api.h>
+#include <QOpenGLContext>
 
 #include <gyro_file_api.h>
 #include "engineGLSceneWidget.h"
@@ -241,21 +242,6 @@ ESToolkit::ESToolkit(QWidget *parent):
 	connect(_selectionDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
 
 	glUtilities::printGLSupport();
-    QSurfaceFormat fmt;
-    fmt.setSwapBehavior(QSurfaceFormat::SwapBehavior::DoubleBuffer);
-   // fmt.setSamples(0);
-    fmt.setStereo(false);
-    fmt.setAlphaBufferSize(0);
-    fmt.setStencilBufferSize(0);
-    fmt.setRedBufferSize(8);
-    fmt.setBlueBufferSize(8);
-    fmt.setGreenBufferSize(8);
-    fmt.setDepthBufferSize(8);
-    fmt.setVersion( 3, 2 );
-    fmt.setProfile( QSurfaceFormat::CoreProfile ); // Requires >=Qt-4.8.0
-    // Set the default GL format to OpenGL 3.2 Core
-    QSurfaceFormat::setDefaultFormat(fmt);
-
 	ReadSettings();
 
 	setMouseTracking(true);
@@ -897,29 +883,31 @@ void ESToolkit::_openProjectDir(const QString dir) {
 
 	QDir::setCurrent(dir);
 
-    auto* viewport = _engineGLView = new EngineGLSceneWidget(this);
+    auto* viewport = _engineGLView = new EngineGLSceneWidget();
+    //_engineGLView->setFormat(QSurfaceFormat::defaultFormat());
     connect(viewport, SIGNAL(engineUpdated()), _ui->mapView, SLOT(onEngineUpdated()));
-
     viewport->setMouseTracking(true);
-    _ui->mapView->setViewport(viewport);
+    //_ui->mapView->setViewport(viewport);
+    setCentralWidget(viewport);
 
     GYInputInitParams inputParams = {
         static_cast<QGraphicsView*>(_ui->mapView)
     };
     gyInputInit(&inputParams);
 
- // _engineGLView->makeCurrent();
- // _engineGLView->update();
-	Project *proj = _assets.loadProject(dir);
+    assert(_engineGLView->context()->isValid());
     _engineGLView->makeCurrent();
     _engineGLView->update();
+	Project *proj = _assets.loadProject(dir);
+
+   // _engineGLView->update();
 
     _assets.setCurrentProject(proj);
     _assets.setCurrentSelection(_assets.getCurrentArea());
 
-    _engineGLView->startRenderTimer();
-
     _engineGLView->doneCurrent();
+
+    _engineGLView->startRenderTimer();
     //elysian::Debug::getInstance()._curArea = _assets.getCurrentArea();
     //_assets.getCurrentArea()->populateVbo();
 

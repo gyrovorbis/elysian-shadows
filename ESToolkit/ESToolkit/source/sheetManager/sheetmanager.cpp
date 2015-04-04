@@ -10,7 +10,6 @@
 #include <QShortcut>
 #include <QFileSystemWatcher>
 #include <QPushButton>
-#define QT_NO_OPENGL_ES_2
 #include <QOpenGLWidget>
 
 #include "elysian_debug.hpp"
