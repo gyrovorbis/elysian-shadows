@@ -57,7 +57,7 @@ static inline void gyMatMultMat(GYMatrix4 dMat, const GYMatrix4 sMat1, const GYM
 
 static inline void gyMatApply(GYMatrix4 mat) {
 	GYMatrix4 result;
-	gyMatMultMat(result, _curMat, mat);
+    gyMatMultMat(result, (const float (*)[4])_curMat, (const float (*)[4])mat);
 	memcpy(_curMat, result, sizeof(GYMatrix4));
 }
 

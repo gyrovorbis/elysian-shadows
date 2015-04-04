@@ -82,6 +82,8 @@ void gyVidSkeleton(const struct spSkeleton*const skeleton);
 void gyVidVertexBatchBegin(void (*flushCallback)(void*), void* obj);
 void gyVidVertexBatchEnd(void);
 void gyVidVertexBatchFlush(void);
+void gyVidVertexBatchFlushPause(void);
+void gyVidVertexBatchFlushResume(void);
 
 
 //CHANGE THIS INTO ONE SHARED FUNCTION, NOT PLATFORM-SPECIFIC!!!

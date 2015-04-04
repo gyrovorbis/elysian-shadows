@@ -41,6 +41,7 @@
 
 #	else
 #       include <windows.h>
+#       define QT_NO_OPENGL_ES_2 //GLEW SHITS WITHOUT THIS
 #       include <GL/glew.h>
 #       include <GL/gl.h>
 #       include <GL/glu.h>
