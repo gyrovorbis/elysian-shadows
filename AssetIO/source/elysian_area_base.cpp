@@ -265,8 +265,8 @@ void AreaBase::populateVbo(void) {
 
     glGenBuffers(1, &vertexVbo);
 
-	VboEntry* data = (VboEntry*)malloc(sizeof(VboEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS*4);
-	VboEntry* curPtr = data;
+    GYVertex* data = (GYVertex*)malloc(sizeof(GYVertex)*width*height*ELYSIAN_AREA_MAP_LAYERS*4);
+    GYVertex* curPtr = data;
 //	const GYTexCoord2* coords;
 
 	for(unsigned z = 0; z < ELYSIAN_AREA_MAP_LAYERS; ++z) {
@@ -283,7 +283,7 @@ void AreaBase::populateVbo(void) {
 	}
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(VboEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS*4, data, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*width*height*ELYSIAN_AREA_MAP_LAYERS*4, data, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
@@ -309,8 +309,8 @@ void AreaBase::populateVbo(void) {
     glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_POS]);
     glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_TEX_COORD]);
 
-    glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(VboEntry), 0);
-    glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(4*sizeof(float)));
+    glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(GYVertex), 0);
+    glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(4*sizeof(float)));
 
 
     if(i == 0) { //light VAO
@@ -318,9 +318,9 @@ void AreaBase::populateVbo(void) {
         glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_NORMAL]);
         glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_TANGENT]);
 
-        glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VboEntry), (void*)(6*sizeof(float)));
-        glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(7*sizeof(float)));
-        glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(VboEntry), (void*)(10*sizeof(float)));
+        glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GYVertex), (void*)(6*sizeof(float)));
+        glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(7*sizeof(float)));
+        glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(10*sizeof(float)));
 
     }
         }

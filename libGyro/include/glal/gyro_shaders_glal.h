@@ -18,6 +18,10 @@ typedef enum __GLAL_TEXTURE_UNITS {
     GLAL_SHADOW2_MAP,
     GLAL_SHADOW3_MAP,
     GLAL_SHADOW4_MAP,
+    GLAL_SHADOW1_CUBE_MAP,
+    GLAL_SHADOW2_CUBE_MAP,
+    GLAL_SHADOW3_CUBE_MAP,
+    GLAL_SHADOW4_CUBE_MAP,
     GLAL_TEXTURE_MAP_MAX
 } GLAL_TEXTURE_UNITS;
 
@@ -94,6 +98,7 @@ typedef struct LightSourceUniforms {
     float           spotCutoffAngle;
     GY_LIGHT_TYPE   type;
     int             valid;
+    GLuint           texture;
 } LightSourceUniforms;
 
 extern GYShaderProgram*				glalCurShaderProg;

@@ -901,7 +901,7 @@ void ESToolkit::_openProjectDir(const QString dir) {
     fmt.setRedBufferSize(8);
     fmt.setBlueBufferSize(8);
     fmt.setGreenBufferSize(8);
-    fmt.setDepthBufferSize(16);
+    fmt.setDepthBufferSize(32);
     fmt.setVersion( 3, 3 );
     fmt.setProfile( QGLFormat::CoreProfile ); // Requires >=Qt-4.8.0
    // fmt.setAlphaBufferSize(8);

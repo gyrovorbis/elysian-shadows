@@ -93,6 +93,7 @@ void LightSource::updateBoundingVolume(const CameraState *const cam, const GY_CU
 		*thisCam = *cam;
 
     } else { // GY_LIGHT_POINT
+           //     *thisCam = *cam;
 
         const float halfW = static_cast<LightAttrib*>(properties)->getRadius();
 

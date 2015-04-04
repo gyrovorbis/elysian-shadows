@@ -365,19 +365,23 @@ namespace elysian {
 
         for(unsigned i = 0; i < onscreenLightCount; ++i) onscreenLights |= (1<<i);
         bool multipass = (onscreenLights > GYRO_VIDEO_LIGHT_SOURCES_MAX);
-        multipass = false;
         const unsigned outerLayerLoopEnd = multipass? ELYSIAN_AREA_MAP_LAYERS : 1;
         const unsigned innerLayerLoopEnd = multipass? 1 : ELYSIAN_AREA_MAP_LAYERS;
 
         static_cast<T*>(this)->bindTileBuffer();
 
+        int outerCount = 0;
+
         for(unsigned k = 0; k < outerLayerLoopEnd; ++k) {
+            ++outerCount;
             _lightsRendered = 0;
             _objectBuffImmediateCount = 0;
             _queued = 0;
             lightsLeft = onscreenLights;
-           // static_cast<T*>(this)->flushTileBuffer();
+            static_cast<T*>(this)->flushTileBuffer();
             _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
+
+
 
             //_renderCustomPassAtElev(-1, NORMAL_FLAT);
 
@@ -418,7 +422,7 @@ namespace elysian {
             if(_objectBuffImmediateCount) {
                 //Make a pass through immediate tile multiplass buffer
                // _disableDepthTest();
-               // static_cast<T*>(this)->flushTileBuffer();
+                static_cast<T*>(this)->flushTileBuffer();
                 _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
                 for(unsigned j = 0; j < _objectBuffImmediateCount; ++j) {
                     _renderOrQueueTileEntry(j, _objectBuffImmediate[j]);
@@ -430,7 +434,7 @@ namespace elysian {
                     _queued = 0;
                     _curRow = _nextRow;
                     _nextRow = !_curRow;
-                   // static_cast<T*>(this)->flushTileBuffer();
+                    static_cast<T*>(this)->flushTileBuffer();
                     _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
                     for(unsigned j = 0; j < count; ++j) {
                         _renderOrQueueTileEntry(j, _objectBuffImmediate[_queue[_curRow][j]]);
@@ -439,8 +443,8 @@ namespace elysian {
             }
         }
 
-       // static_cast<T*>(this)->flushTileBuffer();
-        //static_cast<T*>(this)->unbindTileBuffer();
+        static_cast<T*>(this)->flushTileBuffer();
+        static_cast<T*>(this)->unbindTileBuffer();
         //_renderCustomPassImmediate();
 	}
 
@@ -455,10 +459,11 @@ namespace elysian {
 		//Tiles - rendered with Z at the BOTTOM of the map tile location
 
         static_cast<T*>(this)->bindTileBuffer();
+        unsigned int stateChanges = 0;
 
         uint32_t totalLights = _objectRowLights[normalType][i];
          bool multipass = (totalLights > GYRO_VIDEO_LIGHT_SOURCES_MAX);
-         multipass = false;
+        // multipass = false;
         const unsigned outerLayerLoopEnd = multipass? ELYSIAN_AREA_MAP_LAYERS : 1;
 
         for(unsigned l = 0; l < outerLayerLoopEnd; ++l) {
@@ -466,7 +471,7 @@ namespace elysian {
             _queued = 0;
             _lightsRendered = 0;
             _objectRowLights[normalType][i] = totalLights;
-           // static_cast<T*>(this)->flushTileBuffer();
+            static_cast<T*>(this)->flushTileBuffer();
             _lightsRendered |= _lightsActive = _startLightPass(_objectRowLights[normalType][i]);
             for(unsigned j = 0; j < _objectCount[i]; ++j) {
                 if(multipass && _objectBuff[i][j].layer != l) continue;
@@ -480,7 +485,8 @@ namespace elysian {
                     _queued = 0;
                     _curRow = _nextRow;
                     _nextRow = !_curRow;
-                   // static_cast<T*>(this)->flushTileBuffer();
+                    static_cast<T*>(this)->flushTileBuffer();
+                    ++stateChanges;
                     _lightsRendered |= _lightsActive = _startLightPass(_objectRowLights[normalType][i]);
                     for(unsigned j = 0; j < count; ++j) {
                         _renderOrQueueTileEntry(j, _objectBuff[i][_queue[_curRow][j]]);
@@ -489,8 +495,10 @@ namespace elysian {
             }
         }
 
-       // static_cast<T*>(this)->flushTileBuffer();
-       // static_cast<T*>(this)->unbindTileBuffer();
+       // Debug::printf(Debug::VERBOSE, "stateChanges - %d", stateChanges);
+
+        static_cast<T*>(this)->flushTileBuffer();
+       static_cast<T*>(this)->unbindTileBuffer();
 	}
 }
 

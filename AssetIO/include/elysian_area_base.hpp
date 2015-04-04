@@ -13,10 +13,10 @@
 #define ELYSIAN_MAP_BOUNDARY_CHECKS false //PLEASE, GOD, TAKE ME OUT BEFORE RELEASE!!!!!!
 #define ELYSIAN_AREA_USE_INIT_LUA	true
 #define ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE	100000
-#define ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO             6
+#define ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO             1
 
-#define ELYSIAN_MAP_SYSTEM_VAOS     6
-#define ELYSIAN_MAP_SYSTEM_VBOS     6
+#define ELYSIAN_MAP_SYSTEM_VAOS     1
+#define ELYSIAN_MAP_SYSTEM_VBOS     1
 
 #define ELYSIAN_AREA_MAP_LAYERS		3
 #define ELYSIAN_AREA_MAP_WIDTH		200
@@ -106,14 +106,6 @@ namespace elysian {
 		void					setNormal(const bool val);
 	};
 
-	struct VboEntry {
-		GYVector4	vert;
-		GYTexCoord2	texCoord;
-		GYColor4	color;
-        GYVector3   normal;
-        GYVector3   tangent;
-	};
-
     struct AreaBase: public Asset {
 		//Entity data
 		std::vector<Entity*>			entities;
@@ -158,12 +150,14 @@ namespace elysian {
         bool                activated       = false;
 
         GLushort    		elementsArray[ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE] __attribute__((aligned(32))) = { 1 };
-        const unsigned      elementsPerSegment = ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE/ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO;
+        const unsigned      elementsPerSegment = ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE;
         GLsync              elementsArraySyncs[ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO];
         unsigned            elementsCurSegment = 0;
         int			elementsArraySize[ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO] = {0};
         int lastElemArraySize = 0;
         int lastOffset = 0;
+        int minIndex = INT_MAX;
+        int maxIndex = 0;
 
         //AreaBase(void);
         ~AreaBase(void);
@@ -208,7 +202,7 @@ namespace elysian {
 
 		void		populateVbo(void);
         void        setVboEntry(const TileEntry*const tileEntry, const unsigned l, const unsigned x, const unsigned y) const;
-        void        vboEntryFromTileEntry(VboEntry*const vboEntry, const TileEntry *const tileEntry, const unsigned x, const unsigned y) const;
+        void        vboEntryFromTileEntry(GYVertex*const vboEntry, const TileEntry *const tileEntry, const unsigned x, const unsigned y) const;
         void        animateVboTileEntry(const unsigned l, const unsigned x, const unsigned y, const uint16_t index);
 
 	};
@@ -252,7 +246,7 @@ namespace elysian {
 	}
 
 
-    inline void AreaBase::vboEntryFromTileEntry(VboEntry * const vboEntry, const TileEntry * const tileEntry, const unsigned x, const unsigned y) const {
+    inline void AreaBase::vboEntryFromTileEntry(GYVertex * const vboEntry, const TileEntry * const tileEntry, const unsigned x, const unsigned y) const {
     //const float zDelta = 1.1f;
         const GY_RECT_PLANE_TYPE planeType = tileEntry->getPlane();
         const GY_RECT_TEX_ORIENT texOrient = tileEntry->getOrient();
@@ -293,14 +287,14 @@ namespace elysian {
     }
 
     inline void AreaBase::setTileEntry(const unsigned l, const unsigned x, const unsigned y, const TileEntry e) {
-        VboEntry entry[4];
+        GYVertex entry[4];
 
         vboEntryFromTileEntry(entry, &e, x, y);
 
 		ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
 
         glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
-		glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_MAP_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(VboEntry), sizeof(VboEntry)*4, (void*)entry);
+        glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_MAP_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(GYVertex), sizeof(GYVertex)*4, (void*)entry);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -332,14 +326,14 @@ namespace elysian {
     inline Level* AreaBase::getLevel(void) const { return level; }
 
     inline void AreaBase::setVboEntry(const TileEntry*const tileEntry, const unsigned l, const unsigned x, const unsigned y) const {
-        VboEntry entry[4];
+        GYVertex entry[4];
 
         vboEntryFromTileEntry(entry, tileEntry, x, y);
 
         //ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
 
         glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
-        glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_MAP_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(VboEntry), sizeof(VboEntry)*4, (void*)entry);
+        glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_MAP_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(GYVertex), sizeof(GYVertex)*4, (void*)entry);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 

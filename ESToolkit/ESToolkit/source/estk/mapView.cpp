@@ -346,7 +346,7 @@ void MapView::wheelEvent(QWheelEvent* event) {
     //_zoomLabel->setText(QString::number((int)(getAssets()->getEngine()->getCameraSys()->getKeyFrame().getScale()*getAssets()->getEngine()->getCameraSys()->getStaticScale()*100.0f))+QString("%"));
     mouseMoveEvent(nullptr);
 
-    event->ignore();
+   // event->ignore();
 }
 
 void MapView::mouseMoveEvent(QMouseEvent *event) {
