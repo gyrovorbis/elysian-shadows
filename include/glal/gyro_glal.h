@@ -36,9 +36,12 @@
 
 #	else
 #       include <windows.h>
+#if !defined(__gl_h_) && !defined(__GL_H__) && !defined(__X_GL_H)
 #       include <GL/glew.h>
 #       include <GL/gl.h>
 #       include <GL/glu.h>
+#endif
+#      // define QOPENGL_H //THIS WILL REEST GLEW OTHERWISE!!!
 #
 #       define AL_LIBTYPE_STATIC
 #		include <AL/al.h>
