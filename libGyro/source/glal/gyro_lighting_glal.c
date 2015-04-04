@@ -179,7 +179,7 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
         ++glalUniformChangeCount;
     }
 
-    if(!old || !gyMat4Compare(light->camera->projViewMat, cache->projViewMat)) { //prolly expensive as fuck comparison... still cheaper than uniform change
+    if(!old || !gyMat4Compare((const float(*)[4])light->camera->projViewMat, (const float(*)[4])cache->projViewMat)) { //prolly expensive as fuck comparison... still cheaper than uniform change
         if(!flushed) {
             gyVidVertexBatchFlush();
             flushed = 1;

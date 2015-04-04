@@ -1,4 +1,6 @@
+
 #include "elysian_area.hpp"
+#include <QOpenGLContext>
 #include <QSizePolicy>
 #include <QToolButton>
 #include <QCloseEvent>
@@ -10,7 +12,7 @@
 #include <QStatusBar>
 #include <QDebug>
 #include <gyro_video_api.h>
-#include <QOpenGLContext>
+
 
 #include <gyro_file_api.h>
 #include "engineGLSceneWidget.h"
@@ -197,7 +199,7 @@ ESToolkit::ESToolkit(QWidget *parent):
 	Area::staticConstructor(_ui->mapView);
     _sheetDockWidget->SetSheetScene(Level::_sheetViewScene);
 	_sheetDockWidget->getSourceView()->setEnabled(false);
-    _ui->mapView->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
+    _ui->mapView->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     //_ui->mapView->setScene(Area::editorScene);
 	_ui->mapView->setFocus();
     setFocusPolicy(Qt::ClickFocus);
@@ -883,12 +885,15 @@ void ESToolkit::_openProjectDir(const QString dir) {
 
 	QDir::setCurrent(dir);
 
-    auto* viewport = _engineGLView = new EngineGLSceneWidget();
+    auto* viewport = _engineGLView = new EngineGLSceneWidget(this);
     //_engineGLView->setFormat(QSurfaceFormat::defaultFormat());
     connect(viewport, SIGNAL(engineUpdated()), _ui->mapView, SLOT(onEngineUpdated()));
     viewport->setMouseTracking(true);
-    //_ui->mapView->setViewport(viewport);
-    setCentralWidget(viewport);
+    _engineGLView->makeCurrent();
+    _engineGLView->setMapView(_ui->mapView);
+    _engineGLView->update();
+    _ui->mapView->setViewport(viewport);
+    //setCentralWidget(viewport);
 
     GYInputInitParams inputParams = {
         static_cast<QGraphicsView*>(_ui->mapView)
@@ -896,8 +901,6 @@ void ESToolkit::_openProjectDir(const QString dir) {
     gyInputInit(&inputParams);
 
     assert(_engineGLView->context()->isValid());
-    _engineGLView->makeCurrent();
-    _engineGLView->update();
 	Project *proj = _assets.loadProject(dir);
 
    // _engineGLView->update();

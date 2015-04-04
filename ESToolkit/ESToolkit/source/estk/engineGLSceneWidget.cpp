@@ -5,10 +5,11 @@
 #include <glal/gyro_video_glal.h>
 #include "elysian_engine.hpp"
 #include "elysian_light_system.hpp"
+#include "mapView.h"
 
 #include <QMouseEvent>
 #include <spine/spine.h>
-#include <QOpenGLContext>
+//#include <QOpenGLContext>
 //#undef QT_NO_KEYWORDS
 
 
@@ -38,8 +39,8 @@ bool EngineGLSceneWidget::isPlaying(void) const { return getAssets()->getEngine(
 
 
 void EngineGLSceneWidget::initializeGL(void) {
-    auto* con = context();
-    assert(con->isValid());
+ //   auto* con = context();
+  //  assert(con->isValid());
    // makeCurrent();
    // initializeGLFunctions();
     glalVidOglInit(1280, 720, 1280, 720);
@@ -102,14 +103,17 @@ void EngineGLSceneWidget::startRenderTimer(void) {
 
 void EngineGLSceneWidget::timerEvent(QTimerEvent *)
 {
-        update();
 
+    makeCurrent();
+        update();
+    _mapView->update();
+ //   _mapView->updateScene();
         unsigned parentWidth    = parentWidget()->size().width();
         unsigned parentHeight   = parentWidget()->size().height();
         if(_width != parentWidth || _height != parentHeight) {
             resizeGL(parentWidth, parentHeight);
         }
-
+    doneCurrent();
 }
 
 void EngineGLSceneWidget::resizeGL(int w, int h) {
@@ -163,8 +167,6 @@ void EngineGLSceneWidget::paintGL(void) {
     }
 
     getAssets()->getEngine()->render(&_renderSpineShit);
-
-    update();
 
     Q_EMIT engineUpdated();
 }

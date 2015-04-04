@@ -31,7 +31,7 @@ const GYMatrix4 glalShadowTexCoordBiasMat = {
 };
 
 // ========= DEFAULT UNIFORM STATE VALUES =======
-const static GYMaterial _defaultMaterial = {
+static const GYMaterial _defaultMaterial = {
 	{ 1.0f, 1.0f, 1.0f, 1.0f },
 	{ 1.0f, 1.0f, 1.0f, 1.0f },
     { 0.0f, 0.0f, 0.0f, 1.0f },

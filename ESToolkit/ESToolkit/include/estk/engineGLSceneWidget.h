@@ -9,6 +9,8 @@
 #include <QBasicTimer>
 //#include <QGLFunctions>
 
+class MapView;
+
 #define TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME   5
 
 class EngineGLSceneWidget:
@@ -27,6 +29,7 @@ public:
         void        setCameraManual(const bool val);
         bool        isCameraManualOnPlay(void) const;
         void        setCameraManualOnPlay(const bool val);
+        void        setMapView(MapView* view);
 
         explicit    EngineGLSceneWidget(QWidget* parent = nullptr);
         virtual     ~EngineGLSceneWidget(void);
@@ -39,6 +42,8 @@ protected:
     bool            _advanceFrame       = false;
     bool            _cameraManual       = true;
     bool            _cameraManualOnPlay = false;
+    MapView*        _mapView            = nullptr;
+
 
     //reimplemented from QGLWidget
     virtual void    initializeGL(void) override;
@@ -71,7 +76,7 @@ inline void EngineGLSceneWidget::setCameraManual(const bool val) { _cameraManual
 
 inline bool EngineGLSceneWidget::isCameraManualOnPlay(void) const { return _cameraManualOnPlay; }
 
-
+inline void EngineGLSceneWidget::setMapView(MapView *view) { _mapView = view; }
 
 
 #endif // TK_MAP_SYSTEM_H
