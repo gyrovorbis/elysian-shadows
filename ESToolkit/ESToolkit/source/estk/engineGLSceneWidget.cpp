@@ -43,7 +43,7 @@ void EngineGLSceneWidget::initializeGL(void) {
   //  assert(con->isValid());
    // makeCurrent();
    // initializeGLFunctions();
-    glalVidOglInit(1280, 720, 1280, 720);
+  //  glalVidOglInit(1280, 720, 1280, 720);
    // doneCurrent();
 
     unsigned parentWidth    = parentWidget()->size().width();
@@ -52,7 +52,7 @@ void EngineGLSceneWidget::initializeGL(void) {
     glalVidOglInit(parentWidth, parentHeight, parentWidth, parentHeight);
      if(getAssets()->getEngine()) getAssets()->getEngine()->getCameraSys()->initializeProjMatrix();
 
-
+     _mapView->setSceneRect(0, 0, parentWidth, parentHeight);
 
 }
 
@@ -98,6 +98,7 @@ static void _initSpineShit(void) {
 
 void EngineGLSceneWidget::startRenderTimer(void) {
     _timer.start(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this);
+    timerEvent(nullptr); //go ahead and update the nigger.
 }
 
 
@@ -105,9 +106,12 @@ void EngineGLSceneWidget::timerEvent(QTimerEvent *)
 {
 
     makeCurrent();
-        update();
+    update();
+     //       _mapView->scene()->invalidate();
     _mapView->update();
- //   _mapView->updateScene();
+    _mapView->updateSceneRect(_mapView->rect());
+    paintGL();
+
         unsigned parentWidth    = parentWidget()->size().width();
         unsigned parentHeight   = parentWidget()->size().height();
         if(_width != parentWidth || _height != parentHeight) {
@@ -121,6 +125,7 @@ void EngineGLSceneWidget::resizeGL(int w, int h) {
      _width = w;
      _height = h;
 
+     _mapView->setSceneRect(0, 0, w, h);
  if(getAssets()->getEngine()) getAssets()->getEngine()->getCameraSys()->initializeProjMatrix();
 
 }

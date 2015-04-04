@@ -199,7 +199,7 @@ ESToolkit::ESToolkit(QWidget *parent):
 	Area::staticConstructor(_ui->mapView);
     _sheetDockWidget->SetSheetScene(Level::_sheetViewScene);
 	_sheetDockWidget->getSourceView()->setEnabled(false);
-    _ui->mapView->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    _ui->mapView->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
     //_ui->mapView->setScene(Area::editorScene);
 	_ui->mapView->setFocus();
     setFocusPolicy(Qt::ClickFocus);
@@ -889,11 +889,13 @@ void ESToolkit::_openProjectDir(const QString dir) {
     //_engineGLView->setFormat(QSurfaceFormat::defaultFormat());
     connect(viewport, SIGNAL(engineUpdated()), _ui->mapView, SLOT(onEngineUpdated()));
     viewport->setMouseTracking(true);
-    _engineGLView->makeCurrent();
+    //_engineGLView->makeCurrent();
     _engineGLView->setMapView(_ui->mapView);
-    _engineGLView->update();
+    //_engineGLView->update();
     _ui->mapView->setViewport(viewport);
+   // _ui->mapView->setScene(new QGraphicsScene());
     //setCentralWidget(viewport);
+    //assert(_ui->mapView->scene());
 
     GYInputInitParams inputParams = {
         static_cast<QGraphicsView*>(_ui->mapView)
@@ -908,7 +910,7 @@ void ESToolkit::_openProjectDir(const QString dir) {
     _assets.setCurrentProject(proj);
     _assets.setCurrentSelection(_assets.getCurrentArea());
 
-    _engineGLView->doneCurrent();
+    //_engineGLView->doneCurrent();
 
     _engineGLView->startRenderTimer();
     //elysian::Debug::getInstance()._curArea = _assets.getCurrentArea();
