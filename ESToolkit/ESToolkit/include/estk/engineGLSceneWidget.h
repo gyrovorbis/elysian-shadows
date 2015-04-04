@@ -2,20 +2,18 @@
 #define ENGINE_GL_SCENE_WIDGET_H
 
 #include "assetManager.h"
-#include <QGLWidget>
-
-#include <QGLWidget>
+#define QT_NO_OPENGL_ES_2
+#include <QOpenGLWidget>
 #include <QMatrix4x4>
 #include <QQuaternion>
 #include <QVector2D>
 #include <QBasicTimer>
-#include <QGLShaderProgram>
 //#include <QGLFunctions>
 
 #define TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME   5
 
 class EngineGLSceneWidget:
-        public QGLWidget,
+        public QOpenGLWidget,
         public AssetManager
 {
     Q_OBJECT
@@ -31,7 +29,7 @@ public:
         bool        isCameraManualOnPlay(void) const;
         void        setCameraManualOnPlay(const bool val);
 
-        explicit    EngineGLSceneWidget(const QGLFormat& format, QWidget* parent = 0, const QGLWidget* shareWidget = 0, Qt::WindowFlags f = 0);
+        explicit    EngineGLSceneWidget(QWidget* parent = nullptr);
         virtual     ~EngineGLSceneWidget(void);
 
 

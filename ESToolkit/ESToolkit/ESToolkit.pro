@@ -9,8 +9,8 @@ win32 {
 }
 TARGET = ESToolkit
 TEMPLATE = app
-QT		+= opengl
-QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-empty-body -Wno-unknown-warning-option
+QT		+= widgets
+QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-empty-body
 
 ICON = resource/images/estk.icns
 
@@ -452,7 +452,7 @@ win32 {
                 -lvorbisfile \
                 -lglew32 \
                 -lglew32.dll \
-                -limagehlp \
+                -limagehlp
                 #-lvorbisfile.dll \
                 #-mconsole
                 #-llua52

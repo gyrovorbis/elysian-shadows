@@ -2,6 +2,8 @@
 win32 { 
         #QMAKE_CXX=../../../qtcreator/ESDev/ccache.exe g++
         #QMAKE_CC=../../../qtcreator/ESDev/ccache.exe gcc
+
+    DEFINES += QT_NO_OPENGL_ES_2
 }
 
 
@@ -16,7 +18,7 @@ CONFIG(release, debug|release) {
 }
 
 DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt QT_NO_KEYWORDS QT_NO_DYNAMIC_CAST
-QMAKE_CXXFLAGS += -std=c++11 -msse #-fno-rtti -fno-exceptions
+QMAKE_CXXFLAGS += -std=c++11 -msse -Wno-unknown-warning #-fno-rtti -fno-exceptions
 CONFIG += c++11
 CONFIG -= exceptions rtti
 

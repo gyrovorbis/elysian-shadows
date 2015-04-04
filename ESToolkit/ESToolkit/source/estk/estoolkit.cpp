@@ -1,5 +1,4 @@
 #include "elysian_area.hpp"
-#include <QGLWidget>
 #include <QSizePolicy>
 #include <QToolButton>
 #include <QCloseEvent>
@@ -242,12 +241,20 @@ ESToolkit::ESToolkit(QWidget *parent):
 	connect(_selectionDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
 
 	glUtilities::printGLSupport();
-    QGLFormat glFormat;
-    glFormat.setVersion(2, 5);
-    glFormat.setProfile(QGLFormat::CoreProfile);
-
+    QSurfaceFormat fmt;
+    fmt.setSwapBehavior(QSurfaceFormat::SwapBehavior::DoubleBuffer);
+   // fmt.setSamples(0);
+    fmt.setStereo(false);
+    fmt.setAlphaBufferSize(0);
+    fmt.setStencilBufferSize(0);
+    fmt.setRedBufferSize(8);
+    fmt.setBlueBufferSize(8);
+    fmt.setGreenBufferSize(8);
+    fmt.setDepthBufferSize(8);
+    fmt.setVersion( 3, 2 );
+    fmt.setProfile( QSurfaceFormat::CoreProfile ); // Requires >=Qt-4.8.0
     // Set the default GL format to OpenGL 3.2 Core
-    QGLFormat::setDefaultFormat(glFormat);
+    QSurfaceFormat::setDefaultFormat(fmt);
 
 	ReadSettings();
 
@@ -889,24 +896,8 @@ void ESToolkit::_openProjectDir(const QString dir) {
     }
 
 	QDir::setCurrent(dir);
-    QGLFormat fmt;
 
-    fmt.setDirectRendering(true);
-    fmt.setDoubleBuffer(true);
-    fmt.setDepth(true);
-    fmt.setAccum(false);
-    fmt.setAlpha(false);
-    fmt.setOverlay(false);
-    fmt.setStencil(false);
-    fmt.setRedBufferSize(8);
-    fmt.setBlueBufferSize(8);
-    fmt.setGreenBufferSize(8);
-    fmt.setDepthBufferSize(8);
-    fmt.setVersion( 3, 2 );
-    fmt.setProfile( QGLFormat::CoreProfile ); // Requires >=Qt-4.8.0
-   // fmt.setAlphaBufferSize(8);
-
-    auto* viewport = _engineGLView = new EngineGLSceneWidget(fmt);
+    auto* viewport = _engineGLView = new EngineGLSceneWidget(this);
     connect(viewport, SIGNAL(engineUpdated()), _ui->mapView, SLOT(onEngineUpdated()));
 
     viewport->setMouseTracking(true);
@@ -917,9 +908,10 @@ void ESToolkit::_openProjectDir(const QString dir) {
     };
     gyInputInit(&inputParams);
 
-  _engineGLView->makeCurrent();
+ // _engineGLView->makeCurrent();
  // _engineGLView->update();
 	Project *proj = _assets.loadProject(dir);
+    _engineGLView->makeCurrent();
     _engineGLView->update();
 
     _assets.setCurrentProject(proj);
@@ -927,7 +919,7 @@ void ESToolkit::_openProjectDir(const QString dir) {
 
     _engineGLView->startRenderTimer();
 
-
+    _engineGLView->doneCurrent();
     //elysian::Debug::getInstance()._curArea = _assets.getCurrentArea();
     //_assets.getCurrentArea()->populateVbo();
 
@@ -1241,7 +1233,7 @@ return;
     _ui->mapView->setViewport((_ui->actionEnable_OpenGL->isChecked())? _engineGLView : new QWidget);
 	_ui->mapView->setMouseTracking(true);
 	_ui->mapView->viewport()->setMouseTracking(true);
-    _sheetDockWidget->getSourceView()->setViewport((_ui->actionEnable_OpenGL->isChecked())? new QGLWidget  : new QWidget);
+    _sheetDockWidget->getSourceView()->setViewport((_ui->actionEnable_OpenGL->isChecked())? new QOpenGLWidget  : new QWidget);
 	_sheetDockWidget->getSourceView()->setMouseTracking(true);
 	_sheetDockWidget->getSourceView()->viewport()->setMouseTracking(true);
 
@@ -1636,7 +1628,7 @@ void ESToolkit::on_actionScreenshot_triggered(void) {
     unsigned num = 1;
 
     while(QFile::exists(fileBase+QString::number(num)+QString(".png"))) ++num;
-    _engineGLView->grabFrameBuffer().save(fileBase+QString::number(num)+QString(".png"));
+    _engineGLView->grabFramebuffer().save(fileBase+QString::number(num)+QString(".png"));
 #endif
 }
 

@@ -6,11 +6,12 @@
 #include <QMessageBox>
 #include <QTransform>
 #include <QFileDialog>
-#include <QGLWidget>
 #include <QStatusBar>
 #include <QShortcut>
 #include <QFileSystemWatcher>
 #include <QPushButton>
+#define QT_NO_OPENGL_ES_2
+#include <QOpenGLWidget>
 
 #include "elysian_debug.hpp"
 #include "sheetManager.h"
@@ -567,7 +568,7 @@ void SheetManager::on_actionEnable_OpenGL_triggered() {
 	//Cheating and only allowing GL for dest view, because of how shittily Qt handles QGLWidgets without
 	//a current scene. It artifacts out the ass and looks terrible.
 	//_ui->_srcView->setViewport((_ui->actionEnable_OpenGL->isChecked())? new QGLWidget : new QWidget);
-	_ui->_destView->setViewport((_ui->actionEnable_OpenGL->isChecked())? new QGLWidget : new QWidget);
+    _ui->_destView->setViewport((_ui->actionEnable_OpenGL->isChecked())? new QOpenGLWidget : new QWidget);
 	if(_ui->_srcView->scene()) _ui->_srcView->scene()->update();
 	//if(_ui->_destView->scene()) _ui->_destView->scene()->update();
 }

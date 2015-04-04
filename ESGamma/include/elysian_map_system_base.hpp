@@ -217,7 +217,7 @@ namespace elysian {
         elemArray[elemArraySize+3]    = checkIndex(indices[3]);
         elemArraySize += 4;
 
-        if(elemArraySize + 6 >= _curArea->elementsPerSegment) {
+        if(elemArraySize + 6 >= (int)_curArea->elementsPerSegment) {
             flushTileBuffer();
             elemArraySize = 0;
             _curArea->lastOffset = 0;
@@ -265,8 +265,8 @@ namespace elysian {
 
 
 
-        GLenum result;
-   /*     result = glClientWaitSync(_curArea->elementsArraySyncs[_curArea->elementsCurSegment], GL_SYNC_FLUSH_COMMANDS_BIT, 100000000);
+   /*     GLenum result;
+        result = glClientWaitSync(_curArea->elementsArraySyncs[_curArea->elementsCurSegment], GL_SYNC_FLUSH_COMMANDS_BIT, 100000000);
       while(result != GL_ALREADY_SIGNALED && result != GL_CONDITION_SATISFIED) {
           result = glClientWaitSync(_curArea->elementsArraySyncs[_curArea->elementsCurSegment], 0, 100);
       }*/

@@ -1,6 +1,8 @@
+#define QT_NO_OPENGL_ES_2 //GLEW NEEDS THIS OR IT'LL SHIT ITS DRAWS
+#include <QApplication>
+
 #include <QSplashScreen>
 #include "estoolkit.h"
-#include <QApplication>
 #include <QPainter>
 #include <QTimer>
 #include "elysian_debug.hpp"

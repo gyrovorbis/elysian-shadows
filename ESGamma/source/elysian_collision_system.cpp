@@ -219,7 +219,7 @@ void CollisionSystem::renderTileColliders(void) const {
 			default: assert(0);
 			}
 
-			bool isOnZPlane = false;
+            //bool isOnZPlane = false;
 			bool isZTran = false;
 
 			//Iterate over interested layer(s)
@@ -234,7 +234,7 @@ void CollisionSystem::renderTileColliders(void) const {
 				colType2 = Tile::reorientCollider(colType2, tileEntry.getOrient());
 				//Combine and accumulate
 				colType = Tile::combineColliders(colType, colType2);
-				isOnZPlane = true;
+                //isOnZPlane = true;
 				
 				if(tileEntry.getZTran() && tileEntry.getElev() == playerElev) isZTran = true;
 			}

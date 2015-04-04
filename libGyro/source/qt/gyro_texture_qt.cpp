@@ -3,12 +3,17 @@
 #include <stdio.h>
 #include <gyro_file_api.h>
 #include <gyro_texture_api.h>
-#include <QGLContext>
+#include <QOpenGLContext>
+#include <QOpenGLTexture>
+#include <QHash>
+#include <QImage>
 #include <QDebug>
 #include <cassert>
 
+static QHash<GLuint, QOpenGLTexture*> _qTextures;
+
 int _gyVidTexAlloc(GYTexture *const tex) {
-	const QGLContext* current = QGLContext::currentContext();
+  //  const QOpenGLContext* current = QOpenGLContext::currentContext();
 
 	QString fileName = tex->filename;
 
@@ -19,25 +24,35 @@ int _gyVidTexAlloc(GYTexture *const tex) {
         //qDebug() << fileName;
 	}
 
-	QPixmap pixmap(fileName);
+    QImage pixmap(fileName);
     tex->width = pixmap.width();
     tex->height = pixmap.height();
+    if(pixmap.isNull()) return 0; //fuck.
 
  //   tex->_pixmap = QPixmap(QString(tex->filename));
-    *(int*)&tex->_data = ((QGLContext*)current)->bindTexture(pixmap, GL_TEXTURE_2D, GL_RGBA,  QGLContext::NoBindOption);
+    QOpenGLTexture* glTexture;
+    glTexture = new QOpenGLTexture(pixmap);
+    glTexture->bind();
+    //((QOpenGLContext*)current)->bindTexture(pixmap, GL_TEXTURE_2D, GL_RGBA,  QOpenGLContext::NoBindOption);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    tex->_data = (void*)glTexture->textureId();
       //  glTexImage2D(GL_TEXTURE_2D, 0, img.format, img.width, img.height, 0, img.format, GL_UNSIGNED_BYTE, pixels);
-
-    return *(int*)&tex->_data;
+    _qTextures[(GLuint)tex->_data] = glTexture;
+    return (int)tex->_data;
 }
 
 int _gyVidTexFree(GYTexture *const tex) {
     (void)tex;
-    long int id = reinterpret_cast<long int>(tex->_data);
-    ((QGLContext*)QGLContext::currentContext())->deleteTexture(id);
+    if(!tex) return 0;
+    QOpenGLTexture* qgl = _qTextures[(GLuint)tex->_data];
+    qgl->destroy();
+    _qTextures.remove((GLuint)tex->_data);
+    delete qgl;
+   // long int id = reinterpret_cast<long int>(tex->_data);
+    //((QOpenGLContext*)QOpenGLContext::currentContext())->deleteTexture(id);
     return 1;
 }
 

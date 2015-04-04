@@ -8,14 +8,12 @@
 
 #include <QMouseEvent>
 #include <spine/spine.h>
+#include <QOpenGLContext>
 //#undef QT_NO_KEYWORDS
 
 
-EngineGLSceneWidget::EngineGLSceneWidget(const QGLFormat &format, QWidget *parent, const QGLWidget *shareWidget, Qt::WindowFlags f):
-    QGLWidget(format, parent, shareWidget, f) {
-    makeCurrent();
-   // initializeGLFunctions();
-    glalVidOglInit(1280, 720, 1280, 720);
+EngineGLSceneWidget::EngineGLSceneWidget(QWidget *parent):
+    QOpenGLWidget(parent) {
 }
 
 
@@ -40,7 +38,12 @@ bool EngineGLSceneWidget::isPlaying(void) const { return getAssets()->getEngine(
 
 
 void EngineGLSceneWidget::initializeGL(void) {
-    makeCurrent();
+    auto* con = context();
+    assert(con->isValid());
+   // makeCurrent();
+   // initializeGLFunctions();
+    glalVidOglInit(1280, 720, 1280, 720);
+   // doneCurrent();
 
     unsigned parentWidth    = parentWidget()->size().width();
     unsigned parentHeight   = parentWidget()->size().height();
@@ -99,7 +102,7 @@ void EngineGLSceneWidget::startRenderTimer(void) {
 
 void EngineGLSceneWidget::timerEvent(QTimerEvent *)
 {
-        updateGL();
+        update();
 
         unsigned parentWidth    = parentWidget()->size().width();
         unsigned parentHeight   = parentWidget()->size().height();
@@ -160,6 +163,8 @@ void EngineGLSceneWidget::paintGL(void) {
     }
 
     getAssets()->getEngine()->render(&_renderSpineShit);
+
+    update();
 
     Q_EMIT engineUpdated();
 }

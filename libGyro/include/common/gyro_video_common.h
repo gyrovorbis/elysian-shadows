@@ -71,7 +71,7 @@ static inline void gyVidCamOrthoProj(GYCamera* cam, const float pleft, const flo
 					const float pnear, const float pfar)
 {
 	gyVidOrthoProjMat(cam->projMat, pleft, pright, pbottom, ptop, pnear, pfar);
-	gyMatMultMat(cam->projViewMat, cam->projMat, cam->viewMat);
+    gyMatMultMat(cam->projViewMat, (const float (*)[4])cam->projMat, (const float (*)[4])cam->viewMat);
 	cam->projType = GY_PROJECTION_ORTHO;
 
 	cam->viewVolume.nw = pright-pleft;
@@ -142,7 +142,7 @@ static inline void gyVidCamOrthoLookAt(GYCamera *cam, const GYVector3* pos, cons
 	gyMatStore(&cam->viewMat);
 	gyMatPop();
 
-	gyMatMultMat(cam->projViewMat, cam->projMat, cam->viewMat);
+    gyMatMultMat(cam->projViewMat, (const float(*)[4])cam->projMat, (const float(*)[4])cam->viewMat);
 
 }
 
@@ -319,7 +319,7 @@ static inline void gyVidCamFrustumLookAt(GYCamera* const cam, const GYVector3* c
 	gyMatPop();
 	*/
 
-	gyMatMultMat(cam->projViewMat, cam->projMat, cam->viewMat);
+    gyMatMultMat(cam->projViewMat, (const float (*)[4])cam->projMat, (const float (*)[4])cam->viewMat);
 
 	GYViewVolume* const volume = &cam->viewVolume;
 #if 0

@@ -1,9 +1,9 @@
 include(../../../qtcreator/ESDev/ESDev.pri)
 TEMPLATE = lib
-QT		+= opengl
+QT		+= widgets
 CONFIG += staticlib
 CONFIG += console
-CONFIG += opengl
+#CONFIG += opengl
 CONFIG -= app_bundle
 #CONFIG -= qt
 QMAKE_CXXFLAGS += -Wno-c++11-extensions -Wno-c++11-long-long

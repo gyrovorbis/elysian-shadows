@@ -140,7 +140,7 @@ namespace elysian {
         return _shadowPassEnabled;
     }
 
-    inline uint32_t LightSystem::getLightMask(const Entity& entity) const {
+    inline uint32_t LightSystem::getLightMask(const Entity& /*entity*/) const {
         uint32_t mask = 0;
         for(unsigned i = 0; i < getOnscreenLightCount(); ++i) mask |= (0x1<<i);
         return mask;
