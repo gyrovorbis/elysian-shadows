@@ -52,45 +52,64 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
 	case GY_LIGHT_DIRECTIONAL:
         light->position.w = 0.0f;
         //light->spotCutoffAngle = 360.0f; //Shader needs this for correct texture coords
-	case GY_LIGHT_SPOT:
         //glEnable(GL_TEXTURE_2D);
         //glDisable(GL_TEXTURE_CUBE_MAP);
 		glBindTexture(GL_TEXTURE_2D, internals->shadowMap);
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 #if !defined(ANDROID) /* TODO: FIXME */
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-        //glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
+      //  glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
         //glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE );
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+    //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, 1.0f);
 #endif
 		break;
 
+    case GY_LIGHT_SPOT:
+        //glEnable(GL_TEXTURE_2D);
+        //glDisable(GL_TEXTURE_CUBE_MAP);
+        glBindTexture(GL_TEXTURE_2D, internals->shadowMap);
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+#if !defined(ANDROID) /* TODO: FIXME */
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      //  glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
+        //glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
+    //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, 1.0f);
+#endif
+        break;
+
 	case GY_LIGHT_POINT:
         light->spotCutoffAngle = 360.0f;
        // glEnable(GL_TEXTURE_CUBE_MAP);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, internals->shadowMap);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+                glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 #if !defined(ANDROID) /* TODO: FIXME */
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
+//		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0);
         //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_MODE, GL_NONE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-        glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BORDER_COLOR, 1.0f);
+       // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+      //  glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BORDER_COLOR, 1.0f);
 		//Does this REALLY have to have 6 faces!?
 		for (unsigned i = 0; i < GY_CUBE_MAP_FACE_MAX; ++i) {
 			//shadowDepth? lolz
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT32, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 		}
 #endif
         glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
@@ -171,14 +190,14 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
     }
 
 
-   if(!old || !glalLightsEnabled[index]) {
+  // if(!old || !glalLightsEnabled[index]) {
        if(!flushed) {
            gyVidVertexBatchFlush();
            flushed = 1;
        }
         glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_ENABLED], 1);
         ++glalUniformChangeCount;
-    }
+   // }
 
   // if(light->type == GY_LIGHT_POINT || light->type == GY_LIGHT_SPOT) {
         if(!old || !gyVec3Compare(&light->properties->attenuationFactors, &cache->attenuationFactors)) {
@@ -233,37 +252,49 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
 	 * some reason they're still cool with being bound to bullshit texture units. So
 	 * bind one to the real texture unit, and bind one to a bullshit unit based on type.
 	 */
-    glActiveTexture(glalTextureMapTexUnits[GLAL_SHADOW1_MAP+index]);
+
     if(light->type == GY_LIGHT_POINT) { //Point light + change
-       if(!(old && cache->type == light->type)) {
+
+        if(cache->texture != internals->shadowMap) {
+            glActiveTexture(glalTextureMapTexUnits[GLAL_SHADOW1_CUBE_MAP+index]);
            if(!flushed) {
                gyVidVertexBatchFlush();
                flushed = 1;
            }
-            glBindTexture(GL_TEXTURE_CUBE_MAP, internals->shadowMap);
-            glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_MAP], 7+index);
-            glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_CUBE_MAP], 3+index);
-            ++glalTextureChangeCount;
-            glalUniformChangeCount += 2;
+         glBindTexture(GL_TEXTURE_CUBE_MAP, internals->shadowMap);
+/*
+            if(!old || cache->type != light->type) {
+                    //glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_MAP], 7+index);
+                    glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_CUBE_MAP], 3+index);
+                    ++glalTextureChangeCount;
+                    glalUniformChangeCount += 2;
+             }*/
         }
 
     } else {  //Spot or Directional light + change
-        if(!(old && (cache->type == GY_LIGHT_DIRECTIONAL || cache->type == GY_LIGHT_SPOT))) {
+       // if(!(old && (cache->type == GY_LIGHT_DIRECTIONAL || cache->type == GY_LIGHT_SPOT))) {
           //  glDisable(GL_TEXTURE_CUBE_MAP);
           //  glEnable(GL_TEXTURE_2D);
+        if(cache->texture != internals->shadowMap) {
+        glActiveTexture(glalTextureMapTexUnits[GLAL_SHADOW1_MAP+index]);
             if(!flushed) {
                 gyVidVertexBatchFlush();
                 flushed = 1;
             }
             glBindTexture(GL_TEXTURE_2D, internals->shadowMap);
+            /*
+              if(!old || cache->type != light->type) {
             glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_MAP], 3+index);
             glUniform1i(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SHADOW_CUBE_MAP], 7+index);
             ++glalTextureChangeCount;
             glalUniformChangeCount += 2;
-       }
+              }*/
+        }
+     //  }
 
     }
 
+    cache->texture = internals->shadowMap;
     cache->type = light->type;
     glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
 }
@@ -274,7 +305,6 @@ void gyVidLightSourceAdd(GYLightSource* const light) {
 
 	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
         if(glalLightsEnabled[i] == 0) {
-			glalStripComboBreaker();
 			_addLightUniform(i, light);
             glalLightSources[i] = light;
             glalLightsEnabled[i] = 1;
@@ -291,7 +321,8 @@ void gyVidLightSourceRemove(const GYLightSource* const light) {
         if(glalLightSources[i] == light) {
             if(glalLightsEnabled[i]) {
                 --glalLightSourceCount;
-                glalStripComboBreaker();
+               // glalStripComboBreaker();
+                gyVidVertexBatchFlush();
                 glUniform1i(glalCurLightShader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_ENABLED], 0);
                 ++glalUniformChangeCount;
                 glalLightsEnabled[i] = 0;
@@ -392,7 +423,8 @@ void glalGetSpotLightProjectionMatrix(GYMatrix4 dest, const GYLightSource*const 
 
 	(void)lightSrc;
 
-	gyVidPerspectiveMat(dest, 90.0f, 1.0f, 1.0f, 150.0f);
+    //gyVidPerspectiveMat(dest, 90.0f, 1.0f, 1.0f, 150.0f);
+    gyVidPerspectiveMat(dest, lightSrc->spotCutoffAngle, 1.0f, 1.0f, 550.0f);
 #endif
 
 	//memcpy(test, dest, sizeof(GYMatrix4));
@@ -503,8 +535,9 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 	GYMatrix4 lightProjViewMatrix;
 	int useBias;
 	_LightInternals* internals = light->_data;
-	GYCamera*const cam = light->camera;
+    GYCamera*const cam = light->camera;
 
+    glFlush();
     glViewport(0, 0, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE);
 
     glActiveTexture(glalTextureMapTexUnits[GLAL_SHADOW1_MAP]);
@@ -518,14 +551,15 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 		glalGetPointLightProjectionMatrix(lightProjMatrix, light);
 		glalGetPointLightViewMatrix(lightViewMatrix, light, face);
 
-        //glEnable(GL_TEXTURE_CUBE_MAP);
+       // glEnable(GL_TEXTURE_CUBE_MAP);
         glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
 
 		//Only do this shit once, on the first pass
-		if(face == GY_CUBE_MAP_RIGHT) {
+        if(face == GY_CUBE_MAP_RIGHT) {
             glBindFramebuffer(GL_FRAMEBUFFER, internals->fbo);
-			glalGetPointLightCamMatrix(cam->projViewMat, light);
-		} //else if(face == GY_CUBE_MAP_FRONT) return;
+            glalGetPointLightCamMatrix(cam->projViewMat, light);
+        } //else if(face == GY_CUBE_MAP_FRONT) return;
 
         glBindTexture(GL_TEXTURE_CUBE_MAP, internals->shadowMap);
 
@@ -540,17 +574,15 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 		break;
 
 	case GY_LIGHT_DIRECTIONAL:
-		useBias = 1;
+        useBias = 1;
 
 		glalGetDirectionalLightProjectionMatrix(lightProjMatrix, light);
 		glalGetDirectionalLightViewMatrix(lightViewMatrix, light);
 
 		//glCullFace(GL_BACK);
         //glEnable(GL_TEXTURE_2D);
-    for(unsigned i = 0; i < GLAL_TEXTURE_MAP_MAX; ++i) {
-        glActiveTexture(glalTextureMapTexUnits[i]);
-        glBindTexture(GL_TEXTURE_2D, 0);
-    }
+                glBindTexture(GL_TEXTURE_2D, 0);
+
         glBindFramebuffer(GL_FRAMEBUFFER, internals->fbo);
         glBindTexture(GL_TEXTURE_2D, internals->shadowMap);
 
@@ -563,7 +595,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 
 
 	case GY_LIGHT_SPOT:
-		useBias = 1;
+        useBias = 1;
 
 		glalGetSpotLightProjectionMatrix(lightProjMatrix, light);
 		glalGetSpotLightViewMatrix(lightViewMatrix, light);
@@ -597,17 +629,20 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 		 return;
 	 }
 
+   //  glEnable(GL_CULL_FACE);
+    //    glCullFace(GL_FRONT);
      glClearDepth(1.0f);
      glDepthRange(0.0f, 1.0f);
-     if(_firstShadowPass) {
-        glClear(GL_DEPTH_BUFFER_BIT);
+             glClear(GL_DEPTH_BUFFER_BIT);
+   //  if(_firstShadowPass) {
+
         gyVidDepthTest(1);
         glDepthMask(GL_TRUE);
         glEnable(GL_DEPTH_TEST);
         //glEnable(GL_BLEND);
         glDepthFunc(GL_LESS);
         _firstShadowPass = 0;
-     }
+  //   }
 
 	//find projView matrix
 	gyMatMultMat(lightProjViewMatrix, lightProjMatrix, lightViewMatrix);
@@ -626,6 +661,7 @@ void gyVidLightSourceEndShadowPasses(void) {
 	gyVidSetDefaultShaderProgram();
 	//glalDefaultShadersLoadUniforms();
     glalCurLightShader = &glalLightingShader;
+   // glFlush();
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	unsigned width, height;
 	gyVidResolution(&width, &height);
@@ -633,10 +669,11 @@ void gyVidLightSourceEndShadowPasses(void) {
 
     gyVidDepthTest(0);
     glDepthMask(GL_TRUE);
-    glDisable(GL_DEPTH_TEST);
+    //glDisable(GL_DEPTH_TEST);
     //glEnable(GL_BLEND);
     //glEnable(GL_BLEND);
     glDepthFunc(GL_LEQUAL);
+   // glDisable(GL_CULL_FACE);
 
 
 	//glBindTexture(GL_TEXTURE_CUBE_MAP, 0);

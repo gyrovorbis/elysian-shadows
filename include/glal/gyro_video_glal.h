@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-#define GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE	100000
+#define GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE	(1024*1024)
 
 struct _GYTexture;
 struct _GYCamera;

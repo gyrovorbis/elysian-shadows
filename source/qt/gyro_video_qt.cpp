@@ -11,5 +11,5 @@ void gyVidSceneBegin(void) {
 }
 
 void gyVidSceneEnd(void) {
-   // glFlush();
+ //   glFlush();
 }

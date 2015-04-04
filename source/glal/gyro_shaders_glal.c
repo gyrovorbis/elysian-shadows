@@ -12,11 +12,15 @@ GLenum glalTextureMapTexUnits[GLAL_TEXTURE_MAP_MAX] = {
     GL_TEXTURE3,
     GL_TEXTURE4,
     GL_TEXTURE5,
-    GL_TEXTURE6
+    GL_TEXTURE6,
+    GL_TEXTURE7,
+    GL_TEXTURE8,
+    GL_TEXTURE9,
+    GL_TEXTURE10
 };
 
 int glalTextureMapUniforms[GLAL_TEXTURE_MAP_MAX] = {
-    0, 1, 2, 3, 4, 5, 6
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 };
 
 const GYMatrix4 glalShadowTexCoordBiasMat = {
