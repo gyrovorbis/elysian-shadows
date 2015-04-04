@@ -48,6 +48,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
 void glalVidTangentUpdateUniform(const GYVector3*const tangent);
 void glalVidNormalUpdateUniform(const GYVector3*const normal);
 void glalVidNormalMapZFactorUpdateUniform(const float factor);
+void glalVidBindDefaultFbo(void);
 
 static inline void glalStripComboBreaker(void) {
     if(glalCurStripSize) {

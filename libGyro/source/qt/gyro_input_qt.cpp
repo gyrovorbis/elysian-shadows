@@ -227,8 +227,8 @@ public:
 
 };
 
-static EventFilter*         _inputFilter;
-static GYInputInitParams    _initParams;
+static EventFilter*  _inputFilter;
+GYInputInitParams    _initParams;
 
 int gyInputInit(const GYInputInitParams*const params) {
     _inputFilter = new EventFilter;

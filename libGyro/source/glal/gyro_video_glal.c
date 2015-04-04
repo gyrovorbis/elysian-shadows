@@ -243,7 +243,6 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
      //   glClearDepth(1.0f);
     //    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        GLuint fbo;
        // glGenFramebuffers(1, &fbo);
       //  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 

@@ -17,7 +17,7 @@ typedef struct _GYVidInitParams {
 	GY_VID_RESOLUTION res;
 	int prop;
 	int minWidth, minHeight;
-	int maxWidth, maxHeight;
+    int maxWidth, maxHeight;
 	const char *title;
 	const char *icon;
 } GYVidInitParams;
