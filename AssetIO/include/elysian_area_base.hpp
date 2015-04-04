@@ -144,8 +144,8 @@ namespace elysian {
 		unsigned			layerEntryCount	= 0;
 
         GLuint              vertexVbo       = 0;
-        GLuint              elementVbo[2][ELYSIAN_MAP_SYSTEM_VAOS]      ={ 0 };
-        GLuint              vao[2][ELYSIAN_MAP_SYSTEM_VAOS]          = {0};
+        GLuint              elementVbo[2][ELYSIAN_MAP_SYSTEM_VAOS]      ={ {0} };
+        GLuint              vao[2][ELYSIAN_MAP_SYSTEM_VAOS]          = {{0}};
         bool                vboPopulated    = false;
         bool                activated       = false;
 

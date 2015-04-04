@@ -225,7 +225,7 @@ namespace elysian {
            // _curArea->maxIndex = 0;
             _curArea->lastElemArraySize = 0;
                     glBindVertexArray(_curArea->vao[gyVidShadowPass()][0]);
-                            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*_curArea->elementsPerSegment*ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO, nullptr, GL_STREAM_DRAW);
+           glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*this->_curArea->elementsPerSegment*ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO, nullptr, GL_STREAM_DRAW);
         }
 }
 
