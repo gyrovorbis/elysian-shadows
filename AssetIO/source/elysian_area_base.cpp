@@ -326,12 +326,10 @@ void AreaBase::populateVbo(void) {
         }
 }
 
-    gyVidBindDefaultVertexArray();
-
    // glGenBuffers(1, &elementVbo);
   // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementVbo);
  //   glBufferData(GL_ELEMENT_ARRAY_BUFFER, ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE*sizeof(GLushort), &elementsArray[0], GL_DYNAMIC_DRAW);
-   // glBindVertexArray(0);
+    glBindVertexArray(0);
 
 
     vboPopulated = true;

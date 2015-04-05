@@ -306,7 +306,7 @@ break;
        memcpy(ptr, &elemArray[_curArea->lastElemArraySize], sizeof(GLushort)*(elemArraySize-_curArea->lastElemArraySize));
         glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 
-      //  glDrawElements(GL_TRIANGLE_STRIP, elemArraySize, GL_UNSIGNED_SHORT, elemArray /*nullptr*/);
+       // glDrawElements(GL_TRIANGLE_STRIP, elemArraySize, GL_UNSIGNED_SHORT, elemArray /*nullptr*/);
 
 
                 //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elemArraySize, elemArray, GL_STREAM_DRAW);
@@ -337,7 +337,7 @@ break;
 	
     template<typename P, typename T, typename E>
     inline unsigned MapSystemBase<P, T, E>::getEntityCount(void) {
-        if(!_renderLayer[3] || gyVidShadowPass()) return 0;
+       // if(!_renderLayer[3] || gyVidShadowPass()) return 0;
 		_onscreenEntityPool.clear();
 		auto& entities = _curArea->entities;
 
@@ -369,25 +369,15 @@ break;
 	
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::renderEntityEntry(const E &entry) {
-		//entry.entity->renderAtZ(entry.zCoord);
-		//entry.entity->transform.setPosZ(entry.zCoordWorld);
+       // entry.entity->transform.setPosZ(entry.zCoordWorld);
 
-        if(!gyVidShadowPass()) {
-            const GY_ALPHA_LEVEL          newAlpha = (entry.renderPass > 1)?
-                                                        GY_ALPHA_FULL : GY_ALPHA_PUNCHTHRU;
-
-                //Blending enabled state change
-            if(newAlpha != glalAlphaLevel) {
-                  glalStripComboBreaker();
-                  gyVidAlphaLevel(newAlpha);
-            }
-            if(entry.renderPass > 1 && !_blendPass) {
-                glalStripComboBreaker();
-                disableDepthTest();
-            } else if(entry.renderPass == 1 && _blendPass) {
-                glalStripComboBreaker();
-                enableDepthTest();
-            }
+        //Blending mode state change
+        if(entry.renderPass > 1) {
+            disableDepthTest();
+        }
+        //We don't give a fuck about blend modes when blending is off
+        else if(entry.renderPass == 1) {
+           enableDepthTest();
         }
 
         entry.entity->render();

@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-#define GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE	(1024*1024)
+#define GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE	(1024)
 
 struct _GYTexture;
 struct _GYCamera;
@@ -49,12 +49,6 @@ void glalVidTangentUpdateUniform(const GYVector3*const tangent);
 void glalVidNormalUpdateUniform(const GYVector3*const normal);
 void glalVidNormalMapZFactorUpdateUniform(const float factor);
 void glalVidBindDefaultFbo(void);
-
-static inline void glalStripComboBreaker(void) {
-    if(glalCurStripSize) {
-        gyVidQuadListEnd();
-    }
-}
 
 static inline float glalOrientNormalMapZFactor(const GY_RECT_TEX_ORIENT orient) {
     switch(orient) {

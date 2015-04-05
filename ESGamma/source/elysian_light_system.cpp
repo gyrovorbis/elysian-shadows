@@ -56,7 +56,7 @@ void LightSystem::setGlobalAmbientColor(const GYVector4 &color) {
 }
 
 void LightSystem::setEnabled(const bool val) {
-    GYVector4 noAmbience = GYVector4 { 1.0f, 1.0f, 1.0f, 0.0f };
+    GYVector4 noAmbience = GYVector4 { 1.0f, 1.0f, 1.0f, 1.0f };
 	_enabled = val;
 	gyVidLightingSetEnable(val);
     gyVidSetGlobalAmbience(&noAmbience);
@@ -221,7 +221,7 @@ void LightSystem::addLightSourcesToScene(void) {
 
 void LightSystem::removeLightSourcesFromScene(void) {
     if(gyVidShadowPass()) return;
-    const static GYVector4 fullAmbience = GYVector4{ 1.0f, 1.0f, 1.0f, 0.5f };
+    const static GYVector4 fullAmbience = GYVector4{ 1.0f, 1.0f, 1.0f, 1.0f };
 	gyVidSetGlobalAmbience(&fullAmbience);
 	_activeLights = 0;
 	_activeLightCount = 0;

@@ -257,7 +257,7 @@ namespace elysian {
 			_entityBuff[zIndex][_entityCount[zIndex]].zCoordRelative = relZCoord;
 
 			//render immediately
-           // if(zCoord < 32.0f && normalType == NORMAL_FLAT) _renderEntityEntry(_entityBuff[zIndex][_entityCount[zIndex]]);
+            if(zCoord < 32.0f && normalType == NORMAL_FLAT) _renderEntityEntry(_entityBuff[zIndex][_entityCount[zIndex]]);
 			//queue and render later
             _entityRowLights[zIndex] = (!_entityCount[zIndex])? entityEntry.lights : _entityRowLights[zIndex] | entityEntry.lights;
             ++_entityCount[zIndex];
@@ -298,7 +298,7 @@ namespace elysian {
         for(unsigned i = 0; i < _depthBuffMaxHeight; ++i) {
 //_enableDepthTest();
             _renderDepthBuffTileRow(i, NORMAL_FLAT);
-#if 0
+
             //_renderCustomPassAtElev(i, NORMAL_FLAT);
 
 			//if(_entityCount[i]) {
@@ -332,7 +332,7 @@ namespace elysian {
 
                     j = endIndex;
                 }
-#endif
+
                 //glalStripComboBreaker();
 
                     //_entityBuff[i][j].zCoord += entityZDelta;

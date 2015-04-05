@@ -41,18 +41,19 @@ bool EngineGLSceneWidget::isPlaying(void) const { return getAssets()->getEngine(
 void EngineGLSceneWidget::initializeGL(void) {
  //   auto* con = context();
   //  assert(con->isValid());
-   // makeCurrent();
+    makeCurrent();
    // initializeGLFunctions();
-  //  glalVidOglInit(1280, 720, 1280, 720);
    // doneCurrent();
 
     unsigned parentWidth    = parentWidget()->size().width();
     unsigned parentHeight   = parentWidget()->size().height();
 
-    glalVidOglInit(parentWidth, parentHeight, parentWidth, parentHeight);
+   // glalVidOglInit(parentWidth, parentHeight, parentWidth, parentHeight);
      if(getAssets()->getEngine()) getAssets()->getEngine()->getCameraSys()->initializeProjMatrix();
 
      _mapView->setSceneRect(0, 0, parentWidth, parentHeight);
+
+     doneCurrent();
 
 }
 
@@ -97,6 +98,7 @@ static void _initSpineShit(void) {
 }
 
 void EngineGLSceneWidget::startRenderTimer(void) {
+       glalVidOglInit(1280, 720, 1280, 720);
     _timer.start(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this);
     timerEvent(nullptr); //go ahead and update the nigger.
 }

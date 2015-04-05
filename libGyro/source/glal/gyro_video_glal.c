@@ -141,7 +141,7 @@ const GYCamera*				glalCurCamera				= &_defaultCamera;
 float                       glalNormalMapZFactor        = 1.0f;
 GY_RECT_TEX_ORIENT          glalRectTexOrient			= GY_RECT_TEX_ORIENT_NORMAL;
 GY_RECT_PLANE_TYPE          glalPlaneType				= GY_RECT_PLANE_BOTTOM;
-unsigned                    glalCurStripSize            = 0;
+//unsigned                    glalCurStripSize            = 0;
 unsigned    				glalVertexRenderCount		= 0;
 unsigned                    glalUniformChangeCount      = 0;
 unsigned                    glalPrevVertexRenderCount   = 0;
@@ -161,7 +161,9 @@ static GYVector4			_clearColor                 = { 0.0f, 0.0f, 0.0f, 1.0f };
 static const GYTexCoord2*   _curTexCoordPtr             = NULL;
 static const GYColor4*      _curColorArrayPtr           = NULL;
 GYColor4                    _curQuadListColor[12]       = { {0, 0, 0, 0}, { 0, 0, 0, 0}, {0,0,0,0}, {0, 0,0,0} };
-//static unsigned int         _vertexQueueSize          = 0;
+static int         _vertexQueueSize            = 0;
+static int         _vertexQueueLastSize        = 0;
+static GLintptr         _vertexQueueLastOffset      = 0;
 GLuint                      _streamVao[2]               = { 0 };
 GLuint                      _streamVertexVbo[2]         = { 0 };
 
@@ -171,10 +173,6 @@ void gyVidClearColor(const GYColor4 color) {
     _clearColor.z = (float)color.b*255.0f;
     _clearColor.w = (float)color.a*255.0f;
     glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
-}
-
-void gyVidBindDefaultVertexArray(void) {
-    //glBindVertexArray(_defaultVao[0]);
 }
 
 void gyVidVertexBatchBegin(void (*flushCallback)(void*), void* obj) {
@@ -222,9 +220,9 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
             }
 
             if(GLEW_VERSION_3_2) {
-                _gyLog(GY_DEBUG_VERBOSE, "\tOpenGL 2.1 Extensions detected");
+                _gyLog(GY_DEBUG_VERBOSE, "\tOpenGL 3.2 Extensions detected");
             } else {
-                _gyLog(GY_DEBUG_CRITICAL, "\tOpenGL 2.1 Extensions NOT detected! Prepare for crash!");
+                _gyLog(GY_DEBUG_CRITICAL, "\tOpenGL 3.2 Extensions NOT detected! Prepare for crash!");
             }
 
         #endif
@@ -251,18 +249,21 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
             &glalShadowMapShader
         };
 
+        glGenBuffers(1, &_streamVertexVbo[0]);
+        glBindBuffer(GL_ARRAY_BUFFER, _streamVertexVbo[0]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE, _vertexQueue, GL_STREAM_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
         for(unsigned i = 0; i < 2; ++i) {
             glGenVertexArrays(1, &_streamVao[i]);
             glBindVertexArray(_streamVao[i]);
 
-            glGenBuffers(1, &_streamVertexVbo[i]);
-            glBindBuffer(GL_ARRAY_BUFFER, _streamVertexVbo[i]);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE, _vertexQueue, GL_STREAM_DRAW);
+            glBindBuffer(GL_ARRAY_BUFFER, _streamVertexVbo[0]);
 
             glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_POS]);
             glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_TEX_COORD]);
 
-            glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(GYVertex), 0);
+            glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(GYVertex), (void*)0);
             glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(4*sizeof(float)));
 
 
@@ -278,6 +279,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
             }
         }
         once = 1;
+        glBindVertexArray(0);
     }
 
     return 1;
@@ -296,8 +298,38 @@ void gyVidCamUpdate(const GYCamera *const cam) {
 }
 
 static inline void _flushStreamVertices(void* data) {
+#if 0
+    GLushort* ptr = (GLushort*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, _curArea->lastOffset, sizeof(GLushort)*(elemArraySize-_curArea->lastElemArraySize), GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+    memcpy(ptr, &elemArray[_curArea->lastElemArraySize], sizeof(GLushort)*(elemArraySize-_curArea->lastElemArraySize));
+     glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 
+   //  glDrawElements(GL_TRIANGLE_STRIP, elemArraySize, GL_UNSIGNED_SHORT, elemArray /*nullptr*/);
+
+
+             //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elemArraySize, elemArray, GL_STREAM_DRAW);
+    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elemArraySize, elemArray, GL_STREAM_DRAW);
+     //glDrawElements(GL_TRIANGLE_STRIP, (elemArraySize-_curArea->lastElemArraySize), GL_UNSIGNED_SHORT, (const void*)_curArea->lastOffset);
+     glDrawRangeElements(GL_TRIANGLE_STRIP, _curArea->minIndex, _curArea->maxIndex,  (elemArraySize-_curArea->lastElemArraySize), GL_UNSIGNED_SHORT, (const void*)_curArea->lastOffset);
+     _curArea->lastElemArraySize = elemArraySize;
+     _curArea->lastOffset = elemArraySize*sizeof(GLushort);
+
+
+
+#endif
+
+
+
+    if(_vertexQueueSize-_vertexQueueLastSize <= 0) return;
     glBindVertexArray(_streamVao[gyVidShadowPass()]);
+    GYVertex* ptr = (GYVertex*)glMapBufferRange(GL_ARRAY_BUFFER, _vertexQueueLastOffset, sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize), GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+   // if(ptr) {
+    memcpy(ptr, &_vertexQueue[_vertexQueueLastSize], sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize));
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+
+    glDrawArrays(GL_TRIANGLE_STRIP, _vertexQueueLastSize, (_vertexQueueSize-_vertexQueueLastSize));
+//}
+    _vertexQueueLastSize    = _vertexQueueSize;
+    _vertexQueueLastOffset  = _vertexQueueSize*sizeof(GYVertex);
 
 }
 
@@ -434,15 +466,18 @@ void gyVidQuadListBegin(const GYColor4 *const color) {
     _curQuadListColor[2] = *color;
     _curQuadListColor[3] = *color;
     _curColorArrayPtr = _curQuadListColor;
+    glBindVertexArray(_streamVao[gyVidShadowPass()]);
+    gyVidVertexBatchBegin(&_flushStreamVertices, NULL);
 }
 
 void gyVidQuadListEnd(void) {
+    gyVidVertexBatchFlush();
+    gyVidVertexBatchEnd();
     //gyVidTexCoordArray(_stripTexCoords);
     //gyVidNormalArray(_stripNormals);
     //gyVidTangentArray(_stripTangents);
    // gyVidColorArray(_stripColors);
   //  _gyVidTriangleStrip(_modelViewVertices, 0, glalCurStripSize);
-    glalCurStripSize = 0;
     _curTexCoordPtr = NULL;
     _curColorArrayPtr = NULL;
 }
@@ -488,61 +523,74 @@ void gyVidRectTexOrient(const GY_RECT_TEX_ORIENT orient) {
 
 
 void gyVidQuad(const GYVector4 *const verts, const int frame) {
+    GYVector4           worldVerts[4];
     const GYTexCoord2*  coord;
     const GYVector3*    tangent;
     const GYVector3*    normal;
-    float               zFactor;
 
-    if(!gyVidShadowPass()) {
+   // if(!gyVidShadowPass()) {
         tangent = &glalRectTangents[glalRectTexOrient];
-
         normal = glalPlaneNormalVector(glalNormalMapActive, glalPlaneType, glalRectTexOrient);
 
         //update flip flag for normal map texture flipping to correct normals in fragment shader
-        zFactor = glalOrientNormalMapZFactor(glalRectTexOrient);
-        if(zFactor != glalNormalMapZFactor) {
-            glalStripComboBreaker();
-            glalVidNormalMapZFactorUpdateUniform(zFactor);
-        }
+        glalVidNormalMapZFactorUpdateUniform(glalOrientNormalMapZFactor(glalRectTexOrient));
 
+        gyMatMultVec(verts, worldVerts, 4);
         //Connect current and previous polys with degenerate triangles to continue batching operation
-        if(glalCurStripSize) {
-        //    gyMatMultVec(verts, &_modelViewVertices[glalCurStripSize+2], 4);
-       //     _modelViewVertices[glalCurStripSize] = _modelViewVertices[glalCurStripSize-1];
+        if(_vertexQueueSize) {
 
-        //    _modelViewVertices[glalCurStripSize+1] = _modelViewVertices[glalCurStripSize+2];
-            glalCurStripSize += 2;
+            for(unsigned i = 0; i < 4; ++i) {
+                _vertexQueue[_vertexQueueSize+i+2].pos      = worldVerts[i];
+                _vertexQueue[_vertexQueueSize+i+2].normal   = *normal;
+                _vertexQueue[_vertexQueueSize+i+2].tangent  = *tangent;
+            }
+
+            _vertexQueue[_vertexQueueSize].pos      = _vertexQueue[_vertexQueueSize-1].pos;
+            _vertexQueue[_vertexQueueSize+1].pos    = _vertexQueue[_vertexQueueSize+2].pos;
+
+            _vertexQueueSize += 2;
         } else {
-      //      gyMatMultVec(verts, &_modelViewVertices[glalCurStripSize], 4);
+
+            for(unsigned i = 0; i < 4; ++i) {
+                _vertexQueue[_vertexQueueSize+i].pos        = worldVerts[i];
+                _vertexQueue[_vertexQueueSize+i].normal     = *normal;
+                _vertexQueue[_vertexQueueSize+i].tangent    = *tangent;
+            }
         }
 
-      //  _stripColors[glalCurStripSize]      = _curColorArrayPtr[0];
-     //   _stripColors[glalCurStripSize+1]    = _curColorArrayPtr[1];
-     //   _stripColors[glalCurStripSize+2]    = _curColorArrayPtr[2];
-    //    _stripColors[glalCurStripSize+3]    = _curColorArrayPtr[3];
+        _vertexQueue[_vertexQueueSize].color      = _curColorArrayPtr[0];
+        _vertexQueue[_vertexQueueSize+1].color    = _curColorArrayPtr[1];
+        _vertexQueue[_vertexQueueSize+2].color    = _curColorArrayPtr[2];
+        _vertexQueue[_vertexQueueSize+3].color    = _curColorArrayPtr[3];
 
-      //  _stripNormals[glalCurStripSize]         = *normal;
-     //   _stripNormals[glalCurStripSize+2]      = *normal;
-      //  _stripNormals[glalCurStripSize+3]      = *normal;
-      //  _stripNormals[glalCurStripSize+4]      = *normal;
-
-       // _stripTangents[glalCurStripSize]         = *tangent;
-      //  _stripTangents[glalCurStripSize+2]      = *tangent;
-      //  _stripTangents[glalCurStripSize+3]      = *tangent;
-     //   _stripTangents[glalCurStripSize+4]      = *tangent;
-    }
+   // }
 
     if(glalCurTex) {
         coord = (frame != -1)? gyVidTexCoordArrayFromFrame(&glalCurTex->_coord->texCoord[frame], glalRectTexOrient) :
                                _curTexCoordPtr;
 
+        for(unsigned i = 0; i < 4; ++i) {
+            _vertexQueue[_vertexQueueSize+i].texCoord = coord[i];
+        }
+
      //   memcpy(&_stripTexCoords[glalCurStripSize], coord, sizeof(GYTexCoord2)*4);
 
 	}
 
-    glalCurStripSize += 4;
+    _vertexQueueSize += 4;
 
-    assert(glalCurStripSize < GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE);
+    if((_vertexQueueSize + 6) >= GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE) {
+        gyVidVertexBatchFlush();
+
+        _vertexQueueSize = 0;
+        _vertexQueueLastSize = 0;
+        _vertexQueueLastOffset = 0;
+    glBindVertexArray(_streamVao[gyVidShadowPass()]);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE, NULL, GL_STREAM_DRAW);
+    }
+
+
+    //assert(_vertexQueue < GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE);
 }
 
 void gyVidRect(const int frame) {
