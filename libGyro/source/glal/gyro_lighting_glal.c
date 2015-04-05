@@ -21,7 +21,7 @@ int gyVidShadowPass(void) {
 }
 
 void gyVidLightingSetEnable(const int enabled) {
-    GYVector4 noAmbience = { 0.0f, 0.0f, 0.0f, 0.0f };
+    GYVector4 noAmbience = { 1.0f, 1.0f, 1.0f, 1.0f };
     glalLightingEnabled = enabled;
 
     if(glalLightingEnabled !=  enabled) {
@@ -522,6 +522,7 @@ void glalGetPointLightViewVolume(GYViewVolume* const vol, GYLightSource* lightSr
 }
 
 void gyVidLightSourceBeginShadowPasses(void) {
+    gyVidVertexBatchFlush();
     gyVidSetCurrentShaderProgram(glalShadowMapShader.program);
     glalCurLightShader = &glalShadowMapShader;
     _shadowPass = 1;
@@ -537,6 +538,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 	_LightInternals* internals = light->_data;
     GYCamera*const cam = light->camera;
 
+    gyVidVertexBatchFlush();
     glFlush();
     glViewport(0, 0, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE);
 
@@ -662,6 +664,7 @@ void gyVidLightSourceEndShadowPasses(void) {
 	//glalDefaultShadersLoadUniforms();
     glalCurLightShader = &glalLightingShader;
    // glFlush();
+   gyVidVertexBatchFlush();
     glalVidBindDefaultFbo();
 	unsigned width, height;
 	gyVidResolution(&width, &height);
