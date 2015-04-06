@@ -230,13 +230,15 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         glalLoadDefaultShaders();
         gyVidSetDefaultShaderProgram();
         glalDefaultShadersLoadUniforms();
+        //HAVE TO SET DEFAULT GL STATES OR THE STATE CACHES WILL BE DIRTY
         glDisable(GL_CULL_FACE);
         //gyVidDepthTest(0);
         //gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
         //gyVidAlphaLevel(GY_ALPHA_NONE);
     //    glEnable(GL_DEPTH_TEST);
-    //    glDisable(GL_BLEND);
-     //   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDisable(GL_BLEND);
+       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glDisable(GL_DEPTH_TEST);
       //  glDepthFunc(GL_LESS);
      //   glClearDepth(1.0f);
     //    glBindBuffer(GL_ARRAY_BUFFER, 0);
