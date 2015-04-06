@@ -302,7 +302,7 @@ break;
           //  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo);
         // glBufferData(GL_ELEMENT_ARRAY_BUFFER, );
 
-       GLushort* ptr = (GLushort*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, _curArea->lastOffset, sizeof(GLushort)*(elemArraySize-_curArea->lastElemArraySize), GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+       GLushort* ptr = (GLushort*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, _curArea->lastOffset, sizeof(GLushort)*(elemArraySize-_curArea->lastElemArraySize), GL_MAP_INVALIDATE_RANGE_BIT /*| GL_MAP_FLUSH_EXPLICIT_BIT*/ | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
        memcpy(ptr, &elemArray[_curArea->lastElemArraySize], sizeof(GLushort)*(elemArraySize-_curArea->lastElemArraySize));
         glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 

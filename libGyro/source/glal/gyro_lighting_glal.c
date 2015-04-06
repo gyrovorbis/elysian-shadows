@@ -638,7 +638,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
              glClear(GL_DEPTH_BUFFER_BIT);
    //  if(_firstShadowPass) {
 
-        gyVidDepthTest(1);
+        //gyVidDepthTest(1);
         glDepthMask(GL_TRUE);
         glEnable(GL_DEPTH_TEST);
         //glEnable(GL_BLEND);
@@ -663,16 +663,16 @@ void gyVidLightSourceEndShadowPasses(void) {
 	gyVidSetDefaultShaderProgram();
 	//glalDefaultShadersLoadUniforms();
     glalCurLightShader = &glalLightingShader;
-   // glFlush();
+    glFlush();
    gyVidVertexBatchFlush();
     glalVidBindDefaultFbo();
 	unsigned width, height;
 	gyVidResolution(&width, &height);
 	glViewport(0, 0, width, height);
 
-    gyVidDepthTest(0);
+    //gyVidDepthTest(0);
     glDepthMask(GL_TRUE);
-    //glDisable(GL_DEPTH_TEST);
+    glDisable(GL_DEPTH_TEST);
     //glEnable(GL_BLEND);
     //glEnable(GL_BLEND);
     glDepthFunc(GL_LEQUAL);

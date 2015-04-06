@@ -61,8 +61,10 @@ namespace elysian {
 			assert((char *)&_vertColor == ((char*)&_color+4));
 			gyVidTexBind(_tex);
 			gyVidAlphaLevel(GY_ALPHA_FULL);
+            gyVidQuadListBegin(&_color);
 			gyVidColorArray(&_color);
-			gyVidTriangleStrip((verts)? verts :_verts, 0, 4);
+            gyVidQuad((verts)? verts :_verts, _frame);
+            gyVidQuadListEnd();
 		}
 
 		PrimAttrib::TYPE getType(void) const { return PrimAttrib::QUAD_SPRITE; }
