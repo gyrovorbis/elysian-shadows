@@ -98,7 +98,7 @@ int gyVidShadowPass(void);
 //Shader manipulation
 void gyVidSetCurrentShaderProgram(struct _GYShaderProgram*const program);
 void gyVidSetDefaultShaderProgram(void);
-void gyVidBindDefaultVertexArray(void);
+//void gyVidBindDefaultVertexArray(void);
 
 void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type);
 void gyVidLightSourceUninit(GYLightSource* const light);
