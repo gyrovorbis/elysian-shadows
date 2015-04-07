@@ -78,7 +78,7 @@ void gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsign
 struct spSkeleton;
 void gyVidSkeleton(const struct spSkeleton*const skeleton);
 
-
+void gyVidVertexArrayBind(int id);
 void gyVidVertexBatchBegin(void (*flushCallback)(void*), void* obj);
 void gyVidVertexBatchEnd(void);
 void gyVidVertexBatchFlush(void);

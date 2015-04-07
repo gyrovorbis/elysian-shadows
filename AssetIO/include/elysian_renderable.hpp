@@ -128,10 +128,8 @@ namespace elysian {
 
     inline void Renderable::render(void) {
 
-        if(_spriteAttrib->_color.a == 0.0f) return;
-       gyVidAlphaLevel((_spriteAttrib->_color.a == 255)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
-        gyVidAlphaLevel(GY_ALPHA_FULL);
-        gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
+
+     //   gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
 
         gyVidTexBind(_spriteAttrib->_tex);
         gyVidNormalMapBind(_normalMap);
@@ -143,10 +141,21 @@ namespace elysian {
         //branch assumes shit will usually be depth buffered
 
         gyVidRectPlaneType(_entity->getPlaneType());
+        bool alpha = false;
 
         //Submit vertices
         switch(_spriteAttrib->getType()) {
         case PrimAttrib::QUAD_SPRITE:
+
+            for(unsigned i = 0; i < 4; ++i) {
+                if(static_cast<QuadSpriteAttrib*>(_spriteAttrib)->getVertexAlpha(i) != 255) {
+                    alpha = true;
+                    break;
+                }
+            }
+
+             gyVidAlphaLevel((alpha)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
+
             gyVidQuadListBegin(&_spriteAttrib->_color);
          //   gyVidAlphaLevel(GY_ALPHA_FULL);
             gyVidColorArray(&_spriteAttrib->_color);
@@ -163,6 +172,8 @@ namespace elysian {
             gyVidQuadListEnd();
             break;
         case PrimAttrib::SPRITE:
+            if(_spriteAttrib->_color.a == 0.0f) return;
+            gyVidAlphaLevel((_spriteAttrib->_color.a == 255)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
             gyVidQuadListBegin(&_spriteAttrib->_color);
 
             if(_frame == -1) {

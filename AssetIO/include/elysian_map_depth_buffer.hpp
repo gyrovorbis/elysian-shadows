@@ -299,7 +299,7 @@ namespace elysian {
 //_enableDepthTest();
             _renderDepthBuffTileRow(i, NORMAL_FLAT);
 
-            //_renderCustomPassAtElev(i, NORMAL_FLAT);
+            _renderCustomPassAtElev(i, NORMAL_FLAT);
 
 			//if(_entityCount[i]) {
 				//_endObjectList();
@@ -317,7 +317,6 @@ namespace elysian {
                     } while(!entityRow[endIndex].xOverlap);
 
                     do {
-                        //glalStripComboBreaker();
                         const uint32_t activeLights = _startLightPass(lightsLeft);
 
                         for(int k = j; k <= endIndex; ++k) {
@@ -349,7 +348,7 @@ namespace elysian {
 
             _renderDepthBuffTileRow(i, NORMAL_FRONT);
 
-            //_renderCustomPassAtElev(i, NORMAL_FRONT);
+            _renderCustomPassAtElev(i, NORMAL_FRONT);
                       
         }
 
@@ -378,7 +377,7 @@ namespace elysian {
             _objectBuffImmediateCount = 0;
             _queued = 0;
             lightsLeft = onscreenLights;
-            static_cast<T*>(this)->flushTileBuffer();
+           // static_cast<T*>(this)->flushTileBuffer();
             _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
 
 
@@ -422,7 +421,6 @@ namespace elysian {
             if(_objectBuffImmediateCount) {
                 //Make a pass through immediate tile multiplass buffer
                // _disableDepthTest();
-                static_cast<T*>(this)->flushTileBuffer();
                 _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
                 for(unsigned j = 0; j < _objectBuffImmediateCount; ++j) {
                     _renderOrQueueTileEntry(j, _objectBuffImmediate[j]);
@@ -434,7 +432,7 @@ namespace elysian {
                     _queued = 0;
                     _curRow = _nextRow;
                     _nextRow = !_curRow;
-                    static_cast<T*>(this)->flushTileBuffer();
+                    //static_cast<T*>(this)->flushTileBuffer();
                     _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
                     for(unsigned j = 0; j < count; ++j) {
                         _renderOrQueueTileEntry(j, _objectBuffImmediate[_queue[_curRow][j]]);
@@ -443,9 +441,9 @@ namespace elysian {
             }
         }
 
-        static_cast<T*>(this)->flushTileBuffer();
-        static_cast<T*>(this)->unbindTileBuffer();
-        //_renderCustomPassImmediate();
+        //static_cast<T*>(this)->flushTileBuffer();
+        //static_cast<T*>(this)->unbindTileBuffer();
+        _renderCustomPassImmediate();
 	}
 
 	template<typename T, typename O, typename E>
@@ -471,7 +469,7 @@ namespace elysian {
             _queued = 0;
             _lightsRendered = 0;
             _objectRowLights[normalType][i] = totalLights;
-            static_cast<T*>(this)->flushTileBuffer();
+            //static_cast<T*>(this)->flushTileBuffer();
             _lightsRendered |= _lightsActive = _startLightPass(_objectRowLights[normalType][i]);
             for(unsigned j = 0; j < _objectCount[i]; ++j) {
                 if(multipass && _objectBuff[i][j].layer != l) continue;
@@ -485,7 +483,7 @@ namespace elysian {
                     _queued = 0;
                     _curRow = _nextRow;
                     _nextRow = !_curRow;
-                    static_cast<T*>(this)->flushTileBuffer();
+                    //static_cast<T*>(this)->flushTileBuffer();
                     ++stateChanges;
                     _lightsRendered |= _lightsActive = _startLightPass(_objectRowLights[normalType][i]);
                     for(unsigned j = 0; j < count; ++j) {
@@ -497,8 +495,8 @@ namespace elysian {
 
        // Debug::printf(Debug::VERBOSE, "stateChanges - %d", stateChanges);
 
-        static_cast<T*>(this)->flushTileBuffer();
-       static_cast<T*>(this)->unbindTileBuffer();
+       // static_cast<T*>(this)->flushTileBuffer();
+       //static_cast<T*>(this)->unbindTileBuffer();
 	}
 }
 

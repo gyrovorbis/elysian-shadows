@@ -53,7 +53,7 @@ namespace elysian {
                 _color.a = alpha;
             }
         }
-        float getVertexAlpha(const unsigned short index) const { return (index > 0)? _vertColor[index-1].a : _color.a; }
+        unsigned char getVertexAlpha(const unsigned short index) const { return (index > 0)? _vertColor[index-1].a : _color.a; }
 
 
 		virtual void submitVerts(GYVector4 *verts = nullptr) {

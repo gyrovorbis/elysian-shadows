@@ -285,51 +285,45 @@ void AreaBase::populateVbo(void) {
     glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*width*height*ELYSIAN_AREA_MAP_LAYERS*4, data, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-
-
-    for(unsigned i = 0; i < ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO; ++i) elementsArraySyncs[i] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
+    free(data);
 
     _LightingShaderProgram* shaders[2] = {
         &glalLightingShader,
         &glalShadowMapShader
     };
 
-    for(unsigned i = 0; i < 2; ++i) {
 
-        for(unsigned j = 0; j < ELYSIAN_MAP_SYSTEM_VAOS; ++j) {
-        glGenVertexArrays(1, &vao[i][j]);
-        glBindVertexArray(vao[i][j]);
+    for(unsigned j = 0; j < 2; ++j) {
+        glGenVertexArrays(1, &vao[j]);
+        gyVidVertexArrayBind(vao[j]);
 
-        glGenBuffers(1, &elementVbo[i][j]);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementVbo[i][j]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elementsPerSegment*ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO, elementsArray, GL_STREAM_DRAW);
+        glGenBuffers(1, &elementVbo[j]);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementVbo[j]);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE, elementsArray, GL_STREAM_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
 
-    glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_POS]);
-    glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_TEX_COORD]);
+    glEnableVertexAttribArray(shaders[j]->attribLoc[GLAL_SHADER_POS]);
+    glEnableVertexAttribArray(shaders[j]->attribLoc[GLAL_SHADER_TEX_COORD]);
 
-    glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(GYVertex), 0);
-    glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(4*sizeof(float)));
+    glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_POS], 4, GL_FLOAT, GL_FALSE, sizeof(GYVertex), 0);
+    glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(4*sizeof(float)));
 
 
-    if(i == 0) { //light VAO
-        glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_COLOR]);
-        glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_NORMAL]);
-        glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_TANGENT]);
+    if(j == 0) { //light VAO
+        glEnableVertexAttribArray(shaders[j]->attribLoc[GLAL_SHADER_COLOR]);
+        glEnableVertexAttribArray(shaders[j]->attribLoc[GLAL_SHADER_NORMAL]);
+        glEnableVertexAttribArray(shaders[j]->attribLoc[GLAL_SHADER_TANGENT]);
 
-        glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GYVertex), (void*)(6*sizeof(float)));
-        glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(7*sizeof(float)));
-        glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(10*sizeof(float)));
+        glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GYVertex), (void*)(6*sizeof(float)));
+        glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(7*sizeof(float)));
+        glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(10*sizeof(float)));
 
     }
         }
-}
 
    // glGenBuffers(1, &elementVbo);
   // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementVbo);
  //   glBufferData(GL_ELEMENT_ARRAY_BUFFER, ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE*sizeof(GLushort), &elementsArray[0], GL_DYNAMIC_DRAW);
-    glBindVertexArray(0);
 
 
     vboPopulated = true;

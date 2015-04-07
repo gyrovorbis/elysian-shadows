@@ -9,7 +9,7 @@
 
 #include <QMouseEvent>
 #include <spine/spine.h>
-//#include <QOpenGLContext>
+#include <QOpenGLContext>
 //#undef QT_NO_KEYWORDS
 
 
@@ -41,7 +41,7 @@ bool EngineGLSceneWidget::isPlaying(void) const { return getAssets()->getEngine(
 void EngineGLSceneWidget::initializeGL(void) {
  //   auto* con = context();
   //  assert(con->isValid());
-    makeCurrent();
+  //  makeCurrent();
    // initializeGLFunctions();
    // doneCurrent();
 
@@ -53,7 +53,7 @@ void EngineGLSceneWidget::initializeGL(void) {
 
      _mapView->setSceneRect(0, 0, parentWidth, parentHeight);
 
-     doneCurrent();
+   //  doneCurrent();
 
 }
 
@@ -103,15 +103,18 @@ void EngineGLSceneWidget::startRenderTimer(void) {
     timerEvent(nullptr); //go ahead and update the nigger.
 }
 
+void EngineGLSceneWidget::showEvent(QShowEvent *event) {
+    //startRenderTimer();
+}
+
 
 void EngineGLSceneWidget::timerEvent(QTimerEvent *)
 {
-
     makeCurrent();
     update();
      //       _mapView->scene()->invalidate();
-    _mapView->update();
-    _mapView->updateSceneRect(_mapView->rect());
+    //_mapView->update();
+    _mapView->updateSceneRect(_mapView->sceneRect());
     paintGL();
 
         unsigned parentWidth    = parentWidget()->size().width();
@@ -152,9 +155,12 @@ void EngineGLSceneWidget::paintGL(void) {
     spAnimationState_apply(state, skeleton);
     spSkeleton_updateWorldTransform(skeleton);
 
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gyMatLoadIdentity();
+
+        getAssets()->getEngine()->render(&_renderSpineShit);
+
+    context()->swapBuffers(context()->surface()); // DO QOPENGL WIDGET'S FUCKING JOB FOR IT!
 
     getAssets()->getEngine()->update();
     getAssets()->getEngine()->processInput();
@@ -173,20 +179,19 @@ void EngineGLSceneWidget::paintGL(void) {
         getAssets()->getEngine()->getCameraSys()->setBoundByMap(true);
     }
 
-    getAssets()->getEngine()->render(&_renderSpineShit);
 
     Q_EMIT engineUpdated();
 }
 
 EngineGLSceneWidget::~EngineGLSceneWidget(void){}
-
+/*
 QSize EngineGLSceneWidget::sizeHint(void) const {
     if(getAssets()->getCurArea()) {
         return QSize(getAssets()->getCurArea()->getMapWidth()*32.0f, getAssets()->getCurArea()->getMapHeight()*32.0f);
     }
     return QSize(10,10);
 }
-
+*/
 void EngineGLSceneWidget::setCameraManualOnPlay(const bool val) {
     _cameraManualOnPlay = val;
 

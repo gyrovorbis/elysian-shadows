@@ -12,11 +12,7 @@
 
 #define ELYSIAN_MAP_BOUNDARY_CHECKS false //PLEASE, GOD, TAKE ME OUT BEFORE RELEASE!!!!!!
 #define ELYSIAN_AREA_USE_INIT_LUA	true
-#define ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE	100000
-#define ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO             1
-
-#define ELYSIAN_MAP_SYSTEM_VAOS     1
-#define ELYSIAN_MAP_SYSTEM_VBOS     1
+#define ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE	(1024*1024)
 
 #define ELYSIAN_AREA_MAP_LAYERS		3
 #define ELYSIAN_AREA_MAP_WIDTH		200
@@ -144,20 +140,17 @@ namespace elysian {
 		unsigned			layerEntryCount	= 0;
 
         GLuint              vertexVbo       = 0;
-        GLuint              elementVbo[2][ELYSIAN_MAP_SYSTEM_VAOS]      ={ {0} };
-        GLuint              vao[2][ELYSIAN_MAP_SYSTEM_VAOS]          = {{0}};
+        GLuint              elementVbo[2]      = {0} ;
+        GLuint              vao[2]          = {0};
         bool                vboPopulated    = false;
         bool                activated       = false;
 
-        GLushort    		elementsArray[ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE] __attribute__((aligned(32))) = { 1 };
-        const unsigned      elementsPerSegment = ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE;
-        GLsync              elementsArraySyncs[ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO];
-        unsigned            elementsCurSegment = 0;
-        int			elementsArraySize[ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO] = {0};
-        int lastElemArraySize = 0;
-        int lastOffset = 0;
-        int minIndex = INT_MAX;
-        int maxIndex = 0;
+        GLushort    		elementsArray[2][ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE] __attribute__((aligned(32)));
+        int			elementsArraySize[2] = {0};
+        int lastElemArraySize[2] = {0};
+        int lastOffset[2] = {0};
+        int minIndex[2] = {INT_MAX};
+        int maxIndex[2] = {0};
 
         //AreaBase(void);
         ~AreaBase(void);

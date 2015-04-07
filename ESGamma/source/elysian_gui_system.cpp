@@ -238,9 +238,9 @@ void GuiSystem::renderBackground(void) {
 }
 
 void GuiSystem::renderForeground(void) {
+
     gyVidAlphaLevel(GY_ALPHA_FULL);
     gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
-        //        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     gyVidDepthTest(false);
     _renderDebugOverlay();
     if(_fgFadeAlpha == 0.0f) return;

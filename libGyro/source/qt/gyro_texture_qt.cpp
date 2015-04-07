@@ -31,7 +31,7 @@ int _gyVidTexAlloc(GYTexture *const tex) {
 
  //   tex->_pixmap = QPixmap(QString(tex->filename));
     QOpenGLTexture* glTexture = new QOpenGLTexture(QOpenGLTexture::Target2D);
-    //glTexture->setFormat(QOpenGLTexture::RGBA);
+   // glTexture->setFormat(QOpenGLTexture::RGBA8_UNorm);
     glTexture->setData(pixmap, QOpenGLTexture::DontGenerateMipMaps);
     glTexture->bind();
     //((QOpenGLContext*)current)->bindTexture(pixmap, GL_TEXTURE_2D, GL_RGBA,  QOpenGLContext::NoBindOption);

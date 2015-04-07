@@ -110,6 +110,7 @@ void gyVidDbgTexMapUniform(const int unit) {
 
 void gyVidSetCamWorldPos(const GYVector3*const pos) {
     if(pos->x == glalCamWorldPos.x && pos->y == glalCamWorldPos.y && pos->z == glalCamWorldPos.z) return;
+    gyVidVertexBatchFlush();
     glalCamWorldPos = *pos;
     glUniform3fv(glalCurLightShader->uniformLoc[GLAL_SHADER_CAM_WORLD_POS], 1, (float*)&glalCamWorldPos);
     ++glalUniformChangeCount;

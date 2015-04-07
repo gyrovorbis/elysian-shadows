@@ -43,13 +43,15 @@ void MapView::onLayerChange(Assets::LAYER_TYPE type) {
 }
 
 void MapView::onAreaChange(Area * const area) {
-    if(area) _curUndoItem->setArea(area);
+    if(area) { _curUndoItem->setArea(area);
     //move over cursor entity
 
+    //setSceneRect(-16, -16, 32.0f*getAssets()->getCurArea()->width, 32.0f*getAssets()->getCurArea()->height);
+}
     if(getAssets()->getCurrentArea()) getAssets()->getCurrentArea()->removeEntity(_cursorEntity);
     if(area) {
         area->addEntity(_cursorEntity);
-        //_updateScrollBars();
+        _updateScrollBars();
     }
 
     _entityClearSelection();
@@ -346,7 +348,7 @@ void MapView::wheelEvent(QWheelEvent* event) {
     //_zoomLabel->setText(QString::number((int)(getAssets()->getEngine()->getCameraSys()->getKeyFrame().getScale()*getAssets()->getEngine()->getCameraSys()->getStaticScale()*100.0f))+QString("%"));
     mouseMoveEvent(nullptr);
 
-   // event->ignore();
+    event->ignore();
 }
 
 void MapView::mouseMoveEvent(QMouseEvent *event) {
@@ -528,19 +530,19 @@ void MapView::_updateScrollBars(void) {
     QSize viewSize = viewport()->size();
     QSize sceneSize(getAssets()->getCurArea()->getMapWidth() * 32.0f, getAssets()->getCurArea()->getMapHeight() * 32.0f);
 
-    verticalScrollBar()->setEnabled(true);
-    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-    verticalScrollBar()->setVisible(true);
-    horizontalScrollBar()->setEnabled(true);
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-    horizontalScrollBar()->setVisible(true);
-
+    verticalScrollBar()->setEnabled(false);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    verticalScrollBar()->setVisible(false);
+    horizontalScrollBar()->setEnabled(false);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    horizontalScrollBar()->setVisible(false);
+/*
     verticalScrollBar()->setPageStep(viewSize.height());
     horizontalScrollBar()->setPageStep(viewSize.width());
 
     verticalScrollBar()->setRange(0, sceneSize.height()-viewSize.height());
     horizontalScrollBar()->setRange(0, sceneSize.width()-viewSize.width());
-
+*/
 }
 
 void MapView::createSelectionItemGroup(void) {

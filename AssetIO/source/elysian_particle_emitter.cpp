@@ -268,7 +268,7 @@ void ParticleEmitterInternals::renderAtElev(const unsigned char elev) {
 
         }
 
-        gyVidRectPlaneType((*it).flat? GY_RECT_PLANE_BOTTOM : GY_RECT_PLANE_FRONT);
+       // gyVidRectPlaneType((*it).flat? GY_RECT_PLANE_BOTTOM : GY_RECT_PLANE_FRONT);
 
 		gyMatPush();
 		gyVidQuadListBegin(&(*it).color);

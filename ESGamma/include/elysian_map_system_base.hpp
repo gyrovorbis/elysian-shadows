@@ -66,8 +66,6 @@ namespace elysian {
 		//toggles
 		bool _animate;
         //stats
-        unsigned _renderCount;
-        bool    _blendPass = false;
 
 		void updateAnimation(void);
 
@@ -122,7 +120,6 @@ namespace elysian {
         void        setAnimate(const bool v);
         bool        getRenderTileLayer(const unsigned short int layer) const;
         void        setRenderTileLayer(const unsigned short int layer, const bool v);
-        unsigned    getRenderCount(void) const { return _renderCount; }
 
 	};
 
@@ -158,8 +155,8 @@ namespace elysian {
     inline void MapSystemBase<P, T, E>::renderObjectEntry(const T& entry, const float /*z*/) {
 		if(!_renderLayer[entry.layer]) return; //Don't render if this layer has been toggled off.
 
-         auto& elemArraySize = _curArea->elementsArraySize[0];
-         auto* elemArray     = &_curArea->elementsArray[0];
+         auto& elemArraySize = _curArea->elementsArraySize[gyVidShadowPass()];
+         auto* elemArray     = _curArea->elementsArray[gyVidShadowPass()];
 
         if(!gyVidShadowPass()) {
             const GY_RECT_PLANE_TYPE      newPlane = entry.mapEntry.getPlane();
@@ -206,8 +203,8 @@ namespace elysian {
         }
 
         auto checkIndex = [&](const unsigned short index) {
-            if(index < _curArea->minIndex) _curArea->minIndex = index;
-            if(index > _curArea->maxIndex) _curArea->maxIndex = index;
+            if(index < _curArea->minIndex[gyVidShadowPass()]) _curArea->minIndex[gyVidShadowPass()] = index;
+            if(index > _curArea->maxIndex[gyVidShadowPass()]) _curArea->maxIndex[gyVidShadowPass()] = index;
             return index;
         };
 
@@ -217,15 +214,15 @@ namespace elysian {
         elemArray[elemArraySize+3]    = checkIndex(indices[3]);
         elemArraySize += 4;
 
-        if(elemArraySize + 6 >= (int)_curArea->elementsPerSegment) {
+        if(elemArraySize + 6 >= ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE) {
             flushTileBuffer();
             elemArraySize = 0;
-            _curArea->lastOffset = 0;
+            _curArea->lastOffset[gyVidShadowPass()] = 0;
            // _curArea->minIndex = INT_MAX;
            // _curArea->maxIndex = 0;
-            _curArea->lastElemArraySize = 0;
-                    glBindVertexArray(_curArea->vao[gyVidShadowPass()][0]);
-           glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*this->_curArea->elementsPerSegment*ELYSIAN_MAP_SYSTEM_SEGMENTS_PER_VBO, nullptr, GL_STREAM_DRAW);
+            _curArea->lastElemArraySize[gyVidShadowPass()] = 0;
+            gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
+           glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE, nullptr, GL_STREAM_DRAW);
         }
 }
 
@@ -246,7 +243,7 @@ namespace elysian {
 
         gyVidVertexBatchBegin(&flushVertexBatchCallback, this);
 
-        glBindVertexArray(_curArea->vao[gyVidShadowPass()][0]);
+//        glBindVertexArray(_curArea->vao[gyVidShadowPass()][0]);
 
        // glBindVertexArray(_curArea->vao[gyVidShadowPass()][0]);
 	}
@@ -259,9 +256,9 @@ namespace elysian {
 	
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::flushTileBuffer(void) {
-        auto& elemArraySize = _curArea->elementsArraySize[0];
-        auto* elemArray     = &_curArea->elementsArray[0];
-        if(elemArraySize-_curArea->lastElemArraySize == 0) return;
+        auto& elemArraySize = _curArea->elementsArraySize[gyVidShadowPass()];
+        auto* elemArray     = _curArea->elementsArray[gyVidShadowPass()];
+        if(elemArraySize-_curArea->lastElemArraySize[gyVidShadowPass()] == 0) return;
 
 
 
@@ -297,13 +294,13 @@ break;
 
         //assert(elemArraySize <= maxi);
        // assert(elemArraySize < ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE);
-
+gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
          // glDeleteSync(_curArea->elementsArraySyncs[_curArea->elementsCurSegment]);
           //  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo);
         // glBufferData(GL_ELEMENT_ARRAY_BUFFER, );
 
-       GLushort* ptr = (GLushort*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, _curArea->lastOffset, sizeof(GLushort)*(elemArraySize-_curArea->lastElemArraySize), GL_MAP_INVALIDATE_RANGE_BIT /*| GL_MAP_FLUSH_EXPLICIT_BIT*/ | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
-       memcpy(ptr, &elemArray[_curArea->lastElemArraySize], sizeof(GLushort)*(elemArraySize-_curArea->lastElemArraySize));
+       GLushort* ptr = (GLushort*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, _curArea->lastOffset[gyVidShadowPass()], sizeof(GLushort)*(elemArraySize-_curArea->lastElemArraySize[gyVidShadowPass()]), GL_MAP_INVALIDATE_RANGE_BIT /*| GL_MAP_FLUSH_EXPLICIT_BIT*/ | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+       memcpy(ptr, &elemArray[_curArea->lastElemArraySize[gyVidShadowPass()]], sizeof(GLushort)*(elemArraySize-_curArea->lastElemArraySize[gyVidShadowPass()]));
         glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 
        // glDrawElements(GL_TRIANGLE_STRIP, elemArraySize, GL_UNSIGNED_SHORT, elemArray /*nullptr*/);
@@ -311,13 +308,13 @@ break;
 
                 //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elemArraySize, elemArray, GL_STREAM_DRAW);
        // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elemArraySize, elemArray, GL_STREAM_DRAW);
-        //glDrawElements(GL_TRIANGLE_STRIP, (elemArraySize-_curArea->lastElemArraySize), GL_UNSIGNED_SHORT, (const void*)_curArea->lastOffset);
-        glDrawRangeElements(GL_TRIANGLE_STRIP, _curArea->minIndex, _curArea->maxIndex,  (elemArraySize-_curArea->lastElemArraySize), GL_UNSIGNED_SHORT, (const void*)_curArea->lastOffset);
-        _curArea->lastElemArraySize = elemArraySize;
-        _curArea->lastOffset = elemArraySize*sizeof(GLushort);
+        glDrawElements(GL_TRIANGLE_STRIP, (elemArraySize-_curArea->lastElemArraySize[gyVidShadowPass()]), GL_UNSIGNED_SHORT, (const void*)_curArea->lastOffset[gyVidShadowPass()]);
+        //glDrawRangeElements(GL_TRIANGLE_STRIP, _curArea->minIndex[gyVidShadowPass()], _curArea->maxIndex[gyVidShadowPass()],  (elemArraySize-_curArea->lastElemArraySize[gyVidShadowPass()]), GL_UNSIGNED_SHORT, (const void*)_curArea->lastOffset[gyVidShadowPass()]);
+        _curArea->lastElemArraySize[gyVidShadowPass()] = elemArraySize;
+        _curArea->lastOffset[gyVidShadowPass()] = elemArraySize*sizeof(GLushort);
 
-        _curArea->minIndex = INT_MAX;
-        _curArea->maxIndex = 0;
+        _curArea->minIndex[gyVidShadowPass()] = INT_MAX;
+        _curArea->maxIndex[gyVidShadowPass()] = 0;
 
      //   _curArea->elementsArraySyncs[_curArea->elementsCurSegment] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 
@@ -331,13 +328,13 @@ break;
 
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::unbindTileBuffer(void) {
-        gyVidVertexBatchEnd();
+        //gyVidVertexBatchEnd();
        // gyVidBindDefaultVertexArray();
     }
 	
     template<typename P, typename T, typename E>
     inline unsigned MapSystemBase<P, T, E>::getEntityCount(void) {
-       // if(!_renderLayer[3] || gyVidShadowPass()) return 0;
+        if(!_renderLayer[3]) return 0;
 		_onscreenEntityPool.clear();
 		auto& entities = _curArea->entities;
 
@@ -394,14 +391,14 @@ break;
      //   glDepthFunc(GL_EQUAL);
      gyVidAlphaLevel(GY_ALPHA_FULL);
        gyVidBlendMode(GY_BLEND_ONE);
-        _blendPass = true;
+  //      _blendPass = true;
 	}
 
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::enableDepthTest(void) {
         if(gyVidShadowPass()) return;
       //  flushTileBuffer();
-      //  gyVidDepthTest(false);
+     //   gyVidDepthTest(true);
       //  glDepthMask(GL_TRUE);
         //glEnable(GL_BLEND);
         //glDisable(GL_BLEND);
@@ -409,7 +406,7 @@ break;
          gyVidAlphaLevel(GY_ALPHA_NONE);
         //glDisable(GL_POLYGON_OFFSET_FILL);
         gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
-        _blendPass = false;
+      //  _blendPass = false;
 	}
 
     template<typename P, typename T, typename E>
@@ -421,7 +418,7 @@ break;
     inline uint32_t MapSystemBase<P, T, E>::startLightPass(uint32_t& lightsLeft) { return getLightSys()->startLightPass(lightsLeft); }
 
     template<typename P, typename T, typename E>
-    inline uint32_t MapSystemBase<P, T, E>::getLightCount(void) const { return getLightSys()->getLightCount(); }
+    inline uint32_t MapSystemBase<P, T, E>::getLightCount(void) const { return gyVidShadowPass()? 0 : getLightSys()->getLightCount(); }
 
     template<typename P, typename T, typename E>
     inline bool MapSystemBase<P, T, E>::getRenderTileLayer(const unsigned short layer) const { return _renderLayer[layer]; }

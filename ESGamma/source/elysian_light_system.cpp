@@ -188,6 +188,7 @@ void LightSystem::shadowRenderPasses(void) {
 
                 for(unsigned i = GY_CUBE_MAP_RIGHT; i < GY_CUBE_MAP_FACE_MAX; ++i) {
                     it->updateBoundingVolume(cam, (GY_CUBE_MAP_FACE)i);
+                    _addToLightMap(it);
 
                     if(it->isShadowCaster()) {
                         gyVidLightSourceBeginShadowPass(it, (GY_CUBE_MAP_FACE)i);
@@ -197,7 +198,7 @@ void LightSystem::shadowRenderPasses(void) {
                         if(_shadowPassEnabled) getMapSys()->render();
 
                     }
-                    _addToLightMap(it);
+
                 }
             }
 			break;
