@@ -23,5 +23,6 @@ void gyVidSceneBegin(void) {
 }
 
 void gyVidSceneEnd(void) {
- //   glFlush();
+    gyVidVertexBatchFlush();
+    //glFlush();
 }

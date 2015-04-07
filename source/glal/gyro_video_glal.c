@@ -151,6 +151,7 @@ unsigned                    glalPrevTextureChangeCount  = 0;
 GY_ALPHA_LEVEL              glalAlphaLevel              = GY_ALPHA_NONE;
 GY_BLEND_MODE               glalBlendMode               = GY_BLEND_ONE_MINUS_SRC_ALPHA;
 int                         glalDepthTest               = 0;
+int                         glalVertexArray             = 0;
 void                        (*glalFlushCallback)(void*) = NULL;
 void*                       glalFlushObject             = NULL;
 
@@ -188,7 +189,19 @@ void gyVidVertexBatchEnd(void) {
 }
 
 void gyVidVertexBatchFlush(void) {
+    static int recursing = 0;
+    if(recursing) return;
+    recursing = 1;
     if(glalFlushCallback) glalFlushCallback(glalFlushObject);
+    recursing = 0;
+}
+
+void gyVidVertexArrayBind(int id) {
+    if(id != glalVertexArray) {
+        gyVidVertexBatchFlush();
+        glBindVertexArray(id);
+        glalVertexArray = id;
+    }
 }
 
 unsigned gyVidDbgVertexRenderCount(void) { return glalPrevVertexRenderCount; }
@@ -258,7 +271,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
 
         for(unsigned i = 0; i < 2; ++i) {
             glGenVertexArrays(1, &_streamVao[i]);
-            glBindVertexArray(_streamVao[i]);
+            gyVidVertexArrayBind(_streamVao[i]);
 
             glBindBuffer(GL_ARRAY_BUFFER, _streamVertexVbo[0]);
 
@@ -281,9 +294,10 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
             }
         }
         once = 1;
-        glBindVertexArray(0);
+        gyVidVertexArrayBind(0);
     }
 
+    glalVidBindDefaultFbo();
     return 1;
 }
 
@@ -295,34 +309,15 @@ void gyVidCamUpdate(const GYCamera *const cam) {
     } else {
         glalCurCamera = &_defaultCamera;
     }
+    gyVidVertexBatchFlush();
     glUniformMatrix4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)glalCurCamera->projViewMat);
     ++glalUniformChangeCount;
 }
 
 static inline void _flushStreamVertices(void* data) {
-#if 0
-    GLushort* ptr = (GLushort*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, _curArea->lastOffset, sizeof(GLushort)*(elemArraySize-_curArea->lastElemArraySize), GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
-    memcpy(ptr, &elemArray[_curArea->lastElemArraySize], sizeof(GLushort)*(elemArraySize-_curArea->lastElemArraySize));
-     glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
-
-   //  glDrawElements(GL_TRIANGLE_STRIP, elemArraySize, GL_UNSIGNED_SHORT, elemArray /*nullptr*/);
-
-
-             //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elemArraySize, elemArray, GL_STREAM_DRAW);
-    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elemArraySize, elemArray, GL_STREAM_DRAW);
-     //glDrawElements(GL_TRIANGLE_STRIP, (elemArraySize-_curArea->lastElemArraySize), GL_UNSIGNED_SHORT, (const void*)_curArea->lastOffset);
-     glDrawRangeElements(GL_TRIANGLE_STRIP, _curArea->minIndex, _curArea->maxIndex,  (elemArraySize-_curArea->lastElemArraySize), GL_UNSIGNED_SHORT, (const void*)_curArea->lastOffset);
-     _curArea->lastElemArraySize = elemArraySize;
-     _curArea->lastOffset = elemArraySize*sizeof(GLushort);
-
-
-
-#endif
-
-
 
     if(_vertexQueueSize-_vertexQueueLastSize <= 0) return;
-    glBindVertexArray(_streamVao[gyVidShadowPass()]);
+    gyVidVertexArrayBind(_streamVao[gyVidShadowPass()]);
     GYVertex* ptr = (GYVertex*)glMapBufferRange(GL_ARRAY_BUFFER, _vertexQueueLastOffset, sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize), GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
    // if(ptr) {
     memcpy(ptr, &_vertexQueue[_vertexQueueLastSize], sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize));
@@ -450,10 +445,10 @@ void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
         gyVidVertexBatchFlush();
         switch(lev) {
         case GY_ALPHA_NONE:
-        case GY_ALPHA_PUNCHTHRU:
             glDisable(GL_BLEND);
             break;
         default:
+        case GY_ALPHA_PUNCHTHRU:
             glEnable(GL_BLEND);
             break;
         }
@@ -468,13 +463,12 @@ void gyVidQuadListBegin(const GYColor4 *const color) {
     _curQuadListColor[2] = *color;
     _curQuadListColor[3] = *color;
     _curColorArrayPtr = _curQuadListColor;
-    glBindVertexArray(_streamVao[gyVidShadowPass()]);
     gyVidVertexBatchBegin(&_flushStreamVertices, NULL);
 }
 
 void gyVidQuadListEnd(void) {
-    gyVidVertexBatchFlush();
-    gyVidVertexBatchEnd();
+    //gyVidVertexBatchFlush();
+    //gyVidVertexBatchEnd();
     //gyVidTexCoordArray(_stripTexCoords);
     //gyVidNormalArray(_stripNormals);
     //gyVidTangentArray(_stripTangents);
@@ -587,7 +581,7 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
         _vertexQueueSize = 0;
         _vertexQueueLastSize = 0;
         _vertexQueueLastOffset = 0;
-    glBindVertexArray(_streamVao[gyVidShadowPass()]);
+    gyVidVertexArrayBind(_streamVao[gyVidShadowPass()]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE, NULL, GL_STREAM_DRAW);
     }
 
