@@ -495,20 +495,21 @@ int _gyVidShaderCreate(GYShader* shader) {
 		return 0;
 	}
 
-	if(!gyFileOpen(shader->path, "r", &file)) {
+    if(!gyFileOpen(shader->path, "rb", &file)) {
 		_gyLog(GY_DEBUG_CRITICAL, "\tCould not open shader", shader->path);
 		return 0;
 	}
     gyFileLength(file, &charCount);
-	programSource = malloc(sizeof(char) * charCount + 1);
+   // ++charCount; //make sure we have room for NULL terminator
+    programSource = malloc(sizeof(char) * charCount+1);
     memset(programSource, 0, sizeof(char)*charCount+1);
     gyFileRead(file, programSource, charCount, NULL);
-    //programSource[charCount-1] = '\0';
     programSource[charCount] = '\0';
     gyFileClose(&file);
 
     glShaderSource(shader->shader, 1, (const char*const*)&programSource, (GLint*)&charCount);
 	glCompileShader(shader->shader);
+    free(programSource);
 
 	glGetShaderiv(shader->shader, GL_COMPILE_STATUS, &compiled);
 	if(!compiled) {
