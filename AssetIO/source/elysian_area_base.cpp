@@ -291,15 +291,17 @@ void AreaBase::populateVbo(void) {
         &glalLightingShader,
         &glalShadowMapShader
     };
-
+        glGenBuffers(1, &elementVbo[0]);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementVbo[0]);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE, elementsArray, GL_STREAM_DRAW);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     for(unsigned j = 0; j < 2; ++j) {
         glGenVertexArrays(1, &vao[j]);
         gyVidVertexArrayBind(vao[j]);
 
-        glGenBuffers(1, &elementVbo[j]);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementVbo[j]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE, elementsArray, GL_STREAM_DRAW);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementVbo[0]);
         glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
 
     glEnableVertexAttribArray(shaders[j]->attribLoc[GLAL_SHADER_POS]);

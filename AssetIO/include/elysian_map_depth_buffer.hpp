@@ -295,11 +295,22 @@ namespace elysian {
 
 
 		//Iterate through depth buffers and render from lowest to highest z coord
-        for(unsigned i = 0; i < _depthBuffMaxHeight; ++i) {
+        for(unsigned l = 0; l < _depthBuffMaxHeight; ++l) {
+            unsigned i = (_isShadowPass())? _depthBuffMaxHeight-l-1 : l;
+            i = l;
 //_enableDepthTest();
-            _renderDepthBuffTileRow(i, NORMAL_FLAT);
 
-            _renderCustomPassAtElev(i, NORMAL_FLAT);
+            if(_isShadowPass()) {
+
+                _renderDepthBuffTileRow(i, NORMAL_FRONT);
+
+                //_renderCustomPassAtElev(i, NORMAL_FRONT);
+
+            } else {
+                _renderDepthBuffTileRow(i, NORMAL_FLAT);
+
+                _renderCustomPassAtElev(i, NORMAL_FLAT);
+            }
 
 			//if(_entityCount[i]) {
 				//_endObjectList();
@@ -332,24 +343,15 @@ namespace elysian {
                     j = endIndex;
                 }
 
-                //glalStripComboBreaker();
+            if(_isShadowPass()) {
+                _renderDepthBuffTileRow(i, NORMAL_FLAT);
 
-                    //_entityBuff[i][j].zCoord += entityZDelta;
-                    //_renderEntityEntry(_entityBuff[i][j]);
-					//Give each entity a tiny delta to prevent duplicate z from same y coord
-
-
-                    //entityZDelta += ELYSIAN_DEPTH_BUFFER_ENTITY_ENTITY_MIN_Z_OFFSET;
-
-				//_beginObjectList();
-
-			//}
-             //   _enableDepthTest();
-
+              //  _renderCustomPassAtElev(i, NORMAL_FLAT);
+            } else {
             _renderDepthBuffTileRow(i, NORMAL_FRONT);
 
             _renderCustomPassAtElev(i, NORMAL_FRONT);
-                      
+            }
         }
 
 	}
@@ -443,7 +445,7 @@ namespace elysian {
 
         //static_cast<T*>(this)->flushTileBuffer();
         //static_cast<T*>(this)->unbindTileBuffer();
-        _renderCustomPassImmediate();
+        if(!_isShadowPass()) _renderCustomPassImmediate();
 	}
 
 	template<typename T, typename O, typename E>
