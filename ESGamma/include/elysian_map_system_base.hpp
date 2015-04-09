@@ -155,8 +155,8 @@ namespace elysian {
     inline void MapSystemBase<P, T, E>::renderObjectEntry(const T& entry, const float /*z*/) {
 		if(!_renderLayer[entry.layer]) return; //Don't render if this layer has been toggled off.
 
-         auto& elemArraySize = _curArea->elementsArraySize[gyVidShadowPass()];
-         auto* elemArray     = _curArea->elementsArray[gyVidShadowPass()];
+         auto& elemArraySize = _curArea->elementsArraySize[/*gyVidShadowPass()*/0];
+         auto* elemArray     = _curArea->elementsArray[/*gyVidShadowPass()*/0];
 
         if(!gyVidShadowPass()) {
             const GY_RECT_PLANE_TYPE      newPlane = entry.mapEntry.getPlane();
@@ -217,10 +217,10 @@ namespace elysian {
         if(elemArraySize + 6 >= ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE) {
             flushTileBuffer();
             elemArraySize = 0;
-            _curArea->lastOffset[gyVidShadowPass()] = 0;
+            _curArea->lastOffset[/*gyVidShadowPass()*/0] = 0;
            // _curArea->minIndex = INT_MAX;
            // _curArea->maxIndex = 0;
-            _curArea->lastElemArraySize[gyVidShadowPass()] = 0;
+            _curArea->lastElemArraySize[/*gyVidShadowPass()*/0] = 0;
             gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
            glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE, nullptr, GL_STREAM_DRAW);
         }
@@ -256,9 +256,9 @@ namespace elysian {
 	
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::flushTileBuffer(void) {
-        auto& elemArraySize = _curArea->elementsArraySize[gyVidShadowPass()];
-        auto* elemArray     = _curArea->elementsArray[gyVidShadowPass()];
-        if(elemArraySize-_curArea->lastElemArraySize[gyVidShadowPass()] == 0) return;
+        auto& elemArraySize = _curArea->elementsArraySize[/*gyVidShadowPass()*/0];
+        auto* elemArray     = _curArea->elementsArray[/*gyVidShadowPass()*/0];
+        if(elemArraySize-_curArea->lastElemArraySize[/*gyVidShadowPass()*/0] == 0) return;
 
 
 
@@ -299,22 +299,22 @@ gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
           //  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo);
         // glBufferData(GL_ELEMENT_ARRAY_BUFFER, );
 
-       GLushort* ptr = (GLushort*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, _curArea->lastOffset[gyVidShadowPass()], sizeof(GLushort)*(elemArraySize-_curArea->lastElemArraySize[gyVidShadowPass()]), GL_MAP_INVALIDATE_RANGE_BIT /*| GL_MAP_FLUSH_EXPLICIT_BIT*/ | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
-       memcpy(ptr, &elemArray[_curArea->lastElemArraySize[gyVidShadowPass()]], sizeof(GLushort)*(elemArraySize-_curArea->lastElemArraySize[gyVidShadowPass()]));
-        glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+//       GLushort* ptr = (GLushort*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, _curArea->lastOffset[/*gyVidShadowPass()*/0], sizeof(GLushort)*(elemArraySize-_curArea->lastElemArraySize[/*gyVidShadowPass()*/0]), GL_MAP_INVALIDATE_RANGE_BIT /*| GL_MAP_FLUSH_EXPLICIT_BIT*/ | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+//       memcpy(ptr, &elemArray[_curArea->lastElemArraySize[/*gyVidShadowPass()*/0]], sizeof(GLushort)*(elemArraySize-_curArea->lastElemArraySize[/*gyVidShadowPass()*/0]));
+//        glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 
        // glDrawElements(GL_TRIANGLE_STRIP, elemArraySize, GL_UNSIGNED_SHORT, elemArray /*nullptr*/);
 
 
                 //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elemArraySize, elemArray, GL_STREAM_DRAW);
        // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elemArraySize, elemArray, GL_STREAM_DRAW);
-        glDrawElements(GL_TRIANGLE_STRIP, (elemArraySize-_curArea->lastElemArraySize[gyVidShadowPass()]), GL_UNSIGNED_SHORT, (const void*)_curArea->lastOffset[gyVidShadowPass()]);
+        glDrawElements(GL_TRIANGLE_STRIP, (elemArraySize-_curArea->lastElemArraySize[/*gyVidShadowPass()*/0]), GL_UNSIGNED_SHORT, (const void*)_curArea->lastOffset[/*gyVidShadowPass()*/0]);
         //glDrawRangeElements(GL_TRIANGLE_STRIP, _curArea->minIndex[gyVidShadowPass()], _curArea->maxIndex[gyVidShadowPass()],  (elemArraySize-_curArea->lastElemArraySize[gyVidShadowPass()]), GL_UNSIGNED_SHORT, (const void*)_curArea->lastOffset[gyVidShadowPass()]);
-        _curArea->lastElemArraySize[gyVidShadowPass()] = elemArraySize;
-        _curArea->lastOffset[gyVidShadowPass()] = elemArraySize*sizeof(GLushort);
+        _curArea->lastElemArraySize[/*gyVidShadowPass()*/0] = elemArraySize;
+        _curArea->lastOffset[/*gyVidShadowPass()*/0] = elemArraySize*sizeof(GLushort);
 
-        _curArea->minIndex[gyVidShadowPass()] = INT_MAX;
-        _curArea->maxIndex[gyVidShadowPass()] = 0;
+        _curArea->minIndex[0] = INT_MAX;
+        _curArea->maxIndex[0] = 0;
 
      //   _curArea->elementsArraySyncs[_curArea->elementsCurSegment] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 
