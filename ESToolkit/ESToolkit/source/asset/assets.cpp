@@ -9,9 +9,9 @@
 #include "elysian_engine.hpp"
 #include "elysian_level_system.hpp"
 #include "elysian_map_system.hpp"
-#include "elysian_map_system.hpp"
 #include "entitySelectable.h"
 #include "elysian_party_system.hpp"
+#include <QOpenGLWidget>
 
 //====STATIC MEMBERS====
 
@@ -23,6 +23,8 @@ Selectable *Assets::_currentSelection = nullptr;
 Selectable::TYPE Assets::_currentSelectionType = Selectable::EMPTY;
 Assets::LAYER_TYPE Assets::_currentLayer = Assets::LAYER_TILE1;
 bool Assets::_layerVisible[Assets::LAYER_MAX] = { true };
+QOpenGLWidget* Assets::_glWidget = nullptr;
+
 
 //====INSTANCE MEMBERS====
 
@@ -309,10 +311,27 @@ bool Assets::removeProject(const QString name) {
     return false;
 }
 
+
+void Assets::setGLWidget(QOpenGLWidget*const context) {
+    Q_ASSERT(widget && widget->context() && widget->context()->isValid());
+    _glContext = context;
+}
+
+void Assets::makeGLContextCurrent(void) {
+    _glWidget->makeCurrent();
+}
+
+void Assets::doneGLContextCurrent(void) {
+    _glWidget->doneCurrent();
+}
+
+
 void Assets::onChildProjectActivating(Project *const project, Level *const level, Area *const area) {
+    makeGLContextCurrent();
     if(m_project != project) setCurrentProject(project->getNodeName());
     if(level && _currentLevel != level) setCurrentLevel(level->getNodeName());
     if(area && _currentArea != area) setCurrentArea(area->getNodeName());
+    doneGLContextCurrent();
 }
 
 void Assets::onAreaAdded(Project *const project, Level *const level, Area *const area) {

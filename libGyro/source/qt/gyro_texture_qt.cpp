@@ -5,12 +5,19 @@
 #include <gyro_texture_api.h>
 #include <QOpenGLContext>
 #include <QOpenGLTexture>
+#include <QOpenGLWidget>
+#include <QGraphicsView>
 #include <QHash>
 #include <QImage>
 #include <QDebug>
+#include <gyro_input_api.h>
 #include <cassert>
 
 static QHash<GLuint, QOpenGLTexture*> _qTextures;
+
+//reested-ass hack
+extern GYInputInitParams    _initParams;
+
 
 int _gyVidTexAlloc(GYTexture *const tex) {
   //  const QOpenGLContext* current = QOpenGLContext::currentContext();
@@ -31,6 +38,8 @@ int _gyVidTexAlloc(GYTexture *const tex) {
 
  //   tex->_pixmap = QPixmap(QString(tex->filename));
     QOpenGLTexture* glTexture = new QOpenGLTexture(QOpenGLTexture::Target2D);
+    if(!glTexture) return 0;
+    static_cast<QOpenGLWidget*>(reinterpret_cast<QGraphicsView*>(_initParams.viewWidget)->viewport())->makeCurrent();
    // glTexture->setFormat(QOpenGLTexture::RGBA8_UNorm);
     glTexture->setData(pixmap, QOpenGLTexture::DontGenerateMipMaps);
     glTexture->bind();
@@ -42,18 +51,23 @@ int _gyVidTexAlloc(GYTexture *const tex) {
     tex->_data = (void*)(uintptr_t)glTexture->textureId();
       //  glTexImage2D(GL_TEXTURE_2D, 0, img.format, img.width, img.height, 0, img.format, GL_UNSIGNED_BYTE, pixels);
     _qTextures[(GLuint)(uintptr_t)tex->_data] = glTexture;
+        static_cast<QOpenGLWidget*>(reinterpret_cast<QGraphicsView*>(_initParams.viewWidget)->viewport())->doneCurrent();
+
     return (int)(uintptr_t)tex->_data;
 }
 
 int _gyVidTexFree(GYTexture *const tex) {
     (void)tex;
     if(!tex) return 0;
+        static_cast<QOpenGLWidget*>(reinterpret_cast<QGraphicsView*>(_initParams.viewWidget)->viewport())->makeCurrent();
+
     QOpenGLTexture* qgl = _qTextures[(GLuint)(uintptr_t)tex->_data];
     qgl->destroy();
     _qTextures.remove((GLuint)(uintptr_t)tex->_data);
     delete qgl;
    // long int id = reinterpret_cast<long int>(tex->_data);
     //((QOpenGLContext*)QOpenGLContext::currentContext())->deleteTexture(id);
+        static_cast<QOpenGLWidget*>(reinterpret_cast<QGraphicsView*>(_initParams.viewWidget)->viewport())->doneCurrent();
     return 1;
 }
 

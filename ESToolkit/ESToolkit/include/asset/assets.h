@@ -17,6 +17,8 @@ class TkEntity;
 typedef TkEntity Entity;
 struct MapChange;
 
+class QOpenGLWidget;
+
 namespace elysian {
     class Engine;
 }
@@ -27,8 +29,8 @@ class Assets: public QObject, public elysian::LevelManager {
 public:
 	enum LAYER_TYPE { LAYER_TILE1, LAYER_TILE2, LAYER_TILE3, LAYER_LIGHT, LAYER_COLLISION, LAYER_ENTITY, LAYER_MAX };
 
-    Assets();
-    ~Assets();
+            Assets(void);
+    virtual ~Assets(void);
 
     Selectable* getCurrentSelection(void) const { return _currentSelection; }
     Area*       getCurrentArea(void) const { return _currentArea; }
@@ -69,6 +71,10 @@ public:
 	static QString formatFileName(const QString name);
 	QString getProjectDir();
 	int getUndoStackCount();
+
+    void setGLWidget(QOpenGLWidget*const context);
+    void makeGLContextCurrent(void);
+    void doneGLContextCurrent(void);
 
 Q_SIGNALS:
     //void EntityChanged(Entity *const entity);
@@ -112,16 +118,17 @@ private Q_SLOTS:
     void onEntityParented(Entity*const child, Entity*const parent);
 
 private:
-    static Project* m_project;
-    static elysian::Engine* _engine;
+    static Project*             m_project;
+    static elysian::Engine*     _engine;
 
     //Current state
-    static Area *_currentArea;
-    static Level *_currentLevel;
-    static Selectable *_currentSelection;
-	static Assets::LAYER_TYPE _currentLayer;
-	static bool _layerVisible[Assets::LAYER_MAX];
-    static Selectable::TYPE _currentSelectionType;
+    static Area*                _currentArea;
+    static Level*               _currentLevel;
+    static Selectable*          _currentSelection;
+    static Assets::LAYER_TYPE   _currentLayer;
+    static bool                 _layerVisible[Assets::LAYER_MAX];
+    static Selectable::TYPE     _currentSelectionType;
+    static QOpenGLWidget*      _glWidget;
 
 	void connectSlots(Project *const project);
 };

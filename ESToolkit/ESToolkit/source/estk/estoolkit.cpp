@@ -889,20 +889,21 @@ void ESToolkit::_openProjectDir(const QString dir) {
     //_engineGLView->setFormat(QSurfaceFormat::defaultFormat());
     connect(viewport, SIGNAL(engineUpdated()), _ui->mapView, SLOT(onEngineUpdated()));
     viewport->setMouseTracking(true);
-    //_engineGLView->makeCurrent();
+
     _engineGLView->setMapView(_ui->mapView);
     //_engineGLView->update();
     _ui->mapView->setViewport(viewport);
    // _ui->mapView->setScene(new QGraphicsScene());
     //setCentralWidget(viewport);
     //assert(_ui->mapView->scene());
-
+   // _engineGLView->makeCurrent();
     GYInputInitParams inputParams = {
         static_cast<QGraphicsView*>(_ui->mapView)
     };
     gyInputInit(&inputParams);
-
-    assert(_engineGLView->context()->isValid());
+    _assets.setGLWidget(_engineGLView);
+    _engineGLView->startRenderTimer();
+    _engineGLView->makeCurrent();
 	Project *proj = _assets.loadProject(dir);
 
    // _engineGLView->update();
@@ -910,9 +911,9 @@ void ESToolkit::_openProjectDir(const QString dir) {
     _assets.setCurrentProject(proj);
     _assets.setCurrentSelection(_assets.getCurrentArea());
 
-    //_engineGLView->doneCurrent();
+    _engineGLView->doneCurrent();
 
-    _engineGLView->startRenderTimer();
+
     //elysian::Debug::getInstance()._curArea = _assets.getCurrentArea();
     //_assets.getCurrentArea()->populateVbo();
 
