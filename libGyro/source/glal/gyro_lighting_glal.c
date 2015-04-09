@@ -107,7 +107,7 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
         //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
        // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_MODE, GL_NONE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-      //  glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BORDER_COLOR, 1.0f);
+        glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BORDER_COLOR, 1.0f);
 		//Does this REALLY have to have 6 faces!?
 		for (unsigned i = 0; i < GY_CUBE_MAP_FACE_MAX; ++i) {
 			//shadowDepth? lolz
@@ -298,7 +298,7 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
 
     cache->texture = internals->shadowMap;
     cache->type = light->type;
-    glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
+  //  glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
 }
 
 void gyVidLightSourceAdd(GYLightSource* const light) {
@@ -547,7 +547,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
     gyVidVertexBatchFlush();
     glViewport(0, 0, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE);
 
-   // glActiveTexture(glalTextureMapTexUnits[GLAL_SHADOW1_MAP]);
+    glActiveTexture(glalTextureMapTexUnits[GLAL_TEMP_MAP]);
 
 	switch(light->type) {
 
@@ -640,7 +640,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
     //    glCullFace(GL_FRONT);
 
              glClear(GL_DEPTH_BUFFER_BIT);
-     if(_firstShadowPass) {
+    // if(_firstShadowPass) {
          glClearDepth(1.0f);
          glDepthRange(0.0f, 1.0f);
         glDisable(GL_BLEND);
@@ -648,9 +648,9 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
         //glDepthMask(GL_TRUE);
         glEnable(GL_DEPTH_TEST);
         //glEnable(GL_BLEND);
-        glDepthFunc(GL_LEQUAL);
+        glDepthFunc(GL_LESS);
         _firstShadowPass = 0;
-     }
+    // }
 
 	//find projView matrix
 	gyMatMultMat(lightProjViewMatrix, lightProjMatrix, lightViewMatrix);
