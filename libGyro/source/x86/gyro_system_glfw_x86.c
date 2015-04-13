@@ -2,6 +2,7 @@
 #include "gyro_defines.h"
 //#include <x86/gyro_glfw_x86.inl>
 #include <glal/gyro_video_glal.h>
+#include <glal/gyro_gl.h>
 #include <stdio.h>
 #include <stdarg.h>
 
@@ -9,68 +10,68 @@
 
 //execute x86 CPUID opcode
 static inline void cpuid(int CPUInfo[4],int InfoType){
-	__asm__ __volatile__ (
-		"cpuid":
-		"=a" (CPUInfo[0]),
-		"=b" (CPUInfo[1]),
-		"=c" (CPUInfo[2]),
-		"=d" (CPUInfo[3]) :
-		"a" (InfoType)
-	);
+    __asm__ __volatile__ (
+        "cpuid":
+        "=a" (CPUInfo[0]),
+        "=b" (CPUInfo[1]),
+        "=c" (CPUInfo[2]),
+        "=d" (CPUInfo[3]) :
+        "a" (InfoType)
+    );
 }
 
 static void _checkCPUCapabilities(void) {
-	int x64     = 0;
-	int MMX     = 0;
-	int SSE     = 0;
-	int SSE2    = 0;
-	int SSE3    = 0;
-	int SSSE3   = 0;
-	int SSE41   = 0;
-	int SSE42   = 0;
-	int SSE4a   = 0;
-	int AVX     = 0;
-	int XOP     = 0;
-	int FMA3    = 0;
-	int FMA4    = 0;
+  //  int x64     = 0;
+  //  int MMX     = 0;
+    int SSE     = 0;
+ //   int SSE2    = 0;
+ //   int SSE3    = 0;
+ //   int SSSE3   = 0;
+ //   int SSE41   = 0;
+ //   int SSE42   = 0;
+ //   int SSE4a   = 0;
+ //   int AVX     = 0;
+ //   int XOP     = 0;
+ //   int FMA3    = 0;
+ //   int FMA4    = 0;
 
-	int info[4];
-	cpuid(info, 0);
-	int nIds = info[0];
+    int info[4];
+    cpuid(info, 0);
+    int nIds = info[0];
 
-	cpuid(info, 0x80000000);
-	unsigned nExIds = info[0];
+    cpuid(info, 0x80000000);
+    unsigned nExIds = info[0];
 
-	//  Detect Instruction Set
-	if (nIds >= 1){
-		cpuid(info,0x00000001);
-		MMX   = (info[3] & ((int)1 << 23)) != 0;
-		SSE   = (info[3] & ((int)1 << 25)) != 0;
-		SSE2  = (info[3] & ((int)1 << 26)) != 0;
-		SSE3  = (info[2] & ((int)1 <<  0)) != 0;
+    //  Detect Instruction Set
+    if (nIds >= 1){
+        cpuid(info,0x00000001);
+      //  MMX   = (info[3] & ((int)1 << 23)) != 0;
+        SSE   = (info[3] & ((int)1 << 25)) != 0;
+       // SSE2  = (info[3] & ((int)1 << 26)) != 0;
+      //  SSE3  = (info[2] & ((int)1 <<  0)) != 0;
 
-		SSSE3 = (info[2] & ((int)1 <<  9)) != 0;
-		SSE41 = (info[2] & ((int)1 << 19)) != 0;
-		SSE42 = (info[2] & ((int)1 << 20)) != 0;
+       // SSSE3 = (info[2] & ((int)1 <<  9)) != 0;
+       // SSE41 = (info[2] & ((int)1 << 19)) != 0;
+       // SSE42 = (info[2] & ((int)1 << 20)) != 0;
 
-		AVX   = (info[2] & ((int)1 << 28)) != 0;
-		FMA3  = (info[2] & ((int)1 << 12)) != 0;
-	}
+       // AVX   = (info[2] & ((int)1 << 28)) != 0;
+       // FMA3  = (info[2] & ((int)1 << 12)) != 0;
+    }
 
-	if (nExIds >= 0x80000001){
-		cpuid(info,0x80000001);
-		x64   = (info[3] & ((int)1 << 29)) != 0;
-		SSE4a = (info[2] & ((int)1 <<  6)) != 0;
-		FMA4  = (info[2] & ((int)1 << 16)) != 0;
-		XOP   = (info[2] & ((int)1 << 11)) != 0;
-	}
+    if (nExIds >= 0x80000001){
+        cpuid(info,0x80000001);
+       // x64   = (info[3] & ((int)1 << 29)) != 0;
+      //  SSE4a = (info[2] & ((int)1 <<  6)) != 0;
+       // FMA4  = (info[2] & ((int)1 << 16)) != 0;
+       // XOP   = (info[2] & ((int)1 << 11)) != 0;
+    }
 
-	if(!SSE) {
-		_gyLog(GY_DEBUG_FATAL, "\tSSE CPU Support Not Detected! Prepare for crash... and maybe consider a processor from this decade.");
-		//exit(0);
-	} else {
-		_gyLog(GY_DEBUG_VERBOSE, "\tSSE CPU Extensions detected! Fast-ass math enabled!");
-	}
+    if(!SSE) {
+        _gyLog(GY_DEBUG_FATAL, "\tSSE CPU Support Not Detected! Prepare for crash... and maybe consider a processor from this decade.");
+        //exit(0);
+    } else {
+        _gyLog(GY_DEBUG_VERBOSE, "\tSSE CPU Extensions detected! Fast-ass math enabled!");
+    }
 }
 
 
@@ -97,11 +98,11 @@ int gySysInit(void) {
 #else
   "LINUX";
 #endif
-	_gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86 [%s] v%s", platString, GYRO_LIB_VERSION);
-	gyDebugSigInit();
-	_checkCPUCapabilities();
+    _gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86 [%s] v%s", platString, GYRO_LIB_VERSION);
+    gyDebugSigInit();
+    _checkCPUCapabilities();
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
-	glfwInit();
+    glfwInit();
 #endif
 
     return 1;
@@ -113,83 +114,83 @@ int gySysUninit(void) {
 #endif
 
     //gyDebugUninit();
-	return 1;
+    return 1;
 }
 
 #if 0
 void gyPrintf(const char *const str, ...) {
-	va_list argptr;
-	static char buffer[GYRO_PRINTF_BUFFER_SIZE];
+    va_list argptr;
+    static char buffer[GYRO_PRINTF_BUFFER_SIZE];
 
-	va_start(argptr, str);
-	vsprintf(buffer, str, argptr);
-	va_end(argptr);
+    va_start(argptr, str);
+    vsprintf(buffer, str, argptr);
+    va_end(argptr);
 
     fprintf(stdout, "%s", buffer);
-	fflush(stdout);
+    fflush(stdout);
 }
 #endif
 
 unsigned int gySysStatsVram(void) {
-	return 0;
+    return 0;
 }
 
 unsigned int gySysStatsRam(void) {
-	return 0;
+    return 0;
 }
 
 
 #if defined(__LINUX__) || defined(__APPLE__)
 static const char* gyDebugSigCodeToStr(int sig, int sig_code) {
-	if(sig == SIGFPE)
-		switch(sig_code) {
-			case SI_USER:		return "SIGFPE (raised by program)";
-			case FPE_INTDIV:	return "SIGFPE (integer divide by zero)";
-			case FPE_INTOVF:	return "SIGFPE (integer overflow)";
-			case FPE_FLTDIV:	return "SIGFPE (floating-point divide by zero)";
-			case FPE_FLTOVF:	return "SIGFPE (floating-point overflow)";
-			case FPE_FLTUND:	return "SIGFPE (floating-point underflow)";
-			case FPE_FLTRES:	return "SIGFPE (floating-point inexact result)";
-			case FPE_FLTINV:	return "SIGFPE (floating-point invalid operation)";
-			case FPE_FLTSUB:	return "SIGFPE (subscript out of range)";
-			default:			return "SIGFPE";
-		}
-	else if(sig == SIGSEGV)
-		switch(sig_code) {
-			case SI_USER:		return "SIGSEGV (rasied by program)";
-			case SEGV_MAPERR:	return "SIGSEGV (address not mapped to object)";
-			case SEGV_ACCERR:	return "SIGSEGV (invalid permissions for mapped object)";
-			default:			return "SIGSEGV";
-		}
-	else if(sig == SIGTRAP)
-		switch(sig_code) {
-			case SI_USER:		return "SIGTRAP (raised by program)";
-			case TRAP_BRKPT:	return "SIGTRAP (process breakpoint)";
-			case TRAP_TRACE:	return "SIGTRAP	(process trace trap)";
-			default:			return "SIGTRAP";
-		}
-	/* No suitable code found. */
-	return strsignal(sig);
+    if(sig == SIGFPE)
+        switch(sig_code) {
+            case SI_USER:		return "SIGFPE (raised by program)";
+            case FPE_INTDIV:	return "SIGFPE (integer divide by zero)";
+            case FPE_INTOVF:	return "SIGFPE (integer overflow)";
+            case FPE_FLTDIV:	return "SIGFPE (floating-point divide by zero)";
+            case FPE_FLTOVF:	return "SIGFPE (floating-point overflow)";
+            case FPE_FLTUND:	return "SIGFPE (floating-point underflow)";
+            case FPE_FLTRES:	return "SIGFPE (floating-point inexact result)";
+            case FPE_FLTINV:	return "SIGFPE (floating-point invalid operation)";
+            case FPE_FLTSUB:	return "SIGFPE (subscript out of range)";
+            default:			return "SIGFPE";
+        }
+    else if(sig == SIGSEGV)
+        switch(sig_code) {
+            case SI_USER:		return "SIGSEGV (rasied by program)";
+            case SEGV_MAPERR:	return "SIGSEGV (address not mapped to object)";
+            case SEGV_ACCERR:	return "SIGSEGV (invalid permissions for mapped object)";
+            default:			return "SIGSEGV";
+        }
+    else if(sig == SIGTRAP)
+        switch(sig_code) {
+            case SI_USER:		return "SIGTRAP (raised by program)";
+            case TRAP_BRKPT:	return "SIGTRAP (process breakpoint)";
+            case TRAP_TRACE:	return "SIGTRAP	(process trace trap)";
+            default:			return "SIGTRAP";
+        }
+    /* No suitable code found. */
+    return strsignal(sig);
 }
 
 static void gyDebugSigHandler(int sig, siginfo_t* info, void* unused) {
-	(void) sig;
-	(void) unused;
-	int i, num;
-	void* buf[64];
-	char** symbols;
+    (void) sig;
+    (void) unused;
+    int i, num;
+    void* buf[64];
+    char** symbols;
 
-	num = backtrace(buf, 64);
-	symbols = backtrace_symbols(buf, num);
+    num = backtrace(buf, 64);
+    symbols = backtrace_symbols(buf, num);
 
-	_gyLog(GY_DEBUG_FATAL, "**** BEGIN C/++ BACKTRACE ****");
-	_gyLog(GY_DEBUG_FATAL, "RECIEVED SIGNAL: %s!",
-		   gyDebugSigCodeToStr(info->si_signo, info->si_code));
-	for(i = 0; i < num; i++)
-		_gyLog(GY_DEBUG_FATAL, "	%s", symbols[i]);
-	_gyLog(GY_DEBUG_FATAL, "**** END C/++ BACKTRACE ****");
+    _gyLog(GY_DEBUG_FATAL, "**** BEGIN C/++ BACKTRACE ****");
+    _gyLog(GY_DEBUG_FATAL, "RECIEVED SIGNAL: %s!",
+           gyDebugSigCodeToStr(info->si_signo, info->si_code));
+    for(i = 0; i < num; i++)
+        _gyLog(GY_DEBUG_FATAL, "	%s", symbols[i]);
+    _gyLog(GY_DEBUG_FATAL, "**** END C/++ BACKTRACE ****");
 
-	exit(1);
+    exit(1);
 }
 #elif defined(WIN32)
 
@@ -226,6 +227,7 @@ int addr2line(char const * const program_name, void const * const addr)
 
 void windows_print_stacktrace(CONTEXT* context)
 {
+
   SymInitialize(GetCurrentProcess(), 0, 1);
 
   STACKFRAME frame = { 0 };
@@ -252,10 +254,13 @@ void windows_print_stacktrace(CONTEXT* context)
   }
 
   SymCleanup( GetCurrentProcess() );
+
 }
 
 static LONG WINAPI windows_exception_handler(EXCEPTION_POINTERS * ExceptionInfo)
 {
+    (void)ExceptionInfo;
+
     _gyLog(GY_DEBUG_VERBOSE, "===================================");
   switch(ExceptionInfo->ExceptionRecord->ExceptionCode)
   {
@@ -334,31 +339,29 @@ static LONG WINAPI windows_exception_handler(EXCEPTION_POINTERS * ExceptionInfo)
 
   return EXCEPTION_EXECUTE_HANDLER;
 }
-
-
 #endif
 
 void gyDebugSigInit(void) {
     _gyLog(GY_DEBUG_VERBOSE, "\tRegistering exception handler.");
 #if defined(__LINUX__) || defined(__APPLE__)
-	struct sigaction sa, so;
+    struct sigaction sa, so;
 
-	/* Set up handler. */
-	sa.sa_handler		= NULL;
-	sa.sa_sigaction		= gyDebugSigHandler;
-	sigemptyset(&sa.sa_mask);
-	sa.sa_flags			= SA_SIGINFO;
+    /* Set up handler. */
+    sa.sa_handler		= NULL;
+    sa.sa_sigaction		= gyDebugSigHandler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags			= SA_SIGINFO;
 
-	/* Attach Q_SIGNALS. */
-	sigaction(SIGSEGV, &sa, &so);
-	if(so.sa_handler == SIG_IGN)
-		_gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGSEGV signal handler.");
-	sigaction(SIGFPE, &sa, &so);
-	if(so.sa_handler == SIG_IGN)
-		_gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGFPE signal handler.");
-	sigaction(SIGTRAP, &sa, &so);
-	if(so.sa_handler == SIG_IGN)
-		_gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGTRAP signal handler.");
+    /* Attach Q_SIGNALS. */
+    sigaction(SIGSEGV, &sa, &so);
+    if(so.sa_handler == SIG_IGN)
+        _gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGSEGV signal handler.");
+    sigaction(SIGFPE, &sa, &so);
+    if(so.sa_handler == SIG_IGN)
+        _gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGFPE signal handler.");
+    sigaction(SIGTRAP, &sa, &so);
+    if(so.sa_handler == SIG_IGN)
+        _gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGTRAP signal handler.");
 #elif defined(WIN32)
     //SetUnhandledExceptionFilter(&windows_exception_handler);
 
@@ -370,6 +373,6 @@ void gyDebugSigInit(void) {
 #if GYRO_PLATFORM != GYRO_PLATFORM_Qt
 int main(int argc, char *argv[])
 {
-	return gyro_entry_point(argc, argv);
+    return gyro_entry_point(argc, argv);
 }
 #endif

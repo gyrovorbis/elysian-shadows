@@ -5,21 +5,21 @@
 extern "C" {
 #endif
 
-struct _GYTexture;
-struct _GYTexCoord2;
+struct GYTexture;
+struct GYTexCoord2;
 
-struct _GYTexture* gyVidTexCreateSheetUniform(const char *const filename,
-											const unsigned sheetWidth,
-											const unsigned sheetHeight,
-											const unsigned spriteWidth,
-											const unsigned spriteHeight);
-struct _GYTexture* gyVidTexCreateSheet(const char *const filename, const unsigned width, const unsigned height);
-struct _GYTexture* gyVidTexCreate(const char *const filename);
-const struct _GYTexCoord2* gyVidTexCoordArrayFromFrame(const struct _GYTexCoordFrame*const frame,
-													   const GY_RECT_TEX_ORIENT orient);
+struct GYTexture* gyVidTexCreateSheetUniform(const char *const filename,
+                                            const unsigned sheetWidth,
+                                            const unsigned sheetHeight,
+                                            const unsigned spriteWidth,
+                                            const unsigned spriteHeight);
+struct GYTexture* gyVidTexCreateSheet(const char *const filename, const unsigned width, const unsigned height);
+struct GYTexture* gyVidTexCreate(const char *const filename);
+const struct GYTexCoord2* gyVidTexCoordArrayFromFrame(const struct GYTexCoordFrame*const frame,
+                                                       const GY_RECT_TEX_ORIENT orient);
 
-int             gyVidTexReload(struct _GYTexture* const tex);
-int             gyVidTexDestroy(struct _GYTexture* const tex);
+int             gyVidTexReload(struct GYTexture* const tex);
+int             gyVidTexDestroy(struct GYTexture* const tex);
 unsigned int    gyVidTexAmount(void);
 unsigned        gyVidTexBytes(void);
 int             gyVidTexClear(void);
