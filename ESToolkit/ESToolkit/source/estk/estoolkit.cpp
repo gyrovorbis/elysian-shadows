@@ -899,7 +899,11 @@ void ESToolkit::_openProjectDir(const QString dir) {
     //setCentralWidget(viewport);
     //assert(_ui->mapView->scene());
 <<<<<<< HEAD
+<<<<<<< HEAD
     //_engineGLView->makeCurrent();
+=======
+
+>>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
 =======
 
 >>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
@@ -908,8 +912,11 @@ void ESToolkit::_openProjectDir(const QString dir) {
     };
     gyInputInit(&inputParams);
 <<<<<<< HEAD
+<<<<<<< HEAD
     _assets.setGLWidget(_engineGLView);
 =======
+=======
+>>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
 
     assert(_engineGLView->context()->isValid());
 	Project *proj = _assets.loadProject(dir);
@@ -925,7 +932,13 @@ void ESToolkit::_openProjectDir(const QString dir) {
     _assets.setCurrentSelection(_assets.getCurrentArea());
 
 <<<<<<< HEAD
+<<<<<<< HEAD
    // _engineGLView->doneCurrent();
+=======
+    //_engineGLView->doneCurrent();
+
+    _engineGLView->startRenderTimer();
+>>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
 =======
     //_engineGLView->doneCurrent();
 

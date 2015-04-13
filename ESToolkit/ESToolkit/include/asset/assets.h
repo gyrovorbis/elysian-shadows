@@ -18,8 +18,11 @@ typedef TkEntity Entity;
 struct MapChange;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 class EngineGLSceneWidget;
 
+=======
+>>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
 =======
 >>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
 namespace elysian {
@@ -76,10 +79,13 @@ public:
     int getUndoStackCount();
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     void setGLWidget(EngineGLSceneWidget*const context);
     void makeGLContextCurrent(void);
     void doneGLContextCurrent(void);
 
+=======
+>>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
 =======
 >>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
 Q_SIGNALS:
@@ -129,6 +135,7 @@ private:
 
     //Current state
 <<<<<<< HEAD
+<<<<<<< HEAD
     static Area*                _currentArea;
     static Level*               _currentLevel;
     static Selectable*          _currentSelection;
@@ -137,15 +144,22 @@ private:
     static Selectable::TYPE     _currentSelectionType;
     static EngineGLSceneWidget*      _glWidget;
 =======
+=======
+>>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
     static Area *_currentArea;
     static Level *_currentLevel;
     static Selectable *_currentSelection;
 	static Assets::LAYER_TYPE _currentLayer;
 	static bool _layerVisible[Assets::LAYER_MAX];
     static Selectable::TYPE _currentSelectionType;
+<<<<<<< HEAD
 >>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
 
     void connectSlots(Project *const project);
+=======
+
+	void connectSlots(Project *const project);
+>>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
 };
 
 
