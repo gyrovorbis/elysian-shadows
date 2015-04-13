@@ -17,8 +17,11 @@ class TkEntity;
 typedef TkEntity Entity;
 struct MapChange;
 
+<<<<<<< HEAD
 class EngineGLSceneWidget;
 
+=======
+>>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
 namespace elysian {
     class Engine;
 }
@@ -29,8 +32,8 @@ class Assets: public QObject, public elysian::LevelManager {
 public:
     enum LAYER_TYPE { LAYER_TILE1, LAYER_TILE2, LAYER_TILE3, LAYER_LIGHT, LAYER_COLLISION, LAYER_ENTITY, LAYER_MAX };
 
-            Assets(void);
-    virtual ~Assets(void);
+    Assets();
+    ~Assets();
 
     Selectable* getCurrentSelection(void) const { return _currentSelection; }
     Area*       getCurrentArea(void) const { return _currentArea; }
@@ -72,10 +75,13 @@ public:
     QString getProjectDir();
     int getUndoStackCount();
 
+<<<<<<< HEAD
     void setGLWidget(EngineGLSceneWidget*const context);
     void makeGLContextCurrent(void);
     void doneGLContextCurrent(void);
 
+=======
+>>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
 Q_SIGNALS:
     //void EntityChanged(Entity *const entity);
     void selectionChanged(const Selectable::TYPE type, Selectable *const selection);
@@ -118,10 +124,11 @@ private Q_SLOTS:
     void onEntityParented(Entity*const child, Entity*const parent);
 
 private:
-    static Project*             m_project;
-    static elysian::Engine*     _engine;
+    static Project* m_project;
+    static elysian::Engine* _engine;
 
     //Current state
+<<<<<<< HEAD
     static Area*                _currentArea;
     static Level*               _currentLevel;
     static Selectable*          _currentSelection;
@@ -129,6 +136,14 @@ private:
     static bool                 _layerVisible[Assets::LAYER_MAX];
     static Selectable::TYPE     _currentSelectionType;
     static EngineGLSceneWidget*      _glWidget;
+=======
+    static Area *_currentArea;
+    static Level *_currentLevel;
+    static Selectable *_currentSelection;
+	static Assets::LAYER_TYPE _currentLayer;
+	static bool _layerVisible[Assets::LAYER_MAX];
+    static Selectable::TYPE _currentSelectionType;
+>>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
 
     void connectSlots(Project *const project);
 };

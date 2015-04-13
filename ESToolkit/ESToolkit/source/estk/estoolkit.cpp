@@ -891,19 +891,29 @@ void ESToolkit::_openProjectDir(const QString dir) {
     //_engineGLView->setFormat(QSurfaceFormat::defaultFormat());
     connect(viewport, SIGNAL(engineUpdated()), _ui->mapView, SLOT(onEngineUpdated()));
     viewport->setMouseTracking(true);
-
+    //_engineGLView->makeCurrent();
     _engineGLView->setMapView(_ui->mapView);
     //_engineGLView->update();
     _ui->mapView->setViewport(viewport);
    // _ui->mapView->setScene(new QGraphicsScene());
     //setCentralWidget(viewport);
     //assert(_ui->mapView->scene());
+<<<<<<< HEAD
     //_engineGLView->makeCurrent();
+=======
+
+>>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
     GYInputInitParams inputParams = {
         static_cast<QGraphicsView*>(_ui->mapView)
     };
     gyInputInit(&inputParams);
+<<<<<<< HEAD
     _assets.setGLWidget(_engineGLView);
+=======
+
+    assert(_engineGLView->context()->isValid());
+	Project *proj = _assets.loadProject(dir);
+>>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
 
 
     _engineGLView->makeCurrent();
@@ -914,7 +924,13 @@ void ESToolkit::_openProjectDir(const QString dir) {
     _assets.setCurrentProject(proj);
     _assets.setCurrentSelection(_assets.getCurrentArea());
 
+<<<<<<< HEAD
    // _engineGLView->doneCurrent();
+=======
+    //_engineGLView->doneCurrent();
+
+    _engineGLView->startRenderTimer();
+>>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
     //elysian::Debug::getInstance()._curArea = _assets.getCurrentArea();
     //_assets.getCurrentArea()->populateVbo();
 
