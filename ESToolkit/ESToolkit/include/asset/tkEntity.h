@@ -1,14 +1,9 @@
 #ifndef TK_ENTITY_H
 #define TK_ENTITY_H
 
-#include <QGraphicsRectItem>
-#include "treenode.h"
-#include "assetManager.h"
-#include "elysian_asset_typedefs.hpp"
-#include "elysian_entity_base.hpp"
-#include "luaTableStackModel.h"
-#include "elysian_asset_typedefs.hpp"
-#include "assetManager.h"
+#include <treenode.h>
+#include <assetManager.h>
+#include <elysian_entity_base.hpp>
 
 class Sprite;
 class Component;
@@ -32,7 +27,7 @@ namespace elysian {
 
 class TkEntity:
         public elysian::EntityBase,
-		public TreeNode,
+        public TreeNode,
         public AssetManager
 {
     friend class ESToolkit;
@@ -70,20 +65,20 @@ public:
             TkEntity(void);
             TkEntity(const bool selectable);
             TkEntity(const OOLUA::Lua_table_ref valTable);
-	virtual ~TkEntity(void) override;
+    virtual ~TkEntity(void) override;
 
     void setName(const QString name);
     void setName(char const*const name);
     void setSelectionState(const SELECTION_STATE state);
     SELECTION_STATE getSelectionState(void) const;
-	void populateModel(void);
+    void populateModel(void);
 
-	//Selectable
-	virtual Selectable::TYPE	getType(void) const { return Selectable::ENTITY; }
-	virtual TreeNode::ITEM_TYPE getTreeWidgetItemType(void) { return ITEM_ENTITY; }
+    //Selectable
+    virtual Selectable::TYPE	getType(void) const { return Selectable::ENTITY; }
+    virtual TreeNode::ITEM_TYPE getTreeWidgetItemType(void) { return ITEM_ENTITY; }
     virtual QAbstractItemModel* getModel(void) const override;
 
-	//Should "technically" be decoupled. See .cpp for comment.
+    //Should "technically" be decoupled. See .cpp for comment.
     //void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     virtual bool activate(void) override;
     virtual bool deactivate(void) override;
@@ -91,13 +86,13 @@ public:
     elysian::Entity* getElysianEntity(void);
 #if 0
     Renderable *getRenderable(void) const;
-	Animation *getAnimation(void) const;
-	Collidable *getCollidable(void) const;
-	Warp *getWarp(void) const;
-	Item *getItem(void) const;
-	Character *getCharacter(void) const;
-	Friendly *getFriendly(void) const;
-	Enemy *getEnemy(void) const;
+    Animation *getAnimation(void) const;
+    Collidable *getCollidable(void) const;
+    Warp *getWarp(void) const;
+    Item *getItem(void) const;
+    Character *getCharacter(void) const;
+    Friendly *getFriendly(void) const;
+    Enemy *getEnemy(void) const;
 #endif
 
 Q_SIGNALS:

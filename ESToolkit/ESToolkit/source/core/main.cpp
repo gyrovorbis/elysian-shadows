@@ -5,6 +5,7 @@
 #include "estoolkit.h"
 #include <QPainter>
 #include <QTimer>
+#include <QOpenGLContext>
 #include "elysian_debug.hpp"
 #include <QDebug>
 #include <QRectF>
@@ -15,7 +16,8 @@
 #include "elysian_debug.hpp"
 
 GYAppCbRet Init(int argc, char **argv) {
-
+     //   QApplication::setAttribute(Qt::AA_UseDesktopOpenGL, true);
+    //QApplication::setAttribute(Qt::AA_ShareOpenGLContexts, true);
     //QApplication::setAttribute(Qt::AA_SynthesizeMouseForUnhandledTouchEvents, false);
     //QApplication::setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, false);
     //QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps, false);
@@ -30,7 +32,7 @@ GYAppCbRet Init(int argc, char **argv) {
     fmt.setRedBufferSize(8); Uhh... Qt does a better job than I can... fuck.
     fmt.setBlueBufferSize(8);
     fmt.setGreenBufferSize(8);*/
-    fmt.setDepthBufferSize(32);
+    //fmt.setDepthBufferSize(32);
     //fmt.setAlphaBufferSize(8);
     fmt.setVersion( 3, 2 );
     fmt.setProfile( QSurfaceFormat::CoreProfile ); // Requires >=Qt-4.8.0
@@ -41,11 +43,13 @@ GYAppCbRet Init(int argc, char **argv) {
     rect.setSize(QSizeF(2.0f, 5.0f));
 
     QApplication a(argc, argv);
+
+    qDebug() << "MAIN" << QOpenGLContext::currentContext();
     a.setOrganizationName("Elysian Shadows");
     a.setOrganizationDomain("elysianshadows.com");
     a.setApplicationName("ESTk");
     a.setWindowIcon(QIcon(":/estk/images/estk.ico"));
-    a.setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
+   // a.setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
 
     QPixmap splashScreen(":/splash/images/splashScreen.png");
     QPainter painter(&splashScreen);
@@ -56,7 +60,7 @@ GYAppCbRet Init(int argc, char **argv) {
     painter.drawText(25,82,QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" \"Sex and Candy\" Release"));
     painter.drawText(25,190,"http://elysianshadows.com/tkreleasenotes"); /* This is an invalid URL!!!! */
 
-	QSplashScreen splash(splashScreen, Qt::WindowStaysOnTopHint);
+    QSplashScreen splash(splashScreen, Qt::WindowStaysOnTopHint);
 
 
     ESToolkit w;
@@ -66,14 +70,14 @@ GYAppCbRet Init(int argc, char **argv) {
 // We don't want to wait for the splash screen whilst debugging. --Sara.
 #ifdef QT_NO_DEBUG
     splash.show();
-	QTimer::singleShot(2500, &splash, SLOT(close()));
-	QTimer::singleShot(2500, &w, SLOT(showMaximized()));
+    QTimer::singleShot(2500, &splash, SLOT(close()));
+    QTimer::singleShot(2500, &w, SLOT(showMaximized()));
 #else
    //QTimer::singleShot(1000, &splash, SLOT(close()));
     QTimer::singleShot(0, &w, SLOT(showMaximized()));
 #endif
 
-	a.exec();
+    a.exec();
 
     return GY_RET_CONTINUE;
 }

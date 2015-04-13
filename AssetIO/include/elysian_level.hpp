@@ -2,12 +2,12 @@
 #define ELYSIAN_LEVEL_HPP
 
 #ifdef ELYSIAN_ENGINE
-#   include "elysian_level_base.hpp"
+#   include <elysian_level_base.hpp>
 namespace elysian {
     typedef LevelBase Level;
 }
 #else
-#   include "tkLevel.h"
+#   include <tkLevel.h>
 namespace elysian {
     typedef TkLevel Level;
 }

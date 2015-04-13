@@ -11,7 +11,7 @@
 #include "elysian_map_system.hpp"
 #include "entitySelectable.h"
 #include "elysian_party_system.hpp"
-#include <QOpenGLWidget>
+#include <engineGLSceneWidget.h>
 
 //====STATIC MEMBERS====
 
@@ -23,14 +23,14 @@ Selectable *Assets::_currentSelection = nullptr;
 Selectable::TYPE Assets::_currentSelectionType = Selectable::EMPTY;
 Assets::LAYER_TYPE Assets::_currentLayer = Assets::LAYER_TILE1;
 bool Assets::_layerVisible[Assets::LAYER_MAX] = { true };
-QOpenGLWidget* Assets::_glWidget = nullptr;
+EngineGLSceneWidget* Assets::_glWidget = nullptr;
 
 
 //====INSTANCE MEMBERS====
 
 //General case
 void Assets::setCurrentSelection(Selectable *const selection) {
-	Selectable *const oldSelection = _currentSelection;
+    Selectable *const oldSelection = _currentSelection;
 
     if(oldSelection != selection) {
 
@@ -88,17 +88,17 @@ int Assets::getUndoStackCount(void)
 
 
 void Assets::connectSlots(Project *const project) {
-	connect(project, SIGNAL(activating(Project *const, Level *const, Area *const)), this, SLOT(onChildProjectActivating(Project *const, Level *const, Area *const)));
-	connect(project, SIGNAL(areaAdded(Project * const, Level *const, Area *const)), this, SLOT(onAreaAdded(Project *const, Level *const, Area *const)));
-	connect(project, SIGNAL(areaRenamed(QString,QString)), this, SLOT(onAreaRenamed(QString,QString)));
-	connect(project, SIGNAL(areaRemoved(Project*const,Level*const,Area*const)), this, SLOT(onAreaRemoved(Project*const,Level*const,Area*const)));
-	connect(project, SIGNAL(levelAdded(Project *const, Level *const)), this, SLOT(onLevelAdded(Project *const, Level *const)));
-	connect(project, SIGNAL(levelRemoved(Project*const,Level*const)), this, SLOT(onLevelRemoved(Project*const,Level*const)));
-	connect(project, SIGNAL(levelRenamed(QString,QString)), this, SLOT(onLevelRenamed(QString,QString)));
-	connect(project, SIGNAL(entityAdded(Project*const,Level*const,Area*const,Entity*const)), this, SLOT(onEntityAdded(Project*const,Level*const,Area*const,Entity*const)));
-	connect(project, SIGNAL(entityRemoved(Project*const,Level*const,Area*const,Entity*const)), this, SLOT(onEntityRemoved(Project*const,Level*const,Area*const,Entity*const)));
-	connect(project, SIGNAL(componentAttached(Project*const,Level*const,Area*const,Entity*const,Component*const)), this, SLOT(onComponentAttached(Project*const,Level*const,Area*const,Entity*const,Component*const)));
-	connect(project, SIGNAL(componentRemoved(Project*const,Level*const,Area*const,Entity*const,Component*const)), this, SLOT(onComponentRemoved(Project*const,Level*const,Area*const,Entity*const,Component*const)));
+    connect(project, SIGNAL(activating(Project *const, Level *const, Area *const)), this, SLOT(onChildProjectActivating(Project *const, Level *const, Area *const)));
+    connect(project, SIGNAL(areaAdded(Project * const, Level *const, Area *const)), this, SLOT(onAreaAdded(Project *const, Level *const, Area *const)));
+    connect(project, SIGNAL(areaRenamed(QString,QString)), this, SLOT(onAreaRenamed(QString,QString)));
+    connect(project, SIGNAL(areaRemoved(Project*const,Level*const,Area*const)), this, SLOT(onAreaRemoved(Project*const,Level*const,Area*const)));
+    connect(project, SIGNAL(levelAdded(Project *const, Level *const)), this, SLOT(onLevelAdded(Project *const, Level *const)));
+    connect(project, SIGNAL(levelRemoved(Project*const,Level*const)), this, SLOT(onLevelRemoved(Project*const,Level*const)));
+    connect(project, SIGNAL(levelRenamed(QString,QString)), this, SLOT(onLevelRenamed(QString,QString)));
+    connect(project, SIGNAL(entityAdded(Project*const,Level*const,Area*const,Entity*const)), this, SLOT(onEntityAdded(Project*const,Level*const,Area*const,Entity*const)));
+    connect(project, SIGNAL(entityRemoved(Project*const,Level*const,Area*const,Entity*const)), this, SLOT(onEntityRemoved(Project*const,Level*const,Area*const,Entity*const)));
+    connect(project, SIGNAL(componentAttached(Project*const,Level*const,Area*const,Entity*const,Component*const)), this, SLOT(onComponentAttached(Project*const,Level*const,Area*const,Entity*const,Component*const)));
+    connect(project, SIGNAL(componentRemoved(Project*const,Level*const,Area*const,Entity*const,Component*const)), this, SLOT(onComponentRemoved(Project*const,Level*const,Area*const,Entity*const,Component*const)));
     connect(project, SIGNAL(mapChanged(Area*const,const QVector<MapChange>&)), this, SLOT(onMapChanged(Area*const,const QVector<MapChange>&)));
     connect(project, SIGNAL(entityParented(Entity*const,Entity*const)), this, SLOT(onEntityParented(Entity*const,Entity*const)));
 }
@@ -106,7 +106,7 @@ void Assets::connectSlots(Project *const project) {
 //====NONSTATIC====
 
 Assets::Assets(void) {
-	for(unsigned i = 0; i < Assets::LAYER_MAX; ++i) _layerVisible[i] = true;
+    for(unsigned i = 0; i < Assets::LAYER_MAX; ++i) _layerVisible[i] = true;
 }
 
 Assets::~Assets(void) {
@@ -122,7 +122,7 @@ Assets::~Assets(void) {
 
 void Assets::setLayerVisible(const Assets::LAYER_TYPE type, bool flag) {
     //_layerVisible[type] = flag;
-	if(type <= 3) _engine->getMapSys()->setRenderTileLayer(type, flag);
+    if(type <= 3) _engine->getMapSys()->setRenderTileLayer(type, flag);
     _layerVisible[type] = flag;
 }
 
@@ -162,12 +162,12 @@ void Assets::setCurrentArea(Area *const area) {
     _engine->getLevelSys()->switchArea(area? area->getPath() : nullptr);
     if(area) {
         //area->activate();
-		Q_EMIT areaChanged(_currentArea);
+        Q_EMIT areaChanged(_currentArea);
         //if(area->getFirstEntity()) setCurrentSelection(new EntitySelectable(area->getFirstEntity()));
         setCurrentSelection((EntitySelectable*)nullptr);
     }
     else {
-		Q_EMIT areaChanged(_currentArea);
+        Q_EMIT areaChanged(_currentArea);
         setCurrentSelection((EntitySelectable*)nullptr);
     }
 }
@@ -175,7 +175,7 @@ void Assets::setCurrentArea(Area *const area) {
 
 void Assets::setCurrentLayer(const LAYER_TYPE type) {
     _currentLayer=type;
-	Q_EMIT layerChanged(type);
+    Q_EMIT layerChanged(type);
 }
 
 bool Assets::setCurrentLevel(const QString name) {
@@ -199,8 +199,8 @@ void Assets::setCurrentLevel(Level *const level) {
         else setCurrentArea(nullptr);
     }
     else setCurrentArea(nullptr);
-	//Debug::Log(Debug::VERBOSE, "!!!!!!EMIT CURRENT LEVEL " +( (level)? level->getName() : "NULL"));
-	Q_EMIT levelChanged(level);
+    //Debug::Log(Debug::VERBOSE, "!!!!!!EMIT CURRENT LEVEL " +( (level)? level->getName() : "NULL"));
+    Q_EMIT levelChanged(level);
 }
 
 bool Assets::setCurrentProject(const QString name) {
@@ -218,7 +218,7 @@ void Assets::setCurrentProject(Project *const project) {
     }
 
     if(project) {
-		project->activate();
+        project->activate();
         if(project->getFirstLevel()) setCurrentLevel(project->getFirstLevel()->getNodeName());
         else setCurrentLevel(nullptr);
         QDir::setCurrent(m_project->getLocation());
@@ -227,8 +227,8 @@ void Assets::setCurrentProject(Project *const project) {
     else {
         setCurrentLevel(nullptr);
     }
-	//Debug::Log(Debug::VERBOSE, "!!!!!EMIT CURRENT PROJECT - " + ((project)? project->getName() : "NULL"));
-	Q_EMIT projectChanged(project);
+    //Debug::Log(Debug::VERBOSE, "!!!!!EMIT CURRENT PROJECT - " + ((project)? project->getName() : "NULL"));
+    Q_EMIT projectChanged(project);
 }
 
 Project *Assets::getProject(const QString /*name*/) const {
@@ -243,9 +243,11 @@ Project *Assets::loadProject(const QString directory) {
             return nullptr;
         }
     }
+  //  makeGLContextCurrent();
+   // qDebug() << "LOADPROJECT" << QOpenGLContext::currentContext();
 
     Project *proj = new Project;
-	connectSlots(proj);
+    connectSlots(proj);
 
     gyTimerInit();
 
@@ -265,24 +267,25 @@ Project *Assets::loadProject(const QString directory) {
     //_engine->getMapSys()->makeCurrent();
 
 
-	if(proj->load(directory)) {
+    if(proj->load(directory)) {
         //ConnectSlots(proj);
         m_project = proj;
         Q_EMIT projectAdded(proj);
 
        // _engine->getMapSys()->show();
+//        doneGLContextCurrent();
         return proj;
     }
 
-
+   // doneGLContextCurrent();
     delete proj;
-	Debug::Logf(Debug::VERBOSE, "Could not load project %s!\n", directory.toStdString().c_str());
+    Debug::Logf(Debug::VERBOSE, "Could not load project %s!\n", directory.toStdString().c_str());
     return nullptr;
 }
 
 bool Assets::saveProject(const QString name) const {
     if(m_project->getNodeName() == name) return m_project->save();
-	Debug::Logf(Debug::VERBOSE, "Project %s does not exist!", name.toStdString().c_str());
+    Debug::Logf(Debug::VERBOSE, "Project %s does not exist!", name.toStdString().c_str());
     return false;
 }
 
@@ -295,8 +298,8 @@ bool Assets::removeProject(const QString name) {
     //for(QMap<QString, Project *>::iterator it = _project.begin(); it != _project.end(); ++it) {
         if(m_project->getNodeName() == name) {
             setCurrentProject(nullptr);
-			Q_EMIT projectRemoved(m_project);
-			Q_EMIT projectRemoveUI();
+            Q_EMIT projectRemoved(m_project);
+            Q_EMIT projectRemoveUI();
 
             Project *temp = m_project;
             //_project.erase(it);
@@ -307,71 +310,71 @@ bool Assets::removeProject(const QString name) {
         }
 
     //}
-	Debug::Logf(Debug::VERBOSE, "Project %s could not be removed!\n", name.toStdString().c_str());
+    Debug::Logf(Debug::VERBOSE, "Project %s could not be removed!\n", name.toStdString().c_str());
     return false;
 }
 
 
-void Assets::setGLWidget(QOpenGLWidget*const context) {
-    Q_ASSERT(widget && widget->context() && widget->context()->isValid());
-    _glContext = context;
+void Assets::setGLWidget(EngineGLSceneWidget*const widget) {
+    Q_ASSERT(widget && widget->context());
+    _glWidget = widget;
 }
 
 void Assets::makeGLContextCurrent(void) {
-    _glWidget->makeCurrent();
+//    _glWidget->makeCurrent();
 }
 
 void Assets::doneGLContextCurrent(void) {
-    _glWidget->doneCurrent();
+  //  _glWidget->doneCurrent();
 }
 
 
 void Assets::onChildProjectActivating(Project *const project, Level *const level, Area *const area) {
-    makeGLContextCurrent();
+  //  makeGLContextCurrent();
     if(m_project != project) setCurrentProject(project->getNodeName());
     if(level && _currentLevel != level) setCurrentLevel(level->getNodeName());
     if(area && _currentArea != area) setCurrentArea(area->getNodeName());
-    doneGLContextCurrent();
+   // doneGLContextCurrent();
 }
 
 void Assets::onAreaAdded(Project *const project, Level *const level, Area *const area) {
-	Q_EMIT areaAdded(project, level, area);
+    Q_EMIT areaAdded(project, level, area);
 }
 
 void Assets::onAreaRemoved(Project *const project, Level *const level, Area *const area) {
-	Q_EMIT areaRemoved(project, level, area);
+    Q_EMIT areaRemoved(project, level, area);
 }
 
 void Assets::onLevelAdded(Project *const project, Level *const level) {
-	Q_EMIT levelAdded(project, level);
+    Q_EMIT levelAdded(project, level);
 }
 
 void Assets::onLevelRemoved(Project *const project, Level *const level) {
-	Q_EMIT levelRemoved(project, level);
+    Q_EMIT levelRemoved(project, level);
 }
 
 void Assets::onEntityAdded(Project *const project, Level *const level, Area *const area, Entity *const entity) {
-	Q_EMIT entityAdded(project, level, area, entity);
+    Q_EMIT entityAdded(project, level, area, entity);
 }
 
 void Assets::onEntityRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity) {
-	Q_EMIT entityRemoved(project, level, area, entity);
+    Q_EMIT entityRemoved(project, level, area, entity);
 }
 
 void Assets::onComponentAttached(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp) {
-	Q_EMIT componentAttached(project, level, area, entity, comp);
+    Q_EMIT componentAttached(project, level, area, entity, comp);
 }
 
 void Assets::onComponentRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp) {
-	Q_EMIT componentRemoved(project, level, area, entity, comp);
+    Q_EMIT componentRemoved(project, level, area, entity, comp);
 }
 
 void Assets::onAreaRenamed(const QString oldName, const QString newName) {
-	Q_EMIT areaRenamed(oldName, newName);
+    Q_EMIT areaRenamed(oldName, newName);
 }
 
 void Assets::onLevelRenamed(const QString oldName, const QString newName) {
-	Q_EMIT levelRenamed(oldName, newName);
+    Q_EMIT levelRenamed(oldName, newName);
 }
 
 void Assets::onMapChanged(Area * const area, const QVector<MapChange>& changes) {

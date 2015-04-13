@@ -3,7 +3,7 @@
 
 #include <gyro_matrix_api.h>
 #include <gyro_video_api.h>
-#include "gyro_shaders_glal.h"
+//#include "gyro_shaders_glal.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -11,17 +11,17 @@ extern "C" {
 
 #define GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE	(1024)
 
-struct _GYTexture;
-struct _GYCamera;
+struct GYTexture;
+struct GYCamera;
 
-extern const struct _GYCamera*      glalCurCamera;
+extern const struct GYCamera*       glalCurCamera;
 extern GYMatrix4                    glalViewMatrix;
 extern float                        glalViewZOrient;
 extern float                        glalViewScale;
 extern GYVector3                    glalCamWorldPos;
 extern const GYVector3*             glalTangentVector;
 extern const GYVector3*             glalNormalVector;
-extern const struct _GYTexture*     glalCurTex;
+extern const struct GYTexture*      glalCurTex;
 extern unsigned                     glalCurStripSize;
 extern GYVector4                    glalModelViewVertices[];
 extern GYTexCoord2                  glalStripTexCoords[];
@@ -49,6 +49,7 @@ void glalVidTangentUpdateUniform(const GYVector3*const tangent);
 void glalVidNormalUpdateUniform(const GYVector3*const normal);
 void glalVidNormalMapZFactorUpdateUniform(const float factor);
 void glalVidBindDefaultFbo(void);
+int  glalVidDefaultFbo(void);
 
 static inline float glalOrientNormalMapZFactor(const GY_RECT_TEX_ORIENT orient) {
     switch(orient) {

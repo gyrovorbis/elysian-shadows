@@ -1,8 +1,7 @@
 #ifndef ELYSIAN_ZCOORDS_HPP
 #define ELYSIAN_ZCOORDS_HPP
 
-#include "elysian_asset_typedefs.hpp"
-#include "elysian_area.hpp"
+#include <elysian_area.hpp>
 
 //This needs to be at least as tall as the rendered map area? Not really?
 //#define ELYSIAN_DEPTH_BUFFER_HEIGHT ELYSIAN_AREA_MAP_HEIGHT
@@ -30,24 +29,24 @@
 
 namespace elysian {
 
-	//Use these instead of the preprocessor defines, because those are
-	//recalculated every use!
-	struct ZCoordConstants {
-		static const float bg1;
-		static const float bg2;
-		static const float bg3;
-		static const float mapBase;
-		static const float mapSize;
-		static const float fg1;
-		static const float fg2;
-		static const float fg3;
+    //Use these instead of the preprocessor defines, because those are
+    //recalculated every use!
+    struct ZCoordConstants {
+        static const float bg1;
+        static const float bg2;
+        static const float bg3;
+        static const float mapBase;
+        static const float mapSize;
+        static const float fg1;
+        static const float fg2;
+        static const float fg3;
 
-		static const float tileDecor;
-	
-		static const float warpOverlay;
-		static const float advLog;
+        static const float tileDecor;
 
-	};
+        static const float warpOverlay;
+        static const float advLog;
+
+    };
 
 }
 

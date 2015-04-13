@@ -9,23 +9,23 @@ win32 {
 }
 TARGET = ESToolkit
 TEMPLATE = app
-QT		+= widgets
+QT		+= widgets opengl
 QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-empty-body
 
 ICON = resource/images/estk.icns
 
-DEPENDPATH += include/asset \
+DEPENDPATH +=  ../../AssetIO/include \
+    include/asset \
+    ../../ESGamma/include \
+    include/estk \
+    ../../libGyro/include \
+    ../../libGyro/include/kinetic \
     include/core \
     include/dialog \
-    include/estk \
     include/sheetManager \
     include/tileEngine \
     include/widget \
-    ../../AssetIO/include \
-    ../../libGyro/include \
-    ../../libGyro/include/kinetic \
-	../../ESGamma/include \
-	../../Spine/include
+    ../../Spine/include
 
 INCLUDEPATH += include/asset \
     include/core \
@@ -36,12 +36,12 @@ INCLUDEPATH += include/asset \
     include/widget \
     ../../AssetIO/include \
     ../../libGyro/include \
-	../../libGyro/include/kinetic \
-	../../ESGamma/lib/include \
-	../../ESGamma/include \
-	../../OOLua/include \
-	../../Lua5.2/include \
-	../../Spine/include
+    ../../libGyro/include/kinetic \
+    ../../ESGamma/lib/include \
+    ../../ESGamma/include \
+    ../../OOLua/include \
+    ../../Lua5.2/include \
+    ../../Spine/include
 
 
 SOURCES += source/asset/project.cpp \
@@ -86,10 +86,8 @@ SOURCES += source/asset/project.cpp \
     include/tileEngine/tileSelection.inl \
     source/sheetManager/SheetManagerDestTileGraphicsItem.cpp \
     source/estk/mapViewTileGraphicsItem.cpp \
-    source/asset/mapEntry.cpp \
     ../../AssetIO/source/elysian_zcoords.cpp \
     ../../AssetIO/source/elysian_warp.cpp \
-    ../../AssetIO/source/elysian_tile.cpp \
     ../../AssetIO/source/elysian_renderable.cpp \
     ../../AssetIO/source/elysian_lua_behavior.cpp \
     ../../AssetIO/source/elysian_level_manager.cpp \
@@ -102,10 +100,10 @@ SOURCES += source/asset/project.cpp \
     ../../AssetIO/source/elysian_audio_source.cpp \
     ../../AssetIO/source/elysian_light_source.cpp \
     source/asset/elysianTileWrapper.cpp \
-	../../AssetIO/source/elysian_particle_emitter.cpp \
+    ../../AssetIO/source/elysian_particle_emitter.cpp \
     ../../AssetIO/source/elysian_rigid_body.cpp \
     ../../AssetIO/source/elysian_combat.cpp \
-	../../AssetIO/source/luatables.cc \
+    ../../AssetIO/source/luatables.cc \
     ../../ESGamma/source/elysian_adventure_log.cpp \
     ../../ESGamma/source/elysian_animation_system.cpp \
     ../../ESGamma/source/elysian_audio_system.cpp \
@@ -163,7 +161,9 @@ SOURCES += source/asset/project.cpp \
     ../../ESGamma/source/elysian_skeleton_system.cpp \
     ../../AssetIO/source/elysian_sprite_attrib.cpp \
     ../../AssetIO/source/elysian_color.cpp \
-    ../../AssetIO/source/elysian_material.cpp
+    ../../AssetIO/source/elysian_material.cpp \
+    ../../AssetIO/source/elysian_textured_attrib.cpp \
+    ../../AssetIO/source/elysian_tile.cpp
 
 HEADERS += include/asset/project.h \
     include/asset/assets.h \
@@ -221,11 +221,9 @@ HEADERS += include/asset/project.h \
     include/estk/sheetViewColliderGraphicsItem.h \
     include/sheetManager/sheetManagerTileEntry.h \
     include/estk/mapViewDepthBufferGraphicsItem.h \
-    include/asset/mapEntry.h \
     include/core/glUtilities.h \
     ../../AssetIO/include/elysian_zcoords.hpp \
     ../../AssetIO/include/elysian_warp.hpp \
-    ../../AssetIO/include/elysian_tile.hpp \
     ../../AssetIO/include/elysian_textured_attrib.hpp \
     ../../AssetIO/include/elysian_stl_algorithm.hpp \
     ../../AssetIO/include/elysian_sprite_attrib.hpp \
@@ -249,7 +247,7 @@ HEADERS += include/asset/project.h \
     ../../AssetIO/include/elysian_asset.hpp \
     ../../AssetIO/include/elysian_audio_source.hpp \
     include/asset/elysianTileWrapper.h \
-	../../AssetIO/include/elysian_particle_emitter.hpp \
+    ../../AssetIO/include/elysian_particle_emitter.hpp \
     ../../AssetIO/include/elysian_combat.hpp \
     ../../AssetIO/include/elysian_rigid_body.hpp \
     ../../AssetIO/include/luatables.h \
@@ -294,8 +292,8 @@ HEADERS += include/asset/project.h \
     include/estk/tkMapSystem.h \
     include/estk/entitySelectable.h \
     include/core/tkDebug.h \
-	../../ESGamma/include/elysian_debug_base.hpp \
-	../../ESGamma/include/elysian_debug.hpp \
+    ../../ESGamma/include/elysian_debug_base.hpp \
+    ../../ESGamma/include/elysian_debug.hpp \
     ../../AssetIO/include/elysian_animation_base.hpp \
     ../../AssetIO/include/elysian_animation.hpp \
     include/asset/tkAnimation.h \
@@ -321,7 +319,8 @@ HEADERS += include/asset/project.h \
     include/estk/tkLuaManager.h \
     ../../AssetIO/include/elysian_skeleton.hpp \
     ../../ESGamma/include/elysian_skeleton_system.hpp \
-    ../../AssetIO/include/elysian_color.hpp
+    ../../AssetIO/include/elysian_color.hpp \
+    ../../AssetIO/include/elysian_tile.hpp
 
 FORMS += form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \
@@ -446,14 +445,14 @@ win32 {
                # -lmingw32 \
                 -logg \
                 -lvorbis \
-                #-lvorbis.dll \
+                -lvorbis.dll \
                 -lvorbisenc \
-                #-lvorbisenc.dll \
+                -lvorbisenc.dll \
                 -lvorbisfile \
                 -lglew32 \
                 -lglew32.dll \
                 -limagehlp
-                #-lvorbisfile.dll \
+                -lvorbisfile.dll \
                 #-mconsole
                 #-llua52
 }

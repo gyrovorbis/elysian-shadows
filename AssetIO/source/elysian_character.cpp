@@ -13,20 +13,36 @@ ELYSIAN_LUA_PROXY_FIELDS_EXPORT(Character)
 
 float Character::_deltaTime = 0.0f;
 
+bool Character::canAddTo(Entity& entity) const { return (entity.getAnimation() && entity.getRigidBody()); }
+
+
+bool Character::isFacing(const Entity &entity) const {
+    GYVector2 distVec;
+    gyVec2Sub(&distVec, (GYVector2*)&entity._transform._pos, (GYVector2*)&_entity->_transform._pos);
+    return (_faceDir == Direction::fromVector(distVec));
+}
+
+
+void Character::faceEntity(Entity &entity) {
+    GYVector2 dist;
+    gyVec2Sub(&dist, (GYVector2*)&entity._transform._pos, (GYVector2*)&_entity->_transform._pos);
+    faceDir(Direction::fromVector(dist));
+}
+
 bool Character::save(FILE* /*file*/) {
-	dbgprintf(LOG_VERBOSE, "Character::Save(FILE*)");
-	return true;
+    dbgprintf(LOG_VERBOSE, "Character::Save(FILE*)");
+    return true;
 }
 
 bool Character::load(FILE* /*file*/) {
-	dbgprintf(LOG_VERBOSE, "Character::Load(FILE*)");
-	
-	return true;
+    dbgprintf(LOG_VERBOSE, "Character::Load(FILE*)");
+
+    return true;
 }
 
 //O(1)
 bool Character::addToLevel(void) {
-	_curArea->characters.push_back(this);
+    _curArea->characters.push_back(this);
         return true;
 }
 
@@ -41,26 +57,26 @@ void Character::setDashing(const bool val) {
 }
 
 void Character::faceDir(const Direction::DIR4 dir) {
-	if(_animate) {
-		Animation *animComp = _entity->getAnimation();
-		switch(dir) {
-			case Direction::DIR4_UP:
-				animComp->playAnimation("Up");
-				break;
-			case Direction::DIR4_DOWN:
-				animComp->playAnimation("Down");
-				break;
-			case Direction::DIR4_LEFT:
-				animComp->playAnimation("Left");
-				break;
-			case Direction::DIR4_RIGHT:
-				animComp->playAnimation("Right");
-				break;
-			default:
-				break;
-		}
-	}
-	_faceDir = dir;
+    if(_animate) {
+        Animation *animComp = _entity->getAnimation();
+        switch(dir) {
+            case Direction::DIR4_UP:
+                animComp->playAnimation("Up");
+                break;
+            case Direction::DIR4_DOWN:
+                animComp->playAnimation("Down");
+                break;
+            case Direction::DIR4_LEFT:
+                animComp->playAnimation("Left");
+                break;
+            case Direction::DIR4_RIGHT:
+                animComp->playAnimation("Right");
+                break;
+            default:
+                break;
+        }
+    }
+    _faceDir = dir;
 }
 
 /* If we are currently holding another entity, their mass must be taken into account when applying
@@ -69,13 +85,13 @@ void Character::faceDir(const Direction::DIR4 dir) {
  * accel = force*(inverseMassParent + inverseMassChild)
  */
 float Character::getHeldEntityForceDampFactor(void) {
-	const float invParent = _entity->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass;
-	const float invChild = _heldEntity->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass;
+    const float invParent = _entity->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass;
+    const float invChild = _heldEntity->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass;
 
-	//Don't divid by zero, dipshit.
-	if(invParent+invChild == 0.0f) return 0.0f;
+    //Don't divid by zero, dipshit.
+    if(invParent+invChild == 0.0f) return 0.0f;
 
-	return (invChild/(invChild+invParent));
+    return (invChild/(invChild+invParent));
 }
 
 void Character::walk(const GYVector2 &dir) {
@@ -130,41 +146,41 @@ void Character::animateWalk(const GYVector2 &moveVec) {
 }
 
 void Character::moveByForce(const GYVector2 &dist) {
-	if(gyVec2IsZero(&dist)) return;
-	GYVector2 totalForce = dist;
+    if(gyVec2IsZero(&dist)) return;
+    GYVector2 totalForce = dist;
 
-	if(_heldEntity) {
-		gyVec2Scale(&totalForce, &dist, getHeldEntityForceDampFactor());
-	}
+    if(_heldEntity) {
+        gyVec2Scale(&totalForce, &dist, getHeldEntityForceDampFactor());
+    }
 
-	_entity->getRigidBody()->applyForce(GYVector3{ totalForce.x, totalForce.y, 0.0f });
-	//_entity->transform.translate(dist);
+    _entity->getRigidBody()->applyForce(GYVector3{ totalForce.x, totalForce.y, 0.0f });
+    //_entity->transform.translate(dist);
     animateWalk(dist);
     _lastMoveDir = GYVector3 { dist.x, dist.y, 0.0f };
     gyVec2Normalize(&_lastMoveDir);
 }
 
 void Character::update(void) {
-	if(!_movedThisFrame) {
-		_entity->getAnimation()->replaceState("Walk", "Stand");
-		faceDir(_faceDir);
-		//_entity->getRigidBody()->setVelocity(GYVector3{ 0.0f, 0.0f, 0.0f });
-	}
-	else _movedThisFrame = false;
+    if(!_movedThisFrame) {
+        _entity->getAnimation()->replaceState("Walk", "Stand");
+        faceDir(_faceDir);
+        //_entity->getRigidBody()->setVelocity(GYVector3{ 0.0f, 0.0f, 0.0f });
+    }
+    else _movedThisFrame = false;
 
     //Set falling animation state
     if(_entity->getRigidBody()->getVelocity().z < 0.0f) _entity->getAnimation()->replaceState("Jump", "Fall");
 }
 
 void Character::setHeldEntity(Entity * const entity) {
-	if(_heldEntity) {
-		_heldEntity->getRigidBody()->setActive(true);
-		_heldEntity->getCollidable()->setActive(true);
-		_entity->getAnimation()->removeChildEntity(_heldEntity);
-	}
+    if(_heldEntity) {
+        _heldEntity->getRigidBody()->setActive(true);
+        _heldEntity->getCollidable()->setActive(true);
+        _entity->getAnimation()->removeChildEntity(_heldEntity);
+    }
 
-	_heldEntity = entity;
-	if(entity) {
+    _heldEntity = entity;
+    if(entity) {
         if(!entity->getRigidBody()->getAttrib()->getCanHold()) {
             _heldEntity = nullptr;
         } else {
@@ -185,12 +201,12 @@ void Character::setHeldEntity(Entity * const entity) {
 }
 
 void Character::throwHeldEntity(void) {
-	if(!_heldEntity) return;
+    if(!_heldEntity) return;
 
     GYVector3 startPosOffset;
     GYVector3 velocity;
     GYVector3 throwForce = ELYSIAN_CHAR_THROW_DEFAULT_FORCE;/*{
-		_lastMoveDir.x,
+        _lastMoveDir.x,
         _lastMoveDir.y,
         //0.8f
         0.1f
@@ -231,29 +247,29 @@ void Character::throwHeldEntity(void) {
      //   _heldEntity->getTransform()._pos.z = _entity->getTransform()._pos.z;
     //  _heldEntity->getTransform()._pos.y -= (_heldEntity->getTransform()._pos.z - _entity->getTransform()._pos.z);
 
-	//Set give the object its parent's initial velocity
-	_heldEntity->getRigidBody()->clearKinetic();
+    //Set give the object its parent's initial velocity
+    _heldEntity->getRigidBody()->clearKinetic();
     velocity = _entity->getRigidBody()->getVelocity();
     gyVec3ScaleAccum(&velocity, 2.0f);
 
     _heldEntity->getRigidBody()->setVelocity(velocity);
-	_entity->getRigidBody()->clearKinetic();
+    _entity->getRigidBody()->clearKinetic();
 
-	//Also apply a force to "throw" the bitch in the direction we're facing
+    //Also apply a force to "throw" the bitch in the direction we're facing
     if(_movedThisFrame) _heldEntity->getRigidBody()->applyForce(throwForce);
 
-	setHeldEntity(nullptr);
+    setHeldEntity(nullptr);
 }
 
 void Character::jump(void) {
-	GYVector3 force = ELYSIAN_CHAR_JUMP_DEFAULT_FORCE;
+    GYVector3 force = ELYSIAN_CHAR_JUMP_DEFAULT_FORCE;
     RigidBody*const rb = _entity->getRigidBody();
 
-	if(_heldEntity) {
-		gyVec3ScaleAccum(&force, getHeldEntityForceDampFactor());
-	}
+    if(_heldEntity) {
+        gyVec3ScaleAccum(&force, getHeldEntityForceDampFactor());
+    }
 
-	gyVec3ScaleAccum(&force, 1.0f/_deltaTime);
+    gyVec3ScaleAccum(&force, 1.0f/_deltaTime);
 
 
     getEntity()->getCollidable()->setRestingOnBody(false);

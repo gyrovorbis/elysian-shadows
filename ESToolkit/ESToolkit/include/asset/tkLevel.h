@@ -3,13 +3,11 @@
 //QT
 #include <QString>
 #include <QVector>
-#include "propertyStackModel.h"
-#include "treenode.h"
-#include "elysian_level_base.hpp"
-#include "elysian_level_manager.hpp"
-#include "assets.h"
-#include "elysianTileWrapper.h"
-#include "elysian_system.hpp"
+#include <propertyStackModel.h>
+#include <treenode.h>
+#include <elysian_level_base.hpp>
+#include <elysianTileWrapper.h>
+#include <elysian_system.hpp>
 
 #define ESTK_LEVEL_METADATA_DIRECTORY   "estk"
 #define ESTK_LEVEL_METADATA_TILESET     "estkTileset.bin"
@@ -33,18 +31,24 @@ class TkArea;
 typedef TkArea Area;
 struct MapChange;
 
-class TkLevel: public PropertyStackModel, public TreeNode, public elysian::LevelBase, public elysian::System, public AssetManager {
+class TkLevel:
+        public PropertyStackModel,
+        public TreeNode,
+        public elysian::LevelBase,
+        public elysian::System,
+        public AssetManager
+{
     friend class Assets;
-	friend class TileManagerDialog;
+    friend class TileManagerDialog;
     friend class Project;
     friend class TkArea;
 
     Q_OBJECT
 private:
     ElysianTileWrapper _elysianTileWrappers[ELYSIAN_TILESHEET_TILES];
-	Project *_project;
-	QVector<TileImage *> _tileSheet;
-	QVector<Area *> _area;
+    Project *_project;
+    QVector<TileImage *> _tileSheet;
+    QVector<Area *> _area;
     QString _location;
     static Project* _curProj;
     bool _active, _open, _validSheets;
@@ -55,50 +59,50 @@ private:
     bool _saveMetaData(const QString dir);
     bool _loadMetaData(const QString dir);
 
-	void connectSlots(Area *area);
+    void connectSlots(Area *area);
 
     bool _gatherMaps(const bool normal=true);
     bool _scatterMaps(const bool normal=true);
 
 public:
     virtual bool deactivate(void);
-	Project *getProject(void) const { return _project; }
+    Project *getProject(void) const { return _project; }
     void setNodeName(const QString str);
     void setLocation(const QString loc);
-	QString getLocation(void) const;
+    QString getLocation(void) const;
     QString getString(void) const;
     void setString(const QString str);
-	virtual bool activate(void);
+    virtual bool activate(void);
     bool duplicate(void);
 
-	static bool initializeScene(const SourceView *const view, bool horiz=true);
-	static void addBgRectItem(void);
-	static void updateScenes(void);
+    static bool initializeScene(const SourceView *const view, bool horiz=true);
+    static void addBgRectItem(void);
+    static void updateScenes(void);
 
-	//SheetView static data
-	static QGraphicsRectItem *_sheetViewTileParent;
-	static CheckeredAlphaRectGraphicsItem *_bgRectItem;
-	static SelectionScene *_sheetViewScene;
+    //SheetView static data
+    static QGraphicsRectItem *_sheetViewTileParent;
+    static CheckeredAlphaRectGraphicsItem *_bgRectItem;
+    static SelectionScene *_sheetViewScene;
 
     TkLevel(Project *const project=nullptr);
     virtual ~TkLevel(void);
-	unsigned int getAreaAmount(void) const;
-	inline unsigned char getTileAmount(void) const {  return _tileSheet.size(); }
+    unsigned int getAreaAmount(void) const;
+    inline unsigned char getTileAmount(void) const {  return _tileSheet.size(); }
 
-	inline TileImage *getTileImage(const uint16_t index) const {
-		return (index < _tileSheet.size())? _tileSheet[index] : NULL;
-	}
+    inline TileImage *getTileImage(const uint16_t index) const {
+        return (index < _tileSheet.size())? _tileSheet[index] : NULL;
+    }
 
     Area* newArea(QString name=QString("new_area"));
     Area* getArea(const QString name);
     Area* getAreaByIndex(const unsigned int index);
     Area* loadArea(const QString name);
     Area* reloadArea(Area* const area);
-	bool saveArea(const QString name) const;
+    bool saveArea(const QString name) const;
     bool removeArea(const QString name, const bool deleteDir=true);
     Area *getFirstArea() const;
     elysian::LevelBase* getElysianLevel(void) { return (elysian::LevelBase*)this; }
-	elysian::Tile *getElysianTile(const uint16_t index);
+    elysian::Tile *getElysianTile(const uint16_t index);
     ElysianTileWrapper* getElysianTileWrapper(const uint16_t index);
 
     void setSpecularMapEnabled(const unsigned index, const bool val);
@@ -106,25 +110,25 @@ public:
     bool getSpecularMapEnabled(const unsigned index) const;
     bool getNormalMapEnabled(const unsigned index) const;
 
-	bool load(const QString loc);
-	bool save(void);
-	bool saveAll(void);
-	bool saveAs(const QString loc);
+    bool load(const QString loc);
+    bool save(void);
+    bool saveAll(void);
+    bool saveAs(const QString loc);
 
-	Area *importArea(const QString dir);
+    Area *importArea(const QString dir);
 
-	bool reloadSheets(void);
+    bool reloadSheets(void);
     bool reload(void);
-	bool validSheets(void) const;
-	bool isActive(void) const;
-	bool isOpen(void) const;
+    bool validSheets(void) const;
+    bool isActive(void) const;
+    bool isOpen(void) const;
 
-	bool open(void);
-	bool close(void);
+    bool open(void);
+    bool close(void);
 
-	virtual void populateModel(void);
+    virtual void populateModel(void);
     virtual QAbstractItemModel* getModel(void) const override;
-	bool generateTileSheet(const QString location);
+    bool generateTileSheet(const QString location);
 
     bool scatterTileNormalMaps(void);
     bool gatherTileNormalMaps(void);
@@ -132,31 +136,31 @@ public:
     bool gatherTileSpecularMaps(void);
 
     bool saveTileSheet(void);
-	void clearAllStacks(void);
+    void clearAllStacks(void);
 
-	virtual Selectable::TYPE getType(void) const { return Selectable::LEVEL; }
-	virtual TreeNode::ITEM_TYPE getTreeWidgetItemType(void) { return ITEM_LEVEL; }
+    virtual Selectable::TYPE getType(void) const { return Selectable::LEVEL; }
+    virtual TreeNode::ITEM_TYPE getTreeWidgetItemType(void) { return ITEM_LEVEL; }
 
 private Q_SLOTS:
-	bool activateByArea(Area * const area);
-	void onEntityAdded(Area *const area, Entity *const entity);
-	void onEntityRemoved(Area *const area, Entity *const entity);
-	void onComponentAttached(Area *const area, Entity *const entity, Component *const comp);
-	void onComponentRemoved(Area *const area, Entity *const entity, Component *const comp);
-	void onAreaRenamed(const QString oldName, const QString newName);
+    bool activateByArea(Area * const area);
+    void onEntityAdded(Area *const area, Entity *const entity);
+    void onEntityRemoved(Area *const area, Entity *const entity);
+    void onComponentAttached(Area *const area, Entity *const entity, Component *const comp);
+    void onComponentRemoved(Area *const area, Entity *const entity, Component *const comp);
+    void onAreaRenamed(const QString oldName, const QString newName);
     void onMapChanged(Area*const area, const QVector<MapChange>& changes);
     void onEntityParented(Entity*const child, Entity*const parent);
 
 Q_SIGNALS:
-	void activating(Level *const level, Area *const area);
-	void areaAdded(Level *const level, Area *const area);
-	void areaRemoved(Level *const level, Area *const area);
-	void entityAdded(Level *const level, Area *const area, Entity *const entity);
-	void entityRemoved(Level *const level, Area *const area, Entity *const entity);
-	void componentAttached(Level *const level, Area *const area, Entity *const entity, Component *const comp);
-	void componentRemoved(Level *const level, Area *const area, Entity *const entity, Component *const comp);
-	void areaRenamed(const QString oldName, const QString newName);
-	void levelRenamed(const QString oldName, const QString newName);
+    void activating(Level *const level, Area *const area);
+    void areaAdded(Level *const level, Area *const area);
+    void areaRemoved(Level *const level, Area *const area);
+    void entityAdded(Level *const level, Area *const area, Entity *const entity);
+    void entityRemoved(Level *const level, Area *const area, Entity *const entity);
+    void componentAttached(Level *const level, Area *const area, Entity *const entity, Component *const comp);
+    void componentRemoved(Level *const level, Area *const area, Entity *const entity, Component *const comp);
+    void areaRenamed(const QString oldName, const QString newName);
+    void levelRenamed(const QString oldName, const QString newName);
     void mapChanged(Area*const area, const QVector<MapChange>& changes);
     void entityParented(Entity*const child, Entity*const parent);
 

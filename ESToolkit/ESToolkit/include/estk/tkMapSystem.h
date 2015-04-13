@@ -4,6 +4,7 @@
 #include "elysian_map_system_base.hpp"
 #include "elysian_asset_typedefs.hpp"
 #include "mapViewTileGraphicsItem.h"
+#include "elysian_material.hpp"
 #include "elysian_gui_system.hpp"
 #include "assets.h"
 
@@ -195,7 +196,7 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
             if(entry.drawStyle == DRAW_NORMAL || entry.mapEntry.getPlane() != planeType/* || !entry.mapEntry.getIndex()*/) continue;
             gyVidRectPlaneType(entry.mapEntry.getPlane());
             gyMatPush();
-			gyMatLoadIdentity();
+            gyMatLoadIdentity();
             if(normalType == elysian::NORMAL_FLAT)
                 //Had to add the offset of +3.0f to get the decoration above tiles. Could be potentially reested.
                 gyMatTranslateScale(entry.x*32.0f, entry.y*32.0f + entry.mapEntry.getElev()*32.0f+3.0f, entry.mapEntry.getElev()*32.0f+3.0f, 32.0f, 32.0f, 32.0f);

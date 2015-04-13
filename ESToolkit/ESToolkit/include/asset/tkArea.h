@@ -2,18 +2,13 @@
 #ifndef TK_AREA_H
 #define TK_AREA_H
 
-#include <gyro.h>
 #include <stdint.h>
 #include <QUndoStack>
-#include "elysian_asset_typedefs.hpp"
-#include "elysian_area_base.hpp"
-#include "elysian_level.hpp"
-#include "treenode.h"
-#include "selectionScene.h"
-#include "assets.h"
-#include "propertyStackModel.h"
-#include "assetManager.h"
-#include "mapEntry.h"
+#include <elysian_area_base.hpp>
+#include <treenode.h>
+#include <propertyStackModel.h>
+#include <assetManager.h>
+#include <elysian_tile.hpp>
 
 #define AREA_SAVE_MAP_TILE_0_REEST_CHECK  true
 
@@ -28,22 +23,42 @@ typedef TkLevel Level;
 class SourceView;
 class CheckeredAlphaRectGraphicsItem;
 class MapViewDepthBufferGraphicsItem;
+class SelectionScene;
+
+struct TileEntry: public elysian::TileEntry, public AssetManager {
+    static bool renderIndeces;
+    static bool renderFlipRot;
+    static bool renderElev;
+    static bool renderColliders;
+    static bool renderZTran;
+    static bool renderPlane;
+    inline TileEntry(void) = default;
+    inline TileEntry(const elysian::TileEntry e): elysian::TileEntry(e.value) {}
+    inline TileEntry(const uint32_t val): elysian::TileEntry(val) {}
+    void renderDecoration(QPainter *const painter, const unsigned x, const unsigned y) const;
+    static void renderCollider(QPainter *const painter, const elysian::Tile::COLLIDER_TYPE collider);
+};
 
 struct MapChange {
-    QPoint              loc;
-    TileEntry           oldEntry;
-    TileEntry           newEntry;
-    Assets::LAYER_TYPE  layer;
+    QPoint                  loc;
+    elysian::TileEntry      oldEntry;
+    elysian::TileEntry      newEntry;
+    Assets::LAYER_TYPE      layer;
 };
 
 
 ELYSIAN_ASSET_TYPEDEF(Area)
 
-class TkArea: public PropertyStackModel, public TreeNode, public elysian::AreaBase {
+class TkArea:
+    public PropertyStackModel,
+    public TreeNode,
+    public elysian::AreaBase,
+    public AssetManager
+{
     Q_OBJECT
-	friend class Assets;
+    friend class Assets;
 private:
-	//Scene Data
+    //Scene Data
     static unsigned                         _currentSceneWidth;
     static unsigned                         _currentSceneHeight;
     static MapViewDepthBufferGraphicsItem*  _depthBuffGraphicsItem;
@@ -53,7 +68,6 @@ private:
     QVector<MapChange>  _mapChanges;
     QUndoStack          _undoStack;
     QString             _location;
-    QGraphicsRectItem*  _bgRect;
     bool                _active         = false;
     bool                _open           = false;
     bool                _Q_EMITMapChange  = true;
@@ -63,12 +77,12 @@ private:
 
 
 private Q_SLOTS:
-	void onComponentAttached(Entity *const entity, Component *const comp);
-	void onComponentRemoved(Entity *const entity, Component *const comp);
+    void onComponentAttached(Entity *const entity, Component *const comp);
+    void onComponentRemoved(Entity *const entity, Component *const comp);
     void onEntityParented(Entity*const child, Entity*const parent);
 
 public Q_SLOTS:
-	void onUndoCleanStateChanged(bool changed);
+    void onUndoCleanStateChanged(bool changed);
 public:
 
     using AreaBase::getTileEntry;
@@ -137,15 +151,15 @@ public:
     bool                isActive(void) const;
 
     virtual Selectable::TYPE    getType(void) const { return Selectable::AREA; }
-	virtual TreeNode::ITEM_TYPE getTreeWidgetItemType(void) { return ITEM_AREA; }
+    virtual TreeNode::ITEM_TYPE getTreeWidgetItemType(void) { return ITEM_AREA; }
 
 Q_SIGNALS:
-	void activating(Area *const area);
-	void entityAdded(Area *const area, Entity *const entity);
-	void entityRemoved(Area *const area, Entity *const entity);
-	void componentAttached(Area *const area, Entity *const entity, Component *const comp);
-	void componentRemoved(Area *const area, Entity *const entity, Component *const comp);
-	void renamed(const QString oldName, const QString newName);
+    void activating(Area *const area);
+    void entityAdded(Area *const area, Entity *const entity);
+    void entityRemoved(Area *const area, Entity *const entity);
+    void componentAttached(Area *const area, Entity *const entity, Component *const comp);
+    void componentRemoved(Area *const area, Entity *const entity, Component *const comp);
+    void renamed(const QString oldName, const QString newName);
     void mapChanged(Area*const area, const QVector<MapChange>& changes);
     void entityParented(Entity*const child, Entity*const parent);
 };
@@ -158,12 +172,12 @@ typedef TkArea Area;
 //======== INLINEZ ========
 
 inline uint32_t TkArea::getTileValue(const QPoint loc, const Assets::LAYER_TYPE layer) const {
-	Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
+    Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
     return getTileEntry((unsigned)layer, loc.x(), loc.y()).getValue();
 }
 
 inline void TkArea::setTileValue(const QPoint loc, const Assets::LAYER_TYPE layer, const uint32_t value) {
-	Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
+    Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
     MapChange change;
 
     if(_Q_EMITMapChange) {
@@ -183,7 +197,7 @@ inline void TkArea::setTileValue(const QPoint loc, const Assets::LAYER_TYPE laye
 }
 
 inline void TkArea::setTileEntry(const QPoint loc, const Assets::LAYER_TYPE layer, const TileEntry entry) {
-	Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
+    Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
     MapChange change;
 
     if(_Q_EMITMapChange) {
@@ -205,7 +219,7 @@ inline void TkArea::setTileEntry(const QPoint loc, const Assets::LAYER_TYPE laye
 }
 
 inline TileEntry TkArea::getTileEntry(const QPoint loc, const Assets::LAYER_TYPE layer) const {
-	Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
+    Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
     return getTileEntry((unsigned)layer, loc.x(), loc.y());
 }
 

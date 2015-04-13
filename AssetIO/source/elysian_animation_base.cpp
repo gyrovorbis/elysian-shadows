@@ -5,6 +5,7 @@
 #include "elysian_renderable.hpp"
 #include "elysian_generic.hpp"
 #include "elysian_area.hpp"
+#include "elysian_event_monitor.hpp"
 
 namespace elysian {
 
@@ -13,12 +14,12 @@ ELYSIAN_LUA_PROXY_FIELDS_EXPORT(AnimationBase)
 //----NONSTATIC----
 
 void AnimationBase::addState(const char* state) {
-	if(_statePool.find(AnimStateEntry(state)) == _statePool.end()) {
+    if(_statePool.find(AnimStateEntry(state)) == _statePool.end()) {
 
-		AnimStateEntry& entry = _statePool.claimFreeEntry();
-		entry.setString(state);
-		_updateStates();
-	}
+        AnimStateEntry& entry = _statePool.claimFreeEntry();
+        entry.setString(state);
+        _updateStates();
+    }
 
     if(_children) {
         for(auto it = _children->begin(); it < _children->end(); ++it) {
@@ -48,20 +49,20 @@ void AnimationBase::removeState(const char* state) {
 
 void AnimationBase::replaceState(const char *oldState, const char *newState) {
     auto it = _statePool.find(AnimStateEntry(oldState));
-	auto itNew = _statePool.find(AnimStateEntry(newState));
+    auto itNew = _statePool.find(AnimStateEntry(newState));
 
-	if(itNew == _statePool.end()) {
+    if(itNew == _statePool.end()) {
 
-		if(it == _statePool.end()) { //never even had the old state
-			return addState(newState);
-		}
+        if(it == _statePool.end()) { //never even had the old state
+            return addState(newState);
+        }
 
-		(*it).setString(newState);
-		_updateStates();
+        (*it).setString(newState);
+        _updateStates();
 
-	} else if(it != _statePool.end()) { //we can still remove the old state
-		return removeState(oldState);
-	}
+    } else if(it != _statePool.end()) { //we can still remove the old state
+        return removeState(oldState);
+    }
 
     if(_children) {
         for(auto it = _children->begin(); it < _children->end(); ++it) {
@@ -130,7 +131,7 @@ void AnimationStateStack<S, T>::updateState(const Pool<AnimStateEntry>& states) 
 
 
 AnimationBase::~AnimationBase(void) {
-	delete _children;
+    delete _children;
 }
 
 Component::TYPE AnimationBase::getType(void) const { return Component::ANIMATION; }
@@ -142,7 +143,7 @@ void AnimationBase::addChildEntity(Entity*const entity, const char*animName) {
     assert(childAnim && !_children->isFull());
 
     entity->setParentEntity(getEntity());
-	ChildAnimEntry& entry = _children->claimFreeEntry();
+    ChildAnimEntry& entry = _children->claimFreeEntry();
     entry.setStackBottomState(childAnim);
     entry.entity            = entity;
     entry.animComp          = entity->getAnimation();
@@ -152,23 +153,23 @@ void AnimationBase::addChildEntity(Entity*const entity, const char*animName) {
 }
 
 void AnimationBase::removeChildEntity(const char *animName) {
-	for(auto it = _children->begin(); it < _children->end(); ++it) {
+    for(auto it = _children->begin(); it < _children->end(); ++it) {
         if((*it).getStackBottomState<ChildAnimation>() && strcmp((*it).getStackBottomState<ChildAnimation>()->getName(), animName) == 0) {
-			_children->remove(it);
+            _children->remove(it);
             (*it).entity->setParentEntity(nullptr);
-			return;
-		}
-	}
+            return;
+        }
+    }
 }
 
 void AnimationBase::removeChildEntity(Entity* const entity) {
-	for(auto it = _children->begin(); it < _children->end(); ++it) {
-		if((*it).entity == entity) {
-			_children->remove(it);
+    for(auto it = _children->begin(); it < _children->end(); ++it) {
+        if((*it).entity == entity) {
+            _children->remove(it);
             entity->setParentEntity(nullptr);
-			return;
-		}
-	}
+            return;
+        }
+    }
 }
 
 void AnimationBase::setSpeedMultiplier(const float factor) {
@@ -185,22 +186,22 @@ void AnimationBase::setSpeedMultiplier(const float factor) {
 }
 
 void AnimationBase::_updateChildren(void) {
-	if(!_children || _children->size() == 0) return;
+    if(!_children || _children->size() == 0) return;
 
     InstanceTransform*	parentTransform = &getEntity()->_transform;
-	InstanceTransform*	childTransform;
-	Animation*			childAnim;
-	ChildAnimEntry*		childEntry;
-	GYVector4 localPos = { 0.0f, 0.0f, 0.0f, 1.0f };
-	GYVector4 worldPos;
+    InstanceTransform*	childTransform;
+    Animation*			childAnim;
+    ChildAnimEntry*		childEntry;
+    GYVector4 localPos = { 0.0f, 0.0f, 0.0f, 1.0f };
+    GYVector4 worldPos;
 
-	for(auto it = _children->begin(); it < _children->end(); ++it) {
-		childEntry = &(*it);
+    for(auto it = _children->begin(); it < _children->end(); ++it) {
+        childEntry = &(*it);
         childAnim = childEntry->animComp;
         childTransform = &childEntry->entity->_transform;
 
-		GYVector3 offset = { 0.0f, 0.0f, 0.0f };
-		float zOrient = 0.0f;
+        GYVector3 offset = { 0.0f, 0.0f, 0.0f };
+        float zOrient = 0.0f;
 
         if(childEntry->getStackBottomState<ChildAnimation>()) {
 
@@ -219,62 +220,62 @@ void AnimationBase::_updateChildren(void) {
                     gyLinearInterp(&zOrient, 1, &childEntry->currentSequence->_frames[prevIndex].zOrient,
                             &childEntry->currentFrame->zOrient, currentFrame->duration, _timer);
 
-				} else {
+                } else {
                     offset = childEntry->currentFrame->offset;
                     zOrient = childEntry->currentFrame->zOrient;
 
-				}
-			} else { //assuming to use global defaults
+                }
+            } else { //assuming to use global defaults
                 offset = childEntry->getStackBottomState<ChildAnimation>()->_globalOffset;
-				//zOrient = 0.0f;
-			}
+                //zOrient = 0.0f;
+            }
 
             if(childEntry->getStackBottomState<ChildAnimation>()->_inheritScale) childTransform->_scale = parentTransform->_scale;
-		}
+        }
 
-		gyMatPush();
-		gyMatLoadIdentity();
+        gyMatPush();
+        gyMatLoadIdentity();
 
-		gyMatTranslateScale(parentTransform->_pos.x +  (offset.x *parentTransform->_size.x*parentTransform->_scale.x),
-					   parentTransform->_pos.y + (offset.y*parentTransform->_size.y*parentTransform->_scale.y) ,
-					   parentTransform->_pos.z + (offset.z*parentTransform->_size.z*parentTransform->_scale.z),
-					   childTransform->_size.x*childTransform->_scale.x, childTransform->_size.y*childTransform->_scale.y,  childTransform->_size.z*childTransform->_scale.z);
-		gyMatRotateZ(zOrient);
+        gyMatTranslateScale(parentTransform->_pos.x +  (offset.x *parentTransform->_size.x*parentTransform->_scale.x),
+                       parentTransform->_pos.y + (offset.y*parentTransform->_size.y*parentTransform->_scale.y) ,
+                       parentTransform->_pos.z + (offset.z*parentTransform->_size.z*parentTransform->_scale.z),
+                       childTransform->_size.x*childTransform->_scale.x, childTransform->_size.y*childTransform->_scale.y,  childTransform->_size.z*childTransform->_scale.z);
+        gyMatRotateZ(zOrient);
 
-		if(childAnim) gyMatTranslate(childAnim->getChildPivot().x, childAnim->getChildPivot().y, 0.0f);
+        if(childAnim) gyMatTranslate(childAnim->getChildPivot().x, childAnim->getChildPivot().y, 0.0f);
 
-		gyMatMultVec(&localPos, &worldPos, 1);
+        gyMatMultVec(&localPos, &worldPos, 1);
 
-		gyMatPop();
+        gyMatPop();
 
-		//update children's positions and orientations
-		//childEntry->entity->setElev(getEntity()->getElev());
+        //update children's positions and orientations
+        //childEntry->entity->setElev(getEntity()->getElev());
 
-		childTransform->_pos = GYVector3 {
-			worldPos.x,
-			worldPos.y,
-			worldPos.z
-		};
+        childTransform->_pos = GYVector3 {
+            worldPos.x,
+            worldPos.y,
+            worldPos.z
+        };
 
-		childTransform->_orientZ = parentTransform->_orientZ + zOrient;
+        childTransform->_orientZ = parentTransform->_orientZ + zOrient;
 
-		//update children's animations
+        //update children's animations
 /*
-		if(childAnim) {
-			childAnim->playAnimation(_currentSequence->getName());
-			childAnim->setCurrentFrame(_currentFrame);
-		}
+        if(childAnim) {
+            childAnim->playAnimation(_currentSequence->getName());
+            childAnim->setCurrentFrame(_currentFrame);
+        }
 
 */
-	}
+    }
 }
 
 bool AnimationBase::load(FILE* /*file*/) {
-	return true;
+    return true;
 }
 
 bool AnimationBase::save(FILE* /*file*/) {
-	return true;
+    return true;
 }
 
 bool AnimationBase::canAddTo(Entity &parent) const {
@@ -283,22 +284,22 @@ bool AnimationBase::canAddTo(Entity &parent) const {
 
 //O(1)
 bool AnimationBase::addToLevel(void) {
-	if(_children)
-	for(auto it = _children->begin(); it < _children->end(); ++it) {
-		auto childEntry = &(*it);
-		_curArea->addEntity(childEntry->entity);
-	}
+    if(_children)
+    for(auto it = _children->begin(); it < _children->end(); ++it) {
+        auto childEntry = &(*it);
+        _curArea->addEntity(childEntry->entity);
+    }
     _curArea->animations.push_back(static_cast<Animation*>(this));
-	return true;
+    return true;
 }
 
 //O(n)
 bool AnimationBase::removeFromLevel(void) {
-	if(_children)
-	for(auto it = _children->begin(); it < _children->end(); ++it) {
-		auto childEntry = &(*it);
-		_curArea->removeEntity(childEntry->entity);
-	}
+    if(_children)
+    for(auto it = _children->begin(); it < _children->end(); ++it) {
+        auto childEntry = &(*it);
+        _curArea->removeEntity(childEntry->entity);
+    }
     return containerEraseOnMatch(this, _curArea->animations);
 }
 
@@ -346,19 +347,19 @@ void AnimationBase::playAnimation(const char *name, EventMonitor*const monitor) 
         setCurrentIndex(0);
 
         //Begin initial animation frame immediately!
-		if(currentFrame) {
-			_entity->getRenderable()->setOffset(currentFrame->offset);
-			_entity->getRenderable()->setFrame(currentFrame->spriteFrame);
-			_entity->getRenderable()->setTexOrient(currentFrame->texOrient);
-			if(monitor) monitor->onStart();
-		}
+        if(currentFrame) {
+            _entity->getRenderable()->setOffset(currentFrame->offset);
+            _entity->getRenderable()->setFrame(currentFrame->spriteFrame);
+            _entity->getRenderable()->setTexOrient(currentFrame->texOrient);
+            if(monitor) monitor->onStart();
+        }
     }
 
-	if(_children) {
-		for(auto it = _children->begin(); it < _children->end(); ++it) {
+    if(_children) {
+        for(auto it = _children->begin(); it < _children->end(); ++it) {
             if((*it).animComp) (*it).animComp->playAnimation(name);
-		}
-	}
+        }
+    }
 
 }
 
@@ -366,20 +367,20 @@ void AnimationBase::stopAnimation(void) {
     if(currentSequence) {
         setCurrentIndex(0);
         _timer = 0.0f;
-	}
+    }
 
-	if(_children) {
-		for(auto it = _children->begin(); it < _children->end(); ++it) {
+    if(_children) {
+        for(auto it = _children->begin(); it < _children->end(); ++it) {
             if((*it).animComp) (*it).animComp->stopAnimation();
-		}
-	}
+        }
+    }
 
-	_isActive = false;
+    _isActive = false;
 }
 
 void AnimationBase::setCurrentFrame(const unsigned frame) {
     setCurrentIndex(frame);
-	_timer = 0.0f;
+    _timer = 0.0f;
     if(currentFrame) {
         _entity->getRenderable()->setOffset(currentFrame->offset);
         _entity->getRenderable()->setFrame(currentFrame->spriteFrame);

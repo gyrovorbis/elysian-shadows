@@ -13,6 +13,7 @@
 #include "elysian_examinable.hpp"
 #include "elysian_combat.hpp"
 #include "elysian_renderable.hpp"
+#include "elysian_quad_sprite_attrib.hpp"
 
 namespace elysian {
 
@@ -57,48 +58,48 @@ inline void GuiSystem::CombatStatusIndicator::render(void) {
 }
 
 void MenuText::recursiveRender(const float fadeAlpha) {
-	GYVector4 localVert = { _relPos.x, _relPos.y, 1.0f, 1.0f };
-	GYVector4 worldVert;
+    GYVector4 localVert = { _relPos.x, _relPos.y, 1.0f, 1.0f };
+    GYVector4 worldVert;
 
     const float baseAlpha = _color.a;
     //_fonts[_type]->setAlpha(baseAlpha*fadeAlpha);
     _color.a = baseAlpha*fadeAlpha;
 
-	gyMatMultVec(&localVert, &worldVert, 1);
+    gyMatMultVec(&localVert, &worldVert, 1);
 
-	gyMatPush();
-	gyMatLoadIdentity();
+    gyMatPush();
+    gyMatLoadIdentity();
 
     _fonts[_type]->_transform.setPos(worldVert.x, worldVert.y);
     _fonts[_type]->_transform.setPosZ(worldVert.z);
     _fonts[_type]->_transform.setScale(1.0f, 1.0f);
-	_fonts[_type]->setColor(_color);
+    _fonts[_type]->setColor(_color);
     _fonts[_type]->drawString(_align, _text);
 
-	gyMatPop();
+    gyMatPop();
 
     //_fonts[_type]->setAlpha(baseAlpha);
     _color.a = baseAlpha;
 }
 
 MenuEntity::~MenuEntity(void) {
-	//recursively delete children
-	for(auto it = _childWidgets.begin(); it < _childWidgets.end(); ++it) delete *it;
+    //recursively delete children
+    for(auto it = _childWidgets.begin(); it < _childWidgets.end(); ++it) delete *it;
 }
 
 void MenuEntity::recursiveRender(const float fadeAlpha) {
     GYVector4 localVert = { _transform._pos.x, _transform._pos.y, _transform._pos.z, 1.0f };
-	GYVector4 worldVert;
+    GYVector4 worldVert;
     float baseAlpha[4];
     QuadSpriteAttrib* quadSprite= nullptr;
     unsigned attribType = 0;
 
-	if(_sizeType == SIZE_ABSOLUTE) {
-		gyMatMultVec(&localVert, &worldVert, 1);
-		gyMatPush();
-		gyMatLoadIdentity();
+    if(_sizeType == SIZE_ABSOLUTE) {
+        gyMatMultVec(&localVert, &worldVert, 1);
+        gyMatPush();
+        gyMatLoadIdentity();
         gyMatTranslate(worldVert.x-_transform._pos.x, worldVert.y-_transform._pos.y, worldVert.z-_transform._pos.z);
-	}
+    }
 
     //Update alpha for fade
     if(fadeAlpha != 1.0f && getRenderable()) {
@@ -116,14 +117,14 @@ void MenuEntity::recursiveRender(const float fadeAlpha) {
         }
     }
 
-	Entity::render();
+    Entity::render();
 
-	gyMatPush();
+    gyMatPush();
     Entity::_transform.apply();
     for(auto it = _childWidgets.begin(); it < _childWidgets.end(); ++it) (*it)->recursiveRender(fadeAlpha);
-	gyMatPop();
+    gyMatPop();
 
-	if(_sizeType == SIZE_ABSOLUTE) gyMatPop();
+    if(_sizeType == SIZE_ABSOLUTE) gyMatPop();
 
     //set alpha back to base
     if(attribType == 1) {
@@ -136,46 +137,46 @@ void MenuEntity::recursiveRender(const float fadeAlpha) {
 
 const GYVector2 GuiSystem::_combatTextGravity = ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_GRAVITY;
 
-GuiSystem::GuiSystem(void): 
-	_projWidth(0), 
-	_projHeight(0) 
+GuiSystem::GuiSystem(void):
+    _projWidth(0),
+    _projHeight(0)
 {
-	gyVidResolution(&_projWidth, &_projHeight);
+    gyVidResolution(&_projWidth, &_projHeight);
 
 }
 
 bool GuiSystem::loadAssets(void) {
-	bool success = true;
-	
-	Debug::printf(Debug::VERBOSE, "GuiSystem::LoadAssets()");
+    bool success = true;
+
+    Debug::printf(Debug::VERBOSE, "GuiSystem::LoadAssets()");
     Debug::push();
 
-	success &= twcen.loadTextData(ELYSIAN_FONT_IMAGE_PATH_TWCEN, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_TWCEN);
-	success &= verdana.loadTextData(ELYSIAN_FONT_IMAGE_PATH_VERDANA, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_VERDANA);
+    success &= twcen.loadTextData(ELYSIAN_FONT_IMAGE_PATH_TWCEN, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_TWCEN);
+    success &= verdana.loadTextData(ELYSIAN_FONT_IMAGE_PATH_VERDANA, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_VERDANA);
     success &= pragmata18.loadTextData(ELYSIAN_FONT_IMAGE_PATH_PRAGMATA18, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_PRAGMATA18);
     success &= pragmata22.loadTextData(ELYSIAN_FONT_IMAGE_PATH_PRAGMATA22, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_PRAGMATA22);
     success &= pragmata26.loadTextData(ELYSIAN_FONT_IMAGE_PATH_PRAGMATA26, 512, 512, 32, 32,ELYSIAN_FONT_WIDTH_PATH_PRAGMATA26);
 
-	MenuText::_fonts[0] = &twcen;
-	MenuText::_fonts[1] = &verdana;
+    MenuText::_fonts[0] = &twcen;
+    MenuText::_fonts[1] = &verdana;
     MenuText::_fonts[2] = &pragmata18;
     MenuText::_fonts[3] = &pragmata22;
     MenuText::_fonts[4] = &pragmata26;
 
-	gyVidResolution(&_projWidth, &_projHeight);
+    gyVidResolution(&_projWidth, &_projHeight);
 
     adventureLog.setLabelFont(&pragmata22);
     adventureLog.setTextFont(&pragmata18);
 
     Debug::pop();
-	return success;
+    return success;
 }
 
 void GuiSystem::update(void) {
-	gyVidResolution(&_projWidth, &_projHeight);
-	adventureLog.update();
+    gyVidResolution(&_projWidth, &_projHeight);
+    adventureLog.update();
 
-	const float deltaTime = getTimerSys()->getDeltaTime();
+    const float deltaTime = getTimerSys()->getDeltaTime();
 
     //update internal fade state if fading in or out
     if(_fgFadeTime != 0.0f) _fgFadeElapsed += deltaTime;
@@ -200,18 +201,18 @@ void GuiSystem::update(void) {
     default: break;
     }
 
-	//update CombatText
-	for(auto it = _combatText.begin(); it < _combatText.end(); ++it) {
+    //update CombatText
+    for(auto it = _combatText.begin(); it < _combatText.end(); ++it) {
 
-		gyVec2AddAccum(&(*it).pos, &(*it).vel);
-		gyVec2AddAccum(&(*it).vel, &_combatTextGravity);
-		(*it).timer += deltaTime;
-		(*it).color.a = 255.0f - ((*it).timer/ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_LIFE)*255.0f;
+        gyVec2AddAccum(&(*it).pos, &(*it).vel);
+        gyVec2AddAccum(&(*it).vel, &_combatTextGravity);
+        (*it).timer += deltaTime;
+        (*it).color.a = 255.0f - ((*it).timer/ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_LIFE)*255.0f;
 
-		if((*it).timer >= ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_LIFE) {
-			_combatText.remove(it);
-		}
-	}
+        if((*it).timer >= ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_LIFE) {
+            _combatText.remove(it);
+        }
+    }
 
     //update VictoryText
     for(auto it = _victoryText.begin(); it < _victoryText.end(); ++it) {
@@ -233,8 +234,8 @@ void GuiSystem::update(void) {
 }
 
 void GuiSystem::renderBackground(void) {
-	//if(!_debugOverlayEnabled) return;
-	_renderMenuWidget(_bgMenuWidget);
+    //if(!_debugOverlayEnabled) return;
+    _renderMenuWidget(_bgMenuWidget);
 }
 
 void GuiSystem::renderForeground(void) {
@@ -244,17 +245,17 @@ void GuiSystem::renderForeground(void) {
     gyVidDepthTest(false);
     _renderDebugOverlay();
     if(_fgFadeAlpha == 0.0f) return;
-	//if(!_debugOverlayEnabled) return;
+    //if(!_debugOverlayEnabled) return;
     adventureLog.render();
-	_renderMenuWidget(_fgMenuWidget);
+    _renderMenuWidget(_fgMenuWidget);
 }
 
 void GuiSystem::_printDebugLine(const char *title, const char *str, ...) {
-	char buffer[100];
-	va_list argptr;
-	va_start(argptr,str);
-	vsprintf(buffer,str,argptr);
-	va_end(argptr);
+    char buffer[100];
+    va_list argptr;
+    va_start(argptr,str);
+    vsprintf(buffer,str,argptr);
+    va_end(argptr);
 
     pragmata18._transform._pos.y += 25.0f;
     pragmata18._transform._pos.x = _projWidth-250.0f;
@@ -264,7 +265,7 @@ void GuiSystem::_printDebugLine(const char *title, const char *str, ...) {
 }
 
 void GuiSystem::_renderDebugOverlay(void) {
-	if(!_debugOverlayEnabled) return;
+    if(!_debugOverlayEnabled) return;
 
     pragmata18.setColor(0, 255, 100, 255);
     pragmata18._transform._pos.y = 100.0f;
@@ -278,21 +279,21 @@ void GuiSystem::_renderDebugOverlay(void) {
     _printDebugLine("LightSys Uploads:", "%u", getLightSys()->getShaderUniformChangesLastFrame());
     _printDebugLine("Texture Changes:", "%u", gyVidDbgTextureChangeCount());
     _printDebugLine("Textures:", "%u", gyVidTexAmount());
-	_printDebugLine("Texture MBytes:", "%f", gyVidTexBytes()/1024.0f/1024.0f);
+    _printDebugLine("Texture MBytes:", "%f", gyVidTexBytes()/1024.0f/1024.0f);
     pragmata18._transform._pos.y += 25.0f;
-	_printDebugLine("Onscreen Lights:", "%d", getLightSys()->getOnscreenLightCount());
-	_printDebugLine("Entities:", "%d", getCurArea()->entities.size());
-	_printDebugLine("Contacts:", "%d", getCollisionSys()->getContactCount());
-	_printDebugLine("Pen Res Iter:", "%d", getCollisionSys()->getPenResIterUsed());
-	_printDebugLine("Vel Res Iter:", "%d", getRigidBodySys()->getVelResIterUsed());
+    _printDebugLine("Onscreen Lights:", "%d", getLightSys()->getOnscreenLightCount());
+    _printDebugLine("Entities:", "%d", getCurArea()->entities.size());
+    _printDebugLine("Contacts:", "%d", getCollisionSys()->getContactCount());
+    _printDebugLine("Pen Res Iter:", "%d", getCollisionSys()->getPenResIterUsed());
+    _printDebugLine("Vel Res Iter:", "%d", getRigidBodySys()->getVelResIterUsed());
     pragmata18._transform._pos.y += 25.0f;
-	_printDebugLine("Lua Scripts:", "%d", LuaManager::getScriptCount());
-	_printDebugLine("Lua Script Instances:", "%d", LuaManager::getScriptInstances());
-	_printDebugLine("Lua MBytes:", "%f", LuaManager::getKbytesUsed()/1024.0f);
+    _printDebugLine("Lua Scripts:", "%d", LuaManager::getScriptCount());
+    _printDebugLine("Lua Script Instances:", "%d", LuaManager::getScriptInstances());
+    _printDebugLine("Lua MBytes:", "%f", LuaManager::getKbytesUsed()/1024.0f);
     pragmata18._transform._pos.y += 25.0f;
-	_printDebugLine("Game Time:", "%d:%d:%d", getDaySys()->getDays(), getDaySys()->getHours(), getDaySys()->getMinutes());
-	if(getPartySys()->getPartyLeader()) {
-		_printDebugLine("player.pos:", "<%.2f, %.2f, %.2f>",
+    _printDebugLine("Game Time:", "%d:%d:%d", getDaySys()->getDays(), getDaySys()->getHours(), getDaySys()->getMinutes());
+    if(getPartySys()->getPartyLeader()) {
+        _printDebugLine("player.pos:", "<%.2f, %.2f, %.2f>",
                         getPartySys()->getPartyLeader()->_transform._pos.x,
                         getPartySys()->getPartyLeader()->_transform._pos.y,
                         getPartySys()->getPartyLeader()->_transform._pos.z);
@@ -300,7 +301,7 @@ void GuiSystem::_renderDebugOverlay(void) {
                         getPartySys()->getPartyLeader()->getCollidable()->getRestingOnBody());
         _printDebugLine("player.contacts:", "%d",
                         getPartySys()->getPartyLeader()->getCollidable()->getContactCount());
-	}
+    }
 
     pragmata18.endBatchRender();
 
@@ -375,28 +376,28 @@ void GuiSystem::render(void) {
 
 void GuiSystem::addCombatText(const char*const text, const GYColor4 color, const GYVector2& pos, const GYVector2& vel) {
 
-	CombatText* combat = &_combatText.claimFreeEntry();
+    CombatText* combat = &_combatText.claimFreeEntry();
 
-	strcpy(combat->text, text);
-	combat->color = color;
-	combat->color.a = 255;
-	combat->pos = pos;
-	combat->vel = vel;
-	combat->timer = 0.0f;
+    strcpy(combat->text, text);
+    combat->color = color;
+    combat->color.a = 255;
+    combat->pos = pos;
+    combat->vel = vel;
+    combat->timer = 0.0f;
 
 }
 
 void GuiSystem::_renderMenuWidget(MenuWidget* widget) {
-	if(!widget) return;
+    if(!widget) return;
 
-	gyMatPush();
-	gyMatLoadIdentity();
+    gyMatPush();
+    gyMatLoadIdentity();
     gyMatTranslate(_projWidth*0.5f, _projHeight*0.5f, 20.0f);
-	gyMatScale(_projWidth, _projHeight, 1.0f);
+    gyMatScale(_projWidth, _projHeight, 1.0f);
 
     widget->recursiveRender(_fgFadeAlpha);
 
-	gyMatPop();
+    gyMatPop();
 
 }
 

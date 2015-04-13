@@ -1,45 +1,46 @@
 #ifndef ELYSIAN_RENDERABLE_HPP
 #define ELYSIAN_RENDERABLE_HPP
 
-#include "elysian_component.hpp"
-#include "elysian_quad_sprite_attrib.hpp"
-#include "elysian_material.hpp"
-#include "elysian_asset_typedefs.hpp"
-#include "elysian_entity.hpp"
-#include "elysian_lua_table_proxy.hpp"
+#include <elysian_component.hpp>
+#include <elysian_lua_table_proxy.hpp>
+#include <elysian_instance_transform.hpp>
 #include <gyro_video_api.h>
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 
 namespace elysian {
 
+    class Material;
+    class SpriteAttrib;
+    class QuadSpriteAttrib;
+
     class Renderable:
             public Component,
             public LuaTableProxy<Renderable> {
     friend class EntityBase;
     friend Entity;
-	private:
-		GYTexCoord2			_texCoord[4];
-		Material*			_material		= nullptr;
-		GYTexture*			_normalMap		= nullptr;
-		GYTexture*			_specularMap	= nullptr;
+    private:
+        GYTexCoord2			_texCoord[4];
+        Material*			_material		= nullptr;
+        GYTexture*			_normalMap		= nullptr;
+        GYTexture*			_specularMap	= nullptr;
         SpriteAttrib*		_spriteAttrib	= nullptr;      //Prefab-able attributes
-		int					_frame			= 0;			//for animation
+        int					_frame			= 0;			//for animation
         GYVector2			_offset			= {0.0f, 0.0f};	//texture offset from base transform (local coords)
         GY_RECT_TEX_ORIENT	_texOrient		= GY_RECT_TEX_ORIENT_NORMAL;
 
         Renderable(Entity &parent);
-	public:
+    public:
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
-			ELYSIAN_LUA_PROXY_FIELD(frame, getFrame, setFrame)
+            ELYSIAN_LUA_PROXY_FIELD(frame, getFrame, setFrame)
             ELYSIAN_LUA_PROXY_FIELD(texOrient, getTexOrient, setTexOrient)
             ELYSIAN_LUA_PROXY_FIELD(spriteAttrib, getSpriteAttrib)
             ELYSIAN_LUA_PROXY_FIELD(normalMap, getNormalMapPath)
             ELYSIAN_LUA_PROXY_FIELD(specularMap, getSpecularMapPath)
             ELYSIAN_LUA_PROXY_FIELD(material, getMaterial)
             ELYSIAN_LUA_PROXY_FIELD(offset, getOffset)
-		ELYSIAN_LUA_PROXY_FIELDS_END()
+        ELYSIAN_LUA_PROXY_FIELDS_END()
 
         virtual bool        canAddTo(Entity& /*entity*/) const override;
         virtual bool        load(FILE* file) override;
@@ -48,8 +49,8 @@ namespace elysian {
         virtual bool        removeFromLevel(void) override;
         virtual TYPE        getType(void) const override;
 
-		/*Split into phases JUST IN CASE we wanted to optimize for 
-		header submission/state changes when renderables share attributes*/
+        /*Split into phases JUST IN CASE we wanted to optimize for
+        header submission/state changes when renderables share attributes*/
         void                beginRender(void);
         void                render(void);
         void                endRender(void);
@@ -75,8 +76,8 @@ namespace elysian {
 
         const char*         getNormalMapPath(void) const;
         const char*         getSpecularMapPath(void) const;
-		
-	};
+
+    };
 
 
 
@@ -97,8 +98,6 @@ namespace elysian {
     inline void	Renderable::setTexOrient(const GY_RECT_TEX_ORIENT texOrient) { _texOrient = texOrient; }
     inline int Renderable::getTexOrient(void) const { return _texOrient; }
     inline SpriteAttrib* Renderable::getSpriteAttrib(void) const { return _spriteAttrib; }
-    inline QuadSpriteAttrib* Renderable::getQuadSpriteAttrib(void) const { return static_cast<QuadSpriteAttrib*>(_spriteAttrib); }
-    inline void Renderable::setSpriteAttrib(SpriteAttrib *const attrib) { _spriteAttrib = attrib; if(attrib && _frame != -1) _frame = attrib->_frame; }
     inline void Renderable::setMaterial(Material*const material) { _material = material; }
     inline Material* Renderable::getMaterial(void) const { return _material;}
     inline Vector2 Renderable::getOffset(void) { return Vector2(&_offset); }
@@ -122,74 +121,6 @@ namespace elysian {
 
     inline const char* Renderable::getSpecularMapPath(void) const {
         return _specularMap ? _specularMap->filename : "none";
-    }
-
-
-
-    inline void Renderable::render(void) {
-
-
-     //   gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
-
-        gyVidTexBind(_spriteAttrib->_tex);
-        gyVidNormalMapBind(_normalMap);
-        gyVidSpecularMapBind(_specularMap);
-        gyVidMaterialBind(_material);
-
-        gyMatTranslate(_offset.x, _offset.y, 0.0f);
-
-        //branch assumes shit will usually be depth buffered
-
-        gyVidRectPlaneType(_entity->getPlaneType());
-        bool alpha = false;
-
-        //Submit vertices
-        switch(_spriteAttrib->getType()) {
-        case PrimAttrib::QUAD_SPRITE:
-
-            for(unsigned i = 0; i < 4; ++i) {
-                if(static_cast<QuadSpriteAttrib*>(_spriteAttrib)->getVertexAlpha(i) != 255) {
-                    alpha = true;
-                    break;
-                }
-            }
-
-             gyVidAlphaLevel((alpha)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
-
-            gyVidQuadListBegin(&_spriteAttrib->_color);
-         //   gyVidAlphaLevel(GY_ALPHA_FULL);
-            gyVidColorArray(&_spriteAttrib->_color);
-            if(_spriteAttrib->_tex) {
-                if(_frame != -1)
-                    gyVidTexCoordArray(gyVidTexCoordArrayFromFrame(&_spriteAttrib->_tex->_coord->texCoord[_frame],
-                                                               _texOrient));
-                else
-                    gyVidTexCoordArray(_texCoord);
-
-            }
-            //gyVidTriangleStrip(localVerts, 0, 4);
-            gyVidRect(-1); //HACK AS FUCK PROBABLY BROKE OTHER NON-GLAL PLATFORMS!!!
-            gyVidQuadListEnd();
-            break;
-        case PrimAttrib::SPRITE:
-            if(_spriteAttrib->_color.a == 0.0f) return;
-            gyVidAlphaLevel((_spriteAttrib->_color.a == 255)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
-            gyVidQuadListBegin(&_spriteAttrib->_color);
-
-            if(_frame == -1) {
-                //for(unsigned i = 0; i < 4; ++i) colorArray[i] = _spriteAttrib->_color;
-                gyVidTexCoordArray(_texCoord);
-                //gyVidColorArray(colorArray);
-            } else {
-                gyVidRectTexOrient(_texOrient);
-            }
-
-            gyVidRect(_frame);
-            gyVidQuadListEnd();
-            break;
-        default: break;//the fuck is wrong with you, son?
-        }
-
     }
 
 

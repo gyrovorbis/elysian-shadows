@@ -3,9 +3,9 @@
 
 #include <gyro_shader_api.h>
 #include <gyro_video_api.h>
-#include "elysian_component.hpp"
-#include "elysian_camera_system.hpp"
-#include "elysian_lua_table_proxy.hpp"
+#include <elysian_component.hpp>
+#include <elysian_camera_system.hpp>
+#include <elysian_lua_table_proxy.hpp>
 
 #define ELYSIAN_LIGHT_SOURCE_ATTENUATION_EPSILON	0.1f
 
@@ -15,10 +15,10 @@ namespace elysian {
             private GYLightProperties,
             public LuaTableProxy<LightAttrib>
     {
-		friend class LightSystem;
-		friend class LightSource;
+        friend class LightSystem;
+        friend class LightSource;
 
-	public:
+    public:
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(ambient,        getAmbient)
@@ -29,10 +29,10 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(radius,         getRadius)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
-		LightAttrib(void):
-			GYLightProperties(defaultProperties) {}
+        LightAttrib(void):
+            GYLightProperties(defaultProperties) {}
 
-		static GYLightProperties defaultProperties;
+        static GYLightProperties defaultProperties;
 
         void            setAmbientColor(const GYVector4& color);
         void            setDiffuseColor(const GYVector4& color);
@@ -61,7 +61,7 @@ namespace elysian {
         static float    _calculateRadius(const GYVector3& attenuation);
 
         GYVector3       _prevAttenuation = { 0.0f, 0.0f, 0.0f };
-	};
+    };
 
 
     class LightSource:
@@ -69,13 +69,13 @@ namespace elysian {
             private GYLightSource,
             public LuaTableProxy<LightSource>
     {
-		friend class LightSystem;
-		friend class Engine;
+        friend class LightSystem;
+        friend class Engine;
 
         CameraState         _camState;
         GYVector3           _relPos         = { 0.0f, 0.0f, 0.0f };
         bool                _shadowCaster   = false;
-	public:
+    public:
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(shadowCaster,       isShadowCaster,     setShadowCaster)
             ELYSIAN_LUA_PROXY_FIELD(type,               getLightType,       setLightType)
@@ -88,7 +88,7 @@ namespace elysian {
                             LightSource(Entity& entity);
         virtual             ~LightSource(void) override;
 
-		//reimplemented from component
+        //reimplemented from component
         virtual bool        canAddTo(Entity& entity) const override;
         virtual bool        load(FILE* file) override;
         virtual bool        save(FILE* file) override;
@@ -117,7 +117,7 @@ namespace elysian {
         CameraState*        getCameraState(void);
         void                update(void);
 
-	};
+    };
 
 
 
@@ -128,19 +128,19 @@ namespace elysian {
 
     // ========== INLINEZ ===============
 
-	inline void LightAttrib::setAmbientColor(const GYVector4& color) {
-		ambientColor = color;
-	}
-	inline void LightAttrib::setDiffuseColor(const GYVector4& color) {
-		diffuseColor = color;
-	}
-	inline void LightAttrib::setSpecularColor(const GYVector4& color) {
-		specularColor = color;
-	}
+    inline void LightAttrib::setAmbientColor(const GYVector4& color) {
+        ambientColor = color;
+    }
+    inline void LightAttrib::setDiffuseColor(const GYVector4& color) {
+        diffuseColor = color;
+    }
+    inline void LightAttrib::setSpecularColor(const GYVector4& color) {
+        specularColor = color;
+    }
 
-	inline void LightAttrib::setSpotExponent(const float exp) {
-		spotExponent = exp;
-	}
+    inline void LightAttrib::setSpotExponent(const float exp) {
+        spotExponent = exp;
+    }
 
     inline void LightAttrib::getAmbientColor(GYVector4& color) const { color = ambientColor; }
     inline void LightAttrib::getDiffuseColor(GYVector4& color) const { color = diffuseColor; }
@@ -154,26 +154,26 @@ namespace elysian {
     inline Vector3 LightAttrib::getAttenuation(void) { return Vector3(&attenuationFactors); }
 
     inline bool LightSource::canAddTo(Entity &/*entity*/) const { return true; }
-	inline auto LightSource::getType(void) const -> TYPE { return LIGHT_SOURCE; }
-	inline LightSource::LightSource(Entity& entity):
-		Component(entity),
-		GYLightSource({
-			{ 0.0f, 0.0f, 0.0f, 0.0f }, //pos
-			{ 0.0f, -0.0f, 0.00f },		//dir
-			360.0f,						//cutoff
-			GY_LIGHT_POINT,				//type
-			&LightAttrib::defaultProperties,
-			&_camState,
+    inline auto LightSource::getType(void) const -> TYPE { return LIGHT_SOURCE; }
+    inline LightSource::LightSource(Entity& entity):
+        Component(entity),
+        GYLightSource({
+            { 0.0f, 0.0f, 0.0f, 0.0f }, //pos
+            { 0.0f, -0.0f, 0.00f },		//dir
+            360.0f,						//cutoff
+            GY_LIGHT_POINT,				//type
+            &LightAttrib::defaultProperties,
+            &_camState,
             nullptr
-	}) { gyVec3Normalize(&direction);  }
+    }) { gyVec3Normalize(&direction);  }
     inline void LightSource::setAttrib(const LightAttrib* const attrib) { properties = (GYLightProperties*)(attrib); }
-	inline void LightSource::setDirection(const GYVector3& dir) { gyVec3Normalize(&direction); direction = dir; }
+    inline void LightSource::setDirection(const GYVector3& dir) { gyVec3Normalize(&direction); direction = dir; }
     inline void LightSource::setSpotCutoffAngle(const float angle) { spotCutoffAngle = (type == GY_LIGHT_SPOT)? angle : 360.0f; }
-	inline auto LightSource::getLightType(void) const -> GY_LIGHT_TYPE { return type; }
-	inline const GYVector4& LightSource::getPosition(void) const { return position; }
+    inline auto LightSource::getLightType(void) const -> GY_LIGHT_TYPE { return type; }
+    inline const GYVector4& LightSource::getPosition(void) const { return position; }
     inline LightAttrib* LightSource::getAttrib(void) { return static_cast<LightAttrib*>(properties); }
-	inline void LightSource::setShadowCaster(const bool val) { _shadowCaster = val; }
-	inline bool LightSource::isShadowCaster(void) const { return _shadowCaster; }
+    inline void LightSource::setShadowCaster(const bool val) { _shadowCaster = val; }
+    inline bool LightSource::isShadowCaster(void) const { return _shadowCaster; }
     inline void LightSource::setRelativePos(const float x, const float y, const float z) { _relPos.x = x; _relPos.y = y; _relPos.z = z; }
     inline void LightSource::getDirection(GYVector3& dir) const { dir = direction; }
     inline float LightSource::getSpotCutoffAngle(void) const { return spotCutoffAngle; }
@@ -181,9 +181,9 @@ namespace elysian {
     inline Vector3 LightSource::getRelPos(void) { return Vector3(&_relPos); }
     inline Vector3 LightSource::getDir(void) { return Vector3(&direction); }
 
-	inline CameraState* LightSource::getCameraState(void) {
-		return &_camState;
-	}
+    inline CameraState* LightSource::getCameraState(void) {
+        return &_camState;
+    }
 
     inline void LightAttrib::linearInterpolate(const LightAttrib& startKeyFrame, const LightAttrib& endKeyFrame,
                            const float interval, const float elapsed)

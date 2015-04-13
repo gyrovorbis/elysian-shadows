@@ -2,8 +2,8 @@
 #define ELYSIANTILEWRAPPER_H
 
 #include <QIcon>
-#include "elysian_tile.hpp"
-#include "assetManager.h"
+#include <elysian_tile.hpp>
+#include <assetManager.h>
 
 class TkLevel;
 typedef TkLevel Level;

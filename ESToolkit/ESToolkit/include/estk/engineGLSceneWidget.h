@@ -2,7 +2,7 @@
 #define ENGINE_GL_SCENE_WIDGET_H
 
 #include "assetManager.h"
-#include <QOpenGLWidget>
+#include <QGLWidget>
 #include <QMatrix4x4>
 #include <QQuaternion>
 #include <QVector2D>
@@ -14,7 +14,7 @@ class MapView;
 #define TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME   5
 
 class EngineGLSceneWidget:
-        public QOpenGLWidget,
+        public QGLWidget,
         public AssetManager
 {
     Q_OBJECT

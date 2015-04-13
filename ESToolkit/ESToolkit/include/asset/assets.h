@@ -3,8 +3,8 @@
 
 #include <QObject>
 #include <QString>
-#include "elysian_level_manager.hpp"
-#include "selectable.h"
+#include <elysian_level_manager.hpp>
+#include <selectable.h>
 
 class TkLevel;
 typedef TkLevel Level;
@@ -17,7 +17,7 @@ class TkEntity;
 typedef TkEntity Entity;
 struct MapChange;
 
-class QOpenGLWidget;
+class EngineGLSceneWidget;
 
 namespace elysian {
     class Engine;
@@ -27,7 +27,7 @@ namespace elysian {
 class Assets: public QObject, public elysian::LevelManager {
     Q_OBJECT
 public:
-	enum LAYER_TYPE { LAYER_TILE1, LAYER_TILE2, LAYER_TILE3, LAYER_LIGHT, LAYER_COLLISION, LAYER_ENTITY, LAYER_MAX };
+    enum LAYER_TYPE { LAYER_TILE1, LAYER_TILE2, LAYER_TILE3, LAYER_LIGHT, LAYER_COLLISION, LAYER_ENTITY, LAYER_MAX };
 
             Assets(void);
     virtual ~Assets(void);
@@ -49,9 +49,9 @@ public:
     bool setCurrentProject(const QString name);
     void setCurrentProject(Project *const project);
     //void setCurrentSelection(Selectable *const selection);
-	void setCurrentLayer(const LAYER_TYPE type);
-	void setLayerVisible(const LAYER_TYPE type, bool flag=true);
-	bool getLayerVisible(const LAYER_TYPE type) const;
+    void setCurrentLayer(const LAYER_TYPE type);
+    void setLayerVisible(const LAYER_TYPE type, bool flag=true);
+    bool getLayerVisible(const LAYER_TYPE type) const;
 
     Level* reloadLevel(Level* level=nullptr);
     Area* reloadArea(Area* area=nullptr);
@@ -59,61 +59,61 @@ public:
 
     //Project *NewProject();
     //Project *NewProject(QString n);
-	Project *getFirstProject(void) const;
+    Project *getFirstProject(void) const;
     Project *getProject(const QString name) const;
-	Project *loadProject(const QString directory);
-	bool saveProject(const QString name) const;
-	bool removeProject(const QString name);
+    Project *loadProject(const QString directory);
+    bool saveProject(const QString name) const;
+    bool removeProject(const QString name);
 
     elysian::Engine* getEngine(void) const;
 
     //static bool VerifyDirectory(const QString dir);
-	static QString formatFileName(const QString name);
-	QString getProjectDir();
-	int getUndoStackCount();
+    static QString formatFileName(const QString name);
+    QString getProjectDir();
+    int getUndoStackCount();
 
-    void setGLWidget(QOpenGLWidget*const context);
+    void setGLWidget(EngineGLSceneWidget*const context);
     void makeGLContextCurrent(void);
     void doneGLContextCurrent(void);
 
 Q_SIGNALS:
     //void EntityChanged(Entity *const entity);
-	void selectionChanged(const Selectable::TYPE type, Selectable *const selection);
-	void layerChanged(LAYER_TYPE type);
-	void areaChanged(Area *const area);
-	void levelChanged(Level *const level);
-	void projectChanged(Project *const project);
+    void selectionChanged(const Selectable::TYPE type, Selectable *const selection);
+    void layerChanged(LAYER_TYPE type);
+    void areaChanged(Area *const area);
+    void levelChanged(Level *const level);
+    void projectChanged(Project *const project);
     void engineInitialize(void);
 
-	void areaAdded(Project *const project, Level *const level, Area *const area);
-	void areaRenamed(const QString oldName, const QString newName);
-	void levelAdded(Project *const project, Level *const level);
-	void levelRenamed(const QString oldName, const QString newName);
-	void projectAdded(Project *const project);
-	void entityAdded(Project *const project, Level *const level, Area *const area, Entity *const entity);
+    void areaAdded(Project *const project, Level *const level, Area *const area);
+    void areaRenamed(const QString oldName, const QString newName);
+    void levelAdded(Project *const project, Level *const level);
+    void levelRenamed(const QString oldName, const QString newName);
+    void projectAdded(Project *const project);
+    void entityAdded(Project *const project, Level *const level, Area *const area, Entity *const entity);
 
-	void areaRemoved(Project *const project, Level *const level, Area *const area);
-	void levelRemoved(Project *const project, Level *const level);
-	void projectRemoved(Project *const project);
-	void entityRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity);
-	void componentAttached(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
-	void componentRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
+    void areaRemoved(Project *const project, Level *const level, Area *const area);
+    void levelRemoved(Project *const project, Level *const level);
+    void projectRemoved(Project *const project);
+    void entityRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity);
+    void componentAttached(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
+    void componentRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
     void mapChanged(Area*const area, const QVector<MapChange>& changes);
     void entityParented(Entity*const child, Entity*const parent);
 
-	void projectRemoveUI();
+    void projectRemoveUI();
 private Q_SLOTS:
-	void onChildProjectActivating(Project *const project, Level *const level, Area *const area);
-	void onAreaAdded(Project *const project, Level *const level, Area *const area);
-	void onAreaRenamed(const QString oldName, const QString newName);
-	void onAreaRemoved(Project *const project, Level *const level, Area *const area);
-	void onLevelAdded(Project *const project, Level *const level);
-	void onLevelRemoved(Project *const project, Level *const level);
-	void onLevelRenamed(const QString oldName, const QString newName);
-	void onEntityAdded(Project *const project, Level *const level, Area *const area, Entity *const entity);
-	void onEntityRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity);
-	void onComponentAttached(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
-	void onComponentRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
+    void onChildProjectActivating(Project *const project, Level *const level, Area *const area);
+    void onAreaAdded(Project *const project, Level *const level, Area *const area);
+    void onAreaRenamed(const QString oldName, const QString newName);
+    void onAreaRemoved(Project *const project, Level *const level, Area *const area);
+    void onLevelAdded(Project *const project, Level *const level);
+    void onLevelRemoved(Project *const project, Level *const level);
+    void onLevelRenamed(const QString oldName, const QString newName);
+    void onEntityAdded(Project *const project, Level *const level, Area *const area, Entity *const entity);
+    void onEntityRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity);
+    void onComponentAttached(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
+    void onComponentRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
     void onMapChanged(Area*const area, const QVector<MapChange>& changes);
     void onEntityParented(Entity*const child, Entity*const parent);
 
@@ -128,9 +128,9 @@ private:
     static Assets::LAYER_TYPE   _currentLayer;
     static bool                 _layerVisible[Assets::LAYER_MAX];
     static Selectable::TYPE     _currentSelectionType;
-    static QOpenGLWidget*      _glWidget;
+    static EngineGLSceneWidget*      _glWidget;
 
-	void connectSlots(Project *const project);
+    void connectSlots(Project *const project);
 };
 
 

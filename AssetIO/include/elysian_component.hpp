@@ -1,35 +1,34 @@
 #ifndef ELYSIAN_COMPONENT_HPP
 #define ELYSIAN_COMPONENT_HPP
 
-#include "elysian_asset_typedefs.hpp"
-#include "elysian_asset.hpp"
+#include <elysian_asset.hpp>
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 
 namespace elysian {
 
-	class Component: public Asset { 
+    class Component: public Asset {
         friend Entity;
         friend class EntityBase;
-	public:
-		
-		enum TYPE { 
+    public:
+
+        enum TYPE {
             RENDERABLE,
             ANIMATION,
             COLLIDABLE,
-			CHARACTER, 
-			WARP, 
-			EXAMINABLE,
-			RIGID_BODY,
-			AUDIO_SOURCE,
-			LIGHT_SOURCE,
-			PARTICLE_EMITTER,
-			COMBAT,
+            CHARACTER,
+            WARP,
+            EXAMINABLE,
+            RIGID_BODY,
+            AUDIO_SOURCE,
+            LIGHT_SOURCE,
+            PARTICLE_EMITTER,
+            COMBAT,
             SKELETON,
-			MAX_TYPE, 
-			BEHAVIOR 
-		};
-		
+            MAX_TYPE,
+            BEHAVIOR
+        };
+
         //Implemented by child components
         virtual bool    canAddTo(Entity& entity) const = 0;
         virtual bool    load(FILE* file) = 0;
@@ -40,14 +39,14 @@ namespace elysian {
 
         static bool     isValidType(const TYPE type);
         Entity*         getEntity(void) const;
-		
-	protected:
+
+    protected:
         virtual         ~Component(void) = default;
                         Component(Entity& parent);
                         Component(void) = default;
 
-		Entity* _entity;
-	}; 
+        Entity* _entity;
+    };
 
 
 

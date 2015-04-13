@@ -14,7 +14,8 @@
 
 
 EngineGLSceneWidget::EngineGLSceneWidget(QWidget *parent):
-    QOpenGLWidget(parent) {
+    QGLWidget(parent) {
+    //    glalVidOglInit(1280, 720, 1280, 720);
 }
 
 
@@ -44,14 +45,15 @@ void EngineGLSceneWidget::initializeGL(void) {
   //  makeCurrent();
    // initializeGLFunctions();
    // doneCurrent();
+    qDebug() << "INITGL" << QOpenGLContext::currentContext();
 
     unsigned parentWidth    = parentWidget()->size().width();
     unsigned parentHeight   = parentWidget()->size().height();
 
-   // glalVidOglInit(parentWidth, parentHeight, parentWidth, parentHeight);
+    glalVidOglInit(parentWidth, parentHeight, parentWidth, parentHeight);
      if(getAssets()->getEngine()) getAssets()->getEngine()->getCameraSys()->initializeProjMatrix();
 
-     _mapView->setSceneRect(0, 0, parentWidth, parentHeight);
+     //_mapView->setSceneRect(0, 0, parentWidth, parentHeight);
 
    //  doneCurrent();
 
@@ -98,40 +100,44 @@ static void _initSpineShit(void) {
 }
 
 void EngineGLSceneWidget::startRenderTimer(void) {
-       glalVidOglInit(1280, 720, 1280, 720);
+  //  makeCurrent();
+    glalVidOglInit(1280, 720, 1280, 720);
     _timer.start(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this);
-    timerEvent(nullptr); //go ahead and update the nigger.
+   // timerEvent(nullptr);
 }
 
 void EngineGLSceneWidget::showEvent(QShowEvent *event) {
-    //startRenderTimer();
+    QGLWidget::showEvent(event);
 }
 
 
 void EngineGLSceneWidget::timerEvent(QTimerEvent *)
 {
-    makeCurrent();
-    update();
+ //   makeCurrent();
+    qDebug() << "TIMEREVENT" << QOpenGLContext::currentContext();
+    updateGL();
      //       _mapView->scene()->invalidate();
     //_mapView->update();
-    _mapView->updateSceneRect(_mapView->sceneRect());
-    paintGL();
+   // _mapView->updateSceneRect(_mapView->sceneRect());
+   // paintGL();
 
         unsigned parentWidth    = parentWidget()->size().width();
         unsigned parentHeight   = parentWidget()->size().height();
         if(_width != parentWidth || _height != parentHeight) {
             resizeGL(parentWidth, parentHeight);
         }
-    doneCurrent();
+   // doneCurrent();
 }
 
 void EngineGLSceneWidget::resizeGL(int w, int h) {
+  //  makeCurrent();
      glalVidOglInit(w, h, w, h);
      _width = w;
      _height = h;
 
-     _mapView->setSceneRect(0, 0, w, h);
+    // _mapView->setSceneRect(0, 0, w, h);
  if(getAssets()->getEngine()) getAssets()->getEngine()->getCameraSys()->initializeProjMatrix();
+// doneCurrent();
 
 }
 
@@ -141,7 +147,11 @@ static void _renderSpineShit(void) {
 }
 
 void EngineGLSceneWidget::paintGL(void) {
-	if(!getCurrentArea()) return;
+ // makeCurrent();
+    qDebug() << "PAINTGL" << QOpenGLContext::currentContext();
+    if(!getCurrentArea()) return;
+
+  //  glalVidBindDefaultFbo();
 
     static bool once = false;
     if(!once) {
@@ -158,9 +168,7 @@ void EngineGLSceneWidget::paintGL(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gyMatLoadIdentity();
 
-        getAssets()->getEngine()->render(&_renderSpineShit);
-
-    context()->swapBuffers(context()->surface()); // DO QOPENGL WIDGET'S FUCKING JOB FOR IT!
+   // context()->swapBuffers(context()->surface()); // DO QOPENGL WIDGET'S FUCKING JOB FOR IT!
 
     getAssets()->getEngine()->update();
     getAssets()->getEngine()->processInput();
@@ -179,7 +187,9 @@ void EngineGLSceneWidget::paintGL(void) {
         getAssets()->getEngine()->getCameraSys()->setBoundByMap(true);
     }
 
+    getAssets()->getEngine()->render(&_renderSpineShit);
 
+   // doneCurrent();
     Q_EMIT engineUpdated();
 }
 

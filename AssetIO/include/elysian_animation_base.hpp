@@ -5,13 +5,10 @@
 #include <vector>
 #include <map>
 
-#include "elysian_component.hpp"
-#include "elysian_stl_algorithm.hpp"
-#include "elysian_mem_pool.hpp"
-#include "elysian_asset_typedefs.hpp"
-#include "elysian_lua_table_proxy.hpp"
-
-#include "elysian_event_monitor.hpp"
+#include <elysian_component.hpp>
+#include <elysian_stl_algorithm.hpp>
+#include <elysian_mem_pool.hpp>
+#include <elysian_lua_table_proxy.hpp>
 
 #define ELYSIAN_ANIMATION_SEQUENCE_NAME_SIZE    50
 #define ELYSIAN_ANIMATION_MAX_CHILDREN          100
@@ -23,12 +20,14 @@ ELYSIAN_ASSET_TYPEDEF(Animation)
 
 namespace elysian {
 
-	struct AnimationFrame {
-		GYVector2			offset;
-		float				duration;
-		unsigned int		spriteFrame;
-		GY_RECT_TEX_ORIENT	texOrient;
-	};
+    class EventMonitor;
+
+    struct AnimationFrame {
+        GYVector2			offset;
+        float				duration;
+        unsigned int		spriteFrame;
+        GY_RECT_TEX_ORIENT	texOrient;
+    };
 
     template<typename P, typename T>
     class AnimationSequenceBase {
@@ -61,7 +60,7 @@ namespace elysian {
     protected:
 
                             AnimationSequence(void) = default;
-	public:
+    public:
                             AnimationSequence(const char* name);
         void                addFrame(const float xOffset, const float yOffset, const float duration,
                                     const unsigned int sheetIndex, const GY_RECT_TEX_ORIENT texOrient);
@@ -71,54 +70,54 @@ namespace elysian {
         friend Animation;
         friend class AnimationBase;
 
-	public:
+    public:
         ~AnimationAttrib(void);
-	};
+    };
 
-	struct ChildAnimationFrame {
-		GYVector3	offset;
-		float		zOrient;
-	};
+    struct ChildAnimationFrame {
+        GYVector3	offset;
+        float		zOrient;
+    };
 
     class ChildAnimationSequence:
             public AnimationSequenceBase<ChildAnimationSequence, ChildAnimationFrame>  {
         friend Animation;
         friend class AnimationBase;
 
-	public:
-								ChildAnimationSequence(const char* name);
-		void					addFrame(const float x, const float y, const float z, const float theta);
+    public:
+                                ChildAnimationSequence(const char* name);
+        void					addFrame(const float x, const float y, const float z, const float theta);
 
-	};
+    };
 
-	//Subcomponent of Animation
+    //Subcomponent of Animation
     class ChildAnimation: public ChildAnimationSequence {
         friend Animation;
         friend class AnimationBase;
     private:
-		GYVector3												_globalOffset = { 0.0f, 0.0f, 0.0f };
+        GYVector3												_globalOffset = { 0.0f, 0.0f, 0.0f };
         bool                                                    _inheritSpeedMultiplier = false;
-		bool													_inheritScale	= true;
-	public:
-								ChildAnimation(const char* name);
-								~ChildAnimation(void);
-		void					setGlobalOffset(const float x, const float y, const float z);
+        bool													_inheritScale	= true;
+    public:
+                                ChildAnimation(const char* name);
+                                ~ChildAnimation(void);
+        void					setGlobalOffset(const float x, const float y, const float z);
         void                    setInheritSpeedMultiplier(const bool val);
-		void					setInheritScale(const bool val);
-	};
+        void					setInheritScale(const bool val);
+    };
 
-	class ChildAnimationAttrib {
+    class ChildAnimationAttrib {
         friend Animation;
         friend class AnimationBase;
-	private:
+    private:
 
-		std::map<const char*, ChildAnimation*, ltstr> _animations;
-	public:
-						~ChildAnimationAttrib(void);
-		ChildAnimation* addAnimation(const char* name);
-		ChildAnimation* getAnimation(const char* name);
+        std::map<const char*, ChildAnimation*, ltstr> _animations;
+    public:
+                        ~ChildAnimationAttrib(void);
+        ChildAnimation* addAnimation(const char* name);
+        ChildAnimation* getAnimation(const char* name);
 
-	};
+    };
 
     typedef CharArrayPoolEntry<ELYSIAN_ANIMATION_STATE_LENGTH_MAX> AnimStateEntry;
 
@@ -156,27 +155,27 @@ namespace elysian {
     {
         friend Entity;
         friend class EntityBase;
-	protected:
+    protected:
 
         struct ChildAnimEntry:
                 public AnimationStateStack<ChildAnimationSequence, ChildAnimationFrame>
         {
             Entity*				entity			= nullptr;
             Animation*          animComp        = nullptr;
-		};
+        };
 
         Pool<AnimStateEntry>    _statePool          = Pool<AnimStateEntry>(ELYSIAN_ANIMATION_MAX_CHILDREN);
-		GYVector2				_childPivot			= GYVector2 { 0.0f, 0.0f };
-		Pool<ChildAnimEntry>*	_children			= nullptr;
-		ChildAnimationAttrib*	_childAttrib		= nullptr;
+        GYVector2				_childPivot			= GYVector2 { 0.0f, 0.0f };
+        Pool<ChildAnimEntry>*	_children			= nullptr;
+        ChildAnimationAttrib*	_childAttrib		= nullptr;
         EventMonitor*           _monitor            = nullptr;
-		float					_speedMultiplier	= 1.0f;
-		float					_timer				= 0.0f;
-		bool					_isActive			= false;
-		bool					_looping			= true;
+        float					_speedMultiplier	= 1.0f;
+        float					_timer				= 0.0f;
+        bool					_isActive			= false;
+        bool					_looping			= true;
         AnimationAttrib*        _attrib             = nullptr;
         Entity*                 _parent             = nullptr;
-		
+
                 AnimationBase(Entity& parent);
         virtual ~AnimationBase(void) override;
         void    _updateStates(void);
@@ -186,12 +185,12 @@ namespace elysian {
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
-		virtual bool load(FILE* file) override;
-		virtual bool save(FILE* file) override;
+        virtual bool load(FILE* file) override;
+        virtual bool save(FILE* file) override;
         virtual bool canAddTo(Entity& entity) const override;
-		virtual TYPE getType(void) const override;
-		virtual bool addToLevel(void) override;
-		virtual bool removeFromLevel(void) override;
+        virtual TYPE getType(void) const override;
+        virtual bool addToLevel(void) override;
+        virtual bool removeFromLevel(void) override;
 
         void        addState    (const char* state);
         void        removeState (const char* state);
@@ -200,24 +199,24 @@ namespace elysian {
         void        update(const float deltaTime);
         void        playAnimation(const char *name, EventMonitor*const monitor = nullptr);
         void        stopAnimation(void);
-		
-		AnimationAttrib*		getAttrib(void) const;
-		ChildAnimationAttrib*	getChildAttrib(void) const;
-		void					setSpeedMultiplier(const float factor);
+
+        AnimationAttrib*		getAttrib(void) const;
+        ChildAnimationAttrib*	getChildAttrib(void) const;
+        void					setSpeedMultiplier(const float factor);
         void					setAttrib(AnimationAttrib* attributes);
-		void					setChildAttrib(ChildAnimationAttrib* childAttrib);
-		bool					isActive(void) const;
-		unsigned				getCurrentFrame(void) const;
-		void					setCurrentFrame(const unsigned frame);
-		bool					isLooping(void) const;
-		void					setLooping(const bool val);
-		void					setChildPivot(const float x, const float y);
-		const GYVector2&		getChildPivot(void) const;
-		void					addChildEntity(Entity*const entity, const char*animName);
+        void					setChildAttrib(ChildAnimationAttrib* childAttrib);
+        bool					isActive(void) const;
+        unsigned				getCurrentFrame(void) const;
+        void					setCurrentFrame(const unsigned frame);
+        bool					isLooping(void) const;
+        void					setLooping(const bool val);
+        void					setChildPivot(const float x, const float y);
+        const GYVector2&		getChildPivot(void) const;
+        void					addChildEntity(Entity*const entity, const char*animName);
         void					removeChildEntity(const char*animName);
         void					removeChildEntity(Entity* entity);
         //const AnimationSequence* getSequence(const char* name);
-	};
+    };
 
 
 
@@ -228,54 +227,54 @@ namespace elysian {
 
 
 
-	// ====== INLINEZ ======
+    // ====== INLINEZ ======
 
     inline AnimationSequence::AnimationSequence(const char* name): AnimationSequenceBase(name) { }
-	inline void AnimationSequence::addFrame(const float xOffset, const float yOffset, const float duration,
-											const unsigned int frame, const GY_RECT_TEX_ORIENT texOrient) {
+    inline void AnimationSequence::addFrame(const float xOffset, const float yOffset, const float duration,
+                                            const unsigned int frame, const GY_RECT_TEX_ORIENT texOrient) {
         AnimationSequenceBase::addFrame(AnimationFrame {
-			GYVector2 { xOffset, yOffset },
-			duration,
-			frame,
-			texOrient
-		});
-	}
-	inline AnimationAttrib::~AnimationAttrib(void) {
-		for(auto it: _sequences) delete it.second;
-	}
+            GYVector2 { xOffset, yOffset },
+            duration,
+            frame,
+            texOrient
+        });
+    }
+    inline AnimationAttrib::~AnimationAttrib(void) {
+        for(auto it: _sequences) delete it.second;
+    }
 
     inline ChildAnimationSequence::ChildAnimationSequence(const char* name): AnimationSequenceBase(name) { }
-	inline void ChildAnimationSequence::addFrame(const float x, const float y, const float z, const float theta) {
+    inline void ChildAnimationSequence::addFrame(const float x, const float y, const float z, const float theta) {
         AnimationSequenceBase::addFrame(ChildAnimationFrame{
-			GYVector3 { x, y, z },
-			theta,
-		});
-	}
+            GYVector3 { x, y, z },
+            theta,
+        });
+    }
 
     inline ChildAnimation::ChildAnimation(const char* name): ChildAnimationSequence(name) {  }
-	inline void ChildAnimation::setInheritScale(const bool val) { _inheritScale = val; }
+    inline void ChildAnimation::setInheritScale(const bool val) { _inheritScale = val; }
     inline void ChildAnimation::setInheritSpeedMultiplier(const bool val) { _inheritSpeedMultiplier = val; }
 
-	inline ChildAnimation::~ChildAnimation(void) {
-		for(auto it: _sequences) delete it.second;
-	}
-	inline void ChildAnimation::setGlobalOffset(const float x, const float y, const float z) {
-		_globalOffset.x = x; _globalOffset.y = y; _globalOffset.z = z;
-	}
+    inline ChildAnimation::~ChildAnimation(void) {
+        for(auto it: _sequences) delete it.second;
+    }
+    inline void ChildAnimation::setGlobalOffset(const float x, const float y, const float z) {
+        _globalOffset.x = x; _globalOffset.y = y; _globalOffset.z = z;
+    }
 
-	inline ChildAnimation* ChildAnimationAttrib::addAnimation(const char *name) {
-		ChildAnimation*const anim = new ChildAnimation(name);
-		_animations[anim->getName()] = anim;
-		return anim;
-	}
-	inline ChildAnimation* ChildAnimationAttrib::getAnimation(const char *name) {
-		auto it = _animations.find(name);
-		return (it == _animations.end())? nullptr : it->second;
-	}
+    inline ChildAnimation* ChildAnimationAttrib::addAnimation(const char *name) {
+        ChildAnimation*const anim = new ChildAnimation(name);
+        _animations[anim->getName()] = anim;
+        return anim;
+    }
+    inline ChildAnimation* ChildAnimationAttrib::getAnimation(const char *name) {
+        auto it = _animations.find(name);
+        return (it == _animations.end())? nullptr : it->second;
+    }
 
-	inline ChildAnimationAttrib::~ChildAnimationAttrib(void) {
-		for(auto it: _animations) delete it.second;
-	}
+    inline ChildAnimationAttrib::~ChildAnimationAttrib(void) {
+        for(auto it: _animations) delete it.second;
+    }
 
     inline AnimationBase::AnimationBase(Entity& parent): Component(parent) {}
     inline AnimationAttrib* AnimationBase::getAttrib(void) const { return _attrib; }
@@ -284,13 +283,13 @@ namespace elysian {
         clear();
         setStackBottomState(attributes);
         _attrib = attributes;
-	}
+    }
     inline void AnimationBase::setChildAttrib(ChildAnimationAttrib *childAttrib) {
-		_childAttrib = childAttrib;
-		if(_childAttrib && !_children) {
-			_children = new Pool<ChildAnimEntry>(ELYSIAN_ANIMATION_MAX_CHILDREN);
-		}
-	}
+        _childAttrib = childAttrib;
+        if(_childAttrib && !_children) {
+            _children = new Pool<ChildAnimEntry>(ELYSIAN_ANIMATION_MAX_CHILDREN);
+        }
+    }
     inline bool AnimationBase::isActive(void) const { return _isActive; }
     inline unsigned AnimationBase::getCurrentFrame(void) const { return currentIndex; }
     inline bool AnimationBase::isLooping(void) const { return _looping; }
@@ -362,8 +361,8 @@ namespace elysian {
 
     template<typename S, typename T>
     inline void AnimationStateStack<S,T>::setCurrentIndex(const unsigned index) {
-		if(!currentSequence) return;
-		//assert(currentSequence);
+        if(!currentSequence) return;
+        //assert(currentSequence);
      //   if(currentSequence) {
             const unsigned frameCount = currentSequence->getFrameCount();
             currentIndex = (frameCount > 0)? index % frameCount : 0;
@@ -401,7 +400,7 @@ namespace elysian {
 
     template<typename S, typename T>
     inline void AnimationStateStack<S, T>::setSequence(const char* name) {
-		//if(currentSequence && strcmp(currentSequence->getName(), name) == 0) return; //no change
+        //if(currentSequence && strcmp(currentSequence->getName(), name) == 0) return; //no change
 
         const S* seq = stateStack[stackDepth]->getSequence(name);
         if(!seq && stateStack[stackDepth]->getFrameCount() > 0) {
@@ -420,7 +419,7 @@ namespace elysian {
         currentSequence = seq;
         if(seq) {
             currentIndex = 0;//(seq->getFrame(currentIndex))?
-					//currentIndex : 0;
+                    //currentIndex : 0;
             currentFrame = seq->getFrame(currentIndex);
         } else {
             currentIndex = 0;

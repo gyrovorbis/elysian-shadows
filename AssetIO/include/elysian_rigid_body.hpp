@@ -4,22 +4,22 @@
 #include <stdint.h>
 #include <kinetic/gyro_kinetic_kinetic.h>
 #include <kinetic/gyro_kinetic_static.h>
-#include "elysian_component.hpp"
-#include "elysian_instance_transform.hpp"
-#include "elysian_lua_table_proxy.hpp"
+#include <elysian_component.hpp>
+#include <elysian_instance_transform.hpp>
+#include <elysian_lua_table_proxy.hpp>
 
 namespace elysian {
 
-	class CollisionContact;
+    class CollisionContact;
 
     class RigidBodyAttrib: public LuaTableProxy<RigidBodyAttrib> {	//later separate GYStatic attrib
-	private:
-		uint32_t	_forceMask		= ~0x0;
-		bool		_breakable		= false;
-		float		_baseDurability = -1;
+    private:
+        uint32_t	_forceMask		= ~0x0;
+        bool		_breakable		= false;
+        float		_baseDurability = -1;
         bool        _canHold        = true;
 
-	public:
+    public:
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(canHold,    getCanHold,         setCanHold)
             ELYSIAN_LUA_PROXY_FIELD(breakable,  isBreakable,        setBreakable)
@@ -27,22 +27,22 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(forceMask,  getForceMask,       setForceMask)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
-		uint32_t	getForceMask(void) const;
-		void		setForceMask(const uint32_t mask);
-		void		setBreakable(const bool val);
-		bool		isBreakable(void) const;
-		float		getBaseDurability(void) const;
-		void		setBaseDurability(const float val);
+        uint32_t	getForceMask(void) const;
+        void		setForceMask(const uint32_t mask);
+        void		setBreakable(const bool val);
+        bool		isBreakable(void) const;
+        float		getBaseDurability(void) const;
+        void		setBaseDurability(const float val);
         bool        getCanHold(void) const;
         void        setCanHold(const bool val=true);
-	};
+    };
 
-	//Abstraction for particles and rigidBodies to share force generators
+    //Abstraction for particles and rigidBodies to share force generators
     class ForceTarget:
             protected GYKinetic
            // public LuaTableProxy<ForceTarget>
     {
-	public:
+    public:
 /*
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(vel,            getVel)
@@ -53,21 +53,21 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(torqueAccum,    getTorqueAccum, setTorqueAccum)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 */
-		enum TARGET_TYPE { TARGET_PARTICLE, TARGET_RIGID_BODY };
+        enum TARGET_TYPE { TARGET_PARTICLE, TARGET_RIGID_BODY };
 
-									ForceTarget(void);
-		virtual TARGET_TYPE			getTargetType(void) const			= 0;
-		virtual float				getOrientation(void) const			= 0;
-		virtual const GYVector3&	getPosition(void) const				= 0;
-		virtual const GYStatic*		getStaticAttrib(void) const			= 0;
+                                    ForceTarget(void);
+        virtual TARGET_TYPE			getTargetType(void) const			= 0;
+        virtual float				getOrientation(void) const			= 0;
+        virtual const GYVector3&	getPosition(void) const				= 0;
+        virtual const GYStatic*		getStaticAttrib(void) const			= 0;
         virtual bool               	getRestingOnBody(void) const        = 0;
 
         void                        applyZForce(const GYVector3& force);
-		void						applyForce(const GYVector3& force);
-		void						applyForceToPoint(const GYVector2& loc, const GYVector2& force);
+        void						applyForce(const GYVector3& force);
+        void						applyForceToPoint(const GYVector2& loc, const GYVector2& force);
         GYVector3       			getVelocity(void) const;
-		void						setVelocity(const GYVector3& _vel);
-		void						clearKinetic(void);
+        void						setVelocity(const GYVector3& _vel);
+        void						clearKinetic(void);
 
         void						setRotation(const float rotation);
         float                       getRotation(void) const;
@@ -78,7 +78,7 @@ namespace elysian {
         Vector3                     getVel(void);
         Vector3                     getAccel(void);
         Vector3                     getForceAccum(void);
-	};
+    };
 
     class CollisionSystem;
     class RigidBody:
@@ -86,16 +86,16 @@ namespace elysian {
         public ForceTarget,
         public LuaTableProxy<RigidBody>
     {
-		friend class RigidBodySystem;
+        friend class RigidBodySystem;
         friend class CollisionSystem;
-	private:
-		float				_tileDamping	= 1.0f;
-		bool				_active			= true;
+    private:
+        float				_tileDamping	= 1.0f;
+        bool				_active			= true;
 
-		RigidBodyAttrib*	_attrib			= nullptr;
-		float				_durability		= -1.0f;
-		CollisionContact*	_breakContact	= nullptr;
-	public:
+        RigidBodyAttrib*	_attrib			= nullptr;
+        float				_durability		= -1.0f;
+        CollisionContact*	_breakContact	= nullptr;
+    public:
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(tileDamping,    getTileDamping)
@@ -112,7 +112,7 @@ namespace elysian {
                                     RigidBody(Entity& entity);
         virtual                     ~RigidBody(void) override = default;
 
-		//reimplemented from Component
+        //reimplemented from Component
         virtual bool                canAddTo(Entity& entity) const override;
         virtual bool                load(FILE* file) override;
         virtual bool                save(FILE* file) override;
@@ -120,11 +120,11 @@ namespace elysian {
         virtual bool                removeFromLevel(void) override;
         virtual TYPE                getType(void) const override;
 
-		//reimplemented from ForceTarget
-		virtual TARGET_TYPE			getTargetType(void)	const override;
-		virtual float				getOrientation(void) const override;
-		virtual const GYVector3&	getPosition(void) const override;
-		virtual const GYStatic*		getStaticAttrib(void) const override;
+        //reimplemented from ForceTarget
+        virtual TARGET_TYPE			getTargetType(void)	const override;
+        virtual float				getOrientation(void) const override;
+        virtual const GYVector3&	getPosition(void) const override;
+        virtual const GYStatic*		getStaticAttrib(void) const override;
         virtual bool                getRestingOnBody(void) const override;
 
         void                        setActive(const bool val);
@@ -137,15 +137,13 @@ namespace elysian {
         CollisionContact*           getBreakContact(void) const;
         void                        setBreakContact(CollisionContact*const contact);
 
-		//GYKinetic rigid bodies internal
+        //GYKinetic rigid bodies internal
         void                        integrate(const float deltaTime);
 
-		//GYKinetic rigid bodies external
-		//void applyForceMask(const uint32_t mask, const GYVector2& force);
+        //GYKinetic rigid bodies external
+        //void applyForceMask(const uint32_t mask, const GYVector2& force);
 
-	};
-
-
+    };
 
 
 
@@ -157,17 +155,19 @@ namespace elysian {
 
 
 
-	// ========= INLINEZ ==========
+
+
+    // ========= INLINEZ ==========
     inline GYVector3 ForceTarget::getVelocity(void) const { return vel; }
-	inline void	ForceTarget::setVelocity(const GYVector3& _vel) { vel = _vel; }
+    inline void	ForceTarget::setVelocity(const GYVector3& _vel) { vel = _vel; }
 #if 0
     inline bool ForceTarget::getOnGround(void) const { return (bool)resting; }
     inline void ForceTarget::setOnGround(const bool val) { resting = (int)val; }
 #endif
     inline void ForceTarget::clearKinetic(void) {
-		GYKinetic* kinetic = static_cast<GYKinetic*>(this);
-		memset(kinetic, 0, sizeof(GYKinetic));
-	}
+        GYKinetic* kinetic = static_cast<GYKinetic*>(this);
+        memset(kinetic, 0, sizeof(GYKinetic));
+    }
     inline void	ForceTarget::setRotation(const float rotation) { rot = rotation; }
     inline float ForceTarget::getRotation(void) const { return rot; }
     inline void ForceTarget::setAngAccel(const float accel) { angAccel = accel; }
@@ -180,23 +180,23 @@ namespace elysian {
 
 
     inline RigidBody::RigidBody(Entity& entity): Component(entity) {}
-	inline float RigidBody::getTileDamping(void) const { return _tileDamping; }
-	inline void RigidBody::setTileDamping(const float factor) {_tileDamping = factor; }
-	inline void RigidBody::setAttrib(RigidBodyAttrib*const attrib) { _attrib = attrib; _durability = _attrib->getBaseDurability();}
-	inline void RigidBody::setActive(const bool val) { _active = val; }
-	inline float RigidBody::getDurability(void) const { return _durability; }
+    inline float RigidBody::getTileDamping(void) const { return _tileDamping; }
+    inline void RigidBody::setTileDamping(const float factor) {_tileDamping = factor; }
+    inline void RigidBody::setAttrib(RigidBodyAttrib*const attrib) { _attrib = attrib; _durability = _attrib->getBaseDurability();}
+    inline void RigidBody::setActive(const bool val) { _active = val; }
+    inline float RigidBody::getDurability(void) const { return _durability; }
     inline void RigidBody::setDurability(const float val) { _durability = val; }
-	inline CollisionContact* RigidBody::getBreakContact(void) const { return _breakContact; }
-	inline void	RigidBody::setBreakContact(CollisionContact*const contact) { _breakContact = contact; }
+    inline CollisionContact* RigidBody::getBreakContact(void) const { return _breakContact; }
+    inline void	RigidBody::setBreakContact(CollisionContact*const contact) { _breakContact = contact; }
 
-	inline RigidBodyAttrib* RigidBody::getAttrib(void) const { return _attrib; }
-	//inline void RigidBody::applyForceMask(const uint32_t mask, const GYVector2& force) { if(_attrib->getForceMask() & mask) applyForce(force); }
-	inline uint32_t RigidBodyAttrib::getForceMask(void) const { return _forceMask; }
-	inline void RigidBodyAttrib::setForceMask(const uint32_t mask) { _forceMask = mask; }
-	inline bool RigidBodyAttrib::isBreakable(void) const { return _breakable; }
-	inline void RigidBodyAttrib::setBreakable(const bool val) { _breakable = val; }
-	inline float RigidBodyAttrib::getBaseDurability(void) const { return _baseDurability; }
-	inline void RigidBodyAttrib::setBaseDurability(const float val) { _baseDurability = val; }
+    inline RigidBodyAttrib* RigidBody::getAttrib(void) const { return _attrib; }
+    //inline void RigidBody::applyForceMask(const uint32_t mask, const GYVector2& force) { if(_attrib->getForceMask() & mask) applyForce(force); }
+    inline uint32_t RigidBodyAttrib::getForceMask(void) const { return _forceMask; }
+    inline void RigidBodyAttrib::setForceMask(const uint32_t mask) { _forceMask = mask; }
+    inline bool RigidBodyAttrib::isBreakable(void) const { return _breakable; }
+    inline void RigidBodyAttrib::setBreakable(const bool val) { _breakable = val; }
+    inline float RigidBodyAttrib::getBaseDurability(void) const { return _baseDurability; }
+    inline void RigidBodyAttrib::setBaseDurability(const float val) { _baseDurability = val; }
     inline bool RigidBodyAttrib::getCanHold(void) const { return _canHold; }
     inline void RigidBodyAttrib::setCanHold(const bool val) { _canHold = val; }
 

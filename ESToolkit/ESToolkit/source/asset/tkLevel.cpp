@@ -17,6 +17,7 @@
 #include "elysian_level_system.hpp"
 #include "elysian_engine.hpp"
 #include "elysian_level_system.hpp"
+#include <selectionScene.h>
 #include <gyro_texture_api.h>
 
 //====STATIC====
@@ -27,90 +28,90 @@ SelectionScene *TkLevel::_sheetViewScene                  = nullptr;
 Project* TkLevel::_curProj                                = nullptr;
 
 bool TkLevel::initializeScene(const SourceView *const view, bool horiz) {
-	static bool initialized = false;
+    static bool initialized = false;
     static SheetViewTileGraphicsItem ***tileItem = nullptr;
 
-	if(initialized) {
-		//This should clean up everything in the scene
-		delete _sheetViewScene;
-		delete[] *tileItem;
-		delete[] tileItem;
-	}
+    if(initialized) {
+        //This should clean up everything in the scene
+        delete _sheetViewScene;
+        delete[] *tileItem;
+        delete[] tileItem;
+    }
 
-	const unsigned tileWidth = (horiz)? 32 : 16;
-	const unsigned tileHeight = (horiz)? 16 : 32;
+    const unsigned tileWidth = (horiz)? 32 : 16;
+    const unsigned tileHeight = (horiz)? 16 : 32;
 
-	_sheetViewScene = new SelectionScene;
+    _sheetViewScene = new SelectionScene;
     _sheetViewScene->setSceneRect(QRect(-16, -16, 32*tileWidth, 32*tileHeight));
 
 
-	//Allocate SheetViewTileGraphicsItems for tile/object sheets.
-	tileItem = new SheetViewTileGraphicsItem**[tileHeight];
+    //Allocate SheetViewTileGraphicsItems for tile/object sheets.
+    tileItem = new SheetViewTileGraphicsItem**[tileHeight];
 
-	for(unsigned int i = 0; i < tileHeight; ++i) {
-		tileItem[i] = new SheetViewTileGraphicsItem*[tileWidth];
-	}
+    for(unsigned int i = 0; i < tileHeight; ++i) {
+        tileItem[i] = new SheetViewTileGraphicsItem*[tileWidth];
+    }
 
-	//alloc empty parent for all tiles
-	_sheetViewTileParent = new QGraphicsRectItem;
-	_sheetViewTileParent->setZValue(0);
-	_sheetViewTileParent->setFlag(QGraphicsItem::ItemHasNoContents, true);
-	_sheetViewTileParent->setRect(QRect(0, 0, 32*tileWidth, 32*tileHeight));
+    //alloc empty parent for all tiles
+    _sheetViewTileParent = new QGraphicsRectItem;
+    _sheetViewTileParent->setZValue(0);
+    _sheetViewTileParent->setFlag(QGraphicsItem::ItemHasNoContents, true);
+    _sheetViewTileParent->setRect(QRect(0, 0, 32*tileWidth, 32*tileHeight));
 
-	_bgRectItem = new CheckeredAlphaRectGraphicsItem;
-	_bgRectItem->setRect(QRect(-16, -16, 32*tileWidth, 32*tileHeight));
-	_bgRectItem->setZValue(-1);
+    _bgRectItem = new CheckeredAlphaRectGraphicsItem;
+    _bgRectItem->setRect(QRect(-16, -16, 32*tileWidth, 32*tileHeight));
+    _bgRectItem->setZValue(-1);
 
-	//Initialize TileGraphicsItems
-	if(!horiz) {
-		for(unsigned int i = 0; i < tileHeight; ++i) {
-			for(unsigned int j = 0; j < tileWidth; ++j) {
-				tileItem[i][j] = new SheetViewTileGraphicsItem;
-				tileItem[i][j]->setTilePosition(j, i);
-				tileItem[i][j]->setView(view);
-				tileItem[i][j]->setZValue(0);
-				tileItem[i][j]->setValue((i*tileWidth)+j);
-				tileItem[i][j]->setParentItem(_sheetViewTileParent);
-			}
-		}
-	} else {
-		/* We don't want to just invert the bitches for horizontal, because that
-		 * looks completely fucking reested. We want to lay the two sections of
-		 * the image beside each other. */
-		for(unsigned int i = 0; i < 16; ++i) {
-			for(unsigned int j = 0; j < 16; ++j) {
-				tileItem[i][j] = new SheetViewTileGraphicsItem;
-				tileItem[i][j]->setTilePosition(j, i);
-				tileItem[i][j]->setView(view);
-				tileItem[i][j]->setZValue(0);
-				tileItem[i][j]->setValue((i*16)+j);
-				tileItem[i][j]->setParentItem(_sheetViewTileParent);
-			}
-		}
-		for(unsigned int i = 0; i < 16; ++i) {
-			for(unsigned int j = 16; j < 32; ++j) {
-				tileItem[i][j] = new SheetViewTileGraphicsItem;
-				tileItem[i][j]->setTilePosition(j, i);
-				tileItem[i][j]->setView(view);
-				tileItem[i][j]->setZValue(0);
-				tileItem[i][j]->setValue(i*16+(j-16)+256);
-				//tileItem[i][j].setValue(1);
-				tileItem[i][j]->setParentItem(_sheetViewTileParent);
-			}
-		}
-	}
+    //Initialize TileGraphicsItems
+    if(!horiz) {
+        for(unsigned int i = 0; i < tileHeight; ++i) {
+            for(unsigned int j = 0; j < tileWidth; ++j) {
+                tileItem[i][j] = new SheetViewTileGraphicsItem;
+                tileItem[i][j]->setTilePosition(j, i);
+                tileItem[i][j]->setView(view);
+                tileItem[i][j]->setZValue(0);
+                tileItem[i][j]->setValue((i*tileWidth)+j);
+                tileItem[i][j]->setParentItem(_sheetViewTileParent);
+            }
+        }
+    } else {
+        /* We don't want to just invert the bitches for horizontal, because that
+         * looks completely fucking reested. We want to lay the two sections of
+         * the image beside each other. */
+        for(unsigned int i = 0; i < 16; ++i) {
+            for(unsigned int j = 0; j < 16; ++j) {
+                tileItem[i][j] = new SheetViewTileGraphicsItem;
+                tileItem[i][j]->setTilePosition(j, i);
+                tileItem[i][j]->setView(view);
+                tileItem[i][j]->setZValue(0);
+                tileItem[i][j]->setValue((i*16)+j);
+                tileItem[i][j]->setParentItem(_sheetViewTileParent);
+            }
+        }
+        for(unsigned int i = 0; i < 16; ++i) {
+            for(unsigned int j = 16; j < 32; ++j) {
+                tileItem[i][j] = new SheetViewTileGraphicsItem;
+                tileItem[i][j]->setTilePosition(j, i);
+                tileItem[i][j]->setView(view);
+                tileItem[i][j]->setZValue(0);
+                tileItem[i][j]->setValue(i*16+(j-16)+256);
+                //tileItem[i][j].setValue(1);
+                tileItem[i][j]->setParentItem(_sheetViewTileParent);
+            }
+        }
+    }
 
-	_sheetViewScene->addItem(_sheetViewTileParent);
-	initialized = true;
-	return true;
+    _sheetViewScene->addItem(_sheetViewTileParent);
+    initialized = true;
+    return true;
 }
 
 void TkLevel::addBgRectItem(void) {
-	_sheetViewScene->addItem(_bgRectItem);
+    _sheetViewScene->addItem(_bgRectItem);
 }
 
 void TkLevel::updateScenes(void) {
-	_sheetViewScene->update();
+    _sheetViewScene->update();
 }
 
 //====NONSTATIC====
@@ -131,11 +132,11 @@ TkLevel::TkLevel(Project *const project):
 }
 
 TkLevel::~TkLevel(void) {
-	close();
+    close();
 
-	for(int i = 0; i < _area.size(); ++i) {
+    for(int i = 0; i < _area.size(); ++i) {
         getAssets()->getEngine()->getLevelSys()->removeArea(_area[i]);
-		delete _area[i];
+        delete _area[i];
     }
     _area.clear();
 }
@@ -161,47 +162,47 @@ bool TkLevel::duplicate(void) {
 
 void TkLevel::populateModel(void) {
 
-	clearStack();
+    clearStack();
 
-	insertHeaders();
+    insertHeaders();
 
-	pushLabel("Level");
+    pushLabel("Level");
 
     addProperty("name", new PropertyStandardItem<QString, Level>(this, &Level::getNodeName, &Level::setNodeName));
     addProperty("path", new PropertyStandardItem<QString, Level>(this, &Level::getLocation));
-	addProperty("display", new PropertyStandardItem<QString, Level>(this, &Level::getString, &Level::setString));
+    addProperty("display", new PropertyStandardItem<QString, Level>(this, &Level::getString, &Level::setString));
 
     //addProperty("tiles", new PropertyStandardItem<unsigned char, Level>(this, &Level::getTileAmount));
 
-	popLabel();
+    popLabel();
 }
 
 
 void TkLevel::setNodeName(const QString str) {
-	QString newLocation;
-	bool renamed = false;
-	QString name = str;
-	QString oldName = _name;
-	name.replace(QRegExp("[\\\\/ ]"), QString("_"));
+    QString newLocation;
+    bool renamed = false;
+    QString name = str;
+    QString oldName = _name;
+    name.replace(QRegExp("[\\\\/ ]"), QString("_"));
 
-	if(_name == name) return;
+    if(_name == name) return;
 
-	QStringList splitList = _location.split("/");
-	for(int i = 0; i < splitList.size()-1; ++i) {
-		newLocation.append(splitList[i]+"/");
-	}
-	newLocation.append(name);
+    QStringList splitList = _location.split("/");
+    for(int i = 0; i < splitList.size()-1; ++i) {
+        newLocation.append(splitList[i]+"/");
+    }
+    newLocation.append(name);
 
-	//Already has a name, so we have to rename it
-	if(!_name.isEmpty())  {
+    //Already has a name, so we have to rename it
+    if(!_name.isEmpty())  {
 
-		if(_project->getLevel(name)) {
+        if(_project->getLevel(name)) {
             QMessageBox::critical(nullptr, tr("Error!"), tr("A level with that name already exists in the current project!\n"));
-			return;
-		}
+            return;
+        }
 
-		QString levDir = _project->getLocation();
-		levDir.append("/level");
+        QString levDir = _project->getLocation();
+        levDir.append("/level");
 
         //Fucking Qt rename dir doesn't work on Windows?!
 #if 1
@@ -223,15 +224,15 @@ void TkLevel::setNodeName(const QString str) {
 
 #endif
 
-		renamed = true;
-	}
+        renamed = true;
+    }
 
     TreeNode::setNodeName(name);
-	_location = newLocation;
+    _location = newLocation;
     strcpy(dir, name.toStdString().c_str());
     strcpy(path, _location.toStdString().c_str());
 
-	if(renamed) Q_EMIT levelRenamed(oldName, name);
+    if(renamed) Q_EMIT levelRenamed(oldName, name);
 }
 
 void TkLevel::setLocation(const QString loc) {
@@ -251,12 +252,12 @@ elysian::Tile *TkLevel::getElysianTile(const uint16_t index) {
 
 
 void TkLevel::connectSlots(Area *area) {
-	connect(area, SIGNAL(activating(Area *const)), this, SLOT(activateByArea(Area*const)));
-	connect(area, SIGNAL(entityAdded(Area*const, Entity*const)), this, SLOT(onEntityAdded(Area*const, Entity*const)));
-	connect(area, SIGNAL(entityRemoved(Area*const, Entity*const)), this, SLOT(onEntityRemoved(Area*const, Entity*const)));
-	connect(area, SIGNAL(componentAttached(Area*const,Entity*const,Component*const)), this, SLOT(onComponentAttached(Area*const,Entity*const,Component*const)));
-	connect(area, SIGNAL(componentRemoved(Area*const,Entity*const,Component*const)), this, SLOT(onComponentRemoved(Area*const,Entity*const,Component*const)));
-	connect(area, SIGNAL(renamed(QString,QString)), this, SLOT(onAreaRenamed(QString,QString)));
+    connect(area, SIGNAL(activating(Area *const)), this, SLOT(activateByArea(Area*const)));
+    connect(area, SIGNAL(entityAdded(Area*const, Entity*const)), this, SLOT(onEntityAdded(Area*const, Entity*const)));
+    connect(area, SIGNAL(entityRemoved(Area*const, Entity*const)), this, SLOT(onEntityRemoved(Area*const, Entity*const)));
+    connect(area, SIGNAL(componentAttached(Area*const,Entity*const,Component*const)), this, SLOT(onComponentAttached(Area*const,Entity*const,Component*const)));
+    connect(area, SIGNAL(componentRemoved(Area*const,Entity*const,Component*const)), this, SLOT(onComponentRemoved(Area*const,Entity*const,Component*const)));
+    connect(area, SIGNAL(renamed(QString,QString)), this, SLOT(onAreaRenamed(QString,QString)));
     connect(area, SIGNAL(mapChanged(Area*const,const QVector<MapChange>&)), this, SLOT(onMapChanged(Area*const,const QVector<MapChange>&)));
     connect(area, SIGNAL(entityParented(Entity*const,Entity*const)), this, SLOT(onEntityParented(Entity*const,Entity*const)));
 }
@@ -272,21 +273,21 @@ bool TkLevel::activate(void) {
 }
 
 bool TkLevel::activateByArea(Area *const area) {
-	 //Debug::Log(Debug::VERBOSE, "Level[%s].Activate()\n", getName().toStdString().c_str());
-	if(!_open) open();
+     //Debug::Log(Debug::VERBOSE, "Level[%s].Activate()\n", getName().toStdString().c_str());
+    if(!_open) open();
     //if(_active) {
      //   return false;
     //}
     _curLevel = this;
     //_active = true;
-	Q_EMIT activating(this, area);
+    Q_EMIT activating(this, area);
     /* If there is anything that is not persistent to be added to the
        object/tilesheet scenes, do it now.
     */
 
-	//What the fuck was I doing here? Maybe this was forcing an update?
-	//objectPanelScene->addItem(_bgRectObjects);
-	//tilePanelScene->addItem(_bgRectTiles);
+    //What the fuck was I doing here? Maybe this was forcing an update?
+    //objectPanelScene->addItem(_bgRectObjects);
+    //tilePanelScene->addItem(_bgRectTiles);
     return true;
 }
 
@@ -295,7 +296,7 @@ bool TkLevel::deactivate(void) {
     /* If there is anything that is not persistent to be removed from the
        object/tilesheet scenes, do it now.
     */
-	_sheetViewScene->removeItem(_bgRectItem);
+    _sheetViewScene->removeItem(_bgRectItem);
     //_active = false;
 
     return true;
@@ -305,32 +306,32 @@ bool TkLevel::deactivate(void) {
 // To regenerate sheets, first delete the contents of
 //_objectSheet and _tileSheet, set valid sheets to false, then call this.
 bool TkLevel::generateTileSheet(const QString location){
-	bool success = true;
+    bool success = true;
 
     if(_validSheets) {
-		Debug::Log(Debug::CRITICAL, "Tile sheet generation request when sheet is already valid! Returning false. ");
+        Debug::Log(Debug::CRITICAL, "Tile sheet generation request when sheet is already valid! Returning false. ");
         return false;
     }
 
     //chop up/allocate tile sheets
-	if(!TileSheetUtilities::DivideTileSheet(location, 512, 1024, 32, 32, _tileSheet)) {
-		Debug::Log(Debug::CRITICAL, "Failure cutting tilesheet!");
+    if(!TileSheetUtilities::DivideTileSheet(location, 512, 1024, 32, 32, _tileSheet)) {
+        Debug::Log(Debug::CRITICAL, "Failure cutting tilesheet!");
         success = false;
     }
 
-	if(!_tileSheet.isEmpty()) _validSheets = true;
+    if(!_tileSheet.isEmpty()) _validSheets = true;
 
     return success;
 }
 
 void TkLevel::clearAllStacks(void) {
     for(unsigned int a = 0; a < getAreaAmount(); ++a) {
-		getAreaByIndex(a)->getUndoStack().clear();
+        getAreaByIndex(a)->getUndoStack().clear();
     }
 }
 
 bool TkLevel::open(void) {
-	//Debug::Log(Debug::VERBOSE, "Level[%s].Open()\n", getName().toStdString().c_str());
+    //Debug::Log(Debug::VERBOSE, "Level[%s].Open()\n", getName().toStdString().c_str());
     bool success = true;
     if(_open) return false;
 
@@ -339,13 +340,13 @@ bool TkLevel::open(void) {
 
     success &= _loadMetaData(_location);
 
-	if(!TileSheetUtilities::DivideTileSheet(_location+ELYSIAN_TILESHEET_PATH,
-											ELYSIAN_TILESHEET_WIDTH,
-											ELYSIAN_TILESHEET_HEIGHT,
-											ELYSIAN_TILE_WIDTH,
-											ELYSIAN_TILE_HEIGHT,
-											_tileSheet))
-	{
+    if(!TileSheetUtilities::DivideTileSheet(_location+ELYSIAN_TILESHEET_PATH,
+                                            ELYSIAN_TILESHEET_WIDTH,
+                                            ELYSIAN_TILESHEET_HEIGHT,
+                                            ELYSIAN_TILE_WIDTH,
+                                            ELYSIAN_TILE_HEIGHT,
+                                            _tileSheet))
+    {
         Debug::Log(Debug::CRITICAL, "Failure cutting tilesheet!\n");
         success = false;
     }
@@ -356,9 +357,9 @@ bool TkLevel::open(void) {
 
 bool TkLevel::close(void) {
     if(!_open) return true;
-	if(_active) deactivate();
-	for(int i = 0; i < _tileSheet.size(); ++i) delete _tileSheet[i];
-	_tileSheet.clear();
+    if(_active) deactivate();
+    for(int i = 0; i < _tileSheet.size(); ++i) delete _tileSheet[i];
+    _tileSheet.clear();
     gyVidTexReload(tileSheet);
     gyVidTexReload(normalSheet);
     gyVidTexReload(specularSheet);
@@ -370,24 +371,24 @@ Area *TkLevel::newArea(const QString n) {
     QString name(n);
     unsigned int num = 1;
 
-	Area *ar = new Area(this);
-	connectSlots(ar);
+    Area *ar = new Area(this);
+    connectSlots(ar);
     while(getArea(name+QString::number(num))) {
         ++num;
     }
     name += QString::number(num);
     ar->setLocation(_location+"/area/"+name);
-	_area.push_back(ar);
-	ar->save();
+    _area.push_back(ar);
+    ar->save();
     getAssets()->getEngine()->getLevelSys()->addArea(ar);
-	Q_EMIT areaAdded(this, ar);
+    Q_EMIT areaAdded(this, ar);
     return ar;
 }
 
 
 
 Area *TkLevel::getArea(const QString name) {
-	for(int i = 0; i < _area.size(); ++i) {
+    for(int i = 0; i < _area.size(); ++i) {
         if(_area[i]->getNodeName() == name) return _area[i];
     }
     return nullptr;
@@ -404,7 +405,7 @@ Area *TkLevel::loadArea(const QString name) {
     directory.append("/area/");
     directory.append(name);
 
-	Debug::Log(Debug::VERBOSE, QString("Level::LoadArea("+directory+")"));
+    Debug::Log(Debug::VERBOSE, QString("Level::LoadArea("+directory+")"));
     Debug::push();
 
     Level *tempCurLevel = _curLevel;
@@ -416,13 +417,13 @@ Area *TkLevel::loadArea(const QString name) {
 
     //connectSlots(area);
     if(area) {
-		_area.push_back(area);
-		Q_EMIT areaAdded(this, area);
+        _area.push_back(area);
+        Q_EMIT areaAdded(this, area);
         Debug::pop();
         return area;
     }
 
-	delete area;
+    delete area;
     Debug::pop();
     return nullptr;
 }
@@ -430,16 +431,16 @@ Area *TkLevel::loadArea(const QString name) {
 bool TkLevel::removeArea(const QString name, const bool deleteDir) {
     bool success = true;
 
-	for(int i = 0; i < _area.size(); ++i) {
+    for(int i = 0; i < _area.size(); ++i) {
         if(_area[i]->getNodeName() == name) {
-			Area *temp = _area[i];
+            Area *temp = _area[i];
             getAssets()->getEngine()->getLevelSys()->removeArea(temp);
-			_area.erase(_area.begin() + i);
+            _area.erase(_area.begin() + i);
             if(deleteDir && !FileUtilities::removeDir(temp->getLocation())) {
-				Debug::Logf(Debug::CRITICAL, "! - Could not delete directory '%s'\n", temp->getLocation().toStdString().c_str());
+                Debug::Logf(Debug::CRITICAL, "! - Could not delete directory '%s'\n", temp->getLocation().toStdString().c_str());
                 success = false;
             }
-			Q_EMIT areaRemoved(this, temp);
+            Q_EMIT areaRemoved(this, temp);
             delete temp;
             return success;
         }
@@ -456,13 +457,13 @@ Area *TkLevel::importArea(const QString dir) {
         return nullptr;
     }
 
-	Area *area = new Area(this);
-	connectSlots(area);
+    Area *area = new Area(this);
+    connectSlots(area);
     area->load(dir.toStdString().c_str());
     area->setLocation(_location + "/area/" + QStringList(dir.split("/")).last());
-	area->save();
-	_area.push_back(area);
-	Q_EMIT areaAdded(this, area);
+    area->save();
+    _area.push_back(area);
+    Q_EMIT areaAdded(this, area);
     return area;
 }
 
@@ -473,67 +474,67 @@ bool TkLevel::load(const QString loc) {
     _project = _curProj;
     _project->connectSlots(this);
 
-	Debug::Logf(Debug::VERBOSE, "Level::Load(%s)", loc.toStdString().c_str());
+    Debug::Logf(Debug::VERBOSE, "Level::Load(%s)", loc.toStdString().c_str());
     Debug::push();
 
     setNodeName(dir.dirName());
     _location = loc;
 
-	Debug::Log(Debug::VERBOSE, "Verifying Tilesheet");
+    Debug::Log(Debug::VERBOSE, "Verifying Tilesheet");
     Debug::push();
-	if(!TileSheetUtilities::VerifyImageSize(loc+ELYSIAN_TILESHEET_PATH,
-											ELYSIAN_TILESHEET_WIDTH,
-											ELYSIAN_TILESHEET_HEIGHT)) {
-		Debug::Log(Debug::CRITICAL, "tilesheet.png either could not be opened or is not 512x1024!");
+    if(!TileSheetUtilities::VerifyImageSize(loc+ELYSIAN_TILESHEET_PATH,
+                                            ELYSIAN_TILESHEET_WIDTH,
+                                            ELYSIAN_TILESHEET_HEIGHT)) {
+        Debug::Log(Debug::CRITICAL, "tilesheet.png either could not be opened or is not 512x1024!");
         success = false;
     }
     Debug::pop();
     _validSheets = success;
 
     if(!dir.cd("area")) {
-		Debug::Log(Debug::CRITICAL, "No area directory!");
+        Debug::Log(Debug::CRITICAL, "No area directory!");
         Debug::pop();
-		return false;
+        return false;
     }
 
     QStringList areas = dir.entryList(QDir::AllDirs);
-	for(int j = 2; j < areas.size(); ++j) {
-		success &= (loadArea(areas[j]))? true : false;
+    for(int j = 2; j < areas.size(); ++j) {
+        success &= (loadArea(areas[j]))? true : false;
     }
 
     Debug::pop();
-	return true;//success;
+    return true;//success;
 }
 
 //Does not save children. Just attrib to current location
 bool TkLevel::save(void) {
-	bool success = true;
-	Debug::Log(Debug::VERBOSE, QString("Level::Save(void)"));
+    bool success = true;
+    Debug::Log(Debug::VERBOSE, QString("Level::Save(void)"));
     Debug::push();
-	//Save elysian::Level
+    //Save elysian::Level
     success &= getElysianLevel()->save(_location.toStdString().c_str());
     success &= _saveMetaData(_location);
     Debug::pop();
-	return success;
+    return success;
 }
 
 
 bool TkLevel::saveAll(void) {
-	Debug::Log(Debug::VERBOSE, QString("Level::SaveAll("+_location+")"));
+    Debug::Log(Debug::VERBOSE, QString("Level::SaveAll("+_location+")"));
     Debug::push();
     //export to default save location
-	bool success = saveAs(_location);
+    bool success = saveAs(_location);
     Debug::pop();
-	return success;
+    return success;
 }
 
 bool TkLevel::saveTileSheet(void) {
-	return TileSheetUtilities::GenerateTileSheet(_location+ELYSIAN_TILESHEET_PATH,
-												 ELYSIAN_TILESHEET_WIDTH,
-												 ELYSIAN_TILESHEET_HEIGHT,
-												 ELYSIAN_TILE_WIDTH,
-												 ELYSIAN_TILE_HEIGHT,
-												 _tileSheet);
+    return TileSheetUtilities::GenerateTileSheet(_location+ELYSIAN_TILESHEET_PATH,
+                                                 ELYSIAN_TILESHEET_WIDTH,
+                                                 ELYSIAN_TILESHEET_HEIGHT,
+                                                 ELYSIAN_TILE_WIDTH,
+                                                 ELYSIAN_TILE_HEIGHT,
+                                                 _tileSheet);
 }
 
 bool TkLevel::saveAs(const QString dir) {
@@ -541,99 +542,99 @@ bool TkLevel::saveAs(const QString dir) {
     bool newLoc = (_location != dir)? true : false;
     QDir qdir;
 
-	Debug::Log(Debug::VERBOSE, QString("Level::Export("+dir+")"));
+    Debug::Log(Debug::VERBOSE, QString("Level::Export("+dir+")"));
     Debug::push();
 
-	//Save As and destionation already exists
-	if(newLoc && qdir.exists(dir)) {
-		Debug::Log(Debug::VERBOSE, "Folder already exists");
+    //Save As and destionation already exists
+    if(newLoc && qdir.exists(dir)) {
+        Debug::Log(Debug::VERBOSE, "Folder already exists");
         Debug::push();
         if(QMessageBox::critical(NULL, tr("Warning!"), tr("A directory of the same name already exists at the specified location. Overwrite?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
             if(!qdir.rmdir(dir)) {
-				Debug::Log(Debug::CRITICAL, "Could not remove existing directory!");
+                Debug::Log(Debug::CRITICAL, "Could not remove existing directory!");
                 Debug::pop();
                 Debug::pop();
-				return false;
+                return false;
             }
-			else {
-				Debug::Log(Debug::VERBOSE, "Successfully deleted existing directory.");
+            else {
+                Debug::Log(Debug::VERBOSE, "Successfully deleted existing directory.");
                 Debug::pop();
-			}
+            }
         }
         else {
-			Debug::Log(Debug::VERBOSE, "Canceled overwrite.");
+            Debug::Log(Debug::VERBOSE, "Canceled overwrite.");
             Debug::pop();
             Debug::pop();
-			return true;
+            return true;
         }
     }
 
-	//Create level root if it doesn't already exist
+    //Create level root if it doesn't already exist
    if(!qdir.exists(dir)) { //generate main level directory if it doesn't already exist
-	   Debug::Log(Debug::VERBOSE, "Creating root directory");
+       Debug::Log(Debug::VERBOSE, "Creating root directory");
        Debug::push();
         if(!qdir.mkdir(dir)) {
-			Debug::Log(Debug::CRITICAL, "Could not create directory!");
+            Debug::Log(Debug::CRITICAL, "Could not create directory!");
             Debug::pop();
             Debug::pop();
-			return false;
+            return false;
         }
         Debug::pop();
     }
 
    //Create tile directory if it doesn't already exist
-	if(!qdir.exists(dir+"/tile")) {
-		Debug::Log(Debug::VERBOSE, "Creating tile directory");
+    if(!qdir.exists(dir+"/tile")) {
+        Debug::Log(Debug::VERBOSE, "Creating tile directory");
         Debug::push();
-		if(!qdir.mkdir(dir+"/tile")) {
-			Debug::Log(Debug::CRITICAL, "Could not create directory!");
+        if(!qdir.mkdir(dir+"/tile")) {
+            Debug::Log(Debug::CRITICAL, "Could not create directory!");
             Debug::pop();
             Debug::pop();
-			return false;
+            return false;
         }
         Debug::pop();
     }
-	//Dynamically regenerate tilesheet if it's currently open or is being saved to a new location
-	if(_open || (!newLoc && !QFile::exists(dir+ELYSIAN_TILESHEET_PATH))) { // Dynamically regenerate sheet for open level and new levels
-		success &= TileSheetUtilities::GenerateTileSheet(dir+ELYSIAN_TILESHEET_PATH,
-														 ELYSIAN_TILESHEET_WIDTH,
-														 ELYSIAN_TILESHEET_HEIGHT,
-														 ELYSIAN_TILE_WIDTH,
-														 ELYSIAN_TILE_HEIGHT,
-														 _tileSheet);
-	}
-	//Copy tilesheet if it hasn't been opened and already exists
-	else if(!_open && newLoc) { // Copy existing sheet from previous directory to new directory
-		Debug::Log(Debug::VERBOSE, "Copying terrainsheet.png");
+    //Dynamically regenerate tilesheet if it's currently open or is being saved to a new location
+    if(_open || (!newLoc && !QFile::exists(dir+ELYSIAN_TILESHEET_PATH))) { // Dynamically regenerate sheet for open level and new levels
+        success &= TileSheetUtilities::GenerateTileSheet(dir+ELYSIAN_TILESHEET_PATH,
+                                                         ELYSIAN_TILESHEET_WIDTH,
+                                                         ELYSIAN_TILESHEET_HEIGHT,
+                                                         ELYSIAN_TILE_WIDTH,
+                                                         ELYSIAN_TILE_HEIGHT,
+                                                         _tileSheet);
+    }
+    //Copy tilesheet if it hasn't been opened and already exists
+    else if(!_open && newLoc) { // Copy existing sheet from previous directory to new directory
+        Debug::Log(Debug::VERBOSE, "Copying terrainsheet.png");
         Debug::push();
-		if(!QFile::copy(_location+ELYSIAN_TILESHEET_PATH, dir+ELYSIAN_TILESHEET_PATH)) {
-			Debug::Log(Debug::CRITICAL, "Could not copy terrainsheet.png");
-			success = false;
+        if(!QFile::copy(_location+ELYSIAN_TILESHEET_PATH, dir+ELYSIAN_TILESHEET_PATH)) {
+            Debug::Log(Debug::CRITICAL, "Could not copy terrainsheet.png");
+            success = false;
         }
         Debug::pop();
-	}
+    }
 
-	//Save elysian::Level
+    //Save elysian::Level
     success &= getElysianLevel()->save(dir.toStdString().c_str());
 
     //Save ESTk metadata
     success &= _saveMetaData(dir);
 
-	//Create area directory if it doesn't already exist
+    //Create area directory if it doesn't already exist
     if(!qdir.exists(dir+"/area")) {
-		Debug::Log(Debug::VERBOSE, "Creating 'area' directory");
+        Debug::Log(Debug::VERBOSE, "Creating 'area' directory");
         Debug::push();
         if(!qdir.mkdir(dir+"/area")) {
-			Debug::Log(Debug::CRITICAL, "Could not create 'area' directory!");
+            Debug::Log(Debug::CRITICAL, "Could not create 'area' directory!");
             Debug::pop();
             Debug::pop();
-			return false;
+            return false;
         }
         Debug::pop();
     }
 
-	//Save areas
-	for(int i = 0; i < _area.size(); ++i) {
+    //Save areas
+    for(int i = 0; i < _area.size(); ++i) {
         success &= _area[i]->saveAs(dir+"/area/"+_area[i]->getNodeName());
     }
 
@@ -645,19 +646,19 @@ bool TkLevel::saveAs(const QString dir) {
 //VisualTile *Level::getObjectSheet(const unsigned int index) const { return _objectSheet[index]; }
 
 bool TkLevel::reloadSheets(void) {
-	Debug::Log(Debug::VERBOSE, "Reloading Sheets");
+    Debug::Log(Debug::VERBOSE, "Reloading Sheets");
     Debug::push();
-	close();
-	open();
+    close();
+    open();
     Debug::pop();
     return true;
 }
 
 QString TkLevel::getString(void) const { return string; }
 void TkLevel::setString(const QString str) {
-	if(str.isEmpty()) {
-		return;
-	}
+    if(str.isEmpty()) {
+        return;
+    }
     strcpy(string, str.toStdString().c_str());
 }
 
@@ -667,23 +668,23 @@ bool TkLevel::isOpen(void) const { return _open; }
 bool TkLevel::validSheets(void) const { return _validSheets; }
 
 void TkLevel::onEntityAdded(Area *const area, Entity *const entity) {
-	Q_EMIT entityAdded(this, area, entity);
+    Q_EMIT entityAdded(this, area, entity);
 }
 
 void TkLevel::onEntityRemoved(Area *const area, Entity *const entity) {
-	Q_EMIT entityRemoved(this, area, entity);
+    Q_EMIT entityRemoved(this, area, entity);
 }
 
 void TkLevel::onComponentAttached(Area *const area, Entity *const entity, Component *const comp) {
-	Q_EMIT componentAttached(this, area, entity, comp);
+    Q_EMIT componentAttached(this, area, entity, comp);
 }
 
 void TkLevel::onComponentRemoved(Area *const area, Entity *const entity, Component *const comp) {
-	Q_EMIT componentRemoved(this, area, entity, comp);
+    Q_EMIT componentRemoved(this, area, entity, comp);
 }
 
 void TkLevel::onAreaRenamed(const QString oldName, const QString newName) {
-	Q_EMIT areaRenamed(oldName, newName);
+    Q_EMIT areaRenamed(oldName, newName);
 }
 
 void TkLevel::onMapChanged(Area * const area, const QVector<MapChange>& changes) {

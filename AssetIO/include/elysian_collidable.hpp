@@ -6,10 +6,10 @@
 #include <kinetic/gyro_kinetic_collider.h>
 #include <kinetic/gyro_kinetic_static.h>
 #include <kinetic/gyro_kinetic_contact.h>
-#include "elysian_component.hpp"
-#include "elysian_sort_sweep.hpp"
-#include "elysian_instance_transform.hpp"
-#include "elysian_lua_table_proxy.hpp"
+#include <elysian_component.hpp>
+#include <elysian_sort_sweep.hpp>
+#include <elysian_instance_transform.hpp>
+#include <elysian_lua_table_proxy.hpp>
 
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_BEHAVIOR_MASK	(1<<0)
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_WARP_MASK		(1<<1)
@@ -26,22 +26,22 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(typeAgainst,    getTypeAgainst, setTypeAgainst)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
-		enum TYPE {
-			TILE		= 1,
-			RENDERABLE	= 1<<1,
-			COLLIDABLE	= 1<<2,
-			CHARACTER	= 1<<3,
-			WARP		= 1<<4,
-			RIGID_BODY	= 1<<5,
-			ITEM		= 1<<6,
-			FRIENDLY	= 1<<7,
-			ENEMY		= 1<<8,
-			PLAYER		= 1<<9,
+        enum TYPE {
+            TILE		= 1,
+            RENDERABLE	= 1<<1,
+            COLLIDABLE	= 1<<2,
+            CHARACTER	= 1<<3,
+            WARP		= 1<<4,
+            RIGID_BODY	= 1<<5,
+            ITEM		= 1<<6,
+            FRIENDLY	= 1<<7,
+            ENEMY		= 1<<8,
+            PLAYER		= 1<<9,
             CURSOR      = 1<<10,
-		//MOAR BITS
-			ALL			= ~0x0
-		};
-		
+        //MOAR BITS
+            ALL			= ~0x0
+        };
+
         uint32_t        checkAgainst    = ~0x0;
         uint32_t        type            = ~0x0;
 
@@ -53,7 +53,7 @@ namespace elysian {
         uint32_t        getTypeAgainst(void) const;
         void            setType(const uint32_t flags);
         void            setTypeAgainst(const uint32_t flags);
-	};
+    };
 
 
     class CollidableStaticAttrib:
@@ -123,7 +123,7 @@ namespace elysian {
         GY_COLLIDER_TYPE        _type           = GY_COLLIDER_AABB;
 
     };
-	
+
 
     class Collidable:
         public Component,
@@ -131,10 +131,10 @@ namespace elysian {
     {
         friend Entity;
         friend class EntityBase;
-		friend class CollisionSystem;
-		friend class RigidBodySystem;
+        friend class CollisionSystem;
+        friend class RigidBodySystem;
 
-	public:
+    public:
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(contactCount,       getContactCount)
             ELYSIAN_LUA_PROXY_FIELD(stackedOnGround,    getStackedOnGround)
@@ -143,7 +143,7 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(resolvePen,         getResolvePenetration,  setResolvePenetration)
             ELYSIAN_LUA_PROXY_FIELD(attrib,             getAttrib)
         ELYSIAN_LUA_PROXY_FIELDS_END()
-	protected:
+    protected:
         static CollisionSystem* _colSys;
 
         GYVector3               _worldSize          = { 1.0f, 1.0f, 1.0f, };
@@ -158,7 +158,7 @@ namespace elysian {
         bool                    _worldSpace         = true;
         uint32_t                _eventMonitorMask	= 0;
 
-		union { 
+        union {
             GYCollider          col;
             GYBoxCollider       box;
             GYTriCollider       tri;
@@ -169,8 +169,8 @@ namespace elysian {
 
         virtual                 ~Collidable(void) = default;
         void                    _updateSortSweepAABB(void);
-		
-	public:        
+
+    public:
         //Overridden from Component
         virtual bool            load(FILE* file) override;
         virtual bool            save(FILE* file) override;
@@ -205,19 +205,19 @@ namespace elysian {
         bool                    checkAABBCollision(Collidable* col);
         bool                    checkFullCollision(Collidable* col);
 
-	};
+    };
 
 
 
-	/*
-	Extend libKineticGyro's contact structure to maintain an association
-	between the two GYColliders involved in the contact AND the 
-	elysian::Collidables encapsulating them.
-	*/
+    /*
+    Extend libKineticGyro's contact structure to maintain an association
+    between the two GYColliders involved in the contact AND the
+    elysian::Collidables encapsulating them.
+    */
 
-	class CollisionContact: private GYContact {
-		friend class CollisionSystem;
-		friend class RigidBodySystem;
+    class CollisionContact: private GYContact {
+        friend class CollisionSystem;
+        friend class RigidBodySystem;
         Collidable*     _bodyA              = nullptr;
         Collidable*     _bodyB              = nullptr;
         float           _zDepth             = 0.0f;
@@ -228,22 +228,22 @@ namespace elysian {
         void            _calculatePenetrationInternals(void);
         void            _calculateVelocityInternals(const float deltaTime);
 
-	public:
-		Collidable*		getCollidable(const unsigned index) const;
-		const GYStatic*	getStaticAttrib(const unsigned index) const;
-		void			getWorldPos(GYVector2& pos) const;
-		void			getNormal(GYVector2& _normal) const;
-		void			getObjPos(const unsigned index, GYVector2& pos) const;
-		float			getSeparatingVel(void) const;
-		float			getClosingVel(void) const;
-		float			getDeltaVel(void) const;
-		float			getDepth(void) const;
+    public:
+        Collidable*		getCollidable(const unsigned index) const;
+        const GYStatic*	getStaticAttrib(const unsigned index) const;
+        void			getWorldPos(GYVector2& pos) const;
+        void			getNormal(GYVector2& _normal) const;
+        void			getObjPos(const unsigned index, GYVector2& pos) const;
+        float			getSeparatingVel(void) const;
+        float			getClosingVel(void) const;
+        float			getDeltaVel(void) const;
+        float			getDepth(void) const;
         void            setZDepth(const float depth);
         float           getZDepth(void) const;
         void            setResolveZ(const bool val=true);
         bool            getResolveZ(void) const;
         void            updateRelativeZDepth(const unsigned body, const float zDelta);
-	};
+    };
 
 
 
@@ -258,7 +258,7 @@ namespace elysian {
 
 
 
-	// ======== INLINEZ ========
+    // ======== INLINEZ ========
     inline void CollisionFlags::resetType(void) { type = 0; }
     inline void CollisionFlags::resetCheckAgainst(void) { checkAgainst = 0; }
     inline void CollisionFlags::addType(const uint32_t flag) { type |= flag; }
@@ -327,15 +327,15 @@ namespace elysian {
 
 
 
-	inline Collidable* CollisionContact::getCollidable(const unsigned index) const { return (index == 0)? _bodyA : _bodyB; }
-	inline const GYStatic* CollisionContact::getStaticAttrib(const unsigned index) const { return staticAttrib[index]; }
-	inline void CollisionContact::getWorldPos(GYVector2 &pos) const { pos = worldPos; }
-	inline void CollisionContact::getNormal(GYVector2 &_normal) const { _normal = normal; }
-	inline void CollisionContact::getObjPos(const unsigned index, GYVector2 &pos) const { pos = objPos[index]; }
-	inline float CollisionContact::getSeparatingVel(void) const { return sepVel; }
-	inline float CollisionContact::getClosingVel(void) const { return closingVel; }
-	inline float CollisionContact::getDeltaVel(void) const { return deltaVel; }
-	inline float CollisionContact::getDepth(void) const { return depth; }
+    inline Collidable* CollisionContact::getCollidable(const unsigned index) const { return (index == 0)? _bodyA : _bodyB; }
+    inline const GYStatic* CollisionContact::getStaticAttrib(const unsigned index) const { return staticAttrib[index]; }
+    inline void CollisionContact::getWorldPos(GYVector2 &pos) const { pos = worldPos; }
+    inline void CollisionContact::getNormal(GYVector2 &_normal) const { _normal = normal; }
+    inline void CollisionContact::getObjPos(const unsigned index, GYVector2 &pos) const { pos = objPos[index]; }
+    inline float CollisionContact::getSeparatingVel(void) const { return sepVel; }
+    inline float CollisionContact::getClosingVel(void) const { return closingVel; }
+    inline float CollisionContact::getDeltaVel(void) const { return deltaVel; }
+    inline float CollisionContact::getDepth(void) const { return depth; }
     inline void CollisionContact::setZDepth(const float depth) { _zDepth = depth; }
     inline float CollisionContact::getZDepth(void) const { return _zDepth; }
     inline void CollisionContact::setResolveZ(const bool val) { _resolveZ = val; }

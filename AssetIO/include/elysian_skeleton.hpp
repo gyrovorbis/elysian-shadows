@@ -1,9 +1,8 @@
 #ifndef ELYSIAN_SKELETON_HPP
 #define ELYSIAN_SKELETON_HPP
 
-#include "elysian_component.hpp"
-#include "elysian_lua_table_proxy.hpp"
-#include "elysian_asset_typedefs.hpp"
+#include <elysian_component.hpp>
+#include <elysian_lua_table_proxy.hpp>
 
 struct spAtlas;
 struct spSkeleton;

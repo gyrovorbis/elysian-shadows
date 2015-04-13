@@ -17,23 +17,25 @@
 #include "entitySelectable.h"
 #include "elysian_renderable.hpp"
 #include "elysian_animation.hpp"
+#include "elysian_sprite_attrib.hpp"
+#include "elysian_material.hpp"
 
 
 MapView::MapView(QWidget *parent): DestView<TileEntry>::DestView(parent) {
     setMouseTracking(true);
-	setEventMask(ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK);
+    setEventMask(ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK);
 
-	_curUndoItem = new MapViewPlaceTileGroupUndoItem();
+    _curUndoItem = new MapViewPlaceTileGroupUndoItem();
 
-	connect(getAssets(), SIGNAL(areaChanged(Area*const)), this, SLOT(onAreaChange(Area*const)));
-	connect(getAssets(), SIGNAL(layerChanged(LAYER_TYPE)), this, SLOT(onLayerChange(LAYER_TYPE)));
+    connect(getAssets(), SIGNAL(areaChanged(Area*const)), this, SLOT(onAreaChange(Area*const)));
+    connect(getAssets(), SIGNAL(layerChanged(LAYER_TYPE)), this, SLOT(onLayerChange(LAYER_TYPE)));
     connect(getAssets(), SIGNAL(engineInitialize()), this, SLOT(onEngineInitialize()));
     connect(getAssets(), SIGNAL(mapChanged(Area*const,const QVector<MapChange>&)), this, SLOT(onMapChange(Area*const,const QVector<MapChange>&)));
 }
 
 void MapView::onLayerChange(Assets::LAYER_TYPE type) {
-	//update current undoGroupItem
-	_curUndoItem->setLayer(type);
+    //update current undoGroupItem
+    _curUndoItem->setLayer(type);
 
     if(type == Assets::LAYER_ENTITY) {
         getAssets()->getEngine()->getCollisionSys()->registerContactEventMonitor(ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK, this);
@@ -95,23 +97,23 @@ void MapView::onEngineUpdated(void) {
 }
 
 TileSelection<TileEntry> *MapView::_getTileSelection(void) const {
-	return static_cast<TileSelectable*> (
+    return static_cast<TileSelectable*> (
                 (getCurrentSelectionType() == Selectable::TILE)? getCurrentSelection() : nullptr
-	);
+    );
 }
 
 void MapView::_entitySelectionUpdate(void) {
-	TkEntity* entity;
+    TkEntity* entity;
 
-	for(auto &it: _selectionColliders) {
-		getCurrentArea()->removeEntity(it);
-	}
+    for(auto &it: _selectionColliders) {
+        getCurrentArea()->removeEntity(it);
+    }
 
-	while(_selectionColliders.size() < _tileSelectionRects.size()) {
+    while(_selectionColliders.size() < _tileSelectionRects.size()) {
         entity = new TkEntity(false);
         entity->setPlaneType(GY_RECT_PLANE_BOTTOM);
         entity->setName("_ESTkEntitySelection");
-		auto* collid = entity->addCollidable();
+        auto* collid = entity->addCollidable();
         auto* render = entity->addRenderable();
         auto* sprAttrib = new elysian::SpriteAttrib;
         sprAttrib->setColor(GYColor4{ 0, 255, 255, 25});
@@ -123,20 +125,20 @@ void MapView::_entitySelectionUpdate(void) {
         collid->setAttrib(new elysian::CollidableAttrib);
         collid->setWorldSpace(false);
         collid->setResolvePenetration(false);
-		collid->setContactEventMonitorMask(ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK);
-		_selectionColliders.push_back(entity);
-	}
+        collid->setContactEventMonitorMask(ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK);
+        _selectionColliders.push_back(entity);
+    }
 
-	for(int k = 0; k < _tileSelectionRects.size(); ++k) {
-		auto& rect = _tileSelectionRects[k];
+    for(int k = 0; k < _tileSelectionRects.size(); ++k) {
+        auto& rect = _tileSelectionRects[k];
         auto midPt = rect.bottomRight() + rect.topLeft();
-		midPt /= 2.0f;
+        midPt /= 2.0f;
 
-		entity = _selectionColliders[k];
+        entity = _selectionColliders[k];
         entity->getTransform().setPos(midPt.x(), midPt.y(), 0.0f);
         entity->getTransform().setSize(rect.width(), rect.height(), rect.height()+600.0f);
-		getCurrentArea()->addEntity(_selectionColliders[k]);
-	}
+        getCurrentArea()->addEntity(_selectionColliders[k]);
+    }
 
 }
 
@@ -161,25 +163,25 @@ void MapView::_entitySelectableCreate(void) {
 
 void MapView::_tileSelectionArrayUpdate(void) {
 
-	//clear selection
-	for(unsigned j = 0; j < getCurrentArea()->getMapHeight(); ++j) {
-		for(unsigned i = 0; i < getCurrentArea()->getMapWidth(); ++i) {
-			_tileSelectionArray[j][i] = false;
-		}
-	}
+    //clear selection
+    for(unsigned j = 0; j < getCurrentArea()->getMapHeight(); ++j) {
+        for(unsigned i = 0; i < getCurrentArea()->getMapWidth(); ++i) {
+            _tileSelectionArray[j][i] = false;
+        }
+    }
 
-	//iterate through rectangles and create selection
-	for(int k = 0; k < _tileSelectionRects.size(); ++k) {
-		int startX = (_tileSelectionRects[k].topLeft().x()+16)/32;
-		int startY = (_tileSelectionRects[k].topLeft().y()+16)/32;
-		int endX = (_tileSelectionRects[k].bottomRight().x()+16)/32;
-		int endY = (_tileSelectionRects[k].bottomRight().y()+16)/32;
+    //iterate through rectangles and create selection
+    for(int k = 0; k < _tileSelectionRects.size(); ++k) {
+        int startX = (_tileSelectionRects[k].topLeft().x()+16)/32;
+        int startY = (_tileSelectionRects[k].topLeft().y()+16)/32;
+        int endX = (_tileSelectionRects[k].bottomRight().x()+16)/32;
+        int endY = (_tileSelectionRects[k].bottomRight().y()+16)/32;
 
-		//clamp region to map boundaries
-		if(startX < 0) startX = 0;
-		else if(startX >= getCurrentArea()->getMapWidth()) startX = getCurrentArea()->getMapWidth()-1;
-		if(startY < 0) startY = 0;
-		else if(startY >= getCurrentArea()->getMapHeight()) startY = getCurrentArea()->getMapHeight()-1;
+        //clamp region to map boundaries
+        if(startX < 0) startX = 0;
+        else if(startX >= getCurrentArea()->getMapWidth()) startX = getCurrentArea()->getMapWidth()-1;
+        if(startY < 0) startY = 0;
+        else if(startY >= getCurrentArea()->getMapHeight()) startY = getCurrentArea()->getMapHeight()-1;
 
         if(endX < 0) endX = 0;
         else if(endX >= getCurrentArea()->getMapWidth()) endX = getCurrentArea()->getMapWidth()-1;
@@ -187,60 +189,60 @@ void MapView::_tileSelectionArrayUpdate(void) {
         else if(endY >= getCurrentArea()->getMapHeight()) endY = getCurrentArea()->getMapHeight()-1;
 
 
-		//sync array with rectangular selection
-		for(int j = startY; j <= endY; ++j) {
-			for(int i = startX; i <= endX; ++i) {
-				_tileSelectionArray[j][i] = true;
-			}
-		}
+        //sync array with rectangular selection
+        for(int j = startY; j <= endY; ++j) {
+            for(int i = startX; i <= endX; ++i) {
+                _tileSelectionArray[j][i] = true;
+            }
+        }
 
-		if(isFillingRegion()) {
+        if(isFillingRegion()) {
             getAssets()->getCurrentArea()->setEmitMapChange(false);
-			_curUndoItem->beginUpdateEntries();
-			for(int j = startY; j <= endY; ++j) {
-				for(int i = startX; i <= endX; ++i) {
-					if(_tileSelectionArray[j][i]) {
-						auto* sel = static_cast<TileSelectable*>(_getTileSelection());
-						auto newTileEntry = sel->getFillEntry(i, j, _fillFixedPivot, getSceneMousePos());
-						if(sel->isWithinSelectionFill(i, j, _fillFixedPivot, getSceneMousePos()))
-						_curUndoItem->addTile(QPoint(i, j), newTileEntry);
-					}
-				}
-			}
-			_curUndoItem->endUpdateEntries();
+            _curUndoItem->beginUpdateEntries();
+            for(int j = startY; j <= endY; ++j) {
+                for(int i = startX; i <= endX; ++i) {
+                    if(_tileSelectionArray[j][i]) {
+                        auto* sel = static_cast<TileSelectable*>(_getTileSelection());
+                        auto newTileEntry = sel->getFillEntry(i, j, _fillFixedPivot, getSceneMousePos());
+                        if(sel->isWithinSelectionFill(i, j, _fillFixedPivot, getSceneMousePos()))
+                        _curUndoItem->addTile(QPoint(i, j), newTileEntry);
+                    }
+                }
+            }
+            _curUndoItem->endUpdateEntries();
             getAssets()->getCurrentArea()->setEmitMapChange(true);
-		}
+        }
 
-		if(getAssets()->getCurrentLayer() == Assets::LAYER_ENTITY) {
-			_entitySelectionUpdate();
-		}
-	}
+        if(getAssets()->getCurrentLayer() == Assets::LAYER_ENTITY) {
+            _entitySelectionUpdate();
+        }
+    }
 }
 
 void MapView::_sceneSelectionAddRect(const QRectF& rect) {
-	//If it's too small, don't select (to fall through into pan mode)
-	if(rect.right() - rect.left() < 2 &&
-			rect.bottom() - rect.top() < 2) return;
+    //If it's too small, don't select (to fall through into pan mode)
+    if(rect.right() - rect.left() < 2 &&
+            rect.bottom() - rect.top() < 2) return;
 
-	_tileSelectionRects.push_back(rect);
-	_tileSelectionArrayUpdate();
+    _tileSelectionRects.push_back(rect);
+    _tileSelectionArrayUpdate();
     //scene()->update(scene()->sceneRect());
     _forceSceneUpdate();
 }
 
 void MapView::_sceneSelectionUpdateLastRect(const QRectF& rect) {
-	if(_tileSelectionRects.size() >= 1) _tileSelectionRects.last() = rect;
-	else _tileSelectionRects.push_back(rect);
-	_tileSelectionArrayUpdate();
+    if(_tileSelectionRects.size() >= 1) _tileSelectionRects.last() = rect;
+    else _tileSelectionRects.push_back(rect);
+    _tileSelectionArrayUpdate();
     //scene()->update(scene()->sceneRect());
     _forceSceneUpdate();
 }
 
 void MapView::_sceneSelectionClear(void) {
     //if(_getTileSelection()) static_cast<TileSelectable*>(_getTileSelection())->clearSceneSelection();
-	_tileSelectionRects.clear();
+    _tileSelectionRects.clear();
     _entityClearSelection();
-	memset(_tileSelectionArray, 0, sizeof(_tileSelectionArray));
+    memset(_tileSelectionArray, 0, sizeof(_tileSelectionArray));
     //scene()->update(scene()->sceneRect());
     getAssets()->getCurrentArea()->setEmitMapChange(false);
     _curUndoItem->clearEntries();
@@ -249,49 +251,49 @@ void MapView::_sceneSelectionClear(void) {
 }
 
 void MapView::_externalSelectionCreate(void) {
-	if(_tileSelectionRects.size() <= 0) return;
+    if(_tileSelectionRects.size() <= 0) return;
     if(getAssets()->getCurrentLayer() == Assets::LAYER_ENTITY) return _entitySelectableCreate();
 
     int startX = ELYSIAN_AREA_MAP_WIDTH-2;
-	int endX = 0;
+    int endX = 0;
     int startY = ELYSIAN_AREA_MAP_HEIGHT-2;
-	int endY = 0;
+    int endY = 0;
 
-	for(int i = 0; i < _tileSelectionRects.size(); ++i) {
-		if(startX > (_tileSelectionRects[i].topLeft().x()+16)/32)	startX =  (_tileSelectionRects[i].topLeft().x()+16)/32;
-		if(endX < (_tileSelectionRects[i].bottomRight().x()+16)/32) endX = (_tileSelectionRects[i].bottomRight().x()+16)/32;
-		if(startY > (_tileSelectionRects[i].topLeft().y()+16)/32)	startY = (_tileSelectionRects[i].topLeft().y()+16)/32;
-		if(endY < (_tileSelectionRects[i].bottomRight().y()+16)/32) endY = (_tileSelectionRects[i].bottomRight().y()+16)/32;
+    for(int i = 0; i < _tileSelectionRects.size(); ++i) {
+        if(startX > (_tileSelectionRects[i].topLeft().x()+16)/32)	startX =  (_tileSelectionRects[i].topLeft().x()+16)/32;
+        if(endX < (_tileSelectionRects[i].bottomRight().x()+16)/32) endX = (_tileSelectionRects[i].bottomRight().x()+16)/32;
+        if(startY > (_tileSelectionRects[i].topLeft().y()+16)/32)	startY = (_tileSelectionRects[i].topLeft().y()+16)/32;
+        if(endY < (_tileSelectionRects[i].bottomRight().y()+16)/32) endY = (_tileSelectionRects[i].bottomRight().y()+16)/32;
     }
     if(startX < 0) startX = 0;
-	if(startY < 0) startY = 0;
+    if(startY < 0) startY = 0;
     if(endX >= getAssets()->getCurrentArea()->width-1) endX = getAssets()->getCurrentArea()->width-2;
     if(endY >= getAssets()->getCurrentArea()->height-1) endY = getAssets()->getCurrentArea()->height-2;
 
-	TileSelectable *selection = new TileSelectable(QRect(startX, startY, endX-startX+1, endY-startY+1), _tileSelectionArray, getCurrentArea(), getCurrentLevel(), getAssets()->getCurrentLayer());
+    TileSelectable *selection = new TileSelectable(QRect(startX, startY, endX-startX+1, endY-startY+1), _tileSelectionArray, getCurrentArea(), getCurrentLevel(), getAssets()->getCurrentLayer());
     setCurrentSelection(selection);
 }
 
 void MapView::_externalSelectionClear(void) {
     getAssets()->getCurrentArea()->setEmitMapChange(false);
-	_curUndoItem->clearEntries();
+    _curUndoItem->clearEntries();
     getAssets()->getCurrentArea()->setEmitMapChange(true);
     setCurrentSelection(nullptr);
 }
 
 void MapView::_setTileSelection(TileSelection<TileEntry>* const sel) {
     if(sel && getAssets()->getCurrentLayer() == Assets::LAYER_ENTITY) getAssets()->setCurrentLayer(Assets::LAYER_TILE1);
-	setCurrentSelection(static_cast<TileSelectable *>(sel));
+    setCurrentSelection(static_cast<TileSelectable *>(sel));
 }
 
 QUndoStack* MapView::_getUndoStack(void) const {
-	return &getCurrentArea()->getUndoStack();
+    return &getCurrentArea()->getUndoStack();
 }
 
 PlaceTileGroupUndoItem<TileEntry>* MapView::_createPlaceTileGroup(void) {
-	 auto* curGroup = _curUndoItem;
-	 _curUndoItem = new MapViewPlaceTileGroupUndoItem(getAssets()->getCurrentArea(), getAssets()->getCurrentLayer());
-	return curGroup;
+     auto* curGroup = _curUndoItem;
+     _curUndoItem = new MapViewPlaceTileGroupUndoItem(getAssets()->getCurrentArea(), getAssets()->getCurrentLayer());
+    return curGroup;
 }
 
 TileSelection<TileEntry>* MapView::_copyConstructTileSelection(const TileSelection<TileEntry>& rval) const {
@@ -300,7 +302,7 @@ TileSelection<TileEntry>* MapView::_copyConstructTileSelection(const TileSelecti
 
 
 void MapView::timerEvent(QTimerEvent* event) {
-	if(event->timerId() == _refreshTimerHandle) {
+    if(event->timerId() == _refreshTimerHandle) {
         _forceSceneUpdate();
     }
 }
@@ -308,34 +310,34 @@ void MapView::timerEvent(QTimerEvent* event) {
 void MapView::keyPressEvent(QKeyEvent* event) {
     DestView<TileEntry>::keyPressEvent(event);
 
-	//Check for MapView-specific key events
-	if(_selItemGroup) {
+    //Check for MapView-specific key events
+    if(_selItemGroup) {
         TileSelectable *terSel = static_cast<TileSelectable*>(_getTileSelection());
-		if(terSel) {
+        if(terSel) {
             switch(event->key()) {
             case Qt::Key_Equal:
-				terSel->elevateFromBase();
-                //createSelectionItemGroup(); //force update region
-				break;
-            case Qt::Key_Plus:
-				terSel->elevateUp();
-                //createSelectionItemGroup(); //force update region
-				break;
-            case Qt::Key_Minus:
-				terSel->elevateDown();
+                terSel->elevateFromBase();
                 //createSelectionItemGroup(); //force update region
                 break;
-			case Qt::Key_Z:
-				terSel->toggleZTransitional();
+            case Qt::Key_Plus:
+                terSel->elevateUp();
+                //createSelectionItemGroup(); //force update region
+                break;
+            case Qt::Key_Minus:
+                terSel->elevateDown();
+                //createSelectionItemGroup(); //force update region
+                break;
+            case Qt::Key_Z:
+                terSel->toggleZTransitional();
                 //createSelectionItemGroup();
                 break;
             case Qt::Key_N:
                 terSel->toggleNormalFace();
                 //createSelectionItemGroup();
                 break;
-			}
+            }
             mouseMoveEvent(nullptr);
-		}
+        }
     }
 }
 
@@ -362,19 +364,19 @@ void MapView::mouseMoveEvent(QMouseEvent *event) {
 
     if(sel && !isFillingRegion()) {
 
-		unsigned w, h;
-		sel->getSelectionArea(w, h);
+        unsigned w, h;
+        sel->getSelectionArea(w, h);
 
         getAssets()->getCurrentArea()->setEmitMapChange(false);
-		_curUndoItem->beginUpdateEntries();
-		for(unsigned j = 0; j < h; ++j) {
-			for(unsigned i = 0; i < w; ++i) {
-				auto newTileEntry = sel->getEntry(i, j);
-				if(sel->isWithinSelection(i, j))
-					_curUndoItem->addTile(QPoint(i+(getSceneMousePos().x()+16)/32, j+(getSceneMousePos().y()+16)/32), newTileEntry);
-			}
-		}
-		_curUndoItem->endUpdateEntries();
+        _curUndoItem->beginUpdateEntries();
+        for(unsigned j = 0; j < h; ++j) {
+            for(unsigned i = 0; i < w; ++i) {
+                auto newTileEntry = sel->getEntry(i, j);
+                if(sel->isWithinSelection(i, j))
+                    _curUndoItem->addTile(QPoint(i+(getSceneMousePos().x()+16)/32, j+(getSceneMousePos().y()+16)/32), newTileEntry);
+            }
+        }
+        _curUndoItem->endUpdateEntries();
         getAssets()->getCurrentArea()->setEmitMapChange(true);
     }
 
@@ -441,11 +443,11 @@ void MapView::_endPan(void) {
 
 
 bool MapView::_populatePlaceTileGroup(const TileSelection<TileEntry> *const /*terSel*/, PlaceTileGroupUndoItem<TileEntry> *const /*groupCmd*/) const {
-	return true;
+    return true;
 }
 
 bool MapView::_populatePlaceTileGroupRegionFill(const TileSelection<TileEntry> *const /*terSel*/, PlaceTileGroupUndoItem<TileEntry> *const /*groupCmd*/) const {
-	return true;
+    return true;
 }
 
 void MapView::scrollContentsBy(int dx, int dy) {

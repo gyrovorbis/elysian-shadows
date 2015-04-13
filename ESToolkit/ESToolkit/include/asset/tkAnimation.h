@@ -2,8 +2,8 @@
 #define TK_ANIMATION_H
 
 #include <QObject>
-#include "elysian_animation_base.hpp"
-#include "elysian_asset_typedefs.hpp"
+#include <elysian_animation_base.hpp>
+#include <elysian_asset_typedefs.hpp>
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 

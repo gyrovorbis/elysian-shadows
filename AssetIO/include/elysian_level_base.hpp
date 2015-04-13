@@ -2,12 +2,8 @@
 #define ELYSIAN_LEVEL_BASE_HPP
 
 #include <vector>
-#include <gyro.h>
-#include "elysian_asset.hpp"
-#include "elysian_tile.hpp"
-
-#include "elysian_asset_typedefs.hpp"
-
+#include <elysian_asset.hpp>
+#include <elysian_tile.hpp>
 
 #define ELYSIAN_LEVEL_NAME_SIZE				50
 #define ELYSIAN_LEVEL_STRING_SIZE			50
@@ -29,30 +25,32 @@
 
 ELYSIAN_ASSET_TYPEDEF(Level)
 
+struct GYTexture;
+
 namespace elysian {
 
     struct LevelBase: public Asset {
-		Tile			tileset	[ELYSIAN_TILESHEET_TILES];
-		char			path	[ELYSIAN_LEVEL_PATH_SIZE];
+        Tile			tileset	[ELYSIAN_TILESHEET_TILES];
+        char			path	[ELYSIAN_LEVEL_PATH_SIZE];
         char			dir     [ELYSIAN_LEVEL_NAME_SIZE];
-		char            string	[ELYSIAN_LEVEL_STRING_SIZE];
+        char            string	[ELYSIAN_LEVEL_STRING_SIZE];
 
-		GYTexture*		tileSheet			= nullptr;
-		GYTexture*		normalSheet			= nullptr;
-		GYTexture*		specularSheet		= nullptr;
+        GYTexture*		tileSheet			= nullptr;
+        GYTexture*		normalSheet			= nullptr;
+        GYTexture*		specularSheet		= nullptr;
 
         unsigned short	tileAmount          = ELYSIAN_TILESHEET_TILES;
-		
+
         //lookup tables of attributes
         //palette table(s)
         //Friendlyset/Enemyset
-		//Prefab-y data
-		//Light layer palette
+        //Prefab-y data
+        //Light layer palette
 
-		Tile*			getTile(const uint16_t index);
-		unsigned short	getTileAmount(void) const;
+        Tile*			getTile(const uint16_t index);
+        unsigned short	getTileAmount(void) const;
         const char*		getDirName(void) const;
-		const char*		getPath(void) const;
+        const char*		getPath(void) const;
 
                         ~LevelBase(void);
         bool            load(const char *const dir);
@@ -69,23 +67,23 @@ namespace elysian {
 
 
 
-	// ==== INLINEZ ====
+    // ==== INLINEZ ====
 
         inline Tile *LevelBase::getTile(const uint16_t index) {
-			return &tileset[index];
-		}
+            return &tileset[index];
+        }
 
         inline unsigned short LevelBase::getTileAmount(void) const {
-			return tileAmount;
-		}
+            return tileAmount;
+        }
 
         inline const char *LevelBase::getDirName(void) const {
             return dir;
-		}
+        }
 
         inline const char *LevelBase::getPath(void) const {
-			return path;
-		}
+            return path;
+        }
 
 }
 

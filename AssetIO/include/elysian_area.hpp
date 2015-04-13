@@ -2,12 +2,12 @@
 #define ELYSIAN_AREA_HPP
 
 #ifdef ELYSIAN_ENGINE
-#   include "elysian_area_base.hpp"
+#   include <elysian_area_base.hpp>
 namespace elysian {
     typedef AreaBase Area;
 }
 #else
-#   include "tkArea.h"
+#   include <tkArea.h>
 namespace elysian {
     typedef TkArea Area;
 }

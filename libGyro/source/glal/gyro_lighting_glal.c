@@ -2,7 +2,7 @@
 #include <gyro_shader_api.h>
 #include <gyro_defines.h>
 #include <glal/gyro_shaders_glal.h>
-#include <glal/gyro_glal.h>
+#include <glal/gyro_al.h>
 #include <glal/gyro_video_glal.h>
 #include <gyro_system_api.h>
 #include <stdio.h>
@@ -41,20 +41,20 @@ void gyVidLightingSetEnable(const int enabled) {
 }
 
 void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) {
-	_LightInternals* internals = light->_data = malloc(sizeof(_LightInternals));
+    _LightInternals* internals = light->_data = malloc(sizeof(_LightInternals));
 
     glGenFramebuffers(1, &internals->fbo);
-	glGenTextures(1, &internals->shadowMap);
+    glGenTextures(1, &internals->shadowMap);
 
-	light->type = type;
+    light->type = type;
 
-	switch(type) {
-	case GY_LIGHT_DIRECTIONAL:
+    switch(type) {
+    case GY_LIGHT_DIRECTIONAL:
         light->position.w = 0.0f;
         //light->spotCutoffAngle = 360.0f; //Shader needs this for correct texture coords
         //glEnable(GL_TEXTURE_2D);
         //glDisable(GL_TEXTURE_CUBE_MAP);
-		glBindTexture(GL_TEXTURE_2D, internals->shadowMap);
+        glBindTexture(GL_TEXTURE_2D, internals->shadowMap);
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -68,7 +68,7 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, 1.0f);
 #endif
-		break;
+        break;
 
     case GY_LIGHT_SPOT:
         //glEnable(GL_TEXTURE_2D);
@@ -89,10 +89,10 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
 #endif
         break;
 
-	case GY_LIGHT_POINT:
+    case GY_LIGHT_POINT:
         light->spotCutoffAngle = 360.0f;
        // glEnable(GL_TEXTURE_CUBE_MAP);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, internals->shadowMap);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, internals->shadowMap);
                 glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -108,15 +108,15 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
        // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_MODE, GL_NONE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
         glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BORDER_COLOR, 1.0f);
-		//Does this REALLY have to have 6 faces!?
-		for (unsigned i = 0; i < GY_CUBE_MAP_FACE_MAX; ++i) {
-			//shadowDepth? lolz
+        //Does this REALLY have to have 6 faces!?
+        for (unsigned i = 0; i < GY_CUBE_MAP_FACE_MAX; ++i) {
+            //shadowDepth? lolz
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT32, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
-		}
+        }
 #endif
       //  glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-		break;
-	}
+        break;
+    }
     //glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
     //glBindTexture(GL_TEXTURE_2D, 0);
     //glEnable(GL_TEXTURE_2D);
@@ -124,11 +124,11 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
 }
 
 void gyVidLightSourceUninit(GYLightSource* const light) {
-	_LightInternals* internals = light->_data;
+    _LightInternals* internals = light->_data;
 
-	glDeleteTextures(1, &internals->shadowMap);
-	glDeleteFramebuffers(1, &internals->fbo);
-	free(light->_data);
+    glDeleteTextures(1, &internals->shadowMap);
+    glDeleteFramebuffers(1, &internals->fbo);
+    free(light->_data);
 }
 
 void _addLightUniform(const unsigned index, const GYLightSource*const light) {
@@ -138,7 +138,7 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
 
     const GYLightSource*const   old = glalLightSources[index];
     LightSourceUniforms*const   cache = &_lightSourceUniforms[index];
-    _LightInternals*            internals = light->_data;
+    _LightInternals*             internals = light->_data;
 
     //COMMON UNIFORMS TO ALL TYPES
     if(!old || !gyVec4Compare(&light->position, &cache->position)) {
@@ -248,12 +248,12 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
  }
 
 
-	//Determine whether we're processing a point shadow's cubemap
-	/* We don't have enough texture units for all shadow and shadow cube maps to
-	 * be bound to valid units, and the shaders crash if they aren't bound... but for
-	 * some reason they're still cool with being bound to bullshit texture units. So
-	 * bind one to the real texture unit, and bind one to a bullshit unit based on type.
-	 */
+    //Determine whether we're processing a point shadow's cubemap
+    /* We don't have enough texture units for all shadow and shadow cube maps to
+     * be bound to valid units, and the shaders crash if they aren't bound... but for
+     * some reason they're still cool with being bound to bullshit texture units. So
+     * bind one to the real texture unit, and bind one to a bullshit unit based on type.
+     */
 
     if(light->type == GY_LIGHT_POINT) { //Point light + change
 
@@ -305,21 +305,21 @@ void gyVidLightSourceAdd(GYLightSource* const light) {
 //	assert(lightSourceCount < GYRO_VIDEO_LIGHT_SOURCES_MAX);
     if(!glalLightingEnabled || gyVidShadowPass()) return;
 
-	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
+    for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
         if(glalLightsEnabled[i] == 0) {
-			_addLightUniform(i, light);
+            _addLightUniform(i, light);
             glalLightSources[i] = light;
             glalLightsEnabled[i] = 1;
             ++glalLightSourceCount;
-			return;
-		}
-	}
+            return;
+        }
+    }
 }
 
 void gyVidLightSourceRemove(const GYLightSource* const light) {
     if(!glalLightingEnabled || gyVidShadowPass()) return;
 
-	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
+    for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
         if(glalLightSources[i] == light) {
             if(glalLightsEnabled[i]) {
                 --glalLightSourceCount;
@@ -330,198 +330,198 @@ void gyVidLightSourceRemove(const GYLightSource* const light) {
                 glalLightsEnabled[i] = 0;
             }
             break;
-		}
-	}
+        }
+    }
 }
 
 void gyVidLightSourceReplace(const GYLightSource*const old, GYLightSource*const next) {
     if(!glalLightingEnabled || gyVidShadowPass()) return;
 
-	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
+    for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
         if(glalLightSources[i] == old && glalLightsEnabled[i]) {
             _addLightUniform(i, next);
             glalLightSources[i] = next;
-			break;
-		}
-	}
+            break;
+        }
+    }
 }
 
 void gyVidLightSourceClear(void) {
     if(gyVidShadowPass()) return;
     gyVidVertexBatchFlush();
     glalLightSourceCount = 0;
-	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
+    for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
         if(glalLightsEnabled[i]) {
             glalLightsEnabled[i] = 0;
             //gyVidVertexBatchFlushPause();
             glUniform1i(glalCurLightShader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_ENABLED], 0);
             ++glalUniformChangeCount;
         }
-	}
+    }
    // gyVidVertexBatchFlushResume();
 }
 
 void glalGetSpotLightViewMatrix(GYMatrix4 dest, const GYLightSource*const lightSrc) {
-	GYMatrix4 temp;
-	GYVector3 baseVec = { 0.0f, 1.0f, 0.0f };
-	GYVector3 rightVector;
-	GYVector3 upVector;
+    GYMatrix4 temp;
+    GYVector3 baseVec = { 0.0f, 1.0f, 0.0f };
+    GYVector3 rightVector;
+    GYVector3 upVector;
 
-	gyVec3CrossProd(&rightVector, &baseVec, &lightSrc->direction);
-	gyVec3CrossProd(&upVector, &rightVector, &lightSrc->direction);
-
-
-	gyMatPush();
-	gyMatLoadIdentity();
+    gyVec3CrossProd(&rightVector, &baseVec, &lightSrc->direction);
+    gyVec3CrossProd(&upVector, &rightVector, &lightSrc->direction);
 
 
-	gyVidLookAtMat(temp,
-				   -lightSrc->direction.x, -lightSrc->direction.y, -lightSrc->direction.z,
-				  0.0f, 0.0f, 0.0f,
-				   upVector.x, upVector.y, upVector.z);
-	glalTranspose(temp);
-	gyMatApply(temp);
+    gyMatPush();
+    gyMatLoadIdentity();
 
 
-	gyMatScale(1.0f, 1.0f, 1.0f);//4.0f
+    gyVidLookAtMat(temp,
+                   -lightSrc->direction.x, -lightSrc->direction.y, -lightSrc->direction.z,
+                  0.0f, 0.0f, 0.0f,
+                   upVector.x, upVector.y, upVector.z);
+    glalTranspose(temp);
+    gyMatApply(temp);
 
-	//gyMatTranslate(-lightSrc->position.x, -lightSrc->position.y, -lightSrc->position.z-1000.0f);//+900.0f
-	gyMatTranslate(-lightSrc->position.x, -lightSrc->position.y, -lightSrc->position.z);//+900.0f
 
-	gyMatStore((void*)dest);
-	gyMatPop();
+    gyMatScale(1.0f, 1.0f, 1.0f);//4.0f
+
+    //gyMatTranslate(-lightSrc->position.x, -lightSrc->position.y, -lightSrc->position.z-1000.0f);//+900.0f
+    gyMatTranslate(-lightSrc->position.x, -lightSrc->position.y, -lightSrc->position.z);//+900.0f
+
+    gyMatStore((void*)dest);
+    gyMatPop();
 
 }
 
 void glalGetDirectionalLightViewMatrix(GYMatrix4 dest, const GYLightSource*const lightSrc) {
-	GYMatrix4 temp;
+    GYMatrix4 temp;
 
-	gyMatPush();
-	gyMatLoadIdentity();
+    gyMatPush();
+    gyMatLoadIdentity();
 
-	//gyMatScale(2.0f, 2.0f, 1.0f);
-	gyMatTranslate(GLAL_SHADOW_MAP_SIZE*0.5f, GLAL_SHADOW_MAP_SIZE*0.5f, 0.0f);
+    //gyMatScale(2.0f, 2.0f, 1.0f);
+    gyMatTranslate(GLAL_SHADOW_MAP_SIZE*0.5f, GLAL_SHADOW_MAP_SIZE*0.5f, 0.0f);
 
-	gyVidLookAtMat(temp,
-				   -lightSrc->direction.x, -lightSrc->direction.y, -lightSrc->direction.z,
-				   0.0f, 0.0f, 0.0f,
-				   0.0f, -1.0f, 0.0f);
+    gyVidLookAtMat(temp,
+                   -lightSrc->direction.x, -lightSrc->direction.y, -lightSrc->direction.z,
+                   0.0f, 0.0f, 0.0f,
+                   0.0f, -1.0f, 0.0f);
 
-	gyMatApply(temp);
+    gyMatApply(temp);
 
     gyMatTranslate(-glalCamWorldPos.x, -glalCamWorldPos.y, -glalCamWorldPos.z);
-	//gyMatScale(2.0f, 2.0f, 1.0f);
+    //gyMatScale(2.0f, 2.0f, 1.0f);
 
-	gyMatStore((void*)dest);
-	gyMatPop();
+    gyMatStore((void*)dest);
+    gyMatPop();
 
 }
 
 void glalGetSpotLightProjectionMatrix(GYMatrix4 dest, const GYLightSource*const lightSrc)  {
-	 //GYMatrix4 test;
+     //GYMatrix4 test;
 #if 0
-	//TODO: DON'T HARDCODE ANGLE FOR PERSPECTIVE PROJECTION!!!
-	//ratio is wrong!!!
-	gyVidPerspectiveMat(dest, 90, (float)GLAL_SHADOW_MAP_SIZE/(float)GLAL_SHADOW_MAP_SIZE, 0.5f, 150.0f);//150.0f
+    //TODO: DON'T HARDCODE ANGLE FOR PERSPECTIVE PROJECTION!!!
+    //ratio is wrong!!!
+    gyVidPerspectiveMat(dest, 90, (float)GLAL_SHADOW_MAP_SIZE/(float)GLAL_SHADOW_MAP_SIZE, 0.5f, 150.0f);//150.0f
 #else
 
-	(void)lightSrc;
+    (void)lightSrc;
 
     //gyVidPerspectiveMat(dest, 90.0f, 1.0f, 1.0f, 150.0f);
     gyVidPerspectiveMat(dest, lightSrc->spotCutoffAngle, 1.0f, 1.0f, 550.0f);
 #endif
 
-	//memcpy(test, dest, sizeof(GYMatrix4));
+    //memcpy(test, dest, sizeof(GYMatrix4));
 }
 
 void glalGetDirectionalLightProjectionMatrix(GYMatrix4 dest, const GYLightSource*const lightSrc) {
-	(void)lightSrc;
-	gyVidOrthoProjMat(dest, 0, GLAL_SHADOW_MAP_SIZE,
-							 0, GLAL_SHADOW_MAP_SIZE,
+    (void)lightSrc;
+    gyVidOrthoProjMat(dest, 0, GLAL_SHADOW_MAP_SIZE,
+                             0, GLAL_SHADOW_MAP_SIZE,
                              -1500, 1500);
 }
 
 void glalGetPointLightProjectionMatrix(GYMatrix4 dest, const GYLightSource* const lightSrc) {
     gyVidPerspectiveMat(dest, 90.0f, 1.0f, 0.5f, 901.0f);
-	(void)lightSrc;
+    (void)lightSrc;
 
-	//gyVidCamFrustum(camera, 90.0f, 1.0f, 0.5f, 901.0f);
+    //gyVidCamFrustum(camera, 90.0f, 1.0f, 0.5f, 901.0f);
 }
 
 
 void glalGetPointLightCamMatrix(GYMatrix4 dest, const GYLightSource* const lightSrc) {
-	gyMatPush();
-	gyMatLoadIdentity();
+    gyMatPush();
+    gyMatLoadIdentity();
 
-	gyMatScale(1.0f, -1.0f, -1.0f);
-	gyMatTranslate(-lightSrc->position.x+1, -lightSrc->position.y, -lightSrc->position.z);
+    gyMatScale(1.0f, -1.0f, -1.0f);
+    gyMatTranslate(-lightSrc->position.x+1, -lightSrc->position.y, -lightSrc->position.z);
 
-	gyMatStore((void*)dest);
-	gyMatPop();
+    gyMatStore((void*)dest);
+    gyMatPop();
 }
 
 void glalGetPointLightViewMatrix(GYMatrix4 dest, const GYLightSource* const lightSrc, unsigned face) {
-	GYMatrix4 camMat;
-	gyMatPush();
-	gyMatLoadIdentity();
+    GYMatrix4 camMat;
+    gyMatPush();
+    gyMatLoadIdentity();
 
-	//Create View Matrix
+    //Create View Matrix
     gyMatApply((void*)&glalPointShadowFaceMatrices[face]);
 
-	glalGetPointLightCamMatrix(camMat, lightSrc);
+    glalGetPointLightCamMatrix(camMat, lightSrc);
 
-	gyMatApply((void*)&camMat);
-	gyMatStore((void*)dest);
-	gyMatPop();
+    gyMatApply((void*)&camMat);
+    gyMatStore((void*)dest);
+    gyMatPop();
 }
 
 void glalGetPointLightViewVolume(GYViewVolume* const vol, GYLightSource* lightSrc, const GY_CUBE_MAP_FACE face) {
-	//const float maxDist = 901.0f-0.5f;
-	const float halfW = lightSrc->properties->_radius;//maxDist*0.5f;
+    //const float maxDist = 901.0f-0.5f;
+    const float halfW = lightSrc->properties->_radius;//maxDist*0.5f;
 
-	vol->ntl.x = lightSrc->position.x - halfW; vol->ntl.y = lightSrc->position.y - halfW;
-	vol->ntr.x = lightSrc->position.x + halfW; vol->ntr.y = lightSrc->position.y - halfW;
-	vol->nbl.x = lightSrc->position.x - halfW; vol->nbl.y = lightSrc->position.y + halfW;
-	vol->nbr.x = lightSrc->position.x + halfW; vol->nbr.y = lightSrc->position.y + halfW;
+    vol->ntl.x = lightSrc->position.x - halfW; vol->ntl.y = lightSrc->position.y - halfW;
+    vol->ntr.x = lightSrc->position.x + halfW; vol->ntr.y = lightSrc->position.y - halfW;
+    vol->nbl.x = lightSrc->position.x - halfW; vol->nbl.y = lightSrc->position.y + halfW;
+    vol->nbr.x = lightSrc->position.x + halfW; vol->nbr.y = lightSrc->position.y + halfW;
 
-	switch(face) {
-	case GY_CUBE_MAP_RIGHT:
-		vol->ntl.x += halfW;
-		vol->ntr.x += halfW;
-		vol->nbl.x += halfW;
-		vol->nbr.x += halfW;
-		break;
-	case GY_CUBE_MAP_LEFT:
-		vol->ntl.x -= halfW;
-		vol->ntr.x -= halfW;
-		vol->nbl.x -= halfW;
-		vol->nbr.x -= halfW;
-		break;
+    switch(face) {
+    case GY_CUBE_MAP_RIGHT:
+        vol->ntl.x += halfW;
+        vol->ntr.x += halfW;
+        vol->nbl.x += halfW;
+        vol->nbr.x += halfW;
+        break;
+    case GY_CUBE_MAP_LEFT:
+        vol->ntl.x -= halfW;
+        vol->ntr.x -= halfW;
+        vol->nbl.x -= halfW;
+        vol->nbr.x -= halfW;
+        break;
 
-	case GY_CUBE_MAP_BACK:
-		vol->ntl.y -= halfW;
-		vol->ntr.y -= halfW;
-		vol->nbl.y -= halfW;
-		vol->nbr.y -= halfW;
-		break;
+    case GY_CUBE_MAP_BACK:
+        vol->ntl.y -= halfW;
+        vol->ntr.y -= halfW;
+        vol->nbl.y -= halfW;
+        vol->nbr.y -= halfW;
+        break;
 
-	case GY_CUBE_MAP_FRONT:
-		vol->ntl.y += halfW;
-		vol->ntr.y += halfW;
-		vol->nbl.y += halfW;
-		vol->nbr.y += halfW;
-		break;
+    case GY_CUBE_MAP_FRONT:
+        vol->ntl.y += halfW;
+        vol->ntr.y += halfW;
+        vol->nbl.y += halfW;
+        vol->nbr.y += halfW;
+        break;
 
-	case GY_CUBE_MAP_BOTTOM:
-	case GY_CUBE_MAP_TOP:
-	default:
-		break;
-	}
+    case GY_CUBE_MAP_BOTTOM:
+    case GY_CUBE_MAP_TOP:
+    default:
+        break;
+    }
 
-	vol->ftl = vol->ntl;
-	vol->ftr = vol->ntr;
-	vol->fbl = vol->nbl;
-	vol->fbr = vol->nbr;
+    vol->ftl = vol->ntl;
+    vol->ftr = vol->ntr;
+    vol->fbl = vol->nbl;
+    vol->fbr = vol->nbr;
 
 }
 
@@ -537,11 +537,11 @@ void gyVidLightSourceBeginShadowPasses(void) {
 
 
 void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_MAP_FACE face) {
-	GYMatrix4 lightProjMatrix;
-	GYMatrix4 lightViewMatrix;
-	GYMatrix4 lightProjViewMatrix;
-	int useBias;
-	_LightInternals* internals = light->_data;
+    GYMatrix4 lightProjMatrix;
+    GYMatrix4 lightViewMatrix;
+    GYMatrix4 lightProjViewMatrix;
+    int useBias;
+    _LightInternals* internals = light->_data;
     GYCamera*const cam = light->camera;
 
     gyVidVertexBatchFlush();
@@ -549,20 +549,20 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 
     glActiveTexture(glalTextureMapTexUnits[GLAL_TEMP_MAP]);
 
-	switch(light->type) {
+    switch(light->type) {
 
-	case GY_LIGHT_POINT:
-		useBias = 0;
+    case GY_LIGHT_POINT:
+        useBias = 0;
 
-		//glDepthRange(0, 1);
-		glalGetPointLightProjectionMatrix(lightProjMatrix, light);
-		glalGetPointLightViewMatrix(lightViewMatrix, light, face);
+        //glDepthRange(0, 1);
+        glalGetPointLightProjectionMatrix(lightProjMatrix, light);
+        glalGetPointLightViewMatrix(lightViewMatrix, light, face);
 
        // glEnable(GL_TEXTURE_CUBE_MAP);
         //glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
         //glBindTexture(GL_TEXTURE_2D, 0);
 
-		//Only do this shit once, on the first pass
+        //Only do this shit once, on the first pass
         if(face == GY_CUBE_MAP_RIGHT) {
             glBindFramebuffer(GL_DRAW_FRAMEBUFFER, internals->fbo);
             glalGetPointLightCamMatrix(cam->projViewMat, light);
@@ -570,23 +570,23 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 
         glBindTexture(GL_TEXTURE_CUBE_MAP, internals->shadowMap);
 
-		//glalGetPointLightViewVolume(&cam->viewVolume, light, face);
+        //glalGetPointLightViewVolume(&cam->viewVolume, light, face);
 
         glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
-							   GL_DEPTH_ATTACHMENT,
-							   GL_TEXTURE_CUBE_MAP_POSITIVE_X + face,
-							   internals->shadowMap,
-							   0);
+                               GL_DEPTH_ATTACHMENT,
+                               GL_TEXTURE_CUBE_MAP_POSITIVE_X + face,
+                               internals->shadowMap,
+                               0);
 
-		break;
+        break;
 
-	case GY_LIGHT_DIRECTIONAL:
+    case GY_LIGHT_DIRECTIONAL:
         useBias = 1;
 
-		glalGetDirectionalLightProjectionMatrix(lightProjMatrix, light);
-		glalGetDirectionalLightViewMatrix(lightViewMatrix, light);
+        glalGetDirectionalLightProjectionMatrix(lightProjMatrix, light);
+        glalGetDirectionalLightViewMatrix(lightViewMatrix, light);
 
-		//glCullFace(GL_BACK);
+        //glCullFace(GL_BACK);
         //glEnable(GL_TEXTURE_2D);
                 //glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -595,22 +595,22 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 
         glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
                                GL_DEPTH_ATTACHMENT,
-							   GL_TEXTURE_2D,
+                               GL_TEXTURE_2D,
                                internals->shadowMap,
                                0);
-		break;
+        break;
 
 
-	case GY_LIGHT_SPOT:
+    case GY_LIGHT_SPOT:
         useBias = 1;
 
-		glalGetSpotLightProjectionMatrix(lightProjMatrix, light);
-		glalGetSpotLightViewMatrix(lightViewMatrix, light);
+        glalGetSpotLightProjectionMatrix(lightProjMatrix, light);
+        glalGetSpotLightViewMatrix(lightViewMatrix, light);
 
         //glEnable(GL_TEXTURE_2D);
         //glBindTexture(GL_TEXTURE_2D, 0);
 
-		//glCullFace(GL_BACK);
+        //glCullFace(GL_BACK);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, internals->fbo);
         glBindTexture(GL_TEXTURE_2D, internals->shadowMap);
 
@@ -620,20 +620,20 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
                                internals->shadowMap,
                                0);
 
-		break;
+        break;
 
-	}
+    }
 
 #if !defined(ANDROID) /* TODO: FIXME */
     glDrawBuffer(GL_NONE); // No color buffer is drawn to.
    // glReadBuffer(GL_NONE);
 #endif
 
-	//Check whether shit has reested with our FBO
-	GLenum status;
+    //Check whether shit has reested with our FBO
+    GLenum status;
      if((status = glCheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE) {
-		 _gyLog(GY_DEBUG_CRITICAL, "Binding GLAL depth texture to frame buffer has reested - %d!", status);
-		 return;
+         _gyLog(GY_DEBUG_CRITICAL, "Binding GLAL depth texture to frame buffer has reested - %d!", status);
+         return;
      }
 
      //glEnable(GL_CULL_FACE);
@@ -652,15 +652,15 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
         _firstShadowPass = 0;
     // }
 
-	//find projView matrix
-	gyMatMultMat(lightProjViewMatrix, lightProjMatrix, lightViewMatrix);
+    //find projView matrix
+    gyMatMultMat(lightProjViewMatrix, (const float(*)[4])lightProjMatrix, (const float(*)[4])lightViewMatrix);
 
-	//SUBMIT PROJVIEW UNIFORM TO SHADOW SHADER
+    //SUBMIT PROJVIEW UNIFORM TO SHADOW SHADER
     glUniformMatrix4fv(glalShadowMapShader.uniformLoc[GLAL_SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)lightProjViewMatrix);
     ++glalUniformChangeCount;
 
-	//Store projection view matrix (plus bias) for next render pass
-    if(useBias) gyMatMultMat(cam->projViewMat, glalShadowTexCoordBiasMat, lightProjViewMatrix);
+    //Store projection view matrix (plus bias) for next render pass
+    if(useBias) gyMatMultMat(cam->projViewMat, (const float (*)[4])glalShadowTexCoordBiasMat, (const float (*)[4])lightProjViewMatrix);
 
 }
 
@@ -668,15 +668,15 @@ void gyVidLightSourceEndShadowPasses(void) {
 gyVidVertexBatchFlush();
    // glFlush();
     _shadowPass = 0;
-	gyVidSetDefaultShaderProgram();
-	//glalDefaultShadersLoadUniforms();
+    gyVidSetDefaultShaderProgram();
+    //glalDefaultShadersLoadUniforms();
     glalCurLightShader = &glalLightingShader;
    // glFlush();
   // gyVidVertexBatchFlush();
     glalVidBindDefaultFbo();
    // glDrawBuffer(GL_BACK);
-	unsigned width, height;
-	gyVidResolution(&width, &height);
+    unsigned width, height;
+    gyVidResolution(&width, &height);
     glViewport(0, 0, (float)width, (float)height);
 
     //gyVidDepthTest(0);
@@ -688,6 +688,6 @@ gyVidVertexBatchFlush();
    // glDisable(GL_CULL_FACE);
 
 
-	//glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-	//glBindTexture(GL_TEXTURE_2D, 0);
+    //glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+    //glBindTexture(GL_TEXTURE_2D, 0);
 }

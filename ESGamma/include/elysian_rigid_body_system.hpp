@@ -13,8 +13,7 @@
 #include "elysian_system.hpp"
 #include "elysian_mem_pool.hpp"
 #include "elysian_force_generator.hpp"
-#include "elysian_renderable.hpp"
-#include "elysian_area.hpp"
+#include "elysian_entity.hpp"
 
 #define ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_SIZE               0
 #define ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_FADEOUT_TIME       5.0f
@@ -22,9 +21,9 @@
 
 namespace elysian {
 
-	class RigidBody;
+    class RigidBody;
     class CollisionContact;
-	class ForceGenerator;
+    class ForceGenerator;
     class RigidBodyShard;
     typedef Pool<RigidBodyShard> ShardPool;
 
@@ -51,14 +50,14 @@ namespace elysian {
         void                free(void);
     };
 
-	class RigidBodySystem: public System {
-		CollisionContact*		_contactPool[ELYSIAN_RIGID_BODY_SYSTEM_CONTACT_POOL_SIZE];
+    class RigidBodySystem: public System {
+        CollisionContact*		_contactPool[ELYSIAN_RIGID_BODY_SYSTEM_CONTACT_POOL_SIZE];
         ShardPool                _shardPool		= ShardPool(ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_SIZE);
-		Pool<ForceGenerator*>	_forces			= Pool<ForceGenerator*>(ELYSIAN_RIGID_BODY_FORCE_GENERATOR_MAX_COUNT);
-		GravityForceGenerator	_gravityGenerator;
-		unsigned				_contactCount	= 0;
-		unsigned				_velResIter		= 0;
-		bool					_gravityEnabled = true;
+        Pool<ForceGenerator*>	_forces			= Pool<ForceGenerator*>(ELYSIAN_RIGID_BODY_FORCE_GENERATOR_MAX_COUNT);
+        GravityForceGenerator	_gravityGenerator;
+        unsigned				_contactCount	= 0;
+        unsigned				_velResIter		= 0;
+        bool					_gravityEnabled = true;
         RigidBodyShard*         _shardHead      = nullptr;
         RigidBodyShard*         _shardTail      = nullptr;
 
@@ -68,121 +67,65 @@ namespace elysian {
         RigidBodyShard*     _claimShard(void);
         void                _removeShard(RigidBodyShard* shard);
 
-	public:
+    public:
             RigidBodySystem(void);
            // ~RigidBodySystem(void);
-		void update(void);
-		void integrate3D(void);
+        void update(void);
+        void integrate3D(void);
 
-		unsigned getVelResIterUsed(void) const;
+        unsigned getVelResIterUsed(void) const;
 
-		void resolveContactVelocities(void);
-		void breakRigidBodies(void);
-		void integrate(void);
-		void applyForces(void);
+        void resolveContactVelocities(void);
+        void breakRigidBodies(void);
+        void integrate(void);
+        void applyForces(void);
 
-		void breakRigidBody(RigidBody*const rigidBody);
-		void addForce(ForceGenerator*const force);
-		void applyForce(ForceGenerator*const force);
-		void removeForce(ForceGenerator*const force);
-		void clearForces(void);
+        void breakRigidBody(RigidBody*const rigidBody);
+        void addForce(ForceGenerator*const force);
+        void applyForce(ForceGenerator*const force);
+        void removeForce(ForceGenerator*const force);
+        void clearForces(void);
 
-		void setGravityEnabled(const bool val);
-		void setGravityAccel(const GYVector3& accel);
+        void setGravityEnabled(const bool val);
+        void setGravityAccel(const GYVector3& accel);
 
-	};
+    };
 
 
-	//====== INLINEZ =======
-	inline void RigidBodySystem::addForce(ForceGenerator * const force) {
-		_forces.insertEntry(force);
-	}
-	inline void RigidBodySystem::removeForce(ForceGenerator * const force) {
-		_forces.removeEntry(force);
-	}
-	inline void RigidBodySystem::clearForces(void) {
-		_forces.clear();
-	}
-	inline unsigned RigidBodySystem::getVelResIterUsed(void) const {
-		return _velResIter;
-	}
+    //====== INLINEZ =======
+    inline void RigidBodySystem::addForce(ForceGenerator * const force) {
+        _forces.insertEntry(force);
+    }
+    inline void RigidBodySystem::removeForce(ForceGenerator * const force) {
+        _forces.removeEntry(force);
+    }
+    inline void RigidBodySystem::clearForces(void) {
+        _forces.clear();
+    }
+    inline unsigned RigidBodySystem::getVelResIterUsed(void) const {
+        return _velResIter;
+    }
 
-	inline void RigidBodySystem::setGravityEnabled(const bool val) {
-		if(_gravityEnabled == val) return;
+    inline void RigidBodySystem::setGravityEnabled(const bool val) {
+        if(_gravityEnabled == val) return;
 
-		if(val) {
-			addForce(&_gravityGenerator);
-		} else {
-			removeForce(&_gravityGenerator);
-		}
-		_gravityEnabled = val;
-	}
+        if(val) {
+            addForce(&_gravityGenerator);
+        } else {
+            removeForce(&_gravityGenerator);
+        }
+        _gravityEnabled = val;
+    }
 
     inline void RigidBodySystem::setGravityAccel(const GYVector3 &accel) {_gravityGenerator.setAccel(accel);}
 
-    inline void RigidBodySystem::_removeShard(RigidBodyShard *shard) {
-        assert(shard == _shardHead);
-        _shardHead = shard->getNext();
-        if(shard == _shardTail) _shardTail = nullptr; //end of the list
-        getCurArea()->removeEntity(shard);
-        shard->free();
-        _shardPool.remove(shard->getIterator());
-    }
-
-    inline RigidBodyShard* RigidBodySystem::_claimShard(void) {
-        RigidBodyShard *newShard;
-
-        //Fuckin' emergency, gotta abandon a shard!
-        if(_shardPool.isFull()) {
-            newShard = _shardHead->getNext();
-            if(_shardHead == _shardTail) _shardTail = nullptr;
-            _removeShard(_shardHead);
-            _shardHead = newShard;
-        }
-
-        newShard = &_shardPool.claimFreeEntry();
-        if(!_shardHead) _shardHead = newShard;
-        if(_shardTail) _shardTail->setNext(newShard);
-        _shardTail = newShard;
-        getCurArea()->addEntity(newShard);
-        return newShard;
-    }
 
     inline ShardPool::iterator RigidBodyShard::getIterator(void) const { return _it; }
     inline void RigidBodyShard::setIterator(const ShardPool::iterator it) { _it = it; }
     inline RigidBodyShard* RigidBodyShard::getNext(void) const { return _next; }
     inline void RigidBodyShard::setNext(RigidBodyShard *next) { _next = next; }
     inline auto RigidBodyShard::getState(void) const -> STATE { return _state; }
-    inline void RigidBodyShard::free(void) {
-        _allocTime = 0.0f;
-        _fadeOutTime = 0.0f;
-        getRenderable()->getSpriteAttrib()->setAlpha(255);
-        _state = STATE_NORMAL;
-        _next = nullptr;
-    }
     inline void RigidBodyShard::startFade(const float deltaTime) { _fadeOutTime += deltaTime; _state = STATE_FADE_OUT; }
-
-    inline auto RigidBodyShard::update(const float deltaTime) -> STATE {
-        _allocTime += deltaTime;
-        if(_fadeOutTime > 0.0f) {
-            _fadeOutTime += deltaTime;
-
-            if(_fadeOutTime >= ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_FADEOUT_TIME) {
-                _fadeOutTime = ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_FADEOUT_TIME;
-                _state = STATE_DONE;
-            }
-
-            if(getRenderable()) {
-                const float multiplier = _fadeOutTime/ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_FADEOUT_TIME;
-                unsigned char baseColor = multiplier * 255;
-
-                getRenderable()->getSpriteAttrib()->setAlpha(255-baseColor);
-
-            }
-        }
-
-        return _state;
-    }
 
 }
 

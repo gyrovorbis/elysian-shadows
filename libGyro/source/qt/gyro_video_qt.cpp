@@ -1,16 +1,14 @@
 #include <gyro_video_api.h>
 #include <glal/gyro_video_glal.h>
-#include <QOpenGLFramebufferObject>
 #include <x86/gyro_input_x86.inl>
-#include <QOpenGLWidget>
-#include <QGraphicsView>
+#include <glal/gyro_gl.h>
 
 //reested-ass hack
 extern GYInputInitParams    _initParams;
 
 void glalVidBindDefaultFbo(void) {
     //fucking disgusting.
-    glBindFramebuffer(GL_FRAMEBUFFER, static_cast<QOpenGLWidget*>(reinterpret_cast<QGraphicsView*>(_initParams.viewWidget)->viewport())->defaultFramebufferObject());
+    glBindFramebuffer(GL_FRAMEBUFFER, glalVidDefaultFbo());
 }
 
 void gyVidSceneBegin(void) {
@@ -24,5 +22,5 @@ void gyVidSceneBegin(void) {
 
 void gyVidSceneEnd(void) {
     gyVidVertexBatchFlush();
-    //glFlush();
+  //  glFlush();
 }

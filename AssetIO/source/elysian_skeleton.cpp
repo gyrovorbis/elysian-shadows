@@ -2,6 +2,7 @@
 #include "elysian_debug.hpp"
 #include "elysian_entity.hpp"
 #include "elysian_generic.hpp"
+#include "elysian_area.hpp"
 
 #include "spine/Atlas.h"
 #include "spine/SkeletonData.h"

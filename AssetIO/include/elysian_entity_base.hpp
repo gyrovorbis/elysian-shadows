@@ -4,16 +4,12 @@
 #include <vector>
 #include <map>
 
-#include <oolua.h>
-
-#include "elysian_asset_typedefs.hpp"
-#include "elysian_renderable_object.hpp"
-#include "elysian_asset.hpp"
-#include "elysian_stl_algorithm.hpp"
-#include "elysian_component.hpp"
-#include "elysian_area.hpp"
-#include "elysian_map_depth_buffer.hpp"
-#include "elysian_lua_table_proxy.hpp"
+#include <elysian_renderable_object.hpp>
+#include <elysian_asset.hpp>
+#include <gyro_video_api.h>
+#include <elysian_stl_algorithm.hpp>
+#include <elysian_component.hpp>
+#include <elysian_lua_table_proxy.hpp>
 
 #define ELYSIAN_ENTITY_NAME_SIZE	100
 #define ELYSIAN_ENTITY_NAME_DEFAULT	"Untitled"
@@ -24,26 +20,26 @@ ELYSIAN_ASSET_TYPEDEF(Animation)
 
 namespace elysian {
 
-	class Renderable;
+    class Renderable;
     class Collidable;
-	class RigidBody;
-	class Character;
-	class Warp;
-	class Examinable;
-	class AudioSource;
-	class LightSource;
-	class ParticleEmitter;
-	class Combat;
-	class Behavior;
+    class RigidBody;
+    class Character;
+    class Warp;
+    class Examinable;
+    class AudioSource;
+    class LightSource;
+    class ParticleEmitter;
+    class Combat;
+    class Behavior;
     class LuaBehavior;
     class Skeleton;
 
-	class EntityBase:
-			public RenderableObject,
-			public Asset,
-			public LuaTableProxy<EntityBase, Entity>
-	{
-	public:
+    class EntityBase:
+            public RenderableObject,
+            public Asset,
+            public LuaTableProxy<EntityBase, Entity>
+    {
+    public:
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(name,               getName,                setName)
@@ -63,12 +59,12 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(audioSource,        getAudioSource,         setAudioSource)
             ELYSIAN_LUA_PROXY_FIELD(particleEmitter,    getParticleEmitter,     setParticleEmitter)
             ELYSIAN_LUA_PROXY_FIELD(combat,             getCombat,              setCombat)
-		ELYSIAN_LUA_PROXY_FIELDS_END()
+        ELYSIAN_LUA_PROXY_FIELDS_END()
 
                             EntityBase(void)	= default;
                             EntityBase(const OOLUA::Lua_table_ref valTable);
         virtual             ~EntityBase(void);
-		
+
         bool                load(FILE* file);
         bool                save(FILE* file);
 
@@ -78,9 +74,9 @@ namespace elysian {
 
         bool                activate(void);
         bool                deactivate(void);
-        
+
         void                move(const GYVector2& dist);
-        
+
         void                setName(const char* const newName);
         const char*         getName(void) const;
         void                setDispName(const char* const name);
@@ -96,18 +92,18 @@ namespace elysian {
         bool                isShadowVolume(void) const;
         void                setShadowDepth(const float depth);
         float               getShadowDepth(void) const;
-        
-		Renderable*			addRenderable(void);
-		Animation*			addAnimation(void);
-		Collidable*			addCollidable(void);
-		RigidBody*			addRigidBody(void);
-		Character*			addCharacter(void);
-		Warp*				addWarp(void);
-		Examinable*			addExaminable(void);
-		AudioSource*		addAudioSource(void);
-		LightSource*		addLightSource(void);
-		ParticleEmitter*	addParticleEmitter(void);
-		Combat*				addCombat(void);
+
+        Renderable*			addRenderable(void);
+        Animation*			addAnimation(void);
+        Collidable*			addCollidable(void);
+        RigidBody*			addRigidBody(void);
+        Character*			addCharacter(void);
+        Warp*				addWarp(void);
+        Examinable*			addExaminable(void);
+        AudioSource*		addAudioSource(void);
+        LightSource*		addLightSource(void);
+        ParticleEmitter*	addParticleEmitter(void);
+        Combat*				addCombat(void);
         Skeleton*           addSkeleton(void);
 
         void                setRenderable(const OOLUA::Lua_table_ref valTable);
@@ -121,18 +117,18 @@ namespace elysian {
         void                setLightSource(const OOLUA::Lua_table_ref valTable);
         void                setParticleEmitter(const OOLUA::Lua_table_ref valTable);
         void                setCombat(const OOLUA::Lua_table_ref valTable);
-		
-		Renderable*			getRenderable(void) const { return _renderable; }
-		Animation*			getAnimation(void) const { return _animation; }
-		Collidable*			getCollidable(void) const { return _collidable; }
-		RigidBody*			getRigidBody(void) const { return _rigidBody; }
-		Character*			getCharacter(void) const { return _character; }
-		Warp*				getWarp(void) const { return _warp; }
-		Examinable*			getExaminable(void) const { return _examinable; }
-		AudioSource*		getAudioSource(void) const { return _audioSource; }
-		LightSource*		getLightSource(void) const { return _lightSource; }
-		ParticleEmitter*	getParticleEmitter(void) const { return _particleEmitter; }
-		Combat*				getCombat(void) const { return _combat; }
+
+        Renderable*			getRenderable(void) const { return _renderable; }
+        Animation*			getAnimation(void) const { return _animation; }
+        Collidable*			getCollidable(void) const { return _collidable; }
+        RigidBody*			getRigidBody(void) const { return _rigidBody; }
+        Character*			getCharacter(void) const { return _character; }
+        Warp*				getWarp(void) const { return _warp; }
+        Examinable*			getExaminable(void) const { return _examinable; }
+        AudioSource*		getAudioSource(void) const { return _audioSource; }
+        LightSource*		getLightSource(void) const { return _lightSource; }
+        ParticleEmitter*	getParticleEmitter(void) const { return _particleEmitter; }
+        Combat*				getCombat(void) const { return _combat; }
         Skeleton*           getSkeleton(void) const { return (Skeleton*)_renderable; }
 
         void                removeRenderable(void);
@@ -147,7 +143,7 @@ namespace elysian {
         void                removeParticleEmitter(void);
         void                removeCombat(void);
         void                removeSkeleton(void);
- 
+
         Behavior*           addBehavior(char const* behaviorName);
         Behavior*           getBehavior(char const* constbehaviorName) const;
 
@@ -163,47 +159,47 @@ namespace elysian {
 
         void                removeBehavior(char const* behaviorName);
         void                removeLuaBehavior(char const* scriptName);
-        
+
         float               getDepthBaseY(void) const;
         void                setDepthBaseY(const float base);
 
         bool                isPersistent(void) const;
         void                setPersistent(const bool val);
 
-		OOLUA::Lua_table_ref&	getSelfTable(void);
-		void					setSelfTable(const OOLUA::Lua_table_ref self);
+        OOLUA::Lua_table_ref&	getSelfTable(void);
+        void					setSelfTable(const OOLUA::Lua_table_ref self);
         void                    pushViewTransform(void);
         void                    popViewTransform(void);
-        
-	protected:
-		
+
+    protected:
+
         char _name[ELYSIAN_ENTITY_NAME_SIZE]		= ELYSIAN_ENTITY_NAME_DEFAULT;
         char _dispName[ELYSIAN_ENTITY_NAME_SIZE]    = ELYSIAN_ENTITY_DESC_DEFAULT;
-		bool _componentActive[Component::MAX_TYPE]	= { false };
-        
+        bool _componentActive[Component::MAX_TYPE]	= { false };
+
         std::map<char const *, Behavior*, ltstr> _behavior;
 
         Entity*             _parent             = nullptr;
-		unsigned char		_elev				= 0;
-		bool				_shadowVolume		= false;
-		float				_shadowDepth		= 16.0f;
+        unsigned char		_elev				= 0;
+        bool				_shadowVolume		= false;
+        float				_shadowDepth		= 16.0f;
         GY_RECT_PLANE_TYPE  _planeType			= GY_RECT_PLANE_FRONT;
-		bool				_active				= false;
-		Renderable*			_renderable			= nullptr;
-		Animation*			_animation			= nullptr;
-		Collidable*			_collidable			= nullptr;
-		RigidBody*			_rigidBody			= nullptr;
-		Character*			_character			= nullptr;
-		Warp*				_warp				= nullptr;
-		Examinable*			_examinable			= nullptr;
-		AudioSource*		_audioSource		= nullptr;
-		LightSource*		_lightSource		= nullptr;
-		ParticleEmitter*	_particleEmitter	= nullptr;
-		Combat*				_combat				= nullptr;
-		OOLUA::Lua_table_ref	_selfTable;
+        bool				_active				= false;
+        Renderable*			_renderable			= nullptr;
+        Animation*			_animation			= nullptr;
+        Collidable*			_collidable			= nullptr;
+        RigidBody*			_rigidBody			= nullptr;
+        Character*			_character			= nullptr;
+        Warp*				_warp				= nullptr;
+        Examinable*			_examinable			= nullptr;
+        AudioSource*		_audioSource		= nullptr;
+        LightSource*		_lightSource		= nullptr;
+        ParticleEmitter*	_particleEmitter	= nullptr;
+        Combat*				_combat				= nullptr;
+        OOLUA::Lua_table_ref	_selfTable;
         static float        _oldZ;
         bool                _persistent         = false;
-		
+
 
         template<typename T>
         T* _addComponent(T*& comp);
@@ -214,10 +210,10 @@ namespace elysian {
 
         void _renderRelative(void);
 
-		bool		attachComponent(Component* const comp);
-		Behavior*	attachBehavior(Behavior *const behav);
-		void		reested(void); //default for failed deserialization attempts
-    }; 
+        bool		attachComponent(Component* const comp);
+        Behavior*	attachBehavior(Behavior *const behav);
+        void		reested(void); //default for failed deserialization attempts
+    };
 
 
 

@@ -3,7 +3,7 @@
 
 #include <gyro_shader_api.h>
 #include <elysian_lua_table_proxy.hpp>
-#include "elysian_instance_transform.hpp"
+#include <elysian_instance_transform.hpp>
 
 namespace elysian {
 
@@ -11,7 +11,7 @@ namespace elysian {
             public GYMaterial,
             public LuaTableProxy<Material>
     {
-	public:
+    public:
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(ambient, getAmbient)
             ELYSIAN_LUA_PROXY_FIELD(diffuse, getDiffuse)
@@ -39,7 +39,7 @@ namespace elysian {
         Vector4     getSpecular(void);
         Vector4     getEmissive(void);
 
-	};
+    };
 
 
 
@@ -48,21 +48,21 @@ namespace elysian {
 
 
 //=========== INLINEZ==========
-	inline Material::Material(void):
-		GYMaterial{
-			{ 1.0f, 1.0f, 1.0f, 1.0f },
-			{ 1.0f, 1.0f, 1.0f, 1.0f },
+    inline Material::Material(void):
+        GYMaterial{
+            { 1.0f, 1.0f, 1.0f, 1.0f },
+            { 1.0f, 1.0f, 1.0f, 1.0f },
             { 0.0f, 0.0f, 0.0f, 0.0f },
             { 0.0f, 0.0f, 0.0f, 0.0f },
-			1.0f
-		}
-	{ }
+            1.0f
+        }
+    { }
 
-	inline void Material::setAmbientColor(const GYVector4& color) { ambientColor = color; }
-	inline void Material::setDiffuseColor(const GYVector4& color) { diffuseColor = color; }
-	inline void Material::setSpecularColor(const GYVector4& color) { specularColor = color; }
-	inline void Material::setEmissiveColor(const GYVector4& color) { emissiveColor = color; }
-	inline void Material::setShininess(const float val) { shininess = val; }
+    inline void Material::setAmbientColor(const GYVector4& color) { ambientColor = color; }
+    inline void Material::setDiffuseColor(const GYVector4& color) { diffuseColor = color; }
+    inline void Material::setSpecularColor(const GYVector4& color) { specularColor = color; }
+    inline void Material::setEmissiveColor(const GYVector4& color) { emissiveColor = color; }
+    inline void Material::setShininess(const float val) { shininess = val; }
 
     inline void Material::getAmbientColor(GYVector4& color) const { color = ambientColor; }
     inline void Material::getDiffuseColor(GYVector4& color) const { color = diffuseColor; }

@@ -1,10 +1,10 @@
 #ifndef RENDERABLE_H
 #define RENDERABLE_H
 
-#include "assetManager.h"
-#include "component.h"
+#include <assetManager.h>
+#include <component.h>
+#include <gyro_video_api.h>
 //#include "elysian_primitive.hpp"
-#include <gyro.h>
 
 class QPushButton;
 class QVBoxLayout;
@@ -18,7 +18,7 @@ class QPixmap;
 class SpriteSheet;
 
 namespace elysian {
-	class Renderable;
+    class Renderable;
     class SpritePrim;
     class RectPrim;
 }
@@ -27,21 +27,21 @@ namespace elysian {
 class Renderable: public Component, public AssetManager {
 private:
 //	elysian::Renderable *_elysianRenderable;
-	SpriteSheet *_sheet;
+    SpriteSheet *_sheet;
 /*
-	union ElysianPrimitive {
-		elysian::SpritePrim *elysianSprite;
-		elysian::RectPrim *elysianRect;
-	}_elysianPrim;
+    union ElysianPrimitive {
+        elysian::SpritePrim *elysianSprite;
+        elysian::RectPrim *elysianRect;
+    }_elysianPrim;
 */
-	QVBoxLayout *_mainLayout;
-	QGridLayout *_colorLayout, *_texLayout;
-	QLabel *_colorLabel, *_rLabel, *_gLabel, *_bLabel, *_aLabel, *_texLabel, *_sizeLabel,
-		*_widthLabel, *_heightLabel, *_sheetLabel, *_spriteLabel, *_frameLabel;
-	QLineEdit *_rEdit, *_gEdit, *_bEdit, *_aEdit, *_texEdit, *_shWEdit, *_shHEdit, *_sprWEdit, *_sprHEdit,
-		*_frameEdit;
-	QPushButton *_swatchBut, *_browseBut, *_reloadBut;
-	QCheckBox *_texCheckBox;
+    QVBoxLayout *_mainLayout;
+    QGridLayout *_colorLayout, *_texLayout;
+    QLabel *_colorLabel, *_rLabel, *_gLabel, *_bLabel, *_aLabel, *_texLabel, *_sizeLabel,
+        *_widthLabel, *_heightLabel, *_sheetLabel, *_spriteLabel, *_frameLabel;
+    QLineEdit *_rEdit, *_gEdit, *_bEdit, *_aEdit, *_texEdit, *_shWEdit, *_shHEdit, *_sprWEdit, *_sprHEdit,
+        *_frameEdit;
+    QPushButton *_swatchBut, *_browseBut, *_reloadBut;
+    QCheckBox *_texCheckBox;
 
     void ReloadSpriteSheet(void);
 /*
@@ -52,36 +52,36 @@ public Q_SLOTS:
     void OnSetColorB(void);
     void OnSetColorA(void);
 
-	void OnSetTextured(bool val);
-	void OnSetTexturedPath();
-	//void OnSetSheetWidth();
-	//void OnSetSheetHeight();
-	void OnSetSpriteWidth();
-	void OnSetSpriteHeight();
-	void OnSetFrame();
-	void OnSwatchClick();
-	void OnBrowseClick();
-	void OnReloadClick();
+    void OnSetTextured(bool val);
+    void OnSetTexturedPath();
+    //void OnSetSheetWidth();
+    //void OnSetSheetHeight();
+    void OnSetSpriteWidth();
+    void OnSetSpriteHeight();
+    void OnSetFrame();
+    void OnSwatchClick();
+    void OnBrowseClick();
+    void OnReloadClick();
 
 Q_SIGNALS:
     void PrimitiveUpdate(); */
 
 public:
 
-	void InitializeUI(void);
-	void PopulateUI(void);
+    void InitializeUI(void);
+    void PopulateUI(void);
 
-	Renderable(elysian::Renderable *const comp);
+    Renderable(elysian::Renderable *const comp);
 
     ~Renderable(void);
-	elysian::Component::TYPE getType(void) const { return elysian::Component::RENDERABLE; }
-	//elysian::Primitive::TYPE getPrimType(void) const;
+    elysian::Component::TYPE getType(void) const { return elysian::Component::RENDERABLE; }
+    //elysian::Primitive::TYPE getPrimType(void) const;
 
     GYColor4 getColor(void) const;
 
     QPixmap* getCurrentFramePixmap(void) const;
     void getSpriteSize(unsigned &width, unsigned &height) const;
-	void setColor(float r, float g, float b, float a);
+    void setColor(float r, float g, float b, float a);
 };
 
 #endif // RENDERABLE_H

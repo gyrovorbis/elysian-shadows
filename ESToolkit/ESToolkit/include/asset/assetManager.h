@@ -1,8 +1,7 @@
 #ifndef ASSETMANAGER_H
 #define ASSETMANAGER_H
 
-#include "selectable.h"
-#include "assets.h"
+#include <assets.h>
 
 class TkLevel;
 typedef TkLevel Level;

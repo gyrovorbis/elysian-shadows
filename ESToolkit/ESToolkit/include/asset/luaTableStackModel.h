@@ -2,12 +2,11 @@
 #define ESTK_LUA_TABLE_STANDARD_ITEM_MODEL_HPP
 
 #include <QString>
-#include "elysian_debug.hpp"
 
-#include "elysian_lua_table_proxy.hpp"
-#include "propertyStackModel.h"
-#include "propertyStandardItem.h"
-#include "elysian_debug.hpp"
+#include <elysian_lua_table_proxy.hpp>
+#include <propertyStackModel.h>
+#include <propertyStandardItem.h>
+#include <elysian_debug.hpp>
 
 class LuaTableStackModel;
 

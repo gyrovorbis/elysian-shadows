@@ -12,10 +12,10 @@
 #include "elysian_party_system.hpp"
 
 /*
-	Welcome, motherfuckers, to hell. Where abstract math meets low-level optimization. 
-	Where structural C algorithms meet encapsulated C++ datatypes.
-	Where real men struggle to stand tall and bitches weep...
-	--FG
+    Welcome, motherfuckers, to hell. Where abstract math meets low-level optimization.
+    Where structural C algorithms meet encapsulated C++ datatypes.
+    Where real men struggle to stand tall and bitches weep...
+    --FG
 */
 
 namespace elysian {
@@ -26,77 +26,77 @@ CollisionSystem::CollisionSystem(void) {
 
 //This is a pretty DAMN expensive operation
 void CollisionSystem::render(void) {
-	renderTileColliders();
-	if(_renderLayer != RENDER_DISABLED) {
-		for(unsigned i = 0; i < _curArea->collidables.size(); ++i) {
-			_curArea->collidables[i]->render();
-		}
-	}
+    renderTileColliders();
+    if(_renderLayer != RENDER_DISABLED) {
+        for(unsigned i = 0; i < _curArea->collidables.size(); ++i) {
+            _curArea->collidables[i]->render();
+        }
+    }
 }
 
 void CollisionSystem::update(void) {
-	if(!_enabled) return;
-	//prepareGeometry();
-	detectCollisions();
+    if(!_enabled) return;
+    //prepareGeometry();
+    detectCollisions();
     resolvePenetration();
-	_checkTriggers();
+    _checkTriggers();
 }
 
 void CollisionSystem::_checkTriggers(void) {
-	
-	for(unsigned i = 0; i < _contactAmount; ++i) {
-		CollisionContact &curContact = _contactPool[i];
-		uint32_t curMask = 0;
 
-		if(curContact._eventMonitorMask) {
-			bool prevCollision = false;
-			if(previouslyColliding(*curContact._bodyA, *curContact._bodyB)) {
-				prevCollision = true;
-				//break;
-			}
+    for(unsigned i = 0; i < _contactAmount; ++i) {
+        CollisionContact &curContact = _contactPool[i];
+        uint32_t curMask = 0;
 
-			for(unsigned i = 0; i < 32; ++i) {
-				if( !(curMask = (curContact._eventMonitorMask & (1<<i))) ) continue;
+        if(curContact._eventMonitorMask) {
+            bool prevCollision = false;
+            if(previouslyColliding(*curContact._bodyA, *curContact._bodyB)) {
+                prevCollision = true;
+                //break;
+            }
+
+            for(unsigned i = 0; i < 32; ++i) {
+                if( !(curMask = (curContact._eventMonitorMask & (1<<i))) ) continue;
                 auto* monitor = _contactMonitors[curMask];
                 if(!monitor) continue;
 
-				if(curMask & curContact._bodyA->_eventMonitorMask) {
-					if(!prevCollision) monitor->onCollisionEnter(curContact._bodyA, curContact._bodyB, &curContact);
-					else monitor->onCollide(curContact._bodyA, curContact._bodyB, &curContact);
-				}
-				if(curMask & curContact._bodyB->_eventMonitorMask) {
-					if(!prevCollision) monitor->onCollisionEnter(curContact._bodyB, curContact._bodyA, &curContact);
-					else monitor->onCollide(curContact._bodyB, curContact._bodyA, &curContact);
-				}
-			}
-		}
-	}
+                if(curMask & curContact._bodyA->_eventMonitorMask) {
+                    if(!prevCollision) monitor->onCollisionEnter(curContact._bodyA, curContact._bodyB, &curContact);
+                    else monitor->onCollide(curContact._bodyA, curContact._bodyB, &curContact);
+                }
+                if(curMask & curContact._bodyB->_eventMonitorMask) {
+                    if(!prevCollision) monitor->onCollisionEnter(curContact._bodyB, curContact._bodyA, &curContact);
+                    else monitor->onCollide(curContact._bodyB, curContact._bodyA, &curContact);
+                }
+            }
+        }
+    }
 
 
-	for(unsigned i = 0; i < _prevContactAmount; ++i) {
-		Collidable& colA = *_prevContactPool[i].collidable[0];
-		Collidable& colB = *_prevContactPool[i].collidable[1];
-		uint32_t curMask = 0;
+    for(unsigned i = 0; i < _prevContactAmount; ++i) {
+        Collidable& colA = *_prevContactPool[i].collidable[0];
+        Collidable& colB = *_prevContactPool[i].collidable[1];
+        uint32_t curMask = 0;
 
-		if(!checkCollision(colA, colB)) {
-			for(unsigned i = 0; i < 32; ++i) {
-				curMask = (1<<i);
+        if(!checkCollision(colA, colB)) {
+            for(unsigned i = 0; i < 32; ++i) {
+                curMask = (1<<i);
                 auto* monitor = _contactMonitors[curMask];
                 if(!monitor) continue;
                 if(curMask & colA._eventMonitorMask) monitor->onCollisionExit(&colA, &colB);
                 if(curMask & colB._eventMonitorMask) monitor->onCollisionExit(&colB, &colA);
-			}
-		}
-	}
-	
-	_prevContactAmount = 0;
-	for(unsigned i = 0; i < _contactAmount; ++i) {
-		if(_contactPool[i]._eventMonitorMask) {
-			_prevContactPool[_prevContactAmount].collidable[0] = _contactPool[i]._bodyA;
-			_prevContactPool[_prevContactAmount].collidable[1] = _contactPool[i]._bodyB;
-			++_prevContactAmount;
-		}
-	}
+            }
+        }
+    }
+
+    _prevContactAmount = 0;
+    for(unsigned i = 0; i < _contactAmount; ++i) {
+        if(_contactPool[i]._eventMonitorMask) {
+            _prevContactPool[_prevContactAmount].collidable[0] = _contactPool[i]._bodyA;
+            _prevContactPool[_prevContactAmount].collidable[1] = _contactPool[i]._bodyB;
+            ++_prevContactAmount;
+        }
+    }
 }
 
 void CollisionSystem::prepareGeometry(void) {
@@ -104,15 +104,15 @@ void CollisionSystem::prepareGeometry(void) {
     gyMatLoad(&getCameraSys()->getCurrentState()->viewMat);
 
 
-	unsigned size = _curArea->collidables.size();
-	for(unsigned i = 0; i < size; ++i) {
-		assert(_curArea->collidables[i]->getAttrib());
-		_curArea->collidables[i]->update();
-	}
+    unsigned size = _curArea->collidables.size();
+    for(unsigned i = 0; i < size; ++i) {
+        assert(_curArea->collidables[i]->getAttrib());
+        _curArea->collidables[i]->update();
+    }
 
     gyMatPop();
 }
-    
+
 void CollisionSystem::_applyTileColliderTransform(const Tile::COLLIDER_TYPE colType) const {
     switch(colType) {
     case Tile::COLLIDER_HALF_S:
@@ -159,218 +159,218 @@ void CollisionSystem::renderTileColliders(void) const {
     gyVidSpecularMapBind(nullptr);
     gyVidNormalMapBind(nullptr);
 
-	static const GYVector4 boxLocalVerts[4] = {
-		{ -0.5f, -0.5f, 0.0f, 1.0f },
-		{ 0.5f, -0.5f, 0.0f, 1.0f },
-		{ -0.5f, 0.5f, 0.0f, 1.0f },
-		{ 0.5f, 0.5f, 0.0f, 1.0f }
-	};
-	static const GYVector4 triLocalVerts[3] = {
-		{ 0.5f, -0.5f, 0.0f, 1.0f },
-		{ -0.5f, 0.5f, 0.0f, 1.0f },
-		{ 0.5f, 0.5f, 0.0f, 1.0f }
-	};
-	static const GYColor4 boxColors[4] = {
-		{ 0, 0, 255, 128 },
-		{ 0, 0, 255, 128 },
-		{ 0, 0, 255, 128 },
-		{ 0, 0, 255, 128 }
-	};
+    static const GYVector4 boxLocalVerts[4] = {
+        { -0.5f, -0.5f, 0.0f, 1.0f },
+        { 0.5f, -0.5f, 0.0f, 1.0f },
+        { -0.5f, 0.5f, 0.0f, 1.0f },
+        { 0.5f, 0.5f, 0.0f, 1.0f }
+    };
+    static const GYVector4 triLocalVerts[3] = {
+        { 0.5f, -0.5f, 0.0f, 1.0f },
+        { -0.5f, 0.5f, 0.0f, 1.0f },
+        { 0.5f, 0.5f, 0.0f, 1.0f }
+    };
+    static const GYColor4 boxColors[4] = {
+        { 0, 0, 255, 128 },
+        { 0, 0, 255, 128 },
+        { 0, 0, 255, 128 },
+        { 0, 0, 255, 128 }
+    };
     static const GYColor4 triColors[3] = {
         { 0, 0, 255, 128 },
-		{ 0, 0, 255, 128 },
-		{ 0, 0, 255, 128 }
+        { 0, 0, 255, 128 },
+        { 0, 0, 255, 128 }
     };
-	static const GYColor4 zTranColor = {
-		255, 255, 0, 128
-	};
-    
-	//Check if we're even rendering solidity. If not, return.
-	if(_renderLayer == RENDER_DISABLED) return;
-	//Check if there's even an active player for solidity to be rendered relative to
-	if(!getPartySys()->getPartyLeader()) return;
+    static const GYColor4 zTranColor = {
+        255, 255, 0, 128
+    };
+
+    //Check if we're even rendering solidity. If not, return.
+    if(_renderLayer == RENDER_DISABLED) return;
+    //Check if there's even an active player for solidity to be rendered relative to
+    if(!getPartySys()->getPartyLeader()) return;
 
     int startX, startY, endX, endY;
-	unsigned playerElev = getPartySys()->getPartyLeader()->getElev();
+    unsigned playerElev = getPartySys()->getPartyLeader()->getElev();
     //Collidable &col = *getPartySys()->getPartyLeader()->getCollidable();
 
     gyVidTexBind(nullptr);
-	gyVidAlphaLevel(GY_ALPHA_FULL);
-	getMapSys()->getOnscreenTileRegion(startX, startY, endX, endY);
+    gyVidAlphaLevel(GY_ALPHA_FULL);
+    getMapSys()->getOnscreenTileRegion(startX, startY, endX, endY);
     for(int y = startY; y <= endY; ++y) {
         for(int x = startX; x <= endX; ++x) {
-			unsigned startIndex, stopIndex;
-			Tile::COLLIDER_TYPE colType = Tile::COLLIDER_NONE;
+            unsigned startIndex, stopIndex;
+            Tile::COLLIDER_TYPE colType = Tile::COLLIDER_NONE;
 
-			//Retrieve current colliderType at map location
-			switch(_renderLayer) {
-			case RENDER_LAYER_1:
-				startIndex = stopIndex = 0;
-				break;
-			case RENDER_LAYER_2:
-				startIndex = stopIndex = 1;
-				break;
-			case RENDER_LAYER_3:
-				startIndex = stopIndex = 2;
-				break;
-			case RENDER_COMBINED:
-				startIndex = 0; stopIndex = 2;
-				break;
-			default: assert(0);
-			}
+            //Retrieve current colliderType at map location
+            switch(_renderLayer) {
+            case RENDER_LAYER_1:
+                startIndex = stopIndex = 0;
+                break;
+            case RENDER_LAYER_2:
+                startIndex = stopIndex = 1;
+                break;
+            case RENDER_LAYER_3:
+                startIndex = stopIndex = 2;
+                break;
+            case RENDER_COMBINED:
+                startIndex = 0; stopIndex = 2;
+                break;
+            default: assert(0);
+            }
 
             //bool isOnZPlane = false;
-			bool isZTran = false;
+            bool isZTran = false;
 
-			//Iterate over interested layer(s)
-			for(unsigned i = startIndex; i <= stopIndex; ++i) {
-				TileEntry tileEntry = _curArea->getTileEntry(i, x, y);
+            //Iterate over interested layer(s)
+            for(unsigned i = startIndex; i <= stopIndex; ++i) {
+                TileEntry tileEntry = _curArea->getTileEntry(i, x, y);
 
-				//Only look at colliders on the entity's z-plane
-				if(tileEntry.getElev() > playerElev + 1 ||
-					tileEntry.getElev() < playerElev) continue;
-				
-				Tile::COLLIDER_TYPE colType2 = _curLevel->tileset[tileEntry.getIndex()].colliderType;
-				colType2 = Tile::reorientCollider(colType2, tileEntry.getOrient());
-				//Combine and accumulate
-				colType = Tile::combineColliders(colType, colType2);
+                //Only look at colliders on the entity's z-plane
+                if(tileEntry.getElev() > playerElev + 1 ||
+                    tileEntry.getElev() < playerElev) continue;
+
+                Tile::COLLIDER_TYPE colType2 = _curLevel->tileset[tileEntry.getIndex()].colliderType;
+                colType2 = Tile::reorientCollider(colType2, tileEntry.getOrient());
+                //Combine and accumulate
+                colType = Tile::combineColliders(colType, colType2);
                 //isOnZPlane = true;
-				
-				if(tileEntry.getZTran() && tileEntry.getElev() == playerElev) isZTran = true;
-			}
-			
+
+                if(tileEntry.getZTran() && tileEntry.getElev() == playerElev) isZTran = true;
+            }
+
 
 //			if(!isOnZPlane && !col._onZTran && col.getZTranState() != Collidable::ZTRAN_ACTIVE) colType = Tile::COLLIDER_FULL;
-			if(colType == Tile::COLLIDER_NONE && !isZTran) continue;
+            if(colType == Tile::COLLIDER_NONE && !isZTran) continue;
 
-			gyMatPush();
+            gyMatPush();
             gyMatTranslateScale(x*32.0f, y*32.0f + ZCoordConstants::tileDecor, ZCoordConstants::tileDecor, 32.0f, 32.0f, 1.0f);
-			
-			if(isZTran) {
-				gyVidQuadListBegin(&zTranColor);
-				gyVidRect(0);
-				gyVidQuadListEnd();
-			}
-			
-			if(colType == Tile::COLLIDER_NONE) {
-				gyMatPop();
-				continue;
-			}
 
-			switch(colType) {
-			case Tile::COLLIDER_L_NE:
-				gyMatPush();
-				_applyTileColliderTransform(Tile::COLLIDER_HALF_N);
-				gyVidColorArray(boxColors);
-				gyVidTriangleStrip(boxLocalVerts, 0, 4);
-				gyMatPop();
-				_applyTileColliderTransform(Tile::COLLIDER_QUAD_SE);
-				gyVidColorArray(boxColors);
-				gyVidTriangleStrip(boxLocalVerts, 0, 4);
-				break;
-			case Tile::COLLIDER_L_NW:
-				gyMatPush();
-				_applyTileColliderTransform(Tile::COLLIDER_HALF_N);
-				gyVidColorArray(boxColors);
-				gyVidTriangleStrip(boxLocalVerts, 0, 4);
-				gyMatPop();
-				_applyTileColliderTransform(Tile::COLLIDER_QUAD_SW);
-				gyVidColorArray(boxColors);
-				gyVidTriangleStrip(boxLocalVerts, 0, 4);
-				break;
-			case Tile::COLLIDER_L_SW:
-				gyMatPush();
-				_applyTileColliderTransform(Tile::COLLIDER_HALF_S);
-				gyVidColorArray(boxColors);
-				gyVidTriangleStrip(boxLocalVerts, 0, 4);
-				gyMatPop();
-				_applyTileColliderTransform(Tile::COLLIDER_QUAD_NW);
-				gyVidColorArray(boxColors);
-				gyVidTriangleStrip(boxLocalVerts, 0, 4);
-				break;
-			case Tile::COLLIDER_L_SE:
-				gyMatPush();
-				_applyTileColliderTransform(Tile::COLLIDER_HALF_S);
-				gyVidColorArray(boxColors);
-				gyVidTriangleStrip(boxLocalVerts, 0, 4);
-				gyMatPop();
-				_applyTileColliderTransform(Tile::COLLIDER_QUAD_NE);
-				gyVidColorArray(boxColors);
-				gyVidTriangleStrip(boxLocalVerts, 0, 4);
-				break;
-			case Tile::COLLIDER_QUADS_SE_NW:
-				gyMatPush();
-				_applyTileColliderTransform(Tile::COLLIDER_QUAD_SE);
-				gyVidColorArray(boxColors);
-				gyVidTriangleStrip(boxLocalVerts, 0, 4);
-				gyMatPop();
-				_applyTileColliderTransform(Tile::COLLIDER_QUAD_NW);
-				gyVidColorArray(boxColors);
-				gyVidTriangleStrip(boxLocalVerts, 0, 4);
-				break;
-			case Tile::COLLIDER_QUADS_SW_NE:
-				gyMatPush();
-				_applyTileColliderTransform(Tile::COLLIDER_QUAD_SW);
-				gyVidColorArray(boxColors);
-				gyVidTriangleStrip(boxLocalVerts, 0, 4);
-				gyMatPop();
-				_applyTileColliderTransform(Tile::COLLIDER_QUAD_NE);
-				gyVidColorArray(boxColors);
-				gyVidTriangleStrip(boxLocalVerts, 0, 4);
-				break;
-			case Tile::COLLIDER_FULL:
-			case Tile::COLLIDER_HALF_S:
-			case Tile::COLLIDER_HALF_W:
-			case Tile::COLLIDER_HALF_E:
-			case Tile::COLLIDER_HALF_N:
-			case Tile::COLLIDER_QUAD_NE:
-			case Tile::COLLIDER_QUAD_NW:
-			case Tile::COLLIDER_QUAD_SE:
-			case Tile::COLLIDER_QUAD_SW:
-				_applyTileColliderTransform(colType);
-				gyVidColorArray(boxColors);
-				gyVidTriangleStrip(boxLocalVerts, 0, 4);
-				break;
-			case Tile::COLLIDER_45DEG_NE:
-			case Tile::COLLIDER_45DEG_NW:
-			case Tile::COLLIDER_45DEG_SW:
-			case Tile::COLLIDER_45DEG_SE:
-				_applyTileColliderTransform(colType);
-				gyVidColorArray(triColors);
-				gyVidTriangleStrip(triLocalVerts, 0, 3);
-				break;
-			default: assert(0);
-			}
-			gyMatPop();
-		}
-	}
+            if(isZTran) {
+                gyVidQuadListBegin(&zTranColor);
+                gyVidRect(0);
+                gyVidQuadListEnd();
+            }
+
+            if(colType == Tile::COLLIDER_NONE) {
+                gyMatPop();
+                continue;
+            }
+
+            switch(colType) {
+            case Tile::COLLIDER_L_NE:
+                gyMatPush();
+                _applyTileColliderTransform(Tile::COLLIDER_HALF_N);
+                gyVidColorArray(boxColors);
+            //	gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                gyMatPop();
+                _applyTileColliderTransform(Tile::COLLIDER_QUAD_SE);
+                gyVidColorArray(boxColors);
+        //		gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                break;
+            case Tile::COLLIDER_L_NW:
+                gyMatPush();
+                _applyTileColliderTransform(Tile::COLLIDER_HALF_N);
+                gyVidColorArray(boxColors);
+            //	gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                gyMatPop();
+                _applyTileColliderTransform(Tile::COLLIDER_QUAD_SW);
+                gyVidColorArray(boxColors);
+        //		gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                break;
+            case Tile::COLLIDER_L_SW:
+                gyMatPush();
+                _applyTileColliderTransform(Tile::COLLIDER_HALF_S);
+                gyVidColorArray(boxColors);
+            //	gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                gyMatPop();
+                _applyTileColliderTransform(Tile::COLLIDER_QUAD_NW);
+                gyVidColorArray(boxColors);
+            //	gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                break;
+            case Tile::COLLIDER_L_SE:
+                gyMatPush();
+                _applyTileColliderTransform(Tile::COLLIDER_HALF_S);
+                gyVidColorArray(boxColors);
+              //  gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                gyMatPop();
+                _applyTileColliderTransform(Tile::COLLIDER_QUAD_NE);
+                gyVidColorArray(boxColors);
+             //   gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                break;
+            case Tile::COLLIDER_QUADS_SE_NW:
+                gyMatPush();
+                _applyTileColliderTransform(Tile::COLLIDER_QUAD_SE);
+                gyVidColorArray(boxColors);
+               // gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                gyMatPop();
+                _applyTileColliderTransform(Tile::COLLIDER_QUAD_NW);
+                gyVidColorArray(boxColors);
+              //  gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                break;
+            case Tile::COLLIDER_QUADS_SW_NE:
+                gyMatPush();
+                _applyTileColliderTransform(Tile::COLLIDER_QUAD_SW);
+                gyVidColorArray(boxColors);
+               // gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                gyMatPop();
+                _applyTileColliderTransform(Tile::COLLIDER_QUAD_NE);
+                gyVidColorArray(boxColors);
+               // gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                break;
+            case Tile::COLLIDER_FULL:
+            case Tile::COLLIDER_HALF_S:
+            case Tile::COLLIDER_HALF_W:
+            case Tile::COLLIDER_HALF_E:
+            case Tile::COLLIDER_HALF_N:
+            case Tile::COLLIDER_QUAD_NE:
+            case Tile::COLLIDER_QUAD_NW:
+            case Tile::COLLIDER_QUAD_SE:
+            case Tile::COLLIDER_QUAD_SW:
+                _applyTileColliderTransform(colType);
+                gyVidColorArray(boxColors);
+                //gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                break;
+            case Tile::COLLIDER_45DEG_NE:
+            case Tile::COLLIDER_45DEG_NW:
+            case Tile::COLLIDER_45DEG_SW:
+            case Tile::COLLIDER_45DEG_SE:
+                _applyTileColliderTransform(colType);
+                gyVidColorArray(triColors);
+              //  gyVidTriangleStrip(triLocalVerts, 0, 3);
+                break;
+            default: assert(0);
+            }
+            gyMatPop();
+        }
+    }
 }
 
 //ONLY HANDLES RECTS... why?
 void CollisionSystem::renderEntities(void) {
-	for(std::vector<Collidable *>::const_iterator it = _curArea->collidables.begin();
-        it != _curArea->collidables.end(); 
-		++it) 
-	{
+    for(std::vector<Collidable *>::const_iterator it = _curArea->collidables.begin();
+        it != _curArea->collidables.end();
+        ++it)
+    {
         (*it)->render();
     }
 }
 
 void CollisionSystem::detectCollisions(void) {
-	unsigned i = 0;
+    unsigned i = 0;
 
-	//reset contact counters
-	_contactAmount = 0;
-	for(; i < _curArea->collidables.size(); ++i) _curArea->collidables[i]->_contactCount = 0;
+    //reset contact counters
+    _contactAmount = 0;
+    for(; i < _curArea->collidables.size(); ++i) _curArea->collidables[i]->_contactCount = 0;
     if(getEngineState() != System::ENGINE_ESTK_STOP) {
-	for(i = 0; i < _curArea->collidables.size(); ++i) {
+    for(i = 0; i < _curArea->collidables.size(); ++i) {
         if(!_curArea->collidables[i]->_active || !_curArea->collidables[i]->_worldSpace) continue;
         _detectEntityTileZCollisionCoarse(*_curArea->collidables[i]);
         detectEntityCollision(i);
         if(_curArea->collidables[i]->getAttrib()->getFlags()->checkAgainst & CollisionFlags::TILE) {
             _detectEntityTileCollisionCoarse(*_curArea->collidables[i]);
         }
-	} 
+    }
     }
 
     //Check GUI-layer collidables
@@ -585,22 +585,22 @@ if(worldSpace) {
 
 //Looks correct algorithmically.
 void CollisionSystem::detectEntityCollision(const unsigned i) {
-	Collidable *bodyA = _curArea->collidables[i];
-	Collidable *bodyB;
-	int swapFlag;
+    Collidable *bodyA = _curArea->collidables[i];
+    Collidable *bodyB;
+    int swapFlag;
     float aBot, aTop;
     float bBot, bTop;
     float zBot, zTop;
     bool zTopFound, zBotFound;
-    
+
     gyColliderCurrent(&bodyA->_collider.col, bodyA->getAttrib()->getStaticAttrib());
-    
-	for(unsigned j = i+1; j < _curArea->collidables.size(); ++j) {
-		bodyB = _curArea->collidables[j];
+
+    for(unsigned j = i+1; j < _curArea->collidables.size(); ++j) {
+        bodyB = _curArea->collidables[j];
         bool worldSpace = bodyA->_worldSpace;
-			
-		//Return if collision flags don't match OR
-		//if both are on different z-planes.
+
+        //Return if collision flags don't match OR
+        //if both are on different z-planes.
         if(bodyB->_worldSpace != worldSpace) continue;
         if(!(bodyA->getAttrib()->flags.checkAgainst & bodyB->getAttrib()->flags.type)
                 /* || bodyA->getEntity()->getElev() != bodyB->getEntity()->getElev() */) continue;
@@ -657,15 +657,15 @@ void CollisionSystem::detectEntityCollision(const unsigned i) {
 
 }
 
-		if(gyCollision(&bodyB->_collider.col, bodyB->getAttrib()->getStaticAttrib(), &_contactPool[_contactAmount], &swapFlag)) {
-			++bodyA->_contactCount;
-			++bodyB->_contactCount;
+        if(gyCollision(&bodyB->_collider.col, bodyB->getAttrib()->getStaticAttrib(), &_contactPool[_contactAmount], &swapFlag)) {
+            ++bodyA->_contactCount;
+            ++bodyB->_contactCount;
 
            float zDiff;// =  (zTop == aTop)? (aTop-bBot) : -((bTop-aBot));
 
-			if(!swapFlag) { 
-				_contactPool[_contactAmount]._bodyA = bodyA;
-				_contactPool[_contactAmount]._bodyB = bodyB;
+            if(!swapFlag) {
+                _contactPool[_contactAmount]._bodyA = bodyA;
+                _contactPool[_contactAmount]._bodyB = bodyB;
 
                 if(worldSpace) {
                 if(zTop == aTop && zBot == bBot) {
@@ -675,10 +675,10 @@ void CollisionSystem::detectEntityCollision(const unsigned i) {
                 } else zDiff = 100.0f;
                 }
 
-			}
-			else {
-				_contactPool[_contactAmount]._bodyB = bodyA;
-				_contactPool[_contactAmount]._bodyA = bodyB;
+            }
+            else {
+                _contactPool[_contactAmount]._bodyB = bodyA;
+                _contactPool[_contactAmount]._bodyA = bodyB;
 
                 if(worldSpace) {
                 if(zTop == aTop && zBot == bBot) {
@@ -687,25 +687,25 @@ void CollisionSystem::detectEntityCollision(const unsigned i) {
                     zDiff = aTop-bBot;
                 } else zDiff = 100.0f;
                 }
-			}
+            }
 
             _contactPool[_contactAmount]._resolvePen		= (bodyA->_resolvePen && bodyB->_resolvePen);
-			_contactPool[_contactAmount]._eventMonitorMask	= (bodyA->_eventMonitorMask | bodyB->_eventMonitorMask);
+            _contactPool[_contactAmount]._eventMonitorMask	= (bodyA->_eventMonitorMask | bodyB->_eventMonitorMask);
 
         //    float zDiff = zTop-zBot;
 
             _contactPool[_contactAmount].setZDepth(worldSpace? zDiff : 0.0f);
-			
-			//Emit onCollide trigger for any entitjjies with this component
-            //getBehavSys()->onCollide(bodyA->getEntity(), bodyB);
-			//getBehavSys()->onCollide(bodyB->getEntity(), bodyA)
 
-			
+            //Emit onCollide trigger for any entitjjies with this component
+            //getBehavSys()->onCollide(bodyA->getEntity(), bodyB);
+            //getBehavSys()->onCollide(bodyB->getEntity(), bodyA)
+
+
             if(++_contactAmount == ELYSIAN_COLLISION_CONTACT_LIST_SIZE) {
                 _contactAmount -= 2;
                 break; //MAXXED OUT -- NOT GOOD ENOUGH
             }
-		}
+        }
 
         if(worldSpace) {
         if(zBot == aBot) {
@@ -725,307 +725,307 @@ void CollisionSystem::detectEntityCollision(const unsigned i) {
         }
         }
 
-	}
+    }
 }
 
 inline void CollisionSystem::_detectCollidableColliderCollision(Collidable &collidable, GYCollider &collider) {
-	int swapFlag;
+    int swapFlag;
 
-	gyColliderCurrent(&collidable._collider.col, collidable.getAttrib()->getStaticAttrib());
-	if(gyCollision(&collider, nullptr, &_contactPool[_contactAmount], &swapFlag)) {
-		_contactPool[_contactAmount]._bodyA = &collidable;
-		_contactPool[_contactAmount]._bodyB = nullptr;
-		_contactPool[_contactAmount]._eventMonitorMask = 0;
+    gyColliderCurrent(&collidable._collider.col, collidable.getAttrib()->getStaticAttrib());
+    if(gyCollision(&collider, nullptr, &_contactPool[_contactAmount], &swapFlag)) {
+        _contactPool[_contactAmount]._bodyA = &collidable;
+        _contactPool[_contactAmount]._bodyB = nullptr;
+        _contactPool[_contactAmount]._eventMonitorMask = 0;
         _contactPool[_contactAmount].setZDepth(ELYSIAN_COLLISION_CONTACT_Z_DEPTH_MAX+1.0f);
-		_contactPool[_contactAmount++]._resolvePen = collidable._resolvePen;
-		++collidable._contactCount;
+        _contactPool[_contactAmount++]._resolvePen = collidable._resolvePen;
+        ++collidable._contactCount;
         if(_contactAmount == ELYSIAN_COLLISION_CONTACT_LIST_SIZE) assert(0);
-	}
+    }
 }
 
 
 void CollisionSystem::_detectEntityTileCollisionFine(Collidable &collidable, const unsigned x, const unsigned y, const unsigned char elev) {
-	GYBoxCollider boxCollider;
-	TileEntry tileEntry[3];
-	Tile::COLLIDER_TYPE colType = Tile::COLLIDER_NONE;
+    GYBoxCollider boxCollider;
+    TileEntry tileEntry[3];
+    Tile::COLLIDER_TYPE colType = Tile::COLLIDER_NONE;
 
     tileEntry[0] = _curArea->getTileEntry(0, x, y);
     tileEntry[1] = _curArea->getTileEntry(1, x, y);
     tileEntry[2] = _curArea->getTileEntry(2, x, y);
 
-		//Iterate over tile layers and combine their colliders
-		for(unsigned i = 0; i < 3; ++i) {
+        //Iterate over tile layers and combine their colliders
+        for(unsigned i = 0; i < 3; ++i) {
 
-	#if 0
-			if(tileEntry[i].getElev() > EntityElev + 1 ||
-				tileEntry[i].getElev() < EntityElev) continue;
-	#else
-			if(tileEntry[i].getElev() != elev) continue;
-	#endif
+    #if 0
+            if(tileEntry[i].getElev() > EntityElev + 1 ||
+                tileEntry[i].getElev() < EntityElev) continue;
+    #else
+            if(tileEntry[i].getElev() != elev) continue;
+    #endif
 
-			//if((collidable._onZTran || collidable.getZTranState() == Collidable::ZTRAN_ACTIVE) && tileEntry[i].getElev() != EntityElev) continue;
-			Tile::COLLIDER_TYPE colType2 = _curLevel->tileset[tileEntry[i].getIndex()].colliderType;
-			colType2 = Tile::reorientCollider(colType2, tileEntry[i].getOrient());
-			//Combine and accumulate
-			colType = Tile::combineColliders(colType, colType2);
-		}
+            //if((collidable._onZTran || collidable.getZTranState() == Collidable::ZTRAN_ACTIVE) && tileEntry[i].getElev() != EntityElev) continue;
+            Tile::COLLIDER_TYPE colType2 = _curLevel->tileset[tileEntry[i].getIndex()].colliderType;
+            colType2 = Tile::reorientCollider(colType2, tileEntry[i].getOrient());
+            //Combine and accumulate
+            colType = Tile::combineColliders(colType, colType2);
+        }
 
-		//Do not allow collider to move to location without a tile at its elevation
-		//UNLESS he's z-transitioning!
-		//if(!isTileAtElev && !collidable._onZTran && collidable.getZTranState() != Collidable::ZTRAN_ACTIVE) colType = Tile::COLLIDER_FULL;
+        //Do not allow collider to move to location without a tile at its elevation
+        //UNLESS he's z-transitioning!
+        //if(!isTileAtElev && !collidable._onZTran && collidable.getZTranState() != Collidable::ZTRAN_ACTIVE) colType = Tile::COLLIDER_FULL;
 
-		//Will not always be the case!
-		boxCollider.collider.type = GY_COLLIDER_AABB;
+        //Will not always be the case!
+        boxCollider.collider.type = GY_COLLIDER_AABB;
 
-		//SKETCHY!!!
+        //SKETCHY!!!
         //boxCollider.collider.worldPos.x = x*32.0f;
         //boxCollider.collider.worldPos.y = y*32.0f;
 
-		switch(colType) {
-		case Tile::COLLIDER_NONE:
-			return;
-		case Tile::COLLIDER_L_NE:
-			gyMatPush();
-			_applyTileColliderTransform(Tile::COLLIDER_HALF_N);
-			gyCalcBoxWorldVert(&boxCollider);
+        switch(colType) {
+        case Tile::COLLIDER_NONE:
+            return;
+        case Tile::COLLIDER_L_NE:
+            gyMatPush();
+            _applyTileColliderTransform(Tile::COLLIDER_HALF_N);
+            gyCalcBoxWorldVert(&boxCollider);
             _detectCollidableColliderCollision(collidable, boxCollider.collider);
-			gyMatPop();
-			_applyTileColliderTransform(Tile::COLLIDER_QUAD_SE);
-			gyCalcBoxWorldVert(&boxCollider);
+            gyMatPop();
+            _applyTileColliderTransform(Tile::COLLIDER_QUAD_SE);
+            gyCalcBoxWorldVert(&boxCollider);
             _detectCollidableColliderCollision(collidable, boxCollider.collider);
-			break;
-		case Tile::COLLIDER_L_NW:
-			gyMatPush();
-			_applyTileColliderTransform(Tile::COLLIDER_HALF_N);
-			gyCalcBoxWorldVert(&boxCollider);
+            break;
+        case Tile::COLLIDER_L_NW:
+            gyMatPush();
+            _applyTileColliderTransform(Tile::COLLIDER_HALF_N);
+            gyCalcBoxWorldVert(&boxCollider);
             _detectCollidableColliderCollision(collidable, boxCollider.collider);
-			gyMatPop();
-			_applyTileColliderTransform(Tile::COLLIDER_QUAD_SW);
-			gyCalcBoxWorldVert(&boxCollider);
+            gyMatPop();
+            _applyTileColliderTransform(Tile::COLLIDER_QUAD_SW);
+            gyCalcBoxWorldVert(&boxCollider);
             _detectCollidableColliderCollision(collidable, boxCollider.collider);
-			break;
-		case Tile::COLLIDER_L_SW:
-			gyMatPush();
-			_applyTileColliderTransform(Tile::COLLIDER_HALF_S);
-			gyCalcBoxWorldVert(&boxCollider);
+            break;
+        case Tile::COLLIDER_L_SW:
+            gyMatPush();
+            _applyTileColliderTransform(Tile::COLLIDER_HALF_S);
+            gyCalcBoxWorldVert(&boxCollider);
             _detectCollidableColliderCollision(collidable, boxCollider.collider);
-			gyMatPop();
-			_applyTileColliderTransform(Tile::COLLIDER_QUAD_NW);
-			gyCalcBoxWorldVert(&boxCollider);
+            gyMatPop();
+            _applyTileColliderTransform(Tile::COLLIDER_QUAD_NW);
+            gyCalcBoxWorldVert(&boxCollider);
             _detectCollidableColliderCollision(collidable, boxCollider.collider);
-			break;
-		case Tile::COLLIDER_L_SE:
-			gyMatPush();
-			_applyTileColliderTransform(Tile::COLLIDER_HALF_S);
-			gyCalcBoxWorldVert(&boxCollider);
+            break;
+        case Tile::COLLIDER_L_SE:
+            gyMatPush();
+            _applyTileColliderTransform(Tile::COLLIDER_HALF_S);
+            gyCalcBoxWorldVert(&boxCollider);
             _detectCollidableColliderCollision(collidable, boxCollider.collider);
-			gyMatPop();
-			_applyTileColliderTransform(Tile::COLLIDER_QUAD_NE);
-			gyCalcBoxWorldVert(&boxCollider);
+            gyMatPop();
+            _applyTileColliderTransform(Tile::COLLIDER_QUAD_NE);
+            gyCalcBoxWorldVert(&boxCollider);
             _detectCollidableColliderCollision(collidable, boxCollider.collider);
-			break;
-		case Tile::COLLIDER_QUADS_SE_NW:
-			gyMatPush();
-			_applyTileColliderTransform(Tile::COLLIDER_QUAD_SE);
-			gyCalcBoxWorldVert(&boxCollider);
+            break;
+        case Tile::COLLIDER_QUADS_SE_NW:
+            gyMatPush();
+            _applyTileColliderTransform(Tile::COLLIDER_QUAD_SE);
+            gyCalcBoxWorldVert(&boxCollider);
             _detectCollidableColliderCollision(collidable, boxCollider.collider);
-			gyMatPop();
-			_applyTileColliderTransform(Tile::COLLIDER_QUAD_NW);
-			gyCalcBoxWorldVert(&boxCollider);
+            gyMatPop();
+            _applyTileColliderTransform(Tile::COLLIDER_QUAD_NW);
+            gyCalcBoxWorldVert(&boxCollider);
             _detectCollidableColliderCollision(collidable, boxCollider.collider);
-			break;
-		case Tile::COLLIDER_QUADS_SW_NE:
-			gyMatPush();
-			_applyTileColliderTransform(Tile::COLLIDER_QUAD_SW);
-			gyCalcBoxWorldVert(&boxCollider);
+            break;
+        case Tile::COLLIDER_QUADS_SW_NE:
+            gyMatPush();
+            _applyTileColliderTransform(Tile::COLLIDER_QUAD_SW);
+            gyCalcBoxWorldVert(&boxCollider);
             _detectCollidableColliderCollision(collidable, boxCollider.collider);
-			gyMatPop();
-			_applyTileColliderTransform(Tile::COLLIDER_QUAD_NE);
-			gyCalcBoxWorldVert(&boxCollider);
+            gyMatPop();
+            _applyTileColliderTransform(Tile::COLLIDER_QUAD_NE);
+            gyCalcBoxWorldVert(&boxCollider);
             _detectCollidableColliderCollision(collidable, boxCollider.collider);
-			break;
-		case Tile::COLLIDER_FULL:
-		case Tile::COLLIDER_HALF_S:
-		case Tile::COLLIDER_HALF_W:
-		case Tile::COLLIDER_HALF_E:
-		case Tile::COLLIDER_HALF_N:
-		case Tile::COLLIDER_QUAD_NE:
-		case Tile::COLLIDER_QUAD_NW:
-		case Tile::COLLIDER_QUAD_SE:
-		case Tile::COLLIDER_QUAD_SW:
-			_applyTileColliderTransform(colType);
-			gyCalcBoxWorldVert(&boxCollider);
+            break;
+        case Tile::COLLIDER_FULL:
+        case Tile::COLLIDER_HALF_S:
+        case Tile::COLLIDER_HALF_W:
+        case Tile::COLLIDER_HALF_E:
+        case Tile::COLLIDER_HALF_N:
+        case Tile::COLLIDER_QUAD_NE:
+        case Tile::COLLIDER_QUAD_NW:
+        case Tile::COLLIDER_QUAD_SE:
+        case Tile::COLLIDER_QUAD_SW:
+            _applyTileColliderTransform(colType);
+            gyCalcBoxWorldVert(&boxCollider);
             _detectCollidableColliderCollision(collidable, boxCollider.collider);
-			break;
-		default:
-			break;
-			assert(0);
-		}
+            break;
+        default:
+            break;
+            assert(0);
+        }
 }
 
 void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable, const ENTITY_TILE_CHECK checkFlag) {
 
-	// ==== ZTRAN LOGIC ====
+    // ==== ZTRAN LOGIC ====
 #if 0
-	bool zTranThisFrame = false;
-	int closestElev = -(ELYSIAN_MAP_ENTRY_ELEV_MAX+1);
-	int smallestElevDiff = -(ELYSIAN_MAP_ENTRY_ELEV_MAX+1);
-	unsigned zTranX, zTranY;
+    bool zTranThisFrame = false;
+    int closestElev = -(ELYSIAN_MAP_ENTRY_ELEV_MAX+1);
+    int smallestElevDiff = -(ELYSIAN_MAP_ENTRY_ELEV_MAX+1);
+    unsigned zTranX, zTranY;
 
-	collidable._onZTran = false;
+    collidable._onZTran = false;
 
-	for(unsigned i = 0; i < 3; ++i) {
-		unsigned tileX = ((int)collidable.getCenterWorldPos().x+16)/32;
-		unsigned tileY = ((int)collidable.getCenterWorldPos().y+16)/32;
+    for(unsigned i = 0; i < 3; ++i) {
+        unsigned tileX = ((int)collidable.getCenterWorldPos().x+16)/32;
+        unsigned tileY = ((int)collidable.getCenterWorldPos().y+16)/32;
 
-		TileEntry entry = _curArea->getTileEntry(i, tileX, tileY);
-		if(entry.getZTran()) {
-			if(entry.getElev() == collidable.getEntity()->getElev()) { // check elevation
-				zTranThisFrame = true;
-				zTranX = tileX;
-				zTranY = tileY;
-			}
-			collidable._onZTran = true;
-		}
-
-
-		int elevDiff = entry.getElev() - collidable.getEntity()->getElev();
-		if(elevDiff > 0) {
-			if(smallestElevDiff <= 0 || elevDiff < smallestElevDiff) {
-				smallestElevDiff = elevDiff;
-				closestElev = entry.getElev();
-			}
-		} else if(elevDiff == 0 && smallestElevDiff < 0) {
-			smallestElevDiff = elevDiff;
-			closestElev = entry.getElev();
-
-		} else if(elevDiff < 0 && elevDiff > smallestElevDiff) {
-			smallestElevDiff = elevDiff;
-			closestElev = entry.getElev();
-		}
-		
-	/*
-		if(elevDiff != 0) {
-			//Force favoritism for higher elevations when two options are available
-			if(elevDiff == smallestElevDiff) {
-				if(entry.getElev() > closestElev) closestElev = entry.getElev();
-			}
-			else if(elevDiff < smallestElevDiff) {
-				closestElev = entry.getElev();
-				smallestElevDiff = elevDiff;
-			}
-		}
-		*/
-	}
-
-	unsigned prevZTranX, prevZTranY;
-	unsigned curTileX, curTileY;
-	switch(collidable.getZTranState()) {
-	case Collidable::ZTRAN_INACTIVE:
-		if(zTranThisFrame) {
-			collidable.setZTranState(Collidable::ZTRAN_ACTIVE);
-			collidable.setZTranTile(zTranX, zTranY);
-		}
-		break;
-	case Collidable::ZTRAN_ACTIVE:
-		collidable.getZTranTile(prevZTranX, prevZTranY);
-			curTileX = ((int)collidable.getCenterWorldPos().x+16)/32;
-			curTileY = ((int)collidable.getCenterWorldPos().y+16)/32;
-		if(!(prevZTranX == curTileX && prevZTranY == curTileY)) {
-			if(closestElev != ELYSIAN_MAP_ENTRY_ELEV_MAX) {
-				//Debug::printf(Debug::VERBOSE, "Elevation - %d", closestElev);
-				collidable.getEntity()->setElev(closestElev);
-			}
-			collidable.setZTranState(Collidable::ZTRAN_INACTIVE);
-		}
-		break;
-	}
+        TileEntry entry = _curArea->getTileEntry(i, tileX, tileY);
+        if(entry.getZTran()) {
+            if(entry.getElev() == collidable.getEntity()->getElev()) { // check elevation
+                zTranThisFrame = true;
+                zTranX = tileX;
+                zTranY = tileY;
+            }
+            collidable._onZTran = true;
+        }
 
 
-	// ==== /ZTRAN LOGIC ====
+        int elevDiff = entry.getElev() - collidable.getEntity()->getElev();
+        if(elevDiff > 0) {
+            if(smallestElevDiff <= 0 || elevDiff < smallestElevDiff) {
+                smallestElevDiff = elevDiff;
+                closestElev = entry.getElev();
+            }
+        } else if(elevDiff == 0 && smallestElevDiff < 0) {
+            smallestElevDiff = elevDiff;
+            closestElev = entry.getElev();
+
+        } else if(elevDiff < 0 && elevDiff > smallestElevDiff) {
+            smallestElevDiff = elevDiff;
+            closestElev = entry.getElev();
+        }
+
+    /*
+        if(elevDiff != 0) {
+            //Force favoritism for higher elevations when two options are available
+            if(elevDiff == smallestElevDiff) {
+                if(entry.getElev() > closestElev) closestElev = entry.getElev();
+            }
+            else if(elevDiff < smallestElevDiff) {
+                closestElev = entry.getElev();
+                smallestElevDiff = elevDiff;
+            }
+        }
+        */
+    }
+
+    unsigned prevZTranX, prevZTranY;
+    unsigned curTileX, curTileY;
+    switch(collidable.getZTranState()) {
+    case Collidable::ZTRAN_INACTIVE:
+        if(zTranThisFrame) {
+            collidable.setZTranState(Collidable::ZTRAN_ACTIVE);
+            collidable.setZTranTile(zTranX, zTranY);
+        }
+        break;
+    case Collidable::ZTRAN_ACTIVE:
+        collidable.getZTranTile(prevZTranX, prevZTranY);
+            curTileX = ((int)collidable.getCenterWorldPos().x+16)/32;
+            curTileY = ((int)collidable.getCenterWorldPos().y+16)/32;
+        if(!(prevZTranX == curTileX && prevZTranY == curTileY)) {
+            if(closestElev != ELYSIAN_MAP_ENTRY_ELEV_MAX) {
+                //Debug::printf(Debug::VERBOSE, "Elevation - %d", closestElev);
+                collidable.getEntity()->setElev(closestElev);
+            }
+            collidable.setZTranState(Collidable::ZTRAN_INACTIVE);
+        }
+        break;
+    }
+
+
+    // ==== /ZTRAN LOGIC ====
 #endif
 
-	int startX = (getCurArea()->width)*32.0f;
-	int endX = 0;
-	int startY = (getCurArea()->height)*32.0f;
-	int endY = 0;
-	auto checkBoundary = [&](GYVector4& vert) {
-		if(vert.x < startX) startX = vert.x;
-		if(vert.x > endX) endX = vert.x;
-		if(vert.y < startY) startY = vert.y;
-		if(vert.y > endY) endY = vert.y;
-	};
+    int startX = (getCurArea()->width)*32.0f;
+    int endX = 0;
+    int startY = (getCurArea()->height)*32.0f;
+    int endY = 0;
+    auto checkBoundary = [&](GYVector4& vert) {
+        if(vert.x < startX) startX = vert.x;
+        if(vert.x > endX) endX = vert.x;
+        if(vert.y < startY) startY = vert.y;
+        if(vert.y > endY) endY = vert.y;
+    };
 
-	GYVector4 worldVertsOrig[4];
+    GYVector4 worldVertsOrig[4];
     //float sizeZ = 0.0f;
-	char startElev;
-	char endElev;
-	memcpy(worldVertsOrig, collidable._collider.box.worldVert, sizeof(worldVertsOrig));
+    char startElev;
+    char endElev;
+    memcpy(worldVertsOrig, collidable._collider.box.worldVert, sizeof(worldVertsOrig));
 
-	switch(checkFlag) {
-	case ENTITY_TILE_CHECK_VOLUME:
-		startElev	=	(worldVertsOrig[3].z)/32;
-		endElev		=	(worldVertsOrig[0].z)/32;
+    switch(checkFlag) {
+    case ENTITY_TILE_CHECK_VOLUME:
+        startElev	=	(worldVertsOrig[3].z)/32;
+        endElev		=	(worldVertsOrig[0].z)/32;
         //sizeZ = worldVertsOrig[0].z-worldVertsOrig[3].z;
-		break;
-	case ENTITY_TILE_CHECK_BOTTOM:
-		endElev		=	(worldVertsOrig[0].z-16.0f-1.0f)/32+1;
-		startElev	=	(endElev > 0)? endElev-1 : 0;
-		break;
-	case ENTITY_TILE_CHECK_TOP:
-		startElev	=	(worldVertsOrig[3].z)/32.0f;
-		endElev		=	startElev;
-		break;
-	}
+        break;
+    case ENTITY_TILE_CHECK_BOTTOM:
+        endElev		=	(worldVertsOrig[0].z-16.0f-1.0f)/32+1;
+        startElev	=	(endElev > 0)? endElev-1 : 0;
+        break;
+    case ENTITY_TILE_CHECK_TOP:
+        startElev	=	(worldVertsOrig[3].z)/32.0f;
+        endElev		=	startElev;
+        break;
+    }
 
-	if(startElev < 0) startElev = 0;
-	else if(startElev > ELYSIAN_MAP_ENTRY_ELEV_MAX) startElev = ELYSIAN_MAP_ENTRY_ELEV_MAX;
+    if(startElev < 0) startElev = 0;
+    else if(startElev > ELYSIAN_MAP_ENTRY_ELEV_MAX) startElev = ELYSIAN_MAP_ENTRY_ELEV_MAX;
 
-	if(endElev < 0) startElev = 0;
-	else if(endElev > ELYSIAN_MAP_ENTRY_ELEV_MAX) endElev = ELYSIAN_MAP_ENTRY_ELEV_MAX;
+    if(endElev < 0) startElev = 0;
+    else if(endElev > ELYSIAN_MAP_ENTRY_ELEV_MAX) endElev = ELYSIAN_MAP_ENTRY_ELEV_MAX;
 
-	//const char diffElev = endElev - startElev;
-	//const int sizeY = endY - startY;
+    //const char diffElev = endElev - startElev;
+    //const int sizeY = endY - startY;
 
-	switch(collidable.getAttrib()->getColliderType()) {
-	case GY_COLLIDER_AABB:
+    switch(collidable.getAttrib()->getColliderType()) {
+    case GY_COLLIDER_AABB:
 
 
 /*
-		for(int y = (int)collidable._collider.box.worldVert[0].y/32; y <= (int)collidable._collider.box.worldVert[3].y/32+1; ++y) 
-			for(int x = (int)collidable._collider.box.worldVert[0].x/32; x <= (int)collidable._collider.box.worldVert[1].x/32+1; ++x) {
-				gyMatPush();
-				gyMatLoadIdentity();
-				gyMatTranslateScale(x*32.0f, y*32.0f, 5.0f, 32.0f, 32.0f, 1.0f);
-				_detectEntityTileCollisionFine(collidable, x, y, 0);
-				gyMatPop();
-			}
-		break;*/
-	case GY_COLLIDER_OBB: //not very efficient for long shit
-		for(unsigned i = 0; i < 4; ++i) checkBoundary(collidable._collider.box.worldVert[i]);
+        for(int y = (int)collidable._collider.box.worldVert[0].y/32; y <= (int)collidable._collider.box.worldVert[3].y/32+1; ++y)
+            for(int x = (int)collidable._collider.box.worldVert[0].x/32; x <= (int)collidable._collider.box.worldVert[1].x/32+1; ++x) {
+                gyMatPush();
+                gyMatLoadIdentity();
+                gyMatTranslateScale(x*32.0f, y*32.0f, 5.0f, 32.0f, 32.0f, 1.0f);
+                _detectEntityTileCollisionFine(collidable, x, y, 0);
+                gyMatPop();
+            }
+        break;*/
+    case GY_COLLIDER_OBB: //not very efficient for long shit
+        for(unsigned i = 0; i < 4; ++i) checkBoundary(collidable._collider.box.worldVert[i]);
 #ifdef ELYSIAN_COLLISION_SYSTEM_PROTECTED
-		if(startX < 0 || startY < 0 || endX > getCurArea()->width*32.0f || endY > getCurArea()->height*32.0f) return;
+        if(startX < 0 || startY < 0 || endX > getCurArea()->width*32.0f || endY > getCurArea()->height*32.0f) return;
 #endif
-		for(unsigned char elev = startElev; elev <= endElev; ++elev) {
+        for(unsigned char elev = startElev; elev <= endElev; ++elev) {
 
             const float zOffset = worldVertsOrig[3].z - ((int)startElev*32);
 
-			for(unsigned i = 0; i < 4; ++i)
+            for(unsigned i = 0; i < 4; ++i)
                 collidable._collider.box.worldVert[i].y = worldVertsOrig[i].y;// - ((float)(elev-startElev)*32.0f);//-(int)worldVertsOrig[i].z%32;
 
 #if 1
             for(int y = startY/32-(elev-startElev)-1; y <= endY/32-(elev-startElev)+1; ++y) {
-				if(y < 0) continue;
-				for(int x = startX/32; x <= endX/32+1; ++x) {
+                if(y < 0) continue;
+                for(int x = startX/32; x <= endX/32+1; ++x) {
 
-					gyMatPush();
-					gyMatLoadIdentity();
-					//gyMatTranslateScale(x*32.0f, y*32.0f, 5.0f, 32.0f, 32.0f, 32.0f);
+                    gyMatPush();
+                    gyMatLoadIdentity();
+                    //gyMatTranslateScale(x*32.0f, y*32.0f, 5.0f, 32.0f, 32.0f, 32.0f);
                     gyMatTranslateScale(x*32.0f, (y/*+(elev-startElev)*/)*32.0f-zOffset, 5.0f, 32.0f, 32.0f, 32.0f);
                     _detectEntityTileCollisionFine(collidable, x, y-elev, elev);
-					gyMatPop();
-				}
-			}
+                    gyMatPop();
+                }
+            }
 #else
             for(int y = startY/32-(elev-startElev); y <= endY/32-(elev-startElev)+1; ++y) {
                 if(y < 0) continue;
@@ -1041,50 +1041,50 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable, c
             }
 
 #endif
-		}
-		break;
+        }
+        break;
 
-	default:
-		assert(0);
-	}
+    default:
+        assert(0);
+    }
 }
 
 bool CollisionSystem::resolvePenetration(void) {
 
 
-	//float deltaTime = getTimerSys()->getDeltaTime();
-	unsigned i, j;
+    //float deltaTime = getTimerSys()->getDeltaTime();
+    unsigned i, j;
 
 
-	if(_contactAmount == 0) {
-		_conResIter = 0;
-		return true;
-	}
+    if(_contactAmount == 0) {
+        _conResIter = 0;
+        return true;
+    }
 
-	for(i = 0; i < _contactAmount; ++i) _contactPool[i]._calculatePenetrationInternals();
+    for(i = 0; i < _contactAmount; ++i) _contactPool[i]._calculatePenetrationInternals();
 
-	unsigned iter;
-	for(iter = 0; iter < ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS; ++iter) {
+    unsigned iter;
+    for(iter = 0; iter < ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS; ++iter) {
 
         float   deepest         = -1.0f;
         float   deepestZ        = 0.0f;
         int     deepestIndex    = -1;
         int     deepestZIndex   = -1;
 
-		for(j = 0; j < _contactAmount; ++j) {
-			//reevaluate penetration depth
+        for(j = 0; j < _contactAmount; ++j) {
+            //reevaluate penetration depth
             if(!_contactPool[j]._resolvePen) continue;
             float fabsZDepth = fabs(_contactPool[j]._zDepth);
             if(fabsZDepth > deepestZ && fabsZDepth <= ELYSIAN_COLLISION_CONTACT_Z_DEPTH_MAX) {
                 deepestZ = fabsZDepth;
                 deepestZIndex = j;
             }
-			if(_contactPool[j].depth > deepest && _contactPool[j]._resolvePen) {
-				deepestIndex = j;
-				deepest = _contactPool[j].depth;
-			}
-		}
-		
+            if(_contactPool[j].depth > deepest && _contactPool[j]._resolvePen) {
+                deepestIndex = j;
+                deepest = _contactPool[j].depth;
+            }
+        }
+
         if(deepestZ > ELYSIAN_COLLISION_CONTACT_Z_DEPTH_EPSILON) {
             _resolveZPenetration(&_contactPool[deepestZIndex]);
         } else if(deepest > ELYSIAN_COLLISION_CONTACT_PENETRATION_EPSILON) {
@@ -1096,8 +1096,8 @@ bool CollisionSystem::resolvePenetration(void) {
 #if 0
         //if(deepest <= ELYSIAN_COLLISION_CONTACT_PENETRATION_EPSILON) break; //EPSILAAAAWN
         //if(deepestIndex == -1) break; //no more candidates for resolution
-		//this can probably be lowered quite a bit once point of contact is fucking correct
-		//Debug::printf(Debug::VERBOSE, "-------------POSITION ITERATION - %d-------", iter);
+        //this can probably be lowered quite a bit once point of contact is fucking correct
+        //Debug::printf(Debug::VERBOSE, "-------------POSITION ITERATION - %d-------", iter);
 
         //Resolve the Z direction first!
         if(fabs(_contactPool[deepestIndex].getZDepth()) <= ELYSIAN_COLLISION_CONTACT_Z_DEPTH_MAX /*&& fabs(_contactPool[deepestIndex].getZDepth()) >= 1.0f*/) {
@@ -1120,17 +1120,17 @@ bool CollisionSystem::resolvePenetration(void) {
         } else _contactPool[deepestIndex].setResolveZ(false);
 
 
-		//printf("ABOUT TO RESOLVE DEEPEST - %d, %f", deep
+        //printf("ABOUT TO RESOLVE DEEPEST - %d, %f", deep
 
         _resolveXYPenetration(&_contactPool[deepestIndex]);
 #endif
-	}
+    }
 
-	_conResIter = iter;
+    _conResIter = iter;
 
     if(iter == ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS) Debug::printf(Debug::CRITICAL, "OUT OF PENETRATION ITERATIONS!", iter);
 
-	return true; 
+    return true;
 }
 
 void CollisionSystem::_resolveZPenetration(CollisionContact * const contact) {
@@ -1448,13 +1448,13 @@ void CollisionSystem::onAreaEnter(void) {
 
 /*
 void CollisionSystem::ResolveContacts(void) {
-	ResolvePenetration();
-	ResolveVelocities();
+    ResolvePenetration();
+    ResolveVelocities();
 }
 */
 bool CollisionSystem::checkCollision(const Entity &entity1, const Entity &entity2) const {
-	if(!entity1.getCollidable() || ! entity2.getCollidable()) return false;
-	return checkCollision(*entity1.getCollidable(), *entity2.getCollidable());
+    if(!entity1.getCollidable() || ! entity2.getCollidable()) return false;
+    return checkCollision(*entity1.getCollidable(), *entity2.getCollidable());
 }
 
 //Still a O(n) lookup to check for collision. Plenty of room for optimization
@@ -1462,19 +1462,19 @@ bool CollisionSystem::checkCollision(const Entity &entity1, const Entity &entity
 //LOOKUP!
 //contactCount should be entity only? That would be faster?
 bool CollisionSystem::checkCollision(const Collidable &col1, const Collidable &col2) const {
-	if(col1._contactCount == 0 || col2._contactCount == 0) return false;
-	for(unsigned i = 0; i < _contactAmount; ++i) {
-		if((&col1 == _contactPool[i]._bodyA && &col2 == _contactPool[i]._bodyB) 
-			|| (&col2 == _contactPool[i]._bodyA && &col1 == _contactPool[i]._bodyB)) {
-				return true;
-		}
-	}
-	return false;
+    if(col1._contactCount == 0 || col2._contactCount == 0) return false;
+    for(unsigned i = 0; i < _contactAmount; ++i) {
+        if((&col1 == _contactPool[i]._bodyA && &col2 == _contactPool[i]._bodyB)
+            || (&col2 == _contactPool[i]._bodyA && &col1 == _contactPool[i]._bodyB)) {
+                return true;
+        }
+    }
+    return false;
 }
-    
+
     CollisionSystem::RENDER_LAYER CollisionSystem::cycleRenderLayer(void) {
         _renderLayer = (_renderLayer+1 == RENDER_MAX)? RENDER_LAYER_1 : (RENDER_LAYER)(_renderLayer+1);
-		return _renderLayer;
-	}
+        return _renderLayer;
+    }
 
 }

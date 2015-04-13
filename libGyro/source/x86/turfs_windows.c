@@ -15,13 +15,14 @@
 static char *s_author = NULL;
 static char *s_name = NULL;
 
-static char *s_assets_path = NULL;
-static char *s_userdata_path = NULL;
+//static char *s_assets_path = NULL;
+//static char *s_userdata_path = NULL;
 
 int g_initialized = 0;
 
 TURFSAPI turfs_init(const char *author, const char *name, void *aactivity)
 {
+    (void)aactivity;
     if (author == NULL || name == NULL) {
         return TURFS_RET_INVALID_ARGS;
     }
