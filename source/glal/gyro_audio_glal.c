@@ -15,143 +15,143 @@ static ALCcontext*	_alContext	= NULL;
 //==== PUBLIC API IMPLEMENTATION =====
 
 int gyAudInit(void) {
-	_alDevice = alcOpenDevice(NULL);                                               //Open the device
-	if(!_alDevice) {
-		_gyLog(GY_DEBUG_CRITICAL, "! - Could not open OpenAL Device!");
-		return 0;
-	}
-	_alContext = alcCreateContext(_alDevice, NULL);                                   //Give the device a context
-	alcMakeContextCurrent(_alContext);                                             //Make the context the current
-	if(!_alContext) {
-		_gyLog(GY_DEBUG_CRITICAL, "! - Could not make OpenAL Context!");
-		return 0;
-	}
+    _alDevice = alcOpenDevice(NULL);                                               //Open the device
+    if(!_alDevice) {
+        _gyLog(GY_DEBUG_CRITICAL, "! - Could not open OpenAL Device!");
+        return 0;
+    }
+    _alContext = alcCreateContext(_alDevice, NULL);                                   //Give the device a context
+    alcMakeContextCurrent(_alContext);                                             //Make the context the current
+    if(!_alContext) {
+        _gyLog(GY_DEBUG_CRITICAL, "! - Could not make OpenAL Context!");
+        return 0;
+    }
 
-	return 1;
+    return 1;
 }
 
 int gyAudUninit(void) {
-	alcMakeContextCurrent(NULL);
-	alcDestroyContext(_alContext);
-	alcCloseDevice(_alDevice);
-	return 1;
+    alcMakeContextCurrent(NULL);
+    alcDestroyContext(_alContext);
+    alcCloseDevice(_alDevice);
+    return 1;
 }
 
 void gyAudSetReferenceDistance(const int dist) {
-	_refDist = dist;
+    _refDist = dist;
 }
 
 void gyAudSetZScale(const float scale) {
-	_zScale = scale;
+    _zScale = scale;
 }
 void glalAudSourceAlloc(GYAudioSource*const src) {
 
-	alGenSources(1, (ALuint*)src);
-	alSourcei(*(ALuint*)src, AL_REFERENCE_DISTANCE, _refDist);
-	_checkALError();
+    alGenSources(1, (ALuint*)src);
+    alSourcei(*(ALuint*)src, AL_REFERENCE_DISTANCE, _refDist);
+    _checkALError();
 }
 
-GYAudioSource* gyAudSourceCreate(void) {
-	ALuint* src = malloc(sizeof(ALuint));
-	glalAudSourceAlloc((void*)src);
-	return (GYAudioSource*)src;
+struct GYAudioSource* gyAudSourceCreate(void) {
+    ALuint* src = malloc(sizeof(ALuint));
+    glalAudSourceAlloc((void*)src);
+    return (GYAudioSource*)src;
 }
 
-void gyAudSourceDestroy(GYAudioSource*const src) {
-	if(!src) return;
-	alDeleteSources(1, (ALuint*)src);
-	_checkALError();
-	free(src);
+void gyAudSourceDestroy(struct GYAudioSource*const src) {
+    if(!src) return;
+    alDeleteSources(1, (ALuint*)src);
+    _checkALError();
+    free(src);
 }
 
-void gyAudSourceSetfv(GYAudioSource*const src, const GY_SOURCE_ATTRIB attrib, const GYVector3*const vec) {
-	int alIndex;
-	GYVector3 newVec = *vec;
+void gyAudSourceSetfv(struct GYAudioSource*const src, const GY_SOURCE_ATTRIB attrib, const GYVector3*const vec) {
+    int alIndex;
+    GYVector3 newVec = *vec;
 
-	switch(attrib) {
-	case GY_SOURCE_POS:
-		alIndex = AL_POSITION;
-		break;
-	case GY_SOURCE_VEL:
-		alIndex = AL_VELOCITY;
-		break;
-	default: return;
-	}
+    switch(attrib) {
+    case GY_SOURCE_POS:
+        alIndex = AL_POSITION;
+        break;
+    case GY_SOURCE_VEL:
+        alIndex = AL_VELOCITY;
+        break;
+    default: return;
+    }
 
-	newVec.z *= _zScale;
-	alSourcefv(*(ALuint*)src, alIndex, (void*)&newVec);
-
-}
-
-void gyAudSourceSetf(GYAudioSource*const src, const GY_SOURCE_ATTRIB attrib, const float val) {
-	int alIndex;
-	switch(attrib) {
-	case GY_SOURCE_GAIN:
-		alIndex = AL_GAIN;
-		break;
-	case GY_SOURCE_PITCH:
-		alIndex = AL_PITCH;
-		break;
-	case GY_SOURCE_ROLLOFF_FACTOR:
-		alIndex = AL_ROLLOFF_FACTOR;
-		break;
-	default: return;
-	}
-
-	alSourcef(*(ALuint*)src, alIndex, val);
+    newVec.z *= _zScale;
+    alSourcefv(*(ALuint*)src, alIndex, (void*)&newVec);
 
 }
 
-float gyAudSourceGetf(GYAudioSource*const src, const GY_SOURCE_ATTRIB attrib) {
-	int alIndex;
-	switch(attrib) {
-	case GY_SOURCE_GAIN:
-		alIndex = AL_GAIN;
-		break;
-	case GY_SOURCE_PITCH:
-		alIndex = AL_PITCH;
-		break;
-	case GY_SOURCE_ROLLOFF_FACTOR:
-		alIndex = AL_ROLLOFF_FACTOR;
-		break;
-	default: return 0.0f;
-	}
+void gyAudSourceSetf(struct GYAudioSource*const src, const GY_SOURCE_ATTRIB attrib, const float val) {
+    int alIndex;
+    switch(attrib) {
+    case GY_SOURCE_GAIN:
+        alIndex = AL_GAIN;
+        break;
+    case GY_SOURCE_PITCH:
+        alIndex = AL_PITCH;
+        break;
+    case GY_SOURCE_ROLLOFF_FACTOR:
+        alIndex = AL_ROLLOFF_FACTOR;
+        break;
+    default: return;
+    }
 
-	float value;
+    alSourcef(*(ALuint*)src, alIndex, val);
 
-	alGetSourcef(*(ALuint*)src, alIndex, &value);
-	return value;
 }
 
-void gyAudSourceSeti(GYAudioSource*const src, const GY_SOURCE_ATTRIB attrib, const int val) {
-	int alIndex;
-	switch(attrib) {
-	case GY_SOURCE_LOOPING:
-		alIndex = AL_LOOPING;
-		break;
-	case GY_SOURCE_RELATIVE:
-		alIndex = AL_SOURCE_RELATIVE;
-		break;
-	default: return;
-	}
+float gyAudSourceGetf(struct GYAudioSource*const src, const GY_SOURCE_ATTRIB attrib) {
+    int alIndex;
+    switch(attrib) {
+    case GY_SOURCE_GAIN:
+        alIndex = AL_GAIN;
+        break;
+    case GY_SOURCE_PITCH:
+        alIndex = AL_PITCH;
+        break;
+    case GY_SOURCE_ROLLOFF_FACTOR:
+        alIndex = AL_ROLLOFF_FACTOR;
+        break;
+    default: return 0.0f;
+    }
 
-	alSourcei(*(ALuint*)src, alIndex, val);
+    float value;
+
+    alGetSourcef(*(ALuint*)src, alIndex, &value);
+    return value;
 }
 
-void gyAudSourceStop(GYAudioSource*const src) {
-	alSourceStop(*(ALuint*)src);
+void gyAudSourceSeti(struct GYAudioSource*const src, const GY_SOURCE_ATTRIB attrib, const int val) {
+    int alIndex;
+    switch(attrib) {
+    case GY_SOURCE_LOOPING:
+        alIndex = AL_LOOPING;
+        break;
+    case GY_SOURCE_RELATIVE:
+        alIndex = AL_SOURCE_RELATIVE;
+        break;
+    default: return;
+    }
+
+    alSourcei(*(ALuint*)src, alIndex, val);
 }
 
-int gyAudSourceIsPlaying(GYAudioSource*const src) {
-	ALenum state;
-	alGetSourcei(*(ALuint*)src, AL_SOURCE_STATE, &state);
-	return (state == AL_PLAYING);
+void gyAudSourceStop(struct GYAudioSource*const src) {
+    alSourceStop(*(ALuint*)src);
+}
+
+int gyAudSourceIsPlaying(struct GYAudioSource*const src) {
+    ALenum state;
+    alGetSourcei(*(ALuint*)src, AL_SOURCE_STATE, &state);
+    return (state == AL_PLAYING);
 }
 
 //audio listener
-void gyAudListenerSetPos(const struct _GYVector3* const pos) {
-	GYVector3 veccy = *pos;
-	veccy.z *= _zScale;
-	alListenerfv(AL_POSITION, (void*)&veccy);
+void gyAudListenerSetPos(const struct GYVector3* const pos) {
+    GYVector3 veccy = *pos;
+    veccy.z *= _zScale;
+    alListenerfv(AL_POSITION, (void*)&veccy);
 }
 

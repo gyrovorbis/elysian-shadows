@@ -11,64 +11,64 @@
 extern "C" {
 #endif
 
-struct _GYColor4;
-struct _GYTexture;
-struct _GYCamera;
+struct GYColor4;
+struct GYTexture;
+struct GYCamera;
 
-typedef enum _GY_CUBE_MAP_FACE {
-	GY_CUBE_MAP_RIGHT,
-	GY_CUBE_MAP_LEFT,
-	GY_CUBE_MAP_BOTTOM,
-	GY_CUBE_MAP_TOP,
-	GY_CUBE_MAP_BACK,
-	GY_CUBE_MAP_FRONT,
-	GY_CUBE_MAP_FACE_MAX
+typedef enum GY_CUBE_MAP_FACE {
+    GY_CUBE_MAP_RIGHT,
+    GY_CUBE_MAP_LEFT,
+    GY_CUBE_MAP_BOTTOM,
+    GY_CUBE_MAP_TOP,
+    GY_CUBE_MAP_BACK,
+    GY_CUBE_MAP_FRONT,
+    GY_CUBE_MAP_FACE_MAX
 } GY_CUBE_MAP_FACE;
 
-typedef struct _GYLightProperties {
-	GYVector4	ambientColor;
-	GYVector4	diffuseColor;
-	GYVector4	specularColor;
-	GYVector3	attenuationFactors;
-	float		spotExponent;
-	float		_radius;
+typedef struct GYLightProperties {
+    GYVector4	ambientColor;
+    GYVector4	diffuseColor;
+    GYVector4	specularColor;
+    GYVector3	attenuationFactors;
+    float		spotExponent;
+    float		_radius;
 } GYLightProperties;
 
-typedef enum _GY_LIGHT_TYPE {
-	GY_LIGHT_DIRECTIONAL,
-	GY_LIGHT_SPOT,
-	GY_LIGHT_POINT
+typedef enum GY_LIGHT_TYPE {
+    GY_LIGHT_DIRECTIONAL,
+    GY_LIGHT_SPOT,
+    GY_LIGHT_POINT
 } GY_LIGHT_TYPE;
 
-typedef struct _GYLightSource {
-	//GYMatrix4					projViewMat;
-	GYVector4					position;					//position.w = 0.0f for directional light
-	GYVector3					direction;
-	float						spotCutoffAngle;
-	GY_LIGHT_TYPE				type;
-	GYLightProperties*			properties;
-	struct _GYCamera*			camera;
-	void*						_data;
+typedef struct GYLightSource {
+    //GYMatrix4					projViewMat;
+    GYVector4					position;					//position.w = 0.0f for directional light
+    GYVector3					direction;
+    float						spotCutoffAngle;
+    GY_LIGHT_TYPE				type;
+    GYLightProperties*			properties;
+    struct GYCamera*			camera;
+    void*						_data;
 } GYLightSource;
 
-typedef struct _GYMaterial {
-	GYVector4	ambientColor;
-	GYVector4	diffuseColor;
-	GYVector4	specularColor;
-	GYVector4	emissiveColor;
-	float		shininess;
+typedef struct GYMaterial {
+    GYVector4	ambientColor;
+    GYVector4	diffuseColor;
+    GYVector4	specularColor;
+    GYVector4	emissiveColor;
+    float		shininess;
 } GYMaterial;
 
-typedef struct _GYShader {
-	char	path[GYRO_PATH_MAX_SIZE];
-	int		type;
-	int		shader;
+typedef struct GYShader {
+    char	path[GYRO_PATH_MAX_SIZE];
+    int		type;
+    int		shader;
 } GYShader;
 
-typedef struct _GYShaderProgram {
-	char		path[GYRO_PATH_MAX_SIZE];
-	GYShader*	vertShader;
-	GYShader*	fragShader;
+typedef struct GYShaderProgram {
+    char		path[GYRO_PATH_MAX_SIZE];
+    GYShader*	vertShader;
+    GYShader*	fragShader;
     int 		program;
 } GYShaderProgram;
 
@@ -86,17 +86,17 @@ void gyVidLightingSetEnable(const int enabled);
 
 void gyVidMaterialBind(const GYMaterial*const material);
 
-void gyVidNormalMapBind(const struct _GYTexture* const tex);
-void gyVidSpecularMapBind(const struct _GYTexture * const tex);
+void gyVidNormalMapBind(const struct GYTexture* const tex);
+void gyVidSpecularMapBind(const struct GYTexture * const tex);
 
-void gyVidSetGlobalAmbience(const struct _GYVector4*const color);
+void gyVidSetGlobalAmbience(const struct GYVector4*const color);
 
 //Shadow Multipass Rendering
 int gyVidBeginNextShadowPass(void);
 int gyVidShadowPass(void);
 
 //Shader manipulation
-void gyVidSetCurrentShaderProgram(struct _GYShaderProgram*const program);
+void gyVidSetCurrentShaderProgram(struct GYShaderProgram*const program);
 void gyVidSetDefaultShaderProgram(void);
 //void gyVidBindDefaultVertexArray(void);
 

@@ -7,14 +7,14 @@
 extern "C" {
 #endif
 
-typedef struct _GYTexCoord2 {
-	float u, v;
+typedef struct GYTexCoord2 {
+    float u, v;
 } GYTexCoord2;
 
-typedef struct _GYTexCoordFrame {
-	GYTexCoord2 topLeft;
-	GYTexCoord2 botRight;
-	uint16_t spriteWidth, spriteHeight;
+typedef struct GYTexCoordFrame {
+    GYTexCoord2 topLeft;
+    GYTexCoord2 botRight;
+    uint16_t spriteWidth, spriteHeight;
 } GYTexCoordFrame;
 
 

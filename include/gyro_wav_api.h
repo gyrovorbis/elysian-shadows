@@ -8,10 +8,10 @@
 extern "C" {
 #endif
 
-typedef struct _GYWav {
-	char			filename[GYRO_PATH_MAX_SIZE];
-	unsigned int	bytes;
-	void*			_data;
+typedef struct GYWav {
+    char			filename[GYRO_PATH_MAX_SIZE];
+    unsigned int	bytes;
+    void*			_data;
 } GYWav;
 
 //===PRIVATE - INVOKED BY AUDIO SUBSYSTEM====

@@ -25,38 +25,38 @@ int glalTextureMapUniforms[GLAL_TEXTURE_MAP_MAX] = {
 };
 
 const GYMatrix4 glalShadowTexCoordBiasMat = {
-	{ 0.5f, 0.0f, 0.0f, 0.0f },
-	{ 0.0f, 0.5f, 0.0f, 0.0f },
-	{ 0.0f, 0.0f, 0.5f, 0.0f },
-	{ 0.5f, 0.5f, 0.5f, 1.0f },
+    { 0.5f, 0.0f, 0.0f, 0.0f },
+    { 0.0f, 0.5f, 0.0f, 0.0f },
+    { 0.0f, 0.0f, 0.5f, 0.0f },
+    { 0.5f, 0.5f, 0.5f, 1.0f },
 };
 
 // ========= DEFAULT UNIFORM STATE VALUES =======
 static const GYMaterial _defaultMaterial = {
-	{ 1.0f, 1.0f, 1.0f, 1.0f },
-	{ 1.0f, 1.0f, 1.0f, 1.0f },
+    { 1.0f, 1.0f, 1.0f, 1.0f },
+    { 1.0f, 1.0f, 1.0f, 1.0f },
     { 0.0f, 0.0f, 0.0f, 0.0f },
     { 0.0f, 0.0f, 0.0f, 0.0f },
-	1.0f
+    1.0f
 };
 /*
 static GYLightProperties _emptyLightProperties = {
-	{ 0.0f, 0.0f, 0.0f, 1.0f },
-	{ 0.0f, 0.0f, 0.0f, 1.0f },
-	{ 0.0f, 0.0f, 0.0f, 1.0f },
-	{ 0.0f, 0.0f, 0.0f },
-	1.0f,
-	200.0f
+    { 0.0f, 0.0f, 0.0f, 1.0f },
+    { 0.0f, 0.0f, 0.0f, 1.0f },
+    { 0.0f, 0.0f, 0.0f, 1.0f },
+    { 0.0f, 0.0f, 0.0f },
+    1.0f,
+    200.0f
 };*/
 /*
 const static GYLightSource _emptyLight = {
-	{ 0.0f, 0.0f, 0.0f, 1.0f },
-	{ 0.0f, 0.0f, 0.0f },
-	360.0f,
-	GY_LIGHT_DIRECTIONAL,
-	&_emptyLightProperties,
-	NULL,
-	NULL
+    { 0.0f, 0.0f, 0.0f, 1.0f },
+    { 0.0f, 0.0f, 0.0f },
+    360.0f,
+    GY_LIGHT_DIRECTIONAL,
+    &_emptyLightProperties,
+    NULL,
+    NULL
 };
 
 const static GYVector3 _defaultNormal = {
@@ -90,9 +90,9 @@ _LightingShaderProgram*		glalCurLightShader                              = &glal
 
 // ====== PUBLIC LIGHTING API =======
 
-void gyVidSetCurrentShaderProgram(struct _GYShaderProgram*const program) {
+void gyVidSetCurrentShaderProgram(struct GYShaderProgram*const program) {
     glalCurShaderProg = program;
-	glUseProgram(program->program);
+    glUseProgram(program->program);
 }
 
 void gyVidSetDefaultShaderProgram(void) {
@@ -202,7 +202,7 @@ void gyVidSpecularMapBind(const GYTexture * const tex) {
 
 void glalLightingInit(void) {
 
-	//Cache cube shadow map lookat matrices
+    //Cache cube shadow map lookat matrices
     gyVidLookAtMat(glalPointShadowFaceMatrices[GY_CUBE_MAP_RIGHT], 0.0, 0.0, 0.0,  1.0, 0.0, 0.0,  0.0,-1.0, 0.0); // +X
     gyVidLookAtMat(glalPointShadowFaceMatrices[GY_CUBE_MAP_LEFT], 0.0, 0.0, 0.0, -1.0, 0.0, 0.0,  0.0,-1.0, 0.0); // -X
     gyVidLookAtMat(glalPointShadowFaceMatrices[GY_CUBE_MAP_BOTTOM], 0.0, 0.0, 0.0,  0.0, -1.0, 0.0,  0.0,0.0, -1.0); // +Y
@@ -215,7 +215,7 @@ void gyVidMaterialBind(const GYMaterial*const material) {
     if(!glalLightingEnabled || gyVidShadowPass()) return;
 
     int flushed = 0;
-	if(!material) gyVidMaterialBind(&_defaultMaterial);
+    if(!material) gyVidMaterialBind(&_defaultMaterial);
     else {
 
         //Check for individual state changes
@@ -266,7 +266,7 @@ void gyVidMaterialBind(const GYMaterial*const material) {
 
         _currentMaterial = material;
         memcpy(&_materialCache, _currentMaterial, sizeof(GYMaterial));
-	}
+    }
 }
 
 void gyVidSetGlobalAmbience(const GYVector4*const color) {
@@ -281,27 +281,27 @@ void gyVidSetGlobalAmbience(const GYVector4*const color) {
 //======= INTERNAL QUERY FUNCTIONS FOR DEFAULT SHADER =======
 
 static inline int _protectedUniformQuery(const GYShaderProgram* prog, const char* const name) {
-	int loc = glGetUniformLocation(prog->program, name);
-	if(loc == -1) {
-		_gyLog(GY_DEBUG_CRITICAL, "Query for shader uniform %s failed!", name);
-	}
-	return loc;
+    int loc = glGetUniformLocation(prog->program, name);
+    if(loc == -1) {
+        _gyLog(GY_DEBUG_CRITICAL, "Query for shader uniform %s failed!", name);
+    }
+    return loc;
 }
 
 static inline int _protectedAttribQuery(const GYShaderProgram* prog, const char* const name) {
-	int loc = glGetAttribLocation(prog->program, name);
-	if(loc == -1) {
-		_gyLog(GY_DEBUG_CRITICAL, "Query for shader attribute %s failed!", name);
-	}
-	return loc;
+    int loc = glGetAttribLocation(prog->program, name);
+    if(loc == -1) {
+        _gyLog(GY_DEBUG_CRITICAL, "Query for shader attribute %s failed!", name);
+    }
+    return loc;
 }
 
 
 static void _queryLightingShader(_LightingShaderProgram*const shader, const unsigned light) {
     (void)light;
-	char buff[100];
+    char buff[100];
 
-	//SHARED SHADER ATTRIBS/UNIFORMS
+    //SHARED SHADER ATTRIBS/UNIFORMS
     shader->attribLoc[GLAL_SHADER_POS]						= _protectedAttribQuery(shader->program, "aPosition");
     shader->uniformLoc[GLAL_SHADER_PROJ_VIEW_MAT]			= _protectedUniformQuery(shader->program, "uProjViewMat");
 
@@ -316,7 +316,7 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
 
     shader->attribLoc[GLAL_SHADER_COLOR]						= _protectedAttribQuery(shader->program, "aColor");
 
-	//poll for global uniform locations
+    //poll for global uniform locations
     shader->uniformLoc[GLAL_SHADER_NORMAL_MAP_ZFACTOR]             = _protectedUniformQuery(shader->program, "uNormalMapZFactor");
     shader->uniformLoc[GLAL_SHADER_CAM_WORLD_POS]			= _protectedUniformQuery(shader->program, "uCamWorldPos");
     shader->uniformLoc[GLAL_SHADER_AMBIENCE]					= _protectedUniformQuery(shader->program, "uAmbience");
@@ -327,53 +327,53 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
     shader->uniformLoc[GLAL_SHADER_SPECULAR_MAP]				= _protectedUniformQuery(shader->program, "uSpecularMap");
     shader->uniformLoc[GLAL_SHADER_SHADOW_CUBE_MAP_PROJ_MAT] = _protectedUniformQuery(shader->program, "uShadowCubeMapProjMat");
 
-	//poll for GYMaterial uniform locations
+    //poll for GYMaterial uniform locations
     shader->uniformLoc[GLAL_SHADER_MATERIAL_SHININESS]		= _protectedUniformQuery(shader->program, "uMaterial.shininess");
     shader->uniformLoc[GLAL_SHADER_MATERIAL_AMBIENT_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.ambientColor");
     shader->uniformLoc[GLAL_SHADER_MATERIAL_DIFFUSE_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.diffuseColor");
     shader->uniformLoc[GLAL_SHADER_MATERIAL_SPECULAR_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.specularColor");
     shader->uniformLoc[GLAL_SHADER_MATERIAL_EMISSIVE_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.emissiveColor");
 
-	//poll for GYLightSource uniform locations
-	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
+    //poll for GYLightSource uniform locations
+    for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
 
-		sprintf(buff, "uLights[%d].position", i);
+        sprintf(buff, "uLights[%d].position", i);
         shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_POS]							= _protectedUniformQuery(shader->program, buff);
 
-		sprintf(buff, "uLights[%d].ambientColor", i);
+        sprintf(buff, "uLights[%d].ambientColor", i);
         shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_AMBIENT_COLOR]					= _protectedUniformQuery(shader->program, buff);
 
-		sprintf(buff, "uLights[%d].diffuseColor", i);
+        sprintf(buff, "uLights[%d].diffuseColor", i);
         shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_DIFFUSE_COLOR]					= _protectedUniformQuery(shader->program, buff);
 
-		sprintf(buff, "uLights[%d].specularColor", i);
+        sprintf(buff, "uLights[%d].specularColor", i);
         shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SPECULAR_COLOR]				= _protectedUniformQuery(shader->program, buff);
 
-		sprintf(buff, "uLights[%d].direction", i);
+        sprintf(buff, "uLights[%d].direction", i);
         shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_DIRECTION]						= _protectedUniformQuery(shader->program, buff);
 
-		sprintf(buff, "uLights[%d].attenuationFactors", i);
+        sprintf(buff, "uLights[%d].attenuationFactors", i);
         shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_ATTENUATION_FACTORS]			= _protectedUniformQuery(shader->program, buff);
 
-		sprintf(buff, "uLights[%d].spotExponent", i);
+        sprintf(buff, "uLights[%d].spotExponent", i);
         shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SPOT_EXPONENT]					= _protectedUniformQuery(shader->program, buff);
 
-		sprintf(buff, "uLights[%d].spotCutoffAngle", i);
+        sprintf(buff, "uLights[%d].spotCutoffAngle", i);
         shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SPOT_CUTOFF_ANGLE]				= _protectedUniformQuery(shader->program, buff);
 
-		sprintf(buff, "uLightsEnabled[%d]", i);
+        sprintf(buff, "uLightsEnabled[%d]", i);
         shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_ENABLED]						= _protectedUniformQuery(shader->program, buff);
 
-		sprintf(buff, "uShadowMaps[%d]", i);
+        sprintf(buff, "uShadowMaps[%d]", i);
         shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SHADOW_MAP]					= _protectedUniformQuery(shader->program, buff);
 
-		sprintf(buff, "uShadowCubeMaps[%d]", i);
+        sprintf(buff, "uShadowCubeMaps[%d]", i);
         shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SHADOW_CUBE_MAP]				= _protectedUniformQuery(shader->program, buff);
 
-		sprintf(buff, "uLightProjViewMats[%d]", i);
+        sprintf(buff, "uLightProjViewMats[%d]", i);
         shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_PROJ_VIEW_MAT]					= _protectedUniformQuery(shader->program, buff);
 
-	}
+    }
 }
 
 
@@ -408,9 +408,9 @@ int gyShadersReloadAll(void) {
 }
 
 void glalDefaultShadersLoadUniforms(void) {
-	GYLightSource* sources[GYRO_VIDEO_LIGHT_SOURCES_MAX];
+    GYLightSource* sources[GYRO_VIDEO_LIGHT_SOURCES_MAX];
     int count = glalLightSourceCount;
-	const GYMaterial* material = _currentMaterial;
+    const GYMaterial* material = _currentMaterial;
     _currentMaterial = NULL;
 
     glUniformMatrix4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)glalCurCamera->projViewMat);
@@ -419,87 +419,87 @@ void glalDefaultShadersLoadUniforms(void) {
 
     memcpy(sources, glalLightSources, sizeof(GYLightSource*) * count);
 
-	//Gid rid of them and readd
-	gyVidLightSourceClear();
-	for(int i = 0; i < count; ++i) {
-		gyVidLightSourceAdd(sources[i]);
-	}
+    //Gid rid of them and readd
+    gyVidLightSourceClear();
+    for(int i = 0; i < count; ++i) {
+        gyVidLightSourceAdd(sources[i]);
+    }
 
-	gyVidSetGlobalAmbience(&_globalAmbience);
+    gyVidSetGlobalAmbience(&_globalAmbience);
     gyVidLightingSetEnable(glalLightingEnabled);
 
     glUniform1f(glalCurLightShader->uniformLoc[GLAL_SHADER_NORMAL_MAP_ZFACTOR], glalNormalMapZFactor);
     glUniform3fv(glalCurLightShader->uniformLoc[GLAL_SHADER_CAM_WORLD_POS], 1, (float*)&glalCamWorldPos);
 
-	//set normal map to use texture bank 1
+    //set normal map to use texture bank 1
     glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_MAP], glalTextureMapUniforms[GLAL_TEXTURE_MAP]);
     glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_NORMAL_MAP], glalTextureMapUniforms[GLAL_NORMAL_MAP]);
     glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_SPECULAR_MAP], glalTextureMapUniforms[GLAL_SPECULAR_MAP]);
 
-	//next texture banks are used for shadow maps for each light
-	for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
+    //next texture banks are used for shadow maps for each light
+    for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
         glUniform1i(glalCurLightShader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SHADOW_MAP], 3+i);
         glUniform1i(glalCurLightShader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SHADOW_CUBE_MAP], 7+i);
-	}
+    }
 
-	//Do these not need to be physically resubmitted?
+    //Do these not need to be physically resubmitted?
     glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED], glalTextureMapActive);
     glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_NORMAL_MAP_ENABLED], glalNormalMapActive);
     glUniform1i(glalCurLightShader->uniformLoc[GLAL_SHADER_SPECULAR_MAP_ENABLED], glalSpecularMapActive);
 
-	GYMatrix4 projMat;
-	GYMatrix4 finalMat;
-	glalGetPointLightProjectionMatrix(projMat, NULL);
-    gyMatMultMat(finalMat, glalShadowTexCoordBiasMat, projMat);
+    GYMatrix4 projMat;
+    GYMatrix4 finalMat;
+    glalGetPointLightProjectionMatrix(projMat, NULL);
+    gyMatMultMat(finalMat, glalShadowTexCoordBiasMat, (const float (*)[4])projMat);
     glUniformMatrix4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_SHADOW_CUBE_MAP_PROJ_MAT], 1, GL_FALSE, (float*)projMat); //NO TEX COORD OFFSET? WHAT THE FUCK!?
 
     glalUniformChangeCount += 14;
 
-	//Initialize internal data for shadow shader
-	glalLightingInit();
+    //Initialize internal data for shadow shader
+    glalLightingInit();
 
 }
 
 // ======== SHADER ALLOCATION AND MANAGEMENT ========
 
 int _gyVidShaderCreate(GYShader* shader) {
-	char path[GYRO_PATH_MAX_SIZE];
-	GLint compiled;
-	const char* extension = NULL;
-	const char* token = NULL;
+    char path[GYRO_PATH_MAX_SIZE];
+    GLint compiled;
+    const char* extension = NULL;
+    const char* token = NULL;
     GYFile *file;
     size_t charCount = 0;
     char *programSource = NULL;
 
-	//don't fuck it up by tokenizing
-	strcpy(path, shader->path);
-	strtok(path, ".");
+    //don't fuck it up by tokenizing
+    strcpy(path, shader->path);
+    strtok(path, ".");
 
-	while((token = strtok(NULL, "."))) {
-		extension = token;
-	}
+    while((token = strtok(NULL, "."))) {
+        extension = token;
+    }
 
-	_gyLog(GY_DEBUG_VERBOSE, "Compiling shader: %s", shader->path);
+    _gyLog(GY_DEBUG_VERBOSE, "Compiling shader: %s", shader->path);
 
-	if(strcmp(extension, "vsh") == 0) {
-		shader->type = GL_VERTEX_SHADER;
-	} else if(strcmp(extension, "fsh") == 0) {
-		shader->type = GL_FRAGMENT_SHADER;
-	} else {
-		_gyLog(GY_DEBUG_CRITICAL, "\tUnrecognized shader extension: %s", extension);
-		return 0;
-	}
+    if(strcmp(extension, "vsh") == 0) {
+        shader->type = GL_VERTEX_SHADER;
+    } else if(strcmp(extension, "fsh") == 0) {
+        shader->type = GL_FRAGMENT_SHADER;
+    } else {
+        _gyLog(GY_DEBUG_CRITICAL, "\tUnrecognized shader extension: %s", extension);
+        return 0;
+    }
 
-	shader->shader = glCreateShader(shader->type);
-	if(!shader->shader)  {
-		_gyLog(GY_DEBUG_CRITICAL, "\tCould not generate shader", shader->path);
-		return 0;
-	}
+    shader->shader = glCreateShader(shader->type);
+    if(!shader->shader)  {
+        _gyLog(GY_DEBUG_CRITICAL, "\tCould not generate shader", shader->path);
+        return 0;
+    }
 
     if(!gyFileOpen(shader->path, "rb", &file)) {
-		_gyLog(GY_DEBUG_CRITICAL, "\tCould not open shader", shader->path);
-		return 0;
-	}
+        _gyLog(GY_DEBUG_CRITICAL, "\tCould not open shader", shader->path);
+        return 0;
+    }
     gyFileLength(file, &charCount);
    // ++charCount; //make sure we have room for NULL terminator
     programSource = malloc(sizeof(char) * charCount+1);
@@ -508,82 +508,82 @@ int _gyVidShaderCreate(GYShader* shader) {
     programSource[charCount] = '\0';
     gyFileClose(&file);
 
-    glShaderSource(shader->shader, 1, (const char*const*)&programSource, (GLint*)&charCount);
-	glCompileShader(shader->shader);
+    glShaderSource(shader->shader, 1, (const GLchar**)&programSource, (GLint*)&charCount);
+    glCompileShader(shader->shader);
     free(programSource);
 
-	glGetShaderiv(shader->shader, GL_COMPILE_STATUS, &compiled);
-	if(!compiled) {
-		GLint infoLen = 0;
+    glGetShaderiv(shader->shader, GL_COMPILE_STATUS, &compiled);
+    if(!compiled) {
+        GLint infoLen = 0;
 
-		glGetShaderiv(shader->shader, GL_INFO_LOG_LENGTH, &infoLen);
+        glGetShaderiv(shader->shader, GL_INFO_LOG_LENGTH, &infoLen);
 
-		if(infoLen > 1) {
-			char* infoLog = malloc(sizeof(char)*infoLen);
+        if(infoLen > 1) {
+            char* infoLog = malloc(sizeof(char)*infoLen);
 
-			glGetShaderInfoLog(shader->shader, infoLen, NULL, infoLog);
-			_gyLog(GY_DEBUG_CRITICAL, "\tError compiling shader: %s", infoLog);
-			free(infoLog);
-		} else {
-			_gyLog(GY_DEBUG_CRITICAL, "\tUnknown compilation error");
-		}
+            glGetShaderInfoLog(shader->shader, infoLen, NULL, infoLog);
+            _gyLog(GY_DEBUG_CRITICAL, "\tError compiling shader: %s", infoLog);
+            free(infoLog);
+        } else {
+            _gyLog(GY_DEBUG_CRITICAL, "\tUnknown compilation error");
+        }
 
-		glDeleteShader(shader->shader);
-		return 0;
-	}
+        glDeleteShader(shader->shader);
+        return 0;
+    }
 
-	return 1;
+    return 1;
 }
 
 int _gyVidShaderDestroy(GYShader* shader) {
-	glDeleteShader(shader->shader);
-	return 1;
+    glDeleteShader(shader->shader);
+    return 1;
 }
 
 int _gyVidShaderProgramCreate(GYShaderProgram* program) {
-	GLint linked;
+    GLint linked;
 
-	_gyLog(GY_DEBUG_VERBOSE, "Linking shader program");
+    _gyLog(GY_DEBUG_VERBOSE, "Linking shader program");
 
-	program->program = glCreateProgram();
-	if(!program->program) {
-		_gyLog(GY_DEBUG_CRITICAL, "\tCould not generate program!");
-		return 0;
-	}
+    program->program = glCreateProgram();
+    if(!program->program) {
+        _gyLog(GY_DEBUG_CRITICAL, "\tCould not generate program!");
+        return 0;
+    }
 
-	glAttachShader(program->program, program->vertShader->shader);
-	glAttachShader(program->program, program->fragShader->shader);
+    glAttachShader(program->program, program->vertShader->shader);
+    glAttachShader(program->program, program->fragShader->shader);
 
-	glLinkProgram(program->program);
+    glLinkProgram(program->program);
 
-	glGetProgramiv(program->program, GL_LINK_STATUS, &linked);
+    glGetProgramiv(program->program, GL_LINK_STATUS, &linked);
 
-	if(!linked) {
-		GLint infoLen = 0;
-		glGetProgramiv(program->program, GL_INFO_LOG_LENGTH, &infoLen);
-		if(infoLen > 1) {
-			char* infoLog = malloc(sizeof(char) * infoLen);
+    if(!linked) {
+        GLint infoLen = 0;
+        glGetProgramiv(program->program, GL_INFO_LOG_LENGTH, &infoLen);
+        if(infoLen > 1) {
+            char* infoLog = malloc(sizeof(char) * infoLen);
 
-			glGetProgramInfoLog(program->program, infoLen, NULL, infoLog);
-			_gyLog(GY_DEBUG_CRITICAL, "\tCould not link program: %s", infoLog);
-			free(infoLog);
+            glGetProgramInfoLog(program->program, infoLen, NULL, infoLog);
+            _gyLog(GY_DEBUG_CRITICAL, "\tCould not link program: %s", infoLog);
+            free(infoLog);
 
-		} else {
-			_gyLog(GY_DEBUG_CRITICAL, "\tCould not link program for unknown reasons!");
-		}
+        } else {
+            _gyLog(GY_DEBUG_CRITICAL, "\tCould not link program for unknown reasons!");
+        }
 
-		glDeleteProgram(program->program);
-		return 0;
-	}
+        glDeleteProgram(program->program);
+        return 0;
+    }
 
     glDetachShader(program->program, program->vertShader->shader);
     glDetachShader(program->program, program->fragShader->shader);
 
-	return 1;
+    return 1;
 }
 
 int _gyVidShaderProgramDestroy(GYShaderProgram* program) {
-	glDeleteProgram(program->program);
-	return 1;
+    glDeleteProgram(program->program);
+    return 1;
 }
 

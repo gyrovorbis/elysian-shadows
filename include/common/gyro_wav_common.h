@@ -7,10 +7,10 @@
 extern "C" {
 #endif
 
-struct _GYWav;
+struct GYWav;
 
-struct _GYWav *gyAudWavCreate(const char *const filename);
-int gyAudWavDestroy(struct _GYWav *const wav);
+struct GYWav *gyAudWavCreate(const char *const filename);
+int gyAudWavDestroy(struct GYWav *const wav);
 unsigned int gyAudWavAmount(void);
 int gyAudWavClear(void);
 void gyAudWavWalkthrough(void);

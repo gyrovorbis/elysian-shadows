@@ -11,24 +11,24 @@ extern "C" {
 //Column-Major
 typedef float GYMatrix4[4][4] GYRO_MATRIX4_ALIGN;
 
-typedef struct _GYVector4 {
+typedef struct GYVector4 {
     float x, y, z, w;
 } GYRO_VECTOR4_ALIGN GYVector4;
 
-typedef struct _GYVector3 {
+typedef struct GYVector3 {
     float x, y, z;
 } GYVector3;
 
-typedef struct _GYVector2 {
+typedef struct GYVector2 {
     float x, y;
 } GYVector2;
 
-typedef struct _GYInstMat {
-	GYVector3 _pos;
-	GYVector3 _size;
-	GYVector3 _scale;
-	float _orientZ;
-	struct _GYInstMat *parent;
+typedef struct GYInstMat {
+    GYVector3 _pos;
+    GYVector3 _size;
+    GYVector3 _scale;
+    float _orientZ;
+    struct _GYInstMat *parent;
 } GYInstMat;
 
 #ifdef GYRO_MATRIX_PLATFORM_INCLUDE
