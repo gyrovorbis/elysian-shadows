@@ -17,7 +17,7 @@ class QActionGroup;
 class QUndoGroup;
 
 namespace Ui {
-	class ESToolkit;
+    class ESToolkit;
 }
 
 namespace elysian {
@@ -113,18 +113,18 @@ private:
     void ReadSettings();
     void ResetViewChecks();
 
-	virtual void keyPressEvent(QKeyEvent *event) override;
+    virtual void keyPressEvent(QKeyEvent *event) override;
 
 private Q_SLOTS:
 
     //----CONNECTED BY DESIGNER----
     void _onEngineInitialized();
     void on_actionLevelReloadSheets_triggered();
-	//void on_actionFileImportArea_triggered();
-	//void on_actionFileImportLevel_triggered();
-	//void on_actionFileSaveAsCurrentProject_triggered();
-	//void on_actionFileExportCurrentLevel_triggered();
-	//void on_actionFileExportCurrentArea_triggered();
+    //void on_actionFileImportArea_triggered();
+    //void on_actionFileImportLevel_triggered();
+    //void on_actionFileSaveAsCurrentProject_triggered();
+    //void on_actionFileExportCurrentLevel_triggered();
+    //void on_actionFileExportCurrentArea_triggered();
     void on_actionLevelRemove_triggered();
     void on_actionAreaRemove_triggered();
     void on_actionEntityRemoveCharacter_triggered();
@@ -148,7 +148,7 @@ private Q_SLOTS:
     void OnProjectRemoved();
     void onEntityTreeWidgetLayerChange();
     void OnAddArea(Project *const project, Level *const level, Area *const area);
-	void OnAreaRenamed(const QString oldName, const QString newName);
+    void OnAreaRenamed(const QString oldName, const QString newName);
     void OnRemoveArea(Project *const project, Level *const level, Area *const area);
     void OnComponentAttached(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
     void OnComponentRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
@@ -159,7 +159,7 @@ private Q_SLOTS:
     void OnSubLayerVisibilityChanged(int index, bool visible);
     void OnActiveLayerChanged(int index);
     void OnLayerChanged(Assets::LAYER_TYPE);
-	void updateLayerTreeWidget(void);
+    void updateLayerTreeWidget(void);
     void on_actionUndo_triggered();
     void on_actionRedo_triggered();
     void OnSelectionChanged(const Selectable::TYPE, Selectable *const);
@@ -191,20 +191,20 @@ private Q_SLOTS:
     void on_actionToggle_AutoScroll_triggered();
     void on_actionActionSecret_triggered();
     void on_actionEngine_Settings_triggered();
-	void on_actionElevation_toggled(bool arg1);
-	void on_actionFlip_Rotation_toggled(bool arg1);
-	void on_actionIndeces_toggled(bool arg1);
-	void on_actionSolidity_toggled(bool arg1);
-	void on_actionZ_Transitional_toggled(bool arg1);
-	void on_actionHorizontal_SheetView_triggered(bool checked);
+    void on_actionElevation_toggled(bool arg1);
+    void on_actionFlip_Rotation_toggled(bool arg1);
+    void on_actionIndeces_toggled(bool arg1);
+    void on_actionSolidity_toggled(bool arg1);
+    void on_actionZ_Transitional_toggled(bool arg1);
+    void on_actionHorizontal_SheetView_triggered(bool checked);
     void on_actionScreenshot_triggered();
     void on_actionScatter_triggered();
     void on_actionGather_triggered();
     void on_actionScatter_2_triggered();
     void on_actionGather_2_triggered();
-	void on_actionPrevious_Project_triggered();
-	void on_actionInvoke_triggered(bool checked);
-	void on_actionAdvance_Frame_triggered();
+    void on_actionPrevious_Project_triggered();
+    void on_actionInvoke_triggered(bool checked);
+    void on_actionAdvance_Frame_triggered();
     void on_actionClear_triggered();
     void on_actionLibGyro_toggled(bool arg1);
     void on_actionEngine_toggled(bool arg1);

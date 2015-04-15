@@ -3,7 +3,6 @@
 
 #include <gyro_matrix_api.h>
 #include <gyro_video_api.h>
-#include "gyro_shaders_glal.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -44,6 +43,7 @@ extern const GYVector3 glalRectTangents[GY_RECT_TEX_ORIENT_MAX];
 extern const GYVector3 glalPlaneNormalMapNormals[GY_RECT_PLANE_MAX][GY_RECT_TEX_ORIENT_MAX];
 
 int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidth, const int projHeight);
+int glalVidGlewInit(void);
 
 void glalVidTangentUpdateUniform(const GYVector3*const tangent);
 void glalVidNormalUpdateUniform(const GYVector3*const normal);

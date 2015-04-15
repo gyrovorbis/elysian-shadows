@@ -11,8 +11,6 @@
 #include "elysian_day_system.hpp"
 #include "elysian_debug.hpp"
 
-#include <gyro.h>
-
 namespace elysian {
 
 int LevelSystem::getLevelIndex(const char *const dir) const {
@@ -86,7 +84,7 @@ bool LevelSystem::switchArea(const char *const dir) {
         _removePersistentEntities();
         _curArea->deactivate();
         getCollisionSys()->clearContacts();
-        getMapSys()->resetAnimation();
+        getMapSys()->deactivateArea();
     }
 
 

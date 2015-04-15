@@ -1,6 +1,5 @@
-
-#include "elysian_area.hpp"
 #include <QOpenGLContext>
+#include "elysian_area.hpp"
 #include <QSizePolicy>
 #include <QToolButton>
 #include <QCloseEvent>
@@ -58,150 +57,150 @@
 ESToolkit* ESToolkit::_instance = nullptr;
 
 ESToolkit::ESToolkit(QWidget *parent):
-	QMainWindow(parent),
-	_ui(new Ui::ESToolkit),
-	_ignoreAreaTabChange(false)
+    QMainWindow(parent),
+    _ui(new Ui::ESToolkit),
+    _ignoreAreaTabChange(false)
 {
     _instance = this;
-	// VERY IMPROTANT GLOBAL STATE/STATIC INITIALIZATION
+    // VERY IMPROTANT GLOBAL STATE/STATIC INITIALIZATION
     assert(gyFileInit("ESTeam", "ESTk"));
         //elysian::Behavior::staticConstructor();
     Debug::getInstance();
-	AssetManager::_assets = &_assets;
+    AssetManager::_assets = &_assets;
     //elysian::Behavior::staticConstructor();
 
     const QString verString = QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" \"Sex and Candy\" Release");
-	const char* platString =
+    const char* platString =
 #ifdef __APPLE__
-	"OSX";
+    "OSX";
 #elif defined(WIN32)
-	"WINDOWS";
+    "WINDOWS";
 #else
-	"LINUX";
+    "LINUX";
 #endif
 
-	Debug::Logf(Debug::VERBOSE, "Initializing %s [%s]", verString.toStdString().c_str(), platString);
+    Debug::Logf(Debug::VERBOSE, "Initializing %s [%s]", verString.toStdString().c_str(), platString);
 
-	_ui->setupUi(this);
-	setWindowTitle(verString);
+    _ui->setupUi(this);
+    setWindowTitle(verString);
 
-	//Instantiate external dialogs/tools
+    //Instantiate external dialogs/tools
     _sheetManager           = new SheetManager(/*this*/);
     _engineDialog           = new EngineDialog(/*this*/);
     _engineSettingsDialog   = new EngineSettingsDialog(/*this*/);
     _luaExplorerDialog      = new LuaExplorerDialog(/*this*/);
     connect(_engineSettingsDialog, SIGNAL(enginePathx86Changed(QString)), _engineDialog, SLOT(onEnginePathx86Changed(QString)));
-	connect(_engineSettingsDialog, SIGNAL(dcIpChanged(QString)), _engineDialog, SLOT(OnDreamcastIpChanged(QString)));
-	connect(_engineSettingsDialog, SIGNAL(dcMacChanged(QString)), _engineDialog, SLOT(OnDreamcastMacChanged(QString)));
-	connect(_engineSettingsDialog, SIGNAL(sudoPswdChanged(QString)), _engineDialog, SLOT(OnSudoPswdChanged(QString)));
+    connect(_engineSettingsDialog, SIGNAL(dcIpChanged(QString)), _engineDialog, SLOT(OnDreamcastIpChanged(QString)));
+    connect(_engineSettingsDialog, SIGNAL(dcMacChanged(QString)), _engineDialog, SLOT(OnDreamcastMacChanged(QString)));
+    connect(_engineSettingsDialog, SIGNAL(sudoPswdChanged(QString)), _engineDialog, SLOT(OnSudoPswdChanged(QString)));
 
-	_engineSettingsDialog->restoreSettings();
+    _engineSettingsDialog->restoreSettings();
 
-	_areaTabBar = new QTabBar(this);
+    _areaTabBar = new QTabBar(this);
     QGridLayout *boxLayout = qobject_cast<QGridLayout*>(_ui->centralWidget->layout());
-	Q_ASSERT(boxLayout);
+    Q_ASSERT(boxLayout);
     //boxLayout->insertWidget(0, _areaTabBar, 0, Qt::AlignLeft);
     boxLayout->addWidget(_areaTabBar, 0, 0, Qt::AlignLeft | Qt::AlignCenter);
     boxLayout->addItem(new QSpacerItem(0, 0), 2, 0,  Qt::AlignBottom);
 
-	// set action groups here
-	m_platformActionGroup = new QActionGroup(_ui->menuSelect_Platform);
-	m_platformActionGroup->addAction(_ui->actionNix);
-	m_platformActionGroup->addAction(_ui->actionWindows);
-	m_platformActionGroup->addAction(_ui->actionMac_OS_X);
-	m_platformActionGroup->addAction(_ui->actionDreamcast);
-	m_platformActionGroup->addAction(_ui->actionIPhone_iPad);
-	m_platformActionGroup->setExclusive(true);
+    // set action groups here
+    m_platformActionGroup = new QActionGroup(_ui->menuSelect_Platform);
+    m_platformActionGroup->addAction(_ui->actionNix);
+    m_platformActionGroup->addAction(_ui->actionWindows);
+    m_platformActionGroup->addAction(_ui->actionMac_OS_X);
+    m_platformActionGroup->addAction(_ui->actionDreamcast);
+    m_platformActionGroup->addAction(_ui->actionIPhone_iPad);
+    m_platformActionGroup->setExclusive(true);
 
-	// add QToolButton dropdown for platforms
-	m_activePlatform = new QToolButton();
-	m_activePlatform->setToolTip("Select Platform...");
-	m_activePlatform->setMenu(_ui->menuSelect_Platform);
-	m_activePlatform->setPopupMode(QToolButton::MenuButtonPopup);
+    // add QToolButton dropdown for platforms
+    m_activePlatform = new QToolButton();
+    m_activePlatform->setToolTip("Select Platform...");
+    m_activePlatform->setMenu(_ui->menuSelect_Platform);
+    m_activePlatform->setPopupMode(QToolButton::MenuButtonPopup);
 
-	// activate/disable platforms based on native OS
+    // activate/disable platforms based on native OS
 #ifdef Q_OS_WIN
-		m_activePlatform->setIcon(_ui->actionWindows->icon());
-		_ui->actionWindows->setChecked(true);
-		_ui->actionMac_OS_X->setEnabled(false);
-		_ui->actionNix->setEnabled(false);
+        m_activePlatform->setIcon(_ui->actionWindows->icon());
+        _ui->actionWindows->setChecked(true);
+        _ui->actionMac_OS_X->setEnabled(false);
+        _ui->actionNix->setEnabled(false);
 #elif defined(Q_OS_LINUX)
-		m_activePlatform->setIcon(_ui->actionNix->icon());
-		_ui->actionNix->setChecked(true);
-		_ui->actionMac_OS_X->setEnabled(false);
-		_ui->actionWindows->setEnabled(false);
+        m_activePlatform->setIcon(_ui->actionNix->icon());
+        _ui->actionNix->setChecked(true);
+        _ui->actionMac_OS_X->setEnabled(false);
+        _ui->actionWindows->setEnabled(false);
 #elif defined(Q_OS_MAC)
-		m_activePlatform->setIcon(_ui->actionMac_OS_X->icon());
-		_ui->actionMac_OS_X->setChecked(true);
-		_ui->actionWindows->setEnabled(false);
-		_ui->actionNix->setEnabled(false);
+        m_activePlatform->setIcon(_ui->actionMac_OS_X->icon());
+        _ui->actionMac_OS_X->setChecked(true);
+        _ui->actionWindows->setEnabled(false);
+        _ui->actionNix->setEnabled(false);
 #endif
 
-	_ui->mainToolBar->addWidget(m_activePlatform);
-	_ui->mainToolBar->addSeparator();
-	_ui->mainToolBar->addAction(_ui->actionActionSecret);
+    _ui->mainToolBar->addWidget(m_activePlatform);
+    _ui->mainToolBar->addSeparator();
+    _ui->mainToolBar->addAction(_ui->actionActionSecret);
 
-	//Enable/Disable hardware acceleration based on OGL poll
-	_ui->actionEnable_OpenGL->setEnabled(glUtilities::glSupported());
+    //Enable/Disable hardware acceleration based on OGL poll
+    _ui->actionEnable_OpenGL->setEnabled(glUtilities::glSupported());
 
-	setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
-	setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
+    setCorner(Qt::BottomLeftCorner, Qt::LeftDockWidgetArea);
+    setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 
-	// create/initialize ASSET dock and widget
-	_assetDockWidget = new AssetDockWidget(this);
-	addDockWidget(Qt::LeftDockWidgetArea, _assetDockWidget);
+    // create/initialize ASSET dock and widget
+    _assetDockWidget = new AssetDockWidget(this);
+    addDockWidget(Qt::LeftDockWidgetArea, _assetDockWidget);
 
-	// create/initialize ENTITY dock and widget
+    // create/initialize ENTITY dock and widget
     _entityDockWidget = new EntityDockWidget(this);
     addDockWidget(Qt::LeftDockWidgetArea, _entityDockWidget);
 
-	// create/initialize LAYER dock and widget
-	_layerDockWidget = new LayerDockWidget(this);
-	addDockWidget(Qt::LeftDockWidgetArea, _layerDockWidget);
+    // create/initialize LAYER dock and widget
+    _layerDockWidget = new LayerDockWidget(this);
+    addDockWidget(Qt::LeftDockWidgetArea, _layerDockWidget);
 
     // create/initialize SHEET dock and widget
     _sheetDockWidget        = new SheetDockWidget;
     _sheetDockWidget->getUi()->sheetTabWidget->addTab(Debug::getCentralWidget(), "Console");
     addDockWidget(Qt::BottomDockWidgetArea, _sheetDockWidget);
 
-	// create/initialize SELECTION dock and widget
-	_selectionDockWidget = new SelectionDockWidget(this);
-	addDockWidget(Qt::RightDockWidgetArea, _selectionDockWidget);
+    // create/initialize SELECTION dock and widget
+    _selectionDockWidget = new SelectionDockWidget(this);
+    addDockWidget(Qt::RightDockWidgetArea, _selectionDockWidget);
 
-	// create/initialize HISTORY dock and widget
-	_historyDockWidget = new HistoryDockWidget(this);
-	_historyDockWidget->SetActiveGroup(&_undoGroup);
-	addDockWidget(Qt::RightDockWidgetArea, _historyDockWidget);
+    // create/initialize HISTORY dock and widget
+    _historyDockWidget = new HistoryDockWidget(this);
+    _historyDockWidget->SetActiveGroup(&_undoGroup);
+    addDockWidget(Qt::RightDockWidgetArea, _historyDockWidget);
 
-	// Initialize status bar
-	QLabel *label = new QLabel;
-	label->setPixmap(QPixmap(":/statusbar/images/absPosStatusIcon.png"));
-	statusBar()->addWidget(label, 0);
-	statusBar()->addWidget(_ui->mapView->getSceneMousePosLabel(), 1);
+    // Initialize status bar
+    QLabel *label = new QLabel;
+    label->setPixmap(QPixmap(":/statusbar/images/absPosStatusIcon.png"));
+    statusBar()->addWidget(label, 0);
+    statusBar()->addWidget(_ui->mapView->getSceneMousePosLabel(), 1);
 
-	label = new QLabel;
-	label->setPixmap(QPixmap(":/statusbar/images/tilePosStatusIcon.png"));
-	statusBar()->addWidget(label, 0);
-	statusBar()->addWidget(_ui->mapView->getSceneMouseTileLabel(), 1);
+    label = new QLabel;
+    label->setPixmap(QPixmap(":/statusbar/images/tilePosStatusIcon.png"));
+    statusBar()->addWidget(label, 0);
+    statusBar()->addWidget(_ui->mapView->getSceneMouseTileLabel(), 1);
 
-	label = new QLabel;
-	label->setPixmap(QPixmap(":/statusbar/images/selectionSizeStatusIcon.png"));
-	statusBar()->addWidget(label, 0);
-	statusBar()->addWidget(_ui->mapView->getSceneSelectionSizeLabel(), 1);
+    label = new QLabel;
+    label->setPixmap(QPixmap(":/statusbar/images/selectionSizeStatusIcon.png"));
+    statusBar()->addWidget(label, 0);
+    statusBar()->addWidget(_ui->mapView->getSceneSelectionSizeLabel(), 1);
 
-	label = new QLabel;
-	label->setPixmap(QPixmap(":/statusbar/images/zoomStatusIcon.png"));
-	statusBar()->addWidget(label, 0);
-	statusBar()->addWidget(_ui->mapView->getZoomLabel(), 2);
+    label = new QLabel;
+    label->setPixmap(QPixmap(":/statusbar/images/zoomStatusIcon.png"));
+    statusBar()->addWidget(label, 0);
+    statusBar()->addWidget(_ui->mapView->getZoomLabel(), 2);
 
-	//Initialize and set main scenes
-	Level::initializeScene(static_cast<SourceView *>(_sheetDockWidget->getSourceView()));
-	Area::staticConstructor(_ui->mapView);
+    //Initialize and set main scenes
+    Level::initializeScene(static_cast<SourceView *>(_sheetDockWidget->getSourceView()));
+    Area::staticConstructor(_ui->mapView);
     _sheetDockWidget->SetSheetScene(Level::_sheetViewScene);
-	_sheetDockWidget->getSourceView()->setEnabled(false);
+    _sheetDockWidget->getSourceView()->setEnabled(false);
     _ui->mapView->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
     //_ui->mapView->setScene(Area::editorScene);
-	_ui->mapView->setFocus();
+    _ui->mapView->setFocus();
     setFocusPolicy(Qt::ClickFocus);
 
     //Initialize log console and menu actions
@@ -218,35 +217,35 @@ ESToolkit::ESToolkit(QWidget *parent):
     _ui->actionCommands->setChecked(true);
     Debug::setFilter(Debug::COMMAND, true);
 
-	//CONNECT ASSET SIGNALS/SLOTS TO MAIN UI
+    //CONNECT ASSET SIGNALS/SLOTS TO MAIN UI
     connect(&_assets, SIGNAL(engineInitialize()), this, SLOT(_onEngineInitialized()));
-	connect(&_assets, SIGNAL(projectRemoveUI()), this, SLOT(OnProjectRemoved()));
-	connect(&_assets, SIGNAL(areaChanged(Area *const)), this, SLOT(OnAreaChanged(Area *const)));
-	connect(&_assets, SIGNAL(levelChanged(Level *const)), this, SLOT(OnLevelChanged(Level *const)));
-	connect(&_assets, SIGNAL(projectChanged(Project*const)), this, SLOT(OnProjectChanged(Project*const)));
-	connect(&_assets, SIGNAL(areaAdded(Project*const,Level*const,Area*const)), this, SLOT(OnAddArea(Project*const,Level*const,Area*const)));
-	connect(&_assets, SIGNAL(areaRenamed(QString,QString)), this, SLOT(OnAreaRenamed(QString,QString)));
-	connect(&_assets, SIGNAL(areaRemoved(Project*const,Level*const,Area*const)), this, SLOT(OnRemoveArea(Project*const,Level*const,Area*const)));
-	connect(&_assets, SIGNAL(componentAttached(Project*const,Level*const,Area*const,Entity*const,Component*const)), this, SLOT(OnComponentAttached(Project*const,Level*const,Area*const,Entity*const,Component*const)));
-	connect(&_assets, SIGNAL(componentRemoved(Project*const,Level*const,Area*const,Entity*const,Component*const)), this, SLOT(OnComponentRemoved(Project*const,Level*const,Area*const,Entity*const,Component*const)));
-	connect(&_assets, SIGNAL(selectionChanged(const Selectable::TYPE, Selectable *const)), this, SLOT(OnSelectionChanged(const Selectable::TYPE, Selectable *const)));
-	connect(_areaTabBar, SIGNAL(currentChanged(int)),this, SLOT(OnTabChanged(int)));
-	connect(_layerDockWidget, SIGNAL(LayerVisibilityChanged(int, bool)), this, SLOT(OnSubLayerVisibilityChanged(int, bool)));
-	connect(_layerDockWidget, SIGNAL(ActiveLayerChanged(int)), this, SLOT(OnActiveLayerChanged(int)));
-	connect(_layerDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
-	connect(_assetDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
+    connect(&_assets, SIGNAL(projectRemoveUI()), this, SLOT(OnProjectRemoved()));
+    connect(&_assets, SIGNAL(areaChanged(Area *const)), this, SLOT(OnAreaChanged(Area *const)));
+    connect(&_assets, SIGNAL(levelChanged(Level *const)), this, SLOT(OnLevelChanged(Level *const)));
+    connect(&_assets, SIGNAL(projectChanged(Project*const)), this, SLOT(OnProjectChanged(Project*const)));
+    connect(&_assets, SIGNAL(areaAdded(Project*const,Level*const,Area*const)), this, SLOT(OnAddArea(Project*const,Level*const,Area*const)));
+    connect(&_assets, SIGNAL(areaRenamed(QString,QString)), this, SLOT(OnAreaRenamed(QString,QString)));
+    connect(&_assets, SIGNAL(areaRemoved(Project*const,Level*const,Area*const)), this, SLOT(OnRemoveArea(Project*const,Level*const,Area*const)));
+    connect(&_assets, SIGNAL(componentAttached(Project*const,Level*const,Area*const,Entity*const,Component*const)), this, SLOT(OnComponentAttached(Project*const,Level*const,Area*const,Entity*const,Component*const)));
+    connect(&_assets, SIGNAL(componentRemoved(Project*const,Level*const,Area*const,Entity*const,Component*const)), this, SLOT(OnComponentRemoved(Project*const,Level*const,Area*const,Entity*const,Component*const)));
+    connect(&_assets, SIGNAL(selectionChanged(const Selectable::TYPE, Selectable *const)), this, SLOT(OnSelectionChanged(const Selectable::TYPE, Selectable *const)));
+    connect(_areaTabBar, SIGNAL(currentChanged(int)),this, SLOT(OnTabChanged(int)));
+    connect(_layerDockWidget, SIGNAL(LayerVisibilityChanged(int, bool)), this, SLOT(OnSubLayerVisibilityChanged(int, bool)));
+    connect(_layerDockWidget, SIGNAL(ActiveLayerChanged(int)), this, SLOT(OnActiveLayerChanged(int)));
+    connect(_layerDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
+    connect(_assetDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
     connect(_entityDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
     connect(_entityDockWidget->getTreeWidget(), SIGNAL(entityLayerActivate()), this, SLOT(onEntityTreeWidgetLayerChange()));
-	connect(_sheetDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
-	connect(_sheetDockWidget, SIGNAL(ReleaseFocus()), this, SLOT(GiveMapViewFocus()));
-	connect(_sheetDockWidget, SIGNAL(ExitPanMode()), this, SLOT(ExitPanMode()));
-	connect(_historyDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
-	connect(_selectionDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
+    connect(_sheetDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
+    connect(_sheetDockWidget, SIGNAL(ReleaseFocus()), this, SLOT(GiveMapViewFocus()));
+    connect(_sheetDockWidget, SIGNAL(ExitPanMode()), this, SLOT(ExitPanMode()));
+    connect(_historyDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
+    connect(_selectionDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
 
-	glUtilities::printGLSupport();
-	ReadSettings();
+    glUtilities::printGLSupport();
+    ReadSettings();
 
-	setMouseTracking(true);
+    setMouseTracking(true);
 
     _engineInitialize();
 }
@@ -255,15 +254,15 @@ ESToolkit::~ESToolkit(void) {
     _assets.setCurrentArea(nullptr);
     _assets.setCurrentProject(nullptr);
     _assets.setCurrentLevel(nullptr);
-	_areaTabBar->disconnect();
-	_assetDockWidget->disconnect();
-	_assets.disconnect();
+    _areaTabBar->disconnect();
+    _assetDockWidget->disconnect();
+    _assets.disconnect();
 
     delete _sheetManager;
     delete _engineDialog;
     delete _engineSettingsDialog;
     delete _luaExplorerDialog;
-	delete _ui;
+    delete _ui;
 }
 
 void ESToolkit::_engineInitialize(void) {
@@ -306,44 +305,44 @@ void ESToolkit::_engineLoadAssets(void) {
 
 
 void ESToolkit::changeEvent(QEvent *e){
-	QMainWindow::changeEvent(e);
-	switch (e->type()) {
-	case QEvent::LanguageChange:
-		_ui->retranslateUi(this);
-		break;
-	default:
-		break;
-	}
+    QMainWindow::changeEvent(e);
+    switch (e->type()) {
+    case QEvent::LanguageChange:
+        _ui->retranslateUi(this);
+        break;
+    default:
+        break;
+    }
 }
 
 void ESToolkit::closeEvent(QCloseEvent *event) {
-	WriteSettings();
-	if(MaybeSave()) {
-		//WriteSettings();
-		/*
-		if(_assets.getCurrentProject() != NULL || _assets.GetUndoStackCount() > 0) {
+    WriteSettings();
+    if(MaybeSave()) {
+        //WriteSettings();
+        /*
+        if(_assets.getCurrentProject() != NULL || _assets.GetUndoStackCount() > 0) {
 
             QBox quitAlert(QMessageBox::Question, "Save Project?", "Would you like to save changes to your project before you quit?", QMessageBox::Save | QMessageBox::Cancel | QMessageBox::No);
-			int result = (int)quitAlert.exec();
+            int result = (int)quitAlert.exec();
 
-			if(result == (int)QMessageBox::Cancel) {
-				event->ignore();
-				return;
-			}
+            if(result == (int)QMessageBox::Cancel) {
+                event->ignore();
+                return;
+            }
 
-			if(result == (int)QMessageBox::Save) {
-				qDebug() << "saving project...";
-				_assets.getCurrentProject()->Save();
-			}
+            if(result == (int)QMessageBox::Save) {
+                qDebug() << "saving project...";
+                _assets.getCurrentProject()->Save();
+            }
 
-			event->accept();
-		}*/
+            event->accept();
+        }*/
 
-		event->accept();
-	}
-	else {
-		event->ignore();
-	}
+        event->accept();
+    }
+    else {
+        event->ignore();
+    }
 
     //_assetDockWidget->clearTreeView();
     //MEMORY LEAK, BUT TEMPORARY FIX FOR DOUBLE DELETING AREA/LEVEL IN ~TREEWIDGETITEM
@@ -355,110 +354,110 @@ void ESToolkit::closeEvent(QCloseEvent *event) {
 //Synch menuBar with the state of the currentEntity
 void ESToolkit::SyncEntityMenuBar(const Entity *const /*entity*/) {
 #if 0
-	//Entity *entity = _assets.getCurrentEntity();
+    //Entity *entity = _assets.getCurrentEntity();
 
-	if(!entity) {
-		//Disable Entity manipulation
-		_ui->actionEntityRemove->setDisabled(true);
-		_ui->menuEntityAttach->setDisabled(true);
-		_ui->menuEntityRemove->setDisabled(true);
-		_ui->menuEntity->setDisabled(true);
-		return;
-	}
+    if(!entity) {
+        //Disable Entity manipulation
+        _ui->actionEntityRemove->setDisabled(true);
+        _ui->menuEntityAttach->setDisabled(true);
+        _ui->menuEntityRemove->setDisabled(true);
+        _ui->menuEntity->setDisabled(true);
+        return;
+    }
 
-	//Reset Everything
-	_ui->actionEntityRemove->setDisabled(false);
-	_ui->menuEntityAttach->setDisabled(false);
-	_ui->menuEntityRemove->setDisabled(false);
-	_ui->menuEntity->setDisabled(false);
+    //Reset Everything
+    _ui->actionEntityRemove->setDisabled(false);
+    _ui->menuEntityAttach->setDisabled(false);
+    _ui->menuEntityRemove->setDisabled(false);
+    _ui->menuEntity->setDisabled(false);
 
-	_ui->actionEntityAttachRenderable->setDisabled(false);
-	_ui->actionEntityAttachAnimation->setDisabled(false);
-	_ui->actionEntityAttachCollidable->setDisabled(false);
-	_ui->actionEntityAttachWarp->setDisabled(false);
-	_ui->actionEntityAttachItem->setDisabled(false);
-	_ui->actionEntityAttachCharacter->setDisabled(false);
-	_ui->actionEntityAttachFriendly->setDisabled(false);
-	_ui->actionEntityAttachEnemy->setDisabled(false);
-	_ui->actionEntityAttachConversation->setDisabled(false);
+    _ui->actionEntityAttachRenderable->setDisabled(false);
+    _ui->actionEntityAttachAnimation->setDisabled(false);
+    _ui->actionEntityAttachCollidable->setDisabled(false);
+    _ui->actionEntityAttachWarp->setDisabled(false);
+    _ui->actionEntityAttachItem->setDisabled(false);
+    _ui->actionEntityAttachCharacter->setDisabled(false);
+    _ui->actionEntityAttachFriendly->setDisabled(false);
+    _ui->actionEntityAttachEnemy->setDisabled(false);
+    _ui->actionEntityAttachConversation->setDisabled(false);
 
-	_ui->actionEntityRemoveRenderable->setDisabled(true);
-	_ui->actionEntityRemoveAnimation->setDisabled(true);
-	_ui->actionEntityRemoveCollidable->setDisabled(true);
-	_ui->actionEntityRemoveItem->setDisabled(true);
-	_ui->actionEntityRemoveWarp->setDisabled(true);
-	_ui->actionEntityRemoveCharacter->setDisabled(true);
-	_ui->actionEntityRemoveFriendly->setDisabled(true);
-	_ui->actionEntityRemoveEnemy->setDisabled(true);
-	_ui->actionEntityRemoveConversation->setDisabled(true);
+    _ui->actionEntityRemoveRenderable->setDisabled(true);
+    _ui->actionEntityRemoveAnimation->setDisabled(true);
+    _ui->actionEntityRemoveCollidable->setDisabled(true);
+    _ui->actionEntityRemoveItem->setDisabled(true);
+    _ui->actionEntityRemoveWarp->setDisabled(true);
+    _ui->actionEntityRemoveCharacter->setDisabled(true);
+    _ui->actionEntityRemoveFriendly->setDisabled(true);
+    _ui->actionEntityRemoveEnemy->setDisabled(true);
+    _ui->actionEntityRemoveConversation->setDisabled(true);
 
-	if(entity->getRenderable()) {
-		_ui->actionEntityAttachRenderable->setDisabled(true);
-		if(!entity->getAnimation()) {
-			_ui->actionEntityRemoveRenderable->setDisabled(false);
-		}
-	}
+    if(entity->getRenderable()) {
+        _ui->actionEntityAttachRenderable->setDisabled(true);
+        if(!entity->getAnimation()) {
+            _ui->actionEntityRemoveRenderable->setDisabled(false);
+        }
+    }
 
-	if(entity->getAnimation()) {
-		_ui->actionEntityAttachAnimation->setDisabled(true);
-		if(!entity->getCharacter() && !entity->getItem()) _ui->actionEntityRemoveAnimation->setDisabled(false);
-	}
+    if(entity->getAnimation()) {
+        _ui->actionEntityAttachAnimation->setDisabled(true);
+        if(!entity->getCharacter() && !entity->getItem()) _ui->actionEntityRemoveAnimation->setDisabled(false);
+    }
 
-	if(entity->getCollidable()) {
-		_ui->actionEntityAttachCollidable->setDisabled(true);
-		if(!entity->getWarp() && !entity->getItem() && !entity->getCharacter()) _ui->actionEntityRemoveCollidable->setDisabled(false);
-	}
+    if(entity->getCollidable()) {
+        _ui->actionEntityAttachCollidable->setDisabled(true);
+        if(!entity->getWarp() && !entity->getItem() && !entity->getCharacter()) _ui->actionEntityRemoveCollidable->setDisabled(false);
+    }
 
-	if(entity->getWarp()) {
-		_ui->actionEntityAttachWarp->setDisabled(true);
-		_ui->actionEntityRemoveWarp->setDisabled(false);
-	}
+    if(entity->getWarp()) {
+        _ui->actionEntityAttachWarp->setDisabled(true);
+        _ui->actionEntityRemoveWarp->setDisabled(false);
+    }
 
-	if(entity->getItem()) {
-		_ui->actionEntityAttachItem->setDisabled(true);
-		_ui->actionEntityRemoveItem->setDisabled(false);
+    if(entity->getItem()) {
+        _ui->actionEntityAttachItem->setDisabled(true);
+        _ui->actionEntityRemoveItem->setDisabled(false);
 
-	}
+    }
 
-	if(entity->getConversation()) {
-		_ui->actionEntityAttachConversation->setDisabled(true);
-		_ui->actionEntityRemoveConversation->setDisabled(false);
-	}
+    if(entity->getConversation()) {
+        _ui->actionEntityAttachConversation->setDisabled(true);
+        _ui->actionEntityRemoveConversation->setDisabled(false);
+    }
 
-	if(entity->getCharacter()) {
-		_ui->actionEntityAttachCharacter->setDisabled(true);
-		if(!entity->getFriendly() && !entity->getEnemy()) {
-			_ui->actionEntityRemoveCharacter->setDisabled(false);
-		}
-	}
+    if(entity->getCharacter()) {
+        _ui->actionEntityAttachCharacter->setDisabled(true);
+        if(!entity->getFriendly() && !entity->getEnemy()) {
+            _ui->actionEntityRemoveCharacter->setDisabled(false);
+        }
+    }
 
-	if(entity->getFriendly()) {
-		_ui->actionEntityAttachFriendly->setDisabled(true);
-		_ui->actionEntityRemoveFriendly->setDisabled(false);
-	}
+    if(entity->getFriendly()) {
+        _ui->actionEntityAttachFriendly->setDisabled(true);
+        _ui->actionEntityRemoveFriendly->setDisabled(false);
+    }
 
-	if(entity->getEnemy()) {
-		_ui->actionEntityAttachEnemy->setDisabled(true);
-		_ui->actionEntityRemoveEnemy->setDisabled(false);
-	}
+    if(entity->getEnemy()) {
+        _ui->actionEntityAttachEnemy->setDisabled(true);
+        _ui->actionEntityRemoveEnemy->setDisabled(false);
+    }
 #endif
 }
 
 void ESToolkit::toggleProjectActions(bool enabled)
 {
-	_ui->actionFileSaveCurrentProject->setEnabled(enabled);
-	_ui->actionSelect->setEnabled(enabled);
-	_ui->actionPan->setEnabled(enabled);
-	_ui->actionZoom->setEnabled(enabled);
-	_ui->actionActionSecret->setEnabled(enabled);
-	_ui->actionCut->setEnabled(enabled);
-	_ui->actionPaste->setEnabled(enabled);
-	_ui->actionEnable_OpenGL->setEnabled(enabled && glUtilities::glSupported());
-	_ui->actionInvoke->setEnabled(enabled);
-	_ui->actionToggle_AutoScroll->setEnabled(enabled);
-	_ui->actionHorizontal_SheetView->setEnabled(enabled);
-	_ui->actionDefault_Transform->setEnabled(enabled);
-	_ui->actionReset_Layout->setEnabled(enabled);
+    _ui->actionFileSaveCurrentProject->setEnabled(enabled);
+    _ui->actionSelect->setEnabled(enabled);
+    _ui->actionPan->setEnabled(enabled);
+    _ui->actionZoom->setEnabled(enabled);
+    _ui->actionActionSecret->setEnabled(enabled);
+    _ui->actionCut->setEnabled(enabled);
+    _ui->actionPaste->setEnabled(enabled);
+    _ui->actionEnable_OpenGL->setEnabled(enabled && glUtilities::glSupported());
+    _ui->actionInvoke->setEnabled(enabled);
+    _ui->actionToggle_AutoScroll->setEnabled(enabled);
+    _ui->actionHorizontal_SheetView->setEnabled(enabled);
+    _ui->actionDefault_Transform->setEnabled(enabled);
+    _ui->actionReset_Layout->setEnabled(enabled);
     _ui->actionAdvance_Frame->setEnabled(enabled);
     m_activePlatform->setEnabled(enabled);
     _ui->actionManual_Camera->setEnabled(enabled);
@@ -468,27 +467,27 @@ void ESToolkit::toggleProjectActions(bool enabled)
 
 bool ESToolkit::MaybeSave()
 {
-	// implement "would you like to save changes first?"
-	return true;
+    // implement "would you like to save changes first?"
+    return true;
 }
 
 void ESToolkit::WriteSettings()
 {
-	QSettings settings;
-	settings.setValue("settings", "Did Set");
-	settings.setValue("geometry", saveGeometry());
-	setWindowState(Qt::WindowMaximized);
-	settings.setValue("state", saveState());
-	settings.setValue("projectDir", _assets.getProjectDir());
-	settings.setValue("assetDock", _assetDockWidget->isVisible());
+    QSettings settings;
+    settings.setValue("settings", "Did Set");
+    settings.setValue("geometry", saveGeometry());
+    setWindowState(Qt::WindowMaximized);
+    settings.setValue("state", saveState());
+    settings.setValue("projectDir", _assets.getProjectDir());
+    settings.setValue("assetDock", _assetDockWidget->isVisible());
     settings.setValue("entityDock", _entityDockWidget->isVisible());
-	settings.setValue("layerDock", _layerDockWidget->isVisible());
-	settings.setValue("sheetDock", _sheetDockWidget->isVisible());
-	settings.setValue("selectionDock", _selectionDockWidget->isVisible());
-	settings.setValue("glEnabled", _ui->actionEnable_OpenGL->isChecked());
-	settings.setValue("autoScrollEnabled", _ui->actionToggle_AutoScroll->isChecked());
-	settings.setValue("sheetViewHorizontal", _ui->actionHorizontal_SheetView->isChecked());
-	settings.setValue("engineResolution", _engineDialog->getResolution());
+    settings.setValue("layerDock", _layerDockWidget->isVisible());
+    settings.setValue("sheetDock", _sheetDockWidget->isVisible());
+    settings.setValue("selectionDock", _selectionDockWidget->isVisible());
+    settings.setValue("glEnabled", _ui->actionEnable_OpenGL->isChecked());
+    settings.setValue("autoScrollEnabled", _ui->actionToggle_AutoScroll->isChecked());
+    settings.setValue("sheetViewHorizontal", _ui->actionHorizontal_SheetView->isChecked());
+    settings.setValue("engineResolution", _engineDialog->getResolution());
     settings.setValue("renderMapBackground", TkMapSystem::getRenderMapBackground());
     settings.setValue("mapViewRes", _mapViewRes);
     settings.setValue("showHiddenEntities", _entityDockWidget->getTreeWidget()->getShowHidden());
@@ -496,86 +495,86 @@ void ESToolkit::WriteSettings()
     settings.setValue("lightingEnabled", _engineParams.lightingEnabled);
     settings.setValue("manualCameraEnabled", _engineParams.manualCameraEnabled);
     settings.setValue("audioEnabled", _engineParams.audioEnabled);
-	unsigned x, y;
-	_engineDialog->getStartPos(x, y);
-	settings.setValue("engineStartPosX", x);
-	settings.setValue("engineStartPosY", y);
-	settings.setValue("previousProject", _assets.getProjectDir());
+    unsigned x, y;
+    _engineDialog->getStartPos(x, y);
+    settings.setValue("engineStartPosX", x);
+    settings.setValue("engineStartPosY", y);
+    settings.setValue("previousProject", _assets.getProjectDir());
 }
 
 void ESToolkit::ReadSettings()
 {
     toggleProjectActions(true);
-	_assetDockWidget->setEnabled(false);
+    _assetDockWidget->setEnabled(false);
     _entityDockWidget->setEnabled(false);
-	_layerDockWidget->setEnabled(false);
-	_sheetDockWidget->setEnabled(false);
-	_selectionDockWidget->setEnabled(false);
-	_historyDockWidget->setEnabled(false);
-	_ui->mapView->setEnabled(false);
+    _layerDockWidget->setEnabled(false);
+    _sheetDockWidget->setEnabled(false);
+    _selectionDockWidget->setEnabled(false);
+    _historyDockWidget->setEnabled(false);
+    _ui->mapView->setEnabled(false);
 
-	_ui->actionAsset_View->setChecked(true);
-	_ui->actionEntity_View->setChecked(true);
-	_ui->actionLayer_View->setChecked(true);
-	_ui->actionSheet_View->setChecked(true);
-	_ui->actionSelection_View->setChecked(true);
-	_ui->actionHistory_View->setChecked(true);
+    _ui->actionAsset_View->setChecked(true);
+    _ui->actionEntity_View->setChecked(true);
+    _ui->actionLayer_View->setChecked(true);
+    _ui->actionSheet_View->setChecked(true);
+    _ui->actionSelection_View->setChecked(true);
+    _ui->actionHistory_View->setChecked(true);
 
     _assets.setCurrentProject(nullptr);
 
-	QSettings settings;
-	QString savedSettings = settings.value("settings", "").toString();
-	QByteArray geo = settings.value("geometry", QByteArray()).toByteArray();
-	QByteArray state = settings.value("state", QByteArray()).toByteArray();
-	//QString dir = settings.value("projectDir", QString()).toString();
-	bool sheetViewHorizontal = settings.value("sheetViewHorizontal", true).toBool();
-	bool glEnabled = settings.value("glEnabled", true).toBool();
-	bool autoScrollEnabled = settings.value("autoScrollEnabled", true).toBool();
-	_engineDialog->setResolution(settings.value("engineResolution", 0).toUInt());
+    QSettings settings;
+    QString savedSettings = settings.value("settings", "").toString();
+    QByteArray geo = settings.value("geometry", QByteArray()).toByteArray();
+    QByteArray state = settings.value("state", QByteArray()).toByteArray();
+    //QString dir = settings.value("projectDir", QString()).toString();
+    bool sheetViewHorizontal = settings.value("sheetViewHorizontal", true).toBool();
+    bool glEnabled = settings.value("glEnabled", true).toBool();
+    bool autoScrollEnabled = settings.value("autoScrollEnabled", true).toBool();
+    _engineDialog->setResolution(settings.value("engineResolution", 0).toUInt());
     bool renderMapBg = settings.value("renderMapBackground", false).toBool();
-	unsigned x = settings.value("engineStartPosX", 0).toUInt();
-	unsigned y = settings.value("engineStartPosY", 0).toUInt();
+    unsigned x = settings.value("engineStartPosX", 0).toUInt();
+    unsigned y = settings.value("engineStartPosY", 0).toUInt();
     bool showHiddenEntities = settings.value("showHiddenEntities", false).toBool();
     bool shadowPassEnabled = settings.value("shadowPassEnabled", true).toBool();
     bool manualCamera = settings.value("manualCameraEnabled", false).toBool();
     bool audioEnabled = settings.value("audioEnabled", true).toBool();
     bool lightingEnabled = settings.value("lightingEnabled", true).toBool();
-	_engineDialog->setStartPos(x, y);
+    _engineDialog->setStartPos(x, y);
     MAP_VIEW_RES mapViewRes = (MAP_VIEW_RES)settings.value("mapViewRes", MAP_VIEW_RES_DYNAMIC).toInt();
     _setMapViewResolution(mapViewRes);
 
-	//bool assetVisibility = settings.value("assetDock", true).toBool();
-	//bool entityVisibility = settings.value("entityDock", true).toBool();
-	//bool layerVisibility = settings.value("layerDock", true).toBool();
-	//bool sheetVisibility = settings.value("sheetDock", true).toBool();
-	//bool selectionVisibility = settings.value("selectionDock", true).toBool();
+    //bool assetVisibility = settings.value("assetDock", true).toBool();
+    //bool entityVisibility = settings.value("entityDock", true).toBool();
+    //bool layerVisibility = settings.value("layerDock", true).toBool();
+    //bool sheetVisibility = settings.value("sheetDock", true).toBool();
+    //bool selectionVisibility = settings.value("selectionDock", true).toBool();
 /*
-	if(dir=="") {
-		TooeProjectActions(false);
-		_assetDockWidget->setEnabled(false);
-		_entityDockWidget->setEnabled(false);
-		_layerDockWidget->setEnabled(false);
-		_sheetDockWidget->setEnabled(false);
-		_selectionDockWidget->setEnabled(false);
-		_ui->mapView->setEnabled(false);
-		_assets.setCurrentProject(NULL);
-		return;
-	}*/
+    if(dir=="") {
+        TooeProjectActions(false);
+        _assetDockWidget->setEnabled(false);
+        _entityDockWidget->setEnabled(false);
+        _layerDockWidget->setEnabled(false);
+        _sheetDockWidget->setEnabled(false);
+        _selectionDockWidget->setEnabled(false);
+        _ui->mapView->setEnabled(false);
+        _assets.setCurrentProject(NULL);
+        return;
+    }*/
 
-	if(savedSettings == "") {
-		return;
-	}
+    if(savedSettings == "") {
+        return;
+    }
 
-	restoreState(state);
-	restoreGeometry(geo);
+    restoreState(state);
+    restoreGeometry(geo);
 
-	_ui->actionEnable_OpenGL->setChecked(glEnabled);
-	on_actionEnable_OpenGL_triggered();
-	_ui->actionToggle_AutoScroll->setChecked(autoScrollEnabled);
-	on_actionToggle_AutoScroll_triggered();
-	_ui->actionHorizontal_SheetView->setChecked(sheetViewHorizontal);
+    _ui->actionEnable_OpenGL->setChecked(glEnabled);
+    on_actionEnable_OpenGL_triggered();
+    _ui->actionToggle_AutoScroll->setChecked(autoScrollEnabled);
+    on_actionToggle_AutoScroll_triggered();
+    _ui->actionHorizontal_SheetView->setChecked(sheetViewHorizontal);
     _ui->actionMap_Background->setChecked(renderMapBg);
-	on_actionHorizontal_SheetView_triggered(sheetViewHorizontal);
+    on_actionHorizontal_SheetView_triggered(sheetViewHorizontal);
     _ui->actionHidden_Entities->setChecked(showHiddenEntities);
     _ui->actionShadows->setChecked(shadowPassEnabled);
     _ui->actionLights->setChecked(lightingEnabled);
@@ -587,131 +586,131 @@ void ESToolkit::ReadSettings()
 }
 
 void ESToolkit::OnAreaRenamed(const QString /*oldName*/, const QString /*newName*/) {
-	_ignoreAreaTabChange = true;
+    _ignoreAreaTabChange = true;
 
-	while(_areaTabBar->count()) _areaTabBar->removeTab(0);
-	for(unsigned int i = 0; i < _assets.getCurrentLevel()->getAreaAmount(); ++i) {
+    while(_areaTabBar->count()) _areaTabBar->removeTab(0);
+    for(unsigned int i = 0; i < _assets.getCurrentLevel()->getAreaAmount(); ++i) {
         _areaTabBar->addTab(_assets.getCurrentLevel()->getAreaByIndex(i)->getNodeName());
-	}
+    }
 
-	for(int i = 0; i < _areaTabBar->count(); ++i) {
+    for(int i = 0; i < _areaTabBar->count(); ++i) {
         if(_areaTabBar->tabText(i) == _assets.getCurrentArea()->getNodeName()) _areaTabBar->setCurrentIndex(i);
-	}
+    }
 
-	_ignoreAreaTabChange = false;
+    _ignoreAreaTabChange = false;
 
 }
 
 void ESToolkit::OnAddArea(Project *const /*project*/, Level *const level, Area *const area) {
 
-	_undoGroup.addStack(&area->getUndoStack());
+    _undoGroup.addStack(&area->getUndoStack());
 
-	if(level == _assets.getCurrentLevel()) { //Don't bother updating the tabs otherwise
-		_ignoreAreaTabChange = true;
+    if(level == _assets.getCurrentLevel()) { //Don't bother updating the tabs otherwise
+        _ignoreAreaTabChange = true;
         _areaTabBar->addTab(area->getNodeName());
-		_ignoreAreaTabChange = false;
-	}
+        _ignoreAreaTabChange = false;
+    }
 }
 
 void ESToolkit::OnRemoveArea(Project *const /*project*/, Level *const level, Area *const area) {
-	_undoGroup.removeStack(&area->getUndoStack());
+    _undoGroup.removeStack(&area->getUndoStack());
 
-	if(level == _assets.getCurrentLevel()) { //Don't bother updating the tabs otherwise
-		for(int i = 0; i < _areaTabBar->count(); ++i) {
+    if(level == _assets.getCurrentLevel()) { //Don't bother updating the tabs otherwise
+        for(int i = 0; i < _areaTabBar->count(); ++i) {
             if(_areaTabBar->tabText(i) == area->getNodeName()) {
-				_ignoreAreaTabChange = true;
-				_areaTabBar->removeTab(i);
-				_ignoreAreaTabChange = false;
-				return;
-			}
-		}
-	}
+                _ignoreAreaTabChange = true;
+                _areaTabBar->removeTab(i);
+                _ignoreAreaTabChange = false;
+                return;
+            }
+        }
+    }
 }
 
 void ESToolkit::OnTabChanged(int index) {
-	if(_ignoreAreaTabChange) return;
+    if(_ignoreAreaTabChange) return;
     if(_assets.getCurrentArea() && _assets.getCurrentArea()->getNodeName() == _areaTabBar->tabText(index)) return;
-	_assets.setCurrentArea(_areaTabBar->tabText(index));
+    _assets.setCurrentArea(_areaTabBar->tabText(index));
 }
 
 void ESToolkit::OnSubLayerVisibilityChanged(int index, bool visible)
 {
 
-	switch(index) {
-	case 1:
-		_assets.setLayerVisible(Assets::LAYER_LIGHT, visible);
-		break;
-	case 2:
-		_assets.setLayerVisible(Assets::LAYER_TILE3, visible);
-		break;
-	case 3:
-		_assets.setLayerVisible(Assets::LAYER_TILE2, visible);
-		break;
-	case 4:
-		_assets.setLayerVisible(Assets::LAYER_TILE1, visible);
-		break;
-	case 5:
-		TileEntry::renderColliders = visible;
-		Level::updateScenes();
-		break;
+    switch(index) {
+    case 1:
+        _assets.setLayerVisible(Assets::LAYER_LIGHT, visible);
+        break;
+    case 2:
+        _assets.setLayerVisible(Assets::LAYER_TILE3, visible);
+        break;
+    case 3:
+        _assets.setLayerVisible(Assets::LAYER_TILE2, visible);
+        break;
+    case 4:
+        _assets.setLayerVisible(Assets::LAYER_TILE1, visible);
+        break;
+    case 5:
+        TileEntry::renderColliders = visible;
+        Level::updateScenes();
+        break;
     case 6:
         Area::setInactiveTransparency(visible);
-		break;
-	case 7:
-		TileEntry::renderElev = visible;
+        break;
+    case 7:
+        TileEntry::renderElev = visible;
         if(visible) _assets.getEngine()->getMapSys()->setTileDecor(TkMapSystem::TILE_DECOR_ELEV);
-		break;
-	case 8:
-		TileEntry::renderIndeces = visible;
+        break;
+    case 8:
+        TileEntry::renderIndeces = visible;
         if(visible) _assets.getEngine()->getMapSys()->setTileDecor(TkMapSystem::TILE_DECOR_INDEX);
-		Level::updateScenes();
-		break;
-	case 9:
-		TileEntry::renderZTran = visible;
-		break;
-	case 10:
-		TileEntry::renderFlipRot = visible;
+        Level::updateScenes();
+        break;
+    case 9:
+        TileEntry::renderZTran = visible;
+        break;
+    case 10:
+        TileEntry::renderFlipRot = visible;
         if(visible) _assets.getEngine()->getMapSys()->setTileDecor(TkMapSystem::TILE_DECOR_ORIENT);
-		break;
+        break;
     case 11:
         TileEntry::renderPlane = visible;
         if(visible) _assets.getEngine()->getMapSys()->setTileDecor(TkMapSystem::TILE_DECOR_PLANE);
         break;
-	default:
-		break;
-	}
+    default:
+        break;
+    }
 
     if(!Area::getInactiveTransparency() && !TileEntry::renderElev && !TileEntry::renderIndeces && !TileEntry::renderFlipRot && !TileEntry::renderPlane)
         _assets.getEngine()->getMapSys()->setTileDecor(TkMapSystem::TILE_DECOR_NONE);
 
-	_layerDockWidget->setCurrentLayer(_assets.getCurrentLayer());
+    _layerDockWidget->setCurrentLayer(_assets.getCurrentLayer());
     //Area::updateScene();
 }
 
 void ESToolkit::OnActiveLayerChanged(int index) {
    switch(index) {
-	case 1:
-		//_layerDockWidget->SetCurrentLayerIndex();
-		OnLayerChanged(Assets::LAYER_ENTITY);
-		break;
-	case 2:
-		OnLayerChanged(Assets::LAYER_TILE3);
+    case 1:
+        //_layerDockWidget->SetCurrentLayerIndex();
+        OnLayerChanged(Assets::LAYER_ENTITY);
+        break;
+    case 2:
+        OnLayerChanged(Assets::LAYER_TILE3);
         if(TileEntry::renderColliders) _assets.getEngine()->getCollisionSys()->setRenderLayer(elysian::CollisionSystem::RENDER_LAYER_3);
-		break;
-	case 3:
-		OnLayerChanged(Assets::LAYER_TILE2);
+        break;
+    case 3:
+        OnLayerChanged(Assets::LAYER_TILE2);
         if(TileEntry::renderColliders) _assets.getEngine()->getCollisionSys()->setRenderLayer(elysian::CollisionSystem::RENDER_LAYER_2);
-		break;
-	case 4:
-		OnLayerChanged(Assets::LAYER_TILE1);
+        break;
+    case 4:
+        OnLayerChanged(Assets::LAYER_TILE1);
         if(TileEntry::renderColliders) _assets.getEngine()->getCollisionSys()->setRenderLayer(elysian::CollisionSystem::RENDER_LAYER_1);
-		break;
-	default:
-	   //Fucking LayerTreeWidget just set the current item to an item
-	   //that shouldn't be selectable... set it back.
-	   QTimer::singleShot(10, this, SLOT(updateLayerTreeWidget()));
-		break;
-	}
+        break;
+    default:
+       //Fucking LayerTreeWidget just set the current item to an item
+       //that shouldn't be selectable... set it back.
+       QTimer::singleShot(10, this, SLOT(updateLayerTreeWidget()));
+        break;
+    }
     //Area::updateScene();
 }
 
@@ -721,161 +720,161 @@ void ESToolkit::OnActiveLayerChanged(int index) {
   of the itemChanged slot.
 */
 void ESToolkit::updateLayerTreeWidget(void) {
-	_layerDockWidget->setCurrentLayer(_assets.getCurrentLayer());
+    _layerDockWidget->setCurrentLayer(_assets.getCurrentLayer());
 }
 
 void ESToolkit::OnLayerChanged(Assets::LAYER_TYPE newLayer) {
 #if 0
-	const Assets::LAYER_TYPE oldLayer = _assets.getCurrentLayer();
-	switch (newLayer) {
-	case Assets::TERRAIN1_LAYER:
-	case Assets::TERRAIN2_LAYER:
-		_sheetDockWidget->SetSheetScene(Level::tilePanelScene);
-		break;
-	case Assets::OBJECT1_LAYER:
-	case Assets::OBJECT2_LAYER:
-		_sheetDockWidget->SetSheetScene(Level::objectPanelScene);
-		break;
-	case Assets::ENTITY_LAYER:
-		break;
-	default:
-		break;
-	}
+    const Assets::LAYER_TYPE oldLayer = _assets.getCurrentLayer();
+    switch (newLayer) {
+    case Assets::TERRAIN1_LAYER:
+    case Assets::TERRAIN2_LAYER:
+        _sheetDockWidget->SetSheetScene(Level::tilePanelScene);
+        break;
+    case Assets::OBJECT1_LAYER:
+    case Assets::OBJECT2_LAYER:
+        _sheetDockWidget->SetSheetScene(Level::objectPanelScene);
+        break;
+    case Assets::ENTITY_LAYER:
+        break;
+    default:
+        break;
+    }
 #endif
     if(_assets.getCurrentLayer() == Assets::LAYER_ENTITY && _assets.getCurrentLayer() != newLayer) _assets.setCurrentSelection(nullptr);
 
-	_assets.setCurrentLayer(newLayer);
+    _assets.setCurrentLayer(newLayer);
 
-	//Force update for sake of solidity
-	//Area::updateScene();
+    //Force update for sake of solidity
+    //Area::updateScene();
 #if 0
-	//Only clear the selection if we're changing layer TYPES, so we can promote layers.
-	if(Assets::getTileTypeFromLayerType(newLayer) != Assets::getTileTypeFromLayerType(oldLayer)) {
-		_ui->mapView->deleteSelectionItemGroup();
-		_assets.setCurrentSelection(NULL);
-	}
+    //Only clear the selection if we're changing layer TYPES, so we can promote layers.
+    if(Assets::getTileTypeFromLayerType(newLayer) != Assets::getTileTypeFromLayerType(oldLayer)) {
+        _ui->mapView->deleteSelectionItemGroup();
+        _assets.setCurrentSelection(NULL);
+    }
 #endif
 }
 
 
 void ESToolkit::OnAreaChanged(Area *const area) {
-	if(area) {
-		_ui->actionAreaAddEntity->setDisabled(false);
-		_ui->actionAreaRemove->setDisabled(false);
-		_ui->menuArea->setDisabled(false);
-		_ui->actionFileSaveCurrentArea->setDisabled(false);
-		_undoGroup.setActiveStack(&area->getUndoStack());
-		_ui->mapView->setEnabled(true);
-	}
-	else {
-		_ui->actionAreaAddEntity->setDisabled(true);
-		_ui->actionAreaRemove->setDisabled(true);
-		_ui->menuArea->setDisabled(true);
-		_ui->actionFileSaveCurrentArea->setDisabled(true);
-		_ui->mapView->setEnabled(false);
-	}
+    if(area) {
+        _ui->actionAreaAddEntity->setDisabled(false);
+        _ui->actionAreaRemove->setDisabled(false);
+        _ui->menuArea->setDisabled(false);
+        _ui->actionFileSaveCurrentArea->setDisabled(false);
+        _undoGroup.setActiveStack(&area->getUndoStack());
+        _ui->mapView->setEnabled(true);
+    }
+    else {
+        _ui->actionAreaAddEntity->setDisabled(true);
+        _ui->actionAreaRemove->setDisabled(true);
+        _ui->menuArea->setDisabled(true);
+        _ui->actionFileSaveCurrentArea->setDisabled(true);
+        _ui->mapView->setEnabled(false);
+    }
 
-	//Update tabs
-	if(area) {
-		for(int i = 0; i < _areaTabBar->count(); ++i) {
+    //Update tabs
+    if(area) {
+        for(int i = 0; i < _areaTabBar->count(); ++i) {
             if(_areaTabBar->tabText(i) == area->getNodeName()) _areaTabBar->setCurrentIndex(i);
-		}
-	}
-	_ui->mapView->deleteSelectionItemGroup();
-	//auto boundingRect = Area::editorScene->itemsBoundingRect();
-	//boundingRect.setTop(boundingRect.getTop()-16.0f);
-	//boundingRect.setLeft(boundingRect.getLeft()-16.0f);
-	//boundingRect.setBottom(boundingRect.getBottom()+16.0f);
-	//boundingRect.setRight(boundingRect.getRight()+16.0f);
-	//Area::editorScene->setSceneRect();
+        }
+    }
+    _ui->mapView->deleteSelectionItemGroup();
+    //auto boundingRect = Area::editorScene->itemsBoundingRect();
+    //boundingRect.setTop(boundingRect.getTop()-16.0f);
+    //boundingRect.setLeft(boundingRect.getLeft()-16.0f);
+    //boundingRect.setBottom(boundingRect.getBottom()+16.0f);
+    //boundingRect.setRight(boundingRect.getRight()+16.0f);
+    //Area::editorScene->setSceneRect();
     if(_ui->mapView->scene()) _ui->mapView->scene()->update();
 }
 
 void ESToolkit::OnLevelChanged(Level *const level) {
 
-	if(level) {
-		_ui->actionLevelReloadSheets->setDisabled(false);
-		_ui->actionLevelRemove->setDisabled(false);
-		_ui->menuLevel->setDisabled(false);
-		_ui->actionFileSaveCurrentLevel->setDisabled(false);
-		//_ui->mapView->createSelItemGroup();
-		_ui->actionFileNewArea->setEnabled(true);
-		_sheetDockWidget->setViewEnabled(true);
+    if(level) {
+        _ui->actionLevelReloadSheets->setDisabled(false);
+        _ui->actionLevelRemove->setDisabled(false);
+        _ui->menuLevel->setDisabled(false);
+        _ui->actionFileSaveCurrentLevel->setDisabled(false);
+        //_ui->mapView->createSelItemGroup();
+        _ui->actionFileNewArea->setEnabled(true);
+        _sheetDockWidget->setViewEnabled(true);
 
-	}
-	else {
-		_ui->actionLevelReloadSheets->setDisabled(true);
-		_ui->actionLevelRemove->setDisabled(true);
-		_ui->menuLevel->setEnabled(false);
-		_ui->actionFileSaveCurrentLevel->setDisabled(true);
-		_ui->actionFileNewArea->setEnabled(false);
-		_sheetDockWidget->setViewEnabled(false);
-	}
+    }
+    else {
+        _ui->actionLevelReloadSheets->setDisabled(true);
+        _ui->actionLevelRemove->setDisabled(true);
+        _ui->menuLevel->setEnabled(false);
+        _ui->actionFileSaveCurrentLevel->setDisabled(true);
+        _ui->actionFileNewArea->setEnabled(false);
+        _sheetDockWidget->setViewEnabled(false);
+    }
 
-	//Update tabs
-	if(level) {
+    //Update tabs
+    if(level) {
 
-		_ignoreAreaTabChange = true;
-		while(_areaTabBar->count()) _areaTabBar->removeTab(0);
+        _ignoreAreaTabChange = true;
+        while(_areaTabBar->count()) _areaTabBar->removeTab(0);
 
-		for(unsigned int i = 0; i < _assets.getCurrentLevel()->getAreaAmount(); ++i) {
+        for(unsigned int i = 0; i < _assets.getCurrentLevel()->getAreaAmount(); ++i) {
             _areaTabBar->addTab(_assets.getCurrentLevel()->getAreaByIndex(i)->getNodeName());
-		}
-		//_areaTabBar->setCurrentIndex(0);
-		_ignoreAreaTabChange = false;
-	}
-	else {
-		while(_areaTabBar->count()) _areaTabBar->removeTab(0);
-	}
+        }
+        //_areaTabBar->setCurrentIndex(0);
+        _ignoreAreaTabChange = false;
+    }
+    else {
+        while(_areaTabBar->count()) _areaTabBar->removeTab(0);
+    }
 
-	_ui->mapView->deleteSelectionItemGroup();
-	_sheetDockWidget->UpdateSheetView();
+    _ui->mapView->deleteSelectionItemGroup();
+    _sheetDockWidget->UpdateSheetView();
 }
 /*
 void ESToolkit::OnEntityChanged(Entity *const entity) {
-	//Update Menu Bar
-	SyncEntityMenuBar();
+    //Update Menu Bar
+    SyncEntityMenuBar();
 
-	//Update Entity View
-	_inspectorDock->setWidget((QWidget *)entity);
+    //Update Entity View
+    _inspectorDock->setWidget((QWidget *)entity);
 
-	//center on entity
-	if(entity) _ui->mapView->centerOn(entity);
+    //center on entity
+    if(entity) _ui->mapView->centerOn(entity);
 }*/
 
 void ESToolkit::OnProjectChanged(Project *const project) {
-	//Update menu bar
-	if(project) {
-		_ui->menuNew->setDisabled(false);
-		_ui->menuClose->setDisabled(false);
-		_ui->menuSave->setDisabled(false);
-	}
-	else {
-		_ui->menuNew->setDisabled(true);
-		_ui->menuClose->setDisabled(true);
-		_ui->menuSave->setDisabled(true);
-	}
+    //Update menu bar
+    if(project) {
+        _ui->menuNew->setDisabled(false);
+        _ui->menuClose->setDisabled(false);
+        _ui->menuSave->setDisabled(false);
+    }
+    else {
+        _ui->menuNew->setDisabled(true);
+        _ui->menuClose->setDisabled(true);
+        _ui->menuSave->setDisabled(true);
+    }
 }
 
 void ESToolkit::OnComponentAttached(Project *const /*project*/, Level *const /*level*/, Area *const area, Entity *const entity, Component *const /*comp*/) {
-	if(area == _assets.getCurrentArea()) SyncEntityMenuBar(entity);
+    if(area == _assets.getCurrentArea()) SyncEntityMenuBar(entity);
 }
 
 void ESToolkit::OnComponentRemoved(Project *const /*project*/, Level *const /*level*/, Area *const area, Entity *const entity, Component *const /*comp*/) {
-	if(area == _assets.getCurrentArea()) SyncEntityMenuBar(entity);
+    if(area == _assets.getCurrentArea()) SyncEntityMenuBar(entity);
 }
 
 //======== MENU BAR BAR SLOTS ========
 
 void ESToolkit::on_actionFileQuit_triggered() {
-	//Check for unsaved changes!!
-	QCoreApplication::exit(0);
+    //Check for unsaved changes!!
+    QCoreApplication::exit(0);
 }
 
 void ESToolkit::_openProjectDir(const QString dir) {
-	if(dir=="") {
-		return;
-	}
+    if(dir=="") {
+        return;
+    }
 
 
     if(_assets.getCurrentProject()) {
@@ -883,27 +882,48 @@ void ESToolkit::_openProjectDir(const QString dir) {
         return;
     }
 
-	QDir::setCurrent(dir);
+    QDir::setCurrent(dir);
 
-    auto* viewport = _engineGLView = new EngineGLSceneWidget(this);
-    //_engineGLView->setFormat(QSurfaceFormat::defaultFormat());
-    connect(viewport, SIGNAL(engineUpdated()), _ui->mapView, SLOT(onEngineUpdated()));
+    QWidget* dummyWidget = new QWidget;
+    QHBoxLayout* dipshitLayout = new QHBoxLayout(dummyWidget);
+    dipshitLayout->setMargin(0);
+
+
+
+
+        auto* viewport = _engineGLView = new EngineGLSceneWidget(this);
+
+        _ui->mapView->setViewport(viewport);
+        //dipshitLayout->addWidget(viewport);
+        //_engineGLView->setFormat(QSurfaceFormat::defaultFormat());
+        connect(viewport, SIGNAL(engineUpdated()), _ui->mapView, SLOT(onEngineUpdated()));
     viewport->setMouseTracking(true);
     //_engineGLView->makeCurrent();
     _engineGLView->setMapView(_ui->mapView);
-    //_engineGLView->update();
-    _ui->mapView->setViewport(viewport);
+    _engineGLView->makeCurrent();
+    _engineGLView->updateGL();
+
+
    // _ui->mapView->setScene(new QGraphicsScene());
     //setCentralWidget(viewport);
     //assert(_ui->mapView->scene());
 
     GYInputInitParams inputParams = {
-        static_cast<QGraphicsView*>(_ui->mapView)
+        static_cast<QGraphicsView*>(_ui->mapView),
+        static_cast<QGLWidget*>(_engineGLView)
     };
-    gyInputInit(&inputParams);
 
-    assert(_engineGLView->context()->isValid());
-	Project *proj = _assets.loadProject(dir);
+
+    gyInputInit(&inputParams);
+    qDebug() << "GLEW" << QOpenGLContext::currentContext();
+   // assert(_engineGLView->context()->isValid());
+    _engineGLView->makeCurrent();
+        qDebug() << "GLEW" << QOpenGLContext::currentContext();
+    glalVidGlewInit();
+    _engineGLView->doneCurrent();
+    qDebug() << "LOADPROJECT" << QOpenGLContext::currentContext();
+
+    Project *proj = _assets.loadProject(dir);
 
    // _engineGLView->update();
 
@@ -911,62 +931,64 @@ void ESToolkit::_openProjectDir(const QString dir) {
     _assets.setCurrentSelection(_assets.getCurrentArea());
 
     //_engineGLView->doneCurrent();
-
+    qDebug() << "RENDERTIMER" << QOpenGLContext::currentContext();
     _engineGLView->startRenderTimer();
+  //  _engineGLView->doneCurrent();
+
     //elysian::Debug::getInstance()._curArea = _assets.getCurrentArea();
     //_assets.getCurrentArea()->populateVbo();
 
         // ENABLE ALL UI VIEWS
     if(proj) {
         toggleProjectActions(true);
-		_assetDockWidget->setEnabled(true);
+        _assetDockWidget->setEnabled(true);
         _entityDockWidget->setEnabled(true);
-		_layerDockWidget->ToggleDefaultItem(true);
-		_layerDockWidget->setEnabled(true);
+        _layerDockWidget->ToggleDefaultItem(true);
+        _layerDockWidget->setEnabled(true);
         _sheetDockWidget->CenterSheetView(0, 0);
-		_sheetDockWidget->setEnabled(true);
-		_selectionDockWidget->setEnabled(true);
-		_historyDockWidget->setEnabled(true);
-		//_ui->mapView->setEnabled(true);
-	}
+        _sheetDockWidget->setEnabled(true);
+        _selectionDockWidget->setEnabled(true);
+        _historyDockWidget->setEnabled(true);
+        //_ui->mapView->setEnabled(true);
+    }
 
 
 
-	//_ui->mapView->setFocus();
+    //_ui->mapView->setFocus();
 }
 
 void ESToolkit::on_actionFileOpenProject_triggered(void) {
-	_openProjectDir(QFileDialog::getExistingDirectory(this, tr("Locate Project Directory"), "./", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks));
+    _openProjectDir(QFileDialog::getExistingDirectory(this, tr("Locate Project Directory"), "./", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks));
 }
 
 void ESToolkit::on_actionFileCloseProject_triggered(void) {
-	//Q_EMIT CloseProject
+    //Q_EMIT CloseProject
     _assets.removeProject(_assets.getCurrentProject()->getNodeName());
 }
 
 void ESToolkit::on_actionFileSaveCurrentProject_triggered() {
-	//check failure!
-	Debug::Log(Debug::VERBOSE, "ESToolkit::on_actionFileSaveCurrentProject_triggered");
+    //check failure!
+    Debug::Log(Debug::VERBOSE, "ESToolkit::on_actionFileSaveCurrentProject_triggered");
     Debug::push();
-	_assets.getCurrentProject()->save();
-	//_assets.getCurrentProject()->ClearUndoStacks();
+    _assets.getCurrentProject()->save();
+    //_assets.getCurrentProject()->ClearUndoStacks();
 }
 
 void ESToolkit::on_actionFileSaveCurrentLevel_triggered() {
-	//check failure!
-	_assets.getCurrentLevel()->saveAll();
+    //check failure!
+    _assets.getCurrentLevel()->saveAll();
    // _assets.getCurrentLevel()->ClearAllStacks();
 }
 
 void ESToolkit::on_actionFileSaveCurrentArea_triggered() {
-	_assets.getCurrentArea()->save();
-	//Force TreeNode to update the '*' for unsaved area
-	//_assets.getCurrentArea()->getUndoStack().setClean();
-	//_assets.getCurrentArea()->onUndoCleanStateChanged(true);
+    _assets.getCurrentArea()->save();
+    //Force TreeNode to update the '*' for unsaved area
+    //_assets.getCurrentArea()->getUndoStack().setClean();
+    //_assets.getCurrentArea()->onUndoCleanStateChanged(true);
 }
 
 void ESToolkit::on_actionAreaAddEntity_triggered() {
-	_assets.setCurrentSelection(_assets.getCurrentArea()->newEntity());
+    _assets.setCurrentSelection(_assets.getCurrentArea()->newEntity());
 }
 
 void ESToolkit::on_actionDebugViewLog_triggered()
@@ -976,10 +998,10 @@ void ESToolkit::on_actionDebugViewLog_triggered()
 
 void ESToolkit::on_actionEntityRemove_triggered() {
     if(QMessageBox::critical(nullptr, tr("Warning!"), tr("Are you SURE that you want to permanently delete the current entity?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
-		return;
-	}
+        return;
+    }
 
-	_assets.getCurrentArea()->deleteEntity((Entity *)_assets.getCurrentSelection());
+    _assets.getCurrentArea()->deleteEntity((Entity *)_assets.getCurrentSelection());
 }
 
 void ESToolkit::on_actionEntityAttachRenderable_triggered() {
@@ -1036,7 +1058,7 @@ void ESToolkit::on_actionEntityRemoveWarp_triggered() {
 
 #if 0
 void ESToolkit::on_actionEntityRemoveItem_triggered() {
-	((Entity *)_assets.getCurrentSelection())->RemoveItem();
+    ((Entity *)_assets.getCurrentSelection())->RemoveItem();
 }
 
 void ESToolkit::on_actionEntityRemoveFriendly_triggered() {
@@ -1054,8 +1076,8 @@ void ESToolkit::on_actionEntityRemoveCharacter_triggered() {
 
 void ESToolkit::on_actionAreaRemove_triggered() {
     if(QMessageBox::critical(nullptr, tr("Warning!"), tr("Are you SURE that you want to permanently delete the current area?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
-		return;
-	}
+        return;
+    }
 
     if(_assets.getCurrentSelection() == _assets.getCurrentArea()) _selectionDockWidget->SetSelectionModel(nullptr);
 
@@ -1070,165 +1092,165 @@ void ESToolkit::on_actionAreaRemove_triggered() {
 
 void ESToolkit::on_actionLevelRemove_triggered() {
     if(QMessageBox::critical(nullptr, tr("Warning!"), tr("Are you SURE that you want to permanently delete the current level?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
-		return;
-	}
+        return;
+    }
 
     QString name = _assets.getCurrentLevel()->getNodeName();
     if(_assets.getCurrentSelection() == _assets.getCurrentLevel()) _selectionDockWidget->SetSelectionModel(nullptr);
     _assets.setCurrentLevel(nullptr);
-	_assets.getCurrentProject()->removeLevel(name);
-	_assets.setCurrentLevel(_assets.getCurrentProject()->getFirstLevel());
+    _assets.getCurrentProject()->removeLevel(name);
+    _assets.setCurrentLevel(_assets.getCurrentProject()->getFirstLevel());
 }
 /*
 void ESToolkit::on_actionFileExportCurrentArea_triggered() {
-	QString dir = QFileDialog::getExistingDirectory(this, tr("Select Directory"), _assets.getCurrentProject()->getLocation());
-	dir += "/" + _assets.getCurrentArea()->getName();
-	_assets.getCurrentArea()->Export(dir);
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Select Directory"), _assets.getCurrentProject()->getLocation());
+    dir += "/" + _assets.getCurrentArea()->getName();
+    _assets.getCurrentArea()->Export(dir);
 }
 
 void ESToolkit::on_actionFileExportCurrentLevel_triggered() {
-	QString dir = QFileDialog::getExistingDirectory(this, tr("Select Directory"), _assets.getCurrentProject()->getLocation());
-	dir += "/" + _assets.getCurrentLevel()->getName();
-	_assets.getCurrentLevel()->Export(dir);
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Select Directory"), _assets.getCurrentProject()->getLocation());
+    dir += "/" + _assets.getCurrentLevel()->getName();
+    _assets.getCurrentLevel()->Export(dir);
 }*/
 /*
 void ESToolkit::on_actionFileSaveAsCurrentProject_triggered() {
-	QString dir = QFileDialog::getExistingDirectory(this, tr("Select Directory for Export"), _assets.getCurrentProject()->getLocation());
-	dir += "/" + _assets.getCurrentProject()->getName();
-	_assets.getCurrentProject()->Export(dir);
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Select Directory for Export"), _assets.getCurrentProject()->getLocation());
+    dir += "/" + _assets.getCurrentProject()->getName();
+    _assets.getCurrentProject()->Export(dir);
 }*/
 /*
 void ESToolkit::on_actionFileImportLevel_triggered() {
-	QString dir = QFileDialog::getExistingDirectory(this, tr("Select Level to Import"), _assets.getCurrentProject()->getLocation());
-	_assets.getCurrentProject()->ImportLevel(dir);
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Select Level to Import"), _assets.getCurrentProject()->getLocation());
+    _assets.getCurrentProject()->ImportLevel(dir);
 }
 
 void ESToolkit::on_actionFileImportArea_triggered() {
-	QString dir = QFileDialog::getExistingDirectory(this, tr("Select Area to Import"), _assets.getCurrentProject()->getLocation());
-	_assets.getCurrentLevel()->ImportArea(dir);
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Select Area to Import"), _assets.getCurrentProject()->getLocation());
+    _assets.getCurrentLevel()->ImportArea(dir);
 }*/
 
 void ESToolkit::on_actionLevelReloadSheets_triggered()
 {
-	_assets.getCurrentLevel()->reloadSheets();
+    _assets.getCurrentLevel()->reloadSheets();
 }
 
 
 void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *const selection) {
 
-	_ui->mapView->deleteSelectionItemGroup();
-	/* Must be cleared after every selection change so that the model isn't pointing
-	  to a deleted TerrainSelection */
+    _ui->mapView->deleteSelectionItemGroup();
+    /* Must be cleared after every selection change so that the model isn't pointing
+      to a deleted TerrainSelection */
     _selectionDockWidget->SetSelectionModel(nullptr);
-	_selectionDockWidget->restoreSelectionTreeWidgetDefaultItemDelegate();
+    _selectionDockWidget->restoreSelectionTreeWidgetDefaultItemDelegate();
 
-	switch(type) {
-	case Selectable::PROJECT:
-		break;
-	case Selectable::LEVEL:
-		_selectionDockWidget->SetSelectionTreeWidget();
-		static_cast<Level *>(selection)->populateModel();
-		_selectionDockWidget->SetSelectionModel(static_cast<Level *>(selection));
-		_selectionDockWidget->ExpandSelectionTree();
-		break;
-	case Selectable::AREA:
-		_selectionDockWidget->SetSelectionTreeWidget();
-		static_cast<Area *>(selection)->populateModel();
+    switch(type) {
+    case Selectable::PROJECT:
+        break;
+    case Selectable::LEVEL:
+        _selectionDockWidget->SetSelectionTreeWidget();
+        static_cast<Level *>(selection)->populateModel();
+        _selectionDockWidget->SetSelectionModel(static_cast<Level *>(selection));
+        _selectionDockWidget->ExpandSelectionTree();
+        break;
+    case Selectable::AREA:
+        _selectionDockWidget->SetSelectionTreeWidget();
+        static_cast<Area *>(selection)->populateModel();
         _selectionDockWidget->SetSelectionModel(static_cast<Area *>(selection));
-		_selectionDockWidget->ExpandSelectionTree();
-		break;
-	case Selectable::TILE:
+        _selectionDockWidget->ExpandSelectionTree();
+        break;
+    case Selectable::TILE:
          _ui->mapView->createSelectionItemGroup();
-		 static_cast<TileSelectable *>(selection)->populateModel();
-		 _selectionDockWidget->SetSelectionModel(static_cast<TileSelectable *>(selection));
+         static_cast<TileSelectable *>(selection)->populateModel();
+         _selectionDockWidget->SetSelectionModel(static_cast<TileSelectable *>(selection));
          /*if(static_cast<TileSelectable *>(selection)->getSize() == 1)*/ _selectionDockWidget->ExpandSelectionTree();
-		 selection->installSelectionViewCustomDelegates(_selectionDockWidget->getSelectionTreeWidget());
-		_selectionDockWidget->SetSelectionTreeWidget();
-		break;
-	case Selectable::ENTITY:
-		//Update Menu Bar
-		//SyncEntityMenuBar(static_cast<Entity *>(selection));
+         selection->installSelectionViewCustomDelegates(_selectionDockWidget->getSelectionTreeWidget());
+        _selectionDockWidget->SetSelectionTreeWidget();
+        break;
+    case Selectable::ENTITY:
+        //Update Menu Bar
+        //SyncEntityMenuBar(static_cast<Entity *>(selection));
 
-		//Update Entity View
-		_selectionDockWidget->SetSelectionTreeWidget();
-		//static_cast<Entity*>(selection)->populateModel();
-		_selectionDockWidget->SetSelectionModel(static_cast<EntitySelectable*>(selection));
-		_selectionDockWidget->ExpandSelectionTree();
+        //Update Entity View
+        _selectionDockWidget->SetSelectionTreeWidget();
+        //static_cast<Entity*>(selection)->populateModel();
+        _selectionDockWidget->SetSelectionModel(static_cast<EntitySelectable*>(selection));
+        _selectionDockWidget->ExpandSelectionTree();
 
-		//center on entity
-		//_ui->mapView->centerOn((Entity *)selection);
-		//_ui->mapView->SetCenter((Entity *)selection);
-		break;
-		case Selectable::EMPTY:
+        //center on entity
+        //_ui->mapView->centerOn((Entity *)selection);
+        //_ui->mapView->SetCenter((Entity *)selection);
+        break;
+        case Selectable::EMPTY:
 
 
         /*if(static_cast<TileSelectable *>(selection)->getSize() == 1)*/ //_selectionDockWidget->ExpandSelectionTree();
       //  selection->installSelectionViewCustomDelegates(_selectionDockWidget->getSelectionTreeWidget());
        //_selectionDockWidget->SetSelectionTreeWidget();
 
-		//_selectionDockWidget->SetSelectionWidget(NULL);
-		//crap pants?
-		 break;
-	};
+        //_selectionDockWidget->SetSelectionWidget(NULL);
+        //crap pants?
+         break;
+    };
 }
 
 void ESToolkit::on_actionUndo_triggered(){
-	if(!_assets.getCurrentArea()) return;
-	if(_assets.getCurrentArea()->getUndoStackCount() > 0) {
-		_assets.getCurrentArea()->getUndoStack().undo();
-	}
+    if(!_assets.getCurrentArea()) return;
+    if(_assets.getCurrentArea()->getUndoStackCount() > 0) {
+        _assets.getCurrentArea()->getUndoStack().undo();
+    }
 }
 
 void ESToolkit::on_actionRedo_triggered() {
-	if(!_assets.getCurrentArea())  {
-		Debug::Log(Debug::CRITICAL, "Action Redo triggered, but there was no Area! Aborting function call...");
-		return;
-	}
-	_assets.getCurrentArea()->getUndoStack().redo();
+    if(!_assets.getCurrentArea())  {
+        Debug::Log(Debug::CRITICAL, "Action Redo triggered, but there was no Area! Aborting function call...");
+        return;
+    }
+    _assets.getCurrentArea()->getUndoStack().redo();
 }
 
 void ESToolkit::on_actionFileNewLevel_triggered() {
 
-	//QMessageBox::critical(this, tr("Error!"), tr("This feature won't be implemented until ESTkV1.5.2. Do it manually. ;)"));
-	Level *newLev = _assets.getCurrentProject()->newLevel();
+    //QMessageBox::critical(this, tr("Error!"), tr("This feature won't be implemented until ESTkV1.5.2. Do it manually. ;)"));
+    Level *newLev = _assets.getCurrentProject()->newLevel();
     //_assets.getEngine()->getLevelSys()->addLevel(newLev);
     _assets.setCurrentArea(nullptr);
-	_assets.setCurrentLevel(newLev);
-	_assets.setCurrentSelection(newLev);
+    _assets.setCurrentLevel(newLev);
+    _assets.setCurrentSelection(newLev);
 }
 
 void ESToolkit::on_actionFileNewArea_triggered() {
-	Area *newArea = _assets.getCurrentLevel()->newArea();
+    Area *newArea = _assets.getCurrentLevel()->newArea();
     //_assets.getEngine()->getLevelSys()->addArea(newArea);
-	_assets.setCurrentArea(newArea);
-	_assets.setCurrentSelection(newArea);
+    _assets.setCurrentArea(newArea);
+    _assets.setCurrentSelection(newArea);
 }
 
 void ESToolkit::OnProjectRemoved() {
     toggleProjectActions(false);
     _assetDockWidget->clearTreeView();
-	_assetDockWidget->setEnabled(false);
+    _assetDockWidget->setEnabled(false);
     _entityDockWidget->setEnabled(false);
-	_layerDockWidget->ToggleDefaultItem(false);
-	_layerDockWidget->setEnabled(false);
-	_sheetDockWidget->setEnabled(false);
-	_historyDockWidget->setEnabled(false);
+    _layerDockWidget->ToggleDefaultItem(false);
+    _layerDockWidget->setEnabled(false);
+    _sheetDockWidget->setEnabled(false);
+    _historyDockWidget->setEnabled(false);
     _selectionDockWidget->setWidget(nullptr);
-	_selectionDockWidget->setEnabled(false);
-	_ui->mapView->deleteSelectionItemGroup();
-	_ui->mapView->setEnabled(false);
+    _selectionDockWidget->setEnabled(false);
+    _ui->mapView->deleteSelectionItemGroup();
+    _ui->mapView->setEnabled(false);
 }
 
 void ESToolkit::on_actionEnable_OpenGL_triggered() {
 //	if(!glUtilities::glSupported()) return;
 
 return;
-    _ui->mapView->setViewport((_ui->actionEnable_OpenGL->isChecked())? _engineGLView : new QWidget);
-	_ui->mapView->setMouseTracking(true);
-	_ui->mapView->viewport()->setMouseTracking(true);
-    _sheetDockWidget->getSourceView()->setViewport((_ui->actionEnable_OpenGL->isChecked())? new QOpenGLWidget  : new QWidget);
-	_sheetDockWidget->getSourceView()->setMouseTracking(true);
-	_sheetDockWidget->getSourceView()->viewport()->setMouseTracking(true);
+  //  _ui->mapView->setViewport((_ui->actionEnable_OpenGL->isChecked())? _engineGLView : new QWidget);
+    _ui->mapView->setMouseTracking(true);
+    _ui->mapView->viewport()->setMouseTracking(true);
+   // _sheetDockWidget->getSourceView()->setViewport((_ui->actionEnable_OpenGL->isChecked())? new QOpenGLWidget  : new QWidget);
+    _sheetDockWidget->getSourceView()->setMouseTracking(true);
+    _sheetDockWidget->getSourceView()->viewport()->setMouseTracking(true);
 
    /* if(_ui->actionEnable_OpenGL->isChecked()) {
         _engine->getMapSys()->updateGL();
@@ -1237,172 +1259,172 @@ return;
 
 void ESToolkit::on_actionNix_triggered()
 {
-	m_activePlatform->setIcon(_ui->actionNix->icon());
+    m_activePlatform->setIcon(_ui->actionNix->icon());
 }
 
 void ESToolkit::on_actionWindows_triggered()
 {
-	m_activePlatform->setIcon(_ui->actionWindows->icon());
+    m_activePlatform->setIcon(_ui->actionWindows->icon());
 }
 
 void ESToolkit::on_actionMac_OS_X_triggered()
 {
-	m_activePlatform->setIcon(_ui->actionMac_OS_X->icon());
+    m_activePlatform->setIcon(_ui->actionMac_OS_X->icon());
 }
 
 void ESToolkit::on_actionDreamcast_triggered()
 {
-	m_activePlatform->setIcon(_ui->actionDreamcast->icon());
+    m_activePlatform->setIcon(_ui->actionDreamcast->icon());
 
 }
 
 void ESToolkit::on_actionIPhone_iPad_triggered()
 {
-	m_activePlatform->setIcon(_ui->actionIPhone_iPad->icon());
+    m_activePlatform->setIcon(_ui->actionIPhone_iPad->icon());
 }
 
 void ESToolkit::on_actionInvoke_triggered()
 {
 #if 0
-	if(!_assets.getCurrentArea() || !_assets.getCurrentLevel() || !_assets.getCurrentProject()) return;
+    if(!_assets.getCurrentArea() || !_assets.getCurrentLevel() || !_assets.getCurrentProject()) return;
 
-	_assets.getCurrentArea()->save();
-	_engineDialog->show();
+    _assets.getCurrentArea()->save();
+    _engineDialog->show();
 
-	if(_ui->actionWindows->isChecked() || _ui->actionMac_OS_X->isChecked() || _ui->actionNix->isChecked())
-		_engineDialog->Invoke(EngineDialog::ENGINE_PC);
-	else if(_ui->actionDreamcast->isChecked()) {
-		if(!_engineDialog->Invoke(EngineDialog::ENGINE_DC)) {
-			_engineDialog->close();
-			_engineSettingsDialog->show();
-			_engineSettingsDialog->setFocus();
-			//Debug::Log(Debug::CRITICAL, "InvokeEngine(DREAMCAST) failed! Invalid Settings.");
-		}
-	}
-	else if(_ui->actionIPhone_iPad->isChecked())
-		_engineDialog->Invoke(EngineDialog::ENGINE_iOS);
+    if(_ui->actionWindows->isChecked() || _ui->actionMac_OS_X->isChecked() || _ui->actionNix->isChecked())
+        _engineDialog->Invoke(EngineDialog::ENGINE_PC);
+    else if(_ui->actionDreamcast->isChecked()) {
+        if(!_engineDialog->Invoke(EngineDialog::ENGINE_DC)) {
+            _engineDialog->close();
+            _engineSettingsDialog->show();
+            _engineSettingsDialog->setFocus();
+            //Debug::Log(Debug::CRITICAL, "InvokeEngine(DREAMCAST) failed! Invalid Settings.");
+        }
+    }
+    else if(_ui->actionIPhone_iPad->isChecked())
+        _engineDialog->Invoke(EngineDialog::ENGINE_iOS);
 #endif
 }
 
 void ESToolkit::on_actionAsset_View_triggered(bool checked)
 {
-	_assetDockWidget->setVisible(checked);
-	_ui->actionAsset_View->setChecked(checked);
+    _assetDockWidget->setVisible(checked);
+    _ui->actionAsset_View->setChecked(checked);
 }
 
 void ESToolkit::on_actionEntity_View_triggered(bool checked)
 {
     _entityDockWidget->setVisible(checked);
-	_ui->actionEntity_View->setChecked(checked);
+    _ui->actionEntity_View->setChecked(checked);
 }
 
 void ESToolkit::on_actionLayer_View_triggered(bool checked)
 {
-	_layerDockWidget->setVisible(checked);
-	_ui->actionLayer_View->setChecked(checked);
+    _layerDockWidget->setVisible(checked);
+    _ui->actionLayer_View->setChecked(checked);
 }
 
 void ESToolkit::on_actionSelection_View_triggered(bool checked)
 {
-	_selectionDockWidget->setVisible(checked);
-	_ui->actionSelection_View->setChecked(checked);
+    _selectionDockWidget->setVisible(checked);
+    _ui->actionSelection_View->setChecked(checked);
 }
 
 void ESToolkit::on_actionSheet_View_triggered(bool checked)
 {
 
-	_sheetDockWidget->setVisible(checked);
-	_ui->actionSheet_View->setChecked(checked);
+    _sheetDockWidget->setVisible(checked);
+    _ui->actionSheet_View->setChecked(checked);
 }
 
 void ESToolkit::on_actionHistory_View_triggered(bool checked)
 {
-	_historyDockWidget->setVisible(checked);
-	_ui->actionHistory_View->setChecked(checked);
+    _historyDockWidget->setVisible(checked);
+    _ui->actionHistory_View->setChecked(checked);
 }
 
 void ESToolkit::on_actionReset_Layout_triggered()
 {
-	if(dockWidgetArea(_assetDockWidget) != Qt::LeftDockWidgetArea || _assetDockWidget->isFloating() || !_assetDockWidget->isVisible()) {
-		_assetDockWidget->setFloating(false);
-		removeDockWidget(_assetDockWidget);
-		addDockWidget(Qt::LeftDockWidgetArea, _assetDockWidget);
-		_assetDockWidget->setVisible(true);
-		_ui->actionAsset_View->setChecked(true);
-	}
-
-	if(dockWidgetArea(_entityDockWidget) != Qt::LeftDockWidgetArea || _entityDockWidget->isFloating() || !_entityDockWidget->isVisible()) {
-		_entityDockWidget->setFloating(false);
-		removeDockWidget(_entityDockWidget);
-		addDockWidget(Qt::LeftDockWidgetArea, _entityDockWidget);
-		_entityDockWidget->setVisible(true);
-		_ui->actionEntity_View->setChecked(true);
+    if(dockWidgetArea(_assetDockWidget) != Qt::LeftDockWidgetArea || _assetDockWidget->isFloating() || !_assetDockWidget->isVisible()) {
+        _assetDockWidget->setFloating(false);
+        removeDockWidget(_assetDockWidget);
+        addDockWidget(Qt::LeftDockWidgetArea, _assetDockWidget);
+        _assetDockWidget->setVisible(true);
+        _ui->actionAsset_View->setChecked(true);
     }
 
-	if(dockWidgetArea(_layerDockWidget) != Qt::LeftDockWidgetArea || _layerDockWidget->isFloating() || !_layerDockWidget->isVisible()) {
-		_layerDockWidget->setFloating(false);
-		removeDockWidget(_layerDockWidget);
-		addDockWidget(Qt::LeftDockWidgetArea, _layerDockWidget);
-		_layerDockWidget->setVisible(true);
-		_ui->actionLayer_View->setChecked(true);
-	}
+    if(dockWidgetArea(_entityDockWidget) != Qt::LeftDockWidgetArea || _entityDockWidget->isFloating() || !_entityDockWidget->isVisible()) {
+        _entityDockWidget->setFloating(false);
+        removeDockWidget(_entityDockWidget);
+        addDockWidget(Qt::LeftDockWidgetArea, _entityDockWidget);
+        _entityDockWidget->setVisible(true);
+        _ui->actionEntity_View->setChecked(true);
+    }
 
-	if(dockWidgetArea(_sheetDockWidget) != Qt::BottomDockWidgetArea || _sheetDockWidget->isFloating() || !_sheetDockWidget->isVisible()) {
-		_sheetDockWidget->setFloating(false);
-		removeDockWidget(_sheetDockWidget);
-		addDockWidget(Qt::BottomDockWidgetArea, _sheetDockWidget);
-		_sheetDockWidget->setVisible(true);
-		_ui->actionSheet_View->setChecked(true);
-	}
+    if(dockWidgetArea(_layerDockWidget) != Qt::LeftDockWidgetArea || _layerDockWidget->isFloating() || !_layerDockWidget->isVisible()) {
+        _layerDockWidget->setFloating(false);
+        removeDockWidget(_layerDockWidget);
+        addDockWidget(Qt::LeftDockWidgetArea, _layerDockWidget);
+        _layerDockWidget->setVisible(true);
+        _ui->actionLayer_View->setChecked(true);
+    }
 
-	if(dockWidgetArea(_selectionDockWidget) != Qt::RightDockWidgetArea || _selectionDockWidget->isFloating() || !_selectionDockWidget->isVisible()) {
-		_selectionDockWidget->setFloating(false);
-		removeDockWidget(_selectionDockWidget);
-		addDockWidget(Qt::RightDockWidgetArea, _selectionDockWidget);
-		_selectionDockWidget->setVisible(true);
-		_ui->actionSelection_View->setChecked(true);
-	}
+    if(dockWidgetArea(_sheetDockWidget) != Qt::BottomDockWidgetArea || _sheetDockWidget->isFloating() || !_sheetDockWidget->isVisible()) {
+        _sheetDockWidget->setFloating(false);
+        removeDockWidget(_sheetDockWidget);
+        addDockWidget(Qt::BottomDockWidgetArea, _sheetDockWidget);
+        _sheetDockWidget->setVisible(true);
+        _ui->actionSheet_View->setChecked(true);
+    }
 
-	if(dockWidgetArea(_historyDockWidget) != Qt::RightDockWidgetArea || _historyDockWidget->isFloating() || !_historyDockWidget->isVisible()) {
-		_historyDockWidget->setFloating(false);
-		removeDockWidget(_historyDockWidget);
-		addDockWidget(Qt::RightDockWidgetArea, _historyDockWidget);
-		_historyDockWidget->setVisible(true);
-		_ui->actionHistory_View->setChecked(true);
-	}
+    if(dockWidgetArea(_selectionDockWidget) != Qt::RightDockWidgetArea || _selectionDockWidget->isFloating() || !_selectionDockWidget->isVisible()) {
+        _selectionDockWidget->setFloating(false);
+        removeDockWidget(_selectionDockWidget);
+        addDockWidget(Qt::RightDockWidgetArea, _selectionDockWidget);
+        _selectionDockWidget->setVisible(true);
+        _ui->actionSelection_View->setChecked(true);
+    }
+
+    if(dockWidgetArea(_historyDockWidget) != Qt::RightDockWidgetArea || _historyDockWidget->isFloating() || !_historyDockWidget->isVisible()) {
+        _historyDockWidget->setFloating(false);
+        removeDockWidget(_historyDockWidget);
+        addDockWidget(Qt::RightDockWidgetArea, _historyDockWidget);
+        _historyDockWidget->setVisible(true);
+        _ui->actionHistory_View->setChecked(true);
+    }
 
 
 }
 
 void ESToolkit::UpdateDockWidgetChecked(int widget) {
-	switch(widget) {
-		case 0:
-			_ui->actionAsset_View->setChecked(false);
-			break;
-		case 1:
-			_ui->actionEntity_View->setChecked(false);
-			break;
-		case 2:
-			_ui->actionLayer_View->setChecked(false);
-			break;
-		case 3:
-			_ui->actionSheet_View->setChecked(false);
-			break;
-		case 4:
-			_ui->actionHistory_View->setChecked(false);
-			break;
-		case 5:
-			_ui->actionSelection_View->setChecked(false);
-			break;
-		default:
-			break;
-	}
+    switch(widget) {
+        case 0:
+            _ui->actionAsset_View->setChecked(false);
+            break;
+        case 1:
+            _ui->actionEntity_View->setChecked(false);
+            break;
+        case 2:
+            _ui->actionLayer_View->setChecked(false);
+            break;
+        case 3:
+            _ui->actionSheet_View->setChecked(false);
+            break;
+        case 4:
+            _ui->actionHistory_View->setChecked(false);
+            break;
+        case 5:
+            _ui->actionSelection_View->setChecked(false);
+            break;
+        default:
+            break;
+    }
 }
 
 void ESToolkit::GiveMapViewFocus()
 {
-	QWidget::activateWindow();
-	_ui->mapView->setFocus();
+    QWidget::activateWindow();
+    _ui->mapView->setFocus();
 }
 
 // #JARROD - 03/29/12
@@ -1414,12 +1436,12 @@ void ESToolkit::ExitPanMode()
 
 void ESToolkit::on_actionCut_triggered()
 {
-	_ui->mapView->selectionCut();
+    _ui->mapView->selectionCut();
 }
 
 void ESToolkit::on_actionPaste_triggered()
 {
-	_ui->mapView->selectionPaste();
+    _ui->mapView->selectionPaste();
 }
 
 void ESToolkit::on_actionDefault_Transform_triggered()
@@ -1444,8 +1466,8 @@ void ESToolkit::on_actionDefault_Transform_triggered()
         inited = true;
     }
 
-	//_luaExplorerDialog->setLuaTableStackModel(_assets.getCurArea());
-	_luaExplorerDialog->setModel(lmodel);
+    //_luaExplorerDialog->setLuaTableStackModel(_assets.getCurArea());
+    _luaExplorerDialog->setModel(lmodel);
     _luaExplorerDialog->show();
 
     RowsJoinerProxy* proxy = new RowsJoinerProxy(nullptr);
@@ -1466,11 +1488,11 @@ void ESToolkit::on_actionDefault_Transform_triggered()
 #endif
 
 
-	elysian::CameraKeyFrame keyFrame;
-	unsigned w, h;
-	gyVidResolution(&w, &h);
-	keyFrame.setPos(w*0.5f, h*0.5f);
-	_assets.getEngine()->getCameraSys()->moveToKeyFrame(keyFrame);
+    elysian::CameraKeyFrame keyFrame;
+    unsigned w, h;
+    gyVidResolution(&w, &h);
+    keyFrame.setPos(w*0.5f, h*0.5f);
+    _assets.getEngine()->getCameraSys()->moveToKeyFrame(keyFrame);
     _assets.getEngine()->getCameraSys()->setStaticScale(1.0f);
     //_ui->mapView->defaultTransform();
 
@@ -1478,8 +1500,8 @@ void ESToolkit::on_actionDefault_Transform_triggered()
 
 void ESToolkit::on_actionToggle_AutoScroll_triggered()
 {
-	_ui->mapView->autoScrollToggle(_ui->actionToggle_AutoScroll->isChecked());
-	_sheetDockWidget->getSourceView()->autoScrollToggle(_ui->actionToggle_AutoScroll->isChecked());
+    _ui->mapView->autoScrollToggle(_ui->actionToggle_AutoScroll->isChecked());
+    _sheetDockWidget->getSourceView()->autoScrollToggle(_ui->actionToggle_AutoScroll->isChecked());
 
 
     if(_assets.getEngine()) {
@@ -1501,119 +1523,119 @@ void ESToolkit::on_actionToggle_AutoScroll_triggered()
 
 void ESToolkit::on_actionActionSecret_triggered()
 {
-	if(_assets.getCurLevel()) {
-		_sheetManager->initialize(_ui->actionEnable_OpenGL->isChecked(), _ui->actionToggle_AutoScroll->isChecked());
-		_sheetManager->setFocus();
-		_sheetManager->showMaximized();
-	}
+    if(_assets.getCurLevel()) {
+        _sheetManager->initialize(_ui->actionEnable_OpenGL->isChecked(), _ui->actionToggle_AutoScroll->isChecked());
+        _sheetManager->setFocus();
+        _sheetManager->showMaximized();
+    }
 }
 
 void ESToolkit::on_actionEngine_Settings_triggered() {
-	_engineSettingsDialog->show();
-	_engineSettingsDialog->setFocus();
+    _engineSettingsDialog->show();
+    _engineSettingsDialog->setFocus();
 }
 
 void ESToolkit::on_actionElevation_toggled(bool arg1)
 {
-	if(arg1) {
-		_ui->actionIndeces->setChecked(false);
-		_ui->actionFlip_Rotation->setChecked(false);
-	}
-	TileEntry::renderElev = arg1;
-	Area::updateScene();
+    if(arg1) {
+        _ui->actionIndeces->setChecked(false);
+        _ui->actionFlip_Rotation->setChecked(false);
+    }
+    TileEntry::renderElev = arg1;
+    Area::updateScene();
 }
 
 void ESToolkit::on_actionFlip_Rotation_toggled(bool arg1)
 {
-	if(arg1) {
-		_ui->actionIndeces->setChecked(false);
-		_ui->actionElevation->setChecked(false);
-	}
-	TileEntry::renderFlipRot = arg1;
-	Area::updateScene();
+    if(arg1) {
+        _ui->actionIndeces->setChecked(false);
+        _ui->actionElevation->setChecked(false);
+    }
+    TileEntry::renderFlipRot = arg1;
+    Area::updateScene();
 }
 
 void ESToolkit::on_actionIndeces_toggled(bool arg1)
 {
-	if(arg1) {
+    if(arg1) {
         _ui->actionElevation->setChecked(false);
-		_ui->actionFlip_Rotation->setChecked(false);
-	}
-	TileEntry::renderIndeces = arg1;
+        _ui->actionFlip_Rotation->setChecked(false);
+    }
+    TileEntry::renderIndeces = arg1;
 
-	Area::updateScene();
-	Level::updateScenes();
+    Area::updateScene();
+    Level::updateScenes();
 }
 
 
 void ESToolkit::on_actionSolidity_toggled(bool arg1)
 {
-	TileEntry::renderColliders = arg1;
+    TileEntry::renderColliders = arg1;
     if(arg1) {
         _assets.getEngine()->getCollisionSys()->setRenderLayer((elysian::CollisionSystem::RENDER_LAYER)_assets.getCurrentLayer());
     } else {
        // _assets.getEngine()->getCollisionSys()->setRenderLayer(elysian::CollisionSystem::RENDER_DISABLED);
     }
-	Area::updateScene();
-	Level::updateScenes();
+    Area::updateScene();
+    Level::updateScenes();
 }
 
 void ESToolkit::on_actionZ_Transitional_toggled(bool arg1)
 {
-	TileEntry::renderZTran = arg1;
-	Area::updateScene();
+    TileEntry::renderZTran = arg1;
+    Area::updateScene();
 }
 
 void ESToolkit::on_actionHorizontal_SheetView_triggered(bool checked)
 {
-	//Initialize and set main scenes
-	Level::initializeScene(static_cast<SourceView *>(_sheetDockWidget->getSourceView()), checked);
-	_sheetDockWidget->SetSheetScene(Level::_sheetViewScene);
-	if(_assets.getCurrentLevel()) {
-		Level::addBgRectItem();
-	}
+    //Initialize and set main scenes
+    Level::initializeScene(static_cast<SourceView *>(_sheetDockWidget->getSourceView()), checked);
+    _sheetDockWidget->SetSheetScene(Level::_sheetViewScene);
+    if(_assets.getCurrentLevel()) {
+        Level::addBgRectItem();
+    }
 }
 
 void ESToolkit::keyPressEvent(QKeyEvent *event) {
-	switch(event->key()) {
-	case Qt::Key_1:
-		_assets.setLayerVisible(Assets::LAYER_TILE1, !_assets.getLayerVisible(Assets::LAYER_TILE1));
-		_layerDockWidget->setTopLevelItemCheckState(3, _assets.getLayerVisible(Assets::LAYER_TILE1));
-		break;
-	case Qt::Key_2:
-		_assets.setLayerVisible(Assets::LAYER_TILE2, !_assets.getLayerVisible(Assets::LAYER_TILE2));
-		_layerDockWidget->setTopLevelItemCheckState(2, _assets.getLayerVisible(Assets::LAYER_TILE2));
-		break;
-	case Qt::Key_3:
-		_assets.setLayerVisible(Assets::LAYER_TILE3, !_assets.getLayerVisible(Assets::LAYER_TILE3));
-		_layerDockWidget->setTopLevelItemCheckState(1, _assets.getLayerVisible(Assets::LAYER_TILE3));
-		break;
-	case Qt::Key_Space:
-		on_actionSheet_View_triggered(!_sheetDockWidget->isVisible());
-		break;
-	}
-	Area::updateScene();
+    switch(event->key()) {
+    case Qt::Key_1:
+        _assets.setLayerVisible(Assets::LAYER_TILE1, !_assets.getLayerVisible(Assets::LAYER_TILE1));
+        _layerDockWidget->setTopLevelItemCheckState(3, _assets.getLayerVisible(Assets::LAYER_TILE1));
+        break;
+    case Qt::Key_2:
+        _assets.setLayerVisible(Assets::LAYER_TILE2, !_assets.getLayerVisible(Assets::LAYER_TILE2));
+        _layerDockWidget->setTopLevelItemCheckState(2, _assets.getLayerVisible(Assets::LAYER_TILE2));
+        break;
+    case Qt::Key_3:
+        _assets.setLayerVisible(Assets::LAYER_TILE3, !_assets.getLayerVisible(Assets::LAYER_TILE3));
+        _layerDockWidget->setTopLevelItemCheckState(1, _assets.getLayerVisible(Assets::LAYER_TILE3));
+        break;
+    case Qt::Key_Space:
+        on_actionSheet_View_triggered(!_sheetDockWidget->isVisible());
+        break;
+    }
+    Area::updateScene();
 }
 
 void ESToolkit::on_actionScreenshot_triggered(void) {
 #if 0
-	//Area::editorScene->setSceneRect(Area::editorScene->itemsBoundingRect());                          // Re-shrink the scene to it's bounding contents
-	_ui->mapView->scale(0.1f, 0.1f);
+    //Area::editorScene->setSceneRect(Area::editorScene->itemsBoundingRect());                          // Re-shrink the scene to it's bounding contents
+    _ui->mapView->scale(0.1f, 0.1f);
     QImage image(Area::getEditorScene()->sceneRect().size().toSize(), QImage::Format_ARGB32);              // Create the image with the exact size of the shrunk scene
-	image.fill(Qt::transparent);                                                                      // Start all pixels transparent
+    image.fill(Qt::transparent);                                                                      // Start all pixels transparent
 
-	QPainter painter(&image);
+    QPainter painter(&image);
     Area::getEditorScene()->render(&painter);
 
-	QDir dir("");
-	if(!dir.exists("screenshots")) dir.mkdir("screenshots");
-	QString fileBase("screenshots/estkScreenshot");
-	unsigned num = 1;
+    QDir dir("");
+    if(!dir.exists("screenshots")) dir.mkdir("screenshots");
+    QString fileBase("screenshots/estkScreenshot");
+    unsigned num = 1;
 
-	while(QFile::exists(fileBase+QString::number(num)+QString(".png"))) ++num;
-	image.save(fileBase+QString::number(num)+QString(".png"));
+    while(QFile::exists(fileBase+QString::number(num)+QString(".png"))) ++num;
+    image.save(fileBase+QString::number(num)+QString(".png"));
 
-	_ui->mapView->scale(10.0f, 10.0f);
+    _ui->mapView->scale(10.0f, 10.0f);
 #else
     QDir dir("");
     if(!dir.exists("screenshots")) dir.mkdir("screenshots");
@@ -1621,7 +1643,7 @@ void ESToolkit::on_actionScreenshot_triggered(void) {
     unsigned num = 1;
 
     while(QFile::exists(fileBase+QString::number(num)+QString(".png"))) ++num;
-    _engineGLView->grabFramebuffer().save(fileBase+QString::number(num)+QString(".png"));
+    //_engineGLView->grabFramebuffer().save(fileBase+QString::number(num)+QString(".png"));
 #endif
 }
 
@@ -1643,19 +1665,19 @@ void ESToolkit::on_actionGather_2_triggered(void) {
 }
 
 void ESToolkit::on_actionPrevious_Project_triggered(void) {
-	QSettings settings;
-	QString savedSettings = settings.value("settings", "").toString();
-	QString projectDir = settings.value("previousProject", "").toString();
-	_openProjectDir(projectDir);
+    QSettings settings;
+    QString savedSettings = settings.value("settings", "").toString();
+    QString projectDir = settings.value("previousProject", "").toString();
+    _openProjectDir(projectDir);
 }
 
 void ESToolkit::on_actionInvoke_triggered(bool checked)
 {
-	if(checked) {
-		_engineGLView->play();
-	} else {
-		_engineGLView->stop();
-	}
+    if(checked) {
+        _engineGLView->play();
+    } else {
+        _engineGLView->stop();
+    }
 }
 
 void ESToolkit::onEntityTreeWidgetLayerChange(void) {
@@ -1667,16 +1689,16 @@ void ESToolkit::onEntityTreeWidgetLayerChange(void) {
 void ESToolkit::on_actionAdvance_Frame_triggered()
 {
 #if 0 //random debug reest. :D
-	static bool once = false;
-	static GYVector4 color[4] = {
-		{ 10.0f, 0.0f, 0.0f, 1.5f },
-		{ 0.0f, 0.0f, 10.0f, 1.5f },
-		{ 0.0f, 10.0f, 0.0f, 1.5f },
-		{ 0.0f, 10.0f, 10.0f, 1.5f }
+    static bool once = false;
+    static GYVector4 color[4] = {
+        { 10.0f, 0.0f, 0.0f, 1.5f },
+        { 0.0f, 0.0f, 10.0f, 1.5f },
+        { 0.0f, 10.0f, 0.0f, 1.5f },
+        { 0.0f, 10.0f, 10.0f, 1.5f }
 
-	};
+    };
 
-	if(!once) {
+    if(!once) {
         Entity* entity;
 
         entity = _assets.getCurArea()->findEntity("Julien");
@@ -1685,23 +1707,23 @@ void ESToolkit::on_actionAdvance_Frame_triggered()
         for(unsigned i = 0; i < 1; ++i) {
             //tity = new Entity;
             //entity->getTransform().setPos(900.0f*i, 900.0f*i, 100.0f);
-			auto* src = entity->addLightSource();
-			src->setLightType(GY_LIGHT_POINT);
-			src->setShadowCaster(true);
-			auto* attrib = new elysian::LightAttrib;
-			attrib->setDiffuseColor(color[i]);
-			attrib->setSpecularColor(color[i]);
-			//attrib->setAmbientColor(color[i]);
-			src->setAttrib(attrib);
+            auto* src = entity->addLightSource();
+            src->setLightType(GY_LIGHT_POINT);
+            src->setShadowCaster(true);
+            auto* attrib = new elysian::LightAttrib;
+            attrib->setDiffuseColor(color[i]);
+            attrib->setSpecularColor(color[i]);
+            //attrib->setAmbientColor(color[i]);
+            src->setAttrib(attrib);
 
-			_assets.getCurArea()->addEntity(entity);
-		}
+            _assets.getCurArea()->addEntity(entity);
+        }
 
-		once = true;
-	}
+        once = true;
+    }
 #endif
 
-	_engineGLView->advanceFrame();
+    _engineGLView->advanceFrame();
 }
 
 void ESToolkit::on_actionClear_triggered()

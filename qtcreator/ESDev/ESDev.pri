@@ -1,9 +1,9 @@
 #SPEED UP MINGW'S FUCKTARDEDLY SLOW DUMB ASS!
-win32 { 
+win32 {
         #QMAKE_CXX=../../../qtcreator/ESDev/ccache.exe g++
         #QMAKE_CC=../../../qtcreator/ESDev/ccache.exe gcc
 
-    DEFINES += QT_NO_OPENGL_ES_2
+    #DEFINES += QT_NO_OPENGL_ES_2
 }
 
 

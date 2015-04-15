@@ -1,22 +1,22 @@
 #include <string.h>
-#include "elysian_asset_typedefs.hpp"
-#include "elysian_area.hpp"
+#include "elysian_area_base.hpp"
 #include "elysian_level.hpp"
 #include "elysian_lua_manager.hpp"
-#include "elysian_asset_typedefs.hpp"
 #include "elysian_entity.hpp"
+#include <glal/gyro_gl.h>
+#include <glal/gyro_shaders_glal.h>
 
 using namespace std;
 
 namespace elysian {
 
 Entity* AreaBase::findEntity(const char *name) {
-	for(std::vector<Entity*>::iterator it = entities.begin();
-		it != entities.end(); ++it) {
-			if(strcmp(name, (*it)->getName()) == 0) 
-				return *it;
-	}
-	return nullptr;
+    for(std::vector<Entity*>::iterator it = entities.begin();
+        it != entities.end(); ++it) {
+            if(strcmp(name, (*it)->getName()) == 0)
+                return *it;
+    }
+    return nullptr;
 }
 
 void AreaBase::addEntity(Entity *entity) {
@@ -25,15 +25,15 @@ void AreaBase::addEntity(Entity *entity) {
 }
 
 void AreaBase::removeEntity(Entity *entity) {
-	entity->deactivate();
-	for(std::vector<Entity*>::iterator it = entities.begin();
-		it != entities.end(); ++it)
-	{
-		if(*it == entity) {
-			entities.erase(it);
-			return;
-		}
-	}
+    entity->deactivate();
+    for(std::vector<Entity*>::iterator it = entities.begin();
+        it != entities.end(); ++it)
+    {
+        if(*it == entity) {
+            entities.erase(it);
+            return;
+        }
+    }
 }
 /*
 AreaBase::AreaBase(void) {
@@ -43,38 +43,38 @@ AreaBase::AreaBase(void) {
 
 AreaBase::~AreaBase(void) {
     glDeleteBuffers(1, &vertexVbo);
-	//DELETE COMPONENT/ENTITY SHIT@!!!!
+    //DELETE COMPONENT/ENTITY SHIT@!!!!
     dbgprintf(LOG_VERBOSE, "Area::~Area(%s) - FIX FOR WARPS LEAKING MEMORY!! -- Entity Data?", dir);
-	freeMap();
+    freeMap();
 }
 
 void AreaBase::allocMap(void) {
-	tiles = (TileEntry *)malloc(sizeof(TileEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS);
-	tileLayer2 = tiles + width*height;
-	tileLayer3 = tiles + width*height*2;
-	mapEntryCount = width*height*ELYSIAN_AREA_MAP_LAYERS;
-	layerEntryCount = width*height;
+    tiles = (TileEntry *)malloc(sizeof(TileEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS);
+    tileLayer2 = tiles + width*height;
+    tileLayer3 = tiles + width*height*2;
+    mapEntryCount = width*height*ELYSIAN_AREA_MAP_LAYERS;
+    layerEntryCount = width*height;
 }
 
 void AreaBase::freeMap(void) {
-	free(tiles);
+    free(tiles);
 }
 
 void AreaBase::resizeMap(const unsigned w, const unsigned h) {
-	TileEntry *ntiles = (TileEntry *)malloc(sizeof(TileEntry)*w*h*ELYSIAN_AREA_MAP_LAYERS);
+    TileEntry *ntiles = (TileEntry *)malloc(sizeof(TileEntry)*w*h*ELYSIAN_AREA_MAP_LAYERS);
 
-	memset(ntiles, 0, sizeof(TileEntry)*w*h*ELYSIAN_AREA_MAP_LAYERS);
+    memset(ntiles, 0, sizeof(TileEntry)*w*h*ELYSIAN_AREA_MAP_LAYERS);
 
-	unsigned endX = (w < width)? w : width;
-	unsigned endY = (h < height)? h : height;
+    unsigned endX = (w < width)? w : width;
+    unsigned endY = (h < height)? h : height;
 
-	for(unsigned y = 0; y < endY; ++y)
-		for(unsigned x = 0; x < endX; ++x) {
-			for(unsigned i = 0; i < ELYSIAN_AREA_MAP_LAYERS; ++i)
-				ntiles[i*w*h+y*w+x] = getTileEntry(i, x, y);
-		}
+    for(unsigned y = 0; y < endY; ++y)
+        for(unsigned x = 0; x < endX; ++x) {
+            for(unsigned i = 0; i < ELYSIAN_AREA_MAP_LAYERS; ++i)
+                ntiles[i*w*h+y*w+x] = getTileEntry(i, x, y);
+        }
 
-	freeMap();
+    freeMap();
 
     tiles           = ntiles;
     tileLayer2      = tiles + w*h;
@@ -82,7 +82,7 @@ void AreaBase::resizeMap(const unsigned w, const unsigned h) {
     width           = w;
     height          = h;
     mapEntryCount   = w*h*ELYSIAN_AREA_MAP_LAYERS;
-	layerEntryCount = w*h;
+    layerEntryCount = w*h;
 
     //gotta repopulate map VBO
     if(activated) {
@@ -102,8 +102,8 @@ bool AreaBase::load(const char *const dir) {
 
     dbgprintf(LOG_VERBOSE, "Area::Load(%s)", dir);
     dbgPush();
-    
-	strcpy(path, dir);
+
+    strcpy(path, dir);
     strcpy(buffer, dir);
 
     char* token = strtok(buffer, "/");
@@ -113,155 +113,155 @@ bool AreaBase::load(const char *const dir) {
         token = strtok(nullptr, "/");
     }
     strcpy(this->dir, prevToken);
-    
-	strcpy(buffer, dir);
-    strcat(buffer, ELYSIAN_AREA_MAP_PATH);
-	success &= loadMap(buffer);
 
-	strcpy(buffer, dir);
-	strcat(buffer, ELYSIAN_AREA_ENTITY_PATH);
-	success &= loadEntities(buffer);
+    strcpy(buffer, dir);
+    strcat(buffer, ELYSIAN_AREA_MAP_PATH);
+    success &= loadMap(buffer);
+
+    strcpy(buffer, dir);
+    strcat(buffer, ELYSIAN_AREA_ENTITY_PATH);
+    success &= loadEntities(buffer);
 
     dbgPop();
-	return success;
+    return success;
 }
 
 bool AreaBase::save(const char *const dir) {
-	bool success = true;
+    bool success = true;
 
-	dbgprintf(LOG_VERBOSE, "Area::Save(%s)", dir);
+    dbgprintf(LOG_VERBOSE, "Area::Save(%s)", dir);
     dbgPush();
-    
+
     //Save/Save-As, maintain new directory
     strcpy(path, dir);
-    
-	strcpy(buffer, dir);
-	strcat(buffer, ELYSIAN_AREA_MAP_PATH);
-	success &= saveMap(buffer);
 
-	strcpy(buffer, dir);
-	strcat(buffer, ELYSIAN_AREA_ENTITY_PATH);
-	success &= saveEntities(buffer);
+    strcpy(buffer, dir);
+    strcat(buffer, ELYSIAN_AREA_MAP_PATH);
+    success &= saveMap(buffer);
+
+    strcpy(buffer, dir);
+    strcat(buffer, ELYSIAN_AREA_ENTITY_PATH);
+    success &= saveEntities(buffer);
 
     dbgPop();
-	return success;
+    return success;
 }
 
 bool AreaBase::loadMap(const char *const filename) {
-	GYFile *fp;
-	dbgprintf(LOG_VERBOSE, "Area::LoadMap(%s)", filename);
+    GYFile *fp;
+    dbgprintf(LOG_VERBOSE, "Area::LoadMap(%s)", filename);
     dbgPush();
 
-	if (!gyFileOpen(filename, "rb", &fp)) {
-		dbgprintf(LOG_CRITICAL, "FAILURE!");
-		dbgPop();
-		return false;
-	}
+    if (!gyFileOpen(filename, "rb", &fp)) {
+        dbgprintf(LOG_CRITICAL, "FAILURE!");
+        dbgPop();
+        return false;
+    }
 
     gyFileRead(fp, string, sizeof string, nullptr);
     gyFileRead(fp, string, sizeof string, nullptr);
     gyFileRead(fp, &width, sizeof width, nullptr);
     gyFileRead(fp, &height, sizeof height, nullptr);
 
-	allocMap();
+    allocMap();
 
     gyFileRead(fp, tiles, sizeof(TileEntry) * width * height * ELYSIAN_AREA_MAP_LAYERS, nullptr);
 
-	gyFileClose(&fp);
+    gyFileClose(&fp);
 
     //populateVbo();
     dbgPop();
-	return true;
+    return true;
 }
 
 bool AreaBase::saveMap(const char *const filename) {
-	dbgprintf(LOG_VERBOSE, "Area::SaveMap(%s)", filename);
-	dbgPush();
+    dbgprintf(LOG_VERBOSE, "Area::SaveMap(%s)", filename);
+    dbgPush();
 
-	/*
-	 * This method should only ever be called from
-	 * the toolkit, so all I've done is remove the call
-	 * to gyFilePath. It should be safe to leave in
-	 * standard file i/o ops. - Eddie
-	 */
-	FILE *file = fopen(filename, "wb");
-	if(!file) {
-		dbgprintf(LOG_CRITICAL, "FAILURE!");
+    /*
+     * This method should only ever be called from
+     * the toolkit, so all I've done is remove the call
+     * to gyFilePath. It should be safe to leave in
+     * standard file i/o ops. - Eddie
+     */
+    FILE *file = fopen(filename, "wb");
+    if(!file) {
+        dbgprintf(LOG_CRITICAL, "FAILURE!");
         dbgPop();
         return false;
-	}
+    }
 
     fwrite(dir, sizeof(dir), 1, file);
-	fwrite(string, sizeof(string), 1, file);
-	fwrite(&width, sizeof(width), 1, file);
-	fwrite(&height, sizeof(height), 1, file);
+    fwrite(string, sizeof(string), 1, file);
+    fwrite(&width, sizeof(width), 1, file);
+    fwrite(&height, sizeof(height), 1, file);
 
-	fwrite(tiles, sizeof(TileEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS, 1, file);
+    fwrite(tiles, sizeof(TileEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS, 1, file);
 
-	fclose(file);
+    fclose(file);
     dbgPop();
-	return true;
+    return true;
 }
 
 bool AreaBase::loadEntities(const char *const /*filename*/) {
 #if 0
-	ifstream file(gyFilePath(filename));
-	Entity *currentEntity;
-	unsigned int amount;
+    ifstream file(gyFilePath(filename));
+    Entity *currentEntity;
+    unsigned int amount;
 
-	dbgprintf(LOG_VERBOSE, "Area::LoadEntities(%s)", filename);
+    dbgprintf(LOG_VERBOSE, "Area::LoadEntities(%s)", filename);
     dbgPush();
-    
-	if(!file.is_open())	{
+
+    if(!file.is_open())	{
         dbgprintf(LOG_CRITICAL, "FAILURE - could not open file!");
         dbgPop();
         return false;
     }
-	
-	file >> amount;
-	dbgprintf(LOG_VERBOSE, "%d entities", amount);
-	for(unsigned int i = 0; i < amount; ++i) {
-		if(file.eof()) {
-			dbgprintf(LOG_CRITICAL, "FAILURE! - Unexpected end of file");
+
+    file >> amount;
+    dbgprintf(LOG_VERBOSE, "%d entities", amount);
+    for(unsigned int i = 0; i < amount; ++i) {
+        if(file.eof()) {
+            dbgprintf(LOG_CRITICAL, "FAILURE! - Unexpected end of file");
             dbgPop();
-			return false;
-		}
-		currentEntity = new Entity;
-		currentEntity->load(file);
-	}
+            return false;
+        }
+        currentEntity = new Entity;
+        currentEntity->load(file);
+    }
 
     dbgPop();
 #endif
-	return true;
+    return true;
 }
 
 bool AreaBase::saveEntities(const char *const /*filename*/) {
 #if 0
-	ofstream file(gyFilePath(filename));
-	dbgprintf(LOG_VERBOSE, "Area::SaveEntities(%s)", filename);
+    ofstream file(gyFilePath(filename));
+    dbgprintf(LOG_VERBOSE, "Area::SaveEntities(%s)", filename);
     dbgPush();
-    
-	if(!file.is_open()) {
-		dbgprintf(LOG_CRITICAL, "FAILURE! - Could not open file.");
+
+    if(!file.is_open()) {
+        dbgprintf(LOG_CRITICAL, "FAILURE! - Could not open file.");
         dbgPop();
-		return false;
-	}
-	
-	file << entities.size() << endl;
-	for(unsigned int i = 0; i < entities.size(); ++i) {
-		dbgprintf(LOG_VERBOSE, "Writing entity #%d", i);
-		entities[i]->save(file);
-	}
+        return false;
+    }
+
+    file << entities.size() << endl;
+    for(unsigned int i = 0; i < entities.size(); ++i) {
+        dbgprintf(LOG_VERBOSE, "Writing entity #%d", i);
+        entities[i]->save(file);
+    }
 
     dbgPop();
 #endif
-	return true;
+    return true;
 }
 
 void AreaBase::populateVbo(void) {
     if(vboPopulated) return;
 
-  //  glBindVertexArray(vao);
+    glBindVertexArray(0);
 
     glGenBuffers(1, &vertexVbo);
 
@@ -269,18 +269,18 @@ void AreaBase::populateVbo(void) {
     GYVertex* curPtr = data;
 //	const GYTexCoord2* coords;
 
-	for(unsigned z = 0; z < ELYSIAN_AREA_MAP_LAYERS; ++z) {
-		for(unsigned y = 0; y < height; ++y) {
-			for(unsigned x = 0; x < width; ++x) {
-				TileEntry tileEntry = getTileEntry(z, x, y);
+    for(unsigned z = 0; z < ELYSIAN_AREA_MAP_LAYERS; ++z) {
+        for(unsigned y = 0; y < height; ++y) {
+            for(unsigned x = 0; x < width; ++x) {
+                TileEntry tileEntry = getTileEntry(z, x, y);
 
                 vboEntryFromTileEntry(curPtr, &tileEntry, x, y);
 
-				curPtr += 4;
+                curPtr += 4;
 
-			}
-		}
-	}
+            }
+        }
+    }
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*width*height*ELYSIAN_AREA_MAP_LAYERS*4, data, GL_STATIC_DRAW);
@@ -291,17 +291,15 @@ void AreaBase::populateVbo(void) {
         &glalLightingShader,
         &glalShadowMapShader
     };
-        glGenBuffers(1, &elementVbo[0]);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementVbo[0]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE, elementsArray, GL_STREAM_DRAW);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     for(unsigned j = 0; j < 2; ++j) {
         glGenVertexArrays(1, &vao[j]);
-        gyVidVertexArrayBind(vao[j]);
+        glBindVertexArray(vao[j]);
 
+        glGenBuffers(1, &elementVbo[j]);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementVbo[j]);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE, elementsArray, GL_STREAM_DRAW);
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementVbo[0]);
         glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
 
     glEnableVertexAttribArray(shaders[j]->attribLoc[GLAL_SHADER_POS]);
@@ -327,7 +325,7 @@ void AreaBase::populateVbo(void) {
   // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementVbo);
  //   glBufferData(GL_ELEMENT_ARRAY_BUFFER, ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE*sizeof(GLushort), &elementsArray[0], GL_DYNAMIC_DRAW);
 
-
+glBindVertexArray(0);
     vboPopulated = true;
 }
 
@@ -347,6 +345,36 @@ void AreaBase::activate(void) {
 
     activated = true;
 }
+
+
+void AreaBase::setVboEntry(const TileEntry*const tileEntry, const unsigned l, const unsigned x, const unsigned y) const {
+    GYVertex entry[4];
+
+    vboEntryFromTileEntry(entry, tileEntry, x, y);
+
+    //ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
+
+    glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
+    glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_MAP_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(GYVertex), sizeof(GYVertex)*4, (void*)entry);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+}
+
+void AreaBase::setTileEntry(const unsigned l, const unsigned x, const unsigned y, const TileEntry e) {
+    GYVertex entry[4];
+
+    vboEntryFromTileEntry(entry, &e, x, y);
+
+    ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
+
+    glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
+    glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_MAP_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(GYVertex), sizeof(GYVertex)*4, (void*)entry);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+}
+
 
 
 }

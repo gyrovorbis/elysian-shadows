@@ -12,9 +12,27 @@
 #include <QOpenGLContext>
 //#undef QT_NO_KEYWORDS
 
+EngineGLSceneWidget* EngineGLSceneWidget::_self = nullptr;
+
+void EngineGLSceneWidget::makeCurrentContext(void) {
+    if(_self) {
+        _self->makeCurrent();
+       //     glalVidOglInit(_self->_width, _self->_height, _self->_width, _self->_height);
+    }
+}
+
+void EngineGLSceneWidget::doneCurrentContext(void) {
+    if(_self) _self->doneCurrent();
+}
 
 EngineGLSceneWidget::EngineGLSceneWidget(QWidget *parent):
-    QOpenGLWidget(parent) {
+    QGLWidget(parent) {
+    assert(!_self);
+            _self = this;
+       //     setUpdateBehavior(QOpenGLWidget::NoPartialUpdate);
+           // setAttribute(Qt::WA_NativeWindow);
+
+            connect(this, SIGNAL(resized()), this, SLOT(_onResized()));
 }
 
 
@@ -39,19 +57,24 @@ bool EngineGLSceneWidget::isPlaying(void) const { return getAssets()->getEngine(
 
 
 void EngineGLSceneWidget::initializeGL(void) {
+   // initializeOpenGLFunctions();
  //   auto* con = context();
   //  assert(con->isValid());
   //  makeCurrent();
    // initializeGLFunctions();
    // doneCurrent();
 
-    unsigned parentWidth    = parentWidget()->size().width();
-    unsigned parentHeight   = parentWidget()->size().height();
+    //unsigned parentWidth    = parentWidget()->size().width();
+    //unsigned parentHeight   = parentWidget()->size().height();
 
-   // glalVidOglInit(parentWidth, parentHeight, parentWidth, parentHeight);
+  //  connect(context(), SIGNAL(aboutToBeDestroyed()), this, SLOT(_onContextAboutToBeDestroyed()));
+makeCurrent();
+//glalVidGlewInit();
+      // glalVidOglInit(1280, 720, 1280, 720);
+  //  glalVidOglInit(parentWidth, parentHeight, parentWidth, parentHeight);
      if(getAssets()->getEngine()) getAssets()->getEngine()->getCameraSys()->initializeProjMatrix();
 
-     _mapView->setSceneRect(0, 0, parentWidth, parentHeight);
+    // _mapView->setSceneRect(0, 0, parentWidth, parentHeight);
 
    //  doneCurrent();
 
@@ -98,39 +121,50 @@ static void _initSpineShit(void) {
 }
 
 void EngineGLSceneWidget::startRenderTimer(void) {
+    makeCurrent();
+   // glalVidOglInit(1280, 720, 1280, 720);
+        qDebug() << "IN RENDER TIMER" << QOpenGLContext::currentContext();
        glalVidOglInit(1280, 720, 1280, 720);
     _timer.start(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this);
-    timerEvent(nullptr); //go ahead and update the nigger.
+   // doneCurrent();
+    _initialized = true;
+    //timerEvent(nullptr); //go ahead and update the nigger.
 }
-
+/*
 void EngineGLSceneWidget::showEvent(QShowEvent *event) {
     //startRenderTimer();
-}
+}*/
 
 
 void EngineGLSceneWidget::timerEvent(QTimerEvent *)
 {
     makeCurrent();
-    update();
-     //       _mapView->scene()->invalidate();
+       // qDebug() << "TIMEREVENT" << QOpenGLContext::currentContext();
+   // update();
+    updateGL();
+        //       _mapView->scene()->invalidate();
     //_mapView->update();
-    _mapView->updateSceneRect(_mapView->sceneRect());
-    paintGL();
+   // _mapView->updateSceneRect(_mapView->sceneRect());
+  //  paintGL();
 
-        unsigned parentWidth    = parentWidget()->size().width();
+   #if 0
+    unsigned parentWidth    = parentWidget()->size().width();
         unsigned parentHeight   = parentWidget()->size().height();
         if(_width != parentWidth || _height != parentHeight) {
             resizeGL(parentWidth, parentHeight);
         }
+#endif
     doneCurrent();
 }
-
+#
 void EngineGLSceneWidget::resizeGL(int w, int h) {
-     glalVidOglInit(w, h, w, h);
+makeCurrent();
+   glalVidOglInit(w, h, w, h);
      _width = w;
      _height = h;
 
-     _mapView->setSceneRect(0, 0, w, h);
+    // _mapView->setSceneRect(0, 0, w, h);
+
  if(getAssets()->getEngine()) getAssets()->getEngine()->getCameraSys()->initializeProjMatrix();
 
 }
@@ -141,30 +175,29 @@ static void _renderSpineShit(void) {
 }
 
 void EngineGLSceneWidget::paintGL(void) {
-	if(!getCurrentArea()) return;
+    if(!getCurrentArea() || !_initialized) return;
+
+    makeCurrent();
+
+      //  qDebug() << "PREPAINTGL" << QOpenGLContext::currentContext();
 
     static bool once = false;
     if(!once) {
-        _initSpineShit();
+       // _initSpineShit();
         once = true;
     }
-
+#if 0
     float deltaTime = getAssets()->getEngine()->getTimerSys()->getDeltaTime();
     spSkeleton_update(skeleton, deltaTime);
     spAnimationState_update(state, deltaTime * 1.0f);
     spAnimationState_apply(state, skeleton);
     spSkeleton_updateWorldTransform(skeleton);
-
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    gyMatLoadIdentity();
-
-        getAssets()->getEngine()->render(&_renderSpineShit);
-
-    context()->swapBuffers(context()->surface()); // DO QOPENGL WIDGET'S FUCKING JOB FOR IT!
+#endif
 
     getAssets()->getEngine()->update();
     getAssets()->getEngine()->processInput();
     if(_advanceFrame) {
+
         _advanceFrame = false;
         getAssets()->getEngine()->setEngineState(elysian::System::ENGINE_ESTK_STOP);
     }
@@ -178,6 +211,15 @@ void EngineGLSceneWidget::paintGL(void) {
         getAssets()->getEngine()->getCameraSys()->setDynamic(true);
         getAssets()->getEngine()->getCameraSys()->setBoundByMap(true);
     }
+ //   qDebug() << "POSTPAINTGL" << QOpenGLContext::currentContext();
+    //  getAssets()->getEngine()->getLightSys()->setGlobalAmbientColor(GYVector4 { 1.0f, 1.0f, 1.0f, 1.0f});
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+      gyMatLoadIdentity();
+
+          getAssets()->getEngine()->render(&_renderSpineShit);
+
+     // context()->swapBuffers(context()->surface()); // DO QOPENGL WIDGET'S FUCKING JOB FOR IT!
+        //  update();
 
 
     Q_EMIT engineUpdated();
@@ -199,4 +241,12 @@ void EngineGLSceneWidget::setCameraManualOnPlay(const bool val) {
         _cameraManual = val;
     }
 
+}
+
+void EngineGLSceneWidget::_onContextAboutToBeDestroyed(void) {
+    qDebug() << "DESTROYING CONTEXT!!!";
+}
+
+void EngineGLSceneWidget::_onResized(void) {
+    qDebug() << "RESIZERY!!!!";
 }

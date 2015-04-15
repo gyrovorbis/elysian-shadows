@@ -29,12 +29,11 @@
 #include "elysian_rigid_body_system.hpp"
 #include "elysian_combat_system.hpp"
 #include "elysian_skeleton_system.hpp"
-#include "glal/gyro_glal.h"
 
 namespace elysian {
 
 Engine::Engine(void) {
-	srand(time(nullptr));
+    srand(time(nullptr));
 
     //gyDebugInit();
     //gySysInit();
@@ -42,7 +41,7 @@ Engine::Engine(void) {
     //gyAudInit();
 
     LuaManager::initialize();
-		
+
     //allocate systems
     _levelSystem		= new LevelSystem;
     _mapSystem			= new MapSystem;
@@ -70,45 +69,45 @@ Engine::Engine(void) {
     _combatSystem->initialize();
     MapSystem::staticInitialize();
 
-	//register Lua dependencies
-	Singletons::setGameInput(&_gameInput);
+    //register Lua dependencies
+    Singletons::setGameInput(&_gameInput);
     Singletons::setMouseInput(&_mouseInput);
-	Singletons::setDebug(&Debug::getInstance());
+    Singletons::setDebug(&Debug::getInstance());
 
-	memset(&_platInput, 0, sizeof(GYInput));
+    memset(&_platInput, 0, sizeof(GYInput));
 }
 
 bool Engine::loadAssets(void) {
     bool success = true;
 
     _cameraSystem->initializeProjMatrix();
-    
-	Debug::printf(Debug::VERBOSE, "Engine::LoadAssets()");
-	Debug::push();
-	//Debug::Print(Debug::NORMAL, "PartySystem::PartySystem() - Loading Playable Characters.\n");
-	//success &= partySystem->LoadPlayables();
-		 //Debug::Print(Debug::ERROR_2, "\t! - Playable Character file could not be opened.\n");
-	 //}
-	success &= !_guiSystem->loadAssets();
-	success &= !_dialogSystem->loadAssets();
-	
+
+    Debug::printf(Debug::VERBOSE, "Engine::LoadAssets()");
+    Debug::push();
+    //Debug::Print(Debug::NORMAL, "PartySystem::PartySystem() - Loading Playable Characters.\n");
+    //success &= partySystem->LoadPlayables();
+         //Debug::Print(Debug::ERROR_2, "\t! - Playable Character file could not be opened.\n");
+     //}
+    success &= !_guiSystem->loadAssets();
+    success &= !_dialogSystem->loadAssets();
+
     Debug::pop();
-	return true;
+    return true;
 }
 
 void Engine::update(void) {
 
-	switch(System::_engineState) {
-		case System::ENGINE_NORMAL:
-		case System::ENGINE_WARPING:
-		case System::ENGINE_MODAL_CONVERSATION:
-		case System::ENGINE_CONVERSATION:
-			_partySystem->update();
-			_lightSystem->update();
-			_audioSystem->update();
+    switch(System::_engineState) {
+        case System::ENGINE_NORMAL:
+        case System::ENGINE_WARPING:
+        case System::ENGINE_MODAL_CONVERSATION:
+        case System::ENGINE_CONVERSATION:
+            _partySystem->update();
+            _lightSystem->update();
+            _audioSystem->update();
 
             _rigidBodySystem->applyForces();
-			_rigidBodySystem->integrate();
+            _rigidBodySystem->integrate();
             _collisionSystem->prepareGeometry();
             _rigidBodySystem->integrate3D();
             _collisionSystem->update();
@@ -116,20 +115,20 @@ void Engine::update(void) {
             _rigidBodySystem->resolveContactVelocities();
             _rigidBodySystem->breakRigidBodies();
 
-			_timerSystem->update();
-			_mapSystem->update();
-			_characterSystem->update();
+            _timerSystem->update();
+            _mapSystem->update();
+            _characterSystem->update();
             _skeletonSystem->update();
-			_animationSystem->update();
-			_guiSystem->update();
-			_warpSystem->update();
-			_particleSystem->update();
-			_daySystem->update();
-			_dialogSystem->update();
-			_combatSystem->update();
+            _animationSystem->update();
+            _guiSystem->update();
+            _warpSystem->update();
+            _particleSystem->update();
+            _daySystem->update();
+            _dialogSystem->update();
+            _combatSystem->update();
 
-			_behaviorSystem->callTriggers(Behavior::ON_UPDATE);
-			break;
+            _behaviorSystem->callTriggers(Behavior::ON_UPDATE);
+            break;
 
         case System::ENGINE_ESTK_STOP:
              _collisionSystem->prepareGeometry();
@@ -143,21 +142,21 @@ void Engine::update(void) {
 
 
 #if 0
-			timerSystem->Update();
-			terrainSystem->Update();
-			characterSystem->Update();
-			animationSystem->Update();
-			partySystem->Update();
-			guiSystem->Update();
-			conversationSystem->Update();
-			behaviorSystem->Update();
-			collisionSystem->DetectCollisions();
+            timerSystem->Update();
+            terrainSystem->Update();
+            characterSystem->Update();
+            animationSystem->Update();
+            partySystem->Update();
+            guiSystem->Update();
+            conversationSystem->Update();
+            behaviorSystem->Update();
+            collisionSystem->DetectCollisions();
 //			behaviorSystem->Update();
 #endif
-			break;
-		default:
-			break;
-	}
+            break;
+        default:
+            break;
+    }
 
 }
 
@@ -165,92 +164,92 @@ void Engine::processInput(void) {
 
     gyInputPoll(&_platInput);
     _mouseInput.poll();
-	GameInput::translate(_platInput, _gameInput);
-	Debug::getInstance().processInput(_gameInput);
+    GameInput::translate(_platInput, _gameInput);
+    Debug::getInstance().processInput(_gameInput);
 
-	//if(!_processInput) return;
+    //if(!_processInput) return;
 
-	switch(System::_engineState){
-		case System::ENGINE_NORMAL:
-		case System::ENGINE_CONVERSATION:
-			if(_processInput) _partySystem->processInput(_gameInput);
-			_cameraSystem->processInput(_gameInput);
-			_examinableSystem->processInput(_gameInput);
-			_dialogSystem->processInput(_gameInput);
-			//Debug::getInstance().processInput(_gameInput);
-			//conversationSystem->ProcessInput(input);
-			break;
-		case System::ENGINE_MODAL_CONVERSATION:
-			_dialogSystem->processInput(_gameInput);
-			break;
-		case System::ENGINE_WARPING:
-			break;
-		case System::ENGINE_CAMERA_DEBUG:
-			_cameraSystem->processInput(_gameInput);
-		break;
-		default:
-			break;
-	}
+    switch(System::_engineState){
+        case System::ENGINE_NORMAL:
+        case System::ENGINE_CONVERSATION:
+            if(_processInput) _partySystem->processInput(_gameInput);
+            _cameraSystem->processInput(_gameInput);
+            _examinableSystem->processInput(_gameInput);
+            _dialogSystem->processInput(_gameInput);
+            //Debug::getInstance().processInput(_gameInput);
+            //conversationSystem->ProcessInput(input);
+            break;
+        case System::ENGINE_MODAL_CONVERSATION:
+            _dialogSystem->processInput(_gameInput);
+            break;
+        case System::ENGINE_WARPING:
+            break;
+        case System::ENGINE_CAMERA_DEBUG:
+            _cameraSystem->processInput(_gameInput);
+        break;
+        default:
+            break;
+    }
 }
 
 void Engine::render(void (*func)(void)) {
 
-	switch(System::_engineState) {
-		default:
+    switch(System::_engineState) {
+        default:
             _cameraSystem->update();
-			gyVidSceneBegin();
+            gyVidSceneBegin();
             gyMatLoadIdentity();
 
-		/*	unsigned w, h;
-			gyVidResolution(&w, &h);
+        /*	unsigned w, h;
+            gyVidResolution(&w, &h);
 
-			const float pfar = 1000.0f;
-			const float pnear = -999.0f;
-			const float pleft = 0.0f;
-			const float pright = (float)w;
-			const float ptop = 0.0f;
-			const float pbottom = (float)h;
-			unsigned width, height;
+            const float pfar = 1000.0f;
+            const float pnear = -999.0f;
+            const float pleft = 0.0f;
+            const float pright = (float)w;
+            const float ptop = 0.0f;
+            const float pbottom = (float)h;
+            unsigned width, height;
 
-			gyVidResolution(&width, &height);
-			glViewport(0, 0, width, height);
+            gyVidResolution(&width, &height);
+            glViewport(0, 0, width, height);
 
-			gyVidOrthoProjMat(projectionMatrix, pleft, pright, pbottom, ptop, pnear, pfar);
-			//glDepthRange(0, 1);
-			gyVidProjectionCustomMatrix(projectionMatrix);
-			//gyVidProjectionDefaultMatrix(); */
-			_guiSystem->renderBackground();
-			_cameraSystem->pushViewProjMatrix();
+            gyVidOrthoProjMat(projectionMatrix, pleft, pright, pbottom, ptop, pnear, pfar);
+            //glDepthRange(0, 1);
+            gyVidProjectionCustomMatrix(projectionMatrix);
+            //gyVidProjectionDefaultMatrix(); */
+            _guiSystem->renderBackground();
+            _cameraSystem->pushViewProjMatrix();
 //#if GYRO_PLATFORM == GYRO_PLATFORM_x86
-			_lightSystem->shadowRenderPasses();
+            _lightSystem->shadowRenderPasses();
 //#endif
             //_lightSystem->addLightSourcesToScene();
 
-			_mapSystem->render();
+            _mapSystem->render();
 
-			_lightSystem->render();
+            _lightSystem->render();
 
              _collisionSystem->render();
              _particleSystem->render();
-            func();
+          //  func();
 
-			 _lightSystem->removeLightSourcesFromScene();
+             _lightSystem->removeLightSourcesFromScene();
 
              _guiSystem->render();
 
-			_cameraSystem->popViewProjMatrix();
+            _cameraSystem->popViewProjMatrix();
 
-			//Begin rendering overlays
-            func();
+            //Begin rendering overlays
+          //  func();
             _dialogSystem->render();
             _warpSystem->render();
             _guiSystem->renderForeground();
 
-			gyVidSceneEnd();
-	}
+            gyVidSceneEnd();
+    }
 }
 
-Engine::~Engine(void) { 
+Engine::~Engine(void) {
     //SHIT ALL NEEDS SOME WORK
    // MapSystem::staticUninitialize();
 
@@ -259,25 +258,25 @@ Engine::~Engine(void) {
 
     LuaManager::uninitialize();
 /*	delete _combatSystem;
-	delete _dialogSystem;
-	delete _examinableSystem;
-	delete _daySystem;
-	delete _particleSystem;
-	delete _levelSystem;
-	delete _mapSystem;
-	delete _cameraSystem;
-	delete _animationSystem;
-	delete _characterSystem;
-	delete _partySystem;
-	delete _timerSystem;
-	delete _audioSystem;
-	delete _lightSystem;
-	delete _rigidBodySystem;
-	delete _collisionSystem;
-	delete _guiSystem;
+    delete _dialogSystem;
+    delete _examinableSystem;
+    delete _daySystem;
+    delete _particleSystem;
+    delete _levelSystem;
+    delete _mapSystem;
+    delete _cameraSystem;
+    delete _animationSystem;
+    delete _characterSystem;
+    delete _partySystem;
+    delete _timerSystem;
+    delete _audioSystem;
+    delete _lightSystem;
+    delete _rigidBodySystem;
+    delete _collisionSystem;
+    delete _guiSystem;
     delete _skeletonSystem;
     delete _behaviorSystem;*/
-	
+
 
 }
 

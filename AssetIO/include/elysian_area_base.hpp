@@ -1,9 +1,9 @@
 #ifndef ELYSIAN_AREA_BASE_HPP
 #define ELYSIAN_AREA_BASE_HPP
 
-#include <glal/gyro_glal.h>
 #include <gyro_video_api.h>
 #include <vector>
+#include <stdint.h>
 #include <stdint.h>
 #include "elysian_asset.hpp"
 #include "elysian_mem_pool.hpp"
@@ -41,9 +41,9 @@
 
 #define ELYSIAN_MAP_ENTRY_GET_ATTRIB(t ,a)		((value >> ELYSIAN_##t##_ENTRY_##a##_BIT_POS) & ELYSIAN_##t##_ENTRY_##a##_BIT_MASK)
 #define ELYSIAN_MAP_ENTRY_SET_ATTRIB(t, a, v)	do { \
-													value &= ~(ELYSIAN_##t##_ENTRY_##a##_BIT_MASK << ELYSIAN_##t##_ENTRY_##a##_BIT_POS); \
-													(value) |= ((unsigned)(v) << ELYSIAN_##t##_ENTRY_##a##_BIT_POS); \
-												} while(0)
+                                                    value &= ~(ELYSIAN_##t##_ENTRY_##a##_BIT_MASK << ELYSIAN_##t##_ENTRY_##a##_BIT_POS); \
+                                                    (value) |= ((unsigned)(v) << ELYSIAN_##t##_ENTRY_##a##_BIT_POS); \
+                                                } while(0)
 
 #define ELYSIAN_MAP_ENTRY_TO_VBO_INDEX(l, x, y) ((l*height*width + y*width + x)*4)
 
@@ -62,90 +62,90 @@ ELYSIAN_ASSET_TYPEDEF(Animation)
 
 namespace elysian {
 
-	class Renderable;
+    class Renderable;
     class Collidable;
-	class RigidBody;
+    class RigidBody;
     class Character;
-	class Warp;
-	class Examinable;
-	class AudioSource;
-	class LightSource;
-	class ParticleEmitter;
-	class Combat;
+    class Warp;
+    class Examinable;
+    class AudioSource;
+    class LightSource;
+    class ParticleEmitter;
+    class Combat;
     class Skeleton;
-	class Behavior;
+    class Behavior;
 
-	struct MapEntry {
-		uint32_t value;
-		MapEntry(const uint32_t val);
-		MapEntry(void);
+    struct MapEntry {
+        uint32_t value;
+        MapEntry(const uint32_t val);
+        MapEntry(void);
 
-		uint32_t			getValue(void) const;
-		void				setValue(const uint32_t val);
-		GY_RECT_TEX_ORIENT	getOrient(void) const;
-		unsigned char		getElev(void) const;
-		void				setOrient(const GY_RECT_TEX_ORIENT o);
-		void				setElev(const unsigned char e);
-	};
+        uint32_t			getValue(void) const;
+        void				setValue(const uint32_t val);
+        GY_RECT_TEX_ORIENT	getOrient(void) const;
+        unsigned char		getElev(void) const;
+        void				setOrient(const GY_RECT_TEX_ORIENT o);
+        void				setElev(const unsigned char e);
+    };
 
-	struct TileEntry: public MapEntry {
-		TileEntry(void);
-		TileEntry(const uint32_t val);
+    struct TileEntry: public MapEntry {
+        TileEntry(void);
+        TileEntry(const uint32_t val);
 
-		void					setIndex(const uint16_t i);
-		uint16_t				getIndex(void) const;
-		void					setZTran(const bool z);
-		bool					getZTran(void) const;
-		void					setPlane(const GY_RECT_PLANE_TYPE n);
-		GY_RECT_PLANE_TYPE		getPlane(void) const;
-		bool					getNormal(void) const;
-		void					setNormal(const bool val);
-	};
+        void					setIndex(const uint16_t i);
+        uint16_t				getIndex(void) const;
+        void					setZTran(const bool z);
+        bool					getZTran(void) const;
+        void					setPlane(const GY_RECT_PLANE_TYPE n);
+        GY_RECT_PLANE_TYPE		getPlane(void) const;
+        bool					getNormal(void) const;
+        void					setNormal(const bool val);
+    };
 
     struct AreaBase: public Asset {
-		//Entity data
-		std::vector<Entity*>			entities;
+        //Entity data
+        std::vector<Entity*>			entities;
 
-		//Component data
-		std::vector<Renderable*>		renderables;
-		std::vector<Animation*>			animations;
-		std::vector<Collidable*>		collidables;
-		std::vector<RigidBody*>			rigidBodies;
-		std::vector<Character*>			characters;
-		std::vector<Warp*>				warps;
-		std::vector<Examinable*>		examinables;
-		std::vector<AudioSource*>		audioSources;
-		std::vector<LightSource*>		lightSources;
-		std::vector<ParticleEmitter*>	particleEmitters;
-		std::vector<Combat*>			combats;
+        //Component data
+        std::vector<Renderable*>		renderables;
+        std::vector<Animation*>			animations;
+        std::vector<Collidable*>		collidables;
+        std::vector<RigidBody*>			rigidBodies;
+        std::vector<Character*>			characters;
+        std::vector<Warp*>				warps;
+        std::vector<Examinable*>		examinables;
+        std::vector<AudioSource*>		audioSources;
+        std::vector<LightSource*>		lightSources;
+        std::vector<ParticleEmitter*>	particleEmitters;
+        std::vector<Combat*>			combats;
         std::vector<Skeleton*>          skeletons;
-		std::vector<Behavior*>			behaviors;
-		
+        std::vector<Behavior*>			behaviors;
+
         char dir[ELYSIAN_AREA_NAME_SIZE];		//name of area directory
         char path[ELYSIAN_AREA_PATH_SIZE];
-		char string[ELYSIAN_AREA_STRING_SIZE];	//in-game area name
+        char string[ELYSIAN_AREA_STRING_SIZE];	//in-game area name
 
-		//map - tile layers
-		//pointer to entire map (contiguous block of memory)
-		TileEntry*			tiles			= nullptr;
-		//pointer to individual tile layers (faster indexing)
-		TileEntry*			tileLayer2		= nullptr;
-		TileEntry*			tileLayer3		= nullptr;
+        //map - tile layers
+        //pointer to entire map (contiguous block of memory)
+        TileEntry*			tiles			= nullptr;
+        //pointer to individual tile layers (faster indexing)
+        TileEntry*			tileLayer2		= nullptr;
+        TileEntry*			tileLayer3		= nullptr;
 
         Level*              level			= nullptr;
 
-		unsigned short int	width			= 0;
-		unsigned short int	height			= 0;
-		unsigned			mapEntryCount	= 0;
-		unsigned			layerEntryCount	= 0;
+        unsigned short int	width			= 0;
+        unsigned short int	height			= 0;
+        unsigned			mapEntryCount	= 0;
+        unsigned			layerEntryCount	= 0;
 
-        GLuint              vertexVbo       = 0;
-        GLuint              elementVbo[2]      = {0} ;
-        GLuint              vao[2]          = {0};
+        uint32_t              vertexVbo       = 0;
+        uint32_t              elementVbo[2]      = {0} ;
+        uint32_t              vao[2]          = {0};
         bool                vboPopulated    = false;
         bool                activated       = false;
 
-        GLushort    		elementsArray[2][ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE] __attribute__((aligned(32)));
+        uint16_t    		elementsArray[2][ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE] __attribute__((aligned(32)));
         int			elementsArraySize[2] = {0};
         int lastElemArraySize[2] = {0};
         int lastOffset[2] = {0};
@@ -160,69 +160,69 @@ namespace elysian {
         const char*     getDirName(void) const { return dir; }
         const char*     getPath(void) const { return path; }
 
-		//Slower than layer-specific accessors, but loop-friendly
-		TileEntry	getTileEntry(const unsigned l, const unsigned x, const unsigned y) const;
-		void		setTileEntry(const unsigned l, const unsigned x, const unsigned y, const TileEntry e);
+        //Slower than layer-specific accessors, but loop-friendly
+        TileEntry	getTileEntry(const unsigned l, const unsigned x, const unsigned y) const;
+        void		setTileEntry(const unsigned l, const unsigned x, const unsigned y, const TileEntry e);
         bool        isValidTileEntry(const unsigned x, const unsigned y) const;
-		//Faster lookups
+        //Faster lookups
 #if 0
-		TileEntry	getL1TileEntry(const unsigned x, const unsigned y) const;
-		void		setL1TileEntry(const unsigned x, const unsigned y, const TileEntry e);
-		TileEntry	getL2TileEntry(const unsigned x, const unsigned y) const;
-		void		setL2TileEntry(const unsigned x, const unsigned y, const TileEntry e);
-		TileEntry	getL3TileEntry(const unsigned x, const unsigned y) const;
-		void		setL3TileEntry(const unsigned x, const unsigned y, const TileEntry e);
+        TileEntry	getL1TileEntry(const unsigned x, const unsigned y) const;
+        void		setL1TileEntry(const unsigned x, const unsigned y, const TileEntry e);
+        TileEntry	getL2TileEntry(const unsigned x, const unsigned y) const;
+        void		setL2TileEntry(const unsigned x, const unsigned y, const TileEntry e);
+        TileEntry	getL3TileEntry(const unsigned x, const unsigned y) const;
+        void		setL3TileEntry(const unsigned x, const unsigned y, const TileEntry e);
 #endif
-		//entity management
-		void		addEntity(Entity *entity);
-		void		removeEntity(Entity *entity);
-		Entity*		findEntity(const char* name);
-		
-		void		allocMap(void); //width + height better be set first!
-		void		freeMap(void);
-		void		resizeMap(const unsigned w, const unsigned h);
+        //entity management
+        void		addEntity(Entity *entity);
+        void		removeEntity(Entity *entity);
+        Entity*		findEntity(const char* name);
+
+        void		allocMap(void); //width + height better be set first!
+        void		freeMap(void);
+        void		resizeMap(const unsigned w, const unsigned h);
 
         void        setLevel(Level*const lev);
         Level*      getLevel(void) const;
         bool		load(const char *const dir);
-		bool		save(const char *const dir);
+        bool		save(const char *const dir);
 
-		bool		loadMap(const char *const filename);
-		bool		saveMap(const char *const filename);
-		bool		loadEntities(const char *const filename);
-		bool		saveEntities(const char *const filename);
+        bool		loadMap(const char *const filename);
+        bool		saveMap(const char *const filename);
+        bool		loadEntities(const char *const filename);
+        bool		saveEntities(const char *const filename);
         void        activate(void);
 
-		void		populateVbo(void);
+        void		populateVbo(void);
         void        setVboEntry(const TileEntry*const tileEntry, const unsigned l, const unsigned x, const unsigned y) const;
         void        vboEntryFromTileEntry(GYVertex*const vboEntry, const TileEntry *const tileEntry, const unsigned x, const unsigned y) const;
         void        animateVboTileEntry(const unsigned l, const unsigned x, const unsigned y, const uint16_t index);
 
-	};
+    };
 
-	inline bool operator== (const TileEntry& t1, const TileEntry& t2) {
-		return (t1.value == t2.value);
-	}
+    inline bool operator== (const TileEntry& t1, const TileEntry& t2) {
+        return (t1.value == t2.value);
+    }
 
-	// ==== INLINEZ ====
+    // ==== INLINEZ ====
 
-	inline MapEntry::MapEntry(void): value(0) {}
-	inline MapEntry::MapEntry(const uint32_t val): value(val) {}
-	inline uint32_t MapEntry::getValue(void) const { return value; }
-	inline void MapEntry::setValue(const uint32_t val) { value = val; }
-	inline GY_RECT_TEX_ORIENT MapEntry::getOrient(void) const { return (GY_RECT_TEX_ORIENT)ELYSIAN_MAP_ENTRY_GET_ATTRIB(MAP, ORIENT); }
-	inline void MapEntry::setOrient(const GY_RECT_TEX_ORIENT o) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(MAP, ORIENT, o); }
-	inline unsigned char MapEntry::getElev(void) const { return ELYSIAN_MAP_ENTRY_GET_ATTRIB(MAP, ELEV); }
-	inline void MapEntry::setElev(const unsigned char e) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(MAP, ELEV, e); }
+    inline MapEntry::MapEntry(void): value(0) {}
+    inline MapEntry::MapEntry(const uint32_t val): value(val) {}
+    inline uint32_t MapEntry::getValue(void) const { return value; }
+    inline void MapEntry::setValue(const uint32_t val) { value = val; }
+    inline GY_RECT_TEX_ORIENT MapEntry::getOrient(void) const { return (GY_RECT_TEX_ORIENT)ELYSIAN_MAP_ENTRY_GET_ATTRIB(MAP, ORIENT); }
+    inline void MapEntry::setOrient(const GY_RECT_TEX_ORIENT o) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(MAP, ORIENT, o); }
+    inline unsigned char MapEntry::getElev(void) const { return ELYSIAN_MAP_ENTRY_GET_ATTRIB(MAP, ELEV); }
+    inline void MapEntry::setElev(const unsigned char e) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(MAP, ELEV, e); }
 
-	inline TileEntry::TileEntry(void) {}
-	inline TileEntry::TileEntry(const uint32_t val): MapEntry(val) {}
-	inline uint16_t TileEntry::getIndex(void) const { return ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, INDEX); }
-	inline void TileEntry::setIndex(const uint16_t i) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, INDEX, i); }
-	inline bool TileEntry::getZTran(void) const { return ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, ZTRAN); }
-	inline void TileEntry::setZTran(const bool z) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, ZTRAN, z); }
-	inline GY_RECT_PLANE_TYPE TileEntry::getPlane(void) const { return (GY_RECT_PLANE_TYPE)ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, PLANE); }
-	inline void TileEntry::setPlane(const GY_RECT_PLANE_TYPE n) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, PLANE, n); }
+    inline TileEntry::TileEntry(void) {}
+    inline TileEntry::TileEntry(const uint32_t val): MapEntry(val) {}
+    inline uint16_t TileEntry::getIndex(void) const { return ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, INDEX); }
+    inline void TileEntry::setIndex(const uint16_t i) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, INDEX, i); }
+    inline bool TileEntry::getZTran(void) const { return ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, ZTRAN); }
+    inline void TileEntry::setZTran(const bool z) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, ZTRAN, z); }
+    inline GY_RECT_PLANE_TYPE TileEntry::getPlane(void) const { return (GY_RECT_PLANE_TYPE)ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, PLANE); }
+    inline void TileEntry::setPlane(const GY_RECT_PLANE_TYPE n) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, PLANE, n); }
     inline bool TileEntry::getNormal(void) const {
         GY_RECT_PLANE_TYPE plane = (GY_RECT_PLANE_TYPE)ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, PLANE);
 
@@ -232,11 +232,11 @@ namespace elysian {
         }
 
     }
-	inline void TileEntry::setNormal(const bool v) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, PLANE, v); }
+    inline void TileEntry::setNormal(const bool v) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, PLANE, v); }
 
     inline TileEntry AreaBase::getTileEntry(const unsigned l, const unsigned x, const unsigned y) const {
-		return ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x);
-	}
+        return ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x);
+    }
 
 
     inline void AreaBase::vboEntryFromTileEntry(GYVertex * const vboEntry, const TileEntry * const tileEntry, const unsigned x, const unsigned y) const {
@@ -279,58 +279,32 @@ namespace elysian {
         ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x).setIndex(oldIndex);
     }
 
-    inline void AreaBase::setTileEntry(const unsigned l, const unsigned x, const unsigned y, const TileEntry e) {
-        GYVertex entry[4];
 
-        vboEntryFromTileEntry(entry, &e, x, y);
-
-		ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
-
-        glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
-        glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_MAP_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(GYVertex), sizeof(GYVertex)*4, (void*)entry);
-
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	}
 
 #if 0
     inline TileEntry AreaBase::getL1TileEntry(const unsigned x, const unsigned y) const {
-		return ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tiles, y*width + x);
-	}
+        return ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tiles, y*width + x);
+    }
     inline void AreaBase::setL1TileEntry(const unsigned x, const unsigned y, const TileEntry e) {
-		ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tiles, y*width + x) = e;
-	}
+        ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tiles, y*width + x) = e;
+    }
     inline TileEntry AreaBase::getL2TileEntry(const unsigned x, const unsigned y) const {
-		return ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tileLayer2, y*width + x);
-	}
+        return ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tileLayer2, y*width + x);
+    }
     inline void AreaBase::setL2TileEntry(const unsigned x, const unsigned y, const TileEntry e) {
-		ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tileLayer2, y*width + x) = e;
-	}
+        ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tileLayer2, y*width + x) = e;
+    }
     inline TileEntry AreaBase::getL3TileEntry(const unsigned x, const unsigned y) const {
-		return ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tileLayer3, y*width + x);
-	}
+        return ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tileLayer3, y*width + x);
+    }
     inline void AreaBase::setL3TileEntry(const unsigned x, const unsigned y, const TileEntry e) {
-		ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tileLayer3, y*width + x) = e;
-	}
+        ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(tileLayer3, y*width + x) = e;
+    }
 #endif
 
     inline void AreaBase::setLevel(Level * const lev) { level = lev; }
 
     inline Level* AreaBase::getLevel(void) const { return level; }
-
-    inline void AreaBase::setVboEntry(const TileEntry*const tileEntry, const unsigned l, const unsigned x, const unsigned y) const {
-        GYVertex entry[4];
-
-        vboEntryFromTileEntry(entry, tileEntry, x, y);
-
-        //ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
-
-        glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
-        glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_MAP_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(GYVertex), sizeof(GYVertex)*4, (void*)entry);
-
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    }
 
      inline bool AreaBase::isValidTileEntry(const unsigned x, const unsigned y) const { return (x < width && y < height); }
 

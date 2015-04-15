@@ -239,7 +239,7 @@ int gyInputInit(const GYInputInitParams*const params) {
 
 int gyInputUninit(void) {
      ((QGraphicsView*)_initParams.viewWidget)->removeEventFilter(_inputFilter);
-    //QApplication::instance()->removeEventFilter(_inputFilter);
+    QApplication::instance()->removeEventFilter(_inputFilter);
     delete _inputFilter;
     return 1;
 }

@@ -9,7 +9,7 @@ win32 {
 }
 TARGET = ESToolkit
 TEMPLATE = app
-QT		+= widgets
+QT		+= gui opengl
 QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-empty-body
 
 ICON = resource/images/estk.icns
@@ -24,8 +24,8 @@ DEPENDPATH += include/asset \
     ../../AssetIO/include \
     ../../libGyro/include \
     ../../libGyro/include/kinetic \
-	../../ESGamma/include \
-	../../Spine/include
+    ../../ESGamma/include \
+    ../../Spine/include
 
 INCLUDEPATH += include/asset \
     include/core \
@@ -36,12 +36,12 @@ INCLUDEPATH += include/asset \
     include/widget \
     ../../AssetIO/include \
     ../../libGyro/include \
-	../../libGyro/include/kinetic \
-	../../ESGamma/lib/include \
-	../../ESGamma/include \
-	../../OOLua/include \
-	../../Lua5.2/include \
-	../../Spine/include
+    ../../libGyro/include/kinetic \
+    ../../ESGamma/lib/include \
+    ../../ESGamma/include \
+    ../../OOLua/include \
+    ../../Lua5.2/include \
+    ../../Spine/include
 
 
 SOURCES += source/asset/project.cpp \
@@ -102,10 +102,10 @@ SOURCES += source/asset/project.cpp \
     ../../AssetIO/source/elysian_audio_source.cpp \
     ../../AssetIO/source/elysian_light_source.cpp \
     source/asset/elysianTileWrapper.cpp \
-	../../AssetIO/source/elysian_particle_emitter.cpp \
+    ../../AssetIO/source/elysian_particle_emitter.cpp \
     ../../AssetIO/source/elysian_rigid_body.cpp \
     ../../AssetIO/source/elysian_combat.cpp \
-	../../AssetIO/source/luatables.cc \
+    ../../AssetIO/source/luatables.cc \
     ../../ESGamma/source/elysian_adventure_log.cpp \
     ../../ESGamma/source/elysian_animation_system.cpp \
     ../../ESGamma/source/elysian_audio_system.cpp \
@@ -249,7 +249,7 @@ HEADERS += include/asset/project.h \
     ../../AssetIO/include/elysian_asset.hpp \
     ../../AssetIO/include/elysian_audio_source.hpp \
     include/asset/elysianTileWrapper.h \
-	../../AssetIO/include/elysian_particle_emitter.hpp \
+    ../../AssetIO/include/elysian_particle_emitter.hpp \
     ../../AssetIO/include/elysian_combat.hpp \
     ../../AssetIO/include/elysian_rigid_body.hpp \
     ../../AssetIO/include/luatables.h \
@@ -294,8 +294,8 @@ HEADERS += include/asset/project.h \
     include/estk/tkMapSystem.h \
     include/estk/entitySelectable.h \
     include/core/tkDebug.h \
-	../../ESGamma/include/elysian_debug_base.hpp \
-	../../ESGamma/include/elysian_debug.hpp \
+    ../../ESGamma/include/elysian_debug_base.hpp \
+    ../../ESGamma/include/elysian_debug.hpp \
     ../../AssetIO/include/elysian_animation_base.hpp \
     ../../AssetIO/include/elysian_animation.hpp \
     include/asset/tkAnimation.h \

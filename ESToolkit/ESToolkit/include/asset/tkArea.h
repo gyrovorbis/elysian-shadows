@@ -2,10 +2,8 @@
 #ifndef TK_AREA_H
 #define TK_AREA_H
 
-#include <gyro.h>
 #include <stdint.h>
 #include <QUndoStack>
-#include "elysian_asset_typedefs.hpp"
 #include "elysian_area_base.hpp"
 #include "elysian_level.hpp"
 #include "treenode.h"
@@ -41,9 +39,9 @@ ELYSIAN_ASSET_TYPEDEF(Area)
 
 class TkArea: public PropertyStackModel, public TreeNode, public elysian::AreaBase {
     Q_OBJECT
-	friend class Assets;
+    friend class Assets;
 private:
-	//Scene Data
+    //Scene Data
     static unsigned                         _currentSceneWidth;
     static unsigned                         _currentSceneHeight;
     static MapViewDepthBufferGraphicsItem*  _depthBuffGraphicsItem;
@@ -63,12 +61,12 @@ private:
 
 
 private Q_SLOTS:
-	void onComponentAttached(Entity *const entity, Component *const comp);
-	void onComponentRemoved(Entity *const entity, Component *const comp);
+    void onComponentAttached(Entity *const entity, Component *const comp);
+    void onComponentRemoved(Entity *const entity, Component *const comp);
     void onEntityParented(Entity*const child, Entity*const parent);
 
 public Q_SLOTS:
-	void onUndoCleanStateChanged(bool changed);
+    void onUndoCleanStateChanged(bool changed);
 public:
 
     using AreaBase::getTileEntry;
@@ -137,15 +135,15 @@ public:
     bool                isActive(void) const;
 
     virtual Selectable::TYPE    getType(void) const { return Selectable::AREA; }
-	virtual TreeNode::ITEM_TYPE getTreeWidgetItemType(void) { return ITEM_AREA; }
+    virtual TreeNode::ITEM_TYPE getTreeWidgetItemType(void) { return ITEM_AREA; }
 
 Q_SIGNALS:
-	void activating(Area *const area);
-	void entityAdded(Area *const area, Entity *const entity);
-	void entityRemoved(Area *const area, Entity *const entity);
-	void componentAttached(Area *const area, Entity *const entity, Component *const comp);
-	void componentRemoved(Area *const area, Entity *const entity, Component *const comp);
-	void renamed(const QString oldName, const QString newName);
+    void activating(Area *const area);
+    void entityAdded(Area *const area, Entity *const entity);
+    void entityRemoved(Area *const area, Entity *const entity);
+    void componentAttached(Area *const area, Entity *const entity, Component *const comp);
+    void componentRemoved(Area *const area, Entity *const entity, Component *const comp);
+    void renamed(const QString oldName, const QString newName);
     void mapChanged(Area*const area, const QVector<MapChange>& changes);
     void entityParented(Entity*const child, Entity*const parent);
 };
@@ -158,12 +156,12 @@ typedef TkArea Area;
 //======== INLINEZ ========
 
 inline uint32_t TkArea::getTileValue(const QPoint loc, const Assets::LAYER_TYPE layer) const {
-	Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
+    Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
     return getTileEntry((unsigned)layer, loc.x(), loc.y()).getValue();
 }
 
 inline void TkArea::setTileValue(const QPoint loc, const Assets::LAYER_TYPE layer, const uint32_t value) {
-	Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
+    Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
     MapChange change;
 
     if(_Q_EMITMapChange) {
@@ -183,7 +181,7 @@ inline void TkArea::setTileValue(const QPoint loc, const Assets::LAYER_TYPE laye
 }
 
 inline void TkArea::setTileEntry(const QPoint loc, const Assets::LAYER_TYPE layer, const TileEntry entry) {
-	Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
+    Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
     MapChange change;
 
     if(_Q_EMITMapChange) {
@@ -205,7 +203,7 @@ inline void TkArea::setTileEntry(const QPoint loc, const Assets::LAYER_TYPE laye
 }
 
 inline TileEntry TkArea::getTileEntry(const QPoint loc, const Assets::LAYER_TYPE layer) const {
-	Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
+    Q_ASSERT(loc.x() < ELYSIAN_AREA_MAP_WIDTH && loc.y() < ELYSIAN_AREA_MAP_HEIGHT);
     return getTileEntry((unsigned)layer, loc.x(), loc.y());
 }
 

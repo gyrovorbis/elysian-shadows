@@ -2,19 +2,21 @@
 #define ENGINE_GL_SCENE_WIDGET_H
 
 #include "assetManager.h"
-#include <QOpenGLWidget>
+#include <QGLWidget>
 #include <QMatrix4x4>
 #include <QQuaternion>
 #include <QVector2D>
 #include <QBasicTimer>
+//#include <QOpenGLFunctions>
 //#include <QGLFunctions>
 
 class MapView;
 
-#define TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME   5
+#define TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME   10
 
 class EngineGLSceneWidget:
-        public QOpenGLWidget,
+        public QGLWidget,
+       // public QOpenGLFunctions,
         public AssetManager
 {
     Q_OBJECT
@@ -34,6 +36,9 @@ public:
         explicit    EngineGLSceneWidget(QWidget* parent = nullptr);
         virtual     ~EngineGLSceneWidget(void);
 
+        static void makeCurrentContext(void);
+        static void doneCurrentContext(void);
+
 
 protected:
     QBasicTimer     _timer;
@@ -43,6 +48,10 @@ protected:
     bool            _cameraManual       = true;
     bool            _cameraManualOnPlay = false;
     MapView*        _mapView            = nullptr;
+    bool            _initialized        = false;
+
+
+    static EngineGLSceneWidget* _self;
 
 
     //reimplemented from QGLWidget
@@ -51,7 +60,11 @@ protected:
     virtual void    paintGL(void) override;
     virtual void    timerEvent(QTimerEvent* e) override;
  //   virtual QSize   sizeHint(void) const override;
-    virtual void    showEvent(QShowEvent *event) override;
+  //  virtual void    showEvent(QShowEvent *event) override;
+
+protected Q_SLOTS:
+    void    _onContextAboutToBeDestroyed(void);
+    void    _onResized();
 
 Q_SIGNALS:
 

@@ -11,7 +11,7 @@
 #define GYRO_PLATFORM_iOS		(1<<3)
 #define GYRO_PLATFORM_ANDROID	(1<<4)
 #define GYRO_PLATFORM_Qt		(1<<5)
-	
+
 #define GYRO_ENDIAN_LITTLE		0x01
 #define GYRO_ENDIAN_BIG			0x02
 
@@ -27,7 +27,7 @@
 #	define GYRO_WAV_PLATFORM_INCLUDE
 #endif
 
-	
+
 //Platform-Specific Definitions
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
 
@@ -85,7 +85,7 @@
 #	define GYRO_MATRIX4_ALIGN			__attribute__ ((aligned (16)))
 #	define GYRO_VECTOR4_ALIGN			__attribute__ ((aligned (16)))
 
-#	define GYRO_SYSTEM_PLATFORM_INCLUDE     "glal/gyro_glal.h"
+//#	define GYRO_SYSTEM_PLATFORM_INCLUDE     "glal/gyro_glal.h"
 #	define GYRO_VIDEO_PLATFORM_INCLUDE      "x86/gyro_video_x86.inl"
 #	define GYRO_TEXTURE_PLATFORM_INCLUDE    "qt/gyro_texture_qt.inl"
 #   define GYRO_SHADER_PLATFORM_INCLUDE     "glal/gyro_video_glal.h"

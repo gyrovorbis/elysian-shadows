@@ -1,7 +1,6 @@
 #ifndef ELYSIAN_MAP_SYSTEM_BASE_HPP
 #define ELYSIAN_MAP_SYSTEM_BASE_HPP
 
-#include "glal/gyro_glal.h"
 #include "elysian_system.hpp"
 #include "elysian_camera_system.hpp"
 #include "elysian_map_depth_buffer.hpp"
@@ -18,12 +17,7 @@
 #include <gyro_math_api.h>
 #include <gyro_matrix_api.h>
 #include <gyro_video_api.h>
-
-#ifdef GYRO_GLAL
-#	include <glal/gyro_shaders_glal.h>
-#   include <glal/gyro_video_glal.h>
-
-#endif
+#include <stdint.h>
 
 #define ELYSIAN_MAP_SYSTEM_ONSCREEN_ENTITY_POOL_SIZE	1000
 
@@ -44,50 +38,67 @@ ELYSIAN_ASSET_TYPEDEF(MapSystem)
 
 namespace elysian {
 
-	struct Tile;
-	struct Object;
-	
+    struct Tile;
+    struct Object;
+
     struct MapDepthBuffEntryImplBase: public MapDepthBuffEntry {};
 
     struct EntityDepthBuffEntryImplBase: public EntityDepthBuffEntry {
-		Entity *entity;
-	};
+        Entity *entity;
+    };
+
+    class GLMapSystemBase {
+    protected:
+        unsigned short* _elements = nullptr;
+        int _size = 0;
+        int _lastSize = 0;
+        int _lastOffset = 0;
+
+        void _drawElements(void);
+        void _orphanVbo(void);
+        void _bindArrayVbo(int buffer);
+
+    public:
+        void deactivateArea(void);
+
+    };
 
     template<typename P=MapSystem, typename T=MapDepthBuffEntryImplBase, typename E=EntityDepthBuffEntryImplBase>
     class MapSystemBase:
-		public System, 
+        public System,
+        public GLMapSystemBase,
         public MapDepthBuffer<P, T, E>
-	{ 
-	private:
-		Pool<Entity*>				_onscreenEntityPool	= Pool<Entity*>(ELYSIAN_MAP_SYSTEM_ONSCREEN_ENTITY_POOL_SIZE);
-		static const GYColor4		_tileColor;
-		bool _renderLayer[4];
+    {
+    private:
+        Pool<Entity*>				_onscreenEntityPool	= Pool<Entity*>(ELYSIAN_MAP_SYSTEM_ONSCREEN_ENTITY_POOL_SIZE);
+        static const GYColor4		_tileColor;
+        bool _renderLayer[4];
         //animation
-		//toggles
-		bool _animate;
+        //toggles
+        bool _animate;
         //stats
 
-		void updateAnimation(void);
+        void updateAnimation(void);
 
-		//Represents the current animation state of every Tile
-		struct AnimTile {
-			float elapsedTime;
-			uint16_t curIndex;
-		} _animTiles[ELYSIAN_TILESHEET_TILES];
-       
-	public:
+        //Represents the current animation state of every Tile
+        struct AnimTile {
+            float elapsedTime;
+            uint16_t curIndex;
+        } _animTiles[ELYSIAN_TILESHEET_TILES];
+
+    public:
 
         static void staticInitialize(void);
         static void staticUninitialize(void);
 
                     MapSystemBase(void);
-        
+
         void        update(void);
         void        renderOverlay(void);
         void        resetAnimation(void);
-		//void dbgDump(void);
+        //void dbgDump(void);
 
-		//=== MapDepthBuffer Implementation ===
+        //=== MapDepthBuffer Implementation ===
 
         void        getOnscreenTileRegion(int &startX, int &startY, int &endX, int &endY) const;
         float       getBaseZCoord(void) const;
@@ -112,16 +123,16 @@ namespace elysian {
 
         static void flushVertexBatchCallback(void* self);
 
-		//=== /MapDepthBuffer Implementation ===
+        //=== /MapDepthBuffer Implementation ===
 
-		//Toggles
+        //Toggles
         bool        toggleRenderLayer(const unsigned layer);
         bool        getAnimate(void) const;
         void        setAnimate(const bool v);
         bool        getRenderTileLayer(const unsigned short int layer) const;
         void        setRenderTileLayer(const unsigned short int layer, const bool v);
 
-	};
+    };
 
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::flushVertexBatchCallback(void* self) {
@@ -136,26 +147,26 @@ namespace elysian {
 
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::getOnscreenTileRegion(int &startX, int &startY, int &endX, int &endY) const {
-		getCameraSys()->getVisibleTileRegion(startX, startY, endX, endY);
-	}
-	
+        getCameraSys()->getVisibleTileRegion(startX, startY, endX, endY);
+    }
+
     template<typename P, typename T, typename E>
     inline float MapSystemBase<P, T, E>::getBaseZCoord(void) const {
-		return ZCoordConstants::mapBase;
-	}
-	
+        return ZCoordConstants::mapBase;
+    }
+
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::getObjectLayerEntry(const unsigned /*x*/, const unsigned /*y*/, T &entry) {
-		entry.mapEntry = _curArea->getTileEntry(entry.layer, entry.x, entry.y);
-		entry.lights = getLightSys()->getLightMapEntryMapCoord(entry.y, entry.x);
+        entry.mapEntry = _curArea->getTileEntry(entry.layer, entry.x, entry.y);
+        entry.lights = getLightSys()->getLightMapEntryMapCoord(entry.y, entry.x);
         entry.renderPass = 0;
-	}
-	
+    }
+
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::renderObjectEntry(const T& entry, const float /*z*/) {
-		if(!_renderLayer[entry.layer]) return; //Don't render if this layer has been toggled off.
+        if(!_renderLayer[entry.layer]) return; //Don't render if this layer has been toggled off.
 
-         auto& elemArraySize = _curArea->elementsArraySize[/*gyVidShadowPass()*/0];
+         auto& elemArraySize  = _curArea->elementsArraySize[/*gyVidShadowPass()*/0];
          auto* elemArray     = _curArea->elementsArray[/*gyVidShadowPass()*/0];
 
         if(!gyVidShadowPass()) {
@@ -222,7 +233,8 @@ namespace elysian {
            // _curArea->maxIndex = 0;
             _curArea->lastElemArraySize[/*gyVidShadowPass()*/0] = 0;
             gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
-           glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE, nullptr, GL_STREAM_DRAW);
+                _bindArrayVbo(_curArea->vertexVbo);
+            _orphanVbo();
         }
 }
 
@@ -237,28 +249,31 @@ namespace elysian {
       //  assert(_curArea->elementsArraySize[_curArea->elementsCurSegment] == 0);
 
         gyVidMaterialBind(nullptr);
-		gyVidTexBind(_curLevel->tileSheet);
+        gyVidTexBind(_curLevel->tileSheet);
         gyVidNormalMapBind(_curLevel->normalSheet);
-		gyVidSpecularMapBind(_curLevel->specularSheet);
+        gyVidSpecularMapBind(_curLevel->specularSheet);
 
         gyVidVertexBatchBegin(&flushVertexBatchCallback, this);
 
 //        glBindVertexArray(_curArea->vao[gyVidShadowPass()][0]);
 
        // glBindVertexArray(_curArea->vao[gyVidShadowPass()][0]);
-	}
+    }
 
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::endObjectList(void) {
         flushTileBuffer();
         unbindTileBuffer();
     }
-	
+
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::flushTileBuffer(void) {
-        auto& elemArraySize = _curArea->elementsArraySize[/*gyVidShadowPass()*/0];
-        auto* elemArray     = _curArea->elementsArray[/*gyVidShadowPass()*/0];
-        if(elemArraySize-_curArea->lastElemArraySize[/*gyVidShadowPass()*/0] == 0) return;
+
+        _size = _curArea->elementsArraySize[/*gyVidShadowPass()*/0];
+        _elements     = _curArea->elementsArray[/*gyVidShadowPass()*/0];
+        _lastSize = _curArea->lastElemArraySize[/*gyVidShadowPass()*/0];
+        _lastOffset = _curArea->lastOffset[0];
+        if(_size-_lastSize == 0) return;
 
 
 
@@ -290,28 +305,20 @@ break;
 
         }*/
 
-        glalVertexRenderCount += elemArraySize;
+        glalVertexRenderCount += _curArea->elementsArraySize[0];
 
         //assert(elemArraySize <= maxi);
        // assert(elemArraySize < ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE);
 gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
+    _bindArrayVbo(_curArea->vertexVbo);
          // glDeleteSync(_curArea->elementsArraySyncs[_curArea->elementsCurSegment]);
           //  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo);
         // glBufferData(GL_ELEMENT_ARRAY_BUFFER, );
+        _drawElements();
 
-//       GLushort* ptr = (GLushort*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, _curArea->lastOffset[/*gyVidShadowPass()*/0], sizeof(GLushort)*(elemArraySize-_curArea->lastElemArraySize[/*gyVidShadowPass()*/0]), GL_MAP_INVALIDATE_RANGE_BIT /*| GL_MAP_FLUSH_EXPLICIT_BIT*/ | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
-//       memcpy(ptr, &elemArray[_curArea->lastElemArraySize[/*gyVidShadowPass()*/0]], sizeof(GLushort)*(elemArraySize-_curArea->lastElemArraySize[/*gyVidShadowPass()*/0]));
-//        glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
-
-       // glDrawElements(GL_TRIANGLE_STRIP, elemArraySize, GL_UNSIGNED_SHORT, elemArray /*nullptr*/);
-
-
-                //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elemArraySize, elemArray, GL_STREAM_DRAW);
-       // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elemArraySize, elemArray, GL_STREAM_DRAW);
-        glDrawElements(GL_TRIANGLE_STRIP, (elemArraySize-_curArea->lastElemArraySize[/*gyVidShadowPass()*/0]), GL_UNSIGNED_SHORT, (const void*)_curArea->lastOffset[/*gyVidShadowPass()*/0]);
-        //glDrawRangeElements(GL_TRIANGLE_STRIP, _curArea->minIndex[gyVidShadowPass()], _curArea->maxIndex[gyVidShadowPass()],  (elemArraySize-_curArea->lastElemArraySize[gyVidShadowPass()]), GL_UNSIGNED_SHORT, (const void*)_curArea->lastOffset[gyVidShadowPass()]);
-        _curArea->lastElemArraySize[/*gyVidShadowPass()*/0] = elemArraySize;
-        _curArea->lastOffset[/*gyVidShadowPass()*/0] = elemArraySize*sizeof(GLushort);
+      //glDrawRangeElements(GL_TRIANGLE_STRIP, _curArea->minIndex[gyVidShadowPass()], _curArea->maxIndex[gyVidShadowPass()],  (elemArraySize-_curArea->lastElemArraySize[gyVidShadowPass()]), GL_UNSIGNED_SHORT, (const void*)_curArea->lastOffset[gyVidShadowPass()]);
+        _curArea->lastElemArraySize[/*gyVidShadowPass()*/0] = _curArea->elementsArraySize[0];
+        _curArea->lastOffset[/*gyVidShadowPass()*/0] = _curArea->elementsArraySize[0]*sizeof(uint16_t);
 
         _curArea->minIndex[0] = INT_MAX;
         _curArea->maxIndex[0] = 0;
@@ -324,46 +331,46 @@ gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
             _curArea->elementsCurSegment = 0;
         }
 */
-	}
+    }
 
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::unbindTileBuffer(void) {
         //gyVidVertexBatchEnd();
        // gyVidBindDefaultVertexArray();
     }
-	
+
     template<typename P, typename T, typename E>
     inline unsigned MapSystemBase<P, T, E>::getEntityCount(void) {
         if(!_renderLayer[3]) return 0;
-		_onscreenEntityPool.clear();
-		auto& entities = _curArea->entities;
+        _onscreenEntityPool.clear();
+        auto& entities = _curArea->entities;
 
-		for(auto entity : entities) {
+        for(auto entity : entities) {
             if(getLightSys()->isShadowPass() && !entity->isShadowVolume()) {
                 continue;
             } //else if(getCameraSys()->isOnscreen(entity)) {
                 _onscreenEntityPool.claimFreeEntry() = entity;
             //}
-		}
+        }
         //Debug::printf(Debug::VERBOSE, "ONSCREEN ENTITIES - %d", _onscreenEntityPool.size());
-		return _onscreenEntityPool.size();
-	}
+        return _onscreenEntityPool.size();
+    }
 
     template<typename P, typename T, typename E>
     inline bool MapSystemBase<P, T, E>::getOnscreenEntity(const unsigned index, E &entry, NORMAL_TYPE &normalType, float &lowestY, float& zCoord) const {
-		Entity &entity = *(_onscreenEntityPool)[index];
+        Entity &entity = *(_onscreenEntityPool)[index];
         //if(getCameraSys()->isOnscreen(entity)) {
-			entry.entity = &entity;
+            entry.entity = &entity;
             entry.renderPass = 0;
             entry.lights = getLightSys()->getLightMask(entity);
             normalType = (NORMAL_TYPE)entity.getPlaneType();
-			lowestY = entity.getDepthBaseY();
+            lowestY = entity.getDepthBaseY();
             zCoord = entity._transform._pos.z;
-			return true;
+            return true;
         //}
         //return false;
-	}
-	
+    }
+
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::renderEntityEntry(const E &entry) {
        // entry.entity->transform.setPosZ(entry.zCoordWorld);
@@ -378,7 +385,7 @@ gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
         }
 
         entry.entity->render();
-	}
+    }
 
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::disableDepthTest(void) {
@@ -392,7 +399,7 @@ gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
      gyVidAlphaLevel(GY_ALPHA_FULL);
        gyVidBlendMode(GY_BLEND_ONE);
   //      _blendPass = true;
-	}
+    }
 
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::enableDepthTest(void) {
@@ -407,12 +414,12 @@ gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
         //glDisable(GL_POLYGON_OFFSET_FILL);
         gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
       //  _blendPass = false;
-	}
+    }
 
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::renderCustomPassAtElev(const int elev, const NORMAL_TYPE normalType) const {
         if(normalType == NORMAL_FLAT && elev != -1) getPartSys()->renderAtElev(elev);
-	}
+    }
 
     template<typename P, typename T, typename E>
     inline uint32_t MapSystemBase<P, T, E>::startLightPass(uint32_t& lightsLeft) { return getLightSys()->startLightPass(lightsLeft); }
@@ -449,7 +456,7 @@ gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
         //Update entity elevation
         //Update entity z transitionals
 
-        updateAnimation();
+     //   updateAnimation();
     }
 
     template<typename P, typename T, typename E>

@@ -1,30 +1,38 @@
+#include "elysian_map_system_base.hpp"
+#include <glal/gyro_gl.h>
 
-#include "elysian_collision_system.hpp"
-#include "elysian_debug.hpp"
-#include <gyro.h>
-
-#include "elysian_map_system.hpp"
-//#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tkMapSystem.h")
-#include "elysian_level.hpp"
-#include "elysian_area.hpp"
-#include "elysian_camera_system.hpp"
-#include "elysian_timer_system.hpp"
-#include "elysian_font.hpp"
-#include "elysian_gui_system.hpp"
-#include "elysian_zcoords.hpp"
-#include "elysian_entity.hpp"
 
 namespace elysian {
 
-//Took animation into account!
-#if 0
-	Tile *TerrainSystem::getCurrentTile(const unsigned char index) const {
-		return(!isValidTile(index))? NULL : &_curLevel->tileset[_currentTile[index]];
-	}
+void GLMapSystemBase::_bindArrayVbo(int buffer) {
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+}
 
-	Tile *TerrainSystem::getCurrentObject(const unsigned char index) const {
-		return(!isValidObject(index))? NULL : &_curLevel->tileset[_currentObject[index]];
-	}
-#endif
+void GLMapSystemBase::deactivateArea(void) {
+    gyVidVertexBatchFlush();
+    gyVidVertexBatchEnd();
+}
+
+void GLMapSystemBase::_orphanVbo(void) {
+  //  if(!_elements) return;
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE, nullptr, GL_STREAM_DRAW);
+}
+
+
+void GLMapSystemBase::_drawElements(void) {
+    if(!_elements) return;
+    GLushort* ptr = (GLushort*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, _lastOffset, sizeof(GLushort)*(_size-_lastSize), GL_MAP_INVALIDATE_RANGE_BIT /*| GL_MAP_FLUSH_EXPLICIT_BIT*/ | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+    if(ptr) {memcpy(ptr, &_elements[_lastSize], sizeof(GLushort)*(_size-_lastSize));
+     glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+
+    // glDrawElements(GL_TRIANGLE_STRIP, elemArraySize, GL_UNSIGNED_SHORT, elemArray /*nullptr*/);
+
+
+             //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elemArraySize, elemArray, GL_STREAM_DRAW);
+    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elemArraySize, elemArray, GL_STREAM_DRAW);
+     glDrawElements(GL_TRIANGLE_STRIP, (_size-_lastSize), GL_UNSIGNED_SHORT, (const void*)_lastOffset);
+     }
+}
+
 
 }
