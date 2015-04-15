@@ -2,7 +2,7 @@
 #define GYRO_SHADERS_GLAL_H
 
 #include <gyro_shader_api.h>
-#include <glal/gyro_glal.h>
+#include <glal/gyro_gl.h>
 
 #define GLAL_SHADOW_MAP_SIZE	1024
 
@@ -83,8 +83,8 @@ typedef struct __LightingShaderProgram {
 } _LightingShaderProgram;
 
 typedef struct __LightInternals {
-	GLuint fbo;
-	GLuint shadowMap;
+    GLuint fbo;
+    GLuint shadowMap;
 } _LightInternals;
 
 typedef struct LightSourceUniforms {
