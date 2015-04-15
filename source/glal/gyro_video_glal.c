@@ -53,7 +53,7 @@ const GYVector3 glalRectTangents[GY_RECT_TEX_ORIENT_MAX] = {
 };
 
 const GYVector3 glalPlaneNormals[GY_RECT_PLANE_MAX] = {
-	{ 0.0f, 0.0f, 1.0f },
+    { 0.0f, 0.0f, 1.0f },
     { 0.0f, SQRT_OF_2, SQRT_OF_2},
     { -1.0f, 0.0f, 0.0f },
     { 1.0f, 0.0f, 0.0f },
@@ -64,27 +64,27 @@ const GYVector3 glalPlaneNormals[GY_RECT_PLANE_MAX] = {
 
 
 const GYVector4 glalRectVerts[GY_RECT_PLANE_MAX][4] = {
-	//FLAT
-	{
-		{-0.5f, -0.5f, 0.0f, 1.0f},
-		{0.5f, -0.5f, 0.0f, 1.0f},
-		{-0.5f, 0.5f, 0.0f, 1.0f},
-		{0.5f, 0.5f, 0.0f, 1.0f}
-	},
+    //FLAT
+    {
+        {-0.5f, -0.5f, 0.0f, 1.0f},
+        {0.5f, -0.5f, 0.0f, 1.0f},
+        {-0.5f, 0.5f, 0.0f, 1.0f},
+        {0.5f, 0.5f, 0.0f, 1.0f}
+    },
  #if 0
     //FRONT
-	{
-		{-0.5f, -0.5f, 1.0f, 1.0f},
-		{0.5f, -0.5f, 1.0f, 1.0f},
-		{-0.5f, 0.5f, 0.0f, 1.0f},
-		{0.5f, 0.5f, 0.0f, 1.0f}
-	}
+    {
+        {-0.5f, -0.5f, 1.0f, 1.0f},
+        {0.5f, -0.5f, 1.0f, 1.0f},
+        {-0.5f, 0.5f, 0.0f, 1.0f},
+        {0.5f, 0.5f, 0.0f, 1.0f}
+    }
 #else
-	//FRONT
-	{
-		{-0.5f, 0.5f, 1.0f, 1.0f},
-		{0.5f, 0.5f, 1.0f, 1.0f},
-		{-0.5f, 0.5f, 0.0f, 1.0f},
+    //FRONT
+    {
+        {-0.5f, 0.5f, 1.0f, 1.0f},
+        {0.5f, 0.5f, 1.0f, 1.0f},
+        {-0.5f, 0.5f, 0.0f, 1.0f},
         {0.5f, 0.5f, 0.0f, 1.0f}
     },
    #endif
@@ -197,11 +197,11 @@ void gyVidVertexBatchFlush(void) {
 }
 
 void gyVidVertexArrayBind(int id) {
-    if(id != glalVertexArray) {
-        gyVidVertexBatchFlush();
+  //  if(id != glalVertexArray) {
+       // gyVidVertexBatchFlush();
         glBindVertexArray(id);
         glalVertexArray = id;
-    }
+  //  }
 }
 
 unsigned gyVidDbgVertexRenderCount(void) { return glalPrevVertexRenderCount; }
@@ -212,33 +212,41 @@ void gyVidResolution(unsigned int *const projWidth, unsigned int *const projHeig
     *projWidth = _projWidth; *projHeight = _projHeight;
 }
 
+int glalVidGlewInit(void) {
+    static int once = 0;
+
+    if(!once) {
+    //God fucking damnit, Windows....
+    #ifdef _WIN32
+        _gyLog(GY_DEBUG_VERBOSE, "Initializing GLEW...");
+        glewExperimental = GL_TRUE; //FUCKING GLEW CANT HANDLE GL CORE CONTEXTS WITHOUT THIS.
+        GLenum err = glewInit();
+        if (err != GLEW_OK) {
+          /* Problem: glewInit failed, something is seriously wrong. */
+            _gyLog(GY_DEBUG_CRITICAL, "\tError: %s", glewGetErrorString(err));
+        }
+
+        if(GLEW_VERSION_3_2) {
+            _gyLog(GY_DEBUG_VERBOSE, "\tOpenGL 3.2 Extensions detected");
+        } else {
+            _gyLog(GY_DEBUG_CRITICAL, "\tOpenGL 3.2 Extensions NOT detected! Prepare for crash!");
+        }
+
+     once = 1;
+    }
+    #endif
+
+return 1;
+}
+
 int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidth, const int projHeight) {
     _projWidth = projWidth;
     _projHeight = projHeight;
 
-	glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
-	glViewport(0, 0, viewWidth, viewHeight);
+    glalVidGlewInit();
 
     static int once = 0;
     if(!once) {
-
-        //God fucking damnit, Windows....
-        #ifdef _WIN32
-            _gyLog(GY_DEBUG_VERBOSE, "Initializing GLEW...");
-            glewExperimental = GL_TRUE; //FUCKING GLEW CANT HANDLE GL CORE CONTEXTS WITHOUT THIS.
-            GLenum err = glewInit();
-            if (err != GLEW_OK) {
-              /* Problem: glewInit failed, something is seriously wrong. */
-                _gyLog(GY_DEBUG_CRITICAL, "\tError: %s", glewGetErrorString(err));
-            }
-
-            if(GLEW_VERSION_3_2) {
-                _gyLog(GY_DEBUG_VERBOSE, "\tOpenGL 3.2 Extensions detected");
-            } else {
-                _gyLog(GY_DEBUG_CRITICAL, "\tOpenGL 3.2 Extensions NOT detected! Prepare for crash!");
-            }
-
-        #endif
 
         glalLoadDefaultShaders();
         gyVidSetDefaultShaderProgram();
@@ -295,9 +303,15 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         }
         once = 1;
         gyVidVertexArrayBind(0);
+  //      glalVidBindDefaultFbo();
     }
 
-    glalVidBindDefaultFbo();
+
+    glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
+    glViewport(0, 0, viewWidth, viewHeight);
+
+
+  //  glalVidBindDefaultFbo();
     return 1;
 }
 
@@ -318,13 +332,15 @@ static inline void _flushStreamVertices(void* data) {
 
     if(_vertexQueueSize-_vertexQueueLastSize <= 0) return;
     gyVidVertexArrayBind(_streamVao[gyVidShadowPass()]);
+
+    glBindBuffer(GL_ARRAY_BUFFER, _streamVertexVbo[0]);
     GYVertex* ptr = (GYVertex*)glMapBufferRange(GL_ARRAY_BUFFER, _vertexQueueLastOffset, sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize), GL_MAP_INVALIDATE_RANGE_BIT /*| GL_MAP_FLUSH_EXPLICIT_BIT*/ | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
-   // if(ptr) {
+    if(ptr) {
     memcpy(ptr, &_vertexQueue[_vertexQueueLastSize], sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize));
     glUnmapBuffer(GL_ARRAY_BUFFER);
 
     glDrawArrays(GL_TRIANGLE_STRIP, _vertexQueueLastSize, (_vertexQueueSize-_vertexQueueLastSize));
-//}
+}
     _vertexQueueLastSize    = _vertexQueueSize;
     _vertexQueueLastOffset  = _vertexQueueSize*sizeof(GYVertex);
 
@@ -571,7 +587,7 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
 
      //   memcpy(&_stripTexCoords[glalCurStripSize], coord, sizeof(GYTexCoord2)*4);
 
-	}
+    }
 
     _vertexQueueSize += 4;
 
@@ -595,23 +611,23 @@ void gyVidRect(const int frame) {
 
 
 void gyVidCamFrustum(GYCamera* const cam, const float fov, const float aspect, const float znear, const float zfar) {
-	GYViewVolume* volume = &cam->viewVolume;
+    GYViewVolume* volume = &cam->viewVolume;
 
-	gyVidPerspectiveMat(cam->projMat, fov, aspect, znear, zfar);
-	cam->projType = GY_PROJECTION_PERSPECTIVE;
+    gyVidPerspectiveMat(cam->projMat, fov, aspect, znear, zfar);
+    cam->projType = GY_PROJECTION_PERSPECTIVE;
 
-	gyMatMultMat(cam->projViewMat, cam->projMat, cam->viewMat);
+    gyMatMultMat(cam->projViewMat, cam->projMat, cam->viewMat);
 
-	volume->ratio = aspect;
-	volume->nearD = znear;
-	volume->farD = zfar;
-	volume->angle = fov;
+    volume->ratio = aspect;
+    volume->nearD = znear;
+    volume->farD = zfar;
+    volume->angle = fov;
 
-	volume->tang = (float)tan(GY_ANG2RAD * volume->angle * 0.5);
-	volume->nh = volume->nearD * volume->tang;
-	volume->nw = volume->nh * volume->ratio;
-	volume->fh = volume->farD * volume->tang;
-	volume->fw = volume->fh * volume->ratio;
+    volume->tang = (float)tan(GY_ANG2RAD * volume->angle * 0.5);
+    volume->nh = volume->nearD * volume->tang;
+    volume->nw = volume->nh * volume->ratio;
+    volume->fh = volume->farD * volume->tang;
+    volume->fw = volume->fh * volume->ratio;
 
 }
 
