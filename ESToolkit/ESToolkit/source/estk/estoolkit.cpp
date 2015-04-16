@@ -884,13 +884,6 @@ void ESToolkit::_openProjectDir(const QString dir) {
 
     QDir::setCurrent(dir);
 
-    QWidget* dummyWidget = new QWidget;
-    QHBoxLayout* dipshitLayout = new QHBoxLayout(dummyWidget);
-    dipshitLayout->setMargin(0);
-
-
-
-
         auto* viewport = _engineGLView = new EngineGLSceneWidget(this);
 
 
@@ -900,12 +893,12 @@ void ESToolkit::_openProjectDir(const QString dir) {
     viewport->setMouseTracking(true);
     //_engineGLView->makeCurrent();
     _engineGLView->setMapView(_ui->mapView);
-#ifdef __WIN32
+//#ifndef __WIN32
     _engineGLView->makeCurrent();
-#endif
         _engineGLView->update();
         _engineGLView->show();
         _engineGLView->updateGL();
+  //      #endif
                 _ui->mapView->setViewport(viewport);
 
    // _ui->mapView->setScene(new QGraphicsScene());
@@ -932,7 +925,7 @@ void ESToolkit::_openProjectDir(const QString dir) {
     _engineGLView->updateGL();
 //#endif
     qDebug() << "LOADPROJECT" << QOpenGLContext::currentContext();
-#ifndef __WIN32
+#ifdef __WIN32
     _engineGLView->startRenderTimer();
 #endif
     Project *proj = _assets.loadProject(dir);
@@ -943,9 +936,7 @@ void ESToolkit::_openProjectDir(const QString dir) {
 
     //_engineGLView->doneCurrent();
     qDebug() << "RENDERTIMER" << QOpenGLContext::currentContext();
-#ifdef __WIN32
-    _engineGLView->startRenderTimer();
-#endif
+
   //  _engineGLView->doneCurrent();
 
 

@@ -134,12 +134,12 @@ void EngineGLSceneWidget::startRenderTimer(void) {
 //#endif
 
         qDebug() << "IN RENDER TIMER" << QOpenGLContext::currentContext();
-       glalVidOglInit(1280, 720, 1280, 720);
+     //  glalVidOglInit(1280, 720, 1280, 720);
     _timer.start(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this);
    // doneCurrent();
     _initialized = true;
     timerEvent(nullptr); //go ahead and update the nigger.
-        glalVidOglInit(1280, 720, 1280, 720);
+       // glalVidOglInit(1280, 720, 1280, 720);
 }
 /*
 void EngineGLSceneWidget::showEvent(QShowEvent *event) {
@@ -160,15 +160,15 @@ void EngineGLSceneWidget::timerEvent(QTimerEvent *)
    // _mapView->updateSceneRect(_mapView->sceneRect());
   //  paintGL();
 
-   #ifndef __WIN32
+ //  #ifndef __WIN32
     unsigned parentWidth    = parentWidget()->size().width();
         unsigned parentHeight   = parentWidget()->size().height();
         if(_width != parentWidth || _height != parentHeight) {
             resizeGL(parentWidth, parentHeight);
         }
-#endif
+//#endif
 #ifdef __WIN32
-    doneCurrent();
+    //doneCurrent();
 #endif
 }
 #
