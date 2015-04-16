@@ -233,9 +233,9 @@ int glalVidGlewInit(void) {
         }
 
      once = 1;
-    }
-    #endif
 
+    #endif
+}
 return 1;
 }
 
