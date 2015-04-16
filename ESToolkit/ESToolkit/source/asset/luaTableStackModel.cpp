@@ -1,6 +1,6 @@
 #include "luaTableStackModel.h"
 
-LuaTableItem::LuaTableItem(const int ref, /*const int type,*/ const QStandardItem* label):
+LuaTableItem::LuaTableItem(const int ref, /*const int type,*/ QStandardItem* label):
     _luaRef(ref), /*_luaType(type),*/ _labelItem(label)
 {}
 
@@ -27,3 +27,4 @@ void LuaTableItem::onFieldChanged(QString field) {
     _fieldItems[field]->emitDataChanged();
     //model()->itemChanged(_fieldItems[field]);
 }
+

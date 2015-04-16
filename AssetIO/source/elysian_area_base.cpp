@@ -261,7 +261,7 @@ bool AreaBase::saveEntities(const char *const /*filename*/) {
 void AreaBase::populateVbo(void) {
     if(vboPopulated) return;
 
-    glBindVertexArray(0);
+    gyVidVertexArrayBind(0);
 
     glGenBuffers(1, &vertexVbo);
 
@@ -294,7 +294,7 @@ void AreaBase::populateVbo(void) {
 
     for(unsigned j = 0; j < 2; ++j) {
         glGenVertexArrays(1, &vao[j]);
-        glBindVertexArray(vao[j]);
+        gyVidVertexArrayBind(vao[j]);
 
         glGenBuffers(1, &elementVbo[j]);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementVbo[j]);
@@ -325,7 +325,7 @@ void AreaBase::populateVbo(void) {
   // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementVbo);
  //   glBufferData(GL_ELEMENT_ARRAY_BUFFER, ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE*sizeof(GLushort), &elementsArray[0], GL_DYNAMIC_DRAW);
 
-glBindVertexArray(0);
+    gyVidVertexArrayBind(0);
     vboPopulated = true;
 }
 

@@ -20,6 +20,7 @@ void EntitySelectable::addEntity(TkEntity * const entity) {
     if(!entity) return;
 	_entities.push_back(entity);
     insertSourceModel(entity->getModel());
+    entity->getModel()->setLabelItemText("Entity");
 }
 
 void EntitySelectable::removeEntity(TkEntity * const entity) {

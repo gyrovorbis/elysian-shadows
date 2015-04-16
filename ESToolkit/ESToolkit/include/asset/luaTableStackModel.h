@@ -62,21 +62,20 @@ protected:
     bool                                _proxyTable     = false;
     mutable bool                        _populated      = false;
     OOLUA::Lua_func_ref                 _nextMetamethod;
-    const QStandardItem*                _labelItem      = nullptr;
+    QStandardItem*                      _labelItem      = nullptr;
     QHash<QString, ESTkStandardItem*>   _fieldItems;
 
 public Q_SLOTS:
     void    onFieldChanged(QString field);
   //  void    _onFieldAdded(QString field);
 public:
-            LuaTableItem(const int ref, const QStandardItem* label=nullptr);
+            LuaTableItem(const int ref, QStandardItem* label=nullptr);
             ~LuaTableItem(void); //delete reference
 
     virtual void insertingModelItem(void) override;
 
     QString getValue(void) const;
    // void    populateFields(void);
-
 
     //Receives key type and table reference, then creates FieldItem for pair
     template<typename TKey>
@@ -286,24 +285,29 @@ protected:
 
 public:
 
-                    LuaTableStackModel(void) = default;
+                    //LuaTableStackModel(void) = default;
                     LuaTableStackModel(const int ref);
 
     void            setLuaRef(const int ref);
     virtual void    populateModel(void) override;
+    void            setLabelItemText(const QString string);
 
 };
 
 inline void LuaTableStackModel::setLuaRef(const int ref) { _luaRef = ref; }
 
-inline LuaTableStackModel::LuaTableStackModel(const int ref): LuaTableItem(ref) {}
+inline LuaTableStackModel::LuaTableStackModel(const int ref): LuaTableItem(ref), PropertyStackModel(nullptr) {}
 
 inline void LuaTableStackModel::populateModel(void) {
+    setHorizontalHeaderItem(0, new QStandardItem("Name"));
+    setHorizontalHeaderItem(1, new QStandardItem("Value"));
+    setHorizontalHeaderItem(2, new QStandardItem("Type"));
     if(!_labelItem) {
-        _labelItem = new ESTkStandardItem(QString("Lua Table"));
+        _labelItem = PropertyStackModel::createReadOnlyItem("Lua Table");//ESTkStandardItem(QString("Lua Table"));
         QList<QStandardItem*> items;
-        items.push_back(const_cast<QStandardItem*>(_labelItem));
-        items.push_back(new QStandardItem(""));
+        items.push_back(_labelItem);
+        items.push_back(PropertyStackModel::createReadOnlyItem());
+        items.push_back(PropertyStackModel::createReadOnlyItem());
         QStandardItemModel::appendRow(items);
     }
     _populateFieldItems(this);
@@ -350,6 +354,12 @@ inline void LuaTableFieldItem<TVal, TKey>::setValue(const TVal val) {
     lua_settable(*_mainState, -3);
     lua_pop(*_mainState, 1);
     LuaManager::_stackBalanceEnd();
+}
+
+
+
+inline void LuaTableStackModel::setLabelItemText(const QString string) {
+    _labelItem->setData(string);
 }
 
 #endif // ESTK_LUA_TABLE_MODEL_HPP

@@ -309,7 +309,7 @@ namespace elysian {
             } else {
                 _renderDepthBuffTileRow(i, NORMAL_FLAT);
 
-               // _renderCustomPassAtElev(i, NORMAL_FLAT);
+                _renderCustomPassAtElev(i, NORMAL_FLAT);
             }
 
             //if(_entityCount[i]) {
@@ -350,7 +350,7 @@ namespace elysian {
             } else {
             _renderDepthBuffTileRow(i, NORMAL_FRONT);
 
-           // _renderCustomPassAtElev(i, NORMAL_FRONT);
+             _renderCustomPassAtElev(i, NORMAL_FRONT);
             }
         }
 
@@ -369,6 +369,8 @@ namespace elysian {
         const unsigned outerLayerLoopEnd = multipass? ELYSIAN_AREA_MAP_LAYERS : 1;
         const unsigned innerLayerLoopEnd = multipass? 1 : ELYSIAN_AREA_MAP_LAYERS;
 
+        if(!_isShadowPass()) _renderCustomPassAtElev(-1, NORMAL_FLAT);
+
         static_cast<T*>(this)->bindTileBuffer();
 
         int outerCount = 0;
@@ -382,9 +384,6 @@ namespace elysian {
            // static_cast<T*>(this)->flushTileBuffer();
             _lightsRendered |= _lightsActive = _startLightPass(lightsLeft);
 
-
-
-            //_renderCustomPassAtElev(-1, NORMAL_FLAT);
 
             //_enableDepthTest();
             //_beginObjectList();
@@ -445,7 +444,7 @@ namespace elysian {
 
         //static_cast<T*>(this)->flushTileBuffer();
         //static_cast<T*>(this)->unbindTileBuffer();
-     //   if(!_isShadowPass()) _renderCustomPassImmediate();
+        if(!_isShadowPass()) _renderCustomPassImmediate();
     }
 
     template<typename T, typename O, typename E>

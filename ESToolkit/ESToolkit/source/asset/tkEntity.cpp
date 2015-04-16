@@ -50,7 +50,7 @@ TkEntity::~TkEntity(void) {
     delete _luaModel;
 }
 
-QAbstractItemModel* TkEntity::getModel(void) const {
+LuaTableStackModel* TkEntity::getModel(void) const {
     if(!_luaModel) {
         _luaModel = new LuaTableStackModel(getLuaTableRef());
         _luaModel->populateModel();

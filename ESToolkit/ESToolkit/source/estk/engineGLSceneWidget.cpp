@@ -30,8 +30,7 @@ EngineGLSceneWidget::EngineGLSceneWidget(QWidget *parent):
     QGLWidget(parent) {
     assert(!_self);
             _self = this;
-       //     setUpdateBehavior(QOpenGLWidget::NoPartialUpdate);
-           // setAttribute(Qt::WA_NativeWindow);
+            setAttribute(Qt::WA_NativeWindow);
 
             connect(this, SIGNAL(resized()), this, SLOT(_onResized()));
 }
@@ -123,15 +122,11 @@ static void _initSpineShit(void) {
 
 void EngineGLSceneWidget::startRenderTimer(void) {
     makeCurrent();
-  //      glalVidOglInit(1280, 720, 1280, 720);
 
-        qDebug() << "IN RENDER TIMER" << QOpenGLContext::currentContext();
-     //  glalVidOglInit(1280, 720, 1280, 720);
     _timer.start(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this);
    // doneCurrent();
     _initialized = true;
     timerEvent(nullptr); //go ahead and update the nigger.
-       // glalVidOglInit(1280, 720, 1280, 720);
 }
 /*
 void EngineGLSceneWidget::showEvent(QShowEvent *event) {
@@ -142,7 +137,6 @@ void EngineGLSceneWidget::showEvent(QShowEvent *event) {
 void EngineGLSceneWidget::timerEvent(QTimerEvent *)
 {
     makeCurrent();
-       // qDebug() << "TIMEREVENT" << QOpenGLContext::currentContext();
    // update();
     updateGL();
         //       _mapView->scene()->invalidate();
@@ -159,7 +153,7 @@ void EngineGLSceneWidget::timerEvent(QTimerEvent *)
 //#endif
 
 }
-#
+
 void EngineGLSceneWidget::resizeGL(int w, int h) {
 makeCurrent();
    glalVidOglInit(w, h, w, h);
@@ -180,7 +174,6 @@ static void _renderSpineShit(void) {
 void EngineGLSceneWidget::paintGL(void) {
     if(!getCurrentArea() || !_initialized) return;
     makeCurrent();
-      //  qDebug() << "PREPAINTGL" << QOpenGLContext::currentContext();
 
     static bool once = false;
     if(!once) {
@@ -194,6 +187,11 @@ void EngineGLSceneWidget::paintGL(void) {
     spAnimationState_apply(state, skeleton);
     spSkeleton_updateWorldTransform(skeleton);
 #endif
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    gyMatLoadIdentity();
+
+        getAssets()->getEngine()->render(&_renderSpineShit);
 
     getAssets()->getEngine()->update();
     getAssets()->getEngine()->processInput();
@@ -212,12 +210,8 @@ void EngineGLSceneWidget::paintGL(void) {
         getAssets()->getEngine()->getCameraSys()->setDynamic(true);
         getAssets()->getEngine()->getCameraSys()->setBoundByMap(true);
     }
- //   qDebug() << "POSTPAINTGL" << QOpenGLContext::currentContext();
     //  getAssets()->getEngine()->getLightSys()->setGlobalAmbientColor(GYVector4 { 1.0f, 1.0f, 1.0f, 1.0f});
-      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-      gyMatLoadIdentity();
 
-          getAssets()->getEngine()->render(&_renderSpineShit);
 
      // context()->swapBuffers(context()->surface()); // DO QOPENGL WIDGET'S FUCKING JOB FOR IT!
         //  update();

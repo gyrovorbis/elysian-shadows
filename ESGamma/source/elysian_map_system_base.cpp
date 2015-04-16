@@ -9,8 +9,8 @@ void GLMapSystemBase::_bindArrayVbo(int buffer) {
 }
 
 void GLMapSystemBase::deactivateArea(void) {
-    gyVidVertexBatchFlush();
-    gyVidVertexBatchEnd();
+   // gyVidVertexBatchFlush();
+   // gyVidVertexBatchEnd();
 }
 
 void GLMapSystemBase::_orphanVbo(void) {

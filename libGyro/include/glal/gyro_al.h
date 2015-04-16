@@ -3,6 +3,10 @@
 
 #include "gyro_platform.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 //this is no good
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
 #	ifdef __APPLE__
@@ -37,6 +41,11 @@
 #       include <AL/alc.h>
 #	endif
 #endif
+
+#ifdef __cplusplus
+}
+#endif
+
 
 #endif // GYRO_AL_H
 

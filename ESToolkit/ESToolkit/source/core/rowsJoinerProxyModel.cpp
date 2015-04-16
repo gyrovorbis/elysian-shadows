@@ -437,3 +437,10 @@ void RowsJoinerProxy::s_destroyed(QObject * obj)
         }
     }
 }
+
+QVariant RowsJoinerProxy::headerData(int section, Qt::Orientation orientation, int role) const {
+    if(d->models.size()) {
+        return d->models[0]->headerData(section, orientation, role);
+    }
+    return QVariant();
+}

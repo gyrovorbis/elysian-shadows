@@ -81,7 +81,7 @@ public:
 	//Selectable
 	virtual Selectable::TYPE	getType(void) const { return Selectable::ENTITY; }
 	virtual TreeNode::ITEM_TYPE getTreeWidgetItemType(void) { return ITEM_ENTITY; }
-    virtual QAbstractItemModel* getModel(void) const override;
+    virtual LuaTableStackModel* getModel(void) const override;
 
 	//Should "technically" be decoupled. See .cpp for comment.
     //void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);

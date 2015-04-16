@@ -40,6 +40,8 @@ public:
     virtual int	rowCount(const QModelIndex & p = QModelIndex()) const;
     virtual int	columnCount(const QModelIndex & p = QModelIndex()) const;
 
+    virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+
     virtual Qt::ItemFlags flags(const QModelIndex & i) const { return mapToSource(i).flags(); }
     virtual QVariant data(const QModelIndex & i, int r) const { return mapToSource(i).data(r); }
     virtual bool setData(const QModelIndex &i, const QVariant &v, int r) {

@@ -1,33 +1,16 @@
 #include "propertyStackModel.h"
 #include "propertyStandardItem.h"
 
-bool PropertyStackModel::_staticInit = false;
-QColor PropertyStackModel::_bgRowColor[PROPERTY_STACK_MODEL_COLOR_DEPTH][2];
-
-void PropertyStackModel::_staticConstructor(void) {
-	_bgRowColor[0][0].setRgb(255, 255, 0);
-	_bgRowColor[0][1].setRgb(100, 255, 0);
-
-	_bgRowColor[1][0].setRgb(0, 255, 255);
-	_bgRowColor[1][1].setRgb(0, 255, 100);
-
-	_bgRowColor[2][0].setRgb(255, 0, 255);
-	_bgRowColor[2][1].setRgb(100, 0, 100);
-
-	_bgRowColor[3][0].setRgb(255, 100, 0);
-	_bgRowColor[3][1].setRgb(100, 50, 0);
-
-	_bgRowColor[4][0].setRgb(255, 255, 100);
-	_bgRowColor[4][1].setRgb(100, 255, 50);
+QStandardItem* PropertyStackModel::createReadOnlyItem(QString name) {
+    auto* dummyItem = new QStandardItem(name);
+    dummyItem->setEnabled(false);
+    dummyItem->setSelectable(false);
+    return dummyItem;
 }
-
 
 PropertyStackModel::PropertyStackModel(QObject *parent): QStandardItemModel(parent) {
 	_curParent = invisibleRootItem();
-	if(!_staticInit) {
-		_staticConstructor();
-		_staticInit = true;
-	}
+  //  insertHeaders();
 }
 
 PropertyStackModel::~PropertyStackModel(void) {
@@ -66,27 +49,23 @@ void PropertyStackModel::pushItem(QStandardItem* item) {
     _curParentStack.push_back(item);
 }
 
-void PropertyStackModel::pushLabel(const QString label, QStandardItem *const item) {
-		QList<QStandardItem *> rowItems;
-		QStandardItem *labelItem = new QStandardItem(label);
-		QStandardItem *dummyItem;
-        //set label-specific properties
-		labelItem->setFlags(Qt::ItemIsEnabled);
-		rowItems << labelItem;
+void PropertyStackModel::pushLabel(const QString label, QStandardItem *const item, QStandardItem *const item2) {
+        QList<QStandardItem *> rowItems;
+        QStandardItem *labelItem = createReadOnlyItem(label);
 
-		if(item) rowItems << item;
-		else { //Insert an invisible dummy item.
-			dummyItem = new QStandardItem;
-			dummyItem->setEnabled(false);
-			dummyItem->setSelectable(false);
-			rowItems << dummyItem;
-		}
+        if(item) rowItems << item;
+        else { //Insert an invisible dummy item.
 
-		_curParent->appendRow(rowItems);
-		_curParent = labelItem;
+            rowItems << createReadOnlyItem();
+        }
+
+        if(columnCount() > 2) rowItems << ((item2)? item2 : createReadOnlyItem());
+
+        _curParent->appendRow(rowItems);
+        _curParent = labelItem;
         //_curParentStack.push_back(_curParent);
 
-		_checkPropertyStandardItemAcquire(item);
+        _checkPropertyStandardItemAcquire(item);
 }
 
 void PropertyStackModel::popLabel(void) {
@@ -101,7 +80,7 @@ void PropertyStackModel::popItem(void) {
 }
 
 
-void PropertyStackModel::addRow(QStandardItem *label, QStandardItem *item) {
+void PropertyStackModel::addRow(QStandardItem *label, QStandardItem *item, QStandardItem *item2) {
         QList<QStandardItem*> rowItems;
 
         //name
@@ -110,24 +89,16 @@ void PropertyStackModel::addRow(QStandardItem *label, QStandardItem *item) {
 \
         //value
         rowItems << item;
+
+        if(columnCount() > 2) rowItems << ((item2)? item2 : createReadOnlyItem());
+
         _curParent->appendRow(rowItems);
         _checkPropertyStandardItemAcquire(item);
 }
 
 
-void PropertyStackModel::addProperty(const QString name, QStandardItem *const item) {
-        QList<QStandardItem*> rowItems;
-
-        //name
-        QStandardItem *nameItem = new QStandardItem(name);
-        nameItem->setFlags(Qt::ItemIsEnabled);
-        rowItems << nameItem;
-\
-        //value
-        rowItems << item;
-        _curParent->appendRow(rowItems);
-
-		_checkPropertyStandardItemAcquire(item);
+void PropertyStackModel::addProperty(const QString name, QStandardItem *const item, QStandardItem*const item2) {
+    addRow(createReadOnlyItem(name), item, item2);
 }
 
 void PropertyStackModel::_checkPropertyStandardItemAcquire(QStandardItem *const item) {
