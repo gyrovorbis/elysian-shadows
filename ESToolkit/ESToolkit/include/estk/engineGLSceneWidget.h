@@ -12,7 +12,7 @@
 
 class MapView;
 
-#define TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME   10
+#define TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME   (1000/60)
 
 class EngineGLSceneWidget:
         public QGLWidget,

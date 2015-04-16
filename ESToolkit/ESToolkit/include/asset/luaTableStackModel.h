@@ -303,8 +303,8 @@ inline void LuaTableStackModel::populateModel(void) {
     setHorizontalHeaderItem(1, new QStandardItem("Value"));
     setHorizontalHeaderItem(2, new QStandardItem("Type"));
     if(!_labelItem) {
-        _labelItem = PropertyStackModel::createReadOnlyItem("Lua Table");//ESTkStandardItem(QString("Lua Table"));
         QList<QStandardItem*> items;
+        _labelItem = PropertyStackModel::createReadOnlyItem("Lua Table");//ESTkStandardItem(QString("Lua Table"));
         items.push_back(_labelItem);
         items.push_back(PropertyStackModel::createReadOnlyItem());
         items.push_back(PropertyStackModel::createReadOnlyItem());
@@ -359,7 +359,7 @@ inline void LuaTableFieldItem<TVal, TKey>::setValue(const TVal val) {
 
 
 inline void LuaTableStackModel::setLabelItemText(const QString string) {
-    _labelItem->setData(string);
+    //_labelItem->setData(string, Qt::DisplayRole);
 }
 
 #endif // ESTK_LUA_TABLE_MODEL_HPP

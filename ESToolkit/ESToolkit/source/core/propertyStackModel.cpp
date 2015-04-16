@@ -3,8 +3,7 @@
 
 QStandardItem* PropertyStackModel::createReadOnlyItem(QString name) {
     auto* dummyItem = new QStandardItem(name);
-    dummyItem->setEnabled(false);
-    dummyItem->setSelectable(false);
+    dummyItem->setFlags(Qt::ItemIsEnabled);
     return dummyItem;
 }
 
@@ -52,6 +51,8 @@ void PropertyStackModel::pushItem(QStandardItem* item) {
 void PropertyStackModel::pushLabel(const QString label, QStandardItem *const item, QStandardItem *const item2) {
         QList<QStandardItem *> rowItems;
         QStandardItem *labelItem = createReadOnlyItem(label);
+
+        rowItems << labelItem;
 
         if(item) rowItems << item;
         else { //Insert an invisible dummy item.
