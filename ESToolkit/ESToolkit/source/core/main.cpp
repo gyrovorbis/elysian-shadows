@@ -17,7 +17,6 @@
 
 GYAppCbRet Init(int argc, char **argv) {
     //QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
-//#ifdef __WIN32
     QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
 
 //#else

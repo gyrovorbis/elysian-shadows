@@ -893,12 +893,10 @@ void ESToolkit::_openProjectDir(const QString dir) {
     viewport->setMouseTracking(true);
     //_engineGLView->makeCurrent();
     _engineGLView->setMapView(_ui->mapView);
-//#ifndef __WIN32
     _engineGLView->makeCurrent();
         _engineGLView->update();
         _engineGLView->show();
         _engineGLView->updateGL();
-  //      #endif
                 _ui->mapView->setViewport(viewport);
 
    // _ui->mapView->setScene(new QGraphicsScene());
@@ -914,20 +912,20 @@ void ESToolkit::_openProjectDir(const QString dir) {
     gyInputInit(&inputParams);
     qDebug() << "GLEW" << QOpenGLContext::currentContext();
    // assert(_engineGLView->context()->isValid());
-//#ifdef __WIN32
+
     _engineGLView->makeCurrent();
-//#endif
+
         qDebug() << "GLEW" << QOpenGLContext::currentContext();
     glalVidGlewInit();
-//#ifdef __WIN32
+
     _engineGLView->doneCurrent();
-//#else
+
     _engineGLView->updateGL();
-//#endif
+
     qDebug() << "LOADPROJECT" << QOpenGLContext::currentContext();
-#ifdef __WIN32
+
     _engineGLView->startRenderTimer();
-#endif
+
     Project *proj = _assets.loadProject(dir);
    // _engineGLView->update();
 
