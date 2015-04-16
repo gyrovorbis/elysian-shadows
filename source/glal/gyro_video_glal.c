@@ -197,11 +197,11 @@ void gyVidVertexBatchFlush(void) {
 }
 
 void gyVidVertexArrayBind(int id) {
-  //  if(id != glalVertexArray) {
-       // gyVidVertexBatchFlush();
+    if(id != glalVertexArray) {
+        gyVidVertexBatchFlush();
         glBindVertexArray(id);
         glalVertexArray = id;
-  //  }
+    }
 }
 
 unsigned gyVidDbgVertexRenderCount(void) { return glalPrevVertexRenderCount; }
