@@ -39,9 +39,9 @@ int _gyVidTexAlloc(GYTexture *const tex) {
 //         static_cast<QOpenGLWidget*>(_initParams.glWidget)->doneCurrent();
         return 0; //fuck.
     }
-//#ifdef __WIN32
+
 static_cast<QGLWidget*>(_initParams.glWidget)->makeCurrent();
-//#endif
+
 
      tex->_data = (void*)(uintptr_t) static_cast<QGLWidget*>(_initParams.glWidget)->bindTexture(pixmap.mirrored(), GL_TEXTURE_2D, GL_RGBA);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
