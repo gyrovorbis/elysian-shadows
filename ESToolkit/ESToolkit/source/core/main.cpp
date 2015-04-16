@@ -8,6 +8,7 @@
 #include "elysian_debug.hpp"
 #include <QDebug>
 #include <QRectF>
+#include <QGLFormat>
 #include <initializer_list>
 #include <iostream>
 
@@ -16,7 +17,13 @@
 
 GYAppCbRet Init(int argc, char **argv) {
     //QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
+//#ifdef __WIN32
     QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
+
+//#else
+    //QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
+
+//#endif
    // QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
     //QApplication::setAttribute(Qt::AA_SynthesizeMouseForUnhandledTouchEvents, false);
     //QApplication::setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, false);
@@ -34,10 +41,19 @@ GYAppCbRet Init(int argc, char **argv) {
     fmt.setGreenBufferSize(8);*/
     fmt.setDepthBufferSize(32);
     //fmt.setAlphaBufferSize(8);
-    fmt.setVersion( 3, 2 );
+    fmt.setVersion( 3, 3 );
     fmt.setProfile( QSurfaceFormat::CoreProfile ); // Requires >=Qt-4.8.0
     // Set the default GL format to OpenGL 3.2 Core
     QSurfaceFormat::setDefaultFormat(fmt);
+
+    QGLFormat glfmt;
+            glfmt.setDepthBufferSize(32);
+            //fmt.setAlphaBufferSize(8);
+            glfmt.setVersion( 3, 3 );
+            glfmt.setProfile( QGLFormat::CoreProfile ); // Requires >=Qt-4.8.0
+            // Set the default GL format to OpenGL 3.2 Core
+            QGLFormat::setDefaultFormat(glfmt);
+
 
     QRectF rect;
     rect.setSize(QSizeF(2.0f, 5.0f));

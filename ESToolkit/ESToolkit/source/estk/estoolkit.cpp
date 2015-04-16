@@ -893,16 +893,20 @@ void ESToolkit::_openProjectDir(const QString dir) {
 
         auto* viewport = _engineGLView = new EngineGLSceneWidget(this);
 
-        _ui->mapView->setViewport(viewport);
+
         //dipshitLayout->addWidget(viewport);
         //_engineGLView->setFormat(QSurfaceFormat::defaultFormat());
         connect(viewport, SIGNAL(engineUpdated()), _ui->mapView, SLOT(onEngineUpdated()));
     viewport->setMouseTracking(true);
     //_engineGLView->makeCurrent();
     _engineGLView->setMapView(_ui->mapView);
+#ifdef __WIN32
     _engineGLView->makeCurrent();
-    _engineGLView->updateGL();
-
+#endif
+        _engineGLView->update();
+        _engineGLView->show();
+        _engineGLView->updateGL();
+                _ui->mapView->setViewport(viewport);
 
    // _ui->mapView->setScene(new QGraphicsScene());
     //setCentralWidget(viewport);
@@ -917,14 +921,21 @@ void ESToolkit::_openProjectDir(const QString dir) {
     gyInputInit(&inputParams);
     qDebug() << "GLEW" << QOpenGLContext::currentContext();
    // assert(_engineGLView->context()->isValid());
+//#ifdef __WIN32
     _engineGLView->makeCurrent();
+//#endif
         qDebug() << "GLEW" << QOpenGLContext::currentContext();
     glalVidGlewInit();
+//#ifdef __WIN32
     _engineGLView->doneCurrent();
+//#else
+    _engineGLView->updateGL();
+//#endif
     qDebug() << "LOADPROJECT" << QOpenGLContext::currentContext();
-
+#ifndef __WIN32
+    _engineGLView->startRenderTimer();
+#endif
     Project *proj = _assets.loadProject(dir);
-
    // _engineGLView->update();
 
     _assets.setCurrentProject(proj);
@@ -932,8 +943,11 @@ void ESToolkit::_openProjectDir(const QString dir) {
 
     //_engineGLView->doneCurrent();
     qDebug() << "RENDERTIMER" << QOpenGLContext::currentContext();
+#ifdef __WIN32
     _engineGLView->startRenderTimer();
+#endif
   //  _engineGLView->doneCurrent();
+
 
     //elysian::Debug::getInstance()._curArea = _assets.getCurrentArea();
     //_assets.getCurrentArea()->populateVbo();

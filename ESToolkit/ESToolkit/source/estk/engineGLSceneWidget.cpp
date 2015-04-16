@@ -16,13 +16,18 @@ EngineGLSceneWidget* EngineGLSceneWidget::_self = nullptr;
 
 void EngineGLSceneWidget::makeCurrentContext(void) {
     if(_self) {
+
+//#ifdef __WIN32
         _self->makeCurrent();
+//#endif
        //     glalVidOglInit(_self->_width, _self->_height, _self->_width, _self->_height);
     }
 }
 
 void EngineGLSceneWidget::doneCurrentContext(void) {
+#ifdef __WIN32
     if(_self) _self->doneCurrent();
+#endif
 }
 
 EngineGLSceneWidget::EngineGLSceneWidget(QWidget *parent):
@@ -68,7 +73,9 @@ void EngineGLSceneWidget::initializeGL(void) {
     //unsigned parentHeight   = parentWidget()->size().height();
 
   //  connect(context(), SIGNAL(aboutToBeDestroyed()), this, SLOT(_onContextAboutToBeDestroyed()));
+//#ifdef __WIN32
 makeCurrent();
+//#endif
 //glalVidGlewInit();
       // glalVidOglInit(1280, 720, 1280, 720);
   //  glalVidOglInit(parentWidth, parentHeight, parentWidth, parentHeight);
@@ -121,14 +128,18 @@ static void _initSpineShit(void) {
 }
 
 void EngineGLSceneWidget::startRenderTimer(void) {
+//#ifdef __WIN32
     makeCurrent();
-   // glalVidOglInit(1280, 720, 1280, 720);
+  //      glalVidOglInit(1280, 720, 1280, 720);
+//#endif
+
         qDebug() << "IN RENDER TIMER" << QOpenGLContext::currentContext();
        glalVidOglInit(1280, 720, 1280, 720);
     _timer.start(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this);
    // doneCurrent();
     _initialized = true;
-    //timerEvent(nullptr); //go ahead and update the nigger.
+    timerEvent(nullptr); //go ahead and update the nigger.
+        glalVidOglInit(1280, 720, 1280, 720);
 }
 /*
 void EngineGLSceneWidget::showEvent(QShowEvent *event) {
@@ -138,7 +149,9 @@ void EngineGLSceneWidget::showEvent(QShowEvent *event) {
 
 void EngineGLSceneWidget::timerEvent(QTimerEvent *)
 {
+//#ifdef __WIN32
     makeCurrent();
+//#endif
        // qDebug() << "TIMEREVENT" << QOpenGLContext::currentContext();
    // update();
     updateGL();
@@ -147,14 +160,16 @@ void EngineGLSceneWidget::timerEvent(QTimerEvent *)
    // _mapView->updateSceneRect(_mapView->sceneRect());
   //  paintGL();
 
-   #if 0
+   #ifndef __WIN32
     unsigned parentWidth    = parentWidget()->size().width();
         unsigned parentHeight   = parentWidget()->size().height();
         if(_width != parentWidth || _height != parentHeight) {
             resizeGL(parentWidth, parentHeight);
         }
 #endif
+#ifdef __WIN32
     doneCurrent();
+#endif
 }
 #
 void EngineGLSceneWidget::resizeGL(int w, int h) {
@@ -176,9 +191,9 @@ static void _renderSpineShit(void) {
 
 void EngineGLSceneWidget::paintGL(void) {
     if(!getCurrentArea() || !_initialized) return;
-
+//#ifdef __WIN32
     makeCurrent();
-
+//#endif
       //  qDebug() << "PREPAINTGL" << QOpenGLContext::currentContext();
 
     static bool once = false;
