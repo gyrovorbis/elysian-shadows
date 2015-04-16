@@ -101,6 +101,7 @@ HEADERS += \
     ../../include/glal/gyro_shaders_glal.h \
     ../../include/glal/gyro_video_glal.h \
     ../../include/glal/gyro_gl.h \
+    ../../include/glal/gyro_al.h \
     ../../include/glal/gyro_al.h
 
 SOURCES += \

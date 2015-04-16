@@ -543,7 +543,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
     _LightInternals* internals = light->_data;
     GYCamera*const cam = light->camera;
 
-    gyVidVertexBatchFlush();
+    if(!_firstShadowPass) gyVidVertexBatchFlush();
     glViewport(0, 0, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE);
 
     glActiveTexture(glalTextureMapTexUnits[GLAL_TEMP_MAP]);
@@ -639,7 +639,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
     //    glCullFace(GL_FRONT);
 
              glClear(GL_DEPTH_BUFFER_BIT);
-    // if(_firstShadowPass) {
+    if(_firstShadowPass) {
          glClearDepth(1.0f);
          glDepthRange(0.0f, 1.0f);
         glDisable(GL_BLEND);
@@ -649,7 +649,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
         //glEnable(GL_BLEND);
         glDepthFunc(GL_LESS);
         _firstShadowPass = 0;
-    // }
+    }
 
     //find projView matrix
     gyMatMultMat(lightProjViewMatrix, lightProjMatrix, lightViewMatrix);
