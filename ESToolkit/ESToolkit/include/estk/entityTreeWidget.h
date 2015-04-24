@@ -2,7 +2,7 @@
 #define ENTITY_TREEWIDGET_H
 
 #include <QTreeWidget>
-#include "assetManager.h"
+#include <assetManager.h>
 
 class TkArea;
 typedef TkArea Area;
@@ -21,6 +21,7 @@ protected:
     void _addEntity(Entity* entity);
     void _removeEntity(Entity* entity);
 
+
 public:
     EntityTreeWidget(QWidget *parent=nullptr);
 
@@ -35,6 +36,7 @@ private Q_SLOTS:
 	void OnSelectionChanged(const Selectable::TYPE, Selectable *const);
     void onEntityParented(Entity*const child, Entity*const parent);
     //void onLayerChange(const Assets::LAYER_TYPE layer);
+    void _onCustomContextMenuRequested(QPoint location);
 
 Q_SIGNALS:
     void entityLayerActivate(void);

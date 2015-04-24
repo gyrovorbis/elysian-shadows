@@ -1,7 +1,7 @@
 #ifndef TK_LUAMANAGER_H
 #define TK_LUAMANAGER_H
 
-#include "elysian_lua_manager_base.hpp"
+#include <elysian_lua_manager_base.hpp>
 
 #define TK_LUA_MANAGER_METATABLE_SCRIPT_PATH    "/assets/scripts/utils/tkMetatables.lua"
 

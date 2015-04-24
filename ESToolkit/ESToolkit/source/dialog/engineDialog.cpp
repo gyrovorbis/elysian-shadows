@@ -15,6 +15,7 @@
 #include "project.h"
 #include "elysian_level.hpp"
 #include "elysian_area.hpp"
+#include <elysian_debug.hpp>
 
 EngineDialog::EngineDialog(QWidget *parent): QMainWindow(parent), _currentType(ENGINE_PC) {
 	QWidget *centralWidget = new QWidget;
@@ -106,7 +107,7 @@ bool EngineDialog::Invoke(const ENGINE_TYPE type) {
     args << "-r" << QString::number(_resolution);
 
 	//Write argument text file
-	argFile.open(ELYSIAN_CMD_LINE_ARG_FILE);
+//	argFile.open(ELYSIAN_CMD_LINE_ARG_FILE);
 	for(int i = 0; i < args.size(); ++i) argFile << args.at(i).toStdString() << " ";
 	argFile.close();
 

@@ -120,7 +120,7 @@ TkLuaTableUserdata*  TkLuaTableUserdata::inject(lua_State*const l, const int lua
 
 void TkLuaTableUserdata::_createMetatable(lua_State*const l) {
     _lvm = l;
-    LuaManager::_stackBalanceBegin();
+    LuaManager::stackBalanceBegin();
 
     lua_newtable(l);
     lua_pushvalue(l, -1);
@@ -145,7 +145,7 @@ void TkLuaTableUserdata::_createMetatable(lua_State*const l) {
 
     lua_pop(l, 1);
 
-    LuaManager::_stackBalanceEnd();
+    LuaManager::stackBalanceEnd();
 }
 
 TkLuaTableUserdata*  TkLuaTableUserdata::inject(lua_State*const l, const int luaRef) {
@@ -161,7 +161,7 @@ TkLuaTableUserdata*  TkLuaTableUserdata::inject(lua_State*const l, const int lua
 
     PRINT("1");
     //LuaManager::_cStackDump();
-    LuaManager::_stackBalanceBegin();
+    LuaManager::stackBalanceBegin();
 
     // TERMINOLOGY:
     // 1) original table (table we're injecting into)
@@ -174,7 +174,7 @@ TkLuaTableUserdata*  TkLuaTableUserdata::inject(lua_State*const l, const int lua
     if(!lua_isnil(l, -1)) {
         ud = static_cast<TkLuaTableUserdata*>(lua_touserdata(l, -1));
         lua_pop(l, 2);
-        LuaManager::_stackBalanceEnd();
+        LuaManager::stackBalanceEnd();
         assert(ud);
         return ud;
     }
@@ -263,7 +263,7 @@ TkLuaTableUserdata*  TkLuaTableUserdata::inject(lua_State*const l, const int lua
 
     lua_pop(l, 2);
 
-    LuaManager::_stackBalanceEnd();
+    LuaManager::stackBalanceEnd();
 
     return ud;
 }

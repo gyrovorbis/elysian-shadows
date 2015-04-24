@@ -46,7 +46,7 @@ void MapView::onAreaChange(Area * const area) {
     if(area) { _curUndoItem->setArea(area);
     //move over cursor entity
 
-    //setSceneRect(-16, -16, 32.0f*getAssets()->getCurArea()->width, 32.0f*getAssets()->getCurArea()->height);
+    //setSceneRect(-16, -16, 32.0f*getAssets()->getCurrentArea()->width, 32.0f*getAssets()->getCurrentArea()->height);
 }
     if(getAssets()->getCurrentArea()) getAssets()->getCurrentArea()->removeEntity(_cursorEntity);
     if(area) {
@@ -528,7 +528,7 @@ void MapView::onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) {
 
 void MapView::_updateScrollBars(void) {
     QSize viewSize = viewport()->size();
-    QSize sceneSize(getAssets()->getCurArea()->getMapWidth() * 32.0f, getAssets()->getCurArea()->getMapHeight() * 32.0f);
+    QSize sceneSize(getAssets()->getCurrentArea()->getMapWidth() * 32.0f, getAssets()->getCurrentArea()->getMapHeight() * 32.0f);
 
     verticalScrollBar()->setEnabled(false);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);

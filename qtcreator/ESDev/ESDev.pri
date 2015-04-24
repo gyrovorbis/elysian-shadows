@@ -18,7 +18,7 @@ CONFIG(release, debug|release) {
 }
 
 DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt QT_NO_KEYWORDS QT_NO_DYNAMIC_CAST
-QMAKE_CXXFLAGS += -std=c++11 -msse -Wno-unknown-warning #-fno-rtti -fno-exceptions
+QMAKE_CXXFLAGS += -std=c++11 -msse -Wno-unknown-warning -fmacro-backtrace-limit=0 #-fno-rtti -fno-exceptions
 CONFIG += c++11
 CONFIG -= exceptions rtti
 

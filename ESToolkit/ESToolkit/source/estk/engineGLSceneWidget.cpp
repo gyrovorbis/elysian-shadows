@@ -31,8 +31,6 @@ EngineGLSceneWidget::EngineGLSceneWidget(QWidget *parent):
     assert(!_self);
             _self = this;
             setAttribute(Qt::WA_NativeWindow);
-
-            connect(this, SIGNAL(resized()), this, SLOT(_onResized()));
 }
 
 

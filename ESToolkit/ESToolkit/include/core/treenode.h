@@ -6,11 +6,13 @@
 
 class TreeNode: public QTreeWidgetItem, public Selectable {
 protected:
-    QString         _name;
+    QString         _nodeName;
     bool            _hasChanged         = false;
     virtual bool    deactivate(void)    = 0;
 public:
 	enum ITEM_TYPE { ITEM_PROJECT, ITEM_LEVEL, ITEM_AREA, ITEM_ENTITY };
+
+                        TreeNode(void);
 
     QString             getNodeName(void) const;
     virtual void        setNodeName(const QString name);

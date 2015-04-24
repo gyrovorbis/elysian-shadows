@@ -15,8 +15,6 @@
 
 //====STATIC MEMBERS====
 
-Area *Assets::_currentArea = nullptr;
-Level *Assets::_currentLevel = nullptr;
 Project *Assets::m_project = nullptr;
 elysian::Engine* Assets::_engine = nullptr;
 Selectable *Assets::_currentSelection = nullptr;
@@ -81,7 +79,7 @@ QString Assets::getProjectDir(void)
 
 int Assets::getUndoStackCount(void)
 {
-    return _currentArea->getUndoStackCount();
+    return _curArea->getUndoStackCount();
 }
 
 
@@ -99,6 +97,14 @@ void Assets::connectSlots(Project *const project) {
 	connect(project, SIGNAL(componentRemoved(Project*const,Level*const,Area*const,Entity*const,Component*const)), this, SLOT(onComponentRemoved(Project*const,Level*const,Area*const,Entity*const,Component*const)));
     connect(project, SIGNAL(mapChanged(Area*const,const QVector<MapChange>&)), this, SLOT(onMapChanged(Area*const,const QVector<MapChange>&)));
     connect(project, SIGNAL(entityParented(Entity*const,Entity*const)), this, SLOT(onEntityParented(Entity*const,Entity*const)));
+
+    QObject::connect(project, &Project::inactiveEntityAdded, [&](Project*const project, Level*const level, Area*const area, Entity*const entity) {
+        Q_EMIT inactiveEntityAdded(project, level, area, entity);
+    });
+
+    QObject::connect(project, &Project::inactiveEntityRemoved, [&](Project*const project, Level*const level, Area*const area, Entity*const entity) {
+        Q_EMIT inactiveEntityRemoved(project, level, area, entity);
+    });
 }
 
 //====NONSTATIC====
@@ -140,11 +146,11 @@ bool Assets::setCurrentArea(const QString name) {
     }
     Debug::Log(Debug::CRITICAL, "Could not set current area to %s!\n", name.toStdString().c_str());
     return false;*/
-    if(!_currentLevel) {
+    if(!_curLevel) {
         setCurrentArea(nullptr);
         return false;
     }
-    Area *area = _currentLevel->getArea(name);
+    Area *area = _curLevel->getArea(name);
     if(!area) {
         setCurrentArea(nullptr);
         return false;
@@ -156,16 +162,16 @@ bool Assets::setCurrentArea(const QString name) {
 void Assets::setCurrentArea(Area *const area) {
    // if(_currentArea) _currentArea->deactivate();
     //if(_currentArea == area) return;
-    _currentArea = area;
+    //_currentArea = area;
     _engine->getLevelSys()->switchArea(area? area->getPath() : nullptr);
     if(area) {
         //area->activate();
-		Q_EMIT areaChanged(_currentArea);
+        Q_EMIT areaChanged(_curArea);
         //if(area->getFirstEntity()) setCurrentSelection(new EntitySelectable(area->getFirstEntity()));
         setCurrentSelection((EntitySelectable*)nullptr);
     }
     else {
-		Q_EMIT areaChanged(_currentArea);
+        Q_EMIT areaChanged(_curArea);
         setCurrentSelection((EntitySelectable*)nullptr);
     }
 }
@@ -188,7 +194,7 @@ bool Assets::setCurrentLevel(const QString name) {
 void Assets::setCurrentLevel(Level *const level) {
    // if(_currentLevel) _currentLevel->deactivate();
     //if(_currentLevel == level) return;
-    _currentLevel = level;
+  //  _currentLevel = level;
 
     _engine->getLevelSys()->switchLevel(level? level->getPath() : nullptr);
     if(level) {
@@ -311,8 +317,8 @@ bool Assets::removeProject(const QString name) {
 
 void Assets::onChildProjectActivating(Project *const project, Level *const level, Area *const area) {
     if(m_project != project) setCurrentProject(project->getNodeName());
-    if(level && _currentLevel != level) setCurrentLevel(level->getNodeName());
-    if(area && _currentArea != area) setCurrentArea(area->getNodeName());
+    if(level && _curLevel != level) setCurrentLevel(level->getNodeName());
+    if(area && _curArea != area) setCurrentArea(area->getNodeName());
 }
 
 void Assets::onAreaAdded(Project *const project, Level *const level, Area *const area) {
@@ -369,7 +375,7 @@ Level* Assets::reloadLevel(Level* level) {
     QString areaName;
     if(getCurrentLevel() == level) {
         levelName = level->getDirName();
-        areaName = getCurArea()->getDirName();
+        areaName = getCurrentArea()->getDirName();
         setCurrentArea(nullptr);
         setCurrentLevel(nullptr);
     }

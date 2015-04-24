@@ -1,7 +1,11 @@
 #include "treenode.h"
 
+TreeNode::TreeNode(void) {
+
+}
+
 void TreeNode::setNodeName(const QString name) {
-    _name = name;
+  //  _name = name;
 
     if(_hasChanged == true) {
 		//qDebug("add the star!");
@@ -17,15 +21,17 @@ void TreeNode::setChanged(bool clean)
 {
     if(!clean) {
         _hasChanged = true;
-        setText(0, _name + "*");
+        setText(0, text(0) + "*");
     }
 
     else {
+        QString name = text(0);
         _hasChanged = false;
-        setText(0, _name);
+        name.chop(1);
+        setText(0, name);
     }
 }
 
 QString TreeNode::getNodeName() const {
-    return _name;
+    return text(0);
 }

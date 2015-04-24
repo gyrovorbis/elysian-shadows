@@ -74,7 +74,6 @@ TkDebug::TkDebug(void) {
 	//Register QDebug callback
     qInstallMessageHandler(&logQ);
 	//Register AssetIO debug interface!
-	elysian::Asset::setDebugStack(&_assetioDebug);
 
 	_outfile = new std::ofstream(DEBUG_LOG_PATH);
 	if(!_outfile->is_open()) qDebug() << "!!!!!- could not open Debug log file for writing!";
@@ -95,7 +94,7 @@ void Debug::ESDebugWrapper(elysian::Asset::DBG_TYPE flag, const char msg[] ) {
 /* Fuck you and your QStrings, Marcel. I'm doing this C-Style. */
 void TkDebug::Logf(Debug::LEVEL flag, const char *string, ...) {
     va_list argptr;
-    char buffer[ELYSIAN_DEBUG_BUFFER_SIZE];
+    char buffer[GYRO_PRINTF_BUFFER_SIZE];
     va_start(argptr, string);
     vsprintf(buffer, string, argptr);
     va_end(argptr);
@@ -143,7 +142,7 @@ void TkDebug::pop(void) {
     elysian::DebugBase::pop();
 }
 
-void TkDebug::Log(elysian::DebugBase::LEVEL flag, QString msg, TK_SOURCE src) {
+void TkDebug::Log(LEVEL flag, QString msg, int src) {
     //Write to logfile
         for(unsigned i = 0; i < _stackDepth; ++i) *_outfile << "\t";
         *_outfile << msg.toStdString() << std::endl;
@@ -214,7 +213,7 @@ void TkDebug::clear(void) {
 }
 
 
-void TkDebug::setFilter(const TK_SOURCE src, const bool enabled) {
+void TkDebug::setFilter(const int src, const bool enabled) {
     _filterEnabled[src] = enabled;
     auto&& itemList = _treeWidget->findItems(_srcEnumToStr[src], Qt::MatchExactly, 1);
     for(auto& it : itemList) {

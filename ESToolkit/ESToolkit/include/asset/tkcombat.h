@@ -1,0 +1,15 @@
+#ifndef TKCOMBAT_H
+#define TKCOMBAT_H
+
+#include <elysian_combat_base.hpp>
+
+class TkCombat: public elysian::CombatBase {
+public:
+    TkCombat(TkEntity& parent);
+    TkCombat(void) = default;
+};
+
+inline TkCombat::TkCombat(TkEntity &parent): elysian::CombatBase(parent) {}
+
+#endif // TKCOMBAT_H
+

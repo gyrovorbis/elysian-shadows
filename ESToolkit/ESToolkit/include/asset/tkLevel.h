@@ -3,16 +3,14 @@
 //QT
 #include <QString>
 #include <QVector>
-#include "propertyStackModel.h"
-#include "treenode.h"
-#include "elysian_level_base.hpp"
-#include "elysian_level_manager.hpp"
-#include "assets.h"
-#include "elysianTileWrapper.h"
-#include "elysian_system.hpp"
+#include <propertyStackModel.h>
+#include <treenode.h>
+#include <elysian_system.hpp>
+#include <elysian_level_base.hpp>
+#include <elysianTileWrapper.h>
 
-#define ESTK_LEVEL_METADATA_DIRECTORY   "estk"
-#define ESTK_LEVEL_METADATA_TILESET     "estkTileset.bin"
+#define ESTK_LEVEL_METADATA_DIRECTORY       "estk"
+#define ESTK_LEVEL_METADATA_TILESET         "estkTileset.bin"
 
 #define ESTK_LEVEL_NORMAL_MAPS_DIRECTORY    "normalMaps"
 #define ESTK_LEVEL_SPECULAR_MAPS_DIRECTORY  "specularMaps"
@@ -25,7 +23,8 @@ class SheetViewTileGraphicsItem;
 class AssetManager;
 class TkEntity;
 typedef TkEntity Entity;
-class Component;
+class TkComponent;
+typedef TkComponent Component;
 class SelectionScene;
 class SourceView;
 class CheckeredAlphaRectGraphicsItem;
@@ -33,7 +32,7 @@ class TkArea;
 typedef TkArea Area;
 struct MapChange;
 
-class TkLevel: public PropertyStackModel, public TreeNode, public elysian::LevelBase, public elysian::System, public AssetManager {
+class TkLevel: public PropertyStackModel, public elysian::LevelBase, public TreeNode, public AssetManager, public elysian::System {
     friend class Assets;
 	friend class TileManagerDialog;
     friend class Project;
@@ -153,6 +152,8 @@ Q_SIGNALS:
 	void areaRemoved(Level *const level, Area *const area);
 	void entityAdded(Level *const level, Area *const area, Entity *const entity);
 	void entityRemoved(Level *const level, Area *const area, Entity *const entity);
+    void inactiveEntityAdded(Level*const level, Area*const area, Entity*const entity);
+    void inactiveEntityRemoved(Level*const level, Area*const area, Entity*const entity);
 	void componentAttached(Level *const level, Area *const area, Entity *const entity, Component *const comp);
 	void componentRemoved(Level *const level, Area *const area, Entity *const entity, Component *const comp);
 	void areaRenamed(const QString oldName, const QString newName);

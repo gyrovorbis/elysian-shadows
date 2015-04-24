@@ -100,9 +100,9 @@ inline bool MapViewDepthBufferGraphicsItem::getOnscreenEntity(const unsigned ind
 	Entity &entity = *(*_curEntities)[index];
 		if(true) { //CHECK IF NIGGER IS ONSCREEN
 			entry.entity = &entity;
-            type = (elysian::NORMAL_TYPE)entity.getElysianEntity()->getPlaneType();
-			lowestY = entity.getElysianEntity()->getDepthBaseY();
-			elev = entity.getElysianEntity()->getElev();
+            type = (elysian::NORMAL_TYPE)entry.entity->getPlaneType();
+            lowestY = entity.getDepthBaseY();
+            elev = entity.getElev();
 			return true;
 		}
 		return false;

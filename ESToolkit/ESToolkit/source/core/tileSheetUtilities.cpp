@@ -1,7 +1,6 @@
 #include "tileSheetUtilities.h"
 #include "estoolkit.h"
 #include "elysian_debug.hpp"
-#include "sprite.h"
 #include "tileImage.h"
 #include "tileGraphicsItem.h"
 

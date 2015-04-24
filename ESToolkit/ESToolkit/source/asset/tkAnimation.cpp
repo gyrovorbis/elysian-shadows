@@ -36,4 +36,19 @@ void TkAnimation::removeChildEntity(Entity *entity) {
     static_cast<QTreeWidgetItem*>(getEntity())->removeChild(entity);
 }
 
+bool TkAnimation::validate(QString &str) const {
+    bool success = true;
+    auto cAssert = [&](const bool val, const char* msg) {
+        if(!val) {
+            success = false;
+            str += msg;
+            str += "\n";
+        }
+    };
+
+    cAssert(_attrib, "ERROR: Animation component has no attributes.");
+    if(_attrib && _attrib->_sequences.size()) str += "WARNING: Animation attributes have no sequences.\n";
+
+    return success;
+}
 

@@ -18,6 +18,8 @@
 #include "elysian_engine.hpp"
 #include "elysian_level_system.hpp"
 #include <gyro_texture_api.h>
+#include <elysian_entity.hpp>
+#include <selectionScene.h>
 
 //====STATIC====
 
@@ -143,9 +145,9 @@ TkLevel::~TkLevel(void) {
 
 bool TkLevel::duplicate(void) {
     unsigned num = 1;
-    QString name(_name);
+    QString name(getNodeName());
 
-    while(_project->getLevel(_name+QString::number(num))) ++num;
+    while(_project->getLevel(getNodeName()+QString::number(num))) ++num;
 
 
     if(!FileUtilities::copyDir(_location, _project->getLocation() + "/level/" + name+QString::number(num))) {
@@ -181,10 +183,10 @@ void TkLevel::setNodeName(const QString str) {
 	QString newLocation;
 	bool renamed = false;
 	QString name = str;
-	QString oldName = _name;
+    QString oldName = getNodeName();
 	name.replace(QRegExp("[\\\\/ ]"), QString("_"));
 
-	if(_name == name) return;
+    if(getNodeName() == name) return;
 
 	QStringList splitList = _location.split("/");
 	for(int i = 0; i < splitList.size()-1; ++i) {
@@ -193,7 +195,7 @@ void TkLevel::setNodeName(const QString str) {
 	newLocation.append(name);
 
 	//Already has a name, so we have to rename it
-	if(!_name.isEmpty())  {
+    if(!getNodeName().isEmpty())  {
 
 		if(_project->getLevel(name)) {
             QMessageBox::critical(nullptr, tr("Error!"), tr("A level with that name already exists in the current project!\n"));
@@ -259,6 +261,14 @@ void TkLevel::connectSlots(Area *area) {
 	connect(area, SIGNAL(renamed(QString,QString)), this, SLOT(onAreaRenamed(QString,QString)));
     connect(area, SIGNAL(mapChanged(Area*const,const QVector<MapChange>&)), this, SLOT(onMapChanged(Area*const,const QVector<MapChange>&)));
     connect(area, SIGNAL(entityParented(Entity*const,Entity*const)), this, SLOT(onEntityParented(Entity*const,Entity*const)));
+
+    connect(area, &Area::inactiveEntityAdded, [&](Area*const area, Entity*const entity) {
+        Q_EMIT inactiveEntityAdded(this, area, entity);
+    });
+
+    connect(area, &Area::inactiveEntityRemoved, [&](Area*const area, Entity*const entity) {
+        Q_EMIT inactiveEntityRemoved(this, area, entity);
+    });
 }
 
 /*

@@ -16,7 +16,7 @@
 #include "elysian_debug.hpp"
 
 GYAppCbRet Init(int argc, char **argv) {
-    //QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
+    QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings); //WITHOUT THIS OSX SHITS ITSELF WHEN FUCKING WITH WIDGET SIZING/LOCATIONS
     QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
 
 //#else

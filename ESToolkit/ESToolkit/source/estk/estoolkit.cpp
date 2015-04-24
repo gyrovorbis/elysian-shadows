@@ -27,12 +27,12 @@
 #include "assetManager.h"
 #include "engineDialog.h"
 #include "tileSelectable.h"
-#include "elysian_asset.hpp"
 #include "elysian_behavior.hpp"
 #include "sheetManager.h"
 #include "engineSettingsDialog.h"
 #include "sheetViewTileGraphicsItem.h"
 #include "glUtilities.h"
+#include <selectionScene.h>
 
 #include "assetDockWidget.h"
 #include "layerDockWidget.h"
@@ -910,19 +910,14 @@ void ESToolkit::_openProjectDir(const QString dir) {
 
 
     gyInputInit(&inputParams);
-    qDebug() << "GLEW" << QOpenGLContext::currentContext();
    // assert(_engineGLView->context()->isValid());
 
     _engineGLView->makeCurrent();
-
-        qDebug() << "GLEW" << QOpenGLContext::currentContext();
     glalVidGlewInit();
 
     _engineGLView->doneCurrent();
 
     _engineGLView->updateGL();
-
-    qDebug() << "LOADPROJECT" << QOpenGLContext::currentContext();
 
     _engineGLView->startRenderTimer();
 
@@ -933,7 +928,6 @@ void ESToolkit::_openProjectDir(const QString dir) {
     _assets.setCurrentSelection(_assets.getCurrentArea());
 
     //_engineGLView->doneCurrent();
-    qDebug() << "RENDERTIMER" << QOpenGLContext::currentContext();
 
   //  _engineGLView->doneCurrent();
 
@@ -991,7 +985,7 @@ void ESToolkit::on_actionFileSaveCurrentArea_triggered() {
 }
 
 void ESToolkit::on_actionAreaAddEntity_triggered() {
-    _assets.setCurrentSelection(_assets.getCurrentArea()->newEntity());
+    _assets.setCurrentSelection(new EntitySelectable(_assets.getCurrentArea()->newEntity()));
 }
 
 void ESToolkit::on_actionDebugViewLog_triggered()
@@ -1158,8 +1152,8 @@ void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *cons
         break;
     case Selectable::AREA:
         _selectionDockWidget->SetSelectionTreeWidget();
-        static_cast<Area *>(selection)->populateModel();
-        _selectionDockWidget->SetSelectionModel(static_cast<Area *>(selection));
+        //static_cast<Area *>(selection)->populateModel();
+        //_selectionDockWidget->SetSelectionModel(static_cast<Area *>(selection));
         _selectionDockWidget->ExpandSelectionTree();
         break;
     case Selectable::TILE:
@@ -1526,7 +1520,7 @@ void ESToolkit::on_actionToggle_AutoScroll_triggered()
 
 void ESToolkit::on_actionActionSecret_triggered()
 {
-    if(_assets.getCurLevel()) {
+    if(_assets.getCurrentLevel()) {
         _sheetManager->initialize(_ui->actionEnable_OpenGL->isChecked(), _ui->actionToggle_AutoScroll->isChecked());
         _sheetManager->setFocus();
         _sheetManager->showMaximized();

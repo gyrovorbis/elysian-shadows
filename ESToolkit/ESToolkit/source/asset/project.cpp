@@ -8,6 +8,7 @@
 #include "fileUtilities.h"
 #include "elysian_engine.hpp"
 #include "elysian_level_system.hpp"
+#include <elysian_entity.hpp>
 
 Project::Project(void): _active(false) {}
 
@@ -30,6 +31,14 @@ void Project::connectSlots(TkLevel *const level) {
 	connect(level, SIGNAL(componentRemoved(Level*const,Area*const,Entity*const,Component*const)), this, SLOT(onComponentRemoved(Level*const,Area*const,Entity*const,Component*const)));
     connect(level, SIGNAL(mapChanged(Area*const,const QVector<MapChange>&)), this, SLOT(onMapChanged(Area*const,const QVector<MapChange>&)));
     connect(level, SIGNAL(entityParented(Entity*const,Entity*const)), this, SLOT(onEntityParented(Entity*const,Entity*const)));
+
+    connect(level, &Level::inactiveEntityAdded, [&](Level*const level, Area*const area, Entity*const entity) {
+        Q_EMIT inactiveEntityAdded(this, level, area, entity);
+    });
+
+    connect(level, &Level::inactiveEntityRemoved, [&](Level*const level, Area*const area, Entity*const entity) {
+        Q_EMIT inactiveEntityRemoved(this, level, area, entity);
+    });
 }
 
 void Project::populateModel(void) {

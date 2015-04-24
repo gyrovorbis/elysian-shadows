@@ -3,7 +3,12 @@
 #include "elysian_entity.hpp"
 #include "elysian_debug.hpp"
 #include "assets.h"
+#include <TkLevel.h>
 #include "entitySelectable.h"
+#include <QMenu>
+#include <QAction>
+#include <elysian_renderable_base.hpp>
+#include <project.h>
 
 EntityTreeWidget::EntityTreeWidget(QWidget *parent): QTreeWidget(parent) {
     _hiddenItem = new QTreeWidgetItem();
@@ -12,6 +17,9 @@ EntityTreeWidget::EntityTreeWidget(QWidget *parent): QTreeWidget(parent) {
     _hiddenItem->setText(0, "_Hidden");
     _hiddenItem->setFlags(Qt::ItemIsEnabled);
 
+    setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(this, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(_onCustomContextMenuRequested(QPoint)));
+
 	connect(getAssets(), SIGNAL(areaChanged(Area*const)), this, SLOT(OnAreaChange(Area*const)));
     connect(this,   SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(OnEntitySelected(QTreeWidgetItem *, QTreeWidgetItem*)));
 	connect(getAssets(), SIGNAL(selectionChanged(const Selectable::TYPE, Selectable *const)), this, SLOT(OnSelectionChanged(const Selectable::TYPE, Selectable *const)));
@@ -19,6 +27,23 @@ EntityTreeWidget::EntityTreeWidget(QWidget *parent): QTreeWidget(parent) {
 	connect(getAssets(), SIGNAL(entityRemoved(Project*const,Level*const,Area*const,Entity*const)), this, SLOT(OnRemoveEntity(Project*const,Level*const,Area*const,Entity*const)));
     connect(getAssets(), SIGNAL(entityParented(Entity*const,Entity*const)), this, SLOT(onEntityParented(Entity*const,Entity*const)));
     //onnect(getAssets(), SIGNAL(layerChanged(Assets::LAYER_TYPE)), this, SLOT(onLayerChange(Assets::LAYER_TYPE)));
+
+    connect(getAssets(), &Assets::inactiveEntityAdded, [&](Project*const, Level*const, Area*const area, Entity*const entity) {
+        if(area == getCurrentArea()) {
+            QBrush brush = QBrush(Qt::gray);
+            entity->setForeground(0, brush);
+            for(int i = 0; i < entity->childCount(); ++i) {
+                static_cast<Entity*>(entity->child(0))->setForeground(0, brush);
+            }
+            _addEntity(entity);
+        }
+    });
+
+    connect(getAssets(), &Assets::inactiveEntityRemoved, [&](Project*const, Level*const, Area*const area, Entity*const entity) {
+        if(area == getCurrentArea()) {
+            _removeEntity(entity);
+        }
+    });
 }
 
 void EntityTreeWidget::OnAreaChange(Area *const area) {
@@ -49,7 +74,11 @@ void EntityTreeWidget::onLayerChange(const Assets::LAYER_TYPE layer) {
 }*/
 
 void EntityTreeWidget::OnAddEntity(Project *const /*project*/, Level *const /*level*/, Area *const area, Entity *const entity) {
-   if(area == getCurrentArea()) _addEntity(entity);
+   if(area == getCurrentArea()) {
+       QBrush brush = QBrush(Qt::black);
+       entity->setForeground(0, brush);
+       _addEntity(entity);
+   }
 }
 
 void EntityTreeWidget::OnRemoveEntity(Project *const /*project*/, Level *const /*level*/, Area *const area, Entity *const entity) {
@@ -109,7 +138,7 @@ void EntityTreeWidget::_addEntity(Entity *entity) {
 
     if(first == '_') {
         QBrush brush = QBrush(Qt::gray);
-        entity->setForeground(0, brush);
+        //entity->setForeground(0, brush);
         _hiddenItem->addChild(entity);
     } else {
         addTopLevelItem((QTreeWidgetItem *)entity);
@@ -128,3 +157,20 @@ void EntityTreeWidget::setShowHidden(const bool val) {
         }
     }
 }
+
+
+
+
+void EntityTreeWidget::_onCustomContextMenuRequested(QPoint location) {
+    QModelIndex modelIndex = indexAt(location);
+    Entity *entity = static_cast<Entity*>(itemFromIndex(modelIndex));
+
+    if(!entity || entity == _hiddenItem) return;
+
+    auto* menu = entity->createContextMenu();
+    menu->exec(mapToGlobal(location));
+
+    delete menu;
+
+}
+

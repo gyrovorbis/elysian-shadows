@@ -2,17 +2,18 @@
 #define ESTK_LUA_TABLE_STANDARD_ITEM_MODEL_HPP
 
 #include <QString>
-#include "elysian_debug.hpp"
+#include <QVariant>
 
-#include "elysian_lua_table_proxy.hpp"
-#include "propertyStackModel.h"
-#include "propertyStandardItem.h"
-#include "elysian_debug.hpp"
+#include <assetManager.h>
+#include <elysian_lua_manager.hpp>
+#include <propertyStackModel.h>
+#include <propertyStandardItem.h>
 
 class LuaTableStackModel;
 
 
 namespace OOLUA {
+
     namespace STRING {
         //Template specialization allowing OOLUA to push a QString to Lua as a character array
         template<>
@@ -23,269 +24,126 @@ namespace OOLUA {
         //Template specialization allowing OOLUA to pull a character array from Lua as a QString
         template<>
         inline bool pull<QString>(lua_State* state, QString& string) {
-            string = lua_tostring(state, -1);
-            lua_pop(state, 1);
+            string = luaL_tolstring(state, -1, nullptr); //stringify ANY type
+            lua_pop(state, 2);
             return (string.isNull())? true : false;
+        }
+    }
+
+    template<>
+    inline bool push<QVariant>(lua_State* state, QVariant const& variant) {
+
+        switch(variant.type()) {
+        case QMetaType::Bool:
+            return push(state, variant.toBool());
+        case QMetaType::QString:
+            return push(state, variant.toString());
+        default:
+            return push(state, variant.toFloat());
+        }
+    }
+
+    template<>
+    inline bool pull<QVariant>(lua_State* state, QVariant& variant) {
+        QString     stringVal;
+        float       numberVal;
+        bool        boolVal;
+        int         luaType = lua_type(state, -1);
+        bool        success;
+
+        //QVariant is dynamic, so figure out what the fuck we want to pull
+        switch(luaType) {
+        case LUA_TBOOLEAN:
+            success = OOLUA::pull(state, boolVal);
+            variant.setValue(boolVal);
+            break;
+        case LUA_TNUMBER:
+            success = OOLUA::pull(state, numberVal);
+            variant.setValue(numberVal);
+            break;
+        default:
+            success = OOLUA::pull(state, stringVal);
+            variant.setValue(stringVal);
+        }
+
+        return success;
+    }
+
+}
+
+//Overload this bitch for  Lua QVariant-indexed hashtables
+inline uint qHash( const QVariant & variant ) {
+    switch(variant.type()) {
+    case QMetaType::Bool:
+        return qHash(variant.toBool());
+    default:
+        if(variant.canConvert(QMetaType::Float)) {
+            return qHash(variant.toFloat());
+        } else {
+            return qHash(variant.toString());
         }
     }
 }
 
+struct LuaTableTableFieldData;
+
+
 //QStandardItem representing a Lua k,v pair
-template<typename TVal, typename TKey=QString>
 class LuaTableFieldItem:
-    public PropertyStandardItem<TVal, LuaTableFieldItem<TVal, TKey>, false>,
-    public elysian::LuaManager
+    public PropertyStandardItem<QVariant, LuaTableFieldItem, true>,
+    public elysian::LuaManager,
+    public AssetManager
 {
+    friend struct LuaTableTableFieldData;
 protected:
-    const int       _luaRef = LUA_NOREF;
-    const TKey      _key;
+    mutable LuaTableTableFieldData* _tableData      = nullptr;
+    QStandardItem*                  _labelItem      = nullptr;
+    const int                       _luaRef         = LUA_NOREF;
+    const QVariant                  _key;
 
 public:
-                    LuaTableFieldItem(const int ref, const TKey key);
-    virtual         ~LuaTableFieldItem(void) = default;
-    virtual void    insertingModelItem(void) override;
+                            LuaTableFieldItem(const int ref, const QVariant key, QStandardItem*const labelItem);
+    virtual                 ~LuaTableFieldItem(void);
+    virtual void            insertingModelItem(void) override;
 
-    TVal            getValue(void) const;
-    void            setValue(const TVal val);
+    QVariant                getValue(void) const;
+    void                    setValue(const QVariant val);
+
+    void                    setDirty(const bool val=true);
+    LuaTableTableFieldData* getTableData(void) const;
 
 };
 
-//custom qVariant type required
 
-class LuaTableItem: public QObject, public PropertyStandardItem<QString, LuaTableItem>, public elysian::LuaManager {
+//Aggregating "Table" data away, so primitive-type field items don't have all this overhead.
+struct LuaTableTableFieldData: public QObject, public LuaManager {
     Q_OBJECT
-protected:
-    typedef PropertyStandardItem<QString, LuaTableItem> ParentType;
+    friend class LuaTableFieldItem;
+public:
+    QHash<QVariant, LuaTableFieldItem*> _fieldItems;
+    int                                 _luaRef = LUA_NOREF;
 
-    int                                 _luaRef         = LUA_NOREF;
-    int                                 _luaType        = LUA_TNONE;
-    bool                                _proxyTable     = false;
-    mutable bool                        _populated      = false;
-    OOLUA::Lua_func_ref                 _nextMetamethod;
-    QStandardItem*                      _labelItem      = nullptr;
-    QHash<QString, ESTkStandardItem*>   _fieldItems;
+                                        LuaTableTableFieldData(const int tableRef);
+    virtual                             ~LuaTableTableFieldData(void) override;
+
+    void                                insertTableFieldItems(QStandardItem* parentItem);
 
 public Q_SLOTS:
-    void    onFieldChanged(QString field);
-  //  void    _onFieldAdded(QString field);
-public:
-            LuaTableItem(const int ref, QStandardItem* label=nullptr);
-            ~LuaTableItem(void); //delete reference
-
-    virtual void insertingModelItem(void) override;
-
-    QString getValue(void) const;
-   // void    populateFields(void);
-
-    //Receives key type and table reference, then creates FieldItem for pair
-    template<typename TKey>
-    ESTkStandardItem* _createTableFieldItemFromStack(const int tableRef) {
-        TKey key;
-        QString labelName;
-        const int valueType   = lua_type(*_mainState, -1);
-
-        //retrieve key value
-        lua_pushvalue(*_mainState, -2);
-        OOLUA::pull(*_mainState, key);
-
-        //elysian::Debug::printf(elysian::Debug::VERBOSE, "ValueType - ");
-        switch(valueType) {
-        case LUA_TSTRING:
-            return new LuaTableFieldItem<QString, TKey>(tableRef, key);
-        case LUA_TNUMBER:
-            return new LuaTableFieldItem<float, TKey>(tableRef, key);
-        case LUA_TBOOLEAN:
-            return new LuaTableFieldItem<bool, TKey>(tableRef, key);
-        case LUA_TUSERDATA:
-            return new ESTkStandardItem(QString("userdata"));
-        case LUA_TNIL:
-            return new ESTkStandardItem(QString("nil"));
-        default:
-            return new ESTkStandardItem(QString("function"));
-
-        }
-
-        //lua_pop(*_mainState, 1); //pop value from stack
-    }
-
-    //Iterates over table or proxied userdata, populating model based on k,v pairs
-    void _populateFieldItems(PropertyStackModel*const stackModel) {
-        stackModel->pushItem(const_cast<QStandardItem*>(_labelItem));
-
-        using namespace elysian;
-        using elysian::Debug;
-        bool iterable = false;
-        bool metatable = false;
-
-      //  elysian::Debug::printf(elysian::Debug::VERBOSE, "_addTableFields(%d)", tableRef);
-        //elysian::Debug::push();
-
-        //Helper lambda function for uniform iteration over tables and userdata
-
-        lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
-        _luaType = lua_type(*_mainState, -1);
-
-        //add metatable
-
-        LuaManager::_stackBalanceBegin();
-        if((metatable = getMetatable(-1))) {
-            int metaRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
-            (void)metaRef;
-           /* auto* label = new QStandardItem("__metatable");
-            auto* valueItem = new LuaTableItem(metaRef, label);
-            stackModel->addRow(label, valueItem);*/
-        }
-        LuaManager::_stackBalanceEnd();
-        //LuaManager::_cStackDump();
-
-        //Check if userdata is iterable
-
-        //elysian::Debug::printf(elysian::Debug::VERBOSE, "isUserdata - %d", isUserdata);
-        if(_luaType == LUA_TUSERDATA && metatable) {
-            getMetatable(-1);
-            lua_getfield(*_mainState, -1, "__connectSignals");
-            if(!lua_isnil(*_mainState, -1)) {
-                lua_pushvalue(*_mainState, -3);
-                lua_pushlightuserdata(*_mainState, static_cast<QObject*>(this));
-                _protectedCall(2, 0, nullptr);
-                iterable = true;
-            } else {
-                iterable = false;
-                lua_pop(*_mainState, 1); //pop nil
-            }
-            lua_pop(*_mainState, 1); //pop metatable
-
-        } else if(_luaType == LUA_TTABLE) {
-            iterable = true;
-            auto* ud = TkLuaTableUserdata::inject(*_mainState, _luaRef);
-            connect(ud, SIGNAL(fieldChanged(QString)), this, SLOT(onFieldChanged(QString)));
-
-        //userdata with no metatable
-        } else iterable = false;
-
-        if(!iterable) {
-            stackModel->popItem();
-            lua_pop(*_mainState, 1);
-            return;
-        }
-
-        getGlobal("pairs");
-        lua_pushvalue(*_mainState, -2);
-        _protectedCall(1, 3, nullptr);
-        lua_pushvalue(*_mainState, -3);
-        lua_insert(*_mainState, -4);
-
-        lua_pushvalue(*_mainState, -2);
-        lua_insert(*_mainState, -4);
-
-        //LuaManager::_cStackDump();
-
-        do {
-            // LuaManager::_cStackDump();
-
-            if(!_protectedCall(2, 2, nullptr)) {
-                break;
-            }
-             if(lua_isnil(*_mainState, -2)) break;
-
-            //LuaManager::_cStackDump();
-
-            lua_pushvalue(*_mainState, -4);
-            lua_insert(*_mainState, -5);
-            lua_pushvalue(*_mainState, -3);
-            lua_insert(*_mainState, -5);
-
-            //LuaManager::_cStackDump();
-
-            LuaManager::_stackBalanceBegin();
-
-            const int valueType   = lua_type(*_mainState, -1);
-            const int               keyType     = lua_type(*_mainState, -2);
-            lua_pushvalue(*_mainState, -2);
-            const QString           keyName     = luaL_tolstring(*_mainState, -1, nullptr);
-            lua_pushvalue(*_mainState, -3);
-            const QString           valueName   = luaL_tolstring(*_mainState, -1, nullptr);
-            ESTkStandardItem*       valueItem;
-
-            //LuaManager::_cStackDump();
-
-            lua_pop(*_mainState, 4);
-
-           //elysian::Debug::printf(elysian::Debug::VERBOSE, "<%s, %s>", keyName.toStdString().c_str(), valueName.toStdString().c_str());
-            //elysian::Debug::push();
-
-            //If current value is iterable, recurse over its k,v pairs
-
-            if(valueType == LUA_TTABLE || valueType == LUA_TUSERDATA) {
-
-                LuaManager::_stackBalanceBegin();
-                lua_pushvalue(*_mainState, -1);
-                int ref = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
-                auto* label = new QStandardItem(keyName);
-                valueItem = new LuaTableItem(ref, label);
-
-                stackModel->addRow(label, valueItem);
-                LuaManager::_stackBalanceEnd();
-            } else {
-                LuaManager::_stackBalanceBegin();
-                //LuaManager::_cStackDump();
-                switch(keyType) {
-                case LUA_TSTRING:
-                    valueItem = _createTableFieldItemFromStack<QString>(_luaRef);
-                    break;
-                case LUA_TNUMBER:
-                    valueItem = _createTableFieldItemFromStack<float>(_luaRef);
-                    break;
-                case LUA_TBOOLEAN:
-                    valueItem = _createTableFieldItemFromStack<bool>(_luaRef);
-                    break;
-                case LUA_TTABLE:
-                    valueItem = new ESTkStandardItem(QString("table"));
-                    break;
-                case LUA_TUSERDATA:
-                    valueItem = new ESTkStandardItem(QString("userdata"));
-                    break;
-                default:
-                    valueItem = new ESTkStandardItem(QString("function"));
-                    break;
-                }
-                //LuaManager::_cStackDump();
-                stackModel->addProperty(keyName, valueItem);
-                //LuaManager::_cStackDump();
-                LuaManager::_stackBalanceEnd();
-            }
-
-            _fieldItems[keyName] = valueItem;
-
-            LuaManager::_stackBalanceEnd();
-            lua_pop(*_mainState, 1);
-            //LuaManager::_cStackDump();
-            //Pop value, leave key
-
-            //elysian::Debug::pop();
-        } while(1);
-
-        //elysian::Debug::pop();
-
-        stackModel->popItem();
-
-        lua_pop(*_mainState, 1);
-    }
+    void                                onFieldChanged(const QVariant key);
+    //void                                onFieldAdded(const QVariant key);
 
 };
 
-//QStandardItemModel representing a Lua table or proxied userdata
-//Also needs to be a LuaTableItem!
-class LuaTableStackModel: public LuaTableItem, public PropertyStackModel {
+
+class LuaTableStackModel: public PropertyStackModel, public LuaManager {
     friend class LuaTableItem;
+
+    LuaTableTableFieldData*     _tableData      = nullptr;
+    QStandardItem*              _parentItem     = nullptr;
+    int                         _luaRef         = LUA_NOREF;
+    bool                        _populated      = false;
+
 public:
-   // int                             _luaRef = LUA_NOREF;
-
-protected:
-
-public:
-
-                    //LuaTableStackModel(void) = default;
                     LuaTableStackModel(const int ref);
 
     void            setLuaRef(const int ref);
@@ -294,72 +152,74 @@ public:
 
 };
 
-inline void LuaTableStackModel::setLuaRef(const int ref) { _luaRef = ref; }
 
-inline LuaTableStackModel::LuaTableStackModel(const int ref): LuaTableItem(ref), PropertyStackModel(nullptr) {}
 
-inline void LuaTableStackModel::populateModel(void) {
-    setHorizontalHeaderItem(0, new QStandardItem("Name"));
-    setHorizontalHeaderItem(1, new QStandardItem("Value"));
-    setHorizontalHeaderItem(2, new QStandardItem("Type"));
-    if(!_labelItem) {
-        QList<QStandardItem*> items;
-        _labelItem = PropertyStackModel::createReadOnlyItem("Lua Table");//ESTkStandardItem(QString("Lua Table"));
-        items.push_back(_labelItem);
-        items.push_back(PropertyStackModel::createReadOnlyItem());
-        items.push_back(PropertyStackModel::createReadOnlyItem());
-        QStandardItemModel::appendRow(items);
-    }
-    _populateFieldItems(this);
-    popLabel();
-}
 
-template<typename TVal, typename TKey>
-inline LuaTableFieldItem<TVal, TKey>::LuaTableFieldItem(const int ref, const TKey key):
-    _luaRef(ref),
-    _key(key)
-{}
 
-template<typename TVal, typename TKey>
-inline void LuaTableFieldItem<TVal, TKey>::insertingModelItem(void) {
-    PropertyStandardItem<TVal, LuaTableFieldItem<TVal, TKey>>::
-        _latentInit(this, &LuaTableFieldItem<TVal, TKey>::getValue, &LuaTableFieldItem<TVal, TKey>::setValue,
-                    UndoItem::LUA_TABLE_FIELD_ITEM, nullptr);
-}
+
+//==== INLINEZ ======
 
 //Pull value from Lua table/userdata to update model
-template<typename TVal, typename TKey>
-inline TVal LuaTableFieldItem<TVal, TKey>::getValue(void) const {
-    //qDebug() << "GETVAL -" << _key;
-    LuaManager::_stackBalanceBegin();
-    TVal val;
+inline QVariant LuaTableFieldItem::getValue(void) const {
+    LuaManager::stackBalanceBegin();
+
+    QVariant    val;
+    int         valType;
+    int         tableRef;
+
+    //retrieve field
     lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
     OOLUA::push(*_mainState, _key);
-    //LuaManager::_cStackDump();
     lua_gettable(*_mainState, -2);
-   // LuaManager::_cStackDump();
-    OOLUA::pull(*_mainState, val);
+
+    //check type
+    valType = lua_type(*_mainState, -1);
+
+    //Let QVariant handle all primitive types
+    if(valType != LUA_TTABLE && valType != LUA_TUSERDATA) {
+        OOLUA::pull(*_mainState, val);
+    //Table/Userdata fields are out-of-date
+    } else if(!_tableData) {
+        //val.setValue(QString(lua_typename(*_mainState, valType)));
+        tableRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
+        _tableData = new LuaTableTableFieldData(tableRef);
+        _tableData->insertTableFieldItems(_labelItem);
+    } //else Table/userdata fields should be up-to-date
+    else {
+         //val.setValue(QString(lua_typename(*_mainState, valType)));
+         lua_pop(*_mainState, 1); //don't actually give a fuck about the table
+    }
+
     lua_pop(*_mainState, 1);
-    LuaManager::_stackBalanceEnd();
+
+    LuaManager::stackBalanceEnd();
     return val;
 }
 
+
 //Push value from model to update Lua table/userdata
-template<typename TVal, typename TKey>
-inline void LuaTableFieldItem<TVal, TKey>::setValue(const TVal val) {
-    LuaManager::_stackBalanceBegin();
+inline void LuaTableFieldItem::setValue(const QVariant val) {
+    LuaManager::stackBalanceBegin();
     lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
     OOLUA::push(*_mainState, _key);
     OOLUA::push(*_mainState, val);
     lua_settable(*_mainState, -3);
     lua_pop(*_mainState, 1);
-    LuaManager::_stackBalanceEnd();
+    LuaManager::stackBalanceEnd();
 }
 
+inline LuaTableTableFieldData::LuaTableTableFieldData(const int luaRef): _luaRef(luaRef) {}
 
+
+inline void LuaTableStackModel::setLuaRef(const int ref) {
+    lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, ref);
+    _luaRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX); //get a fresh reference
+}
+
+inline LuaTableStackModel::LuaTableStackModel(const int ref): PropertyStackModel(nullptr) { setLuaRef(ref); }
 
 inline void LuaTableStackModel::setLabelItemText(const QString string) {
-    //_labelItem->setData(string, Qt::DisplayRole);
+    _parentItem->setData(string, Qt::DisplayRole);
 }
 
 #endif // ESTK_LUA_TABLE_MODEL_HPP

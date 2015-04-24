@@ -4,9 +4,10 @@
 #include <QStyledItemDelegate>
 #include <QMap>
 #include <functional>
-#include "tileSelection.h"
-#include "elysian_tile.hpp"
-#include "propertyStandardItem.h"
+#include <tileSelection.h>
+#include <elysian_tile.hpp>
+#include <propertyStandardItem.h>
+#include <propertyStackModel.h>
 
 class TileSelectable;
 class TileSelectableSelectionViewDelegate;

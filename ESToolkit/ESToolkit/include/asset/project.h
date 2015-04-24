@@ -4,10 +4,10 @@
 #include <QString>
 #include <QVector>
 
-#include "treenode.h"
-#include "propertyStackModel.h"
-#include "elysian_system.hpp"
-#include "assetManager.h"
+#include <treenode.h>
+#include <propertyStackModel.h>
+#include <assetManager.h>
+#include <elysian_system.hpp>
 
 class TkLevel;
 class TkArea;
@@ -15,10 +15,11 @@ typedef TkArea Area;
 class Assets;
 class TkEntity;
 typedef TkEntity Entity;
-class Component;
+class TkComponent;
+typedef TkComponent Component;
 struct MapChange;
 
-class Project: public PropertyStackModel, public TreeNode, public elysian::System, public AssetManager {
+class Project: public PropertyStackModel, public TreeNode, public AssetManager, public elysian::System {
     Q_OBJECT
     friend class Assets;
     friend class TkLevel;
@@ -87,6 +88,8 @@ Q_SIGNALS:
 	void levelRenamed(const QString oldName, const QString newName);
 	void entityAdded(Project *const project, Level *const level, Area *const area, Entity *const entity);
 	void entityRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity);
+    void inactiveEntityAdded(Project*const project, Level*const level, Area*const area, Entity*const entity);
+    void inactiveEntityRemoved(Project*const project, Level*const level, Area*const area, Entity*const entity);
 	void componentAttached(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
 	void componentRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
     void mapChanged(Area * const area, const QVector<MapChange>& changes);

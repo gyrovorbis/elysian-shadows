@@ -12,7 +12,8 @@ typedef TkLevel Level;
 class Project;
 class TkArea;
 typedef TkArea Area;
-class Component;
+class TkComponent;
+typedef TkComponent Component;
 class TkEntity;
 typedef TkEntity Entity;
 struct MapChange;
@@ -27,19 +28,16 @@ class Assets: public QObject, public elysian::LevelManager {
 public:
 	enum LAYER_TYPE { LAYER_TILE1, LAYER_TILE2, LAYER_TILE3, LAYER_LIGHT, LAYER_COLLISION, LAYER_ENTITY, LAYER_MAX };
 
-    Assets();
-    ~Assets();
+                Assets(void);
+    virtual     ~Assets(void);
 
     Selectable* getCurrentSelection(void) const { return _currentSelection; }
-    Area*       getCurrentArea(void) const { return _currentArea; }
-    Level*      getCurrentLevel(void) const { return _currentLevel; }
     Project*    getCurrentProject(void) const { return m_project; }
     LAYER_TYPE  getCurrentLayer(void) const { return _currentLayer; }
 
     Selectable::TYPE getCurrentSelectionType(void) const { return _currentSelectionType; }
 
     void setCurrentSelection(Selectable *const selection);
-
     bool setCurrentArea(const QString name);
     void setCurrentArea(Area *const area);
     bool setCurrentLevel(const QString name);
@@ -85,6 +83,8 @@ Q_SIGNALS:
 	void levelRenamed(const QString oldName, const QString newName);
 	void projectAdded(Project *const project);
 	void entityAdded(Project *const project, Level *const level, Area *const area, Entity *const entity);
+    void inactiveEntityAdded(Project*const project, Level*const level, Area*const area, Entity*const entity);
+    void inactiveEntityRemoved(Project*const project, Level*const level, Area*const area, Entity*const entity);
 
 	void areaRemoved(Project *const project, Level *const level, Area *const area);
 	void levelRemoved(Project *const project, Level *const level);
@@ -116,8 +116,6 @@ private:
     static elysian::Engine* _engine;
 
     //Current state
-    static Area *_currentArea;
-    static Level *_currentLevel;
     static Selectable *_currentSelection;
 	static Assets::LAYER_TYPE _currentLayer;
 	static bool _layerVisible[Assets::LAYER_MAX];

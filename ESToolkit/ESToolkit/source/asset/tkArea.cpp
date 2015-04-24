@@ -13,6 +13,7 @@
 #include "fileUtilities.h"
 #include <QOpenGLContext>
 #include <engineGLSceneWidget.h>
+#include <selectionScene.h>
 
 //====STATIC====
 SelectionScene*                 Area::_editorScene              = nullptr;
@@ -53,7 +54,7 @@ TkArea::TkArea(Level *const lev) {
     connect(&_undoStack, SIGNAL(cleanChanged(bool)), this, SLOT(onUndoCleanStateChanged(bool)));
 }
 
-QAbstractItemModel* TkArea::getModel(void) const { return const_cast<TkArea*>(this); }
+QAbstractItemModel* TkArea::getModel(void) const { /*return const_cast<TkArea*>(this);*/ return nullptr; }
 
 TkArea::~TkArea(void) {
     deactivate();
@@ -64,6 +65,7 @@ void Area::resizeEditorScene(void) {
     _depthBuffGraphicsItem->prepareResize();
 }
 
+/*
 void Area::populateModel(void) {
     clearStack();
 
@@ -82,16 +84,16 @@ void Area::populateModel(void) {
 
     popLabel();
 
-}
+}*/
 
 void Area::setNodeName(const QString str) {
     QString newLocation;
     bool _renamed = false;
-    QString oldName = _name;
+    QString oldName = getNodeName();
     QString name = str;
     name.replace(QRegExp("[\\\\/ ]"), QString("_"));
 
-    if(_name == name) return;
+    if(getNodeName() == name) return;
 
     QStringList splitList = _location.split("/");
     for(int i = 0; i < splitList.size()-1; ++i) {
@@ -100,7 +102,7 @@ void Area::setNodeName(const QString str) {
     newLocation.append(name);
 
     //Already has a name, so we have to rename it
-    if(!_name.isEmpty())  {
+    if(!getNodeName().isEmpty())  {
 
         if(level->getArea(name)) {
             QMessageBox::critical(nullptr, tr("Error!"), tr("An area with that name already exists in the current level!\n"));
@@ -111,7 +113,7 @@ void Area::setNodeName(const QString str) {
         areaDir.append("/area");
 
         QDir dir(areaDir);
-        if(!dir.rename(_name, name)) {
+        if(!dir.rename(getNodeName(), name)) {
             QMessageBox::critical(nullptr, tr("Error!"), tr("Unable to rename the directory!\n"));
             return;
         }
@@ -129,9 +131,9 @@ void Area::setNodeName(const QString str) {
 
 bool Area::duplicate(void) {
     unsigned num = 1;
-    QString name(_name);
+    QString name(getNodeName());
 
-    while(level->getArea(_name+QString::number(num))) ++num;
+    while(level->getArea(getNodeName()+QString::number(num))) ++num;
 
     if(!FileUtilities::copyDir(_location, level->getLocation() + "/area/" + name+QString::number(num))) {
         QMessageBox::critical(nullptr, "Error!", "Could not copy area directory!");
@@ -168,18 +170,15 @@ QString Area::getLocation(void) const {
 }
 
 void Area::connectSlots(Entity *const entity) {
-    connect(entity, SIGNAL(componentAttached(Entity*const,Component*const)), this, SLOT(onComponentAttached(Entity*const,Component*const)));
-    connect(entity, SIGNAL(componentRemoved(Entity*const,Component*const)), this, SLOT(onComponentRemoved(Entity*const,Component*const)));
+    //connect(entity, SIGNAL(componentAttached(Entity*const,Component*const)), this, SLOT(onComponentAttached(Entity*const,Component*const)));
+    //connect(entity, SIGNAL(componentRemoved(Entity*const,Component*const)), this, SLOT(onComponentRemoved(Entity*const,Component*const)));
     connect(entity, SIGNAL(entityParented(Entity*const,Entity*const)), this, SLOT(onEntityParented(Entity*const,Entity*const)));
 }
 
 bool TkArea::load(const char*const str) {
-    setLevel(_curLevel);
     level->connectSlots(this);
     QString dir(str);
     bool success = true;
-    Area *tempCurArea = _curArea;
-    _curArea = this;
     Debug::Logf(Debug::VERBOSE, "Area::Load(%s)", dir.toStdString().c_str());
     Debug::push();
 
@@ -205,7 +204,6 @@ bool TkArea::load(const char*const str) {
 #endif
     Debug::pop();
 
-    _curArea = tempCurArea;
     Debug::pop();
     return success;//success;
 }
@@ -298,9 +296,7 @@ bool Area::activate(void) {
     if(!_open) open();
     Q_EMIT activating(this);
     if(!_active) {
-        _curArea = this;
        EngineGLSceneWidget::makeCurrentContext();
-        qDebug() << "ACTIVATE" << QOpenGLContext::currentContext();
         AreaBase::activate();
 
         EngineGLSceneWidget::doneCurrentContext();
@@ -375,12 +371,7 @@ Entity* Area::newEntity(void) {
     entity->setName(name.toStdString().c_str());
     connectSlots(entity);
 
-    if(_active) {
-        entity->activate();
-       // _editorScene->addItem(entity);
-
-    }
-    Q_EMIT entityAdded(this, entity);
+    addInactiveEntity(entity);
     return entity;
 }
 
@@ -472,5 +463,23 @@ void TkArea::addEntity(Entity *entity) {
 void TkArea::removeEntity(Entity *entity) {
     elysian::AreaBase::removeEntity(entity);
  /*   if(!static_cast<QTreeWidgetItem*>(entity)->treeWidget())*/ Q_EMIT entityRemoved(this, entity);
+}
+
+void TkArea::addInactiveEntity(Entity* entity) {
+    inactiveEntities.push_back(entity);
+    Q_EMIT inactiveEntityAdded(this, entity);
+}
+
+void TkArea::removeInactiveEntity(Entity *entity) {
+    for(auto it = inactiveEntities.begin();
+        it != inactiveEntities.end();
+        ++it)
+    {
+        if(*it == entity) {
+            inactiveEntities.erase(it);
+            break;
+        }
+    }
+    Q_EMIT inactiveEntityRemoved(this, entity);
 }
 

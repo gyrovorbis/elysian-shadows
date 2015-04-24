@@ -1,0 +1,161 @@
+#include "elysian_collidable.hpp"
+#include "elysian_instance_transform.hpp"
+#include "elysian_generic.hpp"
+#include "elysian_rigid_body.hpp"
+#include "elysian_collision_system.hpp"
+#include "elysian_asset_typedefs.hpp"
+#include "elysian_entity.hpp"
+#include "elysian_area.hpp"
+
+namespace elysian {
+
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(CollisionFlags)
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(CollidableStaticAttrib)
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(CollidableAttrib)
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(CollidableBase)
+
+CollisionSystem* CollidableBase::_colSys = nullptr;
+
+void CollisionContact::_calculatePenetrationInternals(void) {
+	gyContactCalculatePenetrationInternals(this,
+										   (GYVector2*)&_bodyA->getCenterWorldPos(),
+										   (_bodyB)? (GYVector2*)&_bodyB->getCenterWorldPos() : nullptr);
+}
+
+void CollisionContact::_calculateVelocityInternals(const float deltaTime) {
+	gyContactCalculateVelocityInternals(this,
+										(GYKinetic*)_bodyA->getEntity()->getRigidBody(),
+										(_bodyB)? (GYKinetic*)_bodyB->getEntity()->getRigidBody() : nullptr,
+										deltaTime);
+}
+
+void CollidableBase::update(void) {
+	if(!_active) return;
+    static const GYVector4 localVecs[2] = {
+        { 0.0f, 0.0f, 0.0f, 1.0f }, //position
+        { 1.0f, 1.0f, 1.0f, 1.0f }  //size
+    };
+    GYVector4 worldVecs[2];
+    float oldY;
+	/* This is necessary to ensure that if the attribute geometry was dynamically changed,
+		the runtime data is updated to reflect it. Keep shit synced. */
+	_collider.col.type = _attrib->_type; 
+
+	//Calculate world vertices for collider
+	gyMatPush();
+    if(_worldSpace) {
+        gyMatLoadIdentity();
+    } else {
+        //_entity->pushViewTransform();
+        oldY = _entity->_transform._pos.y;
+        _entity->_transform._pos.y -= _entity->_transform._pos.z;
+    }
+      _entity->_transform.apply();
+
+    gyMatTranslateScale(_attrib->_relPos.x, _attrib->_relPos.y, _attrib->_relPos.z,
+                        _attrib->_relSize.x, _attrib->_relSize.y, _attrib->_relSize.z);
+    gyMatMultVec(localVecs, worldVecs, 2);
+	gyCalcWorldVert(&_collider.col);
+
+    if(!_worldSpace) _entity->_transform._pos.y = oldY;
+     gyMatPop();
+
+    _collider.col.worldPos = *(GYVector3*)&worldVecs[0];
+    gyVec3Sub(&_worldSize, (GYVector3*)&_collider.box.worldVert[2], (GYVector3*)&_collider.box.worldVert[0]);
+    _worldSize.z *= -1.0f;
+
+    //_updateSortSweepAABB();
+
+}
+    
+void CollidableBase::render(void) {
+    if(!_worldSpace) return;
+    const static GYColor4 color = { 0, 0, 255, 128 };
+	const static GYColor4 colColor =  { 255, 0, 0, 128 };
+    
+    gyVidTexBind(nullptr);
+    gyVidNormalMapBind(nullptr);
+    gyVidSpecularMapBind(nullptr);
+	gyVidAlphaLevel(GY_ALPHA_FULL);
+    gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
+
+    gyMatPush();
+        
+    gyVidQuadListBegin((_contactCount == 0)? &color : &colColor);
+    _entity->_transform.apply();
+	gyMatTranslateScale(_attrib->_relPos.x, _attrib->_relPos.y, 0.0f, _attrib->_relSize.x, _attrib->_relSize.y, 1.0f);
+    gyVidRect(0);
+    gyMatPop();
+    gyVidQuadListEnd();
+    
+	/* ==== DEBUG CODE ==== */
+#if 0
+	gyVidQuadListBegin(&colColor);
+
+	gyMatPush(); //Render bottom of entity
+    gyMatTranslateScale(_entity->_transform._pos.x, _entity->_transform._pos.y + 0.5f*_entity->_transform._size.y, /*ZCoordConstants::tileDecor*/ ZCoordConstants::fg1+2.0f, 2.0f, 2.0f, 1.0f);
+	gyVidRect(0);
+	gyMatPop();
+
+	gyMatPush(); //Render center of entity
+    gyMatTranslateScale(_entity->_transform._pos.x, _entity->_transform._pos.y, /*ZCoordConstants::tileDecor*/ ZCoordConstants::fg1+2.0f, 2.0f, 2.0f, 1.0f);
+	gyVidRect(0);
+	gyMatPop();
+
+	gyVidQuadListEnd();
+#endif
+
+}
+
+void CollidableBase::_updateSortSweepAABB(void) {
+#if 0
+    float startX = (getEntity()->getArea()->width)*32.0f;
+    float endX = 0;
+    float startY = (_curArea->height)*32.0f;
+    float endY = 0;
+    auto checkBoundary = [&](GYVector4& vert) {
+        if(vert.x < startX) startX = vert.x;
+        if(vert.x > endX) endX = vert.x;
+        if(vert.y < startY) startY = vert.y;
+        if(vert.y > endY) endY = vert.y;
+    };
+
+    for(unsigned i = 0; i < 4; ++i) checkBoundary(_collider.box.worldVert[i]);
+
+    _sortSweepAABB->min[0] = startX;
+    _sortSweepAABB->max[0] = endX;
+
+#if ELYSIAN_SORT_SWEEP_DIMENSIONS >= 2
+    _sortSweepAABB->min[1] = startY;
+    _sortSweepAABB->max[1] = endY;
+#   if ELYSIAN_SORT_SWEEP_DIMENSIONS >= 3
+    _sortSweepAABB->min[2] = _collider.box.worldVert[3].z;
+    _sortSweepAABB->max[2] = _collider.box.worldVert[0].z;
+#   endif
+#endif
+#endif
+}
+
+bool CollidableBase::checkFullCollision(Collidable* col) {
+    return _colSys->detectCollidableCollidableCollision(static_cast<Collidable*>(this), col);
+}
+
+
+
+bool CollidableBase::checkAABBCollision(Collidable* col) {
+    SortSweepCollidable* b = col->_sortSweepAABB;
+    auto* a = _sortSweepAABB;
+
+    return (((a->min[0] > b->min[0] && a->min[0] < b->max[0]) || (b->min[0] > a->min[0] && b->min[0] < a->max[0])) &&
+            ((a->min[1] > b->min[1] && a->min[1] < b->max[1]) || (b->min[1] > a->min[1] && b->min[1] < a->max[1])));// &&
+           // ((a->min[2] > b->min[2] && a->min[2] < b->max[2]) || (b->min[2] > a->min[2] && b->min[2] < a->max[2])));
+}
+\
+void CollidableBase::setSortSweepAABB(SortSweepCollidable* sweep) {
+    _sortSweepAABB = sweep;
+}
+
+template<>
+unsigned SortSweepCollidable::curIndex = 0;
+
+}
