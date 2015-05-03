@@ -93,6 +93,7 @@ namespace elysian {
 	};
 
 	class ParticleEmitterInternals {
+        friend ParticleEmitter;
 	private:
 		//Particle*				_pool			= nullptr;
 		Pool<Particle>          _pool           = Pool<Particle>(ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_POOL_SIZE);
@@ -124,6 +125,8 @@ namespace elysian {
         public LuaTableProxy<ParticleEmitterBase, ParticleEmitter>
     {
 	public:
+        friend ParticleEmitter;
+
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
         ELYSIAN_LUA_PROXY_FIELDS_END()
 

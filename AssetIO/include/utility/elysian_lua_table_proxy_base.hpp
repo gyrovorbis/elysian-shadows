@@ -61,6 +61,7 @@ namespace elysian {
     class LuaTableProxyBase: public LuaManager {
 	protected:
 
+        static bool     _initializing;
 		static LuaTable _propertyProxyIndexTable;
 		static LuaTable _propertyProxyNewIndexTable;
 		static LuaTable _ooluaIndexTable;               //OOLUA's default index metamethod table
@@ -106,7 +107,7 @@ namespace elysian {
             //We must be accessing an array proxy
             if(!lua_isnil(l, lua_upvalueindex(2))) {
                 if(lua_isnumber(l, -2)) {
-                    _cStackDump();
+                    //_cStackDump();
                     lua_pushvalue(l, lua_upvalueindex(1));
                     lua_getfield(l, -4, "__ud");
                     assert(!lua_isnil(l, -1));
@@ -115,7 +116,7 @@ namespace elysian {
                     lua_pop(l, 1);
                     lua_pushinteger(l, --index);   //Lua property is 1-based, C accessor is 0-based.
                     lua_pushvalue(l, -4);
-                    _cStackDump();
+                    //_cStackDump();
                     _callPropertyProxyMethod(true, 3, 0, -6);
                 } else {    //just insert the bastard otherwise
                     lua_rawset(l, -3);
@@ -669,20 +670,20 @@ namespace elysian {
 
             int startTop = lua_gettop(l)-1; //proxy table absolute index
 
-            _cStackDump();
+            //_cStackDump();
 
             genericIterate(-1, [&](void) {
 
-                _cStackDump();
+               // _cStackDump();
 
                 lua_pushvalue(l, -2);           //push key copy
                 //lua_insert(l, -2);            //move key behind value
                 lua_pushvalue(l, -2);           //push value
 
-                _cStackDump();
+               // _cStackDump();
                 lua_settable(l, startTop);      //set new value in proxy table
 
-                _cStackDump();
+                //_cStackDump();
 
             });
 
@@ -692,6 +693,7 @@ namespace elysian {
         }
 
         void fromTable(OOLUA::Lua_table_ref ref) {
+            _initializing = true;
             lua_State*const state = *LuaManager::_mainState;
 
             OOLUA::push(state, static_cast<T*>(static_cast<P*>(this)));
@@ -701,6 +703,7 @@ namespace elysian {
             lua_pushcfunction(state, &_luaFromTableCFunction);
             lua_insert(state, -3);
             LuaManager::_protectedCall(2, 0, nullptr);
+            _initializing = false;
         }
 
 	};
@@ -720,6 +723,9 @@ namespace elysian {
 
 	template <typename P, typename T>
     LuaTable LuaTableProxyBase<P, T>::_propertyProxyNewIndexTable;
+
+    template <typename P, typename T>
+    bool LuaTableProxyBase<P, T>::_initializing = false;
 
 }
 

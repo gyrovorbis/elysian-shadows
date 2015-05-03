@@ -30,6 +30,11 @@ class TkEntity:
 
 public:
     enum SELECTION_STATE { SELECTION_NONE, SELECTION_SELECTING, SELECTION_SELECTED };
+    enum class TreeItemState {
+        Active,
+        Inactive,
+        Invalid
+    };
 
 protected:
 
@@ -42,9 +47,11 @@ protected:
     elysian::Collidable*         _selectionCollider;
     elysian::Renderable*         _selectionRenderable;
     SELECTION_STATE              _selectionState        = SELECTION_NONE;
+    mutable TreeItemState        _treeItemState         = TreeItemState::Inactive;
     bool                         _saveFlag              = false;
 
     void                         _renderRelative(void);
+
 
 public:
 
@@ -58,6 +65,8 @@ public:
                                 TkEntity(const OOLUA::Lua_table_ref valTable);
     virtual                     ~TkEntity(void) override;
 
+    void                        setTreeWidgetItemState(const TreeItemState state);
+    TreeItemState               getTreeWidgetItemState(void) const;
     void                        setName(const QString name);
     void                        setName(char const*const name);
     void                        setSelectionState(const SELECTION_STATE state);
@@ -80,11 +89,13 @@ public:
     //QTreeWidgetItem
     virtual void                setData(int column, int role, const QVariant &value) override;
 
+    //sstatic Entity*              create(void);
+    static Entity*              create(const OOLUA::Lua_table_ref valTable);
+
 public Q_SLOTS:
     void                        onEntityParented(Entity*const child, Entity*const parent);
 
 Q_SIGNALS:
-
     void                        entityParented(Entity*const child, Entity*const parent);
 
 };
@@ -106,7 +117,7 @@ Q_SIGNALS:
 
 
 
-
+inline auto TkEntity::getTreeWidgetItemState(void) const -> TreeItemState { return _treeItemState; }
 
 inline void TkEntity::setName(char const * const name) {
     setName(QString(name));

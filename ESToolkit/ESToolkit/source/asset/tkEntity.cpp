@@ -13,10 +13,17 @@
 #include <QSpacerItem>
 #include <elysian_generic.hpp>
 #include <QGridLayout>
+#include <tk_menu_stack.h>
 
 elysian::CollidableAttrib* TkEntity::_selColliderAttrib;
 //elysian::Material* TkEntity::_selMaterial;
 bool TkEntity::_staticInit = false;
+
+TkEntity* TkEntity::create(const OOLUA::Lua_table_ref valTable) {
+    TkEntity* entity = new TkEntity;
+    entity->fromTable(valTable);
+    return entity;
+}
 
 TkEntity::TkEntity(void): TkEntity(true) {}
 
@@ -30,6 +37,7 @@ TkEntity::TkEntity(const bool selectable):
     setName(elysian::EntityBase::_name);
 
     if(selectable) {
+
         if(!_staticInit) {
 
             _selColliderAttrib = new elysian::CollidableAttrib;
@@ -53,6 +61,7 @@ TkEntity::TkEntity(const bool selectable):
 
     setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
     setSaveFlag(getSaveFlag());
+    setTreeWidgetItemState(TreeItemState::Inactive);
 
 }
 
@@ -103,6 +112,8 @@ bool TkEntity::activate(void) {
     if(!_active && elysian::EntityBase::activate() && _selectable) {
         _area->collidables.push_back(_selectionCollider);
         _area->renderables.push_back(_renderable);
+        setTreeWidgetItemState(TreeItemState::Active);
+        //Q_EMIT activated();
         return true;
     } else if(_active) {
         return true;
@@ -112,9 +123,12 @@ bool TkEntity::activate(void) {
 }
 
 bool TkEntity::deactivate(void) {
-    if(_active && elysian::EntityBase::deactivate() && _selectable) {
+    bool wasActive = _active;
+    if(elysian::EntityBase::deactivate() && wasActive && _selectable) {
         elysian::containerEraseOnMatch(_selectionCollider, _area->collidables);
         elysian::containerEraseOnMatch(_selectionRenderable, _area->renderables);
+        setTreeWidgetItemState(TreeItemState::Inactive);
+        //Q_EMIT deactivated();
         return true;
     } else if(!_active) {
         return true;
@@ -174,13 +188,15 @@ bool TkEntity::validate(QString& detailedText) const {
         }
     }
 
-    if(!success && !recursive) {
-        msgBox.setIcon(QMessageBox::Critical);
-        msgBox.setDetailedText(detailedText);
-        QSpacerItem* horizontalSpacer = new QSpacerItem(500, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
-        QGridLayout* layout = (QGridLayout*)msgBox.layout();
-        layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
-        msgBox.exec();
+    if(!success) {
+        if(!recursive) {
+            msgBox.setIcon(QMessageBox::Critical);
+            msgBox.setDetailedText(detailedText);
+            QSpacerItem* horizontalSpacer = new QSpacerItem(500, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+            QGridLayout* layout = (QGridLayout*)msgBox.layout();
+            layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
+            msgBox.exec();
+        }
     }
 
     return success;
@@ -188,148 +204,146 @@ bool TkEntity::validate(QString& detailedText) const {
 }
 
 QMenu* TkEntity::createContextMenu(void) {
-    QStack<QMenu*> menuStack;
-
-    auto insertAction = [&](const QString text, const std::function<void(bool)>& callback, const bool enabled=true) {
-        auto* action = new QAction(text, nullptr);
-        //motherfucking C++11 lambda function Qt SLAWTS!!!
-        QObject::connect(action, &QAction::triggered, callback);
-        action->setEnabled(enabled);
-        menuStack.top()->addAction(action);
-        return action;
-    };
-
-    auto insertCheckableAction = [&](const QString text, const std::function<void(bool)>& callback, const bool checked=false, const bool enabled=true) {
-        QAction* action = insertAction(text, callback, enabled);
-        action->setCheckable(true);
-        action->blockSignals(true);
-        action->setChecked(checked);
-        action->blockSignals(false);
-    };
+    MenuStack menuStack("Entity");
 
     auto canAddTo = [&](const elysian::Component&& component) {
         return component.canAddTo(*this);
     };
 
-    menuStack.push(new QMenu("Entity"));
-
-    insertCheckableAction("Active",
+    menuStack.insertCheckableAction("Active",
         [&](bool checked) {
             if(checked) {
                 QString errorMsg;
                 if(validate(errorMsg)) {
-                    getAssets()->getCurrentArea()->removeInactiveEntity(this);
-                    getAssets()->getCurrentArea()->addEntity(this);
-                }
+                    activate();
+                } else setTreeWidgetItemState(TreeItemState::Invalid);
             }
             else {
-                getAssets()->getCurrentArea()->removeEntity(this);
-                getAssets()->getCurrentArea()->addInactiveEntity(this);
+                deactivate();
             }
         },
         isActive()
     );
 
-    insertAction("Delete",
+    menuStack.insertAction("Delete",
          [&](bool) {
             if(isActive()) getAssets()->getCurrentArea()->removeEntity(this);
             delete this;
     });
 
-    menuStack.push(menuStack.top()->addMenu("Components"));
+    menuStack.push("Components");
 
-    insertCheckableAction("Renderable",
+    menuStack.insertCheckableAction("Renderable",
         [&](bool checked) {
             if(checked) addRenderable();
             else removeRenderable();
         },
         getRenderable(),
         canAddTo(elysian::Renderable())
-    );
+    )->setMenu(getRenderable()? getRenderable()->createContextMenu() : nullptr);
 
-    insertCheckableAction("Collidable",
+    menuStack.insertCheckableAction("Collidable",
         [&](bool checked) {
             if(checked) addCollidable();
             else removeCollidable();
         },
         getCollidable(),
         canAddTo(elysian::Collidable())
-    );
+    )->setMenu(getCollidable()? getCollidable()->createContextMenu() : nullptr);
 
-    insertCheckableAction("Animation",
+    menuStack.insertCheckableAction("Animation",
         [&](bool checked) {
             if(checked) addAnimation();
             else removeAnimation();
         },
         getAnimation(),
         canAddTo(elysian::Animation())
-    );
+    )->setMenu(getAnimation()? getAnimation()->createContextMenu() : nullptr);
 
-    insertCheckableAction("Rigid Body",
+    menuStack.insertCheckableAction("Rigid Body",
         [&](bool checked) {
             if(checked) addRigidBody();
             else removeRigidBody();
         },
         getRigidBody(),
         canAddTo(elysian::RigidBody())
-    );
+    )->setMenu(getRigidBody()? getRigidBody()->createContextMenu() : nullptr);
 
-    insertCheckableAction("Warp",
+    menuStack.insertCheckableAction("Warp",
         [&](bool checked) {
             if(checked) addWarp();
             else removeWarp();
         },
         getWarp(),
         canAddTo(elysian::Warp())
-    );
+    )->setMenu(getWarp()? getWarp()->createContextMenu() : nullptr);
 
-    insertCheckableAction("Character",
+    menuStack.insertCheckableAction("Character",
         [&](bool checked) {
             if(checked) addCharacter();
             else removeCharacter();
         },
         getCharacter(),
         canAddTo(elysian::Character())
-    );
+    )->setMenu(getCharacter()? getCharacter()->createContextMenu() : nullptr);
 
-    insertCheckableAction("Light Source",
+    menuStack.insertCheckableAction("Light Source",
         [&](bool checked) {
             if(checked) addLightSource();
             else removeLightSource();
         },
         getLightSource(),
         canAddTo(elysian::LightSource())
-    );
+    )->setMenu(getLightSource()? getLightSource()->createContextMenu() : nullptr);
 
-    insertCheckableAction("Audio Source",
+    menuStack.insertCheckableAction("Audio Source",
         [&](bool checked) {
             if(checked) addAudioSource();
             else removeAudioSource();
         },
         getAudioSource(),
         canAddTo(elysian::AudioSource())
-    );
+    )->setMenu(getAudioSource()? getAudioSource()->createContextMenu() : nullptr);
 
-    insertCheckableAction("Particle Emitter",
+    menuStack.insertCheckableAction("Particle Emitter",
         [&](bool checked=false) {
             if(checked) addParticleEmitter();
             else removeParticleEmitter();
         },
         getParticleEmitter(),
         canAddTo(elysian::ParticleEmitter())
-    );
+    )->setMenu(getParticleEmitter()? getParticleEmitter()->createContextMenu() : nullptr);
 
-    insertCheckableAction("Combat",
+    menuStack.insertCheckableAction("Combat",
         [&](bool checked=false) {
             if(checked) addCombat();
             else removeCombat();
         },
         getCombat(),
         canAddTo(elysian::Combat())
-    );
-
+    )->setMenu(getCombat()? getCombat()->createContextMenu() : nullptr);
 
     return menuStack.first();
+}
 
+void TkEntity::setTreeWidgetItemState(const TreeItemState state) {
+    QBrush brush;
+
+    switch(state) {
+    case TreeItemState::Active:
+        brush = QBrush(Qt::black);
+        break;
+    case TreeItemState::Inactive:
+        brush = QBrush(Qt::gray);
+        break;
+    case TreeItemState::Invalid:
+        brush = QBrush(Qt::red);
+        break;
+    }
+
+    setForeground(0, brush);
+    for(int i = 0; i < childCount(); ++i) {
+        static_cast<Entity*>(child(0))->setForeground(0, brush);
+    }
 
 }

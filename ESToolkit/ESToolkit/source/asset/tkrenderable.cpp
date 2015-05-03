@@ -1,4 +1,6 @@
 #include <tkRenderable.h>
+#include <tk_menu_stack.h>
+#include <QMenu>
 
 bool TkRenderable::validate(QString &str) const {
 
@@ -14,4 +16,19 @@ bool TkRenderable::validate(QString &str) const {
     cAssert(_spriteAttrib, "ERROR: Renderable component has no spriteAttrib.");
 
     return success;
+}
+
+
+QMenu* TkRenderable::createContextMenu(void) {
+    MenuStack menuStack("Renderable");
+
+    menuStack.insertCheckableAction("Sprite Attributes",
+        [&](bool checked) {
+            setSpriteAttrib(checked? new elysian::SpriteAttrib : nullptr);
+        },
+        getSpriteAttrib()
+    );
+
+    return menuStack.first();
+
 }

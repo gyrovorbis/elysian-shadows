@@ -95,7 +95,7 @@ namespace elysian {
     inline int RenderableBase::getTexOrient(void) const { return _texOrient; }
     inline SpriteAttrib* RenderableBase::getSpriteAttrib(void) const { return _spriteAttrib; }
     inline QuadSpriteAttrib* RenderableBase::getQuadSpriteAttrib(void) const { return static_cast<QuadSpriteAttrib*>(_spriteAttrib); }
-    inline void RenderableBase::setSpriteAttrib(SpriteAttrib *const attrib) { _spriteAttrib = attrib; if(attrib && _frame != -1) _frame = attrib->_frame; }
+    inline void RenderableBase::setSpriteAttrib(SpriteAttrib *const attrib) { /*delete _spriteAttrib;*/ _spriteAttrib = attrib; if(attrib && _frame != -1) _frame = attrib->_frame; }
     inline void RenderableBase::setMaterial(Material*const material) { _material = material; }
     inline Material* RenderableBase::getMaterial(void) const { return _material;}
     inline Vector2 RenderableBase::getOffset(void) { return Vector2(&_offset); }
@@ -128,7 +128,7 @@ namespace elysian {
 
      //   gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
 
-        gyVidTexBind(_spriteAttrib->_tex);
+        gyVidTexBind(_spriteAttrib? _spriteAttrib->_tex : nullptr);
         gyVidNormalMapBind(_normalMap);
         gyVidSpecularMapBind(_specularMap);
         gyVidMaterialBind(_material);

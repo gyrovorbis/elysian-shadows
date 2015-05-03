@@ -27,23 +27,6 @@ EntityTreeWidget::EntityTreeWidget(QWidget *parent): QTreeWidget(parent) {
 	connect(getAssets(), SIGNAL(entityRemoved(Project*const,Level*const,Area*const,Entity*const)), this, SLOT(OnRemoveEntity(Project*const,Level*const,Area*const,Entity*const)));
     connect(getAssets(), SIGNAL(entityParented(Entity*const,Entity*const)), this, SLOT(onEntityParented(Entity*const,Entity*const)));
     //onnect(getAssets(), SIGNAL(layerChanged(Assets::LAYER_TYPE)), this, SLOT(onLayerChange(Assets::LAYER_TYPE)));
-
-    connect(getAssets(), &Assets::inactiveEntityAdded, [&](Project*const, Level*const, Area*const area, Entity*const entity) {
-        if(area == getCurrentArea()) {
-            QBrush brush = QBrush(Qt::gray);
-            entity->setForeground(0, brush);
-            for(int i = 0; i < entity->childCount(); ++i) {
-                static_cast<Entity*>(entity->child(0))->setForeground(0, brush);
-            }
-            _addEntity(entity);
-        }
-    });
-
-    connect(getAssets(), &Assets::inactiveEntityRemoved, [&](Project*const, Level*const, Area*const area, Entity*const entity) {
-        if(area == getCurrentArea()) {
-            _removeEntity(entity);
-        }
-    });
 }
 
 void EntityTreeWidget::OnAreaChange(Area *const area) {
@@ -54,9 +37,14 @@ void EntityTreeWidget::OnAreaChange(Area *const area) {
     while(topLevelItemCount()) takeTopLevelItem(0);
     if(!area) return;
     auto& entities = area->getEntities();
+    auto& inactiveEntities = area->getInactiveEntities();
 	for(size_t i = 0; i < entities.size(); ++i) {
 	  //  Debug::Log(Debug::VERBOSE, "Trying to add - %s", area->entity[i]->getName().toStdString().c_str());
         /*if(!entities[i]->getParentEntity())*/ _addEntity(entities[i]);
+    }
+    for(size_t i = 0; i < inactiveEntities.size(); ++i) {
+      //  Debug::Log(Debug::VERBOSE, "Trying to add - %s", area->entity[i]->getName().toStdString().c_str());
+        /*if(!entities[i]->getParentEntity())*/ _addEntity(inactiveEntities[i]);
     }
     if(_showHidden) addTopLevelItem(_hiddenItem);
 }
@@ -75,8 +63,6 @@ void EntityTreeWidget::onLayerChange(const Assets::LAYER_TYPE layer) {
 
 void EntityTreeWidget::OnAddEntity(Project *const /*project*/, Level *const /*level*/, Area *const area, Entity *const entity) {
    if(area == getCurrentArea()) {
-       QBrush brush = QBrush(Qt::black);
-       entity->setForeground(0, brush);
        _addEntity(entity);
    }
 }

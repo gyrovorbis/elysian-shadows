@@ -70,8 +70,9 @@ namespace elysian {
             private GYLightSource,
             public LuaTableProxy<LightSourceBase, LightSource>
     {
-		friend class LightSystem;
-		friend class Engine;
+        friend class    LightSystem;
+        friend class    Engine;
+        friend          LightSource;
 
         CameraState         _camState;
         GYVector3           _relPos         = { 0.0f, 0.0f, 0.0f };
@@ -161,7 +162,7 @@ namespace elysian {
 			&_camState,
             nullptr
 	}) { gyVec3Normalize(&direction);  }
-    inline void LightSourceBase::setAttrib(const LightAttrib* const attrib) { properties = (GYLightProperties*)(attrib); }
+    inline void LightSourceBase::setAttrib(const LightAttrib* const attrib) { if(properties != &LightAttrib::defaultProperties) delete properties; properties = (GYLightProperties*)(attrib); }
     inline void LightSourceBase::setDirection(const GYVector3& dir) { gyVec3Normalize(&direction); direction = dir; }
     inline void LightSourceBase::setSpotCutoffAngle(const float angle) { spotCutoffAngle = (type == GY_LIGHT_SPOT)? angle : 360.0f; }
     inline auto LightSourceBase::getLightType(void) const -> GY_LIGHT_TYPE { return type; }

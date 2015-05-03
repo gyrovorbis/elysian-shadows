@@ -15,7 +15,7 @@ public:
                         TreeNode(void);
 
     QString             getNodeName(void) const;
-    virtual void        setNodeName(const QString name);
+    void                setNodeName(const QString name);
     virtual bool        activate(void) = 0;
     void                setChanged(bool changed);
     virtual ITEM_TYPE   getTreeWidgetItemType(void) = 0;

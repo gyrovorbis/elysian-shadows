@@ -53,8 +53,8 @@ private:
     bool                _emitMapChange  = true;
     bool                _batchMapUpdate = false;
 
-    void                connectSlots(Entity *const entity);
-
+    void                _connectSlots(Entity *const entity);
+    void                _disconnectSlots(Entity*const entity);
 
 private Q_SLOTS:
     void onComponentAttached(Entity *const entity, Component *const comp);
@@ -77,9 +77,8 @@ public:
 
     //elysian::EntityBase overrides
     void                addEntity(Entity* entity);
-    void                removeEntity(Entity* entity);
     void                addInactiveEntity(Entity* entity);
-    void                removeInactiveEntity(Entity* entity);
+    void                removeEntity(Entity* entity);
 
     virtual bool        activate(void);
     virtual bool        deactivate(void);
@@ -120,6 +119,7 @@ public:
     bool                deleteEntity(QString name);
     bool                deleteEntity(Entity *const entity);
     std::vector<Entity*>& getEntities(void);
+    std::vector<Entity*>& getInactiveEntities(void);
 
     static bool         staticConstructor(const SourceView *const view);
     static void         resizeEditorScene(void);
@@ -143,8 +143,8 @@ Q_SIGNALS:
     void activating(Area *const area);
     void entityAdded(Area *const area, Entity *const entity);
     void entityRemoved(Area *const area, Entity *const entity);
-    void inactiveEntityAdded(Area*const area, Entity*const entity);
-    void inactiveEntityRemoved(Area*const area, Entity*const entity);
+    //void inactiveEntityAdded(Area*const area, Entity*const entity);
+    //void inactiveEntityRemoved(Area*const area, Entity*const entity);
 
     void componentAttached(Area *const area, Entity *const entity, Component *const comp);
     void componentRemoved(Area *const area, Entity *const entity, Component *const comp);
@@ -218,6 +218,7 @@ inline unsigned char TkArea::getTileElev(const QPoint loc, const Assets::LAYER_T
 inline unsigned short TkArea::getMapHeight(void) const { return height; }
 inline unsigned short TkArea::getMapWidth(void) const { return width; }
 inline std::vector<Entity*>& TkArea::getEntities(void) { return entities; }
+inline std::vector<Entity*>& TkArea::getInactiveEntities(void) { return inactiveEntities; }
 inline bool TkArea::isOpen(void) const { return _open; }
 inline bool TkArea::isActive(void) const { return _active; }
 inline void TkArea::setEmitMapChange(const bool value) { _emitMapChange = value; }

@@ -89,6 +89,7 @@ namespace elysian {
     {
 		friend class RigidBodySystem;
         friend class CollisionSystem;
+        friend RigidBody;
 	private:
 		float				_tileDamping	= 1.0f;
 		bool				_active			= true;
@@ -179,7 +180,7 @@ namespace elysian {
     inline RigidBodyBase::RigidBodyBase(Entity& entity): Component(entity) {}
     inline float RigidBodyBase::getTileDamping(void) const { return _tileDamping; }
     inline void RigidBodyBase::setTileDamping(const float factor) {_tileDamping = factor; }
-    inline void RigidBodyBase::setAttrib(RigidBodyAttrib*const attrib) { _attrib = attrib; _durability = _attrib->getBaseDurability();}
+    inline void RigidBodyBase::setAttrib(RigidBodyAttrib*const attrib) { /*delete _attrib;*/ _attrib = attrib; _durability = _attrib->getBaseDurability();}
     inline void RigidBodyBase::setActive(const bool val) { _active = val; }
     inline float RigidBodyBase::getDurability(void) const { return _durability; }
     inline void RigidBodyBase::setDurability(const float val) { _durability = val; }

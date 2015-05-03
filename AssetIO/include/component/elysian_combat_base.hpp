@@ -83,6 +83,8 @@ namespace elysian {
         public LuaTableProxy<CombatBase, Combat>
     {
 	public:
+        friend Combat;
+
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
         ELYSIAN_LUA_PROXY_FIELDS_END()
 

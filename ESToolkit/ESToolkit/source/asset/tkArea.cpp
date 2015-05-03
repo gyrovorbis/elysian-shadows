@@ -169,10 +169,17 @@ QString Area::getLocation(void) const {
     return _location;
 }
 
-void Area::connectSlots(Entity *const entity) {
+void Area::_connectSlots(Entity *const entity) {
     //connect(entity, SIGNAL(componentAttached(Entity*const,Component*const)), this, SLOT(onComponentAttached(Entity*const,Component*const)));
     //connect(entity, SIGNAL(componentRemoved(Entity*const,Component*const)), this, SLOT(onComponentRemoved(Entity*const,Component*const)));
     connect(entity, SIGNAL(entityParented(Entity*const,Entity*const)), this, SLOT(onEntityParented(Entity*const,Entity*const)));
+}
+
+void Area::_disconnectSlots(Entity * const entity) {
+    entity->disconnect(SIGNAL(entityParented(Entity*const,Entity*const)));
+    //entity->disconnect(SIGNAL(activated()));
+    //entity->disconnect(SIGNAL(deactivated()));
+
 }
 
 bool TkArea::load(const char*const str) {
@@ -369,7 +376,7 @@ Entity* Area::newEntity(void) {
     }
     name += QString::number(num);
     entity->setName(name.toStdString().c_str());
-    connectSlots(entity);
+    _connectSlots(entity);
 
     addInactiveEntity(entity);
     return entity;
@@ -456,30 +463,18 @@ void TkArea::onEntityParented(Entity * const child, Entity * const parent) {
 
 void TkArea::addEntity(Entity *entity) {
     elysian::AreaBase::addEntity(entity);
-    //Only give a shit about top-level entities
-   /* if(!static_cast<QTreeWidgetItem*>(entity)->treeWidget())*/ Q_EMIT entityAdded(this, entity);
+    _connectSlots(entity);
+     Q_EMIT entityAdded(this, entity);
+}
+
+void TkArea::addInactiveEntity(Entity *entity) {
+    elysian::AreaBase::addInactiveEntity(entity);
+    _connectSlots(entity);
+     Q_EMIT entityAdded(this, entity);
 }
 
 void TkArea::removeEntity(Entity *entity) {
     elysian::AreaBase::removeEntity(entity);
- /*   if(!static_cast<QTreeWidgetItem*>(entity)->treeWidget())*/ Q_EMIT entityRemoved(this, entity);
+    _disconnectSlots(entity);
+    Q_EMIT entityRemoved(this, entity);
 }
-
-void TkArea::addInactiveEntity(Entity* entity) {
-    inactiveEntities.push_back(entity);
-    Q_EMIT inactiveEntityAdded(this, entity);
-}
-
-void TkArea::removeInactiveEntity(Entity *entity) {
-    for(auto it = inactiveEntities.begin();
-        it != inactiveEntities.end();
-        ++it)
-    {
-        if(*it == entity) {
-            inactiveEntities.erase(it);
-            break;
-        }
-    }
-    Q_EMIT inactiveEntityRemoved(this, entity);
-}
-

@@ -14,6 +14,7 @@ public:
                     TkRenderable(void) = default;
 
     virtual bool    validate(QString& string) const override;
+    virtual QMenu*  createContextMenu(void) override;
 
 };
 

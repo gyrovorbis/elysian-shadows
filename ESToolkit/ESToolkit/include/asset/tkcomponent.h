@@ -4,6 +4,7 @@
 #include <elysian_component_base.hpp>
 
 class QString;
+class QMenu;
 
 namespace elysian {
     class EntityBase;
@@ -20,10 +21,13 @@ protected:
                     TkComponent(void) = default;
 
 public:
+                    //GET RID OF THESE DEFAULT!!!!
     virtual bool    validate(QString& /*str*/) const {return false;}//= 0;
     virtual bool    canAddTo(const Entity& /*entity*/) const{return true;}// = 0;
     virtual bool    canRemoveFrom(const Entity& /*entity*/) const{return true;}// = 0;
     virtual TYPE    getType(void) const { return elysian::ComponentBase::MAX_TYPE; }
+    virtual QMenu*  createContextMenu(void) { return nullptr; }
+
 
 };
 

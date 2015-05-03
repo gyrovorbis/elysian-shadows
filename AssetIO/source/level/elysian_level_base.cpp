@@ -171,21 +171,21 @@ namespace elysian {
 	}
 
     bool LevelBase::saveTileset(const char *const filename) {
-#if 0
+
 		FILE* file = fopen(filename, "w");
 
-		dbgprintf(LOG_VERBOSE, "Level::saveTileset(%s)", filename);
+        dbgprintf("Level::saveTileset(%s)", filename);
         dbgpush();
 
 		if(!file) {
-			dbgprintf(LOG_VERBOSE, "FAILURE!");
+            Debug::printf(Debug::CRITICAL, "FAILURE!");
             dbgpop();
 			return false;
 		}
 
 		fprintf(file, "%s\n", string);
 		fprintf(file, "%d\n", tileAmount);
-		dbgprintf(LOG_VERBOSE, "tileAmount - %d", tileAmount);
+        dbgprintf("tileAmount - %d", tileAmount);
 
 		for(unsigned int i = 0; i < tileAmount; ++i) {
 			fprintf(file, "%d\n", tileset[i].colliderType);
@@ -199,7 +199,6 @@ namespace elysian {
 		fclose(file);
         dbgpop();
 		return true;
-        #endif
 	}
 
 

@@ -6,8 +6,11 @@
 class TkParticleEmitter: public elysian::ParticleEmitterBase {
 public:
 
-    TkParticleEmitter(TkEntity& parent);
-    TkParticleEmitter(void) = default;
+                    TkParticleEmitter(TkEntity& parent);
+                    TkParticleEmitter(void) = default;
+
+    virtual bool    validate(QString &string) const override;
+    virtual QMenu*  createContextMenu(void) override;
 
 };
 

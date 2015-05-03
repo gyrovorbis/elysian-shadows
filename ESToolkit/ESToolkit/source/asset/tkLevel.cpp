@@ -261,7 +261,7 @@ void TkLevel::connectSlots(Area *area) {
 	connect(area, SIGNAL(renamed(QString,QString)), this, SLOT(onAreaRenamed(QString,QString)));
     connect(area, SIGNAL(mapChanged(Area*const,const QVector<MapChange>&)), this, SLOT(onMapChanged(Area*const,const QVector<MapChange>&)));
     connect(area, SIGNAL(entityParented(Entity*const,Entity*const)), this, SLOT(onEntityParented(Entity*const,Entity*const)));
-
+/*
     connect(area, &Area::inactiveEntityAdded, [&](Area*const area, Entity*const entity) {
         Q_EMIT inactiveEntityAdded(this, area, entity);
     });
@@ -269,6 +269,7 @@ void TkLevel::connectSlots(Area *area) {
     connect(area, &Area::inactiveEntityRemoved, [&](Area*const area, Entity*const entity) {
         Q_EMIT inactiveEntityRemoved(this, area, entity);
     });
+*/
 }
 
 /*

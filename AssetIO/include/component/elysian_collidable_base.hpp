@@ -281,7 +281,7 @@ namespace elysian {
 
     inline CollidableBase::CollidableBase(Entity &parent): Component(parent){}
     inline unsigned CollidableBase::getContactCount(void) const { return _contactCount; }
-    inline void CollidableBase::setAttrib(CollidableAttrib *attrib) { _attrib = attrib; }
+    inline void CollidableBase::setAttrib(CollidableAttrib *attrib) { /*delete _attrib;*/ _attrib = attrib; }
     inline CollidableAttrib* CollidableBase::getAttrib(void) const { return _attrib; }
     inline const GYVector3& CollidableBase::getCenterWorldPos(void) const { return _collider.col.worldPos; }
     inline void CollidableBase::setResolvePenetration(const bool v) { _resolvePen = v; }

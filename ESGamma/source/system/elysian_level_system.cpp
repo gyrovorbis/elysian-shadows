@@ -98,9 +98,9 @@ bool LevelSystem::switchArea(const char *const dir) {
     //Check if new area has already been loaded
     if((index = getAreaIndex(dir)) >= 0) {
         _curArea = _area[index];
+        _curArea->activate();
         getPartySys()->addPartyToArea();
         _addPersistentEntities();
-        _curArea->activate();
         getBehavSys()->callTriggers(Behavior::ON_ENTER);
         return true;
     }

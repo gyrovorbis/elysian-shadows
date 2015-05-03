@@ -2,7 +2,7 @@
 #define TK_LUA_TABLEPROXY_H
 
 #include "elysian_lua_table_proxy_base.hpp"
-#include  <QObject>
+#include <QObject>
 #include <QVariant>
 
 #define TK_LUA_TABLE_USERDATA_FIELD_KEY         "__tkUd"
@@ -144,7 +144,7 @@ inline void TkLuaTableProxy<P, T>::_callPropertyProxyMethod(const bool write, co
     ParentType::_callPropertyProxyMethod(write, args, retVals, keyIndex);
 
     if(write) {
-        static_cast<TkLuaTableProxyQObject*>(obj)->emitFieldChanged(key);
+        if(!elysian::LuaTableProxyBase<P, T>::_initializing) static_cast<TkLuaTableProxyQObject*>(obj)->emitFieldChanged(key);
     }
 }
 

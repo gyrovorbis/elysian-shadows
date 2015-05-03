@@ -168,6 +168,7 @@ namespace elysian {
 #endif
         //generic entity management
         void		addEntity(Entity *entity);
+        void        addInactiveEntity(Entity* entity);
         void		removeEntity(Entity *entity);
         Entity*		findEntity(const char* name);
 

@@ -7,7 +7,7 @@ namespace elysian {
     typedef LightSourceBase LightSource;
 }
 #else
-#   include <tklightsource.h>
+#   include <tkLightSource.h>
 namespace elysian {
     typedef TkLightSource LightSource;
 }

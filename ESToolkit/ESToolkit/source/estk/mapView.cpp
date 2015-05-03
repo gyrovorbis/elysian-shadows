@@ -135,7 +135,7 @@ void MapView::_entitySelectionUpdate(void) {
 		entity = _selectionColliders[k];
         entity->getTransform().setPos(midPt.x(), midPt.y(), 0.0f);
         entity->getTransform().setSize(rect.width(), rect.height(), rect.height()+600.0f);
-		getCurrentArea()->addEntity(_selectionColliders[k]);
+        getCurrentArea()->addEntity(_selectionColliders[k]);
 	}
 
 }

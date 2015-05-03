@@ -18,9 +18,15 @@ private:
     QStack<QStandardItem*>      _curParentStack;
     QStandardItem*              _curParent;
 
+    QVector<QPair<QColor, QColor>>            m_colors;
+    QPair<QColor, QColor>                       m_dynamicColor;
+    QPair<QColor, QColor>                   m_layoutColor;
+
 
 	void _checkPropertyStandardItemAcquire(QStandardItem *const item);
 	void _releasePropertyStandardItems(void);
+    void    _updateBgColors(void);
+    QColor _rowColor(QStandardItem* item) const;
 public:
 
     PropertyStackModel(QObject *parent=nullptr);

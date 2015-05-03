@@ -114,8 +114,6 @@ SOURCES += source/asset/project.cpp \
     source/asset/tkLuaTableProxy.cpp \
     source/estk/tkLuaWrappers.cpp \
     source/estk/tkLuaManager.cpp \
-    source/asset/tkrenderable.cpp \
-    source/asset/tkcollidable.cpp \
     ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../AssetIO/source/component/elysian_audio_source_base.cpp \
     ../../AssetIO/source/component/elysian_behavior_base.cpp \
@@ -177,7 +175,14 @@ SOURCES += source/asset/project.cpp \
     ../../ESGamma/source/utility/elysian_event_monitor.cpp \
     ../../ESGamma/source/utility/elysian_force_generator.cpp \
     ../../ESGamma/source/utility/elysian_game_input.cpp \
-    ../../ESGamma/source/utility/elysian_sort_sweep.cpp
+    ../../ESGamma/source/utility/elysian_sort_sweep.cpp \
+    source/core/tk_menu_stack.cpp \
+    source/asset/tkRenderable.cpp \
+    source/asset/tkCollidable.cpp \
+    source/asset/tkRigidBody.cpp \
+    source/asset/tkLightSource.cpp \
+    source/asset/tkCombat.cpp \
+    source/asset/tkParticleEmitter.cpp
 
 HEADERS += include/asset/project.h \
     include/asset/assets.h \
@@ -336,17 +341,13 @@ HEADERS += include/asset/project.h \
     ../../AssetIO/include/crtp/elysian_behavior.hpp \
     include/asset/tkBehavior.h \
     ../../AssetIO/include/crtp/elysian_particle_emitter.hpp \
-    include/asset/tkparticleemitter.h \
     ../../AssetIO/include/crtp/elysian_character.hpp \
     include/asset/tkcharacter.h \
     ../../AssetIO/include/crtp/elysian_rigid_body.hpp \
-    include/asset/tkrigidbody.h \
     ../../AssetIO/include/crtp/elysian_audio_source.hpp \
     include/asset/tkaudiosource.h \
     ../../AssetIO/include/crtp/elysian_combat.hpp \
-    include/asset/tkcombat.h \
     ../../AssetIO/include/crtp/elysian_light_source.hpp \
-    include/asset/tklightsource.h \
     ../../AssetIO/include/crtp/elysian_examinable.hpp \
     include/asset/tkexaminable.h \
     ../../AssetIO/include/level/elysian_skeleton_base.hpp \
@@ -356,7 +357,12 @@ HEADERS += include/asset/project.h \
     ../../AssetIO/include/crtp/elysian_warp.hpp \
     include/asset/tkwarp.h \
     ../../ESGamma/include/gui/elysian_sprite.hpp \
-    ../../ESGamma/include/gui/elysian_quad_sprite.hpp
+    ../../ESGamma/include/gui/elysian_quad_sprite.hpp \
+    include/core/tk_menu_stack.h \
+    include/asset/tkRigidBody.h \
+    include/asset/tkLightSource.h \
+    include/asset/tkCombat.h \
+    include/asset/tkParticleEmitter.h
 
 FORMS += form/estk/sheetdockwidget.ui \
     form/estk/selectiondockwidget.ui \
@@ -527,3 +533,5 @@ linux {
                 -lpthread \
                 #-llua52
 }
+
+DISTFILES +=

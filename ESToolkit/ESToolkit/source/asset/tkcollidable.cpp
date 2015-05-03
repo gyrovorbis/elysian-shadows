@@ -1,4 +1,6 @@
 #include <tkCollidable.h>
+#include <tk_menu_stack.h>
+#include <QMenu>
 
 
 bool TkCollidable::validate(QString &str) const {
@@ -12,7 +14,22 @@ bool TkCollidable::validate(QString &str) const {
     };
 
     cAssert(_attrib, "ERROR: Collidable component has no attrib field.");
+    cAssert(_collider.col.type == GY_COLLIDER_AABB || _collider.col.type == GY_COLLIDER_OBB,
+            "ERROR: Collidable component has invalid collider type!");
 
     return success;
 
+}
+
+QMenu* TkCollidable::createContextMenu(void) {
+    MenuStack menuStack("Collidable");
+
+    menuStack.insertCheckableAction("Attributes",
+        [&](bool checked) {
+            setAttrib(checked? new elysian::CollidableAttrib : nullptr);
+        },
+        getAttrib()
+    );
+
+    return menuStack.first();
 }

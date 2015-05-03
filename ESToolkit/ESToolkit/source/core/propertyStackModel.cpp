@@ -10,6 +10,27 @@ QStandardItem* PropertyStackModel::createReadOnlyItem(QString name) {
 PropertyStackModel::PropertyStackModel(QObject *parent): QStandardItemModel(parent) {
 	_curParent = invisibleRootItem();
   //  insertHeaders();
+
+    QVector<QColor> colors;
+     colors.reserve(6);
+     colors.push_back(QColor(255, 230, 191));
+     colors.push_back(QColor(255, 255, 191));
+     colors.push_back(QColor(191, 255, 191));
+     colors.push_back(QColor(199, 255, 255));
+     colors.push_back(QColor(234, 191, 255));
+     colors.push_back(QColor(255, 191, 239));
+     m_colors.reserve(colors.count());
+     const int darknessFactor = 250;
+     for (int i = 0; i < colors.count(); i++) {
+         QColor c = colors.at(i);
+         m_colors.push_back(qMakePair(c, c.darker(darknessFactor)));
+     }
+     QColor dynamicColor(191, 207, 255);
+     QColor layoutColor(255, 191, 191);
+     m_dynamicColor = qMakePair(dynamicColor, dynamicColor.darker(darknessFactor));
+     m_layoutColor = qMakePair(layoutColor, layoutColor.darker(darknessFactor));
+
+     //QObject::connect(this, &QAbstractItemModel::rowsInserted, [&](const QModelIndex & parent, int first, int last) { _updateBgColors();});
 }
 
 PropertyStackModel::~PropertyStackModel(void) {
@@ -95,6 +116,7 @@ void PropertyStackModel::addRow(QStandardItem *label, QStandardItem *item, QStan
 
         _curParent->appendRow(rowItems);
         _checkPropertyStandardItemAcquire(item);
+        _updateBgColors();
 }
 
 
@@ -123,4 +145,72 @@ void PropertyStackModel::_releasePropertyStandardItems(void) {
 		}
 	}
 	_propertyList.clear();
+}
+
+
+
+
+void PropertyStackModel::_updateBgColors(void)
+{
+
+    std::function<void(QStandardItem*)> updateItem = [&](QStandardItem* it) {
+        if(!it) return;
+        if(it != invisibleRootItem()) it->setBackground(QBrush(_rowColor(it)));
+        for(unsigned y = 0; y < it->rowCount(); ++y) {
+            for(unsigned x = 0; x < it->columnCount(); ++x) {
+                updateItem(it->child(y, x));
+            }
+        }
+
+    };
+
+    updateItem(invisibleRootItem());
+    /*
+
+    if (m_sorting) {
+        QMapIterator<QString, QtVariantProperty *> itProperty(m_nameToProperty);
+        while (itProperty.hasNext()) {
+            QtVariantProperty *property = itProperty.next().value();
+            m_currentBrowser->addProperty(property);
+        }
+    } else {
+        QListIterator<QtProperty *> itGroup(m_groups);
+        while (itGroup.hasNext()) {
+            QtProperty *group = itGroup.next();
+            QtBrowserItem *item = m_currentBrowser->addProperty(group);
+            if (m_currentBrowser == m_treeBrowser)
+                m_treeBrowser->setBackgroundColor(item, propertyColor(group));
+            group->setModified(m_currentBrowser == m_treeBrowser);
+        }
+    }*/
+}
+
+
+QColor PropertyStackModel::_rowColor(QStandardItem *item) const {
+    /*   QtProperty *groupProperty = property;
+
+       QMap<QtProperty *, QString>::ConstIterator itProp = m_propertyToGroup.constFind(property);
+       if (itProp != m_propertyToGroup.constEnd())
+           groupProperty = m_nameToGroup.value(itProp.value());*/
+
+      // const int groupIdx;// = m_groups.indexOf(groupProperty);
+if(!item) return QColor();
+    auto*it = item;
+       for(; it->parent() && it->parent() != invisibleRootItem(); it = it->parent());
+
+       const int groupIdx = it->row();
+
+
+       QPair<QColor, QColor> pair;
+   //    if (groupIdx != -1) {
+     //      if (groupProperty == m_dynamicGroup)
+       //        pair = m_dynamicColor;
+        //   else if (isLayoutGroup(groupProperty))
+          //     pair = m_layoutColor;
+          // else
+               pair = m_colors[groupIdx % m_colors.count()];
+      // }
+      // if (!m_brightness)
+        //   return pair.first;
+       return pair.second;
 }
