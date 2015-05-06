@@ -7,7 +7,7 @@ namespace elysian {
     typedef WarpBase Component;
 }
 #else
-#   include <tkwarp.h>
+#   include <tk_warp.h>
 namespace elysian {
     typedef TkWarp Warp;
 }

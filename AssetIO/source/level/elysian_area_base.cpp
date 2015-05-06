@@ -154,6 +154,7 @@ bool AreaBase::load(const char *const dir) {
     assert(level);
 
     bool success = true;
+    OOLUA::Lua_table_ref ref;
 
     dbgprintf("Area::Load(%s)", dir);
     dbgpush();
@@ -176,18 +177,18 @@ bool AreaBase::load(const char *const dir) {
     strcpy(buffer, dir);
     strcat(buffer, ELYSIAN_AREA_TABLE_PATH);
 
-    stackBalanceBegin();
-
-
-    OOLUA::Lua_table_ref ref;
-    runScriptSandbox(buffer, nullptr, 1);
-    //rPrintByIndex(-1, 100, "DESERIALIZED");
-    ref.pull(*_mainState);
-    if(ref.valid()) {
-        fromTable(ref);
+    dbgprintf("Deserializing area_table.lua");
+    dbgpush();
+    if(runScriptSandbox(buffer, nullptr, 1)) {
+        ref.pull(*_mainState);
+        if(ref.valid()) {
+            fromTable(ref);
+        } else {
+            dbgprintf("Invalid area table reference!");
+        }
     }
+    dbgpop();
 
-    //success &= loadEntities(buffer);
 
     dbgpop();
     return success;
@@ -456,12 +457,13 @@ Entity* AreaBase::getActiveEntityByIndex(const unsigned index) const {
 }
 
 
-void AreaBase::setActiveEntityByIndex(const unsigned index, OOLUA::Lua_table_ref valueTable) {
+void AreaBase::setActiveEntityByIndex(const unsigned index, Entity*const entity) {
     if(index == entities.size()) { //allocate new entity
-        Entity* entity = Entity::create(valueTable);
+        //Entity* entity = Entity::create(valueTable);
         static_cast<Area*>(this)->addEntity(entity);
     } else if(index < entities.size()) {                        //initialize existing entity
-        entities[index]->fromTable(valueTable);
+        assert(false);
+        //entities[index]->fromTable(valueTable);
     }
 }
 
@@ -469,12 +471,13 @@ Entity* AreaBase::getInactiveEntityByIndex(const unsigned index) const {
     return inactiveEntities[index];
 }
 
-void AreaBase::setInactiveEntityByIndex(const unsigned index, OOLUA::Lua_table_ref valueTable) {
+void AreaBase::setInactiveEntityByIndex(const unsigned index, Entity*const entity) {
     if(index == inactiveEntities.size()) { //allocate new entity
-        Entity* entity = Entity::create(valueTable);
+        //Entity* entity = Entity::create(valueTable);
         static_cast<Area*>(this)->addInactiveEntity(entity);
     } else if(index < inactiveEntities.size()) {                        //initialize existing entity
-        inactiveEntities[index]->fromTable(valueTable);
+        assert(false);
+        //inactiveEntities[index]->fromTable(valueTable);
     }
 }
 

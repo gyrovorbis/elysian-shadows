@@ -7,7 +7,7 @@ namespace elysian {
     typedef DebugBase Debug;
 }
 #else
-#   include <tkDebug.h>
+#   include <tk_debug.h>
 namespace elysian {
     typedef TkDebug Debug;
 }

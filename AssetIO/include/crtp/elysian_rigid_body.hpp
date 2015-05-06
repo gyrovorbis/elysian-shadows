@@ -7,7 +7,7 @@ namespace elysian {
     typedef RigidBodyBase RigidBody;
 }
 #else
-#   include <tkRigidBody.h>
+#   include <tk_rigid_body.h>
 namespace elysian {
     typedef TkRigidBody RigidBody;
 }

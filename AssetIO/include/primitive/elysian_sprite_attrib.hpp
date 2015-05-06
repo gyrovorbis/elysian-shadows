@@ -27,7 +27,7 @@ namespace elysian {
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(frame, getFrame, setFrame)
-            ELYSIAN_LUA_PROXY_FIELD(texture, getTexPath)
+            ELYSIAN_LUA_PROXY_FIELD(texture, getTexPath, setTexPath)
             ELYSIAN_LUA_PROXY_FIELD(color, getColor4)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
@@ -106,7 +106,12 @@ namespace elysian {
 		//Gonna shit their pants if there is no texture allocated yet...
 		void getSheetSize(unsigned& sheetWidth, unsigned& sheetHeight) const { sheetWidth = _tex->_coord->sheetWidth; sheetHeight = _tex->_coord->sheetHeight; }
 		void getSpriteSize(unsigned& spriteWidth, unsigned& spriteHeight) const { spriteWidth = _tex->_coord->spriteWidth; spriteHeight = _tex->_coord->spriteHeight; }
-        const char* getTexPath(void) const { return _tex? _tex->filename : ""; }
+        const char* getTexPath(void) const { return _tex? _tex->filename : "none"; }
+        void setTexPath(const char*const path) {
+            delete _tex;
+            _tex = gyVidTexCreate(path);
+
+        }
 
 		void loadTexture(const char* filename, const unsigned sheetWidth, const unsigned sheetHeight, const unsigned spriteWidth, const unsigned spriteHeight) {
 			if(_tex) {

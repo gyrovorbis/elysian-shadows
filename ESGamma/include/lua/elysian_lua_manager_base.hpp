@@ -4,9 +4,9 @@
 #include <map>
 #include <oolua.h>
 #include <functional>
-#include "elysian_stl_algorithm.hpp"
-#include "elysian_lua_script.hpp"
-#include "elysian_debug.hpp"
+#include <elysian_stl_algorithm.hpp>
+#include <elysian_lua_script.hpp>
+#include <elysian_debug.hpp>
 
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
 #	define ELYSIAN_LUA_DEBUG                            true

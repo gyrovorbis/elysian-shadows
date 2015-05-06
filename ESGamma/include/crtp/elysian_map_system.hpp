@@ -7,7 +7,7 @@ namespace elysian {
     typedef MapSystemBase MapSystem;
 }
 #else
-#   include "tkMapSystem.h"
+#   include "tk_map_system.h"
 namespace elysian {
     typedef TkMapSystem MapSystem;
 }

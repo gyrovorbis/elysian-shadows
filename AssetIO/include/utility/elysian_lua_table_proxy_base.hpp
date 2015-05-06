@@ -60,6 +60,7 @@ namespace elysian {
 	template <typename P, typename T=P>
     class LuaTableProxyBase: public LuaManager {
 	protected:
+        typedef P ParentType;
 
         static bool     _initializing;
 		static LuaTable _propertyProxyIndexTable;
@@ -611,11 +612,22 @@ namespace elysian {
 
 			luaL_getmetatable(*LuaManager::_mainState, OOLUA::Proxy_class<T>::class_name); //userdata metatable
 
+
 			//Save OOLUA's method table for later
 			lua_getfield(l, -1, "__index");
             lua_pushcfunction(l, &_luaFromTableCFunction);
             lua_setfield(l, -2, "fromTable");
-			_ooluaIndexTable.pull(l);
+
+            lua_getfield(l, -1, "new"); //only register creator function if constructor is exposed
+            if(!lua_isnil(l, -1)) {
+                lua_pushstring(l, "oolua_new");
+                lua_insert(l, -2);
+                lua_rawset(l, -3);
+                lua_pushcfunction(l, &_luaCreate);
+                lua_setfield(l, -2, "new");
+            } else lua_pop(l, 1);
+
+            _ooluaIndexTable.pull(l);
 
 			//Save OOLUA's method table for later
 			lua_getfield(l, -1, "__newindex");
@@ -662,6 +674,10 @@ namespace elysian {
 
             lua_pushcfunction(l, &_lengthMetaMethodCFunction);
             lua_setfield(l, -2, "__len");
+
+            lua_pushstring(l, OOLUA::Proxy_class<T>::class_name);
+            lua_setfield(l, -2, "__typename");
+
         }
 
         static int _luaFromTableCFunction(lua_State*const l) {
@@ -670,15 +686,42 @@ namespace elysian {
 
             int startTop = lua_gettop(l)-1; //proxy table absolute index
 
+
             //_cStackDump();
+
+#ifdef ELYSIAN_LUA_DEBUG
+            char keyString[ELYSIAN_LUA_PROXY_FIELD_KEY_MAX_SIZE];
+            char valString[ELYSIAN_LUA_PROXY_FIELD_KEY_MAX_SIZE];
+
+            dbgprintf("%s:fromTable({", OOLUA::Proxy_class<T>::class_name);
+            dbgpush();
+#endif
 
             genericIterate(-1, [&](void) {
 
                // _cStackDump();
 
                 lua_pushvalue(l, -2);           //push key copy
+
+                //==== DEBUG ====
+#ifdef ELYSIAN_LUA_DEBUG
+                lua_pushvalue(l, -1);
+                strcpy(keyString, luaL_tolstring(l, -1, nullptr));
+                lua_pop(l, 2);
+#endif
+                //==== /DEBUG ====
+
+
                 //lua_insert(l, -2);            //move key behind value
                 lua_pushvalue(l, -2);           //push value
+
+                //==== DEBUG ====
+#ifdef ELYSIAN_LUA_DEBUG
+                lua_pushvalue(l, -1);
+                strcpy(valString, luaL_tolstring(l, -1, nullptr));
+                lua_pop(l, 2);
+                dbgprintf("<%s, %s>", keyString, valString);
+#endif
 
                // _cStackDump();
                 lua_settable(l, startTop);      //set new value in proxy table
@@ -687,6 +730,10 @@ namespace elysian {
 
             });
 
+#ifdef ELYSIAN_LUA_DEBUG
+            dbgpop();
+            dbgprintf("})");
+#endif
             lua_pop(l, 2);
 
             return 0;
@@ -704,6 +751,30 @@ namespace elysian {
             lua_insert(state, -3);
             LuaManager::_protectedCall(2, 0, nullptr);
             _initializing = false;
+        }
+
+        static int _luaCreate(lua_State*const l) {
+            OOLUA::Lua_table_ref valueTable;
+            int args = lua_gettop(l);
+
+            if(args >= 2) {
+                OOLUA::pull(l, valueTable);
+            }
+
+            _ooluaIndexTable.push(l);
+            lua_getfield(l, -1, "oolua_new");
+            lua_remove(l, -2);
+            assert(!lua_isnil(l, -1)); //better fucking have a constructor if you invoked this method
+            _protectedCall(0, 1, nullptr);
+
+            if(args >= 2) {
+                T* obj;
+                OOLUA::pull(l, obj);
+                obj->fromTable(valueTable);
+                OOLUA::push(l, obj);
+            }
+
+            return 1;
         }
 
 	};

@@ -7,7 +7,7 @@ namespace elysian {
     typedef CombatBase Combat;
 }
 #else
-#   include <tkCombat.h>
+#   include <tk_combat.h>
 namespace elysian {
     typedef TkCombat Combat;
 }

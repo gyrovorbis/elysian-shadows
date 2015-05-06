@@ -7,7 +7,7 @@ namespace elysian {
     typedef LevelBase Level;
 }
 #else
-#   include <tkLevel.h>
+#   include <tk_level.h>
 namespace elysian {
     typedef TkLevel Level;
 }

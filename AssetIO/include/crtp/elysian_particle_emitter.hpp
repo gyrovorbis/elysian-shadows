@@ -4,10 +4,10 @@
 #ifdef ELYSIAN_ENGINE
 #   include <elysian_particle_emitter_base.hpp>
 namespace elysian {
-    typedef RenderableBase Renderable;
+    typedef ParticleEmitterBase ParticleEmitter;
 }
 #else
-#   include <tkParticleEmitter.h>
+#   include <tk_particle_emitter.h>
 namespace elysian {
     typedef TkParticleEmitter ParticleEmitter;
 }

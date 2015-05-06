@@ -2,7 +2,7 @@
 
 #include <QSplashScreen>
 #include <QSurfaceFormat>
-#include "estoolkit.h"
+#include <tk_estoolkit.h>
 #include <QPainter>
 #include <QTimer>
 #include "elysian_debug.hpp"

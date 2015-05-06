@@ -174,12 +174,12 @@ namespace elysian {
 
         //active entity management
         Entity*     getActiveEntityByIndex(const unsigned index) const;
-        void        setActiveEntityByIndex(const unsigned index, OOLUA::Lua_table_ref valueTable);
+        void        setActiveEntityByIndex(const unsigned index, Entity*const entity);
         unsigned    getActiveEntityCount(void) const;
 
         //inactive entity management
         Entity*     getInactiveEntityByIndex(const unsigned index) const;
-        void        setInactiveEntityByIndex(const unsigned index, OOLUA::Lua_table_ref valueTable);
+        void        setInactiveEntityByIndex(const unsigned index, Entity*const entity);
         unsigned    getInactiveEntityCount(void) const;
 
         template<typename T>

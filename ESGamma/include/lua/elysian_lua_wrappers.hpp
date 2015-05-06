@@ -290,6 +290,10 @@ OOLUA_PROXY(LuaEventCallback, LuaEventMonitor)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(InstanceTransform)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
 	OOLUA_MEM_FUNC_CONST(void, apply)
 	OOLUA_MEM_FUNC_CONST_RENAME(getPos2f, void, getPos, out_p<float&>, out_p<float&>)
 	OOLUA_MEM_FUNC_CONST_RENAME(getPos3f, void, getPos, out_p<float&>, out_p<float&>, out_p<float&>)
@@ -454,6 +458,7 @@ OOLUA_PROXY(SpriteAttrib, PrimAttrib)
 	OOLUA_MEM_FUNC_CONST(void, getColor, out_p<unsigned char&>, out_p<unsigned char&>, out_p<unsigned char&>, out_p<unsigned char&>)
 	OOLUA_MEM_FUNC_CONST(unsigned char, getAlpha)
     OOLUA_MEM_FUNC_CONST(const char*, getTexPath)
+    OOLUA_MEM_FUNC(void, setTexPath, char const*)
     OOLUA_MEM_FUNC_CONST(unsigned char, getColorR)
     OOLUA_MEM_FUNC_CONST(unsigned char, getColorG)
     OOLUA_MEM_FUNC_CONST(unsigned char, getColorB)
@@ -1083,10 +1088,10 @@ OOLUA_PROXY(Area)
 	OOLUA_MEM_FUNC(maybe_null<Entity*>, findEntity, const char*)
 	OOLUA_MEM_FUNC_CONST(unsigned short, getMapWidth);
 	OOLUA_MEM_FUNC_CONST(unsigned short, getMapHeight);
-    OOLUA_MEM_FUNC(void, setActiveEntityByIndex, const unsigned, Lua_table_ref)
+    OOLUA_MEM_FUNC(void, setActiveEntityByIndex, const unsigned, Entity*const)
     OOLUA_MEM_FUNC_CONST(Entity*, getActiveEntityByIndex, unsigned)
     OOLUA_MEM_FUNC_CONST(unsigned, getActiveEntityCount)
-    OOLUA_MEM_FUNC(void, setInactiveEntityByIndex, const unsigned, Lua_table_ref)
+    OOLUA_MEM_FUNC(void, setInactiveEntityByIndex, const unsigned, Entity*const)
     OOLUA_MEM_FUNC_CONST(Entity*, getInactiveEntityByIndex, unsigned)
     OOLUA_MEM_FUNC_CONST(unsigned, getInactiveEntityCount)
 OOLUA_PROXY_END
@@ -1774,6 +1779,5 @@ static inline int gyroVec4Mult(lua_State*const vm) {
 static inline int gyroVec4Add(lua_State*const vm) {
     OOLUA_C_FUNCTION(void, gyVec4Add, void*, const void* const, const void* const)
 }*/
-
 
 #endif

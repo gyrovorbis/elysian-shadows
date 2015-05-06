@@ -25,12 +25,13 @@ DEPENDPATH += ../../AssetIO/include/component \
 	../../ESGamma/include/system \
 	../../ESGamma/include/utility \
 	include/asset \
+	include/model \
 	include/estk \
-	include/tileEngine \
+	include/tile_engine \
     include/core \
 	../../libGyro/include \
 	../../libGyro/include/kinetic \
-    include/sheetManager \
+	include/sheet_manager \
 	include/dialog \
     include/widget \
 
@@ -46,12 +47,13 @@ INCLUDEPATH += ../../AssetIO/include/component \
 	../../ESGamma/include/system \
 	../../ESGamma/include/utility \
 	include/asset \
+	include/model \
 	include/estk \
-	include/tileEngine \
+	include/tile_engine \
 	include/core \
 	../../libGyro/include \
 	../../libGyro/include/kinetic \
-	include/sheetManager \
+	include/sheet_manager \
 	include/dialog \
 	include/widget \
 	../../Lua5.2/include \
@@ -60,61 +62,7 @@ INCLUDEPATH += ../../AssetIO/include/component \
 	../../Spine/include
 
 
-SOURCES += source/asset/project.cpp \
-    source/asset/assets.cpp \
-    source/asset/assetManager.cpp \
-    source/core/undoItem.cpp \
-    source/core/treenode.cpp \
-    source/core/tileSheetUtilities.cpp \
-    source/core/selectable.cpp \
-    source/core/main.cpp \
-    source/core/fileUtilities.cpp \
-    source/estk/tileSelectable.cpp \
-    source/estk/sheetViewTileGraphicsItem.cpp \
-    source/estk/sheetView.cpp \
-    source/estk/sheetDockWidget.cpp \
-    source/estk/selectionDockWidget.cpp \
-    source/estk/mapView.cpp \
-    source/estk/layerDockWidget.cpp \
-    source/estk/estoolkit.cpp \
-    source/estk/entityTreeWidget.cpp \
-    source/estk/entityDockWidget.cpp \
-    source/estk/assetTreeWidget.cpp \
-    source/estk/assetDockWidget.cpp \
-    source/sheetManager/sheetManagerSourceView.cpp \
-    source/sheetManager/sheetManagerDestView.cpp \
-    source/sheetManager/SheetManagerAssetManager.cpp \
-    source/sheetManager/sheetmanager.cpp \
-    source/tileEngine/sourceView.cpp \
-    source/widget/historyDockWidget.cpp \
-    source/core/propertyStackModel.cpp \
-    source/dialog/engineDialog.cpp \
-    source/dialog/engineSettingsDialog.cpp \
-    source/sheetManager/sheetManagerFileDockWidget.cpp \
-    source/sheetManager/sheetManagerSourceTileGraphicsItem.cpp \
-    source/estk/tileSelectableSelectionViewDelegate.cpp \
-    include/tileEngine/tileGraphicsItem.inl \
-    include/tileEngine/destView.inl \
-    include/tileEngine/tileSelection.inl \
-    source/sheetManager/SheetManagerDestTileGraphicsItem.cpp \
-    source/estk/mapViewTileGraphicsItem.cpp \
-    source/asset/mapEntry.cpp \
-    source/asset/elysianTileWrapper.cpp \
-    source/dialog/luaExplorerDialog.cpp \
-    source/core/rowsJoinerProxyModel.cpp \
-    source/estk/engineGLSceneWidget.cpp \
-    source/estk/entitySelectable.cpp \
-    source/core/tkDebug.cpp \
-    source/asset/tkAnimation.cpp \
-    source/asset/tkArea.cpp \
-    source/asset/tkLevel.cpp \
-    source/asset/tkEntity.cpp \
-    source/estk/tkMapSystem.cpp \
-    source/asset/luaTableStackModel.cpp \
-    source/asset/tkLuaTableProxy.cpp \
-    source/estk/tkLuaWrappers.cpp \
-    source/estk/tkLuaManager.cpp \
-    ../../AssetIO/source/component/elysian_animation_base.cpp \
+SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../AssetIO/source/component/elysian_audio_source_base.cpp \
     ../../AssetIO/source/component/elysian_behavior_base.cpp \
     ../../AssetIO/source/component/elysian_character_base.cpp \
@@ -175,86 +123,68 @@ SOURCES += source/asset/project.cpp \
     ../../ESGamma/source/utility/elysian_event_monitor.cpp \
     ../../ESGamma/source/utility/elysian_force_generator.cpp \
     ../../ESGamma/source/utility/elysian_game_input.cpp \
-    ../../ESGamma/source/utility/elysian_sort_sweep.cpp \
+	../../ESGamma/source/utility/elysian_sort_sweep.cpp \
+    source/asset/tk_animation.cpp \
+    source/asset/tk_area.cpp \
+    source/asset/tk_asset_manager.cpp \
+    source/asset/tk_assets.cpp \
+    source/asset/tk_collidable.cpp \
+    source/asset/tk_combat.cpp \
+    source/asset/tk_elysian_tile_wrapper.cpp \
+    source/asset/tk_entity.cpp \
+    source/asset/tk_level.cpp \
+    source/asset/tk_light_source.cpp \
+    source/asset/tk_lua_table_proxy.cpp \
+    source/asset/tk_map_entry.cpp \
+    source/asset/tk_particle_emitter.cpp \
+    source/asset/tk_project.cpp \
+    source/asset/tk_renderable.cpp \
+    source/asset/tk_rigidbody.cpp \
+    source/core/main.cpp \
+    source/core/tk_debug.cpp \
+    source/core/tk_file_utilities.cpp \
     source/core/tk_menu_stack.cpp \
-    source/asset/tkRenderable.cpp \
-    source/asset/tkCollidable.cpp \
-    source/asset/tkRigidBody.cpp \
-    source/asset/tkLightSource.cpp \
-    source/asset/tkCombat.cpp \
-    source/asset/tkParticleEmitter.cpp
+    source/core/tk_selectable.cpp \
+    source/core/tk_tile_sheet_utilities.cpp \
+    source/core/tk_tree_node.cpp \
+    source/core/tk_undo_item.cpp \
+    source/dialog/tk_engine_dialog.cpp \
+    source/dialog/tk_engine_settings_dialog.cpp \
+    source/dialog/tk_lua_explorer_dialog.cpp \
+    source/estk/tk_asset_dock_widget.cpp \
+    source/estk/tk_asset_tree_widget.cpp \
+    source/estk/tk_engine_gl_scene_widget.cpp \
+    source/estk/tk_entity_dock_widget.cpp \
+    source/estk/tk_entity_selectable.cpp \
+    source/estk/tk_entity_tree_widget.cpp \
+    source/estk/tk_estoolkit.cpp \
+    source/estk/tk_layer_dock_widget.cpp \
+    source/estk/tk_lua_manager.cpp \
+    source/estk/tk_lua_wrappers.cpp \
+    source/estk/tk_map_system.cpp \
+    source/estk/tk_map_view.cpp \
+    source/estk/tk_map_view_tile_graphics_item.cpp \
+    source/estk/tk_selection_dock_widget.cpp \
+    source/estk/tk_sheet_dock_widget.cpp \
+    source/estk/tk_sheet_view.cpp \
+    source/estk/tk_sheet_view_tile_graphics_item.cpp \
+    source/estk/tk_tile_selectable.cpp \
+    source/estk/tk_tile_selectable_selection_view_delegate.cpp \
+    source/model/tk_lua_table_stack_model.cpp \
+    source/model/tk_property_stack_model.cpp \
+    source/model/tk_rows_joiner_proxy_model.cpp \
+    source/sheet_manager/tk_sheet_manager.cpp \
+    source/sheet_manager/tk_sheet_manager_asset_manager.cpp \
+    source/sheet_manager/tk_sheet_manager_dest_tile_graphics_item.cpp \
+    source/sheet_manager/tk_sheet_manager_dest_view.cpp \
+    source/sheet_manager/tk_sheet_manager_file_dock_widget.cpp \
+    source/sheet_manager/tk_sheet_manager_source_tile_graphics_Item.cpp \
+    source/sheet_manager/tk_sheet_manager_source_view.cpp \
+    source/tile_engine/tk_source_view.cpp \
+    source/widget/tk_history_dock_widget.cpp
 
-HEADERS += include/asset/project.h \
-    include/asset/assets.h \
-    include/asset/assetManager.h \
-    include/core/undoItem.h \
-    include/core/treenode.h \
-    include/core/tileSheetUtilities.h \
-    include/core/selectionScene.h \
-    include/core/selectable.h \
-    include/core/fileUtilities.h \
-    include/estk/tileSelectable.h \
-    include/estk/sheetViewTileGraphicsItem.h \
-    include/estk/sheetView.h \
-    include/estk/sheetDockWidget.h \
-    include/estk/selectionDockWidget.h \
-    include/estk/mapViewTileGraphicsItem.h \
-    include/estk/mapView.h \
-    include/estk/layerDockWidget.h \
-    include/estk/estoolkit.h \
-    include/estk/entityTreeWidget.h \
-    include/estk/entityDockWidget.h \
-    include/estk/assetTreeWidget.h \
-    include/estk/assetDockWidget.h \
-    include/sheetManager/sheetManagerTileSelection.h \
-    include/sheetManager/sheetManagerSourceView.h \
-    include/sheetManager/sheetManagerPlaceTileGroupUndoItem.h \
-    include/sheetManager/sheetManagerDestView.h \
-    include/sheetManager/SheetManagerAssets.h \
-    include/sheetManager/SheetManagerAssetManager.h \
-    include/tileEngine/tileSelection.h \
-    include/tileEngine/tileGroupUndoItem.h \
-    include/tileEngine/tileGraphicsItem.h \
-    include/tileEngine/sourceView.h \
-    include/tileEngine/selectionItemGroup.h \
-    include/tileEngine/destView.h \
-    include/widget/historyDockWidget.h \
-    include/core/propertyStackModel.h \
-    include/core/propertyStandardItem.h \
-    include/dialog/engineDialog.h \
-    include/dialog/engineSettingsDialog.h \
-    include/sheetManager/SheetManagerDestTileGraphicsItem.h \
-    include/sheetManager/sheetManagerFileDockWidget.h \
-    include/sheetManager/sheetManagerSourceTileGraphicsItem.h \
-    include/sheetManager/sheetManager.h \
-    include/core/tileImage.h \
-    include/estk/mapViewPlaceTileGroupUndoItem.h \
-    include/core/checkeredAlphaRectGraphicsItem.h \
-    include/estk/tileSelectableSelectionViewDelegate.h \
-    include/estk/sheetViewColliderGraphicsItem.h \
-    include/sheetManager/sheetManagerTileEntry.h \
-    include/estk/mapViewDepthBufferGraphicsItem.h \
-    include/asset/mapEntry.h \
-    include/core/glUtilities.h \
-    include/asset/elysianTileWrapper.h \
-    include/dialog/luaExplorerDialog.h \
-    include/core/rowsJoinerProxyModel.h \
-    include/asset/luaTableStackModel.h \
-    include/estk/engineGLSceneWidget.h \
-    include/estk/tkMapSystem.h \
-    include/estk/entitySelectable.h \
-    include/core/tkDebug.h \
-    include/asset/tkAnimation.h \
-    include/asset/tkArea.h \
-    include/asset/tkLevel.h \
-    include/asset/tkEntity.h \
-    include/asset/tkLuaTableProxy.h \
-    include/estk/tkLuaWrappers.h \
-    include/estk/tkLuaManager.h \
-    include/asset/tkComponent.h \
-    include/asset/tkRenderable.h \
-	include/asset/tkCollidable.h \
-    ../../AssetIO/include/component/elysian_animation_base.hpp \
+
+HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../AssetIO/include/component/elysian_audio_source_base.hpp \
     ../../AssetIO/include/component/elysian_behavior_base.hpp \
     ../../AssetIO/include/component/elysian_character_base.hpp \
@@ -339,42 +269,114 @@ HEADERS += include/asset/project.h \
     ../../ESGamma/include/utility/elysian_sort_sweep.hpp \
     ../../ESGamma/include/utility/elysian_subprocess_manager.hpp \
     ../../AssetIO/include/crtp/elysian_behavior.hpp \
-    include/asset/tkBehavior.h \
     ../../AssetIO/include/crtp/elysian_particle_emitter.hpp \
     ../../AssetIO/include/crtp/elysian_character.hpp \
-    include/asset/tkcharacter.h \
     ../../AssetIO/include/crtp/elysian_rigid_body.hpp \
     ../../AssetIO/include/crtp/elysian_audio_source.hpp \
-    include/asset/tkaudiosource.h \
     ../../AssetIO/include/crtp/elysian_combat.hpp \
     ../../AssetIO/include/crtp/elysian_light_source.hpp \
     ../../AssetIO/include/crtp/elysian_examinable.hpp \
-    include/asset/tkexaminable.h \
-    ../../AssetIO/include/level/elysian_skeleton_base.hpp \
     ../../AssetIO/include/component/elysian_skeleton_base.hpp \
     ../../AssetIO/include/crtp/elysian_skeleton.hpp \
-    include/asset/tkskeleton.h \
     ../../AssetIO/include/crtp/elysian_warp.hpp \
-    include/asset/tkwarp.h \
     ../../ESGamma/include/gui/elysian_sprite.hpp \
-    ../../ESGamma/include/gui/elysian_quad_sprite.hpp \
+	../../ESGamma/include/gui/elysian_quad_sprite.hpp \
+    include/asset/tk_animation.h \
+    include/asset/tk_area.h \
+    include/asset/tk_asset_manager.h \
+	include/asset/tk_assets.h \
+    include/asset/tk_audio_source.h \
+    include/asset/tk_behavior.h \
+    include/asset/tk_character.h \
+    include/asset/tk_collidable.h \
+    include/asset/tk_combat.h \
+    include/asset/tk_component.h \
+    include/asset/tk_elysian_tile_wrapper.h \
+    include/asset/tk_entity.h \
+    include/asset/tk_examinable.h \
+    include/asset/tk_level.h \
+    include/asset/tk_light_source.h \
+    include/asset/tk_lua_table_proxy.h \
+    include/asset/tk_map_entry.h \
+    include/asset/tk_particle_emitter.h \
+    include/asset/tk_project.h \
+    include/asset/tk_renderable.h \
+    include/asset/tk_rigid_body.h \
+    include/asset/tk_skeleton.h \
+    include/asset/tk_warp.h \
+    include/core/tk_checkered_alpha_rect_graphics_item.h \
+    include/core/tk_debug.h \
+    include/core/tk_file_utilities.h \
+    include/core/tk_gl_utilities.h \
     include/core/tk_menu_stack.h \
-    include/asset/tkRigidBody.h \
-    include/asset/tkLightSource.h \
-    include/asset/tkCombat.h \
-    include/asset/tkParticleEmitter.h
+	include/core/tk_selectable.h \
+    include/core/tk_selection_scene.h \
+    include/core/tk_tile_image.h \
+    include/core/tk_tile_sheet_utilities.h \
+    include/core/tk_tree_node.h \
+    include/core/tk_undo_item.h \
+    include/dialog/tk_engine_dialog.h \
+    include/dialog/tk_engine_settings_dialog.h \
+    include/dialog/tk_lua_explorer_dialog.h \
+    include/estk/tk_asset_dock_widget.h \
+    include/estk/tk_asset_tree_widget.h \
+    include/estk/tk_engine_gl_scene_widget.h \
+    include/estk/tk_entity_dock_widget.h \
+	include/estk/tk_entity_selectable.h \
+    include/estk/tk_entity_tree_widget.h \
+    include/estk/tk_estoolkit.h \
+    include/estk/tk_layer_dock_widget.h \
+    include/estk/tk_lua_manager.h \
+    include/estk/tk_lua_wrappers.h \
+    include/estk/tk_map_system.h \
+    include/estk/tk_map_view.h \
+    include/estk/tk_map_view_depth_buffer_graphics_item.h \
+    include/estk/tk_map_view_place_tile_group_undo_item.h \
+    include/estk/tk_map_view_tile_graphics_item.h \
+    include/estk/tk_selection_dock_widget.h \
+    include/estk/tk_sheet_dock_widget.h \
+    include/estk/tk_sheet_view.h \
+    include/estk/tk_sheet_view_collider_graphics_item.h \
+    include/estk/tk_sheet_view_tile_graphics_item.h \
+	include/estk/tk_tile_selectable.h \
+    include/estk/tk_tile_selectable_selection_view_delegate.h \
+    include/model/tk_lua_table_stack_model.h \
+    include/model/tk_property_stack_model.h \
+    include/model/tk_property_standard_item.h \
+    include/model/tk_rows_joiner_proxy_model.h \
+    include/sheet_manager/tk_sheet_manager.h \
+    include/sheet_manager/tk_sheet_manager_asset_manager.h \
+	include/sheet_manager/tk_sheet_manager_assets.h \
+    include/sheet_manager/tk_sheet_manager_dest_tile_graphics_item.h \
+    include/sheet_manager/tk_sheet_manager_dest_view.h \
+    include/sheet_manager/tk_sheet_manager_file_dock_widget.h \
+    include/sheet_manager/tk_sheet_manager_place_tile_group_undo_item.h \
+    include/sheet_manager/tk_sheet_manager_source_tile_graphics_item.h \
+    include/sheet_manager/tk_sheet_manager_source_view.h \
+    include/sheet_manager/tk_sheet_manager_tile_entry.h \
+    include/sheet_manager/tk_sheet_manager_tile_selection.h \
+    include/tile_engine/tk_dest_view.h \
+    include/tile_engine/tk_selection_item_group.h \
+    include/tile_engine/tk_source_view.h \
+    include/tile_engine/tk_tile_graphics_item.h \
+    include/tile_engine/tk_tile_group_undo_item.h \
+    include/tile_engine/tk_tile_selection.h \
+    include/widget/tk_history_dock_widget.h \
+	include/tile_engine/tk_tile_graphics_item_impl.h \
+    include/tile_engine/tk_dest_view_impl.h
 
-FORMS += form/estk/sheetdockwidget.ui \
-    form/estk/selectiondockwidget.ui \
-    form/estk/layerdockwidget.ui \
-    form/estk/estoolkit.ui \
-    form/estk/entitydockwidget.ui \
-    form/estk/assetdockwidget.ui \
-    form/sheetManager/sheetmanager.ui \
-    form/widget/historyDockWidget.ui \
-    form/dialog/engineSettings.ui \
-    form/sheetManager/sheetManagerFileDockWidget.ui \
-    form/dialog/luaExplorer.ui
+
+FORMS += form/estk/tk_sheet_dock_widget.ui \
+	form/estk/tk_selection_dock_widget.ui \
+	form/estk/tk_layer_dock_widget.ui \
+	form/estk/tk_estoolkit.ui \
+	form/estk/tk_entity_dock_widget.ui \
+	form/estk/tk_asset_dock_widget.ui \
+	form/sheet_manager/tk_sheet_manager.ui \
+	form/widget/tk_history_dock_widget.ui \
+	form/dialog/tk_engine_settings.ui \
+	form/sheet_manager/tk_sheet_manager_file_dock_widget.ui \
+	form/dialog/tk_lua_explorer.ui
 
 
 #Create windows manifest requesting ESTk to be run as admin (to run dc-tool as admin)

@@ -143,7 +143,7 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(restingOnBody,      getRestingOnBody)
             ELYSIAN_LUA_PROXY_FIELD(worldSpace,         getWorldSpace,          setWorldSpace)
             ELYSIAN_LUA_PROXY_FIELD(resolvePen,         getResolvePenetration,  setResolvePenetration)
-            ELYSIAN_LUA_PROXY_FIELD(attrib,             getAttrib)
+            ELYSIAN_LUA_PROXY_FIELD(attrib,             getAttrib,              setAttrib)
         ELYSIAN_LUA_PROXY_FIELDS_END()
     protected:
         static CollisionSystem* _colSys;

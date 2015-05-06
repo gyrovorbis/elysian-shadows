@@ -8,7 +8,7 @@ namespace elysian {
     typedef SkeletonBase Skeleton;
 }
 #else
-#   include <tkskeleton.h>
+#   include <tk_skeleton.h>
 namespace elysian {
     typedef TkSkeleton Skeleton;
 }

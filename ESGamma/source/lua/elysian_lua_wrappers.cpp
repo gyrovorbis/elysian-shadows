@@ -343,7 +343,8 @@ OOLUA_EXPORT_FUNCTIONS(SpriteAttrib,
                                    setColorG,
                                    setColorB,
                                    setColorA,
-                                    getColor4)
+                                    getColor4,
+                                    setTexPath)
 OOLUA_EXPORT_FUNCTIONS_CONST(SpriteAttrib,
 							   getColor,
                                getAlpha,

@@ -34,13 +34,13 @@ namespace elysian {
         RenderableBase(void) = default;
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
-			ELYSIAN_LUA_PROXY_FIELD(frame, getFrame, setFrame)
-            ELYSIAN_LUA_PROXY_FIELD(texOrient, getTexOrient, setTexOrient)
-            ELYSIAN_LUA_PROXY_FIELD(spriteAttrib, getSpriteAttrib)
-            ELYSIAN_LUA_PROXY_FIELD(normalMap, getNormalMapPath)
-            ELYSIAN_LUA_PROXY_FIELD(specularMap, getSpecularMapPath)
-            ELYSIAN_LUA_PROXY_FIELD(material, getMaterial)
-            ELYSIAN_LUA_PROXY_FIELD(offset, getOffset)
+            ELYSIAN_LUA_PROXY_FIELD(frame,          getFrame,           setFrame)
+            ELYSIAN_LUA_PROXY_FIELD(texOrient,      getTexOrient,       setTexOrient)
+            ELYSIAN_LUA_PROXY_FIELD(spriteAttrib,   getSpriteAttrib,    setSpriteAttrib)
+            ELYSIAN_LUA_PROXY_FIELD(normalMap,      getNormalMapPath)
+            ELYSIAN_LUA_PROXY_FIELD(specularMap,    getSpecularMapPath)
+            ELYSIAN_LUA_PROXY_FIELD(material,       getMaterial)
+            ELYSIAN_LUA_PROXY_FIELD(offset,         getOffset)
 		ELYSIAN_LUA_PROXY_FIELDS_END()
 
         static bool         hasPrereqs(Entity &entity);

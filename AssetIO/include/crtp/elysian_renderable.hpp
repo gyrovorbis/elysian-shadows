@@ -7,7 +7,7 @@ namespace elysian {
 	typedef RenderableBase Renderable;
 }
 #else
-#   include <tkRenderable.h>
+#   include <tk_renderable.h>
 namespace elysian {
 	typedef TkRenderable Renderable;
 }
