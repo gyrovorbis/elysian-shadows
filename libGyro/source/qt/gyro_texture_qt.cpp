@@ -25,10 +25,12 @@ int _gyVidTexAlloc(GYTexture *const tex) {
     QString fileName = tex->filename;
 
     QStringList list = fileName.split("/");
-    if(list[1] == "assets") {
-        //qDebug() << fileName;
-        fileName = fileName.remove("/assets/");
-        //qDebug() << fileName;
+    if(list.size() >= 2) {
+        if(list[1] == "assets") {
+            //qDebug() << fileName;
+            fileName = fileName.remove("/assets/");
+            //qDebug() << fileName;
+        }
     }
 
     QImage pixmap(fileName);
