@@ -84,8 +84,6 @@ HEADERS += \
     ../../include/kinetic/gyro_kinetic_contact.h \
     ../../include/kinetic/gyro_kinetic_collision.h \
     ../../include/kinetic/gyro_kinetic_collider.h \
-    ../../source/glal/gyro_video_glal.h \
-    ../../source/glal/gyro_shaders_glal.h \
     ../../source/common/gyro_asset_bank.h \
     ../../include/x86/gyro_input_x86.inl \
     ../../include/x86/gyro_math_sse_x86.inl \
