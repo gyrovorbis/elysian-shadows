@@ -1,1 +1,0 @@
-macdeployqt ../../Project/ESToolkit.app

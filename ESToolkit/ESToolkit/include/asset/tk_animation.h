@@ -4,11 +4,11 @@
 #include <QObject>
 #include "elysian_animation_base.hpp"
 
-ELYSIAN_ASSET_TYPEDEF(Entity)
 
 class TkAnimation: public elysian::AnimationBase {
 Q_OBJECT
 public:
+
 
                     TkAnimation(TkEntity& parent);
                     TkAnimation(void) = default;

@@ -1,0 +1,77 @@
+
+
+/*!
+   \page index.html
+
+	\title ESToolkit User Manual
+
+   \indexpage ESToolkit User Manual
+   \startpage ESToolkit User Manual
+
+	The Elysian Shadows Toolkit or "ESTk" is a multiplatform
+	game development environment facilitating the creation
+	of the "next generation" of 2D games. Originally developed
+	solely to power Elysian Shadows, it features a full-fledged
+	dynamic lighting engine, pixel perfect shadows, 3D positional
+	audio, 3D rigid body and particle physics, and is fully
+	extensible through an extremely powerful Lua API.
+
+	ESTk currently supports the following platforms:
+
+	\list
+	\li \l Windows
+	\li \l MacOS X
+	\li \l Linux
+	\li \l iOS
+	\li \l Android
+	\li \l OUYA
+	\li \l Sega Dreamcast
+	\endlist
+
+	Table of contents:
+
+	\list
+	\li \l {Getting Started}
+	\li \l {Project Structure}
+	\li \l {Creating Maps}
+	\li \l {Creating Entities}
+	\li \l {Dynamic Lighting}
+	\li \l {Spine Integration}
+	\li \l {Rigid Bodies}
+	\li \l {Positional Audio}
+	\li \l {Cross-platform Deployment}
+	\li \l {Debugging and Troubleshooting}
+	\li \l {Editor Tools}
+	\li \l {Sheet Manager}
+	\li \l {Lua API Reference}
+	\endlist
+*/
+
+
+/*!
+   \page getting_started.html
+   \contentspage ESToolkit User Manual
+   \nextpage Project Structure
+
+   \indexpage ESToolkit User Manual
+   \startpage ESToolkit User Manual
+
+   \title Getting Started
+
+   This chapter shows how to combine basic C++ with the
+   functionality provided by Qt to create a few small graphical
+   interface (GUI) applications.
+*/
+
+/*!
+   \page project_structure.html
+   \previouspage Getting Started
+   \contentspage ESToolkit User Manual
+
+   \indexpage ESToolkit User Manual
+   \startpage ESToolkit User Manual
+
+   \title Project Structure
+
+   This chapter will teach you how to create dialog boxes using Qt.
+*/

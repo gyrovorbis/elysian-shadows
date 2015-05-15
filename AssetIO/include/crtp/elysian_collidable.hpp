@@ -7,7 +7,7 @@ namespace elysian {
     typedef CollidableBase Collidable;
 }
 #else
-#   include "tk_collidable.h"
+#   include <tk_collidable.h>
 namespace elysian {
     typedef TkCollidable Collidable;
 }

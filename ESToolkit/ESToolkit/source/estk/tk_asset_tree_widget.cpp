@@ -34,21 +34,26 @@ void AssetTreeWidget::OnCurrentItemChanged(QTreeWidgetItem * current, int /*inde
 
     current->setExpanded(true);
 
+    auto* treenode = ((TreeNode *)current);
+
     _ignoreItemChange = true;
-	((TreeNode *)current)->activate();
+    treenode->activate();
+    if(treenode->getTreeWidgetItemType() != TreeNode::ITEM_SUBDIR) {
 
 	//Double cast needed for adjusting memory address offsets. Soooooo fucking reested.
 	setCurrentSelection(static_cast<Selectable *>(static_cast<TreeNode *>(current)));
+
+    }
     _ignoreItemChange = false;
 }
 
 
 void AssetTreeWidget::OnAddArea(Project * const /*project*/, Level *const level, Area *const area) {
-    level->addChild(area);
+    //level->addChild(area);
 }
 
 void AssetTreeWidget::OnAddLevel(Project *const project, Level *const level) {
-    project->addChild(level);
+    //project->addChild(level);
 }
 
 void AssetTreeWidget::OnAddProject(Project *const project) {
@@ -162,7 +167,7 @@ void AssetTreeWidget::onCustomContextMenuRequested(QPoint point) {
 		break;
 
 	default:
-		Q_ASSERT(false);
+        Q_ASSERT(false);
 		return;
 	}
 

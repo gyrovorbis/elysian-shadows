@@ -15,6 +15,18 @@
 #include <tk_engine_gl_scene_widget.h>
 #include <tk_selection_scene.h>
 
+/*!
+    \page exportedfunctions.html
+    \title Platform-Specific Functions
+    \ingroup funclists
+
+*/
+
+/*!
+    \class TkArea
+    \brief JESUS FUCK
+*/
+
 //====STATIC====
 SelectionScene*                 Area::_editorScene              = nullptr;
 unsigned int                    Area::_currentSceneWidth        = 0;

@@ -91,4 +91,5 @@
         <file>images/colliderDiagSENW.png</file>
         <file>images/colliderDiagSWNE.png</file>
     </qresource>
+    <qresource prefix="/"/>
 </RCC>

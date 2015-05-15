@@ -9,7 +9,9 @@
 #include <elysian_level_base.hpp>
 #include <tk_elysian_tile_wrapper.h>
 
-#define ESTK_LEVEL_METADATA_DIRECTORY       "estk"
+#define ESTK_LEVEL_METADATA_SUBDIR          "estk"
+#define ESTK_LEVEL_AREA_SUBDIR              "area"
+#define ESTK_LEVEL_TILE_SUBDIR              "tile"
 #define ESTK_LEVEL_METADATA_TILESET         "estkTileset.bin"
 
 #define ESTK_LEVEL_NORMAL_MAPS_DIRECTORY    "normalMaps"

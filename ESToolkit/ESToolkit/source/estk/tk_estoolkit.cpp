@@ -12,7 +12,6 @@
 #include <QDebug>
 #include <gyro_video_api.h>
 
-
 #include <gyro_file_api.h>
 #include "tk_engine_gl_scene_widget.h"
 
@@ -53,6 +52,10 @@
 #include "tk_entity_tree_widget.h"
 #include "elysian_level_system.hpp"
 #include "elysian_audio_system.hpp"
+#include "tk_documentation_browser.h"
+#include <QHelpContentWidget>
+#include <QHelpIndexWidget>
+#include <QSplitter>
 
 ESToolkit* ESToolkit::_instance = nullptr;
 
@@ -69,7 +72,7 @@ ESToolkit::ESToolkit(QWidget *parent):
     AssetManager::_assets = &_assets;
     //elysian::Behavior::staticConstructor();
 
-    const QString verString = QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" \"Sex and Candy\" Release");
+    const QString verString = QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" ") + QString(ESTOOLKIT_VERSION_NAME);
     const char* platString =
 #ifdef __APPLE__
     "OSX";
@@ -1474,13 +1477,17 @@ void ESToolkit::on_actionDefault_Transform_triggered()
     _selectionDockWidget->SetSelectionModel(proxy);
 
     lua_pushglobaltable(*_mainState);
-    lua_getfield(*_mainState, -1, "serialize");
+    lua_getfield(*_mainState, -1, "serialize");helpengine
     lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, lmodel->_luaRef);
     lua_pushstring(*_mainState, "");
     lua_pushboolean(*_mainState, 0);
     LuaManager::_protectedCall(3, 1, nullptr);
     elysian::Debug::printf(elysian::Debug::VERBOSE, lua_tostring(*_mainState, -1));
     lua_pop(*_mainState, 1);
+
+#else
+
+
 
 #endif
 
@@ -1981,4 +1988,44 @@ void ESToolkit::on_actionReloadProject_triggered(void)
 {
     TkDebug::clear();
     _assets.reloadProject();
+}
+
+void ESToolkit::on_actionDocumentation_triggered()
+{
+        QHelpEngine* helpEngine = new QHelpEngine(ESTK_USER_MANUAL_DB);
+        helpEngine->setupData();
+
+        QTabWidget* tWidget = new QTabWidget;
+        tWidget->setMaximumWidth(200);
+        tWidget->addTab(helpEngine->contentWidget(), "Contents");
+        tWidget->addTab(helpEngine->indexWidget(), "Index");
+
+        HelpBrowser *textViewer = new HelpBrowser(helpEngine);
+        textViewer->setSource(
+               QUrl(ESTK_USER_MANUAL_HOME_PAGE));
+        connect(helpEngine->contentWidget(),
+           SIGNAL(linkActivated(QUrl)),
+           textViewer, SLOT(setSource(QUrl)));
+
+        connect(helpEngine->indexWidget(),
+           SIGNAL(linkActivated(QUrl, QString)),
+           textViewer, SLOT(setSource(QUrl)));
+
+        QSplitter *horizSplitter = new QSplitter(Qt::Horizontal);
+        horizSplitter->insertWidget(0, tWidget);
+        horizSplitter->insertWidget(1, textViewer);
+        horizSplitter->hide();
+
+        auto* helpWindow = new QDockWidget(tr("Help"), this);
+        helpWindow->setWidget(horizSplitter);
+        helpWindow->setFloating(true);
+
+        auto geo = helpWindow->geometry();
+        geo.setWidth(700);
+        geo.setHeight(500);
+        helpWindow->setGeometry(geo);
+
+        helpWindow->show();
+       //addDockWidget(Qt::BottomDockWidgetArea, helpWindow);
+
 }

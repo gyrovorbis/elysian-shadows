@@ -615,6 +615,7 @@ void DebugBase::processInput(GameInput& input) {
 
 #define ARG_LIMIT 20
 bool DebugBase::parseArguments(void) {
+#if 0
 	int argc = 0;
 	char argBuff[ARG_LIMIT][100];
 	char *argv[ARG_LIMIT];
@@ -651,9 +652,11 @@ bool DebugBase::parseArguments(void) {
         Debug::pop();
 		//Recursively reinvoke argument-based initialization
 		return parseArguments(argc+1, argv);
+
     } else {
-        printf(CRITICAL, "gamma_args.txt not found! Shitting pants!");
+        //printf(CRITICAL, "gamma_args.txt not found! Shitting pants!");
     }
+    #endif
 	return false;
 }
 

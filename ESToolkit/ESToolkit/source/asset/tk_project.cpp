@@ -62,13 +62,14 @@ Level *Project::newLevel(const QString n) {
 	_level.push_back(lev);
 	lev->saveAll();
     getAssets()->getEngine()->getLevelSys()->addLevel(lev);
+    _curNodeParent->addChild(lev);
     Q_EMIT levelAdded(this, lev);
     return lev;
 }
 
 Level *Project::loadLevel(const QString name) {
-    QString directory(_location);
-    directory.append("/level/");
+    QString directory(_curNodeParent->getNodePath());
+    directory.append("/");
     directory.append(name);
 
 	Debug::Log(Debug::VERBOSE, QString("Project::LoadLevel("+directory+")"));
@@ -82,6 +83,7 @@ Level *Project::loadLevel(const QString name) {
     if(lev) {
         connectSlots(lev);
 		_level.push_back(lev);
+        _curNodeParent->addChild(lev);
         Q_EMIT levelAdded(this, lev);
         Debug::pop();
 		return lev;
@@ -147,6 +149,7 @@ bool Project::load(const QString loc) {
 
     QDir dir(loc);
     bool success = true;
+    _curNodeParent = this;
 
     if(!dir.isReadable()) {
 		Debug::Log(Debug::CRITICAL, "Directory is not readable!");
@@ -159,7 +162,6 @@ bool Project::load(const QString loc) {
 
     //Set Project name equal to project directory name
     setName(dir.dirName());
-    //Set save directory
     _location = loc;
 
     if(!dir.cd("level")) {
@@ -169,12 +171,45 @@ bool Project::load(const QString loc) {
         return false;
     }
 
-    QStringList levels = dir.entryList(QDir::AllDirs);
+    setNodePath(dir.absolutePath());
 
-    //skip two for '.' and '..'
-    for(int i=2;i < levels.size(); ++i) {
-		success &= (loadLevel(levels[i]))? true : false;
-    }
+    std::function<void(const QString)> scanDirectory = [&](const QString path) {
+        QDir dir(path);
+
+        if(!dir.isReadable()) {
+            Debug::printf(Debug::CRITICAL, "%s is not readable!", path.toStdString().c_str());
+            return;
+        }
+
+        QStringList folders = dir.entryList(QDir::AllDirs);
+
+        //check if folder is a level based on whether it has subdirs containing level data
+        if(folders.contains(ESTK_LEVEL_TILE_SUBDIR) || folders.contains(ESTK_LEVEL_METADATA_SUBDIR) || folders.contains(ESTK_LEVEL_AREA_SUBDIR)) {
+            success &= loadLevel(dir.dirName())? true : false;
+
+        //assume regular subdir and recurse
+        } else {
+            Debug::printf(Debug::VERBOSE, "Entering %s subdirectory, scanning for levels.", path.toStdString().c_str());
+
+            TreeNode* subDir = new TreeNode;
+            subDir->setNodeName(dir.dirName());
+            subDir->setNodePath(path);
+            _subDirs[path] = subDir;
+
+            TreeNode* oldNodeParent = _curNodeParent;
+            _curNodeParent->addChild(subDir);
+            _curNodeParent = subDir;
+
+            //Skip '.' and '..' virtual directories
+            for(int i = 2; i < folders.size(); ++i) {
+                scanDirectory(path+QString("/")+folders[i]);
+            }
+
+            _curNodeParent = oldNodeParent;
+        }
+    };
+
+    scanDirectory(getNodePath()); //begin recursive scan
 
     QDir::setCurrent(prevWorkingDir);
     Debug::pop();

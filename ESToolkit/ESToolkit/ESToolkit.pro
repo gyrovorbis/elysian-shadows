@@ -3,16 +3,41 @@
 # And modified to all fuck by Falco ALL THE DAYS
 # -------------------------------------------------
 include(../../qtcreator/ESDev/ESDev.pri)
+#include($QT_INSTALL_DOCS/global/qt-module-defaults.qdocconf)
 win32 {
   #  QMAKE_CXX=../../qtcreator/ESDev/ccache.exe g++
   #  QMAKE_CC=../../qtcreator/ESDev/ccache.exe gcc
 }
 TARGET = ESToolkit
 TEMPLATE = app
-QT		+= gui opengl
+QT		+= sql gui opengl help
 QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-empty-body
+QMAKE_DOCS = ESToolkit.qdocconf
+#if 0
+#include($$QT_INSTALL_DOCS/global/macros.qdocconf) #macros for QDoc commands
+#include($$QT_INSTALL_DOCS/global/qt-cpp-defines.qdocconf) #needed by C++ projects
+#include($$QT_INSTALL_DOCS/global/compat.qdocconf) #compatibility macros
+#include($$QT_INSTALL_DOCS/global/fileextensions.qdocconf) #configuration common among QDoc projects
+#include($$QT_INSTALL_DOCS/global/qt-html-templates-offline.qdocconf) #offline HTML template for documentation shipped to Qt Creator
+#
+
+QMAKE_DOCS = $$PWD/ESToolkit.qdocconf
+
+# FIXME: Refactor into load(qt_docs) or something similar
+# that can be used from all non-module projects that also
+# provide modularized docs, for example qmake.
+QTDIR = $$[QT_HOST_PREFIX]
+exists($$QTDIR/.qmake.cache): \
+	QMAKE_DOCS_OUTPUTDIR = ../../assets/doc
+else: \
+	QMAKE_DOCS_OUTPUTDIR = ../../assets/doc
 
 ICON = resource/images/estk.icns
+
+MOC_DIR		= $$OUT_PWD/temp/moc
+OBJECTS_DIR = $$OUT_PWD/temp/obj
+UI_DIR		= $$OUT_PWD/temp/ui
+RCC_DIR		= $$OUT_PWD/temp/rcc
 
 DEPENDPATH += ../../AssetIO/include/component \
 	../../AssetIO/include/crtp \
@@ -28,12 +53,12 @@ DEPENDPATH += ../../AssetIO/include/component \
 	include/model \
 	include/estk \
 	include/tile_engine \
-    include/core \
+	include/core \
 	../../libGyro/include \
 	../../libGyro/include/kinetic \
 	include/sheet_manager \
 	include/dialog \
-    include/widget \
+	include/widget \
 
 #PRIORITIZED TO REDUCE BUILD TIME ON FUCKING MINGW
 INCLUDEPATH += ../../AssetIO/include/component \
@@ -181,7 +206,8 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     source/sheet_manager/tk_sheet_manager_source_tile_graphics_Item.cpp \
     source/sheet_manager/tk_sheet_manager_source_view.cpp \
     source/tile_engine/tk_source_view.cpp \
-    source/widget/tk_history_dock_widget.cpp
+    source/widget/tk_history_dock_widget.cpp \
+    source/widget/tk_documentation_browser.cpp \
 
 
 HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
@@ -363,7 +389,10 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     include/tile_engine/tk_tile_selection.h \
     include/widget/tk_history_dock_widget.h \
 	include/tile_engine/tk_tile_graphics_item_impl.h \
-    include/tile_engine/tk_dest_view_impl.h
+    include/tile_engine/tk_dest_view_impl.h \
+    include/model/tk_property_item_delegate.h \
+    include/core/tk_lua_qt_utils.h \
+    include/widget/tk_documentation_browser.h
 
 
 FORMS += form/estk/tk_sheet_dock_widget.ui \
@@ -377,6 +406,13 @@ FORMS += form/estk/tk_sheet_dock_widget.ui \
 	form/dialog/tk_engine_settings.ui \
 	form/sheet_manager/tk_sheet_manager_file_dock_widget.ui \
 	form/dialog/tk_lua_explorer.ui
+
+docs.target = ESToolkit.qhc
+docs.commands = qdoc ./ESToolkit.qdocconf --log-progress --debug $$escape_expand(\n\t) qcollectiongenerator ./ESToolkit.qhcp -o ../../assets/doc/ESToolkit.qhc
+
+QMAKE_EXTRA_TARGETS += docs
+
+PRE_TARGETDEPS += ESToolkit.qhc
 
 
 #Create windows manifest requesting ESTk to be run as admin (to run dc-tool as admin)
@@ -404,7 +440,7 @@ macx {
     CONFIG(release, debug|release) {
         DESTDIR = ../../Project
     }
-    QMAKE_POST_LINK = "./ESToolkitAppDereest.command"
+	QMAKE_POST_LINK = macdeployqt $${TARGET}.app
 }
 
 
@@ -536,4 +572,6 @@ linux {
                 #-llua52
 }
 
-DISTFILES +=
+DISTFILES += \
+    ESToolkit.qdocconf \
+	ESToolkit.qhcp

@@ -132,7 +132,7 @@ namespace elysian {
         dbgpush();
 
 		if(!gyFileOpen(filename, "r", &fp)) {
-            Debug::printf(Debug::CRITICAL, "FAILURE!\n");
+            Debug::printf(Debug::CRITICAL, "FAILURE!");
             dbgpop();
 			return false;
 		}

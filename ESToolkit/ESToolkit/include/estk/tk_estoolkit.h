@@ -6,9 +6,11 @@
 #include <QUndoGroup>
 #include "tk_assets.h"
 #include "elysian_lua_manager.hpp"
-#include "elysian_asset_typedefs.hpp"
 
 #define ESTOOLKIT_VERSION				GYRO_LIB_VERSION
+#define ESTOOLKIT_VERSION_NAME          "\"Ambience and Vanity\""
+#define ESTK_USER_MANUAL_HOME_PAGE      "qthelp://elysianshadows.toolkit.help/doc/index.html"
+#define ESTK_USER_MANUAL_DB             "doc/ESToolkit.qhc"
 
 ELYSIAN_ASSET_TYPEDEF(Debug)
 
@@ -231,5 +233,6 @@ private Q_SLOTS:
     void on_actionManual_Camera_toggled(bool arg1);
     void on_actionEnable_Audio_toggled(bool arg1);
     void on_actionReloadProject_triggered();
+    void on_actionDocumentation_triggered();
 };
 #endif // ESTOOLKIT_H

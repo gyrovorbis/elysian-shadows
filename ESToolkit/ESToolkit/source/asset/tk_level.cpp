@@ -357,7 +357,7 @@ bool TkLevel::open(void) {
 											ELYSIAN_TILE_HEIGHT,
 											_tileSheet))
 	{
-        Debug::Log(Debug::CRITICAL, "Failure cutting tilesheet!\n");
+        Debug::Log(Debug::CRITICAL, "Failure cutting tilesheet!");
         success = false;
     }
 
@@ -391,6 +391,7 @@ Area *TkLevel::newArea(const QString n) {
 	_area.push_back(ar);
 	ar->save();
     getAssets()->getEngine()->getLevelSys()->addArea(ar);
+    addChild(ar);
 	Q_EMIT areaAdded(this, ar);
     return ar;
 }
@@ -428,6 +429,7 @@ Area *TkLevel::loadArea(const QString name) {
     //connectSlots(area);
     if(area) {
 		_area.push_back(area);
+        addChild(area);
 		Q_EMIT areaAdded(this, area);
         Debug::pop();
         return area;

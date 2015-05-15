@@ -1,6 +1,7 @@
 #include "tk_animation.h"
-#include "elysian_animation.hpp"
 #include "elysian_entity.hpp"
+
+
 
 TkAnimation::TkAnimation(TkEntity& parent): elysian::AnimationBase(parent) {
     connect(this, SIGNAL(entityParented(Entity*const,Entity*const)), &parent, SLOT(onEntityParented(Entity*const,Entity*const)));

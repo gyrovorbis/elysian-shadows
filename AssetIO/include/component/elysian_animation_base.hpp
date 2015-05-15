@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_ANIMATION_BASE_HPP
 #define ELYSIAN_ANIMATION_BASE_HPP
 
-#include <gyro.h>
+#include <gyro_video_api.h>
 #include <vector>
 #include <map>
 

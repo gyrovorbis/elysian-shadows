@@ -15,7 +15,7 @@ class SheetManagerFileDockWidget : public QDockWidget
     Q_OBJECT
 
 public:
-	explicit SheetManagerFileDockWidget(QWidget *parent = 0);
+    explicit SheetManagerFileDockWidget(QWidget *parent = 0);
 	~SheetManagerFileDockWidget();
 
 Q_SIGNALS:

@@ -176,6 +176,8 @@
     <addaction name="actionHidden_Entities"/>
     <addaction name="separator"/>
     <addaction name="menuDynamic_Lighting"/>
+    <addaction name="separator"/>
+    <addaction name="actionDocumentation"/>
    </widget>
    <widget class="QMenu" name="menuLevel">
     <property name="enabled">
@@ -1267,6 +1269,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionDocumentation">
+   <property name="text">
+    <string>User Manual</string>
    </property>
   </action>
  </widget>

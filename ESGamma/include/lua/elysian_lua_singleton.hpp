@@ -2,7 +2,6 @@
 #define ELYSIAN_LUA_SINGLETON_HPP
 
 #include "elysian_system.hpp"
-#include "elysian_asset_typedefs.hpp"
 
 ELYSIAN_ASSET_TYPEDEF(Debug)
 

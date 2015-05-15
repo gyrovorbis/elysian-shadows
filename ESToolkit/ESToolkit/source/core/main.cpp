@@ -69,7 +69,7 @@ GYAppCbRet Init(int argc, char **argv) {
     QFont splashFont("Arial", 10);
     splashFont.setBold(true);
     painter.setFont(splashFont);
-    painter.drawText(25,82,QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" \"Sex and Candy\" Release"));
+    painter.drawText(25,82,QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" ")+QString(ESTOOLKIT_VERSION_NAME));
     painter.drawText(25,190,"http://elysianshadows.com/tkreleasenotes"); /* This is an invalid URL!!!! */
 
     QSplashScreen splash(splashScreen, Qt::WindowStaysOnTopHint);

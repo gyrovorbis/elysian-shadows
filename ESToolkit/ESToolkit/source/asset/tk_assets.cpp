@@ -280,7 +280,7 @@ Project *Assets::loadProject(const QString directory) {
 
 
     delete proj;
-	Debug::Logf(Debug::VERBOSE, "Could not load project %s!\n", directory.toStdString().c_str());
+    Debug::Logf(Debug::VERBOSE, "Could not load project %s!", directory.toStdString().c_str());
     return nullptr;
 }
 
@@ -311,7 +311,7 @@ bool Assets::removeProject(const QString name) {
         }
 
     //}
-	Debug::Logf(Debug::VERBOSE, "Project %s could not be removed!\n", name.toStdString().c_str());
+    Debug::Logf(Debug::VERBOSE, "Project %s could not be removed!", name.toStdString().c_str());
     return false;
 }
 
