@@ -97,7 +97,7 @@ int gySysInit(void) {
 #else
   "LINUX";
 #endif
-    _gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86 [%s] v%s", platString, GYRO_LIB_VERSION);
+    _gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86 [%s] v%s (Build Timestamp: %s, %s)", platString, GYRO_LIB_VERSION, __DATE__, __TIME__);
     gyDebugSigInit();
     _checkCPUCapabilities();
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
