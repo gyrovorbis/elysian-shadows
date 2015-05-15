@@ -1,6 +1,6 @@
 TEMPLATE = subdirs
-CONFIG += ordered
-CONFIG += console
+CONFIG 	+= ordered
+CONFIG 	+= console
 
 
 SUBDIRS +=  ../../libGyro/qtcreator/libGyro \
