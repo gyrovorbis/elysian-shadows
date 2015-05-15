@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-#define GYRO_LIB_VERSION "1.5.7"
+#define GYRO_LIB_VERSION "1.5.8"
 
 typedef enum _GY_DEBUG_LEVEL { GY_DEBUG_VERBOSE, GY_DEBUG_CRITICAL, GY_DEBUG_FATAL, GY_DEBUG_OFF } GY_DEBUG_LEVEL;
 
