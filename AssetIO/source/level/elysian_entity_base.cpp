@@ -27,7 +27,7 @@ ELYSIAN_LUA_PROXY_FIELDS_EXPORT(EntityBase)
 
 float EntityBase::_oldZ;
 
-EntityBase::EntityBase(const OOLUA::Lua_table_ref valTable) { static_cast<Entity*>(this)->fromTable(valTable); }
+EntityBase::EntityBase(const OOLUA::Lua_table_ref valTable): EntityBase() { static_cast<Entity*>(this)->fromTable(valTable); }
 
 void EntityBase::setTransform(const OOLUA::Lua_table_ref valTable) { _transform.fromTable(valTable); }
 

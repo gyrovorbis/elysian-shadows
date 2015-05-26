@@ -170,9 +170,9 @@ namespace elysian {
         
 	protected:
 		
-        char _name[ELYSIAN_ENTITY_NAME_SIZE]		= ELYSIAN_ENTITY_NAME_DEFAULT;
-        char _dispName[ELYSIAN_ENTITY_NAME_SIZE]    = ELYSIAN_ENTITY_DESC_DEFAULT;
-		bool _componentActive[Component::MAX_TYPE]	= { false };
+        char _name[ELYSIAN_ENTITY_NAME_SIZE]		{ ELYSIAN_ENTITY_NAME_DEFAULT };
+        char _dispName[ELYSIAN_ENTITY_NAME_SIZE]    { ELYSIAN_ENTITY_DESC_DEFAULT };
+        bool _componentActive[Component::MAX_TYPE] { false };
         
         std::map<char const *, Behavior*, ltstr> _behavior;
 
