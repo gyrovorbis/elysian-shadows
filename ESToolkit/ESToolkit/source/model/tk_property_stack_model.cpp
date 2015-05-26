@@ -1,5 +1,6 @@
 #include "tk_property_stack_model.h"
 #include "tk_property_standard_item.h"
+#include <functional>
 
 QStandardItem* PropertyStackModel::createReadOnlyItem(QString name) {
     auto* dummyItem = new QStandardItem(name);
