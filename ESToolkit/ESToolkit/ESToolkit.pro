@@ -458,7 +458,7 @@ RESOURCES += resource/resource.qrc \
 
 macx {
     CONFIG(release, debug|release) {
-        DESTDIR = ../../Project
+		DESTDIR = ../../executable
     }
 	#QMAKE_POST_LINK = macdeployqt $${TARGET}.app
 }
@@ -466,13 +466,13 @@ macx {
 
 win32 {
       CONFIG(release, debug|release) {
-            DESTDIR = ../../Project
+			DESTDIR = ../../executable
       }
 }
 
 linux {
       CONFIG(release, debug|release) {
-            DESTDIR = ../../Project
+			DESTDIR = ../../executable
       }
 }
 
