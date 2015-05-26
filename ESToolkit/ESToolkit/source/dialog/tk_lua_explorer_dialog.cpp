@@ -2,7 +2,7 @@
 #include "ui_tk_lua_explorer.h"
 //#include "luaTableStandardItemModel.h"
 #include <QAbstractItemModel>
-#include <QStyledItemDelegate.h>
+#include <QStyledItemDelegate>
 #include <QLabel>
 
 LuaExplorerDialog::LuaExplorerDialog(QWidget *parent): QDialog(parent), _ui(new Ui::LuaExplorerDialog) {
