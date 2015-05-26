@@ -7,7 +7,7 @@
 #include "elysian_debug.hpp"
 //#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tk_map_system.h")
 #include "elysian_map_system.hpp"
-#include "elysian_timer_system.hpp"
+#include "elysian_timer_system_base.hpp"
 #include "elysian_zcoords.hpp"
 #include "elysian_party_system.hpp"
 
@@ -20,8 +20,13 @@
 
 namespace elysian {
 
-CollisionSystem::CollisionSystem(void) {
+CollisionSystem::CollisionSystem(void):
+    _detectionMonitor("detectEntities"),
+    _tileDetectMonitor("tiles"),
+    _entityDetectMonitor("entities")
+{
     Collidable::_colSys = this;
+    _sortSweepPool.initialize();
 }
 
 //This is a pretty DAMN expensive operation
@@ -36,6 +41,15 @@ void CollisionSystem::render(void) {
 
 void CollisionSystem::update(void) {
 	if(!_enabled) return;
+
+    for(unsigned i = 0; i < _curArea->collidables.size(); ++i) {
+        if(!_curArea->collidables[i]->getSortSweepAABB()) {
+            SortSweepCollidable* sweep = &_sortSweepPool.claimFreeEntry();
+            sweep->collidable = _curArea->collidables[i];
+            _curArea->collidables[i]->setSortSweepAABB(sweep);
+        }
+    }
+
 	//prepareGeometry();
 	detectCollisions();
     resolvePenetration();
@@ -359,26 +373,56 @@ void CollisionSystem::renderEntities(void) {
 void CollisionSystem::detectCollisions(void) {
 	unsigned i = 0;
 
+	getTimerSys()->pushTaskMonitor(&_detectionMonitor);
+
 	//reset contact counters
 	_contactAmount = 0;
+	_entityEntityChecks = 0;
 	for(; i < _curArea->collidables.size(); ++i) _curArea->collidables[i]->_contactCount = 0;
-    if(getEngineState() != System::ENGINE_ESTK_STOP) {
-	for(i = 0; i < _curArea->collidables.size(); ++i) {
-        if(!_curArea->collidables[i]->_active || !_curArea->collidables[i]->_worldSpace) continue;
-        _detectEntityTileZCollisionCoarse(*_curArea->collidables[i]);
-        detectEntityCollision(i);
-        if(_curArea->collidables[i]->getAttrib()->getFlags()->checkAgainst & CollisionFlags::TILE) {
-            _detectEntityTileCollisionCoarse(*_curArea->collidables[i]);
-        }
-	} 
-    }
 
+    if(getEngineState() != System::ENGINE_ESTK_STOP) {
+
+		getTimerSys()->pushTaskMonitor(&_tileDetectMonitor);
+
+		//Entity v Tile Collision Detection
+        for(i = 0; i < _curArea->collidables.size(); ++i) {
+            if(!_curArea->collidables[i]->_active || !_curArea->collidables[i]->_worldSpace) continue;
+            _detectEntityTileZCollisionCoarse(*_curArea->collidables[i]);
+            if(_curArea->collidables[i]->getAttrib()->getFlags()->checkAgainst & CollisionFlags::TILE) {
+                _detectEntityTileCollisionCoarse(*_curArea->collidables[i]);
+            }
+        }
+
+		getTimerSys()->popTaskMonitor(&_tileDetectMonitor);
+
+		//Entity v Entity Collision Detection
+		getTimerSys()->pushTaskMonitor(&_entityDetectMonitor);
+
+		if(!_broadPhase) {
+			for(i = 0; i < _curArea->collidables.size(); ++i) {
+				detectEntityCollision(i);
+			}
+		} else {
+			_sortSweepPool.sortAndSweep();
+            for(unsigned i = 0; i < _sortSweepPool.getContactCount(); ++i) {
+                _detectEntityEntityCollision(_sortSweepPool.getContactBodyA(i)->getEntity(), _sortSweepPool.getContactBodyB(i)->getEntity());
+            }
+
+		}
+
+		getTimerSys()->popTaskMonitor(&_entityDetectMonitor);
+
+    }
+/*
     //Check GUI-layer collidables
     for(i = 0; i < _curArea->collidables.size(); ++i) {
         if(!_curArea->collidables[i]->_active || _curArea->collidables[i]->_worldSpace) continue;
         detectEntityCollision(i);
     }
     //_sortSweepPool.sortAndSweep();
+*/
+
+	getTimerSys()->popTaskMonitor(&_detectionMonitor);
 }
 
 void CollisionSystem::_detectEntityTileZCollisionCoarse(Collidable& /*collidable*/) {
@@ -583,29 +627,31 @@ if(worldSpace) {
     return contact;
 }
 
-//Looks correct algorithmically.
-void CollisionSystem::detectEntityCollision(const unsigned i) {
-	Collidable *bodyA = _curArea->collidables[i];
-	Collidable *bodyB;
-	int swapFlag;
+bool CollisionSystem::_detectEntityEntityCollision(Entity * const entity1, Entity * const entity2) {
+    Collidable* bodyA = entity1->getCollidable();
+    Collidable* bodyB = entity2->getCollidable();
+    int swapFlag;
     float aBot, aTop;
     float bBot, bTop;
     float zBot, zTop;
     bool zTopFound, zBotFound;
-    
-    gyColliderCurrent(&bodyA->_collider.col, bodyA->getAttrib()->getStaticAttrib());
-    
-	for(unsigned j = i+1; j < _curArea->collidables.size(); ++j) {
-		bodyB = _curArea->collidables[j];
-        bool worldSpace = bodyA->_worldSpace;
-			
-		//Return if collision flags don't match OR
-		//if both are on different z-planes.
-        if(bodyB->_worldSpace != worldSpace) continue;
-        if(!(bodyA->getAttrib()->flags.checkAgainst & bodyB->getAttrib()->flags.type)
-                /* || bodyA->getEntity()->getElev() != bodyB->getEntity()->getElev() */) continue;
+    bool retVal = false;
 
-        if(worldSpace) {
+	_entityEntityChecks++;
+
+	if(!bodyB || !bodyA) return false;
+
+    gyColliderCurrent(&bodyA->_collider.col, bodyA->getAttrib()->getStaticAttrib());
+
+    bool worldSpace = bodyA->_worldSpace;
+
+    //Return if collision flags don't match OR
+    //if both are on different z-planes.
+    if(bodyB->_worldSpace != worldSpace) return false;
+    if(!(bodyA->getAttrib()->flags.checkAgainst & bodyB->getAttrib()->flags.type)
+            /* || bodyA->getEntity()->getElev() != bodyB->getEntity()->getElev() */) return false;
+
+    if(worldSpace) {
         //solve for overlapping z/elevation region
         aBot = bodyA->getCollider()->worldPos.z;
         aTop = aBot + bodyA->getWorldSize().z;
@@ -637,7 +683,7 @@ void CollisionSystem::detectEntityCollision(const unsigned i) {
         }
 
         //No overlap!
-        if(!zTopFound || !zBotFound) continue;
+        if(!zTopFound || !zBotFound) return false;
 
         if(zBot == aBot) {
             //adjustments go to bodyB
@@ -655,59 +701,60 @@ void CollisionSystem::detectEntityCollision(const unsigned i) {
             }
         }
 
-}
+    }
 
-		if(gyCollision(&bodyB->_collider.col, bodyB->getAttrib()->getStaticAttrib(), &_contactPool[_contactAmount], &swapFlag)) {
-			++bodyA->_contactCount;
-			++bodyB->_contactCount;
+    if(gyCollision(&bodyB->_collider.col, bodyB->getAttrib()->getStaticAttrib(), &_contactPool[_contactAmount], &swapFlag)) {
+        ++bodyA->_contactCount;
+        ++bodyB->_contactCount;
 
-           float zDiff;// =  (zTop == aTop)? (aTop-bBot) : -((bTop-aBot));
+       float zDiff;// =  (zTop == aTop)? (aTop-bBot) : -((bTop-aBot));
 
-			if(!swapFlag) { 
-				_contactPool[_contactAmount]._bodyA = bodyA;
-				_contactPool[_contactAmount]._bodyB = bodyB;
+        if(!swapFlag) {
+            _contactPool[_contactAmount]._bodyA = bodyA;
+            _contactPool[_contactAmount]._bodyB = bodyB;
 
-                if(worldSpace) {
-                if(zTop == aTop && zBot == bBot) {
-                    zDiff = aTop-bBot;
-                } else if(zTop == bTop && zBot == aBot) {
-                    zDiff = aBot-bTop;
-                } else zDiff = 100.0f;
-                }
-
-			}
-			else {
-				_contactPool[_contactAmount]._bodyB = bodyA;
-				_contactPool[_contactAmount]._bodyA = bodyB;
-
-                if(worldSpace) {
-                if(zTop == aTop && zBot == bBot) {
-                    zDiff = aBot-bTop;
-                } else if(zTop == bTop && zBot == aBot) {
-                    zDiff = aTop-bBot;
-                } else zDiff = 100.0f;
-                }
-			}
-
-            _contactPool[_contactAmount]._resolvePen		= (bodyA->_resolvePen && bodyB->_resolvePen);
-			_contactPool[_contactAmount]._eventMonitorMask	= (bodyA->_eventMonitorMask | bodyB->_eventMonitorMask);
-
-        //    float zDiff = zTop-zBot;
-
-            _contactPool[_contactAmount].setZDepth(worldSpace? zDiff : 0.0f);
-			
-			//Emit onCollide trigger for any entitjjies with this component
-            //getBehavSys()->onCollide(bodyA->getEntity(), bodyB);
-			//getBehavSys()->onCollide(bodyB->getEntity(), bodyA)
-
-			
-            if(++_contactAmount == ELYSIAN_COLLISION_CONTACT_LIST_SIZE) {
-                _contactAmount -= 2;
-                break; //MAXXED OUT -- NOT GOOD ENOUGH
+            if(worldSpace) {
+            if(zTop == aTop && zBot == bBot) {
+                zDiff = aTop-bBot;
+            } else if(zTop == bTop && zBot == aBot) {
+                zDiff = aBot-bTop;
+            } else zDiff = 100.0f;
             }
-		}
 
-        if(worldSpace) {
+        }
+        else {
+            _contactPool[_contactAmount]._bodyB = bodyA;
+            _contactPool[_contactAmount]._bodyA = bodyB;
+
+            if(worldSpace) {
+            if(zTop == aTop && zBot == bBot) {
+                zDiff = aBot-bTop;
+            } else if(zTop == bTop && zBot == aBot) {
+                zDiff = aTop-bBot;
+            } else zDiff = 100.0f;
+            }
+        }
+
+        _contactPool[_contactAmount]._resolvePen		= (bodyA->_resolvePen && bodyB->_resolvePen);
+        _contactPool[_contactAmount]._eventMonitorMask	= (bodyA->_eventMonitorMask | bodyB->_eventMonitorMask);
+
+    //    float zDiff = zTop-zBot;
+
+        _contactPool[_contactAmount].setZDepth(worldSpace? zDiff : 0.0f);
+        retVal = true;
+
+        //Emit onCollide trigger for any entitjjies with this component
+        //getBehavSys()->onCollide(bodyA->getEntity(), bodyB);
+        //getBehavSys()->onCollide(bodyB->getEntity(), bodyA)
+
+
+        if(++_contactAmount == ELYSIAN_COLLISION_CONTACT_LIST_SIZE) {
+            _contactAmount -= 2;
+            return false;
+        }
+    }
+
+    if(worldSpace) {
         if(zBot == aBot) {
             //adjustments go to bodyB
             float zOffset = aBot - bBot;
@@ -723,11 +770,20 @@ void CollisionSystem::detectEntityCollision(const unsigned i) {
                // for(unsigned i = 0; i < 4; ++i) ((GYBoxCollider*)bodyA->getCollider())->worldVert[i].y += zOffset;
             }
         }
-        }
+    }
+    return retVal;
+}
 
+//Looks correct algorithmically.
+void CollisionSystem::detectEntityCollision(const unsigned i) {
+    
+	for(unsigned j = i+1; j < _curArea->collidables.size(); ++j) {
+        _detectEntityEntityCollision(_curArea->collidables[i]->getEntity(), _curArea->collidables[j]->getEntity());
 	}
 }
 
+
+//FOR FUCKING TILES
 inline void CollisionSystem::_detectCollidableColliderCollision(Collidable &collidable, GYCollider &collider) {
 	int swapFlag;
 
@@ -1128,7 +1184,7 @@ bool CollisionSystem::resolvePenetration(void) {
 
 	_conResIter = iter;
 
-    if(iter == ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS) Debug::printf(Debug::CRITICAL, "OUT OF PENETRATION ITERATIONS!", iter);
+   // if(iter == ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS) Debug::printf(Debug::CRITICAL, "OUT OF PENETRATION ITERATIONS!", iter);
 
 	return true; 
 }

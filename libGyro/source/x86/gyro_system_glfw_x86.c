@@ -84,9 +84,11 @@ static void _checkCPUCapabilities(void) {
 #include <imagehlp.h>
 #endif
 
+static GYSysParams _sysParams;
+
 void gyDebugSigInit(void);
 
-int gySysInit(void) {
+int gySysInit(const GYSysParams*const params) {
     //gyDebugInit();
 
   const char* platString =
@@ -103,6 +105,8 @@ int gySysInit(void) {
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
     glfwInit();
 #endif
+
+    memcpy(&_sysParams, params, sizeof(GYSysParams));
 
     return 1;
 }
@@ -189,7 +193,13 @@ static void gyDebugSigHandler(int sig, siginfo_t* info, void* unused) {
         _gyLog(GY_DEBUG_FATAL, "	%s", symbols[i]);
     _gyLog(GY_DEBUG_FATAL, "**** END C/++ BACKTRACE ****");
 
-    exit(1);
+
+    if(_sysParams.segFaultHandler) {
+        _sysParams.segFaultHandler(_sysParams.context);
+    } else {
+        _gyLog(GY_DEBUG_VERBOSE, "Exitting with default segfault handler.");
+        exit(1);
+    }
 }
 #elif defined(_WIN32)
 

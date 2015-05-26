@@ -23,7 +23,7 @@ HistoryDockWidget::HistoryDockWidget(QWidget *parent) :
     setWidget(m_undoView);
 }
 
-HistoryDockWidget::~HistoryDockWidget()
+HistoryDockWidget::~HistoryDockWidget(void)
 {
     delete ui;
 }

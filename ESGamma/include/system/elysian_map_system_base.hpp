@@ -10,11 +10,11 @@
 #include "elysian_mem_pool.hpp"
 #include "elysian_entity.hpp"
 #include "elysian_light_system.hpp"
-#include "elysian_asset_typedefs.hpp"
 #include "elysian_entity.hpp"
 #include <elysian_tile.hpp>
 #include "elysian_area.hpp"
 #include <elysian_level.hpp>
+#include <elysian_timer_system.hpp>
 
 #include <gyro_math_api.h>
 #include <gyro_matrix_api.h>

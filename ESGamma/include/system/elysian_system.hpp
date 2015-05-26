@@ -4,6 +4,7 @@
 #include "elysian_level_manager.hpp"
 
 ELYSIAN_ASSET_TYPEDEF(MapSystem)
+ELYSIAN_ASSET_TYPEDEF(TimerSystem)
 ELYSIAN_ASSET_TYPEDEF(Debug)
 
 namespace elysian {
@@ -12,7 +13,6 @@ namespace elysian {
 	class AnimationSystem;
 	class CharacterSystem;
 	class PartySystem;
-	class TimerSystem;
 	class WarpSystem;
 	class CollisionSystem;
 	class GuiSystem;

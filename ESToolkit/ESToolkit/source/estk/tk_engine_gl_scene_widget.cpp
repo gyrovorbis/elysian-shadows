@@ -4,8 +4,11 @@
 #include "tk_engine_gl_scene_widget.h"
 #include <glal/gyro_video_glal.h>
 #include "elysian_engine.hpp"
+#include <elysian_timer_system.hpp>
 #include "elysian_light_system.hpp"
 #include "tk_map_view.h"
+#include <QOpenGLDebugLogger>
+#include <QOpenGLDebugMessage>
 
 #include <QMouseEvent>
 #include <spine/spine.h>
@@ -27,7 +30,9 @@ void EngineGLSceneWidget::doneCurrentContext(void) {
 }
 
 EngineGLSceneWidget::EngineGLSceneWidget(QWidget *parent):
-    QGLWidget(parent) {
+    QGLWidget(parent),
+    _engineTask("ESGamma")
+{
     assert(!_self);
             _self = this;
             setAttribute(Qt::WA_NativeWindow);
@@ -71,6 +76,22 @@ makeCurrent();
       // glalVidOglInit(1280, 720, 1280, 720);
   //  glalVidOglInit(parentWidth, parentHeight, parentWidth, parentHeight);
      if(getAssets()->getEngine()) getAssets()->getEngine()->getCameraSys()->initializeProjMatrix();
+
+	// auto* ctx = QOpenGLContext::currentContext();
+	// if(ctx && ctx->hasExtension(QByteArrayLiteral("GL_KHR_debug"))) {
+		 Debug::Logf(Debug::VERBOSE, "Initializing OpenGL debug logger.");
+         _glLogger = new QOpenGLDebugLogger(this);
+         connect(_glLogger, &QOpenGLDebugLogger::messageLogged, this, &EngineGLSceneWidget::_onGLMessageLogged);
+		 if(_glLogger->initialize()) {
+			 Debug::Logf(Debug::VERBOSE, "OpenGL debug logger initialized successfullly.");
+			 _glLogger->startLogging();
+		 } else {
+			 Debug::Logf(Debug::VERBOSE, "OpenGL debug logger could not be initialized.");
+		 }
+
+	// } else {
+	//	 Debug::Logf(Debug::VERBOSE, "OpenGL debug logger extensions not detected!");
+	// }
 
     // _mapView->setSceneRect(0, 0, parentWidth, parentHeight);
 
@@ -186,6 +207,8 @@ void EngineGLSceneWidget::paintGL(void) {
     spSkeleton_updateWorldTransform(skeleton);
 #endif
 
+	getAssets()->getEngine()->getTimerSys()->pushTaskMonitor(&_engineTask);
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gyMatLoadIdentity();
 
@@ -213,7 +236,7 @@ void EngineGLSceneWidget::paintGL(void) {
 
      // context()->swapBuffers(context()->surface()); // DO QOPENGL WIDGET'S FUCKING JOB FOR IT!
         //  update();
-
+	getAssets()->getEngine()->getTimerSys()->popTaskMonitor(&_engineTask);
 
     Q_EMIT engineUpdated();
 }
@@ -242,4 +265,8 @@ void EngineGLSceneWidget::_onContextAboutToBeDestroyed(void) {
 
 void EngineGLSceneWidget::_onResized(void) {
     qDebug() << "RESIZERY!!!!";
+}
+
+void EngineGLSceneWidget::_onGLMessageLogged(const QOpenGLDebugMessage &message) {
+    dbgprintf(message.message().toStdString().c_str());
 }

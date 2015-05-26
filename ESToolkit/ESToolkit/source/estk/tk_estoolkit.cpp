@@ -11,6 +11,8 @@
 #include <QStatusBar>
 #include <QDebug>
 #include <gyro_video_api.h>
+#include <tk_task_monitor_dialog.h>
+#include <QOpenGLDebugLogger>
 
 #include <gyro_file_api.h>
 #include "tk_engine_gl_scene_widget.h"
@@ -56,6 +58,7 @@
 #include <QHelpContentWidget>
 #include <QHelpIndexWidget>
 #include <QSplitter>
+#include <tk_gitlab_manager.h>
 
 ESToolkit* ESToolkit::_instance = nullptr;
 
@@ -294,8 +297,17 @@ void ESToolkit::_engineInitialize(void) {
 
 #endif
 #endif
+	GYSysParams sysParams = {new std::function<void()>([&](void) {
+						GitlabManager::createNewIssue("FUCKING CHRIST!!!!");
 
-    gySysInit();
+
+								 exit(0);
+				  }),
+					[](void* ptr) {
+						(*static_cast<std::function<void()>*>(ptr))();
+				  }
+            };
+    gySysInit(&sysParams);
     //gyVidInit(&vidParams);
     gyAudInit();
     //gyTimerInit();
@@ -1767,6 +1779,11 @@ void ESToolkit::on_actionCommands_toggled(bool arg1)
 
 void ESToolkit::on_actionMap_Background_toggled(bool arg1)
 {
+	auto* dialog = new TaskMonitorDialog;
+	if(_assets.getCurrentProject()) {
+		dialog->setModel(_assets.getEngine()->getTimerSys());
+		dialog->show();
+	}
     TkMapSystem::setRenderMapBackground(arg1);
 }
 
@@ -1981,6 +1998,7 @@ void ESToolkit::on_actionEnable_Audio_toggled(bool arg1)
     if(_assets.getEngine()) {
         _assets.getEngine()->getAudioSys()->setEnabled(arg1);
     }
+
 }
 
 

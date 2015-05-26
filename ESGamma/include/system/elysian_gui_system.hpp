@@ -8,7 +8,7 @@
 #include "elysian_asset_typedefs.hpp"
 #include "elysian_entity.hpp"
 
-#include <gyro.h>
+#include <gyro_video_api.h>
 
 #define ASSETS_VROOT                                "/assets"
 

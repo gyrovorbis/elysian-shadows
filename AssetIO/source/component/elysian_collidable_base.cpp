@@ -64,7 +64,7 @@ void CollidableBase::update(void) {
     gyVec3Sub(&_worldSize, (GYVector3*)&_collider.box.worldVert[2], (GYVector3*)&_collider.box.worldVert[0]);
     _worldSize.z *= -1.0f;
 
-    //_updateSortSweepAABB();
+    _updateSortSweepAABB();
 
 }
     
@@ -108,17 +108,18 @@ void CollidableBase::render(void) {
 }
 
 void CollidableBase::_updateSortSweepAABB(void) {
-#if 0
     float startX = (getEntity()->getArea()->width)*32.0f;
-    float endX = 0;
-    float startY = (_curArea->height)*32.0f;
-    float endY = 0;
+    float endX = 0.0f;
+    float startY = (getEntity()->getArea()->height)*32.0f;
+    float endY = 0.0f;
     auto checkBoundary = [&](GYVector4& vert) {
         if(vert.x < startX) startX = vert.x;
         if(vert.x > endX) endX = vert.x;
         if(vert.y < startY) startY = vert.y;
         if(vert.y > endY) endY = vert.y;
     };
+
+	if(!_sortSweepAABB) return;
 
     for(unsigned i = 0; i < 4; ++i) checkBoundary(_collider.box.worldVert[i]);
 
@@ -133,11 +134,21 @@ void CollidableBase::_updateSortSweepAABB(void) {
     _sortSweepAABB->max[2] = _collider.box.worldVert[0].z;
 #   endif
 #endif
-#endif
 }
 
+
+/*
+for(i = 0; i < _curArea->collidables.size(); ++i) {
+    if(!_curArea->collidables[i]->_active || !_curArea->collidables[i]->_worldSpace) continue;
+    _detectEntityTileZCollisionCoarse(*_curArea->collidables[i]);
+    detectEntityCollision(i);
+    if(_curArea->collidables[i]->getAttrib()->getFlags()->checkAgainst & CollisionFlags::TILE) {
+        _detectEntityTileCollisionCoarse(*_curArea->collidables[i]);
+    }
+}*/
+
 bool CollidableBase::checkFullCollision(Collidable* col) {
-    return _colSys->detectCollidableCollidableCollision(static_cast<Collidable*>(this), col);
+    return _colSys->_detectEntityEntityCollision(getEntity(), col->getEntity());
 }
 
 
@@ -145,6 +156,8 @@ bool CollidableBase::checkFullCollision(Collidable* col) {
 bool CollidableBase::checkAABBCollision(Collidable* col) {
     SortSweepCollidable* b = col->_sortSweepAABB;
     auto* a = _sortSweepAABB;
+
+
 
     return (((a->min[0] > b->min[0] && a->min[0] < b->max[0]) || (b->min[0] > a->min[0] && b->min[0] < a->max[0])) &&
             ((a->min[1] > b->min[1] && a->min[1] < b->max[1]) || (b->min[1] > a->min[1] && b->min[1] < a->max[1])));// &&
@@ -154,6 +167,8 @@ bool CollidableBase::checkAABBCollision(Collidable* col) {
 void CollidableBase::setSortSweepAABB(SortSweepCollidable* sweep) {
     _sortSweepAABB = sweep;
 }
+
+SortSweepCollidable* CollidableBase::getSortSweepAABB(void) const { return _sortSweepAABB; }
 
 template<>
 unsigned SortSweepCollidable::curIndex = 0;

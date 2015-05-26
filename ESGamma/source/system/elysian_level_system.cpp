@@ -83,7 +83,7 @@ bool LevelSystem::switchArea(const char *const dir) {
         getPartySys()->removePartyFromArea();
         _removePersistentEntities();
         _curArea->deactivate();
-        getCollisionSys()->clearContacts();
+        getCollisionSys()->onAreaExit();
         getMapSys()->deactivateArea();
     }
 
@@ -102,6 +102,7 @@ bool LevelSystem::switchArea(const char *const dir) {
         getPartySys()->addPartyToArea();
         _addPersistentEntities();
         getBehavSys()->callTriggers(Behavior::ON_ENTER);
+        getCollisionSys()->onAreaEnter();
         return true;
     }
 
@@ -123,6 +124,7 @@ bool LevelSystem::switchArea(const char *const dir) {
     getPartySys()->addPartyToArea();
     _addPersistentEntities();
     getBehavSys()->callTriggers(Behavior::ON_ENTER);
+    getCollisionSys()->onAreaEnter();
     getAudioSys()->update();
     return true;
 }

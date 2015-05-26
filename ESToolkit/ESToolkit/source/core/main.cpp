@@ -11,6 +11,7 @@
 #include <QGLFormat>
 #include <initializer_list>
 #include <iostream>
+#include <QOpenGLContext>
 
 #include "elysian_engine.hpp"
 #include "elysian_debug.hpp"
@@ -42,6 +43,7 @@ GYAppCbRet Init(int argc, char **argv) {
     //fmt.setAlphaBufferSize(8);
     fmt.setVersion( 3, 3 );
     fmt.setProfile( QSurfaceFormat::CoreProfile ); // Requires >=Qt-4.8.0
+    fmt.setOption(QSurfaceFormat::DebugContext);
     // Set the default GL format to OpenGL 3.2 Core
     QSurfaceFormat::setDefaultFormat(fmt);
 

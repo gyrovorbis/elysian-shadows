@@ -10,9 +10,9 @@ win32 {
 }
 TARGET = ESToolkit
 TEMPLATE = app
-QT		+= sql gui opengl help
+QT		+= sql gui opengl network help
 QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-empty-body
-QMAKE_DOCS = ESToolkit.qdocconf
+#QMAKE_DOCS = ESToolkit.qdocconf
 #if 0
 #include($$QT_INSTALL_DOCS/global/macros.qdocconf) #macros for QDoc commands
 #include($$QT_INSTALL_DOCS/global/qt-cpp-defines.qdocconf) #needed by C++ projects
@@ -21,23 +21,23 @@ QMAKE_DOCS = ESToolkit.qdocconf
 #include($$QT_INSTALL_DOCS/global/qt-html-templates-offline.qdocconf) #offline HTML template for documentation shipped to Qt Creator
 #
 
-QMAKE_DOCS = $$PWD/ESToolkit.qdocconf
+#QMAKE_DOCS = $$PWD/ESToolkit.qdocconf
 
 # FIXME: Refactor into load(qt_docs) or something similar
 # that can be used from all non-module projects that also
 # provide modularized docs, for example qmake.
-QTDIR = $$[QT_HOST_PREFIX]
-exists($$QTDIR/.qmake.cache): \
-	QMAKE_DOCS_OUTPUTDIR = ../../assets/doc
-else: \
-	QMAKE_DOCS_OUTPUTDIR = ../../assets/doc
-
+#QTDIR = $$[QT_HOST_PREFIX]
+#exists($$QTDIR/.qmake.cache): \
+#	QMAKE_DOCS_OUTPUTDIR = ../../assets/doc
+#else: \
+#	QMAKE_DOCS_OUTPUTDIR = ../../assets/doc
+#
 ICON = resource/images/estk.icns
 
-MOC_DIR		= $$OUT_PWD/temp/moc
-OBJECTS_DIR = $$OUT_PWD/temp/obj
-UI_DIR		= $$OUT_PWD/temp/ui
-RCC_DIR		= $$OUT_PWD/temp/rcc
+#MOC_DIR		= $$OUT_PWD/temp/moc
+#OBJECTS_DIR = $$OUT_PWD/temp/obj
+#UI_DIR		= $$OUT_PWD/temp/ui
+#RCC_DIR		= $$OUT_PWD/temp/rcc
 
 DEPENDPATH += ../../AssetIO/include/component \
 	../../AssetIO/include/crtp \
@@ -142,7 +142,6 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../ESGamma/source/system/elysian_rigid_body_system.cpp \
     ../../ESGamma/source/system/elysian_skeleton_system.cpp \
     ../../ESGamma/source/system/elysian_system.cpp \
-    ../../ESGamma/source/system/elysian_timer_system.cpp \
     ../../ESGamma/source/system/elysian_warp_system.cpp \
     ../../ESGamma/source/utility/elysian_debug_base.cpp \
     ../../ESGamma/source/utility/elysian_event_monitor.cpp \
@@ -208,6 +207,13 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     source/tile_engine/tk_source_view.cpp \
     source/widget/tk_history_dock_widget.cpp \
     source/widget/tk_documentation_browser.cpp \
+    ../../ESGamma/source/utility/elysian_task_monitor_base.cpp \
+    source/model/tk_task_monitor.cpp \
+    source/widget/tk_pie_chart_view.cpp \
+    source/dialog/tk_task_monitor_dialog.cpp \
+    ../../ESGamma/source/system/elysian_timer_system_base.cpp \
+    source/estk/tk_timer_system.cpp \
+    source/core/tk_gitlab_manager.cpp
 
 
 HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
@@ -286,7 +292,6 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../ESGamma/include/system/elysian_rigid_body_system.hpp \
     ../../ESGamma/include/system/elysian_skeleton_system.hpp \
     ../../ESGamma/include/system/elysian_system.hpp \
-    ../../ESGamma/include/system/elysian_timer_system.hpp \
     ../../ESGamma/include/system/elysian_warp_system.hpp \
     ../../ESGamma/include/utility/elysian_debug_base.hpp \
     ../../ESGamma/include/utility/elysian_event_monitor.hpp \
@@ -392,7 +397,17 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     include/tile_engine/tk_dest_view_impl.h \
     include/model/tk_property_item_delegate.h \
     include/core/tk_lua_qt_utils.h \
-    include/widget/tk_documentation_browser.h
+    include/widget/tk_documentation_browser.h \
+    ../../ESGamma/include/utility/elysian_task_monitor_base.hpp \
+    ../../ESGamma/include/crtp/elysian_task_monitor.hpp \
+    include/model/tk_task_monitor.h \
+    include/widget/tk_pie_chart_view.h \
+    include/dialog/tk_task_monitor_dialog.h \
+    ../../ESGamma/include/system/elysian_timer_system_base.hpp \
+    ../../ESGamma/include/crtp/elysian_timer_system.hpp \
+    source/estk/tk_timer_system.h \
+    include/estk/tk_timer_system.h \
+    include/core/tk_gitlab_manager.h
 
 
 FORMS += form/estk/tk_sheet_dock_widget.ui \
@@ -407,12 +422,12 @@ FORMS += form/estk/tk_sheet_dock_widget.ui \
 	form/sheet_manager/tk_sheet_manager_file_dock_widget.ui \
 	form/dialog/tk_lua_explorer.ui
 
-docs.target = ESToolkit.qhc
-docs.commands = qdoc ./ESToolkit.qdocconf --log-progress --debug $$escape_expand(\n\t) qcollectiongenerator ./ESToolkit.qhcp -o ../../assets/doc/ESToolkit.qhc
+#docs.target = ESToolkit.qhc
+#docs.commands = qdoc ./ESToolkit.qdocconf --log-progress --debug $$escape_expand(\n\t) qcollectiongenerator ./ESToolkit.qhcp -o ../../assets/doc/ESToolkit.qhc
 
-QMAKE_EXTRA_TARGETS += docs
+#QMAKE_EXTRA_TARGETS += docs
 
-PRE_TARGETDEPS += ESToolkit.qhc
+#PRE_TARGETDEPS += ESToolkit.qhc
 
 
 #Create windows manifest requesting ESTk to be run as admin (to run dc-tool as admin)
@@ -431,6 +446,11 @@ macx {
     #CONFIG(release, debug|release) {
      #  QMAKE_POST_LINK = "macdeployqt TARGET"
     #}
+}
+
+opencl {
+	LIBS += -framework OpenCL
+	QMAKE_CXXFLAGS += -DELYSIAN_OPENCL_ACCELERATED
 
 }
 
@@ -440,7 +460,7 @@ macx {
     CONFIG(release, debug|release) {
         DESTDIR = ../../Project
     }
-	QMAKE_POST_LINK = macdeployqt $${TARGET}.app
+	#QMAKE_POST_LINK = macdeployqt $${TARGET}.app
 }
 
 

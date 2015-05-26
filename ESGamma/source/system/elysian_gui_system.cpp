@@ -282,6 +282,8 @@ void GuiSystem::_renderDebugOverlay(void) {
     pragmata18._transform._pos.y += 25.0f;
 	_printDebugLine("Onscreen Lights:", "%d", getLightSys()->getOnscreenLightCount());
     _printDebugLine("Entities:", "%d", getCurrentArea()->entities.size());
+    _printDebugLine("Collision Checks:", "%d", getCollisionSys()->getEntityEntityChecks());
+    _printDebugLine("Collision Time:", "%.4lf", getCollisionSys()->getDetectionTime());
 	_printDebugLine("Contacts:", "%d", getCollisionSys()->getContactCount());
 	_printDebugLine("Pen Res Iter:", "%d", getCollisionSys()->getPenResIterUsed());
 	_printDebugLine("Vel Res Iter:", "%d", getRigidBodySys()->getVelResIterUsed());

@@ -331,6 +331,16 @@ void DebugBase::processInput(GameInput& input) {
 
 	}
 
+    if(input.getTapped(GameInput::BUT_B)) {
+        if(_engine->_collisionSystem->getBroadPhase()) {
+            _engine->_collisionSystem->setBroadPhase(false);
+            Debug::printf(Debug::VERBOSE, "Sort and Sweep Disabled!");
+        } else {
+            _engine->_collisionSystem->setBroadPhase(true);
+            Debug::printf(Debug::VERBOSE, "Sort and Sweep Enabled!");
+        }
+    }
+
 	if(input.getTapped(GameInput::BUT_L)) {
 		ADV_LOG_WRAP newWrap = (_advLogWrap < ADV_LOG_MAX-1)? (ADV_LOG_WRAP)(_advLogWrap+1) : (ADV_LOG_WRAP)0;
 		if(newWrap == ADV_LOG_ALL) Debug::printf(Debug::VERBOSE, "Adventure Log Wrapping Engine Debug");
@@ -340,18 +350,26 @@ void DebugBase::processInput(GameInput& input) {
 	}
 
 	if(input.getTapped(GameInput::BUT_G)) {
+#if 0
 		static bool enabled = true;
 		enabled = !enabled;
 		getRigidBodySys()->setGravityEnabled(enabled);
 		Debug::printf(Debug::VERBOSE, "Gravity %s.", (enabled)? "enabled" : "disabled");
+#else
+        bool usingGPU = _engine->_collisionSystem->_sortSweepPool.getUseGPU();
+
+        _engine->_collisionSystem->_sortSweepPool.setUseGPU(!usingGPU);
+        dbgprintf("Using GPU - %d", !usingGPU);
+
+        _engine->_timerSystem->printTaskStats();
+#endif
 	}
 
 	if(input.getDown(GameInput::BUT_5)) {
-		++intensity;
-		dirVec.z += 0.1f;
-		gyVec3Normalize(&dirVec);
-		src->setDirection(dirVec);
-		printf(VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
+        static bool enabled = true;
+        enabled = !enabled;
+        getRigidBodySys()->setGravityEnabled(enabled);
+        Debug::printf(Debug::VERBOSE, "Gravity %s.", (enabled)? "enabled" : "disabled");
 	}
 	if(input.getTapped(GameInput::BUT_6)) {
 		static bool enabled = false;

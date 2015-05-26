@@ -17,6 +17,8 @@ ELYSIAN_ASSET_TYPEDEF(Debug)
 class QToolButton;
 class QActionGroup;
 class QUndoGroup;
+class QOpenGLDebugLogger;
+class QOpenGLDebugMessage;
 
 namespace Ui {
     class ESToolkit;
@@ -47,16 +49,22 @@ class ESToolkit : public QMainWindow, public elysian::LuaManager {
 public:
                     ESToolkit(QWidget *parent = nullptr);
     virtual         ~ESToolkit(void);
+
+
+                        static void     inspectTable(OOLUA::Lua_table_ref table);
 protected:
     virtual void    changeEvent(QEvent *e) override;
     virtual void    closeEvent(QCloseEvent *event) override;
-public:
+
+protected:
+
+    void            _onGYSysSegFault();
     void            _engineInitialize(void);
     void            _engineLoadAssets(void);
     void            _openProjectDir(const QString dir);
     void            setMainTextureUniform(const int uniform);
 
-    static void     inspectTable(OOLUA::Lua_table_ref table);
+
 private:
 
     static ESToolkit* _instance;

@@ -1,14 +1,18 @@
 #ifndef ENGINE_GL_SCENE_WIDGET_H
 #define ENGINE_GL_SCENE_WIDGET_H
 
-#include "tk_asset_manager.h"
+#include <tk_asset_manager.h>
 #include <QGLWidget>
 #include <QMatrix4x4>
 #include <QQuaternion>
 #include <QVector2D>
 #include <QBasicTimer>
+#include <tk_task_monitor.h>
 //#include <QOpenGLFunctions>
 //#include <QGLFunctions>
+
+class QOpenGLDebugLogger;
+class QOpenGLDebugMessage;
 
 class MapView;
 
@@ -41,15 +45,16 @@ public:
 
 
 protected:
-    QBasicTimer     _timer;
-    unsigned        _width              = 0;
-    unsigned        _height             = 0;
-    bool            _advanceFrame       = false;
-    bool            _cameraManual       = true;
-    bool            _cameraManualOnPlay = false;
-    MapView*        _mapView            = nullptr;
-    bool            _initialized        = false;
-
+    QBasicTimer             _timer;
+    unsigned                _width              = 0;
+    unsigned                _height             = 0;
+    bool                    _advanceFrame       = false;
+    bool                    _cameraManual       = true;
+    bool                    _cameraManualOnPlay = false;
+    MapView*                _mapView            = nullptr;
+    bool                    _initialized        = false;
+    QOpenGLDebugLogger*     _glLogger           = nullptr;
+    TaskMonitor             _engineTask;
 
     static EngineGLSceneWidget* _self;
 
@@ -65,6 +70,8 @@ protected:
 protected Q_SLOTS:
     void    _onContextAboutToBeDestroyed(void);
     void    _onResized();
+
+    void    _onGLMessageLogged(const QOpenGLDebugMessage& message);
 
 Q_SIGNALS:
 

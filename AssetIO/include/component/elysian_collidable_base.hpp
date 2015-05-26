@@ -202,6 +202,7 @@ namespace elysian {
         void                    setWorldSpace(const bool val);
 
         void                    setSortSweepAABB(SortSweepCollidable* sweep);
+        SortSweepCollidable*    getSortSweepAABB(void) const;
         bool                    checkAABBCollision(Collidable* col);
         bool                    checkFullCollision(Collidable* col);
 
@@ -302,8 +303,8 @@ namespace elysian {
     inline CollidableStaticAttrib::CollidableStaticAttrib(void):
         GYStatic {
             { 0.5f, 0.5f, 0.5f },   //damping
-            1.0f/3000.0f,           //invMass
-            0.1f,                   //angDamping
+            1.0f/300.0f,           //invMass
+            0.0f,                   //angDamping
             0.0f,                   //coeffOfRest
             0.0f,                   //invMomOfInertia
             0.0f                    //zCoeffOfRest

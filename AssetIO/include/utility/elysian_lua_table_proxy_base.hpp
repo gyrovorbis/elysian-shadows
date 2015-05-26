@@ -427,9 +427,9 @@ namespace elysian {
             }
             assert(tableDepth == 0); // YOUR SHIT IS MALFORMED, NIGGER. USE MY DSL CORRECTLY FOR FUCK'S SAKE.
 
-                        LuaManager::rPrintByIndex(-1, 100, "__INDEX");
+        //                LuaManager::rPrintByIndex(-1, 100, "__INDEX");
             _propertyProxyNewIndexTable.pull(l);
-                        LuaManager::rPrintByIndex(-1, 100, "__NEWINDEX");
+          //              LuaManager::rPrintByIndex(-1, 100, "__NEWINDEX");
             _propertyProxyIndexTable.pull(l);
 			lua_pop(l, 1);
 

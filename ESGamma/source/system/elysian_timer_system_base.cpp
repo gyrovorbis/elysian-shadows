@@ -1,7 +1,10 @@
 #include "elysian_timer_system.hpp"
 
-#include <gyro.h>
+#include <gyro_timer_api.h>
+#include <cstring>
+#include <cstdio>
 #include <sys/time.h>
+#include <elysian_task_monitor.hpp>
 
 #if 0
 /* copied from mpbench */
@@ -14,13 +17,23 @@ struct timeval tv1,tv2;
 
 namespace elysian {
 
-TimerSystem::TimerSystem(void)
+void TimerSystemBase::startTimerEvent(const float duration, EventMonitor *monitor) {
+    auto& proc = get<SUBPROC_TIMER_EVENT_POOL> ( static_cast<SubProcessManager<TimerSystem,
+                                              TimerEventPool>& >(*this));
+
+    auto& subProc = proc.claimIdleSubProcess();
+    subProc.setDuration(duration);
+    subProc.setEventMonitor(monitor);
+    subProc.start(static_cast<TimerSystem*>(this));
+}
+
+TimerSystemBase::TimerSystemBase(void)
 {
 
     auto& proc = get<SUBPROC_TIMER_EVENT_POOL> ( static_cast<SubProcessManager<TimerSystem,
                                               TimerEventPool>& >(*this));
 
-    proc.start(this);
+    proc.start(static_cast<TimerSystem*>(this));
 
 	for(unsigned i = 0; i < DELTA_TIME_CIRC_BUFFER_SIZE; ++i) {
 		_deltaTimeCircBuffer[i] = _realDeltaCircBuffer[i] = _minFramerate;
@@ -30,14 +43,15 @@ TimerSystem::TimerSystem(void)
     //TIMER_START;
 }
 
-void TimerSystem::update(void) {
+void TimerSystemBase::update(void) {
 	float delta;
 
     //TIMER_STOP;
 
 	//MS since last frame
 	_prevFrameTicks = _curFrameTicks;
-	//_curFrameTicks =
+    _curFrameTicks = gyTimerTicks();
+    //_curFrameTicks =
 	//TIMER_START;
 			//gyTimerTicks();
 
@@ -47,7 +61,7 @@ void TimerSystem::update(void) {
 	//Calculate delta (sec)
 	//_deltaTime = (_curFrameTicks - _prevFrameTicks)/1000.0f;
 #if 1
-    delta = ((float)gyTimerTicks())/1000.0f;
+    delta = ((float)(_curFrameTicks-_prevFrameTicks))/1000000000.0f;
 #else
 	delta = 1/60.0f;
 #endif
@@ -88,7 +102,39 @@ void TimerSystem::update(void) {
 	_totalTime += _deltaTime;
 
     updateSubProcesses(_deltaTime);
+
+    if(_topLevelTask) _topLevelTask->startNewFrame();
 }
+
+
+bool TimerSystemBase::pushTaskMonitor(TaskMonitor*const task) {
+    bool added = true;
+    if(!_currentTask) {
+        _topLevelTask = _currentTask = task;
+    } else if(task != _topLevelTask){
+        added = _currentTask->addChild(task);
+        _currentTask = task;
+    }
+    task->resume();
+    return added;
+}
+
+void TimerSystemBase::popTaskMonitor(TaskMonitor*const task) {
+    assert(_currentTask == task);
+    task->pause();
+    if(task == _topLevelTask) {
+        //_topLevelTask = task->getParent();
+    } else _currentTask = task->getParent();
+}
+
+void TimerSystemBase::printTaskStats(void) {
+    if(_topLevelTask) {
+        _topLevelTask->sortChildrenBySlowest();
+        _topLevelTask->print();
+    }
+
+}
+
 
 }
 

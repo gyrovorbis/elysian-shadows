@@ -3,7 +3,7 @@
 
 #include "elysian_game_input.hpp"
 #include "elysian_system.hpp"
-#include "elysian_asset_typedefs.hpp"
+#include <elysian_task_monitor.hpp>
 
 ELYSIAN_ASSET_TYPEDEF(Debug)
 
@@ -12,20 +12,24 @@ namespace elysian {
 	class Engine: public System {
         friend Debug;
 	private:
-        GYInput     _platInput;
-        MouseInput  _mouseInput;
-        GameInput   _gameInput;
+        GYInput         _platInput;
+        MouseInput      _mouseInput;
+        GameInput       _gameInput;
+
+        TaskMonitor     _updateMonitor;
+        TaskMonitor     _renderMonitor;
+        TaskMonitor     _inputMonitor;
 		
 	public:
-                Engine(void);
-                ~Engine(void);
+                        Engine(void);
+                        ~Engine(void);
 
-        bool    loadAssets(void);
-        ENGINE_STATE getState(void);
+        bool            loadAssets(void);
+        ENGINE_STATE    getState(void);
 
-        void    update(void);
-        void    processInput(void);
-        void    render(void (*func)(void));
+        void            update(void);
+        void            processInput(void);
+        void            render(void (*func)(void));
     };
 
 }

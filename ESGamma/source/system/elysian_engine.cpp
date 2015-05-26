@@ -9,7 +9,7 @@
 #include "elysian_animation_system.hpp"
 #include "elysian_character_system.hpp"
 #include "elysian_party_system.hpp"
-#include "elysian_timer_system.hpp"
+#include "elysian_timer_system_base.hpp"
 #include "elysian_warp_system.hpp"
 #include "elysian_collision_system.hpp"
 #include "elysian_gui_system.hpp"
@@ -32,7 +32,7 @@
 
 namespace elysian {
 
-Engine::Engine(void) {
+Engine::Engine(void): _renderMonitor("render"), _updateMonitor("update"), _inputMonitor("input") {
     srand(time(nullptr));
 
     //gyDebugInit();
@@ -97,6 +97,8 @@ bool Engine::loadAssets(void) {
 
 void Engine::update(void) {
 
+	_timerSystem->pushTaskMonitor(&_updateMonitor);
+
     switch(System::_engineState) {
         case System::ENGINE_NORMAL:
         case System::ENGINE_WARPING:
@@ -158,9 +160,13 @@ void Engine::update(void) {
             break;
     }
 
+
+	_timerSystem->popTaskMonitor(&_updateMonitor);
 }
 
 void Engine::processInput(void) {
+
+	_timerSystem->pushTaskMonitor(&_inputMonitor);
 
     gyInputPoll(&_platInput);
     _mouseInput.poll();
@@ -190,9 +196,13 @@ void Engine::processInput(void) {
         default:
             break;
     }
+
+	_timerSystem->popTaskMonitor(&_inputMonitor);
 }
 
 void Engine::render(void (*func)(void)) {
+
+	_timerSystem->pushTaskMonitor(&_renderMonitor);
 
     switch(System::_engineState) {
         default:
@@ -247,6 +257,8 @@ void Engine::render(void (*func)(void)) {
 
             gyVidSceneEnd();
     }
+
+	_timerSystem->popTaskMonitor(&_renderMonitor);
 }
 
 Engine::~Engine(void) {
