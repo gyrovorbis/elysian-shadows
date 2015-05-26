@@ -1,5 +1,5 @@
 #include <gyro_timer_api.h>
-#include <QElapsedTimer.h>
+#include <QElapsedTimer>
 #include <QApplication>
 
 static QElapsedTimer* timer = NULL;
