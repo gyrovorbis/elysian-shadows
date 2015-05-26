@@ -51,7 +51,7 @@ namespace elysian {
 
 
 
-                            EntityBase(void)	= default;
+                            EntityBase(void);
                             EntityBase(const OOLUA::Lua_table_ref valTable);
         virtual             ~EntityBase(void);
 		
@@ -170,8 +170,8 @@ namespace elysian {
         
 	protected:
 		
-        char _name[ELYSIAN_ENTITY_NAME_SIZE]		{ ELYSIAN_ENTITY_NAME_DEFAULT };
-        char _dispName[ELYSIAN_ENTITY_NAME_SIZE]    { ELYSIAN_ENTITY_DESC_DEFAULT };
+        char _name[ELYSIAN_ENTITY_NAME_SIZE];
+        char _dispName[ELYSIAN_ENTITY_NAME_SIZE];
         bool _componentActive[Component::MAX_TYPE] { false };
         
         std::map<char const *, Behavior*, ltstr> _behavior;
