@@ -158,28 +158,28 @@ void _clPrintDeviceInfo(const cl_device_id device) {
     unsigned            _aabbContactsSize = 0;
 
 #ifdef ELYSIAN_OPENCL_ACCELERATED
-	bool    _useGPU = true;
+    bool        _useGPU = true;
 #else
-	bool	_useGPU = false;
+    bool        _useGPU = false;
 #endif
 
-    void    _sort(void);
-    void    _sweep(void);
+    void        _sort(void);
+    void        _sweep(void);
 
 public:
-            SortSweepAABBPool(void);
+                SortSweepAABBPool(void);
 
-    void    setUseGPU(const bool val=true);
-    bool    getUseGPU(void) const;
+    void        setUseGPU(const bool val=true);
+    bool        getUseGPU(void) const;
 
-    void    initialize(void);
-    void    uninitialize(void);
+    void        initialize(void);
+    void        uninitialize(void);
 
-    void    removeAABB(const SortSweepAABB<T>& body);
-    void    sortAndSweep(void);
+    void        removeAABB(const SortSweepAABB<T>& body);
+    void        sortAndSweep(void);
 
-    T* getContactBodyA(const unsigned index) const;
-    T* getContactBodyB(const unsigned index) const;
+    T*          getContactBodyA(const unsigned index) const;
+    T*          getContactBodyB(const unsigned index) const;
     unsigned    getContactCount(void) const;
 };
 
@@ -254,7 +254,7 @@ inline void SortSweepAABBPool<T>::sortAndSweep(void) {
 template<typename T>
 inline void SortSweepAABBPool<T>::_sweep(void) {
         if(!_useGPU) {
-//#ifndef ELYSIAN_OPENCL_ACCELERATED
+#ifndef ELYSIAN_OPENCL_ACCELERATED
 
         const unsigned curIndex = SortSweepAABB<T>::curIndex;
 
@@ -287,7 +287,7 @@ inline void SortSweepAABBPool<T>::_sweep(void) {
         //if(v[1] > v[0]) SortSweepAABB<T>::curIndex = 1;
         //if(v[2] > v[SortSweepAABB<T>::curIndex]) SortSweepAABB<T>::curIndex = 2;
 	} else {
-//#else
+#else
 
     cl_int status = clEnqueueWriteBuffer(_cmdQueue,
                                   _aabbListBuff,
@@ -365,7 +365,7 @@ inline void SortSweepAABBPool<T>::_sweep(void) {
                                   nullptr);
 		_checkClError(status, "Could not transfer contacts back to host!");
 	}
-//#endif
+#endif
     }
 }
 
