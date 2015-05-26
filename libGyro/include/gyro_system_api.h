@@ -9,9 +9,15 @@ extern "C" {
 
 #define GYRO_LIB_VERSION "1.5.8"
 
+typedef struct GYSysParams {
+    void*   context;
+    void    (*segFaultHandler)(void*);
+
+} GYSysParams;
+
 typedef enum _GY_DEBUG_LEVEL { GY_DEBUG_VERBOSE, GY_DEBUG_CRITICAL, GY_DEBUG_FATAL, GY_DEBUG_OFF } GY_DEBUG_LEVEL;
 
-int gySysInit(void);
+int gySysInit(const GYSysParams*const params);
 int gySysUninit(void);
 
 int gyDebugInit(void);
