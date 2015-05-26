@@ -169,8 +169,8 @@ void CollidableBase::setSortSweepAABB(SortSweepCollidable* sweep) {
 }
 
 SortSweepCollidable* CollidableBase::getSortSweepAABB(void) const { return _sortSweepAABB; }
-
+/*
 template<>
 unsigned SortSweepCollidable::curIndex = 0;
-
+*/
 }

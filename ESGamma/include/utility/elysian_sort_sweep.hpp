@@ -185,6 +185,10 @@ public:
 
 typedef SortSweepAABBPool<Collidable> SortSweepPool;
 
+
+template<typename T>
+unsigned SortSweepAABB<T>::curIndex = 0;
+
 template<typename T>
 inline SortSweepAABBPool<T>::SortSweepAABBPool(void): Pool<SortSweepAABB<T> >(ELYSIAN_SORT_SWEEP_POOL_SIZE) {}
 
