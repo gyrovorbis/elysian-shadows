@@ -457,23 +457,17 @@ opencl {
 RESOURCES += resource/resource.qrc \
 
 macx {
-    CONFIG(release, debug|release) {
-		DESTDIR = ../../executable
-    }
+	DESTDIR = ../../executable
 	#QMAKE_POST_LINK = macdeployqt $${TARGET}.app
 }
 
 
 win32 {
-      CONFIG(release, debug|release) {
-			DESTDIR = ../../executable
-      }
+	DESTDIR = ../../executable
 }
 
 linux {
-      CONFIG(release, debug|release) {
-			DESTDIR = ../../executable
-      }
+	DESTDIR = ../../executable
 }
 
 
