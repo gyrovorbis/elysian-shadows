@@ -581,7 +581,7 @@ linux {
                 -lGL \
                 -lopenal \
                 -lGLU \
-				-lglew \
+				-lGLEW \
                 -lz \
                 -logg \
                 -lvorbis \
