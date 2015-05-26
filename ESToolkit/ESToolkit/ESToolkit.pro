@@ -588,6 +588,7 @@ linux {
                 -lvorbisfile \
                 -lX11 \
                 -lpthread \
+				-lrt
                 #-llua52
 }
 
