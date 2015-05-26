@@ -16,7 +16,7 @@ ForceTarget::ForceTarget(void):
 	GYKinetic {
 		{ 0.0f, 0.0f, 0.0f },		//vel
 		{ 0.0f, 0.0f, 0.0f },		//accel
-		{ 0.0f, 0.0f, 0.0f },		//prevAccel
+        { 0.0f, 0.0f, 0.0f },		//prevAccel
 		{ 0.0f, 0.0f, 0.0f },		//forceAccum
 		0.0f,				//rot
 		0.0f,				//angAccel

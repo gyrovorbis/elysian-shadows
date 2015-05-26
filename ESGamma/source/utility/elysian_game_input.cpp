@@ -18,7 +18,7 @@ void GameInput::translate(const GYInput& platInput, GameInput& gameInput) {
 	if(platInput.keyTapped[GY_KEY_ESC]) exit(0);
 #	endif
 
-	for(unsigned i = 0; i < GY_KEY_LAST; ++i) {
+    for(unsigned i = 0; i < GY_KEY_LAST; ++i) {
 
         switch(i) {
  #if 0

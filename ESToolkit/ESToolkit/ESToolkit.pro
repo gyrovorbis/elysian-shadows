@@ -454,11 +454,11 @@ opencl {
 
 }
 
-RESOURCES += resource/resource.qrc \
+RESOURCES += resource/resource.qrc
 
 macx {
-	DESTDIR = ../../executable
-	CONFIG(release, debug|release): QMAKE_POST_LINK = macdeployqt $${TARGET}.app
+	#DESTDIR = ../../executable
+	CONFIG(release, debug|release): QMAKE_POST_LINK = macdeployqt $${TARGET}.app -verbose=3
 }
 
 
