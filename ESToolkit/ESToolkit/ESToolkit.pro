@@ -578,7 +578,6 @@ macx {
 
 linux {
         LIBS += \
-                -llua5.2 \
                 -lGL \
                 -lopenal \
                 -lGLU \
