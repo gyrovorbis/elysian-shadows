@@ -138,7 +138,7 @@ void gyResolvePenetration(struct _GYContact *con, GYVector2 posDelta[], GYVector
 		if(con->staticAttrib[i]) {
 			float max = angularLimit * gyVec2Magnitude(&con->objPos[i]);
 			//float max = angularLimit * gyVec2DotProd
-			if(abs(angularMove[i]) > max) {
+            if(fabs(angularMove[i]) > max) {
 				float totalMotion = angularMove[i] + linearMove[i];
 				angularMove[i] = (angularMove[i] > 0)? max : -max;
 				linearMove[i] = totalMotion - angularMove[i];
@@ -362,7 +362,7 @@ void gyContactUpdateDeltaVelocity(GYContact*const contact, GYKinetic*const rb1, 
 	}
 
 	//===========NEED AN EPSILON IN THE FUTURE ====
-	contact->coeffOfRest = (abs(contact->closingVel) < 0.1f)? 0.0f : contact->coeffOfRest;
+    contact->coeffOfRest = (fabs(contact->closingVel) < 0.1f)? 0.0f : contact->coeffOfRest;
 
 	contact->deltaVel = -contact->closingVel -
 		contact->coeffOfRest * (contact->closingVel - velocityFromAccel);
