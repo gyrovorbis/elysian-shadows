@@ -329,7 +329,7 @@ void gyVidCamUpdate(const GYCamera *const cam) {
 }
 
 static inline void _flushStreamVertices(void* data) {
-
+    (void)data;
     if(_vertexQueueSize-_vertexQueueLastSize <= 0) return;
     gyVidVertexArrayBind(_streamVao[gyVidShadowPass()]);
 
