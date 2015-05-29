@@ -23,6 +23,7 @@ class SourceView;
 class CheckeredAlphaRectGraphicsItem;
 class MapViewDepthBufferGraphicsItem;
 class SelectionScene;
+class LuaTableStackModel;
 
 struct MapChange {
     QPoint              loc;
@@ -37,6 +38,14 @@ ELYSIAN_ASSET_TYPEDEF(Area)
 class TkArea: /*public PropertyStackModel,*/  public elysian::AreaBase, public TreeNode {
     Q_OBJECT
     friend class Assets;
+
+ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+    ELYSIAN_LUA_PROXY_FIELD(dirName, getDirName)
+   // ELYSIAN_LUA_PROXY_FIELD(name, )
+    //ELYSIAN_LUA_PROXY_FIELD(path, )
+ELYSIAN_LUA_PROXY_FIELDS_END()
+
+
 private:
     //Scene Data
     static unsigned                         _currentSceneWidth;
@@ -48,6 +57,7 @@ private:
     QVector<MapChange>  _mapChanges;
     QUndoStack          _undoStack;
     QString             _location;
+    mutable LuaTableStackModel* _luaModel       = nullptr;
     bool                _active         = false;
     bool                _open           = false;
     bool                _emitMapChange  = true;

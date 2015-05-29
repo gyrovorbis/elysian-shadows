@@ -48,6 +48,16 @@ public:
 };
 
 
+
+
+
+
+
+
+
+
+// =========== INLINEZ ===========
+
 inline void LuaEventMonitor::setTable(OOLUA::Lua_table_ref& table) { _table = table; }
 inline OOLUA::Lua_table_ref& LuaEventMonitor::getTable(void) { return _table; }
 

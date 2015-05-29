@@ -13,12 +13,12 @@ namespace elysian {
 #   include <tk_lua_table_proxy.h>
 
 namespace elysian {
-    template <typename P, typename T>
-    using LuaTableProxy = TkLuaTableProxy<P, T>;
+    template <typename P, typename T, class... Bases>
+    using LuaTableProxy = TkLuaTableProxy<P, T, Bases...>;
 }
 
-template <typename P, typename T>
-using LuaTableProxy = TkLuaTableProxy<P, T>;
+template <typename P, typename T, class... Bases>
+using LuaTableProxy = TkLuaTableProxy<P, T, Bases...>;
 
 #endif
 

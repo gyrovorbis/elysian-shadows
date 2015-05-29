@@ -14,4 +14,3 @@ class PropertyItemDelegate: public QStyledItemDelegate {
 
 
 #endif // TK_PROPERTY_ITEM_DELEGATE_H
-

@@ -33,6 +33,7 @@
 #include "tk_engine_settings_dialog.h"
 #include <tk_sheet_view_tile_graphics_item.h>
 #include "tk_gl_utilities.h"
+#include <elysian_lua_wrappers.hpp>
 #include <tk_selection_scene.h>
 
 #include "tk_asset_dock_widget.h"
@@ -1168,7 +1169,7 @@ void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *cons
     case Selectable::AREA:
         _selectionDockWidget->SetSelectionTreeWidget();
         //static_cast<Area *>(selection)->populateModel();
-        //_selectionDockWidget->SetSelectionModel(static_cast<Area *>(selection));
+        _selectionDockWidget->SetSelectionModel(selection->getModel());
         _selectionDockWidget->ExpandSelectionTree();
         break;
     case Selectable::TILE:

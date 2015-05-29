@@ -54,6 +54,9 @@
 #	define ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(l, t) l[t]
 #endif
 
+
+ELYSIAN_ASSET_TYPEDEF(Area)
+
 namespace elysian {
 
 
@@ -84,13 +87,14 @@ namespace elysian {
         void					setNormal(const bool val);
     };
 
-
-
     struct AreaBase:
         public LuaTableProxy<AreaBase, Area> {
     public:
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+           // ELYSIAN_LUA_PROXY_FIELD(dirName, )
+            //ELYSIAN_LUA_PROXY_FIELD(name, )
+            //ELYSIAN_LUA_PROXY_FIELD(path, )
             ELYSIAN_LUA_PROXY_ARRAY_FIELD(activeEntities,   getActiveEntityByIndex,     setActiveEntityByIndex,     getActiveEntityCount)
             ELYSIAN_LUA_PROXY_ARRAY_FIELD(inactiveEntities, getInactiveEntityByIndex,   setInactiveEntityByIndex,   getInactiveEntityCount)
         ELYSIAN_LUA_PROXY_FIELDS_END()

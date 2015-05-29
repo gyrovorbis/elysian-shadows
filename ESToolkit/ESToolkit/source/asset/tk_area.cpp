@@ -14,6 +14,7 @@
 #include <QOpenGLContext>
 #include <tk_engine_gl_scene_widget.h>
 #include <tk_selection_scene.h>
+#include <elysian_lua_wrappers.hpp>
 
 /*!
     \page exportedfunctions.html
@@ -26,6 +27,9 @@
     \class TkArea
     \brief JESUS FUCK
 */
+
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(TkArea)
+
 
 //====STATIC====
 SelectionScene*                 Area::_editorScene              = nullptr;
@@ -66,7 +70,13 @@ TkArea::TkArea(Level *const lev) {
     connect(&_undoStack, SIGNAL(cleanChanged(bool)), this, SLOT(onUndoCleanStateChanged(bool)));
 }
 
-QAbstractItemModel* TkArea::getModel(void) const { /*return const_cast<TkArea*>(this);*/ return nullptr; }
+QAbstractItemModel* TkArea::getModel(void) const {
+    if(!_luaModel) {
+        _luaModel = new LuaTableStackModel(getLuaTableRef());
+        _luaModel->populateModel();
+    }
+    return _luaModel;
+}
 
 TkArea::~TkArea(void) {
     deactivate();

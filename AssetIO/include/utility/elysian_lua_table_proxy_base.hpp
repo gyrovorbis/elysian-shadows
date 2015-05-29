@@ -3,16 +3,24 @@
 
 #include <luatables.h>
 #include <elysian_lua_manager.hpp>
+#include <elysian_generic.hpp>
 
 //DSL for autogenerating proxy fields
 #define ELYSIAN_LUA_PROXY_FIELDS_BEGIN() \
-    static constexpr LuaTableFieldProxy _proxyFields[] = {
+    public:                                         \
+    static bool                                     _proxyRegistered; \
+    static constexpr elysian::LuaTableFieldProxy    _proxyFields[] = {
 
 #define ELYSIAN_LUA_PROXY_FIELDS_END() }; \
-    static constexpr unsigned _proxyFieldCount = sizeof(_proxyFields) / sizeof(LuaTableFieldProxy); \
+    static constexpr unsigned _proxyFieldCount = sizeof(_proxyFields) / sizeof(elysian::LuaTableFieldProxy);
+#if 0
+#define ELYSIAN_LUA_PROXY_PARENTS(...) \
+    static constexpr const char*const   _proxyParents[] = { ELYSIAN_STRINGIFY_MACRO(__VA_ARGS__) }; \
+    static constexpr const unsigned     _proxyParentCount = sizeof(_proxyParents) / sizeof(char*);
+#endif
 
-#define ELYSIAN_LUA_PROXY_FIELD_READ_WRITE(f, g, s) { #f, #g, #s, nullptr, LuaTableFieldProxy::FLAG_NONE },
-#define ELYSIAN_LUA_PROXY_FIELD_READ_ONLY(f, g) { #f, #g, nullptr, nullptr, LuaTableFieldProxy::FLAG_NONE },
+#define ELYSIAN_LUA_PROXY_FIELD_READ_WRITE(f, g, s) { #f, #g, #s, nullptr, elysian::LuaTableFieldProxy::FLAG_NONE },
+#define ELYSIAN_LUA_PROXY_FIELD_READ_ONLY(f, g) { #f, #g, nullptr, nullptr, elysian::LuaTableFieldProxy::FLAG_NONE },
 
 #define ELYSIAN_LUA_PROXY_FIELD_GET_MACRO(_1, _2, _3, NAME, ...) NAME
 #define ELYSIAN_LUA_PROXY_FIELD(...) ELYSIAN_LUA_PROXY_FIELD_GET_MACRO(__VA_ARGS__, ELYSIAN_LUA_PROXY_FIELD_READ_WRITE, ELYSIAN_LUA_PROXY_FIELD_READ_ONLY)(__VA_ARGS__)
@@ -27,21 +35,22 @@
 #define ELYSIAN_LUA_PROXY_ARRAY_FIELD(...) ELYSIAN_LUA_PROXY_ARRAY_FIELD_GET_MACRO(__VA_ARGS__, ELYSIAN_LUA_PROXY_ARRAY_FIELD_READ_WRITE, ELYSIAN_LUA_PROXY_ARRAY_FIELD_READ_ONLY)(__VA_ARGS__)
 
 #define ELYSIAN_LUA_PROXY_FIELDS_EXPORT(c) \
-    constexpr unsigned				c::_proxyFieldCount; \
-    constexpr LuaTableFieldProxy	c::_proxyFields[];
+    bool                                    c::_proxyRegistered = false; \
+    constexpr unsigned                      c::_proxyFieldCount; \
+    constexpr elysian::LuaTableFieldProxy	c::_proxyFields[];
 
 #define ELYSIAN_LUA_PROXY_FIELD_KEY_MAX_SIZE    100
 
-template<typename P, typename T>
+template<typename P, typename T, class... Bases>
 class TkLuaTableProxy;
 
 namespace elysian {
-    template <typename P, typename T=P>
-    using LuaTableProxy = TkLuaTableProxy<P, T>;
+    template <typename P, typename T=P, class... Bases>
+    using LuaTableProxy = TkLuaTableProxy<P, T, Bases...>;
 }
 
-template <typename P, typename T=P>
-using LuaTableProxy = TkLuaTableProxy<P, T>;
+template <typename P, typename T=P, class... Bases>
+using LuaTableProxy = TkLuaTableProxy<P, T, Bases...>;
 
 namespace elysian {
 
@@ -54,13 +63,95 @@ namespace elysian {
         const int           flags;
 	};
 
-	/* P - Proxy class
-	 * T - Class being proxied
+    namespace {
+
+        /* Private class template for handling property registration, since C++ doesn't allow template member function
+         * partial specialization. */
+
+        //Class template for allowing CRTP-d properties to be overridden by their child properties at compile-time
+        template<typename P, typename T, class... Bases>
+        struct _LuaTableProxyPropertyRegistrar {
+            static inline void registerProperties(lua_State*const l) {
+                LuaTableProxy<P, T, Bases...>::template _registerProperties<P>(l); //register base class
+                LuaTableProxy<P, T, Bases...>::template _registerProperties<T>(l); //register base's CRTP child
+            }
+        };
+
+        //Partial specialization for non-CRTP classes
+        template<typename P, class... Bases>
+        struct _LuaTableProxyPropertyRegistrar<P, P, Bases...> {
+            static inline void registerProperties(lua_State*const l) {
+                LuaTableProxy<P, P, Bases...>::template _registerProperties<P>(l); //register base class
+            }
+        };
+
+        template<class... Args> struct _LuaTableProxyParents;
+
+        template<>
+        struct _LuaTableProxyParents<> {
+            static int iteratorDepth;
+
+            static bool iterateParentsIndexMetaMethods(lua_State*const /*l*/) { return false; }
+
+            static bool iterateParentsNewIndexMetaMethods(lua_State*const /*l*/) { return false; }
+
+            static bool iterateParentsNextMetaMethods(lua_State*const /*l*/, const int /*depth*/) {
+                iteratorDepth = 0;
+                return false;
+            }
+        };
+
+        int _LuaTableProxyParents<>::iteratorDepth = 0;
+
+        template<typename This, class... Rest>
+        struct _LuaTableProxyParents<This, Rest...>:
+            public _LuaTableProxyParents<Rest...>
+        {
+
+            static bool iterateParentsIndexMetaMethods(lua_State*const l) {
+                return (This::_metaMethodCFunction(l, This::_ooluaIndexTable, This::_propertyProxyIndexTable, false, true))?
+                    true : _LuaTableProxyParents<Rest...>::iterateParentsIndexMetaMethods(l);
+            }
+
+            static bool iterateParentsNewIndexMetaMethods(lua_State*const l) {
+                return (This::_metaMethodCFunction(l, This::_ooluaNewIndexTable, This::_propertyProxyNewIndexTable, true, true))?
+                    true : _LuaTableProxyParents<Rest...>::iterateParentsNewIndexMetaMethods(l);
+            }
+
+            static bool iterateParentsNextMetaMethods(lua_State*const l, const int depth) {
+                if(_LuaTableProxyParents<>::iteratorDepth > depth) {
+                    return _LuaTableProxyParents<Rest...>::iterateParentsNextMetaMethods(l, depth+1);
+                } else if(_LuaTableProxyParents<>::iteratorDepth == depth) {
+                    if(This::_nextMetaMethodCFunction(l) == 2) {
+                        return true;
+                    } else  {
+                        ++_LuaTableProxyParents<>::iteratorDepth;
+                        return _LuaTableProxyParents<Rest...>::iterateParentsNextMetaMethods(l, depth+1);
+                    }
+                    return false; //WTF?
+                } else return false;\
+
+
+            }
+        };
+
+
+    }
+
+
+    /* P    - Proxied Class (or CRTP base)
+     * T    - (optional CRTP child class)
+     * Args - (optional parent proxy classes for property inheritance)
 	 */
-	template <typename P, typename T=P>
-    class LuaTableProxyBase: public LuaManager {
-	protected:
+    template <typename P, typename T=P, class... Bases>
+    class LuaTableProxyBase:
+            private _LuaTableProxyParents<Bases...>,
+            public LuaManager
+    {
+        friend _LuaTableProxyPropertyRegistrar<P, T, Bases...>;
+    public:
         typedef P ParentType;
+        typedef LuaTableProxy<P, T, Bases...> ProxyType;
 
         static bool     _initializing;
 		static LuaTable _propertyProxyIndexTable;
@@ -70,6 +161,8 @@ namespace elysian {
         //static LuaTable _staticMetaTable;
         //LuaTable        _protoTable;
 
+        template <typename C>
+        static inline void _registerProperties(lua_State* l);
 
         static inline int _indexVirtualTableProxyMetamethod(lua_State* l) {
 
@@ -228,9 +321,16 @@ namespace elysian {
         static inline int _nextMetaMethodCFunction(lua_State*const l) {
             const bool isVirtual = (lua_tointeger(l, lua_upvalueindex(2)) != -1);   //check if entry has a real parent
             const bool isArray   = (!lua_isnil(l, lua_upvalueindex(3)));
+            const bool firstPass = lua_isnil(l, -1);
+
+            if(firstPass) {
+                _LuaTableProxyParents<>::iteratorDepth = 0;
+            }
+
+            if(_LuaTableProxyParents<Bases...>::iterateParentsNextMetaMethods(l, 0)) return 2;
+
 
             if(isArray) {
-                bool firstPass  = lua_isnil(l, -1);
                 int index       = firstPass? 0 : lua_tonumber(l, -1);
 
                 lua_getfield(l, -2, "__ud");                //this ptr
@@ -275,7 +375,8 @@ namespace elysian {
                     lua_pushvalue(l, lua_upvalueindex(1));
                     //_propertyProxyIndexTable.push(l);
                     lua_insert(l, -2);
-                    lua_rawget(l, -2);
+                    lua_gettable(l, -2);
+                    //lua_rawget(l, -2);
 
                     if(!lua_isnil(l, -1)) {
                       //  qDebug() << "found field!";
@@ -354,88 +455,7 @@ namespace elysian {
             LuaManager::_protectedCall(args, retVals, nullptr);
         }
 
-        static inline void  _registerPropertyMetaMethodTables(lua_State* l) {
-            unsigned tableDepth = 0;
-            LuaManager::getGlobal(OOLUA::Proxy_class<T>::class_name); //push OOLUA methods table
-
-            //Register property pairs for index table <K=field, V=getFunc>
-            lua_newtable(l); //get table
-            lua_newtable(l); //set table
-
-            for(unsigned i = 0; i < P::_proxyFieldCount; ++i) {
-
-                switch(P::_proxyFields[i].flags) {
-                case LuaTableFieldProxy::FLAG_ARRAY:
-                    lua_getfield(l, -3-(tableDepth*2), P::_proxyFields[i].get);     //upvalue #1, getByIndex method
-                    assert(!lua_isnil(l, -1)); //LUA GET ACCESSOR NOT FOUND!!!!
-                    lua_pushinteger(l, i);                                          //upvalue #2, starting index of virtual table properties
-                    if(P::_proxyFields[i].set) {
-                        lua_getfield(l, -3-(tableDepth*2)-2, P::_proxyFields[i].set); //upvalue #3, setByIndex method
-                        assert(!lua_isnil(l, -1)); //LUA SET ACCESSOR NOT FOUND!!!!
-                    } else lua_pushnil(l);
-                    lua_getfield(l, -3-(tableDepth*2)-3, P::_proxyFields[i].size);    //upvalue #4 size field for arrays
-                    assert(!lua_isnil(l, -1)); //SIZE ACCESSOR NOT FOUND!!!!
-                    lua_pushcclosure(l, &_createVirtualTableProxy, 4);
-                    lua_setfield(l, -3-(tableDepth*2), P::_proxyFields[i].key);
-
-                    lua_getfield(l, -3-(tableDepth*2), P::_proxyFields[i].get);     //upvalue #1, getByIndex method
-                    assert(!lua_isnil(l, -1)); //LUA GET ACCESSOR NOT FOUND!!!!
-                    lua_pushinteger(l, i);                                          //upvalue #2, starting index of virtual table properties
-                    if(P::_proxyFields[i].set) {
-                        lua_getfield(l, -3-(tableDepth*2)-2, P::_proxyFields[i].set); //upvalue #3, setByIndex method
-                        assert(!lua_isnil(l, -1)); //LUA SET ACCESSOR NOT FOUND!!!!
-                    } else lua_pushnil(l);
-                    lua_getfield(l, -3-(tableDepth*2)-3, P::_proxyFields[i].size);    //upvalue #4 size field for arrays
-                    assert(!lua_isnil(l, -1)); //SIZE ACCESSOR NOT FOUND!!!!
-                    lua_pushcclosure(l, &_setVirtualTableProxy, 4);
-                    lua_setfield(l, -3-(tableDepth*2)+1, P::_proxyFields[i].key);
-
-                    break;
-                case LuaTableFieldProxy::FLAG_VTABLE_BEGIN:
-                    lua_newtable(l); //__index metatable for virtual table
-                    lua_newtable(l); //__newindex metatable for virtual table
-                    lua_pushvalue(l, -2);                       //upvalue #1, __index for virtual table
-                    lua_pushinteger(l, i);                      //upvalue #2, starting index of virtual table properties
-                    lua_pushvalue(l, -3);                       //upvalue #3 __newindex for virtual table
-                    lua_pushnil(l);                             //upvalue #4 size for arrays (ignored)
-                    //upvalue #4 size field for arrays
-                    lua_pushcclosure(l, &_createVirtualTableProxy, 4);
-                    ++tableDepth;
-                    lua_setfield(l, -3-(tableDepth*2), P::_proxyFields[i].key);
-                    lua_pushvalue(l, -2);                       //upvalue #1, __index for virtual table
-                    lua_pushinteger(l, i);                      //upvalue #2, starting index of virtual table properties
-                    lua_pushvalue(l, -3);                       //upvalue #3 __newindex for virtual table
-                    lua_pushnil(l);                             //upvalue #4 size for arrays (ignored)
-                    lua_pushcclosure(l, &_setVirtualTableProxy, 4);
-                    lua_setfield(l, -3-(tableDepth*2)+1, P::_proxyFields[i].key);
-                    break;
-
-                case LuaTableFieldProxy::FLAG_VTABLE_END:
-                    --tableDepth;
-                    lua_pop(l, 2);
-                    break;
-                default:
-                    lua_getfield(l, -3-(tableDepth*2), P::_proxyFields[i].get); //get field from OOLUA methods table
-                    assert(!lua_isnil(l, -1)); //LUA GET ACCESSOR NOT FOUND!!!!
-                    lua_setfield(l, -3, P::_proxyFields[i].key);
-                    if(P::_proxyFields[i].set) {
-                        lua_getfield(l, -3-(tableDepth*2), P::_proxyFields[i].set); //get field from OOLUA methods table
-                        assert(!lua_isnil(l, -1)); //LUA SET ACCESSOR NOT FOUND!!!!
-                        lua_setfield(l, -2, P::_proxyFields[i].key);
-                    }
-                }
-            }
-            assert(tableDepth == 0); // YOUR SHIT IS MALFORMED, NIGGER. USE MY DSL CORRECTLY FOR FUCK'S SAKE.
-
-        //                LuaManager::rPrintByIndex(-1, 100, "__INDEX");
-            _propertyProxyNewIndexTable.pull(l);
-          //              LuaManager::rPrintByIndex(-1, 100, "__NEWINDEX");
-            _propertyProxyIndexTable.pull(l);
-			lua_pop(l, 1);
-
-
-
-		}
+        static inline void  _registerPropertyMetaMethodTables(lua_State* l);
 
         inline static int _iNextMetaMethodCFunction(lua_State* l) {
             if(lua_isnil(l, -2)) {
@@ -488,11 +508,12 @@ namespace elysian {
         }
 
 		static int _indexMetaMethodCFunction(lua_State* l) {
-			return _metaMethodCFunction(l, _ooluaIndexTable, _propertyProxyIndexTable, false);
+            return  _metaMethodCFunction(l, _ooluaIndexTable, _propertyProxyIndexTable, false, false)? 1 : 0;
 		}
 
 		static int _newIndexMetaMethodCFunction(lua_State* l) {
-			return _metaMethodCFunction(l, _ooluaNewIndexTable, _propertyProxyNewIndexTable, true);
+            _metaMethodCFunction(l, _ooluaNewIndexTable, _propertyProxyNewIndexTable, true, false);
+            return 0;
 		}
 
 		static int _pairsMetaMethodCFunction(lua_State* l) {
@@ -524,8 +545,10 @@ namespace elysian {
             return 3;
         }
 
+    public:
+
 		//CRTP Overridable?
-		static int _metaMethodCFunction(lua_State* l, LuaTable& ooluaIndexTable, LuaTable& propertyIndexTable, const bool newIndex) {
+        static bool _metaMethodCFunction(lua_State* l, LuaTable& ooluaIndexTable, LuaTable& propertyIndexTable, const bool newIndex, const bool recursing=false) {
             //char key[ELYSIAN_LUA_PROXY_FIELD_KEY_MAX_SIZE];
 
 			//stack state
@@ -543,57 +566,51 @@ namespace elysian {
             //lua_remove(l, 2);
 
 			//check the oolua methods table first!
-			ooluaIndexTable.push(l);
-            lua_pushvalue(l, newIndex? -3 : -2);
-            lua_gettable(l, -2);
-			lua_remove(l, -2);
-
-            //key found in OOLUA's methods table
-			if(!lua_isnil(l, -1)) {
-                lua_remove(l, 1);
-                return 1;           //Must have been an OOLUA proxy method lookup? ...I think?
-
-			//key not found, try property proxy tables
-			} else {
-
-				lua_remove(l, -1);
-				propertyIndexTable.push(l);
+            if(!recursing) {
+                ooluaIndexTable.push(l);
                 lua_pushvalue(l, newIndex? -3 : -2);
                 lua_gettable(l, -2);
-				lua_remove(l, -2);
-
-                //key not found here either, we ain't got it -- INSERT THE BITCH IF NEWINDEX, NOTIFY IF ESTK
-				if(lua_isnil(l, -1)) {
-					lua_pop(l, lua_gettop(l));
-
-                    //retrieve object, notify it of change
-                    //instance._onFieldAdded("ADDED");
+                lua_remove(l, -2);
 
 
-					return 0;
+                //key found in OOLUA's methods table
+                if(!lua_isnil(l, -1)) {
+                    lua_remove(l, 1);
+                    return true;           //Must have been an OOLUA proxy method lookup.
+                }
 
-				} else {
-                    //lua_remove(l, 1);
-                    lua_insert(l, 1);   //push get/set function to bottom of stack
+                lua_pop(l, 1);
 
-                    //lua_remove(l, 3);   //remove key from stack ESTK'S METHOD EXPECTS THIS TO BE HERE
+            }
 
-                    //userdata is index 2
-                   //  OOLUA::push(state, static_cast<T*>(static_cast<P*>(this)));
+            //key not found, try property proxy tables
+            propertyIndexTable.push(l);
+            lua_pushvalue(l, newIndex? -3 : -2);
+            lua_gettable(l, -2);
+            lua_remove(l, -2);
 
-                    //Invoke proxy accessor method
-                    LuaTableProxy<P, T>::_callPropertyProxyMethod(newIndex, newIndex? 2 : 1, newIndex? 0 : 1, 3);
+            //key not found here either, we ain't got it at this level -- LOOK IN PARENTS' SHIT
+            if(lua_isnil(l, -1)) {
+                lua_pop(l, 1);
+                //return false;
+                return newIndex? _LuaTableProxyParents<Bases...>::iterateParentsNewIndexMetaMethods(l) : _LuaTableProxyParents<Bases...>::iterateParentsIndexMetaMethods(l);
 
-                    if(newIndex) {
-                        //instance._onFieldChanged("CHANGED");
-                        return 0;
-                    } else {
-                        return 1;
-                    }
+            } else {
+                //lua_remove(l, 1);
+                lua_insert(l, 1);   //push get/set function to bottom of stack
 
-				}
+                //lua_remove(l, 3);   //remove key from stack ESTK'S METHOD EXPECTS THIS TO BE HERE
 
-			}
+                //userdata is index 2
+               //  OOLUA::push(state, static_cast<T*>(static_cast<P*>(this)));
+
+                //Invoke proxy accessor method
+                LuaTableProxy<P, T, Bases...>::_callPropertyProxyMethod(newIndex, newIndex? 2 : 1, newIndex? 0 : 1, 3);
+
+                return true;
+
+            }
+
 		}
 
 
@@ -634,7 +651,7 @@ namespace elysian {
 			_ooluaNewIndexTable.pull(l);
 
             //LuaManager::_cStackDump();
-            LuaTableProxy<P, T>::_addMetamethods(l);
+            LuaTableProxy<P, T, Bases...>::_addMetamethods(l);
             //LuaManager::_cStackDump();
             //Create a new __next metamethod for internal iteration
             //_propertyProxyIndexTable.push(l);
@@ -770,7 +787,7 @@ namespace elysian {
             if(args >= 2) {
                 T* obj;
                 OOLUA::pull(l, obj);
-                obj->fromTable(valueTable);
+                static_cast<LuaTableProxy<P, T, Bases...>*>(obj)->fromTable(valueTable);
                 OOLUA::push(l, obj);
             }
 
@@ -783,20 +800,116 @@ namespace elysian {
 	template <typename P, typename T>
 	LuaTable LuaTableProxy<P, T>::_staticMetaTable;
 */
-	template <typename P, typename T>
-    LuaTable LuaTableProxyBase<P, T>::_ooluaIndexTable;
+    template <typename P, typename T, class... Args>
+    LuaTable LuaTableProxyBase<P, T, Args...>::_ooluaIndexTable;
 
-	template <typename P, typename T>
-    LuaTable LuaTableProxyBase<P, T>::_ooluaNewIndexTable;
+    template <typename P, typename T, class... Args>
+    LuaTable LuaTableProxyBase<P, T, Args...>::_ooluaNewIndexTable;
 
-	template <typename P, typename T>
-    LuaTable LuaTableProxyBase<P, T>::_propertyProxyIndexTable;
+    template <typename P, typename T, class... Args>
+    LuaTable LuaTableProxyBase<P, T, Args...>::_propertyProxyIndexTable;
 
-	template <typename P, typename T>
-    LuaTable LuaTableProxyBase<P, T>::_propertyProxyNewIndexTable;
+    template <typename P, typename T, class... Args>
+    LuaTable LuaTableProxyBase<P, T, Args...>::_propertyProxyNewIndexTable;
 
-    template <typename P, typename T>
-    bool LuaTableProxyBase<P, T>::_initializing = false;
+    template <typename P, typename T, class... Args>
+    bool LuaTableProxyBase<P, T, Args...>::_initializing = false;
+
+    template <typename P, typename T, class... Args> template <typename C>
+    inline void LuaTableProxyBase<P, T, Args...>::_registerProperties(lua_State* l) {
+        unsigned tableDepth = 0;
+        if(C::_proxyRegistered) return; //proxy properties have already been registered!
+
+        LuaManager::getGlobal(OOLUA::Proxy_class<T>::class_name); //push OOLUA's proxy class methods table
+
+        if(_propertyProxyIndexTable.valid()) _propertyProxyIndexTable.push(l);
+        else lua_newtable(l); //get table (__index metamethod for properties)
+
+        if(_propertyProxyNewIndexTable.valid()) _propertyProxyNewIndexTable.push(l);
+        else lua_newtable(l); //set table (__newindex metamethod for properties)
+
+        //Register property pairs for index table <K=field, V=getFunc>
+        for(unsigned i = 0; i < C::_proxyFieldCount; ++i) {
+
+            switch(C::_proxyFields[i].flags) {
+            case LuaTableFieldProxy::FLAG_ARRAY:
+                lua_getfield(l, -3-(tableDepth*2), C::_proxyFields[i].get);     //upvalue #1, getByIndex method
+                assert(!lua_isnil(l, -1)); //LUA GET ACCESSOR NOT FOUND!!!!
+                lua_pushinteger(l, i);                                          //upvalue #2, starting index of virtual table properties
+                if(C::_proxyFields[i].set) {
+                    lua_getfield(l, -3-(tableDepth*2)-2, C::_proxyFields[i].set); //upvalue #3, setByIndex method
+                    assert(!lua_isnil(l, -1)); //LUA SET ACCESSOR NOT FOUND!!!!
+                } else lua_pushnil(l);
+                lua_getfield(l, -3-(tableDepth*2)-3, C::_proxyFields[i].size);    //upvalue #4 size field for arrays
+                assert(!lua_isnil(l, -1)); //SIZE ACCESSOR NOT FOUND!!!!
+                lua_pushcclosure(l, &_createVirtualTableProxy, 4);
+                lua_setfield(l, -3-(tableDepth*2), C::_proxyFields[i].key);
+
+                lua_getfield(l, -3-(tableDepth*2), C::_proxyFields[i].get);     //upvalue #1, getByIndex method
+                assert(!lua_isnil(l, -1)); //LUA GET ACCESSOR NOT FOUND!!!!
+                lua_pushinteger(l, i);                                          //upvalue #2, starting index of virtual table properties
+                if(P::_proxyFields[i].set) {
+                    lua_getfield(l, -3-(tableDepth*2)-2, C::_proxyFields[i].set); //upvalue #3, setByIndex method
+                    assert(!lua_isnil(l, -1)); //LUA SET ACCESSOR NOT FOUND!!!!
+                } else lua_pushnil(l);
+                lua_getfield(l, -3-(tableDepth*2)-3, P::_proxyFields[i].size);    //upvalue #4 size field for arrays
+                assert(!lua_isnil(l, -1)); //SIZE ACCESSOR NOT FOUND!!!!
+                lua_pushcclosure(l, &_setVirtualTableProxy, 4);
+                lua_setfield(l, -3-(tableDepth*2)+1, C::_proxyFields[i].key);
+
+                break;
+            case LuaTableFieldProxy::FLAG_VTABLE_BEGIN:
+                lua_newtable(l); //__index metatable for virtual table
+                lua_newtable(l); //__newindex metatable for virtual table
+                lua_pushvalue(l, -2);                       //upvalue #1, __index for virtual table
+                lua_pushinteger(l, i);                      //upvalue #2, starting index of virtual table properties
+                lua_pushvalue(l, -3);                       //upvalue #3 __newindex for virtual table
+                lua_pushnil(l);                             //upvalue #4 size for arrays (ignored)
+                //upvalue #4 size field for arrays
+                lua_pushcclosure(l, &_createVirtualTableProxy, 4);
+                ++tableDepth;
+                lua_setfield(l, -3-(tableDepth*2), C::_proxyFields[i].key);
+                lua_pushvalue(l, -2);                       //upvalue #1, __index for virtual table
+                lua_pushinteger(l, i);                      //upvalue #2, starting index of virtual table properties
+                lua_pushvalue(l, -3);                       //upvalue #3 __newindex for virtual table
+                lua_pushnil(l);                             //upvalue #4 size for arrays (ignored)
+                lua_pushcclosure(l, &_setVirtualTableProxy, 4);
+                lua_setfield(l, -3-(tableDepth*2)+1, C::_proxyFields[i].key);
+                break;
+
+            case LuaTableFieldProxy::FLAG_VTABLE_END:
+                --tableDepth;
+                lua_pop(l, 2);
+                break;
+            default:
+                lua_getfield(l, -3-(tableDepth*2), C::_proxyFields[i].get); //get field from OOLUA methods table
+                assert(!lua_isnil(l, -1)); //LUA GET ACCESSOR NOT FOUND!!!!
+                lua_setfield(l, -3, C::_proxyFields[i].key);
+                if(C::_proxyFields[i].set) {
+                    lua_getfield(l, -3-(tableDepth*2), C::_proxyFields[i].set); //get field from OOLUA methods table
+                    assert(!lua_isnil(l, -1)); //LUA SET ACCESSOR NOT FOUND!!!!
+                    lua_setfield(l, -2, C::_proxyFields[i].key);
+                }
+            }
+        }
+        assert(tableDepth == 0); // YOUR SHIT IS MALFORMED, NIGGER. USE MY DSL CORRECTLY FOR FUCK'S SAKE.
+
+    //                LuaManager::rPrintByIndex(-1, 100, "__INDEX");
+        _propertyProxyNewIndexTable.pull(l);
+      //              LuaManager::rPrintByIndex(-1, 100, "__NEWINDEX");
+        _propertyProxyIndexTable.pull(l);
+        lua_pop(l, 1);
+
+        C::_proxyRegistered = true;
+    }
+
+    template<typename P, typename T, class... Bases>
+    inline void LuaTableProxyBase<P, T, Bases...>::_registerPropertyMetaMethodTables(lua_State* l) {
+        //invoke partially specialized class template
+        _LuaTableProxyPropertyRegistrar<P, T, Bases...>::registerProperties(l);
+    }
+
+
 
 }
 

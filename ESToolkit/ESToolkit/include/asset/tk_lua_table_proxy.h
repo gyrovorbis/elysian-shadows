@@ -78,13 +78,13 @@ public:
  * Injects itself into __newIndex metamethod to inform Qt when
  * internal Lua data changes.
  */
-template <typename P, typename T=P>
+template <typename P, typename T=P, class... Bases>
 class TkLuaTableProxy:
-        public elysian::LuaTableProxyBase<P, T>,
+        public elysian::LuaTableProxyBase<P, T, Bases...>,
         public TkLuaTableProxyQObject
 {
 
-    typedef elysian::LuaTableProxyBase<P, T> ParentType;
+    typedef elysian::LuaTableProxyBase<P, T, Bases...> ParentType;
     friend ParentType;
 protected:
     using                       elysian::LuaManager::_mainState;
@@ -102,7 +102,7 @@ public:
     virtual     ~TkLuaTableProxy(void);
 
     //Might also need copy constructor
-    const TkLuaTableProxy<P, T>&    operator=(const TkLuaTableProxy<P, T>& rhs);
+    const TkLuaTableProxy<P, T, Bases...>&    operator=(const TkLuaTableProxy<P, T, Bases...>& rhs);
     int                             getLuaTableRef(void) const;
 
 };
@@ -127,8 +127,8 @@ inline void TkLuaTableUserdata::emitFieldAdded(const QVariant key) const { Q_EMI
 inline void TkLuaTableUserdata::emitFieldChanged(const QVariant key) const { Q_EMIT fieldChanged(key); }
 
 
-template <typename P, typename T>
-inline void TkLuaTableProxy<P, T>::_callPropertyProxyMethod(const bool write, const unsigned args, const unsigned retVals, const unsigned keyIndex) {
+template <typename P, typename T, class... Bases>
+inline void TkLuaTableProxy<P, T, Bases...>::_callPropertyProxyMethod(const bool write, const unsigned args, const unsigned retVals, const unsigned keyIndex) {
     QVariant    key;
     T*          obj;
 
@@ -144,7 +144,7 @@ inline void TkLuaTableProxy<P, T>::_callPropertyProxyMethod(const bool write, co
     ParentType::_callPropertyProxyMethod(write, args, retVals, keyIndex);
 
     if(write) {
-        if(!elysian::LuaTableProxyBase<P, T>::_initializing) static_cast<TkLuaTableProxyQObject*>(obj)->emitFieldChanged(key);
+        if(!elysian::LuaTableProxyBase<P, T, Bases...>::_initializing) static_cast<TkLuaTableProxyQObject*>(static_cast<TkLuaTableProxy<P, T, Bases...>*>(obj))->emitFieldChanged(key);
     }
 }
 
@@ -152,15 +152,15 @@ inline void TkLuaTableProxy<P, T>::_callPropertyProxyMethod(const bool write, co
  * because Qt explicitly deleted its assignment operator and will shit itself.
  */
 
-template<typename P, typename T>
-inline const TkLuaTableProxy<P, T>& TkLuaTableProxy<P,T>::operator=(const TkLuaTableProxy<P, T>& rhs) {
+template<typename P, typename T, class... Bases>
+inline const TkLuaTableProxy<P, T, Bases...>& TkLuaTableProxy<P,T, Bases...>::operator=(const TkLuaTableProxy<P, T, Bases...>& rhs) {
     *static_cast<ParentType*>(this) = *static_cast<const ParentType*>(&rhs);
     *static_cast<T*>(this) = *static_cast<const T*>(&rhs);
     return *this;
 }
 
-template <typename P, typename T>
-inline int TkLuaTableProxy<P, T>::getLuaTableRef(void) const {
+template <typename P, typename T, class... Bases>
+inline int TkLuaTableProxy<P, T, Bases...>::getLuaTableRef(void) const {
     if(_luaRef == LUA_NOREF) {
         //Cannot push a const pointer to Lua, or it'll shit every time we attempt to modify proxy from Lua runtime
         OOLUA::push(*_mainState, const_cast<T*>(static_cast<const T*>(this)));
@@ -170,15 +170,15 @@ inline int TkLuaTableProxy<P, T>::getLuaTableRef(void) const {
 }
 
 
-template <typename P, typename T>
-inline TkLuaTableProxy<P, T>::~TkLuaTableProxy(void) {
+template <typename P, typename T, class... Bases>
+inline TkLuaTableProxy<P, T, Bases...>::~TkLuaTableProxy(void) {
     if(_luaRef != LUA_NOREF) {
         luaL_unref(*_mainState, LUA_REGISTRYINDEX, _luaRef);
     }
 }
 
-template <typename P, typename T>
-inline int TkLuaTableProxy<P, T>::_connectSignals(lua_State *l) {
+template <typename P, typename T, class... Bases>
+inline int TkLuaTableProxy<P, T, Bases...>::_connectSignals(lua_State *l) {
     QObject* tableItem = static_cast<QObject*>(lua_touserdata(*_mainState, -1));
     assert(tableItem);
     lua_pop(*_mainState, 1);
@@ -187,15 +187,15 @@ inline int TkLuaTableProxy<P, T>::_connectSignals(lua_State *l) {
     OOLUA::pull(l, thisPtr);
     assert(thisPtr);
 
-    auto* thisQObj = static_cast<QObject*>(thisPtr);
+    auto* thisQObj = static_cast<QObject*>(static_cast<TkLuaTableProxy<P, T, Bases...>*>(thisPtr));
 
     connect(thisQObj, SIGNAL(fieldChanged(QVariant)), tableItem, SLOT(onFieldChanged(QVariant)));
 
     return 0;
 }
 
-template<typename P, typename T>
-inline void TkLuaTableProxy<P, T>::_addMetamethods(lua_State *l) {
+template<typename P, typename T, class... Bases>
+inline void TkLuaTableProxy<P, T, Bases...>::_addMetamethods(lua_State *l) {
     //Push our QObject retrieval function
     lua_pushcfunction(l, &_connectSignals);
     lua_setfield(l, -2, "__connectSignals");

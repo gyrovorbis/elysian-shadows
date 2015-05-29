@@ -458,7 +458,8 @@ RESOURCES += resource/resource.qrc
 
 macx {
 	#DESTDIR = ../../executable
-	CONFIG(release, debug|release): QMAKE_POST_LINK = macdeployqt $${TARGET}.app -verbose=3
+#	CONFIG(release, debug|release):
+QMAKE_POST_LINK = macdeployqt $${TARGET}.app -verbose=3
 }
 
 

@@ -32,7 +32,7 @@
 
 namespace elysian {
 
-Engine::Engine(void): _renderMonitor("render"), _updateMonitor("update"), _inputMonitor("input") {
+Engine::Engine(void): _updateMonitor("update"), _renderMonitor("render"), _inputMonitor("input") {
     srand(time(nullptr));
 
     //gyDebugInit();

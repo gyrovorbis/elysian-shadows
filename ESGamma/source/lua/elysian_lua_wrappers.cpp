@@ -91,7 +91,7 @@ namespace elysian {
 		_mainState->register_class<RigidBodyAttrib>();
         RigidBodyAttrib::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<ForceTarget>();
-        //ForceTarget::registerProxyMetaTable(*_mainState);
+        ForceTarget::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<RigidBody>();
         RigidBody::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<AnimationSystem>();

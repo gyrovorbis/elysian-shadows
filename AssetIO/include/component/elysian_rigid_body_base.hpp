@@ -39,11 +39,11 @@ namespace elysian {
 
 	//Abstraction for particles and rigidBodies to share force generators
     class ForceTarget:
-            protected GYKinetic
-           // public LuaTableProxy<ForceTarget>
+            protected GYKinetic,
+            public LuaTableProxy<ForceTarget>
     {
 	public:
-/*
+
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(vel,            getVel)
             ELYSIAN_LUA_PROXY_FIELD(accel,          getAccel)
@@ -52,7 +52,7 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(angAccel,       getAngAccel,    setAngAccel)
             ELYSIAN_LUA_PROXY_FIELD(torqueAccum,    getTorqueAccum, setTorqueAccum)
         ELYSIAN_LUA_PROXY_FIELDS_END()
-*/
+
 		enum TARGET_TYPE { TARGET_PARTICLE, TARGET_RIGID_BODY };
 
 									ForceTarget(void);
@@ -85,7 +85,7 @@ namespace elysian {
     class RigidBodyBase:
         public Component,
         public ForceTarget,
-        public LuaTableProxy<RigidBodyBase, RigidBody>
+        public LuaTableProxy<RigidBodyBase, RigidBody, ForceTarget>
     {
 		friend class RigidBodySystem;
         friend class CollisionSystem;
@@ -102,14 +102,11 @@ namespace elysian {
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(tileDamping,    getTileDamping)
             ELYSIAN_LUA_PROXY_FIELD(durability,     getDurability, setDurability)
-            ELYSIAN_LUA_PROXY_FIELD(vel,            getVel)
-            ELYSIAN_LUA_PROXY_FIELD(accel,          getAccel)
-            ELYSIAN_LUA_PROXY_FIELD(forceAccum,     getForceAccum)
-            ELYSIAN_LUA_PROXY_FIELD(rotVel,         getRotation,    setRotation)
-            ELYSIAN_LUA_PROXY_FIELD(angAccel,       getAngAccel,    setAngAccel)
-            ELYSIAN_LUA_PROXY_FIELD(torqueAccum,    getTorqueAccum, setTorqueAccum)
             ELYSIAN_LUA_PROXY_FIELD(attrib,         getAttrib)
         ELYSIAN_LUA_PROXY_FIELDS_END()
+
+        using LuaTableProxy<RigidBodyBase, RigidBody, ForceTarget>::fromTable;
+        using LuaTableProxy<RigidBodyBase, RigidBody, ForceTarget>::registerProxyMetaTable;
 
                                     RigidBodyBase(Entity& entity);
                                     RigidBodyBase(void) = default;
