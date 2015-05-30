@@ -137,3 +137,7 @@ CMakeLists.txt.user
 #ESTk generated
 #################
 #level/**/estk/**
+
+#Symlink for debug.txts, to make them appear correctly in SublimeText #
+#######################################################################
+debug/
