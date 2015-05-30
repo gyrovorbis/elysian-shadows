@@ -100,6 +100,9 @@ int gySysInit(const GYSysParams*const params) {
   "LINUX";
 #endif
     _gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86_64 [%s] v%s", platString, GYRO_LIB_VERSION);
+#if GYRO_BUILD_NODE == LOCAL
+    _gyLog(GY_DEBUG_VERBOSE, "\tWARNING: THIS IS AN UNOFFICIAL BUILD!");
+#endif
     _gyLog(GY_DEBUG_VERBOSE, "\tGit branch name: \t%s", GYRO_STRINGIFY_MACRO(GYRO_BUILD_BRANCH));
     _gyLog(GY_DEBUG_VERBOSE, "\tGit commit ID: \t%s", GYRO_STRINGIFY_MACRO(GYRO_BUILD_COMMIT));
     _gyLog(GY_DEBUG_VERBOSE, "\tBuild number: \t\t%s", GYRO_STRINGIFY_MACRO(GYRO_BUILD_NUMBER));
