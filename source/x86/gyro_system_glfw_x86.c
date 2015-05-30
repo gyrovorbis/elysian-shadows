@@ -7,6 +7,12 @@
 
 #include "../common/gyro_system_callbacks.h"
 
+#define GYRO_BUILD_NODE     "CUSTOM LOCAL BUILD"
+#define GYRO_BUILD_NUMBER   "UNKNOWN"
+#define GYRO_BUILD_BRANCH   "UNKNOWN"
+#define GYRO_BUILD_TAG      "UNKNOWN"
+#define GYRO_BUILD_COMMIT   "UNKNOWN"
+
 //execute x86 CPUID opcode
 static inline void cpuid(int CPUInfo[4],int InfoType){
     __asm__ __volatile__ (
@@ -99,7 +105,13 @@ int gySysInit(const GYSysParams*const params) {
 #else
   "LINUX";
 #endif
-    _gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86 [%s] v%s (Build Timestamp: %s, %s)", platString, GYRO_LIB_VERSION, __DATE__, __TIME__);
+    _gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86_64 [%s] v%s", platString, GYRO_LIB_VERSION);
+    _gyLog(GY_DEBUG_VERBOSE, "\tGit branch name: \t%s", GYRO_BUILD_BRANCH);
+    _gyLog(GY_DEBUG_VERBOSE, "\tGit commit ID: \t%s", GYRO_BUILD_COMMIT);
+    _gyLog(GY_DEBUG_VERBOSE, "\tBuild tag: \t\t%s", GYRO_BUILD_NUMBER);
+    _gyLog(GY_DEBUG_VERBOSE, "\tBuild node: \t\t%s", GYRO_BUILD_NODE);
+    _gyLog(GY_DEBUG_VERBOSE, "\tBuild timestamp: \t%s %s", __DATE__, __TIME__);
+
     gyDebugSigInit();
     _checkCPUCapabilities();
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
