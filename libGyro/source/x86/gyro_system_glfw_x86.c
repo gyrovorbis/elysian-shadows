@@ -7,22 +7,6 @@
 
 #include "../common/gyro_system_callbacks.h"
 
-#define _GYRO_STRINGIFY_MACRO(a) #a
-#define GYRO_STRINGIFY_MACRO(a) _GYRO_STRINGIFY_MACRO(a)
-
-#ifndef GYRO_BUILD_NODE
-#   define GYRO_BUILD_NODE     CUSTOM LOCAL BUILD
-#endif
-#ifndef GYRO_BUILD_NUMBER
-#   define GYRO_BUILD_NUMBER   UNKNOWN
-#endif
-#ifndef GYRO_BUILD_BRANCH
-#   define GYRO_BUILD_BRANCH   UNKNOWN
-#endif
-#ifndef GYRO_BUILD_COMMIT
-#   define GYRO_BUILD_COMMIT   UNKNOWN
-#endif
-
 //execute x86 CPUID opcode
 static inline void cpuid(int CPUInfo[4],int InfoType){
     __asm__ __volatile__ (
@@ -118,7 +102,7 @@ int gySysInit(const GYSysParams*const params) {
     _gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86_64 [%s] v%s", platString, GYRO_LIB_VERSION);
     _gyLog(GY_DEBUG_VERBOSE, "\tGit branch name: \t%s", GYRO_STRINGIFY_MACRO(GYRO_BUILD_BRANCH));
     _gyLog(GY_DEBUG_VERBOSE, "\tGit commit ID: \t%s", GYRO_STRINGIFY_MACRO(GYRO_BUILD_COMMIT));
-    _gyLog(GY_DEBUG_VERBOSE, "\tBuild tag: \t\t%s", GYRO_STRINGIFY_MACRO(GYRO_BUILD_NUMBER));
+    _gyLog(GY_DEBUG_VERBOSE, "\tBuild number: \t\t%s", GYRO_STRINGIFY_MACRO(GYRO_BUILD_NUMBER));
     _gyLog(GY_DEBUG_VERBOSE, "\tBuild node: \t%s", GYRO_STRINGIFY_MACRO(GYRO_BUILD_NODE));
     _gyLog(GY_DEBUG_VERBOSE, "\tBuild timestamp: \t%s %s", __DATE__, __TIME__);
 
