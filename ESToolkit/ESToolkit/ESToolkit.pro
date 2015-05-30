@@ -213,7 +213,8 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     source/dialog/tk_task_monitor_dialog.cpp \
     ../../ESGamma/source/system/elysian_timer_system_base.cpp \
     source/estk/tk_timer_system.cpp \
-    source/core/tk_gitlab_manager.cpp
+    source/core/tk_gitlab_manager.cpp \
+    source/dialog/tk_gitlab_dialog.cpp
 
 
 HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
@@ -407,7 +408,8 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../ESGamma/include/crtp/elysian_timer_system.hpp \
     source/estk/tk_timer_system.h \
     include/estk/tk_timer_system.h \
-    include/core/tk_gitlab_manager.h
+    include/core/tk_gitlab_manager.h \
+    include/dialog/tk_gitlab_dialog.h
 
 
 FORMS += form/estk/tk_sheet_dock_widget.ui \
@@ -420,7 +422,8 @@ FORMS += form/estk/tk_sheet_dock_widget.ui \
 	form/widget/tk_history_dock_widget.ui \
 	form/dialog/tk_engine_settings.ui \
 	form/sheet_manager/tk_sheet_manager_file_dock_widget.ui \
-	form/dialog/tk_lua_explorer.ui
+	form/dialog/tk_lua_explorer.ui \
+    form/dialog/tk_gitlab_dialog.ui
 
 #docs.target = ESToolkit.qhc
 #docs.commands = qdoc ./ESToolkit.qdocconf --log-progress --debug $$escape_expand(\n\t) qcollectiongenerator ./ESToolkit.qhcp -o ../../assets/doc/ESToolkit.qhc

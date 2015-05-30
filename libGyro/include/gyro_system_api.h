@@ -9,6 +9,22 @@ extern "C" {
 
 #define GYRO_LIB_VERSION "1.5.8"
 
+#define _GYRO_STRINGIFY_MACRO(a) #a
+#define GYRO_STRINGIFY_MACRO(a) _GYRO_STRINGIFY_MACRO(a)
+
+#ifndef GYRO_BUILD_NODE
+#   define GYRO_BUILD_NODE     CUSTOM LOCAL BUILD
+#endif
+#ifndef GYRO_BUILD_NUMBER
+#   define GYRO_BUILD_NUMBER   UNKNOWN
+#endif
+#ifndef GYRO_BUILD_BRANCH
+#   define GYRO_BUILD_BRANCH   UNKNOWN
+#endif
+#ifndef GYRO_BUILD_COMMIT
+#   define GYRO_BUILD_COMMIT   UNKNOWN
+#endif
+
 typedef struct GYSysParams {
     void*   context;
     void    (*segFaultHandler)(void*);

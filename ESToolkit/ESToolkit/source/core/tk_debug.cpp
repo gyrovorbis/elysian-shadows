@@ -14,9 +14,13 @@
 #include <QTextEdit>
 #include <QKeyEvent>
 #include <gyro_system_api.h>
+#include <QMutex>
+#include <QQueue>
+#include <QTimer>
 //ESTK
 #include "elysian_debug.hpp"
 #include "elysian_lua_manager.hpp"
+#include <QDir>
 
 TkDebug* TkDebug::_window = nullptr;
 QTreeWidgetItem *TkDebug::_curParent;
@@ -28,12 +32,14 @@ QWidget* TkDebug::_centralWidget;
 bool TkDebug::_pendingError = false;
 unsigned TkDebug::_stackDepth = 0;
 std::ofstream* TkDebug::_outfile;
-char TkDebug::_qtDebugBuff[DEBUG_QT_BUFF_SIZE];
 constexpr char TkDebug::_srcEnumToStr[TkDebug::SOURCE_MAX][50];
 bool TkDebug::_filterEnabled[TkDebug::SOURCE_MAX] = { true };
 QVector<QString> TkDebug::_commandHistory;
 int TkDebug::_commandHistoryIndex;
 bool TkDebug::_shiftDown = false;
+QMutex* TkDebug::_mutex = nullptr;
+QQueue<TkDebug::LogEntry>* TkDebug::_pendingQueue = nullptr;
+QString* TkDebug::_debugLogPath = nullptr;
 
 TkDebug::TkDebug(void) {
     _commandHistory = QVector<QString>();
@@ -62,6 +68,12 @@ TkDebug::TkDebug(void) {
 
     _vertLayout->setContentsMargins(0, 0, 0, 0);
     _vertLayout->setSpacing(0);
+
+    _mutex = new QMutex;
+    _pendingQueue = new QQueue<LogEntry>;
+
+    QTimer::singleShot(DEBUG_LOG_POLL_MSEC, &TkDebug::_servicePendingQueue);
+
 /*
     QFont font;
     font.setPointSize(11);
@@ -70,13 +82,15 @@ TkDebug::TkDebug(void) {
 
     //connect(_prompt, SIGNAL(returnPressed()), this, SLOT(onCommandSubmit()));
 
-
 	//Register QDebug callback
     qInstallMessageHandler(&logQ);
 	//Register AssetIO debug interface!
 
 	_outfile = new std::ofstream(DEBUG_LOG_PATH);
 	if(!_outfile->is_open()) qDebug() << "!!!!!- could not open Debug log file for writing!";
+
+    QDir dir;
+    _debugLogPath = new QString(dir.absoluteFilePath(DEBUG_LOG_PATH));
 
 }
 
@@ -104,106 +118,48 @@ void TkDebug::Logf(Debug::LEVEL flag, const char *string, ...) {
 }
 
 void TkDebug::logQ(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
+    char qtDebugBuff[DEBUG_QT_BUFF_SIZE];
 	LEVEL level;
 
 	switch (type) {
 	case QtDebugMsg:
-        sprintf(_qtDebugBuff, "%s (%s:%u, %s)", msg.toStdString().c_str(), context.file, context.line, context.function);
+        sprintf(qtDebugBuff, "%s (%s:%u, %s)", msg.toStdString().c_str(), context.file, context.line, context.function);
 		level = VERBOSE;
 		break;
 	case QtWarningMsg:
-        sprintf(_qtDebugBuff, "%s (%s:%u, %s)", msg.toStdString().c_str(), context.file, context.line, context.function);
+        sprintf(qtDebugBuff, "%s (%s:%u, %s)", msg.toStdString().c_str(), context.file, context.line, context.function);
 		level = VERBOSE;
 		break;
 	case QtCriticalMsg:
-        sprintf(_qtDebugBuff, "%s (%s:%u, %s)", msg.toStdString().c_str(), context.file, context.line, context.function);
+        sprintf(qtDebugBuff, "%s (%s:%u, %s)", msg.toStdString().c_str(), context.file, context.line, context.function);
 		level = CRITICAL;
 		break;
 	case QtFatalMsg:
-        sprintf(_qtDebugBuff, "%s (%s:%u, %s)", msg.toStdString().c_str(), context.file, context.line, context.function);
+        sprintf(qtDebugBuff, "%s (%s:%u, %s)", msg.toStdString().c_str(), context.file, context.line, context.function);
 		level = FATAL;
 	}
 
     std::cerr << msg.toStdString() << std::endl;
-    Log(level, _qtDebugBuff, SOURCE_QT);
+    Log(level, qtDebugBuff, SOURCE_QT);
 }
 
 void TkDebug::push(void) {
     //++_stackDepth;
-    Q_ASSERT(_curParent);
-	_curParent = _prevItem;
     elysian::DebugBase::push();
+    _mutex->lock();
+    _pendingQueue->enqueue(LogEntry { "PUSH", VERBOSE, TOOLKIT, LogEntry::PUSH });
+    _mutex->unlock();
 }
 
 void TkDebug::pop(void) {
-    //--_stackDepth;
-	_curParent = _curParent->parent();
-	if(!_curParent) _curParent = _treeWidget->invisibleRootItem();
     elysian::DebugBase::pop();
+    _mutex->lock();
+    _pendingQueue->enqueue(LogEntry { "POP", VERBOSE, TOOLKIT, LogEntry::POP });
+    _mutex->unlock();
 }
 
 void TkDebug::Log(LEVEL flag, QString msg, int src) {
-    //Write to logfile
-        for(unsigned i = 0; i < _stackDepth; ++i) *_outfile << "\t";
-        *_outfile << msg.toStdString() << std::endl;
-
-    QBrush brush;
-	_prevItem = new QTreeWidgetItem;
-	_prevItem->setText(0, msg);
-
-	switch(src) {
-    case LUA:
-        brush = QBrush(Qt::darkCyan);
-        break;
-    case COMMAND:
-        brush = QBrush(Qt::darkGreen);
-        break;
-    default:
-        brush = QBrush(Qt::black);
-		break;
-	}
-
-    _prevItem->setForeground(0, brush);
-    _prevItem->setForeground(1, brush);
-    _prevItem->setText(1, _srcEnumToStr[src]);
-
-    Q_ASSERT(_curParent); //better never happen!
-
-	_curParent->addChild(_prevItem);
-
-    if(flag == VERBOSE && !_filterEnabled[src]) _prevItem->setHidden(true);
-
-    //ths is why shit is so slow. Retarded time complexity
-    if(flag >= Debug::CRITICAL && src == LUA) {
-		_pendingError = true;
-		QTreeWidgetItem *it = _prevItem;
-		do {
-            brush = QBrush(Qt::darkRed);
-            it->setForeground(0, brush);
-            it->setForeground(1, brush);
-            it->setExpanded(true);
-			it = it->parent();
-		} while(it);
-
-        _prevItem->setSelected(true);
-        _treeWidget->scrollToItem(_prevItem);
-
-        //If we've returned to the top level with a pending error,
-        //pop the log for the user to see.
-        //if(_curParent == _treeWidget->invisibleRootItem() && _pendingError) {
-        //        getInstance().show();
-        //}
-    } /*else if(src == LUA) {
-        QTreeWidgetItem *it = _prevItem;
-        do {
-            it->setExpanded(true);
-            it = it->parent();
-        } while(it);
-    }*/
-
-	_treeWidget->scrollToBottom();
-    //gyPrintf(msg.toStdString().c_str());
-
+    _postToQueue(src, flag, msg);
 }
 
 void TkDebug::clear(void) {
@@ -323,5 +279,112 @@ void TkDebug::_resizePrompt(void) {
     int RowHeight = m.lineSpacing();
     _prompt->setFixedHeight(nRows*RowHeight+4);
     _treeWidget->scrollToBottom();
+}
+
+void TkDebug::_postToQueue(const int src, const LEVEL level, const QString text) {
+    _mutex->lock();
+    _pendingQueue->enqueue(LogEntry{ text, level, src });
+    _mutex->unlock();
+}
+
+//could probably move critical section into the loop, but I kind of like doing it in batches better
+void TkDebug::_servicePendingQueue(void) {
+    _mutex->lock();
+
+    const bool wasEmpty = _pendingQueue->isEmpty();
+
+    while(!_pendingQueue->isEmpty()) {
+        const LogEntry&& entry = _pendingQueue->dequeue();
+
+        switch(entry.type) {
+        case LogEntry::TEXT:
+            _processLogEntry(entry);
+            break;
+        case LogEntry::PUSH:
+            Q_ASSERT(_curParent);
+            _curParent = _prevItem;
+            break;
+        case LogEntry::POP:
+            _curParent = _curParent->parent();
+            if(!_curParent) _curParent = _treeWidget->invisibleRootItem();
+            break;
+        }
+    }
+
+    _mutex->unlock();
+
+    //Update GUI and widgets and shit
+    if(!wasEmpty) {
+        _treeWidget->scrollToBottom();
+    }
+
+    QTimer::singleShot(DEBUG_LOG_POLL_MSEC, &TkDebug::_servicePendingQueue);
+
+}
+
+
+void TkDebug::_processLogEntry(const LogEntry& entry) {
+    int src             = entry.source;
+    const QString msg   = entry.string;
+    LEVEL flag          = entry.level;
+
+    //Write to logfile
+        for(unsigned i = 0; i < _stackDepth; ++i) *_outfile << "\t";
+        *_outfile << msg.toStdString() << std::endl;
+
+    QBrush brush;
+    _prevItem = new QTreeWidgetItem;
+    _prevItem->setText(0, msg);
+
+    switch(src) {
+    case LUA:
+        brush = QBrush(Qt::darkCyan);
+        break;
+    case COMMAND:
+        brush = QBrush(Qt::darkGreen);
+        break;
+    default:
+        brush = QBrush(Qt::black);
+        break;
+    }
+
+    _prevItem->setForeground(0, brush);
+    _prevItem->setForeground(1, brush);
+    _prevItem->setText(1, _srcEnumToStr[src]);
+
+    Q_ASSERT(_curParent); //better never happen!
+
+    _curParent->addChild(_prevItem);
+
+    if(flag == VERBOSE && !_filterEnabled[src]) _prevItem->setHidden(true);
+
+    //ths is why shit is so slow. Retarded time complexity
+    if(flag >= Debug::CRITICAL && src == LUA) {
+        _pendingError = true;
+        QTreeWidgetItem *it = _prevItem;
+        do {
+            brush = QBrush(Qt::darkRed);
+            it->setForeground(0, brush);
+            it->setForeground(1, brush);
+            it->setExpanded(true);
+            it = it->parent();
+        } while(it);
+
+        _prevItem->setSelected(true);
+        _treeWidget->scrollToItem(_prevItem);
+
+        //If we've returned to the top level with a pending error,
+        //pop the log for the user to see.
+        //if(_curParent == _treeWidget->invisibleRootItem() && _pendingError) {
+        //        getInstance().show();
+        //}
+    } /*else if(src == LUA) {
+        QTreeWidgetItem *it = _prevItem;
+        do {
+            it->setExpanded(true);
+            it = it->parent();
+        } while(it);
+    }*/
+
 }
 

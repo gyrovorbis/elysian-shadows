@@ -7,12 +7,15 @@
 
 #define DEBUG_LOG_PATH                  "toolkit_debug.txt"
 #define DEBUG_QT_BUFF_SIZE              50000
+#define DEBUG_LOG_POLL_MSEC             500
 
 class QString;
 class QTreeWidget;
 class QTreeWidgetItem;
 class QVBoxLayout;
 class QTextEdit;
+class QMutex;
+class QTimer;
 
 class TkDebug: public QObject, public elysian::DebugBase {
     Q_OBJECT
@@ -23,6 +26,7 @@ public:
         TOOLKIT = LUA+1,
         SOURCE_QT,
         COMMAND,
+        OPENGL,
         SOURCE_MAX
     };
 
@@ -53,38 +57,66 @@ public:
     static void setFilter(const int src, const bool enabled);
     static void clear(void);
 
-public Q_SLOTS:
-
-    void onCommandSubmit();
+    static QString getDebugLogPath(void);
 
 private:
-    static void _resizePrompt(void);
-    virtual bool eventFilter(QObject* object, QEvent* event) override;
-    static void writeLog(const int source, const LEVEL level, const char* const str);
+    struct LogEntry {
+        enum TYPE { TEXT, PUSH, POP };
+        QString string;
+        LEVEL   level;
+        int     source;
+        TYPE    type;
+    };
 
-                             TkDebug(void);
-    virtual                  ~TkDebug(void);
-    static char              _qtDebugBuff[DEBUG_QT_BUFF_SIZE];
-    static TkDebug*          _window;
-    static QTreeWidgetItem*  _curParent;
-    static QTreeWidgetItem*  _prevItem;
-    static QTreeWidget*      _treeWidget;
-    static QVBoxLayout*      _vertLayout;
-    static QWidget*          _centralWidget;
-    static QTextEdit*        _prompt;
-    static bool              _pendingError;
-    static unsigned          _stackDepth;
-    static std::ofstream*    _outfile;
-    static bool              _filterEnabled[SOURCE_MAX];
-    static QVector<QString>  _commandHistory;
-    static int               _commandHistoryIndex;
-    static bool              _shiftDown;
+public Q_SLOTS:
+
+    void onCommandSubmit(void);
+
+protected Q_SLOTS:
+    static void _servicePendingQueue(void);
+    static void _postToQueue(const int src, const LEVEL level, const QString text);
+    static void _processLogEntry(const LogEntry& entry);
+
+private:
+
+    static void                 _resizePrompt(void);
+    virtual bool                eventFilter(QObject* object, QEvent* event) override;
+    static void                 writeLog(const int source, const LEVEL level, const char* const str);
+
+                                TkDebug(void);
+    virtual                     ~TkDebug(void) override;
+
+    static TkDebug*             _window;
+    static QTreeWidgetItem*     _curParent;
+    static QTreeWidgetItem*     _prevItem;
+    static QTreeWidget*         _treeWidget;
+    static QVBoxLayout*         _vertLayout;
+    static QWidget*             _centralWidget;
+    static QTextEdit*           _prompt;
+    static bool                 _pendingError;
+    static unsigned             _stackDepth;
+    static std::ofstream*       _outfile;
+    static bool                 _filterEnabled[SOURCE_MAX];
+    static QVector<QString>     _commandHistory;
+    static int                  _commandHistoryIndex;
+    static bool                 _shiftDown;
+
+    static QQueue<LogEntry>*    _pendingQueue;
+    static QMutex*              _mutex;
+
+    static QString*             _debugLogPath;
 
     constexpr static char    _srcEnumToStr[SOURCE_MAX][50] = {
-        "LIBGYRO", "ENGINE", "ASSETIO", "LUA", "TOOLKIT", "QT", "COMMAND"
+        "LIBGYRO", "ENGINE", "ASSETIO", "LUA", "TOOLKIT", "QT", "COMMAND", "OPENGL"
     };
 
 };
+
+
+
+
+
+
 
 
 //========= INLINEZ ==========
@@ -93,6 +125,8 @@ inline void TkDebug::writeLog(const int source, const LEVEL level, const char* c
     Log(level, str, (source == DebugBase::ASSETIO)? ENGINE : (TK_SOURCE)source);
     elysian::DebugBase::writeLog((elysian::DebugBase::SOURCE)source, level, str);
 }
+
+inline QString TkDebug::getDebugLogPath(void) { return *_debugLogPath; }
 
 
 #endif // DEBUG_H

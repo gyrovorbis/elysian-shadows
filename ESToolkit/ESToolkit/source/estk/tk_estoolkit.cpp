@@ -13,6 +13,7 @@
 #include <gyro_video_api.h>
 #include <tk_task_monitor_dialog.h>
 #include <QOpenGLDebugLogger>
+#include <tk_gitlab_dialog.h>
 
 #include <gyro_file_api.h>
 #include "tk_engine_gl_scene_widget.h"
@@ -96,6 +97,7 @@ ESToolkit::ESToolkit(QWidget *parent):
     _engineDialog           = new EngineDialog(/*this*/);
     _engineSettingsDialog   = new EngineSettingsDialog(/*this*/);
     _luaExplorerDialog      = new LuaExplorerDialog(/*this*/);
+    _gitlabDialog           = new GitlabDialog(/*this*/);
     connect(_engineSettingsDialog, SIGNAL(enginePathx86Changed(QString)), _engineDialog, SLOT(onEnginePathx86Changed(QString)));
     connect(_engineSettingsDialog, SIGNAL(dcIpChanged(QString)), _engineDialog, SLOT(OnDreamcastIpChanged(QString)));
     connect(_engineSettingsDialog, SIGNAL(dcMacChanged(QString)), _engineDialog, SLOT(OnDreamcastMacChanged(QString)));
@@ -1778,12 +1780,14 @@ void ESToolkit::on_actionCommands_toggled(bool arg1)
 
 void ESToolkit::on_actionMap_Background_toggled(bool arg1)
 {
-	auto* dialog = new TaskMonitorDialog;
-	if(_assets.getCurrentProject()) {
+    //auto* dialog = new TaskMonitorDialog;
+    /*if(_assets.getCurrentProject()) {
 		dialog->setModel(_assets.getEngine()->getTimerSys());
 		dialog->show();
-	}
-    TkMapSystem::setRenderMapBackground(arg1);
+    }*/
+   // GitlabManager::createNewIssue("const QString description, const bool block");
+    _gitlabDialog->show();
+    //TkMapSystem::setRenderMapBackground(arg1);
 }
 
 void ESToolkit::on_action480p_toggled(bool /*arg1*/)

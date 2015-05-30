@@ -39,6 +39,7 @@ class SheetManager;
 class EngineSettingsDialog;
 class LuaExplorerDialog;
 class EngineGLSceneWidget;
+class GitlabDialog;
 
 namespace Ui {
     class ESToolkit;
@@ -100,6 +101,7 @@ private:
     EngineSettingsDialog*   _engineSettingsDialog;
     SheetManager*           _sheetManager;
     LuaExplorerDialog*      _luaExplorerDialog;
+    GitlabDialog*           _gitlabDialog;
 
     QToolButton*            m_activePlatform;
     QActionGroup*           m_platformActionGroup;

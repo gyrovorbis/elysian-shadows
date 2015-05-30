@@ -31,10 +31,6 @@ namespace elysian {
     }
 
 
-#define ELYSIAN_STRINGIFY_MACRO(tok)            #tok
-#define ELYSIAN_EXPAND_STRINGIFY_MACRO(tok)     ELYSIAN_STRINGIFY_MACRO(tok)
-
-
     /*No No, No No No No, No No No No, No No there's a limit! */
     #	define OOLUA_INTERNAL_60_N \
             N, N, N, N, N, N, N, N, N, N \
