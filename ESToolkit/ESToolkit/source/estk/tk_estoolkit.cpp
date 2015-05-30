@@ -85,7 +85,7 @@ ESToolkit::ESToolkit(QWidget *parent):
 #else
     "LINUX";
 #endif
-
+    _libGyroInitialize();
     Debug::Logf(Debug::VERBOSE, "Initializing %s [%s]", verString.toStdString().c_str(), platString);
 
     _ui->setupUi(this);
@@ -253,8 +253,6 @@ ESToolkit::ESToolkit(QWidget *parent):
     ReadSettings();
 
     setMouseTracking(true);
-
-    _engineInitialize();
 }
 
 ESToolkit::~ESToolkit(void) {
@@ -272,7 +270,7 @@ ESToolkit::~ESToolkit(void) {
     delete _ui;
 }
 
-void ESToolkit::_engineInitialize(void) {
+void ESToolkit::_libGyroInitialize(void) {
     /* The File subsystem needs to be initialized before anything else, ideally */
     gyFileInit("ESTeam", "ESGamma");
 

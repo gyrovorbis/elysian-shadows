@@ -2,15 +2,16 @@
 #define GL_UTILITIES_H
 
 #include <QSurfaceFormat>
+#include <QGLFormat>
 #include "elysian_debug.hpp"
 
 struct glUtilities {
 
     static void printGLSupport(void) {
+
         Debug::Logf(Debug::VERBOSE, "OpenGL Version Check");
         Debug::push();
-        /*
-        Debug::Logf(Debug::VERBOSE, "OpenGL_Version_1_1 - %d", (bool)(int)(QSurfaceFormat::openGLVersionFlags() & QGLFormat::OpenGL_Version_1_1));
+        Debug::Logf(Debug::VERBOSE, "OpenGL_Version_1_1 - %d", (bool)(int)(QGLFormat::openGLVersionFlags() & QGLFormat::OpenGL_Version_1_1));
         Debug::Logf(Debug::VERBOSE, "OpenGL_Version_1_2 - %d", (bool)(int)(QGLFormat::openGLVersionFlags() & QGLFormat::OpenGL_Version_1_2));
         Debug::Logf(Debug::VERBOSE, "OpenGL_Version_1_3 - %d", (bool)(int)(QGLFormat::openGLVersionFlags() & QGLFormat::OpenGL_Version_1_3));
         Debug::Logf(Debug::VERBOSE, "OpenGL_Version_1_4 - %d", (bool)(int)(QGLFormat::openGLVersionFlags() & QGLFormat::OpenGL_Version_1_4));
@@ -31,7 +32,7 @@ struct glUtilities {
         Debug::Logf(Debug::VERBOSE, "OpenGL_ES_Common_Version_1_1 - %d", (bool)(int)(QGLFormat::openGLVersionFlags() & QGLFormat::OpenGL_ES_Common_Version_1_1));
         Debug::Logf(Debug::VERBOSE, "OpenGL_ES_Version_2_0 - %d", (bool)(int)(QGLFormat::openGLVersionFlags() & QGLFormat::OpenGL_ES_Version_2_0));
         Debug::Logf(Debug::VERBOSE, "OpenGL Support in ESTk - %d", glSupported());
-        Debug::pop();*/
+        Debug::pop();
     }
 
     static bool glSupported(void) {

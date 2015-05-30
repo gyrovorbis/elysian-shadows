@@ -59,7 +59,7 @@ protected:
 protected:
 
     void            _onGYSysSegFault();
-    void            _engineInitialize(void);
+    void            _libGyroInitialize(void);
     void            _engineLoadAssets(void);
     void            _openProjectDir(const QString dir);
     void            setMainTextureUniform(const int uniform);
