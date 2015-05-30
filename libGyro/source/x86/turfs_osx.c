@@ -36,7 +36,7 @@ TURFSAPI turfs_init(const char *author, const char *name, void *aactivity)
     s_author = turfs__strdup(author);
     s_name = turfs__strdup(name);
 
-
+#if GYRO_PLATFORM != GYRO_PLATFORM_Qt
     // ----------------------------------------------------------------------------
     // This makes relative paths work in C++ in Xcode by changing directory to the Resources folder inside the .app bundle
     #ifdef __APPLE__
@@ -53,7 +53,7 @@ TURFSAPI turfs_init(const char *author, const char *name, void *aactivity)
     _gyLog(GY_DEBUG_VERBOSE, "OSX working directory: %s", path);
     #endif
     // ----------------------------------------------------------------------------
-
+#endif
     g_initialized = 1;
     return TURFS_RET_OK;
 }

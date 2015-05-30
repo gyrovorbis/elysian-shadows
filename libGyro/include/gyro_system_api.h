@@ -1,5 +1,5 @@
-#ifndef GYRO_SYSTEM_H
-#define GYRO_SYSTEM_H
+#ifndef GYRO_SYSTEM_API_H
+#define GYRO_SYSTEM_API_H
 
 #include "gyro_platform.h"
 

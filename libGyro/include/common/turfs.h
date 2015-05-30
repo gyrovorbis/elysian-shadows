@@ -1,8 +1,13 @@
 #ifndef __included_turfs_h
 #define __included_turfs_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* Needed for size_t and off_t */
 #include <sys/types.h>
+#include <stdio.h>
 
 typedef enum {
     /*
@@ -37,10 +42,11 @@ typedef enum {
     TURFS_RET_UNKNOWN
 } turfs_ret;
 
+
 /**
  * turfs File pointer type
  */
-typedef struct turfs_fp * turfs_fp;
+typedef struct _turfs_fp * turfs_fp;
 
 #define TURFSAPI turfs_ret
 
@@ -165,5 +171,11 @@ TURFSAPI turfs_file_eof(turfs_fp fp);
  * @param[in]   fp  Pointer to file to be closed
  */
 TURFSAPI turfs_file_close(turfs_fp *fp);
+
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __included_turfs_h */
