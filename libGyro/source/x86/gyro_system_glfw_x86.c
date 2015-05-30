@@ -7,10 +7,18 @@
 
 #include "../common/gyro_system_callbacks.h"
 
-#define GYRO_BUILD_NODE     "CUSTOM LOCAL BUILD"
-#define GYRO_BUILD_NUMBER   "UNKNOWN"
-#define GYRO_BUILD_BRANCH   "UNKNOWN"
-#define GYRO_BUILD_COMMIT   "UNKNOWN"
+#ifndef GYRO_BUILD_NODE
+#   define GYRO_BUILD_NODE     "CUSTOM LOCAL BUILD"
+#endif
+#ifndef GYRO_BUILD_NUMBER
+#   define GYRO_BUILD_NUMBER   "UNKNOWN"
+#endif
+#ifndef GYRO_BUILD_BRANCH
+#   define GYRO_BUILD_BRANCH   "UNKNOWN"
+#endif
+#ifndef GYRO_BUILD_COMMIT
+#   define GYRO_BUILD_COMMIT   "UNKNOWN"
+#endif
 
 //execute x86 CPUID opcode
 static inline void cpuid(int CPUInfo[4],int InfoType){

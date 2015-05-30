@@ -24,7 +24,7 @@ CONFIG -= exceptions rtti
 
 #Required to get C++11x to work on OSX
 macx {
-  QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -stdlib=libc++
+  QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -stdlib=libc++ -Wno-macro-redefined
   LIBS += -mmacosx-version-min=10.7 -stdlib=libc++
 }
 
