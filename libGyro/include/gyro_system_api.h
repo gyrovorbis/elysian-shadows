@@ -13,7 +13,7 @@ extern "C" {
 #define GYRO_STRINGIFY_MACRO(a) _GYRO_STRINGIFY_MACRO(a)
 
 #ifndef GYRO_BUILD_NODE
-#   define GYRO_BUILD_NODE     CUSTOM LOCAL BUILD
+#   define GYRO_BUILD_NODE     LOCAL
 #endif
 #ifndef GYRO_BUILD_NUMBER
 #   define GYRO_BUILD_NUMBER   UNKNOWN
