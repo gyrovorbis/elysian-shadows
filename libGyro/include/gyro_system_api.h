@@ -15,6 +15,9 @@ extern "C" {
 #ifndef GYRO_BUILD_NODE
 #   define GYRO_BUILD_NODE     LOCAL
 #endif
+#ifndef GYRO_BUILD_JOB
+#   define GYRO_BUILD_JOB      UNKNOWN
+#endif
 #ifndef GYRO_BUILD_NUMBER
 #   define GYRO_BUILD_NUMBER   UNKNOWN
 #endif
