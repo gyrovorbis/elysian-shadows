@@ -1,5 +1,5 @@
-#ifndef GYRO_FILE_H
-#define GYRO_FILE_H
+#ifndef GYRO_FILE_API_H
+#define GYRO_FILE_API_H
 
 #include <stddef.h>
 #include <sys/types.h>
