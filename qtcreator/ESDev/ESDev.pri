@@ -27,3 +27,8 @@ macx {
   QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -stdlib=libc++
   LIBS += -mmacosx-version-min=10.7 -stdlib=libc++
 }
+
+exists( ESDevCommandLineArgs.pri ) {
+	message("Including ESDevCommandLineArgs.pri in project file")
+	include( ESDevCommandLineArgs.pri )
+}

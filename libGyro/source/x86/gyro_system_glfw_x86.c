@@ -10,7 +10,6 @@
 #define GYRO_BUILD_NODE     "CUSTOM LOCAL BUILD"
 #define GYRO_BUILD_NUMBER   "UNKNOWN"
 #define GYRO_BUILD_BRANCH   "UNKNOWN"
-#define GYRO_BUILD_TAG      "UNKNOWN"
 #define GYRO_BUILD_COMMIT   "UNKNOWN"
 
 //execute x86 CPUID opcode
@@ -109,7 +108,7 @@ int gySysInit(const GYSysParams*const params) {
     _gyLog(GY_DEBUG_VERBOSE, "\tGit branch name: \t%s", GYRO_BUILD_BRANCH);
     _gyLog(GY_DEBUG_VERBOSE, "\tGit commit ID: \t%s", GYRO_BUILD_COMMIT);
     _gyLog(GY_DEBUG_VERBOSE, "\tBuild tag: \t\t%s", GYRO_BUILD_NUMBER);
-    _gyLog(GY_DEBUG_VERBOSE, "\tBuild node: \t\t%s", GYRO_BUILD_NODE);
+    _gyLog(GY_DEBUG_VERBOSE, "\tBuild node: \t%s", GYRO_BUILD_NODE);
     _gyLog(GY_DEBUG_VERBOSE, "\tBuild timestamp: \t%s %s", __DATE__, __TIME__);
 
     gyDebugSigInit();
