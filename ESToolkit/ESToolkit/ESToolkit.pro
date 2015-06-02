@@ -20,9 +20,6 @@ QMAKE_DOCS = ESToolkit.qdocconf
 #include($$QT_INSTALL_DOCS/global/fileextensions.qdocconf) #configuration common among QDoc projects
 #include($$QT_INSTALL_DOCS/global/qt-html-templates-offline.qdocconf) #offline HTML template for documentation shipped to Qt Creator
 
-
-QMAKE_DOCS = $$PWD/ESToolkit.qdocconf
-
 # FIXME: Refactor into load(qt_docs) or something similar
 # that can be used from all non-module projects that also
 # provide modularized docs, for example qmake.
@@ -39,10 +36,14 @@ ICON = resource/images/estk.icns
 #UI_DIR		= $$OUT_PWD/temp/ui
 #RCC_DIR		= $$OUT_PWD/temp/rcc
 
-docs.target = ESToolkit.qhc
-docs.commands = qdoc ./ESToolkit.qdocconf --log-progress --debug $$escape_expand(\n\t) qcollectiongenerator ./ESToolkit.qhcp -o ../../assets/doc/ESToolkit.qhc
-QMAKE_EXTRA_TARGETS += docs
-PRE_TARGETDEPS += ESToolkit.qhc
+
+docs {
+	QMAKE_DOCS = $$PWD/ESToolkit.qdocconf
+	docs.target = ESToolkit.qhc
+	docs.commands = qdoc ./ESToolkit.qdocconf --log-progress --debug $$escape_expand(\n\t) qcollectiongenerator ./ESToolkit.qhcp -o ../../assets/doc/ESToolkit.qhc
+	QMAKE_EXTRA_TARGETS += docs
+	PRE_TARGETDEPS += ESToolkit.qhc
+}
 
 DEPENDPATH += ../../AssetIO/include/component \
 	../../AssetIO/include/crtp \
