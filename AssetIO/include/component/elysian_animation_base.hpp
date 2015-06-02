@@ -163,7 +163,7 @@ namespace elysian {
         {
             Entity*				entity			= nullptr;
             Animation*          animComp        = nullptr;
-		};
+        };
 
         Pool<AnimStateEntry>    _statePool          = Pool<AnimStateEntry>(ELYSIAN_ANIMATION_MAX_CHILDREN);
 		GYVector2				_childPivot			= GYVector2 { 0.0f, 0.0f };

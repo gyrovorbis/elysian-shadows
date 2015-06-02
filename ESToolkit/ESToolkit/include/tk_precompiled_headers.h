@@ -6,8 +6,8 @@
 #include <math.h>
 
 //Precompiled C header files
-#include <gyro.h>
-#include <kinetic/gyro_kinetic.h>
+//#include <gyro.h>
+//#include <kinetic/gyro_kinetic.h>
 
 
 //Precompiled C++ header files
@@ -112,14 +112,14 @@
 #include <QModelIndex>
 #include <QFileSystemModel>
 #include <QStyleOptionGraphicsItem>
-
+/*
 //external library dependencies
 #include <lua/lua.hpp>
 #include <oolua.h>
 #include <spine/spine.h>
 
 //AssetIO includes
-#include <elysian_debug.hpp>
+//#include <elysian_debug.hpp>
 #include <elysian_generic.hpp>
 #include <elysian_asset_typedefs.hpp>
 #include <luatables.h>
@@ -128,31 +128,30 @@
 #include <elysian_stl_algorithm.hpp>
 #include <elysian_mem_pool.hpp>
 
-#include <elysian_entity.hpp>
+//#include <elysian_entity.hpp>
 #include <elysian_direction.hpp>
 #include <elysian_zcoords.hpp>
 #include <elysian_level_manager.hpp>
 #include <elysian_color.hpp>
-#include <elysian_instance_transform.hpp>
+//#include <elysian_instance_transform.hpp>
 #include <elysian_prim_attrib.hpp>
 #include <elysian_renderable_object.hpp>
 #include <elysian_textured_attrib.hpp>
 #include <elysian_sprite_attrib.hpp>
 #include <elysian_quad_sprite_attrib.hpp>
 #include <elysian_component.hpp>
-#include <elysian_lua_manager.hpp>
+//#include <elysian_lua_manager.hpp> 
 
 #include <elysian_system.hpp>
 
 #include <tk_assets.h>
 #include <tk_asset_manager.h>
-#include <tk_property_standard_item.h>
+//#include <tk_property_standard_item.h>
 #include <tk_rows_joiner_proxy_model.h>
 #include <tk_source_view.h>
 #include <tk_dest_view.h>
 
-//3:58
-
+*/
 //end cplusplus headers
 #endif
 
