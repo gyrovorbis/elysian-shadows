@@ -67,8 +67,8 @@
 #include <QTreeWidgetItem>
 #include <QApplication>
 #include <QSplashScreen>
-#include <QSurfaceFormat>
-#include <QOpenGLContext>
+//#include <QSurfaceFormat>
+//#include <QOpenGLContext>
 #include <QCoreApplication>
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -92,8 +92,8 @@
 #include <QStatusBar>
 #include <QtWidgets>
 #include <QTableView>
-#include <QOpenGLDebugLogger>
-#include <QOpenGLDebugMessage>
+//#include <QOpenGLDebugLogger>
+//#include <QOpenGLDebugMessage>
 #include <QCloseEvent>
 #include <QActionGroup>
 #include <QSizePolicy>
