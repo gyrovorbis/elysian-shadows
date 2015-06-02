@@ -8,6 +8,7 @@
 #include <tk_asset_manager.h>
 #include <tk_map_entry.h>
 
+
 #define AREA_SAVE_MAP_TILE_0_REEST_CHECK  true
 
 class QPainter;
