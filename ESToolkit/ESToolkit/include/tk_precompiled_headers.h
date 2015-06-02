@@ -28,7 +28,7 @@
 #include <QLabel>
 #include <QDockWidget>
 #include <QTreeWidget>
-#include <QGLWidget>
+//#include <QGLWidget>
 #include <QBasicTimer>
 #include <QMainWindow>
 #include <QUndoGroup>
@@ -90,7 +90,7 @@
 #include <QRadioButton>
 #include <QSettings>
 #include <QStatusBar>
-#include <QtWidgets>
+//#include <QtWidgets>
 #include <QTableView>
 //#include <QOpenGLDebugLogger>
 //#include <QOpenGLDebugMessage>
