@@ -33,7 +33,7 @@ struct MapChange {
 };
 
 
-ELYSIAN_ASSET_TYPEDEF(Area)
+//ELYSIAN_ASSET_TYPEDEF(Area)
 
 class TkArea: /*public PropertyStackModel,*/  public elysian::AreaBase, public TreeNode {
     Q_OBJECT

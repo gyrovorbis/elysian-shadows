@@ -3,8 +3,8 @@
 #include <QSizePolicy>
 #include <QToolButton>
 #include <QCloseEvent>
+#include <QSplitter>
 #include <QSettings>
-#include <QToolButton>
 #include <QActionGroup>
 #include <QFileDialog>
 #include <QMessageBox>
@@ -59,7 +59,6 @@
 #include "tk_documentation_browser.h"
 #include <QHelpContentWidget>
 #include <QHelpIndexWidget>
-#include <QSplitter>
 #include <tk_gitlab_manager.h>
 
 ESToolkit* ESToolkit::_instance = nullptr;
@@ -299,10 +298,7 @@ void ESToolkit::_libGyroInitialize(void) {
 #endif
 #endif
 	GYSysParams sysParams = {new std::function<void()>([&](void) {
-						GitlabManager::createNewIssue("FUCKING CHRIST!!!!");
-
-
-								 exit(0);
+                        _gitlabDialog->show();
 				  }),
 					[](void* ptr) {
 						(*static_cast<std::function<void()>*>(ptr))();
@@ -2017,7 +2013,7 @@ void ESToolkit::on_actionDocumentation_triggered()
         helpEngine->setupData();
 
         QTabWidget* tWidget = new QTabWidget;
-        tWidget->setMaximumWidth(200);
+        //tWidget->setWid(200);
         tWidget->addTab(helpEngine->contentWidget(), "Contents");
         tWidget->addTab(helpEngine->indexWidget(), "Index");
 

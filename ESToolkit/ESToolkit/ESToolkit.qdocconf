@@ -1,10 +1,10 @@
 #include(compat.qdocconf)
 #include(/Users/falcogirgis/Qt5/Docs/Qt-5.4/global/qt-module-defaults.qdocconf)
-include(/Users/falcogirgis/Qt5/Docs/Qt-5.4/global/macros.qdocconf) #macros for QDoc commands
-include(/Users/falcogirgis/Qt5/Docs/Qt-5.4/global/qt-cpp-defines.qdocconf) #needed by C++ projects
-include(/Users/falcogirgis/Qt5/Docs/Qt-5.4/global/compat.qdocconf) #compatibility macros
-include(/Users/falcogirgis/Qt5/Docs/Qt-5.4/global/fileextensions.qdocconf) #configuration common among QDoc projects
-include(/Users/falcogirgis/Qt5/Docs/Qt-5.4/global/qt-html-templates-offline.qdocconf) #offline HTML template for documentation shipped to Qt Creator
+#include(/Users/falcogirgis/Qt5/Docs/Qt-5.4/global/macros.qdocconf) #macros for QDoc commands
+#include(/Users/falcogirgis/Qt5/Docs/Qt-5.4/global/qt-cpp-defines.qdocconf) #needed by C++ projects
+#include(/Users/falcogirgis/Qt5/Docs/Qt-5.4/global/compat.qdocconf) #compatibility macros
+#include(/Users/falcogirgis/Qt5/Docs/Qt-5.4/global/fileextensions.qdocconf) #configuration common among QDoc projects
+#include(/Users/falcogirgis/Qt5/Docs/Qt-5.4/global/qt-html-templates-offline.qdocconf) #offline HTML template for documentation shipped to Qt Creator
 
 project = ESToolkit
 description = ESToolkit help files, references, examples, and Lua API documentation
@@ -18,11 +18,17 @@ qhp.ESToolkit.indexTitle          = ESToolkit User Manual
 qhp.ESToolkit.sortPages				= true
 qhp.ESToolkit.indexRoot		 =
 
-qhp.ESToolkit.subprojects         = classes
-qhp.ESToolkit.subprojects.classes.title = C++ Classes
-qhp.ESToolkit.subprojects.classes.indexTitle = Qt GUI C++ Classes
-qhp.ESToolkit.subprojects.classes.selectors = class fake:headerfile
-qhp.ESToolkit.subprojects.classes.sortPages = true
+qhp.ESToolkit.subprojects         = manual 
+qhp.ESToolkit.subprojects.manual.title = ESTk User Manual
+qhp.ESToolkit.subprojects.manual.indexTitle = ESToolkit User Manual
+qhp.ESToolkit.subprojects.manual.selectors = fake:headerfile,group,module,qdoc
+qhp.ESToolkit.subprojects.manual.sortPages = true
+
+#qhp.ESToolkit.subprojects.lua.title = Lua API
+#qhp.ESToolkit.subprojects.lua.indexTitle = Lua Wrapper API
+#qhp.ESToolkit.subprojects.lua.selectors = qmlclass
+#qhp.ESToolkit.subprojects.lua.sortPages = true
+
 
 sources.fileextensions = "*.cpp *.qdoc *.mm *.qml *.c"
 headers.fileextensions = "*.h *.ch *.h++ *.hh *.hpp *.hxx"
@@ -37,6 +43,7 @@ defines += GYRO_PLATFORM GYRO_PLATFORM_Qt \
 	QT_NO_DYNAMIC_CAST
 
 falsehoods += ELYSIAN_ENGINE
+
 
 Cpp.ignoretokens +=   ELYSIAN_LUA_PROXY_FIELDS_BEGIN \
 	ELYSIAN_LUA_PROXY_FIELD \
@@ -76,7 +83,8 @@ sourcedirs += source \
 	../../ESGamma/source/gui \
 	../../ESGamma/source/system \
 	../../ESGamma/source/utility \
-	doc
+	doc \
+	doc/bowsht
 
 
 imagedirs   += resource/images

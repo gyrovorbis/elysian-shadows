@@ -12,16 +12,16 @@ TARGET = ESToolkit
 TEMPLATE = app
 QT		+= sql gui opengl network help
 QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-empty-body
-#QMAKE_DOCS = ESToolkit.qdocconf
-#if 0
+QMAKE_DOCS = ESToolkit.qdocconf
+
 #include($$QT_INSTALL_DOCS/global/macros.qdocconf) #macros for QDoc commands
 #include($$QT_INSTALL_DOCS/global/qt-cpp-defines.qdocconf) #needed by C++ projects
 #include($$QT_INSTALL_DOCS/global/compat.qdocconf) #compatibility macros
 #include($$QT_INSTALL_DOCS/global/fileextensions.qdocconf) #configuration common among QDoc projects
 #include($$QT_INSTALL_DOCS/global/qt-html-templates-offline.qdocconf) #offline HTML template for documentation shipped to Qt Creator
-#
 
-#QMAKE_DOCS = $$PWD/ESToolkit.qdocconf
+
+QMAKE_DOCS = $$PWD/ESToolkit.qdocconf
 
 # FIXME: Refactor into load(qt_docs) or something similar
 # that can be used from all non-module projects that also
@@ -38,6 +38,11 @@ ICON = resource/images/estk.icns
 #OBJECTS_DIR = $$OUT_PWD/temp/obj
 #UI_DIR		= $$OUT_PWD/temp/ui
 #RCC_DIR		= $$OUT_PWD/temp/rcc
+
+docs.target = ESToolkit.qhc
+docs.commands = qdoc ./ESToolkit.qdocconf --log-progress --debug $$escape_expand(\n\t) qcollectiongenerator ./ESToolkit.qhcp -o ../../assets/doc/ESToolkit.qhc
+QMAKE_EXTRA_TARGETS += docs
+PRE_TARGETDEPS += ESToolkit.qhc
 
 DEPENDPATH += ../../AssetIO/include/component \
 	../../AssetIO/include/crtp \
@@ -86,6 +91,7 @@ INCLUDEPATH += ../../AssetIO/include/component \
 	../../ESGamma/lib/include \
 	../../Spine/include
 
+PRECOMPILED_HEADER = include/tk_precompiled_headers.h
 
 SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../AssetIO/source/component/elysian_audio_source_base.cpp \
@@ -406,10 +412,10 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     include/dialog/tk_task_monitor_dialog.h \
     ../../ESGamma/include/system/elysian_timer_system_base.hpp \
     ../../ESGamma/include/crtp/elysian_timer_system.hpp \
-    source/estk/tk_timer_system.h \
     include/estk/tk_timer_system.h \
     include/core/tk_gitlab_manager.h \
-    include/dialog/tk_gitlab_dialog.h
+    include/dialog/tk_gitlab_dialog.h \
+    include/tk_precompiled_headers.h
 
 
 FORMS += form/estk/tk_sheet_dock_widget.ui \

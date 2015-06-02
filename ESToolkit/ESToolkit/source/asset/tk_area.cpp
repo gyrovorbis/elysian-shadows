@@ -1,8 +1,8 @@
 #include <QDir>
 #include <QMessageBox>
 #include "elysian_asset_typedefs.hpp"
-#include "elysian_entity.hpp"
 #include "tk_area.h"
+#include "elysian_area.hpp"
 #include "elysian_level.hpp"
 #include "elysian_debug.hpp"
 #include "elysian_entity.hpp"
@@ -17,16 +17,58 @@
 #include <elysian_lua_wrappers.hpp>
 
 /*!
-    \page exportedfunctions.html
-    \title Platform-Specific Functions
-    \ingroup funclists
+    \typedef Area
+    \
+    \brief JESUS FUCK
+
+
+    This class serves a few functions, the most important being:
+
+    \list
+        \i So people can understand my question.
+        \i So people can have a few laughs at the comedy in my example.
+    \endlist
+*/
+
+/*!
+    \qmltype GYVector2
+    \since 4.7
+    \inmodule ESToolkit
+    \brief The Transform elements provide a way to build
+    advanced transformations on Items.
+
+    The Transform element is a base type which cannot be
+    instantiated directly. The concrete Transform types are:
+
+    \list
+      \li \l Rotation
+      \li \l Scale
+      \li \l Translate
+    \endlist
+
+    The Transform elements let you create and control advanced
+    transformations that can be configured independently using
+    specialized properties.
+
+    You can assign any number of Transform elements to an \l
+    Item. Each Transform is applied in order, one at a time.
 
 */
 
 /*!
-    \class TkArea
-    \brief JESUS FUCK
-*/
+  \qmlproperty real GYVector2::x
+
+  THE TRANSLATION ALONG THE X AXIS
+  */
+
+/*!
+ * \qmlmethod int GYVector2::getX()
+ *
+ * GETS THE X SHIT!!!
+ */
+
+
+
 
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(TkArea)
 

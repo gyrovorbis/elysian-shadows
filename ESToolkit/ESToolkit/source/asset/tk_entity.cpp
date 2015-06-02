@@ -1,4 +1,4 @@
-#include "elysian_entity.hpp"
+#include "tk_entity.h"
 #include "elysian_debug.hpp"
 #include "elysian_animation.hpp"
 #include "tk_lua_table_stack_model.h"
@@ -16,7 +16,7 @@
 #include <tk_menu_stack.h>
 
 /*!
-    \sdclass TkEntity
+    \class TkEntity
     \brief The MyClassName class is used as an example on Stack Overflow.
 
     This class serves a few functions, the most important being:
