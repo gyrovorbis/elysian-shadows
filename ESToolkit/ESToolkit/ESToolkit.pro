@@ -10,9 +10,13 @@ win32 {
 }
 TARGET = ESToolkit
 TEMPLATE = app
+
+QMAKE_OBJCXXFLAGS_PRECOMPILE += -std=c++11 -stdlib=libc++
 QT		+= sql gui opengl network help
+
 QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-empty-body
-QMAKE_DOCS = ESToolkit.qdocconf
+#QMAKE_DOCS = ESToolkit.qdocconf
+CONFIG += precompile_header
 
 #include($$QT_INSTALL_DOCS/global/macros.qdocconf) #macros for QDoc commands
 #include($$QT_INSTALL_DOCS/global/qt-cpp-defines.qdocconf) #needed by C++ projects

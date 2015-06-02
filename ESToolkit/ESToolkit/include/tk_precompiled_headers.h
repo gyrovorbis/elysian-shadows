@@ -8,7 +8,6 @@
 //Precompiled C header files
 #include <gyro.h>
 #include <kinetic/gyro_kinetic.h>
-#include <lua.h>
 
 
 //Precompiled C++ header files
@@ -18,9 +17,9 @@
 #include <vector>
 #include <map>
 #include <iostream>
-#include <initializer_list>
 #include <cassert>
 #include <fstream>
+#include <iterator>
 
 #include <QObject>
 #include <QWidget>
@@ -115,9 +114,9 @@
 #include <QStyleOptionGraphicsItem>
 
 //external library dependencies
-#include <lua.hpp>
+#include <lua/lua.hpp>
 #include <oolua.h>
-#include <spine.h>
+#include <spine/spine.h>
 
 //AssetIO includes
 #include <elysian_debug.hpp>
@@ -141,6 +140,7 @@
 #include <elysian_sprite_attrib.hpp>
 #include <elysian_quad_sprite_attrib.hpp>
 #include <elysian_component.hpp>
+#include <elysian_lua_manager.hpp>
 
 #include <elysian_system.hpp>
 
@@ -151,7 +151,7 @@
 #include <tk_source_view.h>
 #include <tk_dest_view.h>
 
-
+//3:58
 
 //end cplusplus headers
 #endif

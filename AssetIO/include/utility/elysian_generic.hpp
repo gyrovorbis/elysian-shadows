@@ -3,6 +3,7 @@
 /* @brief Small, generic utility functions */
 #include <vector>
 #include <algorithm> /* for std::remove */
+#include <iterator>
 namespace elysian {
 
     /* @brief Iterates through haystack, erase()s all items from haystack
