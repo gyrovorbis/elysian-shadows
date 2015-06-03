@@ -12,6 +12,7 @@
 #include <initializer_list>
 #include <iostream>
 #include <QOpenGLContext>
+#include <QCommandLineParser>
 
 #include "elysian_engine.hpp"
 #include "elysian_debug.hpp"
@@ -19,6 +20,26 @@
 GYAppCbRet Init(int argc, char **argv) {
     QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings); //WITHOUT THIS OSX SHITS ITSELF WHEN FUCKING WITH WIDGET SIZING/LOCATIONS
     QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
+
+
+    QApplication a(argc, argv);
+    a.setOrganizationName("Elysian Shadows");
+    a.setOrganizationDomain("elysianshadows.com");
+    a.setApplicationName("ESTk");
+    a.setApplicationVersion(QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" ")+QString(ESTOOLKIT_VERSION_NAME));
+
+    QCommandLineParser parser;
+    parser.setApplicationDescription("ESTk Verification Mode");
+    parser.addHelpOption();
+    parser.addVersionOption();
+
+    QCommandLineOption verifyOption("verify", "Load and verify a single area.", "areaPath");
+    parser.addOption(verifyOption);
+    parser.process(a);
+
+    QString verifyPath = parser.value(verifyOption);
+    qDebug() << "areaPath" << verifyPath;
+
 
 //#else
     //QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
@@ -59,10 +80,6 @@ GYAppCbRet Init(int argc, char **argv) {
     QRectF rect;
     rect.setSize(QSizeF(2.0f, 5.0f));
 
-    QApplication a(argc, argv);
-    a.setOrganizationName("Elysian Shadows");
-    a.setOrganizationDomain("elysianshadows.com");
-    a.setApplicationName("ESTk");
     a.setWindowIcon(QIcon(":/estk/images/estk.ico"));
 
     QPixmap splashScreen(":/splash/images/splashScreen.png");
@@ -79,6 +96,10 @@ GYAppCbRet Init(int argc, char **argv) {
 
     ESToolkit w;
 
+    if(!verifyPath.isNull())  {
+        w.verifySingleArea(verifyPath);
+
+    } else {
     //QApplication::setWindowIcon(QIcon(":/estk/images/estk.ico"));
 
 // We don't want to wait for the splash screen whilst debugging. --Sara.
@@ -91,7 +112,9 @@ GYAppCbRet Init(int argc, char **argv) {
     QTimer::singleShot(0, &w, SLOT(showMaximized()));
 #endif
 
+    }
     a.exec();
+
 
     return GY_RET_CONTINUE;
 }

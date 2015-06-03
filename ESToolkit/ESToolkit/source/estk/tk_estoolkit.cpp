@@ -2038,3 +2038,44 @@ void ESToolkit::on_actionSheet_Manager_triggered()
 {
     on_actionActionSecret_triggered();
 }
+
+bool ESToolkit::verifySingleArea(const QString verifyPath) {
+    QFileInfo   pathInfo(verifyPath);
+    QString     areaPath = pathInfo.absoluteFilePath();
+    QString     levelPath;
+    QString     projectPath;
+
+    qDebug() << "VERIFYING" << verifyPath;
+
+    if(!pathInfo.exists() || !pathInfo.isDir()) {
+
+        return false;
+    }
+
+    QDir curDir(areaPath);
+    do {
+        if(!curDir.cdUp()) {
+
+        }
+
+    } while(!QDir(curDir.filePath("area")).exists());
+
+    levelPath = curDir.absolutePath();
+
+    do {
+        if(!curDir.cdUp()) {
+
+        }
+
+    } while(!QDir(curDir.filePath("level")).exists());
+
+    projectPath = curDir.absolutePath();
+
+
+    _openProjectDir(projectPath);
+    QDir::setCurrent(projectPath);
+    _assets.setCurrentLevel(levelPath.split("/").last());
+    _assets.setCurrentArea(areaPath.split("/").last());
+
+    exit(0);
+}

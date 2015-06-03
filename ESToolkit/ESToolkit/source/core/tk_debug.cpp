@@ -284,6 +284,7 @@ void TkDebug::_resizePrompt(void) {
 void TkDebug::_postToQueue(const int src, const LEVEL level, const QString text) {
     _mutex->lock();
     _pendingQueue->enqueue(LogEntry{ text, level, src });
+    elysian::DebugBase::writeLog((elysian::DebugBase::SOURCE)src, level, Q_CSTR(text));
     _mutex->unlock();
 }
 

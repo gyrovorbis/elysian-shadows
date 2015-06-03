@@ -51,7 +51,8 @@ public:
     virtual         ~ESToolkit(void);
 
 
-                        static void     inspectTable(OOLUA::Lua_table_ref table);
+    static void     inspectTable(OOLUA::Lua_table_ref table);
+    bool            verifySingleArea(const QString path);
 protected:
     virtual void    changeEvent(QEvent *e) override;
     virtual void    closeEvent(QCloseEvent *event) override;
