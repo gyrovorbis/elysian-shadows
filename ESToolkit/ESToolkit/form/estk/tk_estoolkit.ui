@@ -177,7 +177,6 @@
     <addaction name="separator"/>
     <addaction name="menuDynamic_Lighting"/>
     <addaction name="separator"/>
-    <addaction name="actionDocumentation"/>
    </widget>
    <widget class="QMenu" name="menuLevel">
     <property name="enabled">
@@ -266,6 +265,15 @@
     <addaction name="actionClear"/>
     <addaction name="menuFilters"/>
    </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionSheet_Manager"/>
+    <addaction name="actionGitLab_Manager"/>
+    <addaction name="actionPerformance_Monitor"/>
+    <addaction name="actionDocumentation"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuView"/>
@@ -273,6 +281,7 @@
    <addaction name="menuArea"/>
    <addaction name="menuEngine"/>
    <addaction name="menuConsole"/>
+   <addaction name="menuTools"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="windowTitle">
@@ -1274,6 +1283,21 @@
   <action name="actionDocumentation">
    <property name="text">
     <string>User Manual</string>
+   </property>
+  </action>
+  <action name="actionGitLab_Manager">
+   <property name="text">
+    <string>GitLab Manager</string>
+   </property>
+  </action>
+  <action name="actionSheet_Manager">
+   <property name="text">
+    <string>Sheet Manager</string>
+   </property>
+  </action>
+  <action name="actionPerformance_Monitor">
+   <property name="text">
+    <string>Performance Monitor</string>
    </property>
   </action>
  </widget>

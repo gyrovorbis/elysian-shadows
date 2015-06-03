@@ -9,6 +9,8 @@
 #define DEBUG_QT_BUFF_SIZE              50000
 #define DEBUG_LOG_POLL_MSEC             500
 
+#define Q_CSTR(a) (a.toStdString().c_str())
+
 class QString;
 class QTreeWidget;
 class QTreeWidgetItem;

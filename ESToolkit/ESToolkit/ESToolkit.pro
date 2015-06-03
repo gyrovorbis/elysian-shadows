@@ -221,7 +221,8 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../ESGamma/source/system/elysian_timer_system_base.cpp \
     source/estk/tk_timer_system.cpp \
     source/core/tk_gitlab_manager.cpp \
-    source/dialog/tk_gitlab_dialog.cpp
+    source/dialog/tk_gitlab_dialog.cpp \
+    source/core/tk_network_access_manager.cpp
 
 
 HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
@@ -416,7 +417,8 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     include/estk/tk_timer_system.h \
     include/core/tk_gitlab_manager.h \
     include/dialog/tk_gitlab_dialog.h \
-    include/tk_precompiled_headers.h
+    include/tk_precompiled_headers.h \
+    include/core/tk_network_access_manager.h
 
 
 FORMS += form/estk/tk_sheet_dock_widget.ui \

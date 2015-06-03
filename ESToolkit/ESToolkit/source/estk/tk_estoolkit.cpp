@@ -513,6 +513,11 @@ void ESToolkit::WriteSettings()
     settings.setValue("engineStartPosX", x);
     settings.setValue("engineStartPosY", y);
     settings.setValue("previousProject", _assets.getProjectDir());
+    if(_gitlabDialog->isAuthenticated()) {
+        settings.setValue("gitLabHostName", _gitlabDialog->getHostName());
+        settings.setValue("gitLabPrivateToken", _gitlabDialog->getPrivateToken());
+        settings.setValue("gitLabProjectId", _gitlabDialog->getProjectId());
+    }
 }
 
 void ESToolkit::ReadSettings()
@@ -555,6 +560,15 @@ void ESToolkit::ReadSettings()
     _engineDialog->setStartPos(x, y);
     MAP_VIEW_RES mapViewRes = (MAP_VIEW_RES)settings.value("mapViewRes", MAP_VIEW_RES_DYNAMIC).toInt();
     _setMapViewResolution(mapViewRes);
+
+    if(!settings.value("gitLabPrivateToken").isNull()) {
+        _gitlabDialog->setHostName(settings.value("gitLabHostName").toString());
+        _gitlabDialog->setPrivateToken(settings.value("gitLabPrivateToken").toString());
+        _gitlabDialog->authenticate();
+        _gitlabDialog->setProjectId(settings.value("gitLabProjectId").toInt());
+
+    }
+
 
     //bool assetVisibility = settings.value("assetDock", true).toBool();
     //bool entityVisibility = settings.value("entityDock", true).toBool();
@@ -1777,14 +1791,7 @@ void ESToolkit::on_actionCommands_toggled(bool arg1)
 
 void ESToolkit::on_actionMap_Background_toggled(bool arg1)
 {
-    //auto* dialog = new TaskMonitorDialog;
-    /*if(_assets.getCurrentProject()) {
-		dialog->setModel(_assets.getEngine()->getTimerSys());
-		dialog->show();
-    }*/
-   // GitlabManager::createNewIssue("const QString description, const bool block");
-    _gitlabDialog->show();
-    //TkMapSystem::setRenderMapBackground(arg1);
+    TkMapSystem::setRenderMapBackground(arg1);
 }
 
 void ESToolkit::on_action480p_toggled(bool /*arg1*/)
@@ -2011,4 +2018,23 @@ void ESToolkit::on_actionReloadProject_triggered(void)
 void ESToolkit::on_actionDocumentation_triggered()
 {
     _helpDockWidget->show();
+}
+
+void ESToolkit::on_actionGitLab_Manager_triggered()
+{
+    _gitlabDialog->show();
+}
+
+void ESToolkit::on_actionPerformance_Monitor_triggered()
+{
+    auto* dialog = new TaskMonitorDialog;
+    if(_assets.getCurrentProject()) {
+        dialog->setModel(_assets.getEngine()->getTimerSys());
+        dialog->show();
+    }
+}
+
+void ESToolkit::on_actionSheet_Manager_triggered()
+{
+    on_actionActionSecret_triggered();
 }

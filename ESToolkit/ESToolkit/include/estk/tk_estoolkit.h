@@ -244,5 +244,8 @@ private Q_SLOTS:
     void on_actionEnable_Audio_toggled(bool arg1);
     void on_actionReloadProject_triggered();
     void on_actionDocumentation_triggered();
+    void on_actionGitLab_Manager_triggered();
+    void on_actionPerformance_Monitor_triggered();
+    void on_actionSheet_Manager_triggered();
 };
 #endif // ESTOOLKIT_H
