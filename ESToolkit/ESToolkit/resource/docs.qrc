@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/manual">
+        <file>docs/ESToolkit.qhc</file>
+        <file>docs/ESToolkit.qch</file>
+    </qresource>
+</RCC>
