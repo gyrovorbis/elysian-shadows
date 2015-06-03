@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>BehaviorSystem Class | ESToolkit </title>
+</head>
+<body>
+<li>BehaviorSystem</li>
+<div class="sidebar">
+<div class="toc">
+<h3><a name="toc">Contents</a></h3>
+<ul>
+<li class="level1"><a href="#public-functions">Public Functions</a></li>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title">BehaviorSystem Class</h1>
+<span class="small-subtitle">(<a href="elysian-behaviorsystem.html">elysian::BehaviorSystem</a>)<br/></span>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> Inherits:</td><td class="memItemRight bottomAlign"> </td></tr></table></div><ul>
+<li><a href="elysian-behaviorsystem-members.html">List of all members, including inherited members</a></li>
+</ul>
+<a name="public-functions"></a>
+<h2 id="public-functions">Public Functions</h2>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> virtual </td><td class="memItemRight bottomAlign"><b><a href="elysian-behaviorsystem.html#dtor.BehaviorSystem">~BehaviorSystem</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-behaviorsystem.html#callTrigger">callTrigger</a></b>(Entity * const<i> entity</i>, const Behavior::TRIGGER<i> trigger</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-behaviorsystem.html#callTriggers">callTriggers</a></b>(const Behavior::TRIGGER<i> trigger</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-behaviorsystem.html#initialize">initialize</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-behaviorsystem.html#onButtonPress">onButtonPress</a></b>(const GameInput::BUTTON<i> button</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-behaviorsystem.html#onButtonRelease">onButtonRelease</a></b>(const GameInput::BUTTON<i> button</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="elysian-behaviorsystem.html#onCollide">onCollide</a></b>(Collidable * const<i> bodyA</i>, Collidable * const<i> bodyB</i>, CollisionContact *<i> contact</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="elysian-behaviorsystem.html#onCollisionEnter">onCollisionEnter</a></b>(Collidable * const<i> bodyA</i>, Collidable * const<i> bodyB</i>, CollisionContact *<i> contact</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="elysian-behaviorsystem.html#onCollisionExit">onCollisionExit</a></b>(Collidable * const<i> bodyA</i>, Collidable * const<i> bodyB</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-behaviorsystem.html#onCombatReceiveStatusModifier">onCombatReceiveStatusModifier</a></b>(Entity * const<i> entity</i>, CombatStatus * const<i> modifier</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-behaviorsystem.html#onCombatTargetCollisionEnter">onCombatTargetCollisionEnter</a></b>(Entity * const<i> entity</i>, CollisionContact * const<i> contact</i>, Collidable * const<i> collidable</i>, CombatStatus * const<i> modifier</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-behaviorsystem.html#onDialog">onDialog</a></b>(Entity * const<i> entity</i>, const unsigned<i> screen</i>, const int<i> option</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-behaviorsystem.html#onExamine">onExamine</a></b>(Entity * const<i> entity1</i>, Entity * const<i> entity2</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-behaviorsystem.html#onShatter">onShatter</a></b>(Entity * const<i> entity</i>, CollisionContact * const<i> contact</i>)</td></tr>
+</table></div>
+<a name="details"></a>
+<div class="func">
+<h2>Member Function Documentation</h2>
+<!-- $$$~BehaviorSystem[overload1]$$$~BehaviorSystemvoid -->
+<h3 class="fn" id="dtor.BehaviorSystem"><a name="dtor.BehaviorSystem"></a><code>[virtual] </code>BehaviorSystem::<span class="name">~BehaviorSystem</span>(<span class="type">void</span>)</h3>
+<!-- @@@~BehaviorSystem -->
+<!-- $$$callTrigger[overload1]$$$callTriggerEntity*constconstBehavior::TRIGGER -->
+<h3 class="fn" id="callTrigger"><a name="callTrigger"></a><span class="type">void</span> BehaviorSystem::<span class="name">callTrigger</span>(<span class="type"><a href="elysian.html#Entity-typedef">Entity</a></span> * const<i> entity</i>, const <span class="type">Behavior::TRIGGER</span><i> trigger</i>)</h3>
+<!-- @@@callTrigger -->
+<!-- $$$callTriggers[overload1]$$$callTriggersconstBehavior::TRIGGER -->
+<h3 class="fn" id="callTriggers"><a name="callTriggers"></a><span class="type">void</span> BehaviorSystem::<span class="name">callTriggers</span>(const <span class="type">Behavior::TRIGGER</span><i> trigger</i>)</h3>
+<!-- @@@callTriggers -->
+<!-- $$$initialize[overload1]$$$initializevoid -->
+<h3 class="fn" id="initialize"><a name="initialize"></a><span class="type">void</span> BehaviorSystem::<span class="name">initialize</span>(<span class="type">void</span>)</h3>
+<!-- @@@initialize -->
+<!-- $$$onButtonPress[overload1]$$$onButtonPressconstGameInput::BUTTON -->
+<h3 class="fn" id="onButtonPress"><a name="onButtonPress"></a><span class="type">void</span> BehaviorSystem::<span class="name">onButtonPress</span>(const <span class="type"><a href="elysian-gameinput.html#BUTTON-enum">GameInput::BUTTON</a></span><i> button</i>)</h3>
+<!-- @@@onButtonPress -->
+<!-- $$$onButtonRelease[overload1]$$$onButtonReleaseconstGameInput::BUTTON -->
+<h3 class="fn" id="onButtonRelease"><a name="onButtonRelease"></a><span class="type">void</span> BehaviorSystem::<span class="name">onButtonRelease</span>(const <span class="type"><a href="elysian-gameinput.html#BUTTON-enum">GameInput::BUTTON</a></span><i> button</i>)</h3>
+<!-- @@@onButtonRelease -->
+<!-- $$$onCollide[overload1]$$$onCollideCollidable*constCollidable*constCollisionContact* -->
+<h3 class="fn" id="onCollide"><a name="onCollide"></a><code>[virtual] </code><span class="type">void</span> BehaviorSystem::<span class="name">onCollide</span>(<span class="type"><a href="elysian.html#Collidable-typedef">Collidable</a></span> * const<i> bodyA</i>, <span class="type"><a href="elysian.html#Collidable-typedef">Collidable</a></span> * const<i> bodyB</i>, <span class="type"><a href="elysian-collisioncontact.html">CollisionContact</a></span> *<i> contact</i>)</h3>
+<!-- @@@onCollide -->
+<!-- $$$onCollisionEnter[overload1]$$$onCollisionEnterCollidable*constCollidable*constCollisionContact* -->
+<h3 class="fn" id="onCollisionEnter"><a name="onCollisionEnter"></a><code>[virtual] </code><span class="type">void</span> BehaviorSystem::<span class="name">onCollisionEnter</span>(<span class="type"><a href="elysian.html#Collidable-typedef">Collidable</a></span> * const<i> bodyA</i>, <span class="type"><a href="elysian.html#Collidable-typedef">Collidable</a></span> * const<i> bodyB</i>, <span class="type"><a href="elysian-collisioncontact.html">CollisionContact</a></span> *<i> contact</i>)</h3>
+<!-- @@@onCollisionEnter -->
+<!-- $$$onCollisionExit[overload1]$$$onCollisionExitCollidable*constCollidable*const -->
+<h3 class="fn" id="onCollisionExit"><a name="onCollisionExit"></a><code>[virtual] </code><span class="type">void</span> BehaviorSystem::<span class="name">onCollisionExit</span>(<span class="type"><a href="elysian.html#Collidable-typedef">Collidable</a></span> * const<i> bodyA</i>, <span class="type"><a href="elysian.html#Collidable-typedef">Collidable</a></span> * const<i> bodyB</i>)</h3>
+<!-- @@@onCollisionExit -->
+<!-- $$$onCombatReceiveStatusModifier[overload1]$$$onCombatReceiveStatusModifierEntity*constCombatStatus*const -->
+<h3 class="fn" id="onCombatReceiveStatusModifier"><a name="onCombatReceiveStatusModifier"></a><span class="type">void</span> BehaviorSystem::<span class="name">onCombatReceiveStatusModifier</span>(<span class="type"><a href="elysian.html#Entity-typedef">Entity</a></span> * const<i> entity</i>, <span class="type"><a href="elysian-combatstatus.html">CombatStatus</a></span> * const<i> modifier</i>)</h3>
+<!-- @@@onCombatReceiveStatusModifier -->
+<!-- $$$onCombatTargetCollisionEnter[overload1]$$$onCombatTargetCollisionEnterEntity*constCollisionContact*constCollidable*constCombatStatus*const -->
+<h3 class="fn" id="onCombatTargetCollisionEnter"><a name="onCombatTargetCollisionEnter"></a><span class="type">void</span> BehaviorSystem::<span class="name">onCombatTargetCollisionEnter</span>(<span class="type"><a href="elysian.html#Entity-typedef">Entity</a></span> * const<i> entity</i>, <span class="type"><a href="elysian-collisioncontact.html">CollisionContact</a></span> * const<i> contact</i>, <span class="type"><a href="elysian.html#Collidable-typedef">Collidable</a></span> * const<i> collidable</i>, <span class="type"><a href="elysian-combatstatus.html">CombatStatus</a></span> * const<i> modifier</i>)</h3>
+<!-- @@@onCombatTargetCollisionEnter -->
+<!-- $$$onDialog[overload1]$$$onDialogEntity*constconstunsignedconstint -->
+<h3 class="fn" id="onDialog"><a name="onDialog"></a><span class="type">void</span> BehaviorSystem::<span class="name">onDialog</span>(<span class="type"><a href="elysian.html#Entity-typedef">Entity</a></span> * const<i> entity</i>, const <span class="type">unsigned</span><i> screen</i>, const <span class="type">int</span><i> option</i>)</h3>
+<!-- @@@onDialog -->
+<!-- $$$onExamine[overload1]$$$onExamineEntity*constEntity*const -->
+<h3 class="fn" id="onExamine"><a name="onExamine"></a><span class="type">void</span> BehaviorSystem::<span class="name">onExamine</span>(<span class="type"><a href="elysian.html#Entity-typedef">Entity</a></span> * const<i> entity1</i>, <span class="type"><a href="elysian.html#Entity-typedef">Entity</a></span> * const<i> entity2</i>)</h3>
+<!-- @@@onExamine -->
+<!-- $$$onShatter[overload1]$$$onShatterEntity*constCollisionContact*const -->
+<h3 class="fn" id="onShatter"><a name="onShatter"></a><span class="type">void</span> BehaviorSystem::<span class="name">onShatter</span>(<span class="type"><a href="elysian.html#Entity-typedef">Entity</a></span> * const<i> entity</i>, <span class="type"><a href="elysian-collisioncontact.html">CollisionContact</a></span> * const<i> contact</i>)</h3>
+<!-- @@@onShatter -->
+</div>
+</body>
+</html>

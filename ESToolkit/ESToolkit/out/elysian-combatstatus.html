@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>CombatStatus Class | ESToolkit </title>
+</head>
+<body>
+<li>CombatStatus</li>
+<div class="sidebar">
+<div class="toc">
+<h3><a name="toc">Contents</a></h3>
+<ul>
+<li class="level1"><a href="#public-types">Public Types</a></li>
+<li class="level1"><a href="#public-functions">Public Functions</a></li>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title">CombatStatus Class</h1>
+<span class="small-subtitle">(<a href="elysian-combatstatus.html">elysian::CombatStatus</a>)<br/></span>
+<ul>
+<li><a href="elysian-combatstatus-members.html">List of all members, including inherited members</a></li>
+</ul>
+<a name="public-types"></a>
+<h2 id="public-types">Public Types</h2>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> enum </td><td class="memItemRight bottomAlign"><b><a href="elysian-combatstatus.html#STATUS_EFFECT-enum">STATUS_EFFECT</a></b> { POISON, CONFUSION, SLEEP, MAX, STATUS_EFFECT_ALL }</td></tr>
+</table></div>
+<a name="public-functions"></a>
+<h2 id="public-functions">Public Functions</h2>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-combatstatus.html#applyModifier">applyModifier</a></b>(const CombatStatusModifier &amp;<i> rvalue</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> int </td><td class="memItemRight bottomAlign"><b><a href="elysian-combatstatus.html#getHp">getHp</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> int </td><td class="memItemRight bottomAlign"><b><a href="elysian-combatstatus.html#getMaxHp">getMaxHp</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> int </td><td class="memItemRight bottomAlign"><b><a href="elysian-combatstatus.html#getMaxMp">getMaxMp</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> int </td><td class="memItemRight bottomAlign"><b><a href="elysian-combatstatus.html#getMp">getMp</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> uint64_t </td><td class="memItemRight bottomAlign"><b><a href="elysian-combatstatus.html#getStatusEffects">getStatusEffects</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="elysian-combatstatus.html#hasStatusEffect">hasStatusEffect</a></b>(const STATUS_EFFECT<i> effect</i>) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-combatstatus.html#setHp">setHp</a></b>(const int<i> val</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-combatstatus.html#setMaxHp">setMaxHp</a></b>(const int<i> val</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-combatstatus.html#setMaxMp">setMaxMp</a></b>(const int<i> val</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-combatstatus.html#setMp">setMp</a></b>(const int<i> val</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-combatstatus.html#setStatusEffects">setStatusEffects</a></b>(const uint64_t<i> effects</i>)</td></tr>
+</table></div>
+<a name="details"></a>
+<div class="types">
+<h2>Member Type Documentation</h2>
+<!-- $$$STATUS_EFFECT$$$POISON$$$CONFUSION$$$SLEEP$$$MAX$$$STATUS_EFFECT_ALL -->
+<h3 class="fn" id="STATUS_EFFECT-enum"><a name="STATUS_EFFECT-enum"></a>enum CombatStatus::<span class="name">STATUS_EFFECT</span></h3>
+<!-- @@@STATUS_EFFECT -->
+</div>
+<div class="func">
+<h2>Member Function Documentation</h2>
+<!-- $$$applyModifier[overload1]$$$applyModifierconstCombatStatusModifier& -->
+<h3 class="fn" id="applyModifier"><a name="applyModifier"></a><span class="type">void</span> CombatStatus::<span class="name">applyModifier</span>(const <span class="type"><a href="elysian-combatstatusmodifier.html">CombatStatusModifier</a></span> &amp;<i> rvalue</i>)</h3>
+<!-- @@@applyModifier -->
+<!-- $$$getHp[overload1]$$$getHpvoid -->
+<h3 class="fn" id="getHp"><a name="getHp"></a><span class="type">int</span> CombatStatus::<span class="name">getHp</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getHp -->
+<!-- $$$getMaxHp[overload1]$$$getMaxHpvoid -->
+<h3 class="fn" id="getMaxHp"><a name="getMaxHp"></a><span class="type">int</span> CombatStatus::<span class="name">getMaxHp</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getMaxHp -->
+<!-- $$$getMaxMp[overload1]$$$getMaxMpvoid -->
+<h3 class="fn" id="getMaxMp"><a name="getMaxMp"></a><span class="type">int</span> CombatStatus::<span class="name">getMaxMp</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getMaxMp -->
+<!-- $$$getMp[overload1]$$$getMpvoid -->
+<h3 class="fn" id="getMp"><a name="getMp"></a><span class="type">int</span> CombatStatus::<span class="name">getMp</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getMp -->
+<!-- $$$getStatusEffects[overload1]$$$getStatusEffectsvoid -->
+<h3 class="fn" id="getStatusEffects"><a name="getStatusEffects"></a><span class="type">uint64_t</span> CombatStatus::<span class="name">getStatusEffects</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getStatusEffects -->
+<!-- $$$hasStatusEffect[overload1]$$$hasStatusEffectconstSTATUS_EFFECT -->
+<h3 class="fn" id="hasStatusEffect"><a name="hasStatusEffect"></a><span class="type">bool</span> CombatStatus::<span class="name">hasStatusEffect</span>(const <span class="type"><a href="elysian-combatstatus.html#STATUS_EFFECT-enum">STATUS_EFFECT</a></span><i> effect</i>) const</h3>
+<!-- @@@hasStatusEffect -->
+<!-- $$$setHp[overload1]$$$setHpconstint -->
+<h3 class="fn" id="setHp"><a name="setHp"></a><span class="type">void</span> CombatStatus::<span class="name">setHp</span>(const <span class="type">int</span><i> val</i>)</h3>
+<!-- @@@setHp -->
+<!-- $$$setMaxHp[overload1]$$$setMaxHpconstint -->
+<h3 class="fn" id="setMaxHp"><a name="setMaxHp"></a><span class="type">void</span> CombatStatus::<span class="name">setMaxHp</span>(const <span class="type">int</span><i> val</i>)</h3>
+<!-- @@@setMaxHp -->
+<!-- $$$setMaxMp[overload1]$$$setMaxMpconstint -->
+<h3 class="fn" id="setMaxMp"><a name="setMaxMp"></a><span class="type">void</span> CombatStatus::<span class="name">setMaxMp</span>(const <span class="type">int</span><i> val</i>)</h3>
+<!-- @@@setMaxMp -->
+<!-- $$$setMp[overload1]$$$setMpconstint -->
+<h3 class="fn" id="setMp"><a name="setMp"></a><span class="type">void</span> CombatStatus::<span class="name">setMp</span>(const <span class="type">int</span><i> val</i>)</h3>
+<!-- @@@setMp -->
+<!-- $$$setStatusEffects[overload1]$$$setStatusEffectsconstuint64_t -->
+<h3 class="fn" id="setStatusEffects"><a name="setStatusEffects"></a><span class="type">void</span> CombatStatus::<span class="name">setStatusEffects</span>(const <span class="type">uint64_t</span><i> effects</i>)</h3>
+<!-- @@@setStatusEffects -->
+</div>
+</body>
+</html>

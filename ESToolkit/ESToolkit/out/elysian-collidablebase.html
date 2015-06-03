@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>CollidableBase Class | ESToolkit </title>
+</head>
+<body>
+<li>CollidableBase</li>
+<div class="sidebar">
+<div class="toc">
+<h3><a name="toc">Contents</a></h3>
+<ul>
+<li class="level1"><a href="#public-functions">Public Functions</a></li>
+<li class="level1"><a href="#protected-functions">Protected Functions</a></li>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title">CollidableBase Class</h1>
+<span class="small-subtitle">(<a href="elysian-collidablebase.html">elysian::CollidableBase</a>)<br/></span>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> Inherits:</td><td class="memItemRight bottomAlign"> </td></tr></table></div><ul>
+<li><a href="elysian-collidablebase-members.html">List of all members, including inherited members</a></li>
+</ul>
+<a name="public-functions"></a>
+<h2 id="public-functions">Public Functions</h2>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#CollidableBase-2">CollidableBase</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#checkAABBCollision">checkAABBCollision</a></b>(Collidable *<i> col</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#checkFullCollision">checkFullCollision</a></b>(Collidable *<i> col</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> CollidableAttrib * </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#getAttrib">getAttrib</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> const GYVector3 &amp; </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#getCenterWorldPos">getCenterWorldPos</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> GYCollider * </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#getCollider">getCollider</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> unsigned </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#getContactCount">getContactCount</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> uint32_t </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#getContactEventMonitorMask">getContactEventMonitorMask</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#getResolvePenetration">getResolvePenetration</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#getRestingOnBody">getRestingOnBody</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> SortSweepCollidable * </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#getSortSweepAABB">getSortSweepAABB</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#getStackedOnGround">getStackedOnGround</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> const GYVector3 &amp; </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#getWorldPos">getWorldPos</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> const GYVector3 &amp; </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#getWorldSize">getWorldSize</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#getWorldSpace">getWorldSpace</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#render">render</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#setActive">setActive</a></b>(const bool<i> val</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#setAttrib">setAttrib</a></b>(CollidableAttrib *<i> attrib</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#setContactEventMonitorMask">setContactEventMonitorMask</a></b>(const uint32_t<i> t</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#setResolvePenetration">setResolvePenetration</a></b>(const bool<i> v</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#setRestingOnBody">setRestingOnBody</a></b>(const bool<i> v</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#setSortSweepAABB">setSortSweepAABB</a></b>(SortSweepCollidable *<i> sweep</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#setStackedOnGround">setStackedOnGround</a></b>(const bool<i> v</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#setWorldSpace">setWorldSpace</a></b>(const bool<i> val</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#update">update</a></b>(void)</td></tr>
+</table></div>
+<a name="protected-functions"></a>
+<h2 id="protected-functions">Protected Functions</h2>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#CollidableBase">CollidableBase</a></b>(Entity &amp;<i> parent</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#dtor.CollidableBase">~CollidableBase</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collidablebase.html#underscore.updateSortSweepAABB">_updateSortSweepAABB</a></b>(void)</td></tr>
+</table></div>
+<a name="details"></a>
+<div class="func">
+<h2>Member Function Documentation</h2>
+<!-- $$$CollidableBase[overload1]$$$CollidableBaseEntity& -->
+<h3 class="fn" id="CollidableBase"><a name="CollidableBase"></a><code>[protected] </code>CollidableBase::<span class="name">CollidableBase</span>(<span class="type"><a href="elysian.html#Entity-typedef">Entity</a></span> &amp;<i> parent</i>)</h3>
+<!-- @@@CollidableBase -->
+<!-- $$$CollidableBase$$$CollidableBasevoid -->
+<h3 class="fn" id="CollidableBase-2"><a name="CollidableBase-2"></a>CollidableBase::<span class="name">CollidableBase</span>(<span class="type">void</span>)</h3>
+<!-- @@@CollidableBase -->
+<!-- $$$~CollidableBase[overload1]$$$~CollidableBasevoid -->
+<h3 class="fn" id="dtor.CollidableBase"><a name="dtor.CollidableBase"></a><code>[virtual protected] </code>CollidableBase::<span class="name">~CollidableBase</span>(<span class="type">void</span>)</h3>
+<!-- @@@~CollidableBase -->
+<!-- $$$_updateSortSweepAABB[overload1]$$$_updateSortSweepAABBvoid -->
+<h3 class="fn" id="underscore.updateSortSweepAABB"><a name="underscore.updateSortSweepAABB"></a><code>[protected] </code><span class="type">void</span> CollidableBase::<span class="name">_updateSortSweepAABB</span>(<span class="type">void</span>)</h3>
+<!-- @@@_updateSortSweepAABB -->
+<!-- $$$checkAABBCollision[overload1]$$$checkAABBCollisionCollidable* -->
+<h3 class="fn" id="checkAABBCollision"><a name="checkAABBCollision"></a><span class="type">bool</span> CollidableBase::<span class="name">checkAABBCollision</span>(<span class="type"><a href="elysian.html#Collidable-typedef">Collidable</a></span> *<i> col</i>)</h3>
+<!-- @@@checkAABBCollision -->
+<!-- $$$checkFullCollision[overload1]$$$checkFullCollisionCollidable* -->
+<h3 class="fn" id="checkFullCollision"><a name="checkFullCollision"></a><span class="type">bool</span> CollidableBase::<span class="name">checkFullCollision</span>(<span class="type"><a href="elysian.html#Collidable-typedef">Collidable</a></span> *<i> col</i>)</h3>
+<!-- @@@checkFullCollision -->
+<!-- $$$getAttrib[overload1]$$$getAttribvoid -->
+<h3 class="fn" id="getAttrib"><a name="getAttrib"></a><span class="type"><a href="elysian-collidableattrib.html">CollidableAttrib</a></span> * CollidableBase::<span class="name">getAttrib</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getAttrib -->
+<!-- $$$getCenterWorldPos[overload1]$$$getCenterWorldPosvoid -->
+<h3 class="fn" id="getCenterWorldPos"><a name="getCenterWorldPos"></a>const <span class="type">GYVector3</span> &amp; CollidableBase::<span class="name">getCenterWorldPos</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getCenterWorldPos -->
+<!-- $$$getCollider[overload1]$$$getCollidervoid -->
+<h3 class="fn" id="getCollider"><a name="getCollider"></a><span class="type">GYCollider</span> * CollidableBase::<span class="name">getCollider</span>(<span class="type">void</span>)</h3>
+<!-- @@@getCollider -->
+<!-- $$$getContactCount[overload1]$$$getContactCountvoid -->
+<h3 class="fn" id="getContactCount"><a name="getContactCount"></a><span class="type">unsigned</span> CollidableBase::<span class="name">getContactCount</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getContactCount -->
+<!-- $$$getContactEventMonitorMask[overload1]$$$getContactEventMonitorMaskvoid -->
+<h3 class="fn" id="getContactEventMonitorMask"><a name="getContactEventMonitorMask"></a><span class="type">uint32_t</span> CollidableBase::<span class="name">getContactEventMonitorMask</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getContactEventMonitorMask -->
+<!-- $$$getResolvePenetration[overload1]$$$getResolvePenetrationvoid -->
+<h3 class="fn" id="getResolvePenetration"><a name="getResolvePenetration"></a><span class="type">bool</span> CollidableBase::<span class="name">getResolvePenetration</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getResolvePenetration -->
+<!-- $$$getRestingOnBody[overload1]$$$getRestingOnBodyvoid -->
+<h3 class="fn" id="getRestingOnBody"><a name="getRestingOnBody"></a><span class="type">bool</span> CollidableBase::<span class="name">getRestingOnBody</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getRestingOnBody -->
+<!-- $$$getSortSweepAABB[overload1]$$$getSortSweepAABBvoid -->
+<h3 class="fn" id="getSortSweepAABB"><a name="getSortSweepAABB"></a><span class="type">SortSweepCollidable</span> * CollidableBase::<span class="name">getSortSweepAABB</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getSortSweepAABB -->
+<!-- $$$getStackedOnGround[overload1]$$$getStackedOnGroundvoid -->
+<h3 class="fn" id="getStackedOnGround"><a name="getStackedOnGround"></a><span class="type">bool</span> CollidableBase::<span class="name">getStackedOnGround</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getStackedOnGround -->
+<!-- $$$getWorldPos[overload1]$$$getWorldPosvoid -->
+<h3 class="fn" id="getWorldPos"><a name="getWorldPos"></a>const <span class="type">GYVector3</span> &amp; CollidableBase::<span class="name">getWorldPos</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getWorldPos -->
+<!-- $$$getWorldSize[overload1]$$$getWorldSizevoid -->
+<h3 class="fn" id="getWorldSize"><a name="getWorldSize"></a>const <span class="type">GYVector3</span> &amp; CollidableBase::<span class="name">getWorldSize</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getWorldSize -->
+<!-- $$$getWorldSpace[overload1]$$$getWorldSpacevoid -->
+<h3 class="fn" id="getWorldSpace"><a name="getWorldSpace"></a><span class="type">bool</span> CollidableBase::<span class="name">getWorldSpace</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getWorldSpace -->
+<!-- $$$render[overload1]$$$rendervoid -->
+<h3 class="fn" id="render"><a name="render"></a><span class="type">void</span> CollidableBase::<span class="name">render</span>(<span class="type">void</span>)</h3>
+<!-- @@@render -->
+<!-- $$$setActive[overload1]$$$setActiveconstbool -->
+<h3 class="fn" id="setActive"><a name="setActive"></a><span class="type">void</span> CollidableBase::<span class="name">setActive</span>(const <span class="type">bool</span><i> val</i>)</h3>
+<!-- @@@setActive -->
+<!-- $$$setAttrib[overload1]$$$setAttribCollidableAttrib* -->
+<h3 class="fn" id="setAttrib"><a name="setAttrib"></a><span class="type">void</span> CollidableBase::<span class="name">setAttrib</span>(<span class="type"><a href="elysian-collidableattrib.html">CollidableAttrib</a></span> *<i> attrib</i>)</h3>
+<!-- @@@setAttrib -->
+<!-- $$$setContactEventMonitorMask[overload1]$$$setContactEventMonitorMaskconstuint32_t -->
+<h3 class="fn" id="setContactEventMonitorMask"><a name="setContactEventMonitorMask"></a><span class="type">void</span> CollidableBase::<span class="name">setContactEventMonitorMask</span>(const <span class="type">uint32_t</span><i> t</i>)</h3>
+<!-- @@@setContactEventMonitorMask -->
+<!-- $$$setResolvePenetration[overload1]$$$setResolvePenetrationconstbool -->
+<h3 class="fn" id="setResolvePenetration"><a name="setResolvePenetration"></a><span class="type">void</span> CollidableBase::<span class="name">setResolvePenetration</span>(const <span class="type">bool</span><i> v</i>)</h3>
+<!-- @@@setResolvePenetration -->
+<!-- $$$setRestingOnBody[overload1]$$$setRestingOnBodyconstbool -->
+<h3 class="fn" id="setRestingOnBody"><a name="setRestingOnBody"></a><span class="type">void</span> CollidableBase::<span class="name">setRestingOnBody</span>(const <span class="type">bool</span><i> v</i>)</h3>
+<!-- @@@setRestingOnBody -->
+<!-- $$$setSortSweepAABB[overload1]$$$setSortSweepAABBSortSweepCollidable* -->
+<h3 class="fn" id="setSortSweepAABB"><a name="setSortSweepAABB"></a><span class="type">void</span> CollidableBase::<span class="name">setSortSweepAABB</span>(<span class="type">SortSweepCollidable</span> *<i> sweep</i>)</h3>
+<!-- @@@setSortSweepAABB -->
+<!-- $$$setStackedOnGround[overload1]$$$setStackedOnGroundconstbool -->
+<h3 class="fn" id="setStackedOnGround"><a name="setStackedOnGround"></a><span class="type">void</span> CollidableBase::<span class="name">setStackedOnGround</span>(const <span class="type">bool</span><i> v</i>)</h3>
+<!-- @@@setStackedOnGround -->
+<!-- $$$setWorldSpace[overload1]$$$setWorldSpaceconstbool -->
+<h3 class="fn" id="setWorldSpace"><a name="setWorldSpace"></a><span class="type">void</span> CollidableBase::<span class="name">setWorldSpace</span>(const <span class="type">bool</span><i> val</i>)</h3>
+<!-- @@@setWorldSpace -->
+<!-- $$$update[overload1]$$$updatevoid -->
+<h3 class="fn" id="update"><a name="update"></a><span class="type">void</span> CollidableBase::<span class="name">update</span>(<span class="type">void</span>)</h3>
+<!-- @@@update -->
+</div>
+</body>
+</html>

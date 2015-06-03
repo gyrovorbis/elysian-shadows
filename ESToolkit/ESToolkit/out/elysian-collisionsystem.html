@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>CollisionSystem Class | ESToolkit </title>
+</head>
+<body>
+<li>CollisionSystem</li>
+<div class="sidebar">
+<div class="toc">
+<h3><a name="toc">Contents</a></h3>
+<ul>
+<li class="level1"><a href="#public-types">Public Types</a></li>
+<li class="level1"><a href="#public-functions">Public Functions</a></li>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title">CollisionSystem Class</h1>
+<span class="small-subtitle">(<a href="elysian-collisionsystem.html">elysian::CollisionSystem</a>)<br/></span>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> Inherits:</td><td class="memItemRight bottomAlign"> </td></tr></table></div><ul>
+<li><a href="elysian-collisionsystem-members.html">List of all members, including inherited members</a></li>
+</ul>
+<a name="public-types"></a>
+<h2 id="public-types">Public Types</h2>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> enum </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#ENTITY_TILE_CHECK-enum">ENTITY_TILE_CHECK</a></b> { ENTITY_TILE_CHECK_BOTTOM, ENTITY_TILE_CHECK_TOP, ENTITY_TILE_CHECK_VOLUME }</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> enum </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#RENDER_LAYER-enum">RENDER_LAYER</a></b> { RENDER_LAYER_1, RENDER_LAYER_2, RENDER_LAYER_3, RENDER_COMBINED, RENDER_DISABLED, RENDER_MAX }</td></tr>
+</table></div>
+<a name="public-functions"></a>
+<h2 id="public-functions">Public Functions</h2>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#CollisionSystem">CollisionSystem</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> SortSweepCollidable * </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#addSortSweepCollidable">addSortSweepCollidable</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#checkCollision">checkCollision</a></b>(const Entity &amp;<i> entity1</i>, const Entity &amp;<i> entity2</i>) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#checkCollision-2">checkCollision</a></b>(const Collidable &amp;<i> col1</i>, const Collidable &amp;<i> col2</i>) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#clearContacts">clearContacts</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> RENDER_LAYER </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#cycleRenderLayer">cycleRenderLayer</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#detectCollidableCollidableCollision">detectCollidableCollidableCollision</a></b>(Collidable *<i> col1</i>, Collidable *<i> col2</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#detectCollisions">detectCollisions</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#getBroadPhase">getBroadPhase</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> CollisionContact * </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#getContact">getContact</a></b>(const unsigned<i> index</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> unsigned </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#getContactCount">getContactCount</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> double </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#getDetectionTime">getDetectionTime</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> unsigned </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#getEntityEntityChecks">getEntityEntityChecks</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> unsigned </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#getPenResIterUsed">getPenResIterUsed</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#onAreaEnter">onAreaEnter</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#onAreaExit">onAreaExit</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#prepareGeometry">prepareGeometry</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#previouslyColliding">previouslyColliding</a></b>(const Collidable &amp;<i> col1</i>, const Collidable &amp;<i> col2</i>) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#registerContactEventMonitor">registerContactEventMonitor</a></b>(const uint32_t<i> mask</i>, CollisionContactEventMonitor * const<i> monitor</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#removeSortSweepCollidable">removeSortSweepCollidable</a></b>(SortSweepCollidable *<i> body</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#render">render</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#renderTileColliders">renderTileColliders</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#setBroadPhase">setBroadPhase</a></b>(const bool<i> val</i> = true)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#setEnabled">setEnabled</a></b>(const bool<i> enabled</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#setRenderLayer">setRenderLayer</a></b>(const RENDER_LAYER<i> layer</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#unregisterContactEventMonitor">unregisterContactEventMonitor</a></b>(const uint32_t<i> mask</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisionsystem.html#update">update</a></b>(void)</td></tr>
+</table></div>
+<a name="details"></a>
+<div class="types">
+<h2>Member Type Documentation</h2>
+<!-- $$$ENTITY_TILE_CHECK$$$ENTITY_TILE_CHECK_BOTTOM$$$ENTITY_TILE_CHECK_TOP$$$ENTITY_TILE_CHECK_VOLUME -->
+<h3 class="fn" id="ENTITY_TILE_CHECK-enum"><a name="ENTITY_TILE_CHECK-enum"></a>enum CollisionSystem::<span class="name">ENTITY_TILE_CHECK</span></h3>
+<!-- @@@ENTITY_TILE_CHECK -->
+<!-- $$$RENDER_LAYER$$$RENDER_LAYER_1$$$RENDER_LAYER_2$$$RENDER_LAYER_3$$$RENDER_COMBINED$$$RENDER_DISABLED$$$RENDER_MAX -->
+<h3 class="fn" id="RENDER_LAYER-enum"><a name="RENDER_LAYER-enum"></a>enum CollisionSystem::<span class="name">RENDER_LAYER</span></h3>
+<!-- @@@RENDER_LAYER -->
+</div>
+<div class="func">
+<h2>Member Function Documentation</h2>
+<!-- $$$CollisionSystem[overload1]$$$CollisionSystemvoid -->
+<h3 class="fn" id="CollisionSystem"><a name="CollisionSystem"></a>CollisionSystem::<span class="name">CollisionSystem</span>(<span class="type">void</span>)</h3>
+<!-- @@@CollisionSystem -->
+<!-- $$$addSortSweepCollidable[overload1]$$$addSortSweepCollidablevoid -->
+<h3 class="fn" id="addSortSweepCollidable"><a name="addSortSweepCollidable"></a><span class="type">SortSweepCollidable</span> * CollisionSystem::<span class="name">addSortSweepCollidable</span>(<span class="type">void</span>)</h3>
+<!-- @@@addSortSweepCollidable -->
+<!-- $$$checkCollision[overload1]$$$checkCollisionconstEntity&constEntity& -->
+<h3 class="fn" id="checkCollision"><a name="checkCollision"></a><span class="type">bool</span> CollisionSystem::<span class="name">checkCollision</span>(const <span class="type"><a href="elysian.html#Entity-typedef">Entity</a></span> &amp;<i> entity1</i>, const <span class="type"><a href="elysian.html#Entity-typedef">Entity</a></span> &amp;<i> entity2</i>) const</h3>
+<!-- @@@checkCollision -->
+<!-- $$$checkCollision$$$checkCollisionconstCollidable&constCollidable& -->
+<h3 class="fn" id="checkCollision-2"><a name="checkCollision-2"></a><span class="type">bool</span> CollisionSystem::<span class="name">checkCollision</span>(const <span class="type"><a href="elysian.html#Collidable-typedef">Collidable</a></span> &amp;<i> col1</i>, const <span class="type"><a href="elysian.html#Collidable-typedef">Collidable</a></span> &amp;<i> col2</i>) const</h3>
+<!-- @@@checkCollision -->
+<!-- $$$clearContacts[overload1]$$$clearContactsvoid -->
+<h3 class="fn" id="clearContacts"><a name="clearContacts"></a><span class="type">void</span> CollisionSystem::<span class="name">clearContacts</span>(<span class="type">void</span>)</h3>
+<!-- @@@clearContacts -->
+<!-- $$$cycleRenderLayer[overload1]$$$cycleRenderLayervoid -->
+<h3 class="fn" id="cycleRenderLayer"><a name="cycleRenderLayer"></a><span class="type"><a href="elysian-collisionsystem.html#RENDER_LAYER-enum">RENDER_LAYER</a></span> CollisionSystem::<span class="name">cycleRenderLayer</span>(<span class="type">void</span>)</h3>
+<!-- @@@cycleRenderLayer -->
+<!-- $$$detectCollidableCollidableCollision[overload1]$$$detectCollidableCollidableCollisionCollidable*Collidable* -->
+<h3 class="fn" id="detectCollidableCollidableCollision"><a name="detectCollidableCollidableCollision"></a><span class="type">bool</span> CollisionSystem::<span class="name">detectCollidableCollidableCollision</span>(<span class="type"><a href="elysian.html#Collidable-typedef">Collidable</a></span> *<i> col1</i>, <span class="type"><a href="elysian.html#Collidable-typedef">Collidable</a></span> *<i> col2</i>)</h3>
+<!-- @@@detectCollidableCollidableCollision -->
+<!-- $$$detectCollisions[overload1]$$$detectCollisionsvoid -->
+<h3 class="fn" id="detectCollisions"><a name="detectCollisions"></a><span class="type">void</span> CollisionSystem::<span class="name">detectCollisions</span>(<span class="type">void</span>)</h3>
+<!-- @@@detectCollisions -->
+<!-- $$$getBroadPhase[overload1]$$$getBroadPhasevoid -->
+<h3 class="fn" id="getBroadPhase"><a name="getBroadPhase"></a><span class="type">bool</span> CollisionSystem::<span class="name">getBroadPhase</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getBroadPhase -->
+<!-- $$$getContact[overload1]$$$getContactconstunsigned -->
+<h3 class="fn" id="getContact"><a name="getContact"></a><span class="type"><a href="elysian-collisioncontact.html">CollisionContact</a></span> * CollisionSystem::<span class="name">getContact</span>(const <span class="type">unsigned</span><i> index</i>)</h3>
+<!-- @@@getContact -->
+<!-- $$$getContactCount[overload1]$$$getContactCountvoid -->
+<h3 class="fn" id="getContactCount"><a name="getContactCount"></a><span class="type">unsigned</span> CollisionSystem::<span class="name">getContactCount</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getContactCount -->
+<!-- $$$getDetectionTime[overload1]$$$getDetectionTimevoid -->
+<h3 class="fn" id="getDetectionTime"><a name="getDetectionTime"></a><span class="type">double</span> CollisionSystem::<span class="name">getDetectionTime</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getDetectionTime -->
+<!-- $$$getEntityEntityChecks[overload1]$$$getEntityEntityChecksvoid -->
+<h3 class="fn" id="getEntityEntityChecks"><a name="getEntityEntityChecks"></a><span class="type">unsigned</span> CollisionSystem::<span class="name">getEntityEntityChecks</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getEntityEntityChecks -->
+<!-- $$$getPenResIterUsed[overload1]$$$getPenResIterUsedvoid -->
+<h3 class="fn" id="getPenResIterUsed"><a name="getPenResIterUsed"></a><span class="type">unsigned</span> CollisionSystem::<span class="name">getPenResIterUsed</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getPenResIterUsed -->
+<!-- $$$onAreaEnter[overload1]$$$onAreaEntervoid -->
+<h3 class="fn" id="onAreaEnter"><a name="onAreaEnter"></a><span class="type">void</span> CollisionSystem::<span class="name">onAreaEnter</span>(<span class="type">void</span>)</h3>
+<!-- @@@onAreaEnter -->
+<!-- $$$onAreaExit[overload1]$$$onAreaExitvoid -->
+<h3 class="fn" id="onAreaExit"><a name="onAreaExit"></a><span class="type">void</span> CollisionSystem::<span class="name">onAreaExit</span>(<span class="type">void</span>)</h3>
+<!-- @@@onAreaExit -->
+<!-- $$$prepareGeometry[overload1]$$$prepareGeometryvoid -->
+<h3 class="fn" id="prepareGeometry"><a name="prepareGeometry"></a><span class="type">void</span> CollisionSystem::<span class="name">prepareGeometry</span>(<span class="type">void</span>)</h3>
+<!-- @@@prepareGeometry -->
+<!-- $$$previouslyColliding[overload1]$$$previouslyCollidingconstCollidable&constCollidable& -->
+<h3 class="fn" id="previouslyColliding"><a name="previouslyColliding"></a><span class="type">bool</span> CollisionSystem::<span class="name">previouslyColliding</span>(const <span class="type"><a href="elysian.html#Collidable-typedef">Collidable</a></span> &amp;<i> col1</i>, const <span class="type"><a href="elysian.html#Collidable-typedef">Collidable</a></span> &amp;<i> col2</i>) const</h3>
+<!-- @@@previouslyColliding -->
+<!-- $$$registerContactEventMonitor[overload1]$$$registerContactEventMonitorconstuint32_tCollisionContactEventMonitor*const -->
+<h3 class="fn" id="registerContactEventMonitor"><a name="registerContactEventMonitor"></a><span class="type">void</span> CollisionSystem::<span class="name">registerContactEventMonitor</span>(const <span class="type">uint32_t</span><i> mask</i>, <span class="type"><a href="elysian-collisioncontacteventmonitor.html">CollisionContactEventMonitor</a></span> * const<i> monitor</i>)</h3>
+<!-- @@@registerContactEventMonitor -->
+<!-- $$$removeSortSweepCollidable[overload1]$$$removeSortSweepCollidableSortSweepCollidable* -->
+<h3 class="fn" id="removeSortSweepCollidable"><a name="removeSortSweepCollidable"></a><span class="type">void</span> CollisionSystem::<span class="name">removeSortSweepCollidable</span>(<span class="type">SortSweepCollidable</span> *<i> body</i>)</h3>
+<!-- @@@removeSortSweepCollidable -->
+<!-- $$$render[overload1]$$$rendervoid -->
+<h3 class="fn" id="render"><a name="render"></a><span class="type">void</span> CollisionSystem::<span class="name">render</span>(<span class="type">void</span>)</h3>
+<!-- @@@render -->
+<!-- $$$renderTileColliders[overload1]$$$renderTileCollidersvoid -->
+<h3 class="fn" id="renderTileColliders"><a name="renderTileColliders"></a><span class="type">void</span> CollisionSystem::<span class="name">renderTileColliders</span>(<span class="type">void</span>) const</h3>
+<!-- @@@renderTileColliders -->
+<!-- $$$setBroadPhase[overload1]$$$setBroadPhaseconstbool -->
+<h3 class="fn" id="setBroadPhase"><a name="setBroadPhase"></a><span class="type">void</span> CollisionSystem::<span class="name">setBroadPhase</span>(const <span class="type">bool</span><i> val</i> = true)</h3>
+<!-- @@@setBroadPhase -->
+<!-- $$$setEnabled[overload1]$$$setEnabledconstbool -->
+<h3 class="fn" id="setEnabled"><a name="setEnabled"></a><span class="type">void</span> CollisionSystem::<span class="name">setEnabled</span>(const <span class="type">bool</span><i> enabled</i>)</h3>
+<!-- @@@setEnabled -->
+<!-- $$$setRenderLayer[overload1]$$$setRenderLayerconstRENDER_LAYER -->
+<h3 class="fn" id="setRenderLayer"><a name="setRenderLayer"></a><span class="type">void</span> CollisionSystem::<span class="name">setRenderLayer</span>(const <span class="type"><a href="elysian-collisionsystem.html#RENDER_LAYER-enum">RENDER_LAYER</a></span><i> layer</i>)</h3>
+<!-- @@@setRenderLayer -->
+<!-- $$$unregisterContactEventMonitor[overload1]$$$unregisterContactEventMonitorconstuint32_t -->
+<h3 class="fn" id="unregisterContactEventMonitor"><a name="unregisterContactEventMonitor"></a><span class="type">void</span> CollisionSystem::<span class="name">unregisterContactEventMonitor</span>(const <span class="type">uint32_t</span><i> mask</i>)</h3>
+<!-- @@@unregisterContactEventMonitor -->
+<!-- $$$update[overload1]$$$updatevoid -->
+<h3 class="fn" id="update"><a name="update"></a><span class="type">void</span> CollisionSystem::<span class="name">update</span>(<span class="type">void</span>)</h3>
+<!-- @@@update -->
+</div>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>CharacterBase Class | ESToolkit </title>
+</head>
+<body>
+<li>CharacterBase</li>
+<div class="sidebar">
+<div class="toc">
+<h3><a name="toc">Contents</a></h3>
+<ul>
+<li class="level1"><a href="#public-functions">Public Functions</a></li>
+<li class="level1"><a href="#protected-functions">Protected Functions</a></li>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title">CharacterBase Class</h1>
+<span class="small-subtitle">(<a href="elysian-characterbase.html">elysian::CharacterBase</a>)<br/></span>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> Inherits:</td><td class="memItemRight bottomAlign"> </td></tr></table></div><ul>
+<li><a href="elysian-characterbase-members.html">List of all members, including inherited members</a></li>
+</ul>
+<a name="public-functions"></a>
+<h2 id="public-functions">Public Functions</h2>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#animateWalk">animateWalk</a></b>(const GYVector2 &amp;<i> moveVec</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#faceDir">faceDir</a></b>(const Direction::DIR4<i> dir</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#faceEntity">faceEntity</a></b>(Entity &amp;<i> entity</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> float </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#getDashMultiplier">getDashMultiplier</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> Direction::DIR4 </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#getFaceDir">getFaceDir</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> Entity * </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#getHeldEntity">getHeldEntity</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> float </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#getHeldEntityForceDampFactor">getHeldEntityForceDampFactor</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> const GYVector3 &amp; </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#getLastMoveDir">getLastMoveDir</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> float </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#getWalkForce">getWalkForce</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#isDashing">isDashing</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#isFacing">isFacing</a></b>(const Entity &amp;<i> entity</i>) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#jump">jump</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#moveByDist">moveByDist</a></b>(const GYVector2 &amp;<i> dist</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#moveByForce">moveByForce</a></b>(const GYVector2 &amp;<i> vec</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#setAnimate">setAnimate</a></b>(const bool<i> val</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#setDashMultiplier">setDashMultiplier</a></b>(const float<i> mult</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#setDashing">setDashing</a></b>(const bool<i> val</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#setHeldEntity">setHeldEntity</a></b>(Entity * const<i> entity</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#setWalkAnimInterp">setWalkAnimInterp</a></b>(const bool<i> val</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#setWalkForce">setWalkForce</a></b>(const float<i> force</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#throwHeldEntity">throwHeldEntity</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#update">update</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#walk">walk</a></b>(const GYVector2 &amp;<i> dir</i>)</td></tr>
+</table></div>
+<a name="protected-functions"></a>
+<h2 id="protected-functions">Protected Functions</h2>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#CharacterBase">CharacterBase</a></b>(Entity &amp;<i> entity</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#CharacterBase-2">CharacterBase</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual </td><td class="memItemRight bottomAlign"><b><a href="elysian-characterbase.html#dtor.CharacterBase">~CharacterBase</a></b>(void)</td></tr>
+</table></div>
+<a name="details"></a>
+<div class="func">
+<h2>Member Function Documentation</h2>
+<!-- $$$CharacterBase[overload1]$$$CharacterBaseEntity& -->
+<h3 class="fn" id="CharacterBase"><a name="CharacterBase"></a><code>[protected] </code>CharacterBase::<span class="name">CharacterBase</span>(<span class="type"><a href="elysian.html#Entity-typedef">Entity</a></span> &amp;<i> entity</i>)</h3>
+<!-- @@@CharacterBase -->
+<!-- $$$CharacterBase$$$CharacterBasevoid -->
+<h3 class="fn" id="CharacterBase-2"><a name="CharacterBase-2"></a><code>[protected] </code>CharacterBase::<span class="name">CharacterBase</span>(<span class="type">void</span>)</h3>
+<!-- @@@CharacterBase -->
+<!-- $$$~CharacterBase[overload1]$$$~CharacterBasevoid -->
+<h3 class="fn" id="dtor.CharacterBase"><a name="dtor.CharacterBase"></a><code>[virtual protected] </code>CharacterBase::<span class="name">~CharacterBase</span>(<span class="type">void</span>)</h3>
+<!-- @@@~CharacterBase -->
+<!-- $$$animateWalk[overload1]$$$animateWalkconstGYVector2& -->
+<h3 class="fn" id="animateWalk"><a name="animateWalk"></a><span class="type">void</span> CharacterBase::<span class="name">animateWalk</span>(const <span class="type"><a href="qml-gyvector2.html">GYVector2</a></span> &amp;<i> moveVec</i>)</h3>
+<!-- @@@animateWalk -->
+<!-- $$$faceDir[overload1]$$$faceDirconstDirection::DIR4 -->
+<h3 class="fn" id="faceDir"><a name="faceDir"></a><span class="type">void</span> CharacterBase::<span class="name">faceDir</span>(const <span class="type"><a href="elysian-direction.html#DIR4-enum">Direction::DIR4</a></span><i> dir</i>)</h3>
+<!-- @@@faceDir -->
+<!-- $$$faceEntity[overload1]$$$faceEntityEntity& -->
+<h3 class="fn" id="faceEntity"><a name="faceEntity"></a><span class="type">void</span> CharacterBase::<span class="name">faceEntity</span>(<span class="type"><a href="elysian.html#Entity-typedef">Entity</a></span> &amp;<i> entity</i>)</h3>
+<!-- @@@faceEntity -->
+<!-- $$$getDashMultiplier[overload1]$$$getDashMultipliervoid -->
+<h3 class="fn" id="getDashMultiplier"><a name="getDashMultiplier"></a><span class="type">float</span> CharacterBase::<span class="name">getDashMultiplier</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getDashMultiplier -->
+<!-- $$$getFaceDir[overload1]$$$getFaceDirvoid -->
+<h3 class="fn" id="getFaceDir"><a name="getFaceDir"></a><span class="type"><a href="elysian-direction.html#DIR4-enum">Direction::DIR4</a></span> CharacterBase::<span class="name">getFaceDir</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getFaceDir -->
+<!-- $$$getHeldEntity[overload1]$$$getHeldEntityvoid -->
+<h3 class="fn" id="getHeldEntity"><a name="getHeldEntity"></a><span class="type"><a href="elysian.html#Entity-typedef">Entity</a></span> * CharacterBase::<span class="name">getHeldEntity</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getHeldEntity -->
+<!-- $$$getHeldEntityForceDampFactor[overload1]$$$getHeldEntityForceDampFactorvoid -->
+<h3 class="fn" id="getHeldEntityForceDampFactor"><a name="getHeldEntityForceDampFactor"></a><span class="type">float</span> CharacterBase::<span class="name">getHeldEntityForceDampFactor</span>(<span class="type">void</span>)</h3>
+<!-- @@@getHeldEntityForceDampFactor -->
+<!-- $$$getLastMoveDir[overload1]$$$getLastMoveDirvoid -->
+<h3 class="fn" id="getLastMoveDir"><a name="getLastMoveDir"></a>const <span class="type">GYVector3</span> &amp; CharacterBase::<span class="name">getLastMoveDir</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getLastMoveDir -->
+<!-- $$$getWalkForce[overload1]$$$getWalkForcevoid -->
+<h3 class="fn" id="getWalkForce"><a name="getWalkForce"></a><span class="type">float</span> CharacterBase::<span class="name">getWalkForce</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getWalkForce -->
+<!-- $$$isDashing[overload1]$$$isDashingvoid -->
+<h3 class="fn" id="isDashing"><a name="isDashing"></a><span class="type">bool</span> CharacterBase::<span class="name">isDashing</span>(<span class="type">void</span>) const</h3>
+<!-- @@@isDashing -->
+<!-- $$$isFacing[overload1]$$$isFacingconstEntity& -->
+<h3 class="fn" id="isFacing"><a name="isFacing"></a><span class="type">bool</span> CharacterBase::<span class="name">isFacing</span>(const <span class="type"><a href="elysian.html#Entity-typedef">Entity</a></span> &amp;<i> entity</i>) const</h3>
+<!-- @@@isFacing -->
+<!-- $$$jump[overload1]$$$jumpvoid -->
+<h3 class="fn" id="jump"><a name="jump"></a><span class="type">void</span> CharacterBase::<span class="name">jump</span>(<span class="type">void</span>)</h3>
+<!-- @@@jump -->
+<!-- $$$moveByDist[overload1]$$$moveByDistconstGYVector2& -->
+<h3 class="fn" id="moveByDist"><a name="moveByDist"></a><span class="type">void</span> CharacterBase::<span class="name">moveByDist</span>(const <span class="type"><a href="qml-gyvector2.html">GYVector2</a></span> &amp;<i> dist</i>)</h3>
+<!-- @@@moveByDist -->
+<!-- $$$moveByForce[overload1]$$$moveByForceconstGYVector2& -->
+<h3 class="fn" id="moveByForce"><a name="moveByForce"></a><span class="type">void</span> CharacterBase::<span class="name">moveByForce</span>(const <span class="type"><a href="qml-gyvector2.html">GYVector2</a></span> &amp;<i> vec</i>)</h3>
+<!-- @@@moveByForce -->
+<!-- $$$setAnimate[overload1]$$$setAnimateconstbool -->
+<h3 class="fn" id="setAnimate"><a name="setAnimate"></a><span class="type">void</span> CharacterBase::<span class="name">setAnimate</span>(const <span class="type">bool</span><i> val</i>)</h3>
+<!-- @@@setAnimate -->
+<!-- $$$setDashMultiplier[overload1]$$$setDashMultiplierconstfloat -->
+<h3 class="fn" id="setDashMultiplier"><a name="setDashMultiplier"></a><span class="type">void</span> CharacterBase::<span class="name">setDashMultiplier</span>(const <span class="type">float</span><i> mult</i>)</h3>
+<!-- @@@setDashMultiplier -->
+<!-- $$$setDashing[overload1]$$$setDashingconstbool -->
+<h3 class="fn" id="setDashing"><a name="setDashing"></a><span class="type">void</span> CharacterBase::<span class="name">setDashing</span>(const <span class="type">bool</span><i> val</i>)</h3>
+<p><b>See also </b><a href="elysian-characterbase.html#isDashing">isDashing</a>().</p>
+<!-- @@@setDashing -->
+<!-- $$$setHeldEntity[overload1]$$$setHeldEntityEntity*const -->
+<h3 class="fn" id="setHeldEntity"><a name="setHeldEntity"></a><span class="type">void</span> CharacterBase::<span class="name">setHeldEntity</span>(<span class="type"><a href="elysian.html#Entity-typedef">Entity</a></span> * const<i> entity</i>)</h3>
+<!-- @@@setHeldEntity -->
+<!-- $$$setWalkAnimInterp[overload1]$$$setWalkAnimInterpconstbool -->
+<h3 class="fn" id="setWalkAnimInterp"><a name="setWalkAnimInterp"></a><span class="type">void</span> CharacterBase::<span class="name">setWalkAnimInterp</span>(const <span class="type">bool</span><i> val</i>)</h3>
+<!-- @@@setWalkAnimInterp -->
+<!-- $$$setWalkForce[overload1]$$$setWalkForceconstfloat -->
+<h3 class="fn" id="setWalkForce"><a name="setWalkForce"></a><span class="type">void</span> CharacterBase::<span class="name">setWalkForce</span>(const <span class="type">float</span><i> force</i>)</h3>
+<!-- @@@setWalkForce -->
+<!-- $$$throwHeldEntity[overload1]$$$throwHeldEntityvoid -->
+<h3 class="fn" id="throwHeldEntity"><a name="throwHeldEntity"></a><span class="type">void</span> CharacterBase::<span class="name">throwHeldEntity</span>(<span class="type">void</span>)</h3>
+<!-- @@@throwHeldEntity -->
+<!-- $$$update[overload1]$$$updatevoid -->
+<h3 class="fn" id="update"><a name="update"></a><span class="type">void</span> CharacterBase::<span class="name">update</span>(<span class="type">void</span>)</h3>
+<!-- @@@update -->
+<!-- $$$walk[overload1]$$$walkconstGYVector2& -->
+<h3 class="fn" id="walk"><a name="walk"></a><span class="type">void</span> CharacterBase::<span class="name">walk</span>(const <span class="type"><a href="qml-gyvector2.html">GYVector2</a></span> &amp;<i> dir</i>)</h3>
+<!-- @@@walk -->
+</div>
+</body>
+</html>

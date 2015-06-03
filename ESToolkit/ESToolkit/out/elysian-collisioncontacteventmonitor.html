@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>CollisionContactEventMonitor Class | ESToolkit </title>
+</head>
+<body>
+<li>CollisionContactEventMonitor</li>
+<div class="sidebar">
+<div class="toc">
+<h3><a name="toc">Contents</a></h3>
+<ul>
+<li class="level1"><a href="#public-functions">Public Functions</a></li>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title">CollisionContactEventMonitor Class</h1>
+<span class="small-subtitle">(<a href="elysian-collisioncontacteventmonitor.html">elysian::CollisionContactEventMonitor</a>)<br/></span>
+<ul>
+<li><a href="elysian-collisioncontacteventmonitor-members.html">List of all members, including inherited members</a></li>
+</ul>
+<a name="public-functions"></a>
+<h2 id="public-functions">Public Functions</h2>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> uint32_t </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisioncontacteventmonitor.html#getEventMask">getEventMask</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisioncontacteventmonitor.html#onCollide">onCollide</a></b>(Collidable * const<i> bodyA</i>, Collidable * const<i> bodyB</i>, CollisionContact *<i> contact</i>) = 0</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisioncontacteventmonitor.html#onCollisionEnter">onCollisionEnter</a></b>(Collidable * const<i> bodyA</i>, Collidable * const<i> bodyB</i>, CollisionContact *<i> contact</i>) = 0</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> virtual void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisioncontacteventmonitor.html#onCollisionExit">onCollisionExit</a></b>(Collidable * const<i> bodyA</i>, Collidable * const<i> bodyB</i>) = 0</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-collisioncontacteventmonitor.html#setEventMask">setEventMask</a></b>(const uint32_t<i> mask</i>)</td></tr>
+</table></div>
+<a name="details"></a>
+<div class="func">
+<h2>Member Function Documentation</h2>
+<!-- $$$getEventMask[overload1]$$$getEventMaskvoid -->
+<h3 class="fn" id="getEventMask"><a name="getEventMask"></a><span class="type">uint32_t</span> CollisionContactEventMonitor::<span class="name">getEventMask</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getEventMask -->
+<!-- $$$onCollide[overload1]$$$onCollideCollidable*constCollidable*constCollisionContact* -->
+<h3 class="fn" id="onCollide"><a name="onCollide"></a><code>[pure virtual] </code><span class="type">void</span> CollisionContactEventMonitor::<span class="name">onCollide</span>(<span class="type"><a href="elysian.html#Collidable-typedef">Collidable</a></span> * const<i> bodyA</i>, <span class="type"><a href="elysian.html#Collidable-typedef">Collidable</a></span> * const<i> bodyB</i>, <span class="type"><a href="elysian-collisioncontact.html">CollisionContact</a></span> *<i> contact</i>)</h3>
+<!-- @@@onCollide -->
+<!-- $$$onCollisionEnter[overload1]$$$onCollisionEnterCollidable*constCollidable*constCollisionContact* -->
+<h3 class="fn" id="onCollisionEnter"><a name="onCollisionEnter"></a><code>[pure virtual] </code><span class="type">void</span> CollisionContactEventMonitor::<span class="name">onCollisionEnter</span>(<span class="type"><a href="elysian.html#Collidable-typedef">Collidable</a></span> * const<i> bodyA</i>, <span class="type"><a href="elysian.html#Collidable-typedef">Collidable</a></span> * const<i> bodyB</i>, <span class="type"><a href="elysian-collisioncontact.html">CollisionContact</a></span> *<i> contact</i>)</h3>
+<!-- @@@onCollisionEnter -->
+<!-- $$$onCollisionExit[overload1]$$$onCollisionExitCollidable*constCollidable*const -->
+<h3 class="fn" id="onCollisionExit"><a name="onCollisionExit"></a><code>[pure virtual] </code><span class="type">void</span> CollisionContactEventMonitor::<span class="name">onCollisionExit</span>(<span class="type"><a href="elysian.html#Collidable-typedef">Collidable</a></span> * const<i> bodyA</i>, <span class="type"><a href="elysian.html#Collidable-typedef">Collidable</a></span> * const<i> bodyB</i>)</h3>
+<!-- @@@onCollisionExit -->
+<!-- $$$setEventMask[overload1]$$$setEventMaskconstuint32_t -->
+<h3 class="fn" id="setEventMask"><a name="setEventMask"></a><span class="type">void</span> CollisionContactEventMonitor::<span class="name">setEventMask</span>(const <span class="type">uint32_t</span><i> mask</i>)</h3>
+<!-- @@@setEventMask -->
+</div>
+</body>
+</html>

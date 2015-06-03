@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Font Class | ESToolkit </title>
+</head>
+<body>
+<li>Font</li>
+<div class="sidebar">
+<div class="toc">
+<h3><a name="toc">Contents</a></h3>
+<ul>
+<li class="level1"><a href="#public-types">Public Types</a></li>
+<li class="level1"><a href="#public-functions">Public Functions</a></li>
+<li class="level1"><a href="#static-public-members">Static Public Members</a></li>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title">Font Class</h1>
+<span class="small-subtitle">(<a href="elysian-font.html">elysian::Font</a>)<br/></span>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> Inherits:</td><td class="memItemRight bottomAlign"> </td></tr></table></div><ul>
+<li><a href="elysian-font-members.html">List of all members, including inherited members</a></li>
+</ul>
+<a name="public-types"></a>
+<h2 id="public-types">Public Types</h2>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> enum </td><td class="memItemRight bottomAlign"><b><a href="elysian-font.html#ALIGNMENT-enum">ALIGNMENT</a></b> { C_ALIGN, L_ALIGN, R_ALIGN }</td></tr>
+</table></div>
+<a name="public-functions"></a>
+<h2 id="public-functions">Public Functions</h2>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-font.html#drawString">drawString</a></b>(const ALIGNMENT<i> align</i>, const char *<i> str</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-font.html#drawStringf">drawStringf</a></b>(const ALIGNMENT<i> align</i>, const char *<i> str</i>, ...)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-font.html#endBatchRender">endBatchRender</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> unsigned </td><td class="memItemRight bottomAlign"><b><a href="elysian-font.html#getStringPixelWidth">getStringPixelWidth</a></b>(const char *<i> string</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="elysian-font.html#loadTextData">loadTextData</a></b>(const char * const<i> imgFile</i>, const int<i> sheetWidth</i>, const int<i> sheetHeight</i>, const int<i> spriteWidth</i>, const int<i> spriteHeight</i>, const char * const<i> widthFile</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-font.html#startBatchRender">startBatchRender</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> unsigned </td><td class="memItemRight bottomAlign"><b><a href="elysian-font.html#stringLengthWithinWidth">stringLengthWithinWidth</a></b>(const char *<i> string</i>, const unsigned int<i> width</i>)</td></tr>
+</table></div>
+<a name="static-public-members"></a>
+<h2 id="static-public-members">Static Public Members</h2>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> GYColor4 </td><td class="memItemRight bottomAlign"><b><a href="elysian-font.html#getColorPaletteEntry">getColorPaletteEntry</a></b>(const unsigned<i> index</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-font.html#setColorPaletteEntry">setColorPaletteEntry</a></b>(const unsigned<i> index</i>, const GYColor4<i> color</i>)</td></tr>
+</table></div>
+<a name="details"></a>
+<div class="types">
+<h2>Member Type Documentation</h2>
+<!-- $$$ALIGNMENT$$$C_ALIGN$$$L_ALIGN$$$R_ALIGN -->
+<h3 class="fn" id="ALIGNMENT-enum"><a name="ALIGNMENT-enum"></a>enum Font::<span class="name">ALIGNMENT</span></h3>
+<!-- @@@ALIGNMENT -->
+</div>
+<div class="func">
+<h2>Member Function Documentation</h2>
+<!-- $$$drawString[overload1]$$$drawStringconstALIGNMENTconstchar* -->
+<h3 class="fn" id="drawString"><a name="drawString"></a><span class="type">void</span> Font::<span class="name">drawString</span>(const <span class="type"><a href="elysian-font.html#ALIGNMENT-enum">ALIGNMENT</a></span><i> align</i>, const <span class="type">char</span> *<i> str</i>)</h3>
+<!-- @@@drawString -->
+<!-- $$$drawStringf[overload1]$$$drawStringfconstALIGNMENTconstchar*... -->
+<h3 class="fn" id="drawStringf"><a name="drawStringf"></a><span class="type">void</span> Font::<span class="name">drawStringf</span>(const <span class="type"><a href="elysian-font.html#ALIGNMENT-enum">ALIGNMENT</a></span><i> align</i>, const <span class="type">char</span> *<i> str</i>, ...)</h3>
+<!-- @@@drawStringf -->
+<!-- $$$endBatchRender[overload1]$$$endBatchRendervoid -->
+<h3 class="fn" id="endBatchRender"><a name="endBatchRender"></a><span class="type">void</span> Font::<span class="name">endBatchRender</span>(<span class="type">void</span>)</h3>
+<!-- @@@endBatchRender -->
+<!-- $$$getColorPaletteEntry[overload1]$$$getColorPaletteEntryconstunsigned -->
+<h3 class="fn" id="getColorPaletteEntry"><a name="getColorPaletteEntry"></a><code>[static] </code><span class="type">GYColor4</span> Font::<span class="name">getColorPaletteEntry</span>(const <span class="type">unsigned</span><i> index</i>)</h3>
+<!-- @@@getColorPaletteEntry -->
+<!-- $$$getStringPixelWidth[overload1]$$$getStringPixelWidthconstchar* -->
+<h3 class="fn" id="getStringPixelWidth"><a name="getStringPixelWidth"></a><span class="type">unsigned</span> Font::<span class="name">getStringPixelWidth</span>(const <span class="type">char</span> *<i> string</i>)</h3>
+<!-- @@@getStringPixelWidth -->
+<!-- $$$loadTextData[overload1]$$$loadTextDataconstchar*constconstintconstintconstintconstintconstchar*const -->
+<h3 class="fn" id="loadTextData"><a name="loadTextData"></a><span class="type">bool</span> Font::<span class="name">loadTextData</span>(const <span class="type">char</span> * const<i> imgFile</i>, const <span class="type">int</span><i> sheetWidth</i>, const <span class="type">int</span><i> sheetHeight</i>, const <span class="type">int</span><i> spriteWidth</i>, const <span class="type">int</span><i> spriteHeight</i>, const <span class="type">char</span> * const<i> widthFile</i>)</h3>
+<!-- @@@loadTextData -->
+<!-- $$$setColorPaletteEntry[overload1]$$$setColorPaletteEntryconstunsignedconstGYColor4 -->
+<h3 class="fn" id="setColorPaletteEntry"><a name="setColorPaletteEntry"></a><code>[static] </code><span class="type">void</span> Font::<span class="name">setColorPaletteEntry</span>(const <span class="type">unsigned</span><i> index</i>, const <span class="type">GYColor4</span><i> color</i>)</h3>
+<!-- @@@setColorPaletteEntry -->
+<!-- $$$startBatchRender[overload1]$$$startBatchRendervoid -->
+<h3 class="fn" id="startBatchRender"><a name="startBatchRender"></a><span class="type">void</span> Font::<span class="name">startBatchRender</span>(<span class="type">void</span>)</h3>
+<!-- @@@startBatchRender -->
+<!-- $$$stringLengthWithinWidth[overload1]$$$stringLengthWithinWidthconstchar*constunsignedint -->
+<h3 class="fn" id="stringLengthWithinWidth"><a name="stringLengthWithinWidth"></a><span class="type">unsigned</span> Font::<span class="name">stringLengthWithinWidth</span>(const <span class="type">char</span> *<i> string</i>, const <span class="type">unsigned</span> <span class="type">int</span><i> width</i>)</h3>
+<!-- @@@stringLengthWithinWidth -->
+</div>
+</body>
+</html>

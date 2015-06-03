@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Tile Class | ESToolkit </title>
+</head>
+<body>
+<li>Tile</li>
+<div class="sidebar">
+<div class="toc">
+<h3><a name="toc">Contents</a></h3>
+<ul>
+<li class="level1"><a href="#public-types">Public Types</a></li>
+<li class="level1"><a href="#public-functions">Public Functions</a></li>
+<li class="level1"><a href="#static-public-members">Static Public Members</a></li>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title">Tile Class</h1>
+<span class="small-subtitle">(<a href="elysian-tile.html">elysian::Tile</a>)<br/></span>
+<ul>
+<li><a href="elysian-tile-members.html">List of all members, including inherited members</a></li>
+</ul>
+<a name="public-types"></a>
+<h2 id="public-types">Public Types</h2>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> enum </td><td class="memItemRight bottomAlign"><b><a href="elysian-tile.html#COLLIDER_TYPE-enum">COLLIDER_TYPE</a></b> { COLLIDER_NONE, COLLIDER_FULL, COLLIDER_HALF_E, COLLIDER_HALF_N, ..., COLLIDER_MAX }</td></tr>
+</table></div>
+<a name="public-functions"></a>
+<h2 id="public-functions">Public Functions</h2>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> </td><td class="memItemRight bottomAlign"><b><a href="elysian-tile.html#dtor.Tile">~Tile</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> float </td><td class="memItemRight bottomAlign"><b><a href="elysian-tile.html#getAnimTime">getAnimTime</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="elysian-tile.html#getAnimated">getAnimated</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> unsigned </td><td class="memItemRight bottomAlign"><b><a href="elysian-tile.html#getColliderType">getColliderType</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> float </td><td class="memItemRight bottomAlign"><b><a href="elysian-tile.html#getDamping">getDamping</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> uint16_t </td><td class="memItemRight bottomAlign"><b><a href="elysian-tile.html#getNextIndex">getNextIndex</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="elysian-tile.html#getStandOn">getStandOn</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> bool </td><td class="memItemRight bottomAlign"><b><a href="elysian-tile.html#getTransparency">getTransparency</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-tile.html#setAnimTime">setAnimTime</a></b>(const float<i> t</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-tile.html#setAnimated">setAnimated</a></b>(const bool<i> v</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-tile.html#setColliderType">setColliderType</a></b>(const unsigned<i> type</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-tile.html#setDamping">setDamping</a></b>(const float<i> factor</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-tile.html#setHitSfx">setHitSfx</a></b>(GYWav * const<i> wav</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-tile.html#setNextIndex">setNextIndex</a></b>(const uint16_t<i> i</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-tile.html#setStandOn">setStandOn</a></b>(const bool<i> v</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-tile.html#setTransparency">setTransparency</a></b>(const bool<i> v</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-tile.html#setWalkSfx">setWalkSfx</a></b>(GYWav * const<i> wav</i>)</td></tr>
+</table></div>
+<a name="static-public-members"></a>
+<h2 id="static-public-members">Static Public Members</h2>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> COLLIDER_TYPE </td><td class="memItemRight bottomAlign"><b><a href="elysian-tile.html#combineColliders">combineColliders</a></b>(const COLLIDER_TYPE<i> col1</i>, const COLLIDER_TYPE<i> col2</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> COLLIDER_TYPE </td><td class="memItemRight bottomAlign"><b><a href="elysian-tile.html#reorientCollider">reorientCollider</a></b>(const COLLIDER_TYPE<i> collider</i>, const GY_RECT_TEX_ORIENT<i> orient</i>)</td></tr>
+</table></div>
+<a name="details"></a>
+<div class="types">
+<h2>Member Type Documentation</h2>
+<!-- $$$COLLIDER_TYPE$$$COLLIDER_NONE$$$COLLIDER_FULL$$$COLLIDER_HALF_E$$$COLLIDER_HALF_N$$$COLLIDER_HALF_W$$$COLLIDER_HALF_S$$$COLLIDER_QUAD_SE$$$COLLIDER_QUAD_NE$$$COLLIDER_QUAD_NW$$$COLLIDER_QUAD_SW$$$COLLIDER_L_SE$$$COLLIDER_L_NE$$$COLLIDER_L_NW$$$COLLIDER_L_SW$$$COLLIDER_QUADS_SE_NW$$$COLLIDER_QUADS_SW_NE$$$COLLIDER_45DEG_SE$$$COLLIDER_45DEG_NE$$$COLLIDER_45DEG_NW$$$COLLIDER_45DEG_SW$$$COLLIDER_MAX -->
+<h3 class="fn" id="COLLIDER_TYPE-enum"><a name="COLLIDER_TYPE-enum"></a>enum Tile::<span class="name">COLLIDER_TYPE</span></h3>
+<!-- @@@COLLIDER_TYPE -->
+</div>
+<div class="func">
+<h2>Member Function Documentation</h2>
+<!-- $$$~Tile[overload1]$$$~Tilevoid -->
+<h3 class="fn" id="dtor.Tile"><a name="dtor.Tile"></a>Tile::<span class="name">~Tile</span>(<span class="type">void</span>)</h3>
+<!-- @@@~Tile -->
+<!-- $$$combineColliders[overload1]$$$combineCollidersconstCOLLIDER_TYPEconstCOLLIDER_TYPE -->
+<h3 class="fn" id="combineColliders"><a name="combineColliders"></a><code>[static] </code><span class="type"><a href="elysian-tile.html#COLLIDER_TYPE-enum">COLLIDER_TYPE</a></span> Tile::<span class="name">combineColliders</span>(const <span class="type"><a href="elysian-tile.html#COLLIDER_TYPE-enum">COLLIDER_TYPE</a></span><i> col1</i>, const <span class="type"><a href="elysian-tile.html#COLLIDER_TYPE-enum">COLLIDER_TYPE</a></span><i> col2</i>)</h3>
+<!-- @@@combineColliders -->
+<!-- $$$getAnimTime[overload1]$$$getAnimTimevoid -->
+<h3 class="fn" id="getAnimTime"><a name="getAnimTime"></a><span class="type">float</span> Tile::<span class="name">getAnimTime</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getAnimTime -->
+<!-- $$$getAnimated[overload1]$$$getAnimatedvoid -->
+<h3 class="fn" id="getAnimated"><a name="getAnimated"></a><span class="type">bool</span> Tile::<span class="name">getAnimated</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getAnimated -->
+<!-- $$$getColliderType[overload1]$$$getColliderTypevoid -->
+<h3 class="fn" id="getColliderType"><a name="getColliderType"></a><span class="type">unsigned</span> Tile::<span class="name">getColliderType</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getColliderType -->
+<!-- $$$getDamping[overload1]$$$getDampingvoid -->
+<h3 class="fn" id="getDamping"><a name="getDamping"></a><span class="type">float</span> Tile::<span class="name">getDamping</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getDamping -->
+<!-- $$$getNextIndex[overload1]$$$getNextIndexvoid -->
+<h3 class="fn" id="getNextIndex"><a name="getNextIndex"></a><span class="type">uint16_t</span> Tile::<span class="name">getNextIndex</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getNextIndex -->
+<!-- $$$getStandOn[overload1]$$$getStandOnvoid -->
+<h3 class="fn" id="getStandOn"><a name="getStandOn"></a><span class="type">bool</span> Tile::<span class="name">getStandOn</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getStandOn -->
+<!-- $$$getTransparency[overload1]$$$getTransparencyvoid -->
+<h3 class="fn" id="getTransparency"><a name="getTransparency"></a><span class="type">bool</span> Tile::<span class="name">getTransparency</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getTransparency -->
+<!-- $$$reorientCollider[overload1]$$$reorientColliderconstCOLLIDER_TYPEconstGY_RECT_TEX_ORIENT -->
+<h3 class="fn" id="reorientCollider"><a name="reorientCollider"></a><code>[static] </code><span class="type"><a href="elysian-tile.html#COLLIDER_TYPE-enum">COLLIDER_TYPE</a></span> Tile::<span class="name">reorientCollider</span>(const <span class="type"><a href="elysian-tile.html#COLLIDER_TYPE-enum">COLLIDER_TYPE</a></span><i> collider</i>, const <span class="type">GY_RECT_TEX_ORIENT</span><i> orient</i>)</h3>
+<!-- @@@reorientCollider -->
+<!-- $$$setAnimTime[overload1]$$$setAnimTimeconstfloat -->
+<h3 class="fn" id="setAnimTime"><a name="setAnimTime"></a><span class="type">void</span> Tile::<span class="name">setAnimTime</span>(const <span class="type">float</span><i> t</i>)</h3>
+<!-- @@@setAnimTime -->
+<!-- $$$setAnimated[overload1]$$$setAnimatedconstbool -->
+<h3 class="fn" id="setAnimated"><a name="setAnimated"></a><span class="type">void</span> Tile::<span class="name">setAnimated</span>(const <span class="type">bool</span><i> v</i>)</h3>
+<!-- @@@setAnimated -->
+<!-- $$$setColliderType[overload1]$$$setColliderTypeconstunsigned -->
+<h3 class="fn" id="setColliderType"><a name="setColliderType"></a><span class="type">void</span> Tile::<span class="name">setColliderType</span>(const <span class="type">unsigned</span><i> type</i>)</h3>
+<!-- @@@setColliderType -->
+<!-- $$$setDamping[overload1]$$$setDampingconstfloat -->
+<h3 class="fn" id="setDamping"><a name="setDamping"></a><span class="type">void</span> Tile::<span class="name">setDamping</span>(const <span class="type">float</span><i> factor</i>)</h3>
+<!-- @@@setDamping -->
+<!-- $$$setHitSfx[overload1]$$$setHitSfxGYWav*const -->
+<h3 class="fn" id="setHitSfx"><a name="setHitSfx"></a><span class="type">void</span> Tile::<span class="name">setHitSfx</span>(<span class="type">GYWav</span> * const<i> wav</i>)</h3>
+<!-- @@@setHitSfx -->
+<!-- $$$setNextIndex[overload1]$$$setNextIndexconstuint16_t -->
+<h3 class="fn" id="setNextIndex"><a name="setNextIndex"></a><span class="type">void</span> Tile::<span class="name">setNextIndex</span>(const <span class="type">uint16_t</span><i> i</i>)</h3>
+<!-- @@@setNextIndex -->
+<!-- $$$setStandOn[overload1]$$$setStandOnconstbool -->
+<h3 class="fn" id="setStandOn"><a name="setStandOn"></a><span class="type">void</span> Tile::<span class="name">setStandOn</span>(const <span class="type">bool</span><i> v</i>)</h3>
+<!-- @@@setStandOn -->
+<!-- $$$setTransparency[overload1]$$$setTransparencyconstbool -->
+<h3 class="fn" id="setTransparency"><a name="setTransparency"></a><span class="type">void</span> Tile::<span class="name">setTransparency</span>(const <span class="type">bool</span><i> v</i>)</h3>
+<!-- @@@setTransparency -->
+<!-- $$$setWalkSfx[overload1]$$$setWalkSfxGYWav*const -->
+<h3 class="fn" id="setWalkSfx"><a name="setWalkSfx"></a><span class="type">void</span> Tile::<span class="name">setWalkSfx</span>(<span class="type">GYWav</span> * const<i> wav</i>)</h3>
+<!-- @@@setWalkSfx -->
+</div>
+</body>
+</html>

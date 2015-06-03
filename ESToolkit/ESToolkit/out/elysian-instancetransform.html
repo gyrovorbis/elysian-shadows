@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>InstanceTransform Class | ESToolkit </title>
+</head>
+<body>
+<li>InstanceTransform</li>
+<div class="sidebar">
+<div class="toc">
+<h3><a name="toc">Contents</a></h3>
+<ul>
+<li class="level1"><a href="#public-functions">Public Functions</a></li>
+<li class="level1"><a href="#details">Detailed Description</a></li>
+</ul>
+</div>
+<div class="sidebar-content" id="sidebar-content"></div></div>
+<h1 class="title">InstanceTransform Class</h1>
+<span class="small-subtitle">(<a href="elysian-instancetransform.html">elysian::InstanceTransform</a>)<br/></span>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> Inherits:</td><td class="memItemRight bottomAlign"> </td></tr></table></div><ul>
+<li><a href="elysian-instancetransform-members.html">List of all members, including inherited members</a></li>
+</ul>
+<a name="public-functions"></a>
+<h2 id="public-functions">Public Functions</h2>
+<div class="table"><table class="alignedsummary">
+<tr><td class="memItemLeft rightAlign topAlign"> float </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#getOrientZ">getOrientZ</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#getPos">getPos</a></b>(float &amp;<i> x</i>, float &amp;<i> y</i>) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#getPos-2">getPos</a></b>(float &amp;<i> x</i>, float &amp;<i> y</i>, float &amp;<i> z</i>) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#getPos-3">getPos</a></b>(GYVector3 &amp;<i> pos</i>) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#getPos-4">getPos</a></b>(GYVector2 &amp;<i> pos</i>) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> float </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#getPosX">getPosX</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> float </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#getPosY">getPosY</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> float </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#getPosZ">getPosZ</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#getScale">getScale</a></b>(float &amp;<i> x</i>, float &amp;<i> y</i>) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#getScale-2">getScale</a></b>(GYVector2 &amp;<i> scale</i>) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> GYVector3 &amp; </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#getScaleVec">getScaleVec</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> float </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#getScaleX">getScaleX</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> float </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#getScaleY">getScaleY</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> float </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#getScaleZ">getScaleZ</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#getSize">getSize</a></b>(float &amp;<i> x</i>, float &amp;<i> y</i>) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#getSize-2">getSize</a></b>(GYVector2 &amp;<i> size</i>) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> GYVector3 &amp; </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#getSizeVec">getSizeVec</a></b>(void)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> float </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#getSizeX">getSizeX</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> float </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#getSizeY">getSizeY</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> float </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#getSizeZ">getSizeZ</a></b>(void) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#linearInterpolate">linearInterpolate</a></b>(const InstanceTransform &amp;<i> startFrame</i>, const InstanceTransform &amp;<i> endFrame</i>, const float<i> interval</i>, const float<i> elapsed</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#load">load</a></b>(FILE *<i> file</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#rotate">rotate</a></b>(const float<i> z</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#save">save</a></b>(FILE *<i> file</i>) const</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#scale">scale</a></b>(const float<i> x</i>, const float<i> y</i>, const float<i> z</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#scale-2">scale</a></b>(const float<i> x</i>, const float<i> y</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#setOrientZ">setOrientZ</a></b>(const float<i> z</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#setPos">setPos</a></b>(const float<i> x</i>, const float<i> y</i>, const float<i> z</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#setPos-2">setPos</a></b>(const float<i> x</i>, const float<i> y</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#setPos-3">setPos</a></b>(const GYVector3 &amp;<i> pos</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#setPos-4">setPos</a></b>(const GYVector2 &amp;<i> pos</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#setPosVec">setPosVec</a></b>(const OOLUA::Lua_table_ref<i> valTable</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#setPosX">setPosX</a></b>(const float<i> x</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#setPosY">setPosY</a></b>(const float<i> y</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#setPosZ">setPosZ</a></b>(const float<i> z</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#setScale">setScale</a></b>(const float<i> x</i>, const float<i> y</i>, const float<i> z</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#setScale-2">setScale</a></b>(const float<i> x</i>, const float<i> y</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#setScale-3">setScale</a></b>(const GYVector3 &amp;<i> scale</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#setScaleVec">setScaleVec</a></b>(const OOLUA::Lua_table_ref<i> valTable</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#setScaleX">setScaleX</a></b>(const float<i> x</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#setScaleY">setScaleY</a></b>(const float<i> y</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#setScaleZ">setScaleZ</a></b>(const float<i> z</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#setSize">setSize</a></b>(const float<i> x</i>, const float<i> y</i>, const float<i> z</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#setSize-2">setSize</a></b>(const float<i> x</i>, const float<i> y</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#setSizeVec">setSizeVec</a></b>(const OOLUA::Lua_table_ref<i> valTable</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#setSizeX">setSizeX</a></b>(const float<i> x</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#setSizeY">setSizeY</a></b>(const float<i> y</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#setSizeZ">setSizeZ</a></b>(const float<i> z</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#translate">translate</a></b>(const float<i> x</i>, const float<i> y</i>, const float<i> z</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#translate-2">translate</a></b>(const float<i> x</i>, const float<i> y</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#translate-3">translate</a></b>(const GYVector3 &amp;<i> dist</i>)</td></tr>
+<tr><td class="memItemLeft rightAlign topAlign"> void </td><td class="memItemRight bottomAlign"><b><a href="elysian-instancetransform.html#translate-4">translate</a></b>(const GYVector2 &amp;<i> dist</i>)</td></tr>
+</table></div>
+<a name="details"></a>
+<div class="func">
+<h2>Member Function Documentation</h2>
+<!-- $$$getOrientZ[overload1]$$$getOrientZvoid -->
+<h3 class="fn" id="getOrientZ"><a name="getOrientZ"></a><span class="type">float</span> InstanceTransform::<span class="name">getOrientZ</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getOrientZ -->
+<!-- $$$getPos[overload1]$$$getPosfloat&float& -->
+<h3 class="fn" id="getPos"><a name="getPos"></a><span class="type">void</span> InstanceTransform::<span class="name">getPos</span>(<span class="type">float</span> &amp;<i> x</i>, <span class="type">float</span> &amp;<i> y</i>) const</h3>
+<!-- @@@getPos -->
+<!-- $$$getPos$$$getPosfloat&float&float& -->
+<h3 class="fn" id="getPos-2"><a name="getPos-2"></a><span class="type">void</span> InstanceTransform::<span class="name">getPos</span>(<span class="type">float</span> &amp;<i> x</i>, <span class="type">float</span> &amp;<i> y</i>, <span class="type">float</span> &amp;<i> z</i>) const</h3>
+<!-- @@@getPos -->
+<!-- $$$getPos$$$getPosGYVector3& -->
+<h3 class="fn" id="getPos-3"><a name="getPos-3"></a><span class="type">void</span> InstanceTransform::<span class="name">getPos</span>(<span class="type">GYVector3</span> &amp;<i> pos</i>) const</h3>
+<!-- @@@getPos -->
+<!-- $$$getPos$$$getPosGYVector2& -->
+<h3 class="fn" id="getPos-4"><a name="getPos-4"></a><span class="type">void</span> InstanceTransform::<span class="name">getPos</span>(<span class="type"><a href="qml-gyvector2.html">GYVector2</a></span> &amp;<i> pos</i>) const</h3>
+<!-- @@@getPos -->
+<!-- $$$getPosX[overload1]$$$getPosXvoid -->
+<h3 class="fn" id="getPosX"><a name="getPosX"></a><span class="type">float</span> InstanceTransform::<span class="name">getPosX</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getPosX -->
+<!-- $$$getPosY[overload1]$$$getPosYvoid -->
+<h3 class="fn" id="getPosY"><a name="getPosY"></a><span class="type">float</span> InstanceTransform::<span class="name">getPosY</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getPosY -->
+<!-- $$$getPosZ[overload1]$$$getPosZvoid -->
+<h3 class="fn" id="getPosZ"><a name="getPosZ"></a><span class="type">float</span> InstanceTransform::<span class="name">getPosZ</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getPosZ -->
+<!-- $$$getScale[overload1]$$$getScalefloat&float& -->
+<h3 class="fn" id="getScale"><a name="getScale"></a><span class="type">void</span> InstanceTransform::<span class="name">getScale</span>(<span class="type">float</span> &amp;<i> x</i>, <span class="type">float</span> &amp;<i> y</i>) const</h3>
+<!-- @@@getScale -->
+<!-- $$$getScale$$$getScaleGYVector2& -->
+<h3 class="fn" id="getScale-2"><a name="getScale-2"></a><span class="type">void</span> InstanceTransform::<span class="name">getScale</span>(<span class="type"><a href="qml-gyvector2.html">GYVector2</a></span> &amp;<i> scale</i>) const</h3>
+<!-- @@@getScale -->
+<!-- $$$getScaleVec[overload1]$$$getScaleVecvoid -->
+<h3 class="fn" id="getScaleVec"><a name="getScaleVec"></a><span class="type">GYVector3</span> &amp; InstanceTransform::<span class="name">getScaleVec</span>(<span class="type">void</span>)</h3>
+<!-- @@@getScaleVec -->
+<!-- $$$getScaleX[overload1]$$$getScaleXvoid -->
+<h3 class="fn" id="getScaleX"><a name="getScaleX"></a><span class="type">float</span> InstanceTransform::<span class="name">getScaleX</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getScaleX -->
+<!-- $$$getScaleY[overload1]$$$getScaleYvoid -->
+<h3 class="fn" id="getScaleY"><a name="getScaleY"></a><span class="type">float</span> InstanceTransform::<span class="name">getScaleY</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getScaleY -->
+<!-- $$$getScaleZ[overload1]$$$getScaleZvoid -->
+<h3 class="fn" id="getScaleZ"><a name="getScaleZ"></a><span class="type">float</span> InstanceTransform::<span class="name">getScaleZ</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getScaleZ -->
+<!-- $$$getSize[overload1]$$$getSizefloat&float& -->
+<h3 class="fn" id="getSize"><a name="getSize"></a><span class="type">void</span> InstanceTransform::<span class="name">getSize</span>(<span class="type">float</span> &amp;<i> x</i>, <span class="type">float</span> &amp;<i> y</i>) const</h3>
+<!-- @@@getSize -->
+<!-- $$$getSize$$$getSizeGYVector2& -->
+<h3 class="fn" id="getSize-2"><a name="getSize-2"></a><span class="type">void</span> InstanceTransform::<span class="name">getSize</span>(<span class="type"><a href="qml-gyvector2.html">GYVector2</a></span> &amp;<i> size</i>) const</h3>
+<!-- @@@getSize -->
+<!-- $$$getSizeVec[overload1]$$$getSizeVecvoid -->
+<h3 class="fn" id="getSizeVec"><a name="getSizeVec"></a><span class="type">GYVector3</span> &amp; InstanceTransform::<span class="name">getSizeVec</span>(<span class="type">void</span>)</h3>
+<!-- @@@getSizeVec -->
+<!-- $$$getSizeX[overload1]$$$getSizeXvoid -->
+<h3 class="fn" id="getSizeX"><a name="getSizeX"></a><span class="type">float</span> InstanceTransform::<span class="name">getSizeX</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getSizeX -->
+<!-- $$$getSizeY[overload1]$$$getSizeYvoid -->
+<h3 class="fn" id="getSizeY"><a name="getSizeY"></a><span class="type">float</span> InstanceTransform::<span class="name">getSizeY</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getSizeY -->
+<!-- $$$getSizeZ[overload1]$$$getSizeZvoid -->
+<h3 class="fn" id="getSizeZ"><a name="getSizeZ"></a><span class="type">float</span> InstanceTransform::<span class="name">getSizeZ</span>(<span class="type">void</span>) const</h3>
+<!-- @@@getSizeZ -->
+<!-- $$$linearInterpolate[overload1]$$$linearInterpolateconstInstanceTransform&constInstanceTransform&constfloatconstfloat -->
+<h3 class="fn" id="linearInterpolate"><a name="linearInterpolate"></a><span class="type">void</span> InstanceTransform::<span class="name">linearInterpolate</span>(const <span class="type"><a href="elysian-instancetransform.html">InstanceTransform</a></span> &amp;<i> startFrame</i>, const <span class="type"><a href="elysian-instancetransform.html">InstanceTransform</a></span> &amp;<i> endFrame</i>, const <span class="type">float</span><i> interval</i>, const <span class="type">float</span><i> elapsed</i>)</h3>
+<!-- @@@linearInterpolate -->
+<!-- $$$load[overload1]$$$loadFILE* -->
+<h3 class="fn" id="load"><a name="load"></a><span class="type">void</span> InstanceTransform::<span class="name">load</span>(<span class="type">FILE</span> *<i> file</i>)</h3>
+<!-- @@@load -->
+<!-- $$$rotate[overload1]$$$rotateconstfloat -->
+<h3 class="fn" id="rotate"><a name="rotate"></a><span class="type">void</span> InstanceTransform::<span class="name">rotate</span>(const <span class="type">float</span><i> z</i>)</h3>
+<!-- @@@rotate -->
+<!-- $$$save[overload1]$$$saveFILE* -->
+<h3 class="fn" id="save"><a name="save"></a><span class="type">void</span> InstanceTransform::<span class="name">save</span>(<span class="type">FILE</span> *<i> file</i>) const</h3>
+<!-- @@@save -->
+<!-- $$$scale[overload1]$$$scaleconstfloatconstfloatconstfloat -->
+<h3 class="fn" id="scale"><a name="scale"></a><span class="type">void</span> InstanceTransform::<span class="name">scale</span>(const <span class="type">float</span><i> x</i>, const <span class="type">float</span><i> y</i>, const <span class="type">float</span><i> z</i>)</h3>
+<p><b>See also </b><a href="elysian-instancetransform.html#setScale">setScale</a>().</p>
+<!-- @@@scale -->
+<!-- $$$scale$$$scaleconstfloatconstfloat -->
+<h3 class="fn" id="scale-2"><a name="scale-2"></a><span class="type">void</span> InstanceTransform::<span class="name">scale</span>(const <span class="type">float</span><i> x</i>, const <span class="type">float</span><i> y</i>)</h3>
+<!-- @@@scale -->
+<!-- $$$setOrientZ[overload1]$$$setOrientZconstfloat -->
+<h3 class="fn" id="setOrientZ"><a name="setOrientZ"></a><span class="type">void</span> InstanceTransform::<span class="name">setOrientZ</span>(const <span class="type">float</span><i> z</i>)</h3>
+<!-- @@@setOrientZ -->
+<!-- $$$setPos[overload1]$$$setPosconstfloatconstfloatconstfloat -->
+<h3 class="fn" id="setPos"><a name="setPos"></a><span class="type">void</span> InstanceTransform::<span class="name">setPos</span>(const <span class="type">float</span><i> x</i>, const <span class="type">float</span><i> y</i>, const <span class="type">float</span><i> z</i>)</h3>
+<!-- @@@setPos -->
+<!-- $$$setPos$$$setPosconstfloatconstfloat -->
+<h3 class="fn" id="setPos-2"><a name="setPos-2"></a><span class="type">void</span> InstanceTransform::<span class="name">setPos</span>(const <span class="type">float</span><i> x</i>, const <span class="type">float</span><i> y</i>)</h3>
+<!-- @@@setPos -->
+<!-- $$$setPos$$$setPosconstGYVector3& -->
+<h3 class="fn" id="setPos-3"><a name="setPos-3"></a><span class="type">void</span> InstanceTransform::<span class="name">setPos</span>(const <span class="type">GYVector3</span> &amp;<i> pos</i>)</h3>
+<!-- @@@setPos -->
+<!-- $$$setPos$$$setPosconstGYVector2& -->
+<h3 class="fn" id="setPos-4"><a name="setPos-4"></a><span class="type">void</span> InstanceTransform::<span class="name">setPos</span>(const <span class="type"><a href="qml-gyvector2.html">GYVector2</a></span> &amp;<i> pos</i>)</h3>
+<!-- @@@setPos -->
+<!-- $$$setPosVec[overload1]$$$setPosVecconstOOLUA::Lua_table_ref -->
+<h3 class="fn" id="setPosVec"><a name="setPosVec"></a><span class="type">void</span> InstanceTransform::<span class="name">setPosVec</span>(const <span class="type"><a href="oolua.html#Lua_table_ref-typedef">OOLUA::Lua_table_ref</a></span><i> valTable</i>)</h3>
+<!-- @@@setPosVec -->
+<!-- $$$setPosX[overload1]$$$setPosXconstfloat -->
+<h3 class="fn" id="setPosX"><a name="setPosX"></a><span class="type">void</span> InstanceTransform::<span class="name">setPosX</span>(const <span class="type">float</span><i> x</i>)</h3>
+<!-- @@@setPosX -->
+<!-- $$$setPosY[overload1]$$$setPosYconstfloat -->
+<h3 class="fn" id="setPosY"><a name="setPosY"></a><span class="type">void</span> InstanceTransform::<span class="name">setPosY</span>(const <span class="type">float</span><i> y</i>)</h3>
+<!-- @@@setPosY -->
+<!-- $$$setPosZ[overload1]$$$setPosZconstfloat -->
+<h3 class="fn" id="setPosZ"><a name="setPosZ"></a><span class="type">void</span> InstanceTransform::<span class="name">setPosZ</span>(const <span class="type">float</span><i> z</i>)</h3>
+<!-- @@@setPosZ -->
+<!-- $$$setScale[overload1]$$$setScaleconstfloatconstfloatconstfloat -->
+<h3 class="fn" id="setScale"><a name="setScale"></a><span class="type">void</span> InstanceTransform::<span class="name">setScale</span>(const <span class="type">float</span><i> x</i>, const <span class="type">float</span><i> y</i>, const <span class="type">float</span><i> z</i>)</h3>
+<p><b>See also </b><a href="elysian-instancetransform.html#scale">scale</a>().</p>
+<!-- @@@setScale -->
+<!-- $$$setScale$$$setScaleconstfloatconstfloat -->
+<h3 class="fn" id="setScale-2"><a name="setScale-2"></a><span class="type">void</span> InstanceTransform::<span class="name">setScale</span>(const <span class="type">float</span><i> x</i>, const <span class="type">float</span><i> y</i>)</h3>
+<!-- @@@setScale -->
+<!-- $$$setScale$$$setScaleconstGYVector3& -->
+<h3 class="fn" id="setScale-3"><a name="setScale-3"></a><span class="type">void</span> InstanceTransform::<span class="name">setScale</span>(const <span class="type">GYVector3</span> &amp;<i> scale</i>)</h3>
+<!-- @@@setScale -->
+<!-- $$$setScaleVec[overload1]$$$setScaleVecconstOOLUA::Lua_table_ref -->
+<h3 class="fn" id="setScaleVec"><a name="setScaleVec"></a><span class="type">void</span> InstanceTransform::<span class="name">setScaleVec</span>(const <span class="type"><a href="oolua.html#Lua_table_ref-typedef">OOLUA::Lua_table_ref</a></span><i> valTable</i>)</h3>
+<!-- @@@setScaleVec -->
+<!-- $$$setScaleX[overload1]$$$setScaleXconstfloat -->
+<h3 class="fn" id="setScaleX"><a name="setScaleX"></a><span class="type">void</span> InstanceTransform::<span class="name">setScaleX</span>(const <span class="type">float</span><i> x</i>)</h3>
+<!-- @@@setScaleX -->
+<!-- $$$setScaleY[overload1]$$$setScaleYconstfloat -->
+<h3 class="fn" id="setScaleY"><a name="setScaleY"></a><span class="type">void</span> InstanceTransform::<span class="name">setScaleY</span>(const <span class="type">float</span><i> y</i>)</h3>
+<!-- @@@setScaleY -->
+<!-- $$$setScaleZ[overload1]$$$setScaleZconstfloat -->
+<h3 class="fn" id="setScaleZ"><a name="setScaleZ"></a><span class="type">void</span> InstanceTransform::<span class="name">setScaleZ</span>(const <span class="type">float</span><i> z</i>)</h3>
+<!-- @@@setScaleZ -->
+<!-- $$$setSize[overload1]$$$setSizeconstfloatconstfloatconstfloat -->
+<h3 class="fn" id="setSize"><a name="setSize"></a><span class="type">void</span> InstanceTransform::<span class="name">setSize</span>(const <span class="type">float</span><i> x</i>, const <span class="type">float</span><i> y</i>, const <span class="type">float</span><i> z</i>)</h3>
+<!-- @@@setSize -->
+<!-- $$$setSize$$$setSizeconstfloatconstfloat -->
+<h3 class="fn" id="setSize-2"><a name="setSize-2"></a><span class="type">void</span> InstanceTransform::<span class="name">setSize</span>(const <span class="type">float</span><i> x</i>, const <span class="type">float</span><i> y</i>)</h3>
+<!-- @@@setSize -->
+<!-- $$$setSizeVec[overload1]$$$setSizeVecconstOOLUA::Lua_table_ref -->
+<h3 class="fn" id="setSizeVec"><a name="setSizeVec"></a><span class="type">void</span> InstanceTransform::<span class="name">setSizeVec</span>(const <span class="type"><a href="oolua.html#Lua_table_ref-typedef">OOLUA::Lua_table_ref</a></span><i> valTable</i>)</h3>
+<!-- @@@setSizeVec -->
+<!-- $$$setSizeX[overload1]$$$setSizeXconstfloat -->
+<h3 class="fn" id="setSizeX"><a name="setSizeX"></a><span class="type">void</span> InstanceTransform::<span class="name">setSizeX</span>(const <span class="type">float</span><i> x</i>)</h3>
+<!-- @@@setSizeX -->
+<!-- $$$setSizeY[overload1]$$$setSizeYconstfloat -->
+<h3 class="fn" id="setSizeY"><a name="setSizeY"></a><span class="type">void</span> InstanceTransform::<span class="name">setSizeY</span>(const <span class="type">float</span><i> y</i>)</h3>
+<!-- @@@setSizeY -->
+<!-- $$$setSizeZ[overload1]$$$setSizeZconstfloat -->
+<h3 class="fn" id="setSizeZ"><a name="setSizeZ"></a><span class="type">void</span> InstanceTransform::<span class="name">setSizeZ</span>(const <span class="type">float</span><i> z</i>)</h3>
+<!-- @@@setSizeZ -->
+<!-- $$$translate[overload1]$$$translateconstfloatconstfloatconstfloat -->
+<h3 class="fn" id="translate"><a name="translate"></a><span class="type">void</span> InstanceTransform::<span class="name">translate</span>(const <span class="type">float</span><i> x</i>, const <span class="type">float</span><i> y</i>, const <span class="type">float</span><i> z</i>)</h3>
+<!-- @@@translate -->
+<!-- $$$translate$$$translateconstfloatconstfloat -->
+<h3 class="fn" id="translate-2"><a name="translate-2"></a><span class="type">void</span> InstanceTransform::<span class="name">translate</span>(const <span class="type">float</span><i> x</i>, const <span class="type">float</span><i> y</i>)</h3>
+<!-- @@@translate -->
+<!-- $$$translate$$$translateconstGYVector3& -->
+<h3 class="fn" id="translate-3"><a name="translate-3"></a><span class="type">void</span> InstanceTransform::<span class="name">translate</span>(const <span class="type">GYVector3</span> &amp;<i> dist</i>)</h3>
+<!-- @@@translate -->
+<!-- $$$translate$$$translateconstGYVector2& -->
+<h3 class="fn" id="translate-4"><a name="translate-4"></a><span class="type">void</span> InstanceTransform::<span class="name">translate</span>(const <span class="type"><a href="qml-gyvector2.html">GYVector2</a></span> &amp;<i> dist</i>)</h3>
+<!-- @@@translate -->
+</div>
+</body>
+</html>
