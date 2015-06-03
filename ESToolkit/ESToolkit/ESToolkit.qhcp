@@ -3,12 +3,12 @@
 <docFiles>
 	<generate>
 		<file>
-			<input>temp/doc/ESToolkit.qhp</input>
-			<output>../../assets/doc/ESToolkit.qch</output>
+			<input>out/ESToolkit.qhp</input>
+			<output>resource/docs/ESToolkit.qch</output>
 		</file>
 	</generate>
 	<register>
-		<file>../../assets/doc/ESToolkit.qch</file>
+		<file>resource/docs/ESToolkit.qch</file>
 	</register>
 </docFiles>
 </QHelpCollectionProject>

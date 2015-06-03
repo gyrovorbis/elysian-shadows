@@ -97,6 +97,7 @@ ESToolkit::ESToolkit(QWidget *parent):
     _engineSettingsDialog   = new EngineSettingsDialog(/*this*/);
     _luaExplorerDialog      = new LuaExplorerDialog(/*this*/);
     _gitlabDialog           = new GitlabDialog(/*this*/);
+    _helpDockWidget         = new HelpDockWidget(/*this*/);
     connect(_engineSettingsDialog, SIGNAL(enginePathx86Changed(QString)), _engineDialog, SLOT(onEnginePathx86Changed(QString)));
     connect(_engineSettingsDialog, SIGNAL(dcIpChanged(QString)), _engineDialog, SLOT(OnDreamcastIpChanged(QString)));
     connect(_engineSettingsDialog, SIGNAL(dcMacChanged(QString)), _engineDialog, SLOT(OnDreamcastMacChanged(QString)));
@@ -2009,40 +2010,5 @@ void ESToolkit::on_actionReloadProject_triggered(void)
 
 void ESToolkit::on_actionDocumentation_triggered()
 {
-        QHelpEngine* helpEngine = new QHelpEngine(ESTK_USER_MANUAL_DB);
-        helpEngine->setupData();
-
-        QTabWidget* tWidget = new QTabWidget;
-        //tWidget->setWid(200);
-        tWidget->addTab(helpEngine->contentWidget(), "Contents");
-        tWidget->addTab(helpEngine->indexWidget(), "Index");
-
-        HelpBrowser *textViewer = new HelpBrowser(helpEngine);
-        textViewer->setSource(
-               QUrl(ESTK_USER_MANUAL_HOME_PAGE));
-        connect(helpEngine->contentWidget(),
-           SIGNAL(linkActivated(QUrl)),
-           textViewer, SLOT(setSource(QUrl)));
-
-        connect(helpEngine->indexWidget(),
-           SIGNAL(linkActivated(QUrl, QString)),
-           textViewer, SLOT(setSource(QUrl)));
-
-        QSplitter *horizSplitter = new QSplitter(Qt::Horizontal);
-        horizSplitter->insertWidget(0, tWidget);
-        horizSplitter->insertWidget(1, textViewer);
-        horizSplitter->hide();
-
-        auto* helpWindow = new QDockWidget(tr("Help"), this);
-        helpWindow->setWidget(horizSplitter);
-        helpWindow->setFloating(true);
-
-        auto geo = helpWindow->geometry();
-        geo.setWidth(700);
-        geo.setHeight(500);
-        helpWindow->setGeometry(geo);
-
-        helpWindow->show();
-       //addDockWidget(Qt::BottomDockWidgetArea, helpWindow);
-
+    _helpDockWidget->show();
 }

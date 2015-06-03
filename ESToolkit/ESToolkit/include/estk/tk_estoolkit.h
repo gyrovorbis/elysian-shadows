@@ -9,8 +9,6 @@
 
 #define ESTOOLKIT_VERSION				GYRO_LIB_VERSION
 #define ESTOOLKIT_VERSION_NAME          "\"Ambience and Vanity\""
-#define ESTK_USER_MANUAL_HOME_PAGE      "qthelp://elysianshadows.toolkit.help/doc/index.html"
-#define ESTK_USER_MANUAL_DB             "doc/ESToolkit.qhc"
 
 ELYSIAN_ASSET_TYPEDEF(Debug)
 
@@ -40,6 +38,7 @@ class EngineSettingsDialog;
 class LuaExplorerDialog;
 class EngineGLSceneWidget;
 class GitlabDialog;
+class HelpDockWidget;
 
 namespace Ui {
     class ESToolkit;
@@ -102,6 +101,7 @@ private:
     SheetManager*           _sheetManager;
     LuaExplorerDialog*      _luaExplorerDialog;
     GitlabDialog*           _gitlabDialog;
+    HelpDockWidget*         _helpDockWidget;
 
     QToolButton*            m_activePlatform;
     QActionGroup*           m_platformActionGroup;

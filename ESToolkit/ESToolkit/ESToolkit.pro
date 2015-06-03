@@ -16,7 +16,7 @@ QT		+= sql gui opengl network help
 
 QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-empty-body
 #QMAKE_DOCS = ESToolkit.qdocconf
-#CONFIG += precompile_header
+CONFIG += precompile_header
 
 #include($$QT_INSTALL_DOCS/global/macros.qdocconf) #macros for QDoc commands
 #include($$QT_INSTALL_DOCS/global/qt-cpp-defines.qdocconf) #needed by C++ projects
@@ -41,13 +41,8 @@ ICON = resource/images/estk.icns
 #RCC_DIR		= $$OUT_PWD/temp/rcc
 
 
-docs {
-	QMAKE_DOCS = $$PWD/ESToolkit.qdocconf
-	docs.target = ESToolkit.qhc
-	docs.commands = qdoc ./ESToolkit.qdocconf --log-progress --debug $$escape_expand(\n\t) qcollectiongenerator ./ESToolkit.qhcp -o ../../assets/doc/ESToolkit.qhc
-	QMAKE_EXTRA_TARGETS += docs
-	PRE_TARGETDEPS += ESToolkit.qhc
-}
+#docs {
+
 
 DEPENDPATH += ../../AssetIO/include/component \
 	../../AssetIO/include/crtp \
@@ -69,6 +64,7 @@ DEPENDPATH += ../../AssetIO/include/component \
 	include/sheet_manager \
 	include/dialog \
 	include/widget \
+	out
 
 #PRIORITIZED TO REDUCE BUILD TIME ON FUCKING MINGW
 INCLUDEPATH += ../../AssetIO/include/component \
@@ -469,6 +465,25 @@ opencl {
 }
 
 RESOURCES += resource/resource.qrc
+
+docs {
+
+	DEFINES+=TOOLKIT_DOCUMENTATION_RESOURCES
+
+	RESOURCES += resource/docs.qrc
+
+#	PHONY_DEPS=. FUCK THIS SHIT SO HARD!!!!
+#		docs.depends = FORCE
+#		docs.target = $$PWD/out/ESToolkit.qhc
+#		docs.commands = ./generate_docs.sh
+#		docs.config += target_predeps
+#		QMAKE_EXTRA_TARGETS += docs
+#		PRE_TARGETDEPS += $$PWD/out/ESToolkit.qhc
+	#}
+
+#system(./generate_docs.sh)
+
+}
 
 macx {
 	#DESTDIR = ../../executable

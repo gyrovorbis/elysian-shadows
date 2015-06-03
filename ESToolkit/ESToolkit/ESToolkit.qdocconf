@@ -33,7 +33,7 @@ qhp.ESToolkit.subprojects.manual.sortPages = true
 sources.fileextensions = "*.cpp *.qdoc *.mm *.qml *.c"
 headers.fileextensions = "*.h *.ch *.h++ *.hh *.hpp *.hxx"
 
-outputdir   = ./temp/doc
+outputdir   = ./out
 outputformats = HTML
 
 #depends = qtdoc qtcore qtgui qtopengl qtsql
@@ -84,7 +84,6 @@ sourcedirs += source \
 	../../ESGamma/source/system \
 	../../ESGamma/source/utility \
 	doc \
-	doc/bowsht
 
 
 imagedirs   += resource/images
