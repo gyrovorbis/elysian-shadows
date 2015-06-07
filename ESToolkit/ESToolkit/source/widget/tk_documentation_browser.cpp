@@ -3,6 +3,7 @@
 #include <QSplitter>
 #include <QFile>
 #include <QDir>
+#include <QDebug>
 #include <elysian_debug.hpp>
 
 /****************************************************************************
