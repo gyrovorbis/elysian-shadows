@@ -1,0 +1,5 @@
+#ifndef TEST_LUA_BEHAVIOR
+#define TEST_LUA_BEHAVIOR
+
+#endif // TEST_LUA_BEHAVIOR
+

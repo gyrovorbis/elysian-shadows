@@ -13,10 +13,13 @@ TEMPLATE = app
 
 QMAKE_OBJCXXFLAGS_PRECOMPILE += -std=c++11 -stdlib=libc++
 QT		+= sql gui opengl network help
+tests {
+	QT+= testlib
+}
 
 QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-empty-body
 #QMAKE_DOCS = ESToolkit.qdocconf
-CONFIG += precompile_header
+#CONFIG += precompile_header
 
 #include($$QT_INSTALL_DOCS/global/macros.qdocconf) #macros for QDoc commands
 #include($$QT_INSTALL_DOCS/global/qt-cpp-defines.qdocconf) #needed by C++ projects
@@ -63,8 +66,7 @@ DEPENDPATH += ../../AssetIO/include/component \
 	../../libGyro/include/kinetic \
 	include/sheet_manager \
 	include/dialog \
-	include/widget \
-	out
+	include/widget
 
 #PRIORITIZED TO REDUCE BUILD TIME ON FUCKING MINGW
 INCLUDEPATH += ../../AssetIO/include/component \
@@ -494,6 +496,7 @@ macx {
 }
 
 
+
 win32 {
 	DESTDIR = ../../executable
 }
@@ -556,6 +559,22 @@ else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PW
 else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Spine/qtcreator/Spine/debug/Spine.lib
 else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../Spine/qtcreator/Spine/libSpine.a
 
+tests {
+
+	win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../v-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/release/ -lUnitTests
+	else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../qtcreator/build-ESDev-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/debug/ -lUnitTests
+	else:unix: LIBS += -L$$OUT_PWD/../../UnitTests -lUnitTests
+
+	INCLUDEPATH += $$PWD/../../UnitTests
+	DEPENDPATH += $$PWD/../../UnitTests
+
+	win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../qtcreator/build-ESDev-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/release/libUnitTests.a
+	else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../qtcreator/build-ESDev-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/debug/libUnitTests.a
+	else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../qtcreator/build-ESDev-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/release/UnitTests.lib
+	else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../qtcreator/build-ESDev-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/debug/UnitTests.lib
+	else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../UnitTests/libUnitTests.a
+
+}
 
 win32 {
         QMAKE_CFLAGS += -msse -std=c99

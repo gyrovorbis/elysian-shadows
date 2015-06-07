@@ -248,6 +248,8 @@ Project *Assets::loadProject(const QString directory) {
         }
     }
 
+    if(!validateProjectPath(directory)) return nullptr;
+
     Project *proj = new Project;
 	connectSlots(proj);
 
@@ -444,4 +446,20 @@ Project* Assets::reloadProject(void) {
     _engine->setEngineState(engineState);
     if(partyLeader) _engine->getPartySys()->getPartyLeader()->_transform._pos = playerPos;
     return proj;
+}
+
+bool Assets::validateProjectPath(const QString path) {
+    QDir dir(path);
+
+    if(!dir.exists()) {
+        qWarning() << "Project path does not exist: " << path;
+        return false;
+    }
+
+    if(!dir.isReadable()) {
+        qWarning() << "Project path is not readable: " << path;
+        return false;
+    }
+
+    return true;
 }

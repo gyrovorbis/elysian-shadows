@@ -69,8 +69,12 @@ ESToolkit::ESToolkit(QWidget *parent):
     _ignoreAreaTabChange(false)
 {
     _instance = this;
+    GYFileInitParams fileInitParams = {
+        Q_CSTR(QDir::homePath())
+    };
+
+    assert(gyFileInit(&fileInitParams));
     // VERY IMPROTANT GLOBAL STATE/STATIC INITIALIZATION
-    assert(gyFileInit("ESTeam", "ESTk"));
         //elysian::Behavior::staticConstructor();
     Debug::getInstance();
     AssetManager::_assets = &_assets;
@@ -265,6 +269,8 @@ ESToolkit::~ESToolkit(void) {
     _assetDockWidget->disconnect();
     _assets.disconnect();
 
+    delete _helpDockWidget;
+    delete _gitlabDialog;
     delete _sheetManager;
     delete _engineDialog;
     delete _engineSettingsDialog;
@@ -274,8 +280,6 @@ ESToolkit::~ESToolkit(void) {
 
 void ESToolkit::_libGyroInitialize(void) {
     /* The File subsystem needs to be initialized before anything else, ideally */
-    gyFileInit("ESTeam", "ESGamma");
-
     _debug = &elysian::Debug::getInstance();
     char verString[50];
 
@@ -302,7 +306,8 @@ void ESToolkit::_libGyroInitialize(void) {
                         _gitlabDialog->show();
 				  }),
 					[](void* ptr) {
-						(*static_cast<std::function<void()>*>(ptr))();
+                                 exit(1);
+                        //(*static_cast<std::function<void()>*>(ptr))();
 				  }
             };
     gySysInit(&sysParams);
@@ -898,15 +903,18 @@ void ESToolkit::on_actionFileQuit_triggered() {
     QCoreApplication::exit(0);
 }
 
-void ESToolkit::_openProjectDir(const QString dir) {
+bool ESToolkit::openProjectDir(const QString dir) {
+    DbgTest test("ESToolkit::openProjectDir()");
     if(dir=="") {
-        return;
+        test.success = false;
+        return false;
     }
 
 
     if(_assets.getCurrentProject()) {
         QMessageBox::critical(this, "You dun fucked up!", "There's already a project open, asswipe.");
-        return;
+        test.success = false;
+        return false;
     }
 
     QDir::setCurrent(dir);
@@ -936,11 +944,11 @@ void ESToolkit::_openProjectDir(const QString dir) {
     };
 
 
-    gyInputInit(&inputParams);
+    test.success &= gyInputInit(&inputParams);
    // assert(_engineGLView->context()->isValid());
 
     _engineGLView->makeCurrent();
-    glalVidGlewInit();
+    test.success &= glalVidGlewInit();
 
     _engineGLView->doneCurrent();
 
@@ -949,7 +957,14 @@ void ESToolkit::_openProjectDir(const QString dir) {
     _engineGLView->startRenderTimer();
 
     Project *proj = _assets.loadProject(dir);
+    test.success &= (proj != nullptr);
    // _engineGLView->update();
+
+    if(!proj) {
+        QMessageBox::critical(this, "You dun fucked up!", "There's no fucking way that was a valid project directory, cockwheeze.");
+        test.success = false;
+        return false;
+    }
 
     _assets.setCurrentProject(proj);
     _assets.setCurrentSelection(_assets.getCurrentArea());
@@ -976,13 +991,13 @@ void ESToolkit::_openProjectDir(const QString dir) {
         //_ui->mapView->setEnabled(true);
     }
 
-
+    return test.success;
 
     //_ui->mapView->setFocus();
 }
 
 void ESToolkit::on_actionFileOpenProject_triggered(void) {
-    _openProjectDir(QFileDialog::getExistingDirectory(this, tr("Locate Project Directory"), "./", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks));
+    openProjectDir(QFileDialog::getExistingDirectory(this, tr("Locate Project Directory"), "./", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks));
 }
 
 void ESToolkit::on_actionFileCloseProject_triggered(void) {
@@ -1696,7 +1711,7 @@ void ESToolkit::on_actionPrevious_Project_triggered(void) {
     QSettings settings;
     QString savedSettings = settings.value("settings", "").toString();
     QString projectDir = settings.value("previousProject", "").toString();
-    _openProjectDir(projectDir);
+    openProjectDir(projectDir);
 }
 
 void ESToolkit::on_actionInvoke_triggered(bool checked)
@@ -2046,36 +2061,38 @@ bool ESToolkit::verifySingleArea(const QString verifyPath) {
     QString     projectPath;
 
     qDebug() << "VERIFYING" << verifyPath;
+    qDebug() << "ABSOLUTE" << areaPath;
 
     if(!pathInfo.exists() || !pathInfo.isDir()) {
-
+        qDebug() << "PATH DOES NOT EXIST";
         return false;
     }
 
     QDir curDir(areaPath);
     do {
         if(!curDir.cdUp()) {
-
+            qDebug() << "Could not go up one level.";
         }
 
     } while(!QDir(curDir.filePath("area")).exists());
 
     levelPath = curDir.absolutePath();
+    qDebug() << "Level path:" << levelPath;
 
     do {
         if(!curDir.cdUp()) {
-
+            qDebug() << "Could not go up one level.";
         }
 
     } while(!QDir(curDir.filePath("level")).exists());
 
     projectPath = curDir.absolutePath();
+    qDebug() << "Project path: " << projectPath;
 
-
-    _openProjectDir(projectPath);
+    openProjectDir(projectPath);
     QDir::setCurrent(projectPath);
     _assets.setCurrentLevel(levelPath.split("/").last());
     _assets.setCurrentArea(areaPath.split("/").last());
 
-    exit(0);
+    QApplication::quit();
 }

@@ -20,7 +20,7 @@
 typedef struct _GYOggPayload {
 	ALuint			buffers[2];
 	GYFile*           oggFile;
-	OggVorbis_File  oggStream;
+    OggVorbis_File  oggStream;
 	vorbis_info*    vorbisInfo;
 	vorbis_comment* vorbisComment;
 	ALenum			format;

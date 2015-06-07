@@ -68,6 +68,8 @@ public:
 	QString getProjectDir();
 	int getUndoStackCount();
 
+    static bool validateProjectPath(const QString path);
+
 Q_SIGNALS:
     //void EntityChanged(Entity *const entity);
 	void selectionChanged(const Selectable::TYPE type, Selectable *const selection);

@@ -19,6 +19,8 @@ class QTextEdit;
 class QMutex;
 class QTimer;
 
+typedef elysian::DbgTest DbgTest;
+
 class TkDebug: public QObject, public elysian::DebugBase {
     Q_OBJECT
     friend class DebugBase;
@@ -40,7 +42,7 @@ public:
     static void logQ(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
     static void push(void);
-    static void pop(void);
+    static void pop(const bool success=true);
 
     static TkDebug& getInstance(void) {
         if(!_window) _window = new TkDebug;
@@ -102,6 +104,7 @@ private:
     static QVector<QString>     _commandHistory;
     static int                  _commandHistoryIndex;
     static bool                 _shiftDown;
+    static QString              _lastString;
 
     static QQueue<LogEntry>*    _pendingQueue;
     static QMutex*              _mutex;
@@ -124,8 +127,9 @@ private:
 //========= INLINEZ ==========
 
 inline void TkDebug::writeLog(const int source, const LEVEL level, const char* const str) {
+    _lastString = str;
     Log(level, str, (source == DebugBase::ASSETIO)? ENGINE : (TK_SOURCE)source);
-    elysian::DebugBase::writeLog((elysian::DebugBase::SOURCE)source, level, str);
+    //elysian::DebugBase::writeLog((elysian::DebugBase::SOURCE)source, level, str);
 }
 
 inline QString TkDebug::getDebugLogPath(void) { return *_debugLogPath; }

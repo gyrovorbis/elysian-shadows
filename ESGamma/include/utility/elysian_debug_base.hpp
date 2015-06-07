@@ -38,6 +38,13 @@ namespace elysian {
 	class Engine;
 	class GameInput;
 
+    struct DbgTest {
+        bool    success = true;
+
+                DbgTest(const char*const name);
+                ~DbgTest(void);
+    };
+
     class DebugBase: public System {
 	public:
         enum SOURCE { LIBGYRO, ENGINE, ASSETIO, LUA };
@@ -79,7 +86,7 @@ namespace elysian {
         static void luaPrint(const char *string, const LEVEL lev = VERBOSE);
 
         static void push(void) { ++_stackDepth; }
-		static void pop(void) { --_stackDepth; }
+        static void pop(const bool /*success=true*/) { --_stackDepth; }
 
 
 
@@ -120,6 +127,8 @@ namespace elysian {
 
 		const CmdLineArgs& getCmdLineArgs(void) const { return _cmdLineArgs; }
 	};
+
+
 
 }
 

@@ -48,6 +48,15 @@ unsigned int		DebugBase::_stackDepth = 0;
 Debug::LEVEL		DebugBase::_level = ELYSIAN_DEBUG_LOG_LEVEL_DEFAULT;
 Debug::ADV_LOG_WRAP DebugBase::_advLogWrap = Debug::ADV_LOG_OFF;
 
+DbgTest::DbgTest(const char*const string) {
+    Debug::printf(Debug::VERBOSE, string);
+    Debug::push();
+}
+
+DbgTest::~DbgTest(void) {
+    Debug::pop(success);
+}
+
 //Invoked by LibGyro (callback function)
 void DebugBase::libGyroPrintf(const GY_DEBUG_LEVEL level, const char* const str) { Debug::writeLog(LIBGYRO, (LEVEL)level, str); }
 //Invoked by Lua (always VERBOSE, not silenced with the rest)
@@ -563,7 +572,7 @@ void DebugBase::processInput(GameInput& input) {
 			//entity->transform.setPos(600, 600);
 			//entity->setDepthType(DEPTH_BUFFERED);
 			src = lightSrc = entity->addLightSource();
-			lightSrc->setLightType(GY_LIGHT_POINT);
+            lightSrc->setLightType(GY_LIGHT_POINT);
 			//lightSrc->setRelativePos(0.0f, 0.0f, 2.0f);
 			gyVec3Normalize(&dirVec);
 			//lightSrc->setDirection(dirVec);

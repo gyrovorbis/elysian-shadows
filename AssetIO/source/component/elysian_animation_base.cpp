@@ -16,7 +16,7 @@ void AnimationBase::addState(const char* state) {
 
 		AnimStateEntry& entry = _statePool.claimFreeEntry();
 		entry.setString(state);
-		_updateStates();
+        _updateStates();
 	}
 
     if(_children) {

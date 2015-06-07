@@ -22,6 +22,10 @@
 #include "elysian_lua_manager.hpp"
 #include <QDir>
 
+#ifdef ESTK_UNIT_TESTS
+#include <test_estoolkit.h>
+#endif
+
 TkDebug* TkDebug::_window = nullptr;
 QTreeWidgetItem *TkDebug::_curParent;
 QTreeWidgetItem *TkDebug::_prevItem;
@@ -40,6 +44,7 @@ bool TkDebug::_shiftDown = false;
 QMutex* TkDebug::_mutex = nullptr;
 QQueue<TkDebug::LogEntry>* TkDebug::_pendingQueue = nullptr;
 QString* TkDebug::_debugLogPath = nullptr;
+QString TkDebug::_lastString;
 
 TkDebug::TkDebug(void) {
     _commandHistory = QVector<QString>();
@@ -149,13 +154,20 @@ void TkDebug::push(void) {
     _mutex->lock();
     _pendingQueue->enqueue(LogEntry { "PUSH", VERBOSE, TOOLKIT, LogEntry::PUSH });
     _mutex->unlock();
+#ifdef ESTK_UNIT_TESTS
+    //tktest::ESToolkitTest::pushSubTest(_lastString);
+#endif
 }
 
-void TkDebug::pop(void) {
-    elysian::DebugBase::pop();
+void TkDebug::pop(const bool success) {
+    elysian::DebugBase::pop(success);
     _mutex->lock();
     _pendingQueue->enqueue(LogEntry { "POP", VERBOSE, TOOLKIT, LogEntry::POP });
+
     _mutex->unlock();
+#ifdef ESTK_UNIT_TESTS
+    //tktest::ESToolkitTest::popSubTest(success);
+#endif
 }
 
 void TkDebug::Log(LEVEL flag, QString msg, int src) {
@@ -283,7 +295,7 @@ void TkDebug::_resizePrompt(void) {
 
 void TkDebug::_postToQueue(const int src, const LEVEL level, const QString text) {
     _mutex->lock();
-    _pendingQueue->enqueue(LogEntry{ text, level, src });
+    _pendingQueue->enqueue(LogEntry{ text, level, src, LogEntry::TEXT });
     elysian::DebugBase::writeLog((elysian::DebugBase::SOURCE)src, level, Q_CSTR(text));
     _mutex->unlock();
 }

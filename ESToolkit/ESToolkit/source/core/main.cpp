@@ -13,11 +13,15 @@
 #include <iostream>
 #include <QOpenGLContext>
 #include <QCommandLineParser>
-
 #include "elysian_engine.hpp"
 #include "elysian_debug.hpp"
 
-GYAppCbRet Init(int argc, char **argv) {
+#ifdef ESTK_UNIT_TESTS
+#include <test_estoolkit.h>
+#endif
+
+
+static GYAppCbRet Init(int argc, char **argv) {
     QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings); //WITHOUT THIS OSX SHITS ITSELF WHEN FUCKING WITH WIDGET SIZING/LOCATIONS
     QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
 
@@ -27,18 +31,6 @@ GYAppCbRet Init(int argc, char **argv) {
     a.setOrganizationDomain("elysianshadows.com");
     a.setApplicationName("ESTk");
     a.setApplicationVersion(QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" ")+QString(ESTOOLKIT_VERSION_NAME));
-
-    QCommandLineParser parser;
-    parser.setApplicationDescription("ESTk Verification Mode");
-    parser.addHelpOption();
-    parser.addVersionOption();
-
-    QCommandLineOption verifyOption("verify", "Load and verify a single area.", "areaPath");
-    parser.addOption(verifyOption);
-    parser.process(a);
-
-    QString verifyPath = parser.value(verifyOption);
-    qDebug() << "areaPath" << verifyPath;
 
 
 //#else
@@ -94,12 +86,15 @@ GYAppCbRet Init(int argc, char **argv) {
     QSplashScreen splash(splashScreen, Qt::WindowStaysOnTopHint);
 
 
-    ESToolkit w;
 
-    if(!verifyPath.isNull())  {
-        w.verifySingleArea(verifyPath);
 
-    } else {
+#ifdef ESTK_UNIT_TESTS
+    if(argc != 1) {
+        return (GYAppCbRet)tktest::main(argc, argv);
+    }
+#endif
+
+ESToolkit w;
     //QApplication::setWindowIcon(QIcon(":/estk/images/estk.ico"));
 
 // We don't want to wait for the splash screen whilst debugging. --Sara.
@@ -112,7 +107,6 @@ GYAppCbRet Init(int argc, char **argv) {
     QTimer::singleShot(0, &w, SLOT(showMaximized()));
 #endif
 
-    }
     a.exec();
 
 

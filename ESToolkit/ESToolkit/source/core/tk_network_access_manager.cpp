@@ -1,6 +1,8 @@
 #include <tk_network_access_manager.h>
 #include <elysian_debug.hpp>
 #include <QJsonDocument>
+#include <QNetworkRequest>
+#include <QNetworkReply>
 
 
 QueryUrl::QueryUrl(const QString &host, const QUrlQuery &query): QUrl(host) {

@@ -18,7 +18,7 @@ namespace elysian {
                 gyAudSourceSetfv(_src, GY_SOURCE_POS, &_entity->_transform._pos);
 			} else {
 				//give the bitch back if we're done with it
-				_audioSys->releaseChannel(_src);
+                _audioSys->releaseChannel(_src);
 				_src = nullptr;
 			}
 		}

@@ -10,6 +10,12 @@
 extern "C" {
 #endif
 
+typedef struct _GYFileInitParams {
+    const char* workingDir;
+
+} GYFileInitParams;
+
+
 typedef enum _GYPathType {
     /*
      * Path that houses user-specific data for this application.
@@ -31,7 +37,7 @@ typedef enum _GYPathType {
 
 typedef struct _GYFile GYFile;
 
-int gyFileInit(const char *author, const char *name);
+int gyFileInit(const GYFileInitParams*const params);
 int gyFileQuit(void);
 
 int gyFileResolvePath(GYPathType path_type, char **path, size_t *len);

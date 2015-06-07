@@ -28,6 +28,10 @@ macx {
   LIBS += -mmacosx-version-min=10.7 -stdlib=libc++
 }
 
+tests {
+	DEFINES += ESTK_UNIT_TESTS
+}
+
 exists( ESDevCommandLineArgs.pri ) {
 	message("Including ESDevCommandLineArgs.pri in project file")
 	include( ESDevCommandLineArgs.pri )

@@ -53,6 +53,7 @@ public:
 
     static void     inspectTable(OOLUA::Lua_table_ref table);
     bool            verifySingleArea(const QString path);
+    bool            openProjectDir(const QString dir);
 protected:
     virtual void    changeEvent(QEvent *e) override;
     virtual void    closeEvent(QCloseEvent *event) override;
@@ -62,7 +63,6 @@ protected:
     void            _onGYSysSegFault();
     void            _libGyroInitialize(void);
     void            _engineLoadAssets(void);
-    void            _openProjectDir(const QString dir);
     void            setMainTextureUniform(const int uniform);
 
 

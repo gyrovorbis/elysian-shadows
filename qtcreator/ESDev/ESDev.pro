@@ -15,12 +15,11 @@ OOLua.depends = Lua5_2
 
 #ESGamma.depends += libGyro \
  #       OOLua
-ESToolkit.depends = libGyro \
+ESToolkit.depends += libGyro \
 	OOLua \
 	Spine
 
 tests {
-	SUBDIRS += UnitTests
-
+	SUBDIRS += ../../UnitTests
+	ESToolkit.depends += UnitTests
 }
-
