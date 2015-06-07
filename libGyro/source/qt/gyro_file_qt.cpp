@@ -6,18 +6,13 @@
 
 #define GY_FILE_QT_DEBUG_DIR    "ESTkLogs"
 
-extern "C" int gyFileInit(const char *author, const char *name)
-{
+extern "C" int gyFileInit(const GYFileInitParams*const params) {
     int retVal = 0;
-    if (author == NULL || name == NULL) {
-        /* Require an app author & name to identify us */
-        return 0;
-    }
 
-    QString homeDirPath = QDir::homePath();
+    QString homeDirPath = (params && params->workingDir)? params->workingDir : QDir::currentPath();
 
     if(!QDir::setCurrent(homeDirPath)) {
-        _gyLog(GY_DEBUG_FATAL, "Could not cd into user directory: %s", homeDirPath.toStdString().c_str());
+        _gyLog(GY_DEBUG_FATAL, "Could not cd into working directory directory: %s", homeDirPath.toStdString().c_str());
     } else {
 
         if(QDir(GY_FILE_QT_DEBUG_DIR).exists() || QDir().mkdir(GY_FILE_QT_DEBUG_DIR)) {
@@ -35,5 +30,5 @@ extern "C" int gyFileInit(const char *author, const char *name)
 
     }
 
-    return turfs_init(author, name, NULL) == TURFS_RET_OK && retVal;
+    return turfs_init("ESTeam", "ESTk", NULL) == TURFS_RET_OK && retVal;
 }
