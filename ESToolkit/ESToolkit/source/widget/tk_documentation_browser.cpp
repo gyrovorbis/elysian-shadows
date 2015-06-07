@@ -5,6 +5,8 @@
 #include <QDir>
 #include <QDebug>
 #include <elysian_debug.hpp>
+#include <QHelpContentWidget>
+#include <QHelpIndexWidget>
 
 /****************************************************************************
 ** This file is part of the documentation of Qt. It was originally
