@@ -1,5 +1,5 @@
 
-#include <QtTest>
+#include <QtTest.h>
 
 #include <tk_estoolkit.h>
 #include <test_estoolkit.h>

@@ -1,7 +1,7 @@
 #ifndef TEST_LIBGYRO_FILE
 #define TEST_LIBGYRO_FILE
 
-#include <QTTest>
+#include <QtTest>
 #include <gyro_file_api.h>
 #include <test_estoolkit.h>
 #include <QDir>
