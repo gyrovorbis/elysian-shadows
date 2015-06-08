@@ -1,3 +1,5 @@
+include(ESDev.pri)
+
 TEMPLATE = subdirs
 CONFIG += ordered
 CONFIG 	+= console
