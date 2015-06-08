@@ -2,6 +2,7 @@
 #define ELYSIAN_LUA_SCRIPT_H
 
 #include "elysian_behavior.hpp"
+#include <oolua.h>
 
 #define ELYSIAN_LUA_SCRIPT_PATH_SIZE 200
 
@@ -64,11 +65,32 @@ namespace elysian {
         void						setParent(LuaBehaviorScript* const parent);
         void                        cacheTriggers(lua_State*const state);
 	};
+}
+
+namespace OOLUA
+{
+    typedef elysian::LuaBehaviorScriptAttrib    LuaBehaviorScriptAttrib;
+}
+
+OOLUA_PROXY(LuaBehaviorScriptAttrib)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MFUNC(inheritFromBehavior)
+    OOLUA_MFUNC(addSupportedTrigger)
+OOLUA_PROXY_END
 
 
 
-    //====== INLINEZ ========
 
+
+
+
+
+//====== INLINEZ ========
+
+namespace elysian {
     inline LuaBehaviorScript::LuaBehaviorScript(const char* file): LuaScript(file) {}
     inline auto	LuaBehaviorScript::getType(void) const -> TYPE { return TYPE_BEHAVIOR; }
     inline LuaBehaviorScript* LuaBehaviorScript::getParent(void) const { return _parent; }
@@ -81,14 +103,14 @@ namespace elysian {
     inline void LuaBehaviorScriptAttrib::inheritFromBehavior(const char*const path) { _hasParent = true; strcpy(_parentPath, path); }
     inline bool LuaBehaviorScriptAttrib::hasParent(void) const { return _hasParent; }
 
-	inline const char *LuaScript::getPath(void) const { return _path; }
-	inline unsigned LuaScript::getRefCount(void) const { return _refCount; }
-	inline void LuaScript::incRefCount(void) { ++_refCount; }
-	inline void LuaScript::decRefCount(void) { --_refCount; }
-	inline int LuaScript::getEnvironRef(void) const { return _environRef; }
-	inline void LuaScript::setEnvironRef(const int ref) { _environRef = ref; }
+    inline const char *LuaScript::getPath(void) const { return _path; }
+    inline unsigned LuaScript::getRefCount(void) const { return _refCount; }
+    inline void LuaScript::incRefCount(void) { ++_refCount; }
+    inline void LuaScript::decRefCount(void) { --_refCount; }
+    inline int LuaScript::getEnvironRef(void) const { return _environRef; }
+    inline void LuaScript::setEnvironRef(const int ref) { _environRef = ref; }
     inline bool LuaScript::getError(void) const { return _error; }
-	inline void LuaScript::setError(const bool err) { _error = err; }
+    inline void LuaScript::setError(const bool err) { _error = err; }
 }
 
 

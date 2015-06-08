@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "tinycthread.h"
+#include  "tinycthread.h"
 
 #define GYRO_OGG_STREAM_BUFF_SIZE	(4096 * 20)
 #define GYRO_OGG_STREAM_BUFF_COUNT	2
@@ -21,8 +21,8 @@ typedef struct _GYOggPayload {
 	ALuint			buffers[2];
 	GYFile*           oggFile;
     OggVorbis_File  oggStream;
-	vorbis_info*    vorbisInfo;
-	vorbis_comment* vorbisComment;
+    vorbis_info*    vorbisInfo;
+    vorbis_comment* vorbisComment;
 	ALenum			format;
 } GYOggPayload;
 

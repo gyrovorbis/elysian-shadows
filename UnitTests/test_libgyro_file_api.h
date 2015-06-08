@@ -8,19 +8,6 @@
 
 namespace tktest {
 
-class BullshitTest: public QObject {
-    Q_OBJECT
-private Q_SLOTS:
-
-void testzor(void) {
-    qDebug() << "DYNAMICALLY BULLSHITTED";
-
-
-}
-
-};
-
-
 class LibGyroFileApiTest: public ESToolkitTest {
     Q_OBJECT
 public:
@@ -32,11 +19,6 @@ private Q_SLOTS:
 
     void initializeApi(void) {
         QVERIFY(gyFileInit(nullptr));
-    }
-
-    void bowsht(void) {
-        qDebug() << "BOWSHT";
-        enqueueNextText(new BullshitTest);
     }
 
 

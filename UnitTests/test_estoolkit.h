@@ -30,6 +30,7 @@ protected:
     static QList<QObject*>  _testQueue;
     static QStack<QString>  _subTestStack;
     static QMutex*          _mutex;
+    static bool             _initialized;
 
 
 
@@ -45,6 +46,8 @@ public:
     static void enqueueTest(QObject* object);
     static void pushSubTest(const QString name);
     static void popSubTest(const bool success = true);
+    static void flagError(const QString msg);
+    static void flagWarning(const QString msg);
 
     static void initialize(void);
 
@@ -61,8 +64,22 @@ private Q_SLOTS:
     }
 };
 
+inline void ESToolkitTest::flagWarning(const QString msg) {
+    if(!_initialized) return;
+    QWARN(Q_CSTR(msg));
+}
+
+
+inline void ESToolkitTest::flagError(const QString msg) {
+    if(!_initialized) return;
+    QVERIFY2(false, Q_CSTR(msg));
+    //_mutex->lock();
+
+    //_mutex->unlock();
+}
+
 inline void ESToolkitTest::pushSubTest(const QString name) {
-    return;
+    if(!_initialized) return;
     _mutex->lock();
     _subTestStack.push(name);
     QString out;
@@ -74,8 +91,7 @@ inline void ESToolkitTest::pushSubTest(const QString name) {
 }
 
 inline void ESToolkitTest::popSubTest(const bool success) {
-    return;
-    if(!success) QVERIFY(false);
+    if(!_initialized) return;
     _mutex->lock();
     QString out;
     out +=  QString("*****");
@@ -107,6 +123,7 @@ inline void ESToolkitTest::enqueueTest(QObject* object) {
 
 inline void ESToolkitTest::initialize(void) {
     _mutex = new QMutex();
+    _initialized = true;
 }
 
 

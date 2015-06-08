@@ -325,7 +325,7 @@ bool TkLevel::generateTileSheet(const QString location){
 
     //chop up/allocate tile sheets
 	if(!TileSheetUtilities::DivideTileSheet(location, 512, 1024, 32, 32, _tileSheet)) {
-		Debug::Log(Debug::CRITICAL, "Failure cutting tilesheet!");
+        Debug::Log(Debug::FATAL, "Failure cutting tilesheet!");
         success = false;
     }
 
@@ -357,7 +357,7 @@ bool TkLevel::open(void) {
 											ELYSIAN_TILE_HEIGHT,
 											_tileSheet))
 	{
-        Debug::Log(Debug::CRITICAL, "Failure cutting tilesheet!");
+        Debug::Log(Debug::FATAL, "Failure cutting tilesheet!");
         success = false;
     }
 
@@ -497,14 +497,14 @@ bool TkLevel::load(const QString loc) {
 	if(!TileSheetUtilities::VerifyImageSize(loc+ELYSIAN_TILESHEET_PATH,
 											ELYSIAN_TILESHEET_WIDTH,
 											ELYSIAN_TILESHEET_HEIGHT)) {
-		Debug::Log(Debug::CRITICAL, "tilesheet.png either could not be opened or is not 512x1024!");
+        Debug::Log(Debug::CRITICAL, "tilesheet.png either could not be opened or is not 512x1024!");
         success = false;
     }
     Debug::pop();
     _validSheets = success;
 
     if(!dir.cd("area")) {
-		Debug::Log(Debug::CRITICAL, "No area directory!");
+        Debug::Log(Debug::CRITICAL, "No area directory!");
         Debug::pop();
 		return false;
     }

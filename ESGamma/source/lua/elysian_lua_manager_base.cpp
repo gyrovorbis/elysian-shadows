@@ -38,14 +38,14 @@ void LuaManagerBase::_errorprintf(const char *const string, ...) {
     vsprintf(buffer, string, argptr);
     va_end(argptr);
 
-    Debug::luaPrint(buffer, Debug::CRITICAL);
+    Debug::luaPrint(buffer, Debug::FATAL);
 }
 
 
 void LuaManagerBase::_showError(void) {
     if(_errorCode == 0) return;
     const char *errorMsg = luaL_checkstring(*_mainState, -1);
-    _errorprintf("Error Message");
+    Debug::luaPrint("Error Message");
     Debug::push();
     _errorprintf((errorMsg)? errorMsg : "Lua error message not available");
     Debug::pop();
@@ -280,10 +280,9 @@ bool LuaManagerBase::runScriptSandbox(const char *const file, LuaScript* const s
     int ref = LUA_NOREF;
 
     if((_errorCode = luaL_loadfile(*_mainState, file)) != 0) {
-        _showError();
         if(_errorCode == LUA_ERRFILE) {
-            _errorprintf("Could not load script file!");
-        }
+            Debug::printf(Debug::CRITICAL, "Could not load script file [%s]!", file);
+        } else _showError(); //DO NOT ERROR OUT IF FILE ISN'T FOUND!!!
         /*else {
             lua_remove(*_mainState, 1);					//take loaded chunk off of stack
         }*/

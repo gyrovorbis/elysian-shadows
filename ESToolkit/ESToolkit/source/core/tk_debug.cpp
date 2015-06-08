@@ -155,7 +155,7 @@ void TkDebug::push(void) {
     _pendingQueue->enqueue(LogEntry { "PUSH", VERBOSE, TOOLKIT, LogEntry::PUSH });
     _mutex->unlock();
 #ifdef ESTK_UNIT_TESTS
-    //tktest::ESToolkitTest::pushSubTest(_lastString);
+    tktest::ESToolkitTest::pushSubTest(_lastString);
 #endif
 }
 
@@ -166,7 +166,7 @@ void TkDebug::pop(const bool success) {
 
     _mutex->unlock();
 #ifdef ESTK_UNIT_TESTS
-    //tktest::ESToolkitTest::popSubTest(success);
+    tktest::ESToolkitTest::popSubTest(success);
 #endif
 }
 
@@ -294,6 +294,11 @@ void TkDebug::_resizePrompt(void) {
 }
 
 void TkDebug::_postToQueue(const int src, const LEVEL level, const QString text) {
+#ifdef ESTK_UNIT_TESTS
+    if(level == Debug::CRITICAL) tktest::ESToolkitTest::flagWarning(text);
+    else if(level == Debug::FATAL) tktest::ESToolkitTest::flagError(text);
+#endif
+
     _mutex->lock();
     _pendingQueue->enqueue(LogEntry{ text, level, src, LogEntry::TEXT });
     elysian::DebugBase::writeLog((elysian::DebugBase::SOURCE)src, level, Q_CSTR(text));

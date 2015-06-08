@@ -92,7 +92,7 @@ _LightingShaderProgram*		glalCurLightShader                              = &glal
 
 void gyVidSetCurrentShaderProgram(struct _GYShaderProgram*const program) {
     glalCurShaderProg = program;
-	glUseProgram(program->program);
+    if(program) glUseProgram(program->program);
 }
 
 void gyVidSetDefaultShaderProgram(void) {
@@ -301,6 +301,8 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
     (void)light;
 	char buff[100];
 
+    if(!shader->program) return;
+
 	//SHARED SHADER ATTRIBS/UNIFORMS
     shader->attribLoc[GLAL_SHADER_POS]						= _protectedAttribQuery(shader->program, "aPosition");
     shader->uniformLoc[GLAL_SHADER_PROJ_VIEW_MAT]			= _protectedUniformQuery(shader->program, "uProjViewMat");
@@ -384,7 +386,7 @@ void glalLoadDefaultShaders(void) {
     //GYShader* vertShader = gyShaderCreate("/Users/Falco/Documents/ESDev/libGyro/source/glal/shaders/pixelLighting.vsh");
     //GYShader* fragShader = gyShaderCreate("/Users/Falco/Documents/ESDev/libGyro/source/glal/shaders/pixelLighting.fsh");
     glalLightingShader.program = gyShaderProgramCreate(vertShader, fragShader);
-    _gyLog(GY_DEBUG_CRITICAL, "LIGHTING SHADER - %d", glalLightingShader.program->program);
+    //_gyLog(GY_DEBUG_CRITICAL, "LIGHTING SHADER - %d", glalLightingShader.program->program);
     _queryLightingShader(&glalLightingShader, 1);
 
     vertShader = gyShaderCreate("/assets/shaders/shadowMap.vsh");
@@ -546,12 +548,22 @@ int _gyVidShaderProgramCreate(GYShaderProgram* program) {
 
 	program->program = glCreateProgram();
 	if(!program->program) {
-		_gyLog(GY_DEBUG_CRITICAL, "\tCould not generate program!");
+        _gyLog(GY_DEBUG_FATAL, "\tCould not generate program!");
 		return 0;
 	}
 
-	glAttachShader(program->program, program->vertShader->shader);
-	glAttachShader(program->program, program->fragShader->shader);
+    if(program->vertShader) {
+        glAttachShader(program->program, program->vertShader->shader);
+    } else {
+        _gyLog(GY_DEBUG_FATAL, "\tNo vertex shader object to attach!");
+        return 0;
+    }
+    if(program->fragShader) {
+        glAttachShader(program->program, program->fragShader->shader);
+    } else {
+        _gyLog(GY_DEBUG_FATAL, "\tNo fragment shader object to attach!");
+        return 0;
+    }
 
 	glLinkProgram(program->program);
 

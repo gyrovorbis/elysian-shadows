@@ -142,7 +142,6 @@ namespace OOLUA
 	typedef elysian::CameraSystem				CameraSystem;
     typedef elysian::LuaScript                  LuaScript;
     typedef elysian::LuaBehaviorScript          LuaBehaviorScript;
-	typedef elysian::LuaBehaviorScriptAttrib	LuaBehaviorScriptAttrib;
 	typedef elysian::Direction					Direction;
 	typedef elysian::EventMonitor				EventMonitor;
 	typedef elysian::LuaEventMonitor			LuaEventMonitor;
@@ -166,15 +165,6 @@ OOLUA_PROXY(Lua32BitMask)
 	OOLUA_MEM_FUNC_CONST(uint32_t, toInt)
 	OOLUA_MEM_FUNC(void, fromInt, uint32_t)
 	OOLUA_MEM_FUNC(void, setBit, unsigned char, unsigned char)
-OOLUA_PROXY_END
-
-OOLUA_PROXY(LuaBehaviorScriptAttrib)
-	OOLUA_TAGS (
-		No_public_constructors,
-		No_public_destructor
-	)
-	OOLUA_MFUNC(inheritFromBehavior)
-	OOLUA_MFUNC(addSupportedTrigger)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(GYVector2)

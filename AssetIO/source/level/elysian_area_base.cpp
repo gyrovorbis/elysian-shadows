@@ -408,6 +408,10 @@ void AreaBase::populateVbo(void) {
 
 void AreaBase::activate(void) {
     if(activated) return;
+    if(!level || !level->tileSheet) {
+        Debug::printf(Debug::FATAL, "Parent level has no tilesheet. Area couldn't be activated!");
+        return;
+    }
 
 
 #if 1

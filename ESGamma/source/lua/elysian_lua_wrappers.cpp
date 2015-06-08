@@ -157,11 +157,6 @@ OOLUA_EXPORT_FUNCTIONS(Lua32BitMask,
 					   fromInt,
 					   setBit)
 
-OOLUA_EXPORT_FUNCTIONS(LuaBehaviorScriptAttrib,
-					   inheritFromBehavior,
-					   addSupportedTrigger)
-OOLUA_EXPORT_FUNCTIONS_CONST(LuaBehaviorScriptAttrib)
-
 //EXPORT_OOLUA_FUNCTIONS_0_CONST(GYVector2)
 //EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(GYVector2)
 OOLUA_EXPORT_FUNCTIONS(GYVector2, setX, setY)

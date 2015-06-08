@@ -5,6 +5,7 @@
 #include <QObject>
 #include <test_area.h>
 #include <test_estoolkit.h>
+#include <QDebug>
 
 namespace tktest {
 
@@ -17,11 +18,17 @@ public:
 
 private Q_SLOTS:
 
+    void initTestCase(void);
     void activateLevel(void);
 
 };
 
 inline LevelTest::LevelTest(TkLevel *level) { _level = level; }
+
+inline void LevelTest::initTestCase() {
+    qDebug() << QString("Verifying Level[") << QString(_level->path) << "]";
+}
+
 
 inline void LevelTest::activateLevel(void) {
     getAssets()->setCurrentLevel(_level);

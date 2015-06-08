@@ -961,7 +961,9 @@ bool ESToolkit::openProjectDir(const QString dir) {
    // _engineGLView->update();
 
     if(!proj) {
-        QMessageBox::critical(this, "You dun fucked up!", "There's no fucking way that was a valid project directory, cockwheeze.");
+        QString invalidNotice("There's no fucking way that was a valid project directory, cockwheeze.");
+        if(isVisible()) QMessageBox::critical(this, "You dun fucked up!", invalidNotice);
+        else Debug::printf(Debug::FATAL, "%s", Q_CSTR(invalidNotice));
         test.success = false;
         return false;
     }

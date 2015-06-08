@@ -102,7 +102,9 @@ void DebugBase::writeLog(const DebugBase::SOURCE source, const DebugBase::LEVEL 
 		fflush(_luaDbgFile);
 	}
 #endif
-	gyPrintf(buffer); //use the "preferred" IO of each platform
+
+    //Only print to standard IO if we give a shit about this kind of output
+    if(level >= _level) gyPrintf(buffer); //use the "preferred" IO of each platform
 
     if(_advLogWrap != ADV_LOG_OFF) {
 	AdventureLog::TEXT_TYPE advType;

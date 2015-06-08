@@ -57,7 +57,7 @@ public:
 
     using                       elysian::EntityBase::render;
     using                       elysian::EntityBase::move;
-    using                       elysian::EntityBase::setName;
+    //using                       elysian::EntityBase::setName;
     using                       elysian::EntityBase::setTransform;
 
                                 TkEntity(void);

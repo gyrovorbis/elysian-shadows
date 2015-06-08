@@ -18,16 +18,16 @@ qhp.ESToolkit.indexTitle          = ESToolkit User Manual
 qhp.ESToolkit.sortPages				= true
 qhp.ESToolkit.indexRoot		 =
 
-qhp.ESToolkit.subprojects         = manual 
+qhp.ESToolkit.subprojects         = lua manual
 qhp.ESToolkit.subprojects.manual.title = ESTk User Manual
 qhp.ESToolkit.subprojects.manual.indexTitle = ESToolkit User Manual
 qhp.ESToolkit.subprojects.manual.selectors = fake:headerfile,group,module,qdoc
 qhp.ESToolkit.subprojects.manual.sortPages = true
 
-#qhp.ESToolkit.subprojects.lua.title = Lua API
-#qhp.ESToolkit.subprojects.lua.indexTitle = Lua Wrapper API
-#qhp.ESToolkit.subprojects.lua.selectors = qmlclass
-#qhp.ESToolkit.subprojects.lua.sortPages = true
+qhp.ESToolkit.subprojects.lua.title = Lua API
+qhp.ESToolkit.subprojects.lua.indexTitle = Lua Wrapper API
+qhp.ESToolkit.subprojects.lua.selectors = qmlclass
+qhp.ESToolkit.subprojects.lua.sortPages = true
 
 
 sources.fileextensions = "*.cpp *.qdoc *.mm *.qml *.c"
