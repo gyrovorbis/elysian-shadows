@@ -13,6 +13,7 @@ extern "C" {
 #define GYRO_STRINGIFY_MACRO(a) _GYRO_STRINGIFY_MACRO(a)
 
 #ifndef GYRO_BUILD_NODE
+#   define LOCAL               LOCAL    //Don't even ask.
 #   define GYRO_BUILD_NODE     LOCAL
 #endif
 #ifndef GYRO_BUILD_JOB

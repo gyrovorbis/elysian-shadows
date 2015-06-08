@@ -30,13 +30,15 @@ LuaBehavior::~LuaBehavior(void) {
 	//Traverse hierarchy from BOTTOM TO TOP cleaning shit up
 	//    - Call onDestroy if script implements it (NOT if behavior uses it)
 	//    - OOLUA will delete selfTables automatically
-	for(unsigned i = 0; i < _hierarchyDepth; ++i) {
-		_script = _scriptHierarchy[i];
-		_ooSelfTableRef = &_ooSelfTableRefHierarchy[i];
-		if(_script->getAttrib()->getSupportedTriggers() & ON_DESTROY) onDestroy();
-	}
+    if(_script) {
+        for(unsigned i = 0; i < _hierarchyDepth; ++i) {
+            _script = _scriptHierarchy[i];
+            _ooSelfTableRef = &_ooSelfTableRefHierarchy[i];
+            if(_script->getAttrib()->getSupportedTriggers() & ON_DESTROY) onDestroy();
+        }
 
-	LuaManager::unloadBehaviorScript(*_script);
+        LuaManager::unloadBehaviorScript(*_script);
+    }
 }
 
 bool LuaBehavior::loadScript(const char *file, const OOLUA::Lua_table_ref paramTable) {
