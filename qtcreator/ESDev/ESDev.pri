@@ -1,3 +1,9 @@
+exists( ESDevCommandLineArgs.pri ) {
+	message("Including ESDevCommandLineArgs.pri in project file")
+	include( ESDevCommandLineArgs.pri )
+}
+
+
 #SPEED UP MINGW'S FUCKTARDEDLY SLOW DUMB ASS!
 win32 {
         #QMAKE_CXX=../../../qtcreator/ESDev/ccache.exe g++
@@ -32,7 +38,3 @@ tests {
 	DEFINES += ESTK_UNIT_TESTS
 }
 
-exists( ESDevCommandLineArgs.pri ) {
-	message("Including ESDevCommandLineArgs.pri in project file")
-	include( ESDevCommandLineArgs.pri )
-}
