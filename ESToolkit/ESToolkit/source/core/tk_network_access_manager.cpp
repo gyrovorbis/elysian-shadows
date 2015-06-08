@@ -3,6 +3,7 @@
 #include <QJsonDocument>
 #include <QNetworkRequest>
 #include <QNetworkReply>
+#include <functional>
 
 
 QueryUrl::QueryUrl(const QString &host, const QUrlQuery &query): QUrl(host) {

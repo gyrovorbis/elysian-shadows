@@ -3,6 +3,7 @@
 
 #include <QNetworkAccessManager>
 #include <QUrl>
+#include <functional>
 
 class QNetworkReply;
 class QByteArray;

@@ -26,13 +26,6 @@ static GYAppCbRet Init(int argc, char **argv) {
     QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
 
 
-    QApplication a(argc, argv);
-    a.setOrganizationName("Elysian Shadows");
-    a.setOrganizationDomain("elysianshadows.com");
-    a.setApplicationName("ESTk");
-    a.setApplicationVersion(QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" ")+QString(ESTOOLKIT_VERSION_NAME));
-
-
 //#else
     //QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
 
@@ -72,6 +65,12 @@ static GYAppCbRet Init(int argc, char **argv) {
     QRectF rect;
     rect.setSize(QSizeF(2.0f, 5.0f));
 
+
+    QApplication a(argc, argv);
+    a.setOrganizationName("Elysian Shadows");
+    a.setOrganizationDomain("elysianshadows.com");
+    a.setApplicationName("ESTk");
+    a.setApplicationVersion(QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" ")+QString(ESTOOLKIT_VERSION_NAME));
     a.setWindowIcon(QIcon(":/estk/images/estk.ico"));
 
     QPixmap splashScreen(":/splash/images/splashScreen.png");

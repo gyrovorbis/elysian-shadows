@@ -11,10 +11,10 @@ win32 {
 TARGET = ESToolkit
 TEMPLATE = app
 
-QMAKE_OBJCXXFLAGS_PRECOMPILE += -std=c++11 -stdlib=libc++
+#QMAKE_OBJCXXFLAGS_PRECOMPILE += -std=c++11 -stdlib=libc++
 QT		+= sql gui opengl network help
 tests {
-	QT+= testlib
+    QT+= testlib
 }
 
 QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-empty-body
@@ -48,53 +48,53 @@ ICON = resource/images/estk.icns
 
 
 DEPENDPATH += ../../AssetIO/include/component \
-	../../AssetIO/include/crtp \
-	../../AssetIO/include/level \
-	../../AssetIO/include/primitive \
-	../../AssetIO/include/utility \
-	../../ESGamma/include/crtp \
-	../../ESGamma/include/gui \
-	../../ESGamma/include/lua \
-	../../ESGamma/include/system \
-	../../ESGamma/include/utility \
-	include/asset \
-	include/model \
-	include/estk \
-	include/tile_engine \
-	include/core \
-	../../libGyro/include \
-	../../libGyro/include/kinetic \
-	include/sheet_manager \
-	include/dialog \
-	include/widget
+    ../../AssetIO/include/crtp \
+    ../../AssetIO/include/level \
+    ../../AssetIO/include/primitive \
+    ../../AssetIO/include/utility \
+    ../../ESGamma/include/crtp \
+    ../../ESGamma/include/gui \
+    ../../ESGamma/include/lua \
+    ../../ESGamma/include/system \
+    ../../ESGamma/include/utility \
+    include/asset \
+    include/model \
+    include/estk \
+    include/tile_engine \
+    include/core \
+    ../../libGyro/include \
+    ../../libGyro/include/kinetic \
+    include/sheet_manager \
+    include/dialog \
+    include/widget
 
 #PRIORITIZED TO REDUCE BUILD TIME ON FUCKING MINGW
 INCLUDEPATH += ../../AssetIO/include/component \
-	../../AssetIO/include/crtp \
-	../../AssetIO/include/level \
-	../../AssetIO/include/primitive \
-	../../AssetIO/include/utility \
-	../../ESGamma/include/crtp \
-	../../ESGamma/include/gui \
-	../../ESGamma/include/lua \
-	../../ESGamma/include/system \
-	../../ESGamma/include/utility \
-	include/asset \
-	include/model \
-	include/estk \
-	include/tile_engine \
-	include/core \
-	../../libGyro/include \
-	../../libGyro/include/kinetic \
-	include/sheet_manager \
-	include/dialog \
-	include/widget \
-	../../Lua5.2/include \
-	../../OOLua/include \
-	../../ESGamma/lib/include \
-	../../Spine/include
+    ../../AssetIO/include/crtp \
+    ../../AssetIO/include/level \
+    ../../AssetIO/include/primitive \
+    ../../AssetIO/include/utility \
+    ../../ESGamma/include/crtp \
+    ../../ESGamma/include/gui \
+    ../../ESGamma/include/lua \
+    ../../ESGamma/include/system \
+    ../../ESGamma/include/utility \
+    include/asset \
+    include/model \
+    include/estk \
+    include/tile_engine \
+    include/core \
+    ../../libGyro/include \
+    ../../libGyro/include/kinetic \
+    include/sheet_manager \
+    include/dialog \
+    include/widget \
+    ../../Lua5.2/include \
+    ../../OOLua/include \
+    ../../ESGamma/lib/include \
+    ../../Spine/include
 
-PRECOMPILED_HEADER = include/tk_precompiled_headers.h
+#PRECOMPILED_HEADER = include/tk_precompiled_headers.h
 
 SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../AssetIO/source/component/elysian_audio_source_base.cpp \
@@ -123,7 +123,6 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../AssetIO/source/primitive/elysian_quad_sprite_attrib.cpp \
     ../../AssetIO/source/primitive/elysian_sprite_attrib.cpp \
     ../../AssetIO/source/utility/elysian_lua_table_proxy_base.cpp \
-    ../../AssetIO/source/utility/elysian_new.cpp \
     ../../AssetIO/source/utility/luatables.cc \
     ../../ESGamma/source/gui/elysian_adventure_log.cpp \
     ../../ESGamma/source/gui/elysian_font.cpp \
@@ -156,7 +155,7 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../ESGamma/source/utility/elysian_event_monitor.cpp \
     ../../ESGamma/source/utility/elysian_force_generator.cpp \
     ../../ESGamma/source/utility/elysian_game_input.cpp \
-	../../ESGamma/source/utility/elysian_sort_sweep.cpp \
+    ../../ESGamma/source/utility/elysian_sort_sweep.cpp \
     source/asset/tk_animation.cpp \
     source/asset/tk_area.cpp \
     source/asset/tk_asset_manager.cpp \
@@ -322,11 +321,11 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../AssetIO/include/crtp/elysian_skeleton.hpp \
     ../../AssetIO/include/crtp/elysian_warp.hpp \
     ../../ESGamma/include/gui/elysian_sprite.hpp \
-	../../ESGamma/include/gui/elysian_quad_sprite.hpp \
+    ../../ESGamma/include/gui/elysian_quad_sprite.hpp \
     include/asset/tk_animation.h \
     include/asset/tk_area.h \
     include/asset/tk_asset_manager.h \
-	include/asset/tk_assets.h \
+    include/asset/tk_assets.h \
     include/asset/tk_audio_source.h \
     include/asset/tk_behavior.h \
     include/asset/tk_character.h \
@@ -351,7 +350,7 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     include/core/tk_file_utilities.h \
     include/core/tk_gl_utilities.h \
     include/core/tk_menu_stack.h \
-	include/core/tk_selectable.h \
+    include/core/tk_selectable.h \
     include/core/tk_selection_scene.h \
     include/core/tk_tile_image.h \
     include/core/tk_tile_sheet_utilities.h \
@@ -364,7 +363,7 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     include/estk/tk_asset_tree_widget.h \
     include/estk/tk_engine_gl_scene_widget.h \
     include/estk/tk_entity_dock_widget.h \
-	include/estk/tk_entity_selectable.h \
+    include/estk/tk_entity_selectable.h \
     include/estk/tk_entity_tree_widget.h \
     include/estk/tk_estoolkit.h \
     include/estk/tk_layer_dock_widget.h \
@@ -380,7 +379,7 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     include/estk/tk_sheet_view.h \
     include/estk/tk_sheet_view_collider_graphics_item.h \
     include/estk/tk_sheet_view_tile_graphics_item.h \
-	include/estk/tk_tile_selectable.h \
+    include/estk/tk_tile_selectable.h \
     include/estk/tk_tile_selectable_selection_view_delegate.h \
     include/model/tk_lua_table_stack_model.h \
     include/model/tk_property_stack_model.h \
@@ -388,7 +387,7 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     include/model/tk_rows_joiner_proxy_model.h \
     include/sheet_manager/tk_sheet_manager.h \
     include/sheet_manager/tk_sheet_manager_asset_manager.h \
-	include/sheet_manager/tk_sheet_manager_assets.h \
+    include/sheet_manager/tk_sheet_manager_assets.h \
     include/sheet_manager/tk_sheet_manager_dest_tile_graphics_item.h \
     include/sheet_manager/tk_sheet_manager_dest_view.h \
     include/sheet_manager/tk_sheet_manager_file_dock_widget.h \
@@ -404,7 +403,7 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     include/tile_engine/tk_tile_group_undo_item.h \
     include/tile_engine/tk_tile_selection.h \
     include/widget/tk_history_dock_widget.h \
-	include/tile_engine/tk_tile_graphics_item_impl.h \
+    include/tile_engine/tk_tile_graphics_item_impl.h \
     include/tile_engine/tk_dest_view_impl.h \
     include/model/tk_property_item_delegate.h \
     include/core/tk_lua_qt_utils.h \
@@ -419,21 +418,21 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     include/estk/tk_timer_system.h \
     include/core/tk_gitlab_manager.h \
     include/dialog/tk_gitlab_dialog.h \
-    include/tk_precompiled_headers.h \
+   # include/tk_precompiled_headers.h \
     include/core/tk_network_access_manager.h
 
 
 FORMS += form/estk/tk_sheet_dock_widget.ui \
-	form/estk/tk_selection_dock_widget.ui \
-	form/estk/tk_layer_dock_widget.ui \
-	form/estk/tk_estoolkit.ui \
-	form/estk/tk_entity_dock_widget.ui \
-	form/estk/tk_asset_dock_widget.ui \
-	form/sheet_manager/tk_sheet_manager.ui \
-	form/widget/tk_history_dock_widget.ui \
-	form/dialog/tk_engine_settings.ui \
-	form/sheet_manager/tk_sheet_manager_file_dock_widget.ui \
-	form/dialog/tk_lua_explorer.ui \
+    form/estk/tk_selection_dock_widget.ui \
+    form/estk/tk_layer_dock_widget.ui \
+    form/estk/tk_estoolkit.ui \
+    form/estk/tk_entity_dock_widget.ui \
+    form/estk/tk_asset_dock_widget.ui \
+    form/sheet_manager/tk_sheet_manager.ui \
+    form/widget/tk_history_dock_widget.ui \
+    form/dialog/tk_engine_settings.ui \
+    form/sheet_manager/tk_sheet_manager_file_dock_widget.ui \
+    form/dialog/tk_lua_explorer.ui \
     form/dialog/tk_gitlab_dialog.ui
 
 #docs.target = ESToolkit.qhc
@@ -463,8 +462,8 @@ macx {
 }
 
 opencl {
-	LIBS += -framework OpenCL
-	QMAKE_CXXFLAGS += -DELYSIAN_OPENCL_ACCELERATED
+    LIBS += -framework OpenCL
+    QMAKE_CXXFLAGS += -DELYSIAN_OPENCL_ACCELERATED
 
 }
 
@@ -472,9 +471,9 @@ RESOURCES += resource/resource.qrc
 
 docs {
 
-	DEFINES+=TOOLKIT_DOCUMENTATION_RESOURCES
+    DEFINES+=TOOLKIT_DOCUMENTATION_RESOURCES
 
-	RESOURCES += resource/docs.qrc
+    RESOURCES += resource/docs.qrc
 
 #	PHONY_DEPS=. FUCK THIS SHIT SO HARD!!!!
 #		docs.depends = FORCE
@@ -483,26 +482,26 @@ docs {
 #		docs.config += target_predeps
 #		QMAKE_EXTRA_TARGETS += docs
 #		PRE_TARGETDEPS += $$PWD/out/ESToolkit.qhc
-	#}
+    #}
 
 #system(./generate_docs.sh)
 
 }
 
 macx {
-	#DESTDIR = ../../executable
+    #DESTDIR = ../../executable
 #	CONFIG(release, debug|release):
-	QMAKE_POST_LINK = "macdeployqt $${TARGET}.app -verbose=3"
+    QMAKE_POST_LINK = "macdeployqt $${TARGET}.app -verbose=3"
 }
 
 
 
 win32 {
-	DESTDIR = ../../executable
+    DESTDIR = ../../executable
 }
 
 linux {
-	DESTDIR = ../../executable
+    DESTDIR = ../../executable
 }
 
 
@@ -561,18 +560,18 @@ else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../Spine/qtcreator/Spine/libSpine.a
 
 tests {
 
-	win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../v-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/release/ -lUnitTests
-	else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../qtcreator/build-ESDev-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/debug/ -lUnitTests
-	else:unix: LIBS += -L$$OUT_PWD/../../UnitTests -lUnitTests
+    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../v-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/release/ -lUnitTests
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../qtcreator/build-ESDev-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/debug/ -lUnitTests
+    else:unix: LIBS += -L$$OUT_PWD/../../UnitTests -lUnitTests
 
-	INCLUDEPATH += $$PWD/../../UnitTests
-	DEPENDPATH += $$PWD/../../UnitTests
+    INCLUDEPATH += $$PWD/../../UnitTests
+    DEPENDPATH += $$PWD/../../UnitTests
 
-	win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../qtcreator/build-ESDev-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/release/libUnitTests.a
-	else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../qtcreator/build-ESDev-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/debug/libUnitTests.a
-	else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../qtcreator/build-ESDev-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/release/UnitTests.lib
-	else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../qtcreator/build-ESDev-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/debug/UnitTests.lib
-	else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../UnitTests/libUnitTests.a
+    win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../qtcreator/build-ESDev-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/release/libUnitTests.a
+    else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../qtcreator/build-ESDev-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/debug/libUnitTests.a
+    else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../qtcreator/build-ESDev-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/release/UnitTests.lib
+    else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../qtcreator/build-ESDev-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/debug/UnitTests.lib
+    else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../UnitTests/libUnitTests.a
 
 }
 
@@ -626,7 +625,7 @@ linux {
                 -lGL \
                 -lopenal \
                 -lGLU \
-				-lGLEW \
+                -lGLEW \
                 -lz \
                 -logg \
                 -lvorbis \
@@ -634,10 +633,10 @@ linux {
                 -lvorbisfile \
                 -lX11 \
                 -lpthread \
-				-lrt
+                -lrt
                 #-llua52
 }
 
 DISTFILES += \
     ESToolkit.qdocconf \
-	ESToolkit.qhcp
+    ESToolkit.qhcp

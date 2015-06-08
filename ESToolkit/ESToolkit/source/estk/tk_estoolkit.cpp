@@ -299,13 +299,13 @@ void ESToolkit::_libGyroInitialize(void) {
 
 #endif
 #endif
-	GYSysParams sysParams = {new std::function<void()>([&](void) {
+    GYSysParams sysParams = {new std::function<void()>([&](void) {
                         _gitlabDialog->show();
-				  }),
-					[](void* ptr) {
+                  }),
+                    [](void* ptr) {
                                  exit(1);
                         //(*static_cast<std::function<void()>*>(ptr))();
-				  }
+                  }
             };
     gySysInit(&sysParams);
     //gyVidInit(&vidParams);
