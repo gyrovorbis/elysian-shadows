@@ -59,6 +59,7 @@ int main(int argc, char** argv)
     parser.addHelpOption();
     parser.addVersionOption();
 
+    qDebug() << "Current working directory:" << QDir::currentPath();
     QCommandLineOption testOption("project", "Set project working directory", "directory");
     parser.addOption(testOption);
 

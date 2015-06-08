@@ -248,7 +248,7 @@ Project *Assets::loadProject(const QString directory) {
         }
     }
 
-    if(!validateProjectPath(directory)) return nullptr;
+   // if(!validateProjectPath(directory)) return nullptr;
 
     Project *proj = new Project;
 	connectSlots(proj);
@@ -449,10 +449,10 @@ Project* Assets::reloadProject(void) {
 }
 
 bool Assets::validateProjectPath(const QString path) {
-    QDir dir(path);
+    QDir dir(QDir::current());
 
-    if(!dir.exists()) {
-        qWarning() << "Project path does not exist: " << path;
+    if(!dir.cd(path)) {
+        qWarning() << "Could not enter project directory: " << path;
         return false;
     }
 

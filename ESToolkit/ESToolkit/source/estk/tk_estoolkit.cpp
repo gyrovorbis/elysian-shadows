@@ -69,11 +69,8 @@ ESToolkit::ESToolkit(QWidget *parent):
     _ignoreAreaTabChange(false)
 {
     _instance = this;
-    GYFileInitParams fileInitParams = {
-        Q_CSTR(QDir::homePath())
-    };
 
-    assert(gyFileInit(&fileInitParams));
+    assert(gyFileInit(nullptr));
     // VERY IMPROTANT GLOBAL STATE/STATIC INITIALIZATION
         //elysian::Behavior::staticConstructor();
     Debug::getInstance();
@@ -917,7 +914,9 @@ bool ESToolkit::openProjectDir(const QString dir) {
         return false;
     }
 
-    QDir::setCurrent(dir);
+    if(Assets::validateProjectPath(dir)) {
+        QDir::setCurrent(dir);
+    }
 
         auto* viewport = _engineGLView = new EngineGLSceneWidget(this);
 
@@ -956,7 +955,7 @@ bool ESToolkit::openProjectDir(const QString dir) {
 
     _engineGLView->startRenderTimer();
 
-    Project *proj = _assets.loadProject(dir);
+    Project *proj = _assets.loadProject(QDir::currentPath());
     test.success &= (proj != nullptr);
    // _engineGLView->update();
 
