@@ -34,7 +34,7 @@ extern "C" int gyFileInit(const GYFileInitParams*const params) {
         _gyLog(GY_DEBUG_FATAL, "Could not cd BACK into working directory directory: %s", homeDirPath.toStdString().c_str());
     }
 
-    _gyLog(GY_DEBUG_CRITICAL, "CURRENT - %s", QDir::currentPath().toStdString().c_str());
+    //_gyLog(GY_DEBUG_CRITICAL, "CURRENT - %s", QDir::currentPath().toStdString().c_str());
 
     return turfs_init("ESTeam", "ESTk", NULL) == TURFS_RET_OK && retVal;
 }
