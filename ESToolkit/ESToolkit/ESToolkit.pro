@@ -11,7 +11,7 @@ win32 {
 TARGET = ESToolkit
 TEMPLATE = app
 
-#QMAKE_OBJCXXFLAGS_PRECOMPILE += -std=c++11 -stdlib=libc++
+QMAKE_OBJCXXFLAGS_PRECOMPILE += -std=c++11 -stdlib=libc++
 QT		+= sql gui opengl network help
 tests {
     QT+= testlib
@@ -94,7 +94,7 @@ INCLUDEPATH += ../../AssetIO/include/component \
     ../../ESGamma/lib/include \
     ../../Spine/include
 
-#PRECOMPILED_HEADER = include/tk_precompiled_headers.h
+PRECOMPILED_HEADER = include/tk_precompiled_headers.h
 
 SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../AssetIO/source/component/elysian_audio_source_base.cpp \
@@ -418,7 +418,7 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     include/estk/tk_timer_system.h \
     include/core/tk_gitlab_manager.h \
     include/dialog/tk_gitlab_dialog.h \
-   # include/tk_precompiled_headers.h \
+    include/tk_precompiled_headers.h \
     include/core/tk_network_access_manager.h
 
 
@@ -560,17 +560,17 @@ else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../Spine/qtcreator/Spine/libSpine.a
 
 tests {
 
-    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../v-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/release/ -lUnitTests
-    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../qtcreator/build-ESDev-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/debug/ -lUnitTests
+    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../UnitTests/release/ -lUnitTests
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../UnitTests/debug/ -lUnitTests
     else:unix: LIBS += -L$$OUT_PWD/../../UnitTests -lUnitTests
 
     INCLUDEPATH += $$PWD/../../UnitTests
     DEPENDPATH += $$PWD/../../UnitTests
 
-    win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../qtcreator/build-ESDev-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/release/libUnitTests.a
-    else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../qtcreator/build-ESDev-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/debug/libUnitTests.a
-    else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../qtcreator/build-ESDev-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/release/UnitTests.lib
-    else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../qtcreator/build-ESDev-Desktop_Qt_5_4_1_clang_64bit-Debug/UnitTests/debug/UnitTests.lib
+    win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../UnitTests/release/libUnitTests.a
+    else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../UnitTests/debug/libUnitTests.a
+    else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../UnitTests/release/UnitTests.lib
+    else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../UnitTests/debug/UnitTests.lib
     else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../UnitTests/libUnitTests.a
 
 }
