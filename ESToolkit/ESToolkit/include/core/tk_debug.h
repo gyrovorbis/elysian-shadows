@@ -3,9 +3,8 @@
 
 #include <elysian_debug_base.hpp>
 #include <QObject>
-#include <fstream>
 
-#define DEBUG_LOG_PATH                  "toolkit_debug.txt"
+#define GY_FILE_QT_DEBUG_DIR            "logs"
 #define DEBUG_QT_BUFF_SIZE              50000
 #define DEBUG_LOG_POLL_MSEC             500
 
@@ -99,7 +98,6 @@ private:
     static QTextEdit*           _prompt;
     static bool                 _pendingError;
     static unsigned             _stackDepth;
-    static std::ofstream*       _outfile;
     static bool                 _filterEnabled[SOURCE_MAX];
     static QVector<QString>     _commandHistory;
     static int                  _commandHistoryIndex;

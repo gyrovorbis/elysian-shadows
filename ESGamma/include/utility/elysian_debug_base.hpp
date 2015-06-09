@@ -19,11 +19,15 @@
 #define ELYSIAN_DEBUG_AREA_DEFAULT			ASSETS_VROOT "/level/Loren_Beta2/area/Uptown"
 #define ELYSIAN_DEBUG_PREFIX_STACK          "\t"
 #define ELYSIAN_DEBUG_PREFIX_FATAL          "! - "
-#define ELYSIAN_DEBUG_PREFIX_CRITICAL       "! - "
+#define ELYSIAN_DEBUG_PREFIX_CRITICAL       "* - "
 
-#define dbgprintf(...)                      do { \
-                                                Debug::printf(Debug::VERBOSE, __VA_ARGS__); \
+#define ELYSIAN_DEBUG_LOG_PRINTF(level, ...) do { \
+                                                Debug::printf(Debug::level, __VA_ARGS__); \
                                             } while(0)
+
+#define dbgprintf(...)                      ELYSIAN_DEBUG_LOG_PRINTF(VERBOSE,   __VA_ARGS__)
+#define warnprintf(...)                     ELYSIAN_DEBUG_LOG_PRINTF(CRITICAL,  __VA_ARGS__)
+#define errprintf(...)                      ELYSIAN_DEBUG_LOG_PRINTF(FATAL,     __VA_ARGS__)
 
 #define dbgpush()                           Debug::push()
 #define dbgpop()                            Debug::pop()

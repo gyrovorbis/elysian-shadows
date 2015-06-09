@@ -35,7 +35,6 @@ QTextEdit* TkDebug::_prompt;
 QWidget* TkDebug::_centralWidget;
 bool TkDebug::_pendingError = false;
 unsigned TkDebug::_stackDepth = 0;
-std::ofstream* TkDebug::_outfile;
 constexpr char TkDebug::_srcEnumToStr[TkDebug::SOURCE_MAX][50];
 bool TkDebug::_filterEnabled[TkDebug::SOURCE_MAX] = { true };
 QVector<QString> TkDebug::_commandHistory;
@@ -77,8 +76,6 @@ TkDebug::TkDebug(void) {
     _mutex = new QMutex;
     _pendingQueue = new QQueue<LogEntry>;
 
-    QTimer::singleShot(DEBUG_LOG_POLL_MSEC, &TkDebug::_servicePendingQueue);
-
 /*
     QFont font;
     font.setPointSize(11);
@@ -91,17 +88,29 @@ TkDebug::TkDebug(void) {
     qInstallMessageHandler(&logQ);
 	//Register AssetIO debug interface!
 
-	_outfile = new std::ofstream(DEBUG_LOG_PATH);
-	if(!_outfile->is_open()) qDebug() << "!!!!!- could not open Debug log file for writing!";
+#if 0
+    if(QDir(GY_FILE_QT_DEBUG_DIR).exists() || QDir().mkdir(GY_FILE_QT_DEBUG_DIR)) {
+        QDir debugDir(GY_FILE_QT_DEBUG_DIR);
+        if(debugDir.exists() && QDir::setCurrent(debugDir.path())) {
+            dbgprintf("Creating log files at %s", debugDir.absolutePath().toStdString().c_str());
+        } else {
+            errprintf("Could not cd into debug log file directory: %s", debugDir.path().toStdString().c_str());
+        }
 
-    QDir dir;
-    _debugLogPath = new QString(dir.absoluteFilePath(DEBUG_LOG_PATH));
+    } else {
+        errprintf("Could not access debug log file directory: %s/%s", Q_CSTR(QDir::currentPath()), GY_FILE_QT_DEBUG_DIR);
+    }
+#endif
+    dbgprintf("Creating log files at %s", Q_CSTR(QDir::currentPath()));
+    _debugLogPath = new QString(QDir::currentPath()); //QString(QDir().current().absoluteFilePath(GY_FILE_QT_DEBUG_DIR));
+
+    QTimer::singleShot(DEBUG_LOG_POLL_MSEC, &TkDebug::_servicePendingQueue);
 
 }
 
 TkDebug::~TkDebug(void) {
-    _outfile->close();
-    delete _outfile;
+    delete _mutex;
+    delete _pendingQueue;
 }
 
 /*
@@ -133,7 +142,7 @@ void TkDebug::logQ(QtMsgType type, const QMessageLogContext &context, const QStr
 		break;
 	case QtWarningMsg:
         sprintf(qtDebugBuff, "%s (%s:%u, %s)", msg.toStdString().c_str(), context.file, context.line, context.function);
-		level = VERBOSE;
+        level = CRITICAL;
 		break;
 	case QtCriticalMsg:
         sprintf(qtDebugBuff, "%s (%s:%u, %s)", msg.toStdString().c_str(), context.file, context.line, context.function);
@@ -144,7 +153,6 @@ void TkDebug::logQ(QtMsgType type, const QMessageLogContext &context, const QStr
 		level = FATAL;
 	}
 
-    std::cerr << msg.toStdString() << std::endl;
     Log(level, qtDebugBuff, SOURCE_QT);
 }
 
@@ -294,15 +302,15 @@ void TkDebug::_resizePrompt(void) {
 }
 
 void TkDebug::_postToQueue(const int src, const LEVEL level, const QString text) {
+    _mutex->lock();
+    elysian::DebugBase::writeLog((elysian::DebugBase::SOURCE)src, level, Q_CSTR(text));
+    _pendingQueue->enqueue(LogEntry{ text, level, src, LogEntry::TEXT });
+    _mutex->unlock();
+
 #ifdef ESTK_UNIT_TESTS
     if(level == Debug::CRITICAL) tktest::ESToolkitTest::flagWarning(text);
     else if(level == Debug::FATAL) tktest::ESToolkitTest::flagError(text);
 #endif
-
-    _mutex->lock();
-    _pendingQueue->enqueue(LogEntry{ text, level, src, LogEntry::TEXT });
-    elysian::DebugBase::writeLog((elysian::DebugBase::SOURCE)src, level, Q_CSTR(text));
-    _mutex->unlock();
 }
 
 //could probably move critical section into the loop, but I kind of like doing it in batches better
@@ -345,10 +353,6 @@ void TkDebug::_processLogEntry(const LogEntry& entry) {
     int src             = entry.source;
     const QString msg   = entry.string;
     LEVEL flag          = entry.level;
-
-    //Write to logfile
-        for(unsigned i = 0; i < _stackDepth; ++i) *_outfile << "\t";
-        *_outfile << msg.toStdString() << std::endl;
 
     QBrush brush;
     _prevItem = new QTreeWidgetItem;

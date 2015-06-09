@@ -99,16 +99,22 @@ int main(int argc, char** argv)
         failures += QTest::qExec(obj, testArgs);
     };//testestestests
 
+   //Clear old test data
+    char strBuff[200];
+    int i = 0;
+    do {
+        sprintf(strBuff, "ESTkTestResults%03d.xml", ++i);
+    } while(QFile::exists(strBuff) && QFile::remove(strBuff));
+
+
    QObject *current;
    while(ESToolkitTest::_testQueue.size()) {
-       char strBuff[200];
-       sprintf(strBuff, "ESTkTestResults%03d.xml", ++testCases);
+       sprintf(strBuff, "ESTkTestResults%03d.xml,xml", ++testCases);
 
        (current = ESToolkitTest::_testQueue.takeFirst());
        QStringList testArgs = args;
        testArgs.push_back(QString("-o"));
        testArgs.push_back(QString(strBuff));
-       testArgs.push_back(QString("-xml"));
        ASSERT_TEST(current, testArgs);
    }
 

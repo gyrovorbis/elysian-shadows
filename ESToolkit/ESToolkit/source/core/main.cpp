@@ -15,6 +15,8 @@
 #include <QCommandLineParser>
 #include "elysian_engine.hpp"
 #include "elysian_debug.hpp"
+#include <gyro_file_api.h>
+#include <QDir>
 
 #ifdef ESTK_UNIT_TESTS
 #include <test_estoolkit.h>
@@ -85,15 +87,20 @@ static GYAppCbRet Init(int argc, char **argv) {
     QSplashScreen splash(splashScreen, Qt::WindowStaysOnTopHint);
 
 
-
-
 #ifdef ESTK_UNIT_TESTS
     if(argc != 1) {
         return (GYAppCbRet)tktest::main(argc, argv);
     }
 #endif
+    GYFileInitParams fileParams;
+    strcpy(fileParams.workingDir, Q_CSTR(QDir::homePath()));
+    gyFileInit(&fileParams);
+    QDir outputDir(QDir::current());
+    if(!outputDir.cd(ESTOOLKIT_OUTPUT_DIR) && !outputDir.mkdir(ESTOOLKIT_OUTPUT_DIR)) {
+        qCritical() << QString("Could not set ESTk working directory: [%s]") << QDir().current().filePath(ESTOOLKIT_OUTPUT_DIR);
+    } else QDir::setCurrent(QDir::current().filePath(ESTOOLKIT_OUTPUT_DIR));
 
-ESToolkit w;
+    ESToolkit w;
     //QApplication::setWindowIcon(QIcon(":/estk/images/estk.ico"));
 
 // We don't want to wait for the splash screen whilst debugging. --Sara.

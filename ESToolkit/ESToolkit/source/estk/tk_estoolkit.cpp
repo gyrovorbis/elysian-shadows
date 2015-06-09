@@ -69,8 +69,6 @@ ESToolkit::ESToolkit(QWidget *parent):
     _ignoreAreaTabChange(false)
 {
     _instance = this;
-
-    assert(gyFileInit(nullptr));
     // VERY IMPROTANT GLOBAL STATE/STATIC INITIALIZATION
         //elysian::Behavior::staticConstructor();
     Debug::getInstance();
@@ -901,16 +899,19 @@ void ESToolkit::on_actionFileQuit_triggered() {
 }
 
 bool ESToolkit::openProjectDir(const QString dir) {
-    DbgTest test("ESToolkit::openProjectDir()");
-    if(dir=="") {
-        test.success = false;
+    bool success = true;
+    dbgprintf("ESToolkit::openProjectDir(%s)", Q_CSTR(dir));
+
+    if(dir=="" || dir.isNull()) {
+        success = false;
         return false;
     }
-
+    dbgpush();
 
     if(_assets.getCurrentProject()) {
         QMessageBox::critical(this, "You dun fucked up!", "There's already a project open, asswipe.");
-        test.success = false;
+        success = false;
+        dbgpop();
         return false;
     }
 
@@ -943,11 +944,11 @@ bool ESToolkit::openProjectDir(const QString dir) {
     };
 
 
-    test.success &= gyInputInit(&inputParams);
+    success &= gyInputInit(&inputParams);
    // assert(_engineGLView->context()->isValid());
 
     _engineGLView->makeCurrent();
-    test.success &= glalVidGlewInit();
+    success &= glalVidGlewInit();
 
     _engineGLView->doneCurrent();
 
@@ -956,14 +957,14 @@ bool ESToolkit::openProjectDir(const QString dir) {
     _engineGLView->startRenderTimer();
 
     Project *proj = _assets.loadProject(QDir::currentPath());
-    test.success &= (proj != nullptr);
+    success &= (proj != nullptr);
    // _engineGLView->update();
 
     if(!proj) {
         QString invalidNotice("There's no fucking way that was a valid project directory, cockwheeze.");
         if(isVisible()) QMessageBox::critical(this, "You dun fucked up!", invalidNotice);
         else Debug::printf(Debug::FATAL, "%s", Q_CSTR(invalidNotice));
-        test.success = false;
+        success = false;
         return false;
     }
 
@@ -992,7 +993,7 @@ bool ESToolkit::openProjectDir(const QString dir) {
         //_ui->mapView->setEnabled(true);
     }
 
-    return test.success;
+    return success;
 
     //_ui->mapView->setFocus();
 }
