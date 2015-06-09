@@ -94,14 +94,22 @@ int main(int argc, char** argv)
     ESToolkitTest::enqueueTest(new tktest::TestSmokeProject(project));
 
    int failures = 0;
-   auto ASSERT_TEST = [&failures, args](QObject* obj) {
-     failures += QTest::qExec(obj, args);
-   };//testestestests
+   int testCases = 0;
+   auto ASSERT_TEST = [&failures](QObject* obj, const QStringList testArgs) {
+        failures += QTest::qExec(obj, testArgs);
+    };//testestestests
 
    QObject *current;
    while(ESToolkitTest::_testQueue.size()) {
+       char strBuff[200];
+       sprintf(strBuff, "ESTkTestResults%03d.xml", ++testCases);
+
        (current = ESToolkitTest::_testQueue.takeFirst());
-       ASSERT_TEST(current);
+       QStringList testArgs = args;
+       testArgs.push_back(QString("-o"));
+       testArgs.push_back(QString(strBuff));
+       testArgs.push_back(QString("-xml"));
+       ASSERT_TEST(current, testArgs);
    }
 
    char buff[7];
