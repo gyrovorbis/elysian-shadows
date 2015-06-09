@@ -10,8 +10,10 @@
 extern "C" {
 #endif
 
+#define GYRO_FILE_API_WORKING_DIR_PATH_SIZE 200
+
 typedef struct _GYFileInitParams {
-    const char* workingDir;
+    char workingDir[GYRO_FILE_API_WORKING_DIR_PATH_SIZE];
 
 } GYFileInitParams;
 
