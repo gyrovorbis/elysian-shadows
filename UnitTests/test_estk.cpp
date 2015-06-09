@@ -54,6 +54,8 @@ int main(int argc, char** argv)
 {
     Debug::setLevel(Debug::OFF);
     ESToolkitTest::initialize();
+
+
     QCommandLineParser parser;
     parser.setApplicationDescription("ESToolkit Command-Line Mode");
     parser.addHelpOption();
@@ -64,16 +66,23 @@ int main(int argc, char** argv)
     parser.addOption(testOption);
 
     QStringList args = QApplication::arguments();
-    parser.process(args);
+    //parser.process(args);
 
-    QString project = parser.value(testOption);
+    QString project;
 
     for(auto it = args.begin(); it != args.end();  ++it) {
-        if(*it == "--project") { args.erase(it); break; }
+        if(*it == "--project") {
+            project = (*++it);
+            args.erase(it);
+            break;
+        }
     }
 
-    for(auto it = args.begin(); it != args.end(); ++it) {
-        if(*it == project) { args.erase(it); break; }
+    for(auto it = args.begin(); it != args.end();  ++it) {
+        if(*it == "--project") {
+            args.erase(it);
+            break;
+        }
     }
 
 
