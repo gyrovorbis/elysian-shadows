@@ -1,5 +1,5 @@
-#ifndef GYRO_SYSTEM_H
-#define GYRO_SYSTEM_H
+#ifndef GYRO_SYSTEM_API_H
+#define GYRO_SYSTEM_API_H
 
 #include "gyro_platform.h"
 
@@ -7,11 +7,37 @@
 extern "C" {
 #endif
 
-#define GYRO_LIB_VERSION "1.5.7"
+#define GYRO_LIB_VERSION "1.5.8"
+
+#define _GYRO_STRINGIFY_MACRO(a) #a
+#define GYRO_STRINGIFY_MACRO(a) _GYRO_STRINGIFY_MACRO(a)
+
+#ifndef GYRO_BUILD_NODE
+#   define LOCAL               LOCAL    //Don't even ask.
+#   define GYRO_BUILD_NODE     LOCAL
+#endif
+#ifndef GYRO_BUILD_JOB
+#   define GYRO_BUILD_JOB      UNKNOWN
+#endif
+#ifndef GYRO_BUILD_NUMBER
+#   define GYRO_BUILD_NUMBER   UNKNOWN
+#endif
+#ifndef GYRO_BUILD_BRANCH
+#   define GYRO_BUILD_BRANCH   UNKNOWN
+#endif
+#ifndef GYRO_BUILD_COMMIT
+#   define GYRO_BUILD_COMMIT   UNKNOWN
+#endif
+
+typedef struct GYSysParams {
+    void*   context;
+    void    (*segFaultHandler)(void*);
+
+} GYSysParams;
 
 typedef enum _GY_DEBUG_LEVEL { GY_DEBUG_VERBOSE, GY_DEBUG_CRITICAL, GY_DEBUG_FATAL, GY_DEBUG_OFF } GY_DEBUG_LEVEL;
 
-int gySysInit(void);
+int gySysInit(const GYSysParams*const params);
 int gySysUninit(void);
 
 int gyDebugInit(void);

@@ -1,5 +1,5 @@
-#ifndef GYRO_FILE_H
-#define GYRO_FILE_H
+#ifndef GYRO_FILE_API_H
+#define GYRO_FILE_API_H
 
 #include <stddef.h>
 #include <sys/types.h>
@@ -9,6 +9,14 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define GYRO_FILE_API_WORKING_DIR_PATH_SIZE 200
+
+typedef struct _GYFileInitParams {
+    char workingDir[GYRO_FILE_API_WORKING_DIR_PATH_SIZE];
+
+} GYFileInitParams;
+
 
 typedef enum _GYPathType {
     /*
@@ -31,7 +39,7 @@ typedef enum _GYPathType {
 
 typedef struct _GYFile GYFile;
 
-int gyFileInit(const char *author, const char *name);
+int gyFileInit(const GYFileInitParams*const params);
 int gyFileQuit(void);
 
 int gyFileResolvePath(GYPathType path_type, char **path, size_t *len);

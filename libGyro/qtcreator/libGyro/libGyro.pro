@@ -1,6 +1,6 @@
 include(../../../qtcreator/ESDev/ESDev.pri)
 TEMPLATE = lib
-QT		+= widgets opengl
+QT		+= opengl
 CONFIG += staticlib
 CONFIG += console
 #CONFIG += opengl
@@ -99,7 +99,9 @@ HEADERS += \
     ../../include/glal/gyro_shaders_glal.h \
     ../../include/glal/gyro_video_glal.h \
     ../../include/glal/gyro_gl.h \
-    ../../include/glal/gyro_al.h
+    ../../include/glal/gyro_al.h \
+    ../../include/glal/gyro_al.h \
+    ../../include/common/turfs.h
 
 SOURCES += \
 #    ../../source/x86/gyro_video_x86.c \
@@ -122,11 +124,11 @@ SOURCES += \
 #    ../../source/common/gyro_matrix_stack.c \
 #    ../../source/common/gyro_asset_bank.c \
 #    ../../source/glal/gyro_lighting_glal.c \
+	../../source/qt/gyro_file_qt.cpp \
     ../../source/common/turfs_common.c \
     ../../source/common/turfs_strings.c \
     ../../source/x86/turfs_file_stdio.c \
     ../../source/common/gyro_file.c \
-    ../../source/x86/gyro_file_x86.c \
     ../../source/glal/gyro_lighting_glal.c \
     ../../source/glal/gyro_shaders_glal.c \
     ../../source/glal/gyro_video_glal.c \
@@ -148,6 +150,6 @@ SOURCES += \
     ../../source/qt/gyro_debug_qt.cpp \
     ../../source/qt/gyro_input_qt.cpp \
     ../../source/qt/gyro_timer_qt.cpp \
-    ../../source/qt/gyro_video_qt.cpp
+	../../source/qt/gyro_video_qt.cpp
 
 
