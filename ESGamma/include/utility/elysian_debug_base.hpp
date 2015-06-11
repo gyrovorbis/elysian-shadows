@@ -17,8 +17,8 @@
 #define ELYSIAN_DEBUG_LEVEL_DEFAULT			ASSETS_VROOT "/level/Loren_Beta2"
 #define ELYSIAN_DEBUG_AREA_DEFAULT			ASSETS_VROOT "/level/Loren_Beta2/area/Uptown"
 #define ELYSIAN_DEBUG_PREFIX_STACK          "\t"
-#define ELYSIAN_DEBUG_PREFIX_FATAL          "! - "
-#define ELYSIAN_DEBUG_PREFIX_CRITICAL       "* - "
+#define ELYSIAN_DEBUG_PREFIX_FATAL          "X - "
+#define ELYSIAN_DEBUG_PREFIX_CRITICAL       "! - "
 
 #define ELYSIAN_DEBUG_LOG_PRINTF(level, ...) do { \
                                                 Debug::printf(Debug::level, __VA_ARGS__); \
@@ -41,34 +41,30 @@ namespace elysian {
     class Engine;
     class GameInput;
 
-    struct DbgTest {
-        bool    success = true;
+    struct DbgEvent {
+        unsigned                depth = 0;
 
-                DbgTest(const char*const name);
-                ~DbgTest(void);
+                                DbgEvent(const char*const string, ...);
+                                ~DbgEvent(void);
     };
+
 
     class DebugBase: public System {
 	public:
-        enum SOURCE { LIBGYRO, ENGINE, ASSETIO, LUA };
-		enum LEVEL { VERBOSE, CRITICAL, FATAL, OFF };
-		enum ADV_LOG_WRAP { ADV_LOG_ALL, ADV_LOG_LUA, ADV_LOG_OFF, ADV_LOG_MAX };
+        enum SOURCE             { LIBGYRO, ENGINE, ASSETIO, LUA };
+        enum LEVEL              { VERBOSE, CRITICAL, FATAL, OFF };
+        enum ADV_LOG_WRAP       { ADV_LOG_ALL, ADV_LOG_LUA, ADV_LOG_OFF, ADV_LOG_MAX };
 
     protected:
         //Taken from elysian_asset.hpp cmd-line arg list
         struct CmdLineArgs {
-            char level[100];	//	= ELYSIAN_DEBUG_LEVEL_DEFAULT;
-            char area[100];		//	= ELYSIAN_DEBUG_AREA_DEFAULT;	/* You can't do this crap in Linux. */
-            int x			= 0;
-            int y			= 0;
-            int resolution	= 0;
-
-            CmdLineArgs(void)
-                {
-                //	strcpy(level, ELYSIAN_DEBUG_LEVEL_DEFAULT);
-                //	strcpy(area, ELYSIAN_DEBUG_AREA_DEFAULT);
-                }
-        } _cmdLineArgs;
+            char                level[100]          = {0};
+            char                area[100]           = {0};
+            int                 x                   = 0;
+            int                 y                   = 0;
+            int                 resolution          = 0;
+                                CmdLineArgs(void)   = default;
+        }                       _cmdLineArgs;
 
         static unsigned int		_stackDepth;
         static ADV_LOG_WRAP		_advLogWrap;
@@ -78,61 +74,73 @@ namespace elysian {
         bool					_nextFrame;
 
         //Centralized Debug Print/Log Mechanism
-        static void writeLog(const SOURCE source, const LEVEL level, const char* const str);
+        static void             writeLog(const SOURCE source, const LEVEL level, const char* const str);
         //Invoked by LibGyro (callback function)
-        static void libGyroPrintf(const GY_DEBUG_LEVEL level, const char* const str);
+        static void             libGyroPrintf(const GY_DEBUG_LEVEL level, const char* const str);
 
     public:
         //Invoked by Engine
-        static void printf(const LEVEL level, const char *const string, ...);
+        static void             printf(const LEVEL level, const char *const string, ...);
         //Invoked by Lua (always VERBOSE, not silenced with the rest)
-        static void luaPrint(const char *string, const LEVEL lev = VERBOSE);
+        static void             luaPrint(const char *string, const LEVEL lev = VERBOSE);
 
-        static void push(void) { ++_stackDepth; }
-        static void pop(const bool /*success=true*/) { --_stackDepth; }
+        static void             push(void);
+        static void             pop(const unsigned count=1);
+        static unsigned         getStackDepth(void);
 
-
-
-	private:
-
-        static Engine* _engine;
-        static LEVEL _level;
     protected:
-        DebugBase(void);
+
+        const static
+        GYDebugCallbacks        _gyDbgCallbacks;
+
+        static Engine*          _engine;
+        static LEVEL            _level;
+
+                                DebugBase(void);
     public:
-
+                                ~DebugBase(void);
         //Yes, bitch. It's a fucking singleton! Our one and only.
-        static DebugBase& getInstance(void) {
-            static DebugBase instance;
-            return instance;
-        }
+        static DebugBase&       getInstance(void);
 
-        static void initialize(void);
+        static void             initialize(void);
+        static void             setEngine(Engine &eng);
+        static void             setLevel(const LEVEL level);
 
-        //static void setAdvLogWrap(const bool val=true) { _advLogWrap = val; }
-        static void setEngine(Engine &eng) { _engine = &eng; }
-        static void setLevel(const LEVEL level) { _level = level; }
+        void                    update(void);
+        void                    processInput(GameInput &input);
+        void                    render(void);
+        void                    renderOverlay(void);
+        bool                    sandboxInit(void);
 
-        ~DebugBase(void);
+        bool                    initializeEngine(void);
+        bool                    parseArguments(void);
+        bool                    parseArguments(int argc, char *argv[]);
 
-        void update(void);
-        void processInput(GameInput &input);
-        void render(void);
-        void renderOverlay(void);
-        bool sandboxInit(void);
+        void                    setNextFrame(const bool val=true);
+        bool                    getNextFrame(void) const;
 
-        bool initializeEngine(void);
-        bool parseArguments(void);
-        bool parseArguments(int argc, char *argv[]);
-
-        void setNextFrame(const bool val=true) { _nextFrame = val; }
-        bool getNextFrame(void) const { return _nextFrame; }
-
-		const CmdLineArgs& getCmdLineArgs(void) const { return _cmdLineArgs; }
+        const CmdLineArgs&      getCmdLineArgs(void) const;
 	};
 
 
 
+
+
+
+
+    //=========INLINEZ=======
+    inline void DebugBase::push(void) { ++_stackDepth; }
+    inline void DebugBase::pop(const unsigned count) { _stackDepth -= count; }
+    inline unsigned DebugBase::getStackDepth(void) { return _stackDepth; }
+    inline DebugBase& DebugBase::getInstance(void) {
+        static DebugBase instance;
+        return instance;
+    }
+    inline void DebugBase::setEngine(Engine &eng) { _engine = &eng; }
+    inline void DebugBase::setLevel(const LEVEL level) { _level = level; }
+    inline const DebugBase::CmdLineArgs& DebugBase::getCmdLineArgs(void) const { return _cmdLineArgs; }
+    inline void DebugBase::setNextFrame(const bool val) { _nextFrame = val; }
+    inline bool DebugBase::getNextFrame(void) const { return _nextFrame; }
 }
 
 #endif

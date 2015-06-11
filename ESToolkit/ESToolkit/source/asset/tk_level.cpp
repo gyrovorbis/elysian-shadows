@@ -311,7 +311,7 @@ bool TkLevel::activateByArea(Area *const area) {
 
 bool TkLevel::deactivate(void) {
     if(!_active) return true;
-    Debug::Logf(Debug::VERBOSE, "Level[%s].deactivate()\n", getNodeName().toStdString().c_str());
+    Debug::Logf(Debug::VERBOSE, "Level[%s].deactivate()", getNodeName().toStdString().c_str());
     /* If there is anything that is not persistent to be removed from the
        object/tilesheet scenes, do it now.
     */

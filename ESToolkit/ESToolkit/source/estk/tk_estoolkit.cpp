@@ -85,7 +85,7 @@ ESToolkit::ESToolkit(QWidget *parent):
     "LINUX";
 #endif
     _libGyroInitialize();
-    Debug::Logf(Debug::VERBOSE, "Initializing %s [%s]", verString.toStdString().c_str(), platString);
+    DbgEvent event("Initializing %s [%s]", verString.toStdString().c_str(), platString);
 
     _ui->setupUi(this);
     setWindowTitle(verString);
@@ -522,6 +522,7 @@ void ESToolkit::WriteSettings()
 
 void ESToolkit::ReadSettings()
 {
+    DbgEvent event("Restoring user settings.");
     toggleProjectActions(true);
     _assetDockWidget->setEnabled(false);
     _entityDockWidget->setEnabled(false);
@@ -564,7 +565,7 @@ void ESToolkit::ReadSettings()
     if(!settings.value("gitLabPrivateToken").isNull()) {
         _gitlabDialog->setHostName(settings.value("gitLabHostName").toString());
         _gitlabDialog->setPrivateToken(settings.value("gitLabPrivateToken").toString());
-        _gitlabDialog->authenticate();
+        _gitlabDialog->authenticate(true);
         _gitlabDialog->setProjectId(settings.value("gitLabProjectId").toInt());
 
     }
@@ -897,19 +898,17 @@ void ESToolkit::on_actionFileQuit_triggered() {
 }
 
 bool ESToolkit::openProjectDir(const QString dir) {
+    DbgEvent dbg("ESToolkit::openProjectDir(%s)", Q_CSTR(dir));
     bool success = true;
-    dbgprintf("ESToolkit::openProjectDir(%s)", Q_CSTR(dir));
 
     if(dir=="" || dir.isNull()) {
         success = false;
         return false;
     }
-    dbgpush();
 
     if(_assets.getCurrentProject()) {
         QMessageBox::critical(this, "You dun fucked up!", "There's already a project open, asswipe.");
         success = false;
-        dbgpop();
         return false;
     }
 

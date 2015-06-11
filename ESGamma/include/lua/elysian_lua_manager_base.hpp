@@ -174,6 +174,7 @@ namespace elysian {
             lua_insert(*_mainState, 1);
         }
         if((_errorCode = lua_pcall(*_mainState, nargs, nresults, script? 1 : 0)) != 0) {
+            DbgEvent event("Lua Exception");
             if(script) {
                 lua_remove(*_mainState, 1);
 				script->setError();

@@ -60,13 +60,14 @@ bool EngineGLSceneWidget::isPlaying(void) const { return getAssets()->getEngine(
 
 
 void EngineGLSceneWidget::initializeGL(void) {
+    DbgEvent event("Initializing OpenGL");
    // initializeOpenGLFunctions();
  //   auto* con = context();
   //  assert(con->isValid());
   //  makeCurrent();
    // initializeGLFunctions();
    // doneCurrent();
-    qDebug() << "INITGL" << QOpenGLContext::currentContext();
+    qDebug() << QOpenGLContext::currentContext();
 
     //unsigned parentWidth    = parentWidget()->size().width();
     //unsigned parentHeight   = parentWidget()->size().height();
@@ -79,15 +80,15 @@ makeCurrent();
      if(getAssets()->getEngine()) getAssets()->getEngine()->getCameraSys()->initializeProjMatrix();
 
 	// auto* ctx = QOpenGLContext::currentContext();
-	// if(ctx && ctx->hasExtension(QByteArrayLiteral("GL_KHR_debug"))) {
-		 Debug::Logf(Debug::VERBOSE, "Initializing OpenGL debug logger.");
+    // if(ctx && ctx->hasEx tension(QByteArrayLiteral("GL_KHR_debug"))) {
+
          _glLogger = new QOpenGLDebugLogger(this);
          connect(_glLogger, &QOpenGLDebugLogger::messageLogged, this, &EngineGLSceneWidget::_onGLMessageLogged);
 		 if(_glLogger->initialize()) {
 			 Debug::Logf(Debug::VERBOSE, "OpenGL debug logger initialized successfullly.");
 			 _glLogger->startLogging();
 		 } else {
-			 Debug::Logf(Debug::VERBOSE, "OpenGL debug logger could not be initialized.");
+             Debug::Logf(Debug::CRITICAL, "OpenGL debug logger could not be initialized.");
 		 }
 
 	// } else {

@@ -260,13 +260,16 @@ Project *Assets::loadProject(const QString directory) {
     elysian::Behavior::staticConstructor();
     elysian::Debug::getInstance().setEngine(*_engine);
 
-    _engine = new elysian::Engine;
-    elysian::Debug::setEngine(*_engine);
+    {
+        DbgEvent event("Initializing ESGamma engine");
+        _engine = new elysian::Engine;
+        elysian::Debug::setEngine(*_engine);
 
 
-    _engine->loadAssets();
-    elysian::Debug::getInstance().sandboxInit();
-    _engine->setEngineState(elysian::System::ENGINE_ESTK_STOP);
+        _engine->loadAssets();
+        elysian::Debug::getInstance().sandboxInit();
+        _engine->setEngineState(elysian::System::ENGINE_ESTK_STOP);
+    }
 
     Q_EMIT engineInitialize();
 

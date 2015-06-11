@@ -42,20 +42,31 @@ namespace elysian {
 
 //======STATIC MEMBERS=====
 
-FILE*				DebugBase::_dbgFile;
-FILE*				DebugBase::_luaDbgFile;
-Engine*				DebugBase::_engine = nullptr;
-unsigned int		DebugBase::_stackDepth = 0;
-Debug::LEVEL		DebugBase::_level = ELYSIAN_DEBUG_LOG_LEVEL_DEFAULT;
-Debug::ADV_LOG_WRAP DebugBase::_advLogWrap = Debug::ADV_LOG_OFF;
+FILE*                       DebugBase::_dbgFile;
+FILE*                       DebugBase::_luaDbgFile;
+Engine*                     DebugBase::_engine          = nullptr;
+unsigned int                DebugBase::_stackDepth      = 0;
+Debug::LEVEL                DebugBase::_level           = ELYSIAN_DEBUG_LOG_LEVEL_DEFAULT;
+Debug::ADV_LOG_WRAP         DebugBase::_advLogWrap      = Debug::ADV_LOG_OFF;
+const GYDebugCallbacks      DebugBase::_gyDbgCallbacks  =  {
+                                &libGyroPrintf,
+                                &Debug::push,
+                                &Debug::pop
+                            };
 
-DbgTest::DbgTest(const char*const string) {
-    Debug::printf(Debug::VERBOSE, string);
+DbgEvent::DbgEvent(const char*const string, ...) {
+    char buffer[GYRO_PRINTF_BUFFER_SIZE];
+    va_list argptr;
+    va_start(argptr,string);
+    vsprintf(buffer, string, argptr);
+    va_end(argptr);
+    depth = Debug::getStackDepth();
+    Debug::printf(Debug::VERBOSE, buffer);
     Debug::push();
 }
 
-DbgTest::~DbgTest(void) {
-    Debug::pop(success);
+DbgEvent::~DbgEvent(void) {
+    Debug::pop(Debug::getStackDepth()-depth);
 }
 
 //Invoked by LibGyro (callback function)
@@ -150,7 +161,7 @@ DebugBase::DebugBase(void):
 	_nextFrame(true)
 {
 	//Register debug callback with LibGyro
-	gySysDebugEnable(ELYSIAN_DEBUG_LIBGYRO_LEVEL_DEFAULT, &libGyroPrintf);
+    gySysDebugEnable(ELYSIAN_DEBUG_LIBGYRO_LEVEL_DEFAULT, &_gyDbgCallbacks);
 	//Register pointer to asset debug interface with AssetIO
 #if !defined(ANDROID)
 	_dbgFile = fopen(ELYSIAN_DEBUG_FILE, "w");
@@ -732,8 +743,8 @@ bool DebugBase::parseArguments(int argc, char *argv[]) {
 
 
 bool DebugBase::initializeEngine(void) {
-	if(_cmdLineArgs.level) _engine->_levelSystem->switchLevel(_cmdLineArgs.level);
-	if(_cmdLineArgs.area) _engine->_levelSystem->switchArea(_cmdLineArgs.area);
+    if(_cmdLineArgs.level[0]) _engine->_levelSystem->switchLevel(_cmdLineArgs.level);
+    if(_cmdLineArgs.area[0]) _engine->_levelSystem->switchArea(_cmdLineArgs.area);
 	return true;
 }
 

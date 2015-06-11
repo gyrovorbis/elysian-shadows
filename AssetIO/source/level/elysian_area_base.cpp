@@ -230,7 +230,7 @@ bool AreaBase::loadMap(const char *const filename) {
     dbgpush();
 
     if (!gyFileOpen(filename, "rb", &fp)) {
-        Debug::printf(Debug::CRITICAL, "FAILURE!");
+        Debug::printf(Debug::FATAL, "FAILURE!");
         dbgpop();
         return false;
     }

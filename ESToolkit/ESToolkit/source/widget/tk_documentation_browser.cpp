@@ -31,7 +31,7 @@ QVariant HelpBrowser::loadResource(int type, const QUrl &name){
 HelpDockWidget::HelpDockWidget(QWidget */*parent*/) {
 
 #ifndef TOOLKIT_DOCUMENTATION_RESOURCES
-    dbgprintf("WARNING: ESToolkit was compiled without documentation resource files.");
+    warnprintf("This build was compiled without documentation resource files!");
 
 #else
     dbgprintf("Expanding ESToolkit User Manual files.");

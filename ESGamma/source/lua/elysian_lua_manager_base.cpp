@@ -363,8 +363,7 @@ bool LuaManagerBase::unloadScript(LuaScript &script) {
 }
 
 bool LuaManagerBase::initialize(void) {
-    Debug::printf(Debug::VERBOSE, "LuaManagerBase::initialize() - Initializing main Lua state.");
-    Debug::push();
+    DbgEvent event("Initializing Lua virtual machine.");
 
     _mainState = new OOLUA::Script;
     Debug::printf(Debug::VERBOSE, "Opening standard libs");
@@ -373,8 +372,6 @@ bool LuaManagerBase::initialize(void) {
     runString(_rPrint);
     runScriptSandbox(ELYSIAN_LUA_MANAGER_SERIALIZE_SCRIPT_PATH);
     LuaManager::_registerWrappers();
-
-    Debug::pop();
     return true;
 }
 

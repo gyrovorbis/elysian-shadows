@@ -18,7 +18,7 @@ class QTextEdit;
 class QMutex;
 class QTimer;
 
-typedef elysian::DbgTest DbgTest;
+typedef elysian::DbgEvent DbgEvent;
 
 class TkDebug: public QObject, public elysian::DebugBase {
     Q_OBJECT
@@ -41,7 +41,7 @@ public:
     static void logQ(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
     static void push(void);
-    static void pop(const bool success=true);
+    static void pop(const unsigned count=0);
 
     static TkDebug& getInstance(void) {
         if(!_window) _window = new TkDebug;

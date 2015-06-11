@@ -72,7 +72,7 @@ static int _loadWavFile(const char* filename, ALuint* buffer, ALsizei* size,
     int alErrorCode;
 
     if (!gyFileOpen(filename, "rb", &soundFile)) {
-        _gyLog(GY_DEBUG_CRITICAL, "! - Could not open WAV file - %s", filename);
+        _gyLog(GY_DEBUG_WARNING, "! - Could not open WAV file - %s", filename);
         return 0;
     }
 
@@ -89,7 +89,7 @@ static int _loadWavFile(const char* filename, ALuint* buffer, ALsizei* size,
          riff_header.format[2] != 'V' ||
          riff_header.format[3] != 'E') {
         gyFileClose(&soundFile);
-        _gyLog(GY_DEBUG_CRITICAL, "! - Invalid RIFF/WAVE tag - %s", filename);
+        _gyLog(GY_DEBUG_WARNING, "! - Invalid RIFF/WAVE tag - %s", filename);
         return 0;
     }
 
@@ -101,7 +101,7 @@ static int _loadWavFile(const char* filename, ALuint* buffer, ALsizei* size,
         wave_format.subChunkID[2] != 't' ||
         wave_format.subChunkID[3] != ' ') {
         gyFileClose(&soundFile);
-        _gyLog(GY_DEBUG_CRITICAL, "! - Invalid fmt tag - %s", filename);
+        _gyLog(GY_DEBUG_WARNING, "! - Invalid fmt tag - %s", filename);
         return 0;
     }
 
@@ -117,7 +117,7 @@ static int _loadWavFile(const char* filename, ALuint* buffer, ALsizei* size,
         wave_data.subChunkID[2] != 't' ||
         wave_data.subChunkID[3] != 'a') {
         gyFileClose(&soundFile);
-        _gyLog(GY_DEBUG_CRITICAL, "! - Invalid data tag - %s", filename);
+        _gyLog(GY_DEBUG_WARNING, "! - Invalid data tag - %s", filename);
         return 0;
     }
 
@@ -126,7 +126,7 @@ static int _loadWavFile(const char* filename, ALuint* buffer, ALsizei* size,
 
     // Read in the sound data into the soundData variable
     if (!gyFileRead(soundFile, data, wave_data.subChunk2Size, NULL)) {
-        _gyLog(GY_DEBUG_CRITICAL, "! - Could not read data - %s", filename);
+        _gyLog(GY_DEBUG_WARNING, "! - Could not read data - %s", filename);
         gyFileClose(&soundFile);
         return 0;
     }
@@ -152,7 +152,7 @@ static int _loadWavFile(const char* filename, ALuint* buffer, ALsizei* size,
     //create our openAL buffer and check for success
     alGenBuffers(1, buffer);
     if((alErrorCode = alGetError()) != AL_NO_ERROR) {
-        _gyLog(GY_DEBUG_CRITICAL, "! - alGenBuffers() failure - %s", _openALError(alErrorCode));
+        _gyLog(GY_DEBUG_WARNING, "! - alGenBuffers() failure - %s", _openALError(alErrorCode));
         gyFileClose(&soundFile);
         return 0;
     }
@@ -162,7 +162,7 @@ static int _loadWavFile(const char* filename, ALuint* buffer, ALsizei* size,
     alBufferData(*buffer, *format, (void*)data,
                  *size, *frequency);
     if((alErrorCode = alGetError()) != AL_NO_ERROR) {
-        _gyLog(GY_DEBUG_CRITICAL, "! - alBufferData() failure - %s", _openALError(alErrorCode));
+        _gyLog(GY_DEBUG_WARNING, "! - alBufferData() failure - %s", _openALError(alErrorCode));
         gyFileClose(&soundFile);
         return 0;
     }

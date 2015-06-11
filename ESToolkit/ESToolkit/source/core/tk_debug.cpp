@@ -17,6 +17,7 @@
 #include <QMutex>
 #include <QQueue>
 #include <QTimer>
+#include <QFontDatabase>
 //ESTK
 #include "elysian_debug.hpp"
 #include "elysian_lua_manager.hpp"
@@ -52,6 +53,7 @@ TkDebug::TkDebug(void) {
     _centralWidget->setLayout(_vertLayout);
 
 	_treeWidget = new QTreeWidget;
+    _treeWidget->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
     _treeWidget->setAutoScroll(false);
 	_treeWidget->setColumnCount(2);
 	QStringList labels;
@@ -66,6 +68,7 @@ TkDebug::TkDebug(void) {
 	_vertLayout->addWidget(_treeWidget);
 
     _prompt = new QTextEdit;
+    _prompt->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
     _prompt->installEventFilter(this);
     _vertLayout->addWidget(_prompt);
     _resizePrompt();
@@ -167,8 +170,8 @@ void TkDebug::push(void) {
 #endif
 }
 
-void TkDebug::pop(const bool success) {
-    elysian::DebugBase::pop(success);
+void TkDebug::pop(const unsigned count) {
+    elysian::DebugBase::pop(count);
     _mutex->lock();
     _pendingQueue->enqueue(LogEntry { "POP", VERBOSE, TOOLKIT, LogEntry::POP });
 
@@ -381,19 +384,20 @@ void TkDebug::_processLogEntry(const LogEntry& entry) {
     if(flag == VERBOSE && !_filterEnabled[src]) _prevItem->setHidden(true);
 
     //ths is why shit is so slow. Retarded time complexity
-    if(flag >= Debug::CRITICAL && src == LUA) {
+    if(flag >= Debug::CRITICAL) {
         _pendingError = true;
+
         QTreeWidgetItem *it = _prevItem;
+        brush = QBrush(flag == Debug::FATAL? Qt::darkRed : Qt::darkYellow);
+        it->setForeground(0, brush);
+        it->setForeground(1, brush);
         do {
-            brush = QBrush(Qt::darkRed);
-            it->setForeground(0, brush);
-            it->setForeground(1, brush);
             it->setExpanded(true);
-            it = it->parent();
+            it = (flag == Debug::FATAL)? it->parent() : nullptr;
         } while(it);
 
-        _prevItem->setSelected(true);
-        _treeWidget->scrollToItem(_prevItem);
+        if(flag == Debug::FATAL) _prevItem->setSelected(true);
+        //_treeWidget->scrollToItem(_prevItem);
 
         //If we've returned to the top level with a pending error,
         //pop the log for the user to see.

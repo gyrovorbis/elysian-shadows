@@ -248,6 +248,8 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
 
     static int once = 0;
     if(!once) {
+        _gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro Video API.");
+        _gyPush();
 
         glalLoadDefaultShaders();
         gyVidSetDefaultShaderProgram();
@@ -272,6 +274,8 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
             &glalLightingShader,
             &glalShadowMapShader
         };
+
+        _gyLog(GY_DEBUG_VERBOSE, "Creating VAOs and VBOs.");
 
         glGenVertexArrays(1, &_defaultVao);
         gyVidVertexArrayBind(-1);
@@ -308,6 +312,8 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         once = 1;
         gyVidVertexArrayBind(0);
   //      glalVidBindDefaultFbo();
+
+        _gyPop(1);
     }
 
 

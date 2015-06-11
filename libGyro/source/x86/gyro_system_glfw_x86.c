@@ -67,10 +67,10 @@ static void _checkCPUCapabilities(void) {
     }
 
     if(!SSE) {
-        _gyLog(GY_DEBUG_FATAL, "\tSSE CPU Support Not Detected! Prepare for crash... and maybe consider a processor from this decade.");
+        _gyLog(GY_DEBUG_ERROR, "SSE CPU Support Not Detected! Prepare for crash... and maybe consider a processor from this decade.");
         //exit(0);
     } else {
-        _gyLog(GY_DEBUG_VERBOSE, "\tSSE CPU Extensions detected! Fast-ass math enabled!");
+        _gyLog(GY_DEBUG_VERBOSE, "SSE CPU Extensions detected! Fast-ass math enabled!");
     }
 }
 
@@ -90,6 +90,7 @@ static GYSysParams _sysParams;
 void gyDebugSigInit(void);
 
 int gySysInit(const GYSysParams*const params) {
+    char strBuff[40];
     //gyDebugInit();
 
   const char* platString =
@@ -101,14 +102,20 @@ int gySysInit(const GYSysParams*const params) {
   "LINUX";
 #endif
     _gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86_64 [%s] v%s", platString, GYRO_LIB_VERSION);
-#if GYRO_BUILD_NODE == LOCAL
-    _gyLog(GY_DEBUG_VERBOSE, "WARNING: THIS IS AN UNOFFICIAL BUILD!");
+    _gyPush();
+#ifdef GYRO_LOCAL_BUILD
+    _gyLog(GY_DEBUG_WARNING, "THIS IS AN UNOFFICIAL BUILD!");
+#else
+    _gyLog(GY_DEBUG_VERBOSE, "THIS IS AN OFFICIAL BUILD!");
 #endif
-    _gyLog(GY_DEBUG_VERBOSE, "\tGit branch name: \t%s", GYRO_STRINGIFY_MACRO(GYRO_BUILD_BRANCH));
-    _gyLog(GY_DEBUG_VERBOSE, "\tGit commit ID: \t%s", GYRO_STRINGIFY_MACRO(GYRO_BUILD_COMMIT));
-    _gyLog(GY_DEBUG_VERBOSE, "\tBuild number: \t\t%s", GYRO_STRINGIFY_MACRO(GYRO_BUILD_NUMBER));
-    _gyLog(GY_DEBUG_VERBOSE, "\tBuild node: \t%s", GYRO_STRINGIFY_MACRO(GYRO_BUILD_NODE));
-    _gyLog(GY_DEBUG_VERBOSE, "\tBuild timestamp: \t%s %s", __DATE__, __TIME__);
+    _gyPush();
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Git branch name", GYRO_STRINGIFY_MACRO(GYRO_BUILD_BRANCH));
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Git commit ID", GYRO_STRINGIFY_MACRO(GYRO_BUILD_COMMIT));
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Build number", GYRO_STRINGIFY_MACRO(GYRO_BUILD_NUMBER));
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Build node", GYRO_STRINGIFY_MACRO(GYRO_BUILD_NODE));
+    sprintf(strBuff, "%s %s", __DATE__, __TIME__);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Build timestamp", strBuff);
+    _gyPop(1);
 
     gyDebugSigInit();
     _checkCPUCapabilities();
@@ -117,6 +124,8 @@ int gySysInit(const GYSysParams*const params) {
 #endif
 
     memcpy(&_sysParams, params, sizeof(GYSysParams));
+
+    _gyPop(1);
 
     return 1;
 }
@@ -196,13 +205,14 @@ static void gyDebugSigHandler(int sig, siginfo_t* info, void* unused) {
     num = backtrace(buf, 64);
     symbols = backtrace_symbols(buf, num);
 
-    _gyLog(GY_DEBUG_FATAL, "**** BEGIN C/++ BACKTRACE ****");
-    _gyLog(GY_DEBUG_FATAL, "RECIEVED SIGNAL: %s!",
+    _gyLog(GY_DEBUG_ERROR, "**** BEGIN C/++ BACKTRACE ****");
+    _gyPush();
+    _gyLog(GY_DEBUG_ERROR, "RECIEVED SIGNAL: %s!",
            gyDebugSigCodeToStr(info->si_signo, info->si_code));
     for(i = 0; i < num; i++)
-        _gyLog(GY_DEBUG_FATAL, "	%s", symbols[i]);
-    _gyLog(GY_DEBUG_FATAL, "**** END C/++ BACKTRACE ****");
-
+        _gyLog(GY_DEBUG_ERROR, "	%s", symbols[i]);
+    _gyLog(GY_DEBUG_ERROR, "**** END C/++ BACKTRACE ****");
+    _gyPop(1);
 
     if(_sysParams.segFaultHandler) {
         _sysParams.segFaultHandler(_sysParams.context);
@@ -361,7 +371,7 @@ static LONG WINAPI windows_exception_handler(EXCEPTION_POINTERS * ExceptionInfo)
 #endif
 
 void gyDebugSigInit(void) {
-    _gyLog(GY_DEBUG_VERBOSE, "\tRegistering exception handler.");
+    _gyLog(GY_DEBUG_VERBOSE, "Registering exception handler to POSIX signals.");
 #if defined(__LINUX__) || defined(__APPLE__)
     struct sigaction sa, so;
 
