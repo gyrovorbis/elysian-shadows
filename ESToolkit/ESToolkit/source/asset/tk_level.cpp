@@ -311,7 +311,7 @@ bool TkLevel::deactivate(void) {
        object/tilesheet scenes, do it now.
     */
     _sheetViewScene->removeItem(_bgRectItem);
-    //_active = false;
+    _active = false;
 
     return true;
 }
