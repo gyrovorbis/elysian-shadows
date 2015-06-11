@@ -54,8 +54,8 @@ THE SOFTWARE.
 
 namespace
 {
-	const int LEVELS1 = 10;
-	const int LEVELS2 = 20;
+	const int SEVERITYS1 = 10;
+	const int SEVERITYS2 = 20;
 
 	lua_State *getthread(lua_State *vm, int *arg)
 	{
@@ -91,15 +91,15 @@ namespace
 		lua_pushliteral(vm, "stack traceback:");
 		while (lua_getstack(L1, level++, &ar))
 		{
-			if (level > LEVELS1 && firstpart)
+			if (level > SEVERITYS1 && firstpart)
 			{
-				/* no more than `LEVELS2' more levels? */
-				if (!lua_getstack(L1, level+LEVELS2, &ar))
+				/* no more than `SEVERITYS2' more levels? */
+				if (!lua_getstack(L1, level+SEVERITYS2, &ar))
 					level--;  /* keep going */
 				else
 				{
 					lua_pushliteral(vm, "\n\t...");  /* too many levels */
-					while (lua_getstack(L1, level+LEVELS2, &ar))  /* find last levels */
+					while (lua_getstack(L1, level+SEVERITYS2, &ar))  /* find last levels */
 						level++;
 				}
 				firstpart = 0;
@@ -171,7 +171,7 @@ namespace OOLUA
 #	if OOLUA_USE_EXCEPTIONS == 1
 #		define OOLUA_CHECK_STACK_IF_ENABLED(lvm, count) \
 		if( !lua_checkstack(lvm, (count)) )throw OOLUA::Runtime_error("unable to grow the stack")
-#	elif OOLUA_STORE_LAST_ERROR == 1
+#	elif OOLUA_STORE_LAST_DBG_ERROR == 1
 #		define OOLUA_CHECK_STACK_IF_ENABLED(lvm, count) \
 		MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA \
 		if( !lua_checkstack(lvm, (count)) ) \
@@ -185,7 +185,7 @@ namespace OOLUA
 			/*else cant even grow the stack to add the error*/ \
 			return false; \
 		}while(0) \
-		MSC_POP_COMPILER_WARNING_OOLUA
+		MSC_POP_COMPILER_DBG_WARNING_OOLUA
 #	endif
 #elif OOLUA_DEBUG_CHECKS == 1
 #	define OOLUA_CHECK_STACK_IF_ENABLED(lvm, count) \

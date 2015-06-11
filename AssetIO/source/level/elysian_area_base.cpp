@@ -230,7 +230,7 @@ bool AreaBase::loadMap(const char *const filename) {
     dbgpush();
 
     if (!gyFileOpen(filename, "rb", &fp)) {
-        Debug::printf(Debug::FATAL, "FAILURE!");
+        Debug::printf(Debug::DBG_ERROR, "FAILURE!");
         dbgpop();
         return false;
     }
@@ -263,7 +263,7 @@ bool AreaBase::saveMap(const char *const filename) {
      */
     FILE *file = fopen(filename, "wb");
     if(!file) {
-        Debug::printf(Debug::CRITICAL, "FAILURE!");
+        Debug::printf(Debug::DBG_WARNING, "FAILURE!");
         dbgpop();
         return false;
     }
@@ -286,20 +286,20 @@ bool AreaBase::loadEntities(const char *const /*filename*/) {
     Entity *currentEntity;
     unsigned int amount;
 
-    dbgprintf(LOG_VERBOSE, "Area::LoadEntities(%s)", filename);
+    dbgprintf(LOG_DBG_VERBOSE, "Area::LoadEntities(%s)", filename);
     dbgPush();
 
     if(!file.is_open())	{
-        dbgprintf(LOG_CRITICAL, "FAILURE - could not open file!");
+        dbgprintf(LOG_DBG_WARNING, "FAILURE - could not open file!");
         dbgPop();
         return false;
     }
 
     file >> amount;
-    dbgprintf(LOG_VERBOSE, "%d entities", amount);
+    dbgprintf(LOG_DBG_VERBOSE, "%d entities", amount);
     for(unsigned int i = 0; i < amount; ++i) {
         if(file.eof()) {
-            dbgprintf(LOG_CRITICAL, "FAILURE! - Unexpected end of file");
+            dbgprintf(LOG_DBG_WARNING, "FAILURE! - Unexpected end of file");
             dbgPop();
             return false;
         }
@@ -315,18 +315,18 @@ bool AreaBase::loadEntities(const char *const /*filename*/) {
 bool AreaBase::saveEntities(const char *const /*filename*/) {
 #if 0
     ofstream file(gyFilePath(filename));
-    dbgprintf(LOG_VERBOSE, "Area::SaveEntities(%s)", filename);
+    dbgprintf(LOG_DBG_VERBOSE, "Area::SaveEntities(%s)", filename);
     dbgPush();
 
     if(!file.is_open()) {
-        dbgprintf(LOG_CRITICAL, "FAILURE! - Could not open file.");
+        dbgprintf(LOG_DBG_WARNING, "FAILURE! - Could not open file.");
         dbgPop();
         return false;
     }
 
     file << entities.size() << endl;
     for(unsigned int i = 0; i < entities.size(); ++i) {
-        dbgprintf(LOG_VERBOSE, "Writing entity #%d", i);
+        dbgprintf(LOG_DBG_VERBOSE, "Writing entity #%d", i);
         entities[i]->save(file);
     }
 
@@ -409,7 +409,7 @@ void AreaBase::populateVbo(void) {
 void AreaBase::activate(void) {
     if(activated) return;
     if(!level || !level->tileSheet) {
-        Debug::printf(Debug::FATAL, "Parent level has no tilesheet. Area couldn't be activated!");
+        Debug::printf(Debug::DBG_ERROR, "Parent level has no tilesheet. Area couldn't be activated!");
         return;
     }
 

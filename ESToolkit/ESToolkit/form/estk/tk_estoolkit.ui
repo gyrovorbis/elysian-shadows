@@ -254,13 +254,34 @@
      <property name="title">
       <string>Filters</string>
      </property>
-     <addaction name="actionLibGyro"/>
-     <addaction name="actionEngine"/>
-     <addaction name="actionToolkit"/>
-     <addaction name="actionLua"/>
-     <addaction name="actionQt"/>
-     <addaction name="actionCommands"/>
-     <addaction name="actionOpenGL"/>
+     <widget class="QMenu" name="menuSource">
+      <property name="title">
+       <string>Source</string>
+      </property>
+      <addaction name="actionLibGyro"/>
+      <addaction name="actionEngine"/>
+      <addaction name="actionToolkit"/>
+      <addaction name="actionQt"/>
+      <addaction name="actionOpenGL"/>
+      <addaction name="actionLua"/>
+      <addaction name="actionCommands"/>
+     </widget>
+     <widget class="QMenu" name="menuType_Here">
+      <property name="title">
+       <string>Type Here</string>
+      </property>
+     </widget>
+     <widget class="QMenu" name="menuSeverity">
+      <property name="title">
+       <string>Severity</string>
+      </property>
+      <addaction name="actionVerbose"/>
+      <addaction name="actionWarning"/>
+      <addaction name="actionError"/>
+     </widget>
+     <addaction name="menuSeverity"/>
+     <addaction name="menuSource"/>
+     <addaction name="menuType_Here"/>
     </widget>
     <addaction name="separator"/>
     <addaction name="actionClear"/>
@@ -1306,10 +1327,43 @@
     <bool>true</bool>
    </property>
    <property name="checked">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>OpenGL</string>
+   </property>
+  </action>
+  <action name="actionVerbose">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Verbose</string>
+   </property>
+  </action>
+  <action name="actionWarning">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Warning</string>
+   </property>
+  </action>
+  <action name="actionError">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Error</string>
    </property>
   </action>
  </widget>

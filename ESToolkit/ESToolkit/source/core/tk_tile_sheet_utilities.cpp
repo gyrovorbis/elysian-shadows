@@ -32,7 +32,7 @@ bool TileSheetUtilities::GetImageSize(const QString loc, unsigned int &width, un
 
 	reader.setFileName(loc);
 	if(!reader.canRead()) {
-		Debug::Logf(Debug::CRITICAL, "TileSheetUtilities::GetImageSize(%s) - Could not open image!", loc.toStdString().c_str());
+		Debug::Logf(Debug::DBG_WARNING, "TileSheetUtilities::GetImageSize(%s) - Could not open image!", loc.toStdString().c_str());
 		return false;
 	}
 	QSize size=reader.size();
@@ -74,7 +74,7 @@ bool TileSheetUtilities::DivideTileSheet(const QString loc, const unsigned int s
     QRect clipRect(0,0,spriteWidth,spriteHeight);
     int id = 0;
     if(!reader.canRead()) {
-		Debug::Logf(Debug::CRITICAL, "Could not read image file %s!", loc.toStdString().c_str());
+		Debug::Logf(Debug::DBG_WARNING, "Could not read image file %s!", loc.toStdString().c_str());
         return false;
     }
 
@@ -87,7 +87,7 @@ bool TileSheetUtilities::DivideTileSheet(const QString loc, const unsigned int s
 
             if(image.isNull()) {
                 QString error = reader.errorString();
-				Debug::Log(Debug::CRITICAL, "TileManager::DivideTileSheet(): There was an error reading the image! Error message: " + error);
+				Debug::Log(Debug::DBG_WARNING, "TileManager::DivideTileSheet(): There was an error reading the image! Error message: " + error);
                return false;
             }
 
@@ -104,7 +104,7 @@ bool TileSheetUtilities::DivideTileSheet(const QString loc, const unsigned int s
 	//int id = 0;
 
 	if(image.isNull()) {
-		Debug::Logf(Debug::CRITICAL, "Could not read image file %s!", loc.toStdString().c_str());
+		Debug::Logf(Debug::DBG_WARNING, "Could not read image file %s!", loc.toStdString().c_str());
 		return false;
 	}
 
@@ -115,7 +115,7 @@ bool TileSheetUtilities::DivideTileSheet(const QString loc, const unsigned int s
 			//tile->id=id++;
 
 			if(pixmap.isNull()) {
-				Debug::Log(Debug::CRITICAL, "TileManager::DivideTileSheet(): There was an error reading the image!");
+				Debug::Log(Debug::DBG_WARNING, "TileManager::DivideTileSheet(): There was an error reading the image!");
 				//delete tile;
 				return false;
 			}
@@ -151,7 +151,7 @@ bool TileSheetUtilities::DivideSpriteSheet(SpriteSheet &/*sprite*/) {
 	assert(sprite._attrib);
 	QImage *img = new QImage(QString(sprite._attrib->getTexPath()));
     if(img->isNull()) {
-		Debug::Logf(Debug::CRITICAL, "Could not open image filez %s!", sprite._attrib->getTexPath());
+		Debug::Logf(Debug::DBG_WARNING, "Could not open image filez %s!", sprite._attrib->getTexPath());
         return false;
     }
 
@@ -167,7 +167,7 @@ bool TileSheetUtilities::DivideSpriteSheet(SpriteSheet &/*sprite*/) {
 	QRect clipRect(0,0,spriteWidth,spriteHeight);
 
     if(!reader.canRead()) {
-		Debug::Logf(Debug::CRITICAL, "Could not read image file %s!", sprite._attrib->getTexPath());
+		Debug::Logf(Debug::DBG_WARNING, "Could not read image file %s!", sprite._attrib->getTexPath());
 		//sprite._spriteAmount = 0;
         return false;
     }
@@ -189,7 +189,7 @@ bool TileSheetUtilities::DivideSpriteSheet(SpriteSheet &/*sprite*/) {
 
             if(image.isNull()) {
                 QString error = reader.errorString();
-                Debug::Log(Debug::CRITICAL, "TileManager::DivideSpriteSheet(): There was an error reading the image! Error message: " + error);
+                Debug::Log(Debug::DBG_WARNING, "TileManager::DivideSpriteSheet(): There was an error reading the image! Error message: " + error);
 				//sprite._spriteAmount = 0;
                 return false;
             }

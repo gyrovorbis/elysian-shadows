@@ -989,7 +989,7 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable, c
             curTileY = ((int)collidable.getCenterWorldPos().y+16)/32;
         if(!(prevZTranX == curTileX && prevZTranY == curTileY)) {
             if(closestElev != ELYSIAN_MAP_ENTRY_ELEV_MAX) {
-                //Debug::printf(Debug::VERBOSE, "Elevation - %d", closestElev);
+                //Debug::printf(Debug::DBG_VERBOSE, "Elevation - %d", closestElev);
                 collidable.getEntity()->setElev(closestElev);
             }
             collidable.setZTranState(Collidable::ZTRAN_INACTIVE);
@@ -1153,7 +1153,7 @@ bool CollisionSystem::resolvePenetration(void) {
         //if(deepest <= ELYSIAN_COLLISION_CONTACT_PENETRATION_EPSILON) break; //EPSILAAAAWN
         //if(deepestIndex == -1) break; //no more candidates for resolution
         //this can probably be lowered quite a bit once point of contact is fucking correct
-        //Debug::printf(Debug::VERBOSE, "-------------POSITION ITERATION - %d-------", iter);
+        //Debug::printf(Debug::DBG_VERBOSE, "-------------POSITION ITERATION - %d-------", iter);
 
         //Resolve the Z direction first!
         if(fabs(_contactPool[deepestIndex].getZDepth()) <= ELYSIAN_COLLISION_CONTACT_Z_DEPTH_MAX /*&& fabs(_contactPool[deepestIndex].getZDepth()) >= 1.0f*/) {
@@ -1184,7 +1184,7 @@ bool CollisionSystem::resolvePenetration(void) {
 
     _conResIter = iter;
 
-   // if(iter == ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS) Debug::printf(Debug::CRITICAL, "OUT OF PENETRATION ITERATIONS!", iter);
+   // if(iter == ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS) Debug::printf(Debug::DBG_WARNING, "OUT OF PENETRATION ITERATIONS!", iter);
 
     return true;
 }

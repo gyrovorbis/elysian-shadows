@@ -82,7 +82,7 @@ bool Engine::loadAssets(void) {
 
     _cameraSystem->initializeProjMatrix();
 
-    Debug::printf(Debug::VERBOSE, "Engine::LoadAssets()");
+    Debug::printf(Debug::DBG_VERBOSE, "Engine::LoadAssets()");
     Debug::push();
     success &= !_guiSystem->loadAssets();
     success &= !_dialogSystem->loadAssets();

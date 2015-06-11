@@ -7,7 +7,7 @@
 #include <elysian_instance_transform.hpp>
 
 #define ELYSIAN_WARP_AREA_PATH_MAX_CHARS    200
-#define ELYSIAN_WARP_LEVEL_PATH_MAX_CHARS   200
+#define ELYSIAN_WARP_SEVERITY_PATH_MAX_CHARS   200
 
 namespace elysian {
 	
@@ -27,7 +27,7 @@ namespace elysian {
         bool                    _changeLevel    = false;
         bool                    _obliqueTran    = true;
         char                    _areaPath[ELYSIAN_WARP_AREA_PATH_MAX_CHARS];
-        char                    _levelPath[ELYSIAN_WARP_LEVEL_PATH_MAX_CHARS];
+        char                    _levelPath[ELYSIAN_WARP_SEVERITY_PATH_MAX_CHARS];
 		
                                 WarpBase(Entity &parent);
                                 WarpBase(void) = default;

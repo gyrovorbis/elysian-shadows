@@ -46,7 +46,7 @@ bool LuaBehavior::loadScript(const char *file, const OOLUA::Lua_table_ref paramT
 
     dbgpush();
 	if(_script) {
-        Debug::printf(Debug::CRITICAL, "Already has a script loaded!");
+        Debug::printf(Debug::DBG_WARNING, "Already has a script loaded!");
         dbgpop();
 		return false;
 	}

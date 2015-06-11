@@ -1,5 +1,5 @@
-#ifndef ELYSIAN_LEVEL_HPP
-#define ELYSIAN_LEVEL_HPP
+#ifndef ELYSIAN_SEVERITY_HPP
+#define ELYSIAN_SEVERITY_HPP
 
 #ifdef ELYSIAN_ENGINE
 #   include <elysian_level_base.hpp>
@@ -16,4 +16,4 @@ typedef TkLevel Level;
 #endif
 
 
-#endif // ELYSIAN_LEVEL_HPP
+#endif // ELYSIAN_SEVERITY_HPP

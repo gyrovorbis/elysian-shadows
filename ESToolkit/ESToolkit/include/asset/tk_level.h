@@ -1,5 +1,5 @@
-#ifndef TK_LEVEL_H
-#define TK_LEVEL_H
+#ifndef TK_SEVERITY_H
+#define TK_SEVERITY_H
 //QT
 #include <QString>
 #include <QVector>
@@ -9,13 +9,13 @@
 #include <elysian_level_base.hpp>
 #include <tk_elysian_tile_wrapper.h>
 
-#define ESTK_LEVEL_METADATA_SUBDIR          "estk"
-#define ESTK_LEVEL_AREA_SUBDIR              "area"
-#define ESTK_LEVEL_TILE_SUBDIR              "tile"
-#define ESTK_LEVEL_METADATA_TILESET         "estkTileset.bin"
+#define ESTK_SEVERITY_METADATA_SUBDIR          "estk"
+#define ESTK_SEVERITY_AREA_SUBDIR              "area"
+#define ESTK_SEVERITY_TILE_SUBDIR              "tile"
+#define ESTK_SEVERITY_METADATA_TILESET         "estkTileset.bin"
 
-#define ESTK_LEVEL_NORMAL_MAPS_DIRECTORY    "normalMaps"
-#define ESTK_LEVEL_SPECULAR_MAPS_DIRECTORY  "specularMaps"
+#define ESTK_SEVERITY_NORMAL_MAPS_DIRECTORY    "normalMaps"
+#define ESTK_SEVERITY_SPECULAR_MAPS_DIRECTORY  "specularMaps"
 
 class QGraphicsRectItem;
 
@@ -135,8 +135,8 @@ public:
     bool saveTileSheet(void);
     void clearAllStacks(void);
 
-    virtual Selectable::TYPE getType(void) const { return Selectable::LEVEL; }
-    virtual TreeNode::ITEM_TYPE getTreeWidgetItemType(void) { return ITEM_LEVEL; }
+    virtual Selectable::TYPE getType(void) const { return Selectable::SEVERITY; }
+    virtual TreeNode::ITEM_TYPE getTreeWidgetItemType(void) { return ITEM_SEVERITY; }
 
 private Q_SLOTS:
     bool activateByArea(Area * const area);
@@ -178,4 +178,4 @@ inline bool TkLevel::getNormalMapEnabled(const unsigned index) const { return _n
 inline ElysianTileWrapper* TkLevel::getElysianTileWrapper(const uint16_t index) { return &_elysianTileWrappers[index]; }
 
 
-#endif // LEVEL_H
+#endif // SEVERITY_H

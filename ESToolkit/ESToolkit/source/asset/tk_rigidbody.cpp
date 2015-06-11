@@ -11,7 +11,7 @@ bool TkRigidBody::validate(QString &str) const {
         }
     };
 
-    cAssert(_attrib, "ERROR: RigidBody component has no attrib field.");
+    cAssert(_attrib, "DBG_ERROR: RigidBody component has no attrib field.");
     return success;
 }
 

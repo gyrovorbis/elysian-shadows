@@ -28,7 +28,11 @@ class TkDebug: public QObject, public elysian::DebugBase {
 public:
 
     enum TK_SOURCE {
-        TOOLKIT = LUA+1,
+        LIBGYRO     = DebugBase::LIBGYRO,
+        ENGINE      = DebugBase::ENGINE,
+        ASSETIO     = DebugBase::ASSETIO,
+        LUA         = DebugBase::LUA,
+        TOOLKIT     = DebugBase::LUA+1,
         SOURCE_QT,
         COMMAND,
         OPENGL,
@@ -36,14 +40,14 @@ public:
     };
 
     //static void ESDebugWrapper(elysian::Asset::DBG_TYPE, const char msg[]);
-    static void Log( LEVEL flag, QString msg, int src = TOOLKIT);
+    static void Log(SEVERITY flag, QString msg, int src = TOOLKIT);
     //Fuck you, Marcel. Fuck QString. C-Style!
-	static void Logf( LEVEL flag, const char *string, ...);
+    static void Logf(SEVERITY flag, const char *string, ...);
 	//Event filter to catch QDebug/QFatal/QCritical messages
     static void logQ(QtMsgType type, const QMessageLogContext &context, const QString &msg);
 
     static void push(void);
-    static void pop(const unsigned count=0);
+    static void pop(const unsigned count=1);
 
     static TkDebug& getInstance(void) {
         if(!_window) _window = new TkDebug;
@@ -59,7 +63,8 @@ public:
         _window = nullptr;
 	}
 
-    static void setFilter(const int src, const bool enabled);
+    static void setFilter(const TK_SOURCE source, const bool enabled);
+    static void setFilter(const SEVERITY severity, const bool enabled);
     static void clear(void);
 
     static QString getDebugLogPath(void);
@@ -68,7 +73,7 @@ private:
     struct LogEntry {
         enum TYPE { TEXT, PUSH, POP };
         QString string;
-        LEVEL   level;
+        SEVERITY   level;
         int     source;
         TYPE    type;
     };
@@ -79,14 +84,14 @@ public Q_SLOTS:
 
 protected Q_SLOTS:
     static void _servicePendingQueue(void);
-    static void _postToQueue(const int src, const LEVEL level, const QString text);
+    static void _postToQueue(const TK_SOURCE src, const SEVERITY level, const QString text);
     static void _processLogEntry(const LogEntry& entry);
 
 private:
 
     static void                 _resizePrompt(void);
     virtual bool                eventFilter(QObject* object, QEvent* event) override;
-    static void                 writeLog(const int source, const LEVEL level, const char* const str);
+    static void                 writeLog(const int source, const SEVERITY level, const char* const str);
 
                                 TkDebug(void);
     virtual                     ~TkDebug(void) override;
@@ -100,7 +105,8 @@ private:
     static QTextEdit*           _prompt;
     static bool                 _pendingError;
     static unsigned             _stackDepth;
-    static bool                 _filterEnabled[SOURCE_MAX];
+    static bool                 _filterSourceEnabled[SOURCE_MAX];
+    static bool                 _filterSeverityEnabled[DebugBase::DBG_OFF];
     static QVector<QString>     _commandHistory;
     static int                  _commandHistoryIndex;
     static bool                 _shiftDown;
@@ -129,13 +135,22 @@ private:
 
 //========= INLINEZ ==========
 
-inline void TkDebug::writeLog(const int source, const LEVEL level, const char* const str) {
+inline void TkDebug::writeLog(const int source, const SEVERITY level, const char* const str) {
     _lastString = str;
     Log(level, str, (source == DebugBase::ASSETIO)? ENGINE : (TK_SOURCE)source);
     //elysian::DebugBase::writeLog((elysian::DebugBase::SOURCE)source, level, str);
 }
 
 inline QString TkDebug::getDebugLogPath(void) { return *_debugLogPath; }
+
+
+inline void TkDebug::setFilter(const TK_SOURCE src, const bool enabled) {
+    _filterSourceEnabled[src] = enabled;
+}
+
+inline void TkDebug::setFilter(const SEVERITY severity, const bool enabled) {
+    _filterSeverityEnabled[severity] = enabled;
+}
 
 
 #endif // DEBUG_H

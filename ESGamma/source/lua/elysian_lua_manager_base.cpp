@@ -17,7 +17,7 @@ int                                         LuaManagerBase::_traceBackDbgPushes 
 const char									LuaManagerBase::_rPrint[] =
     "function rPrint(s, l, i) -- recursive Print (structure, limit, indent)\n"
         "l = (l) or 100; i = i or \"\";	-- default item limit, indent string\n"
-        "if (l<1) then print \"ERROR: Item limit reached.\"; return l-1 end;\n"
+        "if (l<1) then print \"DBG_ERROR: Item limit reached.\"; return l-1 end;\n"
         "local ts = type(s);\n"
         "if (ts ~= \"table\" and not(ts == \"userdata\" and getmetatable(s) and getmetatable(s).__pairs)) then print (i,ts,s); return l-1 end\n"
         "print (i,ts);           -- print \"table\"\n"
@@ -29,7 +29,7 @@ const char									LuaManagerBase::_rPrint[] =
     "end\n";
 
 
-//Dumps to debug log and LUA_ERROR_FILE
+//Dumps to debug log and LUA_DBG_ERROR_FILE
 void LuaManagerBase::_errorprintf(const char *const string, ...) {
     char buffer[GYRO_PRINTF_BUFFER_SIZE];
     va_list argptr;
@@ -38,7 +38,7 @@ void LuaManagerBase::_errorprintf(const char *const string, ...) {
     vsprintf(buffer, string, argptr);
     va_end(argptr);
 
-    Debug::luaPrint(buffer, Debug::FATAL);
+    Debug::luaPrint(buffer, Debug::DBG_ERROR);
 }
 
 
@@ -108,7 +108,7 @@ int LuaManagerBase::_traceBack(lua_State *L) {
       //  --_traceBackDbgPushes;
     //}
 
-    Debug::luaPrint("***** LUA ERROR *****");
+    Debug::luaPrint("***** LUA DBG_ERROR *****");
     Debug::push();
     //++_traceBackDbgPushes;
 
@@ -281,8 +281,8 @@ bool LuaManagerBase::runScriptSandbox(const char *const file, LuaScript* const s
 
     if((_errorCode = luaL_loadfile(*_mainState, file)) != 0) {
         if(_errorCode == LUA_ERRFILE) {
-            Debug::printf(Debug::CRITICAL, "Could not load script file [%s]!", file);
-        } else _showError(); //DO NOT ERROR OUT IF FILE ISN'T FOUND!!!
+            Debug::printf(Debug::DBG_WARNING, "Could not load script file [%s]!", file);
+        } else _showError(); //DO NOT DBG_ERROR OUT IF FILE ISN'T FOUND!!!
         /*else {
             lua_remove(*_mainState, 1);					//take loaded chunk off of stack
         }*/
@@ -366,9 +366,9 @@ bool LuaManagerBase::initialize(void) {
     DbgEvent event("Initializing Lua virtual machine.");
 
     _mainState = new OOLUA::Script;
-    Debug::printf(Debug::VERBOSE, "Opening standard libs");
+    Debug::printf(Debug::DBG_VERBOSE, "Opening standard libs");
     luaL_openlibs(*_mainState);
-    Debug::printf(Debug::VERBOSE, "Registering wrappers");
+    Debug::printf(Debug::DBG_VERBOSE, "Registering wrappers");
     runString(_rPrint);
     runScriptSandbox(ELYSIAN_LUA_MANAGER_SERIALIZE_SCRIPT_PATH);
     LuaManager::_registerWrappers();

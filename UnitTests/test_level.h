@@ -1,5 +1,5 @@
-#ifndef TEST_LEVEL
-#define TEST_LEVEL
+#ifndef TEST_SEVERITY
+#define TEST_SEVERITY
 
 #include <tk_level.h>
 #include <QObject>
@@ -43,5 +43,5 @@ inline void LevelTest::activateLevel(void) {
 }
 
 
-#endif // TEST_LEVEL
+#endif // TEST_SEVERITY
 

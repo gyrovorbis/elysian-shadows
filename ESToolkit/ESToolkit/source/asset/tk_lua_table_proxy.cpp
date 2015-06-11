@@ -272,7 +272,7 @@ TkLuaTableUserdata*  TkLuaTableUserdata::inject(lua_State*const l, const int lua
 TkLuaTableUserdata::~TkLuaTableUserdata(void) {
     luaL_unref(_lvm, LUA_REGISTRYINDEX, _propRef);
     luaL_unref(_lvm, LUA_REGISTRYINDEX, _origRef);
-    Debug::printf(Debug::VERBOSE, "__TKUD GARBAGE COLLECTED!!!!");
+    Debug::printf(Debug::DBG_VERBOSE, "__TKUD GARBAGE COLLECTED!!!!");
 }
 
 int TkLuaTableUserdata::_indexMetamethod(lua_State* l) {

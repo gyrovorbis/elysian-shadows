@@ -22,30 +22,30 @@ SkeletonAttrib::~SkeletonAttrib(void) {
 bool SkeletonAttrib::loadAssets(const char * const atlas, const char * const json) {
     bool success = true;
 
-    Debug::printf(Debug::VERBOSE, "SkeletonAttrib::loadAssets(%s, %s)", atlas, json);
+    Debug::printf(Debug::DBG_VERBOSE, "SkeletonAttrib::loadAssets(%s, %s)", atlas, json);
     Debug::push();
 
     _atlas = spAtlas_createFromFile(atlas, nullptr);
     if(!_atlas) {
-        Debug::printf(Debug::CRITICAL, "Could not load texture atlas!");
+        Debug::printf(Debug::DBG_WARNING, "Could not load texture atlas!");
         success = false;
     }
 
     spSkeletonJson* skelJson = spSkeletonJson_create(_atlas);
     if(!skelJson) {
-        Debug::printf(Debug::CRITICAL, "Could not create SkeletonJson!");
+        Debug::printf(Debug::DBG_WARNING, "Could not create SkeletonJson!");
         success = false;
     }
 
     _skeletonData = spSkeletonJson_readSkeletonDataFile(skelJson, json);
     if(!_skeletonData) {
-        Debug::printf(Debug::CRITICAL, "Could not initialize SkeletonData!");
+        Debug::printf(Debug::DBG_WARNING, "Could not initialize SkeletonData!");
         success = false;
     }
 
     _animStateData = spAnimationStateData_create(_skeletonData);
     if(!_animStateData) {
-        Debug::printf(Debug::CRITICAL, "Could not initialize AnimationStateData!");
+        Debug::printf(Debug::DBG_WARNING, "Could not initialize AnimationStateData!");
         success = false;
     }
 

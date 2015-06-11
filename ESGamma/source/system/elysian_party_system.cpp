@@ -170,7 +170,7 @@ void PartySystem::processInput(const GameInput &input) {
 //				getPartSys()->getAttrib(0)->setSize(3);
 //				getPartSys()->getAttrib(0)->setFadeOut(true);
                 emitDashParticles();
-				//Debug::printf(Debug::VERBOSE, "DASHING!!!");
+				//Debug::printf(Debug::DBG_VERBOSE, "DASHING!!!");
 			}
 		}
 
@@ -312,22 +312,22 @@ void PartySystem::_checkPickup(Entity * const leader) const {
 bool PartySystem::loadPlayables(void) {
 #if 0
 	std::ifstream stream(gyFilePath(ELYSIAN_PARTY_PATH));
-	Debug::printf(Debug::VERBOSE, "PartySystem::LoadPlayable(%s)", ELYSIAN_PARTY_PATH);
+	Debug::printf(Debug::DBG_VERBOSE, "PartySystem::LoadPlayable(%s)", ELYSIAN_PARTY_PATH);
     Debug::push();
 	
 	if(!stream.is_open()) {
-		Debug::printf(Debug::CRITICAL, "Could not open %s", ELYSIAN_PARTY_PATH);
+		Debug::printf(Debug::DBG_WARNING, "Could not open %s", ELYSIAN_PARTY_PATH);
         Debug::pop();
 		return false;
 	}
 	
 	stream >> _playableAmount;
-	Debug::printf(Debug::VERBOSE, "_playableAmount - %d", _playableAmount);
+	Debug::printf(Debug::DBG_VERBOSE, "_playableAmount - %d", _playableAmount);
 	_playable = new Entity*[_playableAmount];
 	
 	for(unsigned i = 0; i < _playableAmount; ++i) {
 		if(!stream.is_open()) {
-			Debug::printf(Debug::CRITICAL, "\tCould not read %s.", ELYSIAN_PARTY_PATH);
+			Debug::printf(Debug::DBG_WARNING, "\tCould not read %s.", ELYSIAN_PARTY_PATH);
             Debug::pop();
 			return false;
 		}
@@ -349,10 +349,10 @@ bool PartySystem::addPlayableToParty(const char *name) {
 	for(unsigned int i = 0; i < _playableAmount; ++i) {
 		if(strcmp(_playable[i]->getName(), name) == 0) {
 			if(getPlayablePartyMember(name)) {
-				Debug::printf(Debug::CRITICAL, "PartySystem::AddPlayableToParty(%s): Already in the party!", name);
+				Debug::printf(Debug::DBG_WARNING, "PartySystem::AddPlayableToParty(%s): Already in the party!", name);
 				return false;
 			}
-			Debug::printf(Debug::VERBOSE, "%s has joined the party!", name);
+			Debug::printf(Debug::DBG_VERBOSE, "%s has joined the party!", name);
 			_playableParty.push_back(_playable[i]);
 			_curArea->addEntity(_playable[i]);
 			//_playable[i]->activate();
@@ -362,7 +362,7 @@ bool PartySystem::addPlayableToParty(const char *name) {
 			return true;
 		}
 	}
-	Debug::printf(Debug::CRITICAL, "PartySystem::AddPlayableToParty(%s): Not a loaded playable!", name);
+	Debug::printf(Debug::DBG_WARNING, "PartySystem::AddPlayableToParty(%s): Not a loaded playable!", name);
 	return false;
 }
 
@@ -371,11 +371,11 @@ bool PartySystem::addPlayableToParty(const Entity &entity) {
 		if(_playable[i] == &entity) {
 			for(unsigned int j = 0; j < _playableParty.size(); ++j) { //check if entity is already in _playableParty
 				if(_playableParty[j] == &entity) {
-					Debug::printf(Debug::CRITICAL, "PartySystem::AddPlayableToParty(Entity&): %s is already in the party!", entity.getName());
+					Debug::printf(Debug::DBG_WARNING, "PartySystem::AddPlayableToParty(Entity&): %s is already in the party!", entity.getName());
 					return false;
 				}
 			}
-			Debug::printf(Debug::VERBOSE, "%s has joined the party!", entity.getName());
+			Debug::printf(Debug::DBG_VERBOSE, "%s has joined the party!", entity.getName());
 			_playableParty.push_back(_playable[i]);
 			//_playable[i]->activate();
 			_curArea->addEntity(_playable[i]);
@@ -385,7 +385,7 @@ bool PartySystem::addPlayableToParty(const Entity &entity) {
 			return true;
 		}
 	}
-	Debug::printf(Debug::CRITICAL, "! - PartySystem::AddPlayableToParty(Entity&): Entity is not a loaded playable!");
+	Debug::printf(Debug::DBG_WARNING, "! - PartySystem::AddPlayableToParty(Entity&): Entity is not a loaded playable!");
 	return false;
 }
 
@@ -398,7 +398,7 @@ bool PartySystem::removePlayableFromParty(const char *name) {
 			return true;
 		}
 	}
-	Debug::printf(Debug::CRITICAL, "! - PartySystem::RemovePlayableFromParty(const char[]): %s is not in the party!", name);
+	Debug::printf(Debug::DBG_WARNING, "! - PartySystem::RemovePlayableFromParty(const char[]): %s is not in the party!", name);
 	return false;
 }
 
@@ -409,16 +409,16 @@ bool PartySystem::removePlayableFromParty(const Entity &entity) {
 			return true;
 		}
 	}
-	Debug::printf(Debug::CRITICAL, "! - PartySystem::RemovePlayableFromParty(Entity&): Entity is not in party!");
+	Debug::printf(Debug::DBG_WARNING, "! - PartySystem::RemovePlayableFromParty(Entity&): Entity is not in party!");
 	return false;
 }
 
 bool PartySystem::removePlayableFromParty(const unsigned int slot) {
 	if(slot >= _playableParty.size()) {
-		Debug::printf(Debug::CRITICAL, "! PartySystem::RemovePlayableFromParty(const uint): Invalid slot!");
+		Debug::printf(Debug::DBG_WARNING, "! PartySystem::RemovePlayableFromParty(const uint): Invalid slot!");
 		return false;
 	}
-	Debug::printf(Debug::VERBOSE, "%s has left the party!", _playableParty[slot]->getName());
+	Debug::printf(Debug::DBG_VERBOSE, "%s has left the party!", _playableParty[slot]->getName());
 	_playableParty[slot]->deactivate();
 	
 	
@@ -446,13 +446,13 @@ Entity *PartySystem::getPlayablePartyMember(const char *name) const {
 			return _playableParty[i];
 		}
 	}
-	Debug::printf(Debug::CRITICAL, "PartySystem::getPlayableFromParty(const char[]): %s is not in the party!", name);
+	Debug::printf(Debug::DBG_WARNING, "PartySystem::getPlayableFromParty(const char[]): %s is not in the party!", name);
     return nullptr;
 }
 
 Entity *PartySystem::getPlayablePartyMember(const unsigned int slot) const {
 	if(slot >= _playableParty.size()) {
-		Debug::printf(Debug::CRITICAL, "PartySystem::getPlayableFromParty(const uint): Invalid slot %d!", slot);
+		Debug::printf(Debug::DBG_WARNING, "PartySystem::getPlayableFromParty(const uint): Invalid slot %d!", slot);
         return nullptr;
 	}
 	return _playableParty[slot];
@@ -467,7 +467,7 @@ Entity *PartySystem::getPartyLeader(void) const {
 
 bool PartySystem::addCharacterToParty(Entity *entity) {
     if(getPartySlot(entity) != -1) return false;
-	//Debug::printf(Debug::VERBOSE, "%s has joined the party!", entity->getName());
+	//Debug::printf(Debug::DBG_VERBOSE, "%s has joined the party!", entity->getName());
 	_characterParty.push_back(entity);
     if( _characterParty.size() > 1) entity->_transform.setPos(_partyPathPoint[_partyPathPoint.size()-1]);
 	if(_playableParty.size() == 0 && _characterParty.size() == 1) getCameraSys()->setFollowEntity(entity);
@@ -482,7 +482,7 @@ bool PartySystem::removeCharacterFromParty(const char *name) {
 			return true;
 		}
 	}
-	Debug::printf(Debug::CRITICAL, "! - PartySystem::RemoveCharacterFromParty(const char[]): %s is not in the party!", name);
+	Debug::printf(Debug::DBG_WARNING, "! - PartySystem::RemoveCharacterFromParty(const char[]): %s is not in the party!", name);
 	return false;
 }
 
@@ -493,16 +493,16 @@ bool PartySystem::removeCharacterFromParty(const Entity *entity) {
 			return true;
 		}
 	}
-	Debug::printf(Debug::CRITICAL, "! - PartySystem::RemoveCharacterFromParty(Entity&): %s is not in the party!", entity->getName());
+	Debug::printf(Debug::DBG_WARNING, "! - PartySystem::RemoveCharacterFromParty(Entity&): %s is not in the party!", entity->getName());
 	return false;
 }
 
 bool PartySystem::removeCharacterFromParty(const unsigned int slot) {
 	if(slot >= _characterParty.size()) {
-		Debug::printf(Debug::CRITICAL, "! - PartySystem::RemoveCharacterFromParty(const uint): %d is an invalid slot!", slot);
+		Debug::printf(Debug::DBG_WARNING, "! - PartySystem::RemoveCharacterFromParty(const uint): %d is an invalid slot!", slot);
 		return false;
 	}
-	Debug::printf(Debug::VERBOSE, "%s has left the party!", _characterParty[slot]->getName());
+	Debug::printf(Debug::DBG_VERBOSE, "%s has left the party!", _characterParty[slot]->getName());
 	//update positions
     for(unsigned int i = _characterParty.size()-1; i > slot; --i) _characterParty[i]->_transform._pos = _characterParty[i-1]->_transform._pos;
 	_characterParty.erase(_characterParty.begin() + slot);
@@ -517,13 +517,13 @@ Entity *PartySystem::getCharacterPartyMember(const char *name) const {
 			return _characterParty[i];
 		}
 	}
-    //Debug::printf(Debug::CRITICAL, "PartySystem::getCharacterPartyMember(const char[]): %s is not in the party!", name);
+    //Debug::printf(Debug::DBG_WARNING, "PartySystem::getCharacterPartyMember(const char[]): %s is not in the party!", name);
     return NULL;
 }
 
 Entity *PartySystem::getCharacterPartyMember(const unsigned int slot) const {
 	if(slot >= _characterParty.size()) {
-        //Debug::printf(Debug::CRITICAL, "PartySystem::getCharacterPartyMember(const uint): %d is an invalid slot!", slot);
+        //Debug::printf(Debug::DBG_WARNING, "PartySystem::getCharacterPartyMember(const uint): %d is an invalid slot!", slot);
         return nullptr;
 	}
 	return _characterParty[slot];
@@ -554,7 +554,7 @@ void PartySystem::_resizePartyPathPoints(void) {
 		}
 	}
 	
-	Debug::printf(Debug::VERBOSE, "_partyPathPoint.size() - %d", _partyPathPoint.size());
+	Debug::printf(Debug::DBG_VERBOSE, "_partyPathPoint.size() - %d", _partyPathPoint.size());
 }
 
 void PartySystem::updatePartyPaths(void) {

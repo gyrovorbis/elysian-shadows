@@ -10,8 +10,8 @@
 ** This definition must come before the inclusion of 'stdio.h'; it
 ** should not affect non-POSIX systems
 */
-#if !defined(_FILE_OFFSET_BITS)
-#define _FILE_OFFSET_BITS 64
+#if !defined(_FILE_DBG_OFFSET_BITS)
+#define _FILE_DBG_OFFSET_BITS 64
 #endif
 
 

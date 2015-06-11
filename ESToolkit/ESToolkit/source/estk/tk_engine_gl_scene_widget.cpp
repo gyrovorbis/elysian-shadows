@@ -85,14 +85,14 @@ makeCurrent();
          _glLogger = new QOpenGLDebugLogger(this);
          connect(_glLogger, &QOpenGLDebugLogger::messageLogged, this, &EngineGLSceneWidget::_onGLMessageLogged);
 		 if(_glLogger->initialize()) {
-			 Debug::Logf(Debug::VERBOSE, "OpenGL debug logger initialized successfullly.");
+             Debug::Logf(Debug::DBG_VERBOSE, "OpenGL debug logger initialized successfullly.");
 			 _glLogger->startLogging();
 		 } else {
-             Debug::Logf(Debug::CRITICAL, "OpenGL debug logger could not be initialized.");
+             Debug::Logf(Debug::DBG_WARNING, "OpenGL debug logger could not be initialized.");
 		 }
 
 	// } else {
-	//	 Debug::Logf(Debug::VERBOSE, "OpenGL debug logger extensions not detected!");
+    //	 Debug::Logf(Debug::DBG_VERBOSE, "OpenGL debug logger extensions not detected!");
 	// }
 
     // _mapView->setSceneRect(0, 0, parentWidth, parentHeight);

@@ -42,14 +42,14 @@ namespace OOLUA
 		}
 		void handle_cpp_pull_fail(lua_State* vm, char const * expected_type)
 		{
-#	if OOLUA_USE_EXCEPTIONS == 1 || OOLUA_STORE_LAST_ERROR == 1
+#	if OOLUA_USE_EXCEPTIONS == 1 || OOLUA_STORE_LAST_DBG_ERROR == 1
 			lua_pushfstring(vm, "Stack type is not a %s, yet %s"
 							, expected_type
 							, lua_gettop(vm) ? lua_typename(vm, lua_type(vm, -1) ) : "empty stack");
 #	endif
 #	if OOLUA_USE_EXCEPTIONS == 1
-			throw OOLUA::Type_error(vm, static_cast<ERROR::PopTheStack*>(0));
-#	elif OOLUA_STORE_LAST_ERROR == 1
+			throw OOLUA::Type_error(vm, static_cast<DBG_ERROR::PopTheStack*>(0));
+#	elif OOLUA_STORE_LAST_DBG_ERROR == 1
 			OOLUA::INTERNAL::set_error_from_top_of_stack_and_pop_the_error(vm);
 			return;
 #	else

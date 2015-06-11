@@ -422,7 +422,7 @@ inline void SortSweepAABBPool<T>::initialize(void) {
     dbgprintf("Compiling program: %s [%s]", ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_PATH, ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_FLAGS);
     dbgpush();
     if(!gyFileOpen(ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_PATH, "r", &fp)) {
-        Debug::printf(Debug::CRITICAL, "Could not open source file!");
+        Debug::printf(Debug::DBG_WARNING, "Could not open source file!");
     }
     gyFileLength(fp, &fileLen);
     programSource = (char*)malloc(sizeof(char)*(fileLen+1));

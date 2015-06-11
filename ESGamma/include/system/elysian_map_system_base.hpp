@@ -25,9 +25,9 @@
 
 /*
 //Objects have integer zCoords, force Entities to floats to prevent duplicate z
-#define ELYSIAN_DEPTH_BUFFER_ENTITY_OBJECT_MIN_Y_OFFSET 0.001f
+#define ELYSIAN_DEPTH_BUFFER_ENTITY_OBJECT_MIN_Y_DBG_OFFSET 0.001f
 //Applied to every entity at the same buffer index to prevent duplicate z
-#define ELYSIAN_DEPTH_BUFFER_ENTITY_ENTITY_MIN_Z_OFFSET 0.001f
+#define ELYSIAN_DEPTH_BUFFER_ENTITY_ENTITY_MIN_Z_DBG_OFFSET 0.001f
 //This needs to be at LEAST as wide as the rendered map area? Not really?
 #define ELYSIAN_DEPTH_BUFFER_OBJECT_WIDTH 40
 //Guess this could be a bit smaller? Maybe?
@@ -174,7 +174,7 @@ namespace elysian {
         if(!gyVidShadowPass()) {
             const GY_RECT_PLANE_TYPE      newPlane = entry.mapEntry.getPlane();
             const GY_RECT_TEX_ORIENT      newOrient = entry.mapEntry.getOrient();
-            /*const GY_ALPHA_LEVEL          newAlpha = (entry.renderPass > 1 ||
+            /*const GY_ALPHA_SEVERITY          newAlpha = (entry.renderPass > 1 ||
                                                       _curLevel->tileset[entry.mapEntry.getIndex()].getTransparency())?
                                                         GY_ALPHA_FULL : GY_ALPHA_NONE;*/
 
@@ -290,19 +290,19 @@ namespace elysian {
       //  }
     /*    switch(result) {
         case GL_ALREADY_SIGNALED:
-            Debug::printf(Debug::VERBOSE, "ALREADY SIGNALED");
+            Debug::printf(Debug::DBG_VERBOSE, "ALREADY SIGNALED");
             break;
         case GL_CONDITION_SATISFIED:
-                        Debug::printf(Debug::VERBOSE, "condition satisfied");
+                        Debug::printf(Debug::DBG_VERBOSE, "condition satisfied");
             break;
         case GL_TIMEOUT_EXPIRED:
-                        Debug::printf(Debug::VERBOSE, "timeout expired");
+                        Debug::printf(Debug::DBG_VERBOSE, "timeout expired");
             break;
         case GL_WAIT_FAILED:
-                        Debug::printf(Debug::VERBOSE, "wait failed");
+                        Debug::printf(Debug::DBG_VERBOSE, "wait failed");
 break;
         default:
-                    Debug::printf(Debug::VERBOSE, "else");
+                    Debug::printf(Debug::DBG_VERBOSE, "else");
             break;
 
         }*/
@@ -354,7 +354,7 @@ gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
                 _onscreenEntityPool.claimFreeEntry() = entity;
             //}
         }
-        //Debug::printf(Debug::VERBOSE, "ONSCREEN ENTITIES - %d", _onscreenEntityPool.size());
+        //Debug::printf(Debug::DBG_VERBOSE, "ONSCREEN ENTITIES - %d", _onscreenEntityPool.size());
         return _onscreenEntityPool.size();
     }
 
@@ -394,7 +394,7 @@ gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
         if(gyVidShadowPass()) return;
        // flushTileBuffer();
        // gyVidDepthTest(false);
-        //glEnable(GL_POLYGON_OFFSET_FILL);
+        //glEnable(GL_POLYGON_DBG_OFFSET_FILL);
         //glPolygonOffset(2.0f, 2.0f);
       //  glDepthMask(GL_FALSE);
      //   glDepthFunc(GL_EQUAL);
@@ -413,7 +413,7 @@ gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
         //glDisable(GL_BLEND);
         // glDepthFunc(GL_LEQUAL);
          gyVidAlphaLevel(GY_ALPHA_NONE);
-        //glDisable(GL_POLYGON_OFFSET_FILL);
+        //glDisable(GL_POLYGON_DBG_OFFSET_FILL);
         gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
       //  _blendPass = false;
     }
@@ -503,7 +503,7 @@ gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
         }
     }
 
-/* VERY FUCKING TIME-CRITICAL. THAT'S WHY IT LOOKS LIKE SHIT.
+/* VERY FUCKING TIME-DBG_WARNING. THAT'S WHY IT LOOKS LIKE SHIT.
    We are purposely avoiding the matrix stack. Those calculations
    aren't necessary for the tiny bit of simple translation this
    rendering needs.

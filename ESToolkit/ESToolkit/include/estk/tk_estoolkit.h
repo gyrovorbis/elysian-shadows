@@ -255,6 +255,9 @@ private Q_SLOTS:
     void on_actionPerformance_Monitor_triggered();
     void on_actionSheet_Manager_triggered();
     void on_actionOpenGL_toggled(bool arg1);
+    void on_actionVerbose_toggled(bool arg1);
+    void on_actionWarning_toggled(bool arg1);
+    void on_actionError_toggled(bool arg1);
 };
 
 

@@ -428,11 +428,11 @@ bool EntityBase::load(FILE* /*file*/) { //Deserialization
     bool success = true;
     unsigned int amount, compType;
 
-    dbgprintf(LOG_VERBOSE, "Entity::Load(ifstream)");
+    dbgprintf(LOG_DBG_VERBOSE, "Entity::Load(ifstream)");
     dbgPush();
 
     stream >> _name;
-    dbgprintf(LOG_VERBOSE, "_name = %s", _name);
+    dbgprintf(LOG_DBG_VERBOSE, "_name = %s", _name);
 
     //Transform
     transform.load(stream);
@@ -483,7 +483,7 @@ bool EntityBase::load(FILE* /*file*/) { //Deserialization
                 comp = addBehavior(behaviorName);
                 break;
             default:
-                dbgprintf(LOG_CRITICAL, "Unknown component type %d!", compType);
+                dbgprintf(LOG_DBG_WARNING, "Unknown component type %d!", compType);
                 comp = NULL;
                 break;
         }
@@ -494,7 +494,7 @@ bool EntityBase::load(FILE* /*file*/) { //Deserialization
             break;
         }
         else if(!comp->load(stream)) {
-            dbgprintf(LOG_CRITICAL, "Unable to create component %d", compType);
+            dbgprintf(LOG_DBG_WARNING, "Unable to create component %d", compType);
             success = false;
             continue;
         }
@@ -509,7 +509,7 @@ bool EntityBase::save(FILE* /*file*/) { //Serialization
 #if 0
     Component *comp = NULL;
     bool success = true;
-    dbgprintf(LOG_VERBOSE, "Entity::Save(ofstream)");
+    dbgprintf(LOG_DBG_VERBOSE, "Entity::Save(ofstream)");
     dbgPush();
 
     stream.precision(6);
@@ -610,7 +610,7 @@ Behavior *EntityBase::attachBehavior(Behavior *behav) {
 #if 0
     std::map<const char *, Behavior*, ltstr>::iterator it = _behavior.find(behav->getBehavName());
     if(it != _behavior.end()) {
-        dbgprintf(LOG_CRITICAL, "Entity::AddBehavior(%s) - Already attached!", behav->getBehavName());
+        dbgprintf(LOG_DBG_WARNING, "Entity::AddBehavior(%s) - Already attached!", behav->getBehavName());
         delete behav;
         return NULL;
     }
@@ -618,7 +618,7 @@ Behavior *EntityBase::attachBehavior(Behavior *behav) {
 
 	//Check for prereqs
     if(/*behav->canAddTo(*static_cast<Entity*>(this)) ||*/ !behav->getBehavName()) {
-        Debug::printf(Debug::CRITICAL, "Could not attach behavior!");
+        Debug::printf(Debug::DBG_WARNING, "Could not attach behavior!");
 		delete behav;
         return nullptr;
 	}
@@ -658,9 +658,9 @@ void EntityBase::setLuaBehaviorByIndex(const unsigned index, const OOLUA::Lua_ta
     }
 
     if(index >= _behavior.size()) {
-        Debug::printf(Debug::VERBOSE, "INSERTING");
+        Debug::printf(Debug::DBG_VERBOSE, "INSERTING");
     } else {
-        Debug::printf(Debug::VERBOSE, "UPDATING");
+        Debug::printf(Debug::DBG_VERBOSE, "UPDATING");
         behavior->fromTable(valueTable);
     }
 }
@@ -672,7 +672,7 @@ void EntityBase::removeLuaBehavior(const char *script) {
 Behavior* EntityBase::getBehavior(const char *behaviorName) const {
 	std::map<const char *, Behavior*, ltstr>::const_iterator it = _behavior.find(behaviorName);
 	if(it == _behavior.end()) {
-        Debug::printf(Debug::CRITICAL, "Behavior::getBehavior(%s) - Not attached!", behaviorName);
+        Debug::printf(Debug::DBG_WARNING, "Behavior::getBehavior(%s) - Not attached!", behaviorName);
         return nullptr;
     }
     else return it->second;
@@ -681,7 +681,7 @@ Behavior* EntityBase::getBehavior(const char *behaviorName) const {
 void EntityBase::removeBehavior(const char *behaviorName) {
 	std::map<const char *, Behavior*, ltstr>::iterator it = _behavior.find(behaviorName);
 	if(it == _behavior.end()) {
-        Debug::printf(Debug::CRITICAL, "Behavior::RemoveBehavior(%s) - Not attached!", behaviorName);
+        Debug::printf(Debug::DBG_WARNING, "Behavior::RemoveBehavior(%s) - Not attached!", behaviorName);
 		return;
 	}
 	

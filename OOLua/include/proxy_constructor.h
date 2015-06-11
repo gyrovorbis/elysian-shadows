@@ -225,7 +225,7 @@ static int oolua_factory_function(lua_State* vm) \
 	{ \
 		if( OOLUA_VA_CONSTRUCTOR(__VA_ARGS__)<class_ VA_PARAM_TYPES(__VA_ARGS__) >::construct(vm) ) return 1; \
 	} \
-	MSC_POP_COMPILER_WARNING_OOLUA
+	MSC_POP_COMPILER_DBG_WARNING_OOLUA
 /**@}*/
 
 /** \cond INTERNAL*/

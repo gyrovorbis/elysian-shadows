@@ -12,9 +12,9 @@
 //Maximum elevation height an object can have
 #define ELYSIAN_DEPTH_BUFFER_OBJECT_ELEVATION_MAX 31
 //Objects have integer zCoords, force Entities to floats to prevent duplicate z
-#define ELYSIAN_DEPTH_BUFFER_ENTITY_OBJECT_MIN_Y_OFFSET 0.001f
+#define ELYSIAN_DEPTH_BUFFER_ENTITY_OBJECT_MIN_Y_DBG_OFFSET 0.001f
 //Applied to every entity at the same buffer index to prevent duplicate z
-#define ELYSIAN_DEPTH_BUFFER_ENTITY_ENTITY_MIN_Z_OFFSET 0.001f
+#define ELYSIAN_DEPTH_BUFFER_ENTITY_ENTITY_MIN_Z_DBG_OFFSET 0.001f
 //This needs to be at least as tall as the rendered map area? Not really?
 #define ELYSIAN_DEPTH_BUFFER_HEIGHT (ELYSIAN_AREA_MAP_HEIGHT+ELYSIAN_DEPTH_BUFFER_OBJECT_ELEVATION_MAX)
 //This needs to be at LEAST as wide as the rendered map area? Not really?
@@ -496,7 +496,7 @@ namespace elysian {
             }
         }
 
-       // Debug::printf(Debug::VERBOSE, "stateChanges - %d", stateChanges);
+       // Debug::printf(Debug::DBG_VERBOSE, "stateChanges - %d", stateChanges);
 
        // static_cast<T*>(this)->flushTileBuffer();
        //static_cast<T*>(this)->unbindTileBuffer();

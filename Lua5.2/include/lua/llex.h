@@ -16,7 +16,7 @@
 
 
 /*
-* WARNING: if you change the order of this enumeration,
+* DBG_WARNING: if you change the order of this enumeration,
 * grep "ORDER RESERVED"
 */
 enum RESERVED {

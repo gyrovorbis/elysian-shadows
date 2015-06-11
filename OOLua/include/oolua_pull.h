@@ -139,7 +139,7 @@ namespace OOLUA
 MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA
 			if(Is_const) class_type = INTERNAL::class_from_stack_top< Raw_type >(vm);
 			else class_type = INTERNAL::none_const_class_from_stack_top<Raw_type>(vm);
-MSC_POP_COMPILER_WARNING_OOLUA
+MSC_POP_COMPILER_DBG_WARNING_OOLUA
 		}
 
 

@@ -144,7 +144,7 @@ bool Assets::setCurrentArea(const QString name) {
         Q_EMIT AreaChanged(_currentArea);
         return true;
     }
-    Debug::Log(Debug::CRITICAL, "Could not set current area to %s!\n", name.toStdString().c_str());
+    Debug::Log(Debug::DBG_WARNING, "Could not set current area to %s!\n", name.toStdString().c_str());
     return false;*/
     if(!_curLevel) {
         setCurrentArea(nullptr);
@@ -203,7 +203,7 @@ void Assets::setCurrentLevel(Level *const level) {
         else setCurrentArea(nullptr);
     }
     else setCurrentArea(nullptr);
-    //Debug::Log(Debug::VERBOSE, "!!!!!!EMIT CURRENT LEVEL " +( (level)? level->getName() : "NULL"));
+    //Debug::Log(Debug::DBG_VERBOSE, "!!!!!!EMIT CURRENT SEVERITY " +( (level)? level->getName() : "NULL"));
     Q_EMIT levelChanged(level);
 }
 
@@ -231,7 +231,7 @@ void Assets::setCurrentProject(Project *const project) {
     else {
         setCurrentLevel(nullptr);
     }
-    //Debug::Log(Debug::VERBOSE, "!!!!!EMIT CURRENT PROJECT - " + ((project)? project->getName() : "NULL"));
+    //Debug::Log(Debug::DBG_VERBOSE, "!!!!!EMIT CURRENT PROJECT - " + ((project)? project->getName() : "NULL"));
     Q_EMIT projectChanged(project);
 }
 
@@ -288,13 +288,13 @@ Project *Assets::loadProject(const QString directory) {
 
    // doneGLContextCurrent();
     delete proj;
-    Debug::Logf(Debug::VERBOSE, "Could not load project %s!", directory.toStdString().c_str());
+    Debug::Logf(Debug::DBG_VERBOSE, "Could not load project %s!", directory.toStdString().c_str());
     return nullptr;
 }
 
 bool Assets::saveProject(const QString name) const {
     if(m_project->getNodeName() == name) return m_project->save();
-    Debug::Logf(Debug::VERBOSE, "Project %s does not exist!", name.toStdString().c_str());
+    Debug::Logf(Debug::DBG_VERBOSE, "Project %s does not exist!", name.toStdString().c_str());
     return false;
 }
 
@@ -319,7 +319,7 @@ bool Assets::removeProject(const QString name) {
         }
 
     //}
-    Debug::Logf(Debug::VERBOSE, "Project %s could not be removed!", name.toStdString().c_str());
+    Debug::Logf(Debug::DBG_VERBOSE, "Project %s could not be removed!", name.toStdString().c_str());
     return false;
 }
 

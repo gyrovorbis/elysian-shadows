@@ -33,17 +33,17 @@ void EntityTreeWidget::OnAreaChange(Area *const area) {
     _curArea = area;
     _hiddenItem->takeChildren();
     if(_showHidden) takeTopLevelItem(indexOfTopLevelItem(_hiddenItem));
-	//Debug::Log(Debug::VERBOSE, "Area change - %s", area->getName().toStdString().c_str());
+    //Debug::Log(Debug::DBG_VERBOSE, "Area change - %s", area->getName().toStdString().c_str());
     while(topLevelItemCount()) takeTopLevelItem(0);
     if(!area) return;
     auto& entities = area->getEntities();
     auto& inactiveEntities = area->getInactiveEntities();
 	for(size_t i = 0; i < entities.size(); ++i) {
-	  //  Debug::Log(Debug::VERBOSE, "Trying to add - %s", area->entity[i]->getName().toStdString().c_str());
+      //  Debug::Log(Debug::DBG_VERBOSE, "Trying to add - %s", area->entity[i]->getName().toStdString().c_str());
         /*if(!entities[i]->getParentEntity())*/ _addEntity(entities[i]);
     }
     for(size_t i = 0; i < inactiveEntities.size(); ++i) {
-      //  Debug::Log(Debug::VERBOSE, "Trying to add - %s", area->entity[i]->getName().toStdString().c_str());
+      //  Debug::Log(Debug::DBG_VERBOSE, "Trying to add - %s", area->entity[i]->getName().toStdString().c_str());
         /*if(!entities[i]->getParentEntity())*/ _addEntity(inactiveEntities[i]);
     }
     if(_showHidden) addTopLevelItem(_hiddenItem);

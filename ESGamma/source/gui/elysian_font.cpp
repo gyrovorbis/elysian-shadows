@@ -11,7 +11,7 @@ GYColor4 Font::_colorPalette[ELYSIAN_FONT_MARKUP_COLOR_PALETTE_SIZE] = { GYColor
 bool Font::loadTextData(const char*const imgFile, const int sheetWidth, const int sheetHeight, const int spriteWidth, const int spriteHeight, const char*const widthFile) {
 	bool success = true;
 
-    Debug::printf(Debug::VERBOSE, "Font::Load(%s, %s)", imgFile, widthFile);
+    Debug::printf(Debug::DBG_VERBOSE, "Font::Load(%s, %s)", imgFile, widthFile);
     Debug::push();
 
     //_transform.setSize(16.0f, 32.0f);
@@ -19,12 +19,12 @@ bool Font::loadTextData(const char*const imgFile, const int sheetWidth, const in
 
 	//CHECK IF TEXTURE IS EVER LOADED
     if(!(_tex = gyVidTexCreateSheetUniform(imgFile, sheetWidth, sheetHeight, spriteWidth, spriteHeight))) {
-        Debug::printf(Debug::CRITICAL, "Font::Load(%s): Unable to load sheet texture!", imgFile);
+        Debug::printf(Debug::DBG_WARNING, "Font::Load(%s): Unable to load sheet texture!", imgFile);
 		success = false;
 	}
 
     if(!_loadCharacterWidths(widthFile)) {
-        Debug::printf(Debug::CRITICAL, "Font::LoadCharacterWidths(%s): could not open file!", widthFile);
+        Debug::printf(Debug::DBG_WARNING, "Font::LoadCharacterWidths(%s): could not open file!", widthFile);
 		success = false;
 	}
 

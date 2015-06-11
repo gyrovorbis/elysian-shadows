@@ -34,8 +34,8 @@
 */
 
 
-#define LEVELS1	12	/* size of the first part of the stack */
-#define LEVELS2	10	/* size of the second part of the stack */
+#define SEVERITYS1	12	/* size of the first part of the stack */
+#define SEVERITYS2	10	/* size of the second part of the stack */
 
 
 
@@ -121,13 +121,13 @@ LUALIB_API void luaL_traceback (lua_State *L, lua_State *L1,
   lua_Debug ar;
   int top = lua_gettop(L);
   int numlevels = countlevels(L1);
-  int mark = (numlevels > LEVELS1 + LEVELS2) ? LEVELS1 : 0;
+  int mark = (numlevels > SEVERITYS1 + SEVERITYS2) ? SEVERITYS1 : 0;
   if (msg) lua_pushfstring(L, "%s\n", msg);
   lua_pushliteral(L, "stack traceback:");
   while (lua_getstack(L1, level++, &ar)) {
     if (level == mark) {  /* too many levels? */
       lua_pushliteral(L, "\n\t...");  /* add a '...' */
-      level = numlevels - LEVELS2;  /* and skip to last ones */
+      level = numlevels - SEVERITYS2;  /* and skip to last ones */
     }
     else {
       lua_getinfo(L1, "Slnt", &ar);

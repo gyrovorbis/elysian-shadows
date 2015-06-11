@@ -25,7 +25,7 @@ THE SOFTWARE.
 #include "oolua_error.h"
 #include "oolua_config.h"
 
-#if OOLUA_STORE_LAST_ERROR == 1
+#if OOLUA_STORE_LAST_DBG_ERROR == 1
 
 #	include "lua_includes.h"
 

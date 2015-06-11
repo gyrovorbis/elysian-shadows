@@ -155,13 +155,13 @@ static void correctstack (lua_State *L, TValue *oldstack) {
 
 
 /* some space for error handling */
-#define ERRORSTACKSIZE	(LUAI_MAXSTACK + 200)
+#define DBG_ERRORSTACKSIZE	(LUAI_MAXSTACK + 200)
 
 
 void luaD_reallocstack (lua_State *L, int newsize) {
   TValue *oldstack = L->stack;
   int lim = L->stacksize;
-  lua_assert(newsize <= LUAI_MAXSTACK || newsize == ERRORSTACKSIZE);
+  lua_assert(newsize <= LUAI_MAXSTACK || newsize == DBG_ERRORSTACKSIZE);
   lua_assert(L->stack_last - L->stack == L->stacksize - EXTRA_STACK);
   luaM_reallocvector(L, L->stack, L->stacksize, newsize, TValue);
   for (; lim < newsize; lim++)
@@ -182,7 +182,7 @@ void luaD_growstack (lua_State *L, int n) {
     if (newsize > LUAI_MAXSTACK) newsize = LUAI_MAXSTACK;
     if (newsize < needed) newsize = needed;
     if (newsize > LUAI_MAXSTACK) {  /* stack overflow? */
-      luaD_reallocstack(L, ERRORSTACKSIZE);
+      luaD_reallocstack(L, DBG_ERRORSTACKSIZE);
       luaG_runerror(L, "stack overflow");
     }
     else

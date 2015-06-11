@@ -1,5 +1,5 @@
-#ifndef ELYSIAN_LEVEL_SYSTEM_HPP
-#define ELYSIAN_LEVEL_SYSTEM_HPP
+#ifndef ELYSIAN_SEVERITY_SYSTEM_HPP
+#define ELYSIAN_SEVERITY_SYSTEM_HPP
 
 #include "elysian_system.hpp"
 #include "elysian_asset_typedefs.hpp"
@@ -10,18 +10,18 @@
 
 #include <vector>
 
-#define ELYSIAN_LEVEL_SYSTEM_PERSISTENT_ENTITY_MAX  10
+#define ELYSIAN_SEVERITY_SYSTEM_PERSISTENT_ENTITY_MAX  10
 
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86 || GYRO_PLATFORM == GYRO_PLATFORM_ANDROID || GYRO_PLATFORM == GYRO_PLATFORM_iOS
-#   define ELYSIAN_LEVELS_LOADED_MAX    1
+#   define ELYSIAN_SEVERITYS_LOADED_MAX    1
 #   define ELYSIAN_AREAS_LOADED_MAX     3
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_Qt
-#   define ELYSIAN_LEVELS_LOADED_MAX    100
+#   define ELYSIAN_SEVERITYS_LOADED_MAX    100
 #   define ELYSIAN_AREAS_LOADED_MAX     300
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_DC
-#   define ELYSIAN_LEVELS_LOADED_MAX    1
+#   define ELYSIAN_SEVERITYS_LOADED_MAX    1
 #   define ELYSIAN_AREAS_LOADED_MAX     1
 
 #endif
@@ -47,7 +47,7 @@ namespace elysian {
 
         typedef Pool<TimeStampEntry, true> ZonePool;
 
-        ZonePool _entries = ZonePool(ELYSIAN_LEVELS_LOADED_MAX, 1);
+        ZonePool _entries = ZonePool(ELYSIAN_SEVERITYS_LOADED_MAX, 1);
         char     _prevPath[GYRO_PATH_MAX_SIZE] = { 0 };
 
     protected:

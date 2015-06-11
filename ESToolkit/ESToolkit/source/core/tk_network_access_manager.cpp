@@ -57,7 +57,7 @@ void TkNetworkAccessManager::_onSslErrors(QNetworkReply* reply, QList<QSslError>
 bool TkNetworkAccessManager::checkNetworkReplyError(QNetworkReply *reply) {
     if(reply->error() != QNetworkReply::NoError) {
        QString error = reply->errorString();
-       Debug::printf(Debug::CRITICAL, "QNetworkReply::Error: %s", Q_CSTR(error));
+       Debug::printf(Debug::DBG_WARNING, "QNetworkReply::Error: %s", Q_CSTR(error));
         return true;
     }
     return false;
@@ -70,7 +70,7 @@ QJsonDocument TkNetworkAccessManager::jsonNetworkReply(QNetworkReply *reply) {
     QJsonDocument&& json = QJsonDocument::fromJson(string.toUtf8(), &parseError);
 
     if(json.isNull()) {
-        Debug::printf(Debug::CRITICAL, "Error parsing JSON network response. [Error: %s] [Raw: %s]", Q_CSTR(parseError.errorString()), Q_CSTR(string));
+        Debug::printf(Debug::DBG_WARNING, "Error parsing JSON network response. [Error: %s] [Raw: %s]", Q_CSTR(parseError.errorString()), Q_CSTR(string));
     }
 
     return json;

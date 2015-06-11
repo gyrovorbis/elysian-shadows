@@ -41,7 +41,7 @@ namespace elysian {
 
 		//Initialize all nondynamic sources to be nondirectional
 		for(unsigned i = AudioChannel::BGM_1; i < AudioChannel::DYN_1; ++i) {
-			gyAudSourceSetf(_channels[i].src, GY_SOURCE_ROLLOFF_FACTOR, 0.0f);
+            gyAudSourceSetf(_channels[i].src, GY_SOURCE_ROLLOFF_FACTOR, 0.0f);
 			gyAudOggStreamSetLooping(_channels[i].src, 1);
 			//gyAudSourceSeti(_channels[i].src, GY_SOURCE_RELATIVE, 1);
 		}
@@ -329,7 +329,7 @@ namespace elysian {
 	}
 
 	void AudioSystem::setSfxChannelPos(const unsigned channel, const GYVector2 &pos, const unsigned elev) const {
-        //gyAudSourceSetf(_channels[channel].src, GY_SOURCE_ROLLOFF_FACTOR, 1.0f);
+        //gyAudSourceSetf(_channels[channel].src, GY_SOURCE_ROLLDBG_OFF_FACTOR, 1.0f);
         //gyAudSourceSeti(_channels[channel].src, GY_SOURCE_RELATIVE, 1);
 		GYVector3 pos3 = { pos.x, pos.y, static_cast<float>(elev) };
 		gyAudSourceSetfv(_channels[channel].src, GY_SOURCE_POS, &pos3);
@@ -415,14 +415,14 @@ namespace elysian {
 	void AudioSystem::setBgmTrackPos(const float x, const float y, const float z) const {
 		GYVector3 pos3 = { x, y, z };
 		for(unsigned i = 0; i < 2; ++i) {
-			//gyAudSourceSetf(_channels[i].src, GY_SOURCE_ROLLOFF_FACTOR, 1.0f);
+			//gyAudSourceSetf(_channels[i].src, GY_SOURCE_ROLLDBG_OFF_FACTOR, 1.0f);
 			gyAudSourceSetfv(_streamChannels[i].src, GY_SOURCE_POS, &pos3);
 		}
 	}
 
 	void AudioSystem::setBgmTrackRolloffFactor(const float val) const {
 		for(unsigned i = 0; i < 2; ++i) {
-			gyAudSourceSetf(_streamChannels[i].src, GY_SOURCE_ROLLOFF_FACTOR, val);
+            gyAudSourceSetf(_streamChannels[i].src, GY_SOURCE_ROLLOFF_FACTOR, val);
 		}
 	}
 
@@ -672,11 +672,11 @@ namespace elysian {
 
 	void AudioSystem::setAuxTrackRolloffFactor(const unsigned track, const float val) const {
 		if(track == 0) {
-			gyAudSourceSetf(_streamChannels[StreamChannel::Type::AUX_1].src, GY_SOURCE_ROLLOFF_FACTOR, val);
-			gyAudSourceSetf(_streamChannels[StreamChannel::Type::AUX_1_TRAN].src, GY_SOURCE_ROLLOFF_FACTOR, val);
+            gyAudSourceSetf(_streamChannels[StreamChannel::Type::AUX_1].src, GY_SOURCE_ROLLOFF_FACTOR, val);
+            gyAudSourceSetf(_streamChannels[StreamChannel::Type::AUX_1_TRAN].src, GY_SOURCE_ROLLOFF_FACTOR, val);
 		} else {
-			gyAudSourceSetf(_streamChannels[StreamChannel::Type::AUX_2].src, GY_SOURCE_ROLLOFF_FACTOR, val);
-			gyAudSourceSetf(_streamChannels[StreamChannel::Type::AUX_2_TRAN].src, GY_SOURCE_ROLLOFF_FACTOR, val);
+            gyAudSourceSetf(_streamChannels[StreamChannel::Type::AUX_2].src, GY_SOURCE_ROLLOFF_FACTOR, val);
+            gyAudSourceSetf(_streamChannels[StreamChannel::Type::AUX_2_TRAN].src, GY_SOURCE_ROLLOFF_FACTOR, val);
 		}
 	}
 

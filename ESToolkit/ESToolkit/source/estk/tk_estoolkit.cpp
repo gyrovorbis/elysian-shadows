@@ -358,7 +358,7 @@ void ESToolkit::closeEvent(QCloseEvent *event) {
     }
 
     //_assetDockWidget->clearTreeView();
-    //MEMORY LEAK, BUT TEMPORARY FIX FOR DOUBLE DELETING AREA/LEVEL IN ~TREEWIDGETITEM
+    //MEMORY LEAK, BUT TEMPORARY FIX FOR DOUBLE DELETING AREA/SEVERITY IN ~TREEWIDGETITEM
     removeDockWidget(_assetDockWidget);
     _assetDockWidget->setParent(nullptr);
 
@@ -525,6 +525,9 @@ void ESToolkit::WriteSettings()
     settings.setValue("debugFilterLua", _ui->actionLua->isChecked());
     settings.setValue("debugFilterCommands", _ui->actionCommands->isChecked());
     settings.setValue("debugFilterOpenGL", _ui->actionOpenGL->isChecked());
+    settings.setValue("debugFilterVerbose", _ui->actionVerbose->isChecked());
+    settings.setValue("debugFilterWarning", _ui->actionWarning->isChecked());
+    settings.setValue("debugFilterError", _ui->actionError->isChecked());
 }
 
 void ESToolkit::ReadSettings()
@@ -568,19 +571,7 @@ void ESToolkit::ReadSettings()
     _engineDialog->setStartPos(x, y);
     MAP_VIEW_RES mapViewRes = (MAP_VIEW_RES)settings.value("mapViewRes", MAP_VIEW_RES_DYNAMIC).toInt();
     _setMapViewResolution(mapViewRes);
-    if(!settings.value("gitLabPrivateToken").isNull()) {
-        _gitlabDialog->setHostName(settings.value("gitLabHostName").toString());
-        _gitlabDialog->setPrivateToken(settings.value("gitLabPrivateToken").toString());
-        _gitlabDialog->authenticate(true);
-        _gitlabDialog->setProjectId(settings.value("gitLabProjectId").toInt());
-    }
-    _ui->actionToolkit->setChecked(settings.value("debugFilterToolkit", true).toBool());
-    _ui->actionEngine->setChecked(settings.value("debugFilterEngine", true).toBool());
-    _ui->actionLibGyro->setChecked(settings.value("debugFilterLibGyro", true).toBool());
-    _ui->actionQt->setChecked(settings.value("debugFilterQt", true).toBool());
-    _ui->actionLua->setChecked(settings.value("debugFilterLua", true).toBool());
-    _ui->actionCommands->setChecked(settings.value("debugFilterCommands", true).toBool());
-    _ui->actionOpenGL->setChecked(settings.value("debugFilterOpenGL", true).toBool());
+
 
     //bool assetVisibility = settings.value("assetDock", true).toBool();
     //bool entityVisibility = settings.value("entityDock", true).toBool();
@@ -619,6 +610,22 @@ void ESToolkit::ReadSettings()
     _ui->actionLights->setChecked(lightingEnabled);
     _ui->actionManual_Camera->setChecked(manualCamera);
     _ui->actionEnable_Audio->setChecked(audioEnabled);
+    if(!settings.value("gitLabPrivateToken").isNull()) {
+        _gitlabDialog->setHostName(settings.value("gitLabHostName").toString());
+        _gitlabDialog->setPrivateToken(settings.value("gitLabPrivateToken").toString());
+        _gitlabDialog->authenticate(true);
+        _gitlabDialog->setProjectId(settings.value("gitLabProjectId").toInt());
+    }
+    _ui->actionToolkit->setChecked(settings.value("debugFilterToolkit", true).toBool());
+    _ui->actionEngine->setChecked(settings.value("debugFilterEngine", true).toBool());
+    _ui->actionLibGyro->setChecked(settings.value("debugFilterLibGyro", true).toBool());
+    _ui->actionQt->setChecked(settings.value("debugFilterQt", true).toBool());
+    _ui->actionLua->setChecked(settings.value("debugFilterLua", true).toBool());
+    _ui->actionCommands->setChecked(settings.value("debugFilterCommands", true).toBool());
+    _ui->actionOpenGL->setChecked(settings.value("debugFilterOpenGL", true).toBool());
+    _ui->actionVerbose->setChecked(settings.value("debugFilterVerbose", true).toBool());
+    _ui->actionWarning->setChecked(settings.value("debugFilterWarning", true).toBool());
+    _ui->actionError->setChecked(settings.value("debugFilterError", true).toBool());
 
     toggleProjectActions(false);
 
@@ -971,7 +978,7 @@ bool ESToolkit::openProjectDir(const QString dir) {
     if(!proj) {
         QString invalidNotice("There's no fucking way that was a valid project directory, cockwheeze.");
         if(isVisible()) QMessageBox::critical(this, "You dun fucked up!", invalidNotice);
-        else Debug::printf(Debug::FATAL, "%s", Q_CSTR(invalidNotice));
+        else Debug::printf(Debug::DBG_ERROR, "%s", Q_CSTR(invalidNotice));
         success = false;
         return false;
     }
@@ -1017,7 +1024,7 @@ void ESToolkit::on_actionFileCloseProject_triggered(void) {
 
 void ESToolkit::on_actionFileSaveCurrentProject_triggered() {
     //check failure!
-    Debug::Log(Debug::VERBOSE, "ESToolkit::on_actionFileSaveCurrentProject_triggered");
+    Debug::Log(Debug::DBG_VERBOSE, "ESToolkit::on_actionFileSaveCurrentProject_triggered");
     Debug::push();
     _assets.getCurrentProject()->save();
     //_assets.getCurrentProject()->ClearUndoStacks();
@@ -1196,7 +1203,7 @@ void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *cons
     switch(type) {
     case Selectable::PROJECT:
         break;
-    case Selectable::LEVEL:
+    case Selectable::SEVERITY:
         _selectionDockWidget->SetSelectionTreeWidget();
         static_cast<Level *>(selection)->populateModel();
         _selectionDockWidget->SetSelectionModel(static_cast<Level *>(selection));
@@ -1252,7 +1259,7 @@ void ESToolkit::on_actionUndo_triggered(){
 
 void ESToolkit::on_actionRedo_triggered() {
     if(!_assets.getCurrentArea())  {
-        Debug::Log(Debug::CRITICAL, "Action Redo triggered, but there was no Area! Aborting function call...");
+        Debug::Log(Debug::DBG_WARNING, "Action Redo triggered, but there was no Area! Aborting function call...");
         return;
     }
     _assets.getCurrentArea()->getUndoStack().redo();
@@ -1347,7 +1354,7 @@ void ESToolkit::on_actionInvoke_triggered()
             _engineDialog->close();
             _engineSettingsDialog->show();
             _engineSettingsDialog->setFocus();
-            //Debug::Log(Debug::CRITICAL, "InvokeEngine(DREAMCAST) failed! Invalid Settings.");
+            //Debug::Log(Debug::DBG_WARNING, "InvokeEngine(DREAMCAST) failed! Invalid Settings.");
         }
     }
     else if(_ui->actionIPhone_iPad->isChecked())
@@ -1531,7 +1538,7 @@ void ESToolkit::on_actionDefault_Transform_triggered()
     lua_pushstring(*_mainState, "");
     lua_pushboolean(*_mainState, 0);
     LuaManager::_protectedCall(3, 1, nullptr);
-    elysian::Debug::printf(elysian::Debug::VERBOSE, lua_tostring(*_mainState, -1));
+    elysian::Debug::printf(elysian::Debug::DBG_VERBOSE, lua_tostring(*_mainState, -1));
     lua_pop(*_mainState, 1);
 
 #else
@@ -1782,6 +1789,21 @@ void ESToolkit::on_actionAdvance_Frame_triggered()
 void ESToolkit::on_actionClear_triggered()
 {
     Debug::clear();
+}
+
+void ESToolkit::on_actionVerbose_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::DBG_VERBOSE, arg1);
+}
+
+void ESToolkit::on_actionWarning_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::DBG_WARNING, arg1);
+}
+
+void ESToolkit::on_actionError_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::DBG_ERROR, arg1);
 }
 
 void ESToolkit::on_actionLibGyro_toggled(bool arg1)
@@ -2112,6 +2134,3 @@ bool ESToolkit::verifySingleArea(const QString verifyPath) {
 
     QApplication::quit();
 }
-
-
-

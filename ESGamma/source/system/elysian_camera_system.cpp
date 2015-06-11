@@ -142,7 +142,7 @@ void CameraSystem::_updateState(CameraState*const state, const float /*deltaTime
 
         for(auto it : state->entities) fitEntity(it);
 
-        //Debug::printf(Debug::VERBOSE, "<%f, %f>, <%f, %f>", newXDist, newYDist, maxXDist, maxYDist);
+        //Debug::printf(Debug::DBG_VERBOSE, "<%f, %f>, <%f, %f>", newXDist, newYDist, maxXDist, maxYDist);
 
         //convert dists to widths by adding back margins
 
@@ -156,12 +156,12 @@ void CameraSystem::_updateState(CameraState*const state, const float /*deltaTime
         //float boundWidth = ;
         //float boundHeight = ;
 
-        //Debug::printf(Debug::VERBOSE, "%f, %f - NEWSCALE - %f", scaleX, scaleY, nextScale);
+        //Debug::printf(Debug::DBG_VERBOSE, "%f, %f - NEWSCALE - %f", scaleX, scaleY, nextScale);
 
         //Check if we need to bother updating
         if(fabs(nextScale - interp.getEndKeyFrame()._scale) > ELYSIAN_CAMERA_STATE_SCALE_INTERP_EPSILON) {
-            //Debug::printf(Debug::VERBOSE, "SCALE - %f", nextScale);
-            //Debug::printf(Debug::VERBOSE, "<%f, %f>", scaleX, scaleY);
+            //Debug::printf(Debug::DBG_VERBOSE, "SCALE - %f", nextScale);
+            //Debug::printf(Debug::DBG_VERBOSE, "<%f, %f>", scaleX, scaleY);
 
             //curInterp.startScaleInterp(_keyFrame._scale, nextScale, 4.0f);
             setScale(nextScale, 4.0f);

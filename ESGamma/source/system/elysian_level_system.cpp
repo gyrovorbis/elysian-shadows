@@ -60,7 +60,7 @@ bool LevelSystem::switchLevel(const char *const dir) {
         return true;
     }
 
-    if(_level.size() >= ELYSIAN_LEVELS_LOADED_MAX) {
+    if(_level.size() >= ELYSIAN_SEVERITYS_LOADED_MAX) {
         delete _level[0];
         _level.erase(_level.begin());
     }

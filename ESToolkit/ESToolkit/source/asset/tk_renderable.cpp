@@ -13,7 +13,7 @@ bool TkRenderable::validate(QString &str) const {
         }
     };
 
-    cAssert(_spriteAttrib, "ERROR: Renderable component has no spriteAttrib.");
+    cAssert(_spriteAttrib, "DBG_ERROR: Renderable component has no spriteAttrib.");
 
     return success;
 }

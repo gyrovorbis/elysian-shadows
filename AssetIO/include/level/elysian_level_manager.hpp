@@ -1,5 +1,5 @@
-#ifndef ELYSIAN_LEVEL_MANAGER_HPP
-#define ELYSIAN_LEVEL_MANAGER_HPP
+#ifndef ELYSIAN_SEVERITY_MANAGER_HPP
+#define ELYSIAN_SEVERITY_MANAGER_HPP
 
 #include <elysian_asset_typedefs.hpp>
 

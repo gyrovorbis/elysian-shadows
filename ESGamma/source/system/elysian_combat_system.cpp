@@ -24,11 +24,11 @@ void CombatSystem::onCollisionEnter(Collidable*const bodyA, Collidable*const bod
     if(!(combatA->getDmgType() == Combat::DMG_SOURCE || combatA->getDmgType() == Combat::DMG_SOURCE_TARGET) ||
             !((combatB->getDmgType() == Combat::DMG_TARGET || combatB->getDmgType() == Combat::DMG_SOURCE_TARGET))) return;
 
-    Debug::printf(Debug::VERBOSE, "A PREFLAGS %d", bodyA->getContactEventMonitorMask());
-    Debug::printf(Debug::VERBOSE, "B PREFLAGS %d", bodyB->getContactEventMonitorMask());
+    Debug::printf(Debug::DBG_VERBOSE, "A PREFLAGS %d", bodyA->getContactEventMonitorMask());
+    Debug::printf(Debug::DBG_VERBOSE, "B PREFLAGS %d", bodyB->getContactEventMonitorMask());
 	_dealCollisionDamage(combatA, combatB, bodyB, contact);
-    Debug::printf(Debug::VERBOSE, "A POSTFLAGS %d", bodyA->getContactEventMonitorMask());
-    Debug::printf(Debug::VERBOSE, "B POSTFLAGS %d", bodyB->getContactEventMonitorMask());
+    Debug::printf(Debug::DBG_VERBOSE, "A POSTFLAGS %d", bodyA->getContactEventMonitorMask());
+    Debug::printf(Debug::DBG_VERBOSE, "B POSTFLAGS %d", bodyB->getContactEventMonitorMask());
 }
 
 void CombatSystem::onCollide(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* /*contact*/) {

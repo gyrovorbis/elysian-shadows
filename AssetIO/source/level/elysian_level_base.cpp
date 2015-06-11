@@ -34,7 +34,7 @@ extern "C" {
 
 namespace elysian {
 
-    static char buffer[ELYSIAN_LEVEL_PATH_SIZE+50];
+    static char buffer[ELYSIAN_SEVERITY_PATH_SIZE+50];
 
     LevelBase::~LevelBase(void) {
         gyVidTexDestroy(tileSheet);
@@ -64,7 +64,7 @@ namespace elysian {
                                                        ELYSIAN_TILE_HEIGHT)))
         {
             success = false;
-            Debug::printf(Debug::CRITICAL, "FAILURE!");
+            Debug::printf(Debug::DBG_ERROR, "FAILURE!");
         }
         dbgpop();
 
@@ -90,8 +90,6 @@ namespace elysian {
                                                        ELYSIAN_TILE_WIDTH,
                                                        ELYSIAN_TILE_HEIGHT);
         dbgpop();
-
-
         dbgpop();
 		return success;
     }
@@ -120,7 +118,7 @@ namespace elysian {
         dbgpush();
 
 		if(!gyFileOpen(filename, "r", &fp)) {
-            Debug::printf(Debug::CRITICAL, "FAILURE!");
+            Debug::printf(Debug::DBG_WARNING, "FAILURE!");
             dbgpop();
 			return false;
 		}
@@ -130,7 +128,7 @@ namespace elysian {
 		memset(buffer, 0, sizeof(char) * (len + 1));
 		gyFileRead(fp, buffer, len, NULL);
 
-		sgets(string, ELYSIAN_LEVEL_STRING_SIZE, &ptr);
+        sgets(string, ELYSIAN_SEVERITY_STRING_SIZE, &ptr);
 		sscanf(ptr, "%hd%n", &tileAmount, &ptr_inc);
 		ptr += ptr_inc;
         dbgprintf("tileAmount - %d", tileAmount);
@@ -166,7 +164,7 @@ namespace elysian {
         dbgpush();
 
 		if(!file) {
-            Debug::printf(Debug::CRITICAL, "FAILURE!");
+            Debug::printf(Debug::DBG_WARNING, "FAILURE!");
             dbgpop();
 			return false;
 		}

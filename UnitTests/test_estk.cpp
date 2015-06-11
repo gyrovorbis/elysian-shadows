@@ -55,7 +55,7 @@ bool            ESTkTest::_initialized      = false;
 
 int main(int argc, char** argv)
 {
-    Debug::setLevel(Debug::OFF);
+    Debug::setLevel(Debug::DBG_OFF);
     ESTkTest::initialize();
 
 
