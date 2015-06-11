@@ -1,14 +1,17 @@
 #include <stdio.h>
 #include <stdarg.h>
-
 #include <gyro_defines.h>
+#include <string.h>
 #include <gyro_system_api.h>
-
 #include "gyro_system_callbacks.h"
 
-static void (*_dbgFunc)(const GY_DEBUG_LEVEL, const char *const) = NULL;
+static GYDebugCallbacks _dbgCallbacks = {
+    NULL,
+    NULL,
+    NULL,
+};
 
-static GY_DEBUG_LEVEL _dbgLevel = GY_DEBUG_CRITICAL;
+static GY_DEBUG_LEVEL _dbgLevel = GY_DEBUG_WARNING;
 
 GYAppInitCb gy_appInitCb = NULL;
 GYAppTickCb gy_appTickCb = NULL;
@@ -25,13 +28,21 @@ void _gyLog(GY_DEBUG_LEVEL level, const char*const str, ...) {
     vsprintf(buffer, str, argptr);
     va_end(argptr);
 
-    if(_dbgFunc) _dbgFunc(level, buffer);
+    if(_dbgCallbacks.printf) _dbgCallbacks.printf(level, buffer);
     else gyPrintf(buffer);
 }
 
-void gySysDebugEnable(GY_DEBUG_LEVEL level, void(*func)(const GY_DEBUG_LEVEL, const char *const)) {
+void _gyPush(void) {
+    if(_dbgCallbacks.push) _dbgCallbacks.push();
+}
+
+void _gyPop(const unsigned count) {
+    if(_dbgCallbacks.pop) _dbgCallbacks.pop(count);
+}
+
+void gySysDebugEnable(GY_DEBUG_LEVEL level, const GYDebugCallbacks* callbacks) {
     _dbgLevel = level;
-    _dbgFunc = func;
+    memcpy(&_dbgCallbacks, callbacks, sizeof(GYDebugCallbacks));
 }
 
 void gySysRegisterAppInit(GYAppInitCb init_cb)
