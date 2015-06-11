@@ -5,8 +5,16 @@
 extern "C" {
 #endif
 
-void gySysDebugEnable(GY_DEBUG_LEVEL level, void(*func)(const GY_DEBUG_LEVEL level, const char *const));
+typedef struct GYDebugCallbacks {
+    void(*printf)(const GY_DEBUG_LEVEL level, const char *const);
+    void(*push)(void);
+    void(*pop)(const unsigned);
+} GYDebugCallbacks;
+
+void gySysDebugEnable(GY_DEBUG_LEVEL level, const GYDebugCallbacks* callbacks);
 void _gyLog(GY_DEBUG_LEVEL level, const char* const str, ...);
+void _gyPush(void);
+void _gyPop(const unsigned count);
 
 #ifdef __cplusplus
 }

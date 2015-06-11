@@ -37,7 +37,7 @@ static inline int _checkALError(void) {
     int error = alGetError();
 
     if(error != AL_NO_ERROR) {
-        _gyLog(GY_DEBUG_CRITICAL, "OpenAL Error raised: %s", _openALError(error));
+        _gyLog(GY_DEBUG_WARNING, "OpenAL Error raised: %s", _openALError(error));
         return 1;
     }
     return 0;

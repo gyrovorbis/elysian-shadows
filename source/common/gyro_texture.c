@@ -204,7 +204,7 @@ static void *_TexConstructor(void *const data) {
 
     //platform-specific texture allocation
     if(!_gyVidTexAlloc(tex)) {
-        _gyLog(GY_DEBUG_CRITICAL, "Could not load texture! - %s", texData->file);
+        _gyLog(GY_DEBUG_WARNING, "Could not load texture! - %s", texData->file);
         free(tex);
         return NULL;
     }

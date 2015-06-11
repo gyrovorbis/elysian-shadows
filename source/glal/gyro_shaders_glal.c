@@ -280,18 +280,18 @@ void gyVidSetGlobalAmbience(const GYVector4*const color) {
 
 //======= INTERNAL QUERY FUNCTIONS FOR DEFAULT SHADER =======
 
-static inline int _protectedUniformQuery(const GYShaderProgram* prog, const char* const name) {
+static inline int _protectedUniformQuery(const GYShaderProgram* prog, const char* const name, const unsigned canFail) {
     int loc = glGetUniformLocation(prog->program, name);
-    if(loc == -1) {
-        _gyLog(GY_DEBUG_CRITICAL, "Query for shader uniform %s failed!", name);
+    if(!canFail && loc == -1) {
+        _gyLog(GY_DEBUG_WARNING, "Query for shader uniform %s failed!", name);
     }
     return loc;
 }
 
-static inline int _protectedAttribQuery(const GYShaderProgram* prog, const char* const name) {
+static inline int _protectedAttribQuery(const GYShaderProgram* prog, const char* const name, const unsigned canFail) {
     int loc = glGetAttribLocation(prog->program, name);
-    if(loc == -1) {
-        _gyLog(GY_DEBUG_CRITICAL, "Query for shader attribute %s failed!", name);
+    if(!canFail && loc == -1) {
+        _gyLog(GY_DEBUG_WARNING, "Query for shader attribute %s failed!", name);
     }
     return loc;
 }
@@ -304,76 +304,76 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
     if(!shader->program) return;
 
 	//SHARED SHADER ATTRIBS/UNIFORMS
-    shader->attribLoc[GLAL_SHADER_POS]						= _protectedAttribQuery(shader->program, "aPosition");
-    shader->uniformLoc[GLAL_SHADER_PROJ_VIEW_MAT]			= _protectedUniformQuery(shader->program, "uProjViewMat");
+    shader->attribLoc[GLAL_SHADER_POS]						= _protectedAttribQuery(shader->program, "aPosition", 0);
+    shader->uniformLoc[GLAL_SHADER_PROJ_VIEW_MAT]			= _protectedUniformQuery(shader->program, "uProjViewMat", 0);
 
-    shader->attribLoc[GLAL_SHADER_TEX_COORD]					= _protectedAttribQuery(shader->program, "aTexCoord");
-    shader->attribLoc[GLAL_SHADER_NORMAL]						= _protectedAttribQuery(shader->program, "aNormal");
-    shader->attribLoc[GLAL_SHADER_TANGENT]						= _protectedAttribQuery(shader->program, "aTangent");
+    shader->attribLoc[GLAL_SHADER_TEX_COORD]					= _protectedAttribQuery(shader->program, "aTexCoord", 0);
+    shader->uniformLoc[GLAL_SHADER_TEXTURE_MAP]              = _protectedUniformQuery(shader->program, "uTexture", 0);
+    shader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED]			= _protectedUniformQuery(shader->program, "uTextureEnabled", 0);
 
-    shader->uniformLoc[GLAL_SHADER_TEXTURE_MAP]              = _protectedUniformQuery(shader->program, "uTexture");
-    shader->uniformLoc[GLAL_SHADER_TEXTURE_ENABLED]			= _protectedUniformQuery(shader->program, "uTextureEnabled");
+    //Everything beyond this point is for the light shader only
+    shader->attribLoc[GLAL_SHADER_NORMAL]						= _protectedAttribQuery(shader->program, "aNormal", !light);
+    shader->attribLoc[GLAL_SHADER_TANGENT]						= _protectedAttribQuery(shader->program, "aTangent", !light);
+    shader->attribLoc[GLAL_SHADER_COLOR]						= _protectedAttribQuery(shader->program, "aColor", !light);
 
     //if(!light) return; //the rest is lighting only
 
-    shader->attribLoc[GLAL_SHADER_COLOR]						= _protectedAttribQuery(shader->program, "aColor");
-
     //poll for global uniform locations
-    shader->uniformLoc[GLAL_SHADER_NORMAL_MAP_ZFACTOR]             = _protectedUniformQuery(shader->program, "uNormalMapZFactor");
-    shader->uniformLoc[GLAL_SHADER_CAM_WORLD_POS]			= _protectedUniformQuery(shader->program, "uCamWorldPos");
-    shader->uniformLoc[GLAL_SHADER_AMBIENCE]					= _protectedUniformQuery(shader->program, "uAmbience");
-    shader->uniformLoc[GLAL_SHADER_LIGHTING_ENABLED]			= _protectedUniformQuery(shader->program, "uLightingEnabled");
-    shader->uniformLoc[GLAL_SHADER_NORMAL_MAP_ENABLED]		= _protectedUniformQuery(shader->program, "uNormalMapEnabled");
-    shader->uniformLoc[GLAL_SHADER_NORMAL_MAP]				= _protectedUniformQuery(shader->program, "uNormalMap");
-    shader->uniformLoc[GLAL_SHADER_SPECULAR_MAP_ENABLED]		= _protectedUniformQuery(shader->program, "uSpecularMapEnabled");
-    shader->uniformLoc[GLAL_SHADER_SPECULAR_MAP]				= _protectedUniformQuery(shader->program, "uSpecularMap");
-    shader->uniformLoc[GLAL_SHADER_SHADOW_CUBE_MAP_PROJ_MAT] = _protectedUniformQuery(shader->program, "uShadowCubeMapProjMat");
+    shader->uniformLoc[GLAL_SHADER_NORMAL_MAP_ZFACTOR]             = _protectedUniformQuery(shader->program, "uNormalMapZFactor", !light);
+    shader->uniformLoc[GLAL_SHADER_CAM_WORLD_POS]			= _protectedUniformQuery(shader->program, "uCamWorldPos", !light);
+    shader->uniformLoc[GLAL_SHADER_AMBIENCE]					= _protectedUniformQuery(shader->program, "uAmbience", !light);
+    //shader->uniformLoc[GLAL_SHADER_LIGHTING_ENABLED]			= _protectedUniformQuery(shader->program, "uLightingEnabled");
+    shader->uniformLoc[GLAL_SHADER_NORMAL_MAP_ENABLED]		= _protectedUniformQuery(shader->program, "uNormalMapEnabled", !light);
+    shader->uniformLoc[GLAL_SHADER_NORMAL_MAP]				= _protectedUniformQuery(shader->program, "uNormalMap", !light);
+    shader->uniformLoc[GLAL_SHADER_SPECULAR_MAP_ENABLED]		= _protectedUniformQuery(shader->program, "uSpecularMapEnabled", !light);
+    shader->uniformLoc[GLAL_SHADER_SPECULAR_MAP]				= _protectedUniformQuery(shader->program, "uSpecularMap", !light);
+    shader->uniformLoc[GLAL_SHADER_SHADOW_CUBE_MAP_PROJ_MAT] = _protectedUniformQuery(shader->program, "uShadowCubeMapProjMat", !light);
 
     //poll for GYMaterial uniform locations
-    shader->uniformLoc[GLAL_SHADER_MATERIAL_SHININESS]		= _protectedUniformQuery(shader->program, "uMaterial.shininess");
-    shader->uniformLoc[GLAL_SHADER_MATERIAL_AMBIENT_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.ambientColor");
-    shader->uniformLoc[GLAL_SHADER_MATERIAL_DIFFUSE_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.diffuseColor");
-    shader->uniformLoc[GLAL_SHADER_MATERIAL_SPECULAR_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.specularColor");
-    shader->uniformLoc[GLAL_SHADER_MATERIAL_EMISSIVE_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.emissiveColor");
+    shader->uniformLoc[GLAL_SHADER_MATERIAL_SHININESS]		= _protectedUniformQuery(shader->program, "uMaterial.shininess", !light);
+    shader->uniformLoc[GLAL_SHADER_MATERIAL_AMBIENT_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.ambientColor", !light);
+    shader->uniformLoc[GLAL_SHADER_MATERIAL_DIFFUSE_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.diffuseColor", !light);
+    shader->uniformLoc[GLAL_SHADER_MATERIAL_SPECULAR_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.specularColor", !light);
+    shader->uniformLoc[GLAL_SHADER_MATERIAL_EMISSIVE_COLOR]	= _protectedUniformQuery(shader->program, "uMaterial.emissiveColor", !light);
 
     //poll for GYLightSource uniform locations
     for(unsigned i = 0; i < GYRO_VIDEO_LIGHT_SOURCES_MAX; ++i) {
 
         sprintf(buff, "uLights[%d].position", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_POS]							= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_POS]							= _protectedUniformQuery(shader->program, buff, !light);
 
         sprintf(buff, "uLights[%d].ambientColor", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_AMBIENT_COLOR]					= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_AMBIENT_COLOR]					= _protectedUniformQuery(shader->program, buff, !light);
 
         sprintf(buff, "uLights[%d].diffuseColor", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_DIFFUSE_COLOR]					= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_DIFFUSE_COLOR]					= _protectedUniformQuery(shader->program, buff, !light);
 
         sprintf(buff, "uLights[%d].specularColor", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SPECULAR_COLOR]				= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SPECULAR_COLOR]				= _protectedUniformQuery(shader->program, buff, !light);
 
         sprintf(buff, "uLights[%d].direction", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_DIRECTION]						= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_DIRECTION]						= _protectedUniformQuery(shader->program, buff, !light);
 
         sprintf(buff, "uLights[%d].attenuationFactors", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_ATTENUATION_FACTORS]			= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_ATTENUATION_FACTORS]			= _protectedUniformQuery(shader->program, buff, !light);
 
         sprintf(buff, "uLights[%d].spotExponent", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SPOT_EXPONENT]					= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SPOT_EXPONENT]					= _protectedUniformQuery(shader->program, buff, !light);
 
         sprintf(buff, "uLights[%d].spotCutoffAngle", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SPOT_CUTOFF_ANGLE]				= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SPOT_CUTOFF_ANGLE]				= _protectedUniformQuery(shader->program, buff, !light);
 
         sprintf(buff, "uLightsEnabled[%d]", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_ENABLED]						= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_ENABLED]						= _protectedUniformQuery(shader->program, buff, !light);
 
         sprintf(buff, "uShadowMaps[%d]", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SHADOW_MAP]					= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SHADOW_MAP]					= _protectedUniformQuery(shader->program, buff, !light);
 
         sprintf(buff, "uShadowCubeMaps[%d]", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SHADOW_CUBE_MAP]				= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SHADOW_CUBE_MAP]				= _protectedUniformQuery(shader->program, buff, !light);
 
         sprintf(buff, "uLightProjViewMats[%d]", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_PROJ_VIEW_MAT]					= _protectedUniformQuery(shader->program, buff);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_PROJ_VIEW_MAT]					= _protectedUniformQuery(shader->program, buff, !light);
 
     }
 }
@@ -381,18 +381,20 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
 
 // =========== PUBLIC INTERNAL FUNCTIONS ==========
 void glalLoadDefaultShaders(void) {
+    _gyLog(GY_DEBUG_VERBOSE, "Loading default shaders.");
+    _gyPush();
+
     GYShader* vertShader = gyShaderCreate("/assets/shaders/pixelLighting.vsh");
     GYShader* fragShader = gyShaderCreate("/assets/shaders/pixelLighting.fsh");
-    //GYShader* vertShader = gyShaderCreate("/Users/Falco/Documents/ESDev/libGyro/source/glal/shaders/pixelLighting.vsh");
-    //GYShader* fragShader = gyShaderCreate("/Users/Falco/Documents/ESDev/libGyro/source/glal/shaders/pixelLighting.fsh");
     glalLightingShader.program = gyShaderProgramCreate(vertShader, fragShader);
-    //_gyLog(GY_DEBUG_CRITICAL, "LIGHTING SHADER - %d", glalLightingShader.program->program);
     _queryLightingShader(&glalLightingShader, 1);
 
     vertShader = gyShaderCreate("/assets/shaders/shadowMap.vsh");
     fragShader = gyShaderCreate("/assets/shaders/shadowMap.fsh");
     glalShadowMapShader.program = gyShaderProgramCreate(vertShader, fragShader);
     _queryLightingShader(&glalShadowMapShader, 0);
+
+    _gyPop(1);
 }
 
 int gyShadersReloadAll(void) {
@@ -482,24 +484,28 @@ int _gyVidShaderCreate(GYShader* shader) {
     }
 
     _gyLog(GY_DEBUG_VERBOSE, "Compiling shader: %s", shader->path);
+    _gyPush();
 
     if(strcmp(extension, "vsh") == 0) {
         shader->type = GL_VERTEX_SHADER;
     } else if(strcmp(extension, "fsh") == 0) {
         shader->type = GL_FRAGMENT_SHADER;
     } else {
-        _gyLog(GY_DEBUG_CRITICAL, "\tUnrecognized shader extension: %s", extension);
+        _gyLog(GY_DEBUG_ERROR, "Unrecognized shader extension: %s", extension);
+        _gyPop(1);
         return 0;
     }
 
     shader->shader = glCreateShader(shader->type);
     if(!shader->shader)  {
-        _gyLog(GY_DEBUG_CRITICAL, "\tCould not generate shader", shader->path);
+        _gyLog(GY_DEBUG_ERROR, "Could not generate shader", shader->path);
+        _gyPop(1);
         return 0;
     }
 
 	if(!gyFileOpen(shader->path, "r", &file)) {
-		_gyLog(GY_DEBUG_CRITICAL, "\tCould not open shader", shader->path);
+        _gyLog(GY_DEBUG_ERROR, "Could not open shader", shader->path);
+        _gyPop(1);
 		return 0;
 	}
 
@@ -525,16 +531,18 @@ int _gyVidShaderCreate(GYShader* shader) {
             char* infoLog = malloc(sizeof(char)*infoLen);
 
             glGetShaderInfoLog(shader->shader, infoLen, NULL, infoLog);
-            _gyLog(GY_DEBUG_CRITICAL, "\tError compiling shader: %s", infoLog);
+            _gyLog(GY_DEBUG_ERROR, "Error compiling shader: %s", infoLog);
             free(infoLog);
         } else {
-            _gyLog(GY_DEBUG_CRITICAL, "\tUnknown compilation error");
+            _gyLog(GY_DEBUG_ERROR, "Unknown compilation error");
         }
 
         glDeleteShader(shader->shader);
+        _gyPop(1);
         return 0;
     }
 
+    _gyPop(1);
     return 1;
 }
 
@@ -547,23 +555,27 @@ int _gyVidShaderProgramCreate(GYShaderProgram* program) {
     GLint linked;
 
     _gyLog(GY_DEBUG_VERBOSE, "Linking shader program");
+    _gyPush();
 
 	program->program = glCreateProgram();
 	if(!program->program) {
-        _gyLog(GY_DEBUG_FATAL, "\tCould not generate program!");
+        _gyLog(GY_DEBUG_ERROR, "\tCould not generate program!");
+        _gyPop(1);
 		return 0;
 	}
 
     if(program->vertShader) {
         glAttachShader(program->program, program->vertShader->shader);
     } else {
-        _gyLog(GY_DEBUG_FATAL, "\tNo vertex shader object to attach!");
+        _gyLog(GY_DEBUG_ERROR, "\tNo vertex shader object to attach!");
+        _gyPop(1);
         return 0;
     }
     if(program->fragShader) {
         glAttachShader(program->program, program->fragShader->shader);
     } else {
-        _gyLog(GY_DEBUG_FATAL, "\tNo fragment shader object to attach!");
+        _gyLog(GY_DEBUG_ERROR, "\tNo fragment shader object to attach!");
+        _gyPop(1);
         return 0;
     }
 
@@ -578,13 +590,14 @@ int _gyVidShaderProgramCreate(GYShaderProgram* program) {
             char* infoLog = malloc(sizeof(char) * infoLen);
 
             glGetProgramInfoLog(program->program, infoLen, NULL, infoLog);
-            _gyLog(GY_DEBUG_CRITICAL, "\tCould not link program: %s", infoLog);
+            _gyLog(GY_DEBUG_ERROR, "Could not link program: %s", infoLog);
             free(infoLog);
 
         } else {
-            _gyLog(GY_DEBUG_CRITICAL, "\tCould not link program for unknown reasons!");
+            _gyLog(GY_DEBUG_ERROR, "Could not link program for unknown reasons!");
         }
 
+        _gyPop(1);
         glDeleteProgram(program->program);
         return 0;
     }
@@ -592,6 +605,7 @@ int _gyVidShaderProgramCreate(GYShaderProgram* program) {
     glDetachShader(program->program, program->vertShader->shader);
     glDetachShader(program->program, program->fragShader->shader);
 
+    _gyPop(1);
     return 1;
 }
 

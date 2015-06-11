@@ -13,7 +13,7 @@ extern "C" {
 #define GYRO_STRINGIFY_MACRO(a) _GYRO_STRINGIFY_MACRO(a)
 
 #ifndef GYRO_BUILD_NODE
-#   define LOCAL               LOCAL    //Don't even ask.
+#   define GYRO_LOCAL_BUILD
 #   define GYRO_BUILD_NODE     LOCAL
 #endif
 #ifndef GYRO_BUILD_JOB
@@ -35,7 +35,7 @@ typedef struct GYSysParams {
 
 } GYSysParams;
 
-typedef enum _GY_DEBUG_LEVEL { GY_DEBUG_VERBOSE, GY_DEBUG_CRITICAL, GY_DEBUG_FATAL, GY_DEBUG_OFF } GY_DEBUG_LEVEL;
+typedef enum _GY_DEBUG_LEVEL { GY_DEBUG_VERBOSE, GY_DEBUG_WARNING, GY_DEBUG_ERROR, GY_DEBUG_OFF } GY_DEBUG_LEVEL;
 
 int gySysInit(const GYSysParams*const params);
 int gySysUninit(void);
