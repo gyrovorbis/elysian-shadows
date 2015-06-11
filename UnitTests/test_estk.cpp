@@ -4,6 +4,7 @@
 #include <tk_estoolkit.h>
 #include <test_estoolkit.h>
 #include <test_project.h>
+#include <test_map_view.h>
 #include <test_libgyro_file_api.h>
 
 /*
@@ -85,9 +86,10 @@ int main(int argc, char** argv)
         }
     }
 
+    args.push_back(QString("-o"));
+    args.push_back(QString("ESTkTestResults0000.xml,xml"));
 
     qDebug() << "Using project directory supplied as command-line argument:" << project;
-
 
     ESToolkitTest::enqueueTest(new LibGyroFileApiTest());
     ESToolkitTest::enqueueTest(new tktest::ESToolkitTest());
@@ -95,33 +97,49 @@ int main(int argc, char** argv)
 
    int failures = 0;
    int testCases = 0;
-   auto ASSERT_TEST = [&failures](QObject* obj, const QStringList testArgs) {
-        failures += QTest::qExec(obj, testArgs);
+   auto ASSERT_TEST = [&failures, &args](QObject* obj) {
+        failures += QTest::qExec(obj, args);
+        delete obj;
     };//testestestests
 
    //Clear old test data
     char strBuff[200];
-    int i = 0;
+    int i = -1;
     do {
-        sprintf(strBuff, "ESTkTestResults%03d.xml", ++i);
+        sprintf(strBuff, "ESTkTestResults%04d.xml", ++i);
     } while(QFile::exists(strBuff) && QFile::remove(strBuff));
 
 
-   QObject *current;
-   while(ESToolkitTest::_testQueue.size()) {
-       sprintf(strBuff, "ESTkTestResults%03d.xml,xml", ++testCases);
 
-       (current = ESToolkitTest::_testQueue.takeFirst());
-       QStringList testArgs = args;
-       testArgs.push_back(QString("-o"));
-       testArgs.push_back(QString(strBuff));
-       ASSERT_TEST(current, testArgs);
+   while(ESToolkitTest::_testQueue.size()) {
+       sprintf(strBuff, "./ESTkTestResults%04d.xml", ++testCases);
+
+       QObject *current =  ESToolkitTest::_testQueue.takeFirst();
+
+       ASSERT_TEST(current);
+
+       if(!QFile::exists("ESTkTestResults0000.xml")) {
+            qDebug() << "DOESN't EXIST";
+       }
+
+       QFile lolz("ESTkTestResults0000.xml");
+       if(!lolz.isReadable()) {
+        qDebug() << "NOT READABLE";
+       }
+       //if(lolz.is
+        //qDebug() << "IS OPEN!";
+       //}
+
+       if(!QFile::copy("ESTkTestResults0000.xml", strBuff)) {
+        qDebug() << "FAILED COPY!!";
+       }
+
    }
 
    char buff[7];
    sprintf(buff, "%d", failures);
 
-    qDebug() << "TESTING COMPLETE WITH" << QString(buff) << "errors!";
+    qDebug() << "FUCKING FUCK!!!!!" << QString(buff) << "errors!";
     qDebug() << ((failures)? "GO FIX ASSETS RIGHT FUCKING NOW!": "WEEEEEEELL! GOOD FUCKING JOB, NIGGAS!");
 
    return failures;

@@ -4,6 +4,7 @@
 #include <tk_area.h>
 #include <QObject>
 #include <QDebug>
+#include <QtTest>
 
 namespace tktest {
 
@@ -24,11 +25,13 @@ private Q_SLOTS:
 inline AreaTest::AreaTest(TkArea *area): _area(area) {}
 
 inline void AreaTest::initTestCase() {
+    QVERIFY(true);
     qDebug() << QString("Verifying Area[") << QString(_area->path) << "]";
 }
 
 
 inline void AreaTest::activateArea(void) {
+    QVERIFY(true);
     getAssets()->setCurrentArea(_area);
 }
 

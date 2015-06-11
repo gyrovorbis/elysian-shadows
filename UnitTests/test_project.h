@@ -58,7 +58,7 @@ inline void TestSmokeProject::openProject()
 inline void TestSmokeProject::iterateLevels() {
     QVERIFY(getAssets()->getCurrentProject());
     for(unsigned i = 0; i < getAssets()->getCurrentProject()->getLevelAmount(); ++i) {
-        ESToolkitTest::enqueueNextText(new LevelTest(getAssets()->getCurrentProject()->getLevelByIndex(i)));
+        ESToolkitTest::enqueueNextTest(new LevelTest(getAssets()->getCurrentProject()->getLevelByIndex(i)));
     }
 }
 

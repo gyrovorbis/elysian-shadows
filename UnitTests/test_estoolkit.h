@@ -42,7 +42,7 @@ protected:
 
 public:
 
-    static void enqueueNextText(QObject* object);
+    static void enqueueNextTest(QObject* object);
     static void enqueueTest(QObject* object);
     static void pushSubTest(const QString name);
     static void popSubTest(const bool success = true);
@@ -72,7 +72,7 @@ inline void ESToolkitTest::flagWarning(const QString msg) {
 
 inline void ESToolkitTest::flagError(const QString msg) {
     if(!_initialized) return;
-    QVERIFY2(false, Q_CSTR(msg));
+  //  QVERIFY2(false, Q_CSTR(msg));
     //_mutex->lock();
 
     //_mutex->unlock();
@@ -107,7 +107,7 @@ inline void ESToolkitTest::popSubTest(const bool success) {
 inline void ESToolkitTest::setESToolkit(ESToolkit*const estk) { _estk = estk; }
 inline ESToolkit* ESToolkitTest::getESToolkit(void) { return _estk; }
 
-inline void ESToolkitTest::enqueueNextText(QObject *object) {
+inline void ESToolkitTest::enqueueNextTest(QObject *object) {
    // for(auto it = _testQueue.begin(); it != _testQueue.end(); ++it) {
      //   if(*it == this) {
        //     ++it;

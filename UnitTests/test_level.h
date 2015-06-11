@@ -27,14 +27,16 @@ inline LevelTest::LevelTest(TkLevel *level) { _level = level; }
 
 inline void LevelTest::initTestCase() {
     qDebug() << QString("Verifying Level[") << QString(_level->path) << "]";
+    QVERIFY(true);
 }
 
 
 inline void LevelTest::activateLevel(void) {
     getAssets()->setCurrentLevel(_level);
     for(unsigned i = 0 ; i < _level->getAreaAmount(); ++i) {
-        ESToolkitTest::enqueueNextText(new AreaTest(_level->getAreaByIndex(i)));
+        ESToolkitTest::enqueueNextTest(new AreaTest(_level->getAreaByIndex(i)));
     }
+    QVERIFY(true);
 }
 
 
