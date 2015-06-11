@@ -84,10 +84,6 @@ bool Engine::loadAssets(void) {
 
     Debug::printf(Debug::VERBOSE, "Engine::LoadAssets()");
     Debug::push();
-    //Debug::Print(Debug::NORMAL, "PartySystem::PartySystem() - Loading Playable Characters.\n");
-    //success &= partySystem->LoadPlayables();
-         //Debug::Print(Debug::ERROR_2, "\t! - Playable Character file could not be opened.\n");
-     //}
     success &= !_guiSystem->loadAssets();
     success &= !_dialogSystem->loadAssets();
 

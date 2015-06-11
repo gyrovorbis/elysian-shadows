@@ -898,7 +898,7 @@ void ESToolkit::on_actionFileQuit_triggered() {
 }
 
 bool ESToolkit::openProjectDir(const QString dir) {
-    DbgEvent dbg("ESToolkit::openProjectDir(%s)", Q_CSTR(dir));
+    DbgEvent dbg("Opening Project [%s]", Q_CSTR(dir));
     bool success = true;
 
     if(dir=="" || dir.isNull()) {

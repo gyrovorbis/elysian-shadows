@@ -247,11 +247,10 @@ void Area::_disconnectSlots(Entity * const entity) {
 }
 
 bool TkArea::load(const char*const str) {
+    DbgEvent event("Indexing Area [%s]", str);
     level->connectSlots(this);
     QString dir(str);
     bool success = true;
-    Debug::Logf(Debug::VERBOSE, "Area::Load(%s)", dir.toStdString().c_str());
-    Debug::push();
 
     _location = dir;
 
@@ -261,10 +260,10 @@ bool TkArea::load(const char*const str) {
     //level = _level;
 
     setNodeName(QDir(dir).dirName());
-
+#if 0
     Debug::Log(Debug::VERBOSE, "Creating Toolkit Entities from elysian::Entities.");
     Debug::push();
-#if 0
+
     for(unsigned int i = 0; i < _elysianArea.entities.size(); ++i) {
         Debug::Logf(Debug::VERBOSE, "Entity #%d - %s.", i, _elysianArea.entities[i]->getName());
         Entity *tempEntity = new Entity(*_elysianArea.entities[i]);
@@ -273,9 +272,6 @@ bool TkArea::load(const char*const str) {
         //tempEntity->setParentItem(_entityParent);
     }
 #endif
-    Debug::pop();
-
-    Debug::pop();
     return success;//success;
 }
 
@@ -394,6 +390,7 @@ bool Area::activate(void) {
     if(!_open) open();
     Q_EMIT activating(this);
     if(!_active) {
+        DbgEvent event("Activating Area [%s].", Q_CSTR(_location));
        EngineGLSceneWidget::makeCurrentContext();
         AreaBase::activate();
 
@@ -422,7 +419,9 @@ bool Area::deactivate(void) {
 
 bool Area::open(void) {
     bool success = true;
-    if(_open) return false;
+    if(_open) return true;
+    DbgEvent event("Opening Area [%s].", Q_CSTR(_location));
+
     EngineGLSceneWidget::makeCurrentContext();
 
     success &= AreaBase::load(_location.toStdString().c_str());

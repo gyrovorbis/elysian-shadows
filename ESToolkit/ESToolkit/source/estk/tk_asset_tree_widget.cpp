@@ -37,6 +37,8 @@ void AssetTreeWidget::OnCurrentItemChanged(QTreeWidgetItem * current, int /*inde
     auto* treenode = ((TreeNode *)current);
 
     _ignoreItemChange = true;
+    DbgEvent event("Changing Asset View selection.");
+
     treenode->activate();
     if(treenode->getTreeWidgetItemType() != TreeNode::ITEM_SUBDIR) {
 

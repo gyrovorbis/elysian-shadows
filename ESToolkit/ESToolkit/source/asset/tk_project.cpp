@@ -72,12 +72,9 @@ Level *Project::loadLevel(const QString name) {
     directory.append("/");
     directory.append(name);
 
-	Debug::Log(Debug::VERBOSE, QString("Project::LoadLevel("+directory+")"));
-    Debug::push();
-
     Level::_curProj = this;
 
-    Level *lev = getLevelSys()->loadLevel(directory.toStdString().c_str());
+    Level *lev = getLevelSys()->loadLevel(Q_CSTR(directory));
 
     //connectSlots(lev);
     if(lev) {
@@ -85,12 +82,10 @@ Level *Project::loadLevel(const QString name) {
 		_level.push_back(lev);
         _curNodeParent->addChild(lev);
         Q_EMIT levelAdded(this, lev);
-        Debug::pop();
 		return lev;
     }
 
 	delete lev;
-    Debug::pop();
     return nullptr;
 }
 
@@ -144,8 +139,7 @@ bool Project::removeLevel(const QString name, const bool deleteFolder) {
 }
 
 bool Project::load(const QString loc) {
-	Debug::Log(Debug::VERBOSE, QString("Project::Load(" + loc + ")"));
-    Debug::push();
+    DbgEvent event("Indexing Project [%s].", Q_CSTR(loc));
 
     QDir dir(loc);
     bool success = true;
@@ -153,7 +147,6 @@ bool Project::load(const QString loc) {
 
     if(!dir.isReadable()) {
 		Debug::Log(Debug::CRITICAL, "Directory is not readable!");
-        Debug::pop();
 		return false;
     }
 
@@ -165,9 +158,8 @@ bool Project::load(const QString loc) {
     _location = loc;
 
     if(!dir.cd("level")) {
-        Debug::Logf(Debug::CRITICAL, "No 'level' folder!", getNodeName().toStdString().c_str());
+        Debug::Logf(Debug::FATAL, "No 'level' folder!", getNodeName().toStdString().c_str());
         QDir::setCurrent(prevWorkingDir);
-        Debug::pop();
         return false;
     }
 
@@ -177,7 +169,7 @@ bool Project::load(const QString loc) {
         QDir dir(path);
 
         if(!dir.isReadable()) {
-            Debug::printf(Debug::CRITICAL, "%s is not readable!", path.toStdString().c_str());
+            Debug::printf(Debug::FATAL, "%s is not readable!", path.toStdString().c_str());
             return;
         }
 
@@ -189,8 +181,7 @@ bool Project::load(const QString loc) {
 
         //assume regular subdir and recurse
         } else {
-            Debug::printf(Debug::VERBOSE, "Entering %s subdirectory, scanning for levels.", path.toStdString().c_str());
-
+            DbgEvent event("Indexing subdirectory [%s].", Q_CSTR(path));
             TreeNode* subDir = new TreeNode;
             subDir->setNodeName(dir.dirName());
             subDir->setNodePath(path);
@@ -200,9 +191,15 @@ bool Project::load(const QString loc) {
             _curNodeParent->addChild(subDir);
             _curNodeParent = subDir;
 
-            //Skip '.' and '..' virtual directories
-            for(int i = 2; i < folders.size(); ++i) {
-                scanDirectory(path+QString("/")+folders[i]);
+
+            if(folders.size() > 2) {
+                //Skip '.' and '..' virtual directories
+                for(int i = 2; i < folders.size(); ++i) {
+                    scanDirectory(path+QString("/")+folders[i]);
+                }
+            } else {
+                Debug::printf(Debug::FATAL, "No levels found!");
+                subDir->setValid(false);
             }
 
             _curNodeParent = oldNodeParent;
@@ -212,7 +209,6 @@ bool Project::load(const QString loc) {
     scanDirectory(getNodePath()); //begin recursive scan
 
     QDir::setCurrent(prevWorkingDir);
-    Debug::pop();
 	return true;//success;
 }
 

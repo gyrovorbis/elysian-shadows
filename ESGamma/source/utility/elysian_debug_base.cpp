@@ -192,10 +192,10 @@ GYVector3 dirVec = { 0.0f, 0.0f, -1.0f };
 
 bool DebugBase::sandboxInit(void) {
 	//Fuck the current loading paradigm. Initialization happens here for now.
-    printf(VERBOSE, "LuaManager::runScriptSandbox(%s)", ELYSIAN_GLOBAL_INIT_LUA_PATH);
+    printf(VERBOSE, "Executing global_init script [%s].", ELYSIAN_GLOBAL_INIT_LUA_PATH);
     Debug::push();
 
-	LuaManager::runScriptSandbox(ELYSIAN_GLOBAL_INIT_LUA_PATH);
+    LuaManager::runScriptSandbox(ELYSIAN_GLOBAL_INIT_LUA_PATH);
 	Entity* leader = getPartySys()->getPartyLeader();
 	if(leader) {
         leader->_transform.setPos(_cmdLineArgs.x, _cmdLineArgs.y);

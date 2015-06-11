@@ -45,7 +45,7 @@ namespace elysian {
     bool LevelBase::load(const char *const dir) {
         bool success = true;
 
-        dbgprintf("Level::Load(%s)", dir);
+        dbgprintf("Loading Level [%s].", dir);
         dbgpush();
 		strcpy(path, dir);
 
@@ -55,7 +55,7 @@ namespace elysian {
 
         strcpy(buffer, dir);
         strcat(buffer, ELYSIAN_TILESHEET_PATH);
-        dbgprintf("Level::LoadTileSheet(%s)", buffer);
+        dbgprintf("Loading tilesheet [%s].", buffer);
         dbgpush();
         if(!(tileSheet = gyVidTexCreateSheetUniform(buffer,
                                                        ELYSIAN_TILESHEET_WIDTH,
@@ -70,7 +70,7 @@ namespace elysian {
 
         strcpy(buffer, dir);
         strcat(buffer, ELYSIAN_NORMALSHEET_PATH);
-        dbgprintf("Level::LoadNormalSheet(%s)", buffer);
+        dbgprintf("Loading normalsheet [%s].", buffer);
         dbgpush();
             normalSheet =    gyVidTexCreateSheetUniform(buffer,
                                                        ELYSIAN_TILESHEET_WIDTH,
@@ -82,7 +82,7 @@ namespace elysian {
 
         strcpy(buffer, dir);
         strcat(buffer, ELYSIAN_SPECULARSHEET_PATH);
-        dbgprintf("Level::LoadSpecularSheet(%s)", buffer);
+        dbgprintf("Loading specularsheet [%s].", buffer);
         dbgpush();
             specularSheet = gyVidTexCreateSheetUniform(buffer,
                                                        ELYSIAN_TILESHEET_WIDTH,
@@ -116,7 +116,7 @@ namespace elysian {
 		int ptr_inc = 0;
 		size_t len;
 
-        dbgprintf("Level::LoadTileset(%s)", filename);
+        dbgprintf("Loading tileset [%s].", filename);
         dbgpush();
 
 		if(!gyFileOpen(filename, "r", &fp)) {

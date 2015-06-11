@@ -311,7 +311,7 @@ bool TkLevel::activateByArea(Area *const area) {
 
 bool TkLevel::deactivate(void) {
     if(!_active) return true;
-    Debug::Logf(Debug::VERBOSE, "Level[%s].deactivate()", getNodeName().toStdString().c_str());
+    //Debug::Logf(Debug::VERBOSE, "Level[%s].deactivate()", getNodeName().toStdString().c_str());
     /* If there is anything that is not persistent to be removed from the
        object/tilesheet scenes, do it now.
     */
@@ -353,6 +353,7 @@ bool TkLevel::open(void) {
     //Debug::Log(Debug::VERBOSE, "Level[%s].Open()\n", getName().toStdString().c_str());
     bool success = true;
     if(_open) return false;
+    DbgEvent event("Opening Level [%s].", Q_CSTR(_location));
 
     QDir dir(_location);
     success &= LevelBase::load(dir.absolutePath().toStdString().c_str());
@@ -366,7 +367,7 @@ bool TkLevel::open(void) {
 											ELYSIAN_TILE_HEIGHT,
 											_tileSheet))
 	{
-        Debug::Log(Debug::FATAL, "Failure cutting tilesheet!");
+        Debug::Log(Debug::FATAL, "Failed to divide tilesheet!");
         success = false;
     }
 
@@ -427,9 +428,6 @@ Area *TkLevel::loadArea(const QString name) {
     directory.append("/area/");
     directory.append(name);
 
-    Debug::Log(Debug::VERBOSE, QString("Level::LoadArea("+directory+")"));
-    Debug::push();
-
     Level *tempCurLevel = _curLevel;
     _curLevel = this;
 
@@ -442,12 +440,10 @@ Area *TkLevel::loadArea(const QString name) {
 		_area.push_back(area);
         addChild(area);
 		Q_EMIT areaAdded(this, area);
-        Debug::pop();
         return area;
     }
 
     delete area;
-    Debug::pop();
     return nullptr;
 }
 
@@ -491,18 +487,17 @@ Area *TkLevel::importArea(const QString dir) {
 }
 
 bool TkLevel::load(const QString loc) {
+    DbgEvent event("Indexing Level [%s].", Q_CSTR(loc));
     QDir dir(loc);
     bool success = true;
 
     _project = _curProj;
     _project->connectSlots(this);
 
-    Debug::Logf(Debug::VERBOSE, "Level::Load(%s)", loc.toStdString().c_str());
-    Debug::push();
-
     setNodeName(dir.dirName());
     _location = loc;
 
+#if 0
     Debug::Log(Debug::VERBOSE, "Verifying Tilesheet");
     Debug::push();
 	if(!TileSheetUtilities::VerifyImageSize(loc+ELYSIAN_TILESHEET_PATH,
@@ -513,10 +508,11 @@ bool TkLevel::load(const QString loc) {
     }
     Debug::pop();
     _validSheets = success;
+#endif
 
     if(!dir.cd("area")) {
-        Debug::Log(Debug::CRITICAL, "No area directory!");
-        Debug::pop();
+        Debug::Log(Debug::FATAL, "No area directory!");
+        setValid(false);
         return false;
     }
 
@@ -525,8 +521,7 @@ bool TkLevel::load(const QString loc) {
         success &= (loadArea(areas[j]))? true : false;
     }
 
-    Debug::pop();
-    return true;//success;
+    return success;
 }
 
 //Does not save children. Just attrib to current location
