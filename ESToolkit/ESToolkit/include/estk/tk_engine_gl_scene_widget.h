@@ -54,6 +54,8 @@ protected:
     MapView*                _mapView            = nullptr;
     bool                    _initialized        = false;
     QOpenGLDebugLogger*     _glLogger           = nullptr;
+    bool                    _wasGLError         = false;
+    QString                 _prevGLError;
     TaskMonitor             _engineTask;
 
     static EngineGLSceneWidget* _self;

@@ -153,7 +153,7 @@ unsigned LuaManagerBase::_envDump(LuaScript *scr) {
 
     LuaManager::getGlobal("rPrint");
     lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, scr->getEnvironRef());
-    lua_pushnil(*_mainState);
+    lua_pushnumber(*_mainState, 3);
     sprintf(envString, "_env[%d]", envCount-1);
     lua_pushstring(*_mainState, envString);
     _protectedCall(3, 1, nullptr);

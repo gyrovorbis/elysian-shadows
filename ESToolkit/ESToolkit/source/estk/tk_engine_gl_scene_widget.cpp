@@ -201,6 +201,8 @@ void EngineGLSceneWidget::paintGL(void) {
        // _initSpineShit();
         once = true;
     }
+
+    _wasGLError = false;
 #if 0
     float deltaTime = getAssets()->getEngine()->getTimerSys()->getDeltaTime();
     spSkeleton_update(skeleton, deltaTime);
@@ -271,5 +273,9 @@ void EngineGLSceneWidget::_onResized(void) {
 }
 
 void EngineGLSceneWidget::_onGLMessageLogged(const QOpenGLDebugMessage &message) {
-    dbgprintf(message.message().toStdString().c_str());
+    if(!_wasGLError && _prevGLError != message) {
+        dbgprintf(message.message().toStdString().c_str());
+        _prevGLError = message;
+        _wasGLError = true;
+    }
 }
