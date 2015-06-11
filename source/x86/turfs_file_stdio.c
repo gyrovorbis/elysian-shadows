@@ -22,7 +22,7 @@ TURFSAPI turfs_file_open(const char *file, const char *mode, turfs_fp *fp)
     *fp = malloc(sizeof(turfs_fp));
     if (*fp == NULL) {
         free(rpath);
-        return TURFS_RET_MEMORY_ERROR;
+        return TURFS_RET_MEMORY_DBG_ERROR;
     }
     (*fp)->fp = fopen(rpath, mode);
     if ((*fp)->fp == NULL) {
