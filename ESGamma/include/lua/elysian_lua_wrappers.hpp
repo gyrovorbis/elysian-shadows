@@ -42,6 +42,7 @@
 #include "elysian_camera_system.hpp"
 #include "elysian_lua_table_proxy.hpp"
 #include <elysian_audio_system.hpp>
+#include <elysian_renderable.hpp>
 
 /* IT'S NOT SAFE TO GO ALONE! TAKE THIS HEADER FILE. IT WILL HELP
  * YOU ON YOUR JOURNEY!

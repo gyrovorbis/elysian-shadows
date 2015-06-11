@@ -14,7 +14,7 @@ typedef struct _GYAudWavPayload {
     char *data;
 } GYAudWavPayload;
 
-void gyAudSourcePlayWav(GYAudioSource*const src, const GYWav* wav) {
+void gyAudSourcePlayWav(GYAudioSource*const src, const struct GYWav* wav) {
     if(!wav) return;
     const GYAudWavPayload* payload = wav->_data;
     alSourcei(*(ALuint*)src, AL_BUFFER, payload->buffer);

@@ -3,7 +3,7 @@
 
 #include <cstring>
 #include <stdio.h>
-//#include <QDebug>
+#include <gyro_system_api.h>
 #include <elysian_system.hpp>
 
 #define ASSETS_VROOT						"/assets"

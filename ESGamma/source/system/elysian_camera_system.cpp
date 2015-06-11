@@ -6,6 +6,7 @@
 #include "elysian_generic.hpp"
 #include "elysian_area.hpp"
 #include "elysian_level_base.hpp"
+#include <elysian_timer_system.hpp>
 
 namespace elysian {
 

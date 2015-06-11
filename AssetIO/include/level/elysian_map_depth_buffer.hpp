@@ -158,9 +158,8 @@ namespace elysian {
 
         //Entity buffer
         unsigned _entityCount[ELYSIAN_DEPTH_BUFFER_HEIGHT];
-        E _entityBuff[ELYSIAN_DEPTH_BUFFER_HEIGHT][ELYSIAN_DEPTH_BUFFER_ENTITY_WIDTH];
         uint32_t _entityRowLights[ELYSIAN_DEPTH_BUFFER_HEIGHT];
-        E _entityBuff[ELYSIAN_DEPTH_BUFFER_HEIGHT][ELYSIAN_DEPTH_BUFFER_ENTITY_WIDTH]; __attribute__((aligned(32)))
+        E        _entityBuff[ELYSIAN_DEPTH_BUFFER_HEIGHT][ELYSIAN_DEPTH_BUFFER_ENTITY_WIDTH]; __attribute__((aligned(32)))
 
 
         uint32_t _lightsRendered = 0;

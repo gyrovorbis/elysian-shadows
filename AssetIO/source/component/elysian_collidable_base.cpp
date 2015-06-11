@@ -6,6 +6,7 @@
 #include "elysian_asset_typedefs.hpp"
 #include "elysian_entity.hpp"
 #include "elysian_area.hpp"
+#include <gyro_shader_api.h>
 
 namespace elysian {
 

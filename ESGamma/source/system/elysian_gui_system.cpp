@@ -13,6 +13,7 @@
 #include "elysian_examinable.hpp"
 #include "elysian_combat.hpp"
 #include "elysian_renderable_base.hpp"
+#include <elysian_renderable.hpp>
 
 namespace elysian {
 

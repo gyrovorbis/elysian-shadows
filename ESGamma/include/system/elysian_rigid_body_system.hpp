@@ -10,11 +10,10 @@
 
 #define ELYSIAN_RIGID_BODY_RESTING_CONTACT_ESCAPE_VELOCITY      100.0f
 
-#include "elysian_system.hpp"
-#include "elysian_mem_pool.hpp"
-#include "elysian_force_generator.hpp"
-#include <elysian_renderable.hpp>
-#include "elysian_area.hpp"
+#include <elysian_system.hpp>
+#include <elysian_mem_pool.hpp>
+#include <elysian_force_generator.hpp>
+#include <elysian_entity.hpp>
 
 #define ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_SIZE               0
 #define ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_FADEOUT_TIME       5.0f
@@ -91,14 +90,18 @@ namespace elysian {
 
     };
 
-
-    inline void RigidBodySystem::_removeShard(RigidBodyShard *shard) {
-        assert(shard == _shardHead);
-        _shardHead = shard->getNext();
-        if(shard == _shardTail) _shardTail = nullptr; //end of the list
-        getCurrentArea()->removeEntity(shard);
-        shard->free();
-        _shardPool.remove(shard->getIterator());
+    //====== INLINEZ =======
+    inline void RigidBodySystem::addForce(ForceGenerator * const force) {
+        _forces.insertEntry(force);
+    }
+    inline void RigidBodySystem::removeForce(ForceGenerator * const force) {
+        _forces.removeEntry(force);
+    }
+    inline void RigidBodySystem::clearForces(void) {
+        _forces.clear();
+    }
+    inline unsigned RigidBodySystem::getVelResIterUsed(void) const {
+        return _velResIter;
     }
 
     inline void RigidBodySystem::setGravityEnabled(const bool val) {
@@ -109,17 +112,10 @@ namespace elysian {
         } else {
             removeForce(&_gravityGenerator);
         }
-
-        newShard = &_shardPool.claimFreeEntry();
-        if(!_shardHead) _shardHead = newShard;
-        if(_shardTail) _shardTail->setNext(newShard);
-        _shardTail = newShard;
-        getCurrentArea()->addEntity(newShard);
-        return newShard;
+        _gravityEnabled = val;
     }
 
     inline void RigidBodySystem::setGravityAccel(const GYVector3 &accel) {_gravityGenerator.setAccel(accel);}
-
 
     inline ShardPool::iterator RigidBodyShard::getIterator(void) const { return _it; }
     inline void RigidBodyShard::setIterator(const ShardPool::iterator it) { _it = it; }
@@ -130,5 +126,4 @@ namespace elysian {
 
 }
 
-
-#endif // ELYSIAN_RIGID_BODY_SYSTEM_HPP
+#endif

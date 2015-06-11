@@ -104,8 +104,6 @@ namespace elysian {
 		int					getSelfTableRef(void) const;
         LuaBehaviorScript*  getScript(void) const;
 
-        int					getSelfTableRef(void) const;
-
         OOLUA::Lua_table_ref& getSelfTable(void) { return *_ooSelfTableRef; }
 
     };

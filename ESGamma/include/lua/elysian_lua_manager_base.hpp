@@ -7,6 +7,7 @@
 #include <elysian_stl_algorithm.hpp>
 #include <elysian_lua_script.hpp>
 #include <elysian_debug.hpp>
+#include <gyro_defines.h>
 
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
 #	define ELYSIAN_LUA_DEBUG                            true

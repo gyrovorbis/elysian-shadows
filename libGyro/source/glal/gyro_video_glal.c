@@ -351,6 +351,20 @@ static inline void _flushStreamVertices(void* data) {
 
 }
 
+static inline void _gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsigned int startIndex, const unsigned int amount) {
+    //glBindVertexArray(_defaultVao[gyVidShadowPass()]);
+  //  glBindBuffer(GL_ARRAY_BUFFER, 0);
+   // glDrawArrays(GL_TRIANGLE_STRIP, startIndex, amount);
+    glalVertexRenderCount += amount;
+   // glBindVertexArray(0);
+    _curTexCoordPtr = NULL;
+}
+
+void gyVidTriangleStrip(const struct GYVector4 *const vertexArray, const unsigned int startIndex, const unsigned int amount) {
+    //gyMatMultVec(vertexArray, _modelViewVertices, amount);
+   // _gyVidTriangleStrip(_modelViewVertices, startIndex, amount);
+}
+
 void gyVidColorArray(const struct GYColor4 *const ptr) {
     if(gyVidShadowPass()) return;
     //glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, ptr);

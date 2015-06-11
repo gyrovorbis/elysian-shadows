@@ -166,13 +166,6 @@ namespace elysian {
 
         void		callTrigger(const TRIGGER trigger);
 
-        uint64_t	getTriggers(void) const;
-        void		addTrigger(const TRIGGER flag);
-        void		addTriggers(const uint64_t flags);
-        void		removeTrigger(const TRIGGER flag);
-        inline bool getActive(void) const { return _active; }
-        inline void setActive(const bool val=true) { _active = val; }
-
 		uint64_t	getTriggers(void) const;
         void        setTriggers(const uint64_t triggers);
 		void		addTrigger(const TRIGGER flag);

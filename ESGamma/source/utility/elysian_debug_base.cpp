@@ -36,6 +36,7 @@
 #include "elysian_event_monitor.hpp"
 #include "elysian_rigid_body_system.hpp"
 #include "elysian_debug_base.hpp"
+#include <elysian_renderable.hpp>
 
 namespace elysian {
 

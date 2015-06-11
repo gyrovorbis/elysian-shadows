@@ -10,6 +10,7 @@
 #include <elysian_stl_algorithm.hpp>
 #include <elysian_component.hpp>
 #include <elysian_lua_table_proxy.hpp>
+#include <gyro_video_api.h>
 
 #define ELYSIAN_ENTITY_NAME_SIZE	100
 #define ELYSIAN_ENTITY_NAME_DEFAULT	"Untitled"

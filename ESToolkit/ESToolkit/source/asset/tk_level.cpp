@@ -17,7 +17,6 @@
 #include "elysian_level_system.hpp"
 #include "elysian_engine.hpp"
 #include "elysian_level_system.hpp"
-#include <selectionScene.h>
 #include <gyro_texture_api.h>
 #include <elysian_entity.hpp>
 #include <tk_selection_scene.h>

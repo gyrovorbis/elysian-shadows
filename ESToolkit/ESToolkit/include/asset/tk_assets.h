@@ -18,14 +18,6 @@ class TkEntity;
 typedef TkEntity Entity;
 struct MapChange;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-class EngineGLSceneWidget;
-
-=======
->>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
-=======
->>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
 namespace elysian {
     class Engine;
 }
@@ -130,14 +122,8 @@ private:
 	static Assets::LAYER_TYPE _currentLayer;
 	static bool _layerVisible[Assets::LAYER_MAX];
     static Selectable::TYPE _currentSelectionType;
-<<<<<<< HEAD
->>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
-
     void connectSlots(Project *const project);
-=======
 
-	void connectSlots(Project *const project);
->>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
 };
 
 

@@ -12,35 +12,27 @@
 #include "elysian_renderable_base.hpp"
 #include "elysian_behavior_system.hpp"
 #include "elysian_sprite_attrib.hpp"
+#include <elysian_renderable.hpp>
 
 namespace elysian {
 
-inline void RigidBodySystem::_removeShard(RigidBodyShard *shard) {
-    assert(shard == _shardHead);
-    _shardHead = shard->getNext();
-    if(shard == _shardTail) _shardTail = nullptr; //end of the list
-    getCurArea()->removeEntity(shard);
-    shard->free();
-    _shardPool.remove(shard->getIterator());
-}
+RigidBodyShard* RigidBodySystem::_claimShard(void) {
+   RigidBodyShard *newShard;
 
-inline RigidBodyShard* RigidBodySystem::_claimShard(void) {
-    RigidBodyShard *newShard;
+   //Fuckin' emergency, gotta abandon a shard!
+   if(_shardPool.isFull()) {
+       newShard = _shardHead->getNext();
+       if(_shardHead == _shardTail) _shardTail = nullptr;
+       _removeShard(_shardHead);
+       _shardHead = newShard;
+   }
 
-    //Fuckin' emergency, gotta abandon a shard!
-    if(_shardPool.isFull()) {
-        newShard = _shardHead->getNext();
-        if(_shardHead == _shardTail) _shardTail = nullptr;
-        _removeShard(_shardHead);
-        _shardHead = newShard;
-    }
-
-    newShard = &_shardPool.claimFreeEntry();
-    if(!_shardHead) _shardHead = newShard;
-    if(_shardTail) _shardTail->setNext(newShard);
-    _shardTail = newShard;
-    getCurArea()->addEntity(newShard);
-    return newShard;
+   newShard = &_shardPool.claimFreeEntry();
+   if(!_shardHead) _shardHead = newShard;
+   if(_shardTail) _shardTail->setNext(newShard);
+   _shardTail = newShard;
+   getCurrentArea()->addEntity(newShard);
+   return newShard;
 }
 
 
@@ -52,27 +44,15 @@ void RigidBodyShard::free(void) {
     _next = nullptr;
 }
 
-auto RigidBodyShard::update(const float deltaTime) -> STATE {
-    _allocTime += deltaTime;
-    if(_fadeOutTime > 0.0f) {
-        _fadeOutTime += deltaTime;
+void RigidBodySystem::_removeShard(RigidBodyShard *shard) {
+     assert(shard == _shardHead);
+     _shardHead = shard->getNext();
+     if(shard == _shardTail) _shardTail = nullptr; //end of the list
+     getCurrentArea()->removeEntity(shard);
+     shard->free();
+     _shardPool.remove(shard->getIterator());
+ }
 
-        if(_fadeOutTime >= ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_FADEOUT_TIME) {
-            _fadeOutTime = ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_FADEOUT_TIME;
-            _state = STATE_DONE;
-        }
-
-        if(getRenderable()) {
-            const float multiplier = _fadeOutTime/ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_FADEOUT_TIME;
-            unsigned char baseColor = multiplier * 255;
-
-            getRenderable()->getSpriteAttrib()->setAlpha(255-baseColor);
-
-        }
-    }
-
-    return _state;
-}
 
 RigidBodySystem::RigidBodySystem(void) {
     _gravityGenerator.setForceMask(0x1);
@@ -82,6 +62,28 @@ RigidBodySystem::RigidBodySystem(void) {
         _shardPool[i].setIterator(ShardPool::iterator(&_shardPool, i));
     }
 }
+
+auto RigidBodyShard::update(const float deltaTime) -> STATE {
+      _allocTime += deltaTime;
+      if(_fadeOutTime > 0.0f) {
+          _fadeOutTime += deltaTime;
+
+          if(_fadeOutTime >= ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_FADEOUT_TIME) {
+              _fadeOutTime = ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_FADEOUT_TIME;
+              _state = STATE_DONE;
+          }
+
+          if(getRenderable()) {
+              const float multiplier = _fadeOutTime/ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_FADEOUT_TIME;
+              unsigned char baseColor = multiplier * 255;
+
+              getRenderable()->getSpriteAttrib()->setAlpha(255-baseColor);
+
+          }
+      }
+
+      return _state;
+  }
 
 void RigidBodySystem::update(void) {
     const float deltaTime = getTimerSys()->getDeltaTime();

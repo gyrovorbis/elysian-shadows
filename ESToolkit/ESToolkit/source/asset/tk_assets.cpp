@@ -12,13 +12,6 @@
 #include "elysian_map_system.hpp"
 #include "tk_entity_selectable.h"
 #include "elysian_party_system.hpp"
-<<<<<<< HEAD
-<<<<<<< HEAD
-#include <engineGLSceneWidget.h>
-=======
->>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
-=======
->>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
 
 //====STATIC MEMBERS====
 
@@ -28,14 +21,6 @@ Selectable *Assets::_currentSelection = nullptr;
 Selectable::TYPE Assets::_currentSelectionType = Selectable::EMPTY;
 Assets::LAYER_TYPE Assets::_currentLayer = Assets::LAYER_TILE1;
 bool Assets::_layerVisible[Assets::LAYER_MAX] = { true };
-<<<<<<< HEAD
-<<<<<<< HEAD
-EngineGLSceneWidget* Assets::_glWidget = nullptr;
-
-=======
->>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
-=======
->>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
 
 //====INSTANCE MEMBERS====
 
@@ -335,36 +320,6 @@ bool Assets::removeProject(const QString name) {
     return false;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-void Assets::setGLWidget(EngineGLSceneWidget*const widget) {
-    Q_ASSERT(widget && widget->context());
-    _glWidget = widget;
-}
-
-void Assets::makeGLContextCurrent(void) {
-//    _glWidget->makeCurrent();
-}
-
-void Assets::doneGLContextCurrent(void) {
-  //  _glWidget->doneCurrent();
-}
-
-
-void Assets::onChildProjectActivating(Project *const project, Level *const level, Area *const area) {
-  //  makeGLContextCurrent();
-    if(m_project != project) setCurrentProject(project->getNodeName());
-    if(level && _currentLevel != level) setCurrentLevel(level->getNodeName());
-    if(area && _currentArea != area) setCurrentArea(area->getNodeName());
-   // doneGLContextCurrent();
-=======
-void Assets::onChildProjectActivating(Project *const project, Level *const level, Area *const area) {
-    if(m_project != project) setCurrentProject(project->getNodeName());
-    if(level && _currentLevel != level) setCurrentLevel(level->getNodeName());
-    if(area && _currentArea != area) setCurrentArea(area->getNodeName());
->>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
-=======
 void Assets::onChildProjectActivating(Project *const project, Level *const level, Area *const area) {
     if(m_project != project) setCurrentProject(project->getNodeName());
     if(level && _curLevel != level) setCurrentLevel(level->getNodeName());
