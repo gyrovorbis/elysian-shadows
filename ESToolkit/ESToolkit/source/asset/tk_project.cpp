@@ -300,9 +300,10 @@ bool Project::activate(void) {
 
 bool Project::activateByLevel(Level *const level, Area *const area) {
 	//Debug::Log(Debug::VERBOSE, "Activating Project %s", getName().toStdString().c_str());
-    if(!_active) {
-        _active = true;
+    if(_active) {
+        Q_EMIT activating(nullptr, level, area);
     }
+    _active = true;
     Q_EMIT activating(this, level, area);
     return true;
 }
@@ -318,7 +319,6 @@ void Project::onRemoveEntity(Level *const level, Area *const area, Entity *const
 bool Project::deactivate(void) {
     _active = false;
 	//Debug::Log(Debug::VERBOSE, "Deactivating Project %s", getName().toStdString().c_str());
-    _active = false;
     return true;
 }
 

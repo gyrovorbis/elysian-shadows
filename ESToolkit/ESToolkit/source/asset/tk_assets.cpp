@@ -321,7 +321,7 @@ bool Assets::removeProject(const QString name) {
 }
 
 void Assets::onChildProjectActivating(Project *const project, Level *const level, Area *const area) {
-    if(m_project != project) setCurrentProject(project->getNodeName());
+    if(project && m_project != project) setCurrentProject(project->getNodeName());
     if(level && _curLevel != level) setCurrentLevel(level->getNodeName());
     if(area && _curArea != area) setCurrentArea(area->getNodeName());
 }

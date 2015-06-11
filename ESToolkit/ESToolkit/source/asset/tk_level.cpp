@@ -290,9 +290,14 @@ bool TkLevel::activateByArea(Area *const area) {
     //_curLevel = this;
     //_active = true;
 
-    if(_active) return true;
+    if(_active)  {
+        Q_EMIT activating(nullptr, area);
+        return true;
+    }
+
     _active = true;
     Q_EMIT activating(this, area);
+
     _sheetViewScene->addItem(_bgRectItem);
     /* If there is anything that is not persistent to be added to the
        object/tilesheet scenes, do it now.
