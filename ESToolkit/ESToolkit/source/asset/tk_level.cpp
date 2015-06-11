@@ -410,9 +410,9 @@ Area *TkLevel::newArea(const QString n) {
 
 
 
-Area *TkLevel::getArea(const QString name) {
+Area *TkLevel::getArea(const QString path) {
     for(int i = 0; i < _area.size(); ++i) {
-        if(_area[i]->getNodeName() == name) return _area[i];
+        if(_area[i]->getNodePath() == path) return _area[i];
     }
     return nullptr;
 }
@@ -495,6 +495,7 @@ bool TkLevel::load(const QString loc) {
     _project->connectSlots(this);
 
     setNodeName(dir.dirName());
+    setNodePath(dir.absolutePath());
     _location = loc;
 
 #if 0

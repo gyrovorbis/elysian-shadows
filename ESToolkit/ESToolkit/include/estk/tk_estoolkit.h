@@ -40,6 +40,7 @@ class LuaExplorerDialog;
 class EngineGLSceneWidget;
 class GitlabDialog;
 class HelpDockWidget;
+class TkArea;
 
 namespace Ui {
     class ESToolkit;
@@ -64,13 +65,12 @@ protected:
     virtual void    changeEvent(QEvent *e) override;
     virtual void    closeEvent(QCloseEvent *event) override;
 
-protected:
-
     void            _onGYSysSegFault();
     void            _libGyroInitialize(void);
     void            _engineLoadAssets(void);
     void            setMainTextureUniform(const int uniform);
 
+    void            _addAreaToTabBar(const TkArea* area);
 
 private:
 
@@ -90,10 +90,7 @@ private:
     elysian::Debug *        _debug;
 
     Ui::ESToolkit*          _ui;
-
     QTabBar*                _areaTabBar;
-    bool                    _ignoreAreaTabChange;
-
     QMenu*                  _filterMenu     = nullptr;
 
     AssetDockWidget*        _assetDockWidget;

@@ -14,6 +14,7 @@
 #include <tk_task_monitor_dialog.h>
 #include <QOpenGLDebugLogger>
 #include <tk_gitlab_dialog.h>
+#include <QBrush>
 
 #include <gyro_file_api.h>
 #include "tk_engine_gl_scene_widget.h"
@@ -65,8 +66,7 @@ ESToolkit* ESToolkit::_instance = nullptr;
 
 ESToolkit::ESToolkit(QWidget *parent):
     QMainWindow(parent),
-    _ui(new Ui::ESToolkit),
-    _ignoreAreaTabChange(false)
+    _ui(new Ui::ESToolkit)
 {
     _instance = this;
     // VERY IMPROTANT GLOBAL STATE/STATIC INITIALIZATION
@@ -625,18 +625,18 @@ void ESToolkit::ReadSettings()
 }
 
 void ESToolkit::OnAreaRenamed(const QString /*oldName*/, const QString /*newName*/) {
-    _ignoreAreaTabChange = true;
+    _areaTabBar->blockSignals(true);
 
     while(_areaTabBar->count()) _areaTabBar->removeTab(0);
     for(unsigned int i = 0; i < _assets.getCurrentLevel()->getAreaAmount(); ++i) {
-        _areaTabBar->addTab(_assets.getCurrentLevel()->getAreaByIndex(i)->getNodeName());
+        _addAreaToTabBar(_assets.getCurrentLevel()->getAreaByIndex(i));
     }
 
     for(int i = 0; i < _areaTabBar->count(); ++i) {
-        if(_areaTabBar->tabText(i) == _assets.getCurrentArea()->getNodeName()) _areaTabBar->setCurrentIndex(i);
+        if(_areaTabBar->tabToolTip(i) == _assets.getCurrentArea()->getNodePath()) _areaTabBar->setCurrentIndex(i);
     }
 
-    _ignoreAreaTabChange = false;
+    _areaTabBar->blockSignals(false);
 
 }
 
@@ -645,9 +645,9 @@ void ESToolkit::OnAddArea(Project *const /*project*/, Level *const level, Area *
     _undoGroup.addStack(&area->getUndoStack());
 
     if(level == _assets.getCurrentLevel()) { //Don't bother updating the tabs otherwise
-        _ignoreAreaTabChange = true;
-        _areaTabBar->addTab(area->getNodeName());
-        _ignoreAreaTabChange = false;
+        _areaTabBar->blockSignals(true);
+        _addAreaToTabBar(area);
+        _areaTabBar->blockSignals(false);
     }
 }
 
@@ -656,10 +656,10 @@ void ESToolkit::OnRemoveArea(Project *const /*project*/, Level *const level, Are
 
     if(level == _assets.getCurrentLevel()) { //Don't bother updating the tabs otherwise
         for(int i = 0; i < _areaTabBar->count(); ++i) {
-            if(_areaTabBar->tabText(i) == area->getNodeName()) {
-                _ignoreAreaTabChange = true;
+            if(_areaTabBar->tabToolTip(i) == area->getNodePath()) {
+                _areaTabBar->blockSignals(true);
                 _areaTabBar->removeTab(i);
-                _ignoreAreaTabChange = false;
+                _areaTabBar->blockSignals(false);
                 return;
             }
         }
@@ -667,9 +667,8 @@ void ESToolkit::OnRemoveArea(Project *const /*project*/, Level *const level, Are
 }
 
 void ESToolkit::OnTabChanged(int index) {
-    if(_ignoreAreaTabChange) return;
-    if(_assets.getCurrentArea() && _assets.getCurrentArea()->getNodeName() == _areaTabBar->tabText(index)) return;
-    _assets.setCurrentArea(_areaTabBar->tabText(index));
+    if(_assets.getCurrentArea() && _assets.getCurrentArea()->getNodePath() == _areaTabBar->tabToolTip(index)) return;
+    _assets.setCurrentArea(_areaTabBar->tabToolTip(index));
 }
 
 void ESToolkit::OnSubLayerVisibilityChanged(int index, bool visible)
@@ -795,6 +794,11 @@ void ESToolkit::OnLayerChanged(Assets::LAYER_TYPE newLayer) {
 #endif
 }
 
+void ESToolkit::_addAreaToTabBar(const TkArea *area) {
+    const auto index = _areaTabBar->addTab(area->getNodeName());
+    _areaTabBar->setTabToolTip(index, area->getNodePath());
+    _areaTabBar->setTabTextColor(index, area->foreground(0).color());
+}
 
 void ESToolkit::OnAreaChanged(Area *const area) {
     if(area) {
@@ -815,16 +819,14 @@ void ESToolkit::OnAreaChanged(Area *const area) {
     //Update tabs
     if(area) {
         for(int i = 0; i < _areaTabBar->count(); ++i) {
-            if(_areaTabBar->tabText(i) == area->getNodeName()) _areaTabBar->setCurrentIndex(i);
+            if(_areaTabBar->tabToolTip(i) == area->getNodePath()) {
+                _areaTabBar->setCurrentIndex(i);
+                _areaTabBar->setTabTextColor(i, area->foreground(0).color());
+                break;
+            }
         }
     }
     _ui->mapView->deleteSelectionItemGroup();
-    //auto boundingRect = Area::editorScene->itemsBoundingRect();
-    //boundingRect.setTop(boundingRect.getTop()-16.0f);
-    //boundingRect.setLeft(boundingRect.getLeft()-16.0f);
-    //boundingRect.setBottom(boundingRect.getBottom()+16.0f);
-    //boundingRect.setRight(boundingRect.getRight()+16.0f);
-    //Area::editorScene->setSceneRect();
     if(_ui->mapView->scene()) _ui->mapView->scene()->update();
 }
 
@@ -851,14 +853,14 @@ void ESToolkit::OnLevelChanged(Level *const level) {
     //Update tabs
     if(level) {
 
-        _ignoreAreaTabChange = true;
+        _areaTabBar->blockSignals(true);
         while(_areaTabBar->count()) _areaTabBar->removeTab(0);
 
         for(unsigned int i = 0; i < _assets.getCurrentLevel()->getAreaAmount(); ++i) {
-            _areaTabBar->addTab(_assets.getCurrentLevel()->getAreaByIndex(i)->getNodeName());
+            _addAreaToTabBar(_assets.getCurrentLevel()->getAreaByIndex(i));
         }
         //_areaTabBar->setCurrentIndex(0);
-        _ignoreAreaTabChange = false;
+        _areaTabBar->blockSignals(false);
     }
     else {
         while(_areaTabBar->count()) _areaTabBar->removeTab(0);

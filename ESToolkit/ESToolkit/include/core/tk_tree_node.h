@@ -44,7 +44,7 @@ inline auto TreeNode::getTreeWidgetItemType(void) -> ITEM_TYPE { return ITEM_SUB
 inline QAbstractItemModel* TreeNode::getModel(void) const { return nullptr; }
 inline auto TreeNode::getType(void) const -> TYPE { return EMPTY; }
 inline void TreeNode::setValid(const bool val) {
-    QBrush brush = val? QBrush(Qt::black) : QBrush(Qt::red);
+    QBrush brush = val? QBrush(Qt::black) : QBrush(Qt::darkRed);
     setForeground(0, brush);
 }
 

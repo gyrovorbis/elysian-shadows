@@ -104,9 +104,9 @@ TkLevel *Project::getFirstLevel() const {
     return (_level.size() > 0)? _level.first() : nullptr;
 }
 
-TkLevel *Project::getLevel(const QString name)  {
+TkLevel *Project::getLevel(const QString path)  {
 	for(int i = 0; i < _level.size(); ++i) {
-        if(_level[i]->getNodeName() == name) return _level[i];
+        if(_level[i]->getNodePath() == path) return _level[i];
     }
     return nullptr;
 }
@@ -117,11 +117,11 @@ TkLevel *Project::getLevelByIndex(const unsigned int index) {
     return (index < (unsigned)_level.size())? _level[index] : nullptr;
 }
 
-bool Project::removeLevel(const QString name, const bool deleteFolder) {
+bool Project::removeLevel(const QString path, const bool deleteFolder) {
     bool success = true;
 
 	for(int i = 0; i < _level.size(); ++i) {
-        if(_level[i]->getNodeName() == name) {
+        if(_level[i]->getNodePath() == path) {
 			Level *temp = _level[i];
             getAssets()->getEngine()->getLevelSys()->removeLevel(temp);
 			_level.erase(_level.begin() + i);
@@ -134,7 +134,7 @@ bool Project::removeLevel(const QString name, const bool deleteFolder) {
             return success;
         }
     }
-    Debug::Logf(Debug::DBG_WARNING, "Level %s could not be removed!\n", name.toStdString().c_str());
+    Debug::Logf(Debug::DBG_WARNING, "Level %s could not be removed!\n", Q_CSTR(path));
     return false;
 }
 
@@ -158,7 +158,7 @@ bool Project::load(const QString loc) {
     _location = loc;
 
     if(!dir.cd("level")) {
-        Debug::Logf(Debug::DBG_ERROR, "No 'level' folder!", getNodeName().toStdString().c_str());
+        Debug::Logf(Debug::DBG_ERROR, "No 'level' folder!");
         QDir::setCurrent(prevWorkingDir);
         return false;
     }
@@ -169,7 +169,7 @@ bool Project::load(const QString loc) {
         QDir dir(path);
 
         if(!dir.isReadable()) {
-            Debug::printf(Debug::DBG_ERROR, "%s is not readable!", path.toStdString().c_str());
+            Debug::printf(Debug::DBG_ERROR, "%s is not readable!", Q_CSTR(path));
             return;
         }
 
@@ -276,7 +276,7 @@ bool Project::saveAs(const QString dir) {
     }
 
 	for(int i = 0; i < _level.size(); ++i) {
-        success &= _level[i]->saveAs(dir+"/level/"+_level[i]->getNodeName());
+        success &= _level[i]->saveAs(dir+"/level/"+_level[i]->getNodePath());
     }
 
     Debug::pop();

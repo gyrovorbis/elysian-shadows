@@ -178,14 +178,14 @@ void Assets::setCurrentArea(Area *const area) {
 
 
 void Assets::setCurrentLayer(const LAYER_TYPE type) {
-    _currentLayer=type;
+    _currentLayer = type;
     Q_EMIT layerChanged(type);
 }
 
-bool Assets::setCurrentLevel(const QString name) {
+bool Assets::setCurrentLevel(const QString path) {
 
     if(!m_project) return false;
-    Level *level = m_project->getLevel(name);
+    Level *level = m_project->getLevel(path);
     if(!level) return false;
     setCurrentLevel(level);
     return true;
@@ -199,7 +199,7 @@ void Assets::setCurrentLevel(Level *const level) {
     _engine->getLevelSys()->switchLevel(level? level->getPath() : nullptr);
     if(level) {
     //	level->activate();
-        if(level->getFirstArea()) setCurrentArea(level->getFirstArea()->getNodeName());
+        if(level->getFirstArea()) setCurrentArea(level->getFirstArea()->getNodePath());
         else setCurrentArea(nullptr);
     }
     else setCurrentArea(nullptr);
@@ -223,7 +223,7 @@ void Assets::setCurrentProject(Project *const project) {
 
     if(project) {
         project->activate();
-        if(project->getFirstLevel()) setCurrentLevel(project->getFirstLevel()->getNodeName());
+        if(project->getFirstLevel()) setCurrentLevel(project->getFirstLevel()->getNodePath());
         else setCurrentLevel(nullptr);
         QDir::setCurrent(m_project->getLocation());
     }
@@ -292,9 +292,9 @@ Project *Assets::loadProject(const QString directory) {
     return nullptr;
 }
 
-bool Assets::saveProject(const QString name) const {
-    if(m_project->getNodeName() == name) return m_project->save();
-    Debug::Logf(Debug::DBG_VERBOSE, "Project %s does not exist!", name.toStdString().c_str());
+bool Assets::saveProject(const QString path) const {
+    if(m_project->getNodePath() == path) return m_project->save();
+    Debug::Logf(Debug::DBG_VERBOSE, "Project %s does not exist!", Q_CSTR(path));
     return false;
 }
 
@@ -303,9 +303,9 @@ Project *Assets::getFirstProject(void) const {
 }
 
 
-bool Assets::removeProject(const QString name) {
+bool Assets::removeProject(const QString path) {
     //for(QMap<QString, Project *>::iterator it = _project.begin(); it != _project.end(); ++it) {
-        if(m_project->getNodeName() == name) {
+        if(m_project->getNodePath() == path) {
             setCurrentProject(nullptr);
             Q_EMIT projectRemoved(m_project);
             Q_EMIT projectRemoveUI();
@@ -319,14 +319,14 @@ bool Assets::removeProject(const QString name) {
         }
 
     //}
-    Debug::Logf(Debug::DBG_VERBOSE, "Project %s could not be removed!", name.toStdString().c_str());
+    Debug::Logf(Debug::DBG_VERBOSE, "Project %s could not be removed!", Q_CSTR(path));
     return false;
 }
 
 void Assets::onChildProjectActivating(Project *const project, Level *const level, Area *const area) {
-    if(project && m_project != project) setCurrentProject(project->getNodeName());
-    if(level && _curLevel != level) setCurrentLevel(level->getNodeName());
-    if(area && _curArea != area) setCurrentArea(area->getNodeName());
+    if(project && m_project != project) setCurrentProject(project->getNodePath());
+    if(level && _curLevel != level) setCurrentLevel(level->getNodePath());
+    if(area && _curArea != area) setCurrentArea(area->getNodePath());
 }
 
 void Assets::onAreaAdded(Project *const project, Level *const level, Area *const area) {

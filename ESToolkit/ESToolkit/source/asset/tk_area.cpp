@@ -260,6 +260,7 @@ bool TkArea::load(const char*const str) {
     //level = _level;
 
     setNodeName(QDir(dir).dirName());
+    setNodePath(QDir(dir).absolutePath());
 #if 0
     Debug::Log(Debug::DBG_VERBOSE, "Creating Toolkit Entities from elysian::Entities.");
     Debug::push();

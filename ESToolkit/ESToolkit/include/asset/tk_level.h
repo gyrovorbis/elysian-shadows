@@ -91,7 +91,7 @@ public:
     }
 
     Area* newArea(QString name=QString("new_area"));
-    Area* getArea(const QString name);
+    Area* getArea(const QString path);
     Area* getAreaByIndex(const unsigned int index);
     Area* loadArea(const QString name);
     Area* reloadArea(Area* const area);
