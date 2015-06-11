@@ -4,12 +4,12 @@
 #include <tk_level.h>
 #include <QObject>
 #include <test_area.h>
-#include <test_estoolkit.h>
+#include <test_estk.h>
 #include <QDebug>
 
 namespace tktest {
 
-class LevelTest: public QObject, public AssetManager {
+class LevelTest: public ESTkTest {
     Q_OBJECT
 private:
     TkLevel* _level;
@@ -34,7 +34,7 @@ inline void LevelTest::initTestCase() {
 inline void LevelTest::activateLevel(void) {
     getAssets()->setCurrentLevel(_level);
     for(unsigned i = 0 ; i < _level->getAreaAmount(); ++i) {
-        ESToolkitTest::enqueueNextTest(new AreaTest(_level->getAreaByIndex(i)));
+        ESTkTest::enqueueNextTest(new AreaTest(_level->getAreaByIndex(i)));
     }
     QVERIFY(true);
 }

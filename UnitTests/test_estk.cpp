@@ -2,8 +2,10 @@
 #include <QtTest>
 
 #include <tk_estoolkit.h>
-#include <test_estoolkit.h>
+#include <test_estk.h>
 #include <test_project.h>
+#include <test_init.h>
+#include <test_estoolkit.h>
 #include <test_map_view.h>
 #include <test_libgyro_file_api.h>
 
@@ -45,16 +47,16 @@ CREATE QUEUE WITH STATES OF INSERTION
 
 namespace tktest {
 
-ESToolkit* ESTkTestCommon::_estk             = nullptr;
-QList<QObject*> ESToolkitTest::_testQueue;
-QStack<QString> ESToolkitTest::_subTestStack;
-QMutex* ESToolkitTest::_mutex = nullptr;
-bool ESToolkitTest::_initialized = false;
+ESToolkit*      ESTkTest::_estk             = nullptr;
+QList<QObject*> ESTkTest::_testQueue;
+QStack<QString> ESTkTest::_subTestStack;
+QMutex*         ESTkTest::_mutex            = nullptr;
+bool            ESTkTest::_initialized      = false;
 
 int main(int argc, char** argv)
 {
     Debug::setLevel(Debug::OFF);
-    ESToolkitTest::initialize();
+    ESTkTest::initialize();
 
 
     QCommandLineParser parser;
@@ -91,9 +93,10 @@ int main(int argc, char** argv)
 
     qDebug() << "Using project directory supplied as command-line argument:" << project;
 
-    ESToolkitTest::enqueueTest(new LibGyroFileApiTest());
-    ESToolkitTest::enqueueTest(new tktest::ESToolkitTest());
-    ESToolkitTest::enqueueTest(new tktest::TestSmokeProject(project));
+    ESTkTest::enqueueTest(new LibGyroFileApiTest());
+    ESTkTest::enqueueTest(new tktest::InitializationTest(project));
+    ESTkTest::enqueueTest(new tktest::ESToolkitTest);
+    ESTkTest::enqueueTest(new tktest::TestSmokeProject());
 
    int failures = 0;
    int testCases = 0;
@@ -111,29 +114,12 @@ int main(int argc, char** argv)
 
 
 
-   while(ESToolkitTest::_testQueue.size()) {
+   while(ESTkTest::_testQueue.size()) {
        sprintf(strBuff, "./ESTkTestResults%04d.xml", ++testCases);
 
        QObject *current =  ESToolkitTest::_testQueue.takeFirst();
 
        ASSERT_TEST(current);
-
-       if(!QFile::exists("ESTkTestResults0000.xml")) {
-            qDebug() << "DOESN't EXIST";
-       }
-
-       QFile lolz("ESTkTestResults0000.xml");
-       if(!lolz.isReadable()) {
-        qDebug() << "NOT READABLE";
-       }
-       //if(lolz.is
-        //qDebug() << "IS OPEN!";
-       //}
-
-       if(!QFile::copy("ESTkTestResults0000.xml", strBuff)) {
-        qDebug() << "FAILED COPY!!";
-       }
-
    }
 
    char buff[7];

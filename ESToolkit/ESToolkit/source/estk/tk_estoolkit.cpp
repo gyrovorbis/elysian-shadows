@@ -792,8 +792,7 @@ void ESToolkit::OnAreaChanged(Area *const area) {
         _ui->actionFileSaveCurrentArea->setDisabled(false);
         _undoGroup.setActiveStack(&area->getUndoStack());
         _ui->mapView->setEnabled(true);
-    }
-    else {
+    } else {
         _ui->actionAreaAddEntity->setDisabled(true);
         _ui->actionAreaRemove->setDisabled(true);
         _ui->menuArea->setDisabled(true);
@@ -828,8 +827,7 @@ void ESToolkit::OnLevelChanged(Level *const level) {
         _ui->actionFileNewArea->setEnabled(true);
         _sheetDockWidget->setViewEnabled(true);
 
-    }
-    else {
+    } else {
         _ui->actionLevelReloadSheets->setDisabled(true);
         _ui->actionLevelRemove->setDisabled(true);
         _ui->menuLevel->setEnabled(false);

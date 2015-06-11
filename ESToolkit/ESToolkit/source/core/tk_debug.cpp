@@ -23,7 +23,7 @@
 #include <QDir>
 
 #ifdef ESTK_UNIT_TESTS
-#include <test_estoolkit.h>
+#include <test_estk.h>
 #endif
 
 TkDebug* TkDebug::_window = nullptr;
@@ -163,7 +163,7 @@ void TkDebug::push(void) {
     _pendingQueue->enqueue(LogEntry { "PUSH", VERBOSE, TOOLKIT, LogEntry::PUSH });
     _mutex->unlock();
 #ifdef ESTK_UNIT_TESTS
-    tktest::ESToolkitTest::pushSubTest(_lastString);
+    tktest::ESTkTest::pushSubTest(_lastString);
 #endif
 }
 
@@ -174,7 +174,7 @@ void TkDebug::pop(const bool success) {
 
     _mutex->unlock();
 #ifdef ESTK_UNIT_TESTS
-    tktest::ESToolkitTest::popSubTest(success);
+    tktest::ESTkTest::popSubTest(success);
 #endif
 }
 
@@ -308,8 +308,8 @@ void TkDebug::_postToQueue(const int src, const LEVEL level, const QString text)
     _mutex->unlock();
 
 #ifdef ESTK_UNIT_TESTS
-    if(level == Debug::CRITICAL) tktest::ESToolkitTest::flagWarning(text);
-    else if(level == Debug::FATAL) tktest::ESToolkitTest::flagError(text);
+    if(level == Debug::CRITICAL) tktest::ESTkTest::flagWarning(text);
+    else if(level == Debug::FATAL) tktest::ESTkTest::flagError(text);
 #endif
 }
 

@@ -278,7 +278,6 @@ void Level::OnChildAreaActivating(Area *const area) {
 }*/
 
 bool TkLevel::activate(void) {
-    _sheetViewScene->addItem(_bgRectItem);
     return activateByArea(nullptr);
 }
 
@@ -288,9 +287,13 @@ bool TkLevel::activateByArea(Area *const area) {
     //if(_active) {
      //   return false;
     //}
-    _curLevel = this;
+    //_curLevel = this;
     //_active = true;
+
+    if(_active) return true;
+    _active = true;
     Q_EMIT activating(this, area);
+    _sheetViewScene->addItem(_bgRectItem);
     /* If there is anything that is not persistent to be added to the
        object/tilesheet scenes, do it now.
     */
@@ -302,6 +305,7 @@ bool TkLevel::activateByArea(Area *const area) {
 }
 
 bool TkLevel::deactivate(void) {
+    if(!_active) return true;
     Debug::Logf(Debug::VERBOSE, "Level[%s].deactivate()\n", getNodeName().toStdString().c_str());
     /* If there is anything that is not persistent to be removed from the
        object/tilesheet scenes, do it now.

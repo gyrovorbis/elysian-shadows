@@ -45,7 +45,12 @@ namespace Ui {
     class ESToolkit;
 }
 
+namespace tktest {
+    class ESToolkitTest;
+}
+
 class ESToolkit : public QMainWindow, public elysian::LuaManager {
+    friend class tktest::ESToolkitTest;
     Q_OBJECT
 public:
                     ESToolkit(QWidget *parent = nullptr);
@@ -250,4 +255,6 @@ private Q_SLOTS:
     void on_actionPerformance_Monitor_triggered();
     void on_actionSheet_Manager_triggered();
 };
+
+
 #endif // ESTOOLKIT_H

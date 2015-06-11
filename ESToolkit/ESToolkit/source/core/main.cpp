@@ -20,7 +20,7 @@
 #include <QDir>
 
 #ifdef ESTK_UNIT_TESTS
-#include <test_estoolkit.h>
+#include <test_estk.h>
 #endif
 
 

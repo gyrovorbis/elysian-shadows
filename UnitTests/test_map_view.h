@@ -7,10 +7,15 @@
 namespace tktest {
 
 class MapViewTest: public QObject, public AssetManager {
+
 private Q_SLOTS:
-    
+    void initTestCase(void);
+
     
 };
+
+
+
 
 
 }

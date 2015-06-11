@@ -40,8 +40,8 @@ void AssetTreeWidget::OnCurrentItemChanged(QTreeWidgetItem * current, int /*inde
     treenode->activate();
     if(treenode->getTreeWidgetItemType() != TreeNode::ITEM_SUBDIR) {
 
-	//Double cast needed for adjusting memory address offsets. Soooooo fucking reested.
-	setCurrentSelection(static_cast<Selectable *>(static_cast<TreeNode *>(current)));
+        //Double cast needed for adjusting memory address offsets. Soooooo fucking reested.
+        setCurrentSelection(static_cast<Selectable *>(static_cast<TreeNode *>(current)));
 
     }
     _ignoreItemChange = false;

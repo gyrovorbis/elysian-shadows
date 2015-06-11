@@ -1,37 +1,20 @@
 #ifndef TEST_ESTOOLKIT_H
 #define TEST_ESTOOLKIT_H
 
-#include <QTest>
-#include <QObject>
-#include <tk_estoolkit.h>
+#include <test_estk.h>
+#include <QtTest>
 #include <tk_asset_manager.h>
-#include <QList>
-#include <QStack>
-#include <gyro_system_api.h>
-#include <QMutex>
-
-class ESToolkit;
+#include <tk_estoolkit.h>
+#include <tk_level.h>
+#include <tk_area.h>
+#include <tk_project.h>
+#include <QTabBar>
 
 namespace tktest {
 
-class ESTkTestCommon {
-protected:
-    static ESToolkit*       _estk;
-};
-
-
-class ESToolkitTest: public QObject, public ESTkTestCommon, public AssetManager {
-
-
+class ESToolkitTest: public ESTkTest {
     Q_OBJECT
-    friend int main(int arg, char*argv[]);
-protected:
-
-    static QList<QObject*>  _testQueue;
-    static QStack<QString>  _subTestStack;
-    static QMutex*          _mutex;
-    static bool             _initialized;
-
+private:
 
 
     //test reload shaders
@@ -39,95 +22,98 @@ protected:
     //switch area via asset view
     //layer test (switch layers, lay tiles)
 
-
-public:
-
-    static void enqueueNextTest(QObject* object);
-    static void enqueueTest(QObject* object);
-    static void pushSubTest(const QString name);
-    static void popSubTest(const bool success = true);
-    static void flagError(const QString msg);
-    static void flagWarning(const QString msg);
-
-    static void initialize(void);
-
-
-    static void         setESToolkit(ESToolkit*const estk);
-    static ESToolkit*   getESToolkit(void);
-
+    void    _verifyCurrentTabsText() const;
+    void    _verifyCurrentTabSelection() const;
+    Level*  _findNextLevel(void) const;
 
 private Q_SLOTS:
 
-    void createESToolkitMainWindow(void) {
-        _estk = new ESToolkit;
-        QVERIFY(_estk != nullptr);
-    }
+    void initTestCase(void);
+
+    //Tab Bar
+    void tabTextCorrectInitially(void);
+    void tabSelectionCorrectInitially(void);
+    void tabsTextUpdateOnLevelChange(void);
+    void tabSelectionUpdatesOnLevelChange(void);
+    void tabSelectionUpdatesOnAreaChange(void);
+    void tabSelectionChangeTriggersAreaChange(void);
 };
 
-inline void ESToolkitTest::flagWarning(const QString msg) {
-    if(!_initialized) return;
-    QWARN(Q_CSTR(msg));
+
+inline void ESToolkitTest::_verifyCurrentTabsText(void) const {
+    QVERIFY(_estk->_areaTabBar->count() == getCurrentLevel()->getAreaAmount());
+
+    for(unsigned i = 0; i < getCurrentLevel()->getAreaAmount(); ++i) {
+        QVERIFY(_estk->_areaTabBar->tabText(i) == getCurrentLevel()->getAreaByIndex(i)->getNodeName());
+        qDebug() << "TAB TEXT" << _estk->_areaTabBar->tabText(i) << "AREA NAME" << getCurrentLevel()->getAreaByIndex(i)->getNodeName();
+    }
+}
+
+inline void ESToolkitTest::_verifyCurrentTabSelection() const {
+    QVERIFY(_estk->_areaTabBar->tabText(_estk->_areaTabBar->currentIndex()) == getCurrentArea()->getNodeName());
+    qDebug() << "SELECTED" << _estk->_areaTabBar->tabText(_estk->_areaTabBar->currentIndex()) << "AREA" << getCurrentArea()->getNodeName();
+}
+
+inline Level* ESToolkitTest::_findNextLevel(void) const {
+    TkLevel* nextLevel = nullptr;
+    for(unsigned i = 0; i < getCurrentProject()->getLevelAmount(); ++i) {
+        if(getCurrentProject()->getLevelByIndex(i) != getCurrentLevel()) {
+            nextLevel = getCurrentProject()->getLevelByIndex(i);
+            if(getCurrentProject()->getLevelByIndex(i)->getAreaAmount() >= 2) {
+                break;  //prefer level with multiple areas
+            }
+        }
+    }
+    return nextLevel;
 }
 
 
-inline void ESToolkitTest::flagError(const QString msg) {
-    if(!_initialized) return;
-  //  QVERIFY2(false, Q_CSTR(msg));
-    //_mutex->lock();
-
-    //_mutex->unlock();
+inline void ESToolkitTest::initTestCase(void) {
+    QVERIFY(currentProjectLevelAreaExist());
 }
 
-inline void ESToolkitTest::pushSubTest(const QString name) {
-    if(!_initialized) return;
-    _mutex->lock();
-    _subTestStack.push(name);
-    QString out;
-    out += "*****BEGINNING SUBTEST: ";
-    out += name;
-    out += "*****";
-  //  gyPrintf("%s\n", Q_CSTR(out));
-    _mutex->unlock();
+inline void ESToolkitTest::tabTextCorrectInitially(void) {
+    _verifyCurrentTabsText();
 }
 
-inline void ESToolkitTest::popSubTest(const bool success) {
-    if(!_initialized) return;
-    _mutex->lock();
-    QString out;
-    out +=  QString("*****");
-    out += _subTestStack.top();
-    out += ((success)? QString(" PASS") : QString(" FAIL"));
-    out += QString("*****");
-   // gyPrintf("%s\n", Q_CSTR(out));
-    if(_subTestStack.size()) _subTestStack.pop();
-    _mutex->unlock();
+inline void ESToolkitTest::tabSelectionCorrectInitially(void) {
+    _verifyCurrentTabSelection();
 }
 
-
-inline void ESToolkitTest::setESToolkit(ESToolkit*const estk) { _estk = estk; }
-inline ESToolkit* ESToolkitTest::getESToolkit(void) { return _estk; }
-
-inline void ESToolkitTest::enqueueNextTest(QObject *object) {
-   // for(auto it = _testQueue.begin(); it != _testQueue.end(); ++it) {
-     //   if(*it == this) {
-       //     ++it;
-            _testQueue.push_front(object);
-         //   return;
-       // }
-   // }
+inline void ESToolkitTest::tabsTextUpdateOnLevelChange(void) {
+    Level* next = _findNextLevel();
+    qDebug() << "CURRENT" << getCurrentLevel()->getNodeName() << "NEXT" << next->getNodeName();
+    if(!next) QSKIP("No other levels are loaded in the project!!!");
+    getAssets()->setCurrentSelection(next);
+    _verifyCurrentTabsText();
 }
 
-inline void ESToolkitTest::enqueueTest(QObject* object) {
-    _testQueue.push_back(object);
+inline void ESToolkitTest::tabSelectionUpdatesOnLevelChange(void) {
+    _verifyCurrentTabSelection();
 }
 
-inline void ESToolkitTest::initialize(void) {
-    _mutex = new QMutex();
-    _initialized = true;
+inline void ESToolkitTest::tabSelectionUpdatesOnAreaChange(void) {
+    if(getCurrentLevel()->getAreaAmount() < 2) QSKIP("Couldn't find a new level with more than one area for test!");
+
+    for(unsigned i = 0; i < getCurrentLevel()->getAreaAmount(); ++i) {
+        if(_estk->_areaTabBar->tabText(_estk->_areaTabBar->currentIndex()) != getCurrentLevel()->getAreaByIndex(i)->getNodeName()) {
+            getAssets()->setCurrentSelection(getCurrentLevel()->getAreaByIndex(i));
+            break;
+        }
+    }
+
+    _verifyCurrentTabSelection();
 }
 
 
-int main(int argc, char*argv[]);
+inline void ESToolkitTest::tabSelectionChangeTriggersAreaChange(void) {
+    if(getCurrentLevel()->getAreaAmount() < 2) QSKIP("Current level only has one area!");
+
+    for(unsigned i = 0; i < _estk->_areaTabBar->count(); ++i) {
+        _estk->_areaTabBar->setCurrentIndex(i);
+        QVERIFY(_estk->_areaTabBar->tabText(i) == getCurrentArea()->getNodeName());
+    }
+}
 
 }
 

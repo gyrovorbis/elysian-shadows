@@ -71,7 +71,6 @@ SOURCES += \
 
 HEADERS += \
     test_libgyro_file_api.h \
-    test_estoolkit.h \
     test_libgyro_video_api.h \
     test_project.h \
     test_entity.h \
@@ -82,4 +81,7 @@ HEADERS += \
     test_area.h \
     test_light_system.h \
     test_audio_system.h \
-    test_map_view.h
+    test_map_view.h \
+    test_estk.h \
+    test_estoolkit.h \
+    test_init.h

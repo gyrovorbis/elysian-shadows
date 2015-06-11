@@ -3,12 +3,12 @@
 
 #include <QtTest>
 #include <gyro_file_api.h>
-#include <test_estoolkit.h>
+#include <test_estk.h>
 #include <QDir>
 
 namespace tktest {
 
-class LibGyroFileApiTest: public ESToolkitTest {
+class LibGyroFileApiTest: public ESTkTest {
     Q_OBJECT
 public:
     LibGyroFileApiTest() {

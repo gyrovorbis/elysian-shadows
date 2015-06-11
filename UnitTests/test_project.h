@@ -2,7 +2,7 @@
 #define TEST_OPEN_PROJECT
 
 #include <QTest>
-#include <test_estoolkit.h>
+#include <test_estk.h>
 #include <tk_estoolkit.h>
 #include <QDir>
 #include <tk_assets.h>
@@ -13,15 +13,12 @@ class Project;
 
 namespace tktest {
 
-class TestSmokeProject: public QObject, public ESTkTestCommon, public AssetManager {
+class TestSmokeProject: public ESTkTest {
     Q_OBJECT
 
-public:
-    TestSmokeProject(const QString project);
 
 private:
 
-    QString     _path;
 
 private Q_SLOTS:
     void initTestCase();
@@ -39,10 +36,8 @@ private Q_SLOTS:
 
 };
 
-inline TestSmokeProject::TestSmokeProject(const QString project): _path(project) {}
-
 inline void TestSmokeProject::initTestCase() {
-    qDebug() << QString("Verifying Project[") << _path << "]";
+    qDebug() << QString("Verifying Project[") << getAssets()->getCurrentProject()->getNodePath() << "]";
 }
 
 inline void TestSmokeProject::cleanupTestCase()
@@ -51,14 +46,13 @@ inline void TestSmokeProject::cleanupTestCase()
 
 inline void TestSmokeProject::openProject()
 {
-    QVERIFY(_estk->openProjectDir(_path));
   //  QVERIFY(getAssets()->getCurrentProject()- == _project);
 }
 
 inline void TestSmokeProject::iterateLevels() {
     QVERIFY(getAssets()->getCurrentProject());
     for(unsigned i = 0; i < getAssets()->getCurrentProject()->getLevelAmount(); ++i) {
-        ESToolkitTest::enqueueNextTest(new LevelTest(getAssets()->getCurrentProject()->getLevelByIndex(i)));
+      //  ESTkTest::enqueueNextTest(new LevelTest(getAssets()->getCurrentProject()->getLevelByIndex(i)));
     }
 }
 
