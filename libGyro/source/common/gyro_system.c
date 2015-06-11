@@ -11,18 +11,18 @@ static GYDebugCallbacks _dbgCallbacks = {
     NULL,
 };
 
-static GY_DEBUG_LEVEL _dbgLevel = GY_DEBUG_WARNING;
+static GY_DEBUG_SEVERITY _dbgLevel = GY_DEBUG_DBG_WARNING;
 
 GYAppInitCb gy_appInitCb = NULL;
 GYAppTickCb gy_appTickCb = NULL;
 GYAppDrawCb gy_appDrawCb = NULL;
 GYAppQuitCb gy_appQuitCb = NULL;
 
-void _gyLog(GY_DEBUG_LEVEL level, const char*const str, ...) {
+void _gyLog(GY_DEBUG_SEVERITY level, const char*const str, ...) {
     char buffer[GYRO_PRINTF_BUFFER_SIZE];
     va_list argptr;
 
-	if(_dbgLevel == GY_DEBUG_OFF || level < _dbgLevel) return;
+    if(_dbgLevel == GY_DEBUG_DBG_OFF || level < _dbgLevel) return;
 
     va_start(argptr, str);
     vsprintf(buffer, str, argptr);
@@ -40,7 +40,7 @@ void _gyPop(const unsigned count) {
     if(_dbgCallbacks.pop) _dbgCallbacks.pop(count);
 }
 
-void gySysDebugEnable(GY_DEBUG_LEVEL level, const GYDebugCallbacks* callbacks) {
+void gySysDebugEnable(GY_DEBUG_SEVERITY level, const GYDebugCallbacks* callbacks) {
     _dbgLevel = level;
     memcpy(&_dbgCallbacks, callbacks, sizeof(GYDebugCallbacks));
 }

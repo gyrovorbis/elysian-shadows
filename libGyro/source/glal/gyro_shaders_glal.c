@@ -283,7 +283,7 @@ void gyVidSetGlobalAmbience(const GYVector4*const color) {
 static inline int _protectedUniformQuery(const GYShaderProgram* prog, const char* const name, const unsigned canFail) {
     int loc = glGetUniformLocation(prog->program, name);
     if(!canFail && loc == -1) {
-        _gyLog(GY_DEBUG_WARNING, "Query for shader uniform %s failed!", name);
+        _gyLog(GY_DEBUG_DBG_WARNING, "Query for shader uniform %s failed!", name);
     }
     return loc;
 }
@@ -291,7 +291,7 @@ static inline int _protectedUniformQuery(const GYShaderProgram* prog, const char
 static inline int _protectedAttribQuery(const GYShaderProgram* prog, const char* const name, const unsigned canFail) {
     int loc = glGetAttribLocation(prog->program, name);
     if(!canFail && loc == -1) {
-        _gyLog(GY_DEBUG_WARNING, "Query for shader attribute %s failed!", name);
+        _gyLog(GY_DEBUG_DBG_WARNING, "Query for shader attribute %s failed!", name);
     }
     return loc;
 }
@@ -361,7 +361,7 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
         shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SPOT_EXPONENT]					= _protectedUniformQuery(shader->program, buff, !light);
 
         sprintf(buff, "uLights[%d].spotCutoffAngle", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SPOT_CUTOFF_ANGLE]				= _protectedUniformQuery(shader->program, buff, !light);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SPOT_CUTDBG_OFF_ANGLE]				= _protectedUniformQuery(shader->program, buff, !light);
 
         sprintf(buff, "uLightsEnabled[%d]", i);
         shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_ENABLED]						= _protectedUniformQuery(shader->program, buff, !light);
@@ -381,7 +381,7 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
 
 // =========== PUBLIC INTERNAL FUNCTIONS ==========
 void glalLoadDefaultShaders(void) {
-    _gyLog(GY_DEBUG_VERBOSE, "Loading default shaders.");
+    _gyLog(GY_DEBUG_DBG_VERBOSE, "Loading default shaders.");
     _gyPush();
 
     GYShader* vertShader = gyShaderCreate("/assets/shaders/pixelLighting.vsh");
@@ -455,7 +455,7 @@ void glalDefaultShadersLoadUniforms(void) {
     GYMatrix4 finalMat;
     glalGetPointLightProjectionMatrix(projMat, NULL);
     gyMatMultMat(finalMat, glalShadowTexCoordBiasMat, (const float (*)[4])projMat);
-    glUniformMatrix4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_SHADOW_CUBE_MAP_PROJ_MAT], 1, GL_FALSE, (float*)projMat); //NO TEX COORD OFFSET? WHAT THE FUCK!?
+    glUniformMatrix4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_SHADOW_CUBE_MAP_PROJ_MAT], 1, GL_FALSE, (float*)projMat); //NO TEX COORD DBG_OFFSET? WHAT THE FUCK!?
 
     glalUniformChangeCount += 14;
 
@@ -483,7 +483,7 @@ int _gyVidShaderCreate(GYShader* shader) {
         extension = token;
     }
 
-    _gyLog(GY_DEBUG_VERBOSE, "Compiling shader: %s", shader->path);
+    _gyLog(GY_DEBUG_DBG_VERBOSE, "Compiling shader: %s", shader->path);
     _gyPush();
 
     if(strcmp(extension, "vsh") == 0) {
@@ -491,20 +491,20 @@ int _gyVidShaderCreate(GYShader* shader) {
     } else if(strcmp(extension, "fsh") == 0) {
         shader->type = GL_FRAGMENT_SHADER;
     } else {
-        _gyLog(GY_DEBUG_ERROR, "Unrecognized shader extension: %s", extension);
+        _gyLog(GY_DEBUG_DBG_ERROR, "Unrecognized shader extension: %s", extension);
         _gyPop(1);
         return 0;
     }
 
     shader->shader = glCreateShader(shader->type);
     if(!shader->shader)  {
-        _gyLog(GY_DEBUG_ERROR, "Could not generate shader", shader->path);
+        _gyLog(GY_DEBUG_DBG_ERROR, "Could not generate shader", shader->path);
         _gyPop(1);
         return 0;
     }
 
 	if(!gyFileOpen(shader->path, "r", &file)) {
-        _gyLog(GY_DEBUG_ERROR, "Could not open shader", shader->path);
+        _gyLog(GY_DEBUG_DBG_ERROR, "Could not open shader", shader->path);
         _gyPop(1);
 		return 0;
 	}
@@ -531,10 +531,10 @@ int _gyVidShaderCreate(GYShader* shader) {
             char* infoLog = malloc(sizeof(char)*infoLen);
 
             glGetShaderInfoLog(shader->shader, infoLen, NULL, infoLog);
-            _gyLog(GY_DEBUG_ERROR, "Error compiling shader: %s", infoLog);
+            _gyLog(GY_DEBUG_DBG_ERROR, "Error compiling shader: %s", infoLog);
             free(infoLog);
         } else {
-            _gyLog(GY_DEBUG_ERROR, "Unknown compilation error");
+            _gyLog(GY_DEBUG_DBG_ERROR, "Unknown compilation error");
         }
 
         glDeleteShader(shader->shader);
@@ -554,12 +554,12 @@ int _gyVidShaderDestroy(GYShader* shader) {
 int _gyVidShaderProgramCreate(GYShaderProgram* program) {
     GLint linked;
 
-    _gyLog(GY_DEBUG_VERBOSE, "Linking shader program");
+    _gyLog(GY_DEBUG_DBG_VERBOSE, "Linking shader program");
     _gyPush();
 
 	program->program = glCreateProgram();
 	if(!program->program) {
-        _gyLog(GY_DEBUG_ERROR, "\tCould not generate program!");
+        _gyLog(GY_DEBUG_DBG_ERROR, "\tCould not generate program!");
         _gyPop(1);
 		return 0;
 	}
@@ -567,14 +567,14 @@ int _gyVidShaderProgramCreate(GYShaderProgram* program) {
     if(program->vertShader) {
         glAttachShader(program->program, program->vertShader->shader);
     } else {
-        _gyLog(GY_DEBUG_ERROR, "\tNo vertex shader object to attach!");
+        _gyLog(GY_DEBUG_DBG_ERROR, "\tNo vertex shader object to attach!");
         _gyPop(1);
         return 0;
     }
     if(program->fragShader) {
         glAttachShader(program->program, program->fragShader->shader);
     } else {
-        _gyLog(GY_DEBUG_ERROR, "\tNo fragment shader object to attach!");
+        _gyLog(GY_DEBUG_DBG_ERROR, "\tNo fragment shader object to attach!");
         _gyPop(1);
         return 0;
     }
@@ -590,11 +590,11 @@ int _gyVidShaderProgramCreate(GYShaderProgram* program) {
             char* infoLog = malloc(sizeof(char) * infoLen);
 
             glGetProgramInfoLog(program->program, infoLen, NULL, infoLog);
-            _gyLog(GY_DEBUG_ERROR, "Could not link program: %s", infoLog);
+            _gyLog(GY_DEBUG_DBG_ERROR, "Could not link program: %s", infoLog);
             free(infoLog);
 
         } else {
-            _gyLog(GY_DEBUG_ERROR, "Could not link program for unknown reasons!");
+            _gyLog(GY_DEBUG_DBG_ERROR, "Could not link program for unknown reasons!");
         }
 
         _gyPop(1);

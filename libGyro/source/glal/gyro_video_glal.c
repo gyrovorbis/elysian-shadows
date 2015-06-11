@@ -148,7 +148,7 @@ unsigned                    glalPrevVertexRenderCount   = 0;
 unsigned                    glalPrevUniformChangeCount  = 0;
 unsigned                    glalTextureChangeCount      = 0;
 unsigned                    glalPrevTextureChangeCount  = 0;
-GY_ALPHA_LEVEL              glalAlphaLevel              = GY_ALPHA_NONE;
+GY_ALPHA_SEVERITY              glalAlphaLevel              = GY_ALPHA_NONE;
 GY_BLEND_MODE               glalBlendMode               = GY_BLEND_ONE_MINUS_SRC_ALPHA;
 int                         glalDepthTest               = 0;
 int                         glalVertexArray             = 0;
@@ -219,18 +219,18 @@ int glalVidGlewInit(void) {
     if(!once) {
     //God fucking damnit, Windows....
     #ifdef _WIN32
-        _gyLog(GY_DEBUG_VERBOSE, "Initializing GLEW...");
+        _gyLog(GY_DEBUG_DBG_VERBOSE, "Initializing GLEW...");
         glewExperimental = GL_TRUE; //FUCKING GLEW CANT HANDLE GL CORE CONTEXTS WITHOUT THIS.
         GLenum err = glewInit();
         if (err != GLEW_OK) {
           /* Problem: glewInit failed, something is seriously wrong. */
-            _gyLog(GY_DEBUG_CRITICAL, "\tError: %s", glewGetErrorString(err));
+            _gyLog(GY_DEBUG_DBG_WARNING, "\tError: %s", glewGetErrorString(err));
         }
 
         if(GLEW_VERSION_3_2) {
-            _gyLog(GY_DEBUG_VERBOSE, "\tOpenGL 3.2 Extensions detected");
+            _gyLog(GY_DEBUG_DBG_VERBOSE, "\tOpenGL 3.2 Extensions detected");
         } else {
-            _gyLog(GY_DEBUG_CRITICAL, "\tOpenGL 3.2 Extensions NOT detected! Prepare for crash!");
+            _gyLog(GY_DEBUG_DBG_WARNING, "\tOpenGL 3.2 Extensions NOT detected! Prepare for crash!");
         }
 
      once = 1;
@@ -248,7 +248,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
 
     static int once = 0;
     if(!once) {
-        _gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro Video API.");
+        _gyLog(GY_DEBUG_DBG_VERBOSE, "Initializing libGyro Video API.");
         _gyPush();
 
         glalLoadDefaultShaders();
@@ -275,7 +275,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
             &glalShadowMapShader
         };
 
-        _gyLog(GY_DEBUG_VERBOSE, "Creating VAOs and VBOs.");
+        _gyLog(GY_DEBUG_DBG_VERBOSE, "Creating VAOs and VBOs.");
 
         glGenVertexArrays(1, &_defaultVao);
         gyVidVertexArrayBind(-1);
@@ -325,7 +325,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
     return 1;
 }
 
-// ==== LOW-LEVEL API =====
+// ==== LOW-SEVERITY API =====
 
 void gyVidCamUpdate(const struct GYCamera *const cam) {
     if(cam) {
@@ -464,7 +464,7 @@ void gyVidDepthTest(const int enable) {
     }
 }
 
-void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
+void gyVidAlphaLevel(const GY_ALPHA_SEVERITY lev) {
     if(gyVidShadowPass()) return;
 
     //Does this even do anything now that we're shader based?
@@ -505,7 +505,7 @@ void gyVidQuadListEnd(void) {
     _curColorArrayPtr = NULL;
 }
 
-// ==== HIGH-LEVEL API ====
+// ==== HIGH-SEVERITY API ====
 // (glorified wrappers around low-level API)
 
 

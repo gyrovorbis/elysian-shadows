@@ -17,13 +17,13 @@ static ALCcontext*	_alContext	= NULL;
 int gyAudInit(void) {
     _alDevice = alcOpenDevice(NULL);                                               //Open the device
     if(!_alDevice) {
-        _gyLog(GY_DEBUG_WARNING, "! - Could not open OpenAL Device!");
+        _gyLog(GY_DEBUG_DBG_WARNING, "! - Could not open OpenAL Device!");
         return 0;
     }
     _alContext = alcCreateContext(_alDevice, NULL);                                   //Give the device a context
     alcMakeContextCurrent(_alContext);                                             //Make the context the current
     if(!_alContext) {
-        _gyLog(GY_DEBUG_WARNING, "! - Could not make OpenAL Context!");
+        _gyLog(GY_DEBUG_DBG_WARNING, "! - Could not make OpenAL Context!");
         return 0;
     }
 

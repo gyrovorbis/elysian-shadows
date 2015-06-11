@@ -101,8 +101,8 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0);
 #if !defined(ANDROID) /* TODO: FIXME */
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
-//		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0);
+        //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_SEVERITY, 0);
+//		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_SEVERITY, 0);
         //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
        // glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_MODE, GL_NONE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
@@ -240,7 +240,7 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
             gyVidVertexBatchFlush();
             flushed = 1;
         }
-            glUniform1f(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SPOT_CUTOFF_ANGLE], light->spotCutoffAngle);
+            glUniform1f(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SPOT_CUTDBG_OFF_ANGLE], light->spotCutoffAngle);
             cache->spotCutoffAngle = light->spotCutoffAngle;
             ++glalUniformChangeCount;
     }
@@ -631,7 +631,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
     //Check whether shit has reested with our FBO
     GLenum status;
      if((status = glCheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE) {
-         _gyLog(GY_DEBUG_WARNING, "Binding GLAL depth texture to frame buffer has reested - %d!", status);
+         _gyLog(GY_DEBUG_DBG_WARNING, "Binding GLAL depth texture to frame buffer has reested - %d!", status);
          return;
      }
 
