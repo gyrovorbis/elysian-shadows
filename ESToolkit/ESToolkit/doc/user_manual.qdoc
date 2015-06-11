@@ -1,0 +1,103 @@
+
+
+/*!
+   \page index.html overview
+
+	\title ESToolkit User Manual
+
+   \indexpage ESToolkit User Manual
+   \startpage ESToolkit User Manual
+
+	The Elysian Shadows Toolkit or "ESTk" is a multiplatform
+	game development environment facilitating the creation
+	of the "next generation" of 2D games. Originally developed
+	solely to power Elysian Shadows, it features a full-fledged
+	dynamic lighting engine, pixel perfect shadows, 3D positional
+	audio, 3D rigid body and particle physics, and is fully
+	extensible through an extremely powerful Lua API.
+
+  \part Basic Qt
+
+    This is the first part.
+
+
+        \chapter Getting Started
+
+        This is the first part's first chapter.
+
+
+            \section1 Hello Qt
+
+            This is the first chapter's first section.
+
+
+            \section1 Making Connections
+
+            This is the first chapter's second section.
+
+
+            \section1 Using the Reference Documentation
+
+            This is the first chapter's third section.
+
+
+        \chapter Creating Dialogs
+
+        This is the first part's second chapter.
+
+
+            \section1 Subclassing QDialog
+
+            This is the second chapter's first section.
+
+            ...
+
+
+    \part Intermediate Qt
+
+    This is the second part.
+
+
+        \chapter Layout Management
+
+        This is the second part's first chapter.
+
+
+            \section1 Basic Layouts
+
+            This is the first chapter's first section.
+
+
+	ESTk currently supports the following platforms:
+
+
+	Table of contents:
+
+	\list
+	\li \l{Getting Started}
+	\li \l{Project Structure}
+	\li \l{Creating Maps}
+	\li \l{Creating Entities}
+	\li \l{Dynamic Lighting}
+	\li \l{Spine Integration}
+	\li \l{Rigid Bodies}
+	\li \l{Positional Audio}
+	\li \l{Cross-platform Deployment}
+	\li \l{Debugging and Troubleshooting}
+	\li \l{Editor Tools}
+	\li \l{Sheet Manager}
+	\li \l{Lua API Reference}
+	\endlist
+
+	\list
+	\li \l Windows
+	\li \l MacOS X
+	\li \l Linux
+	\li \l iOS
+	\li \l Android
+	\li \l OUYA
+	\li \l Sega Dreamcast
+	\endlist
+
+*/
+

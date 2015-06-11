@@ -213,33 +213,41 @@ void gyVidResolution(unsigned int *const projWidth, unsigned int *const projHeig
     *projWidth = _projWidth; *projHeight = _projHeight;
 }
 
+int glalVidGlewInit(void) {
+    static int once = 0;
+
+    if(!once) {
+    //God fucking damnit, Windows....
+    #ifdef _WIN32
+        _gyLog(GY_DEBUG_VERBOSE, "Initializing GLEW...");
+        glewExperimental = GL_TRUE; //FUCKING GLEW CANT HANDLE GL CORE CONTEXTS WITHOUT THIS.
+        GLenum err = glewInit();
+        if (err != GLEW_OK) {
+          /* Problem: glewInit failed, something is seriously wrong. */
+            _gyLog(GY_DEBUG_CRITICAL, "\tError: %s", glewGetErrorString(err));
+        }
+
+        if(GLEW_VERSION_3_2) {
+            _gyLog(GY_DEBUG_VERBOSE, "\tOpenGL 3.2 Extensions detected");
+        } else {
+            _gyLog(GY_DEBUG_CRITICAL, "\tOpenGL 3.2 Extensions NOT detected! Prepare for crash!");
+        }
+
+     once = 1;
+
+    #endif
+}
+return 1;
+}
+
 int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidth, const int projHeight) {
     _projWidth = projWidth;
     _projHeight = projHeight;
 
-    glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
-    glViewport(0, 0, viewWidth, viewHeight);
+    glalVidGlewInit();
 
     static int once = 0;
     if(!once) {
-
-        //God fucking damnit, Windows....
-        #ifdef _WIN32
-            _gyLog(GY_DEBUG_VERBOSE, "Initializing GLEW...");
-            glewExperimental = GL_TRUE; //FUCKING GLEW CANT HANDLE GL CORE CONTEXTS WITHOUT THIS.
-            GLenum err = glewInit();
-            if (err != GLEW_OK) {
-              /* Problem: glewInit failed, something is seriously wrong. */
-                _gyLog(GY_DEBUG_CRITICAL, "\tError: %s", glewGetErrorString(err));
-            }
-
-            if(GLEW_VERSION_3_2) {
-                _gyLog(GY_DEBUG_VERBOSE, "\tOpenGL 3.2 Extensions detected");
-            } else {
-                _gyLog(GY_DEBUG_CRITICAL, "\tOpenGL 3.2 Extensions NOT detected! Prepare for crash!");
-            }
-
-        #endif
 
         glalLoadDefaultShaders();
         gyVidSetDefaultShaderProgram();
@@ -298,10 +306,16 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
             }
         }
         once = 1;
-        gyVidVertexArrayBind(-1);
+        gyVidVertexArrayBind(0);
+  //      glalVidBindDefaultFbo();
     }
 
-   // glalVidBindDefaultFbo();
+
+    glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
+    glViewport(0, 0, viewWidth, viewHeight);
+
+
+  //  glalVidBindDefaultFbo();
     return 1;
 }
 
@@ -323,13 +337,15 @@ static inline void _flushStreamVertices(void* data) {
     if(_vertexQueueSize-_vertexQueueLastSize <= 0) return;
 
     gyVidVertexArrayBind(_streamVao[gyVidShadowPass()]);
+
+    glBindBuffer(GL_ARRAY_BUFFER, _streamVertexVbo[0]);
     GYVertex* ptr = (GYVertex*)glMapBufferRange(GL_ARRAY_BUFFER, _vertexQueueLastOffset, sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize), GL_MAP_INVALIDATE_RANGE_BIT /*| GL_MAP_FLUSH_EXPLICIT_BIT*/ | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
-   // if(ptr) {
+    if(ptr) {
     memcpy(ptr, &_vertexQueue[_vertexQueueLastSize], sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize));
     glUnmapBuffer(GL_ARRAY_BUFFER);
 
     glDrawArrays(GL_TRIANGLE_STRIP, _vertexQueueLastSize, (_vertexQueueSize-_vertexQueueLastSize));
-//}
+}
     _vertexQueueLastSize    = _vertexQueueSize;
     _vertexQueueLastOffset  = _vertexQueueSize*sizeof(GYVertex);
 
@@ -591,7 +607,7 @@ void gyVidCamFrustum(GYCamera* const cam, const float fov, const float aspect, c
     gyVidPerspectiveMat(cam->projMat, fov, aspect, znear, zfar);
     cam->projType = GY_PROJECTION_PERSPECTIVE;
 
-    gyMatMultMat(cam->projViewMat, (const float(*)[4])cam->projMat, (const float(*)[4])cam->viewMat);
+    gyMatMultMat(cam->projViewMat, cam->projMat, cam->viewMat);
 
     volume->ratio = aspect;
     volume->nearD = znear;

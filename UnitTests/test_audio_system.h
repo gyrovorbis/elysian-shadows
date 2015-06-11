@@ -1,0 +1,5 @@
+#ifndef TEST_AUDIO_SYSTEM
+#define TEST_AUDIO_SYSTEM
+
+#endif // TEST_AUDIO_SYSTEM
+

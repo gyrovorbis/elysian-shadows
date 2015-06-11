@@ -1,0 +1,89 @@
+#include(compat.qdocconf)
+#include(/Users/falcogirgis/Qt5/Docs/Qt-5.4/global/qt-module-defaults.qdocconf)
+#include(/Users/falcogirgis/Qt5/Docs/Qt-5.4/global/macros.qdocconf) #macros for QDoc commands
+#include(/Users/falcogirgis/Qt5/Docs/Qt-5.4/global/qt-cpp-defines.qdocconf) #needed by C++ projects
+#include(/Users/falcogirgis/Qt5/Docs/Qt-5.4/global/compat.qdocconf) #compatibility macros
+#include(/Users/falcogirgis/Qt5/Docs/Qt-5.4/global/fileextensions.qdocconf) #configuration common among QDoc projects
+#include(/Users/falcogirgis/Qt5/Docs/Qt-5.4/global/qt-html-templates-offline.qdocconf) #offline HTML template for documentation shipped to Qt Creator
+
+project = ESToolkit
+description = ESToolkit help files, references, examples, and Lua API documentation
+
+qhp.projects = ESToolkit
+
+qhp.ESToolkit.file				 = ESToolkit.qhp
+qhp.ESToolkit.namespace           = elysianshadows.toolkit.help
+qhp.ESToolkit.virtualFolder       = doc
+qhp.ESToolkit.indexTitle          = ESToolkit User Manual
+qhp.ESToolkit.sortPages				= true
+qhp.ESToolkit.indexRoot		 =
+
+qhp.ESToolkit.subprojects         = lua manual
+qhp.ESToolkit.subprojects.manual.title = ESTk User Manual
+qhp.ESToolkit.subprojects.manual.indexTitle = ESToolkit User Manual
+qhp.ESToolkit.subprojects.manual.selectors = fake:headerfile,group,module,qdoc
+qhp.ESToolkit.subprojects.manual.sortPages = true
+
+qhp.ESToolkit.subprojects.lua.title = Lua API
+qhp.ESToolkit.subprojects.lua.indexTitle = Lua Wrapper API
+qhp.ESToolkit.subprojects.lua.selectors = qmlclass
+qhp.ESToolkit.subprojects.lua.sortPages = true
+
+
+sources.fileextensions = "*.cpp *.qdoc *.mm *.qml *.c"
+headers.fileextensions = "*.h *.ch *.h++ *.hh *.hpp *.hxx"
+
+outputdir   = ./out
+outputformats = HTML
+
+#depends = qtdoc qtcore qtgui qtopengl qtsql
+
+defines += GYRO_PLATFORM GYRO_PLATFORM_Qt \
+	QT_NO_KEYWORDS \
+	QT_NO_DYNAMIC_CAST
+
+falsehoods += ELYSIAN_ENGINE
+
+
+Cpp.ignoretokens +=   ELYSIAN_LUA_PROXY_FIELDS_BEGIN \
+	ELYSIAN_LUA_PROXY_FIELD \
+	ELYSIAN_LUA_PROXY_FIELDS_END \
+	ELYSIAN_LUA_PROXY_ARRAY_FIELD \
+	ELYSIAN_LUA_PROXY_FIELD_EXPORT \
+	ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_BEGIN \
+	Q_SIGNALS \
+	Q_SLOTS \
+	Q_EMIT
+
+headerdirs  += ../../AssetIO/include \
+	../../ESGamma/include \
+	./include \
+	../../libGyro/include \
+	../../Lua5.2/include \
+	../../OOLua/include \
+	../../Spine/include
+
+
+sourcedirs += source \
+	source/asset \
+	source/core \
+	source/dialog \
+	source/estk \
+	source/model \
+	source/sheet_manager \
+	source/tile_engine \
+	source/widget \
+	../../AssetIO/source \
+	../../AssetIO/source/component \
+	./../AssetIO/source/level \
+	./../AssetIO/source/primitive \
+	./../AssetIO/source/utility \
+	../../ESGamma/source \
+	../../ESGamma/source/lua \
+	../../ESGamma/source/gui \
+	../../ESGamma/source/system \
+	../../ESGamma/source/utility \
+	doc \
+
+
+imagedirs   += resource/images

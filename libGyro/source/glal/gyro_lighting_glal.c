@@ -2,7 +2,6 @@
 #include <gyro_shader_api.h>
 #include <gyro_defines.h>
 #include <glal/gyro_shaders_glal.h>
-#include <glal/gyro_al.h>
 #include <glal/gyro_video_glal.h>
 #include <gyro_system_api.h>
 #include <stdio.h>
@@ -118,7 +117,7 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
         break;
     }
     //glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-    //glBindTexture(GL_TEXTURE_2D, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
     //glEnable(GL_TEXTURE_2D);
     //glDisable(GL_TEXTURE_CUBE_MAP);
 }
@@ -544,7 +543,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
     _LightInternals* internals = light->_data;
     GYCamera*const cam = light->camera;
 
-    gyVidVertexBatchFlush();
+    if(!_firstShadowPass) gyVidVertexBatchFlush();
     glViewport(0, 0, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE);
 
     glActiveTexture(glalTextureMapTexUnits[GLAL_TEMP_MAP]);
@@ -640,7 +639,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
     //    glCullFace(GL_FRONT);
 
              glClear(GL_DEPTH_BUFFER_BIT);
-    // if(_firstShadowPass) {
+    if(_firstShadowPass) {
          glClearDepth(1.0f);
          glDepthRange(0.0f, 1.0f);
         glDisable(GL_BLEND);
@@ -650,17 +649,17 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
         //glEnable(GL_BLEND);
         glDepthFunc(GL_LESS);
         _firstShadowPass = 0;
-    // }
+    }
 
     //find projView matrix
-    gyMatMultMat(lightProjViewMatrix, (const float(*)[4])lightProjMatrix, (const float(*)[4])lightViewMatrix);
+    gyMatMultMat(lightProjViewMatrix, lightProjMatrix, lightViewMatrix);
 
     //SUBMIT PROJVIEW UNIFORM TO SHADOW SHADER
     glUniformMatrix4fv(glalShadowMapShader.uniformLoc[GLAL_SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)lightProjViewMatrix);
     ++glalUniformChangeCount;
 
     //Store projection view matrix (plus bias) for next render pass
-    if(useBias) gyMatMultMat(cam->projViewMat, (const float (*)[4])glalShadowTexCoordBiasMat, (const float (*)[4])lightProjViewMatrix);
+    if(useBias) gyMatMultMat(cam->projViewMat, glalShadowTexCoordBiasMat, lightProjViewMatrix);
 
 }
 

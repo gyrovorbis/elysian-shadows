@@ -55,8 +55,8 @@ THE SOFTWARE.
 #define OOLUA_C_FUNCTION_N(return_value, func, ...) \
 	OOLUA_PARAMS_CONCAT(1, __VA_ARGS__) \
 	typedef OOLUA::INTERNAL::return_type_traits<return_value > R; \
-	typedef R::type (funcType)( OOLUA_PARAM_TYPE_CONCAT(__VA_ARGS__) ) ; \
-	OOLUA::INTERNAL::Proxy_none_member_caller<R, LVD::is_void< R::type >::value >:: \
+    typedef R::type (funcType)( OOLUA_PARAM_TYPE_CONCAT(__VA_ARGS__) ) ; \
+    OOLUA::INTERNAL::Proxy_none_member_caller<R, LVD::is_void< R::type >::value >:: \
 		call<funcType OOLUA_TPARAMS_CONCAT(__VA_ARGS__)> \
 			(vm, &func OOLUA_PPARAMS_CONCAT(__VA_ARGS__)); \
 	OOLUA_BACK_CONCAT(__VA_ARGS__) \

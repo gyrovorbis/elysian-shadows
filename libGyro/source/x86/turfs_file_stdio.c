@@ -3,7 +3,7 @@
 
 #include <common/turfs.h>
 
-struct turfs_fp {
+struct _turfs_fp {
     FILE *fp;
     int eof;
 };
@@ -19,7 +19,7 @@ TURFSAPI turfs_file_open(const char *file, const char *mode, turfs_fp *fp)
     if ((err = turfs_silph_scope(file, &rpath, &rpath_len, NULL)) != TURFS_RET_OK) {
         return err;
     }
-    *fp = malloc(sizeof(struct turfs_fp));
+    *fp = malloc(sizeof(turfs_fp));
     if (*fp == NULL) {
         free(rpath);
         return TURFS_RET_MEMORY_ERROR;

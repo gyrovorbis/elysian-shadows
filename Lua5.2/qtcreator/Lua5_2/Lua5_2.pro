@@ -57,7 +57,7 @@ SOURCES += \
     ../../source/lua.c \
     ../../source/lundump.c \
     ../../source/lvm.c \
-    ../../source/lzio.c
+	../../source/lzio.c
 
 HEADERS += \
     ../../include/lua/lapi.h \

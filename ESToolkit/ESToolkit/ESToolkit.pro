@@ -3,336 +3,444 @@
 # And modified to all fuck by Falco ALL THE DAYS
 # -------------------------------------------------
 include(../../qtcreator/ESDev/ESDev.pri)
+#include($QT_INSTALL_DOCS/global/qt-module-defaults.qdocconf)
 win32 {
   #  QMAKE_CXX=../../qtcreator/ESDev/ccache.exe g++
   #  QMAKE_CC=../../qtcreator/ESDev/ccache.exe gcc
 }
 TARGET = ESToolkit
 TEMPLATE = app
-QT		+= widgets opengl
-QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-empty-body
 
+QMAKE_OBJCXXFLAGS_PRECOMPILE += -std=c++11 -stdlib=libc++
+QT		+= sql gui opengl network help
+tests {
+    QT+= testlib
+}
+
+QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-empty-body
+#QMAKE_DOCS = ESToolkit.qdocconf
+#CONFIG += precompile_header
+
+#include($$QT_INSTALL_DOCS/global/macros.qdocconf) #macros for QDoc commands
+#include($$QT_INSTALL_DOCS/global/qt-cpp-defines.qdocconf) #needed by C++ projects
+#include($$QT_INSTALL_DOCS/global/compat.qdocconf) #compatibility macros
+#include($$QT_INSTALL_DOCS/global/fileextensions.qdocconf) #configuration common among QDoc projects
+#include($$QT_INSTALL_DOCS/global/qt-html-templates-offline.qdocconf) #offline HTML template for documentation shipped to Qt Creator
+
+# FIXME: Refactor into load(qt_docs) or something similar
+# that can be used from all non-module projects that also
+# provide modularized docs, for example qmake.
+#QTDIR = $$[QT_HOST_PREFIX]
+#exists($$QTDIR/.qmake.cache): \
+#	QMAKE_DOCS_OUTPUTDIR = ../../assets/doc
+#else: \
+#	QMAKE_DOCS_OUTPUTDIR = ../../assets/doc
+#
 ICON = resource/images/estk.icns
 
-DEPENDPATH +=  ../../AssetIO/include \
+#MOC_DIR		= $$OUT_PWD/temp/moc
+#OBJECTS_DIR = $$OUT_PWD/temp/obj
+#UI_DIR		= $$OUT_PWD/temp/ui
+#RCC_DIR		= $$OUT_PWD/temp/rcc
+
+
+#docs {
+
+
+DEPENDPATH += ../../AssetIO/include/component \
+    ../../AssetIO/include/crtp \
+    ../../AssetIO/include/level \
+    ../../AssetIO/include/primitive \
+    ../../AssetIO/include/utility \
+    ../../ESGamma/include/crtp \
+    ../../ESGamma/include/gui \
+    ../../ESGamma/include/lua \
+    ../../ESGamma/include/system \
+    ../../ESGamma/include/utility \
     include/asset \
-    ../../ESGamma/include \
+    include/model \
     include/estk \
+    include/tile_engine \
+    include/core \
     ../../libGyro/include \
     ../../libGyro/include/kinetic \
-    include/core \
+    include/sheet_manager \
     include/dialog \
-    include/sheetManager \
-    include/tileEngine \
-    include/widget \
-    ../../Spine/include
+    include/widget
 
-INCLUDEPATH += include/asset \
-    include/core \
-    include/dialog \
+#PRIORITIZED TO REDUCE BUILD TIME ON FUCKING MINGW
+INCLUDEPATH += ../../AssetIO/include/component \
+    ../../AssetIO/include/crtp \
+    ../../AssetIO/include/level \
+    ../../AssetIO/include/primitive \
+    ../../AssetIO/include/utility \
+    ../../ESGamma/include/crtp \
+    ../../ESGamma/include/gui \
+    ../../ESGamma/include/lua \
+    ../../ESGamma/include/system \
+    ../../ESGamma/include/utility \
+    include/asset \
+    include/model \
     include/estk \
-    include/sheetManager \
-    include/tileEngine \
-    include/widget \
-    ../../AssetIO/include \
+    include/tile_engine \
+    include/core \
     ../../libGyro/include \
     ../../libGyro/include/kinetic \
-    ../../ESGamma/lib/include \
-    ../../ESGamma/include \
-    ../../OOLua/include \
+    include/sheet_manager \
+    include/dialog \
+    include/widget \
     ../../Lua5.2/include \
+    ../../OOLua/include \
+    ../../ESGamma/lib/include \
     ../../Spine/include
 
+PRECOMPILED_HEADER = include/tk_precompiled_headers.h
 
-SOURCES += source/asset/project.cpp \
-    source/asset/assets.cpp \
-    source/asset/assetManager.cpp \
-    source/core/undoItem.cpp \
-    source/core/treenode.cpp \
-    source/core/tileSheetUtilities.cpp \
-    source/core/selectable.cpp \
+SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
+    ../../AssetIO/source/component/elysian_audio_source_base.cpp \
+    ../../AssetIO/source/component/elysian_behavior_base.cpp \
+    ../../AssetIO/source/component/elysian_character_base.cpp \
+    ../../AssetIO/source/component/elysian_collidable_base.cpp \
+    ../../AssetIO/source/component/elysian_combat_base.cpp \
+    ../../AssetIO/source/component/elysian_examinable_base.cpp \
+    ../../AssetIO/source/component/elysian_light_source_base.cpp \
+    ../../AssetIO/source/component/elysian_lua_behavior.cpp \
+    ../../AssetIO/source/component/elysian_particle_emitter_base.cpp \
+    ../../AssetIO/source/component/elysian_renderable_base.cpp \
+    ../../AssetIO/source/component/elysian_rigid_body_base.cpp \
+    ../../AssetIO/source/component/elysian_skeleton_base.cpp \
+    ../../AssetIO/source/component/elysian_warp_base.cpp \
+    ../../AssetIO/source/level/elysian_area_base.cpp \
+    ../../AssetIO/source/level/elysian_dialog.cpp \
+    ../../AssetIO/source/level/elysian_entity_base.cpp \
+    ../../AssetIO/source/level/elysian_level_base.cpp \
+    ../../AssetIO/source/level/elysian_level_manager.cpp \
+    ../../AssetIO/source/level/elysian_tile.cpp \
+    ../../AssetIO/source/level/elysian_zcoords.cpp \
+    ../../AssetIO/source/primitive/elysian_color.cpp \
+    ../../AssetIO/source/primitive/elysian_instance_transform.cpp \
+    ../../AssetIO/source/primitive/elysian_material.cpp \
+    ../../AssetIO/source/primitive/elysian_quad_sprite_attrib.cpp \
+    ../../AssetIO/source/primitive/elysian_sprite_attrib.cpp \
+    ../../AssetIO/source/utility/elysian_lua_table_proxy_base.cpp \
+    ../../AssetIO/source/utility/luatables.cc \
+    ../../ESGamma/source/gui/elysian_adventure_log.cpp \
+    ../../ESGamma/source/gui/elysian_font.cpp \
+    ../../ESGamma/source/lua/elysian_lua_manager_base.cpp \
+    ../../ESGamma/source/lua/elysian_lua_script.cpp \
+    ../../ESGamma/source/lua/elysian_lua_singleton.cpp \
+    ../../ESGamma/source/lua/elysian_lua_wrappers.cpp \
+    ../../ESGamma/source/system/elysian_animation_system.cpp \
+    ../../ESGamma/source/system/elysian_audio_system.cpp \
+    ../../ESGamma/source/system/elysian_behavior_system.cpp \
+    ../../ESGamma/source/system/elysian_camera_system.cpp \
+    ../../ESGamma/source/system/elysian_character_system.cpp \
+    ../../ESGamma/source/system/elysian_collision_system.cpp \
+    ../../ESGamma/source/system/elysian_combat_system.cpp \
+    ../../ESGamma/source/system/elysian_day_system.cpp \
+    ../../ESGamma/source/system/elysian_dialog_system.cpp \
+    ../../ESGamma/source/system/elysian_engine.cpp \
+    ../../ESGamma/source/system/elysian_examinable_system.cpp \
+    ../../ESGamma/source/system/elysian_gui_system.cpp \
+    ../../ESGamma/source/system/elysian_level_system.cpp \
+    ../../ESGamma/source/system/elysian_light_system.cpp \
+    ../../ESGamma/source/system/elysian_map_system_base.cpp \
+    ../../ESGamma/source/system/elysian_particle_system.cpp \
+    ../../ESGamma/source/system/elysian_party_system.cpp \
+    ../../ESGamma/source/system/elysian_rigid_body_system.cpp \
+    ../../ESGamma/source/system/elysian_skeleton_system.cpp \
+    ../../ESGamma/source/system/elysian_system.cpp \
+    ../../ESGamma/source/system/elysian_warp_system.cpp \
+    ../../ESGamma/source/utility/elysian_debug_base.cpp \
+    ../../ESGamma/source/utility/elysian_event_monitor.cpp \
+    ../../ESGamma/source/utility/elysian_force_generator.cpp \
+    ../../ESGamma/source/utility/elysian_game_input.cpp \
+    ../../ESGamma/source/utility/elysian_sort_sweep.cpp \
+    source/asset/tk_animation.cpp \
+    source/asset/tk_area.cpp \
+    source/asset/tk_asset_manager.cpp \
+    source/asset/tk_assets.cpp \
+    source/asset/tk_collidable.cpp \
+    source/asset/tk_combat.cpp \
+    source/asset/tk_elysian_tile_wrapper.cpp \
+    source/asset/tk_entity.cpp \
+    source/asset/tk_level.cpp \
+    source/asset/tk_light_source.cpp \
+    source/asset/tk_lua_table_proxy.cpp \
+    source/asset/tk_map_entry.cpp \
+    source/asset/tk_particle_emitter.cpp \
+    source/asset/tk_project.cpp \
+    source/asset/tk_renderable.cpp \
+    source/asset/tk_rigidbody.cpp \
     source/core/main.cpp \
-    source/core/fileUtilities.cpp \
-    source/estk/tileSelectable.cpp \
-    source/estk/sheetViewTileGraphicsItem.cpp \
-    source/estk/sheetView.cpp \
-    source/estk/sheetDockWidget.cpp \
-    source/estk/selectionDockWidget.cpp \
-    source/estk/mapView.cpp \
-    source/estk/layerDockWidget.cpp \
-    source/estk/estoolkit.cpp \
-    source/estk/entityTreeWidget.cpp \
-    source/estk/entityDockWidget.cpp \
-    source/estk/assetTreeWidget.cpp \
-    source/estk/assetDockWidget.cpp \
-    source/sheetManager/sheetManagerSourceView.cpp \
-    source/sheetManager/sheetManagerDestView.cpp \
-    source/sheetManager/SheetManagerAssetManager.cpp \
-    source/sheetManager/sheetmanager.cpp \
-    source/tileEngine/sourceView.cpp \
-    source/widget/historyDockWidget.cpp \
-    source/asset/character.cpp \
-    source/asset/collidable.cpp \
-    source/asset/renderable.cpp \
-    source/asset/warp.cpp \
-    source/core/propertyStackModel.cpp \
-    source/dialog/engineDialog.cpp \
-    source/dialog/engineSettingsDialog.cpp \
-    source/sheetManager/sheetManagerFileDockWidget.cpp \
-    source/sheetManager/sheetManagerSourceTileGraphicsItem.cpp \
-    source/estk/tileSelectableSelectionViewDelegate.cpp \
-    include/tileEngine/tileGraphicsItem.inl \
-    include/tileEngine/destView.inl \
-    include/tileEngine/tileSelection.inl \
-    source/sheetManager/SheetManagerDestTileGraphicsItem.cpp \
-    source/estk/mapViewTileGraphicsItem.cpp \
-    ../../AssetIO/source/elysian_zcoords.cpp \
-    ../../AssetIO/source/elysian_warp.cpp \
-    ../../AssetIO/source/elysian_renderable.cpp \
-    ../../AssetIO/source/elysian_lua_behavior.cpp \
-    ../../AssetIO/source/elysian_level_manager.cpp \
-    ../../AssetIO/source/elysian_examinable.cpp \
-    ../../AssetIO/source/elysian_dialog.cpp \
-    ../../AssetIO/source/elysian_collidable.cpp \
-    ../../AssetIO/source/elysian_character.cpp \
-    ../../AssetIO/source/elysian_behavior.cpp \
-    ../../AssetIO/source/elysian_asset.cpp \
-    ../../AssetIO/source/elysian_audio_source.cpp \
-    ../../AssetIO/source/elysian_light_source.cpp \
-    source/asset/elysianTileWrapper.cpp \
-    ../../AssetIO/source/elysian_particle_emitter.cpp \
-    ../../AssetIO/source/elysian_rigid_body.cpp \
-    ../../AssetIO/source/elysian_combat.cpp \
-    ../../AssetIO/source/luatables.cc \
-    ../../ESGamma/source/elysian_adventure_log.cpp \
-    ../../ESGamma/source/elysian_animation_system.cpp \
-    ../../ESGamma/source/elysian_audio_system.cpp \
-    ../../ESGamma/source/elysian_behavior_system.cpp \
-    ../../ESGamma/source/elysian_camera_system.cpp \
-    ../../ESGamma/source/elysian_character_system.cpp \
-    ../../ESGamma/source/elysian_collision_system.cpp \
-    ../../ESGamma/source/elysian_combat_system.cpp \
-    ../../ESGamma/source/elysian_day_system.cpp \
-    ../../ESGamma/source/elysian_dialog_system.cpp \
-    ../../ESGamma/source/elysian_engine.cpp \
-    ../../ESGamma/source/elysian_event_monitor.cpp \
-    ../../ESGamma/source/elysian_examinable_system.cpp \
-    ../../ESGamma/source/elysian_font.cpp \
-    ../../ESGamma/source/elysian_force_generator.cpp \
-    ../../ESGamma/source/elysian_game_input.cpp \
-    ../../ESGamma/source/elysian_gui_system.cpp \
-    ../../ESGamma/source/elysian_level_system.cpp \
-    ../../ESGamma/source/elysian_light_system.cpp \
-    ../../ESGamma/source/elysian_lua_script.cpp \
-    ../../ESGamma/source/elysian_lua_singleton.cpp \
-    ../../ESGamma/source/elysian_particle_system.cpp \
-    ../../ESGamma/source/elysian_party_system.cpp \
-    ../../ESGamma/source/elysian_quad_attrib.cpp \
-    ../../ESGamma/source/elysian_rigid_body_system.cpp \
-    ../../ESGamma/source/elysian_sort_sweep.cpp \
-    ../../ESGamma/source/elysian_system.cpp \
-    ../../ESGamma/source/elysian_timer_system.cpp \
-    ../../ESGamma/source/elysian_warp_system.cpp \
-    source/dialog/luaExplorerDialog.cpp \
-    source/core/rowsJoinerProxyModel.cpp \
-    ../../AssetIO/source/elysian_instance_transform.cpp \
-    source/estk/engineGLSceneWidget.cpp \
-    source/estk/entitySelectable.cpp \
-    ../../ESGamma/source/elysian_debug_base.cpp \
-    source/core/tkDebug.cpp \
-    ../../AssetIO/source/elysian_animation_base.cpp \
-    source/asset/tkAnimation.cpp \
-    source/asset/tkArea.cpp \
-    ../../AssetIO/source/elysian_area_base.cpp \
-    ../../AssetIO/source/elysian_level_base.cpp \
-    source/asset/tkLevel.cpp \
-    ../../AssetIO/source/elysian_entity_base.cpp \
-    source/asset/tkEntity.cpp \
-    ../../ESGamma/source/elysian_map_system_base.cpp \
-    source/estk/tkMapSystem.cpp \
-    source/asset/luaTableStackModel.cpp \
-    ../../AssetIO/source/elysian_lua_table_proxy_base.cpp \
-    source/asset/tkLuaTableProxy.cpp \
-    source/estk/tkLuaWrappers.cpp \
-    ../../ESGamma/source/elysian_lua_wrappers.cpp \
-    ../../ESGamma/source/elysian_lua_manager_base.cpp \
-    source/estk/tkLuaManager.cpp \
-    ../../AssetIO/source/elysian_skeleton.cpp \
-    ../../ESGamma/source/elysian_skeleton_system.cpp \
-    ../../AssetIO/source/elysian_sprite_attrib.cpp \
-    ../../AssetIO/source/elysian_color.cpp \
-    ../../AssetIO/source/elysian_material.cpp \
-    ../../AssetIO/source/elysian_textured_attrib.cpp \
-    ../../AssetIO/source/elysian_tile.cpp
+    source/core/tk_debug.cpp \
+    source/core/tk_file_utilities.cpp \
+    source/core/tk_menu_stack.cpp \
+    source/core/tk_selectable.cpp \
+    source/core/tk_tile_sheet_utilities.cpp \
+    source/core/tk_tree_node.cpp \
+    source/core/tk_undo_item.cpp \
+    source/dialog/tk_engine_dialog.cpp \
+    source/dialog/tk_engine_settings_dialog.cpp \
+    source/dialog/tk_lua_explorer_dialog.cpp \
+    source/estk/tk_asset_dock_widget.cpp \
+    source/estk/tk_asset_tree_widget.cpp \
+    source/estk/tk_engine_gl_scene_widget.cpp \
+    source/estk/tk_entity_dock_widget.cpp \
+    source/estk/tk_entity_selectable.cpp \
+    source/estk/tk_entity_tree_widget.cpp \
+    source/estk/tk_estoolkit.cpp \
+    source/estk/tk_layer_dock_widget.cpp \
+    source/estk/tk_lua_manager.cpp \
+    source/estk/tk_lua_wrappers.cpp \
+    source/estk/tk_map_system.cpp \
+    source/estk/tk_map_view.cpp \
+    source/estk/tk_map_view_tile_graphics_item.cpp \
+    source/estk/tk_selection_dock_widget.cpp \
+    source/estk/tk_sheet_dock_widget.cpp \
+    source/estk/tk_sheet_view.cpp \
+    source/estk/tk_sheet_view_tile_graphics_item.cpp \
+    source/estk/tk_tile_selectable.cpp \
+    source/estk/tk_tile_selectable_selection_view_delegate.cpp \
+    source/model/tk_lua_table_stack_model.cpp \
+    source/model/tk_property_stack_model.cpp \
+    source/model/tk_rows_joiner_proxy_model.cpp \
+    source/sheet_manager/tk_sheet_manager.cpp \
+    source/sheet_manager/tk_sheet_manager_asset_manager.cpp \
+    source/sheet_manager/tk_sheet_manager_dest_tile_graphics_item.cpp \
+    source/sheet_manager/tk_sheet_manager_dest_view.cpp \
+    source/sheet_manager/tk_sheet_manager_file_dock_widget.cpp \
+    source/sheet_manager/tk_sheet_manager_source_tile_graphics_Item.cpp \
+    source/sheet_manager/tk_sheet_manager_source_view.cpp \
+    source/tile_engine/tk_source_view.cpp \
+    source/widget/tk_history_dock_widget.cpp \
+    source/widget/tk_documentation_browser.cpp \
+    ../../ESGamma/source/utility/elysian_task_monitor_base.cpp \
+    source/model/tk_task_monitor.cpp \
+    source/widget/tk_pie_chart_view.cpp \
+    source/dialog/tk_task_monitor_dialog.cpp \
+    ../../ESGamma/source/system/elysian_timer_system_base.cpp \
+    source/estk/tk_timer_system.cpp \
+    source/core/tk_gitlab_manager.cpp \
+    source/dialog/tk_gitlab_dialog.cpp \
+    source/core/tk_network_access_manager.cpp
 
-HEADERS += include/asset/project.h \
-    include/asset/assets.h \
-    include/asset/assetManager.h \
-    include/core/undoItem.h \
-    include/core/treenode.h \
-    include/core/tileSheetUtilities.h \
-    include/core/selectionScene.h \
-    include/core/selectable.h \
-    include/core/fileUtilities.h \
-    include/estk/tileSelectable.h \
-    include/estk/sheetViewTileGraphicsItem.h \
-    include/estk/sheetView.h \
-    include/estk/sheetDockWidget.h \
-    include/estk/selectionDockWidget.h \
-    include/estk/mapViewTileGraphicsItem.h \
-    include/estk/mapView.h \
-    include/estk/layerDockWidget.h \
-    include/estk/estoolkit.h \
-    include/estk/entityTreeWidget.h \
-    include/estk/entityDockWidget.h \
-    include/estk/assetTreeWidget.h \
-    include/estk/assetDockWidget.h \
-    include/sheetManager/sheetManagerTileSelection.h \
-    include/sheetManager/sheetManagerSourceView.h \
-    include/sheetManager/sheetManagerPlaceTileGroupUndoItem.h \
-    include/sheetManager/sheetManagerDestView.h \
-    include/sheetManager/SheetManagerAssets.h \
-    include/sheetManager/SheetManagerAssetManager.h \
-    include/tileEngine/tileSelection.h \
-    include/tileEngine/tileGroupUndoItem.h \
-    include/tileEngine/tileGraphicsItem.h \
-    include/tileEngine/sourceView.h \
-    include/tileEngine/selectionItemGroup.h \
-    include/tileEngine/destView.h \
-    include/widget/historyDockWidget.h \
-    include/asset/character.h \
-    include/asset/collidable.h \
-    include/asset/component.h \
-    include/asset/renderable.h \
-    include/asset/sprite.h \
-    include/asset/warp.h \
-    include/core/propertyStackModel.h \
-    include/core/propertyStandardItem.h \
-    include/dialog/engineDialog.h \
-    include/dialog/engineSettingsDialog.h \
-    include/sheetManager/SheetManagerDestTileGraphicsItem.h \
-    include/sheetManager/sheetManagerFileDockWidget.h \
-    include/sheetManager/sheetManagerSourceTileGraphicsItem.h \
-    include/sheetManager/sheetManager.h \
-    include/core/tileImage.h \
-    include/estk/mapViewPlaceTileGroupUndoItem.h \
-    include/core/checkeredAlphaRectGraphicsItem.h \
-    include/estk/tileSelectableSelectionViewDelegate.h \
-    include/estk/sheetViewColliderGraphicsItem.h \
-    include/sheetManager/sheetManagerTileEntry.h \
-    include/estk/mapViewDepthBufferGraphicsItem.h \
-    include/core/glUtilities.h \
-    ../../AssetIO/include/elysian_zcoords.hpp \
-    ../../AssetIO/include/elysian_warp.hpp \
-    ../../AssetIO/include/elysian_textured_attrib.hpp \
-    ../../AssetIO/include/elysian_stl_algorithm.hpp \
-    ../../AssetIO/include/elysian_sprite_attrib.hpp \
-    ../../AssetIO/include/elysian_renderable_object.hpp \
-    ../../AssetIO/include/elysian_renderable.hpp \
-    ../../AssetIO/include/elysian_quad_sprite_attrib.hpp \
-    ../../AssetIO/include/elysian_prim_attrib.hpp \
-    ../../AssetIO/include/elysian_model_attrib.hpp \
-    ../../AssetIO/include/elysian_map_depth_buffer.hpp \
-    ../../AssetIO/include/elysian_lua_behavior.hpp \
-    ../../AssetIO/include/elysian_level_manager.hpp \
-    ../../AssetIO/include/elysian_instance_transform.hpp \
-    ../../AssetIO/include/elysian_examinable.hpp \
-    ../../AssetIO/include/elysian_direction.hpp \
-    ../../AssetIO/include/elysian_dialog.hpp \
-    ../../AssetIO/include/elysian_cstr_map.hpp \
-    ../../AssetIO/include/elysian_component.hpp \
-    ../../AssetIO/include/elysian_collidable.hpp \
-    ../../AssetIO/include/elysian_character.hpp \
-    ../../AssetIO/include/elysian_behavior.hpp \
-    ../../AssetIO/include/elysian_asset.hpp \
-    ../../AssetIO/include/elysian_audio_source.hpp \
-    include/asset/elysianTileWrapper.h \
-    ../../AssetIO/include/elysian_particle_emitter.hpp \
-    ../../AssetIO/include/elysian_combat.hpp \
-    ../../AssetIO/include/elysian_rigid_body.hpp \
-    ../../AssetIO/include/luatables.h \
-    ../../AssetIO/include/elysian_light_source.hpp \
-    include/dialog/luaExplorerDialog.h \
-    include/core/rowsJoinerProxyModel.h \
-    ../../AssetIO/include/elysian_asset_typedefs.hpp \
-    ../../ESGamma/include/elysian_adventure_log.hpp \
-    ../../ESGamma/include/elysian_animation_system.hpp \
-    ../../ESGamma/include/elysian_audio_system.hpp \
-    ../../ESGamma/include/elysian_behavior_system.hpp \
-    ../../ESGamma/include/elysian_camera_system.hpp \
-    ../../ESGamma/include/elysian_character_system.hpp \
-    ../../ESGamma/include/elysian_collision_system.hpp \
-    ../../ESGamma/include/elysian_combat_system.hpp \
-    ../../ESGamma/include/elysian_day_system.hpp \
-    ../../ESGamma/include/elysian_dialog_system.hpp \
-    ../../ESGamma/include/elysian_engine.hpp \
-    ../../ESGamma/include/elysian_event_monitor.hpp \
-    ../../ESGamma/include/elysian_examinable_system.hpp \
-    ../../ESGamma/include/elysian_font.hpp \
-    ../../ESGamma/include/elysian_force_generator.hpp \
-    ../../ESGamma/include/elysian_game_input.hpp \
-    ../../ESGamma/include/elysian_gui_system.hpp \
-    ../../ESGamma/include/elysian_level_system.hpp \
-    ../../ESGamma/include/elysian_light_system.hpp \
-    ../../ESGamma/include/elysian_lua_script.hpp \
-    ../../ESGamma/include/elysian_lua_singleton.hpp \
-    ../../ESGamma/include/elysian_model.hpp \
-    ../../ESGamma/include/elysian_particle_system.hpp \
-    ../../ESGamma/include/elysian_party_system.hpp \
-    ../../ESGamma/include/elysian_quad_sprite.hpp \
-    ../../ESGamma/include/elysian_rigid_body_system.hpp \
-    ../../ESGamma/include/elysian_sort_sweep.hpp \
-    ../../ESGamma/include/elysian_sprite.hpp \
-    ../../ESGamma/include/elysian_subprocess_manager.hpp \
-    ../../ESGamma/include/elysian_system.hpp \
-    ../../ESGamma/include/elysian_timer_system.hpp \
-    ../../ESGamma/include/elysian_warp_system.hpp \
-    include/asset/luaTableStackModel.h \
-    include/estk/engineGLSceneWidget.h \
-    include/estk/tkMapSystem.h \
-    include/estk/entitySelectable.h \
-    include/core/tkDebug.h \
-    ../../ESGamma/include/elysian_debug_base.hpp \
-    ../../ESGamma/include/elysian_debug.hpp \
-    ../../AssetIO/include/elysian_animation_base.hpp \
-    ../../AssetIO/include/elysian_animation.hpp \
-    include/asset/tkAnimation.h \
-    ../../AssetIO/include/elysian_area_base.hpp \
-    include/asset/tkArea.h \
-    ../../AssetIO/include/elysian_level_base.hpp \
-    ../../AssetIO/include/elysian_area.hpp \
-    ../../AssetIO/include/elysian_level.hpp \
-    include/asset/tkLevel.h \
-    ../../AssetIO/include/elysian_entity_base.hpp \
-    include/asset/tkEntity.h \
-    ../../AssetIO/include/elysian_entity.hpp \
-    ../../ESGamma/include/elysian_map_system_base.hpp \
-    ../../ESGamma/include/elysian_map_system.hpp \
-    ../../AssetIO/include/elysian_material.hpp \
-    ../../AssetIO/include/elysian_lua_table_proxy_base.hpp \
-    ../../AssetIO/include/elysian_lua_table_proxy.hpp \
-    include/asset/tkLuaTableProxy.h \
-    include/estk/tkLuaWrappers.h \
-    ../../ESGamma/include/elysian_lua_wrappers.hpp \
-    ../../ESGamma/include/elysian_lua_manager_base.hpp \
-    ../../ESGamma/include/elysian_lua_manager.hpp \
-    include/estk/tkLuaManager.h \
-    ../../AssetIO/include/elysian_skeleton.hpp \
-    ../../ESGamma/include/elysian_skeleton_system.hpp \
-    ../../AssetIO/include/elysian_color.hpp \
-    ../../AssetIO/include/elysian_tile.hpp
 
-FORMS += form/estk/sheetdockwidget.ui \
-    form/estk/selectiondockwidget.ui \
-    form/estk/layerdockwidget.ui \
-    form/estk/estoolkit.ui \
-    form/estk/entitydockwidget.ui \
-    form/estk/assetdockwidget.ui \
-    form/sheetManager/sheetmanager.ui \
-    form/widget/historyDockWidget.ui \
-    form/dialog/engineSettings.ui \
-    form/sheetManager/sheetManagerFileDockWidget.ui \
-    form/dialog/luaExplorer.ui
+HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
+    ../../AssetIO/include/component/elysian_audio_source_base.hpp \
+    ../../AssetIO/include/component/elysian_behavior_base.hpp \
+    ../../AssetIO/include/component/elysian_character_base.hpp \
+    ../../AssetIO/include/component/elysian_collidable_base.hpp \
+    ../../AssetIO/include/component/elysian_combat_base.hpp \
+    ../../AssetIO/include/component/elysian_component_base.hpp \
+    ../../AssetIO/include/component/elysian_examinable_base.hpp \
+    ../../AssetIO/include/component/elysian_light_source_base.hpp \
+    ../../AssetIO/include/component/elysian_lua_behavior.hpp \
+    ../../AssetIO/include/component/elysian_particle_emitter_base.hpp \
+    ../../AssetIO/include/component/elysian_renderable_base.hpp \
+    ../../AssetIO/include/component/elysian_rigid_body_base.hpp \
+    ../../AssetIO/include/component/elysian_warp_base.hpp \
+    ../../AssetIO/include/crtp/elysian_animation.hpp \
+    ../../AssetIO/include/crtp/elysian_area.hpp \
+    ../../AssetIO/include/crtp/elysian_collidable.hpp \
+    ../../AssetIO/include/crtp/elysian_component.hpp \
+    ../../AssetIO/include/crtp/elysian_entity.hpp \
+    ../../AssetIO/include/crtp/elysian_level.hpp \
+    ../../AssetIO/include/crtp/elysian_lua_table_proxy.hpp \
+    ../../AssetIO/include/crtp/elysian_renderable.hpp \
+    ../../AssetIO/include/level/elysian_area_base.hpp \
+    ../../AssetIO/include/level/elysian_dialog.hpp \
+    ../../AssetIO/include/level/elysian_direction.hpp \
+    ../../AssetIO/include/level/elysian_entity_base.hpp \
+    ../../AssetIO/include/level/elysian_level_base.hpp \
+    ../../AssetIO/include/level/elysian_level_manager.hpp \
+    ../../AssetIO/include/level/elysian_map_depth_buffer.hpp \
+    ../../AssetIO/include/level/elysian_tile.hpp \
+    ../../AssetIO/include/level/elysian_zcoords.hpp \
+    ../../AssetIO/include/primitive/elysian_color.hpp \
+    ../../AssetIO/include/primitive/elysian_instance_transform.hpp \
+    ../../AssetIO/include/primitive/elysian_material.hpp \
+    ../../AssetIO/include/primitive/elysian_model_attrib.hpp \
+    ../../AssetIO/include/primitive/elysian_prim_attrib.hpp \
+    ../../AssetIO/include/primitive/elysian_quad_sprite_attrib.hpp \
+    ../../AssetIO/include/primitive/elysian_renderable_object.hpp \
+    ../../AssetIO/include/primitive/elysian_sprite_attrib.hpp \
+    ../../AssetIO/include/primitive/elysian_textured_attrib.hpp \
+    ../../AssetIO/include/utility/elysian_asset_typedefs.hpp \
+    ../../AssetIO/include/utility/elysian_cstr_map.hpp \
+    ../../AssetIO/include/utility/elysian_generic.hpp \
+    ../../AssetIO/include/utility/elysian_lua_table_proxy_base.hpp \
+    ../../AssetIO/include/utility/elysian_mem_pool.hpp \
+    ../../AssetIO/include/utility/elysian_stl_algorithm.hpp \
+    ../../AssetIO/include/utility/luatables.h \
+    ../../ESGamma/include/crtp/elysian_debug.hpp \
+    ../../ESGamma/include/crtp/elysian_lua_manager.hpp \
+    ../../ESGamma/include/crtp/elysian_map_system.hpp \
+    ../../ESGamma/include/gui/elysian_adventure_log.hpp \
+    ../../ESGamma/include/gui/elysian_font.hpp \
+    ../../ESGamma/include/lua/elysian_lua_manager_base.hpp \
+    ../../ESGamma/include/lua/elysian_lua_script.hpp \
+    ../../ESGamma/include/lua/elysian_lua_singleton.hpp \
+    ../../ESGamma/include/lua/elysian_lua_wrappers.hpp \
+    ../../ESGamma/include/system/elysian_animation_system.hpp \
+    ../../ESGamma/include/system/elysian_audio_system.hpp \
+    ../../ESGamma/include/system/elysian_behavior_system.hpp \
+    ../../ESGamma/include/system/elysian_camera_system.hpp \
+    ../../ESGamma/include/system/elysian_character_system.hpp \
+    ../../ESGamma/include/system/elysian_collision_system.hpp \
+    ../../ESGamma/include/system/elysian_combat_system.hpp \
+    ../../ESGamma/include/system/elysian_day_system.hpp \
+    ../../ESGamma/include/system/elysian_dialog_system.hpp \
+    ../../ESGamma/include/system/elysian_engine.hpp \
+    ../../ESGamma/include/system/elysian_examinable_system.hpp \
+    ../../ESGamma/include/system/elysian_gui_system.hpp \
+    ../../ESGamma/include/system/elysian_level_system.hpp \
+    ../../ESGamma/include/system/elysian_light_system.hpp \
+    ../../ESGamma/include/system/elysian_map_system_base.hpp \
+    ../../ESGamma/include/system/elysian_particle_system.hpp \
+    ../../ESGamma/include/system/elysian_party_system.hpp \
+    ../../ESGamma/include/system/elysian_rigid_body_system.hpp \
+    ../../ESGamma/include/system/elysian_skeleton_system.hpp \
+    ../../ESGamma/include/system/elysian_system.hpp \
+    ../../ESGamma/include/system/elysian_warp_system.hpp \
+    ../../ESGamma/include/utility/elysian_debug_base.hpp \
+    ../../ESGamma/include/utility/elysian_event_monitor.hpp \
+    ../../ESGamma/include/utility/elysian_force_generator.hpp \
+    ../../ESGamma/include/utility/elysian_game_input.hpp \
+    ../../ESGamma/include/utility/elysian_sort_sweep.hpp \
+    ../../ESGamma/include/utility/elysian_subprocess_manager.hpp \
+    ../../AssetIO/include/crtp/elysian_behavior.hpp \
+    ../../AssetIO/include/crtp/elysian_particle_emitter.hpp \
+    ../../AssetIO/include/crtp/elysian_character.hpp \
+    ../../AssetIO/include/crtp/elysian_rigid_body.hpp \
+    ../../AssetIO/include/crtp/elysian_audio_source.hpp \
+    ../../AssetIO/include/crtp/elysian_combat.hpp \
+    ../../AssetIO/include/crtp/elysian_light_source.hpp \
+    ../../AssetIO/include/crtp/elysian_examinable.hpp \
+    ../../AssetIO/include/component/elysian_skeleton_base.hpp \
+    ../../AssetIO/include/crtp/elysian_skeleton.hpp \
+    ../../AssetIO/include/crtp/elysian_warp.hpp \
+    ../../ESGamma/include/gui/elysian_sprite.hpp \
+    ../../ESGamma/include/gui/elysian_quad_sprite.hpp \
+    include/asset/tk_animation.h \
+    include/asset/tk_area.h \
+    include/asset/tk_asset_manager.h \
+    include/asset/tk_assets.h \
+    include/asset/tk_audio_source.h \
+    include/asset/tk_behavior.h \
+    include/asset/tk_character.h \
+    include/asset/tk_collidable.h \
+    include/asset/tk_combat.h \
+    include/asset/tk_component.h \
+    include/asset/tk_elysian_tile_wrapper.h \
+    include/asset/tk_entity.h \
+    include/asset/tk_examinable.h \
+    include/asset/tk_level.h \
+    include/asset/tk_light_source.h \
+    include/asset/tk_lua_table_proxy.h \
+    include/asset/tk_map_entry.h \
+    include/asset/tk_particle_emitter.h \
+    include/asset/tk_project.h \
+    include/asset/tk_renderable.h \
+    include/asset/tk_rigid_body.h \
+    include/asset/tk_skeleton.h \
+    include/asset/tk_warp.h \
+    include/core/tk_checkered_alpha_rect_graphics_item.h \
+    include/core/tk_debug.h \
+    include/core/tk_file_utilities.h \
+    include/core/tk_gl_utilities.h \
+    include/core/tk_menu_stack.h \
+    include/core/tk_selectable.h \
+    include/core/tk_selection_scene.h \
+    include/core/tk_tile_image.h \
+    include/core/tk_tile_sheet_utilities.h \
+    include/core/tk_tree_node.h \
+    include/core/tk_undo_item.h \
+    include/dialog/tk_engine_dialog.h \
+    include/dialog/tk_engine_settings_dialog.h \
+    include/dialog/tk_lua_explorer_dialog.h \
+    include/estk/tk_asset_dock_widget.h \
+    include/estk/tk_asset_tree_widget.h \
+    include/estk/tk_engine_gl_scene_widget.h \
+    include/estk/tk_entity_dock_widget.h \
+    include/estk/tk_entity_selectable.h \
+    include/estk/tk_entity_tree_widget.h \
+    include/estk/tk_estoolkit.h \
+    include/estk/tk_layer_dock_widget.h \
+    include/estk/tk_lua_manager.h \
+    include/estk/tk_lua_wrappers.h \
+    include/estk/tk_map_system.h \
+    include/estk/tk_map_view.h \
+    include/estk/tk_map_view_depth_buffer_graphics_item.h \
+    include/estk/tk_map_view_place_tile_group_undo_item.h \
+    include/estk/tk_map_view_tile_graphics_item.h \
+    include/estk/tk_selection_dock_widget.h \
+    include/estk/tk_sheet_dock_widget.h \
+    include/estk/tk_sheet_view.h \
+    include/estk/tk_sheet_view_collider_graphics_item.h \
+    include/estk/tk_sheet_view_tile_graphics_item.h \
+    include/estk/tk_tile_selectable.h \
+    include/estk/tk_tile_selectable_selection_view_delegate.h \
+    include/model/tk_lua_table_stack_model.h \
+    include/model/tk_property_stack_model.h \
+    include/model/tk_property_standard_item.h \
+    include/model/tk_rows_joiner_proxy_model.h \
+    include/sheet_manager/tk_sheet_manager.h \
+    include/sheet_manager/tk_sheet_manager_asset_manager.h \
+    include/sheet_manager/tk_sheet_manager_assets.h \
+    include/sheet_manager/tk_sheet_manager_dest_tile_graphics_item.h \
+    include/sheet_manager/tk_sheet_manager_dest_view.h \
+    include/sheet_manager/tk_sheet_manager_file_dock_widget.h \
+    include/sheet_manager/tk_sheet_manager_place_tile_group_undo_item.h \
+    include/sheet_manager/tk_sheet_manager_source_tile_graphics_item.h \
+    include/sheet_manager/tk_sheet_manager_source_view.h \
+    include/sheet_manager/tk_sheet_manager_tile_entry.h \
+    include/sheet_manager/tk_sheet_manager_tile_selection.h \
+    include/tile_engine/tk_dest_view.h \
+    include/tile_engine/tk_selection_item_group.h \
+    include/tile_engine/tk_source_view.h \
+    include/tile_engine/tk_tile_graphics_item.h \
+    include/tile_engine/tk_tile_group_undo_item.h \
+    include/tile_engine/tk_tile_selection.h \
+    include/widget/tk_history_dock_widget.h \
+    include/tile_engine/tk_tile_graphics_item_impl.h \
+    include/tile_engine/tk_dest_view_impl.h \
+    include/model/tk_property_item_delegate.h \
+    include/core/tk_lua_qt_utils.h \
+    include/widget/tk_documentation_browser.h \
+    ../../ESGamma/include/utility/elysian_task_monitor_base.hpp \
+    ../../ESGamma/include/crtp/elysian_task_monitor.hpp \
+    include/model/tk_task_monitor.h \
+    include/widget/tk_pie_chart_view.h \
+    include/dialog/tk_task_monitor_dialog.h \
+    ../../ESGamma/include/system/elysian_timer_system_base.hpp \
+    ../../ESGamma/include/crtp/elysian_timer_system.hpp \
+    include/estk/tk_timer_system.h \
+    include/core/tk_gitlab_manager.h \
+    include/dialog/tk_gitlab_dialog.h \
+    include/tk_precompiled_headers.h \
+    include/core/tk_network_access_manager.h
+
+
+FORMS += form/estk/tk_sheet_dock_widget.ui \
+    form/estk/tk_selection_dock_widget.ui \
+    form/estk/tk_layer_dock_widget.ui \
+    form/estk/tk_estoolkit.ui \
+    form/estk/tk_entity_dock_widget.ui \
+    form/estk/tk_asset_dock_widget.ui \
+    form/sheet_manager/tk_sheet_manager.ui \
+    form/widget/tk_history_dock_widget.ui \
+    form/dialog/tk_engine_settings.ui \
+    form/sheet_manager/tk_sheet_manager_file_dock_widget.ui \
+    form/dialog/tk_lua_explorer.ui \
+    form/dialog/tk_gitlab_dialog.ui
+
+#docs.target = ESToolkit.qhc
+#docs.commands = qdoc ./ESToolkit.qdocconf --log-progress --debug $$escape_expand(\n\t) qcollectiongenerator ./ESToolkit.qhcp -o ../../assets/doc/ESToolkit.qhc
+
+#QMAKE_EXTRA_TARGETS += docs
+
+#PRE_TARGETDEPS += ESToolkit.qhc
 
 
 #Create windows manifest requesting ESTk to be run as admin (to run dc-tool as admin)
@@ -351,29 +459,49 @@ macx {
     #CONFIG(release, debug|release) {
      #  QMAKE_POST_LINK = "macdeployqt TARGET"
     #}
+}
+
+opencl {
+    LIBS += -framework OpenCL
+    QMAKE_CXXFLAGS += -DELYSIAN_OPENCL_ACCELERATED
 
 }
 
-RESOURCES += resource/resource.qrc \
+RESOURCES += resource/resource.qrc
+
+docs {
+
+    DEFINES+=TOOLKIT_DOCUMENTATION_RESOURCES
+
+    RESOURCES += resource/docs.qrc
+
+#	PHONY_DEPS=. FUCK THIS SHIT SO HARD!!!!
+#		docs.depends = FORCE
+#		docs.target = $$PWD/out/ESToolkit.qhc
+#		docs.commands = ./generate_docs.sh
+#		docs.config += target_predeps
+#		QMAKE_EXTRA_TARGETS += docs
+#		PRE_TARGETDEPS += $$PWD/out/ESToolkit.qhc
+    #}
+
+#system(./generate_docs.sh)
+
+}
 
 macx {
-    CONFIG(release, debug|release) {
-        DESTDIR = ../../Project
-    }
-    QMAKE_POST_LINK = "./ESToolkitAppDereest.command"
+    #DESTDIR = ../../executable
+#	CONFIG(release, debug|release):
+    QMAKE_POST_LINK = "macdeployqt $${TARGET}.app -verbose=3"
 }
+
 
 
 win32 {
-      CONFIG(release, debug|release) {
-            DESTDIR = ../../Project
-      }
+    DESTDIR = ../../executable
 }
 
 linux {
-      CONFIG(release, debug|release) {
-            DESTDIR = ../../Project
-      }
+    DESTDIR = ../../executable
 }
 
 
@@ -430,6 +558,22 @@ else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PW
 else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../Spine/qtcreator/Spine/debug/Spine.lib
 else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../Spine/qtcreator/Spine/libSpine.a
 
+tests {
+
+    win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../UnitTests/release/ -lUnitTests
+    else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../UnitTests/debug/ -lUnitTests
+    else:unix: LIBS += -L$$OUT_PWD/../../UnitTests -lUnitTests
+
+    INCLUDEPATH += $$PWD/../../UnitTests
+    DEPENDPATH += $$PWD/../../UnitTests
+
+    win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../UnitTests/release/libUnitTests.a
+    else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../UnitTests/debug/libUnitTests.a
+    else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../UnitTests/release/UnitTests.lib
+    else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../../UnitTests/debug/UnitTests.lib
+    else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../UnitTests/libUnitTests.a
+
+}
 
 win32 {
         QMAKE_CFLAGS += -msse -std=c99
@@ -478,10 +622,10 @@ macx {
 
 linux {
         LIBS += \
-                -llua5.2 \
                 -lGL \
                 -lopenal \
                 -lGLU \
+                -lGLEW \
                 -lz \
                 -logg \
                 -lvorbis \
@@ -489,5 +633,10 @@ linux {
                 -lvorbisfile \
                 -lX11 \
                 -lpthread \
+                -lrt
                 #-llua52
 }
+
+DISTFILES += \
+    ESToolkit.qdocconf \
+    ESToolkit.qhcp

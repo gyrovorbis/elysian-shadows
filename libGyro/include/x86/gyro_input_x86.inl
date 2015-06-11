@@ -7,6 +7,7 @@ extern "C" {
 
 typedef struct GYInputInitParams {
     void* viewWidget;
+    void* glWidget;
 } GYInputInitParams;
 
 //Two goddamn layers of translation? Christ.

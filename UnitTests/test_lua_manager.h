@@ -1,0 +1,5 @@
+#ifndef TEST_LUA_MANAGER
+#define TEST_LUA_MANAGER
+
+#endif // TEST_LUA_MANAGER
+

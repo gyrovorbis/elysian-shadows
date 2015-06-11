@@ -5,9 +5,6 @@
         <file>images/logo.png</file>
         <file>images/modwatermarks.png</file>
         <file>images/bulletAngel.jpg</file>
-        <file>cube.png</file>
-        <file>vshader.glsl</file>
-        <file>fshader.glsl</file>
     </qresource>
     <qresource prefix="/layerSelectionWidget">
         <file>images/eyeBox_checked.png</file>
@@ -94,4 +91,5 @@
         <file>images/colliderDiagSENW.png</file>
         <file>images/colliderDiagSWNE.png</file>
     </qresource>
+    <qresource prefix="/"/>
 </RCC>
