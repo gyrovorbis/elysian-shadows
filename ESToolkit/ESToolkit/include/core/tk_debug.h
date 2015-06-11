@@ -1,8 +1,9 @@
 #ifndef TK_DEBUG_H
 #define TK_DEBUG_H
 
-#include <elysian_debug_base.hpp>
 #include <QObject>
+#include <elysian_debug_base.hpp>
+#include <QStack>
 
 #define GY_FILE_QT_DEBUG_DIR            "logs"
 #define DEBUG_QT_BUFF_SIZE              50000
@@ -17,6 +18,7 @@ class QVBoxLayout;
 class QTextEdit;
 class QMutex;
 class QTimer;
+
 
 typedef elysian::DbgEvent DbgEvent;
 
@@ -103,11 +105,14 @@ private:
     static int                  _commandHistoryIndex;
     static bool                 _shiftDown;
     static QString              _lastString;
+    static bool                 _prevMsgDiscarded;
+    static QStack<bool>         _ignoredPushes;
 
     static QQueue<LogEntry>*    _pendingQueue;
     static QMutex*              _mutex;
 
     static QString*             _debugLogPath;
+
 
     constexpr static char    _srcEnumToStr[SOURCE_MAX][50] = {
         "LIBGYRO", "ENGINE", "ASSETIO", "LUA", "TOOLKIT", "QT", "COMMAND", "OPENGL"

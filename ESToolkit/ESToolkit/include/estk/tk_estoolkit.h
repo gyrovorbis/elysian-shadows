@@ -254,6 +254,7 @@ private Q_SLOTS:
     void on_actionGitLab_Manager_triggered();
     void on_actionPerformance_Monitor_triggered();
     void on_actionSheet_Manager_triggered();
+    void on_actionOpenGL_toggled(bool arg1);
 };
 
 

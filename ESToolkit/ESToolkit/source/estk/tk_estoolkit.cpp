@@ -518,6 +518,13 @@ void ESToolkit::WriteSettings()
         settings.setValue("gitLabPrivateToken", _gitlabDialog->getPrivateToken());
         settings.setValue("gitLabProjectId", _gitlabDialog->getProjectId());
     }
+    settings.setValue("debugFilterToolkit", _ui->actionToolkit->isChecked());
+    settings.setValue("debugFilterEngine", _ui->actionEngine->isChecked());
+    settings.setValue("debugFilterLibGyro", _ui->actionLibGyro->isChecked());
+    settings.setValue("debugFilterQt", _ui->actionQt->isChecked());
+    settings.setValue("debugFilterLua", _ui->actionLua->isChecked());
+    settings.setValue("debugFilterCommands", _ui->actionCommands->isChecked());
+    settings.setValue("debugFilterOpenGL", _ui->actionOpenGL->isChecked());
 }
 
 void ESToolkit::ReadSettings()
@@ -561,15 +568,19 @@ void ESToolkit::ReadSettings()
     _engineDialog->setStartPos(x, y);
     MAP_VIEW_RES mapViewRes = (MAP_VIEW_RES)settings.value("mapViewRes", MAP_VIEW_RES_DYNAMIC).toInt();
     _setMapViewResolution(mapViewRes);
-
     if(!settings.value("gitLabPrivateToken").isNull()) {
         _gitlabDialog->setHostName(settings.value("gitLabHostName").toString());
         _gitlabDialog->setPrivateToken(settings.value("gitLabPrivateToken").toString());
         _gitlabDialog->authenticate(true);
         _gitlabDialog->setProjectId(settings.value("gitLabProjectId").toInt());
-
     }
-
+    _ui->actionToolkit->setChecked(settings.value("debugFilterToolkit", true).toBool());
+    _ui->actionEngine->setChecked(settings.value("debugFilterEngine", true).toBool());
+    _ui->actionLibGyro->setChecked(settings.value("debugFilterLibGyro", true).toBool());
+    _ui->actionQt->setChecked(settings.value("debugFilterQt", true).toBool());
+    _ui->actionLua->setChecked(settings.value("debugFilterLua", true).toBool());
+    _ui->actionCommands->setChecked(settings.value("debugFilterCommands", true).toBool());
+    _ui->actionOpenGL->setChecked(settings.value("debugFilterOpenGL", true).toBool());
 
     //bool assetVisibility = settings.value("assetDock", true).toBool();
     //bool entityVisibility = settings.value("entityDock", true).toBool();
@@ -1803,6 +1814,12 @@ void ESToolkit::on_actionCommands_toggled(bool arg1)
     Debug::setFilter(Debug::COMMAND, arg1);
 }
 
+void ESToolkit::on_actionOpenGL_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::OPENGL, arg1);
+}
+
+
 void ESToolkit::on_actionMap_Background_toggled(bool arg1)
 {
     TkMapSystem::setRenderMapBackground(arg1);
@@ -2095,3 +2112,6 @@ bool ESToolkit::verifySingleArea(const QString verifyPath) {
 
     QApplication::quit();
 }
+
+
+

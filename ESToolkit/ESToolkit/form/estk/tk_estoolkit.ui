@@ -260,6 +260,7 @@
      <addaction name="actionLua"/>
      <addaction name="actionQt"/>
      <addaction name="actionCommands"/>
+     <addaction name="actionOpenGL"/>
     </widget>
     <addaction name="separator"/>
     <addaction name="actionClear"/>
@@ -1298,6 +1299,17 @@
   <action name="actionPerformance_Monitor">
    <property name="text">
     <string>Performance Monitor</string>
+   </property>
+  </action>
+  <action name="actionOpenGL">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>OpenGL</string>
    </property>
   </action>
  </widget>

@@ -45,6 +45,8 @@ QMutex* TkDebug::_mutex = nullptr;
 QQueue<TkDebug::LogEntry>* TkDebug::_pendingQueue = nullptr;
 QString* TkDebug::_debugLogPath = nullptr;
 QString TkDebug::_lastString;
+bool TkDebug::_prevMsgDiscarded = false;
+QStack<bool> TkDebug::_ignoredPushes;
 
 TkDebug::TkDebug(void) {
     _commandHistory = QVector<QString>();
@@ -161,9 +163,15 @@ void TkDebug::logQ(QtMsgType type, const QMessageLogContext &context, const QStr
 
 void TkDebug::push(void) {
     //++_stackDepth;
-    elysian::DebugBase::push();
     _mutex->lock();
-    _pendingQueue->enqueue(LogEntry { "PUSH", VERBOSE, TOOLKIT, LogEntry::PUSH });
+    elysian::DebugBase::push();
+    if(_prevMsgDiscarded) {
+        _ignoredPushes.push(true);
+    } else {
+        _pendingQueue->enqueue(LogEntry { "PUSH", VERBOSE, TOOLKIT, LogEntry::PUSH });
+        _ignoredPushes.push(false);
+    }
+
     _mutex->unlock();
 #ifdef ESTK_UNIT_TESTS
     tktest::ESTkTest::pushSubTest(_lastString);
@@ -171,10 +179,11 @@ void TkDebug::push(void) {
 }
 
 void TkDebug::pop(const unsigned count) {
-    elysian::DebugBase::pop(count);
     _mutex->lock();
-    _pendingQueue->enqueue(LogEntry { "POP", VERBOSE, TOOLKIT, LogEntry::POP });
-
+    elysian::DebugBase::pop(count);
+    for(unsigned i = 0; i < count; ++i) {
+        if(!_ignoredPushes.pop()) _pendingQueue->enqueue(LogEntry { "POP", VERBOSE, TOOLKIT, LogEntry::POP });
+    }
     _mutex->unlock();
 #ifdef ESTK_UNIT_TESTS
     tktest::ESTkTest::popSubTest(success);
@@ -194,10 +203,12 @@ void TkDebug::clear(void) {
 
 void TkDebug::setFilter(const int src, const bool enabled) {
     _filterEnabled[src] = enabled;
+#if 0
     auto&& itemList = _treeWidget->findItems(_srcEnumToStr[src], Qt::MatchExactly, 1);
     for(auto& it : itemList) {
         it->setHidden(!enabled);
     }
+#endif
 }
 
 void TkDebug::onCommandSubmit(void) {
@@ -225,16 +236,17 @@ void TkDebug::onCommandSubmit(void) {
     QString dispStr = str;
     dispStr = dispStr.replace("\n", "\n> ");
     Debug::Log(VERBOSE, QString("> ")+dispStr, COMMAND);
+    const unsigned depth = Debug::getStackDepth();
     auto* parent = _prevItem;
     Debug::push();
     elysian::LuaManager::runString(str.toStdString().c_str());
-    Debug::pop();
 
     //Update widget
     parent->setExpanded(true);
     _prompt->clear();
     _resizePrompt();
    // _treeWidget->scrollToBottom();
+    Debug::pop(Debug::getStackDepth()-depth);
 }
 
 
@@ -307,7 +319,12 @@ void TkDebug::_resizePrompt(void) {
 void TkDebug::_postToQueue(const int src, const LEVEL level, const QString text) {
     _mutex->lock();
     elysian::DebugBase::writeLog((elysian::DebugBase::SOURCE)src, level, Q_CSTR(text));
-    _pendingQueue->enqueue(LogEntry{ text, level, src, LogEntry::TEXT });
+    if(_filterEnabled[src]) {
+        _pendingQueue->enqueue(LogEntry{ text, level, src, LogEntry::TEXT });
+        _prevMsgDiscarded = false;
+    } else {
+        _prevMsgDiscarded = true;
+    }
     _mutex->unlock();
 
 #ifdef ESTK_UNIT_TESTS
