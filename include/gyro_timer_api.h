@@ -2,6 +2,7 @@
 #define GYRO_TIMER_H
 
 #include "gyro_platform.h"
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -9,7 +10,7 @@ extern "C" {
     
 int                 gyTimerInit(void);
 int                 gyTimerUninit(void);
-unsigned long int   gyTimerTicks(void);
+int64_t             gyTimerTicks(void);
 void                gyTimerSleep(const unsigned long duration);
 
 #ifdef GYRO_TIMER_PLATFORM_INCLUDE

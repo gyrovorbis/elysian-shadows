@@ -7,14 +7,14 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-typedef struct GYAudWavPayload {
+typedef struct _GYAudWavPayload {
     ALsizei size, freq;
     ALenum 	format;
     ALuint buffer;
     char *data;
 } GYAudWavPayload;
 
-void gyAudSourcePlayWav(struct GYAudioSource*const src, const struct GYWav* wav) {
+void gyAudSourcePlayWav(GYAudioSource*const src, const GYWav* wav) {
     if(!wav) return;
     const GYAudWavPayload* payload = wav->_data;
     alSourcei(*(ALuint*)src, AL_BUFFER, payload->buffer);
@@ -31,7 +31,7 @@ void gyAudSourcePlayWav(struct GYAudioSource*const src, const struct GYWav* wav)
  * The RIFF data is the meta data information that holds,
  * the ID, size and format of the wave file
  */
-typedef struct _WAVE_RIFF_Header {
+typedef struct __WAVE_RIFF_Header {
     char chunkID[4];
     uint32_t chunkSize;//size not including chunkSize or chunkID
     char format[4];
@@ -40,7 +40,7 @@ typedef struct _WAVE_RIFF_Header {
 /*
  * Struct to hold fmt subchunk data for WAVE files.
  */
-typedef struct _WAVE_Format {
+typedef struct __WAVE_Format {
     char subChunkID[4];
     uint32_t subChunkSize;
     uint16_t audioFormat;
@@ -54,7 +54,7 @@ typedef struct _WAVE_Format {
 /*
 * Struct to hold the data of the wave file
 */
-typedef struct _WAVE_Data {
+typedef struct __WAVE_Data {
     char subChunkID[4]; //should contain the word data
     uint32_t subChunk2Size; //Stores the size of the data block
 } _WAVE_Data;

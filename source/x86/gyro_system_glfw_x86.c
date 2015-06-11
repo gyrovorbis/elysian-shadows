@@ -21,19 +21,19 @@ static inline void cpuid(int CPUInfo[4],int InfoType){
 }
 
 static void _checkCPUCapabilities(void) {
-  //  int x64     = 0;
-  //  int MMX     = 0;
+    int x64     = 0;
+    int MMX     = 0;
     int SSE     = 0;
- //   int SSE2    = 0;
- //   int SSE3    = 0;
- //   int SSSE3   = 0;
- //   int SSE41   = 0;
- //   int SSE42   = 0;
- //   int SSE4a   = 0;
- //   int AVX     = 0;
- //   int XOP     = 0;
- //   int FMA3    = 0;
- //   int FMA4    = 0;
+    int SSE2    = 0;
+    int SSE3    = 0;
+    int SSSE3   = 0;
+    int SSE41   = 0;
+    int SSE42   = 0;
+    int SSE4a   = 0;
+    int AVX     = 0;
+    int XOP     = 0;
+    int FMA3    = 0;
+    int FMA4    = 0;
 
     int info[4];
     cpuid(info, 0);
@@ -45,25 +45,25 @@ static void _checkCPUCapabilities(void) {
     //  Detect Instruction Set
     if (nIds >= 1){
         cpuid(info,0x00000001);
-      //  MMX   = (info[3] & ((int)1 << 23)) != 0;
+        MMX   = (info[3] & ((int)1 << 23)) != 0;
         SSE   = (info[3] & ((int)1 << 25)) != 0;
-       // SSE2  = (info[3] & ((int)1 << 26)) != 0;
-      //  SSE3  = (info[2] & ((int)1 <<  0)) != 0;
+        SSE2  = (info[3] & ((int)1 << 26)) != 0;
+        SSE3  = (info[2] & ((int)1 <<  0)) != 0;
 
-       // SSSE3 = (info[2] & ((int)1 <<  9)) != 0;
-       // SSE41 = (info[2] & ((int)1 << 19)) != 0;
-       // SSE42 = (info[2] & ((int)1 << 20)) != 0;
+        SSSE3 = (info[2] & ((int)1 <<  9)) != 0;
+        SSE41 = (info[2] & ((int)1 << 19)) != 0;
+        SSE42 = (info[2] & ((int)1 << 20)) != 0;
 
-       // AVX   = (info[2] & ((int)1 << 28)) != 0;
-       // FMA3  = (info[2] & ((int)1 << 12)) != 0;
+        AVX   = (info[2] & ((int)1 << 28)) != 0;
+        FMA3  = (info[2] & ((int)1 << 12)) != 0;
     }
 
     if (nExIds >= 0x80000001){
         cpuid(info,0x80000001);
-       // x64   = (info[3] & ((int)1 << 29)) != 0;
-      //  SSE4a = (info[2] & ((int)1 <<  6)) != 0;
-       // FMA4  = (info[2] & ((int)1 << 16)) != 0;
-       // XOP   = (info[2] & ((int)1 << 11)) != 0;
+        x64   = (info[3] & ((int)1 << 29)) != 0;
+        SSE4a = (info[2] & ((int)1 <<  6)) != 0;
+        FMA4  = (info[2] & ((int)1 << 16)) != 0;
+        XOP   = (info[2] & ((int)1 << 11)) != 0;
     }
 
     if(!SSE) {
@@ -80,30 +80,43 @@ static void _checkCPUCapabilities(void) {
 #include <execinfo.h>
 #include <stdlib.h>
 #include <unistd.h>
-#elif defined(WIN32)
+#elif defined(_WIN32)
 #include <windows.h>
 #include <imagehlp.h>
 #endif
 
+static GYSysParams _sysParams;
+
 void gyDebugSigInit(void);
 
-int gySysInit(void) {
+int gySysInit(const GYSysParams*const params) {
     //gyDebugInit();
 
   const char* platString =
 #ifdef __APPLE__
   "OSX";
-#elif defined(WIN32)
+#elif defined(_WIN32)
   "WINDOWS";
 #else
   "LINUX";
 #endif
-    _gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86 [%s] v%s", platString, GYRO_LIB_VERSION);
+    _gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86_64 [%s] v%s", platString, GYRO_LIB_VERSION);
+#if GYRO_BUILD_NODE == LOCAL
+    _gyLog(GY_DEBUG_VERBOSE, "WARNING: THIS IS AN UNOFFICIAL BUILD!");
+#endif
+    _gyLog(GY_DEBUG_VERBOSE, "\tGit branch name: \t%s", GYRO_STRINGIFY_MACRO(GYRO_BUILD_BRANCH));
+    _gyLog(GY_DEBUG_VERBOSE, "\tGit commit ID: \t%s", GYRO_STRINGIFY_MACRO(GYRO_BUILD_COMMIT));
+    _gyLog(GY_DEBUG_VERBOSE, "\tBuild number: \t\t%s", GYRO_STRINGIFY_MACRO(GYRO_BUILD_NUMBER));
+    _gyLog(GY_DEBUG_VERBOSE, "\tBuild node: \t%s", GYRO_STRINGIFY_MACRO(GYRO_BUILD_NODE));
+    _gyLog(GY_DEBUG_VERBOSE, "\tBuild timestamp: \t%s %s", __DATE__, __TIME__);
+
     gyDebugSigInit();
     _checkCPUCapabilities();
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
     glfwInit();
 #endif
+
+    memcpy(&_sysParams, params, sizeof(GYSysParams));
 
     return 1;
 }
@@ -190,9 +203,15 @@ static void gyDebugSigHandler(int sig, siginfo_t* info, void* unused) {
         _gyLog(GY_DEBUG_FATAL, "	%s", symbols[i]);
     _gyLog(GY_DEBUG_FATAL, "**** END C/++ BACKTRACE ****");
 
-    exit(1);
+
+    if(_sysParams.segFaultHandler) {
+        _sysParams.segFaultHandler(_sysParams.context);
+    } else {
+        _gyLog(GY_DEBUG_VERBOSE, "Exitting with default segfault handler.");
+        exit(1);
+    }
 }
-#elif defined(WIN32)
+#elif defined(_WIN32)
 
 const char* execPipe(char* cmd) {
     FILE* pipe = popen(cmd, "r");
@@ -362,7 +381,7 @@ void gyDebugSigInit(void) {
     sigaction(SIGTRAP, &sa, &so);
     if(so.sa_handler == SIG_IGN)
         _gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGTRAP signal handler.");
-#elif defined(WIN32)
+#elif defined(_WIN32)
     //SetUnhandledExceptionFilter(&windows_exception_handler);
 
 #endif
