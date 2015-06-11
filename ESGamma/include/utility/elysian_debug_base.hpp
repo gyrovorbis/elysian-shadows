@@ -51,7 +51,7 @@ namespace elysian {
 
     class DebugBase: public System {
 	public:
-        enum SOURCE             { LIBGYRO, ENGINE, ASSETIO, LUA };
+        enum SOURCE             { LIBGYRO, ENGINE, LUA };
         enum SEVERITY           { DBG_VERBOSE, DBG_WARNING, DBG_ERROR, DBG_OFF };
         enum ADV_LOG_WRAP       { ADV_LOG_ALL, ADV_LOG_LUA, ADV_LOG_DBG_OFF, ADV_LOG_MAX };
 

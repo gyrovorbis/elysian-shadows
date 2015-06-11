@@ -2235,3 +2235,8 @@ void ESToolkit::on_actionCommandsError_toggled(bool arg1)
 {
     Debug::setFilter(Debug::COMMAND, Debug::DBG_ERROR, arg1);
 }
+
+void ESToolkit::on_actionReset_Stack_Depth_triggered()
+{
+    Debug::pop(Debug::getStackDepth());
+}

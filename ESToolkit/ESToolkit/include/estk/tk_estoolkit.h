@@ -275,6 +275,7 @@ private Q_SLOTS:
     void on_actionCommandsVerbose_toggled(bool arg1);
     void on_actionCommandsWarning_toggled(bool arg1);
     void on_actionCommandsError_toggled(bool arg1);
+    void on_actionReset_Stack_Depth_triggered();
 };
 
 

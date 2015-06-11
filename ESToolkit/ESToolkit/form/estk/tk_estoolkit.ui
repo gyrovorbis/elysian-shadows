@@ -252,6 +252,7 @@
     </property>
     <addaction name="separator"/>
     <addaction name="actionClear"/>
+    <addaction name="actionReset_Stack_Depth"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -1415,6 +1416,11 @@
    </property>
    <property name="text">
     <string>Error</string>
+   </property>
+  </action>
+  <action name="actionReset_Stack_Depth">
+   <property name="text">
+    <string>Reset Stack Depth</string>
    </property>
   </action>
  </widget>

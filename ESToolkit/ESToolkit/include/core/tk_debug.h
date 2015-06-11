@@ -32,7 +32,6 @@ public:
     enum TK_SOURCE {
         LIBGYRO     = DebugBase::LIBGYRO,
         ENGINE      = DebugBase::ENGINE,
-        ASSETIO     = DebugBase::ASSETIO,
         LUA         = DebugBase::LUA,
         TOOLKIT     = DebugBase::LUA+1,
         SOURCE_QT,
@@ -124,7 +123,7 @@ private:
 
 
     constexpr static char    _srcEnumToStr[SOURCE_MAX][50] = {
-        "LIBGYRO", "ENGINE", "ASSETIO", "LUA", "TOOLKIT", "QT", "COMMAND", "OPENGL"
+        "LIBGYRO", "ENGINE", "LUA", "TOOLKIT", "QT", "COMMAND", "OPENGL"
     };
 
 };
@@ -140,7 +139,7 @@ private:
 
 inline void TkDebug::writeLog(const int source, const SEVERITY level, const char* const str) {
     _lastString = str;
-    Log(level, str, (source == DebugBase::ASSETIO)? ENGINE : (TK_SOURCE)source);
+    Log(level, str, (TK_SOURCE)source);
     //elysian::DebugBase::writeLog((elysian::DebugBase::SOURCE)source, level, str);
 }
 
