@@ -370,6 +370,8 @@ bool TkLevel::open(void) {
         success = false;
     }
 
+    setValid(success);
+
     _open = true;
     return success;
 }

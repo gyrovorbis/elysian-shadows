@@ -431,6 +431,8 @@ bool Area::open(void) {
     for(auto& it: entities) it->setSaveFlag(true);
     for(auto& it: inactiveEntities) it->setSaveFlag(true);
 
+    setValid(success);
+
     resizeEditorScene();
 /*
     _bgRect = new CheckeredAlphaRectGraphicsItem;

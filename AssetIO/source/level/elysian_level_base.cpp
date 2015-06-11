@@ -72,15 +72,11 @@ namespace elysian {
         strcat(buffer, ELYSIAN_NORMALSHEET_PATH);
         dbgprintf("Level::LoadNormalSheet(%s)", buffer);
         dbgpush();
-        if(!(normalSheet = gyVidTexCreateSheetUniform(buffer,
+            normalSheet =    gyVidTexCreateSheetUniform(buffer,
                                                        ELYSIAN_TILESHEET_WIDTH,
                                                        ELYSIAN_TILESHEET_HEIGHT,
                                                        ELYSIAN_TILE_WIDTH,
-                                                       ELYSIAN_TILE_HEIGHT)))
-        {
-            //success = false;
-            dbgprintf("Fine. Don't bumpmap your shit.");
-        }
+                                                       ELYSIAN_TILE_HEIGHT);
         dbgpop();
 
 
@@ -88,22 +84,13 @@ namespace elysian {
         strcat(buffer, ELYSIAN_SPECULARSHEET_PATH);
         dbgprintf("Level::LoadSpecularSheet(%s)", buffer);
         dbgpush();
-        if(!(specularSheet = gyVidTexCreateSheetUniform(buffer,
+            specularSheet = gyVidTexCreateSheetUniform(buffer,
                                                        ELYSIAN_TILESHEET_WIDTH,
                                                        ELYSIAN_TILESHEET_HEIGHT,
                                                        ELYSIAN_TILE_WIDTH,
-                                                       ELYSIAN_TILE_HEIGHT)))
-        {
-            //success = false;
-            dbgprintf("No specular sheet? Aight.");
-        }
+                                                       ELYSIAN_TILE_HEIGHT);
         dbgpop();
 
-#ifdef ELYSIAN_ENGINE
-        strcpy(buffer, dir);
-        strcat(buffer, ELYSIAN_LEVEL_INIT_LUA_PATH);
-        LuaManager::runScriptSandbox(buffer);
-#endif
 
         dbgpop();
 		return success;

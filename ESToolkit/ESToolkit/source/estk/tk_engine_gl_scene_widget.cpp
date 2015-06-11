@@ -273,9 +273,9 @@ void EngineGLSceneWidget::_onResized(void) {
 }
 
 void EngineGLSceneWidget::_onGLMessageLogged(const QOpenGLDebugMessage &message) {
-    if(!_wasGLError && _prevGLError != message) {
+    if(!_wasGLError && _prevGLError != message.message()) {
         dbgprintf(message.message().toStdString().c_str());
-        _prevGLError = message;
+        _prevGLError = message.message();
         _wasGLError = true;
     }
 }

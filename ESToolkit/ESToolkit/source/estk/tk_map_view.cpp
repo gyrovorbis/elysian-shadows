@@ -19,6 +19,7 @@
 #include "elysian_animation.hpp"
 #include "elysian_sprite_attrib.hpp"
 #include "elysian_material.hpp"
+#include <elysian_level.hpp>
 
 
 MapView::MapView(QWidget *parent): DestView<TileEntry>::DestView(parent) {
@@ -404,6 +405,8 @@ void MapView::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void MapView::mousePressEvent(QMouseEvent *event) {
+    if(event->button() == Qt::RightButton && !getCurrentLevel()->validSheets()) return;
+
     DestView<TileEntry>::mousePressEvent(event);
 
 

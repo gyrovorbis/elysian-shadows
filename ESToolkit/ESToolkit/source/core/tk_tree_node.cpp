@@ -1,7 +1,8 @@
 #include "tk_tree_node.h"
 
 TreeNode::TreeNode(void) {
-
+    QBrush brush = QBrush(Qt::gray);
+    setForeground(0, brush);
 }
 
 void TreeNode::setNodeName(const QString name) {
