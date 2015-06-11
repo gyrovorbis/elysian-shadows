@@ -83,7 +83,7 @@ void DebugBase::writeLog(const DebugBase::SOURCE source, const DebugBase::SEVERI
 	buffer[0] = '\0';
 
 	//Add tabs for each stack layer
-	if(source != LUA) for(unsigned int i = 0; i < _stackDepth; ++i) strcat(buffer, ELYSIAN_DEBUG_PREFIX_STACK);
+    /*if(source != LUA)*/ for(unsigned int i = 0; i < _stackDepth; ++i) strcat(buffer, ELYSIAN_DEBUG_PREFIX_STACK);
 
 	//Add prefixes for error types
 	switch(level) {

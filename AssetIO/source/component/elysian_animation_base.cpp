@@ -138,7 +138,7 @@ AnimationBase::~AnimationBase(void) {
 void AnimationBase::addChildEntity(Entity*const entity, const char*animName) {
     ChildAnimation* childAnim = _childAttrib->getAnimation(animName);
 
-    assert(childAnim && !_children->isFull());
+     assert(childAnim && !_children->isFull());
 
     entity->setParentEntity(getEntity());
     ChildAnimEntry& entry = _children->claimFreeEntry();

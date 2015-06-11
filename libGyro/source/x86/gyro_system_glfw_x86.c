@@ -104,9 +104,9 @@ int gySysInit(const GYSysParams*const params) {
     _gyLog(GY_DEBUG_DBG_VERBOSE, "Initializing libGyro_x86_64 [%s] v%s", platString, GYRO_LIB_VERSION);
     _gyPush();
 #ifdef GYRO_LOCAL_BUILD
-    _gyLog(GY_DEBUG_DBG_WARNING, "THIS IS AN UNDBG_OFFICIAL BUILD!");
+    _gyLog(GY_DEBUG_DBG_WARNING, "THIS IS AN UNOFFICIAL BUILD!");
 #else
-    _gyLog(GY_DEBUG_DBG_VERBOSE, "THIS IS AN DBG_OFFICIAL BUILD!");
+    _gyLog(GY_DEBUG_DBG_VERBOSE, "THIS IS AN OFFICIAL BUILD!");
 #endif
     _gyPush();
     _gyLog(GY_DEBUG_DBG_VERBOSE, "%-20s: %40s", "Git branch name", GYRO_STRINGIFY_MACRO(GYRO_BUILD_BRANCH));
