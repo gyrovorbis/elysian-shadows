@@ -19,22 +19,6 @@ int glalDefaultFbo(void) {
 return 0;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-//reested-ass hack
-extern GYInputInitParams    _initParams;
-
-extern "C" int glalVidDefaultFbo(void) {
-//qDebug() << "FBO" <<  static_cast<QOpenGLWidget*>(reinterpret_cast<QGraphicsView*>(_initParams.viewWidget)->viewport())->defaultFramebufferObject();
-   // return static_cast<QOpenGLWidget*>(reinterpret_cast<QGraphicsView*>(_initParams.viewWidget)->viewport())->defaultFramebufferObject();
-    return 0;
-}
-
-
-=======
->>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
-=======
->>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
 int _gyVidTexAlloc(GYTexture *const tex) {
      //static_cast<QOpenGLWidget*>(_initParams.glWidget)->makeCurrent();
 

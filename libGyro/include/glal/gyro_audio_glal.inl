@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-typedef struct _GYAudioSource {
+typedef struct GYAudioSource {
     void* ptr;
 } GYAudioSource;
 

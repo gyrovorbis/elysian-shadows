@@ -498,20 +498,11 @@ int _gyVidShaderCreate(GYShader* shader) {
         return 0;
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    if(!gyFileOpen(shader->path, "rb", &file)) {
-        _gyLog(GY_DEBUG_CRITICAL, "\tCould not open shader", shader->path);
-        return 0;
-    }
-=======
-=======
->>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
 	if(!gyFileOpen(shader->path, "r", &file)) {
 		_gyLog(GY_DEBUG_CRITICAL, "\tCould not open shader", shader->path);
 		return 0;
 	}
->>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
+
     gyFileLength(file, &charCount);
 	programSource = malloc(sizeof(char) * charCount + 1);
     memset(programSource, 0, sizeof(char)*charCount+1);
@@ -520,17 +511,9 @@ int _gyVidShaderCreate(GYShader* shader) {
     programSource[charCount] = '\0';
     gyFileClose(&file);
 
-<<<<<<< HEAD
     glShaderSource(shader->shader, 1, (const GLchar**)&programSource, (GLint*)&charCount);
     glCompileShader(shader->shader);
     free(programSource);
-=======
-    glShaderSource(shader->shader, 1, (const char*const*)&programSource, (GLint*)&charCount);
-	glCompileShader(shader->shader);
-<<<<<<< HEAD
->>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
-=======
->>>>>>> parent of 7c5c52b... Have the windows build at least loading the scene before segfaulting...
 
     glGetShaderiv(shader->shader, GL_COMPILE_STATUS, &compiled);
     if(!compiled) {
