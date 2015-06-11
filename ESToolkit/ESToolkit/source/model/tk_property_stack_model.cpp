@@ -117,7 +117,7 @@ void PropertyStackModel::addRow(QStandardItem *label, QStandardItem *item, QStan
 
         _curParent->appendRow(rowItems);
         _checkPropertyStandardItemAcquire(item);
-        _updateBgColors();
+        //_updateBgColors();
 }
 
 
