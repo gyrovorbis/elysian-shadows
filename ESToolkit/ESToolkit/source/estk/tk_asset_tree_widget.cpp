@@ -37,7 +37,7 @@ void AssetTreeWidget::OnCurrentItemChanged(QTreeWidgetItem * current, int /*inde
     auto* treenode = ((TreeNode *)current);
 
     _ignoreItemChange = true;
-    DbgEvent event("Changing Asset View selection.");
+    //DbgEvent event("Changing Asset View selection.");
 
     treenode->activate();
     if(treenode->getTreeWidgetItemType() != TreeNode::ITEM_SUBDIR) {
@@ -104,6 +104,7 @@ void AssetTreeWidget::onCustomContextMenuRequested(QPoint point) {
                 getAssets()->setCurrentLevel(newLev);
                 getAssets()->setCurrentSelection(newLev);
             } else if(result->text() == QString("Reload")) {
+                DbgEvent dbgEvent("Reloading Project [%s].", Q_CSTR(getCurrentProject()->getLocation()));
                 getAssets()->reloadProject();
             }
 		}
@@ -135,7 +136,8 @@ void AssetTreeWidget::onCustomContextMenuRequested(QPoint point) {
             } else if(result->text() == QString("Duplicate")) {
                 level->duplicate();
             } else if(result->text() == QString("Reload")) {
-               getAssets()->reloadLevel(level);
+                DbgEvent dbgEvent("Reloading Level [%s].", level->path);
+                getAssets()->reloadLevel(level);
 
             }
 		}
@@ -163,13 +165,13 @@ void AssetTreeWidget::onCustomContextMenuRequested(QPoint point) {
             } else if(result->text() == QString("Duplicate")) {
                 area->duplicate();
             } else if(result->text() == QString("Reload")) {
+                DbgEvent dbgEvent("Reloading Area [%s].", area->path);
                 getAssets()->reloadArea(area);
             }
 		}
 		break;
 
 	default:
-        Q_ASSERT(false);
 		return;
 	}
 

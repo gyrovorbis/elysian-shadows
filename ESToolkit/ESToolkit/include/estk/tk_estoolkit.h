@@ -94,6 +94,8 @@ private:
     QTabBar*                _areaTabBar;
     bool                    _ignoreAreaTabChange;
 
+    QMenu*                  _filterMenu     = nullptr;
+
     AssetDockWidget*        _assetDockWidget;
     EntityDockWidget*       _entityDockWidget;
     LayerDockWidget*        _layerDockWidget;
@@ -224,13 +226,6 @@ private Q_SLOTS:
     void on_actionPrevious_Project_triggered();
     void on_actionInvoke_triggered(bool checked);
     void on_actionAdvance_Frame_triggered();
-    void on_actionClear_triggered();
-    void on_actionLibGyro_toggled(bool arg1);
-    void on_actionEngine_toggled(bool arg1);
-    void on_actionToolkit_toggled(bool arg1);
-    void on_actionLua_toggled(bool arg1);
-    void on_actionQt_toggled(bool arg1);
-    void on_actionCommands_toggled(bool arg1);
     void on_actionMap_Background_toggled(bool arg1);
     void on_action480p_toggled(bool arg1);
     void on_action720p_toggled(bool arg1);
@@ -254,10 +249,35 @@ private Q_SLOTS:
     void on_actionGitLab_Manager_triggered();
     void on_actionPerformance_Monitor_triggered();
     void on_actionSheet_Manager_triggered();
+    void on_actionClear_triggered();
+    void on_actionLibGyro_toggled(bool arg1);
+    void on_actionEngine_toggled(bool arg1);
+    void on_actionToolkit_toggled(bool arg1);
+    void on_actionLua_toggled(bool arg1);
+    void on_actionQt_toggled(bool arg1);
+    void on_actionCommands_toggled(bool arg1);
     void on_actionOpenGL_toggled(bool arg1);
-    void on_actionVerbose_toggled(bool arg1);
-    void on_actionWarning_toggled(bool arg1);
-    void on_actionError_toggled(bool arg1);
+    void on_actionLibGyroVerbose_toggled(bool arg1);
+    void on_actionLibGyroWarning_toggled(bool arg1);
+    void on_actionLibGyroError_toggled(bool arg1);
+    void on_actionEngineVerbose_toggled(bool arg1);
+    void on_actionEngineWarning_toggled(bool arg1);
+    void on_actionEngineError_toggled(bool arg1);
+    void on_actionToolkitVerbose_toggled(bool arg1);
+    void on_actionToolkitWarning_toggled(bool arg1);
+    void on_actionToolkitError_toggled(bool arg1);
+    void on_actionQtVerbose_toggled(bool arg1);
+    void on_actionQtWarning_toggled(bool arg1);
+    void on_actionQtError_toggled(bool arg1);
+    void on_actionOpenGLVerbose_toggled(bool arg1);
+    void on_actionOpenGLWarning_toggled(bool arg1);
+    void on_actionOpenGLError_toggled(bool arg1);
+    void on_actionLuaVerbose_toggled(bool arg1);
+    void on_actionLuaWarning_toggled(bool arg1);
+    void on_actionLuaError_toggled(bool arg1);
+    void on_actionCommandsVerbose_toggled(bool arg1);
+    void on_actionCommandsWarning_toggled(bool arg1);
+    void on_actionCommandsError_toggled(bool arg1);
 };
 
 

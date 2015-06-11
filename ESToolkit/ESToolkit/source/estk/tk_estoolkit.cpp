@@ -211,19 +211,9 @@ ESToolkit::ESToolkit(QWidget *parent):
     _ui->mapView->setFocus();
     setFocusPolicy(Qt::ClickFocus);
 
-    //Initialize log console and menu actions
-    _ui->actionLibGyro->setChecked(true);
-    Debug::setFilter(Debug::LIBGYRO, true);
-    _ui->actionEngine->setChecked(true);
-    Debug::setFilter(Debug::ENGINE, true);
-    _ui->actionLua->setChecked(true);
-    Debug::setFilter(Debug::LUA, true);
-    _ui->actionToolkit->setChecked(true);
-    Debug::setFilter(Debug::TOOLKIT, true);
-    _ui->actionQt->setChecked(true);
-    Debug::setFilter(Debug::SOURCE_QT, true);
-    _ui->actionCommands->setChecked(true);
-    Debug::setFilter(Debug::COMMAND, true);
+    //Console->Filters menu
+    _filterMenu = Debug::getFilterMenu();
+    _ui->menuConsole->addMenu(Debug::getFilterMenu());
 
     //CONNECT ASSET SIGNALS/SLOTS TO MAIN UI
     connect(&_assets, SIGNAL(engineInitialize()), this, SLOT(_onEngineInitialized()));
@@ -518,16 +508,16 @@ void ESToolkit::WriteSettings()
         settings.setValue("gitLabPrivateToken", _gitlabDialog->getPrivateToken());
         settings.setValue("gitLabProjectId", _gitlabDialog->getProjectId());
     }
-    settings.setValue("debugFilterToolkit", _ui->actionToolkit->isChecked());
-    settings.setValue("debugFilterEngine", _ui->actionEngine->isChecked());
-    settings.setValue("debugFilterLibGyro", _ui->actionLibGyro->isChecked());
-    settings.setValue("debugFilterQt", _ui->actionQt->isChecked());
-    settings.setValue("debugFilterLua", _ui->actionLua->isChecked());
-    settings.setValue("debugFilterCommands", _ui->actionCommands->isChecked());
-    settings.setValue("debugFilterOpenGL", _ui->actionOpenGL->isChecked());
-    settings.setValue("debugFilterVerbose", _ui->actionVerbose->isChecked());
-    settings.setValue("debugFilterWarning", _ui->actionWarning->isChecked());
-    settings.setValue("debugFilterError", _ui->actionError->isChecked());
+    unsigned source = 0;
+    for(auto itSource : _filterMenu->actions()) {
+        unsigned severity = 0;
+        for(auto itSeverity : itSource->menu()->actions()) {
+            char buff[30];
+            sprintf(buff, "debugFilter_%d_%d", source, severity++);
+            settings.setValue(buff, itSeverity->isChecked());
+        }
+        ++source;
+    }
 }
 
 void ESToolkit::ReadSettings()
@@ -616,16 +606,19 @@ void ESToolkit::ReadSettings()
         _gitlabDialog->authenticate(true);
         _gitlabDialog->setProjectId(settings.value("gitLabProjectId").toInt());
     }
-    _ui->actionToolkit->setChecked(settings.value("debugFilterToolkit", true).toBool());
-    _ui->actionEngine->setChecked(settings.value("debugFilterEngine", true).toBool());
-    _ui->actionLibGyro->setChecked(settings.value("debugFilterLibGyro", true).toBool());
-    _ui->actionQt->setChecked(settings.value("debugFilterQt", true).toBool());
-    _ui->actionLua->setChecked(settings.value("debugFilterLua", true).toBool());
-    _ui->actionCommands->setChecked(settings.value("debugFilterCommands", true).toBool());
-    _ui->actionOpenGL->setChecked(settings.value("debugFilterOpenGL", true).toBool());
-    _ui->actionVerbose->setChecked(settings.value("debugFilterVerbose", true).toBool());
-    _ui->actionWarning->setChecked(settings.value("debugFilterWarning", true).toBool());
-    _ui->actionError->setChecked(settings.value("debugFilterError", true).toBool());
+
+    unsigned source = 0;
+    for(auto itSource : _filterMenu->actions()) {
+        unsigned severity = 0;
+        for(auto itSeverity : itSource->menu()->actions()) {
+            char buff[30];
+            sprintf(buff, "debugFilter_%d_%d", source, severity);
+            const bool enabled = settings.value(buff, true).toBool();
+            Debug::setFilter((Debug::TK_SOURCE)source, (Debug::SEVERITY)severity++, enabled);
+            itSeverity->setChecked(enabled);
+        }
+        source++;
+    }
 
     toggleProjectActions(false);
 
@@ -1786,62 +1779,6 @@ void ESToolkit::on_actionAdvance_Frame_triggered()
     _engineGLView->advanceFrame();
 }
 
-void ESToolkit::on_actionClear_triggered()
-{
-    Debug::clear();
-}
-
-void ESToolkit::on_actionVerbose_toggled(bool arg1)
-{
-    Debug::setFilter(Debug::DBG_VERBOSE, arg1);
-}
-
-void ESToolkit::on_actionWarning_toggled(bool arg1)
-{
-    Debug::setFilter(Debug::DBG_WARNING, arg1);
-}
-
-void ESToolkit::on_actionError_toggled(bool arg1)
-{
-    Debug::setFilter(Debug::DBG_ERROR, arg1);
-}
-
-void ESToolkit::on_actionLibGyro_toggled(bool arg1)
-{
-    Debug::setFilter(Debug::LIBGYRO, arg1);
-}
-
-void ESToolkit::on_actionEngine_toggled(bool arg1)
-{
-    Debug::setFilter(Debug::ENGINE, arg1);
-}
-
-void ESToolkit::on_actionToolkit_toggled(bool arg1)
-{
-    Debug::setFilter(Debug::TOOLKIT, arg1);
-}
-
-void ESToolkit::on_actionLua_toggled(bool arg1)
-{
-    Debug::setFilter(Debug::LUA, arg1);
-}
-
-void ESToolkit::on_actionQt_toggled(bool arg1)
-{
-    Debug::setFilter(Debug::SOURCE_QT, arg1);
-}
-
-void ESToolkit::on_actionCommands_toggled(bool arg1)
-{
-    Debug::setFilter(Debug::COMMAND, arg1);
-}
-
-void ESToolkit::on_actionOpenGL_toggled(bool arg1)
-{
-    Debug::setFilter(Debug::OPENGL, arg1);
-}
-
-
 void ESToolkit::on_actionMap_Background_toggled(bool arg1)
 {
     TkMapSystem::setRenderMapBackground(arg1);
@@ -2133,4 +2070,166 @@ bool ESToolkit::verifySingleArea(const QString verifyPath) {
     _assets.setCurrentArea(areaPath.split("/").last());
 
     QApplication::quit();
+}
+
+
+
+void ESToolkit::on_actionClear_triggered()
+{
+    Debug::clear();
+}
+
+void ESToolkit::on_actionLibGyro_toggled(bool arg1)
+{
+    _ui->actionLibGyroVerbose->setChecked(arg1);
+    _ui->actionLibGyroWarning->setChecked(arg1);
+    _ui->actionLibGyroError->setChecked(arg1);
+}
+
+void ESToolkit::on_actionEngine_toggled(bool arg1)
+{
+    _ui->actionEngineVerbose->setChecked(arg1);
+    _ui->actionEngineWarning->setChecked(arg1);
+    _ui->actionEngineError->setChecked(arg1);
+}
+
+void ESToolkit::on_actionToolkit_toggled(bool arg1)
+{
+    _ui->actionToolkitVerbose->setChecked(arg1);
+    _ui->actionToolkitWarning->setChecked(arg1);
+    _ui->actionToolkitError->setChecked(arg1);}
+
+void ESToolkit::on_actionLua_toggled(bool arg1)
+{
+    _ui->actionLuaVerbose->setChecked(arg1);
+    _ui->actionLuaWarning->setChecked(arg1);
+    _ui->actionLuaError->setChecked(arg1);
+}
+
+
+void ESToolkit::on_actionQt_toggled(bool arg1)
+{
+    _ui->actionQtVerbose->setChecked(arg1);
+    _ui->actionQtWarning->setChecked(arg1);
+    _ui->actionQtError->setChecked(arg1);
+}
+
+void ESToolkit::on_actionCommands_toggled(bool arg1)
+{
+    _ui->actionCommandsVerbose->setChecked(arg1);
+    _ui->actionCommandsWarning->setChecked(arg1);
+    _ui->actionCommandsError->setChecked(arg1);
+}
+
+void ESToolkit::on_actionOpenGL_toggled(bool arg1)
+{
+    _ui->actionOpenGLVerbose->setChecked(arg1);
+    _ui->actionOpenGLWarning->setChecked(arg1);
+    _ui->actionOpenGLError->setChecked(arg1);
+}
+
+void ESToolkit::on_actionLibGyroVerbose_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::LIBGYRO, Debug::DBG_VERBOSE, arg1);
+
+}
+
+void ESToolkit::on_actionLibGyroWarning_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::LIBGYRO, Debug::DBG_WARNING, arg1);
+}
+
+void ESToolkit::on_actionLibGyroError_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::LIBGYRO, Debug::DBG_ERROR, arg1);
+}
+
+void ESToolkit::on_actionEngineVerbose_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::ENGINE, Debug::DBG_VERBOSE, arg1);
+}
+
+void ESToolkit::on_actionEngineWarning_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::ENGINE, Debug::DBG_WARNING, arg1);
+}
+
+void ESToolkit::on_actionEngineError_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::ENGINE, Debug::DBG_ERROR, arg1);
+}
+
+void ESToolkit::on_actionToolkitVerbose_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::TOOLKIT, Debug::DBG_VERBOSE, arg1);
+}
+
+void ESToolkit::on_actionToolkitWarning_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::TOOLKIT, Debug::DBG_WARNING, arg1);
+}
+
+void ESToolkit::on_actionToolkitError_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::TOOLKIT, Debug::DBG_ERROR, arg1);
+}
+
+void ESToolkit::on_actionQtVerbose_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::SOURCE_QT, Debug::DBG_VERBOSE, arg1);
+}
+
+void ESToolkit::on_actionQtWarning_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::SOURCE_QT, Debug::DBG_WARNING, arg1);
+}
+
+void ESToolkit::on_actionQtError_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::SOURCE_QT, Debug::DBG_ERROR, arg1);
+}
+
+void ESToolkit::on_actionOpenGLVerbose_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::OPENGL, Debug::DBG_VERBOSE, arg1);
+}
+
+void ESToolkit::on_actionOpenGLWarning_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::OPENGL, Debug::DBG_WARNING, arg1);
+}
+
+void ESToolkit::on_actionOpenGLError_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::OPENGL, Debug::DBG_ERROR, arg1);
+}
+
+void ESToolkit::on_actionLuaVerbose_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::LUA, Debug::DBG_VERBOSE, arg1);
+}
+
+void ESToolkit::on_actionLuaWarning_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::LUA, Debug::DBG_WARNING, arg1);
+}
+
+void ESToolkit::on_actionLuaError_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::LUA, Debug::DBG_ERROR, arg1);
+}
+
+void ESToolkit::on_actionCommandsVerbose_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::COMMAND, Debug::DBG_VERBOSE, arg1);
+}
+
+void ESToolkit::on_actionCommandsWarning_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::COMMAND, Debug::DBG_WARNING, arg1);
+}
+
+void ESToolkit::on_actionCommandsError_toggled(bool arg1)
+{
+    Debug::setFilter(Debug::COMMAND, Debug::DBG_ERROR, arg1);
 }

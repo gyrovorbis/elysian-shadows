@@ -18,6 +18,8 @@
 #include <QQueue>
 #include <QTimer>
 #include <QFontDatabase>
+#include <tk_menu_stack.h>
+#include <QMenu>
 //ESTK
 #include "elysian_debug.hpp"
 #include "elysian_lua_manager.hpp"
@@ -37,8 +39,7 @@ QWidget* TkDebug::_centralWidget;
 bool TkDebug::_pendingError = false;
 unsigned TkDebug::_stackDepth = 0;
 constexpr char TkDebug::_srcEnumToStr[TkDebug::SOURCE_MAX][50];
-bool TkDebug::_filterSourceEnabled[TkDebug::SOURCE_MAX] = { true };
-bool TkDebug::_filterSeverityEnabled[elysian::DebugBase::DBG_OFF] = { true };
+bool TkDebug::_filterEnabled[TkDebug::SOURCE_MAX][TkDebug::DBG_OFF] = {{ true }};
 QVector<QString> TkDebug::_commandHistory;
 int TkDebug::_commandHistoryIndex;
 bool TkDebug::_shiftDown = false;
@@ -48,6 +49,7 @@ QString* TkDebug::_debugLogPath = nullptr;
 QString TkDebug::_lastString;
 bool TkDebug::_prevMsgDiscarded = false;
 QStack<bool> TkDebug::_ignoredPushes;
+QMenu* TkDebug::_filterMenu;
 
 TkDebug::TkDebug(void) {
     _commandHistory = QVector<QString>();
@@ -109,6 +111,37 @@ TkDebug::TkDebug(void) {
 #endif
     dbgprintf("Creating log files at %s", Q_CSTR(QDir::currentPath()));
     _debugLogPath = new QString(QDir::currentPath()); //QString(QDir().current().absoluteFilePath(GY_FILE_QT_DEBUG_DIR));
+
+
+    MenuStack sourcesMenu("Filters");
+    auto addFilterSource = [&](const QString name, const Debug::TK_SOURCE source) {
+        MenuStack severityMenu("Severity");
+        severityMenu.insertCheckableAction("Verbose", [=](const bool checked) {
+            Debug::setFilter(source, Debug::DBG_VERBOSE, checked);
+        });
+        severityMenu.insertCheckableAction("Warning", [=](const bool checked) {
+            Debug::setFilter(source, Debug::DBG_WARNING, checked);
+        });
+        severityMenu.insertCheckableAction("Error", [=](const bool checked) {
+            Debug::setFilter(source, Debug::DBG_ERROR, checked);
+        });
+        QAction* action = sourcesMenu.insertCheckableAction(name, [action](const bool checked) {
+            for(auto it : action->menu()->actions()) {
+                it->setChecked(checked);
+            }
+        });
+        action->setMenu(severityMenu.first());
+    };
+    addFilterSource("LibGyro",  Debug::LIBGYRO);
+    addFilterSource("Engine",   Debug::ENGINE);
+    addFilterSource("Toolkit",  Debug::TOOLKIT);
+    addFilterSource("Qt",       Debug::SOURCE_QT);
+    addFilterSource("OpenGL",   Debug::OPENGL);
+    addFilterSource("Lua",      Debug::LUA);
+    addFilterSource("Commands", Debug::COMMAND);
+    _filterMenu = sourcesMenu.first();
+    _treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(_treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(_onLogWidgetContextMenuRequested(QPoint)));
 
     QTimer::singleShot(DEBUG_LOG_POLL_MSEC, &TkDebug::_servicePendingQueue);
 
@@ -310,7 +343,7 @@ void TkDebug::_resizePrompt(void) {
 void TkDebug::_postToQueue(const TK_SOURCE src, const SEVERITY level, const QString text) {
     _mutex->lock();
     elysian::DebugBase::writeLog((elysian::DebugBase::SOURCE)src, level, Q_CSTR(text));
-    if(_filterSourceEnabled[src] && _filterSeverityEnabled[level]) {
+    if(_filterEnabled[src][level]) {
         _pendingQueue->enqueue(LogEntry{ text, level, src, LogEntry::TEXT });
         _prevMsgDiscarded = false;
     } else {
@@ -420,5 +453,9 @@ void TkDebug::_processLogEntry(const LogEntry& entry) {
         } while(it);
     }*/
 
+}
+
+void TkDebug::_onLogWidgetContextMenuRequested(const QPoint point) {
+    _filterMenu->exec(_treeWidget->mapToGlobal(point));
 }
 

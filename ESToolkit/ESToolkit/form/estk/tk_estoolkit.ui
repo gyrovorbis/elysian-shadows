@@ -250,42 +250,8 @@
     <property name="title">
      <string>Console</string>
     </property>
-    <widget class="QMenu" name="menuFilters">
-     <property name="title">
-      <string>Filters</string>
-     </property>
-     <widget class="QMenu" name="menuSource">
-      <property name="title">
-       <string>Source</string>
-      </property>
-      <addaction name="actionLibGyro"/>
-      <addaction name="actionEngine"/>
-      <addaction name="actionToolkit"/>
-      <addaction name="actionQt"/>
-      <addaction name="actionOpenGL"/>
-      <addaction name="actionLua"/>
-      <addaction name="actionCommands"/>
-     </widget>
-     <widget class="QMenu" name="menuType_Here">
-      <property name="title">
-       <string>Type Here</string>
-      </property>
-     </widget>
-     <widget class="QMenu" name="menuSeverity">
-      <property name="title">
-       <string>Severity</string>
-      </property>
-      <addaction name="actionVerbose"/>
-      <addaction name="actionWarning"/>
-      <addaction name="actionError"/>
-     </widget>
-     <addaction name="menuSeverity"/>
-     <addaction name="menuSource"/>
-     <addaction name="menuType_Here"/>
-    </widget>
     <addaction name="separator"/>
     <addaction name="actionClear"/>
-    <addaction name="menuFilters"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
@@ -1075,54 +1041,6 @@
     <string>Clear</string>
    </property>
   </action>
-  <action name="actionLibGyro">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>libGyro</string>
-   </property>
-  </action>
-  <action name="actionEngine">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Engine</string>
-   </property>
-  </action>
-  <action name="actionToolkit">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Toolkit</string>
-   </property>
-  </action>
-  <action name="actionLua">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Lua</string>
-   </property>
-  </action>
-  <action name="actionQt">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Qt</string>
-   </property>
-  </action>
-  <action name="actionCommands">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Commands</string>
-   </property>
-  </action>
   <action name="actionMap_Background">
    <property name="checkable">
     <bool>true</bool>
@@ -1322,18 +1240,7 @@
     <string>Performance Monitor</string>
    </property>
   </action>
-  <action name="actionOpenGL">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>OpenGL</string>
-   </property>
-  </action>
-  <action name="actionVerbose">
+  <action name="actionLibGyroVerbose">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -1344,7 +1251,7 @@
     <string>Verbose</string>
    </property>
   </action>
-  <action name="actionWarning">
+  <action name="actionLibGyroWarning">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -1355,12 +1262,156 @@
     <string>Warning</string>
    </property>
   </action>
-  <action name="actionError">
+  <action name="actionLibGyroError">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="checked">
     <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Error</string>
+   </property>
+  </action>
+  <action name="actionEngineVerbose">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Verbose</string>
+   </property>
+  </action>
+  <action name="actionEngineWarning">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Warning</string>
+   </property>
+  </action>
+  <action name="actionEngineError">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Error</string>
+   </property>
+  </action>
+  <action name="actionToolkitVerbose">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Verbose</string>
+   </property>
+  </action>
+  <action name="actionToolkitWarning">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Warning</string>
+   </property>
+  </action>
+  <action name="actionToolkitError">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Error</string>
+   </property>
+  </action>
+  <action name="actionQtVerbose">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Verbose</string>
+   </property>
+  </action>
+  <action name="actionQtWarning">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Warning</string>
+   </property>
+  </action>
+  <action name="actionQtError">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Error</string>
+   </property>
+  </action>
+  <action name="actionOpenGLVerbose">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Verbose</string>
+   </property>
+  </action>
+  <action name="actionOpenGLWarning">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Warning</string>
+   </property>
+  </action>
+  <action name="actionOpenGLError">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Error</string>
+   </property>
+  </action>
+  <action name="actionLuaVerbose">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Verbose</string>
+   </property>
+  </action>
+  <action name="actionLuaWarning">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Warning</string>
+   </property>
+  </action>
+  <action name="actionLuaError">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Error</string>
+   </property>
+  </action>
+  <action name="actionCommandsVerbose">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Verbose</string>
+   </property>
+  </action>
+  <action name="actionCommandsWarning">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Warning</string>
+   </property>
+  </action>
+  <action name="actionCommandsError">
+   <property name="checkable">
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Error</string>

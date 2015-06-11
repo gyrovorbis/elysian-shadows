@@ -4,6 +4,7 @@
 #include <QObject>
 #include <elysian_debug_base.hpp>
 #include <QStack>
+#include <QPoint>
 
 #define GY_FILE_QT_DEBUG_DIR            "logs"
 #define DEBUG_QT_BUFF_SIZE              50000
@@ -18,6 +19,7 @@ class QVBoxLayout;
 class QTextEdit;
 class QMutex;
 class QTimer;
+class QMenu;
 
 
 typedef elysian::DbgEvent DbgEvent;
@@ -63,11 +65,11 @@ public:
         _window = nullptr;
 	}
 
-    static void setFilter(const TK_SOURCE source, const bool enabled);
-    static void setFilter(const SEVERITY severity, const bool enabled);
+    static void setFilter(const TK_SOURCE source, const SEVERITY severity, const bool enabled);
     static void clear(void);
 
     static QString getDebugLogPath(void);
+    static QMenu*  getFilterMenu(void);
 
 private:
     struct LogEntry {
@@ -86,6 +88,7 @@ protected Q_SLOTS:
     static void _servicePendingQueue(void);
     static void _postToQueue(const TK_SOURCE src, const SEVERITY level, const QString text);
     static void _processLogEntry(const LogEntry& entry);
+    void        _onLogWidgetContextMenuRequested(const QPoint point);
 
 private:
 
@@ -103,10 +106,10 @@ private:
     static QVBoxLayout*         _vertLayout;
     static QWidget*             _centralWidget;
     static QTextEdit*           _prompt;
+    static QMenu*               _filterMenu;
     static bool                 _pendingError;
     static unsigned             _stackDepth;
-    static bool                 _filterSourceEnabled[SOURCE_MAX];
-    static bool                 _filterSeverityEnabled[DebugBase::DBG_OFF];
+    static bool                 _filterEnabled[SOURCE_MAX][DebugBase::DBG_OFF];
     static QVector<QString>     _commandHistory;
     static int                  _commandHistoryIndex;
     static bool                 _shiftDown;
@@ -144,13 +147,14 @@ inline void TkDebug::writeLog(const int source, const SEVERITY level, const char
 inline QString TkDebug::getDebugLogPath(void) { return *_debugLogPath; }
 
 
-inline void TkDebug::setFilter(const TK_SOURCE src, const bool enabled) {
-    _filterSourceEnabled[src] = enabled;
+inline void TkDebug::setFilter(const TK_SOURCE src, const SEVERITY severity, const bool enabled) {
+    _filterEnabled[src][severity] = enabled;
 }
 
-inline void TkDebug::setFilter(const SEVERITY severity, const bool enabled) {
-    _filterSeverityEnabled[severity] = enabled;
+inline QMenu* TkDebug::getFilterMenu(void) {
+    return _filterMenu;
 }
+
 
 
 #endif // DEBUG_H
