@@ -10,7 +10,6 @@ QMAKE_CXXFLAGS += -Wno-c++11-extensions -Wno-c++11-long-long
 QMAKE_CFLAGS += -msse -std=c99
 
 INCLUDEPATH += ../../include \
-                ../../source/x86/png \
                 ../../../Spine/include
 
 #==========PLATFORM-SPECIFIC BULLSHIT==========
@@ -37,7 +36,6 @@ linux {
 #==========/PLATFORM-SPECIFIC BULLSHIT==========
 
 DEPENDPATH += ../../include \
-    ../../include/x86/png \
     ../../source/glal/shaders \
     ../../source/glal \
     ../../include/x86 \
@@ -104,26 +102,6 @@ HEADERS += \
     ../../include/common/turfs.h
 
 SOURCES += \
-#    ../../source/x86/gyro_video_x86.c \
-#    ../../source/x86/gyro_timer_x86.c \
-#    ../../source/x86/gyro_texture_x86.c \
-#    ../../source/x86/gyro_system_x86.c \
-#    ../../source/x86/gyro_matrix_x86.c \
-#    ../../source/x86/gyro_input_x86.c \
-#    ../../source/kinetic/gyro_kinetic_physics.c \
-#    ../../source/kinetic/gyro_kinetic_collision.c \
-#    ../../source/glal/gyro_wav_glal.c \
-#    ../../source/glal/gyro_video_glal.c \
-#    ../../source/glal/gyro_shaders_glal.c \
-#    ../../source/glal/gyro_ogg_glal.c \
-#    ../../source/glal/gyro_audio_glal.c \
-#    ../../source/common/gyro_wav.c \
-#    ../../source/common/gyro_texture.c \
-#    ../../source/common/gyro_system.c \
-#    ../../source/common/gyro_shader.c \
-#    ../../source/common/gyro_matrix_stack.c \
-#    ../../source/common/gyro_asset_bank.c \
-#    ../../source/glal/gyro_lighting_glal.c \
 	../../source/qt/gyro_file_qt.cpp \
     ../../source/common/turfs_common.c \
     ../../source/common/turfs_strings.c \
@@ -151,5 +129,3 @@ SOURCES += \
     ../../source/qt/gyro_input_qt.cpp \
     ../../source/qt/gyro_timer_qt.cpp \
 	../../source/qt/gyro_video_qt.cpp
-
-
