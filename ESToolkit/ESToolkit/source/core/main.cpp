@@ -144,7 +144,7 @@ static GYAppCbRet Init(int argc, char **argv) {
     a.setApplicationVersion(QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" ")+QString(ESTOOLKIT_VERSION_NAME));
     a.setWindowIcon(QIcon(":/estk/images/estk.ico"));
 
-    _tkCrashReport(args);
+    //_tkCrashReport(args);
 #if 0
     for(unsigned i = 0; i < argc; ++i) {
         if(strcmp(argv[i], ESTOOLKIT_CRASH_CMD_LINE_ARG) == 0) {
