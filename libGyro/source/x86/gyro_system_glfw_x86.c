@@ -330,8 +330,8 @@ static LONG WINAPI windows_exception_handler(EXCEPTION_POINTERS * ExceptionInfo)
     case EXCEPTION_ILLEGAL_INSTRUCTION:
       _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_ILLEGAL_INSTRUCTION", stderr);
       break;
-    case EXCEPTION_IN_PAGE_DBG_ERROR:
-      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_IN_PAGE_DBG_ERROR", stderr);
+    case EXCEPTION_IN_PAGE_ERROR:
+      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_IN_PAGE_ERROR", stderr);
       break;
     case EXCEPTION_INT_DIVIDE_BY_ZERO:
       _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_INT_DIVIDE_BY_ZERO", stderr);

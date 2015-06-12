@@ -181,7 +181,7 @@ int _tthread_timespec_get(struct timespec *ts, int base);
 #if defined(_TTHREAD_WIN32_)
 typedef struct {
   union {
-    DBG_WARNING_SECTION cs;      /* Critical section handle (used for non-timed mutexes) */
+    CRITICAL_SECTION cs;      /* Critical section handle (used for non-timed mutexes) */
     HANDLE mut;               /* Mutex handle (used for timed mutex) */
   } mHandle;                  /* Mutex handle */
   int mAlreadyLocked;         /* TRUE if the mutex is already locked */
@@ -249,7 +249,7 @@ int mtx_unlock(mtx_t *mtx);
 typedef struct {
   HANDLE mEvents[2];                  /* Signal and broadcast event HANDLEs. */
   unsigned int mWaitersCount;         /* Count of the number of waiters. */
-  DBG_WARNING_SECTION mWaitersCountLock; /* Serialize access to mWaitersCount. */
+  CRITICAL_SECTION mWaitersCountLock; /* Serialize access to mWaitersCount. */
 } cnd_t;
 #else
 typedef pthread_cond_t cnd_t;
@@ -448,7 +448,7 @@ int tss_set(tss_t key, void *val);
 #if defined(_TTHREAD_WIN32_)
   typedef struct {
     LONG volatile status;
-    DBG_WARNING_SECTION lock;
+    CRITICAL_SECTION lock;
   } once_flag;
   #define ONCE_FLAG_INIT {0,}
 #else
