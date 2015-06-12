@@ -15,7 +15,7 @@ class ESToolkit;
 namespace tktest {
 
 class ESTkTest: public QObject, public AssetManager {
-    friend int              main(int arg, char*argv[]);
+    friend int              main(const QStringList);
 protected:
     static ESToolkit*       _estk;
     static QList<QObject*>  _testQueue;
@@ -108,7 +108,7 @@ inline bool ESTkTest::currentProjectLevelAreaExist(void) {
 }
 
 
-int main(int argc, char*argv[]);
+int main(QStringList args);
 
 }
 

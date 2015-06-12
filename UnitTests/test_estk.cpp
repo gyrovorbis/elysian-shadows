@@ -53,7 +53,7 @@ QStack<QString> ESTkTest::_subTestStack;
 QMutex*         ESTkTest::_mutex            = nullptr;
 bool            ESTkTest::_initialized      = false;
 
-int main(int argc, char** argv)
+int main(QStringList args)
 {
     Debug::setLevel(Debug::DBG_OFF);
     ESTkTest::initialize();
@@ -68,7 +68,6 @@ int main(int argc, char** argv)
     QCommandLineOption testOption("project", "Set project working directory", "directory");
     parser.addOption(testOption);
 
-    QStringList args = QApplication::arguments();
     //parser.process(args);
 
     QString project;

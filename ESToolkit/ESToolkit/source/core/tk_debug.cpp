@@ -125,12 +125,11 @@ TkDebug::TkDebug(void) {
         severityMenu.insertCheckableAction("Error", [=](const bool checked) {
             Debug::setFilter(source, Debug::DBG_ERROR, checked);
         });
-        QAction* action = sourcesMenu.insertCheckableAction(name, [action](const bool checked) {
-            for(auto it : action->menu()->actions()) {
-                it->setChecked(checked);
-            }
-        });
-        action->setMenu(severityMenu.first());
+        sourcesMenu.insertCheckableAction(name, [](const bool /*checked*/) {
+            //for(auto it : action->menu()->actions()) {
+             //   it->setChecked(checked);
+            //}
+        })->setMenu(severityMenu.first());
     };
     addFilterSource("LibGyro",  Debug::LIBGYRO);
     addFilterSource("Engine",   Debug::ENGINE);
@@ -221,7 +220,7 @@ void TkDebug::pop(const unsigned count) {
     }
     _mutex->unlock();
 #ifdef ESTK_UNIT_TESTS
-    tktest::ESTkTest::popSubTest(success);
+    tktest::ESTkTest::popSubTest(true);
 #endif
 }
 

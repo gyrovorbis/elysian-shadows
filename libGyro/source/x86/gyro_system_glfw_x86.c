@@ -196,6 +196,7 @@ static const char* gyDebugSigCodeToStr(int sig, int sig_code) {
 }
 
 static void gyDebugSigHandler(int sig, siginfo_t* info, void* unused) {
+    char backTrace[3000];
     (void) sig;
     (void) unused;
     int i, num;

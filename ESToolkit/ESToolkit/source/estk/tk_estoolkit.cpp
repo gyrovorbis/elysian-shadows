@@ -291,7 +291,12 @@ void ESToolkit::_libGyroInitialize(void) {
                         _gitlabDialog->show();
                   }),
                     [](void* ptr) {
-                                 exit(1);
+                        QStringList cmdLineArgs = QApplication::arguments();
+                        cmdLineArgs.push_back(ESTOOLKIT_CRASH_CMD_LINE_ARG);
+                        cmdLineArgs.push_back("--backtrace");
+                        cmdLineArgs.push_back((const char*)ptr);
+                        QProcess::startDetached(QCoreApplication::applicationFilePath(), cmdLineArgs);
+                        exit(1);
                         //(*static_cast<std::function<void()>*>(ptr))();
                   }
             };

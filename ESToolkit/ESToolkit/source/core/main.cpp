@@ -18,17 +18,82 @@
 #include "elysian_debug.hpp"
 #include <gyro_file_api.h>
 #include <QDir>
+#include <QMessageBox>
+#include <QSpacerItem>
+#include <QGridLayout>
+#include <QDebug>
 
 #ifdef ESTK_UNIT_TESTS
 #include <test_estk.h>
 #endif
 
 
+
+static int _tkCrashReport(QStringList& args) {
+    auto findAndRemove = [&args](const QString key) {
+        for(unsigned i = 0; i < args.size(); ++i) {
+            if(args[i] == key) {
+                args.removeAt(i);
+                return (args.size() > i)? args.takeAt(i) : QString();
+            }
+        }
+    };
+
+    QString backtrace("Stack backtrace was not captured.");
+    QDir::setCurrent(QDir::homePath());
+    QFile file("ESTk/gamma_debug.txt");
+    if(!file.open(QFile::ReadOnly | QFile::Text)) {
+        qWarning() << "SHITS REESTED";
+    }
+
+    QTextStream in(&file);
+    QString logText = in.readAll();
+    file.close();
+
+    QStringList list = logText.split("**** BEGIN C/++ BACKTRACE ****");
+    if(list.size() != 2) {
+        qDebug() << "WHAT HTE FUCK";
+    } else {
+    qDebug() << list[0];
+
+    backtrace = list[1];
+}
+
+    backtrace = logText;
+
+
+/*
+    QString project     =  findAndRemove("--project");
+    QString level       = findAndRemove("--level");
+    QString
+*/
+    QMessageBox msgBox;
+    msgBox.setText("Shit has Reested!");
+    msgBox.setInformativeText("ESToolkit just shit its pants and was forced to close after encountering a fatal exception.");
+    //1) Submit Bug Report
+    //2) Continue
+    //3) Abort
+
+    auto* bugReport = msgBox.addButton("Submit Bug Report", QMessageBox::HelpRole);
+    auto* resume    = msgBox.addButton("Resume", QMessageBox::AcceptRole);
+    msgBox.setStandardButtons(QMessageBox::Abort);
+    msgBox.setDefaultButton(bugReport);
+    msgBox.setIcon(QMessageBox::Critical);
+
+    msgBox.setDetailedText(backtrace);
+
+    QSpacerItem* horizontalSpacer = new QSpacerItem(500, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    QGridLayout* layout = (QGridLayout*)msgBox.layout();
+    layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
+    msgBox.exec();
+
+
+}
+
+
 static GYAppCbRet Init(int argc, char **argv) {
     QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings); //WITHOUT THIS OSX SHITS ITSELF WHEN FUCKING WITH WIDGET SIZING/LOCATIONS
     QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
-
-
 //#else
     //QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
 
@@ -70,6 +135,7 @@ static GYAppCbRet Init(int argc, char **argv) {
 
 
     QApplication a(argc, argv);
+    auto args = QApplication::arguments();
 
     qDebug() << "MAIN" << QOpenGLContext::currentContext();
     a.setOrganizationName("Elysian Shadows");
@@ -77,6 +143,16 @@ static GYAppCbRet Init(int argc, char **argv) {
     a.setApplicationName("ESTk");
     a.setApplicationVersion(QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" ")+QString(ESTOOLKIT_VERSION_NAME));
     a.setWindowIcon(QIcon(":/estk/images/estk.ico"));
+
+    _tkCrashReport(args);
+#if 0
+    for(unsigned i = 0; i < argc; ++i) {
+        if(strcmp(argv[i], ESTOOLKIT_CRASH_CMD_LINE_ARG) == 0) {
+
+            --argc;
+        }
+    }
+#endif
 
     QPixmap splashScreen(":/splash/images/splashScreen.png");
     QPainter painter(&splashScreen);
@@ -92,7 +168,7 @@ static GYAppCbRet Init(int argc, char **argv) {
 
 #ifdef ESTK_UNIT_TESTS
     if(argc != 1) {
-        return (GYAppCbRet)tktest::main(argc, argv);
+        return (GYAppCbRet)tktest::main(args);
     }
 #endif
     GYFileInitParams fileParams;
@@ -116,10 +192,7 @@ static GYAppCbRet Init(int argc, char **argv) {
     QTimer::singleShot(0, &w, SLOT(showMaximized()));
 #endif
 
-    a.exec();
-
-
-    return GY_RET_CONTINUE;
+    return (GYAppCbRet)a.exec();
 }
 
 

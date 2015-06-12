@@ -123,7 +123,7 @@ TkLevel::TkLevel(Project *const project):
     _project(project),
     _active(false),
     _open(false),
-    _validSheets(false)
+    _validSheets(true)
 {
     strcpy(dir, "untitled");
     strcpy(string, "untitled");
@@ -368,6 +368,7 @@ bool TkLevel::open(void) {
 											_tileSheet))
 	{
         Debug::Log(Debug::DBG_ERROR, "Failed to divide tilesheet!");
+        _validSheets = false;
         success = false;
     }
 

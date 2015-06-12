@@ -10,6 +10,7 @@
 #define ESTOOLKIT_VERSION				GYRO_LIB_VERSION
 #define ESTOOLKIT_VERSION_NAME          "\"Ambience and Vanity\""
 #define ESTOOLKIT_OUTPUT_DIR            "ESTk"
+#define ESTOOLKIT_CRASH_CMD_LINE_ARG    "--crash"
 
 ELYSIAN_ASSET_TYPEDEF(Debug)
 
