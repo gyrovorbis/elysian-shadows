@@ -30,11 +30,9 @@ extern "C" {
 #	ifdef __APPLE__
 #		include <OpenAL/al.h>
 #		include <OpenAL/alc.h>
-#define __gl_h_
+#       define __gl_h_
 
 #	else
-#      // define QOPENGL_H //THIS WILL REEST GLEW OTHERWISE!!!
-#       include <windows.h>
 #       define AL_LIBTYPE_STATIC
 #		include <AL/al.h>
 #       include <AL/alc.h>
