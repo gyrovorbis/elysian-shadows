@@ -68,7 +68,7 @@ inline void ESTkTest::pushSubTest(const QString name) {
 }
 
 inline void ESTkTest::popSubTest(const bool success) {
-    if(!_initialized) return;
+    if(!_initialized || _subTestStack.size() <= 0) return;
     _mutex->lock();
     QString out;
     out +=  QString("*****");

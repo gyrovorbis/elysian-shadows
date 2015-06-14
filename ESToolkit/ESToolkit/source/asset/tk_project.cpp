@@ -101,7 +101,7 @@ TkLevel *Project::getFirstLevel() const {
     return (_level.size() > 0)? _level.first() : nullptr;
 }
 
-TkLevel *Project::getLevel(const QString path)  {
+TkLevel *Project::getLevel(const QString path) const  {
 	for(int i = 0; i < _level.size(); ++i) {
         if(_level[i]->getNodePath() == path) return _level[i];
     }
@@ -110,7 +110,7 @@ TkLevel *Project::getLevel(const QString path)  {
 
 unsigned int Project::getLevelAmount(void) const { return _level.size(); }
 
-TkLevel *Project::getLevelByIndex(const unsigned int index) {
+TkLevel *Project::getLevelByIndex(const unsigned int index) const {
     return (index < (unsigned)_level.size())? _level[index] : nullptr;
 }
 
@@ -450,4 +450,12 @@ void Project::onMapChanged(Area * const area, const QVector<MapChange>& changes)
 
 void Project::onEntityParented(Entity * const child, Entity * const parent) {
     Q_EMIT entityParented(child, parent);
+}
+
+TreeNode* Project::getTreeNode(const QString path) const {
+    if(_subDirs.find(path) != _subDirs.end()) {
+        return _subDirs[path];
+    } else if(getLevel(path)) {
+        return getLevel(path);
+    }
 }

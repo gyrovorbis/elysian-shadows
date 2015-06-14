@@ -425,6 +425,13 @@ Area *TkLevel::getArea(const QString path) {
     return nullptr;
 }
 
+Area *TkLevel::getAreaByName(const QString path) {
+    for(int i = 0; i < _area.size(); ++i) {
+        if(_area[i]->getNodeName() == path) return _area[i];
+    }
+    return nullptr;
+}
+
 unsigned int TkLevel::getAreaAmount(void) const { return _area.size(); }
 
 Area *TkLevel::getAreaByIndex(const unsigned int index) {
@@ -966,7 +973,6 @@ bool TkLevel::gatherTileSpecularMaps(void) {
 void TkLevel::onEntityParented(Entity * const child, Entity * const parent) {
     Q_EMIT entityParented(child, parent);
 }
-
 
 
 

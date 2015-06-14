@@ -56,9 +56,10 @@ public:
     bool            saveLevel(const QString path);
     bool            removeLevel(const QString path, const bool deleteFolder=true);
     unsigned int    getLevelAmount() const;
-    TkLevel*        getLevel(const QString path);
-    TkLevel*        getLevelByIndex(const unsigned int index);
+    TkLevel*        getLevel(const QString path) const;
+    TkLevel*        getLevelByIndex(const unsigned int index) const;
     TkLevel*        getFirstLevel(void) const;
+    TreeNode*       getTreeNode(const QString path) const;
 
     bool            load(const QString loc);
     bool            save(void);

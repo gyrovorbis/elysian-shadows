@@ -96,6 +96,7 @@ int main(QStringList args)
     ESTkTest::enqueueTest(new tktest::InitializationTest(project));
     ESTkTest::enqueueTest(new tktest::ESToolkitTest);
     ESTkTest::enqueueTest(new tktest::TestSmokeProject());
+    ESTkTest::enqueueTest(new tktest::LevelTest);
 
    int failures = 0;
    int testCases = 0;
