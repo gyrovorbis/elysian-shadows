@@ -400,7 +400,7 @@ void CollisionSystem::detectCollisions(void) {
 
 		if(!_broadPhase) {
 			for(i = 0; i < _curArea->collidables.size(); ++i) {
-				detectEntityCollision(i);
+                detectEntityCollision(i);
 			}
 		} else {
 			_sortSweepPool.sortAndSweep();
@@ -413,14 +413,16 @@ void CollisionSystem::detectCollisions(void) {
 		getTimerSys()->popTaskMonitor(&_entityDetectMonitor);
 
     }
-/*
+
     //Check GUI-layer collidables
     for(i = 0; i < _curArea->collidables.size(); ++i) {
         if(!_curArea->collidables[i]->_active || _curArea->collidables[i]->_worldSpace) continue;
-        detectEntityCollision(i);
+        for(unsigned j = i+1; j < _curArea->collidables.size(); ++j) {
+            detectCollidableCollidableCollision(_curArea->collidables[i], _curArea->collidables[j]);
+        }
     }
     //_sortSweepPool.sortAndSweep();
-*/
+
 
 	getTimerSys()->popTaskMonitor(&_detectionMonitor);
 }

@@ -66,6 +66,7 @@ TkEntity::TkEntity(const bool selectable):
         _selectionCollider->setAttrib(_selColliderAttrib);
         _selectionCollider->setWorldSpace(false);
         _selectionCollider->setResolvePenetration(false);
+
         _selectionRenderable = new Renderable(*this);
         _selSpriteAttrib = new elysian::SpriteAttrib;
         _selectionRenderable->setSpriteAttrib(_selSpriteAttrib);
