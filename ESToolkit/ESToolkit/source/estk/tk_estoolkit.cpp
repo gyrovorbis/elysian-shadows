@@ -291,11 +291,25 @@ void ESToolkit::_libGyroInitialize(void) {
                         _gitlabDialog->show();
                   }),
                     [](void* ptr) {
-                        QStringList cmdLineArgs = QApplication::arguments();
-                        cmdLineArgs.push_back(ESTOOLKIT_CRASH_CMD_LINE_ARG);
-                        cmdLineArgs.push_back("--backtrace");
-                        cmdLineArgs.push_back((const char*)ptr);
-                        QProcess::startDetached(QCoreApplication::applicationFilePath(), cmdLineArgs);
+
+                        if(_instance->isVisible()) { //Don't try to relaunch and shit if running in command-line mode!
+                            QStringList cmdLineArgs = QApplication::arguments();
+                            cmdLineArgs.push_back(ESTOOLKIT_CRASH_CMD_LINE_ARG);
+                            if(_instance->_assets.getCurrentProject()) {
+                                cmdLineArgs.push_back("--project");
+                                cmdLineArgs.push_back(_instance->_assets.getCurrentProject()->getNodePath());
+                            }
+                             if(_instance->_assets.getCurrentLevel()) {
+                                 cmdLineArgs.push_back("--level");
+                                 cmdLineArgs.push_back(_instance->_assets.getCurrentLevel()->getNodePath());
+                             }
+                             if(_instance->_assets.getCurrentProject()) {
+                                 cmdLineArgs.push_back("--area");
+                                 cmdLineArgs.push_back(_instance->_assets.getCurrentArea()->getNodePath());
+                             }
+
+                            QProcess::startDetached(QCoreApplication::applicationFilePath(), cmdLineArgs);
+                        }
                         exit(1);
                         //(*static_cast<std::function<void()>*>(ptr))();
                   }
@@ -2244,4 +2258,9 @@ void ESToolkit::on_actionCommandsError_toggled(bool arg1)
 void ESToolkit::on_actionReset_Stack_Depth_triggered()
 {
     Debug::pop(Debug::getStackDepth());
+}
+
+void ESToolkit::showGitlabBugReportTab(void) const {
+    _gitlabDialog->setTab(GitlabDialog::TAB_CREATE_REPORT);
+    _gitlabDialog->show();
 }

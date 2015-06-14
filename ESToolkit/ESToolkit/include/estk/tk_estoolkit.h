@@ -62,6 +62,8 @@ public:
     static void     inspectTable(OOLUA::Lua_table_ref table);
     bool            verifySingleArea(const QString path);
     bool            openProjectDir(const QString dir);
+    Assets&         getAssets(void);
+    void            showGitlabBugReportTab(void) const;
 protected:
     virtual void    changeEvent(QEvent *e) override;
     virtual void    closeEvent(QCloseEvent *event) override;
@@ -278,6 +280,11 @@ private Q_SLOTS:
     void on_actionCommandsError_toggled(bool arg1);
     void on_actionReset_Stack_Depth_triggered();
 };
+
+
+inline Assets& ESToolkit::getAssets(void) {
+    return _assets;
+}
 
 
 #endif // ESTOOLKIT_H

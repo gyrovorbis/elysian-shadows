@@ -22,99 +22,69 @@
 #include <QSpacerItem>
 #include <QGridLayout>
 #include <QDebug>
+#include <QPushButton>
 
 #ifdef ESTK_UNIT_TESTS
 #include <test_estk.h>
 #endif
 
+enum TK_CRASH_STATE {
+    TK_CRASH_BUG_REPORT,
+    TK_CRASH_RESUME,
+    TK_CRASH_ABORT
+};
 
 
-static int _tkCrashReport(QStringList& args) {
-    auto findAndRemove = [&args](const QString key) {
-        for(unsigned i = 0; i < args.size(); ++i) {
-            if(args[i] == key) {
-                args.removeAt(i);
-                return (args.size() > i)? args.takeAt(i) : QString();
-            }
-        }
-    };
-
-    QString backtrace("Stack backtrace was not captured.");
+static TK_CRASH_STATE _tkCrashReport(QStringList& /*args*/) {
     QDir::setCurrent(QDir::homePath());
     QFile file("ESTk/gamma_debug.txt");
+    QString logText = "Debug log file could not be found!";
+
     if(!file.open(QFile::ReadOnly | QFile::Text)) {
-        qWarning() << "SHITS REESTED";
+        qWarning() << logText;
+    } else {
+        QTextStream in(&file);
+        logText = in.readAll();
+        file.close();
     }
 
-    QTextStream in(&file);
-    QString logText = in.readAll();
-    file.close();
-
-    QStringList list = logText.split("**** BEGIN C/++ BACKTRACE ****");
-    if(list.size() != 2) {
-        qDebug() << "WHAT HTE FUCK";
-    } else {
-    qDebug() << list[0];
-
-    backtrace = list[1];
-}
-
-    backtrace = logText;
-
-
-/*
-    QString project     =  findAndRemove("--project");
-    QString level       = findAndRemove("--level");
-    QString
-*/
     QMessageBox msgBox;
     msgBox.setText("Shit has Reested!");
     msgBox.setInformativeText("ESToolkit just shit its pants and was forced to close after encountering a fatal exception.");
-    //1) Submit Bug Report
-    //2) Continue
-    //3) Abort
 
     auto* bugReport = msgBox.addButton("Submit Bug Report", QMessageBox::HelpRole);
-    auto* resume    = msgBox.addButton("Resume", QMessageBox::AcceptRole);
     msgBox.setStandardButtons(QMessageBox::Abort);
+    auto* resume    = msgBox.addButton("Resume", QMessageBox::AcceptRole);
     msgBox.setDefaultButton(bugReport);
     msgBox.setIcon(QMessageBox::Critical);
 
-    msgBox.setDetailedText(backtrace);
+    msgBox.setDetailedText(logText);
 
     QSpacerItem* horizontalSpacer = new QSpacerItem(500, 0, QSizePolicy::Minimum, QSizePolicy::Expanding);
     QGridLayout* layout = (QGridLayout*)msgBox.layout();
     layout->addItem(horizontalSpacer, layout->rowCount(), 0, 1, layout->columnCount());
+
     msgBox.exec();
 
+    TK_CRASH_STATE crashState;
+    auto* clicked = msgBox.clickedButton();
 
+    if(clicked == resume) {
+        crashState = TK_CRASH_RESUME;
+    } else if(clicked == bugReport) {
+        crashState = TK_CRASH_BUG_REPORT;
+    } else {
+        crashState = TK_CRASH_ABORT;
+    }
+
+    return crashState;
 }
 
 
 static GYAppCbRet Init(int argc, char **argv) {
     QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings); //WITHOUT THIS OSX SHITS ITSELF WHEN FUCKING WITH WIDGET SIZING/LOCATIONS
     QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
-//#else
-    //QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
-
-//#endif
-   // QApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
-    //QApplication::setAttribute(Qt::AA_SynthesizeMouseForUnhandledTouchEvents, false);
-    //QApplication::setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, false);
-    //QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps, false);
-    //QApplication::setAttribute(Qt::AA_Use96Dpi, true);
     QSurfaceFormat fmt;
-   // fmt.setSwapBehavior(QSurfaceFormat::SwapBehavior::DoubleBuffer);
-   // fmt.setSamples(0);
-    //fmt.setStereo(false);
-   // fmt.setAlphaBufferSize(0);
-   // fmt.setStencilBufferSize(0);
-  /*  fmt.setSamples(1);
-    fmt.setRedBufferSize(8); Uhh... Qt does a better job than I can... fuck.
-    fmt.setBlueBufferSize(8);
-    fmt.setGreenBufferSize(8);*/
-    //fmt.setDepthBufferSize(32);
-    //fmt.setAlphaBufferSize(8);
     fmt.setVersion( 3, 3 );
     fmt.setProfile( QSurfaceFormat::CoreProfile ); // Requires >=Qt-4.8.0
     fmt.setOption(QSurfaceFormat::DebugContext);
@@ -122,37 +92,22 @@ static GYAppCbRet Init(int argc, char **argv) {
     QSurfaceFormat::setDefaultFormat(fmt);
 
     QGLFormat glfmt;
-            glfmt.setDepthBufferSize(32);
-            //fmt.setAlphaBufferSize(8);
-            glfmt.setVersion( 3, 3 );
-            glfmt.setProfile( QGLFormat::CoreProfile ); // Requires >=Qt-4.8.0
-            // Set the default GL format to OpenGL 3.2 Core
-            QGLFormat::setDefaultFormat(glfmt);
-
-
-    QRectF rect;
-    rect.setSize(QSizeF(2.0f, 5.0f));
+    glfmt.setDepthBufferSize(32);
+    //fmt.setAlphaBufferSize(8);
+    glfmt.setVersion( 3, 3 );
+    glfmt.setProfile( QGLFormat::CoreProfile ); // Requires >=Qt-4.8.0
+    // Set the default GL format to OpenGL 3.2 Core
+    QGLFormat::setDefaultFormat(glfmt);
 
 
     QApplication a(argc, argv);
     auto args = QApplication::arguments();
 
-    qDebug() << "MAIN" << QOpenGLContext::currentContext();
     a.setOrganizationName("Elysian Shadows");
     a.setOrganizationDomain("elysianshadows.com");
     a.setApplicationName("ESTk");
     a.setApplicationVersion(QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" ")+QString(ESTOOLKIT_VERSION_NAME));
     a.setWindowIcon(QIcon(":/estk/images/estk.ico"));
-
-    //_tkCrashReport(args);
-#if 0
-    for(unsigned i = 0; i < argc; ++i) {
-        if(strcmp(argv[i], ESTOOLKIT_CRASH_CMD_LINE_ARG) == 0) {
-
-            --argc;
-        }
-    }
-#endif
 
     QPixmap splashScreen(":/splash/images/splashScreen.png");
     QPainter painter(&splashScreen);
@@ -165,9 +120,26 @@ static GYAppCbRet Init(int argc, char **argv) {
 
     QSplashScreen splash(splashScreen, Qt::WindowStaysOnTopHint);
 
+    QString project;
+    QString level;
+    QString area;
+
+    bool relaunching = false;
+    for(auto it = args.begin(); it != args.end(); ++it) {
+        if(*it == ESTOOLKIT_CRASH_CMD_LINE_ARG) {
+            relaunching = true;
+        } else if(*it == "--project") {
+            project = *(it+1);
+        } else if(*it == "--level") {
+            level = *(it+1);
+        } else if(*it == "--area") {
+            area = *(it+1);
+        }
+    }
+
 
 #ifdef ESTK_UNIT_TESTS
-    if(argc != 1) {
+    if(argc != 1 && !relaunching) {
         return (GYAppCbRet)tktest::main(args);
     }
 #endif
@@ -182,15 +154,33 @@ static GYAppCbRet Init(int argc, char **argv) {
     ESToolkit w;
     //QApplication::setWindowIcon(QIcon(":/estk/images/estk.ico"));
 
-// We don't want to wait for the splash screen whilst debugging. --Sara.
+    if(!relaunching) {
 #ifdef QT_NO_DEBUG
-    splash.show();
-    QTimer::singleShot(2500, &splash, SLOT(close()));
-    QTimer::singleShot(2500, &w, SLOT(showMaximized()));
+        splash.show();
+        QTimer::singleShot(2500, &splash, SLOT(close()));
+        QTimer::singleShot(2500, &w, SLOT(showMaximized()));
 #else
-   //QTimer::singleShot(1000, &splash, SLOT(close()));
-    QTimer::singleShot(0, &w, SLOT(showMaximized()));
+        QTimer::singleShot(0, &w, SLOT(showMaximized()));
 #endif
+    } else {
+
+        //No splash screen if we're recovering from a crash
+        switch(_tkCrashReport(args)) {
+        case TK_CRASH_ABORT:
+            return (GYAppCbRet)0;
+        case TK_CRASH_RESUME:
+            w.showMaximized();
+            break;
+        case TK_CRASH_BUG_REPORT:
+            w.showMaximized();
+            w.showGitlabBugReportTab();
+        }
+
+        //Recover previous state
+        if(!project.isNull())       w.openProjectDir(project);
+        if(!level.isNull())         w.getAssets().setCurrentLevel(level);
+        if(!area.isNull())          w.getAssets().setCurrentArea(area);
+    }
 
     return (GYAppCbRet)a.exec();
 }

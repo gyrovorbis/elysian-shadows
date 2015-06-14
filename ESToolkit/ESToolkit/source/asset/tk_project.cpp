@@ -155,6 +155,7 @@ bool Project::load(const QString loc) {
 
     //Set Project name equal to project directory name
     setName(dir.dirName());
+    setNodePath(dir.absolutePath());
     _location = loc;
 
     if(!dir.cd("level")) {
@@ -162,8 +163,6 @@ bool Project::load(const QString loc) {
         QDir::setCurrent(prevWorkingDir);
         return false;
     }
-
-    setNodePath(dir.absolutePath());
 
     std::function<void(const QString)> scanDirectory = [&](const QString path) {
         QDir dir(path);

@@ -67,8 +67,3 @@ HEADERS += \
     ../../include/spine/SlotData.h \
     ../../include/spine/spine.h \
     ../../src/spine/Json.h
-
-
-
-include(deployment.pri)
-qtcAddDeployment()
