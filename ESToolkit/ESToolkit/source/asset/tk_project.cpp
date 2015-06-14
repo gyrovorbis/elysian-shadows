@@ -205,7 +205,7 @@ bool Project::load(const QString loc) {
         }
     };
 
-    scanDirectory(getNodePath()); //begin recursive scan
+    scanDirectory(getNodePath()+QString("/level")); //begin recursive scan
 
     QDir::setCurrent(prevWorkingDir);
 	return true;//success;
