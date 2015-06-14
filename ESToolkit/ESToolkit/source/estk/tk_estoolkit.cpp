@@ -1699,6 +1699,7 @@ void ESToolkit::keyPressEvent(QKeyEvent *event) {
 }
 
 void ESToolkit::on_actionScreenshot_triggered(void) {
+        DbgEvent event("Dumping screenshot.");
 #if 0
     //Area::editorScene->setSceneRect(Area::editorScene->itemsBoundingRect());                          // Re-shrink the scene to it's bounding contents
     _ui->mapView->scale(0.1f, 0.1f);
@@ -1718,13 +1719,34 @@ void ESToolkit::on_actionScreenshot_triggered(void) {
 
     _ui->mapView->scale(10.0f, 10.0f);
 #else
-    QDir dir("");
-    if(!dir.exists("screenshots")) dir.mkdir("screenshots");
-    QString fileBase("screenshots/estkScreenshot");
+
+    QDir prevWorking(QDir::current());
+
+    QDir dir(_outputDir);
+    if(!dir.exists(ESTOOLKIT_SCREENS_DIR) ) {
+        if(!dir.mkdir(ESTOOLKIT_SCREENS_DIR)) {
+            errprintf("Could not create directory [%s]", Q_CSTR(dir.absoluteFilePath(ESTOOLKIT_SCREENS_DIR)));
+            return;
+        }
+    }
+
+    dir.cd(ESTOOLKIT_SCREENS_DIR);
+    QDir::setCurrent(dir.absolutePath());
+
+    QString fileBase("estkScreenshot");
     unsigned num = 1;
 
     while(QFile::exists(fileBase+QString::number(num)+QString(".png"))) ++num;
-    //_engineGLView->grabFramebuffer().save(fileBase+QString::number(num)+QString(".png"));
+    QString filePath = fileBase+QString::number(num)+QString(".png");
+
+    if(_engineGLView->grabFrameBuffer().save(filePath)) {
+        dbgprintf("Screenshot saved [%s].", Q_CSTR(dir.absoluteFilePath(filePath)));
+    } else {
+        errprintf("Could not save screenshot [%s].", Q_CSTR(dir.absoluteFilePath(filePath)));
+    }
+
+    QDir::setCurrent(prevWorking.absolutePath());
+
 #endif
 }
 

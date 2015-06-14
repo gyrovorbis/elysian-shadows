@@ -232,6 +232,9 @@ TileSelection<T>::TileSelection(const TileSelection &rval) {
 
     for(unsigned i = 0; i < _height; ++i) {
         //memcpy(_entry[i], rval._entry[i], sizeof(_entry[0][0])*_width);
+        /*  CAN'T FUCKING USE MEMCPY() HERE, SINCE HALF OF QT'S DATATYPES
+         *  HAVE OVERLOADED ASSIGNMENT OPERATORS AND COPY CONSTRUCTORS!!!!11111
+         */
         for(unsigned j = 0; j < _width; ++j) _entry[i][j] = rval._entry[i][j];
         memcpy(_inSelection[i], rval._inSelection[i], sizeof(_inSelection[0][0])*_width);
     }

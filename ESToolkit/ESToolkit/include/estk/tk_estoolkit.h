@@ -4,12 +4,14 @@
 #include <gyro_system_api.h>
 #include <QMainWindow>
 #include <QUndoGroup>
+#include <QDir>
 #include "tk_assets.h"
 #include "elysian_lua_manager.hpp"
 
 #define ESTOOLKIT_VERSION				GYRO_LIB_VERSION
 #define ESTOOLKIT_VERSION_NAME          "\"Ambience and Vanity\""
 #define ESTOOLKIT_OUTPUT_DIR            "ESTk"
+#define ESTOOLKIT_SCREENS_DIR           "screenshots"
 #define ESTOOLKIT_CRASH_CMD_LINE_ARG    "--crash"
 
 ELYSIAN_ASSET_TYPEDEF(Debug)
@@ -64,6 +66,9 @@ public:
     bool            openProjectDir(const QString dir);
     Assets&         getAssets(void);
     void            showGitlabBugReportTab(void) const;
+    void            setOutputDir(const QDir dir);
+    QDir            getOutputDir(void) const;
+
 protected:
     virtual void    changeEvent(QEvent *e) override;
     virtual void    closeEvent(QCloseEvent *event) override;
@@ -92,6 +97,7 @@ private:
     EngineGLSceneWidget*    _engineGLView   = nullptr;
 
     elysian::Debug *        _debug;
+    QDir                    _outputDir;
 
     Ui::ESToolkit*          _ui;
     QTabBar*                _areaTabBar;
@@ -286,6 +292,9 @@ private Q_SLOTS:
 inline Assets& ESToolkit::getAssets(void) {
     return _assets;
 }
+
+inline void ESToolkit::setOutputDir(const QDir dir) { _outputDir = dir; }
+inline QDir ESToolkit::getOutputDir(void) const { return _outputDir; }
 
 
 #endif // ESTOOLKIT_H

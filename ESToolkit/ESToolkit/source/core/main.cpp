@@ -149,9 +149,12 @@ static GYAppCbRet Init(int argc, char **argv) {
     QDir outputDir(QDir::current());
     if(!outputDir.cd(ESTOOLKIT_OUTPUT_DIR) && !outputDir.mkdir(ESTOOLKIT_OUTPUT_DIR)) {
         qCritical() << QString("Could not set ESTk working directory: [%s]") << QDir().current().filePath(ESTOOLKIT_OUTPUT_DIR);
-    } else QDir::setCurrent(QDir::current().filePath(ESTOOLKIT_OUTPUT_DIR));
+    } else {
+        QDir::setCurrent(QDir::current().filePath(ESTOOLKIT_OUTPUT_DIR));
+    }
 
     ESToolkit w;
+    w.setOutputDir(outputDir);
     //QApplication::setWindowIcon(QIcon(":/estk/images/estk.ico"));
 
     if(!relaunching) {
