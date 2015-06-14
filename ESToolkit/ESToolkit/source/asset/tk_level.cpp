@@ -103,6 +103,7 @@ bool TkLevel::initializeScene(const SourceView *const view, bool horiz) {
     }
 
     _sheetViewScene->addItem(_sheetViewTileParent);
+
     initialized = true;
     return true;
 }
@@ -112,6 +113,10 @@ void TkLevel::addBgRectItem(void) {
 }
 
 void TkLevel::updateScenes(void) {
+    if(_bgRectItem->isActive()) {
+        _sheetViewScene->removeItem(_bgRectItem);
+    }
+    _sheetViewScene->addItem(_bgRectItem);
     _sheetViewScene->update();
 }
 
@@ -302,7 +307,8 @@ bool TkLevel::activateByArea(Area *const area) {
     _active = true;
     Q_EMIT activating(this, area);
 
-    _sheetViewScene->addItem(_bgRectItem);
+    updateScenes();
+    //_sheetViewScene->addItem(_bgRectItem);
     /* If there is anything that is not persistent to be added to the
        object/tilesheet scenes, do it now.
     */
@@ -319,7 +325,7 @@ bool TkLevel::deactivate(void) {
     /* If there is anything that is not persistent to be removed from the
        object/tilesheet scenes, do it now.
     */
-    _sheetViewScene->removeItem(_bgRectItem);
+    //_sheetViewScene->removeItem(_bgRectItem);
     _active = false;
 
     return true;
@@ -357,6 +363,7 @@ bool TkLevel::open(void) {
     //Debug::Log(Debug::DBG_VERBOSE, "Level[%s].Open()\n", getName().toStdString().c_str());
     bool success = true;
     if(_open) return false;
+    _open = true;
     DbgEvent event("Opening Level [%s].", Q_CSTR(_location));
 
     QDir dir(_location);
@@ -377,8 +384,6 @@ bool TkLevel::open(void) {
     }
 
     setValid(success);
-
-    _open = true;
     return success;
 }
 
@@ -658,11 +663,9 @@ bool TkLevel::saveAs(const QString dir) {
 //VisualTile *Level::getObjectSheet(const unsigned int index) const { return _objectSheet[index]; }
 
 bool TkLevel::reloadSheets(void) {
-    Debug::Log(Debug::DBG_VERBOSE, "Reloading Sheets");
-    Debug::push();
+    DbgEvent event("Reloading tilesheets [%s].", Q_CSTR(getNodePath()));
     close();
     open();
-    Debug::pop();
     return true;
 }
 
