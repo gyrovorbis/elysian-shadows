@@ -204,7 +204,11 @@ public:
          const unsigned freeIndexSize = ELYSIAN_MEM_POOL_DEFAULT_FREE_INDEX_CAPACITY):
             _maxSize(maxCapacity), _freeIndicesSize(freeIndexSize)
     {
-        _entries        = new T[maxCapacity];
+        //_entries        = new T[maxCapacity];
+        _entries        = (T*)malloc(sizeof(T)*maxCapacity);
+        for(unsigned i = 0; i < maxCapacity; ++i) {
+            new (&_entries[i]) T();
+        }
         _used           = (bool*)malloc(sizeof(bool) * (maxCapacity+1));
         _freeIndices    = (int*)malloc(sizeof(int) * freeIndexSize);
 
@@ -216,9 +220,12 @@ public:
     }
 
     ~Pool(void) {
+        for(unsigned i = 0 ; i < _maxSize; ++i) {
+            _entries[i].~T();
+        }
         free(_freeIndices);
         free(_used);
-        delete[] _entries;
+        free(_entries);
     }
 
     T& operator[] (const int index) { return _entries[index]; }
@@ -342,12 +349,17 @@ public:
 
 
     void resize(const unsigned size) {
-        T *old_entries = _entries;
-        _entries = new T[size];
-        memcpy(reinterpret_cast<void*>(_entries), reinterpret_cast<const void*>(old_entries), sizeof(T) * _maxSize);
-        delete[] old_entries;
-        _maxSize = size;
+        //T *old_entries = _entries;
+        //_entries = (T*)malloc(sizeof(T)*size);//new T[size];
+        //memcpy(reinterpret_cast<void*>(_entries), reinterpret_cast<const void*>(old_entries), sizeof(T) * _maxSize);
+        //free(old_entries);
+
+        _entries = (T*)realloc(_entries, sizeof(T)*size);
+        for(unsigned i = _maxSize; i < _maxSize; ++i) {
+            new (&_entries[i]) T();
+        }
         _used    = (bool*)realloc(_used, sizeof(bool) * (size+1));
+        _maxSize = size;
         clear();
     }
 
