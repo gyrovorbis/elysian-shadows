@@ -148,7 +148,7 @@ unsigned                    glalPrevVertexRenderCount   = 0;
 unsigned                    glalPrevUniformChangeCount  = 0;
 unsigned                    glalTextureChangeCount      = 0;
 unsigned                    glalPrevTextureChangeCount  = 0;
-GY_ALPHA_SEVERITY              glalAlphaLevel              = GY_ALPHA_NONE;
+GY_ALPHA_LEVEL              glalAlphaLevel              = GY_ALPHA_NONE;
 GY_BLEND_MODE               glalBlendMode               = GY_BLEND_ONE_MINUS_SRC_ALPHA;
 int                         glalDepthTest               = 0;
 int                         glalVertexArray             = 0;
@@ -165,7 +165,6 @@ GYColor4                    _curQuadListColor[12]       = { {0, 0, 0, 0}, { 0, 0
 static int         _vertexQueueSize            = 0;
 static int         _vertexQueueLastSize        = 0;
 static GLintptr         _vertexQueueLastOffset      = 0;
-GLuint                      _defaultVao                 = 0;
 GLuint                      _streamVao[2]               = { 0 };
 GLuint                      _streamVertexVbo[2]         = { 0 };
 
@@ -200,7 +199,7 @@ void gyVidVertexBatchFlush(void) {
 void gyVidVertexArrayBind(int id) {
     if(id != glalVertexArray) {
         gyVidVertexBatchFlush();
-        glBindVertexArray((id == -1)? (GLuint)_defaultVao : (GLuint)id);
+        glBindVertexArray(id);
         glalVertexArray = id;
     }
 }
@@ -219,18 +218,18 @@ int glalVidGlewInit(void) {
     if(!once) {
     //God fucking damnit, Windows....
     #ifdef _WIN32
-        _gyLog(GY_DEBUG_DBG_VERBOSE, "Initializing GLEW...");
+        _gyLog(GY_DEBUG_VERBOSE, "Initializing GLEW...");
         glewExperimental = GL_TRUE; //FUCKING GLEW CANT HANDLE GL CORE CONTEXTS WITHOUT THIS.
         GLenum err = glewInit();
         if (err != GLEW_OK) {
           /* Problem: glewInit failed, something is seriously wrong. */
-            _gyLog(GY_DEBUG_DBG_WARNING, "\tError: %s", glewGetErrorString(err));
+            _gyLog(GY_DEBUG_CRITICAL, "\tError: %s", glewGetErrorString(err));
         }
 
         if(GLEW_VERSION_3_2) {
-            _gyLog(GY_DEBUG_DBG_VERBOSE, "\tOpenGL 3.2 Extensions detected");
+            _gyLog(GY_DEBUG_VERBOSE, "\tOpenGL 3.2 Extensions detected");
         } else {
-            _gyLog(GY_DEBUG_DBG_WARNING, "\tOpenGL 3.2 Extensions NOT detected! Prepare for crash!");
+            _gyLog(GY_DEBUG_CRITICAL, "\tOpenGL 3.2 Extensions NOT detected! Prepare for crash!");
         }
 
      once = 1;
@@ -277,9 +276,6 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
 
         _gyLog(GY_DEBUG_DBG_VERBOSE, "Creating VAOs and VBOs.");
 
-        glGenVertexArrays(1, &_defaultVao);
-        gyVidVertexArrayBind(-1);
-
         glGenBuffers(1, &_streamVertexVbo[0]);
         glBindBuffer(GL_ARRAY_BUFFER, _streamVertexVbo[0]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE, _vertexQueue, GL_STREAM_DRAW);
@@ -311,8 +307,6 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         }
         once = 1;
         gyVidVertexArrayBind(0);
-  //      glalVidBindDefaultFbo();
-
         _gyPop(1);
     }
 
@@ -325,9 +319,9 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
     return 1;
 }
 
-// ==== LOW-SEVERITY API =====
+// ==== LOW-LEVEL API =====
 
-void gyVidCamUpdate(const struct GYCamera *const cam) {
+void gyVidCamUpdate(const GYCamera *const cam) {
     if(cam) {
         glalCurCamera = cam;
     } else {
@@ -341,7 +335,6 @@ void gyVidCamUpdate(const struct GYCamera *const cam) {
 static inline void _flushStreamVertices(void* data) {
     (void)data;
     if(_vertexQueueSize-_vertexQueueLastSize <= 0) return;
-
     gyVidVertexArrayBind(_streamVao[gyVidShadowPass()]);
 
     glBindBuffer(GL_ARRAY_BUFFER, _streamVertexVbo[0]);
@@ -366,7 +359,7 @@ static inline void _gyVidTriangleStrip(const struct _GYVector4 *const vertexArra
     _curTexCoordPtr = NULL;
 }
 
-void gyVidTriangleStrip(const struct GYVector4 *const vertexArray, const unsigned int startIndex, const unsigned int amount) {
+void gyVidTriangleStrip(const GYVector4 *const vertexArray, const unsigned int startIndex, const unsigned int amount) {
     //gyMatMultVec(vertexArray, _modelViewVertices, amount);
    // _gyVidTriangleStrip(_modelViewVertices, startIndex, amount);
 }
@@ -378,21 +371,21 @@ void gyVidColorArray(const struct GYColor4 *const ptr) {
     _curColorArrayPtr = ptr;
 }
 
-void gyVidTexCoordArray(const struct GYTexCoord2 *const ptr) {
+void gyVidTexCoordArray(const GYTexCoord2 *const ptr) {
     //assert(curTex); //You should not be submitting this to the untextured shabut in der, dumbass!
     //glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD], 2, GL_FLOAT, GL_TRUE, 0, ptr);
     //glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD]);
     _curTexCoordPtr = ptr;
 }
 
-void gyVidTangentArray(const struct GYVector3 *const ptr) {
+void gyVidTangentArray(const struct _GYVector3 *const ptr) {
     if(gyVidShadowPass()) return;
     //glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, 0, ptr);
     //glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT]);
     glalTangentVector = ptr;
 }
 
-void gyVidNormalArray(const struct GYVector3 *const ptr) {
+void gyVidNormalArray(const struct _GYVector3 *const ptr) {
     if(gyVidShadowPass()) return;
     //glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, 0, ptr);
     //glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL]);
@@ -464,7 +457,7 @@ void gyVidDepthTest(const int enable) {
     }
 }
 
-void gyVidAlphaLevel(const GY_ALPHA_SEVERITY lev) {
+void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
     if(gyVidShadowPass()) return;
 
     //Does this even do anything now that we're shader based?
@@ -505,7 +498,7 @@ void gyVidQuadListEnd(void) {
     _curColorArrayPtr = NULL;
 }
 
-// ==== HIGH-SEVERITY API ====
+// ==== HIGH-LEVEL API ====
 // (glorified wrappers around low-level API)
 
 
@@ -836,4 +829,3 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
 
    // target.draw(*vertexArray, states);
 }
-
