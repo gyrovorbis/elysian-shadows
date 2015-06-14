@@ -33,7 +33,7 @@ extern unsigned                     glalPrevVertexRenderCount;
 extern unsigned                     glalPrevUniformChangeCount;
 extern unsigned                     glalTextureChangeCount;
 extern unsigned                     glalPrevTextureChangeCount;
-extern GY_ALPHA_SEVERITY               glalAlphaLevel;
+extern GY_ALPHA_LEVEL               glalAlphaLevel;
 extern GY_BLEND_MODE                glalBlendMode;
 extern int                          glalDepthTest;
 
