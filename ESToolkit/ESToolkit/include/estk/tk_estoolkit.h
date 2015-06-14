@@ -73,7 +73,8 @@ protected:
     void            _engineLoadAssets(void);
     void            setMainTextureUniform(const int uniform);
 
-    void            _addAreaToTabBar(const TkArea* area);
+    void            _repopulateTabbar(void);
+    void            _addAreaToTabBar(const Area* area);
 
 private:
 

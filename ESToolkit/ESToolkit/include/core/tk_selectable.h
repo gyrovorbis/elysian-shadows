@@ -35,7 +35,7 @@ typedef TkArea Area;
 
 class Selectable/*: public PropertyStackModel*/ {
 public:
-    enum TYPE { EMPTY, PROJECT, SEVERITY, AREA, TILE, ENTITY };
+    enum TYPE { EMPTY, PROJECT, LEVEL, AREA, TILE, ENTITY };
 
 	union Union {
         TileSelection<elysian::TileEntry>*  terrain;

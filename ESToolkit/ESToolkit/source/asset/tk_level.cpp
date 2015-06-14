@@ -424,15 +424,19 @@ Area *TkLevel::getAreaByIndex(const unsigned int index) {
     return (index < (unsigned)_area.size())? _area[index] : nullptr;
 }
 
-Area *TkLevel::loadArea(const QString name) {
-    QString directory(_location);
-    directory.append("/area/");
-    directory.append(name);
+Area *TkLevel::loadArea(const QString path) {
+    //QString directory(_location);
+    //directory.append("/area/");
+    //directory.append(name);
+    Area* area = nullptr;
+    if((area = getArea(path))) {
+        return area;
+    }
 
     Level *tempCurLevel = _curLevel;
     _curLevel = this;
 
-    Area* area = getLevelSys()->loadArea(directory.toStdString().c_str());//new Area(this);
+    area = getLevelSys()->loadArea(Q_CSTR(path));//new Area(this);
 
     _curLevel = tempCurLevel;
 
@@ -448,16 +452,16 @@ Area *TkLevel::loadArea(const QString name) {
     return nullptr;
 }
 
-bool TkLevel::removeArea(const QString name, const bool deleteDir) {
+bool TkLevel::removeArea(const QString path, const bool deleteDir) {
     bool success = true;
 
     for(int i = 0; i < _area.size(); ++i) {
-        if(_area[i]->getNodeName() == name) {
+        if(_area[i]->getNodePath() == path) {
             Area *temp = _area[i];
             getAssets()->getEngine()->getLevelSys()->removeArea(temp);
             _area.erase(_area.begin() + i);
-            if(deleteDir && !FileUtilities::removeDir(temp->getLocation())) {
-                Debug::Logf(Debug::DBG_WARNING, "! - Could not delete directory '%s'\n", temp->getLocation().toStdString().c_str());
+            if(deleteDir && !FileUtilities::removeDir(temp->getNodePath())) {
+                Debug::Logf(Debug::DBG_WARNING, "! - Could not delete directory '%s'", Q_CSTR(temp->getNodePath()));
                 success = false;
             }
             Q_EMIT areaRemoved(this, temp);
@@ -465,11 +469,11 @@ bool TkLevel::removeArea(const QString name, const bool deleteDir) {
             return success;
         }
     }
-    Debug::Logf(Debug::DBG_WARNING, "Area %s could not be removed!\n", getNodeName().toStdString().c_str());
+    Debug::Logf(Debug::DBG_WARNING, "Area %s could not be removed!", Q_CSTR(path));
     return false;
 }
 
-Area *TkLevel::getFirstArea(void) const { return (_area.size() > 0)? _area[0] : NULL; }
+Area *TkLevel::getFirstArea(void) const { return (_area.size() > 0)? _area[0] : nullptr; }
 
 Area *TkLevel::importArea(const QString dir) {
     if(getArea(QStringList(dir.split("/")).last())) {
@@ -487,9 +491,9 @@ Area *TkLevel::importArea(const QString dir) {
     return area;
 }
 
-bool TkLevel::load(const QString loc) {
-    DbgEvent event("Indexing Level [%s].", Q_CSTR(loc));
-    QDir dir(loc);
+bool TkLevel::load(const QString path) {
+    DbgEvent event("Indexing Level [%s].", Q_CSTR(path));
+    QDir dir(path);
     bool success = true;
 
     _project = _curProj;
@@ -497,7 +501,7 @@ bool TkLevel::load(const QString loc) {
 
     setNodeName(dir.dirName());
     setNodePath(dir.absolutePath());
-    _location = loc;
+    _location = path;
 
 #if 0
     Debug::Log(Debug::DBG_VERBOSE, "Verifying Tilesheet");
@@ -517,10 +521,10 @@ bool TkLevel::load(const QString loc) {
         setValid(false);
         return false;
     }
-
+//  scanDirectory(path+QString("/")+folders[i]);
     QStringList areas = dir.entryList(QDir::AllDirs);
     for(int j = 2; j < areas.size(); ++j) {
-        success &= (loadArea(areas[j]))? true : false;
+        success &= (loadArea(dir.absoluteFilePath(areas[j])))? true : false;
     }
 
     return success;
@@ -944,7 +948,7 @@ bool TkLevel::reload(void) {
 }
 
 Area* TkLevel::reloadArea(Area * const area) {
-    QString dirName = area->getDirName();
+    QString dirName = area->getNodePath();
     removeArea(dirName, false);
     return loadArea(dirName);
 }

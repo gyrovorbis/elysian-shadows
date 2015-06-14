@@ -14,7 +14,7 @@ protected:
     bool                        _valid              = true;
     virtual bool                deactivate(void);
 public:
-    enum ITEM_TYPE { ITEM_SUBDIR, ITEM_PROJECT, ITEM_SEVERITY, ITEM_AREA, ITEM_ENTITY };
+    enum ITEM_TYPE { ITEM_SUBDIR, ITEM_PROJECT, ITEM_LEVEL, ITEM_AREA, ITEM_ENTITY };
 
                                 TreeNode();
 

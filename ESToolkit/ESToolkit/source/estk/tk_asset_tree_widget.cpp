@@ -110,7 +110,7 @@ void AssetTreeWidget::onCustomContextMenuRequested(QPoint point) {
 		}
 		break;
 
-    case TreeNode::ITEM_SEVERITY:
+    case TreeNode::ITEM_LEVEL:
         actions.push_back(new QAction("Add Area", nullptr));
         actions.push_back(new QAction("Duplicate", nullptr));
         actions.push_back(new QAction("Remove", nullptr));
@@ -131,7 +131,7 @@ void AssetTreeWidget::onCustomContextMenuRequested(QPoint point) {
 
 				Project *project = level->getProject();
                 getAssets()->setCurrentLevel(nullptr);
-                project->removeLevel(level->getNodeName());
+                project->removeLevel(level->getNodePath());
                 getAssets()->setCurrentLevel(project->getFirstLevel());
             } else if(result->text() == QString("Duplicate")) {
                 level->duplicate();

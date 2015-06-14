@@ -121,8 +121,8 @@ QAbstractItemModel* TkArea::getModel(void) const {
 }
 
 TkArea::~TkArea(void) {
-    deactivate();
-    close();
+    //deactivate();
+    //close();
 }
 
 void Area::resizeEditorScene(void) {

@@ -93,10 +93,10 @@ public:
     Area* newArea(QString name=QString("new_area"));
     Area* getArea(const QString path);
     Area* getAreaByIndex(const unsigned int index);
-    Area* loadArea(const QString name);
+    Area* loadArea(const QString path);
     Area* reloadArea(Area* const area);
-    bool saveArea(const QString name) const;
-    bool removeArea(const QString name, const bool deleteDir=true);
+    bool saveArea(const QString path) const;
+    bool removeArea(const QString path, const bool deleteDir=true);
     Area *getFirstArea() const;
     elysian::LevelBase* getElysianLevel(void) { return (elysian::LevelBase*)this; }
     elysian::Tile *getElysianTile(const uint16_t index);
@@ -107,12 +107,12 @@ public:
     bool getSpecularMapEnabled(const unsigned index) const;
     bool getNormalMapEnabled(const unsigned index) const;
 
-    bool load(const QString loc);
+    bool load(const QString path);
     bool save(void);
     bool saveAll(void);
-    bool saveAs(const QString loc);
+    bool saveAs(const QString path);
 
-    Area *importArea(const QString dir);
+    Area *importArea(const QString path);
 
     bool reloadSheets(void);
     bool reload(void);
@@ -135,8 +135,8 @@ public:
     bool saveTileSheet(void);
     void clearAllStacks(void);
 
-    virtual Selectable::TYPE getType(void) const { return Selectable::SEVERITY; }
-    virtual TreeNode::ITEM_TYPE getTreeWidgetItemType(void) { return ITEM_SEVERITY; }
+    virtual Selectable::TYPE getType(void) const { return Selectable::LEVEL; }
+    virtual TreeNode::ITEM_TYPE getTreeWidgetItemType(void) { return ITEM_LEVEL; }
 
 private Q_SLOTS:
     bool activateByArea(Area * const area);

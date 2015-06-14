@@ -104,7 +104,7 @@ ESToolkit::ESToolkit(QWidget *parent):
 
     _engineSettingsDialog->restoreSettings();
 
-    _areaTabBar = new QTabBar(this);
+    _areaTabBar = new QTabBar();
     QGridLayout *boxLayout = qobject_cast<QGridLayout*>(_ui->centralWidget->layout());
     Q_ASSERT(boxLayout);
     //boxLayout->insertWidget(0, _areaTabBar, 0, Qt::AlignLeft);
@@ -644,7 +644,7 @@ void ESToolkit::ReadSettings()
 }
 
 void ESToolkit::OnAreaRenamed(const QString /*oldName*/, const QString /*newName*/) {
-    _areaTabBar->blockSignals(true);
+    const bool blockSigs = _areaTabBar->blockSignals(true);
 
     while(_areaTabBar->count()) _areaTabBar->removeTab(0);
     for(unsigned int i = 0; i < _assets.getCurrentLevel()->getAreaAmount(); ++i) {
@@ -655,18 +655,19 @@ void ESToolkit::OnAreaRenamed(const QString /*oldName*/, const QString /*newName
         if(_areaTabBar->tabToolTip(i) == _assets.getCurrentArea()->getNodePath()) _areaTabBar->setCurrentIndex(i);
     }
 
-    _areaTabBar->blockSignals(false);
+    _areaTabBar->blockSignals(blockSigs);
 
 }
 
 void ESToolkit::OnAddArea(Project *const /*project*/, Level *const level, Area *const area) {
+    static int i = 0;
 
-    _undoGroup.addStack(&area->getUndoStack());
-
-    if(level == _assets.getCurrentLevel()) { //Don't bother updating the tabs otherwise
-        _areaTabBar->blockSignals(true);
+    if(level && level == _assets.getCurrentLevel()) { //Don't bother updating the tabs otherwise
+        qDebug() << "ADDING" << area->getNodePath() << area->getNodeName() << i++;
+        _undoGroup.addStack(&area->getUndoStack());
+        const bool blockSigs = _areaTabBar->blockSignals(true);
         _addAreaToTabBar(area);
-        _areaTabBar->blockSignals(false);
+        _areaTabBar->blockSignals(blockSigs);
     }
 }
 
@@ -676,9 +677,14 @@ void ESToolkit::OnRemoveArea(Project *const /*project*/, Level *const level, Are
     if(level == _assets.getCurrentLevel()) { //Don't bother updating the tabs otherwise
         for(int i = 0; i < _areaTabBar->count(); ++i) {
             if(_areaTabBar->tabToolTip(i) == area->getNodePath()) {
-                _areaTabBar->blockSignals(true);
+                qDebug() << "TAB COUNT PRE" << _areaTabBar->count();
+                const bool blockSigs = _areaTabBar->blockSignals(true);
+                _areaTabBar->setCurrentIndex(-1);
                 _areaTabBar->removeTab(i);
-                _areaTabBar->blockSignals(false);
+                _areaTabBar->setCurrentIndex(-1);
+                qDebug() << "removing tab" << i;
+                qDebug() << "TAB COUNT POST" << _areaTabBar->count();
+                _areaTabBar->blockSignals(blockSigs);
                 return;
             }
         }
@@ -686,6 +692,7 @@ void ESToolkit::OnRemoveArea(Project *const /*project*/, Level *const level, Are
 }
 
 void ESToolkit::OnTabChanged(int index) {
+    if(index == -1) return;
     if(_assets.getCurrentArea() && _assets.getCurrentArea()->getNodePath() == _areaTabBar->tabToolTip(index)) return;
     _assets.setCurrentArea(_areaTabBar->tabToolTip(index));
 }
@@ -836,6 +843,7 @@ void ESToolkit::OnAreaChanged(Area *const area) {
     }
 
     //Update tabs
+    const bool sigs = _areaTabBar->blockSignals(true);
     if(area) {
         for(int i = 0; i < _areaTabBar->count(); ++i) {
             if(_areaTabBar->tabToolTip(i) == area->getNodePath()) {
@@ -844,7 +852,12 @@ void ESToolkit::OnAreaChanged(Area *const area) {
                 break;
             }
         }
+    } else {
+        _areaTabBar->setCurrentIndex(-1);
     }
+    _areaTabBar->blockSignals(sigs);
+
+
     _ui->mapView->deleteSelectionItemGroup();
     if(_ui->mapView->scene()) _ui->mapView->scene()->update();
 }
@@ -870,20 +883,19 @@ void ESToolkit::OnLevelChanged(Level *const level) {
     }
 
     //Update tabs
+    const bool blockSigs = _areaTabBar->blockSignals(true);
     if(level) {
-
-        _areaTabBar->blockSignals(true);
         while(_areaTabBar->count()) _areaTabBar->removeTab(0);
 
         for(unsigned int i = 0; i < _assets.getCurrentLevel()->getAreaAmount(); ++i) {
             _addAreaToTabBar(_assets.getCurrentLevel()->getAreaByIndex(i));
         }
         //_areaTabBar->setCurrentIndex(0);
-        _areaTabBar->blockSignals(false);
     }
     else {
         while(_areaTabBar->count()) _areaTabBar->removeTab(0);
     }
+    _areaTabBar->blockSignals(blockSigs);
 
     _ui->mapView->deleteSelectionItemGroup();
     _sheetDockWidget->UpdateSheetView();
@@ -1217,7 +1229,7 @@ void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *cons
     switch(type) {
     case Selectable::PROJECT:
         break;
-    case Selectable::SEVERITY:
+    case Selectable::LEVEL:
         _selectionDockWidget->SetSelectionTreeWidget();
         static_cast<Level *>(selection)->populateModel();
         _selectionDockWidget->SetSelectionModel(static_cast<Level *>(selection));

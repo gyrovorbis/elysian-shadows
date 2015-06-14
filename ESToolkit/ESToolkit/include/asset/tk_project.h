@@ -52,16 +52,19 @@ public:
 
     TkLevel*        newLevel(const QString n=QString("new_level"));
     TkLevel*        reloadLevel(TkLevel* level);
-    TkLevel*        loadLevel(const QString name); //assumed to be within current project, so directory is not necessary
-    bool            saveLevel(const QString name);
-    bool            removeLevel(const QString name, const bool deleteFolder=true);
+    TkLevel*        loadLevel(const QString path); //assumed to be within current project, so directory is not necessary
+    bool            saveLevel(const QString path);
+    bool            removeLevel(const QString path, const bool deleteFolder=true);
     unsigned int    getLevelAmount() const;
-    TkLevel*        getLevel(const QString name);
+    TkLevel*        getLevel(const QString path);
     TkLevel*        getLevelByIndex(const unsigned int index);
     TkLevel*        getFirstLevel(void) const;
 
     bool            load(const QString loc);
     bool            save(void);
+    bool            scanDirectory(const QString path);
+    bool            scanBackLevelPath(const QString path);
+    bool            isLevelPath(const QString path);
 
     TkLevel*        importLevel(const QString dir);
     bool            saveAs(const QString dir);

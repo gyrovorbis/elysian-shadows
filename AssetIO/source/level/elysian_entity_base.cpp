@@ -47,6 +47,7 @@ void EntityBase::reested(void) {
 
 EntityBase::~EntityBase(void) {
 
+    return;
     if(_active) deactivate();
 
     //Cleanup Components

@@ -67,18 +67,15 @@ Level *Project::newLevel(const QString n) {
     return lev;
 }
 
-Level *Project::loadLevel(const QString name) {
-    QString directory(_curNodeParent->getNodePath());
-    directory.append("/");
-    directory.append(name);
-
+Level *Project::loadLevel(const QString path) {
+    QString directory(path);
     Level::_curProj = this;
 
     Level *lev = getLevelSys()->loadLevel(Q_CSTR(directory));
 
     //connectSlots(lev);
     if(lev) {
-        connectSlots(lev);
+       // connectSlots(lev);
 		_level.push_back(lev);
         _curNodeParent->addChild(lev);
         Q_EMIT levelAdded(this, lev);
@@ -125,8 +122,8 @@ bool Project::removeLevel(const QString path, const bool deleteFolder) {
 			Level *temp = _level[i];
             getAssets()->getEngine()->getLevelSys()->removeLevel(temp);
 			_level.erase(_level.begin() + i);
-            if(deleteFolder && !FileUtilities::removeDir(temp->getLocation())) {
-                Debug::Logf(Debug::DBG_WARNING, "! - Could not delete directory '%s'\n", temp->getLocation().toStdString().c_str());
+            if(deleteFolder && !FileUtilities::removeDir(temp->getNodePath())) {
+                Debug::Logf(Debug::DBG_ERROR, "Could not delete directory '%s'", Q_CSTR(temp->getNodePath()));
                 success = false;
             }
             Q_EMIT levelRemoved(this, temp);
@@ -134,8 +131,112 @@ bool Project::removeLevel(const QString path, const bool deleteFolder) {
             return success;
         }
     }
-    Debug::Logf(Debug::DBG_WARNING, "Level %s could not be removed!\n", Q_CSTR(path));
+    Debug::Logf(Debug::DBG_WARNING, "Level %s could not be removed!", Q_CSTR(path));
     return false;
+}
+
+bool Project::isLevelPath(const QString path) {
+    QDir dir(path);
+    QStringList folders = dir.entryList(QDir::AllDirs);
+    return (folders.contains(ESTK_SEVERITY_TILE_SUBDIR) || folders.contains(ESTK_SEVERITY_METADATA_SUBDIR) || folders.contains(ESTK_SEVERITY_AREA_SUBDIR));
+}
+
+bool Project::scanDirectory(const QString path) {
+    QDir dir(path);
+    bool success = true;
+
+    if(!dir.isReadable()) {
+        Debug::printf(Debug::DBG_ERROR, "%s is not readable!", Q_CSTR(path));
+        return false;
+    }
+
+    QStringList folders = dir.entryList(QDir::AllDirs);
+
+    //check if folder is a level based on whether it has subdirs containing level data
+    if(isLevelPath(path)) {
+        success &= loadLevel(dir.absolutePath())? true : false;
+
+    //assume regular subdir and recurse
+    } else {
+        DbgEvent event("Indexing subdirectory [%s].", Q_CSTR(path));
+        TreeNode* subDir = new TreeNode;
+        subDir->setNodeName(dir.dirName());
+        subDir->setNodePath(path);
+        _subDirs[path] = subDir;
+
+        TreeNode* oldNodeParent = _curNodeParent;
+        _curNodeParent->addChild(subDir);
+        _curNodeParent = subDir;
+
+
+        if(folders.size() > 2) {
+            //Skip '.' and '..' virtual directories
+            for(int i = 2; i < folders.size(); ++i) {
+                scanDirectory(path+QString("/")+folders[i]);
+            }
+        } else {
+            Debug::printf(Debug::DBG_WARNING, "No levels found!");
+            subDir->setValid(false);
+        }
+
+        _curNodeParent = oldNodeParent;
+    }
+
+    return success;
+}
+
+bool Project::scanBackLevelPath(const QString path) {
+    DbgEvent event("Scanning backwards from level path [%s].", Q_CSTR(path));
+    QStringList dirs = path.split("/");
+    TreeNode* oldNodeParent = _curNodeParent;
+    TreeNode* subDir        = nullptr;
+    bool success = false;
+
+    int levelDirIndex = -1;
+    for(unsigned i = 0; i < dirs.size(); ++i) {
+        if(dirs[i] == "level") {
+            levelDirIndex = i;
+            break;
+        }
+    }
+
+    if(levelDirIndex == -1) {
+        errprintf("No 'level' subdir, invalid path [%s].", Q_CSTR(path));
+        return false;
+    }
+
+    for(unsigned i = levelDirIndex+1; i < dirs.size(); ++i) {
+        QString subDirPath;
+        for(unsigned j = 0; j <= i; j++) subDirPath += dirs[j] + ((j==i)? QString("") : QString("/"));
+
+        if(isLevelPath(subDirPath)) {
+            success = loadLevel(QDir(subDirPath).absolutePath())? true : false;
+        } else {
+
+            if(_subDirs.find(subDirPath) != _subDirs.end()) {
+                dbgprintf("Subdir exists, continuing [%s].", Q_CSTR(subDirPath));
+                dbgpush();
+                _curNodeParent = _subDirs[subDirPath];
+            } else {
+                dbgprintf("Scanning subdirectory [%s].", Q_CSTR(subDirPath));
+                subDir = new TreeNode;
+                subDir->setNodeName(dirs[i]);
+                subDir->setNodePath(subDirPath);
+                _subDirs[subDirPath] = subDir;
+                _curNodeParent->addChild(subDir);
+                _curNodeParent = subDir;
+            }
+        }
+    }
+
+    if(!success) {
+        dbgprintf("No level directory was found in path [%s]!", Q_CSTR(path));
+    }
+
+    _curNodeParent = oldNodeParent;
+
+    return success;
+
 }
 
 bool Project::load(const QString loc) {
@@ -164,51 +265,10 @@ bool Project::load(const QString loc) {
         return false;
     }
 
-    std::function<void(const QString)> scanDirectory = [&](const QString path) {
-        QDir dir(path);
-
-        if(!dir.isReadable()) {
-            Debug::printf(Debug::DBG_ERROR, "%s is not readable!", Q_CSTR(path));
-            return;
-        }
-
-        QStringList folders = dir.entryList(QDir::AllDirs);
-
-        //check if folder is a level based on whether it has subdirs containing level data
-        if(folders.contains(ESTK_SEVERITY_TILE_SUBDIR) || folders.contains(ESTK_SEVERITY_METADATA_SUBDIR) || folders.contains(ESTK_SEVERITY_AREA_SUBDIR)) {
-            success &= loadLevel(dir.dirName())? true : false;
-
-        //assume regular subdir and recurse
-        } else {
-            DbgEvent event("Indexing subdirectory [%s].", Q_CSTR(path));
-            TreeNode* subDir = new TreeNode;
-            subDir->setNodeName(dir.dirName());
-            subDir->setNodePath(path);
-            _subDirs[path] = subDir;
-
-            TreeNode* oldNodeParent = _curNodeParent;
-            _curNodeParent->addChild(subDir);
-            _curNodeParent = subDir;
-
-
-            if(folders.size() > 2) {
-                //Skip '.' and '..' virtual directories
-                for(int i = 2; i < folders.size(); ++i) {
-                    scanDirectory(path+QString("/")+folders[i]);
-                }
-            } else {
-                Debug::printf(Debug::DBG_ERROR, "No levels found!");
-                subDir->setValid(false);
-            }
-
-            _curNodeParent = oldNodeParent;
-        }
-    };
-
-    scanDirectory(getNodePath()+QString("/level")); //begin recursive scan
+    success &= scanDirectory(getNodePath()+QString("/level")); //begin recursive scan
 
     QDir::setCurrent(prevWorkingDir);
-	return true;//success;
+    return success;
 }
 
 bool Project::save(void) {
@@ -360,9 +420,10 @@ QString Project::getLocation(void) const {
 }
 
 TkLevel* Project::reloadLevel(TkLevel *level) {
-    QString dirName = level->getDirName();
-    removeLevel(dirName, false);
-    return loadLevel(dirName);
+    QString path = level->getNodePath();
+    removeLevel(path, false);
+    scanBackLevelPath(path);
+    return getLevel(path);
 }
 
 void Project::onComponentAttached(Level *const level, Area *const area, Entity *const entity, Component *const comp) {

@@ -26,6 +26,7 @@ MapView::MapView(QWidget *parent): DestView<TileEntry>::DestView(parent) {
     _curUndoItem = new MapViewPlaceTileGroupUndoItem();
 
     connect(getAssets(), SIGNAL(areaChanged(Area*const)), this, SLOT(onAreaChange(Area*const)));
+    connect(getAssets(), SIGNAL(areaChanging(Area*const)), this, SLOT(onAreaChanging(Area*const)));
     connect(getAssets(), SIGNAL(layerChanged(LAYER_TYPE)), this, SLOT(onLayerChange(LAYER_TYPE)));
     connect(getAssets(), SIGNAL(engineInitialize()), this, SLOT(onEngineInitialize()));
     connect(getAssets(), SIGNAL(mapChanged(Area*const,const QVector<MapChange>&)), this, SLOT(onMapChange(Area*const,const QVector<MapChange>&)));
@@ -42,13 +43,15 @@ void MapView::onLayerChange(Assets::LAYER_TYPE type) {
     }
 }
 
-void MapView::onAreaChange(Area * const area) {
-    if(area) { _curUndoItem->setArea(area);
-    //move over cursor entity
-
-    //setSceneRect(-16, -16, 32.0f*getAssets()->getCurrentArea()->width, 32.0f*getAssets()->getCurrentArea()->height);
-}
+void MapView::onAreaChanging(Area * const area) {
     if(getAssets()->getCurrentArea()) getAssets()->getCurrentArea()->removeEntity(_cursorEntity);
+}
+
+void MapView::onAreaChange(Area * const area) {
+    if(area) {
+        _curUndoItem->setArea(area);
+    }
+
     if(area) {
         area->addEntity(_cursorEntity);
         _updateScrollBars();

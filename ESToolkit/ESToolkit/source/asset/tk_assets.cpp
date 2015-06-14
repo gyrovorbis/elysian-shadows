@@ -134,7 +134,7 @@ bool Assets::getLayerVisible(const Assets::LAYER_TYPE type) const {
     return (type <= 2)? _engine->getMapSys()->getRenderTileLayer(type) : _layerVisible[type];
 }
 
-bool Assets::setCurrentArea(const QString name) {
+bool Assets::setCurrentArea(const QString path) {
 /*    if(_currentArea) _currentArea->Deactivate();
     if(_currentLevel->getArea(name)) {
         _currentArea = _currentLevel->getArea(name);
@@ -150,7 +150,7 @@ bool Assets::setCurrentArea(const QString name) {
         setCurrentArea(nullptr);
         return false;
     }
-    Area *area = _curLevel->getArea(name);
+    Area *area = _curLevel->getArea(path);
     if(!area) {
         setCurrentArea(nullptr);
         return false;
@@ -163,17 +163,18 @@ void Assets::setCurrentArea(Area *const area) {
    // if(_currentArea) _currentArea->deactivate();
     //if(_currentArea == area) return;
     //_currentArea = area;
-    _engine->getLevelSys()->switchArea(area? area->getPath() : nullptr);
-    if(area) {
+    Q_EMIT areaChanging(area);
+    _engine->getLevelSys()->switchArea(area? Q_CSTR(area->getNodePath()) : nullptr);
+  //  if(area) {
         //area->activate();
-        Q_EMIT areaChanged(_curArea);
+    //    Q_EMIT areaChanged(_curArea);
         //if(area->getFirstEntity()) setCurrentSelection(new EntitySelectable(area->getFirstEntity()));
+      //  setCurrentSelection((EntitySelectable*)nullptr);
+    //}
+   // else {
         setCurrentSelection((EntitySelectable*)nullptr);
-    }
-    else {
         Q_EMIT areaChanged(_curArea);
-        setCurrentSelection((EntitySelectable*)nullptr);
-    }
+    //}
 }
 
 
@@ -195,8 +196,8 @@ void Assets::setCurrentLevel(Level *const level) {
    // if(_currentLevel) _currentLevel->deactivate();
     //if(_currentLevel == level) return;
   //  _currentLevel = level;
-
-    _engine->getLevelSys()->switchLevel(level? level->getPath() : nullptr);
+    Q_EMIT levelChanging(level);
+    _engine->getLevelSys()->switchLevel(level? Q_CSTR(level->getNodePath()) : nullptr);
     if(level) {
     //	level->activate();
         if(level->getFirstArea()) setCurrentArea(level->getFirstArea()->getNodePath());
@@ -207,9 +208,9 @@ void Assets::setCurrentLevel(Level *const level) {
     Q_EMIT levelChanged(level);
 }
 
-bool Assets::setCurrentProject(const QString name) {
+bool Assets::setCurrentProject(const QString path) {
 
-    Project *project = getProject(name);
+    Project *project = getProject(path);
     if(!project) return false;
     setCurrentProject(project);
     return true;
@@ -379,18 +380,18 @@ void Assets::onEntityParented(Entity * const child, Entity * const parent) {
 
 Level* Assets::reloadLevel(Level* level) {
     if(!level) level = getCurrentLevel();
-    QString levelName;
-    QString areaName;
+    QString levelPath;
+    QString areaPath;
     if(getCurrentLevel() == level) {
-        levelName = level->getDirName();
-        areaName = getCurrentArea()->getDirName();
+        levelPath = level->getNodePath();
+        if(getCurrentArea()) areaPath = getCurrentArea()->getNodePath();
         setCurrentArea(nullptr);
         setCurrentLevel(nullptr);
     }
     level = level->getProject()->reloadLevel(level);
-    if(!areaName.isNull()) {
+    if(!areaPath.isNull()) {
         setCurrentLevel(level);
-        setCurrentArea(level->getArea(areaName));
+        setCurrentArea(level->getArea(areaPath));
     } else {
         //Force views and widgets to have correct selection
         setCurrentLevel(getCurrentLevel());
@@ -400,25 +401,25 @@ Level* Assets::reloadLevel(Level* level) {
 
 Area* Assets::reloadArea(Area* area) {
     if(!area) area = getCurrentArea();
-    QString areaName;
+    QString areaPath;
     if(getCurrentArea() == area) {
         setCurrentArea(nullptr);
-       areaName = area->getDirName();
+        areaPath = area->getNodePath();
    }
-   area = area->getLevel()->reloadArea(area);
-   if(!areaName.isNull()) {
-        setCurrentArea(getCurrentLevel()->getArea(areaName));
+   auto* newArea = area->getLevel()->reloadArea(area);
+   if(!areaPath.isNull()) {
+        setCurrentArea(newArea);
    } else {
        //Force views and widgets to have correct selection
         setCurrentArea(getCurrentArea());
    }
-   return area;
+   return newArea;
 }
 
 Project* Assets::reloadProject(void) {
     if(!m_project) return nullptr;
-    const QString areaName = _curArea->getDirName();
-    const QString levelName = _curLevel->getDirName();
+    const QString areaName = _curArea->getNodePath();
+    const QString levelName = _curLevel->getNodePath();
     const QString projPath = m_project->getLocation();
     const elysian::System::ENGINE_STATE engineState = _engine->getEngineState();
     const Entity* partyLeader = _engine->getPartySys()->getPartyLeader();

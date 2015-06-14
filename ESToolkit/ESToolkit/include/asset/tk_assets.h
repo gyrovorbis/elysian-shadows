@@ -38,11 +38,11 @@ public:
     Selectable::TYPE getCurrentSelectionType(void) const { return _currentSelectionType; }
 
     void setCurrentSelection(Selectable *const selection);
-    bool setCurrentArea(const QString name);
+    bool setCurrentArea(const QString path);
     void setCurrentArea(Area *const area);
-    bool setCurrentLevel(const QString name);
+    bool setCurrentLevel(const QString path);
     void setCurrentLevel(Level *const level);
-    bool setCurrentProject(const QString name);
+    bool setCurrentProject(const QString path);
     void setCurrentProject(Project *const project);
     //void setCurrentSelection(Selectable *const selection);
     void setCurrentLayer(const LAYER_TYPE type);
@@ -75,7 +75,9 @@ Q_SIGNALS:
     void selectionChanged(const Selectable::TYPE type, Selectable *const selection);
     void layerChanged(LAYER_TYPE type);
     void areaChanged(Area *const area);
+    void areaChanging(Area* const area);
     void levelChanged(Level *const level);
+    void levelChanging(Level* const level);
     void projectChanged(Project *const project);
     void engineInitialize(void);
 
