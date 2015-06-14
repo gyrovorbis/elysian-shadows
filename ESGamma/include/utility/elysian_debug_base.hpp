@@ -43,7 +43,7 @@ namespace elysian {
 
     struct DbgEvent {
         unsigned                depth = 0;
-
+                                DbgEvent(void) = default;
                                 DbgEvent(const char*const string, ...);
                                 ~DbgEvent(void);
     };

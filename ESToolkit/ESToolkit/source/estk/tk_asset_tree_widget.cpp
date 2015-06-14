@@ -126,8 +126,8 @@ void AssetTreeWidget::onCustomContextMenuRequested(QPoint point) {
                 getAssets()->setCurrentSelection(newArea);
 			} else if(result->text() == QString("Remove")) {
                 if(QMessageBox::critical(nullptr, tr("Warning!"), tr("Are you SURE that you want to permanently delete the selected level?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
-					return;
-				}
+                    return;
+                }
 
 				Project *project = level->getProject();
                 getAssets()->setCurrentLevel(nullptr);
@@ -158,7 +158,7 @@ void AssetTreeWidget::onCustomContextMenuRequested(QPoint point) {
 
                 Level* level = area->getLevel();
                 getAssets()->setCurrentArea(nullptr);
-                level->removeArea(area->getNodeName());
+                level->removeArea(area->getNodePath());
                 getAssets()->setCurrentArea(level->getFirstArea());
 
 

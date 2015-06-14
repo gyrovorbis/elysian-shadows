@@ -47,18 +47,18 @@ void Project::populateModel(void) {
 
 QAbstractItemModel* Project::getModel(void) const { return const_cast<Project*>(this); }
 
-Level *Project::newLevel(const QString n) {
-    QString name(n);
+Level *Project::newLevel(const QString name) {
+    DbgEvent event("Creating new Level [%s] at [%s]", Q_CSTR(name), Q_CSTR(getNodePath()));
+    QString path(getNodePath());
+    path += QString("/level/") + name;
     unsigned int num = 1;
     TkLevel *lev = new TkLevel(this);
 	connectSlots(lev);
 
-    while(getLevel(name+QString::number(num))) {
-        ++num;
-    }
+    while(getLevel(path+QString::number(num))) ++num;
 
-    name += QString::number(num);
-    lev->setLocation(_location+"/level/"+name);
+    path += QString::number(num);
+    lev->setLocation(path);
 	_level.push_back(lev);
 	lev->saveAll();
     getAssets()->getEngine()->getLevelSys()->addLevel(lev);
@@ -116,7 +116,7 @@ TkLevel *Project::getLevelByIndex(const unsigned int index) {
 
 bool Project::removeLevel(const QString path, const bool deleteFolder) {
     bool success = true;
-
+    DbgEvent("Removing Level [%s].", Q_CSTR(path));
 	for(int i = 0; i < _level.size(); ++i) {
         if(_level[i]->getNodePath() == path) {
 			Level *temp = _level[i];
@@ -125,6 +125,8 @@ bool Project::removeLevel(const QString path, const bool deleteFolder) {
             if(deleteFolder && !FileUtilities::removeDir(temp->getNodePath())) {
                 Debug::Logf(Debug::DBG_ERROR, "Could not delete directory '%s'", Q_CSTR(temp->getNodePath()));
                 success = false;
+            } else {
+                dbgprintf("Deleted directory successfully [%s]", Q_CSTR(temp->getNodePath()));
             }
             Q_EMIT levelRemoved(this, temp);
             delete temp;
@@ -195,7 +197,7 @@ bool Project::scanBackLevelPath(const QString path) {
     int levelDirIndex = -1;
     for(unsigned i = 0; i < dirs.size(); ++i) {
         if(dirs[i] == "level") {
-            levelDirIndex = i;
+            levelDirIndex = i-1;
             break;
         }
     }

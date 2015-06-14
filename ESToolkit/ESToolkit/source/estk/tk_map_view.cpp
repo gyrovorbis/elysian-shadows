@@ -17,7 +17,7 @@
 #include "tk_entity_selectable.h"
 #include "elysian_renderable.hpp"
 #include "elysian_animation.hpp"
-
+#include <elysian_level.hpp>
 
 MapView::MapView(QWidget *parent): DestView<TileEntry>::DestView(parent) {
     setMouseTracking(true);
@@ -48,7 +48,7 @@ void MapView::onAreaChanging(Area * const area) {
 }
 
 void MapView::onAreaChange(Area * const area) {
-    if(area) {
+    if(area && area->getLevel()->validSheets()) {
         _curUndoItem->setArea(area);
     }
 
@@ -405,8 +405,8 @@ void MapView::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void MapView::mousePressEvent(QMouseEvent *event) {
+    if(event->button() == Qt::RightButton && !getCurrentLevel()->validSheets()) return;
     DestView<TileEntry>::mousePressEvent(event);
-
 
     if(getAssets()->getCurrentLayer() == Assets::LAYER_ENTITY && event->button() == Qt::LeftButton) {
         //we're dragging an entity

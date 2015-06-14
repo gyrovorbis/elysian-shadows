@@ -663,7 +663,6 @@ void ESToolkit::OnAddArea(Project *const /*project*/, Level *const level, Area *
     static int i = 0;
 
     if(level && level == _assets.getCurrentLevel()) { //Don't bother updating the tabs otherwise
-        qDebug() << "ADDING" << area->getNodePath() << area->getNodeName() << i++;
         _undoGroup.addStack(&area->getUndoStack());
         const bool blockSigs = _areaTabBar->blockSignals(true);
         _addAreaToTabBar(area);
@@ -675,15 +674,13 @@ void ESToolkit::OnRemoveArea(Project *const /*project*/, Level *const level, Are
     _undoGroup.removeStack(&area->getUndoStack());
 
     if(level == _assets.getCurrentLevel()) { //Don't bother updating the tabs otherwise
+        _undoGroup.setActiveStack(nullptr);
         for(int i = 0; i < _areaTabBar->count(); ++i) {
             if(_areaTabBar->tabToolTip(i) == area->getNodePath()) {
-                qDebug() << "TAB COUNT PRE" << _areaTabBar->count();
                 const bool blockSigs = _areaTabBar->blockSignals(true);
                 _areaTabBar->setCurrentIndex(-1);
                 _areaTabBar->removeTab(i);
                 _areaTabBar->setCurrentIndex(-1);
-                qDebug() << "removing tab" << i;
-                qDebug() << "TAB COUNT POST" << _areaTabBar->count();
                 _areaTabBar->blockSignals(blockSigs);
                 return;
             }

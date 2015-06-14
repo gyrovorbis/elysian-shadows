@@ -144,20 +144,23 @@ TkLevel::~TkLevel(void) {
 
 
 bool TkLevel::duplicate(void) {
+    DbgEvent event("Duplicating level [%s].", Q_CSTR(getNodePath()));
     unsigned num = 1;
-    QString name(getNodeName());
+    QString path(getNodePath());
 
-    while(_project->getLevel(getNodeName()+QString::number(num))) ++num;
+    while(_project->getLevel(getNodePath()+QString::number(num))) ++num;
 
 
-    if(!FileUtilities::copyDir(_location, _project->getLocation() + "/level/" + name+QString::number(num))) {
+    if(!FileUtilities::copyDir(path, path+QString::number(num))) {
         QMessageBox::critical(nullptr, "Error!", "Could not copy level directory!");
         return false;
+    } else {
+        dbgprintf("Successfully copied level directory [%s].", Q_CSTR((path+QString::number(num))));
     }
 
     //saveAs(_location+QString::number(num));
 
-    return _project->loadLevel(name + QString::number(num));
+    return _project->scanBackLevelPath(path + QString::number(num));
 }
 
 
@@ -241,6 +244,7 @@ void TkLevel::setLocation(const QString loc) {
 
    QStringList splitList = _location.split("/");
    setNodeName(splitList.last());
+   setNodePath(loc);
 }
 
 QString TkLevel::getLocation() const {
@@ -390,17 +394,17 @@ bool TkLevel::close(void) {
     return true;
 }
 
-Area *TkLevel::newArea(const QString n) {
-    QString name(n);
+Area *TkLevel::newArea(const QString name) {
+    DbgEvent event("Creating new area [%s] at [%s]", Q_CSTR(getNodePath()), Q_CSTR(name));
+    QString path(getNodePath());
+    path += "/area/"+name;
     unsigned int num = 1;
 
     Area *ar = new Area(this);
     connectSlots(ar);
-    while(getArea(name+QString::number(num))) {
-        ++num;
-    }
-    name += QString::number(num);
-    ar->setLocation(_location+"/area/"+name);
+
+    while(getArea(path+QString::number(num))) ++num;
+    ar->setLocation(path+QString::number(num));
     _area.push_back(ar);
     ar->save();
     getAssets()->getEngine()->getLevelSys()->addArea(ar);
@@ -408,8 +412,6 @@ Area *TkLevel::newArea(const QString n) {
 	Q_EMIT areaAdded(this, ar);
     return ar;
 }
-
-
 
 Area *TkLevel::getArea(const QString path) {
     for(int i = 0; i < _area.size(); ++i) {
@@ -453,6 +455,7 @@ Area *TkLevel::loadArea(const QString path) {
 }
 
 bool TkLevel::removeArea(const QString path, const bool deleteDir) {
+    DbgEvent event("Removing Area [%s].", Q_CSTR(path));
     bool success = true;
 
     for(int i = 0; i < _area.size(); ++i) {
@@ -461,15 +464,17 @@ bool TkLevel::removeArea(const QString path, const bool deleteDir) {
             getAssets()->getEngine()->getLevelSys()->removeArea(temp);
             _area.erase(_area.begin() + i);
             if(deleteDir && !FileUtilities::removeDir(temp->getNodePath())) {
-                Debug::Logf(Debug::DBG_WARNING, "! - Could not delete directory '%s'", Q_CSTR(temp->getNodePath()));
+                Debug::Logf(Debug::DBG_ERROR, "Could not delete directory '%s'", Q_CSTR(temp->getNodePath()));
                 success = false;
+            } else {
+                dbgprintf("Deleted directory successfully [%s].", Q_CSTR(temp->getNodePath()));
             }
             Q_EMIT areaRemoved(this, temp);
             delete temp;
             return success;
         }
     }
-    Debug::Logf(Debug::DBG_WARNING, "Area %s could not be removed!", Q_CSTR(path));
+    Debug::Logf(Debug::DBG_ERROR, "Area wasn't found [%s].", Q_CSTR(path));
     return false;
 }
 
@@ -532,23 +537,21 @@ bool TkLevel::load(const QString path) {
 
 //Does not save children. Just attrib to current location
 bool TkLevel::save(void) {
+    DbgEvent event("Saving Level [%s].", Q_CSTR(getNodePath()));
     bool success = true;
-    Debug::Log(Debug::DBG_VERBOSE, QString("Level::Save(void)"));
-    Debug::push();
     //Save elysian::Level
     success &= getElysianLevel()->save(_location.toStdString().c_str());
     success &= _saveMetaData(_location);
-    Debug::pop();
     return success;
 }
 
 
 bool TkLevel::saveAll(void) {
-    Debug::Log(Debug::DBG_VERBOSE, QString("Level::SaveAll("+_location+")"));
-    Debug::push();
+    //Debug::Log(Debug::DBG_VERBOSE, QString("Level::SaveAll("+_location+")"));
+    //Debug::push();
     //export to default save location
     bool success = saveAs(_location);
-    Debug::pop();
+    //Debug::pop();
     return success;
 }
 
@@ -562,61 +565,52 @@ bool TkLevel::saveTileSheet(void) {
 }
 
 bool TkLevel::saveAs(const QString dir) {
+    char buff[200];
+    if(getNodePath() == dir) {
+        sprintf(buff, "Saving Level [%s].", Q_CSTR(getNodePath()));
+    } else {
+        sprintf(buff, "Copying level [%s] to [%s].", Q_CSTR(getNodePath()), Q_CSTR(dir));
+    }
+
+    DbgEvent event("%s", buff);
     bool success = true;
     bool newLoc = (_location != dir)? true : false;
     QDir qdir;
 
-    Debug::Log(Debug::DBG_VERBOSE, QString("Level::Export("+dir+")"));
-    Debug::push();
-
-    //Save As and destionation already exists
+    //Save As and destination already exists
     if(newLoc && qdir.exists(dir)) {
-        Debug::Log(Debug::DBG_VERBOSE, "Folder already exists");
-        Debug::push();
-        if(QMessageBox::critical(NULL, tr("Warning!"), tr("A directory of the same name already exists at the specified location. Overwrite?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
+        DbgEvent event("Path already exists.");
+        if(QMessageBox::critical(nullptr, tr("Warning!"), tr("A directory of the same name already exists at the specified location. Overwrite?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
             if(!qdir.rmdir(dir)) {
-                Debug::Log(Debug::DBG_WARNING, "Could not remove existing directory!");
-                Debug::pop();
-                Debug::pop();
+                errprintf("Could not remove existing directory!");
                 return false;
             }
             else {
-                Debug::Log(Debug::DBG_VERBOSE, "Successfully deleted existing directory.");
-                Debug::pop();
+                dbgprintf("Successfully deleted existing directory.");
             }
         }
         else {
-            Debug::Log(Debug::DBG_VERBOSE, "Canceled overwrite.");
-            Debug::pop();
-            Debug::pop();
+            dbgprintf("Canceled overwriting existing directory.");
             return true;
         }
     }
 
     //Create level root if it doesn't already exist
    if(!qdir.exists(dir)) { //generate main level directory if it doesn't already exist
-       Debug::Log(Debug::DBG_VERBOSE, "Creating root directory");
-       Debug::push();
+       DbgEvent event("Creating directory [%s].", Q_CSTR(dir));
         if(!qdir.mkdir(dir)) {
-            Debug::Log(Debug::DBG_WARNING, "Could not create directory!");
-            Debug::pop();
-            Debug::pop();
+            errprintf("Could not create directory!");
             return false;
         }
-        Debug::pop();
     }
 
    //Create tile directory if it doesn't already exist
     if(!qdir.exists(dir+"/tile")) {
-        Debug::Log(Debug::DBG_VERBOSE, "Creating tile directory");
-        Debug::push();
+        DbgEvent event("Creating tile directory.");
         if(!qdir.mkdir(dir+"/tile")) {
-            Debug::Log(Debug::DBG_WARNING, "Could not create directory!");
-            Debug::pop();
-            Debug::pop();
+            errprintf("Could not create directory!");
             return false;
         }
-        Debug::pop();
     }
     //Dynamically regenerate tilesheet if it's currently open or is being saved to a new location
     if(_open || (!newLoc && !QFile::exists(dir+ELYSIAN_TILESHEET_PATH))) { // Dynamically regenerate sheet for open level and new levels
@@ -629,13 +623,11 @@ bool TkLevel::saveAs(const QString dir) {
     }
     //Copy tilesheet if it hasn't been opened and already exists
     else if(!_open && newLoc) { // Copy existing sheet from previous directory to new directory
-        Debug::Log(Debug::DBG_VERBOSE, "Copying terrainsheet.png");
-        Debug::push();
+        DbgEvent event("Copying tilesheet [%s] to [%s].", Q_CSTR((_location+ELYSIAN_TILESHEET_PATH)), Q_CSTR((dir+ELYSIAN_TILESHEET_PATH)));
         if(!QFile::copy(_location+ELYSIAN_TILESHEET_PATH, dir+ELYSIAN_TILESHEET_PATH)) {
-            Debug::Log(Debug::DBG_WARNING, "Could not copy terrainsheet.png");
+            errprintf("Could not copy sheet!");
             success = false;
         }
-        Debug::pop();
     }
 
     //Save elysian::Level
@@ -646,15 +638,11 @@ bool TkLevel::saveAs(const QString dir) {
 
     //Create area directory if it doesn't already exist
     if(!qdir.exists(dir+"/area")) {
-        Debug::Log(Debug::DBG_VERBOSE, "Creating 'area' directory");
-        Debug::push();
+        DbgEvent event("Creating area directory [%s]", Q_CSTR((dir+"/area")));
         if(!qdir.mkdir(dir+"/area")) {
-            Debug::Log(Debug::DBG_WARNING, "Could not create 'area' directory!");
-            Debug::pop();
-            Debug::pop();
+            errprintf("Could not create 'area' directory!");
             return false;
         }
-        Debug::pop();
     }
 
     //Save areas

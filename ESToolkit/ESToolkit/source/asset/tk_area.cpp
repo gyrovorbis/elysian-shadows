@@ -194,18 +194,21 @@ void Area::setNodeName(const QString str) {
 }
 
 bool Area::duplicate(void) {
+    DbgEvent event("Duplicating Area [%s].", Q_CSTR(getNodePath()));
     unsigned num = 1;
-    QString name(getNodeName());
+    QString path(getNodePath());
 
-    while(level->getArea(getNodeName()+QString::number(num))) ++num;
+    while(level->getArea(getNodePath()+QString::number(num))) ++num;
 
-    if(!FileUtilities::copyDir(_location, level->getLocation() + "/area/" + name+QString::number(num))) {
+    if(!FileUtilities::copyDir(path, path+QString::number(num))) {
         QMessageBox::critical(nullptr, "Error!", "Could not copy area directory!");
         return false;
+    } else {
+        dbgprintf("Successfully copied area directory [%s].", Q_CSTR((getNodePath()+QString::number(num))));
     }
     //saveAs(_location+QString::number(num));
 
-    return level->loadArea(name + QString::number(num));
+    return level->loadArea(path + QString::number(num));
 }
 
 
@@ -214,6 +217,7 @@ void Area::setLocation(const QString loc) {
 
     QStringList splitList = _location.split("/");
     setNodeName(splitList.last());
+    setNodePath(loc);
 }
 
 void Area::setString(const QString str) {
@@ -277,58 +281,46 @@ bool TkArea::load(const char*const str) {
 }
 
 bool Area::save(void) {
+    DbgEvent event("Saving Area [%s].", Q_CSTR(getNodePath()));
     bool success = true;
-    Debug::Log(Debug::DBG_VERBOSE, QString("Area::Save("+_location+")"));
-    Debug::push();
     //Save parent level
     success &= level->save();
     //export to previous save location
-    success &= saveAs(_location);
+    success &= saveAs(getNodePath());
     _undoStack.setClean();
-    Debug::pop();
     return success;
 }
 
 bool Area::saveAs(const QString dir) {
+    DbgEvent event("Saving Area [%s].", Q_CSTR(dir));
     bool success = true;
     bool newLoc = (_location != dir)? true : false;
     QDir qdir;
 
-    Debug::Log(Debug::DBG_VERBOSE, QString("Area::Export("+dir+")"));
-    Debug::push();
-
     //Check Save As and directory already exists
     if(newLoc && qdir.exists(dir)) {
-        Debug::Log(Debug::DBG_VERBOSE, "Directory already exists!");
-        Debug::push();
-        if(QMessageBox::critical(NULL, tr("Warning!"), tr("A directory of the same name already exists at the specified location. Overwrite?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
+        DbgEvent event("Directory already exists!");
+        if(QMessageBox::critical(nullptr, tr("Warning!"), tr("A directory of the same name already exists at the specified location. Overwrite?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
             if(!qdir.rmdir(dir)) {
-                Debug::Log(Debug::DBG_WARNING, "Could not delete existing directory!");
-                Debug::pop();
-                Debug::pop();
+                Debug::Log(Debug::DBG_ERROR, "Could not delete existing directory!");
                 return false;
+            } else {
+                dbgprintf("Directory successfully deleted.");
             }
         }
         else {
             Debug::Log(Debug::DBG_VERBOSE, "Directory overwrite canceled.");
-            Debug::pop();
-            Debug::pop();
             return true; //User canceled, still a success
         }
-        Debug::pop();
     }
 
     //create main area directory if it doesn't already exist
     if(!qdir.exists(dir)) {
-        Debug::Log(Debug::DBG_VERBOSE, "Creating root directory");
-        Debug::push();
+        DbgEvent event("Creating directory.");
         if(!qdir.mkdir(dir)) {
-            Debug::Log(Debug::DBG_WARNING, "Could not create directory!");
-            Debug::pop();
-            Debug::pop();
+            errprintf("Could not create directory!");
             return false; //no point in proceeding
         }
-        Debug::pop();
     }
 
 /*
@@ -383,7 +375,6 @@ bool Area::saveAs(const QString dir) {
     entities = oldEntities;
     inactiveEntities = oldInactiveEntities;
 
-    Debug::pop();
     return success;
 }
 
