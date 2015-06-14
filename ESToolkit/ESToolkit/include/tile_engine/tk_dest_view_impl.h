@@ -521,4 +521,3 @@ void DestView<T>::selectionPaste(void) {
 
 
 #endif // TK_DEST_VIEW_IMPL_H
-

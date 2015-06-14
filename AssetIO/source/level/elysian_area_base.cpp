@@ -416,12 +416,9 @@ void AreaBase::activate(void) {
 
 #if 1
 #ifdef ELYSIAN_AREA_USE_INIT_LUA
-    {
-        strcpy(buffer, path); //dir);
-        strcat(buffer, ELYSIAN_AREA_INIT_LUA_PATH);
-        DbgEvent event("Executing area_init script [%s].", buffer);
-        LuaManager::runScriptSandbox(buffer);
-    }
+    strcpy(buffer, path); //dir);
+    strcat(buffer, ELYSIAN_AREA_INIT_LUA_PATH);
+    LuaManager::runScriptSandbox(buffer);
 #endif
 #endif
 
@@ -487,7 +484,5 @@ void AreaBase::setInactiveEntityByIndex(const unsigned index, Entity*const entit
         //inactiveEntities[index]->fromTable(valueTable);
     }
 }
-
-
 
 }

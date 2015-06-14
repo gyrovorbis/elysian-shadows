@@ -47,7 +47,7 @@ private:
 
 
 
-	//Shared delegate instance for displaying all TileSelectables
+    //Shared delegate instance for displaying all TileSelectables
     static TileSelectableSelectionViewDelegate* _selectionViewDelegate;
 
 protected:
@@ -83,24 +83,24 @@ protected:
 
 public:
 
-	//Main constructor--based on QGraphicsItems that have been selected within the scene
-	TileSelectable(const QList<QGraphicsItem *>& items, Area *const area, Level *const lev, const Assets::LAYER_TYPE layer);
-	//Copy constructor
-	TileSelectable(const TileSelectable &rval);
-	//MEGA reesty constructor to optimize creation from MapView
-	TileSelectable(const QRect &region, bool selectionArray[][ELYSIAN_AREA_MAP_WIDTH], Area *const area, Level *const lev, const Assets::LAYER_TYPE layer);
+    //Main constructor--based on QGraphicsItems that have been selected within the scene
+    TileSelectable(const QList<QGraphicsItem *>& items, Area *const area, Level *const lev, const Assets::LAYER_TYPE layer);
+    //Copy constructor
+    TileSelectable(const TileSelectable &rval);
+    //MEGA reesty constructor to optimize creation from MapView
+    TileSelectable(const QRect &region, bool selectionArray[][ELYSIAN_AREA_MAP_WIDTH], Area *const area, Level *const lev, const Assets::LAYER_TYPE layer);
 
     virtual void                populateModel(void) override;
     virtual void                installSelectionViewCustomDelegates(QAbstractItemView *const view) override;
     virtual QAbstractItemModel* getModel(void) const override;
     Assets::LAYER_TYPE          getTileLayer(void) const { return _layer; }
     virtual Selectable::TYPE    getType(void) const override { return Selectable::TILE; }
-	TileEntry					getPrevEntry(const unsigned x, const unsigned y) const;
-	void						getScenePos(unsigned& x, unsigned& y) const;
+    TileEntry					getPrevEntry(const unsigned x, const unsigned y) const;
+    void						getScenePos(unsigned& x, unsigned& y) const;
 
-	//void    updateSceneSelection(const unsigned sceneX, const unsigned sceneY);
-	//void    clearSceneSelection(void);
-	//void    clearPrevSceneSelection(void);
+    //void    updateSceneSelection(const unsigned sceneX, const unsigned sceneY);
+    //void    clearSceneSelection(void);
+    //void    clearPrevSceneSelection(void);
 
     //MapEntry modifiers
     void    elevateUp(void);

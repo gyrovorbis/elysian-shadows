@@ -187,10 +187,12 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
         //GYVector4 { x*32.0f+16.0f, y*32.0f+ 16.0f +  tileEntry->getElev()*32.0f, tileEntry->getElev()*32.0f, 1.0f },
 
         //WTF?
-        gyVidDepthTest(true);
+        //gyVidDepthTest(true);
         gyVidQuadListBegin(&color);
         for(unsigned i = 0; i < count; ++i) {
             auto& entry = array[i];
+            int plane = entry.mapEntry.getPlane();
+            int elev = entry.mapEntry.getElev();
             if(entry.drawStyle == DRAW_NORMAL || entry.mapEntry.getPlane() != planeType/* || !entry.mapEntry.getIndex()*/) continue;
             gyVidRectPlaneType(entry.mapEntry.getPlane());
             gyMatPush();

@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-struct GYVidInitParams;
+struct _GYVidInitParams;
 struct GYCamera;
 
 typedef struct GYColor4 {
@@ -23,9 +23,9 @@ typedef struct GYVertex {
     GYVector3   tangent;
 } GYVertex;
 
-typedef enum GY_ALPHA_SEVERITY { GY_ALPHA_NONE, GY_ALPHA_PUNCHTHRU, GY_ALPHA_FULL } GY_ALPHA_SEVERITY;
+typedef enum _GY_ALPHA_LEVEL { GY_ALPHA_NONE, GY_ALPHA_PUNCHTHRU, GY_ALPHA_FULL } GY_ALPHA_LEVEL;
 
-typedef enum GY_RECT_PLANE_TYPE {
+typedef enum _GY_RECT_PLANE_TYPE {
     GY_RECT_PLANE_BOTTOM,
     GY_RECT_PLANE_FRONT,
     GY_RECT_PLANE_LEFT,
@@ -43,7 +43,7 @@ typedef enum GY_BLEND_MODE {
 
 //Internal state
 void gyVidTexBind(const struct GYTexture *const tex);
-void gyVidAlphaLevel(const GY_ALPHA_SEVERITY lev);
+void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev);
 void gyVidBlendMode(const GY_BLEND_MODE mode);
 void gyVidDepthTest(const int enable);
 void gyVidResolution(unsigned int *const width, unsigned int *const height);
@@ -54,7 +54,7 @@ void gyVidCamUpdate(const struct GYCamera *const cam);
 void gyVidSetCamWorldPos(const GYVector3*const pos);
 
 //General Video API
-int         gyVidInit(const struct GYVidInitParams *const params); //MUST SET PROJWIDTH/PROJHEIGHT
+int         gyVidInit(const struct _GYVidInitParams *const params); //MUST SET PROJWIDTH/PROJHEIGHT
 int         gyVidUninit(void);
 void        gyVidSceneBegin(void);
 void        gyVidSceneEnd(void);

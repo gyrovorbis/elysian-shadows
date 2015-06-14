@@ -17,9 +17,6 @@
 #include "tk_entity_selectable.h"
 #include "elysian_renderable.hpp"
 #include "elysian_animation.hpp"
-#include "elysian_sprite_attrib.hpp"
-#include "elysian_material.hpp"
-#include <elysian_level.hpp>
 
 
 MapView::MapView(QWidget *parent): DestView<TileEntry>::DestView(parent) {
@@ -139,7 +136,7 @@ void MapView::_entitySelectionUpdate(void) {
         entity->getTransform().setPos(midPt.x(), midPt.y(), 0.0f);
         entity->getTransform().setSize(rect.width(), rect.height(), rect.height()+600.0f);
         getCurrentArea()->addEntity(_selectionColliders[k]);
-	}
+    }
 
 }
 
@@ -405,8 +402,6 @@ void MapView::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void MapView::mousePressEvent(QMouseEvent *event) {
-    if(event->button() == Qt::RightButton && !getCurrentLevel()->validSheets()) return;
-
     DestView<TileEntry>::mousePressEvent(event);
 
 
@@ -560,6 +555,3 @@ void MapView::updateSelectionItemGroup(void) { }
 void MapView::deleteSelectionItemGroup(void) {
     _selItemGroup = nullptr;
 }
-
-
-

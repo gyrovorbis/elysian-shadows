@@ -260,4 +260,3 @@ void TileGraphicsItem<T>::_renderFlipRotPixmap(QPainter *const painter, const QP
 
 
 #endif // TK_TILE_GRAPHICS_ITEM_IMPL_H
-

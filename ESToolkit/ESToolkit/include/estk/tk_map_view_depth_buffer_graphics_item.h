@@ -9,17 +9,17 @@
 #include "elysian_map_system.hpp"
 
 class MapViewDepthBufferGraphicsItem:
-		public MapViewTileGraphicsItem,
-		public elysian::MapDepthBuffer<MapViewDepthBufferGraphicsItem,
+        public MapViewTileGraphicsItem,
+        public elysian::MapDepthBuffer<MapViewDepthBufferGraphicsItem,
                                         TkMapDepthBuffEntryImpl,
                                         TkEntityDepthBuffEntryImpl> {
 private:
-	QPainter *_curPainter;
+    QPainter *_curPainter;
     std::vector<Entity*>* _curEntities;
 
 public:
 
-	//=== Implemented from elysian::MapDepthBuffer ===
+    //=== Implemented from elysian::MapDepthBuffer ===
     void        getOnscreenTileRegion(int &startX, int &startY, int &endX, int &endY) const;
     float       getBaseZCoord(void) const;
     void        getObjectLayerEntry(const unsigned x, const unsigned y, TkMapDepthBuffEntryImpl &entry);
@@ -41,17 +41,17 @@ public:
     void        bindTileBuffer(void);
     void        unbindTileBuffer(void);
 
-	//=== /Implemened from elysian::MapDepthBuffer ===
+    //=== /Implemened from elysian::MapDepthBuffer ===
 
-	MapViewDepthBufferGraphicsItem(void) {}
+    MapViewDepthBufferGraphicsItem(void) {}
 
-	virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem */*option*/, QWidget */*widget*/) {
-		if(!getCurrentLevel() || !getCurrentArea()) return;
-		_curEntities = &getCurrentArea()->getEntities();
-		_curPainter = painter;
+    virtual void paint(QPainter *painter, const QStyleOptionGraphicsItem */*option*/, QWidget */*widget*/) {
+        if(!getCurrentLevel() || !getCurrentArea()) return;
+        _curEntities = &getCurrentArea()->getEntities();
+        _curPainter = painter;
 
-		render();
-	}
+        render();
+    }
 };
 
 inline void MapViewDepthBufferGraphicsItem::flushTileBuffer(void) { }
@@ -62,34 +62,34 @@ inline bool MapViewDepthBufferGraphicsItem::isShadowPass(void) const { return fa
 inline void MapViewDepthBufferGraphicsItem::renderCustomPassImmediate(void) { }
 
 inline void MapViewDepthBufferGraphicsItem::getOnscreenTileRegion(int &startX, int &startY, int &endX, int &endY) const {
-	QRect renderRegion = getVisibleTileRegion();
-	startX	= renderRegion.left();
-	endX	= renderRegion.right();
-	startY	= renderRegion.top();
-	endY	= renderRegion.bottom();
+    QRect renderRegion = getVisibleTileRegion();
+    startX	= renderRegion.left();
+    endX	= renderRegion.right();
+    startY	= renderRegion.top();
+    endY	= renderRegion.bottom();
 }
 
 inline float MapViewDepthBufferGraphicsItem::getBaseZCoord(void) const {
-	return elysian::ZCoordConstants::mapBase;
+    return elysian::ZCoordConstants::mapBase;
 }
 
 inline void MapViewDepthBufferGraphicsItem::getObjectLayerEntry(const unsigned x, const unsigned y, TkMapDepthBuffEntryImpl &entry) {
-	_currentLayer = (Assets::LAYER_TYPE)entry.layer;
+    _currentLayer = (Assets::LAYER_TYPE)entry.layer;
     entry.lights = 0;
-	entry.drawStyle = (getAssets()->getCurrentLayer() == _currentLayer)? _getTileDrawStyle(x, y) : DRAW_NORMAL;
-	entry.mapEntry = _getTileEntryFromDrawStyle(x, y, entry.drawStyle);
+    entry.drawStyle = (getAssets()->getCurrentLayer() == _currentLayer)? _getTileDrawStyle(x, y) : DRAW_NORMAL;
+    entry.mapEntry = _getTileEntryFromDrawStyle(x, y, entry.drawStyle);
 }
 
 inline void MapViewDepthBufferGraphicsItem::renderObjectEntry(const TkMapDepthBuffEntryImpl &entry, const float /*z*/)  {
-	if(!getAssets()->getLayerVisible((Assets::LAYER_TYPE)entry.layer)) return;
-	Assets::LAYER_TYPE curLayer = getAssets()->getCurrentLayer();
+    if(!getAssets()->getLayerVisible((Assets::LAYER_TYPE)entry.layer)) return;
+    Assets::LAYER_TYPE curLayer = getAssets()->getCurrentLayer();
 
-	_curPainter->save();
-	_curPainter->translate(entry.x*32, entry.y*32);
+    _curPainter->save();
+    _curPainter->translate(entry.x*32, entry.y*32);
     if(Area::getInactiveTransparency() && entry.layer != (unsigned)curLayer) _curPainter->setOpacity(0.5f);
-	_renderTile(_curPainter, TileEntry(entry.mapEntry.value), entry.drawStyle, entry.x, entry.y,
-				(curLayer == (Assets::LAYER_TYPE)entry.layer));
-	_curPainter->restore();
+    _renderTile(_curPainter, TileEntry(entry.mapEntry.value), entry.drawStyle, entry.x, entry.y,
+                (curLayer == (Assets::LAYER_TYPE)entry.layer));
+    _curPainter->restore();
 }
 
 inline unsigned MapViewDepthBufferGraphicsItem::getEntityCount(void) {
@@ -97,19 +97,19 @@ inline unsigned MapViewDepthBufferGraphicsItem::getEntityCount(void) {
 }
 
 inline bool MapViewDepthBufferGraphicsItem::getOnscreenEntity(const unsigned index, TkEntityDepthBuffEntryImpl &entry, elysian::NORMAL_TYPE &type, float &lowestY, float &elev) const {
-	Entity &entity = *(*_curEntities)[index];
-		if(true) { //CHECK IF NIGGER IS ONSCREEN
-			entry.entity = &entity;
+    Entity &entity = *(*_curEntities)[index];
+        if(true) { //CHECK IF NIGGER IS ONSCREEN
+            entry.entity = &entity;
             type = (elysian::NORMAL_TYPE)entry.entity->getPlaneType();
             lowestY = entity.getDepthBaseY();
             elev = entity.getElev();
-			return true;
-		}
-		return false;
+            return true;
+        }
+        return false;
 }
 
 inline void MapViewDepthBufferGraphicsItem::renderEntityEntry(const TkEntityDepthBuffEntryImpl &/*entry*/) const {
-	//entry.entity->paint(_curPainter, NULL, NULL);
+    //entry.entity->paint(_curPainter, NULL, NULL);
 }
 
 inline void MapViewDepthBufferGraphicsItem::enableDepthTest(void) const { }

@@ -3,18 +3,16 @@
 
 #include <cassert>
 #include <cstring>
-#include <elysian_zcoords.hpp>
+#include "elysian_area.hpp"
+#include "elysian_zcoords.hpp"
 #include <gyro_shader_api.h>
-
-//#include "elysian_system.hpp"
-//#include "elysian_light_system.hpp"
 
 //Maximum elevation height an object can have
 #define ELYSIAN_DEPTH_BUFFER_OBJECT_ELEVATION_MAX 31
 //Objects have integer zCoords, force Entities to floats to prevent duplicate z
-#define ELYSIAN_DEPTH_BUFFER_ENTITY_OBJECT_MIN_Y_DBG_OFFSET 0.001f
+#define ELYSIAN_DEPTH_BUFFER_ENTITY_OBJECT_MIN_Y_OFFSET 0.001f
 //Applied to every entity at the same buffer index to prevent duplicate z
-#define ELYSIAN_DEPTH_BUFFER_ENTITY_ENTITY_MIN_Z_DBG_OFFSET 0.001f
+#define ELYSIAN_DEPTH_BUFFER_ENTITY_ENTITY_MIN_Z_OFFSET 0.001f
 //This needs to be at least as tall as the rendered map area? Not really?
 #define ELYSIAN_DEPTH_BUFFER_HEIGHT (ELYSIAN_AREA_MAP_HEIGHT+ELYSIAN_DEPTH_BUFFER_OBJECT_ELEVATION_MAX)
 //This needs to be at LEAST as wide as the rendered map area? Not really?
@@ -158,9 +156,8 @@ namespace elysian {
 
         //Entity buffer
         unsigned _entityCount[ELYSIAN_DEPTH_BUFFER_HEIGHT];
+        E _entityBuff[ELYSIAN_DEPTH_BUFFER_HEIGHT][ELYSIAN_DEPTH_BUFFER_ENTITY_WIDTH];
         uint32_t _entityRowLights[ELYSIAN_DEPTH_BUFFER_HEIGHT];
-        E        _entityBuff[ELYSIAN_DEPTH_BUFFER_HEIGHT][ELYSIAN_DEPTH_BUFFER_ENTITY_WIDTH]; __attribute__((aligned(32)))
-
 
         uint32_t _lightsRendered = 0;
         uint32_t _lightsActive	= 0;
@@ -281,7 +278,7 @@ namespace elysian {
         for(unsigned j = 0; j < _depthBuffMaxHeight; ++j) {
             if(_entityCount[j]) {
                 unsigned onscreenLights = 0;
-                if(!_isShadowPass()) {
+                if(!gyVidShadowPass()) {
                     for(unsigned i = 0; i < 32; ++i) if(_entityRowLights[i]&(0x1<<i)) ++onscreenLights;
                 }
                 const bool multipass = (onscreenLights > GYRO_VIDEO_LIGHT_SOURCES_MAX);
@@ -343,7 +340,6 @@ namespace elysian {
 
                     j = endIndex;
                 }
-
 
             if(_isShadowPass()) {
                 _renderDepthBuffTileRow(i, NORMAL_FLAT);
@@ -496,7 +492,7 @@ namespace elysian {
             }
         }
 
-       // Debug::printf(Debug::DBG_VERBOSE, "stateChanges - %d", stateChanges);
+       // Debug::printf(Debug::VERBOSE, "stateChanges - %d", stateChanges);
 
        // static_cast<T*>(this)->flushTileBuffer();
        //static_cast<T*>(this)->unbindTileBuffer();

@@ -27,31 +27,31 @@ protected:
     QPointF             _fillCurrentPivot;
     bool                _fillingRegion      = false;
 
-	//Undo/redo extra data to retreive ID dynamically
+    //Undo/redo extra data to retreive ID dynamically
     bool                _placedTileGroup    = false;
     int                 _placeTileGroupID;
 
-	//Tile selection placement state
+    //Tile selection placement state
     int                 _prevXOffset        = 0;
     int                 _prevYOffset        = 0;
     bool                _selectionChanged   = true;
 
-	//Tile Region Filling Logic
-	void _startRegionFill(QMouseEvent *event);
-	void _updateRegionFill(QMouseEvent *event);
-	void _endRegionFill(QMouseEvent *event);
+    //Tile Region Filling Logic
+    void _startRegionFill(QMouseEvent *event);
+    void _updateRegionFill(QMouseEvent *event);
+    void _endRegionFill(QMouseEvent *event);
 
     void _scheduleMousePosUpdate(void);
 
-	virtual bool _populatePlaceTileGroup(const TileSelection<T> *const terSel, PlaceTileGroupUndoItem<T> *const groupCmd) const;
-	virtual bool _populatePlaceTileGroupRegionFill(const TileSelection<T> *const terSel, PlaceTileGroupUndoItem<T> *const groupCmd) const;
+    virtual bool _populatePlaceTileGroup(const TileSelection<T> *const terSel, PlaceTileGroupUndoItem<T> *const groupCmd) const;
+    virtual bool _populatePlaceTileGroupRegionFill(const TileSelection<T> *const terSel, PlaceTileGroupUndoItem<T> *const groupCmd) const;
 
-	//Overridden SourceView functionality
-	virtual void _sceneSelectionAddRect(const QRectF &rect);
-	virtual void _sceneSelectionUpdateLastRect(const QRectF &rect);
-	virtual void _sceneSelectionClear(void);
+    //Overridden SourceView functionality
+    virtual void _sceneSelectionAddRect(const QRectF &rect);
+    virtual void _sceneSelectionUpdateLastRect(const QRectF &rect);
+    virtual void _sceneSelectionClear(void);
 
-	//Overridable DestView functionality
+    //Overridable DestView functionality
     virtual TileSelection<T>*           _getTileSelection(void) const = 0;
     virtual void                        _setTileSelection(TileSelection<T> *const sel) = 0;
     virtual QUndoStack*                 _getUndoStack(void) const = 0;
@@ -66,32 +66,32 @@ public:
     inline bool     isFillingRegion(void) const { return _fillingRegion; }
     inline void     setSelectionChanged(const bool val) { _selectionChanged = val; }
 
-	/* Needs to be invoked whenever a terrain selection is made to
-	   create the selection in the view. */
+    /* Needs to be invoked whenever a terrain selection is made to
+       create the selection in the view. */
     virtual void createSelectionItemGroup(void);
     virtual void deleteSelectionItemGroup(void);
     virtual void updateSelectionItemGroup(void);
 
-	void placeSelection(void);
-	void disableSelectionPlacementMerge(void);
+    void placeSelection(void);
+    void disableSelectionPlacementMerge(void);
 
-	void selectionCut(void);
-	void selectionPaste(void);
-	void selectionFlipHorizontal(void);
-	void selectionFlipVertical(void);
-	void selectionRotateC(void);
-	void selectionRotateCC(void);
+    void selectionCut(void);
+    void selectionPaste(void);
+    void selectionFlipHorizontal(void);
+    void selectionFlipVertical(void);
+    void selectionRotateC(void);
+    void selectionRotateCC(void);
 
-	//reimplemented QT functionality
+    //reimplemented QT functionality
 
-	virtual void keyReleaseEvent(QKeyEvent *event);
-	virtual void scrollContentsBy(int dx, int dy);
-	virtual void keyPressEvent(QKeyEvent *event);
-	virtual void wheelEvent(QWheelEvent *event);
-	virtual void mousePressEvent(QMouseEvent *event);
-	virtual void mouseMoveEvent(QMouseEvent *event);
-	virtual void mouseReleaseEvent(QMouseEvent *event);
-	virtual void drawForeground(QPainter *painter, const QRectF &rect);
+    virtual void keyReleaseEvent(QKeyEvent *event);
+    virtual void scrollContentsBy(int dx, int dy);
+    virtual void keyPressEvent(QKeyEvent *event);
+    virtual void wheelEvent(QWheelEvent *event);
+    virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void mouseReleaseEvent(QMouseEvent *event);
+    virtual void drawForeground(QPainter *painter, const QRectF &rect);
 };
 
 

@@ -3,7 +3,7 @@
 
 #include <gyro_shader_api.h>
 #include <elysian_lua_table_proxy.hpp>
-#include <elysian_instance_transform.hpp>
+#include "elysian_instance_transform.hpp"
 
 namespace elysian {
 

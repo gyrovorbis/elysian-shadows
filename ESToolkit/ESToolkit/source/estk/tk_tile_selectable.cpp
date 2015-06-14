@@ -76,57 +76,57 @@ void TileSelectable::_populateTileIndicesList(void) {
 }
 
 TileSelectable::TileSelectable(const QList<QGraphicsItem *> &items, Area *const area, Level *const lev, const Assets::LAYER_TYPE layer):
-	TileSelection<TileEntry>::TileSelection(items),
-	_layer(layer),
-	_level(lev),
-	_area(area)
+    TileSelection<TileEntry>::TileSelection(items),
+    _layer(layer),
+    _level(lev),
+    _area(area)
 {
     //Q_ASSERT(0); //shouldn't be using this constructor
-	if(!_selectionViewDelegate) _selectionViewDelegate = new TileSelectableSelectionViewDelegate;
+    if(!_selectionViewDelegate) _selectionViewDelegate = new TileSelectableSelectionViewDelegate;
     _populateTileIndicesList();
     //updateSceneSelection();
 }
 
 
 TileSelectable::TileSelectable(const QRect &region, bool selectionArray[][ELYSIAN_AREA_MAP_WIDTH], Area *const area, Level *const lev, const Assets::LAYER_TYPE layer):
-	_layer(layer),
-	_level(lev),
-	_area(area)
+    _layer(layer),
+    _level(lev),
+    _area(area)
 {
-	_width = region.width();
-	_height = region.height();
+    _width = region.width();
+    _height = region.height();
 
-	_allocArrays(_entry, _inSelection, _width, _height);
+    _allocArrays(_entry, _inSelection, _width, _height);
 
-	for(unsigned j = 0; j < _height; ++j) {
-		for(unsigned i = 0; i < _width; ++i) {
-			//uint16_t tileValue = area->getTileValue(QPoint(region.topLeft().x()+i, region.topLeft().y()+j), layer);
-			_entry[j][i] = area->getTileEntry(QPoint(region.topLeft().x()+i, region.topLeft().y()+j), layer);
+    for(unsigned j = 0; j < _height; ++j) {
+        for(unsigned i = 0; i < _width; ++i) {
+            //uint16_t tileValue = area->getTileValue(QPoint(region.topLeft().x()+i, region.topLeft().y()+j), layer);
+            _entry[j][i] = area->getTileEntry(QPoint(region.topLeft().x()+i, region.topLeft().y()+j), layer);
             _inSelection[j][i] = selectionArray[region.topLeft().y()+j][region.topLeft().x()+i];
-			//_index[j][i] = ELYSIAN_MAP_INDEX_FROM_VALUE(tileValue);
-			//_orient[j][i] = ELYSIAN_MAP_ORIENT_FROM_VALUE(tileValue);
+            //_index[j][i] = ELYSIAN_MAP_INDEX_FROM_VALUE(tileValue);
+            //_orient[j][i] = ELYSIAN_MAP_ORIENT_FROM_VALUE(tileValue);
 
-		}
-	}
+        }
+    }
 
-	if(!_selectionViewDelegate) _selectionViewDelegate = new TileSelectableSelectionViewDelegate;
+    if(!_selectionViewDelegate) _selectionViewDelegate = new TileSelectableSelectionViewDelegate;
     _populateTileIndicesList();
-	//updateSceneSelection(region.topLeft().x(), region.topLeft().y());
+    //updateSceneSelection(region.topLeft().x(), region.topLeft().y());
 }
 
 TileSelectable::TileSelectable(const TileSelectable &rval):
-	TileSelection<TileEntry>::TileSelection(rval),
-	Selectable(),
-	PropertyStackModel(),
-	_layer(rval._layer),
-	_level(rval._level),
-	_area(rval._area)
+    TileSelection<TileEntry>::TileSelection(rval),
+    Selectable(),
+    PropertyStackModel(),
+    _layer(rval._layer),
+    _level(rval._level),
+    _area(rval._area)
 {}
 
 void TileSelectable::populateModel(void) {
 
-	clearStack();
-	insertHeaders();
+    clearStack();
+    insertHeaders();
 
     //Add group attributes if we're > 1
     if(_tileIndices.size() > 1) {
@@ -186,37 +186,37 @@ void TileSelectable::populateModel(void) {
 
     for(const auto it : _tileIndices) {
 
-			//ADD TILE ATTRIBUTES (BOTH TERRAIN AND OBJECTS)
+            //ADD TILE ATTRIBUTES (BOTH TERRAIN AND OBJECTS)
             const unsigned int tileIndex = it;
             elysian::Tile *curTile = &_level->getElysianLevel()->tileset[tileIndex];
             auto*           curTileWrapper = _level->getElysianTileWrapper(tileIndex);
-			Q_ASSERT(curTile);
-			//Add tile # and icon header
-			QStandardItem *item = new QStandardItem;
+            Q_ASSERT(curTile);
+            //Add tile # and icon header
+            QStandardItem *item = new QStandardItem;
             item->setData(tileIndex, Qt::DisplayRole);
-			item->setFlags(Qt::ItemIsEnabled);
+            item->setFlags(Qt::ItemIsEnabled);
             item->setIcon(_level->getTileImage(tileIndex)->getIcon());
-			pushLabel("Tile", item);
+            pushLabel("Tile", item);
 
-				//Add collider type property
+                //Add collider type property
                 item = new PropertyStandardItem<QString, ElysianTileWrapper, true>(curTileWrapper,
-																				   &ElysianTileWrapper::getColliderString,
-																				   &ElysianTileWrapper::setColliderString,
-																				   UndoItem::TILE_COLLIDER,
-																				   &_area->getUndoStack(),
-																				   &ElysianTileWrapper::updateColliderIcon);
-				item->setIcon(ElysianTileWrapper::getColliderIconFromEnum((ElysianTileWrapper::COLLIDER_TYPE)curTile->getColliderType()));
+                                                                                   &ElysianTileWrapper::getColliderString,
+                                                                                   &ElysianTileWrapper::setColliderString,
+                                                                                   UndoItem::TILE_COLLIDER,
+                                                                                   &_area->getUndoStack(),
+                                                                                   &ElysianTileWrapper::updateColliderIcon);
+                item->setIcon(ElysianTileWrapper::getColliderIconFromEnum((ElysianTileWrapper::COLLIDER_TYPE)curTile->getColliderType()));
                 if(tileIndex == 0) item->setEditable(false);
                 if(_groupCol) _groupCol->addChildItem(static_cast<ESTkStandardItem*>(item));
                 addProperty("collider", item);
 
-				//addProperty("col int", new PropertyStandardItem<unsigned, elysian::Tile>(curTile, &elysian::Tile::getColliderType, &elysian::Tile::setColliderType));
+                //addProperty("col int", new PropertyStandardItem<unsigned, elysian::Tile>(curTile, &elysian::Tile::getColliderType, &elysian::Tile::setColliderType));
 
                 item = new PropertyStandardItem<bool, elysian::Tile, true>(curTile,
                                                                                 &elysian::Tile::getAnimated,
                                                                                 &elysian::Tile::setAnimated,
-																				UndoItem::TILE_ANIMATED,
-																				&_area->getUndoStack());
+                                                                                UndoItem::TILE_ANIMATED,
+                                                                                &_area->getUndoStack());
                 item->setEditable(false);
                 item->setCheckState(curTile->getAnimated()? Qt::Checked : Qt::Unchecked);
                 if(tileIndex != 0) {
@@ -224,25 +224,25 @@ void TileSelectable::populateModel(void) {
                     static_cast<PropertyStandardItem<bool, elysian::Tile, true>*>(item)->unignoreCheck();
                 }
 
-				pushLabel("Animation", item);
+                pushLabel("Animation", item);
 
                     item = new PropertyStandardItem<uint16_t, elysian::Tile, true>(curTile,
                                                                                         &elysian::Tile::getNextIndex,
                                                                                         &elysian::Tile::setNextIndex,
-																						UndoItem::TILE_ANIM_NEXT_INDEX,
-																						&_area->getUndoStack());
+                                                                                        UndoItem::TILE_ANIM_NEXT_INDEX,
+                                                                                        &_area->getUndoStack());
                     if(tileIndex == 0) item->setEditable(false);
-					addProperty("next index", item);
+                    addProperty("next index", item);
 
                     item = new PropertyStandardItem<float, elysian::Tile, true>(curTile,
                                                                                         &elysian::Tile::getAnimTime,
                                                                                         &elysian::Tile::setAnimTime,
-																						UndoItem::TILE_ANIM_TIME,
-																						&_area->getUndoStack());
+                                                                                        UndoItem::TILE_ANIM_TIME,
+                                                                                        &_area->getUndoStack());
                     if(tileIndex == 0) item->setEditable(false);
-					addProperty("time", item);
+                    addProperty("time", item);
 
-				popLabel();
+                popLabel();
 
                 item = new PropertyStandardItem<bool, elysian::Tile, true>(curTile,
                                                                                     &elysian::Tile::getStandOn,
@@ -301,53 +301,53 @@ void TileSelectable::populateModel(void) {
                 if(_groupSpecular) _groupSpecular->addChildItem(static_cast<ESTkStandardItem*>(item));
                 addProperty("Specular Map", item);
 
-			popLabel();
-		}
+            popLabel();
+        }
 }
 
 void TileSelectable::installSelectionViewCustomDelegates(QAbstractItemView *const view) {
-	view->setItemDelegate(_selectionViewDelegate);
+    view->setItemDelegate(_selectionViewDelegate);
 }
 
 void TileSelectable::elevateUp(void) {
-	for(unsigned y = 0; y < _height; ++y) {
-		for(unsigned x = 0; x < _width; ++x) {
-			if(!_entry[y][x].value) continue; //Do NOT give attributes to tile 0!
-			int elev = _entry[y][x].getElev();
+    for(unsigned y = 0; y < _height; ++y) {
+        for(unsigned x = 0; x < _width; ++x) {
+            if(!_entry[y][x].value) continue; //Do NOT give attributes to tile 0!
+            int elev = _entry[y][x].getElev();
             if(++elev > 31) elev = 31; //Cap the max elevation
-			_entry[y][x].setElev(elev);
-		}
-	}
+            _entry[y][x].setElev(elev);
+        }
+    }
 }
 
 void TileSelectable::elevateDown(void) {
-	for(unsigned y = 0; y < _height; ++y) {
-		for(unsigned x = 0; x < _width; ++x) {
-			if(!_entry[y][x].value) continue; //Do NOT give attributes to tile 0!
-			int elev = _entry[y][x].getElev();
-			if(--elev < 0) elev = 0; //Cap the min elevation
-			_entry[y][x].setElev(elev);
-		}
-	}
+    for(unsigned y = 0; y < _height; ++y) {
+        for(unsigned x = 0; x < _width; ++x) {
+            if(!_entry[y][x].value) continue; //Do NOT give attributes to tile 0!
+            int elev = _entry[y][x].getElev();
+            if(--elev < 0) elev = 0; //Cap the min elevation
+            _entry[y][x].setElev(elev);
+        }
+    }
 }
 
 void TileSelectable::elevateFromBase(void) {
-	for(unsigned y = 0; y < _height; ++y) {
-		for(unsigned x = 0; x < _width; ++x) {
-			if(!_entry[y][x].value) continue; //Do NOT give attributes to tile 0!
+    for(unsigned y = 0; y < _height; ++y) {
+        for(unsigned x = 0; x < _width; ++x) {
+            if(!_entry[y][x].value) continue; //Do NOT give attributes to tile 0!
             _entry[y][x].setElev(_height-1-y);
             _entry[y][x].setPlane(GY_RECT_PLANE_FRONT);
-		}
-	}
+        }
+    }
 }
 
 void TileSelectable::toggleZTransitional(void) {
-	for(unsigned y = 0; y < _height; ++y) {
-		for(unsigned x = 0; x < _width; ++x) {
-			if(!_entry[y][x].value) continue; //Do NOT give attributes to tile 0!
-			_entry[y][x].setZTran(!_entry[y][x].getZTran());
-		}
-	}
+    for(unsigned y = 0; y < _height; ++y) {
+        for(unsigned x = 0; x < _width; ++x) {
+            if(!_entry[y][x].value) continue; //Do NOT give attributes to tile 0!
+            _entry[y][x].setZTran(!_entry[y][x].getZTran());
+        }
+    }
 }
 
 void TileSelectable::toggleNormalFace(void) {
@@ -499,4 +499,3 @@ void TileSelectable::clearPrevSceneSelection(void) {
     }
 }
 */
-
