@@ -1606,11 +1606,9 @@ void ESToolkit::on_actionToggle_AutoScroll_triggered()
 
 void ESToolkit::on_actionActionSecret_triggered()
 {
-    if(_assets.getCurrentLevel()) {
-        _sheetManager->initialize(_ui->actionEnable_OpenGL->isChecked(), _ui->actionToggle_AutoScroll->isChecked());
-        _sheetManager->setFocus();
-        _sheetManager->showMaximized();
-    }
+    _sheetManager->initialize(_ui->actionEnable_OpenGL->isChecked(), _ui->actionToggle_AutoScroll->isChecked());
+    _sheetManager->setFocus();
+    _sheetManager->showMaximized();
 }
 
 void ESToolkit::on_actionEngine_Settings_triggered() {

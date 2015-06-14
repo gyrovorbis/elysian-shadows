@@ -28,7 +28,7 @@
 #include "tk_gl_utilities.h"
 
 //=====STATIC=====
-QPixmap SheetManager::reorientPixmap(const QPixmap &pixmap, const GY_RECT_TEX_ORIENT orient) {
+QPixmap SheetManager::reorientPixmap(const QPixmap pixmap, const GY_RECT_TEX_ORIENT orient) {
 	QTransform transform;
 
 	switch(orient) {
@@ -197,14 +197,14 @@ SheetManager::~SheetManager(void) {
 void SheetManager::initialize(const bool gl, const bool autoScroll) {
 	Assets &assets = *AssetManager::getAssets();
 
-    if(_destLevelDropdown->text() == assets.getCurrentLevel()->getNodeName() || _assets.getUndoStack()->count()) return;
+    if(_destLevelDropdown->text() == assets.getCurrentLevel()->getNodePath() || _assets.getUndoStack()->count()) return;
 
 	//_assets.setCurrentLevel(assets.getCurrentLevel());
 	//_assets.setCurrentTileType(assets.getCurrentLayerTileType());
 	_historyDockWidget->SetActiveStack(_assets.getUndoStack());
 	_ignoreSheetTabChange = true;
 
-    _destLevelDropdown->setText(assets.getCurrentLevel()->getNodeName());
+    _destLevelDropdown->setText(assets.getCurrentLevel()->getNodePath());
 
 	_ui->actionEnable_OpenGL->setChecked(gl);
 	on_actionEnable_OpenGL_triggered();
@@ -213,7 +213,7 @@ void SheetManager::initialize(const bool gl, const bool autoScroll) {
 
 
 	for(int l = 0; l < _destLevelActions.size(); ++l) {
-        if(_destLevelActions[l]->text() == assets.getCurrentLevel()->getNodeName()) {
+        if(_destLevelActions[l]->text() == assets.getCurrentLevel()->getNodePath()) {
 			_destLevelActions[l]->setChecked(true);
 			changeActiveLevel(_destLevelActions[l]);
 		}
@@ -273,8 +273,22 @@ void SheetManager::changeActiveLevel(QAction *action) {
 		return;
 	}
 
-	_assets.setCurrentLevel(AssetManager::getAssets()->getCurrentProject()->getLevel(action->text()));
-	if(!_assets.getCurrentLevel()->isOpen()) _assets.getCurrentLevel()->open();
+    auto* level = AssetManager::getAssets()->getCurrentProject()->getLevel(action->text());
+    if(!level) return;
+
+
+    if(!level->isOpen()) level->open();
+    if(!level->validSheets()) {
+        QMessageBox::warning(nullptr, "Invalid Sheet", "Tilesheet.png does not exist for the specified level. Could not open!");
+        _ui->_destView->setEnabled(false);
+        _ui->_destView->setScene(nullptr);
+        return;
+    }
+
+    _ui->_destView->setEnabled(true);
+    _ui->_destView->setScene(_destSheetScene);
+    _assets.setCurrentLevel(level);
+
 	Q_ASSERT(_assets.getCurrentLevel());
 	action->setChecked(true);
 	_destLevelDropdown->setText(action->text());
@@ -297,13 +311,13 @@ void SheetManager::changeActiveLevel(QAction *action) {
 
 void SheetManager::onLevelAdded(Project *const /*project*/, Level *const level) {
 	//destination
-    QAction *levelAction = new QAction(level->getNodeName(), this);
+    QAction *levelAction = new QAction(level->getNodePath(), this);
 	levelAction->setCheckable(true);
 	_destLevelMenu->addAction(levelAction);
 	_destLevelGroup->addAction(levelAction);
 	_destLevelActions.push_back(levelAction);
 	//source
-    levelAction = new QAction(level->getNodeName(), this);
+    levelAction = new QAction(level->getNodePath(), this);
 	levelAction->setCheckable(true);
 	_srcLevelMenu->addAction(levelAction);
 	_srcLevelGroup->addAction(levelAction);
@@ -313,7 +327,7 @@ void SheetManager::onLevelAdded(Project *const /*project*/, Level *const level) 
 void SheetManager::onLevelRemoved(Project *const /*project*/, Level *const level) {
 	//destination
 	for(int i = 0; i < _destLevelActions.size(); ++i) {
-        if(_destLevelActions[i]->text() == level->getNodeName()) {
+        if(_destLevelActions[i]->text() == level->getNodePath()) {
 			delete _destLevelActions[i];
 			_destLevelActions.remove(i);
 			break;
@@ -321,7 +335,7 @@ void SheetManager::onLevelRemoved(Project *const /*project*/, Level *const level
 	}
 	//source
 	for(int i = 0; i < _srcLevelActions.size(); ++i) {
-        if(_srcLevelActions[i]->text() == level->getNodeName()) {
+        if(_srcLevelActions[i]->text() == level->getNodePath()) {
 			delete _srcLevelActions[i];
 			_srcLevelActions.remove(i);
 			break;
@@ -524,6 +538,7 @@ bool SheetManager::_save(void) {
 	for(unsigned i = 0; i < 512; ++i) level->getTileImage(i)->setPixmap(reorientPixmap(tileDestEntry.tileEntry[i].getPixmap(), tileDestEntry.tileEntry[i].getOrient()));
 	retVal = level->saveTileSheet();
     retVal &= level->reloadSheets();
+    Level::updateScenes();
 	//Without this, we can't lay the same selection in the previous location, even though it may have been undone
 	_ui->_destView->setSelectionChanged(true);
     _assets.getUndoStack()->setClean();

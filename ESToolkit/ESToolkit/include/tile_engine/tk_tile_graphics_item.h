@@ -39,7 +39,7 @@ protected:
     virtual T _getTileEntryFromDrawStyle(const unsigned x, const unsigned y, const DRAW_STYLE style) const;
 
     void _renderTile(QPainter *const painter, const T entry, const DRAW_STYLE style, const unsigned x, const unsigned y, const bool decorate);
-    void _renderFlipRotPixmap(QPainter *const painter, const QPixmap &pixmap, const GY_RECT_TEX_ORIENT orient);
+    void _renderFlipRotPixmap(QPainter *const painter, const QPixmap pixmap, const GY_RECT_TEX_ORIENT orient);
 
     //IMPLEMENT ME!
     virtual bool _isSelectedWithinView(const unsigned x=0, const unsigned y=0) const=0;

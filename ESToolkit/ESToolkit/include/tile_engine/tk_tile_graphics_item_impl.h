@@ -203,7 +203,7 @@ void TileGraphicsItem<T>::_renderTile(QPainter *const painter, const T entry, co
  rotation is counterclockwise in the engine, while it's clockwise in QT. Hence we are negating rotation here.
  */
 template<typename T>
-void TileGraphicsItem<T>::_renderFlipRotPixmap(QPainter *const painter, const QPixmap &pixmap, const GY_RECT_TEX_ORIENT orient) {
+void TileGraphicsItem<T>::_renderFlipRotPixmap(QPainter *const painter, const QPixmap pixmap, const GY_RECT_TEX_ORIENT orient) {
     switch(orient) {
     case GY_RECT_TEX_ORIENT_NORMAL:
         painter->drawPixmap(-16, -16, 32, 32, pixmap);

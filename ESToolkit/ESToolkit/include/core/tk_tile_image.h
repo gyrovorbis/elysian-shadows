@@ -16,7 +16,7 @@ public:
 		return _pixmap;
 	}
 
-	void setPixmap(const QPixmap &pixmap) {
+    void setPixmap(const QPixmap pixmap) {
 		_pixmap = pixmap;
 		delete _icon;
 		_icon = new QIcon(_pixmap);

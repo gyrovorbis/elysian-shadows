@@ -23,7 +23,7 @@ public:
 	//Copy constructor -- deep copy
 	TileSelection(const TileSelection &rval);
     //Move constructor (C++11)
-    TileSelection(TileSelection &&rval);
+    //TileSelection(TileSelection &&rval);
 	virtual ~TileSelection(void);
 
 	//Implemented here, so this check is not expensive.
@@ -231,12 +231,13 @@ TileSelection<T>::TileSelection(const TileSelection &rval) {
     _allocArrays(_entry, _inSelection, _width, _height);
 
     for(unsigned i = 0; i < _height; ++i) {
-        memcpy(_entry[i], rval._entry[i], sizeof(_entry[0][0])*_width);
+        //memcpy(_entry[i], rval._entry[i], sizeof(_entry[0][0])*_width);
+        for(unsigned j = 0; j < _width; ++j) _entry[i][j] = rval._entry[i][j];
         memcpy(_inSelection[i], rval._inSelection[i], sizeof(_inSelection[0][0])*_width);
     }
 }
 
-
+/*
 template<typename T>
 TileSelection<T>::TileSelection(TileSelection &&rval):
     _width(rval._width),
@@ -246,7 +247,7 @@ TileSelection<T>::TileSelection(TileSelection &&rval):
 {
     rval._inSelection = rval._entry = nullptr;
 }
-
+*/
 template<typename T>
 TileSelection<T>::~TileSelection(void) {
     _freeArrays(_entry, _inSelection, _width, _height);
@@ -271,8 +272,8 @@ void TileSelection<T>::_allocArrays(T **&entry, bool **&selection, unsigned widt
     for(unsigned y = 0; y < height; ++y) {
         for(unsigned x = 0; x < width; ++x) {
             selection[y][x] = false;
-            //Clear entry out. An explicit default constructor is not required (or encouraged).
-            memset(&entry[y][x], 0, sizeof(T));
+            //Clear entry out. An explicit default constructor is not required (or encouraged). <-you're a dipshit.
+            //memset(&entry[y][x], 0, sizeof(T));
         }
     }
 }

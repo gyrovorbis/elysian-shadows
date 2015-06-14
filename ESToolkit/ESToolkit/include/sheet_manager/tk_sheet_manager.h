@@ -54,7 +54,7 @@ public:
 	//Returns false if CANCELED. Returns true if saved or discarded.
 	bool saveOrDiscard(bool canCancel=true);
 	//Useful helper function. This should really be moved to some utility Pixmap/Tile class eventually...
-	static QPixmap reorientPixmap(const QPixmap &pixmap, const GY_RECT_TEX_ORIENT orient);
+    static QPixmap reorientPixmap(const QPixmap pixmap, const GY_RECT_TEX_ORIENT orient);
 
 protected:
 	//virtual void closeEvent(QCloseEvent *const event);

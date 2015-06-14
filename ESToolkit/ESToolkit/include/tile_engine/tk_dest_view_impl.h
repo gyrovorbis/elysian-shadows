@@ -501,8 +501,9 @@ template<typename T>
 void DestView<T>::selectionCut(void) {
     TileSelection<T> *terSel = _getTileSelection();
     if(terSel) {
+        auto* newClipBoard = _copyConstructTileSelection(*terSel);
         delete _selClipboard;
-        _selClipboard = _copyConstructTileSelection(*terSel);
+        _selClipboard = newClipBoard;
         deleteSelectionItemGroup();
         _setTileSelection(nullptr);
         _sceneSelectionClear();
