@@ -35,7 +35,7 @@ namespace elysian {
         bool            getError(void) const;
         void            setError(const bool err=true);
 
-        virtual TYPE    getType(void) const { return TYPE_SCRIPT; }
+        virtual TYPE    getType(void) const;
 	};
 
 	//Supplied by Lua
@@ -70,6 +70,8 @@ namespace elysian {
 namespace OOLUA
 {
     typedef elysian::LuaBehaviorScriptAttrib    LuaBehaviorScriptAttrib;
+    typedef elysian::LuaScript                  LuaScript;
+    typedef elysian::LuaBehaviorScript          LuaBehaviorScript;
 }
 
 OOLUA_PROXY(LuaBehaviorScriptAttrib)
@@ -81,8 +83,25 @@ OOLUA_PROXY(LuaBehaviorScriptAttrib)
     OOLUA_MFUNC(addSupportedTrigger)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(LuaScript)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MEM_FUNC_CONST(const char*, getPath)
+    OOLUA_MEM_FUNC_CONST(unsigned, getRefCount)
+    OOLUA_MEM_FUNC_CONST(bool, getError)
+    //OOLUA_MEM_FUNC(Lua_table_ref&, getEnvironTable)
+OOLUA_PROXY_END
 
-
+OOLUA_PROXY(LuaBehaviorScript, LuaScript)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor
+    )
+    OOLUA_MEM_FUNC_CONST(maybe_null<LuaBehaviorScript*>, getParent)
+    OOLUA_MEM_FUNC(LuaBehaviorScriptAttrib*, getAttrib)
+OOLUA_PROXY_END
 
 
 
@@ -111,6 +130,9 @@ namespace elysian {
     inline void LuaScript::setEnvironRef(const int ref) { _environRef = ref; }
     inline bool LuaScript::getError(void) const { return _error; }
     inline void LuaScript::setError(const bool err) { _error = err; }
+
+
+    inline auto LuaScript::getType(void) const -> TYPE { return TYPE_SCRIPT; }
 }
 
 

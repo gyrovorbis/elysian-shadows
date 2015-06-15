@@ -8,7 +8,6 @@ OOLUA_EXPORT_FUNCTIONS(LuaBehaviorScriptAttrib,
                        addSupportedTrigger)
 OOLUA_EXPORT_FUNCTIONS_CONST(LuaBehaviorScriptAttrib)
 
-
 /*!
     \qmltype LuaBehaviorScriptAttrib
     \since 1.5.8
@@ -34,13 +33,11 @@ OOLUA_EXPORT_FUNCTIONS_CONST(LuaBehaviorScriptAttrib)
         end
     \endcode
 */
-
 /*!
  * \qmlmethod void LuaBehaviorScriptAttrib::addSupportedTrigger(Behavior.TRIGGER triggerType)
  *
  * Adds triggerType to the list of triggers implemented by the LuaBehaviorScript.
  */
-
 /*!
  * \qmlmethod void LuaBehaviorScriptAttrib::inheritFromBehavior(string path)
  *
@@ -48,6 +45,106 @@ OOLUA_EXPORT_FUNCTIONS_CONST(LuaBehaviorScriptAttrib)
  * the given path.
  */
 
+
+/*!
+    \qmltype LuaScript
+    \since 1.5.8
+    \inmodule ESToolkit
+    \brief Base class representing an executable Lua script. The
+    script may either be a standalone script file (ie area_init.lua)
+    or it can be a LuaBehavior script. All LuaScripts run within
+    their own sandboxed environments, with their own separate global
+    namespaces.
+
+    The sandbox environment table uses the true global '_G' table as
+    its __index metamethod, meaning it can read from it normally;
+    however, writing directly to the true global namespace must be
+    done explicitly (ie _G.value = 3)... Also that is absolutely
+    shitty style, so don't fucking do it.
+
+*/
+/*!
+ * \qmlmethod string LuaScript::getPath()
+ *
+ * Returns the full, asset-relative path to the source Lua script.
+ */
+
+/*!
+ * \qmlmethod int LuaScript::getRefCount()
+ *
+ * Returns the number of instances currently instantiated from
+ * a particular script or behavior. This is managed internally
+ * by the engine.
+ */
+
+/*!
+ * \qmlmethod bool LuaScript::getError()
+ *
+ * Returns true if the current Lua script contains any errors.
+ * Scripts in an error will report their error, then abort
+ * execution.
+ */
+
+
+OOLUA_EXPORT_FUNCTIONS(LuaScript)
+OOLUA_EXPORT_FUNCTIONS_CONST(LuaScript,
+                             getPath,
+                             getRefCount,
+                             getError)
+
+
+
+
+/*!
+    \qmltype LuaBehaviorScript
+    \since 1.5.8
+    \inmodule ESToolkit
+    \brief Class for Lua scripts implementing "Behavior" functionality.
+    A LuaBehaviorScript implements a series of "trigger" callback
+    functions, which are used to extend the functionality of the engine.
+    A LuaBehaviorScript may be instantiated as a LuaBehavior component
+    and attached to an Entity, overriding default engine behavior
+    or implementing entirely new behavior outside of the engine.
+
+    As each LuaScript is sandboxed with its own environment, each
+    LuaBehaviorScript has its own sandboxed environment table,
+    which is shared among all of its LuaBehavior instances.
+
+    The "global" namespace within a LuaBehaviorScript essentially
+    emulates static class variables and members, since every instance
+    shares the same environment. Because of this, instanced data is
+    contained within the "self" table, which is managed by the engine
+    and is passed back to each trigger when invoked by the engine.
+
+*/
+/*!
+ * \qmlmethod string LuaScript::getPath()
+ *
+ * Returns the full, asset-relative path to the source Lua script.
+ */
+
+/*!
+ * \qmlmethod int LuaScript::getRefCount()
+ *
+ * Returns the number of instances currently instantiated from
+ * a particular script or behavior. This is managed internally
+ * by the engine.
+ */
+
+/*!
+ * \qmlmethod bool LuaScript::getError()
+ *
+ * Returns true if the current Lua script contains any errors.
+ * Scripts in an error will report their error, then abort
+ * execution.
+ */
+
+
+
+OOLUA_EXPORT_FUNCTIONS(LuaBehaviorScript,
+                       getAttrib)
+OOLUA_EXPORT_FUNCTIONS_CONST(LuaBehaviorScript,
+                             getParent)
 
 
 

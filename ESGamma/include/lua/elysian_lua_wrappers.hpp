@@ -141,8 +141,6 @@ namespace OOLUA
 	typedef elysian::DialogSystem				DialogSystem;
 	typedef elysian::CombatSystem				CombatSystem;
 	typedef elysian::CameraSystem				CameraSystem;
-    typedef elysian::LuaScript                  LuaScript;
-    typedef elysian::LuaBehaviorScript          LuaBehaviorScript;
 	typedef elysian::Direction					Direction;
 	typedef elysian::EventMonitor				EventMonitor;
 	typedef elysian::LuaEventMonitor			LuaEventMonitor;
@@ -983,26 +981,6 @@ OOLUA_PROXY(Behavior, Component)
 	OOLUA_MEM_FUNC(void, addTrigger, Behavior::TRIGGER)
 	OOLUA_MEM_FUNC(void, removeTrigger, Behavior::TRIGGER)
 	OOLUA_MEM_FUNC_CONST(const char*, getBehavName)
-OOLUA_PROXY_END
-
-OOLUA_PROXY(LuaScript)
-    OOLUA_TAGS (
-        No_public_constructors,
-        No_public_destructor
-    )
-    OOLUA_MEM_FUNC_CONST(const char*, getPath)
-    OOLUA_MEM_FUNC_CONST(unsigned, getRefCount)
-    OOLUA_MEM_FUNC_CONST(bool, getError)
-    //OOLUA_MEM_FUNC(Lua_table_ref&, getEnvironTable)
-OOLUA_PROXY_END
-
-OOLUA_PROXY(LuaBehaviorScript, LuaScript)
-    OOLUA_TAGS (
-        No_public_constructors,
-        No_public_destructor
-    )
-    OOLUA_MEM_FUNC_CONST(maybe_null<LuaBehaviorScript*>, getParent)
-    OOLUA_MEM_FUNC(LuaBehaviorScriptAttrib*, getAttrib)
 OOLUA_PROXY_END
 
 

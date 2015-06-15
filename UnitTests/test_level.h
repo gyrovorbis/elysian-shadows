@@ -52,7 +52,7 @@ private Q_SLOTS:
     void flagEmptySubDirAtDepth3();
     void save();
     void load();
-    void duplicateTopLevel();
+    void duplicateTopLevel();       ADD AREA TAB BAR SHIT TO TESTS
     void duplicateSubDir();
     void reloadTopLevel();
     void renameLevel();

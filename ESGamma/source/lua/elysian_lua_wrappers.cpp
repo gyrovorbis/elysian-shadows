@@ -762,17 +762,6 @@ EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(Behavior,
 EXPORT_OOLUA_FUNCTIONS_1_CONST(Behavior,
 								getBehavName)
 
-OOLUA_EXPORT_FUNCTIONS(LuaScript)
-OOLUA_EXPORT_FUNCTIONS_CONST(LuaScript,
-                             getPath,
-                             getRefCount,
-                             getError)
-
-OOLUA_EXPORT_FUNCTIONS(LuaBehaviorScript,
-                       getAttrib)
-OOLUA_EXPORT_FUNCTIONS_CONST(LuaBehaviorScript,
-                             getParent)
-
 OOLUA_EXPORT_FUNCTIONS(LuaBehavior,
                         getSelfTable,
                         setTriggers)
