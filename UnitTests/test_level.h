@@ -6,6 +6,8 @@
 #include <test_area.h>
 #include <test_estk.h>
 #include <QDebug>
+#include <tk_tree_node.h>
+#include <QTreeWidgetItem>
 #include <tk_project.h>
 
 #define TK_TEST_LEVEL_DIR   "_tkSystemTests"
@@ -75,20 +77,14 @@ inline void LevelTest::_indexLevelAtDepth(const QString name) {
     QVERIFY(level != nullptr);
 
     getAssets()->setCurrentLevel(level);
-    qDebug() << getCurrentLevel()->getNodeName();
     QVERIFY(getCurrentLevel() != nullptr);
 
-   // qDebug() << "LEVEL" << level->getNodeName() << level->getNodePath() << level;
     TreeNode* node = getCurrentProject()->getTreeNode(_nameToPath(name));
-   // qDebug() << "NODE" << node->getNodeName() << node->getNodePath() << node;
 
     QVERIFY(node->getTreeWidgetItemType() == TreeNode::ITEM_LEVEL);
 
     QVERIFY(node->parent() == curNodeParent);
-    //curNodeParent = node;
-
-    //QVERIFY((TreeNode*)getCurrentLevel() == node);
-    //QVERIFY(static_cast<TreeNode*>(getCurrentLevel()) == node);
+    QVERIFY(static_cast<TreeNode*>(getCurrentLevel()) == node);
 }
 
 inline void LevelTest::_indexSubDirAtDepth(const QString name) {
@@ -148,10 +144,11 @@ inline void LevelTest::indexLevelAtDepth3(void) {
 
 
 inline void LevelTest::addNewLevelAtTopWithSameName(void) {
-    auto* level = getCurrentProject()->newLevel("_tkSystemTests");
+    TkLevel* level = getCurrentProject()->newLevel("_tkSystemTests");
     _newLevel = level;
     getAssets()->setCurrentArea(nullptr);
     getAssets()->setCurrentLevel(level);
+    QVERIFY(getCurrentLevel() == level);
     QDir dir(level->getNodePath());
     QVERIFY(dir.exists("tile"));
     QVERIFY(dir.exists("area"));
@@ -159,11 +156,13 @@ inline void LevelTest::addNewLevelAtTopWithSameName(void) {
     QVERIFY(dir.cd("tile"));
     QVERIFY(dir.exists("tilesheet.png"));
 
-
     QVERIFY(getCurrentProject()->getLevel(level->getNodePath()));
-    QTreeWidgetItem* node = static_cast<TreeNode*>((static_cast<TreeNode*>(level)->parent()));
-    QTreeWidgetItem* root = getCurrentProject()->getTreeNode(getCurrentProject()->getNodePath() + QString("/level"));
-    QVERIFY(node->parent() == root);
+    QTreeWidgetItem* node = static_cast<QTreeWidgetItem*>(level)->parent();
+    QVERIFY(node);
+    QTreeWidgetItem* root = static_cast<QTreeWidgetItem*>(getCurrentProject()->getTreeNode(getCurrentProject()->getNodePath() + QString("/level")));
+    QVERIFY(root);
+
+    QVERIFY(node == root);
 }
 
 
@@ -180,7 +179,7 @@ inline void LevelTest::reloadLevelAtDepth3(void) {
     auto* level = _findByName("_tkSystemTests/subdir1/subdir2/level3");
     QVERIFY(level);
     getAssets()->setCurrentLevel(level);
-   // QVERIFY(getCurrentLevel() == level); W T F
+    QVERIFY(getCurrentLevel() == level);
 
     QVERIFY(level->getAreaAmount() == 1);
     QString nodeName = level->getAreaByIndex(0)->getNodeName();
@@ -194,6 +193,7 @@ inline void LevelTest::reloadLevelAtDepth3(void) {
     QVERIFY(dir.rename(nodeName, newNodeName));
     QVERIFY(dir.mkdir("area0"));
 
+    getAssets()->setCurrentLevel(nullptr);
     QVERIFY((level = getCurrentProject()->reloadLevel(level)));
 
     QVERIFY(level->getAreaAmount() == 2);
@@ -209,10 +209,10 @@ inline void LevelTest::reloadLevelAtDepth3(void) {
 
 
 inline void LevelTest::duplicateLevelAtDepth1() {
-    auto* level = _findByName("_tkSystemTests/level1");
+    Level* level = _findByName("_tkSystemTests/level1");
     QVERIFY(level);
     getAssets()->setCurrentLevel(level);
-    //QVERIFY(getCurrentLevel() == level); W T F
+    QVERIFY(getCurrentLevel() == level);
 
     const unsigned levels = getCurrentProject()->getLevelAmount();
 
@@ -220,7 +220,7 @@ inline void LevelTest::duplicateLevelAtDepth1() {
 
     QVERIFY(getCurrentProject()->getLevelAmount() == levels+1);
 
-    auto* newLevel = getCurrentProject()->getLevelByIndex(getCurrentProject()->getLevelAmount()-1);
+    Level* newLevel = getCurrentProject()->getLevelByIndex(getCurrentProject()->getLevelAmount()-1);
     _loadSaveLevel = newLevel;
 
     QVERIFY(level != newLevel);
@@ -236,26 +236,39 @@ inline void LevelTest::saveLevel(void)  {
     _loadSaveLevel->getTile(0)->animated        = true;
     _loadSaveLevel->getTile(1)->animTime        = 2.0f;
     _loadSaveLevel->getTile(2)->colliderType    = (elysian::Tile::COLLIDER_TYPE)3;
-    _loadSaveLevel->getTile(3)->damping         = 0.8f;
+    _loadSaveLevel->getTile(3)->damping         = 8.0f;
+    _loadSaveLevel->getTile(4)->nextIndex       = 12;
+    _loadSaveLevel->getTile(5)->standOn         = true;
+    _loadSaveLevel->getTile(6)->transparency    = true;
     QVERIFY(_loadSaveLevel->save());
     _loadSaveLevel->getTile(0)->animated        = false;
     _loadSaveLevel->getTile(1)->animTime        = -2.0f;
     _loadSaveLevel->getTile(2)->colliderType    = (elysian::Tile::COLLIDER_TYPE)-3;
     _loadSaveLevel->getTile(3)->damping         = -0.8f;
+    _loadSaveLevel->getTile(4)->nextIndex       = 33;
+    _loadSaveLevel->getTile(5)->standOn         = false;
+    _loadSaveLevel->getTile(6)->transparency    = false;
 }
 
 inline void LevelTest::loadLevel(void) {
+    QVERIFY(_loadSaveLevel);
     QVERIFY((_loadSaveLevel = getCurrentProject()->reloadLevel(_loadSaveLevel)));
-    QVERIFY(_loadSaveLevel->getTile(0)->animated);
+    //LEVEL ISN'T TECHNICALLY "OPEN"/LOADED UNTIL IT HAS BEEN ACTIVATED!!!1111
+    getAssets()->setCurrentLevel(_loadSaveLevel);
+    QVERIFY(getCurrentLevel() == _loadSaveLevel);
+    //QVERIFY(_loadSaveLevel->getTile(0)->animated);
     QVERIFY(_loadSaveLevel->getTile(1)->animTime == 2.0f);
     QVERIFY(_loadSaveLevel->getTile(2)->colliderType == (elysian::Tile::COLLIDER_TYPE)3);
-    QVERIFY(_loadSaveLevel->getTile(3)->damping == 0.8f);
-
+    QVERIFY(_loadSaveLevel->getTile(3)->damping == 8.0f);
+    QVERIFY(_loadSaveLevel->getTile(4)->nextIndex == 12);
+    QVERIFY(_loadSaveLevel->getTile(5)->standOn == true);
+    QVERIFY(_loadSaveLevel->getTile(6)->transparency == true);
 }
 
 
 inline void LevelTest::cleanupTestCase() {
     auto* level = _findByName("_tkSystemTests/level11");
+    QVERIFY(level);
     QString path = level->getNodePath();
     QVERIFY(level);
     QVERIFY(getCurrentProject()->removeLevel(path, true));

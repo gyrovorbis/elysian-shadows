@@ -102,6 +102,7 @@ public:
     elysian::LevelBase* getElysianLevel(void) { return (elysian::LevelBase*)this; }
     elysian::Tile *getElysianTile(const uint16_t index);
     ElysianTileWrapper* getElysianTileWrapper(const uint16_t index);
+    void setNodePath(const QString path);
 
     void setSpecularMapEnabled(const unsigned index, const bool val);
     void setNormalMapEnabled(const unsigned index, const bool val);

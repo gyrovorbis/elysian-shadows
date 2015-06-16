@@ -109,14 +109,15 @@ bool TkLevel::initializeScene(const SourceView *const view, bool horiz) {
 }
 
 void TkLevel::addBgRectItem(void) {
-    _sheetViewScene->addItem(_bgRectItem);
+    if(_bgRectItem->scene() != _sheetViewScene)
+        _sheetViewScene->addItem(_bgRectItem);
 }
 
 void TkLevel::updateScenes(void) {
     if(_bgRectItem->isActive()) {
         _sheetViewScene->removeItem(_bgRectItem);
     }
-    _sheetViewScene->addItem(_bgRectItem);
+    if(_bgRectItem->scene() != _sheetViewScene) _sheetViewScene->addItem(_bgRectItem);
     _sheetViewScene->update();
 }
 
@@ -508,6 +509,12 @@ Area *TkLevel::importArea(const QString dir) {
     return area;
 }
 
+void TkLevel::setNodePath(const QString path) {
+    _location = path;
+    strcpy(elysian::LevelBase::path, Q_CSTR(path));
+    TreeNode::setNodePath(path);
+}
+
 bool TkLevel::load(const QString path) {
     DbgEvent event("Indexing Level [%s].", Q_CSTR(path));
     QDir dir(path);
@@ -518,7 +525,6 @@ bool TkLevel::load(const QString path) {
 
     setNodeName(dir.dirName());
     setNodePath(dir.absolutePath());
-    _location = path;
 
 #if 0
     Debug::Log(Debug::DBG_VERBOSE, "Verifying Tilesheet");
@@ -552,8 +558,8 @@ bool TkLevel::save(void) {
     DbgEvent event("Saving Level [%s].", Q_CSTR(getNodePath()));
     bool success = true;
     //Save elysian::Level
-    success &= getElysianLevel()->save(_location.toStdString().c_str());
-    success &= _saveMetaData(_location);
+    success &= getElysianLevel()->save(Q_CSTR(getNodePath()));
+    success &= _saveMetaData(getNodePath());
     return success;
 }
 

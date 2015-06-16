@@ -40,6 +40,29 @@ Area* LevelSystem::loadArea(const char * const dir) {
     return ar;
 }
 
+void LevelSystem::removeArea(Area * const area) {
+    for(auto it = _area.begin(); it != _area.end(); ++it) {
+        if(*it == area) {
+            if(_curArea == area) _curArea = nullptr;
+            _area.erase(it);
+            return;
+        }
+    }
+}
+
+void LevelSystem::removeLevel(Level * const level) {
+    for(auto it = _level.begin(); it != _level.end(); ++it) {
+        if(*it == level) {
+            if(_curLevel == level) _curLevel = nullptr;
+            _level.erase(it);
+            return;
+        }
+    }
+}
+
+
+
+
 bool LevelSystem::switchLevel(const char *const dir) {
     int index;
     Level *lev;
@@ -64,6 +87,9 @@ bool LevelSystem::switchLevel(const char *const dir) {
         delete _level[0];
         _level.erase(_level.begin());
     }
+#ifndef ELYSIAN_ENGINE
+    Q_ASSERT(false); //YOU SHOULD ALWAYS HAVE CREATED THE AREA BEFORE SWITCH IN ESTK!!!!!!1111
+#endif
     lev = new Level;
     _curLevel = lev;
     lev->load(dir);

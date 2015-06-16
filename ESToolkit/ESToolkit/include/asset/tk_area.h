@@ -100,6 +100,7 @@ public:
     elysian::Area&      getElysianArea(void);
     void                setNodeName(const QString str);
     void                setLocation(const QString loc);
+    void                setNodePath(const QString path);
     void                setString(const QString str);
     QString             getString(void) const;
     void                setMapWidth(const unsigned short w);

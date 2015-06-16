@@ -14,7 +14,14 @@ TEMPLATE = app
 QMAKE_OBJCXXFLAGS_PRECOMPILE += -std=c++11 -stdlib=libc++
 QT		+= sql gui opengl network help
 tests {
-    QT+= testlib
+		CONFIG += testcase
+	#CONFIG(release, debug|release) {
+		QT += testlib
+#}
+	#CONFIG(debug, debug|release) {
+	#	QT += QtTest_debug
+#}
+
 }
 
 QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-empty-body

@@ -52,13 +52,17 @@ Level *Project::newLevel(const QString name) {
     QString path(getNodePath());
     path += QString("/level/") + name;
     unsigned int num = 1;
-    TkLevel *lev = new TkLevel(this);
-	connectSlots(lev);
+    //TkLevel *lev = new TkLevel(this);
 
     while(getLevel(path+QString::number(num))) ++num;
 
     path += QString::number(num);
+    TkLevel* lev = getAssets()->getEngine()->getLevelSys()->loadLevel(Q_CSTR(path));
+    connectSlots(lev);
+
+    lev->setNodeName(name + QString::number(num));
     lev->setLocation(path);
+    lev->setNodePath(path);
 	_level.push_back(lev);
 	lev->saveAll();
     getAssets()->getEngine()->getLevelSys()->addLevel(lev);
@@ -75,6 +79,7 @@ Level *Project::loadLevel(const QString path) {
 
     //connectSlots(lev);
     if(lev) {
+        lev->load(path);
        // connectSlots(lev);
 		_level.push_back(lev);
         _curNodeParent->addChild(lev);
@@ -268,6 +273,7 @@ bool Project::load(const QString loc) {
     }
 
     success &= scanDirectory(getNodePath()+QString("/level")); //begin recursive scan
+    _curNodeParent = getTreeNode(getNodePath()+QString("/level"));
 
     QDir::setCurrent(prevWorkingDir);
     return success;
@@ -290,7 +296,7 @@ Level *Project::importLevel(const QString dir) {
 
     TkLevel *level = new TkLevel(this);
 	connectSlots(level);
-	level->load(dir);
+    //level->load(dir);
     level->setLocation(_location + "/level/" + QStringList(dir.split("/")).last());
 	level->saveAll();
 	_level.push_back(level);
@@ -337,7 +343,7 @@ bool Project::saveAs(const QString dir) {
     }
 
 	for(int i = 0; i < _level.size(); ++i) {
-        success &= _level[i]->saveAs(dir+"/level/"+_level[i]->getNodePath());
+        success &= _level[i]->saveAs(dir+"/level/"+_level[i]->getNodeName());
     }
 
     Debug::pop();
@@ -457,5 +463,5 @@ TreeNode* Project::getTreeNode(const QString path) const {
         return _subDirs[path];
     } else if(getLevel(path)) {
         return getLevel(path);
-    }
+    } else return nullptr;
 }

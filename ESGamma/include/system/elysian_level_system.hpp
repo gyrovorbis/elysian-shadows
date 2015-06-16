@@ -137,32 +137,6 @@ namespace elysian {
         _level.push_back(level);
     }
 
-    inline void LevelSystem::removeArea(Area * const area) {
-        for(auto it = _area.begin(); it != _area.end(); ++it) {
-            if(*it == area) {
-                _area.erase(it);
-                return;
-            }
-        }
-    }
-
-    inline void LevelSystem::removeLevel(Level * const level) {
-        for(auto it = _level.begin(); it != _level.end(); ++it) {
-            if(*it == level) {
-                _level.erase(it);
-                return;
-            }
-        }
-    }
-
-
-
-
-
-
-
-
-
     // ==== INLINEZ =====
 /*
     inline Area* LevelSystem::loadArea(const char * const dir) {

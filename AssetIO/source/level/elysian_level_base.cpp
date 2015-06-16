@@ -142,6 +142,8 @@ namespace elysian {
 			ptr += ptr_inc;
 			sscanf(ptr, "%f%n", &tileset[i].animTime, &ptr_inc);
 			ptr += ptr_inc;
+            sscanf(ptr, "%f%n", &tileset[i].damping, &ptr_inc);
+            ptr += ptr_inc;
 			sscanf(ptr, "%hd%n", &tileset[i].nextIndex, &ptr_inc);
 			ptr += ptr_inc;
             sscanf(ptr, "%d%n", (int*)&tileset[i].standOn, &ptr_inc);
@@ -175,8 +177,9 @@ namespace elysian {
 
 		for(unsigned int i = 0; i < tileAmount; ++i) {
 			fprintf(file, "%d\n", tileset[i].colliderType);
-			fprintf(file, "%d\n", tileset[i].animated);
+            fprintf(file, "%d\n", (int)tileset[i].animated);
 			fprintf(file, "%f\n", tileset[i].animTime);
+            fprintf(file, "%f\n", tileset[i].damping);
 			fprintf(file, "%d\n", tileset[i].nextIndex);
             fprintf(file, "%d\n", (int)tileset[i].standOn);
             fprintf(file, "%d\n", (int)tileset[i].transparency);

@@ -379,23 +379,27 @@ void Assets::onEntityParented(Entity * const child, Entity * const parent) {
 }
 
 Level* Assets::reloadLevel(Level* level) {
+    bool wasCurrent = false;
     if(!level) level = getCurrentLevel();
     QString levelPath;
     QString areaPath;
     if(getCurrentLevel() == level) {
+        wasCurrent = true;
         levelPath = level->getNodePath();
         if(getCurrentArea()) areaPath = getCurrentArea()->getNodePath();
         setCurrentArea(nullptr);
         setCurrentLevel(nullptr);
     }
     level = level->getProject()->reloadLevel(level);
-    if(!areaPath.isNull()) {
+    if(wasCurrent) {
         setCurrentLevel(level);
-        setCurrentArea(level->getArea(areaPath));
+        if(!areaPath.isNull()) {
+            setCurrentArea(level->getArea(areaPath));
+        }
     } else {
-        //Force views and widgets to have correct selection
         setCurrentLevel(getCurrentLevel());
     }
+
     return level;
 }
 

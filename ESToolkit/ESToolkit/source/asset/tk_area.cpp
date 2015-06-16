@@ -211,6 +211,12 @@ bool Area::duplicate(void) {
     return level->loadArea(path + QString::number(num));
 }
 
+void Area::setNodePath(const QString path) {
+    _location = path;
+    strcpy(elysian::AreaBase::path, Q_CSTR(path));
+    TreeNode::setNodePath(path);
+}
+
 
 void Area::setLocation(const QString loc) {
     _location = loc;
