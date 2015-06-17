@@ -217,26 +217,27 @@ int glalVidGlewInit(void) {
 
     if(!once) {
     //God fucking damnit, Windows....
-    #ifdef _WIN32
+#ifdef _WIN32
         _gyLog(GY_DEBUG_VERBOSE, "Initializing GLEW...");
+        _gyPush();
         glewExperimental = GL_TRUE; //FUCKING GLEW CANT HANDLE GL CORE CONTEXTS WITHOUT THIS.
         GLenum err = glewInit();
         if (err != GLEW_OK) {
           /* Problem: glewInit failed, something is seriously wrong. */
-            _gyLog(GY_DEBUG_CRITICAL, "\tError: %s", glewGetErrorString(err));
+            _gyLog(GY_DEBUG_FATAL, "Error: %s", glewGetErrorString(err));
         }
 
         if(GLEW_VERSION_3_2) {
-            _gyLog(GY_DEBUG_VERBOSE, "\tOpenGL 3.2 Extensions detected");
+            _gyLog(GY_DEBUG_VERBOSE, "OpenGL 3.2 Extensions detected");
         } else {
-            _gyLog(GY_DEBUG_CRITICAL, "\tOpenGL 3.2 Extensions NOT detected! Prepare for crash!");
+            _gyLog(GY_DEBUG_FATAL, "OpenGL 3.2 Extensions NOT detected! Prepare for crash!");
         }
+        _gyPop(1);
+        once = 1;
 
-     once = 1;
-
-    #endif
-}
-return 1;
+#endif
+    }
+    return 1;
 }
 
 int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidth, const int projHeight) {
