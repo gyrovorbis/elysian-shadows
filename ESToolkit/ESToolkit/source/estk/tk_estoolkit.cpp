@@ -62,6 +62,10 @@
 #include <QHelpIndexWidget>
 #include <tk_gitlab_manager.h>
 
+#ifdef ESTK_UNIT_TESTS
+#include <QtTest>
+#endif
+
 ESToolkit* ESToolkit::_instance = nullptr;
 
 ESToolkit::ESToolkit(QWidget *parent):
@@ -291,7 +295,7 @@ void ESToolkit::_libGyroInitialize(void) {
                         _gitlabDialog->show();
                   }),
                     [](void* ptr) {
-                        qWarning() << "CRASHING";
+                        //qWarning() << "CRASHING";
                         if(_instance->isVisible()) { //Don't try to relaunch and shit if running in command-line mode!
                             qWarning() << "VISIBLE";
                             QStringList cmdLineArgs = QApplication::arguments();
@@ -311,9 +315,13 @@ void ESToolkit::_libGyroInitialize(void) {
 
                             QProcess::startDetached(QCoreApplication::applicationFilePath(), cmdLineArgs);
                         } else {
-                            qWarning() << "INVISIBLE";
+                          //  qWarning() << "INVISIBLE";
                         }
-                        exit(1);
+//#ifdef ESTK_UNIT_TESTS
+
+//#else
+                        exit(-1);
+//#endif
                         //(*static_cast<std::function<void()>*>(ptr))();
                   }
             };
