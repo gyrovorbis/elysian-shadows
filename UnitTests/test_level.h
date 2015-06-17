@@ -130,6 +130,7 @@ inline void LevelTest::flagInvalidLevelAtDepth2(void) {
     //QEXPECT_FAIL("", "Working as intended.", Continue);
     _indexLevelAtDepth("_tkSystemTests/subdir1/reestedLevel");
     auto* lev = _findByName("_tkSystemTests/subdir1/reestedLevel");
+    QVERIFY(lev);
     QVERIFY(!lev->validSheets());
 
 }

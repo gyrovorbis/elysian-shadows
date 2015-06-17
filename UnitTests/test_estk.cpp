@@ -120,9 +120,7 @@ int main(QStringList args)
        sprintf(strBuff, "./ESTkTestResults%04d.xml", ++testCases);
 
        QObject *current =  ESToolkitTest::_testQueue.takeFirst();
-       qDebug() << "BEGIN EXEC " << QString::number(testCases);
        ASSERT_TEST(current);
-               qDebug() << "ENDEXEC" << QString::number(testCases);
    }
 
    char buff[7];

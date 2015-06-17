@@ -295,8 +295,6 @@ void ESToolkit::_libGyroInitialize(void) {
                         _gitlabDialog->show();
                   }),
                     [](void* ptr) {
-                        gyPrintf("Crashing in thread %d", QThread::currentThread());
-                        //qWarning() << "CRASHING";
                         if(_instance->isVisible()) { //Don't try to relaunch and shit if running in command-line mode!
                             qWarning() << "VISIBLE";
                             QStringList cmdLineArgs = QApplication::arguments();
