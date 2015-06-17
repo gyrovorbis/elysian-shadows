@@ -291,8 +291,9 @@ void ESToolkit::_libGyroInitialize(void) {
                         _gitlabDialog->show();
                   }),
                     [](void* ptr) {
-
+                        qWarning() << "CRASHING";
                         if(_instance->isVisible()) { //Don't try to relaunch and shit if running in command-line mode!
+                            qWarning() << "VISIBLE";
                             QStringList cmdLineArgs = QApplication::arguments();
                             cmdLineArgs.push_back(ESTOOLKIT_CRASH_CMD_LINE_ARG);
                             if(_instance->_assets.getCurrentProject()) {
@@ -309,6 +310,8 @@ void ESToolkit::_libGyroInitialize(void) {
                              }
 
                             QProcess::startDetached(QCoreApplication::applicationFilePath(), cmdLineArgs);
+                        } else {
+                            qWarning() << "INVISIBLE";
                         }
                         exit(1);
                         //(*static_cast<std::function<void()>*>(ptr))();
