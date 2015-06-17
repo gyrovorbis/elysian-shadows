@@ -85,14 +85,14 @@ GYOgg* gyAudOggCreate(const char*const path) {
     ogg->looping = 0;
 
     if(!gyFileOpen(path, "rb", &payload->oggFile)) {
-        _gyLog(GY_DEBUG_DBG_WARNING, "! - Could not open ogg file %s", path);
+        _gyLog(GY_DEBUG_WARNING, "! - Could not open ogg file %s", path);
         free(payload);
         free(ogg);
         return NULL;
     }
 
     if((result = ov_open_callbacks(payload->oggFile, &payload->oggStream, NULL, 0, callbacks)) < 0) {
-        _gyLog(GY_DEBUG_DBG_WARNING, "! - Could not open OGG stream: %s", _vorbisErrorString(result));
+        _gyLog(GY_DEBUG_WARNING, "! - Could not open OGG stream: %s", _vorbisErrorString(result));
         gyFileClose(&payload->oggFile);
         free(payload);
         free(ogg);
@@ -107,7 +107,7 @@ GYOgg* gyAudOggCreate(const char*const path) {
 
     alGenBuffers(2, payload->buffers);
     if((alErrorCode = alGetError()) != AL_NO_ERROR) {
-        _gyLog(GY_DEBUG_DBG_WARNING, "! - Could not generate OpenAL buffers for OGG stream: %s", _openALError(alErrorCode));
+        _gyLog(GY_DEBUG_WARNING, "! - Could not generate OpenAL buffers for OGG stream: %s", _openALError(alErrorCode));
     }
 
     /* Debug stuff. */
@@ -130,7 +130,7 @@ void gyAudOggDestroy(GYOgg*const ogg) {
     //Homeboy only deleted one, but I think that's a memory leak!
     alDeleteBuffers(2, payload->buffers);
     if((errorCode = alGetError()) != AL_NO_ERROR) {
-        _gyLog(GY_DEBUG_DBG_WARNING, "! - Could not delete OpenAL buffers from OGG stream: %s", _openALError(errorCode));
+        _gyLog(GY_DEBUG_WARNING, "! - Could not delete OpenAL buffers from OGG stream: %s", _openALError(errorCode));
     }
 
     ov_clear(&payload->oggStream);
@@ -156,7 +156,7 @@ static inline int _streamOgg(const ALuint buffer, GYOgg*const ogg) {
             size += result;
         } else {
             if(result < 0) {
-                _gyLog(GY_DEBUG_DBG_WARNING, "! - Error streaming OGG file: %s", _vorbisErrorString(result));
+                _gyLog(GY_DEBUG_WARNING, "! - Error streaming OGG file: %s", _vorbisErrorString(result));
                 return 0;
              } else {
                 if(ogg->looping)

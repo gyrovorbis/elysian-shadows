@@ -631,7 +631,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
     //Check whether shit has reested with our FBO
     GLenum status;
      if((status = glCheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE) {
-         _gyLog(GY_DEBUG_DBG_WARNING, "Binding GLAL depth texture to frame buffer has reested - %d!", status);
+         _gyLog(GY_DEBUG_WARNING, "Binding GLAL depth texture to frame buffer has reested - %d!", status);
          return;
      }
 

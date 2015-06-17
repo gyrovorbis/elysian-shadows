@@ -248,7 +248,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
 
     static int once = 0;
     if(!once) {
-        _gyLog(GY_DEBUG_DBG_VERBOSE, "Initializing libGyro Video API.");
+        _gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro Video API.");
         _gyPush();
 
         glalLoadDefaultShaders();
@@ -275,7 +275,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
             &glalShadowMapShader
         };
 
-        _gyLog(GY_DEBUG_DBG_VERBOSE, "Creating VAOs and VBOs.");
+        _gyLog(GY_DEBUG_VERBOSE, "Creating VAOs and VBOs.");
 
         glGenBuffers(1, &_streamVertexVbo[0]);
         glBindBuffer(GL_ARRAY_BUFFER, _streamVertexVbo[0]);

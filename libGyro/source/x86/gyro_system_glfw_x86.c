@@ -67,10 +67,10 @@ static void _checkCPUCapabilities(void) {
     }
 
     if(!SSE) {
-        _gyLog(GY_DEBUG_DBG_ERROR, "SSE CPU Support Not Detected! Prepare for crash... and maybe consider a processor from this decade.");
+        _gyLog(GY_DEBUG_ERROR, "SSE CPU Support Not Detected! Prepare for crash... and maybe consider a processor from this decade.");
         //exit(0);
     } else {
-        _gyLog(GY_DEBUG_DBG_VERBOSE, "SSE CPU Extensions detected! Fast-ass math enabled!");
+        _gyLog(GY_DEBUG_VERBOSE, "SSE CPU Extensions detected! Fast-ass math enabled!");
     }
 }
 
@@ -101,20 +101,20 @@ int gySysInit(const GYSysParams*const params) {
 #else
   "LINUX";
 #endif
-    _gyLog(GY_DEBUG_DBG_VERBOSE, "Initializing libGyro_x86_64 [%s] v%s", platString, GYRO_LIB_VERSION);
+    _gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86_64 [%s] v%s", platString, GYRO_LIB_VERSION);
     _gyPush();
 #ifdef GYRO_LOCAL_BUILD
-    _gyLog(GY_DEBUG_DBG_WARNING, "THIS IS AN UNOFFICIAL BUILD!");
+    _gyLog(GY_DEBUG_WARNING, "THIS IS AN UNOFFICIAL BUILD!");
 #else
-    _gyLog(GY_DEBUG_DBG_VERBOSE, "THIS IS AN OFFICIAL BUILD!");
+    _gyLog(GY_DEBUG_VERBOSE, "THIS IS AN OFFICIAL BUILD!");
 #endif
     _gyPush();
-    _gyLog(GY_DEBUG_DBG_VERBOSE, "%-20s: %40s", "Git branch name", GYRO_STRINGIFY_MACRO(GYRO_BUILD_BRANCH));
-    _gyLog(GY_DEBUG_DBG_VERBOSE, "%-20s: %40s", "Git commit ID", GYRO_STRINGIFY_MACRO(GYRO_BUILD_COMMIT));
-    _gyLog(GY_DEBUG_DBG_VERBOSE, "%-20s: %40s", "Build number", GYRO_STRINGIFY_MACRO(GYRO_BUILD_NUMBER));
-    _gyLog(GY_DEBUG_DBG_VERBOSE, "%-20s: %40s", "Build node", GYRO_STRINGIFY_MACRO(GYRO_BUILD_NODE));
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Git branch name", GYRO_STRINGIFY_MACRO(GYRO_BUILD_BRANCH));
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Git commit ID", GYRO_STRINGIFY_MACRO(GYRO_BUILD_COMMIT));
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Build number", GYRO_STRINGIFY_MACRO(GYRO_BUILD_NUMBER));
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Build node", GYRO_STRINGIFY_MACRO(GYRO_BUILD_NODE));
     sprintf(strBuff, "%s %s", __DATE__, __TIME__);
-    _gyLog(GY_DEBUG_DBG_VERBOSE, "%-20s: %40s", "Build timestamp", strBuff);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Build timestamp", strBuff);
     _gyPop(1);
 
     gyDebugSigInit();
@@ -206,19 +206,19 @@ static void gyDebugSigHandler(int sig, siginfo_t* info, void* unused) {
     num = backtrace(buf, 64);
     symbols = backtrace_symbols(buf, num);
 
-    _gyLog(GY_DEBUG_DBG_ERROR, "**** BEGIN C/++ BACKTRACE ****");
+    _gyLog(GY_DEBUG_ERROR, "**** BEGIN C/++ BACKTRACE ****");
     _gyPush();
-    _gyLog(GY_DEBUG_DBG_ERROR, "RECIEVED SIGNAL: %s!",
+    _gyLog(GY_DEBUG_ERROR, "RECIEVED SIGNAL: %s!",
            gyDebugSigCodeToStr(info->si_signo, info->si_code));
     for(i = 0; i < num; i++)
-        _gyLog(GY_DEBUG_DBG_ERROR, "	%s", symbols[i]);
-    _gyLog(GY_DEBUG_DBG_ERROR, "**** END C/++ BACKTRACE ****");
+        _gyLog(GY_DEBUG_ERROR, "	%s", symbols[i]);
+    _gyLog(GY_DEBUG_ERROR, "**** END C/++ BACKTRACE ****");
     _gyPop(1);
 
     if(_sysParams.segFaultHandler) {
         _sysParams.segFaultHandler(_sysParams.context);
     } else {
-        _gyLog(GY_DEBUG_DBG_VERBOSE, "Exitting with default segfault handler.");
+        _gyLog(GY_DEBUG_VERBOSE, "Exitting with default segfault handler.");
         exit(1);
     }
 }
@@ -250,7 +250,7 @@ int addr2line(char const * const program_name, void const * const addr)
   /* This will print a nicely formatted string specifying the
      function and source line of the address */
 
-   _gyLog(GY_DEBUG_DBG_VERBOSE, execPipe(addr2line_cmd));
+   _gyLog(GY_DEBUG_VERBOSE, execPipe(addr2line_cmd));
    return 1;
   //return system(addr2line_cmd);
 }
@@ -291,76 +291,76 @@ static LONG WINAPI windows_exception_handler(EXCEPTION_POINTERS * ExceptionInfo)
 {
     (void)ExceptionInfo;
 
-    _gyLog(GY_DEBUG_DBG_VERBOSE, "===================================");
+    _gyLog(GY_DEBUG_VERBOSE, "===================================");
   switch(ExceptionInfo->ExceptionRecord->ExceptionCode)
   {
     case EXCEPTION_ACCESS_VIOLATION:
-      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_ACCESS_VIOLATION", stderr);
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_ACCESS_VIOLATION", stderr);
       break;
     case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
-      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_ARRAY_BOUNDS_EXCEEDED", stderr);
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_ARRAY_BOUNDS_EXCEEDED", stderr);
       break;
     case EXCEPTION_BREAKPOINT:
-      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_BREAKPOINT", stderr);
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_BREAKPOINT", stderr);
       break;
     case EXCEPTION_DATATYPE_MISALIGNMENT:
-      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_DATATYPE_MISALIGNMENT", stderr);
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_DATATYPE_MISALIGNMENT", stderr);
       break;
     case EXCEPTION_FLT_DENORMAL_OPERAND:
-      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_FLT_DENORMAL_OPERAND", stderr);
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_DENORMAL_OPERAND", stderr);
       break;
     case EXCEPTION_FLT_DIVIDE_BY_ZERO:
-      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_FLT_DIVIDE_BY_ZERO", stderr);
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_DIVIDE_BY_ZERO", stderr);
       break;
     case EXCEPTION_FLT_INEXACT_RESULT:
-      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_FLT_INEXACT_RESULT", stderr);
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_INEXACT_RESULT", stderr);
       break;
     case EXCEPTION_FLT_INVALID_OPERATION:
-      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_FLT_INVALID_OPERATION", stderr);
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_INVALID_OPERATION", stderr);
       break;
     case EXCEPTION_FLT_OVERFLOW:
-      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_FLT_OVERFLOW", stderr);
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_OVERFLOW", stderr);
       break;
     case EXCEPTION_FLT_STACK_CHECK:
-      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_FLT_STACK_CHECK", stderr);
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_STACK_CHECK", stderr);
       break;
     case EXCEPTION_FLT_UNDERFLOW:
-      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_FLT_UNDERFLOW", stderr);
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_UNDERFLOW", stderr);
       break;
     case EXCEPTION_ILLEGAL_INSTRUCTION:
-      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_ILLEGAL_INSTRUCTION", stderr);
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_ILLEGAL_INSTRUCTION", stderr);
       break;
     case EXCEPTION_IN_PAGE_ERROR:
-      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_IN_PAGE_ERROR", stderr);
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_IN_PAGE_ERROR", stderr);
       break;
     case EXCEPTION_INT_DIVIDE_BY_ZERO:
-      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_INT_DIVIDE_BY_ZERO", stderr);
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_INT_DIVIDE_BY_ZERO", stderr);
       break;
     case EXCEPTION_INT_OVERFLOW:
-      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_INT_OVERFLOW", stderr);
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_INT_OVERFLOW", stderr);
       break;
     case EXCEPTION_INVALID_DISPOSITION:
-      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_INVALID_DISPOSITION", stderr);
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_INVALID_DISPOSITION", stderr);
       break;
     case EXCEPTION_NONCONTINUABLE_EXCEPTION:
-      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_NONCONTINUABLE_EXCEPTION", stderr);
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_NONCONTINUABLE_EXCEPTION", stderr);
       break;
     case EXCEPTION_PRIV_INSTRUCTION:
-      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_PRIV_INSTRUCTION", stderr);
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_PRIV_INSTRUCTION", stderr);
       break;
     case EXCEPTION_SINGLE_STEP:
-      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_SINGLE_STEP", stderr);
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_SINGLE_STEP", stderr);
       break;
     case EXCEPTION_STACK_OVERFLOW:
-      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: EXCEPTION_STACK_OVERFLOW", stderr);
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_STACK_OVERFLOW", stderr);
       break;
     default:
-      _gyLog(GY_DEBUG_DBG_VERBOSE, "Error: Unrecognized Exception", stderr);
+      _gyLog(GY_DEBUG_VERBOSE, "Error: Unrecognized Exception", stderr);
       break;
   }
   //fflush(stderr);
 
-  _gyLog(GY_DEBUG_DBG_VERBOSE, "===================================");
+  _gyLog(GY_DEBUG_VERBOSE, "===================================");
 
   if (EXCEPTION_STACK_OVERFLOW != ExceptionInfo->ExceptionRecord->ExceptionCode)
   {
@@ -372,7 +372,7 @@ static LONG WINAPI windows_exception_handler(EXCEPTION_POINTERS * ExceptionInfo)
 #endif
 
 void gyDebugSigInit(void) {
-    _gyLog(GY_DEBUG_DBG_VERBOSE, "Registering exception handler to POSIX signals.");
+    _gyLog(GY_DEBUG_VERBOSE, "Registering exception handler to POSIX signals.");
 #if defined(__LINUX__) || defined(__APPLE__)
     struct sigaction sa, so;
 
@@ -385,13 +385,13 @@ void gyDebugSigInit(void) {
     /* Attach Q_SIGNALS. */
     sigaction(SIGSEGV, &sa, &so);
     if(so.sa_handler == SIG_IGN)
-        _gyLog(GY_DEBUG_DBG_VERBOSE, "Unable to set up SIGSEGV signal handler.");
+        _gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGSEGV signal handler.");
     sigaction(SIGFPE, &sa, &so);
     if(so.sa_handler == SIG_IGN)
-        _gyLog(GY_DEBUG_DBG_VERBOSE, "Unable to set up SIGFPE signal handler.");
+        _gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGFPE signal handler.");
     sigaction(SIGTRAP, &sa, &so);
     if(so.sa_handler == SIG_IGN)
-        _gyLog(GY_DEBUG_DBG_VERBOSE, "Unable to set up SIGTRAP signal handler.");
+        _gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGTRAP signal handler.");
 #elif defined(_WIN32)
     //SetUnhandledExceptionFilter(&windows_exception_handler);
 
