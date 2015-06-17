@@ -323,9 +323,16 @@ void ESToolkit::_libGyroInitialize(void) {
 //#else
                         //QThread::currentThread()->terminate();
                         //QThread::currentThread()->wait();
-                      pthread_kill(pthread_self(), 15);
-                      //  exit(-1);
-//#endif
+                        if(QThread::currentThread() != qApp->thread()) {
+                                  qDebug() << "CHILD";
+                                     QThread::currentThread()->exit(-1);//pthread_kill(pthread_self(), 15);
+
+                                 }
+                        else {
+                                     qDebug() << "parent";
+                                     exit(-1);
+}
+                                     //#endif
                         //(*static_cast<std::function<void()>*>(ptr))();
                   }
             };
