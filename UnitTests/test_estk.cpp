@@ -55,7 +55,7 @@ bool            ESTkTest::_initialized      = false;
 
 int main(QStringList args)
 {
-    Debug::setLevel(Debug::DBG_OFF);
+    //Debug::setLevel(Debug::DBG_OFF);
     ESTkTest::initialize();
 
 
