@@ -205,6 +205,9 @@ static void gyDebugSigHandler(int sig, siginfo_t* info, void* unused) {
     static int hasCrashed = 0;
     if(hasCrashed) exit(-1);
     hasCrashed = 1;
+
+    _gyLog(GY_DEBUG_VERBOSE, "CRASHING!!!!!");
+
     num = backtrace(buf, 64);
     symbols = backtrace_symbols(buf, num);
 
