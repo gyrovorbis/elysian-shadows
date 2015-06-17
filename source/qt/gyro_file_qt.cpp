@@ -9,7 +9,7 @@ extern "C" int gyFileInit(const GYFileInitParams*const params) {
     QString homeDirPath = params? params->workingDir : QDir::currentPath();
 
     if(!QDir::setCurrent(homeDirPath)) {
-        _gyLog(GY_DEBUG_DBG_ERROR, "Could not cd into working directory directory: %s", homeDirPath.toStdString().c_str());
+        _gyLog(GY_DEBUG_ERROR, "Could not cd into working directory directory: %s", homeDirPath.toStdString().c_str());
         return 0;
     }
 

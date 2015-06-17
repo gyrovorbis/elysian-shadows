@@ -35,7 +35,7 @@ typedef struct GYSysParams {
 
 } GYSysParams;
 
-typedef enum _GY_DEBUG_SEVERITY { GY_DEBUG_DBG_VERBOSE, GY_DEBUG_DBG_WARNING, GY_DEBUG_DBG_ERROR, GY_DEBUG_DBG_OFF } GY_DEBUG_SEVERITY;
+typedef enum _GY_DEBUG_SEVERITY { GY_DEBUG_VERBOSE, GY_DEBUG_WARNING, GY_DEBUG_ERROR, GY_DEBUG_OFF } GY_DEBUG_SEVERITY;
 
 int gySysInit(const GYSysParams*const params);
 int gySysUninit(void);
