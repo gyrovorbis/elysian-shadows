@@ -41,7 +41,7 @@ private Q_SLOTS:
 
 
 inline void ESToolkitTest::_verifyCurrentTabsText(void) const {
-    QVERIFY(_estk->_areaTabBar->count() == getCurrentLevel()->getAreaAmount());
+    QVERIFY(_estk->_areaTabBar->count() == (int)getCurrentLevel()->getAreaAmount());
 
     for(unsigned i = 0; i < getCurrentLevel()->getAreaAmount(); ++i) {
         QVERIFY(_estk->_areaTabBar->tabText(i) == getCurrentLevel()->getAreaByIndex(i)->getNodeName());

@@ -224,13 +224,13 @@ int glalVidGlewInit(void) {
         GLenum err = glewInit();
         if (err != GLEW_OK) {
           /* Problem: glewInit failed, something is seriously wrong. */
-            _gyLog(GY_DEBUG_FATAL, "Error: %s", glewGetErrorString(err));
+            _gyLog(GY_DEBUG_ERROR, "Error: %s", glewGetErrorString(err));
         }
 
         if(GLEW_VERSION_3_2) {
             _gyLog(GY_DEBUG_VERBOSE, "OpenGL 3.2 Extensions detected");
         } else {
-            _gyLog(GY_DEBUG_FATAL, "OpenGL 3.2 Extensions NOT detected! Prepare for crash!");
+            _gyLog(GY_DEBUG_ERROR, "OpenGL 3.2 Extensions NOT detected! Prepare for crash!");
         }
         _gyPop(1);
         once = 1;
