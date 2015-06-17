@@ -315,26 +315,30 @@ void ESToolkit::_libGyroInitialize(void) {
                              }
 
                             QProcess::startDetached(QCoreApplication::applicationFilePath(), cmdLineArgs);
-                        } else {
-                          //  qWarning() << "INVISIBLE";
                         }
+
+
+
+                                 //else {
+                          //  qWarning() << "INVISIBLE";
+                       // }
 //#ifdef ESTK_UNIT_TESTS
 
 //#else
                         //QThread::currentThread()->terminate();
                         //QThread::currentThread()->wait();
-                        if(QThread::currentThread() != qApp->thread()) {
-                                  qDebug() << "CHILD";
-                                     QThread::currentThread()->exit(-1);//pthread_kill(pthread_self(), 15);
+                      //  if(QThread::currentThread() != qApp->thread()) {
+                        //          qDebug() << "CHILD";
+                                    // QThread::currentThread()->exit(-1);//pthread_kill(pthread_self(), 15);
 
-                                 }
-                        else {
-                                     qDebug() << "parent";
-                                     exit(-1);
+                               //  }
+                     //   else {
+                                //     qDebug() << "parent";
+                                   //  abort();
 }
                                      //#endif
                         //(*static_cast<std::function<void()>*>(ptr))();
-                  }
+               //   }
             };
     gySysInit(&sysParams);
     //gyVidInit(&vidParams);

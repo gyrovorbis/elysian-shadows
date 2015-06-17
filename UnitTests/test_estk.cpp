@@ -101,7 +101,9 @@ int main(QStringList args)
    int failures = 0;
    int testCases = 0;
    auto ASSERT_TEST = [&failures, &args](QObject* obj) {
+
         failures += QTest::qExec(obj, args);
+
         delete obj;
     };//testestestests
 
@@ -118,8 +120,9 @@ int main(QStringList args)
        sprintf(strBuff, "./ESTkTestResults%04d.xml", ++testCases);
 
        QObject *current =  ESToolkitTest::_testQueue.takeFirst();
-
+       qDebug() << "BEGIN EXEC " << QString::number(testCases);
        ASSERT_TEST(current);
+               qDebug() << "ENDEXEC" << QString::number(testCases);
    }
 
    char buff[7];

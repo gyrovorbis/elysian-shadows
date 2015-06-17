@@ -101,7 +101,7 @@ inline void LevelTest::_indexSubDirAtDepth(const QString name) {
 }
 
 inline void LevelTest::initTestCase(void) {
-    gyDebugSigInit();
+    //gyDebugSigInit();
     QVERIFY(getCurrentProject() != nullptr);
     curNodeParent = getCurrentProject()->getTreeNode(getCurrentProject()->getNodePath() + QString("/level"));
 }
