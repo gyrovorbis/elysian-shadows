@@ -196,6 +196,11 @@ static const char* gyDebugSigCodeToStr(int sig, int sig_code) {
 }
 
 static void gyDebugSigHandler(int sig, siginfo_t* info, void* unused) {
+    sigset_t x;
+    sigfillset(&x);
+    //DO NOT FUCKING FUCK WITH ME WHILE I'M HANDLING A SIGNAL!!!111
+    sigprocmask(SIG_BLOCK, &x, NULL);
+
     char backTrace[3000];
     (void) sig;
     (void) unused;
@@ -203,8 +208,6 @@ static void gyDebugSigHandler(int sig, siginfo_t* info, void* unused) {
     void* buf[64];
     char** symbols;
     static int hasCrashed = 0;
-    if(hasCrashed) exit(-1);
-    hasCrashed = 1;
 
     _gyLog(GY_DEBUG_VERBOSE, "CRASHING!!!!!");
 
@@ -222,12 +225,58 @@ static void gyDebugSigHandler(int sig, siginfo_t* info, void* unused) {
 
     if(_sysParams.segFaultHandler) {
         _sysParams.segFaultHandler(_sysParams.context);
+        _exit(2);
     } else {
         _gyLog(GY_DEBUG_VERBOSE, "Exitting with default segfault handler.");
-        exit(-1);
+        //exit(-1);
     }
 }
+#endif
+
+static void _regSigAction(const int sig, const char* name, struct sigaction*const sa) {
+    struct sigaction so;
+    sigaction(sig, sa, &so);
+     if(so.sa_handler == SIG_IGN)
+         _gyLog(GY_DEBUG_WARNING, "Unable to set up %s signal handler!", name);
+}
+
+#define _GY_SIG(a) a, GYRO_STRINGIFY_MACRO(#a)
+
+void gyDebugSigInit(void) {
+#if defined(__LINUX__) || defined(__APPLE__)
+    _gyLog(GY_DEBUG_VERBOSE, "Registering exception handler to POSIX signals.");
+    //return;
+    struct sigaction sa;
+
+    /* Set up handler. */
+    sa.sa_handler		= NULL;
+    sa.sa_sigaction		= gyDebugSigHandler;
+
+    sigfillset(&sa.sa_mask);
+    sa.sa_flags			= SA_SIGINFO;
+
+    /* Register signal handlers */
+    _regSigAction(_GY_SIG(SIGSEGV), &sa);
+    _regSigAction(_GY_SIG(SIGFPE), &sa);
+    _regSigAction(_GY_SIG(SIGTRAP), &sa);
+    _regSigAction(_GY_SIG(SIGBUS), &sa);
+    _regSigAction(_GY_SIG(SIGHUP), &sa);
+    _regSigAction(_GY_SIG(SIGQUIT), &sa);
+    _regSigAction(_GY_SIG(SIGILL), &sa);
+    _regSigAction(_GY_SIG(SIGABRT), &sa);
+    //_regSigAction(_GY_SIG(SIGKILL), &sa);
+    _regSigAction(_GY_SIG(SIGTERM), &sa);
+
 #elif defined(_WIN32)
+    //SetUnhandledExceptionFilter(&windows_exception_handler);
+
+#endif
+}
+
+
+
+
+#if defined(_WIN32)
 
 const char* execPipe(char* cmd) {
     FILE* pipe = popen(cmd, "r");
@@ -375,44 +424,6 @@ static LONG WINAPI windows_exception_handler(EXCEPTION_POINTERS * ExceptionInfo)
   return EXCEPTION_EXECUTE_HANDLER;
 }
 #endif
-
-static void _regSigAction(const int sig, const char* name, struct sigaction*const sa) {
-    struct sigaction so;
-    sigaction(sig, sa, &so);
-     if(so.sa_handler == SIG_IGN)
-         _gyLog(GY_DEBUG_WARNING, "Unable to set up %s signal handler!", name);
-}
-
-#define _GY_SIG(a) a, GYRO_STRINGIFY_MACRO(#a)
-
-void gyDebugSigInit(void) {
-#if defined(__LINUX__) || defined(__APPLE__)
-    _gyLog(GY_DEBUG_VERBOSE, "Registering exception handler to POSIX signals.");
-    struct sigaction sa;
-
-    /* Set up handler. */
-    sa.sa_handler		= NULL;
-    sa.sa_sigaction		= gyDebugSigHandler;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags			= SA_SIGINFO;
-
-    /* Register signal handlers */
-    _regSigAction(_GY_SIG(SIGSEGV), &sa);
-    _regSigAction(_GY_SIG(SIGFPE), &sa);
-    _regSigAction(_GY_SIG(SIGTRAP), &sa);
-    _regSigAction(_GY_SIG(SIGBUS), &sa);
-    _regSigAction(_GY_SIG(SIGHUP), &sa);
-    _regSigAction(_GY_SIG(SIGQUIT), &sa);
-    _regSigAction(_GY_SIG(SIGILL), &sa);
-    _regSigAction(_GY_SIG(SIGABRT), &sa);
-    _regSigAction(_GY_SIG(SIGKILL), &sa);
-    _regSigAction(_GY_SIG(SIGTERM), &sa);
-
-#elif defined(_WIN32)
-    //SetUnhandledExceptionFilter(&windows_exception_handler);
-
-#endif
-}
 
 
 
