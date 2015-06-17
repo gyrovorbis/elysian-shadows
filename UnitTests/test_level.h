@@ -10,6 +10,8 @@
 #include <QTreeWidgetItem>
 #include <tk_project.h>
 
+extern "C" void gyDebugSigInit();
+
 #define TK_TEST_LEVEL_DIR   "_tkSystemTests"
 
 namespace tktest {
@@ -99,6 +101,7 @@ inline void LevelTest::_indexSubDirAtDepth(const QString name) {
 }
 
 inline void LevelTest::initTestCase(void) {
+    gyDebugSigInit();
     QVERIFY(getCurrentProject() != nullptr);
     curNodeParent = getCurrentProject()->getTreeNode(getCurrentProject()->getNodePath() + QString("/level"));
 }

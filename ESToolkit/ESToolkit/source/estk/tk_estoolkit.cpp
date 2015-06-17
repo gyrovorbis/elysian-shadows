@@ -320,9 +320,10 @@ void ESToolkit::_libGyroInitialize(void) {
 //#ifdef ESTK_UNIT_TESTS
 
 //#else
-                        QThread::currentThread()->exit(-1);
-                               //  pthread_kill(pthread_self(), 15);
-                        //exit(-1);
+                        //QThread::currentThread()->terminate();
+                        //QThread::currentThread()->wait();
+                      pthread_kill(pthread_self(), 15);
+                      //  exit(-1);
 //#endif
                         //(*static_cast<std::function<void()>*>(ptr))();
                   }

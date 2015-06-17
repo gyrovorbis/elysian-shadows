@@ -373,10 +373,19 @@ static LONG WINAPI windows_exception_handler(EXCEPTION_POINTERS * ExceptionInfo)
 }
 #endif
 
+static void _regSigAction(const int sig, const char* name, struct sigaction*const sa) {
+    struct sigaction so;
+    sigaction(sig, sa, &so);
+     if(so.sa_handler == SIG_IGN)
+         _gyLog(GY_DEBUG_WARNING, "Unable to set up %s signal handler!", name);
+}
+
+#define _GY_SIG(a) a, GYRO_STRINGIFY_MACRO(#a)
+
 void gyDebugSigInit(void) {
-    _gyLog(GY_DEBUG_VERBOSE, "Registering exception handler to POSIX signals.");
 #if defined(__LINUX__) || defined(__APPLE__)
-    struct sigaction sa, so;
+    _gyLog(GY_DEBUG_VERBOSE, "Registering exception handler to POSIX signals.");
+    struct sigaction sa;
 
     /* Set up handler. */
     sa.sa_handler		= NULL;
@@ -384,16 +393,18 @@ void gyDebugSigInit(void) {
     sigemptyset(&sa.sa_mask);
     sa.sa_flags			= SA_SIGINFO;
 
-    /* Attach Q_SIGNALS. */
-    sigaction(SIGSEGV, &sa, &so);
-    if(so.sa_handler == SIG_IGN)
-        _gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGSEGV signal handler.");
-    sigaction(SIGFPE, &sa, &so);
-    if(so.sa_handler == SIG_IGN)
-        _gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGFPE signal handler.");
-    sigaction(SIGTRAP, &sa, &so);
-    if(so.sa_handler == SIG_IGN)
-        _gyLog(GY_DEBUG_VERBOSE, "Unable to set up SIGTRAP signal handler.");
+    /* Register signal handlers */
+    _regSigAction(_GY_SIG(SIGSEGV), &sa);
+    _regSigAction(_GY_SIG(SIGFPE), &sa);
+    _regSigAction(_GY_SIG(SIGTRAP), &sa);
+    _regSigAction(_GY_SIG(SIGBUS), &sa);
+    _regSigAction(_GY_SIG(SIGHUP), &sa);
+    _regSigAction(_GY_SIG(SIGQUIT), &sa);
+    _regSigAction(_GY_SIG(SIGILL), &sa);
+    _regSigAction(_GY_SIG(SIGABRT), &sa);
+    _regSigAction(_GY_SIG(SIGKILL), &sa);
+    _regSigAction(_GY_SIG(SIGTERM), &sa);
+
 #elif defined(_WIN32)
     //SetUnhandledExceptionFilter(&windows_exception_handler);
 
