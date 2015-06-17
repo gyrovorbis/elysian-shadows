@@ -202,7 +202,9 @@ static void gyDebugSigHandler(int sig, siginfo_t* info, void* unused) {
     int i, num;
     void* buf[64];
     char** symbols;
-
+    static int hasCrashed = 0;
+    if(hasCrashed) exit(-1);
+    hasCrashed = 1;
     num = backtrace(buf, 64);
     symbols = backtrace_symbols(buf, num);
 
@@ -219,7 +221,7 @@ static void gyDebugSigHandler(int sig, siginfo_t* info, void* unused) {
         _sysParams.segFaultHandler(_sysParams.context);
     } else {
         _gyLog(GY_DEBUG_VERBOSE, "Exitting with default segfault handler.");
-        exit(1);
+        exit(-1);
     }
 }
 #elif defined(_WIN32)
