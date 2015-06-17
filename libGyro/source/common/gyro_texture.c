@@ -204,7 +204,7 @@ static void *_TexConstructor(void *const data) {
 
     //platform-specific texture allocation
     if(!_gyVidTexAlloc(tex)) {
-        _gyLog(GY_DEBUG_DBG_WARNING, "Could not load texture! - %s", texData->file);
+        _gyLog(GY_DEBUG_WARNING, "Could not load texture! - %s", texData->file);
         free(tex);
         return NULL;
     }
@@ -303,31 +303,31 @@ void gyVidTexWalkthrough(void) {
     GYTexture *tex;
     GYAssetBankEntry *entry = _texCoordBank._head;
 
-    _gyLog(GY_DEBUG_DBG_VERBOSE, "====TEX COORD WALKTHROUGH====");
+    _gyLog(GY_DEBUG_VERBOSE, "====TEX COORD WALKTHROUGH====");
     for(; entry; entry = entry->_next) {
         coord = entry->_payload;
-        _gyLog(GY_DEBUG_DBG_VERBOSE, "%d) Sheet - %dx%d, Sprite - %dx%d", count, coord->sheetWidth, coord->sheetHeight, coord->spriteWidth, coord->spriteHeight);
-        _gyLog(GY_DEBUG_DBG_VERBOSE, "\tFrames - %d, _refCount - %d", coord->frames, entry->_refCount);
+        _gyLog(GY_DEBUG_VERBOSE, "%d) Sheet - %dx%d, Sprite - %dx%d", count, coord->sheetWidth, coord->sheetHeight, coord->spriteWidth, coord->spriteHeight);
+        _gyLog(GY_DEBUG_VERBOSE, "\tFrames - %d, _refCount - %d", coord->frames, entry->_refCount);
         ++count;
     }
-    _gyLog(GY_DEBUG_DBG_VERBOSE, "====/TEX COORD WALKTHROUGH====");
+    _gyLog(GY_DEBUG_VERBOSE, "====/TEX COORD WALKTHROUGH====");
 
     count = 0;
-    _gyLog(GY_DEBUG_DBG_VERBOSE, "====TEXTURE WALKTHROUGH====");
+    _gyLog(GY_DEBUG_VERBOSE, "====TEXTURE WALKTHROUGH====");
     for(entry = _texBank._head; entry; entry = entry->_next) {
         tex = entry->_payload;
         if(!tex) {
-            _gyLog(GY_DEBUG_DBG_VERBOSE, "%d) NULL", count++);
+            _gyLog(GY_DEBUG_VERBOSE, "%d) NULL", count++);
             continue;
         }
-        _gyLog(GY_DEBUG_DBG_VERBOSE, "%d) %s", count, tex->filename);
-        _gyLog(GY_DEBUG_DBG_VERBOSE, "\tbpp - %d, palette - %d", tex->bpp, tex->palette);
-        _gyLog(GY_DEBUG_DBG_VERBOSE, "\tSheet size - %dx%d", tex->_coord->sheetWidth, tex->_coord->sheetHeight);
-        _gyLog(GY_DEBUG_DBG_VERBOSE, "\tSprite size - %dx%d", tex->_coord->spriteWidth, tex->_coord->spriteHeight);
-        _gyLog(GY_DEBUG_DBG_VERBOSE, "\t_refCount - %d", entry->_refCount);
+        _gyLog(GY_DEBUG_VERBOSE, "%d) %s", count, tex->filename);
+        _gyLog(GY_DEBUG_VERBOSE, "\tbpp - %d, palette - %d", tex->bpp, tex->palette);
+        _gyLog(GY_DEBUG_VERBOSE, "\tSheet size - %dx%d", tex->_coord->sheetWidth, tex->_coord->sheetHeight);
+        _gyLog(GY_DEBUG_VERBOSE, "\tSprite size - %dx%d", tex->_coord->spriteWidth, tex->_coord->spriteHeight);
+        _gyLog(GY_DEBUG_VERBOSE, "\t_refCount - %d", entry->_refCount);
         ++count;
     }
-    _gyLog(GY_DEBUG_DBG_VERBOSE, "====/TEXTURE WALKTHROUGH====");
+    _gyLog(GY_DEBUG_VERBOSE, "====/TEXTURE WALKTHROUGH====");
 }
 
 const struct GYTexCoord2* gyVidTexCoordArrayFromFrame(const struct GYTexCoordFrame *const frame, const GY_RECT_TEX_ORIENT orient) {
