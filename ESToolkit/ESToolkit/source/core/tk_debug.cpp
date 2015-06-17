@@ -81,7 +81,7 @@ TkDebug::TkDebug(void) {
     _vertLayout->setContentsMargins(0, 0, 0, 0);
     _vertLayout->setSpacing(0);
 
-    _mutex = new QMutex;
+    _mutex = new QMutex(QMutex::Recursive);
     _pendingQueue = new QQueue<LogEntry>;
 
 /*
