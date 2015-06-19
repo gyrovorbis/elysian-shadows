@@ -231,7 +231,7 @@ static void gyDebugSigHandler(int sig, siginfo_t* info, void* unused) {
         //exit(-1);
     }
 }
-#endif
+
 
 static void _regSigAction(const int sig, const char* name, struct sigaction*const sa) {
     struct sigaction so;
@@ -240,7 +240,10 @@ static void _regSigAction(const int sig, const char* name, struct sigaction*cons
          _gyLog(GY_DEBUG_WARNING, "Unable to set up %s signal handler!", name);
 }
 
+
 #define _GY_SIG(a) a, GYRO_STRINGIFY_MACRO(#a)
+
+#endif
 
 void gyDebugSigInit(void) {
 #if defined(__LINUX__) || defined(__APPLE__)
