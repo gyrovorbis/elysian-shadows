@@ -54,16 +54,19 @@ ICON = resource/images/estk.icns
 #docs {
 
 
-DEPENDPATH += ../../AssetIO/include/component \
+DEPENDPATH += 	../../AssetIO/include \
+	../../AssetIO/include/component \
     ../../AssetIO/include/crtp \
     ../../AssetIO/include/level \
     ../../AssetIO/include/primitive \
     ../../AssetIO/include/utility \
+	../../ESGamma/include \
     ../../ESGamma/include/crtp \
     ../../ESGamma/include/gui \
     ../../ESGamma/include/lua \
     ../../ESGamma/include/system \
     ../../ESGamma/include/utility \
+	include \
     include/asset \
     include/model \
     include/estk \
@@ -76,16 +79,19 @@ DEPENDPATH += ../../AssetIO/include/component \
     include/widget
 
 #PRIORITIZED TO REDUCE BUILD TIME ON FUCKING MINGW
-INCLUDEPATH += ../../AssetIO/include/component \
+INCLUDEPATH += ../../AssetIO/include \
+	../../AssetIO/include/component \
     ../../AssetIO/include/crtp \
     ../../AssetIO/include/level \
     ../../AssetIO/include/primitive \
     ../../AssetIO/include/utility \
+	../../ESGamma/include \
     ../../ESGamma/include/crtp \
     ../../ESGamma/include/gui \
     ../../ESGamma/include/lua \
     ../../ESGamma/include/system \
     ../../ESGamma/include/utility \
+	include \
     include/asset \
     include/model \
     include/estk \
@@ -230,7 +236,8 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     source/estk/tk_timer_system.cpp \
     source/core/tk_gitlab_manager.cpp \
     source/dialog/tk_gitlab_dialog.cpp \
-    source/core/tk_network_access_manager.cpp
+    source/core/tk_network_access_manager.cpp \
+    ../../AssetIO/source/proxy/elysian_area_proxy.cpp
 
 
 HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
@@ -426,7 +433,8 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     include/core/tk_gitlab_manager.h \
     include/dialog/tk_gitlab_dialog.h \
     include/tk_precompiled_headers.h \
-    include/core/tk_network_access_manager.h
+    include/core/tk_network_access_manager.h \
+    ../../AssetIO/include/proxy/elysian_area_proxy.hpp
 
 
 FORMS += form/estk/tk_sheet_dock_widget.ui \

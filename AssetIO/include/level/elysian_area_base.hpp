@@ -22,15 +22,13 @@
 #define ELYSIAN_AREA_ENTITY_PATH	"/entity.txt"
 #define ELYSIAN_AREA_TABLE_PATH     "/area_table.lua"
 #define ELYSIAN_AREA_INIT_LUA_PATH	"/area_init.lua"
-#define ELYSIAN_MAP_ENTRY_ELEV_MAX	31
-
-//Common MapEntry properties
-#define ELYSIAN_MAP_ENTRY_ORIENT_BIT_POS	9
-#define ELYSIAN_MAP_ENTRY_ORIENT_BIT_MASK	0x0007
-#define ELYSIAN_MAP_ENTRY_ELEV_BIT_POS		12
-#define ELYSIAN_MAP_ENTRY_ELEV_BIT_MASK		0x001f
+#define ELYSIAN_TILE_ENTRY_ELEV_MAX	31
 
 //TileEntry properties
+#define ELYSIAN_TILE_ENTRY_ORIENT_BIT_POS	9
+#define ELYSIAN_TILE_ENTRY_ORIENT_BIT_MASK	0x0007
+#define ELYSIAN_TILE_ENTRY_ELEV_BIT_POS		12
+#define ELYSIAN_TILE_ENTRY_ELEV_BIT_MASK	0x001f
 #define ELYSIAN_TILE_ENTRY_INDEX_BIT_POS	0
 #define ELYSIAN_TILE_ENTRY_INDEX_BIT_MASK	0x01ff
 #define ELYSIAN_TILE_ENTRY_ZTRAN_BIT_POS	31
@@ -38,16 +36,16 @@
 #define ELYSIAN_TILE_ENTRY_PLANE_BIT_POS	17
 #define ELYSIAN_TILE_ENTRY_PLANE_BIT_MASK	0x000f
 
-#define ELYSIAN_MAP_ENTRY_GET_ATTRIB(t ,a)		((value >> ELYSIAN_##t##_ENTRY_##a##_BIT_POS) & ELYSIAN_##t##_ENTRY_##a##_BIT_MASK)
-#define ELYSIAN_MAP_ENTRY_SET_ATTRIB(t, a, v)	do { \
+#define ELYSIAN_TILE_ENTRY_GET_ATTRIB(t ,a)		((value >> ELYSIAN_##t##_ENTRY_##a##_BIT_POS) & ELYSIAN_##t##_ENTRY_##a##_BIT_MASK)
+#define ELYSIAN_TILE_ENTRY_SET_ATTRIB(t, a, v)	do { \
                                                     value &= ~(ELYSIAN_##t##_ENTRY_##a##_BIT_MASK << ELYSIAN_##t##_ENTRY_##a##_BIT_POS); \
                                                     (value) |= ((unsigned)(v) << ELYSIAN_##t##_ENTRY_##a##_BIT_POS); \
                                                 } while(0)
 
-#define ELYSIAN_MAP_ENTRY_TO_VBO_INDEX(l, x, y) ((l*height*width + y*width + x)*4)
+#define ELYSIAN_TILE_ENTRY_TO_VBO_INDEX(l, x, y) ((l*height*width + y*width + x)*4)
 
 #ifdef ELYSIAN_MAP_BOUNDARY_CHECKS
-#	define ELYSIAN_AREA_PROTECTED_MAP_ACCESS(t) ((t < mapEntryCount)? tiles[t] : tiles[0])
+#	define ELYSIAN_AREA_PROTECTED_MAP_ACCESS(t) ((t < tileEntryCount)? tiles[t] : tiles[0])
 #	define ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(l, t) ((t < layerEntryCount)? l[t] : l[0])
 #else
 #	define ELYSIAN_AREA_PROTECTED_MAP_ACCESS(t) tiles[t]
@@ -57,26 +55,22 @@
 
 ELYSIAN_ASSET_TYPEDEF(Area)
 
+using namespace std;
+
 namespace elysian {
 
-
-    struct MapEntry {
-        uint32_t value;
-        MapEntry(const uint32_t val);
-        MapEntry(void);
-
-        uint32_t			getValue(void) const;
-        void				setValue(const uint32_t val);
-        GY_RECT_TEX_ORIENT	getOrient(void) const;
-        unsigned char		getElev(void) const;
-        void				setOrient(const GY_RECT_TEX_ORIENT o);
-        void				setElev(const unsigned char e);
-    };
-
-    struct TileEntry: public MapEntry {
+    struct TileEntry {
         TileEntry(void);
         TileEntry(const uint32_t val);
 
+        uint32_t                value = 0;
+
+        uint32_t                getValue(void) const;
+        void                    setValue(const uint32_t val);
+        GY_RECT_TEX_ORIENT      getOrient(void) const;
+        unsigned char           getElev(void) const;
+        void                    setOrient(const GY_RECT_TEX_ORIENT o);
+        void                    setElev(const unsigned char e);
         void					setIndex(const uint16_t i);
         uint16_t				getIndex(void) const;
         void					setZTran(const bool z);
@@ -92,122 +86,132 @@ namespace elysian {
     public:
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
-           // ELYSIAN_LUA_PROXY_FIELD(dirName, )
-            //ELYSIAN_LUA_PROXY_FIELD(name, )
-            //ELYSIAN_LUA_PROXY_FIELD(path, )
+            ELYSIAN_LUA_PROXY_FIELD(dirName, getDirName, setDirName)
+            ELYSIAN_LUA_PROXY_FIELD(nameString, getNameString, setNameString)
+            ELYSIAN_LUA_PROXY_FIELD(path, getPath)
+            ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_BEGIN(size)
+                ELYSIAN_LUA_PROXY_FIELD(width, getMapWidth, setMapWidth)
+                ELYSIAN_LUA_PROXY_FIELD(height, getMapHeight, setMapHeight)
+            ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_END()
             ELYSIAN_LUA_PROXY_ARRAY_FIELD(activeEntities,   getActiveEntityByIndex,     setActiveEntityByIndex,     getActiveEntityCount)
             ELYSIAN_LUA_PROXY_ARRAY_FIELD(inactiveEntities, getInactiveEntityByIndex,   setInactiveEntityByIndex,   getInactiveEntityCount)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
         //Entity data
-        std::vector<Entity*>			entities;
-        std::vector<Entity*>            inactiveEntities;
+        vector<Entity*>             entities;
+        vector<Entity*>             inactiveEntities;
 
         //Component data
-        std::vector<Renderable*>		renderables;
-        std::vector<Animation*>			animations;
-        std::vector<Collidable*>		collidables;
-        std::vector<RigidBody*>			rigidBodies;
-        std::vector<Character*>			characters;
-        std::vector<Warp*>				warps;
-        std::vector<Examinable*>		examinables;
-        std::vector<AudioSource*>		audioSources;
-        std::vector<LightSource*>		lightSources;
-        std::vector<ParticleEmitter*>	particleEmitters;
-        std::vector<Combat*>			combats;
-        std::vector<Skeleton*>          skeletons;
-        std::vector<Behavior*>			behaviors;
+        vector<Renderable*>         renderables;
+        vector<Animation*>			animations;
+        vector<Collidable*>         collidables;
+        vector<RigidBody*>			rigidBodies;
+        vector<Character*>			characters;
+        vector<Warp*>				warps;
+        vector<Examinable*>         examinables;
+        vector<AudioSource*>		audioSources;
+        vector<LightSource*>		lightSources;
+        vector<ParticleEmitter*>	particleEmitters;
+        vector<Combat*>             combats;
+        vector<Skeleton*>           skeletons;
+        vector<Behavior*>           behaviors;
 
-        char dir[ELYSIAN_AREA_NAME_SIZE];		//name of area directory
-        char path[ELYSIAN_AREA_PATH_SIZE];
-        char string[ELYSIAN_AREA_STRING_SIZE];	//in-game area name
+        char                        dir[ELYSIAN_AREA_NAME_SIZE];		//name of area directory
+        char                        path[ELYSIAN_AREA_PATH_SIZE];
+        char                        string[ELYSIAN_AREA_STRING_SIZE];	//in-game area name
 
         //map - tile layers
         //pointer to entire map (contiguous block of memory)
-        TileEntry*			tiles			= nullptr;
+        TileEntry*                  tiles			= nullptr;
         //pointer to individual tile layers (faster indexing)
-        TileEntry*			tileLayer2		= nullptr;
-        TileEntry*			tileLayer3		= nullptr;
+        TileEntry*                  tileLayer2		= nullptr;
+        TileEntry*                  tileLayer3		= nullptr;
 
-        Level*              level			= nullptr;
+        Level*                      level			= nullptr;
 
-        unsigned short int	width			= 0;
-        unsigned short int	height			= 0;
-        unsigned			mapEntryCount	= 0;
-        unsigned			layerEntryCount	= 0;
+        unsigned short int          width			= 0;
+        unsigned short int          height			= 0;
+        unsigned                    tileEntryCount	= 0;
+        unsigned                    layerEntryCount	= 0;
 
-        uint32_t              vertexVbo       = 0;
-        uint32_t              elementVbo[2]      = {0} ;
-        uint32_t              vao[2]          = {0};
-        bool                vboPopulated    = false;
-        bool                activated       = false;
+        uint32_t                    vertexVbo       = 0;
+        uint32_t                    elementVbo[2]      = {0} ;
+        uint32_t                    vao[2]          = {0};
+        bool                        vboPopulated    = false;
+        bool                        activated       = false;
 
-        uint16_t    		elementsArray[2][ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE] __attribute__((aligned(32)));
-        int			elementsArraySize[2] = {0};
-        int lastElemArraySize[2] = {0};
-        int lastOffset[2] = {0};
-        int minIndex[2] = {INT_MAX};
-        int maxIndex[2] = {0};
+        uint16_t                    elementsArray[2][ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE] __attribute__((aligned(32)));
+        int                         elementsArraySize[2] = {0};
+        int                         lastElemArraySize[2] = {0};
+        int                         lastOffset[2] = {0};
+        int                         minIndex[2] = {INT_MAX};
+        int                         maxIndex[2] = {0};
 
         //AreaBase(void);
-        ~AreaBase(void);
+                                    ~AreaBase(void);
 
-        unsigned short  getMapWidth(void) const { return width; }
-        unsigned short  getMapHeight(void) const { return height; }
-        const char*     getDirName(void) const { return dir; }
-        const char*     getPath(void) const { return path; }
+        unsigned short              getMapWidth(void) const;
+        unsigned short              getMapHeight(void) const;
+        void                        setMapWidth(const unsigned short w);
+        void                        setMapHeight(const unsigned short h);
+
+        const char*                 getDirName(void) const;
+        const char*                 getPath(void) const;
+        const char*                 getNameString(void) const;
+        void                        setDirName(const char* name);
+        void                        setNameString(const char *str);
 
         //Slower than layer-specific accessors, but loop-friendly
-        TileEntry	getTileEntry(const unsigned l, const unsigned x, const unsigned y) const;
-        void		setTileEntry(const unsigned l, const unsigned x, const unsigned y, const TileEntry e);
-        bool        isValidTileEntry(const unsigned x, const unsigned y) const;
+        TileEntry                   getTileEntry(const unsigned l, const unsigned x, const unsigned y) const;
+        void                        setTileEntry(const unsigned l, const unsigned x, const unsigned y, const TileEntry e);
+        bool                        isValidTileEntry(const unsigned x, const unsigned y) const;
         //Faster lookups
 #if 0
-        TileEntry	getL1TileEntry(const unsigned x, const unsigned y) const;
-        void		setL1TileEntry(const unsigned x, const unsigned y, const TileEntry e);
-        TileEntry	getL2TileEntry(const unsigned x, const unsigned y) const;
-        void		setL2TileEntry(const unsigned x, const unsigned y, const TileEntry e);
-        TileEntry	getL3TileEntry(const unsigned x, const unsigned y) const;
-        void		setL3TileEntry(const unsigned x, const unsigned y, const TileEntry e);
+        TileEntry                   getL1TileEntry(const unsigned x, const unsigned y) const;
+        void                        setL1TileEntry(const unsigned x, const unsigned y, const TileEntry e);
+        TileEntry                   getL2TileEntry(const unsigned x, const unsigned y) const;
+        void                        setL2TileEntry(const unsigned x, const unsigned y, const TileEntry e);
+        TileEntry                   getL3TileEntry(const unsigned x, const unsigned y) const;
+        void                        setL3TileEntry(const unsigned x, const unsigned y, const TileEntry e);
 #endif
         //generic entity management
-        void		addEntity(Entity *entity);
-        void        addInactiveEntity(Entity* entity);
-        void		removeEntity(Entity *entity);
-        Entity*		findEntity(const char* name);
+        void                        addEntity(Entity *entity);
+        void                        addInactiveEntity(Entity* entity);
+        void                        removeEntity(Entity *entity);
+        Entity*                     findEntity(const char* name);
 
         //active entity management
-        Entity*     getActiveEntityByIndex(const unsigned index) const;
-        void        setActiveEntityByIndex(const unsigned index, Entity*const entity);
-        unsigned    getActiveEntityCount(void) const;
+        Entity*                     getActiveEntityByIndex(const unsigned index) const;
+        void                        setActiveEntityByIndex(const unsigned index, Entity*const entity);
+        unsigned                    getActiveEntityCount(void) const;
 
         //inactive entity management
-        Entity*     getInactiveEntityByIndex(const unsigned index) const;
-        void        setInactiveEntityByIndex(const unsigned index, Entity*const entity);
-        unsigned    getInactiveEntityCount(void) const;
+        Entity*                     getInactiveEntityByIndex(const unsigned index) const;
+        void                        setInactiveEntityByIndex(const unsigned index, Entity*const entity);
+        unsigned                    getInactiveEntityCount(void) const;
 
         template<typename T>
-        std::vector<T*>* getContainer(void);
+        std::vector<T*>*            getContainer(void);
 
-        void		allocMap(void); //width + height better be set first!
-        void		freeMap(void);
-        void		resizeMap(const unsigned w, const unsigned h);
+        void                        allocMap(void); //width + height better be set first!
+        void                        freeMap(void);
+        void                        resizeMap(const unsigned w, const unsigned h);
 
-        void        setLevel(Level*const lev);
-        Level*      getLevel(void) const;
-        bool		load(const char *const dir);
-        bool		save(const char *const dir);
+        void                        setLevel(Level*const lev);
+        Level*                      getLevel(void) const;
+        bool                        load(const char *const dir);
+        bool                        save(const char *const dir);
 
-        bool		loadMap(const char *const filename);
-        bool		saveMap(const char *const filename);
-        bool		loadEntities(const char *const filename);
-        bool		saveEntities(const char *const filename);
-        void        activate(void);
+        bool                        loadMap(const char *const filename);
+        bool                        saveMap(const char *const filename);
+        bool                        loadEntities(const char *const filename);
+        bool                        saveEntities(const char *const filename);
+        void                        activate(void);
 
-        void		populateVbo(void);
-        void        setVboEntry(const TileEntry*const tileEntry, const unsigned l, const unsigned x, const unsigned y) const;
-        void        vboEntryFromTileEntry(GYVertex*const vboEntry, const TileEntry *const tileEntry, const unsigned x, const unsigned y) const;
-        void        animateVboTileEntry(const unsigned l, const unsigned x, const unsigned y, const uint16_t index);
+        void                        populateVbo(void);
+        void                        setVboEntry(const TileEntry*const tileEntry, const unsigned l, const unsigned x, const unsigned y) const;
+        void                        vboEntryFromTileEntry(GYVertex*const vboEntry, const TileEntry *const tileEntry, const unsigned x, const unsigned y) const;
+        void                        animateVboTileEntry(const unsigned l, const unsigned x, const unsigned y, const uint16_t index);
 
 
     };
@@ -218,25 +222,22 @@ namespace elysian {
 
     // ==== INLINEZ ====
 
-    inline MapEntry::MapEntry(void): value(0) {}
-    inline MapEntry::MapEntry(const uint32_t val): value(val) {}
-    inline uint32_t MapEntry::getValue(void) const { return value; }
-    inline void MapEntry::setValue(const uint32_t val) { value = val; }
-    inline GY_RECT_TEX_ORIENT MapEntry::getOrient(void) const { return (GY_RECT_TEX_ORIENT)ELYSIAN_MAP_ENTRY_GET_ATTRIB(MAP, ORIENT); }
-    inline void MapEntry::setOrient(const GY_RECT_TEX_ORIENT o) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(MAP, ORIENT, o); }
-    inline unsigned char MapEntry::getElev(void) const { return ELYSIAN_MAP_ENTRY_GET_ATTRIB(MAP, ELEV); }
-    inline void MapEntry::setElev(const unsigned char e) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(MAP, ELEV, e); }
-
-    inline TileEntry::TileEntry(void) {}
-    inline TileEntry::TileEntry(const uint32_t val): MapEntry(val) {}
-    inline uint16_t TileEntry::getIndex(void) const { return ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, INDEX); }
-    inline void TileEntry::setIndex(const uint16_t i) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, INDEX, i); }
-    inline bool TileEntry::getZTran(void) const { return ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, ZTRAN); }
-    inline void TileEntry::setZTran(const bool z) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, ZTRAN, z); }
-    inline GY_RECT_PLANE_TYPE TileEntry::getPlane(void) const { return (GY_RECT_PLANE_TYPE)ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, PLANE); }
-    inline void TileEntry::setPlane(const GY_RECT_PLANE_TYPE n) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, PLANE, n); }
+    inline TileEntry::TileEntry(void): value(0) {}
+    inline TileEntry::TileEntry(const uint32_t val): value(val) {}
+    inline uint32_t TileEntry::getValue(void) const { return value; }
+    inline void TileEntry::setValue(const uint32_t val) { value = val; }
+    inline GY_RECT_TEX_ORIENT TileEntry::getOrient(void) const { return (GY_RECT_TEX_ORIENT)ELYSIAN_TILE_ENTRY_GET_ATTRIB(TILE, ORIENT); }
+    inline void TileEntry::setOrient(const GY_RECT_TEX_ORIENT o) { ELYSIAN_TILE_ENTRY_SET_ATTRIB(TILE, ORIENT, o); }
+    inline unsigned char TileEntry::getElev(void) const { return ELYSIAN_TILE_ENTRY_GET_ATTRIB(TILE, ELEV); }
+    inline void TileEntry::setElev(const unsigned char e) { ELYSIAN_TILE_ENTRY_SET_ATTRIB(TILE, ELEV, e); }
+    inline uint16_t TileEntry::getIndex(void) const { return ELYSIAN_TILE_ENTRY_GET_ATTRIB(TILE, INDEX); }
+    inline void TileEntry::setIndex(const uint16_t i) { ELYSIAN_TILE_ENTRY_SET_ATTRIB(TILE, INDEX, i); }
+    inline bool TileEntry::getZTran(void) const { return ELYSIAN_TILE_ENTRY_GET_ATTRIB(TILE, ZTRAN); }
+    inline void TileEntry::setZTran(const bool z) { ELYSIAN_TILE_ENTRY_SET_ATTRIB(TILE, ZTRAN, z); }
+    inline GY_RECT_PLANE_TYPE TileEntry::getPlane(void) const { return (GY_RECT_PLANE_TYPE)ELYSIAN_TILE_ENTRY_GET_ATTRIB(TILE, PLANE); }
+    inline void TileEntry::setPlane(const GY_RECT_PLANE_TYPE n) { ELYSIAN_TILE_ENTRY_SET_ATTRIB(TILE, PLANE, n); }
     inline bool TileEntry::getNormal(void) const {
-        GY_RECT_PLANE_TYPE plane = (GY_RECT_PLANE_TYPE)ELYSIAN_MAP_ENTRY_GET_ATTRIB(TILE, PLANE);
+        GY_RECT_PLANE_TYPE plane = (GY_RECT_PLANE_TYPE)ELYSIAN_TILE_ENTRY_GET_ATTRIB(TILE, PLANE);
 
         switch(plane) {
             case GY_RECT_PLANE_FRONT: return true;
@@ -244,7 +245,7 @@ namespace elysian {
         }
 
     }
-    inline void TileEntry::setNormal(const bool v) { ELYSIAN_MAP_ENTRY_SET_ATTRIB(TILE, PLANE, v); }
+    inline void TileEntry::setNormal(const bool v) { ELYSIAN_TILE_ENTRY_SET_ATTRIB(TILE, PLANE, v); }
 
     inline TileEntry AreaBase::getTileEntry(const unsigned l, const unsigned x, const unsigned y) const {
         return ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x);
@@ -282,6 +283,15 @@ namespace elysian {
     }
 #endif
 
+    inline unsigned short  AreaBase::getMapWidth(void) const { return width; }
+    inline unsigned short  AreaBase::getMapHeight(void) const { return height; }
+
+    inline const char*     AreaBase::getDirName(void) const { return dir; }
+    inline const char*     AreaBase::getPath(void) const { return path; }
+    inline const char*     AreaBase::getNameString(void) const { return string; }
+    inline void            AreaBase::setDirName(const char* name) { strcpy(dir, name); }
+    inline void            AreaBase::setNameString(const char* name) { strcpy(string, name); }
+
     inline void AreaBase::setLevel(Level * const lev) { level = lev; }
 
     inline Level* AreaBase::getLevel(void) const { return level; }
@@ -314,7 +324,6 @@ namespace elysian {
 
         }
      }
-
 }
 
 #endif

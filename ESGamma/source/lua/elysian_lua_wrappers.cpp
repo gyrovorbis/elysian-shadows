@@ -784,43 +784,6 @@ EXPORT_OOLUA_FUNCTIONS_2_CONST(Level,
                                 getDirName,
 								getPath)
 
-EXPORT_OOLUA_FUNCTIONS_3_NON_CONST(MapEntry,
-									setValue,
-									setOrient,
-									setElev)
-EXPORT_OOLUA_FUNCTIONS_3_CONST(MapEntry,
-								getValue,
-								getOrient,
-								getElev)
-
-OOLUA_EXPORT_FUNCTIONS(TileEntry,
-									setIndex,
-									setZTran,
-                                    setNormal,
-                                    setPlane)
-OOLUA_EXPORT_FUNCTIONS_CONST(TileEntry,
-								getIndex,
-								getZTran,
-                                getNormal,
-                                getPlane)
-
-OOLUA_EXPORT_FUNCTIONS_CONST(Area,
-                                    getDirName,
-									getPath,
-									getTileEntry,
-									getMapWidth,
-                                    getMapHeight,
-                                    getActiveEntityByIndex,
-                                    getActiveEntityCount,
-                                    getInactiveEntityByIndex,
-                                    getInactiveEntityCount)
-OOLUA_EXPORT_FUNCTIONS(Area,
-								setTileEntry,
-								addEntity,
-								removeEntity,
-                                findEntity,
-                                setActiveEntityByIndex,
-                                setInactiveEntityByIndex)
 
 EXPORT_OOLUA_FUNCTIONS_2_NON_CONST(GameInput,
 									setUp,

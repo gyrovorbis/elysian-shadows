@@ -1,5 +1,6 @@
 #include "elysian_lua_behavior.hpp"
 #include "elysian_lua_wrappers.hpp"
+#include <proxy/elysian_area_proxy.hpp>
 
 #ifdef ELYSIAN_LUA_DEBUG
 #	define _PROTECTED(a) \

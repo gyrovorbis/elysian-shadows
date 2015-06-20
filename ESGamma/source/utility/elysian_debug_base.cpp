@@ -636,7 +636,7 @@ void DebugBase::processInput(GameInput& input) {
 		Entity* leader = _engine->_partySystem->getPartyLeader();
 		if(leader) {
 			unsigned elev = leader->getElev();
-			elev = (elev < ELYSIAN_MAP_ENTRY_ELEV_MAX)? elev+1 : 0;
+            elev = (elev < ELYSIAN_TILE_ENTRY_ELEV_MAX)? elev+1 : 0;
 			leader->setElev(elev);
             printf(DBG_VERBOSE, "Player.elevation - %d", elev);
 		}

@@ -926,8 +926,8 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable, c
     // ==== ZTRAN LOGIC ====
 #if 0
     bool zTranThisFrame = false;
-    int closestElev = -(ELYSIAN_MAP_ENTRY_ELEV_MAX+1);
-    int smallestElevDiff = -(ELYSIAN_MAP_ENTRY_ELEV_MAX+1);
+    int closestElev = -(ELYSIAN_TILE_ENTRY_ELEV_MAX+1);
+    int smallestElevDiff = -(ELYSIAN_TILE_ENTRY_ELEV_MAX+1);
     unsigned zTranX, zTranY;
 
     collidable._onZTran = false;
@@ -990,7 +990,7 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable, c
             curTileX = ((int)collidable.getCenterWorldPos().x+16)/32;
             curTileY = ((int)collidable.getCenterWorldPos().y+16)/32;
         if(!(prevZTranX == curTileX && prevZTranY == curTileY)) {
-            if(closestElev != ELYSIAN_MAP_ENTRY_ELEV_MAX) {
+            if(closestElev != ELYSIAN_TILE_ENTRY_ELEV_MAX) {
                 //Debug::printf(Debug::DBG_VERBOSE, "Elevation - %d", closestElev);
                 collidable.getEntity()->setElev(closestElev);
             }
@@ -1037,10 +1037,10 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable, c
     }
 
     if(startElev < 0) startElev = 0;
-    else if(startElev > ELYSIAN_MAP_ENTRY_ELEV_MAX) startElev = ELYSIAN_MAP_ENTRY_ELEV_MAX;
+    else if(startElev > ELYSIAN_TILE_ENTRY_ELEV_MAX) startElev = ELYSIAN_TILE_ENTRY_ELEV_MAX;
 
     if(endElev < 0) startElev = 0;
-    else if(endElev > ELYSIAN_MAP_ENTRY_ELEV_MAX) endElev = ELYSIAN_MAP_ENTRY_ELEV_MAX;
+    else if(endElev > ELYSIAN_TILE_ENTRY_ELEV_MAX) endElev = ELYSIAN_TILE_ENTRY_ELEV_MAX;
 
     //const char diffElev = endElev - startElev;
     //const int sizeY = endY - startY;

@@ -28,6 +28,14 @@ Entity* AreaBase::findEntity(const char *name) {
     return nullptr;
 }
 
+void AreaBase::setMapWidth(const unsigned short w) {
+
+}
+
+void AreaBase::setMapHeight(const unsigned short h) {
+
+}
+
 void AreaBase::addEntity(Entity *entity) {
     for(auto& it: entities) {
         if(strcmp(it->getName(),  entity->getName()) == 0) return;
@@ -73,7 +81,7 @@ void AreaBase::allocMap(void) {
     tiles = (TileEntry *)malloc(sizeof(TileEntry)*width*height*ELYSIAN_AREA_MAP_LAYERS);
     tileLayer2 = tiles + width*height;
     tileLayer3 = tiles + width*height*2;
-    mapEntryCount = width*height*ELYSIAN_AREA_MAP_LAYERS;
+    tileEntryCount = width*height*ELYSIAN_AREA_MAP_LAYERS;
     layerEntryCount = width*height;
 }
 
@@ -102,7 +110,7 @@ void AreaBase::resizeMap(const unsigned w, const unsigned h) {
     tileLayer3      = tiles + w*h*2;
     width           = w;
     height          = h;
-    mapEntryCount   = w*h*ELYSIAN_AREA_MAP_LAYERS;
+    tileEntryCount   = w*h*ELYSIAN_AREA_MAP_LAYERS;
     layerEntryCount = w*h;
 
     //gotta repopulate map VBO
@@ -436,7 +444,7 @@ void AreaBase::setVboEntry(const TileEntry*const tileEntry, const unsigned l, co
     //ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
-    glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_MAP_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(GYVertex), sizeof(GYVertex)*4, (void*)entry);
+    glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_TILE_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(GYVertex), sizeof(GYVertex)*4, (void*)entry);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -450,7 +458,7 @@ void AreaBase::setTileEntry(const unsigned l, const unsigned x, const unsigned y
     ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
-    glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_MAP_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(GYVertex), sizeof(GYVertex)*4, (void*)entry);
+    glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_TILE_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(GYVertex), sizeof(GYVertex)*4, (void*)entry);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
