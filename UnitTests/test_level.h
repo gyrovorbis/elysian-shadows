@@ -279,32 +279,7 @@ inline void LevelTest::cleanupTestCase() {
 
 }
 
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-#if 0
-inline void LevelTest::activateLevel(void) {
-    getAssets()->setCurrentLevel(_level);
-    for(unsigned i = 0 ; i < _level->getAreaAmount(); ++i) {
-        ESTkTest::enqueueNextTest(new AreaTest(_level->getAreaByIndex(i)));
-    }
-    QVERIFY(true);
-}
-#endif
 
 
 #endif // TEST_SEVERITY

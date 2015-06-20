@@ -3,9 +3,10 @@
 
 #include <tk_estoolkit.h>
 #include <test_estk.h>
-#include <test_project.h>
+#include <test_project_assets.h>
 #include <test_init.h>
 #include <test_estoolkit.h>
+#include <test_level.h>
 #include <test_map_view.h>
 #include <test_libgyro_file_api.h>
 
@@ -71,21 +72,21 @@ int main(QStringList args)
     //parser.process(args);
 
     QString project;
+    bool    assetsTest = true;
+    QList<QStringList::iterator> argIts;
 
     for(auto it = args.begin(); it != args.end();  ++it) {
         if(*it == "--project") {
+            argIts.push_back(it);
             project = (*++it);
-            args.erase(it);
-            break;
+            argIts.push_back(it);
+        } else if(*it == "--estk") {
+            assetsTest = false;
+            argIts.push_back(it);
         }
     }
 
-    for(auto it = args.begin(); it != args.end();  ++it) {
-        if(*it == "--project") {
-            args.erase(it);
-            break;
-        }
-    }
+    for(auto it: argIts) if(it != args.end()) args.erase(it);
 
     args.push_back(QString("-o"));
     args.push_back(QString("ESTkTestResults0000.xml,xml"));
@@ -94,9 +95,12 @@ int main(QStringList args)
 
     ESTkTest::enqueueTest(new LibGyroFileApiTest());
     ESTkTest::enqueueTest(new tktest::InitializationTest(project));
-    ESTkTest::enqueueTest(new tktest::ESToolkitTest);
-    ESTkTest::enqueueTest(new tktest::TestSmokeProject());
-    ESTkTest::enqueueTest(new tktest::LevelTest);
+    if(!assetsTest) {
+        ESTkTest::enqueueTest(new tktest::ESToolkitTest);
+        ESTkTest::enqueueTest(new tktest::LevelTest);
+    } else {
+        ESTkTest::enqueueTest(new tktest::TestProjectAssets());
+    }
 
    int failures = 0;
    int testCases = 0;

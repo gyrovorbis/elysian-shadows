@@ -72,7 +72,6 @@ SOURCES += \
 HEADERS += \
     test_libgyro_file_api.h \
     test_libgyro_video_api.h \
-    test_project.h \
     test_entity.h \
     test_lua_behavior.h \
     test_lua_table_proxy.h \
@@ -84,4 +83,7 @@ HEADERS += \
     test_map_view.h \
     test_estk.h \
     test_estoolkit.h \
-    test_init.h
+    test_init.h \
+    test_project_assets.h \
+    test_level_assets.h \
+    test_area_assets.h

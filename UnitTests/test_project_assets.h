@@ -7,13 +7,13 @@
 #include <QDir>
 #include <tk_assets.h>
 #include <tk_project.h>
-#include <test_level.h>
+#include <test_level_assets.h>
 
 class Project;
 
 namespace tktest {
 
-class TestSmokeProject: public ESTkTest {
+class TestProjectAssets: public ESTkTest {
     Q_OBJECT
 
 
@@ -36,23 +36,23 @@ private Q_SLOTS:
 
 };
 
-inline void TestSmokeProject::initTestCase() {
+inline void TestProjectAssets::initTestCase() {
     qDebug() << QString("Verifying Project[") << getAssets()->getCurrentProject()->getNodePath() << "]";
 }
 
-inline void TestSmokeProject::cleanupTestCase()
+inline void TestProjectAssets::cleanupTestCase()
 {
 }
 
-inline void TestSmokeProject::openProject()
+inline void TestProjectAssets::openProject()
 {
   //  QVERIFY(getAssets()->getCurrentProject()- == _project);
 }
 
-inline void TestSmokeProject::iterateLevels() {
+inline void TestProjectAssets::iterateLevels() {
     QVERIFY(getAssets()->getCurrentProject());
     for(unsigned i = 0; i < getAssets()->getCurrentProject()->getLevelAmount(); ++i) {
-      //  ESTkTest::enqueueNextTest(new LevelTest(getAssets()->getCurrentProject()->getLevelByIndex(i)));
+        ESTkTest::enqueueNextTest(new LevelAssetsTest(getAssets()->getCurrentProject()->getLevelByIndex(i)));
     }
 }
 

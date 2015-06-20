@@ -47,8 +47,9 @@ inline void ESTkTest::flagWarning(const QString msg) {
 }
 
 
-inline void ESTkTest::flagError(const QString /*msg*/) {
+inline void ESTkTest::flagError(const QString msg) {
     if(!_initialized) return;
+    QVERIFY2(false, Q_CSTR(msg));
   //  QVERIFY2(false, Q_CSTR(msg));
     //_mutex->lock();
 
