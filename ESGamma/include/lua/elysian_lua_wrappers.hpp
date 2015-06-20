@@ -1585,7 +1585,7 @@ static inline const char* luaGetVariableString(lua_State* const l) {
 static inline int print(lua_State* const l) {
 
 
-    elysian::Debug::luaPrint(luaGetVariableString(l));
+    elysian::LuaManager::luaPrint(luaGetVariableString(l));
 
     return 0;
 }

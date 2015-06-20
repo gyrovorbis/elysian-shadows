@@ -11,6 +11,7 @@ namespace elysian {
 std::map<const char*, LuaScript*, ltstr>	LuaManagerBase::_scripts;
 OOLUA::Script*								LuaManagerBase::_mainState                                                  = nullptr;
 int											LuaManagerBase::_errorCode                                                  = 0;
+Debug::SEVERITY                             LuaManagerBase::_printSeverity                                              = Debug::DBG_VERBOSE;
 int                                         LuaManagerBase::_stackBalanceTop[ELYSIAN_LUA_STACK_BALANCE_RECURSIVE_DEPTH] = { 0 };
 int                                         LuaManagerBase::_stackBalanceRecursiveDepth                                 = 0;
 int                                         LuaManagerBase::_traceBackDbgPushes                                         = 0;
@@ -27,6 +28,11 @@ const char									LuaManagerBase::_rPrint[] =
         "end\n"
         "return l\n"
     "end\n";
+
+void LuaManagerBase::luaPrint(const char * const string, const Debug::SEVERITY severity) {
+    Debug::SEVERITY sev = (severity == Debug::DBG_OFF)? _printSeverity : severity;
+    Debug::luaPrint(string, sev);
+}
 
 
 //Dumps to debug log and LUA_DBG_ERROR_FILE
@@ -123,7 +129,7 @@ void LuaManagerBase::_cStackDump (void) {
     int top = lua_gettop(*_mainState);
     char varDisplayString[200];
 
-    Debug::luaPrint("C Stack Dump");
+    luaPrint("C Stack Dump");
     Debug::push();
 
     for (i = 1; i <= top; ++i) {  /* repeat for each level */
@@ -376,7 +382,7 @@ bool LuaManagerBase::initialize(void) {
 }
 
 bool LuaManagerBase::uninitialize(void) {
-    //delete _mainState;
+    delete _mainState;
     _scripts.clear();
     return true;
 }

@@ -26,17 +26,18 @@ namespace elysian {
     protected:
 		
 		static std::map<const char *, LuaScript *, ltstr> _scripts;
-		static int _errorCode;
+        static int              _errorCode;
+        static Debug::SEVERITY  _printSeverity;
 #ifdef ELYSIAN_LUA_DEBUG
-        static int _stackBalanceTop[ELYSIAN_LUA_STACK_BALANCE_RECURSIVE_DEPTH];
-        static int _stackBalanceRecursiveDepth;
+        static int              _stackBalanceTop[ELYSIAN_LUA_STACK_BALANCE_RECURSIVE_DEPTH];
+        static int              _stackBalanceRecursiveDepth;
 #endif
-		static const char _rPrint[];
-        //static const char _serializeTable[];
-        static int _traceBackDbgPushes;
+        static const char       _rPrint[];
+        static int              _traceBackDbgPushes;
 
-		static void _errorprintf(const char *const string, ...);
-		static void _registerWrappers(void);
+        static int              _changePrintSeverity(const int sev);
+        static void             _errorprintf(const char *const string, ...);
+        static void             _registerWrappers(void);
 
         //================== TEMPLATE INTERNALS =====================
 
@@ -161,6 +162,7 @@ namespace elysian {
 
         static void					rPrintByIndex(const int index, const unsigned depth, const char* name);
         static void					rPrintByRef(const int ref, const unsigned depth, const char* name);
+        static void                 luaPrint(const char*const string, const Debug::SEVERITY severity = Debug::DBG_OFF);
 
         static bool                 getMetatable(const int index);
         static void                 getGlobal(const char*const key);
@@ -259,6 +261,13 @@ namespace elysian {
             return ref;
         }
     };
+
+    inline int LuaManagerBase::_changePrintSeverity(const int sev) {
+        int current = _printSeverity;
+        _printSeverity = (Debug::SEVERITY)sev;
+        return current;
+    }
+
 
 }
 
