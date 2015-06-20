@@ -30,7 +30,9 @@ inline void InitializationTest::createESToolkitMainWindow(void) {
 }
 
 inline void InitializationTest::openProjectAssetsFolder(void) {
+    expectError(true);
     QVERIFY(_estk->openProjectDir(_assetsPath));
+    expectError(false);
 }
 
 

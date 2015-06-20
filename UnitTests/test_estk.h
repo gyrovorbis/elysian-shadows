@@ -22,6 +22,8 @@ protected:
     static QStack<QString>  _subTestStack;
     static QMutex*          _mutex;
     static bool             _initialized;
+    static bool             _expectWarning;
+    static bool             _expectError;
 
     static void             setESToolkit(ESToolkit*const estk);
     static ESToolkit*       getESToolkit(void);
@@ -35,6 +37,9 @@ public:
     static void             popSubTest(const bool success = true);
     static void             flagError(const QString msg);
     static void             flagWarning(const QString msg);
+    static void             expectWarning(const bool val=true);
+    static void             expectError(const bool val=true);
+
 
     static void             initialize(void);
 
@@ -42,15 +47,14 @@ public:
 
 
 inline void ESTkTest::flagWarning(const QString msg) {
-    if(!_initialized) return;
+    if(!_initialized || _expectWarning) return;
     QWARN(Q_CSTR(msg));
 }
 
 
 inline void ESTkTest::flagError(const QString msg) {
-    if(!_initialized) return;
+    if(!_initialized || _expectError) return;
     QVERIFY2(false, Q_CSTR(msg));
-  //  QVERIFY2(false, Q_CSTR(msg));
     //_mutex->lock();
 
     //_mutex->unlock();
@@ -107,6 +111,15 @@ inline void ESTkTest::initialize(void) {
 inline bool ESTkTest::currentProjectLevelAreaExist(void) {
     return (getCurrentProject() && getCurrentLevel() && getCurrentArea());
 }
+
+inline void ESTkTest::expectError(const bool val) {
+    _expectError = val;
+}
+
+inline void ESTkTest::expectWarning(const bool val) {
+    _expectWarning = val;
+}
+
 
 
 int main(QStringList args);

@@ -109,8 +109,10 @@ inline void ESToolkitTest::tabSelectionUpdatesOnAreaChange(void) {
 inline void ESToolkitTest::tabSelectionChangeTriggersAreaChange(void) {
     if(getCurrentLevel()->getAreaAmount() < 2) QSKIP("Current level only has one area!");
 
-    for(unsigned i = 0; i < _estk->_areaTabBar->count(); ++i) {
+    for(int i = 0; i < _estk->_areaTabBar->count(); ++i) {
+        expectError(true);
         _estk->_areaTabBar->setCurrentIndex(i);
+        expectError(false);
         QVERIFY(_estk->_areaTabBar->tabText(i) == getCurrentArea()->getNodeName());
     }
 }

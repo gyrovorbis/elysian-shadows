@@ -53,6 +53,8 @@ QList<QObject*> ESTkTest::_testQueue;
 QStack<QString> ESTkTest::_subTestStack;
 QMutex*         ESTkTest::_mutex            = nullptr;
 bool            ESTkTest::_initialized      = false;
+bool            ESTkTest::_expectError      = false;
+bool            ESTkTest::_expectWarning    = false;
 
 int main(QStringList args)
 {

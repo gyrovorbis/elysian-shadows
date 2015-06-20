@@ -127,7 +127,9 @@ inline void LevelTest::indexLevelAtDepth2(void) {
 }
 
 inline void LevelTest::flagInvalidLevelAtDepth2(void) {
+    expectError(true);
     _indexLevelAtDepth("_tkSystemTests/subdir1/reestedLevel");
+    expectError(false);
     auto* lev = _findByName("_tkSystemTests/subdir1/reestedLevel");
     QVERIFY(lev);
     QVERIFY(!lev->validSheets());
@@ -147,7 +149,9 @@ inline void LevelTest::indexLevelAtDepth3(void) {
 
 
 inline void LevelTest::addNewLevelAtTopWithSameName(void) {
+    expectError(true);
     TkLevel* level = getCurrentProject()->newLevel("_tkSystemTests");
+    expectError(false);
     _newLevel = level;
     getAssets()->setCurrentArea(nullptr);
     getAssets()->setCurrentLevel(level);
