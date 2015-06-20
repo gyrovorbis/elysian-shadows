@@ -43,6 +43,7 @@
 #include "elysian_lua_table_proxy.hpp"
 #include <elysian_audio_system.hpp>
 #include <elysian_renderable.hpp>
+#include <proxy/elysian_skeleton_proxy.hpp>
 
 /* IT'S NOT SAFE TO GO ALONE! TAKE THIS HEADER FILE. IT WILL HELP
  * YOU ON YOUR JOURNEY!
@@ -356,6 +357,7 @@ OOLUA_PROXY(Entity, RenderableObject)
     OOLUA_MEM_FUNC(maybe_null<Examinable*>, addExaminable)
     OOLUA_MEM_FUNC(maybe_null<Combat*>, addCombat)
     OOLUA_MEM_FUNC(maybe_null<ParticleEmitter*>, addParticleEmitter)
+    OOLUA_MEM_FUNC(maybe_null<Skeleton*>, addSkeleton)
     OOLUA_MEM_FUNC(maybe_null<Behavior*>, addBehavior, const char*)
     OOLUA_MEM_FUNC(maybe_null<LuaBehavior*>, addLuaBehavior, const char*, OOLUA::Lua_table_ref)
     OOLUA_MEM_FUNC_CONST(maybe_null<Renderable*>, getRenderable)
@@ -369,6 +371,7 @@ OOLUA_PROXY(Entity, RenderableObject)
     OOLUA_MEM_FUNC_CONST(maybe_null<Examinable*>, getExaminable)
     OOLUA_MEM_FUNC_CONST(maybe_null<Combat*>, getCombat)
     OOLUA_MEM_FUNC_CONST(maybe_null<ParticleEmitter*>, getParticleEmitter)
+    OOLUA_MEM_FUNC_CONST(maybe_null<Skeleton*>, getSkeleton)
     OOLUA_MEM_FUNC_CONST(maybe_null<Behavior*>, getBehavior, const char*)
     OOLUA_MEM_FUNC_CONST(maybe_null<LuaBehavior*>, getLuaBehavior, const char*)
 	OOLUA_MEM_FUNC(void, removeRenderable)
@@ -382,6 +385,7 @@ OOLUA_PROXY(Entity, RenderableObject)
 	OOLUA_MEM_FUNC(void, removeExaminable)
 	OOLUA_MEM_FUNC(void, removeCombat);
 	OOLUA_MEM_FUNC(void, removeParticleEmitter)
+    OOLUA_MEM_FUNC(void, removeSkeleton)
 	OOLUA_MEM_FUNC(void, removeBehavior, const char*)
 	OOLUA_MEM_FUNC(void, removeLuaBehavior, const char*)
 	OOLUA_MEM_FUNC(Lua_table_ref&, getSelfTable)
@@ -404,6 +408,7 @@ OOLUA_PROXY(Entity, RenderableObject)
     OOLUA_MEM_FUNC(void, setExaminable, const OOLUA::Lua_table_ref)
     OOLUA_MEM_FUNC(void, setCombat, const OOLUA::Lua_table_ref)
     OOLUA_MEM_FUNC(void, setParticleEmitter, const OOLUA::Lua_table_ref)
+    OOLUA_MEM_FUNC(void, setSkeleton, const OOLUA::Lua_table_ref)
     OOLUA_MEM_FUNC(void, setPersistent, const bool)
     OOLUA_MEM_FUNC_CONST(bool, isPersistent)
     OOLUA_MEM_FUNC_CONST(const char*, getDispName)

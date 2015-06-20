@@ -51,6 +51,8 @@ namespace elysian {
         void            setAnimTimeScale(const float scale);
         float           getAnimTimeScale(void) const;
 
+        void            setAnimByName(const int trackIndex, const char*const animationName, const bool loop) const;
+
     };
 
 

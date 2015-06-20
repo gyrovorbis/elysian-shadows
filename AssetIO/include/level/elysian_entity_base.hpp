@@ -38,6 +38,7 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(persistent,         isPersistent,           setPersistent)
             ELYSIAN_LUA_PROXY_FIELD(transform,          getTransform,           setTransform)
             ELYSIAN_LUA_PROXY_FIELD(renderable,         getRenderable,          setRenderable)
+            ELYSIAN_LUA_PROXY_FIELD(skeleton,           getSkeleton,            setSkeleton)
             ELYSIAN_LUA_PROXY_FIELD(animation,          getAnimation,           setAnimation)
             ELYSIAN_LUA_PROXY_FIELD(collidable,         getCollidable,          setCollidable)
             ELYSIAN_LUA_PROXY_FIELD(rigidBody,          getRigidBody,           setRigidBody)
@@ -109,19 +110,20 @@ namespace elysian {
         void                setLightSource(const OOLUA::Lua_table_ref valTable);
         void                setParticleEmitter(const OOLUA::Lua_table_ref valTable);
         void                setCombat(const OOLUA::Lua_table_ref valTable);
+        void                setSkeleton(const OOLUA::Lua_table_ref valTable);
 
-        Renderable*			getRenderable(void) const { return _renderable; }
-        Animation*			getAnimation(void) const { return _animation; }
-        Collidable*			getCollidable(void) const { return _collidable; }
-        RigidBody*			getRigidBody(void) const { return _rigidBody; }
-        Character*			getCharacter(void) const { return _character; }
-        Warp*				getWarp(void) const { return _warp; }
-        Examinable*			getExaminable(void) const { return _examinable; }
-        AudioSource*		getAudioSource(void) const { return _audioSource; }
-        LightSource*		getLightSource(void) const { return _lightSource; }
-        ParticleEmitter*	getParticleEmitter(void) const { return _particleEmitter; }
-        Combat*				getCombat(void) const { return _combat; }
-        Skeleton*           getSkeleton(void) const { return (Skeleton*)_renderable; }
+        Renderable*			getRenderable(void) const;
+        Animation*			getAnimation(void) const;
+        Collidable*			getCollidable(void) const;
+        RigidBody*			getRigidBody(void) const;
+        Character*			getCharacter(void) const;
+        Warp*				getWarp(void) const;
+        Examinable*			getExaminable(void) const;
+        AudioSource*		getAudioSource(void) const;
+        LightSource*		getLightSource(void) const;
+        ParticleEmitter*	getParticleEmitter(void) const;
+        Combat*				getCombat(void) const;
+        Skeleton*           getSkeleton(void) const;
 
         void                removeRenderable(void);
         void                removeAnimation(void);
@@ -184,6 +186,7 @@ namespace elysian {
 		float				_shadowDepth		= 16.0f;
         GY_RECT_PLANE_TYPE  _planeType			= GY_RECT_PLANE_FRONT;
         bool				_active				= false;
+
         Renderable*			_renderable			= nullptr;
         Animation*			_animation			= nullptr;
         Collidable*			_collidable			= nullptr;
@@ -195,6 +198,8 @@ namespace elysian {
         LightSource*		_lightSource		= nullptr;
         ParticleEmitter*	_particleEmitter	= nullptr;
         Combat*				_combat				= nullptr;
+        Skeleton*           _skeleton           = nullptr;
+
         OOLUA::Lua_table_ref	_selfTable;
         static float        _oldZ;
         bool                _persistent         = false;
@@ -219,6 +224,19 @@ namespace elysian {
 
 
     //=========== INLINEZ =========
+
+    inline Renderable*      EntityBase::getRenderable(void) const { return _renderable; }
+    inline Animation*		EntityBase::getAnimation(void) const { return _animation; }
+    inline Collidable*		EntityBase::getCollidable(void) const { return _collidable; }
+    inline RigidBody*		EntityBase::getRigidBody(void) const { return _rigidBody; }
+    inline Character*		EntityBase::getCharacter(void) const { return _character; }
+    inline Warp*			EntityBase::getWarp(void) const { return _warp; }
+    inline Examinable*		EntityBase::getExaminable(void) const { return _examinable; }
+    inline AudioSource*		EntityBase::getAudioSource(void) const { return _audioSource; }
+    inline LightSource*		EntityBase::getLightSource(void) const { return _lightSource; }
+    inline ParticleEmitter*	EntityBase::getParticleEmitter(void) const { return _particleEmitter; }
+    inline Combat*			EntityBase::getCombat(void) const { return _combat; }
+    inline Skeleton*        EntityBase::getSkeleton(void) const { return _skeleton; }
 
     inline void EntityBase::setName(const char* const newName) { strcpy(_name, newName); }
     inline const char* EntityBase::getName(void) const { return _name; }

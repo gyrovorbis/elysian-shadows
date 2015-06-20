@@ -111,6 +111,8 @@ namespace elysian {
 		_mainState->register_class<ImplosionForceGenerator>();
 		_mainState->register_class<ExplosionForceGenerator>();
 		_mainState->register_class<CameraKeyFrame>();
+        _mainState->register_class<SkeletonAttrib>();
+        _mainState->register_class<Skeleton>();
 
 
 		//Register C and static member functions
@@ -263,6 +265,7 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
 						addRigidBody,
 						addCombat,
 						addParticleEmitter,
+                        addSkeleton,
 						addBehavior,
 						addLuaBehavior,
 						removeRenderable,
@@ -276,6 +279,7 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
 						removeRigidBody,
 						removeCombat,
 						removeParticleEmitter,
+                        removeSkeleton,
 						removeBehavior,
 						removeLuaBehavior,
 						setSelfTable,
@@ -295,6 +299,7 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
                        setParticleEmitter,
                        setCombat,
                        setExaminable,
+                       setSkeleton,
                        setPersistent,
                        setDispName,
                        setLuaBehaviorByIndex)
@@ -314,6 +319,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
 								getRigidBody,
 								getCombat,
 								getParticleEmitter,
+                                getSkeleton,
 								getBehavior,
 								getLuaBehavior,
                                 isShadowVolume,

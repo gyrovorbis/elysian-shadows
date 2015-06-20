@@ -17,6 +17,7 @@
 #include "elysian_combat.hpp"
 #include "elysian_area.hpp"
 #include "elysian_lua_wrappers.hpp"
+#include <crtp/elysian_skeleton.hpp>
 #include <elysian_generic.hpp>
 
 using namespace std;
@@ -62,6 +63,7 @@ EntityBase::~EntityBase(void) {
     removeLightSource();
     removeParticleEmitter();
     removeCombat();
+    removeSkeleton();
 
     // Cleanup Behaviors
     for(auto it = _behavior.begin(); it != _behavior.end(); ++it) {
@@ -102,11 +104,16 @@ void EntityBase::popViewTransform(void) {
 
 void EntityBase::render(void) {
     if(_particleEmitter) _particleEmitter->render();
-    if(!_renderable) return;
 
-    pushViewTransform();
-    static_cast<Entity*>(this)->_renderRelative();
-    popViewTransform();
+    if(_renderable) {
+        pushViewTransform();
+        static_cast<Entity*>(this)->_renderRelative();
+        popViewTransform();
+    }
+
+    if(_skeleton) {
+        _skeleton->render();
+    }
 
 }
 
@@ -349,6 +356,10 @@ bool EntityBase::activate(void) {
         _area->combats.push_back(_combat);
 		_componentActive[Component::COMBAT] = true;
 	}
+    if(_skeleton && !_componentActive[Component::SKELETON]) {
+        _area->skeletons.push_back(_skeleton);
+        _componentActive[Component::SKELETON] = true;
+    }
 
 	for(auto it = _behavior.begin(); it != _behavior.end(); ++it) {
 		if(!it->second->getActive()) {
@@ -412,6 +423,10 @@ bool EntityBase::deactivate(void) {
         containerEraseOnMatch(_combat, _area->combats);
 		_componentActive[Component::COMBAT] = false;
 	}
+    if(_skeleton && _componentActive[Component::SKELETON]) {
+        containerEraseOnMatch(_skeleton, _area->skeletons);
+        _componentActive[Component::SKELETON] = false;
+    }
 
 	for(auto it = _behavior.begin(); it != _behavior.end(); ++it) {
 		if(it->second->getActive()) {
@@ -755,8 +770,7 @@ Combat *EntityBase::addCombat(void) {
 }
 
 Skeleton* EntityBase::addSkeleton(void) {
-    //return _addComponent<Skeleton>(_renderable);
-    return nullptr;
+    return _addComponent<Skeleton>(_skeleton, _active? &_area->skeletons : nullptr);
 }
 
 template<typename T>
@@ -815,7 +829,7 @@ void EntityBase::removeCombat(void) {
 }
 
 void EntityBase::removeSkeleton(void) {
-
+    _removeComponent<Skeleton>(_skeleton, _active? &_area->skeletons : nullptr);
 }
 
 template<typename T>
@@ -870,6 +884,8 @@ void EntityBase::setCombat(const OOLUA::Lua_table_ref valTable) {
     _setComponent<Combat>(_combat, valTable, _active? &_area->combats : nullptr);
 }
 
-
+void EntityBase::setSkeleton(const OOLUA::Lua_table_ref valTable) {
+    _setComponent<Skeleton>(_skeleton, valTable, _active? &_area->skeletons : nullptr);
+}
 
 }

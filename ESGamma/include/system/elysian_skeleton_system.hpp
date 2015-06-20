@@ -7,7 +7,8 @@ namespace elysian {
 
     class SkeletonSystem: public System {
     public:
-        void update(void);
+                SkeletonSystem(void);
+        void    update(void);
 
 
     };

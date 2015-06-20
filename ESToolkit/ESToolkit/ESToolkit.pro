@@ -237,7 +237,8 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     source/core/tk_gitlab_manager.cpp \
     source/dialog/tk_gitlab_dialog.cpp \
     source/core/tk_network_access_manager.cpp \
-    ../../AssetIO/source/proxy/elysian_area_proxy.cpp
+    ../../AssetIO/source/proxy/elysian_area_proxy.cpp \
+    ../../AssetIO/source/proxy/elysian_skeleton_proxy.cpp
 
 
 HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
@@ -434,7 +435,8 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     include/dialog/tk_gitlab_dialog.h \
     include/tk_precompiled_headers.h \
     include/core/tk_network_access_manager.h \
-    ../../AssetIO/include/proxy/elysian_area_proxy.hpp
+    ../../AssetIO/include/proxy/elysian_area_proxy.hpp \
+    ../../AssetIO/include/proxy/elysian_skeleton_proxy.hpp
 
 
 FORMS += form/estk/tk_sheet_dock_widget.ui \

@@ -62,6 +62,10 @@ SkeletonBase::~SkeletonBase(void) {
     /*decrement attrib reference count*/
 }
 
+void SkeletonBase::setAnimByName(const int trackIndex, const char*const animationName, const bool loop) const {
+    spAnimationState_setAnimationByName(_animState, trackIndex, animationName, loop);
+}
+
 
 void SkeletonBase::setAttrib(SkeletonAttrib * const attrib) {
     //float x, y;
