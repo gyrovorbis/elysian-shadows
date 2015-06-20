@@ -201,26 +201,22 @@ static void gyDebugSigHandler(int sig, siginfo_t* info, void* unused) {
     //DO NOT FUCKING FUCK WITH ME WHILE I'M HANDLING A SIGNAL!!!111
     sigprocmask(SIG_BLOCK, &x, NULL);
 
-    char backTrace[3000];
     (void) sig;
     (void) unused;
     int i, num;
     void* buf[64];
     char** symbols;
-    static int hasCrashed = 0;
-
-    _gyLog(GY_DEBUG_VERBOSE, "CRASHING!!!!!");
 
     num = backtrace(buf, 64);
     symbols = backtrace_symbols(buf, num);
 
-    _gyLog(GY_DEBUG_ERROR, "**** BEGIN C/++ BACKTRACE ****");
+    _gyLog(GY_DEBUG_VERBOSE, "**** BEGIN C/++ BACKTRACE ****");
     _gyPush();
-    _gyLog(GY_DEBUG_ERROR, "RECIEVED SIGNAL: %s!",
+    _gyLog(GY_DEBUG_VERBOSE, "RECIEVED SIGNAL: %s!",
            gyDebugSigCodeToStr(info->si_signo, info->si_code));
     for(i = 0; i < num; i++)
-        _gyLog(GY_DEBUG_ERROR, "	%s", symbols[i]);
-    _gyLog(GY_DEBUG_ERROR, "**** END C/++ BACKTRACE ****");
+        _gyLog(GY_DEBUG_VERBOSE, "	%s", symbols[i]);
+    _gyLog(GY_DEBUG_VERBOSE, "**** END C/++ BACKTRACE ****");
     _gyPop(1);
 
     if(_sysParams.segFaultHandler) {
