@@ -333,6 +333,8 @@ void gyVidCamUpdate(const GYCamera *const cam) {
     ++glalUniformChangeCount;
 }
 
+static int _glPrimitiveType = GL_TRIANGLE_STRIP;
+
 static inline void _flushStreamVertices(void* data) {
     (void)data;
     if(_vertexQueueSize-_vertexQueueLastSize <= 0) return;
@@ -344,7 +346,7 @@ static inline void _flushStreamVertices(void* data) {
     memcpy(ptr, &_vertexQueue[_vertexQueueLastSize], sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize));
     glUnmapBuffer(GL_ARRAY_BUFFER);
 
-    glDrawArrays(GL_TRIANGLE_STRIP, _vertexQueueLastSize, (_vertexQueueSize-_vertexQueueLastSize));
+    glDrawArrays(_glPrimitiveType, _vertexQueueLastSize, (_vertexQueueSize-_vertexQueueLastSize));
 }
     _vertexQueueLastSize    = _vertexQueueSize;
     _vertexQueueLastOffset  = _vertexQueueSize*sizeof(GYVertex);
@@ -602,7 +604,7 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
         _vertexQueueSize = 0;
         _vertexQueueLastSize = 0;
         _vertexQueueLastOffset = 0;
-    gyVidVertexArrayBind(_streamVao[gyVidShadowPass()]);
+        gyVidVertexArrayBind(_streamVao[gyVidShadowPass()]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE, NULL, GL_STREAM_DRAW);
     }
 
@@ -649,30 +651,28 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
     spSkinnedMeshAttachment*    skinnedMesh;
     float                       width, height;
     //GYColor4                    color;
-    GYVertex*                   startVertex = &_vertexQueue[0];
-    GYVertex*                   vertex = startVertex;
     //int                         i;
     //int                         index;
     const float                 zEpsilon = 0.0f;
     float                       zOffset;
 
-    gyVidQuadListEnd();
-
     gyVidNormalMapBind(NULL);
     gyVidSpecularMapBind(NULL);
     gyVidMaterialBind(NULL);
-    gyVidAlphaLevel(GY_ALPHA_FULL);
-     gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
      gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
+     gyVidAlphaLevel(GY_ALPHA_FULL);
      gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
      glalVidNormalMapZFactorUpdateUniform(1.0f);
+     gyVidDepthTest(0);
 
-
-    gyVidDepthTest(1);
+     gyVidVertexBatchFlush();
+     gyVidVertexBatchBegin(&_flushStreamVertices, NULL);
+     GYVertex*                   startVertex = &_vertexQueue[_vertexQueueSize];
+     GYVertex*                   vertex = startVertex;
 
     for (int i = 0; i < skeleton->slotsCount; ++i) {
     //for (int i = skeleton->slotsCount-1; i >= 0; --i) {
-        startVertex = &_vertexQueue[0];
+        startVertex = &_vertexQueue[_vertexQueueSize];
         vertex = startVertex;
 
         slot = skeleton->drawOrder[i];
@@ -685,18 +685,25 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
             regionAttachment = (spRegionAttachment*)attachment;
             texture = (GYTexture*)((spAtlasRegion*)regionAttachment->rendererObject)->page->rendererObject;
             spRegionAttachment_computeWorldVertices(regionAttachment, slot->bone, worldVertices);
-/*
+
             GYColor4 color = {
                 (unsigned char)(skeleton->r * slot->r * 255),
                 (unsigned char)(skeleton->g * slot->g * 255),
                 (unsigned char)(skeleton->b * slot->b * 255),
                 (unsigned char)(skeleton->a * slot->a * 255)
-            };*/
-
-                        GYColor4 color = { 0, 0, 255, 255 };
+            };
 
             width = texture->width;
             height = texture->height;
+
+            vertex->pos.x = worldVertices[SP_VERTEX_X2];
+            vertex->pos.y = worldVertices[SP_VERTEX_Y2];
+            vertex->pos.z = 80.0f + zOffset;
+            vertex->pos.w = 1.0f;
+            vertex->texCoord.u = regionAttachment->uvs[SP_VERTEX_X2];// * width;
+            vertex->texCoord.v = regionAttachment->uvs[SP_VERTEX_Y2];// * height;
+            vertex->color = *(GYColor4*)&color;
+            ++vertex;
 
             vertex->pos.x = worldVertices[SP_VERTEX_X1];
             vertex->pos.y = worldVertices[SP_VERTEX_Y1];
@@ -707,14 +714,17 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
             vertex->color = *(GYColor4*)&color;
             ++vertex;
 
-            vertex->pos.x = worldVertices[SP_VERTEX_X2];
-            vertex->pos.y = worldVertices[SP_VERTEX_Y2];
+
+
+            vertex->pos.x = worldVertices[SP_VERTEX_X3];
+            vertex->pos.y = worldVertices[SP_VERTEX_Y3];
             vertex->pos.z = 80.0f + zOffset;
             vertex->pos.w = 1.0f;
-            vertex->texCoord.u = regionAttachment->uvs[SP_VERTEX_X2];// * width;
-            vertex->texCoord.v = regionAttachment->uvs[SP_VERTEX_Y2];// * height;
+            vertex->texCoord.u = regionAttachment->uvs[SP_VERTEX_X3];// * width;
+            vertex->texCoord.v = regionAttachment->uvs[SP_VERTEX_Y3];// * height;
             vertex->color = *(GYColor4*)&color;
             ++vertex;
+
 
             vertex->pos.x = worldVertices[SP_VERTEX_X3];
             vertex->pos.y = worldVertices[SP_VERTEX_Y3];
@@ -734,20 +744,27 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
             vertex->color = *(GYColor4*)&color;
             ++vertex;
 
+            vertex->pos.x = worldVertices[SP_VERTEX_X1];
+            vertex->pos.y = worldVertices[SP_VERTEX_Y1];
+            vertex->pos.z = 80.0f + zOffset;
+            vertex->pos.w = 1.0f;
+            vertex->texCoord.u = regionAttachment->uvs[SP_VERTEX_X1];// * width;
+            vertex->texCoord.v = regionAttachment->uvs[SP_VERTEX_Y1];// * height;
+            vertex->color = *(GYColor4*)&color;
+            ++vertex;
+
         } else if (attachment->type == SP_ATTACHMENT_MESH) {
             mesh = (spMeshAttachment*)attachment;
             //if (mesh->verticesCount > SPINE_MESH_VERTEX_COUNT_MAX) continue;
             texture = (GYTexture*)((spAtlasRegion*)mesh->rendererObject)->page->rendererObject;
             spMeshAttachment_computeWorldVertices(mesh, slot, worldVertices);
 
-        /*    GYColor4 color = {
+           GYColor4 color = {
                 (unsigned char)(skeleton->r * slot->r * 255),
                 (unsigned char)(skeleton->g * slot->g * 255),
                 (unsigned char)(skeleton->b * slot->b * 255),
                 (unsigned char)(skeleton->a * slot->a * 255)
-            };*/
-
-            GYColor4 color = { 255, 0, 0, 255 };
+            };
 
             width = texture->width;
             height = texture->height;
@@ -768,15 +785,13 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
            // if (mesh->uvsCount > SPINE_MESH_VERTEX_COUNT_MAX) continue;
             texture = (GYTexture*)((spAtlasRegion*)skinnedMesh->rendererObject)->page->rendererObject;
             spSkinnedMeshAttachment_computeWorldVertices(skinnedMesh, slot, worldVertices);
-/*
+
             GYColor4 color = {
                 (unsigned char)(skeleton->r * slot->r * 255),
                 (unsigned char)(skeleton->g * slot->g * 255),
                 (unsigned char)(skeleton->b * slot->b * 255),
                 (unsigned char)(skeleton->a * slot->a * 255)
             };
-  */
-                        GYColor4 color = { 0, 255, 0, 255 };
 
             width = texture->width;
             height = texture->height;
@@ -796,7 +811,6 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
 
         if(texture) {
 
-            gyVidAlphaLevel(GY_ALPHA_FULL);
            // if(slot->data->additiveBlending != lastAdditive) {
             if(slot->data->additiveBlending) {
                 gyVidBlendMode(GY_BLEND_ONE);
@@ -806,7 +820,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
 
             gyVidTexBind(texture);
 
-            float* rawPtr = (float*)startVertex;
+            /*
             glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_POS]);
             glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR]);
             glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TEX_COORD]);
@@ -817,16 +831,33 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
             glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GYVertex), (void*)(rawPtr+6));
             glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(rawPtr+7));
             glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(rawPtr+10));
-
-            int count = (int)vertex-(int)startVertex;
+*/
+            int count = vertex-startVertex;
+            _vertexQueueSize += count;
             assert(count < GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE);
-            glDrawArrays(attachment->type == SP_ATTACHMENT_REGION? GL_QUADS : GL_TRIANGLES, 0, count);
+            //glDrawArrays(attachment->type == SP_ATTACHMENT_REGION? GL_QUADS : GL_TRIANGLES, 0, count);
             glalVertexRenderCount += count;
+
+            _glPrimitiveType = attachment->type == SP_ATTACHMENT_REGION? GL_TRIANGLE_STRIP : GL_TRIANGLES;
+
+            gyVidVertexBatchFlush();
+
+            if((_vertexQueueSize + 6) >= GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE) {
+                gyVidVertexBatchFlush();
+
+                _vertexQueueSize = 0;
+                _vertexQueueLastSize = 0;
+                _vertexQueueLastOffset = 0;
+                gyVidVertexArrayBind(_streamVao[gyVidShadowPass()]);
+                glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE, NULL, GL_STREAM_DRAW);
+            }
+
         }
 
     }
 
-    gyVidDepthTest(0);
+    gyVidVertexBatchEnd();
+    _glPrimitiveType = GL_TRIANGLE_STRIP;
 
    // target.draw(*vertexArray, states);
 }
