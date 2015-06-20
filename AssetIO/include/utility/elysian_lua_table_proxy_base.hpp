@@ -450,7 +450,7 @@ namespace elysian {
             return 1;
         }
 
-        static inline  void _callPropertyProxyMethod(const bool /*write*/, const unsigned args, const unsigned retVals, const unsigned keyIndex) {
+        static inline  void _callPropertyProxyMethod(const bool /*write*/, const unsigned args, const unsigned retVals, const int keyIndex) {
             lua_remove(*_mainState, keyIndex);
             LuaManager::_protectedCall(args, retVals, nullptr);
         }
@@ -632,16 +632,24 @@ namespace elysian {
 
 			//Save OOLUA's method table for later
 			lua_getfield(l, -1, "__index");
+
+            lua_pushstring(l, "fromTable");
             lua_pushcfunction(l, &_luaFromTableCFunction);
-            lua_setfield(l, -2, "fromTable");
+            lua_rawset(l, -3);
+
+            lua_pushstring(l, "__typename");
+            lua_pushstring(l, OOLUA::Proxy_class<T>::class_name);
+            lua_rawset(l, -3);
 
             lua_getfield(l, -1, "new"); //only register creator function if constructor is exposed
             if(!lua_isnil(l, -1)) {
                 lua_pushstring(l, "oolua_new");
                 lua_insert(l, -2);
                 lua_rawset(l, -3);
+
+                lua_pushstring(l, "new");
                 lua_pushcfunction(l, &_luaCreate);
-                lua_setfield(l, -2, "new");
+                lua_rawset(l, -3);
             } else lua_pop(l, 1);
 
             _ooluaIndexTable.pull(l);

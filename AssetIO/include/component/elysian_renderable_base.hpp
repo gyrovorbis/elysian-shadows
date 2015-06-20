@@ -141,6 +141,7 @@ namespace elysian {
         bool alpha = false;
 
         //Submit vertices
+
         switch(_spriteAttrib->getType()) {
         case PrimAttrib::QUAD_SPRITE:
 

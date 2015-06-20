@@ -386,7 +386,7 @@ gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
            enableDepthTest();
         }
 
-        entry.entity->render();
+         entry.entity->render();
     }
 
     template<typename P, typename T, typename E>

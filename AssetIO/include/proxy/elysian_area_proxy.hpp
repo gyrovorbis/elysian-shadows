@@ -51,10 +51,10 @@ OOLUA_PROXY(Area)
     OOLUA_MEM_FUNC_CONST(unsigned short, getMapHeight);
     OOLUA_MEM_FUNC(void, setMapHeight, const unsigned short)
     OOLUA_MEM_FUNC(void, setMapWidth, const unsigned short)
-    OOLUA_MEM_FUNC(void, setActiveEntityByIndex, const unsigned, Entity*const)
+    OOLUA_MEM_FUNC(void, setActiveEntityByIndex, const unsigned, cpp_in_p<Entity*const>)
     OOLUA_MEM_FUNC_CONST(Entity*, getActiveEntityByIndex, unsigned)
     OOLUA_MEM_FUNC_CONST(unsigned, getActiveEntityCount)
-    OOLUA_MEM_FUNC(void, setInactiveEntityByIndex, const unsigned, Entity*const)
+    OOLUA_MEM_FUNC(void, setInactiveEntityByIndex, const unsigned, cpp_in_p<Entity*const>)
     OOLUA_MEM_FUNC_CONST(Entity*, getInactiveEntityByIndex, unsigned)
     OOLUA_MEM_FUNC_CONST(unsigned, getInactiveEntityCount)
 OOLUA_PROXY_END

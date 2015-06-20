@@ -541,9 +541,11 @@ bool LuaManagerBase::genericIterate(const int index, std::function<void(void)> l
     lua_pushvalue(*_mainState, -2);
     lua_insert(*_mainState, -4);
 
-    do {
-        if(!_protectedCall(2, 2, nullptr)) {
+    QVariant lastKey;
+    QVariant lastValue;
 
+    do {
+        if(!_protectedCall(2, 2, nullptr, "LuaManager::genericIterate(<%s, %s>)", Q_CSTR(lastKey.toString()), Q_CSTR(lastValue.toString()))) {
             break;
         }
          if(lua_isnil(*_mainState, -2)) {
@@ -559,11 +561,12 @@ bool LuaManagerBase::genericIterate(const int index, std::function<void(void)> l
 
         //STACK[-2] = KEY
         //STACK[-1] = VALUE
-/*
-        QVariant key;
-        lua_pushvalue(*_mainState, -2);
-        OOLUA::pull(*_mainState, key);
 
+        lua_pushvalue(*_mainState, -1);
+        OOLUA::pull(*_mainState, lastValue);
+        lua_pushvalue(*_mainState, -2);
+        OOLUA::pull(*_mainState, lastKey);
+/*
         QList<QStandardItem*> items;
         auto* labelItem = (PropertyStackModel::createReadOnlyItem(key.toString()));
         auto* valueItem = new LuaTableFieldItem(_luaRef, key, labelItem);

@@ -39,8 +39,8 @@ TkEntity* TkEntity::create(const OOLUA::Lua_table_ref valTable) {
 
 TkEntity::TkEntity(void): TkEntity(true) {}
 
-TkEntity::TkEntity(const OOLUA::Lua_table_ref valTable): TkEntity(false) {
-    fromTable(valTable);
+TkEntity::TkEntity(const OOLUA::Lua_table_ref valTable): TkEntity(true) {
+    //fromTable(valTable);
 }
 
 TkEntity::TkEntity(const bool selectable):
