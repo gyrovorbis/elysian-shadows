@@ -71,10 +71,10 @@ AreaBase::AreaBase(void) {
 }*/
 
 AreaBase::~AreaBase(void) {
-    glDeleteBuffers(1, &vertexVbo);
     //DELETE COMPONENT/ENTITY SHIT@!!!!
     dbgprintf("Area::~Area(%s) - FIX FOR WARPS LEAKING MEMORY!! -- Entity Data?", dir);
     freeMap();
+    freeVbo();
 }
 
 void AreaBase::allocMap(void) {
@@ -115,8 +115,7 @@ void AreaBase::resizeMap(const unsigned w, const unsigned h) {
 
     //gotta repopulate map VBO
     if(activated) {
-        glDeleteBuffers(1, &vertexVbo);
-        vboPopulated = false;
+        freeVbo();
         populateVbo();
     }
 
@@ -341,6 +340,24 @@ bool AreaBase::saveEntities(const char *const /*filename*/) {
     dbgPop();
 #endif
     return true;
+}
+
+void AreaBase::freeVbo(void) {
+    glDeleteBuffers(1, &vertexVbo);
+    glDeleteBuffers(1, &elementVbo[0]);
+    glDeleteBuffers(1, &elementVbo[1]);
+
+    glDeleteVertexArrays(1, &vao[0]);
+    glDeleteVertexArrays(1, &vao[1]);
+
+    for(unsigned i = 0; i < 2; ++i) {
+        elementsArraySize[i] = 0;
+        lastElemArraySize[i] = 0;
+        lastOffset[i] = 0;
+        minIndex[i] = INT_MAX;
+        maxIndex[i] = 0;
+    }
+    vboPopulated = false;
 }
 
 void AreaBase::populateVbo(void) {

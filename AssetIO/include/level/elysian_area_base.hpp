@@ -135,7 +135,7 @@ namespace elysian {
         unsigned                    layerEntryCount	= 0;
 
         uint32_t                    vertexVbo       = 0;
-        uint32_t                    elementVbo[2]      = {0} ;
+        uint32_t                    elementVbo[2]   = {0} ;
         uint32_t                    vao[2]          = {0};
         bool                        vboPopulated    = false;
         bool                        activated       = false;
@@ -209,6 +209,7 @@ namespace elysian {
         void                        activate(void);
 
         void                        populateVbo(void);
+        void                        freeVbo(void);
         void                        setVboEntry(const TileEntry*const tileEntry, const unsigned l, const unsigned x, const unsigned y) const;
         void                        vboEntryFromTileEntry(GYVertex*const vboEntry, const TileEntry *const tileEntry, const unsigned x, const unsigned y) const;
         void                        animateVboTileEntry(const unsigned l, const unsigned x, const unsigned y, const uint16_t index);
