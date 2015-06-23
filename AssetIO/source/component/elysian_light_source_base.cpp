@@ -23,6 +23,8 @@ GYLightProperties LightAttrib::defaultProperties = {
 	200.0f
 };
 
+LightAttrib LightAttrib::defaultAttrib;
+
 void LightAttrib::setAttenuationFactors(const GYVector3& vec) {
     attenuationFactors = vec;
     getRadius();

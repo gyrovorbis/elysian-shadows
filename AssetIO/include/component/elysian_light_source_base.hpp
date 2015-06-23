@@ -34,6 +34,7 @@ namespace elysian {
             GYLightProperties(defaultProperties) {}
 
         static GYLightProperties defaultProperties;
+        static LightAttrib       defaultAttrib;
 
         void            setAmbientColor(const GYVector4& color);
         void            setDiffuseColor(const GYVector4& color);
@@ -158,11 +159,11 @@ namespace elysian {
 			{ 0.0f, -0.0f, 0.00f },		//dir
 			360.0f,						//cutoff
 			GY_LIGHT_POINT,				//type
-			&LightAttrib::defaultProperties,
+            nullptr,
 			&_camState,
             nullptr
-	}) { gyVec3Normalize(&direction);  }
-    inline void LightSourceBase::setAttrib(const LightAttrib* const attrib) { if(properties != &LightAttrib::defaultProperties) delete properties; properties = (GYLightProperties*)(attrib); }
+    }) { gyVec3Normalize(&direction);  setLightType(GY_LIGHT_POINT);}
+    inline void LightSourceBase::setAttrib(const LightAttrib* const attrib) { if(properties != &LightAttrib::defaultAttrib) delete properties; properties = (GYLightProperties*)(attrib); }
     inline void LightSourceBase::setDirection(const GYVector3& dir) { gyVec3Normalize(&direction); direction = dir; }
     inline void LightSourceBase::setSpotCutoffAngle(const float angle) { spotCutoffAngle = (type == GY_LIGHT_SPOT)? angle : 360.0f; }
     inline auto LightSourceBase::getLightType(void) const -> GY_LIGHT_TYPE { return type; }
