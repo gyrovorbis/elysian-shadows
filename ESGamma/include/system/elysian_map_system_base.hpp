@@ -51,7 +51,7 @@ namespace elysian {
 
     class GLMapSystemBase {
     protected:
-        unsigned short* _elements = nullptr;
+        uint32_t* _elements = nullptr;
         int _size = 0;
         int _lastSize = 0;
         int _lastOffset = 0;
@@ -215,7 +215,7 @@ namespace elysian {
             elemArraySize += 2;
         }
 
-        auto checkIndex = [&](const unsigned short index) {
+        auto checkIndex = [&](const uint32_t index) {
             if(index < _curArea->minIndex[gyVidShadowPass()]) _curArea->minIndex[gyVidShadowPass()] = index;
             if(index > _curArea->maxIndex[gyVidShadowPass()]) _curArea->maxIndex[gyVidShadowPass()] = index;
             return index;
@@ -320,7 +320,7 @@ gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
 
       //glDrawRangeElements(GL_TRIANGLE_STRIP, _curArea->minIndex[gyVidShadowPass()], _curArea->maxIndex[gyVidShadowPass()],  (elemArraySize-_curArea->lastElemArraySize[gyVidShadowPass()]), GL_UNSIGNED_SHORT, (const void*)_curArea->lastOffset[gyVidShadowPass()]);
         _curArea->lastElemArraySize[/*gyVidShadowPass()*/0] = _curArea->elementsArraySize[0];
-        _curArea->lastOffset[/*gyVidShadowPass()*/0] = _curArea->elementsArraySize[0]*sizeof(uint16_t);
+        _curArea->lastOffset[/*gyVidShadowPass()*/0] = _curArea->elementsArraySize[0]*sizeof(uint32_t);
 
         _curArea->minIndex[0] = INT_MAX;
         _curArea->maxIndex[0] = 0;

@@ -140,7 +140,7 @@ namespace elysian {
         bool                        vboPopulated    = false;
         bool                        activated       = false;
 
-        uint16_t                    elementsArray[2][ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE] __attribute__((aligned(32)));
+        uint32_t                    elementsArray[2][ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE] __attribute__((aligned(32)));
         int                         elementsArraySize[2] = {0};
         int                         lastElemArraySize[2] = {0};
         int                         lastOffset[2] = {0};

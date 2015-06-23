@@ -81,7 +81,7 @@ namespace elysian {
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(shadowCaster,       isShadowCaster,     setShadowCaster)
             ELYSIAN_LUA_PROXY_FIELD(type,               getLightType,       setLightType)
-            ELYSIAN_LUA_PROXY_FIELD(attrib,             getAttrib)
+            ELYSIAN_LUA_PROXY_FIELD(attrib,             getAttrib,          setAttrib)
             ELYSIAN_LUA_PROXY_FIELD(relPos,             getRelPos)
             ELYSIAN_LUA_PROXY_FIELD(dir,                getDir)
             ELYSIAN_LUA_PROXY_FIELD(spotCutoffAngle,    getSpotCutoffAngle, setSpotCutoffAngle)

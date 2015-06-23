@@ -15,14 +15,14 @@ void GLMapSystemBase::deactivateArea(void) {
 
 void GLMapSystemBase::_orphanVbo(void) {
   //  if(!_elements) return;
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE, nullptr, GL_STREAM_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE, nullptr, GL_STREAM_DRAW);
 }
 
 
 void GLMapSystemBase::_drawElements(void) {
     if(!_elements) return;
-    GLushort* ptr = (GLushort*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, _lastOffset, sizeof(GLushort)*(_size-_lastSize), GL_MAP_INVALIDATE_RANGE_BIT /*| GL_MAP_FLUSH_EXPLICIT_BIT*/ | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
-    if(ptr) {memcpy(ptr, &_elements[_lastSize], sizeof(GLushort)*(_size-_lastSize));
+    GLuint* ptr = (GLuint*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, _lastOffset, sizeof(GLuint)*(_size-_lastSize), GL_MAP_INVALIDATE_RANGE_BIT /*| GL_MAP_FLUSH_EXPLICIT_BIT*/ | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+    if(ptr) {memcpy(ptr, &_elements[_lastSize], sizeof(GLuint)*(_size-_lastSize));
      glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 
     // glDrawElements(GL_TRIANGLE_STRIP, elemArraySize, GL_UNSIGNED_SHORT, elemArray /*nullptr*/);
@@ -30,7 +30,7 @@ void GLMapSystemBase::_drawElements(void) {
 
              //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elemArraySize, elemArray, GL_STREAM_DRAW);
     // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort)*elemArraySize, elemArray, GL_STREAM_DRAW);
-     glDrawElements(GL_TRIANGLE_STRIP, (_size-_lastSize), GL_UNSIGNED_SHORT, (const void*)_lastOffset);
+     glDrawElements(GL_TRIANGLE_STRIP, (_size-_lastSize), GL_UNSIGNED_INT, (const void*)_lastOffset);
      }
 }
 
