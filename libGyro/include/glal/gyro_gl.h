@@ -28,6 +28,10 @@ extern "C" {
 #	else
 //#       include <windows.h>
 //#if !defined(__gl_h_) && !defined(__GL_H__) && !defined(__X_GL_H)
+#ifdef __WIN32
+#       include <windows.h>
+#endif
+
 #       include <GL/glew.h>
 #define QT_NO_OPENGL_ES_2
 //#       include <GL/gl.h>
