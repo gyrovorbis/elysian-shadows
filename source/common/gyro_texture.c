@@ -220,11 +220,14 @@ static int _TexDestructor(void *const payload) {
     GYTexture *tex = payload;
 
     int retVal = _gyVidTexFree(tex);
-    if(!tex->_coord->spriteWidth || !tex->_coord->spriteHeight) { //non uniform
-        free(tex->_coord->texCoord);
-        free(tex->_coord);
-    } else {
-        retVal &= gyAssetBankRemove(&_texCoordBank, tex->_coord);
+
+    if(tex->_coord) {
+        if(!tex->_coord->spriteWidth || !tex->_coord->spriteHeight) { //non uniform
+            free(tex->_coord->texCoord);
+            free(tex->_coord);
+        } else {
+            retVal &= gyAssetBankRemove(&_texCoordBank, tex->_coord);
+        }
     }
     free(tex);
     return retVal;
@@ -251,10 +254,10 @@ int gyVidTexDestroy(GYTexture *const tex) {
     if(!tex) return 0;
     GYTexEntryDat data = {
         tex->filename,
-        tex->width,
-        tex->height,
-        tex->_coord? tex->_coord->spriteWidth : tex->width,
-        tex->_coord? tex->_coord->spriteHeight : tex->height
+        tex->_coord? tex->width : 0,
+        tex->_coord? tex->height : 0,
+        tex->_coord? tex->_coord->spriteWidth : 0,
+        tex->_coord? tex->_coord->spriteHeight : 0
     };
     return gyAssetBankRemove(&_texBank, &data);
 }
