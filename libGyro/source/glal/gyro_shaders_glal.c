@@ -471,7 +471,7 @@ int _gyVidShaderCreate(GYShader* shader) {
     GLint compiled;
     const char* extension = NULL;
     const char* token = NULL;
-    GYFile *file;
+    GYFile *file = NULL;
     size_t charCount = 0;
     char *programSource = NULL;
 
