@@ -30,6 +30,7 @@
 
 #include <gyro_video_api.h>
 #include <gyro_texture_api.h>
+#include <gyro_system_api.h>
 #include <gyro_file_api.h>
 #include <spine/extension.h>
 #include <spine/spine.h>
@@ -40,8 +41,9 @@
 
 void _spAtlasPage_createTexture (spAtlasPage* self, const char* path) {
     GYTexture* texture = gyVidTexCreate(path);
-    assert(texture);
+    //assert(texture);
     if(!texture) {
+        self->rendererObject = NULL;
         return;
     }
     self->rendererObject = texture;
@@ -68,7 +70,11 @@ char* _spUtil_readFile (const char* path, int* length) {
 
     gyFileRead(file, data, *length, &bytesRead);
     data[*length] = 0;
-    assert((int)bytesRead == *length);
+    if(bytesRead != (size_t)*length) {
+        _gyLog(GY_DEBUG_ERROR, "Error loading file [%s]. Length [%d], Bytes Read [%d].", path, length, bytesRead);
+        free(data);
+        data = NULL;
+    }
 
     gyFileClose(&file);
     return data;

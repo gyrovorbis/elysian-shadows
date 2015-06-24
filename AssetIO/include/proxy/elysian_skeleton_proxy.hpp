@@ -27,7 +27,7 @@ OOLUA_PROXY(Skeleton)
         No_public_destructor
     )
     OOLUA_MEM_FUNC(void, setAttrib, cpp_in_p<SkeletonAttrib*const>)
-    OOLUA_MEM_FUNC_CONST(SkeletonAttrib*, getAttrib)
+    OOLUA_MEM_FUNC_CONST(maybe_null<SkeletonAttrib*>, getAttrib)
     OOLUA_MEM_FUNC(void, setAnimTimeScale, const float)
     OOLUA_MEM_FUNC_CONST(float, getAnimTimeScale)
     OOLUA_MEM_FUNC_CONST(void, setAnimByName, const int, const char*, const bool)

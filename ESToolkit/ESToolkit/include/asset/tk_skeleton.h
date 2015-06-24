@@ -20,15 +20,18 @@ Q_SIGNALS:
 class TkSkeleton: public elysian::SkeletonBase {
             Q_OBJECT
 public:
-            TkSkeleton(TkEntity& parent);
-            TkSkeleton(void) = default;
+                    TkSkeleton(TkEntity& parent);
+                    TkSkeleton(void) = default;
 
-    void    setAttrib(SkeletonAttrib * const attrib);
+    void            setAttrib(SkeletonAttrib * const attrib);
+
+    virtual bool    validate(QString& msg) const override;
+    virtual QMenu*  createContextMenu(void) override;
 
 private Q_SLOTS:
 
-    void    onJsonChanged(void);
-    void    onAtlasChanged(void);
+    void            onJsonChanged(void);
+    void            onAtlasChanged(void);
 
 };
 
@@ -53,9 +56,7 @@ inline void TkSkeletonAttrib::setJsonPath(const char*const path) {
 
 
 inline void TkSkeleton::setAttrib(SkeletonAttrib * const attrib) {
-    if(_attrib != attrib) {
-        disconnect(_attrib);
-    }
+    disconnect(_attrib);
 
     connect(attrib, SIGNAL(atlasChanged()), this, SLOT(onAtlasChanged()));
     connect(attrib, SIGNAL(jsonChanged()), this, SLOT(onJsonChanged()));

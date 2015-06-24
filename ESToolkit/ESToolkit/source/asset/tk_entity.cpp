@@ -198,6 +198,7 @@ bool TkEntity::validate(QString& detailedText) const {
     if(getAudioSource())        success &= getAudioSource()->validate(detailedText);
     if(getParticleEmitter())    success &= getParticleEmitter()->validate(detailedText);
     if(getCombat())             success &= getCombat()->validate(detailedText);
+    if(getSkeleton())           success &= getSkeleton()->validate(detailedText);
 
 
     if(getAnimation() && getAnimation()->_children && getAnimation()->_children->size()) {
@@ -282,6 +283,15 @@ QMenu* TkEntity::createContextMenu(void) {
         getAnimation(),
         canAddTo(elysian::Animation())
     )->setMenu(getAnimation()? getAnimation()->createContextMenu() : nullptr);
+
+    menuStack.insertCheckableAction("Skeleton",
+        [&](bool checked=false) {
+            if(checked) addSkeleton();
+            else removeSkeleton();
+        },
+        getSkeleton(),
+        canAddTo(elysian::Skeleton())
+    )->setMenu(getSkeleton()? getSkeleton()->createContextMenu() : nullptr);
 
     menuStack.insertCheckableAction("Rigid Body",
         [&](bool checked) {

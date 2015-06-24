@@ -34,19 +34,21 @@ namespace elysian {
         spAtlas*                _atlas          = nullptr;
         spSkeletonData*         _skeletonData   = nullptr;
         spAnimationStateData*   _animStateData  = nullptr;
-        bool                    _atlasReested   = true;
-        bool                    _jsonReested    = true;
+
+    protected:
+        void                    _reloadAtlas(void);
+        void                    _reloadJson(void);
 
     public:
-                    ~SkeletonAttribBase(void);
+                                ~SkeletonAttribBase(void);
 
-        void        loadAssets(const char*const atlas, const char*const json);
-        void        setAtlasPath(const char*const file);
-        const char* getAtlasPath(void) const;
-        void        setJsonPath(const char*const json);
-        const char* getJsonPath(void) const;
+        void                    loadAssets(const char*const atlas, const char*const json);
+        void                    setAtlasPath(const char*const file);
+        const char*             getAtlasPath(void) const;
+        void                    setJsonPath(const char*const json);
+        const char*             getJsonPath(void) const;
 
-        bool        isReested(void) const;
+        bool                    isReested(void) const;
     };
 
     class SkeletonBase:
@@ -65,6 +67,7 @@ namespace elysian {
 
     public:
                         SkeletonBase(Entity& entity);
+                        SkeletonBase(void) = default;
         virtual         ~SkeletonBase(void) override;
 
        //reimplemented from component
@@ -93,7 +96,7 @@ namespace elysian {
     inline SkeletonAttrib* SkeletonBase::getAttrib(void) const { return _attrib; }
     inline const char* SkeletonAttribBase::getAtlasPath(void) const { return _atlasPath; }
     inline const char* SkeletonAttribBase::getJsonPath(void) const { return _jsonPath; }
-    inline bool SkeletonAttribBase::isReested(void) const { return _atlasReested || _jsonReested; }
+    inline bool SkeletonAttribBase::isReested(void) const { return !_atlas || !_skeletonData || !_animStateData; }
 
     inline SkeletonBase::SkeletonBase(Entity& entity): Component(entity) {}
     inline void SkeletonBase::setAnimTimeScale(const float scale) { _animTimeScale = scale; }
