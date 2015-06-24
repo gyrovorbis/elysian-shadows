@@ -599,9 +599,11 @@ win32 {
         LIBS += -L../../lib/win32 \
                 #-llua52 \
                 -L../../libGyro/lib/win32 \
+                -lglew32 \
+                #-lglew32.dll \
+                -lglu32 \
                 -lopengl32 \
                 -lopenal32.dll \
-                -lglu32 \
                 -lz \
                 -lz.dll \
                # -lmingw32 \
@@ -611,10 +613,8 @@ win32 {
                 -lvorbisenc \
                 -lvorbisenc.dll \
                 -lvorbisfile \
-                -lglew32 \
-                -lglew32.dll \
-                -limagehlp
-                -lvorbisfile.dll \
+                -limagehlp \
+                -lvorbisfile.dll
                 #-mconsole
                 #-llua52
 }
