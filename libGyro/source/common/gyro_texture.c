@@ -249,7 +249,13 @@ GYTexture* gyVidTexCreate(const char *const filename) {
 
 int gyVidTexDestroy(GYTexture *const tex) {
     if(!tex) return 0;
-    GYTexEntryDat data = { tex->filename, tex->_coord->sheetWidth, tex->_coord->sheetHeight, tex->_coord->spriteWidth, tex->_coord->spriteHeight};
+    GYTexEntryDat data = {
+        tex->filename,
+        tex->width,
+        tex->height,
+        tex->_coord? tex->_coord->spriteWidth : tex->width,
+        tex->_coord? tex->_coord->spriteHeight : tex->height
+    };
     return gyAssetBankRemove(&_texBank, &data);
 }
 
