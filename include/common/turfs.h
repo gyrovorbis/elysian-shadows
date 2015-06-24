@@ -43,10 +43,14 @@ typedef enum {
 } turfs_ret;
 
 
+typedef struct _Turfs_file {
+    FILE *fp;
+    int eof;
+} Turfs_file;
+
 /**
  * turfs File pointer type
  */
-typedef struct _turfs_fp * turfs_fp;
 
 #define TURFSAPI turfs_ret
 
@@ -119,7 +123,7 @@ TURFSAPI turfs_silph_scope(const char *vpath, char **path, size_t *len, turfs_pa
  * does not exist, or TURFS_RET_UNKNOWN if the file could not
  * be opened for some unspecified reason.
  */
-TURFSAPI turfs_file_open(const char *file, const char *mode, turfs_fp *fp);
+TURFSAPI turfs_file_open(const char *file, const char *mode, Turfs_file **fp);
 
 /**
  * Reads bytes from an opened file
@@ -129,7 +133,7 @@ TURFSAPI turfs_file_open(const char *file, const char *mode, turfs_fp *fp);
  * @param[in]   count       Number of bytes to read
  * @param[out]  bytes_read  Number of bytes read
  */
-TURFSAPI turfs_file_read(turfs_fp fp, void *buffer, size_t count, size_t *bytes_read);
+TURFSAPI turfs_file_read(Turfs_file* fp, void *buffer, size_t count, size_t *bytes_read);
 
 /**
  * Seeks to a position in a file. Equivalent to fseek()
@@ -138,7 +142,7 @@ TURFSAPI turfs_file_read(turfs_fp fp, void *buffer, size_t count, size_t *bytes_
  * @param[in]   offset
  * @param[in]   whence
  */
-TURFSAPI turfs_file_seek(turfs_fp fp, off_t offset, int whence);
+TURFSAPI turfs_file_seek(Turfs_file* fp, off_t offset, int whence);
 
 /**
  * Fetches the length of an open file.
@@ -146,7 +150,7 @@ TURFSAPI turfs_file_seek(turfs_fp fp, off_t offset, int whence);
  * @param[in]   fp  File to fetch length of
  * @param[out]  len Location to store length
  */
-TURFSAPI turfs_file_length(turfs_fp fp, size_t *len);
+TURFSAPI turfs_file_length(Turfs_file* fp, size_t *len);
 
 /**
  * Fetches the current position within a file.
@@ -155,7 +159,7 @@ TURFSAPI turfs_file_length(turfs_fp fp, size_t *len);
  * @param[in]   fp  File to fetch position of
  * @param[out]  pos Location to store position
  */
-TURFSAPI turfs_file_tell(turfs_fp fp, long int *pos);
+TURFSAPI turfs_file_tell(Turfs_file* fp, long int *pos);
 
 /**
  * Test for end-of-file
@@ -163,14 +167,14 @@ TURFSAPI turfs_file_tell(turfs_fp fp, long int *pos);
  * @returns TURFS_RET_END_OF_FILE if EOF was reached,
  * or TURFS_RET_OK otherwise.
  */
-TURFSAPI turfs_file_eof(turfs_fp fp);
+TURFSAPI turfs_file_eof(Turfs_file* fp);
 
 /**
  * Close an open file
  *
  * @param[in]   fp  Pointer to file to be closed
  */
-TURFSAPI turfs_file_close(turfs_fp *fp);
+TURFSAPI turfs_file_close(Turfs_file** fp);
 
 
 

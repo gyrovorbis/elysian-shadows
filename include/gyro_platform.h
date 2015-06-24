@@ -93,6 +93,7 @@
 #	define GYRO_MATRIX_PLATFORM_INCLUDE     "x86/gyro_matrix_sse_x86.inl"
 #	define GYRO_AUDIO_PLATFORM_INCLUDE      "glal/gyro_audio_glal.inl"
 #	define GYRO_INPUT_PLATFORM_INCLUDE      "x86/gyro_input_x86.inl"
+#   define GYRO_FILE_PLATFORM_INCLUDE       "glal/gyro_file_glal.inl"
 
 
 //===== FUCKING HACK REEST - DESTROY ME =====

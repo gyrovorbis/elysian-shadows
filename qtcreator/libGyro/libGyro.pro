@@ -99,7 +99,8 @@ HEADERS += \
     ../../include/glal/gyro_gl.h \
     ../../include/glal/gyro_al.h \
     ../../include/glal/gyro_al.h \
-    ../../include/common/turfs.h
+    ../../include/common/turfs.h \
+    ../../include/glal/gyro_file_glal.inl
 
 SOURCES += \
 	../../source/qt/gyro_file_qt.cpp \
@@ -128,4 +129,4 @@ SOURCES += \
     ../../source/qt/gyro_debug_qt.cpp \
     ../../source/qt/gyro_input_qt.cpp \
     ../../source/qt/gyro_timer_qt.cpp \
-	../../source/qt/gyro_video_qt.cpp
+        ../../source/qt/gyro_video_qt.cpp
