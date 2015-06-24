@@ -643,12 +643,15 @@ static float worldVertices[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE];
 //Spine interop
 void gyVidSkeleton(const spSkeleton*const skeleton) {
     if(gyVidShadowPass()) return;
-    spSlot*                     slot;
-    spAttachment*               attachment;
-    GYTexture*                  texture;
-    spRegionAttachment*         regionAttachment;
-    spMeshAttachment*           mesh;
-    spSkinnedMeshAttachment*    skinnedMesh;
+    spSlot*                     slot                = NULL;
+    spAttachment*               attachment          = NULL;
+    GYTexture*                  texture             = NULL;
+    spRegionAttachment*         regionAttachment    = NULL;
+    spAtlasRegion*              atlasRegion         = NULL;
+    spAtlasPage*                atlasPage           = NULL;
+    spMeshAttachment*           mesh                = NULL;
+    spSkinnedMeshAttachment*    skinnedMesh         = NULL;
+
     float                       width, height;
     //GYColor4                    color;
     //int                         i;
@@ -682,8 +685,11 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
         zOffset = zEpsilon * (float)i;
 
         if (attachment->type == SP_ATTACHMENT_REGION) {
-            regionAttachment = (spRegionAttachment*)attachment;
-            texture = (GYTexture*)((spAtlasRegion*)regionAttachment->rendererObject)->page->rendererObject;
+            regionAttachment    = (spRegionAttachment*)attachment;
+            atlasRegion         = regionAttachment? regionAttachment->rendererObject : NULL;
+            atlasPage           = atlasRegion? atlasRegion->page : NULL;
+            texture             = atlasPage? atlasPage->rendererObject : NULL;
+
             spRegionAttachment_computeWorldVertices(regionAttachment, slot->bone, worldVertices);
 
             GYColor4 color = {
@@ -693,8 +699,10 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
                 (unsigned char)(skeleton->a * slot->a * 255)
             };
 
-            width = texture->width;
-            height = texture->height;
+            if(texture) {
+                width = texture->width;
+                height = texture->height;
+            }
 
             vertex->pos.x = worldVertices[SP_VERTEX_X2];
             vertex->pos.y = worldVertices[SP_VERTEX_Y2];
@@ -755,8 +763,17 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
 
         } else if (attachment->type == SP_ATTACHMENT_MESH) {
             mesh = (spMeshAttachment*)attachment;
+
+            mesh                = (spMeshAttachment*)attachment;
+            atlasRegion         = mesh? mesh->rendererObject : NULL;
+            atlasPage           = atlasRegion? atlasRegion->page : NULL;
+            texture             = atlasPage? atlasPage->rendererObject : NULL;
+
+
             //if (mesh->verticesCount > SPINE_MESH_VERTEX_COUNT_MAX) continue;
-            texture = (GYTexture*)((spAtlasRegion*)mesh->rendererObject)->page->rendererObject;
+            texture = regionAttachment?
+                        (GYTexture*)((spAtlasRegion*)regionAttachment->rendererObject)->page->rendererObject :
+                        NULL;
             spMeshAttachment_computeWorldVertices(mesh, slot, worldVertices);
 
            GYColor4 color = {
@@ -766,8 +783,11 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
                 (unsigned char)(skeleton->a * slot->a * 255)
             };
 
-            width = texture->width;
-            height = texture->height;
+            if(texture) {
+                width = texture->width;
+                height = texture->height;
+            }
+
             for (int j = 0; j < mesh->trianglesCount; ++j) { //loop unroll?
                 int index = mesh->triangles[j] << 1;
                 vertex->pos.x = worldVertices[index];
@@ -783,7 +803,10 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
         } else if (attachment->type == SP_ATTACHMENT_SKINNED_MESH) {
             skinnedMesh = (spSkinnedMeshAttachment*)attachment;
            // if (mesh->uvsCount > SPINE_MESH_VERTEX_COUNT_MAX) continue;
-            texture = (GYTexture*)((spAtlasRegion*)skinnedMesh->rendererObject)->page->rendererObject;
+            atlasRegion         = skinnedMesh? skinnedMesh->rendererObject : NULL;
+            atlasPage           = atlasRegion? atlasRegion->page : NULL;
+            texture             = atlasPage? atlasPage->rendererObject : NULL;
+
             spSkinnedMeshAttachment_computeWorldVertices(skinnedMesh, slot, worldVertices);
 
             GYColor4 color = {
@@ -793,8 +816,10 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
                 (unsigned char)(skeleton->a * slot->a * 255)
             };
 
-            width = texture->width;
-            height = texture->height;
+            if(texture) {
+                width = texture->width;
+                height = texture->height;
+            }
             for (int j = 0; j < skinnedMesh->trianglesCount; ++j) { //loop unroll?
                 int index = skinnedMesh->triangles[j] << 1;
                 vertex->pos.x = worldVertices[index];
