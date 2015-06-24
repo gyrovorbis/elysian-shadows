@@ -5,14 +5,17 @@
 #ifdef ELYSIAN_ENGINE
 #   include <elysian_skeleton_base.hpp>
 namespace elysian {
-    typedef SkeletonBase Skeleton;
+    typedef SkeletonBase        Skeleton;
+    typedef SkeletonAttribBase  SkeletonAttrib;
 }
 #else
 #   include <tk_skeleton.h>
 namespace elysian {
-    typedef TkSkeleton Skeleton;
+    typedef TkSkeleton          Skeleton;
+    typedef TkSkeletonAttrib    SkeletonAttrib;
 }
-typedef TkSkeleton Skeleton;
+typedef TkSkeleton          Skeleton;
+typedef TkSkeletonAttrib    SkeletonAttrib;
 
 #endif
 

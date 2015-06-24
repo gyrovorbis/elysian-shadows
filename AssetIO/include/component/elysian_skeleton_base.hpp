@@ -4,6 +4,12 @@
 #include <elysian_component.hpp>
 #include <elysian_lua_table_proxy.hpp>
 
+#define ELYSIAN_SKELETON_ATLAS_PATH_SIZE    300
+#define ELYSIAN_SKELETON_JSON_PATH_SIZE     300
+
+ELYSIAN_ASSET_TYPEDEF(SkeletonAttrib)
+ELYSIAN_ASSET_TYPEDEF(Skeleton)
+
 struct spAtlas;
 struct spSkeleton;
 struct spSkeletonData;
@@ -12,23 +18,45 @@ struct spAnimationState;
 
 namespace elysian {
 
-    class SkeletonAttrib {
+    class SkeletonAttribBase:
+        public LuaTableProxy<SkeletonAttrib>
+    {
     friend class SkeletonBase;
     friend Skeleton;
-        spAtlas*                _atlas         = nullptr;
-        spSkeletonData*         _skeletonData  = nullptr;
-        spAnimationStateData*   _animStateData = nullptr;
+
+    ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+        ELYSIAN_LUA_PROXY_FIELD(atlasPath,               getAtlasPath,      setAtlasPath)
+        ELYSIAN_LUA_PROXY_FIELD(jsonPath,                getJsonPath,       setJsonPath)
+    ELYSIAN_LUA_PROXY_FIELDS_END()
+
+        char                    _atlasPath[ELYSIAN_SKELETON_ATLAS_PATH_SIZE]    = { 0 };
+        char                    _jsonPath[ELYSIAN_SKELETON_JSON_PATH_SIZE]      = { 0 };
+        spAtlas*                _atlas          = nullptr;
+        spSkeletonData*         _skeletonData   = nullptr;
+        spAnimationStateData*   _animStateData  = nullptr;
+        bool                    _atlasReested   = true;
+        bool                    _jsonReested    = true;
 
     public:
-        ~SkeletonAttrib(void);
+                    ~SkeletonAttribBase(void);
 
-        bool loadAssets(const char*const atlas, const char*const json);
+        void        loadAssets(const char*const atlas, const char*const json);
+        void        setAtlasPath(const char*const file);
+        const char* getAtlasPath(void) const;
+        void        setJsonPath(const char*const json);
+        const char* getJsonPath(void) const;
+
+        bool        isReested(void) const;
     };
 
     class SkeletonBase:
             public Component,
             public LuaTableProxy<SkeletonBase, Skeleton>
     {
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+            ELYSIAN_LUA_PROXY_FIELD(attrib,     getAttrib,      setAttrib)
+        ELYSIAN_LUA_PROXY_FIELDS_END()
+
         SkeletonAttrib*     _attrib         = nullptr;
         spSkeleton*         _skeleton       = nullptr;
         spAnimationState*   _animState      = nullptr;
@@ -63,10 +91,15 @@ namespace elysian {
     //inline SkeletonAttrib::SkeletonAttrib(void) {}
 
     inline SkeletonAttrib* SkeletonBase::getAttrib(void) const { return _attrib; }
+    inline const char* SkeletonAttribBase::getAtlasPath(void) const { return _atlasPath; }
+    inline const char* SkeletonAttribBase::getJsonPath(void) const { return _jsonPath; }
+    inline bool SkeletonAttribBase::isReested(void) const { return _atlasReested || _jsonReested; }
 
     inline SkeletonBase::SkeletonBase(Entity& entity): Component(entity) {}
     inline void SkeletonBase::setAnimTimeScale(const float scale) { _animTimeScale = scale; }
     inline float SkeletonBase::getAnimTimeScale(void) const { return _animTimeScale; }
+
+
 
 }
 

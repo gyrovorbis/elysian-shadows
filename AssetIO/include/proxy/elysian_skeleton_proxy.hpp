@@ -14,7 +14,11 @@ namespace OOLUA
 
 
 OOLUA_PROXY(SkeletonAttrib)
-    OOLUA_MEM_FUNC(bool, loadAssets, const char*, const char*)
+    OOLUA_MEM_FUNC(void, loadAssets, const char*, const char*)
+    OOLUA_MEM_FUNC_CONST(const char*, getAtlasPath)
+    OOLUA_MEM_FUNC_CONST(const char*, getJsonPath)
+    OOLUA_MEM_FUNC(void, setAtlasPath, const char*)
+    OOLUA_MEM_FUNC(void, setJsonPath, const char*)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Skeleton)

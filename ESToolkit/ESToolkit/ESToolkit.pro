@@ -238,7 +238,8 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     source/dialog/tk_gitlab_dialog.cpp \
     source/core/tk_network_access_manager.cpp \
     ../../AssetIO/source/proxy/elysian_area_proxy.cpp \
-    ../../AssetIO/source/proxy/elysian_skeleton_proxy.cpp
+    ../../AssetIO/source/proxy/elysian_skeleton_proxy.cpp \
+    source/asset/tk_skeleton.cpp
 
 
 HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \

@@ -1,4 +1,4 @@
-#include "elysian_skeleton_base.hpp"
+#include <crtp/elysian_skeleton.hpp>
 #include "elysian_debug.hpp"
 #include "elysian_entity.hpp"
 #include "elysian_generic.hpp"
@@ -13,46 +13,81 @@
 
 namespace elysian {
 
-SkeletonAttrib::~SkeletonAttrib(void) {
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(SkeletonBase)
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(SkeletonAttribBase)
+
+SkeletonAttribBase::~SkeletonAttribBase(void) {
     spAnimationStateData_dispose(_animStateData);
     spSkeletonData_dispose(_skeletonData);
     spAtlas_dispose(_atlas);
 }
 
-bool SkeletonAttrib::loadAssets(const char * const atlas, const char * const json) {
-    bool success = true;
+void SkeletonAttribBase::setAtlasPath(const char * const file) {
+    if(strcmp(_atlasPath, file) == 0) return;
 
-    Debug::printf(Debug::DBG_VERBOSE, "SkeletonAttrib::loadAssets(%s, %s)", atlas, json);
-    Debug::push();
-
-    _atlas = spAtlas_createFromFile(atlas, nullptr);
-    if(!_atlas) {
-        Debug::printf(Debug::DBG_WARNING, "Could not load texture atlas!");
-        success = false;
+    if(_atlas) {
+        spAtlas_dispose(_atlas);
+        _atlas = nullptr;
     }
 
+    DbgEvent event("Skeleton Attrib loading atlas image [%s]", file);
+
+    strcpy(_atlasPath, file);
+    _atlas = spAtlas_createFromFile(file, nullptr);
+    if(!_atlas) {
+        _atlasReested = true;
+        errprintf("Could not be loaded!");
+    } else _atlasReested = false;
+}
+
+void SkeletonAttribBase::setJsonPath(const char * const json) {
+    if(!_atlas) return;
+
+    if(strcmp(_jsonPath, json) == 0) return;
+
+    DbgEvent event("Skeleton Attrib loading json file [%s]", json);
+
+    if(_skeletonData) {
+        spSkeletonData_dispose(_skeletonData);
+        _skeletonData = nullptr;
+    }
+    if(_animStateData) {
+        spAnimationStateData_dispose(_animStateData);
+        _animStateData = nullptr;
+    }
+
+    strcpy(_jsonPath, json);
     spSkeletonJson* skelJson = spSkeletonJson_create(_atlas);
     if(!skelJson) {
-        Debug::printf(Debug::DBG_WARNING, "Could not create SkeletonJson!");
-        success = false;
-    }
+        errprintf("Could not create SkeletonJson!");
+        _jsonReested = true;
 
-    _skeletonData = spSkeletonJson_readSkeletonDataFile(skelJson, json);
-    if(!_skeletonData) {
-        Debug::printf(Debug::DBG_WARNING, "Could not initialize SkeletonData!");
-        success = false;
-    }
+    } else {
 
-    _animStateData = spAnimationStateData_create(_skeletonData);
-    if(!_animStateData) {
-        Debug::printf(Debug::DBG_WARNING, "Could not initialize AnimationStateData!");
-        success = false;
-    }
+        _skeletonData = spSkeletonJson_readSkeletonDataFile(skelJson, json);
+        if(!_skeletonData) {
+            errprintf("Could not initialize SkeletonData!");
+            _jsonReested = true;
+        } else {
 
+            _animStateData = spAnimationStateData_create(_skeletonData);
+            if(!_animStateData) {
+                errprintf("Could not initialize AnimationStateData!");
+                spSkeletonData_dispose(_skeletonData);
+                _animStateData = nullptr;
+                _jsonReested = true;
+            } else _jsonReested = false;
+
+        }
+    }
     spSkeletonJson_dispose(skelJson);
+}
 
-    Debug::pop();
-    return success;
+
+
+void SkeletonAttribBase::loadAssets(const char * const atlas, const char * const json) {
+    setAtlasPath(atlas);
+    setJsonPath(json);
 }
 
 
@@ -68,30 +103,50 @@ void SkeletonBase::setAnimByName(const int trackIndex, const char*const animatio
 
 
 void SkeletonBase::setAttrib(SkeletonAttrib * const attrib) {
+    DbgEvent event("SkeletonBase setting attributes.");
     //float x, y;
     _attrib = attrib;
+    if(_skeleton) {
+        spSkeleton_dispose(_skeleton);
+        _skeleton = nullptr;
+    }
+    if(_animState) {
+        spAnimationState_dispose(_animState);
+        _animState = nullptr;
+    }
+
     _skeleton = spSkeleton_create(attrib->_skeletonData);
+    if(!_skeleton) {
+        errprintf("Could not create SkeletonData!");
+    }
+
     _animState = spAnimationState_create(attrib->_animStateData);
-    assert(_skeleton);
-    assert(_animState);
+    if(!_animState) {
+        errprintf("Could not create AnimationState!");
+    }
 
-    _skeleton->x = _entity->_transform._pos.x;
-    _skeleton->y = _entity->_transform._pos.y;
-
-    spSkeleton_updateWorldTransform(_skeleton);
+    if(_skeleton) {
+        _skeleton->x = _entity->_transform._pos.x;
+        _skeleton->y = _entity->_transform._pos.y;
+        spSkeleton_updateWorldTransform(_skeleton);
+    }
 }
 
 void SkeletonBase::update(const float deltaTime) const {
-    _skeleton->x = _entity->_transform._pos.x;
-    _skeleton->y = _entity->_transform._pos.y;
-    spSkeleton_update(_skeleton, deltaTime);
-    spAnimationState_update(_animState, deltaTime * _animTimeScale);
-    spAnimationState_apply(_animState, _skeleton);
-    spSkeleton_updateWorldTransform(_skeleton);
+    if(_skeleton && _animState) {
+        spSkeleton_update(_skeleton, deltaTime);
+        spAnimationState_update(_animState, deltaTime * _animTimeScale);
+        spAnimationState_apply(_animState, _skeleton);
+    }
 }
 
 void SkeletonBase::render(void) const {
-    gyVidSkeleton(_skeleton);
+    if(_skeleton && _animState && !_attrib->isReested()) {
+        _skeleton->x = _entity->_transform._pos.x;
+        _skeleton->y = _entity->_transform._pos.y;
+        spSkeleton_updateWorldTransform(_skeleton);
+        gyVidSkeleton(_skeleton);
+    }
 }
 
 

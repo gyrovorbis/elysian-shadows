@@ -112,7 +112,9 @@ namespace elysian {
 		_mainState->register_class<ExplosionForceGenerator>();
 		_mainState->register_class<CameraKeyFrame>();
         _mainState->register_class<SkeletonAttrib>();
+        SkeletonAttrib::registerProxyMetaTable(*_mainState);
         _mainState->register_class<Skeleton>();
+        Skeleton::registerProxyMetaTable(*_mainState);
 
 
 		//Register C and static member functions

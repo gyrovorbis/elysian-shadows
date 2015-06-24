@@ -2,10 +2,12 @@
 
 
 OOLUA_EXPORT_FUNCTIONS(SkeletonAttrib,
-                        loadAssets)
-OOLUA_EXPORT_FUNCTIONS_CONST(SkeletonAttrib)
-
-
+                        loadAssets,
+                        setJsonPath,
+                        setAtlasPath)
+OOLUA_EXPORT_FUNCTIONS_CONST(SkeletonAttrib,
+                             getJsonPath,
+                             getAtlasPath)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(Skeleton,
                              getAttrib,
