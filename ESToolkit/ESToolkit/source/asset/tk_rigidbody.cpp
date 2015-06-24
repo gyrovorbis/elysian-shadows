@@ -1,5 +1,6 @@
-#include <tk_rigid_body.h>
-#include <tk_menu_stack.h>
+#include <asset/tk_rigid_body.h>
+#include <core/tk_menu_stack.h>
+#include <asset/tk_entity.h>
 
 bool TkRigidBody::validate(QString &str) const {
     bool success = true;
@@ -23,7 +24,8 @@ QMenu* TkRigidBody::createContextMenu(void) {
         [&](bool checked) {
             setAttrib(checked? new elysian::RigidBodyAttrib : nullptr);
         },
-        getAttrib()
+        getAttrib(),
+        !_entity->isActive()
     );
 
     return menuStack.first();

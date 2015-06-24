@@ -1,5 +1,6 @@
-#include <tk_light_source.h>
-#include <tk_menu_stack.h>
+#include <asset/tk_light_source.h>
+#include <core/tk_menu_stack.h>
+#include <asset/tk_entity.h>
 
 bool TkLightSource::validate(QString& str) const {
     bool success = true;
@@ -22,7 +23,8 @@ QMenu* TkLightSource::createContextMenu(void) {
         [&](bool checked) {
             setAttrib(checked? new elysian::LightAttrib : nullptr);
         },
-        getAttrib()
+        getAttrib(),
+        !_entity->isActive()
     );
 
     return menuStack.first();

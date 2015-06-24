@@ -1,5 +1,6 @@
-#include <tk_combat.h>
-#include <tk_menu_stack.h>
+#include <asset/tk_combat.h>
+#include <core/tk_menu_stack.h>
+#include <asset/tk_entity.h>
 
 bool TkCombat::validate(QString& str) const {
     bool success = true;
@@ -22,7 +23,8 @@ QMenu* TkCombat::createContextMenu(void) {
         [&](bool checked) {
             setAttrib(checked? new elysian::CombatAttrib : nullptr);
         },
-        getAttrib()
+        getAttrib(),
+        !_entity->isActive()
     );
 
     return menuStack.first();

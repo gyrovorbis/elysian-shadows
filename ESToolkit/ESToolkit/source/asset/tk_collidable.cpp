@@ -1,6 +1,6 @@
-#include <tk_collidable.h>
-#include <tk_menu_stack.h>
-#include <QMenu>
+#include <asset/tk_collidable.h>
+#include <core/tk_menu_stack.h>
+#include <asset/tk_entity.h>
 
 
 bool TkCollidable::validate(QString &str) const {
@@ -28,7 +28,8 @@ QMenu* TkCollidable::createContextMenu(void) {
         [&](bool checked) {
             setAttrib(checked? new elysian::CollidableAttrib : nullptr);
         },
-        getAttrib()
+        getAttrib(),
+        !_entity->isActive()
     );
 
     return menuStack.first();

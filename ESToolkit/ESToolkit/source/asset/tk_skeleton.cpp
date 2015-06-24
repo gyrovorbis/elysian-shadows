@@ -1,5 +1,6 @@
 #include <asset/tk_skeleton.h>
 #include <core/tk_menu_stack.h>
+#include <asset/tk_entity.h>
 
 void TkSkeleton::onAtlasChanged(void) {
     setAttrib(_attrib);
@@ -31,7 +32,8 @@ QMenu* TkSkeleton::createContextMenu(void) {
         [&](bool checked) {
             setAttrib(checked? new SkeletonAttrib : nullptr);
         },
-        getAttrib()
+        getAttrib(),
+        !_entity->isActive()
     );
 
     return menuStack.first();

@@ -330,7 +330,7 @@ static int ll_loadlib (lua_State *L) {
 
 
 static int readable (const char *filename) {
-  turfs_fp f;
+  Turfs_file* f;
   turfs_ret ret;
   ret = turfs_file_open(filename, "r", &f); /* try to open file */
   if (ret != TURFS_RET_OK || f == NULL) return 0; /* open failed */

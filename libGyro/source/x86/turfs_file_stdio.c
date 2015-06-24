@@ -3,12 +3,7 @@
 
 #include <common/turfs.h>
 
-struct _turfs_fp {
-    FILE *fp;
-    int eof;
-};
-
-TURFSAPI turfs_file_open(const char *file, const char *mode, turfs_fp *fp)
+TURFSAPI turfs_file_open(const char *file, const char *mode, Turfs_file **fp)
 {
     turfs_ret err;
     char *rpath = NULL;
@@ -19,7 +14,7 @@ TURFSAPI turfs_file_open(const char *file, const char *mode, turfs_fp *fp)
     if ((err = turfs_silph_scope(file, &rpath, &rpath_len, NULL)) != TURFS_RET_OK) {
         return err;
     }
-    *fp = malloc(sizeof(turfs_fp));
+    *fp = malloc(sizeof(Turfs_file));
     if (*fp == NULL) {
         free(rpath);
         return TURFS_RET_MEMORY_DBG_ERROR;
@@ -36,7 +31,7 @@ TURFSAPI turfs_file_open(const char *file, const char *mode, turfs_fp *fp)
     return TURFS_RET_OK;
 }
 
-TURFSAPI turfs_file_read(turfs_fp fp, void *buffer, size_t count, size_t *bytes_read)
+TURFSAPI turfs_file_read(Turfs_file* fp, void *buffer, size_t count, size_t *bytes_read)
 {
     size_t read_bytes = 0;
     if (fp == NULL || fp->fp == NULL || buffer == NULL) {
@@ -50,7 +45,7 @@ TURFSAPI turfs_file_read(turfs_fp fp, void *buffer, size_t count, size_t *bytes_
     return TURFS_RET_OK;
 }
 
-TURFSAPI turfs_file_seek(turfs_fp fp, off_t offset, int whence)
+TURFSAPI turfs_file_seek(Turfs_file* fp, off_t offset, int whence)
 {
     if (fp == NULL || fp->fp == NULL) {
         return TURFS_RET_INVALID_ARGS;
@@ -62,7 +57,7 @@ TURFSAPI turfs_file_seek(turfs_fp fp, off_t offset, int whence)
     return TURFS_RET_OK;
 }
 
-TURFSAPI turfs_file_length(turfs_fp fp, size_t *len)
+TURFSAPI turfs_file_length(Turfs_file* fp, size_t *len)
 {
     long cur;
     if (fp == NULL || fp->fp == NULL) {
@@ -77,7 +72,7 @@ TURFSAPI turfs_file_length(turfs_fp fp, size_t *len)
     return TURFS_RET_OK;
 }
 
-TURFSAPI turfs_file_tell(turfs_fp fp, long int *pos)
+TURFSAPI turfs_file_tell(Turfs_file* fp, long int *pos)
 {
     if (fp == NULL || fp->fp == NULL) {
         return TURFS_RET_INVALID_ARGS;
@@ -89,7 +84,7 @@ TURFSAPI turfs_file_tell(turfs_fp fp, long int *pos)
     return TURFS_RET_OK;
 }
 
-TURFSAPI turfs_file_eof(turfs_fp fp)
+TURFSAPI turfs_file_eof(Turfs_file* fp)
 {
     if (fp->eof) {
         return TURFS_RET_END_OF_FILE;
@@ -97,7 +92,7 @@ TURFSAPI turfs_file_eof(turfs_fp fp)
     return TURFS_RET_OK;
 }
 
-TURFSAPI turfs_file_close(turfs_fp *fp)
+TURFSAPI turfs_file_close(Turfs_file** fp)
 {
     if (fp == NULL || *fp == NULL || !(*fp)->fp)  {
         return TURFS_RET_INVALID_ARGS;

@@ -26,7 +26,8 @@ QMenu* TkRenderable::createContextMenu(void) {
         [&](bool checked) {
             setSpriteAttrib(checked? new elysian::SpriteAttrib : nullptr);
         },
-        getSpriteAttrib()
+        getSpriteAttrib(),
+        !_entity->isActive()
     );
 
     return menuStack.first();

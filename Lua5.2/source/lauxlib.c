@@ -564,7 +564,7 @@ LUALIB_API void luaL_unref (lua_State *L, int t, int ref) {
 
 typedef struct LoadF {
   int n;  /* number of pre-read characters */
-  turfs_fp fp;  /* file being read */
+  Turfs_file* fp;  /* file being read */
   char buff[LUAL_BUFFERSIZE];  /* area for reading file */
 } LoadF;
 

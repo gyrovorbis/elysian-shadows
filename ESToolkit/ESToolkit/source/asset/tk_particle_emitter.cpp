@@ -1,5 +1,6 @@
-#include <tk_particle_emitter.h>
-#include <tk_menu_stack.h>
+#include <asset/tk_particle_emitter.h>
+#include <core/tk_menu_stack.h>
+#include <asset/tk_entity.h>
 
 bool TkParticleEmitter::validate(QString& str) const {
     bool success = true;
@@ -22,7 +23,8 @@ QMenu* TkParticleEmitter::createContextMenu(void) {
         [&](bool checked) {
             setAttrib(checked? new elysian::ParticleEmitterAttrib : nullptr);
         },
-        getAttrib()
+        getAttrib(),
+        !_entity->isActive()
     );
 
     return menuStack.first();

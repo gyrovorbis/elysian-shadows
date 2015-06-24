@@ -17,6 +17,8 @@ typedef struct _GYFileInitParams {
 
 } GYFileInitParams;
 
+struct _GYFile;
+typedef struct _GYFile GYFile;
 
 typedef enum _GYPathType {
     /*
@@ -37,8 +39,6 @@ typedef enum _GYPathType {
 	GY_PATH_ASSETS
 } GYPathType;
 
-typedef struct _GYFile GYFile;
-
 int gyFileInit(const GYFileInitParams*const params);
 int gyFileQuit(void);
 
@@ -51,6 +51,10 @@ int gyFileLength(GYFile *fp, size_t *len);
 int gyFileTell(GYFile *fp, long int *pos);
 
 int gyFileClose(GYFile **fp);
+
+#ifdef GYRO_FILE_PLATFORM_INCLUDE
+#	include GYRO_FILE_PLATFORM_INCLUDE
+#endif
 
 #ifdef __cplusplus
 }
