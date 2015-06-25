@@ -255,9 +255,9 @@ void MapView::_externalSelectionCreate(void) {
     if(_tileSelectionRects.size() <= 0) return;
     if(getAssets()->getCurrentLayer() == Assets::LAYER_ENTITY) return _entitySelectableCreate();
 
-    int startX = ELYSIAN_AREA_MAP_WIDTH-2;
+    int startX = ELYSIAN_AREA_MAP_WIDTH-1;
     int endX = 0;
-    int startY = ELYSIAN_AREA_MAP_HEIGHT-2;
+    int startY = ELYSIAN_AREA_MAP_HEIGHT-1;
     int endY = 0;
 
     for(int i = 0; i < _tileSelectionRects.size(); ++i) {
@@ -268,8 +268,8 @@ void MapView::_externalSelectionCreate(void) {
     }
     if(startX < 0) startX = 0;
     if(startY < 0) startY = 0;
-    if(endX >= getAssets()->getCurrentArea()->width-1) endX = getAssets()->getCurrentArea()->width-2;
-    if(endY >= getAssets()->getCurrentArea()->height-1) endY = getAssets()->getCurrentArea()->height-2;
+    if(endX >= getAssets()->getCurrentArea()->width) endX = getAssets()->getCurrentArea()->width;
+    if(endY >= getAssets()->getCurrentArea()->height) endY = getAssets()->getCurrentArea()->height;
 
     TileSelectable *selection = new TileSelectable(QRect(startX, startY, endX-startX+1, endY-startY+1), _tileSelectionArray, getCurrentArea(), getCurrentLevel(), getAssets()->getCurrentLayer());
     setCurrentSelection(selection);
