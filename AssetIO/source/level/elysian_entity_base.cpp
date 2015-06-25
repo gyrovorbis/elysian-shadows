@@ -105,11 +105,9 @@ void EntityBase::popViewTransform(void) {
 void EntityBase::render(void) {
     if(_particleEmitter) _particleEmitter->render();
 
-    if(_renderable) {
-        pushViewTransform();
-        static_cast<Entity*>(this)->_renderRelative();
-        popViewTransform();
-    }
+    pushViewTransform();
+    static_cast<Entity*>(this)->_renderRelative();
+    popViewTransform();
 
     if(_skeleton) {
         _skeleton->render();
@@ -118,10 +116,12 @@ void EntityBase::render(void) {
 }
 
 void EntityBase::_renderRelative(void) {
-    _renderable->beginRender();
-    //if(_depthType == DEPTH_BUFFERED) transform._size.y = transform._size.z;
-    _renderable->render();
-    _renderable->endRender();
+    if(_renderable) {
+        _renderable->beginRender();
+        //if(_depthType == DEPTH_BUFFERED) transform._size.y = transform._size.z;
+        _renderable->render();
+        _renderable->endRender();
+    }
 }
 
 #if 0
