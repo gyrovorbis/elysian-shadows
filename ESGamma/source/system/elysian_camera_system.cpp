@@ -35,6 +35,9 @@ void CameraState::clipBoundingRegion(const int xMin, const int xMax, const int y
     if(scrStartY < clipYMin)    scrStartY   = clipYMin;
     if(scrEndY > yMax)          scrEndY     = yMax;
 
+    //assert(scrStartY <= scrEndY);
+    //assert(scrStartX <= scrEndX);
+
     //tileStartX	= scrStartX/32;
     //tileEndX	= scrEndX/32;
 
@@ -222,8 +225,8 @@ void CameraSystem::getVisibleTileRegion(int& startX, int& startY, int& endX, int
     startX = state->scrStartX / ELYSIAN_TILE_WIDTH; endX = state->scrEndX / ELYSIAN_TILE_WIDTH;
     startY = state->scrStartY / ELYSIAN_TILE_HEIGHT; endY = state->scrEndY / ELYSIAN_TILE_HEIGHT;
 
-    assert(startX >= 0);
-    assert(startY >= 0);
+    //assert(startX >= 0);
+    //assert(startY >= 0);
     if(++endX >= _curArea->width) endX = _curArea->width-1;
     if(++endY >= _curArea->height) endY = _curArea->height-1;
 }

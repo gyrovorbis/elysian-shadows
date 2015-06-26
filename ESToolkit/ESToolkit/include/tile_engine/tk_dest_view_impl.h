@@ -368,6 +368,7 @@ void DestView<T>::mouseMoveEvent(QMouseEvent *event) {
     //_sceneMousePos = _mapViewPosToScenePos(_viewMousePos);
     }
 
+    _mapViewPosToScenePos(_viewMousePos, _sceneMousePos);
     _scheduleMousePosUpdate();
 
 /*	if(_autoScrollEnabled && dragMode() != ScrollHandDrag) {

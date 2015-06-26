@@ -88,9 +88,11 @@ void EntityTreeWidget::OnSelectionChanged(const Selectable::TYPE type, Selectabl
 		break;
 	case Selectable::ENTITY:
 		entities = static_cast<EntitySelectable*>(selection);
+        const bool blocked = blockSignals(true);
 		for(auto it = entities->getEntities().begin(); it != entities->getEntities().end(); ++it) {
 			setCurrentItem(static_cast<TkEntity*>(*it));
 		}
+        blockSignals(blocked);
         //_ignoreLayerChange = true;
         if(getAssets()->getCurrentLayer() != Assets::LAYER_ENTITY) Q_EMIT entityLayerActivate();
         //ignoreLayerChange = false;

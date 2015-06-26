@@ -156,7 +156,7 @@ namespace elysian {
 		Component(entity),
 		GYLightSource({
 			{ 0.0f, 0.0f, 0.0f, 0.0f }, //pos
-			{ 0.0f, -0.0f, 0.00f },		//dir
+            { 0.0f, 0.0f, -1.0f },		//dir
 			360.0f,						//cutoff
 			GY_LIGHT_POINT,				//type
             nullptr,

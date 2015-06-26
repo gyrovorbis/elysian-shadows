@@ -33,22 +33,28 @@ private:
     int								_refreshTimerHandle = 30;
 
     QVector<TkEntity*>				_selectionColliders;
-    QVector<TkEntity*>				_selectedEntities;
+    QVector<TkEntity*>				_sceneSelectedEntities;
+    QVector<TkEntity*>              _entityClipboard;
     MapViewPlaceTileGroupUndoItem*	_curUndoItem		= nullptr;
     TkEntity*                       _cursorEntity       = nullptr;
     TkEntity*                       _underCursorEntity  = nullptr;
+    QPointF                         _cursorDragOffset   = QPointF(0.0f, 0.0f);
     bool                            _entityDrag         = false;
 
     void _updateScrollBars(void);
 
     //Internal selection management
-    void _tileSelectionArrayUpdate(void);
-    void _entitySelectionUpdate(void);
-    void _entitySelectableCreate(void);
-    bool _entityAddToSelection(TkEntity*const entity);
-    bool _entityRemoveFromSelection(TkEntity*const entity);
-    void _entityClearSelection(void);
-    bool _entityIsSceneSelected(const TkEntity*const entity) const;
+    void                    _tileSelectionArrayUpdate(void);
+    void                    _entitySceneSelectionUpdate(void);
+    void                    _entitySelectableCreate(void);
+    bool                    _entityAddToSceneSelection(TkEntity*const entity);
+    bool                    _entityRemoveFromSceneSelection(TkEntity*const entity);
+    void                    _entityClearSceneSelection(void);
+    bool                    _entityIsSceneSelected(const TkEntity*const entity) const;
+    bool                    _entityIsSelected(const TkEntity*const entity) const;
+    void                    _setUnderCursorEntity(TkEntity*const entity);
+    bool                    _isEntityRegionSelecting(void) const;
+    bool                    _isSelectionCollider(const TkEntity*const entity) const;
 
     //SourceView virtual implementation
     virtual void            _sceneSelectionAddRect(const QRectF &rect) override;
@@ -78,9 +84,9 @@ private:
 public:
     explicit    MapView(QWidget *parent = nullptr);
 
-    inline bool isSelected(const unsigned x, const unsigned y) const { return _tileSelectionArray[y][x]; }
-    inline bool isTerrainLayer(void) const { return getAssets()->getCurrentLayer() != Assets::LAYER_ENTITY; }
-    inline bool isEntityLayer(void) const { return getAssets()->getCurrentLayer() == Assets::LAYER_ENTITY; }
+    bool isSelected(const unsigned x, const unsigned y) const;
+    bool isTerrainLayer(void) const;
+    bool isEntityLayer(void) const;
 
     //QGraphicsView virtual implementation
     virtual void mouseMoveEvent(QMouseEvent *event) override;
@@ -96,6 +102,12 @@ public:
     virtual void updateSelectionItemGroup(void) override;
     virtual void deleteSelectionItemGroup(void) override;
 
+    //DestView static override
+    void selectionCut(void);
+    void selectionPaste(void);
+
+    void selectionCopy(void);
+
 public Q_SLOTS:
 
     void onEngineInitialize(void);
@@ -105,5 +117,26 @@ public Q_SLOTS:
     void onLayerChange(LAYER_TYPE type);
     void onMapChange(Area*const area, const QVector<MapChange>& changes);
 };
+
+
+
+
+
+
+
+
+
+
+//====INLINEZ =======
+
+inline bool MapView::isSelected(const unsigned x, const unsigned y) const { return _tileSelectionArray[y][x]; }
+inline bool MapView::isTerrainLayer(void) const { return getAssets()->getCurrentLayer() != Assets::LAYER_ENTITY; }
+inline bool MapView::isEntityLayer(void) const { return getAssets()->getCurrentLayer() == Assets::LAYER_ENTITY; }
+inline bool MapView::_isSelectionCollider(const TkEntity*const entity) const {
+    for(auto it : _selectionColliders)
+        if(it == entity) return true;
+    return false;
+}
+
 
 #endif

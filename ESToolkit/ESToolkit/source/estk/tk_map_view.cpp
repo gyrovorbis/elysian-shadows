@@ -57,7 +57,7 @@ void MapView::onAreaChange(Area * const area) {
         _updateScrollBars();
     }
 
-    _entityClearSelection();
+    _entityClearSceneSelection();
     _underCursorEntity = nullptr;
 }
 
@@ -103,7 +103,7 @@ TileSelection<TileEntry> *MapView::_getTileSelection(void) const {
     );
 }
 
-void MapView::_entitySelectionUpdate(void) {
+void MapView::_entitySceneSelectionUpdate(void) {
     TkEntity* entity;
 
     for(auto &it: _selectionColliders) {
@@ -144,12 +144,12 @@ void MapView::_entitySelectionUpdate(void) {
 }
 
 void MapView::_entitySelectableCreate(void) {
-    if(_selectedEntities.size() > 0) {
+    if(_sceneSelectedEntities.size() > 0) {
         auto* select = new EntitySelectable;
-        for(auto it = _selectedEntities.begin(); it != _selectedEntities.end(); ++it) {
+        for(auto it = _sceneSelectedEntities.begin(); it != _sceneSelectedEntities.end(); ++it) {
             select->addEntity(*it);
         }
-        _entityClearSelection();
+        _entityClearSceneSelection();
 
         getAssets()->setCurrentSelection(select);
     } else {
@@ -159,7 +159,7 @@ void MapView::_entitySelectableCreate(void) {
     for(auto &it: _selectionColliders) {
         getCurrentArea()->removeEntity(it);
     }
-    _selectionColliders.clear();
+    //_selectionColliders.clear();
 }
 
 void MapView::_tileSelectionArrayUpdate(void) {
@@ -215,7 +215,7 @@ void MapView::_tileSelectionArrayUpdate(void) {
         }
 
         if(getAssets()->getCurrentLayer() == Assets::LAYER_ENTITY) {
-            _entitySelectionUpdate();
+            _entitySceneSelectionUpdate();
         }
     }
 }
@@ -242,7 +242,7 @@ void MapView::_sceneSelectionUpdateLastRect(const QRectF& rect) {
 void MapView::_sceneSelectionClear(void) {
     //if(_getTileSelection()) static_cast<TileSelectable*>(_getTileSelection())->clearSceneSelection();
     _tileSelectionRects.clear();
-    _entityClearSelection();
+    _entityClearSceneSelection();
     memset(_tileSelectionArray, 0, sizeof(_tileSelectionArray));
     //scene()->update(scene()->sceneRect());
     getAssets()->getCurrentArea()->setEmitMapChange(false);
@@ -342,6 +342,8 @@ void MapView::keyPressEvent(QKeyEvent* event) {
     }
 }
 
+bool MapView::_isEntityRegionSelecting(void) const { return _selectionColliders.size() && _selectionColliders[0]->isActive(); }
+
 void MapView::wheelEvent(QWheelEvent* event) {
     const float delta = (event->delta() > 0)? 1.05f : 0.95f;
     //setTransformationAnchor();
@@ -390,7 +392,8 @@ void MapView::mouseMoveEvent(QMouseEvent *event) {
     } else if(_entityDrag) {
         delta = -delta;
         if(getAssets()->getCurrentSelectionType() == Selectable::ENTITY) {
-            static_cast<EntitySelectable*>(getAssets()->getCurrentSelection())->translate((float)delta.x(), (float)delta.y());
+            QPointF newPos = _sceneMousePos + _cursorDragOffset;
+            static_cast<EntitySelectable*>(getAssets()->getCurrentSelection())->setPosition(newPos.x(), newPos.y());
         }
     }
 }
@@ -405,7 +408,7 @@ void MapView::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void MapView::mousePressEvent(QMouseEvent *event) {
-    if(event->button() == Qt::RightButton && !getCurrentLevel()->validSheets()) return;
+    if(event->button() == Qt::RightButton && getAssets()->getCurrentLayer() != Assets::LAYER_ENTITY && !getCurrentLevel()->validSheets()) return;
     DestView<TileEntry>::mousePressEvent(event);
 
     if(getAssets()->getCurrentLayer() == Assets::LAYER_ENTITY && event->button() == Qt::LeftButton) {
@@ -413,8 +416,12 @@ void MapView::mousePressEvent(QMouseEvent *event) {
         if(_underCursorEntity) {
             _panning = false;
             _entityDrag = true;
-            _entityAddToSelection(_underCursorEntity);
-             return _entitySelectableCreate();
+            _cursorDragOffset = QPointF(_underCursorEntity->_transform._pos.x-_sceneMousePos.x(), _underCursorEntity->_transform._pos.y-_sceneMousePos.y()-_underCursorEntity->_transform._pos.z);
+            if(!_entityIsSelected(_underCursorEntity)) {
+                _entityAddToSceneSelection(_underCursorEntity);
+                _entitySelectableCreate();
+            }
+            static_cast<EntitySelectable*>(getAssets()->getCurrentSelection())->setBaseEntity(_underCursorEntity);
         }
 
     }
@@ -422,6 +429,23 @@ void MapView::mousePressEvent(QMouseEvent *event) {
 
 void MapView::_forceSceneUpdate(void) {
     //if(viewport()) static_cast<EngineGLSceneWidget*>(viewport())->updateGL();
+}
+
+inline bool MapView::_entityIsSelected(const TkEntity * const entity) const {
+    if(getAssets()->getCurrentSelectionType() == Selectable::ENTITY) {
+        return static_cast<const EntitySelectable*>(getAssets()->getCurrentSelection())->isInSelection(entity);
+    }
+    return false;
+}
+
+inline void MapView::_setUnderCursorEntity(TkEntity * const entity) {
+    if(!_isEntityRegionSelecting()) {
+        if(_underCursorEntity && _underCursorEntity->getSelectionState() == TkEntity::SELECTION_SELECTING) {
+            _underCursorEntity->setSelectionState(TkEntity::SELECTION_NONE);
+        }
+    }
+    _underCursorEntity = entity;
+    if(entity && entity->getSelectionState() != TkEntity::SELECTION_SELECTED) entity->setSelectionState(TkEntity::SELECTION_SELECTING);
 }
 
 const QPointF& MapView::_mapViewPosToScenePos(const QPoint &viewPos, QPointF& out) const {
@@ -455,31 +479,31 @@ void MapView::scrollContentsBy(int dx, int dy) {
     getAssets()->getEngine()->getCameraSys()->translate(GYVector3 { (float)dx, (float)dy, 0.0f });
 }
 
-inline void MapView::_entityClearSelection(void) {
-    for(auto it = _selectedEntities.begin(); it != _selectedEntities.end(); ++it) {
+inline void MapView::_entityClearSceneSelection(void) {
+    for(auto it = _sceneSelectedEntities.begin(); it != _sceneSelectedEntities.end(); ++it) {
         (*it)->setSelectionState(TkEntity::SELECTION_NONE);
     }
-    _selectedEntities.clear();
+    _sceneSelectedEntities.clear();
 }
 
-inline bool MapView::_entityAddToSelection(TkEntity * const entity) {
-    Entity* parent = entity->getTopParentEntity();
+inline bool MapView::_entityAddToSceneSelection(TkEntity * const entity) {
+  //  Entity* parent = entity->getTopParentEntity();
 
-    for(auto it = _selectedEntities.begin(); it != _selectedEntities.end(); ++it) {
-        if(parent == *it) {
+    for(auto it = _sceneSelectedEntities.begin(); it != _sceneSelectedEntities.end(); ++it) {
+        if(entity == *it) {
             return false;
         }
     }
-    _selectedEntities.push_back(parent);
+    _sceneSelectedEntities.push_back(entity);
     entity->setSelectionState(TkEntity::SELECTION_SELECTING);
 
     return true;
 }
 
-bool MapView::_entityRemoveFromSelection(TkEntity * const entity) {
-    for(auto it = _selectedEntities.begin(); it != _selectedEntities.end(); ++it) {
+bool MapView::_entityRemoveFromSceneSelection(TkEntity * const entity) {
+    for(auto it = _sceneSelectedEntities.begin(); it != _sceneSelectedEntities.end(); ++it) {
         if(entity == *it) {
-            _selectedEntities.erase(it);
+            _sceneSelectedEntities.erase(it);
             if(entity->getSelectionState() != TkEntity::SELECTION_SELECTED) entity->setSelectionState(TkEntity::SELECTION_NONE);
             return true;
         }
@@ -488,45 +512,58 @@ bool MapView::_entityRemoveFromSelection(TkEntity * const entity) {
 }
 
 void MapView::onCollisionEnter(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* /*contact*/) {
-    Entity* parent;
-
-    //Is this shit even relevant?
-    if(bodyA->getContactEventMonitorMask() & ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK) {
+    if((bodyA->getEntity() == _cursorEntity && _isSelectionCollider(bodyB->getEntity())) || (bodyB->getEntity() == _cursorEntity && _isSelectionCollider(bodyA->getEntity()))) return;
 
         //cursorEntity
         if(bodyA->getEntity() == _cursorEntity) {
-            parent = bodyB->getEntity()->getTopParentEntity();
-            _underCursorEntity = parent;
-            if(parent->getSelectionState() != TkEntity::SELECTION_SELECTED) parent->setSelectionState(TkEntity::SELECTION_SELECTING);
+          //  parent = bodyB->getEntity()->getTopParentEntity();
+            if(!_isEntityRegionSelecting()) _setUnderCursorEntity(bodyB->getEntity());
         } else { //region select entity
             if(!(bodyB->getContactEventMonitorMask() & ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK)) {
-                if(bodyB->getAttrib()->getFlags()->type == elysian::CollisionFlags::CURSOR) _entityAddToSelection(bodyB->getEntity()->getTopParentEntity());
+                if(bodyB->getAttrib()->getFlags()->type == elysian::CollisionFlags::CURSOR) _entityAddToSceneSelection(bodyB->getEntity());
             }
         }
-    }
 
 }
 
-void MapView::onCollide(Collidable*const /*bodyA*/, Collidable*const /*bodyB*/, CollisionContact* /*contact*/) {
+void MapView::onCollide(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* /*contact*/) {
+    if((bodyA->getEntity() == _cursorEntity && _isSelectionCollider(bodyB->getEntity())) || (bodyB->getEntity() == _cursorEntity && _isSelectionCollider(bodyA->getEntity()))) return;
 
+    if(bodyA->getEntity() == _cursorEntity && !_underCursorEntity) {
+        if(!(bodyB->getContactEventMonitorMask() & ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK))
+            _setUnderCursorEntity(bodyB->getEntity());
+    }
 }
 
 bool MapView::_entityIsSceneSelected(const TkEntity * const entity) const {
-    for(auto it = _selectedEntities.begin(); it != _selectedEntities.end(); ++it)
+    for(auto it = _sceneSelectedEntities.begin(); it != _sceneSelectedEntities.end(); ++it)
         if(entity == *it) return true;
     return false;
 }
 
 void MapView::onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) {
-    if(bodyA->getEntity() != _cursorEntity && bodyB->getAttrib()->getFlags()->type == elysian::CollisionFlags::CURSOR) _entityRemoveFromSelection(bodyB->getEntity()->getTopParentEntity());
+    if((bodyA->getEntity() == _cursorEntity && _isSelectionCollider(bodyB->getEntity())) || (bodyB->getEntity() == _cursorEntity && _isSelectionCollider(bodyA->getEntity()))) return;
 
-    if(bodyA->getEntity() == _cursorEntity && bodyB->getEntity() == _underCursorEntity) {
-        if(_underCursorEntity->getSelectionState() != TkEntity::SELECTION_SELECTED) {
 
-            if(!_entityIsSceneSelected(_underCursorEntity)) _underCursorEntity->setSelectionState(TkEntity::SELECTION_NONE);
+    //normal cursor
+    if(bodyA->getEntity() == _cursorEntity) {
+        if(!_isEntityRegionSelecting()) {
+            if(bodyB->getEntity() == _underCursorEntity) {
+                    if(_underCursorEntity->getSelectionState() != TkEntity::SELECTION_SELECTED) {
+
+                        if(!_entityIsSceneSelected(_underCursorEntity)) _underCursorEntity->setSelectionState(TkEntity::SELECTION_NONE);
+                    }
+                    _setUnderCursorEntity(nullptr);
+            }
         }
-        _underCursorEntity = nullptr;
+    //region select box
+    } else {
+        if(bodyB->getAttrib()->getFlags()->type == elysian::CollisionFlags::CURSOR)
+                if(bodyB->getEntity()->getSelectionState() != TkEntity::SELECTION_SELECTED)
+                        _entityRemoveFromSceneSelection(bodyB->getEntity());
+
     }
+
 }
 
 void MapView::_updateScrollBars(void) {
@@ -557,4 +594,31 @@ void MapView::updateSelectionItemGroup(void) { }
 
 void MapView::deleteSelectionItemGroup(void) {
     _selItemGroup = nullptr;
+}
+
+void MapView::selectionCut(void) {
+
+    DestView<TileEntry>::selectionCut();
+
+    if(_sceneSelectedEntities.size()) {
+        _entityClipboard = _sceneSelectedEntities;
+        _sceneSelectedEntities.clear();
+        setCurrentSelection(nullptr);
+    }
+
+}
+
+void MapView::selectionPaste(void) {
+    DestView<TileEntry>::selectionPaste();
+
+    if(_entityClipboard.size()) {
+
+
+    }
+
+}
+
+void MapView::selectionCopy(void) {
+
+
 }

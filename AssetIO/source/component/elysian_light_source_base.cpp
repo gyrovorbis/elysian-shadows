@@ -111,7 +111,7 @@ void LightSourceBase::updateBoundingVolume(const CameraState *const cam, const G
 		default:
 			break;
         }
-	}
+
 
         vol->ftl = vol->ntl;
         vol->ftr = vol->ntr;
@@ -119,10 +119,8 @@ void LightSourceBase::updateBoundingVolume(const CameraState *const cam, const G
         vol->fbr = vol->nbr;
 
         thisCam->updateViewVolumeBoundingRegion();
-
-    if(type != GY_LIGHT_DIRECTIONAL) {
-        thisCam->clipBoundingRegion(*cam);
-    }
+                thisCam->clipBoundingRegion(*cam);
+	}
 
 
 }

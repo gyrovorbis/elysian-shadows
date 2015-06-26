@@ -26,6 +26,7 @@ void EntitySelectable::addEntity(TkEntity * const entity) {
 void EntitySelectable::removeEntity(TkEntity * const entity) {
 	for(auto it = _entities.begin(); it != _entities.end(); ++it) {
 		if(*it == entity) {
+            if(*it == _baseEntity) _baseEntity = nullptr;
 			_entities.erase(it);
             removeSourceModel(entity->getModel());
 			break;
@@ -36,6 +37,26 @@ void EntitySelectable::removeEntity(TkEntity * const entity) {
 void EntitySelectable::translate(const float x, const float y) {
     for(auto& it : _entities) it->getTransform().translate(x, y);
 }
+
+void EntitySelectable::setPosition(const float x, const float y) {
+    const GYVector3 basePos = getBaseEntity()->_transform._pos;
+
+    auto moveEntity = [&](TkEntity* entity) {
+        const GYVector3 prevPos = entity->_transform._pos;
+        GYVector3 offset;
+        gyVec3Sub(&offset, &prevPos, &basePos);
+        entity->_transform.setPos(x+offset.x, y+offset.y, prevPos.z);
+    };
+
+    getBaseEntity()->_transform._pos = GYVector3 { x, y+basePos.z, basePos.z };
+    for(auto entity : _entities)  {
+
+        if(entity != getBaseEntity()) {
+            moveEntity(entity);
+        }
+    }
+}
+
 
 void EntitySelectable::setCurrentSelection(const bool val, const Selectable* const other) {
     QVector<TkEntity*> exclusiveEntities = _entities;
@@ -51,6 +72,7 @@ void EntitySelectable::setCurrentSelection(const bool val, const Selectable* con
                 }
             }
         }
+        _baseEntity = otherEntities._baseEntity;
     }
 
     for(auto& it : exclusiveEntities) {

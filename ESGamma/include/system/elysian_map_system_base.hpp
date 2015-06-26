@@ -197,10 +197,7 @@ namespace elysian {
             gyVidRectPlaneType(newPlane);
             gyVidRectTexOrient(newOrient);
             const float newZFactor = glalOrientNormalMapZFactor(newOrient);
-            if(newZFactor != glalNormalMapZFactor) {
-              //  flushTileBuffer();
-                glalVidNormalMapZFactorUpdateUniform(newZFactor);
-            }
+            glalVidNormalMapZFactorUpdateUniform(newZFactor);
         }
 
         const unsigned int indexBase = (entry.layer*getCurrentArea()->height*getCurrentArea()->width +

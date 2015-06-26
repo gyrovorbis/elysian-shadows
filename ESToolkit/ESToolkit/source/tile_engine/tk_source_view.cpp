@@ -51,7 +51,6 @@ SourceView::SourceView(QWidget *parent):
 
 void SourceView::_updateSceneMousePos(void) {
     static char buff[100];
-    _mapViewPosToScenePos(_viewMousePos, _sceneMousePos);
 
     sprintf(buff, "%d, %d", (int)_sceneMousePos.x(), (int)_sceneMousePos.y());
     _sceneMousePosLabel->setText(buff);
