@@ -140,6 +140,7 @@ void MapView::_entitySceneSelectionUpdate(void) {
         entity->getTransform().setSize(rect.width(), rect.height(), rect.height()+600.0f);
         getCurrentArea()->addEntity(_selectionColliders[k]);
     }
+    _entityDrag = false;
 
 }
 
