@@ -80,3 +80,16 @@ void EntitySelectable::setCurrentSelection(const bool val, const Selectable* con
         getAssets()->getEngine()->getBehavSys()->callTrigger(it, val? elysian::Behavior::ON_TK_SELECT : elysian::Behavior::ON_TK_UNSELECT);
     }
 }
+
+void EntitySelectable::deactivate(void) {
+    for(auto& it : _entities) {
+        it->deactivate();
+    }
+}
+
+void EntitySelectable::activate(void) {
+    for(auto& it : _entities) {
+        it->activate();
+    }
+
+}

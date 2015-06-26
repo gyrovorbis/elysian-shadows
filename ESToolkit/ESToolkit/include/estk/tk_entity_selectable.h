@@ -27,6 +27,9 @@ public:
     void                        translate(const float x, const float y);
     void                        setPosition(const float x, const float y);
 
+    void                        deactivate(void);
+    void                        activate(void);
+
     virtual void                setCurrentSelection(const bool val, const Selectable*const other) override;
     virtual QAbstractItemModel* getModel(void) const override;
 

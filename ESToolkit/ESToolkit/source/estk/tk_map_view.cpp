@@ -601,10 +601,12 @@ void MapView::selectionCut(void) {
 
     DestView<TileEntry>::selectionCut();
 
-    if(_sceneSelectedEntities.size()) {
-        _entityClipboard = _sceneSelectedEntities;
-        _sceneSelectedEntities.clear();
-        setCurrentSelection(nullptr);
+    if(getAssets()->getCurrentSelectionType() == Selectable::ENTITY) {
+        if(_entityClipboard) delete _entityClipboard;
+        _entityClipboard = static_cast<EntitySelectable*>(getAssets()->getCurrentSelection());
+        _entityClipboard->deactivate();
+        _clipboardDragOffset = _cursorDragOffset;
+        getAssets()->setCurrentSelection(nullptr);
     }
 
 }
@@ -612,11 +614,12 @@ void MapView::selectionCut(void) {
 void MapView::selectionPaste(void) {
     DestView<TileEntry>::selectionPaste();
 
-    if(_entityClipboard.size()) {
-
+    if(_entityClipboard) {
+        _cursorDragOffset = _clipboardDragOffset;
+        _entityClipboard->activate();
+        getAssets()->setCurrentSelection(_entityClipboard);
 
     }
-
 }
 
 void MapView::selectionCopy(void) {

@@ -34,12 +34,13 @@ private:
 
     QVector<TkEntity*>				_selectionColliders;
     QVector<TkEntity*>				_sceneSelectedEntities;
-    QVector<TkEntity*>              _entityClipboard;
-    MapViewPlaceTileGroupUndoItem*	_curUndoItem		= nullptr;
-    TkEntity*                       _cursorEntity       = nullptr;
-    TkEntity*                       _underCursorEntity  = nullptr;
-    QPointF                         _cursorDragOffset   = QPointF(0.0f, 0.0f);
-    bool                            _entityDrag         = false;
+    MapViewPlaceTileGroupUndoItem*	_curUndoItem            = nullptr;
+    TkEntity*                       _cursorEntity           = nullptr;
+    TkEntity*                       _underCursorEntity      = nullptr;
+    EntitySelectable*               _entityClipboard        = nullptr;
+    QPointF                         _cursorDragOffset       = QPointF(0.0f, 0.0f);
+    QPointF                         _clipboardDragOffset    = QPointF(0.0f, 0.0f);
+    bool                            _entityDrag             = false;
 
     void _updateScrollBars(void);
 
