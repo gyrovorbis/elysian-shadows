@@ -155,7 +155,7 @@ inline void TkLuaTableProxy<P, T, Bases...>::_callPropertyProxyMethod(const bool
 template<typename P, typename T, class... Bases>
 inline const TkLuaTableProxy<P, T, Bases...>& TkLuaTableProxy<P,T, Bases...>::operator=(const TkLuaTableProxy<P, T, Bases...>& rhs) {
     *static_cast<ParentType*>(this) = *static_cast<const ParentType*>(&rhs);
-    *static_cast<T*>(this) = *static_cast<const T*>(&rhs);
+    //*static_cast<T*>(this) = *static_cast<const T*>(&rhs);
     return *this;
 }
 

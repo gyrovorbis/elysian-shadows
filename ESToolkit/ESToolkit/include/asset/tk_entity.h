@@ -61,8 +61,9 @@ public:
     using                       elysian::EntityBase::setTransform;
 
                                 TkEntity(void);
-                                TkEntity(const bool selectable);
+                                TkEntity(const bool selectable, TkEntity* prefab=nullptr);
                                 TkEntity(const OOLUA::Lua_table_ref valTable);
+                                TkEntity(TkEntity* prefab);
     virtual                     ~TkEntity(void) override;
 
     void                        setTreeWidgetItemState(const TreeItemState state);

@@ -29,8 +29,8 @@ ELYSIAN_ASSET_TYPEDEF(Entity)
 
 namespace elysian {
 
-    class ComponentBase:
-        public GenericMemberData<ComponentBase, ELYSIAN_VA_EXPAND_LIST(ELYSIAN_COMPONENT_CONTAINER, ELYSIAN_COMPONENT_TYPES_LIST) >
+    class ComponentBase//:
+        //public GenericMemberData<ComponentBase, ELYSIAN_VA_EXPAND_LIST(ELYSIAN_COMPONENT_CONTAINER, ELYSIAN_COMPONENT_TYPES_LIST) >
     {
         friend Entity;
         friend class EntityBase;

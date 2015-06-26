@@ -55,6 +55,7 @@ namespace elysian {
 
                             EntityBase(void);
                             EntityBase(const OOLUA::Lua_table_ref valTable);
+                            EntityBase(EntityBase* other);
         virtual             ~EntityBase(void);
 
         bool                load(FILE* file);
@@ -206,7 +207,7 @@ namespace elysian {
 
 
         template<typename T>
-        T* _addComponent(T*& comp, std::vector<T*>* container = nullptr);
+        T* _addComponent(T*& comp, std::vector<T*>* container = nullptr, T* prefab=nullptr);
         template<typename T>
         void _removeComponent(T*& comp, std::vector<T*>* container=nullptr);
         template<typename T>

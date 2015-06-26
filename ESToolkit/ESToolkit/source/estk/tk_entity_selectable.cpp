@@ -8,19 +8,28 @@ EntitySelectable::EntitySelectable(TkEntity*const entity): RowsJoinerProxy(nullp
 	addEntity(entity);
 }
 
+EntitySelectable::EntitySelectable(EntitySelectable *selectable): RowsJoinerProxy(nullptr) {
+    for(auto it : selectable->_entities) {
+        EntityEntry entry;
+        entry.wasActive = it.wasActive;
+        entry.entity = new TkEntity(it.entity);
+        addEntity(entry);
+    }
+}
+
 QAbstractItemModel* EntitySelectable::getModel(void) const { return const_cast<EntitySelectable*>(this); }
 
 auto EntitySelectable::getType(void) const -> TYPE { return ENTITY; }
 
-const QVector<TkEntity*>& EntitySelectable::getEntities(void) const {
-	return _entities;
-}
+//const QVector<TkEntity*>& EntitySelectable::getEntities(void) const {
+//	return _entities;
+//}
 
-void EntitySelectable::addEntity(TkEntity * const entity) {
-    if(!entity) return;
-	_entities.push_back(entity);
-    insertSourceModel(entity->getModel());
-    entity->getModel()->setLabelItemText("Entity");
+void EntitySelectable::addEntity(const EntityEntry entry) {
+    if(!entry.entity) return;
+    _entities.push_back(entry);
+    insertSourceModel(entry->getModel());
+    entry->getModel()->setLabelItemText("Entity");
 }
 
 void EntitySelectable::removeEntity(TkEntity * const entity) {
@@ -59,12 +68,12 @@ void EntitySelectable::setPosition(const float x, const float y) {
 
 
 void EntitySelectable::setCurrentSelection(const bool val, const Selectable* const other) {
-    QVector<TkEntity*> exclusiveEntities = _entities;
+    QVector<EntityEntry> exclusiveEntities = _entities;
 
 
     if(other && other->getType() == Selectable::ENTITY) {
         const EntitySelectable& otherEntities = *static_cast<const EntitySelectable*>(other);
-        for(auto it  = otherEntities.getEntities().begin(); it != otherEntities.getEntities().end(); ++it) {
+        for(auto it  = otherEntities._entities.begin(); it != otherEntities._entities.end(); ++it) {
             for(auto it2 = exclusiveEntities.begin(); it2 != exclusiveEntities.end(); ++it2) {
                 if(*it == *it2) {
                     it2 = exclusiveEntities.erase(it2);
@@ -83,13 +92,16 @@ void EntitySelectable::setCurrentSelection(const bool val, const Selectable* con
 
 void EntitySelectable::deactivate(void) {
     for(auto& it : _entities) {
-        it->deactivate();
+        it.wasActive = it->isActive();
+        if(it->getArea()) it->getArea()->removeEntity(it);
     }
 }
 
-void EntitySelectable::activate(void) {
+void EntitySelectable::activate(TkArea* area) {
     for(auto& it : _entities) {
-        it->activate();
+        area->addEntity(it);
+        if(it.wasActive) it->activate();
+        else it->deactivate();
     }
 
 }

@@ -28,6 +28,7 @@ public:
 	}
 
 	virtual void undo(void) {
+        if(!_area) return;
         _area->beginMapUpdate();
 		for(QMap<QPoint, UndoEntry>::const_iterator i = _undoGroup.begin(); i != _undoGroup.end(); ++i) {
 			//_area->setTileValue(i.key(), _layer, ELYSIAN_MAP_TERRAIN_PACK_VALUE(i.value().oldData.index, i.value().oldData.orient));
@@ -41,6 +42,7 @@ public:
         //if(_skipFirst) { //assume changes have already been applied to map from updating
         //	_skipFirst = false;
         //} else {
+        if(!_area) return;
             _area->beginMapUpdate();
 			for(QMap<QPoint, UndoEntry>::const_iterator i = _undoGroup.begin(); i != _undoGroup.end(); ++i) {
 				//_area->setTileValue(i.key(), _layer, ELYSIAN_MAP_TERRAIN_PACK_VALUE(i.value().newData.index, i.value().newData.orient));

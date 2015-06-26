@@ -89,7 +89,7 @@ void EntityTreeWidget::OnSelectionChanged(const Selectable::TYPE type, Selectabl
 	case Selectable::ENTITY:
 		entities = static_cast<EntitySelectable*>(selection);
         const bool blocked = blockSignals(true);
-		for(auto it = entities->getEntities().begin(); it != entities->getEntities().end(); ++it) {
+        for(auto it = entities->begin(); it != entities->end(); ++it) {
 			setCurrentItem(static_cast<TkEntity*>(*it));
 		}
         blockSignals(blocked);

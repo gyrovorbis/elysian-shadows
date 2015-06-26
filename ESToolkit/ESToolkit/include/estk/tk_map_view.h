@@ -39,8 +39,8 @@ private:
     TkEntity*                       _underCursorEntity      = nullptr;
     EntitySelectable*               _entityClipboard        = nullptr;
     QPointF                         _cursorDragOffset       = QPointF(0.0f, 0.0f);
-    QPointF                         _clipboardDragOffset    = QPointF(0.0f, 0.0f);
     bool                            _entityDrag             = false;
+    bool                            _cutClipboard           = true;
 
     void _updateScrollBars(void);
 
@@ -106,7 +106,6 @@ public:
     //DestView static override
     void selectionCut(void);
     void selectionPaste(void);
-
     void selectionCopy(void);
 
 public Q_SLOTS:

@@ -602,27 +602,47 @@ void MapView::selectionCut(void) {
     DestView<TileEntry>::selectionCut();
 
     if(getAssets()->getCurrentSelectionType() == Selectable::ENTITY) {
-        if(_entityClipboard) delete _entityClipboard;
-        _entityClipboard = static_cast<EntitySelectable*>(getAssets()->getCurrentSelection());
-        _entityClipboard->deactivate();
-        _clipboardDragOffset = _cursorDragOffset;
-        getAssets()->setCurrentSelection(nullptr);
-    }
+        auto* curSelection = static_cast<EntitySelectable*>(getAssets()->getCurrentSelection());
 
+    if(_entityClipboard != curSelection) {
+        if(_entityClipboard) delete _entityClipboard;
+            _entityClipboard = static_cast<EntitySelectable*>(getAssets()->getCurrentSelection());
+            _entityClipboard->deactivate();
+            getAssets()->setCurrentSelection(nullptr);
+            _cutClipboard = true;
+        }
+    }
 }
 
 void MapView::selectionPaste(void) {
     DestView<TileEntry>::selectionPaste();
 
     if(_entityClipboard) {
-        _cursorDragOffset = _clipboardDragOffset;
-        _entityClipboard->activate();
+        _entityClipboard->activate(getAssets()->getCurrentArea());
         getAssets()->setCurrentSelection(_entityClipboard);
-
+        _entityClipboard->setPosition(_sceneMousePos.x(), _sceneMousePos.y());
+        if(_cutClipboard) {
+            _entityClipboard = nullptr;
+        } else {
+            _entityClipboard = new EntitySelectable(_entityClipboard);
+            _entityClipboard->deactivate();
+            _cutClipboard = false;
+        }
     }
 }
 
 void MapView::selectionCopy(void) {
 
+    if(getAssets()->getCurrentSelectionType() == Selectable::ENTITY) {
+        auto* curSelection = static_cast<EntitySelectable*>(getAssets()->getCurrentSelection());
 
+        if(_entityClipboard != curSelection) {
+            if(_entityClipboard) delete _entityClipboard;
+
+            _entityClipboard = new EntitySelectable(curSelection);
+            _entityClipboard->deactivate();
+            _cutClipboard = false;
+        }
+    }
 }
+

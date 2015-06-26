@@ -178,6 +178,7 @@ namespace elysian {
         void                        addEntity(Entity *entity);
         void                        addInactiveEntity(Entity* entity);
         void                        removeEntity(Entity *entity);
+        void                        validateEntityName(Entity* entity);
         Entity*                     findEntity(const char* name);
 
         //active entity management

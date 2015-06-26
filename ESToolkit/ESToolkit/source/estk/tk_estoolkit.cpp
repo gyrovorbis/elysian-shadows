@@ -1542,6 +1542,11 @@ void ESToolkit::on_actionCut_triggered()
     _ui->mapView->selectionCut();
 }
 
+void ESToolkit::on_actionCopy_triggered()
+{
+   _ui->mapView->selectionCopy();
+}
+
 void ESToolkit::on_actionPaste_triggered()
 {
     _ui->mapView->selectionPaste();
@@ -2317,3 +2322,4 @@ void ESToolkit::showGitlabBugReportTab(void) const {
     _gitlabDialog->setTab(GitlabDialog::TAB_CREATE_REPORT);
     _gitlabDialog->show();
 }
+

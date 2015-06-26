@@ -69,6 +69,7 @@ namespace elysian {
                         SkeletonBase(Entity& entity);
                         SkeletonBase(void) = default;
         virtual         ~SkeletonBase(void) override;
+        SkeletonBase&   operator= (const SkeletonBase& other);
 
        //reimplemented from component
         static constexpr const Component::TYPE componentType = Component::SKELETON;
@@ -89,6 +90,7 @@ namespace elysian {
         //bool            isAnimComplete(const int trackIndex) const;
 
     };
+
 
 
 

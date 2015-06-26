@@ -28,9 +28,40 @@ ELYSIAN_LUA_PROXY_FIELDS_EXPORT(EntityBase)
 
 float EntityBase::_oldZ;
 
-EntityBase::EntityBase(void) { strcpy(_name, ELYSIAN_ENTITY_NAME_DEFAULT); strcpy(_dispName, ELYSIAN_ENTITY_DESC_DEFAULT); }
+EntityBase::EntityBase(void): EntityBase(nullptr) {  }
 
 EntityBase::EntityBase(const OOLUA::Lua_table_ref valTable): EntityBase() { /* static_cast<Entity*>(this)->fromTable(valTable); */ }
+
+EntityBase::EntityBase(EntityBase *other) {
+    if(!other) {
+        strcpy(_name, ELYSIAN_ENTITY_NAME_DEFAULT);
+        strcpy(_dispName, ELYSIAN_ENTITY_DESC_DEFAULT);
+    } else {
+        strcpy(_name, other->_name);
+        strcpy(_dispName, other->_dispName);
+        if(other->getRenderable()) _addComponent<Renderable>(_renderable, nullptr, other->getRenderable());
+        if(other->getAnimation()) _addComponent<Animation>(_animation, nullptr, other->getAnimation());
+        if(other->getCollidable()) _addComponent<Collidable>(_collidable, nullptr, other->getCollidable());
+        if(other->getRigidBody()) _addComponent<RigidBody>(_rigidBody, nullptr, other->getRigidBody());
+        if(other->getCharacter()) _addComponent<Character>(_character, nullptr, other->getCharacter());
+        if(other->getWarp()) _addComponent<Warp>(_warp, nullptr, other->getWarp());
+        if(other->getExaminable()) _addComponent<Examinable>(_examinable, nullptr, other->getExaminable());
+        if(other->getAudioSource()) _addComponent<AudioSource>(_audioSource, nullptr, other->getAudioSource());
+        if(other->getLightSource()) _addComponent<LightSource>(_lightSource, nullptr, other->getLightSource());
+        if(other->getParticleEmitter()) _addComponent<ParticleEmitter>(_particleEmitter, nullptr, other->getParticleEmitter());
+        if(other->getCombat()) _addComponent<Combat>(_combat, nullptr, other->getCombat());
+        if(other->getSkeleton()) _addComponent<Skeleton>(_skeleton, nullptr, other->getSkeleton());
+
+        _transform = other->_transform;
+        _area = other->_area;
+        _elev = other->_elev;
+        _shadowVolume = other->_shadowVolume;
+        _shadowDepth = other->_shadowDepth;
+        _planeType = other->_planeType;
+        if(other->isActive()) activate();
+    }
+}
+
 
 void EntityBase::setTransform(const OOLUA::Lua_table_ref valTable) { _transform.fromTable(valTable); }
 
@@ -712,13 +743,17 @@ void EntityBase::removeBehavior(const char *behaviorName) {
     
 
 template<typename T>
-T* EntityBase::_addComponent(T*& comp, std::vector<T*>* activeList) {
+T* EntityBase::_addComponent(T*& comp, std::vector<T*>* activeList, T* prefab) {
     if(comp) return comp;
     //if(!T::canAddTo(*static_cast<Entity*>(this))) return nullptr;
     comp = new T(*static_cast<Entity*>(this));
     if(_active) {
         activeList->push_back(comp);
         _componentActive[T::componentType] = true;
+    }
+    if(prefab) {
+        *comp = *prefab;
+        comp->_entity = static_cast<Entity*>(this);
     }
     return comp;
 }

@@ -503,15 +503,21 @@ void TkArea::onEntityParented(Entity * const child, Entity * const parent) {
 }
 
 void TkArea::addEntity(Entity *entity) {
+    const unsigned count = entities.size();
     elysian::AreaBase::addEntity(entity);
-    _connectSlots(entity);
-     Q_EMIT entityAdded(this, entity);
+    if(count != entities.size()) {
+        _connectSlots(entity);
+         Q_EMIT entityAdded(this, entity);
+    }
 }
 
 void TkArea::addInactiveEntity(Entity *entity) {
+    const unsigned count = inactiveEntities.size();
     elysian::AreaBase::addInactiveEntity(entity);
-    _connectSlots(entity);
-     Q_EMIT entityAdded(this, entity);
+    if(count != inactiveEntities.size()) {
+        _connectSlots(entity);
+        Q_EMIT entityAdded(this, entity);
+    }
 }
 
 void TkArea::removeEntity(Entity *entity) {

@@ -225,6 +225,7 @@
     </property>
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
+    <addaction name="actionCopy"/>
    </widget>
    <widget class="QMenu" name="menuEngine">
     <property name="title">
@@ -1421,6 +1422,14 @@
   <action name="actionReset_Stack_Depth">
    <property name="text">
     <string>Reset Stack Depth</string>
+   </property>
+  </action>
+  <action name="actionCopy">
+   <property name="text">
+    <string>Copy</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
    </property>
   </action>
  </widget>

@@ -36,20 +36,26 @@ void AreaBase::setMapHeight(const unsigned short h) {
 
 }
 
-void AreaBase::addEntity(Entity *entity) {
-    for(auto& it: entities) {
-        if(strcmp(it->getName(),  entity->getName()) == 0) return;
+void AreaBase::validateEntityName(Entity *entity) {
+    char buff[ELYSIAN_ENTITY_NAME_SIZE];
+    int num = 0;
+
+    strcpy(buff, entity->getName());
+    while(findEntity(buff)) {
+        sprintf(buff, "%s%d", entity->getName(), ++num);
     }
 
+    entity->setName(buff);
+}
+
+void AreaBase::addEntity(Entity *entity) {
+    validateEntityName(entity);
     entity->setArea(static_cast<Area*>(this));
     entity->activate();
 }
 
 void AreaBase::addInactiveEntity(Entity *entity) {
-    for(auto& it: inactiveEntities) {
-        if(strcmp(it->getName(),  entity->getName()) == 0) return;
-    }
-
+    validateEntityName(entity);
     entity->setArea(static_cast<Area*>(this));
     inactiveEntities.push_back(entity);
 }

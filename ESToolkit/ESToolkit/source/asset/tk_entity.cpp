@@ -43,7 +43,12 @@ TkEntity::TkEntity(const OOLUA::Lua_table_ref valTable): TkEntity(true) {
     //fromTable(valTable);
 }
 
-TkEntity::TkEntity(const bool selectable):
+
+TkEntity::TkEntity(TkEntity* prefab): TkEntity(true, prefab) {}
+
+
+TkEntity::TkEntity(const bool selectable, TkEntity* prefab):
+    elysian::EntityBase(prefab),
     _selectable(selectable)
 {
     setName(elysian::EntityBase::_name);

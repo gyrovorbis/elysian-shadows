@@ -7,31 +7,53 @@
 #include <QVector>
 
 class TkEntity;
+class TkArea;
 
 class EntitySelectable: public Selectable, public RowsJoinerProxy, public AssetManager {
+public:
+    struct EntityEntry {
+                    EntityEntry(void)       = default;
+                    EntityEntry(TkEntity*const ent);
+        TkEntity*   operator->(void);
+        TkEntity*   operator->(void) const;
+                    operator TkEntity*(void) const;
+                    operator const TkEntity*(void) const;
+        friend bool operator==(EntityEntry entry, TkEntity* ent);
+
+
+        TkEntity*   entity      = nullptr;
+        bool        wasActive   = false;
+    };
 private:
-    QVector<TkEntity*>          _entities;
+
+
+    QVector<EntityEntry>       _entities;
     TkEntity*                   _baseEntity = nullptr;
 
 public:
                                 EntitySelectable(TkEntity*const entity = nullptr);
-    void                        addEntity(TkEntity*const entity);
+                                EntitySelectable(EntitySelectable* selectable);
+
+    void                        addEntity(const EntityEntry entry);
     void                        setBaseEntity(TkEntity*const entity);
     TkEntity*                   getBaseEntity(void) const;
     void                        removeEntities(QVector<TkEntity*>& entities);
     void                        removeEntity(TkEntity*const entity);
     virtual TYPE                getType(void) const override;
-    const QVector<TkEntity*>&   getEntities(void) const;
+    //const QVector<TkEntity*>&   getEntities(void) const;
     bool                        isInSelection(const TkEntity*const entity) const;
 
     void                        translate(const float x, const float y);
     void                        setPosition(const float x, const float y);
 
     void                        deactivate(void);
-    void                        activate(void);
+    void                        activate(TkArea* area);
 
     virtual void                setCurrentSelection(const bool val, const Selectable*const other) override;
     virtual QAbstractItemModel* getModel(void) const override;
+
+    QVector<EntityEntry>::iterator begin(void);
+    QVector<EntityEntry>::iterator end(void);
 
 };
 
@@ -65,7 +87,24 @@ inline bool EntitySelectable::isInSelection(const TkEntity*const entity) const {
     return false;
 }
 
+inline EntitySelectable::EntityEntry::EntityEntry(TkEntity*const ent): entity(ent) {}
 
+inline TkEntity* EntitySelectable::EntityEntry::operator->(void) {
+    return entity;
+}
 
+inline TkEntity* EntitySelectable::EntityEntry::operator->(void) const {
+    return entity;
+}
+
+inline bool operator==(EntitySelectable::EntityEntry entry, TkEntity* ent) {
+    return entry.entity == ent;
+}
+
+inline EntitySelectable::EntityEntry::operator TkEntity*(void) const { return entity; }
+inline EntitySelectable::EntityEntry::operator const TkEntity*(void) const { return const_cast<const TkEntity*>(entity); }
+
+inline QVector<EntitySelectable::EntityEntry>::iterator EntitySelectable::begin(void) { return _entities.begin(); }
+inline QVector<EntitySelectable::EntityEntry>::iterator EntitySelectable::end(void) { return _entities.end(); }
 
 #endif // ENTITY_SELECTABLE_H

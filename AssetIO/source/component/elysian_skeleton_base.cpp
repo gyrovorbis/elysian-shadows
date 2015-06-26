@@ -22,6 +22,12 @@ SkeletonAttribBase::~SkeletonAttribBase(void) {
     spAtlas_dispose(_atlas);
 }
 
+SkeletonBase& SkeletonBase::operator= (const SkeletonBase& other) {
+    _animTimeScale = other._animTimeScale;
+    setAttrib(other._attrib);
+    return *this;
+}
+
 void SkeletonAttribBase::_reloadAtlas(void) {
 
     if(_atlas) {
