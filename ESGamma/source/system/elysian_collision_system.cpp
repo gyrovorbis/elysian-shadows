@@ -169,9 +169,6 @@ void CollisionSystem::_applyTileColliderTransform(const Tile::COLLIDER_TYPE colT
 
 //HARD-CODED TO ONE LAYER
 void CollisionSystem::renderTileColliders(void) const {
-    gyVidMaterialBind(nullptr);
-    gyVidSpecularMapBind(nullptr);
-    gyVidNormalMapBind(nullptr);
 
     static const GYVector4 boxLocalVerts[4] = {
         { -0.5f, -0.5f, 0.0f, 1.0f },
@@ -208,8 +205,13 @@ void CollisionSystem::renderTileColliders(void) const {
     unsigned playerElev = getPartySys()->getPartyLeader()->getElev();
     //Collidable &col = *getPartySys()->getPartyLeader()->getCollidable();
 
+    gyVidMaterialBind(nullptr);
+    gyVidSpecularMapBind(nullptr);
+    gyVidNormalMapBind(nullptr);
     gyVidTexBind(nullptr);
+    gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
     gyVidAlphaLevel(GY_ALPHA_FULL);
+    gyVidQuadListBegin(boxColors);
     getMapSys()->getOnscreenTileRegion(startX, startY, endX, endY);
     for(int y = startY; y <= endY; ++y) {
         for(int x = startX; x <= endX; ++x) {
@@ -258,13 +260,7 @@ void CollisionSystem::renderTileColliders(void) const {
             if(colType == Tile::COLLIDER_NONE && !isZTran) continue;
 
             gyMatPush();
-            gyMatTranslateScale(x*32.0f, y*32.0f + ZCoordConstants::tileDecor, ZCoordConstants::tileDecor, 32.0f, 32.0f, 1.0f);
-
-            if(isZTran) {
-                gyVidQuadListBegin(&zTranColor);
-                gyVidRect(0);
-                gyVidQuadListEnd();
-            }
+            gyMatTranslateScale(x*32.0f, y*32.0f + 50.0f/*ZCoordConstants::tileDecor*/, 50.0f/*ZCoordConstants::tileDecor*/, 32.0f, 32.0f, 32.0f);
 
             if(colType == Tile::COLLIDER_NONE) {
                 gyMatPop();
@@ -275,62 +271,74 @@ void CollisionSystem::renderTileColliders(void) const {
             case Tile::COLLIDER_L_NE:
                 gyMatPush();
                 _applyTileColliderTransform(Tile::COLLIDER_HALF_N);
-                gyVidColorArray(boxColors);
-            //	gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                //gyVidColorArray(boxColors);
+                //gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                gyVidRect(0);
                 gyMatPop();
                 _applyTileColliderTransform(Tile::COLLIDER_QUAD_SE);
-                gyVidColorArray(boxColors);
-        //		gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                //gyVidColorArray(boxColors);
+                gyVidRect(0);
+                //gyVidTriangleStrip(boxLocalVerts, 0, 4);
                 break;
             case Tile::COLLIDER_L_NW:
                 gyMatPush();
                 _applyTileColliderTransform(Tile::COLLIDER_HALF_N);
-                gyVidColorArray(boxColors);
-            //	gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                //gyVidColorArray(boxColors);
+                //gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                gyVidRect(0);
                 gyMatPop();
                 _applyTileColliderTransform(Tile::COLLIDER_QUAD_SW);
-                gyVidColorArray(boxColors);
-        //		gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                gyVidRect(0);
+                //gyVidColorArray(boxColors);
+                //gyVidTriangleStrip(boxLocalVerts, 0, 4);
                 break;
             case Tile::COLLIDER_L_SW:
                 gyMatPush();
                 _applyTileColliderTransform(Tile::COLLIDER_HALF_S);
-                gyVidColorArray(boxColors);
-            //	gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                //gyVidColorArray(boxColors);
+                //gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                gyVidRect(0);
                 gyMatPop();
                 _applyTileColliderTransform(Tile::COLLIDER_QUAD_NW);
-                gyVidColorArray(boxColors);
-            //	gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                //gyVidColorArray(boxColors);
+                //gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                gyVidRect(0);
                 break;
             case Tile::COLLIDER_L_SE:
                 gyMatPush();
                 _applyTileColliderTransform(Tile::COLLIDER_HALF_S);
-                gyVidColorArray(boxColors);
-              //  gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                //gyVidColorArray(boxColors);
+                //gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                gyVidRect(0);
                 gyMatPop();
                 _applyTileColliderTransform(Tile::COLLIDER_QUAD_NE);
-                gyVidColorArray(boxColors);
-             //   gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                //gyVidColorArray(boxColors);
+                //gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                gyVidRect(0);
                 break;
             case Tile::COLLIDER_QUADS_SE_NW:
                 gyMatPush();
                 _applyTileColliderTransform(Tile::COLLIDER_QUAD_SE);
-                gyVidColorArray(boxColors);
-               // gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                //gyVidColorArray(boxColors);
+                //gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                gyVidRect(0);
                 gyMatPop();
                 _applyTileColliderTransform(Tile::COLLIDER_QUAD_NW);
-                gyVidColorArray(boxColors);
-              //  gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                //gyVidColorArray(boxColors);
+                //gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                gyVidRect(0);
                 break;
             case Tile::COLLIDER_QUADS_SW_NE:
                 gyMatPush();
                 _applyTileColliderTransform(Tile::COLLIDER_QUAD_SW);
-                gyVidColorArray(boxColors);
-               // gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                //gyVidColorArray(boxColors);
+                //gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                gyVidRect(0);
                 gyMatPop();
                 _applyTileColliderTransform(Tile::COLLIDER_QUAD_NE);
-                gyVidColorArray(boxColors);
-               // gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                //gyVidColorArray(boxColors);
+                //gyVidTriangleStrip(boxLocalVerts, 0, 4);
+                gyVidRect(0);
                 break;
             case Tile::COLLIDER_FULL:
             case Tile::COLLIDER_HALF_S:
@@ -342,15 +350,16 @@ void CollisionSystem::renderTileColliders(void) const {
             case Tile::COLLIDER_QUAD_SE:
             case Tile::COLLIDER_QUAD_SW:
                 _applyTileColliderTransform(colType);
-                gyVidColorArray(boxColors);
+                gyVidRect(0);
+                //gyVidColorArray(boxColors);
                 //gyVidTriangleStrip(boxLocalVerts, 0, 4);
                 break;
             case Tile::COLLIDER_45DEG_NE:
             case Tile::COLLIDER_45DEG_NW:
             case Tile::COLLIDER_45DEG_SW:
             case Tile::COLLIDER_45DEG_SE:
-                _applyTileColliderTransform(colType);
-                gyVidColorArray(triColors);
+                //_applyTileColliderTransform(colType);
+                //gyVidColorArray(triColors);
               //  gyVidTriangleStrip(triLocalVerts, 0, 3);
                 break;
             default: assert(0);
@@ -358,7 +367,10 @@ void CollisionSystem::renderTileColliders(void) const {
             gyMatPop();
         }
     }
+
+    gyVidQuadListEnd();
 }
+
 
 //ONLY HANDLES RECTS... why?
 void CollisionSystem::renderEntities(void) {
