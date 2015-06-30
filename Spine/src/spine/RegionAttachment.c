@@ -30,6 +30,9 @@
 
 #include <spine/RegionAttachment.h>
 #include <spine/extension.h>
+#include <gyro_matrix_api.h>
+#include <gyro_video_api.h>
+#include <glal/gyro_video_glal.h>
 
 void _spRegionAttachment_dispose (spAttachment* attachment) {
 	spRegionAttachment* self = SUB_CAST(spRegionAttachment, attachment);
@@ -100,14 +103,37 @@ void spRegionAttachment_updateOffset (spRegionAttachment* self) {
 }
 
 void spRegionAttachment_computeWorldVertices (spRegionAttachment* self, spBone* bone, float* vertices) {
-	const float* offset = self->offset;
-	float x = bone->skeleton->x + bone->worldX, y = bone->skeleton->y + bone->worldY;
-	vertices[SP_VERTEX_X1] = offset[SP_VERTEX_X1] * bone->m00 + offset[SP_VERTEX_Y1] * bone->m01 + x;
+    const float* offset = self->offset;
+#ifndef SPINE_INEFFICIENT
+    float x = bone->skeleton->x + bone->worldX, y = bone->skeleton->y + bone->worldY;
+    vertices[SP_VERTEX_X1] = offset[SP_VERTEX_X1] * bone->m00 + offset[SP_VERTEX_Y1] * bone->m01 + x;
 	vertices[SP_VERTEX_Y1] = offset[SP_VERTEX_X1] * bone->m10 + offset[SP_VERTEX_Y1] * bone->m11 + y;
+ //   vertices[SP_VERTEX_Z1] = vertices[SP_VERTEX_Y1];
 	vertices[SP_VERTEX_X2] = offset[SP_VERTEX_X2] * bone->m00 + offset[SP_VERTEX_Y2] * bone->m01 + x;
 	vertices[SP_VERTEX_Y2] = offset[SP_VERTEX_X2] * bone->m10 + offset[SP_VERTEX_Y2] * bone->m11 + y;
+  //  vertices[SP_VERTEX_Z2] = 0.0f;
 	vertices[SP_VERTEX_X3] = offset[SP_VERTEX_X3] * bone->m00 + offset[SP_VERTEX_Y3] * bone->m01 + x;
 	vertices[SP_VERTEX_Y3] = offset[SP_VERTEX_X3] * bone->m10 + offset[SP_VERTEX_Y3] * bone->m11 + y;
+  //  vertices[SP_VERTEX_Z3] = 0.0f;
 	vertices[SP_VERTEX_X4] = offset[SP_VERTEX_X4] * bone->m00 + offset[SP_VERTEX_Y4] * bone->m01 + x;
 	vertices[SP_VERTEX_Y4] = offset[SP_VERTEX_X4] * bone->m10 + offset[SP_VERTEX_Y4] * bone->m11 + y;
+   // vertices[SP_VERTEX_Z4] = vertices[SP_VERTEX_Y4];
+#else
+
+    gyMatPush();
+
+    gyMatTranslate(bone->skeleton->x + bone->worldX, bone->skeleton->y + bone->worldY, 0.0f);
+
+    for(unsigned i = 0; i < 4; ++i) {
+        gyMatPush();
+
+        gyMatApply((float (*)[4])&bone->m00);
+        gyMatScale(offset[4*i+0], offset[4*i+1], 0.0f);
+        gyMatMultVec(&glalRectVerts[0][i], (GYVector4*)&vertices[i*4], 1);
+
+        gyMatPop();
+    }
+    gyMatPop();
+
+#endif
 }

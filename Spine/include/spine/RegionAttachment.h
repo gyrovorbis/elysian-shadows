@@ -40,7 +40,7 @@ extern "C" {
 #endif
 
 typedef enum {
-	SP_VERTEX_X1 = 0, SP_VERTEX_Y1, SP_VERTEX_X2, SP_VERTEX_Y2, SP_VERTEX_X3, SP_VERTEX_Y3, SP_VERTEX_X4, SP_VERTEX_Y4
+    SP_VERTEX_X1 = 0, SP_VERTEX_Y1, SP_VERTEX_Z1, SP_VERTEX_W1, SP_VERTEX_X2, SP_VERTEX_Y2, SP_VERTEX_Z2, SP_VERTEX_W2,  SP_VERTEX_X3, SP_VERTEX_Y3, SP_VERTEX_Z3, SP_VERTEX_W3, SP_VERTEX_X4, SP_VERTEX_Y4, SP_VERTEX_Z4, SP_VERTEX_W4, SP_VERTEX_COUNT
 } spVertexIndex;
 
 typedef struct spRegionAttachment {
@@ -54,8 +54,8 @@ typedef struct spRegionAttachment {
 	int regionWidth, regionHeight; /* Unrotated, stripped pixel size. */
 	int regionOriginalWidth, regionOriginalHeight; /* Unrotated, unstripped pixel size. */
 
-	float offset[8];
-	float uvs[8];
+    float offset[SP_VERTEX_COUNT];
+    float uvs[SP_VERTEX_COUNT];
 } spRegionAttachment;
 
 spRegionAttachment* spRegionAttachment_create (const char* name);

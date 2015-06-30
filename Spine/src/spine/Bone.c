@@ -97,6 +97,19 @@ void spBone_updateWorldTransform (spBone* self) {
 		CONST_CAST(float, self->m10) = sine * self->worldScaleX;
 		CONST_CAST(float, self->m11) = cosine * self->worldScaleY;
 	}
+
+    CONST_CAST(float, self->m02) = 0.0f;
+    CONST_CAST(float, self->m12) = 0.0f;
+
+    CONST_CAST(float, self->m20) = 0.0f;
+    CONST_CAST(float, self->m21) = 0.0f;
+    CONST_CAST(float, self->m22) = 1.0f;
+    CONST_CAST(float, self->m23) = 0.0f;
+    CONST_CAST(float, self->m30) = 0.0f;
+    CONST_CAST(float, self->m31) = 0.0f;
+    CONST_CAST(float, self->m32) = 0.0f;
+    CONST_CAST(float, self->m33) = 1.0f;
+
 }
 
 void spBone_setToSetupPose (spBone* self) {

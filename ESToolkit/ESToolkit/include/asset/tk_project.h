@@ -30,8 +30,9 @@ private:
     QHash<QString, TreeNode*>   _subDirs;
     QVector<TkLevel *>          _level;
     QString                     _location;
-    TreeNode*                   _curNodeParent  = nullptr;
-    bool                        _active         = false;
+    TreeNode*                   _curNodeParent      = nullptr;
+    bool                        _active             = false;
+    bool                        _indexHiddenLevels  = false;
 
 
     virtual bool    deactivate(void) override;
@@ -66,6 +67,7 @@ public:
     bool            scanDirectory(const QString path);
     bool            scanBackLevelPath(const QString path);
     bool            isLevelPath(const QString path);
+    void            setIndexHiddenLevels(const bool val);
 
     TkLevel*        importLevel(const QString dir);
     bool            saveAs(const QString dir);

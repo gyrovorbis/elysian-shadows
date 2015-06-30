@@ -131,6 +131,8 @@ void TkEntity::setSelectionState(const SELECTION_STATE state) {
     case SELECTION_SELECTING:
         _selSpriteAttrib->setColor(0, 255, 255, 100);
         break;
+    case SELECTION_NONE:
+        _selSpriteAttrib->setColor(50, 50, 50, 100);
     default: break;
     }
 }
@@ -166,11 +168,15 @@ bool TkEntity::deactivate(void) {
 }
 
 void TkEntity::_renderRelative(void) {
-    if(_selectionState != SELECTION_NONE && !gyVidShadowPass()) {
-        _selectionRenderable->beginRender();
-        //if(_depthType == DEPTH_BUFFERED) transform._size.y = transform._size.z;
-        _selectionRenderable->render();
-        _selectionRenderable->endRender();
+    if(!gyVidShadowPass()) {
+
+        if(_selectionState != SELECTION_NONE /* || !getRenderable()*/) {
+            _selectionRenderable->beginRender();
+            //if(_depthType == DEPTH_BUFFERED) transform._size.y = transform._size.z;
+            _selectionRenderable->render();
+            _selectionRenderable->endRender();
+        }
+
     }
     elysian::EntityBase::_renderRelative();
 }

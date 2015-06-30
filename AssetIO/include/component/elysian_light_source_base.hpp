@@ -22,11 +22,11 @@ namespace elysian {
     public:
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
-            ELYSIAN_LUA_PROXY_FIELD(ambient,        getAmbient)
-            ELYSIAN_LUA_PROXY_FIELD(diffuse,        getDiffuse)
-            ELYSIAN_LUA_PROXY_FIELD(specular,       getSpecular)
-            ELYSIAN_LUA_PROXY_FIELD(attenuation,    getAttenuation)
-            ELYSIAN_LUA_PROXY_FIELD(spotExponent,   getSpotExponent, setSpotExponent)
+            ELYSIAN_LUA_PROXY_FIELD(ambient,        getAmbient,         setAmbient)
+            ELYSIAN_LUA_PROXY_FIELD(diffuse,        getDiffuse,         setDiffuse)
+            ELYSIAN_LUA_PROXY_FIELD(specular,       getSpecular,        setSpecular)
+            ELYSIAN_LUA_PROXY_FIELD(attenuation,    getAttenuation,     setAttenuation)
+            ELYSIAN_LUA_PROXY_FIELD(spotExponent,   getSpotExponent,    setSpotExponent)
             ELYSIAN_LUA_PROXY_FIELD(radius,         getRadius)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
@@ -53,6 +53,11 @@ namespace elysian {
         Vector4         getDiffuse(void);
         Vector4         getSpecular(void);
         Vector3         getAttenuation(void);
+
+        void            setAmbient(const Vector4& color);
+        void            setDiffuse(const Vector4& color);
+        void            setSpecular(const Vector4& color);
+        void            setAttenuation(const Vector3& vec);
 
         float           getRadius(void);
 
@@ -146,6 +151,11 @@ namespace elysian {
     inline void LightAttrib::getSpecularColor(GYVector4& color) const { color = specularColor; }
     inline void LightAttrib::getAttenuationFactors(GYVector3& vec) const { vec = attenuationFactors; }
     inline float LightAttrib::getSpotExponent(void) const { return spotExponent; }
+    inline void LightAttrib::setAmbient(const Vector4& color) { ambientColor = color; }
+    inline void LightAttrib::setDiffuse(const Vector4& color) { diffuseColor = color; }
+    inline void LightAttrib::setSpecular(const Vector4& color) { specularColor = color; }
+    inline void LightAttrib::setAttenuation(const Vector3& vec) { attenuationFactors = vec; }
+
 
     inline Vector4 LightAttrib::getAmbient(void) { return Vector4(&ambientColor); }
     inline Vector4 LightAttrib::getDiffuse(void) { return Vector4(&diffuseColor); }

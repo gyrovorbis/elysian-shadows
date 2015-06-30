@@ -138,12 +138,11 @@ void EntityBase::render(void) {
 
     pushViewTransform();
     static_cast<Entity*>(this)->_renderRelative();
-    popViewTransform();
 
     if(_skeleton) {
         _skeleton->render();
     }
-
+    popViewTransform();
 }
 
 void EntityBase::_renderRelative(void) {

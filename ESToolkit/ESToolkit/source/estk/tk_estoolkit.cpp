@@ -2323,3 +2323,7 @@ void ESToolkit::showGitlabBugReportTab(void) const {
     _gitlabDialog->show();
 }
 
+void ESToolkit::on_actionHidden_Levels_toggled(bool arg1)
+{
+    _assets.getCurrentProject()->setIndexHiddenLevels(arg1);
+}

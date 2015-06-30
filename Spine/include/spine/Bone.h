@@ -49,8 +49,11 @@ struct spBone {
 	float scaleX, scaleY;
 	int/*bool*/flipX, flipY;
 
-	float const m00, m01, worldX; /* a b x */
-	float const m10, m11, worldY; /* c d y */
+    float  const m00, m01, m02, worldX; /* a b x */
+    float  const m10, m11, m12, worldY; /* c d y */
+    float  const m20, m21, m22, m23;
+    float  const m30, m31, m32, m33;
+
 	float const worldRotation;
 	float const worldScaleX, worldScaleY;
 	int/*bool*/const worldFlipX, worldFlipY;
@@ -65,8 +68,11 @@ struct spBone {
 		scaleX(0), scaleY(0),
 		flipX(0), flipY(0),
 
-		m00(0), m01(0), worldX(0),
-		m10(0), m11(0), worldY(0),
+        m00(1.0f), m01(0), m02(0.0f), worldX(0),
+        m10(0), m11(1.0f), m12(0.0f), worldY(0),
+        m20(0.0f), m21(0.0f), m22(1.0f), m23(0.0f),
+        m30(0.0f), m31(0.0f), m32(0.0f), m33(1.0f),
+
 		worldRotation(0),
 		worldScaleX(0), worldScaleY(0),
 		worldFlipX(0), worldFlipY(0) {

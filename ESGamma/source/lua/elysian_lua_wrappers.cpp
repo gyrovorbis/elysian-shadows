@@ -626,7 +626,11 @@ OOLUA_EXPORT_FUNCTIONS(LightAttrib,
                        getDiffuse,
                        getSpecular,
                        getAttenuation,
-                       getRadius)
+                       getRadius,
+                       setDiffuse,
+                       setSpecular,
+                       setAmbient,
+                       setAttenuation)
 OOLUA_EXPORT_FUNCTIONS_CONST(LightAttrib,
                              getAmbientColor,
                              getDiffuseColor,

@@ -72,6 +72,8 @@ Level *Project::newLevel(const QString name) {
 }
 
 Level *Project::loadLevel(const QString path) {
+    QDir dir(path);
+
     QString directory(path);
     Level::_curProj = this;
 
@@ -161,25 +163,42 @@ bool Project::scanDirectory(const QString path) {
 
     //check if folder is a level based on whether it has subdirs containing level data
     if(isLevelPath(path)) {
-        success &= loadLevel(dir.absolutePath())? true : false;
+
+        if(!getLevel(dir.absolutePath())) {
+            if(dir.dirName()[0] != '_' || _indexHiddenLevels) {
+                success &= loadLevel(dir.absolutePath())? true : false;
+            }
+        }
 
     //assume regular subdir and recurse
     } else {
         DbgEvent event("Indexing subdirectory [%s].", Q_CSTR(path));
-        TreeNode* subDir = new TreeNode;
-        subDir->setNodeName(dir.dirName());
-        subDir->setNodePath(path);
-        _subDirs[path] = subDir;
+
+        TreeNode* subDir;
+
+        auto it = _subDirs.find(path);
+
+        if(it == _subDirs.end()) {
+            if(dir.dirName()[0] != '_' || _indexHiddenLevels) {
+                subDir = new TreeNode;
+                subDir->setNodeName(dir.dirName());
+                subDir->setNodePath(path);
+                _subDirs[path] = subDir;
+                _curNodeParent->addChild(subDir);
+            } else return success;
+        } else {
+            subDir = it.value();
+        }
 
         TreeNode* oldNodeParent = _curNodeParent;
-        _curNodeParent->addChild(subDir);
         _curNodeParent = subDir;
-
 
         if(folders.size() > 2) {
             //Skip '.' and '..' virtual directories
             for(int i = 2; i < folders.size(); ++i) {
-                scanDirectory(path+QString("/")+folders[i]);
+                //if(!(folders[i][0] == '_' && !_indexHiddenLevels)) {
+                    scanDirectory(path+QString("/")+folders[i]);
+                //}
             }
         } else {
             Debug::printf(Debug::DBG_WARNING, "No levels found!");
@@ -191,6 +210,45 @@ bool Project::scanDirectory(const QString path) {
 
     return success;
 }
+
+
+void Project::setIndexHiddenLevels(const bool val) {
+    _indexHiddenLevels = val;
+    if(val) {
+        scanDirectory(getNodePath()+QString("/level"));
+    } else {
+        QVector<Level*> levels = _level;
+
+        for(Level* level : levels) {
+            QStringList dirs = level->getNodePath().split("/");
+            for(QString dir : dirs) {
+                if(dir.startsWith("_")) {
+                    removeLevel(level->getNodePath());
+                    break;
+                }
+            }
+        }
+
+        auto it = _subDirs.begin();
+
+        QList<TreeNode*> toDelete;
+        while(it != _subDirs.end()) {
+            QStringList dirs = it.value()->getNodePath().split("/");
+            for(QString dir : dirs) {
+                if(dir.startsWith("_")) {
+                    if(it.value()->parent() == _curNodeParent) toDelete.push_back(it.value());
+                    it = _subDirs.erase(it);
+                    break;
+                }
+            }
+        }
+
+        for(auto node: toDelete) delete node;
+
+    }
+}
+
+
 
 bool Project::scanBackLevelPath(const QString path) {
     DbgEvent event("Scanning backwards from level path [%s].", Q_CSTR(path));
