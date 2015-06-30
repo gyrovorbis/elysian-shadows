@@ -642,7 +642,6 @@ void gyVidCamFrustum(GYCamera* const cam, const float fov, const float aspect, c
 static float worldVertices[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE];
 //Spine interop
 void gyVidSkeleton(const spSkeleton*const skeleton) {
-    if(gyVidShadowPass()) return;
     spSlot*                     slot                = NULL;
     spAttachment*               attachment          = NULL;
     GYTexture*                  texture             = NULL;
@@ -662,16 +661,16 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
     gyVidNormalMapBind(NULL);
     gyVidSpecularMapBind(NULL);
     gyVidMaterialBind(NULL);
-     gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
-     gyVidAlphaLevel(GY_ALPHA_FULL);
-     gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
-     glalVidNormalMapZFactorUpdateUniform(1.0f);
-     gyVidDepthTest(0);
+    gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
+    gyVidAlphaLevel(GY_ALPHA_FULL);
+    gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
+    glalVidNormalMapZFactorUpdateUniform(1.0f);
+    gyVidDepthTest(0);
 
-     gyVidVertexBatchFlush();
-     gyVidVertexBatchBegin(&_flushStreamVertices, NULL);
-     GYVertex*                   startVertex = &_vertexQueue[_vertexQueueSize];
-     GYVertex*                   vertex = startVertex;
+    gyVidVertexBatchFlush();
+    gyVidVertexBatchBegin(&_flushStreamVertices, NULL);
+    GYVertex*                   startVertex = &_vertexQueue[_vertexQueueSize];
+    GYVertex*                   vertex = startVertex;
 
     for (int i = 0; i < skeleton->slotsCount; ++i) {
     //for (int i = skeleton->slotsCount-1; i >= 0; --i) {
@@ -706,7 +705,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
 
             vertex->pos.x = worldVertices[SP_VERTEX_X2];
             vertex->pos.y = worldVertices[SP_VERTEX_Y2];
-            vertex->pos.z = 80.0f + zOffset;
+            vertex->pos.z = worldVertices[SP_VERTEX_Z2];
             vertex->pos.w = 1.0f;
             vertex->texCoord.u = regionAttachment->uvs[SP_VERTEX_X2];// * width;
             vertex->texCoord.v = regionAttachment->uvs[SP_VERTEX_Y2];// * height;
@@ -715,7 +714,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
 
             vertex->pos.x = worldVertices[SP_VERTEX_X1];
             vertex->pos.y = worldVertices[SP_VERTEX_Y1];
-            vertex->pos.z = 80.0f + zOffset;
+            vertex->pos.z = worldVertices[SP_VERTEX_Z1];
             vertex->pos.w = 1.0f;
             vertex->texCoord.u = regionAttachment->uvs[SP_VERTEX_X1];// * width;
             vertex->texCoord.v = regionAttachment->uvs[SP_VERTEX_Y1];// * height;
@@ -726,7 +725,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
 
             vertex->pos.x = worldVertices[SP_VERTEX_X3];
             vertex->pos.y = worldVertices[SP_VERTEX_Y3];
-            vertex->pos.z = 80.0f + zOffset;
+            vertex->pos.z = worldVertices[SP_VERTEX_Z3];
             vertex->pos.w = 1.0f;
             vertex->texCoord.u = regionAttachment->uvs[SP_VERTEX_X3];// * width;
             vertex->texCoord.v = regionAttachment->uvs[SP_VERTEX_Y3];// * height;
@@ -736,7 +735,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
 
             vertex->pos.x = worldVertices[SP_VERTEX_X3];
             vertex->pos.y = worldVertices[SP_VERTEX_Y3];
-            vertex->pos.z = 80.0f + zOffset;
+            vertex->pos.z = worldVertices[SP_VERTEX_Z3];
             vertex->pos.w = 1.0f;
             vertex->texCoord.u = regionAttachment->uvs[SP_VERTEX_X3];// * width;
             vertex->texCoord.v = regionAttachment->uvs[SP_VERTEX_Y3];// * height;
@@ -745,7 +744,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
 
             vertex->pos.x = worldVertices[SP_VERTEX_X4];
             vertex->pos.y = worldVertices[SP_VERTEX_Y4];
-            vertex->pos.z = 80.0f + zOffset;
+            vertex->pos.z = worldVertices[SP_VERTEX_Z4];
             vertex->pos.w = 1.0f;
             vertex->texCoord.u = regionAttachment->uvs[SP_VERTEX_X4];// * width;
             vertex->texCoord.v = regionAttachment->uvs[SP_VERTEX_Y4];// * height;
@@ -754,7 +753,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
 
             vertex->pos.x = worldVertices[SP_VERTEX_X1];
             vertex->pos.y = worldVertices[SP_VERTEX_Y1];
-            vertex->pos.z = 80.0f + zOffset;
+            vertex->pos.z = worldVertices[SP_VERTEX_Z1];
             vertex->pos.w = 1.0f;
             vertex->texCoord.u = regionAttachment->uvs[SP_VERTEX_X1];// * width;
             vertex->texCoord.v = regionAttachment->uvs[SP_VERTEX_Y1];// * height;
