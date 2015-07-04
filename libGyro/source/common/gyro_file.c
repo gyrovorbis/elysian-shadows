@@ -32,7 +32,7 @@ int gyFileOpen(const char *file_path, const char *mode, GYFile **fp)
     //if (*fp == NULL) {
     //	return 0;
     //}
-    if (turfs_file_open(file_path, mode, fp) != TURFS_RET_OK) {
+    if (turfs_file_open(file_path, mode, (Turfs_file**)fp) != TURFS_RET_OK) {
         //free(*fp);
         //*fp = NULL;
 		return 0;
@@ -42,27 +42,27 @@ int gyFileOpen(const char *file_path, const char *mode, GYFile **fp)
 
 int gyFileRead(GYFile *fp, void *buffer, size_t count, size_t *bytes_read)
 {
-    return turfs_file_read(fp, buffer, count, bytes_read) == TURFS_RET_OK;
+    return turfs_file_read((Turfs_file*)fp, buffer, count, bytes_read) == TURFS_RET_OK;
 }
 
 int gyFileSeek(GYFile *fp, off_t offset, int whence)
 {
-    return turfs_file_seek(fp, offset, whence) == TURFS_RET_OK;
+    return turfs_file_seek((Turfs_file*)fp, offset, whence) == TURFS_RET_OK;
 }
 
 int gyFileLength(GYFile *fp, size_t *len)
 {
-    return turfs_file_length(fp, len) == TURFS_RET_OK;
+    return turfs_file_length((Turfs_file*)fp, len) == TURFS_RET_OK;
 }
 
 int gyFileTell(GYFile *fp, long int *pos)
 {
-    return turfs_file_tell(fp, pos) == TURFS_RET_OK;
+    return turfs_file_tell((Turfs_file*)fp, pos) == TURFS_RET_OK;
 }
 
 int gyFileClose(GYFile **fp)
 {
-    turfs_ret ret = turfs_file_close(fp);
+    turfs_ret ret = turfs_file_close((Turfs_file**)fp);
     //free(*fp);
     //*fp = NULL;
 	return ret == TURFS_RET_OK;
