@@ -1,7 +1,6 @@
 #include "elysian_lua_script.hpp"
 #include "elysian_lua_behavior.hpp"
 #include <lua/lua.hpp>
-#include <cstring>
 
 OOLUA_EXPORT_FUNCTIONS(LuaBehaviorScriptAttrib,
                        inheritFromBehavior,
@@ -99,6 +98,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(LuaScript,
     \qmltype LuaBehaviorScript
     \since 1.5.8
     \inmodule ESToolkit
+    \inherits LuaScript
     \brief Class for Lua scripts implementing "Behavior" functionality.
     A LuaBehaviorScript implements a series of "trigger" callback
     functions, which are used to extend the functionality of the engine.

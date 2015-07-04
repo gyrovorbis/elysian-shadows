@@ -65,106 +65,102 @@ namespace elysian {
         const int           flags;
 	};
 
-    namespace {
+    /* Private class template for handling property registration, since C++ doesn't allow template member function
+     * partial specialization. */
 
-        /* Private class template for handling property registration, since C++ doesn't allow template member function
-         * partial specialization. */
+    //Class template for allowing CRTP-d properties to be overridden by their child properties at compile-time
+    template<typename P, typename T, class... Bases>
+    struct _LuaTableProxyPropertyRegistrar {
+        static inline void registerProperties(lua_State*const l) {
+            LuaTableProxy<P, T, Bases...>::template _registerProperties<P>(l); //register base class
+            LuaTableProxy<P, T, Bases...>::template _registerProperties<T>(l); //register base's CRTP child
+        }
+    };
 
-        //Class template for allowing CRTP-d properties to be overridden by their child properties at compile-time
-        template<typename P, typename T, class... Bases>
-        struct _LuaTableProxyPropertyRegistrar {
-            static inline void registerProperties(lua_State*const l) {
-                LuaTableProxy<P, T, Bases...>::template _registerProperties<P>(l); //register base class
-                LuaTableProxy<P, T, Bases...>::template _registerProperties<T>(l); //register base's CRTP child
-            }
-        };
+    //Partial specialization for non-CRTP classes
+    template<typename P, class... Bases>
+    struct _LuaTableProxyPropertyRegistrar<P, P, Bases...> {
+        static inline void registerProperties(lua_State*const l) {
+            LuaTableProxy<P, P, Bases...>::template _registerProperties<P>(l); //register base class
+        }
+    };
 
-        //Partial specialization for non-CRTP classes
-        template<typename P, class... Bases>
-        struct _LuaTableProxyPropertyRegistrar<P, P, Bases...> {
-            static inline void registerProperties(lua_State*const l) {
-                LuaTableProxy<P, P, Bases...>::template _registerProperties<P>(l); //register base class
-            }
-        };
+    template<typename P, typename T, class... Args> struct _LuaTableProxyParents;
 
-        template<typename P, typename T, class... Args> struct _LuaTableProxyParents;
+    template<typename P, typename T>
+    struct _LuaTableProxyParents<P, T>: public LuaManager {
+        static int iteratorDepth;
 
-        template<typename P, typename T>
-        struct _LuaTableProxyParents<P, T>: public LuaManager {
-            static int iteratorDepth;
+        static bool iterateParentsIndexMetaMethods(lua_State*const /*l*/) { return false; }
 
-            static bool iterateParentsIndexMetaMethods(lua_State*const /*l*/) { return false; }
+        static bool iterateParentsNewIndexMetaMethods(lua_State*const /*l*/) { return false; }
 
-            static bool iterateParentsNewIndexMetaMethods(lua_State*const /*l*/) { return false; }
+        static unsigned pushParentsIndexTable(lua_State*const /*l*/) { return 0; }
 
-            static unsigned pushParentsIndexTable(lua_State*const /*l*/) { return 0; }
+        static int adjustParentIndex(const int /*startIndex*/) { return -1; }
 
-            static int adjustParentIndex(const int /*startIndex*/) { return -1; }
+        static void appendParentIndexTable(lua_State*const /*l*/, LuaTableFieldProxy*const /*proxy*/, int& /*totalProxies*/) {}
+        static void appendParentNewIndexTable(lua_State*const /*l*/) {}
+    };
 
-            static void appendParentIndexTable(lua_State*const /*l*/, LuaTableFieldProxy*const /*proxy*/, int& /*totalProxies*/) {}
-            static void appendParentNewIndexTable(lua_State*const /*l*/) {}
-        };
+    template<typename P, typename T, typename This, class... Rest>
+    struct _LuaTableProxyParents<P, T, This, Rest...>:
+        public _LuaTableProxyParents<P, T, Rest...>
+    {
 
-        template<typename P, typename T, typename This, class... Rest>
-        struct _LuaTableProxyParents<P, T, This, Rest...>:
-            public _LuaTableProxyParents<P, T, Rest...>
-        {
+        static bool iterateParentsIndexMetaMethods(lua_State*const l) {
+            return (This::_metaMethodCFunction(l, This::_ooluaIndexTable, This::_propertyProxyIndexTable, false, true))?
+                true : _LuaTableProxyParents<T, P, Rest...>::iterateParentsIndexMetaMethods(l);
+        }
 
-            static bool iterateParentsIndexMetaMethods(lua_State*const l) {
-                return (This::_metaMethodCFunction(l, This::_ooluaIndexTable, This::_propertyProxyIndexTable, false, true))?
-                    true : _LuaTableProxyParents<T, P, Rest...>::iterateParentsIndexMetaMethods(l);
-            }
-
-            static bool iterateParentsNewIndexMetaMethods(lua_State*const l) {
-                return (This::_metaMethodCFunction(l, This::_ooluaNewIndexTable, This::_propertyProxyNewIndexTable, true, true))?
-                    true : _LuaTableProxyParents<T, P, Rest...>::iterateParentsNewIndexMetaMethods(l);
-            }
+        static bool iterateParentsNewIndexMetaMethods(lua_State*const l) {
+            return (This::_metaMethodCFunction(l, This::_ooluaNewIndexTable, This::_propertyProxyNewIndexTable, true, true))?
+                true : _LuaTableProxyParents<T, P, Rest...>::iterateParentsNewIndexMetaMethods(l);
+        }
 
 #if 0
-            static int adjustParentIndexTable(const int startIndex) {
-                if()
-            }
+        static int adjustParentIndexTable(const int startIndex) {
+            if()
+        }
 #endif
-            static void appendParentIndexTable(lua_State*const l, LuaTableFieldProxy*const proxy, int& totalProxies) {
+        static void appendParentIndexTable(lua_State*const l, LuaTableFieldProxy*const proxy, int& totalProxies) {
 
-               // assert(_LuaTableProxyParents<P, T>::template _proxyTotalCount + This::_proxyFieldCount <= ELYSIAN_LUA_PROXY_FIELDS_MAX);
-                memcpy(&proxy[totalProxies], This::_proxyFields, sizeof(LuaTableFieldProxy)*This::_proxyFieldCount);
-                totalProxies += This::_proxyFieldCount;
+           // assert(_LuaTableProxyParents<P, T>::template _proxyTotalCount + This::_proxyFieldCount <= ELYSIAN_LUA_PROXY_FIELDS_MAX);
+            memcpy(&proxy[totalProxies], This::_proxyFields, sizeof(LuaTableFieldProxy)*This::_proxyFieldCount);
+            totalProxies += This::_proxyFieldCount;
 
-                lua_getglobal(l, "appendTable");
-                lua_pushvalue(l, -2); //duplicate dest table
-                This::_propertyProxyIndexTable.push(l);
-                LuaManager::_protectedCall(2, 0, nullptr, "Lua Table Proxy - Appending parent index tables.");
-                _LuaTableProxyParents<T, P, Rest...>::appendParentIndexTable(l, proxy, totalProxies);
-            }
+            lua_getglobal(l, "appendTable");
+            lua_pushvalue(l, -2); //duplicate dest table
+            This::_propertyProxyIndexTable.push(l);
+            LuaManager::_protectedCall(2, 0, nullptr, "Lua Table Proxy - Appending parent index tables.");
+            _LuaTableProxyParents<T, P, Rest...>::appendParentIndexTable(l, proxy, totalProxies);
+        }
 
-            static void appendParentNewIndexTable(lua_State*const l) {
-                lua_getglobal(l, "appendTable");
-                lua_pushvalue(l, -2); //duplicate dest table
-                This::_propertyProxyNewIndexTable.push(l);
-                LuaManager::_protectedCall(2, 0, nullptr, "Lua Table Proxy - Appending parent index tables.");
-                _LuaTableProxyParents<T, P, Rest...>::appendParentNewIndexTable(l);
-            }
+        static void appendParentNewIndexTable(lua_State*const l) {
+            lua_getglobal(l, "appendTable");
+            lua_pushvalue(l, -2); //duplicate dest table
+            This::_propertyProxyNewIndexTable.push(l);
+            LuaManager::_protectedCall(2, 0, nullptr, "Lua Table Proxy - Appending parent index tables.");
+            _LuaTableProxyParents<T, P, Rest...>::appendParentNewIndexTable(l);
+        }
 
-            static bool iterateParentsNextMetaMethods(lua_State*const l, const int depth) {
-                if(_LuaTableProxyParents<P, T>::iteratorDepth > depth) {
+        static bool iterateParentsNextMetaMethods(lua_State*const l, const int depth) {
+            if(_LuaTableProxyParents<P, T>::iteratorDepth > depth) {
+                return _LuaTableProxyParents<P, T, Rest...>::iterateParentsNextMetaMethods(l, depth+1);
+            } else if(_LuaTableProxyParents<P, T>::iteratorDepth == depth) {
+                if(This::_nextMetaMethodCFunction(l) == 2) {
+                    return true;
+                } else  {
+                    ++_LuaTableProxyParents<P, T>::iteratorDepth;
                     return _LuaTableProxyParents<P, T, Rest...>::iterateParentsNextMetaMethods(l, depth+1);
-                } else if(_LuaTableProxyParents<P, T>::iteratorDepth == depth) {
-                    if(This::_nextMetaMethodCFunction(l) == 2) {
-                        return true;
-                    } else  {
-                        ++_LuaTableProxyParents<P, T>::iteratorDepth;
-                        return _LuaTableProxyParents<P, T, Rest...>::iterateParentsNextMetaMethods(l, depth+1);
-                    }
-                    return false; //WTF?
-                } else return false;\
+                }
+                return false; //WTF?
+            } else return false;\
 
 
-            }
-        };
+        }
+    };
 
-
-    }
 
 
     /* P    - Proxied Class (or CRTP base)

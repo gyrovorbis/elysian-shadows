@@ -2,6 +2,8 @@
 #define ELYSIAN_LUA_SCRIPT_H
 
 #include <oolua.h>
+#include <cstring>
+
 
 #define ELYSIAN_LUA_SCRIPT_PATH_SIZE 200
 
