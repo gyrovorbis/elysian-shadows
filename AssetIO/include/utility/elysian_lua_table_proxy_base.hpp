@@ -4,6 +4,7 @@
 #include <luatables.h>
 #include <elysian_lua_manager.hpp>
 #include <elysian_generic.hpp>
+#include <cassert>
 
 //DSL for autogenerating proxy fields
 #define ELYSIAN_LUA_PROXY_FIELDS_BEGIN() \
@@ -40,6 +41,7 @@
     constexpr elysian::LuaTableFieldProxy	c::_proxyFields[];
 
 #define ELYSIAN_LUA_PROXY_FIELD_KEY_MAX_SIZE    100
+#define ELYSIAN_LUA_PROXY_FIELDS_MAX            100
 
 template<typename P, typename T, class... Bases>
 class TkLuaTableProxy;
@@ -85,48 +87,74 @@ namespace elysian {
             }
         };
 
-        template<class... Args> struct _LuaTableProxyParents;
+        template<typename P, typename T, class... Args> struct _LuaTableProxyParents;
 
-        template<>
-        struct _LuaTableProxyParents<> {
+        template<typename P, typename T>
+        struct _LuaTableProxyParents<P, T>: public LuaManager {
             static int iteratorDepth;
 
             static bool iterateParentsIndexMetaMethods(lua_State*const /*l*/) { return false; }
 
             static bool iterateParentsNewIndexMetaMethods(lua_State*const /*l*/) { return false; }
 
-            static bool iterateParentsNextMetaMethods(lua_State*const /*l*/, const int /*depth*/) {
-                iteratorDepth = 0;
-                return false;
-            }
+            static unsigned pushParentsIndexTable(lua_State*const /*l*/) { return 0; }
+
+            static int adjustParentIndex(const int /*startIndex*/) { return -1; }
+
+            static void appendParentIndexTable(lua_State*const /*l*/, LuaTableFieldProxy*const /*proxy*/, int& /*totalProxies*/) {}
+            static void appendParentNewIndexTable(lua_State*const /*l*/) {}
         };
 
-        int _LuaTableProxyParents<>::iteratorDepth = 0;
-
-        template<typename This, class... Rest>
-        struct _LuaTableProxyParents<This, Rest...>:
-            public _LuaTableProxyParents<Rest...>
+        template<typename P, typename T, typename This, class... Rest>
+        struct _LuaTableProxyParents<P, T, This, Rest...>:
+            public _LuaTableProxyParents<P, T, Rest...>
         {
 
             static bool iterateParentsIndexMetaMethods(lua_State*const l) {
                 return (This::_metaMethodCFunction(l, This::_ooluaIndexTable, This::_propertyProxyIndexTable, false, true))?
-                    true : _LuaTableProxyParents<Rest...>::iterateParentsIndexMetaMethods(l);
+                    true : _LuaTableProxyParents<T, P, Rest...>::iterateParentsIndexMetaMethods(l);
             }
 
             static bool iterateParentsNewIndexMetaMethods(lua_State*const l) {
                 return (This::_metaMethodCFunction(l, This::_ooluaNewIndexTable, This::_propertyProxyNewIndexTable, true, true))?
-                    true : _LuaTableProxyParents<Rest...>::iterateParentsNewIndexMetaMethods(l);
+                    true : _LuaTableProxyParents<T, P, Rest...>::iterateParentsNewIndexMetaMethods(l);
+            }
+
+#if 0
+            static int adjustParentIndexTable(const int startIndex) {
+                if()
+            }
+#endif
+            static void appendParentIndexTable(lua_State*const l, LuaTableFieldProxy*const proxy, int& totalProxies) {
+
+               // assert(_LuaTableProxyParents<P, T>::template _proxyTotalCount + This::_proxyFieldCount <= ELYSIAN_LUA_PROXY_FIELDS_MAX);
+                memcpy(&proxy[totalProxies], This::_proxyFields, sizeof(LuaTableFieldProxy)*This::_proxyFieldCount);
+                totalProxies += This::_proxyFieldCount;
+
+                lua_getglobal(l, "appendTable");
+                lua_pushvalue(l, -2); //duplicate dest table
+                This::_propertyProxyIndexTable.push(l);
+                LuaManager::_protectedCall(2, 0, nullptr, "Lua Table Proxy - Appending parent index tables.");
+                _LuaTableProxyParents<T, P, Rest...>::appendParentIndexTable(l, proxy, totalProxies);
+            }
+
+            static void appendParentNewIndexTable(lua_State*const l) {
+                lua_getglobal(l, "appendTable");
+                lua_pushvalue(l, -2); //duplicate dest table
+                This::_propertyProxyNewIndexTable.push(l);
+                LuaManager::_protectedCall(2, 0, nullptr, "Lua Table Proxy - Appending parent index tables.");
+                _LuaTableProxyParents<T, P, Rest...>::appendParentNewIndexTable(l);
             }
 
             static bool iterateParentsNextMetaMethods(lua_State*const l, const int depth) {
-                if(_LuaTableProxyParents<>::iteratorDepth > depth) {
-                    return _LuaTableProxyParents<Rest...>::iterateParentsNextMetaMethods(l, depth+1);
-                } else if(_LuaTableProxyParents<>::iteratorDepth == depth) {
+                if(_LuaTableProxyParents<P, T>::iteratorDepth > depth) {
+                    return _LuaTableProxyParents<P, T, Rest...>::iterateParentsNextMetaMethods(l, depth+1);
+                } else if(_LuaTableProxyParents<P, T>::iteratorDepth == depth) {
                     if(This::_nextMetaMethodCFunction(l) == 2) {
                         return true;
                     } else  {
-                        ++_LuaTableProxyParents<>::iteratorDepth;
-                        return _LuaTableProxyParents<Rest...>::iterateParentsNextMetaMethods(l, depth+1);
+                        ++_LuaTableProxyParents<P, T>::iteratorDepth;
+                        return _LuaTableProxyParents<P, T, Rest...>::iterateParentsNextMetaMethods(l, depth+1);
                     }
                     return false; //WTF?
                 } else return false;\
@@ -145,8 +173,7 @@ namespace elysian {
 	 */
     template <typename P, typename T=P, class... Bases>
     class LuaTableProxyBase:
-            private _LuaTableProxyParents<Bases...>,
-            public LuaManager
+            public _LuaTableProxyParents<P, T, Bases...>
     {
         friend _LuaTableProxyPropertyRegistrar<P, T, Bases...>;
     public:
@@ -158,11 +185,14 @@ namespace elysian {
 		static LuaTable _propertyProxyNewIndexTable;
 		static LuaTable _ooluaIndexTable;               //OOLUA's default index metamethod table
 		static LuaTable _ooluaNewIndexTable;            //OOLUA's default new index metamethod table
+        static LuaTableFieldProxy _combinedFields[ELYSIAN_LUA_PROXY_FIELDS_MAX];
+        static int _proxyTotalCount;
         //static LuaTable _staticMetaTable;
         //LuaTable        _protoTable;
 
         template <typename C>
         static inline void _registerProperties(lua_State* l);
+
 
         static inline int _indexVirtualTableProxyMetamethod(lua_State* l) {
 
@@ -236,7 +266,7 @@ namespace elysian {
 
 
         inline static int _getNextKey(lua_State* l) {
-            if(P::_proxyFieldCount <= 0) return 0;
+            if(_proxyTotalCount <= 0) return 0;
 
             char    key[ELYSIAN_LUA_PROXY_FIELD_KEY_MAX_SIZE];
             int     parentIndex     = lua_tointeger(l, lua_upvalueindex(2)); //-1 means parent is top-level
@@ -246,8 +276,8 @@ namespace elysian {
 
             auto findNextIndexAtDepth = [&](const int startIndex, const int startDepth, int &currentDepth) {
 
-                for(int i = startIndex+1; i < (int)P::_proxyFieldCount; ++i) {
-                    switch(P::_proxyFields[i].flags) {
+                for(int i = startIndex+1; i < _proxyTotalCount; ++i) {
+                    switch(_combinedFields[i].flags) {
                     case LuaTableFieldProxy::FLAG_VTABLE_BEGIN:
                         if(currentDepth == (int)startDepth) {
                             ++currentDepth;
@@ -267,7 +297,7 @@ namespace elysian {
             };
 
             for(int i = 0; i <= parentIndex; ++i) { //figure out table depth of parent table
-                switch(P::_proxyFields[i].flags) {
+                switch(_combinedFields[i].flags) {
                 case LuaTableFieldProxy::FLAG_VTABLE_BEGIN:
                     ++depth;
                     break;
@@ -287,7 +317,8 @@ namespace elysian {
                 currentIndex = parentIndex;
                 int currentDepth = depth;
                 while((currentIndex = findNextIndexAtDepth(currentIndex, depth, currentDepth)) != -1) {
-                    if(strcmp(key, P::_proxyFields[currentIndex].key) == 0) {
+                    if(currentIndex >= _proxyTotalCount) break;
+                    if(strcmp(key, _combinedFields[currentIndex].key) == 0) {
                         nextIndex = findNextIndexAtDepth(currentIndex, depth, currentDepth);
                         found = true;
                         break;
@@ -299,13 +330,13 @@ namespace elysian {
                     assert(0);
                     return 0;
                 //We're at the end!
-                } else if(nextIndex == -1) {
+                } else if(nextIndex == -1 || nextIndex >= _proxyTotalCount) {
                     lua_pushnil(l);
                     return 1;
                 //Return next key
                 } else {
                     //qDebug() << "NEXT KEY " << P::_proxyFields[index+1].key;
-                    lua_pushstring(l, P::_proxyFields[nextIndex].key);
+                    lua_pushstring(l, _combinedFields[nextIndex].key);
                     return 1;
                 }
             //assume this is a nil index, and we want the first key.
@@ -313,7 +344,7 @@ namespace elysian {
                 //qDebug() << "FIRST KEY " << P::_proxyFields[0].key;
                 lua_pop(l, 1);
                 //depth 0's parent is implicitly -1
-                lua_pushstring(l, P::_proxyFields[parentIndex+1].key); //Unless you did something fucktarded (empty table), this should be a valid index
+                lua_pushstring(l, _combinedFields[parentIndex+1].key); //Unless you did something fucktarded (empty table), this should be a valid index
                 return 1;
             }
         }
@@ -323,11 +354,12 @@ namespace elysian {
             const bool isArray   = (!lua_isnil(l, lua_upvalueindex(3)));
             const bool firstPass = lua_isnil(l, -1);
 
+            /*
             if(firstPass) {
-                _LuaTableProxyParents<>::iteratorDepth = 0;
-            }
-
-            if(_LuaTableProxyParents<Bases...>::iterateParentsNextMetaMethods(l, 0)) return 2;
+                _LuaTableProxyParents<P, T>::iteratorDepth = 0;
+            } else {
+                if(_LuaTableProxyParents<Bases...>::iterateParentsNextMetaMethods(l, 0)) return 2;
+            }*/
 
 
             if(isArray) {
@@ -339,7 +371,7 @@ namespace elysian {
                 lua_pushvalue(l, -2);                       //this ptr
 
                 assert(!lua_isnil(l, -1));
-                _protectedCall(1, 1, nullptr);              //get array size
+                LuaManager::_protectedCall(1, 1, nullptr);              //get array size
 
                 int size = lua_tointeger(l, -1);
 
@@ -354,21 +386,32 @@ namespace elysian {
                 lua_pushvalue(l, lua_upvalueindex(1));      //get function
                 lua_pushvalue(l, -3);                       //this ptr arg1
                 lua_pushinteger(l, index-1);                //index arg2 (C arrays are zero based)
-                _protectedCall(2, 1, nullptr);              //this->getByIndex(index);
+                LuaManager::_protectedCall(2, 1, nullptr);              //this->getByIndex(index);
 
                 return 2; // return <key, value> pair
 
             } else {
 
                 if(lua_isnil(l, -2)) {
-                   // qDebug() << "__NEXT called with NIL";
+                   // qDebug() << "__NEXT called with NIL table";
                     lua_pop(l, 2);
                     return 0;
                 } else {
                    // qDebug() << "_nextMetaMethodCFunction()";
                 }
 
+#if 0
+                lua_getglobal(*_mainState, "proxyNext");
+                lua_pushvalue(*_mainState, -3);     //table
+                lua_pushvalue(*_mainState, -3);     //key
+                const unsigned varArgs = _LuaTableProxyParents<Bases...>::pushParentsIndexTable(*_mainState);
+                _ooluaIndexTable.push(*_mainState);
+                LuaManager::_protectedCall(3+varArgs, 2, nullptr, "LuaTableProxy::next()");
+                if(!lua_isnil(*_mainState, -1)) {
+#else
+
                 if(_getNextKey(l)) {
+#endif
                    // qDebug() << "getNextKey() - true";
                     lua_pushvalue(l, -1);
 
@@ -413,9 +456,9 @@ namespace elysian {
             lua_pushvalue(l, lua_upvalueindex(4));
             lua_pushcclosure(l, &_createVirtualTableProxy, 4);
             lua_pushvalue(l, -4);
-            _protectedCall(1, 1, nullptr);      //create proxy table
+            LuaManager::_protectedCall(1, 1, nullptr);      //create proxy table
             lua_pushvalue(l, -3);               //push valueTable
-            _protectedCall(2, 0, nullptr);
+            LuaManager::_protectedCall(2, 0, nullptr);
             return 0;
         }
 
@@ -451,7 +494,7 @@ namespace elysian {
         }
 
         static inline  void _callPropertyProxyMethod(const bool /*write*/, const unsigned args, const unsigned retVals, const int keyIndex) {
-            lua_remove(*_mainState, keyIndex);
+            lua_remove(*LuaManager::_mainState, keyIndex);
             LuaManager::_protectedCall(args, retVals, nullptr);
         }
 
@@ -469,7 +512,7 @@ namespace elysian {
             unsigned index = lua_tonumber(l, -1);
 			//qDebug() << "IPAIRS INDEX " << index;
             lua_pop(l, 1);
-            if(++index > P::_proxyFieldCount) {
+            if(++index > (unsigned)_proxyTotalCount) {
                 lua_pop(l, 1);
                 lua_pushnil(l);
                 return 1;
@@ -478,7 +521,7 @@ namespace elysian {
             lua_pushnumber(l, index);
 
             _propertyProxyIndexTable.push(l);
-            lua_pushstring(l, P::_proxyFields[index-1].key);
+            lua_pushstring(l, _combinedFields[index-1].key);
 
             lua_rawget(l, -2);
 
@@ -503,7 +546,7 @@ namespace elysian {
 
         static int _lengthMetaMethodCFunction(lua_State* l) {
             lua_pop(l, lua_gettop(l));
-            lua_pushinteger(l, P::_proxyFieldCount);
+            lua_pushinteger(l, _proxyTotalCount);
             return 1;
         }
 
@@ -522,13 +565,19 @@ namespace elysian {
 			//2 - Userdata
 			//3 - nil (first key)
             //lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _propertyProxyIndexTable.ref());
-            lua_pushvalue(*_mainState, lua_upvalueindex(1));
-            lua_pushvalue(*_mainState, lua_upvalueindex(2));
-            lua_pushvalue(*_mainState, lua_upvalueindex(3));
+#if 1
+            lua_pushvalue(*LuaManager::_mainState, lua_upvalueindex(1));
+            lua_pushvalue(*LuaManager::_mainState, lua_upvalueindex(2));
+            lua_pushvalue(*LuaManager::_mainState, lua_upvalueindex(3));
             lua_pushcclosure(l, &_nextMetaMethodCFunction, 3);
 			lua_insert(l, 1);
 			lua_pushnil(l);
-			return 3;
+#else
+            lua_getglobal(l, "next");
+            _propertyProxyIndexTable.push(l);
+            lua_pushnil(l);
+#endif
+            return 3;
 		}
 
         static int _ipairsMetaMethodCFunction(lua_State* l) {
@@ -593,7 +642,7 @@ namespace elysian {
             if(lua_isnil(l, -1)) {
                 lua_pop(l, 1);
                 //return false;
-                return newIndex? _LuaTableProxyParents<Bases...>::iterateParentsNewIndexMetaMethods(l) : _LuaTableProxyParents<Bases...>::iterateParentsIndexMetaMethods(l);
+                return newIndex? _LuaTableProxyParents<P, T, Bases...>::iterateParentsNewIndexMetaMethods(l) : _LuaTableProxyParents<P, T, Bases...>::iterateParentsIndexMetaMethods(l);
 
             } else {
                 //lua_remove(l, 1);
@@ -623,7 +672,19 @@ namespace elysian {
 		//override OOLUA's Proxy Class metatable
 		//do any kind of static registration bullshit for fields
 		static void registerProxyMetaTable(lua_State *l) {
+            //Register properties
 			_registerPropertyMetaMethodTables(l);
+
+            //Inherit from parent tables
+            _propertyProxyIndexTable.push(l);
+            _proxyTotalCount += P::_proxyFieldCount;
+            memcpy(_combinedFields, P::_proxyFields, sizeof(LuaTableFieldProxy)*P::_proxyFieldCount);
+             _LuaTableProxyParents<P, T, Bases...>::appendParentIndexTable(l, _combinedFields, _proxyTotalCount);
+            lua_pop(l, 1);
+
+            _propertyProxyNewIndexTable.push(l);
+            _LuaTableProxyParents<P, T, Bases...>::appendParentNewIndexTable(l);
+            lua_pop(l, 1);
 
 			assert(OOLUA::INTERNAL::class_name_is_already_registered(*LuaManager::_mainState, OOLUA::Proxy_class<T>::class_name));
 
@@ -706,12 +767,77 @@ namespace elysian {
         }
 
         static int _luaFromTableCFunction(lua_State*const l) {
+            int absDst = lua_gettop(l)-1; //proxy table absolute index
+            int absSrc = lua_gettop(l)-2;
+#if 0
+            auto iterateArray = [&](const int i) {
+                lua_len(l, -1);
+                if(!lua_isnil(l, -1)) {
+                    return lua_tointeger(l, -1);
+                } else {
+                    lua_pop(l, 1);
+                    return 0l;
+                }
+            };
+
             //STACK[-2] = proxy table/ud
             //STACK[-1] = value table
 
             int startTop = lua_gettop(l)-1; //proxy table absolute index
 
+            int arraySize;
 
+            for(int i = 0; i < _proxyTotalCount; ++i) {
+                dbgprintf("<%d, %s>", i, _combinedFields[i].key);
+
+
+
+                switch(_combinedFields[i].flags) {
+
+                case LuaTableFieldProxy::FLAG_ARRAY:
+
+#if 0
+                    lua_getfield(l, -1, _combinedFields[i].key);
+                    arraySize = iterateArray(i);
+                  //  if(!lua_isnil(l, -1)) {
+                    //    lua_setfield(l, -3, _combinedFields[i].key);
+                   // } else lua_pop(l, 1);
+
+                    for(int j = 1; j < arraySize+1; ++j) {
+
+                        dbgprintf("ARRAY <%s, %d, %d>", _combinedFields[i].key, j, arraySize);
+
+                        lua_pushinteger(l, j);
+                        lua_pushvalue(l, -1);
+                        lua_gettable(l, -3);
+                        lua_getfield(l, -3, _combinedFields[i].set);
+                        lua_insert(l, -3);
+                        LuaManager::_protectedCall(2, 0, nullptr, "SET ARRAY");
+
+
+                    }
+                    lua_pop(l, 1);
+#endif
+                default:
+
+                  //  if(_combinedFields[i].set) {
+                        lua_getfield(l, -1, _combinedFields[i].key);
+                        if(!lua_isnil(l, -1)) {
+                            lua_setfield(l, -3, _combinedFields[i].key);
+                        } else lua_pop(l, 1);
+                   // }
+
+                        if(_combinedFields[i].flags == LuaTableFieldProxy::FLAG_VTABLE_BEGIN) {
+                            while(i < _proxyTotalCount && _combinedFields[i].flags != LuaTableFieldProxy::FLAG_VTABLE_END) ++i;
+                        }
+
+                }
+
+
+            }
+#endif
+
+#if 1
             //_cStackDump();
 
 #ifdef ELYSIAN_LUA_DEBUG
@@ -722,11 +848,12 @@ namespace elysian {
             dbgpush();
 #endif
 
-            genericIterate(-1, [&](void) {
+            LuaManager::genericIterate(-2, [&](void) {
 
                // _cStackDump();
-
+                //lua_pop(l, 1)
                 lua_pushvalue(l, -2);           //push key copy
+                lua_pushvalue(l, -1);
 
                 //==== DEBUG ====
 #ifdef ELYSIAN_LUA_DEBUG
@@ -736,9 +863,14 @@ namespace elysian {
 #endif
                 //==== /DEBUG ====
 
+                lua_gettable(l, absSrc);
+               // if(!lua_isnil(l, -1)) {
+                    lua_settable(l, absDst);
+                //}
+
 
                 //lua_insert(l, -2);            //move key behind value
-                lua_pushvalue(l, -2);           //push value
+                //lua_pushvalue(l, -1);           //push value
 
                 //==== DEBUG ====
 #ifdef ELYSIAN_LUA_DEBUG
@@ -749,15 +881,19 @@ namespace elysian {
 #endif
 
                // _cStackDump();
-                lua_settable(l, startTop);      //set new value in proxy table
+              //  lua_settable(l, startTop);      //set new value in proxy table
 
                 //_cStackDump();
 
             });
 
+
 #ifdef ELYSIAN_LUA_DEBUG
-            dbgpop();
-            dbgprintf("})");
+        //    dbgpop();
+         //   dbgprintf("})");
+#endif
+
+
 #endif
             lua_pop(l, 2);
 
@@ -790,7 +926,7 @@ namespace elysian {
             lua_getfield(l, -1, "oolua_new");
             lua_remove(l, -2);
             assert(!lua_isnil(l, -1)); //better fucking have a constructor if you invoked this method
-            _protectedCall(0, 1, nullptr);
+            LuaManager::_protectedCall(0, 1, nullptr);
 
             if(args >= 2) {
                 T* obj;
@@ -808,6 +944,19 @@ namespace elysian {
 	template <typename P, typename T>
 	LuaTable LuaTableProxy<P, T>::_staticMetaTable;
 */
+
+    template<typename P, typename T, class... Args>
+    int LuaTableProxyBase<P, T, Args...>::_proxyTotalCount = 0;
+
+    template<typename P, typename T, class... Args>
+    LuaTableFieldProxy LuaTableProxyBase<P, T, Args...>::_combinedFields[ELYSIAN_LUA_PROXY_FIELDS_MAX] = {{
+        nullptr,
+        nullptr,
+        nullptr,
+        nullptr,
+        0
+    }};
+
     template <typename P, typename T, class... Args>
     LuaTable LuaTableProxyBase<P, T, Args...>::_ooluaIndexTable;
 

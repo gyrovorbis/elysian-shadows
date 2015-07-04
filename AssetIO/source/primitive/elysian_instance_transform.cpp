@@ -1,5 +1,4 @@
 #include "elysian_instance_transform.hpp"
-#include "elysian_lua_wrappers.hpp"
 
 namespace elysian {
 

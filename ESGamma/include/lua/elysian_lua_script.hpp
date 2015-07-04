@@ -1,7 +1,6 @@
 #ifndef ELYSIAN_LUA_SCRIPT_H
 #define ELYSIAN_LUA_SCRIPT_H
 
-#include "elysian_behavior.hpp"
 #include <oolua.h>
 
 #define ELYSIAN_LUA_SCRIPT_PATH_SIZE 200
@@ -9,7 +8,7 @@
 struct lua_State;
 
 namespace elysian {
-	
+
 	/*
 	  Abstraction for a single lua script file and its ENV
 	*/
@@ -47,7 +46,7 @@ namespace elysian {
 	public:
         uint64_t    getSupportedTriggers(void) const;
         const char* getParentPath(void) const;
-        void        addSupportedTrigger(const Behavior::TRIGGER trigger);
+        void        addSupportedTrigger(const uint64_t trigger);
         void        inheritFromBehavior(const char*const path);
         bool        hasParent(void) const;
 	};
@@ -118,7 +117,7 @@ namespace elysian {
 
     inline uint64_t LuaBehaviorScriptAttrib::getSupportedTriggers(void) const { return _triggers; }
     inline const char* LuaBehaviorScriptAttrib::getParentPath(void) const { return _parentPath; }
-    inline void LuaBehaviorScriptAttrib::addSupportedTrigger(const Behavior::TRIGGER trigger) { _triggers |= trigger; }
+    inline void LuaBehaviorScriptAttrib::addSupportedTrigger(const uint64_t trigger) { _triggers |= trigger; }
     inline void LuaBehaviorScriptAttrib::inheritFromBehavior(const char*const path) { _hasParent = true; strcpy(_parentPath, path); }
     inline bool LuaBehaviorScriptAttrib::hasParent(void) const { return _hasParent; }
 

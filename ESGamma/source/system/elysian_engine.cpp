@@ -196,7 +196,7 @@ void Engine::processInput(void) {
 	_timerSystem->popTaskMonitor(&_inputMonitor);
 }
 
-void Engine::render(void (*func)(void)) {
+void Engine::render(void) {
 
 	_timerSystem->pushTaskMonitor(&_renderMonitor);
 

@@ -39,7 +39,7 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(transform,          getTransform,           setTransform)
             ELYSIAN_LUA_PROXY_FIELD(renderable,         getRenderable,          setRenderable)
             ELYSIAN_LUA_PROXY_FIELD(skeleton,           getSkeleton,            setSkeleton)
-            ELYSIAN_LUA_PROXY_FIELD(animation,          getAnimation,           setAnimation)
+            //ELYSIAN_LUA_PROXY_FIELD(animation,          getAnimation,           setAnimation)
             ELYSIAN_LUA_PROXY_FIELD(collidable,         getCollidable,          setCollidable)
             ELYSIAN_LUA_PROXY_FIELD(rigidBody,          getRigidBody,           setRigidBody)
             ELYSIAN_LUA_PROXY_FIELD(warp,               getWarp,                setWarp)

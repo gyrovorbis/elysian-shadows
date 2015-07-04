@@ -12,6 +12,7 @@
 #include "elysian_map_system.hpp"
 #include "tk_entity_selectable.h"
 #include "elysian_party_system.hpp"
+#include <asset/tk_behavior.h>
 
 //====STATIC MEMBERS====
 

@@ -6,8 +6,8 @@
 #include <elysian_lua_table_proxy.hpp>
 #include <elysian_instance_transform.hpp>
 
-#define ELYSIAN_WARP_AREA_PATH_MAX_CHARS    200
-#define ELYSIAN_WARP_SEVERITY_PATH_MAX_CHARS   200
+#define ELYSIAN_WARP_AREA_PATH_MAX_CHARS        200
+#define ELYSIAN_WARP_SEVERITY_PATH_MAX_CHARS    200
 
 namespace elysian {
 	
@@ -26,8 +26,8 @@ namespace elysian {
         bool                    _changeArea     = false;
         bool                    _changeLevel    = false;
         bool                    _obliqueTran    = true;
-        char                    _areaPath[ELYSIAN_WARP_AREA_PATH_MAX_CHARS];
-        char                    _levelPath[ELYSIAN_WARP_SEVERITY_PATH_MAX_CHARS];
+        char                    _areaPath[ELYSIAN_WARP_AREA_PATH_MAX_CHARS]         = { 0 };
+        char                    _levelPath[ELYSIAN_WARP_SEVERITY_PATH_MAX_CHARS]    = { 0 };
 		
                                 WarpBase(Entity &parent);
                                 WarpBase(void) = default;
@@ -35,7 +35,7 @@ namespace elysian {
 		
 	public:
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
-            ELYSIAN_LUA_PROXY_FIELD(toPos,              getToPos)
+            ELYSIAN_LUA_PROXY_FIELD(toPos,              getToPosVec,            setToPosVec)
             ELYSIAN_LUA_PROXY_FIELD(changeArea,         getChangeArea,          setChangeArea)
             ELYSIAN_LUA_PROXY_FIELD(changeLevel,        getChangeLevel,         setChangeLevel)
             ELYSIAN_LUA_PROXY_FIELD(areaPath,           getAreaPath,            setAreaPath)
@@ -44,7 +44,8 @@ namespace elysian {
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
         void                    setToPos(const float x, const float y, const float z);
-        Vector3                 getToPos(void);
+        Vector3                 getToPosVec(void);
+        void                    setToPosVec(const Vector3& pos);
         const char*             getAreaPath(void) const;
         void                    setAreaPath(const char *name);
         const char*             getLevelPath(void) const;
@@ -90,9 +91,13 @@ namespace elysian {
         _toPosition.z = z;
 	}
 	
-    inline Vector3 WarpBase::getToPos(void) {
+    inline Vector3 WarpBase::getToPosVec(void) {
         return Vector3(&_toPosition);
 	}
+
+    inline void WarpBase::setToPosVec(const Vector3 &pos) {
+        _toPosition = pos;
+    }
 	
     inline const char *WarpBase::getAreaPath(void) const {
 		return _areaPath;

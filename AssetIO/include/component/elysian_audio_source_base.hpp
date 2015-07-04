@@ -1,8 +1,8 @@
 #ifndef ELYSIAN_AUDIO_SOURCE_BASE_HPP
 #define ELYSIAN_AUDIO_SOURCE_BASE_HPP
 
-#include <elysian_component_base.hpp>
-#include <elysian_lua_table_proxy.hpp>
+#include <crtp/elysian_component.hpp>
+#include <crtp/elysian_lua_table_proxy.hpp>
 #include <gyro_wav_api.h>
 #include <gyro_audio_api.h>
 
@@ -17,23 +17,29 @@ namespace elysian {
     public:
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+            ELYSIAN_LUA_PROXY_FIELD(gain,       getGain,        setGain)
+            ELYSIAN_LUA_PROXY_FIELD(pitch,      getPitch,       setPitch)
+            ELYSIAN_LUA_PROXY_FIELD(looping,    getLooping,     setLooping)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
-                AudioSourceBase(void) = default;
-                AudioSourceBase(Entity& entity);
-        virtual ~AudioSourceBase(void) override;
+                        AudioSourceBase(void) = default;
+                        AudioSourceBase(Entity& entity);
+        virtual         ~AudioSourceBase(void) override;
 
 		//reimplemented from component
         static constexpr const Component::TYPE componentType = Component::AUDIO_SOURCE;
 
 		//public API
-		void setWav(const GYWav*const wav);
-		void playWav(const GYWav*const wav);
-		void play(void);
-		void stop(void);
-		void setGain(const float val);
-		void setPitch(const float val);
-		void setLooping(const bool val);
+        void            setWav(const GYWav*const wav);
+        void            playWav(const GYWav*const wav);
+        void            play(void);
+        void            stop(void);
+        void            setGain(const float val);
+        void            setPitch(const float val);
+        void            setLooping(const bool val);
+        float           getGain(void) const;
+        bool            getLooping(void) const;
+        float           getPitch(void) const;
 
 		//subsystem
 		void			update(void);
@@ -118,6 +124,12 @@ namespace elysian {
     inline void AudioSourceBase::setAudioSys(AudioSystem* const sys) {
 		_audioSys = sys;
 	}
+
+    inline float AudioSourceBase::getPitch(void) const { return _pitch; }
+
+    inline float AudioSourceBase::getGain(void) const { return _gain; }
+
+    inline bool AudioSourceBase::getLooping(void) const { return _looping; }
 
 
 

@@ -217,7 +217,7 @@ void EngineGLSceneWidget::paintGL(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gyMatLoadIdentity();
 
-        getAssets()->getEngine()->render(&_renderSpineShit);
+        getAssets()->getEngine()->render();
 
     getAssets()->getEngine()->update();
     getAssets()->getEngine()->processInput();
@@ -238,7 +238,7 @@ void EngineGLSceneWidget::paintGL(void) {
     }
     //  getAssets()->getEngine()->getLightSys()->setGlobalAmbientColor(GYVector4 { 1.0f, 1.0f, 1.0f, 1.0f});
 
-    getAssets()->getEngine()->render(&_renderSpineShit);
+    //getAssets()->getEngine()->render(&_renderSpineShit);
 
      // context()->swapBuffers(context()->surface()); // DO QOPENGL WIDGET'S FUCKING JOB FOR IT!
         //  update();

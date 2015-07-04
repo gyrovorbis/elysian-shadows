@@ -1,9 +1,9 @@
 #ifndef ELYSIAN_CHARACTER_BASE_HPP
 #define ELYSIAN_CHARACTER_BASE_HPP
 
-#include <elysian_component_base.hpp>
-#include <elysian_direction.hpp>
-#include <elysian_lua_table_proxy.hpp>
+#include <crtp/elysian_component.hpp>
+#include <level/elysian_direction.hpp>
+#include <crtp/elysian_lua_table_proxy.hpp>
 
 #define ELYSIAN_CHAR_ANIM_SEQ_STAND_UP		"StandUp"
 #define ELYSIAN_CHAR_ANIM_SEQ_STAND_DOWN	"StandDown"
@@ -59,6 +59,10 @@ namespace elysian {
 
     public:
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+            ELYSIAN_LUA_PROXY_FIELD(walkForce,          getWalkForce,           setWalkForce)
+            ELYSIAN_LUA_PROXY_FIELD(dashMultiplier,     getDashMultiplier,      setDashMultiplier)
+            ELYSIAN_LUA_PROXY_FIELD(holdingDampFactor,  getHeldEntityForceDampFactor)
+            ELYSIAN_LUA_PROXY_FIELD(heldEntity,         getHeldEntity)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
         static constexpr const Component::TYPE componentType = Component::CHARACTER;
@@ -103,7 +107,6 @@ namespace elysian {
     inline void CharacterBase::setWalkForce(const float force) { _walkForce = force; }
     inline float CharacterBase::getWalkForce(void) const { return _walkForce; }
     inline const GYVector3& CharacterBase::getLastMoveDir(void) const { return _lastMoveDir; }
-
     inline void CharacterBase::setAnimate(const bool val) { _animate = val; }
 
 }

@@ -37,10 +37,11 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(frame,          getFrame,           setFrame)
             ELYSIAN_LUA_PROXY_FIELD(texOrient,      getTexOrient,       setTexOrient)
             ELYSIAN_LUA_PROXY_FIELD(spriteAttrib,   getSpriteAttrib,    setSpriteAttrib)
-            ELYSIAN_LUA_PROXY_FIELD(normalMap,      getNormalMapPath)
-            ELYSIAN_LUA_PROXY_FIELD(specularMap,    getSpecularMapPath)
-            ELYSIAN_LUA_PROXY_FIELD(material,       getMaterial)
-            ELYSIAN_LUA_PROXY_FIELD(offset,         getOffset)
+            ELYSIAN_LUA_PROXY_FIELD(normalMap,      getNormalMapPath,   setNormalMapPath)
+            ELYSIAN_LUA_PROXY_FIELD(specularMap,    getSpecularMapPath, setSpecularMapPath)
+            ELYSIAN_LUA_PROXY_FIELD(material,       getMaterial,        setMaterial)
+            ELYSIAN_LUA_PROXY_FIELD(offset,         getOffsetVec,       setOffsetVec)
+            ELYSIAN_LUA_PROXY_ARRAY_FIELD(uvCoords, getUVCoords,        setUVCoords,    getUVCoordsCount)
 		ELYSIAN_LUA_PROXY_FIELDS_END()
 
         static bool         hasPrereqs(Entity &entity);
@@ -57,7 +58,8 @@ namespace elysian {
         void				setFrame(const unsigned fr);
         void				setOffset(const GYVector2 &offset);
         void				getOffset(GYVector2 &offset) const;
-        Vector2             getOffset(void);
+        Vector2             getOffsetVec(void);
+        void                setOffsetVec(const Vector2& vec);
         void				setTexOrient(const GY_RECT_TEX_ORIENT texOrient);
         int             	getTexOrient(void) const;
 
@@ -70,7 +72,14 @@ namespace elysian {
 
         void                loadNormalMap(const char*const path, const unsigned /*width*/, const unsigned /*height*/);
         void                loadSpecularMap(const char*const path, const unsigned /*width*/, const unsigned /*height*/);
+        void                setSpecularMapPath(const char*const path);
+        void                setNormalMapPath(const char*const path);
         void                setTexCoord(const unsigned index, const float u, const float v);
+
+        unsigned            getUVCoordsCount(void) const;
+        Vector2             getUVCoords(const unsigned index);
+        void                setUVCoords(const unsigned index, const Vector2& coords);
+
 
         const char*         getNormalMapPath(void) const;
         const char*         getSpecularMapPath(void) const;
@@ -85,6 +94,8 @@ namespace elysian {
 
     //=================== INLINEZ ======================
     inline RenderableBase::RenderableBase(Entity &parent): Component(parent) {}
+    inline void RenderableBase::setSpecularMapPath(const char * const path) { loadSpecularMap(path, 0, 0); }
+    inline void RenderableBase::setNormalMapPath(const char * const path) { loadNormalMap(path, 0, 0); }
     inline void RenderableBase::beginRender(void) {}
     inline void RenderableBase::endRender(void) {}
     inline unsigned RenderableBase::getFrame(void) const { return _frame; }
@@ -98,7 +109,8 @@ namespace elysian {
     inline void RenderableBase::setSpriteAttrib(SpriteAttrib *const attrib) { /*delete _spriteAttrib;*/ _spriteAttrib = attrib; if(attrib && _frame != -1) _frame = attrib->_frame; }
     inline void RenderableBase::setMaterial(Material*const material) { _material = material; }
     inline Material* RenderableBase::getMaterial(void) const { return _material;}
-    inline Vector2 RenderableBase::getOffset(void) { return Vector2(&_offset); }
+    inline Vector2 RenderableBase::getOffsetVec(void) { return Vector2(&_offset); }
+    inline void RenderableBase::setOffsetVec(const Vector2 &vec) { _offset = vec; }
 
     inline void RenderableBase::loadNormalMap(const char*const path, const unsigned /*width*/, const unsigned /*height*/) {
         if(_normalMap) gyVidTexDestroy(_normalMap);
@@ -189,6 +201,10 @@ namespace elysian {
         }
 
     }
+
+    inline unsigned RenderableBase::getUVCoordsCount(void) const { return 4; }
+    inline Vector2 RenderableBase::getUVCoords(const unsigned index) { return Vector2((GYVector2*)&_texCoord[index]); }
+    inline void RenderableBase::setUVCoords(const unsigned index, const Vector2& coords) { _texCoord[index].u = coords.x; _texCoord[index].v = coords.y; }
 
 }
 

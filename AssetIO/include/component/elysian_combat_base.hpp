@@ -13,7 +13,11 @@ namespace elysian {
     class ParticleEmitterAttrib;
     class CombatStatusModifier;
 
-    class CombatAttrib {
+    class CombatAttrib: public LuaTableProxy<CombatAttrib> {
+         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+            ELYSIAN_LUA_PROXY_FIELD(type,           getTypeFlags,           setTypeFlags)
+            ELYSIAN_LUA_PROXY_FIELD(typeAgainst,    getTypeAgainstFlags,    setTypeAgainstFlags)
+         ELYSIAN_LUA_PROXY_FIELDS_END()
     private:
         //GYColor4				_particleColor		= { 255, 255, 255, 255 };
         uint32_t				_typeFlags			= ~0x0;
@@ -86,6 +90,14 @@ namespace elysian {
         friend Combat;
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+            ELYSIAN_LUA_PROXY_FIELD(dmgType,        getDmgType,         setDmgType)
+            ELYSIAN_LUA_PROXY_FIELD(collisionFlags, getCollisionFlags,  setCollisionFlags)
+            ELYSIAN_LUA_PROXY_FIELD(aggroDist,      getAggroDist,       setAggroDist)
+            ELYSIAN_LUA_PROXY_FIELD(deaggroDist,    getDeaggroDist,     setDeaggroDist)
+            ELYSIAN_LUA_PROXY_FIELD(targetType,     getTargetType,      setTargetType)
+            ELYSIAN_LUA_PROXY_FIELD(inCombat,       isInCombat)
+            ELYSIAN_LUA_PROXY_FIELD(status,         getStatus)
+            ELYSIAN_LUA_PROXY_FIELD(attrib,         getAttrib,          setAttrib)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
         enum COLLISION_FLAGS {

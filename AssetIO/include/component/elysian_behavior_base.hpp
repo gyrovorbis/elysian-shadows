@@ -13,15 +13,18 @@
 ELYSIAN_ASSET_TYPEDEF(Entity)
 ELYSIAN_ASSET_TYPEDEF(Collidable)
 
-
 namespace elysian {
 	
 	struct ltstr;
 	class CollisionContact;
 	class CombatStatus;
 	
-    class BehaviorBase: public Component {
+    class BehaviorBase:
+            public Component
+    {
         friend class BaseEntity;
+
+
 	private:
 		static const Component::TYPE _type = Component::BEHAVIOR;
 		static std::map<const char*, Behavior* (*)(Entity&), ltstr> _creators;

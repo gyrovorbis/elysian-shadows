@@ -1,6 +1,20 @@
-#include "elysian_lua_behavior.hpp"
-#include "elysian_lua_wrappers.hpp"
-#include <proxy/elysian_area_proxy.hpp>
+#include <proxy/elysian_entity_proxy.hpp>
+#include <proxy/elysian_primitive_proxy.hpp>
+#include <proxy/elysian_event_monitor_proxy.hpp>
+#include <proxy/elysian_renderable_proxy.hpp>
+#include <proxy/elysian_animation_proxy.hpp>
+#include <proxy/elysian_collidable_proxy.hpp>
+#include <proxy/elysian_rigid_body_proxy.hpp>
+#include <proxy/elysian_character_proxy.hpp>
+#include <proxy/elysian_warp_proxy.hpp>
+#include <proxy/elysian_audio_source_proxy.hpp>
+#include <proxy/elysian_light_source_proxy.hpp>
+#include <proxy/elysian_examinable_proxy.hpp>
+#include <proxy/elysian_particle_emitter_proxy.hpp>
+#include <proxy/elysian_combat_proxy.hpp>
+#include <proxy/elysian_skeleton_proxy.hpp>
+#include <proxy/elysian_lua_behavior_proxy.hpp>
+#include <crtp/elysian_debug.hpp>
 
 #ifdef ELYSIAN_LUA_DEBUG
 #	define _PROTECTED(a) \
@@ -18,19 +32,29 @@ namespace elysian {
 
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(LuaBehavior)
 
+LuaBehavior::LuaBehavior(Entity &entity): Behavior(entity) {}
+
 LuaBehavior::LuaBehavior(Entity &entity,
-                         const char *
-						 script,
+                         const char *script,
 						 const OOLUA::Lua_table_ref paramTable):
                          Behavior(entity)
 {
-	loadScript(script, paramTable);
+    setParamTable(paramTable);
+    setBehavName(script);
+    loadScript();
 }
+
+void LuaBehavior::setBehavName(const char * const path) {
+    if(_script) LuaManager::unloadBehaviorScript(*_script);
+    _script = LuaManager::loadBehaviorScript(path);
+}
+
 	
 LuaBehavior::~LuaBehavior(void) {
 	//Traverse hierarchy from BOTTOM TO TOP cleaning shit up
 	//    - Call onDestroy if script implements it (NOT if behavior uses it)
 	//    - OOLUA will delete selfTables automatically
+
     if(_script) {
         for(unsigned i = 0; i < _hierarchyDepth; ++i) {
             _script = _scriptHierarchy[i];
@@ -42,17 +66,16 @@ LuaBehavior::~LuaBehavior(void) {
     }
 }
 
-bool LuaBehavior::loadScript(const char *file, const OOLUA::Lua_table_ref paramTable) {
-    dbgprintf("LuaBehavior::loadScript(%s)", file);
+bool LuaBehavior::loadScript(void) {
+    DbgEvent event("LuaBehavior::loadScript(%s)", getBehavName());
 
-    dbgpush();
+#if 0
 	if(_script) {
         Debug::printf(Debug::DBG_WARNING, "Already has a script loaded!");
         dbgpop();
 		return false;
 	}
-
-	_script = LuaManager::loadBehaviorScript(file);
+#endif
 
 	//Climb hierarchy and create top-down list
 	for(auto* script = _script;
@@ -96,21 +119,16 @@ bool LuaBehavior::loadScript(const char *file, const OOLUA::Lua_table_ref paramT
 		addTriggers(_script->getAttrib()->getSupportedTriggers());
 
 		if(_triggerBits & ON_CREATE) {
-            dbgprintf("LuaBehavior::onCreate(%s)", _script->getPath());
-            dbgpush();
-            if(paramTable.ref() != LUA_REFNIL) //Call trigger with custom parameter table
-                _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_CREATE_INDEX, _ooSelfTableRef, paramTable));
+            DbgEvent event("LuaBehavior::onCreate(%s)", _script->getPath());
+            if(_paramTableRef.ref() != LUA_REFNIL) //Call trigger with custom parameter table
+                _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_CREATE_INDEX, _ooSelfTableRef, _paramTableRef));
 			//call basic trigger
 			else onCreate();
-            dbgpop();
 		}
 
 		parentSelfTableRef = selfTableRef;
 	}
 
-    (void)paramTable;
-
-    dbgpop();
 	return true;
 }
 
@@ -120,7 +138,7 @@ void LuaBehavior::_selfTableDump(void) {
 
 	for(int i = _hierarchyDepth-1; i >= 0; --i) {
 		sprintf(selfDisplay, "self[%d]", _hierarchyDepth-1-i);
-        rPrintByRef(_ooSelfTableRefHierarchy[i].ref(), 0, selfDisplay);
+        LuaManager::rPrintByRef(_ooSelfTableRefHierarchy[i].ref(), 0, selfDisplay);
 	}
 }
 

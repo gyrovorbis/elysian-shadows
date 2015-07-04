@@ -48,7 +48,7 @@ bool TkAnimation::validate(QString &str) const {
     };
 
     cAssert(_attrib, "DBG_ERROR: Animation component has no attributes.");
-    if(_attrib && _attrib->_sequences.size()) str += "DBG_WARNING: Animation attributes have no sequences.\n";
+    //if(_attrib && _attrib->_sequences.size()) str += "DBG_WARNING: Animation attributes have no sequences.\n";
 
     return success;
 }

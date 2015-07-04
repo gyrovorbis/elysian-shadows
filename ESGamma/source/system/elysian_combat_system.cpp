@@ -1,12 +1,13 @@
 #include "elysian_combat_system.hpp"
 #include "elysian_combat.hpp"
 #include "elysian_area.hpp"
-#include "elysian_lua_wrappers.hpp"
 #include "elysian_collision_system.hpp"
 #include "elysian_camera_system.hpp"
 #include "elysian_gui_system.hpp"
 #include "elysian_behavior_system.hpp"
 #include "elysian_audio_system.hpp"
+#include <system/elysian_party_system.hpp>
+#include <system/elysian_particle_system.hpp>
 #include <cmath>
 
 namespace elysian {

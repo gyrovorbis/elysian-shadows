@@ -191,8 +191,8 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
         gyVidQuadListBegin(&color);
         for(unsigned i = 0; i < count; ++i) {
             auto& entry = array[i];
-            int plane = entry.mapEntry.getPlane();
-            int elev = entry.mapEntry.getElev();
+            //int plane = entry.mapEntry.getPlane();
+            //int elev = entry.mapEntry.getElev();
             if(entry.drawStyle == DRAW_NORMAL || entry.mapEntry.getPlane() != planeType/* || !entry.mapEntry.getIndex()*/) continue;
             gyVidRectPlaneType(entry.mapEntry.getPlane());
             gyMatPush();

@@ -53,6 +53,7 @@ void CharacterBase::faceDir(const Direction::DIR4 dir) {
  * accel = force*(inverseMassParent + inverseMassChild)
  */
 float CharacterBase::getHeldEntityForceDampFactor(void) {
+    if(!_heldEntity) return 0.0f;
 	const float invParent = _entity->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass;
 	const float invChild = _heldEntity->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass;
 

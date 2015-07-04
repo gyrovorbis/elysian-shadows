@@ -236,10 +236,43 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     source/estk/tk_timer_system.cpp \
     source/core/tk_gitlab_manager.cpp \
     source/dialog/tk_gitlab_dialog.cpp \
-    source/core/tk_network_access_manager.cpp \
+    source/asset/tk_skeleton.cpp \
+    ../../AssetIO/source/proxy/elysian_animation_proxy.cpp \
     ../../AssetIO/source/proxy/elysian_area_proxy.cpp \
+    ../../AssetIO/source/proxy/elysian_audio_source_proxy.cpp \
+    ../../AssetIO/source/proxy/elysian_character_proxy.cpp \
+    ../../AssetIO/source/proxy/elysian_collidable_proxy.cpp \
+    ../../AssetIO/source/proxy/elysian_combat_proxy.cpp \
+    ../../AssetIO/source/proxy/elysian_component_proxy.cpp \
+    ../../AssetIO/source/proxy/elysian_entity_proxy.cpp \
+    ../../AssetIO/source/proxy/elysian_examinable_proxy.cpp \
+    ../../AssetIO/source/proxy/elysian_instance_transform_proxy.cpp \
+    ../../AssetIO/source/proxy/elysian_level_proxy.cpp \
+    ../../AssetIO/source/proxy/elysian_light_source_proxy.cpp \
+    ../../AssetIO/source/proxy/elysian_lua_behavior_proxy.cpp \
+    ../../AssetIO/source/proxy/elysian_particle_emitter_proxy.cpp \
+    ../../AssetIO/source/proxy/elysian_primitive_proxy.cpp \
+    ../../AssetIO/source/proxy/elysian_renderable_proxy.cpp \
+    ../../AssetIO/source/proxy/elysian_rigid_body_proxy.cpp \
     ../../AssetIO/source/proxy/elysian_skeleton_proxy.cpp \
-    source/asset/tk_skeleton.cpp
+    ../../AssetIO/source/proxy/elysian_warp_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_animation_system_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_audio_system_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_camera_system_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_character_system_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_combat_system_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_day_system_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_dialog_system_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_event_monitor_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_game_input_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_gui_system_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_level_system_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_light_system_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_particle_system_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_party_system_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_rigid_body_system_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_timer_system_proxy.cpp \
+    source/core/tk_network_access_manager.cpp
 
 
 HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
@@ -436,8 +469,41 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     include/dialog/tk_gitlab_dialog.h \
     include/tk_precompiled_headers.h \
     include/core/tk_network_access_manager.h \
+    ../../AssetIO/include/proxy/elysian_animation_proxy.hpp \
     ../../AssetIO/include/proxy/elysian_area_proxy.hpp \
-    ../../AssetIO/include/proxy/elysian_skeleton_proxy.hpp
+    ../../AssetIO/include/proxy/elysian_audio_source_proxy.hpp \
+    ../../AssetIO/include/proxy/elysian_character_proxy.hpp \
+    ../../AssetIO/include/proxy/elysian_collidable_proxy.hpp \
+    ../../AssetIO/include/proxy/elysian_combat_proxy.hpp \
+    ../../AssetIO/include/proxy/elysian_component_proxy.hpp \
+    ../../AssetIO/include/proxy/elysian_entity_proxy.hpp \
+    ../../AssetIO/include/proxy/elysian_examinable_proxy.hpp \
+    ../../AssetIO/include/proxy/elysian_instance_transform_proxy.hpp \
+    ../../AssetIO/include/proxy/elysian_level_proxy.hpp \
+    ../../AssetIO/include/proxy/elysian_light_source_proxy.hpp \
+    ../../AssetIO/include/proxy/elysian_lua_behavior_proxy.hpp \
+    ../../AssetIO/include/proxy/elysian_particle_emitter_proxy.hpp \
+    ../../AssetIO/include/proxy/elysian_primitive_proxy.hpp \
+    ../../AssetIO/include/proxy/elysian_renderable_proxy.hpp \
+    ../../AssetIO/include/proxy/elysian_rigid_body_proxy.hpp \
+    ../../AssetIO/include/proxy/elysian_skeleton_proxy.hpp \
+    ../../AssetIO/include/proxy/elysian_warp_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_animation_system_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_audio_system_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_camera_system_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_character_system_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_combat_system_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_day_system_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_dialog_system_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_event_monitor_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_game_input_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_gui_system_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_level_system_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_light_system_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_particle_system_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_party_system_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_timer_system_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_rigid_body_system_proxy.hpp
 
 
 FORMS += form/estk/tk_sheet_dock_widget.ui \

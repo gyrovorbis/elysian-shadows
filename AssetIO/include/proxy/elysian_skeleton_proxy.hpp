@@ -8,8 +8,8 @@ namespace OOLUA
     typedef elysian::SkeletonAttrib     SkeletonAttrib;
     typedef elysian::Skeleton           Skeleton;
 
-    template<> class Proxy_class<SkeletonAttrib>;
-    template<> class Proxy_class<Skeleton>;
+    //template<> class Proxy_class<SkeletonAttrib>;
+    //template<> class Proxy_class<Skeleton>;
 }
 
 
@@ -21,7 +21,7 @@ OOLUA_PROXY(SkeletonAttrib)
     OOLUA_MEM_FUNC(void, setJsonPath, const char*)
 OOLUA_PROXY_END
 
-OOLUA_PROXY(Skeleton)
+OOLUA_PROXY(Skeleton, Component)
     OOLUA_TAGS (
         No_public_constructors,
         No_public_destructor

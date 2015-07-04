@@ -19,7 +19,11 @@ namespace elysian {
     class Material;
     class ForceGenerator;
 
-    class ParticleEmitterAttrib: public SpriteAttrib, public CollidableStaticAttrib {
+    class ParticleEmitterAttrib:
+            public SpriteAttrib,
+            public CollidableStaticAttrib,
+            public LuaTableProxy<ParticleEmitterAttrib, ParticleEmitterAttrib, CollidableStaticAttrib, SpriteAttrib>
+    {
         friend class ParticleEmitterInternals;
     private:
         int         _animGrid[ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_HEIGHT][ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_WIDTH] = { {-1} };
@@ -45,6 +49,22 @@ namespace elysian {
 
     public:
 
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+            ELYSIAN_LUA_PROXY_FIELD(maxLife,            getMaxLife,             setMaxLife)
+            ELYSIAN_LUA_PROXY_FIELD(startSize,          getStartSize,           setStartSize)
+            ELYSIAN_LUA_PROXY_FIELD(endSize,            getEndSize,             setEndSize)
+            ELYSIAN_LUA_PROXY_FIELD(endColor,           getEndColor,            setEndColor)
+            ELYSIAN_LUA_PROXY_FIELD(intensityFactor,    getIntensityFactor,     setIntensityFactor)
+            ELYSIAN_LUA_PROXY_FIELD(randomStartFrame,   getRandomStartFrame,    setRandomStartFrame)
+            ELYSIAN_LUA_PROXY_FIELD(forceMask,          getForceMask,           setForceMask)
+            ELYSIAN_LUA_PROXY_FIELD(animFrameDuration,  getAnimFrameDuration,   setAnimFrameDuration)
+            ELYSIAN_LUA_PROXY_FIELD(shadowVolume,       getShadowVolume,        setShadowVolume)
+            ELYSIAN_LUA_PROXY_FIELD(stick,              getStick,               setStick)
+        ELYSIAN_LUA_PROXY_FIELDS_END()
+
+        using       LuaTableProxy<ParticleEmitterAttrib, ParticleEmitterAttrib, CollidableStaticAttrib, SpriteAttrib>::registerProxyMetaTable;
+        using       LuaTableProxy<ParticleEmitterAttrib, ParticleEmitterAttrib, CollidableStaticAttrib, SpriteAttrib>::fromTable;
+
                     ParticleEmitterAttrib(void);
         virtual     ~ParticleEmitterAttrib(void) override;
 
@@ -65,6 +85,16 @@ namespace elysian {
         void        setIntensityFactor(const float factor);
         void        setRandomStartFrame(const bool val);
         void        setShadowVolume(const bool val);
+
+        unsigned    getMaxLife(void) const;
+        unsigned    getStartSize(void) const;
+        unsigned    getEndSize(void) const;
+        Color4      getEndColor(void);
+        float       getIntensityFactor(void) const;
+        bool        getRandomStartFrame(void) const;
+        unsigned    getAnimFrameDuration(void) const;
+        bool        getShadowVolume(void) const;
+        bool        getStick(void) const;
     };
 
     class Particle: public ForceTarget {
@@ -100,6 +130,11 @@ namespace elysian {
 		ParticleEmitterAttrib*	_attrib			= nullptr;
 
     public:
+
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+            ELYSIAN_LUA_PROXY_FIELD(attrib,     getAttrib,      setAttrib)
+        ELYSIAN_LUA_PROXY_FIELDS_END()
+
         ~ParticleEmitterInternals(void);
 
         void allocatePool(const unsigned size);
@@ -128,6 +163,7 @@ namespace elysian {
         friend ParticleEmitter;
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+            ELYSIAN_LUA_PROXY_FIELD(attrib,     getAttrib,      setAttrib)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
                         ParticleEmitterBase(void) = default;
@@ -185,6 +221,17 @@ namespace elysian {
     inline void ParticleEmitterAttrib::setStick(const bool val) { _stick = val; }
 
     inline void ParticleEmitterAttrib::setRandomStartFrame(const bool val) { _randomStartFrame = val; }
+
+    inline unsigned ParticleEmitterAttrib::getMaxLife(void) const { return _maxLife; }
+    inline unsigned ParticleEmitterAttrib::getStartSize(void) const { return _startSize; }
+    inline unsigned ParticleEmitterAttrib::getEndSize(void) const { return _endSize; }
+    inline Color4 ParticleEmitterAttrib::getEndColor(void) { return Color4(&_endColor); }
+    inline float ParticleEmitterAttrib::getIntensityFactor(void) const { return _intensityFactor; }
+    inline bool ParticleEmitterAttrib::getRandomStartFrame(void) const { return _randomStartFrame; }
+    inline unsigned ParticleEmitterAttrib::getAnimFrameDuration(void) const { return _animFrameDuration; }
+    inline bool ParticleEmitterAttrib::getShadowVolume(void) const { return _shadowVolume; }
+    inline bool ParticleEmitterAttrib::getStick(void) const { return _stick; }
+
 }
 
 #endif // ELYSIAN_PARTICLE_EMITTER_HPP

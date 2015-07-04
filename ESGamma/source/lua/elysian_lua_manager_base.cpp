@@ -1,6 +1,6 @@
 #include "elysian_lua_manager.hpp"
 #include "elysian_lua_script.hpp"
-#include "elysian_lua_wrappers.hpp"
+#include <crtp/elysian_behavior.hpp>
 #include "luatables.h"
 #include "elysian_debug.hpp"
 #include "elysian_lua_table_proxy.hpp"
@@ -377,6 +377,7 @@ bool LuaManagerBase::initialize(void) {
     Debug::printf(Debug::DBG_VERBOSE, "Registering wrappers");
     runString(_rPrint);
     runScriptSandbox(ELYSIAN_LUA_MANAGER_SERIALIZE_SCRIPT_PATH);
+    runScriptSandbox(ELYSIAN_LUA_MANAGER_TABLE_MANIP_SCRIPT_PATH);
     LuaManager::_registerWrappers();
     return true;
 }

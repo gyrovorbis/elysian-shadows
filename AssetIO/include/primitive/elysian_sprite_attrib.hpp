@@ -27,7 +27,7 @@ namespace elysian {
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(frame, getFrame, setFrame)
             ELYSIAN_LUA_PROXY_FIELD(texture, getTexPath, setTexPath)
-            ELYSIAN_LUA_PROXY_FIELD(color, getColor4)
+            ELYSIAN_LUA_PROXY_FIELD(color, getColor4, setColor4)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
         //Not super efficient, but since each rect needs its own color, header must be resubmitted...
@@ -89,6 +89,7 @@ namespace elysian {
         }
 
         Color4 getColor4(void) { return Color4(&_color); }
+        void setColor4(const Color4& color) { _color = color; }
 
         void setColor(const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a) { _color.r = r; _color.g = g; _color.b = b; _color.a = a; }
         void setColor(const GYColor4& color) { _color = color; }

@@ -1,5 +1,5 @@
 #include "elysian_event_monitor.hpp"
-#include "elysian_lua_wrappers.hpp"
+#include <proxy/elysian_event_monitor_proxy.hpp>
 
 namespace elysian {
 

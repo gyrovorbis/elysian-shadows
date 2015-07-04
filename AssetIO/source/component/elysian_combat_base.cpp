@@ -8,6 +8,7 @@
 namespace elysian {
 
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(CombatBase)
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(CombatAttrib)
 
 void CombatBase::setDmgType(const DMG_TYPE type) {
 	_dmgType = type;

@@ -1,24 +1,24 @@
 #include <algorithm>
-#include "elysian_component_base.hpp"
-#include "elysian_behavior.hpp"
-#include "elysian_entity.hpp"
-#include <elysian_renderable.hpp>
-#include "elysian_animation.hpp"
-#include "elysian_collidable.hpp"
-#include "elysian_character.hpp"
-#include "elysian_warp.hpp"
-#include "elysian_stl_algorithm.hpp"
-#include "elysian_lua_behavior.hpp"
-#include "elysian_examinable.hpp"
-#include "elysian_audio_source.hpp"
-#include "elysian_light_source.hpp"
-#include "elysian_particle_emitter.hpp"
-#include "elysian_rigid_body.hpp"
-#include "elysian_combat.hpp"
-#include "elysian_area.hpp"
-#include "elysian_lua_wrappers.hpp"
-#include <crtp/elysian_skeleton.hpp>
-#include <elysian_generic.hpp>
+#include <proxy/elysian_primitive_proxy.hpp>
+#include <proxy/elysian_entity_proxy.hpp>
+#include <proxy/elysian_renderable_proxy.hpp>
+#include <proxy/elysian_event_monitor_proxy.hpp>
+#include <proxy/elysian_animation_proxy.hpp>
+#include <proxy/elysian_collidable_proxy.hpp>
+#include <proxy/elysian_character_proxy.hpp>
+#include <proxy/elysian_rigid_body_proxy.hpp>
+#include <proxy/elysian_warp_proxy.hpp>
+#include <proxy/elysian_examinable_proxy.hpp>
+#include <proxy/elysian_particle_emitter_proxy.hpp>
+#include <proxy/elysian_audio_source_proxy.hpp>
+#include <proxy/elysian_light_source_proxy.hpp>
+#include <proxy/elysian_combat_proxy.hpp>
+#include <proxy/elysian_skeleton_proxy.hpp>
+#include <proxy/elysian_lua_behavior_proxy.hpp>
+
+#include <utility/elysian_stl_algorithm.hpp>
+#include <crtp/elysian_area.hpp>
+#include <utility/elysian_generic.hpp>
 
 using namespace std;
 
@@ -30,7 +30,7 @@ float EntityBase::_oldZ;
 
 EntityBase::EntityBase(void): EntityBase(nullptr) {  }
 
-EntityBase::EntityBase(const OOLUA::Lua_table_ref valTable): EntityBase() { /* static_cast<Entity*>(this)->fromTable(valTable); */ }
+EntityBase::EntityBase(const OOLUA::Lua_table_ref /*valTable*/): EntityBase() { /* static_cast<Entity*>(this)->fromTable(valTable); */ }
 
 EntityBase::EntityBase(EntityBase *other) {
     if(!other) {
@@ -170,6 +170,7 @@ void EntityBase::_renderRelative(void) {
 #endif
 
 void EntityBase::renderShadowVolume(void) {
+#if 0
 /*
     static const float verts[17*4] = {
         -1,  1,  1, 1.0f,
@@ -210,6 +211,7 @@ void EntityBase::renderShadowVolume(void) {
         -1, -1,  2, 1.0f,
         -1,  1,  2, 1.0f
     };
+
 /*
     static const float verts[17*4] = {
         -1,  1,  2, 1.0f,
@@ -325,7 +327,7 @@ void EntityBase::renderShadowVolume(void) {
 //	gyVidTriangleStrip((GYVector4*)verts, 0, 17);
 
     gyMatPop();
-
+#endif
 
 }
 
@@ -693,21 +695,17 @@ LuaBehavior* EntityBase::getLuaBehaviorByIndex(const unsigned index) const {
     return nullptr;
 }
 
-void EntityBase::setLuaBehaviorByIndex(const unsigned index, const OOLUA::Lua_table_ref valueTable) {
-    unsigned count = 0;
-    LuaBehavior* behavior;
-    for(auto behav : _behavior) {
-        if(count++ == index) {
-            behavior = static_cast<LuaBehavior*>(behav.second);
-            break;
-        }
-    }
 
-    if(index >= _behavior.size()) {
-        Debug::printf(Debug::DBG_VERBOSE, "INSERTING");
-    } else {
-        Debug::printf(Debug::DBG_VERBOSE, "UPDATING");
-        behavior->fromTable(valueTable);
+void EntityBase::setLuaBehaviorByIndex(const unsigned index, const OOLUA::Lua_table_ref valueTable) {
+    if(index == _behavior.size()) { //allocate new entity
+        //Entity* entity = Entity::create(valueTable);
+        LuaBehavior* behav = new LuaBehavior(*static_cast<Entity*>(this));
+        behav->fromTable(valueTable);
+        behav->loadScript();
+
+    } else if(index < _behavior.size()) {                        //initialize existing entity
+        assert(false);
+        //inactiveEntities[index]->fromTable(valueTable);
     }
 }
 

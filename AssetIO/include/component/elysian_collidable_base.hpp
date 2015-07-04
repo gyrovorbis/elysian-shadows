@@ -68,7 +68,7 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(invMomOfInertia,    getInvMomOfInertia,     setInvMomOfInertia)
             ELYSIAN_LUA_PROXY_FIELD(angDamping,         getAngDamping,          setAngDamping)
             ELYSIAN_LUA_PROXY_FIELD(zCoeffOfRest,       getZCoeffOfRest,        setZCoeffOfRest)
-            ELYSIAN_LUA_PROXY_FIELD(damping,            getDamping)
+            ELYSIAN_LUA_PROXY_FIELD(damping,            getDampingVec,          setDampingVec)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
                     CollidableStaticAttrib(void);
@@ -76,7 +76,8 @@ namespace elysian {
         void        setZDamping(const float z);
         void        setDamping3f(const float x, const float y, const float z);
 
-        Vector3     getDamping(void);
+        Vector3     getDampingVec(void);
+        void        setDampingVec(const Vector3& vec);
         float       getInverseMass(void) const;
         void        setInverseMass(const float mass);
         float       getCoeffOfRest(void) const;
@@ -97,11 +98,11 @@ namespace elysian {
     public:
 
     ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
-        ELYSIAN_LUA_PROXY_FIELD(colliderType,       getColliderType,    setColliderType)
-        ELYSIAN_LUA_PROXY_FIELD(relPos,             getRelPos)
-        ELYSIAN_LUA_PROXY_FIELD(relSize,            getRelSize)
-        ELYSIAN_LUA_PROXY_FIELD(staticAttrib,       getStaticAttrib)
-        ELYSIAN_LUA_PROXY_FIELD(flags,              getFlags)
+        ELYSIAN_LUA_PROXY_FIELD(colliderType,       getColliderType,       setColliderType)
+        ELYSIAN_LUA_PROXY_FIELD(relPos,             getRelPosVec,          setRelPosVec)
+        ELYSIAN_LUA_PROXY_FIELD(relSize,            getRelSizeVec,         setRelSizeVec)
+        ELYSIAN_LUA_PROXY_FIELD(staticAttrib,       getStaticAttrib,       setStaticAttrib)
+        ELYSIAN_LUA_PROXY_FIELD(flags,              getFlags,              setFlags)
     ELYSIAN_LUA_PROXY_FIELDS_END()
 
         CollisionFlags          flags;
@@ -113,10 +114,14 @@ namespace elysian {
         void                    setRelPos(const float x, const float y, const float z);
         void                    setRelSize(const float x, const float y, const float z);
         const GYVector3&        getRelSize(void) const;
-        Vector3                 getRelSize(void);
-        Vector3                 getRelPos(void);
+        Vector3                 getRelSizeVec(void);
+        Vector3                 getRelPosVec(void);
+        void                    setRelSizeVec(const Vector3& size);
+        void                    setRelPosVec(const Vector3& pos);
         CollidableStaticAttrib* getStaticAttrib(void);
+        void                    setStaticAttrib(const OOLUA::Lua_table_ref valTable);
         CollisionFlags*         getFlags(void);
+        void                    setFlags(const OOLUA::Lua_table_ref valTable);
 
     private:
         CollidableStaticAttrib  _staticAttrib;
@@ -193,6 +198,8 @@ namespace elysian {
         GYCollider*             getCollider(void);
         const GYVector3&        getWorldPos(void) const;
         const GYVector3&        getWorldSize(void) const;
+        void                    setWorldSize(const Vector3& size);
+        void                    setWorldPos(const Vector3& pos);
         void                    setActive(const bool val);
         bool                    getRestingOnBody(void) const;
         void                    setRestingOnBody(const bool v);
@@ -275,10 +282,12 @@ namespace elysian {
     inline void CollidableAttrib::setRelPos(const float x, const float y, const float z) { _relPos.x = x; _relPos.y = y; _relPos.z = z; /* was fucked? No setting of Z?*/ }
     inline void CollidableAttrib::setRelSize(const float x, const float y, const float z) { _relSize.x = x; _relSize.y = y; _relSize.z = z; }
     inline const GYVector3& CollidableAttrib::getRelSize(void) const { return _relSize; }
-    inline Vector3 CollidableAttrib::getRelSize(void) { return Vector3(&_relSize); }
-    inline Vector3 CollidableAttrib::getRelPos(void) { return Vector3(&_relPos); }
+    inline Vector3 CollidableAttrib::getRelSizeVec(void) { return Vector3(&_relSize); }
+    inline Vector3 CollidableAttrib::getRelPosVec(void) { return Vector3(&_relPos); }
     inline CollidableStaticAttrib* CollidableAttrib::getStaticAttrib(void) { return &_staticAttrib; }
     inline CollisionFlags* CollidableAttrib::getFlags(void) { return &flags; }
+    inline void CollidableAttrib::setRelSizeVec(const Vector3& size) { _relSize = size; }
+    inline void CollidableAttrib::setRelPosVec(const Vector3& pos) { _relPos = pos; }
 
     inline CollidableBase::CollidableBase(Entity &parent): Component(parent){}
     inline unsigned CollidableBase::getContactCount(void) const { return _contactCount; }
@@ -312,7 +321,8 @@ namespace elysian {
     inline void CollidableStaticAttrib::setDamping(const float xy) { damping.x = damping.y = xy; }
     inline void CollidableStaticAttrib::setDamping3f(const float x, const float y, const float z) { damping.x = x; damping.y = y; damping.z = z; }
     inline void CollidableStaticAttrib::setZDamping(const float z) { damping.z = z; }
-    inline Vector3 CollidableStaticAttrib::getDamping(void) { return Vector3(&damping); }
+    inline Vector3 CollidableStaticAttrib::getDampingVec(void) { return Vector3(&damping); }
+    inline void CollidableStaticAttrib::setDampingVec(const Vector3& vec) { damping = vec; }
     inline float CollidableStaticAttrib::getInverseMass(void) const { return inverseMass; }
     inline void CollidableStaticAttrib::setInverseMass(const float mass) { inverseMass = mass; }
     inline float CollidableStaticAttrib::getCoeffOfRest(void) const { return coeffOfRest; }

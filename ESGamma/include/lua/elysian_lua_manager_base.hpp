@@ -19,6 +19,7 @@
 #endif
 
 #define ELYSIAN_LUA_MANAGER_SERIALIZE_SCRIPT_PATH       "/assets/scripts/utils/serialize.lua"
+#define ELYSIAN_LUA_MANAGER_TABLE_MANIP_SCRIPT_PATH     "/assets/scripts/utils/table_manip.lua"
 
 namespace elysian {
 	
@@ -176,6 +177,7 @@ namespace elysian {
             lua_insert(*_mainState, 1);
         //}
         if((_errorCode = lua_pcall(*_mainState, nargs, nresults, script? 1 : 1)) != 0) {
+            lua_remove(*_mainState, 1);
             DbgEvent event("Lua Exception");
             if(context) {
                 DbgEvent event("C/++ Context");
@@ -188,7 +190,6 @@ namespace elysian {
             }
 
           //  if(script) {
-                lua_remove(*_mainState, 1);
                 if(script) script->setError();
 				_cStackDump();
 				lua_remove(*_mainState, lua_gettop(*_mainState));		//clean up stack after reesting
