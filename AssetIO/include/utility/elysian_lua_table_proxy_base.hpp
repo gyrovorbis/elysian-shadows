@@ -58,11 +58,11 @@ namespace elysian {
 
     struct LuaTableFieldProxy {
         enum FLAGS { FLAG_NONE, FLAG_VTABLE_BEGIN, FLAG_VTABLE_END, FLAG_ARRAY };
-        const char *const   key;
-        const char *const   get;
-        const char *const   set;
-        const char*         size;
-        const int           flags;
+        const char*   key;
+        const char*   get;
+        const char*   set;
+        const char*   size;
+        int           flags;
 	};
 
     /* Private class template for handling property registration, since C++ doesn't allow template member function
