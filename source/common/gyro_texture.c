@@ -14,6 +14,22 @@
 
 static GYTexCoord2 _texFrameCoords[4];
 
+static const GYTexCoordFrame _defaultTexCoordFrame = {
+    { 0.0f, 0.0f },
+    { 1.0f, 1.0f },
+    0, 0
+};
+
+static const GYTexCoordSheet _defaultTexCoords = {
+    0,
+    0,
+    0,
+    0,
+    1,
+    &_defaultTexCoordFrame
+};
+
+
 //Used internally for searches/construction
 typedef struct _GYTexEntryDat {
     const char* const file;
@@ -209,7 +225,7 @@ static void *_TexConstructor(void *const data) {
         return NULL;
     }
 
-    tex->_coord = (texData->sheetWidth == 0)? NULL : //(!texData->spriteWidth || !texData->spriteHeight)?
+    tex->_coord = (texData->sheetWidth == 0)? &_defaultTexCoords : //(!texData->spriteWidth || !texData->spriteHeight)?
         //_LoadSheetCoords(texData) :
         gyAssetBankInsert(&_texCoordBank, texData);
     //assert(tex->_coord);
@@ -221,7 +237,7 @@ static int _TexDestructor(void *const payload) {
 
     int retVal = _gyVidTexFree(tex);
 
-    if(tex->_coord) {
+    if(tex->_coord && tex->_coord != &_defaultTexCoords) {
         if(!tex->_coord->spriteWidth || !tex->_coord->spriteHeight) { //non uniform
             free(tex->_coord->texCoord);
             free(tex->_coord);
