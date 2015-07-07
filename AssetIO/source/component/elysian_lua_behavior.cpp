@@ -49,7 +49,7 @@ void LuaBehavior::setBehavName(const char * const path) {
     _script = LuaManager::loadBehaviorScript(path);
 }
 
-inline void LuaBehavior::setParamTable(OOLUA::Lua_table_ref ref) {
+void LuaBehavior::setParamTable(OOLUA::Lua_table_ref ref) {
     if(ref.valid()) {
         _paramTableRef = ref;
     } else {
