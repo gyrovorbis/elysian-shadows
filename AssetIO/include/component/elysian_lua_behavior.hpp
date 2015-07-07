@@ -108,7 +108,7 @@ namespace elysian {
         void                setBehavName(const char*const path);
 
 		int					getSelfTableRef(void) const;
-        void                setParamTable(const OOLUA::Lua_table_ref ref);
+        void                setParamTable(OOLUA::Lua_table_ref ref);
         LuaBehaviorScript*  getScript(void) const;
 
         OOLUA::Lua_table_ref& getSelfTable(void);
@@ -120,7 +120,7 @@ namespace elysian {
     //======= INLINEZ ======
 
     inline const char* LuaBehavior::getBehavName(void) const {
-        return (_script)? _script->getPath() : "";
+        return (_script)? _script->getPath() : "none";
     }
 
     inline LuaBehaviorScript* LuaBehavior::getScript(void) const { return _script; }
@@ -128,10 +128,6 @@ namespace elysian {
     inline OOLUA::Lua_table_ref& LuaBehavior::getSelfTable(void) { return *_ooSelfTableRef; }
 
     inline OOLUA::Lua_table_ref LuaBehavior::getParamTable(void) { return _paramTableRef; }
-
-    inline void LuaBehavior::setParamTable(const OOLUA::Lua_table_ref ref) {
-        _paramTableRef = ref;
-    }
 
     inline int LuaBehavior::getSelfTableRef(void) const { return _ooSelfTableRef->ref(); }
 

@@ -170,49 +170,39 @@ namespace elysian {
 
 	};
 
-    inline bool LuaManagerBase::_protectedCall(const int nargs, const int nresults, LuaScript *script, const char* context, ...) {
+    inline bool LuaManagerBase::_protectedCall(const int nargs, const int nresults, LuaScript *script, const char* /*context*/, ...) {
 #ifdef ELYSIAN_LUA_DEBUG
-       // if(script) {
+        if(script) {
             lua_pushcfunction(*_mainState, &LuaManagerBase::_traceBack);
             lua_insert(*_mainState, 1);
-        //}
-        if((_errorCode = lua_pcall(*_mainState, nargs, nresults, script? 1 : 1)) != 0) {
-            lua_remove(*_mainState, 1);
+        }
+        if((_errorCode = lua_pcall(*_mainState, nargs, nresults, script? 1 : 0)) != 0) {
             DbgEvent event("Lua Exception");
-            if(context) {
-                DbgEvent event("C/++ Context");
-                char buffer[GYRO_PRINTF_BUFFER_SIZE];
-                va_list argptr;
-                va_start(argptr, context);
-                vsprintf(buffer, context, argptr);
-                va_end(argptr);
-                luaPrint(buffer, Debug::DBG_VERBOSE);
-            }
-
-          //  if(script) {
-                if(script) script->setError();
-				_cStackDump();
-				lua_remove(*_mainState, lua_gettop(*_mainState));		//clean up stack after reesting
-                if(script) _envDump(script);
-				dumpStats();
+            if(script) {
+                lua_remove(*_mainState, 1);
+                script->setError();
+                _cStackDump();
+                lua_remove(*_mainState, lua_gettop(*_mainState));		//clean up stack after reesting
+                _envDump(script);
+                dumpStats();
                 //if(_traceBackDbgPushes) {
-                    Debug::pop();
+                    //Debug::pop();
                 //    --_traceBackDbgPushes;
                // }
-           // } else {
-              //  _showError();
+            } else {
+                _showError();
                 //lua_remove(*_mainState, 1);
                 //_cStackDump();
                 //dumpStats();
-            //}
+            }
             return false; //shit reested
-		} else {
-            //if(script)
+        } else {
+            if(script)
                 lua_remove(*_mainState, 1); //remove c traceback function from bottom of stack
-		}
+        }
         return true; // shit was just fine
 #else	//ain't NOBODY got time for debug overhead!
-		lua_call(*_mainState, nargs, nresults);
+        lua_call(*_mainState, nargs, nresults);
 #endif
 	}
 

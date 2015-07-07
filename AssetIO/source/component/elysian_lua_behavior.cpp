@@ -49,6 +49,15 @@ void LuaBehavior::setBehavName(const char * const path) {
     _script = LuaManager::loadBehaviorScript(path);
 }
 
+inline void LuaBehavior::setParamTable(OOLUA::Lua_table_ref ref) {
+    if(ref.valid()) {
+        _paramTableRef = ref;
+    } else {
+        lua_newtable(*LuaManager::_mainState);
+        _paramTableRef.pull(*LuaManager::_mainState);
+    }
+}
+
 	
 LuaBehavior::~LuaBehavior(void) {
 	//Traverse hierarchy from BOTTOM TO TOP cleaning shit up
@@ -68,6 +77,10 @@ LuaBehavior::~LuaBehavior(void) {
 
 bool LuaBehavior::loadScript(void) {
     DbgEvent event("LuaBehavior::loadScript(%s)", getBehavName());
+    if(!_script) {
+        errprintf("Could not load script!");
+        return false;
+    }
 
 #if 0
 	if(_script) {

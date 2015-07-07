@@ -30,7 +30,7 @@ OOLUA_PROXY(LuaBehavior, Behavior)
     OOLUA_MEM_FUNC_CONST(uint64_t, getTriggers)
     OOLUA_MEM_FUNC(void, setTriggers, uint64_t)
     OOLUA_MEM_FUNC_CONST(maybe_null<LuaBehaviorScript*>, getScript)
-    OOLUA_MEM_FUNC(void, setBehavName, const char*const)
+    OOLUA_MEM_FUNC(void, setBehavName, const char*)
     OOLUA_MEM_FUNC(Lua_table_ref, getParamTable)
     OOLUA_MEM_FUNC(void, setParamTable, Lua_table_ref)
 

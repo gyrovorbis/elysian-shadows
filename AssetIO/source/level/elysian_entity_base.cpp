@@ -701,7 +701,9 @@ void EntityBase::setLuaBehaviorByIndex(const unsigned index, const OOLUA::Lua_ta
         //Entity* entity = Entity::create(valueTable);
         LuaBehavior* behav = new LuaBehavior(*static_cast<Entity*>(this));
         behav->fromTable(valueTable);
-        behav->loadScript();
+        if(behav->loadScript()) {
+            attachBehavior(behav);
+        }
 
     } else if(index < _behavior.size()) {                        //initialize existing entity
         assert(false);
