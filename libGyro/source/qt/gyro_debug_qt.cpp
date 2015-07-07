@@ -16,8 +16,12 @@ void gyPrintf(const char *const str, ...) {
     vsprintf(buffer, str, argptr);
     va_end(argptr);
 
-    printf("%s", buffer);
-    fflush(stdout);
+    //printf("%s", buffer); Still won't force Qt's fucking debug log to update!
+    //fflush(stdout);
+
+    QString qBuff(buffer);
+    qBuff.chop(1);
+    QTextStream(stdout) << qBuff << endl;
 
     //QString qBuff(buffer);
     //qBuff.chop(1);
