@@ -40,17 +40,20 @@ class Font;
 		
 		void update(void);
         void render(void);
-		
 
 		void addLine(const TEXT_TYPE lineType, const char* line);
-        //void setEnabled(const bool val);
+        void addLine(const char* line);
+        void clear(void);
+
         bool isEnabled(void) const;
         void fade(const float time, const bool enabled=false);
-
 
         void setLabel(const char*label);
         void setLabelFont(Font*const font);
         void setTextFont(Font*const font);
+
+        void setStaticText(const bool val=true);
+        bool hasStaticText(void) const;
 
 	private:
         //static const float _exitFadeTime;
@@ -71,13 +74,13 @@ class Font;
         float       _exitFadeTime   = 0.0f;
         Font*       _labelFont      = nullptr;
         Font*       _textFont       = nullptr;
-        unsigned    _scrW;
-        unsigned    _scrH;
+        unsigned    _scrW           = 0;
+        unsigned    _scrH           = 0;
+        bool        _staticText     = false;
 		//float _waitCounter;
 		//unsigned int _maxLinesOnscreen;
 		
 	}; 
-
 
 
 
@@ -88,6 +91,7 @@ class Font;
     inline void AdventureLog::setTextFont(Font * const font) { _textFont = font; }
     inline void AdventureLog::setLabel(const char *label) { strcpy(_label, label); }
 
+    inline void AdventureLog::clear(void) { _startIndex = _endIndex; }
 
 	inline bool AdventureLog::isEnabled(void) const {
 		return (_exitState == EXIT_ACTIVE || _exitState == EXIT_FADE_IN)? true : false;
@@ -97,6 +101,12 @@ class Font;
         _exitState = enabled? EXIT_FADE_IN : EXIT_FADE_OUT;
         _exitFadeTime = time;
     }
+
+    inline bool AdventureLog::hasStaticText(void) const { return _staticText; }
+
+    inline void AdventureLog::setStaticText(const bool val) { _staticText = val; }
+
+    inline void AdventureLog::addLine(const char* string) { addLine(TEXT_NORMAL, string); }
     
 }
 

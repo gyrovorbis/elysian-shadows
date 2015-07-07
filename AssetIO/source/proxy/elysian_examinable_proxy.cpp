@@ -16,8 +16,15 @@
 #include <proxy/elysian_lua_behavior_proxy.hpp>
 
 
-
 OOLUA_EXPORT_FUNCTIONS(Examinable,
                        setDialog,
-                       setMaxDist)
-OOLUA_EXPORT_FUNCTIONS_CONST(Examinable)
+                       setMaxDist,
+                       setEnabled,
+                       setRelativeDir,
+                       setHasDescription)
+OOLUA_EXPORT_FUNCTIONS_CONST(Examinable,
+                             isEnabled,
+                             getMaxDist,
+                             getRelativeDir,
+                             hasDescription,
+                             getDialog)

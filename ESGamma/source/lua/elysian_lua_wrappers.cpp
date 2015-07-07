@@ -142,6 +142,7 @@ namespace elysian {
 		_mainState->register_class<DaySystem>();
 		_mainState->register_class<DialogSystem>();
 		_mainState->register_class<RigidBodySystem>();
+        _mainState->register_class<AdventureLog>();
 		_mainState->register_class<GuiSystem>();
 		_mainState->register_class<LevelSystem>();
 		_mainState->register_class<CombatSystem>();

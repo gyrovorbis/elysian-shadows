@@ -117,7 +117,6 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../AssetIO/source/component/elysian_combat_base.cpp \
     ../../AssetIO/source/component/elysian_examinable_base.cpp \
     ../../AssetIO/source/component/elysian_light_source_base.cpp \
-    ../../AssetIO/source/component/elysian_lua_behavior.cpp \
     ../../AssetIO/source/component/elysian_particle_emitter_base.cpp \
     ../../AssetIO/source/component/elysian_renderable_base.cpp \
     ../../AssetIO/source/component/elysian_rigid_body_base.cpp \
@@ -272,7 +271,9 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../ESGamma/source/proxy/elysian_party_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_rigid_body_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_timer_system_proxy.cpp \
-    source/core/tk_network_access_manager.cpp
+    source/core/tk_network_access_manager.cpp \
+    ../../AssetIO/source/component/elysian_lua_behavior_base.cpp \
+    source/asset/tk_lua_behavior.cpp
 
 
 HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
@@ -284,7 +285,6 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../AssetIO/include/component/elysian_component_base.hpp \
     ../../AssetIO/include/component/elysian_examinable_base.hpp \
     ../../AssetIO/include/component/elysian_light_source_base.hpp \
-    ../../AssetIO/include/component/elysian_lua_behavior.hpp \
     ../../AssetIO/include/component/elysian_particle_emitter_base.hpp \
     ../../AssetIO/include/component/elysian_renderable_base.hpp \
     ../../AssetIO/include/component/elysian_rigid_body_base.hpp \
@@ -503,7 +503,10 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../ESGamma/include/proxy/elysian_particle_system_proxy.hpp \
     ../../ESGamma/include/proxy/elysian_party_system_proxy.hpp \
     ../../ESGamma/include/proxy/elysian_timer_system_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_rigid_body_system_proxy.hpp
+    ../../ESGamma/include/proxy/elysian_rigid_body_system_proxy.hpp \
+    include/asset/tk_lua_behavior.h \
+    ../../AssetIO/include/component/elysian_lua_behavior_base.hpp \
+    ../../AssetIO/include/crtp/elysian_lua_behavior.hpp
 
 
 FORMS += form/estk/tk_sheet_dock_widget.ui \

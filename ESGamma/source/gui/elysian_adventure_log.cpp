@@ -17,7 +17,7 @@ namespace elysian {
  is handled here: Full log and string is too big for a single line.
  */
 void AdventureLog::addLine(const TEXT_TYPE lineType, const char *line) {
-    fade(ELYSIAN_ADV_LOG_DEFAULT_FADE_TIME, true);
+    if(!_staticText) fade(ELYSIAN_ADV_LOG_DEFAULT_FADE_TIME, true);
     getGuiSys()->getResolution(_scrW, _scrH);
     if(_endIndex == ELYSIAN_ADV_LOG_LINES-1) { //The entire log is COMPLETELY full. Problem.
 		

@@ -28,6 +28,8 @@
 #include <QGridLayout>
 #include <tk_menu_stack.h>
 
+#define TK_ENTITY_CONTEXT_MENU_BEHAVIOR_NAME_SIZE   100
+
 /*!
     \class TkEntity
     \brief The MyClassName class is used as an example on Stack Overflow.
@@ -326,6 +328,16 @@ QMenu* TkEntity::createContextMenu(void) {
         canAddTo(elysian::RigidBody())
     )->setMenu(getRigidBody()? getRigidBody()->createContextMenu() : nullptr);
 
+    menuStack.insertCheckableAction("Examinable",
+        [&](bool checked) {
+            if(checked) addExaminable();
+            else removeExaminable();
+        },
+        getExaminable(),
+        canAddTo(elysian::Examinable())
+    )->setMenu(getExaminable()? getExaminable()->createContextMenu() : nullptr);
+
+
     menuStack.insertCheckableAction("Warp",
         [&](bool checked) {
             if(checked) addWarp();
@@ -379,6 +391,34 @@ QMenu* TkEntity::createContextMenu(void) {
         getCombat(),
         canAddTo(elysian::Combat())
     )->setMenu(getCombat()? getCombat()->createContextMenu() : nullptr);
+
+    menuStack.pop();
+
+    menuStack.push("Behaviors");
+
+    unsigned behavNum = 0;
+    for(auto behav : _behavior) {
+        char strBuff[TK_ENTITY_CONTEXT_MENU_BEHAVIOR_NAME_SIZE];
+
+        sprintf(strBuff, "%d - %s", ++behavNum, Q_CSTR(static_cast<LuaBehavior*>(behav.second)->getScriptName()));
+        menuStack.insertCheckableAction(strBuff,
+            [=](bool checked) {
+                if(!checked) {
+                    removeLuaBehavior(behav.second->getBehavName());
+                }
+            },
+            true,
+            true
+        );
+    }
+
+    menuStack.insertAction("New Behavior",
+                           [&](const bool checked) {
+        LuaBehavior* behav = new LuaBehavior(*this);
+        attachBehavior(behav);
+    });
+
+    menuStack.pop();
 
     return menuStack.first();
 }

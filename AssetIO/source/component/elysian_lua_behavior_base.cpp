@@ -30,11 +30,11 @@
 
 namespace elysian {
 
-ELYSIAN_LUA_PROXY_FIELDS_EXPORT(LuaBehavior)
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(LuaBehaviorBase)
 
-LuaBehavior::LuaBehavior(Entity &entity): Behavior(entity) {}
+LuaBehaviorBase::LuaBehaviorBase(Entity &entity): Behavior(entity) {}
 
-LuaBehavior::LuaBehavior(Entity &entity,
+LuaBehaviorBase::LuaBehaviorBase(Entity &entity,
                          const char *script,
 						 const OOLUA::Lua_table_ref paramTable):
                          Behavior(entity)
@@ -44,12 +44,12 @@ LuaBehavior::LuaBehavior(Entity &entity,
     loadScript();
 }
 
-void LuaBehavior::setBehavName(const char * const path) {
+void LuaBehaviorBase::setBehavName(const char * const path) {
     if(_script) LuaManager::unloadBehaviorScript(*_script);
     _script = LuaManager::loadBehaviorScript(path);
 }
 
-void LuaBehavior::setParamTable(OOLUA::Lua_table_ref ref) {
+void LuaBehaviorBase::setParamTable(OOLUA::Lua_table_ref ref) {
     if(ref.valid()) {
         _paramTableRef = ref;
     } else {
@@ -59,7 +59,7 @@ void LuaBehavior::setParamTable(OOLUA::Lua_table_ref ref) {
 }
 
 	
-LuaBehavior::~LuaBehavior(void) {
+LuaBehaviorBase::~LuaBehaviorBase(void) {
 	//Traverse hierarchy from BOTTOM TO TOP cleaning shit up
 	//    - Call onDestroy if script implements it (NOT if behavior uses it)
 	//    - OOLUA will delete selfTables automatically
@@ -75,7 +75,7 @@ LuaBehavior::~LuaBehavior(void) {
     }
 }
 
-bool LuaBehavior::loadScript(void) {
+bool LuaBehaviorBase::loadScript(void) {
     DbgEvent event("LuaBehavior::loadScript(%s)", getBehavName());
     if(!_script) {
         errprintf("Could not load script!");
@@ -122,7 +122,7 @@ bool LuaBehavior::loadScript(void) {
 
 			OOLUA::push(*_mainState, getEntity());							//push parent entity
             lua_setfield(*_mainState, -2, "selfEntity");					//selfTable.selfBehav = entity
-            OOLUA::push(*_mainState, this);                                 //push parent entity
+            OOLUA::push(*_mainState, static_cast<LuaBehavior*>(this));                                 //push parent entity
             lua_setfield(*_mainState, -2, "selfBehav");                     //selfTable.selfBeahv
 		}
 
@@ -145,7 +145,7 @@ bool LuaBehavior::loadScript(void) {
 	return true;
 }
 
-void LuaBehavior::_selfTableDump(void) {
+void LuaBehaviorBase::_selfTableDump(void) {
 	char selfDisplay[20] = {0};
 	Debug::luaPrint("**** BEHAVIOR SELF TABLE DUMP ****");
 
@@ -155,95 +155,95 @@ void LuaBehavior::_selfTableDump(void) {
 	}
 }
 
-void LuaBehavior::onUpdate(void) {
+void LuaBehaviorBase::onUpdate(void) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_UPDATE_INDEX, _ooSelfTableRef));
 }
 
-void LuaBehavior::onRender(void) {
+void LuaBehaviorBase::onRender(void) {
 
 }
 
-void LuaBehavior::onCreate(void) {
+void LuaBehaviorBase::onCreate(void) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_CREATE_INDEX, _ooSelfTableRef));
 }
 
-void LuaBehavior::onDestroy(void) {
+void LuaBehaviorBase::onDestroy(void) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_DESTROY_INDEX, _ooSelfTableRef));
 }
 
-void LuaBehavior::onLoad(void) {
+void LuaBehaviorBase::onLoad(void) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_LOAD_INDEX, _ooSelfTableRef));
 }
 
-void LuaBehavior::onUnload(void) {
+void LuaBehaviorBase::onUnload(void) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_UNLOAD_INDEX, _ooSelfTableRef));
 }
 
-void LuaBehavior::onEnter(void) {
+void LuaBehaviorBase::onEnter(void) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_ENTER_INDEX, _ooSelfTableRef));
 }
 
-void LuaBehavior::onExit(void) {
+void LuaBehaviorBase::onExit(void) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_EXIT_INDEX, _ooSelfTableRef));
 }
 	
-void LuaBehavior::onCollide(CollisionContact*const contact, elysian::Collidable *collidable) {
+void LuaBehaviorBase::onCollide(CollisionContact*const contact, elysian::Collidable *collidable) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COLLIDE_INDEX, _ooSelfTableRef, contact, collidable));
 }
 
-void LuaBehavior::onCollisionEnter(CollisionContact*const contact, elysian::Collidable *collidable) {
+void LuaBehaviorBase::onCollisionEnter(CollisionContact*const contact, elysian::Collidable *collidable) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COLLISION_ENTER_INDEX, _ooSelfTableRef, contact, collidable));
 }
 
-void LuaBehavior::onCollisionExit(elysian::Collidable *collidable) {
+void LuaBehaviorBase::onCollisionExit(elysian::Collidable *collidable) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COLLISION_EXIT_INDEX, _ooSelfTableRef, collidable));
 }
 
-void LuaBehavior::onShatter(CollisionContact* contact) {
+void LuaBehaviorBase::onShatter(CollisionContact* contact) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_SHATTER_INDEX, _ooSelfTableRef, contact));
 }
 
-void LuaBehavior::onExamine(Entity* entity) {
+void LuaBehaviorBase::onExamine(Entity* entity) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_EXAMINE_INDEX, _ooSelfTableRef, entity));
 }
 
-void LuaBehavior::onDialog(const unsigned screen, const int option) {
+void LuaBehaviorBase::onDialog(const unsigned screen, const int option) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_DIALOG_INDEX, _ooSelfTableRef, screen, option));
 }
 
-void LuaBehavior::onCombatEnter(void) {
+void LuaBehaviorBase::onCombatEnter(void) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COMBAT_ENTER_INDEX, _ooSelfTableRef));
 }
 
-void LuaBehavior::onCombatExit(void) {
+void LuaBehaviorBase::onCombatExit(void) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COMBAT_EXIT_INDEX, _ooSelfTableRef));
 }
 
-void LuaBehavior::onCombatDeath(void) {
+void LuaBehaviorBase::onCombatDeath(void) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COMBAT_DEATH_INDEX, _ooSelfTableRef));
 }
 
-void LuaBehavior::onCombatReceiveStatusModifier(CombatStatus*const modifier) {
+void LuaBehaviorBase::onCombatReceiveStatusModifier(CombatStatus*const modifier) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COMBAT_RECEIVE_STATUS_MODIFIER_INDEX, _ooSelfTableRef, modifier));
 }
 
-void LuaBehavior::onCombatTargetCollisionEnter(CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier) {
+void LuaBehaviorBase::onCombatTargetCollisionEnter(CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COMBAT_TARGET_COLLISION_ENTER_INDEX, _ooSelfTableRef, contact, collidable, modifier));
 }
 
-void LuaBehavior::onButtonPress(const GameInput::BUTTON button) {
+void LuaBehaviorBase::onButtonPress(const GameInput::BUTTON button) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_BUTTON_PRESS_INDEX, _ooSelfTableRef, button));
 }
 
-void LuaBehavior::onButtonRelease(const GameInput::BUTTON button) {
+void LuaBehaviorBase::onButtonRelease(const GameInput::BUTTON button) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_BUTTON_RELEASE_INDEX, _ooSelfTableRef, button));
 }
 
-void LuaBehavior::onTkSelect(void) {
+void LuaBehaviorBase::onTkSelect(void) {
     _PROTECTED(_callTriggerByName<void>("onTkSelect", _ooSelfTableRef));
 }
 
-void LuaBehavior::onTkUnselect(void) {
+void LuaBehaviorBase::onTkUnselect(void) {
     _PROTECTED(_callTriggerByName<void>("onTkUnselect", _ooSelfTableRef));
 }
 

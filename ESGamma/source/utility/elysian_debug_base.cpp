@@ -26,7 +26,7 @@
 #include "elysian_collision_system.hpp"
 #include "elysian_level.hpp"
 #include "elysian_adventure_log.hpp"
-#include "elysian_lua_behavior.hpp"
+#include "elysian_lua_behavior_base.hpp"
 #include "elysian_audio_source.hpp"
 #include "elysian_light_source.hpp"
 #include "elysian_light_system.hpp"

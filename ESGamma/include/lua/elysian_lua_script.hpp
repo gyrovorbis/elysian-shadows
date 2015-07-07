@@ -1,5 +1,5 @@
-#ifndef ELYSIAN_LUA_SCRIPT_H
-#define ELYSIAN_LUA_SCRIPT_H
+#ifndef ELYSIAN_LUA_SCRIPT_HPP
+#define ELYSIAN_LUA_SCRIPT_HPP
 
 #include <oolua.h>
 #include <cstring>

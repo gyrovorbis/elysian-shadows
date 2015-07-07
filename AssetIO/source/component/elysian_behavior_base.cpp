@@ -1,5 +1,4 @@
 #include "elysian_behavior.hpp"
-#include "elysian_lua_behavior.hpp"
 #include "elysian_collidable.hpp"
 #include "elysian_generic.hpp"
 #include "elysian_asset_typedefs.hpp"

@@ -1,26 +1,27 @@
-#ifndef ELYSIAN_LUA_BEHAVIOR_HPP
-#define ELYSIAN_LUA_BEHAVIOR_HPP
+#ifndef ELYSIAN_LUA_BEHAVIOR_BASE_HPP
+#define ELYSIAN_LUA_BEHAVIOR_BASE_HPP
 
-#include "elysian_behavior.hpp"
-#include "elysian_lua_manager.hpp"
-#include "elysian_lua_table_proxy.hpp"
+#include <crtp/elysian_behavior.hpp>
+#include <crtp/elysian_lua_table_proxy.hpp>
 
 #define ELYSIAN_LUA_BEHAVIOR_NAME				"LuaBehavior"
 #define ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH	5
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 ELYSIAN_ASSET_TYPEDEF(Collidable)
+ELYSIAN_ASSET_TYPEDEF(LuaBehavior)
 
 namespace elysian {
 
 	class LuaBehaviorScript;
 
-    class LuaBehavior:
-            public LuaTableProxy<LuaBehavior, LuaBehavior>,
-            public Behavior
-    //        public LuaManager (inherited from LuaTableProxy already)
-    {
+    class LuaBehaviorBase:
+            public Behavior,
+            public LuaTableProxy<LuaBehaviorBase, LuaBehavior>  {
+    friend LuaBehavior;
     friend class BaseEntity;
+    friend Entity;
+
     public:
 
     ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
@@ -47,11 +48,11 @@ namespace elysian {
 
         template<typename RType, typename... PTypes>
         RType _callTriggerByIndex(const uint64_t trigger, PTypes... parameters) {
-            lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());
-            lua_pushinteger(*_mainState, trigger);
-            lua_gettable(*_mainState, -2);      //must invoke metamethods for behavior inheritance
+            lua_rawgeti(*LuaManager::_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());
+            lua_pushinteger(*LuaManager::_mainState, trigger);
+            lua_gettable(*LuaManager::_mainState, -2);      //must invoke metamethods for behavior inheritance
             //lua_rawgeti(*_mainState, -1, trigger);
-            lua_remove(*_mainState, -2);
+            lua_remove(*LuaManager::_mainState, -2);
             return LuaManager::_callFunction<RType>(_script, parameters...);
         }
 
@@ -68,9 +69,9 @@ namespace elysian {
         ELYSIAN_LUA_PROXY_FIELDS_END()
 */
 
-                            LuaBehavior(Entity& entity);
-                            LuaBehavior(Entity& entity, const char *script, const OOLUA::Lua_table_ref paramTable);
-        virtual             ~LuaBehavior(void) override;
+                            LuaBehaviorBase(Entity& entity);
+                            LuaBehaviorBase(Entity& entity, const char *script, const OOLUA::Lua_table_ref paramTable);
+        virtual             ~LuaBehaviorBase(void) override;
 
         bool				loadScript(void);
                 template<typename RType, typename... PTypes>
@@ -119,17 +120,17 @@ namespace elysian {
 
     //======= INLINEZ ======
 
-    inline const char* LuaBehavior::getBehavName(void) const {
+    inline const char* LuaBehaviorBase::getBehavName(void) const {
         return (_script)? _script->getPath() : "none";
     }
 
-    inline LuaBehaviorScript* LuaBehavior::getScript(void) const { return _script; }
+    inline LuaBehaviorScript* LuaBehaviorBase::getScript(void) const { return _script; }
 
-    inline OOLUA::Lua_table_ref& LuaBehavior::getSelfTable(void) { return *_ooSelfTableRef; }
+    inline OOLUA::Lua_table_ref& LuaBehaviorBase::getSelfTable(void) { return *_ooSelfTableRef; }
 
-    inline OOLUA::Lua_table_ref LuaBehavior::getParamTable(void) { return _paramTableRef; }
+    inline OOLUA::Lua_table_ref LuaBehaviorBase::getParamTable(void) { return _paramTableRef; }
 
-    inline int LuaBehavior::getSelfTableRef(void) const { return _ooSelfTableRef->ref(); }
+    inline int LuaBehaviorBase::getSelfTableRef(void) const { return _ooSelfTableRef->ref(); }
 
 
 }

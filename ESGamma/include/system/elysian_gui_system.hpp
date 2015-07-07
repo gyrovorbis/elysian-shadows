@@ -173,9 +173,10 @@ namespace elysian {
         void            clearFgMenuWidget(void);
         void            setBgMenuWidget(MenuWidget*const widget);
         void            clearBgMenuWidget(void);
-        void            setAdvLogEnabled(const bool val);
         void            setExamineEntity(const Entity* const entity);
         const Entity*   getExamineEntity(void) const;
+        AdventureLog&   getAdvLog(void);
+        void            setAdvLogEnabled(const bool enabled=true);
 
         void            addCombatStatsEntity(const Entity*const entity);
         void            removeCombatStatsEntity(const Entity*const entity);
@@ -270,6 +271,8 @@ namespace elysian {
     }
 
     inline auto GuiSystem::getFgFadeState(void) const -> FADE_STATE { return _fgFadeState; }
+
+    inline AdventureLog& GuiSystem::getAdvLog(void) { return adventureLog; }
 
 
 }

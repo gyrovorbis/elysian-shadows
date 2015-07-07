@@ -18,10 +18,9 @@
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 ELYSIAN_ASSET_TYPEDEF(Area)
+ELYSIAN_ASSET_TYPEDEF(LuaBehavior)
 
 namespace elysian {
-
-    class LuaBehavior;
 
 	class EntityBase:
 			public RenderableObject,
@@ -42,6 +41,7 @@ namespace elysian {
             //ELYSIAN_LUA_PROXY_FIELD(animation,          getAnimation,           setAnimation)
             ELYSIAN_LUA_PROXY_FIELD(collidable,         getCollidable,          setCollidable)
             ELYSIAN_LUA_PROXY_FIELD(rigidBody,          getRigidBody,           setRigidBody)
+            ELYSIAN_LUA_PROXY_FIELD(examinable,         getExaminable,          setExaminable)
             ELYSIAN_LUA_PROXY_FIELD(warp,               getWarp,                setWarp)
             ELYSIAN_LUA_PROXY_FIELD(character,          getCharacter,           setCharacter)
             ELYSIAN_LUA_PROXY_FIELD(lightSource,        getLightSource,         setLightSource)
