@@ -27,6 +27,7 @@ void CharacterBase::setDashing(const bool val) {
 void CharacterBase::faceDir(const Direction::DIR4 dir) {
 	if(_animate) {
 		Animation *animComp = _entity->getAnimation();
+        if(!animComp) return;
 		switch(dir) {
 			case Direction::DIR4_UP:
 				animComp->playAnimation("Up");
@@ -89,6 +90,7 @@ void CharacterBase::animateWalk(const GYVector2 &moveVec) {
 
     if(_animate) {
         Animation *animComp = _entity->getAnimation();
+        if(!animComp) return;
 
         if((_walkAnimInterp && _faceDir == dir) || !_walkAnimInterp) {
             switch(dir) {
@@ -136,6 +138,7 @@ void CharacterBase::moveByForce(const GYVector2 &dist) {
 }
 
 void CharacterBase::update(void) {
+    if(!_entity->getAnimation()) return;
 	if(!_movedThisFrame) {
 		_entity->getAnimation()->replaceState("Walk", "Stand");
 		faceDir(_faceDir);
@@ -253,7 +256,7 @@ void CharacterBase::jump(void) {
    // force.y *= rb->getStaticAttrib()->zDamping;
 
     rb->applyForce(force);
-
+    if(!_entity->getAnimation()) return;
     _entity->getAnimation()->replaceState("Fall", "Jump");
 }
 

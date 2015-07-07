@@ -305,6 +305,7 @@ void AnimationBase::playAnimation(const char *name, EventMonitor*const monitor) 
 
     if(!_isActive || !currentSequence || strcmp(name, currentSequence->getName()) != 0) {
         setSequence(name);
+        if(!currentSequence || strcmp(currentSequence->getName(), name) != 0) return;
         _timer = 0.0f;
         _isActive = true;
         _monitor = monitor;
