@@ -11,8 +11,10 @@
 #define ESTK_USER_MANUAL_QHC_RESOURCE_PATH  ":/manual/docs/ESToolkit.qhc"
 #define ESTK_USER_MANUAL_QCH_RESOURCE_PATH  ":/manual/docs/ESToolkit.qch"
 
-#define ESTK_USER_MANUAL_QHC_EXPANDED_PATH  "doc/ESToolkit.qhc"
-#define ESTK_USER_MANUAL_QCH_EXPANDED_PATH  "doc/ESToolkit.qch"
+#define ESTK_USER_MANUAL_QHC_FILE_NAME      "ESToolkit.qhc"
+#define ESTK_USER_MANUAL_QCH_FILE_NAME      "ESToolkit.qch"
+#define ESTK_USER_MANUAL_QHC_EXPANDED_PATH  "doc/" ESTK_USER_MANUAL_QHC_FILE_NAME
+#define ESTK_USER_MANUAL_QCH_EXPANDED_PATH  "doc/" ESTK_USER_MANUAL_QCH_FILE_NAME
 #define ESTK_USER_MANUAL_EXPANDED_DIR       "doc"
 
 class HelpBrowser : public QTextBrowser
