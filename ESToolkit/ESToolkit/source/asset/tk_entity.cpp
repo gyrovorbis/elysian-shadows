@@ -30,18 +30,6 @@
 
 #define TK_ENTITY_CONTEXT_MENU_BEHAVIOR_NAME_SIZE   100
 
-/*!
-    \class TkEntity
-    \brief The MyClassName class is used as an example on Stack Overflow.
-
-    This class serves a few functions, the most important being:
-
-    \list
-        \i So people can understand my question.
-        \i So people can have a few laughs at the comedy in my example.
-    \endlist
- */
-
 elysian::CollidableAttrib* TkEntity::_selColliderAttrib;
 //elysian::Material* TkEntity::_selMaterial;
 bool TkEntity::_staticInit = false;

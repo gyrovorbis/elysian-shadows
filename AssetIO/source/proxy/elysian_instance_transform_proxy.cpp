@@ -1,6 +1,48 @@
 #include <proxy/elysian_instance_transform_proxy.hpp>
 
 
+
+/*!
+    \qmltype Vector2
+    \since 1.5.8
+    \inmodule ESToolkit
+    \brief Represents a 2-dimensional vector.
+*/
+
+/*!
+ * \qmlproperty float Vector2::x
+ *
+ * \sa getX(), setX()
+ */
+/*!
+ * \qmlproperty float Vector2::y
+ *
+ * \sa getY(), setY()
+ */
+
+/*!
+ * \qmlmethod float Vector2::getX()
+ *
+ * Returns the value of the vector's X component.
+ */
+/*!
+ * \qmlmethod float Vector2::getY()
+ *
+ * Returns the value of the vector's Y component.
+ */
+/*!
+ * \qmlmethod void Vector2::setX(float val)
+ *
+ * Sets the value of the vector's X component.
+ */
+/*!
+ * \qmlmethod void Vector2::setY(float val)
+ *
+ * Sets the value of the vector's Y component.
+ */
+
+
+
 //EXPORT_OOLUA_FUNCTIONS_0_CONST(GYVector2)
 //EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(GYVector2)
 OOLUA_EXPORT_FUNCTIONS(GYVector2, setX, setY)
