@@ -44,21 +44,34 @@ HelpDockWidget::HelpDockWidget(QWidget */*parent*/) {
 
     } else {
 
-        if(QFile::exists(ESTK_USER_MANUAL_QCH_EXPANDED_PATH) && !QFile::remove(ESTK_USER_MANUAL_QCH_EXPANDED_PATH)) {
+        QDir oldCurrent = QDir::current();
+        QDir::setCurrent(dir.absolutePath());
+
+        //Stupid fucking Windows doesn't let us have write permission by default...
+        QFile qchFile(ESTK_USER_MANUAL_QCH_FILE_NAME);
+        qchFile.setPermissions(QFile::WriteUser | QFile::WriteGroup | QFile::WriteOther | QFile::WriteOwner);
+
+        QFile qhcFile(ESTK_USER_MANUAL_QHC_FILE_NAME);
+        qhcFile.setPermissions(QFile::WriteUser | QFile::WriteGroup | QFile::WriteOther | QFile::WriteOwner);
+
+
+        if(QFile::exists(ESTK_USER_MANUAL_QCH_FILE_NAME) && !QFile::remove(ESTK_USER_MANUAL_QCH_FILE_NAME)) {
             Debug::printf(Debug::DBG_WARNING, "Could not overwrite existing QCH file!");
         } else {
-            if(!QFile::copy(ESTK_USER_MANUAL_QCH_RESOURCE_PATH, ESTK_USER_MANUAL_QCH_EXPANDED_PATH)) {
+            if(!QFile::copy(ESTK_USER_MANUAL_QCH_RESOURCE_PATH, ESTK_USER_MANUAL_QCH_FILE_NAME)) {
                 Debug::printf(Debug::DBG_WARNING, "Could not expand QCH file to: [%s]", ESTK_USER_MANUAL_QCH_EXPANDED_PATH);
             }
         }
 
-        if(QFile::exists(ESTK_USER_MANUAL_QHC_EXPANDED_PATH) && !QFile::remove(ESTK_USER_MANUAL_QHC_EXPANDED_PATH)) {
+        if(QFile::exists(ESTK_USER_MANUAL_QHC_FILE_NAME) && !QFile::remove(ESTK_USER_MANUAL_QHC_FILE_NAME)) {
             Debug::printf(Debug::DBG_WARNING, "Could not overwrite existing QCH file!");
         } else {
-            if(!QFile::copy(ESTK_USER_MANUAL_QHC_RESOURCE_PATH, ESTK_USER_MANUAL_QHC_EXPANDED_PATH)) {
+            if(!QFile::copy(ESTK_USER_MANUAL_QHC_RESOURCE_PATH, ESTK_USER_MANUAL_QHC_FILE_NAME)) {
                 Debug::printf(Debug::DBG_WARNING, "Could not expand QHC file to: [%s]", ESTK_USER_MANUAL_QHC_EXPANDED_PATH);
             }
         }
+
+        QDir::setCurrent(oldCurrent.absolutePath());
 
     }
 
