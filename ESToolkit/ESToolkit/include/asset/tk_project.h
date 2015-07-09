@@ -68,6 +68,8 @@ public:
     bool            scanBackLevelPath(const QString path);
     bool            isLevelPath(const QString path);
     void            setIndexHiddenLevels(const bool val);
+    bool            getIndexHiddenLevels(void) const;
+
 
     TkLevel*        importLevel(const QString dir);
     bool            saveAs(const QString dir);
@@ -118,6 +120,7 @@ Q_SIGNALS:
 // ========== INLINEZ ==========
 inline auto Project::getType(void) const -> TYPE { return Selectable::PROJECT; }
 inline auto Project::getTreeWidgetItemType(void) ->ITEM_TYPE { return ITEM_PROJECT; }
+inline bool Project::getIndexHiddenLevels(void) const { return _indexHiddenLevels; }
 
 
 #endif // PROJECT_H

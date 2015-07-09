@@ -508,6 +508,7 @@ void ESToolkit::toggleProjectActions(bool enabled)
     _ui->actionManual_Camera->setEnabled(enabled);
     _ui->actionEnable_Audio->setEnabled(enabled);
     _ui->actionReloadProject->setEnabled(enabled);
+
 }
 
 bool ESToolkit::MaybeSave()
@@ -560,6 +561,8 @@ void ESToolkit::WriteSettings()
         }
         ++source;
     }
+    settings.setValue("showHiddenLevels", _assets.getCurrentProject()? _assets.getCurrentProject()->getIndexHiddenLevels() : false);
+
 }
 
 void ESToolkit::ReadSettings()
@@ -600,9 +603,12 @@ void ESToolkit::ReadSettings()
     bool manualCamera = settings.value("manualCameraEnabled", false).toBool();
     bool audioEnabled = settings.value("audioEnabled", true).toBool();
     bool lightingEnabled = settings.value("lightingEnabled", true).toBool();
+    bool showHiddenLevels = settings.value("showHiddenLevels", false).toBool();
     _engineDialog->setStartPos(x, y);
     MAP_VIEW_RES mapViewRes = (MAP_VIEW_RES)settings.value("mapViewRes", MAP_VIEW_RES_DYNAMIC).toInt();
     _setMapViewResolution(mapViewRes);
+
+
 
 
     //bool assetVisibility = settings.value("assetDock", true).toBool();
@@ -642,6 +648,7 @@ void ESToolkit::ReadSettings()
     _ui->actionLights->setChecked(lightingEnabled);
     _ui->actionManual_Camera->setChecked(manualCamera);
     _ui->actionEnable_Audio->setChecked(audioEnabled);
+    _ui->actionHidden_Levels->setChecked(showHiddenLevels);
     if(!settings.value("gitLabPrivateToken").isNull()) {
         _gitlabDialog->setHostName(settings.value("gitLabHostName").toString());
         _gitlabDialog->setPrivateToken(settings.value("gitLabPrivateToken").toString());
@@ -661,6 +668,8 @@ void ESToolkit::ReadSettings()
         }
         source++;
     }
+
+
 
     toggleProjectActions(false);
 
@@ -938,6 +947,7 @@ void ESToolkit::OnProjectChanged(Project *const project) {
         _ui->menuNew->setDisabled(false);
         _ui->menuClose->setDisabled(false);
         _ui->menuSave->setDisabled(false);
+        project->setIndexHiddenLevels(_engineParams.showHiddenLevels);
     }
     else {
         _ui->menuNew->setDisabled(true);
@@ -2324,5 +2334,8 @@ void ESToolkit::showGitlabBugReportTab(void) const {
 
 void ESToolkit::on_actionHidden_Levels_toggled(bool arg1)
 {
-    _assets.getCurrentProject()->setIndexHiddenLevels(arg1);
+    _engineParams.showHiddenLevels = arg1;
+    if(_assets.getCurrentProject()) {
+        _assets.getCurrentProject()->setIndexHiddenLevels(arg1);
+    }
 }

@@ -1,6 +1,7 @@
 #include <QTreeWidgetItem>
 #include <QDir>
 #include <QMessageBox>
+#include <functional>
 
 #include <tk_project.h>
 #include "elysian_level.hpp"
@@ -9,6 +10,7 @@
 #include "elysian_engine.hpp"
 #include "elysian_level_system.hpp"
 #include <elysian_entity.hpp>
+#include <core/tk_tree_node.h>
 
 Project::Project(void): _active(false) {}
 
@@ -104,9 +106,17 @@ bool Project::saveLevel(const QString name) {
     return false;
 }
 
-TkLevel *Project::getFirstLevel() const {
-    return (_level.size() > 0)? _level.first() : nullptr;
+TkLevel *Project::getFirstLevel(void) const {
+
+    for(unsigned i = 0; i < _level.size(); ++i) {
+        if(_indexHiddenLevels || !_level[i]->getNodeName().startsWith("_")) {
+            return _level[i];
+        }
+    }
+
+    return nullptr;
 }
+
 
 TkLevel *Project::getLevel(const QString path) const  {
 	for(int i = 0; i < _level.size(); ++i) {
@@ -213,6 +223,36 @@ bool Project::scanDirectory(const QString path) {
 
 
 void Project::setIndexHiddenLevels(const bool val) {
+    std::function<void(TreeNode*)> deleteSubDir = [&](TreeNode*const node) {
+        Level* lev;
+
+        while(node->childCount() > 0) {
+            TreeNode* child = static_cast<TreeNode*>(node->child(0));
+            switch(child->getTreeWidgetItemType()) {
+            case TreeNode::AREA:
+                break;
+            case TreeNode::LEVEL:
+                lev = getLevel(child->getNodePath());
+                if(getAssets()->getCurrentLevel() == lev) {
+                    getAssets()->setCurrentLevel(getFirstLevel());
+                }
+                removeLevel(child->getNodePath(), false);
+                break;
+            default:
+                deleteSubDir(child);
+            }
+        }
+
+        auto it = _subDirs.find(node->getNodePath());
+        if(it != _subDirs.end()) {
+            delete node;
+            _subDirs.erase(it);
+        }
+
+
+    };
+
+
     _indexHiddenLevels = val;
     if(val) {
         scanDirectory(getNodePath()+QString("/level"));
@@ -220,30 +260,28 @@ void Project::setIndexHiddenLevels(const bool val) {
         QVector<Level*> levels = _level;
 
         for(Level* level : levels) {
-            QStringList dirs = level->getNodePath().split("/");
-            for(QString dir : dirs) {
-                if(dir.startsWith("_")) {
-                    removeLevel(level->getNodePath());
-                    break;
+            if(level->getNodeName().startsWith("_")) {
+                if(getAssets()->getCurrentLevel() == level) {
+                    getAssets()->setCurrentLevel(getFirstLevel());
+                }
+                removeLevel(level->getNodePath(), false);
+            }
+        }
+
+        for(int i = 0; i < _curNodeParent->childCount(); ++i) {
+            TreeNode* child = static_cast<TreeNode*>(_curNodeParent->child(i));
+            if(child->getNodeName().startsWith("_")) {
+                auto it = _subDirs.find(child->getNodePath());
+                if(it != _subDirs.end()) {
+                    deleteSubDir(child);
+                    //delete child;
+                    i = 0;
                 }
             }
         }
 
-        auto it = _subDirs.begin();
 
-        QList<TreeNode*> toDelete;
-        while(it != _subDirs.end()) {
-            QStringList dirs = it.value()->getNodePath().split("/");
-            for(QString dir : dirs) {
-                if(dir.startsWith("_")) {
-                    if(it.value()->parent() == _curNodeParent) toDelete.push_back(it.value());
-                    it = _subDirs.erase(it);
-                    break;
-                }
-            }
-        }
 
-        for(auto node: toDelete) delete node;
 
     }
 }

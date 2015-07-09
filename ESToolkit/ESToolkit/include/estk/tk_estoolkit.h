@@ -90,6 +90,7 @@ private:
         bool        lightingEnabled     = true;
         bool        manualCameraEnabled = false;
         bool        audioEnabled        = true;
+        bool        showHiddenLevels    = false;
     } _engineParams;
 
     Assets                  _assets;
