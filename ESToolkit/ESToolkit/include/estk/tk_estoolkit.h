@@ -68,6 +68,7 @@ public:
     void            showGitlabBugReportTab(void) const;
     void            setOutputDir(const QDir dir);
     QDir            getOutputDir(void) const;
+    void            setIndexHiddenLevels(const bool val);
 
 protected:
     virtual void    changeEvent(QEvent *e) override;

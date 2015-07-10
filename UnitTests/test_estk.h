@@ -18,6 +18,7 @@ class ESTkTest: public QObject, public AssetManager {
     friend int              main(const QStringList);
 protected:
     static ESToolkit*       _estk;
+    static bool             _assetsTest;
     static QList<QObject*>  _testQueue;
     static QStack<QString>  _subTestStack;
     static QMutex*          _mutex;

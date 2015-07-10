@@ -2339,3 +2339,7 @@ void ESToolkit::on_actionHidden_Levels_toggled(bool arg1)
         _assets.getCurrentProject()->setIndexHiddenLevels(arg1);
     }
 }
+
+void ESToolkit::setIndexHiddenLevels(const bool val) {
+    on_actionHidden_Levels_toggled(val);
+}

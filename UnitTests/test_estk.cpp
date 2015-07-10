@@ -49,6 +49,7 @@ CREATE QUEUE WITH STATES OF INSERTION
 namespace tktest {
 
 ESToolkit*      ESTkTest::_estk             = nullptr;
+bool            ESTkTest::_assetsTest       = false;
 QList<QObject*> ESTkTest::_testQueue;
 QStack<QString> ESTkTest::_subTestStack;
 QMutex*         ESTkTest::_mutex            = nullptr;
@@ -91,6 +92,8 @@ int main(QStringList args)
 
     for(auto it: argIts) if(it != args.end()) args.erase(it);
 
+    ESTkTest::_assetsTest = assetsTest;
+
     args.push_back(QString("-o"));
     args.push_back(QString("ESTkTestResults0000.xml,xml"));
 
@@ -98,10 +101,6 @@ int main(QStringList args)
 
     ESTkTest::enqueueTest(new LibGyroFileApiTest());
     ESTkTest::enqueueTest(new tktest::InitializationTest(project));
-    if(ESTkTest::_estk->getAssets().getCurrentProject()) {
-        showHiddenLevelsSettingVal = ESTkTest::_estk->getAssets().getCurrentProject()->getIndexHiddenLevels();
-        ESTkTest::_estk->getAssets().getCurrentProject()->setIndexHiddenLevels(assetsTest? false : true);
-    }
     if(!assetsTest) {
         ESTkTest::enqueueTest(new tktest::ESToolkitTest);
         ESTkTest::enqueueTest(new tktest::LevelTest);

@@ -27,6 +27,7 @@ inline InitializationTest::InitializationTest(QString assetsPath): _assetsPath(a
 inline void InitializationTest::createESToolkitMainWindow(void) {
     _estk = new ESToolkit;
     QVERIFY(_estk != nullptr);
+    _estk->setIndexHiddenLevels(!_assetsTest);
 }
 
 inline void InitializationTest::openProjectAssetsFolder(void) {
