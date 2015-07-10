@@ -128,6 +128,7 @@ void gyVidLightSourceUninit(GYLightSource* const light) {
     glDeleteTextures(1, &internals->shadowMap);
     glDeleteFramebuffers(1, &internals->fbo);
     free(light->_data);
+    //light->_data = NULL;
 }
 
 void _addLightUniform(const unsigned index, const GYLightSource*const light) {
