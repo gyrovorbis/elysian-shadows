@@ -14,12 +14,12 @@ TEMPLATE = app
 QMAKE_OBJCXXFLAGS_PRECOMPILE += -std=c++11 -stdlib=libc++
 QT		+= sql gui opengl network help
 tests {
-		CONFIG += testcase
-	#CONFIG(release, debug|release) {
-		QT += testlib
+        CONFIG += testcase
+    #CONFIG(release, debug|release) {
+        QT += testlib
 #}
-	#CONFIG(debug, debug|release) {
-	#	QT += QtTest_debug
+    #CONFIG(debug, debug|release) {
+    #	QT += QtTest_debug
 #}
 
 }
@@ -55,18 +55,18 @@ ICON = resource/images/estk.icns
 
 
 DEPENDPATH += 	../../AssetIO/include \
-	../../AssetIO/include/component \
+    ../../AssetIO/include/component \
     ../../AssetIO/include/crtp \
     ../../AssetIO/include/level \
     ../../AssetIO/include/primitive \
     ../../AssetIO/include/utility \
-	../../ESGamma/include \
+    ../../ESGamma/include \
     ../../ESGamma/include/crtp \
     ../../ESGamma/include/gui \
     ../../ESGamma/include/lua \
     ../../ESGamma/include/system \
     ../../ESGamma/include/utility \
-	include \
+    include \
     include/asset \
     include/model \
     include/estk \
@@ -80,18 +80,18 @@ DEPENDPATH += 	../../AssetIO/include \
 
 #PRIORITIZED TO REDUCE BUILD TIME ON FUCKING MINGW
 INCLUDEPATH += ../../AssetIO/include \
-	../../AssetIO/include/component \
+    ../../AssetIO/include/component \
     ../../AssetIO/include/crtp \
     ../../AssetIO/include/level \
     ../../AssetIO/include/primitive \
     ../../AssetIO/include/utility \
-	../../ESGamma/include \
+    ../../ESGamma/include \
     ../../ESGamma/include/crtp \
     ../../ESGamma/include/gui \
     ../../ESGamma/include/lua \
     ../../ESGamma/include/system \
     ../../ESGamma/include/utility \
-	include \
+    include \
     include/asset \
     include/model \
     include/estk \
@@ -107,7 +107,7 @@ INCLUDEPATH += ../../AssetIO/include \
     ../../ESGamma/lib/include \
     ../../Spine/include
 
-PRECOMPILED_HEADER = include/tk_precompiled_headers.h
+#PRECOMPILED_HEADER = include/tk_precompiled_headers.h
 
 SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../AssetIO/source/component/elysian_audio_source_base.cpp \
@@ -668,11 +668,13 @@ win32 {
         LIBS += -L../../lib/win32 \
                 #-llua52 \
                 -L../../libGyro/lib/win32 \
+                -lDbgHelp \
                 -lglew32 \
                 #-lglew32.dll \
                 -lglu32 \
                 -lopengl32 \
                 -lopenal32.dll \
+                #-lDbgHelp.dll \
                 -lz \
                 -lz.dll \
                # -lmingw32 \

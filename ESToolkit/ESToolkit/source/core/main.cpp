@@ -1,5 +1,10 @@
 #include <QApplication>
 
+#ifdef _WIN32
+#include <windows.h>
+#include <dbghelp.h>
+#endif
+
 #include <QSplashScreen>
 #include <QSurfaceFormat>
 #include <tk_estoolkit.h>
@@ -192,6 +197,14 @@ static GYAppCbRet Init(int argc, char **argv) {
 
 
 int main(int argc, char* argv[]) {
+#ifdef _WIN32
+    int retVal = SymInitialize
+    (
+        GetCurrentProcess(),        // Process to get symbol table for
+        NULL,                          // Where to search for symbol files: dont care
+        TRUE                           // Get symbols for all dll's etc. attached to process
+    );
+#endif
     return Init(argc, argv);
     //gySysRegisterAppInit(&Init);
 }
