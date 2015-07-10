@@ -58,6 +58,7 @@ bool            ESTkTest::_expectWarning    = false;
 
 int main(QStringList args)
 {
+    bool showHiddenLevelsSettingVal;
     //Debug::setLevel(Debug::DBG_OFF);
     ESTkTest::initialize();
 
@@ -97,6 +98,10 @@ int main(QStringList args)
 
     ESTkTest::enqueueTest(new LibGyroFileApiTest());
     ESTkTest::enqueueTest(new tktest::InitializationTest(project));
+    if(ESTkTest::_estk->getAssets().getCurrentProject()) {
+        showHiddenLevelsSettingVal = ESTkTest::_estk->getAssets().getCurrentProject()->getIndexHiddenLevels();
+        ESTkTest::_estk->getAssets().getCurrentProject()->setIndexHiddenLevels(assetsTest? false : true);
+    }
     if(!assetsTest) {
         ESTkTest::enqueueTest(new tktest::ESToolkitTest);
         ESTkTest::enqueueTest(new tktest::LevelTest);
@@ -134,6 +139,8 @@ int main(QStringList args)
 
     qDebug() << "FUCKING FUCK!!!!!" << QString(buff) << "errors!";
     qDebug() << ((failures)? "GO FIX ASSETS RIGHT FUCKING NOW!": "WEEEEEEELL! GOOD FUCKING JOB, NIGGAS!");
+
+    ESTkTest::_estk->getAssets().getCurrentProject()->setIndexHiddenLevels(showHiddenLevelsSettingVal);
 
    return failures;
 }
