@@ -130,5 +130,4 @@ SOURCES += \
     ../../source/qt/gyro_debug_qt.cpp \
     ../../source/qt/gyro_input_qt.cpp \
     ../../source/qt/gyro_timer_qt.cpp \
-        ../../source/qt/gyro_video_qt.cpp \
-    ../../source/x86/gyro_stacktrace_win_x86.c
+        ../../source/qt/gyro_video_qt.cpp
