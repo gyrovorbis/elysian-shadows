@@ -16,6 +16,10 @@ namespace elysian {
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(SkeletonBase)
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(SkeletonAttribBase)
 
+SkeletonBase::SkeletonBase(const SkeletonBase &other) {
+    *this = other;
+}
+
 SkeletonAttribBase::~SkeletonAttribBase(void) {
     spAnimationStateData_dispose(_animStateData);
     spSkeletonData_dispose(_skeletonData);

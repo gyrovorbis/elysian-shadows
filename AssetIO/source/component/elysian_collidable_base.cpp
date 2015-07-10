@@ -30,6 +30,10 @@ ELYSIAN_LUA_PROXY_FIELDS_EXPORT(CollidableBase)
 
 CollisionSystem* CollidableBase::_colSys = nullptr;
 
+CollidableBase::CollidableBase(const CollidableBase &other) {
+    *this = other;
+}
+
 void CollidableAttrib::setStaticAttrib(const OOLUA::Lua_table_ref valTable) { _staticAttrib.fromTable(valTable); }
 
 void CollidableAttrib::setFlags(const OOLUA::Lua_table_ref valTable) { flags.fromTable(valTable); }

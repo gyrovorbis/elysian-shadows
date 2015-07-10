@@ -30,6 +30,7 @@ namespace elysian {
         char                    _levelPath[ELYSIAN_WARP_SEVERITY_PATH_MAX_CHARS]    = { 0 };
 		
                                 WarpBase(Entity &parent);
+                                WarpBase(const WarpBase& other);
                                 WarpBase(void) = default;
                                  //~WarpBase(void) = default;
 		

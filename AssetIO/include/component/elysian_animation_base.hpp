@@ -180,6 +180,7 @@ namespace elysian {
         Entity*                 _parent             = nullptr;
 
                 AnimationBase(Entity& parent);
+                AnimationBase(const AnimationBase& other);
                 AnimationBase(void) = default;
         virtual ~AnimationBase(void) override;
         void    _updateStates(void);

@@ -35,6 +35,7 @@ namespace elysian {
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
                         ExaminableBase(void) = default;
+                        ExaminableBase(const ExaminableBase& other);
                         ExaminableBase(Entity& parent);
 
 		//overridden from Component

@@ -29,6 +29,10 @@ void AnimationBase::addState(const char* state) {
     }
 }
 
+AnimationBase::AnimationBase(const AnimationBase &other) {
+    *this = other;
+}
+
 void AnimationBase::removeState(const char* state) {
     auto it = _statePool.find(AnimStateEntry(state));
 

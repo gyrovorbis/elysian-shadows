@@ -12,6 +12,10 @@ namespace elysian {
 
     AudioSystem* AudioSourceBase::_audioSys = nullptr;
 
+    AudioSourceBase::AudioSourceBase(const AudioSourceBase &other) {
+        *this = other;
+    }
+
     void AudioSourceBase::update(void) {
 		if(_src) {
 			if(gyAudSourceIsPlaying(_src)) {

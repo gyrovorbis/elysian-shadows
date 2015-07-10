@@ -173,7 +173,7 @@ namespace elysian {
         }                       _collider;
 
                                 CollidableBase(Entity &parent);
-
+                                CollidableBase(const CollidableBase& other);
         virtual                 ~CollidableBase(void) = default;
         void                    _updateSortSweepAABB(void);
 

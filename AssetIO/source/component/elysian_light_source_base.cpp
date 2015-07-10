@@ -10,6 +10,12 @@ namespace elysian {
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(LightAttrib)
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(LightSourceBase)
 
+LightSourceBase::LightSourceBase(const LightSourceBase &other) {
+    *this = other;              //absorb the other fucker's config and attrib
+    camera = &_camState;
+    setLightType(other.type);   //Initialize internals
+}
+
 LightSourceBase::~LightSourceBase(void) {
     if(_entity) gyVidLightSourceUninit(static_cast<GYLightSource*>(this));
 }
@@ -53,6 +59,10 @@ float LightAttrib::getRadius(void) {
 }
 
 void LightSourceBase::setLightType(const GY_LIGHT_TYPE _type) {
+  /*  if(_data) {
+        gyVidLightSourceUninit(static_cast<GYLightSource*>(this));
+        _data = nullptr;
+    }*/
 	gyVidLightSourceInit(static_cast<GYLightSource*>(this), _type);
 }
 

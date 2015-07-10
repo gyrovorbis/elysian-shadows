@@ -13,6 +13,10 @@ ELYSIAN_LUA_PROXY_FIELDS_EXPORT(CharacterBase)
 
 float CharacterBase::_deltaTime = 0.0f;
 
+CharacterBase::CharacterBase(const CharacterBase &other) {
+    *this = other;
+}
+
 bool CharacterBase::isFacing(const Entity &entity) const {
     GYVector2 distVec;
     gyVec2Sub(&distVec, (GYVector2*)&entity._transform._pos, (GYVector2*)&_entity->_transform._pos);

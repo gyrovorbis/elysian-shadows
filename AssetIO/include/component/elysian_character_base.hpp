@@ -38,6 +38,7 @@ namespace elysian {
 		
 	protected:
                 CharacterBase(Entity& entity);
+                CharacterBase(const CharacterBase& other);
                 CharacterBase(void)                 = default;
         virtual ~CharacterBase(void) override		= default;
 

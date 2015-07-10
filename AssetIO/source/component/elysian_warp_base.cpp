@@ -8,4 +8,8 @@ namespace elysian {
 
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(WarpBase)
 
+WarpBase::WarpBase(const WarpBase& other) {
+    *this = other;
+}
+
 }

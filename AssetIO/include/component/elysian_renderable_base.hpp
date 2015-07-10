@@ -29,6 +29,7 @@ namespace elysian {
         GY_RECT_TEX_ORIENT	_texOrient		= GY_RECT_TEX_ORIENT_NORMAL;
 
         RenderableBase(Entity &parent);
+        RenderableBase(const RenderableBase& other);
 	public:
 
         RenderableBase(void) = default;

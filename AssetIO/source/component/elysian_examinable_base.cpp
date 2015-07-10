@@ -14,4 +14,8 @@ namespace elysian {
 		_dialog->setTriggerEntity(_entity);
 	}
 
+    ExaminableBase::ExaminableBase(const ExaminableBase& other) {
+        *this = other;
+    }
+
 }

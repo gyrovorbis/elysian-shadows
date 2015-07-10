@@ -19,6 +19,10 @@ ELYSIAN_LUA_PROXY_FIELDS_EXPORT(ParticleEmitterAttrib)
 
 ParticleEmitterAttrib::ParticleEmitterAttrib(void) {}
 
+ParticleEmitterBase::ParticleEmitterBase(const ParticleEmitterBase &other) {
+    *this = other;
+}
+
 ParticleEmitterAttrib::~ParticleEmitterAttrib(void) {
     delete _material;
 

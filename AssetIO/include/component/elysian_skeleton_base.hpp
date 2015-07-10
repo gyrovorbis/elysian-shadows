@@ -68,6 +68,7 @@ namespace elysian {
     public:
                         SkeletonBase(Entity& entity);
                         SkeletonBase(void) = default;
+                        SkeletonBase(const SkeletonBase& other);
         virtual         ~SkeletonBase(void) override;
         SkeletonBase&   operator= (const SkeletonBase& other);
 

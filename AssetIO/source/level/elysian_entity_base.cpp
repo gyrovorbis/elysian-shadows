@@ -746,14 +746,16 @@ template<typename T>
 T* EntityBase::_addComponent(T*& comp, std::vector<T*>* activeList, T* prefab) {
     if(comp) return comp;
     //if(!T::canAddTo(*static_cast<Entity*>(this))) return nullptr;
-    comp = new T(*static_cast<Entity*>(this));
+    if(prefab) {
+        comp = new T(*prefab);
+        comp->_entity = static_cast<Entity*>(this);
+    } else {
+        comp = new T(*static_cast<Entity*>(this));
+    }
+
     if(_active) {
         activeList->push_back(comp);
         _componentActive[T::componentType] = true;
-    }
-    if(prefab) {
-        *comp = *prefab;
-        comp->_entity = static_cast<Entity*>(this);
     }
     return comp;
 }
