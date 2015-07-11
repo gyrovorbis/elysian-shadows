@@ -88,6 +88,7 @@ void CharacterBase::moveByDist(const GYVector2 &dist) {
 
 void CharacterBase::animateWalk(const GYVector2 &moveVec) {
     _movedThisFrame = true;
+    if(!_entity->getAnimation()) return;
     _entity->getAnimation()->replaceState("Stand", "Walk");
 
     Direction::DIR4 dir = Direction::fromVector(moveVec);

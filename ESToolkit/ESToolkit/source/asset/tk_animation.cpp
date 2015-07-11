@@ -38,6 +38,7 @@ void TkAnimation::removeChildEntity(Entity *entity) {
 }
 
 bool TkAnimation::validate(QString &str) const {
+    return true;
     bool success = true;
     auto cAssert = [&](const bool val, const char* msg) {
         if(!val) {

@@ -32,6 +32,7 @@ CollisionSystem* CollidableBase::_colSys = nullptr;
 
 CollidableBase::CollidableBase(const CollidableBase &other) {
     *this = other;
+    _sortSweepAABB = nullptr;
 }
 
 void CollidableAttrib::setStaticAttrib(const OOLUA::Lua_table_ref valTable) { _staticAttrib.fromTable(valTable); }

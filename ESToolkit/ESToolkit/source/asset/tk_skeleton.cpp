@@ -11,6 +11,7 @@ void TkSkeleton::onJsonChanged(void) {
 }
 
 bool TkSkeleton::validate(QString &str) const {
+    return true;
     bool success = true;
     auto cAssert = [&](const bool val, const char* msg) {
         if(!val) {

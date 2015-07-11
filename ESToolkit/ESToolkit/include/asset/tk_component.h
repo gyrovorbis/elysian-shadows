@@ -22,7 +22,7 @@ protected:
 
 public:
                     //GET RID OF THESE DEFAULT!!!!
-    virtual bool    validate(QString& /*str*/) const {return false;}//= 0;
+    virtual bool    validate(QString& /*str*/) const {return true;}//= 0;
     virtual bool    canAddTo(const Entity& /*entity*/) const{return true;}// = 0;
     virtual bool    canRemoveFrom(const Entity& /*entity*/) const{return true;}// = 0;
     virtual TYPE    getType(void) const { return elysian::ComponentBase::MAX_TYPE; }
