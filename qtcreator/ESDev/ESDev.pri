@@ -1,15 +1,15 @@
 exists( ESDevCommandLineArgs.pri ) {
-	message("Including ESDevCommandLineArgs.pri in project file")
-	include( ESDevCommandLineArgs.pri )
+    message("Including ESDevCommandLineArgs.pri in project file")
+    include( ESDevCommandLineArgs.pri )
 }
 
 
 #SPEED UP MINGW'S FUCKTARDEDLY SLOW DUMB ASS!
 win32 {
-        #QMAKE_CXX=../../../qtcreator/ESDev/ccache.exe g++
-        #QMAKE_CC=../../../qtcreator/ESDev/ccache.exe gcc
 
-    #DEFINES += QT_NO_OPENGL_ES_2
+    QMAKE_CFLAGS_RELEASE +=-g -O1
+    QMAKE_CXXFLAGS_RELEASE +=-g -O1
+    QMAKE_LFLAGS_RELEASE=
 }
 
 QMAKE_CXXFLAGS += -Wno-unused-local-typedefs
@@ -36,6 +36,6 @@ macx {
 }
 
 tests {
-	DEFINES += ESTK_UNIT_TESTS
+    DEFINES += ESTK_UNIT_TESTS
 }
 
