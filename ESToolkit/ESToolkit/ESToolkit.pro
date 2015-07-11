@@ -26,7 +26,7 @@ tests {
 
 QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-empty-body
 #QMAKE_DOCS = ESToolkit.qdocconf
-#CONFIG += precompile_header
+CONFIG += precompile_header
 
 #include($$QT_INSTALL_DOCS/global/macros.qdocconf) #macros for QDoc commands
 #include($$QT_INSTALL_DOCS/global/qt-cpp-defines.qdocconf) #needed by C++ projects
