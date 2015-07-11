@@ -15,7 +15,8 @@ INCLUDEPATH += ../../include \
 #==========PLATFORM-SPECIFIC BULLSHIT==========
 
 win32 {
-        INCLUDEPATH +=  ../../lib/win32
+        INCLUDEPATH +=  ../../lib/win32 \
+                        ../../lib/win32/mingw
         SOURCES +=	../../source/x86/turfs_windows.c
 }
 
@@ -103,7 +104,7 @@ HEADERS += \
     ../../include/glal/gyro_file_glal.inl
 
 SOURCES += \
-	../../source/qt/gyro_file_qt.cpp \
+    ../../source/qt/gyro_file_qt.cpp \
     ../../source/common/turfs_common.c \
     ../../source/common/turfs_strings.c \
     ../../source/x86/turfs_file_stdio.c \
