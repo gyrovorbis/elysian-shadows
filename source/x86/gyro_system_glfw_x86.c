@@ -83,6 +83,8 @@ static void _checkCPUCapabilities(void) {
 #elif defined(_WIN32)
 #include <windows.h>
 #include <imagehlp.h>
+#include <process.h>
+#include <dbghelp.h>
 #endif
 
 static GYSysParams _sysParams;
@@ -160,6 +162,245 @@ unsigned int gySysStatsVram(void) {
 unsigned int gySysStatsRam(void) {
     return 0;
 }
+
+
+
+#if defined(_WIN32)
+
+extern void backtrace_register();
+
+#define TRACE_MAX_FUNCTION_NAME_LENGTH  255
+
+void windows_print_stacktrace(EXCEPTION_POINTERS * ExceptionInfo) {
+
+    // Initialise the symbol table to get function names:
+       HANDLE thread = GetCurrentThread();
+       HANDLE process = GetCurrentProcess();
+
+       CONTEXT context = *(ExceptionInfo->ContextRecord);
+       //memset(&context, 0, sizeof(CONTEXT));
+       //context.ContextFlags = CONTEXT_FULL;
+       //RtlCaptureContext(&context);
+
+
+
+    // Store the current stack frame here:
+    STACKFRAME frame = { 0 };
+     DWORD image;
+     ZeroMemory(&frame, sizeof(STACKFRAME));
+ #ifdef _M_IX86
+     image = IMAGE_FILE_MACHINE_I386;
+     frame.AddrPC.Offset = context.Eip;
+     frame.AddrPC.Mode = AddrModeFlat;
+     frame.AddrFrame.Offset = context.Ebp;
+     frame.AddrFrame.Mode = AddrModeFlat;
+     frame.AddrStack.Offset = context.Esp;
+     frame.AddrStack.Mode = AddrModeFlat;
+ #elif _M_X64
+     image = IMAGE_FILE_MACHINE_AMD64;
+     frame.AddrPC.Offset = context->Rip;
+     frame.AddrPC.Mode = AddrModeFlat;
+     frame.AddrFrame.Offset = context->Rbp;
+     frame.AddrFrame.Mode = AddrModeFlat;
+     frame.AddrStack.Offset = context->Rsp;
+     frame.AddrStack.Mode = AddrModeFlat;
+ #elif _M_IA64
+     image = IMAGE_FILE_MACHINE_IA64;
+     frame.AddrPC.Offset = context->StIIP;
+     frame.AddrPC.Mode = AddrModeFlat;
+     frame.AddrFrame.Offset = context->IntSp;
+     frame.AddrFrame.Mode = AddrModeFlat;
+     frame.AddrBStore.Offset = context->RsBSP;
+     frame.AddrBStore.Mode = AddrModeFlat;
+     frame.AddrStack.Offset = context->IntSp;
+     frame.AddrStack.Mode = AddrModeFlat;
+ #else
+ #error "This platform is not supported."
+ #endif
+#if 0
+     for (size_t i = 0; i < 25; i++) {
+
+       BOOL result = StackWalk64(
+         image, process, thread,
+         &frame, &context, NULL,
+         SymFunctionTableAccess64, SymGetModuleBase64, NULL);
+
+        _gyLog(GY_DEBUG_VERBOSE, "STILL ALIEVE");
+
+        DWORD error = GetLastError();
+        if (error && TRUE)
+        {
+            _gyLog(GY_DEBUG_VERBOSE, "Error from StackWalk64: %lu.\n", error);
+        }
+
+       if (!result) { break;  }
+
+       char buffer[sizeof(SYMBOL_INFO) + MAX_SYM_NAME * sizeof(TCHAR)];
+       PSYMBOL_INFO symbol = (PSYMBOL_INFO)buffer;
+       symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+       symbol->MaxNameLen = MAX_SYM_NAME;
+
+       DWORD64 displacement = 0;
+       if (SymFromAddr(process, frame.AddrPC.Offset, &displacement, symbol)) {
+         _gyLog(GY_DEBUG_VERBOSE, "[%i] %s\n", i, symbol->Name);
+       } else {
+         _gyLog(GY_DEBUG_VERBOSE, "[%i] ???\n", i);
+       }
+
+     }
+#elif 1
+
+     SYMBOL_INFO *symbol = (SYMBOL_INFO *)malloc(sizeof(SYMBOL_INFO)+(TRACE_MAX_FUNCTION_NAME_LENGTH ) * sizeof(TCHAR));
+        symbol->MaxNameLen = TRACE_MAX_FUNCTION_NAME_LENGTH;
+        symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+        IMAGEHLP_LINE64 *line = (IMAGEHLP_LINE64 *)malloc(sizeof(IMAGEHLP_LINE64));
+        line->SizeOfStruct = sizeof(IMAGEHLP_LINE64);
+        DWORD displacement;
+        while (StackWalk(image, process, NULL, &frame, &context, NULL, NULL, NULL, NULL))
+        {
+            if (SymFromAddr(process, frame.AddrPC.Offset, NULL, symbol))
+            {
+                if (SymGetLineFromAddr64(process, frame.AddrPC.Offset, &displacement, line))
+                {
+                    _gyLog(GY_DEBUG_VERBOSE, "\tat %s in %s: line: %lu: address: 0x%0X\n", symbol->Name, line->FileName, line->LineNumber, symbol->Address);
+                }
+                else if (TRUE)
+                {
+                    _gyLog(GY_DEBUG_VERBOSE, "Error from SymGetLineFromAddr64: %lu.\n", GetLastError());
+                }
+            }
+            else if (TRUE)
+            {
+                _gyLog(GY_DEBUG_VERBOSE, "Error from SymFromAddr: %lu.\n", GetLastError());
+            }
+        }
+        DWORD error = GetLastError();
+        if (error && TRUE)
+        {
+            _gyLog(GY_DEBUG_VERBOSE, "Error from StackWalk64: %lu.\n", error);
+        }
+        _gyLog(GY_DEBUG_VERBOSE, "DUN WALKIN DA STACK");
+
+        /*
+#define EXCEPTION_FILE L"Exception.dmp"
+        HANDLE dumpFile = CreateFile(EXCEPTION_FILE, GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+        MINIDUMP_EXCEPTION_INFORMATION exceptionInformation;
+        exceptionInformation.ThreadId = GetCurrentThreadId();
+        exceptionInformation.ExceptionPointers = ExceptionInfo;
+        exceptionInformation.ClientPointers = FALSE;
+        if (MiniDumpWriteDump(process, GetProcessId(process), dumpFile, MiniDumpNormal, ExceptionInfo ? &exceptionInformation : NULL, NULL, NULL))
+        {
+            printf("Wrote a dump.");
+        }
+*/
+#else
+     typedef USHORT (WINAPI CaptureStackBackTraceType)(__in ULONG, __in ULONG, __out PVOID, __out_opt PULONG);
+       CaptureStackBackTraceType func = (CaptureStackBackTraceType)(GetProcAddress(LoadLibrary("kernel32.dll"), "RtlCaptureStackBackTrace"));
+
+       if(func == NULL)
+           return; // WOE 29.SEP.2010
+
+       // Quote from Microsoft Documentation:
+       // ## Windows Server 2003 and Windows XP:
+       // ## The sum of the FramesToSkip and FramesToCapture parameters must be less than 63.
+       const int kMaxCallers = 62;
+
+       void* callers[kMaxCallers];
+       int count = (func)(0, kMaxCallers, callers, NULL);
+       for(int i = 0; i < count; i++)
+          printf(TraceFile, "*** %d called from %016I64LX\n", i, callers[i]);
+
+#endif
+
+
+
+     SymCleanup(process);
+}
+
+static LONG WINAPI windows_exception_handler(EXCEPTION_POINTERS * ExceptionInfo)
+{
+    (void)ExceptionInfo;
+
+    _gyLog(GY_DEBUG_VERBOSE, "===================================");
+  switch(ExceptionInfo->ExceptionRecord->ExceptionCode)
+  {
+    case EXCEPTION_ACCESS_VIOLATION:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_ACCESS_VIOLATION", stderr);
+      break;
+    case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_ARRAY_BOUNDS_EXCEEDED", stderr);
+      break;
+    case EXCEPTION_BREAKPOINT:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_BREAKPOINT", stderr);
+      break;
+    case EXCEPTION_DATATYPE_MISALIGNMENT:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_DATATYPE_MISALIGNMENT", stderr);
+      break;
+    case EXCEPTION_FLT_DENORMAL_OPERAND:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_DENORMAL_OPERAND", stderr);
+      break;
+    case EXCEPTION_FLT_DIVIDE_BY_ZERO:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_DIVIDE_BY_ZERO", stderr);
+      break;
+    case EXCEPTION_FLT_INEXACT_RESULT:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_INEXACT_RESULT", stderr);
+      break;
+    case EXCEPTION_FLT_INVALID_OPERATION:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_INVALID_OPERATION", stderr);
+      break;
+    case EXCEPTION_FLT_OVERFLOW:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_OVERFLOW", stderr);
+      break;
+    case EXCEPTION_FLT_STACK_CHECK:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_STACK_CHECK", stderr);
+      break;
+    case EXCEPTION_FLT_UNDERFLOW:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_UNDERFLOW", stderr);
+      break;
+    case EXCEPTION_ILLEGAL_INSTRUCTION:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_ILLEGAL_INSTRUCTION", stderr);
+      break;
+    case EXCEPTION_IN_PAGE_ERROR:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_IN_PAGE_ERROR", stderr);
+      break;
+    case EXCEPTION_INT_DIVIDE_BY_ZERO:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_INT_DIVIDE_BY_ZERO", stderr);
+      break;
+    case EXCEPTION_INT_OVERFLOW:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_INT_OVERFLOW", stderr);
+      break;
+    case EXCEPTION_INVALID_DISPOSITION:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_INVALID_DISPOSITION", stderr);
+      break;
+    case EXCEPTION_NONCONTINUABLE_EXCEPTION:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_NONCONTINUABLE_EXCEPTION", stderr);
+      break;
+    case EXCEPTION_PRIV_INSTRUCTION:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_PRIV_INSTRUCTION", stderr);
+      break;
+    case EXCEPTION_SINGLE_STEP:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_SINGLE_STEP", stderr);
+      break;
+    case EXCEPTION_STACK_OVERFLOW:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_STACK_OVERFLOW", stderr);
+      break;
+    default:
+      _gyLog(GY_DEBUG_VERBOSE, "Error: Unrecognized Exception", stderr);
+      break;
+  }
+  //fflush(stderr);
+
+  _gyLog(GY_DEBUG_VERBOSE, "===================================");
+
+  if (EXCEPTION_STACK_OVERFLOW != ExceptionInfo->ExceptionRecord->ExceptionCode)
+  {
+      windows_print_stacktrace(ExceptionInfo);
+  }
+
+  return EXCEPTION_EXECUTE_HANDLER;
+}
+#endif
+
 
 
 #if defined(__LINUX__) || defined(__APPLE__)
@@ -267,163 +508,13 @@ void gyDebugSigInit(void) {
     _regSigAction(_GY_SIG(SIGTERM), &sa);
 
 #elif defined(_WIN32)
-    //SetUnhandledExceptionFilter(&windows_exception_handler);
-
+    //LoadLibraryA("backtrace.dll");
+    SetUnhandledExceptionFilter(&windows_exception_handler);
+   // SymSetOptions(SYMOPT_UNDNAME | SYMOPT_DEFERRED_LOADS);
+    //_gyLog(GY_DEBUG_VERBOSE, "RETVAL - %d", retVal);
+    //backtrace_register();
 #endif
 }
-
-
-
-
-#if defined(_WIN32)
-
-const char* execPipe(char* cmd) {
-    FILE* pipe = popen(cmd, "r");
-    if (!pipe) return "PIPE DBG_ERROR!";
-    static char buffer[1280];
-    char tempBuff[129];
-    buffer[0] = 0;
-    while(!feof(pipe)) {
-        if(fgets(tempBuff, 128, pipe) != NULL)
-            strcat(buffer, tempBuff);
-    }
-    pclose(pipe);
-    return buffer;
-}
-
-/* Resolve symbol name and source location given the path to the executable
-   and an address */
-int addr2line(char const * const program_name, void const * const addr)
-{
-  char addr2line_cmd[512] = {0};
-
-  /* have addr2line map the address to the relent line in the code */
-   sprintf(addr2line_cmd,"addr2line 2>&1 -f -p -e %.256s %p", program_name, addr);
-
-  /* This will print a nicely formatted string specifying the
-     function and source line of the address */
-
-   _gyLog(GY_DEBUG_VERBOSE, execPipe(addr2line_cmd));
-   return 1;
-  //return system(addr2line_cmd);
-}
-
-void windows_print_stacktrace(CONTEXT* context)
-{
-
-  SymInitialize(GetCurrentProcess(), 0, 1);
-
-  STACKFRAME frame = { 0 };
-
-  /* setup initial stack frame */
-  frame.AddrPC.Offset         = context->Eip;
-  frame.AddrPC.Mode           = AddrModeFlat;
-  frame.AddrStack.Offset      = context->Esp;
-  frame.AddrStack.Mode        = AddrModeFlat;
-  frame.AddrFrame.Offset      = context->Ebp;
-  frame.AddrFrame.Mode        = AddrModeFlat;
-
-  while (StackWalk(IMAGE_FILE_MACHINE_I386 ,
-                   GetCurrentProcess(),
-                   GetCurrentThread(),
-                   &frame,
-                   context,
-                   0,
-                   SymFunctionTableAccess,
-                   SymGetModuleBase,
-                   0 ) )
-  {
-    addr2line(__argv[0], (void*)frame.AddrPC.Offset);
-  }
-
-  SymCleanup( GetCurrentProcess() );
-
-}
-
-static LONG WINAPI windows_exception_handler(EXCEPTION_POINTERS * ExceptionInfo)
-{
-    (void)ExceptionInfo;
-
-    _gyLog(GY_DEBUG_VERBOSE, "===================================");
-  switch(ExceptionInfo->ExceptionRecord->ExceptionCode)
-  {
-    case EXCEPTION_ACCESS_VIOLATION:
-      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_ACCESS_VIOLATION", stderr);
-      break;
-    case EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
-      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_ARRAY_BOUNDS_EXCEEDED", stderr);
-      break;
-    case EXCEPTION_BREAKPOINT:
-      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_BREAKPOINT", stderr);
-      break;
-    case EXCEPTION_DATATYPE_MISALIGNMENT:
-      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_DATATYPE_MISALIGNMENT", stderr);
-      break;
-    case EXCEPTION_FLT_DENORMAL_OPERAND:
-      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_DENORMAL_OPERAND", stderr);
-      break;
-    case EXCEPTION_FLT_DIVIDE_BY_ZERO:
-      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_DIVIDE_BY_ZERO", stderr);
-      break;
-    case EXCEPTION_FLT_INEXACT_RESULT:
-      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_INEXACT_RESULT", stderr);
-      break;
-    case EXCEPTION_FLT_INVALID_OPERATION:
-      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_INVALID_OPERATION", stderr);
-      break;
-    case EXCEPTION_FLT_OVERFLOW:
-      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_OVERFLOW", stderr);
-      break;
-    case EXCEPTION_FLT_STACK_CHECK:
-      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_STACK_CHECK", stderr);
-      break;
-    case EXCEPTION_FLT_UNDERFLOW:
-      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_FLT_UNDERFLOW", stderr);
-      break;
-    case EXCEPTION_ILLEGAL_INSTRUCTION:
-      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_ILLEGAL_INSTRUCTION", stderr);
-      break;
-    case EXCEPTION_IN_PAGE_ERROR:
-      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_IN_PAGE_ERROR", stderr);
-      break;
-    case EXCEPTION_INT_DIVIDE_BY_ZERO:
-      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_INT_DIVIDE_BY_ZERO", stderr);
-      break;
-    case EXCEPTION_INT_OVERFLOW:
-      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_INT_OVERFLOW", stderr);
-      break;
-    case EXCEPTION_INVALID_DISPOSITION:
-      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_INVALID_DISPOSITION", stderr);
-      break;
-    case EXCEPTION_NONCONTINUABLE_EXCEPTION:
-      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_NONCONTINUABLE_EXCEPTION", stderr);
-      break;
-    case EXCEPTION_PRIV_INSTRUCTION:
-      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_PRIV_INSTRUCTION", stderr);
-      break;
-    case EXCEPTION_SINGLE_STEP:
-      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_SINGLE_STEP", stderr);
-      break;
-    case EXCEPTION_STACK_OVERFLOW:
-      _gyLog(GY_DEBUG_VERBOSE, "Error: EXCEPTION_STACK_OVERFLOW", stderr);
-      break;
-    default:
-      _gyLog(GY_DEBUG_VERBOSE, "Error: Unrecognized Exception", stderr);
-      break;
-  }
-  //fflush(stderr);
-
-  _gyLog(GY_DEBUG_VERBOSE, "===================================");
-
-  if (EXCEPTION_STACK_OVERFLOW != ExceptionInfo->ExceptionRecord->ExceptionCode)
-  {
-      windows_print_stacktrace(ExceptionInfo->ContextRecord);
-  }
-
-  return EXCEPTION_EXECUTE_HANDLER;
-}
-#endif
-
 
 
 #if GYRO_PLATFORM != GYRO_PLATFORM_Qt
