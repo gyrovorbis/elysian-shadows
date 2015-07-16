@@ -6,9 +6,9 @@
 #include <gyro_system_api.h>
 
 #ifdef GL_ES_VERSION_3_0
-#   define GY_GL_VERSION_STR "#version 300 es"
+#   define GY_GL_VERSION_STR "#version 300 es\n"
 #else
-#   define GY_GL_VERSION_STR "#version 330"
+#   define GY_GL_VERSION_STR "#version 330\n"
 #endif
 
 
