@@ -166,7 +166,7 @@ void Engine::processInput(void) {
 
     gyInputPoll(&_platInput);
     _mouseInput.poll();
-    GameInput::translate(_platInput, _gameInput);
+    GameInput::translate(*_platInput, _gameInput);
     Debug::getInstance().processInput(_gameInput);
 
     //if(!_processInput) return;

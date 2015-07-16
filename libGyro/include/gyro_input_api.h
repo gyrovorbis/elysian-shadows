@@ -29,7 +29,7 @@ typedef struct GYMouse {
 int gyInputInit(const struct GYInputInitParams*const params);
 int gyInputUninit(void);
 
-void gyInputPoll(struct GYInput *const input);
+void gyInputPoll(struct GYInput** const input);
 
 void gyMousePoll(struct GYMouse*const mouse);
 

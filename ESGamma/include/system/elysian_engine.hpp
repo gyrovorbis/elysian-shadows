@@ -12,7 +12,7 @@ namespace elysian {
 	class Engine: public System {
         friend Debug;
 	private:
-        GYInput         _platInput;
+        GYInput*        _platInput;
         MouseInput      _mouseInput;
         GameInput       _gameInput;
 
