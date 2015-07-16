@@ -1,4 +1,5 @@
 #include <gyro_timer_api.h>
+#include <sys/time.h>
 
 
 
@@ -11,7 +12,10 @@ int gyTimerUninit(void) {
 }
 
 int64_t gyTimerTicks(void) {
-    return 16666666;
+    struct timeval time;
+    gettimeofday(&time, NULL);
+    uint64_t nanos = (time.tv_sec * 1000000000) + (time.tv_usec * 1000);
+    return nanos;
 }
 
 
