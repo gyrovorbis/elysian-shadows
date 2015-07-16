@@ -10,9 +10,10 @@ typedef struct GYInputInitParams {
 
 
 typedef struct GYInput {
+    int up;
     int down;
-    float x;
-    float y;
+    int left;
+    int right;
 } GYInput;
 
 #ifdef __cplusplus
