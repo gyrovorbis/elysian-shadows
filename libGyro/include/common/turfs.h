@@ -98,7 +98,7 @@ TURFSAPI turfs_virtual_path(turfs_path_type type, char **path, size_t *len);
  * @param[out]  path    Location where path will be stored
  * @param[out]  len     Location where path length will be stored
  */
-TURFSAPI turfs_resolve_path(turfs_path_type type, char **path, size_t *len);
+TURFSAPI turfs_resolve_path(turfs_path_type type, const char* vpath, char **path, size_t *len);
 
 /**
  * Translates a full virtual path to its real system path
@@ -175,6 +175,8 @@ TURFSAPI turfs_file_eof(Turfs_file* fp);
  * @param[in]   fp  Pointer to file to be closed
  */
 TURFSAPI turfs_file_close(Turfs_file** fp);
+
+char *turfs__strdup(const char *str);
 
 
 

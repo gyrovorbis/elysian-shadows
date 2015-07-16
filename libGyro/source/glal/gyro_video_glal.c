@@ -168,6 +168,29 @@ static GLintptr         _vertexQueueLastOffset      = 0;
 GLuint                      _streamVao[2]               = { 0 };
 GLuint                      _streamVertexVbo[2]         = { 0 };
 
+void glalVidBindDefaultFbo(void) {
+    //fucking disgusting.
+   // glBindFramebuffer(GL_FRAMEBUFFER, glalDefaultFbo());
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void gyVidSceneBegin(void) {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    gyMatLoadIdentity();
+    glalPrevVertexRenderCount = glalVertexRenderCount;
+    glalPrevUniformChangeCount = glalUniformChangeCount;
+    glalPrevTextureChangeCount = glalTextureChangeCount;
+    glalVertexRenderCount = 0;
+    glalUniformChangeCount = 0;
+    glalTextureChangeCount = 0;
+}
+
+void gyVidSceneEnd(void) {
+    gyVidVertexBatchFlush();
+  //  glFlush();
+}
+
+
 void gyVidClearColor(const GYColor4 color) {
     _clearColor.x = (float)color.r*255.0f;
     _clearColor.y = (float)color.g*255.0f;
@@ -313,8 +336,9 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
 
 
     glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
+#if GYRO_PLATFORM != GYRO_PLATFORM_iOS
     glViewport(0, 0, viewWidth, viewHeight);
-
+#endif
 
   //  glalVidBindDefaultFbo();
     return 1;

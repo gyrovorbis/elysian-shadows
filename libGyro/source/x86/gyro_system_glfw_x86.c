@@ -87,11 +87,12 @@ static void _checkCPUCapabilities(void) {
 #include <dbghelp.h>
 #endif
 
-static GYSysParams _sysParams;
+static GYSysInitParams _sysParams;
 
 void gyDebugSigInit(void);
+void _gySysPrintBuildInfo(const char*const platString);
 
-int gySysInit(const GYSysParams*const params) {
+int gySysInit(const GYSysInitParams*const params) {
     char strBuff[40];
     //gyDebugInit();
 
@@ -103,24 +104,9 @@ int gySysInit(const GYSysParams*const params) {
 #else
   "LINUX";
 #endif
-    _gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86_64 [%s] v%s", platString, GYRO_LIB_VERSION);
-    _gyPush();
-#ifdef GYRO_LOCAL_BUILD
-    _gyLog(GY_DEBUG_WARNING, "THIS IS AN UNOFFICIAL BUILD!");
-#else
-    _gyLog(GY_DEBUG_VERBOSE, "THIS IS AN OFFICIAL BUILD!");
-#endif
-    _gyPush();
-    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Git branch name", GYRO_STRINGIFY_MACRO(GYRO_BUILD_BRANCH));
-    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Git commit ID", GYRO_STRINGIFY_MACRO(GYRO_BUILD_COMMIT));
-    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Build number", GYRO_STRINGIFY_MACRO(GYRO_BUILD_NUMBER));
-    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Build node", GYRO_STRINGIFY_MACRO(GYRO_BUILD_NODE));
-    sprintf(strBuff, "%s %s", __DATE__, __TIME__);
-    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Build timestamp", strBuff);
-    _gyPop(1);
 
-    gyDebugSigInit();
-    _checkCPUCapabilities();
+    _gySysPrintBuildInfo(platString);
+
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
     glfwInit();
 #endif

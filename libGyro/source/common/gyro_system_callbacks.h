@@ -4,7 +4,8 @@
 #include <gyro_system_api.h>
 
 extern GYAppInitCb gy_appInitCb;
-extern GYAppTickCb gy_appTickCb;
+extern GYAppUpdateCb gy_appUpdateCb;
+extern GYAppInputCb gy_appInputCb;
 extern GYAppDrawCb gy_appDrawCb;
 extern GYAppQuitCb gy_appQuitCb;
 

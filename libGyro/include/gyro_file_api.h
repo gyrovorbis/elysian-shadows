@@ -42,7 +42,7 @@ typedef enum _GYPathType {
 int gyFileInit(const GYFileInitParams*const params);
 int gyFileQuit(void);
 
-int gyFileResolvePath(GYPathType path_type, char **path, size_t *len);
+int gyFileResolvePath(GYPathType path_type, const char* vpath, char **path, size_t *len);
 
 int gyFileOpen(const char *file_path, const char *mode, GYFile **fp);
 int gyFileRead(GYFile *fp, void *buffer, size_t count, size_t *bytes_read);

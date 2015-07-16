@@ -75,7 +75,7 @@ TURFSAPI turfs_quit(void)
     return TURFS_RET_OK;
 }
 
-static int s__get_assets_path(char **path, size_t *len)
+static int s__get_assets_path(const char* vpath, char **path, size_t *len)
 {
     char temp_path[2048];
     char *ptr;
@@ -106,7 +106,7 @@ static int s__get_assets_path(char **path, size_t *len)
     return 1;
 }
 
-static int s__get_userdata_path(char **path, size_t *len)
+static int s__get_userdata_path(const char* vpath, char **path, size_t *len)
 {
     char temp_path[2048];
     const char *home_path;
@@ -123,7 +123,7 @@ static int s__get_userdata_path(char **path, size_t *len)
     return 1;
 }
 
-TURFSAPI turfs_resolve_path(turfs_path_type type, char **path, size_t *len)
+TURFSAPI turfs_resolve_path(turfs_path_type type, const char* vpath, char **path, size_t *len)
 {
     if (!g_initialized) {
         return TURFS_RET_NOT_INITIALIZED;
@@ -133,12 +133,12 @@ TURFSAPI turfs_resolve_path(turfs_path_type type, char **path, size_t *len)
     }
     switch (type) {
         case TURFS_PATH_ASSETS:
-            if (!s__get_assets_path(path, len)) {
+            if (!s__get_assets_path(vpath, path, len)) {
                 return TURFS_RET_UNKNOWN;
             }
             break;
         case TURFS_PATH_USERDATA:
-            if (!s__get_userdata_path(path, len)) {
+            if (!s__get_userdata_path(vpath, path, len)) {
                 return TURFS_RET_UNKNOWN;
             }
             break;
