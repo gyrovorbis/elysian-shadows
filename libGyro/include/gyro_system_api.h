@@ -33,11 +33,11 @@ typedef struct GYSysInitParams {
     void*   context;
     void    (*segFaultHandler)(void*);
 
-} GYSysParams;
+} GYSysInitParams;
 
 typedef enum _GY_DEBUG_SEVERITY { GY_DEBUG_VERBOSE, GY_DEBUG_WARNING, GY_DEBUG_ERROR, GY_DEBUG_OFF } GY_DEBUG_SEVERITY;
 
-int gySysInit(const GYSysParams*const params);
+int gySysInit(const GYSysInitParams*const params);
 int gySysUninit(void);
 
 int gyDebugInit(void);
