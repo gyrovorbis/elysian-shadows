@@ -3,8 +3,8 @@
 
 #include <cassert>
 #include <cstring>
-#include "elysian_area.hpp"
-#include "elysian_zcoords.hpp"
+#include <crtp/elysian_area.hpp>
+#include <level/elysian_zcoords.hpp>
 #include <gyro_shader_api.h>
 
 //Maximum elevation height an object can have

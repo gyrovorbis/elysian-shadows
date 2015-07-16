@@ -290,7 +290,7 @@ void ESToolkit::_libGyroInitialize(void) {
 
 #endif
 #endif
-    GYSysParams sysParams = {new std::function<void()>([&](void) {
+    GYSysInitParams sysParams = {new std::function<void()>([&](void) {
                         _gitlabDialog->show();
                   }),
                     [](void* ptr) {

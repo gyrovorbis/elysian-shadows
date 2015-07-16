@@ -111,7 +111,7 @@ int gySysInit(const GYSysInitParams*const params) {
     glfwInit();
 #endif
 
-    memcpy(&_sysParams, params, sizeof(GYSysParams));
+    memcpy(&_sysParams, params, sizeof(GYSysInitParams));
 
     _gyPop(1);
 

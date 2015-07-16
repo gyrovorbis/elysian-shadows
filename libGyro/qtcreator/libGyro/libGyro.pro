@@ -141,10 +141,11 @@ SOURCES += \
     ../../source/glal/gyro_wav_glal.c \
     ../../source/glal/tinycthread.c \
     ../../source/glal/gyro_ogg_glal.c \
-    ../../source/common/turfs_file_stdio.c
+    ../../source/common/turfs_file_stdio.c \
+    ../../source/x86/gyro_matrix_x86.c
 
 !ios {
-    SOURCES += ../../source/qt/gyro_video_qt.cpp \
+    SOURCES += \
         ../../source/x86/gyro_system_glfw_x86.c \
         ../../source/qt/gyro_texture_qt.cpp \
         ../../source/qt/gyro_debug_qt.cpp \
@@ -152,7 +153,6 @@ SOURCES += \
         ../../source/qt/gyro_timer_qt.cpp \
         ../../source/qt/gyro_file_qt.cpp
 } else {
-    SOURCES += ../../source/x86/gyro_matrix_x86.c
 
     OBJECTIVE_SOURCES += \
         ../../source/ios/main.mm \

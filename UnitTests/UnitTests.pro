@@ -10,16 +10,19 @@ QT       += widgets network opengl sql testlib
 
 
 
-DEPENDPATH += ../AssetIO/include/component \
+DEPENDPATH += ../AssetIO/include \
+        ../AssetIO/include/component \
 	../AssetIO/include/crtp \
 	../AssetIO/include/level \
 	../AssetIO/include/primitive \
 	../AssetIO/include/utility \
+        ../ESGamma/include \
 	../ESGamma/include/crtp \
 	../ESGamma/include/gui \
 	../ESGamma/include/lua \
 	../ESGamma/include/system \
 	../ESGamma/include/utility \
+        ../ESToolkit/ESToolkit/include \
 	../ESToolkit/ESToolkit/include/asset \
 	../ESToolkit/ESToolkit/include/model \
 	../ESToolkit/ESToolkit/include/estk \
@@ -32,16 +35,19 @@ DEPENDPATH += ../AssetIO/include/component \
 	../ESToolkit/ESToolkit/include/widget
 
 #PRIORITIZED TO REDUCE BUILD TIME ON FUCKING MINGW
-INCLUDEPATH += ../AssetIO/include/component \
+INCLUDEPATH += ../AssetIO/include \
+        ../AssetIO/include/component \
 	../AssetIO/include/crtp \
 	../AssetIO/include/level \
 	../AssetIO/include/primitive \
 	../AssetIO/include/utility \
+        ../ESGamma/include \
 	../ESGamma/include/crtp \
 	../ESGamma/include/gui \
 	../ESGamma/include/lua \
 	../ESGamma/include/system \
 	../ESGamma/include/utility \
+        ../ESToolkit/ESToolkit/include \
 	../ESToolkit/ESToolkit/include/asset \
 	../ESToolkit/ESToolkit/include/model \
 	../ESToolkit/ESToolkit/include/estk \
@@ -88,4 +94,3 @@ HEADERS += \
     test_level_assets.h \
     test_area_assets.h
 
-OBJECTIVE_SOURCES +=

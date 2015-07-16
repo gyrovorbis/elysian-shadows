@@ -3,6 +3,7 @@
 
 #include "elysian_system.hpp"
 #include "elysian_camera_system.hpp"
+#include <crtp/elysian_depth_buff_entry.hpp>
 #include "elysian_map_depth_buffer.hpp"
 #include "elysian_zcoords.hpp"
 #include "elysian_renderable_base.hpp"
@@ -35,22 +36,13 @@
 #define ELYSIAN_DEPTH_BUFFER_ENTITY_WIDTH 20
 */
 
-//ELYSIAN_ASSET_TYPEDEF(MapSystem)
-//ELYSIAN_ASSET_TYPEDEF(MapDepthBuffEntryImpl, struct)
-//ELYSIAN_ASSET_TYPEDEF(EntityDepthBuffEntryImpl, struct)
 
 namespace elysian {
 
     struct Tile;
     struct Object;
 
-    struct MapDepthBuffEntryImplBase: public MapDepthBuffEntry {};
-
-    struct EntityDepthBuffEntryImplBase: public EntityDepthBuffEntry {
-        Entity *entity;
-    };
-
-    class GLMapSystemBase {
+    class GLMapSystemCrtp {
     protected:
         uint32_t* _elements = nullptr;
         int _size = 0;
@@ -67,9 +59,9 @@ namespace elysian {
     };
 
     template<typename P=MapSystem, typename T=MapDepthBuffEntryImplBase, typename E=EntityDepthBuffEntryImplBase>
-    class MapSystemBase:
+    class MapSystemCrtp:
         public System,
-        public GLMapSystemBase,
+        public GLMapSystemCrtp,
         public MapDepthBuffer<P, T, E>
     {
     private:
@@ -94,7 +86,7 @@ namespace elysian {
         static void staticInitialize(void);
         static void staticUninitialize(void);
 
-                    MapSystemBase(void);
+                    MapSystemCrtp(void);
 
         void        update(void);
         void        renderOverlay(void);
@@ -137,43 +129,41 @@ namespace elysian {
 
     };
 
-#ifdef ELYSIAN_ENGINE
-    class MapSystem: public MapSystemBase<> {
+    class MapSystemBase: public MapSystemCrtp<MapSystem, MapDepthBuffEntryImpl, EntityDepthBuffEntryImpl> {
 
     };
 
-#endif
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::flushVertexBatchCallback(void* self) {
-        reinterpret_cast<MapSystemBase<P, T, E>*>(self)->flushTileBuffer();
+    inline void MapSystemCrtp<P, T, E>::flushVertexBatchCallback(void* self) {
+        reinterpret_cast<MapSystemCrtp<P, T, E>*>(self)->flushTileBuffer();
     }
 
 
 //-----INLINEZ-----
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::renderCustomPassImmediate(void) { enableDepthTest(); }
+    inline void MapSystemCrtp<P, T, E>::renderCustomPassImmediate(void) { enableDepthTest(); }
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::getOnscreenTileRegion(int &startX, int &startY, int &endX, int &endY) const {
+    inline void MapSystemCrtp<P, T, E>::getOnscreenTileRegion(int &startX, int &startY, int &endX, int &endY) const {
         getCameraSys()->getVisibleTileRegion(startX, startY, endX, endY);
     }
 
     template<typename P, typename T, typename E>
-    inline float MapSystemBase<P, T, E>::getBaseZCoord(void) const {
+    inline float MapSystemCrtp<P, T, E>::getBaseZCoord(void) const {
         return ZCoordConstants::mapBase;
     }
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::getObjectLayerEntry(const unsigned /*x*/, const unsigned /*y*/, T &entry) {
+    inline void MapSystemCrtp<P, T, E>::getObjectLayerEntry(const unsigned /*x*/, const unsigned /*y*/, T &entry) {
         entry.mapEntry = _curArea->getTileEntry(entry.layer, entry.x, entry.y);
         entry.lights = getLightSys()->getLightMapEntryMapCoord(entry.y, entry.x);
         entry.renderPass = 0;
     }
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::renderObjectEntry(const T& entry, const float /*z*/) {
+    inline void MapSystemCrtp<P, T, E>::renderObjectEntry(const T& entry, const float /*z*/) {
         if(!_renderLayer[entry.layer]) return; //Don't render if this layer has been toggled off.
 
          auto& elemArraySize  = _curArea->elementsArraySize[/*gyVidShadowPass()*/0];
@@ -246,13 +236,13 @@ namespace elysian {
 }
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::beginObjectList(void) {
+    inline void MapSystemCrtp<P, T, E>::beginObjectList(void) {
        // flushTileBuffer();
         bindTileBuffer();
     }
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::bindTileBuffer(void) {
+    inline void MapSystemCrtp<P, T, E>::bindTileBuffer(void) {
       //  assert(_curArea->elementsArraySize[_curArea->elementsCurSegment] == 0);
 
         gyVidMaterialBind(nullptr);
@@ -268,13 +258,13 @@ namespace elysian {
     }
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::endObjectList(void) {
+    inline void MapSystemCrtp<P, T, E>::endObjectList(void) {
         flushTileBuffer();
         unbindTileBuffer();
     }
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::flushTileBuffer(void) {
+    inline void MapSystemCrtp<P, T, E>::flushTileBuffer(void) {
 
         _size = _curArea->elementsArraySize[/*gyVidShadowPass()*/0];
         _elements     = _curArea->elementsArray[/*gyVidShadowPass()*/0];
@@ -341,13 +331,13 @@ gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
     }
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::unbindTileBuffer(void) {
+    inline void MapSystemCrtp<P, T, E>::unbindTileBuffer(void) {
         //gyVidVertexBatchEnd();
        // gyVidBindDefaultVertexArray();
     }
 
     template<typename P, typename T, typename E>
-    inline unsigned MapSystemBase<P, T, E>::getEntityCount(void) {
+    inline unsigned MapSystemCrtp<P, T, E>::getEntityCount(void) {
         if(!_renderLayer[3]) return 0;
         _onscreenEntityPool.clear();
         auto& entities = _curArea->entities;
@@ -364,7 +354,7 @@ gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
     }
 
     template<typename P, typename T, typename E>
-    inline bool MapSystemBase<P, T, E>::getOnscreenEntity(const unsigned index, E &entry, NORMAL_TYPE &normalType, float &lowestY, float& zCoord) const {
+    inline bool MapSystemCrtp<P, T, E>::getOnscreenEntity(const unsigned index, E &entry, NORMAL_TYPE &normalType, float &lowestY, float& zCoord) const {
         Entity &entity = *(_onscreenEntityPool)[index];
         //if(getCameraSys()->isOnscreen(entity)) {
             entry.entity = &entity;
@@ -379,7 +369,7 @@ gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
     }
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::renderEntityEntry(const E &entry) {
+    inline void MapSystemCrtp<P, T, E>::renderEntityEntry(const E &entry) {
        // entry.entity->transform.setPosZ(entry.zCoordWorld);
 
         //Blending mode state change
@@ -395,7 +385,7 @@ gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
     }
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::disableDepthTest(void) {
+    inline void MapSystemCrtp<P, T, E>::disableDepthTest(void) {
         if(gyVidShadowPass()) return;
        // flushTileBuffer();
        // gyVidDepthTest(false);
@@ -409,7 +399,7 @@ gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
     }
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::enableDepthTest(void) {
+    inline void MapSystemCrtp<P, T, E>::enableDepthTest(void) {
         if(gyVidShadowPass()) return;
       //  flushTileBuffer();
      //   gyVidDepthTest(true);
@@ -424,42 +414,42 @@ gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
     }
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::renderCustomPassAtElev(const int elev, const NORMAL_TYPE normalType) const {
+    inline void MapSystemCrtp<P, T, E>::renderCustomPassAtElev(const int elev, const NORMAL_TYPE normalType) const {
         if(normalType == NORMAL_FLAT && elev != -1) getPartSys()->renderAtElev(elev);
     }
 
     template<typename P, typename T, typename E>
-    inline uint32_t MapSystemBase<P, T, E>::startLightPass(uint32_t& lightsLeft) { return getLightSys()->startLightPass(lightsLeft); }
+    inline uint32_t MapSystemCrtp<P, T, E>::startLightPass(uint32_t& lightsLeft) { return getLightSys()->startLightPass(lightsLeft); }
 
     template<typename P, typename T, typename E>
-    inline uint32_t MapSystemBase<P, T, E>::getLightCount(void) const { return gyVidShadowPass()? 0 : getLightSys()->getLightCount(); }
+    inline uint32_t MapSystemCrtp<P, T, E>::getLightCount(void) const { return gyVidShadowPass()? 0 : getLightSys()->getLightCount(); }
 
     template<typename P, typename T, typename E>
-    inline bool MapSystemBase<P, T, E>::getRenderTileLayer(const unsigned short layer) const { return _renderLayer[layer]; }
+    inline bool MapSystemCrtp<P, T, E>::getRenderTileLayer(const unsigned short layer) const { return _renderLayer[layer]; }
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::setRenderTileLayer(const unsigned short layer, const bool v) { _renderLayer[layer] = v; }
+    inline void MapSystemCrtp<P, T, E>::setRenderTileLayer(const unsigned short layer, const bool v) { _renderLayer[layer] = v; }
 
 
 
     template<typename P, typename T, typename E>
-    const GYColor4      MapSystemBase<P, T, E>::_tileColor = { 255, 255, 255, 255 }; //I s'pose this could be configurable?
+    const GYColor4      MapSystemCrtp<P, T, E>::_tileColor = { 255, 255, 255, 255 }; //I s'pose this could be configurable?
 /*    template<typename P, typename T, typename E>
-    GY_RECT_PLANE_TYPE  MapSystemBase<P, T, E>::_curPlaneType = GY_RECT_PLANE_BOTTOM;
+    GY_RECT_PLANE_TYPE  MapSystemCrtp<P, T, E>::_curPlaneType = GY_RECT_PLANE_BOTTOM;
     template<typename P, typename T, typename E>
-    GY_RECT_TEX_ORIENT  MapSystemBase<P, T, E>::_curTexOrient = GY_RECT_TEX_ORIENT_NORMAL;
+    GY_RECT_TEX_ORIENT  MapSystemCrtp<P, T, E>::_curTexOrient = GY_RECT_TEX_ORIENT_NORMAL;
     template<typename P, typename T, typename E>
-    TEXTURE_FLIP  MapSystemBase<P, T, E>::_curTexFlip = TEXTURE_FLIP_NONE; */
+    TEXTURE_FLIP  MapSystemCrtp<P, T, E>::_curTexFlip = TEXTURE_FLIP_NONE; */
 
     template<typename P, typename T, typename E>
-    inline MapSystemBase<P, T, E>::MapSystemBase(void):
+    inline MapSystemCrtp<P, T, E>::MapSystemCrtp(void):
         _animate(true) {
         for(unsigned i = 0; i < 4; ++i) _renderLayer[i] = true;
         //for(unsigned int i = 0; i < 256; ++i) _currentTile[i] = _currentObject[i] = i;
     }
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::update(void) {
+    inline void MapSystemCrtp<P, T, E>::update(void) {
         //Update entity elevation
         //Update entity z transitionals
 
@@ -467,7 +457,7 @@ gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
     }
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::updateAnimation(void) {
+    inline void MapSystemCrtp<P, T, E>::updateAnimation(void) {
         //Cache time since last frame
         float deltaTime = getTimerSys()->getDeltaTime();
 
@@ -501,7 +491,7 @@ gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
     }
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::resetAnimation(void) {
+    inline void MapSystemCrtp<P, T, E>::resetAnimation(void) {
         for(unsigned i = 0; i < ELYSIAN_TILESHEET_TILES; ++i) {
             _animTiles[i].elapsedTime = 0.0f;
             _animTiles[i].curIndex = i;
@@ -531,7 +521,7 @@ gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
 
     //Debug toggle this shit?
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::renderOverlay(void) {
+    inline void MapSystemCrtp<P, T, E>::renderOverlay(void) {
         //void DrawString(CAMERA camera, FORMAT format, ALIGNMENT align, const char *str, ...);
         //guiSystem->verdana.setColor(gyro::GREEN);
         /*guiSystem->verdana.setAlpha(1.0f, 1.0f, 1.0f, 1.0f);
@@ -544,23 +534,23 @@ gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
     }
 
     template<typename P, typename T, typename E>
-    inline bool MapSystemBase<P, T, E>::getAnimate(void) const { return _animate; }
+    inline bool MapSystemCrtp<P, T, E>::getAnimate(void) const { return _animate; }
     template<typename P, typename T, typename E>
-    void MapSystemBase<P, T, E>::setAnimate(const bool v) { _animate = v; }
+    void MapSystemCrtp<P, T, E>::setAnimate(const bool v) { _animate = v; }
 
     template<typename P, typename T, typename E>
-    inline bool MapSystemBase<P, T, E>::toggleRenderLayer(const unsigned layer) {
+    inline bool MapSystemCrtp<P, T, E>::toggleRenderLayer(const unsigned layer) {
         return (_renderLayer[layer] = !_renderLayer[layer]);
     }
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::staticInitialize(void) {}
+    inline void MapSystemCrtp<P, T, E>::staticInitialize(void) {}
 
     template<typename P, typename T, typename E>
-    inline void MapSystemBase<P, T, E>::staticUninitialize(void) {}
+    inline void MapSystemCrtp<P, T, E>::staticUninitialize(void) {}
 
     template<typename P, typename T, typename E>
-    inline bool MapSystemBase<P, T, E>::isShadowPass(void) const { return gyVidShadowPass(); }
+    inline bool MapSystemCrtp<P, T, E>::isShadowPass(void) const { return gyVidShadowPass(); }
 
 
 }

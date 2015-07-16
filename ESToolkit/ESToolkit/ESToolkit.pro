@@ -403,7 +403,10 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../ESGamma/include/proxy/elysian_timer_system_proxy.hpp \
     ../../ESGamma/include/proxy/elysian_rigid_body_system_proxy.hpp \
     ../../AssetIO/include/component/elysian_lua_behavior_base.hpp \
-    ../../AssetIO/include/crtp/elysian_lua_behavior.hpp
+    ../../AssetIO/include/crtp/elysian_lua_behavior.hpp \
+    ../../AssetIO/include/level/elysian_depth_buff_entry_base.hpp \
+    ../../AssetIO/include/crtp/elysian_depth_buff_entry.hpp \
+    include/asset/tk_depth_buff_entry.h
 
 !ios {
     HEADERS +=  include/asset/tk_animation.h \

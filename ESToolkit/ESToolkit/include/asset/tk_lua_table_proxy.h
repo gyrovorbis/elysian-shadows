@@ -158,8 +158,8 @@ inline const TkLuaTableProxy<P, T, Bases...>& TkLuaTableProxy<P,T, Bases...>::op
 
 template <typename P, typename T, class... Bases>
 inline TkLuaTableProxy<P, T, Bases...>::~TkLuaTableProxy(void) {
-    if(_luaRef != LUA_NOREF) {
-        luaL_unref(*_mainState, LUA_REGISTRYINDEX, _luaRef);
+    if(elysian::LuaTableProxyBase<P, T, Bases...>::_luaRef != LUA_NOREF) {
+        luaL_unref(*_mainState, LUA_REGISTRYINDEX, elysian::LuaTableProxyBase<P, T, Bases...>::_luaRef);
     }
 }
 

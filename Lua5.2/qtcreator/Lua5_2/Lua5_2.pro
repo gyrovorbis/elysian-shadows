@@ -85,4 +85,5 @@ HEADERS += \
     ../../include/lua/lundump.h \
     ../../include/lua/lvm.h \
     ../../include/lua/lzio.h \
-    ../../../libGyro/source/ios/gyviewcontroller.h
+    ../../../libGyro/source/ios/gyviewcontroller.h \
+    ../../../AssetIO/include/level/elysian_depth_buff_entry_base.hpp

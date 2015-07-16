@@ -23,13 +23,14 @@
 #define ELYSIAN_TILESHEET_TILE_HEIGHT		32
 #define ELYSIAN_TILESHEET_TILES				512
 
-ELYSIAN_ASSET_TYPEDEF(Level, struct)
+ELYSIAN_ASSET_TYPEDEF(Level)
 
 struct GYTexture;
 
 namespace elysian {
 
-    struct LevelBase {
+    class LevelBase {
+    public:
 		Tile			tileset	[ELYSIAN_TILESHEET_TILES];
         char			path	[ELYSIAN_LEVEL_PATH_SIZE];
         char			dir     [ELYSIAN_LEVEL_NAME_SIZE];

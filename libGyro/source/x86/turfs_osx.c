@@ -77,12 +77,14 @@ TURFSAPI turfs_quit(void)
 
 static int s__get_assets_path(const char* vpath, char **path, size_t *len)
 {
-    char temp_path[2048];
+    static char temp_path[2048];
     char *ptr;
     memset(temp_path, 0, sizeof temp_path);
 #if GYRO_PLATFORM == GYRO_PLATFORM_Qt
 	(void)ptr;
-    *path = "../assets";
+    strcat(temp_path, "../");
+    strcat(temp_path, vpath);
+    *path = temp_path;
 #else
     strncpy(temp_path, NXArgv[0], sizeof temp_path);
     if (strlen(temp_path)) {

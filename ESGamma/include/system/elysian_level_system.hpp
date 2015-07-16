@@ -27,8 +27,8 @@
 #endif
 
 
-ELYSIAN_ASSET_TYPEDEF(Level, struct)
-ELYSIAN_ASSET_TYPEDEF(Area, struct)
+ELYSIAN_ASSET_TYPEDEF(Level)
+ELYSIAN_ASSET_TYPEDEF(Area)
 
 namespace elysian {
 

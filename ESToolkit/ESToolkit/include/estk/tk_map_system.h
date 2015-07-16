@@ -1,4 +1,4 @@
-4#ifndef TK_MAP_SYSTEM_H
+#ifndef TK_MAP_SYSTEM_H
 #define TK_MAP_SYSTEM_H
 
 #include <elysian_map_system_base.hpp>
@@ -6,23 +6,11 @@
 #include <elysian_gui_system.hpp>
 #include <tk_assets.h>
 
-ELYSIAN_ASSET_TYPEDEF(MapSystem)
-//ELYSIAN_ASSET_TYPEDEF(MapDepthBuffEntryImpl, struct)
-//ELYSIAN_ASSET_TYPEDEF(EntityDepthBuffEntryImpl, struct)
-
-
-struct TkMapDepthBuffEntryImpl: public elysian::MapDepthBuffEntryImplBase {
-    TileGraphicsItem<TileEntry>::DRAW_STYLE drawStyle;
-};
-
-struct TkEntityDepthBuffEntryImpl: public elysian::EntityDepthBuffEntryImplBase {};
-
-
 class TkMapSystem:  public MapViewTileGraphicsItem,
-                    public elysian::MapSystemBase<TkMapSystem, TkMapDepthBuffEntryImpl, TkEntityDepthBuffEntryImpl>
+                    public elysian::MapSystemBase
 {
     friend class ESToolkit;
-    typedef elysian::MapSystemBase<TkMapSystem, TkMapDepthBuffEntryImpl, TkEntityDepthBuffEntryImpl> MapSystemBase;
+    typedef elysian::MapSystemBase MapSystemBase;
 public:
     enum TILE_DECOR_TYPE { TILE_DECOR_NONE, TILE_DECOR_INDEX, TILE_DECOR_ELEV, TILE_DECOR_ORIENT, TILE_DECOR_PLANE, TILE_DECOR_MAX };
 
@@ -36,7 +24,7 @@ protected:
     void        _renderCustomPass(const unsigned count, const TkMapDepthBuffEntryImpl array[], const elysian::NORMAL_TYPE normalType) const;
     void        _renderMapBorders(void) const;
 public:
-    using       elysian::MapSystemBase<TkMapSystem, TkMapDepthBuffEntryImpl, TkEntityDepthBuffEntryImpl>::update;
+    using       elysian::MapSystemBase::update;
 
     static void staticInitialize(void);
     static void staticUninitialize(void);

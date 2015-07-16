@@ -259,7 +259,6 @@ Project *Assets::loadProject(const QString directory) {
 
     gyTimerInit();
 
-    elysian::Behavior::staticConstructor();
     elysian::Debug::getInstance().setEngine(*_engine);
 
     {

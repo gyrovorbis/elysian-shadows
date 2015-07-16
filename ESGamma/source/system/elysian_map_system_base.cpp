@@ -4,22 +4,22 @@
 
 namespace elysian {
 
-void GLMapSystemBase::_bindArrayVbo(int buffer) {
+void GLMapSystemCrtp::_bindArrayVbo(int buffer) {
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
 }
 
-void GLMapSystemBase::deactivateArea(void) {
+void GLMapSystemCrtp::deactivateArea(void) {
    // gyVidVertexBatchFlush();
    // gyVidVertexBatchEnd();
 }
 
-void GLMapSystemBase::_orphanVbo(void) {
+void GLMapSystemCrtp::_orphanVbo(void) {
   //  if(!_elements) return;
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE, nullptr, GL_STREAM_DRAW);
 }
 
 
-void GLMapSystemBase::_drawElements(void) {
+void GLMapSystemCrtp::_drawElements(void) {
     if(!_elements) return;
     GLuint* ptr = (GLuint*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, _lastOffset, sizeof(GLuint)*(_size-_lastSize), GL_MAP_INVALIDATE_RANGE_BIT /*| GL_MAP_FLUSH_EXPLICIT_BIT*/ | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
     if(ptr) {memcpy(ptr, &_elements[_lastSize], sizeof(GLuint)*(_size-_lastSize));

@@ -1,3 +1,4 @@
+#include <gyro_platform.h>
 #if GYRO_PLATFORM != GYRO_PLATFORM_iOS
 #include <ogg/ogg.h>
 #include <vorbis/codec.h>
@@ -14,6 +15,7 @@
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbisfile.h>
 #endif
+
 #include <gyro_audio_api.h>
 #include <gyro_file_api.h>
 #include <gyro_ogg_api.h>

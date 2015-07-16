@@ -54,7 +54,7 @@ void gyVidCamUpdate(const struct GYCamera *const cam);
 void gyVidSetCamWorldPos(const GYVector3*const pos);
 
 //General Video API
-int         gyVidInit(const GYVidInitParams *const params); //MUST SET PROJWIDTH/PROJHEIGHT
+int         gyVidInit(const struct GYVidInitParams *const params); //MUST SET PROJWIDTH/PROJHEIGHT
 int         gyVidUninit(void);
 void        gyVidSceneBegin(void);
 void        gyVidSceneEnd(void);

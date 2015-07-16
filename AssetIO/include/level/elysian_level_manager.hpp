@@ -1,10 +1,10 @@
-#ifndef ELYSIAN_SEVERITY_MANAGER_HPP
-#define ELYSIAN_SEVERITY_MANAGER_HPP
+#ifndef ELYSIAN_LEVEL_MANAGER_HPP
+#define ELYSIAN_LEVEL_MANAGER_HPP
 
-#include <elysian_asset_typedefs.hpp>
+#include <utility/elysian_asset_typedefs.hpp>
 
-ELYSIAN_ASSET_TYPEDEF(Level, struct)
-ELYSIAN_ASSET_TYPEDEF(Area, struct)
+ELYSIAN_ASSET_TYPEDEF(Level)
+ELYSIAN_ASSET_TYPEDEF(Area)
 
 namespace elysian {
 

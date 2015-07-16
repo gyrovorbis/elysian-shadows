@@ -53,7 +53,7 @@
 #endif
 
 
-ELYSIAN_ASSET_TYPEDEF(Area, struct)
+ELYSIAN_ASSET_TYPEDEF(Area)
 
 using namespace std;
 
@@ -81,7 +81,7 @@ namespace elysian {
         void					setNormal(const bool val);
     };
 
-    struct AreaBase:
+    class AreaBase:
         public LuaTableProxy<AreaBase, Area> {
     public:
 

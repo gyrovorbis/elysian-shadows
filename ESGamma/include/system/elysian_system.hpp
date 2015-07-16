@@ -5,6 +5,7 @@
 
 ELYSIAN_ASSET_TYPEDEF(TimerSystem)
 ELYSIAN_ASSET_TYPEDEF(Debug)
+ELYSIAN_ASSET_TYPEDEF(MapSystem)
 
 namespace elysian {
 	class LevelSystem;
@@ -27,7 +28,6 @@ namespace elysian {
 	class RigidBodySystem;
 	class CombatSystem;
     class SkeletonSystem;
-    class MapSystem;
 
 	class System: public LevelManager {
 	public:
