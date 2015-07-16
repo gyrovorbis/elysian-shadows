@@ -10,8 +10,21 @@ extern "C" {
 //this is no good
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
 #elif GYRO_PLATFORM == GYRO_PLATFORM_iOS
-#	include "ios/ios_system.h"
-#	include "ios/gyro_gles_ios.h"
+#   ifdef __OBJC__
+    #import <OpenGLES/ES3/gl.h>
+    #import <OpenGLES/ES3/glext.h>
+    #import <UIKit/UIKit.h>
+    #import <OpenGLES/EAGL.h>
+    #import <QuartzCore/QuartzCore.h>
+    #import <OpenGLES/EAGLDrawable.h>
+
+#   else
+    #include <OpenGLES/ES3/gl.h>
+    #include <OpenGLES/ES3/glext.h>
+#   endif
+
+
+
 #elif GYRO_PLATFORM == GYRO_PLATFORM_ANDROID
 #	include <EGL/egl.h>
 #	include <GLES2/gl2.h>

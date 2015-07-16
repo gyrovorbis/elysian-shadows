@@ -10,6 +10,14 @@
 #define ASSETS_PATH_STR     "/assets"
 #define USERDATA_PATH_STR   "/userdata"
 
+char *turfs__strdup(const char *str)
+{
+    size_t len = 1 + strlen(str);
+    char *p = malloc(len);
+    return p ? memcpy(p, str, len) : NULL;
+}
+
+
 TURFSAPI turfs_virtual_path(turfs_path_type type, char **path, size_t *len)
 {
     if (!g_initialized) {
@@ -52,8 +60,9 @@ TURFSAPI turfs_silph_scope(const char *vpath, char **path, size_t *len, turfs_pa
         if (!strncmp(vpath, asset_vpath, asset_len)) {
             if (vpath[asset_len] == '/') {
                 memset(temp_path, 0, sizeof temp_path);
-                turfs_resolve_path(TURFS_PATH_ASSETS, &asset_rpath, NULL);
-                sprintf(temp_path, "%s/%s", asset_rpath, &vpath[asset_len + 1]);
+                turfs_resolve_path(TURFS_PATH_ASSETS, vpath, &asset_rpath, NULL);
+                strcpy(temp_path, asset_rpath);
+               // sprintf(temp_path, "%s/%s", asset_rpath, &vpath[asset_len + 1]);
                 if (path != NULL) {
                     *path = turfs__strdup(temp_path);
                 }
@@ -72,8 +81,9 @@ TURFSAPI turfs_silph_scope(const char *vpath, char **path, size_t *len, turfs_pa
         if (!strncmp(vpath, userdata_vpath, userdata_len)) {
             if (vpath[userdata_len] == '/') {
                 memset(temp_path, 0, sizeof temp_path);
-                turfs_resolve_path(TURFS_PATH_USERDATA, &userdata_rpath, NULL);
-                sprintf(temp_path, "%s/%s", userdata_rpath, &vpath[userdata_len + 1]);
+                turfs_resolve_path(TURFS_PATH_USERDATA, vpath, &userdata_rpath, NULL);
+                strcpy(temp_path, asset_rpath);
+              //  sprintf(temp_path, "%s/%s", userdata_rpath, &vpath[userdata_len + 1]);
                 if (path != NULL) {
                     *path = turfs__strdup(temp_path);
                 }

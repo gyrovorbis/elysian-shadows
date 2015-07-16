@@ -29,7 +29,7 @@ extern "C" {
 #   define GYRO_BUILD_COMMIT   UNKNOWN
 #endif
 
-typedef struct GYSysParams {
+typedef struct GYSysInitParams {
     void*   context;
     void    (*segFaultHandler)(void*);
 
@@ -51,19 +51,21 @@ typedef enum {
 } GYAppCbRet;
 
 typedef GYAppCbRet (*GYAppInitCb)(int argc, char **argv);
-typedef GYAppCbRet (*GYAppTickCb)(void);
+typedef GYAppCbRet (*GYAppUpdateCb)(void);
+typedef GYAppCbRet (*GYAppInputCb)(void);
 typedef GYAppCbRet (*GYAppDrawCb)(void);
 typedef GYAppCbRet (*GYAppQuitCb)(void);
 
 void gySysRegisterAppInit(GYAppInitCb init_cb);
-void gySysRegisterAppTick(GYAppTickCb tick_cb);
+void gySysRegisterAppUpdate(GYAppUpdateCb update_cb);
+void gySysRegisterAppInput(GYAppInputCb input_cb);
 void gySysRegisterAppDraw(GYAppDrawCb draw_cb);
 void gySysRegisterAppQuit(GYAppQuitCb quit_cb);
+int gySysAppExec(int argc, char* argv[]);
 
 unsigned int gySysStatsVram(void);
 unsigned int gySysStatsRam(void);
 
-void gyro_main(void);
 
 #include "common/gyro_system_common.h"
 

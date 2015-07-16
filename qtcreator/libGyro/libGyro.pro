@@ -1,12 +1,11 @@
 include(../../../qtcreator/ESDev/ESDev.pri)
 TEMPLATE = lib
-QT		+= opengl
-CONFIG += staticlib
-CONFIG += console
-#CONFIG += opengl
+QT += opengl
+CONFIG += staticlib console
 CONFIG -= app_bundle
-#CONFIG -= qt
-QMAKE_CXXFLAGS += -Wno-c++11-extensions -Wno-c++11-long-long
+!ios {
+    QMAKE_CXXFLAGS += -Wno-c++11-extensions -Wno-c++11-long-long
+}
 QMAKE_CFLAGS += -msse -std=c99
 
 INCLUDEPATH += ../../include \
@@ -15,9 +14,9 @@ INCLUDEPATH += ../../include \
 #==========PLATFORM-SPECIFIC BULLSHIT==========
 
 win32 {
-        INCLUDEPATH +=  ../../lib/win32 \
-                        ../../lib/win32/mingw
-        SOURCES +=	../../source/x86/turfs_windows.c
+    INCLUDEPATH +=  ../../lib/win32 \
+                    ../../lib/win32/mingw
+    SOURCES +=	../../source/x86/turfs_windows.c
 }
 
 macx {
@@ -27,20 +26,31 @@ macx {
 }
 
 linux {
-
     LIBS += \
         -ldynamic
-
     SOURCES +=	../../source/x86/turfs_unix.c
 }
+
+ios {
+
+    INCLUDEPATH += ../../lib/ios/Ogg.framework/Headers \
+        ../../lib/ios/Vorbis.framework/Headers
+
+}
+
 
 #==========/PLATFORM-SPECIFIC BULLSHIT==========
 
 DEPENDPATH += ../../include \
     ../../source/glal/shaders \
     ../../source/glal \
-    ../../include/x86 \
     ../../include/glal
+
+!ios {
+    DEPENDPATH += ../../include/x86
+} else {
+    DEPENDPATH += ../../include/ios
+}
 
 OTHER_FILES += \
     ../../source/glal/shaders/fixedFunctionTextured.vsh \
@@ -84,11 +94,6 @@ HEADERS += \
     ../../include/kinetic/gyro_kinetic_collision.h \
     ../../include/kinetic/gyro_kinetic_collider.h \
     ../../source/common/gyro_asset_bank.h \
-    ../../include/x86/gyro_input_x86.inl \
-    ../../include/x86/gyro_math_sse_x86.inl \
-    ../../include/x86/gyro_matrix_sse_x86.inl \
-    ../../include/x86/gyro_sdl_x86.inl \
-    ../../include/x86/gyro_video_x86.inl \
     ../../include/glal/gyro_audio_glal.inl \
     ../../include/glal/gyro_texture_glal.inl \
     ../../include/common/gyro_video_common.h \
@@ -103,11 +108,23 @@ HEADERS += \
     ../../include/common/turfs.h \
     ../../include/glal/gyro_file_glal.inl
 
+
+!ios {
+    HEADERS += ../../include/x86/gyro_input_x86.inl \
+    ../../include/x86/gyro_math_sse_x86.inl \
+    ../../include/x86/gyro_matrix_sse_x86.inl \
+    ../../include/x86/gyro_sdl_x86.inl \
+    ../../include/x86/gyro_video_x86.inl
+} else {
+    HEADERS += ../../source/ios/GYAppDelegate.h \
+        ../../source/ios/GYView.h \
+        ../../source/ios/GYViewController.h
+
+}
+
+
 SOURCES += \
-    ../../source/qt/gyro_file_qt.cpp \
     ../../source/common/turfs_common.c \
-    ../../source/common/turfs_strings.c \
-    ../../source/x86/turfs_file_stdio.c \
     ../../source/common/gyro_file.c \
     ../../source/glal/gyro_lighting_glal.c \
     ../../source/glal/gyro_shaders_glal.c \
@@ -123,11 +140,30 @@ SOURCES += \
     ../../source/glal/gyro_audio_glal.c \
     ../../source/glal/gyro_wav_glal.c \
     ../../source/glal/tinycthread.c \
-    ../../source/x86/gyro_system_glfw_x86.c \
-    ../../source/x86/gyro_matrix_x86.c \
-    ../../source/qt/gyro_texture_qt.cpp \
     ../../source/glal/gyro_ogg_glal.c \
-    ../../source/qt/gyro_debug_qt.cpp \
-    ../../source/qt/gyro_input_qt.cpp \
-    ../../source/qt/gyro_timer_qt.cpp \
-        ../../source/qt/gyro_video_qt.cpp
+    ../../source/common/turfs_file_stdio.c
+
+!ios {
+    SOURCES += ../../source/qt/gyro_video_qt.cpp \
+        ../../source/x86/gyro_system_glfw_x86.c \
+        ../../source/qt/gyro_texture_qt.cpp \
+        ../../source/qt/gyro_debug_qt.cpp \
+        ../../source/qt/gyro_input_qt.cpp \
+        ../../source/qt/gyro_timer_qt.cpp \
+        ../../source/qt/gyro_file_qt.cpp
+} else {
+    SOURCES += ../../source/x86/gyro_matrix_x86.c
+
+    OBJECTIVE_SOURCES += \
+        ../../source/ios/main.mm \
+        ../../source/ios/gyro_texture_ios.mm \
+        ../../source/ios/gyro_input_ios.mm \
+        ../../source/ios/gyro_debug_ios.mm \
+        ../../source/ios/gyro_timer_ios.mm \
+        ../../source/ios/turfs_ios.mm \
+        ../../source/ios/gyro_system_ios.mm \
+        ../../source/ios/gyro_video_ios.mm \
+        ../../source/ios/GYAppDelegate.mm \
+        ../../source/ios/GYView.mm \
+        ../../source/ios/GYViewController.mm
+}

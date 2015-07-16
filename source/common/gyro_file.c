@@ -9,16 +9,16 @@ int gyFileQuit(void)
 	return turfs_quit() == TURFS_RET_OK;
 }
 
-int gyFileResolvePath(GYPathType path_type, char **path, size_t *len)
+int gyFileResolvePath(GYPathType path_type, const char* vpath, char **path, size_t *len)
 {
 	if (path == NULL) {
 		return 0;
 	}
 	switch (path_type) {
 		case GY_PATH_USERDATA:
-			return turfs_resolve_path(TURFS_PATH_USERDATA, path, len) == TURFS_RET_OK;
+            return turfs_resolve_path(TURFS_PATH_USERDATA, vpath, path, len) == TURFS_RET_OK;
 		case GY_PATH_ASSETS:
-			return turfs_resolve_path(TURFS_PATH_ASSETS, path, len) == TURFS_RET_OK;
+            return turfs_resolve_path(TURFS_PATH_ASSETS, vpath, path, len) == TURFS_RET_OK;
 	}
 	return 1;
 }

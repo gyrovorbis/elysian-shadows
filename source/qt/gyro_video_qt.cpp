@@ -9,22 +9,3 @@ extern GYInputInitParams    _initParams;
 
 int glalDefaultFbo(void);
 
-void glalVidBindDefaultFbo(void) {
-    //fucking disgusting.
-   // glBindFramebuffer(GL_FRAMEBUFFER, glalDefaultFbo());
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void gyVidSceneBegin(void) {
-    glalPrevVertexRenderCount = glalVertexRenderCount;
-    glalPrevUniformChangeCount = glalUniformChangeCount;
-    glalPrevTextureChangeCount = glalTextureChangeCount;
-    glalVertexRenderCount = 0;
-    glalUniformChangeCount = 0;
-    glalTextureChangeCount = 0;
-}
-
-void gyVidSceneEnd(void) {
-    gyVidVertexBatchFlush();
-  //  glFlush();
-}

@@ -5,6 +5,13 @@
 #include <glal/gyro_shaders_glal.h>
 #include <gyro_system_api.h>
 
+#ifdef GL_ES_VERSION_3_0
+#   define GY_GL_VERSION_STR "#version 300 es"
+#else
+#   define GY_GL_VERSION_STR "#version 330"
+#endif
+
+
 GLenum glalTextureMapTexUnits[GLAL_TEXTURE_MAP_MAX] = {
     GL_TEXTURE0,
     GL_TEXTURE1,
@@ -517,7 +524,17 @@ int _gyVidShaderCreate(GYShader* shader) {
     programSource[charCount] = '\0';
     gyFileClose(&file);
 
-    glShaderSource(shader->shader, 1, (const GLchar**)&programSource, (GLint*)&charCount);
+    GLchar* sources[2] = {
+        GY_GL_VERSION_STR,
+        programSource
+    };
+
+    GLint sourceLengths[2] = {
+        strlen(GY_GL_VERSION_STR),
+        charCount
+    };
+
+    glShaderSource(shader->shader, 2, sources, sourceLengths);
     glCompileShader(shader->shader);
     free(programSource);
 
