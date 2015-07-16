@@ -205,6 +205,7 @@ private Q_SLOTS:
     void on_actionDreamcast_triggered();
     void on_actionIPhone_iPad_triggered();
     void on_actionInvoke_triggered();
+    void onInvokeEngineStopped();
     void on_actionAsset_View_triggered(bool checked);
     void on_actionEntity_View_triggered(bool checked);
     void on_actionLayer_View_triggered(bool checked);

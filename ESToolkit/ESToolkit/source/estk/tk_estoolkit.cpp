@@ -242,6 +242,7 @@ ESToolkit::ESToolkit(QWidget *parent):
     connect(_sheetDockWidget, SIGNAL(ExitPanMode()), this, SLOT(ExitPanMode()));
     connect(_historyDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
     connect(_selectionDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
+    connect(_engineDialog, SIGNAL(stopped()), this, SLOT(onInvokeEngineStopped()));
 
     glUtilities::printGLSupport();
     ReadSettings();
@@ -1397,25 +1398,39 @@ void ESToolkit::on_actionIPhone_iPad_triggered()
 
 void ESToolkit::on_actionInvoke_triggered()
 {
-#if 0
+
     if(!_assets.getCurrentArea() || !_assets.getCurrentLevel() || !_assets.getCurrentProject()) return;
 
-    _assets.getCurrentArea()->save();
-    _engineDialog->show();
+    if(_ui->actionInvoke->isChecked()) {
 
-    if(_ui->actionWindows->isChecked() || _ui->actionMac_OS_X->isChecked() || _ui->actionNix->isChecked())
-        _engineDialog->Invoke(EngineDialog::ENGINE_PC);
-    else if(_ui->actionDreamcast->isChecked()) {
-        if(!_engineDialog->Invoke(EngineDialog::ENGINE_DC)) {
-            _engineDialog->close();
-            _engineSettingsDialog->show();
-            _engineSettingsDialog->setFocus();
-            //Debug::Log(Debug::DBG_WARNING, "InvokeEngine(DREAMCAST) failed! Invalid Settings.");
+        if(_ui->actionDreamcast->isChecked()) {
+            _assets.getCurrentArea()->save();
+            _engineDialog->show();
+
+            if(!_engineDialog->Invoke(EngineDialog::ENGINE_DC)) {
+                _engineDialog->close();
+                _engineSettingsDialog->show();
+                _engineSettingsDialog->setFocus();
+                //Debug::Log(Debug::DBG_WARNING, "InvokeEngine(DREAMCAST) failed! Invalid Settings.");
+            }
         }
+        else if(_ui->actionIPhone_iPad->isChecked()) {
+            _assets.getCurrentArea()->save();
+            _engineDialog->show();
+
+            _engineDialog->Invoke(EngineDialog::ENGINE_iOS);
+        }
+    } else if(_engineDialog->isVisible()) {
+        _engineDialog->kill();
+        _engineDialog->close();
     }
-    else if(_ui->actionIPhone_iPad->isChecked())
-        _engineDialog->Invoke(EngineDialog::ENGINE_iOS);
-#endif
+
+}
+
+void ESToolkit::onInvokeEngineStopped(void) {
+    const bool blocked = _ui->actionInvoke->blockSignals(true);
+    _ui->actionInvoke->setChecked(false);
+    _ui->actionInvoke->blockSignals(blocked);
 }
 
 void ESToolkit::on_actionAsset_View_triggered(bool checked)
@@ -1814,9 +1829,9 @@ void ESToolkit::on_actionPrevious_Project_triggered(void) {
 
 void ESToolkit::on_actionInvoke_triggered(bool checked)
 {
-    if(checked) {
+    if(checked && (_ui->actionWindows->isChecked() || _ui->actionMac_OS_X->isChecked() || _ui->actionNix->isChecked())) {
         _engineGLView->play();
-    } else {
+    } else if(!checked) {
         _engineGLView->stop();
     }
 }

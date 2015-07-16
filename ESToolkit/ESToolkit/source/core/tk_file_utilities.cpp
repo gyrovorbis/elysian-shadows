@@ -54,3 +54,22 @@ bool FileUtilities::copyDir(const QString &srcFilePath,
     }
     return true;
 }
+
+QString FileUtilities::getAssetRelativePath(const QString path) {
+    bool found = false;
+    QString result;
+    QStringList list = path.split("/");
+
+    for(int i = 0; i < list.size(); ++i) {
+        if(list[i] == "assets") {
+            found = true;
+        }
+
+        if(found) {
+            result += "/";
+            result += list[i];
+        }
+    }
+
+    return found? result : QString("NOT AN ASSET RELATIVE PATH");
+}

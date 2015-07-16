@@ -225,8 +225,8 @@ void Engine::render(void) {
             gyVidProjectionCustomMatrix(projectionMatrix);
             //gyVidProjectionDefaultMatrix(); */
             _guiSystem->renderBackground();
-#if GYRO_PLATFORM != GYRO_PLATFORM_iOS
             _cameraSystem->pushViewProjMatrix();
+#if GYRO_PLATFORM != GYRO_PLATFORM_iOS
             _lightSystem->shadowRenderPasses();
 #else
             _lightSystem->removeLightSourcesFromScene();

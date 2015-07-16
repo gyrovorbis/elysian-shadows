@@ -142,6 +142,20 @@ void GameInput::translate(const GYInput& platInput, GameInput& gameInput) {
         }
         
     }
+#elif GYRO_PLATFORM == GYRO_PLATFORM_iOS
+
+    if(platInput.up) gameInput.setDown(GameInput::BUT_DPAD_U);
+    else gameInput.setUp(GameInput::BUT_DPAD_U);
+
+    if(platInput.down) gameInput.setDown(GameInput::BUT_DPAD_D);
+    else gameInput.setUp(GameInput::BUT_DPAD_D);
+
+    if(platInput.left) gameInput.setDown(GameInput::BUT_DPAD_L);
+    else gameInput.setUp(GameInput::BUT_DPAD_L);
+
+    if(platInput.right) gameInput.setDown(GameInput::BUT_DPAD_R);
+    else gameInput.setUp(GameInput::BUT_DPAD_R);
+
 
 #else
 	(void)platInput;

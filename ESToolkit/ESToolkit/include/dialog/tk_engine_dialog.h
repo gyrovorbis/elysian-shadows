@@ -50,7 +50,8 @@ class EngineDialog: public QMainWindow, public AssetManager {
     Q_OBJECT
 public:
     enum ENGINE_TYPE { ENGINE_PC, ENGINE_DC, ENGINE_PSP, ENGINE_iOS };
-    EngineDialog(QWidget *parent=0);
+                EngineDialog(QWidget *parent=0);
+    virtual     ~EngineDialog(void) override;
 
     bool Invoke(const ENGINE_TYPE type);
 private:
@@ -77,6 +78,7 @@ private:
     //Resolution
     unsigned _resolution = 0;
 
+    virtual void closeEvent(QCloseEvent *event) override;
 
 private Q_SLOTS:
 	void OnReadyReadStandardOutput(void);
@@ -94,6 +96,8 @@ public Q_SLOTS:
     void OnSudoPswdChanged(QString string);
     void onEnginePathx86Changed(QString path);
 
+Q_SIGNALS:
+    void stopped(void);
 
 public:
 
@@ -102,7 +106,7 @@ public:
 
     void getStartPos(unsigned &x, unsigned &y) const;
     void setStartPos(const unsigned x, const unsigned y);
-
+    void kill(void);
 };
 
 

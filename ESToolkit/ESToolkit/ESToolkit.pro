@@ -90,9 +90,9 @@ INCLUDEPATH += ../../AssetIO/include \
     include/sheet_manager \
     include/dialog \
     include/widget
-}
 
-PRECOMPILED_HEADER = include/tk_precompiled_headers.h
+    PRECOMPILED_HEADER = include/tk_precompiled_headers.h
+}
 
 SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../AssetIO/source/component/elysian_audio_source_base.cpp \

@@ -16,6 +16,7 @@
 #include "elysian_level.hpp"
 #include "elysian_area.hpp"
 #include <elysian_debug.hpp>
+#include <core/tk_file_utilities.h>
 
 EngineDialog::EngineDialog(QWidget *parent): QMainWindow(parent), _currentType(ENGINE_PC) {
 	QWidget *centralWidget = new QWidget;
@@ -83,10 +84,22 @@ EngineDialog::EngineDialog(QWidget *parent): QMainWindow(parent), _currentType(E
     connect(_clearButton, SIGNAL(clicked()), this, SLOT(OnClickClear()));
     connect(_engine, SIGNAL(started()), this, SLOT(OnStart()));
     connect(_engine, SIGNAL(readyReadStandardOutput()), this, SLOT(OnReadyReadStandardOutput()));
+    connect(_engine, SIGNAL(readyReadStandardError()), this, SLOT(OnReadyReadStandardOutput()));
 	connect(_engine, SIGNAL(error(QProcess::ProcessError)), this, SLOT(OnError(QProcess::ProcessError)));
 
     //Load from file through settings dialog
     //_enginePathx86 = ENGINE_DIALOG_DEFAULT_PATH;
+
+}
+
+EngineDialog::~EngineDialog(void) {
+    kill();
+}
+
+
+void EngineDialog::closeEvent(QCloseEvent *event) {
+    kill();
+    Q_EMIT stopped();
 
 }
 
@@ -101,13 +114,13 @@ bool EngineDialog::Invoke(const ENGINE_TYPE type) {
 
     _engine->setWorkingDirectory(getAssets()->getCurrentProject()->getLocation());
 	//relative level and area paths are hacked to FUCK!
-    args << "-l" << QString("level/")+getAssets()->getCurrentLevel()->getNodeName();
-    args << "-a" << QString("level/")+getAssets()->getCurrentLevel()->getNodeName()+QString("/area/")+getAssets()->getCurrentArea()->getNodeName();
+    args << "-l" << FileUtilities::getAssetRelativePath(getAssets()->getCurrentLevel()->getNodePath());
+    args << "-a" << FileUtilities::getAssetRelativePath(getAssets()->getCurrentArea()->getNodePath());
 	args << "-x" << _startPosXEdit->text() << "-y" << _startPosYEdit->text();
     args << "-r" << QString::number(_resolution);
 
 	//Write argument text file
-//	argFile.open(ELYSIAN_CMD_LINE_ARG_FILE);
+    argFile.open(ELYSIAN_DEBUG_ARG_FILE_NAME);
 	for(int i = 0; i < args.size(); ++i) argFile << args.at(i).toStdString() << " ";
 	argFile.close();
 
@@ -153,7 +166,7 @@ bool EngineDialog::Invoke(const ENGINE_TYPE type) {
 
         break;
     case ENGINE_iOS:
-
+        _engine->start("/bin/sh", QStringList {getAssets()->getCurrentProject()->getNodePath() + "/bin/launchESGammaiOS.sh" });
     default:
         break;
     }
@@ -198,6 +211,8 @@ void EngineDialog::OnError(QProcess::ProcessError error) {
 
 	_log->addItem(item);
 	_log->scrollToBottom();
+
+    Q_EMIT stopped();
 }
 
 void EngineDialog::OnReadyReadStandardOutput(void) {
@@ -243,17 +258,19 @@ void EngineDialog::OnClickClear(void) {
 void EngineDialog::OnFinish(int /*result*/) {
 	//qDebug() << result;
     OnClickClose();
+    Q_EMIT stopped();
 }
 
 void EngineDialog::OnClickClose(void) {
-    _engine->kill();
+    kill();
     _log->clear();
     close();
+    Q_EMIT stopped();
 }
 
 void EngineDialog::OnClickRestart(void) {
     _engine->close();
-    _engine->kill();
+    kill();
     Invoke(_currentType);
 }
 
@@ -305,4 +322,11 @@ void EngineDialog::setStartPos(const unsigned x, const unsigned y) {
 
 void EngineDialog::onEnginePathx86Changed(QString path) {
     _enginePathx86 = path;
+}
+
+void EngineDialog::kill(void) {
+    if(_currentType == ENGINE_iOS) {
+        QProcess::startDetached("killall", QStringList { "iOS Simulator" });
+    }
+    _engine->kill();
 }

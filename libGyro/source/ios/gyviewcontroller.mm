@@ -3,7 +3,11 @@
 #include <gyro_input_api.h>
 
 extern GYAppUpdateCb   gyAppUpdateCb;
-static GYInput _input;
+
+static GYInput _input = {
+    0, 0, 0, 0
+};
+
 static GYMouse _mouse;
 
 // ==== PUBLIC C INPUT API =====
@@ -34,6 +38,7 @@ int gyInputInit(const GYInputInitParams * const params) {
 
 - (void)update {
     if(gyAppUpdateCb) gyAppUpdateCb();
+    memset(&_input, 0, sizeof(GYInput));
 }
 
 
@@ -53,16 +58,57 @@ int gyInputInit(const GYInputInitParams * const params) {
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     for (UITouch *aTouch in touches) {
         CGPoint pt = [aTouch locationInView:self.view];
-        _gyLog(GY_DEBUG_VERBOSE, "Touched some shit: <%f, %f>", pt.x, pt.y);
 
+        if(pt.x < 0.5f*self.view.frame.size.width) {
+            _input.left = 1;
+        } else if(pt.x > 0.5f*self.view.frame.size.width) {
+            _input.right = 1;
+        }
+
+        if(pt.y < 0.5f*self.view.frame.size.height) {
+            _input.up = 1;
+        } else if(pt.y > 0.5f*self.view.frame.size.height){
+            _input.down = 1;
+        }
     }
+
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+    for (UITouch *aTouch in touches) {
+        CGPoint pt = [aTouch locationInView:self.view];
+
+        if(pt.x < 0.5f*self.view.frame.size.width) {
+            _input.left = 1;
+        } else if(pt.x > 0.5f*self.view.frame.size.width) {
+            _input.right = 1;
+        }
+
+        if(pt.y < 0.5f*self.view.frame.size.height) {
+            _input.up = 1;
+        } else if(pt.y > 0.5f*self.view.frame.size.height){
+            _input.down = 1;
+        }
+    }
 
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+    for (UITouch *aTouch in touches) {
+        CGPoint pt = [aTouch locationInView:self.view];
+
+        if(pt.x < 0.5f*self.view.frame.size.width) {
+            _input.left = 1;
+        } else if(pt.x > 0.5f*self.view.frame.size.width) {
+            _input.right = 1;
+        }
+
+        if(pt.y < 0.5f*self.view.frame.size.height) {
+            _input.up = 1;
+        } else if(pt.y > 0.5f*self.view.frame.size.height){
+            _input.down = 1;
+        }
+    }
 
 }
 
