@@ -118,7 +118,8 @@ HEADERS += \
 } else {
     HEADERS += ../../source/ios/GYAppDelegate.h \
         ../../source/ios/GYView.h \
-        ../../source/ios/GYViewController.h
+        ../../source/ios/GYViewController.h \
+        ../../include/ios/gyro_input_ios.inl
 
 }
 
@@ -142,7 +143,8 @@ SOURCES += \
     ../../source/glal/tinycthread.c \
     ../../source/glal/gyro_ogg_glal.c \
     ../../source/common/turfs_file_stdio.c \
-    ../../source/x86/gyro_matrix_x86.c
+    ../../source/x86/gyro_matrix_x86.c \
+
 
 !ios {
     SOURCES += \
@@ -157,7 +159,6 @@ SOURCES += \
     OBJECTIVE_SOURCES += \
         ../../source/ios/main.mm \
         ../../source/ios/gyro_texture_ios.mm \
-        ../../source/ios/gyro_input_ios.mm \
         ../../source/ios/gyro_debug_ios.mm \
         ../../source/ios/gyro_timer_ios.mm \
         ../../source/ios/turfs_ios.mm \
