@@ -43,7 +43,7 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(triggers, getTriggers)
         ELYSIAN_LUA_PROXY_FIELDS_END()*/
 
-        virtual ~BehaviorBase(void) override = default;
+        virtual     ~BehaviorBase(void) = default;
 
         enum TRIGGER_INDEX {
             ON_SCRIPT_CREATE_INDEX,
@@ -137,8 +137,6 @@ namespace elysian {
         virtual const char* getBehavName(void) const = 0;
 
         static Behavior* create(const char* typeName, Entity& parent);
-
-        static void staticConstructor(void);
 
         //Default trigger implementations (should never be called, since anything with the trigger should override)
         virtual void onCreate(void);

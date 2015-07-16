@@ -84,4 +84,5 @@ HEADERS += \
     ../../include/lua/lualib.h \
     ../../include/lua/lundump.h \
     ../../include/lua/lvm.h \
-    ../../include/lua/lzio.h
+    ../../include/lua/lzio.h \
+    ../../../libGyro/source/ios/gyviewcontroller.h

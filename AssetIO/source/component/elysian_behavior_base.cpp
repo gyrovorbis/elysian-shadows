@@ -18,10 +18,6 @@ std::map<const char *, Behavior* (*)(Entity&), ltstr> BehaviorBase::_creators;
 void BehaviorBase::registerCreator(const char *const typeName, Behavior* (*const func)(Entity&)) {
 	_creators[typeName] = func;
 }
-
-void BehaviorBase::staticConstructor(void) {
-	//REGISTER C++ BEHAVIORS HERE
-}
 		
 Behavior* BehaviorBase::create(const char* typeName, Entity& parent) {
 	std::map<const char *, Behavior* (*)(Entity&), ltstr>::iterator it = _creators.find(typeName);

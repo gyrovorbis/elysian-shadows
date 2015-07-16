@@ -25,7 +25,7 @@ namespace elysian {
                         AudioSourceBase(void) = default;
                         AudioSourceBase(Entity& entity);
                         AudioSourceBase(const AudioSourceBase& other);
-        virtual         ~AudioSourceBase(void) override;
+                        ~AudioSourceBase(void);
 
 		//reimplemented from component
         static constexpr const Component::TYPE componentType = Component::AUDIO_SOURCE;

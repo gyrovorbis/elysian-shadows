@@ -207,6 +207,7 @@ bool TkEntity::validate(QString& detailedText) const {
     if(getAnimation())          success &= getAnimation()->validate(detailedText);
     if(getRigidBody())          success &= getRigidBody()->validate(detailedText);
     if(getWarp())               success &= getWarp()->validate(detailedText);
+    if(getExaminable())         success &= getExaminable()->validate(detailedText);
     if(getCharacter())          success &= getCharacter()->validate(detailedText);
     if(getLightSource())        success &= getLightSource()->validate(detailedText);
     if(getAudioSource())        success &= getAudioSource()->validate(detailedText);
@@ -324,7 +325,6 @@ QMenu* TkEntity::createContextMenu(void) {
         getExaminable(),
         canAddTo(elysian::Examinable())
     )->setMenu(getExaminable()? getExaminable()->createContextMenu() : nullptr);
-
 
     menuStack.insertCheckableAction("Warp",
         [&](bool checked) {

@@ -71,7 +71,7 @@ namespace elysian {
 
                             LuaBehaviorBase(Entity& entity);
                             LuaBehaviorBase(Entity& entity, const char *script, const OOLUA::Lua_table_ref paramTable);
-        virtual             ~LuaBehaviorBase(void) override;
+                            ~LuaBehaviorBase(void);
 
         bool				loadScript(void);
                 template<typename RType, typename... PTypes>

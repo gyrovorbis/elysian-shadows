@@ -44,6 +44,7 @@
 #define ELYSIAN_LUA_PROXY_FIELDS_MAX            100
 #define ELYSIAN_LUA_PROXY_TO_STRING_BUFF_SIZE   100
 
+#ifndef ELYSIAN_ENGINE
 template<typename P, typename T, class... Bases>
 class TkLuaTableProxy;
 
@@ -54,6 +55,15 @@ namespace elysian {
 
 template <typename P, typename T=P, class... Bases>
 using LuaTableProxy = TkLuaTableProxy<P, T, Bases...>;
+#else
+namespace elysian {
+    template<typename P, typename T, class... Bases>
+    class LuaTableProxyBase;
+
+    template <typename P, typename T=P, class... Bases>
+    using LuaTableProxy = LuaTableProxyBase<T, P, Bases...>;
+}
+#endif
 
 namespace elysian {
 
@@ -191,6 +201,9 @@ namespace elysian {
             public _LuaTableProxyParents<P, T, Bases...>
     {
         friend _LuaTableProxyPropertyRegistrar<P, T, Bases...>;
+
+    protected:
+        mutable int     _luaRef = LUA_NOREF;
     public:
         typedef P ParentType;
         typedef LuaTableProxy<P, T, Bases...> ProxyType;
@@ -201,9 +214,10 @@ namespace elysian {
 		static LuaTable _ooluaIndexTable;               //OOLUA's default index metamethod table
 		static LuaTable _ooluaNewIndexTable;            //OOLUA's default new index metamethod table
         static LuaTableFieldProxy _combinedFields[ELYSIAN_LUA_PROXY_FIELDS_MAX];
-        static int _proxyTotalCount;
+        static int      _proxyTotalCount;
         //static LuaTable _staticMetaTable;
         //LuaTable        _protoTable;
+
 
         template <typename C>
         static inline void _registerProperties(lua_State* l);
@@ -694,7 +708,7 @@ namespace elysian {
 
 
 	public:
-
+        int         getLuaTableRef(void) const;
 		void		setMetaTable(const LuaTable& ref) const;
 		void		setProtoTable(const LuaTable& ref) const;
 		LuaTable	getProtoTable(void) const;
@@ -1095,6 +1109,16 @@ namespace elysian {
     inline void LuaTableProxyBase<P, T, Bases...>::_registerPropertyMetaMethodTables(lua_State* l) {
         //invoke partially specialized class template
         _LuaTableProxyPropertyRegistrar<P, T, Bases...>::registerProperties(l);
+    }
+
+    template <typename P, typename T, class... Bases>
+    inline int LuaTableProxyBase<P, T, Bases...>::getLuaTableRef(void) const {
+        if(_luaRef == LUA_NOREF) {
+            //Cannot push a const pointer to Lua, or it'll shit every time we attempt to modify proxy from Lua runtime
+            OOLUA::push(*LuaManager::_mainState, const_cast<T*>(static_cast<const T*>(this)));
+            _luaRef = luaL_ref(*LuaManager::_mainState, LUA_REGISTRYINDEX);
+        }
+        return _luaRef;
     }
 
 

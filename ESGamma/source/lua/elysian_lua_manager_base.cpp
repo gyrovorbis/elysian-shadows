@@ -542,11 +542,19 @@ bool LuaManagerBase::genericIterate(const int index, std::function<void(void)> l
     lua_pushvalue(*_mainState, -2);
     lua_insert(*_mainState, -4);
 
+#if GYRO_PLATFORM != GYRO_PLATFORM_iOS
     QVariant lastKey;
     QVariant lastValue;
+#endif
 
     do {
-        if(!_protectedCall(2, 2, nullptr, "LuaManager::genericIterate(<%s, %s>)", Q_CSTR(lastKey.toString()), Q_CSTR(lastValue.toString()))) {
+        if(!_protectedCall(2, 2, nullptr
+#if GYRO_PLATFORM != GYRO_PLATFORM_iOS
+                           ,"LuaManager::genericIterate(<%s, %s>)"
+                           , Q_CSTR(lastKey.toString()),
+                           Q_CSTR(lastValue.toString())
+#endif
+                )) {
             break;
         }
          if(lua_isnil(*_mainState, -2)) {
@@ -563,11 +571,13 @@ bool LuaManagerBase::genericIterate(const int index, std::function<void(void)> l
         //STACK[-2] = KEY
         //STACK[-1] = VALUE
 
+#if GYRO_PLATFORM != GYRO_PLATFORM_iOS
         lua_pushvalue(*_mainState, -1);
         OOLUA::pull(*_mainState, lastValue);
         lua_pushvalue(*_mainState, -2);
         OOLUA::pull(*_mainState, lastKey);
-/*
+#endif
+        /*
         QList<QStandardItem*> items;
         auto* labelItem = (PropertyStackModel::createReadOnlyItem(key.toString()));
         auto* valueItem = new LuaTableFieldItem(_luaRef, key, labelItem);

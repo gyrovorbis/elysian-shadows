@@ -96,7 +96,7 @@ namespace elysian {
                             LightSourceBase(void) = default;
                             LightSourceBase(Entity& entity);
                             LightSourceBase(const LightSourceBase& other);
-        virtual             ~LightSourceBase(void) override;
+                            ~LightSourceBase(void);
 
 		//reimplemented from component
         static constexpr const Component::TYPE componentType = Component::LIGHT_SOURCE;

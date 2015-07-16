@@ -1,9 +1,8 @@
 #ifndef ELYSIAN_SYSTEM_HPP
 #define ELYSIAN_SYSTEM_HPP
 
-#include "elysian_level_manager.hpp"
+#include <level/elysian_level_manager.hpp>
 
-ELYSIAN_ASSET_TYPEDEF(MapSystem)
 ELYSIAN_ASSET_TYPEDEF(TimerSystem)
 ELYSIAN_ASSET_TYPEDEF(Debug)
 
@@ -28,6 +27,7 @@ namespace elysian {
 	class RigidBodySystem;
 	class CombatSystem;
     class SkeletonSystem;
+    class MapSystem;
 
 	class System: public LevelManager {
 	public:

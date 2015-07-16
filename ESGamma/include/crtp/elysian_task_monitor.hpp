@@ -4,7 +4,7 @@
 #ifdef ELYSIAN_ENGINE
 #   include <elysian_task_monitor_base.hpp>
 namespace elysian {
-    typedef TaskMonitorBaseBase TaskMonitor;
+    typedef TaskMonitorBase TaskMonitor;
 }
 #else
 #   include <tk_task_monitor.h>

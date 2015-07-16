@@ -60,10 +60,32 @@
 #elif GYRO_PLATFORM == GYRO_PLATFORM_PSP
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_iOS
+    typedef struct GYInput {
+
+    } GYInput;
+
+    typedef struct GYVidInitParams {
+
+    } GYVidInitParams;
+
+    typedef struct GYInputInitParams {
+
+    } GYInputInitParams;
+
+
 #	define GYRO_GLAL
-#   define GYRO_ENDIAN GYRO_ENDIAN_LITTLE
-#   define GYRO_MATH_SOFTWARE
-#   define GYRO_MATRIX_SOFTWARE
+#	define GYRO_ENDIAN						GYRO_ENDIAN_LITTLE
+#	define GYRO_MATRIX4_ALIGN			__attribute__ ((aligned (16)))
+#	define GYRO_VECTOR4_ALIGN			__attribute__ ((aligned (16)))
+
+//#   define GYRO_MATH_SOFTWARE
+#	define GYRO_AUDIO_PLATFORM_INCLUDE		"glal/gyro_audio_glal.inl"
+//#	define GYRO_INPUT_PLATFORM_INCLUDE		"android/gyro_input_android.inl"
+#	define GYRO_MATH_PLATFORM_INCLUDE       "x86/gyro_math_sse_x86.inl"
+#	define GYRO_MATRIX_PLATFORM_INCLUDE     "x86/gyro_matrix_sse_x86.inl"
+//#	define GYRO_MATRIX_PLATFORM_INCLUDE		"android/gyro_matrix_neon.inl"
+#	define GYRO_TEXTURE_PLATFORM_INCLUDE	"glal/gyro_texture_glal.inl"
+//#	define GYRO_VIDEO_PLATFORM_INCLUDE		"android/gyro_video_android.inl"
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_ANDROID
 #	define GYRO_GLAL

@@ -40,7 +40,7 @@ namespace elysian {
                 CharacterBase(Entity& entity);
                 CharacterBase(const CharacterBase& other);
                 CharacterBase(void)                 = default;
-        virtual ~CharacterBase(void) override		= default;
+                ~CharacterBase(void)        		= default;
 
         Direction::DIR4		_faceDir			= Direction::DIR4_CENTER;
         GYVector3			_lastMoveDir		= { 0.0f, 0.0f, 0.0f };

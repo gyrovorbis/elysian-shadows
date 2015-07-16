@@ -17,7 +17,7 @@
 #define ELYSIAN_ENTITY_DESC_DEFAULT "No Description"
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
-ELYSIAN_ASSET_TYPEDEF(Area)
+ELYSIAN_ASSET_TYPEDEF(Area, struct)
 ELYSIAN_ASSET_TYPEDEF(LuaBehavior)
 
 namespace elysian {

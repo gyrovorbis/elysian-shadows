@@ -225,10 +225,12 @@ void Engine::render(void) {
             gyVidProjectionCustomMatrix(projectionMatrix);
             //gyVidProjectionDefaultMatrix(); */
             _guiSystem->renderBackground();
+#if GYRO_PLATFORM != GYRO_PLATFORM_iOS
             _cameraSystem->pushViewProjMatrix();
-//#if GYRO_PLATFORM == GYRO_PLATFORM_x86
             _lightSystem->shadowRenderPasses();
-//#endif
+#else
+            _lightSystem->removeLightSourcesFromScene();
+#endif
             //_lightSystem->addLightSourcesToScene();
 
             _mapSystem->render();
@@ -239,7 +241,9 @@ void Engine::render(void) {
              _particleSystem->render();
           //  func();
 
+#if GYRO_PLATFORM != GYRO_PLATFORM_iOS
              _lightSystem->removeLightSourcesFromScene();
+#endif
 
              _guiSystem->render();
 

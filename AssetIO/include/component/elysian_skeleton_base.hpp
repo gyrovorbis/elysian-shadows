@@ -69,7 +69,7 @@ namespace elysian {
                         SkeletonBase(Entity& entity);
                         SkeletonBase(void) = default;
                         SkeletonBase(const SkeletonBase& other);
-        virtual         ~SkeletonBase(void) override;
+                        ~SkeletonBase(void);
         SkeletonBase&   operator= (const SkeletonBase& other);
 
        //reimplemented from component

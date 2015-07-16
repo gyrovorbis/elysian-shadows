@@ -87,3 +87,5 @@ HEADERS += \
     test_project_assets.h \
     test_level_assets.h \
     test_area_assets.h
+
+OBJECTIVE_SOURCES +=

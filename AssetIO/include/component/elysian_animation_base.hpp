@@ -182,7 +182,7 @@ namespace elysian {
                 AnimationBase(Entity& parent);
                 AnimationBase(const AnimationBase& other);
                 AnimationBase(void) = default;
-        virtual ~AnimationBase(void) override;
+                ~AnimationBase(void);
         void    _updateStates(void);
         void	_updateChildren(void);
 

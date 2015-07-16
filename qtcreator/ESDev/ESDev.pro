@@ -14,9 +14,11 @@ SUBDIRS +=  ../../libGyro/qtcreator/libGyro \
 tests {
 	SUBDIRS += ../../UnitTests
 }
-	.
+
+
 SUBDIRS += ../../ESToolkit/ESToolkit
 #    ../../ESGamma/qtcreator/ESGamma
+
 
 libGyro.depends = Spine
 

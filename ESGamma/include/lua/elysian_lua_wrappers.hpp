@@ -7,6 +7,8 @@
 #include <system/elysian_gui_system.hpp>
 #include <lua/elysian_lua_singleton.hpp>
 #include <crtp/elysian_collidable.hpp>
+#include <crtp/elysian_entity.hpp>
+#include <crtp/elysian_debug.hpp>
 #include <level/elysian_tile.hpp>
 #include <proxy/elysian_entity_proxy.hpp>
 #include <crtp/elysian_combat.hpp>
@@ -116,8 +118,8 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 
 	//Entity::DEPTH_TYPE
 //	typedef OOLUA::Entity Entity;
-	s->register_class_static<Entity>("NORMAL_FLAT", elysian::NORMAL_FLAT);
-	s->register_class_static<Entity>("NORMAL_FRONT", elysian::NORMAL_FRONT);
+    s->register_class_static<OOLUA::Entity>("NORMAL_FLAT", elysian::NORMAL_FLAT);
+    s->register_class_static<OOLUA::Entity>("NORMAL_FRONT", elysian::NORMAL_FRONT);
 
 	//CollisionFlags::TYPE
     typedef elysian::CollisionFlags CollisionFlags;
@@ -315,12 +317,12 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 // ======= C GLOBAL AND C++ STATIC FUNCTION WRAPPERS ======
 
 static inline int dbgPush(lua_State* const /*l*/) {
-    Debug::push();
+    elysian::Debug::push();
     return 0;
 }
 
 static inline int dbgPop(lua_State* const /*l*/) {
-    Debug::pop();
+    elysian::Debug::pop();
     return 0;
 }
 

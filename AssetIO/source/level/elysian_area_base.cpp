@@ -21,6 +21,7 @@
 #include <utility/elysian_generic.hpp>
 #include <glal/gyro_gl.h>
 #include <glal/gyro_shaders_glal.h>
+#include <glal/gyro_video_glal.h>
 #include <gyro_file_api.h>
 
 using namespace std;

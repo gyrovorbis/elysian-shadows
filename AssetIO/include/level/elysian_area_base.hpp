@@ -53,7 +53,7 @@
 #endif
 
 
-ELYSIAN_ASSET_TYPEDEF(Area)
+ELYSIAN_ASSET_TYPEDEF(Area, struct)
 
 using namespace std;
 
@@ -208,6 +208,7 @@ namespace elysian {
         bool                        loadEntities(const char *const filename);
         bool                        saveEntities(const char *const filename);
         void                        activate(void);
+        void                        deactivate(void);
 
         void                        populateVbo(void);
         void                        freeVbo(void);
@@ -301,6 +302,10 @@ namespace elysian {
      inline bool AreaBase::isValidTileEntry(const unsigned x, const unsigned y) const { return (x < width && y < height); }
 
      inline unsigned AreaBase::getActiveEntityCount(void) const { return entities.size(); }
+
+     inline void AreaBase::deactivate(void) {
+        activated = false;
+     }
 
      inline unsigned AreaBase::getInactiveEntityCount(void) const {
          return inactiveEntities.size();

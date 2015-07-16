@@ -3,8 +3,8 @@
 
 #include <elysian_asset_typedefs.hpp>
 
-ELYSIAN_ASSET_TYPEDEF(Level)
-ELYSIAN_ASSET_TYPEDEF(Area)
+ELYSIAN_ASSET_TYPEDEF(Level, struct)
+ELYSIAN_ASSET_TYPEDEF(Area, struct)
 
 namespace elysian {
 

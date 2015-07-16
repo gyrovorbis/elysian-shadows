@@ -4,7 +4,7 @@
 #ifdef ELYSIAN_ENGINE
 #   include <elysian_warp_base.hpp>
 namespace elysian {
-    typedef WarpBase Component;
+    typedef WarpBase Warp;
 }
 #else
 #   include <tk_warp.h>

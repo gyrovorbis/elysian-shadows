@@ -20,6 +20,7 @@ namespace OOLUA {
     typedef elysian::Examinable         Examinable;
     typedef elysian::Combat             Combat;
     typedef elysian::ParticleEmitter    ParticleEmitter;
+    typedef elysian::Behavior           Behavior;
     typedef elysian::LuaBehavior        LuaBehavior;
     typedef elysian::RenderableObject   RenderableObject;
     typedef elysian::Entity             Entity;

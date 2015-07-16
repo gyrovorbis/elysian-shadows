@@ -6,10 +6,13 @@ exists( ESDevCommandLineArgs.pri ) {
 
 #SPEED UP MINGW'S FUCKTARDEDLY SLOW DUMB ASS!
 win32 {
-
     QMAKE_CFLAGS_RELEASE +=-g -O1
     QMAKE_CXXFLAGS_RELEASE +=-g -O1
     QMAKE_LFLAGS_RELEASE=
+}
+
+ios {
+    DEFINES += ELYSIAN_ENGINE
 }
 
 QMAKE_CXXFLAGS += -Wno-unused-local-typedefs
@@ -24,9 +27,24 @@ CONFIG(release, debug|release) {
 #	QMAKE_CFLAGS += -03
 }
 
-DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt QT_NO_KEYWORDS QT_NO_DYNAMIC_CAST
-QMAKE_CXXFLAGS += -std=c++11 -msse -Wno-unknown-warning-option #-fno-rtti -fno-exceptions
-CONFIG += c++11
+
+DEFINES += QT_NO_KEYWORDS QT_NO_DYNAMIC_CAST
+
+ios {
+    DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_iOS
+} else {
+    DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt
+
+}
+
+
+QMAKE_CXXFLAGS += -msse -Wno-unknown-warning-option #-fno-rtti -fno-exceptions
+
+#!ios {
+    QMAKE_CXXFLAGS += -std=c++11
+    CONFIG += c++11
+#}
+
 CONFIG -= exceptions rtti
 
 #Required to get C++11x to work on OSX
@@ -38,4 +56,5 @@ macx {
 tests {
     DEFINES += ESTK_UNIT_TESTS
 }
+
 

@@ -169,7 +169,7 @@ namespace elysian {
                         ParticleEmitterBase(void) = default;
                         ParticleEmitterBase(Entity& entity);
                         ParticleEmitterBase(const ParticleEmitterBase& other);
-        virtual         ~ParticleEmitterBase(void) override = default;
+                        ~ParticleEmitterBase(void) = default;
 
 		//reimplemented from component
         static constexpr const Component::TYPE componentType = Component::PARTICLE_EMITTER;

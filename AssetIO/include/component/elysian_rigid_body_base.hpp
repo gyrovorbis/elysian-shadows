@@ -110,7 +110,7 @@ namespace elysian {
                                     RigidBodyBase(Entity& entity);
                                     RigidBodyBase(const RigidBodyBase& other);
                                     RigidBodyBase(void) = default;
-        virtual                     ~RigidBodyBase(void) override = default;
+                                    ~RigidBodyBase(void) = default;
 
 		//reimplemented from Component
         static constexpr const Component::TYPE componentType = Component::RIGID_BODY;

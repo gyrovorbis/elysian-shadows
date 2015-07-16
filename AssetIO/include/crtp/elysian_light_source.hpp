@@ -2,7 +2,7 @@
 #define ELYSIAN_LIGHT_SOURCE_HPP
 
 #ifdef ELYSIAN_ENGINE
-#   include <elysian_light_source.hpp>
+#   include <component/elysian_light_source_base.hpp>
 namespace elysian {
     typedef LightSourceBase LightSource;
 }

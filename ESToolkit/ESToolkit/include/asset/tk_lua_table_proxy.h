@@ -88,7 +88,6 @@ class TkLuaTableProxy:
     friend ParentType;
 protected:
     using                       elysian::LuaManager::_mainState;
-    mutable int                 _luaRef = LUA_NOREF;
 
     //CRTP overridden from engine
     static void _callPropertyProxyMethod(const bool write, const unsigned args, const unsigned retVals, const unsigned keyIndex);
@@ -103,8 +102,6 @@ public:
 
     //Might also need copy constructor
     const TkLuaTableProxy<P, T, Bases...>&    operator=(const TkLuaTableProxy<P, T, Bases...>& rhs);
-    int                             getLuaTableRef(void) const;
-
 };
 
 
@@ -158,17 +155,6 @@ inline const TkLuaTableProxy<P, T, Bases...>& TkLuaTableProxy<P,T, Bases...>::op
     //*static_cast<T*>(this) = *static_cast<const T*>(&rhs);
     return *this;
 }
-
-template <typename P, typename T, class... Bases>
-inline int TkLuaTableProxy<P, T, Bases...>::getLuaTableRef(void) const {
-    if(_luaRef == LUA_NOREF) {
-        //Cannot push a const pointer to Lua, or it'll shit every time we attempt to modify proxy from Lua runtime
-        OOLUA::push(*_mainState, const_cast<T*>(static_cast<const T*>(this)));
-        _luaRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
-    }
-    return _luaRef;
-}
-
 
 template <typename P, typename T, class... Bases>
 inline TkLuaTableProxy<P, T, Bases...>::~TkLuaTableProxy(void) {

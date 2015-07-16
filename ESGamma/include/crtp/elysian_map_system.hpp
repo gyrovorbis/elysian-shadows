@@ -3,9 +3,6 @@
 
 #ifdef ELYSIAN_ENGINE
 #   include "elysian_map_system_base.hpp"
-namespace elysian {
-    typedef MapSystemBase MapSystem;
-}
 #else
 #   include "tk_map_system.h"
 namespace elysian {

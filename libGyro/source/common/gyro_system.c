@@ -13,10 +13,33 @@ static GYDebugCallbacks _dbgCallbacks = {
 
 static GY_DEBUG_SEVERITY _dbgLevel = GY_DEBUG_WARNING;
 
-GYAppInitCb gy_appInitCb = NULL;
-GYAppTickCb gy_appTickCb = NULL;
-GYAppDrawCb gy_appDrawCb = NULL;
-GYAppQuitCb gy_appQuitCb = NULL;
+GYAppInitCb     gyAppInitCb        = NULL;
+GYAppUpdateCb   gyAppUpdateCb      = NULL;
+GYAppInputCb    gyAppInputCb       = NULL;
+GYAppDrawCb     gyAppDrawCb        = NULL;
+GYAppQuitCb     gyAppQuitCb        = NULL;
+
+void _gySysPrintBuildInfo(const char*const platString) {
+    char strBuff[40];
+
+    _gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86_64 [%s] v%s", platString, GYRO_LIB_VERSION);
+    _gyPush();
+#ifdef GYRO_LOCAL_BUILD
+    _gyLog(GY_DEBUG_WARNING, "THIS IS AN UNOFFICIAL BUILD!");
+#else
+    _gyLog(GY_DEBUG_VERBOSE, "THIS IS AN OFFICIAL BUILD!");
+#endif
+    _gyPush();
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Git branch name", GYRO_STRINGIFY_MACRO(GYRO_BUILD_BRANCH));
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Git commit ID", GYRO_STRINGIFY_MACRO(GYRO_BUILD_COMMIT));
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Build number", GYRO_STRINGIFY_MACRO(GYRO_BUILD_NUMBER));
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Build node", GYRO_STRINGIFY_MACRO(GYRO_BUILD_NODE));
+    sprintf(strBuff, "%s %s", __DATE__, __TIME__);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Build timestamp", strBuff);
+    _gyPop(1);
+
+
+}
 
 void _gyLog(GY_DEBUG_SEVERITY level, const char*const str, ...) {
     char buffer[GYRO_PRINTF_BUFFER_SIZE];
@@ -47,25 +70,32 @@ void gySysDebugEnable(GY_DEBUG_SEVERITY level, const GYDebugCallbacks* callbacks
 
 void gySysRegisterAppInit(GYAppInitCb init_cb)
 {
-	gy_appInitCb = init_cb;
+    gyAppInitCb = init_cb;
 }
 
-void gySysRegisterAppTick(GYAppTickCb tick_cb)
+void gySysRegisterAppUpdate(GYAppUpdateCb update_cb)
 {
-	gy_appTickCb = tick_cb;
+    gyAppUpdateCb = update_cb;
+}
+
+void gySysRegisterAppInput(GYAppInputCb input_cb)
+{
+    gyAppInputCb = input_cb;
 }
 
 void gySysRegisterAppDraw(GYAppDrawCb draw_cb)
 {
-	gy_appDrawCb = draw_cb;
+    gyAppDrawCb = draw_cb;
 }
 
 void gySysRegisterAppQuit(GYAppQuitCb quit_cb)
 {
-	gy_appQuitCb = quit_cb;
+    gyAppQuitCb = quit_cb;
 }
 
+
 #if GYRO_PLATFORM != GYRO_PLATFORM_Qt
+#if 0
 int gyro_entry_point(int argc, char **argv)
 {
 	gyro_main();
@@ -93,4 +123,5 @@ int gyro_entry_point(int argc, char **argv)
 	}
 	return 0;
 }
+#endif
 #endif

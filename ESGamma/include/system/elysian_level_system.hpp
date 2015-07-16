@@ -4,7 +4,7 @@
 #include "elysian_system.hpp"
 #include "elysian_asset_typedefs.hpp"
 #include "elysian_mem_pool.hpp"
-#include "tk_area.h"
+#include <crtp/elysian_area.hpp>
 #include "elysian_level.hpp"
 
 
@@ -27,8 +27,8 @@
 #endif
 
 
-ELYSIAN_ASSET_TYPEDEF(Level)
-ELYSIAN_ASSET_TYPEDEF(Area)
+ELYSIAN_ASSET_TYPEDEF(Level, struct)
+ELYSIAN_ASSET_TYPEDEF(Area, struct)
 
 namespace elysian {
 

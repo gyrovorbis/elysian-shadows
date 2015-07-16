@@ -105,7 +105,7 @@ void DebugBase::writeLog(const DebugBase::SOURCE source, const DebugBase::SEVERI
 //	size_t length = strlen(buffer);
 	strcat(buffer, "\n");
 
-#if !defined(ANDROID)
+#if !defined(ANDROID) && GYRO_PLATFORM != GYRO_PLATFORM_iOS
 	fputs(buffer, _dbgFile);
 	fflush(_dbgFile);
 	if(source == LUA) {
@@ -656,7 +656,7 @@ void DebugBase::processInput(GameInput& input) {
 
 #define ARG_LIMIT 20
 bool DebugBase::parseArguments(void) {
-#if 0
+//#if 0
 	int argc = 0;
 	char argBuff[ARG_LIMIT][100];
 	char *argv[ARG_LIMIT];
@@ -667,7 +667,7 @@ bool DebugBase::parseArguments(void) {
 
 	//Default values for command-line args
 	_cmdLineArgs.x = _cmdLineArgs.y = 32*4;
-    strcpy(_cmdLineArgs.level, ELYSIAN_DEBUG_SEVERITY_DEFAULT);
+    strcpy(_cmdLineArgs.level, ELYSIAN_DEBUG_LEVEL_DEFAULT);
 	strcpy(_cmdLineArgs.area, ELYSIAN_DEBUG_AREA_DEFAULT);
 
 	if (gyFileOpen(ELYSIAN_DEBUG_ARG_FILE, "r", &file)) {
@@ -697,7 +697,7 @@ bool DebugBase::parseArguments(void) {
     } else {
         //printf(DBG_WARNING, "gamma_args.txt not found! Shitting pants!");
     }
-    #endif
+    //#endif
 	return false;
 }
 

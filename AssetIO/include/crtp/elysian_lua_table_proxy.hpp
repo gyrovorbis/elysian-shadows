@@ -6,8 +6,8 @@
 #ifdef ELYSIAN_ENGINE
 #   include <elysian_lua_table_proxy_base.hpp>
 namespace elysian {
-    template <typename P, typename T=P>
-    using LuaTableProxy = LuaTableProxyBase<T, P>;
+    template <typename P, typename T, class... Bases>
+    using LuaTableProxy = LuaTableProxyBase<T, P, Bases...>;
 }
 #else
 #   include <tk_lua_table_proxy.h>

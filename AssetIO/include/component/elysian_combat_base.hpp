@@ -127,7 +127,7 @@ namespace elysian {
                 CombatBase(Entity& entity);
                 CombatBase(void) = default;
                 CombatBase(const CombatBase& other);
-        virtual ~CombatBase(void) override = default;
+                ~CombatBase(void) = default;
 
 		//reimplemented from component
         static constexpr const Component::TYPE componentType = Component::COMBAT;

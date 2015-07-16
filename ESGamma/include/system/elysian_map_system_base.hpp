@@ -19,6 +19,7 @@
 #include <gyro_math_api.h>
 #include <gyro_matrix_api.h>
 #include <gyro_video_api.h>
+#include <glal/gyro_video_glal.h>
 #include <stdint.h>
 
 #define ELYSIAN_MAP_SYSTEM_ONSCREEN_ENTITY_POOL_SIZE	1000
@@ -34,7 +35,7 @@
 #define ELYSIAN_DEPTH_BUFFER_ENTITY_WIDTH 20
 */
 
-ELYSIAN_ASSET_TYPEDEF(MapSystem)
+//ELYSIAN_ASSET_TYPEDEF(MapSystem)
 //ELYSIAN_ASSET_TYPEDEF(MapDepthBuffEntryImpl, struct)
 //ELYSIAN_ASSET_TYPEDEF(EntityDepthBuffEntryImpl, struct)
 
@@ -135,6 +136,13 @@ namespace elysian {
         void        setRenderTileLayer(const unsigned short int layer, const bool v);
 
     };
+
+#ifdef ELYSIAN_ENGINE
+    class MapSystem: public MapSystemBase<> {
+
+    };
+
+#endif
 
     template<typename P, typename T, typename E>
     inline void MapSystemBase<P, T, E>::flushVertexBatchCallback(void* self) {

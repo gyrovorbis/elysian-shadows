@@ -4,6 +4,7 @@
 #include <vector>
 #include <gyro_texture_api.h>
 #include <elysian_tile.hpp>
+#include <elysian_asset_typedefs.hpp>
 
 
 #define ELYSIAN_LEVEL_NAME_SIZE				50
@@ -22,7 +23,7 @@
 #define ELYSIAN_TILESHEET_TILE_HEIGHT		32
 #define ELYSIAN_TILESHEET_TILES				512
 
-ELYSIAN_ASSET_TYPEDEF(Level)
+ELYSIAN_ASSET_TYPEDEF(Level, struct)
 
 struct GYTexture;
 
@@ -54,6 +55,8 @@ namespace elysian {
                         ~LevelBase(void);
         bool            load(const char *const dir);
         bool            save(const char *const dir);
+        void            activate(void);
+        void            deactivate(void);
         bool            loadTileset(const char *const filename);
         bool            saveTileset(const char *const filename);
     };
@@ -61,7 +64,8 @@ namespace elysian {
 
 
 
-
+    inline void LevelBase::activate(void) { }
+    inline void LevelBase::deactivate(void) { }
 
 
 
