@@ -4,7 +4,11 @@
 # -------------------------------------------------
 include(../../qtcreator/ESDev/ESDev.pri)
 
-TARGET = ESToolkit
+!ios {
+    TARGET = ESToolkit
+} else {
+    TARGET = ESGamma_iOS
+}
 TEMPLATE = app
 
 !ios {
@@ -572,7 +576,9 @@ macx {
     QMAKE_POST_LINK = "macdeployqt $${TARGET}.app -verbose=3"
 }
 
-
+ios {
+    DESTDIR = ../../executable
+}
 
 win32 {
     DESTDIR = ../../executable
