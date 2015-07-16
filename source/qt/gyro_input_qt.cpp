@@ -244,10 +244,10 @@ int gyInputUninit(void) {
     return 1;
 }
 
-void gyInputPoll(GYInput*const input) {
+void gyInputPoll(GYInput**const input) {
     _updateKeyTaps(*_inputFilter);
 
-    *input = *(GYInput*)_inputFilter;
+    *input = (GYInput*)_inputFilter;
 }
 
 void gyMousePoll(GYMouse*const mouse) {
