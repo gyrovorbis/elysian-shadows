@@ -168,12 +168,6 @@ static GLintptr         _vertexQueueLastOffset      = 0;
 GLuint                      _streamVao[2]               = { 0 };
 GLuint                      _streamVertexVbo[2]         = { 0 };
 
-void glalVidBindDefaultFbo(void) {
-    //fucking disgusting.
-   // glBindFramebuffer(GL_FRAMEBUFFER, glalDefaultFbo());
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
 void gyVidSceneBegin(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gyMatLoadIdentity();
