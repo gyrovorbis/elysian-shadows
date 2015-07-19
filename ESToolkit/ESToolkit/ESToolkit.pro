@@ -6,7 +6,6 @@ include(../../qtcreator/ESDev/ESDev.pri)
 
 TARGET = ESToolkit
 
-
 TEMPLATE = app
 
 !ios {
@@ -17,9 +16,14 @@ TEMPLATE = app
     }
 } else {
     QT -= core gui widgets
-    deployment.files = ../../assets
-    deployment.path =
-    QMAKE_BUNDLE_DATA += deployment
+#    deployment.files = ../../assets
+#    deployment.path =
+#    QMAKE_BUNDLE_DATA += deployment
+}
+
+ios {
+#    QMAKE_XCODE_CODE_SIGN_IDENTITY="Elysian Shadows"
+    QMAKE_INFO_PLIST=ESToolkit_Info.plist
 }
 
 
@@ -576,7 +580,10 @@ macx {
 ios {
     QMAKE_CXXFLAGS += -stdlib=libc++
     iphoneos {
-        DESTDIR = ../../executable/ios
+        #DESTDIR = ../../executable/ios
+        deployment.files = ../../assets
+        deployment.path =
+        QMAKE_BUNDLE_DATA += deployment
     }
     iphonesimulator {
         DESTDIR = ../../executable/ios_sim

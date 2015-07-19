@@ -43,12 +43,13 @@ ios {
     iphoneos {
         #QMAKE_CFLAGS += -target armv8-apple-none-eabi -mcpu=cortex-a8 -mfpu=neon -miphoneos-version-min=7.0
 
+        QMAKE_CXXFLAGS += -fno-rtti -fno-exceptions
         #QMAKE_CXXFLAGS += -mcpu=cortex-a8 -mfpu=neon -target armv8-apple-none-eabi -miphoneos-version-min=7.0å
         #QMAKE_CFLAGS += -target armv8-apple-none-eabi
         #QMAKE_CXXFLAGS += -target armv8-apple-none-eabi
         QMAKE_IOS_DEVICE_ARCHS=armv7
         QMAKE_IOS_DEPLOYMENT_TARGET=8.2
-        QMAKE_IOS_TARGETED_DEVICE_FAMILY=3
+        QMAKE_IOS_TARGETED_DEVICE_FAMILY=1,2
         DEFINES += GYRO_PLATFORM_iOS_DEVICE
         #CONFIG+=neon
     }
