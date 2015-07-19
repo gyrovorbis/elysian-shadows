@@ -1,0 +1,3 @@
+ruby assets/bin/transporter_chief.rb /Users/falcogirgis/esdev/ESToolkit/ESToolkit/Debug-iphoneos/ESToolkit.app -v -d 617f198c931bbecb325bfd7341413098d3216a0c
+
+instruments -w 617f198c931bbecb325bfd7341413098d3216a0c -t /Applications/Xcode.app/Contents/Applications/Instruments.app/Contents/PlugIns/AutomationInstrument.xrplugin/Contents/Resources/Automation.tracetemplate /Users/falcogirgis/esdev/ESToolkit/ESToolkit/Debug-iphoneos/ESToolkit.app -e UIASCRIPT /Users/falcogirgis/esdev/assets/bin/Launch-App.js -e UIARESULTSPATH output.txt
