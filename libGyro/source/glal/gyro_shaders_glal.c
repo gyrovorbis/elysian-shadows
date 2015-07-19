@@ -6,9 +6,13 @@
 #include <gyro_system_api.h>
 
 #ifdef GL_ES_VERSION_3_0
-#   define GY_GL_VERSION_STR "#version 300 es\n"
+#   define GY_GL_VERSION_STR "#version 300 es"
+#else
+#ifdef _WIN32
+#   define GY_GL_VERSION_STR "#version 330\n\r"
 #else
 #   define GY_GL_VERSION_STR "#version 330\n"
+#endif
 #endif
 
 
@@ -310,7 +314,7 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
 
     if(!shader->program) return;
 
-	//SHARED SHADER ATTRIBS/UNIFORMS
+    //SHARED SHADER ATTRIBS/UNIFORMS
     shader->attribLoc[GLAL_SHADER_POS]						= _protectedAttribQuery(shader->program, "aPosition", 0);
     shader->uniformLoc[GLAL_SHADER_PROJ_VIEW_MAT]			= _protectedUniformQuery(shader->program, "uProjViewMat", 0);
 
@@ -510,14 +514,14 @@ int _gyVidShaderCreate(GYShader* shader) {
         return 0;
     }
 
-	if(!gyFileOpen(shader->path, "r", &file)) {
+    if(!gyFileOpen(shader->path, "r", &file)) {
         _gyLog(GY_DEBUG_ERROR, "Could not open shader", shader->path);
         _gyPop(1);
-		return 0;
-	}
+        return 0;
+    }
 
     gyFileLength(file, &charCount);
-	programSource = malloc(sizeof(char) * charCount + 1);
+    programSource = malloc(sizeof(char) * charCount + 1);
     memset(programSource, 0, sizeof(char)*charCount+1);
     gyFileRead(file, programSource, charCount, NULL);
     //programSource[charCount-1] = '\0';
@@ -574,12 +578,12 @@ int _gyVidShaderProgramCreate(GYShaderProgram* program) {
     _gyLog(GY_DEBUG_VERBOSE, "Linking shader program");
     _gyPush();
 
-	program->program = glCreateProgram();
-	if(!program->program) {
+    program->program = glCreateProgram();
+    if(!program->program) {
         _gyLog(GY_DEBUG_ERROR, "\tCould not generate program!");
         _gyPop(1);
-		return 0;
-	}
+        return 0;
+    }
 
     if(program->vertShader) {
         glAttachShader(program->program, program->vertShader->shader);
