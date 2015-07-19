@@ -2,8 +2,8 @@
 #define ELYSIAN_COMBAT_BASE_HPP
 
 #include <gyro_video_api.h>
-#include <elysian_component.hpp>
-#include <elysian_lua_table_proxy.hpp>
+#include <crtp/elysian_component.hpp>
+#include <crtp/elysian_lua_table_proxy.hpp>
 
 #define ELYSIAN_COMBAT_AGGRO_DIST_DEFAULT      200.0f
 #define ELYSIAN_COMBAT_DEAGGRO_DIST_DEFAULT    400.0f

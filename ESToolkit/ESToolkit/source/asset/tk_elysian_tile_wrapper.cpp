@@ -1,6 +1,6 @@
 #include <tk_elysian_tile_wrapper.h>
-#include "elysian_level.hpp"
-#include "elysian_area.hpp"
+#include <asset/tk_level.h>
+#include <asset/tk_area.h>
 
 QIcon **ElysianTileWrapper::_icons = nullptr;
 

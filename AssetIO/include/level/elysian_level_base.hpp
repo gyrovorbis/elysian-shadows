@@ -3,8 +3,8 @@
 
 #include <vector>
 #include <gyro_texture_api.h>
-#include <elysian_tile.hpp>
-#include <elysian_asset_typedefs.hpp>
+#include <level/elysian_tile.hpp>
+#include <utility/elysian_asset_typedefs.hpp>
 
 
 #define ELYSIAN_LEVEL_NAME_SIZE				50

@@ -1,7 +1,7 @@
 #ifndef TKCHARACTER_H
 #define TKCHARACTER_H
 
-#include <elysian_character_base.hpp>
+#include <component/elysian_character_base.hpp>
 
 class TkCharacter: public elysian::CharacterBase {
 public:

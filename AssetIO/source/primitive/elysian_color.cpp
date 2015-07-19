@@ -1,4 +1,4 @@
-#include "elysian_color.hpp"
+#include <primitive/elysian_color.hpp>
 
 namespace elysian {
 

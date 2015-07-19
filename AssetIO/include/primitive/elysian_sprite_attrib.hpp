@@ -1,9 +1,9 @@
 #ifndef ELYSIAN_SPRITE_ATTRIB_HPP
 #define ELYSIAN_SPRITE_ATTRIB_HPP
 
-#include <elysian_prim_attrib.hpp>
-#include <elysian_lua_table_proxy.hpp>
-#include <elysian_color.hpp>
+#include <primitive/elysian_prim_attrib.hpp>
+#include <crtp/elysian_lua_table_proxy.hpp>
+#include <primitive/elysian_color.hpp>
 
 ELYSIAN_ASSET_TYPEDEF(Renderable)
 

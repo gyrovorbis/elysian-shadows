@@ -1,9 +1,9 @@
 #include "elysian_animation_system.hpp"
 #include "elysian_camera_system.hpp"
 #include "elysian_timer_system.hpp"
-#include "elysian_animation.hpp"
+#include <crtp/elysian_animation.hpp>
 #include "elysian_debug.hpp"
-#include "elysian_area.hpp"
+#include <crtp/elysian_area.hpp>
 
 namespace elysian {
 

@@ -4,9 +4,8 @@
 #include "elysian_system.hpp"
 #include "elysian_font.hpp"
 #include "elysian_adventure_log.hpp"
-#include "elysian_mem_pool.hpp"
-#include "elysian_asset_typedefs.hpp"
-#include "elysian_entity.hpp"
+#include <utility/elysian_mem_pool.hpp>
+#include <crtp/elysian_entity.hpp>
 
 #include <gyro_video_api.h>
 

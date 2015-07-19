@@ -18,10 +18,10 @@
 #include "elysian_lua_manager.hpp"
 #include "elysian_behavior_system.hpp"
 #include "elysian_light_system.hpp"
-#include "elysian_entity.hpp"
+#include <crtp/elysian_entity.hpp>
 //#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tk_map_system.h")
 #include "elysian_map_system.hpp"
-#include "elysian_light_source.hpp"
+#include <crtp/elysian_light_source.hpp>
 #include "elysian_particle_system.hpp"
 #include "elysian_day_system.hpp"
 #include "elysian_dialog_system.hpp"

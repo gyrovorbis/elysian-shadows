@@ -1,9 +1,9 @@
 #include "elysian_audio_system.hpp"
-#include "elysian_audio_source.hpp"
+#include <crtp/elysian_audio_source.hpp>
 #include "elysian_party_system.hpp"
-#include "elysian_entity.hpp"
+#include <crtp/elysian_entity.hpp>
 #include "elysian_timer_system.hpp"
-#include "elysian_area.hpp"
+#include <crtp/elysian_area.hpp>
 
 namespace elysian {
 

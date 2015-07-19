@@ -1,17 +1,17 @@
 #include "elysian_warp_system.hpp"
 #include "elysian_camera_system.hpp"
-#include "elysian_warp.hpp"
+#include <crtp/elysian_warp.hpp>
 #include "elysian_party_system.hpp"
 #include "elysian_debug.hpp"
-#include "elysian_collidable.hpp"
+#include <crtp/elysian_collidable.hpp>
 #include "elysian_timer_system.hpp"
 #include "elysian_level_system.hpp"
-#include "elysian_instance_transform.hpp"
-#include "elysian_entity.hpp"
+#include <primitive/elysian_instance_transform.hpp>
+#include <crtp/elysian_entity.hpp>
 #include "elysian_collision_system.hpp"
 #include "elysian_gui_system.hpp"
-#include "elysian_zcoords.hpp"
-#include "elysian_area.hpp"
+#include <level/elysian_zcoords.hpp>
+#include <crtp/elysian_area.hpp>
 
 namespace elysian {
 

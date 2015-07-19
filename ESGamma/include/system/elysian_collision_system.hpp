@@ -3,11 +3,11 @@
 
 #include <map>
 #include <gyro_kinetic.h>
-#include <elysian_mem_pool.hpp>
+#include <utility/elysian_mem_pool.hpp>
 #include "elysian_system.hpp"
-#include "elysian_tile.hpp"
-#include "elysian_collidable.hpp"
-#include "elysian_sort_sweep.hpp"
+#include <level/elysian_tile.hpp>
+#include <crtp/elysian_collidable.hpp>
+#include <utility/elysian_sort_sweep.hpp>
 #include <elysian_task_monitor.hpp>
 
 #define ELYSIAN_COLLISION_SYSTEM_PROTECTED					true

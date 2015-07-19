@@ -1,16 +1,16 @@
 #include "elysian_dialog_system.hpp"
-#include "elysian_entity.hpp"
-#include "elysian_dialog.hpp"
+#include <crtp/elysian_entity.hpp>
+#include <level/elysian_dialog.hpp>
 #include "elysian_game_input.hpp"
 #include "elysian_debug.hpp"
-#include "elysian_collidable.hpp"
-#include "elysian_entity.hpp"
+#include <crtp/elysian_collidable.hpp>
+#include <crtp/elysian_entity.hpp>
 #include "elysian_party_system.hpp"
-#include "elysian_area.hpp"
+#include <crtp/elysian_area.hpp>
 #include "elysian_gui_system.hpp"
 #include "elysian_camera_system.hpp"
 #include "elysian_timer_system.hpp"
-#include "elysian_character.hpp"
+#include <crtp/elysian_character.hpp>
 #include "elysian_behavior_system.hpp"
 #include "elysian_audio_system.hpp"
 

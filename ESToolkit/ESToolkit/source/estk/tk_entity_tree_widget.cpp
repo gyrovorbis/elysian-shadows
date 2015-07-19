@@ -1,13 +1,13 @@
 #include "tk_entity_tree_widget.h"
-#include "elysian_area.hpp"
-#include "elysian_entity.hpp"
+#include <asset/tk_area.h>
+#include <asset/tk_entity.h>
 #include "elysian_debug.hpp"
 #include "tk_assets.h"
 #include <tk_level.h>
 #include "tk_entity_selectable.h"
 #include <QMenu>
 #include <QAction>
-#include <elysian_renderable_base.hpp>
+#include <asset/tk_renderable.h>
 #include <tk_project.h>
 
 EntityTreeWidget::EntityTreeWidget(QWidget *parent): QTreeWidget(parent) {

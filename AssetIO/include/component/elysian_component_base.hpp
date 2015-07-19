@@ -1,8 +1,8 @@
 #ifndef ELYSIAN_COMPONENT_BASE_HPP
 #define ELYSIAN_COMPONENT_BASE_HPP
 
-#include <../utility/elysian_asset_typedefs.hpp>
-#include <../utility/elysian_generic.hpp>
+#include <utility/elysian_asset_typedefs.hpp>
+#include <utility/elysian_generic.hpp>
 
 #define ELYSIAN_COMPONENT_CONTAINER(C) std::vector<C*>
 

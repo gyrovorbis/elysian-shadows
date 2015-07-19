@@ -1,7 +1,7 @@
 #ifndef TKSKELETON_H
 #define TKSKELETON_H
 
-#include <elysian_skeleton_base.hpp>
+#include <component/elysian_skeleton_base.hpp>
 
 class TkSkeletonAttrib: public elysian::SkeletonAttribBase {
     Q_OBJECT

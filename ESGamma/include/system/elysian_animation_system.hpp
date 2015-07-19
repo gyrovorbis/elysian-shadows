@@ -3,7 +3,7 @@
 
 #include "elysian_system.hpp"
 #include "elysian_subprocess_manager.hpp"
-#include "elysian_instance_transform.hpp"
+#include <primitive/elysian_instance_transform.hpp>
 
 namespace elysian {
 

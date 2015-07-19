@@ -4,17 +4,16 @@
 #include "elysian_system.hpp"
 #include "elysian_camera_system.hpp"
 #include <crtp/elysian_depth_buff_entry.hpp>
-#include "elysian_map_depth_buffer.hpp"
-#include "elysian_zcoords.hpp"
-#include "elysian_renderable_base.hpp"
+#include <level/elysian_map_depth_buffer.hpp>
+#include <level/elysian_zcoords.hpp>
+#include <crtp/elysian_renderable.hpp>
 #include "elysian_particle_system.hpp"
-#include "elysian_mem_pool.hpp"
-#include "elysian_entity.hpp"
+#include <utility/elysian_mem_pool.hpp>
+#include <crtp/elysian_entity.hpp>
 #include "elysian_light_system.hpp"
-#include "elysian_entity.hpp"
-#include <elysian_tile.hpp>
-#include "elysian_area.hpp"
-#include <elysian_level.hpp>
+#include <level/elysian_tile.hpp>
+#include <crtp/elysian_area.hpp>
+#include <crtp/elysian_level.hpp>
 #include <elysian_timer_system.hpp>
 
 #include <gyro_math_api.h>

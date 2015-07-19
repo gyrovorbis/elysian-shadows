@@ -20,6 +20,7 @@ QMAKE_CFLAGS += -std=c99
 
 !iphoneos {
     QMAKE_CFLAGS += -msse
+    QMAKE_CXXFLAGS += -msse
 }
 
 CONFIG(debug, debug|release) {

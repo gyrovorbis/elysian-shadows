@@ -2,7 +2,7 @@
 #define TK_ENTITY_H
 
 #include <tk_tree_node.h>
-#include <elysian_entity_base.hpp>
+#include <level/elysian_entity_base.hpp>
 #include <tk_lua_table_stack_model.h>
 #include <elysian_system.hpp>
 

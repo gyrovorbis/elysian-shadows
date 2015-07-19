@@ -2,7 +2,7 @@
 #define ELYSIAN_WARP_SYSTEM_HPP
 
 #include "elysian_system.hpp"
-#include "elysian_warp.hpp"
+#include <crtp/elysian_warp.hpp>
 #include "elysian_sprite.hpp"
 #include "elysian_collision_system.hpp"
 

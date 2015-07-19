@@ -1,5 +1,5 @@
 #include <tk_map_view_tile_graphics_item.h>
-#include "elysian_area.hpp"
+#include <asset/tk_area.h>
 
 MapViewTileGraphicsItem::MapViewTileGraphicsItem(void):
     TileGraphicsItem<TileEntry>::TileGraphicsItem(TileGraphicsItem<TileEntry>::TYPE_DEST),

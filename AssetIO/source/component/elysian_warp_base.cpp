@@ -1,8 +1,6 @@
-#include "elysian_warp.hpp"
-#include "elysian_generic.hpp"
-#include "elysian_asset_typedefs.hpp"
-#include "elysian_entity.hpp"
-#include "elysian_area.hpp"
+#include <crtp/elysian_warp.hpp>
+//#include <crelysian_entity.hpp"
+//#include "elysian_area.hpp"
 
 namespace elysian {
 

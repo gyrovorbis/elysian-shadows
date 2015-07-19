@@ -1,11 +1,10 @@
 #include "elysian_camera_system.hpp"
-#include "elysian_entity.hpp"
+#include <crtp/elysian_entity.hpp>
 #include "elysian_gui_system.hpp"
 #include "elysian_game_input.hpp"
 #include "elysian_debug.hpp"
-#include "elysian_generic.hpp"
-#include "elysian_area.hpp"
-#include "elysian_level_base.hpp"
+#include <crtp/elysian_area.hpp>
+#include <crtp/elysian_level.hpp>
 #include <elysian_timer_system.hpp>
 
 namespace elysian {

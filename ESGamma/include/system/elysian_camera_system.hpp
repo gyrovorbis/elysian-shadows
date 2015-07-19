@@ -2,10 +2,10 @@
 #define ELYSIAN_CAMERA_SYSTEM_HPP
 
 #include <elysian_system.hpp>
-#include <elysian_instance_transform.hpp>
+#include <primitive/elysian_instance_transform.hpp>
 #include <elysian_subprocess_manager.hpp>
 #include <elysian_timer_system_base.hpp>
-#include <elysian_zcoords.hpp>
+#include <level/elysian_zcoords.hpp>
 
 #include <stdlib.h>
 

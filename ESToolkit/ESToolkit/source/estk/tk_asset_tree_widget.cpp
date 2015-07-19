@@ -3,9 +3,9 @@
 #include <tk_asset_tree_widget.h>
 #include "tk_tree_node.h"
 #include "elysian_debug.hpp"
-#include "elysian_area.hpp"
+#include <asset/tk_area.h>
 #include <tk_project.h>
-#include "elysian_level.hpp"
+#include <asset/tk_level.h>
 #include "tk_assets.h"
 #include "elysian_engine.hpp"
 #include "elysian_level_system.hpp"

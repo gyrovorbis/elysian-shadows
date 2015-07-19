@@ -2,10 +2,6 @@
 #define MAP_VIEW_DEPTH_BUFFER_GRAPHICS_ITEM_H
 
 #include <tk_map_view_tile_graphics_item.h>
-#include "elysian_map_depth_buffer.hpp"
-#include "elysian_area.hpp"
-#include "elysian_zcoords.hpp"
-#include "elysian_entity.hpp"
 #include "elysian_map_system.hpp"
 
 class MapViewDepthBufferGraphicsItem:

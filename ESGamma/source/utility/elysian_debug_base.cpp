@@ -3,12 +3,11 @@
 #include <gyro.h>
 #include <gyro_kinetic.h>
 
-#include "elysian_animation.hpp"
-#include "elysian_zcoords.hpp"
+#include <crtp/elysian_animation.hpp>
+#include <level/elysian_zcoords.hpp>
 #include "elysian_party_system.hpp"
-#include "elysian_entity.hpp"
-#include "elysian_renderable_base.hpp"
-#include "elysian_sprite_attrib.hpp"
+#include <crtp/elysian_entity.hpp>
+#include <primitive/elysian_sprite_attrib.hpp>
 #include "elysian_debug.hpp"
 #include "elysian_level_system.hpp"
 #include "elysian_engine.hpp"
@@ -16,19 +15,18 @@
 //#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tk_map_system.h")
 #include "elysian_map_system.hpp"
 #include "elysian_camera_system.hpp"
-#include "elysian_entity.hpp"
-#include "elysian_character.hpp"
+#include <crtp/elysian_character.hpp>
 #include "elysian_party_system.hpp"
-#include "elysian_area.hpp"
+#include <crtp/elysian_area.hpp>
 #include "elysian_gui_system.hpp"
-#include "elysian_animation.hpp"
+#include <crtp/elysian_animation.hpp>
 #include "elysian_behavior_system.hpp"
 #include "elysian_collision_system.hpp"
-#include "elysian_level.hpp"
+#include <crtp/elysian_level.hpp>
 #include "elysian_adventure_log.hpp"
-#include "elysian_lua_behavior_base.hpp"
-#include "elysian_audio_source.hpp"
-#include "elysian_light_source.hpp"
+#include <crtp/elysian_lua_behavior.hpp>
+#include <crtp/elysian_audio_source.hpp>
+#include <crtp/elysian_light_source.hpp>
 #include "elysian_light_system.hpp"
 #include "elysian_particle_system.hpp"
 #include "elysian_day_system.hpp"
@@ -36,7 +34,7 @@
 #include "elysian_event_monitor.hpp"
 #include "elysian_rigid_body_system.hpp"
 #include "elysian_debug_base.hpp"
-#include <elysian_renderable.hpp>
+#include <crtp/elysian_renderable.hpp>
 
 namespace elysian {
 

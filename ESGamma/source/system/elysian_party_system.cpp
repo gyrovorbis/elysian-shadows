@@ -1,17 +1,17 @@
 #include "elysian_party_system.hpp"
 #include "elysian_debug.hpp"
-#include "elysian_entity.hpp"
-#include "elysian_character.hpp"
+#include <crtp/elysian_entity.hpp>
+#include <crtp/elysian_character.hpp>
 #include "elysian_game_input.hpp"
 #include "elysian_camera_system.hpp"
-#include "elysian_animation.hpp"
+#include <crtp/elysian_animation.hpp>
 #include "elysian_timer_system.hpp"
-#include "elysian_collidable.hpp"
+#include <crtp/elysian_collidable.hpp>
 #include "elysian_collision_system.hpp"
-#include "elysian_examinable.hpp"
+#include <crtp/elysian_examinable.hpp>
 #include "elysian_behavior_system.hpp"
 #include "elysian_particle_system.hpp"
-#include "elysian_level.hpp"
+#include <crtp/elysian_level.hpp>
 #include "elysian_audio_system.hpp"
 
 namespace elysian {

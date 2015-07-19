@@ -2,11 +2,11 @@
 #define ELYSIAN_PARTY_SYSTEM_HPP
 
 #include <vector>
-#include <gyro.h>
+#include <gyro_matrix_api.h>
+#include <gyro_wav_api.h>
 #include "elysian_system.hpp"
 #include "elysian_game_input.hpp"
-#include "elysian_character.hpp"
-#include "elysian_asset_typedefs.hpp"
+#include <crtp/elysian_character.hpp>
 
 #define ELYSIAN_PARTY_SYSTEM_FOOT_STEP_SFX_TIME         0.3f
 #define ELYSIAN_PARTY_SYSTEM_DASH_PART_TIME_INTERVAL    0.5f

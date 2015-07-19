@@ -1,7 +1,7 @@
 #ifndef TKCOMBAT_H
 #define TKCOMBAT_H
 
-#include <elysian_combat_base.hpp>
+#include <component/elysian_combat_base.hpp>
 
 class TkCombat: public elysian::CombatBase {
 public:

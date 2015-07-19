@@ -15,9 +15,8 @@
 #include <proxy/elysian_skeleton_proxy.hpp>
 #include <proxy/elysian_lua_behavior_proxy.hpp>
 
-#include "elysian_generic.hpp"
+#include <utility/elysian_generic.hpp>
 #include "elysian_collision_system.hpp"
-#include "elysian_asset_typedefs.hpp"
 #include <gyro_shader_api.h>
 
 

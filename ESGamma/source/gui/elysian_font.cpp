@@ -1,4 +1,6 @@
 #include <gyro_video_api.h>
+#include <gyro_file_api.h>
+#include <gyro_shader_api.h>
 #include "elysian_font.hpp"
 #include "elysian_debug.hpp"
 #include "elysian_camera_system.hpp"

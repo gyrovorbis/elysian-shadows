@@ -4,12 +4,12 @@
 #include <functional>
 
 #include <tk_project.h>
-#include "elysian_level.hpp"
+#include <asset/tk_level.h>
 #include "elysian_debug.hpp"
 #include <tk_file_utilities.h>
 #include "elysian_engine.hpp"
 #include "elysian_level_system.hpp"
-#include <elysian_entity.hpp>
+#include <crtp/elysian_entity.hpp>
 #include <core/tk_tree_node.h>
 
 Project::Project(void): _active(false) {}

@@ -4,7 +4,7 @@
 #include <QDebug>
 #include <QTime>
 
-#include "elysian_level.hpp"
+#include <asset/tk_level.h>
 #include <tk_project.h>
 #include "elysian_debug.hpp"
 #include <tk_tile_sheet_utilities.h>
@@ -18,7 +18,7 @@
 #include "elysian_engine.hpp"
 #include "elysian_level_system.hpp"
 #include <gyro_texture_api.h>
-#include <elysian_entity.hpp>
+#include <crtp/elysian_entity.hpp>
 #include <tk_selection_scene.h>
 
 //====STATIC====

@@ -3,7 +3,7 @@
 
 #include "tk_sheet_dock_widget.h"
 #include "ui_tk_sheet_dock_widget.h"
-#include "elysian_level.hpp"
+#include <asset/tk_level.h>
 #include <tk_source_view.h>
 
 SheetDockWidget::SheetDockWidget(QWidget *parent) :

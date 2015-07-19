@@ -1,9 +1,9 @@
 #ifndef MAP_ENTRY_H
 #define MAP_ENTRY_H
 
-#include "elysian_asset_typedefs.hpp"
-#include "elysian_area_base.hpp"
-#include "elysian_tile.hpp"
+#include <utility/elysian_asset_typedefs.hpp>
+#include <level/elysian_area_base.hpp>
+#include <level/elysian_tile.hpp>
 #include "tk_asset_manager.h"
 
 class QPainter;

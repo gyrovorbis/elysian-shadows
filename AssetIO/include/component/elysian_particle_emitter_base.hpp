@@ -2,12 +2,12 @@
 #define ELYSIAN_PARTICLE_EMITTER_BASE_HPP
 
 #include <cassert>
-#include <elysian_component_base.hpp>
-#include <elysian_mem_pool.hpp>
-#include <elysian_sprite_attrib.hpp>
-#include <elysian_collidable.hpp>
-#include <elysian_lua_table_proxy.hpp>
-#include <elysian_rigid_body.hpp>
+#include <crtp/elysian_component.hpp>
+#include <utility/elysian_mem_pool.hpp>
+#include <primitive/elysian_sprite_attrib.hpp>
+#include <crtp/elysian_collidable.hpp>
+#include <crtp/elysian_lua_table_proxy.hpp>
+#include <crtp/elysian_rigid_body.hpp>
 
 #define ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_POOL_SIZE	5000
 #define ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_WIDTH            10

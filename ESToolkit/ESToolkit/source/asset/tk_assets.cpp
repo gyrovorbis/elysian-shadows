@@ -2,9 +2,9 @@
 #include <QMessageBox>
 #include "tk_assets.h"
 #include <tk_project.h>
-#include "elysian_level.hpp"
-#include "tk_area.h"
-#include "elysian_entity.hpp"
+#include <asset/tk_level.h>
+#include <asset/tk_area.h>
+#include <crtp/elysian_entity.hpp>
 #include "elysian_debug.hpp"
 #include "elysian_engine.hpp"
 #include "elysian_level_system.hpp"

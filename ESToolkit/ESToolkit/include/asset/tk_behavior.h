@@ -1,7 +1,7 @@
 #ifndef TKBEHAVIOR_H
 #define TKBEHAVIOR_H
 
-#include <elysian_behavior_base.hpp>
+#include <component/elysian_behavior_base.hpp>
 
 class TkBehavior: public elysian::BehaviorBase {
 public:

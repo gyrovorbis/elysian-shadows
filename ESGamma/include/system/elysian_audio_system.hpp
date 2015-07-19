@@ -6,7 +6,6 @@
 #include <gyro_ogg_api.h>
 #include <gyro_matrix_api.h>
 #include "elysian_system.hpp"
-#include "elysian_asset_typedefs.hpp"
 
 #define ELYSIAN_AUDIO_CHANNELS			32
 #define ELYSIAN_AUDIO_REFERENCE_DIST	10

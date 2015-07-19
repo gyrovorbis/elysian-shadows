@@ -1,8 +1,8 @@
 #ifndef ELYSIAN_SKELETON_BASE_HPP
 #define ELYSIAN_SKELETON_BASE_HPP
 
-#include <elysian_component.hpp>
-#include <elysian_lua_table_proxy.hpp>
+#include <crtp/elysian_component.hpp>
+#include <crtp/elysian_lua_table_proxy.hpp>
 
 #define ELYSIAN_SKELETON_ATLAS_PATH_SIZE    300
 #define ELYSIAN_SKELETON_JSON_PATH_SIZE     300

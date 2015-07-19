@@ -1,6 +1,6 @@
 #include <string.h>
 #include <gyro_file_api.h>
-#include <elysian_level.hpp>
+#include <crtp/elysian_level.hpp>
 #include <elysian_lua_manager.hpp>
 
 using namespace std;

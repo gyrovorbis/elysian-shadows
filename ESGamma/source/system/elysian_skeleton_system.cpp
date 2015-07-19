@@ -1,7 +1,7 @@
 #include "elysian_skeleton_system.hpp"
 #include "elysian_timer_system.hpp"
-#include "elysian_area.hpp"
-#include "elysian_skeleton.hpp"
+#include <crtp/elysian_area.hpp>
+#include <crtp/elysian_skeleton.hpp>
 #include <spine/Bone.h>
 
 namespace elysian {

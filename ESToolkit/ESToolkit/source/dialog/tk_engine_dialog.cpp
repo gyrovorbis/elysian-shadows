@@ -13,8 +13,8 @@
 #include "tk_engine_dialog.h"
 #include "tk_assets.h"
 #include <tk_project.h>
-#include "elysian_level.hpp"
-#include "elysian_area.hpp"
+#include <asset/tk_level.h>
+#include <asset/tk_area.h>
 #include <elysian_debug.hpp>
 #include <core/tk_file_utilities.h>
 

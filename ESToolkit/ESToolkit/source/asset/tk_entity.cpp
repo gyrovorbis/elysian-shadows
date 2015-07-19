@@ -24,7 +24,7 @@
 #include <QMessageBox>
 #include <QMenu>
 #include <QSpacerItem>
-#include <elysian_generic.hpp>
+#include <utility/elysian_generic.hpp>
 #include <QGridLayout>
 #include <tk_menu_stack.h>
 

@@ -1,9 +1,9 @@
 #ifndef ELYSIAN_LUA_TABLE_PROXY_BASE_HPP
 #define ELYSIAN_LUA_TABLE_PROXY_BASE_HPP
 
-#include <luatables.h>
+#include <utility/luatables.h>
 #include <elysian_lua_manager.hpp>
-#include <elysian_generic.hpp>
+#include <utility/elysian_generic.hpp>
 #include <cassert>
 
 //DSL for autogenerating proxy fields

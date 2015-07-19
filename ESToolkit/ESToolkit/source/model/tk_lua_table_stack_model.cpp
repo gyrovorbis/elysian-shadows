@@ -1,5 +1,5 @@
 #include <tk_lua_table_stack_model.h>
-#include <elysian_lua_table_proxy.hpp>
+#include <asset/tk_lua_table_proxy.h>
 #include <QVariant>
 #include <tk_area.h>
 

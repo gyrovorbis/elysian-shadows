@@ -1,7 +1,7 @@
-#ifndef TKPARTICLEEMITTER_H
-#define TKPARTICLEEMITTER_H
+#ifndef TK_PARTICLE_EMITTER_H
+#define TK_PARTICLE_EMITTER_H
 
-#include <elysian_particle_emitter_base.hpp>
+#include <component/elysian_particle_emitter_base.hpp>
 
 class TkParticleEmitter: public elysian::ParticleEmitterBase {
 public:

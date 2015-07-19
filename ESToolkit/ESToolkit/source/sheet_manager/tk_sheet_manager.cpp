@@ -1,4 +1,4 @@
-#include "elysian_area.hpp"
+#include <asset/tk_area.h>
 #include <QMenu>
 #include <QActionGroup>
 #include <QToolButton>
@@ -18,7 +18,7 @@
 #include "tk_sheet_manager_file_dock_widget.h"
 #include "tk_history_dock_widget.h"
 #include <tk_project.h>
-#include "elysian_level.hpp"
+#include <asset/tk_level.h>
 #include <tk_tile_sheet_utilities.h>
 #include "tk_sheet_manager_source_tile_graphics_item.h"
 #include <tk_tile_image.h>

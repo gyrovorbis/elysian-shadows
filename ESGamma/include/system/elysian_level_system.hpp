@@ -2,10 +2,9 @@
 #define ELYSIAN_SEVERITY_SYSTEM_HPP
 
 #include "elysian_system.hpp"
-#include "elysian_asset_typedefs.hpp"
-#include "elysian_mem_pool.hpp"
+#include <utility/elysian_mem_pool.hpp>
 #include <crtp/elysian_area.hpp>
-#include "elysian_level.hpp"
+#include <crtp/elysian_level.hpp>
 
 
 #include <vector>

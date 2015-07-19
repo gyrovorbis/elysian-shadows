@@ -1,11 +1,11 @@
 #include <vector>
 #include <algorithm>
-#include "elysian_audio_source.hpp"
+#include <crtp/elysian_audio_source.hpp>
 #include <elysian_audio_system.hpp>
-#include "elysian_generic.hpp"
-#include "elysian_asset_typedefs.hpp"
-#include "elysian_entity.hpp"
-#include "elysian_area.hpp"
+#include <utility/elysian_generic.hpp>
+#include <utility/elysian_asset_typedefs.hpp>
+#include <crtp/elysian_entity.hpp>
+#include <crtp/elysian_area.hpp>
 
 namespace elysian {
 

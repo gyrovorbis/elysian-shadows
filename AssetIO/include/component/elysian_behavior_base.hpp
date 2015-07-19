@@ -4,8 +4,8 @@
 #include <map>
 #include <stdint.h>
 #include <cassert>
-#include <elysian_component.hpp>
-#include <elysian_stl_algorithm.hpp>
+#include <crtp/elysian_component.hpp>
+#include <utility/elysian_stl_algorithm.hpp>
 #include <elysian_game_input.hpp>
 
 #define ELYSIAN_BEHAVIOR_NAME_SIZE 100

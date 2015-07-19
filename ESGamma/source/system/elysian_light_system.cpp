@@ -1,9 +1,9 @@
 #include "elysian_light_system.hpp"
-#include "elysian_light_source.hpp"
+#include <crtp/elysian_light_source.hpp>
 #include "elysian_camera_system.hpp"
-#include "elysian_area.hpp"
-#include "elysian_entity.hpp"
-#include "elysian_level.hpp"
+#include <crtp/elysian_area.hpp>
+#include <crtp/elysian_entity.hpp>
+#include <crtp/elysian_level.hpp>
 //#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tk_map_system.h")
 #include "elysian_map_system.hpp"
 #include <gyro_shader_api.h>

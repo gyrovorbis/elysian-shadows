@@ -1,6 +1,5 @@
 #include <QDir>
 #include <QMessageBox>
-#include "elysian_asset_typedefs.hpp"
 #include <proxy/elysian_area_proxy.hpp>
 #include <proxy/elysian_entity_proxy.hpp>
 #include <proxy/elysian_primitive_proxy.hpp>
@@ -20,7 +19,7 @@
 #include <proxy/elysian_lua_behavior_proxy.hpp>
 
 
-#include "elysian_level.hpp"
+#include <asset/tk_area.h>
 #include "elysian_debug.hpp"
 #include "tk_property_standard_item.h"
 #include <tk_checkered_alpha_rect_graphics_item.h>

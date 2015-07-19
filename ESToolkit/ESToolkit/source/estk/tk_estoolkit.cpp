@@ -1,5 +1,5 @@
 #include <QOpenGLContext>
-#include "elysian_area.hpp"
+#include <asset/tk_area.h>
 #include <QSizePolicy>
 #include <QToolButton>
 #include <QCloseEvent>
@@ -20,9 +20,9 @@
 #include "tk_engine_gl_scene_widget.h"
 
 #include "elysian_debug.hpp"
-#include "elysian_level.hpp"
+#include <asset/tk_level.h>
 #include "tk_assets.h"
-#include "elysian_entity.hpp"
+#include <asset/tk_entity.h>
 #include <tk_project.h>
 #include <tk_estoolkit.h>
 #include "ui_tk_estoolkit.h"
@@ -30,7 +30,7 @@
 #include "tk_asset_manager.h"
 #include "tk_engine_dialog.h"
 #include "tk_tile_selectable.h"
-#include "elysian_behavior.hpp"
+#include <asset/tk_behavior.h>
 #include "tk_sheet_manager.h"
 #include "tk_engine_settings_dialog.h"
 #include <tk_sheet_view_tile_graphics_item.h>
@@ -47,11 +47,10 @@
 #include "elysian_engine.hpp"
 #include "elysian_debug.hpp"
 #include "tk_lua_table_stack_model.h"
-#include "luatables.h"
 #include "tk_lua_explorer_dialog.h"
 #include "tk_rows_joiner_proxy_model.h"
 #include "elysian_map_system.hpp"
-#include "elysian_light_source.hpp"
+#include <asset/tk_light_source.h>
 #include "tk_entity_selectable.h"
 #include "tk_entity_tree_widget.h"
 #include "elysian_level_system.hpp"

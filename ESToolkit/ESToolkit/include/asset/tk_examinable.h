@@ -1,7 +1,7 @@
 #ifndef TKEXAMINABLE_H
 #define TKEXAMINABLE_H
 
-#include <elysian_examinable_base.hpp>
+#include <component/elysian_examinable_base.hpp>
 
 class TkExaminable: public elysian::ExaminableBase {
 public:

@@ -3,9 +3,9 @@
 
 #include <gyro_shader_api.h>
 #include <gyro_video_api.h>
-#include <elysian_component.hpp>
+#include <crtp/elysian_component.hpp>
 #include <elysian_camera_system.hpp>
-#include <elysian_lua_table_proxy.hpp>
+#include <crtp/elysian_lua_table_proxy.hpp>
 
 #define ELYSIAN_LIGHT_SOURCE_ATTENUATION_EPSILON	0.1f
 

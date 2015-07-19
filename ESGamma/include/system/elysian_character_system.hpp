@@ -3,9 +3,9 @@
 
 #include "elysian_system.hpp"
 #include "elysian_subprocess_manager.hpp"
-#include "elysian_entity.hpp"
-#include "elysian_character.hpp"
-#include "elysian_rigid_body.hpp"
+#include <crtp/elysian_entity.hpp>
+#include <crtp/elysian_character.hpp>
+#include <crtp/elysian_rigid_body.hpp>
 
 #define ELYSIAN_CHARACTER_SYSTEM_WAYPOINT_INTERP_POOL_SIZE	50
 

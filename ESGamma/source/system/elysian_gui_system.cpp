@@ -9,11 +9,10 @@
 #include "elysian_lua_manager.hpp"
 #include "elysian_light_system.hpp"
 #include "elysian_rigid_body_system.hpp"
-#include "elysian_rigid_body.hpp"
-#include "elysian_examinable.hpp"
-#include "elysian_combat.hpp"
-#include "elysian_renderable_base.hpp"
-#include <elysian_renderable.hpp>
+#include <crtp/elysian_rigid_body.hpp>
+#include <crtp/elysian_examinable.hpp>
+#include <crtp/elysian_combat.hpp>
+#include <crtp/elysian_renderable.hpp>
 
 namespace elysian {
 

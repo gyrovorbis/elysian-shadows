@@ -5,7 +5,7 @@
 #include <QRect>
 #include <tk_dest_view.h>
 #include "tk_asset_manager.h"
-#include "elysian_area.hpp"
+#include <asset/tk_area.h>
 #include "elysian_collision_system.hpp"
 
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK	(1<<31)

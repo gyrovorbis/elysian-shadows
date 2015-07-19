@@ -1,7 +1,7 @@
 #include "elysian_force_generator.hpp"
-#include "elysian_rigid_body.hpp"
-#include "elysian_collidable.hpp"
-#include "elysian_entity.hpp"
+#include <crtp/elysian_rigid_body.hpp>
+#include <crtp/elysian_collidable.hpp>
+#include <crtp/elysian_entity.hpp>
 #include <gyro_kinetic.h>
 
 

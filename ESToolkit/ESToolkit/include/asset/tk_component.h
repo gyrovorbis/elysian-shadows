@@ -1,7 +1,7 @@
 #ifndef TKCOMPONENT_H
 #define TKCOMPONENT_H
 
-#include <elysian_component_base.hpp>
+#include <component/elysian_component_base.hpp>
 
 class QString;
 class QMenu;

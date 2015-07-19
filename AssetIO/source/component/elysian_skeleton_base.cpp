@@ -1,8 +1,7 @@
 #include <crtp/elysian_skeleton.hpp>
 #include "elysian_debug.hpp"
-#include "elysian_entity.hpp"
-#include "elysian_generic.hpp"
-#include <elysian_area.hpp>
+#include <crtp/elysian_entity.hpp>
+#include <crtp/elysian_area.hpp>
 
 #include "spine/Atlas.h"
 #include "spine/SkeletonData.h"

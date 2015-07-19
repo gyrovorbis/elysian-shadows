@@ -4,7 +4,7 @@
 #include <map>
 #include <oolua.h>
 #include <functional>
-#include <elysian_stl_algorithm.hpp>
+#include <utility/elysian_stl_algorithm.hpp>
 #include <elysian_lua_script.hpp>
 #include <elysian_debug.hpp>
 #include <gyro_defines.h>

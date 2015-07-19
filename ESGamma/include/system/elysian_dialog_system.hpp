@@ -2,9 +2,8 @@
 #define ELYSIAN_DIALOG_SYSTEM_HPP
 
 #include "elysian_system.hpp"
-#include "elysian_dialog.hpp"
-#include "elysian_quad_sprite.hpp"
-#include "elysian_asset_typedefs.hpp"
+#include <level/elysian_dialog.hpp>
+#include <elysian_quad_sprite.hpp>
 #include <gyro_wav_api.h>
 
 #define ELSYIAN_DIALOG_SYSTEM_CHAR_APPEAR_TIME      0.05f

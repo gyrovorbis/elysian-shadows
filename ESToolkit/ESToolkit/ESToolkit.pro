@@ -49,23 +49,18 @@ DEPENDPATH += 	../../AssetIO/include \
 
 !ios {
     DEPENDPATH += include \
-    include/asset \
-    include/model \
-    include/estk \
-    include/tile_engine \
-    include/core \
-    include/sheet_manager \
-    include/dialog \
-    include/widget
+        include/asset \
+        include/model \
+        include/estk \
+        include/tile_engine \
+        include/core \
+        include/sheet_manager \
+        include/dialog \
+        include/widget
 }
 
 #PRIORITIZED TO REDUCE BUILD TIME ON FUCKING MINGW
 INCLUDEPATH += ../../AssetIO/include \
-    ../../AssetIO/include/component \
-    ../../AssetIO/include/crtp \
-    ../../AssetIO/include/level \
-    ../../AssetIO/include/primitive \
-    ../../AssetIO/include/utility \
     ../../ESGamma/include \
     ../../ESGamma/include/crtp \
     ../../ESGamma/include/gui \

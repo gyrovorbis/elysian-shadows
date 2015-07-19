@@ -2,7 +2,7 @@
 #define TK_ANIMATION_H
 
 #include <QObject>
-#include "elysian_animation_base.hpp"
+#include <component/elysian_animation_base.hpp>
 
 
 class TkAnimation: public elysian::AnimationBase {

@@ -1,18 +1,17 @@
 #include <cassert>
 #include "elysian_rigid_body_system.hpp"
-#include "elysian_area.hpp"
+#include <crtp/elysian_area.hpp>
 #include "elysian_collision_system.hpp"
-#include "elysian_rigid_body.hpp"
+#include <crtp/elysian_rigid_body.hpp>
 #include "elysian_timer_system.hpp"
-#include "elysian_entity.hpp"
+#include <crtp/elysian_entity.hpp>
 #include "elysian_force_generator.hpp"
 #include "elysian_debug.hpp"
-#include "elysian_level.hpp"
+#include <crtp/elysian_level.hpp>
 #include "elysian_particle_system.hpp"
-#include "elysian_renderable_base.hpp"
 #include "elysian_behavior_system.hpp"
-#include "elysian_sprite_attrib.hpp"
-#include <elysian_renderable.hpp>
+#include <primitive/elysian_sprite_attrib.hpp>
+#include <crtp/elysian_renderable.hpp>
 
 namespace elysian {
 

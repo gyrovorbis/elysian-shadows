@@ -1,7 +1,7 @@
 #ifndef TK_LUA_TABLEPROXY_H
 #define TK_LUA_TABLEPROXY_H
 
-#include "elysian_lua_table_proxy_base.hpp"
+#include <utility/elysian_lua_table_proxy_base.hpp>
 #include <QObject>
 #include <QVariant>
 

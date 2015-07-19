@@ -1,9 +1,7 @@
 #include <cfloat>
-#include "elysian_light_source.hpp"
-#include "elysian_generic.hpp"
-#include "elysian_asset_typedefs.hpp"
-#include "elysian_entity.hpp"
-#include "elysian_area.hpp"
+#include <crtp/elysian_light_source.hpp>
+#include <crtp/elysian_entity.hpp>
+#include <crtp/elysian_area.hpp>
 
 namespace elysian {
 

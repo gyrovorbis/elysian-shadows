@@ -5,7 +5,7 @@
 #include <QMap>
 #include <functional>
 #include <tk_tile_selection.h>
-#include <elysian_tile.hpp>
+#include <level/elysian_tile.hpp>
 #include <tk_property_standard_item.h>
 #include <tk_property_stack_model.h>
 

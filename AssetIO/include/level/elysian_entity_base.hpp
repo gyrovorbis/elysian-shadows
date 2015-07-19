@@ -6,10 +6,10 @@
 
 #include <oolua.h>
 
-#include <elysian_renderable_object.hpp>
-#include <elysian_stl_algorithm.hpp>
-#include <elysian_component.hpp>
-#include <elysian_lua_table_proxy.hpp>
+#include <primitive/elysian_renderable_object.hpp>
+#include <utility/elysian_stl_algorithm.hpp>
+#include <crtp/elysian_component.hpp>
+#include <crtp/elysian_lua_table_proxy.hpp>
 #include <gyro_video_api.h>
 
 #define ELYSIAN_ENTITY_NAME_SIZE	100

@@ -1,7 +1,7 @@
 #ifndef TKAUDIOSOURCE_H
 #define TKAUDIOSOURCE_H
 
-#include <elysian_audio_source_base.hpp>
+#include <component/elysian_audio_source_base.hpp>
 
 class TkAudioSource: public elysian::AudioSourceBase {
 

@@ -7,10 +7,10 @@
 #include <kinetic/gyro_kinetic_collider.h>
 #include <kinetic/gyro_kinetic_static.h>
 #include <kinetic/gyro_kinetic_contact.h>
-#include <elysian_component.hpp>
-#include "elysian_sort_sweep.hpp"
-#include "elysian_instance_transform.hpp"
-#include "elysian_lua_table_proxy.hpp"
+#include <crtp/elysian_component.hpp>
+#include <utility/elysian_sort_sweep.hpp>
+#include <primitive/elysian_instance_transform.hpp>
+#include <crtp/elysian_lua_table_proxy.hpp>
 
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_BEHAVIOR_MASK	(1<<0)
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_WARP_MASK		(1<<1)

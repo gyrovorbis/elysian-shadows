@@ -4,7 +4,7 @@
 #include <gyro_video_api.h>
 #include <gyro_math_api.h>
 #include "elysian_system.hpp"
-#include "elysian_particle_emitter.hpp"
+#include <crtp/elysian_particle_emitter.hpp>
 
 #define ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_COUNT		4
 

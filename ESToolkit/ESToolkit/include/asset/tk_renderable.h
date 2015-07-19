@@ -1,7 +1,7 @@
 #ifndef TKRENDERABLE_H
 #define TKRENDERABLE_H
 
-#include <elysian_renderable_base.hpp>
+#include <component/elysian_renderable_base.hpp>
 
 class TkRenderable: public elysian::RenderableBase {
 friend class TkEntity;

@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QString>
-#include "elysian_level_manager.hpp"
+#include <level/elysian_level_manager.hpp>
 #include "tk_selectable.h"
 
 class TkLevel;

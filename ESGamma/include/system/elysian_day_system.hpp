@@ -2,7 +2,6 @@
 #define ELYSIAN_DAY_SYSTEM_HPP
 
 #include "elysian_system.hpp"
-#include "elysian_asset_typedefs.hpp"
 #include <gyro_matrix_api.h>
 
 ELYSIAN_ASSET_TYPEDEF(Entity)

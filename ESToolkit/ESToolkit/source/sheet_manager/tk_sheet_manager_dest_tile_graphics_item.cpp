@@ -1,6 +1,6 @@
 #include <QPainter>
 #include "tk_sheet_manager_dest_tile_graphics_item.h"
-#include "elysian_level.hpp"
+#include <asset/tk_level.h>
 #include <tk_tile_image.h>
 #include "tk_sheet_manager_tile_selection.h"
 #include "tk_sheet_manager_assets.h"

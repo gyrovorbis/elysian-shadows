@@ -3,7 +3,7 @@
 #include "elysian_debug.hpp"
 #include "elysian_timer_system.hpp"
 #include "elysian_force_generator.hpp"
-#include "elysian_area.hpp"
+#include <crtp/elysian_area.hpp>
 
 namespace elysian {
 

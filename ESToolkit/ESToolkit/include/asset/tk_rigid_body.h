@@ -1,7 +1,7 @@
 #ifndef TKRIGIDBODY_H
 #define TKRIGIDBODY_H
 
-#include <elysian_rigid_body_base.hpp>
+#include <component/elysian_rigid_body_base.hpp>
 
 class TkRigidBody: public elysian::RigidBodyBase {
 public:

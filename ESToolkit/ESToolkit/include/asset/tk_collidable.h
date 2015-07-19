@@ -1,7 +1,7 @@
 #ifndef TKCOLLIDABLE_H
 #define TKCOLLIDABLE_H
 
-#include <elysian_collidable_base.hpp>
+#include <component/elysian_collidable_base.hpp>
 
 class TkCollidable: public elysian::CollidableBase {
 friend class TkEntity;

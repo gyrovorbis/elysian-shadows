@@ -5,11 +5,11 @@
 #include <vector>
 #include <map>
 
-#include <elysian_component.hpp>
-#include "elysian_stl_algorithm.hpp"
-#include "elysian_mem_pool.hpp"
-#include "elysian_asset_typedefs.hpp"
-#include "elysian_lua_table_proxy.hpp"
+#include <crtp/elysian_component.hpp>
+#include <utility/elysian_stl_algorithm.hpp>
+#include <utility/elysian_mem_pool.hpp>
+#include <utility/elysian_asset_typedefs.hpp>
+#include <crtp/elysian_lua_table_proxy.hpp>
 
 #include "elysian_event_monitor.hpp"
 

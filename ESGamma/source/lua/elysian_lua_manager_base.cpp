@@ -1,9 +1,9 @@
 #include "elysian_lua_manager.hpp"
 #include "elysian_lua_script.hpp"
 #include <crtp/elysian_behavior.hpp>
-#include "luatables.h"
+#include <utility/luatables.h>
 #include "elysian_debug.hpp"
-#include "elysian_lua_table_proxy.hpp"
+#include <crtp/elysian_lua_table_proxy.hpp>
 
 namespace elysian {
 

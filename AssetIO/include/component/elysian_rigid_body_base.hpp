@@ -4,9 +4,9 @@
 #include <stdint.h>
 #include <kinetic/gyro_kinetic_kinetic.h>
 #include <kinetic/gyro_kinetic_static.h>
-#include <elysian_component.hpp>
-#include <elysian_lua_table_proxy.hpp>
-#include <elysian_instance_transform.hpp>
+#include <crtp/elysian_component.hpp>
+#include <crtp/elysian_lua_table_proxy.hpp>
+#include <primitive/elysian_instance_transform.hpp>
 
 namespace elysian {
 

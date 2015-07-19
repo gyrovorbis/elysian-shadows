@@ -1,5 +1,5 @@
 #include "tk_entity_selectable.h"
-#include "elysian_entity.hpp"
+#include <asset/tk_entity.h>
 #include "elysian_engine.hpp"
 #include "elysian_behavior_system.hpp"
 #include "tk_lua_table_stack_model.h"

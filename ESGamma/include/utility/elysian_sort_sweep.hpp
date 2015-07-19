@@ -1,10 +1,10 @@
 #ifndef ELYSIAN_SORT_SWEEP_HPP
 #define ELYSIAN_SORT_SWEEP_HPP
 
-#include <elysian_mem_pool.hpp>
-#include <elysian_asset_typedefs.hpp>
+#include <utility/elysian_mem_pool.hpp>
+#include <utility/elysian_asset_typedefs.hpp>
 #include <elysian_debug.hpp>
-#include <elysian_generic.hpp>
+#include <utility/elysian_generic.hpp>
 
 #ifdef ELYSIAN_OPENCL_ACCELERATED
 #	ifdef __APPLE__

@@ -4,9 +4,9 @@
 #include <gyro_video_api.h>
 #include <vector>
 #include <stdint.h>
-#include <elysian_mem_pool.hpp>
-#include <elysian_component.hpp>
-#include <elysian_lua_table_proxy.hpp>
+#include <utility/elysian_mem_pool.hpp>
+#include <crtp/elysian_component.hpp>
+#include <crtp/elysian_lua_table_proxy.hpp>
 
 #define ELYSIAN_MAP_BOUNDARY_CHECKS false //PLEASE, GOD, TAKE ME OUT BEFORE RELEASE!!!!!!
 #define ELYSIAN_AREA_USE_INIT_LUA	true

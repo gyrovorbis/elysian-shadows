@@ -1,4 +1,4 @@
-#include "elysian_material.hpp"
+#include <primitive/elysian_material.hpp>
 
 namespace elysian {
 

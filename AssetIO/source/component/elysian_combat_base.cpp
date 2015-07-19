@@ -1,9 +1,8 @@
-#include "elysian_combat.hpp"
-#include "elysian_generic.hpp"
-#include "elysian_collidable.hpp"
-#include "elysian_asset_typedefs.hpp"
-#include "elysian_entity.hpp"
-#include "elysian_area.hpp"
+#include <crtp/elysian_combat.hpp>
+#include <utility/elysian_generic.hpp>
+#include <crtp/elysian_collidable.hpp>
+#include <crtp/elysian_entity.hpp>
+#include <crtp/elysian_area.hpp>
 
 namespace elysian {
 

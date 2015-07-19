@@ -4,7 +4,7 @@
 #include <gyro_math_api.h>
 #include <gyro_matrix_api.h>
 
-#include "elysian_lua_table_proxy.hpp"
+#include <crtp/elysian_lua_table_proxy.hpp>
 
 namespace elysian {
 

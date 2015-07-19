@@ -5,9 +5,9 @@
 #define PERFORMANCE_MONITOR_MAX_CHILDREN            20
 #define PERFORMANCE_MONITOR_NAME_SIZE               50
 
-#include <elysian_mem_pool.hpp>
+#include <utility/elysian_mem_pool.hpp>
 #include <gyro_timer_api.h>
-#include <elysian_asset_typedefs.hpp>
+#include <utility/elysian_asset_typedefs.hpp>
 
 ELYSIAN_ASSET_TYPEDEF(TaskMonitor);
 

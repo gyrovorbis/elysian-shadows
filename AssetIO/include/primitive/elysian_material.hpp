@@ -2,8 +2,8 @@
 #define ELYSIAN_MATERIAL_HPP
 
 #include <gyro_shader_api.h>
-#include <elysian_lua_table_proxy.hpp>
-#include "elysian_instance_transform.hpp"
+#include <crtp/elysian_lua_table_proxy.hpp>
+#include <primitive/elysian_instance_transform.hpp>
 
 namespace elysian {
 

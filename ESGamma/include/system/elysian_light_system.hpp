@@ -2,9 +2,9 @@
 #define ELYSIAN_LIGHT_SYSTEM_H
 
 #include "elysian_system.hpp"
-#include "elysian_area.hpp"
+#include <crtp/elysian_area.hpp>
 #include "elysian_subprocess_manager.hpp"
-#include "elysian_light_source.hpp"
+#include <crtp/elysian_light_source.hpp>
 #include <gyro_matrix_api.h>
 
 #define ELYSIAN_LIGHT_SYSTEM_MAX_LIGHTS_ONSCREEN		32

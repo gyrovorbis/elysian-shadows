@@ -6,7 +6,7 @@
 #include <tk_property_stack_model.h>
 #include <tk_tree_node.h>
 #include <elysian_system.hpp>
-#include <elysian_level_base.hpp>
+#include <level/elysian_level_base.hpp>
 #include <tk_elysian_tile_wrapper.h>
 
 #define ESTK_SEVERITY_METADATA_SUBDIR          "estk"

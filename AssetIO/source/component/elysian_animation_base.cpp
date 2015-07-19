@@ -1,9 +1,9 @@
 #include <cassert>
-#include "elysian_animation.hpp"
-#include "elysian_entity.hpp"
-#include "elysian_renderable.hpp"
-#include "elysian_generic.hpp"
-#include "elysian_area.hpp"
+#include <crtp/elysian_animation.hpp>
+#include <crtp/elysian_entity.hpp>
+#include <crtp/elysian_renderable.hpp>
+#include <utility/elysian_generic.hpp>
+#include <crtp/elysian_area.hpp>
 #include "elysian_event_monitor.hpp"
 
 namespace elysian {

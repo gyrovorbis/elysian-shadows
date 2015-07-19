@@ -7,7 +7,7 @@
 #include "tk_map_view.h"
 #include <tk_tile_image.h>
 #include "tk_tile_selectable.h"
-#include "elysian_level.hpp"
+#include <asset/tk_level.h>
 
 class MapViewTileGraphicsItem: public TileGraphicsItem<TileEntry>, public AssetManager {
 protected:

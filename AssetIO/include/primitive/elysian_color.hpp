@@ -2,7 +2,7 @@
 #define ELYSIAN_COLOR_HPP
 
 #include <gyro_video_api.h>
-#include <elysian_lua_table_proxy.hpp>
+#include <crtp/elysian_lua_table_proxy.hpp>
 
 namespace elysian {
 

@@ -1,9 +1,8 @@
 #ifndef ELYSIAN_QUAD_SPRITE_HPP
 #define ELYSIAN_QUAD_SPRITE_HPP
 
-#include "elysian_renderable_object.hpp"
-#include "elysian_quad_sprite_attrib.hpp"
-#include <gyro.h>
+#include <primitive/elysian_renderable_object.hpp>
+#include <primitive/elysian_quad_sprite_attrib.hpp>
 
 namespace elysian {
 

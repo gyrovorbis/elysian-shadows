@@ -6,18 +6,18 @@
 #include "tk_map_view.h"
 #include "tk_selection_item_group.h"
 #include "tk_tile_selectable.h"
-#include "elysian_area.hpp"
+#include <asset/tk_area.h>
 #include "tk_map_view_place_tile_group_undo_item.h"
 #include "tk_assets.h"
 #include "elysian_engine.hpp"
 #include "elysian_camera_system.hpp"
 #include "tk_engine_gl_scene_widget.h"
-#include "elysian_collidable.hpp"
-#include "elysian_entity.hpp"
+#include <asset/tk_collidable.h>
+#include <asset/tk_entity.h>
 #include "tk_entity_selectable.h"
-#include "elysian_renderable.hpp"
-#include "elysian_animation.hpp"
-#include <elysian_level.hpp>
+#include <asset/tk_renderable.h>
+#include <asset/tk_animation.h>
+#include <asset/tk_level.h>
 
 MapView::MapView(QWidget *parent): DestView<TileEntry>::DestView(parent) {
     setMouseTracking(true);

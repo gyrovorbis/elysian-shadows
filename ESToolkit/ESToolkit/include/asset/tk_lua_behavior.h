@@ -1,7 +1,7 @@
 #ifndef TK_LUA_BEHAVIOR_H
 #define TK_LUA_BEHAVIOR_H
 
-#include <elysian_lua_behavior_base.hpp>
+#include <component/elysian_lua_behavior_base.hpp>
 
 class TkLuaBehavior: public elysian::LuaBehaviorBase {
 public:

@@ -2,7 +2,7 @@
 #define ELYSIAN_SUBPROCESS_MANAGER_HPP
 
 #include "elysian_event_monitor.hpp"
-#include "elysian_mem_pool.hpp"
+#include <utility/elysian_mem_pool.hpp>
 
 namespace elysian {
 

@@ -1,9 +1,9 @@
 #include "elysian_day_system.hpp"
 #include "elysian_timer_system.hpp"
-#include "elysian_light_source.hpp"
+#include <crtp/elysian_light_source.hpp>
 #include "elysian_debug.hpp"
-#include "elysian_area.hpp"
-#include "elysian_entity.hpp"
+#include <crtp/elysian_area.hpp>
+#include <crtp/elysian_entity.hpp>
 namespace elysian {
 
 void DaySystem::update(void) {

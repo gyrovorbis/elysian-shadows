@@ -4,7 +4,7 @@
 #include <gyro_math_api.h>
 #include <gyro_matrix_api.h>
 #include <stdint.h>
-#include "elysian_asset_typedefs.hpp"
+#include <utility/elysian_asset_typedefs.hpp>
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 
