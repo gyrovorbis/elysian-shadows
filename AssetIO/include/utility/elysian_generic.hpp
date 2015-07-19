@@ -1,14 +1,13 @@
 #ifndef ELYSIAN_GENERIC_HPP
 #define ELYSIAN_GENERIC_HPP
-/* @brief Small, generic utility functions */
+
 #include <vector>
-#include <algorithm> /* for std::remove */
+#include <algorithm>
 #include <iterator>
+
 namespace elysian {
 
-    /* @brief Iterates through haystack, erase()s all items from haystack
-    whose its memory address is the same as needle's.
-    @returns true if item is found and erased, false otherwise */
+
     template <class T, class U>
     inline bool containerEraseOnMatch(const T needle, U& haystack) {
         /* A modified erase/remove idiom */

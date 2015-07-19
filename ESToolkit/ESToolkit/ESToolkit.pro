@@ -4,11 +4,9 @@
 # -------------------------------------------------
 include(../../qtcreator/ESDev/ESDev.pri)
 
-!ios {
-    TARGET = ESToolkit
-} else {
-    TARGET = ESGamma_iOS
-}
+TARGET = ESToolkit
+
+
 TEMPLATE = app
 
 !ios {
@@ -18,7 +16,7 @@ TEMPLATE = app
         QT += testlib
     }
 } else {
-    QT -= core gui
+    QT -= core gui widgets
     deployment.files = ../../assets
     deployment.path =
     QMAKE_BUNDLE_DATA += deployment
@@ -27,9 +25,10 @@ TEMPLATE = app
 
 !ios {
     QMAKE_OBJCXXFLAGS_PRECOMPILE += -std=c++11 -stdlib=libc++
+    CONFIG += precompile_header
 }
 QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-empty-body
-CONFIG += precompile_header
+
 
 ICON = resource/images/estk.icns
 
@@ -120,7 +119,7 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../AssetIO/source/primitive/elysian_quad_sprite_attrib.cpp \
     ../../AssetIO/source/primitive/elysian_sprite_attrib.cpp \
     ../../AssetIO/source/utility/elysian_lua_table_proxy_base.cpp \
-    ../../AssetIO/source/utility/luatables.cc \
+    ../../AssetIO/source/utility/luatables.cpp \
     ../../ESGamma/source/gui/elysian_adventure_log.cpp \
     ../../ESGamma/source/gui/elysian_font.cpp \
     ../../ESGamma/source/lua/elysian_lua_manager_base.cpp \
@@ -405,8 +404,7 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../AssetIO/include/component/elysian_lua_behavior_base.hpp \
     ../../AssetIO/include/crtp/elysian_lua_behavior.hpp \
     ../../AssetIO/include/level/elysian_depth_buff_entry_base.hpp \
-    ../../AssetIO/include/crtp/elysian_depth_buff_entry.hpp \
-    include/asset/tk_depth_buff_entry.h
+    ../../AssetIO/include/crtp/elysian_depth_buff_entry.hpp
 
 !ios {
     HEADERS +=  include/asset/tk_animation.h \
@@ -503,7 +501,8 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
         include/dialog/tk_gitlab_dialog.h \
         include/tk_precompiled_headers.h \
         include/core/tk_network_access_manager.h \
-        include/asset/tk_lua_behavior.h
+        include/asset/tk_lua_behavior.h \
+        include/asset/tk_depth_buff_entry.h
 }
 
 
@@ -559,7 +558,7 @@ docs {
     DEFINES+=TOOLKIT_DOCUMENTATION_RESOURCES
 
     RESOURCES += resource/docs.qrc
-
+hold
 #	PHONY_DEPS=. FUCK THIS SHIT SO HARD!!!!
 #		docs.depends = FORCE
 #		docs.target = $$PWD/out/ESToolkit.qhc
@@ -580,6 +579,7 @@ macx {
 }
 
 ios {
+    QMAKE_CXXFLAGS += -stdlib=libc++
     DESTDIR = ../../executable
 }
 
@@ -709,7 +709,7 @@ macx {
 
 ios {
     LIBS += \
-#        -lstdc++ \
+        -lstdc++ \
         -framework OpenGLES \
         -framework GLKit \
         -framework UIKit \

@@ -16,6 +16,11 @@ ios {
 }
 
 QMAKE_CXXFLAGS += -Wno-unused-local-typedefs
+QMAKE_CFLAGS += -std=c99
+
+!iphoneos {
+    QMAKE_CFLAGS += -msse
+}
 
 CONFIG(debug, debug|release) {
 #	QMAKE_CXXFLAGS += -O0
@@ -27,19 +32,35 @@ CONFIG(release, debug|release) {
 #	QMAKE_CFLAGS += -03
 }
 
-
 DEFINES += QT_NO_KEYWORDS QT_NO_DYNAMIC_CAST
 
 ios {
     DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_iOS
+    iphonesimulator {
+        DEFINES += GYRO_PLATFORM_iOS_SIMULATOR
+    }
+    iphoneos {
+        #QMAKE_CFLAGS += -target armv8-apple-none-eabi -mcpu=cortex-a8 -mfpu=neon -miphoneos-version-min=7.0
+
+        #QMAKE_CXXFLAGS += -mcpu=cortex-a8 -mfpu=neon -target armv8-apple-none-eabi -miphoneos-version-min=7.0å
+        #QMAKE_CFLAGS += -target armv8-apple-none-eabi
+        #QMAKE_CXXFLAGS += -target armv8-apple-none-eabi
+        QMAKE_IOS_DEVICE_ARCHS=armv7
+        QMAKE_IOS_DEPLOYMENT_TARGET=8.2
+        QMAKE_IOS_TARGETED_DEVICE_FAMILY=3
+        DEFINES += GYRO_PLATFORM_iOS_DEVICE
+        #CONFIG+=neon
+    }
 }
 else {
     DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt
 
 }
 
-
-QMAKE_CXXFLAGS += -msse -Wno-unknown-warning-option #-fno-rtti -fno-exceptions
+QMAKE_CXXFLAGS += -Wno-unknown-warning-option #-fno-rtti -fno-exceptions
+!ios {
+    QMAKE_CXXFLAGS += -msse
+}
 
 #!ios {
     QMAKE_CXXFLAGS += -std=c++11

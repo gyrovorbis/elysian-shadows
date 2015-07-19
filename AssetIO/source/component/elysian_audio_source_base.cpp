@@ -1,3 +1,4 @@
+#include <vector>
 #include <algorithm>
 #include "elysian_audio_source.hpp"
 #include <elysian_audio_system.hpp>

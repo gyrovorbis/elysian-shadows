@@ -83,7 +83,7 @@ void CharacterBase::moveByDist(const GYVector2 &dist) {
     animateWalk(dist);
 
     _lastMoveDir = GYVector3 { dist.x, dist.y, 0.0f };
-    gyVec2Normalize(&_lastMoveDir);
+    gyVec2Normalize((GYVector2*)&_lastMoveDir);
 }
 
 void CharacterBase::animateWalk(const GYVector2 &moveVec) {
@@ -139,7 +139,7 @@ void CharacterBase::moveByForce(const GYVector2 &dist) {
     //_entity->transform.translate(dist);
     animateWalk(dist);
     _lastMoveDir = GYVector3 { dist.x, dist.y, 0.0f };
-    gyVec2Normalize(&_lastMoveDir);
+    gyVec2Normalize((GYVector2*)&_lastMoveDir);
 }
 
 void CharacterBase::update(void) {
