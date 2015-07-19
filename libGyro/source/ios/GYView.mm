@@ -16,6 +16,17 @@ extern GYAppDrawCb     gyAppDrawCb;
 extern GYAppQuitCb     gyAppQuitCb;
 
 
+static GYView* _view = NULL;
+
+
+void glalVidBindDefaultFbo(void) {
+    //fucking disgusting.
+   // glBindFramebuffer(GL_FRAMEBUFFER, glalDefaultFbo());
+    //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    [_view bindDrawable];
+}
+
+
 - (id)initWithFrame:(CGRect)frame context:(EAGLContext *)context
 {
     self = [super initWithFrame:frame context:context];
@@ -24,6 +35,7 @@ extern GYAppQuitCb     gyAppQuitCb;
 
         if(gyAppInitCb) gyAppInitCb(0, NULL);
         glalVidOglInit(frame.size.width, frame.size.height, frame.size.width, frame.size.height);
+        _view = self;
 
 
 
@@ -34,7 +46,7 @@ extern GYAppQuitCb     gyAppQuitCb;
 
 - (void)drawRect:(CGRect)rect
 {
-
+   // display.
     //clear the screen
     //glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     //glClear(GL_COLOR_BUFFER_BIT);
