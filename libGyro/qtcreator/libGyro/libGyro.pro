@@ -6,7 +6,6 @@ CONFIG -= app_bundle
 !ios {
     QMAKE_CXXFLAGS += -Wno-c++11-extensions -Wno-c++11-long-long
 }
-QMAKE_CFLAGS += -msse -std=c99
 
 INCLUDEPATH += ../../include \
                 ../../../Spine/include
@@ -35,7 +34,6 @@ ios {
 
     INCLUDEPATH += ../../lib/ios/Ogg.framework/Headers \
         ../../lib/ios/Vorbis.framework/Headers
-
 }
 
 
@@ -119,8 +117,9 @@ HEADERS += \
     HEADERS += ../../source/ios/GYAppDelegate.h \
         ../../source/ios/GYView.h \
         ../../source/ios/GYViewController.h \
-        ../../include/ios/gyro_input_ios.inl
-
+        ../../include/ios/gyro_input_ios.inl \
+        ../../include/ios/gyro_video_ios.inl \
+        ../../include/arm/gyro_matrix_arm_neon.inl
 }
 
 
