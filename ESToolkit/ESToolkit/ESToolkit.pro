@@ -580,7 +580,12 @@ macx {
 
 ios {
     QMAKE_CXXFLAGS += -stdlib=libc++
-    DESTDIR = ../../executable
+    iphoneos {
+        DESTDIR = ../../executable/ios
+    }
+    iphonesimulator {
+        DESTDIR = ../../executable/ios_sim
+    }
 }
 
 win32 {
