@@ -4,7 +4,6 @@ CONFIG += staticlib
 
 CONFIG -= app_bundle
 CONFIG -= qt
-QMAKE_CFLAGS += -msse -std=c99
 
 INCLUDEPATH += ../../include \
 				../../../libGyro/include

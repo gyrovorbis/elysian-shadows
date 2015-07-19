@@ -58,9 +58,6 @@ else {
 }
 
 QMAKE_CXXFLAGS += -Wno-unknown-warning-option #-fno-rtti -fno-exceptions
-!ios {
-    QMAKE_CXXFLAGS += -msse
-}
 
 #!ios {
     QMAKE_CXXFLAGS += -std=c++11
