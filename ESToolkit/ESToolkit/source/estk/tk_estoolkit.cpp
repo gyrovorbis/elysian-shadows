@@ -120,6 +120,8 @@ ESToolkit::ESToolkit(QWidget *parent):
     m_platformActionGroup->addAction(_ui->actionMac_OS_X);
     m_platformActionGroup->addAction(_ui->actionDreamcast);
     m_platformActionGroup->addAction(_ui->actionIPhone_iPad);
+    m_platformActionGroup->addAction(_ui->actionIOS_Simulator);
+    m_platformActionGroup->addAction(_ui->actionAndroid_Device);
     m_platformActionGroup->setExclusive(true);
 
     // add QToolButton dropdown for platforms
@@ -1418,6 +1420,15 @@ void ESToolkit::on_actionInvoke_triggered()
             _engineDialog->show();
 
             _engineDialog->Invoke(EngineDialog::ENGINE_iOS);
+
+        } else if(_ui->actionIOS_Simulator->isChecked()) {
+            _assets.getCurrentArea()->save();
+            _engineDialog->show();
+            _engineDialog->Invoke(EngineDialog::ENGINE_iOS_Sim);
+        } else if(_ui->actionAndroid_Device->isChecked()) {
+            QMessageBox::information(nullptr, "Shit isn't done yet.", "I haven't gotten around to Droid integration. Get off my dick.");
+            _engineDialog->Invoke(EngineDialog::ENGINE_Droid);
+            //_ui->actionAndroid_Device->setChecked(false);
         }
     } else if(_engineDialog->isVisible()) {
         _engineDialog->kill();
@@ -2356,4 +2367,14 @@ void ESToolkit::on_actionHidden_Levels_toggled(bool arg1)
 
 void ESToolkit::setIndexHiddenLevels(const bool val) {
     on_actionHidden_Levels_toggled(val);
+}
+
+void ESToolkit::on_actionIOS_Simulator_triggered()
+{
+    m_activePlatform->setIcon(_ui->actionIOS_Simulator->icon());
+}
+
+void ESToolkit::on_actionAndroid_Device_triggered()
+{
+    m_activePlatform->setIcon(_ui->actionAndroid_Device->icon());
 }

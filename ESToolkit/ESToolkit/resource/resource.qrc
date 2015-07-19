@@ -49,6 +49,9 @@
         <file>images/stopIcon.png</file>
         <file>images/camera.png</file>
         <file>images/audio.png</file>
+        <file>images/ios_sim.png</file>
+        <file>images/ios_logo.png</file>
+        <file>images/droid_logo.png</file>
     </qresource>
     <qresource prefix="/splash">
         <file>images/splashScreen.png</file>

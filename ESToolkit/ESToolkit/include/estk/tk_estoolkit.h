@@ -291,6 +291,8 @@ private Q_SLOTS:
     void on_actionReset_Stack_Depth_triggered();
     void on_actionCopy_triggered();
     void on_actionHidden_Levels_toggled(bool arg1);
+    void on_actionIOS_Simulator_triggered();
+    void on_actionAndroid_Device_triggered();
 };
 
 

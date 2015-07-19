@@ -84,7 +84,9 @@ EngineDialog::EngineDialog(QWidget *parent): QMainWindow(parent), _currentType(E
     connect(_clearButton, SIGNAL(clicked()), this, SLOT(OnClickClear()));
     connect(_engine, SIGNAL(started()), this, SLOT(OnStart()));
     connect(_engine, SIGNAL(readyReadStandardOutput()), this, SLOT(OnReadyReadStandardOutput()));
-    connect(_engine, SIGNAL(readyReadStandardError()), this, SLOT(OnReadyReadStandardOutput()));
+    connect(_engine, SIGNAL(readyReadStandardError()), this, SLOT(onReadyReadStandardError()));
+    connect(_engine, SIGNAL(finished(int)), this, SLOT(OnFinish(int)));
+    connect(_engine, SIGNAL(stateChanged(QProcess::ProcessState)), this, SLOT(onStateChange(QProcess::ProcessState)));
 	connect(_engine, SIGNAL(error(QProcess::ProcessError)), this, SLOT(OnError(QProcess::ProcessError)));
 
     //Load from file through settings dialog
@@ -96,6 +98,20 @@ EngineDialog::~EngineDialog(void) {
     kill();
 }
 
+void EngineDialog::onStateChange(QProcess::ProcessState state) {
+    switch(state) {
+    case QProcess::NotRunning:
+        qDebug() << "NOT RUNNING STATE!!!!";
+        break;
+    case QProcess::Starting:
+        qDebug() << "STARTING STATE!!!!";
+        break;
+    case QProcess::Running:
+        qDebug() << "RUNNING STATE1!!!!";
+        break;
+
+    }
+}
 
 void EngineDialog::closeEvent(QCloseEvent *event) {
     kill();
@@ -162,14 +178,19 @@ bool EngineDialog::Invoke(const ENGINE_TYPE type) {
 #endif
         break;
     }
-    case ENGINE_PSP:
-
-        break;
     case ENGINE_iOS:
+        _engine->setWorkingDirectory(getAssets()->getCurrentProject()->getNodePath() + QString("/bin/"));
+        _engine->start("/bin/sh", QStringList { getAssets()->getCurrentProject()->getNodePath() + "/bin/launchESTkiOSDevice.sh"});
+        break;
+    case ENGINE_iOS_Sim:
         _engine->start("/bin/sh", QStringList {getAssets()->getCurrentProject()->getNodePath() + "/bin/launchESGammaiOS.sh" });
     default:
         break;
     }
+
+    _engine->setProcessChannelMode(QProcess::MergedChannels);
+    _engine->waitForStarted();
+    _engine->closeWriteChannel();
 
     return true;
 }
@@ -207,12 +228,36 @@ void EngineDialog::OnError(QProcess::ProcessError error) {
 	case QProcess::UnknownError:
         item->setText(QString("ENGINE DBG_ERROR: Unknown Error!"));
 		break;
+    default:
+        qCritical() << "WHAT IN FUCK's CUNT";
 	}
 
 	_log->addItem(item);
 	_log->scrollToBottom();
 
     Q_EMIT stopped();
+}
+
+void EngineDialog::onReadyReadStandardError(void) {
+    //Qt-based Method
+    QString string;
+    QTextStream stream(&string);
+
+    stream << _engine->readAllStandardError();
+    stream.flush();
+    qWarning() << string;
+    QStringList stringList = string.split("\n");
+
+    for(int i = 0; i < stringList.size(); ++i) {
+        QListWidgetItem *item = new QListWidgetItem();
+        item->setText(stringList[i]);
+        item->setForeground(QBrush(Qt::darkRed));
+        item->setSelected(true);
+        _log->addItem(item);
+        //qWarning() << stringList[i];
+     }
+    _log->scrollToBottom();
+
 }
 
 void EngineDialog::OnReadyReadStandardOutput(void) {
@@ -235,7 +280,14 @@ void EngineDialog::OnReadyReadStandardOutput(void) {
     _log->scrollToBottom();
 #endif
 	//Qt-based Method
-	QString string = _engine->readAllStandardOutput();
+    QString string;
+    QTextStream stream(&string);
+
+    stream << _engine->readAllStandardOutput();
+    stream.flush();
+
+    qDebug() << string;
+
 	//qDebug() << string; This'll wrap back to Tk now... Fuck that.
 	QStringList stringList = string.split("\n");
 
@@ -244,7 +296,6 @@ void EngineDialog::OnReadyReadStandardOutput(void) {
 		item->setText(stringList[i]);
 		item->setSelected(true);
 		_log->addItem(item);
-
 	 }
 	_log->scrollToBottom();
 }
@@ -255,10 +306,11 @@ void EngineDialog::OnClickClear(void) {
     _log->clear();
 }
 
-void EngineDialog::OnFinish(int /*result*/) {
-	//qDebug() << result;
-    OnClickClose();
-    Q_EMIT stopped();
+void EngineDialog::OnFinish(int result) {
+
+    qDebug() << result;
+    //OnClickClose();
+    //Q_EMIT stopped();
 }
 
 void EngineDialog::OnClickClose(void) {
@@ -324,9 +376,14 @@ void EngineDialog::onEnginePathx86Changed(QString path) {
     _enginePathx86 = path;
 }
 
+/*
+ * End external/background tasks and processes used to launch and run builds.
+ */
 void EngineDialog::kill(void) {
-    if(_currentType == ENGINE_iOS) {
+    if(_currentType == ENGINE_iOS_Sim) {
         QProcess::startDetached("killall", QStringList { "iOS Simulator" });
+    } else if(_currentType == ENGINE_iOS) {
+        QProcess::startDetached("killall", QStringList { "deviceconsole"});
     }
     _engine->kill();
 }

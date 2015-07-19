@@ -49,7 +49,7 @@ invoke with a copy?
 class EngineDialog: public QMainWindow, public AssetManager {
     Q_OBJECT
 public:
-    enum ENGINE_TYPE { ENGINE_PC, ENGINE_DC, ENGINE_PSP, ENGINE_iOS };
+    enum ENGINE_TYPE { ENGINE_PC, ENGINE_DC, ENGINE_iOS_Sim, ENGINE_iOS, ENGINE_Droid };
                 EngineDialog(QWidget *parent=0);
     virtual     ~EngineDialog(void) override;
 
@@ -82,12 +82,14 @@ private:
 
 private Q_SLOTS:
 	void OnReadyReadStandardOutput(void);
+    void onReadyReadStandardError(void);
 	void OnClickClose(void);
 	void OnClickClear(void);
 	void OnClickRestart(void);
     void OnStart(void);
 	void OnError(QProcess::ProcessError error);
     void OnFinish(int result);
+    void onStateChange(QProcess::ProcessState state);
     void onResolutionRadioButtonsClicked(bool checked);
 
 public Q_SLOTS:
