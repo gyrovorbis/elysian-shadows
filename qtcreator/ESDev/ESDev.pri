@@ -16,7 +16,7 @@ ios {
 }
 
 QMAKE_CXXFLAGS += -Wno-unused-local-typedefs
-QMAKE_CFLAGS += -std=c99
+#QMAKE_CFLAGS += -std=c99
 
 !iphoneos {
     QMAKE_CFLAGS += -msse
