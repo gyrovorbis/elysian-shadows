@@ -580,7 +580,7 @@ macx {
 ios {
     QMAKE_CXXFLAGS += -stdlib=libc++
     iphoneos {
-        #DESTDIR = ../../executable/ios
+        DESTDIR = ../../executable/ios
         deployment.files = ../../assets
         deployment.path =
         QMAKE_BUNDLE_DATA += deployment

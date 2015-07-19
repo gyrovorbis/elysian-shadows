@@ -384,6 +384,8 @@ void EngineDialog::kill(void) {
         QProcess::startDetached("killall", QStringList { "iOS Simulator" });
     } else if(_currentType == ENGINE_iOS) {
         QProcess::startDetached("killall", QStringList { "deviceconsole"});
+        QProcess::startDetached("killall", QStringList { "instruments"});
+        QProcess::startDetached("killall", QStringList { "ios-deploy"});
     }
     _engine->kill();
 }
