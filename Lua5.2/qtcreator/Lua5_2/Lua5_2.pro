@@ -1,7 +1,7 @@
 #-------------------------------------------------
 #
 # Project created by QtCreator 2014-12-21T07:10:54
-#
+# DONT FUCKING USE -msse IN LUA LIBS ON WINDOWS!!!!111
 #-------------------------------------------------
 include(../../../qtcreator/ESDev/ESDev.pri)
 QT       -= core gui
@@ -15,8 +15,8 @@ QMAKE_CFLAGS += -Wno-deprecated-declarations
 DEFINES += ELYSIAN_LUA_MODS
 
 INCLUDEPATH += ../../include \
-	../../include/lua \
-	../../../libGyro/include
+    ../../include/lua \
+    ../../../libGyro/include
 
 unix {
     target.path = /usr/lib
@@ -57,7 +57,7 @@ SOURCES += \
     ../../source/lua.c \
     ../../source/lundump.c \
     ../../source/lvm.c \
-	../../source/lzio.c
+    ../../source/lzio.c
 
 HEADERS += \
     ../../include/lua/lapi.h \

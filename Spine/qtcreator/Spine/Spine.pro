@@ -5,9 +5,10 @@ CONFIG += staticlib
 CONFIG -= app_bundle
 CONFIG -= qt
 
+
 INCLUDEPATH += ../../include \
-				../../../libGyro/include
-QMAKE_CFLAGS += -Wno-unused-parameter
+                ../../../libGyro/include
+QMAKE_CFLAGS += -Wno-unused-parameter -std=c99
 
 SOURCES += \
     ../../src/spine/Animation.c \
