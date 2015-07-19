@@ -11,6 +11,13 @@
 #include <QDebug>
 #include <cassert>
 
+void glalVidBindDefaultFbo(void) {
+    //fucking disgusting.
+   // glBindFramebuffer(GL_FRAMEBUFFER, glalDefaultFbo());
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+
 extern GYInputInitParams    _initParams;
 //static QHash<GLuint, QOpenGLTexture*> _qTextures;
 

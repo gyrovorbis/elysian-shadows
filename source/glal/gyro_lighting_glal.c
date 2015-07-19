@@ -58,17 +58,28 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-#if !defined(ANDROID) /* TODO: FIXME */
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 #if GYRO_PLATFORM != GYRO_PLATFORM_iOS
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
       //  glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
         //glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
     //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, 1.0f);
-#endif
+#else
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      //  glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        //glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
+    //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
 #endif
         break;
 
@@ -79,17 +90,19 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-#if !defined(ANDROID) /* TODO: FIXME */
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
       //  glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
         //glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
     //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
 #if GYRO_PLATFORM != GYRO_PLATFORM_iOS
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
+
+
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, 1.0f);
-#endif
+#else
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
+
 #endif
         break;
 
@@ -104,7 +117,6 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0);
-#if !defined(ANDROID) /* TODO: FIXME */
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
         //glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_SEVERITY, 0);
 //		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_SEVERITY, 0);
@@ -118,7 +130,11 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
             //shadowDepth? lolz
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT32, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
         }
-#endif
+#else
+        for (unsigned i = 0; i < GY_CUBE_MAP_FACE_MAX; ++i) {
+            //shadowDepth? lolz
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT24, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
+        }
 #endif
       //  glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
         break;
@@ -532,6 +548,8 @@ void glalGetPointLightViewVolume(GYViewVolume* const vol, GYLightSource* lightSr
 
 }
 
+static GLint iosFramebuffer = 0;
+
 void gyVidLightSourceBeginShadowPasses(void) {
     gyVidVertexBatchFlush();
     //glFlush();
@@ -540,6 +558,11 @@ void gyVidLightSourceBeginShadowPasses(void) {
     gyVidAlphaLevel(GY_ALPHA_NONE);
     _shadowPass = 1;
     _firstShadowPass = 1;
+
+#if GYRO_PLATFORM == GYRO_PLATFORM_iOS
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &iosFramebuffer);
+#endif
+
 }
 
 
@@ -593,6 +616,14 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
         glalGetDirectionalLightProjectionMatrix(lightProjMatrix, light);
         glalGetDirectionalLightViewMatrix(lightViewMatrix, light);
 
+#if GYRO_PLATFORM == GYRO_PLATFORM_iOS
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glEnable(GL_DEPTH_TEST);
+    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+
+#endif
+
         //glCullFace(GL_BACK);
         //glEnable(GL_TEXTURE_2D);
                 //glBindTexture(GL_TEXTURE_2D, 0);
@@ -631,12 +662,14 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 
     }
 
-#if !defined(ANDROID) /* TODO: FIXME */
+
 #if GYRO_PLATFORM != GYRO_PLATFORM_iOS
     glDrawBuffer(GL_NONE); // No color buffer is drawn to.
    // glReadBuffer(GL_NONE);
+#else
+    glDrawBuffers(0, NULL);
 #endif
-#endif
+
 
     //Check whether shit has reested with our FBO
     GLenum status;
@@ -684,12 +717,23 @@ gyVidVertexBatchFlush();
     glalCurLightShader = &glalLightingShader;
    // glFlush();
   // gyVidVertexBatchFlush();
+#if GYRO_PLATFORM == GYRO_PLATFORM_iOS
+    //glBindFramebuffer(GL_FRAMEBUFFER, iosFramebuffer);
+        glalVidBindDefaultFbo();
+#else
     glalVidBindDefaultFbo();
-   // glDrawBuffer(GL_BACK);
+
     unsigned width, height;
     gyVidResolution(&width, &height);
     glViewport(0, 0, (float)width, (float)height);
 
+ #endif
+    // glDrawBuffer(GL_BACK);
+#if GYRO_PLATFORM == GYRO_PLATFORM_iOS
+    glDisable(GL_CULL_FACE);
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+
+#endif
     //gyVidDepthTest(0);
     //glDepthMask(GL_TRUE);
     glDisable(GL_DEPTH_TEST);
