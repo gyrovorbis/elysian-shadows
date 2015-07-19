@@ -5,6 +5,7 @@
 #include <glal/gyro_video_glal.h>
 #include <gyro_system_api.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 
 LightSourceUniforms _lightSourceUniforms[GYRO_VIDEO_LIGHT_SOURCES_MAX];
