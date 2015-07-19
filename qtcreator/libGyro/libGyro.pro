@@ -3,6 +3,7 @@ TEMPLATE = lib
 QT += opengl
 CONFIG += staticlib console
 CONFIG -= app_bundle
+QMAKE_CFLAGS += -std=c99
 !ios {
     QMAKE_CXXFLAGS += -Wno-c++11-extensions -Wno-c++11-long-long
 }
@@ -12,7 +13,7 @@ INCLUDEPATH += ../../include \
 
 #==========PLATFORM-SPECIFIC BULLSHIT==========
 
-win32 {
+win32 {s
     INCLUDEPATH +=  ../../lib/win32 \
                     ../../lib/win32/mingw
     SOURCES +=	../../source/x86/turfs_windows.c
