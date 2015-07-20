@@ -11,7 +11,7 @@
 #include <QDebug>
 #include <cassert>
 
-void glalVidBindDefaultFbo(void) {
+extern "C" void glalVidBindDefaultFbo(void) {
     //fucking disgusting.
    // glBindFramebuffer(GL_FRAMEBUFFER, glalDefaultFbo());
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
