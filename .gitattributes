@@ -1,13 +1,13 @@
 #Declare files that will always have LF (Unix style) line endings on checkout.
-#* text eol=lf
+*.fsh text eol=lf
+*.vsh text eol=lf
 
 #Declare files that will always have LF (Unix style) end of file characters on checkout.
-#* text eof=lf
+*.fsh text eof=lf
+*.vsh text eof=lf
 
 #Declares files that will always be converted to OS native line endings upon checkout.
 *.lua text
-*.fsh text
-*.vsh text
 
 #Denotes all files that are truly binary and should not be modified.
 *.png binary
