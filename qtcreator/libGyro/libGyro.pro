@@ -144,6 +144,7 @@ SOURCES += \
     ../../source/glal/gyro_ogg_glal.c \
     ../../source/common/turfs_file_stdio.c \
     ../../source/x86/gyro_matrix_x86.c \
+    ../../source/qt/gyro_video_qt.cpp
 
 
 !ios {
