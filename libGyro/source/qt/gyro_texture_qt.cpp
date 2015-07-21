@@ -10,13 +10,6 @@
 #include <QImage>
 #include <QDebug>
 #include <cassert>
-#include <glal/gyro_gl.h>
-
-extern "C" void glalVidBindDefaultFbo(void) {
-    //fucking disgusting.
-   // glBindFramebuffer(GL_FRAMEBUFFER, glalDefaultFbo());
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
 
 
 extern GYInputInitParams    _initParams;
