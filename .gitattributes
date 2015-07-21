@@ -16,3 +16,4 @@ ios-deploy binary
 *.rb binary
 *.spine binary
 *.psd binary
+*.gif binary
