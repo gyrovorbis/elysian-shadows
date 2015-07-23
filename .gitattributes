@@ -9,16 +9,16 @@
 #Declares files that will always be converted to OS native line endings upon checkout.
 *.lua text
 
-#Denotes all files that are truly binary and should not be modified.
-*.png binary
+#Denotes all files that are truly binary and/or should not be modified.
+*.png -text
 *.bin binary
-*.txt binary
-*.jpg binary
-*.js binary
-deviceconsole binary
-ios-deploy binary
+*.txt -text
+*.jpg -text
+*.js -text
+deviceconsole -text
+ios-deploy -text
 *.sh binary
 *.rb binary
 *.spine binary
 *.psd binary
-*.gif binary
+*.gif -text
