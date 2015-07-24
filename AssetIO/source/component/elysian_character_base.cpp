@@ -5,6 +5,7 @@
 #include <crtp/elysian_collidable.hpp>
 #include <crtp/elysian_entity.hpp>
 #include <crtp/elysian_area.hpp>
+#include <crtp/elysian_skeleton.hpp>
 
 namespace elysian {
 
@@ -24,30 +25,26 @@ bool CharacterBase::isFacing(const Entity &entity) const {
 
 void CharacterBase::setDashing(const bool val) {
     _dashing = val;
-    _entity->getAnimation()->setSpeedMultiplier(val? _dashMultiplier : 1.0f);
+    setSpeedMultiplier(val? _dashMultiplier : 1.0f);
 }
 
 void CharacterBase::faceDir(const Direction::DIR4 dir) {
-	if(_animate) {
-		Animation *animComp = _entity->getAnimation();
-        if(!animComp) return;
 		switch(dir) {
 			case Direction::DIR4_UP:
-				animComp->playAnimation("Up");
+                playAnimation("Up");
 				break;
 			case Direction::DIR4_DOWN:
-				animComp->playAnimation("Down");
+                playAnimation("Down");
 				break;
 			case Direction::DIR4_LEFT:
-				animComp->playAnimation("Left");
-				break;
+                playAnimation("Left");
+                break;
 			case Direction::DIR4_RIGHT:
-				animComp->playAnimation("Right");
+                playAnimation("Right");
 				break;
 			default:
 				break;
 		}
-	}
 	_faceDir = dir;
 }
 
@@ -60,7 +57,6 @@ float CharacterBase::getHeldEntityForceDampFactor(void) {
     if(!_heldEntity) return 0.0f;
 	const float invParent = _entity->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass;
 	const float invChild = _heldEntity->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass;
-
     //Don't divid by zero, dipshit.
     if(invParent+invChild == 0.0f) return 0.0f;
 
@@ -87,28 +83,25 @@ void CharacterBase::moveByDist(const GYVector2 &dist) {
 
 void CharacterBase::animateWalk(const GYVector2 &moveVec) {
     _movedThisFrame = true;
-    if(!_entity->getAnimation()) return;
-    _entity->getAnimation()->replaceState("Stand", "Walk");
+    replaceState("Stand", "Walk");
 
     Direction::DIR4 dir = Direction::fromVector(moveVec);
 
     if(_animate) {
-        Animation *animComp = _entity->getAnimation();
-        if(!animComp) return;
 
         if((_walkAnimInterp && _faceDir == dir) || !_walkAnimInterp) {
             switch(dir) {
                 case Direction::DIR4_UP:
-                    animComp->playAnimation("Up");
+                    playAnimation("Up");
                     break;
                 case Direction::DIR4_DOWN:
-                    animComp->playAnimation("Down");
+                    playAnimation("Down");
                     break;
                 case Direction::DIR4_LEFT:
-                    animComp->playAnimation("Left");
+                    playAnimation("Left");
                     break;
                 case Direction::DIR4_RIGHT:
-                    animComp->playAnimation("Right");
+                    playAnimation("Right");
                     break;
                 default:
                     break;
@@ -142,23 +135,22 @@ void CharacterBase::moveByForce(const GYVector2 &dist) {
 }
 
 void CharacterBase::update(void) {
-    if(!_entity->getAnimation()) return;
 	if(!_movedThisFrame) {
-		_entity->getAnimation()->replaceState("Walk", "Stand");
+        replaceState("Walk", "Stand");
 		faceDir(_faceDir);
 		//_entity->getRigidBody()->setVelocity(GYVector3{ 0.0f, 0.0f, 0.0f });
 	}
 	else _movedThisFrame = false;
 
     //Set falling animation state
-    if(_entity->getRigidBody()->getVelocity().z < 0.0f) _entity->getAnimation()->replaceState("Jump", "Fall");
+    if(_entity->getRigidBody()->getVelocity().z < 0.0f) replaceState("Jump", "Fall");
 }
 
 void CharacterBase::setHeldEntity(Entity * const entity) {
 	if(_heldEntity) {
 		_heldEntity->getRigidBody()->setActive(true);
-		_heldEntity->getCollidable()->setActive(true);
-		_entity->getAnimation()->removeChildEntity(_heldEntity);
+        _heldEntity->getCollidable()->setActive(true);
+        removeChildEntity(_heldEntity);
 	}
 
 	_heldEntity = entity;
@@ -169,15 +161,15 @@ void CharacterBase::setHeldEntity(Entity * const entity) {
             entity->getRigidBody()->setActive(false);
             entity->getRigidBody()->clearKinetic();
             entity->getCollidable()->setActive(false);
-            _entity->getAnimation()->addChildEntity(entity, ELYSIAN_CHAR_ANIM_CHILD_SEQ_HELD);
-            _entity->getAnimation()->removeState("Walk");
-            _entity->getAnimation()->removeState("Stand");
-            _entity->getAnimation()->removeState("Jump");
-            _entity->getAnimation()->removeState("Fall");
-            _entity->getAnimation()->addState("Hold");
+            addChildEntity(entity, ELYSIAN_CHAR_ANIM_CHILD_SEQ_HELD);
+            removeState("Walk");
+            removeState("Stand");
+            removeState("Jump");
+            removeState("Fall");
+            addState("Hold");
         }
     } else {
-        _entity->getAnimation()->removeState("Hold");
+        removeState("Hold");
     }
 
 }
@@ -260,9 +252,71 @@ void CharacterBase::jump(void) {
    // force.y *= rb->getStaticAttrib()->zDamping;
 
     rb->applyForce(force);
-    if(!_entity->getAnimation()) return;
-    _entity->getAnimation()->replaceState("Fall", "Jump");
+    replaceState("Fall", "Jump");
 }
+
+
+void CharacterBase::playAnimation(const char*const name) {
+    if(_entity->getSkeleton()) {
+        _entity->getSkeleton()->setAnimByName(0, name, true);
+    } else if(_entity->getAnimation()) {
+        _entity->getAnimation()->playAnimation(name);
+    }
+
+}
+
+void CharacterBase::replaceState(const char*const name1, const char*const name2) {
+    if(_entity->getSkeleton()) {
+
+    } else if(_entity->getAnimation()) {
+        _entity->getAnimation()->replaceState(name1, name2);
+    }
+
+}
+
+void CharacterBase::removeChildEntity(Entity*entity) {
+    if(_entity->getSkeleton()) {
+
+    } else if(_entity->getAnimation()) {
+        _entity->getAnimation()->removeChildEntity(entity);
+    }
+}
+
+void CharacterBase::addChildEntity(Entity*entity, const char*const name) {
+    if(_entity->getSkeleton()) {
+
+    } else if(_entity->getAnimation()) {
+        _entity->getAnimation()->addChildEntity(entity, name);
+    }
+
+
+}
+
+
+void CharacterBase::removeState(const char*const state) {
+    if(_entity->getSkeleton()) {
+
+    } else if(_entity->getAnimation()) {
+        _entity->getAnimation()->removeState(state);
+    }
+
+}
+
+void CharacterBase::addState(const char*const state) {
+    if(_entity->getSkeleton()) {
+
+    } else if(_entity->getAnimation()) {
+        _entity->getAnimation()->addState(state);
+    }
+
+
+}
+
+void CharacterBase::setSpeedMultiplier(const float factor) {
+    _entity->getAnimation()->setSpeedMultiplier(factor);
+
+}
+
 
 
 }

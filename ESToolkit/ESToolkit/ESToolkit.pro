@@ -722,6 +722,7 @@ ios {
         -framework UIKit \
         -framework Foundation \
         -framework CoreGraphics \
+        -framework CoreMotion \
         -framework OpenAL \
         -F../../libGyro/lib/ios \
         -framework Ogg \

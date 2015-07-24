@@ -227,7 +227,7 @@ void Engine::render(void) {
             _guiSystem->renderBackground();
             _cameraSystem->pushViewProjMatrix();
 #if GYRO_PLATFORM != GYRO_PLATFORM_iOSasdfasdf
-            //_lightSystem->setShadowPassEnabled(false);
+            _lightSystem->setShadowPassEnabled(false);
             _lightSystem->shadowRenderPasses();
 #else
             _lightSystem->removeLightSourcesFromScene();

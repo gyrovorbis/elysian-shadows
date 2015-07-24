@@ -93,6 +93,15 @@ namespace elysian {
         void                faceDir(const Direction::DIR4 dir);
         void                faceEntity(Entity& entity);
         void                animateWalk(const GYVector2& moveVec);
+
+        //animation component wrappers/abstraction
+        void playAnimation(const char*const name);
+        void replaceState(const char*const name1, const char*const name2);
+        void removeChildEntity(Entity*entity);
+        void addChildEntity(Entity*entity, const char*const name);
+        void removeState(const char*const state);
+        void addState(const char*const state);
+        void setSpeedMultiplier(const float factor);
     };
 
 
@@ -109,6 +118,8 @@ namespace elysian {
     inline float CharacterBase::getWalkForce(void) const { return _walkForce; }
     inline const GYVector3& CharacterBase::getLastMoveDir(void) const { return _lastMoveDir; }
     inline void CharacterBase::setAnimate(const bool val) { _animate = val; }
+
+
 
 }
 
