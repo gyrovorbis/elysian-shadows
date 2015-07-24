@@ -2,10 +2,12 @@
 #define GY_VIEW_CONTROLLER_H
 
 #import <GLKit/GLKit.h>
+#import <CoreMotion/CoreMotion.h>
 
 @interface GYViewController : GLKViewController {
 
-
+CMMotionManager *motionManager;
+NSOperationQueue *queue;
 
 };
 
