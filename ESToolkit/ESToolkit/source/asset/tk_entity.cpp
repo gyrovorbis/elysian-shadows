@@ -265,7 +265,7 @@ QMenu* TkEntity::createContextMenu(void) {
             else removeRenderable();
         },
         getRenderable(),
-        canAddTo(elysian::Renderable())
+        canAddTo(elysian::Renderable()) && !isActive()
     )->setMenu(getRenderable()? getRenderable()->createContextMenu() : nullptr);
 
     menuStack.insertCheckableAction("Collidable",
@@ -274,7 +274,7 @@ QMenu* TkEntity::createContextMenu(void) {
             else removeCollidable();
         },
         getCollidable(),
-        canAddTo(elysian::Collidable())
+        canAddTo(elysian::Collidable()) && !isActive()
     )->setMenu(getCollidable()? getCollidable()->createContextMenu() : nullptr);
 
 #if 0
@@ -294,7 +294,7 @@ QMenu* TkEntity::createContextMenu(void) {
             else removeSkeleton();
         },
         getSkeleton(),
-        canAddTo(elysian::Skeleton())
+        canAddTo(elysian::Skeleton()) && !isActive()
     )->setMenu(getSkeleton()? getSkeleton()->createContextMenu() : nullptr);
 
     menuStack.insertCheckableAction("Rigid Body",
@@ -303,7 +303,7 @@ QMenu* TkEntity::createContextMenu(void) {
             else removeRigidBody();
         },
         getRigidBody(),
-        canAddTo(elysian::RigidBody())
+        canAddTo(elysian::RigidBody()) && !isActive()
     )->setMenu(getRigidBody()? getRigidBody()->createContextMenu() : nullptr);
 
     menuStack.insertCheckableAction("Examinable",
@@ -312,7 +312,7 @@ QMenu* TkEntity::createContextMenu(void) {
             else removeExaminable();
         },
         getExaminable(),
-        canAddTo(elysian::Examinable())
+        canAddTo(elysian::Examinable()) && !isActive()
     )->setMenu(getExaminable()? getExaminable()->createContextMenu() : nullptr);
 
     menuStack.insertCheckableAction("Warp",
@@ -321,7 +321,7 @@ QMenu* TkEntity::createContextMenu(void) {
             else removeWarp();
         },
         getWarp(),
-        canAddTo(elysian::Warp())
+        canAddTo(elysian::Warp()) && !isActive()
     )->setMenu(getWarp()? getWarp()->createContextMenu() : nullptr);
 
     menuStack.insertCheckableAction("Character",
@@ -330,7 +330,7 @@ QMenu* TkEntity::createContextMenu(void) {
             else removeCharacter();
         },
         getCharacter(),
-        canAddTo(elysian::Character())
+        canAddTo(elysian::Character()) && !isActive()
     )->setMenu(getCharacter()? getCharacter()->createContextMenu() : nullptr);
 
     menuStack.insertCheckableAction("Light Source",
@@ -339,7 +339,7 @@ QMenu* TkEntity::createContextMenu(void) {
             else removeLightSource();
         },
         getLightSource(),
-        canAddTo(elysian::LightSource())
+        canAddTo(elysian::LightSource()) && !isActive()
     )->setMenu(getLightSource()? getLightSource()->createContextMenu() : nullptr);
 
     menuStack.insertCheckableAction("Audio Source",
@@ -348,25 +348,25 @@ QMenu* TkEntity::createContextMenu(void) {
             else removeAudioSource();
         },
         getAudioSource(),
-        canAddTo(elysian::AudioSource())
+        canAddTo(elysian::AudioSource()) && !isActive()
     )->setMenu(getAudioSource()? getAudioSource()->createContextMenu() : nullptr);
 
     menuStack.insertCheckableAction("Particle Emitter",
-        [&](bool checked=false) {
+        [&](bool checked) {
             if(checked) addParticleEmitter();
             else removeParticleEmitter();
         },
         getParticleEmitter(),
-        canAddTo(elysian::ParticleEmitter())
+        canAddTo(elysian::ParticleEmitter()) && !isActive()
     )->setMenu(getParticleEmitter()? getParticleEmitter()->createContextMenu() : nullptr);
 
     menuStack.insertCheckableAction("Combat",
-        [&](bool checked=false) {
+        [&](bool checked) {
             if(checked) addCombat();
             else removeCombat();
         },
         getCombat(),
-        canAddTo(elysian::Combat())
+        canAddTo(elysian::Combat()) && !isActive()
     )->setMenu(getCombat()? getCombat()->createContextMenu() : nullptr);
 
     menuStack.pop();

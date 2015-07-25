@@ -263,7 +263,12 @@ void _spAnimationState_setCurrent (spAnimationState* self, int index, spTrackEnt
 spTrackEntry* spAnimationState_setAnimationByName (spAnimationState* self, int trackIndex, const char* animationName,
 		int/*bool*/loop) {
 	spAnimation* animation = spSkeletonData_findAnimation(self->data->skeletonData, animationName);
-	return spAnimationState_setAnimation(self, trackIndex, animation, loop);
+#ifndef ELYSIAN_RUNTIME_CHECKS
+    return spAnimationState_setAnimation(self, trackIndex, animation, loop);
+#else
+    return animation? spAnimationState_setAnimation(self, trackIndex, animation, loop) : NULL;
+
+#endif
 }
 
 spTrackEntry* spAnimationState_setAnimation (spAnimationState* self, int trackIndex, spAnimation* animation, int/*bool*/loop) {

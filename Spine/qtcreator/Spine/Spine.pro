@@ -5,6 +5,9 @@ CONFIG += staticlib
 CONFIG -= app_bundle
 CONFIG -= qt
 
+DEFINES+=ELYSIAN_DEREESTING
+DEFINES+=ELYSIAN_RUNTIME_CHECKS
+
 
 INCLUDEPATH += ../../include \
                 ../../../libGyro/include

@@ -1,6 +1,7 @@
 #include <asset/tk_skeleton.h>
 #include <core/tk_menu_stack.h>
 #include <asset/tk_entity.h>
+#include <spine/AnimationState.h>
 
 void TkSkeleton::onAtlasChanged(void) {
     setAttrib(_attrib);
@@ -37,5 +38,13 @@ QMenu* TkSkeleton::createContextMenu(void) {
     );
 
     return menuStack.first();
+
+}
+
+void TkSkeleton::setAnimByName(const int trackIndex, const char*const animName, const bool loop) const {
+    if(!spAnimationState_setAnimationByName(_animState, trackIndex, animName, loop)) {
+        qWarning() << "Skeleton::setAnimByName() - " << animName << "animation could not be found!";
+
+    }
 
 }
