@@ -49,7 +49,7 @@ QMenu* TkSkeleton::createContextMenu(void) {
 
 void TkSkeleton::setAnimByName(const int trackIndex, const char*const animName, const bool loop) const {
     if(!spAnimationState_setAnimationByName(_animState, trackIndex, animName, loop)) {
-        qWarning() << "Skeleton::setAnimByName() - " << animName << "animation could not be found!";
+        //qWarning() << "Skeleton::setAnimByName() - " << animName << "animation could not be found!";
 
     }
 
