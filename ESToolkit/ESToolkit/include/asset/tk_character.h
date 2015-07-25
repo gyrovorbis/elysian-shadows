@@ -5,12 +5,13 @@
 
 class TkCharacter: public elysian::CharacterBase {
 public:
-    TkCharacter(TkEntity& parent);
-    TkCharacter(void) = default;
+                    TkCharacter(TkEntity& parent);
+                    TkCharacter(void) = default;
 
-    virtual bool validate(QString &msg) const override;
-    virtual bool canAddTo(const Entity &) const override;
-    //virtual ~TkCharacter(void) = default;
+    virtual bool    validate(QString &msg) const override;
+    virtual bool    canAddTo(const Entity &) const override;
+    virtual bool    canRemoveFrom(const Entity&) const override;
+    virtual QMenu*  createContextMenu(void) override;
 
 };
 

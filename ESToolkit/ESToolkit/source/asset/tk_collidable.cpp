@@ -36,5 +36,16 @@ QMenu* TkCollidable::createContextMenu(void) {
         !_entity->isActive()
     );
 
+    menuStack.insertAction("Remove", [&](bool /*checked*/) {
+            _entity->removeCollidable();
+        },
+        canRemoveFrom(*_entity)
+    );
+
+
     return menuStack.first();
+}
+
+bool TkCollidable::canRemoveFrom(const Entity &entity) const {
+    return !entity.getRigidBody() && !entity.getWarp();
 }

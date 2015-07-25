@@ -37,6 +37,12 @@ QMenu* TkSkeleton::createContextMenu(void) {
         !_entity->isActive()
     );
 
+    menuStack.insertAction("Remove", [&](bool /*checked*/) {
+            _entity->removeSkeleton();
+        },
+        canRemoveFrom(*_entity)
+    );
+
     return menuStack.first();
 
 }

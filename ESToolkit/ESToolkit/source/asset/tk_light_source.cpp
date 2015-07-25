@@ -27,6 +27,13 @@ QMenu* TkLightSource::createContextMenu(void) {
         !_entity->isActive()
     );
 
+    menuStack.insertAction("Remove", [&](bool /*checked*/) {
+            _entity->removeLightSource();
+        },
+        canRemoveFrom(*_entity)
+    );
+
+
     return menuStack.first();
 
 }

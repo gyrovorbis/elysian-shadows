@@ -28,6 +28,13 @@ QMenu* TkRigidBody::createContextMenu(void) {
         !_entity->isActive()
     );
 
+    menuStack.insertAction("Remove", [&](bool /*checked*/) {
+            _entity->removeRigidBody();
+        },
+        canRemoveFrom(*_entity)
+    );
+
+
     return menuStack.first();
 
 }
@@ -36,3 +43,6 @@ bool TkRigidBody::canAddTo(const Entity &entity) const {
     return entity.getCollidable();
 }
 
+bool TkRigidBody::canRemoveFrom(const Entity &entity) const {
+    return !entity.getCharacter();
+}

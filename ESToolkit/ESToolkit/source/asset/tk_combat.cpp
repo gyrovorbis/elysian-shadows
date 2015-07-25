@@ -27,6 +27,13 @@ QMenu* TkCombat::createContextMenu(void) {
         !_entity->isActive()
     );
 
+    menuStack.insertAction("Remove", [&](bool /*checked*/) {
+            _entity->removeCombat();
+        },
+        canRemoveFrom(*_entity)
+    );
+
+
     return menuStack.first();
 
 }

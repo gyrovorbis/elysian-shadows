@@ -27,6 +27,13 @@ QMenu* TkParticleEmitter::createContextMenu(void) {
         !_entity->isActive()
     );
 
+    menuStack.insertAction("Remove", [&](bool /*checked*/) {
+            _entity->removeParticleEmitter();
+        },
+        canRemoveFrom(*_entity)
+    );
+
+
     return menuStack.first();
 
 }

@@ -5,14 +5,13 @@
 
 class TkWarp: public elysian::WarpBase {
 public:
-    TkWarp(TkEntity& parent);
-    TkWarp(void) = default;
+            TkWarp(TkEntity& parent);
+            TkWarp(void) = default;
 
-   // ~TkWarp(void) = default;
+    virtual bool    canAddTo(const Entity &entity) const override;
+    virtual QMenu*  createContextMenu(void) override;
 };
 
-
-inline TkWarp::TkWarp(TkEntity &parent): elysian::WarpBase(parent) {}
 
 #endif // TKWARP_H
 
