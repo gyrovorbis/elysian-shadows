@@ -313,7 +313,9 @@ void CharacterBase::addState(const char*const state) {
 }
 
 void CharacterBase::setSpeedMultiplier(const float factor) {
-    _entity->getAnimation()->setSpeedMultiplier(factor);
+    if(_entity->getAnimation()) {
+        _entity->getAnimation()->setSpeedMultiplier(factor);
+    }
 
 }
 
