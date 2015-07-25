@@ -8,8 +8,6 @@
 class TkAnimation: public elysian::AnimationBase {
 Q_OBJECT
 public:
-
-
                     TkAnimation(TkEntity& parent);
                     TkAnimation(void) = default;
                     virtual ~TkAnimation(void) = default;
@@ -21,11 +19,15 @@ public:
 
     //TkComponent virtual
     virtual bool    validate(QString& str) const override;
+    virtual bool    canAddTo(const Entity& entity) const override;
 
 
 Q_SIGNALS:
     void            entityParented(Entity*const child, Entity*const parent);
 };
+
+
+
 
 
 

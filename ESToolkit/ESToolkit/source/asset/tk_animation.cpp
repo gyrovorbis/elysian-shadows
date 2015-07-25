@@ -1,7 +1,7 @@
 #include "tk_animation.h"
 #include <asset/tk_entity.h>
 
-
+bool TkAnimation::canAddTo(const Entity &entity) const { return entity.getRenderable(); }
 
 TkAnimation::TkAnimation(TkEntity& parent): elysian::AnimationBase(parent) {
     connect(this, SIGNAL(entityParented(Entity*const,Entity*const)), &parent, SLOT(onEntityParented(Entity*const,Entity*const)));

@@ -10,6 +10,7 @@ public:
 
     virtual bool    validate(QString &string) const override;
     virtual QMenu*  createContextMenu(void) override;
+    virtual bool    canAddTo(const Entity &entity) const override;
 
 };
 

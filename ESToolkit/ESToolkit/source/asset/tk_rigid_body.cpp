@@ -3,7 +3,6 @@
 #include <asset/tk_entity.h>
 
 bool TkRigidBody::validate(QString &str) const {
-    return true;
     bool success = true;
     auto cAssert = [&](const bool val, const char* msg) {
         if(!val) {
@@ -31,5 +30,9 @@ QMenu* TkRigidBody::createContextMenu(void) {
 
     return menuStack.first();
 
+}
+
+bool TkRigidBody::canAddTo(const Entity &entity) const {
+    return entity.getCollidable();
 }
 

@@ -9,6 +9,7 @@ public:
     TkCharacter(void) = default;
 
     virtual bool validate(QString &msg) const override;
+    virtual bool canAddTo(const Entity &) const override;
     //virtual ~TkCharacter(void) = default;
 
 };

@@ -10,12 +10,16 @@ bool TkCollidable::validate(QString &str) const {
             success = false;
             str += msg;
             str += "\n";
+            return false;
         }
+        return true;
     };
 
-    cAssert(_attrib, "DBG_ERROR: Collidable component has no attrib field.");
-    cAssert(_attrib->getColliderType() == GY_COLLIDER_AABB || _attrib->getColliderType() == GY_COLLIDER_OBB,
+    if(cAssert(_attrib, "DBG_ERROR: Collidable component has no attrib field.")) {
+        cAssert(_attrib->getColliderType() == GY_COLLIDER_AABB || _attrib->getColliderType() == GY_COLLIDER_OBB,
             "DBG_ERROR: Collidable component has invalid collider type!");
+
+    }
 
     return success;
 

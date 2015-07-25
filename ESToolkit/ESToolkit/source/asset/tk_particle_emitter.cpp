@@ -3,7 +3,6 @@
 #include <asset/tk_entity.h>
 
 bool TkParticleEmitter::validate(QString& str) const {
-    return true;
     bool success = true;
     auto cAssert = [&](const bool val, const char* msg) {
         if(!val) {
@@ -13,7 +12,7 @@ bool TkParticleEmitter::validate(QString& str) const {
         }
     };
 
-    cAssert(_attrib, "DBG_ERROR: LightSource component has no attrib field.");
+    cAssert(_attrib, "DBG_ERROR: ParticleEmitter component has no attrib field.");
     return success;
 }
 

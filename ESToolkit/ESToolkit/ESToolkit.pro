@@ -191,6 +191,7 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../AssetIO/source/component/elysian_lua_behavior_base.cpp
 
 
+
 !ios {
 
     SOURCES += source/asset/tk_animation.cpp \
@@ -208,7 +209,6 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
         source/asset/tk_particle_emitter.cpp \
         source/asset/tk_project.cpp \
         source/asset/tk_renderable.cpp \
-        source/asset/tk_rigidbody.cpp \
         source/core/main.cpp \
         source/core/tk_debug.cpp \
         source/core/tk_file_utilities.cpp \
@@ -260,7 +260,9 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
         source/estk/tk_timer_system.cpp \
         source/core/tk_gitlab_manager.cpp \
         source/dialog/tk_gitlab_dialog.cpp \
-        source/asset/tk_skeleton.cpp
+        source/asset/tk_skeleton.cpp \
+        source/asset/tk_rigid_body.cpp \
+        source/asset/tk_character.cpp
 
 } else {
         SOURCES += ../../ESGamma/source/system/main.cpp

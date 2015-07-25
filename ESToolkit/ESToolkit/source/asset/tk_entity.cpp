@@ -204,7 +204,6 @@ bool TkEntity::validate(QString& detailedText) const {
 
     if(getRenderable())         success &= getRenderable()->validate(detailedText);
     if(getCollidable())         success &= getCollidable()->validate(detailedText);
-    if(getAnimation())          success &= getAnimation()->validate(detailedText);
     if(getRigidBody())          success &= getRigidBody()->validate(detailedText);
     if(getWarp())               success &= getWarp()->validate(detailedText);
     if(getExaminable())         success &= getExaminable()->validate(detailedText);
@@ -214,18 +213,6 @@ bool TkEntity::validate(QString& detailedText) const {
     if(getParticleEmitter())    success &= getParticleEmitter()->validate(detailedText);
     if(getCombat())             success &= getCombat()->validate(detailedText);
     if(getSkeleton())           success &= getSkeleton()->validate(detailedText);
-
-
-    if(getAnimation() && getAnimation()->_children && getAnimation()->_children->size()) {
-        detailedText += "\n\n";
-        for(auto it = getAnimation()->_children->begin();
-            it != getAnimation()->_children->end();
-            ++it)
-        {
-            success &= (*it).entity->validate(detailedText);
-
-        }
-    }
 
     if(!success) {
         if(!recursive) {
@@ -290,6 +277,7 @@ QMenu* TkEntity::createContextMenu(void) {
         canAddTo(elysian::Collidable())
     )->setMenu(getCollidable()? getCollidable()->createContextMenu() : nullptr);
 
+#if 0
     menuStack.insertCheckableAction("Animation",
         [&](bool checked) {
             if(checked) addAnimation();
@@ -298,6 +286,7 @@ QMenu* TkEntity::createContextMenu(void) {
         getAnimation(),
         canAddTo(elysian::Animation())
     )->setMenu(getAnimation()? getAnimation()->createContextMenu() : nullptr);
+#endif
 
     menuStack.insertCheckableAction("Skeleton",
         [&](bool checked=false) {
