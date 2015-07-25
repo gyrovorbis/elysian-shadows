@@ -90,7 +90,7 @@ void PartySystem::processInput(const GameInput &input) {
 	}*/
 
     auto endDash = [&](void) {
-        getPartyLeader()->getAnimation()->setSpeedMultiplier(1.0f);
+        getPartyLeader()->getCharacter()->setSpeedMultiplier(1.0f);
         getAudioSys()->setSfxChannelPitch(0, 1.0f);
         getPartyLeader()->getCharacter()->setDashing(false);
         _tapTimer = 0.0f;
