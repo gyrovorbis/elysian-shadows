@@ -370,7 +370,7 @@ QMenu* TkEntity::createContextMenu(void) {
     )->setMenu(getCombat()? getCombat()->createContextMenu() : nullptr);
 
     menuStack.pop();
-#if 0
+
     menuStack.push("Behaviors");
 
     unsigned behavNum = 0;
@@ -388,15 +388,15 @@ QMenu* TkEntity::createContextMenu(void) {
             true
         );
     }
-
+#if 0
     menuStack.insertAction("New Behavior",
-                           [&](const bool checked) {
+                            [&](const bool checked) {
         LuaBehavior* behav = new LuaBehavior(*this);
         attachBehavior(behav);
     });
-
-    menuStack.pop();
 #endif
+    menuStack.pop();
+
 
     return menuStack.first();
 }
