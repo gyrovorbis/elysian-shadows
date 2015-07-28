@@ -56,9 +56,12 @@ bool FileUtilities::copyDir(const QString &srcFilePath,
 }
 
 QString FileUtilities::getAssetRelativePath(const QString path) {
+    QString linuxPath = path;
+    linuxPath.replace("\\", "/");
+
     bool found = false;
     QString result;
-    QStringList list = path.split("/");
+    QStringList list = linuxPath.split("/");
 
     for(int i = 0; i < list.size(); ++i) {
         if(list[i] == "assets") {

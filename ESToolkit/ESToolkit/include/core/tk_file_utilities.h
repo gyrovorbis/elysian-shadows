@@ -6,9 +6,9 @@
 class FileUtilities {
 public:
 
-    static QString getAssetRelativePath(const QString path);
-    static bool removeDir(const QString dirName);
-    static bool copyDir(const QString &srcFilePath, const QString &tgtFilePath);
+    static QString  getAssetRelativePath(const QString path);
+    static bool     removeDir(const QString dirName);
+    static bool     copyDir(const QString &srcFilePath, const QString &tgtFilePath);
 
 };
 

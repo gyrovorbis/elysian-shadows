@@ -175,6 +175,11 @@
  *
  * Flags the entity for being saved and loaded as part of the current area or not.
  */
+/*!
+ * \qmlmethod bool Entity::isActive()
+ *
+ * Returns whether the current entity is active within an area or not
+ */
 
 
 /*!
@@ -605,4 +610,5 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
                                 isPersistent,
                                 getDispName,
                                 getLuaBehaviorByIndex,
-                                getLuaBehaviorCount)
+                                getLuaBehaviorCount,
+                                isActive)

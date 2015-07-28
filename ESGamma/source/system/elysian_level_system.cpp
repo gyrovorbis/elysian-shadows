@@ -89,7 +89,7 @@ bool LevelSystem::switchLevel(const char *const dir) {
         _level.erase(_level.begin());
     }
 #ifndef ELYSIAN_ENGINE
-    Q_ASSERT(false); //YOU SHOULD ALWAYS HAVE CREATED THE AREA BEFORE SWITCH IN ESTK!!!!!!1111
+ //   Q_ASSERT(false); //YOU SHOULD ALWAYS HAVE CREATED THE AREA BEFORE SWITCH IN ESTK!!!!!!1111
 #endif
     lev = new Level;
     _curLevel = lev;

@@ -10,12 +10,15 @@ namespace elysian {
 class EventMonitor {
 private:
 	static EventMonitor		_nullMonitor;
+
 public:
 	static bool				isNull(const EventMonitor*const mon);
 	static EventMonitor*	null(void);
 	virtual void			onStart(void);
 	virtual void			onFinish(void);
 	virtual					~EventMonitor(void) = default;
+    void                    setEnabled(const bool val);
+
 };
 
 class EventCallback: public EventMonitor {
@@ -57,6 +60,8 @@ public:
 
 
 // =========== INLINEZ ===========
+
+//inline void LuaEventMonitor::setEnabled(const bool val) { _enabled = val; }
 
 inline void LuaEventMonitor::setTable(OOLUA::Lua_table_ref& table) { _table = table; }
 inline OOLUA::Lua_table_ref& LuaEventMonitor::getTable(void) { return _table; }

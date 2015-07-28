@@ -370,7 +370,7 @@ QMenu* TkEntity::createContextMenu(void) {
     )->setMenu(getCombat()? getCombat()->createContextMenu() : nullptr);
 
     menuStack.pop();
-
+#if 0
     menuStack.push("Behaviors");
 
     unsigned behavNum = 0;
@@ -396,6 +396,7 @@ QMenu* TkEntity::createContextMenu(void) {
     });
 
     menuStack.pop();
+#endif
 
     return menuStack.first();
 }
