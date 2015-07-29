@@ -50,7 +50,11 @@ void glalVidBindDefaultFbo(void) {
     //clear the screen
     //glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     //glClear(GL_COLOR_BUFFER_BIT);
-     glalVidOglInit(rect.size.width, rect.size.height, rect.size.width, rect.size.height);
+    //if([[UIDevice currentDevice] orientation] == ) {
+        glalVidOglInit(rect.size.width, rect.size.height, rect.size.width, rect.size.height);
+    //} else if([[UIDevice currentDevice] orientation] == ) {
+
+    //}
     if(gyAppDrawCb) gyAppDrawCb();
     
 
