@@ -57,7 +57,20 @@ void GameInput::translate(const GYInput& platInput, GameInput& gameInput) {
 
        gameInput.keyTapped[i] = platInput.keyTapped[i];
        if(gameInput.keyTapped[i]) getBehavSys()->onButtonPress((GameInput::BUTTON)i);
+
 	}
+
+    if(gameInput.getDown(BUT_DPAD_U)) {
+        gameInput._analogDir[0].y = -1.0f;
+    } else if(gameInput.getDown(BUT_DPAD_D)) {
+        gameInput._analogDir[0].y = 1.0f;
+    } else gameInput._analogDir[0].y = 0.0f;
+
+    if(gameInput.getDown(BUT_DPAD_L)) {
+        gameInput._analogDir[0].x = -1.0f;
+    } else if(gameInput.getDown(BUT_DPAD_R)) {
+        gameInput._analogDir[0].x = 1.0f;
+    } else gameInput._analogDir[0].x = 0.0f;
 
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_DC
@@ -155,6 +168,15 @@ void GameInput::translate(const GYInput& platInput, GameInput& gameInput) {
 
     if(platInput.right) gameInput.setDown(GameInput::BUT_DPAD_R);
     else gameInput.setUp(GameInput::BUT_DPAD_R);
+
+    if(platInput.shake) gameInput.setDown(GameInput::BUT_I);
+    else gameInput.setUp(GameInput::BUT_I);
+
+    gameInput._pinch = platInput.pinch;
+
+    gameInput.acceleration = platInput.accelerometer;
+
+    gameInput._analogDir[0] = platInput.cursorDir;
 
 
 #else

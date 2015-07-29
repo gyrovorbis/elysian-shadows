@@ -64,12 +64,8 @@ void PartySystem::processInput(const GameInput &input) {
 	Entity*entity = getPartyLeader();
 	if(!entity) return;
 
-	const static GYVector2 rightMove = { 1.0f, 0.0f };
-	const static GYVector2 leftMove = { -1.0f, 0.0f };
-	const static GYVector2 upMove = { 0.0f, -1.0f };
-	const static GYVector2 downMove = { 0.0f, 1.0f };
-	bool moved = false;
-	GYVector2 moveDist = { 0.0f, 0.0f };
+    GYVector2 moveDist = input.getAnalogDir(0);
+    bool moved = false;
 
 	//if(_playableParty.size() < 1) return;
 	
@@ -190,24 +186,24 @@ void PartySystem::processInput(const GameInput &input) {
 
 	if(input.getDown(GameInput::BUT_DPAD_U)){
 		if(input.getTapped(GameInput::BUT_DPAD_U)) updateDash(GameInput::BUT_DPAD_U);
-		gyVec2AddAccum(&moveDist, &upMove);
+//		gyVec2AddAccum(&moveDist, &upMove);
 		moved = true;
 	}
 	if(input.getDown(GameInput::BUT_DPAD_D)){
 		if(input.getTapped(GameInput::BUT_DPAD_D))  updateDash(GameInput::BUT_DPAD_D);
-		gyVec2AddAccum(&moveDist, &downMove);
+        //gyVec2AddAccum(&moveDist, &downMove);
 		moved = true;
 	}
 	
 	if(input.getDown(GameInput::BUT_DPAD_L)){
 		if(input.getTapped(GameInput::BUT_DPAD_L))  updateDash(GameInput::BUT_DPAD_L);
-		gyVec2AddAccum(&moveDist, &leftMove);
+        //gyVec2AddAccum(&moveDist, &leftMove);
 		moved = true;
 	}
 	
 	if(input.getDown(GameInput::BUT_DPAD_R)){
 		if(input.getTapped(GameInput::BUT_DPAD_R)) updateDash(GameInput::BUT_DPAD_R);
-		gyVec2AddAccum(&moveDist, &rightMove);
+        //gyVec2AddAccum(&moveDist, &rightMove);
 		moved = true;
 	}
 

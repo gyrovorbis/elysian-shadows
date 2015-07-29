@@ -560,7 +560,7 @@ void gyVidLightSourceBeginShadowPasses(void) {
     _firstShadowPass = 1;
 
 #if GYRO_PLATFORM == GYRO_PLATFORM_iOS
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &iosFramebuffer);
+ //   glGetIntegerv(GL_FRAMEBUFFER_BINDING, &iosFramebuffer);
 #endif
 
 }

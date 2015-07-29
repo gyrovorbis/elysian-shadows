@@ -16,7 +16,7 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
     
-    GLKViewController * ctrl = [[GYViewController alloc] init];
+    GYViewController * ctrl = [[GYViewController alloc] init];
     [ctrl setPreferredFramesPerSecond:60];
     
     //these are the only three lines you
@@ -35,7 +35,9 @@
     
     
     ctrl.view = view;
-    
+    //[ctrl.view addSubView: view];
+    [ctrl initTracking];
+
     self.window.rootViewController = ctrl;
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];

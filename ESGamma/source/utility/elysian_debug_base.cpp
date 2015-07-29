@@ -304,6 +304,8 @@ void DebugBase::processInput(GameInput& input) {
 
     }
 
+    if(input.getPinch() != 1.0f) _engine->_cameraSystem->setStaticScale(input.getPinch());
+
 	//EVERYTHING BEYOND THIS POINT IS IN FALCO'S DEBUG KEYSPACE!!!!
 	if(!input.getDown(GameInput::BUT_LALT)) return;
 
@@ -335,7 +337,6 @@ void DebugBase::processInput(GameInput& input) {
     if(input.getDown(GameInput::BUT_D) && !freeCam) {
         _engine->_cameraSystem->rotateX(0.1f*getTimerSys()->getDeltaTime());
 	}
-
 
 	if(input.getTapped(GameInput::BUT_Z)) { //Reset Transform
 		_engine->_cameraSystem->setStaticScale(1.0f);

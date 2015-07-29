@@ -605,6 +605,9 @@
    <property name="toolTip">
     <string>Play current level</string>
    </property>
+   <property name="shortcut">
+    <string>Return</string>
+   </property>
   </action>
   <action name="actionNix">
    <property name="checkable">

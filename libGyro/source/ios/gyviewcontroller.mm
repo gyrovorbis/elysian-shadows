@@ -8,7 +8,7 @@ using namespace std;
 extern GYAppUpdateCb   gyAppUpdateCb;
 
 static GYInput _input = {
-    0, 0, 0, 0
+    0, 0, 0, 0, 0, 1.0f, 1.0f, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f }
 };
 
 static GYMouse _mouse;
@@ -29,16 +29,19 @@ int gyInputInit(const GYInputInitParams * const params) {
 
 // ==== VIEW CONTROLLER OBJ-C IMPLEMENTATION =====
 
+@interface GYViewController ()
+- (void)handlePinchGesture:(UIPinchGestureRecognizer *)recognizer;
+
+@end
+
+
 @implementation GYViewController
 
 
 
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    // Set animation frame rate
-    self.preferredFramesPerSecond = 60;
+- (void)initTracking {
+ //   [super viewDidLoad];
 
 
     motionManager = [[CMMotionManager alloc] init];
@@ -57,45 +60,79 @@ int gyInputInit(const GYInputInitParams * const params) {
 
          [motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue currentQueue]
                                                withHandler:^(CMAccelerometerData  *accelerometerData, NSError *error) {
-          [self outputAccelertionData:accelerometerData.acceleration];
-                                                   if(error){
+          [self accelerometerHandler:accelerometerData.acceleration];
+            if(error){
 
-                                                       NSLog(@"%@", error);
-                                             }
+             NSLog(@"%@", error);
+            }
           }];
     }
 
+
+
+    pinchGesture = [[UIPinchGestureRecognizer alloc]
+                          initWithTarget:self
+                          action:@selector(handlePinchGesture:)];
+  //  [twoFingerPinch setDelegate:self];
+     [self.view addGestureRecognizer:pinchGesture];
+
 }
 
--(void)outputAccelertionData:(CMAcceleration)acceleration
+-(void)accelerometerHandler:(CMAcceleration)acceleration
 {
-     cout<<"X = "<<acceleration.x<<endl;
-      cout<<"Y = "<<acceleration.y<<endl;
-      cout<<"Z = "<<acceleration.z<<endl;
+
+    _input.accelerometer.x = acceleration.x;
+    _input.accelerometer.y = acceleration.y;
+    _input.accelerometer.z = acceleration.z;
+
 }
 
 - (void)update {
     if(gyAppUpdateCb) gyAppUpdateCb();
-    memset(&_input, 0, sizeof(GYInput));
+    //_input.down = 0;
+   // _input.up = 0;
+   // _input.left = 0;
+   // _input.right = 0;
+    _input.shake = 0;
 }
 
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     if(interfaceOrientation == UIInterfaceOrientationLandscapeRight) {
-            return YES;
+        return YES;
+    } else if(interfaceOrientation == UIInterfaceOrientationPortrait) {
+
+        return YES;
     }
     return NO;
 }
 
+- (IBAction)handlePinchGesture:(UIPinchGestureRecognizer *)recognizer {
+
+    _input.pinch = recognizer.scale;
+    _gyLog(GY_DEBUG_VERBOSE, "recognizer.scale = %f", recognizer.scale);
+
+}
+
+
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
-    if(self.interfaceOrientation == UIInterfaceOrientationLandscapeRight) {
-        [self.view setFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
-    }
+//    if(self.interfaceOrientation == UIInterfaceOrientationLandscapeRight) {
+     //   [self.view setFrame:CGRectMake(0, 0, self.view.frame.size.height, self.view.frame.size.width)];
+  //  }
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    _input.up = _input.left = _input.right = _input.down = 0;
+    const GYVector2 midPoint = { 0.5f*(float)self.view.frame.size.width, 0.5f*(float)self.view.frame.size.height };
+
+
     for (UITouch *aTouch in touches) {
         CGPoint pt = [aTouch locationInView:self.view];
+        _input.cursorPos = { (float)pt.x, (float)pt.y };
+
+        gyVec2Sub(&_input.cursorDir, &_input.cursorPos, &midPoint);
+        _input.cursorMag = gyVec2MagAndNormalize(&_input.cursorDir);
+
 
         if(pt.x < 0.5f*self.view.frame.size.width) {
             _input.left = 1;
@@ -114,8 +151,17 @@ int gyInputInit(const GYInputInitParams * const params) {
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+    _input.up = _input.left = _input.right = _input.down = 0;
+     const GYVector2 midPoint = { 0.5f*(float)self.view.frame.size.width, 0.5f*(float)self.view.frame.size.height };
+
     for (UITouch *aTouch in touches) {
         CGPoint pt = [aTouch locationInView:self.view];
+
+        _input.cursorPos = { (float)pt.x, (float)pt.y };
+
+        gyVec2Sub(&_input.cursorDir, &_input.cursorPos, &midPoint);
+        _input.cursorMag = gyVec2MagAndNormalize(&_input.cursorDir);
+
 
         if(pt.x < 0.5f*self.view.frame.size.width) {
             _input.left = 1;
@@ -133,28 +179,40 @@ int gyInputInit(const GYInputInitParams * const params) {
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+        _input.up = _input.left = _input.right = _input.down = 0;
+        _input.cursorDir = GYVector2 { 0.0f, 0.0f };
+#if 0
     for (UITouch *aTouch in touches) {
         CGPoint pt = [aTouch locationInView:self.view];
 
         if(pt.x < 0.5f*self.view.frame.size.width) {
-            _input.left = 1;
+            _input.left = 0;
         } else if(pt.x > 0.5f*self.view.frame.size.width) {
-            _input.right = 1;
+            _input.right = 0;
             //_gyLog(GY_DEBUG_VERBOSE, "%d", pt.x);
             cout << "TESTING    " << pt.x << endl;
         }
 
         if(pt.y < 0.5f*self.view.frame.size.height) {
-            _input.up = 1;
+            _input.up = 0;
         } else if(pt.y > 0.5f*self.view.frame.size.height){
-            _input.down = 1;
+            _input.down = 0;
         }
     }
-
+#endif
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
 
 }
+
+
+- (void)motionBegan:(UIEventSubtype)motion withEvent:(UIEvent*)event {
+    if(event.type == UIEventSubtypeMotionShake) {
+        _input.shake = 1;
+    }
+}
+
+
 
 @end

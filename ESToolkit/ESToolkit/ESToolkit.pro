@@ -188,8 +188,7 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../ESGamma/source/proxy/elysian_party_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_rigid_body_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_timer_system_proxy.cpp \
-    ../../AssetIO/source/component/elysian_lua_behavior_base.cpp \
-    source/asset/tk_warp.cpp
+    ../../AssetIO/source/component/elysian_lua_behavior_base.cpp
 
 
 
@@ -263,7 +262,8 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
         source/dialog/tk_gitlab_dialog.cpp \
         source/asset/tk_skeleton.cpp \
         source/asset/tk_rigid_body.cpp \
-        source/asset/tk_character.cpp
+        source/asset/tk_character.cpp \
+        source/asset/tk_warp.cpp
 
 } else {
         SOURCES += ../../ESGamma/source/system/main.cpp
@@ -590,6 +590,9 @@ ios {
     }
     iphonesimulator {
         DESTDIR = ../../executable/ios_sim
+        deployment.files = ../../assets
+        deployment.path =
+        QMAKE_BUNDLE_DATA += deployment
     }
 }
 

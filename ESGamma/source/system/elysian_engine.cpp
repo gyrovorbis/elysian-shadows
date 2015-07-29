@@ -226,12 +226,7 @@ void Engine::render(void) {
             //gyVidProjectionDefaultMatrix(); */
             _guiSystem->renderBackground();
             _cameraSystem->pushViewProjMatrix();
-#if GYRO_PLATFORM != GYRO_PLATFORM_iOSasdfasdf
-            _lightSystem->setShadowPassEnabled(false);
             _lightSystem->shadowRenderPasses();
-#else
-            _lightSystem->removeLightSourcesFromScene();
-#endif
             //_lightSystem->addLightSourcesToScene();
 
             _mapSystem->render();
@@ -242,9 +237,7 @@ void Engine::render(void) {
              _particleSystem->render();
           //  func();
 
-#if GYRO_PLATFORM != GYRO_PLATFORM_iOSsdfgsdfg
              _lightSystem->removeLightSourcesFromScene();
-#endif
 
              _guiSystem->render();
 

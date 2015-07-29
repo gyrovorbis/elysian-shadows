@@ -6,19 +6,23 @@
 
 @interface GYViewController : GLKViewController {
 
-CMMotionManager *motionManager;
-NSOperationQueue *queue;
+    CMMotionManager *motionManager;
+    UIPinchGestureRecognizer* pinchGesture;
+    NSOperationQueue *queue;
 
 };
 
 
 - (void)update;
-- (void)viewDidLoad;
+- (void)initTracking;
 - (BOOL)shouldAutorotateToInterfaceOrientation: (UIInterfaceOrientation) interfaceOrientation;
+- (void)didRotateFromInterfaceorientation: (UIInterfaceOrientation)fromInterfaceOrientation;
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event;
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event;
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event;
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event;
+- (void)motionBegan:(UIEventSubtype)motion withEvent:(UIEvent*)event;
+
 
 @end
 
