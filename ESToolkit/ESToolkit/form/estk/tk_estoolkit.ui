@@ -606,7 +606,7 @@
     <string>Play current level</string>
    </property>
    <property name="shortcut">
-    <string>Return</string>
+    <string>F5</string>
    </property>
   </action>
   <action name="actionNix">

@@ -215,7 +215,7 @@ namespace elysian {
     inline MenuEntity::MenuEntity(void) { setPlaneType(GY_RECT_PLANE_BOTTOM); }
 	inline void MenuEntity::addChildWidget(MenuWidget*const widget) { _childWidgets.claimFreeEntry() = widget; }
 	inline void MenuEntity::setSizeType(const SIZE_TYPE type) { _sizeType = type; }
-	inline void MenuEntity::removeChildWidget(MenuWidget*const widget) { _childWidgets.removeEntry(widget); }
+    inline void MenuEntity::removeChildWidget(MenuWidget*const widget) { _childWidgets.removeEntry(widget); }
 
     inline void GuiSystem::setExamineEntity(const Entity * const entity) { _examineEntity = entity; }
     inline const Entity* GuiSystem::getExamineEntity(void) const { return _examineEntity; }

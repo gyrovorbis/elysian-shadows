@@ -83,7 +83,7 @@ void MenuText::recursiveRender(const float fadeAlpha) {
 
 MenuEntity::~MenuEntity(void) {
     //recursively delete children
-    for(auto it = _childWidgets.begin(); it < _childWidgets.end(); ++it) delete *it;
+//    for(auto it = _childWidgets.begin(); it < _childWidgets.end(); ++it) delete *it;
 }
 
 void MenuEntity::recursiveRender(const float fadeAlpha) {

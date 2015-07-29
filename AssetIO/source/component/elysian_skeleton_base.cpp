@@ -20,9 +20,9 @@ SkeletonBase::SkeletonBase(const SkeletonBase &other) {
 }
 
 SkeletonAttribBase::~SkeletonAttribBase(void) {
-    spAnimationStateData_dispose(_animStateData);
-    spSkeletonData_dispose(_skeletonData);
-    spAtlas_dispose(_atlas);
+    if(_animStateData) spAnimationStateData_dispose(_animStateData);
+    if(_skeletonData) spSkeletonData_dispose(_skeletonData);
+    if(_atlas) spAtlas_dispose(_atlas);
 }
 
 SkeletonBase& SkeletonBase::operator= (const SkeletonBase& other) {

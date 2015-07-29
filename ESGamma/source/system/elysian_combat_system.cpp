@@ -216,7 +216,7 @@ void CombatSystem::update(void) {
     }
 
     //Check whether we should add or remove leader (PARTY EVENTUALLY)
-    if(leader && leader->getCombat()->isInCombat() && _combatants.size() == 1) {
+    if(leader && leader->getCombat() && leader->getCombat()->isInCombat() && _combatants.size() == 1) {
         removeCombatant(*leader);
     } else if(_combatants.size() > 0 && !leader->getCombat()->isInCombat()) {
         addCombatant(*leader);
