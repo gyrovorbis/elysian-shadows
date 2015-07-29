@@ -169,7 +169,10 @@ void GameInput::translate(const GYInput& platInput, GameInput& gameInput) {
     if(platInput.right) gameInput.setDown(GameInput::BUT_DPAD_R);
     else gameInput.setUp(GameInput::BUT_DPAD_R);
 
-    if(platInput.shake) gameInput.setDown(GameInput::BUT_I);
+    //if(platInput.shake) gameInput.setDown(GameInput::BUT_I);
+    //else gameInput.setUp(GameInput::BUT_I);
+
+    if(platInput.accelerometer.y >= 0.5f)  gameInput.setDown(GameInput::BUT_I);
     else gameInput.setUp(GameInput::BUT_I);
 
     gameInput._pinch = platInput.pinch;
