@@ -173,7 +173,6 @@ ESToolkit::ESToolkit(QWidget *parent):
     // create/initialize SHEET dock and widget
     _sheetDockWidget        = new SheetDockWidget;
     _sheetDockWidget->getUi()->sheetTabWidget->addTab(Debug::getCentralWidget(), "Console");
-    Debug::getCentralWidget()->addAction(_ui->actionCopy);
     addDockWidget(Qt::BottomDockWidgetArea, _sheetDockWidget);
 
     // create/initialize SELECTION dock and widget
@@ -1579,7 +1578,9 @@ void ESToolkit::on_actionCut_triggered()
 
 void ESToolkit::on_actionCopy_triggered()
 {
-   _ui->mapView->selectionCopy();
+    if(_ui->mapView->hasFocus()) {
+        _ui->mapView->selectionCopy();
+    }
 }
 
 void ESToolkit::on_actionPaste_triggered()

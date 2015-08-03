@@ -25,8 +25,11 @@ class QMenu;
 typedef elysian::DbgEvent DbgEvent;
 
 class DebugLogTreeWidget: public QTreeWidget {
-    virtual void keyPressEvent(QKeyEvent *event) override;
-    virtual bool eventFilter(QObject *object, QEvent* event) override;
+public:
+    explicit        DebugLogTreeWidget(QWidget*parent = nullptr);
+protected:
+  //  virtual void    keyPressEvent(QKeyEvent *event) override;
+    virtual bool    eventFilter(QObject *object, QEvent* event) override;
 };
 
 class TkDebug: public QObject, public elysian::DebugBase {
@@ -74,6 +77,8 @@ public:
 
     static QString getDebugLogPath(void);
     static QMenu*  getFilterMenu(void);
+
+    void copyEvent(void);
 
 private:
     struct LogEntry {
