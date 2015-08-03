@@ -228,6 +228,14 @@ void CameraSystem::getVisibleTileRegion(int& startX, int& startY, int& endX, int
     //assert(startY >= 0);
     if(++endX >= _curArea->width) endX = _curArea->width-1;
     if(++endY >= _curArea->height) endY = _curArea->height-1;
+
+    if(endX < startX) {
+        std::swap(startX, endX);
+    }
+
+    if(endY < startY) {
+        std::swap(startY, endY);
+    }
 }
 
 void CameraSystem::popViewProjMatrix(void) {
