@@ -57,6 +57,7 @@ public:
 
     static void push(void);
     static void pop(const unsigned count=1);
+    static void resetStackDepth(void);
 
     static TkDebug& getInstance(void) {
         if(!_window) _window = new TkDebug;

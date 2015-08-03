@@ -227,6 +227,18 @@ void TkDebug::pop(const unsigned count) {
 #endif
 }
 
+void TkDebug::resetStackDepth(void) {
+    _mutex->lock();
+
+    pop(Debug::getStackDepth());
+    _ignoredPushes.clear();
+    _pendingQueue->clear();
+    _curParent = _prevItem = _treeWidget->invisibleRootItem();
+
+    _mutex->unlock();
+
+}
+
 void TkDebug::Log(SEVERITY flag, QString msg, int src) {
     _postToQueue((TK_SOURCE)src, flag, msg);
 }
@@ -271,7 +283,7 @@ void TkDebug::onCommandSubmit(void) {
     parent->setExpanded(true);
     _prompt->clear();
     _resizePrompt();
-   // _treeWidget->scrollToBottom();
+   // _treeWidget->om();
     Debug::pop(Debug::getStackDepth()-depth);
 }
 
@@ -339,7 +351,7 @@ void TkDebug::_resizePrompt(void) {
     QFontMetrics m(_prompt->font());
     int RowHeight = m.lineSpacing();
     _prompt->setFixedHeight(nRows*RowHeight+4);
-    _treeWidget->scrollToBottom();
+    //_treeWidget->scrollToBottom();
 }
 
 void TkDebug::_postToQueue(const TK_SOURCE src, const SEVERITY level, const QString text) {
@@ -378,7 +390,9 @@ void TkDebug::_servicePendingQueue(void) {
             break;
         case LogEntry::POP:
             _curParent = _curParent->parent();
-            if(!_curParent) _curParent = _treeWidget->invisibleRootItem();
+            if(!_curParent) {
+                _prevItem = _curParent = _treeWidget->invisibleRootItem();
+            }
             break;
         }
     }
@@ -386,7 +400,7 @@ void TkDebug::_servicePendingQueue(void) {
     _mutex->unlock();
 
     //Update GUI and widgets and shit
-    if(!wasEmpty) {
+    if(!wasEmpty && !_treeWidget->hasFocus() && !_prompt->hasFocus()) {
         _treeWidget->scrollToBottom();
     }
 
