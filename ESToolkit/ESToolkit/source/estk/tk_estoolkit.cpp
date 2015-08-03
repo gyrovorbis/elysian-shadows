@@ -173,6 +173,7 @@ ESToolkit::ESToolkit(QWidget *parent):
     // create/initialize SHEET dock and widget
     _sheetDockWidget        = new SheetDockWidget;
     _sheetDockWidget->getUi()->sheetTabWidget->addTab(Debug::getCentralWidget(), "Console");
+    Debug::getCentralWidget()->addAction(_ui->actionCopy);
     addDockWidget(Qt::BottomDockWidgetArea, _sheetDockWidget);
 
     // create/initialize SELECTION dock and widget
@@ -2183,6 +2184,7 @@ bool ESToolkit::verifySingleArea(const QString verifyPath) {
     _assets.setCurrentArea(areaPath.split("/").last());
 
     QApplication::quit();
+    return true;
 }
 
 
