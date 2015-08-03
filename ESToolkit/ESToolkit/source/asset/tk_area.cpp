@@ -258,10 +258,11 @@ bool Area::save(void) {
     return success;
 }
 
-bool Area::saveAs(const QString dir) {
-    DbgEvent event("Saving Area [%s].", Q_CSTR(dir));
+bool Area::saveAs(const QString path) {
+    DbgEvent event("Saving Area [%s].", Q_CSTR(path));
     bool success = true;
-    bool newLoc = (_location != dir)? true : false;
+    bool newLoc = (_location != path)? true : false;
+    QString dir = FileUtilities::getAbsoluteAssetPath(path);
     QDir qdir;
 
     //Check Save As and directory already exists

@@ -6,7 +6,7 @@
 #include <tk_project.h>
 #include <asset/tk_level.h>
 #include "elysian_debug.hpp"
-#include <tk_file_utilities.h>
+#include <core/tk_file_utilities.h>
 #include "elysian_engine.hpp"
 #include "elysian_level_system.hpp"
 #include <crtp/elysian_entity.hpp>
@@ -79,11 +79,13 @@ Level *Project::loadLevel(const QString path) {
     QString directory(path);
     Level::_curProj = this;
 
-    Level *lev = getLevelSys()->loadLevel(Q_CSTR(directory));
+    //Load and cache from asset-relative path, not from absolute path
+    Level *lev = getLevelSys()->loadLevel(Q_CSTR(FileUtilities::getAssetRelativePath(directory)));
+//      Level *lev = getLevelSys()->loadLevel(Q_CSTR(directory));
 
     //connectSlots(lev);
     if(lev) {
-        lev->load(path);
+      //  lev->load(path);
        // connectSlots(lev);
 		_level.push_back(lev);
         _curNodeParent->addChild(lev);
@@ -142,7 +144,7 @@ bool Project::removeLevel(const QString path, const bool deleteFolder) {
             if(deleteFolder && !FileUtilities::removeDir(temp->getNodePath())) {
                 Debug::Logf(Debug::DBG_ERROR, "Could not delete directory '%s'", Q_CSTR(temp->getNodePath()));
                 success = false;
-            } else {
+            } else if(deleteFolder) {
                 dbgprintf("Deleted directory successfully [%s]", Q_CSTR(temp->getNodePath()));
             }
             Q_EMIT levelRemoved(this, temp);
@@ -526,8 +528,9 @@ QString Project::getLocation(void) const {
 TkLevel* Project::reloadLevel(TkLevel *level) {
     QString path = level->getNodePath();
     removeLevel(path, false);
+    path = FileUtilities::getAbsoluteAssetPath(path);
     scanBackLevelPath(path);
-    return getLevel(path);
+    return getLevel(FileUtilities::getAssetRelativePath(path));
 }
 
 void Project::onComponentAttached(Level *const level, Area *const area, Entity *const entity, Component *const comp) {

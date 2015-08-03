@@ -11,7 +11,7 @@
 #include <tk_sheet_view_tile_graphics_item.h>
 #include <tk_tile_image.h>
 #include "tk_area.h"
-#include <tk_file_utilities.h>
+#include <core/tk_file_utilities.h>
 #include "tk_property_standard_item.h"
 #include <tk_checkered_alpha_rect_graphics_item.h>
 #include "elysian_level_system.hpp"
@@ -370,9 +370,9 @@ bool TkLevel::open(void) {
     QDir dir(_location);
     success &= LevelBase::load(dir.absolutePath().toStdString().c_str());
 
-    success &= _loadMetaData(_location);
+    success &= _loadMetaData(FileUtilities::getAbsoluteAssetPath(getNodePath()));
 
-	if(!TileSheetUtilities::DivideTileSheet(_location+ELYSIAN_TILESHEET_PATH,
+    if(!TileSheetUtilities::DivideTileSheet(FileUtilities::getAbsoluteAssetPath(getNodePath())+ELYSIAN_TILESHEET_PATH,
 											ELYSIAN_TILESHEET_WIDTH,
 											ELYSIAN_TILESHEET_HEIGHT,
 											ELYSIAN_TILE_WIDTH,
@@ -451,7 +451,7 @@ Area *TkLevel::loadArea(const QString path) {
     Level *tempCurLevel = _curLevel;
     _curLevel = this;
 
-    area = getLevelSys()->loadArea(Q_CSTR(path));//new Area(this);
+    area = getLevelSys()->loadArea(Q_CSTR(FileUtilities::getAssetRelativePath(path)));//new Area(this);
 
     _curLevel = tempCurLevel;
 
@@ -507,7 +507,7 @@ Area *TkLevel::importArea(const QString dir) {
     _area.push_back(area);
     Q_EMIT areaAdded(this, area);
     return area;
-}
+} 
 
 void TkLevel::setNodePath(const QString path) {
     _location = path;
@@ -517,14 +517,15 @@ void TkLevel::setNodePath(const QString path) {
 
 bool TkLevel::load(const QString path) {
     DbgEvent event("Indexing Level [%s].", Q_CSTR(path));
-    QDir dir(path);
+    QDir dir(FileUtilities::getAbsoluteAssetPath(path));
     bool success = true;
 
     _project = _curProj;
     _project->connectSlots(this);
 
-    setNodeName(dir.dirName());
-    setNodePath(dir.absolutePath());
+  //  _location = path;
+    setNodeName(QDir(path).dirName());
+    setNodePath(QDir(path).absolutePath());
 
 #if 0
     Debug::Log(Debug::DBG_VERBOSE, "Verifying Tilesheet");
@@ -558,8 +559,8 @@ bool TkLevel::save(void) {
     DbgEvent event("Saving Level [%s].", Q_CSTR(getNodePath()));
     bool success = true;
     //Save elysian::Level
-    success &= getElysianLevel()->save(Q_CSTR(getNodePath()));
-    success &= _saveMetaData(getNodePath());
+    success &= getElysianLevel()->save(Q_CSTR(FileUtilities::getAbsoluteAssetPath(getNodePath())));
+    success &= _saveMetaData(FileUtilities::getAbsoluteAssetPath(getNodePath()));
     return success;
 }
 
@@ -568,13 +569,13 @@ bool TkLevel::saveAll(void) {
     //Debug::Log(Debug::DBG_VERBOSE, QString("Level::SaveAll("+_location+")"));
     //Debug::push();
     //export to default save location
-    bool success = saveAs(_location);
+    bool success = saveAs(getNodePath());
     //Debug::pop();
     return success;
 }
 
 bool TkLevel::saveTileSheet(void) {
-    return TileSheetUtilities::GenerateTileSheet(_location+ELYSIAN_TILESHEET_PATH,
+    return TileSheetUtilities::GenerateTileSheet(FileUtilities::getAbsoluteAssetPath(getNodePath())+ELYSIAN_TILESHEET_PATH,
                                                  ELYSIAN_TILESHEET_WIDTH,
                                                  ELYSIAN_TILESHEET_HEIGHT,
                                                  ELYSIAN_TILE_WIDTH,

@@ -3,7 +3,13 @@
 #include <QFileInfo>
 #include <QFileInfoList>
 
-#include <tk_file_utilities.h>
+#include <core/tk_file_utilities.h>
+
+QString FileUtilities::_assetPath;
+
+void FileUtilities::setAssetPath(const QString path) {
+    _assetPath = path;
+}
 
 bool FileUtilities::removeDir(const QString dirName) {
 	bool result = true;
@@ -75,4 +81,28 @@ QString FileUtilities::getAssetRelativePath(const QString path) {
     }
 
     return found? result : QString("NOT AN ASSET RELATIVE PATH");
+}
+
+QString FileUtilities::getAbsoluteAssetPath(const QString path) {
+
+
+    QString relPath = path;
+    QString absPath;
+    // = "FUCKING REESTED PATH!!!";
+    relPath.replace("\\", "/");
+
+    QStringList list = relPath.split("/");
+    if(list.size() >= 2 && list[1] == "assets") {
+        absPath = _assetPath;
+
+        for(unsigned i = 2; i < list.size(); ++i) {
+            absPath += "/";
+            absPath += list[i];
+        }
+        return absPath;
+    } else { //not even an asset-relative path to begin with...
+
+        return path;
+    }
+
 }

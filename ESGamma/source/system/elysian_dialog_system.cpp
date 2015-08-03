@@ -73,8 +73,8 @@ DialogSystem::DialogSystem(void) {
 }
 
 DialogSystem::~DialogSystem(void) {
-	delete _scrollDownSFX;
-	delete _scrollUpSFX;
+    gyAudWavDestroy(_scrollDownSFX);
+    gyAudWavDestroy(_scrollUpSFX);
 
 }
 

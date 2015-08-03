@@ -13,6 +13,7 @@
 #include "tk_entity_selectable.h"
 #include "elysian_party_system.hpp"
 #include <asset/tk_behavior.h>
+#include <core/tk_file_utilities.h>
 
 //====STATIC MEMBERS====
 
@@ -165,7 +166,7 @@ void Assets::setCurrentArea(Area *const area) {
     //if(_currentArea == area) return;
     //_currentArea = area;
     Q_EMIT areaChanging(area);
-    _engine->getLevelSys()->switchArea(area? Q_CSTR(area->getNodePath()) : nullptr);
+    _engine->getLevelSys()->switchArea(area? area->path : nullptr);
   //  if(area) {
         //area->activate();
     //    Q_EMIT areaChanged(_curArea);
@@ -198,7 +199,7 @@ void Assets::setCurrentLevel(Level *const level) {
     //if(_currentLevel == level) return;
   //  _currentLevel = level;
     Q_EMIT levelChanging(level);
-    _engine->getLevelSys()->switchLevel(level? Q_CSTR(level->getNodePath()) : nullptr);
+    _engine->getLevelSys()->switchLevel(level? level->path : nullptr);
     if(level) {
     //	level->activate();
         if(level->getFirstArea()) setCurrentArea(level->getFirstArea()->getNodePath());
@@ -254,6 +255,7 @@ Project *Assets::loadProject(const QString directory) {
 
    // if(!validateProjectPath(directory)) return nullptr;
 
+    FileUtilities::setAssetPath(QDir(directory).absolutePath());
     Project *proj = new Project;
     connectSlots(proj);
 
