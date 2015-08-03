@@ -19,6 +19,7 @@
 #include <QTimer>
 #include <QFontDatabase>
 #include <tk_menu_stack.h>
+#include <QClipboard>
 #include <QMenu>
 //ESTK
 #include "elysian_debug.hpp"
@@ -57,10 +58,11 @@ TkDebug::TkDebug(void) {
 	_vertLayout = new QVBoxLayout;
     _centralWidget->setLayout(_vertLayout);
 
-	_treeWidget = new QTreeWidget;
+    _treeWidget = new DebugLogTreeWidget;
     _treeWidget->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
     _treeWidget->setAutoScroll(false);
 	_treeWidget->setColumnCount(2);
+    _treeWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
 	QStringList labels;
 	labels.append(QString("String"));
 	labels.append(QString("Source"));
@@ -458,3 +460,15 @@ void TkDebug::_onLogWidgetContextMenuRequested(const QPoint point) {
     _filterMenu->exec(_treeWidget->mapToGlobal(point));
 }
 
+//Handle copy requests manually to support Copy+paste
+void DebugLogTreeWidget::keyPressEvent(QKeyEvent *event) {
+
+    if(event == QKeySequence::Copy) {
+        QVariant variant;
+        if (model())
+            variant = model()->data(currentIndex(), Qt::DisplayRole);
+        if (variant.type() == QVariant::String)
+            QApplication::clipboard()->setText(variant.toString());
+        event->accept();
+    } else QTreeWidget::keyPressEvent(event);
+}

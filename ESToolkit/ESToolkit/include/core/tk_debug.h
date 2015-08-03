@@ -2,18 +2,19 @@
 #define TK_DEBUG_H
 
 #include <QObject>
+#include <QTreeWidget>
 #include <elysian_debug_base.hpp>
+#include <gyro_defines.h>
 #include <QStack>
 #include <QPoint>
 
 #define GY_FILE_QT_DEBUG_DIR            "logs"
-#define DEBUG_QT_BUFF_SIZE              50000
+#define DEBUG_QT_BUFF_SIZE              GYRO_PRINTF_BUFFER_SIZE
 #define DEBUG_LOG_POLL_MSEC             500
 
 #define Q_CSTR(a) (a.toStdString().c_str())
 
 class QString;
-class QTreeWidget;
 class QTreeWidgetItem;
 class QVBoxLayout;
 class QTextEdit;
@@ -21,8 +22,11 @@ class QMutex;
 class QTimer;
 class QMenu;
 
-
 typedef elysian::DbgEvent DbgEvent;
+
+class DebugLogTreeWidget: public QTreeWidget {
+    void keyPressEvent(QKeyEvent *event);
+};
 
 class TkDebug: public QObject, public elysian::DebugBase {
     Q_OBJECT

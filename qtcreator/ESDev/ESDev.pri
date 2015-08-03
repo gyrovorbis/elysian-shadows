@@ -15,7 +15,7 @@ ios {
     DEFINES += ELYSIAN_ENGINE
 }
 
-QMAKE_CXXFLAGS += -Wno-unused-local-typedefs
+QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-unknown-pragmas
 #QMAKE_CFLAGS += -std=c99
 
 !iphoneos {

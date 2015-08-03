@@ -401,6 +401,17 @@ void MapView::mouseMoveEvent(QMouseEvent *event) {
 
 void MapView::mouseReleaseEvent(QMouseEvent *event) {
 
+    if(event->button() == Qt::RightButton && _underCursorEntity) {
+        if(_tileSelectionRects.size() == 0 ||
+                (_tileSelectionRects.size() == 1 && _tileSelectionRects[0].width() <= 2.0f && _tileSelectionRects[0].height() <= 2.0f)) {
+
+            //create entity selection from current entity
+            getAssets()->setCurrentSelection(new EntitySelectable(_underCursorEntity));
+            auto* menu = _underCursorEntity->createContextMenu();
+            menu->exec(mapToGlobal(_viewMousePos));
+        }
+    }
+
     //if(getAssets()->getCurrentLayer() == Assets::LAYER_ENTITY) {
      //   _entitySelectableCreate();
    // }
