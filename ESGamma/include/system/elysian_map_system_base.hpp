@@ -171,9 +171,10 @@ namespace elysian {
         if(!gyVidShadowPass()) {
             const GY_RECT_PLANE_TYPE      newPlane = entry.mapEntry.getPlane();
             const GY_RECT_TEX_ORIENT      newOrient = entry.mapEntry.getOrient();
-            /*const GY_ALPHA_LEVEL          newAlpha = (entry.renderPass > 1 ||
+            const GY_ALPHA_LEVEL          newAlpha = (entry.renderPass > 1 ||
                                                       _curLevel->tileset[entry.mapEntry.getIndex()].getTransparency())?
-                                                        GY_ALPHA_FULL : GY_ALPHA_NONE;*/
+                                                        GY_ALPHA_FULL : GY_ALPHA_NONE;
+            const GY_BLEND_MODE           newBlend = (newAlpha == GY_ALPHA_FULL)? GY_BLEND_ONE_MINUS_SRC_ALPHA : GY_BLEND_ONE;
 
             //Blending enabled state change
           /*  if(newAlpha != glalAlphaLevel) {
@@ -182,7 +183,7 @@ namespace elysian {
             }*/
 
             //Blending mode state change
-            if(entry.renderPass > 1) {
+            if(entry.renderPass > 1  || newAlpha != GY_ALPHA_NONE) {
                 disableDepthTest();
             }
             //We don't give a fuck about blend modes when blending is off
@@ -191,6 +192,8 @@ namespace elysian {
             }
 
             //Normal map texture flip state change
+            gyVidBlendMode(newBlend);
+            gyVidAlphaLevel(newAlpha);
             gyVidRectPlaneType(newPlane);
             gyVidRectTexOrient(newOrient);
             const float newZFactor = glalOrientNormalMapZFactor(newOrient);
@@ -305,7 +308,7 @@ break;
 
         //assert(elemArraySize <= maxi);
        // assert(elemArraySize < ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE);
-gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
+        gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
     _bindArrayVbo(_curArea->vertexVbo);
          // glDeleteSync(_curArea->elementsArraySyncs[_curArea->elementsCurSegment]);
           //  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo);

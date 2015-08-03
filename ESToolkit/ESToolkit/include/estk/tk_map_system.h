@@ -169,6 +169,7 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
         gyVidNormalMapBind(nullptr);
         gyVidSpecularMapBind(nullptr);
         gyVidAlphaLevel(GY_ALPHA_FULL);
+        gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
         gyVidMaterialBind(&_selMat[drawStyle]);
 
         const GYColor4& color = selectionDecorColors[drawStyle];

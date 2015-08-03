@@ -480,8 +480,11 @@ void gyVidDepthTest(const int enable) {
 
 void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
     if(gyVidShadowPass()) return;
+    //static int wasShadow = 0;
+   // int passChange = (wasShadow != gyVidShadowPass());
 
     //Does this even do anything now that we're shader based?
+
     if(lev != glalAlphaLevel) {
         gyVidVertexBatchFlush();
         switch(lev) {
@@ -494,6 +497,7 @@ void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
             break;
         }
         glalAlphaLevel = lev;
+      //  wasShadow = gyVidShadowPass();
     }
 }
 
