@@ -7,6 +7,8 @@
 #include <QDebug>
 #include <tk_undo_item.h>
 
+class QStyledItemDelegate;
+
 /*
   Base class for ALL custom QStandardItems within Toolkit.
   Provides accessors for resource management, so that the
@@ -14,10 +16,11 @@
 */
 class ESTkStandardItem: public QStandardItem {
 protected:
-    QVector<ESTkStandardItem*> _children;
-    unsigned    _refCount       = 0;
-    bool        _initialized    = false;
-    bool        _active         = false;
+    QVector<ESTkStandardItem*>  _children;
+    QStyledItemDelegate*        _delegate       = nullptr;
+    unsigned                    _refCount       = 0;
+    bool                        _initialized    = false;
+    bool                        _active         = false;
 public:
     ESTkStandardItem(void) = default;
 
@@ -48,6 +51,7 @@ public:
     using QStandardItem::emitDataChanged;
 
     void addChildItem(ESTkStandardItem*const item) { _children.push_back(item); }
+    virtual QStyledItemDelegate* getStyledItemDelegate(void) const { return _delegate; }
 };
 
 template <bool UndoRedo, typename T, typename C>

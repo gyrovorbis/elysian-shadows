@@ -31,6 +31,11 @@ Q_SIGNALS:
     void ExitPanMode();
 protected:
     void closeEvent(QCloseEvent *event);
+private Q_SLOTS:
+    void on_orientComboBox_currentIndexChanged(int index);
+    void on_elevSpinBox_editingFinished();
+    void on_planeComboBox_currentIndexChanged(int index);
+
 private:
     Ui::SheetDockWidget *ui;
 };

@@ -137,3 +137,35 @@ LuaTableTableFieldData::~LuaTableTableFieldData(void) {
 
 }
 
+QStyledItemDelegate* LuaTableFieldItem::getStyledItemDelegate(void) const {
+#if 0
+    LuaManager::stackBalanceBegin();
+    int top = lua_gettop(*_mainState);
+
+    lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
+    lua_getmetatable(*_mainState, -1);
+    lua_getfield(*_mainState, -1, ELYSIAN_LUA_TABLE_STACK_MODEL_DELEGATE_METAFIELD);
+    if(lua_isnil(*_mainState, -1)) {
+        lua_pop(*_mainState, lua_gettop(*_mainState)-top);
+        LuaManager::stackBalanceEnd();
+        return nullptr;
+    }
+
+    OOLUA::push(*_mainState, _key);
+    lua_gettable(*_mainState, -1);
+
+    if(lua_isnil(*_mainState, -1)) {
+        lua_pop(*_mainState, lua_gettop(*_mainState)-top);
+        LuaManager::stackBalanceEnd();
+        return nullptr;
+    }
+
+    OOLUA::pull(*_mainState, _delegate);
+#else
+    return nullptr;
+#endif
+
+
+
+}
+

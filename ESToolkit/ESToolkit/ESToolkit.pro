@@ -188,7 +188,8 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../ESGamma/source/proxy/elysian_party_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_rigid_body_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_timer_system_proxy.cpp \
-    ../../AssetIO/source/component/elysian_lua_behavior_base.cpp
+    ../../AssetIO/source/component/elysian_lua_behavior_base.cpp \
+    source/model/tk_property_item_delegate.cpp
 
 
 

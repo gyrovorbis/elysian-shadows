@@ -9,6 +9,8 @@
 #include <tk_property_stack_model.h>
 #include <tk_property_standard_item.h>
 
+#define ELYSIAN_LUA_TABLE_STACK_MODEL_DELEGATE_METAFIELD    "__delegate"
+
 class LuaTableStackModel;
 struct LuaTableTableFieldData;
 
@@ -33,6 +35,7 @@ public:
 
     QVariant                getValue(void) const;
     void                    setValue(const QVariant val);
+    virtual QStyledItemDelegate* getStyledItemDelegate(void) const override;
 
     void                    setDirty(const bool val=true);
     LuaTableTableFieldData* getTableData(void) const;

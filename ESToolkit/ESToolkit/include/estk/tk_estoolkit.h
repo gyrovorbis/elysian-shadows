@@ -9,7 +9,7 @@
 #include "elysian_lua_manager.hpp"
 
 #define ESTOOLKIT_VERSION				GYRO_LIB_VERSION
-#define ESTOOLKIT_VERSION_NAME          "\"Ambience and Vanity\""
+#define ESTOOLKIT_VERSION_NAME          "\"Beautiful Thieves\""
 #define ESTOOLKIT_OUTPUT_DIR            "ESTk"
 #define ESTOOLKIT_SCREENS_DIR           "screenshots"
 #define ESTOOLKIT_CRASH_CMD_LINE_ARG    "--crash"

@@ -108,6 +108,9 @@ public:
     void    elevateFromBase(void);
     void    toggleZTransitional(void);
     void    toggleNormalFace(void);
+    void    setElev(const unsigned elev);
+    void    setPlane(const GY_RECT_PLANE_TYPE plane);
+    void    setOrient(const GY_RECT_TEX_ORIENT orient);
 
     //Selection-View Tile Group Property Accessors
     QString getColliderString(void) const;

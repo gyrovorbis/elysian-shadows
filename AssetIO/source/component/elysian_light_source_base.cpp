@@ -42,9 +42,9 @@ float LightAttrib::_calculateRadius(const GYVector3 &vec) {
 
     //LOLOLOL QUADRATIC EQUATION
     const float root1 = (-b + gySqrt(b*b - 4.0f*a*c))/(2.0f*a);
-    //const float root2 = (-b - sqrt(b*b - 4.0f*a*c))/(2.0f*a); //reest root
+    const float root2 = (-b - sqrt(b*b - 4.0f*a*c))/(2.0f*a); //reest root
 
-    return root1;
+    return root1 >= 0.0f? root1 : root2;
 }
 
 float LightAttrib::getRadius(void) {

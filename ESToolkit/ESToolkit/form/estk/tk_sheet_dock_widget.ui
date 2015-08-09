@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>450</width>
+    <width>500</width>
     <height>220</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>86</width>
-    <height>133</height>
+    <width>479</width>
+    <height>215</height>
    </size>
   </property>
   <property name="features">
@@ -72,6 +72,66 @@
           <property name="spacing">
            <number>0</number>
           </property>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QLabel" name="planeLabel">
+              <property name="text">
+               <string>Plane</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="planeComboBox"/>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="elevLabel">
+              <property name="text">
+               <string>Elevation</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="elevSpinBox"/>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="orientLabel">
+              <property name="text">
+               <string>Orientation</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="orientComboBox"/>
+            </item>
+           </layout>
+          </item>
           <item>
            <widget class="SheetView" name="m_tileSelectionView">
             <property name="toolTip">

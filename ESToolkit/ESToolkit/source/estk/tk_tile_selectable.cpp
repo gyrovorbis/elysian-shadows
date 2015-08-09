@@ -427,6 +427,55 @@ void TileSelectable::setSpecularMapEnabled(const bool val) {
                                                           _groupSpecular,
                                                           UndoItem::TILE_GROUP_SPECULAR_MAP));
 }
+
+void TileSelectable::setElev(const unsigned elev) {
+    for(unsigned y = 0; y < _height; ++y) {
+        for(unsigned x = 0; x < _width; ++x) {
+            if(!_entry[y][x].value) continue; //Do NOT give attributes to tile 0!
+            _entry[y][x].setElev(elev);
+        }
+    }
+}
+
+void TileSelectable::setPlane(const GY_RECT_PLANE_TYPE plane) {
+    for(unsigned y = 0; y < _height; ++y) {
+        for(unsigned x = 0; x < _width; ++x) {
+            if(!_entry[y][x].value) continue; //Do NOT give attributes to tile 0!
+            _entry[y][x].setPlane(plane);
+        }
+    }
+}
+
+void TileSelectable::setOrient(const GY_RECT_TEX_ORIENT orient) {
+
+    switch(orient) {
+    case GY_RECT_TEX_ORIENT_FLIP_HORIZ:
+        flipHorizontal();
+        break;
+    case GY_RECT_TEX_ORIENT_FLIP_VERT:
+        flipVertical();
+        break;
+    case GY_RECT_TEX_ORIENT_ROT_270:
+        rotateCC();
+    case GY_RECT_TEX_ORIENT_ROT_180:
+        rotateCC();
+    case GY_RECT_TEX_ORIENT_ROT_90:
+        rotateCC();
+        break;
+    case GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_90:
+        flipHorizontal();
+        rotateC();
+        break;
+    case GY_RECT_TEX_ORIENT_FLIP_HORIZ_ROT_270:
+        flipHorizontal();
+        rotateCC();
+        break;
+    case GY_RECT_TEX_ORIENT_NORMAL:
+    default:
+        break;
+    }
+}
+
 /*
 void TileSelectable::updateSceneSelection(const unsigned sceneX, const unsigned sceneY) {
 //	return;

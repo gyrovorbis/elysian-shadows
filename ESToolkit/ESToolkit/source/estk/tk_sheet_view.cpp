@@ -13,6 +13,10 @@ void SheetView::_externalSelectionCreate(void) {
 	TileSelectable *sel = new TileSelectable(scene()->selectedItems(), getCurrentArea(), getCurrentLevel(), getAssets()->getCurrentLayer());
     if(getAssets()->getCurrentLayer() == Assets::LAYER_ENTITY) getAssets()->setCurrentLayer(Assets::LAYER_TILE1);
 
+    sel->setElev(_elev);
+    sel->setPlane(_plane);
+    sel->setOrient(_orient);
+
 	getAssets()->setCurrentSelection(sel);
 }
 
