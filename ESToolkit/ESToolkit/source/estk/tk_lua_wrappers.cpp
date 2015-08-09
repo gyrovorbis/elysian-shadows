@@ -1,18 +1,34 @@
 #include "tk_lua_wrappers.h"
 #include "tk_lua_manager.h"
 #include <asset/tk_lua_table_proxy.h>
+#include <proxy/elysian_primitive_proxy.hpp>
+#include <proxy/elysian_collidable_proxy.hpp>
+#include <proxy/elysian_event_monitor_proxy.hpp>
+#include <proxy/elysian_renderable_proxy.hpp>
+#include <proxy/elysian_animation_proxy.hpp>
+#include <proxy/elysian_warp_proxy.hpp>
+#include <proxy/elysian_rigid_body_proxy.hpp>
+#include <proxy/elysian_character_proxy.hpp>
+#include <proxy/elysian_audio_source_proxy.hpp>
+#include <proxy/elysian_light_source_proxy.hpp>
+#include <proxy/elysian_examinable_proxy.hpp>
+#include <proxy/elysian_particle_emitter_proxy.hpp>
+#include <proxy/elysian_combat_proxy.hpp>
+#include <proxy/elysian_skeleton_proxy.hpp>
+#include <proxy/elysian_lua_behavior_proxy.hpp>
 
 void TkLuaManager::_registerWrappers(void) {
     elysian::LuaManagerBase::_registerWrappers();
 
 
-    _mainState->register_class<estk>();
-    _mainState->register_class_static<estk>("inspectTable", &estk_inspectTable);
+    _mainState->register_class<Toolkit>();
+    _mainState->register_class_static<Toolkit>("select", &Toolkit_select);
+    _mainState->register_class_static<Toolkit>("findEntity", &Toolkit_findEntity);
 
     luaRegisterTkEnumsConstants(_mainState);
     TkLuaTableUserdata::staticInitialize();
 
 }
 
-EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(estk)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(estk)
+EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Toolkit)
+EXPORT_OOLUA_FUNCTIONS_0_CONST(Toolkit)

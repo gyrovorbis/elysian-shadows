@@ -67,8 +67,6 @@ TkLuaTableUserdata*  TkLuaTableUserdata::inject(lua_State*const l, const int lua
         lua_setfield(l, -2, TK_LUA_TABLE_USERDATA_FIELD_KEY);                                      //1) orig table 2) proxy table
         PRINT("7");
 
-
-
         //iterate over original table, moving entries to proxy table
         lua_rawgeti(l, LUA_REGISTRYINDEX, ud->getOrigRef());
         lua_pushnil(l);  /* first key */
@@ -141,8 +139,6 @@ void TkLuaTableUserdata::_createMetatable(lua_State*const l) {
     lua_setfield(l, -2, "__pairs");
     lua_pushcfunction(l, &TkLuaTableUserdata::_ipairsMetamethod);
     lua_setfield(l, -2, "__ipairs");
-    //lua_pushcfunction(l, &TkLuaTableUserdata::_nextMetamethod);
-    //lua_setfield(l, -2, "__next");
     lua_pushcfunction(l, &TkLuaTableUserdata::_lengthMetamethod);
     lua_setfield(l, -2, "__len");
     lua_pushcfunction(l, &TkLuaTableUserdata::_metamethodSetMetamethod);

@@ -106,8 +106,8 @@ namespace elysian {
 
 			_protectedCall(argc, retc, script);
 			return __RValuePull<RType>::pull(*_mainState);
-		}
-
+        }
+    public:
 		template<typename RType, typename... PTypes>
 		static RType _callGlobalFunction(const char*const funcName, LuaScript* script, PTypes... parameters) {
 
@@ -122,6 +122,8 @@ namespace elysian {
 			//Invoke next template to push args, make the call, and pop retVal
 			return _callFunction<RType>(script, parameters...);
 		}
+
+    protected:
 
                                     LuaManagerBase(void) = default;
 		static void					_showError(void);

@@ -2083,16 +2083,17 @@ void ESToolkit::_tkLuaInitialize(void) {
 
 }
 
-void ESToolkit::inspectTable(OOLUA::Lua_table_ref table) {
+void ESToolkit::select(const int luaRef) {
     auto* self = _instance;
 
-    table.push(*_mainState);
+    lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, luaRef);
     int newRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
 
     LuaTableStackModel* model = new LuaTableStackModel(newRef);
     model->populateModel();
     self->_selectionDockWidget->SetSelectionTreeWidget();
     self->_selectionDockWidget->SetSelectionModel(model);
+    self->_selectionDockWidget->ExpandSelectionTree();
 }
 
 void ESToolkit::on_actionManual_Camera_toggled(bool arg1)

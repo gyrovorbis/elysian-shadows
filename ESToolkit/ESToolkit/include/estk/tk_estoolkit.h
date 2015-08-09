@@ -61,7 +61,7 @@ public:
     virtual         ~ESToolkit(void);
 
 
-    static void     inspectTable(OOLUA::Lua_table_ref table);
+    static void     select(const int luaRef);
     bool            verifySingleArea(const QString path);
     bool            openProjectDir(const QString dir);
     Assets&         getAssets(void);
