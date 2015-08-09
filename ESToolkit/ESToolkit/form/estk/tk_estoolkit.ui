@@ -1044,7 +1044,7 @@
     <string>Run engine's next frame</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+R</string>
+    <string>F4</string>
    </property>
   </action>
   <action name="actionClear">
