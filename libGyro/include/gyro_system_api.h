@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-#define GYRO_LIB_VERSION "1.5.8"
+#define GYRO_LIB_VERSION "1.5.9"
 
 #define _GYRO_STRINGIFY_MACRO(a) #a
 #define GYRO_STRINGIFY_MACRO(a) _GYRO_STRINGIFY_MACRO(a)
