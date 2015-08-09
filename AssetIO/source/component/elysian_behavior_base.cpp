@@ -102,7 +102,7 @@ BehaviorBase::BehaviorBase(Entity& parent): Component(parent) {
 }
 
 void BehaviorBase::addTrigger(TRIGGER flag) {
-	std::map<const char*, Behavior*, ltstr>& behaviors = getEntity()->getBehaviors();
+    auto&& behaviors = getEntity()->getBehaviors();
 
 	//Trigger already added!
 	if(_triggerBits & flag) return;
@@ -140,15 +140,13 @@ void BehaviorBase::removeTrigger(TRIGGER flag) {
 	_triggerBits &= ~flag;
 
 	//If entity still needs trigger config, don't tear shit down
-	for(auto it = behaviors.begin();
-		it != behaviors.end();
-		++it) 
+    for(auto it : behaviors)
 	{
 		switch(flag) {
 		case ON_COLLIDE:
 		case ON_COLLISION_ENTER:
 		case ON_COLLISION_EXIT:
-			if(it->second->getTriggers() & (ON_COLLIDE | ON_COLLISION_EXIT | ON_COLLISION_ENTER)) {
+            if(it->getTriggers() & (ON_COLLIDE | ON_COLLISION_EXIT | ON_COLLISION_ENTER)) {
 				return;
 			}
 			break;

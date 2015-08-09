@@ -50,15 +50,18 @@ struct LuaTableTableFieldData: public QObject, public LuaManager {
 public:
     QHash<QVariant, LuaTableFieldItem*> _fieldItems;
     int                                 _luaRef = LUA_NOREF;
+    QStandardItem*                      _parentItem = nullptr;
 
                                         LuaTableTableFieldData(const int tableRef);
     virtual                             ~LuaTableTableFieldData(void) override;
 
+    void                                insertTableFieldItem(const QVariant key);
     void                                insertTableFieldItems(QStandardItem* parentItem);
 
 public Q_SLOTS:
     void                                onFieldChanged(const QVariant key);
-    //void                                onFieldAdded(const QVariant key);
+    void                                onFieldAdded(const QVariant key);
+  //vod                                 onFieldRemoved(const QVariant key); same shit as onFieldChanged to nil!
 
 };
 

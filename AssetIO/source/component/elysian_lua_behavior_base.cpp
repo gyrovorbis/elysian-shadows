@@ -77,18 +77,15 @@ LuaBehaviorBase::~LuaBehaviorBase(void) {
 
 bool LuaBehaviorBase::loadScript(void) {
     DbgEvent event("LuaBehavior::loadScript(%s)", getBehavName());
+
     if(!_script) {
         errprintf("Could not load script!");
         return false;
     }
 
-#if 0
-	if(_script) {
-        Debug::printf(Debug::DBG_WARNING, "Already has a script loaded!");
-        dbgpop();
-		return false;
-	}
-#endif
+    if(_script->getError()) {
+        warnprintf("Adding dead Lua script in error state!");
+    }
 
 	//Climb hierarchy and create top-down list
 	for(auto* script = _script;

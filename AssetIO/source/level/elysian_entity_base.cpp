@@ -97,10 +97,10 @@ EntityBase::~EntityBase(void) {
     removeSkeleton();
 
     // Cleanup Behaviors
-    for(auto it = _behavior.begin(); it != _behavior.end(); ++it) {
-        removeBehavior(it->first);
+    for(auto it : _behaviors) {
+        removeBehavior(it->getBehavName());
     }
-    _behavior.clear();
+    _behaviors.clear();
 }
 
 void EntityBase::pushViewTransform(void) {
@@ -393,10 +393,10 @@ bool EntityBase::activate(void) {
         _componentActive[Component::SKELETON] = true;
     }
 
-	for(auto it = _behavior.begin(); it != _behavior.end(); ++it) {
-		if(!it->second->getActive()) {
-            _area->behaviors.push_back(it->second);
-			it->second->setActive();
+    for(auto it : _behaviors) {
+        if(!it->getActive()) {
+            _area->behaviors.push_back(it);
+            it->setActive();
 		}
 	}
 
@@ -460,10 +460,10 @@ bool EntityBase::deactivate(void) {
         _componentActive[Component::SKELETON] = false;
     }
 
-	for(auto it = _behavior.begin(); it != _behavior.end(); ++it) {
-		if(it->second->getActive()) {
-            containerEraseOnMatch(it->second, _area->behaviors);
-			it->second->setActive(false);
+    for(auto it : _behaviors) {
+        if(it->getActive()) {
+            containerEraseOnMatch(it, _area->behaviors);
+            it->setActive(false);
 		}
 	}
 	
@@ -660,19 +660,19 @@ Behavior *EntityBase::attachBehavior(Behavior *behav) {
     if(it != _behavior.end()) {
         dbgprintf(LOG_DBG_WARNING, "Entity::AddBehavior(%s) - Already attached!", behav->getBehavName());
         delete behav;
-        return NULL;
+        return null;
     }
 #endif
 
 	//Check for prereqs
-    if(/*behav->canAddTo(*static_cast<Entity*>(this)) ||*/ !behav->getBehavName()) {
+    if(!behav->getBehavName()) {
         Debug::printf(Debug::DBG_WARNING, "Could not attach behavior!");
 		delete behav;
         return nullptr;
 	}
 	
-	//Attach using its own typeName as a key (so that it never leaves scope), fixing the reast mentioned above.
-	_behavior[behav->getBehavName()] = behav;
+    //Attach using its own typeName as a key (so that it never leaves scope), fixing the reest mentioned above.
+    _behaviors.push_back(behav);
 	
 	//add to level
     if(_active) {
@@ -687,17 +687,8 @@ LuaBehavior* EntityBase::getLuaBehavior(const char*script) const {
     return static_cast<LuaBehavior*>(getBehavior(script));
 }
 
-LuaBehavior* EntityBase::getLuaBehaviorByIndex(const unsigned index) const {
-    unsigned count = 0;
-    for(auto behav : _behavior) {
-        if(count++ == index) return static_cast<LuaBehavior*>(behav.second);
-    }
-    return nullptr;
-}
-
-
 void EntityBase::setLuaBehaviorByIndex(const unsigned index, const OOLUA::Lua_table_ref valueTable) {
-    if(index == _behavior.size()) { //allocate new entity
+    if(index == _behaviors.size()) { //allocate new entity
         //Entity* entity = Entity::create(valueTable);
         LuaBehavior* behav = new LuaBehavior(*static_cast<Entity*>(this));
         behav->fromTable(valueTable);
@@ -706,7 +697,7 @@ void EntityBase::setLuaBehaviorByIndex(const unsigned index, const OOLUA::Lua_ta
         attachBehavior(behav);
         //}
 
-    } else if(index < _behavior.size()) {                        //initialize existing entity
+    } else if(index < _behaviors.size()) {                        //initialize existing entity
         assert(false);
         //inactiveEntities[index]->fromTable(valueTable);
     }
@@ -717,28 +708,37 @@ void EntityBase::removeLuaBehavior(const char *script) {
 }
 
 Behavior* EntityBase::getBehavior(const char *behaviorName) const {
-	std::map<const char *, Behavior*, ltstr>::const_iterator it = _behavior.find(behaviorName);
-	if(it == _behavior.end()) {
-        Debug::printf(Debug::DBG_WARNING, "Behavior::getBehavior(%s) - Not attached!", behaviorName);
-        return nullptr;
+
+    for(auto it : _behaviors) {
+        if(strcmp(behaviorName, it->getBehavName()) == 0) {
+            return it;
+        }
     }
-    else return it->second;
+
+    return nullptr;
 }
 
-void EntityBase::removeBehavior(const char *behaviorName) {
-	std::map<const char *, Behavior*, ltstr>::iterator it = _behavior.find(behaviorName);
-	if(it == _behavior.end()) {
+void EntityBase::removeBehavior(const char* behaviorName) {
+    auto it = _behaviors.begin();
+
+    for(; it != _behaviors.end(); ++it) {
+        if(strcmp(behaviorName, (*it)->getBehavName()) == 0) {
+            break;
+        }
+    }
+
+    if(it == _behaviors.end()) {
         Debug::printf(Debug::DBG_WARNING, "Behavior::RemoveBehavior(%s) - Not attached!", behaviorName);
 		return;
 	}
 	
 	//remove component from area if not null
 	if(_active) {
-        containerEraseOnMatch(it->second, _area->behaviors);
-		it->second->setActive(false);
+        containerEraseOnMatch(*it, _area->behaviors);
+        (*it)->setActive(false);
 	}
-	delete it->second;
-	_behavior.erase(it);
+    delete (*it);
+    _behaviors.erase(it);
 }
     
 
@@ -923,6 +923,11 @@ void EntityBase::setCombat(const OOLUA::Lua_table_ref valTable) {
 
 void EntityBase::setSkeleton(const OOLUA::Lua_table_ref valTable) {
     _setComponent<Skeleton>(_skeleton, valTable, _active? &_area->skeletons : nullptr);
+}
+
+LuaBehavior* EntityBase::getLuaBehaviorByIndex(const unsigned index) const {
+    if(index >= _behaviors.size()) return nullptr;
+    return static_cast<LuaBehavior*>(_behaviors[index]);
 }
 
 }

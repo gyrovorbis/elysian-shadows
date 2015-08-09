@@ -21,6 +21,9 @@ void LuaTableTableFieldData::onFieldChanged(const QVariant key) {
     item->emitDataChanged();
 }
 
+void LuaTableTableFieldData::onFieldAdded(const QVariant key) {
+    insertTableFieldItem(key);
+}
 
 void LuaTableStackModel::populateModel(void) {
     if(_populated) return;
@@ -42,6 +45,18 @@ void LuaTableStackModel::populateModel(void) {
     _populated = true;
 }
 
+void LuaTableTableFieldData::insertTableFieldItem(const QVariant key) {
+    QList<QStandardItem*> items;
+    auto* labelItem = (PropertyStackModel::createReadOnlyItem(key.toString()));
+    auto* valueItem = new LuaTableFieldItem(_luaRef, key, labelItem);
+    items.push_back(labelItem);
+    items.push_back(valueItem);
+
+    _parentItem->appendRow(items);
+    valueItem->insertingModelItem();
+    _fieldItems[key] = valueItem;
+
+}
 
 
 //Iterates over table or proxied userdata, populating model based on k,v pairs
@@ -50,6 +65,8 @@ void LuaTableTableFieldData::insertTableFieldItems(QStandardItem*const parentIte
     LuaManager::stackBalanceBegin();
     bool metatable;
     bool iterable;
+
+    _parentItem = parentItem; //Store reference to its own parent
 
     lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);   //push table ref
 
@@ -86,6 +103,7 @@ void LuaTableTableFieldData::insertTableFieldItems(QStandardItem*const parentIte
         iterable = true;
         auto* ud = TkLuaTableUserdata::inject(*_mainState, _luaRef);
         connect(ud, SIGNAL(fieldChanged(QVariant)), this, SLOT(onFieldChanged(QVariant)));
+        connect(ud, SIGNAL(fieldAdded(QVariant)), this, SLOT(onFieldAdded(QVariant)));
     } else iterable = false;
 
     if(iterable) {
@@ -95,17 +113,7 @@ void LuaTableTableFieldData::insertTableFieldItems(QStandardItem*const parentIte
             lua_pushvalue(*_mainState, -2);
             OOLUA::pull(*_mainState, key);
 
-            QList<QStandardItem*> items;
-            auto* labelItem = (PropertyStackModel::createReadOnlyItem(key.toString()));
-            auto* valueItem = new LuaTableFieldItem(_luaRef, key, labelItem);
-            items.push_back(labelItem);
-            items.push_back(valueItem);
-            //items.push_back(
-
-            parentItem->appendRow(items);
-            valueItem->insertingModelItem();
-            _fieldItems[key] = valueItem;
-
+            insertTableFieldItem(key);
 
         });
 

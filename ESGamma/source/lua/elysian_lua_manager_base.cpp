@@ -233,7 +233,10 @@ inline LuaScript *LuaManagerBase::_createScriptFromExisting(const char* const fi
 LuaBehaviorScript* LuaManagerBase::loadBehaviorScript(const char* const file) {
 
     LuaBehaviorScript* behav = static_cast<LuaBehaviorScript*>(_createScriptFromExisting(file));
-    if(behav) return behav;
+    if(behav) {
+        dbgprintf("Script already loaded. Returning reference from cache.");
+        return behav;
+    }
 
     behav = new LuaBehaviorScript(file);
 
@@ -260,6 +263,7 @@ LuaBehaviorScript* LuaManagerBase::loadBehaviorScript(const char* const file) {
         _callGlobalFunction<void>("onScriptCreate", behav);
     }
 
+    dbgprintf("Adding new script to cache.");
     _scripts.insert(std::pair<const char *, LuaScript *>(behav->getPath(), behav));
     return behav;
 

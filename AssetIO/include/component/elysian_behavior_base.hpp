@@ -194,8 +194,9 @@ namespace elysian {
 	}
 	
     inline void BehaviorBase::callTrigger(const TRIGGER trigger) {
-		if(!_triggerBits & trigger) return;
-
+#if 0
+        if(!_triggerBits & trigger) return; //not our fucking job to check this shit here
+#endif
 		switch(trigger) {
 			case ON_LOAD:
 				return onLoad();

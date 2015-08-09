@@ -3,8 +3,13 @@
 #define PRINT(a) do { \
     } while(0)
 
-int TkLuaTableUserdata::_metaRef    = LUA_NOREF;
-lua_State* TkLuaTableUserdata::_lvm = nullptr;
+int TkLuaTableUserdata::_metaRef;
+lua_State* TkLuaTableUserdata::_lvm;
+
+void TkLuaTableUserdata::staticInitialize(void) {
+    _metaRef = LUA_NOREF;
+    _lvm = nullptr;
+}
 
 #if 0
 TkLuaTableUserdata*  TkLuaTableUserdata::inject(lua_State*const l, const int luaRef) {
@@ -373,8 +378,8 @@ int TkLuaTableUserdata::_newIndexMetamethod(lua_State* l) {
 
     //notify Qt that shit has gone down
 
-    if(newKey)              ud->emitFieldAdded(lua_tostring(l, 2));
-    else if(valueChange)    ud->emitFieldChanged(lua_tostring(l, 2));
+    if(newKey)         ud->emitFieldAdded(lua_tostring(l, 2));
+    if(valueChange)    ud->emitFieldChanged(lua_tostring(l, 2));
 
     //lua_pop(l, 5);
 
@@ -390,6 +395,7 @@ int TkLuaTableUserdata::_gcMetamethod(lua_State* l) {
     auto* ud = static_cast<TkLuaTableUserdata*>(lua_touserdata(l, -1));
     assert(ud);
     delete ud;
+    qDebug() << "TkLuaTableUserData::_gcMetaMethod()";
     lua_pop(l, lua_gettop(l));
     return 0;
 }

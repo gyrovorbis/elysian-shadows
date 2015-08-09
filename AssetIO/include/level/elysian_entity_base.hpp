@@ -145,8 +145,7 @@ namespace elysian {
         LuaBehavior*        addLuaBehavior(char const* scriptName, const OOLUA::Lua_table_ref paramTable);
 
         LuaBehavior*        getLuaBehavior(char const* scriptName) const;
-        std::map<char const *, Behavior*, ltstr>&
-                            getBehaviors(void);
+        std::vector<Behavior*>& getBehaviors(void);
         LuaBehavior*        getLuaBehaviorByIndex(const unsigned index) const;
         void                setLuaBehaviorByIndex(const unsigned index, const OOLUA::Lua_table_ref valueTable);
         unsigned            getLuaBehaviorCount(void) const;
@@ -178,7 +177,7 @@ namespace elysian {
         char _dispName[ELYSIAN_ENTITY_NAME_SIZE];
         bool _componentActive[Component::MAX_TYPE] { false };
         
-        std::map<char const *, Behavior*, ltstr> _behavior;
+        std::vector<Behavior*> _behaviors;
 
         Entity*             _parent             = nullptr;
         Area*               _area               = nullptr;
@@ -269,7 +268,7 @@ namespace elysian {
 
      //   return (transform._pos.y); /* + 0.5f * transform._size.y * transform._scale.y);*/ }
    // inline void Entity::setDepthBaseY(const float base) { transform._pos.y = base - 0.5f * transform._size.y * transform._scale.y; }
-    inline std::map<char const *, Behavior*, ltstr>& EntityBase::getBehaviors(void) { return _behavior; }
+    inline std::vector<Behavior*>& EntityBase::getBehaviors(void) { return _behaviors; }
     inline void EntityBase::setShadowVolume(const bool v) { _shadowVolume = v; }
     inline bool EntityBase::isShadowVolume(void) const { return _shadowVolume; }
     inline void EntityBase::setShadowDepth(const float depth) { _shadowDepth = depth; }
@@ -279,7 +278,7 @@ namespace elysian {
     inline bool EntityBase::isActive(void) const { return _active; }
     inline void EntityBase::setPersistent(const bool val) { _persistent = val; }
     inline bool EntityBase::isPersistent(void) const { return _persistent; }
-    inline unsigned EntityBase::getLuaBehaviorCount(void) const { return _behavior.size(); }
+    inline unsigned EntityBase::getLuaBehaviorCount(void) const { return _behaviors.size(); }
     inline Area* EntityBase::getArea(void) const { return _area; }
     inline void EntityBase::setArea(Area*const area) { _area = area; }
 

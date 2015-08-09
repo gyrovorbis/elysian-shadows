@@ -19,6 +19,7 @@ private:
 
     static int          _metaRef;
     static lua_State*   _lvm;
+
 Q_SIGNALS:
     //Notifies Qt's GUI models to update when Lua table fields change
     void    fieldChanged(const QVariant key) const;
@@ -32,11 +33,14 @@ public:
 
     void    setOrigRef(const int ref);
     int     getOrigRef(void) const;
+
     void    setPropRef(const int ref);
     int     getPropRef(void) const;
 
     //static
     static TkLuaTableUserdata*  inject(lua_State*const l, const int luaRef);
+    static void                 staticInitialize(void);
+
     //static bool                 hasTkUserdata(OOLUA::Lua_table_ref& ref);
 
 private:
