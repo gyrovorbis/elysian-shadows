@@ -43,9 +43,9 @@ void SelectionDockWidget::SetSelectionModel(QAbstractItemModel *model)
     SizeColumnsToDefault();
 }
 
-void SelectionDockWidget::ExpandSelectionTree()
+void SelectionDockWidget::ExpandSelectionTree(const int index)
 {
-    _selectionTreeWidget->expandToDepth(0);
+    _selectionTreeWidget->expandToDepth(index);
     SizeColumnsToDefault();
 }
 

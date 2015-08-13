@@ -4,12 +4,14 @@
 #include <tk_selectable.h>
 #include <tk_rows_joiner_proxy_model.h>
 #include <tk_asset_manager.h>
+#include <estk/tk_lua_manager.h>
 #include <QVector>
 
 class TkEntity;
 class TkArea;
+class LuaTableStackModel;
 
-class EntitySelectable: public Selectable, public RowsJoinerProxy, public AssetManager {
+class EntitySelectable: public Selectable, public TkLuaManager, public AssetManager {
 public:
     struct EntityEntry {
                     EntityEntry(void)       = default;
@@ -24,15 +26,20 @@ public:
         TkEntity*   entity      = nullptr;
         bool        wasActive   = false;
     };
+
 private:
 
+    QVector<EntityEntry>            _entities;
+    TkEntity*                       _baseEntity     = nullptr;
+    mutable LuaTableStackModel*     _luaModel       = nullptr;
+    int                             _luaTableRef    = LUA_REFNIL;
 
-    QVector<EntityEntry>       _entities;
-    TkEntity*                   _baseEntity = nullptr;
 
 public:
-                                EntitySelectable(TkEntity*const entity = nullptr);
+                                EntitySelectable(void);
+                                EntitySelectable(TkEntity*const entity);
                                 EntitySelectable(EntitySelectable* selectable);
+    virtual                     ~EntitySelectable(void) override;
 
     void                        addEntity(const EntityEntry entry);
     void                        setBaseEntity(TkEntity*const entity);
@@ -42,6 +49,7 @@ public:
     virtual TYPE                getType(void) const override;
     //const QVector<TkEntity*>&   getEntities(void) const;
     bool                        isInSelection(const TkEntity*const entity) const;
+    int                         getLuaTableRef(void) const;
 
     void                        translate(const float x, const float y);
     void                        setPosition(const float x, const float y);
@@ -106,5 +114,7 @@ inline EntitySelectable::EntityEntry::operator const TkEntity*(void) const { ret
 
 inline QVector<EntitySelectable::EntityEntry>::iterator EntitySelectable::begin(void) { return _entities.begin(); }
 inline QVector<EntitySelectable::EntityEntry>::iterator EntitySelectable::end(void) { return _entities.end(); }
+
+inline int EntitySelectable::getLuaTableRef(void) const { return _luaTableRef; }
 
 #endif // ENTITY_SELECTABLE_H

@@ -266,7 +266,7 @@ void CameraSystemBase::setPerspectiveFrustum(const float /*fov*/, const float /*
 void CameraSystemBase::popState(void) {
     --_depth;
     if(_depth <= 0) _depth = 0;
-    _states[_depth] = &_internalStates[_depth];
+    //_states[_depth] = &_internalStates[_depth];
     assert(_depth >= 0);
     setCurrentCamera(_states[_depth]);
     _customState = false;
@@ -279,15 +279,15 @@ void CameraSystemBase::popState(void) {
 
 void CameraSystemBase::processInput(const GameInput& input) {
     if(input.getTapped(GameInput::BUT_P)) {
-        //_debugActive = !_debugActive;
+        _debugActive = !_debugActive;
 
         if(_debugActive) { //enable
             //_debugState.focalEntity = _curState->focalEntity;
 
             _debugState._pos = GYVector3 {
-                _curState->_pos.x,
-                _curState->_pos.y,
-                ZCoordConstants::mapBase+150.0f
+                _curState->_pos.x-500.0f,
+                _curState->_pos.y+1000.0f,
+                _curState->_pos.z+500.0f
             };
 
             //_curState = &_debugState;

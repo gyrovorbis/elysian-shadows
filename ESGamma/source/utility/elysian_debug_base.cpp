@@ -324,19 +324,22 @@ void DebugBase::processInput(GameInput& input) {
     }
 
     if(input.getDown(GameInput::BUT_Q) && !freeCam){
-
+        _engine->_cameraSystem->getCurrentState()->setOrient(0.0f, 0.0f, 1.0f);
         _engine->_cameraSystem->getCurrentState()->rotate(0.1f*60.0f*getTimerSys()->getDeltaTime());
 	}
     if(input.getDown(GameInput::BUT_A) && !freeCam){
+                _engine->_cameraSystem->getCurrentState()->setOrient(0.0f, 0.0f, 1.0f);
         _engine->_cameraSystem->getCurrentState()->rotate(-0.1f*60.0f*getTimerSys()->getDeltaTime());
     }
 
-    if(input.getDown(GameInput::BUT_B) && !freeCam) {
-   //     _engine->_cameraSystem->rotateX(-0.1f*60.0f*getTimerSys()->getDeltaTime());
+    if(input.getDown(GameInput::BUT_F) && !freeCam) {
+        _engine->_cameraSystem->getCurrentState()->setOrient(1.0f, 0.0f, 0.0f);
+        _engine->_cameraSystem->getCurrentState()->rotate(-0.1f*60.0f*getTimerSys()->getDeltaTime());
 	}
 
     if(input.getDown(GameInput::BUT_D) && !freeCam) {
-     //  _engine->_cameraSystem->rotateX(0.1f*60.0f*getTimerSys()->getDeltaTime());
+        _engine->_cameraSystem->getCurrentState()->setOrient(1.0f, 0.0f, 0.0f);
+        _engine->_cameraSystem->getCurrentState()->rotate(0.1f*60.0f*getTimerSys()->getDeltaTime());
 	}
 
 	if(input.getTapped(GameInput::BUT_Z)) { //Reset Transform

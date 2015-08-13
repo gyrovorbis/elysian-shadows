@@ -22,7 +22,7 @@ public:
     void SetSelectionTreeWidget();
 	void restoreSelectionTreeWidgetDefaultItemDelegate(void);
     void SetSelectionModel(QAbstractItemModel *model);
-    void ExpandSelectionTree();
+    void ExpandSelectionTree(const int index=0);
 	QTreeView *getSelectionTreeWidget(void);
 Q_SIGNALS:
     void UncheckMe(int);
