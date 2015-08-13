@@ -162,9 +162,9 @@ static GYVector4			_clearColor                 = { 0.0f, 0.0f, 0.0f, 1.0f };
 static const GYTexCoord2*   _curTexCoordPtr             = NULL;
 static const GYColor4*      _curColorArrayPtr           = NULL;
 GYColor4                    _curQuadListColor[12]       = { {0, 0, 0, 0}, { 0, 0, 0, 0}, {0,0,0,0}, {0, 0,0,0} };
-static int         _vertexQueueSize            = 0;
-static int         _vertexQueueLastSize        = 0;
-static GLintptr         _vertexQueueLastOffset      = 0;
+static int                  _vertexQueueSize            = 0;
+static int                  _vertexQueueLastSize        = 0;
+static GLintptr             _vertexQueueLastOffset      = 0;
 GLuint                      _streamVao[2]               = { 0 };
 GLuint                      _streamVertexVbo[2]         = { 0 };
 
