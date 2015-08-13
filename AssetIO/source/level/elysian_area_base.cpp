@@ -23,12 +23,28 @@
 #include <glal/gyro_shaders_glal.h>
 #include <glal/gyro_video_glal.h>
 #include <gyro_file_api.h>
+#include <system/elysian_audio_system.hpp>
+
 
 using namespace std;
 
 namespace elysian {
 
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(AreaBase)
+
+unsigned AreaBase::getAuxOggTrackCount(void) const { return 2; }
+unsigned AreaBase::getBgmOggTrackCount(void) const { return 3; }
+
+AreaBase::AreaBase(void) {
+    for(unsigned i = 0; i < ELYSIAN_AUDIO_BGM_TRACKS; ++i) {
+        strcpy(_bgmOggTracks[i], "none");
+    }
+
+    for(unsigned i = 0; i < ELYSIAN_AUDIO_AUX_TRACKS; ++i) {
+        strcpy(_auxOggTracks[i], "none");
+    }
+}
+
 
 Entity* AreaBase::findEntity(const char *name) {
     for(auto it : entities) {

@@ -1073,8 +1073,11 @@ namespace elysian {
                 assert(!lua_isnil(l, -1)); //SIZE ACCESSOR NOT FOUND!!!!
                 lua_pushinteger(l, i);                                              //upvalue #4, starting index of virtual table properties
                 lua_pushcclosure(l, &_createVirtualTableProxy, LUA_TABLE_PROXY_UPVALUE_COUNT);
+#if 0
                 lua_setfield(l, -3-(tableDepth*2), C::_proxyFields[i].key);
-
+#else
+                lua_setfield(l, -3, C::_proxyFields[i].key);
+#endif
                 lua_getfield(l, -3-(tableDepth*2), C::_proxyFields[i].get);     //upvalue #1, getByIndex method
                 assert(!lua_isnil(l, -1)); //LUA GET ACCESSOR NOT FOUND!!!!
                 if(P::_proxyFields[i].set) {
@@ -1085,8 +1088,11 @@ namespace elysian {
                 assert(!lua_isnil(l, -1)); //SIZE ACCESSOR NOT FOUND!!!!
                 lua_pushinteger(l, i);                                          //upvalue #4, starting index of virtual table properties
                 lua_pushcclosure(l, &_setVirtualTableProxy, LUA_TABLE_PROXY_UPVALUE_COUNT);
+#if 0
                 lua_setfield(l, -3-(tableDepth*2)+1, C::_proxyFields[i].key);
-
+#else
+                lua_setfield(l, -2, C::_proxyFields[i].key);
+#endif
                 break;
             case LuaTableFieldProxy::FLAG_VTABLE_BEGIN:
                 lua_newtable(l); //__index metatable for virtual table
@@ -1097,14 +1103,23 @@ namespace elysian {
                 lua_pushinteger(l, i);                      //upvalue #4, starting index of virtual table properties
                 //upvalue #4 size field for arrays
                 lua_pushcclosure(l, &_createVirtualTableProxy, LUA_TABLE_PROXY_UPVALUE_COUNT);
+
                 ++tableDepth;
+#if 0
                 lua_setfield(l, -3-(tableDepth*2), C::_proxyFields[i].key);
+#else
+                lua_setfield(l, -5, C::_proxyFields[i].key);
+#endif
                 lua_pushvalue(l, -2);                       //upvalue #1, __index for virtual table
                 lua_pushvalue(l, -2);                       //upvalue #2 __newindex for virtual table
                 lua_pushnil(l);                             //upvalue #3 size for arrays (ignored)
                 lua_pushinteger(l, i);                      //upvalue #4, starting index of virtual table properties
                 lua_pushcclosure(l, &_setVirtualTableProxy, LUA_TABLE_PROXY_UPVALUE_COUNT);
+#if 0
                 lua_setfield(l, -3-(tableDepth*2)+1, C::_proxyFields[i].key);
+#else
+                lua_setfield(l, -4, C::_proxyFields[i].key);
+#endif
                 break;
 
             case LuaTableFieldProxy::FLAG_VTABLE_END:

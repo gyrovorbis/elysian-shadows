@@ -111,6 +111,9 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
     s->register_class_static<gyro>("RECT_PLANE_FRONT", GY_RECT_PLANE_FRONT);
     s->register_class_static<gyro>("RECT_PLANE_LEFT", GY_RECT_PLANE_LEFT);
     s->register_class_static<gyro>("RECT_PLANE_RIGHT", GY_RECT_PLANE_RIGHT);
+    s->register_class_static<gyro>("RECT_PLANE_FRONT_SLOPE_45", GY_RECT_PLANE_FRONT_SLOPE_45);
+    s->register_class_static<gyro>("RECT_PLANE_LEFT_SLOPE_45", GY_RECT_PLANE_LEFT_SLOPE_45);
+    s->register_class_static<gyro>("RECT_PLANE_RIGHT_SLOPE_45", GY_RECT_PLANE_RIGHT_SLOPE_45);
 
     s->register_class_static<gyro>("MOUSE_BUT_LEFT", GY_MOUSE_BUT_LEFT);
     s->register_class_static<gyro>("MOUSE_BUT_RIGHT", GY_MOUSE_BUT_RIGHT);

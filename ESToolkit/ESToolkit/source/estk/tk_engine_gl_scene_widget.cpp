@@ -1,5 +1,5 @@
 
-#include "elysian_camera_system.hpp"
+#include "crtp/elysian_camera_system.hpp"
 #include <gyro_video_api.h>
 #include "tk_engine_gl_scene_widget.h"
 #include <glal/gyro_video_glal.h>
@@ -36,6 +36,8 @@ EngineGLSceneWidget::EngineGLSceneWidget(QWidget *parent):
     assert(!_self);
             _self = this;
             setAttribute(Qt::WA_NativeWindow);
+
+    connect(this, SIGNAL(engineUpdated()), getAssets(), SIGNAL(engineUpdated()));
 }
 
 

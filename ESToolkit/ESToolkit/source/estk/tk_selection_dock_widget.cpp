@@ -2,6 +2,7 @@
 #include <QCloseEvent>
 #include "tk_selection_dock_widget.h"
 #include "ui_tk_selection_dock_widget.h"
+#include <model/tk_property_item_delegate.h>
 
 SelectionDockWidget::SelectionDockWidget(QWidget *parent) :
     QDockWidget(parent),
@@ -15,9 +16,9 @@ SelectionDockWidget::SelectionDockWidget(QWidget *parent) :
     p.setColor(QPalette::HighlightedText, Qt::black);
     _selectionTreeWidget->setPalette(p);
 	_selectionTreeWidget->setIndentation(9);
-
 	_selectionTreeWidget->setAlternatingRowColors(true);
 
+    _selectionTreeWidget->setItemDelegate(new PropertyItemProxyDelegate);
 	_defaultItemDelegate = _selectionTreeWidget->itemDelegate();
 }
 

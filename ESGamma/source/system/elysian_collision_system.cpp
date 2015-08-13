@@ -1,6 +1,6 @@
 #include "elysian_collision_system.hpp"
 #include <crtp/elysian_collidable.hpp>
-#include "elysian_camera_system.hpp"
+#include "crtp/elysian_camera_system.hpp"
 #include <crtp/elysian_level.hpp>
 #include <crtp/elysian_area.hpp>
 #include <crtp/elysian_entity.hpp>
@@ -1443,13 +1443,13 @@ void CollisionSystem::_resolveXYPenetration(CollisionContact * const con) {
 
     gyVec2AddAccum((GYVector2*)&con->_bodyA->getEntity()->_transform._pos, &posDelta[0]);
     //con->_bodyA->getEntity()->move(posDelta[0]);
-    con->_bodyA->getEntity()->_transform._orientZ += orientDelta[0];
+    con->_bodyA->getEntity()->_transform._angle += orientDelta[0];
 
     if(con->staticAttrib[1]) {
         //applyDamp(dampedDelta, posDelta[1], con->_bodyB->getAttrib()->getStaticAttrib()->damping);
         gyVec2AddAccum((GYVector2*)&con->_bodyB->getEntity()->_transform._pos, &posDelta[1]);
         //con->_bodyB->getEntity()->move(posDelta[1]);
-        con->_bodyB->getEntity()->_transform._orientZ += orientDelta[1];
+        con->_bodyB->getEntity()->_transform._angle += orientDelta[1];
     }
 
 /**** /TAKEN FROM C PENETRATION RESOLUTION *****/

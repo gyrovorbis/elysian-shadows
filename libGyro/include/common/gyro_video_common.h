@@ -90,7 +90,7 @@ static inline void gyVidCamOrthoProj(GYCamera* cam, const float pleft, const flo
 */
 }
 
-static inline void gyVidCamOrthoLookAt(GYCamera *cam, const GYVector3* pos, const float scale, const float rotZ, const float rotX) {
+static inline void gyVidCamOrthoLookAt(GYCamera *cam, const GYVector3* pos, const float scale, const float angle, const GYVector3* dir) {
 
     unsigned scrWidth, scrHeight;
     GYViewVolume*const volume = &cam->viewVolume;
@@ -102,17 +102,19 @@ static inline void gyVidCamOrthoLookAt(GYCamera *cam, const GYVector3* pos, cons
 
     //Have to calculate the geometry differently when rotated about the X axis...
     //fuck it for now...
-    if(rotX != 0.0f) {
+
+    if(angle != 0.0f) {
         rectWidth = 9999.0f;
         rectHeight = 99999.0f;
     }
-
+#if 0
     if(rotZ != 0.0f) {
         botRight.x = rectWidth;
         botRight.y = rectHeight;
         diagonalDist = gyVec2Magnitude(&botRight);
         rectWidth = rectHeight = diagonalDist;
     }
+#endif
 
     const float halfW = (rectWidth)*0.5f;
     const float halfH = (rectHeight)*0.5f;
@@ -133,10 +135,13 @@ static inline void gyVidCamOrthoLookAt(GYCamera *cam, const GYVector3* pos, cons
     gyVidResolution(&scrWidth, &scrHeight);
     gyMatTranslate((float)scrWidth*0.5f, (float)scrHeight*0.5f, 0.0f);
     gyMatScale(scale, scale, 1.0f);
+#if 0
     gyMatRotate(rotX, 1.0f, 0.0f, 0.0f);
     gyMatRotateZ(rotZ);
-
-    gyMatTranslate(floor(-pos->x*scale)/scale, floor(-pos->y*scale)/scale, (rotX == 0)? 0.0f : -pos->z);
+#else
+    gyMatRotate(angle, dir->x, dir->y, dir->z);
+#endif
+    gyMatTranslate(floor(-pos->x*scale)/scale, floor(-pos->y*scale)/scale, /*(rotX == 0)? 0.0f : -pos->z*/ 0.0f);
 
 
     gyMatStore(&cam->viewMat);

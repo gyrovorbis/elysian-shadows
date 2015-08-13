@@ -259,7 +259,7 @@ void AnimationBase::_updateChildren(void) {
             worldPos.z
         };
 
-        childTransform->_orientZ = parentTransform->_orientZ + zOrient;
+        childTransform->_angle = parentTransform->_angle + zOrient;
 
         //update children's animations
 /*

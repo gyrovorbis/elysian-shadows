@@ -33,8 +33,6 @@ OOLUA_EXPORT_FUNCTIONS_CONST(TileEntry,
                                  getOrient,
                                  getElev)
 
-
-
 OOLUA_EXPORT_FUNCTIONS_CONST(Area,
                                     getDirName,
                                     getPath,
@@ -45,7 +43,12 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Area,
                                     getActiveEntityCount,
                                     getInactiveEntityByIndex,
                                     getInactiveEntityCount,
-                                    getNameString)
+                                    getNameString,
+                                    getUseSun,
+                                    getBgmOggByTrack,
+                                    getAuxOggByTrack,
+                                    getBgmOggTrackCount,
+                                    getAuxOggTrackCount)
 OOLUA_EXPORT_FUNCTIONS(Area,
                                 setTileEntry,
                                 addEntity,
@@ -56,4 +59,9 @@ OOLUA_EXPORT_FUNCTIONS(Area,
                                 setDirName,
                                 setNameString,
                                 setMapWidth,
-                                setMapHeight)
+                                setMapHeight,
+                                setUseSun,
+                                getAmbientColor,
+                                setAmbientColor,
+                                setBgmOggByTrack,
+                                setAuxOggByTrack)

@@ -2,7 +2,7 @@
 #include <crtp/elysian_combat.hpp>
 #include <crtp/elysian_area.hpp>
 #include "elysian_collision_system.hpp"
-#include "elysian_camera_system.hpp"
+#include "crtp/elysian_camera_system.hpp"
 #include "elysian_gui_system.hpp"
 #include "elysian_behavior_system.hpp"
 #include "elysian_audio_system.hpp"

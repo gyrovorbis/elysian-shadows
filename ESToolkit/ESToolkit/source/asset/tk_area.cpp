@@ -29,6 +29,8 @@
 #include <QOpenGLContext>
 #include <tk_engine_gl_scene_widget.h>
 #include <tk_selection_scene.h>
+#include <model/tk_property_item_delegate.h>
+#include <tk_lua_wrappers.h>
 
 
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(TkArea)
@@ -539,4 +541,12 @@ void TkArea::removeEntity(Entity *entity) {
     elysian::AreaBase::removeEntity(entity);
     _disconnectSlots(entity);
     Q_EMIT entityRemoved(this, entity);
+}
+
+void TkArea::initializeDelegates(void) {
+    auto* widthDelegate = new SpinboxPropertyItemDelegate(0, ELYSIAN_AREA_MAP_WIDTH);
+    OOLUA::push(*_mainState, widthDelegate);
+    lua_setfield(*_mainState, -2, "lkkfsdklj;fsdalk;jasdfl;kj");
+
+
 }

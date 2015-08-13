@@ -80,6 +80,7 @@ Q_SIGNALS:
     void levelChanging(Level* const level);
     void projectChanged(Project *const project);
     void engineInitialize(void);
+    void engineUpdated(void);
 
 	void areaAdded(Project *const project, Level *const level, Area *const area);
 	void areaRenamed(const QString oldName, const QString newName);

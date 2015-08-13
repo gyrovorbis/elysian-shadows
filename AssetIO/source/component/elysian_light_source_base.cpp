@@ -77,8 +77,8 @@ void LightSourceBase::update(void) {
 	}
 }
 
-void LightSourceBase::updateBoundingVolume(const CameraState *const cam, const GY_CUBE_MAP_FACE face) {
-	CameraState* thisCam = static_cast<CameraState*>(camera);
+void LightSourceBase::updateBoundingVolume(const Camera *const cam, const GY_CUBE_MAP_FACE face) {
+    Camera* thisCam = static_cast<Camera*>(camera);
     GYViewVolume* vol = &thisCam->viewVolume;
 
 	if(type == GY_LIGHT_DIRECTIONAL) {

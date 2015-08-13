@@ -5,6 +5,7 @@
 #include <vector>
 #include <stdint.h>
 #include <utility/elysian_mem_pool.hpp>
+#include <primitive/elysian_instance_transform.hpp>
 #include <crtp/elysian_component.hpp>
 #include <crtp/elysian_lua_table_proxy.hpp>
 
@@ -89,10 +90,20 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(dirName, getDirName, setDirName)
             ELYSIAN_LUA_PROXY_FIELD(nameString, getNameString, setNameString)
             ELYSIAN_LUA_PROXY_FIELD(path, getPath)
+
             ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_BEGIN(size)
                 ELYSIAN_LUA_PROXY_FIELD(width, getMapWidth, setMapWidth)
                 ELYSIAN_LUA_PROXY_FIELD(height, getMapHeight, setMapHeight)
             ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_END()
+
+            ELYSIAN_LUA_PROXY_FIELD(useSun,       getUseSun,        setUseSun)
+            ELYSIAN_LUA_PROXY_FIELD(ambientColor, getAmbientColor, setAmbientColor)
+
+            ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_BEGIN(music)
+                ELYSIAN_LUA_PROXY_ARRAY_FIELD(bgm,      getBgmOggByTrack,       setBgmOggByTrack,       getBgmOggTrackCount)
+                ELYSIAN_LUA_PROXY_ARRAY_FIELD(aux,      getAuxOggByTrack,       setAuxOggByTrack,       getAuxOggTrackCount)
+            ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_END()
+
             ELYSIAN_LUA_PROXY_ARRAY_FIELD(activeEntities,   getActiveEntityByIndex,     setActiveEntityByIndex,     getActiveEntityCount)
             ELYSIAN_LUA_PROXY_ARRAY_FIELD(inactiveEntities, getInactiveEntityByIndex,   setInactiveEntityByIndex,   getInactiveEntityCount)
         ELYSIAN_LUA_PROXY_FIELDS_END()
@@ -146,8 +157,13 @@ namespace elysian {
         int                         lastOffset[2] = {0};
         int                         minIndex[2] = {INT_MAX};
         int                         maxIndex[2] = {0};
+        GYVector4                   _ambientColor   = { 1.0f, 1.0f, 1.0f, 1.0f };
+        bool                        _useSun         = true;
 
-        //AreaBase(void);
+        char                        _bgmOggTracks[3][ELYSIAN_AREA_PATH_SIZE] = { 0 };
+        char                        _auxOggTracks[2][ELYSIAN_AREA_PATH_SIZE] = { 0 };
+
+                                    AreaBase(void);
                                     ~AreaBase(void);
 
         unsigned short              getMapWidth(void) const;
@@ -160,6 +176,18 @@ namespace elysian {
         const char*                 getNameString(void) const;
         void                        setDirName(const char* name);
         void                        setNameString(const char *str);
+
+        bool                        getUseSun(void) const;
+        void                        setUseSun(const bool val);
+        Vector4                     getAmbientColor(void);
+        void                        setAmbientColor(const GYVector4& color);
+
+        const char*                 getBgmOggByTrack(const unsigned index) const;
+        void                        setBgmOggByTrack(const unsigned index, const char* path);
+        unsigned                    getBgmOggTrackCount(void) const;
+        const char*                 getAuxOggByTrack(const unsigned index) const;
+        void                        setAuxOggByTrack(const unsigned index, const char* path);
+        unsigned                    getAuxOggTrackCount(void) const;
 
         //Slower than layer-specific accessors, but loop-friendly
         TileEntry                   getTileEntry(const unsigned l, const unsigned x, const unsigned y) const;
@@ -331,6 +359,17 @@ namespace elysian {
 
         }
      }
+
+
+     inline bool AreaBase::getUseSun(void) const { return _useSun; }
+     inline void AreaBase::setUseSun(const bool val) { _useSun = val; }
+     inline Vector4 AreaBase::getAmbientColor(void) { return Vector4(&_ambientColor); }
+     inline void AreaBase::setAmbientColor(const GYVector4& color) { _ambientColor = color; }
+     inline const char* AreaBase::getBgmOggByTrack(const unsigned index) const { return _bgmOggTracks[index]; }
+     inline void AreaBase::setBgmOggByTrack(const unsigned index, const char* path) { strcpy(_bgmOggTracks[index], path); }
+     inline const char* AreaBase::getAuxOggByTrack(const unsigned index) const { return _auxOggTracks[index]; }
+     inline void AreaBase::setAuxOggByTrack(const unsigned index, const char* path) { strcpy(_auxOggTracks[index], path); }
+
 }
 
 #endif

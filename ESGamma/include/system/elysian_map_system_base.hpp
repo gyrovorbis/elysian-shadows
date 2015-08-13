@@ -2,7 +2,7 @@
 #define ELYSIAN_MAP_SYSTEM_BASE_HPP
 
 #include "elysian_system.hpp"
-#include "elysian_camera_system.hpp"
+#include "crtp/elysian_camera_system.hpp"
 #include <crtp/elysian_depth_buff_entry.hpp>
 #include <level/elysian_map_depth_buffer.hpp>
 #include <level/elysian_zcoords.hpp>

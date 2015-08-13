@@ -12,7 +12,7 @@ const QPixmap SheetViewTileGraphicsItem::_getTilePixmap(const TileEntry /*entry*
 }
 
 const TileSelection<TileEntry> *SheetViewTileGraphicsItem::_getTileSelection(void) const {
-	return NULL;
+    return nullptr;
 }
 
 /*

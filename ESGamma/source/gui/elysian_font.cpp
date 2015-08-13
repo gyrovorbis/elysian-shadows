@@ -3,7 +3,7 @@
 #include <gyro_shader_api.h>
 #include "elysian_font.hpp"
 #include "elysian_debug.hpp"
-#include "elysian_camera_system.hpp"
+#include "crtp/elysian_camera_system.hpp"
 #include "elysian_system.hpp"
 
 namespace elysian {

@@ -1,7 +1,9 @@
 #include <tk_lua_table_stack_model.h>
 #include <asset/tk_lua_table_proxy.h>
 #include <QVariant>
-#include <tk_area.h>
+#include <asset/tk_area.h>
+#include <estk/tk_lua_wrappers.h>
+#include <core/tk_lua_qt_utils.h>
 
 LuaTableFieldItem::LuaTableFieldItem(const int ref, const QVariant key, QStandardItem*const labelItem):
     _labelItem(labelItem),
@@ -146,34 +148,41 @@ LuaTableTableFieldData::~LuaTableTableFieldData(void) {
 }
 
 QStyledItemDelegate* LuaTableFieldItem::getStyledItemDelegate(void) const {
-#if 0
-    LuaManager::stackBalanceBegin();
-    int top = lua_gettop(*_mainState);
 
-    lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
-    lua_getmetatable(*_mainState, -1);
-    lua_getfield(*_mainState, -1, ELYSIAN_LUA_TABLE_STACK_MODEL_DELEGATE_METAFIELD);
-    if(lua_isnil(*_mainState, -1)) {
+    if(!_delegate) {
+
+        LuaManager::stackBalanceBegin();
+        int top = lua_gettop(*_mainState);
+
+        lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
+        //lua_getmetatable(*_mainState, -1);
+        LuaManager::getMetatable(-1);
+        lua_getfield(*_mainState, -1, ELYSIAN_LUA_TABLE_STACK_MODEL_DELEGATE_METAFIELD);
+        if(lua_isnil(*_mainState, -1)) {
+            lua_pop(*_mainState, lua_gettop(*_mainState)-top);
+            LuaManager::stackBalanceEnd();
+            return nullptr;
+        }
+
+        OOLUA::push(*_mainState, _key);
+        lua_gettable(*_mainState, -2);
+
+        if(lua_isnil(*_mainState, -1)) {
+            lua_pop(*_mainState, lua_gettop(*_mainState)-top);
+            LuaManager::stackBalanceEnd();
+            return nullptr;
+        }
+
+        PropertyItemDelegate* delegate;
+        OOLUA::pull(*_mainState, delegate);
+        _delegate = static_cast<QStyledItemDelegate*>(delegate);
+
         lua_pop(*_mainState, lua_gettop(*_mainState)-top);
         LuaManager::stackBalanceEnd();
-        return nullptr;
+
     }
 
-    OOLUA::push(*_mainState, _key);
-    lua_gettable(*_mainState, -1);
-
-    if(lua_isnil(*_mainState, -1)) {
-        lua_pop(*_mainState, lua_gettop(*_mainState)-top);
-        LuaManager::stackBalanceEnd();
-        return nullptr;
-    }
-
-    OOLUA::pull(*_mainState, _delegate);
-#else
-    return nullptr;
-#endif
-
-
+    return _delegate;
 
 }
 

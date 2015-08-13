@@ -8,7 +8,7 @@
 #include "elysian_party_system.hpp"
 #include <crtp/elysian_area.hpp>
 #include "elysian_gui_system.hpp"
-#include "elysian_camera_system.hpp"
+#include <crtp/elysian_camera_system.hpp>
 #include "elysian_timer_system.hpp"
 #include <crtp/elysian_character.hpp>
 #include "elysian_behavior_system.hpp"

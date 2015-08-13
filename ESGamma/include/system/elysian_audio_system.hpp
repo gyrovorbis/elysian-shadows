@@ -10,6 +10,8 @@
 #define ELYSIAN_AUDIO_CHANNELS			32
 #define ELYSIAN_AUDIO_REFERENCE_DIST	10
 #define ELYSIAN_AUDIO_ZSCALE			32.0f
+#define ELYSIAN_AUDIO_BGM_TRACKS        6
+#define ELYSIAN_AUDIO_AUX_TRACKS        4
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 ELYSIAN_ASSET_TYPEDEF(AudioSource)
@@ -131,8 +133,8 @@ namespace elysian {
 
 		}					_streamChannels[6];
 		AudioChannel		_channels[ELYSIAN_AUDIO_CHANNELS];
-		GYOgg*				_bgmTracks[6]		= {nullptr};
-		GYOgg*				_auxTracks[4]		= {nullptr};
+        GYOgg*				_bgmTracks[ELYSIAN_AUDIO_BGM_TRACKS]		= {nullptr};
+        GYOgg*				_auxTracks[ELYSIAN_AUDIO_AUX_TRACKS]		= {nullptr};
 		GYVector3			_listenerPos		= {0.0f, 0.0f, 0.0f};
 		struct GlobalState {
 			enum STATE { NORMAL, FADE_OUT, FADE_OUT_NEW, FADE_IN } state = NORMAL;

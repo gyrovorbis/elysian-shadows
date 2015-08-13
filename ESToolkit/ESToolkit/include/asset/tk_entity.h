@@ -93,6 +93,7 @@ public:
 
     //sstatic Entity*              create(void);
     static Entity*              create(const OOLUA::Lua_table_ref valTable);
+    static void                 initializeDelegates(void);
 
 public Q_SLOTS:
     void                        onEntityParented(Entity*const child, Entity*const parent);

@@ -18,20 +18,8 @@
 #include <proxy/elysian_camera_system_proxy.hpp>
 
 
-OOLUA_EXPORT_FUNCTIONS_CONST(CameraKeyFrame,
-                             getPos,
-                             getDir,
-                             getZOrient,
-                             getXOrient,
-                             getScale,
-                             getOffset)
-OOLUA_EXPORT_FUNCTIONS(CameraKeyFrame,
-                       setPos,
-                       setScale,
-                       setZOrient,
-                       setXOrient,
-                       setDir,
-                       setOffset)
+OOLUA_EXPORT_FUNCTIONS_CONST(CameraKeyFrame)
+OOLUA_EXPORT_FUNCTIONS(CameraKeyFrame)
 
 OOLUA_EXPORT_FUNCTIONS(CameraSystem,
                        scale,

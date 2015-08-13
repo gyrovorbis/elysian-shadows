@@ -1,5 +1,5 @@
 #include "elysian_particle_system.hpp"
-#include "elysian_camera_system.hpp"
+#include <crtp/elysian_camera_system.hpp>
 #include "elysian_debug.hpp"
 #include "elysian_timer_system.hpp"
 #include "elysian_force_generator.hpp"
@@ -30,7 +30,7 @@ void ParticleSystem::resizePool(const unsigned index, const unsigned size) {
 
 void ParticleSystem::update(void) {
 	const float deltaTime = getTimerSys()->getDeltaTime();
-	CameraState* state = getCameraSys()->getCurrentState();
+    Camera* state = getCameraSys()->getCurrentState();
 
     //Update internal emitters
 	for(unsigned i = 0; i < ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_COUNT; ++i) {

@@ -2,6 +2,8 @@
 #include <core/tk_menu_stack.h>
 #include <asset/tk_entity.h>
 #include <spine/AnimationState.h>
+#include <model/tk_property_item_delegate.h>
+#include <estk/tk_lua_wrappers.h>
 
 void TkSkeleton::onAtlasChanged(void) {
     setAttrib(_attrib);
@@ -53,4 +55,14 @@ void TkSkeleton::setAnimByName(const int trackIndex, const char*const animName, 
 
     }
 
+}
+
+void TkSkeletonAttrib::initializeDelegates(void) {
+    auto* atlasDelegate = new FileBrowserPropertyItemDelegate;
+    OOLUA::push(*_mainState, atlasDelegate);
+    lua_setfield(*_mainState, -2, "atlasPath");
+
+    auto* jsonDelegate = new FileBrowserPropertyItemDelegate;
+    OOLUA::push(*_mainState, jsonDelegate);
+    lua_setfield(*_mainState, -2, "jsonPath");
 }

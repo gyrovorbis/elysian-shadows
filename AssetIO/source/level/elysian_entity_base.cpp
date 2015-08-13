@@ -120,7 +120,7 @@ void EntityBase::pushViewTransform(void) {
         gyMatTranslate(_transform._pos.x, _transform._pos.y, _transform._pos.z);
         gyMatScale(_transform._size.x*_transform._scale.x, _transform._size.y*_transform._scale.y, _transform._size.z*_transform._scale.z);
         gyMatTranslate(0.0f, 0.0f, 0.5f);
-        gyMatRotate(_transform._orientZ, 0.0f, 1.0f, 0.0f);
+        //gyMatRotate(_transform._orientZ, 0.0f, 1.0f, 0.0f);
         gyMatTranslate(0.0f, 0.0f, -0.5f);
 
 
@@ -929,5 +929,7 @@ LuaBehavior* EntityBase::getLuaBehaviorByIndex(const unsigned index) const {
     if(index >= _behaviors.size()) return nullptr;
     return static_cast<LuaBehavior*>(_behaviors[index]);
 }
+
+
 
 }

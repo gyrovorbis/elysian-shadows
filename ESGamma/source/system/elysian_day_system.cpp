@@ -40,7 +40,7 @@ void DaySystem::update(void) {
 
 
 void DaySystem::setSunEnabled(const bool val) {
-	if(_sunEnabled == val) return;
+    //if(_sunEnabled == val) return;
 
 	if(val) {
 		onAreaEnter();

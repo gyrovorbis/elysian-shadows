@@ -14,7 +14,7 @@
 #include "elysian_game_input.hpp"
 //#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tk_map_system.h")
 #include "elysian_map_system.hpp"
-#include "elysian_camera_system.hpp"
+#include "crtp/elysian_camera_system.hpp"
 #include <crtp/elysian_character.hpp>
 #include "elysian_party_system.hpp"
 #include <crtp/elysian_area.hpp>
@@ -324,24 +324,25 @@ void DebugBase::processInput(GameInput& input) {
     }
 
     if(input.getDown(GameInput::BUT_Q) && !freeCam){
-        _engine->_cameraSystem->rotateZ(0.1f*60.0f*getTimerSys()->getDeltaTime());
+
+        _engine->_cameraSystem->getCurrentState()->rotate(0.1f*60.0f*getTimerSys()->getDeltaTime());
 	}
     if(input.getDown(GameInput::BUT_A) && !freeCam){
-        _engine->_cameraSystem->rotateZ(-0.1f*60.0f*getTimerSys()->getDeltaTime());
-	}
+        _engine->_cameraSystem->getCurrentState()->rotate(-0.1f*60.0f*getTimerSys()->getDeltaTime());
+    }
 
-    if(input.getDown(GameInput::BUT_E) && !freeCam) {
-        _engine->_cameraSystem->rotateX(-0.1f*getTimerSys()->getDeltaTime());
+    if(input.getDown(GameInput::BUT_B) && !freeCam) {
+   //     _engine->_cameraSystem->rotateX(-0.1f*60.0f*getTimerSys()->getDeltaTime());
 	}
 
     if(input.getDown(GameInput::BUT_D) && !freeCam) {
-        _engine->_cameraSystem->rotateX(0.1f*getTimerSys()->getDeltaTime());
+     //  _engine->_cameraSystem->rotateX(0.1f*60.0f*getTimerSys()->getDeltaTime());
 	}
 
 	if(input.getTapped(GameInput::BUT_Z)) { //Reset Transform
 		_engine->_cameraSystem->setStaticScale(1.0f);
-		_engine->_cameraSystem->setOrientZ(0.0f);
-		_engine->_cameraSystem->setOrientX(0.0f);
+        //_engine->_cameraSystem->setOrientZ(0.0f);
+        //_engine->_cameraSystem->setOrientX(0.0f);
 	}
 
 	if(input.getTapped(GameInput::BUT_C)) {
@@ -352,7 +353,7 @@ void DebugBase::processInput(GameInput& input) {
         else Debug::printf(Debug::DBG_VERBOSE, "Collision Disabled");
 
 	}
-
+#if 0
     if(input.getTapped(GameInput::BUT_B)) {
         if(_engine->_collisionSystem->getBroadPhase()) {
             _engine->_collisionSystem->setBroadPhase(false);
@@ -362,6 +363,7 @@ void DebugBase::processInput(GameInput& input) {
             Debug::printf(Debug::DBG_VERBOSE, "Sort and Sweep Enabled!");
         }
     }
+#endif
 
 	if(input.getTapped(GameInput::BUT_L)) {
 		ADV_LOG_WRAP newWrap = (_advLogWrap < ADV_LOG_MAX-1)? (ADV_LOG_WRAP)(_advLogWrap+1) : (ADV_LOG_WRAP)0;
@@ -613,7 +615,7 @@ void DebugBase::processInput(GameInput& input) {
 		}
 
 		if(count%2 == 0) {
-			getCameraSys()->pushCustomCameraState(src->getCameraState());
+            getCameraSys()->pushCustomCamera(src->getCameraState());
 
 		} else {
 			getCameraSys()->popState();

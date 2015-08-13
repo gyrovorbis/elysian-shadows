@@ -1,6 +1,6 @@
 #include "elysian_light_system.hpp"
 #include <crtp/elysian_light_source.hpp>
-#include "elysian_camera_system.hpp"
+#include "crtp/elysian_camera_system.hpp"
 #include <crtp/elysian_area.hpp>
 #include <crtp/elysian_entity.hpp>
 #include <crtp/elysian_level.hpp>
@@ -23,7 +23,7 @@ LightSystem::LightSystem(void) {
 
 
 void LightSystem::_addToLightMap(LightSource*const src) {
-    CameraState*const		 lightCam	= src->getCameraState();
+    Camera*const		 lightCam	= src->getCameraState();
     const uint32_t			lightMask	= (1<<(_onscreenLightCount-1));
     int startX, startY, endX, endY;
 
@@ -147,7 +147,7 @@ void LightSystem::shadowRenderPasses(void) {
     //if(!_enabled) return;
     const auto sources      = _curArea->lightSources;
     CameraSystem* camSys    = getCameraSys();
-    CameraState* cam        = camSys->getCurrentState();
+    Camera* cam        = camSys->getCurrentState();
     /*
     getCameraSys()->getVisibleTileRegion();
     _screenTileXOffset	= cam->_tileStartX;
@@ -176,7 +176,7 @@ void LightSystem::shadowRenderPasses(void) {
 
             if(it->isShadowCaster()) {
                 gyVidLightSourceBeginShadowPass(it, GY_CUBE_MAP_FACE_MAX);
-                getCameraSys()->setCurrentCameraState(it->getCameraState());
+                getCameraSys()->setCurrentCamera(it->getCameraState());
                 //_renderShadowVolumes();
                 if(_shadowPassEnabled) getMapSys()->render();
             }
@@ -193,7 +193,7 @@ void LightSystem::shadowRenderPasses(void) {
                     if(it->isShadowCaster()) {
                         gyVidLightSourceBeginShadowPass(it, (GY_CUBE_MAP_FACE)i);
 
-                        getCameraSys()->setCurrentCameraState(it->getCameraState());
+                        getCameraSys()->setCurrentCamera(it->getCameraState());
                         //_renderShadowVolumes();
                         if(_shadowPassEnabled) getMapSys()->render();
 
@@ -408,7 +408,7 @@ void LightSystem::_sortOnscreenLights(void) {
         for(unsigned i = 0; i < _onscreenLightCount; ++i) {
             if(used[i]) continue;
             int sx, sy, ex, ey;
-            const CameraState* const cam = lights[i]->getCameraState();
+            const Camera* const cam = lights[i]->getCameraState();
             getCameraSys()->getVisibleTileRegion(sx, sy, ex, ey, cam);
             const unsigned area = (ex-sx)*(ey-sy);
             if(area > largestArea) {

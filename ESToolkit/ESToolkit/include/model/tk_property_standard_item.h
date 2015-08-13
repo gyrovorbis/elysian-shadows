@@ -16,11 +16,11 @@ class QStyledItemDelegate;
 */
 class ESTkStandardItem: public QStandardItem {
 protected:
-    QVector<ESTkStandardItem*>  _children;
-    QStyledItemDelegate*        _delegate       = nullptr;
-    unsigned                    _refCount       = 0;
-    bool                        _initialized    = false;
-    bool                        _active         = false;
+    QVector<ESTkStandardItem*>      _children;
+    mutable QStyledItemDelegate*    _delegate       = nullptr;
+    unsigned                        _refCount       = 0;
+    bool                            _initialized    = false;
+    bool                            _active         = false;
 public:
     ESTkStandardItem(void) = default;
 
@@ -80,6 +80,7 @@ private:
 	QUndoStack *_undoStack;
 	UndoItem::TYPE _undoType;
     bool _ignoreCheck;
+    bool _displayValue = false;
     bool _settingFlags = false;
 	//unsigned _refCount;
 protected:
@@ -156,7 +157,8 @@ public:
             //Fucking terrible, but I don't want to specialize for bool.
             else return *(reinterpret_cast<bool*>(&data))? Qt::Checked : Qt::Unchecked;
         case Qt::DisplayRole:
-            if(isCheckable()) return QStandardItem::data(role);
+            //if(isCheckable())
+            return _displayValue? QStandardItem::data(Qt::DisplayRole) : data;
         case Qt::EditRole:
             return data;
 		default:
@@ -177,12 +179,14 @@ public:
                 }
             }
             break;
-		case Qt::DisplayRole:
+        case Qt::DisplayRole:
+            _displayValue = true;
+            return QStandardItem::setData(value, role);
 		case Qt::EditRole:
             if(lastData != value.value<T>()) {
                 _PropertyStandardItem<UndoRedo, T, C>::setDataEditRole(this, value);
             }
-			break;
+            break;
 		default:
 			return QStandardItem::setData(value, role);
 		}

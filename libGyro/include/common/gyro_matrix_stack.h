@@ -91,22 +91,20 @@ static inline void gyMatTranslateScale(const float x, const float y, const float
 	gyMatApply(_tranScaleMat);
 }
 
-static inline void gyMatInstance(const GYInstMat *const inst) {
-	GYVector3 sc = inst->_size;
-	float sin, cos;
-	gyVec3CompProdAccum(&sc, &inst->_scale);
-	gySinCos(inst->_orientZ, &sin, &cos);
-	_instanceMat[0][0] = sc.x*cos; _instanceMat[1][0] = -sc.y*sin; _instanceMat[3][0] = inst->_pos.x;
-	_instanceMat[0][1] = sc.x*sin; _instanceMat[1][1] = sc.y*cos; _instanceMat[3][1] = inst->_pos.y;
-	_instanceMat[2][2] = sc.z;
-	_instanceMat[3][2] = inst->_pos.z; //and scale Z?
-	gyMatApply(_instanceMat);
-}
+
 
 static inline void gyMatRotate(const float angle, const float x, const float y, const float z) {
 	float sinTheta, cosTheta;
 
 	gySinCos(angle, &sinTheta, &cosTheta);
+
+#if 0
+    const float xy = x*y;
+    const float yz = y*z;
+    const float xz = x*z;
+    const float oneMinusCos = 1.0f - cosTheta;
+    const float
+#endif
 
 	_rotationMat[0][0] = cosTheta + x*x*(1.0f-cosTheta);
 	_rotationMat[1][0] = y*x*(1.0f-cosTheta) + z*sinTheta;
@@ -121,6 +119,26 @@ static inline void gyMatRotate(const float angle, const float x, const float y, 
 	_rotationMat[2][2] = cosTheta + z*z*(1.0f-cosTheta);
 
 	gyMatApply(_rotationMat);
+}
+
+static inline void gyMatInstance(const GYInstMat *const inst) {
+    GYVector3 sc = inst->_size;
+    gyVec3CompProdAccum(&sc, &inst->_scale);
+    //gySinCos(inst->_orientZ, &sin, &cos);
+
+#if 0
+    _instanceMat[0][0] = sc.x*cos; _instanceMat[1][0] = -sc.y*sin; _instanceMat[3][0] = inst->_pos.x;
+    _instanceMat[0][1] = sc.x*sin; _instanceMat[1][1] = sc.y*cos; _instanceMat[3][1] = inst->_pos.y;
+    _instanceMat[2][2] = sc.z;
+    _instanceMat[3][2] = inst->_pos.z; //and scale Z?
+    gyMatApply(_instanceMat);
+#else
+    gyMatTranslate(inst->_pos.x, inst->_pos.y, inst->_pos.z);
+    gyMatScale(sc.x, sc.y, sc.z);
+    gyMatRotate(inst->_angle, inst->_orient.x, inst->_orient.y, inst->_orient.z);
+#endif
+
+
 }
 
 static inline void gyMatShearZ(const float shx, const float shy) {

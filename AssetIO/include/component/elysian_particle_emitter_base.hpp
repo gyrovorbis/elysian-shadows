@@ -15,7 +15,7 @@
 
 namespace elysian {
 
-    struct CameraState;
+    struct Camera;
     class Material;
     class ForceGenerator;
 
@@ -64,6 +64,7 @@ namespace elysian {
 
         using       LuaTableProxy<ParticleEmitterAttrib, ParticleEmitterAttrib, CollidableStaticAttrib, SpriteAttrib>::registerProxyMetaTable;
         using       LuaTableProxy<ParticleEmitterAttrib, ParticleEmitterAttrib, CollidableStaticAttrib, SpriteAttrib>::fromTable;
+        using       LuaTableProxy<ParticleEmitterAttrib, ParticleEmitterAttrib, CollidableStaticAttrib, SpriteAttrib>::initializeDelegates;
 
                     ParticleEmitterAttrib(void);
         virtual     ~ParticleEmitterAttrib(void) override;
@@ -142,7 +143,7 @@ namespace elysian {
         ParticleEmitterAttrib* getAttrib(void) const;
 
         void applyForce(ForceGenerator*const force, const float deltaTime);
-        void update(const CameraState*const state, const float deltaTime);
+        void update(const Camera*const state, const float deltaTime);
         void render(void);
         void renderAtElev(const unsigned char elev);
 

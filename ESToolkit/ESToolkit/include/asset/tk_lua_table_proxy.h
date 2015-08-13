@@ -8,6 +8,7 @@
 #define TK_LUA_TABLE_USERDATA_FIELD_KEY         "__tkUd"
 #define TK_LUA_TABLE_METAMETHODSET_FIELD_KEY    "__metaset"
 #define TK_LUA_TABLE_PROPERTY_TABLE_FIELD_KEY   "__prop"
+#define TK_LUA_TABLE_DELEGATE_FIELD_KEY         "__delegate"
 
 
 class TkLuaTableUserdata: public QObject {
@@ -102,7 +103,11 @@ protected:
 
 public:
 
+                TkLuaTableProxy(void) = default;
+                TkLuaTableProxy(const TkLuaTableProxy<P, T, Bases...>& rhs);
     virtual     ~TkLuaTableProxy(void);
+
+    static void initializeDelegates(void);
 
     //Might also need copy constructor
     const TkLuaTableProxy<P, T, Bases...>&    operator=(const TkLuaTableProxy<P, T, Bases...>& rhs);
@@ -127,6 +132,8 @@ inline TkLuaTableUserdata::TkLuaTableUserdata(void): QObject(nullptr) {}
 inline void TkLuaTableUserdata::emitFieldAdded(const QVariant key) const { Q_EMIT fieldAdded(key); }
 inline void TkLuaTableUserdata::emitFieldChanged(const QVariant key) const { Q_EMIT fieldChanged(key); }
 
+template <typename P, typename T, class... Bases>
+inline void TkLuaTableProxy<P, T, Bases...>::initializeDelegates(void) { }
 
 template <typename P, typename T, class... Bases>
 inline void TkLuaTableProxy<P, T, Bases...>::_callPropertyProxyMethod(const bool write, const unsigned args, const unsigned retVals, const unsigned keyIndex) {
@@ -160,6 +167,11 @@ inline const TkLuaTableProxy<P, T, Bases...>& TkLuaTableProxy<P,T, Bases...>::op
     return *this;
 }
 
+template<typename P, typename T, class... Bases>
+inline TkLuaTableProxy<P, T, Bases...>::TkLuaTableProxy(const TkLuaTableProxy<P, T, Bases...>& rhs) {
+    *this = rhs;
+}
+
 template <typename P, typename T, class... Bases>
 inline TkLuaTableProxy<P, T, Bases...>::~TkLuaTableProxy(void) {
     if(elysian::LuaTableProxyBase<P, T, Bases...>::_luaRef != LUA_NOREF) {
@@ -189,6 +201,15 @@ inline void TkLuaTableProxy<P, T, Bases...>::_addMetamethods(lua_State *l) {
     //Push our QObject retrieval function
     lua_pushcfunction(l, &_connectSignals);
     lua_setfield(l, -2, "__connectSignals");
+
+    lua_newtable(*_mainState);
+    lua_pushvalue(*_mainState, -1);
+    lua_setfield(*_mainState, -3, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
+
+    //CRTP polymorph to allow child classes to create and register their own delegates
+    T::initializeDelegates();
+
+    lua_pop(*_mainState, 1);
 
     ParentType::_addMetamethods(l);
 }

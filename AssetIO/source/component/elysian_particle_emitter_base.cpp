@@ -3,7 +3,7 @@
 #include <primitive/elysian_material.hpp>
 #include "elysian_debug.hpp"
 #include "elysian_force_generator.hpp"
-#include "elysian_camera_system.hpp"
+#include "crtp/elysian_camera_system.hpp"
 #include <crtp/elysian_entity.hpp>
 #include <level/elysian_map_depth_buffer.hpp>
 #include <crtp/elysian_area.hpp>
@@ -139,7 +139,7 @@ void ParticleEmitterInternals::emitFromPoint(const GYVector3 &pos, const float a
 }
 
 
-void ParticleEmitterInternals::update(const CameraState*const cam, const float deltaTime) {
+void ParticleEmitterInternals::update(const Camera*const cam, const float deltaTime) {
     GYVector3 newVel;
     //Check for periodic emission!
 

@@ -128,7 +128,6 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../ESGamma/source/system/elysian_animation_system.cpp \
     ../../ESGamma/source/system/elysian_audio_system.cpp \
     ../../ESGamma/source/system/elysian_behavior_system.cpp \
-    ../../ESGamma/source/system/elysian_camera_system.cpp \
     ../../ESGamma/source/system/elysian_character_system.cpp \
     ../../ESGamma/source/system/elysian_collision_system.cpp \
     ../../ESGamma/source/system/elysian_combat_system.cpp \
@@ -189,7 +188,11 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../ESGamma/source/proxy/elysian_rigid_body_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_timer_system_proxy.cpp \
     ../../AssetIO/source/component/elysian_lua_behavior_base.cpp \
-    source/model/tk_property_item_delegate.cpp
+    source/model/tk_property_item_delegate.cpp \
+    source/estk/tk_camera_dock_widget.cpp \
+    ../../ESGamma/source/system/elysian_camera_system_base.cpp \
+    source/estk/tk_camera_system.cpp \
+    ../../ESGamma/source/utility/elysian_camera_shake_subprocess.cpp
 
 
 
@@ -328,7 +331,6 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../ESGamma/include/system/elysian_animation_system.hpp \
     ../../ESGamma/include/system/elysian_audio_system.hpp \
     ../../ESGamma/include/system/elysian_behavior_system.hpp \
-    ../../ESGamma/include/system/elysian_camera_system.hpp \
     ../../ESGamma/include/system/elysian_character_system.hpp \
     ../../ESGamma/include/system/elysian_collision_system.hpp \
     ../../ESGamma/include/system/elysian_combat_system.hpp \
@@ -407,7 +409,12 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../AssetIO/include/component/elysian_lua_behavior_base.hpp \
     ../../AssetIO/include/crtp/elysian_lua_behavior.hpp \
     ../../AssetIO/include/level/elysian_depth_buff_entry_base.hpp \
-    ../../AssetIO/include/crtp/elysian_depth_buff_entry.hpp
+    ../../AssetIO/include/crtp/elysian_depth_buff_entry.hpp \
+    ../../ESGamma/include/system/elysian_camera_system_base.hpp \
+    ../../ESGamma/include/crtp/elysian_camera_system.hpp \
+    include/estk/tk_camera_dock_widget.h \
+    include/estk/tk_camera_system.h \
+    ../../ESGamma/include/utility/elysian_camera_shake_subprocess.hpp
 
 !ios {
     HEADERS +=  include/asset/tk_animation.h \
@@ -520,7 +527,8 @@ FORMS += form/estk/tk_sheet_dock_widget.ui \
     form/dialog/tk_engine_settings.ui \
     form/sheet_manager/tk_sheet_manager_file_dock_widget.ui \
     form/dialog/tk_lua_explorer.ui \
-    form/dialog/tk_gitlab_dialog.ui
+    form/dialog/tk_gitlab_dialog.ui \
+    form/estk/tk_camera_dock_widget.ui
 
 #docs.target = ESToolkit.qhc
 #docs.commands = qdoc ./ESToolkit.qdocconf --log-progress --debug $$escape_expand(\n\t) qcollectiongenerator ./ESToolkit.qhcp -o ../../assets/doc/ESToolkit.qhc

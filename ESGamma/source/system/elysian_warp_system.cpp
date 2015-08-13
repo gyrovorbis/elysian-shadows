@@ -1,5 +1,5 @@
 #include "elysian_warp_system.hpp"
-#include "elysian_camera_system.hpp"
+#include "crtp/elysian_camera_system.hpp"
 #include <crtp/elysian_warp.hpp>
 #include "elysian_party_system.hpp"
 #include "elysian_debug.hpp"
@@ -56,8 +56,8 @@ void WarpSystem::update(void) {
 			_state = FADE_IN;
 			if(_currentWarp._obliqueTran) {
 				CameraKeyFrame fr = getCameraSys()->getKeyFrame();
-				fr.setXOrient(0.0f);
-				fr.setScale(1.0f);
+                fr._orient.x = 0.0f;
+                fr.setScale(1.0f, 1.0f, 1.0f);
 				getCameraSys()->moveToKeyFrame(fr, 1.0f);
 			}
 			break;
@@ -123,8 +123,8 @@ void WarpSystem::UpdateCheckWarp(void) {
 			setEngineState(System::ENGINE_WARPING);
 			if(_currentWarp._obliqueTran) {
 				CameraKeyFrame fr = getCameraSys()->getKeyFrame();
-				fr.setXOrient(-0.25*M_PI);
-				fr.setScale(2.0f);
+                fr._orient.x =-0.25*M_PI;
+                fr.setScale(2.0f, 2.0f, 2.0f);
 				getCameraSys()->moveToKeyFrame(fr, 1.0f);
 			}
 		} 

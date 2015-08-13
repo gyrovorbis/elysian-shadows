@@ -26,7 +26,9 @@
 #include <QSpacerItem>
 #include <utility/elysian_generic.hpp>
 #include <QGridLayout>
+#include <model/tk_property_item_delegate.h>
 #include <tk_menu_stack.h>
+#include <tk_lua_wrappers.h>
 
 #define TK_ENTITY_CONTEXT_MENU_BEHAVIOR_NAME_SIZE   100
 
@@ -421,4 +423,26 @@ void TkEntity::setTreeWidgetItemState(const TreeItemState state) {
         static_cast<Entity*>(child(0))->setForeground(0, brush);
     }
 
+}
+
+void TkEntity::initializeDelegates(void) {
+    LuaManager::stackBalanceBegin();
+
+    auto* planeDelegate = new EnumDropdownPropertyItemDelegate({
+       "RECT_PLANE_BOTTOM",
+       "RECT_PLANE_FRONT",
+       "RECT_PLANE_LEFT",
+       "RECT_PLANE_RIGHT",
+       "RECT_PLANE_FRONT_SLOPE_45",
+       "RECT_PLANE_LEFT_SLOPE_45",
+       "RECT_PLANE_RIGHT_SLOPE_45"
+    });
+    OOLUA::push(*_mainState, planeDelegate);
+    lua_setfield(*_mainState, -2, "planeType");
+
+    auto* elevDelegate = new SpinboxPropertyItemDelegate(0, ELYSIAN_TILE_ENTRY_ELEV_MAX);
+    OOLUA::push(*_mainState, elevDelegate);
+    lua_setfield(*_mainState, -2, "elev");
+
+    LuaManager::stackBalanceEnd();
 }

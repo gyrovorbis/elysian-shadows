@@ -36,6 +36,7 @@
 #include <tk_sheet_view_tile_graphics_item.h>
 #include "tk_gl_utilities.h"
 #include <tk_selection_scene.h>
+#include <estk/tk_camera_dock_widget.h>
 
 #include "tk_asset_dock_widget.h"
 #include "tk_layer_dock_widget.h"
@@ -182,7 +183,11 @@ ESToolkit::ESToolkit(QWidget *parent):
     // create/initialize HISTORY dock and widget
     _historyDockWidget = new HistoryDockWidget(this);
     _historyDockWidget->SetActiveGroup(&_undoGroup);
-    addDockWidget(Qt::RightDockWidgetArea, _historyDockWidget);
+    _historyDockWidget->hide();
+    //addDockWidget(Qt::RightDockWidgetArea, _historyDockWidget);
+
+    _cameraDockWidget = new CameraDockWidget(this);
+    _cameraDockWidget->hide();
 
     // Initialize status bar
     QLabel *label = new QLabel;
@@ -1283,12 +1288,15 @@ void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *cons
     case Selectable::ENTITY:
         //Update Menu Bar
         //SyncEntityMenuBar(static_cast<Entity *>(selection));
-
+#if 1
         //Update Entity View
         _selectionDockWidget->SetSelectionTreeWidget();
         //static_cast<Entity*>(selection)->populateModel();
         _selectionDockWidget->SetSelectionModel(static_cast<EntitySelectable*>(selection));
         _selectionDockWidget->ExpandSelectionTree();
+#else
+        select(static_cast<EntitySelectable*>(selection)->)
+#endif
 
         //center on entity
         //_ui->mapView->centerOn((Entity *)selection);
@@ -2380,4 +2388,13 @@ void ESToolkit::on_actionIOS_Simulator_triggered()
 void ESToolkit::on_actionAndroid_Device_triggered()
 {
     m_activePlatform->setIcon(_ui->actionAndroid_Device->icon());
+}
+
+void ESToolkit::on_actionCamera_View_toggled(bool arg1) {
+    if(arg1) {
+        addDockWidget(Qt::LeftDockWidgetArea, _cameraDockWidget);
+        _cameraDockWidget->show();
+    } else {
+        _cameraDockWidget->hide();
+    }
 }

@@ -161,11 +161,12 @@
      <addaction name="actionShadows"/>
     </widget>
     <addaction name="actionAsset_View"/>
-    <addaction name="actionLayer_View"/>
     <addaction name="actionSheet_View"/>
-    <addaction name="actionHistory_View"/>
+    <addaction name="actionLayer_View"/>
     <addaction name="actionSelection_View"/>
     <addaction name="actionEntity_View"/>
+    <addaction name="actionCamera_View"/>
+    <addaction name="actionHistory_View"/>
     <addaction name="separator"/>
     <addaction name="actionReset_Layout"/>
     <addaction name="separator"/>
@@ -1044,7 +1045,7 @@
     <string>Run engine's next frame</string>
    </property>
    <property name="shortcut">
-    <string>F4</string>
+    <string>Ctrl+R</string>
    </property>
   </action>
   <action name="actionClear">
@@ -1480,6 +1481,17 @@
    </property>
    <property name="toolTip">
     <string>Send Toolkit to Android Device</string>
+   </property>
+  </action>
+  <action name="actionCamera_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Camera View</string>
+   </property>
+   <property name="toolTip">
+    <string>Toggle Camera View</string>
    </property>
   </action>
  </widget>

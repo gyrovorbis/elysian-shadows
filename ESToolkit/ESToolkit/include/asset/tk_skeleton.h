@@ -6,12 +6,14 @@
 class TkSkeletonAttrib: public elysian::SkeletonAttribBase {
     Q_OBJECT
 public:
-    void    setJsonPath(const char*const path);
-    void    setAtlasPath(const char*const path);
+    void        setJsonPath(const char*const path);
+    void        setAtlasPath(const char*const path);
+
+    static void initializeDelegates(void);
 
 Q_SIGNALS:
-    void    jsonChanged(void);
-    void    atlasChanged(void);
+    void        jsonChanged(void);
+    void        atlasChanged(void);
 };
 
 

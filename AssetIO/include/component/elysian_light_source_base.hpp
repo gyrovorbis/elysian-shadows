@@ -4,7 +4,7 @@
 #include <gyro_shader_api.h>
 #include <gyro_video_api.h>
 #include <crtp/elysian_component.hpp>
-#include <elysian_camera_system.hpp>
+#include <crtp/elysian_camera_system.hpp>
 #include <crtp/elysian_lua_table_proxy.hpp>
 
 #define ELYSIAN_LIGHT_SOURCE_ATTENUATION_EPSILON	0.1f
@@ -80,7 +80,7 @@ namespace elysian {
         friend class    Engine;
         friend          LightSource;
 
-        CameraState         _camState;
+        Camera              _camState;
         GYVector3           _relPos         = { 0.0f, 0.0f, 0.0f };
         bool                _shadowCaster   = false;
     public:
@@ -118,8 +118,8 @@ namespace elysian {
         Vector3             getRelPos(void);
         Vector3             getDir(void);
 
-        void                updateBoundingVolume(const CameraState*const cam, const GY_CUBE_MAP_FACE face);
-        CameraState*        getCameraState(void);
+        void                updateBoundingVolume(const Camera*const cam, const GY_CUBE_MAP_FACE face);
+        Camera*             getCameraState(void);
         void                update(void);
 
     };
@@ -193,7 +193,7 @@ namespace elysian {
     inline Vector3 LightSourceBase::getRelPos(void) { return Vector3(&_relPos); }
     inline Vector3 LightSourceBase::getDir(void) { return Vector3(&direction); }
 
-    inline CameraState* LightSourceBase::getCameraState(void) {
+    inline Camera* LightSourceBase::getCameraState(void) {
 		return &_camState;
 	}
 

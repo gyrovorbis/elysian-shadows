@@ -142,6 +142,8 @@ public:
     //virtual void                populateModel(void) override;
     virtual QAbstractItemModel* getModel(void) const override;
 
+    static void         initializeDelegates(void);
+
     bool                open(void);
     bool                close(void);
     bool                isOpen(void) const;

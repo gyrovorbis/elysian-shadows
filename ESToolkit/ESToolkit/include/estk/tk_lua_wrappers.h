@@ -5,8 +5,8 @@
 #include <oolua.h>
 #include <estk/tk_estoolkit.h>
 #include <lua/elysian_lua_singleton.hpp>
-#include <proxy/elysian_entity_proxy.hpp>
 #include <asset/tk_area.h>
+#include <model/tk_property_item_delegate.h>
 
 
 namespace OOLUA
@@ -28,6 +28,27 @@ OOLUA_PROXY_END
 
 
 
+
+OOLUA_PROXY(PropertyItemDelegate)
+    OOLUA_TAGS (
+        No_public_constructors,
+        No_public_destructor,
+        Abstract
+    )
+OOLUA_PROXY_END
+
+OOLUA_PROXY(EnumDropdownPropertyItemDelegate, PropertyItemDelegate)
+    OOLUA_MEM_FUNC(void, insertEnumValue, const char*)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(SpinboxPropertyItemDelegate, PropertyItemDelegate)
+    OOLUA_MEM_FUNC(void, setMaxValue, int)
+    OOLUA_MEM_FUNC(void, setMinValue, int)
+OOLUA_PROXY_END
+
+OOLUA_PROXY(FileBrowserPropertyItemDelegate, PropertyItemDelegate)
+OOLUA_PROXY_END
+
 static inline int Toolkit_select(lua_State* const vm) {
     const int ref = luaL_ref(vm, LUA_REGISTRYINDEX);
     ESToolkit::select(ref);
@@ -35,13 +56,6 @@ static inline int Toolkit_select(lua_State* const vm) {
     return 0;
 }
 
-static inline int Toolkit_findEntity(lua_State* const vm) {
-    QString name;
-    OOLUA::pull(vm, name);
-    auto* entity = Debug::getCurrentArea()->findEntity(Q_CSTR(name));
-    OOLUA::push(vm, entity);
-    return entity? 1 : 0;
-}
 
 
 static inline void luaRegisterTkEnumsConstants(OOLUA::Script */*s*/) {

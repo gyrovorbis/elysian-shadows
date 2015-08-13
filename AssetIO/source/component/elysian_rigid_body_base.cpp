@@ -63,7 +63,7 @@ void RigidBodyBase::integrate(const float deltaTime) {
 				stat,
                 deltaTime,
                 &_entity->_transform._pos,
-                &_entity->_transform._orientZ);
+                &_entity->_transform._angle);
 
     if(resting) {
         stat->angDamping    /= _tileDamping;
@@ -76,7 +76,7 @@ void RigidBodyBase::integrate(const float deltaTime) {
 }
 
 auto RigidBodyBase::getTargetType(void) const -> TARGET_TYPE { return TARGET_RIGID_BODY; }
-float RigidBodyBase::getOrientation(void) const { return getEntity()->_transform._orientZ; }
+float RigidBodyBase::getOrientation(void) const { return getEntity()->_transform._angle; }
 const GYVector3& RigidBodyBase::getPosition(void) const { return getEntity()->_transform._pos; }
 const GYStatic* RigidBodyBase::getStaticAttrib(void) const { return getEntity()->getCollidable()->getAttrib()->getStaticAttrib(); }
 bool RigidBodyBase::getRestingOnBody(void) const { return getEntity()->getCollidable()->getRestingOnBody(); }

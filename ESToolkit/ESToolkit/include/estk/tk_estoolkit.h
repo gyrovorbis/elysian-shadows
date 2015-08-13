@@ -41,6 +41,7 @@ class SheetManager;
 class EngineSettingsDialog;
 class LuaExplorerDialog;
 class EngineGLSceneWidget;
+class CameraDockWidget;
 class GitlabDialog;
 class HelpDockWidget;
 class TkArea;
@@ -111,6 +112,7 @@ private:
     SheetDockWidget*        _sheetDockWidget;       //Not used anymore
     SelectionDockWidget*    _selectionDockWidget;
     HistoryDockWidget*      _historyDockWidget;
+    CameraDockWidget*       _cameraDockWidget;
     QDockWidget*            _bottomDockWidget;
     QTabWidget*             _bottomTabWidget;
 
@@ -293,6 +295,7 @@ private Q_SLOTS:
     void on_actionHidden_Levels_toggled(bool arg1);
     void on_actionIOS_Simulator_triggered();
     void on_actionAndroid_Device_triggered();
+    void on_actionCamera_View_toggled(bool arg1);
 };
 
 

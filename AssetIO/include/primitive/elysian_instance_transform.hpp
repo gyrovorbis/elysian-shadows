@@ -88,11 +88,16 @@ namespace elysian {
         //Lua should treat this as a class
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
-            ELYSIAN_LUA_PROXY_FIELD(orientZ, getOrientZ, setOrientZ)
+            ELYSIAN_LUA_PROXY_FIELD(angle, getAngle, setAngle)
             ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_BEGIN(pos)
                 ELYSIAN_LUA_PROXY_FIELD(x, getPosX, setPosX)
                 ELYSIAN_LUA_PROXY_FIELD(y, getPosY, setPosY)
                 ELYSIAN_LUA_PROXY_FIELD(z, getPosZ, setPosZ)
+            ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_END()
+            ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_BEGIN(orient)
+                ELYSIAN_LUA_PROXY_FIELD(x, getOrientX, setOrientX)
+                ELYSIAN_LUA_PROXY_FIELD(y, getOrientY, setOrientY)
+                ELYSIAN_LUA_PROXY_FIELD(z, getOrientZ, setOrientZ)
             ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_END()
             ELYSIAN_LUA_PROXY_VIRTUAL_TABLE_FIELD_BEGIN(size)
                 ELYSIAN_LUA_PROXY_FIELD(x, getSizeX, setSizeX)
@@ -111,6 +116,7 @@ namespace elysian {
                 { 100.0f, 100.0f, 0.0f },
                 { 100.0f, 100.0f, 100.0f },
                 { 1.0f, 1.0f, 1.0f },
+                { 0.0f, 0.0f, 0.0f },
                 0.0f,
                 nullptr
             }) {}
@@ -169,11 +175,20 @@ namespace elysian {
         void getScale(float& x, float& y) const { x = _scale.x; y = _scale.y; }
         //void getScale(GYVector3& scale) const { scale = _scale; }
         void getScale(GYVector2& scale) const { scale.x = _scale.x; scale.y = _scale.y; }
+        const GYVector3& getScale(void) const { return _scale; }
 
-        void setOrientZ(const float z) { _orientZ = z; }
-        float getOrientZ(void) const { return _orientZ; }
+        void getOrient(float& x, float& y, float& z) const;
+        void setOrient(const float x, const float y, const float z);
+        float getAngle(void) const;
+        void setAngle(const float angle);
+        float getOrientX(void) const;
+        float getOrientY(void) const;
+        float getOrientZ(void) const;
+        void setOrientX(const float orient);
+        void setOrientY(const float orient);
+        void setOrientZ(const float orient);
 
-        void rotate(const float z) { _orientZ += z; }
+        void rotate(const float z) { _angle += z; }
 
         void translate(const float x, const float y, const float z) { _pos.x += x; _pos.y += y; _pos.z += z; }
         void translate(const float x, const float y) { _pos.x += x; _pos.y += y; }
@@ -261,7 +276,18 @@ namespace elysian {
     inline void Vector4::setZ(const float val) const { _ptr->z = val; }
     inline void Vector4::setW(const float val) const { _ptr->w = val; }
 
+    inline void InstanceTransform::getOrient(float& x, float& y, float& z) const { x = _orient.x; y = _orient.y; z = _orient.z; }
+    inline void InstanceTransform::setOrient(const float x, const float y, const float z) { _orient.x = x; _orient.y = y; _orient.z = z; }
+    inline float InstanceTransform::getAngle(void) const { return _angle; }
+    inline void InstanceTransform::setAngle(const float angle) { _angle = angle; }
+    inline float InstanceTransform::getOrientX(void) const { return _orient.x; }
+    inline float InstanceTransform::getOrientY(void) const { return _orient.y; }
+    inline float InstanceTransform::getOrientZ(void) const { return _orient.z; }
+    inline void InstanceTransform::setOrientX(const float orient) { _orient.x = orient; }
+    inline void InstanceTransform::setOrientY(const float orient) { _orient.y = orient; }
+    inline void InstanceTransform::setOrientZ(const float orient) { _orient.z = orient; }
     inline GYVector3& InstanceTransform::getPosVec(void) { return _pos; }
+
     //inline GYVector3& InstanceTransform::getSizeVec(void) { return _size; }
     //inline GYVector3& InstanceTransform::getScaleVec(void) { return _scale; }
 

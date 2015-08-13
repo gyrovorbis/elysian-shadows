@@ -10,7 +10,7 @@
 #include "tk_map_view_place_tile_group_undo_item.h"
 #include "tk_assets.h"
 #include "elysian_engine.hpp"
-#include "elysian_camera_system.hpp"
+#include "crtp/elysian_camera_system.hpp"
 #include "tk_engine_gl_scene_widget.h"
 #include <asset/tk_collidable.h>
 #include <asset/tk_entity.h>
@@ -94,7 +94,7 @@ void MapView::onEngineInitialize(void) {
 }
 
 void MapView::onEngineUpdated(void) {
-    _zoomLabel->setText(QString::number((int)(getAssets()->getEngine()->getCameraSys()->getKeyFrame().getScale()*getAssets()->getEngine()->getCameraSys()->getStaticScale()*100.0f))+QString("%"));
+    _zoomLabel->setText(QString::number((int)(getAssets()->getEngine()->getCameraSys()->getKeyFrame().getScale().x*getAssets()->getEngine()->getCameraSys()->getStaticScale()*100.0f))+QString("%"));
 }
 
 TileSelection<TileEntry> *MapView::_getTileSelection(void) const {
@@ -384,7 +384,7 @@ void MapView::mouseMoveEvent(QMouseEvent *event) {
         getAssets()->getCurrentArea()->setEmitMapChange(true);
     }
 
-    float scale = getAssets()->getEngine()->getCameraSys()->getKeyFrame().getScale() * getAssets()->getEngine()->getCameraSys()->getStaticScale();
+    float scale = getAssets()->getEngine()->getCameraSys()->getKeyFrame().getScale().x * getAssets()->getEngine()->getCameraSys()->getStaticScale();
     auto p2 = _panPivot-_viewMousePos;
     auto delta = p2 - p1;
     delta /= scale;

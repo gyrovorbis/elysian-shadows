@@ -2,6 +2,7 @@
 #define ELYSIAN_AREA_PROXY_HPP
 
 #include <crtp/elysian_area.hpp>
+#include <proxy/elysian_instance_transform_proxy.hpp>
 
 namespace OOLUA
 {
@@ -57,6 +58,16 @@ OOLUA_PROXY(Area)
     OOLUA_MEM_FUNC(void, setInactiveEntityByIndex, const unsigned, cpp_in_p<Entity*const>)
     OOLUA_MEM_FUNC_CONST(Entity*, getInactiveEntityByIndex, unsigned)
     OOLUA_MEM_FUNC_CONST(unsigned, getInactiveEntityCount)
+    OOLUA_MEM_FUNC_CONST(bool, getUseSun)
+    OOLUA_MEM_FUNC(void, setUseSun, bool)
+    OOLUA_MEM_FUNC(Vector4, getAmbientColor)
+    OOLUA_MEM_FUNC(void, setAmbientColor, const GYVector4&)
+    OOLUA_MEM_FUNC_CONST(const char*, getBgmOggByTrack, unsigned)
+    OOLUA_MEM_FUNC_CONST(const char*, getAuxOggByTrack, unsigned)
+    OOLUA_MEM_FUNC_CONST(unsigned, getBgmOggTrackCount)
+    OOLUA_MEM_FUNC_CONST(unsigned, getAuxOggTrackCount)
+    OOLUA_MEM_FUNC(void, setBgmOggByTrack, unsigned, const char*)
+    OOLUA_MEM_FUNC(void, setAuxOggByTrack, unsigned, const char*)
 OOLUA_PROXY_END
 
 #endif // ELYSIAN_AREA_PROXY_HPP

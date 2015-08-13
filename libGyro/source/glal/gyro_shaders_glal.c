@@ -524,6 +524,7 @@ int _gyVidShaderCreate(GYShader* shader) {
     programSource = malloc(sizeof(char) * charCount + 1);
     memset(programSource, 0, sizeof(char)*charCount+1);
     gyFileRead(file, programSource, charCount, NULL);
+
     //programSource[charCount-1] = '\0';
     programSource[charCount] = '\0';
     gyFileClose(&file);
