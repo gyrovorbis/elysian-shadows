@@ -24,10 +24,11 @@ typedef struct GYVector2 {
 } GYVector2;
 
 typedef struct GYInstMat {
-    GYVector3 _pos;
-    GYVector3 _size;
-    GYVector3 _scale;
-    float _orientZ;
+    GYVector3   _pos;
+    GYVector3   _size;
+    GYVector3   _scale;
+    GYVector3   _orient;
+    float       _angle;
     struct _GYInstMat *parent;
 } GYInstMat;
 
