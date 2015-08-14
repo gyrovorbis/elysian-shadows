@@ -918,7 +918,7 @@ namespace elysian {
                         lua_pushnumber(l, i);
                         lua_gettable(l, -2);
 
-#ifdef ELYSIAN_LUA_DEBUG
+#if !(defined(_WIN32) && defined(QT_DEBUG))
                         lua_pushvalue(l, -1);
                         dbgprintf("<%d, %s>", i, luaL_tolstring(l, -1, nullptr));
                         lua_pop(l, 2);
