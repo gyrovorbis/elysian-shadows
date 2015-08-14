@@ -108,6 +108,7 @@ bool LevelSystem::switchArea(const char *const dir) {
         //Clean up current area
         getBehavSys()->callTriggers(Behavior::ON_EXIT);
         getPartySys()->removePartyFromArea();
+        getDaySys()->onAreaExit();
         _removePersistentEntities();
         _curArea->deactivate();
         getCollisionSys()->onAreaExit();
@@ -153,6 +154,7 @@ bool LevelSystem::switchArea(const char *const dir) {
     ar->activate();
     getBehavSys()->callTriggers(Behavior::ON_LOAD);
     getPartySys()->addPartyToArea();
+    getDaySys()->onAreaEnter();
     _addPersistentEntities();
     getBehavSys()->callTriggers(Behavior::ON_ENTER);
     getCollisionSys()->onAreaEnter();

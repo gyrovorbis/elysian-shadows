@@ -28,6 +28,6 @@ OOLUA_EXPORT_FUNCTIONS_CONST(DaySystem,
                              getSunLightAttrib)
 OOLUA_EXPORT_FUNCTIONS(DaySystem,
                        setTimeDilation,
-                       setSunEnabled,
+                  //    setSunEnabled,
                        setTimeOfDay)
 

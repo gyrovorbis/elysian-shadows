@@ -493,7 +493,7 @@ void DebugBase::processInput(GameInput& input) {
 	if(input.getTapped(GameInput::BUT_N)) {
 		static bool sunEnabled = true;
 		sunEnabled = !sunEnabled;
-		getDaySys()->setSunEnabled(sunEnabled);
+        //getDaySys()->setSunEnabled(sunEnabled);
 	}
 	if(input.getDown(GameInput::BUT_M)) {
 		getDaySys()->addSeconds(600);

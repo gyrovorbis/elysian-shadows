@@ -28,7 +28,6 @@ namespace elysian {
         bool            _shadowPassEnabled  = true;
         bool			_enabled            = true;
         bool			_renderDebug        = false;
-        GYVector4		_globalAmbience     = { 0.8f, 0.8f, 0.8f, 1.0f };
         unsigned		_onscreenLightCount	= 0;
         LightSource*	_onscreenLights[ELYSIAN_LIGHT_SYSTEM_MAX_LIGHTS_ONSCREEN] = { nullptr };
         uint32_t		_lightMap[ELYSIAN_LIGHT_SYSTEM_LIGHT_MAP_HEIGHT][ELYSIAN_LIGHT_SYSTEM_LIGHT_MAP_WIDTH] = { {0} };
@@ -132,7 +131,7 @@ namespace elysian {
     }
 
     inline void LightSystem::getGlobalAmbientColor(GYVector4& color) const {
-        color = _globalAmbience;
+        color = _curArea->_ambientColor;
     }
 
     inline void LightSystem::setShadowPassEnabled(const bool val) {

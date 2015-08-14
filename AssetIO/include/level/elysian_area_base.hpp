@@ -157,7 +157,7 @@ namespace elysian {
         int                         lastOffset[2] = {0};
         int                         minIndex[2] = {INT_MAX};
         int                         maxIndex[2] = {0};
-        GYVector4                   _ambientColor   = { 1.0f, 1.0f, 1.0f, 1.0f };
+        GYVector4                   _ambientColor   = { 0.5f, 0.5f, 0.5f, 1.0f };
         bool                        _useSun         = true;
 
         char                        _bgmOggTracks[3][ELYSIAN_AREA_PATH_SIZE] = { 0 };
@@ -180,7 +180,7 @@ namespace elysian {
         bool                        getUseSun(void) const;
         void                        setUseSun(const bool val);
         Vector4                     getAmbientColor(void);
-        void                        setAmbientColor(const GYVector4& color);
+        void                        setAmbientColor(const Vector4& color);
 
         const char*                 getBgmOggByTrack(const unsigned index) const;
         void                        setBgmOggByTrack(const unsigned index, const char* path);
@@ -364,7 +364,7 @@ namespace elysian {
      inline bool AreaBase::getUseSun(void) const { return _useSun; }
      inline void AreaBase::setUseSun(const bool val) { _useSun = val; }
      inline Vector4 AreaBase::getAmbientColor(void) { return Vector4(&_ambientColor); }
-     inline void AreaBase::setAmbientColor(const GYVector4& color) { _ambientColor = color; }
+     inline void AreaBase::setAmbientColor(const Vector4& color) { _ambientColor = color; }
      inline const char* AreaBase::getBgmOggByTrack(const unsigned index) const { return _bgmOggTracks[index]; }
      inline void AreaBase::setBgmOggByTrack(const unsigned index, const char* path) { strcpy(_bgmOggTracks[index], path); }
      inline const char* AreaBase::getAuxOggByTrack(const unsigned index) const { return _auxOggTracks[index]; }

@@ -19,7 +19,7 @@ OOLUA_PROXY(DaySystem)
     OOLUA_MFUNC_CONST(getMinutes)
     OOLUA_MFUNC_CONST(getSunLightAttrib)
     OOLUA_MFUNC(setTimeDilation)
-    OOLUA_MFUNC(setSunEnabled)
+//    OOLUA_MFUNC(setSunEnabled)
     OOLUA_MEM_FUNC(void, setTimeOfDay, float)
 OOLUA_PROXY_END
 

@@ -10,6 +10,9 @@ void DaySystem::update(void) {
 
 	TimerSystem* timerSys = getTimerSys();
 
+    if(_curArea->getUseSun() && !_sunActive) onAreaEnter();
+    else if(!_curArea->getUseSun() && _sunActive) onAreaExit();
+
 	_curSecs += timerSys->getDeltaTime() * _timeSpeed;
 
 	if(_curSecs >= _secsPerDay) {
@@ -38,7 +41,7 @@ void DaySystem::update(void) {
 	_sunLightSrc->setDirection(*(GYVector3*)&dir);
 }
 
-
+#if 0
 void DaySystem::setSunEnabled(const bool val) {
     //if(_sunEnabled == val) return;
 
@@ -50,16 +53,21 @@ void DaySystem::setSunEnabled(const bool val) {
 
 	_sunEnabled = val;
 }
+#endif
 
 
 void DaySystem::onAreaEnter(void) {
-    getCurrentArea()->addEntity(_sunEntity);
-	_sunActive = true;
+    if(_curArea->getUseSun()) {
+        getCurrentArea()->addEntity(_sunEntity);
+        _sunActive = true;
+    }
 }
 
 void DaySystem::onAreaExit(void) {
-    getCurrentArea()->removeEntity(_sunEntity);
-	_sunActive = false;
+    if(_sunActive) {
+        getCurrentArea()->removeEntity(_sunEntity);
+        _sunActive = false;
+    }
 }
 
 DaySystem::DaySystem(void) {
@@ -69,14 +77,13 @@ DaySystem::DaySystem(void) {
 	_sunLightAttrib->setDiffuseColor(GYVector4{0.5f, 0.5f, 0.5f, 1.0f});
 	_sunLightAttrib->setSpecularColor(GYVector4{1.0f, 1.0f, 1.0f, 1.0f});
 
-
 	_sunEntity = new Entity();
     _sunEntity->setName("_Sun");
-	_sunLightSrc = _sunEntity->addLightSource();
+    _sunLightSrc = _sunEntity->addLightSource();
 	_sunLightSrc->setLightType(GY_LIGHT_DIRECTIONAL);
 	_sunLightSrc->setDirection(dir3);
 	_sunLightSrc->setShadowCaster(true);
-	_sunLightSrc->setAttrib(_sunLightAttrib);
+    _sunLightSrc->setAttrib(_sunLightAttrib);
 }
 
 DaySystem::~DaySystem(void) {

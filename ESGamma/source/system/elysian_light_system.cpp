@@ -12,7 +12,6 @@
 namespace elysian {
 
 LightSystem::LightSystem(void) {
-    setGlobalAmbientColor(_globalAmbience);
     gyVidLightingSetEnable(1);
 
     auto& proc = get<SUBPROC_ATTRIB_INTERP_POOL> ( static_cast<SubProcessManager<LightSystem,
@@ -51,8 +50,8 @@ void LightSystem::update(void) {
 }
 
 void LightSystem::setGlobalAmbientColor(const GYVector4 &color) {
-    _globalAmbience = color;
-    gyVidSetGlobalAmbience(&color);
+  //  _curArea->setAmbientColor(color);
+  //  gyVidSetGlobalAmbience(&color);
 }
 
 void LightSystem::setEnabled(const bool val) {
@@ -174,11 +173,11 @@ void LightSystem::shadowRenderPasses(void) {
             _onscreenLights[_onscreenLightCount++] = it;
             it->updateBoundingVolume(cam, GY_CUBE_MAP_FACE_MAX);
 
-            if(it->isShadowCaster()) {
+            if(it->isShadowCaster() && _shadowPassEnabled) {
                 gyVidLightSourceBeginShadowPass(it, GY_CUBE_MAP_FACE_MAX);
                 getCameraSys()->setCurrentCamera(it->getCameraState());
                 //_renderShadowVolumes();
-                if(_shadowPassEnabled) getMapSys()->render();
+                /*if(_shadowPassEnabled)*/ getMapSys()->render();
             }
             _addToLightMap(it);
             break;
@@ -190,12 +189,12 @@ void LightSystem::shadowRenderPasses(void) {
                     it->updateBoundingVolume(cam, (GY_CUBE_MAP_FACE)i);
                     _addToLightMap(it);
 
-                    if(it->isShadowCaster()) {
+                    if(it->isShadowCaster() && _shadowPassEnabled) {
                         gyVidLightSourceBeginShadowPass(it, (GY_CUBE_MAP_FACE)i);
 
                         getCameraSys()->setCurrentCamera(it->getCameraState());
                         //_renderShadowVolumes();
-                        if(_shadowPassEnabled) getMapSys()->render();
+                        /*if(_shadowPassEnabled)*/ getMapSys()->render();
 
                     }
 
@@ -207,7 +206,7 @@ void LightSystem::shadowRenderPasses(void) {
 
     camSys->popState();
     if(_shadowPassEnabled) gyVidLightSourceEndShadowPasses();
-    if(_enabled) gyVidSetGlobalAmbience(&_globalAmbience);
+    if(_enabled) gyVidSetGlobalAmbience(&_curArea->_ambientColor);
     _shadowPass = false;
     //_sortOnscreenLights();
 }

@@ -46,7 +46,7 @@ namespace elysian {
 						~DaySystem(void);
 
 		LightAttrib*	getSunLightAttrib(void) const;
-		void			setSunEnabled(const bool val);
+        //void			setSunEnabled(const bool val);
 		void			setTimeDilation(const float multiplier);
         void            setTimeOfDay(const float time);
 		void			addSeconds(const float seconds);
