@@ -51,6 +51,7 @@ void PropertyItemProxyDelegate::setModelData(QWidget *editor, QAbstractItemModel
 
 
 bool PropertyItemProxyDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) {
+    return QStyledItemDelegate::editorEvent(event, model, option, index);
 #if 0
 
     auto* propModel = static_cast<const PropertyStackModel*>(model);
