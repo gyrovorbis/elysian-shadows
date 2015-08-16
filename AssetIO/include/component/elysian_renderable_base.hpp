@@ -20,9 +20,6 @@ namespace elysian {
 
     protected:
 		GYTexCoord2			_texCoord[4];
-		Material*			_material		= nullptr;
-		GYTexture*			_normalMap		= nullptr;
-		GYTexture*			_specularMap	= nullptr;
         SpriteAttrib*		_spriteAttrib	= nullptr;      //Prefab-able attributes
         int					_frame			= 0;			//for animation
         GYVector2			_offset			= {0.0f, 0.0f};	//texture offset from base transform (local coords)
@@ -38,9 +35,6 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(frame,          getFrame,           setFrame)
             ELYSIAN_LUA_PROXY_FIELD(texOrient,      getTexOrient,       setTexOrient)
             ELYSIAN_LUA_PROXY_FIELD(spriteAttrib,   getSpriteAttrib,    setSpriteAttrib)
-            ELYSIAN_LUA_PROXY_FIELD(normalMap,      getNormalMapPath,   setNormalMapPath)
-            ELYSIAN_LUA_PROXY_FIELD(specularMap,    getSpecularMapPath, setSpecularMapPath)
-            ELYSIAN_LUA_PROXY_FIELD(material,       getMaterial,        setMaterial)
             ELYSIAN_LUA_PROXY_FIELD(offset,         getOffsetVec,       setOffsetVec)
             ELYSIAN_LUA_PROXY_ARRAY_FIELD(uvCoords, getUVCoords,        setUVCoords,    getUVCoordsCount)
 		ELYSIAN_LUA_PROXY_FIELDS_END()
@@ -68,13 +62,6 @@ namespace elysian {
         QuadSpriteAttrib*   getQuadSpriteAttrib(void) const;
         void                setSpriteAttrib(SpriteAttrib *const attrib);
 
-        void                setMaterial(Material*const material);
-        Material*           getMaterial(void) const;
-
-        void                loadNormalMap(const char*const path, const unsigned /*width*/, const unsigned /*height*/);
-        void                loadSpecularMap(const char*const path, const unsigned /*width*/, const unsigned /*height*/);
-        void                setSpecularMapPath(const char*const path);
-        void                setNormalMapPath(const char*const path);
         void                setTexCoord(const unsigned index, const float u, const float v);
 
         unsigned            getUVCoordsCount(void) const;
@@ -82,8 +69,7 @@ namespace elysian {
         void                setUVCoords(const unsigned index, const Vector2& coords);
 
 
-        const char*         getNormalMapPath(void) const;
-        const char*         getSpecularMapPath(void) const;
+
 
     };
 
@@ -95,8 +81,6 @@ namespace elysian {
 
     //=================== INLINEZ ======================
     inline RenderableBase::RenderableBase(Entity &parent): Component(parent) {}
-    inline void RenderableBase::setSpecularMapPath(const char * const path) { loadSpecularMap(path, 0, 0); }
-    inline void RenderableBase::setNormalMapPath(const char * const path) { loadNormalMap(path, 0, 0); }
     inline void RenderableBase::beginRender(void) {}
     inline void RenderableBase::endRender(void) {}
     inline unsigned RenderableBase::getFrame(void) const { return _frame; }
@@ -108,33 +92,14 @@ namespace elysian {
     inline SpriteAttrib* RenderableBase::getSpriteAttrib(void) const { return _spriteAttrib; }
     inline QuadSpriteAttrib* RenderableBase::getQuadSpriteAttrib(void) const { return static_cast<QuadSpriteAttrib*>(_spriteAttrib); }
     inline void RenderableBase::setSpriteAttrib(SpriteAttrib *const attrib) { /*delete _spriteAttrib;*/ _spriteAttrib = attrib; if(attrib && _frame != -1) _frame = attrib->_frame; }
-    inline void RenderableBase::setMaterial(Material*const material) { _material = material; }
-    inline Material* RenderableBase::getMaterial(void) const { return _material;}
     inline Vector2 RenderableBase::getOffsetVec(void) { return Vector2(&_offset); }
     inline void RenderableBase::setOffsetVec(const Vector2 &vec) { _offset = vec; }
 
-    inline void RenderableBase::loadNormalMap(const char*const path, const unsigned /*width*/, const unsigned /*height*/) {
-        if(_normalMap) gyVidTexDestroy(_normalMap);
-        _normalMap = gyVidTexCreate(path);
-    }
-    inline void RenderableBase::loadSpecularMap(const char*const path, const unsigned /*width*/, const unsigned /*height*/) {
-        if(_specularMap) gyVidTexDestroy(_specularMap);
-        _specularMap = gyVidTexCreate(path);
-    }
+
     inline void RenderableBase::setTexCoord(const unsigned index, const float u, const float v) {
         _frame = -1;
         _texCoord[index].u = u; _texCoord[index].v = v;
     }
-
-    inline const char* RenderableBase::getNormalMapPath(void) const {
-        return _normalMap ? _normalMap->filename : "none";
-    }
-
-    inline const char* RenderableBase::getSpecularMapPath(void) const {
-        return _specularMap ? _specularMap->filename : "none";
-    }
-
-
 
     inline void RenderableBase::render(void) {
 
@@ -142,9 +107,9 @@ namespace elysian {
      //   gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
 
         gyVidTexBind(_spriteAttrib? _spriteAttrib->_tex : nullptr);
-        gyVidNormalMapBind(_normalMap);
-        gyVidSpecularMapBind(_specularMap);
-        gyVidMaterialBind(_material);
+        gyVidNormalMapBind(_spriteAttrib? _spriteAttrib->getNormalMap() : nullptr);
+        gyVidSpecularMapBind(_spriteAttrib? _spriteAttrib->getSpecularMap() : nullptr);
+        gyVidMaterialBind(_spriteAttrib? _spriteAttrib->getMaterial() : nullptr);
 
         gyMatTranslate(_offset.x, _offset.y, 0.0f);
 

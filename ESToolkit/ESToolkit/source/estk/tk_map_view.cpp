@@ -78,7 +78,7 @@ void MapView::onEngineInitialize(void) {
     auto* sprAttrib = new elysian::SpriteAttrib;
     auto* mat = new elysian::Material;
     mat->setEmissiveColor(GYVector4 {4.0f, 0.0f, 0.0f, 0.0f});
-    render->setMaterial(mat);
+    sprAttrib->setMaterial(mat);
     sprAttrib->setColor(GYColor4{ 255, 0, 0, 255});
     render->setSpriteAttrib(sprAttrib);
     colAttrib->getFlags()->resetType();
@@ -121,7 +121,7 @@ void MapView::_entitySceneSelectionUpdate(void) {
         render->setSpriteAttrib(sprAttrib);
         auto* mat = new elysian::Material;
         mat->setEmissiveColor(GYVector4{0.0f, 1.0f, 1.0f, 0.0f});
-        render->setMaterial(mat);
+        sprAttrib->setMaterial(mat);
 
         collid->setAttrib(new elysian::CollidableAttrib);
         collid->setWorldSpace(false);

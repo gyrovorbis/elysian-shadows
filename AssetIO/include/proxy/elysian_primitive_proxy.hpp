@@ -37,6 +37,23 @@ OOLUA_PROXY(Color4)
     OOLUA_MEM_FUNC_CONST(void, setA, const unsigned char)
 OOLUA_PROXY_END
 
+OOLUA_PROXY(Material)
+    OOLUA_MEM_FUNC(void, setAmbientColor, const GYVector4&)
+    OOLUA_MEM_FUNC(void, setDiffuseColor, const GYVector4&)
+    OOLUA_MEM_FUNC(void, setSpecularColor, const GYVector4&)
+    OOLUA_MEM_FUNC(void, setEmissiveColor, const GYVector4&)
+    OOLUA_MEM_FUNC(void, setShininess, float)
+    OOLUA_MEM_FUNC_CONST(void, getAmbientColor, GYVector4&)
+    OOLUA_MEM_FUNC_CONST(void, getDiffuseColor, GYVector4&)
+    OOLUA_MEM_FUNC_CONST(void, getSpecularColor, GYVector4&)
+    OOLUA_MEM_FUNC_CONST(void, getEmissiveColor, GYVector4&)
+    OOLUA_MEM_FUNC_CONST(float, getShininess)
+    OOLUA_MEM_FUNC(Vector4, getEmissive)
+    OOLUA_MEM_FUNC(Vector4, getDiffuse)
+    OOLUA_MEM_FUNC(Vector4, getAmbient)
+    OOLUA_MEM_FUNC(Vector4, getSpecular)
+OOLUA_PROXY_END
+
 OOLUA_PROXY(PrimAttrib)
     OOLUA_TAGS (Abstract)
 OOLUA_PROXY_END
@@ -63,6 +80,12 @@ OOLUA_PROXY(SpriteAttrib, PrimAttrib)
     OOLUA_MEM_FUNC(void, loadTexture, const char *, unsigned, unsigned, unsigned, unsigned)
     OOLUA_MEM_FUNC(void, loadSheet, const char *, unsigned, unsigned)
     OOLUA_MEM_FUNC(void, setTexCoord, unsigned, float, float)
+    OOLUA_MEM_FUNC(void, setMaterial, cpp_in_p<Material*>)
+    OOLUA_MEM_FUNC_CONST(maybe_null<Material*>, getMaterial)
+    OOLUA_MEM_FUNC_CONST(const char*, getNormalMapPath)
+    OOLUA_MEM_FUNC_CONST(const char*, getSpecularMapPath)
+    OOLUA_MEM_FUNC(void, setNormalMapPath, const char*)
+    OOLUA_MEM_FUNC(void, setSpecularMapPath, const char*)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(QuadSpriteAttrib, SpriteAttrib)
@@ -71,22 +94,6 @@ OOLUA_PROXY(QuadSpriteAttrib, SpriteAttrib)
     OOLUA_MEM_FUNC(void, setVerticesAlpha, const unsigned char, const unsigned char, const unsigned char, const unsigned char)
 OOLUA_PROXY_END
 
-OOLUA_PROXY(Material)
-    OOLUA_MEM_FUNC(void, setAmbientColor, const GYVector4&)
-    OOLUA_MEM_FUNC(void, setDiffuseColor, const GYVector4&)
-    OOLUA_MEM_FUNC(void, setSpecularColor, const GYVector4&)
-    OOLUA_MEM_FUNC(void, setEmissiveColor, const GYVector4&)
-    OOLUA_MEM_FUNC(void, setShininess, float)
-    OOLUA_MEM_FUNC_CONST(void, getAmbientColor, GYVector4&)
-    OOLUA_MEM_FUNC_CONST(void, getDiffuseColor, GYVector4&)
-    OOLUA_MEM_FUNC_CONST(void, getSpecularColor, GYVector4&)
-    OOLUA_MEM_FUNC_CONST(void, getEmissiveColor, GYVector4&)
-    OOLUA_MEM_FUNC_CONST(float, getShininess)
-    OOLUA_MEM_FUNC(Vector4, getEmissive)
-    OOLUA_MEM_FUNC(Vector4, getDiffuse)
-    OOLUA_MEM_FUNC(Vector4, getAmbient)
-    OOLUA_MEM_FUNC(Vector4, getSpecular)
-OOLUA_PROXY_END
 
 
 
