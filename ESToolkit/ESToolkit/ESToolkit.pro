@@ -192,7 +192,9 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     source/estk/tk_camera_dock_widget.cpp \
     ../../ESGamma/source/system/elysian_camera_system_base.cpp \
     source/estk/tk_camera_system.cpp \
-    ../../ESGamma/source/utility/elysian_camera_shake_subprocess.cpp
+    ../../ESGamma/source/utility/elysian_camera_shake_subprocess.cpp \
+    ../../AssetIO/source/proxy/elysian_bit_mask_proxy.cpp \
+    ../../AssetIO/source/utility/elysian_bit_mask.cpp
 
 
 
@@ -414,7 +416,9 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../ESGamma/include/crtp/elysian_camera_system.hpp \
     include/estk/tk_camera_dock_widget.h \
     include/estk/tk_camera_system.h \
-    ../../ESGamma/include/utility/elysian_camera_shake_subprocess.hpp
+    ../../ESGamma/include/utility/elysian_camera_shake_subprocess.hpp \
+    ../../ESGamma/include/utility/elysian_bit_mask.hpp \
+    ../../AssetIO/include/proxy/elysian_bit_mask_proxy.hpp
 
 !ios {
     HEADERS +=  include/asset/tk_animation.h \

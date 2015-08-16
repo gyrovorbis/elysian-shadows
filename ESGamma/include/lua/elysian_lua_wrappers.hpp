@@ -43,28 +43,6 @@ namespace OOLUA
     typedef elysian::Singletons     Singletons;
 }
 
-struct Lua32BitMask {
-	uint32_t mask = 0;
-
-	uint32_t toInt(void) const { return mask; }
-	void fromInt(const uint32_t val) { mask = val; }
-
-	void setBit(const unsigned char index, const unsigned char val) {
-		if(val) mask |= (1<<index);
-		else mask &= ~(1<<index);
-	}
-};
-
-OOLUA_PROXY(Lua32BitMask)
-	OOLUA_MEM_FUNC_CONST(uint32_t, toInt)
-	OOLUA_MEM_FUNC(void, fromInt, uint32_t)
-	OOLUA_MEM_FUNC(void, setBit, unsigned char, unsigned char)
-OOLUA_PROXY_END
-
-
-
-
-
 
 
 

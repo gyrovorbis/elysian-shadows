@@ -40,6 +40,7 @@
     constexpr unsigned                      c::_proxyFieldCount; \
     constexpr elysian::LuaTableFieldProxy	c::_proxyFields[];
 
+
 #define ELYSIAN_LUA_PROXY_FIELD_KEY_MAX_SIZE    100
 #define ELYSIAN_LUA_PROXY_FIELDS_MAX            100
 #define ELYSIAN_LUA_PROXY_TO_STRING_BUFF_SIZE   100

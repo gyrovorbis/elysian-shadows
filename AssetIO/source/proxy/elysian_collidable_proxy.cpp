@@ -16,17 +16,12 @@
 #include <proxy/elysian_lua_behavior_proxy.hpp>
 
 
-
 OOLUA_EXPORT_FUNCTIONS(CollisionFlags,
-                                   resetType,
-                                   resetCheckAgainst,
-                                   addType,
-                                   addCheckAgainst,
                                     setType,
-                                    setTypeAgainst)
-OOLUA_EXPORT_FUNCTIONS_CONST(CollisionFlags,
-                               getType,
-                               getTypeAgainst)
+                                    setTypeAgainst,
+                                    getType,
+                                    getTypeAgainst)
+OOLUA_EXPORT_FUNCTIONS_CONST(CollisionFlags)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(CollidableStaticAttrib,
                              getInverseMass,

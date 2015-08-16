@@ -11,6 +11,7 @@
 #include <utility/elysian_sort_sweep.hpp>
 #include <primitive/elysian_instance_transform.hpp>
 #include <crtp/elysian_lua_table_proxy.hpp>
+#include <utility/elysian_bit_mask.hpp>
 
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_BEHAVIOR_MASK	(1<<0)
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_WARP_MASK		(1<<1)
@@ -43,17 +44,14 @@ namespace elysian {
             ALL			= ~0x0
         };
 
-        uint32_t        checkAgainst    = ~0x0;
-        uint32_t        type            = ~0x0;
+        BitMask32       _typeAgainst;
+        BitMask32       _type;
 
-        void            resetType(void);
-        void            resetCheckAgainst(void);
-        void            addType(const uint32_t flag);
-        void            addCheckAgainst(const uint32_t flag);
-        uint32_t        getType(void) const;
-        uint32_t        getTypeAgainst(void) const;
-        void            setType(const uint32_t flags);
-        void            setTypeAgainst(const uint32_t flags);
+                            CollisionFlags(void);
+        BitMask32&          getType(void);
+        BitMask32&          getTypeAgainst(void);
+        void                setType(const BitMask32 flags);
+        void                setTypeAgainst(const BitMask32 flags);
     };
 
 
@@ -267,14 +265,15 @@ namespace elysian {
 
 
     // ======== INLINEZ ========
-    inline void CollisionFlags::resetType(void) { type = 0; }
-    inline void CollisionFlags::resetCheckAgainst(void) { checkAgainst = 0; }
-    inline void CollisionFlags::addType(const uint32_t flag) { type |= flag; }
-    inline void CollisionFlags::addCheckAgainst(const uint32_t flag) { checkAgainst |= flag; }
-    inline uint32_t CollisionFlags::getType(void) const { return type; }
-    inline uint32_t CollisionFlags::getTypeAgainst(void) const { return checkAgainst; }
-    inline void CollisionFlags::setType(const uint32_t flags) { type = flags; }
-    inline void CollisionFlags::setTypeAgainst(const uint32_t flags) { checkAgainst = flags; }
+    inline CollisionFlags::CollisionFlags(void) {
+        _type.setValue(UINT32_MAX);
+        _typeAgainst.setValue(UINT32_MAX);
+
+    }
+    inline BitMask32& CollisionFlags::getType(void){ return _type; }
+    inline BitMask32& CollisionFlags::getTypeAgainst(void) { return _typeAgainst; }
+    inline void CollisionFlags::setType(const BitMask32 flags) { _type = flags; }
+    inline void CollisionFlags::setTypeAgainst(const BitMask32 flags) { _typeAgainst = flags; }
 
     inline  CollidableAttrib::~CollidableAttrib(void) { printf("~CollidabAttrib - YOU STILL NEED TO FUCKING FIX ME!!!!\n"); }
     inline GY_COLLIDER_TYPE CollidableAttrib::getColliderType(void) const { return _type; }

@@ -782,8 +782,8 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
             shard->getCollidable()->setAttrib(new CollidableAttrib());
         }
         *shard->getCollidable()->getAttrib() = *entity->getCollidable()->getAttrib();
-        shard->getCollidable()->getAttrib()->getFlags()->addCheckAgainst(CollisionFlags::ALL);
-        shard->getCollidable()->getAttrib()->getFlags()->addType(CollisionFlags::ALL);
+        //shard->getCollidable()->getAttrib()->getFlags()->addCheckAgainst(CollisionFlags::ALL);
+        //shard->getCollidable()->getAttrib()->getFlags()->addType(CollisionFlags::ALL);
 
         if(!shard->getRigidBody()) {
             shard->addRigidBody();

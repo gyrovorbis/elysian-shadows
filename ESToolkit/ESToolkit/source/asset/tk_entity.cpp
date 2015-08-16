@@ -65,10 +65,10 @@ TkEntity::TkEntity(const bool selectable, TkEntity* prefab):
             _selColliderAttrib = new elysian::CollidableAttrib;
             //_selColliderAttrib->setRelPos(0.0f, 0.0f, 0.0f);
             //_selColliderAttrib->setRelSize(1.0f, 1.0f, 0.0f);
-            _selColliderAttrib->getFlags()->resetType();
-            _selColliderAttrib->getFlags()->resetCheckAgainst();
-            _selColliderAttrib->getFlags()->addType(elysian::CollisionFlags::CURSOR);
-            _selColliderAttrib->getFlags()->addCheckAgainst(elysian::CollisionFlags::CURSOR);
+            _selColliderAttrib->getFlags()->setType(elysian::BitMask32(0u));
+            _selColliderAttrib->getFlags()->setTypeAgainst(0);
+            _selColliderAttrib->getFlags()->getType().setBit(elysian::CollisionFlags::CURSOR, true);
+            _selColliderAttrib->getFlags()->getTypeAgainst().setBit(elysian::CollisionFlags::CURSOR, true);
             _staticInit = true;
         }
 

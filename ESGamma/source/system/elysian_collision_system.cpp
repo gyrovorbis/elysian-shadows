@@ -400,7 +400,7 @@ void CollisionSystem::detectCollisions(void) {
         for(i = 0; i < _curArea->collidables.size(); ++i) {
             if(!_curArea->collidables[i]->_active || !_curArea->collidables[i]->_worldSpace) continue;
             _detectEntityTileZCollisionCoarse(*_curArea->collidables[i]);
-            if(_curArea->collidables[i]->getAttrib()->getFlags()->checkAgainst & CollisionFlags::TILE) {
+            if(_curArea->collidables[i]->getAttrib()->getFlags()->getTypeAgainst().getValue() & CollisionFlags::TILE) {
                 _detectEntityTileCollisionCoarse(*_curArea->collidables[i]);
             }
         }
@@ -522,7 +522,7 @@ bool CollisionSystem::detectCollidableCollidableCollision(Collidable* col1, Coll
 
     //Return if collision flags don't match OR
     //if both are on different z-planes.
-    if(!(bodyA->getAttrib()->flags.checkAgainst & bodyB->getAttrib()->flags.type)
+    if(!(bodyA->getAttrib()->flags.getTypeAgainst().getValue() & bodyB->getAttrib()->flags.getType().getValue())
             /* || bodyA->getEntity()->getElev() != bodyB->getEntity()->getElev() */) return false;
 
     //worldSpace checks in 3D, screen checks in 2D
@@ -662,7 +662,7 @@ bool CollisionSystem::_detectEntityEntityCollision(Entity * const entity1, Entit
     //Return if collision flags don't match OR
     //if both are on different z-planes.
     if(bodyB->_worldSpace != worldSpace) return false;
-    if(!(bodyA->getAttrib()->flags.checkAgainst & bodyB->getAttrib()->flags.type)
+    if(!(bodyA->getAttrib()->flags.getTypeAgainst().getValue() & bodyB->getAttrib()->flags.getType().getValue())
             /* || bodyA->getEntity()->getElev() != bodyB->getEntity()->getElev() */) return false;
 
     if(worldSpace) {
