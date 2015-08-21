@@ -53,7 +53,7 @@ const GYDebugCallbacks      DebugBase::_gyDbgCallbacks  =  {
                             };
 
 DbgEvent::DbgEvent(const char*const string, ...) {
-    char buffer[GYRO_PRINTF_BUFFER_SIZE];
+    static char buffer[GYRO_PRINTF_BUFFER_SIZE];
     va_list argptr;
     va_start(argptr,string);
     vsprintf(buffer, string, argptr);
@@ -142,7 +142,7 @@ void DebugBase::writeLog(const DebugBase::SOURCE source, const DebugBase::SEVERI
 
 // Invoked for non AssetIO Engine logging
 void DebugBase::printf(const Debug::SEVERITY level, const char *const string, ...) {
-    char buffer[GYRO_PRINTF_BUFFER_SIZE];
+    static char buffer[GYRO_PRINTF_BUFFER_SIZE];
 	va_list argptr;
 	//early-out
 	if(level < _level) return;
