@@ -2,13 +2,26 @@
 #include <QSpinBox>
 #include <QLineEdit>
 #include <QHBoxLayout>
+#include <QEvent>
 #include <QPushButton>
 #include <QFileDialog>
+#include <QMouseEvent>
 #include <core/tk_file_utilities.h>
+#include <QMenu>
+#include <QInputDialog>
+#include <QAction>
+#include <utility/elysian_lua_table_ref.hpp>
+
+std::unique_ptr<QAction> lol;
 
 #include <model/tk_property_item_delegate.h>
 #include <model/tk_property_standard_item.h>
 #include <model/tk_property_stack_model.h>
+#include <model/tk_lua_table_stack_model.h>
+#include <core/tk_menu_stack.h>
+
+PropertyItemDelegate* PropertyItemProxyDelegate::_defaultTableDelegate = nullptr;
+
 
 QWidget* PropertyItemProxyDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const {
     auto* model = static_cast<const PropertyStackModel*>(index.model());
@@ -46,26 +59,52 @@ void PropertyItemProxyDelegate::setModelData(QWidget *editor, QAbstractItemModel
     } else {
         return QStyledItemDelegate::setModelData(editor, model, index);
     }
+}
 
+bool PropertyItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) {
+    auto* propModel =  qobject_cast<const PropertyStackModel*>(model);
+    auto* item = propModel? propModel->itemFromIndex(index) : nullptr;
+    auto* propItem = (item && item->type() >= QStandardItem::UserType)? static_cast<ESTkStandardItem*>(item) : nullptr;
+
+    if(event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+        if(mouseEvent->button() == Qt::RightButton) {
+            auto* menu = getContextMenu(propItem);
+            if(menu) menu->exec(mouseEvent->globalPos());
+            return true;
+        }
+
+    }
+
+    return QStyledItemDelegate::editorEvent(event, model, option, index);
 }
 
 
 bool PropertyItemProxyDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) {
-    return QStyledItemDelegate::editorEvent(event, model, option, index);
-#if 0
 
-    auto* propModel = static_cast<const PropertyStackModel*>(model);
-    auto* item = static_cast<ESTkStandardItem*>(propModel->itemFromIndex(index));
+    auto* propModel =  qobject_cast<const PropertyStackModel*>(model);
+    auto* item = propModel? propModel->itemFromIndex(index) : nullptr;
+    auto* propItem = (item && item->type() >= QStandardItem::UserType)? static_cast<ESTkStandardItem*>(item) : nullptr;
 
+    if(propItem) {
+        if(propItem->getStyledItemDelegate()) {
+            return static_cast<PropertyItemDelegate*>(propItem->getStyledItemDelegate())->editorEvent(event, model, option, index);
+        }
 
-    if(item->getStyledItemDelegate()) {
-        return item->getStyledItemDelegate()->editorEvent(event, model, option, index);
-    } else {
-        return QStyledItemDelegate::editorEvent(event, model, option, index);
+        auto* luaItem = (propItem->type() == (int)ESTkStandardItemType::LuaTable)? static_cast<LuaTableFieldItem*>(propItem) : nullptr;
+        if (luaItem && (luaItem->getValueLuaType() == LUA_TTABLE || luaItem->getParentLuaType() == LUA_TTABLE)) {
+            if(!_defaultTableDelegate) {
+                _defaultTableDelegate = new FileBrowserPropertyItemDelegate;
+            }
+            return _defaultTableDelegate->editorEvent(event, model, option, index);
+
+        }
+
     }
+    return QStyledItemDelegate::editorEvent(event, model, option, index);
 
 
-#endif
+
 }
 
 
@@ -166,8 +205,9 @@ QWidget* FileBrowserPropertyItemDelegate::createEditor(QWidget *parent, const QS
     _parentWidget->setFocusPolicy(Qt::StrongFocus);
     _parentWidget->setAutoFillBackground(true);
 
-    QObject::connect(_browseButton, &QPushButton::pressed, [=]() {
-       QString str = QFileDialog::getOpenFileName(nullptr, tr("Locate File"), "./");
+    QObject::connect(_browseButton, &QPushButton::pressed, [=](void) {
+       QString str = _dir ? QFileDialog::getExistingDirectory(nullptr, tr("Locate Project Directory"), "./", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks) :
+                            QFileDialog::getOpenFileName(nullptr, tr("Locate File"), "./");
        if(!str.isNull()) {
             QString relFile = FileUtilities::getAssetRelativePath(str);
             _pathEdit->setText(relFile);
@@ -192,6 +232,72 @@ void FileBrowserPropertyItemDelegate::setModelData(QWidget *editor, QAbstractIte
 
     item->setData(_pathEdit->text(), Qt::EditRole);
 
+}
+
+QMenu* PropertyItemDelegate::getContextMenu(ESTkStandardItem*const item) {
+    MenuStack menu("PropertyItem");
+    LuaTableFieldItem* fieldItem = (item->type() == (int)ESTkStandardItemType::LuaTable)? static_cast<LuaTableFieldItem*>(item) : nullptr;
+
+    if(!fieldItem) return nullptr;
+
+    menu.push("type");
+
+    for(int i = 0; i < _supportedTypes.size(); ++i) {
+        switch(_supportedTypes[i]) {
+        case LUA_TNIL:
+            menu.insertCheckableAction("nil", [=](const bool val) {
+                fieldItem->setData("nil", Qt::EditRole);
+
+            }, fieldItem->getValueLuaType() == LUA_TNIL);
+            break;
+        case LUA_TBOOLEAN:
+            menu.insertCheckableAction("bool", [=](const bool val) {
+                fieldItem->setData(false, Qt::EditRole);
+            }, fieldItem->getValueLuaType() == LUA_TBOOLEAN);
+            break;
+        case LUA_TNUMBER:
+            menu.insertCheckableAction("number", [=](const bool val) {
+                fieldItem->setData(0, Qt::EditRole);
+
+            }, fieldItem->getValueLuaType() == LUA_TNUMBER);
+            break;
+        case LUA_TSTRING:
+            menu.insertCheckableAction("string", [=](const bool val) {
+                fieldItem->setData("", Qt::EditRole);
+            }, fieldItem->getValueLuaType() == LUA_TSTRING);
+            break;
+        case LUA_TTABLE:
+            menu.insertCheckableAction("table", [=](const bool val) {
+                //fieldItem->setData("nil", Qt::EditRole);
+
+            }, fieldItem->getValueLuaType() == LUA_TTABLE);
+            break;
+        case LUA_TUSERDATA:
+            break;
+        }
+    }
+
+    menu.pop();
+
+    if(fieldItem->getValueLuaType() == LUA_TTABLE) {
+        menu.insertAction("Add Key", [=](bool) {
+            QString key = QInputDialog::getText(nullptr, "Add New Field", "Key Name");
+            if(key.isNull()) return;
+
+            elysian::LuaTableRef ref(fieldItem->getTableData()->getLuaRef());
+            ref.insert(Q_CSTR(key), elysian::LuaVariant(12.0f));
+           // fieldItem->getTableData()->insertTableFieldItem(key);
+
+
+        });
+
+    }
+
+    _contextMenu = menu.first();
+
+    _initialized = true;
+
+    return _contextMenu;
 }
 
 

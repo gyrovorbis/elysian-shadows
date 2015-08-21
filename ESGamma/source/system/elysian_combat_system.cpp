@@ -18,9 +18,9 @@ void CombatSystem::initialize(void) {
 
 void CombatSystem::onCollisionEnter(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) {
 	auto* combatA = bodyA->getEntity()->getCombat();
-	if(!(combatA->getCollisionFlags() & Combat::ON_COLLISION_ENTER) || !combatA->getDmgActive()) return;
+    if(!(combatA->getCollisionFlags().getValue() & Combat::ON_COLLISION_ENTER) || !combatA->getDmgActive()) return;
 	auto* combatB = bodyB->getEntity()->getCombat();
-	if(!combatB || !(combatB->getAttrib()->getTypeFlags() & combatA->getAttrib()->getTypeAgainstFlags())) return;
+    if(!combatB || !(combatB->getAttrib()->getTypeFlags().getValue() & combatA->getAttrib()->getTypeAgainstFlags().getValue())) return;
 
     if(!(combatA->getDmgType() == Combat::DMG_SOURCE || combatA->getDmgType() == Combat::DMG_SOURCE_TARGET) ||
             !((combatB->getDmgType() == Combat::DMG_TARGET || combatB->getDmgType() == Combat::DMG_SOURCE_TARGET))) return;
@@ -34,18 +34,18 @@ void CombatSystem::onCollisionEnter(Collidable*const bodyA, Collidable*const bod
 
 void CombatSystem::onCollide(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* /*contact*/) {
 	auto* combatA = bodyA->getEntity()->getCombat();
-	if(!(combatA->getCollisionFlags() & Combat::ON_COLLIDE) || !combatA->getDmgActive()) return;
+    if(!(combatA->getCollisionFlags().getValue() & Combat::ON_COLLIDE) || !combatA->getDmgActive()) return;
 	auto* combatB = bodyB->getEntity()->getCombat();
-	if(!combatB || !(combatB->getAttrib()->getTypeFlags() & combatA->getAttrib()->getTypeAgainstFlags())) return;
+    if(!combatB || !(combatB->getAttrib()->getTypeFlags().getValue() & combatA->getAttrib()->getTypeAgainstFlags().getValue())) return;
 
     //_dealCollisionDamage(combatA, combatB, bodyB, contact);
 }
 
 void CombatSystem::onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) {
 	auto* combatA = bodyA->getEntity()->getCombat();
-	if(!(combatA->getCollisionFlags() & Combat::ON_COLLISION_EXIT) || !combatA->getDmgActive()) return;
+    if(!(combatA->getCollisionFlags().getValue() & Combat::ON_COLLISION_EXIT) || !combatA->getDmgActive()) return;
 	auto* combatB = bodyB->getEntity()->getCombat();
-	if(!combatB || !(combatB->getAttrib()->getTypeFlags() & combatA->getAttrib()->getTypeAgainstFlags())) return;
+    if(!combatB || !(combatB->getAttrib()->getTypeFlags().getValue() & combatA->getAttrib()->getTypeAgainstFlags().getValue())) return;
 
     //_dealCollisionDamage(combatA, combatB, bodyB, nullptr);
 }

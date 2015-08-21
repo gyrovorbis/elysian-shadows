@@ -4,7 +4,7 @@
 #include <cassert>
 #include <crtp/elysian_component.hpp>
 #include <utility/elysian_mem_pool.hpp>
-#include <primitive/elysian_sprite_attrib.hpp>
+#include <crtp/elysian_sprite_attrib.hpp>
 #include <crtp/elysian_collidable.hpp>
 #include <crtp/elysian_lua_table_proxy.hpp>
 #include <crtp/elysian_rigid_body.hpp>
@@ -38,11 +38,9 @@ namespace elysian {
 
         GYVector3	_acceleration		= { 0.0f, 0.0f, 0.0f };
         Material*	_material			= nullptr;
-        GYTexture*	_specularMap		= nullptr;
-        GYTexture*  _normalMap          = nullptr;
         float		_intensityFactor	= 1.0f;
         unsigned	_maxLife			= 100;
-        uint32_t	_forceMask			= ~0x0;
+        BitMask32	_forceMask			= ~0x0;
         bool		_stick				= true;
         bool        _randomStartFrame   = false;
         bool        _shadowVolume       = true;
@@ -77,11 +75,8 @@ namespace elysian {
         void        setAnimGridSize(const unsigned w, const unsigned h);
         void        setAnimGridIndex(const unsigned row, const unsigned col, int index);
         void        setAnimFrameDuration(const unsigned frame);
-        void        setMaterial(Material*const material);
-        void        loadSpecularMap(const char*const path, const unsigned width, const unsigned height);
-        void        loadNormalMap(const char*const path, const unsigned width, const unsigned height);
-        uint32_t    getForceMask(void) const;
-        void        setForceMask(const uint32_t mask);
+        BitMask32&  getForceMask(void);
+        void        setForceMask(const BitMask32 mask);
         void        setStick(const bool val);
         void        setIntensityFactor(const float factor);
         void        setRandomStartFrame(const bool val);
@@ -182,9 +177,10 @@ namespace elysian {
 
     // ====== INLINEZ =====
 
-    inline uint32_t ParticleEmitterAttrib::getForceMask(void) const { return _forceMask; }
+    inline BitMask32& ParticleEmitterAttrib::getForceMask(void) { return _forceMask; }
+
     inline void ParticleEmitterAttrib::setShadowVolume(const bool val) { _shadowVolume = val; }
-    inline void ParticleEmitterAttrib::setForceMask(const uint32_t mask) { _forceMask = mask; }
+    inline void ParticleEmitterAttrib::setForceMask(const BitMask32 mask) { _forceMask = mask; }
     inline void ParticleEmitterAttrib::setStartSize(const unsigned size) { _startSize = size; }
     inline void ParticleEmitterAttrib::setEndSize(const unsigned size) { _endSize = size; }
     inline void ParticleEmitterAttrib::setEndColor(const GYColor4 color) { _endColor = color; }
@@ -206,18 +202,6 @@ namespace elysian {
 
     inline void ParticleEmitterAttrib::setMaxLife(const unsigned life) {
         _maxLife = life;
-    }
-
-    inline void ParticleEmitterAttrib::setMaterial(Material * const material) { _material = material; }
-
-    inline void ParticleEmitterAttrib::loadSpecularMap(const char*const path, const unsigned /*width*/, const unsigned /*height*/) {
-        if(_specularMap) gyVidTexDestroy(_specularMap);
-        _specularMap = gyVidTexCreate(path);
-    }
-
-    inline void ParticleEmitterAttrib::loadNormalMap(const char*const path, const unsigned /*width*/, const unsigned /*height*/) {
-        if(_normalMap) gyVidTexDestroy(_normalMap);
-        _normalMap = gyVidTexCreate(path);
     }
 
     inline void ParticleEmitterAttrib::setStick(const bool val) { _stick = val; }

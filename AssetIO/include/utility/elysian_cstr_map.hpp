@@ -5,9 +5,10 @@
 
 namespace elysian {
 
-	template <typename T>
 	class cstr_map {
-
+        bool operator(const char*const a, const char*const b) const {
+            return strcmp(a, b) == 0;
+        }
 	};
 
 }

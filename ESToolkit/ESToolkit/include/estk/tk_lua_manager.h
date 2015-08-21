@@ -18,7 +18,7 @@ private:
 
 public:
 
-    static void initialize(void);
+    static bool initialize(void);
     static bool getMetatable(const int index);
     //static void getGlobal(const char*const key);
 };

@@ -10,7 +10,7 @@
 #include <crtp/elysian_level.hpp>
 #include "elysian_particle_system.hpp"
 #include "elysian_behavior_system.hpp"
-#include <primitive/elysian_sprite_attrib.hpp>
+#include <crtp/elysian_sprite_attrib.hpp>
 #include <crtp/elysian_renderable.hpp>
 
 namespace elysian {
@@ -119,7 +119,7 @@ void RigidBodySystem::applyForce(ForceGenerator*const force) {
     auto rigidBodies = getCurrentArea()->rigidBodies;
 
     for(auto rb : rigidBodies) {
-        if(force->getForceMask() & rb->getAttrib()->getForceMask()) {
+        if(force->getForceMask().getValue() & rb->getAttrib()->getForceMask().getValue()) {
             force->applyForce(rb, deltaTime);
         }
     }

@@ -17,6 +17,8 @@
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_WARP_MASK		(1<<1)
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_COMBAT_MASK		(1<<2)
 
+ELYSIAN_ASSET_TYPEDEF(CollidableAttrib)
+
 namespace elysian {
 
     class CollisionSystem;
@@ -90,7 +92,7 @@ namespace elysian {
 
 
 
-    class CollidableAttrib: public LuaTableProxy<CollidableAttrib> {
+    class CollidableAttribBase: public LuaTableProxy<CollidableAttribBase, CollidableAttrib> {
     friend Collidable;
     friend class CollidableBase;
     public:
@@ -105,8 +107,8 @@ namespace elysian {
 
         CollisionFlags          flags;
 
-        virtual                 ~CollidableAttrib(void);
-                                CollidableAttrib(void) = default;
+        virtual                 ~CollidableAttribBase(void);
+                                CollidableAttribBase(void) = default;
         GY_COLLIDER_TYPE        getColliderType(void) const;
         void                    setColliderType(const GY_COLLIDER_TYPE type);
         void                    setRelPos(const float x, const float y, const float z);
@@ -275,18 +277,18 @@ namespace elysian {
     inline void CollisionFlags::setType(const BitMask32 flags) { _type = flags; }
     inline void CollisionFlags::setTypeAgainst(const BitMask32 flags) { _typeAgainst = flags; }
 
-    inline  CollidableAttrib::~CollidableAttrib(void) { printf("~CollidabAttrib - YOU STILL NEED TO FUCKING FIX ME!!!!\n"); }
-    inline GY_COLLIDER_TYPE CollidableAttrib::getColliderType(void) const { return _type; }
-    inline void CollidableAttrib::setColliderType(const GY_COLLIDER_TYPE type) { _type = type; }
-    inline void CollidableAttrib::setRelPos(const float x, const float y, const float z) { _relPos.x = x; _relPos.y = y; _relPos.z = z; /* was fucked? No setting of Z?*/ }
-    inline void CollidableAttrib::setRelSize(const float x, const float y, const float z) { _relSize.x = x; _relSize.y = y; _relSize.z = z; }
-    inline const GYVector3& CollidableAttrib::getRelSize(void) const { return _relSize; }
-    inline Vector3 CollidableAttrib::getRelSizeVec(void) { return Vector3(&_relSize); }
-    inline Vector3 CollidableAttrib::getRelPosVec(void) { return Vector3(&_relPos); }
-    inline CollidableStaticAttrib* CollidableAttrib::getStaticAttrib(void) { return &_staticAttrib; }
-    inline CollisionFlags* CollidableAttrib::getFlags(void) { return &flags; }
-    inline void CollidableAttrib::setRelSizeVec(const Vector3& size) { _relSize = size; }
-    inline void CollidableAttrib::setRelPosVec(const Vector3& pos) { _relPos = pos; }
+    inline  CollidableAttribBase::~CollidableAttribBase(void) { printf("~CollidabAttrib - YOU STILL NEED TO FUCKING FIX ME!!!!\n"); }
+    inline GY_COLLIDER_TYPE CollidableAttribBase::getColliderType(void) const { return _type; }
+    inline void CollidableAttribBase::setColliderType(const GY_COLLIDER_TYPE type) { _type = type; }
+    inline void CollidableAttribBase::setRelPos(const float x, const float y, const float z) { _relPos.x = x; _relPos.y = y; _relPos.z = z; /* was fucked? No setting of Z?*/ }
+    inline void CollidableAttribBase::setRelSize(const float x, const float y, const float z) { _relSize.x = x; _relSize.y = y; _relSize.z = z; }
+    inline const GYVector3& CollidableAttribBase::getRelSize(void) const { return _relSize; }
+    inline Vector3 CollidableAttribBase::getRelSizeVec(void) { return Vector3(&_relSize); }
+    inline Vector3 CollidableAttribBase::getRelPosVec(void) { return Vector3(&_relPos); }
+    inline CollidableStaticAttrib* CollidableAttribBase::getStaticAttrib(void) { return &_staticAttrib; }
+    inline CollisionFlags* CollidableAttribBase::getFlags(void) { return &flags; }
+    inline void CollidableAttribBase::setRelSizeVec(const Vector3& size) { _relSize = size; }
+    inline void CollidableAttribBase::setRelPosVec(const Vector3& pos) { _relPos = pos; }
 
     inline CollidableBase::CollidableBase(Entity &parent): Component(parent){}
     inline unsigned CollidableBase::getContactCount(void) const { return _contactCount; }

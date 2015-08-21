@@ -425,8 +425,22 @@ void TkEntity::setTreeWidgetItemState(const TreeItemState state) {
 
 }
 
-void TkEntity::initializeDelegates(void) {
+void TkEntity::registerProxyMetaTable(lua_State*const vm) {
+
     LuaManager::stackBalanceBegin();
+
+    getGlobal(OOLUA::Proxy_class<elysian::Entity>::class_name); //userdata metatable
+    lua_newtable(*_mainState);
+    lua_pushstring(vm, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
+    lua_pushvalue(vm, -2);
+    lua_rawset(vm, -4);
+
+    MenuStack *menuStack = new MenuStack("Entity");
+
+    menuStack->insertCheckableAction("Active",
+        [&](bool checked) {
+        }
+    );
 
     auto* planeDelegate = new EnumDropdownPropertyItemDelegate({
        "RECT_PLANE_BOTTOM",
@@ -437,6 +451,7 @@ void TkEntity::initializeDelegates(void) {
        "RECT_PLANE_LEFT_SLOPE_45",
        "RECT_PLANE_RIGHT_SLOPE_45"
     });
+    planeDelegate->setContextMenu(menuStack->first());
     OOLUA::push(*_mainState, planeDelegate);
     lua_setfield(*_mainState, -2, "planeType");
 
@@ -444,5 +459,9 @@ void TkEntity::initializeDelegates(void) {
     OOLUA::push(*_mainState, elevDelegate);
     lua_setfield(*_mainState, -2, "elev");
 
+    lua_pop(*_mainState, 2);
+
     LuaManager::stackBalanceEnd();
+
+    elysian::EntityBase::registerProxyMetaTable(vm);
 }

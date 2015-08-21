@@ -7,6 +7,9 @@ class TkExaminable: public elysian::ExaminableBase {
 public:
     TkExaminable(TkEntity& parent);
     TkExaminable(void) = default;
+
+
+    static void initializeDelegates(void);
 };
 
 

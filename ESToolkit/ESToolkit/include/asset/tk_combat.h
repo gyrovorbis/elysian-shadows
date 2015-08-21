@@ -10,6 +10,8 @@ public:
 
     virtual bool    validate(QString &) const override;
     virtual QMenu*  createContextMenu(void) override;
+
+    static void     initializeDelegates(void);
 };
 
 inline TkCombat::TkCombat(TkEntity &parent): elysian::CombatBase(parent) {}

@@ -31,7 +31,11 @@ namespace OOLUA {
         case QMetaType::Bool:
             return push(state, variant.toBool());
         case QMetaType::QString:
-            return push(state, variant.toString());
+            if(variant.toString() == "nil") {
+                lua_pushnil(state);
+                return true;
+            }
+             else return push(state, variant.toString());
         default:
             return push(state, variant.toFloat());
         }

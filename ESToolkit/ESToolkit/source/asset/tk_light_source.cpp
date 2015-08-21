@@ -1,6 +1,8 @@
 #include <asset/tk_light_source.h>
 #include <core/tk_menu_stack.h>
 #include <asset/tk_entity.h>
+#include <model/tk_property_item_delegate.h>
+#include <estk/tk_lua_wrappers.h>
 
 bool TkLightSource::validate(QString& str) const {
     bool success = true;
@@ -36,4 +38,16 @@ QMenu* TkLightSource::createContextMenu(void) {
 
     return menuStack.first();
 
+}
+
+void TkLightSource::initializeDelegates(void) {
+    auto* typeDelegate = new EnumDropdownPropertyItemDelegate({
+       "LIGHT_DIRECTIONAL", "LIGHT_SPOT", "LIGHT_POINT"
+    });
+    OOLUA::push(*_mainState, typeDelegate);
+    lua_setfield(*_mainState, -2, "type");
+
+    auto* cutoffDelegate = new SpinboxPropertyItemDelegate(0, 360);
+    OOLUA::push(*_mainState, cutoffDelegate);
+    lua_setfield(*_mainState, -2, "spotCutoffAngle");
 }

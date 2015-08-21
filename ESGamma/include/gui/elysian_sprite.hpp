@@ -2,7 +2,7 @@
 #define ELYSIAN_SPRITE_HPP
 
 #include <primitive/elysian_renderable_object.hpp>
-#include <primitive/elysian_sprite_attrib.hpp>
+#include <crtp/elysian_sprite_attrib.hpp>
 #include <gyro_video_api.h>
 
 namespace elysian {

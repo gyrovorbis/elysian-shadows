@@ -32,13 +32,20 @@ public:
                             LuaTableFieldItem(const int ref, const QVariant key, QStandardItem*const labelItem);
     virtual                 ~LuaTableFieldItem(void);
     virtual void            insertingModelItem(void) override;
+    virtual QStyledItemDelegate* getStyledItemDelegate(void) const override;
+    virtual int type(void) const override { return (int)ESTkStandardItemType::LuaTable; }
 
     QVariant                getValue(void) const;
     void                    setValue(const QVariant val);
-    virtual QStyledItemDelegate* getStyledItemDelegate(void) const override;
+    int                     getLuaRef(void) const;
+
 
     void                    setDirty(const bool val=true);
     LuaTableTableFieldData* getTableData(void) const;
+
+    int                     getValueLuaType(void) const;
+    int                     getKeyLuaType(void) const;
+    int                     getParentLuaType(void) const;
 
 };
 
@@ -49,7 +56,7 @@ struct LuaTableTableFieldData: public QObject, public LuaManager {
     friend class LuaTableFieldItem;
 public:
     QHash<QVariant, LuaTableFieldItem*> _fieldItems;
-    int                                 _luaRef = LUA_NOREF;
+    int                                 _luaRef     = LUA_NOREF;
     QStandardItem*                      _parentItem = nullptr;
 
                                         LuaTableTableFieldData(const int tableRef);
@@ -57,6 +64,7 @@ public:
 
     void                                insertTableFieldItem(const QVariant key);
     void                                insertTableFieldItems(QStandardItem* parentItem);
+    int                                 getLuaRef(void) const;
 
 public Q_SLOTS:
     void                                onFieldChanged(const QVariant key);
@@ -89,6 +97,8 @@ public:
 
 
 //==== INLINEZ ======
+
+inline int LuaTableFieldItem::getLuaRef(void) const { return _luaRef; }
 
 //Pull value from Lua table/userdata to update model
 inline QVariant LuaTableFieldItem::getValue(void) const {
@@ -152,5 +162,34 @@ inline LuaTableStackModel::LuaTableStackModel(const int ref): PropertyStackModel
 inline void LuaTableStackModel::setLabelItemText(const QString string) {
     _parentItem->setData(string, Qt::DisplayRole);
 }
+
+inline int LuaTableFieldItem::getKeyLuaType(void) const {
+    OOLUA::push(*_mainState, _key);
+    const int type = lua_type(*_mainState, -1);
+    lua_pop(*_mainState, 1);
+    return type;
+}
+
+inline int LuaTableFieldItem::getValueLuaType(void) const {
+    lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
+    OOLUA::push(*_mainState, _key);
+    lua_gettable(*_mainState, -2);
+    const int type = lua_type(*_mainState, -1);
+    lua_pop(*_mainState, 1);
+    return type;
+}
+
+
+inline LuaTableTableFieldData* LuaTableFieldItem::getTableData(void) const { return _tableData; }
+
+inline int LuaTableFieldItem::getParentLuaType(void) const {
+    lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
+    const int luaType = lua_type(*_mainState, -1);
+    lua_pop(*_mainState, 1);
+    return luaType;
+
+}
+
+inline int LuaTableTableFieldData::getLuaRef(void) const { return _luaRef; }
 
 #endif // ESTK_LUA_TABLE_MODEL_HPP

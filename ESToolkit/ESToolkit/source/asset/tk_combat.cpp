@@ -1,6 +1,8 @@
 #include <asset/tk_combat.h>
 #include <core/tk_menu_stack.h>
 #include <asset/tk_entity.h>
+#include <model/tk_property_item_delegate.h>
+#include <estk/tk_lua_wrappers.h>
 
 bool TkCombat::validate(QString& str) const {
     bool success = true;
@@ -36,4 +38,12 @@ QMenu* TkCombat::createContextMenu(void) {
 
     return menuStack.first();
 
+}
+
+void TkCombat::initializeDelegates(void) {
+    auto* typeDelegate = new EnumDropdownPropertyItemDelegate({
+        "DMG_NONE", "DMG_SOURCE", "DMG_TARGET", "DMG_SOURCE_TARGET"
+    });
+    OOLUA::push(*_mainState, typeDelegate);
+    lua_setfield(*_mainState, -2, "dmgType");
 }

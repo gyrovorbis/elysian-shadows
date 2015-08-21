@@ -3,6 +3,14 @@
 
 #include <component/elysian_collidable_base.hpp>
 
+class TkCollidableAttrib: public elysian::CollidableAttribBase {
+public:
+
+    static void initializeDelegates(void);
+
+};
+
+
 class TkCollidable: public elysian::CollidableBase {
 friend class TkEntity;
 friend class elysian::EntityBase;

@@ -10,6 +10,8 @@ public:
 
     virtual bool    canAddTo(const Entity &entity) const override;
     virtual QMenu*  createContextMenu(void) override;
+
+    static void     initializeDelegates(void);
 };
 
 

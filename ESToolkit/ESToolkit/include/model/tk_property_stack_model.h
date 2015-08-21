@@ -9,6 +9,7 @@
 class ESTkStandardItem;
 
 class PropertyStackModel: public QStandardItemModel {
+    Q_OBJECT
 private:
 
 	//Need to maintain a list of PropertyStandardItems, because these

@@ -193,10 +193,84 @@ static GYAppCbRet Init(int argc, char **argv) {
     return (GYAppCbRet)a.exec();
 }
 
+#include <memory>
+#include <stdio.h>
+
+auto f = [](int* string) { printf("f() invoked\n"); };
+
+void b(int* str) { printf("b() invoked\n"); }
+
+struct A {
+    A(decltype(f) lam): lambda(lam) {}
+    decltype(f) lambda;
+    ~A(void) { lambda(nullptr); }
+};
+
+struct Blank {};
 
 
+template<typename T>
+class NoOverheadLambda {
+    int i = 3;
+private:
+    T getLambdaWithoutReference();
+    ~NoOverheadLambda(void) {
+        getLambdaWithoutReference()();
+    }
+};
+
+
+struct B: public A {
+    Blank blank;
+    B(Blank b, decltype(f) l): A(l), blank(b) {}
+};
+
+struct C: public B {
+    int num;
+    C(const int n, Blank b, decltype(f) lam): B(b, lam), num(n) {}
+};
+
+auto hello = []() { std::cout << "hello world" << std::endl; };
+struct free_deleter {
+template <typename T>
+void operator()(T* t) {
+free(t);
+}
+};
 
 int main(int argc, char* argv[]) {
+    {
+         auto v = [](){ return 1; }; cout << sizeof(&v) << endl;
+
+        printf("sizeof(int): %d\n", sizeof(int));
+        printf("sizeof(int*): %d\n", sizeof(int*));
+
+        std::unique_ptr<int> uptr1;
+        std::unique_ptr<int, decltype(f)> uptr2(new int, f);
+        std::unique_ptr<int, void(*)(int*)> uptr3(new int, b);
+        printf("Default: %d\n", sizeof(uptr1));
+        printf("Lambda: %d\n", sizeof(uptr2));
+        printf("FuncPtr: %d\n", sizeof(uptr3));
+
+        A a = { f };
+        B b = { Blank(), f};
+        C c = { 2, Blank(), f };
+        printf("sizeof(A): %d\n", sizeof(A));
+        printf("sizeof(B): %d\n", sizeof(B));
+        printf("sizeof(C): %d\n", sizeof(C));
+        printf("sizeof(a): %d\n", sizeof(a));
+        printf("sizeof(b): %d\n", sizeof(b));
+        printf("sizeof(c): %d\n", sizeof(c));
+
+        ((decltype(hello)*)(0))->operator()();
+
+        std::unique_ptr<char, free_deleter> foo((char*)malloc(10));
+
+        std::cout << "foo: " << sizeof(foo) << std::endl;
+        std::cout << "char*: " << sizeof(char*) << std::endl;
+
+    }
+
 #ifdef _WIN32
     int retVal = SymInitialize
     (

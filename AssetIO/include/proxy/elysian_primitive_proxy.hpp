@@ -3,7 +3,7 @@
 
 #include <primitive/elysian_color.hpp>
 #include <primitive/elysian_material.hpp>
-#include <primitive/elysian_sprite_attrib.hpp>
+#include <crtp/elysian_sprite_attrib.hpp>
 #include <primitive/elysian_quad_sprite_attrib.hpp>
 #include <proxy/elysian_instance_transform_proxy.hpp>
 

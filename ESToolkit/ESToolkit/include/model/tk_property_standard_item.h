@@ -9,6 +9,11 @@
 
 class QStyledItemDelegate;
 
+enum class ESTkStandardItemType: uint32_t {
+    Generic = QStandardItem::UserType+1,
+    LuaTable
+};
+
 /*
   Base class for ALL custom QStandardItems within Toolkit.
   Provides accessors for resource management, so that the
@@ -26,7 +31,7 @@ public:
 
     ESTkStandardItem(const QString string): QStandardItem(string) {}
 
-	virtual int type(void) const override { return QStandardItem::UserType; }
+    virtual int type(void) const override { return (int)ESTkStandardItemType::Generic; }
 	void acquire(void) { ++_refCount; }
 	void release(void) { if(--_refCount == 0) delete this; }
 	unsigned getRefCount(void) const { return _refCount; }

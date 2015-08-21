@@ -64,7 +64,7 @@ namespace elysian {
 		_mainState->register_class<InstanceTransform>();
         InstanceTransform::registerProxyMetaTable(*_mainState);
 		OOLUA::register_class<Entity>(*_mainState);
-		EntityBase::registerProxyMetaTable(*_mainState);
+        Entity::registerProxyMetaTable(*_mainState);
         _mainState->register_class<SpriteAttrib>();
         SpriteAttrib::registerProxyMetaTable(*_mainState);
         _mainState->register_class<QuadSpriteAttrib>();

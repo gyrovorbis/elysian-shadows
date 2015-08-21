@@ -5,6 +5,7 @@
 #include <gyro_matrix_api.h>
 #include <stdint.h>
 #include <utility/elysian_asset_typedefs.hpp>
+#include <utility/elysian_bit_mask.hpp>
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 
@@ -13,13 +14,13 @@ namespace elysian {
 	class ForceTarget;
 	class ForceGenerator {
 	private:
-		uint32_t		_forceMask = ~0x0;
+        BitMask32		_forceMask = ~0x0;
 	public:
 		virtual void	applyForce(ForceTarget*const target, const float deltaTime) = 0;
 		virtual			~ForceGenerator(void) = default;
 
-		uint32_t		getForceMask(void) const;
-		void			setForceMask(const uint32_t mask);
+        BitMask32&		getForceMask(void);
+        void			setForceMask(const BitMask32 mask);
 	};
 
 	class GravityForceGenerator: public ForceGenerator {
@@ -69,8 +70,8 @@ namespace elysian {
 
 	// ======= INLINEZ ======
 
-	inline uint32_t ForceGenerator::getForceMask(void) const { return _forceMask; }
-	inline void ForceGenerator::setForceMask(const uint32_t mask) { _forceMask = mask; }
+    inline BitMask32& ForceGenerator::getForceMask(void) { return _forceMask; }
+    inline void ForceGenerator::setForceMask(const BitMask32 mask) { _forceMask = mask; }
 
 
 	inline void ImplosionForceGenerator::setForceMagnitude(const float mag) { _magnitude = mag;}

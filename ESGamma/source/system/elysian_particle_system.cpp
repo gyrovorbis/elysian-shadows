@@ -49,13 +49,13 @@ void ParticleSystem::applyForce(ForceGenerator * const forceGen) {
 
     //Update internal emitters
 	for(unsigned i = 0; i < ELYSIAN_PARTICLE_SYSTEM_INTERNAL_EMITTER_COUNT; ++i) {
-        if(forceGen->getForceMask() & emitters[i].getAttrib()->getForceMask()) emitters[i].applyForce(forceGen, deltaTime);
+        if(forceGen->getForceMask().getValue() & emitters[i].getAttrib()->getForceMask().getValue()) emitters[i].applyForce(forceGen, deltaTime);
 	}
 
     //update entity emitters
     auto emitters = getCurrentArea()->particleEmitters;
     for(auto it : emitters) {
-		if(forceGen->getForceMask() & it->getAttrib()->getForceMask()) it->applyForce(forceGen, deltaTime);
+        if(forceGen->getForceMask().getValue() & it->getAttrib()->getForceMask().getValue()) it->applyForce(forceGen, deltaTime);
 	}
 }
 
