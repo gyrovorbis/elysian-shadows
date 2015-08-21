@@ -17,7 +17,6 @@
 
 
 OOLUA_EXPORT_FUNCTIONS_CONST(RigidBodyAttrib,
-                             getForceMask,
                              getCanHold,
                              isBreakable,
                              getBaseDurability)
@@ -25,7 +24,8 @@ OOLUA_EXPORT_FUNCTIONS(RigidBodyAttrib,
                        setForceMask,
                        setBreakable,
                        setBaseDurability,
-                       setCanHold)
+                       setCanHold,
+                       getForceMask)
 
 OOLUA_EXPORT_FUNCTIONS(ForceTarget,
                        applyForce,

@@ -40,6 +40,7 @@
     constexpr unsigned                      c::_proxyFieldCount; \
     constexpr elysian::LuaTableFieldProxy	c::_proxyFields[];
 
+
 #define ELYSIAN_LUA_PROXY_FIELD_KEY_MAX_SIZE    100
 #define ELYSIAN_LUA_PROXY_FIELDS_MAX            100
 #define ELYSIAN_LUA_PROXY_TO_STRING_BUFF_SIZE   100
@@ -724,8 +725,8 @@ namespace elysian {
 		static void registerProxyMetaTable(lua_State *l) {
             P::_proxyRegistered             = false;
             T::_proxyRegistered             = false;
-            _propertyProxyIndexTable     = LUA_REFNIL;
-            _propertyProxyNewIndexTable  = LUA_REFNIL;
+            _propertyProxyIndexTable        = LUA_REFNIL;
+            _propertyProxyNewIndexTable     = LUA_REFNIL;
 
             //Register properties
 			_registerPropertyMetaMethodTables(l);
@@ -734,7 +735,7 @@ namespace elysian {
             lua_rawgeti(l, LUA_REGISTRYINDEX, _propertyProxyIndexTable);
             _proxyTotalCount = P::_proxyFieldCount;
             memcpy(_combinedFields, P::_proxyFields, sizeof(LuaTableFieldProxy)*P::_proxyFieldCount);
-             _LuaTableProxyParents<P, T, Bases...>::appendParentIndexTable(l, _combinedFields, _proxyTotalCount);
+            _LuaTableProxyParents<P, T, Bases...>::appendParentIndexTable(l, _combinedFields, _proxyTotalCount);
             lua_pop(l, 1);
 
             lua_rawgeti(l, LUA_REGISTRYINDEX, _propertyProxyNewIndexTable);
@@ -757,7 +758,7 @@ namespace elysian {
             lua_pushcclosure(l, &_luaFromTableCFunction, LUA_TABLE_PROXY_UPVALUE_COUNT);
             lua_rawset(l, -3);
 
-            lua_pushstring(l, "__typename");
+            lua_pushstring(l, ELYSIAN_LUA_PROXY_TYPE_METAFIELD);
             lua_pushstring(l, OOLUA::Proxy_class<T>::class_name);
             lua_rawset(l, -3);
 
@@ -858,8 +859,8 @@ namespace elysian {
             lua_pushcclosure(l, &_luaToStringMetaMethodCFunction, LUA_TABLE_PROXY_UPVALUE_COUNT);
             lua_setfield(l, -2, "__tostring");
 
-            lua_pushstring(l, OOLUA::Proxy_class<T>::class_name);
-            lua_setfield(l, -2, "__typename");
+            //lua_pushstring(l, OOLUA::Proxy_class<T>::class_name);
+            //lua_setfield(l, -2, "__typename");
 
         }
 

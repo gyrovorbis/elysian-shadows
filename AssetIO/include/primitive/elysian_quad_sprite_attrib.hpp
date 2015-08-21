@@ -2,7 +2,7 @@
 #define ELYSIAN_QUAD_SPRITE_ATTRIB_HPP
 
 #include <primitive/elysian_textured_attrib.hpp>
-#include <primitive/elysian_sprite_attrib.hpp>
+#include <crtp/elysian_sprite_attrib.hpp>
 
 namespace elysian {
 

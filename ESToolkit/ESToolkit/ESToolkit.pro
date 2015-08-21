@@ -192,7 +192,12 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     source/estk/tk_camera_dock_widget.cpp \
     ../../ESGamma/source/system/elysian_camera_system_base.cpp \
     source/estk/tk_camera_system.cpp \
-    ../../ESGamma/source/utility/elysian_camera_shake_subprocess.cpp
+    ../../ESGamma/source/utility/elysian_camera_shake_subprocess.cpp \
+    ../../AssetIO/source/proxy/elysian_bit_mask_proxy.cpp \
+    ../../AssetIO/source/utility/elysian_bit_mask.cpp \
+    source/asset/tk_examinable.cpp \
+    ../../ESGamma/source/utility/elysian_lua_table_ref.cpp \
+    ../../ESGamma/source/utility/elysian_lua_variant.cpp
 
 
 
@@ -267,7 +272,8 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
         source/asset/tk_skeleton.cpp \
         source/asset/tk_rigid_body.cpp \
         source/asset/tk_character.cpp \
-        source/asset/tk_warp.cpp
+        source/asset/tk_warp.cpp \
+        source/asset/tk_sprite_attrib.cpp
 
 } else {
         SOURCES += ../../ESGamma/source/system/main.cpp
@@ -310,7 +316,6 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../AssetIO/include/primitive/elysian_prim_attrib.hpp \
     ../../AssetIO/include/primitive/elysian_quad_sprite_attrib.hpp \
     ../../AssetIO/include/primitive/elysian_renderable_object.hpp \
-    ../../AssetIO/include/primitive/elysian_sprite_attrib.hpp \
     ../../AssetIO/include/primitive/elysian_textured_attrib.hpp \
     ../../AssetIO/include/utility/elysian_asset_typedefs.hpp \
     ../../AssetIO/include/utility/elysian_cstr_map.hpp \
@@ -414,7 +419,14 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../ESGamma/include/crtp/elysian_camera_system.hpp \
     include/estk/tk_camera_dock_widget.h \
     include/estk/tk_camera_system.h \
-    ../../ESGamma/include/utility/elysian_camera_shake_subprocess.hpp
+    ../../ESGamma/include/utility/elysian_camera_shake_subprocess.hpp \
+    ../../ESGamma/include/utility/elysian_bit_mask.hpp \
+    ../../AssetIO/include/proxy/elysian_bit_mask_proxy.hpp \
+    include/asset/tk_sprite_attrib.h \
+    ../../AssetIO/include/crtp/elysian_sprite_attrib.hpp \
+    ../../AssetIO/include/primitive/elysian_sprite_attrib_base.hpp \
+    ../../AssetIO/include/utility/elysian_lua_table_ref.hpp \
+    ../../AssetIO/include/utility/elysian_lua_variant.hpp
 
 !ios {
     HEADERS +=  include/asset/tk_animation.h \

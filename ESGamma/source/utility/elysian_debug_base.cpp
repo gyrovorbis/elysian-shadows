@@ -7,7 +7,7 @@
 #include <level/elysian_zcoords.hpp>
 #include "elysian_party_system.hpp"
 #include <crtp/elysian_entity.hpp>
-#include <primitive/elysian_sprite_attrib.hpp>
+#include <crtp/elysian_sprite_attrib.hpp>
 #include "elysian_debug.hpp"
 #include "elysian_level_system.hpp"
 #include "elysian_engine.hpp"

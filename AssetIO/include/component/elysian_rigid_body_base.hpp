@@ -7,6 +7,7 @@
 #include <crtp/elysian_component.hpp>
 #include <crtp/elysian_lua_table_proxy.hpp>
 #include <primitive/elysian_instance_transform.hpp>
+#include <utility/elysian_bit_mask.hpp>
 
 namespace elysian {
 
@@ -14,7 +15,7 @@ namespace elysian {
 
     class RigidBodyAttrib: public LuaTableProxy<RigidBodyAttrib> {	//later separate GYStatic attrib
     private:
-        uint32_t	_forceMask		= ~0x0;
+        BitMask32	_forceMask		= ~0x0;
         bool		_breakable		= false;
         float		_baseDurability = -1;
         bool        _canHold        = true;
@@ -27,8 +28,8 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(forceMask,  getForceMask,       setForceMask)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
-        uint32_t	getForceMask(void) const;
-        void		setForceMask(const uint32_t mask);
+        BitMask32&	getForceMask(void);
+        void		setForceMask(const BitMask32 mask);
         void		setBreakable(const bool val);
         bool		isBreakable(void) const;
         float		getBaseDurability(void) const;
@@ -191,8 +192,8 @@ namespace elysian {
     inline RigidBodyAttrib* RigidBodyBase::getAttrib(void) const { return _attrib; }
 
 	//inline void RigidBody::applyForceMask(const uint32_t mask, const GYVector2& force) { if(_attrib->getForceMask() & mask) applyForce(force); }
-	inline uint32_t RigidBodyAttrib::getForceMask(void) const { return _forceMask; }
-	inline void RigidBodyAttrib::setForceMask(const uint32_t mask) { _forceMask = mask; }
+    inline BitMask32& RigidBodyAttrib::getForceMask(void) { return _forceMask; }
+    inline void RigidBodyAttrib::setForceMask(const BitMask32 mask) { _forceMask = mask; }
 	inline bool RigidBodyAttrib::isBreakable(void) const { return _breakable; }
 	inline void RigidBodyAttrib::setBreakable(const bool val) { _breakable = val; }
 	inline float RigidBodyAttrib::getBaseDurability(void) const { return _baseDurability; }

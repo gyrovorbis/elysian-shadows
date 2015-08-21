@@ -1,6 +1,8 @@
 #include <asset/tk_collidable.h>
 #include <core/tk_menu_stack.h>
 #include <asset/tk_entity.h>
+#include <model/tk_property_item_delegate.h>
+#include <estk/tk_lua_wrappers.h>
 
 
 bool TkCollidable::validate(QString &str) const {
@@ -25,6 +27,7 @@ bool TkCollidable::validate(QString &str) const {
 
 }
 
+
 QMenu* TkCollidable::createContextMenu(void) {
     MenuStack menuStack("Collidable");
 
@@ -48,4 +51,13 @@ QMenu* TkCollidable::createContextMenu(void) {
 
 bool TkCollidable::canRemoveFrom(const Entity &entity) const {
     return !entity.getRigidBody() && !entity.getWarp();
+}
+
+void TkCollidableAttrib::initializeDelegates(void) {
+    auto* typeDelegate = new EnumDropdownPropertyItemDelegate({
+       "COLLIDER_NONE", "COLLIDER_AABB", "COLLIDER_OBB", "COLLIDER_RTRI", "COLLIDER_OTHER_TRIS", "COLLIDER_CIR"
+    });
+    OOLUA::push(*_mainState, typeDelegate);
+    lua_setfield(*_mainState, -2, "colliderType");
+
 }

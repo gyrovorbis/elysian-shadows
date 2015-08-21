@@ -24,7 +24,7 @@ namespace elysian {
 
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(CollisionFlags)
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(CollidableStaticAttrib)
-ELYSIAN_LUA_PROXY_FIELDS_EXPORT(CollidableAttrib)
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(CollidableAttribBase)
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(CollidableBase)
 
 CollisionSystem* CollidableBase::_colSys = nullptr;
@@ -34,9 +34,9 @@ CollidableBase::CollidableBase(const CollidableBase &other) {
     _sortSweepAABB = nullptr;
 }
 
-void CollidableAttrib::setStaticAttrib(const OOLUA::Lua_table_ref valTable) { _staticAttrib.fromTable(valTable); }
+void CollidableAttribBase::setStaticAttrib(const OOLUA::Lua_table_ref valTable) { _staticAttrib.fromTable(valTable); }
 
-void CollidableAttrib::setFlags(const OOLUA::Lua_table_ref valTable) { flags.fromTable(valTable); }
+void CollidableAttribBase::setFlags(const OOLUA::Lua_table_ref valTable) { flags.fromTable(valTable); }
 
 void CollisionContact::_calculatePenetrationInternals(void) {
 	gyContactCalculatePenetrationInternals(this,

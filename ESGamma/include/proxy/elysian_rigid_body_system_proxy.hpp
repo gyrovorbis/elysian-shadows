@@ -19,7 +19,7 @@ OOLUA_PROXY(ForceGenerator)
         No_public_constructors,
         No_public_destructor
     )
-    OOLUA_MEM_FUNC(void, setForceMask, uint32_t)
+    OOLUA_MEM_FUNC(void, setForceMask, BitMask32)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(GravityForceGenerator, ForceGenerator)

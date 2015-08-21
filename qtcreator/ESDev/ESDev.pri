@@ -3,6 +3,8 @@ exists( ESDevCommandLineArgs.pri ) {
     include( ESDevCommandLineArgs.pri )
 }
 
+CONFIG -= exceptions
+
 
 #SPEED UP MINGW'S FUCKTARDEDLY SLOW DUMB ASS!
 win32 {

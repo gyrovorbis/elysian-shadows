@@ -32,6 +32,7 @@
 #include <proxy/elysian_party_system_proxy.hpp>
 #include <proxy/elysian_rigid_body_system_proxy.hpp>
 #include <proxy/elysian_timer_system_proxy.hpp>
+#include <proxy/elysian_bit_mask_proxy.hpp>
 
 #include <crtp/elysian_lua_manager.hpp>
 
@@ -42,7 +43,10 @@ namespace elysian {
     void LuaManagerBase::_registerWrappers(void) {
 
 		//Register classes and structs
-		_mainState->register_class<Lua32BitMask>();
+        _mainState->register_class<BitMask32>();
+        BitMask32::registerProxyMetaTable(*_mainState);
+        _mainState->register_class<BitMask64>();
+        BitMask64::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<LuaBehaviorScriptAttrib>();
         OOLUA::register_class<GYVector2>(*_mainState);
         OOLUA::register_class<GYVector3>(*_mainState);
@@ -60,7 +64,7 @@ namespace elysian {
 		_mainState->register_class<InstanceTransform>();
         InstanceTransform::registerProxyMetaTable(*_mainState);
 		OOLUA::register_class<Entity>(*_mainState);
-		EntityBase::registerProxyMetaTable(*_mainState);
+        Entity::registerProxyMetaTable(*_mainState);
         _mainState->register_class<SpriteAttrib>();
         SpriteAttrib::registerProxyMetaTable(*_mainState);
         _mainState->register_class<QuadSpriteAttrib>();
@@ -196,11 +200,6 @@ namespace elysian {
 
 }
 
-OOLUA_EXPORT_FUNCTIONS_CONST(Lua32BitMask,
-							 toInt)
-OOLUA_EXPORT_FUNCTIONS(Lua32BitMask,
-					   fromInt,
-					   setBit)
 
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Singletons)

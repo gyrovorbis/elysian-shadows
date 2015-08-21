@@ -8,13 +8,14 @@ namespace OOLUA {
     typedef elysian::RigidBodyAttrib            RigidBodyAttrib;
     typedef elysian::ForceTarget                ForceTarget;
     typedef elysian::RigidBody                  RigidBody;
+    typedef elysian::BitMask32                  BitMask32;
     typedef elysian::Vector3                    Vector3;
 
 }
 
 OOLUA_PROXY(RigidBodyAttrib)
-    OOLUA_MEM_FUNC(void, setForceMask, uint32_t)
-    OOLUA_MEM_FUNC_CONST(uint32_t, getForceMask)
+    OOLUA_MEM_FUNC(void, setForceMask, const BitMask32)
+    OOLUA_MEM_FUNC(BitMask32&, getForceMask)
     OOLUA_MEM_FUNC(void, setBreakable, bool)
     OOLUA_MEM_FUNC_CONST(bool, isBreakable)
     OOLUA_MEM_FUNC(void, setBaseDurability, float)

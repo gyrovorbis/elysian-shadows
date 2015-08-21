@@ -20,7 +20,5 @@
 
 
 OOLUA_EXPORT_FUNCTIONS(LightSystem,
-                       setGlobalAmbientColor,
                        interpLightAttrib)
-OOLUA_EXPORT_FUNCTIONS_CONST(LightSystem,
-                             getGlobalAmbientColor)
+OOLUA_EXPORT_FUNCTIONS_CONST(LightSystem)

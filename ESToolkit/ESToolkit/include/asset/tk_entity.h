@@ -11,9 +11,10 @@ class Sprite;
 class TkEntity;
 class LuaTableStackModel;
 
+ELYSIAN_ASSET_TYPEDEF(SpriteAttrib)
+ELYSIAN_ASSET_TYPEDEF(CollidableAttrib)
+
 namespace elysian {
-    class CollidableAttrib;
-    class SpriteAttrib;
     class Material;
 }
 
@@ -93,8 +94,7 @@ public:
 
     //sstatic Entity*              create(void);
     static Entity*              create(const OOLUA::Lua_table_ref valTable);
-    static void                 initializeDelegates(void);
-
+    static void                 registerProxyMetaTable(lua_State*const vm);
 public Q_SLOTS:
     void                        onEntityParented(Entity*const child, Entity*const parent);
 

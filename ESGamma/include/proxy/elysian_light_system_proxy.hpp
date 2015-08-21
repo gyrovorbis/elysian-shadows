@@ -16,8 +16,6 @@ OOLUA_PROXY(LightSystem)
         No_public_constructors,
         No_public_destructor
     )
-    OOLUA_MFUNC(setGlobalAmbientColor)
-    OOLUA_MEM_FUNC_CONST(void, getGlobalAmbientColor, GYVector4&)
     OOLUA_MEM_FUNC(void, interpLightAttrib, float, const LightAttrib&, LightAttrib*, cpp_in_p<EventMonitor*>)
 OOLUA_PROXY_END
 

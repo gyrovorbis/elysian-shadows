@@ -3,6 +3,7 @@
 
 #include <proxy/elysian_component_proxy.hpp>
 #include <crtp/elysian_collidable.hpp>
+#include <proxy/elysian_bit_mask_proxy.hpp>
 
 namespace OOLUA {
     typedef elysian::CollisionFlags             CollisionFlags;
@@ -10,6 +11,7 @@ namespace OOLUA {
     typedef elysian::CollidableAttrib           CollidableAttrib;
     typedef elysian::CollisionContact           CollisionContact;
     typedef elysian::Collidable                 Collidable;
+    typedef elysian::BitMask32                  BitMask32;
 
     typedef elysian::Vector3                    Vector3;
 
@@ -22,14 +24,10 @@ OOLUA_PROXY(CollisionFlags)
         No_public_constructors,
         No_public_destructor
     )
-    OOLUA_MEM_FUNC(void, resetType)
-    OOLUA_MEM_FUNC(void, resetCheckAgainst)
-    OOLUA_MEM_FUNC(void, addType, uint32_t)
-    OOLUA_MEM_FUNC(void, addCheckAgainst, uint32_t)
-    OOLUA_MEM_FUNC_CONST(uint32_t, getType)
-    OOLUA_MEM_FUNC_CONST(uint32_t, getTypeAgainst)
-    OOLUA_MEM_FUNC(void, setType, const uint32_t)
-    OOLUA_MEM_FUNC(void, setTypeAgainst, const uint32_t)
+    OOLUA_MEM_FUNC(BitMask32&, getType)
+    OOLUA_MEM_FUNC(BitMask32&, getTypeAgainst)
+    OOLUA_MEM_FUNC(void, setType, const BitMask32)
+    OOLUA_MEM_FUNC(void, setTypeAgainst, const BitMask32)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CollidableStaticAttrib)

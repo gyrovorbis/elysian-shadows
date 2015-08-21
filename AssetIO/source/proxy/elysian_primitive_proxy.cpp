@@ -22,7 +22,10 @@ OOLUA_EXPORT_FUNCTIONS(SpriteAttrib,
                                    setColorA,
                                     getColor4,
                                     setColor4,
-                                    setTexPath)
+                                    setTexPath,
+                                   setSpecularMapPath,
+                                   setNormalMapPath,
+                                   setMaterial)
 OOLUA_EXPORT_FUNCTIONS_CONST(SpriteAttrib,
                                getColor,
                                getAlpha,
@@ -31,7 +34,10 @@ OOLUA_EXPORT_FUNCTIONS_CONST(SpriteAttrib,
                              getColorG,
                              getColorB,
                              getColorA,
-                             getFrame)
+                             getFrame,
+                             getNormalMapPath,
+                             getSpecularMapPath,
+                             getMaterial)
 
 EXPORT_OOLUA_FUNCTIONS_1_CONST(QuadSpriteAttrib,
                                getVertexColor)

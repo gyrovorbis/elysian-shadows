@@ -9,6 +9,8 @@
 #include <test_level.h>
 #include <test_map_view.h>
 #include <test_libgyro_file_api.h>
+#include <test_lua_variant.h>
+#include <test_lua_table_ref.h>
 
 /*
  *
@@ -104,6 +106,8 @@ int main(QStringList args)
     if(!assetsTest) {
         ESTkTest::enqueueTest(new tktest::ESToolkitTest);
         ESTkTest::enqueueTest(new tktest::LevelTest);
+        ESTkTest::enqueueTest(new tktest::LuaVariantTest);
+        ESTkTest::enqueueTest(new tktest::LuaTableRefTest);
     } else {
         ESTkTest::enqueueTest(new tktest::TestProjectAssets());
     }

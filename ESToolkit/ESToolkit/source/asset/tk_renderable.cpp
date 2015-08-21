@@ -1,6 +1,7 @@
 #include <tk_renderable.h>
 #include <tk_menu_stack.h>
 #include <QMenu>
+#include <model/tk_property_item_delegate.h>
 
 bool TkRenderable::validate(QString &str) const {
     bool success = true;
@@ -38,4 +39,19 @@ QMenu* TkRenderable::createContextMenu(void) {
 
     return menuStack.first();
 
+}
+
+void TkRenderable::initializeDelegates(void) {
+    auto* orientDelegate = new EnumDropdownPropertyItemDelegate({
+        "RECT_TEX_ORIENT_NORMAL",
+        "RECT_TEX_ORIENT_FLIP_HORIZ",
+        "RECT_TEX_ORIENT_FLIP_VERT",
+        "RECT_TEX_ORIENT_ROT_90",
+        "RECT_TEX_ORIENT_ROT_180",
+        "RECT_TEX_ORIENT_ROT_270",
+        "RECT_TEX_ORIENT_FLIP_HORIZ_ROT_90",
+        "RECT_TEX_ORIENT_FLIP_HORIZ_ROT_270"
+    });
+    OOLUA::push(*_mainState, orientDelegate);
+    lua_setfield(*_mainState, -2, "texOrient");
 }

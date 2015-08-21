@@ -1,7 +1,9 @@
 #include "tk_lua_manager.h"
 
-void TkLuaManager::initialize(void) {
-    LuaManagerBase::initialize();
+bool TkLuaManager::initialize(void) {
+    bool success = true;
+    success &= LuaManagerBase::initialize();
 
-    runScriptSandbox(TK_LUA_MANAGER_METATABLE_SCRIPT_PATH);
+    success &= runScriptSandbox(TK_LUA_MANAGER_METATABLE_SCRIPT_PATH);
+    return success;
 }

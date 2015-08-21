@@ -10,6 +10,8 @@ public:
 
     virtual bool    validate(QString &) const;
     virtual QMenu*  createContextMenu(void);
+
+    static void     initializeDelegates(void);
 };
 
 

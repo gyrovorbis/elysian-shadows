@@ -17,13 +17,13 @@
 
 
 
-OOLUA_EXPORT_FUNCTIONS_CONST(CombatAttrib,
-                             getTypeFlags,
-                             getTypeAgainstFlags)
+OOLUA_EXPORT_FUNCTIONS_CONST(CombatAttrib)
 OOLUA_EXPORT_FUNCTIONS(CombatAttrib,
                        setTypeFlags,
                        setTypeAgainstFlags,
-                       setParticleAttrib)
+                       setParticleAttrib,
+                       getTypeFlags,
+                       getTypeAgainstFlags)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(CombatStatus,
                              getMp,
@@ -46,7 +46,6 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Combat,
                               getStatus,
                              getAttrib,
                              getTargetType,
-                             getCollisionFlags,
                              getDmgActive,
                              getDmgType,
                              getAggroDist,
@@ -64,4 +63,5 @@ OOLUA_EXPORT_FUNCTIONS(Combat,
                        setStatus,
                        setTargetType,
                        setAggroDist,
-                       setDeaggroDist)
+                       setDeaggroDist,
+                       getCollisionFlags)

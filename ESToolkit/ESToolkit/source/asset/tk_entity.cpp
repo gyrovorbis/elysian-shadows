@@ -65,10 +65,10 @@ TkEntity::TkEntity(const bool selectable, TkEntity* prefab):
             _selColliderAttrib = new elysian::CollidableAttrib;
             //_selColliderAttrib->setRelPos(0.0f, 0.0f, 0.0f);
             //_selColliderAttrib->setRelSize(1.0f, 1.0f, 0.0f);
-            _selColliderAttrib->getFlags()->resetType();
-            _selColliderAttrib->getFlags()->resetCheckAgainst();
-            _selColliderAttrib->getFlags()->addType(elysian::CollisionFlags::CURSOR);
-            _selColliderAttrib->getFlags()->addCheckAgainst(elysian::CollisionFlags::CURSOR);
+            _selColliderAttrib->getFlags()->setType(elysian::BitMask32(0u));
+            _selColliderAttrib->getFlags()->setTypeAgainst(0);
+            _selColliderAttrib->getFlags()->getType().setBit(elysian::CollisionFlags::CURSOR, true);
+            _selColliderAttrib->getFlags()->getTypeAgainst().setBit(elysian::CollisionFlags::CURSOR, true);
             _staticInit = true;
         }
 
@@ -425,8 +425,22 @@ void TkEntity::setTreeWidgetItemState(const TreeItemState state) {
 
 }
 
-void TkEntity::initializeDelegates(void) {
+void TkEntity::registerProxyMetaTable(lua_State*const vm) {
+
     LuaManager::stackBalanceBegin();
+
+    getGlobal(OOLUA::Proxy_class<elysian::Entity>::class_name); //userdata metatable
+    lua_newtable(*_mainState);
+    lua_pushstring(vm, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
+    lua_pushvalue(vm, -2);
+    lua_rawset(vm, -4);
+
+    MenuStack *menuStack = new MenuStack("Entity");
+
+    menuStack->insertCheckableAction("Active",
+        [&](bool checked) {
+        }
+    );
 
     auto* planeDelegate = new EnumDropdownPropertyItemDelegate({
        "RECT_PLANE_BOTTOM",
@@ -437,6 +451,7 @@ void TkEntity::initializeDelegates(void) {
        "RECT_PLANE_LEFT_SLOPE_45",
        "RECT_PLANE_RIGHT_SLOPE_45"
     });
+    planeDelegate->setContextMenu(menuStack->first());
     OOLUA::push(*_mainState, planeDelegate);
     lua_setfield(*_mainState, -2, "planeType");
 
@@ -444,5 +459,9 @@ void TkEntity::initializeDelegates(void) {
     OOLUA::push(*_mainState, elevDelegate);
     lua_setfield(*_mainState, -2, "elev");
 
+    lua_pop(*_mainState, 2);
+
     LuaManager::stackBalanceEnd();
+
+    elysian::EntityBase::registerProxyMetaTable(vm);
 }

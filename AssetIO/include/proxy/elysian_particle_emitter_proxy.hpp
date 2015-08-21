@@ -2,7 +2,7 @@
 #define ELYSIAN_PARTICLE_EMITTER_PROXY_HPP
 
 #include <crtp/elysian_particle_emitter.hpp>
-#include <primitive/elysian_sprite_attrib.hpp>
+#include <crtp/elysian_sprite_attrib.hpp>
 #include <crtp/elysian_collidable.hpp>
 #include <primitive/elysian_color.hpp>
 
@@ -23,9 +23,7 @@ namespace OOLUA {
 OOLUA_PROXY(ParticleEmitterAttrib, SpriteAttrib, CollidableStaticAttrib)
     OOLUA_MFUNC(setAcceleration)
     OOLUA_MFUNC(setMaxLife)
-    OOLUA_MEM_FUNC(void, setMaterial, cpp_in_p<Material*>)
-    OOLUA_MEM_FUNC(void, loadSpecularMap, const char*, unsigned, unsigned)
-    OOLUA_MEM_FUNC(void, setForceMask, uint32_t)
+    OOLUA_MEM_FUNC(void, setForceMask, BitMask32)
     OOLUA_MEM_FUNC(void, setIntensityFactor, float)
     OOLUA_MEM_FUNC(void, setStartSize, unsigned)
     OOLUA_MEM_FUNC(void, setEndSize, unsigned)
@@ -34,7 +32,6 @@ OOLUA_PROXY(ParticleEmitterAttrib, SpriteAttrib, CollidableStaticAttrib)
     OOLUA_MEM_FUNC(void, setAnimGridIndex, unsigned, unsigned, int)
     OOLUA_MEM_FUNC(void, setAnimFrameDuration, unsigned)
     OOLUA_MEM_FUNC(void, setStick, bool)
-    OOLUA_MEM_FUNC(void, loadNormalMap, const char*, unsigned, unsigned)
     OOLUA_MEM_FUNC(void, setRandomStartFrame, bool)
     OOLUA_MEM_FUNC(void, setShadowVolume, bool)
     OOLUA_MEM_FUNC(Color4, getEndColor)
@@ -45,7 +42,7 @@ OOLUA_PROXY(ParticleEmitterAttrib, SpriteAttrib, CollidableStaticAttrib)
     OOLUA_MEM_FUNC_CONST(unsigned, getEndSize)
     OOLUA_MEM_FUNC_CONST(unsigned, getStartSize)
     OOLUA_MEM_FUNC_CONST(float, getIntensityFactor)
-    OOLUA_MEM_FUNC_CONST(uint32_t, getForceMask)
+    OOLUA_MEM_FUNC(BitMask32&, getForceMask)
     OOLUA_MEM_FUNC_CONST(unsigned, getMaxLife)
 OOLUA_PROXY_END
 

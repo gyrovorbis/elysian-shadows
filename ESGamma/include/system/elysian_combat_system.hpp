@@ -40,11 +40,11 @@ namespace elysian {
 	private:
 
 		struct ActionResolution {
-			CombatReceipt*		receipt	= nullptr;
-			CollisionContact*	contact	= nullptr;
-			Combat*				src		= nullptr;
-			Combat*				target	= nullptr;
-			GYVector2			initialVel = { 0.0f, 0.0f };
+            CombatReceipt*		receipt     = nullptr;
+            CollisionContact*	contact     = nullptr;
+            Combat*				src         = nullptr;
+            Combat*				target      = nullptr;
+            GYVector2			initialVel  = { 0.0f, 0.0f };
 		} _curActionRes;
 
 		Pool<Entity*>	_combatants;
