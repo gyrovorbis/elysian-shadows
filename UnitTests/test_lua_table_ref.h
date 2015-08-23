@@ -3,7 +3,7 @@
 
 
 #include <QtTest>
-#include <elysian_lua_table_ref.hpp>
+#include <utility/elysian_lua_table_ref.hpp>
 #include <QDebug>
 
 namespace tktest {
@@ -11,11 +11,9 @@ namespace tktest {
 class LuaTableRefTest: public QObject, public LuaManager {
     Q_OBJECT
 
-    typedef elysian::LuaTableRef LuaTableRef;
-
 private:
 
-    LuaTableRef _ref;
+    elysian::LuaTableRef _ref;
 
     constexpr static const char*const _testTable = "return {"
                                                    "    1, 2, 3, 4,"
@@ -68,7 +66,7 @@ inline void LuaTableRefTest::defaultstoNilRef(void) {
 }
 
 inline void LuaTableRefTest::createFromString() {
-    _ref = LuaTableRef::createFromString(_testTable);
+    _ref = elysian::LuaTableRef::createFromString(_testTable);
     QVERIFY(!_ref.isNilRef());
 }
 

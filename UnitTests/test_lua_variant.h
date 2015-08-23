@@ -678,8 +678,9 @@ inline void LuaVariantTest::closure(void) {
 
     int val = v<int, int>(38);
     qWarning() << "RETURN VALUE - " << val;
-}
 #endif
+}
+
 
 }
 

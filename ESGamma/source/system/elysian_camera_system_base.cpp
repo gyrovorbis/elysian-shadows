@@ -205,7 +205,7 @@ void CameraSystemBase::initializeProjMatrix(void) {
     _debugState.setOrient(0.0f, 1.0f, 1.0f);
     gyVidCamFrustum(&_debugState, 45.0f, 1.0f, 0.5f, 900.0f);
 
-    //_curState->updateViewVolumeBoundingRegion();
+    _curState->updateViewVolumeBoundingRegion();
     //_curState->clipBoundingRegion(0, getCurrentArea()->getMapWidth()*32, 0, getCurrentArea()->getMapHeight()*32);
 
 }
@@ -233,14 +233,18 @@ void CameraSystemBase::getVisibleTileRegion(int& startX, int& startY, int& endX,
     //assert(startY >= 0);
     if(++endX >= _curArea->width) endX = _curArea->width-1;
     if(++endY >= _curArea->height) endY = _curArea->height-1;
-
+    //if(startX < 0) startX = 0;
+    //if(endX < 0) endX = 0;
+    //if(startY < 0) startY = 0;
+    //if(endY < 0) endY = 0;
+/*
     if(endX < startX) {
         std::swap(startX, endX);
     }
 
     if(endY < startY) {
         std::swap(startY, endY);
-    }
+    }*/
 }
 
 void CameraSystemBase::popViewProjMatrix(void) {

@@ -544,9 +544,9 @@ void TkArea::removeEntity(Entity *entity) {
 }
 
 void TkArea::initializeDelegates(void) {
-    auto* widthDelegate = new SpinboxPropertyItemDelegate(0, ELYSIAN_AREA_MAP_WIDTH);
-    OOLUA::push(*_mainState, widthDelegate);
-    lua_setfield(*_mainState, -2, "lkkfsdklj;fsdalk;jasdfl;kj");
+    //auto* widthDelegate = new SpinboxPropertyItemDelegate(0, ELYSIAN_AREA_MAP_WIDTH);
+    //OOLUA::push(*_mainState, widthDelegate);
+    //lua_setfield(*_mainState, -2, "lkkfsdklj;fsdalk;jasdfl;kj");
 
 
 }
