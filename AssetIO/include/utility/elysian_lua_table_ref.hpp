@@ -100,7 +100,7 @@ namespace elysian {
             friend class LuaTableRef;
 
             typedef typename std::conditional<is_const_iterator, const LuaTableRef*, LuaTableRef*>::type DataStructurePointerType;
-            typedef typename std::conditional<is_const_iterator, const LuaVariant&, LuaVariant&>::type ValueReferenceType;
+            typedef typename std::conditional<is_const_iterator, const LuaTableRef&, LuaTableRef>::type ValueReferenceType;
 
             const_noconst_iterator(DataStructurePointerType pointer_to_datastructure, const int funcRef, const LuaPair initialValue):
                 _pair(initialValue),
@@ -171,7 +171,7 @@ namespace elysian {
 
         private:
             LuaPair                     _pair;
-            DataStructurePointerType    _tableRef       = nullptr; // store a reference to MyDataStructure
+            DataStructurePointerType    _tableRef;
             int                         _nextFuncRef    = LUA_NOREF;
 
         };
