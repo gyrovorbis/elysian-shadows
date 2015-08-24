@@ -98,11 +98,7 @@ namespace elysian {
             friend class LuaTableRef;
 
             typedef typename std::conditional<is_const_iterator, const LuaTableRef*, LuaTableRef*>::type DataStructurePointerType;
-<<<<<<< HEAD
-            typedef typename std::conditional<is_const_iterator, const LuaTableRef&, LuaTableRef>::type ValueReferenceType;
-=======
             typedef typename std::conditional<is_const_iterator, const LuaTableRef&, LuaTableRef&>::type ValueReferenceType;
->>>>>>> a8ff85c14d1b323ac827cbc4ac7db2d2d2efbeb7
 
             const_noconst_iterator(DataStructurePointerType pointer_to_datastructure, const int funcRef, const LuaPair initialValue):
                 _pair(initialValue),
