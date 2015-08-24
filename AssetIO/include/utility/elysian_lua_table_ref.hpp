@@ -8,8 +8,6 @@
 namespace elysian {
 
 
-
-
 #if 0
 
     //QStandardItem representing a Lua k,v pair
@@ -95,12 +93,16 @@ namespace elysian {
 
         template<bool is_const_iterator=true>
 
-        class const_noconst_iterator : public std::iterator<std::forward_iterator_tag, LuaVariant>, public LuaManager {
+        class const_noconst_iterator : public std::iterator<std::forward_iterator_tag, LuaTableRef>, public LuaManager {
             friend class const_noconst_iterator<true>;
             friend class LuaTableRef;
 
             typedef typename std::conditional<is_const_iterator, const LuaTableRef*, LuaTableRef*>::type DataStructurePointerType;
+<<<<<<< HEAD
             typedef typename std::conditional<is_const_iterator, const LuaTableRef&, LuaTableRef>::type ValueReferenceType;
+=======
+            typedef typename std::conditional<is_const_iterator, const LuaTableRef&, LuaTableRef&>::type ValueReferenceType;
+>>>>>>> a8ff85c14d1b323ac827cbc4ac7db2d2d2efbeb7
 
             const_noconst_iterator(DataStructurePointerType pointer_to_datastructure, const int funcRef, const LuaPair initialValue):
                 _pair(initialValue),

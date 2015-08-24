@@ -215,8 +215,8 @@ namespace elysian {
 
         _getOnscreenTileRegion(_scrStartX, _scrStartY, _scrEndX, _scrEndY);
 
-        assert(_scrStartX <= _scrEndX);
-        assert(_scrStartY <= _scrEndY);
+        //assert(_scrStartX <= _scrEndX);
+        //assert(_scrStartY <= _scrEndY);
 
         //Maximum number of rows depth buffer could need based on visible region
         _depthBuffMaxVisible = _scrEndY - _scrStartY + 1 + ELYSIAN_DEPTH_BUFFER_OBJECT_ELEVATION_MAX;
