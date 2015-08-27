@@ -87,6 +87,10 @@ static TK_CRASH_STATE _tkCrashReport(QStringList& /*args*/) {
 
 
 static GYAppCbRet Init(int argc, char **argv) {
+    QString project;
+    QString level;
+    QString area;
+
     QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings); //WITHOUT THIS OSX SHITS ITSELF WHEN FUCKING WITH WIDGET SIZING/LOCATIONS
     QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
     QSurfaceFormat fmt;
@@ -104,30 +108,8 @@ static GYAppCbRet Init(int argc, char **argv) {
     // Set the default GL format to OpenGL 3.2 Core
     QGLFormat::setDefaultFormat(glfmt);
 
-
     QApplication a(argc, argv);
     auto args = QApplication::arguments();
-
-    a.setOrganizationName("Elysian Shadows");
-    a.setOrganizationDomain("elysianshadows.com");
-    a.setApplicationName("ESTk");
-    a.setApplicationVersion(QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" ")+QString(ESTOOLKIT_VERSION_NAME));
-    a.setWindowIcon(QIcon(":/estk/images/estk.ico"));
-
-    QPixmap splashScreen(":/splash/images/splashScreen.png");
-    QPainter painter(&splashScreen);
-    painter.setPen(QPen(QColor(225, 202, 251)));
-    QFont splashFont("Arial", 10);
-    splashFont.setBold(true);
-    painter.setFont(splashFont);
-    painter.drawText(25,82,QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" ")+QString(ESTOOLKIT_VERSION_NAME));
-    painter.drawText(25,190,"http://elysianshadows.com/tkreleasenotes"); /* This is an invalid URL!!!! */
-
-    QSplashScreen splash(splashScreen, Qt::WindowStaysOnTopHint);
-
-    QString project;
-    QString level;
-    QString area;
 
     bool relaunching = false;
     for(auto it = args.begin(); it != args.end(); ++it) {
@@ -148,6 +130,25 @@ static GYAppCbRet Init(int argc, char **argv) {
         return (GYAppCbRet)tktest::main(args);
     }
 #endif
+
+
+    a.setOrganizationName("Elysian Shadows");
+    a.setOrganizationDomain("elysianshadows.com");
+    a.setApplicationName("ESTk");
+    a.setApplicationVersion(QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" ")+QString(ESTOOLKIT_VERSION_NAME));
+    a.setWindowIcon(QIcon(":/estk/images/estk.ico"));
+
+    QPixmap splashScreen(":/splash/images/splashScreen.png");
+    QPainter painter(&splashScreen);
+    painter.setPen(QPen(QColor(225, 202, 251)));
+    QFont splashFont("Arial", 10);
+    splashFont.setBold(true);
+    painter.setFont(splashFont);
+    painter.drawText(25,82,QString("ESTkv")+QString(ESTOOLKIT_VERSION)+QString(" ")+QString(ESTOOLKIT_VERSION_NAME));
+    painter.drawText(25,190,"http://elysianshadows.com/tkreleasenotes"); /* This is an invalid URL!!!! */
+
+    QSplashScreen splash(splashScreen, Qt::WindowStaysOnTopHint);
+
     GYFileInitParams fileParams;
     strcpy(fileParams.workingDir, Q_CSTR(QDir::homePath()));
     gyFileInit(&fileParams);

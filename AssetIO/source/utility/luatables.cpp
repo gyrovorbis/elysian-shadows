@@ -52,7 +52,7 @@ extern "C"
 	#define get_current_dir getcwd
 	#define DIRECTORY_SEPARATOR "/"
 #else
-	#error Platform not supported!
+    //#error Platform not supported!
 #endif
 
 using namespace std;

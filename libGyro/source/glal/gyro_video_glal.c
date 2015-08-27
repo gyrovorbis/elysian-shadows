@@ -234,7 +234,7 @@ int glalVidGlewInit(void) {
 
     if(!once) {
     //God fucking damnit, Windows....
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__linux__)
         _gyLog(GY_DEBUG_VERBOSE, "Initializing GLEW...");
         _gyPush();
         glewExperimental = GL_TRUE; //FUCKING GLEW CANT HANDLE GL CORE CONTEXTS WITHOUT THIS.
