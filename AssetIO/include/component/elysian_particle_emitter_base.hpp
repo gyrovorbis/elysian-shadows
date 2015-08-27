@@ -13,16 +13,18 @@
 #define ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_WIDTH            10
 #define ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_HEIGHT           10
 
+ELYSIAN_ASSET_TYPEDEF(ParticleEmitterAttrib)
+
 namespace elysian {
 
     struct Camera;
     class Material;
     class ForceGenerator;
 
-    class ParticleEmitterAttrib:
+    class ParticleEmitterAttribBase:
             public SpriteAttrib,
             public CollidableStaticAttrib,
-            public LuaTableProxy<ParticleEmitterAttrib, ParticleEmitterAttrib, CollidableStaticAttrib, SpriteAttrib>
+            public LuaTableProxy<ParticleEmitterAttribBase, ParticleEmitterAttrib, CollidableStaticAttrib, SpriteAttrib>
     {
         friend class ParticleEmitterInternals;
     private:
@@ -60,11 +62,11 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(stick,              getStick,               setStick)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
-        using       LuaTableProxy<ParticleEmitterAttrib, ParticleEmitterAttrib, CollidableStaticAttrib, SpriteAttrib>::registerProxyMetaTable;
-        using       LuaTableProxy<ParticleEmitterAttrib, ParticleEmitterAttrib, CollidableStaticAttrib, SpriteAttrib>::fromTable;
+        using       LuaTableProxy<ParticleEmitterAttribBase, ParticleEmitterAttrib, CollidableStaticAttrib, SpriteAttrib>::registerProxyMetaTable;
+        using       LuaTableProxy<ParticleEmitterAttribBase, ParticleEmitterAttrib, CollidableStaticAttrib, SpriteAttrib>::fromTable;
 
-                    ParticleEmitterAttrib(void);
-        virtual     ~ParticleEmitterAttrib(void) override;
+                    ParticleEmitterAttribBase(void);
+        virtual     ~ParticleEmitterAttribBase(void) override;
 
         void        setAcceleration(const GYVector3& accel);
         void        setMaxLife(const unsigned life); //number of frames since birth that it lives
@@ -176,46 +178,46 @@ namespace elysian {
 
     // ====== INLINEZ =====
 
-    inline BitMask32& ParticleEmitterAttrib::getForceMask(void) { return _forceMask; }
+    inline BitMask32& ParticleEmitterAttribBase::getForceMask(void) { return _forceMask; }
 
-    inline void ParticleEmitterAttrib::setShadowVolume(const bool val) { _shadowVolume = val; }
-    inline void ParticleEmitterAttrib::setForceMask(const BitMask32 mask) { _forceMask = mask; }
-    inline void ParticleEmitterAttrib::setStartSize(const unsigned size) { _startSize = size; }
-    inline void ParticleEmitterAttrib::setEndSize(const unsigned size) { _endSize = size; }
-    inline void ParticleEmitterAttrib::setEndColor(const GYColor4 color) { _endColor = color; }
-    inline void ParticleEmitterAttrib::setAnimGridSize(const unsigned w, const unsigned h) {
+    inline void ParticleEmitterAttribBase::setShadowVolume(const bool val) { _shadowVolume = val; }
+    inline void ParticleEmitterAttribBase::setForceMask(const BitMask32 mask) { _forceMask = mask; }
+    inline void ParticleEmitterAttribBase::setStartSize(const unsigned size) { _startSize = size; }
+    inline void ParticleEmitterAttribBase::setEndSize(const unsigned size) { _endSize = size; }
+    inline void ParticleEmitterAttribBase::setEndColor(const GYColor4 color) { _endColor = color; }
+    inline void ParticleEmitterAttribBase::setAnimGridSize(const unsigned w, const unsigned h) {
         _animGridWidth = w; _animGridHeight = h;
         assert(w <= ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_WIDTH);
         assert(h <= ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_HEIGHT);
     }
-    inline void ParticleEmitterAttrib::setAnimGridIndex(const unsigned row, const unsigned col, int index) {
+    inline void ParticleEmitterAttribBase::setAnimGridIndex(const unsigned row, const unsigned col, int index) {
         _animGrid[row][col] = index;
     }
-    inline void ParticleEmitterAttrib::setAnimFrameDuration(const unsigned duration) { _animFrameDuration = duration; }
+    inline void ParticleEmitterAttribBase::setAnimFrameDuration(const unsigned duration) { _animFrameDuration = duration; }
 
-    inline void ParticleEmitterAttrib::setAcceleration(const GYVector3& accel) {
+    inline void ParticleEmitterAttribBase::setAcceleration(const GYVector3& accel) {
         _acceleration = accel;
     }
 
-    inline void ParticleEmitterAttrib::setIntensityFactor(const float factor) { _intensityFactor = factor; }
+    inline void ParticleEmitterAttribBase::setIntensityFactor(const float factor) { _intensityFactor = factor; }
 
-    inline void ParticleEmitterAttrib::setMaxLife(const unsigned life) {
+    inline void ParticleEmitterAttribBase::setMaxLife(const unsigned life) {
         _maxLife = life;
     }
 
-    inline void ParticleEmitterAttrib::setStick(const bool val) { _stick = val; }
+    inline void ParticleEmitterAttribBase::setStick(const bool val) { _stick = val; }
 
-    inline void ParticleEmitterAttrib::setRandomStartFrame(const bool val) { _randomStartFrame = val; }
+    inline void ParticleEmitterAttribBase::setRandomStartFrame(const bool val) { _randomStartFrame = val; }
 
-    inline unsigned ParticleEmitterAttrib::getMaxLife(void) const { return _maxLife; }
-    inline unsigned ParticleEmitterAttrib::getStartSize(void) const { return _startSize; }
-    inline unsigned ParticleEmitterAttrib::getEndSize(void) const { return _endSize; }
-    inline Color4 ParticleEmitterAttrib::getEndColor(void) { return Color4(&_endColor); }
-    inline float ParticleEmitterAttrib::getIntensityFactor(void) const { return _intensityFactor; }
-    inline bool ParticleEmitterAttrib::getRandomStartFrame(void) const { return _randomStartFrame; }
-    inline unsigned ParticleEmitterAttrib::getAnimFrameDuration(void) const { return _animFrameDuration; }
-    inline bool ParticleEmitterAttrib::getShadowVolume(void) const { return _shadowVolume; }
-    inline bool ParticleEmitterAttrib::getStick(void) const { return _stick; }
+    inline unsigned ParticleEmitterAttribBase::getMaxLife(void) const { return _maxLife; }
+    inline unsigned ParticleEmitterAttribBase::getStartSize(void) const { return _startSize; }
+    inline unsigned ParticleEmitterAttribBase::getEndSize(void) const { return _endSize; }
+    inline Color4 ParticleEmitterAttribBase::getEndColor(void) { return Color4(&_endColor); }
+    inline float ParticleEmitterAttribBase::getIntensityFactor(void) const { return _intensityFactor; }
+    inline bool ParticleEmitterAttribBase::getRandomStartFrame(void) const { return _randomStartFrame; }
+    inline unsigned ParticleEmitterAttribBase::getAnimFrameDuration(void) const { return _animFrameDuration; }
+    inline bool ParticleEmitterAttribBase::getShadowVolume(void) const { return _shadowVolume; }
+    inline bool ParticleEmitterAttribBase::getStick(void) const { return _stick; }
 
 }
 

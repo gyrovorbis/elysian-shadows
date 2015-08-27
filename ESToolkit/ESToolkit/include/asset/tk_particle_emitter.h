@@ -3,10 +3,15 @@
 
 #include <component/elysian_particle_emitter_base.hpp>
 
+class TkParticleEmitterAttrib: public elysian::ParticleEmitterAttribBase {
+public:
+    using       LuaTableProxy<elysian::ParticleEmitterAttribBase, ParticleEmitterAttrib, elysian::CollidableStaticAttrib, SpriteAttrib>::initializeDelegates;
+
+
+};
+
 class TkParticleEmitter: public elysian::ParticleEmitterBase {
 public:
-
-    using       LuaTableProxy<ParticleEmitterAttrib, ParticleEmitterAttrib, CollidableStaticAttrib, SpriteAttrib>::initializeDelegates;
 
                     TkParticleEmitter(TkEntity& parent);
                     TkParticleEmitter(void) = default;
