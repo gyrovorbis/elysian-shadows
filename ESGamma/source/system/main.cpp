@@ -4,7 +4,7 @@
 #include <gyro_audio_api.h>
 #include <gyro_file_api.h>
 #include <system/elysian_engine.hpp>
-#include <system/crtp/elysian_camera_system.hpp>
+#include <crtp/elysian_camera_system.hpp>
 #include <crtp/elysian_debug.hpp>
 #include "elysian_behavior.hpp"
 #include "elysian_lua_singleton.hpp"

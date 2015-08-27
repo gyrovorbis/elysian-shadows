@@ -6,6 +6,8 @@
 class TkParticleEmitter: public elysian::ParticleEmitterBase {
 public:
 
+    using       LuaTableProxy<ParticleEmitterAttrib, ParticleEmitterAttrib, CollidableStaticAttrib, SpriteAttrib>::initializeDelegates;
+
                     TkParticleEmitter(TkEntity& parent);
                     TkParticleEmitter(void) = default;
 

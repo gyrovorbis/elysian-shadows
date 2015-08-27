@@ -62,7 +62,6 @@ namespace elysian {
 
         using       LuaTableProxy<ParticleEmitterAttrib, ParticleEmitterAttrib, CollidableStaticAttrib, SpriteAttrib>::registerProxyMetaTable;
         using       LuaTableProxy<ParticleEmitterAttrib, ParticleEmitterAttrib, CollidableStaticAttrib, SpriteAttrib>::fromTable;
-        using       LuaTableProxy<ParticleEmitterAttrib, ParticleEmitterAttrib, CollidableStaticAttrib, SpriteAttrib>::initializeDelegates;
 
                     ParticleEmitterAttrib(void);
         virtual     ~ParticleEmitterAttrib(void) override;
