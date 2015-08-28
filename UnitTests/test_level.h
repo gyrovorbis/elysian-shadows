@@ -200,7 +200,10 @@ inline void LevelTest::reloadLevelAtDepth3(void) {
 
     QDir dir(FileUtilities::getAbsoluteAssetPath(level->getNodePath()));
     QVERIFY(dir.cd("area"));
-    QVERIFY(dir.rename(nodeName, newNodeName));
+
+    QVERIFY(FileUtilities::copyDir(dir.absoluteFilePath(nodeName), dir.absoluteFilePath(newNodeName)));
+    QVERIFY(FileUtilities::removeDir(dir.absoluteFilePath(nodeName)));
+
     QVERIFY(dir.mkdir("area0"));
 
     getAssets()->setCurrentLevel(nullptr);
