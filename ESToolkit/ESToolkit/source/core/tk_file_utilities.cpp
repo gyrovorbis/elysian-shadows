@@ -70,7 +70,7 @@ QString FileUtilities::getAssetRelativePath(const QString path) {
     bool found = false;
     QString result;
 
-#if 0
+#if 1
     QStringList list = linuxPath.split("/");
 
     for(int i = 0; i < list.size(); ++i) {
@@ -104,7 +104,7 @@ QString FileUtilities::getAbsoluteAssetPath(const QString path) {
     QString absPath;
     // = "FUCKING REESTED PATH!!!";
     relPath.replace("\\", "/");
-#if 0
+#if 1
 
     QStringList list = relPath.split("/");
     if(list.size() >= 2 && list[1] == "assets") {
