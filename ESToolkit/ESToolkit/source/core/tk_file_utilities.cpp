@@ -9,6 +9,7 @@ QString FileUtilities::_assetPath;
 
 void FileUtilities::setAssetPath(const QString path) {
     _assetPath = path;
+    _assetPath.replace("\\", "/");
 }
 
 bool FileUtilities::removeDir(const QString dirName) {
@@ -62,11 +63,14 @@ bool FileUtilities::copyDir(const QString &srcFilePath,
 }
 
 QString FileUtilities::getAssetRelativePath(const QString path) {
+
     QString linuxPath = path;
     linuxPath.replace("\\", "/");
 
     bool found = false;
     QString result;
+
+#if 0
     QStringList list = linuxPath.split("/");
 
     for(int i = 0; i < list.size(); ++i) {
@@ -81,6 +85,16 @@ QString FileUtilities::getAssetRelativePath(const QString path) {
     }
 
     return found? result : QString("NOT AN ASSET RELATIVE PATH");
+
+#else
+
+    result = linuxPath;
+    result.replace(_assetPath, "/assets");
+
+    return result;
+
+
+#endif
 }
 
 QString FileUtilities::getAbsoluteAssetPath(const QString path) {
@@ -90,6 +104,7 @@ QString FileUtilities::getAbsoluteAssetPath(const QString path) {
     QString absPath;
     // = "FUCKING REESTED PATH!!!";
     relPath.replace("\\", "/");
+#if 0
 
     QStringList list = relPath.split("/");
     if(list.size() >= 2 && list[1] == "assets") {
@@ -104,5 +119,10 @@ QString FileUtilities::getAbsoluteAssetPath(const QString path) {
 
         return path;
     }
+
+#else
+    relPath.replace("/assets", _assetPath);
+    return relPath;
+#endif
 
 }

@@ -164,13 +164,6 @@ inline void LevelTest::addNewLevelAtTopWithSameName(void) {
     QVERIFY(dir.cd("tile"));
     QVERIFY(dir.exists("tilesheet.png"));
 
-    qDebug() << "TESTPATH - " << FileUtilities::getAssetRelativePath(level->getNodePath());
-
-    for(unsigned i = 0; i < getCurrentProject()->getLevelAmount(); ++i) {
-        qDebug() << "LEV" << getCurrentProject()->getLevelByIndex(i)->getNodePath();
-    }
-
-
     QVERIFY(getCurrentProject()->getLevel(level->getNodePath()));
 
     //QVERIFY(getCurrentProject()->getLevel(level->getNodePath()));
