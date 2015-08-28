@@ -61,7 +61,7 @@ bool            ESTkTest::_expectWarning    = false;
 
 int main(QStringList args)
 {
-    bool showHiddenLevelsSettingVal;
+    //bool showHiddenLevelsSettingVal;
     //Debug::setLevel(Debug::DBG_OFF);
     ESTkTest::initialize();
 
@@ -143,7 +143,7 @@ int main(QStringList args)
     qDebug() << "FUCKING FUCK!!!!!" << QString(buff) << "errors!";
     qDebug() << ((failures)? "GO FIX ASSETS RIGHT FUCKING NOW!": "WEEEEEEELL! GOOD FUCKING JOB, NIGGAS!");
 
-    ESTkTest::_estk->getAssets().getCurrentProject()->setIndexHiddenLevels(showHiddenLevelsSettingVal);
+    //ESTkTest::_estk->getAssets().getCurrentProject()->setIndexHiddenLevels(showHiddenLevelsSettingVal);
 
    return failures;
 }

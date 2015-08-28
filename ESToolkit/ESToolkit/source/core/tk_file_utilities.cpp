@@ -29,7 +29,7 @@ bool FileUtilities::removeDir(const QString dirName) {
 				}
 			}
 			result = dir.rmdir(dirName);
-		}
+        } else result = false;
 		return result;
 }
 

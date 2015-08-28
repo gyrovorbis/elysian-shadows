@@ -62,12 +62,12 @@ Level *Project::newLevel(const QString name) {
     TkLevel* lev = getAssets()->getEngine()->getLevelSys()->loadLevel(Q_CSTR(path));
     connectSlots(lev);
 
-    lev->setNodeName(name + QString::number(num));
-    lev->setLocation(path);
-    lev->setNodePath(path);
+    //lev->setNodeName(name + QString::number(num));
+    //lev->setLocation(path);
+    lev->setNodePath(FileUtilities::getAssetRelativePath(path));
 	_level.push_back(lev);
-	lev->saveAll();
-    getAssets()->getEngine()->getLevelSys()->addLevel(lev);
+    lev->saveAll();
+    //getAssets()->getEngine()->getLevelSys()->addLevel(lev);
     _curNodeParent->addChild(lev);
     Q_EMIT levelAdded(this, lev);
     return lev;
@@ -121,8 +121,9 @@ TkLevel *Project::getFirstLevel(void) const {
 
 
 TkLevel *Project::getLevel(const QString path) const  {
+    const auto vpath = FileUtilities::getAssetRelativePath(path);
 	for(int i = 0; i < _level.size(); ++i) {
-        if(_level[i]->getNodePath() == path) return _level[i];
+        if(_level[i]->getNodePath() == vpath) return _level[i];
     }
     return nullptr;
 }
@@ -141,11 +142,13 @@ bool Project::removeLevel(const QString path, const bool deleteFolder) {
 			Level *temp = _level[i];
             getAssets()->getEngine()->getLevelSys()->removeLevel(temp);
 			_level.erase(_level.begin() + i);
-            if(deleteFolder && !FileUtilities::removeDir(temp->getNodePath())) {
-                Debug::Logf(Debug::DBG_ERROR, "Could not delete directory '%s'", Q_CSTR(temp->getNodePath()));
-                success = false;
-            } else if(deleteFolder) {
-                dbgprintf("Deleted directory successfully [%s]", Q_CSTR(temp->getNodePath()));
+            if(deleteFolder) {
+                if(!FileUtilities::removeDir(FileUtilities::getAbsoluteAssetPath(temp->getNodePath()))) {
+                    Debug::Logf(Debug::DBG_ERROR, "Could not delete directory '%s'", Q_CSTR(temp->getNodePath()));
+                    success = false;
+                } else {
+                    dbgprintf("Deleted directory successfully [%s]", Q_CSTR(temp->getNodePath()));
+                }
             }
             Q_EMIT levelRemoved(this, temp);
             delete temp;
@@ -558,9 +561,10 @@ void Project::onEntityParented(Entity * const child, Entity * const parent) {
 }
 
 TreeNode* Project::getTreeNode(const QString path) const {
-    if(_subDirs.find(path) != _subDirs.end()) {
-        return _subDirs[path];
-    } else if(getLevel(path)) {
-        return getLevel(path);
+    const auto vpath = path; //FileUtilities::getAssetRelativePath(path);
+    if(_subDirs.find(vpath) != _subDirs.end()) {
+        return _subDirs[vpath];
+    } else if(getLevel(vpath)) {
+        return getLevel(vpath);
     } else return nullptr;
 }

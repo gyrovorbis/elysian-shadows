@@ -9,6 +9,7 @@
 #include <tk_tree_node.h>
 #include <QTreeWidgetItem>
 #include <tk_project.h>
+#include <core/tk_file_utilities.h>
 
 extern "C" void gyDebugSigInit();
 
@@ -156,14 +157,23 @@ inline void LevelTest::addNewLevelAtTopWithSameName(void) {
     getAssets()->setCurrentArea(nullptr);
     getAssets()->setCurrentLevel(level);
     QVERIFY(getCurrentLevel() == level);
-    QDir dir(level->getNodePath());
+    QDir dir(FileUtilities::getAbsoluteAssetPath(level->getNodePath()));
     QVERIFY(dir.exists("tile"));
     QVERIFY(dir.exists("area"));
     QVERIFY(dir.exists("estk"));
     QVERIFY(dir.cd("tile"));
     QVERIFY(dir.exists("tilesheet.png"));
 
+    qDebug() << "TESTPATH - " << FileUtilities::getAssetRelativePath(level->getNodePath());
+
+    for(unsigned i = 0; i < getCurrentProject()->getLevelAmount(); ++i) {
+        qDebug() << "LEV" << getCurrentProject()->getLevelByIndex(i)->getNodePath();
+    }
+
+
     QVERIFY(getCurrentProject()->getLevel(level->getNodePath()));
+
+    //QVERIFY(getCurrentProject()->getLevel(level->getNodePath()));
     QTreeWidgetItem* node = static_cast<QTreeWidgetItem*>(level)->parent();
     QVERIFY(node);
     QTreeWidgetItem* root = static_cast<QTreeWidgetItem*>(getCurrentProject()->getTreeNode(getCurrentProject()->getNodePath() + QString("/level")));
@@ -195,7 +205,7 @@ inline void LevelTest::reloadLevelAtDepth3(void) {
     QTreeWidgetItem* parent = static_cast<QTreeWidgetItem*>(level)->parent();
     const int childCount = parent->childCount();
 
-    QDir dir(level->getNodePath());
+    QDir dir(FileUtilities::getAbsoluteAssetPath(level->getNodePath()));
     QVERIFY(dir.cd("area"));
     QVERIFY(dir.rename(nodeName, newNodeName));
     QVERIFY(dir.mkdir("area0"));
@@ -234,7 +244,7 @@ inline void LevelTest::duplicateLevelAtDepth1() {
     QVERIFY(static_cast<QTreeWidgetItem*>(level)->parent() == static_cast<QTreeWidgetItem*>(newLevel)->parent());
     QVERIFY(level->getAreaAmount() == newLevel->getAreaAmount());
     QVERIFY(newLevel->getNodeName() == "level11");
-    QVERIFY(QDir(newLevel->getNodePath()).exists());
+    QVERIFY(QDir(FileUtilities::getAbsoluteAssetPath(newLevel->getNodePath())).exists());
 
 }
 
