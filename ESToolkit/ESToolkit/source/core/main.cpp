@@ -109,28 +109,6 @@ static GYAppCbRet Init(int argc, char **argv) {
     QGLFormat::setDefaultFormat(glfmt);
 
     QApplication a(argc, argv);
-    auto args = QApplication::arguments();
-
-    bool relaunching = false;
-    for(auto it = args.begin(); it != args.end(); ++it) {
-        if(*it == ESTOOLKIT_CRASH_CMD_LINE_ARG) {
-            relaunching = true;
-        } else if(*it == "--project") {
-            project = *(it+1);
-        } else if(*it == "--level") {
-            level = *(it+1);
-        } else if(*it == "--area") {
-            area = *(it+1);
-        }
-    }
-
-
-#ifdef ESTK_UNIT_TESTS
-    if(argc != 1 && !relaunching) {
-        return (GYAppCbRet)tktest::main(args);
-    }
-#endif
-
 
     a.setOrganizationName("Elysian Shadows");
     a.setOrganizationDomain("elysianshadows.com");
@@ -158,6 +136,28 @@ static GYAppCbRet Init(int argc, char **argv) {
     } else {
         QDir::setCurrent(QDir::current().filePath(ESTOOLKIT_OUTPUT_DIR));
     }
+
+    auto args = QApplication::arguments();
+
+    bool relaunching = false;
+    for(auto it = args.begin(); it != args.end(); ++it) {
+        if(*it == ESTOOLKIT_CRASH_CMD_LINE_ARG) {
+            relaunching = true;
+        } else if(*it == "--project") {
+            project = *(it+1);
+        } else if(*it == "--level") {
+            level = *(it+1);
+        } else if(*it == "--area") {
+            area = *(it+1);
+        }
+    }
+
+
+#ifdef ESTK_UNIT_TESTS
+    if(argc != 1 && !relaunching) {
+        return (GYAppCbRet)tktest::main(args);
+    }
+#endif
 
     ESToolkit w;
     w.setOutputDir(outputDir);
