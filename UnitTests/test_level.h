@@ -194,7 +194,7 @@ inline void LevelTest::reloadLevelAtDepth3(void) {
     QVERIFY(level->getAreaAmount() == 1);
     QString nodeName = level->getAreaByIndex(0)->getNodeName();
 
-    QString newNodeName = (nodeName == "area1")? "area2" : "area1";
+    QString newNodeName = "area2";
     QTreeWidgetItem* parent = static_cast<QTreeWidgetItem*>(level)->parent();
     const int childCount = parent->childCount();
 
@@ -217,6 +217,10 @@ inline void LevelTest::reloadLevelAtDepth3(void) {
     QVERIFY(parent->childCount() == childCount);
 
     QVERIFY(dir.rmdir("area0"));
+
+    //change shit back.
+    QVERIFY(FileUtilities::copyDir(dir.absoluteFilePath(newNodeName), dir.absoluteFilePath(nodeName)));
+    QVERIFY(FileUtilities::removeDir(dir.absoluteFilePath(newNodeName)));
 }
 
 
