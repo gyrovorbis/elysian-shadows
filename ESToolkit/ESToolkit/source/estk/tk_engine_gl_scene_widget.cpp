@@ -103,45 +103,6 @@ makeCurrent();
 
 }
 
-spAtlas* atlas;
-spSkeletonData* skeletonData;
-spSkeleton* skeleton;
-spAnimationState* state;
-spSkeletonJson* json;
-spAnimationStateData* stateData;
-
-
-static void _initSpineShit(void) {
-
-
-    atlas = spAtlas_createFromFile("/assets/raptor.atlas", 0);
-    json = spSkeletonJson_create(atlas);
-    json->scale = 0.5f;
-    skeletonData = spSkeletonJson_readSkeletonDataFile(json, "/assets/raptor.json");
-    if (!skeletonData) {
-       printf("Error: %s\n", json->error);
-       exit(0);
-    }
-   spSkeletonJson_dispose(json);
-
-   spBone_setYDown(true);
-
-//         SkeletonDrawable* drawable = new SkeletonDrawable(skeletonData);
-        skeleton = spSkeleton_create(skeletonData);
-
-        stateData = spAnimationStateData_create(skeletonData);
-        state = spAnimationState_create(stateData);
-
-       // drawable->timeScale = 1;
-
-        skeleton->x = 320;
-        skeleton->y = 500;
-        spSkeleton_updateWorldTransform(skeleton);
-
-        spAnimationState_setAnimationByName(state, 0, "walk", true);
-        spAnimationState_setAnimationByName(state, 1, "empty", false);
-        spAnimationState_addAnimationByName(state, 1, "gungrab", false, 2);
-}
 
 void EngineGLSceneWidget::startRenderTimer(void) {
     makeCurrent();
