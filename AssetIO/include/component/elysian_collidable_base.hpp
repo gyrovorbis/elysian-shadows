@@ -46,8 +46,8 @@ namespace elysian {
             ALL			= ~0x0
         };
 
-        BitMask32       _typeAgainst;
-        BitMask32       _type;
+        BitMask32       _typeAgainst    = ~0x0;
+        BitMask32       _type           = ~0x0;
 
                             CollisionFlags(void);
         BitMask32&          getType(void);

@@ -22,7 +22,8 @@ EntityTreeWidget::EntityTreeWidget(QWidget *parent): QTreeWidget(parent) {
 
 	connect(getAssets(), SIGNAL(areaChanged(Area*const)), this, SLOT(OnAreaChange(Area*const)));
     connect(this,   SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)), this, SLOT(OnEntitySelected(QTreeWidgetItem *, QTreeWidgetItem*)));
-	connect(getAssets(), SIGNAL(selectionChanged(const Selectable::TYPE, Selectable *const)), this, SLOT(OnSelectionChanged(const Selectable::TYPE, Selectable *const)));
+    //connect(this, SIGNAL(itemSelectionChanged(void)), this, SLOT(_onItemSelectionChanged(void)));
+    connect(getAssets(), SIGNAL(selectionChanged(const Selectable::TYPE, Selectable *const)), this, SLOT(OnSelectionChanged(const Selectable::TYPE, Selectable *const)));
 	connect(getAssets(), SIGNAL(entityAdded(Project*const,Level*const,Area*const,Entity*const)), this, SLOT(OnAddEntity(Project*const,Level*const,Area*const,Entity*const)));
 	connect(getAssets(), SIGNAL(entityRemoved(Project*const,Level*const,Area*const,Entity*const)), this, SLOT(OnRemoveEntity(Project*const,Level*const,Area*const,Entity*const)));
     connect(getAssets(), SIGNAL(entityParented(Entity*const,Entity*const)), this, SLOT(onEntityParented(Entity*const,Entity*const)));
@@ -147,6 +148,28 @@ void EntityTreeWidget::setShowHidden(const bool val) {
 }
 
 
+void EntityTreeWidget::_onItemSelectionChanged(void) {
+    auto selection = std::move(selectedItems());
+    EntitySelectable* selectable = nullptr;
+
+    if(selection.size()) {
+
+        selectable = new EntitySelectable;
+
+        for(auto it = selection.begin();
+            it != selection.end();
+            ++it)
+        {
+            selectable->addEntity(static_cast<Entity*>(*it));
+
+        }
+
+    }
+
+
+
+    setCurrentSelection(selectable);
+}
 
 
 void EntityTreeWidget::_onCustomContextMenuRequested(QPoint location) {
