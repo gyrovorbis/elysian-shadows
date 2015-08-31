@@ -5,7 +5,7 @@
 #   include <elysian_collidable_base.hpp>
 namespace elysian {
     typedef CollidableBase          Collidable;
-    typedef CollidableAttribBase    CollidableAttrib
+    typedef CollidableAttribBase    CollidableAttrib;
 }
 #else
 #   include <tk_collidable.h>

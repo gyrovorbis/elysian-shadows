@@ -21,7 +21,7 @@ namespace elysian {
         //constexpr           operator T(void);
 
         constexpr unsigned  getBitCount(void) const;
-        constexpr bool      getBit(const unsigned index) const;
+        bool      getBit(const unsigned index) const;
         void                setBit(const unsigned index, const bool val);
 
        // operator            T(void);
@@ -80,7 +80,7 @@ namespace elysian {
     }
 
     template<typename T>
-    inline constexpr bool BitMask<T>::getBit(const unsigned index) const {
+    inline bool BitMask<T>::getBit(const unsigned index) const {
         T one = 1;
         return (_value&(one<<index));
 

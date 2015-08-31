@@ -32,8 +32,11 @@ private Q_SLOTS:
     void OnAreaChange(Area * const area);
     void OnAddEntity(Project *const project, Level *const level, Area *const area, Entity *const entity);
     void OnRemoveEntity(Project *const project, Level *const level, Area *const area, Entity *const entity);
+
     void OnEntitySelected(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-	void OnSelectionChanged(const Selectable::TYPE, Selectable *const);
+    void _onItemSelectionChanged(void);
+
+    void OnSelectionChanged(const Selectable::TYPE, Selectable *const);
     void onEntityParented(Entity*const child, Entity*const parent);
     //void onLayerChange(const Assets::LAYER_TYPE layer);
     void _onCustomContextMenuRequested(QPoint location);

@@ -12,15 +12,15 @@
 namespace elysian {
 
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(ParticleEmitterBase)
-ELYSIAN_LUA_PROXY_FIELDS_EXPORT(ParticleEmitterAttrib)
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(ParticleEmitterAttribBase)
 
-ParticleEmitterAttrib::ParticleEmitterAttrib(void) {}
+ParticleEmitterAttribBase::ParticleEmitterAttribBase(void) {}
 
 ParticleEmitterBase::ParticleEmitterBase(const ParticleEmitterBase &other) {
     *this = other;
 }
 
-ParticleEmitterAttrib::~ParticleEmitterAttrib(void) {
+ParticleEmitterAttribBase::~ParticleEmitterAttribBase(void) {
     delete _material;
 
     gyVidTexDestroy(_normalMap);

@@ -9,9 +9,10 @@
 #define ELYSIAN_COMBAT_AGGRO_DIST_DEFAULT      200.0f
 #define ELYSIAN_COMBAT_DEAGGRO_DIST_DEFAULT    400.0f
 
+ELYSIAN_ASSET_TYPEDEF(ParticleEmitterAttrib)
+
 namespace elysian {
 
-    class ParticleEmitterAttrib;
     class CombatStatusModifier;
 
     class CombatAttrib: public LuaTableProxy<CombatAttrib> {

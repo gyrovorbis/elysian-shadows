@@ -87,6 +87,10 @@ static TK_CRASH_STATE _tkCrashReport(QStringList& /*args*/) {
 
 
 static GYAppCbRet Init(int argc, char **argv) {
+    QString project;
+    QString level;
+    QString area;
+
     QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings); //WITHOUT THIS OSX SHITS ITSELF WHEN FUCKING WITH WIDGET SIZING/LOCATIONS
     QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
     QSurfaceFormat fmt;
@@ -104,9 +108,7 @@ static GYAppCbRet Init(int argc, char **argv) {
     // Set the default GL format to OpenGL 3.2 Core
     QGLFormat::setDefaultFormat(glfmt);
 
-
     QApplication a(argc, argv);
-    auto args = QApplication::arguments();
 
     a.setOrganizationName("Elysian Shadows");
     a.setOrganizationDomain("elysianshadows.com");
@@ -125,9 +127,17 @@ static GYAppCbRet Init(int argc, char **argv) {
 
     QSplashScreen splash(splashScreen, Qt::WindowStaysOnTopHint);
 
-    QString project;
-    QString level;
-    QString area;
+    GYFileInitParams fileParams;
+    strcpy(fileParams.workingDir, Q_CSTR(QDir::homePath()));
+    gyFileInit(&fileParams);
+    QDir outputDir(QDir::current());
+    if(!outputDir.cd(ESTOOLKIT_OUTPUT_DIR) && !outputDir.mkdir(ESTOOLKIT_OUTPUT_DIR)) {
+        qCritical() << QString("Could not set ESTk working directory: [%s]") << QDir().current().filePath(ESTOOLKIT_OUTPUT_DIR);
+    } else {
+        QDir::setCurrent(QDir::current().filePath(ESTOOLKIT_OUTPUT_DIR));
+    }
+
+    auto args = QApplication::arguments();
 
     bool relaunching = false;
     for(auto it = args.begin(); it != args.end(); ++it) {
@@ -148,15 +158,6 @@ static GYAppCbRet Init(int argc, char **argv) {
         return (GYAppCbRet)tktest::main(args);
     }
 #endif
-    GYFileInitParams fileParams;
-    strcpy(fileParams.workingDir, Q_CSTR(QDir::homePath()));
-    gyFileInit(&fileParams);
-    QDir outputDir(QDir::current());
-    if(!outputDir.cd(ESTOOLKIT_OUTPUT_DIR) && !outputDir.mkdir(ESTOOLKIT_OUTPUT_DIR)) {
-        qCritical() << QString("Could not set ESTk working directory: [%s]") << QDir().current().filePath(ESTOOLKIT_OUTPUT_DIR);
-    } else {
-        QDir::setCurrent(QDir::current().filePath(ESTOOLKIT_OUTPUT_DIR));
-    }
 
     ESToolkit w;
     w.setOutputDir(outputDir);

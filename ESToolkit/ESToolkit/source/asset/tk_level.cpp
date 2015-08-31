@@ -157,16 +157,16 @@ bool TkLevel::duplicate(void) {
     while(_project->getLevel(getNodePath()+QString::number(num))) ++num;
 
 
-    if(!FileUtilities::copyDir(path, path+QString::number(num))) {
+    if(!FileUtilities::copyDir(FileUtilities::getAbsoluteAssetPath(path), FileUtilities::getAbsoluteAssetPath(path+QString::number(num)))) {
         QMessageBox::critical(nullptr, "Error!", "Could not copy level directory!");
         return false;
     } else {
         dbgprintf("Successfully copied level directory [%s].", Q_CSTR((path+QString::number(num))));
     }
 
-    //saveAs(_location+QString::number(num));
+    //saveAs(FileUtilities::getAbsoluteAssetPath(_location+QString::number(num)));
 
-    return _project->scanBackLevelPath(path + QString::number(num));
+    return _project->scanBackLevelPath(FileUtilities::getAbsoluteAssetPath(path + QString::number(num)));
 }
 
 
@@ -420,8 +420,9 @@ Area *TkLevel::newArea(const QString name) {
 }
 
 Area *TkLevel::getArea(const QString path) {
+    const auto vpath = FileUtilities::getAssetRelativePath(path);
     for(int i = 0; i < _area.size(); ++i) {
-        if(_area[i]->getNodePath() == path) return _area[i];
+        if(_area[i]->getNodePath() == vpath) return _area[i];
     }
     return nullptr;
 }
@@ -569,7 +570,7 @@ bool TkLevel::saveAll(void) {
     //Debug::Log(Debug::DBG_VERBOSE, QString("Level::SaveAll("+_location+")"));
     //Debug::push();
     //export to default save location
-    bool success = saveAs(getNodePath());
+    bool success = saveAs(FileUtilities::getAbsoluteAssetPath(getNodePath()));
     //Debug::pop();
     return success;
 }
@@ -585,7 +586,7 @@ bool TkLevel::saveTileSheet(void) {
 
 bool TkLevel::saveAs(const QString dir) {
     char buff[200];
-    if(getNodePath() == dir) {
+    if(FileUtilities::getAssetRelativePath(getNodePath()) == FileUtilities::getAssetRelativePath(dir)) {
         sprintf(buff, "Saving Level [%s].", Q_CSTR(getNodePath()));
     } else {
         sprintf(buff, "Copying level [%s] to [%s].", Q_CSTR(getNodePath()), Q_CSTR(dir));
@@ -593,7 +594,7 @@ bool TkLevel::saveAs(const QString dir) {
 
     DbgEvent event("%s", buff);
     bool success = true;
-    bool newLoc = (_location != dir)? true : false;
+    bool newLoc = (FileUtilities::getAssetRelativePath(_location) != FileUtilities::getAssetRelativePath(dir))? true : false;
     QDir qdir;
 
     //Save As and destination already exists

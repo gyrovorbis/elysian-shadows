@@ -77,6 +77,8 @@ void EntitySelectable::addEntity(const EntityEntry entry) {
     lua_settable(*_mainState, -3);
     lua_pop(*_mainState, 1);
 
+    //if(!_baseEntity) _baseEntity = entry.entity;
+
     entry->getModel()->setLabelItemText("Entity");
 
     LuaManager::stackBalanceEnd();

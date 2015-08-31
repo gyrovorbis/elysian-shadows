@@ -108,7 +108,6 @@ namespace elysian {
 
         using                       LuaTableProxy<RigidBodyBase, RigidBody, ForceTarget>::registerProxyMetaTable;
         using                       LuaTableProxy<RigidBodyBase, RigidBody, ForceTarget>::fromTable;
-        using                       LuaTableProxy<RigidBodyBase, RigidBody, ForceTarget>::initializeDelegates;
                                     RigidBodyBase(Entity& entity);
                                     RigidBodyBase(const RigidBodyBase& other);
                                     RigidBodyBase(void) = default;

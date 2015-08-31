@@ -10,9 +10,7 @@
 #include <QMenu>
 #include <QInputDialog>
 #include <QAction>
-#include <utility/elysian_lua_table_ref.hpp>
-
-std::unique_ptr<QAction> lol;
+//#include <utility/elysian_lua_table_ref.hpp>
 
 #include <model/tk_property_item_delegate.h>
 #include <model/tk_property_standard_item.h>
@@ -283,11 +281,11 @@ QMenu* PropertyItemDelegate::getContextMenu(ESTkStandardItem*const item) {
         menu.insertAction("Add Key", [=](bool) {
             QString key = QInputDialog::getText(nullptr, "Add New Field", "Key Name");
             if(key.isNull()) return;
-
+#if 0
             elysian::LuaTableRef ref(fieldItem->getTableData()->getLuaRef());
             ref.insert(Q_CSTR(key), elysian::LuaVariant(12.0f));
            // fieldItem->getTableData()->insertTableFieldItem(key);
-
+#endif
 
         });
 
