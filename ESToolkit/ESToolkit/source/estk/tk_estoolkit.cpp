@@ -2104,6 +2104,15 @@ void ESToolkit::select(const int luaRef) {
     self->_selectionDockWidget->ExpandSelectionTree();
 }
 
+int ESToolkit::pushSelection(lua_State * const vm) {
+    if(_instance->_assets.getCurrentSelectionType() == Selectable::ENTITY) {
+        lua_rawgeti(vm, LUA_REGISTRYINDEX, static_cast<EntitySelectable*>(_instance->_assets.getCurrentSelection())->getLuaTableRef());
+        return 1;
+    }
+    lua_pushnil(vm);
+    return 0;
+}
+
 void ESToolkit::on_actionManual_Camera_toggled(bool arg1)
 {
     _engineParams.manualCameraEnabled = arg1;
