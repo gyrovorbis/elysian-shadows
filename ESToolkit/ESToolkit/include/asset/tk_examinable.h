@@ -5,7 +5,7 @@
 
 class TkExaminable: public elysian::ExaminableBase {
 public:
-    TkExaminable(TkEntity& parent);
+    TkExaminable(TkEntity& parent, const TkExaminable*const prefab=nullptr);
     TkExaminable(void) = default;
 
 
@@ -14,7 +14,7 @@ public:
 
 
 
-inline TkExaminable::TkExaminable(TkEntity &parent): elysian::ExaminableBase(parent) {}
+inline TkExaminable::TkExaminable(TkEntity &parent, const TkExaminable*const prefab): elysian::ExaminableBase(parent, prefab) {}
 
 #endif // TKEXAMINABLE_H
 

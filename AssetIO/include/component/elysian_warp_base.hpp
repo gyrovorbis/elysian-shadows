@@ -22,17 +22,13 @@ namespace elysian {
 
 		
     protected:
+        char                    _areaPath[ELYSIAN_WARP_AREA_PATH_MAX_CHARS]         = { 0 };
+        char                    _levelPath[ELYSIAN_WARP_SEVERITY_PATH_MAX_CHARS]    = { 0 };
         GYVector3               _toPosition;
         bool                    _changeArea     = false;
         bool                    _changeLevel    = false;
         bool                    _obliqueTran    = true;
-        char                    _areaPath[ELYSIAN_WARP_AREA_PATH_MAX_CHARS]         = { 0 };
-        char                    _levelPath[ELYSIAN_WARP_SEVERITY_PATH_MAX_CHARS]    = { 0 };
-		
-                                WarpBase(Entity &parent);
-                                WarpBase(const WarpBase& other);
-                                WarpBase(void) = default;
-                                 //~WarpBase(void) = default;
+
 		
 	public:
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
@@ -43,6 +39,10 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(levelPath,          getLevelPath,           setLevelPath)
             ELYSIAN_LUA_PROXY_FIELD(obliqueTran,        getObliqueTransition,   setObliqueTransition)
         ELYSIAN_LUA_PROXY_FIELDS_END()
+
+                                WarpBase(Entity &parent, const WarpBase*const prefab=nullptr);
+                                WarpBase(void) = default;
+        WarpBase&               operator=(const WarpBase& rhs);
 
         void                    setToPos(const float x, const float y, const float z);
         Vector3                 getToPosVec(void);
@@ -68,17 +68,20 @@ namespace elysian {
 
 
 
-
-
-
-
-
-
-
-
     // ================ INLINEZ ===================
 
-    inline WarpBase::WarpBase(Entity& parent): Component(parent) {}
+    inline WarpBase::WarpBase(Entity& parent, const WarpBase*const prefab): Component(parent) {
+        if(prefab) *this = *prefab;
+    }
+    inline WarpBase& WarpBase::operator=(const WarpBase& rhs) {
+        _toPosition     = rhs._toPosition;
+        _changeArea     = rhs._changeArea;
+        _changeLevel    = rhs._changeLevel;
+        _obliqueTran    = rhs._obliqueTran;
+        strcpy(_areaPath, rhs._areaPath);
+        strcpy(_levelPath, rhs._levelPath);
+        return *this;
+    }
 
     inline void WarpBase::setObliqueTransition(const bool flag) {
 		_obliqueTran = flag;

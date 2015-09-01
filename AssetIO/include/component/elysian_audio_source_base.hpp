@@ -22,42 +22,42 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(looping,    getLooping,     setLooping)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
-                        AudioSourceBase(void) = default;
-                        AudioSourceBase(Entity& entity);
-                        AudioSourceBase(const AudioSourceBase& other);
-                        ~AudioSourceBase(void);
+                            AudioSourceBase(void) = default;
+                            AudioSourceBase(Entity& entity, const AudioSourceBase*const other=nullptr);
+                            ~AudioSourceBase(void);
+
+        AudioSourceBase&    operator=(const AudioSourceBase& rhs);
 
 		//reimplemented from component
         static constexpr const Component::TYPE componentType = Component::AUDIO_SOURCE;
 
 		//public API
-        void            setWav(const GYWav*const wav);
-        void            playWav(const GYWav*const wav);
-        void            play(void);
-        void            stop(void);
-        void            setGain(const float val);
-        void            setPitch(const float val);
-        void            setLooping(const bool val);
-        float           getGain(void) const;
-        bool            getLooping(void) const;
-        float           getPitch(void) const;
+        void                setWav(const GYWav*const wav);
+        void                playWav(const GYWav*const wav);
+        void                play(void);
+        void                stop(void);
+        void                setGain(const float val);
+        void                setPitch(const float val);
+        void                setLooping(const bool val);
+        float               getGain(void) const;
+        bool                getLooping(void) const;
+        float               getPitch(void) const;
 
 		//subsystem
-		void			update(void);
-		void			setChannel(GYAudioSource* const src);
-		GYAudioSource*	getChannel(void) const;
-		static void		setAudioSys(AudioSystem* const sys);
-
+        void                update(void);
+        void                setChannel(GYAudioSource* const src);
+        GYAudioSource*      getChannel(void) const;
+        static void         setAudioSys(AudioSystem* const sys);
 
 	private:
 		static AudioSystem* _audioSys;
-		GYAudioSource*		_src = nullptr;
-		const GYWav*		_wav = nullptr;
+        GYAudioSource*		_src        = nullptr;
+        const GYWav*		_wav        = nullptr;
 
 		//source attributes
-		float				_gain = 1.0f;
-		float				_pitch = 1.0f;
-		bool				_looping = false;
+        float				_gain       = 1.0f;
+        float				_pitch      = 1.0f;
+        bool				_looping    = false;
 
 	};
 
@@ -95,9 +95,16 @@ namespace elysian {
 
 	*/
 	
-    inline AudioSourceBase::AudioSourceBase(Entity& entity): Component(entity) {
-
+    inline AudioSourceBase::AudioSourceBase(Entity& entity, const AudioSourceBase*const other): Component(entity) {
+        if(other) *this = *other;
 	}
+    inline AudioSourceBase& AudioSourceBase::operator=(const AudioSourceBase& rhs) {
+        _wav        = rhs._wav;
+        _gain       = rhs._gain;
+        _pitch      = rhs._pitch;
+        _looping    = rhs._looping;
+        return *this;
+    }
 
     inline AudioSourceBase::~AudioSourceBase(void) {
 		stop();

@@ -37,10 +37,11 @@ namespace elysian {
 		static const Component::TYPE _type		= Component::CHARACTER;
 		
 	protected:
-                CharacterBase(Entity& entity);
-                CharacterBase(const CharacterBase& other);
-                CharacterBase(void)                 = default;
-                ~CharacterBase(void)        		= default;
+                            CharacterBase(Entity& entity, const CharacterBase*const prefab=nullptr);
+                            CharacterBase(void)                 = default;
+                            ~CharacterBase(void)        		= default;
+
+        CharacterBase&      operator=(const CharacterBase& rhs);
 
         Direction::DIR4		_faceDir			= Direction::DIR4_CENTER;
         GYVector3			_lastMoveDir		= { 0.0f, 0.0f, 0.0f };
@@ -56,7 +57,7 @@ namespace elysian {
 
         //Pick-up state
 
-        Entity* _heldEntity = nullptr;
+        Entity*             _heldEntity = nullptr;
 
     public:
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
@@ -95,19 +96,28 @@ namespace elysian {
         void                animateWalk(const GYVector2& moveVec);
 
         //animation component wrappers/abstraction
-        void playAnimation(const char*const name);
-        void replaceState(const char*const name1, const char*const name2);
-        void removeChildEntity(Entity*entity);
-        void addChildEntity(Entity*entity, const char*const name);
-        void removeState(const char*const state);
-        void addState(const char*const state);
-        void setSpeedMultiplier(const float factor);
+        void                playAnimation(const char*const name);
+        void                replaceState(const char*const name1, const char*const name2);
+        void                removeChildEntity(Entity*entity);
+        void                addChildEntity(Entity*entity, const char*const name);
+        void                removeState(const char*const state);
+        void                addState(const char*const state);
+        void                setSpeedMultiplier(const float factor);
     };
-
 
     // ====== INLINEZ ======
 
-    inline CharacterBase::CharacterBase(Entity& entity): Component(entity) {}
+    inline CharacterBase::CharacterBase(Entity& entity, const CharacterBase*const prefab): Component(entity) {
+        if(prefab) *this = *prefab;
+    }
+    inline CharacterBase& CharacterBase::operator=(const CharacterBase& rhs) {
+        _faceDir            = rhs._faceDir;
+        _walkForce          = rhs._walkForce;
+        _dashMultiplier     = rhs._dashMultiplier;
+        _walkAnimInterp     = rhs._walkAnimInterp;
+        _animate            = rhs._animate;
+        return *this;
+    }
     inline void CharacterBase::setDashMultiplier(const float mult) { _dashMultiplier = mult; }
     inline float CharacterBase::getDashMultiplier(void) const { return _dashMultiplier; }
     inline bool CharacterBase::isDashing(void) const { return _dashing; }

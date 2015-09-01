@@ -8,7 +8,7 @@
 class TkAnimation: public elysian::AnimationBase {
 Q_OBJECT
 public:
-                    TkAnimation(TkEntity& parent);
+                    TkAnimation(TkEntity& parent, const TkAnimation*const prefab=nullptr);
                     TkAnimation(void) = default;
                     virtual ~TkAnimation(void) = default;
 

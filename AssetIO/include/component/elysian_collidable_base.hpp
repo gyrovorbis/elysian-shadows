@@ -172,8 +172,7 @@ namespace elysian {
             GYCirCollider       cir;
         }                       _collider;
 
-                                CollidableBase(Entity &parent);
-                                CollidableBase(const CollidableBase& other);
+                                CollidableBase(Entity &parent, const CollidableBase*const prefab=nullptr);
         virtual                 ~CollidableBase(void) = default;
         void                    _updateSortSweepAABB(void);
 
@@ -212,6 +211,8 @@ namespace elysian {
         SortSweepCollidable*    getSortSweepAABB(void) const;
         bool                    checkAABBCollision(Collidable* col);
         bool                    checkFullCollision(Collidable* col);
+
+        CollidableBase&         operator= (const CollidableBase& other);
 
     };
 
@@ -289,8 +290,9 @@ namespace elysian {
     inline CollisionFlags* CollidableAttribBase::getFlags(void) { return &flags; }
     inline void CollidableAttribBase::setRelSizeVec(const Vector3& size) { _relSize = size; }
     inline void CollidableAttribBase::setRelPosVec(const Vector3& pos) { _relPos = pos; }
-
-    inline CollidableBase::CollidableBase(Entity &parent): Component(parent){}
+    inline CollidableBase::CollidableBase(Entity &parent, const CollidableBase*const prefab): Component(parent) {
+        if(prefab) *this = *prefab;
+    }
     inline unsigned CollidableBase::getContactCount(void) const { return _contactCount; }
     inline void CollidableBase::setAttrib(CollidableAttrib *attrib) { /*delete _attrib;*/ _attrib = attrib; }
     inline CollidableAttrib* CollidableBase::getAttrib(void) const { return _attrib; }
@@ -361,6 +363,16 @@ namespace elysian {
 
 */
 
+    }
+    inline CollidableBase& CollidableBase::operator=(const CollidableBase& rhs) {
+        _worldSize          = rhs._worldSize;
+        _attrib             = rhs._attrib;
+        _resolvePen         = rhs._resolvePen;
+        _active             = rhs._active;
+        _worldSpace         = rhs._worldSpace;
+        _eventMonitorMask   = rhs._eventMonitorMask;
+        _collider           = rhs._collider;
+        return *this;
     }
 
 }

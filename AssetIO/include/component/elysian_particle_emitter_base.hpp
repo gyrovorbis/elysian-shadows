@@ -132,20 +132,21 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(attrib,     getAttrib,      setAttrib)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
-        ~ParticleEmitterInternals(void);
+                                    ~ParticleEmitterInternals(void);
+        ParticleEmitterInternals&   operator=(const ParticleEmitterInternals& rhs);
 
-        void allocatePool(const unsigned size);
-        void setAttrib(ParticleEmitterAttrib*const attrib);
-        ParticleEmitterAttrib* getAttrib(void) const;
+        void                        allocatePool(const unsigned size);
+        void                        setAttrib(ParticleEmitterAttrib*const attrib);
+        ParticleEmitterAttrib*      getAttrib(void) const;
 
-        void applyForce(ForceGenerator*const force, const float deltaTime);
-        void update(const Camera*const state, const float deltaTime);
-        void render(void);
-        void renderAtElev(const unsigned char elev);
+        void                        applyForce(ForceGenerator*const force, const float deltaTime);
+        void                        update(const Camera*const state, const float deltaTime);
+        void                        render(void);
+        void                        renderAtElev(const unsigned char elev);
 
         //Emitter functions
-        void emitFromPoint(const GYVector3& pos, const float angle, const unsigned intensity);
-        void emitFromPointInDir(const GYVector3& pos, const GYVector3& dir, const unsigned intensity, const float angle);
+        void                        emitFromPoint(const GYVector3& pos, const float angle, const unsigned intensity);
+        void                        emitFromPointInDir(const GYVector3& pos, const GYVector3& dir, const unsigned intensity, const float angle);
     //	void fallFromSky(void);
     };
 
@@ -163,23 +164,26 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(attrib,     getAttrib,      setAttrib)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
-                        ParticleEmitterBase(void) = default;
-                        ParticleEmitterBase(Entity& entity);
-                        ParticleEmitterBase(const ParticleEmitterBase& other);
-                        ~ParticleEmitterBase(void) = default;
+                                ParticleEmitterBase(void) = default;
+                                ParticleEmitterBase(Entity& entity, const ParticleEmitterBase*const prefab=nullptr);
+                                ~ParticleEmitterBase(void) = default;
+
+        ParticleEmitterBase&    operator=(const ParticleEmitterBase& rhs);
 
 		//reimplemented from component
         static constexpr const Component::TYPE componentType = Component::PARTICLE_EMITTER;
 
-        void            emitFromEntity(const GYVector3& pos, const float angle, const unsigned intensity);
+        void                    emitFromEntity(const GYVector3& pos, const float angle, const unsigned intensity);
 
     };
 
 
+
+
+
     // ====== INLINEZ =====
-
+    inline ParticleEmitterAttribBase::ParticleEmitterAttribBase(void) {}
     inline BitMask32& ParticleEmitterAttribBase::getForceMask(void) { return _forceMask; }
-
     inline void ParticleEmitterAttribBase::setShadowVolume(const bool val) { _shadowVolume = val; }
     inline void ParticleEmitterAttribBase::setForceMask(const BitMask32 mask) { _forceMask = mask; }
     inline void ParticleEmitterAttribBase::setStartSize(const unsigned size) { _startSize = size; }
@@ -204,11 +208,8 @@ namespace elysian {
     inline void ParticleEmitterAttribBase::setMaxLife(const unsigned life) {
         _maxLife = life;
     }
-
     inline void ParticleEmitterAttribBase::setStick(const bool val) { _stick = val; }
-
     inline void ParticleEmitterAttribBase::setRandomStartFrame(const bool val) { _randomStartFrame = val; }
-
     inline unsigned ParticleEmitterAttribBase::getMaxLife(void) const { return _maxLife; }
     inline unsigned ParticleEmitterAttribBase::getStartSize(void) const { return _startSize; }
     inline unsigned ParticleEmitterAttribBase::getEndSize(void) const { return _endSize; }
@@ -218,6 +219,20 @@ namespace elysian {
     inline unsigned ParticleEmitterAttribBase::getAnimFrameDuration(void) const { return _animFrameDuration; }
     inline bool ParticleEmitterAttribBase::getShadowVolume(void) const { return _shadowVolume; }
     inline bool ParticleEmitterAttribBase::getStick(void) const { return _stick; }
+
+
+    inline ParticleEmitterInternals& ParticleEmitterInternals::operator=(const ParticleEmitterInternals& rhs) {
+        _attrib = rhs._attrib;
+        return *this;
+    }
+
+    inline ParticleEmitterBase::ParticleEmitterBase(Entity& entity, const ParticleEmitterBase*const prefab): Component(entity) {
+        if(prefab) *this = *prefab;
+    }
+    inline ParticleEmitterBase& ParticleEmitterBase::operator=(const ParticleEmitterBase& rhs) {
+        ParticleEmitterInternals::operator=(rhs);
+        return *this;
+    }
 
 }
 

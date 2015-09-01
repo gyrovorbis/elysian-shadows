@@ -8,19 +8,13 @@ namespace elysian {
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(LightAttrib)
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(LightSourceBase)
 
-LightSourceBase::LightSourceBase(const LightSourceBase &other) {
-    *this = other;              //absorb the other fucker's config and attrib
-    camera = &_camState;
-    setLightType(other.type);   //Initialize internals
-}
-
 LightSourceBase::~LightSourceBase(void) {
     if(_entity) gyVidLightSourceUninit(static_cast<GYLightSource*>(this));
 }
 
 GYLightProperties LightAttrib::defaultProperties = {
     { 0.0f, 0.0f, 0.0f, 0.0f },
-    { 0.0f, 0.0f, 0.0f, 0.0f },
+    { 10.0f, 0.0f, 0.0f, 0.0f },
     { 0.0f, 0.0f, 0.0f, 0.0f },
     { 0.00005f, 0.00005f, 0.00005f },
     1.0f,
