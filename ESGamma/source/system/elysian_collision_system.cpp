@@ -614,9 +614,10 @@ if(worldSpace) {
         //getBehavSys()->onCollide(bodyB->getEntity(), bodyA)
 
 
-        if(++_contactAmount == ELYSIAN_COLLISION_CONTACT_LIST_SIZE) {
-            assert(0);
-            return contact; //MAXXED OUT -- NOT GOOD ENOUGH
+        if(_contactAmount < ELYSIAN_COLLISION_CONTACT_LIST_SIZE-1) {
+            ++_contactAmount;
+        } else {
+            //assert(0); //WE RAN OUT OF CONTACTS, NOT FUCKING GOOD!!!!!111
         }
     }
 
