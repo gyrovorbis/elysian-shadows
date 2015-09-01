@@ -95,7 +95,7 @@ namespace elysian {
 
                             LightSourceBase(void) = default;
                             LightSourceBase(Entity& entity, const LightSourceBase*const prefab=nullptr);
-                            ~LightSourceBase(void) override;
+                            ~LightSourceBase(void);
 
          LightSourceBase&   operator=(const LightSourceBase& rhs);
 
