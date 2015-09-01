@@ -31,7 +31,7 @@
      <number>0</number>
     </property>
     <property name="topMargin">
-     <number>3</number>
+     <number>0</number>
     </property>
     <property name="rightMargin">
      <number>0</number>
@@ -40,42 +40,20 @@
      <number>0</number>
     </property>
     <item>
-     <widget class="AssetTreeWidget" name="_assetTreeWidget">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="styleSheet">
-       <string notr="true">AssetTreeWidget {
-selection-background-color: rgb(225, 202, 251);
-selection-color: rgb(0,0,0);
-}</string>
+     <widget class="QTreeView" name="treeView">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
       </property>
       <property name="alternatingRowColors">
        <bool>true</bool>
       </property>
-      <attribute name="headerVisible">
-       <bool>false</bool>
-      </attribute>
-      <column>
-       <property name="text">
-        <string notr="true">1</string>
-       </property>
-      </column>
      </widget>
     </item>
    </layout>
   </widget>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>AssetTreeWidget</class>
-   <extends>QTreeWidget</extends>
-   <header>tk_asset_tree_widget.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

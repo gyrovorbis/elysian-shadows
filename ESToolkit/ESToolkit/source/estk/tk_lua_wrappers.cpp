@@ -36,7 +36,8 @@ void TkLuaManager::_registerWrappers(void) {
     _mainState->register_class<EnumDropdownPropertyItemDelegate>();
     _mainState->register_class<SpinboxPropertyItemDelegate>();
     _mainState->register_class<FileBrowserPropertyItemDelegate>();
-    _mainState->register_class_static<Toolkit>("select", &Toolkit_select);
+    _mainState->register_class_static<Toolkit>("setSelection", &Toolkit_setSelection);
+    _mainState->register_class_static<Toolkit>("getSelection", &ESToolkit::pushSelection);
     _mainState->register_class_static<Toolkit>("findEntity", &Toolkit_findEntity);
 
     luaRegisterTkEnumsConstants(_mainState);

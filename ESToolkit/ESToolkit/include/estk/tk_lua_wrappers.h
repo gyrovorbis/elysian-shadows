@@ -49,14 +49,12 @@ OOLUA_PROXY_END
 OOLUA_PROXY(FileBrowserPropertyItemDelegate, PropertyItemDelegate)
 OOLUA_PROXY_END
 
-static inline int Toolkit_select(lua_State* const vm) {
+static inline int Toolkit_setSelection(lua_State* const vm) {
     const int ref = luaL_ref(vm, LUA_REGISTRYINDEX);
     ESToolkit::select(ref);
     luaL_unref(vm, LUA_REGISTRYINDEX, ref);
     return 0;
 }
-
-
 
 static inline void luaRegisterTkEnumsConstants(OOLUA::Script */*s*/) {
 
