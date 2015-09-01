@@ -179,8 +179,7 @@ namespace elysian {
         AnimationAttrib*        _attrib             = nullptr;
         Entity*                 _parent             = nullptr;
 
-                AnimationBase(Entity& parent);
-                AnimationBase(const AnimationBase& other);
+                AnimationBase(Entity& parent, const AnimationBase*const prefab = nullptr);
                 AnimationBase(void) = default;
                 ~AnimationBase(void);
         void    _updateStates(void);
@@ -278,7 +277,9 @@ namespace elysian {
         for(auto it: _animations) delete it.second;
     }
 
-    inline AnimationBase::AnimationBase(Entity& parent): Component(parent) {}
+    inline AnimationBase::AnimationBase(Entity& parent, const AnimationBase*const prefab): Component(parent) {
+        if(prefab) *this = *prefab;
+    }
     inline AnimationAttrib* AnimationBase::getAttrib(void) const { return _attrib; }
     inline ChildAnimationAttrib* AnimationBase::getChildAttrib(void) const { return _childAttrib; }
     inline void AnimationBase::setAttrib(AnimationAttrib* attributes) {

@@ -7,7 +7,7 @@ class TkRigidBody: public elysian::RigidBodyBase {
 public:
     using                       LuaTableProxy<elysian::RigidBodyBase, RigidBody, ForceTarget>::initializeDelegates;
 
-    TkRigidBody(TkEntity& parent);
+    TkRigidBody(TkEntity& parent, const TkRigidBody*const prefab=nullptr);
     TkRigidBody(void) = default;
 
     virtual bool    validate(QString &string) const override;
@@ -23,7 +23,7 @@ public:
 
 // ========= INLINEZ ========
 
-inline TkRigidBody::TkRigidBody(TkEntity &parent): elysian::RigidBodyBase(parent) {}
+inline TkRigidBody::TkRigidBody(TkEntity &parent, const TkRigidBody*const prefab): elysian::RigidBodyBase(parent, prefab) {}
 
 #endif // TKRIGIDBODY_H
 

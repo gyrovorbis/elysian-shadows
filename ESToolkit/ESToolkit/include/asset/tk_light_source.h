@@ -5,8 +5,8 @@
 
 class TkLightSource: public elysian::LightSourceBase {
 public:
-    TkLightSource(TkEntity& parent);
     TkLightSource(void) = default;
+    TkLightSource(TkEntity& parent, const TkLightSource*const prefab=nullptr);
 
     virtual bool    validate(QString &) const;
     virtual QMenu*  createContextMenu(void);
@@ -19,7 +19,7 @@ public:
 
 // ======= INLINEZ ======
 
-inline TkLightSource::TkLightSource(TkEntity &parent): elysian::LightSourceBase(parent) {}
+inline TkLightSource::TkLightSource(TkEntity &parent, const TkLightSource*const prefab): elysian::LightSourceBase(parent, prefab) {}
 
 
 #endif

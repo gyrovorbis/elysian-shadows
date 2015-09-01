@@ -25,11 +25,9 @@ namespace elysian {
         GYVector2			_offset			= {0.0f, 0.0f};	//texture offset from base transform (local coords)
         GY_RECT_TEX_ORIENT	_texOrient		= GY_RECT_TEX_ORIENT_NORMAL;
 
-        RenderableBase(Entity &parent);
-        RenderableBase(const RenderableBase& other);
-	public:
 
-        RenderableBase(void) = default;
+
+	public:
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(frame,          getFrame,           setFrame)
@@ -39,8 +37,11 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_ARRAY_FIELD(uvCoords, getUVCoords,        setUVCoords,    getUVCoordsCount)
 		ELYSIAN_LUA_PROXY_FIELDS_END()
 
-        static bool         hasPrereqs(Entity &entity);
+                            RenderableBase(void) = default;
+                            RenderableBase(Entity &parent, const RenderableBase*const prefab=nullptr);
+        RenderableBase&     operator=(const RenderableBase& rhs);
 
+        static bool         hasPrereqs(Entity &entity);
         static constexpr const Component::TYPE componentType = Component::RENDERABLE;
 
         /*Split into phases JUST IN CASE we wanted to optimize for
@@ -73,14 +74,19 @@ namespace elysian {
 
     };
 
-
-
-
-
-
-
     //=================== INLINEZ ======================
-    inline RenderableBase::RenderableBase(Entity &parent): Component(parent) {}
+    inline RenderableBase::RenderableBase(Entity &parent, const RenderableBase*const prefab): Component(parent) {
+        if(prefab) *this = *prefab;
+    }
+    inline RenderableBase& RenderableBase::operator=(const RenderableBase& rhs) {
+        memcpy(_texCoord, rhs._texCoord, sizeof(_texCoord));
+        _spriteAttrib   = rhs._spriteAttrib;
+        _frame          = rhs._frame;
+        _offset         = rhs._offset;
+        _texOrient      = rhs._texOrient;
+        return *this;
+    }
+
     inline void RenderableBase::beginRender(void) {}
     inline void RenderableBase::endRender(void) {}
     inline unsigned RenderableBase::getFrame(void) const { return _frame; }

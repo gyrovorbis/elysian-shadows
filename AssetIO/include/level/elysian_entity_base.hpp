@@ -186,6 +186,7 @@ namespace elysian {
 		float				_shadowDepth		= 16.0f;
         GY_RECT_PLANE_TYPE  _planeType			= GY_RECT_PLANE_FRONT;
         bool				_active				= false;
+        bool                _persistent         = false;
 
         Renderable*			_renderable			= nullptr;
         Animation*			_animation			= nullptr;
@@ -201,8 +202,7 @@ namespace elysian {
         Skeleton*           _skeleton           = nullptr;
 
         OOLUA::Lua_table_ref	_selfTable;
-        static float        _oldZ;
-        bool                _persistent         = false;
+        static float            _oldZ;
 
 
         template<typename T>

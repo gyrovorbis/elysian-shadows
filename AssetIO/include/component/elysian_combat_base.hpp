@@ -125,14 +125,14 @@ namespace elysian {
         bool					_dmgActive		= true;
         bool                    _inCombat       = false;
     public:
+                                CombatBase(void) = default;
+                                CombatBase(Entity& entity, const CombatBase*const prefab=nullptr);
+                                ~CombatBase(void) = default;
 
-                CombatBase(Entity& entity);
-                CombatBase(void) = default;
-                CombatBase(const CombatBase& other);
-                ~CombatBase(void) = default;
+        CombatBase&             operator=(const CombatBase& rhs);
 
 		//reimplemented from component
-        static constexpr const Component::TYPE componentType = Component::COMBAT;
+        static constexpr const  Component::TYPE componentType = Component::COMBAT;
 
 		void					setSelfTable(OOLUA::Lua_table_ref self);
 		OOLUA::Lua_table_ref&	getSelfTable(void);
@@ -216,7 +216,21 @@ namespace elysian {
     inline void	CombatBase::setActionTable(OOLUA::Lua_table_ref self) { _actionTable = self; }
     inline OOLUA::Lua_table_ref& CombatBase::getActionTable(void) { return _actionTable; }
 
-    inline CombatBase::CombatBase(Entity &entity): Component(entity) {}
+    inline CombatBase::CombatBase(Entity &entity, const CombatBase*const prefab): Component(entity) {
+        if(prefab) *this = *prefab;
+    }
+
+    inline CombatBase& CombatBase::operator=(const CombatBase& rhs) {
+        _status             = rhs._status;
+        _attrib             = rhs._attrib;
+        _dmgType            = rhs._dmgType;
+        _collisionFlags     = rhs._collisionFlags;
+        _aggroDist          = rhs._aggroDist;
+        _deaggroDist        = rhs._deaggroDist;
+        _targetType         = rhs._targetType;
+        _dmgActive          = rhs._dmgActive;
+        return *this;
+    }
     inline auto	CombatBase::getDmgType(void) const -> DMG_TYPE { return _dmgType; }
     inline auto CombatBase::getTargetType(void) const ->TARGET_TYPE { return _targetType; }
     inline void CombatBase::setTargetType(const TARGET_TYPE type) { _targetType = type; }

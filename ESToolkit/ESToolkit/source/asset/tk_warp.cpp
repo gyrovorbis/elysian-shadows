@@ -4,8 +4,6 @@
 #include <model/tk_property_standard_item.h>
 #include <estk/tk_lua_wrappers.h>
 
-TkWarp::TkWarp(TkEntity &parent): elysian::WarpBase(parent) {}
-
 bool TkWarp::canAddTo(const Entity &entity) const {
     return entity.getCollidable();
 }

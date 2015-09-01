@@ -5,7 +5,7 @@
 
 class TkCharacter: public elysian::CharacterBase {
 public:
-                    TkCharacter(TkEntity& parent);
+                    TkCharacter(TkEntity& parent, const TkCharacter*const prefab=nullptr);
                     TkCharacter(void) = default;
 
     virtual bool    validate(QString &msg) const override;
@@ -15,7 +15,7 @@ public:
 
 };
 
-inline TkCharacter::TkCharacter(TkEntity& parent): elysian::CharacterBase(parent) {}
+inline TkCharacter::TkCharacter(TkEntity& parent, const TkCharacter*const prefab): elysian::CharacterBase(parent, prefab) {}
 
 inline bool TkCharacter::validate(QString& /*msg*/) const { return true; }
 

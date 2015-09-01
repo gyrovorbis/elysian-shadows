@@ -15,10 +15,6 @@ namespace elysian {
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(SkeletonBase)
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(SkeletonAttribBase)
 
-SkeletonBase::SkeletonBase(const SkeletonBase &other) {
-    *this = other;
-}
-
 SkeletonAttribBase::~SkeletonAttribBase(void) {
     if(_animStateData) spAnimationStateData_dispose(_animStateData);
     if(_skeletonData) spSkeletonData_dispose(_skeletonData);
@@ -32,7 +28,6 @@ SkeletonBase& SkeletonBase::operator= (const SkeletonBase& other) {
 }
 
 void SkeletonAttribBase::_reloadAtlas(void) {
-
     if(_atlas) {
         spAtlas_dispose(_atlas);
         _atlas = nullptr;

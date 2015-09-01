@@ -5,8 +5,8 @@
 
 class TkCombat: public elysian::CombatBase {
 public:
-                    TkCombat(TkEntity& parent);
                     TkCombat(void) = default;
+                    TkCombat(TkEntity& parent, const TkCombat*const prefab=nullptr);
 
     virtual bool    validate(QString &) const override;
     virtual QMenu*  createContextMenu(void) override;
@@ -14,7 +14,7 @@ public:
     static void     initializeDelegates(void);
 };
 
-inline TkCombat::TkCombat(TkEntity &parent): elysian::CombatBase(parent) {}
+inline TkCombat::TkCombat(TkEntity &parent, const TkCombat*const prefab): elysian::CombatBase(parent, prefab) {}
 
 #endif // TKCOMBAT_H
 

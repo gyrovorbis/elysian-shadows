@@ -14,12 +14,6 @@ namespace elysian {
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(ParticleEmitterBase)
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(ParticleEmitterAttribBase)
 
-ParticleEmitterAttribBase::ParticleEmitterAttribBase(void) {}
-
-ParticleEmitterBase::ParticleEmitterBase(const ParticleEmitterBase &other) {
-    *this = other;
-}
-
 ParticleEmitterAttribBase::~ParticleEmitterAttribBase(void) {
     delete _material;
 
@@ -324,7 +318,6 @@ void ParticleEmitterInternals::setAttrib(ParticleEmitterAttrib * const attrib) {
 ParticleEmitterInternals::~ParticleEmitterInternals(void) {}
 
 
-ParticleEmitterBase::ParticleEmitterBase(Entity& entity): Component(entity) {}
 
 
 }

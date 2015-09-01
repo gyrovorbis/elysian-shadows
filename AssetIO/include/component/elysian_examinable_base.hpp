@@ -34,9 +34,9 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(dialog,         getDialog)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
+                        ExaminableBase(Entity& parent, const ExaminableBase*const prefab=nullptr);
                         ExaminableBase(void) = default;
-                        ExaminableBase(const ExaminableBase& other);
-                        ExaminableBase(Entity& parent);
+        ExaminableBase& operator=(const ExaminableBase& rhs);
 
 		//overridden from Component
         static constexpr const Component::TYPE componentType = Component::EXAMINABLE;
@@ -60,9 +60,17 @@ namespace elysian {
 
 
 	// ====== INLINEZ =======
-
-
-    inline ExaminableBase::ExaminableBase(Entity& parent): Component(parent) {}
+    inline ExaminableBase::ExaminableBase(Entity& parent, const ExaminableBase*const prefab): Component(parent) {
+        if(prefab) *this = *prefab;
+    }
+    inline ExaminableBase& ExaminableBase::operator=(const ExaminableBase& rhs) {
+        _dialog     = rhs._dialog;
+        _enabled    = rhs._enabled;
+        _maxDist    = rhs._maxDist;
+        _dir        = rhs._dir;
+        _hasDesc    = rhs._hasDesc;
+        return *this;
+    }
     inline bool ExaminableBase::hasDescription(void) const { return _hasDesc; }
     inline void ExaminableBase::setHasDescription(const bool val) { _hasDesc = val; }
     inline Dialog* ExaminableBase::getDialog(void) const { return _dialog; }

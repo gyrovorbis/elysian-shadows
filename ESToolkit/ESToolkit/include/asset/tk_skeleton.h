@@ -22,7 +22,7 @@ Q_SIGNALS:
 class TkSkeleton: public elysian::SkeletonBase {
             Q_OBJECT
 public:
-                    TkSkeleton(TkEntity& parent);
+                    TkSkeleton(TkEntity& parent, const TkSkeleton*const prefab=nullptr);
                     TkSkeleton(void) = default;
 
     void            setAttrib(SkeletonAttrib * const attrib);
@@ -46,7 +46,7 @@ private Q_SLOTS:
 
 //============= INLINEZ=========
 
-inline TkSkeleton::TkSkeleton(TkEntity &parent): elysian::SkeletonBase(parent) {}
+inline TkSkeleton::TkSkeleton(TkEntity &parent, const TkSkeleton*const prefab): elysian::SkeletonBase(parent, prefab) {}
 
 inline void TkSkeletonAttrib::setAtlasPath(const char*const path) {
     SkeletonAttribBase::setAtlasPath(path);

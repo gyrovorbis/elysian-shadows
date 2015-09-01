@@ -241,6 +241,7 @@ free(t);
 
 int main(int argc, char* argv[]) {
     {
+
          auto v = [](){ return 1; }; cout << sizeof(&v) << endl;
 
         printf("sizeof(int): %d\n", sizeof(int));
