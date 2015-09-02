@@ -107,17 +107,17 @@ void AssetFileSystemModel::_onDirectoryLoaded(const QString str) {
     QDir thisDir(str);
     QString path;
 
-    qDebug() << "***** PROCESSING >> " << str;
+    //qDebug() << "***** PROCESSING >> " << str;
 
     auto dirs = thisDir.entryList(QDir::NoDotAndDotDot|QDir::AllDirs);
 
     for(auto dir: dirs) {
         for(auto  dirType : _customDirTypes) {
             path = thisDir.absoluteFilePath(dir);
-            qDebug() << "ASSESSING PATH" << path;
+            //qDebug() << "ASSESSING PATH" << path;
             auto* dirData = dirType->fromFilePath(path);
             if(dirData) {
-                qDebug() << "REGISTERING" << str;
+                //qDebug() << "REGISTERING" << str;
                 _customData[path] = dirData;
                 break;
             }
@@ -129,10 +129,10 @@ void AssetFileSystemModel::_onDirectoryLoaded(const QString str) {
     for(auto file: files) {
         for(auto  fileType : _customFileTypes) {
             path = thisDir.absoluteFilePath(file);
-            qDebug() << "ASSESSING PATH" << path;
+            //qDebug() << "ASSESSING PATH" << path;
             auto* fileData = fileType->fromFilePath(path);
             if(fileData) {
-                qDebug() << "REGISTERING" << str;
+                //qDebug() << "REGISTERING" << str;
                 _customData[path] = fileData;
             }
         }
