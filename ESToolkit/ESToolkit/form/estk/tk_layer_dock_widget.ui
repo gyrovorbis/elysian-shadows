@@ -59,6 +59,11 @@
     </property>
     <item>
      <widget class="QTreeWidget" name="m_layerTreeWidget">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true">QTreeWidget {
 background-color: rgb(237, 237, 237);

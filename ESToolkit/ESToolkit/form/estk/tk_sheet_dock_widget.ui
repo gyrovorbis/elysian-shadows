@@ -16,6 +16,11 @@
     <height>277</height>
    </size>
   </property>
+  <property name="font">
+   <font>
+    <pointsize>10</pointsize>
+   </font>
+  </property>
   <property name="features">
    <set>QDockWidget::AllDockWidgetFeatures</set>
   </property>
@@ -76,13 +81,24 @@
            <layout class="QHBoxLayout" name="horizontalLayout_3">
             <item>
              <widget class="QLabel" name="planeLabel">
+              <property name="font">
+               <font>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
               <property name="text">
                <string>Plane</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="planeComboBox"/>
+             <widget class="QComboBox" name="planeComboBox">
+              <property name="font">
+               <font>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
+             </widget>
             </item>
             <item>
              <spacer name="horizontalSpacer">
@@ -99,6 +115,11 @@
             </item>
             <item>
              <widget class="QLabel" name="elevLabel">
+              <property name="font">
+               <font>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
               <property name="text">
                <string>Elevation</string>
               </property>
