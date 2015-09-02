@@ -63,7 +63,6 @@ public:
 
 
     static void     select(const int luaRef);
-    static void     pushSelection(lua_State*const vm);
 
     bool            verifySingleArea(const QString path);
     bool            openProjectDir(const QString dir);

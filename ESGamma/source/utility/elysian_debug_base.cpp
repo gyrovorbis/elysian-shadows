@@ -439,9 +439,11 @@ void DebugBase::processInput(GameInput& input) {
 	}
 
 	if(input.getTapped(GameInput::BUT_R)) {
-        freeCam = !freeCam;
-        static Entity* julien = getCurrentArea()->findEntity("Julien");
-#if 0
+        //freeCam = !freeCam;
+        //static Entity* julien = getCurrentArea()->findEntity("Julien");
+#if 1
+        static bool renderDebug = false;
+        renderDebug = !renderDebug;
 		getLightSys()->setRenderDebugEnabled(renderDebug);
         printf(DBG_VERBOSE, "LightSystem::renderShadowVolumes = %d", renderDebug);
 #else
