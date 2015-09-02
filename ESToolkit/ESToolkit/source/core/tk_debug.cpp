@@ -164,7 +164,7 @@ void Debug::ESDebugWrapper(elysian::Asset::DBG_TYPE flag, const char msg[] ) {
 /* Fuck you and your QStrings, Marcel. I'm doing this C-Style. */
 void TkDebug::Logf(Debug::SEVERITY flag, const char *string, ...) {
     va_list argptr;
-    char buffer[GYRO_PRINTF_BUFFER_SIZE];
+    static char buffer[GYRO_PRINTF_BUFFER_SIZE];
     va_start(argptr, string);
     vsprintf(buffer, string, argptr);
     va_end(argptr);
@@ -174,7 +174,7 @@ void TkDebug::Logf(Debug::SEVERITY flag, const char *string, ...) {
 }
 
 void TkDebug::logQ(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
-    char qtDebugBuff[DEBUG_QT_BUFF_SIZE];
+    static char qtDebugBuff[DEBUG_QT_BUFF_SIZE];
     SEVERITY level;
 
 	switch (type) {

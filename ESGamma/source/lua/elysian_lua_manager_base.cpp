@@ -37,7 +37,7 @@ void LuaManagerBase::luaPrint(const char * const string, const Debug::SEVERITY s
 
 //Dumps to debug log and LUA_DBG_ERROR_FILE
 void LuaManagerBase::_errorprintf(const char *const string, ...) {
-    char buffer[GYRO_PRINTF_BUFFER_SIZE];
+    static char buffer[GYRO_PRINTF_BUFFER_SIZE];
     va_list argptr;
 
     va_start(argptr,string);
