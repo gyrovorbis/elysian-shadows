@@ -56,8 +56,6 @@ static inline int Toolkit_setSelection(lua_State* const vm) {
     return 0;
 }
 
-
-
 static inline void luaRegisterTkEnumsConstants(OOLUA::Script */*s*/) {
 
 }

@@ -53,6 +53,9 @@ public:
     Area* reloadArea(Area* area=nullptr);
     Project* reloadProject(void);
 
+    Level*  findLevel(const QString path) const;
+    Area*   findArea(const QString path) const;
+
     //Project *NewProject();
     //Project *NewProject(QString n);
     Project *getFirstProject(void) const;
