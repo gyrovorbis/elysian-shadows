@@ -43,6 +43,12 @@ void AssetDockWidget::_onProjectChanged(Project * const project) {
         //connect(_ui->treeView, SIGNAL(itemChanged))
         _fsModel->addDirectoryType(new AreaAssetFileType);
         _fsModel->addDirectoryType(new LevelAssetFileType);
+        _fsModel->addFileType(new SpecularsheetAssetFileType);
+        _fsModel->addFileType(new NormalsheetAssetFileType);
+        _fsModel->addFileType(new TilesheetAssetFileType);
+        _fsModel->addFileType(new LuaScriptAssetFileType);
+        _fsModel->addFileType(new LuaBehaviorAssetFileType);
+        _fsModel->addFileType(new MapAssetFileType);
         _fsModel->setRootPath(project->getNodePath());
         qDebug() << "LA NODE PATH" << project->getNodePath();
         //model->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
@@ -89,6 +95,13 @@ AssetFileSystemModel::AssetFileSystemModel(void) {
     connect(this, SIGNAL(directoryLoaded(QString)), this, SLOT(_onDirectoryLoaded(QString)));
 }
 
+AssetFileSystemModel::~AssetFileSystemModel(void) {
+    for(auto it: _customDirTypes)   delete it;
+    for(auto it: _customFileTypes)  delete it;
+    for(auto it: _customData)       delete it;
+
+}
+
 QVariant AssetFileSystemModel::data(const QModelIndex &index, int role) const {
     QString path = filePath(index);
 
@@ -129,11 +142,12 @@ void AssetFileSystemModel::_onDirectoryLoaded(const QString str) {
     for(auto file: files) {
         for(auto  fileType : _customFileTypes) {
             path = thisDir.absoluteFilePath(file);
-            //qDebug() << "ASSESSING PATH" << path;
+            qDebug() << "ASSESSING PATH" << path;
             auto* fileData = fileType->fromFilePath(path);
             if(fileData) {
-                //qDebug() << "REGISTERING" << str;
+                qDebug() << "REGISTERING" << str;
                 _customData[path] = fileData;
+                break;
             }
         }
     }
@@ -156,16 +170,15 @@ void AssetFileSystemModel::_onDoubleClick(const QModelIndex &index) {
     if(data != _customData.end()) data.value()->doubleClick(index);
 }
 
-
-AreaAssetFileType::AreaAssetFileType(TkArea*const area): CustomAssetFileType(), _area(area) {}
-QVariant AreaAssetFileType::data(const QModelIndex &index, int role) {
-
-    if(role == Qt::DisplayRole && index.column() == 2) return QVariant("Area");
-
-    return static_cast<const QFileSystemModel*>(index.model())->QFileSystemModel::data(index, role);
+CustomAssetFileType::CustomAssetFileType(const QString name, const QIcon icon):
+    _typeName(name), _icon(icon) {}
 
 
+AreaAssetFileType::AreaAssetFileType(void): CustomAssetFileType("Area", QIcon(TK_AREA_ASSET_ICON)) {}
+AreaAssetFileType::AreaAssetFileType(TkArea*const area): AreaAssetFileType() {
+    _area = area;
 }
+
 auto AreaAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
     QDir dir(path);
 
@@ -188,16 +201,11 @@ void AreaAssetFileType::doubleClick(const QModelIndex &index) {
 
 
 
-
-LevelAssetFileType::LevelAssetFileType(TkLevel*const level): CustomAssetFileType(), _level(level) {}
-QVariant LevelAssetFileType::data(const QModelIndex &index, int role) {
-
-    if(role == Qt::DisplayRole && index.column() == 2) return QVariant("Level");
-
-    return static_cast<const QFileSystemModel*>(index.model())->QFileSystemModel::data(index, role);
-
-
+LevelAssetFileType::LevelAssetFileType(void): CustomAssetFileType("Level", QIcon(TK_LEVEL_ASSET_ICON)) {}
+LevelAssetFileType::LevelAssetFileType(TkLevel*const level): LevelAssetFileType() {
+    _level = level;
 }
+
 auto LevelAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
     QDir dir(path);
 
@@ -217,4 +225,38 @@ void LevelAssetFileType::doubleClick(const QModelIndex &index) {
 }
 
 
+
+auto SpecularsheetAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
+    if(QFileInfo(QFile(path).fileName()).fileName() == "specularsheet.png") return new SpecularsheetAssetFileType();
+    return nullptr;
+}
+
+auto NormalsheetAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
+    if(QFileInfo(QFile(path).fileName()).fileName() == "normalsheet.png") return new NormalsheetAssetFileType();
+    return nullptr;
+}
+
+
+auto TilesheetAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
+    if(QFileInfo(QFile(path).fileName()).fileName() == "tilesheet.png") return new TilesheetAssetFileType();
+    return nullptr;
+}
+
+
+auto MapAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
+    if(QFileInfo(QFile(path).fileName()).fileName() == "map.bin") return new MapAssetFileType();
+    return nullptr;
+}
+
+auto LuaScriptAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
+    QFileInfo file(QFile(path).fileName());
+    if(file.fileName() == "area_init.lua" || file.fileName() == "level_init.lua") return new LuaScriptAssetFileType();
+    return nullptr;
+}
+
+auto LuaBehaviorAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
+    QFile file(path);
+    if(file.fileName().split("_behav.lua").size() > 1) return new LuaBehaviorAssetFileType();
+    return nullptr;
+}
 

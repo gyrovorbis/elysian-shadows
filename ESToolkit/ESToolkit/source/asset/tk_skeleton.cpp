@@ -58,6 +58,10 @@ void TkSkeleton::setAnimByName(const int trackIndex, const char*const animName, 
 }
 
 void TkSkeletonAttrib::initializeDelegates(void) {
+    lua_newtable(*_mainState);
+    lua_pushvalue(*_mainState, -1);
+    lua_setfield(*_mainState, -3, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
+
     auto* atlasDelegate = new FileBrowserPropertyItemDelegate;
     OOLUA::push(*_mainState, atlasDelegate);
     lua_setfield(*_mainState, -2, "atlasPath");
@@ -65,4 +69,6 @@ void TkSkeletonAttrib::initializeDelegates(void) {
     auto* jsonDelegate = new FileBrowserPropertyItemDelegate;
     OOLUA::push(*_mainState, jsonDelegate);
     lua_setfield(*_mainState, -2, "jsonPath");
+
+    lua_pop(*_mainState, 1);
 }

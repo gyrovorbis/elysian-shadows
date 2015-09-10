@@ -117,7 +117,7 @@ namespace elysian {
         gyVidSpecularMapBind(_spriteAttrib? _spriteAttrib->getSpecularMap() : nullptr);
         gyVidMaterialBind(_spriteAttrib? _spriteAttrib->getMaterial() : nullptr);
 
-        gyMatTranslate(_offset.x, _offset.y, 0.0f);
+        //gyMatTranslate(_offset.x, _offset.y, 0.0f);
 
         //branch assumes shit will usually be depth buffered
 

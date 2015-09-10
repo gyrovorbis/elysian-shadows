@@ -8,10 +8,9 @@
 #define ELYSIAN_EXAMINABLE_DESC_LENGTH    50
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
+ELYSIAN_ASSET_TYPEDEF(Dialog)
 
 namespace elysian {
-
-	class Dialog;
 
     class ExaminableBase:
         public Component,

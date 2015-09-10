@@ -184,6 +184,7 @@ namespace elysian {
         _active         = rhs._active;
         _attrib         = rhs._attrib;
         _durability     = rhs._durability;
+        return *this;
     }
     inline float RigidBodyBase::getTileDamping(void) const { return _tileDamping; }
     inline void RigidBodyBase::setTileDamping(const float factor) {_tileDamping = factor; }

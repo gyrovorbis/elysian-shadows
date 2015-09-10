@@ -94,5 +94,16 @@
         <file>images/colliderDiagSENW.png</file>
         <file>images/colliderDiagSWNE.png</file>
     </qresource>
+    <qresource prefix="/assetIcons">
+        <file>images/_0000_specularsheet_icon.png</file>
+        <file>images/_0001_normalsheet_icon.png</file>
+        <file>images/_0002_tilesheet_icon.png</file>
+        <file>images/_0003_prefabs_icon.png</file>
+        <file>images/_0004_LS.png</file>
+        <file>images/_0005_LB.png</file>
+        <file>images/_0006_BIN.png</file>
+        <file>images/_0007_levels_icon.png</file>
+        <file>images/_0008_areas_icon.png</file>
+    </qresource>
     <qresource prefix="/"/>
 </RCC>

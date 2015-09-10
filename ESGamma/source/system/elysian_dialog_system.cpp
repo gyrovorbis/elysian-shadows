@@ -1,6 +1,6 @@
 #include "elysian_dialog_system.hpp"
 #include <crtp/elysian_entity.hpp>
-#include <level/elysian_dialog.hpp>
+#include <crtp/elysian_dialog.hpp>
 #include "elysian_game_input.hpp"
 #include "elysian_debug.hpp"
 #include <crtp/elysian_collidable.hpp>
@@ -158,8 +158,8 @@ void DialogSystem::render(void) {
 		unsigned int maxLen = 0;
 
 		for(unsigned int i = 0; i < _curScreen.prompt->getOptionCount(); ++i) {
-            if(font.getStringPixelWidth(_curScreen.prompt->getOptionText(i)) > maxLen)
-                maxLen = font.getStringPixelWidth(_curScreen.prompt->getOptionText(i));
+            if(font.getStringPixelWidth(_curScreen.prompt->getOption(i)->getText()) > maxLen)
+                maxLen = font.getStringPixelWidth(_curScreen.prompt->getOption(i)->getText());
 		}
 
         _optionBox._transform.setSize(maxLen+10.0f, _curScreen.prompt->getOptionCount()*25.0f+10.0f);
@@ -190,7 +190,7 @@ void DialogSystem::render(void) {
             font._transform.setPos(_optionBox._transform._pos.x-0.5*_optionBox._transform._size.x+15.0f, _optionBox._transform._pos.y-0.5*_optionBox._transform._size.y + 25.0+ i*25.0f);
 		//	else
 			//guiSystem->twcen.transform.setPosition(_optionBox.transform.getPosition().x-0.5*_optionBox.transform.getSize().x+15.0f, _optionBox.transform.getPosition().y-0.5*_optionBox.transform.getSize().y + 25.0+ i*25.0f);
-            font.drawString(Font::L_ALIGN, _curScreen.prompt->getOptionText(i));
+            font.drawString(Font::L_ALIGN, _curScreen.prompt->getOption(i)->getText());
 		}
 		//Render cursor
         _cursor._transform._pos.z = _mainCanvas._transform._pos.z+3;
@@ -374,7 +374,7 @@ void DialogSystem::NextScreen(void) {
 			nextIndex = _curScreen.text->getNextIndex();
 			break;
 		case BOX_INPUT:
-			nextIndex = _curScreen.prompt->getOptionNextIndex(_currentOption); //_currentConversationDialog->getScreen(_currentScreen)->getOption(_currentOption)->resultScreen;
+            nextIndex = _curScreen.prompt->getOption(_currentOption)->getNextIndex(); //_currentConversationDialog->getScreen(_currentScreen)->getOption(_currentOption)->resultScreen;
 			break;
 		default:
 			nextIndex = -1; //shit's reested.

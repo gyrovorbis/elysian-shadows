@@ -348,6 +348,26 @@ void MapView::keyPressEvent(QKeyEvent* event) {
             }
             mouseMoveEvent(nullptr);
         }
+    } else if(getCurrentSelectionType() == Selectable::ENTITY) {
+        auto* entitySel = static_cast<EntitySelectable*>(getCurrentSelection());
+
+        for(auto it = entitySel->begin(); it != entitySel->end(); ++it) {
+            switch(event->key()) {
+            case Qt::Key_Left:
+                (*it)->_transform.rotate(-0.1f);
+                break;
+            case Qt::Key_Right:
+                (*it)->_transform.rotate(0.1f);
+                break;
+
+            }
+
+
+
+
+        }
+
+
     }
 }
 

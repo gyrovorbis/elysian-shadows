@@ -41,9 +41,15 @@ QMenu* TkCombat::createContextMenu(void) {
 }
 
 void TkCombat::initializeDelegates(void) {
+    lua_newtable(*_mainState);
+    lua_pushvalue(*_mainState, -1);
+    lua_setfield(*_mainState, -3, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
+
     auto* typeDelegate = new EnumDropdownPropertyItemDelegate({
         "DMG_NONE", "DMG_SOURCE", "DMG_TARGET", "DMG_SOURCE_TARGET"
     });
     OOLUA::push(*_mainState, typeDelegate);
     lua_setfield(*_mainState, -2, "dmgType");
+
+    lua_pop(*_mainState, 1);
 }

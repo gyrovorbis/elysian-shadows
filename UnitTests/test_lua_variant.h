@@ -4,6 +4,7 @@
 
 #include <QtTest>
 #include <utility/elysian_lua_variant.hpp>
+#include <proxy/elysian_instance_transform_proxy.hpp>
 #include <QDebug>
 
 namespace tktest {
@@ -14,7 +15,11 @@ class LuaVariantTest: public QObject, public LuaManager {
 
     typedef elysian::LuaVariant LuaVariant;
 
-public:
+    constexpr static const char*const _luaFunc =
+                                        "function addShit(a, b)\n"
+                                        "     return a+b\n"
+                                        "end\n"
+                                        "return addShit";
 
 private Q_SLOTS:
 
@@ -69,15 +74,17 @@ private Q_SLOTS:
     void assignVoidPtr(void);
 
     void pushNil(void);
-    void popNil(void);
+    void pullNil(void);
     void pushBool(void);
-    void popBool(void);
+    void pullBool(void);
     void pushNumber(void);
-    void popNumber(void);
+    void pullNumber(void);
     void pushString(void);
-    void popString(void);
+    void pullString(void);
     void pushUserdata(void);
-    void popUserdata(void);
+    void pullUserdata(void);
+    void pushLuaFunction(void);
+    void pullLuaFunction(void);
 
     //boolean conversions
     void nilToBool(void);
@@ -104,6 +111,10 @@ private Q_SLOTS:
 
     void voidPtrAsVoidPtr(void);
     void otherAsVoidPtr(void);
+
+    //function operations
+    void callLuaFunctionIntReturn(void);
+    void callLuaFunctionVariadicArgsVoidReturn(void);
 
     void closure(void);
 };
@@ -149,7 +160,7 @@ inline void LuaVariantTest::createWithStringType(void) {
 
 inline void LuaVariantTest::createWithVoidPtrType(void) {
     int i = 33;
-    LuaVariant variant(&i);
+    LuaVariant variant((void*)&i);
     QVERIFY(variant.getType() == LUA_TLIGHTUSERDATA);
 }
 
@@ -190,7 +201,7 @@ inline void LuaVariantTest::getString(void) {
 
 inline void LuaVariantTest::getVoidPtr(void) {
     int i = 3;
-    LuaVariant variant(&i);
+    LuaVariant variant((void*)&i);
     QVERIFY(variant.getValue<void*>() == &i);
 }
 
@@ -199,13 +210,14 @@ inline void LuaVariantTest::compareNullPtr(void) {
 }
 
 inline void LuaVariantTest::compareVariant(void) {
+    elysian::Vector2 vec;
     QVERIFY(LuaVariant(nullptr) == LuaVariant(nullptr));
     QVERIFY(LuaVariant(true) == LuaVariant(true));
     QVERIFY(LuaVariant(0) == LuaVariant(0));
     QVERIFY(LuaVariant(0.3f) == LuaVariant(0.3f));
     QVERIFY(LuaVariant(0.4123) == LuaVariant(0.4123));
     QVERIFY(LuaVariant("FuckYou") == LuaVariant("FuckYou"));
-    QVERIFY(LuaVariant(this) == LuaVariant(this));
+    QVERIFY(LuaVariant(&vec) == LuaVariant(&vec));
 }
 
 inline void LuaVariantTest::compareBool(void) {
@@ -230,7 +242,7 @@ inline void LuaVariantTest::compareString(void) {
 
 inline void LuaVariantTest::compareVoidPtr(void) {
     int i = 33;
-    QVERIFY(LuaVariant(&i) == &i);
+    QVERIFY(LuaVariant((void*)&i) == &i);
 }
 
 inline void LuaVariantTest::setNil(void) {
@@ -244,13 +256,14 @@ inline void LuaVariantTest::setNil(void) {
 }
 
 inline void LuaVariantTest::setVariant(void) {
+    elysian::Vector2 vec;
     LuaVariant nil;
     LuaVariant boolean(true);
     LuaVariant intNum(3);
     LuaVariant floatNum(3.33f);
     LuaVariant doubleNum(4.12345);
     LuaVariant str("fucktwats");
-    LuaVariant userdata(this);
+    LuaVariant userdata(&vec);
 
     LuaVariant v;
     v = nil;
@@ -303,8 +316,8 @@ inline void LuaVariantTest::setString(void) {
 
 inline void LuaVariantTest::setVoidPtr(void) {
     LuaVariant v;
-    v.setValue(this);
-    QVERIFY(v == LuaVariant(this));
+    v.setValue((void*)this);
+    QVERIFY(v == LuaVariant((void*)this));
 }
 
 
@@ -360,7 +373,7 @@ inline void LuaVariantTest::pushNil(void) {
     QVERIFY(luaType == LUA_TNIL);
 }
 
-inline void LuaVariantTest::popNil(void) {
+inline void LuaVariantTest::pullNil(void) {
     LuaVariant variant;
     lua_pushnil(*_mainState);
     variant.pull();
@@ -377,7 +390,7 @@ inline void LuaVariantTest::pushBool(void) {
     QVERIFY(val == true);
 }
 
-inline void LuaVariantTest::popBool(void) {
+inline void LuaVariantTest::pullBool(void) {
     LuaVariant variant;
     lua_pushboolean(*_mainState, true);
     variant.pull();
@@ -395,7 +408,7 @@ inline void LuaVariantTest::pushNumber(void) {
     QVERIFY(val == 33.0f);
 }
 
-inline void LuaVariantTest::popNumber(void) {
+inline void LuaVariantTest::pullNumber(void) {
     LuaVariant variant;
     lua_pushnumber(*_mainState, 12.0f);
     variant.pull();
@@ -413,7 +426,7 @@ inline void LuaVariantTest::pushString(void) {
     QVERIFY(strcmp(val, "FUCK YOU!!!") == 0);
 }
 
-inline void LuaVariantTest::popString(void) {
+inline void LuaVariantTest::pullString(void) {
     LuaVariant variant;
     lua_pushstring(*_mainState, "biiiitches!!!");
     variant.pull();
@@ -423,7 +436,7 @@ inline void LuaVariantTest::popString(void) {
 
 inline void LuaVariantTest::pushUserdata(void) {
     int i = 22;
-    LuaVariant variant(&i);
+    LuaVariant variant((void*)&i);
     variant.push();
     const int luaType = lua_type(*_mainState, -1);
     void*const val = lua_touserdata(*_mainState, -1);
@@ -432,7 +445,7 @@ inline void LuaVariantTest::pushUserdata(void) {
     QVERIFY(val == &i);
 }
 
-inline void LuaVariantTest::popUserdata(void) {
+inline void LuaVariantTest::pullUserdata(void) {
     int i = 22;
     LuaVariant variant;
     lua_pushlightuserdata(*_mainState, &i);
@@ -442,6 +455,27 @@ inline void LuaVariantTest::popUserdata(void) {
 }
 
 
+inline void LuaVariantTest::pullLuaFunction(void) {
+    LuaVariant variant;
+    QVERIFY(LuaManager::runString(_luaFunc));
+    QVERIFY(variant.pull());
+    QVERIFY(variant.getType() == LUA_TFUNCTION);
+}
+
+inline void LuaVariantTest::pushLuaFunction(void) {
+    LuaManager::getGlobal("print");
+    int ref = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
+    QVERIFY(ref != LUA_REFNIL);
+    QVERIFY(ref != LUA_NOREF);
+    LuaVariant variant;
+    variant.setRef(ref);
+    QVERIFY(variant.push());
+    QVERIFY(lua_isfunction(*_mainState, -1));
+    lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, ref);
+    QVERIFY(lua_compare(*_mainState, -1, -2, LUA_OPEQ));
+    lua_pop(*_mainState, 2);
+    luaL_unref(*_mainState, LUA_REGISTRYINDEX, ref);
+}
 
 
 inline void LuaVariantTest::nilToBool(void) {
@@ -524,7 +558,7 @@ inline void LuaVariantTest::stringToBool(void) {
 }
 
 inline void LuaVariantTest::voidPtrToBool(void) {
-    LuaVariant v(this);
+    LuaVariant v((void*)this);
     QVERIFY(v.asBool() == true);
     QVERIFY(v.toBool() == true);
     QVERIFY((bool)v == true);
@@ -590,7 +624,7 @@ inline void LuaVariantTest::stringAsNumber(void) {
 }
 
 inline void LuaVariantTest::voidPtrAsNumber(void) {
-    LuaVariant v(this);
+    LuaVariant v((void*)this);
     QVERIFY(v.asNumber() == 1.0f);
     QVERIFY(v.toNumber() == 1.0);
     QVERIFY((int)v == 1);
@@ -642,7 +676,7 @@ inline void LuaVariantTest::stringAsString(void) {
 }
 
 inline void LuaVariantTest::voidPtrAsString(void) {
-    LuaVariant v(this);
+    LuaVariant v((void*)this);
     //QVERIFY(v.asString() == "userdata");
     //QVERIFY(strcmp(v.toString(), "userdata") == 0);
     QVERIFY(strcmp((const char*)v, "userdata") == 0);
@@ -654,7 +688,7 @@ inline void LuaVariantTest::voidPtrAsString(void) {
 }
 
 inline void LuaVariantTest::voidPtrAsVoidPtr(void) {
-    LuaVariant v(this);
+    LuaVariant v((void*)this);
     QVERIFY(v.asUserdata() == (void*)this);
     QVERIFY(v.toUserdata() == (void*)this);
     QVERIFY((void*)v == (void*)this);
@@ -670,17 +704,34 @@ inline void LuaVariantTest::otherAsVoidPtr(void) {
 inline void LuaVariantTest::closure(void) {
     int a = 3;
     LuaVariant v;
-#if 0
-    v.setClosure<int>([=](int b) {
+
+    v.setClosure(std::function<int(int)>([=](int b) {
         qWarning() << "HOLY FUCKING SHIT! " << a << b;
         return 2;
-    });
+    }));
 
-    int val = v<int, int>(38);
+    int val = (int)v(38);
     qWarning() << "RETURN VALUE - " << val;
-#endif
+
 }
 
+
+inline void LuaVariantTest::callLuaFunctionIntReturn(void) {
+    LuaVariant variant;
+    QVERIFY(LuaManager::runString(_luaFunc));
+    QVERIFY(variant.pull());
+    int i = (int)variant(3, 4);
+    QVERIFY(i == 7);
+}
+
+
+inline void LuaVariantTest::callLuaFunctionVariadicArgsVoidReturn(void) {
+    LuaVariant v;
+    LuaManager::getGlobal("print");
+    QVERIFY(v.pull());
+    QVERIFY(v("FUCK", "YOU", 3, 45.0f, "LOLZ").isNil());
+
+}
 
 }
 

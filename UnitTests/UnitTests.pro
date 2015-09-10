@@ -93,6 +93,6 @@ HEADERS += \
     test_project_assets.h \
     test_level_assets.h \
     test_area_assets.h \
-    test_lua_table_ref.h \
-    test_lua_variant.h
+    test_lua_variant.h \
+    test_dialog.h
 

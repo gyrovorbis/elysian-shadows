@@ -94,8 +94,7 @@ static inline void gyVidCamOrthoLookAt(GYCamera *cam, const GYVector3* pos, cons
 
     unsigned scrWidth, scrHeight;
     GYViewVolume*const volume = &cam->viewVolume;
-    GYVector2 botRight;
-    float diagonalDist;
+
 
     float rectWidth = volume->nw/scale;
     float rectHeight = volume->nh/scale;
@@ -108,6 +107,8 @@ static inline void gyVidCamOrthoLookAt(GYCamera *cam, const GYVector3* pos, cons
         rectHeight = 99999.0f;
     }
 #if 0
+    GYVector2 botRight;
+    float diagonalDist;
     if(rotZ != 0.0f) {
         botRight.x = rectWidth;
         botRight.y = rectHeight;

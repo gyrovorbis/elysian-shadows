@@ -42,6 +42,10 @@ QMenu* TkRenderable::createContextMenu(void) {
 }
 
 void TkRenderable::initializeDelegates(void) {
+    lua_newtable(*_mainState);
+    lua_pushvalue(*_mainState, -1);
+    lua_setfield(*_mainState, -3, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
+
     auto* orientDelegate = new EnumDropdownPropertyItemDelegate({
         "RECT_TEX_ORIENT_NORMAL",
         "RECT_TEX_ORIENT_FLIP_HORIZ",
@@ -54,4 +58,6 @@ void TkRenderable::initializeDelegates(void) {
     });
     OOLUA::push(*_mainState, orientDelegate);
     lua_setfield(*_mainState, -2, "texOrient");
+
+    lua_pop(*_mainState, 1);
 }
