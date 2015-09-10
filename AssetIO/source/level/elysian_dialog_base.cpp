@@ -28,7 +28,7 @@ void DialogPromptBase::setOption(const unsigned index, DialogOption* option) {
         }
     }
 }
-inline DialogPromptBase::~DialogPromptBase(void) { for(auto it: _options) delete it; }
+DialogPromptBase::~DialogPromptBase(void) { for(auto it: _options) delete it; }
 // ====== DIALOG =======
 
 
