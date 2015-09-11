@@ -3,7 +3,7 @@
 
 
 #include <QtTest>
-#include <utility/elysian_lua_variant.hpp>
+#include <crtp/elysian_lua_variant.hpp>
 #include <proxy/elysian_instance_transform_proxy.hpp>
 #include <QDebug>
 
@@ -11,9 +11,6 @@ namespace tktest {
 
 class LuaVariantTest: public QObject, public LuaManager {
     Q_OBJECT
-
-
-    typedef elysian::LuaVariant LuaVariant;
 
     constexpr static const char*const _luaFunc =
                                         "function addShit(a, b)\n"
@@ -706,13 +703,11 @@ inline void LuaVariantTest::closure(void) {
     LuaVariant v;
 
     v.setClosure(std::function<int(int)>([=](int b) {
-        qWarning() << "HOLY FUCKING SHIT! " << a << b;
-        return 2;
+        return a*b;
     }));
 
-    int val = (int)v(38);
-    qWarning() << "RETURN VALUE - " << val;
-
+    int val = (int)v(3);
+    QVERIFY(val == 9);
 }
 
 

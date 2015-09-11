@@ -139,27 +139,16 @@ namespace elysian {
     inline DialogPromptBase::DialogPromptBase(const char*const text):
         DialogScreen(DialogScreenBase::SCREEN_PROMPT, text) {}
     inline unsigned DialogPromptBase::getOptionCount(void) const { return _options.size(); }
-    inline DialogOption* DialogPromptBase::getOption(const unsigned index) const { return _options[index]; }
 
 
     //==== DIALOG INLINEZ =====
-    inline DialogBase::~DialogBase(void) { for(auto it : _screens) delete it; }
+
     inline int DialogBase::getStartScreen(void) const { return _startScreen; }
     inline void DialogBase::setStartScreen(const int index) { _startScreen = index; }
     inline unsigned DialogBase::getScreenCount(void) const { return _screens.size(); }
-    inline DialogScreen* DialogBase::getScreen(const unsigned index) const { return _screens[index]; }
+    inline DialogScreen* DialogBase::getScreen(const unsigned index) const { return index < _screens.size()? _screens[index] : nullptr; }
     inline void DialogBase::setTriggerEntity(Entity * const entity) { _triggerEntity = entity; }
     inline Entity* DialogBase::getTriggerEntity(void) const { return _triggerEntity; }
-    inline void DialogBase::setScreen(const unsigned index, DialogScreen*const screen) {
-        if(index >= _screens.size()) {
-            _screens.push_back(screen);
-        } else {
-            if(_screens[index]) {
-                delete _screens[index];
-                _screens[index] = screen;
-            }
-        }
-    }
 
 
 

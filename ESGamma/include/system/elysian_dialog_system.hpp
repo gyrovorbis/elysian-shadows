@@ -2,7 +2,7 @@
 #define ELYSIAN_DIALOG_SYSTEM_HPP
 
 #include "elysian_system.hpp"
-#include <level/elysian_dialog_base.hpp>
+#include <crtp/elysian_dialog.hpp>
 #include <elysian_quad_sprite.hpp>
 #include <gyro_wav_api.h>
 
@@ -21,7 +21,6 @@
 #define ELYSIAN_DIALOG_SYSTEM_SCROLL_UP_SFX         "/assets/audio/sfx/SFX_DialogScrollUp_1.wav"
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
-ELYSIAN_ASSET_TYPEDEF(Dialog)
 
 namespace elysian {
 
@@ -54,8 +53,8 @@ namespace elysian {
 		Dialog*			_curDialog			= nullptr;
 		union Screen {
 			DialogScreen*	screen			= nullptr;
-			DialogText*		text;
-			DialogPrompt*	prompt;
+            //DialogText*		text;
+            //DialogPrompt*	prompt;
 		} _curScreen, _prevScreen;
 		EventMonitor*	_monitor			= nullptr;
 		//ConversationDialog* _currentConversationDialog; WTF?

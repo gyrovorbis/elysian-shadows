@@ -195,7 +195,8 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../ESGamma/source/utility/elysian_lua_variant.cpp \
     ../../AssetIO/source/proxy/elysian_dialog_proxy.cpp \
     ../../AssetIO/source/level/elysian_dialog_base.cpp \
-    ../../AssetIO/source/level/elysian_dialog_screen_base.cpp
+    ../../AssetIO/source/level/elysian_dialog_screen_base.cpp \
+    source/core/tk_lua_qt_utils.cpp
 
 
 
@@ -426,12 +427,13 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../AssetIO/include/crtp/elysian_sprite_attrib.hpp \
     ../../AssetIO/include/primitive/elysian_sprite_attrib_base.hpp \
     ../../AssetIO/include/utility/elysian_lua_table_ref.hpp \
-    ../../AssetIO/include/utility/elysian_lua_variant.hpp \
     ../../AssetIO/include/proxy/elysian_dialog_proxy.hpp \
     ../../AssetIO/include/level/elysian_dialog_base.hpp \
     ../../AssetIO/include/crtp/elysian_dialog.hpp \
     ../../AssetIO/include/crtp/elysian_dialog_screen.hpp \
-    ../../AssetIO/include/level/elysian_dialog_screen_base.hpp
+    ../../AssetIO/include/level/elysian_dialog_screen_base.hpp \
+    ../../AssetIO/include/crtp/elysian_lua_variant.hpp \
+    ../../AssetIO/include/utility/elysian_lua_variant_base.hpp
 
 !ios {
     HEADERS +=  include/asset/tk_animation.h \
@@ -534,7 +536,8 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
         include/estk/tk_camera_system.h \
         include/asset/tk_sprite_attrib.h \
         include/asset/tk_dialog_screen.h \
-        include/asset/tk_dialog.h
+        include/asset/tk_dialog.h \
+        include/asset/tk_lua_variant.h
 }
 
 

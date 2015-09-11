@@ -25,6 +25,9 @@
 
 namespace elysian {
 	
+    class LuaVariantBase;
+    using LuaVariant = LuaVariantBase;
+
     class LuaManagerBase {
     protected:
 		
@@ -148,6 +151,7 @@ namespace elysian {
 		static bool					initialize(void);
 		static bool					uninitialize(void);
 		
+        static LuaVariant           exec(const char*const str, ...);
 		static bool					runString(const char *const string);
 		static LuaScript*			loadScript(const char *const file);
 		static LuaBehaviorScript*	loadBehaviorScript(const char *const file);

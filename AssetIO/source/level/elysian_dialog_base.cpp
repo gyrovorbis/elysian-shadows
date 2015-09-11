@@ -17,19 +17,44 @@ namespace elysian {
 
 
 // ====== DIALOG PROMPT =======
+DialogOption* DialogPromptBase::getOption(const unsigned index) const {
+        qDebug() << "INDEXING AT" << index << "SIZE" << _options.size() << "THIS" << (void*)this;
+        //return (index < _options.size())?
+                    return _options[index];
+    }
+
 void DialogPromptBase::addOption(const char*const text, const int nextIndex) { _options.push_back(new DialogOption(text, nextIndex)); }
 void DialogPromptBase::setOption(const unsigned index, DialogOption* option) {
-    if(index >= _options.size()) {
+    qDebug() << "SETTING OPTION AT" << index << "PTR" << (void*)option;
+    if(index == _options.size()) {
+        qDebug() << "PUSHING WITH SIZE "<<_options.size();
         _options.push_back(option);
     } else {
-        if(_options[index]) {
-            delete _options[index];
-            _options[index] = option;
-        }
+        //qDebug() << "REALLOC WITH SIZE " << _options.size();
+        //if(_options[index]) {
+         //   delete _options[index];
+         //   _options[index] = option;
+       // }
     }
 }
 DialogPromptBase::~DialogPromptBase(void) { for(auto it: _options) delete it; }
 // ====== DIALOG =======
+
+DialogBase::~DialogBase(void) { for(auto it : _screens) delete it; }
+
+void DialogBase::setScreen(const unsigned index, DialogScreen*const screen) {
+    if(index == _screens.size()) {
+        qDebug() << "Setting screen:" << (void*)screen << "SIZE" << _screens.size();
+        _screens.push_back(screen);
+    } else {
+        assert(0);
+       // qDebug() << "REALLOC SHIT" << (void*)screen;
+      //  if(_screens[index]) {
+      //      delete _screens[index];
+    //        _screens[index] = screen;
+       // }
+    }
+}
 
 
 

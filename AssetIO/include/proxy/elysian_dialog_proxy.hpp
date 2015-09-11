@@ -42,7 +42,7 @@ OOLUA_PROXY_END
 OOLUA_PROXY(DialogPrompt, DialogScreen)
     OOLUA_MEM_FUNC(void, addOption, const char*, int)
     OOLUA_MEM_FUNC_CONST(unsigned, getOptionCount)
-    OOLUA_MEM_FUNC_CONST(DialogOption*, getOption, unsigned)
+    OOLUA_MEM_FUNC_CONST(maybe_null<DialogOption*>, getOption, unsigned)
     OOLUA_MEM_FUNC(void, setOption, unsigned, cpp_in_p<DialogOption*>)
 OOLUA_PROXY_END
 
@@ -50,7 +50,7 @@ OOLUA_PROXY(Dialog)
     OOLUA_MEM_FUNC(DialogText*, addTextScreen, const char*)
     OOLUA_MEM_FUNC(DialogPrompt*, addPromptScreen, const char*)
     OOLUA_MEM_FUNC(void, setScreen, const unsigned, cpp_in_p<DialogScreen*>)
-    OOLUA_MEM_FUNC_CONST(DialogScreen*, getScreen, const unsigned)
+    OOLUA_MEM_FUNC_CONST(maybe_null<DialogScreen*>, getScreen, const unsigned)
     OOLUA_MEM_FUNC_CONST(unsigned, getScreenCount)
     OOLUA_MEM_FUNC(void, setTriggerEntity, Entity*)
     OOLUA_MEM_FUNC_CONST(maybe_null<Entity*>, getTriggerEntity)

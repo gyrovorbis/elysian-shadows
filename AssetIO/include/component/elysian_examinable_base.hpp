@@ -30,7 +30,7 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(maxDist,        getMaxDist,     setMaxDist)
             ELYSIAN_LUA_PROXY_FIELD(relativeDir,    getRelativeDir, setRelativeDir)
             ELYSIAN_LUA_PROXY_FIELD(description,    hasDescription, setHasDescription)
-            ELYSIAN_LUA_PROXY_FIELD(dialog,         getDialog)
+            ELYSIAN_LUA_PROXY_FIELD(dialog,         getDialog,      setDialog)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
                         ExaminableBase(Entity& parent, const ExaminableBase*const prefab=nullptr);

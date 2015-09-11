@@ -206,6 +206,8 @@ inline void TkLuaTableProxy<P, T, Bases...>::_addMetamethods(lua_State *l) {
     T::initializeDelegates();
 
     ParentType::_addMetamethods(l);
+
+    LuaManager::_udTypeNames.push_back(OOLUA::Proxy_class<T>::class_name);
 }
 
 

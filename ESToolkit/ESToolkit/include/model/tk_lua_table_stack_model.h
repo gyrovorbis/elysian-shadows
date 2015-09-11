@@ -6,6 +6,7 @@
 #include <tk_asset_manager.h>
 #include <elysian_lua_manager.hpp>
 #include <tk_lua_qt_utils.h>
+#include <crtp/elysian_lua_variant.hpp>
 #include <tk_property_stack_model.h>
 #include <tk_property_standard_item.h>
 
@@ -35,8 +36,12 @@ public:
     virtual QStyledItemDelegate* getStyledItemDelegate(void) const override;
     virtual int type(void) const override { return (int)ESTkStandardItemType::LuaTable; }
 
-    QVariant                getValue(void) const;
-    void                    setValue(const QVariant val);
+    virtual QVariant        getValue(void) const;
+    virtual void            setValue(const QVariant val);
+
+
+    LuaVariant              getVariant(void) const;
+    void                    setVariant(const LuaVariant var);
     int                     getLuaRef(void) const;
 
 
@@ -98,6 +103,24 @@ public:
 
 //==== INLINEZ ======
 
+inline void LuaTableFieldItem::setVariant(const LuaVariant var) {
+    LuaManager::stackBalanceBegin();
+    lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
+    OOLUA::push(*_mainState, _key);
+    OOLUA::push(*_mainState, var);
+    lua_settable(*_mainState, -3);
+    lua_pop(*_mainState, 1);
+    LuaManager::stackBalanceEnd();
+}
+
+inline LuaVariant LuaTableFieldItem::getVariant(void) const {
+    lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
+    OOLUA::push(*_mainState, _key);
+    lua_gettable(*_mainState, -2);
+    lua_remove(*_mainState, -2);
+    return LuaVariant::fromStack();
+}
+
 inline int LuaTableFieldItem::getLuaRef(void) const { return _luaRef; }
 
 //Pull value from Lua table/userdata to update model
@@ -118,6 +141,10 @@ inline QVariant LuaTableFieldItem::getValue(void) const {
 
     //Let QVariant handle all primitive types
     if(valType != LUA_TTABLE && valType != LUA_TUSERDATA) {
+        if(_tableData) {
+            //setDirty(true);
+            //emitDataChanged();
+        }
         OOLUA::pull(*_mainState, val);
     //Table/Userdata fields are out-of-date
     } else if(!_tableData) {

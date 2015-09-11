@@ -78,15 +78,15 @@ class PropertyStandardItem: public ESTkStandardItem {
 	template<bool TUndoRedo, typename TT, typename CC>
 	friend struct _PropertyStandardItem;
 private:
-    C * _objInst;
-    T (C::* _getAccessor)(void) const;
-    void (C::* _setAccessor)(const T);
-    QIcon (C::* _updateIcon)(const T) const;
-	QUndoStack *_undoStack;
-	UndoItem::TYPE _undoType;
-    bool _ignoreCheck;
-    bool _displayValue = false;
-    bool _settingFlags = false;
+    C*                  _objInst;
+    T                   (C::*_getAccessor)(void) const;
+    void                (C::*_setAccessor)(const T);
+    QIcon               (C::*_updateIcon)(const T) const;
+    QUndoStack*         _undoStack;
+    UndoItem::TYPE      _undoType;
+    bool                _ignoreCheck;
+    bool                _displayValue = false;
+    bool                _settingFlags = false;
 	//unsigned _refCount;
 protected:
     PropertyStandardItem(void) = default;

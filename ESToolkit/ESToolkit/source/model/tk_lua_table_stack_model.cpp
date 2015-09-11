@@ -33,16 +33,29 @@ void LuaTableStackModel::populateModel(void) {
     setHorizontalHeaderItem(1, new QStandardItem("Value"));
     //setHorizontalHeaderItem(2, new QStandardItem("Type"));
 
+    LuaVariant v;
+    v.setRef(_luaRef);
+
+    lua_newtable(*_mainState);
+    lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
+    lua_rawseti(*_mainState, -2, 1);
+    int ref = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
+
+    //luaL_unref(*_mainState, _luaRef);
+    //_luaRef = ref;
+
     QList<QStandardItem*> items;
-    _parentItem = PropertyStackModel::createReadOnlyItem("Lua Table");//ESTkStandardItem(QString("Lua Table"));
+    _parentItem = PropertyStackModel::createReadOnlyItem(v.getTypeString());//ESTkStandardItem(QString("Lua Table"));
     items.push_back(_parentItem);
-    items.push_back(PropertyStackModel::createReadOnlyItem());
+    auto* valItem = new LuaTableFieldItem(ref, QVariant(1), _parentItem);
+    items.push_back(valItem);
+
     //items.push_back(PropertyStackModel::createReadOnlyItem());
     QStandardItemModel::appendRow(items);
+    valItem->insertingModelItem();
 
-
-    _tableData = new LuaTableTableFieldData(_luaRef);
-    _tableData->insertTableFieldItems(_parentItem);
+    //_tableData = new LuaTableTableFieldData(_luaRef);
+    //_tableData->insertTableFieldItems(_parentItem);
 
     _populated = true;
 }
@@ -131,11 +144,12 @@ LuaTableFieldItem::~LuaTableFieldItem(void) {
 
 inline void LuaTableFieldItem::setDirty(const bool val) {
     if(val) {
-        for(int i = 0; i < rowCount(); ++i) {
-            auto&& row = takeRow(i);
+        while(_labelItem->rowCount()) {
+            auto&& row = _labelItem->takeRow(0);
             for(int j = 0; j < row.size(); ++j) {
                 delete row[j];
             }
+
         }
     }
 }
