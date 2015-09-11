@@ -299,7 +299,7 @@ QMenu* PropertyItemDelegate::getContextMenu(ESTkStandardItem*const item) {
             QString key = QInputDialog::getText(nullptr, "Add New Field", "Key Name");
             if(key.isNull()) return;
 
-            QStringList typeList = LuaManager::_udTypeNames;
+            QStringList typeList = TkLuaManager::_udTypeNames;
             typeList.push_front("nil");
             typeList.push_front("boolean");
             typeList.push_front("number");
