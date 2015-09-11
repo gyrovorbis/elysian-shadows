@@ -93,7 +93,7 @@ void gyDebugSigInit(void);
 void _gySysPrintBuildInfo(const char*const platString);
 
 int gySysInit(const GYSysInitParams*const params) {
-    char strBuff[40];
+    //char strBuff[40];
     //gyDebugInit();
 
   const char* platString =
@@ -106,6 +106,7 @@ int gySysInit(const GYSysInitParams*const params) {
 #endif
 
     _gySysPrintBuildInfo(platString);
+    _checkCPUCapabilities();
 
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
     glfwInit();

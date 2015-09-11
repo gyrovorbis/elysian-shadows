@@ -14,13 +14,13 @@
 
 static GYTexCoord2 _texFrameCoords[4];
 
-static const GYTexCoordFrame _defaultTexCoordFrame = {
+static GYTexCoordFrame _defaultTexCoordFrame = {
     { 0.0f, 0.0f },
     { 1.0f, 1.0f },
     0, 0
 };
 
-static const GYTexCoordSheet _defaultTexCoords = {
+static GYTexCoordSheet _defaultTexCoords = {
     0,
     0,
     0,
@@ -227,7 +227,7 @@ static void *_TexConstructor(void *const data) {
 
     tex->_coord = (texData->sheetWidth == 0)? &_defaultTexCoords : //(!texData->spriteWidth || !texData->spriteHeight)?
         //_LoadSheetCoords(texData) :
-        gyAssetBankInsert(&_texCoordBank, texData);
+        (GYTexCoordSheet*)gyAssetBankInsert(&_texCoordBank, texData);
     //assert(tex->_coord);
     return tex;
 }
