@@ -178,6 +178,7 @@ void TkDebug::logQ(QtMsgType type, const QMessageLogContext &context, const QStr
     SEVERITY level;
 
 	switch (type) {
+    default:
 	case QtDebugMsg:
         sprintf(qtDebugBuff, "%s (%s:%u, %s)", msg.toStdString().c_str(), context.file, context.line, context.function);
         level = DBG_VERBOSE;
@@ -478,11 +479,11 @@ void TkDebug::_onLogWidgetContextMenuRequested(const QPoint point) {
     _filterMenu->exec(_treeWidget->mapToGlobal(point));
 }
 
-DebugLogTreeWidget::DebugLogTreeWidget(QWidget *parent) {
+DebugLogTreeWidget::DebugLogTreeWidget(QWidget*) {
     qApp->installEventFilter(this);
 }
 
-bool DebugLogTreeWidget::eventFilter(QObject *object, QEvent *event) {
+bool DebugLogTreeWidget::eventFilter(QObject* /*object*/, QEvent *event) {
 
     if(event->type() == QEvent::ShortcutOverride) {
         auto* keyEvent = static_cast<QKeyEvent*>(event);

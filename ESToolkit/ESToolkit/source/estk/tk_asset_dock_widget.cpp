@@ -86,6 +86,7 @@ void AssetDockWidget::_onSelectionChanged(const Selectable::TYPE type, Selectabl
     case Selectable::LEVEL:
         _onLevelChanged(static_cast<TkLevel*>(selection));
         break;
+    default: break;
 
     }
 }
@@ -155,7 +156,7 @@ void AssetFileSystemModel::_onDirectoryLoaded(const QString str) {
 
 }
 
-void AssetFileSystemModel::_onSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected) {
+void AssetFileSystemModel::_onSelectionChanged(const QItemSelection &selected, const QItemSelection& /*deselected*/) {
     auto indeces = selected.indexes();
 
     for(auto it : indeces) {
@@ -188,11 +189,11 @@ auto AreaAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType*
     return nullptr;
 }
 
-void AreaAssetFileType::select(QModelIndex &index) {
+void AreaAssetFileType::select(QModelIndex& /*index*/) {
     getAssets()->setCurrentSelection(static_cast<Selectable*>(static_cast<TreeNode*>(_area)));
 }
 
-void AreaAssetFileType::doubleClick(const QModelIndex &index) {
+void AreaAssetFileType::doubleClick(const QModelIndex& /*index*/) {
     getAssets()->setCurrentArea(_area);
     getAssets()->setCurrentSelection(static_cast<Selectable*>(static_cast<TreeNode*>(_area)));
 }
@@ -215,11 +216,11 @@ auto LevelAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType
     return nullptr;
 }
 
-void LevelAssetFileType::select(QModelIndex &index) {
+void LevelAssetFileType::select(QModelIndex& /*index*/) {
     getAssets()->setCurrentSelection(static_cast<Selectable*>(static_cast<TreeNode*>(_level)));
 }
 
-void LevelAssetFileType::doubleClick(const QModelIndex &index) {
+void LevelAssetFileType::doubleClick(const QModelIndex& /*index*/) {
     getAssets()->setCurrentLevel(_level);
     getAssets()->setCurrentSelection(static_cast<Selectable*>(static_cast<TreeNode*>(_level)));
 }

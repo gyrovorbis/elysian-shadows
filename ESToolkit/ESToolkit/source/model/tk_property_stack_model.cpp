@@ -157,8 +157,8 @@ void PropertyStackModel::_updateBgColors(void)
     std::function<void(QStandardItem*)> updateItem = [&](QStandardItem* it) {
         if(!it) return;
         if(it != invisibleRootItem()) it->setBackground(QBrush(_rowColor(it)));
-        for(unsigned y = 0; y < it->rowCount(); ++y) {
-            for(unsigned x = 0; x < it->columnCount(); ++x) {
+        for(unsigned y = 0; y < (unsigned)it->rowCount(); ++y) {
+            for(unsigned x = 0; x < (unsigned)it->columnCount(); ++x) {
                 updateItem(it->child(y, x));
             }
         }

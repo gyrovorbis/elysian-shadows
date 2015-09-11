@@ -28,7 +28,7 @@ private:
 
 class HelpDockWidget: public QDockWidget {
 private:
-    HelpBrowser*    _helpBrowser = nullptr;
+    //HelpBrowser*    _helpBrowser = nullptr;
 public:
     HelpDockWidget(QWidget*parent=nullptr);
 

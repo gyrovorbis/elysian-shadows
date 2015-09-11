@@ -110,7 +110,7 @@ bool Project::saveLevel(const QString name) {
 
 TkLevel *Project::getFirstLevel(void) const {
 
-    for(unsigned i = 0; i < _level.size(); ++i) {
+    for(unsigned i = 0; i < (unsigned)_level.size(); ++i) {
         if(_indexHiddenLevels || !_level[i]->getNodeName().startsWith("_")) {
             return _level[i];
         }
@@ -301,7 +301,7 @@ bool Project::scanBackLevelPath(const QString path) {
     bool success = false;
 
     int levelDirIndex = -1;
-    for(unsigned i = 0; i < dirs.size(); ++i) {
+    for(unsigned i = 0; i < (unsigned)dirs.size(); ++i) {
         if(dirs[i] == "level") {
             levelDirIndex = i-1;
             break;
@@ -313,7 +313,7 @@ bool Project::scanBackLevelPath(const QString path) {
         return false;
     }
 
-    for(unsigned i = levelDirIndex+1; i < dirs.size(); ++i) {
+    for(unsigned i = levelDirIndex+1; i < (unsigned)dirs.size(); ++i) {
         QString subDirPath;
         for(unsigned j = 0; j <= i; j++) subDirPath += dirs[j] + ((j==i)? QString("") : QString("/"));
 

@@ -4,7 +4,9 @@
 MenuStack::MenuStack(const QString name) { stack.push_back(new QMenu(name)); }
 
 QMenu* MenuStack::push(const QString name) {
-    stack.push_back(stack.size()? current()->addMenu(name) : new QMenu(name));
+    auto* menu = stack.size()? current()->addMenu(name) : new QMenu(name);
+    stack.push_back(menu);
+    return menu;
 }
 
 QAction* MenuStack::insertAction(const QString text, const std::function<void(bool)>& callback, const bool enabled) {

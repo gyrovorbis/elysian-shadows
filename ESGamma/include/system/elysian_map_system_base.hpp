@@ -46,7 +46,7 @@ namespace elysian {
         uint32_t* _elements = nullptr;
         int _size = 0;
         int _lastSize = 0;
-        int _lastOffset = 0;
+        intptr_t _lastOffset = 0;
 
         void _drawElements(void);
         void _orphanVbo(void);
@@ -213,8 +213,8 @@ namespace elysian {
         }
 
         auto checkIndex = [&](const uint32_t index) {
-            if(index < _curArea->minIndex[gyVidShadowPass()]) _curArea->minIndex[gyVidShadowPass()] = index;
-            if(index > _curArea->maxIndex[gyVidShadowPass()]) _curArea->maxIndex[gyVidShadowPass()] = index;
+            if((int)index < _curArea->minIndex[gyVidShadowPass()]) _curArea->minIndex[gyVidShadowPass()] = (int)index;
+            if((int)index > _curArea->maxIndex[gyVidShadowPass()]) _curArea->maxIndex[gyVidShadowPass()] = (int)index;
             return index;
         };
 

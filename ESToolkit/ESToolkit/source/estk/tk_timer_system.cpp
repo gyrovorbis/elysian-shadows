@@ -3,7 +3,7 @@
 
 void TkTimerSystem::pushTaskMonitor(TaskMonitor * const task) {
 	return;
-    bool first = !_topLevelTask;
+    //bool first = !_topLevelTask;
 
 	if(elysian::TimerSystemBase::pushTaskMonitor(task)) {
 		pushLabel(task->getName(), task);

@@ -169,7 +169,13 @@ void CollisionSystem::_applyTileColliderTransform(const Tile::COLLIDER_TYPE colT
 
 //HARD-CODED TO ONE LAYER
 void CollisionSystem::renderTileColliders(void) const {
-
+    static const GYColor4 boxColors[4] = {
+        { 0, 0, 255, 128 },
+        { 0, 0, 255, 128 },
+        { 0, 0, 255, 128 },
+        { 0, 0, 255, 128 }
+    };
+#if 0
     static const GYVector4 boxLocalVerts[4] = {
         { -0.5f, -0.5f, 0.0f, 1.0f },
         { 0.5f, -0.5f, 0.0f, 1.0f },
@@ -181,12 +187,6 @@ void CollisionSystem::renderTileColliders(void) const {
         { -0.5f, 0.5f, 0.0f, 1.0f },
         { 0.5f, 0.5f, 0.0f, 1.0f }
     };
-    static const GYColor4 boxColors[4] = {
-        { 0, 0, 255, 128 },
-        { 0, 0, 255, 128 },
-        { 0, 0, 255, 128 },
-        { 0, 0, 255, 128 }
-    };
     static const GYColor4 triColors[3] = {
         { 0, 0, 255, 128 },
         { 0, 0, 255, 128 },
@@ -195,7 +195,7 @@ void CollisionSystem::renderTileColliders(void) const {
     static const GYColor4 zTranColor = {
         255, 255, 0, 128
     };
-
+#endif
     //Check if we're even rendering solidity. If not, return.
     if(_renderLayer == RENDER_DISABLED) return;
     //Check if there's even an active player for solidity to be rendered relative to

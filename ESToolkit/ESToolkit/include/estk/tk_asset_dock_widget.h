@@ -29,6 +29,7 @@ private:
     QIcon               _icon;
 public:
                         CustomAssetFileType(const QString name, const QIcon icon);
+    virtual             ~CustomAssetFileType(void) = default;
     virtual QMenu*      contextMenu(QModelIndex& index);
     virtual void        select(QModelIndex& index);
     virtual QVariant    data(const QModelIndex& index, int role=Qt::DisplayRole);
@@ -155,8 +156,8 @@ private:
 
 
 
-inline QMenu* CustomAssetFileType::contextMenu(QModelIndex& index) { return nullptr; }
-inline void CustomAssetFileType::select(QModelIndex& index) { }
+inline QMenu* CustomAssetFileType::contextMenu(QModelIndex& /*index*/) { return nullptr; }
+inline void CustomAssetFileType::select(QModelIndex& /*index*/) { }
 inline QVariant CustomAssetFileType::data(const QModelIndex& index, int role) {
 
     if(role == Qt::DisplayRole && index.column() == 2 && !_typeName.isNull()) return _typeName;
@@ -165,8 +166,8 @@ inline QVariant CustomAssetFileType::data(const QModelIndex& index, int role) {
     return static_cast<const QFileSystemModel*>(index.model())->QFileSystemModel::data(index, role);
 
 }
-inline void CustomAssetFileType::doubleClick(const QModelIndex& index) { }
-inline auto CustomAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* { return nullptr; }
+inline void CustomAssetFileType::doubleClick(const QModelIndex& /*index*/) { }
+inline auto CustomAssetFileType::fromFilePath(const QString /*path*/) -> CustomAssetFileType* { return nullptr; }
 
 
 inline void AssetFileSystemModel::addFileType(CustomAssetFileType *type) {

@@ -52,7 +52,9 @@ namespace elysian {
 	private:
         bool        keyDown[BUT_MAX]        = { false };
         bool        keyTapped[BUT_MAX]      = { false };
+#if GYRO_PLATFORM==GYRO_PLATFORM_iOS
         GYVector3   acceleration            = { 0.0f, 0.0f, 0.0f };
+#endif
         GYVector2   _analogDir[2]            = { { 0.0f, 0.0f } };
         float       _pinch                  = 1.0f;
 

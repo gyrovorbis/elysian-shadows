@@ -151,11 +151,6 @@ makeCurrent();
 
 }
 
-static void _renderSpineShit(void) {
-    //    gyVidSkeleton(skeleton);
-
-}
-
 void EngineGLSceneWidget::paintGL(void) {
     if(!getCurrentArea() || !_initialized) return;
     makeCurrent();

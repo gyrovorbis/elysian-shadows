@@ -110,11 +110,11 @@ bool PropertyItemProxyDelegate::editorEvent(QEvent *event, QAbstractItemModel *m
 
 
 
-QWidget* EnumDropdownPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const {
+QWidget* EnumDropdownPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem& /*option*/, const QModelIndex& /*index*/) const {
     auto* editor = new QComboBox(parent);
     editor->setFocusPolicy(Qt::WheelFocus);
 
-    for(unsigned i = 0; i < _stringNames.size(); ++i) {
+    for(unsigned i = 0; i < (unsigned)_stringNames.size(); ++i) {
         editor->addItem(_stringNames[i], i);
     }
     return editor;
@@ -147,7 +147,7 @@ void EnumDropdownPropertyItemDelegate::setModelData(QWidget *editor, QAbstractIt
 
 
 
-QWidget* SpinboxPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const {
+QWidget* SpinboxPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem& /*option*/, const QModelIndex& /*index*/) const {
     auto* editor = new QSpinBox(parent);
     editor->setMaximum(_max);
     editor->setMinimum(_min);
@@ -182,7 +182,7 @@ FileBrowserPropertyItemDelegate::FileBrowserPropertyItemDelegate(void) {
 
 }
 
-QWidget* FileBrowserPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const {
+QWidget* FileBrowserPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem& /*option*/, const QModelIndex &index) const {
 
     auto* model = static_cast<const PropertyStackModel*>(index.model());
     auto* item = static_cast<ESTkStandardItem*>(model->itemFromIndex(index));
@@ -220,14 +220,14 @@ QWidget* FileBrowserPropertyItemDelegate::createEditor(QWidget *parent, const QS
     return _parentWidget;
 }
 
-void FileBrowserPropertyItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
+void FileBrowserPropertyItemDelegate::setEditorData(QWidget* /*editor*/, const QModelIndex &index) const {
     auto* model = static_cast<const PropertyStackModel*>(index.model());
     auto* item = static_cast<ESTkStandardItem*>(model->itemFromIndex(index));
 
     _pathEdit->setText(item? item->data(Qt::EditRole).toString() : "");
 }
 
-void FileBrowserPropertyItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
+void FileBrowserPropertyItemDelegate::setModelData(QWidget* /*editor*/, QAbstractItemModel *model, const QModelIndex &index) const {
     auto* propModel = static_cast<const PropertyStackModel*>(model);
     auto* item = static_cast<ESTkStandardItem*>(propModel->itemFromIndex(index));
 
@@ -249,7 +249,7 @@ QMenu* PropertyItemDelegate::getContextMenu(ESTkStandardItem*const item) {
     for(int i = 0; i < _supportedTypes.size(); ++i) {
         switch(_supportedTypes[i]) {
         case LUA_TNIL:
-            menu.insertCheckableAction("nil", [=](const bool val) {
+            menu.insertCheckableAction("nil", [=](const bool) {
                 fieldItem->setData("nil", Qt::EditRole);
 
             }, fieldItem->getValueLuaType() == LUA_TNIL);

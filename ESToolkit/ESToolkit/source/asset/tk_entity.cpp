@@ -44,7 +44,7 @@ TkEntity* TkEntity::create(const OOLUA::Lua_table_ref valTable) {
 
 TkEntity::TkEntity(void): TkEntity(true) {}
 
-TkEntity::TkEntity(const OOLUA::Lua_table_ref valTable): TkEntity(true) {
+TkEntity::TkEntity(const OOLUA::Lua_table_ref /*valTable*/): TkEntity(true) {
     //fromTable(valTable);
 }
 
@@ -438,7 +438,7 @@ void TkEntity::registerProxyMetaTable(lua_State*const vm) {
     MenuStack *menuStack = new MenuStack("Entity");
 
     menuStack->insertCheckableAction("Active",
-        [&](bool checked) {
+        [&](bool) {
         }
     );
 

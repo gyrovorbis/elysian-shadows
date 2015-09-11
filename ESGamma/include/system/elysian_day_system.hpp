@@ -37,7 +37,7 @@ namespace elysian {
 		Entity*			_sunEntity		= nullptr;
 		LightSource*	_sunLightSrc	= nullptr;
 		LightAttrib*	_sunLightAttrib	= nullptr;
-		bool			_sunEnabled		= true;
+//		bool			_sunEnabled		= true;
 		bool			_sunActive		= false;
 
 

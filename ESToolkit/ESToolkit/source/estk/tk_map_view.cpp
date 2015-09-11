@@ -43,7 +43,7 @@ void MapView::onLayerChange(Assets::LAYER_TYPE type) {
     }
 }
 
-void MapView::onAreaChanging(Area * const area) {
+void MapView::onAreaChanging(Area * const /*area*/) {
     if(getAssets()->getCurrentArea()) getAssets()->getCurrentArea()->removeEntity(_cursorEntity);
 }
 
@@ -607,7 +607,7 @@ void MapView::onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) {
 }
 
 void MapView::_updateScrollBars(void) {
-    QSize viewSize = viewport()->size();
+    //QSize viewSize = viewport()->size();
     QSize sceneSize(getAssets()->getCurrentArea()->getMapWidth() * 32.0f, getAssets()->getCurrentArea()->getMapHeight() * 32.0f);
 
     verticalScrollBar()->setEnabled(false);

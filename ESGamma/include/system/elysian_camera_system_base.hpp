@@ -205,7 +205,7 @@ namespace elysian {
 
 
 
-        void setScale(const float factor, const float time=0.0f, EventMonitor*const monitor=nullptr) {
+        void setScale(const float /*factor*/, const float time=0.0f, EventMonitor*const monitor=nullptr) {
             auto &interp = get<SUBPROC_KEY_FR_INTERP > ( static_cast<SubProcParent&>(*this));
 
             if(interp.getProcState() == PROC_STATE_RUNNING) return;
@@ -351,7 +351,10 @@ namespace elysian {
 
         return (distY < maxDistY && distX < maxDistX);
 #else
-
+        (void)x;
+        (void)y;
+        (void)halfWidth;
+        (void)halfHeight;
         return true;
 #endif
 
@@ -367,6 +370,11 @@ namespace elysian {
 
         return (distY < maxDistY && distX < maxDistX);
 #else
+        (void)x;
+        (void)y;
+        (void)halfWidth;
+        (void)halfHeight;
+
         return true;
 #endif
     }

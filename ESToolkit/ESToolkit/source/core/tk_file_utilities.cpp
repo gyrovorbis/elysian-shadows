@@ -110,7 +110,7 @@ QString FileUtilities::getAbsoluteAssetPath(const QString path) {
     if(list.size() >= 2 && list[1] == "assets") {
         absPath = _assetPath;
 
-        for(unsigned i = 2; i < list.size(); ++i) {
+        for(unsigned i = 2; i < (unsigned)list.size(); ++i) {
             absPath += "/";
             absPath += list[i];
         }

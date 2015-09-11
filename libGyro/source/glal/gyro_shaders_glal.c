@@ -529,7 +529,7 @@ int _gyVidShaderCreate(GYShader* shader) {
     programSource[charCount] = '\0';
     gyFileClose(&file);
 
-    GLchar* sources[2] = {
+   const GLchar*const sources[2] = {
         GY_GL_VERSION_STR,
         programSource
     };
