@@ -110,6 +110,7 @@ static int s__get_assets_path(const char* vpath, char **path, size_t *len)
 
 static int s__get_userdata_path(const char* vpath, char **path, size_t *len)
 {
+    (void)vpath;
     char temp_path[2048];
     const char *home_path;
     memset(temp_path, 0, sizeof temp_path);

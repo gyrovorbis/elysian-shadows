@@ -548,8 +548,6 @@ void glalGetPointLightViewVolume(GYViewVolume* const vol, GYLightSource* lightSr
 
 }
 
-static GLint iosFramebuffer = 0;
-
 void gyVidLightSourceBeginShadowPasses(void) {
     gyVidVertexBatchFlush();
     //glFlush();
