@@ -22,8 +22,9 @@ protected:
 
 public:
 
-    static bool initialize(void);
-    static bool getMetatable(const int index);
+    static bool         initialize(void);
+    static bool         getMetatable(const int index);
+    static QStringList  getUdTypeNames(void);
     //static void getGlobal(const char*const key);
 };
 
@@ -33,6 +34,9 @@ public:
 
 
 // ===== INLINEZ ========
+
+inline QStringList TkLuaManager::getUdTypeNames(void) { return _udTypeNames; }
+
 /*
 inline void TkLuaManager::getGlobal(const char * const key) {
     lua_pushglobaltable(*_mainState);

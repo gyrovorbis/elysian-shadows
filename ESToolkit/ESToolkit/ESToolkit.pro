@@ -195,8 +195,7 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../ESGamma/source/utility/elysian_lua_variant.cpp \
     ../../AssetIO/source/proxy/elysian_dialog_proxy.cpp \
     ../../AssetIO/source/level/elysian_dialog_base.cpp \
-    ../../AssetIO/source/level/elysian_dialog_screen_base.cpp \
-    source/core/tk_lua_qt_utils.cpp
+    ../../AssetIO/source/level/elysian_dialog_screen_base.cpp
 
 
 
@@ -278,7 +277,8 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
         source/estk/tk_camera_dock_widget.cpp \
         source/asset/tk_examinable.cpp \
         source/estk/tk_camera_system.cpp \
-        source/asset/tk_dialog.cpp
+        source/asset/tk_dialog.cpp \
+        source/core/tk_lua_qt_utils.cpp
 
 } else {
         SOURCES += ../../ESGamma/source/system/main.cpp
