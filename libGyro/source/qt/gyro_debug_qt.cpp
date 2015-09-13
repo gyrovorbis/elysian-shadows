@@ -4,7 +4,10 @@
 #include <gyro_system_api.h>
 #include <gyro_defines.h>
 
+static QTextStream* _stream = nullptr;
+
 int gyDebugInit(void) {
+    _stream = new QTextStream(stdout);
     return 1;
 }
 
@@ -21,7 +24,8 @@ void gyPrintf(const char *const str, ...) {
 
     QString qBuff(buffer);
     qBuff.chop(1);
-    QTextStream(stdout) << qBuff << endl;
+    *_stream << qBuff << endl;
+    _stream->flush();
 
     //QString qBuff(buffer);
     //qBuff.chop(1);
@@ -30,5 +34,6 @@ void gyPrintf(const char *const str, ...) {
 }
 
 int gyDebugUninit(void) {
+    delete _stream;
     return 1;
 }
