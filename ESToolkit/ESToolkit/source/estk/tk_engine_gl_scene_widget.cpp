@@ -107,10 +107,12 @@ makeCurrent();
 void EngineGLSceneWidget::startRenderTimer(void) {
     makeCurrent();
 
-    _timer.start(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this);
-   // doneCurrent();
     _initialized = true;
-    timerEvent(nullptr); //go ahead and update the nigger.
+    QTimer::singleShot(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this, SLOT(_updateEngine()));
+    //_timer.start(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this);
+   // doneCurrent();
+
+    //timerEvent(nullptr); //go ahead and update the nigger.
 }
 /*
 void EngineGLSceneWidget::showEvent(QShowEvent *event) {
@@ -118,7 +120,7 @@ void EngineGLSceneWidget::showEvent(QShowEvent *event) {
 }*/
 
 
-void EngineGLSceneWidget::timerEvent(QTimerEvent *)
+void EngineGLSceneWidget::_updateEngine(void)
 {
     makeCurrent();
    // update();
@@ -135,6 +137,8 @@ void EngineGLSceneWidget::timerEvent(QTimerEvent *)
             resizeGL(parentWidth, parentHeight);
         }
 //#endif
+
+    QTimer::singleShot(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this, SLOT(_updateEngine()));
 
 }
 
