@@ -881,7 +881,7 @@ namespace elysian {
             case LUA_TABLE_PROXY_NORMAL:
             case LUA_TABLE_PROXY_VIRTUAL:
                 {
-#if !(defined(_WIN32) && defined(QT_DEBUG))
+#if 0
                     DbgEvent event("Deserializing %s Lua Proxy table", tableType == LUA_TABLE_PROXY_NORMAL? "Normal" : "Virtual");
 #endif
                     int depth = 1;
@@ -894,7 +894,7 @@ namespace elysian {
                             if(depth == 1) {
                                 lua_getfield(l, -1, _combinedFields[i].key);
                                 if(!lua_isnil(l, -1)) {
-#if !(defined(_WIN32) && defined(QT_DEBUG))
+#if 0
                                     lua_pushvalue(l, -1);
                                     dbgprintf("[%d] = <%s, %s>", i, _combinedFields[i].key, luaL_tolstring(l, -1, nullptr));
                                     lua_pop(l, 2);
@@ -912,7 +912,7 @@ namespace elysian {
             case LUA_TABLE_PROXY_ARRAY:
             default:
                 {
-#if !(defined(_WIN32) && defined(QT_DEBUG))
+#if 0
                     DbgEvent event("Deserializing Array Lua Proxy table");
 #endif
                     lua_len(l, -1);
@@ -923,7 +923,7 @@ namespace elysian {
                         lua_pushnumber(l, i);
                         lua_gettable(l, -2);
 
-#if !(defined(_WIN32) && defined(QT_DEBUG))
+#if 0
                         lua_pushvalue(l, -1);
                         dbgprintf("<%d, %s>", i, luaL_tolstring(l, -1, nullptr));
                         lua_pop(l, 2);

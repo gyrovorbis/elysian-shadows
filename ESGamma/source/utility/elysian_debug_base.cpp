@@ -52,6 +52,11 @@ const GYDebugCallbacks      DebugBase::_gyDbgCallbacks  =  {
                                 &Debug::pop
                             };
 
+Debug& DebugBase::getInstance(void) {
+    static Debug instance;
+    return instance;
+}
+
 DbgEvent::DbgEvent(const char*const string, ...) {
     static char buffer[GYRO_PRINTF_BUFFER_SIZE];
     va_list argptr;

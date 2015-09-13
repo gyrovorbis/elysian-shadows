@@ -50,7 +50,7 @@ void AssetDockWidget::_onProjectChanged(Project * const project) {
         _fsModel->addFileType(new LuaBehaviorAssetFileType);
         _fsModel->addFileType(new MapAssetFileType);
         _fsModel->setRootPath(project->getNodePath());
-        qDebug() << "LA NODE PATH" << project->getNodePath();
+        //qDebug() << "LA NODE PATH" << project->getNodePath();
         //model->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
         _fsModel->setResolveSymlinks(true);
         _ui->treeView->setModel(_fsModel);
@@ -143,10 +143,10 @@ void AssetFileSystemModel::_onDirectoryLoaded(const QString str) {
     for(auto file: files) {
         for(auto  fileType : _customFileTypes) {
             path = thisDir.absoluteFilePath(file);
-            qDebug() << "ASSESSING PATH" << path;
+            //qDebug() << "ASSESSING PATH" << path;
             auto* fileData = fileType->fromFilePath(path);
             if(fileData) {
-                qDebug() << "REGISTERING" << str;
+                //qDebug() << "REGISTERING" << str;
                 _customData[path] = fileData;
                 break;
             }

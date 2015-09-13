@@ -74,6 +74,7 @@ ESToolkit::ESToolkit(QWidget *parent):
     _instance = this;
     // VERY IMPROTANT GLOBAL STATE/STATIC INITIALIZATION
         //elysian::Behavior::staticConstructor();
+    gyDebugInit();
     Debug::getInstance();
     AssetManager::_assets = &_assets;
     //elysian::Behavior::staticConstructor();

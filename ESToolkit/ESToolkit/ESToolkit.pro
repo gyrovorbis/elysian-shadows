@@ -10,6 +10,7 @@ TEMPLATE = app
 
 !ios {
     QT += sql gui opengl network help
+    CONFIG += console
     tests {
         CONFIG += testcase
         QT += testlib

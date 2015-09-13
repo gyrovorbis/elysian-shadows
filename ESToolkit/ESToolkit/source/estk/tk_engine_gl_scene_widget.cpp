@@ -107,11 +107,12 @@ makeCurrent();
 void EngineGLSceneWidget::startRenderTimer(void) {
     makeCurrent();
 
-    _initialized = true;
-    QTimer::singleShot(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this, SLOT(_updateEngine()));
+
+    //QTimer::singleShot(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this, SLOT(_updateEngine()));
     //_timer.start(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this);
    // doneCurrent();
-
+    _updateEngine();
+    _initialized = true;
     //timerEvent(nullptr); //go ahead and update the nigger.
 }
 /*
