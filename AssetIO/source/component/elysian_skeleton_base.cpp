@@ -50,6 +50,7 @@ void SkeletonAttribBase::setAtlasPath(const char * const file) {
 }
 
 void SkeletonAttribBase::_reloadJson(void) {
+    if(_jsonPath[0] == '\0') return;
     DbgEvent event("Skeleton Attrib loading json file [%s]", _jsonPath);
 
     if(_skeletonData) {
@@ -69,12 +70,12 @@ void SkeletonAttribBase::_reloadJson(void) {
 
         _skeletonData = spSkeletonJson_readSkeletonDataFile(skelJson, _jsonPath);
         if(!_skeletonData) {
-            errprintf("Could not initialize SkeletonData!");
+            errprintf("Could not initialize SkeletonData! [%s]", _jsonPath);
         } else {
 
             _animStateData = spAnimationStateData_create(_skeletonData);
             if(!_animStateData) {
-                errprintf("Could not initialize AnimationStateData!");
+                errprintf("Could not initialize AnimationStateData! [%s]", _skeletonData);
                 if(_skeletonData) {
                     spSkeletonData_dispose(_skeletonData);
                     _skeletonData = nullptr;
