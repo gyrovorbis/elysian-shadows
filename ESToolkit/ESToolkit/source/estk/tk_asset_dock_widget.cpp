@@ -13,7 +13,8 @@ AssetDockWidget::AssetDockWidget(QWidget *parent) :
 {
     _ui->setupUi(this);
 
-    connect(getAssets(), SIGNAL(projectChanged(Project*const)), this, SLOT(_onProjectChanged(Project*const)));
+    connect(getAssets(), SIGNAL(projectAdded(Project*const)), this, SLOT(_onProjectAdded(Project*const)));
+    connect(getAssets(), SIGNAL(projectRemoved(Project*const)), this, SLOT(_onProjectRemoved(Project*const)));
     connect(getAssets(), &Assets::areaChanged, this, &AssetDockWidget::_onAreaChanged);
     connect(getAssets(), &Assets::levelChanged, this, &AssetDockWidget::_onLevelChanged);
     connect(getAssets(), &Assets::selectionChanged, this, &AssetDockWidget::_onSelectionChanged);
@@ -36,7 +37,7 @@ void AssetDockWidget::closeEvent(QCloseEvent *event)
     event->accept();
 }
 
-void AssetDockWidget::_onProjectChanged(Project * const project) {
+void AssetDockWidget::_onProjectAdded(Project * const project) {
     if(project) {
         _fsModel = new AssetFileSystemModel;
         _ui->treeView->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -62,6 +63,12 @@ void AssetDockWidget::_onProjectChanged(Project * const project) {
         _onLevelChanged(getAssets()->getCurrentLevel());
         _onAreaChanged(getAssets()->getCurrentArea());
     }
+}
+
+void AssetDockWidget::_onProjectRemoved(Project * const/* project*/) {
+    _ui->treeView->setModel(nullptr);
+    delete _fsModel;
+    _fsModel = nullptr;
 }
 
 void AssetDockWidget::_onAreaChanged(TkArea*const area) {
@@ -152,18 +159,14 @@ void AssetFileSystemModel::_onDirectoryLoaded(const QString str) {
             }
         }
     }
-
-
 }
 
 void AssetFileSystemModel::_onSelectionChanged(const QItemSelection &selected, const QItemSelection& /*deselected*/) {
     auto indeces = selected.indexes();
-
     for(auto it : indeces) {
         auto data = _customData.find(filePath(it));
         if(data != _customData.end()) data.value()->select(it);
     }
-
 }
 
 void AssetFileSystemModel::_onDoubleClick(const QModelIndex &index) {

@@ -354,10 +354,10 @@ void MapView::keyPressEvent(QKeyEvent* event) {
         for(auto it = entitySel->begin(); it != entitySel->end(); ++it) {
             switch(event->key()) {
             case Qt::Key_Left:
-                (*it)->_transform.rotate(-0.1f);
+              //  (*it)->_transform.rotate(-0.1f);
                 break;
             case Qt::Key_Right:
-                (*it)->_transform.rotate(0.1f);
+             //   (*it)->_transform.rotate(0.1f);
                 break;
 
             }

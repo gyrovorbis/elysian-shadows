@@ -108,6 +108,7 @@ namespace elysian {
 		_mainState->register_class<Examinable>();
         Examinable::registerProxyMetaTable(*_mainState);
         OOLUA::register_class<CombatStatusModifier>(*_mainState);
+        CombatStatus::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<CombatAttrib>();
         CombatAttrib::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<Combat>();

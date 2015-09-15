@@ -522,8 +522,12 @@ bool CollisionSystem::detectCollidableCollidableCollision(Collidable* col1, Coll
 
     //Return if collision flags don't match OR
     //if both are on different z-planes.
-    if(!(bodyA->getAttrib()->flags.getTypeAgainst().getValue() & bodyB->getAttrib()->flags.getType().getValue())
-            /* || bodyA->getEntity()->getElev() != bodyB->getEntity()->getElev() */) return false;
+    //if(!(bodyA->getAttrib()->flags.getTypeAgainst().getValue() | bodyB->getAttrib()->flags.getType().getValue())
+      //      /* || bodyA->getEntity()->getElev() != bodyB->getEntity()->getElev() */) return false;
+
+    if(!((bodyA->getAttrib()->flags.getTypeAgainst().getValue() & bodyB->getAttrib()->flags.getType().getValue())) &&
+            !((bodyB->getAttrib()->flags.getTypeAgainst().getValue() & bodyA->getAttrib()->flags.getType().getValue())))  return false;
+
 
     //worldSpace checks in 3D, screen checks in 2D
     if(worldSpace) {
@@ -663,8 +667,8 @@ bool CollisionSystem::_detectEntityEntityCollision(Entity * const entity1, Entit
     //Return if collision flags don't match OR
     //if both are on different z-planes.
     if(bodyB->_worldSpace != worldSpace) return false;
-    if(!(bodyA->getAttrib()->flags.getTypeAgainst().getValue() & bodyB->getAttrib()->flags.getType().getValue())
-            /* || bodyA->getEntity()->getElev() != bodyB->getEntity()->getElev() */) return false;
+    if(!((bodyA->getAttrib()->flags.getTypeAgainst().getValue() & bodyB->getAttrib()->flags.getType().getValue())) &&
+            !((bodyB->getAttrib()->flags.getTypeAgainst().getValue() & bodyA->getAttrib()->flags.getType().getValue())))  return false;
 
     if(worldSpace) {
         //solve for overlapping z/elevation region

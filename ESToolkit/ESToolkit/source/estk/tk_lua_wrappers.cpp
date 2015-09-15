@@ -30,7 +30,6 @@ static inline int Toolkit_findEntity(lua_State* const vm) {
 void TkLuaManager::_registerWrappers(void) {
     elysian::LuaManagerBase::_registerWrappers();
 
-
     _mainState->register_class<Toolkit>();
     _mainState->register_class<PropertyItemDelegate>();
     _mainState->register_class<EnumDropdownPropertyItemDelegate>();

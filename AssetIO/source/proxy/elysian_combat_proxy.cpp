@@ -43,7 +43,6 @@ OOLUA_EXPORT_FUNCTIONS(CombatStatusModifier,
                        removeStatusEffect)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(Combat,
-                              getStatus,
                              getAttrib,
                              getTargetType,
                              getDmgActive,
@@ -64,4 +63,5 @@ OOLUA_EXPORT_FUNCTIONS(Combat,
                        setTargetType,
                        setAggroDist,
                        setDeaggroDist,
-                       getCollisionFlags)
+                       getCollisionFlags,
+                       getStatus)

@@ -2135,6 +2135,7 @@ void ESToolkit::on_actionEnable_Audio_toggled(bool arg1)
 void ESToolkit::on_actionReloadProject_triggered(void)
 {
     TkDebug::clear();
+    _assets.setCurrentSelection(nullptr);
     _assets.reloadProject();
 }
 

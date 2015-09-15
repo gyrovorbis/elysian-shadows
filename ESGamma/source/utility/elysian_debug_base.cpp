@@ -361,7 +361,7 @@ void DebugBase::processInput(GameInput& input) {
         else Debug::printf(Debug::DBG_VERBOSE, "Collision Disabled");
 
 	}
-#if 0
+
     if(input.getTapped(GameInput::BUT_B)) {
         if(_engine->_collisionSystem->getBroadPhase()) {
             _engine->_collisionSystem->setBroadPhase(false);
@@ -371,7 +371,6 @@ void DebugBase::processInput(GameInput& input) {
             Debug::printf(Debug::DBG_VERBOSE, "Sort and Sweep Enabled!");
         }
     }
-#endif
 
 	if(input.getTapped(GameInput::BUT_L)) {
 		ADV_LOG_WRAP newWrap = (_advLogWrap < ADV_LOG_MAX-1)? (ADV_LOG_WRAP)(_advLogWrap+1) : (ADV_LOG_WRAP)0;

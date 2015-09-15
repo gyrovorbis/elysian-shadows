@@ -6,7 +6,6 @@
 #include <asset/tk_asset_manager.h>
 #include <QHash>
 
-
 #define TK_SPECULARSHEET_ASSET_ICON ":/assetIcons/images/_0000_specularsheet_icon.png"
 #define TK_NORMALSHEET_ASSET_ICON   ":/assetIcons/images/_0001_normalsheet_icon.png"
 #define TK_TILESHEET_ASSET_ICON     ":/assetIcons/images/_0002_tilesheet_icon.png"
@@ -20,8 +19,6 @@
 namespace Ui {
     class AssetDockWidget;
 }
-
-
 
 class CustomAssetFileType {
 private:
@@ -137,7 +134,8 @@ Q_SIGNALS:
 protected:
     void                    closeEvent(QCloseEvent *event);
 protected Q_SLOTS:
-    void                    _onProjectChanged(Project*const project);
+    void                    _onProjectAdded(Project*const project);
+    void                    _onProjectRemoved(Project*const project);
     void                    _onAreaChanged(TkArea*const area);
     void                    _onLevelChanged(TkLevel*const level);
     void                    _onSelectionChanged(const Selectable::TYPE type, Selectable *const selection);

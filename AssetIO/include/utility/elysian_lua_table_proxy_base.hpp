@@ -1133,11 +1133,19 @@ namespace elysian {
                 break;
             default:
                 lua_getfield(l, -3-(tableDepth*2), C::_proxyFields[i].get); //get field from OOLUA methods table
-                assert(!lua_isnil(l, -1)); //LUA GET ACCESSOR NOT FOUND!!!!
+                if(lua_isnil(l, -1)) {
+                    errprintf("Proxy GET accessor [%s] not found!", C::_proxyFields[i].get);
+                    assert(false);
+                }
+
                 lua_setfield(l, -3, C::_proxyFields[i].key);
                 if(C::_proxyFields[i].set) {
                     lua_getfield(l, -3-(tableDepth*2), C::_proxyFields[i].set); //get field from OOLUA methods table
-                    assert(!lua_isnil(l, -1)); //LUA SET ACCESSOR NOT FOUND!!!!
+                    if(lua_isnil(l, -1)) {
+                        errprintf("Proxy SET accessor [%s] not found!", C::_proxyFields[i].set);
+                        assert(false);
+                    }
+
                     lua_setfield(l, -2, C::_proxyFields[i].key);
                 }
             }
