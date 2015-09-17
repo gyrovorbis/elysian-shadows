@@ -2,7 +2,7 @@
 #define ELYSIAN_EXAMINABLE_HPP
 
 #ifdef ELYSIAN_ENGINE
-#   include <elysian_examinable_base.hpp>
+#   include <component/elysian_examinable_base.hpp>
 namespace elysian {
     typedef ExaminableBase Examinable;
 }

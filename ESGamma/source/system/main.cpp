@@ -6,8 +6,8 @@
 #include <system/elysian_engine.hpp>
 #include <crtp/elysian_camera_system.hpp>
 #include <crtp/elysian_debug.hpp>
-#include "elysian_behavior.hpp"
-#include "elysian_lua_singleton.hpp"
+#include <crtp/elysian_behavior.hpp>
+#include <lua/elysian_lua_singleton.hpp>
 
 static elysian::Engine* engine  = NULL;
 static elysian::Debug*  debug   = NULL;

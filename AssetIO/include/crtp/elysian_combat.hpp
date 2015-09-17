@@ -2,7 +2,7 @@
 #define ELYSIAN_COMBAT_HPP
 
 #ifdef ELYSIAN_ENGINE
-#   include <elysian_combat_base.hpp>
+#   include <component/elysian_combat_base.hpp>
 namespace elysian {
     typedef CombatBase Combat;
 }

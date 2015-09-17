@@ -47,7 +47,7 @@ THE SOFTWARE.
 #				define MAC_BUILD		1
 			/// nix
 #			elif(defined(unix) || defined(_unix) || defined(__unix) || defined(__unix__) || \
-				defined(linux) || defined(__linux))
+                defined(linux) || defined(__linux)) || defined(_arch_dreamcast)
 #				define UNIX_BUILD		1
 
 #			endif///! CYGWIN

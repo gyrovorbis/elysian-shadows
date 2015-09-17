@@ -3,6 +3,21 @@ exists( ESDevCommandLineArgs.pri ) {
     include( ESDevCommandLineArgs.pri )
 }
 
+dreamcast {
+
+    INCLUDEPATH=/home/jenkins/Dreamcast/cadcdev-kallistios/include \
+        /home/jenkins/Dreamcast/cadcdev-kos-ports/include \
+        /home/jenkins/Dreamcast/cadcdev-kallistios/kernel/arch/dreamcast/include \
+        /home/jenkins/Dreamcast/cadcdev-kallistios/addons/include
+
+    DEFINES+=_arch_dreamcast \
+        _arch_sub_pristine \
+        ELYSIAN_ENGINE
+
+
+}
+
+
 CONFIG -= exceptions
 
 
@@ -17,10 +32,12 @@ ios {
     DEFINES += ELYSIAN_ENGINE
 }
 
-QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-unknown-pragmas -Wno-inconsistent-missing-override
+!dreamcast {
+    QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-unknown-pragmas -Wno-inconsistent-missing-override
+}
 #QMAKE_CFLAGS += -std=c99
 
-!iphoneos {
+!iphoneos:!dreamcast {
     QMAKE_CFLAGS += -msse
     QMAKE_CXXFLAGS += -msse
 }
@@ -56,17 +73,19 @@ ios {
         #CONFIG+=neon
     }
 }
-else {
+else:dreamcast {
+    DEFINES+=GYRO_PLATFORM=GYRO_PLATFORM_DC
+} else {
     DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt
-
 }
 
-QMAKE_CXXFLAGS += -Wno-unknown-warning-option #-fno-rtti -fno-exceptions
 
-#!ios {
+
     QMAKE_CXXFLAGS += -std=c++11
+!dreamcast {
+QMAKE_CXXFLAGS += -Wno-unknown-warning-option #-fno-rtti -fno-exceptions
     CONFIG += c++11
-#}
+}
 
 CONFIG -= exceptions rtti
 

@@ -2,7 +2,7 @@
 #define ELYSIAN_SEVERITY_HPP
 
 #ifdef ELYSIAN_ENGINE
-#   include <elysian_level_base.hpp>
+#   include <level/elysian_level_base.hpp>
 namespace elysian {
     typedef LevelBase Level;
 }

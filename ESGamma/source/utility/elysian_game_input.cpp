@@ -151,7 +151,7 @@ void GameInput::translate(const GYInput& platInput, GameInput& gameInput) {
                 gameInput.setDown(BUT_9);
                 break;
             default:
-                Debug::printf(Debug::DBG_VERBOSE, "Key Pressed - %04x", key);
+                Debug::printf(Debug::LOG_VERBOSE, "Key Pressed - %04x", key);
         }
         
     }

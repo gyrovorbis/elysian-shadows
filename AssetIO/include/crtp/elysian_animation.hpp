@@ -2,7 +2,7 @@
 #define ELYSIAN_ANIMATION_HPP
 
 #ifdef ELYSIAN_ENGINE
-#   include <elysian_animation_base.hpp>
+#   include <component/elysian_animation_base.hpp>
 namespace elysian {
     typedef AnimationBase Animation;
 }

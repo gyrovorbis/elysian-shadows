@@ -329,7 +329,7 @@ namespace elysian {
 	}
 
 	void AudioSystem::setSfxChannelPos(const unsigned channel, const GYVector2 &pos, const unsigned elev) const {
-        //gyAudSourceSetf(_channels[channel].src, GY_SOURCE_ROLLDBG_OFF_FACTOR, 1.0f);
+        //gyAudSourceSetf(_channels[channel].src, GY_SOURCE_ROLLLOG_OFF_FACTOR, 1.0f);
         //gyAudSourceSeti(_channels[channel].src, GY_SOURCE_RELATIVE, 1);
 		GYVector3 pos3 = { pos.x, pos.y, static_cast<float>(elev) };
 		gyAudSourceSetfv(_channels[channel].src, GY_SOURCE_POS, &pos3);
@@ -415,7 +415,7 @@ namespace elysian {
 	void AudioSystem::setBgmTrackPos(const float x, const float y, const float z) const {
 		GYVector3 pos3 = { x, y, z };
 		for(unsigned i = 0; i < 2; ++i) {
-			//gyAudSourceSetf(_channels[i].src, GY_SOURCE_ROLLDBG_OFF_FACTOR, 1.0f);
+			//gyAudSourceSetf(_channels[i].src, GY_SOURCE_ROLLLOG_OFF_FACTOR, 1.0f);
 			gyAudSourceSetfv(_streamChannels[i].src, GY_SOURCE_POS, &pos3);
 		}
 	}

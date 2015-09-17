@@ -1040,7 +1040,7 @@ bool ESToolkit::openProjectDir(const QString dir) {
     if(!proj) {
         QString invalidNotice("There's no fucking way that was a valid project directory, cockwheeze.");
         if(isVisible()) QMessageBox::critical(this, "You dun fucked up!", invalidNotice);
-        else Debug::printf(Debug::DBG_ERROR, "%s", Q_CSTR(invalidNotice));
+        else Debug::printf(Debug::LOG_ERROR, "%s", Q_CSTR(invalidNotice));
         success = false;
         return false;
     }
@@ -1086,7 +1086,7 @@ void ESToolkit::on_actionFileCloseProject_triggered(void) {
 
 void ESToolkit::on_actionFileSaveCurrentProject_triggered() {
     //check failure!
-    Debug::Log(Debug::DBG_VERBOSE, "ESToolkit::on_actionFileSaveCurrentProject_triggered");
+    Debug::Log(Debug::LOG_VERBOSE, "ESToolkit::on_actionFileSaveCurrentProject_triggered");
     Debug::push();
     _assets.getCurrentProject()->save();
     //_assets.getCurrentProject()->ClearUndoStacks();
@@ -1324,7 +1324,7 @@ void ESToolkit::on_actionUndo_triggered(){
 
 void ESToolkit::on_actionRedo_triggered() {
     if(!_assets.getCurrentArea())  {
-        Debug::Log(Debug::DBG_WARNING, "Action Redo triggered, but there was no Area! Aborting function call...");
+        Debug::Log(Debug::LOG_WARNING, "Action Redo triggered, but there was no Area! Aborting function call...");
         return;
     }
     _assets.getCurrentArea()->getUndoStack().redo();
@@ -1419,7 +1419,7 @@ void ESToolkit::on_actionInvoke_triggered()
                 _engineDialog->close();
                 _engineSettingsDialog->show();
                 _engineSettingsDialog->setFocus();
-                //Debug::Log(Debug::DBG_WARNING, "InvokeEngine(DREAMCAST) failed! Invalid Settings.");
+                //Debug::Log(Debug::LOG_WARNING, "InvokeEngine(DREAMCAST) failed! Invalid Settings.");
             }
         }
         else if(_ui->actionIPhone_iPad->isChecked()) {
@@ -1633,7 +1633,7 @@ void ESToolkit::on_actionDefault_Transform_triggered()
     lua_pushstring(*_mainState, "");
     lua_pushboolean(*_mainState, 0);
     LuaManager::_protectedCall(3, 1, nullptr);
-    elysian::Debug::printf(elysian::Debug::DBG_VERBOSE, lua_tostring(*_mainState, -1));
+    elysian::Debug::printf(elysian::Debug::LOG_VERBOSE, lua_tostring(*_mainState, -1));
     lua_pop(*_mainState, 1);
 
 #else
@@ -2254,108 +2254,108 @@ void ESToolkit::on_actionOpenGL_toggled(bool arg1)
 
 void ESToolkit::on_actionLibGyroVerbose_toggled(bool arg1)
 {
-    Debug::setFilter(Debug::LIBGYRO, Debug::DBG_VERBOSE, arg1);
+    Debug::setFilter(Debug::LIBGYRO, Debug::LOG_VERBOSE, arg1);
 
 }
 
 void ESToolkit::on_actionLibGyroWarning_toggled(bool arg1)
 {
-    Debug::setFilter(Debug::LIBGYRO, Debug::DBG_WARNING, arg1);
+    Debug::setFilter(Debug::LIBGYRO, Debug::LOG_WARNING, arg1);
 }
 
 void ESToolkit::on_actionLibGyroError_toggled(bool arg1)
 {
-    Debug::setFilter(Debug::LIBGYRO, Debug::DBG_ERROR, arg1);
+    Debug::setFilter(Debug::LIBGYRO, Debug::LOG_ERROR, arg1);
 }
 
 void ESToolkit::on_actionEngineVerbose_toggled(bool arg1)
 {
-    Debug::setFilter(Debug::ENGINE, Debug::DBG_VERBOSE, arg1);
+    Debug::setFilter(Debug::ENGINE, Debug::LOG_VERBOSE, arg1);
 }
 
 void ESToolkit::on_actionEngineWarning_toggled(bool arg1)
 {
-    Debug::setFilter(Debug::ENGINE, Debug::DBG_WARNING, arg1);
+    Debug::setFilter(Debug::ENGINE, Debug::LOG_WARNING, arg1);
 }
 
 void ESToolkit::on_actionEngineError_toggled(bool arg1)
 {
-    Debug::setFilter(Debug::ENGINE, Debug::DBG_ERROR, arg1);
+    Debug::setFilter(Debug::ENGINE, Debug::LOG_ERROR, arg1);
 }
 
 void ESToolkit::on_actionToolkitVerbose_toggled(bool arg1)
 {
-    Debug::setFilter(Debug::TOOLKIT, Debug::DBG_VERBOSE, arg1);
+    Debug::setFilter(Debug::TOOLKIT, Debug::LOG_VERBOSE, arg1);
 }
 
 void ESToolkit::on_actionToolkitWarning_toggled(bool arg1)
 {
-    Debug::setFilter(Debug::TOOLKIT, Debug::DBG_WARNING, arg1);
+    Debug::setFilter(Debug::TOOLKIT, Debug::LOG_WARNING, arg1);
 }
 
 void ESToolkit::on_actionToolkitError_toggled(bool arg1)
 {
-    Debug::setFilter(Debug::TOOLKIT, Debug::DBG_ERROR, arg1);
+    Debug::setFilter(Debug::TOOLKIT, Debug::LOG_ERROR, arg1);
 }
 
 void ESToolkit::on_actionQtVerbose_toggled(bool arg1)
 {
-    Debug::setFilter(Debug::SOURCE_QT, Debug::DBG_VERBOSE, arg1);
+    Debug::setFilter(Debug::SOURCE_QT, Debug::LOG_VERBOSE, arg1);
 }
 
 void ESToolkit::on_actionQtWarning_toggled(bool arg1)
 {
-    Debug::setFilter(Debug::SOURCE_QT, Debug::DBG_WARNING, arg1);
+    Debug::setFilter(Debug::SOURCE_QT, Debug::LOG_WARNING, arg1);
 }
 
 void ESToolkit::on_actionQtError_toggled(bool arg1)
 {
-    Debug::setFilter(Debug::SOURCE_QT, Debug::DBG_ERROR, arg1);
+    Debug::setFilter(Debug::SOURCE_QT, Debug::LOG_ERROR, arg1);
 }
 
 void ESToolkit::on_actionOpenGLVerbose_toggled(bool arg1)
 {
-    Debug::setFilter(Debug::OPENGL, Debug::DBG_VERBOSE, arg1);
+    Debug::setFilter(Debug::OPENGL, Debug::LOG_VERBOSE, arg1);
 }
 
 void ESToolkit::on_actionOpenGLWarning_toggled(bool arg1)
 {
-    Debug::setFilter(Debug::OPENGL, Debug::DBG_WARNING, arg1);
+    Debug::setFilter(Debug::OPENGL, Debug::LOG_WARNING, arg1);
 }
 
 void ESToolkit::on_actionOpenGLError_toggled(bool arg1)
 {
-    Debug::setFilter(Debug::OPENGL, Debug::DBG_ERROR, arg1);
+    Debug::setFilter(Debug::OPENGL, Debug::LOG_ERROR, arg1);
 }
 
 void ESToolkit::on_actionLuaVerbose_toggled(bool arg1)
 {
-    Debug::setFilter(Debug::LUA, Debug::DBG_VERBOSE, arg1);
+    Debug::setFilter(Debug::LUA, Debug::LOG_VERBOSE, arg1);
 }
 
 void ESToolkit::on_actionLuaWarning_toggled(bool arg1)
 {
-    Debug::setFilter(Debug::LUA, Debug::DBG_WARNING, arg1);
+    Debug::setFilter(Debug::LUA, Debug::LOG_WARNING, arg1);
 }
 
 void ESToolkit::on_actionLuaError_toggled(bool arg1)
 {
-    Debug::setFilter(Debug::LUA, Debug::DBG_ERROR, arg1);
+    Debug::setFilter(Debug::LUA, Debug::LOG_ERROR, arg1);
 }
 
 void ESToolkit::on_actionCommandsVerbose_toggled(bool arg1)
 {
-    Debug::setFilter(Debug::COMMAND, Debug::DBG_VERBOSE, arg1);
+    Debug::setFilter(Debug::COMMAND, Debug::LOG_VERBOSE, arg1);
 }
 
 void ESToolkit::on_actionCommandsWarning_toggled(bool arg1)
 {
-    Debug::setFilter(Debug::COMMAND, Debug::DBG_WARNING, arg1);
+    Debug::setFilter(Debug::COMMAND, Debug::LOG_WARNING, arg1);
 }
 
 void ESToolkit::on_actionCommandsError_toggled(bool arg1)
 {
-    Debug::setFilter(Debug::COMMAND, Debug::DBG_ERROR, arg1);
+    Debug::setFilter(Debug::COMMAND, Debug::LOG_ERROR, arg1);
 }
 
 void ESToolkit::on_actionReset_Stack_Depth_triggered()

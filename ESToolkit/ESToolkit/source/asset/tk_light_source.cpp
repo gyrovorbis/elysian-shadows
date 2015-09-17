@@ -14,7 +14,7 @@ bool TkLightSource::validate(QString& str) const {
         }
     };
 
-    cAssert(properties, "DBG_ERROR: LightSource component has no attrib field.");
+    cAssert(properties, "LOG_ERROR: LightSource component has no attrib field.");
     return success;
 }
 

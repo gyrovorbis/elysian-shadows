@@ -82,9 +82,9 @@ bool DialogSystem::loadAssets(void) {
 	bool success = true;
 
 	_scrollDownSFX = gyAudWavCreate(ELYSIAN_DIALOG_SYSTEM_SCROLL_DOWN_SFX);
-	if(!_scrollDownSFX) Debug::printf(Debug::DBG_WARNING, "Could not load - %s", ELYSIAN_DIALOG_SYSTEM_SCROLL_DOWN_SFX);
+	if(!_scrollDownSFX) Debug::printf(Debug::LOG_WARNING, "Could not load - %s", ELYSIAN_DIALOG_SYSTEM_SCROLL_DOWN_SFX);
 	_scrollUpSFX = gyAudWavCreate(ELYSIAN_DIALOG_SYSTEM_SCROLL_UP_SFX);
-	if(!_scrollUpSFX) Debug::printf(Debug::DBG_WARNING, "Could not load - %s", ELYSIAN_DIALOG_SYSTEM_SCROLL_UP_SFX);
+	if(!_scrollUpSFX) Debug::printf(Debug::LOG_WARNING, "Could not load - %s", ELYSIAN_DIALOG_SYSTEM_SCROLL_UP_SFX);
 
 	return success;
 }
@@ -311,7 +311,7 @@ void DialogSystem::processInput(const GameInput &input) {
 
 			for(unsigned int i = 0; i < _curArea->conversations.size(); ++i) {
 				/*if(player->getCollidable()->isCollidingWith(*_curArea->conversations[i]->getEntity()->getCollidable())) {
-					Debug::printf(Debug::DBG_VERBOSE, "Start the dialog with the %s, fucker!\n", _curArea->conversations[i]->getEntity()->getName());
+					Debug::printf(Debug::LOG_VERBOSE, "Start the dialog with the %s, fucker!\n", _curArea->conversations[i]->getEntity()->getName());
 					Open(*_curArea->conversations[i]);
 				}*/
 			}
@@ -487,7 +487,7 @@ void DialogSystem::Open(Entity &entity) {
 	Close();
 	Conversation *convo = entity.getConversation();
 	if(!convo) {
-		Debug::printf(Debug::DBG_WARNING, "Entity '%s' has no conversation component!\n", entity.getName());
+		Debug::printf(Debug::LOG_WARNING, "Entity '%s' has no conversation component!\n", entity.getName());
 		_currentConversation = NULL;
 		return;
 	}

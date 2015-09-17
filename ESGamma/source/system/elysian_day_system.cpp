@@ -17,7 +17,7 @@ void DaySystem::update(void) {
 
 	if(_curSecs >= _secsPerDay) {
 		_curSecs -= _secsPerDay;
-        //Debug::printf(Debug::DBG_VERBOSE, "DAY WENT BY");
+        //Debug::printf(Debug::LOG_VERBOSE, "DAY WENT BY");
 		++_days;
 	}
 

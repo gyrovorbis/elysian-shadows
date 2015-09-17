@@ -104,20 +104,20 @@ void WarpSystem::UpdatePause(void) {
 			return;
 		}
 	}      
-	//Debug::printf(Debug::DBG_VERBOSE, "CHANGING STATE!");
+	//Debug::printf(Debug::LOG_VERBOSE, "CHANGING STATE!");
 	_state = CHECK_WARP;
 
 }
 
 void WarpSystem::UpdateCheckWarp(void) {
 	//Check for warp
-	//Debug::printf(Debug::DBG_VERBOSE, "WARP CHECK");
+	//Debug::printf(Debug::LOG_VERBOSE, "WARP CHECK");
 	if(!getPartySys()->getPartyLeader()) return; //before we dereference it
 	Collidable *playerCollider = getPartySys()->getPartyLeader()->getCollidable();
 
 	for(unsigned int i = 0; i < _curArea->warps.size(); ++i) {
 		if(getCollisionSys()->checkCollision(*playerCollider, *_curArea->warps[i]->getEntity()->getCollidable())) {
-			//Debug::printf(Debug::DBG_VERBOSE, "Warp Collision! %s", _curArea->warps[i]->getEntity()->getName());
+			//Debug::printf(Debug::LOG_VERBOSE, "Warp Collision! %s", _curArea->warps[i]->getEntity()->getName());
 			_currentWarp = *_curArea->warps[i];
 			_state = FADE_OUT;
 			setEngineState(System::ENGINE_WARPING);

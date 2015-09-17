@@ -14,17 +14,17 @@ namespace elysian {
         }
 
         bool load(FILE* file) {
-            dbgprintf(LOG_DBG_VERBOSE, "ModelPrim::Load(ifstream&)");
+            dbgprintf(LOG_LOG_VERBOSE, "ModelPrim::Load(ifstream&)");
             dbgPush();
-            dbgprintf(LOG_DBG_WARNING, "Not implemented.");
+            dbgprintf(LOG_LOG_WARNING, "Not implemented.");
             dbgPop();
             return false;
         }
 
         bool save(FILE* file) {
-            dbgprintf(LOG_DBG_VERBOSE, "ModelPrim::Save(ofstream&)");
+            dbgprintf(LOG_LOG_VERBOSE, "ModelPrim::Save(ofstream&)");
             dbgPush();
-            dbgprintf(LOG_DBG_WARNING, "Not implemented.");
+            dbgprintf(LOG_LOG_WARNING, "Not implemented.");
             dbgPop();
             return false;
         }

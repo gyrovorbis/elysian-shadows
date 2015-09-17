@@ -35,15 +35,15 @@ namespace OOLUA
 		{
 			if (pcall_result == 0)return true;
 
-#if OOLUA_STORE_LAST_DBG_ERROR == 1
+#if OOLUA_STORE_LAST_LOG_ERROR == 1
 			if (pcall_result != LUA_ERRMEM)set_error_from_top_of_stack_and_pop_the_error(vm);
 #elif OOLUA_USE_EXCEPTIONS == 1
 			if (pcall_result == LUA_ERRRUN)
-				throw OOLUA::Runtime_error(vm, (OOLUA::DBG_ERROR::PopTheStack*)0);
+				throw OOLUA::Runtime_error(vm, (OOLUA::LOG_ERROR::PopTheStack*)0);
 			else if (pcall_result == LUA_ERRMEM)
-				throw OOLUA::Memory_error(vm, (OOLUA::DBG_ERROR::PopTheStack*)0);
+				throw OOLUA::Memory_error(vm, (OOLUA::LOG_ERROR::PopTheStack*)0);
 			else if (pcall_result == LUA_ERRERR)
-				throw OOLUA::Runtime_error(vm, (OOLUA::DBG_ERROR::PopTheStack*)0);
+				throw OOLUA::Runtime_error(vm, (OOLUA::LOG_ERROR::PopTheStack*)0);
 #elif OOLUA_DEBUG_CHECKS == 1
 			(void)vm;
 			if (pcall_result == LUA_ERRRUN)
@@ -62,15 +62,15 @@ namespace OOLUA
 		bool load_buffer_check_result(lua_State* vm, int result)
 		{
 			if (result == 0)return true;
-#if OOLUA_STORE_LAST_DBG_ERROR == 1
+#if OOLUA_STORE_LAST_LOG_ERROR == 1
 			if (result != LUA_ERRMEM)set_error_from_top_of_stack_and_pop_the_error(vm);
 #elif OOLUA_USE_EXCEPTIONS == 1
 			if (result == LUA_ERRFILE)
-				throw OOLUA::File_error(vm, (OOLUA::DBG_ERROR::PopTheStack*)0);
+				throw OOLUA::File_error(vm, (OOLUA::LOG_ERROR::PopTheStack*)0);
 			else if (result == LUA_ERRSYNTAX)
-				throw OOLUA::Syntax_error(vm, (OOLUA::DBG_ERROR::PopTheStack*)0);
+				throw OOLUA::Syntax_error(vm, (OOLUA::LOG_ERROR::PopTheStack*)0);
 			else if (result == LUA_ERRMEM )
-				throw OOLUA::Memory_error(vm, (OOLUA::DBG_ERROR::PopTheStack*)0);
+				throw OOLUA::Memory_error(vm, (OOLUA::LOG_ERROR::PopTheStack*)0);
 #elif OOLUA_DEBUG_CHECKS == 1
 			(void)vm;
 			if (result == LUA_ERRSYNTAX)

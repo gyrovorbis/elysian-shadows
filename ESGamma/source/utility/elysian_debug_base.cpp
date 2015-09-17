@@ -45,7 +45,7 @@ FILE*                       DebugBase::_luaDbgFile;
 Engine*                     DebugBase::_engine          = nullptr;
 unsigned int                DebugBase::_stackDepth      = 0;
 Debug::SEVERITY                DebugBase::_level           = ELYSIAN_DEBUG_LOG_SEVERITY_DEFAULT;
-Debug::ADV_LOG_WRAP         DebugBase::_advLogWrap      = Debug::ADV_LOG_DBG_OFF;
+Debug::ADV_LOG_WRAP         DebugBase::_advLogWrap      = Debug::ADV_LOG_LOG_OFF;
 const GYDebugCallbacks      DebugBase::_gyDbgCallbacks  =  {
                                 &libGyroPrintf,
                                 &Debug::push,
@@ -59,7 +59,7 @@ DbgEvent::DbgEvent(const char*const string, ...) {
     vsprintf(buffer, string, argptr);
     va_end(argptr);
     depth = Debug::getStackDepth();
-    Debug::printf(Debug::DBG_VERBOSE, buffer);
+    Debug::printf(Debug::LOG_VERBOSE, buffer);
     Debug::push();
 }
 
@@ -69,7 +69,7 @@ DbgEvent::~DbgEvent(void) {
 
 //Invoked by LibGyro (callback function)
 void DebugBase::libGyroPrintf(const GY_DEBUG_SEVERITY level, const char* const str) { Debug::writeLog(LIBGYRO, (SEVERITY)level, str); }
-//Invoked by Lua (always DBG_VERBOSE, not silenced with the rest)
+//Invoked by Lua (always LOG_VERBOSE, not silenced with the rest)
 void DebugBase::luaPrint(const char *string, const SEVERITY lev) { Debug::writeLog(LUA, lev, string); }
 
 // Central endpoint for all debug log calls
@@ -85,13 +85,13 @@ void DebugBase::writeLog(const DebugBase::SOURCE source, const DebugBase::SEVERI
 
 	//Add prefixes for error types
 	switch(level) {
-    case DBG_ERROR:
-        strcat(buffer, ELYSIAN_DEBUG_PREFIX_DBG_ERROR);
+    case LOG_ERROR:
+        strcat(buffer, ELYSIAN_DEBUG_PREFIX_LOG_ERROR);
 		break;
-    case DBG_WARNING:
-        strcat(buffer, ELYSIAN_DEBUG_PREFIX_DBG_WARNING);
+    case LOG_WARNING:
+        strcat(buffer, ELYSIAN_DEBUG_PREFIX_LOG_WARNING);
 		break;
-    case DBG_VERBOSE: //no prefix
+    case LOG_VERBOSE: //no prefix
 	default:
 		break;
 	}
@@ -116,7 +116,7 @@ void DebugBase::writeLog(const DebugBase::SOURCE source, const DebugBase::SEVERI
     //Only print to standard IO if we give a shit about this kind of output
     if(level >= _level) gyPrintf(buffer); //use the "preferred" IO of each platform
 
-    if(_advLogWrap != ADV_LOG_DBG_OFF) {
+    if(_advLogWrap != ADV_LOG_LOG_OFF) {
 	AdventureLog::TEXT_TYPE advType;
 
 	switch(source) {
@@ -126,10 +126,10 @@ void DebugBase::writeLog(const DebugBase::SOURCE source, const DebugBase::SEVERI
         default:
             advType = AdventureLog::TEXT_NORMAL;
         }
-        if(level == DBG_WARNING || level == DBG_ERROR) advType = AdventureLog::TEXT_DBG_ERROR;
+        if(level == LOG_WARNING || level == LOG_ERROR) advType = AdventureLog::TEXT_LOG_ERROR;
 
         //Check to see if this kind of output is being wrapped to the Adventure Log
-        if(level == DBG_WARNING || level == DBG_ERROR ||
+        if(level == LOG_WARNING || level == LOG_ERROR ||
                 _advLogWrap == ADV_LOG_ALL ||
                 (_advLogWrap == ADV_LOG_LUA && source == LUA))
         {
@@ -165,7 +165,7 @@ DebugBase::DebugBase(void):
 	_dbgFile = fopen(ELYSIAN_DEBUG_FILE, "w");
 	_luaDbgFile = fopen(ELYSIAN_LUA_DEBUG_FILE, "w");
 #endif
-    //printf(DBG_VERBOSE, "-----Debug Initialized-----");
+    //printf(LOG_VERBOSE, "-----Debug Initialized-----");
 }
 
 DebugBase::~DebugBase(void) {
@@ -190,7 +190,7 @@ GYVector3 dirVec = { 0.0f, 0.0f, -1.0f };
 
 bool DebugBase::sandboxInit(void) {
 	//Fuck the current loading paradigm. Initialization happens here for now.
-    printf(DBG_VERBOSE, "Executing global_init script [%s].", ELYSIAN_GLOBAL_INIT_LUA_PATH);
+    printf(LOG_VERBOSE, "Executing global_init script [%s].", ELYSIAN_GLOBAL_INIT_LUA_PATH);
     Debug::push();
 
     LuaManager::runScriptSandbox(ELYSIAN_GLOBAL_INIT_LUA_PATH);
@@ -245,19 +245,19 @@ void DebugBase::processInput(GameInput& input) {
 		CollisionSystem::RENDER_LAYER layer = _engine->_collisionSystem->cycleRenderLayer();
 		switch(layer) {
 		case CollisionSystem::RENDER_DISABLED:
-            printf(DBG_VERBOSE, "Render Collision Layer - Disabled");
+            printf(LOG_VERBOSE, "Render Collision Layer - Disabled");
 			break;
 		case CollisionSystem::RENDER_LAYER_1:
-            printf(DBG_VERBOSE, "Render Collision Layer - 1");
+            printf(LOG_VERBOSE, "Render Collision Layer - 1");
 			break;
 		case CollisionSystem::RENDER_LAYER_2:
-            printf(DBG_VERBOSE, "Render Collision Layer - 2");
+            printf(LOG_VERBOSE, "Render Collision Layer - 2");
 			break;
 		case CollisionSystem::RENDER_LAYER_3:
-            printf(DBG_VERBOSE, "Render Collision Layer - 3");
+            printf(LOG_VERBOSE, "Render Collision Layer - 3");
 			break;
 		case CollisionSystem::RENDER_COMBINED:
-            printf(DBG_VERBOSE, "Render Collision Layer - Combined");
+            printf(LOG_VERBOSE, "Render Collision Layer - Combined");
 			break;
 		default: break;
 		}
@@ -265,19 +265,19 @@ void DebugBase::processInput(GameInput& input) {
 /*
 	if(input.getTapped(GameInput::BUT_1)) {
 		bool render = _engine->_mapSystem->toggleRenderLayer(0);
-        printf(DBG_VERBOSE, "Render Layer 1 - %s", (render)? "enabled" : "disabled");
+        printf(LOG_VERBOSE, "Render Layer 1 - %s", (render)? "enabled" : "disabled");
 	}
 	if(input.getTapped(GameInput::BUT_2)) {
 		bool render = _engine->_mapSystem->toggleRenderLayer(1);
-        printf(DBG_VERBOSE, "Render Layer 2 - %s", (render)? "enabled" : "disabled");
+        printf(LOG_VERBOSE, "Render Layer 2 - %s", (render)? "enabled" : "disabled");
 	}
 	if(input.getTapped(GameInput::BUT_3)) {
 		bool render = _engine->_mapSystem->toggleRenderLayer(2);
-        printf(DBG_VERBOSE, "Render Layer 3 - %s", (render)? "enabled" : "disabled");
+        printf(LOG_VERBOSE, "Render Layer 3 - %s", (render)? "enabled" : "disabled");
     }*/
 	if(input.getTapped(GameInput::BUT_4)) {
 		bool render = _engine->_mapSystem->toggleRenderLayer(3);
-        printf(DBG_VERBOSE, "Render Layer 4 - %s", (render)? "enabled" : "disabled");
+        printf(LOG_VERBOSE, "Render Layer 4 - %s", (render)? "enabled" : "disabled");
 	}
 
 	//Rendering layers
@@ -286,12 +286,12 @@ void DebugBase::processInput(GameInput& input) {
         if(isEnabled) {
             //_engine->_guiSystem->adventureLog.setEnabled(false);
             _engine->_guiSystem->fadeFgLayer(1.0f, false);
-            printf(DBG_VERBOSE, "Disable GUI Layer");
+            printf(LOG_VERBOSE, "Disable GUI Layer");
             isEnabled = false;
 		} else {
             //_engine->_guiSystem->adventureLog.setEnabled(true);
             _engine->_guiSystem->fadeFgLayer(1.0f, true);
-            printf(DBG_VERBOSE, "Enable GUI Layer");
+            printf(LOG_VERBOSE, "Enable GUI Layer");
             isEnabled = true;
 		}
         //GYVector3 disp = { 200.0f, 0.0f, 0.0f };
@@ -352,27 +352,27 @@ void DebugBase::processInput(GameInput& input) {
 		static bool enabled = true;
 		enabled = !enabled;
 		_engine->_collisionSystem->setEnabled(enabled);
-        if(enabled) Debug::printf(Debug::DBG_VERBOSE, "Collision Enabled");
-        else Debug::printf(Debug::DBG_VERBOSE, "Collision Disabled");
+        if(enabled) Debug::printf(Debug::LOG_VERBOSE, "Collision Enabled");
+        else Debug::printf(Debug::LOG_VERBOSE, "Collision Disabled");
 
 	}
 #if 0
     if(input.getTapped(GameInput::BUT_B)) {
         if(_engine->_collisionSystem->getBroadPhase()) {
             _engine->_collisionSystem->setBroadPhase(false);
-            Debug::printf(Debug::DBG_VERBOSE, "Sort and Sweep Disabled!");
+            Debug::printf(Debug::LOG_VERBOSE, "Sort and Sweep Disabled!");
         } else {
             _engine->_collisionSystem->setBroadPhase(true);
-            Debug::printf(Debug::DBG_VERBOSE, "Sort and Sweep Enabled!");
+            Debug::printf(Debug::LOG_VERBOSE, "Sort and Sweep Enabled!");
         }
     }
 #endif
 
 	if(input.getTapped(GameInput::BUT_L)) {
 		ADV_LOG_WRAP newWrap = (_advLogWrap < ADV_LOG_MAX-1)? (ADV_LOG_WRAP)(_advLogWrap+1) : (ADV_LOG_WRAP)0;
-        if(newWrap == ADV_LOG_ALL) Debug::printf(Debug::DBG_VERBOSE, "Adventure Log Wrapping Engine Debug");
-        else if(newWrap == ADV_LOG_LUA) Debug::printf(Debug::DBG_VERBOSE, "Adventure Log Wrapping Lua only");
-        else Debug::printf(Debug::DBG_VERBOSE, "Adventure Log Wrapping None");
+        if(newWrap == ADV_LOG_ALL) Debug::printf(Debug::LOG_VERBOSE, "Adventure Log Wrapping Engine Debug");
+        else if(newWrap == ADV_LOG_LUA) Debug::printf(Debug::LOG_VERBOSE, "Adventure Log Wrapping Lua only");
+        else Debug::printf(Debug::LOG_VERBOSE, "Adventure Log Wrapping None");
 		_advLogWrap = newWrap;
 	}
 
@@ -381,7 +381,7 @@ void DebugBase::processInput(GameInput& input) {
 		static bool enabled = true;
 		enabled = !enabled;
 		getRigidBodySys()->setGravityEnabled(enabled);
-        Debug::printf(Debug::DBG_VERBOSE, "Gravity %s.", (enabled)? "enabled" : "disabled");
+        Debug::printf(Debug::LOG_VERBOSE, "Gravity %s.", (enabled)? "enabled" : "disabled");
 #else
         bool usingGPU = _engine->_collisionSystem->_sortSweepPool.getUseGPU();
 
@@ -396,7 +396,7 @@ void DebugBase::processInput(GameInput& input) {
         static bool enabled = true;
         enabled = !enabled;
         getRigidBodySys()->setGravityEnabled(enabled);
-        Debug::printf(Debug::DBG_VERBOSE, "Gravity %s.", (enabled)? "enabled" : "disabled");
+        Debug::printf(Debug::LOG_VERBOSE, "Gravity %s.", (enabled)? "enabled" : "disabled");
 	}
 	if(input.getTapped(GameInput::BUT_6)) {
 		static bool enabled = false;
@@ -407,35 +407,35 @@ void DebugBase::processInput(GameInput& input) {
 		dirVec.z -= 0.1f;
         //gyVec3Normalize(&dirVec);
         //src->setDirection(dirVec);
-        printf(DBG_VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
+        printf(LOG_VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
 	}
 	if(input.getDown(GameInput::BUT_7)) {
 		++size;
 		dirVec.y += 0.1f;
 		gyVec3Normalize(&dirVec);
 		src->setDirection(dirVec);
-        printf(DBG_VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
+        printf(LOG_VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
 	}
 	if(input.getDown(GameInput::BUT_8)) {
 		if(size != 0) --size;
 		dirVec.y -= 0.1f;
 		gyVec3Normalize(&dirVec);
 		src->setDirection(dirVec);
-        printf(DBG_VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
+        printf(LOG_VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
 	}
 	if(input.getDown(GameInput::BUT_9)) {
 		dirVec.x += 0.1f;
 		theta += 0.1f;
 		gyVec3Normalize(&dirVec);
 		src->setDirection(dirVec);
-        printf(DBG_VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
+        printf(LOG_VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
 	}
 	if(input.getDown(GameInput::BUT_O)) {
 		dirVec.x -= 0.1f;
 		theta -= 0.1f;
 		gyVec3Normalize(&dirVec);
 		src->setDirection(dirVec);
-        printf(DBG_VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
+        printf(LOG_VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
 	}
 
 	if(input.getTapped(GameInput::BUT_R)) {
@@ -443,7 +443,7 @@ void DebugBase::processInput(GameInput& input) {
         static Entity* julien = getCurrentArea()->findEntity("Julien");
 #if 0
 		getLightSys()->setRenderDebugEnabled(renderDebug);
-        printf(DBG_VERBOSE, "LightSystem::renderShadowVolumes = %d", renderDebug);
+        printf(LOG_VERBOSE, "LightSystem::renderShadowVolumes = %d", renderDebug);
 #else
         if(freeCam) getCameraSys()->setFollowEntity(nullptr);
         else getCameraSys()->setFollowEntity(julien);
@@ -605,7 +605,7 @@ void DebugBase::processInput(GameInput& input) {
 			lightSrc->setShadowCaster(true);
 			attrib->setAttenuationFactors(GYVector3{ 0.00001f, 0.00001f, 0.00001f });
 
-            Debug::printf(DBG_VERBOSE, "Adding light - %d", count);
+            Debug::printf(LOG_VERBOSE, "Adding light - %d", count);
 
 			//getCameraSys()->setCustomCameraState(lightSrc->getCameraState());
 
@@ -642,14 +642,14 @@ void DebugBase::processInput(GameInput& input) {
 			unsigned elev = leader->getElev();
             elev = (elev < ELYSIAN_TILE_ENTRY_ELEV_MAX)? elev+1 : 0;
 			leader->setElev(elev);
-            printf(DBG_VERBOSE, "Player.elevation - %d", elev);
+            printf(LOG_VERBOSE, "Player.elevation - %d", elev);
 		}
 	}
 	//Display players' tile position
 /*	if(input.getTapped(GameInput::BUT_M)) {
 		Entity *player1 = _engine->_partySystem->getPartyLeader();
 		if(player1) {
-            printf(DBG_VERBOSE, "<%d, %d>\n",  ((int)player1->transform._pos.x+16)/32, ((int)player1->transform._pos.y+16)/32);
+            printf(LOG_VERBOSE, "<%d, %d>\n",  ((int)player1->transform._pos.x+16)/32, ((int)player1->transform._pos.y+16)/32);
 		}
 	}*/
 
@@ -675,7 +675,7 @@ bool DebugBase::parseArguments(void) {
 	strcpy(_cmdLineArgs.area, ELYSIAN_DEBUG_AREA_DEFAULT);
 
 	if (gyFileOpen(ELYSIAN_DEBUG_ARG_FILE, "r", &file)) {
-        printf(DBG_VERBOSE, "Debug::parseArguments(void) - initializing from '%s'", ELYSIAN_DEBUG_ARG_FILE);
+        printf(LOG_VERBOSE, "Debug::parseArguments(void) - initializing from '%s'", ELYSIAN_DEBUG_ARG_FILE);
         Debug::push();
 		if (!gyFileLength(file, &buffer_len)) {
 			return 0;
@@ -688,7 +688,7 @@ bool DebugBase::parseArguments(void) {
 		bufptr = buffer;
 		while(sscanf(bufptr, "%s", argBuff[argc]) != EOF) {
 			argv[argc + 1] = argBuff[argc]; //yes, I'm really doing this.
-            printf(DBG_VERBOSE, "argv[%d] - %s", argc + 1, argv[argc + 1]);
+            printf(LOG_VERBOSE, "argv[%d] - %s", argc + 1, argv[argc + 1]);
 			bufptr += strlen(argBuff[argc]) + 1;
 			++argc;
 		}
@@ -699,7 +699,7 @@ bool DebugBase::parseArguments(void) {
 		return parseArguments(argc+1, argv);
 
     } else {
-        //printf(DBG_WARNING, "gamma_args.txt not found! Shitting pants!");
+        //printf(LOG_WARNING, "gamma_args.txt not found! Shitting pants!");
     }
     //#endif
 	return false;
@@ -708,11 +708,11 @@ bool DebugBase::parseArguments(void) {
 bool DebugBase::parseArguments(int argc, char *argv[]) {
 	if(argc <= 1) return parseArguments(); //default init
 
-    printf(DBG_VERBOSE, "Debug::parseArguments(%d, char *argv[])", argc);
+    printf(LOG_VERBOSE, "Debug::parseArguments(%d, char *argv[])", argc);
     Debug::push();
 	for(unsigned int i = 1; i < (unsigned int)argc; ++i) {
 		if(argv[i][0] != '-') {
-            printf(DBG_WARNING, "! - Unrecognized command-line argument: %s", argv[i]);
+            printf(LOG_WARNING, "! - Unrecognized command-line argument: %s", argv[i]);
 			continue;
 		}
 
@@ -738,7 +738,7 @@ bool DebugBase::parseArguments(int argc, char *argv[]) {
 				_cmdLineArgs.resolution = atoi(argv[++i]);
 				break;
 			default:
-                printf(DBG_WARNING, "! - Unrecognized command-line argument: %s", argv[i]);
+                printf(LOG_WARNING, "! - Unrecognized command-line argument: %s", argv[i]);
 		}
 	}
     Debug::pop();

@@ -2,7 +2,7 @@
 #define ELYSIAN_ENTITY_HPP
 
 #ifdef ELYSIAN_ENGINE
-#   include <elysian_entity_base.hpp>
+#   include <level/elysian_entity_base.hpp>
 namespace elysian {
     typedef EntityBase Entity;
 }

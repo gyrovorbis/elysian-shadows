@@ -48,6 +48,9 @@
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_DC
 
+#	define GYRO_MATRIX4_ALIGN			__attribute__((aligned(32)));
+#	define GYRO_VECTOR4_ALIGN			__attribute__((aligned(32)));
+
 #   define GYRO_ENDIAN GYRO_ENDIAN_LITTLE
 #   ifndef GYRO_MATH_SOFTWARE
 #       define GYRO_MATH_ACCELERATION
@@ -56,6 +59,11 @@
 #       define GYRO_MATRIX_ACCELERATION
 #   endif
 
+#	define GYRO_INPUT_PLATFORM_INCLUDE      "dc/gyro_input_dc.h"
+#	define GYRO_MATH_PLATFORM_INCLUDE       "dc/gyro_math_dc.inl"
+#	define GYRO_MATRIX_PLATFORM_INCLUDE     "dc/gyro_matrix_dc.inl"
+#	define GYRO_VIDEO_PLATFORM_INCLUDE      "dc/gyro_video_dc.h"
+#	define GYRO_TEXTURE_PLATFORM_INCLUDE    "dc/gyro_texture_dc.h"
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_PSP
 

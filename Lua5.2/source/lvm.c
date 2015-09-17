@@ -574,7 +574,7 @@ void luaV_execute (lua_State *L) {
         (--L->hookcount == 0 || L->hookmask & LUA_MASKLINE)) {
       Protect(traceexec(L));
     }
-    /* DBG_WARNING: several calls may realloc the stack and invalidate `ra' */
+    /* LOG_WARNING: several calls may realloc the stack and invalidate `ra' */
     ra = RA(i);
     lua_assert(base == ci->u.l.base);
     lua_assert(base <= L->top && L->top < L->stack + L->stacksize);

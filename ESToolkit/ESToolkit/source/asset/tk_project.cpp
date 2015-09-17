@@ -104,7 +104,7 @@ Level *Project::loadLevel(const QString path) {
 bool Project::saveLevel(const QString name) {
 	Level *lev = getLevel(name);
 	if(lev) return lev->saveAll();
-    Debug::Logf(Debug::DBG_WARNING, "Level %s does not exist!\n", name.toStdString().c_str());
+    Debug::Logf(Debug::LOG_WARNING, "Level %s does not exist!\n", name.toStdString().c_str());
     return false;
 }
 
@@ -144,7 +144,7 @@ bool Project::removeLevel(const QString path, const bool deleteFolder) {
 			_level.erase(_level.begin() + i);
             if(deleteFolder) {
                 if(!FileUtilities::removeDir(FileUtilities::getAbsoluteAssetPath(temp->getNodePath()))) {
-                    Debug::Logf(Debug::DBG_ERROR, "Could not delete directory '%s'", Q_CSTR(temp->getNodePath()));
+                    Debug::Logf(Debug::LOG_ERROR, "Could not delete directory '%s'", Q_CSTR(temp->getNodePath()));
                     success = false;
                 } else {
                     dbgprintf("Deleted directory successfully [%s]", Q_CSTR(temp->getNodePath()));
@@ -155,7 +155,7 @@ bool Project::removeLevel(const QString path, const bool deleteFolder) {
             return success;
         }
     }
-    Debug::Logf(Debug::DBG_WARNING, "Level %s could not be removed!", Q_CSTR(path));
+    Debug::Logf(Debug::LOG_WARNING, "Level %s could not be removed!", Q_CSTR(path));
     return false;
 }
 
@@ -170,7 +170,7 @@ bool Project::scanDirectory(const QString path) {
     bool success = true;
 
     if(!dir.isReadable()) {
-        Debug::printf(Debug::DBG_ERROR, "%s is not readable!", Q_CSTR(path));
+        Debug::printf(Debug::LOG_ERROR, "%s is not readable!", Q_CSTR(path));
         return false;
     }
 
@@ -216,7 +216,7 @@ bool Project::scanDirectory(const QString path) {
                 //}
             }
         } else {
-            Debug::printf(Debug::DBG_WARNING, "No levels found!");
+            Debug::printf(Debug::LOG_WARNING, "No levels found!");
             subDir->setValid(false);
         }
 
@@ -355,7 +355,7 @@ bool Project::load(const QString loc) {
     _curNodeParent = this;
 
     if(!dir.isReadable()) {
-        Debug::Log(Debug::DBG_WARNING, "Directory is not readable!");
+        Debug::Log(Debug::LOG_WARNING, "Directory is not readable!");
 		return false;
     }
 
@@ -368,7 +368,7 @@ bool Project::load(const QString loc) {
     _location = loc;
 
     if(!dir.cd("level")) {
-        Debug::Logf(Debug::DBG_ERROR, "No 'level' folder!");
+        Debug::Logf(Debug::LOG_ERROR, "No 'level' folder!");
         QDir::setCurrent(prevWorkingDir);
         return false;
     }
@@ -381,7 +381,7 @@ bool Project::load(const QString loc) {
 }
 
 bool Project::save(void) {
-    Debug::Log(Debug::DBG_VERBOSE, QString("Project::Save(" + _location + ")"));
+    Debug::Log(Debug::LOG_VERBOSE, QString("Project::Save(" + _location + ")"));
     Debug::push();
 	//Saving is just exporting to the same location.
 	bool success = saveAs(_location);
@@ -391,7 +391,7 @@ bool Project::save(void) {
 
 Level *Project::importLevel(const QString dir) {
     if(getLevel(QStringList(dir.split("/")).last())) {
-        Debug::Log(Debug::DBG_WARNING, "A level of the same name already exists within the current project!");
+        Debug::Log(Debug::LOG_WARNING, "A level of the same name already exists within the current project!");
         return nullptr;
     }
 
@@ -410,26 +410,26 @@ bool Project::saveAs(const QString dir) {
     bool newLoc = (dir != _location)? true : false;
     QDir qdir;
 
-    Debug::Log(Debug::DBG_VERBOSE, QString("Project::Save("+dir+")"));
+    Debug::Log(Debug::LOG_VERBOSE, QString("Project::Save("+dir+")"));
     Debug::push();
 
     if(newLoc && qdir.exists(dir)) { //Are we overriding another existing folder for a save as?
         if(QMessageBox::critical(NULL, tr("Warning!"), tr("A directory of the same name already exists at the specified location. Overwrite?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
             if(!qdir.rmdir(dir)) {
-                Debug::Log(Debug::DBG_WARNING, "Could not remove existing directory!\n");
+                Debug::Log(Debug::LOG_WARNING, "Could not remove existing directory!\n");
                 Debug::pop();
 				return false;
             }
         }
         else {
-            Debug::Log(Debug::DBG_VERBOSE, "Overwrite canceled.");
+            Debug::Log(Debug::LOG_VERBOSE, "Overwrite canceled.");
             Debug::pop();
 			return true; //They didn't want to overwrite, not an error.
         }
     }
    if(!qdir.exists(dir)) { //generate main project directory if it doesn't already exist
         if(!qdir.mkdir(dir)) {
-            Debug::Log(Debug::DBG_WARNING, "Could not create root directory!");
+            Debug::Log(Debug::LOG_WARNING, "Could not create root directory!");
             Debug::pop();
 			return false;
         }
@@ -437,7 +437,7 @@ bool Project::saveAs(const QString dir) {
 
     if(!qdir.exists(dir + "/level")) {
         if(!qdir.mkdir(dir + "/level")) {
-            Debug::Log(Debug::DBG_WARNING, "Could not create 'level' directory!");
+            Debug::Log(Debug::LOG_WARNING, "Could not create 'level' directory!");
             Debug::pop();
 			return false;
         }
@@ -463,7 +463,7 @@ bool Project::activate(void) {
 }
 
 bool Project::activateByLevel(Level *const level, Area *const area) {
-    //Debug::Log(Debug::DBG_VERBOSE, "Activating Project %s", getName().toStdString().c_str());
+    //Debug::Log(Debug::LOG_VERBOSE, "Activating Project %s", getName().toStdString().c_str());
     if(_active) {
         Q_EMIT activating(nullptr, level, area);
     }
@@ -482,7 +482,7 @@ void Project::onRemoveEntity(Level *const level, Area *const area, Entity *const
 
 bool Project::deactivate(void) {
     _active = false;
-    //Debug::Log(Debug::DBG_VERBOSE, "Deactivating Project %s", getName().toStdString().c_str());
+    //Debug::Log(Debug::LOG_VERBOSE, "Deactivating Project %s", getName().toStdString().c_str());
     return true;
 }
 

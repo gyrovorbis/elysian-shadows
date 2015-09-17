@@ -23,7 +23,7 @@ void AdventureLog::addLine(const TEXT_TYPE lineType, const char *line) {
 		
         //Manually add this to the beginning to prevent bitchy recursion:
         strcpy(_log[0], "Log file overflow! Resetting...");
-        _type[0] = TEXT_DBG_ERROR;
+        _type[0] = TEXT_LOG_ERROR;
         
         /* Push everything visible at the bottom of the log to the
 		 top+1 and start overwriting everything already there. */
@@ -179,7 +179,7 @@ void AdventureLog::render(void) {
             case TEXT_NORMAL:
 				r = g = b = 255;
                 break; 
-            case TEXT_DBG_ERROR:
+            case TEXT_LOG_ERROR:
 				r = 255;
 				g = b = 0;
                 break; 

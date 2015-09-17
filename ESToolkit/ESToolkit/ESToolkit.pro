@@ -8,7 +8,11 @@ TARGET = ESToolkit
 
 TEMPLATE = app
 
-!ios {
+dreamcast {
+    TARGET_EXT=".elf"
+}
+
+!ios: !dreamcast {
     QT += sql gui opengl network help
     tests {
         CONFIG += testcase
@@ -51,7 +55,7 @@ DEPENDPATH += 	../../AssetIO/include \
     ../../libGyro/include \
     ../../libGyro/include/kinetic
 
-!ios {
+!ios: !dreamcast{
     DEPENDPATH += include \
         include/asset \
         include/model \
@@ -78,7 +82,7 @@ INCLUDEPATH += ../../AssetIO/include \
     ../../ESGamma/lib/include \
     ../../Spine/include
 
-!ios {
+!ios: !dreamcast {
     INCLUDEPATH += include \
     include/asset \
     include/model \
@@ -198,7 +202,7 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
 
 
 
-!ios {
+!ios: !dreamcast {
 
     SOURCES += source/asset/tk_animation.cpp \
         source/asset/tk_area.cpp \
@@ -426,7 +430,7 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../AssetIO/include/utility/elysian_lua_table_ref.hpp \
     ../../AssetIO/include/utility/elysian_lua_variant.hpp
 
-!ios {
+!ios:!dreamcast {
     HEADERS +=  include/asset/tk_animation.h \
         include/asset/tk_area.h \
         include/asset/tk_asset_manager.h \
@@ -582,7 +586,7 @@ docs {
     DEFINES+=TOOLKIT_DOCUMENTATION_RESOURCES
 
     RESOURCES += resource/docs.qrc
-hold
+
 #	PHONY_DEPS=. FUCK THIS SHIT SO HARD!!!!
 #		docs.depends = FORCE
 #		docs.target = $$PWD/out/ESToolkit.qhc
@@ -600,6 +604,11 @@ macx {
     #DESTDIR = ../../executable
 #	CONFIG(release, debug|release):
     QMAKE_POST_LINK = "macdeployqt $${TARGET}.app -verbose=3"
+}
+
+dreamcast {
+    DESTDIR = ../../executable
+    QMAKE_POST_LINK="mv ../../executable/ESToolkit ../../executable/ESToolkit.elf"
 }
 
 ios {
@@ -625,6 +634,7 @@ win32 {
 linux {
     DESTDIR = ../../executable
 }
+
 
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../libGyro/qtcreator/libGyro/release/ -llibGyro
@@ -757,7 +767,19 @@ ios {
         -framework Vorbis
 }
 
-linux {
+dreamcast {
+
+    LIBS+=-L/home/jenkins/Dreamcast/cadcdev-kallistios/lib/dreamcast \
+        -L/home/jenkins/Dreamcast/cadcdev-kallistios/addons/lib/dreamcast \
+        -lstdc++ \
+        -lm \
+        -Wl,--start-group -lkallisti -lc -lgcc -Wl,--end-group \
+        -T/home/jenkins/Dreamcast/cadcdev-kallistios/utils/ldscripts/shlelf.xc \
+        -nodefaultlibs
+
+}
+
+else:linux {
     LIBS += \
         -lGL \
         -lopenal \

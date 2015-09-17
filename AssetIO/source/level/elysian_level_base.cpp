@@ -64,7 +64,7 @@ namespace elysian {
                                                        ELYSIAN_TILE_HEIGHT)))
         {
             success = false;
-            Debug::printf(Debug::DBG_ERROR, "FAILURE!");
+            Debug::printf(Debug::LOG_ERROR, "FAILURE!");
         }
         dbgpop();
 
@@ -118,7 +118,7 @@ namespace elysian {
         dbgpush();
 
 		if(!gyFileOpen(filename, "r", &fp)) {
-            Debug::printf(Debug::DBG_WARNING, "FAILURE!");
+            Debug::printf(Debug::LOG_WARNING, "FAILURE!");
             dbgpop();
 			return false;
 		}
@@ -166,7 +166,7 @@ namespace elysian {
         dbgpush();
 
 		if(!file) {
-            Debug::printf(Debug::DBG_WARNING, "FAILURE!");
+            Debug::printf(Debug::LOG_WARNING, "FAILURE!");
             dbgpop();
 			return false;
 		}

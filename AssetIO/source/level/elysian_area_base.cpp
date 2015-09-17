@@ -19,9 +19,11 @@
 #include <crtp/elysian_level.hpp>
 #include <crtp/elysian_lua_manager.hpp>
 #include <utility/elysian_generic.hpp>
+#if GYRO_PLATFORM != GYRO_PLATFORM_DC
 #include <glal/gyro_gl.h>
 #include <glal/gyro_shaders_glal.h>
 #include <glal/gyro_video_glal.h>
+#endif
 #include <gyro_file_api.h>
 #include <system/elysian_audio_system.hpp>
 
@@ -160,6 +162,7 @@ void AreaBase::resizeMap(const unsigned w, const unsigned h) {
 }
 
 void AreaBase::vboEntryFromTileEntry(GYVertex * const vboEntry, const TileEntry * const tileEntry, const unsigned x, const unsigned y) const {
+#if GYRO_PLATFORM != GYRO_PLATFORM_DC
 //const float zDelta = 1.1f;
     const GY_RECT_PLANE_TYPE planeType = tileEntry->getPlane();
     const GY_RECT_TEX_ORIENT texOrient = tileEntry->getOrient();
@@ -189,6 +192,7 @@ void AreaBase::vboEntryFromTileEntry(GYVertex * const vboEntry, const TileEntry 
             *tangent
         };
     }
+#endif
 }
 
 
@@ -275,7 +279,7 @@ bool AreaBase::loadMap(const char *const filename) {
     dbgpush();
 
     if (!gyFileOpen(filename, "rb", &fp)) {
-        Debug::printf(Debug::DBG_ERROR, "FAILURE!");
+        Debug::printf(Debug::LOG_ERROR, "FAILURE!");
         dbgpop();
         return false;
     }
@@ -308,7 +312,7 @@ bool AreaBase::saveMap(const char *const filename) {
      */
     FILE *file = fopen(filename, "wb");
     if(!file) {
-        Debug::printf(Debug::DBG_WARNING, "FAILURE!");
+        Debug::printf(Debug::LOG_WARNING, "FAILURE!");
         dbgpop();
         return false;
     }
@@ -331,20 +335,20 @@ bool AreaBase::loadEntities(const char *const /*filename*/) {
     Entity *currentEntity;
     unsigned int amount;
 
-    dbgprintf(LOG_DBG_VERBOSE, "Area::LoadEntities(%s)", filename);
+    dbgprintf(LOG_LOG_VERBOSE, "Area::LoadEntities(%s)", filename);
     dbgPush();
 
     if(!file.is_open())	{
-        dbgprintf(LOG_DBG_WARNING, "FAILURE - could not open file!");
+        dbgprintf(LOG_LOG_WARNING, "FAILURE - could not open file!");
         dbgPop();
         return false;
     }
 
     file >> amount;
-    dbgprintf(LOG_DBG_VERBOSE, "%d entities", amount);
+    dbgprintf(LOG_LOG_VERBOSE, "%d entities", amount);
     for(unsigned int i = 0; i < amount; ++i) {
         if(file.eof()) {
-            dbgprintf(LOG_DBG_WARNING, "FAILURE! - Unexpected end of file");
+            dbgprintf(LOG_LOG_WARNING, "FAILURE! - Unexpected end of file");
             dbgPop();
             return false;
         }
@@ -360,18 +364,18 @@ bool AreaBase::loadEntities(const char *const /*filename*/) {
 bool AreaBase::saveEntities(const char *const /*filename*/) {
 #if 0
     ofstream file(gyFilePath(filename));
-    dbgprintf(LOG_DBG_VERBOSE, "Area::SaveEntities(%s)", filename);
+    dbgprintf(LOG_LOG_VERBOSE, "Area::SaveEntities(%s)", filename);
     dbgPush();
 
     if(!file.is_open()) {
-        dbgprintf(LOG_DBG_WARNING, "FAILURE! - Could not open file.");
+        dbgprintf(LOG_LOG_WARNING, "FAILURE! - Could not open file.");
         dbgPop();
         return false;
     }
 
     file << entities.size() << endl;
     for(unsigned int i = 0; i < entities.size(); ++i) {
-        dbgprintf(LOG_DBG_VERBOSE, "Writing entity #%d", i);
+        dbgprintf(LOG_LOG_VERBOSE, "Writing entity #%d", i);
         entities[i]->save(file);
     }
 
@@ -381,6 +385,7 @@ bool AreaBase::saveEntities(const char *const /*filename*/) {
 }
 
 void AreaBase::freeVbo(void) {
+#if GYRO_PLATFORM != GYRO_PLATFORM_DC
     glDeleteBuffers(1, &vertexVbo);
     glDeleteBuffers(1, &elementVbo[0]);
     glDeleteBuffers(1, &elementVbo[1]);
@@ -396,11 +401,12 @@ void AreaBase::freeVbo(void) {
         maxIndex[i] = 0;
     }
     vboPopulated = false;
+#endif
 }
 
 void AreaBase::populateVbo(void) {
     if(vboPopulated) return;
-
+#if GYRO_PLATFORM != GYRO_PLATFORM_DC
     gyVidVertexArrayBind(0);
 
     glGenBuffers(1, &vertexVbo);
@@ -466,13 +472,14 @@ void AreaBase::populateVbo(void) {
  //   glBufferData(GL_ELEMENT_ARRAY_BUFFER, ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE*sizeof(GLushort), &elementsArray[0], GL_DYNAMIC_DRAW);
 
     gyVidVertexArrayBind(0);
+#endif
     vboPopulated = true;
 }
 
 void AreaBase::activate(void) {
     if(activated) return;
     if(!level || !level->tileSheet) {
-        Debug::printf(Debug::DBG_ERROR, "Parent level has no tilesheet. Area couldn't be activated!");
+        Debug::printf(Debug::LOG_ERROR, "Parent level has no tilesheet. Area couldn't be activated!");
         return;
     }
 
@@ -497,11 +504,12 @@ void AreaBase::setVboEntry(const TileEntry*const tileEntry, const unsigned l, co
     vboEntryFromTileEntry(entry, tileEntry, x, y);
 
     //ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
-
+#if GYRO_PLATFORM != GYRO_PLATFORM_DC
     glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
     glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_TILE_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(GYVertex), sizeof(GYVertex)*4, (void*)entry);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+#endif
 
 }
 
@@ -511,12 +519,13 @@ void AreaBase::setTileEntry(const unsigned l, const unsigned x, const unsigned y
     vboEntryFromTileEntry(entry, &e, x, y);
 
     ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
-
+#if GYRO_PLATFORM != GYRO_PLATFORM_DC
     glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
     glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_TILE_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(GYVertex), sizeof(GYVertex)*4, (void*)entry);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+#endif
 }
 
 Entity* AreaBase::getActiveEntityByIndex(const unsigned index) const {

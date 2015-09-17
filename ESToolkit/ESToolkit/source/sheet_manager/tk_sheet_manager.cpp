@@ -381,7 +381,7 @@ SourceSheetEntry *SheetManager::_createSourceSheetEntry(const QString filename, 
 	SourceSheetEntry *entry;
 	unsigned sheetWidth, sheetHeight;
 
-    Debug::Logf(Debug::DBG_VERBOSE, "SheetManager::_createSourceSheetEntry(%s)", filename.toStdString().c_str());
+    Debug::Logf(Debug::LOG_VERBOSE, "SheetManager::_createSourceSheetEntry(%s)", filename.toStdString().c_str());
     Debug::push();
 
 	if(!TileSheetUtilities::GetImageSize(filename, sheetWidth, sheetHeight)) {
@@ -527,7 +527,7 @@ bool SheetManager::saveOrDiscard(bool canCancel) {
 
 bool SheetManager::_save(void) {
 
-    Debug::Logf(Debug::DBG_VERBOSE, "SheetManager::_save(%s)", _destLevelDropdown->text().toStdString().c_str());
+    Debug::Logf(Debug::LOG_VERBOSE, "SheetManager::_save(%s)", _destLevelDropdown->text().toStdString().c_str());
     Debug::push();
 
 	Level *const level = AssetManager::getAssets()->getCurrentProject()->getLevel(_destLevelDropdown->text());
@@ -544,7 +544,7 @@ bool SheetManager::_save(void) {
     _assets.getUndoStack()->setClean();
 
 
-    if(!retVal) Debug::Logf(Debug::DBG_WARNING, "Could not reload sheet!");
+    if(!retVal) Debug::Logf(Debug::LOG_WARNING, "Could not reload sheet!");
     Debug::pop();
 	return retVal;
 }

@@ -1,9 +1,9 @@
-#include "gyro_timer.h"
+#include <gyro_timer_api.h>
 #include <kos.h>
 
 uint32_t _startTick = 0;
 
-unsigned long int gyTimerTicks(void) {
+int64_t gyTimerTicks(void) {
     return (timer_ms_gettime64()-_startTick);
 }
 

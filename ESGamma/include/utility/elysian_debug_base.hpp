@@ -13,21 +13,21 @@
 #define ELYSIAN_DEBUG_ARG_FILE_NAME         "gamma_args.txt"
 #define ELYSIAN_DEBUG_ARG_FILE				ASSETS_VROOT "/" ELYSIAN_DEBUG_ARG_FILE_NAME
 #define ELYSIAN_GLOBAL_INIT_LUA_PATH		ASSETS_VROOT "/scripts/global_init.lua"
-#define ELYSIAN_DEBUG_LOG_SEVERITY_DEFAULT		Debug::DBG_VERBOSE
+#define ELYSIAN_DEBUG_LOG_SEVERITY_DEFAULT		Debug::LOG_VERBOSE
 #define ELYSIAN_DEBUG_LIBGYRO_SEVERITY_DEFAULT GY_DEBUG_VERBOSE
 #define ELYSIAN_DEBUG_LEVEL_DEFAULT			ASSETS_VROOT "/level/bullshit/caves_test"
 #define ELYSIAN_DEBUG_AREA_DEFAULT			ELYSIAN_DEBUG_LEVEL_DEFAULT "/area/caves_test01"
 #define ELYSIAN_DEBUG_PREFIX_STACK          "\t"
-#define ELYSIAN_DEBUG_PREFIX_DBG_ERROR          "X - "
-#define ELYSIAN_DEBUG_PREFIX_DBG_WARNING       "! - "
+#define ELYSIAN_DEBUG_PREFIX_LOG_ERROR          "X - "
+#define ELYSIAN_DEBUG_PREFIX_LOG_WARNING       "! - "
 
 #define ELYSIAN_DEBUG_LOG_PRINTF(level, ...) do { \
                                                 Debug::printf(Debug::level, __VA_ARGS__); \
                                             } while(0)
 
-#define dbgprintf(...)                      ELYSIAN_DEBUG_LOG_PRINTF(DBG_VERBOSE,   __VA_ARGS__)
-#define warnprintf(...)                     ELYSIAN_DEBUG_LOG_PRINTF(DBG_WARNING,  __VA_ARGS__)
-#define errprintf(...)                      ELYSIAN_DEBUG_LOG_PRINTF(DBG_ERROR,     __VA_ARGS__)
+#define dbgprintf(...)                      ELYSIAN_DEBUG_LOG_PRINTF(LOG_VERBOSE,   __VA_ARGS__)
+#define warnprintf(...)                     ELYSIAN_DEBUG_LOG_PRINTF(LOG_WARNING,  __VA_ARGS__)
+#define errprintf(...)                      ELYSIAN_DEBUG_LOG_PRINTF(LOG_ERROR,     __VA_ARGS__)
 
 #define dbgpush()                           Debug::push()
 #define dbgpop()                            Debug::pop()
@@ -53,8 +53,8 @@ namespace elysian {
     class DebugBase: public System {
 	public:
         enum SOURCE             { LIBGYRO, ENGINE, LUA };
-        enum SEVERITY           { DBG_VERBOSE, DBG_WARNING, DBG_ERROR, DBG_OFF };
-        enum ADV_LOG_WRAP       { ADV_LOG_ALL, ADV_LOG_LUA, ADV_LOG_DBG_OFF, ADV_LOG_MAX };
+        enum SEVERITY           { LOG_VERBOSE, LOG_WARNING, LOG_ERROR, LOG_OFF };
+        enum ADV_LOG_WRAP       { ADV_LOG_ALL, ADV_LOG_LUA, ADV_LOG_LOG_OFF, ADV_LOG_MAX };
 
     protected:
         //Taken from elysian_asset.hpp cmd-line arg list
@@ -82,8 +82,8 @@ namespace elysian {
     public:
         //Invoked by Engine
         static void             printf(const SEVERITY level, const char *const string, ...);
-        //Invoked by Lua (always DBG_VERBOSE, not silenced with the rest)
-        static void             luaPrint(const char *string, const SEVERITY lev = DBG_VERBOSE);
+        //Invoked by Lua (always LOG_VERBOSE, not silenced with the rest)
+        static void             luaPrint(const char *string, const SEVERITY lev = LOG_VERBOSE);
 
         static void             push(void);
         static void             pop(const unsigned count=1);

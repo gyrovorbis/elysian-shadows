@@ -47,7 +47,7 @@ extern "C"
 	#include <direct.h>
 	#define get_current_dir _getcwd
 	#define DIRECTORY_SEPARATOR "\\"
-#elif defined(linux) || defined (__linux) || defined(__linux__) || defined(__APPLE__)
+#elif defined(linux) || defined (__linux) || defined(__linux__) || defined(__APPLE__) || defined(_arch_dreamcast)
 	#include <unistd.h>
 	#define get_current_dir getcwd
 	#define DIRECTORY_SEPARATOR "/"

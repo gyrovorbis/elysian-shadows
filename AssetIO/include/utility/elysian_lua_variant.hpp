@@ -2,6 +2,7 @@
 #define ELYSIAN_LUA_VARIANT_HPP
 
 #include <crtp/elysian_lua_manager.hpp>
+#include <stdlib.h>
 
 #define ELYSIAN_LUA_VARIANT_TYPE_BIT_POS	0
 #define ELYSIAN_LUA_VARIANT_TYPE_BIT_MASK	0x0f

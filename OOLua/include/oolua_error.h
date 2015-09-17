@@ -28,12 +28,12 @@ THE SOFTWARE.
 	\details When the library is compiled with \ref OOLUA_USE_EXCEPTIONS == 1
 	it will include the \ref oolua_exception.h header and provide dummy
 	implementations for OOLUA::get_last_error and OOLUA::reset_error_value.
-	When compiled with \ref OOLUA_STORE_LAST_DBG_ERROR == 1 it provides implementations
+	When compiled with \ref OOLUA_STORE_LAST_LOG_ERROR == 1 it provides implementations
 	for \ref OOLUA::get_last_error and \ref OOLUA::reset_error_value.
 	\see \ref OOLuaConfig
 */
-#ifndef OOLUA_DBG_ERROR_H_
-#	define OOLUA_DBG_ERROR_H_
+#ifndef OOLUA_LOG_ERROR_H_
+#	define OOLUA_LOG_ERROR_H_
 
 #include "oolua_config.h"
 
@@ -56,13 +56,13 @@ namespace OOLUA
 	/** \brief Reset the error state such that a call to OOLUA::get_last_error
 		will return an empty string.
 		\see OOLuaErrorReporting
-		\note This function is a nop when \ref OOLUA_STORE_LAST_DBG_ERROR is not enabled
+		\note This function is a nop when \ref OOLUA_STORE_LAST_LOG_ERROR is not enabled
 	*/
 	void reset_error_value(lua_State* vm);
 	/** \brief Returns the last stored error
 		\return empty string if there is not an error else the error message
 		\see OOLuaErrorReporting
-		\note This function is a nop when \ref OOLUA_STORE_LAST_DBG_ERROR is not enabled
+		\note This function is a nop when \ref OOLUA_STORE_LAST_LOG_ERROR is not enabled
 	*/
 	std::string get_last_error(lua_State* vm);
 	/**@}*/

@@ -167,7 +167,7 @@ namespace elysian {
 
         static void					rPrintByIndex(const int index, const unsigned depth, const char* name);
         static void					rPrintByRef(const int ref, const unsigned depth, const char* name);
-        static void                 luaPrint(const char*const string, const Debug::SEVERITY severity = Debug::DBG_OFF);
+        static void                 luaPrint(const char*const string, const Debug::SEVERITY severity = Debug::LOG_OFF);
 
         static bool                 getMetatable(const int index);
         static void                 getGlobal(const char*const key);

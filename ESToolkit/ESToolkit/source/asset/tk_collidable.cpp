@@ -17,9 +17,9 @@ bool TkCollidable::validate(QString &str) const {
         return true;
     };
 
-    if(cAssert(_attrib, "DBG_ERROR: Collidable component has no attrib field.")) {
+    if(cAssert(_attrib, "LOG_ERROR: Collidable component has no attrib field.")) {
         cAssert(_attrib->getColliderType() == GY_COLLIDER_AABB || _attrib->getColliderType() == GY_COLLIDER_OBB,
-            "DBG_ERROR: Collidable component has invalid collider type!");
+            "LOG_ERROR: Collidable component has invalid collider type!");
 
     }
 

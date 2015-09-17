@@ -148,7 +148,7 @@ MSC_PUSH_DISABLE_CONDITIONAL_CONSTANT_OOLUA
 									&& INTERNAL::userdata_is_constant(static_cast<INTERNAL::Lua_ud *>(lua_touserdata(vm, index))) );
 				}
 				return 0;
-MSC_POP_COMPILER_DBG_WARNING_OOLUA
+MSC_POP_COMPILER_LOG_WARNING_OOLUA
 			}
 		};
 
