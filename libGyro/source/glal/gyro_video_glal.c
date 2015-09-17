@@ -371,7 +371,11 @@ static inline void _flushStreamVertices(void* data) {
 
 }
 
-static inline void _gyVidTriangleStrip(const struct _GYVector4 *const vertexArray, const unsigned int startIndex, const unsigned int amount) {
+#if 0
+static inline void _gyVidTriangleStrip(const GYVector4 *const vertexArray, const unsigned int startIndex, const unsigned int amount) {
+    (void)vertexArray;
+    (void)startIndex;
+    (void)amount;
     //glBindVertexArray(_defaultVao[gyVidShadowPass()]);
   //  glBindBuffer(GL_ARRAY_BUFFER, 0);
    // glDrawArrays(GL_TRIANGLE_STRIP, startIndex, amount);
@@ -379,8 +383,12 @@ static inline void _gyVidTriangleStrip(const struct _GYVector4 *const vertexArra
    // glBindVertexArray(0);
     _curTexCoordPtr = NULL;
 }
+#endif
 
 void gyVidTriangleStrip(const GYVector4 *const vertexArray, const unsigned int startIndex, const unsigned int amount) {
+    (void)vertexArray;
+    (void)startIndex;
+    (void)amount;
     //gyMatMultVec(vertexArray, _modelViewVertices, amount);
    // _gyVidTriangleStrip(_modelViewVertices, startIndex, amount);
 }
@@ -399,14 +407,14 @@ void gyVidTexCoordArray(const GYTexCoord2 *const ptr) {
     _curTexCoordPtr = ptr;
 }
 
-void gyVidTangentArray(const struct _GYVector3 *const ptr) {
+void gyVidTangentArray(const GYVector3 *const ptr) {
     if(gyVidShadowPass()) return;
     //glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, 0, ptr);
     //glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_TANGENT]);
     glalTangentVector = ptr;
 }
 
-void gyVidNormalArray(const struct _GYVector3 *const ptr) {
+void gyVidNormalArray(const GYVector3 *const ptr) {
     if(gyVidShadowPass()) return;
     //glVertexAttribPointer(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, 0, ptr);
     //glEnableVertexAttribArray(glalCurLightShader->attribLoc[GLAL_SHADER_NORMAL]);
