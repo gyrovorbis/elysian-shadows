@@ -1,8 +1,8 @@
-#include "gyro_video.h"
-#include "gyro_matrix.h"
-#include "gyro_texture.h"
-#include "gyro_system.h"
-#include "stripheader.h"
+#include <gyro_video_api.h>
+#include <gyro_matrix_api.h>
+#include <gyro_texture_api.h>
+#include <gyro_system_api.h>
+//#include "stripheader.h"
 #include <stdint.h>
 #include <assert.h>
 
@@ -43,7 +43,7 @@ static const GYVector4 localVert[4]  = {
 //Internal transformed vertex buffer (SH4 handles transformations on DC)
 static GYVector4 _worldVert[GYRO_WORLD_VERT_BUFSIZE];
 //current pvr texture
-static texture_t *_shTex = NULL;
+//static texture_t *_shTex = NULL;
 static GYTexCoordSheet *_texCoordSheet = NULL;
 //current pvr vertex list
 static pvr_list_t _list = PVR_LIST_OP_POLY;
@@ -55,13 +55,14 @@ static const GYTexCoord2 *_texCoordArray = NULL;
 static const GYColor4 *_colorArray = NULL;
 //texture orientation
 static GY_RECT_TEX_ORIENT _texOrient = GY_RECT_TEX_ORIENT_NORMAL;
-
+#if 0
 //Debug callback supplied to Tvspelsfreak's SH (Strip Header) library
 static void shErrorCallback(SHERROR error, const char *fname) {
     _gyLog(GY_DEBUG_CRITICAL, "DC_SHLIB ERROR! code: %d, fname: %s\n", error, fname);
 }
+#endif
 
-int gyVidInit(const GYVidInitParams *const params) {
+int gyVidInit(const struct GYVidInitParams *const params) {
     //KOS automatically initializes 640x480 video mode
     //TODO: Init param choosing between 320x240 and 640x480!
     _projWidth = 640;
@@ -93,9 +94,23 @@ int gyVidInit(const GYVidInitParams *const params) {
     pvr_set_pal_format(PVR_PAL_ARGB8888);
 
     //resgister debug function pointer to Tvspelsfreak's SHlib
-    shErrorHandler(&shErrorCallback);
+   // shErrorHandler(&shErrorCallback);
     return 1;
 }
+
+void gyVidCamUpdate(const GYCamera *const cam) {
+}
+
+void gyVidSetCamWorldPos(const GYVector3*const pos) {
+}
+
+
+void gyVidClearColor(const GYColor4 color) {
+
+}
+
+void gyVidRectPlaneType(const GY_RECT_PLANE_TYPE type) {}
+
 
 void gyVidResolution(unsigned int *const width, unsigned int *const height) {
     *width = _projWidth;
@@ -122,10 +137,10 @@ void gyVidSceneEnd(void) {
 void gyVidTexBind(const GYTexture *const tex) {
     //update our cached PVR texture
     if(tex) {
-        _shTex = tex->_data;
+        //_shTex = tex->_data;
         _texCoordSheet = tex->_coord;
     } else {
-        _shTex = NULL;
+       // _shTex = NULL;
         _texCoordSheet = NULL;
     }
 }
@@ -142,7 +157,7 @@ void gyVidColorArray(const GYColor4 *const ptr) {
     _colorArray = ptr;
 }
 
-void gyVidTexCoordArray(const struct _GYTexCoord2 *const ptr) {
+void gyVidTexCoordArray(const struct GYTexCoord2 *const ptr) {
     _texCoordArray = ptr;
 }
 
@@ -150,7 +165,10 @@ void gyVidRectTexOrient(const GY_RECT_TEX_ORIENT orient) {
     _texOrient = orient;
 }
 
-static inline void gyVidTexCoordArrayFromFrame(GYTexCoord2 *const coord, const GYTexCoordFrame *const frame) {
+#if 0
+const struct GYTexCoord2* gyVidTexCoordArrayFromFrame(const struct GYTexCoordFrame*const frame,
+                                               const GY_RECT_TEX_ORIENT orient) {
+
 	switch(_texOrient) {
 		case GY_RECT_TEX_ORIENT_NORMAL:
 /*
@@ -232,13 +250,15 @@ static inline void gyVidTexCoordArrayFromFrame(GYTexCoord2 *const coord, const G
 		default:
 			assert(0);
     }
+
 }
+#endif
 
 /*
   Triangle strip API works like OGL's vertex array API.
 */
 void gyVidTriangleStrip(const GYVector4 *const vertexArray, const unsigned int startIndex, const unsigned int amount) {
-    stripheader_t header;
+ //   stripheader_t header;
     unsigned int i;
     register uint32_t *ptr = (uint32_t *)pvr_vertbuf_tail(_list);
 
@@ -253,8 +273,8 @@ void gyVidTriangleStrip(const GYVector4 *const vertexArray, const unsigned int s
     gyMatMultVec(vertexArray+startIndex, _worldVert, amount);
 
     //Commit polygon strip header
-    shInit(&header, (_shTex)? 4 : 0, _list, _shTex, NULL);
-    ptr += shCommit(&header, ptr);
+  //  shInit(&header, (_shTex)? 4 : 0, _list, _shTex, NULL);
+    //ptr += shCommit(&header, ptr);
 
     //Commit vertices
     //branch avoidance optimization here? Copy everything into one buffer with no branches?
@@ -273,7 +293,7 @@ void gyVidTriangleStrip(const GYVector4 *const vertexArray, const unsigned int s
 		}
 		--ptr; //padding
 		if(_texCoordArray) {
-            *--ptr = _texCoordArray[i].uv;//PVR_PACK_16BIT_UV(_texCoordArray[i].u, _texCoordArray[i].v);
+  //          *--ptr = _texCoordArray[i].uv;//PVR_PACK_16BIT_UV(_texCoordArray[i].u, _texCoordArray[i].v);
         }
         else {
             ptr -= 1;
@@ -296,7 +316,7 @@ void gyVidTriangleStrip(const GYVector4 *const vertexArray, const unsigned int s
 }
 
 void gyVidQuadListBegin(const GYColor4 *const color) {
-	stripheader_t header;	
+//	stripheader_t header;
     register uint32_t *ptr = (uint32_t *)pvr_vertbuf_tail(_list);
 
     //Initialize store queue transfers to bypass the cache
@@ -306,9 +326,9 @@ void gyVidQuadListBegin(const GYColor4 *const color) {
     ptr = _current_ptr;
   
     //Commit hardware sprite header
-    shInit(&header, (_shTex)? 16 : 15, _list, _shTex, NULL);
-    shSpriteColor(&header, (void*)color);
-    ptr += shCommit(&header, ptr);
+//    shInit(&header, (_shTex)? 16 : 15, _list, _shTex, NULL);
+    //shSpriteColor(&header, (void*)color);
+  //  ptr += shCommit(&header, ptr);
     _current_ptr = ptr;
 }
 
@@ -322,7 +342,7 @@ void gyVidQuadListEnd(void) {
   Hardware sprites are optimized structures on the Dreamcast that
   can be packed into a single vertex (rather than 4 for a quad).
   */
-void gyVidRect(const unsigned int frame) {
+void gyVidRect(const int frame) {
   /*  static GYVector4 localVert[4]  = {
         {-0.5f, -0.5f, 1.0f, 1.0f},
         {0.5f, -0.5f, 1.0f, 1.0f},
@@ -341,10 +361,12 @@ void gyVidRect(const unsigned int frame) {
     //commit hardware sprite vertex
     ptr += 16; //64-byte vertex
     if(texCoordFrame) {
+#if 0
         gyVidTexCoordArrayFromFrame(texCoord, texCoordFrame);
         *--ptr = texCoord[2].uv;
         *--ptr = texCoord[1].uv;
         *--ptr = texCoord[0].uv;
+#endif
         //*--ptr = texCoordFrame->botRight.uv; //prepacking these bitches is
         //*--ptr = texCoordFrame->topRight.uv; //a potential optimization
         //*--ptr = texCoordFrame->topLeft.uv; //(that has now been implemented)
@@ -374,7 +396,7 @@ void gyVidRect(const unsigned int frame) {
     _current_ptr = ptr;
 }
 
-void gyVidQuad(const GYVector4 *const verts, const unsigned frame) {
+void gyVidQuad(const struct GYVector4 *const verts, const int frame) {
     register uint32_t *ptr = _current_ptr;
     GYTexCoordFrame *texCoordFrame = (_texCoordSheet)? &_texCoordSheet->texCoord[frame] : NULL;
     GYTexCoord2 texCoord[3];
@@ -385,10 +407,12 @@ void gyVidQuad(const GYVector4 *const verts, const unsigned frame) {
     //commit hardware sprite vertex
     ptr += 16; //64-byte vertex
     if(texCoordFrame) {
+#if 0
         gyVidTexCoordArrayFromFrame(texCoord, texCoordFrame);
         *--ptr = texCoord[2].uv;
         *--ptr = texCoord[1].uv;
         *--ptr = texCoord[0].uv;
+#endif
         //*--ptr = texCoordFrame->botRight.uv; //prepacking these bitches is
         //*--ptr = texCoordFrame->topRight.uv; //a potential optimization
         //*--ptr = texCoordFrame->topLeft.uv; //(that has now been implemented) 
@@ -417,4 +441,49 @@ void gyVidQuad(const GYVector4 *const verts, const unsigned frame) {
 
     _current_ptr = ptr;
 }
+
+
+
+
+#include <gyro_shader_api.h>
+
+// ===== NEWFANGLED BULLSHIT ======
+int gyVidShadowPass(void) {}
+void gyVidLightingSetEnable(const int enabled) {}
+void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type){}
+void gyVidLightSourceUninit(GYLightSource* const light) {}
+void gyVidMaterialBind(const GYMaterial*const material) {}
+void gyVidLightSourceAdd(GYLightSource* const light){}
+void gyVidLightSourceRemove(const GYLightSource* const light) {}
+void gyVidSetGlobalAmbience(const GYVector4*const color) {}
+int gyShadersReloadAll(void) {}
+void gyVidLightSourceReplace(const GYLightSource*const old, GYLightSource*const next) {
+}
+
+void gyVidLightSourceClear(void) {}
+void gyVidLightSourceBeginShadowPasses(void) {}
+void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_MAP_FACE face) {}
+void gyVidLightSourceEndShadowPasses(void) {}
+unsigned gyVidDbgVertexRenderCount(void) { return 0; }
+unsigned gyVidDbgShaderUniformChangeCount(void) { return 0; }
+unsigned gyVidDbgTextureChangeCount(void) { return 0; }
+#include <spine/spine.h>
+void gyVidSkeleton(const spSkeleton*const skeleton) {}
+void gyVidDepthTest(const int enable){}
+void gyVidBlendMode(const GY_BLEND_MODE mode){}
+void gyVidVertexArrayBind(int id) {}
+void gyVidVertexBatchBegin(void (*flushCallback)(void*), void* obj) {
+
+}
+
+void gyVidVertexBatchEnd(void) {
+
+}
+
+void gyVidVertexBatchFlush(void) {
+}
+
+void glalVidNormalMapZFactorUpdateUniform(const float factor) {}
+void gyVidNormalMapBind(const GYTexture * const tex) {}
+void gyVidSpecularMapBind(const GYTexture * const tex) {}
 

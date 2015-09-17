@@ -1,7 +1,8 @@
 #ifndef GYRO_VIDEO_COMMON_H
 #define GYRO_VIDEO_COMMON_H
 
-#include "../gyro_matrix_api.h"
+#include <gyro_matrix_api.h>
+#include <math.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -90,6 +91,7 @@ static inline void gyVidCamOrthoProj(GYCamera* cam, const float pleft, const flo
 */
 }
 
+
 static inline void gyVidCamOrthoLookAt(GYCamera *cam, const GYVector3* pos, const float scale, const float angle, const GYVector3* dir) {
 
     unsigned scrWidth, scrHeight;
@@ -161,7 +163,7 @@ static inline void glalTranspose(GYMatrix4 mat) {
 }
 
 
-void gyVidCamFrustum(GYCamera* const cam, const float fov, const float aspect, const float znear, const float zfar);
+//void gyVidCamFrustum(GYCamera* const cam, const float fov, const float aspect, const float znear, const float zfar);
 
 // to perform cross product between 2 vectors in lookAtMat
 static inline void _lookAtCrossProd(float x1, float y1, float z1, float x2, float y2, float z2, float res[3])
@@ -418,6 +420,26 @@ static inline void gyVidCamFrustumLookAt(GYCamera* const cam, const GYVector3* c
 //int gyVidCamBoxWithinViewVolume(GYCamera* cam);
 
 
+static inline void gyVidCamFrustum(GYCamera* const cam, const float fov, const float aspect, const float znear, const float zfar) {
+    GYViewVolume* volume = &cam->viewVolume;
+
+    gyVidPerspectiveMat(cam->projMat, fov, aspect, znear, zfar);
+    cam->projType = GY_PROJECTION_PERSPECTIVE;
+
+    gyMatMultMat(cam->projViewMat, cam->projMat, cam->viewMat);
+
+    volume->ratio = aspect;
+    volume->nearD = znear;
+    volume->farD = zfar;
+    volume->angle = fov;
+
+    volume->tang = (float)tan(GY_ANG2RAD * volume->angle * 0.5);
+    volume->nh = volume->nearD * volume->tang;
+    volume->nw = volume->nh * volume->ratio;
+    volume->fh = volume->farD * volume->tang;
+    volume->fw = volume->fh * volume->ratio;
+
+}
 
 
 

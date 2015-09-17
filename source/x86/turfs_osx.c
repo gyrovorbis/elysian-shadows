@@ -50,7 +50,7 @@ TURFSAPI turfs_init(const char *author, const char *name, void *aactivity)
     CFRelease(resourcesURL);
 
     chdir(path);
-    _gyLog(GY_DEBUG_DBG_VERBOSE, "OSX working directory: %s", path);
+    _gyLog(GY_DEBUG_LOG_VERBOSE, "OSX working directory: %s", path);
     #endif
     // ----------------------------------------------------------------------------
 #endif
