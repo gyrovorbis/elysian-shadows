@@ -264,7 +264,7 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
             gyVidVertexBatchFlush();
             flushed = 1;
         }
-            glUniform1f(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SPOT_CUTDBG_OFF_ANGLE], light->spotCutoffAngle);
+            glUniform1f(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SPOT_CUTLOG_OFF_ANGLE], light->spotCutoffAngle);
             cache->spotCutoffAngle = light->spotCutoffAngle;
             ++glalUniformChangeCount;
     }

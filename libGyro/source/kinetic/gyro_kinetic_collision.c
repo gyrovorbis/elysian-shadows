@@ -523,7 +523,7 @@ int gyCollisionOBBvOBB(const GYBoxCollider *boxA,
        // edge = 1;
     }
 
-   /* _gyLog(GY_DEBUG_DBG_VERBOSE, "POC[%d] = <%f, %f>, A = <%f, %f>, B = <%f, %f>",
+   /* _gyLog(GY_DEBUG_LOG_VERBOSE, "POC[%d] = <%f, %f>, A = <%f, %f>, B = <%f, %f>",
            edge,
            con->worldPos.x, con->worldPos.y,
            boxA->collider.worldPos.x, boxA->collider.worldPos.y,

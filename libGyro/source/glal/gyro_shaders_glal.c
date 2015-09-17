@@ -372,7 +372,7 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
         shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SPOT_EXPONENT]					= _protectedUniformQuery(shader->program, buff, !light);
 
         sprintf(buff, "uLights[%d].spotCutoffAngle", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SPOT_CUTDBG_OFF_ANGLE]				= _protectedUniformQuery(shader->program, buff, !light);
+        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_SPOT_CUTLOG_OFF_ANGLE]				= _protectedUniformQuery(shader->program, buff, !light);
 
         sprintf(buff, "uLightsEnabled[%d]", i);
         shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_ENABLED]						= _protectedUniformQuery(shader->program, buff, !light);
@@ -466,7 +466,7 @@ void glalDefaultShadersLoadUniforms(void) {
     GYMatrix4 finalMat;
     glalGetPointLightProjectionMatrix(projMat, NULL);
     gyMatMultMat(finalMat, glalShadowTexCoordBiasMat, (const float (*)[4])projMat);
-    glUniformMatrix4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_SHADOW_CUBE_MAP_PROJ_MAT], 1, GL_FALSE, (float*)projMat); //NO TEX COORD DBG_OFFSET? WHAT THE FUCK!?
+    glUniformMatrix4fv(glalCurLightShader->uniformLoc[GLAL_SHADER_SHADOW_CUBE_MAP_PROJ_MAT], 1, GL_FALSE, (float*)projMat); //NO TEX COORD LOG_OFFSET? WHAT THE FUCK!?
 
     glalUniformChangeCount += 14;
 

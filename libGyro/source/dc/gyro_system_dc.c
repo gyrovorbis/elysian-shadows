@@ -1,10 +1,16 @@
-#include "gyro_system.h"
+#include <gyro_system_api.h>
 #include "gyro_defines.h"
 #include <kos.h>
 #include "stdio.h"
 #include "stdarg.h"
 
-int gySysInit() {
+int gySysAppExec(int argc, char* argv[]) {}
+
+int gyDebugInit(void) {
+    return 1;
+}
+
+int gySysInit(const GYSysInitParams*const params) {
     cont_btn_callback(0, CONT_START | CONT_A | CONT_B | CONT_X | CONT_Y, (void (*)(unsigned char, long  unsigned int))arch_exit);
     fs_chdir("/pc/");
     /* Quick test to make sure we've chrooted properly.

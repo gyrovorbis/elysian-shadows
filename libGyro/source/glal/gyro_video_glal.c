@@ -639,27 +639,6 @@ void gyVidRect(const int frame) {
 }
 
 
-void gyVidCamFrustum(GYCamera* const cam, const float fov, const float aspect, const float znear, const float zfar) {
-    GYViewVolume* volume = &cam->viewVolume;
-
-    gyVidPerspectiveMat(cam->projMat, fov, aspect, znear, zfar);
-    cam->projType = GY_PROJECTION_PERSPECTIVE;
-
-    gyMatMultMat(cam->projViewMat, cam->projMat, cam->viewMat);
-
-    volume->ratio = aspect;
-    volume->nearD = znear;
-    volume->farD = zfar;
-    volume->angle = fov;
-
-    volume->tang = (float)tan(GY_ANG2RAD * volume->angle * 0.5);
-    volume->nh = volume->nearD * volume->tang;
-    volume->nw = volume->nh * volume->ratio;
-    volume->fh = volume->farD * volume->tang;
-    volume->fw = volume->fh * volume->ratio;
-
-}
-
 //FUCKING GAY!!!! TRANSFORM IN PLACE!!!
 static float worldVertices[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE];
 //Spine interop
