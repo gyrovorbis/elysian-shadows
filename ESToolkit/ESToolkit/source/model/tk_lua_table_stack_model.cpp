@@ -33,16 +33,29 @@ void LuaTableStackModel::populateModel(void) {
     setHorizontalHeaderItem(1, new QStandardItem("Value"));
     //setHorizontalHeaderItem(2, new QStandardItem("Type"));
 
+    LuaVariant v;
+    v.setRef(_luaRef);
+
+    lua_newtable(*_mainState);
+    lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
+    lua_rawseti(*_mainState, -2, 1);
+    int ref = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
+
+    //luaL_unref(*_mainState, _luaRef);
+    //_luaRef = ref;
+
     QList<QStandardItem*> items;
-    _parentItem = PropertyStackModel::createReadOnlyItem("Lua Table");//ESTkStandardItem(QString("Lua Table"));
+    _parentItem = PropertyStackModel::createReadOnlyItem(v.getTypeString());//ESTkStandardItem(QString("Lua Table"));
     items.push_back(_parentItem);
-    items.push_back(PropertyStackModel::createReadOnlyItem());
+    auto* valItem = new LuaTableFieldItem(ref, QVariant(1), _parentItem);
+    items.push_back(valItem);
+
     //items.push_back(PropertyStackModel::createReadOnlyItem());
     QStandardItemModel::appendRow(items);
+    valItem->insertingModelItem();
 
-
-    _tableData = new LuaTableTableFieldData(_luaRef);
-    _tableData->insertTableFieldItems(_parentItem);
+    //_tableData = new LuaTableTableFieldData(_luaRef);
+    //_tableData->insertTableFieldItems(_parentItem);
 
     _populated = true;
 }
@@ -131,11 +144,12 @@ LuaTableFieldItem::~LuaTableFieldItem(void) {
 
 inline void LuaTableFieldItem::setDirty(const bool val) {
     if(val) {
-        for(int i = 0; i < rowCount(); ++i) {
-            auto&& row = takeRow(i);
+        while(_labelItem->rowCount()) {
+            auto&& row = _labelItem->takeRow(0);
             for(int j = 0; j < row.size(); ++j) {
                 delete row[j];
             }
+
         }
     }
 }
@@ -154,42 +168,44 @@ QStyledItemDelegate* LuaTableFieldItem::getStyledItemDelegate(void) const {
         LuaManager::stackBalanceBegin();
         int top = lua_gettop(*_mainState);
 
-#if 11
+//#if 11
         lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
         lua_getmetatable(*_mainState, -1);
         LuaManager::getMetatable(-1);
         lua_getfield(*_mainState, -1, ELYSIAN_LUA_TABLE_STACK_MODEL_DELEGATE_METAFIELD);
-#else
-        lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
-        //lua_getmetatable(*_mainState, -1);
-        lua_getfield(*_mainState, -1, ELYSIAN_LUA_PROXY_TYPE_METAFIELD);
 
         if(lua_isnil(*_mainState, -1)) {
-            lua_pop(*_mainState, lua_gettop(*_mainState)-top);
-            LuaManager::stackBalanceEnd();
-            return nullptr;
-        }
 
-        QString registryName;
-        OOLUA::pull(*_mainState, registryName);
+//#else
+            //lua_pop(*_mainState, 3);
+            lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
+            lua_getfield(*_mainState, -1, ELYSIAN_LUA_PROXY_TYPE_METAFIELD);
 
-        LuaManager::getGlobal(Q_CSTR(registryName));
+            if(lua_isnil(*_mainState, -1)) {
+                lua_pop(*_mainState, lua_gettop(*_mainState)-top);
+                LuaManager::stackBalanceEnd();
+                return nullptr;
+            }
 
-        if(lua_isnil(*_mainState, -1)) {
-            lua_pop(*_mainState, lua_gettop(*_mainState)-top);
-            LuaManager::stackBalanceEnd();
-            return nullptr;
-        }
+            QString registryName;
+            OOLUA::pull(*_mainState, registryName);
 
-        lua_getfield(*_mainState, -1, ELYSIAN_LUA_TABLE_STACK_MODEL_DELEGATE_METAFIELD);
+            LuaManager::getGlobal(Q_CSTR(registryName));
 
+            if(lua_isnil(*_mainState, -1)) {
+                lua_pop(*_mainState, lua_gettop(*_mainState)-top);
+                LuaManager::stackBalanceEnd();
+                return nullptr;
+            }
 
-#endif
-
-        if(lua_isnil(*_mainState, -1)) {
-            lua_pop(*_mainState, lua_gettop(*_mainState)-top);
-            LuaManager::stackBalanceEnd();
-            return nullptr;
+            //TK_LUA_TABLE_DELEGATE_FIELD_KEY
+            lua_getfield(*_mainState, -1, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
+            if(lua_isnil(*_mainState, -1)) {
+                lua_pop(*_mainState, lua_gettop(*_mainState)-top);
+                LuaManager::stackBalanceEnd();
+                return nullptr;
+            }
+//#endif
         }
 
         OOLUA::push(*_mainState, _key);
@@ -207,6 +223,7 @@ QStyledItemDelegate* LuaTableFieldItem::getStyledItemDelegate(void) const {
 
         lua_pop(*_mainState, lua_gettop(*_mainState)-top);
         LuaManager::stackBalanceEnd();
+
 
     }
 

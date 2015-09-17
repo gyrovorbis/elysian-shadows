@@ -10,6 +10,7 @@
 #include <QMenu>
 #include <QInputDialog>
 #include <QAction>
+#include <crtp/elysian_lua_variant.hpp>
 //#include <utility/elysian_lua_table_ref.hpp>
 
 #include <model/tk_property_item_delegate.h>
@@ -85,12 +86,14 @@ bool PropertyItemProxyDelegate::editorEvent(QEvent *event, QAbstractItemModel *m
     auto* propItem = (item && item->type() >= QStandardItem::UserType)? static_cast<ESTkStandardItem*>(item) : nullptr;
 
     if(propItem) {
-        if(propItem->getStyledItemDelegate()) {
+        QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
+
+        if(propItem->getStyledItemDelegate() && mouseEvent->button() != Qt::RightButton) {
             return static_cast<PropertyItemDelegate*>(propItem->getStyledItemDelegate())->editorEvent(event, model, option, index);
         }
 
         auto* luaItem = (propItem->type() == (int)ESTkStandardItemType::LuaTable)? static_cast<LuaTableFieldItem*>(propItem) : nullptr;
-        if (luaItem && (luaItem->getValueLuaType() == LUA_TTABLE || luaItem->getParentLuaType() == LUA_TTABLE)) {
+        if (luaItem && (luaItem->getValueLuaType() == LUA_TTABLE || luaItem->getParentLuaType() == LUA_TTABLE || luaItem->getValueLuaType()==LUA_TUSERDATA || luaItem->getParentLuaType() == LUA_TUSERDATA)) {
             if(!_defaultTableDelegate) {
                 _defaultTableDelegate = new FileBrowserPropertyItemDelegate;
             }
@@ -107,11 +110,11 @@ bool PropertyItemProxyDelegate::editorEvent(QEvent *event, QAbstractItemModel *m
 
 
 
-QWidget* EnumDropdownPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const {
+QWidget* EnumDropdownPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem& /*option*/, const QModelIndex& /*index*/) const {
     auto* editor = new QComboBox(parent);
     editor->setFocusPolicy(Qt::WheelFocus);
 
-    for(unsigned i = 0; i < _stringNames.size(); ++i) {
+    for(unsigned i = 0; i < (unsigned)_stringNames.size(); ++i) {
         editor->addItem(_stringNames[i], i);
     }
     return editor;
@@ -144,7 +147,7 @@ void EnumDropdownPropertyItemDelegate::setModelData(QWidget *editor, QAbstractIt
 
 
 
-QWidget* SpinboxPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const {
+QWidget* SpinboxPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem& /*option*/, const QModelIndex& /*index*/) const {
     auto* editor = new QSpinBox(parent);
     editor->setMaximum(_max);
     editor->setMinimum(_min);
@@ -179,7 +182,7 @@ FileBrowserPropertyItemDelegate::FileBrowserPropertyItemDelegate(void) {
 
 }
 
-QWidget* FileBrowserPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const {
+QWidget* FileBrowserPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem& /*option*/, const QModelIndex &index) const {
 
     auto* model = static_cast<const PropertyStackModel*>(index.model());
     auto* item = static_cast<ESTkStandardItem*>(model->itemFromIndex(index));
@@ -217,14 +220,14 @@ QWidget* FileBrowserPropertyItemDelegate::createEditor(QWidget *parent, const QS
     return _parentWidget;
 }
 
-void FileBrowserPropertyItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
+void FileBrowserPropertyItemDelegate::setEditorData(QWidget* /*editor*/, const QModelIndex &index) const {
     auto* model = static_cast<const PropertyStackModel*>(index.model());
     auto* item = static_cast<ESTkStandardItem*>(model->itemFromIndex(index));
 
     _pathEdit->setText(item? item->data(Qt::EditRole).toString() : "");
 }
 
-void FileBrowserPropertyItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
+void FileBrowserPropertyItemDelegate::setModelData(QWidget* /*editor*/, QAbstractItemModel *model, const QModelIndex &index) const {
     auto* propModel = static_cast<const PropertyStackModel*>(model);
     auto* item = static_cast<ESTkStandardItem*>(propModel->itemFromIndex(index));
 
@@ -233,41 +236,46 @@ void FileBrowserPropertyItemDelegate::setModelData(QWidget *editor, QAbstractIte
 }
 
 QMenu* PropertyItemDelegate::getContextMenu(ESTkStandardItem*const item) {
-    MenuStack menu("PropertyItem");
-    LuaTableFieldItem* fieldItem = (item->type() == (int)ESTkStandardItemType::LuaTable)? static_cast<LuaTableFieldItem*>(item) : nullptr;
+    LuaTableFieldItem* fieldItem =
+            (item->type() == (int)ESTkStandardItemType::LuaTable)?
+                static_cast<LuaTableFieldItem*>(item) : nullptr;
 
     if(!fieldItem) return nullptr;
+
+    MenuStack menu("PropertyItem");
 
     menu.push("type");
 
     for(int i = 0; i < _supportedTypes.size(); ++i) {
         switch(_supportedTypes[i]) {
         case LUA_TNIL:
-            menu.insertCheckableAction("nil", [=](const bool val) {
+            menu.insertCheckableAction("nil", [=](const bool) {
                 fieldItem->setData("nil", Qt::EditRole);
 
             }, fieldItem->getValueLuaType() == LUA_TNIL);
             break;
         case LUA_TBOOLEAN:
-            menu.insertCheckableAction("bool", [=](const bool val) {
+            menu.insertCheckableAction("bool", [=](const bool) {
                 fieldItem->setData(false, Qt::EditRole);
             }, fieldItem->getValueLuaType() == LUA_TBOOLEAN);
             break;
         case LUA_TNUMBER:
-            menu.insertCheckableAction("number", [=](const bool val) {
+            menu.insertCheckableAction("number", [=](const bool) {
                 fieldItem->setData(0, Qt::EditRole);
 
             }, fieldItem->getValueLuaType() == LUA_TNUMBER);
             break;
         case LUA_TSTRING:
-            menu.insertCheckableAction("string", [=](const bool val) {
-                fieldItem->setData("", Qt::EditRole);
+            menu.insertCheckableAction("string", [=](const bool) {
+                fieldItem->setData("none", Qt::EditRole);
             }, fieldItem->getValueLuaType() == LUA_TSTRING);
             break;
         case LUA_TTABLE:
-            menu.insertCheckableAction("table", [=](const bool val) {
-                //fieldItem->setData("nil", Qt::EditRole);
-
+            menu.insertCheckableAction("table", [=](const bool) {
+                LuaVariant v;
+                lua_newtable(*_mainState);
+                v.pull();
+                fieldItem->setVariant(v);
             }, fieldItem->getValueLuaType() == LUA_TTABLE);
             break;
         case LUA_TUSERDATA:
@@ -275,12 +283,53 @@ QMenu* PropertyItemDelegate::getContextMenu(ESTkStandardItem*const item) {
         }
     }
 
-    menu.pop();
+    menu.push("userdata");
+    for(auto it: LuaManager::_udTypeNames) {
+        menu.insertCheckableAction(it, [=](const bool) {
+            LuaVariant v = LuaManager::exec("if(%s.new) then return %s.new() else return {} end", Q_CSTR(it), Q_CSTR(it));
+            fieldItem->setVariant(v);
+        });
+    }
 
-    if(fieldItem->getValueLuaType() == LUA_TTABLE) {
+
+    menu.pop(2);
+
+    if(fieldItem->getValueLuaType() == LUA_TTABLE || fieldItem->getValueLuaType() == LUA_TUSERDATA) {
         menu.insertAction("Add Key", [=](bool) {
             QString key = QInputDialog::getText(nullptr, "Add New Field", "Key Name");
             if(key.isNull()) return;
+
+            QStringList typeList = TkLuaManager::getUdTypeNames();
+            typeList.push_front("nil");
+            typeList.push_front("boolean");
+            typeList.push_front("number");
+            typeList.push_front("string");
+            typeList.push_front("table");
+
+            QString type = QInputDialog::getItem(nullptr, "Add New Field", "Type", typeList);
+
+            if(type.isNull()) return;
+
+            lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, fieldItem->getTableData()->getLuaRef());
+            OOLUA::push(*_mainState, QVariant(key));
+
+            if(type == "nil") {
+                OOLUA::push(*_mainState, LuaVariant(nullptr));
+            } else if(type == "boolean") {
+                OOLUA::push(*_mainState, LuaVariant(false));
+            } else if(type == "number") {
+                OOLUA::push(*_mainState, LuaVariant(0.0f));
+            } else if(type == "string") {
+                OOLUA::push(*_mainState, LuaVariant("none"));
+            } else if(type == "table") {
+              //  OOLUA::push(*_mainState, LuaVariant({1}));
+                lua_newtable(*_mainState);
+            } else {
+                OOLUA::push(*_mainState, LuaManager::exec("if(%s.new) then return %s.new() else return {} end", Q_CSTR(type), Q_CSTR(type)));
+            }
+
+            lua_settable(*_mainState, -3);
+
 #if 0
             elysian::LuaTableRef ref(fieldItem->getTableData()->getLuaRef());
             ref.insert(Q_CSTR(key), elysian::LuaVariant(12.0f));

@@ -169,7 +169,13 @@ void CollisionSystem::_applyTileColliderTransform(const Tile::COLLIDER_TYPE colT
 
 //HARD-CODED TO ONE LAYER
 void CollisionSystem::renderTileColliders(void) const {
-
+    static const GYColor4 boxColors[4] = {
+        { 0, 0, 255, 128 },
+        { 0, 0, 255, 128 },
+        { 0, 0, 255, 128 },
+        { 0, 0, 255, 128 }
+    };
+#if 0
     static const GYVector4 boxLocalVerts[4] = {
         { -0.5f, -0.5f, 0.0f, 1.0f },
         { 0.5f, -0.5f, 0.0f, 1.0f },
@@ -181,12 +187,6 @@ void CollisionSystem::renderTileColliders(void) const {
         { -0.5f, 0.5f, 0.0f, 1.0f },
         { 0.5f, 0.5f, 0.0f, 1.0f }
     };
-    static const GYColor4 boxColors[4] = {
-        { 0, 0, 255, 128 },
-        { 0, 0, 255, 128 },
-        { 0, 0, 255, 128 },
-        { 0, 0, 255, 128 }
-    };
     static const GYColor4 triColors[3] = {
         { 0, 0, 255, 128 },
         { 0, 0, 255, 128 },
@@ -195,7 +195,7 @@ void CollisionSystem::renderTileColliders(void) const {
     static const GYColor4 zTranColor = {
         255, 255, 0, 128
     };
-
+#endif
     //Check if we're even rendering solidity. If not, return.
     if(_renderLayer == RENDER_DISABLED) return;
     //Check if there's even an active player for solidity to be rendered relative to
@@ -522,8 +522,12 @@ bool CollisionSystem::detectCollidableCollidableCollision(Collidable* col1, Coll
 
     //Return if collision flags don't match OR
     //if both are on different z-planes.
-    if(!(bodyA->getAttrib()->flags.getTypeAgainst().getValue() & bodyB->getAttrib()->flags.getType().getValue())
-            /* || bodyA->getEntity()->getElev() != bodyB->getEntity()->getElev() */) return false;
+    //if(!(bodyA->getAttrib()->flags.getTypeAgainst().getValue() | bodyB->getAttrib()->flags.getType().getValue())
+      //      /* || bodyA->getEntity()->getElev() != bodyB->getEntity()->getElev() */) return false;
+
+    if(!((bodyA->getAttrib()->flags.getTypeAgainst().getValue() & bodyB->getAttrib()->flags.getType().getValue())) &&
+            !((bodyB->getAttrib()->flags.getTypeAgainst().getValue() & bodyA->getAttrib()->flags.getType().getValue())))  return false;
+
 
     //worldSpace checks in 3D, screen checks in 2D
     if(worldSpace) {
@@ -614,9 +618,10 @@ if(worldSpace) {
         //getBehavSys()->onCollide(bodyB->getEntity(), bodyA)
 
 
-        if(++_contactAmount == ELYSIAN_COLLISION_CONTACT_LIST_SIZE) {
-            assert(0);
-            return contact; //MAXXED OUT -- NOT GOOD ENOUGH
+        if(_contactAmount < ELYSIAN_COLLISION_CONTACT_LIST_SIZE-1) {
+            ++_contactAmount;
+        } else {
+            //assert(0); //WE RAN OUT OF CONTACTS, NOT FUCKING GOOD!!!!!111
         }
     }
 
@@ -662,8 +667,8 @@ bool CollisionSystem::_detectEntityEntityCollision(Entity * const entity1, Entit
     //Return if collision flags don't match OR
     //if both are on different z-planes.
     if(bodyB->_worldSpace != worldSpace) return false;
-    if(!(bodyA->getAttrib()->flags.getTypeAgainst().getValue() & bodyB->getAttrib()->flags.getType().getValue())
-            /* || bodyA->getEntity()->getElev() != bodyB->getEntity()->getElev() */) return false;
+    if(!((bodyA->getAttrib()->flags.getTypeAgainst().getValue() & bodyB->getAttrib()->flags.getType().getValue())) &&
+            !((bodyB->getAttrib()->flags.getTypeAgainst().getValue() & bodyA->getAttrib()->flags.getType().getValue())))  return false;
 
     if(worldSpace) {
         //solve for overlapping z/elevation region

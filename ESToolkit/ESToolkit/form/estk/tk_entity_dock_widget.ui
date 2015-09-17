@@ -16,6 +16,11 @@
     <height>101</height>
    </size>
   </property>
+  <property name="font">
+   <font>
+    <pointsize>10</pointsize>
+   </font>
+  </property>
   <property name="features">
    <set>QDockWidget::AllDockWidgetFeatures</set>
   </property>
@@ -41,14 +46,25 @@
     </property>
     <item>
      <widget class="EntityTreeWidget" name="m_entityTreeWidget">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
       <property name="styleSheet">
        <string notr="true">EntityTreeWidget {
 selection-background-color: rgb(225, 202, 251);
 selection-color: rgb(0,0,0);
 }</string>
       </property>
+      <property name="alternatingRowColors">
+       <bool>true</bool>
+      </property>
       <property name="selectionMode">
-       <enum>QAbstractItemView::SingleSelection</enum>
+       <enum>QAbstractItemView::MultiSelection</enum>
       </property>
       <attribute name="headerVisible">
        <bool>false</bool>

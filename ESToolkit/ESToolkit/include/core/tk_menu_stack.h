@@ -16,7 +16,7 @@ struct MenuStack {
     QAction*    insertCheckableAction(const QString text, const std::function<void(bool)>& callback, const bool checked=false, const bool enabled=true);
 
     QMenu*      push(const QString name);
-    void        pop(void);
+    void        pop(const unsigned count=1);
 
     QMenu*      current(void) const;
     QMenu*      first(void) const;
@@ -33,7 +33,7 @@ struct MenuStack {
 
 inline QMenu* MenuStack::current(void) const { return stack.top(); }
 inline QMenu* MenuStack::first(void) const { return stack.first(); }
-inline void MenuStack::pop(void) { stack.pop(); }
+inline void MenuStack::pop(const unsigned count) { for(unsigned i = 0; i < count; ++i) stack.pop(); }
 
 
 

@@ -881,7 +881,9 @@ namespace elysian {
             case LUA_TABLE_PROXY_NORMAL:
             case LUA_TABLE_PROXY_VIRTUAL:
                 {
+#if 0
                     DbgEvent event("Deserializing %s Lua Proxy table", tableType == LUA_TABLE_PROXY_NORMAL? "Normal" : "Virtual");
+#endif
                     int depth = 1;
                     for(int i = startIndex+1; i < _proxyTotalCount && !exitLoop; ++i) {
                         switch(_combinedFields[i].flags) {
@@ -892,7 +894,7 @@ namespace elysian {
                             if(depth == 1) {
                                 lua_getfield(l, -1, _combinedFields[i].key);
                                 if(!lua_isnil(l, -1)) {
-#ifdef ELYSIAN_LUA_DEBUG
+#if 0
                                     lua_pushvalue(l, -1);
                                     dbgprintf("[%d] = <%s, %s>", i, _combinedFields[i].key, luaL_tolstring(l, -1, nullptr));
                                     lua_pop(l, 2);
@@ -910,7 +912,9 @@ namespace elysian {
             case LUA_TABLE_PROXY_ARRAY:
             default:
                 {
+#if 0
                     DbgEvent event("Deserializing Array Lua Proxy table");
+#endif
                     lua_len(l, -1);
                     const int length = lua_tointeger(l, -1);
                     lua_pop(l, 1);
@@ -919,7 +923,7 @@ namespace elysian {
                         lua_pushnumber(l, i);
                         lua_gettable(l, -2);
 
-#ifdef ELYSIAN_LUA_DEBUG
+#if 0
                         lua_pushvalue(l, -1);
                         dbgprintf("<%d, %s>", i, luaL_tolstring(l, -1, nullptr));
                         lua_pop(l, 2);
@@ -1129,11 +1133,19 @@ namespace elysian {
                 break;
             default:
                 lua_getfield(l, -3-(tableDepth*2), C::_proxyFields[i].get); //get field from OOLUA methods table
-                assert(!lua_isnil(l, -1)); //LUA GET ACCESSOR NOT FOUND!!!!
+                if(lua_isnil(l, -1)) {
+                    errprintf("Proxy GET accessor [%s] not found!", C::_proxyFields[i].get);
+                    assert(false);
+                }
+
                 lua_setfield(l, -3, C::_proxyFields[i].key);
                 if(C::_proxyFields[i].set) {
                     lua_getfield(l, -3-(tableDepth*2), C::_proxyFields[i].set); //get field from OOLUA methods table
-                    assert(!lua_isnil(l, -1)); //LUA SET ACCESSOR NOT FOUND!!!!
+                    if(lua_isnil(l, -1)) {
+                        errprintf("Proxy SET accessor [%s] not found!", C::_proxyFields[i].set);
+                        assert(false);
+                    }
+
                     lua_setfield(l, -2, C::_proxyFields[i].key);
                 }
             }

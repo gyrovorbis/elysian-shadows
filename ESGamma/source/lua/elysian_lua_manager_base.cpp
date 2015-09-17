@@ -3,6 +3,7 @@
 #include <crtp/elysian_behavior.hpp>
 #include <utility/luatables.h>
 #include "elysian_debug.hpp"
+#include <utility/elysian_lua_variant_base.hpp>
 #include <crtp/elysian_lua_table_proxy.hpp>
 
 namespace elysian {
@@ -37,7 +38,7 @@ void LuaManagerBase::luaPrint(const char * const string, const Debug::SEVERITY s
 
 //Dumps to debug log and LUA_LOG_ERROR_FILE
 void LuaManagerBase::_errorprintf(const char *const string, ...) {
-    char buffer[GYRO_PRINTF_BUFFER_SIZE];
+    static char buffer[GYRO_PRINTF_BUFFER_SIZE];
     va_list argptr;
 
     va_start(argptr,string);
@@ -606,6 +607,20 @@ bool LuaManagerBase::genericIterate(const int index, std::function<void(void)> l
 
     stackBalanceEnd();
     return true;
+}
+
+
+LuaVariant LuaManagerBase::exec(const char * const str, ...) {
+    static char buffer[GYRO_PRINTF_BUFFER_SIZE];
+    va_list argptr;
+
+    va_start(argptr,str);
+    vsprintf(buffer, str, argptr);
+    va_end(argptr);
+
+    runString(buffer);
+    return LuaVariant::fromStack();
+
 }
 
 // char encoded serialize function that is available in plaintext in

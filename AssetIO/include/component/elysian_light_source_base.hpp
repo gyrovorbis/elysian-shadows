@@ -94,9 +94,10 @@ namespace elysian {
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
                             LightSourceBase(void) = default;
-                            LightSourceBase(Entity& entity);
-                            LightSourceBase(const LightSourceBase& other);
+                            LightSourceBase(Entity& entity, const LightSourceBase*const prefab=nullptr);
                             ~LightSourceBase(void);
+
+         LightSourceBase&   operator=(const LightSourceBase& rhs);
 
 		//reimplemented from component
         static constexpr const Component::TYPE componentType = Component::LIGHT_SOURCE;
@@ -163,7 +164,7 @@ namespace elysian {
     inline Vector4 LightAttrib::getSpecular(void) { return Vector4(&specularColor); }
     inline Vector3 LightAttrib::getAttenuation(void) { return Vector3(&attenuationFactors); }
 
-    inline LightSourceBase::LightSourceBase(Entity& entity):
+    inline LightSourceBase::LightSourceBase(Entity& entity, const LightSourceBase*const prefab):
 		Component(entity),
 		GYLightSource({
 			{ 0.0f, 0.0f, 0.0f, 0.0f }, //pos
@@ -173,7 +174,26 @@ namespace elysian {
             nullptr,
 			&_camState,
             nullptr
-    }) { gyVec3Normalize(&direction);  setLightType(GY_LIGHT_POINT);}
+        })
+    {
+        if(!prefab) {
+            gyVec3Normalize(&direction);
+            setLightType(GY_LIGHT_POINT);
+        } else {
+            *this = *prefab;              //absorb the other fucker's config and attrib
+        }
+    }
+    inline LightSourceBase& LightSourceBase::operator=(const LightSourceBase& rhs) {
+        _camState       = rhs._camState;
+        _relPos         = rhs._relPos;
+        _shadowCaster   = rhs._shadowCaster;
+        position        = rhs.position;
+        direction       = rhs.direction;
+        spotCutoffAngle = rhs.spotCutoffAngle;
+        properties      = rhs.properties;
+        setLightType(rhs.type);
+        return *this;
+    }
     inline void LightSourceBase::setAttrib(const LightAttrib* const attrib) {
         if(properties != &LightAttrib::defaultAttrib)
             //delete properties;

@@ -1,6 +1,6 @@
 #include "elysian_dialog_system.hpp"
 #include <crtp/elysian_entity.hpp>
-#include <level/elysian_dialog.hpp>
+#include <crtp/elysian_dialog.hpp>
 #include "elysian_game_input.hpp"
 #include "elysian_debug.hpp"
 #include <crtp/elysian_collidable.hpp>
@@ -155,14 +155,15 @@ void DialogSystem::render(void) {
 
 	//Render prompt
 	if(_boxState == BOX_INPUT && _posState != POS_MOVE_UP && _posState != POS_MOVE_DOWN) {
+        auto* prompt = static_cast<DialogPrompt*>(_curScreen.screen);
 		unsigned int maxLen = 0;
 
-		for(unsigned int i = 0; i < _curScreen.prompt->getOptionCount(); ++i) {
-            if(font.getStringPixelWidth(_curScreen.prompt->getOptionText(i)) > maxLen)
-                maxLen = font.getStringPixelWidth(_curScreen.prompt->getOptionText(i));
+        for(unsigned int i = 0; i < prompt->getOptionCount(); ++i) {
+            if(font.getStringPixelWidth(prompt->getOption(i)->getText()) > maxLen)
+                maxLen = font.getStringPixelWidth(prompt->getOption(i)->getText());
 		}
 
-        _optionBox._transform.setSize(maxLen+10.0f, _curScreen.prompt->getOptionCount()*25.0f+10.0f);
+        _optionBox._transform.setSize(maxLen+10.0f, prompt->getOptionCount()*25.0f+10.0f);
 		if(_posState == POS_TOP)
         _optionBox._transform.setPos((4.0f/5.0f)*_mainCanvas._transform._size.x-0.5f*_optionBox._transform._size.x, _mainCanvas._transform._pos.y+0.5*_optionBox._transform._size.y);
 		else
@@ -185,12 +186,12 @@ void DialogSystem::render(void) {
 		_optionBox.render();
 		//Render options
         font._transform._pos.z += 3.0f;
-		for(unsigned int i = 0; i < _curScreen.prompt->getOptionCount(); ++i) {
+        for(unsigned int i = 0; i < prompt->getOptionCount(); ++i) {
 		//	if(_posState == POS_TOP)
             font._transform.setPos(_optionBox._transform._pos.x-0.5*_optionBox._transform._size.x+15.0f, _optionBox._transform._pos.y-0.5*_optionBox._transform._size.y + 25.0+ i*25.0f);
 		//	else
 			//guiSystem->twcen.transform.setPosition(_optionBox.transform.getPosition().x-0.5*_optionBox.transform.getSize().x+15.0f, _optionBox.transform.getPosition().y-0.5*_optionBox.transform.getSize().y + 25.0+ i*25.0f);
-            font.drawString(Font::L_ALIGN, _curScreen.prompt->getOptionText(i));
+            font.drawString(Font::L_ALIGN, prompt->getOption(i)->getText());
 		}
 		//Render cursor
         _cursor._transform._pos.z = _mainCanvas._transform._pos.z+3;
@@ -320,6 +321,8 @@ void DialogSystem::processInput(const GameInput &input) {
 	}
 	//active dialog
 	else {
+        auto* prompt = static_cast<DialogPrompt*>(_curScreen.screen);
+
 		switch(_boxState) {
 			case BOX_OUTPUT:
 				if(input.getDown(GameInput::BUT_J)) {
@@ -344,8 +347,8 @@ void DialogSystem::processInput(const GameInput &input) {
 				//move down
 				if(input.getTapped(GameInput::BUT_DPAD_D)) {
 					++_currentOption;
-					if(_currentOption > (int)_curScreen.prompt->getOptionCount()-1) {
-						_currentOption = (int)_curScreen.prompt->getOptionCount()-1;
+                    if(_currentOption > (int)prompt->getOptionCount()-1) {
+                        _currentOption = (int)prompt->getOptionCount()-1;
 					}
 				}
 				//move up
@@ -368,13 +371,15 @@ void DialogSystem::NextScreen(void) {
 	int nextIndex;
 
 	getAudioSys()->playSfxChannel(-1, *_scrollDownSFX);
+            auto* prompt = static_cast<DialogPrompt*>(_curScreen.screen);
+            auto*text = static_cast<DialogText*>(_curScreen.screen);
 
 	switch(_boxState) {
 		case BOX_OUTPUT_END:
-			nextIndex = _curScreen.text->getNextIndex();
+            nextIndex = text->getNextIndex();
 			break;
 		case BOX_INPUT:
-			nextIndex = _curScreen.prompt->getOptionNextIndex(_currentOption); //_currentConversationDialog->getScreen(_currentScreen)->getOption(_currentOption)->resultScreen;
+            nextIndex = prompt->getOption(_currentOption)->getNextIndex(); //_currentConversationDialog->getScreen(_currentScreen)->getOption(_currentOption)->resultScreen;
 			break;
 		default:
 			nextIndex = -1; //shit's reested.

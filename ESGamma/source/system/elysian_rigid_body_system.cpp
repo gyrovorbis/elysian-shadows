@@ -149,9 +149,10 @@ void RigidBodySystem::_updateContacts(void) {
         curContact = colSys->getContact(i);
 
         if(curContact->getCollidable(0)->getEntity()->getRigidBody()) {
-            _contactPool[_contactCount++] = curContact;
+            if(_contactCount < ELYSIAN_RIGID_BODY_SYSTEM_CONTACT_POOL_SIZE) _contactPool[_contactCount++] = curContact;
+            //else assert(0); //WE'RE FUCKED, THIS IS NOT GOOD!!!!11
             curContact->_calculateVelocityInternals(deltaTime);
-            assert(_contactCount <= ELYSIAN_RIGID_BODY_SYSTEM_CONTACT_POOL_SIZE);
+            //assert(_contactCount <= ELYSIAN_RIGID_BODY_SYSTEM_CONTACT_POOL_SIZE);
         }
     }
 

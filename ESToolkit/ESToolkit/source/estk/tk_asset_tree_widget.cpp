@@ -50,11 +50,11 @@ void AssetTreeWidget::OnCurrentItemChanged(QTreeWidgetItem * current, int /*inde
 }
 
 
-void AssetTreeWidget::OnAddArea(Project * const /*project*/, Level *const level, Area *const area) {
+void AssetTreeWidget::OnAddArea(Project * const /*project*/, Level *const /*level*/, Area *const /*area*/) {
     //level->addChild(area);
 }
 
-void AssetTreeWidget::OnAddLevel(Project *const project, Level *const level) {
+void AssetTreeWidget::OnAddLevel(Project *const /*project*/, Level *const /*level*/) {
     //project->addChild(level);
 }
 

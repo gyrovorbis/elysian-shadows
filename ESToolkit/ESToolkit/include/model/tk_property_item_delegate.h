@@ -3,7 +3,7 @@
 
 #include <QStyledItemDelegate>
 #include <QVector>
-#include <lua/lua.hpp>
+#include <estk/tk_lua_manager.h>
 
 class QLineEdit;
 class QPushButton;
@@ -11,7 +11,7 @@ class QHBoxLayout;
 class QMenu;
 class ESTkStandardItem;
 
-class PropertyItemDelegate: public QStyledItemDelegate {
+class PropertyItemDelegate: public QStyledItemDelegate, public TkLuaManager {
 protected:
     bool            _initialized = false;
     bool            _addPairs   = true;

@@ -5,7 +5,7 @@
 
 class TkWarp: public elysian::WarpBase {
 public:
-            TkWarp(TkEntity& parent);
+            TkWarp(TkEntity& parent, const TkWarp*const prefab=nullptr);
             TkWarp(void) = default;
 
     virtual bool    canAddTo(const Entity &entity) const override;
@@ -13,6 +13,11 @@ public:
 
     static void     initializeDelegates(void);
 };
+
+
+
+ //==== INLINEZ =====
+inline TkWarp::TkWarp(TkEntity &parent, const TkWarp*const prefab): elysian::WarpBase(parent, prefab) {}
 
 
 #endif // TKWARP_H

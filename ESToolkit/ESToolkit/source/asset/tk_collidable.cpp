@@ -54,10 +54,16 @@ bool TkCollidable::canRemoveFrom(const Entity &entity) const {
 }
 
 void TkCollidableAttrib::initializeDelegates(void) {
+    lua_newtable(*_mainState);
+    lua_pushvalue(*_mainState, -1);
+    lua_setfield(*_mainState, -3, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
+
     auto* typeDelegate = new EnumDropdownPropertyItemDelegate({
        "COLLIDER_NONE", "COLLIDER_AABB", "COLLIDER_OBB", "COLLIDER_RTRI", "COLLIDER_OTHER_TRIS", "COLLIDER_CIR"
     });
     OOLUA::push(*_mainState, typeDelegate);
     lua_setfield(*_mainState, -2, "colliderType");
 
+    lua_pop(*_mainState, 1);
 }
+

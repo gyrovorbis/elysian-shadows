@@ -108,10 +108,11 @@ namespace elysian {
 
         using                       LuaTableProxy<RigidBodyBase, RigidBody, ForceTarget>::registerProxyMetaTable;
         using                       LuaTableProxy<RigidBodyBase, RigidBody, ForceTarget>::fromTable;
-                                    RigidBodyBase(Entity& entity);
-                                    RigidBodyBase(const RigidBodyBase& other);
+
+                                    RigidBodyBase(Entity& entity, const RigidBodyBase*const prefab=nullptr);
                                     RigidBodyBase(void) = default;
                                     ~RigidBodyBase(void) = default;
+        RigidBodyBase&              operator=(const RigidBodyBase& rhs);
 
 		//reimplemented from Component
         static constexpr const Component::TYPE componentType = Component::RIGID_BODY;
@@ -175,7 +176,16 @@ namespace elysian {
     inline Vector3 ForceTarget::getForceAccum(void) { return Vector3(&forceAccum); }
 
 
-    inline RigidBodyBase::RigidBodyBase(Entity& entity): Component(entity) {}
+    inline RigidBodyBase::RigidBodyBase(Entity& entity, const RigidBodyBase*const prefab): Component(entity) {
+        if(prefab) *this = *prefab;
+    }
+    inline RigidBodyBase& RigidBodyBase::operator=(const RigidBodyBase& rhs) {
+        _tileDamping    = rhs._tileDamping;
+        _active         = rhs._active;
+        _attrib         = rhs._attrib;
+        _durability     = rhs._durability;
+        return *this;
+    }
     inline float RigidBodyBase::getTileDamping(void) const { return _tileDamping; }
     inline void RigidBodyBase::setTileDamping(const float factor) {_tileDamping = factor; }
     inline void RigidBodyBase::setAttrib(RigidBodyAttrib*const attrib) {

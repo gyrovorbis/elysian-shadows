@@ -39,7 +39,14 @@ namespace elysian {
     };
 
     //The only combat-related variables the engine has knowledge of
-    class CombatStatus {
+    class CombatStatus: public LuaTableProxy<CombatStatus> {
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+            ELYSIAN_LUA_PROXY_FIELD(maxHp,  getMaxHp,   setMaxHp)
+            ELYSIAN_LUA_PROXY_FIELD(hp,     getHp,      setHp)
+            ELYSIAN_LUA_PROXY_FIELD(maxMp,  getMaxMp,   setMaxMp)
+            ELYSIAN_LUA_PROXY_FIELD(mp,     getMp,      setMp)
+        ELYSIAN_LUA_PROXY_FIELDS_END()
+
     public:
         enum STATUS_EFFECT {
             POISON                  = 1,
@@ -98,7 +105,7 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(deaggroDist,    getDeaggroDist,     setDeaggroDist)
             ELYSIAN_LUA_PROXY_FIELD(targetType,     getTargetType,      setTargetType)
             ELYSIAN_LUA_PROXY_FIELD(inCombat,       isInCombat)
-            ELYSIAN_LUA_PROXY_FIELD(status,         getStatus)
+            ELYSIAN_LUA_PROXY_FIELD(status,         getStatus,          setStatus)
             ELYSIAN_LUA_PROXY_FIELD(attrib,         getAttrib,          setAttrib)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
@@ -125,14 +132,14 @@ namespace elysian {
         bool					_dmgActive		= true;
         bool                    _inCombat       = false;
     public:
+                                CombatBase(void) = default;
+                                CombatBase(Entity& entity, const CombatBase*const prefab=nullptr);
+                                ~CombatBase(void) = default;
 
-                CombatBase(Entity& entity);
-                CombatBase(void) = default;
-                CombatBase(const CombatBase& other);
-                ~CombatBase(void) = default;
+        CombatBase&             operator=(const CombatBase& rhs);
 
 		//reimplemented from component
-        static constexpr const Component::TYPE componentType = Component::COMBAT;
+        static constexpr const  Component::TYPE componentType = Component::COMBAT;
 
 		void					setSelfTable(OOLUA::Lua_table_ref self);
 		OOLUA::Lua_table_ref&	getSelfTable(void);
@@ -149,7 +156,7 @@ namespace elysian {
 		void					setDmgActive(const bool active);
         TARGET_TYPE             getTargetType(void) const;
         void                    setTargetType(const TARGET_TYPE type);
-        CombatStatus    		getStatus(void) const;
+        CombatStatus&    		getStatus(void);
         void                    setStatus(const CombatStatus& status);
         void					applyModifier(const CombatStatusModifier& rvalue);
 
@@ -216,7 +223,21 @@ namespace elysian {
     inline void	CombatBase::setActionTable(OOLUA::Lua_table_ref self) { _actionTable = self; }
     inline OOLUA::Lua_table_ref& CombatBase::getActionTable(void) { return _actionTable; }
 
-    inline CombatBase::CombatBase(Entity &entity): Component(entity) {}
+    inline CombatBase::CombatBase(Entity &entity, const CombatBase*const prefab): Component(entity) {
+        if(prefab) *this = *prefab;
+    }
+
+    inline CombatBase& CombatBase::operator=(const CombatBase& rhs) {
+        _status             = rhs._status;
+        _attrib             = rhs._attrib;
+        _dmgType            = rhs._dmgType;
+        _collisionFlags     = rhs._collisionFlags;
+        _aggroDist          = rhs._aggroDist;
+        _deaggroDist        = rhs._deaggroDist;
+        _targetType         = rhs._targetType;
+        _dmgActive          = rhs._dmgActive;
+        return *this;
+    }
     inline auto	CombatBase::getDmgType(void) const -> DMG_TYPE { return _dmgType; }
     inline auto CombatBase::getTargetType(void) const ->TARGET_TYPE { return _targetType; }
     inline void CombatBase::setTargetType(const TARGET_TYPE type) { _targetType = type; }
@@ -226,7 +247,7 @@ namespace elysian {
     inline BitMask32& CombatBase::getCollisionFlags(void) { return _collisionFlags; }
     inline bool CombatBase::getDmgActive(void) const { return _dmgActive; }
     inline void CombatBase::setDmgActive(const bool active) { _dmgActive = active; }
-    inline CombatStatus CombatBase::getStatus(void) const { return _status; }
+    inline CombatStatus& CombatBase::getStatus(void) { return _status; }
     inline void CombatBase::setStatus(const CombatStatus& status) {_status = status; }
     inline void	CombatBase::applyModifier(const CombatStatusModifier& rvalue) { _status.applyModifier(rvalue); }
     inline void CombatBase::setInCombat(const bool val) { _inCombat = val; }

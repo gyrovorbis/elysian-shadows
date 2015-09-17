@@ -101,7 +101,7 @@ namespace elysian {
     public:
                                 ~DebugBase(void);
         //Yes, bitch. It's a fucking singleton! Our one and only.
-        static DebugBase&       getInstance(void);
+        static Debug&           getInstance(void);
 
         static void             initialize(void);
         static void             setEngine(Engine &eng);
@@ -133,10 +133,6 @@ namespace elysian {
     inline void DebugBase::push(void) { ++_stackDepth; }
     inline void DebugBase::pop(const unsigned count) { _stackDepth -= count; }
     inline unsigned DebugBase::getStackDepth(void) { return _stackDepth; }
-    inline DebugBase& DebugBase::getInstance(void) {
-        static DebugBase instance;
-        return instance;
-    }
     inline void DebugBase::setEngine(Engine &eng) { _engine = &eng; }
     inline void DebugBase::setLevel(const SEVERITY level) { _level = level; }
     inline const DebugBase::CmdLineArgs& DebugBase::getCmdLineArgs(void) const { return _cmdLineArgs; }

@@ -7,13 +7,13 @@ class TkAudioSource: public elysian::AudioSourceBase {
 
 public:
 
-    TkAudioSource(TkEntity& parent);
+    TkAudioSource(TkEntity& parent, const TkAudioSource*const prefab=nullptr);
     TkAudioSource(void) = default;
     //virtual ~TkAnimation(void) = default;
 };
 
 
-inline TkAudioSource::TkAudioSource(TkEntity& entity): elysian::AudioSourceBase(entity) {}
+inline TkAudioSource::TkAudioSource(TkEntity& entity, const TkAudioSource*const prefab): elysian::AudioSourceBase(entity, prefab) {}
 
 
 #endif // TKAUDIOSOURCE_H

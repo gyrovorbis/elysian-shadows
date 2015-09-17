@@ -103,53 +103,17 @@ makeCurrent();
 
 }
 
-spAtlas* atlas;
-spSkeletonData* skeletonData;
-spSkeleton* skeleton;
-spAnimationState* state;
-spSkeletonJson* json;
-spAnimationStateData* stateData;
-
-
-static void _initSpineShit(void) {
-
-
-    atlas = spAtlas_createFromFile("/assets/raptor.atlas", 0);
-    json = spSkeletonJson_create(atlas);
-    json->scale = 0.5f;
-    skeletonData = spSkeletonJson_readSkeletonDataFile(json, "/assets/raptor.json");
-    if (!skeletonData) {
-       printf("Error: %s\n", json->error);
-       exit(0);
-    }
-   spSkeletonJson_dispose(json);
-
-   spBone_setYDown(true);
-
-//         SkeletonDrawable* drawable = new SkeletonDrawable(skeletonData);
-        skeleton = spSkeleton_create(skeletonData);
-
-        stateData = spAnimationStateData_create(skeletonData);
-        state = spAnimationState_create(stateData);
-
-       // drawable->timeScale = 1;
-
-        skeleton->x = 320;
-        skeleton->y = 500;
-        spSkeleton_updateWorldTransform(skeleton);
-
-        spAnimationState_setAnimationByName(state, 0, "walk", true);
-        spAnimationState_setAnimationByName(state, 1, "empty", false);
-        spAnimationState_addAnimationByName(state, 1, "gungrab", false, 2);
-}
 
 void EngineGLSceneWidget::startRenderTimer(void) {
     makeCurrent();
 
-    _timer.start(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this);
+
+    //QTimer::singleShot(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this, SLOT(_updateEngine()));
+    //_timer.start(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this);
    // doneCurrent();
+    _updateEngine();
     _initialized = true;
-    timerEvent(nullptr); //go ahead and update the nigger.
+    //timerEvent(nullptr); //go ahead and update the nigger.
 }
 /*
 void EngineGLSceneWidget::showEvent(QShowEvent *event) {
@@ -157,7 +121,7 @@ void EngineGLSceneWidget::showEvent(QShowEvent *event) {
 }*/
 
 
-void EngineGLSceneWidget::timerEvent(QTimerEvent *)
+void EngineGLSceneWidget::_updateEngine(void)
 {
     makeCurrent();
    // update();
@@ -175,6 +139,8 @@ void EngineGLSceneWidget::timerEvent(QTimerEvent *)
         }
 //#endif
 
+    QTimer::singleShot(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this, SLOT(_updateEngine()));
+
 }
 
 void EngineGLSceneWidget::resizeGL(int w, int h) {
@@ -187,11 +153,6 @@ makeCurrent();
 
  if(getAssets()->getEngine()) getAssets()->getEngine()->getCameraSys()->initializeProjMatrix();
 // doneCurrent();
-
-}
-
-static void _renderSpineShit(void) {
-    //    gyVidSkeleton(skeleton);
 
 }
 

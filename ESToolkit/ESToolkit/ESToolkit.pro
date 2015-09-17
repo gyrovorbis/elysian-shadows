@@ -14,6 +14,7 @@ dreamcast {
 
 !ios: !dreamcast {
     QT += sql gui opengl network help
+    CONFIG += console
     tests {
         CONFIG += testcase
         QT += testlib
@@ -110,7 +111,6 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../AssetIO/source/component/elysian_skeleton_base.cpp \
     ../../AssetIO/source/component/elysian_warp_base.cpp \
     ../../AssetIO/source/level/elysian_area_base.cpp \
-    ../../AssetIO/source/level/elysian_dialog.cpp \
     ../../AssetIO/source/level/elysian_entity_base.cpp \
     ../../AssetIO/source/level/elysian_level_base.cpp \
     ../../AssetIO/source/level/elysian_level_manager.cpp \
@@ -197,7 +197,10 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../AssetIO/source/proxy/elysian_bit_mask_proxy.cpp \
     ../../AssetIO/source/utility/elysian_bit_mask.cpp \
     ../../ESGamma/source/utility/elysian_lua_table_ref.cpp \
-    ../../ESGamma/source/utility/elysian_lua_variant.cpp
+    ../../ESGamma/source/utility/elysian_lua_variant.cpp \
+    ../../AssetIO/source/proxy/elysian_dialog_proxy.cpp \
+    ../../AssetIO/source/level/elysian_dialog_base.cpp \
+    ../../AssetIO/source/level/elysian_dialog_screen_base.cpp
 
 
 
@@ -278,7 +281,9 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
         source/model/tk_property_item_delegate.cpp \
         source/estk/tk_camera_dock_widget.cpp \
         source/asset/tk_examinable.cpp \
-        source/estk/tk_camera_system.cpp
+        source/estk/tk_camera_system.cpp \
+        source/asset/tk_dialog.cpp \
+        source/core/tk_lua_qt_utils.cpp
 
 } else {
         SOURCES += ../../ESGamma/source/system/main.cpp
@@ -306,7 +311,6 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../AssetIO/include/crtp/elysian_lua_table_proxy.hpp \
     ../../AssetIO/include/crtp/elysian_renderable.hpp \
     ../../AssetIO/include/level/elysian_area_base.hpp \
-    ../../AssetIO/include/level/elysian_dialog.hpp \
     ../../AssetIO/include/level/elysian_direction.hpp \
     ../../AssetIO/include/level/elysian_entity_base.hpp \
     ../../AssetIO/include/level/elysian_level_base.hpp \
@@ -428,7 +432,13 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../AssetIO/include/crtp/elysian_sprite_attrib.hpp \
     ../../AssetIO/include/primitive/elysian_sprite_attrib_base.hpp \
     ../../AssetIO/include/utility/elysian_lua_table_ref.hpp \
-    ../../AssetIO/include/utility/elysian_lua_variant.hpp
+    ../../AssetIO/include/proxy/elysian_dialog_proxy.hpp \
+    ../../AssetIO/include/level/elysian_dialog_base.hpp \
+    ../../AssetIO/include/crtp/elysian_dialog.hpp \
+    ../../AssetIO/include/crtp/elysian_dialog_screen.hpp \
+    ../../AssetIO/include/level/elysian_dialog_screen_base.hpp \
+    ../../AssetIO/include/crtp/elysian_lua_variant.hpp \
+    ../../AssetIO/include/utility/elysian_lua_variant_base.hpp
 
 !ios:!dreamcast {
     HEADERS +=  include/asset/tk_animation.h \
@@ -529,7 +539,10 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
         include/asset/tk_depth_buff_entry.h \
         include/estk/tk_camera_dock_widget.h \
         include/estk/tk_camera_system.h \
-        include/asset/tk_sprite_attrib.h
+        include/asset/tk_sprite_attrib.h \
+        include/asset/tk_dialog_screen.h \
+        include/asset/tk_dialog.h \
+        include/asset/tk_lua_variant.h
 }
 
 

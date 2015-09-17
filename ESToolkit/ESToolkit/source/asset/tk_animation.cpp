@@ -3,7 +3,7 @@
 
 bool TkAnimation::canAddTo(const Entity &entity) const { return entity.getRenderable(); }
 
-TkAnimation::TkAnimation(TkEntity& parent): elysian::AnimationBase(parent) {
+TkAnimation::TkAnimation(TkEntity& parent, const TkAnimation*const prefab): elysian::AnimationBase(parent, prefab) {
     connect(this, SIGNAL(entityParented(Entity*const,Entity*const)), &parent, SLOT(onEntityParented(Entity*const,Entity*const)));
 }
 

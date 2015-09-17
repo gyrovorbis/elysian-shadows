@@ -49,7 +49,7 @@ void LightSystem::update(void) {
     }
 }
 
-void LightSystem::setGlobalAmbientColor(const GYVector4 &color) {
+void LightSystem::setGlobalAmbientColor(const GYVector4 &/*color*/) {
   //  _curArea->setAmbientColor(color);
   //  gyVidSetGlobalAmbience(&color);
 }

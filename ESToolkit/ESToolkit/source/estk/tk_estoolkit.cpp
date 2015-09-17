@@ -74,6 +74,7 @@ ESToolkit::ESToolkit(QWidget *parent):
     _instance = this;
     // VERY IMPROTANT GLOBAL STATE/STATIC INITIALIZATION
         //elysian::Behavior::staticConstructor();
+    gyDebugInit();
     Debug::getInstance();
     AssetManager::_assets = &_assets;
     //elysian::Behavior::staticConstructor();
@@ -300,7 +301,7 @@ void ESToolkit::_libGyroInitialize(void) {
     GYSysInitParams sysParams = {new std::function<void()>([&](void) {
                         _gitlabDialog->show();
                   }),
-                    [](void* ptr) {
+                    [](void* /*ptr*/) {
                         if(_instance->isVisible()) { //Don't try to relaunch and shit if running in command-line mode!
                             QStringList cmdLineArgs = QApplication::arguments();
                             cmdLineArgs.push_back(ESTOOLKIT_CRASH_CMD_LINE_ARG);
@@ -698,7 +699,7 @@ void ESToolkit::OnAreaRenamed(const QString /*oldName*/, const QString /*newName
 }
 
 void ESToolkit::OnAddArea(Project *const /*project*/, Level *const level, Area *const area) {
-    static int i = 0;
+  //  static int i = 0;
 
     if(level && level == _assets.getCurrentLevel()) { //Don't bother updating the tabs otherwise
         _undoGroup.addStack(&area->getUndoStack());
@@ -2104,6 +2105,15 @@ void ESToolkit::select(const int luaRef) {
     self->_selectionDockWidget->ExpandSelectionTree();
 }
 
+int ESToolkit::pushSelection(lua_State * const vm) {
+    if(_instance->_assets.getCurrentSelectionType() == Selectable::ENTITY) {
+        lua_rawgeti(vm, LUA_REGISTRYINDEX, static_cast<EntitySelectable*>(_instance->_assets.getCurrentSelection())->getLuaTableRef());
+        return 1;
+    }
+    lua_pushnil(vm);
+    return 0;
+}
+
 void ESToolkit::on_actionManual_Camera_toggled(bool arg1)
 {
     _engineParams.manualCameraEnabled = arg1;
@@ -2125,6 +2135,7 @@ void ESToolkit::on_actionEnable_Audio_toggled(bool arg1)
 void ESToolkit::on_actionReloadProject_triggered(void)
 {
     TkDebug::clear();
+    _assets.setCurrentSelection(nullptr);
     _assets.reloadProject();
 }
 

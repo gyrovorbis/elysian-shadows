@@ -113,7 +113,7 @@ void EngineDialog::onStateChange(QProcess::ProcessState state) {
     }
 }
 
-void EngineDialog::closeEvent(QCloseEvent *event) {
+void EngineDialog::closeEvent(QCloseEvent* /*event*/) {
     kill();
     Q_EMIT stopped();
 

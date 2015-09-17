@@ -1,7 +1,7 @@
 #include <crtp/elysian_examinable.hpp>
 #include <crtp/elysian_entity.hpp>
 #include <utility/elysian_generic.hpp>
-#include <level/elysian_dialog.hpp>
+#include <crtp/elysian_dialog.hpp>
 #include <crtp/elysian_area.hpp>
 
 namespace elysian {
@@ -12,9 +12,5 @@ namespace elysian {
 		_dialog = dialog;
 		_dialog->setTriggerEntity(_entity);
 	}
-
-    ExaminableBase::ExaminableBase(const ExaminableBase& other) {
-        *this = other;
-    }
 
 }

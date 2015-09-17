@@ -476,3 +476,15 @@ bool Assets::validateProjectPath(const QString path) {
 
     return true;
 }
+
+Area* Assets::findArea(const QString path) const {
+    for(unsigned i = 0; i < m_project->getLevelAmount(); ++i) {
+        auto* area = m_project->getLevelByIndex(i)->getArea(path);
+        if(area) return area;
+    }
+    return nullptr;
+}
+
+Level* Assets::findLevel(const QString path) const {
+    return m_project->getLevel(path);
+}

@@ -66,9 +66,8 @@ namespace elysian {
         float               _animTimeScale  = 1.0f;
 
     public:
-                        SkeletonBase(Entity& entity);
+                        SkeletonBase(Entity& entity, const SkeletonBase* other=nullptr);
                         SkeletonBase(void) = default;
-                        SkeletonBase(const SkeletonBase& other);
                         ~SkeletonBase(void);
         SkeletonBase&   operator= (const SkeletonBase& other);
 
@@ -105,7 +104,9 @@ namespace elysian {
     inline const char* SkeletonAttribBase::getJsonPath(void) const { return _jsonPath; }
     inline bool SkeletonAttribBase::isReested(void) const { return !_atlas || !_skeletonData || !_animStateData; }
 
-    inline SkeletonBase::SkeletonBase(Entity& entity): Component(entity) {}
+    inline SkeletonBase::SkeletonBase(Entity& entity, const SkeletonBase *other): Component(entity) {
+        if(other) *this = *other;
+    }
     inline void SkeletonBase::setAnimTimeScale(const float scale) { _animTimeScale = scale; }
     inline float SkeletonBase::getAnimTimeScale(void) const { return _animTimeScale; }
 

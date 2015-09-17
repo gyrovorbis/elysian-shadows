@@ -10,7 +10,7 @@
 #include <test_map_view.h>
 #include <test_libgyro_file_api.h>
 #include <test_lua_variant.h>
-#include <test_lua_table_ref.h>
+#include <test_dialog.h>
 
 /*
  *
@@ -107,7 +107,7 @@ int main(QStringList args)
         ESTkTest::enqueueTest(new tktest::ESToolkitTest);
         ESTkTest::enqueueTest(new tktest::LevelTest);
         ESTkTest::enqueueTest(new tktest::LuaVariantTest);
-        ESTkTest::enqueueTest(new tktest::LuaTableRefTest);
+        ESTkTest::enqueueTest(new tktest::DialogLuaTest);
     } else {
         ESTkTest::enqueueTest(new tktest::TestProjectAssets());
     }
@@ -115,9 +115,7 @@ int main(QStringList args)
    int failures = 0;
    int testCases = 0;
    auto ASSERT_TEST = [&failures, &args](QObject* obj) {
-
         failures += QTest::qExec(obj, args);
-
         delete obj;
     };//testestestests
 

@@ -16,7 +16,7 @@ class QOpenGLDebugMessage;
 
 class MapView;
 
-#define TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME   (1000/60)
+#define TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME   (1000.0f/60.0f)
 
 class EngineGLSceneWidget:
         public QGLWidget,
@@ -65,11 +65,13 @@ protected:
     virtual void    initializeGL(void) override;
     virtual void    resizeGL(int w, int h) override;
     virtual void    paintGL(void) override;
-    virtual void    timerEvent(QTimerEvent* e) override;
+
  //   virtual QSize   sizeHint(void) const override;
   //  virtual void    showEvent(QShowEvent *event) override;
 
 protected Q_SLOTS:
+
+    void    _updateEngine(void);
     void    _onContextAboutToBeDestroyed(void);
     void    _onResized();
 

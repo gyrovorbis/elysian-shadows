@@ -202,16 +202,12 @@ inline void TkLuaTableProxy<P, T, Bases...>::_addMetamethods(lua_State *l) {
     lua_pushcfunction(l, &_connectSignals);
     lua_setfield(l, -2, "__connectSignals");
 
-    lua_newtable(*_mainState);
-    lua_pushvalue(*_mainState, -1);
-    lua_setfield(*_mainState, -3, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
-
     //CRTP polymorph to allow child classes to create and register their own delegates
     T::initializeDelegates();
 
-    lua_pop(*_mainState, 1);
-
     ParentType::_addMetamethods(l);
+
+    LuaManager::_udTypeNames.push_back(OOLUA::Proxy_class<T>::class_name);
 }
 
 

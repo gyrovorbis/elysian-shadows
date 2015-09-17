@@ -41,6 +41,10 @@ QMenu* TkLightSource::createContextMenu(void) {
 }
 
 void TkLightSource::initializeDelegates(void) {
+    lua_newtable(*_mainState);
+    lua_pushvalue(*_mainState, -1);
+    lua_setfield(*_mainState, -3, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
+
     auto* typeDelegate = new EnumDropdownPropertyItemDelegate({
        "LIGHT_DIRECTIONAL", "LIGHT_SPOT", "LIGHT_POINT"
     });
@@ -50,4 +54,6 @@ void TkLightSource::initializeDelegates(void) {
     auto* cutoffDelegate = new SpinboxPropertyItemDelegate(0, 360);
     OOLUA::push(*_mainState, cutoffDelegate);
     lua_setfield(*_mainState, -2, "spotCutoffAngle");
+
+    lua_pop(*_mainState, 1);
 }

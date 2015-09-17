@@ -52,8 +52,13 @@ const GYDebugCallbacks      DebugBase::_gyDbgCallbacks  =  {
                                 &Debug::pop
                             };
 
+Debug& DebugBase::getInstance(void) {
+    static Debug instance;
+    return instance;
+}
+
 DbgEvent::DbgEvent(const char*const string, ...) {
-    char buffer[GYRO_PRINTF_BUFFER_SIZE];
+    static char buffer[GYRO_PRINTF_BUFFER_SIZE];
     va_list argptr;
     va_start(argptr,string);
     vsprintf(buffer, string, argptr);
@@ -142,7 +147,7 @@ void DebugBase::writeLog(const DebugBase::SOURCE source, const DebugBase::SEVERI
 
 // Invoked for non AssetIO Engine logging
 void DebugBase::printf(const Debug::SEVERITY level, const char *const string, ...) {
-    char buffer[GYRO_PRINTF_BUFFER_SIZE];
+    static char buffer[GYRO_PRINTF_BUFFER_SIZE];
 	va_list argptr;
 	//early-out
 	if(level < _level) return;
@@ -356,7 +361,7 @@ void DebugBase::processInput(GameInput& input) {
         else Debug::printf(Debug::LOG_VERBOSE, "Collision Disabled");
 
 	}
-#if 0
+
     if(input.getTapped(GameInput::BUT_B)) {
         if(_engine->_collisionSystem->getBroadPhase()) {
             _engine->_collisionSystem->setBroadPhase(false);
@@ -366,7 +371,6 @@ void DebugBase::processInput(GameInput& input) {
             Debug::printf(Debug::LOG_VERBOSE, "Sort and Sweep Enabled!");
         }
     }
-#endif
 
 	if(input.getTapped(GameInput::BUT_L)) {
 		ADV_LOG_WRAP newWrap = (_advLogWrap < ADV_LOG_MAX-1)? (ADV_LOG_WRAP)(_advLogWrap+1) : (ADV_LOG_WRAP)0;
@@ -439,9 +443,11 @@ void DebugBase::processInput(GameInput& input) {
 	}
 
 	if(input.getTapped(GameInput::BUT_R)) {
-        freeCam = !freeCam;
-        static Entity* julien = getCurrentArea()->findEntity("Julien");
-#if 0
+        //freeCam = !freeCam;
+        //static Entity* julien = getCurrentArea()->findEntity("Julien");
+#if 1
+        static bool renderDebug = false;
+        renderDebug = !renderDebug;
 		getLightSys()->setRenderDebugEnabled(renderDebug);
         printf(LOG_VERBOSE, "LightSystem::renderShadowVolumes = %d", renderDebug);
 #else

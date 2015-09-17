@@ -43,7 +43,7 @@ void MapView::onLayerChange(Assets::LAYER_TYPE type) {
     }
 }
 
-void MapView::onAreaChanging(Area * const area) {
+void MapView::onAreaChanging(Area * const /*area*/) {
     if(getAssets()->getCurrentArea()) getAssets()->getCurrentArea()->removeEntity(_cursorEntity);
 }
 
@@ -123,7 +123,15 @@ void MapView::_entitySceneSelectionUpdate(void) {
         mat->setEmissiveColor(GYVector4{0.0f, 1.0f, 1.0f, 0.0f});
         sprAttrib->setMaterial(mat);
 
-        collid->setAttrib(new elysian::CollidableAttrib);
+        auto* const colAttrib = new elysian::CollidableAttrib;
+
+        colAttrib->getFlags()->setType(0);
+        colAttrib->getFlags()->getType().setBit(elysian::CollisionFlags::CURSOR, true);
+        //colAttrib->getFlags()->setTypeAgainst(0);
+        //colAttrib->getFlags()->getTypeAgainst().setBit(elysian::CollisionFlags::CURSOR, true);
+
+
+        collid->setAttrib(colAttrib);
         collid->setWorldSpace(false);
         collid->setResolvePenetration(false);
         collid->setContactEventMonitorMask(ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK);
@@ -340,6 +348,26 @@ void MapView::keyPressEvent(QKeyEvent* event) {
             }
             mouseMoveEvent(nullptr);
         }
+    } else if(getCurrentSelectionType() == Selectable::ENTITY) {
+        auto* entitySel = static_cast<EntitySelectable*>(getCurrentSelection());
+
+        for(auto it = entitySel->begin(); it != entitySel->end(); ++it) {
+            switch(event->key()) {
+            case Qt::Key_Left:
+              //  (*it)->_transform.rotate(-0.1f);
+                break;
+            case Qt::Key_Right:
+             //   (*it)->_transform.rotate(0.1f);
+                break;
+
+            }
+
+
+
+
+        }
+
+
     }
 }
 
@@ -532,7 +560,7 @@ void MapView::onCollisionEnter(Collidable*const bodyA, Collidable*const bodyB, C
             if(!_isEntityRegionSelecting()) _setUnderCursorEntity(bodyB->getEntity());
         } else { //region select entity
             if(!(bodyB->getContactEventMonitorMask() & ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK)) {
-                if(bodyB->getAttrib()->getFlags()->getType().getValue() == elysian::CollisionFlags::CURSOR) _entityAddToSceneSelection(bodyB->getEntity());
+                if(bodyB->getAttrib()->getFlags()->getType().getBit(elysian::CollisionFlags::CURSOR)) _entityAddToSceneSelection(bodyB->getEntity());
             }
         }
 
@@ -570,7 +598,7 @@ void MapView::onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) {
         }
     //region select box
     } else {
-        if(bodyB->getAttrib()->getFlags()->getType().getValue() == elysian::CollisionFlags::CURSOR)
+        if(bodyB->getAttrib()->getFlags()->getType().getBit(elysian::CollisionFlags::CURSOR))
                 if(bodyB->getEntity()->getSelectionState() != TkEntity::SELECTION_SELECTED)
                         _entityRemoveFromSceneSelection(bodyB->getEntity());
 
@@ -579,7 +607,7 @@ void MapView::onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) {
 }
 
 void MapView::_updateScrollBars(void) {
-    QSize viewSize = viewport()->size();
+    //QSize viewSize = viewport()->size();
     QSize sceneSize(getAssets()->getCurrentArea()->getMapWidth() * 32.0f, getAssets()->getCurrentArea()->getMapHeight() * 32.0f);
 
     verticalScrollBar()->setEnabled(false);

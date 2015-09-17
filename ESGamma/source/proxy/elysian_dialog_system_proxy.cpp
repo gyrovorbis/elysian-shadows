@@ -19,29 +19,6 @@
 #include <proxy/elysian_dialog_system_proxy.hpp>
 
 
-OOLUA_EXPORT_FUNCTIONS(DialogScreen,
-                       addSourceEntity,
-                       setTrigger)
-OOLUA_EXPORT_FUNCTIONS_CONST(DialogScreen,
-                             getText,
-                             getIndex)
-
-OOLUA_EXPORT_FUNCTIONS(DialogText,
-                       setNextIndex)
-OOLUA_EXPORT_FUNCTIONS_CONST(DialogText,
-                             getNextIndex)
-
-OOLUA_EXPORT_FUNCTIONS(DialogPrompt,
-                       addOption)
-OOLUA_EXPORT_FUNCTIONS_CONST(DialogPrompt)
-
-OOLUA_EXPORT_FUNCTIONS(Dialog,
-                       addTextScreen,
-                       addPromptScreen,
-                       setTriggerEntity,
-                       setStartScreen)
-OOLUA_EXPORT_FUNCTIONS_CONST(Dialog)
-
 
 OOLUA_EXPORT_FUNCTIONS(DialogSystem,
                        startDialog)

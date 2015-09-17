@@ -71,15 +71,39 @@ void AreaBase::setMapHeight(const unsigned short /*h*/) {
 }
 
 void AreaBase::validateEntityName(Entity *entity) {
-    char buff[ELYSIAN_ENTITY_NAME_SIZE];
-    int num = 0;
+    auto tokenize = [](const char*const src, char*const strdest, unsigned long& numdest) {
+        const auto len = strlen(src);
+        int numPos = (int)len-1;
+        for(; numPos >= 0; --numPos) {
+            if(!isdigit(src[numPos])) break;
+        }
+        if(numPos < 0) numPos = 0;
+        //Don't overflow and cause an exception in stoul()
+        if(len-numPos-1 >= 9) numPos = len-10; //10 digits max for uint32, use 9 for buffer and simplicity
+#if GYRO_PLATFORM != GYRO_PLATFORM_DC
+        numdest = (numPos < (int)len-1)? stoul(&src[numPos+1]) : 2ul;
+#else
+        numdest = (numPos < (int)len-1)? atoi(&src[numPos+1]) : 2ul; //god fucking damnit
+#endif
+        strncpy(strdest, src, numPos+1);
+        strdest[numPos+1] = '\0';
+    };
 
-    strcpy(buff, entity->getName());
-    while(findEntity(buff)) {
-        sprintf(buff, "%s%d", entity->getName(), ++num);
+    char strBuff[ELYSIAN_ENTITY_NAME_SIZE];
+    char concatBuff[ELYSIAN_ENTITY_NAME_SIZE];
+    unsigned long num;
+
+    if(findEntity(entity->getName())) {
+
+        tokenize(entity->getName(), strBuff, num);
+
+        sprintf(concatBuff, "%s%lu", strBuff, num);
+        while(findEntity(concatBuff)) {
+            sprintf(concatBuff, "%s%lu", strBuff, ++num);
+        }
+
+        entity->setName(concatBuff);
     }
-
-    entity->setName(buff);
 }
 
 void AreaBase::addEntity(Entity *entity) {

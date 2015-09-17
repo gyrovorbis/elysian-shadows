@@ -10,6 +10,9 @@ SelectionDockWidget::SelectionDockWidget(QWidget *parent) :
 {
     ui->setupUi(this);
     _selectionTreeWidget = new QTreeView();
+    QFont font = _selectionTreeWidget->font();
+    font.setPointSize(10);
+    _selectionTreeWidget->setFont(font);
 
     QPalette p = _selectionTreeWidget->palette();
     p.setColor(QPalette::Highlight, QColor(225,202,251));

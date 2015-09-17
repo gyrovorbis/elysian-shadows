@@ -15,10 +15,6 @@ namespace elysian {
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(SkeletonBase)
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(SkeletonAttribBase)
 
-SkeletonBase::SkeletonBase(const SkeletonBase &other) {
-    *this = other;
-}
-
 SkeletonAttribBase::~SkeletonAttribBase(void) {
     if(_animStateData) spAnimationStateData_dispose(_animStateData);
     if(_skeletonData) spSkeletonData_dispose(_skeletonData);
@@ -32,7 +28,6 @@ SkeletonBase& SkeletonBase::operator= (const SkeletonBase& other) {
 }
 
 void SkeletonAttribBase::_reloadAtlas(void) {
-
     if(_atlas) {
         spAtlas_dispose(_atlas);
         _atlas = nullptr;
@@ -55,6 +50,7 @@ void SkeletonAttribBase::setAtlasPath(const char * const file) {
 }
 
 void SkeletonAttribBase::_reloadJson(void) {
+    if(_jsonPath[0] == '\0') return;
     DbgEvent event("Skeleton Attrib loading json file [%s]", _jsonPath);
 
     if(_skeletonData) {
@@ -74,12 +70,12 @@ void SkeletonAttribBase::_reloadJson(void) {
 
         _skeletonData = spSkeletonJson_readSkeletonDataFile(skelJson, _jsonPath);
         if(!_skeletonData) {
-            errprintf("Could not initialize SkeletonData!");
+            errprintf("Could not initialize SkeletonData! [%s]", _jsonPath);
         } else {
 
             _animStateData = spAnimationStateData_create(_skeletonData);
             if(!_animStateData) {
-                errprintf("Could not initialize AnimationStateData!");
+                errprintf("Could not initialize AnimationStateData! [%s]", _skeletonData);
                 if(_skeletonData) {
                     spSkeletonData_dispose(_skeletonData);
                     _skeletonData = nullptr;

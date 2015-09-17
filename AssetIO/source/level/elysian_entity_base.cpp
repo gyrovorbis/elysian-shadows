@@ -118,11 +118,8 @@ void EntityBase::pushViewTransform(void) {
     } else {
 
         gyMatTranslate(_transform._pos.x, _transform._pos.y, _transform._pos.z);
+        gyMatRotate(_transform._angle, _transform._orient.x, _transform._orient.y, _transform._orient.z);
         gyMatScale(_transform._size.x*_transform._scale.x, _transform._size.y*_transform._scale.y, _transform._size.z*_transform._scale.z);
-        gyMatTranslate(0.0f, 0.0f, 0.5f);
-        //gyMatRotate(_transform._orientZ, 0.0f, 1.0f, 0.0f);
-        gyMatTranslate(0.0f, 0.0f, -0.5f);
-
 
     }
 
@@ -746,12 +743,8 @@ template<typename T>
 T* EntityBase::_addComponent(T*& comp, std::vector<T*>* activeList, T* prefab) {
     if(comp) return comp;
     //if(!T::canAddTo(*static_cast<Entity*>(this))) return nullptr;
-    if(prefab) {
-        comp = new T(*prefab);
-        comp->_entity = static_cast<Entity*>(this);
-    } else {
-        comp = new T(*static_cast<Entity*>(this));
-    }
+
+    comp = new T(*static_cast<Entity*>(this), prefab);
 
     if(_active) {
         activeList->push_back(comp);

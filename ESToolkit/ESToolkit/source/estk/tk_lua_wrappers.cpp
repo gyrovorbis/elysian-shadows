@@ -30,13 +30,13 @@ static inline int Toolkit_findEntity(lua_State* const vm) {
 void TkLuaManager::_registerWrappers(void) {
     elysian::LuaManagerBase::_registerWrappers();
 
-
     _mainState->register_class<Toolkit>();
     _mainState->register_class<PropertyItemDelegate>();
     _mainState->register_class<EnumDropdownPropertyItemDelegate>();
     _mainState->register_class<SpinboxPropertyItemDelegate>();
     _mainState->register_class<FileBrowserPropertyItemDelegate>();
-    _mainState->register_class_static<Toolkit>("select", &Toolkit_select);
+    _mainState->register_class_static<Toolkit>("setSelection", &Toolkit_setSelection);
+    _mainState->register_class_static<Toolkit>("getSelection", &ESToolkit::pushSelection);
     _mainState->register_class_static<Toolkit>("findEntity", &Toolkit_findEntity);
 
     luaRegisterTkEnumsConstants(_mainState);

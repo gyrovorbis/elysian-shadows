@@ -25,6 +25,11 @@
     <height>426</height>
    </size>
   </property>
+  <property name="font">
+   <font>
+    <pointsize>10</pointsize>
+   </font>
+  </property>
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>
   </property>
@@ -35,7 +40,7 @@
    <set>Qt::BottomDockWidgetArea|Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
   </property>
   <property name="windowTitle">
-   <string>Camera Dock Widget</string>
+   <string>Camera View</string>
   </property>
   <widget class="QWidget" name="cameraWidgetContents">
    <property name="sizePolicy">
