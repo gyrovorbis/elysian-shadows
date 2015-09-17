@@ -64,7 +64,7 @@ static inline void gyMatTranslate(const float x, const float y, const float z) {
 	_translationMat[3][0] = x;
 	_translationMat[3][1] = y;
 	_translationMat[3][2] = z;
-    gyMatApply((float (*)[4][4])_translationMat);
+    gyMatApply(_translationMat);
 }
 
 static inline void gyMatRotateZ(const float theta) {
@@ -72,14 +72,14 @@ static inline void gyMatRotateZ(const float theta) {
 	gySinCos(theta, &zsin, &zcos);
 	_zRotationMat[0][0] = zcos;  _zRotationMat[1][0] = zsin;
 	_zRotationMat[0][1] = -zsin; _zRotationMat[1][1] = zcos;
-    gyMatApply((float (*)[4][4])_zRotationMat);
+    gyMatApply(_zRotationMat);
 }
 
 static inline void gyMatScale(const float sx, const float sy, const float sz) {
 	_scaleMat[0][0] = sx;
 	_scaleMat[1][1] = sy;
 	_scaleMat[2][2] = sz;
-    gyMatApply((float (*)[4][4])_scaleMat);
+    gyMatApply(_scaleMat);
 }
 
 static inline void gyMatTranslateScale(const float x, const float y, const float z, const float sx, const float sy, const float sz) {
@@ -89,7 +89,7 @@ static inline void gyMatTranslateScale(const float x, const float y, const float
 	_tranScaleMat[3][0] = x;
 	_tranScaleMat[3][1] = y;
 	_tranScaleMat[3][2] = z;
-    gyMatApply((float (*)[4][4])_tranScaleMat);
+    gyMatApply(_tranScaleMat);
 }
 
 
@@ -119,7 +119,7 @@ static inline void gyMatRotate(const float angle, const float x, const float y, 
 	_rotationMat[1][2] = y*z*(1.0f-cosTheta) - x*sinTheta;
 	_rotationMat[2][2] = cosTheta + z*z*(1.0f-cosTheta);
 
-    gyMatApply((float (*)[4][4])_rotationMat);
+    gyMatApply(_rotationMat);
 }
 
 static inline void gyMatInstance(const GYInstMat *const inst) {
@@ -151,7 +151,7 @@ static inline void gyMatShearZ(const float shx, const float shy) {
 	_shearMat[1][2] = shy;// _shearMat[3][1] = -shy;
 
 #endif
-    gyMatApply((float (*)[4][4])_shearMat);
+    gyMatApply(_shearMat);
 }
 
     
