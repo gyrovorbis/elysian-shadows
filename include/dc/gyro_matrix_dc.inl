@@ -4,16 +4,16 @@
 #define VEC3(a) ((GYVector3*)a)
 #define VEC4(a) ((GYVector4*)a)
 
-static inline void gyMatLoad(GYMatrix4 *mat) {
-    mat_load(mat);
+static inline void gyMatLoad(void *mat) {
+    mat_load((GYMatrix4*)mat);
 }
 
-static inline void gyMatStore(GYMatrix4 *mat) {
-    mat_store(mat);
+static inline void gyMatStore(void *mat) {
+    mat_store((GYMatrix4*)mat);
 }
 
-static inline void gyMatApply(GYMatrix4 *mat) {
-    mat_apply(mat);
+static inline void gyMatApply(void *mat) {
+    mat_apply((GYMatrix4*)mat);
 }
 
 static inline void gyMatMultMat(GYMatrix4 dMat, const GYMatrix4 sMat1, const GYMatrix4 sMat2) {
