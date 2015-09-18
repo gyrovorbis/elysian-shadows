@@ -11,15 +11,9 @@ extern "C" {
 //Column-Major
 typedef float GYMatrix4[4][4] GYRO_MATRIX4_ALIGN;
 
-#if GYRO_PLATFORM != GYRO_PLATFORM_DC
 typedef struct GYVector4 {
     float x, y, z, w;
-} GYRO_VECTOR4_ALIGN GYVector4;
-#else
-typedef struct GYVector4 {
-    float x, y, z, w;
-} GYVector4;
-#endif
+} GYVector4 GYRO_VECTOR4_ALIGN;
 
 typedef struct GYVector3 {
     float x, y, z;

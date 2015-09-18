@@ -2,12 +2,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <png.h>
+//#include <png.h>
 
 #include <gyro_file_api.h>
 #include <gyro_system_api.h>
 #include <gyro_texture_api.h>
-#include "glal/gyro_glal.h"
+#include <glal/gyro_gl.h>
 
 typedef struct image_s
 {
@@ -16,7 +16,7 @@ typedef struct image_s
 	int format;
 	int components;
 } image_t;
-
+#if 0
 static void __png_read_data_from_stream(png_structp png_ptr, png_bytep out_bytes, png_size_t byte_count)
 {
 	GYFile *file;
@@ -167,23 +167,24 @@ static GLuint create_texture_png(const char *filename, GLenum st, GLenum min, GL
     *success = 1;
     return id;
 };
+#endif
 
-int _gyVidTexAlloc(GYTexture *const tex, const unsigned width, const unsigned height) {
-	(void)width;
-	(void)height;
+int _gyVidTexAlloc(GYTexture *const tex) {
+//	(void)width;
+//	(void)height;
 	unsigned success = 0;
 	tex->_data = NULL;
 
 	switch(tex->bpp) {
 		case GY_TEX_16BPP:
-			*(GLuint *)&tex->_data = create_texture_png(tex->filename, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST, &success);
+            //*(GLuint *)&tex->_data = create_texture_png(tex->filename, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST, &success);
 			break;
 		case GY_TEX_8BPP:
 			break;
 		case GY_TEX_4BPP:
 			break;
-		default:
-			*(GLuint *)&tex->_data = create_texture_png(tex->filename, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST, &success);
+    default: break;
+        //	*(GLuint *)&tex->_data = create_texture_png(tex->filename, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST, &success);
 	}
 
 	return success;
