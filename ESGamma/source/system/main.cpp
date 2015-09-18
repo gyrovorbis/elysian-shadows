@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
     #if GYRO_PLATFORM == GYRO_PLATFORM_x86
         { (GY_VID_RESOLUTION)debug->getCmdLineArgs().resolution, GY_WIN_RESIZABLE, 480, 270, 1280, 720, verString, "icon.bmp"};
     #elif GYRO_PLATFORM == GYRO_PLATFORM_ANDROID
-        { GY_VID_1280x720, GY_WIN_FULLSCREEN, 1280, 720, 1280, 720 };
+        { /*GY_VID_1280x720, GY_WIN_FULLSCREEN, 1280, 720, 1280, 720*/ };
     #elif GYRO_PLATFORM == GYRO_PLATFORM_iOS
         { };
     #elif GYRO_PLATFORM == GYRO_PLATFORM_DC
@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
     #if GYRO_PLATFORM == GYRO_PLATFORM_x86
         { (GY_VID_RESOLUTION)debug->getCmdLineArgs().resolution, GY_WIN_RESIZABLE, 480, 270, 1280, 720, verString, "icon.bmp"};
     #elif GYRO_PLATFORM == GYRO_PLATFORM_ANDROID
-        { GY_VID_1280x720, GY_WIN_FULLSCREEN, 1280, 720, 1280, 720 };
+        { /*GY_VID_1280x720, GY_WIN_FULLSCREEN, 1280, 720, 1280, 720*/ };
     #elif GYRO_PLATFORM == GYRO_PLATFORM_iOS
         { };
     #elif GYRO_PLATFORM == GYRO_PLATFORM_DC

@@ -12,7 +12,7 @@ dreamcast {
     TARGET_EXT=".elf"
 }
 
-!ios: !dreamcast {
+!ios: !dreamcast: !android {
     QT += sql gui opengl network help
     CONFIG += console
     tests {
@@ -56,7 +56,7 @@ DEPENDPATH += 	../../AssetIO/include \
     ../../libGyro/include \
     ../../libGyro/include/kinetic
 
-!ios: !dreamcast{
+!ios: !dreamcast: !android{
     DEPENDPATH += include \
         include/asset \
         include/model \
@@ -83,7 +83,7 @@ INCLUDEPATH += ../../AssetIO/include \
     ../../ESGamma/lib/include \
     ../../Spine/include
 
-!ios: !dreamcast {
+!ios: !dreamcast: !android {
     INCLUDEPATH += include \
     include/asset \
     include/model \
@@ -205,7 +205,7 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
 
 
 
-!ios: !dreamcast {
+!ios: !dreamcast: !android {
 
     SOURCES += source/asset/tk_animation.cpp \
         source/asset/tk_area.cpp \
@@ -440,7 +440,7 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../AssetIO/include/crtp/elysian_lua_variant.hpp \
     ../../AssetIO/include/utility/elysian_lua_variant_base.hpp
 
-!ios:!dreamcast {
+!ios:!dreamcast: !android {
     HEADERS +=  include/asset/tk_animation.h \
         include/asset/tk_area.h \
         include/asset/tk_asset_manager.h \
@@ -790,8 +790,10 @@ dreamcast {
         -T/home/jenkins/Dreamcast/cadcdev-kallistios/utils/ldscripts/shlelf.xc \
         -nodefaultlibs
 
-}
+} else: android {
+    LIBS += -lEGL -lGLESv2 -landroid
 
+}
 else:linux {
     LIBS += \
         -lGL \

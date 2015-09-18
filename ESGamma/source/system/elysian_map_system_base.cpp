@@ -17,7 +17,7 @@ void GLMapSystemCrtp::deactivateArea(void) {
 
 void GLMapSystemCrtp::_orphanVbo(void) {
   //  if(!_elements) return;
-#if GYRO_PLATFORM != GYRO_PLATFORM_DC
+#if GYRO_PLATFORM != GYRO_PLATFORM_DC && GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE, nullptr, GL_STREAM_DRAW);
 #endif
 }
@@ -25,7 +25,7 @@ void GLMapSystemCrtp::_orphanVbo(void) {
 
 void GLMapSystemCrtp::_drawElements(void) {
     if(!_elements) return;
-    #if GYRO_PLATFORM != GYRO_PLATFORM_DC
+    #if GYRO_PLATFORM != GYRO_PLATFORM_DC && GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     GLuint* ptr = (GLuint*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, _lastOffset, sizeof(GLuint)*(_size-_lastSize), GL_MAP_INVALIDATE_RANGE_BIT /*| GL_MAP_FLUSH_EXPLICIT_BIT*/ | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
     if(ptr) {memcpy(ptr, &_elements[_lastSize], sizeof(GLuint)*(_size-_lastSize));
      glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);

@@ -28,7 +28,7 @@ win32 {
 #    QMAKE_LFLAGS_RELEASE=
 }
 
-ios {
+ios|android {
     DEFINES += ELYSIAN_ENGINE
 }
 
@@ -37,7 +37,7 @@ ios {
 }
 #QMAKE_CFLAGS += -std=c99
 
-!iphoneos:!dreamcast {
+!iphoneos:!dreamcast:!android {
     QMAKE_CFLAGS += -msse
     QMAKE_CXXFLAGS += -msse
 }
@@ -54,7 +54,13 @@ CONFIG(release, debug|release) {
 
 DEFINES += QT_NO_KEYWORDS QT_NO_DYNAMIC_CAST
 
-ios {
+android {
+    DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_ANDROID
+    QMAKE_CFLAGS    += -mfpu=neon
+    QMAKE_CXXFLAGS  += -mfpu=neon
+        #QMAKE_ANDROID_DEPLOYMENT_TARGET=8.2
+        #QMAKE_ANDROID_TARGETED_DEVICE_FAMILY=1,2
+} else: ios {
     DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_iOS
     iphonesimulator {
         DEFINES += GYRO_PLATFORM_iOS_SIMULATOR

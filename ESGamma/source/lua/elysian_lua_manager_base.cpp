@@ -547,14 +547,14 @@ bool LuaManagerBase::genericIterate(const int index, std::function<void(void)> l
     lua_pushvalue(*_mainState, -2);
     lua_insert(*_mainState, -4);
 
-#if GYRO_PLATFORM != GYRO_PLATFORM_iOS && GYRO_PLATFORM != GYRO_PLATFORM_DC
+#if GYRO_PLATFORM == GYRO_PLATFORM_Qt
     QVariant lastKey;
     QVariant lastValue;
 #endif
 
     do {
         if(!_protectedCall(2, 2, nullptr
-#if GYRO_PLATFORM != GYRO_PLATFORM_iOS && GYRO_PLATFORM != GYRO_PLATFORM_DC
+#if GYRO_PLATFORM == GYRO_PLATFORM_Qt
                            ,"LuaManager::genericIterate(<%s, %s>)"
                            , Q_CSTR(lastKey.toString()),
                            Q_CSTR(lastValue.toString())
@@ -576,7 +576,7 @@ bool LuaManagerBase::genericIterate(const int index, std::function<void(void)> l
         //STACK[-2] = KEY
         //STACK[-1] = VALUE
 
-#if GYRO_PLATFORM != GYRO_PLATFORM_iOS && GYRO_PLATFORM != GYRO_PLATFORM_DC
+#if GYRO_PLATFORM == GYRO_PLATFORM_Qt
         lua_pushvalue(*_mainState, -1);
         OOLUA::pull(*_mainState, lastValue);
         lua_pushvalue(*_mainState, -2);

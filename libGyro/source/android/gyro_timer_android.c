@@ -19,7 +19,7 @@ int gyTimerInit(void) {
     return 1;
 }
 
-unsigned long int gyTimerTicks(void)
+int64_t gyTimerTicks(void)
 {
 	return (__get_raw_time() - gy_init_time) * 1e-3;
 }

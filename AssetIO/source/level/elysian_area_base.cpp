@@ -80,7 +80,7 @@ void AreaBase::validateEntityName(Entity *entity) {
         if(numPos < 0) numPos = 0;
         //Don't overflow and cause an exception in stoul()
         if(len-numPos-1 >= 9) numPos = len-10; //10 digits max for uint32, use 9 for buffer and simplicity
-#if GYRO_PLATFORM != GYRO_PLATFORM_DC
+#if GYRO_PLATFORM != GYRO_PLATFORM_DC && GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
         numdest = (numPos < (int)len-1)? stoul(&src[numPos+1]) : 2ul;
 #else
         numdest = (numPos < (int)len-1)? atoi(&src[numPos+1]) : 2ul; //god fucking damnit
@@ -409,7 +409,7 @@ bool AreaBase::saveEntities(const char *const /*filename*/) {
 }
 
 void AreaBase::freeVbo(void) {
-#if GYRO_PLATFORM != GYRO_PLATFORM_DC
+#if GYRO_PLATFORM != GYRO_PLATFORM_DC && GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     glDeleteBuffers(1, &vertexVbo);
     glDeleteBuffers(1, &elementVbo[0]);
     glDeleteBuffers(1, &elementVbo[1]);
@@ -430,7 +430,7 @@ void AreaBase::freeVbo(void) {
 
 void AreaBase::populateVbo(void) {
     if(vboPopulated) return;
-#if GYRO_PLATFORM != GYRO_PLATFORM_DC
+#if GYRO_PLATFORM != GYRO_PLATFORM_DC && GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     gyVidVertexArrayBind(0);
 
     glGenBuffers(1, &vertexVbo);
@@ -528,7 +528,7 @@ void AreaBase::setVboEntry(const TileEntry*const tileEntry, const unsigned l, co
     vboEntryFromTileEntry(entry, tileEntry, x, y);
 
     //ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
-#if GYRO_PLATFORM != GYRO_PLATFORM_DC
+#if GYRO_PLATFORM != GYRO_PLATFORM_DC && GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
     glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_TILE_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(GYVertex), sizeof(GYVertex)*4, (void*)entry);
 
