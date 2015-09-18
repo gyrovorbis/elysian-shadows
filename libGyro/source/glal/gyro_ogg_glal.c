@@ -1,5 +1,5 @@
 #include <gyro_platform.h>
-#if GYRO_PLATFORM != GYRO_PLATFORM_iOS
+#if GYRO_PLATFORM != GYRO_PLATFORM_iOS && GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
 #include <ogg/ogg.h>
 #include <vorbis/codec.h>
 #include <vorbis/vorbisenc.h>
@@ -9,11 +9,14 @@
 #include <vorbis/vorbisfile.h>
 
 #else
+#if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
 #include <ogg.h>
+
 #include <codec.h>
 #include <vorbisenc.h>
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbisfile.h>
+#endif
 #endif
 
 #include <gyro_audio_api.h>
@@ -29,14 +32,16 @@
 #define GYRO_OGG_STREAM_BUFF_COUNT	2
 
 typedef struct _GYOggPayload {
+#if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
 	ALuint			buffers[2];
 	GYFile*           oggFile;
     OggVorbis_File  oggStream;
     vorbis_info*    vorbisInfo;
     vorbis_comment* vorbisComment;
 	ALenum			format;
+#endif
 } GYOggPayload;
-
+#if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
 static inline const char* _vorbisErrorString(const int code) {
     switch(code) {
         case OV_EREAD:
@@ -77,9 +82,10 @@ static long int __ov_tell_fn(void *datasource)
     gyFileTell(datasource, &pos);
     return pos;
 }
-
+#endif
 GYOgg* gyAudOggCreate(const char*const path) {
     int result;
+    #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     int alErrorCode;
     char* device = (char*)alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
 
@@ -132,9 +138,11 @@ GYOgg* gyAudOggCreate(const char*const path) {
     printf("bitrate lower	- %ld\n", payload->vorbisInfo->bitrate_lower);
     printf("bitrate window	- %ld\n", payload->vorbisInfo->bitrate_window);
     return ogg;
+#endif
 }
 
 void gyAudOggDestroy(GYOgg*const ogg) {
+    #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     GYOggPayload* payload = ogg->_data;
     int errorCode;
 
@@ -148,11 +156,13 @@ void gyAudOggDestroy(GYOgg*const ogg) {
 
     free(payload);
     free(ogg);
-
+#endif
 }
 
 // Streams data from open OGG file into given buffer
+#if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
 static inline int _streamOgg(const ALuint buffer, GYOgg*const ogg) {
+    #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     char pcm[GYRO_OGG_STREAM_BUFF_SIZE];
     int  size = 0;
     int  section;
@@ -183,13 +193,15 @@ static inline int _streamOgg(const ALuint buffer, GYOgg*const ogg) {
         _checkALError();
         return 1;
     }
-
+#endif
     return 0;
 }
+#endif
 
 //======= OGG STREAM THREADICISM =======
 
 typedef struct _OggStreamSource {
+    #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     ALuint				src;				//polymorphically compatible with GYAudioSource
     GYOgg*				ogg;
     thrd_t              thread;
@@ -198,9 +210,11 @@ typedef struct _OggStreamSource {
     cnd_t               tryStreamCond;
     unsigned			killMe;
     unsigned			looping;
+#endif
 } _OggStreamSource;
 
 static int _gyAudOggStreamUpdate(void* data) {
+#if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     _OggStreamSource*const stream = data;
     int processed;
     int done;
@@ -246,9 +260,11 @@ static int _gyAudOggStreamUpdate(void* data) {
     }
 
     return thrd_success;
+#endif
 }
 
 struct GYAudioSource* gyAudOggStreamCreate(void) {
+#if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     _OggStreamSource*const stream = malloc(sizeof(_OggStreamSource));
 
     //Init source
@@ -266,9 +282,11 @@ struct GYAudioSource* gyAudOggStreamCreate(void) {
     //spawn the thread
     thrd_create(&stream->thread, &_gyAudOggStreamUpdate, stream);
     return (GYAudioSource*)stream;
+#endif
 }
 
 void gyAudOggStreamDestroy(struct GYAudioSource*const src) {
+#if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     struct _OggStreamSource*const stream = (void*)src;
 
     //Kill the stream thread
@@ -285,10 +303,12 @@ void gyAudOggStreamDestroy(struct GYAudioSource*const src) {
 
     //kill alSource
     gyAudSourceDestroy(src);
+#endif
 }
 
 
 void gyAudOggStreamPlay(struct GYAudioSource*src, GYOgg*ogg) {
+    #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     _OggStreamSource* stream = (void*)src;
     GYOggPayload* payload = ogg->_data;
     int validBuffers = 0;
@@ -317,9 +337,11 @@ void gyAudOggStreamPlay(struct GYAudioSource*src, GYOgg*ogg) {
     }
 
     mtx_unlock(&stream->streamMutex);
+#endif
 }
 
 void gyAudOggStreamPause(struct GYAudioSource*src) {
+    #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     _OggStreamSource* stream = (void*)src;
     int queued;
 
@@ -338,9 +360,11 @@ void gyAudOggStreamPause(struct GYAudioSource*src) {
     stream->stillStreaming = 0;
 
     mtx_unlock(&stream->streamMutex);
+#endif
 }
 
 void gyAudOggStreamStop(struct GYAudioSource*src) {
+#if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     _OggStreamSource* stream = (void*)src;
     if(!stream || !stream->ogg) return;
     GYOggPayload* payload = stream->ogg->_data;
@@ -351,9 +375,11 @@ void gyAudOggStreamStop(struct GYAudioSource*src) {
     ov_pcm_seek(&payload->oggStream, 0);
 
     mtx_unlock(&stream->streamMutex);
+#endif
 }
 
 void gyAudOggStreamSync(GYAudioSource*const src1, GYAudioSource*const src2) {
+#if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     _OggStreamSource* stream1 = (_OggStreamSource*)src1;
     _OggStreamSource* stream2 = (_OggStreamSource*)src2;
     GYOggPayload* payload1 = stream1->ogg->_data;
@@ -368,22 +394,27 @@ void gyAudOggStreamSync(GYAudioSource*const src1, GYAudioSource*const src2) {
 
     mtx_unlock(&stream1->streamMutex);
     mtx_unlock(&stream2->streamMutex);
+#endif
 }
 
 void gyAudOggStreamSetLooping(GYAudioSource*const src, const unsigned looping) {
+#if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     _OggStreamSource* stream = (_OggStreamSource*)src;
     GYOgg *ogg = stream->ogg;
     //lock?
     stream->looping = looping;
     if(ogg) ogg->looping = looping;
+#endif
 }
 
 double gyAudOggStreamTime(GYAudioSource*const src) {
+#if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     _OggStreamSource* stream = (_OggStreamSource*)src;
     GYOggPayload *ogg = stream->ogg->_data;
 
     //lock? Not sure if this does any writing internally... better fucking not...
     return ov_time_tell(&ogg->oggStream);
+#endif
 }
 
 

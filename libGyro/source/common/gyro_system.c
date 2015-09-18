@@ -94,34 +94,3 @@ void gySysRegisterAppQuit(GYAppQuitCb quit_cb)
 }
 
 
-#if GYRO_PLATFORM != GYRO_PLATFORM_Qt
-#if 0
-int gyro_entry_point(int argc, char **argv)
-{
-	gyro_main();
-	if (gy_appInitCb != NULL) {
-		if (!gy_appInitCb(argc, argv)) {
-			return -1;
-		}
-	}
-	do {
-		if (gy_appTickCb != NULL) {
-			if (!gy_appTickCb()) {
-				break;
-			}
-		}
-        if (gy_appDrawCb != NULL) {
-			if (!gy_appDrawCb()) {
-				break;
-			}
-		}
-	} while (1);
-	if (gy_appQuitCb != NULL) {
-		if (!gy_appQuitCb()) {
-			return -2;
-		}
-	}
-	return 0;
-}
-#endif
-#endif

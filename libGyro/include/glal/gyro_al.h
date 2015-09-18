@@ -22,9 +22,9 @@ extern "C" {
 #   include <OpenAL/alc.h>
 #elif GYRO_PLATFORM == GYRO_PLATFORM_ANDROID
 
-#	define AL_LIBTYPE_STATIC
-#	include <AL/al.h>
-#	include <AL/alc.h>
+//#	define AL_LIBTYPE_STATIC
+//#	include <AL/al.h>
+//#	include <AL/alc.h>
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_Qt
 

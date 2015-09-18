@@ -113,7 +113,12 @@ HEADERS += \
     ../../include/common/turfs.h \
     ../../include/glal/gyro_file_glal.inl
 
-ios {
+android {
+
+    HEADERS += ../../include/android/gyro_input_android.inl \
+        ../../include/android/gyro_video_android.inl
+
+} else: ios {
     HEADERS += ../../source/ios/GYAppDelegate.h \
         ../../source/ios/GYView.h \
         ../../source/ios/GYViewController.h \
@@ -177,7 +182,7 @@ dreamcast {
         ../../source/x86/gyro_matrix_x86.c \
         ../../source/qt/gyro_video_qt.cpp
 
-    !ios {
+    !ios:!android {
         SOURCES += \
             ../../source/x86/gyro_system_glfw_x86.c \
             ../../source/qt/gyro_texture_qt.cpp \
@@ -185,6 +190,19 @@ dreamcast {
             ../../source/qt/gyro_input_qt.cpp \
             ../../source/qt/gyro_timer_qt.cpp \
             ../../source/qt/gyro_file_qt.cpp
+    } else: android {
+        SOURCES += ../../source/android/android_native_app_glue.c \
+            ../../source/android/bionic_polyfill.c \
+            ../../source/android/gyro_file_android.c \
+            ../../source/android/gyro_input_android.c \
+            ../../source/android/gyro_matrix_android.c \
+            ../../source/android/gyro_system_android.c \
+            ../../source/android/gyro_texture_android.c \
+            ../../source/android/gyro_timer_android.c \
+            ../../source/android/gyro_video_android.c \
+            ../../source/android/turfs_android.c
+
+
     } else {
 
         OBJECTIVE_SOURCES += \
