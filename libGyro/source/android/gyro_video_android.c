@@ -1,8 +1,8 @@
 #include <gyro_video_api.h>
 #include <gyro_system_api.h>
-#include "../glal/gyro_video_glal.h"
+#include <glal/gyro_video_glal.h>
 #include "internal_android.h"
-#include <glal/gyro_glal.h>
+#include <glal/gyro_gl.h>
 
 GYVidInitParams vidParams;
 int vidBpp;
@@ -38,14 +38,14 @@ int gyVidInit(const GYVidInitParams *const params) {
 	context = eglCreateContext(display, config, NULL, attrib_list);
 
 	if (eglMakeCurrent(display, surface, surface, context) == EGL_FALSE) {
-		_gyLog(GY_DEBUG_FATAL, "Unable to eglMakeCurrent\n");
+        _gyLog(GY_DEBUG_ERROR, "Unable to eglMakeCurrent\n");
 		return 0;
 	}
 
 	eglQuerySurface(display, surface, EGL_WIDTH, &w);
 	eglQuerySurface(display, surface, EGL_HEIGHT, &h);
 
-    gyVidOglInit(w, h, w, h);
+    glalVidOglInit(w, h, w, h);
     return 1;
 }
 
@@ -66,12 +66,15 @@ int gyVidUninit(void) {
 	return 1;
 }
 
+#if 0
 void gyVidSceneBegin(void) {
     //glClearColor(0.5f, 0.75f, 0.6f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    vertexRenderCount = 0;
+    glalVertexRenderCount = 0;
 }
 
 void gyVidSceneEnd(void) {
     eglSwapBuffers(display, surface);
 }
+
+#endif

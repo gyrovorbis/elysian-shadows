@@ -8,9 +8,11 @@
 #include <gyro_video_api.h>
 #include <gyro_texture_api.h>
 #include <gyro_shader_api.h>
-#include "../glal/gyro_video_glal.h"
+#include <glal/gyro_gl.h>
 
 #include "internal_android.h"
+
+int gyInputInit(const struct GYInputInitParams*const params) {}
 
 static inline void _SetKeyDown(GYInput *const input, const GY_ANDROID_KEY key) {
 	if(!input->keyDown[key]) input->keyTapped[key] = 1;
@@ -113,10 +115,10 @@ static inline GY_ANDROID_KEY _TranslateFromAndroid(const int keyCode) {
 		return GY_KEY_LSHIFT;
 	case AKEYCODE_SHIFT_RIGHT:
 		return GY_KEY_RSHIFT;
-	case AKEYCODE_CTRL_LEFT:
-		return GY_KEY_LCTRL;
-	case AKEYCODE_CTRL_RIGHT:
-		return GY_KEY_RCTRL;
+    //case AKEYCODE_CTRL:
+    //	return GY_KEY_LCTRL;
+//	case AKEYCODE_CTRL_RIGHT:
+//		return GY_KEY_RCTRL;
 	case AKEYCODE_ALT_LEFT:
 		return GY_KEY_LALT;
 	case AKEYCODE_ALT_RIGHT:
@@ -160,18 +162,22 @@ static int32_t __handle_input_event(struct android_app *app, AInputEvent *event)
 	}
 	return 0;
 }
-
-int gyInputInit(void)
+#if 0
+void  gyInputPoll(struct GYInput** const input)
 {
 	gy_android_app->onInputEvent = __handle_input_event;
     return 1;
 }
+#endif
 
 int gyInputUninit(void) {
     return 1;
 }
 
-void gyInputPoll(GYInput *const input) {
+void gyMousePoll(GYMouse*const mouse) {}
+
+void gyInputPoll(GYInput **const input) {
+#if 0
 	int ident;
 	int events;
 	struct android_poll_source *source;
@@ -194,5 +200,6 @@ void gyInputPoll(GYInput *const input) {
 	}
 
     _Input = NULL;
+#endif
 }
 

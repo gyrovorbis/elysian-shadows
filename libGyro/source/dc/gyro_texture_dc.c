@@ -1,12 +1,13 @@
-#include "gyro_texture.h"
-#include "shtexture.h"
+#include <gyro_texture_api.h>
+//#include "shtexture.h"
 
 #include <kos.h>
 #include <png/png.h>
 
 //typedef  pvr_ptr_t _GYTexPayload;
 
-int _gyVidTexAlloc(GYTexture *const tex, const unsigned width, const unsigned height) {
+int _gyVidTexAlloc(GYTexture *const tex) {
+#if 0
     texture_t *shtex;
 
 /*    if(pvr_mem_stats() < tex->bytes) { //not enough VRAM
@@ -36,11 +37,14 @@ int _gyVidTexAlloc(GYTexture *const tex, const unsigned width, const unsigned he
     }
 
     return 1;
+#endif
 }
 
 int _gyVidTexFree(GYTexture *const tex) {
+#if 0
     pvr_mem_free(((texture_t*)tex->_data)->vram_ptr);
     free(tex->_data);
     return 1;
+#endif
 }
 

@@ -13,7 +13,7 @@ typedef enum _GY_WIN_PROPERTIES {
 	GY_WIN_STRETCH = 4
 } GY_WIN_PROPERTIES;
 
-typedef struct _GYVidInitParams {
+typedef struct GYVidInitParams {
 	GY_VID_RESOLUTION res;
 	int prop;
 	int minWidth, minHeight;

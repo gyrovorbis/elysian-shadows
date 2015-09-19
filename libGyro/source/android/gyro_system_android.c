@@ -13,7 +13,8 @@
 
 struct android_app *gy_android_app;
 
-int gySysInit(void)
+
+int gySysInit(const GYSysInitParams*const params)
 {
 	const char* platString = "ANDROID";
 	_gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro [%s] v%s", platString, GYRO_LIB_VERSION);
@@ -43,7 +44,7 @@ unsigned int gySysStatsRam(void)
 	return 0;
 }
 
-static void __android_event_poller(void)
+static void _android_event_poller(void)
 {
 	int ident;
 	int events;
@@ -58,7 +59,37 @@ static void __android_event_poller(void)
 	}
 }
 
-static void __handle_android_cmd(struct android_app *app, int32_t cmd)
+int gyro_entry_point(int argc, char **argv)
+{
+#if 0
+    gyro_main();
+    if (gy_appInitCb != NULL) {
+        if (!gy_appInitCb(argc, argv)) {
+            return -1;
+        }
+    }
+    do {
+       // if (gy_appTickCb != NULL) {
+        //    if (!gy_appTickCb()) {
+        //        break;
+        //    }
+       // }
+        if (gy_appDrawCb != NULL) {
+            if (!gy_appDrawCb()) {
+                break;
+            }
+        }
+    } while (1);
+    if (gy_appQuitCb != NULL) {
+        if (!gy_appQuitCb()) {
+            return -2;
+        }
+    }
+    return 0;
+#endif
+}
+
+static void _handle_android_cmd(struct android_app *app, int32_t cmd)
 {
 	switch (cmd) {
 		case APP_CMD_SAVE_STATE:
@@ -81,6 +112,12 @@ void android_main(struct android_app *app)
 {
 	app_dummy();
 	gy_android_app = app;
-	gy_android_app->onAppCmd = __handle_android_cmd;
-	__android_event_poller();
+    gy_android_app->onAppCmd = _handle_android_cmd;
+    _android_event_poller();
 }
+
+int gyDebugInit(void) {
+    return 1;
+}
+
+int gySysAppExec(int argc, char* argv[]) {}
