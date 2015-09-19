@@ -2,7 +2,7 @@
 #define ELYSIAN_COMPONENT_HPP
 
 #ifdef ELYSIAN_ENGINE
-#   include <elysian_component_base.hpp>
+#   include <component/elysian_component_base.hpp>
 namespace elysian {
     typedef ComponentBase Component;
 }

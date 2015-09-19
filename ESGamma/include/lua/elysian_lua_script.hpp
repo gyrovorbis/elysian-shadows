@@ -59,7 +59,7 @@ namespace elysian {
         LuaBehaviorScript*          _parent				= nullptr;
 	public:
                                     LuaBehaviorScript(const char* file);
-        virtual						~LuaBehaviorScript(void)=default;
+        virtual						~LuaBehaviorScript(void){}
         virtual TYPE				getType(void) const override;
         LuaBehaviorScript*			getParent(void) const;
         LuaBehaviorScriptAttrib*	getAttrib(void);

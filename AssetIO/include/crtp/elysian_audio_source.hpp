@@ -2,7 +2,7 @@
 #define ELYSIAN_AUDIO_SOURCE_HPP
 
 #ifdef ELYSIAN_ENGINE
-#   include <elysian_audio_source_base.hpp>
+#   include <component/elysian_audio_source_base.hpp>
 namespace elysian {
     typedef AudioSourceBase AudioSource;
 }

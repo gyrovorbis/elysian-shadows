@@ -2,7 +2,7 @@
 #define ELYSIAN_PARTICLE_EMITTER_HPP
 
 #ifdef ELYSIAN_ENGINE
-#   include <elysian_particle_emitter_base.hpp>
+#   include <component/elysian_particle_emitter_base.hpp>
 namespace elysian {
     typedef ParticleEmitterAttribBase   ParticleEmitterAttrib;
     typedef ParticleEmitterBase         ParticleEmitter;

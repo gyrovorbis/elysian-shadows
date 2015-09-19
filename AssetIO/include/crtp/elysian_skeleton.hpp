@@ -3,7 +3,7 @@
 
 
 #ifdef ELYSIAN_ENGINE
-#   include <elysian_skeleton_base.hpp>
+#   include <component/elysian_skeleton_base.hpp>
 namespace elysian {
     typedef SkeletonBase        Skeleton;
     typedef SkeletonAttribBase  SkeletonAttrib;

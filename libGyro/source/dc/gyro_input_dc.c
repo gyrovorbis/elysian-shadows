@@ -1,7 +1,7 @@
-#include "gyro_input.h"
+#include <gyro_input_api.h>
 #include <kos.h>
 
-int gyInputInit() {
+int gyInputInit(const struct GYInputInitParams*const params) {
 	return 1;
 }
 
@@ -20,7 +20,7 @@ static void _SetButUp(GYInput *const input, const GY_DC_BUTTON but) {
         input->butTapped[but] = 0;
 }
 
-void  gyInputPoll(GYInput *const input) {
+void  gyInputPoll(struct GYInput** const input) {
 	maple_device_t *cont;
 	cont_state_t *state;
 
@@ -54,8 +54,8 @@ void  gyInputPoll(GYInput *const input) {
 	if(state->buttons & CONT_START) _SetButDown(input, GY_CONT_BUT_START);
 	else _SetButUp(input, GY_CONT_BUT_START);
 
-	input->analog1X = state->joyx;
-	input->analog1Y = state->joyy;
+//	input->analog1X = state->joyx;
+//	input->analog1Y = state->joyy;
 
 	unsigned short int ltrig = state->ltrig; 
 	unsigned short int rtrig = state->rtrig;
@@ -67,4 +67,4 @@ void  gyInputPoll(GYInput *const input) {
 	else _SetButUp(input, GY_CONT_RTRIG);
 }
 
-
+void gyMousePoll(GYMouse*const mouse) {}

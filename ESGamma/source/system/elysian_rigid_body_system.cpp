@@ -392,10 +392,10 @@ void RigidBodySystem::resolveContactVelocities(void) {
             }
         }
 
-    /*	Debug::printf(Debug::DBG_VERBOSE, "=====ITER[%d]=====", iter);
-        Debug::printf(Debug::DBG_VERBOSE, "deltaVel = %f", max);
-        Debug::printf(Debug::DBG_VERBOSE, "vel[0] = <%f, %f>, vel[1] = <%f, %f>", velDelta[0].x, velDelta[0].y, velDelta[1].x, velDelta[1].y);
-        Debug::printf(Debug::DBG_VERBOSE, "rot[0] = %f, rot[1] = %f", rotDelta[0], rotDelta[1]);*/
+    /*	Debug::printf(Debug::LOG_VERBOSE, "=====ITER[%d]=====", iter);
+        Debug::printf(Debug::LOG_VERBOSE, "deltaVel = %f", max);
+        Debug::printf(Debug::LOG_VERBOSE, "vel[0] = <%f, %f>, vel[1] = <%f, %f>", velDelta[0].x, velDelta[0].y, velDelta[1].x, velDelta[1].y);
+        Debug::printf(Debug::LOG_VERBOSE, "rot[0] = %f, rot[1] = %f", rotDelta[0], rotDelta[1]);*/
 
 
         //========= / STOLEN FROM LIBGYRO VELOCITY RESOLUTION =======
@@ -467,9 +467,9 @@ void RigidBodySystem::resolveContactVelocities(void) {
 
     _velResIter = iter;
 
-    //if(iter == ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS) Debug::printf(Debug::DBG_WARNING, "OUT OF VELOCITY ITERATIONS!", iter);
+    //if(iter == ELYSIAN_COLLISION_CONTACT_RESOLUTION_MAX_ITERATIONS) Debug::printf(Debug::LOG_WARNING, "OUT OF VELOCITY ITERATIONS!", iter);
 
-    //Debug::printf(Debug::DBG_VERBOSE, "ITER - %d", iter);
+    //Debug::printf(Debug::LOG_VERBOSE, "ITER - %d", iter);
 
 }
 
@@ -546,9 +546,9 @@ void RigidBodySystem::integrate3D(void) {
                     GYVector3 vel = it->getVelocity();
                     vel.z = 0.0f;
                     it->setVelocity(vel);
-                    Debug::printf(Debug::DBG_WARNING, "GOT IT");
+                    Debug::printf(Debug::LOG_WARNING, "GOT IT");
             //	} else {
-                    //Debug::printf(Debug::DBG_WARNING, "TOUGH SHIT - %f", normal);
+                    //Debug::printf(Debug::LOG_WARNING, "TOUGH SHIT - %f", normal);
             //	}
             }
             //else it->getAttrib()->setForceMask(1);
@@ -657,7 +657,7 @@ void RigidBodySystem::integrate3D(void) {
 
                     vel.z = 0.0f;
 
-                    //Debug::printf(Debug::DBG_WARNING, "Resting");
+                    //Debug::printf(Debug::LOG_WARNING, "Resting");
                     collidable->getEntity()->getCollidable()->update();
                     collidable->setStackedOnGround(true);
                     collidable->setRestingOnBody(true);
@@ -680,7 +680,7 @@ void RigidBodySystem::integrate3D(void) {
         //	}
 
         } else { // if(!it->getOnGround()){
-            //Debug::printf(Debug::DBG_WARNING, "Falling");
+            //Debug::printf(Debug::LOG_WARNING, "Falling");
         //	it->getAttrib()->setForceMask(1);
             collidable->setStackedOnGround(false);
             collidable->setRestingOnBody(false);

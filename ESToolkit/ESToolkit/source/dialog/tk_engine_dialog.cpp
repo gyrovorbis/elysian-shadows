@@ -211,22 +211,22 @@ void EngineDialog::OnError(QProcess::ProcessError error) {
 
 	switch(error) {
 	case QProcess::FailedToStart:
-        item->setText(QString("ENGINE DBG_ERROR: Failed to launch!"));
+        item->setText(QString("ENGINE LOG_ERROR: Failed to launch!"));
 		break;
 	case QProcess::Crashed:
-        item->setText(QString("ENGINE DBG_ERROR: Engine has crashed!"));
+        item->setText(QString("ENGINE LOG_ERROR: Engine has crashed!"));
 		break;
 	case QProcess::Timedout:
-        item->setText(QString("ENGINE DBG_ERROR: Engine has timed out!"));
+        item->setText(QString("ENGINE LOG_ERROR: Engine has timed out!"));
 		break;
 	case QProcess::WriteError:
-        item->setText(QString("ENGINE DBG_ERROR: Engine write error!"));
+        item->setText(QString("ENGINE LOG_ERROR: Engine write error!"));
 		break;
 	case QProcess::ReadError:
-        item->setText(QString("ENGINE DBG_ERROR: Engine read error!"));
+        item->setText(QString("ENGINE LOG_ERROR: Engine read error!"));
 		break;
 	case QProcess::UnknownError:
-        item->setText(QString("ENGINE DBG_ERROR: Unknown Error!"));
+        item->setText(QString("ENGINE LOG_ERROR: Unknown Error!"));
 		break;
     default:
         qCritical() << "WHAT IN FUCK's CUNT";

@@ -2,7 +2,7 @@
 #define ELYSIAN_DIALOG_HPP
 
 #ifdef ELYSIAN_ENGINE
-#   include <elysian_dialog_base.hpp>
+#   include <level/elysian_dialog_base.hpp>
 namespace elysian {
     using Dialog        = DialogBase;
     using DialogText    = DialogTextBase;

@@ -228,7 +228,7 @@ void LightSystem::removeLightSourcesFromScene(void) {
     _shaderUniformChangesLastFrame = _shaderUniformChangesThisFrame;
     _shaderUniformChangesThisFrame = 0;
     gyVidLightSourceClear();
-   // Debug::printf(Debug::DBG_VERBOSE, "SHADER CHANGES - %d", _shaderUniformChangesLastFrame);
+   // Debug::printf(Debug::LOG_VERBOSE, "SHADER CHANGES - %d", _shaderUniformChangesLastFrame);
 
 }
 
@@ -286,7 +286,7 @@ uint32_t LightSystem::startLightPass(uint32_t& lightsLeft) {
         return mask;
     };
 
-    //Debug::printf(Debug::DBG_VERBOSE, "Pass - %d", call);
+    //Debug::printf(Debug::LOG_VERBOSE, "Pass - %d", call);
     Debug::push();
 
     //Lights we can keep from previous pass
@@ -299,9 +299,9 @@ uint32_t LightSystem::startLightPass(uint32_t& lightsLeft) {
     uint32_t		removedLights			= (_activeLights&(~keepActiveLights));
     unsigned		removedLightsCount		= bitCount(removedLights);
 
-    //Debug::printf(Debug::DBG_VERBOSE, "keepActiveLightCount - %d", keepActiveLightCount);
-    //Debug::printf(Debug::DBG_VERBOSE, "addLightCount - %d", addLightsCount);
-    //Debug::printf(Debug::DBG_VERBOSE, "removeLightsCount - %d", removedLightsCount);
+    //Debug::printf(Debug::LOG_VERBOSE, "keepActiveLightCount - %d", keepActiveLightCount);
+    //Debug::printf(Debug::LOG_VERBOSE, "addLightCount - %d", addLightsCount);
+    //Debug::printf(Debug::LOG_VERBOSE, "removeLightsCount - %d", removedLightsCount);
 
     //If we're either adding or removing lights, state change
     if(addLightsCount > 0 /*|| removedLightsCount != 0 || keepActiveLightCount != GYRO_VIDEO_LIGHT_SOURCES_MAX*/) {
@@ -334,11 +334,11 @@ uint32_t LightSystem::startLightPass(uint32_t& lightsLeft) {
                 ++newActiveLightCount;
                 --addLightsCount;
                 ++_shaderUniformChangesThisFrame;
-                //Debug::printf(Debug::DBG_VERBOSE, "Replaced %d with %d", removedIndex, addedIndex);
+                //Debug::printf(Debug::LOG_VERBOSE, "Replaced %d with %d", removedIndex, addedIndex);
             } else { //Remove
                 gyVidLightSourceRemove(removedLight);
                 ++_shaderUniformChangesThisFrame;
-                //Debug::printf(Debug::DBG_VERBOSE, "Removed %d", removedIndex);
+                //Debug::printf(Debug::LOG_VERBOSE, "Removed %d", removedIndex);
             }
         }
 
@@ -349,7 +349,7 @@ uint32_t LightSystem::startLightPass(uint32_t& lightsLeft) {
             gyVidLightSourceAdd(_onscreenLights[addedIndex]);
             newActiveLights |= indexToMask(addedIndex);
             ++newActiveLightCount;
-           // Debug::printf(Debug::DBG_VERBOSE, "Added %d", addedIndex);
+           // Debug::printf(Debug::LOG_VERBOSE, "Added %d", addedIndex);
             ++_shaderUniformChangesThisFrame;
         }
 

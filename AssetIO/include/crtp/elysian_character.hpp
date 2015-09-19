@@ -2,7 +2,7 @@
 #define ELYSIAN_CHARACTER_HPP
 
 #ifdef ELYSIAN_ENGINE
-#   include <elysian_character_base.hpp>
+#   include <component/elysian_character_base.hpp>
 namespace elysian {
     typedef CharacterBase Character;
 }

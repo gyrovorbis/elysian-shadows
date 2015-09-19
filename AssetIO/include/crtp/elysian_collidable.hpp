@@ -2,7 +2,7 @@
 #define ELYSIAN_COLLIDABLE_HPP
 
 #ifdef ELYSIAN_ENGINE
-#   include <elysian_collidable_base.hpp>
+#   include <component/elysian_collidable_base.hpp>
 namespace elysian {
     typedef CollidableBase          Collidable;
     typedef CollidableAttribBase    CollidableAttrib;

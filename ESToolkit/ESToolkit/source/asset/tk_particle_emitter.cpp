@@ -12,7 +12,7 @@ bool TkParticleEmitter::validate(QString& str) const {
         }
     };
 
-    cAssert(_attrib, "DBG_ERROR: ParticleEmitter component has no attrib field.");
+    cAssert(_attrib, "LOG_ERROR: ParticleEmitter component has no attrib field.");
     return success;
 }
 

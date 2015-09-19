@@ -2,7 +2,7 @@
 #define ELYSIAN_RENDERABLE_HPP
 
 #ifdef ELYSIAN_ENGINE
-#   include <elysian_renderable_base.hpp>
+#   include <component/elysian_renderable_base.hpp>
 namespace elysian {
 	typedef RenderableBase Renderable;
 }

@@ -108,7 +108,6 @@ namespace elysian {
     }
 
     inline void RenderableBase::render(void) {
-            float newZFactor;
 
 
      //   gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);

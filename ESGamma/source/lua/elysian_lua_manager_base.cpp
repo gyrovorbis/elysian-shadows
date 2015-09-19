@@ -12,14 +12,14 @@ namespace elysian {
 std::map<const char*, LuaScript*, ltstr>	LuaManagerBase::_scripts;
 OOLUA::Script*								LuaManagerBase::_mainState                                                  = nullptr;
 int											LuaManagerBase::_errorCode                                                  = 0;
-Debug::SEVERITY                             LuaManagerBase::_printSeverity                                              = Debug::DBG_VERBOSE;
+Debug::SEVERITY                             LuaManagerBase::_printSeverity                                              = Debug::LOG_VERBOSE;
 int                                         LuaManagerBase::_stackBalanceTop[ELYSIAN_LUA_STACK_BALANCE_RECURSIVE_DEPTH] = { 0 };
 int                                         LuaManagerBase::_stackBalanceRecursiveDepth                                 = 0;
 int                                         LuaManagerBase::_traceBackDbgPushes                                         = 0;
 const char									LuaManagerBase::_rPrint[] =
     "function rPrint(s, l, i) -- recursive Print (structure, limit, indent)\n"
         "l = (l) or 100; i = i or \"\";	-- default item limit, indent string\n"
-        "if (l<1) then print \"DBG_ERROR: Item limit reached.\"; return l-1 end;\n"
+        "if (l<1) then print \"LOG_ERROR: Item limit reached.\"; return l-1 end;\n"
         "local ts = type(s);\n"
         "if (ts ~= \"table\" and not(ts == \"userdata\" and getmetatable(s) and getmetatable(s).__pairs)) then print (i,ts,s); return l-1 end\n"
         "print (i,ts);           -- print \"table\"\n"
@@ -31,12 +31,12 @@ const char									LuaManagerBase::_rPrint[] =
     "end\n";
 
 void LuaManagerBase::luaPrint(const char * const string, const Debug::SEVERITY severity) {
-    Debug::SEVERITY sev = (severity == Debug::DBG_OFF)? _printSeverity : severity;
+    Debug::SEVERITY sev = (severity == Debug::LOG_OFF)? _printSeverity : severity;
     Debug::luaPrint(string, sev);
 }
 
 
-//Dumps to debug log and LUA_DBG_ERROR_FILE
+//Dumps to debug log and LUA_LOG_ERROR_FILE
 void LuaManagerBase::_errorprintf(const char *const string, ...) {
     static char buffer[GYRO_PRINTF_BUFFER_SIZE];
     va_list argptr;
@@ -45,7 +45,7 @@ void LuaManagerBase::_errorprintf(const char *const string, ...) {
     vsprintf(buffer, string, argptr);
     va_end(argptr);
 
-    Debug::luaPrint(buffer, Debug::DBG_ERROR);
+    Debug::luaPrint(buffer, Debug::LOG_ERROR);
 }
 
 
@@ -115,7 +115,7 @@ int LuaManagerBase::_traceBack(lua_State *L) {
       //  --_traceBackDbgPushes;
     //}
 
-    Debug::luaPrint("***** LUA DBG_ERROR *****");
+    Debug::luaPrint("***** LUA LOG_ERROR *****");
     Debug::push();
     //++_traceBackDbgPushes;
 
@@ -292,8 +292,8 @@ bool LuaManagerBase::runScriptSandbox(const char *const file, LuaScript* const s
 
     if((_errorCode = luaL_loadfile(*_mainState, file)) != 0) {
         if(_errorCode == LUA_ERRFILE) {
-            Debug::printf(Debug::DBG_WARNING, "Could not load script file [%s]!", file);
-        } else _showError(); //DO NOT DBG_ERROR OUT IF FILE ISN'T FOUND!!!
+            Debug::printf(Debug::LOG_WARNING, "Could not load script file [%s]!", file);
+        } else _showError(); //DO NOT LOG_ERROR OUT IF FILE ISN'T FOUND!!!
         /*else {
             lua_remove(*_mainState, 1);					//take loaded chunk off of stack
         }*/
@@ -377,9 +377,9 @@ bool LuaManagerBase::initialize(void) {
     DbgEvent event("Initializing Lua virtual machine.");
 
     _mainState = new OOLUA::Script;
-    Debug::printf(Debug::DBG_VERBOSE, "Opening standard libs");
+    Debug::printf(Debug::LOG_VERBOSE, "Opening standard libs");
     luaL_openlibs(*_mainState);
-    Debug::printf(Debug::DBG_VERBOSE, "Registering wrappers");
+    Debug::printf(Debug::LOG_VERBOSE, "Registering wrappers");
     runString(_rPrint);
     runScriptSandbox(ELYSIAN_LUA_MANAGER_SERIALIZE_SCRIPT_PATH);
     runScriptSandbox(ELYSIAN_LUA_MANAGER_TABLE_MANIP_SCRIPT_PATH);
@@ -547,14 +547,14 @@ bool LuaManagerBase::genericIterate(const int index, std::function<void(void)> l
     lua_pushvalue(*_mainState, -2);
     lua_insert(*_mainState, -4);
 
-#if GYRO_PLATFORM != GYRO_PLATFORM_iOS
+#if GYRO_PLATFORM == GYRO_PLATFORM_Qt
     QVariant lastKey;
     QVariant lastValue;
 #endif
 
     do {
         if(!_protectedCall(2, 2, nullptr
-#if GYRO_PLATFORM != GYRO_PLATFORM_iOS
+#if GYRO_PLATFORM == GYRO_PLATFORM_Qt
                            ,"LuaManager::genericIterate(<%s, %s>)"
                            , Q_CSTR(lastKey.toString()),
                            Q_CSTR(lastValue.toString())
@@ -576,7 +576,7 @@ bool LuaManagerBase::genericIterate(const int index, std::function<void(void)> l
         //STACK[-2] = KEY
         //STACK[-1] = VALUE
 
-#if GYRO_PLATFORM != GYRO_PLATFORM_iOS
+#if GYRO_PLATFORM == GYRO_PLATFORM_Qt
         lua_pushvalue(*_mainState, -1);
         OOLUA::pull(*_mainState, lastValue);
         lua_pushvalue(*_mainState, -2);

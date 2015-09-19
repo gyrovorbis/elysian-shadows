@@ -5,9 +5,9 @@
 
 #include <android/native_activity.h>
 
-#include <turfs.h>
+#include <common/turfs.h>
 
-#include "internal.h"
+#include "internal_android.h"
 
 static char *s_author = NULL;
 static char *s_name = NULL;
@@ -61,7 +61,7 @@ static int s__get_userdata_path(char **path, size_t *len)
     return 1;
 }
 
-TURFSAPI turfs_resolve_path(turfs_path_type type, char **path, size_t *len)
+TURFSAPI turfs_resolve_path(turfs_path_type type, const char* vpath, char **path, size_t *len)
 {
     if (!g_initialized) {
         return TURFS_RET_NOT_INITIALIZED;

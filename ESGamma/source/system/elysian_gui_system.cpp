@@ -147,7 +147,7 @@ GuiSystem::GuiSystem(void):
 bool GuiSystem::loadAssets(void) {
     bool success = true;
 
-    Debug::printf(Debug::DBG_VERBOSE, "GuiSystem::LoadAssets()");
+    Debug::printf(Debug::LOG_VERBOSE, "GuiSystem::LoadAssets()");
     Debug::push();
 
     success &= twcen.loadTextData(ELYSIAN_FONT_IMAGE_PATH_TWCEN, 256, 256, 16, 32,ELYSIAN_FONT_WIDTH_PATH_TWCEN);
@@ -409,7 +409,7 @@ void GuiSystem::_renderExamineEntity(void) {
     const GYColor4 color = { 255, 255, 255, 255 };
     pragmata18._transform._pos.x = xform->_pos.x;
     pragmata18._transform._pos.y = xform->_pos.y + 0.5f * xform->_size.y;
-    pragmata18._transform._pos.z = xform->_pos.z + xform->_size.y + ELYSIAN_GUI_SYSTEM_EXAMINE_TEXT_DBG_OFFSET;
+    pragmata18._transform._pos.z = xform->_pos.z + xform->_size.y + ELYSIAN_GUI_SYSTEM_EXAMINE_TEXT_LOG_OFFSET;
 
     pragmata18.setColor(color);
 

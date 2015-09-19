@@ -12,7 +12,7 @@ bool TkLuaBehavior::validate(QString& str) const {
         }
     };
 
-    cAssert(_script, "DBG_ERROR: LuaBehavior component doesn't have a valid script field.");
+    cAssert(_script, "LOG_ERROR: LuaBehavior component doesn't have a valid script field.");
     return success;
 }
 

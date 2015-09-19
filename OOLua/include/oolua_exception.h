@@ -91,53 +91,53 @@ THE SOFTWARE.
 
 	namespace OOLUA
 	{
-		namespace DBG_ERROR
+		namespace LOG_ERROR
 		{
 			struct PopTheStack{};
 			enum exception_buffer {size = 512};
-		} // namespace DBG_ERROR
+		} // namespace LOG_ERROR
 
 		struct Exception : std::exception
 		{
 			Exception(lua_State* vm);
-			Exception(lua_State* vm, DBG_ERROR::PopTheStack*);
+			Exception(lua_State* vm, LOG_ERROR::PopTheStack*);
 			Exception(char const* msg);
 			Exception(Exception const& rhs);
 			Exception& operator = (Exception const& rhs) throw();
 			char const* what() const throw();
 
 			size_t m_len;
-			char m_buffer[DBG_ERROR::size];
+			char m_buffer[LOG_ERROR::size];
 		};
 
 		struct Syntax_error : Exception
 		{
 			Syntax_error(lua_State* vm);
-			Syntax_error(lua_State* vm, DBG_ERROR::PopTheStack* specialisation);
+			Syntax_error(lua_State* vm, LOG_ERROR::PopTheStack* specialisation);
 		};
 
 		struct Runtime_error : Exception
 		{
 			Runtime_error(lua_State* vm);
-			Runtime_error(lua_State* vm, DBG_ERROR::PopTheStack* specialisation);
+			Runtime_error(lua_State* vm, LOG_ERROR::PopTheStack* specialisation);
 			Runtime_error(char const* msg);
 		};
 
 		struct Memory_error : Exception
 		{
 			Memory_error(lua_State* vm);
-			Memory_error(lua_State* vm, DBG_ERROR::PopTheStack* specialisation);
+			Memory_error(lua_State* vm, LOG_ERROR::PopTheStack* specialisation);
 		};
 
 		struct File_error : Exception
 		{
 			File_error(lua_State* vm);
-			File_error(lua_State* vm, DBG_ERROR::PopTheStack* specialisation);
+			File_error(lua_State* vm, LOG_ERROR::PopTheStack* specialisation);
 		};
 
 		struct Type_error : Exception
 		{
-			Type_error(lua_State* vm, DBG_ERROR::PopTheStack* specialisation);
+			Type_error(lua_State* vm, LOG_ERROR::PopTheStack* specialisation);
 		};
 
 	} // namespace OOLUA // NOLINT

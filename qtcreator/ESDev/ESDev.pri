@@ -3,6 +3,21 @@ exists( ESDevCommandLineArgs.pri ) {
     include( ESDevCommandLineArgs.pri )
 }
 
+dreamcast {
+
+    INCLUDEPATH=/home/jenkins/Dreamcast/cadcdev-kallistios/include \
+        /home/jenkins/Dreamcast/cadcdev-kos-ports/include \
+        /home/jenkins/Dreamcast/cadcdev-kallistios/kernel/arch/dreamcast/include \
+        /home/jenkins/Dreamcast/cadcdev-kallistios/addons/include
+
+    DEFINES+=_arch_dreamcast \
+        _arch_sub_pristine \
+        ELYSIAN_ENGINE
+
+
+}
+
+
 CONFIG -= exceptions
 
 
@@ -13,14 +28,16 @@ win32 {
 #    QMAKE_LFLAGS_RELEASE=
 }
 
-ios {
+ios|android {
     DEFINES += ELYSIAN_ENGINE
 }
 
-QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-unknown-pragmas -Wno-inconsistent-missing-override
+!dreamcast {
+    QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-unknown-pragmas -Wno-inconsistent-missing-override
+}
 #QMAKE_CFLAGS += -std=c99
 
-!iphoneos {
+!iphoneos:!dreamcast:!android {
     QMAKE_CFLAGS += -msse
     QMAKE_CXXFLAGS += -msse
 }
@@ -37,7 +54,13 @@ CONFIG(release, debug|release) {
 
 DEFINES += QT_NO_KEYWORDS QT_NO_DYNAMIC_CAST
 
-ios {
+android {
+    DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_ANDROID
+    QMAKE_CFLAGS    += -mfpu=neon
+    QMAKE_CXXFLAGS  += -mfpu=neon
+        #QMAKE_ANDROID_DEPLOYMENT_TARGET=8.2
+        #QMAKE_ANDROID_TARGETED_DEVICE_FAMILY=1,2
+} else: ios {
     DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_iOS
     iphonesimulator {
         DEFINES += GYRO_PLATFORM_iOS_SIMULATOR
@@ -56,17 +79,19 @@ ios {
         #CONFIG+=neon
     }
 }
-else {
+else:dreamcast {
+    DEFINES+=GYRO_PLATFORM=GYRO_PLATFORM_DC
+} else {
     DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt
-
 }
 
-QMAKE_CXXFLAGS += -Wno-unknown-warning-option #-fno-rtti -fno-exceptions
 
-#!ios {
+
     QMAKE_CXXFLAGS += -std=c++11
+!dreamcast {
+QMAKE_CXXFLAGS += -Wno-unknown-warning-option #-fno-rtti -fno-exceptions
     CONFIG += c++11
-#}
+}
 
 CONFIG -= exceptions rtti
 

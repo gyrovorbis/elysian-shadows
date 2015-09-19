@@ -40,7 +40,7 @@ HelpDockWidget::HelpDockWidget(QWidget */*parent*/) {
 
     QDir dir(ESTK_USER_MANUAL_EXPANDED_DIR);
     if(!(dir.exists() || QDir::current().mkdir(ESTK_USER_MANUAL_EXPANDED_DIR))) {
-        Debug::printf(Debug::DBG_WARNING, "Could not access docs directory! [%s]", dir.absolutePath().toStdString().c_str());
+        Debug::printf(Debug::LOG_WARNING, "Could not access docs directory! [%s]", dir.absolutePath().toStdString().c_str());
 
     } else {
 
@@ -56,18 +56,18 @@ HelpDockWidget::HelpDockWidget(QWidget */*parent*/) {
 
 
         if(QFile::exists(ESTK_USER_MANUAL_QCH_FILE_NAME) && !QFile::remove(ESTK_USER_MANUAL_QCH_FILE_NAME)) {
-            Debug::printf(Debug::DBG_WARNING, "Could not overwrite existing QCH file!");
+            Debug::printf(Debug::LOG_WARNING, "Could not overwrite existing QCH file!");
         } else {
             if(!QFile::copy(ESTK_USER_MANUAL_QCH_RESOURCE_PATH, ESTK_USER_MANUAL_QCH_FILE_NAME)) {
-                Debug::printf(Debug::DBG_WARNING, "Could not expand QCH file to: [%s]", ESTK_USER_MANUAL_QCH_EXPANDED_PATH);
+                Debug::printf(Debug::LOG_WARNING, "Could not expand QCH file to: [%s]", ESTK_USER_MANUAL_QCH_EXPANDED_PATH);
             }
         }
 
         if(QFile::exists(ESTK_USER_MANUAL_QHC_FILE_NAME) && !QFile::remove(ESTK_USER_MANUAL_QHC_FILE_NAME)) {
-            Debug::printf(Debug::DBG_WARNING, "Could not overwrite existing QCH file!");
+            Debug::printf(Debug::LOG_WARNING, "Could not overwrite existing QCH file!");
         } else {
             if(!QFile::copy(ESTK_USER_MANUAL_QHC_RESOURCE_PATH, ESTK_USER_MANUAL_QHC_FILE_NAME)) {
-                Debug::printf(Debug::DBG_WARNING, "Could not expand QHC file to: [%s]", ESTK_USER_MANUAL_QHC_EXPANDED_PATH);
+                Debug::printf(Debug::LOG_WARNING, "Could not expand QHC file to: [%s]", ESTK_USER_MANUAL_QHC_EXPANDED_PATH);
             }
         }
 
@@ -80,7 +80,7 @@ HelpDockWidget::HelpDockWidget(QWidget */*parent*/) {
 
         QHelpEngine* helpEngine = new QHelpEngine(dbFileName);
         if(!helpEngine->setupData()) {
-            Debug::printf(Debug::DBG_WARNING, "QHelpEngine::setupData() failed!");
+            Debug::printf(Debug::LOG_WARNING, "QHelpEngine::setupData() failed!");
         }
 
         QTabWidget* tWidget = new QTabWidget;

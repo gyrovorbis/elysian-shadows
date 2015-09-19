@@ -62,7 +62,7 @@ bool            ESTkTest::_expectWarning    = false;
 int main(QStringList args)
 {
     //bool showHiddenLevelsSettingVal;
-    //Debug::setLevel(Debug::DBG_OFF);
+    //Debug::setLevel(Debug::LOG_OFF);
     ESTkTest::initialize();
 
 

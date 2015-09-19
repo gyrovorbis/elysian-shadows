@@ -2,7 +2,7 @@
 #define ELYSIAN_BEHAVIOR_HPP
 
 #ifdef ELYSIAN_ENGINE
-#   include <elysian_behavior_base.hpp>
+#   include <component/elysian_behavior_base.hpp>
 namespace elysian {
     typedef BehaviorBase Behavior;
 }

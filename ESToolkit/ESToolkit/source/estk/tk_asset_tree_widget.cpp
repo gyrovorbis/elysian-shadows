@@ -72,7 +72,7 @@ void AssetTreeWidget::OnAreaChange(Area * const area) {
 	if(area) setCurrentItem(area);
 	else setCurrentItem(getCurrentLevel());
  //   area->setSelected(true);
-    //Debug::Log(Debug::DBG_VERBOSE, "PostCurrItem - %s", ((Area*)currentItem())->getName().toStdString().c_str());
+    //Debug::Log(Debug::LOG_VERBOSE, "PostCurrItem - %s", ((Area*)currentItem())->getName().toStdString().c_str());
 }
 
 /* ON REMOVES */

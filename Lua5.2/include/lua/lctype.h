@@ -11,7 +11,7 @@
 
 
 /*
-** DBG_WARNING: the functions defined here do not necessarily correspond
+** LOG_WARNING: the functions defined here do not necessarily correspond
 ** to the similar functions in the standard C ctype.h. They are
 ** optimized for the specific needs of Lua
 */

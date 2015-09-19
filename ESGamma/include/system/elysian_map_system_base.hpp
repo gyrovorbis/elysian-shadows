@@ -304,7 +304,9 @@ break;
 
         }*/
 
+#if GYRO_PLATFORM != GYRO_PLATFORM_DC
         glalVertexRenderCount += _curArea->elementsArraySize[0];
+#endif
 
         //assert(elemArraySize <= maxi);
        // assert(elemArraySize < ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE);

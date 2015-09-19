@@ -119,7 +119,7 @@ private:
     static QMenu*               _filterMenu;
     static bool                 _pendingError;
     static unsigned             _stackDepth;
-    static bool                 _filterEnabled[SOURCE_MAX][DebugBase::DBG_OFF];
+    static bool                 _filterEnabled[SOURCE_MAX][DebugBase::LOG_OFF];
     static QVector<QString>     _commandHistory;
     static int                  _commandHistoryIndex;
     static bool                 _shiftDown;

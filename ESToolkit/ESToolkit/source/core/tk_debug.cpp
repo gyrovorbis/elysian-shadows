@@ -40,7 +40,7 @@ QWidget* TkDebug::_centralWidget;
 bool TkDebug::_pendingError = false;
 unsigned TkDebug::_stackDepth = 0;
 constexpr char TkDebug::_srcEnumToStr[TkDebug::SOURCE_MAX][50];
-bool TkDebug::_filterEnabled[TkDebug::SOURCE_MAX][TkDebug::DBG_OFF] = {{ true }};
+bool TkDebug::_filterEnabled[TkDebug::SOURCE_MAX][TkDebug::LOG_OFF] = {{ true }};
 QVector<QString> TkDebug::_commandHistory;
 int TkDebug::_commandHistoryIndex;
 bool TkDebug::_shiftDown = false;
@@ -120,13 +120,13 @@ TkDebug::TkDebug(void) {
     auto addFilterSource = [&](const QString name, const Debug::TK_SOURCE source) {
         MenuStack severityMenu("Severity");
         severityMenu.insertCheckableAction("Verbose", [=](const bool checked) {
-            Debug::setFilter(source, Debug::DBG_VERBOSE, checked);
+            Debug::setFilter(source, Debug::LOG_VERBOSE, checked);
         });
         severityMenu.insertCheckableAction("Warning", [=](const bool checked) {
-            Debug::setFilter(source, Debug::DBG_WARNING, checked);
+            Debug::setFilter(source, Debug::LOG_WARNING, checked);
         });
         severityMenu.insertCheckableAction("Error", [=](const bool checked) {
-            Debug::setFilter(source, Debug::DBG_ERROR, checked);
+            Debug::setFilter(source, Debug::LOG_ERROR, checked);
         });
         sourcesMenu.insertCheckableAction(name, [](const bool /*checked*/) {
             //for(auto it : action->menu()->actions()) {
@@ -158,7 +158,7 @@ TkDebug::~TkDebug(void) {
 /*
 void Debug::ESDebugWrapper(elysian::Asset::DBG_TYPE flag, const char msg[] ) {
     QString str(msg);
-    Debug::Log(ASSETIO_DBG_WARNING, str);
+    Debug::Log(ASSETIO_LOG_WARNING, str);
 }*/
 
 /* Fuck you and your QStrings, Marcel. I'm doing this C-Style. */
@@ -181,19 +181,19 @@ void TkDebug::logQ(QtMsgType type, const QMessageLogContext &context, const QStr
     default:
 	case QtDebugMsg:
         sprintf(qtDebugBuff, "%s (%s:%u, %s)", msg.toStdString().c_str(), context.file, context.line, context.function);
-        level = DBG_VERBOSE;
+        level = LOG_VERBOSE;
 		break;
 	case QtWarningMsg:
         sprintf(qtDebugBuff, "%s (%s:%u, %s)", msg.toStdString().c_str(), context.file, context.line, context.function);
-        level = DBG_WARNING;
+        level = LOG_WARNING;
 		break;
 	case QtCriticalMsg:
         sprintf(qtDebugBuff, "%s (%s:%u, %s)", msg.toStdString().c_str(), context.file, context.line, context.function);
-        level = DBG_WARNING;
+        level = LOG_WARNING;
 		break;
 	case QtFatalMsg:
         sprintf(qtDebugBuff, "%s (%s:%u, %s)", msg.toStdString().c_str(), context.file, context.line, context.function);
-        level = DBG_ERROR;
+        level = LOG_ERROR;
 	}
 
     Log(level, qtDebugBuff, SOURCE_QT);
@@ -206,7 +206,7 @@ void TkDebug::push(void) {
     if(_prevMsgDiscarded) {
         _ignoredPushes.push(true);
     } else {
-        _pendingQueue->enqueue(LogEntry { "PUSH", DBG_VERBOSE, TOOLKIT, LogEntry::PUSH });
+        _pendingQueue->enqueue(LogEntry { "PUSH", LOG_VERBOSE, TOOLKIT, LogEntry::PUSH });
         _ignoredPushes.push(false);
     }
 
@@ -220,7 +220,7 @@ void TkDebug::pop(const unsigned count) {
     _mutex->lock();
     elysian::DebugBase::pop(count);
     for(unsigned i = 0; i < count; ++i) {
-        if(!_ignoredPushes.pop()) _pendingQueue->enqueue(LogEntry { "POP", DBG_VERBOSE, TOOLKIT, LogEntry::POP });
+        if(!_ignoredPushes.pop()) _pendingQueue->enqueue(LogEntry { "POP", LOG_VERBOSE, TOOLKIT, LogEntry::POP });
     }
     _mutex->unlock();
 #ifdef ESTK_UNIT_TESTS
@@ -274,7 +274,7 @@ void TkDebug::onCommandSubmit(void) {
 
     QString dispStr = str;
     dispStr = dispStr.replace("\n", "\n> ");
-    Debug::Log(DBG_VERBOSE, QString("> ")+dispStr, COMMAND);
+    Debug::Log(LOG_VERBOSE, QString("> ")+dispStr, COMMAND);
     const unsigned depth = Debug::getStackDepth();
     auto* parent = _prevItem;
     Debug::push();
@@ -367,8 +367,8 @@ void TkDebug::_postToQueue(const TK_SOURCE src, const SEVERITY level, const QStr
     _mutex->unlock();
 
 #ifdef ESTK_UNIT_TESTS
-    if(level == Debug::DBG_WARNING) tktest::ESTkTest::flagWarning(text);
-    else if(level == Debug::DBG_ERROR) tktest::ESTkTest::flagError(text);
+    if(level == Debug::LOG_WARNING) tktest::ESTkTest::flagWarning(text);
+    else if(level == Debug::LOG_ERROR) tktest::ESTkTest::flagError(text);
 #endif
 }
 
@@ -442,22 +442,22 @@ void TkDebug::_processLogEntry(const LogEntry& entry) {
 
     _curParent->addChild(_prevItem);
 
-    //if(flag == DBG_VERBOSE && !_filterSourceEnabled[src]) _prevItem->setHidden(true);
+    //if(flag == LOG_VERBOSE && !_filterSourceEnabled[src]) _prevItem->setHidden(true);
 
     //ths is why shit is so slow. Retarded time complexity
-    if(flag >= Debug::DBG_WARNING) {
+    if(flag >= Debug::LOG_WARNING) {
         _pendingError = true;
 
         QTreeWidgetItem *it = _prevItem;
-        brush = QBrush(flag == Debug::DBG_ERROR? Qt::darkRed : Qt::darkYellow);
+        brush = QBrush(flag == Debug::LOG_ERROR? Qt::darkRed : Qt::darkYellow);
         it->setForeground(0, brush);
         it->setForeground(1, brush);
         do {
             it->setExpanded(true);
-            it = (flag == Debug::DBG_ERROR)? it->parent() : nullptr;
+            it = (flag == Debug::LOG_ERROR)? it->parent() : nullptr;
         } while(it);
 
-        if(flag == Debug::DBG_ERROR) _prevItem->setSelected(true);
+        if(flag == Debug::LOG_ERROR) _prevItem->setSelected(true);
         //_treeWidget->scrollToItem(_prevItem);
 
         //If we've returned to the top level with a pending error,

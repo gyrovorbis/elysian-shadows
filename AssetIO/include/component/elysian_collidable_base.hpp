@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 #include <cstring>
+#include <cstdint>
+#include <limits>
 #include <kinetic/gyro_kinetic_collider.h>
 #include <kinetic/gyro_kinetic_static.h>
 #include <kinetic/gyro_kinetic_contact.h>
@@ -269,8 +271,8 @@ namespace elysian {
 
     // ======== INLINEZ ========
     inline CollisionFlags::CollisionFlags(void) {
-        _type.setValue(UINT32_MAX);
-        _typeAgainst.setValue(UINT32_MAX);
+        _type.setValue(std::numeric_limits<std::uint32_t>::max());
+        _typeAgainst.setValue(std::numeric_limits<std::uint32_t>::max());
 
     }
     inline BitMask32& CollisionFlags::getType(void){ return _type; }

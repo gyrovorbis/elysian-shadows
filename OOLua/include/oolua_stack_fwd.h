@@ -51,7 +51,7 @@ namespace OOLUA
 	/**
 		\brief Pushes an instance to top of the Lua stack
 		\return
-		If \ref OOLUA_STORE_LAST_DBG_ERROR is set to one then the the return value will
+		If \ref OOLUA_STORE_LAST_LOG_ERROR is set to one then the the return value will
 		indicate success or failure, if \ref OOLUA_USE_EXCEPTIONS is set to one then
 		failure will always be reported by throwing an exception.
 		\note Although all push methods return a boolean, most simply return true.
@@ -88,7 +88,7 @@ namespace OOLUA
 		\brief Pulls the top element off the stack and pops it.
 		\details In stack terms this is a top followed by pop.
 		\return
-		If \ref OOLUA_STORE_LAST_DBG_ERROR is set to one then the the return value will
+		If \ref OOLUA_STORE_LAST_LOG_ERROR is set to one then the the return value will
 		indicate success or failure, if \ref OOLUA_USE_EXCEPTIONS is set to one then
 		failure will always be reported by throwing an exception.
 		\see OOLuaErrorReporting

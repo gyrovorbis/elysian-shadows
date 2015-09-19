@@ -14,7 +14,7 @@ bool TkCombat::validate(QString& str) const {
         }
     };
 
-    cAssert(_attrib, "DBG_ERROR: Combat component has no attrib field.");
+    cAssert(_attrib, "LOG_ERROR: Combat component has no attrib field.");
     return success;
 }
 

@@ -235,11 +235,11 @@ bool TkArea::load(const char*const str) {
     setNodeName(QDir(dir).dirName());
     setNodePath(QDir(dir).absolutePath());
 #if 0
-    Debug::Log(Debug::DBG_VERBOSE, "Creating Toolkit Entities from elysian::Entities.");
+    Debug::Log(Debug::LOG_VERBOSE, "Creating Toolkit Entities from elysian::Entities.");
     Debug::push();
 
     for(unsigned int i = 0; i < _elysianArea.entities.size(); ++i) {
-        Debug::Logf(Debug::DBG_VERBOSE, "Entity #%d - %s.", i, _elysianArea.entities[i]->getName());
+        Debug::Logf(Debug::LOG_VERBOSE, "Entity #%d - %s.", i, _elysianArea.entities[i]->getName());
         Entity *tempEntity = new Entity(*_elysianArea.entities[i]);
         connectSlots(tempEntity);
         _entities.push_back(tempEntity);
@@ -272,14 +272,14 @@ bool Area::saveAs(const QString path) {
         DbgEvent event("Directory already exists!");
         if(QMessageBox::critical(nullptr, tr("Warning!"), tr("A directory of the same name already exists at the specified location. Overwrite?"), QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
             if(!qdir.rmdir(dir)) {
-                Debug::Log(Debug::DBG_ERROR, "Could not delete existing directory!");
+                Debug::Log(Debug::LOG_ERROR, "Could not delete existing directory!");
                 return false;
             } else {
                 dbgprintf("Directory successfully deleted.");
             }
         }
         else {
-            Debug::Log(Debug::DBG_VERBOSE, "Directory overwrite canceled.");
+            Debug::Log(Debug::LOG_VERBOSE, "Directory overwrite canceled.");
             return true; //User canceled, still a success
         }
     }
@@ -408,7 +408,7 @@ bool Area::open(void) {
 }
 
 bool Area::close(void) {
-    //Debug::Log(Debug::DBG_VERBOSE, "Area[%s].Close()\n", getName().toStdString().c_str());
+    //Debug::Log(Debug::LOG_VERBOSE, "Area[%s].Close()\n", getName().toStdString().c_str());
     if(!_open) return true;
     if(_active) deactivate();
 

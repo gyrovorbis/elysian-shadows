@@ -2,6 +2,7 @@
 #define ELYSIAN_LUA_VARIANT_BASE_HPP
 
 #include <initializer_list>
+#include <cstdlib>
 #include <crtp/elysian_lua_manager.hpp>
 
 #define ELYSIAN_LUA_VARIANT_DEBUG   ELYSIAN_LUA_DEBUG

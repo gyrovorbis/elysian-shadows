@@ -13,7 +13,7 @@ typedef float GYMatrix4[4][4] GYRO_MATRIX4_ALIGN;
 
 typedef struct GYVector4 {
     float x, y, z, w;
-} GYRO_VECTOR4_ALIGN GYVector4;
+} GYVector4 GYRO_VECTOR4_ALIGN;
 
 typedef struct GYVector3 {
     float x, y, z;

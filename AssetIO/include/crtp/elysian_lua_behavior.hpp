@@ -2,7 +2,7 @@
 #define ELYSIAN_LUA_BEHAVIOR_HPP
 
 #ifdef ELYSIAN_ENGINE
-#   include <elysian_lua_behavior_base.hpp>
+#   include <component/elysian_lua_behavior_base.hpp>
 namespace elysian {
     typedef LuaBehaviorBase LuaBehavior;
 }

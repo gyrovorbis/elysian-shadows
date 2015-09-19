@@ -8,7 +8,11 @@ TARGET = ESToolkit
 
 TEMPLATE = app
 
-!ios {
+dreamcast {
+    TARGET_EXT=".elf"
+}
+
+!ios: !dreamcast: !android {
     QT += sql gui opengl network help
     CONFIG += console
     tests {
@@ -52,7 +56,7 @@ DEPENDPATH += 	../../AssetIO/include \
     ../../libGyro/include \
     ../../libGyro/include/kinetic
 
-!ios {
+!ios: !dreamcast: !android{
     DEPENDPATH += include \
         include/asset \
         include/model \
@@ -79,7 +83,7 @@ INCLUDEPATH += ../../AssetIO/include \
     ../../ESGamma/lib/include \
     ../../Spine/include
 
-!ios {
+!ios: !dreamcast: !android {
     INCLUDEPATH += include \
     include/asset \
     include/model \
@@ -201,7 +205,7 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
 
 
 
-!ios {
+!ios: !dreamcast: !android {
 
     SOURCES += source/asset/tk_animation.cpp \
         source/asset/tk_area.cpp \
@@ -436,7 +440,7 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../AssetIO/include/crtp/elysian_lua_variant.hpp \
     ../../AssetIO/include/utility/elysian_lua_variant_base.hpp
 
-!ios {
+!ios:!dreamcast: !android {
     HEADERS +=  include/asset/tk_animation.h \
         include/asset/tk_area.h \
         include/asset/tk_asset_manager.h \
@@ -595,7 +599,7 @@ docs {
     DEFINES+=TOOLKIT_DOCUMENTATION_RESOURCES
 
     RESOURCES += resource/docs.qrc
-hold
+
 #	PHONY_DEPS=. FUCK THIS SHIT SO HARD!!!!
 #		docs.depends = FORCE
 #		docs.target = $$PWD/out/ESToolkit.qhc
@@ -613,6 +617,11 @@ macx {
     #DESTDIR = ../../executable
 #	CONFIG(release, debug|release):
     QMAKE_POST_LINK = "macdeployqt $${TARGET}.app -verbose=3"
+}
+
+dreamcast {
+    DESTDIR = ../../executable
+    QMAKE_POST_LINK="mv ../../executable/ESToolkit ../../executable/ESToolkit.elf"
 }
 
 ios {
@@ -638,6 +647,7 @@ win32 {
 linux {
     DESTDIR = ../../executable
 }
+
 
 
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../libGyro/qtcreator/libGyro/release/ -llibGyro
@@ -770,7 +780,21 @@ ios {
         -framework Vorbis
 }
 
-linux {
+dreamcast {
+
+    LIBS+=-L/home/jenkins/Dreamcast/cadcdev-kallistios/lib/dreamcast \
+        -L/home/jenkins/Dreamcast/cadcdev-kallistios/addons/lib/dreamcast \
+        -lstdc++ \
+        -lm \
+        -Wl,--start-group -lkallisti -lc -lgcc -Wl,--end-group \
+        -T/home/jenkins/Dreamcast/cadcdev-kallistios/utils/ldscripts/shlelf.xc \
+        -nodefaultlibs
+
+} else: android {
+    LIBS += -lEGL -lGLESv2 -landroid
+
+}
+else:linux {
     LIBS += \
         -lGL \
         -lopenal \

@@ -2,7 +2,7 @@
 #define ELYSIAN_RIGID_BODY_HPP
 
 #ifdef ELYSIAN_ENGINE
-#   include <elysian_rigid_body_base.hpp>
+#   include <component/elysian_rigid_body_base.hpp>
 namespace elysian {
     typedef RigidBodyBase RigidBody;
 }
