@@ -108,14 +108,15 @@ namespace elysian {
     }
 
     inline void RenderableBase::render(void) {
+            float newZFactor;
 
 
      //   gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
 
-        gyVidTexBind(_spriteAttrib? _spriteAttrib->_tex : nullptr);
-        gyVidNormalMapBind(_spriteAttrib? _spriteAttrib->getNormalMap() : nullptr);
-        gyVidSpecularMapBind(_spriteAttrib? _spriteAttrib->getSpecularMap() : nullptr);
-        gyVidMaterialBind(_spriteAttrib? _spriteAttrib->getMaterial() : nullptr);
+       gyVidTexBind(_spriteAttrib? _spriteAttrib->_tex : nullptr);
+       gyVidNormalMapBind(_spriteAttrib? _spriteAttrib->getNormalMap() : nullptr);
+       gyVidSpecularMapBind(_spriteAttrib? _spriteAttrib->getSpecularMap() : nullptr);
+       gyVidMaterialBind(_spriteAttrib? _spriteAttrib->getMaterial() : nullptr);
 
         //gyMatTranslate(_offset.x, _offset.y, 0.0f);
 
@@ -136,8 +137,12 @@ namespace elysian {
                 }
             }
 
-             gyVidAlphaLevel((alpha)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
+             //gyVidAlphaLevel((alpha)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
+             gyVidAlphaLevel(GY_ALPHA_FULL);
 
+
+             //newZFactor = glalOrientNormalMapZFactor(_texOrient);
+             //glalVidNormalMapZFactorUpdateUniform(newZFactor);
             gyVidQuadListBegin(&_spriteAttrib->_color);
          //   gyVidAlphaLevel(GY_ALPHA_FULL);
             gyVidColorArray(&_spriteAttrib->_color);
@@ -155,7 +160,10 @@ namespace elysian {
             break;
         case PrimAttrib::SPRITE:
             if(_spriteAttrib->_color.a == 0.0f) return;
-            gyVidAlphaLevel((_spriteAttrib->_color.a == 255)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
+            gyVidAlphaLevel(GY_ALPHA_FULL);
+
+           // newZFactor = glalOrientNormalMapZFactor(_texOrient);
+            //glalVidNormalMapZFactorUpdateUniform(newZFactor);
             gyVidQuadListBegin(&_spriteAttrib->_color);
 
             if(_frame == -1) {

@@ -107,6 +107,7 @@ makeCurrent();
 void EngineGLSceneWidget::startRenderTimer(void) {
     makeCurrent();
 
+        //_timer.start(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this);
 
     //QTimer::singleShot(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this, SLOT(_updateEngine()));
     //_timer.start(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this);
@@ -160,6 +161,8 @@ void EngineGLSceneWidget::paintGL(void) {
     if(!getCurrentArea() || !_initialized) return;
     makeCurrent();
 
+    auto delta = gyTimerTicks();
+
     static bool once = false;
     if(!once) {
        // _initSpineShit();
@@ -167,17 +170,12 @@ void EngineGLSceneWidget::paintGL(void) {
     }
 
     _wasGLError = false;
-#if 0
-    float deltaTime = getAssets()->getEngine()->getTimerSys()->getDeltaTime();
-    spSkeleton_update(skeleton, deltaTime);
-    spAnimationState_update(state, deltaTime * 1.0f);
-    spAnimationState_apply(state, skeleton);
-    spSkeleton_updateWorldTransform(skeleton);
-#endif
 
 	getAssets()->getEngine()->getTimerSys()->pushTaskMonitor(&_engineTask);
 
-        getAssets()->getEngine()->render();
+    getAssets()->getEngine()->render();
+
+    doneCurrent();
 
     getAssets()->getEngine()->update();
     getAssets()->getEngine()->processInput();
@@ -200,9 +198,16 @@ void EngineGLSceneWidget::paintGL(void) {
 
     //getAssets()->getEngine()->render(&_renderSpineShit);
 
-     // context()->swapBuffers(context()->surface()); // DO QOPENGL WIDGET'S FUCKING JOB FOR IT!
+      //context()->swapBuffers(context()->surface()); // DO QOPENGL WIDGET'S FUCKING JOB FOR IT!
         //  update();
+
 	getAssets()->getEngine()->getTimerSys()->popTaskMonitor(&_engineTask);
+
+    auto result = gyTimerTicks() - delta;
+
+    auto sec = (double)result/1000000000.0;
+   // qDebug() << "nsec - " << result << "sec - " << sec << "hz - " << 1.0/sec;
+
 
     Q_EMIT engineUpdated();
 }

@@ -44,7 +44,7 @@ TimerSystemBase::TimerSystemBase(void)
 }
 
 void TimerSystemBase::update(void) {
-	float delta;
+    double delta;
 
     //TIMER_STOP;
 
@@ -61,9 +61,9 @@ void TimerSystemBase::update(void) {
 	//Calculate delta (sec)
 	//_deltaTime = (_curFrameTicks - _prevFrameTicks)/1000.0f;
 #if 1
-    delta = ((float)(_curFrameTicks-_prevFrameTicks))/1000000000.0f;
+    delta = ((double)(_curFrameTicks-_prevFrameTicks))/1000000000.0;
 #else
-	delta = 1/60.0f;
+  //  delta = 1.0f/60.0f;
 #endif
     //TIMER_CLEAR;
     //TIMER_START;
@@ -71,24 +71,24 @@ void TimerSystemBase::update(void) {
 
 	_realDeltaCircBuffer[_buffIndex] = delta;
 
-    
+#if 0
 	//Apply framerate limiting
 	if(_enableMaxFramerate &&  delta < _maxFramerate) {
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
-		gyTimerSleep(_maxFramerate*1000.0f - delta*1000.0f);
+//		gyTimerSleep(_maxFramerate*1000.0f - delta*1000.0f);
 #endif
-		delta = _maxFramerate;
+        delta = _maxFramerate;
 	}
-	else if(_enableMinFramerate && delta > _minFramerate) delta = _minFramerate;
-
+    else if(_enableMinFramerate && delta > _minFramerate) delta = _minFramerate;
+#endif
 
 	_deltaTimeCircBuffer[_buffIndex] = delta;
 
 	//_totalTicks += delta*1000.0f;
 
 	//Calculate weighted deltatime
-	_deltaTime = 0.0f;
-	_realDeltaTime = 0.0f;
+    _deltaTime = 0;
+    _realDeltaTime = 0;
 	for(unsigned i = 0; i < DELTA_TIME_CIRC_BUFFER_SIZE; ++i) {
 		_deltaTime += _deltaTimeCircBuffer[i];
 		_realDeltaTime += _realDeltaCircBuffer[i];

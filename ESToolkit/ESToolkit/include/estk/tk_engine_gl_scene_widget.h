@@ -16,7 +16,9 @@ class QOpenGLDebugMessage;
 
 class MapView;
 
-#define TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME   (1000.0f/60.0f)
+//#define TK_ENGINE_GL_SCENE_DYNAMIC_UDPATE_TIME
+//#define TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME   (1000.0f/60.0f)
+#define TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME   0.0f
 
 class EngineGLSceneWidget:
         public QGLWidget,

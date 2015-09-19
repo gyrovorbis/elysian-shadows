@@ -231,7 +231,7 @@ void Engine::render(void) {
 
             _mapSystem->render();
 
-            _lightSystem->render();
+            //_lightSystem->render();
 
              _collisionSystem->render();
              _particleSystem->render();
