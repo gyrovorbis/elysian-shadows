@@ -709,11 +709,12 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 void gyVidLightSourceEndShadowPasses(void) {
 gyVidVertexBatchFlush();
    // glFlush();
+   // glFlush();
     _shadowPass = 0;
     gyVidSetDefaultShaderProgram();
     //glalDefaultShadersLoadUniforms();
     glalCurLightShader = &glalLightingShader;
-   // glFlush();
+
   // gyVidVertexBatchFlush();
 #if GYRO_PLATFORM == GYRO_PLATFORM_iOS
     //glBindFramebuffer(GL_FRAMEBUFFER, iosFramebuffer);

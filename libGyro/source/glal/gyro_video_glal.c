@@ -359,7 +359,7 @@ static inline void _flushStreamVertices(void* data) {
     gyVidVertexArrayBind(_streamVao[gyVidShadowPass()]);
 
     glBindBuffer(GL_ARRAY_BUFFER, _streamVertexVbo[0]);
-    GYVertex* ptr = (GYVertex*)glMapBufferRange(GL_ARRAY_BUFFER, _vertexQueueLastOffset, sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize), GL_MAP_INVALIDATE_RANGE_BIT /*| GL_MAP_FLUSH_EXPLICIT_BIT*/ | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+    GYVertex* ptr = (GYVertex*)glMapBufferRange(GL_ARRAY_BUFFER, _vertexQueueLastOffset, sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize), GL_MAP_INVALIDATE_RANGE_BIT | /*GL_MAP_FLUSH_EXPLICIT_BIT |*/ GL_MAP_WRITE_BIT/* | GL_MAP_UNSYNCHRONIZED_BIT*/);
     if(ptr) {
     memcpy(ptr, &_vertexQueue[_vertexQueueLastSize], sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize));
     glUnmapBuffer(GL_ARRAY_BUFFER);
@@ -488,8 +488,8 @@ void gyVidDepthTest(const int enable) {
 
 void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
     if(gyVidShadowPass()) return;
-    //static int wasShadow = 0;
-   // int passChange = (wasShadow != gyVidShadowPass());
+    static int wasShadow = 0;
+    int passChange = (wasShadow != gyVidShadowPass());
 
     //Does this even do anything now that we're shader based?
 
@@ -505,7 +505,7 @@ void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
             break;
         }
         glalAlphaLevel = lev;
-      //  wasShadow = gyVidShadowPass();
+        wasShadow = gyVidShadowPass();
     }
 }
 
@@ -520,8 +520,9 @@ void gyVidQuadListBegin(const GYColor4 *const color) {
 }
 
 void gyVidQuadListEnd(void) {
-    //gyVidVertexBatchFlush();
-    //gyVidVertexBatchEnd();
+    gyVidVertexBatchFlush();
+    gyVidVertexBatchEnd();
+    //glFlush();
     //gyVidTexCoordArray(_stripTexCoords);
     //gyVidNormalArray(_stripNormals);
     //gyVidTangentArray(_stripTangents);
