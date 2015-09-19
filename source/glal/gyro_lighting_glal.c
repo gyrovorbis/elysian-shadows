@@ -55,11 +55,14 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
         //glEnable(GL_TEXTURE_2D);
         //glDisable(GL_TEXTURE_CUBE_MAP);
         glBindTexture(GL_TEXTURE_2D, internals->shadowMap);
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+#ifndef GL_ES_VERSION_2_0
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-#if GYRO_PLATFORM != GYRO_PLATFORM_iOS
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+#endif
+
+#ifdef GYRO_GLAL_GL_Desktop
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -78,8 +81,10 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         //glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
     //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+#   ifdef GYRO_GLAL_GL_ES3
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
+#   endif
 #endif
         break;
 
@@ -87,7 +92,9 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
         //glEnable(GL_TEXTURE_2D);
         //glDisable(GL_TEXTURE_CUBE_MAP);
         glBindTexture(GL_TEXTURE_2D, internals->shadowMap);
+#ifndef GL_ES_VERSION_2_0
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
+#endif
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -95,12 +102,12 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
       //  glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
         //glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
     //    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+#ifndef GL_ES_VERSION_2_0
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-#if GYRO_PLATFORM != GYRO_PLATFORM_iOS
-
-
+#endif
+#ifdef GYRO_GLAL_GL_Desktop
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, 1.0f);
-#else
+#elif defined(GL_ES_VERSION_3_0)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
 
 #endif
@@ -110,11 +117,12 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
         light->spotCutoffAngle = 360.0f;
        // glEnable(GL_TEXTURE_CUBE_MAP);
         glBindTexture(GL_TEXTURE_CUBE_MAP, internals->shadowMap);
-                glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+#ifndef GL_ES_VERSION_2_0
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BASE_LEVEL, 0);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_LEVEL, 0);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
@@ -135,6 +143,7 @@ void gyVidLightSourceInit(GYLightSource* const light, const GY_LIGHT_TYPE type) 
             //shadowDepth? lolz
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT24, GLAL_SHADOW_MAP_SIZE, GLAL_SHADOW_MAP_SIZE, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
         }
+#endif
 #endif
       //  glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
         break;
@@ -264,7 +273,7 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
             gyVidVertexBatchFlush();
             flushed = 1;
         }
-            glUniform1f(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SPOT_CUTDBG_OFF_ANGLE], light->spotCutoffAngle);
+            glUniform1f(glalCurLightShader->lightsUniformLoc[index][GLAL_SHADER_LIGHT_SPOT_CUTLOG_OFF_ANGLE], light->spotCutoffAngle);
             cache->spotCutoffAngle = light->spotCutoffAngle;
             ++glalUniformChangeCount;
     }
@@ -592,19 +601,22 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 
         //Only do this shit once, on the first pass
         if(face == GY_CUBE_MAP_RIGHT) {
+#ifndef GL_ES_VERSION_2_0
             glBindFramebuffer(GL_DRAW_FRAMEBUFFER, internals->fbo);
+#endif
             glalGetPointLightCamMatrix(cam->projViewMat, light);
         } //else if(face == GY_CUBE_MAP_FRONT) return;
 
         glBindTexture(GL_TEXTURE_CUBE_MAP, internals->shadowMap);
 
         //glalGetPointLightViewVolume(&cam->viewVolume, light, face);
-
+#ifndef GL_ES_VERSION_2_0
         glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
                                GL_DEPTH_ATTACHMENT,
                                GL_TEXTURE_CUBE_MAP_POSITIVE_X + face,
                                internals->shadowMap,
                                0);
+#endif
 
         break;
 
@@ -625,15 +637,18 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
         //glCullFace(GL_BACK);
         //glEnable(GL_TEXTURE_2D);
                 //glBindTexture(GL_TEXTURE_2D, 0);
-
+#ifndef GL_ES_VERSION_2_0
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, internals->fbo);
+#endif
         glBindTexture(GL_TEXTURE_2D, internals->shadowMap);
 
+#ifndef GL_ES_VERSION_2_0
         glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
                                GL_DEPTH_ATTACHMENT,
                                GL_TEXTURE_2D,
                                internals->shadowMap,
                                0);
+#endif
         break;
 
 
@@ -647,24 +662,27 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
         //glBindTexture(GL_TEXTURE_2D, 0);
 
         //glCullFace(GL_BACK);
+#ifndef GL_ES_VERSION_2_0
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, internals->fbo);
+#endif
         glBindTexture(GL_TEXTURE_2D, internals->shadowMap);
-
+#ifndef GL_ES_VERSION_2_0
         glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
                                GL_DEPTH_ATTACHMENT,
                                GL_TEXTURE_2D,
                                internals->shadowMap,
                                0);
+#endif
 
         break;
 
     }
 
 
-#if GYRO_PLATFORM != GYRO_PLATFORM_iOS
+#if GYRO_PLATFORM == GYRO_PLATFORM_Qt
     glDrawBuffer(GL_NONE); // No color buffer is drawn to.
    // glReadBuffer(GL_NONE);
-#else
+#elif GYRO_PLATFORM == GYRO_PLATFORM_iOS
     glDrawBuffers(0, NULL);
 #endif
 
@@ -681,7 +699,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 
              glClear(GL_DEPTH_BUFFER_BIT);
     if(_firstShadowPass) {
-#if GYRO_PLATFORM != GYRO_PLATFORM_iOS
+#if GYRO_PLATFORM != GYRO_PLATFORM_iOS && GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
          glClearDepth(1.0f);
          glDepthRange(0.0f, 1.0f);
 #endif
@@ -728,7 +746,7 @@ gyVidVertexBatchFlush();
 
  #endif
     // glDrawBuffer(GL_BACK);
-#if GYRO_PLATFORM == GYRO_PLATFORM_iOS
+#if GYRO_PLATFORM == GYRO_PLATFORM_iOS || GYRO_PLATFOMR==GYRO_PLATFORM_ANDROID
     glDisable(GL_CULL_FACE);
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 

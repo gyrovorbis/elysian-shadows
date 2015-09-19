@@ -216,7 +216,9 @@ void gyVidVertexBatchFlush(void) {
 void gyVidVertexArrayBind(int id) {
     if(id != glalVertexArray) {
         gyVidVertexBatchFlush();
+#ifndef GL_ES_VERSION_2_0
         glBindVertexArray(id);
+#endif
         glalVertexArray = id;
     }
 }
@@ -234,7 +236,8 @@ int glalVidGlewInit(void) {
 
     if(!once) {
     //God fucking damnit, Windows....
-#if defined(_WIN32) || defined(__linux__)
+#if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
+#   if defined(_WIN32) || defined(__linux__)
         _gyLog(GY_DEBUG_VERBOSE, "Initializing GLEW...");
         _gyPush();
         glewExperimental = GL_TRUE; //FUCKING GLEW CANT HANDLE GL CORE CONTEXTS WITHOUT THIS.
@@ -252,6 +255,7 @@ int glalVidGlewInit(void) {
         _gyPop(1);
         once = 1;
 
+#   endif
 #endif
     }
     return 1;
@@ -300,7 +304,9 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         for(unsigned i = 0; i < 2; ++i) {
+#ifndef GL_ES_VERSION_2_0
             glGenVertexArrays(1, &_streamVao[i]);
+#endif
             gyVidVertexArrayBind(_streamVao[i]);
 
             glBindBuffer(GL_ARRAY_BUFFER, _streamVertexVbo[0]);
@@ -355,21 +361,26 @@ static int _glPrimitiveType = GL_TRIANGLE_STRIP;
 
 static inline void _flushStreamVertices(void* data) {
     (void)data;
+#ifndef GL_ES_VERSION_2_0
     if(_vertexQueueSize-_vertexQueueLastSize <= 0) return;
     gyVidVertexArrayBind(_streamVao[gyVidShadowPass()]);
 
     glBindBuffer(GL_ARRAY_BUFFER, _streamVertexVbo[0]);
-    GYVertex* ptr = (GYVertex*)glMapBufferRange(GL_ARRAY_BUFFER, _vertexQueueLastOffset, sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize), GL_MAP_INVALIDATE_RANGE_BIT | /*GL_MAP_FLUSH_EXPLICIT_BIT |*/ GL_MAP_WRITE_BIT/* | GL_MAP_UNSYNCHRONIZED_BIT*/);
+
+    GYVertex* ptr = (GYVertex*)glMapBufferRange(GL_ARRAY_BUFFER, _vertexQueueLastOffset, sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize), GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+
     if(ptr) {
     memcpy(ptr, &_vertexQueue[_vertexQueueLastSize], sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize));
+    glFlushMappedBufferRange(GL_ARRAY_BUFFER, _vertexQueueLastOffset, sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize));
     glUnmapBuffer(GL_ARRAY_BUFFER);
 
     glDrawArrays(_glPrimitiveType, _vertexQueueLastSize, (_vertexQueueSize-_vertexQueueLastSize));
 }
     _vertexQueueLastSize    = _vertexQueueSize;
     _vertexQueueLastOffset  = _vertexQueueSize*sizeof(GYVertex);
-
+#endif
 }
+
 
 #if 0
 static inline void _gyVidTriangleStrip(const GYVector4 *const vertexArray, const unsigned int startIndex, const unsigned int amount) {
@@ -488,8 +499,8 @@ void gyVidDepthTest(const int enable) {
 
 void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
     if(gyVidShadowPass()) return;
-    static int wasShadow = 0;
-    int passChange = (wasShadow != gyVidShadowPass());
+    //static int wasShadow = 0;
+   // int passChange = (wasShadow != gyVidShadowPass());
 
     //Does this even do anything now that we're shader based?
 
@@ -505,7 +516,7 @@ void gyVidAlphaLevel(const GY_ALPHA_LEVEL lev) {
             break;
         }
         glalAlphaLevel = lev;
-        wasShadow = gyVidShadowPass();
+      //  wasShadow = gyVidShadowPass();
     }
 }
 
@@ -520,9 +531,8 @@ void gyVidQuadListBegin(const GYColor4 *const color) {
 }
 
 void gyVidQuadListEnd(void) {
-    gyVidVertexBatchFlush();
+    _flushStreamVertices(NULL);
     gyVidVertexBatchEnd();
-    //glFlush();
     //gyVidTexCoordArray(_stripTexCoords);
     //gyVidNormalArray(_stripNormals);
     //gyVidTangentArray(_stripTangents);
@@ -647,27 +657,6 @@ void gyVidRect(const int frame) {
     gyVidQuad(glalRectVerts[glalPlaneType], frame);
 }
 
-
-void gyVidCamFrustum(GYCamera* const cam, const float fov, const float aspect, const float znear, const float zfar) {
-    GYViewVolume* volume = &cam->viewVolume;
-
-    gyVidPerspectiveMat(cam->projMat, fov, aspect, znear, zfar);
-    cam->projType = GY_PROJECTION_PERSPECTIVE;
-
-    gyMatMultMat(cam->projViewMat, cam->projMat, cam->viewMat);
-
-    volume->ratio = aspect;
-    volume->nearD = znear;
-    volume->farD = zfar;
-    volume->angle = fov;
-
-    volume->tang = (float)tan(GY_ANG2RAD * volume->angle * 0.5);
-    volume->nh = volume->nearD * volume->tang;
-    volume->nw = volume->nh * volume->ratio;
-    volume->fh = volume->farD * volume->tang;
-    volume->fw = volume->fh * volume->ratio;
-
-}
 
 //FUCKING GAY!!!! TRANSFORM IN PLACE!!!
 static float worldVertices[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE];

@@ -12,6 +12,10 @@
 #define GYRO_PLATFORM_ANDROID	(1<<4)
 #define GYRO_PLATFORM_Qt		(1<<5)
 
+//#define GYRO_GLAL_GL_Desktop    (1<<0)
+//#define GYRO_GLAL_GL_ES3        (1<<1)
+//#define GYRO_GLAL_GL_ES2        (1<<2)
+
 #define GYRO_ENDIAN_LITTLE		0x01
 #define GYRO_ENDIAN_BIG			0x02
 
@@ -48,6 +52,9 @@
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_DC
 
+#	define GYRO_MATRIX4_ALIGN			__attribute__((aligned(32)));
+#	define GYRO_VECTOR4_ALIGN			__attribute__((aligned(32)));
+
 #   define GYRO_ENDIAN GYRO_ENDIAN_LITTLE
 #   ifndef GYRO_MATH_SOFTWARE
 #       define GYRO_MATH_ACCELERATION
@@ -56,12 +63,18 @@
 #       define GYRO_MATRIX_ACCELERATION
 #   endif
 
+#	define GYRO_INPUT_PLATFORM_INCLUDE      "dc/gyro_input_dc.h"
+#	define GYRO_MATH_PLATFORM_INCLUDE       "dc/gyro_math_dc.inl"
+#	define GYRO_MATRIX_PLATFORM_INCLUDE     "dc/gyro_matrix_dc.inl"
+#	define GYRO_VIDEO_PLATFORM_INCLUDE      "dc/gyro_video_dc.h"
+#	define GYRO_TEXTURE_PLATFORM_INCLUDE    "dc/gyro_texture_dc.h"
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_PSP
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_iOS
 
 #	define GYRO_GLAL
+#   define GYRO_GLAL_GL_ES3
 #	define GYRO_ENDIAN						GYRO_ENDIAN_LITTLE
 #	define GYRO_MATRIX4_ALIGN			__attribute__ ((aligned (32)))
 #	define GYRO_VECTOR4_ALIGN			__attribute__ ((aligned (16)))
@@ -82,11 +95,12 @@
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_ANDROID
 #	define GYRO_GLAL
+#   define GYRO_GLAL_GL_ES2
 #	define GYRO_ENDIAN						GYRO_ENDIAN_LITTLE
-#	define GYRO_AUDIO_PLATFORM_INCLUDE		"glal/gyro_audio_glal.inl"
+//#	define GYRO_AUDIO_PLATFORM_INCLUDE		"glal/gyro_audio_glal.inl"
 #	define GYRO_INPUT_PLATFORM_INCLUDE		"android/gyro_input_android.inl"
 #	define GYRO_MATH_PLATFORM_INCLUDE		"common/gyro_math_common.inl"
-#	define GYRO_MATRIX_PLATFORM_INCLUDE		"android/gyro_matrix_neon.inl"
+#	define GYRO_MATRIX_PLATFORM_INCLUDE		"arm/gyro_matrix_arm_neon.inl"
 #	define GYRO_TEXTURE_PLATFORM_INCLUDE	"glal/gyro_texture_glal.inl"
 #	define GYRO_VIDEO_PLATFORM_INCLUDE		"android/gyro_video_android.inl"
 
@@ -97,6 +111,7 @@
 #elif GYRO_PLATFORM == GYRO_PLATFORM_Qt
 
 #   define                                  GYRO_GLAL
+#   define                                  GYRO_GLAL_GL_Desktop
 #	define GYRO_MATRIX4_ALIGN			__attribute__ ((aligned (16)))
 #	define GYRO_VECTOR4_ALIGN			__attribute__ ((aligned (16)))
 
