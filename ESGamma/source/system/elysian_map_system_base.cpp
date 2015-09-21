@@ -27,7 +27,7 @@ void GLMapSystemCrtp::_drawElements(void) {
     GLuint* ptr = (GLuint*)glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER, _lastOffset, sizeof(GLuint)*(_size-_lastSize), GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT | GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
     if(ptr) {
         memcpy(ptr, &_elements[_lastSize], sizeof(GLuint)*(_size-_lastSize));
-        glFlushMappedBufferRange(GL_ELEMENT_ARRAY_BUFFER, _lastOffset, sizeof(GLuint)*(_size-_lastSize));
+        //glFlushMappedBufferRange(GL_ELEMENT_ARRAY_BUFFER, _lastOffset, sizeof(GLuint)*(_size-_lastSize));
         glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 
         // glDrawElements(GL_TRIANGLE_STRIP, elemArraySize, GL_UNSIGNED_SHORT, elemArray /*nullptr*/);
