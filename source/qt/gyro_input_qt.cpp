@@ -2,42 +2,14 @@
 #include <QApplication>
 #include <QKeyEvent>
 #include <QGraphicsView>
+#include <gyro_system_api.h>
 
-static unsigned _keyDownFrames[GY_KEY_LAST] = { 0 };
-static unsigned _mouseButDownFrames[GY_MOUSE_BUT_MAX] = { 0 };
+extern "C" int  _sdlControllerInit(const struct GYInputInitParams*const  params);
+extern "C" int  _sdlControllerUninit(void);
+extern "C" void _sdlControllerDump(void);
 
-static inline void _updateKeyTaps(GYInput& input) {
-    for(unsigned k = 0; k < GY_KEY_LAST; ++k) {
-        if(input.keyDown[k]) {
-            if(_keyDownFrames[k] >= 1) {
-                input.keyTapped[k] = 0;
-            } else {
-                ++_keyDownFrames[k];
-                input.keyTapped[k] = 1;
-            }
-        } else {
-            _keyDownFrames[k] = 0;
-            input.keyTapped[k] = 0;
-        }
-    }
-}
-
-
-static inline void _updateMouseButTaps(GYMouse& input) {
-    for(unsigned k = 0; k < GY_MOUSE_BUT_MAX; ++k) {
-        if(input.butDown[k]) {
-            if(_mouseButDownFrames[k] >= 1) {
-                input.butTapped[k] = 0;
-            } else {
-                ++_mouseButDownFrames[k];
-                input.butTapped[k] = 1;
-            }
-        } else {
-            _mouseButDownFrames[k] = 0;
-            input.butTapped[k] = 0;
-        }
-    }
-}
+GYInputInitParams    _initParams;
+static bool         _changedThisFrame[GY_KEY_COUNT] = { false };
 
 static inline GY_MOUSE_BUTTON _TranslateMouseButtonFromQt(const Qt::MouseButton button) {
     switch(button) {
@@ -51,7 +23,7 @@ static inline GY_MOUSE_BUTTON _TranslateMouseButtonFromQt(const Qt::MouseButton 
     }
 }
 
-static inline GY_X86_KEY _TranslateFromQt(const int keyCode) {
+static inline GY_KEY _TranslateFromQt(const int keyCode) {
     switch(keyCode) {
     case Qt::Key_Escape:
         //exit(1);
@@ -163,22 +135,27 @@ static inline GY_X86_KEY _TranslateFromQt(const int keyCode) {
     }
 }
 
-static inline void _setKeyDown(GYInput *const input, const GY_X86_KEY key) {
-    input->keyDown[key] = 1;
+static inline void _setKeyDown(GYKeyboard *const keybd, const GY_KEY key) {
+    unsigned newState = keybd->keys[key] | 0x1;
+    keybd->keys[key] = (GY_BUTTON_STATE)newState;
+    _changedThisFrame[key] = true;
 }
 
-static inline void _setKeyUp(GYInput *const input, const GY_X86_KEY key) {
-    input->keyDown[key] = 0;
+static inline void _setKeyUp(GYKeyboard *const keybd, const GY_KEY key) {
+    //keybd->keys[key] = (GY_BUTTON_STATE)(((keybd->keys[key] << 0x1)) & 0x11);
+    unsigned newState = (keybd->keys[key] & (~0x1));
+    keybd->keys[key] = (GY_BUTTON_STATE)newState;
+    _changedThisFrame[key] = true;
 }
 
 
-class EventFilter: public QObject, public GYInput, public GYMouse {
+class EventFilter: public QObject, public GYKeyboard, public GYMouse {
 
 public:
 
     EventFilter(void) {
-        memset((GYInput*)this, 0, sizeof(GYInput));
-        memset((GYMouse*)this, 0, sizeof(GYMouse));
+        memset(static_cast<GYKeyboard*>(this), 0, sizeof(GYKeyboard));
+        memset(static_cast<GYMouse*>(this), 0, sizeof(GYMouse));
     }
 
     virtual ~EventFilter(void) = default;
@@ -191,11 +168,11 @@ public:
 
         switch(event->type()) {
         case QEvent::KeyPress:
-            _setKeyDown(this, _TranslateFromQt(keyEvent->key()));
+            _setKeyDown(static_cast<GYKeyboard*>(this), _TranslateFromQt(keyEvent->key()));
             break;
 
         case QEvent::KeyRelease:
-            _setKeyUp(this, _TranslateFromQt(keyEvent->key()));
+            _setKeyUp(static_cast<GYKeyboard*>(this), _TranslateFromQt(keyEvent->key()));
             break;
 
         case QEvent::MouseMove:
@@ -204,11 +181,11 @@ public:
             break;
 
          case QEvent::MouseButtonPress:
-            butDown[_TranslateMouseButtonFromQt(mouseEvent->button())] = 1;
+            //buttons[_TranslateMouseButtonFromQt(mouseEvent->button())] = (GY_BUTTON_STATE)(((buttons[_TranslateMouseButtonFromQt(mouseEvent->button())] << 0x1) | 0x1) & 0x11);
             break;
 
         case QEvent::MouseButtonRelease:
-            butDown[_TranslateMouseButtonFromQt(mouseEvent->button())] = 0;
+            //buttons[_TranslateMouseButtonFromQt(mouseEvent->button())] = (GY_BUTTON_STATE)(((buttons[_TranslateMouseButtonFromQt(mouseEvent->button())] << 0x1)) & 0x11);
             break;
 
         case QEvent::Wheel:
@@ -227,31 +204,58 @@ public:
 
 };
 
-static EventFilter*  _inputFilter;
-GYInputInitParams    _initParams;
+static EventFilter*  _inputFilter = nullptr;
 
 int gyInputInit(const GYInputInitParams*const params) {
+    int success = 1;
     _inputFilter = new EventFilter;
     _initParams = *params;
     ((QGraphicsView*)_initParams.viewWidget)->installEventFilter(_inputFilter);
+    success &= _sdlControllerInit(params);
     return 1;
 }
 
 int gyInputUninit(void) {
+    int success = 1;
      ((QGraphicsView*)_initParams.viewWidget)->removeEventFilter(_inputFilter);
     QApplication::instance()->removeEventFilter(_inputFilter);
+    success &= _sdlControllerUninit();
     delete _inputFilter;
     return 1;
 }
 
-void gyInputPoll(GYInput**const input) {
-    _updateKeyTaps(*_inputFilter);
+int gyKeyboardPoll(GYKeyboard**const keybd) {
+    *keybd = static_cast<GYKeyboard*>(_inputFilter);
 
-    *input = (GYInput*)_inputFilter;
+    for(unsigned i = 0; i < GY_KEY_COUNT; ++i) {
+        if(!_changedThisFrame[i]) {
+            unsigned wasDown = ((*keybd)->keys[i] & GY_BUT_FLAGS_IS_PRESSED);
+            unsigned key = (*keybd)->keys[i];
+            key <<= 1;
+            key |= wasDown;
+            key &= 0x03;
+            (*keybd)->keys[i] = (GY_BUTTON_STATE)key;
+        } else _changedThisFrame[i] = false;
+    }
+
+    return 1;
 }
 
-void gyMousePoll(GYMouse*const mouse) {
-    _updateMouseButTaps(*_inputFilter);
-    *mouse = *(GYMouse*)_inputFilter;
-    _inputFilter->scrollWheel.x = _inputFilter->scrollWheel.y = 0.0f;
+int gyMousePoll(GYMouse**const mouse) {
+    //*mouse = static_cast<GYMouse*>(_inputFilter);
+    //_inputFilter->scrollWheel.x = _inputFilter->scrollWheel.y = 0.0f;
+    return 1;
+}
+
+void gyInputDeviceDump(void) {
+    _gyLog(GY_DEBUG_VERBOSE, "LibGyro Device Dump");
+
+    _gyPush();
+    _gyLog(GY_DEBUG_VERBOSE, "Keyboard: ATTACHED [Qt]");
+    _gyLog(GY_DEBUG_VERBOSE, "Mouse: ATTACHED [Qt]");
+
+    _sdlControllerDump();
+    _gyPop(1);
+
+
 }
