@@ -739,6 +739,9 @@ win32 {
         #-lDbgHelp.dll \
         -lz \
         -lz.dll \
+        -lSDL2 \
+        -lSDL2Main \
+        -lSDL2.dll \
        # -lmingw32 \
         -logg \
         -lvorbis \
