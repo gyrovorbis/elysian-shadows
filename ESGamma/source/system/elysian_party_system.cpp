@@ -13,13 +13,16 @@
 #include "elysian_particle_system.hpp"
 #include <crtp/elysian_level.hpp>
 #include "elysian_audio_system.hpp"
+#include <system/elysian_input_system.hpp>
+#include <crtp/elysian_skeleton.hpp>
 
 namespace elysian {
 
 //----NONSTATIC----
 
-PartySystem::PartySystem(void)
-{}
+PartySystem::PartySystem(void) {
+    for(unsigned i = 0; i < ELYSIAN_PARTY_SLOTS_MAX; ++i) _players[i].setPlayerNum(i);
+}
 
 PartySystem::~PartySystem() {
     //for(unsigned int i = 0; i < _playableAmount; ++i) {
@@ -30,10 +33,12 @@ PartySystem::~PartySystem() {
 }
 
 void PartySystem::update(void) {//VOIDICATE
+#if 0
 	_tapTimer += getTimerSys()->getDeltaTime();
     _dashPartTimer += getTimerSys()->getDeltaTime();
 	//if(_playableParty.size() < 1) return;
 	updatePartyPaths();
+#endif
 }
 
 int PartySystem::getPartySlot(const Entity *entity) {
@@ -60,12 +65,27 @@ void PartySystem::setPartyLeader(Entity *entity) {
     _characterParty[slot] = prevLeader;
 }
 
-void PartySystem::processInput(const GameInput &input) {
+void PartySystem::processInput(void) {
+    for(unsigned i = 0; i < _characterParty.size(); ++i) {
+        _players[i].processInput(getInputSys()->getController(i), this);
+    }
+
+#if 0
+    return;
+    auto* cont = getInputSys()->getController(0);
+
 	Entity*entity = getPartyLeader();
 	if(!entity) return;
 
-    GYVector2 moveDist = input.getAnalogDir(0);
+    GYVector2 moveDist = cont->getAnalogStick(GY_CONTROLLER_ANALOG_LEFT);
     bool moved = false;
+
+
+    if(cont->getAnalogMag(GY_CONTROLLER_ANALOG_LEFT) >= 0.3f) {
+        moved = true;
+    }
+
+
 
 	//if(_playableParty.size() < 1) return;
 	
@@ -84,13 +104,12 @@ void PartySystem::processInput(const GameInput &input) {
 		RemovePlayableFromParty(0u);
 		return;
 	}*/
-
     auto endDash = [&](void) {
         getPartyLeader()->getCharacter()->setSpeedMultiplier(1.0f);
         getAudioSys()->setSfxChannelPitch(0, 1.0f);
         getPartyLeader()->getCharacter()->setDashing(false);
         _tapTimer = 0.0f;
-        _lastDpadTapped = GameInput::BUT_NONE;
+        _lastDpadTapped = GY_CONTROLLER_BUT_COUNT;
     };
 
     auto emitDashParticles = [&](void) {
@@ -107,32 +126,32 @@ void PartySystem::processInput(const GameInput &input) {
         _dashPartTimer = 0.0f;
     };
 
-	auto updateDash = [&](const GameInput::BUTTON but) {
+    auto updateDash = [&](const GY_CONTROLLER_BUTTON but) {
 		bool updateTappedButton = true;
 
 		if(_dashing) {
 			bool stop = false;
 			switch(_lastDpadTapped) {
-				case GameInput::BUT_DPAD_U:
-				  if(but == GameInput::BUT_DPAD_D) stop = true;
+                case GY_CONTROLLER_BUT_DPAD_UP:
+                  if(but == GY_CONTROLLER_BUT_DPAD_DOWN) stop = true;
 					break;
-				case GameInput::BUT_DPAD_D:
-					if(but == GameInput::BUT_DPAD_U) stop = true;
+                case GY_CONTROLLER_BUT_DPAD_DOWN:
+                    if(but == GY_CONTROLLER_BUT_DPAD_UP) stop = true;
 					 break;
 
-				case GameInput::BUT_DPAD_L:
-					if(but == GameInput::BUT_DPAD_R) stop = true;
+                case GY_CONTROLLER_BUT_DPAD_LEFT:
+                    if(but == GY_CONTROLLER_BUT_DPAD_RIGHT) stop = true;
 					break;
 
-				case GameInput::BUT_DPAD_R:
-					if(but == GameInput::BUT_DPAD_L) stop = true;
+                case GY_CONTROLLER_BUT_DPAD_RIGHT:
+                    if(but == GY_CONTROLLER_BUT_DPAD_LEFT) stop = true;
 					  break;
                 default: break;
 			}
 
             if(stop || _tapTimer > _dashTapTimeWindow) {
                 endDash();
-                _lastDpadTapped = GameInput::BUT_NONE;
+                _lastDpadTapped = GY_CONTROLLER_BUT_COUNT;
                 updateTappedButton = false;
             } //else {
                 //updateTappedButton = false;
@@ -142,18 +161,18 @@ void PartySystem::processInput(const GameInput &input) {
                 //float angle;
 
 				switch(_lastDpadTapped) {
-					case GameInput::BUT_DPAD_U:
+                    case GY_CONTROLLER_BUT_DPAD_UP:
                       _dashPartAngle = M_PI*0.5f;
 						break;
-					case GameInput::BUT_DPAD_D:
+                    case GY_CONTROLLER_BUT_DPAD_DOWN:
                         _dashPartAngle = -M_PI*0.5f;
 						 break;
 
-					case GameInput::BUT_DPAD_L:
+                    case GY_CONTROLLER_BUT_DPAD_LEFT:
                         _dashPartAngle = 0.0f;
 						break;
 
-					case GameInput::BUT_DPAD_R:
+                    case GY_CONTROLLER_BUT_DPAD_RIGHT:
                         _dashPartAngle = -M_PI;
 						  break;
 
@@ -180,33 +199,33 @@ void PartySystem::processInput(const GameInput &input) {
         emitDashParticles();
     }
 
-    if(_lastDpadTapped != GameInput::BUT_NONE) {
+    if(_lastDpadTapped != GY_CONTROLLER_BUT_COUNT) {
         //if(!input.getDown(_lastDpadTapped)) endDash();
     }
 
-	if(input.getDown(GameInput::BUT_DPAD_U)){
-		if(input.getTapped(GameInput::BUT_DPAD_U)) updateDash(GameInput::BUT_DPAD_U);
+    if(cont->isPressed(GY_CONTROLLER_BUT_DPAD_UP)){
+        if(cont->isTapped(GY_CONTROLLER_BUT_DPAD_UP)) updateDash(GY_CONTROLLER_BUT_DPAD_UP);
 //		gyVec2AddAccum(&moveDist, &upMove);
 		moved = true;
 	}
-	if(input.getDown(GameInput::BUT_DPAD_D)){
-		if(input.getTapped(GameInput::BUT_DPAD_D))  updateDash(GameInput::BUT_DPAD_D);
+    if(cont->isPressed(GY_CONTROLLER_BUT_DPAD_DOWN)){
+        if(cont->isTapped(GY_CONTROLLER_BUT_DPAD_DOWN))  updateDash(GY_CONTROLLER_BUT_DPAD_DOWN);
         //gyVec2AddAccum(&moveDist, &downMove);
 		moved = true;
 	}
 	
-	if(input.getDown(GameInput::BUT_DPAD_L)){
-		if(input.getTapped(GameInput::BUT_DPAD_L))  updateDash(GameInput::BUT_DPAD_L);
+    if(cont->isPressed(GY_CONTROLLER_BUT_DPAD_LEFT)){
+        if(cont->isTapped(GY_CONTROLLER_BUT_DPAD_LEFT))  updateDash(GY_CONTROLLER_BUT_DPAD_LEFT);
         //gyVec2AddAccum(&moveDist, &leftMove);
 		moved = true;
 	}
 	
-	if(input.getDown(GameInput::BUT_DPAD_R)){
-		if(input.getTapped(GameInput::BUT_DPAD_R)) updateDash(GameInput::BUT_DPAD_R);
+    if(cont->isPressed(GY_CONTROLLER_BUT_DPAD_RIGHT)){
+        if(cont->isTapped(GY_CONTROLLER_BUT_DPAD_RIGHT)) updateDash(GY_CONTROLLER_BUT_DPAD_RIGHT);
         //gyVec2AddAccum(&moveDist, &rightMove);
 		moved = true;
 	}
-
+#if 0
 	//examine
 	if(input.getTapped(GameInput::BUT_M)) {
 		if(_playableParty.size() != 0) _checkExamine(_playableParty[0]);
@@ -214,10 +233,13 @@ void PartySystem::processInput(const GameInput &input) {
 	}
 
 
-	if(input.getTapped(GameInput::BUT_I)) {
-		if(_characterParty.size() != 0) _characterParty[0]->getCharacter()->jump();
 
-	}
+#endif
+
+    if(cont->isTapped(GY_CONTROLLER_BUT_X)) {
+        if(_characterParty.size() != 0) _characterParty[0]->getCharacter()->jump();
+
+    }
 
 	_footStepTimer += getTimerSys()->getDeltaTime();
 	if(_wasOnGround) {
@@ -275,17 +297,72 @@ void PartySystem::processInput(const GameInput &input) {
 
         getPartyLeader()->getCharacter()->setDashing(false);
 	}
-
+#if 0
     if(input.getTapped(GameInput::BUT_N)) {
         if(_characterParty.size() != 0) _checkPickup(_characterParty[0]);
     }
+#endif
+#endif
+
+
 }
 
-void PartySystem::_checkPickup(Entity * const leader) const {
+void PartySystem::checkPickup(Entity * const entity) const {
+
+    auto* cont = getInputSys()->getController(0);
+
+    if(entity->getCharacter()->getHeldEntity()) {
+        if(!cont->isPressed(GY_CONTROLLER_BUT_RSHOULDER)) {
+            entity->getCharacter()->throwHeldEntity();
+        }
+
+    } else if(entity->getCharacter()->getPullEntity()) {
+
+        if(!cont->isPressed(GY_CONTROLLER_BUT_RSHOULDER)) {
+            entity->getCharacter()->setPullEntity(nullptr);
+        }
+
+
+    } else {
+
+        if(cont->isPressed(GY_CONTROLLER_BUT_RSHOULDER)) {
+            if(entity->getCollidable()->getContactCount() > 0) {
+                auto& rigidBodies = _curArea->rigidBodies;
+                for(auto it = rigidBodies.begin();
+                    it != rigidBodies.end();
+                    ++it)
+                {
+                    if(getCollisionSys()->checkCollision(*entity, *(*it)->getEntity())) {
+                       // if((*it)->getEntity()->getRigidBody()->getAttrib()->getCanHold()) {
+
+                            if(entity->getCharacter()->canPickUpEntity((*it)->getEntity())) {
+                                entity->getCharacter()->setHeldEntity((*it)->getEntity());
+                            } else {
+                                entity->getCharacter()->setPullEntity((*it)->getEntity());
+
+                            }
+
+
+                            break;
+
+                        }
+
+                   // }
+                }
+            }
+
+        }
+    }
+
+
+
+
+
+#if 0
+
 	if(leader->getCharacter()->getHeldEntity()) {
 		leader->getCharacter()->throwHeldEntity();
 	} else {
-
 		if(leader->getCollidable()->getContactCount() > 0) {
 			auto& rigidBodies = _curArea->rigidBodies;
 			for(auto it = rigidBodies.begin();
@@ -299,9 +376,10 @@ void PartySystem::_checkPickup(Entity * const leader) const {
                     }
 				}
 			}
-		}
-
+        }
 	}
+
+#endif
 
 }
 
@@ -446,12 +524,12 @@ Entity *PartySystem::getPlayablePartyMember(const char *name) const {
     return nullptr;
 }
 
-Entity *PartySystem::getPlayablePartyMember(const unsigned int slot) const {
-	if(slot >= _playableParty.size()) {
+Entity *PartySystem::getPartyMember(const unsigned int slot) const {
+    if(slot >= _characterParty.size()) {
 		Debug::printf(Debug::LOG_WARNING, "PartySystem::getPlayableFromParty(const uint): Invalid slot %d!", slot);
         return nullptr;
 	}
-	return _playableParty[slot];
+    return _characterParty[slot];
 }
 
 
@@ -621,7 +699,7 @@ void PartySystem::addPartyToArea(void) {
 }
 
 
-void PartySystem::_checkExamine(Entity* const entity) const {
+void PartySystem::checkExamine(Entity* const entity) const {
 	if(!entity->getCollidable()->getContactCount()) return;
 
 
@@ -642,6 +720,339 @@ void PartySystem::_checkExamine(Entity* const entity) const {
 		}
 	}
 }
+
+
+// =========== PLAYER ==========
+void Player::_processMovement(const float deltaTime, const Controller*const cont, Entity*const entity, PartySystem*const partySys) {
+    auto angle = cont->getAnalogAngle(GY_CONTROLLER_ANALOG_LEFT);
+    auto mag = cont->getAnalogMag(GY_CONTROLLER_ANALOG_LEFT);
+
+    _tapTimer += partySys->getTimerSys()->getDeltaTime();
+    _dashPartTimer += partySys->getTimerSys()->getDeltaTime();
+
+    auto endDash = [&](void) {
+        entity->getCharacter()->setSpeedMultiplier(1.0f);
+        partySys->getAudioSys()->setSfxChannelPitch(0, 1.0f);
+        entity->getCharacter()->setDashing(false);
+        _tapTimer = 0.0f;
+        _lastAngle = 0.0f;
+    };
+
+    auto emitDashParticles = [&](void) {
+        partySys->getPartSys()->getAttrib(0)->setAcceleration(GYVector3{ 0.0f, -70.0f, 7.0f/*7.0f*//*6.5f*/ });
+        partySys->getPartSys()->getAttrib(0)->setForceMask(0);
+        partySys->getPartSys()->getAttrib(0)->setEndColor(GYColor4 { 255, 255, 255, 0});
+        partySys->getPartSys()->getAttrib(0)->setColor(255, 255, 255, 100);
+        partySys->getPartSys()->getAttrib(0)->setMaxLife(30);
+        partySys->getPartSys()->getAttrib(0)->setStick(false);
+        GYVector3 pos = entity->_transform._pos;
+        pos.z += 5.0f;
+        pos.y = entity->getDepthBaseY();
+        partySys->getPartSys()->emitFromPoint(0, pos, angle, 500);
+        _dashPartTimer = 0.0f;
+    };
+
+    _tapTimer += partySys->getTimerSys()->getDeltaTime();
+    switch(_dashState) {
+        case DASH_NONE:
+        entity->getCharacter()->setDashing(false);
+        if(mag < 0.3f) {
+            ++_dashState;
+                    dbgprintf("DASH_FIRST_TAP");
+        }
+        break;
+    case DASH_FIRST_TAP:
+        if(mag >= 0.5f) {
+            _tapTimer = 0.0f;
+            _lastAngle = angle;
+            ++_dashState;
+                    dbgprintf("DASH_RELEASE");
+        }
+        break;
+    case DASH_RELEASE:
+        //if(fabs(_lastAngle-angle) > 0.5f*M_PI) {
+            //_dashState = DASH_NONE;
+        //} else {
+            if(_tapTimer >= _dashTapTimeWindow) {
+                _dashState = DASH_NONE;
+                        dbgprintf("DASH_NONE");
+            } else if(mag < 0.5f) {
+          //      _lastAngle = angle;
+                ++_dashState;
+                        dbgprintf("DASH_SECOND_TAP");
+            }
+        //}
+        break;
+    case DASH_SECOND_TAP:
+        //if(fabs(_lastAngle-angle) > 0.5f*M_PI) {
+          //  _dashState = DASH_NONE;
+        //} else {
+            if(_tapTimer >= _dashTapTimeWindow) {
+                _dashState = DASH_NONE;
+                        dbgprintf("DASH_NONE: TIME");
+            } else if(mag >= 0.5f) {
+                //if(fabs(_lastAngle-angle) > M_PI) {
+                //    _dashState = DASH_NONE;
+                //            dbgprintf("DASH_NONE: ANGLE[%f]", fabs(_lastAngle-angle));
+                //} else {
+                            dbgprintf("DASH_ACTIVE");
+                    _lastAngle = angle;
+                    ++_dashState;
+                    entity->getCharacter()->setDashing(true);
+                    emitDashParticles();
+                    _tapTimer = 0.0f;
+                //}
+            }
+        //}
+        break;
+    case DASH_ACTIVE:
+        default:
+        if(!entity->getCharacter()->isDashing() || _tapTimer >= _dashDuration) {
+            _dashState = DASH_NONE;
+                    dbgprintf("DASH_NONE");
+        }
+        break;
+    }
+
+        //Compensate for inaccuracy and over-sensitivity with dead-zones on either side
+        if(mag < 0.3f)      return;
+        mag -= 0.3f;
+        mag /= 0.7f;
+
+        GYVector2 moveVec = cont->getAnalogDir(GY_CONTROLLER_ANALOG_LEFT);
+
+        if(!cont->isPressed(GY_CONTROLLER_BUT_LSHOULDER)/* && !entity->getCharacter()->getPullEntity()*/) {
+            auto dir = Direction::fromVector2(moveVec);
+            entity->getCharacter()->setFaceDir(dir);
+        } else {
+
+            if(mag >= 0.7f && !entity->getCharacter()->isDashing()) mag = 0.699999f;
+
+        }
+
+        gyVec2ScaleAccum(&moveVec, mag);
+
+        entity->getCharacter()->walk(moveVec);
+
+
+
+
+}
+
+void Player::_processJump(const float deltaTime, const Controller*const cont, Entity*const entity) {
+    if(cont->isTapped(GY_CONTROLLER_BUT_X)) {
+        entity->getCharacter()->jump();
+    }
+}
+
+
+
+void Player::_processExamine(const float deltaTime, const Controller*const cont, Entity*const entity, PartySystem* partySys) {
+    if(cont->isTapped(GY_CONTROLLER_BUT_CIRCLE)) {
+        partySys->checkExamine(entity);
+    }
+}
+
+
+void Player::_processIdle(const float deltaTime, const Controller*const cont, Entity*const entity) { }
+void Player::_processPickup(const float deltaTime, const Controller*const cont, Entity*const entity, PartySystem* partySys) {
+
+
+
+   // if(cont->isTapped(GY_CONTROLLER_BUT_RSHOULDER)) {
+        partySys->checkPickup(entity);
+   // }
+
+}
+
+void Player::_processCarry(const float deltaTime, const Controller*const cont, Entity*const entity) {
+}
+
+void Player::_processPushPull(const float deltaTime, const Controller*const cont, Entity*const entity) {
+}
+
+
+void __initJulienShit(Entity*entity) {
+    entity->getSkeleton()->getAttrib()->addAnimations({
+        new SkeletalAnimation("StandDown", {
+            new AnimationTrack("front_pose_idle"),
+            new AnimationTrack("front_head_hairweave"),
+            new AnimationTrack("root_right")
+        }),
+        new SkeletalAnimation("StandUp", {
+            new AnimationTrack("back_pose_idle"),
+            new AnimationTrack("back_head_hairweave"),
+            new AnimationTrack("root_right")
+        }),
+        new SkeletalAnimation("StandRight", {
+            new AnimationTrack("side_pose_idle"),
+            new AnimationTrack("side_head_hairweave"),
+            new AnimationTrack("root_right")
+        }),
+        new SkeletalAnimation("StandLeft", {
+            new AnimationTrack("side_pose_idle"),
+            new AnimationTrack("side_head_hairweave"),
+            new AnimationTrack("root_left")
+        }),
+        new SkeletalAnimation("WalkDown", {
+            new AnimationTrack("front_pose_walk"),
+            new AnimationTrack("front_head_hairweave"),
+            new AnimationTrack("root_right")
+        }),
+        new SkeletalAnimation("WalkUp", {
+            new AnimationTrack("back_pose_walk"),
+            new AnimationTrack("back_head_hairweave"),
+            new AnimationTrack("root_right")
+        }),
+        new SkeletalAnimation("WalkRight", {
+            new AnimationTrack("side_pose_walk"),
+            new AnimationTrack("side_head_hairweave"),
+            new AnimationTrack("root_right")
+        }),
+        new SkeletalAnimation("WalkLeft", {
+            new AnimationTrack("side_pose_walk"),
+            new AnimationTrack("side_head_hairweave"),
+            new AnimationTrack("root_left")
+        }),
+        new SkeletalAnimation("RunDown", {
+          new AnimationTrack("front_pose_run"),
+          new AnimationTrack("front_head_hairweave"),
+          new AnimationTrack("root_right")
+        }),
+        new SkeletalAnimation("RunUp", {
+          new AnimationTrack("back_pose_run"),
+          new AnimationTrack("back_head_hairweave"),
+          new AnimationTrack("root_right")
+        }),
+        new SkeletalAnimation("RunRight", {
+            new AnimationTrack("side_pose_run"),
+            new AnimationTrack("side_head_hairweave"),
+            new AnimationTrack("root_right")
+        }),
+        new SkeletalAnimation("RunLeft", {
+            new AnimationTrack("side_pose_run"),
+            new AnimationTrack("side_head_hairweave"),
+            new AnimationTrack("root_left")
+        }),
+        new SkeletalAnimation("DashDown", {
+            new AnimationTrack("front_pose_dash"),
+            new AnimationTrack("front_head_hairweave"),
+            new AnimationTrack("root_right")
+        }),
+        new SkeletalAnimation("DashUp", {
+            new AnimationTrack("back_pose_dash"),
+            new AnimationTrack("back_head_hairweave"),
+            new AnimationTrack("root_right")
+        }),
+        new SkeletalAnimation("DashRight", {
+            new AnimationTrack("side_pose_dash"),
+            new AnimationTrack("side_head_hairweave"),
+            new AnimationTrack("root_right")
+        }),
+        new SkeletalAnimation("DashLeft", {
+            new AnimationTrack("side_pose_dash"),
+            new AnimationTrack("side_head_hairweave"),
+            new AnimationTrack("root_left")
+        }),
+        new SkeletalAnimation("JumpDown", {
+          new AnimationTrack("front_pose_jump_up"),
+          new AnimationTrack("front_head_hairweave"),
+          new AnimationTrack("root_right")
+        }),
+        new SkeletalAnimation("JumpUp", {
+          new AnimationTrack("back_pose_jump_up"),
+          new AnimationTrack("back_head_hairweave"),
+          new AnimationTrack("root_right")
+        }),
+        new SkeletalAnimation("JumpRight", {
+          new AnimationTrack("side_pose_jump_up"),
+          new AnimationTrack("side_head_hairweave"),
+          new AnimationTrack("root_right")
+        }),
+        new SkeletalAnimation("JumpLeft", {
+          new AnimationTrack("side_pose_jump_up"),
+          new AnimationTrack("side_head_hairweave"),
+          new AnimationTrack("root_left")
+        }),
+        new SkeletalAnimation("FallDown", {
+            new AnimationTrack("front_pose_jump_down"),
+            new AnimationTrack("front_head_hairweave"),
+            new AnimationTrack("root_right")
+        }),
+        new SkeletalAnimation("FallUp", {
+            new AnimationTrack("back_pose_jump_down"),
+            new AnimationTrack("back_head_hairweave"),
+            new AnimationTrack("root_right")
+        }),
+        new SkeletalAnimation("FallRight", {
+            new AnimationTrack("side_pose_jump_down"),
+            new AnimationTrack("side_head_hairweave"),
+            new AnimationTrack("root_right")
+        }),
+        new SkeletalAnimation("FallLeft", {
+            new AnimationTrack("side_pose_jump_down"),
+            new AnimationTrack("side_head_hairweave"),
+            new AnimationTrack("root_left")
+        }),
+        new SkeletalAnimation("KnockDown", {
+            new AnimationTrack("front_pose_knockback", false),
+            new AnimationTrack("front_head_hairweave", false),
+            new AnimationTrack("root_right", false)
+        }),
+        new SkeletalAnimation("KnockUp", {
+            new AnimationTrack("back_pose_knockback", false),
+            new AnimationTrack("back_head_hairweave", false),
+            new AnimationTrack("root_right", false)
+        }),
+        new SkeletalAnimation("KnockRight", {
+            new AnimationTrack("side_pose_knockback", false),
+            new AnimationTrack("side_head_hairweave", false),
+            new AnimationTrack("root_right", false)
+        }),
+        new SkeletalAnimation("KnockLeft", {
+            new AnimationTrack("side_pose_knockback", false),
+            new AnimationTrack("side_head_hairweave", false),
+            new AnimationTrack("root_left", false)
+        }),
+        new SkeletalAnimation("DeathDown", {
+            new AnimationTrack("front_pose_death", false),
+            new AnimationTrack("root_right", false)
+        }),
+        new SkeletalAnimation("DeathUp", {
+            new AnimationTrack("back_pose_death", false),
+            new AnimationTrack("root_right", false)
+        }),
+        new SkeletalAnimation("DeathRight", {
+            new AnimationTrack("side_pose_death", false),
+            new AnimationTrack("root_right", false)
+        }),
+        new SkeletalAnimation("DeathLeft", {
+            new AnimationTrack("side_pose_death", false),
+            new AnimationTrack("root_left", false)
+        })
+    });
+}
+
+
+
+void Player::processInput(const Controller* const cont, PartySystem*const partySys) {
+
+    static bool initialized = false;
+
+    auto* partyMember = partySys->getPartyMember(_playerNum);
+    const float deltaTime = partySys->getTimerSys()->getDeltaTime();
+
+    if(!initialized) {
+        __initJulienShit(partyMember);
+        initialized = true;
+    }
+
+    _processMovement(deltaTime, cont, partyMember, partySys);
+    _processJump(deltaTime, cont, partyMember);
+    _processExamine(deltaTime, cont, partyMember, partySys);
+    _processPickup(deltaTime, cont, partyMember, partySys);
+}
+
 
 }
 

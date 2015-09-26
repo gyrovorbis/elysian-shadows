@@ -29,6 +29,7 @@
 #include "elysian_rigid_body_system.hpp"
 #include "elysian_combat_system.hpp"
 #include "elysian_skeleton_system.hpp"
+#include <system/elysian_input_system.hpp>
 
 namespace elysian {
 
@@ -43,6 +44,7 @@ Engine::Engine(void): _updateMonitor("update"), _renderMonitor("render"), _input
     LuaManager::initialize();
 
     //allocate systems
+    _inputSystem        = new InputSystem;
     _levelSystem		= new LevelSystem;
     _mapSystem			= new MapSystem;
     _cameraSystem		= new CameraSystem;
@@ -64,17 +66,18 @@ Engine::Engine(void): _updateMonitor("update"), _renderMonitor("render"), _input
     _combatSystem		= new CombatSystem;
     _skeletonSystem     = new SkeletonSystem;
 
+    InputSystem::initialize();
+
     _behaviorSystem->initialize();
     _warpSystem->initialize();
     _combatSystem->initialize();
     MapSystem::staticInitialize();
 
     //register Lua dependencies
-    Singletons::setGameInput(&_gameInput);
-    Singletons::setMouseInput(&_mouseInput);
+    //Singletons::setGameInput(&_gameInput);
     Singletons::setDebug(&Debug::getInstance());
 
-    memset(&_platInput, 0, sizeof(GYInput));
+   // memset(&_platInput, 0, sizeof(GYInput));
 }
 
 bool Engine::loadAssets(void) {
@@ -164,30 +167,36 @@ void Engine::processInput(void) {
 
 	_timerSystem->pushTaskMonitor(&_inputMonitor);
 
-    gyInputPoll(&_platInput);
-    _mouseInput.poll();
-    GameInput::translate(*_platInput, _gameInput);
-    Debug::getInstance().processInput(_gameInput);
+    _inputSystem->update();
+
+    //gyInputPoll(&_platInput);
+    //_mouseInput.poll();
+    //GameInput::translate(*_platInput, _gameInput);
+
 
     //if(!_processInput) return;
 
     switch(System::_engineState){
         case System::ENGINE_NORMAL:
         case System::ENGINE_CONVERSATION:
-            if(_processInput) _partySystem->processInput(_gameInput);
-            _cameraSystem->processInput(_gameInput);
-            _examinableSystem->processInput(_gameInput);
-            _dialogSystem->processInput(_gameInput);
-            //Debug::getInstance().processInput(_gameInput);
+            if(_processInput) _partySystem->processInput();
+
+            _cameraSystem->processInput(_inputSystem->getKeyboard());
+            _examinableSystem->processInput();
+            _dialogSystem->processInput();
+
+            Debug::getInstance().processInput(_inputSystem->getKeyboard());
             //conversationSystem->ProcessInput(input);
             break;
         case System::ENGINE_MODAL_CONVERSATION:
-            _dialogSystem->processInput(_gameInput);
+            _dialogSystem->processInput();
             break;
         case System::ENGINE_WARPING:
             break;
         case System::ENGINE_CAMERA_DEBUG:
+#if 0
             _cameraSystem->processInput(_gameInput);
+#endif
         break;
         default:
             break;
@@ -258,11 +267,13 @@ void Engine::render(void) {
 Engine::~Engine(void) {
     //SHIT ALL NEEDS SOME WORK
     MapSystem::staticUninitialize();
+    InputSystem::uninitialize();
 
     //gyInputUninit();
     //gyTimerUninit();
 
     LuaManager::uninitialize();
+    delete _inputSystem;
     delete _combatSystem;
     delete _dialogSystem;
     delete _examinableSystem;

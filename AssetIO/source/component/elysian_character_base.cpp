@@ -16,15 +16,26 @@ float CharacterBase::_deltaTime = 0.0f;
 bool CharacterBase::isFacing(const Entity &entity) const {
     GYVector2 distVec;
     gyVec2Sub(&distVec, (GYVector2*)&entity._transform._pos, (GYVector2*)&_entity->_transform._pos);
-    return (_faceDir == Direction::fromVector(distVec));
+    return (_faceDir == Direction::fromVector2(distVec));
 }
 
 void CharacterBase::setDashing(const bool val) {
+    if(val) {
+        _entity->getRigidBody()->getAttrib()->getForceMask().setBit(1, false);
+        _entity->getRigidBody()->clearKinetic();
+        addState(STATE_DASH);
+    }
+    else {
+        _entity->getRigidBody()->getAttrib()->getForceMask().setBit(1, true);
+        removeState(STATE_DASH);
+    }
     _dashing = val;
     setSpeedMultiplier(val? _dashMultiplier : 1.0f);
 }
 
 void CharacterBase::faceDir(const Direction::DIR4 dir) {
+    playAnimation(dir);
+#if 0
 		switch(dir) {
 			case Direction::DIR4_UP:
                 playAnimation("Up");
@@ -41,6 +52,7 @@ void CharacterBase::faceDir(const Direction::DIR4 dir) {
 			default:
 				break;
 		}
+#endif
 	_faceDir = dir;
 }
 
@@ -49,22 +61,47 @@ void CharacterBase::faceDir(const Direction::DIR4 dir) {
  * accel = force*inverseMass
  * accel = force*(inverseMassParent + inverseMassChild)
  */
-float CharacterBase::getHeldEntityForceDampFactor(void) {
-    if(!_heldEntity) return 0.0f;
+float CharacterBase::getEntityForceDampFactor(void) {
+    Entity* entity;
+
+    if(_heldEntity)         entity = _heldEntity;
+    else if(_pullEntity) entity = _pullEntity;
+    else return 0.0f;
+
 	const float invParent = _entity->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass;
-	const float invChild = _heldEntity->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass;
+    const float invChild = entity->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass;
     //Don't divid by zero, dipshit.
     if(invParent+invChild == 0.0f) return 0.0f;
 
     return (invChild/(invChild+invParent));
 }
 
+float CharacterBase::getOtherForceDampFactor(void) {
+    Entity* entity;
+
+    if(_heldEntity)         entity = _heldEntity;
+    else if(_pullEntity) entity = _pullEntity;
+    else return 0.0f;
+
+    const float invParent = _entity->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass;
+    const float invChild = entity->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass;
+    //Don't divid by zero, dipshit.
+    if(invParent+invChild == 0.0f) return 0.0f;
+
+    return (invParent/(invChild+invParent));
+}
+
+
 void CharacterBase::walk(const GYVector2 &dir) {
-    if(gyVec2IsZero(&dir)) return;
+    if(gyVec2IsZero(&dir) || hasState(STATE_KNOCKBACK)) return;
     GYVector2 dist = dir;
-    float mag = _walkForce * _deltaTime;
+    float mag = _walkForce;
     mag *= (_dashing)? _dashMultiplier : 1.0f;
-    gyVec2Normalize(&dist);
+    float scale = gyVec2Magnitude(&dir);
+    if(scale > 0.7f)
+        replaceState(STATE_WALK, STATE_RUN);
+    else
+        replaceState(STATE_RUN, STATE_WALK);
     gyVec2ScaleAccum(&dist, mag);
     moveByForce(dist);
 }
@@ -79,14 +116,14 @@ void CharacterBase::moveByDist(const GYVector2 &dist) {
 
 void CharacterBase::animateWalk(const GYVector2 &moveVec) {
     _movedThisFrame = true;
-    replaceState("Stand", "Walk");
+    //replaceState(STATE_STAND, STATE_WALK);
 
-    Direction::DIR4 dir = Direction::fromVector(moveVec);
+    //Direction::DIR4 dir = Direction::fromVector(_faceDir);
 
-    if(_animate) {
-
-        if((_walkAnimInterp && _faceDir == dir) || !_walkAnimInterp) {
-            switch(dir) {
+  //  if(_animate) {
+    playAnimation(_faceDir);
+#if 0
+            switch(_faceDir) {
                 case Direction::DIR4_UP:
                     playAnimation("Up");
                     break;
@@ -102,26 +139,34 @@ void CharacterBase::animateWalk(const GYVector2 &moveVec) {
                 default:
                     break;
             }
-        }
-    }
+       // }
+#endif
 
-    _faceDir = dir;
+    //_faceDir = dir;
     //gyVec2Scale(&_lastMoveDir, &totalForce, 1.0f/gyVec2Magnitude(&totalForce));
 }
 
 void CharacterBase::faceEntity(Entity &entity) {
     GYVector2 dist;
     gyVec2Sub(&dist, (GYVector2*)&entity._transform._pos, (GYVector2*)&_entity->_transform._pos);
-    faceDir(Direction::fromVector(dist));
+    faceDir(Direction::fromVector2(dist));
 }
 
 void CharacterBase::moveByForce(const GYVector2 &dist) {
 	if(gyVec2IsZero(&dist)) return;
 	GYVector2 totalForce = dist;
 
-    if(_heldEntity) {
-        gyVec2Scale(&totalForce, &dist, getHeldEntityForceDampFactor());
+    if(_heldEntity || _pullEntity) {
+        GYVector2 objForce;
+        gyVec2Scale(&totalForce, &dist, getEntityForceDampFactor());
+
+        if(_pullEntity) {
+
+            //gyVec2Scale(&objForce, &dist, (getEntityForceDampFactor()*_entity->getCollidable()->getAttrib()->getStaticAttrib()->getInverseMass())/_pullEntity->getCollidable()->getAttrib()->getStaticAttrib()->getInverseMass());
+            //_pullEntity->getRigidBody()->applyForce(GYVector3{ objForce.x, objForce.y, 0.0f });
+        }
     }
+
 
     _entity->getRigidBody()->applyForce(GYVector3{ totalForce.x, totalForce.y, 0.0f });
     //_entity->transform.translate(dist);
@@ -132,14 +177,19 @@ void CharacterBase::moveByForce(const GYVector2 &dist) {
 
 void CharacterBase::update(void) {
 	if(!_movedThisFrame) {
-        replaceState("Walk", "Stand");
-		faceDir(_faceDir);
+        replaceState(STATE_WALK, STATE_STAND);
+        replaceState(STATE_RUN, STATE_STAND);
+        faceDir(_faceDir);
 		//_entity->getRigidBody()->setVelocity(GYVector3{ 0.0f, 0.0f, 0.0f });
 	}
 	else _movedThisFrame = false;
 
     //Set falling animation state
-    if(_entity->getRigidBody()->getVelocity().z < 0.0f) replaceState("Jump", "Fall");
+    if(_entity->getRigidBody()->getVelocity().z < 0.0f) replaceState(STATE_JUMP, STATE_FALL);
+    if(_entity->getRigidBody()->getRestingOnBody()) {
+        removeState(STATE_KNOCKBACK);
+        removeState(STATE_FALL);
+    }
 }
 
 void CharacterBase::setHeldEntity(Entity * const entity) {
@@ -158,14 +208,14 @@ void CharacterBase::setHeldEntity(Entity * const entity) {
             entity->getRigidBody()->clearKinetic();
             entity->getCollidable()->setActive(false);
             addChildEntity(entity, ELYSIAN_CHAR_ANIM_CHILD_SEQ_HELD);
-            removeState("Walk");
-            removeState("Stand");
-            removeState("Jump");
-            removeState("Fall");
-            addState("Hold");
+            removeState(STATE_WALK);
+            removeState(STATE_STAND);
+            removeState(STATE_JUMP);
+            removeState(STATE_FALL);
+            addState(STATE_HOLD);
         }
     } else {
-        removeState("Hold");
+        removeState(STATE_HOLD);
     }
 
 }
@@ -232,11 +282,13 @@ void CharacterBase::throwHeldEntity(void) {
 }
 
 void CharacterBase::jump(void) {
+    if(!_entity->getRigidBody()->getRestingOnBody()) return;
+
 	GYVector3 force = ELYSIAN_CHAR_JUMP_DEFAULT_FORCE;
     RigidBody*const rb = _entity->getRigidBody();
 
     if(_heldEntity) {
-        gyVec3ScaleAccum(&force, getHeldEntityForceDampFactor());
+        gyVec3ScaleAccum(&force, getEntityForceDampFactor());
     }
 
     gyVec3ScaleAccum(&force, 1.0f/_deltaTime);
@@ -248,24 +300,24 @@ void CharacterBase::jump(void) {
    // force.y *= rb->getStaticAttrib()->zDamping;
 
     rb->applyForce(force);
-    replaceState("Fall", "Jump");
+    replaceState(STATE_FALL, STATE_JUMP);
 }
 
 
-void CharacterBase::playAnimation(const char*const name) {
+void CharacterBase::playAnimation(Direction::DIR4 dir) {
+    const char* name = getAnimNameFromStates(dir);
+
+    if(!name) return;
+
     if(_entity->getSkeleton()) {
-        _entity->getSkeleton()->setAnimByName(0, name, true);
-    } else if(_entity->getAnimation()) {
-        _entity->getAnimation()->playAnimation(name);
+        _entity->getSkeleton()->setAnim(name);
     }
-
 }
 
-void CharacterBase::replaceState(const char*const name1, const char*const name2) {
+void CharacterBase::replaceState(ANIM_STATE state1, ANIM_STATE state2) {
     if(_entity->getSkeleton()) {
-
-    } else if(_entity->getAnimation()) {
-        _entity->getAnimation()->replaceState(name1, name2);
+        _animStates[state1] = false;
+        _animStates[state2] = true;
     }
 
 }
@@ -273,36 +325,28 @@ void CharacterBase::replaceState(const char*const name1, const char*const name2)
 void CharacterBase::removeChildEntity(Entity*entity) {
     if(_entity->getSkeleton()) {
 
-    } else if(_entity->getAnimation()) {
-        _entity->getAnimation()->removeChildEntity(entity);
     }
 }
 
 void CharacterBase::addChildEntity(Entity*entity, const char*const name) {
     if(_entity->getSkeleton()) {
 
-    } else if(_entity->getAnimation()) {
-        _entity->getAnimation()->addChildEntity(entity, name);
     }
 
 
 }
 
 
-void CharacterBase::removeState(const char*const state) {
+void CharacterBase::removeState(const ANIM_STATE state) {
     if(_entity->getSkeleton()) {
-
-    } else if(_entity->getAnimation()) {
-        _entity->getAnimation()->removeState(state);
+        _animStates[state] = false;
     }
 
 }
 
-void CharacterBase::addState(const char*const state) {
+void CharacterBase::addState(const ANIM_STATE state) {
     if(_entity->getSkeleton()) {
-
-    } else if(_entity->getAnimation()) {
-        _entity->getAnimation()->addState(state);
+        _animStates[state] = true;
     }
 
 
@@ -312,6 +356,106 @@ void CharacterBase::setSpeedMultiplier(const float factor) {
     if(_entity->getAnimation()) {
         _entity->getAnimation()->setSpeedMultiplier(factor);
     }
+
+}
+
+
+bool CharacterBase::canPickUpEntity(Entity * const entity) {
+    if(entity->getRigidBody()) {
+        return entity->getRigidBody()->getAttrib()->getCanHold();
+    }
+    return true;
+
+}
+
+const char* CharacterBase::getAnimNameFromStates(const Direction::DIR4 dir) {
+    switch(dir) {
+    case Direction::DIR4_LEFT:
+        if(_animStates[STATE_DEATH]) {
+            return "DeathLeft";
+        } else if(_animStates[STATE_KNOCKBACK]) {
+            return "KnockLeft";
+        } else if(_animStates[STATE_JUMP]) {
+            return "JumpLeft";
+        } else if(_animStates[STATE_FALL]) {
+            return "FallLeft";
+        } else if(_animStates[STATE_DASH]) {
+            return "DashLeft";
+        } else if(_animStates[STATE_RUN]) {
+            return "RunLeft";
+        } else if(_animStates[STATE_WALK]) {
+            return "WalkLeft";
+        } else if(_animStates[STATE_STAND]) {
+            return "StandLeft";
+        }
+        break;
+    case Direction::DIR4_RIGHT:
+        if(_animStates[STATE_DEATH]) {
+            return "DeathRight";
+        } else if(_animStates[STATE_KNOCKBACK]) {
+            return "KnockRight";
+        } else if(_animStates[STATE_JUMP]) {
+            return "JumpRight";
+        } else if(_animStates[STATE_FALL]) {
+            return "FallRight";
+        } else if(_animStates[STATE_DASH]) {
+            return "DashRight";
+        } else if(_animStates[STATE_RUN]) {
+            return "RunRight";
+        } else if(_animStates[STATE_WALK]) {
+            return "WalkRight";
+        } else if(_animStates[STATE_STAND]) {
+            return "StandRight";
+        }
+        break;
+    case Direction::DIR4_UP:
+        if(_animStates[STATE_DEATH]) {
+            return "DeathUp";
+        } else if(_animStates[STATE_KNOCKBACK]) {
+            return "KnockUp";
+        } else if(_animStates[STATE_JUMP]) {
+            return "JumpUp";
+        } else if(_animStates[STATE_FALL]) {
+            return "FallUp";
+        } else if(_animStates[STATE_DASH]) {
+            return "DashUp";
+        } else if(_animStates[STATE_RUN]) {
+            return "RunUp";
+        }  else if(_animStates[STATE_WALK]) {
+            return "WalkUp";
+        }else if(_animStates[STATE_STAND]) {
+            return "StandUp";
+        }
+        break;
+    case Direction::DIR4_DOWN:
+        if(_animStates[STATE_DEATH]) {
+            return "DeathDown";
+        } else if(_animStates[STATE_KNOCKBACK]) {
+            return "KnockDown";
+        } else if(_animStates[STATE_JUMP]) {
+            return "JumpDown";
+        } else if(_animStates[STATE_FALL]) {
+            return "FallDown";
+        } else if(_animStates[STATE_DASH]) {
+            return "DashDown";
+        } else if(_animStates[STATE_RUN]) {
+            return "RunDown";
+        } else if(_animStates[STATE_WALK]) {
+            return "WalkDown";
+        } else if(_animStates[STATE_STAND]) {
+            return "StandDown";
+        }
+        break;
+
+
+    }
+    return nullptr;
+}
+
+
+void CharacterBase::applyKnockbackForce(const GYVector3 &force) {
+    addState(STATE_KNOCKBACK);
+    _entity->getRigidBody()->applyForce(force);
 
 }
 

@@ -134,8 +134,8 @@ namespace elysian {
 		OOLUA::register_class<TileEntry>(*_mainState);
 		_mainState->register_class<Area>();
         Area::registerProxyMetaTable(*_mainState);
-		_mainState->register_class<GameInput>();
-        _mainState->register_class<MouseInput>();
+    //	_mainState->register_class<GameInput>();
+       // _mainState->register_class<MouseInput>();
 		_mainState->register_class<PartySystem>();
 		_mainState->register_class<TimerSystem>();
 		_mainState->register_class<Singletons>();
@@ -156,6 +156,8 @@ namespace elysian {
         _mainState->register_class<AdventureLog>();
 		_mainState->register_class<GuiSystem>();
 		_mainState->register_class<LevelSystem>();
+        _mainState->register_class<Controller>();
+        _mainState->register_class<InputSystem>();
 		_mainState->register_class<CombatSystem>();
 		_mainState->register_class<CameraSystem>();
 		_mainState->register_class<Direction>();
@@ -181,6 +183,7 @@ namespace elysian {
 		_mainState->register_class_static<Singletons>("setProcessInput", &Singletons_setProcessInput);
 		_mainState->register_class_static<Singletons>("getAnimSys", &Singletons_getAnimationSystem);
 		_mainState->register_class_static<Singletons>("getPartySys", &Singletons_getPartySystem);
+        _mainState->register_class_static<Singletons>("getInputSys", &Singletons_getInputSystem);
 		_mainState->register_class_static<Singletons>("getTimerSys", &Singletons_getTimerSystem);
 		_mainState->register_class_static<Singletons>("getAudioSys", &Singletons_getAudioSystem);
 		_mainState->register_class_static<Singletons>("getLightSys", &Singletons_getLightSystem);
@@ -195,6 +198,10 @@ namespace elysian {
 		_mainState->register_class_static<Singletons>("getCharSys", &Singletons_getCharacterSystem);
 
 		_mainState->register_class_static<EventMonitor>("null", &EventMonitor_null);
+
+        _mainState->register_class_static<Direction>("fromVector2", &Direction_fromVector2);
+        _mainState->register_class_static<Direction>("toVector2", &Direction_toVector2);
+        _mainState->register_class_static<Direction>("toVector3", &Direction_toVector3);
 
 		//libGyro wrappers
 //		_mainState->register_class_static<gyro>("filePath", &gyroFilePath);

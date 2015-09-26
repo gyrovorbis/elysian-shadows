@@ -28,11 +28,16 @@ OOLUA_EXPORT_FUNCTIONS(Character,
                                    setWalkForce,
                                    setDashMultiplier,
                                     setDashing,
-                                   getHeldEntityForceDampFactor)
+                                   getEntityForceDampFactor,
+                                    addState,
+                                    removeState,
+                                    jump,
+                                    applyKnockbackForce)
 OOLUA_EXPORT_FUNCTIONS_CONST(Character,
                                getFaceDir,
                                isFacing,
                                getHeldEntity,
                                 getLastMoveDir,
                                 getWalkForce,
-                             getDashMultiplier)
+                             getDashMultiplier,
+                             hasState)

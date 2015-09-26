@@ -156,8 +156,8 @@ namespace elysian {
         virtual void onCombatEnter(void);
         virtual void onCombatExit(void);
         virtual void onCombatDeath(void);
-        virtual void onButtonPress(const GameInput::BUTTON button);
-        virtual void onButtonRelease(const GameInput::BUTTON button);
+        //virtual void onButtonPress(const GameInput::BUTTON button);
+        //virtual void onButtonRelease(const GameInput::BUTTON button);
         virtual void onCombatReceiveStatusModifier(CombatStatus*const modifier);
         virtual void onCombatTargetCollisionEnter(CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier);
 

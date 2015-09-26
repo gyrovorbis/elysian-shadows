@@ -5,6 +5,7 @@ namespace elysian {
 	System::ENGINE_STATE System::_engineState = System::ENGINE_NORMAL;
 	bool System::_processInput = true;
 
+    InputSystem*        System::_inputSystem        = nullptr;
 	LevelSystem*		System::_levelSystem		= nullptr;
 	MapSystem*			System::_mapSystem			= nullptr;
 	CameraSystem*		System::_cameraSystem		= nullptr;

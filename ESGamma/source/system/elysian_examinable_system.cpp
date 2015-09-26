@@ -8,10 +8,12 @@
 #include "elysian_behavior_system.hpp"
 #include <crtp/elysian_entity.hpp>
 #include "elysian_gui_system.hpp"
+#include <system/elysian_input_system.hpp>
 
 namespace elysian {
 
-void ExaminableSystem::processInput(GameInput& input) {
+void ExaminableSystem::processInput(void) {
+
     Entity*const partyLeader = getPartySys()->getCharacterPartyMember(0u);
     Entity* curExamine = nullptr;
     float minDist;
@@ -44,7 +46,7 @@ void ExaminableSystem::processInput(GameInput& input) {
         }
 
         if(curExamine) {
-            if(/*partyLeader->getCharacter()->isFacing(curExamine) &&*/ input.getTapped(GameInput::BUT_J)) {
+            if(/*partyLeader->getCharacter()->isFacing(curExamine) &&*/ getInputSys()->getController(0)->isTapped(GY_CONTROLLER_BUT_CIRCLE)) {
                 getBehavSys()->getBehavSys()->onExamine(curExamine, partyLeader);
                 if(curExamine->getExaminable()->getDialog()) getDialogSys()->startDialog(curExamine->getExaminable()->getDialog());
                 curExamine = nullptr;
@@ -52,6 +54,7 @@ void ExaminableSystem::processInput(GameInput& input) {
         }
 
         getGuiSys()->setExamineEntity(curExamine);
+
 }
 
 }

@@ -91,7 +91,7 @@ namespace elysian {
 		bool	loadAssets(void);
 		void	update(void);
 		void	render(void);
-		void	processInput(const GameInput &input);
+        void	processInput(void);
 
 		//Quick helper functions that use default values internally (mostly debugging)
 		void	openText(const char*const str);

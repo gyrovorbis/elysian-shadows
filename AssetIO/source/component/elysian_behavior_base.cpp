@@ -90,8 +90,8 @@ void BehaviorBase::onCombatExit(void) { Debug::printf(Debug::LOG_WARNING, "Behav
 void BehaviorBase::onCombatDeath(void) { Debug::printf(Debug::LOG_WARNING, "Behavior::onCombatDeath() - Unimplemented for '%s'.", getBehavName()); }
 void BehaviorBase::onCombatReceiveStatusModifier(CombatStatus*const /*modifier*/) { Debug::printf(Debug::LOG_WARNING, "Behavior::onCombatReceiveStatusModifier() - Unimplemented for '%s'.", getBehavName()); }
 void BehaviorBase::onCombatTargetCollisionEnter(CollisionContact*const /*contact*/, Collidable*const /*collidable*/, CombatStatus*const /*modifier*/) { Debug::printf(Debug::LOG_WARNING, "Behavior::onCombatTargetCollisionEnter() - Unimplemented for '%s'.", getBehavName()); }
-void BehaviorBase::onButtonPress(const GameInput::BUTTON /*button*/) { Debug::printf(Debug::LOG_WARNING, "Behavior::onButtonPress() - Unimplemented for '%s'.", getBehavName()); }
-void BehaviorBase::onButtonRelease(const GameInput::BUTTON /*button*/) { Debug::printf(Debug::LOG_WARNING, "Behavior::onButtonRelease() - Unimplemented for '%s'.", getBehavName()); }
+//void BehaviorBase::onButtonPress(const GameInput::BUTTON /*button*/) { Debug::printf(Debug::LOG_WARNING, "Behavior::onButtonPress() - Unimplemented for '%s'.", getBehavName()); }
+//void BehaviorBase::onButtonRelease(const GameInput::BUTTON /*button*/) { Debug::printf(Debug::LOG_WARNING, "Behavior::onButtonRelease() - Unimplemented for '%s'.", getBehavName()); }
 
 void BehaviorBase::onTkSelect(void) { Debug::printf(Debug::LOG_WARNING, "Behavior::onTkSelect() - Unimplemented for '%s'.", getBehavName()); }
 void BehaviorBase::onTkUnselect(void) { Debug::printf(Debug::LOG_WARNING, "Behavior::onTkUnselect() - Unimplemented for '%s'.", getBehavName()); }

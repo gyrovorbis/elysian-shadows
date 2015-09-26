@@ -5,17 +5,19 @@
 #include "elysian_system.hpp"
 
 namespace elysian {
-
-    class MouseInput: public GYMouse {
+#if 0
+    class MouseInput {
+    private:
+       GYMouse* _gyHandle = nullptr;
     public:
-        MouseInput(void);
+                MouseInput(void);
 
-        bool getTapped(const GY_MOUSE_BUTTON button) const;
-        bool getDown(const GY_MOUSE_BUTTON button) const;
-        void getScreenPos(GYVector2& pos) const;
-        void getScrollWheel(GYVector2& dir) const;
+        bool    getTapped(const GY_MOUSE_BUTTON button) const;
+        bool    getDown(const GY_MOUSE_BUTTON button) const;
+        void    getScreenPos(GYVector2& pos) const;
+        void    getScrollWheel(GYVector2& dir) const;
 
-        void poll(void);
+        void    poll(void);
 
     };
 
@@ -73,11 +75,11 @@ namespace elysian {
 
     // ========= INLINEZ ===========
     inline MouseInput::MouseInput(void) { memset(this, 0, sizeof(MouseInput)); }
-    inline bool MouseInput::getTapped(const GY_MOUSE_BUTTON button) const { return butTapped[button]; }
-    inline bool MouseInput::getDown(const GY_MOUSE_BUTTON button) const { return butDown[button]; }
-    inline void MouseInput::getScreenPos(GYVector2& pos) const { pos = screenPos; }
-    inline void MouseInput::getScrollWheel(GYVector2& dir) const { dir = scrollWheel; }
-    inline void MouseInput::poll(void) { gyMousePoll(this); }
+    inline bool MouseInput::getTapped(const GY_MOUSE_BUTTON button) const { return _gyHandle->buttons[button] == GY_BUT_STATE_TAPPED; }
+    inline bool MouseInput::getDown(const GY_MOUSE_BUTTON button) const { return (_gyHandle->buttons[button]&GY_BUT_FLAGS_IS_PRESSED); }
+    inline void MouseInput::getScreenPos(GYVector2& pos) const { pos = _gyHandle->screenPos; }
+    inline void MouseInput::getScrollWheel(GYVector2& dir) const { dir = _gyHandle->scrollWheel; }
+    inline void MouseInput::poll(void) { gyMousePoll(&_gyHandle); }
     inline float GameInput::getPinch(void) const { return _pinch; }
 
     inline auto GameInput::getDpadLeftRightFromAnalog(const unsigned index) const -> BUTTON {
@@ -95,6 +97,8 @@ namespace elysian {
     inline const GYVector2& GameInput::getAnalogDir(const unsigned index) const {
         return _analogDir[index];
     }
+
+#endif
 
 }
 

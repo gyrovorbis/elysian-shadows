@@ -110,22 +110,22 @@ namespace elysian {
 
     inline void SpriteAttribBase::setNormalMapPath(const char * const path) {
         if(_normalMap) gyVidTexDestroy(_normalMap);
-        _normalMap = gyVidTexCreate(path);
+        if(strcmp(path, "") != 0) _normalMap = gyVidTexCreate(path);
     }
     inline void SpriteAttribBase::setSpecularMapPath(const char * const path) {
         if(_specularMap) gyVidTexDestroy(_specularMap);
-        _specularMap = gyVidTexCreate(path);
+        if(strcmp(path, "") != 0) _specularMap = gyVidTexCreate(path);
     }
 
     inline void SpriteAttribBase::setMaterial(Material*const material) { _material = material; }
     inline Material* SpriteAttribBase::getMaterial(void) const { return _material;}
 
     inline const char* SpriteAttribBase::getNormalMapPath(void) const {
-        return _normalMap ? _normalMap->filename : "none";
+        return _normalMap ? _normalMap->filename : "";
     }
 
     inline const char* SpriteAttribBase::getSpecularMapPath(void) const {
-        return _specularMap ? _specularMap->filename : "none";
+        return _specularMap ? _specularMap->filename : "";
     }
 
     inline void SpriteAttribBase::submit(void) {
@@ -204,10 +204,10 @@ namespace elysian {
     //Gonna shit their pants if there is no texture allocated yet...
     inline void SpriteAttribBase::getSheetSize(unsigned& sheetWidth, unsigned& sheetHeight) const { sheetWidth = _tex->_coord->sheetWidth; sheetHeight = _tex->_coord->sheetHeight; }
     inline void SpriteAttribBase::getSpriteSize(unsigned& spriteWidth, unsigned& spriteHeight) const { spriteWidth = _tex->_coord->spriteWidth; spriteHeight = _tex->_coord->spriteHeight; }
-    inline const char* SpriteAttribBase::getTexPath(void) const { return _tex? _tex->filename : "none"; }
+    inline const char* SpriteAttribBase::getTexPath(void) const { return _tex? _tex->filename : ""; }
     inline void SpriteAttribBase::setTexPath(const char*const path) {
         delete _tex;
-        _tex = gyVidTexCreate(path);
+        if(strcmp(path, "") != 0) _tex = gyVidTexCreate(path);
 
     }
 

@@ -15,6 +15,33 @@ namespace elysian {
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(SkeletonBase)
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(SkeletonAttribBase)
 
+void SkeletonBase::setAnim(const char* name) {
+
+    auto* anim = _attrib->findAnimation(name);
+
+
+    if(!anim || _curAnim == anim) return;
+
+    unsigned oldTrackCount = _curAnim? _curAnim->_tracks.size() : 0;
+#if 0
+    for(unsigned i = 0; i < anim->_tracks.size(); ++i) {
+        if(_curAnim &&  i < _curAnim->_tracks.size() && strcmp(anim->_tracks[i]->_name, _curAnim->_tracks[i]->_name) == 0) continue;
+            //spAnimationState_clearTrack(_animState, i);
+            setAnimByName(i, anim->_tracks[i]->_name, anim->_tracks[i]->_looping);
+    }
+
+    for(unsigned i = anim->_tracks.size(); i < oldTrackCount; ++i) {
+        spAnimationState_clearTrack(_animState, i);
+    }
+
+#endif
+
+    if(_curAnim) for(unsigned i = 0; i < _curAnim->_tracks.size(); ++i) spAnimationState_clearTrack(_animState, i);
+    for(unsigned i = 0; i < anim->_tracks.size(); ++i) setAnimByName(i, anim->_tracks[i]->_name, anim->_tracks[i]->_looping);
+
+    _curAnim = anim;
+}
+
 SkeletonAttribBase::~SkeletonAttribBase(void) {
     if(_animStateData) spAnimationStateData_dispose(_animStateData);
     if(_skeletonData) spSkeletonData_dispose(_skeletonData);

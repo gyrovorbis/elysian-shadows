@@ -15,12 +15,14 @@
 #define ELYSIAN_CHAR_ANIM_SEQ_WALK_RIGHT	"WalkRight"
 #define ELYSIAN_CHAR_ANIM_CHILD_SEQ_HELD	"HeldEntity"
 
-#define ELYSIAN_CHAR_WALK_DEFAULT_FORCE         68000000.0f
-#define ELYSIAN_CHAR_DASH_DEFAULT_MULTIPLIER    5.0f
+#define ELYSIAN_CHAR_WALK_DEFAULT_FORCE         28000000.0f
+#define ELYSIAN_CHAR_DASH_DEFAULT_MULTIPLIER    10.0f
 #define ELYSIAN_CHAR_JUMP_DEFAULT_FORCE         GYVector3 { 0.0f, /*-330000.0f*/ 0.0f, 330000.0f }
 #define ELYSIAN_CHAR_THROW_DEFAULT_FORCE		GYVector3 { 0.0f, /*2000.0f*/0.0f, 25000.0f }
 
 namespace elysian {
+
+
 
 	class CharacterAttrib {
 		//bool _canHold = true;
@@ -33,8 +35,23 @@ namespace elysian {
         friend class EntityBase;
         friend Entity;
 		friend class CharacterSystem;
+    public:
+
+        enum ANIM_STATE {
+            STATE_STAND,
+            STATE_WALK,
+            STATE_RUN,
+            STATE_DASH,
+            STATE_JUMP,
+            STATE_FALL,
+            STATE_HOLD,
+            STATE_KNOCKBACK,
+            STATE_DEATH,
+            STATE_COUNT
+        };
 	private:
 		static const Component::TYPE _type		= Component::CHARACTER;
+        bool _animStates[STATE_COUNT] = { false };
 		
 	protected:
                             CharacterBase(Entity& entity, const CharacterBase*const prefab=nullptr);
@@ -57,26 +74,32 @@ namespace elysian {
 
         //Pick-up state
 
-        Entity*             _heldEntity = nullptr;
+        Entity*             _heldEntity     = nullptr;
+        Entity*             _pullEntity     = nullptr;
 
     public:
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(walkForce,          getWalkForce,           setWalkForce)
             ELYSIAN_LUA_PROXY_FIELD(dashMultiplier,     getDashMultiplier,      setDashMultiplier)
-            ELYSIAN_LUA_PROXY_FIELD(holdingDampFactor,  getHeldEntityForceDampFactor)
+            ELYSIAN_LUA_PROXY_FIELD(holdingDampFactor,  getEntityForceDampFactor)
             ELYSIAN_LUA_PROXY_FIELD(heldEntity,         getHeldEntity)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
         static constexpr const Component::TYPE componentType = Component::CHARACTER;
 
         Direction::DIR4     getFaceDir(void) const;
+        void                setFaceDir(const Direction::DIR4 dir);
         const GYVector3&    getLastMoveDir(void) const;
         bool                isFacing(const Entity& entity) const;
         void                setWalkAnimInterp(const bool val);
         void                setAnimate(const bool val);
 
+        bool                canPickUpEntity(Entity*const entity);
+        void                setPullEntity(Entity*const entity);
+        Entity*             getPullEntity(void) const;
         void                setHeldEntity(Entity*const entity);
-        float               getHeldEntityForceDampFactor(void);
+        float               getEntityForceDampFactor(void);
+        float               getOtherForceDampFactor(void);
         void                throwHeldEntity(void);
         Entity*             getHeldEntity(void) const;
         void                jump(void);
@@ -96,13 +119,16 @@ namespace elysian {
         void                animateWalk(const GYVector2& moveVec);
 
         //animation component wrappers/abstraction
-        void                playAnimation(const char*const name);
-        void                replaceState(const char*const name1, const char*const name2);
+        void                applyKnockbackForce(const GYVector3& force);
+        void                playAnimation(const Direction::DIR4 dir);
+        void                replaceState(ANIM_STATE name1, ANIM_STATE name2);
         void                removeChildEntity(Entity*entity);
         void                addChildEntity(Entity*entity, const char*const name);
-        void                removeState(const char*const state);
-        void                addState(const char*const state);
+        void                removeState(const ANIM_STATE state);
+        void                addState(const ANIM_STATE state);
+        bool                hasState(const ANIM_STATE state) const;
         void                setSpeedMultiplier(const float factor);
+        const char*         getAnimNameFromStates(const Direction::DIR4 dir);
     };
 
     // ====== INLINEZ ======
@@ -128,6 +154,10 @@ namespace elysian {
     inline float CharacterBase::getWalkForce(void) const { return _walkForce; }
     inline const GYVector3& CharacterBase::getLastMoveDir(void) const { return _lastMoveDir; }
     inline void CharacterBase::setAnimate(const bool val) { _animate = val; }
+    inline void CharacterBase::setFaceDir(const Direction::DIR4 dir) { _faceDir = dir; }
+    inline Entity* CharacterBase::getPullEntity(void) const { return _pullEntity; }
+    inline void CharacterBase::setPullEntity(Entity * const entity) { _pullEntity = entity; }
+    inline bool CharacterBase::hasState(const ANIM_STATE state) const { return _animStates[state]; }
 
 
 

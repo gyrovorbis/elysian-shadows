@@ -10,6 +10,9 @@
     <height>768</height>
    </rect>
   </property>
+  <property name="focusPolicy">
+   <enum>Qt::StrongFocus</enum>
+  </property>
   <property name="windowTitle">
    <string>overwritten programmatically</string>
   </property>
@@ -73,7 +76,7 @@
      <x>0</x>
      <y>0</y>
      <width>1024</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -110,6 +113,9 @@
      <addaction name="actionFileNewArea"/>
     </widget>
     <widget class="QMenu" name="menuReload">
+     <property name="focusPolicy">
+      <enum>Qt::StrongFocus</enum>
+     </property>
      <property name="title">
       <string>Reload</string>
      </property>
@@ -253,6 +259,9 @@
     <addaction name="actionReload_Shaders"/>
     <addaction name="separator"/>
     <addaction name="actionEngine_Settings"/>
+    <addaction name="actionInput_Device_Dump"/>
+    <addaction name="actionTexture_Dump"/>
+    <addaction name="actionAudio_Dump"/>
    </widget>
    <widget class="QMenu" name="menuConsole">
     <property name="title">
@@ -1492,6 +1501,21 @@
    </property>
    <property name="toolTip">
     <string>Toggle Camera View</string>
+   </property>
+  </action>
+  <action name="actionInput_Device_Dump">
+   <property name="text">
+    <string>Input Device Dump</string>
+   </property>
+  </action>
+  <action name="actionTexture_Dump">
+   <property name="text">
+    <string>Texture Dump</string>
+   </property>
+  </action>
+  <action name="actionAudio_Dump">
+   <property name="text">
+    <string>Audio Dump</string>
    </property>
   </action>
  </widget>

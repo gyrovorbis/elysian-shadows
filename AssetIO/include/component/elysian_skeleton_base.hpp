@@ -3,9 +3,11 @@
 
 #include <crtp/elysian_component.hpp>
 #include <crtp/elysian_lua_table_proxy.hpp>
+#include <initializer_list>
 
-#define ELYSIAN_SKELETON_ATLAS_PATH_SIZE    300
-#define ELYSIAN_SKELETON_JSON_PATH_SIZE     300
+#define ELYSIAN_SKELETON_ATLAS_PATH_SIZE        300
+#define ELYSIAN_SKELETON_JSON_PATH_SIZE         300
+#define ELYSIAN_ANIMATION_NAME_SIZE             100
 
 ELYSIAN_ASSET_TYPEDEF(SkeletonAttrib)
 ELYSIAN_ASSET_TYPEDEF(Skeleton)
@@ -18,6 +20,28 @@ struct spAnimationState;
 
 namespace elysian {
 
+    struct AnimationTrack {
+        AnimationTrack(const char*name, const bool looping=true): _looping(looping) { strcpy(_name, name); }
+        char    _name[ELYSIAN_ANIMATION_NAME_SIZE] = { 0 };
+        float   _timeScale = 1.0f;
+        bool    _looping    = true;
+
+    };
+
+
+    struct SkeletalAnimation {
+        char _name[ELYSIAN_ANIMATION_NAME_SIZE] = { 0 };
+        SkeletalAnimation(const char*const name, const std::initializer_list<AnimationTrack*> &tracks):
+            _tracks(tracks) {
+            strcpy(_name, name);
+        }
+
+        std::vector<AnimationTrack*> _tracks;
+        unsigned _trackCount = 0;
+    };
+
+
+
     class SkeletonAttribBase:
         public LuaTableProxy<SkeletonAttrib>
     {
@@ -29,6 +53,8 @@ namespace elysian {
         ELYSIAN_LUA_PROXY_FIELD(jsonPath,                getJsonPath,       setJsonPath)
     ELYSIAN_LUA_PROXY_FIELDS_END()
 
+
+        std::vector<SkeletalAnimation*> _animations;
         char                    _atlasPath[ELYSIAN_SKELETON_ATLAS_PATH_SIZE]    = { 0 };
         char                    _jsonPath[ELYSIAN_SKELETON_JSON_PATH_SIZE]      = { 0 };
         spAtlas*                _atlas          = nullptr;
@@ -48,6 +74,9 @@ namespace elysian {
         void                    setJsonPath(const char*const json);
         const char*             getJsonPath(void) const;
 
+        void                    addAnimations(const std::initializer_list<SkeletalAnimation*>& list);
+        SkeletalAnimation*      findAnimation(const char*name) const;
+
         bool                    isReested(void) const;
     };
 
@@ -62,6 +91,7 @@ namespace elysian {
         SkeletonAttrib*     _attrib         = nullptr;
         spSkeleton*         _skeleton       = nullptr;
         spAnimationState*   _animState      = nullptr;
+        SkeletalAnimation*  _curAnim        = nullptr;
 
         float               _animTimeScale  = 1.0f;
 
@@ -84,6 +114,7 @@ namespace elysian {
         float           getAnimTimeScale(void) const;
 
         void            setAnimByName(const int trackIndex, const char*const animName, const bool loop=true) const;
+        void            setAnim(const char* name);
         //void            addAnimByName(const int trackIndex, const char*const animName, const bool loop, const float delay) const;
         //void            mixAnimByName(const int trackIndex, const char*const animName, const bool loop, const float alpha) const;
         //void            clearAnim(const int trackIndex) const;
@@ -110,6 +141,15 @@ namespace elysian {
     inline void SkeletonBase::setAnimTimeScale(const float scale) { _animTimeScale = scale; }
     inline float SkeletonBase::getAnimTimeScale(void) const { return _animTimeScale; }
 
+
+    inline void SkeletonAttribBase::addAnimations(const std::initializer_list<SkeletalAnimation*>& list) { _animations.insert(_animations.end(), list); }
+
+    inline SkeletalAnimation* SkeletonAttribBase::findAnimation(const char *name) const {
+        for(unsigned i = 0; i < _animations.size(); ++i) {
+            if(strcmp(_animations[i]->_name, name) == 0) return _animations[i];
+        }
+        return nullptr;
+    }
 
 
 }

@@ -12,9 +12,6 @@ namespace elysian {
 	class Engine: public System {
         friend Debug;
 	private:
-        GYInput*        _platInput;
-        MouseInput      _mouseInput;
-        GameInput       _gameInput;
 
         TaskMonitor     _updateMonitor;
         TaskMonitor     _renderMonitor;

@@ -10,15 +10,18 @@
 
 
 namespace elysian {
-
+#if 0
 void GameInput::translate(const GYInput& platInput, GameInput& gameInput) {
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86 || GYRO_PLATFORM == GYRO_PLATFORM_ANDROID || GYRO_PLATFORM == GYRO_PLATFORM_Qt
+
+
+
 
 #	if GYRO_PLATFORM == GYRO_PLATFORM_x86
 	if(platInput.keyTapped[GY_KEY_ESC]) exit(0);
 #	endif
 
-    for(unsigned i = 0; i < GY_KEY_LAST; ++i) {
+    for(unsigned i = 0; i < GY_KEY_COUNT; ++i) {
 
         switch(i) {
  #if 0
@@ -71,6 +74,29 @@ void GameInput::translate(const GYInput& platInput, GameInput& gameInput) {
     } else if(gameInput.getDown(BUT_DPAD_R)) {
         gameInput._analogDir[0].x = 1.0f;
     } else gameInput._analogDir[0].x = 0.0f;
+
+
+    GYController* cont;
+    gyControllerPoll(0, &cont);
+    if(cont) {
+#if 0
+        gameInput._analogDir[0] = cont->lAnalogStick;
+        gameInput._analogDir[1] = cont->rAnalogStick;
+
+        if(cont->dDown) gameInput.setDown(BUT_DPAD_D);
+        else gameInput.setUp(BUT_DPAD_D);
+
+        if(cont->dUp) gameInput.setDown(BUT_DPAD_U);
+        else gameInput.setUp(BUT_DPAD_U);
+
+        if(cont->dLeft) gameInput.setDown(BUT_DPAD_L);
+        else gameInput.setUp(BUT_DPAD_L);
+
+        if(cont->dRight) gameInput.setDown(BUT_DPAD_R);
+        else gameInput.setUp(BUT_DPAD_R);
+#endif
+
+    }
 
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_DC
@@ -229,5 +255,5 @@ bool GameInput::invalidKey(GameInput::BUTTON key) const {
 	}
 	else return	false;
 }
-
+#endif
 }

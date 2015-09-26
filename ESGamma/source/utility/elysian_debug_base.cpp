@@ -35,6 +35,7 @@
 #include "elysian_rigid_body_system.hpp"
 #include "elysian_debug_base.hpp"
 #include <crtp/elysian_renderable.hpp>
+#include <system/elysian_input_system.hpp>
 
 namespace elysian {
 
@@ -230,22 +231,21 @@ static LightSource* src;
 
 static EventCallback callback;
 
-void DebugBase::processInput(GameInput& input) {
-
+void DebugBase::processInput(Keyboard*const input) {
 	static float theta = 0.0f;
 	static unsigned size = 3;
 //	static unsigned intensity = 200;
     static bool freeCam = false;
 
 	//Camera zoom
-    if(input.getDown(GameInput::BUT_W) && ! input.getDown(GameInput::BUT_LALT)){
+    if(input->isPressed(GY_KEY_W) && !input->isPressed(GY_KEY_LALT)) {
         _engine->_cameraSystem->staticScale(0.95f);
     }
-    if(input.getDown(GameInput::BUT_S) && !input.getDown(GameInput::BUT_LALT)){
+    if(input->isPressed(GY_KEY_S) && !input->isPressed(GY_KEY_LALT)){
         _engine->_cameraSystem->staticScale(1.05f);
 	}
 
-	if(input.getTapped(GameInput::BUT_0)) {
+    if(input->isTapped(GY_KEY_0)) {
 
 		CollisionSystem::RENDER_LAYER layer = _engine->_collisionSystem->cycleRenderLayer();
 		switch(layer) {
@@ -280,13 +280,13 @@ void DebugBase::processInput(GameInput& input) {
 		bool render = _engine->_mapSystem->toggleRenderLayer(2);
         printf(LOG_VERBOSE, "Render Layer 3 - %s", (render)? "enabled" : "disabled");
     }*/
-	if(input.getTapped(GameInput::BUT_4)) {
+    if(input->isTapped(GY_KEY_4)) {
 		bool render = _engine->_mapSystem->toggleRenderLayer(3);
         printf(LOG_VERBOSE, "Render Layer 4 - %s", (render)? "enabled" : "disabled");
 	}
 
 	//Rendering layers
-	if(input.getTapped(GameInput::BUT_5)) {
+    if(input->isTapped(GY_KEY_5)) {
         static bool isEnabled = true;
         if(isEnabled) {
             //_engine->_guiSystem->adventureLog.setEnabled(false);
@@ -309,51 +309,51 @@ void DebugBase::processInput(GameInput& input) {
 
     }
 
-    if(input.getPinch() != 1.0f) _engine->_cameraSystem->setStaticScale(input.getPinch());
+    //if(input.getPinch() != 1.0f) _engine->_cameraSystem->setStaticScale(input.getPinch());
 
 	//EVERYTHING BEYOND THIS POINT IS IN FALCO'S DEBUG KEYSPACE!!!!
-	if(!input.getDown(GameInput::BUT_LALT)) return;
+    if(!input->isPressed(GY_KEY_LALT)) return;
 
-    if(input.getDown(GameInput::BUT_W) && freeCam){
+    if(input->isPressed(GY_KEY_W) && freeCam){
 
         _engine->_cameraSystem->translate(GYVector3{0.0f, -3.0f, 0.0f});
     }
-    if(input.getDown(GameInput::BUT_S) && freeCam){
+    if(input->isPressed(GY_KEY_S) && freeCam){
         _engine->_cameraSystem->translate(GYVector3{0.0f, 3.0f, 0.0f});
     }
-    if(input.getDown(GameInput::BUT_A) && freeCam){
+    if(input->isPressed(GY_KEY_A) && freeCam){
         _engine->_cameraSystem->translate(GYVector3{-3.0f, 0.0f, 0.0f});
     }
-    if(input.getDown(GameInput::BUT_D) && freeCam){
+    if(input->isPressed(GY_KEY_D) && freeCam){
         _engine->_cameraSystem->translate(GYVector3{3.0f, 0.0f, 0.0f});
     }
 
-    if(input.getDown(GameInput::BUT_Q) && !freeCam){
+    if(input->isPressed(GY_KEY_Q) && !freeCam){
         _engine->_cameraSystem->getCurrentState()->setOrient(0.0f, 0.0f, 1.0f);
         _engine->_cameraSystem->getCurrentState()->rotate(0.1f*60.0f*getTimerSys()->getDeltaTime());
 	}
-    if(input.getDown(GameInput::BUT_A) && !freeCam){
+    if(input->isPressed(GY_KEY_A) && !freeCam){
                 _engine->_cameraSystem->getCurrentState()->setOrient(0.0f, 0.0f, 1.0f);
         _engine->_cameraSystem->getCurrentState()->rotate(-0.1f*60.0f*getTimerSys()->getDeltaTime());
     }
 
-    if(input.getDown(GameInput::BUT_F) && !freeCam) {
+    if(input->isPressed(GY_KEY_F) && !freeCam) {
         _engine->_cameraSystem->getCurrentState()->setOrient(1.0f, 0.0f, 0.0f);
         _engine->_cameraSystem->getCurrentState()->rotate(-0.1f*60.0f*getTimerSys()->getDeltaTime());
 	}
 
-    if(input.getDown(GameInput::BUT_D) && !freeCam) {
+    if(input->isPressed(GY_KEY_D) && !freeCam) {
         _engine->_cameraSystem->getCurrentState()->setOrient(1.0f, 0.0f, 0.0f);
         _engine->_cameraSystem->getCurrentState()->rotate(0.1f*60.0f*getTimerSys()->getDeltaTime());
 	}
 
-	if(input.getTapped(GameInput::BUT_Z)) { //Reset Transform
+    if(input->isTapped(GY_KEY_Z)) { //Reset Transform
 		_engine->_cameraSystem->setStaticScale(1.0f);
         //_engine->_cameraSystem->setOrientZ(0.0f);
         //_engine->_cameraSystem->setOrientX(0.0f);
 	}
 
-	if(input.getTapped(GameInput::BUT_C)) {
+    if(input->isTapped(GY_KEY_C)) {
 		static bool enabled = true;
 		enabled = !enabled;
 		_engine->_collisionSystem->setEnabled(enabled);
@@ -362,7 +362,7 @@ void DebugBase::processInput(GameInput& input) {
 
 	}
 
-    if(input.getTapped(GameInput::BUT_B)) {
+    if(input->isTapped(GY_KEY_B)) {
         if(_engine->_collisionSystem->getBroadPhase()) {
             _engine->_collisionSystem->setBroadPhase(false);
             Debug::printf(Debug::LOG_VERBOSE, "Sort and Sweep Disabled!");
@@ -372,7 +372,7 @@ void DebugBase::processInput(GameInput& input) {
         }
     }
 
-	if(input.getTapped(GameInput::BUT_L)) {
+    if(input->isTapped(GY_KEY_L)) {
 		ADV_LOG_WRAP newWrap = (_advLogWrap < ADV_LOG_MAX-1)? (ADV_LOG_WRAP)(_advLogWrap+1) : (ADV_LOG_WRAP)0;
         if(newWrap == ADV_LOG_ALL) Debug::printf(Debug::LOG_VERBOSE, "Adventure Log Wrapping Engine Debug");
         else if(newWrap == ADV_LOG_LUA) Debug::printf(Debug::LOG_VERBOSE, "Adventure Log Wrapping Lua only");
@@ -380,7 +380,7 @@ void DebugBase::processInput(GameInput& input) {
 		_advLogWrap = newWrap;
 	}
 
-	if(input.getTapped(GameInput::BUT_G)) {
+    if(input->isTapped(GY_KEY_G)) {
 #if 0
 		static bool enabled = true;
 		enabled = !enabled;
@@ -396,13 +396,13 @@ void DebugBase::processInput(GameInput& input) {
 #endif
 	}
 
-	if(input.getDown(GameInput::BUT_5)) {
+    if(input->isTapped(GY_KEY_5)) {
         static bool enabled = true;
         enabled = !enabled;
         getRigidBodySys()->setGravityEnabled(enabled);
         Debug::printf(Debug::LOG_VERBOSE, "Gravity %s.", (enabled)? "enabled" : "disabled");
 	}
-	if(input.getTapped(GameInput::BUT_6)) {
+    if(input->isTapped(GY_KEY_6)) {
 		static bool enabled = false;
 		enabled = !enabled;
 		getGuiSys()->setDebugOverLayEnabled(enabled);
@@ -413,28 +413,28 @@ void DebugBase::processInput(GameInput& input) {
         //src->setDirection(dirVec);
         printf(LOG_VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
 	}
-	if(input.getDown(GameInput::BUT_7)) {
+    if(input->isTapped(GY_KEY_7)) {
 		++size;
 		dirVec.y += 0.1f;
 		gyVec3Normalize(&dirVec);
 		src->setDirection(dirVec);
         printf(LOG_VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
 	}
-	if(input.getDown(GameInput::BUT_8)) {
+    if(input->isTapped(GY_KEY_8)) {
 		if(size != 0) --size;
 		dirVec.y -= 0.1f;
 		gyVec3Normalize(&dirVec);
 		src->setDirection(dirVec);
         printf(LOG_VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
 	}
-	if(input.getDown(GameInput::BUT_9)) {
+    if(input->isTapped(GY_KEY_9)) {
 		dirVec.x += 0.1f;
 		theta += 0.1f;
 		gyVec3Normalize(&dirVec);
 		src->setDirection(dirVec);
         printf(LOG_VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
 	}
-	if(input.getDown(GameInput::BUT_O)) {
+    if(input->isTapped(GY_KEY_0)) {
 		dirVec.x -= 0.1f;
 		theta -= 0.1f;
 		gyVec3Normalize(&dirVec);
@@ -442,7 +442,7 @@ void DebugBase::processInput(GameInput& input) {
         printf(LOG_VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
 	}
 
-	if(input.getTapped(GameInput::BUT_R)) {
+    if(input->isTapped(GY_KEY_R)) {
         //freeCam = !freeCam;
         //static Entity* julien = getCurrentArea()->findEntity("Julien");
 #if 1
@@ -457,7 +457,7 @@ void DebugBase::processInput(GameInput& input) {
 #endif
 	}
 
-    if(input.getDown(GameInput::BUT_U)) {
+    if(input->isPressed(GY_KEY_U)) {
 
 		static bool once = true;
         static ParticleEmitter* emitter;
@@ -496,12 +496,12 @@ void DebugBase::processInput(GameInput& input) {
 
 //	static float timeSpeed = 60.0f;
 
-	if(input.getTapped(GameInput::BUT_N)) {
+    if(input->isTapped(GY_KEY_N)) {
 		static bool sunEnabled = true;
 		sunEnabled = !sunEnabled;
         //getDaySys()->setSunEnabled(sunEnabled);
 	}
-	if(input.getDown(GameInput::BUT_M)) {
+    if(input->isPressed(GY_KEY_M)) {
 		getDaySys()->addSeconds(600);
 	}
 
@@ -515,7 +515,7 @@ void DebugBase::processInput(GameInput& input) {
 		getDaySys()->setTimeDilation(timeSpeed);
 	}*/
 
-	if(input.getTapped(GameInput::BUT_FORWARDSLASH)) {
+    if(input->isTapped(GY_KEY_FORWARDSLASH)) {
 		LuaManager::dumpStats();
 	}
 /*	if(input.getTapped(GameInput::BUT_N)) {
@@ -523,7 +523,7 @@ void DebugBase::processInput(GameInput& input) {
 		Debug::luaPrint("One man's corruption is another man's salvation.");
 		Debug::luaPrint("-----------------------------------------");
 	}*/
-	if(input.getTapped(GameInput::BUT_T)) {
+    if(input->isTapped(GY_KEY_T)) {
 		Entity *entity = new Entity;
 		entity->setName("DICKMITE");
         entity->_transform.setPos(200.0F, 200.0f);
@@ -565,7 +565,7 @@ void DebugBase::processInput(GameInput& input) {
 	}
 
 
-	if(input.getTapped(GameInput::BUT_X)) {
+    if(input->isTapped(GY_KEY_X)) {
 /*		GYVector4 diffuseColors[4] = {
 			{ 1.0f, 1.0f, 5.0f, 1.0f},
 			{ 1.0f, 2.0f, 1.0f, 1.0f},
@@ -637,7 +637,7 @@ void DebugBase::processInput(GameInput& input) {
 	}
 
 	//Elevate player
-	if(input.getTapped(GameInput::BUT_Y)) {
+    if(input->isPressed(GY_KEY_Y)) {
 	/*	Dialog* dialog = new Dialog;
 		auto* screen = dialog->addTextScreen("WTF!? A wild Rattata appeared!");
 		screen->setNextIndex(-1);
@@ -660,8 +660,9 @@ void DebugBase::processInput(GameInput& input) {
 	}*/
 
 	//KILL ALL INPUT WHEN YOU'RE HOLDING ALT!!!!
-	input.clear();
-
+#if 0
+    input.clear();
+#endif
 }
 
 #define ARG_LIMIT 20

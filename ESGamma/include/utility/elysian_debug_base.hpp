@@ -40,7 +40,7 @@ ELYSIAN_ASSET_TYPEDEF(Debug)
 namespace elysian {
 
     class Engine;
-    class GameInput;
+    class Keyboard;
 
     struct DbgEvent {
         unsigned                depth = 0;
@@ -108,7 +108,7 @@ namespace elysian {
         static void             setLevel(const SEVERITY level);
 
         void                    update(void);
-        void                    processInput(GameInput &input);
+        void                    processInput(Keyboard*const input);
         void                    render(void);
         void                    renderOverlay(void);
         bool                    sandboxInit(void);

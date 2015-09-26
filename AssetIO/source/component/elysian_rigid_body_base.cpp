@@ -46,8 +46,8 @@ void RigidBodyBase::integrate(const float deltaTime) {
     GYStatic*const stat = getEntity()->getCollidable()->getAttrib()->getStaticAttrib();
 
     if(resting) {
-        stat->angDamping    *= _tileDamping;
-        gyVec2ScaleAccum((GYVector2*)&stat->damping, _tileDamping);
+        //stat->angDamping    *= _tileDamping;
+        //gyVec2ScaleAccum((GYVector2*)&stat->damping, _tileDamping);
     } else {
       /*  angDamping          = stat->angDamping;
         baseDamping         = stat->damping;
@@ -62,8 +62,8 @@ void RigidBodyBase::integrate(const float deltaTime) {
                 &_entity->_transform._angle);
 
     if(resting) {
-        stat->angDamping    /= _tileDamping;
-        gyVec2ScaleAccum((GYVector2*)&stat->damping, 1.0f/_tileDamping);
+        //stat->angDamping    /= _tileDamping;
+        //gyVec2ScaleAccum((GYVector2*)&stat->damping, 1.0f/_tileDamping);
     } else {
        /* stat->damping       = baseDamping;
         stat->angDamping    = angDamping;*/

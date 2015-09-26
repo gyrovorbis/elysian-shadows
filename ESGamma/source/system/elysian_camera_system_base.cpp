@@ -6,6 +6,7 @@
 #include <crtp/elysian_area.hpp>
 #include <crtp/elysian_level.hpp>
 #include <elysian_timer_system.hpp>
+#include <system/elysian_input_system.hpp>
 
 namespace elysian {
 
@@ -281,8 +282,9 @@ void CameraSystemBase::popState(void) {
     }*/
 }
 
-void CameraSystemBase::processInput(const GameInput& input) {
-    if(input.getTapped(GameInput::BUT_P)) {
+void CameraSystemBase::processInput(const Keyboard* input) {
+
+    if(input->isTapped(GY_KEY_P)) {
         _debugActive = !_debugActive;
 
         if(_debugActive) { //enable
@@ -308,62 +310,61 @@ void CameraSystemBase::processInput(const GameInput& input) {
 #if 1
     if(_curState == &_debugState) {
 
-        if(input.getDown(GameInput::BUT_O)) {
+        if(input->isPressed(GY_KEY_O)) {
             GYVector3 dist = { 0.0f, 0.0f, 5.0f };
             //GYVector3 delta = { 0.0f, 0.0f, -0.01f};
             //gyVec3Add(&_curState->dir, &_curState->dir, &delta);
             //gyVec3Normalize(&_curState->dir);
             translateOffset(dist);
         }
-        if(input.getDown(GameInput::BUT_L)) {
+        if(input->isPressed(GY_KEY_L)) {
             GYVector3 dist = { 0.0f, 0.0f, -5.0f };
             //GYVector3 delta = { 0.0f, 0.0f, 0.01f };
             //gyVec3Add(&_curState->dir, &_curState->dir, &delta);
             //gyVec3Normalize(&_curState->dir);
             translateOffset(dist);
         }
-        if(input.getDown(GameInput::BUT_DPAD_L)) {
+        if(input->isPressed(GY_KEY_DPAD_L)) {
             //GYVector3 delta = { -0.01f, 0.0f, 0.0f };
             //gyVec3Add(&_curState->dir, &_curState->dir, &delta);
             //gyVec3Normalize(&_curState->dir);
         }
-        if(input.getDown(GameInput::BUT_DPAD_R)) {
+        if(input->isPressed(GY_KEY_DPAD_R)) {
             //GYVector3 delta = { 0.01f, 0.0f, 0.0f };
             //gyVec3Add(&_curState->dir, &_curState->dir, &delta);
             //gyVec3Normalize(&_curState->dir);
         }
 
-        if(input.getDown(GameInput::BUT_W)) {
+        if(input->isPressed(GY_KEY_W)) {
             translateOffset(GYVector3{ 0.0f, -5.0f, 0.0f});
 
         }
-        if(input.getDown(GameInput::BUT_A)) {
+        if(input->isPressed(GY_KEY_A)) {
 
             translateOffset(GYVector3{ -2.0f, 0.0f, 0.0f});
         }
-        if(input.getDown(GameInput::BUT_S)) {
+        if(input->isPressed(GY_KEY_S)) {
 
             translateOffset(GYVector3{ 0.0f, 5.0f, 0.0f});
 
         }
-        if(input.getDown(GameInput::BUT_D)) {
+        if(input->isPressed(GY_KEY_D)) {
             translateOffset(GYVector3{ 2.0f, 0.0f, 0.0f});
         }
 
-        if(input.getDown(GameInput::BUT_Z)) {
+        if(input->isPressed(GY_KEY_Z)) {
  //           _curState->_keyFrame._dir.y -= 0.01f;
  //           _curState->_keyFrame._dir.z += 0.01f;
   //          gyVec3Normalize(&_curState->_keyFrame._dir);
         }
 
-        if(input.getDown(GameInput::BUT_X)) {
+        if(input->isPressed(GY_KEY_X)) {
     //        _curState->_keyFrame._dir.y += 0.01f;
   //          _curState->_keyFrame._dir.z -= 0.01f;
   //          gyVec3Normalize(&_curState->_keyFrame._dir);
         }
     }
 #endif
-
 }
 
 void CameraSystemBase::update(void) {

@@ -36,7 +36,12 @@ OOLUA_PROXY(Character, Component)
     OOLUA_MEM_FUNC_CONST(const GYVector3&, getLastMoveDir)
     OOLUA_MEM_FUNC_CONST(float, getWalkForce)
     OOLUA_MEM_FUNC_CONST(float, getDashMultiplier)
-    OOLUA_MEM_FUNC(float, getHeldEntityForceDampFactor)
+    OOLUA_MEM_FUNC(float, getEntityForceDampFactor)
+    OOLUA_MEM_FUNC(void, addState, const Character::ANIM_STATE)
+    OOLUA_MEM_FUNC(void, removeState, const Character::ANIM_STATE)
+    OOLUA_MEM_FUNC(void, jump)
+    OOLUA_MEM_FUNC(void, applyKnockbackForce, const GYVector3&)
+    OOLUA_MEM_FUNC_CONST(bool, hasState, const Character::ANIM_STATE)
 OOLUA_PROXY_END
 
 #endif // ELYSIAN_CHARACTER_PROXY_HPP

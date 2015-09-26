@@ -23,9 +23,9 @@ ELYSIAN_ASSET_TYPEDEF(Entity)
 
 namespace elysian {
 
-    class GameInput;
-    class CameraSystemBase;
-    struct Camera;
+    class   Keyboard;
+    class   CameraSystemBase;
+    struct  Camera;
 
     class CameraKeyFrame: public InstanceTransform {
         friend class CameraSystemBase;
@@ -135,7 +135,7 @@ namespace elysian {
 
         void setCurrentCamera(Camera*const state);
 
-        void processInput(const GameInput& input);
+        void processInput(const Keyboard* input);
 
         CameraKeyFrame getKeyFrame(void) const {
             return *static_cast<CameraKeyFrame*>(_curState);

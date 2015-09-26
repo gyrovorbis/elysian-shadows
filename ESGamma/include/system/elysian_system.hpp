@@ -28,6 +28,7 @@ namespace elysian {
 	class RigidBodySystem;
 	class CombatSystem;
     class SkeletonSystem;
+    class InputSystem;
 
 	class System: public LevelManager {
 	public:
@@ -39,6 +40,7 @@ namespace elysian {
 		static ENGINE_STATE _engineState;
         static bool         _processInput;
 
+        static InputSystem      *_inputSystem;
 		static LevelSystem		*_levelSystem;
 		static MapSystem		*_mapSystem;
 		static CameraSystem		*_cameraSystem;
@@ -61,6 +63,7 @@ namespace elysian {
 		static BehaviorSystem	*_behaviorSystem;
 
 	public:
+        static InputSystem*         getInputSys(void) { return _inputSystem; }
 		static LevelSystem*			getLevelSys(void) { return _levelSystem; }
 		static MapSystem*			getMapSys(void) { return _mapSystem; }
 		static CameraSystem*		getCameraSys(void) { return _cameraSystem; }

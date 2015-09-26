@@ -41,8 +41,8 @@ namespace elysian {
         void onCombatReceiveStatusModifier(Entity*const entity, CombatStatus*const modifier) const;
         void onCombatTargetCollisionEnter(Entity*const entity, CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier) const;
         void onShatter(Entity*const entity, CollisionContact*const contact) const;
-        void onButtonPress(const GameInput::BUTTON button) const;
-        void onButtonRelease(const GameInput::BUTTON button) const;
+        //void onButtonPress(const GameInput::BUTTON button) const;
+        //void onButtonRelease(const GameInput::BUTTON button) const;
 
 		
 	};
@@ -114,17 +114,18 @@ namespace elysian {
         }, entity);
     }
 
-    inline void BehaviorSystem::onButtonPress(const GameInput::BUTTON button) const {
+    /*inline void BehaviorSystem::onButtonPress(const GameInput::BUTTON button) const {
         _foreachBehavior(Behavior::ON_BUTTON_PRESS, [&](Behavior*const behav) {
             behav->onButtonPress(button);
         });
-    }
+    }*/
 
+    /*
     inline void BehaviorSystem::onButtonRelease(const GameInput::BUTTON button) const {
         _foreachBehavior(Behavior::ON_BUTTON_RELEASE, [&](Behavior*const behav) {
             behav->onButtonRelease(button);
         });
-    }
+    }*/
 
     inline void BehaviorSystem::onCombatTargetCollisionEnter(Entity*const entity, CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier) const {
         _foreachBehavior(Behavior::ON_COMBAT_TARGET_COLLISION_ENTER, [&](Behavior*const behav) {

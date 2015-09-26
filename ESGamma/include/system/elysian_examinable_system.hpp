@@ -13,7 +13,7 @@ namespace elysian {
 
 	public:
 
-		void processInput(GameInput& input);
+        void processInput(void);
 
 
 	};

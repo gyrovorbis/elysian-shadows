@@ -83,6 +83,7 @@ void TimerSystemBase::update(void) {
 #endif
 
 	_deltaTimeCircBuffer[_buffIndex] = delta;
+    //_deltaTime = delta;
 
 	//_totalTicks += delta*1000.0f;
 
@@ -90,16 +91,20 @@ void TimerSystemBase::update(void) {
     _deltaTime = 0;
     _realDeltaTime = 0;
 	for(unsigned i = 0; i < DELTA_TIME_CIRC_BUFFER_SIZE; ++i) {
-		_deltaTime += _deltaTimeCircBuffer[i];
+        _deltaTime += _deltaTimeCircBuffer[i];
 		_realDeltaTime += _realDeltaCircBuffer[i];
 	}
-	_deltaTime /= (float)DELTA_TIME_CIRC_BUFFER_SIZE;
+    _deltaTime /= (float)DELTA_TIME_CIRC_BUFFER_SIZE;
 	_realDeltaTime /= (float)DELTA_TIME_CIRC_BUFFER_SIZE;
 
 	//Reset circular buffer when it fills up
 	if(++_buffIndex >= DELTA_TIME_CIRC_BUFFER_SIZE) _buffIndex = 0; 
 
 	_totalTime += _deltaTime;
+
+#if 1
+   // _deltaTime = _deltaTime/((1.0f/60.0f));
+#endif
 
     updateSubProcesses(_deltaTime);
 

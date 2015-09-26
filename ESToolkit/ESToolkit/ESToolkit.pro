@@ -200,7 +200,9 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../ESGamma/source/utility/elysian_lua_variant.cpp \
     ../../AssetIO/source/proxy/elysian_dialog_proxy.cpp \
     ../../AssetIO/source/level/elysian_dialog_base.cpp \
-    ../../AssetIO/source/level/elysian_dialog_screen_base.cpp
+    ../../AssetIO/source/level/elysian_dialog_screen_base.cpp \
+    ../../ESGamma/source/system/elysian_input_system.cpp \
+    ../../ESGamma/source/proxy/elysian_input_system_proxy.cpp
 
 
 
@@ -438,7 +440,9 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../AssetIO/include/crtp/elysian_dialog_screen.hpp \
     ../../AssetIO/include/level/elysian_dialog_screen_base.hpp \
     ../../AssetIO/include/crtp/elysian_lua_variant.hpp \
-    ../../AssetIO/include/utility/elysian_lua_variant_base.hpp
+    ../../AssetIO/include/utility/elysian_lua_variant_base.hpp \
+    ../../ESGamma/include/system/elysian_input_system.hpp \
+    ../../ESGamma/include/proxy/elysian_input_system_proxy.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  include/asset/tk_animation.h \
@@ -616,7 +620,7 @@ docs {
 macx {
     #DESTDIR = ../../executable
 #	CONFIG(release, debug|release):
-    QMAKE_POST_LINK = "macdeployqt $${TARGET}.app -verbose=3"
+    QMAKE_POST_LINK =   "rm -rf $${TARGET}.app/Contents/Frameworks/SDL2.framework" $$escape_expand(\n\t) "cp -R ../../libGyro/lib/osx/SDL2.framework $${TARGET}.app/Contents/Frameworks" $$escape_expand(\n\t) "macdeployqt $${TARGET}.app -verbose=3"
 }
 
 dreamcast {
@@ -755,6 +759,8 @@ macx {
         -lz \
         -F../../ESGamma/lib/osx \
         -L../../ESGamma/lib/osx \
+        -F../../libGyro/lib/osx \
+        -framework SDL2 \
         -framework Foundation \
         -framework Cocoa \
         -lobjc \

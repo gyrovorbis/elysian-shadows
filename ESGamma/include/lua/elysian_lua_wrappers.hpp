@@ -15,6 +15,7 @@
 #include <crtp/elysian_character.hpp>
 #include <crtp/elysian_behavior.hpp>
 #include <level/elysian_map_depth_buffer.hpp>
+#include <proxy/elysian_input_system_proxy.hpp>
 #include <gyro_shader_api.h>
 
 
@@ -217,6 +218,7 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 	s->register_class_static<Tile>("COLLIDER_45DEG_SW", Tile::COLLIDER_45DEG_SW);
 
 	//GameInput::BUTTONS
+#if 0
     typedef elysian::GameInput GameInput;
 	s->register_class_static<GameInput>("BUT_NONE", GameInput::BUT_NONE);
 	s->register_class_static<GameInput>("BUT_A", GameInput::BUT_A);
@@ -272,7 +274,31 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
     s->register_class_static<GameInput>("BUT_BACKSLASH", GameInput::BUT_BACKSLASH);
     s->register_class_static<GameInput>("BUT_FORWARDSLASH", GameInput::BUT_FORWARDSLASH);
 	s->register_class_static<GameInput>("BUT_MAX", GameInput::BUT_MAX);
+#endif
 
+    typedef elysian::Controller Controller;
+    s->register_class_static<Controller>("BUT_DPAD_UP", GY_CONTROLLER_BUT_DPAD_UP);
+    s->register_class_static<Controller>("BUT_DPAD_DOWN", GY_CONTROLLER_BUT_DPAD_DOWN);
+    s->register_class_static<Controller>("BUT_DPAD_LEFT", GY_CONTROLLER_BUT_DPAD_LEFT);
+    s->register_class_static<Controller>("BUT_DPAD_RIGHT", GY_CONTROLLER_BUT_DPAD_RIGHT);
+    s->register_class_static<Controller>("BUT_START", GY_CONTROLLER_BUT_START);
+    s->register_class_static<Controller>("BUT_SELECT", GY_CONTROLLER_BUT_SELECT);
+    s->register_class_static<Controller>("BUT_HOME", GY_CONTROLLER_BUT_HOME);
+    s->register_class_static<Controller>("BUT_LSHOULDER", GY_CONTROLLER_BUT_LSHOULDER);
+    s->register_class_static<Controller>("BUT_RSHOULDER", GY_CONTROLLER_BUT_RSHOULDER);
+    s->register_class_static<Controller>("BUT_LANALOG", GY_CONTROLLER_BUT_LANALOG);
+    s->register_class_static<Controller>("BUT_RANALOG", GY_CONTROLLER_BUT_RANALOG);
+    s->register_class_static<Controller>("BUT_X", GY_CONTROLLER_BUT_X);
+    s->register_class_static<Controller>("BUT_SQUARE", GY_CONTROLLER_BUT_SQUARE);
+    s->register_class_static<Controller>("BUT_CIRCLE", GY_CONTROLLER_BUT_CIRCLE);
+    s->register_class_static<Controller>("BUT_TRIANGLE", GY_CONTROLLER_BUT_TRIANGLE);
+    s->register_class_static<Controller>("BUT_COUNT", GY_CONTROLLER_BUT_COUNT);
+
+    typedef elysian::InputSystem InputSystem;
+    s->register_class_static<InputSystem>("BUT_STATE_UP", GY_BUT_STATE_UP);
+    s->register_class_static<InputSystem>("BUT_STATE_TAPPED", GY_BUT_STATE_TAPPED);
+    s->register_class_static<InputSystem>("BUT_STATE_RELEASED", GY_BUT_STATE_RELEASED);
+    s->register_class_static<InputSystem>("BUT_STATE_DOWN", GY_BUT_STATE_DOWN);
 
 	//Direction::DIR4
     typedef elysian::Direction Direction;
@@ -281,6 +307,19 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 	s->register_class_static<Direction>("DIR4_RIGHT", Direction::DIR4_RIGHT);
 	s->register_class_static<Direction>("DIR4_UP", Direction::DIR4_UP);
 	s->register_class_static<Direction>("DIR4_DOWN", Direction::DIR4_DOWN);
+
+    //Character::ANIM_STATE
+    typedef elysian::Character Character;
+    s->register_class_static<Character>("STATE_STAND", Character::STATE_STAND);
+    s->register_class_static<Character>("STATE_WALK", Character::STATE_WALK);
+    s->register_class_static<Character>("STATE_RUN", Character::STATE_RUN);
+    s->register_class_static<Character>("STATE_DASH", Character::STATE_DASH);
+    s->register_class_static<Character>("STATE_JUMP", Character::STATE_JUMP);
+    s->register_class_static<Character>("STATE_FALL", Character::STATE_FALL);
+    s->register_class_static<Character>("STATE_HOLD", Character::STATE_HOLD);
+    s->register_class_static<Character>("STATE_KNOCKBACK", Character::STATE_KNOCKBACK);
+    s->register_class_static<Character>("STATE_DEATH", Character::STATE_DEATH);
+    s->register_class_static<Character>("STATE_COUNT", Character::STATE_COUNT);
 
 	//Font Alignment
     typedef elysian::MenuText MenuText;
@@ -367,11 +406,11 @@ static inline int Singletons_getCurLevel(lua_State* const vm) {
 }
 
 static inline int Singletons_getGameInput(lua_State* const vm) {
-	OOLUA_C_FUNCTION_0(elysian::GameInput*, elysian::Singletons::getGameInput)
+//	OOLUA_C_FUNCTION_0(elysian::GameInput*, elysian::Singletons::getGameInput)
 }
 
 static inline int Singletons_getMouseInput(lua_State* const vm) {
-    OOLUA_C_FUNCTION_0(elysian::MouseInput*, elysian::Singletons::getMouseInput)
+    //OOLUA_C_FUNCTION_0(elysian::MouseInput*, elysian::Singletons::getMouseInput)
 }
 
 static inline int Singletons_setProcessInput(lua_State* const vm) {
@@ -384,6 +423,10 @@ static inline int Singletons_getAnimationSystem(lua_State* const vm) {
 
 static inline int Singletons_getPartySystem(lua_State* const vm) {
 	OOLUA_C_FUNCTION(elysian::PartySystem*, elysian::Singletons::getPartySys)
+}
+
+static inline int Singletons_getInputSystem(lua_State* const vm) {
+    OOLUA_C_FUNCTION(elysian::InputSystem*, elysian::Singletons::getInputSys)
 }
 
 static inline int Singletons_getAudioSystem(lua_State* const vm) {
@@ -428,6 +471,18 @@ static inline int Singletons_getCameraSystem(lua_State* const vm) {
 
 static inline int Singletons_getCharacterSystem(lua_State* const vm) {
 	OOLUA_C_FUNCTION(elysian::CharacterSystem*, elysian::Singletons::getCharSys)
+}
+
+static inline int Direction_fromVector2(lua_State* const vm) {
+    OOLUA_C_FUNCTION(elysian::Direction::DIR4, elysian::Direction::fromVector2, const GYVector2&)
+}
+
+static inline int Direction_toVector2(lua_State* const vm) {
+    OOLUA_C_FUNCTION(GYVector2, elysian::Direction::toVector2, elysian::Direction::DIR4)
+}
+
+static inline int Direction_toVector3(lua_State* const vm) {
+    OOLUA_C_FUNCTION(GYVector3, elysian::Direction::toVector3, elysian::Direction::DIR4, float)
 }
 
 static inline int EventMonitor_null(lua_State *const vm) {

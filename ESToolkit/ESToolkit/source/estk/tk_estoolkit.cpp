@@ -60,6 +60,7 @@
 #include <QHelpContentWidget>
 #include <QHelpIndexWidget>
 #include <tk_gitlab_manager.h>
+#include <elysian_input_system.hpp>
 
 #ifdef ESTK_UNIT_TESTS
 #include <QtTest>
@@ -1018,11 +1019,12 @@ bool ESToolkit::openProjectDir(const QString dir) {
 
     GYInputInitParams inputParams = {
         static_cast<QGraphicsView*>(_ui->mapView),
-        static_cast<QGLWidget*>(_engineGLView)
+        static_cast<QGLWidget*>(_engineGLView),
+        4
     };
 
+    success &= elysian::InputSystem::initialize(&inputParams);
 
-    success &= gyInputInit(&inputParams);
    // assert(_engineGLView->context()->isValid());
 
     _engineGLView->makeCurrent();
@@ -2407,5 +2409,12 @@ void ESToolkit::on_actionCamera_View_toggled(bool arg1) {
         _cameraDockWidget->show();
     } else {
         _cameraDockWidget->hide();
+    }
+}
+
+void ESToolkit::on_actionInput_Device_Dump_triggered()
+{
+    if(_assets.getEngine()) {
+        _assets.getEngine()->getInputSys()->dumpStats();
     }
 }

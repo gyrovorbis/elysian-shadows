@@ -13,6 +13,7 @@
 #include <crtp/elysian_character.hpp>
 #include "elysian_behavior_system.hpp"
 #include "elysian_audio_system.hpp"
+#include <system/elysian_input_system.hpp>
 
 #include <cmath>
 #include <gyro_audio_api.h>
@@ -302,7 +303,9 @@ void DialogSystem::update(void) {
 	}
 }
 
-void DialogSystem::processInput(const GameInput &input) {
+void DialogSystem::processInput(void) {
+    Controller* cont = getInputSys()->getController(0);
+
 
 	//No active dialog
 	if(!_curDialog) {
@@ -325,12 +328,12 @@ void DialogSystem::processInput(const GameInput &input) {
 
 		switch(_boxState) {
 			case BOX_OUTPUT:
-				if(input.getDown(GameInput::BUT_J)) {
-					++_currentCharacter;
+                if(cont->isPressed(GY_CONTROLLER_BUT_CIRCLE)) {
+                    _characterTimer += _nextCharTime*getTimerSys()->getDeltaTime()*60.0f;
 				}
 				break;
 			case BOX_OUTPUT_END:
-				if(input.getTapped(GameInput::BUT_J)) {
+                if(cont->isTapped(GY_CONTROLLER_BUT_CIRCLE)) {
 					//input prompt
 					if(_curScreen.screen->getScreenType() == DialogScreen::SCREEN_PROMPT) {
 						_boxState = BOX_INPUT;
@@ -345,21 +348,21 @@ void DialogSystem::processInput(const GameInput &input) {
 				break;
 			case BOX_INPUT:
 				//move down
-				if(input.getTapped(GameInput::BUT_DPAD_D)) {
+                if(cont->isTapped(GY_CONTROLLER_BUT_DPAD_DOWN) || cont->getVirtualDPad(GY_CONTROLLER_ANALOG_LEFT).isTapped(GY_CONTROLLER_BUT_DPAD_DOWN)) {
 					++_currentOption;
                     if(_currentOption > (int)prompt->getOptionCount()-1) {
                         _currentOption = (int)prompt->getOptionCount()-1;
 					}
 				}
 				//move up
-				else if(input.getTapped(GameInput::BUT_DPAD_U)) {
+                else if(cont->isTapped(GY_CONTROLLER_BUT_DPAD_UP) || cont->getVirtualDPad(GY_CONTROLLER_ANALOG_LEFT).isTapped(GY_CONTROLLER_BUT_DPAD_UP)) {
 					--_currentOption;
 					if(_currentOption < 0) {
 						_currentOption = 0;
 					}
 				}
 				//select option
-				if(input.getTapped(GameInput::BUT_J)) {
+                if(cont->isTapped(GY_CONTROLLER_BUT_CIRCLE)) {
 					NextScreen();
 				}
 				break;

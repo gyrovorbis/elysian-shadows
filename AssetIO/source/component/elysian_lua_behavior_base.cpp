@@ -228,13 +228,14 @@ void LuaBehaviorBase::onCombatTargetCollisionEnter(CollisionContact*const contac
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COMBAT_TARGET_COLLISION_ENTER_INDEX, _ooSelfTableRef, contact, collidable, modifier));
 }
 
+/*
 void LuaBehaviorBase::onButtonPress(const GameInput::BUTTON button) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_BUTTON_PRESS_INDEX, _ooSelfTableRef, button));
 }
 
 void LuaBehaviorBase::onButtonRelease(const GameInput::BUTTON button) {
     _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_BUTTON_RELEASE_INDEX, _ooSelfTableRef, button));
-}
+}*/
 
 void LuaBehaviorBase::onTkSelect(void) {
     _PROTECTED(_callTriggerByName<void>("onTkSelect", _ooSelfTableRef));

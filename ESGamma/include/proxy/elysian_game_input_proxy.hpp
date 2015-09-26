@@ -5,11 +5,12 @@
 #include <utility/elysian_game_input.hpp>
 
 namespace OOLUA {
-    typedef elysian::GameInput      GameInput;
-    typedef elysian::MouseInput     MouseInput;
+  //  typedef elysian::GameInput      GameInput;
+ //   typedef elysian::MouseInput     MouseInput;
 
 }
 
+#if 0
 OOLUA_PROXY(GameInput)
     OOLUA_TAGS (
         No_public_constructors,
@@ -21,6 +22,7 @@ OOLUA_PROXY(GameInput)
     OOLUA_MEM_FUNC(void, setDown, GameInput::BUTTON)
 OOLUA_PROXY_END
 
+
 OOLUA_PROXY(MouseInput)
     OOLUA_TAGS (
         No_public_constructors,
@@ -31,6 +33,8 @@ OOLUA_PROXY(MouseInput)
     OOLUA_MEM_FUNC_CONST(void, getScreenPos, GYVector2&)
     OOLUA_MEM_FUNC_CONST(void, getScrollWheel, GYVector2&)
 OOLUA_PROXY_END
+
+#endif
 
 #endif // ELYSIAN_GAME_INPUT_PROXY_HPP
 
