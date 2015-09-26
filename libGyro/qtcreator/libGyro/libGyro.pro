@@ -21,7 +21,7 @@ win32 {
 
 macx {
     INCLUDEPATH += ../../lib/osx
-    INCLUDEPATH += ../../lib/osx/SDL.framework/Headers
+    INCLUDEPATH += ../../lib/osx/SDL2.framework/Headers
     SOURCES +=	../../source/x86/turfs_osx.c
 }
 
@@ -180,7 +180,8 @@ dreamcast {
         ../../source/glal/tinycthread.c \
         ../../source/glal/gyro_ogg_glal.c \
         ../../source/x86/gyro_matrix_x86.c \
-        ../../source/qt/gyro_video_qt.cpp
+        ../../source/qt/gyro_video_qt.cpp \
+        ../../source/x86/gyro_controller_sdl_x86.c
 
     !ios:!android {
         SOURCES += \
