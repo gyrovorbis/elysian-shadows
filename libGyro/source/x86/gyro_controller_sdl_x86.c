@@ -1,7 +1,19 @@
+
+#ifdef __WIN32
+#include <sdl/SDL.h>
+#include <sdl/SDL_joystick.h>
+#include <sdl/SDL_gamecontroller.h>
+#include <sdl/SDL_haptic.h>
+
+#elif defined(__linux__)
+
+
+#else
 #include <SDL.h>
 #include <SDL_joystick.h>
 #include <SDL_gamecontroller.h>
 #include <SDL_haptic.h>
+#endif
 #include <gyro_system_api.h>
 #include <gyro_input_api.h>
 
