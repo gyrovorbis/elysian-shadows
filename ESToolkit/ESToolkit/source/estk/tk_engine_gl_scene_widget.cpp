@@ -84,7 +84,7 @@ makeCurrent();
 
     // auto* ctx = QOpenGLContext::currentContext();
     // if(ctx && ctx->hasEx tension(QByteArrayLiteral("GL_KHR_debug"))) {
-
+#if 0
          _glLogger = new QOpenGLDebugLogger(this);
          connect(_glLogger, &QOpenGLDebugLogger::messageLogged, this, &EngineGLSceneWidget::_onGLMessageLogged);
          if(_glLogger->initialize()) {
@@ -93,6 +93,7 @@ makeCurrent();
          } else {
              Debug::Logf(Debug::LOG_WARNING, "OpenGL debug logger could not be initialized.");
          }
+#endif
 
     // } else {
     //	 Debug::Logf(Debug::LOG_VERBOSE, "OpenGL debug logger extensions not detected!");
@@ -177,7 +178,7 @@ void EngineGLSceneWidget::paintGL(void) {
     getAssets()->getEngine()->render();
 
     //doneCurrent();
-    swapBuffers();
+    //swapBuffers();
 
     getAssets()->getEngine()->update();
     getAssets()->getEngine()->processInput();

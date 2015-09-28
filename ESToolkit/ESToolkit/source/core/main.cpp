@@ -98,7 +98,7 @@ static GYAppCbRet Init(int argc, char **argv) {
    // fmt.setStencilBufferSize(0);
    // fmt.setDepthBufferSize(16);
     fmt.setProfile( QSurfaceFormat::CoreProfile ); // Requires >=Qt-4.8.0
-    fmt.setOption(QSurfaceFormat::DebugContext);
+    //fmt.setOption(QSurfaceFormat::DebugContext);
     // Set the default GL format to OpenGL 3.2 Core
     QSurfaceFormat::setDefaultFormat(fmt);
 
