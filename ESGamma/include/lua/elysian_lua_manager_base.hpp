@@ -191,7 +191,7 @@ namespace elysian {
                 script->setError();
                 _cStackDump();
                 lua_remove(*_mainState, lua_gettop(*_mainState));		//clean up stack after reesting
-                _envDump(script);
+                //_envDump(script);
                 dumpStats();
                 //if(_traceBackDbgPushes) {
                     //Debug::pop();

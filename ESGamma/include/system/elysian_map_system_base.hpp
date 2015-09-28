@@ -181,7 +181,6 @@ namespace elysian {
               flushTileBuffer();
              gyVidAlphaLevel(newAlpha);
             }*/
-
             //Blending mode state change
             if(entry.renderPass > 1  || newAlpha != GY_ALPHA_NONE) {
                 disableDepthTest();

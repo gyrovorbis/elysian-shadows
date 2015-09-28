@@ -377,10 +377,10 @@ const char* CharacterBase::getAnimNameFromStates(const Direction::DIR4 dir) {
             return "KnockLeft";
         } else if(_animStates[STATE_JUMP]) {
             return "JumpLeft";
-        } else if(_animStates[STATE_FALL]) {
-            return "FallLeft";
         } else if(_animStates[STATE_DASH]) {
             return "DashLeft";
+        } else if(_animStates[STATE_FALL]) {
+            return "FallLeft";
         } else if(_animStates[STATE_RUN]) {
             return "RunLeft";
         } else if(_animStates[STATE_WALK]) {
@@ -396,10 +396,10 @@ const char* CharacterBase::getAnimNameFromStates(const Direction::DIR4 dir) {
             return "KnockRight";
         } else if(_animStates[STATE_JUMP]) {
             return "JumpRight";
-        } else if(_animStates[STATE_FALL]) {
-            return "FallRight";
         } else if(_animStates[STATE_DASH]) {
             return "DashRight";
+        } else if(_animStates[STATE_FALL]) {
+            return "FallRight";
         } else if(_animStates[STATE_RUN]) {
             return "RunRight";
         } else if(_animStates[STATE_WALK]) {
@@ -415,10 +415,10 @@ const char* CharacterBase::getAnimNameFromStates(const Direction::DIR4 dir) {
             return "KnockUp";
         } else if(_animStates[STATE_JUMP]) {
             return "JumpUp";
-        } else if(_animStates[STATE_FALL]) {
-            return "FallUp";
         } else if(_animStates[STATE_DASH]) {
             return "DashUp";
+        } else if(_animStates[STATE_FALL]) {
+            return "FallUp";
         } else if(_animStates[STATE_RUN]) {
             return "RunUp";
         }  else if(_animStates[STATE_WALK]) {
@@ -434,11 +434,11 @@ const char* CharacterBase::getAnimNameFromStates(const Direction::DIR4 dir) {
             return "KnockDown";
         } else if(_animStates[STATE_JUMP]) {
             return "JumpDown";
-        } else if(_animStates[STATE_FALL]) {
-            return "FallDown";
         } else if(_animStates[STATE_DASH]) {
             return "DashDown";
-        } else if(_animStates[STATE_RUN]) {
+        } else if(_animStates[STATE_FALL]) {
+            return "FallDown";
+        }  else if(_animStates[STATE_RUN]) {
             return "RunDown";
         } else if(_animStates[STATE_WALK]) {
             return "WalkDown";

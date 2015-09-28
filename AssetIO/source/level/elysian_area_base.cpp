@@ -528,12 +528,11 @@ void AreaBase::setVboEntry(const TileEntry*const tileEntry, const unsigned l, co
     vboEntryFromTileEntry(entry, tileEntry, x, y);
 
     //ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
-#if GYRO_PLATFORM != GYRO_PLATFORM_DC && GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
+    //gyVidVertexArrayBind(0);
     glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
     glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_TILE_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(GYVertex), sizeof(GYVertex)*4, (void*)entry);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-#endif
 
 }
 
@@ -541,15 +540,13 @@ void AreaBase::setTileEntry(const unsigned l, const unsigned x, const unsigned y
     GYVertex entry[4];
 
     vboEntryFromTileEntry(entry, &e, x, y);
-
     ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
-#if GYRO_PLATFORM != GYRO_PLATFORM_DC
+
     glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
     glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_TILE_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(GYVertex), sizeof(GYVertex)*4, (void*)entry);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-#endif
 }
 
 Entity* AreaBase::getActiveEntityByIndex(const unsigned index) const {
