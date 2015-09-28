@@ -95,20 +95,20 @@ static GYAppCbRet Init(int argc, char **argv) {
     QApplication::setAttribute(Qt::AA_UseDesktopOpenGL);
     QSurfaceFormat fmt;
     fmt.setVersion( 3, 3 );
-    //fmt.setStencilBufferSize(0);
-    //fmt.setDepthBufferSize(16);
+   // fmt.setStencilBufferSize(0);
+   // fmt.setDepthBufferSize(16);
     fmt.setProfile( QSurfaceFormat::CoreProfile ); // Requires >=Qt-4.8.0
-    fmt.setOption(QSurfaceFormat::DebugContext);
+    //fmt.setOption(QSurfaceFormat::DebugContext);
     // Set the default GL format to OpenGL 3.2 Core
     QSurfaceFormat::setDefaultFormat(fmt);
 
     QGLFormat glfmt;
     //glfmt.setStencil(false);
     //glfmt.setDirectRendering(true);
-    //glfmt.setSwapInterval(0);
+   // glfmt.setSwapInterval(0);
     //glfmt.setDepthBufferSize(16);
     //glfmt.setStencilBufferSize(0);
-    //fmt.setAlphaBufferSize(8);
+    //glfmt.setAlphaBufferSize(8);
     glfmt.setVersion( 3, 3 );
     glfmt.setProfile( QGLFormat::CoreProfile ); // Requires >=Qt-4.8.0
     // Set the default GL format to OpenGL 3.2 Core

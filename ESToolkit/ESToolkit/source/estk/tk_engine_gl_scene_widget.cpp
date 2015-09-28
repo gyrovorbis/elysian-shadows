@@ -36,6 +36,7 @@ EngineGLSceneWidget::EngineGLSceneWidget(QWidget *parent):
     assert(!_self);
             _self = this;
             setAttribute(Qt::WA_NativeWindow);
+            //setAutoBufferSwap(true);
 
     connect(this, SIGNAL(engineUpdated()), getAssets(), SIGNAL(engineUpdated()));
 }
@@ -81,21 +82,22 @@ makeCurrent();
   //  glalVidOglInit(parentWidth, parentHeight, parentWidth, parentHeight);
      if(getAssets()->getEngine()) getAssets()->getEngine()->getCameraSys()->initializeProjMatrix();
 
-	// auto* ctx = QOpenGLContext::currentContext();
+    // auto* ctx = QOpenGLContext::currentContext();
     // if(ctx && ctx->hasEx tension(QByteArrayLiteral("GL_KHR_debug"))) {
-
+#if 0
          _glLogger = new QOpenGLDebugLogger(this);
          connect(_glLogger, &QOpenGLDebugLogger::messageLogged, this, &EngineGLSceneWidget::_onGLMessageLogged);
-		 if(_glLogger->initialize()) {
+         if(_glLogger->initialize()) {
              Debug::Logf(Debug::LOG_VERBOSE, "OpenGL debug logger initialized successfullly.");
-			 _glLogger->startLogging();
-		 } else {
+             _glLogger->startLogging();
+         } else {
              Debug::Logf(Debug::LOG_WARNING, "OpenGL debug logger could not be initialized.");
-		 }
+         }
+#endif
 
-	// } else {
+    // } else {
     //	 Debug::Logf(Debug::LOG_VERBOSE, "OpenGL debug logger extensions not detected!");
-	// }
+    // }
 
     // _mapView->setSceneRect(0, 0, parentWidth, parentHeight);
 
@@ -171,11 +173,12 @@ void EngineGLSceneWidget::paintGL(void) {
 
     _wasGLError = false;
 
-	getAssets()->getEngine()->getTimerSys()->pushTaskMonitor(&_engineTask);
+    getAssets()->getEngine()->getTimerSys()->pushTaskMonitor(&_engineTask);
 
     getAssets()->getEngine()->render();
 
-    doneCurrent();
+    //doneCurrent();
+    //swapBuffers();
 
     getAssets()->getEngine()->update();
     getAssets()->getEngine()->processInput();
@@ -201,7 +204,7 @@ void EngineGLSceneWidget::paintGL(void) {
       //context()->swapBuffers(context()->surface()); // DO QOPENGL WIDGET'S FUCKING JOB FOR IT!
         //  update();
 
-	getAssets()->getEngine()->getTimerSys()->popTaskMonitor(&_engineTask);
+    getAssets()->getEngine()->getTimerSys()->popTaskMonitor(&_engineTask);
 
     auto result = gyTimerTicks() - delta;
 
