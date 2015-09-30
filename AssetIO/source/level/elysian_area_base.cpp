@@ -523,6 +523,7 @@ void AreaBase::activate(void) {
 
 
 void AreaBase::setVboEntry(const TileEntry*const tileEntry, const unsigned l, const unsigned x, const unsigned y) const {
+#ifdef GYRO_GLAL
     GYVertex entry[4];
 
     vboEntryFromTileEntry(entry, tileEntry, x, y);
@@ -533,10 +534,11 @@ void AreaBase::setVboEntry(const TileEntry*const tileEntry, const unsigned l, co
     glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_TILE_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(GYVertex), sizeof(GYVertex)*4, (void*)entry);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-
+#endif
 }
 
 void AreaBase::setTileEntry(const unsigned l, const unsigned x, const unsigned y, const TileEntry e) {
+#ifdef GYRO_GLAL
     GYVertex entry[4];
 
     vboEntryFromTileEntry(entry, &e, x, y);
@@ -546,6 +548,7 @@ void AreaBase::setTileEntry(const unsigned l, const unsigned x, const unsigned y
     glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_TILE_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(GYVertex), sizeof(GYVertex)*4, (void*)entry);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+#endif
 
 }
 

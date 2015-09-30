@@ -5,7 +5,9 @@
 namespace elysian {
 
 void GLMapSystemCrtp::_bindArrayVbo(int buffer) {
+#ifdef GYRO_GLAL
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
+#endif
 }
 
 void GLMapSystemCrtp::deactivateArea(void) {
@@ -14,10 +16,12 @@ void GLMapSystemCrtp::deactivateArea(void) {
 }
 
 void GLMapSystemCrtp::_orphanVbo(void) {
+#ifdef GYRO_GLAL
   //  if(!_elements) return;
     //glFlushMappedBufferRange(GL_ELEMENT_ARRAY_BUFFER, _lastOffset, );
   //  glFlushBuffer
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE, nullptr, GL_STREAM_DRAW);
+#endif
 }
 
 
