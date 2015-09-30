@@ -116,11 +116,16 @@ namespace elysian {
     protected:
 
         constexpr const static
-        GYInputInitParams _defaultInitParams = {
+        GYInputInitParams _defaultInitParams =
+#if GYRO_PLATFORM == GYRO_PLATFORM_Qt
+        {
             nullptr,
             nullptr,
             ELYSIAN_INPUT_CONTROLLERS_MAX
         };
+#else
+        { 'a' };
+#endif
 
         static bool     _initialized;
         static bool     _managedExternally;
