@@ -15,13 +15,24 @@ static GYMouse _mouse;
 
 // ==== PUBLIC C INPUT API =====
 
-void gyInputPoll(GYInput** const input) {
-    *input = &_input;
+
+
+int gyKeyboardPoll(GYKeyboard**const keybd) {
+    *keybd = NULL;
+    return 1;
 }
 
-void gyMousePoll(GYMouse* const mouse) {
-    (void)mouse;
+int gyMousePoll(GYMouse**const mouse) {
+    *mouse = NULL;
+    return 1;
 }
+
+int gyControllerPoll(GYController**const controller) {
+    *controller = NULL;
+    return 1;
+}
+
+
 
 int gyInputInit(const GYInputInitParams * const params) {
     return 1;
