@@ -8,6 +8,9 @@ int gyInputInit(const struct GYInputInitParams*const params) {
 int gyInputUninit() {
 	return 1;
 }
+void gyInputDeviceDump(void) {
+
+}
 
 static void _SetButDown(GYInput *const input, const GY_DC_BUTTON but) {
 	input->butTapped[but] = !input->butDown[but];

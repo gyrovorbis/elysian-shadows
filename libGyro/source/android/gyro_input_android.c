@@ -189,6 +189,10 @@ int gyControllerPoll(const unsigned slot, GYController**const controller) {
     return 1;
 }
 
+void gyInputDeviceDump(void) {
+
+}
+
 void gyInputPoll(GYInput **const input) {
 #if 0
 	int ident;
