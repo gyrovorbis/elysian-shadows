@@ -6,7 +6,10 @@
 #include <sdl/SDL_haptic.h>
 
 #elif defined(__linux__)
-
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_joystick.h>
+#include <SDL2/SDL_gamecontroller.h>
+#include <SDL2/SDL_haptic.h>
 
 #else
 #include <SDL.h>
