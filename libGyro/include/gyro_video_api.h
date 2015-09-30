@@ -77,6 +77,9 @@ void gyVidTriangleStrip(const struct GYVector4 *const vertexArray, const unsigne
 //Spine interop
 struct spSkeleton;
 void gyVidSkeleton(const struct spSkeleton*const skeleton);
+struct spAttachment;
+void gyVidSkeletonAttachment(struct spAttachment*const attachment);
+void gyVidSkeletonAttachmentCallback(const int type, void (*callback)(struct spAttachment*));
 
 void gyVidVertexArrayBind(int id);
 void gyVidVertexBatchBegin(void (*flushCallback)(void*), void* obj);
