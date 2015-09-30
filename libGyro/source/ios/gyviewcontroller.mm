@@ -38,6 +38,17 @@ int gyInputInit(const GYInputInitParams * const params) {
     return 1;
 }
 
+int gyInputUninit(void) {
+    return 1;
+}
+
+
+void gyInputDeviceDump(void) {
+
+}
+
+
+
 // ==== VIEW CONTROLLER OBJ-C IMPLEMENTATION =====
 
 @interface GYViewController ()
