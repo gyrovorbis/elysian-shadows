@@ -172,6 +172,7 @@ namespace elysian {
         void setScale(const float x, const float y, const float z) { _scale.x = x; _scale.y = y; _scale.z = z; }
         void setScale(const float x, const float y) { _scale.x = x; _scale.y = y; }
         void setScale(const GYVector3& scale) { _scale = scale; }
+        void setScale(const GYVector2& scale) { _scale.x = scale.x; _scale.y = scale.y; }
         void getScale(float& x, float& y) const { x = _scale.x; y = _scale.y; }
         //void getScale(GYVector3& scale) const { scale = _scale; }
         void getScale(GYVector2& scale) const { scale.x = _scale.x; scale.y = _scale.y; }

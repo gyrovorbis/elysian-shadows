@@ -3,12 +3,13 @@
 #include <crtp/elysian_entity.hpp>
 #include <crtp/elysian_area.hpp>
 
-#include "spine/Atlas.h"
-#include "spine/SkeletonData.h"
-#include "spine/SkeletonJson.h"
-#include "spine/Skeleton.h"
-#include "spine/AnimationStateData.h"
-#include "spine/AnimationState.h"
+#include <spine/Atlas.h>
+#include <spine/SkeletonData.h>
+#include <spine/SkeletonJson.h>
+#include <spine/Skeleton.h>
+#include <spine/AnimationStateData.h>
+#include <spine/AnimationState.h>
+#include <spine/extension.h>
 
 namespace elysian {
 
@@ -129,6 +130,7 @@ void SkeletonAttribBase::loadAssets(const char * const atlas, const char * const
 
 
 SkeletonBase::~SkeletonBase(void) {
+    _removeEntityAttachments();
     if(_animState) spAnimationState_dispose(_animState);
     if(_skeleton) spSkeleton_dispose(_skeleton);
     /*decrement attrib reference count*/
@@ -177,6 +179,7 @@ void SkeletonBase::update(const float deltaTime) const {
         spSkeleton_update(_skeleton, deltaTime);
         spAnimationState_update(_animState, deltaTime * _animTimeScale);
         spAnimationState_apply(_animState, _skeleton);
+        _updateEntityAttachments();
     }
 }
 
@@ -189,24 +192,96 @@ void SkeletonBase::render(void) const {
     }
 }
 
-void SkeletonBase::attachEntityToSlot(const char *slot, Entity *entity) {
-    //spSlot* slot = spSkeleton_findSlot(_skeleton, slot);
+void SkeletonBase::attachEntityToSlot(const char *name, Entity *entity) {
 
-    if(!slot) {
-        errprintf("Could not attach %s to slot %s on %s", entity->getName(), slot, _entity->getName());
-        return;
+    EntityAttachment* attachment = _findEntityAttachment(name);
+
+    if(!attachment) {
+        spSlot* slot =  spSkeleton_findSlot(_skeleton, name);
+
+        if(!slot) {
+            errprintf("Could not attach %s to slot %s on %s", entity->getName(), slot, _entity->getName());
+            return;
+        }
+
+        if(!slot->attachment) {
+            attachment = new EntityAttachment;
+            attachment->slot = slot;
+            _entityAttachments.push_back(attachment);
+            spSlot_setAttachment(slot, attachment);
+            //slot->attachment = attachment;
+        } else {
+            errprintf("Attachment %s found on entity %s, but not in skeleton component cache!", name, _entity->getName());
+            attachment = static_cast<EntityAttachment*>(slot->attachment);
+        }
     }
 
-    //slot->attachment =
-}
-
-
-EntityAttachment::EntityAttachment(const char*_name) {
-  //  type = ENTITY_A
-    //strcpy(name, _name);
+    attachment->entity = entity;
 
 }
 
+void SkeletonBase::_updateEntityAttachments(void) const {
+    for(auto* it: _entityAttachments) it->update();
+}
 
+void SkeletonBase::removeEntityFromSlot(const char *name) {
+    EntityAttachment* attachment = _findEntityAttachment(name);
+    if(!attachment) {
+        errprintf("Attachment %s not found on entity %s", name, _entity->getName());
+        return;
+    }
+    attachment->entity = nullptr;
+}
+
+EntityAttachment* SkeletonBase::_findEntityAttachment(const char * const name) const {
+    for(auto* it: _entityAttachments) {
+        if(strcmp(it->slot->data->name, name) == 0) return it;
+    }
+    return nullptr;
+}
+
+void SkeletonBase::_removeEntityAttachments(void) {
+    for(auto* it : _entityAttachments) {
+        //it->slot->attachment = nullptr;
+        spSlot_setAttachment(it->slot, nullptr);
+        spAttachment_dispose(it);
+        //delete it;
+    }
+    _entityAttachments.clear();
+}
+
+
+EntityAttachment::EntityAttachment(void) {
+    _spAttachment_init(this, "EntityAttachment", SP_ATTACHMENT_ENTITY, &dispose);
+}
+
+void EntityAttachment::dispose(spAttachment *attachment) {
+    EntityAttachment* self = static_cast<EntityAttachment*>(attachment);
+    dbgprintf("Spine just called vtable[dispose] on entity attachment [%s]!", self->slot->data->name);
+    delete self;
+}
+
+void EntityAttachment::update(void) {
+    if(!entity) return;
+
+    auto& transform = entity->getTransform();
+
+    transform.setPos(GYVector2{
+        slot->bone->worldX,
+        slot->bone->worldY
+    });
+
+    if(slot->bone->data->inheritRotation) {
+        transform.setOrientZ(slot->bone->worldRotation);
+    }
+
+    if(slot->bone->data->inheritScale) {
+        transform.setScale(GYVector2{
+            slot->bone->worldScaleX,
+            slot->bone->worldScaleY
+        });
+    }
+        
+}
 
 }

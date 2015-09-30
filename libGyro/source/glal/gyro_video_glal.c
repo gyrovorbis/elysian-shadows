@@ -703,6 +703,12 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
         texture = NULL;
         zOffset = zEpsilon * (float)i;
 
+        //handle custom attachment types by deffering to application layer callbacks.
+        if(attachment->type > SP_ATTACHMENT_SKINNED_MESH) {
+            gyVidSkeletonAttachment(attachment);
+            continue;
+        }
+
         if (attachment->type == SP_ATTACHMENT_REGION) {
             regionAttachment    = (spRegionAttachment*)attachment;
             atlasRegion         = regionAttachment? regionAttachment->rendererObject : NULL;

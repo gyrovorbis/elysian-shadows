@@ -14,6 +14,7 @@ ELYSIAN_ASSET_TYPEDEF(SkeletonAttrib)
 ELYSIAN_ASSET_TYPEDEF(Skeleton)
 
 struct spAtlas;
+struct spSlot;
 struct spSkeleton;
 struct spSkeletonData;
 struct spAnimationStateData;
@@ -22,9 +23,12 @@ struct spAnimationState;
 namespace elysian {
 
     struct EntityAttachment: public spAttachment {
-        Entity* entity = nullptr;
+        Entity*     entity  = nullptr;
+        spSlot*     slot    = nullptr;
+                    EntityAttachment(void);
 
-        EntityAttachment(const char*_name);
+        void        update(void);
+        static void dispose(spAttachment* attachment);
     };
 
     struct AnimationTrack {
@@ -95,12 +99,18 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(attrib,     getAttrib,      setAttrib)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
+        std::vector<EntityAttachment*>
+                            _entityAttachments;
         SkeletonAttrib*     _attrib         = nullptr;
         spSkeleton*         _skeleton       = nullptr;
         spAnimationState*   _animState      = nullptr;
         SkeletalAnimation*  _curAnim        = nullptr;
 
         float               _animTimeScale  = 1.0f;
+
+        EntityAttachment*   _findEntityAttachment(const char*const name) const;
+        void                _updateEntityAttachments(void) const;
+        void                _removeEntityAttachments(void);
 
     public:
                         SkeletonBase(Entity& entity, const SkeletonBase* other=nullptr);
@@ -123,7 +133,9 @@ namespace elysian {
         void            setAnimByName(const int trackIndex, const char*const animName, const bool loop=true) const;
         void            setAnim(const char* name);
 
-        void            attachEntityToSlot(const char* slot, Entity* entity);
+        Entity*         getEntityAttachedToSlot(const char*name) const;
+        void            attachEntityToSlot(const char* name, Entity* entity);
+        void            removeEntityFromSlot(const char* name);
         //void            addAnimByName(const int trackIndex, const char*const animName, const bool loop, const float delay) const;
         //void            mixAnimByName(const int trackIndex, const char*const animName, const bool loop, const float alpha) const;
         //void            clearAnim(const int trackIndex) const;
@@ -158,6 +170,11 @@ namespace elysian {
             if(strcmp(_animations[i]->_name, name) == 0) return _animations[i];
         }
         return nullptr;
+    }
+
+    inline Entity* SkeletonBase::getEntityAttachedToSlot(const char *name) const {
+        auto* slot = _findEntityAttachment(name);
+        return slot? slot->entity : nullptr;
     }
 
 

@@ -31,6 +31,9 @@ OOLUA_PROXY(Skeleton, Component)
     OOLUA_MEM_FUNC(void, setAnimTimeScale, const float)
     OOLUA_MEM_FUNC_CONST(float, getAnimTimeScale)
     OOLUA_MEM_FUNC_CONST(void, setAnimByName, const int, const char*, const bool)
+    OOLUA_MEM_FUNC_CONST(maybe_null<Entity*>, getEntityAttachedToSlot, const char*)
+    OOLUA_MEM_FUNC(void, attachEntityToSlot, const char*, cpp_in_p<Entity*>)
+    OOLUA_MEM_FUNC(void, removeEntityFromSlot, const char*)
 OOLUA_PROXY_END
 
 

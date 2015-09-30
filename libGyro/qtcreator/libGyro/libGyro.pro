@@ -154,7 +154,8 @@ SOURCES += \
     ../../source/common/gyro_system.c \
     ../../source/common/gyro_texture.c \
     ../../source/common/gyro_wav.c \
-    ../../source/common/turfs_file_stdio.c
+    ../../source/common/turfs_file_stdio.c \
+    ../../source/common/gyro_video.c
 
 dreamcast {
 
