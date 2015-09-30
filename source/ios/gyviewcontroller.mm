@@ -27,7 +27,7 @@ int gyMousePoll(GYMouse**const mouse) {
     return 1;
 }
 
-int gyControllerPoll(GYController**const controller) {
+int gyControllerPoll(const unsigned slot, GYController**const controller) {
     *controller = NULL;
     return 1;
 }
