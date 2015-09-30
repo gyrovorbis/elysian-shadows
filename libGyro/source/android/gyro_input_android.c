@@ -174,7 +174,20 @@ int gyInputUninit(void) {
     return 1;
 }
 
-void gyMousePoll(GYMouse*const mouse) {}
+int gyKeyboardPoll(GYKeyboard**const keybd) {
+    *keybd = NULL;
+    return 1;
+}
+
+int gyMousePoll(GYMouse**const mouse) {
+    *mouse = NULL;
+    return 1;
+}
+
+int gyControllerPoll(const unsigned slot, GYController**const controller) {
+    *controller = NULL;
+    return 1;
+}
 
 void gyInputPoll(GYInput **const input) {
 #if 0
