@@ -620,7 +620,7 @@ docs {
 macx {
     #DESTDIR = ../../executable
 #	CONFIG(release, debug|release):
-    QMAKE_POST_LINK =   "rm -rf $${TARGET}.app/Contents/Frameworks/SDL2.framework" $$escape_expand(\n\t) "cp -R ../../libGyro/lib/osx/SDL2.framework $${TARGET}.app/Contents/Frameworks" $$escape_expand(\n\t) "macdeployqt $${TARGET}.app -verbose=3"
+    QMAKE_POST_LINK =   "sh ./macdeployes.sh"
 }
 
 dreamcast {
