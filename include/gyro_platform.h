@@ -53,7 +53,7 @@
 #elif GYRO_PLATFORM == GYRO_PLATFORM_DC
 
 #	define GYRO_MATRIX4_ALIGN			__attribute__((aligned(32)));
-#	define GYRO_VECTOR4_ALIGN			__attribute__((aligned(32)));
+#	define GYRO_VECTOR4_ALIGN			__attribute__((aligned(16)));
 
 #   define GYRO_ENDIAN GYRO_ENDIAN_LITTLE
 #   ifndef GYRO_MATH_SOFTWARE
