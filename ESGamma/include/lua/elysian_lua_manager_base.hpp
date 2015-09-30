@@ -256,9 +256,12 @@ namespace elysian {
         static const char* pull(lua_State* const state) {
             static char _internalBuffer[GYRO_PRINTF_BUFFER_SIZE];
 
-            strcpy(_internalBuffer, lua_tostring(state, -1));
-
-            lua_pop(state, 1);
+            if(lua_isnil(state, -1)) {
+               strcpy(_internalBuffer, "");
+            } else {
+                strcpy(_internalBuffer, lua_tostring(state, -1));
+                lua_pop(state, 1);
+            }
             return _internalBuffer; //you better copy this shit asap
         }
     };

@@ -3,6 +3,7 @@
 
 #include <crtp/elysian_component.hpp>
 #include <crtp/elysian_lua_table_proxy.hpp>
+#include <spine/Attachment.h>
 #include <initializer_list>
 
 #define ELYSIAN_SKELETON_ATLAS_PATH_SIZE        300
@@ -19,6 +20,12 @@ struct spAnimationStateData;
 struct spAnimationState;
 
 namespace elysian {
+
+    struct EntityAttachment: public spAttachment {
+        Entity* entity = nullptr;
+
+        EntityAttachment(const char*_name);
+    };
 
     struct AnimationTrack {
         AnimationTrack(const char*name, const bool looping=true): _looping(looping) { strcpy(_name, name); }
@@ -115,6 +122,8 @@ namespace elysian {
 
         void            setAnimByName(const int trackIndex, const char*const animName, const bool loop=true) const;
         void            setAnim(const char* name);
+
+        void            attachEntityToSlot(const char* slot, Entity* entity);
         //void            addAnimByName(const int trackIndex, const char*const animName, const bool loop, const float delay) const;
         //void            mixAnimByName(const int trackIndex, const char*const animName, const bool loop, const float alpha) const;
         //void            clearAnim(const int trackIndex) const;

@@ -135,7 +135,9 @@ SkeletonBase::~SkeletonBase(void) {
 }
 
 void SkeletonBase::setAnimByName(const int trackIndex, const char*const animationName, const bool loop) const {
-    spAnimationState_setAnimationByName(_animState, trackIndex, animationName, loop);
+    if(!spAnimationState_setAnimationByName(_animState, trackIndex, animationName, loop)) {
+        warnprintf("SkeletonBase::setAnimByName(%d, %s, %s) - Could not find animation!", trackIndex, animationName, loop? "true" : "false");
+    }
 }
 
 
@@ -185,6 +187,24 @@ void SkeletonBase::render(void) const {
         spSkeleton_updateWorldTransform(_skeleton);
         gyVidSkeleton(_skeleton);
     }
+}
+
+void SkeletonBase::attachEntityToSlot(const char *slot, Entity *entity) {
+    //spSlot* slot = spSkeleton_findSlot(_skeleton, slot);
+
+    if(!slot) {
+        errprintf("Could not attach %s to slot %s on %s", entity->getName(), slot, _entity->getName());
+        return;
+    }
+
+    //slot->attachment =
+}
+
+
+EntityAttachment::EntityAttachment(const char*_name) {
+  //  type = ENTITY_A
+    //strcpy(name, _name);
+
 }
 
 
