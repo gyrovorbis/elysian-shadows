@@ -56,8 +56,7 @@ int _gyVidTexAlloc(GYTexture *const tex) {
         return 0; //fuck.
     }
 
-static_cast<QGLWidget*>(_initParams.glWidget)->makeCurrent();
-
+    static_cast<QGLWidget*>(_initParams.glWidget)->makeCurrent();
 
      tex->_data = (void*)(uintptr_t) static_cast<QGLWidget*>(_initParams.glWidget)->bindTexture(pixmap, GL_TEXTURE_2D, GL_RGBA, QGLContext::NoBindOption);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
