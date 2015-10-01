@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <gyro_file_api.h>
 #include <gyro_texture_api.h>
+#include <gyro_system_api.h>
 #include <QGLWidget>
 //#include <QOpenGLWidget>
 #include <gyro_input_api.h>
@@ -21,6 +22,13 @@ return 0;
 }
 
 int _gyVidTexAlloc(GYTexture *const tex) {
+    auto checkPowerOfTwo = [](const unsigned dimension) {
+        return (dimension == 2 || dimension == 4 || dimension == 8 || dimension == 16 ||
+                dimension == 32 || dimension == 64 || dimension == 128 || dimension == 256 ||
+                dimension == 512 || dimension == 1024);
+    };
+
+
      //static_cast<QOpenGLWidget*>(_initParams.glWidget)->makeCurrent();
 
     QString fileName = tex->filename;
@@ -37,6 +45,11 @@ int _gyVidTexAlloc(GYTexture *const tex) {
     QImage pixmap(fileName);
     tex->width = pixmap.width();
     tex->height = pixmap.height();
+
+    if(!checkPowerOfTwo(tex->width) || !checkPowerOfTwo(tex->height)) {
+        _gyLog(GY_DEBUG_ERROR, "%s - <%d, %d> dimensions are not powers of two, dipshit!", tex->filename, tex->width, tex->height);
+    }
+
     if(pixmap.isNull()) {
         tex->_data = 0;
 //         static_cast<QOpenGLWidget*>(_initParams.glWidget)->doneCurrent();
