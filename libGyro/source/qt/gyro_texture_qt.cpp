@@ -47,7 +47,7 @@ int _gyVidTexAlloc(GYTexture *const tex) {
     tex->height = pixmap.height();
 
     if(!checkPowerOfTwo(tex->width) || !checkPowerOfTwo(tex->height)) {
-        _gyLog(GY_DEBUG_ERROR, "%s - <%d, %d> dimensions are not powers of two, dipshit!", tex->filename, tex->width, tex->height);
+        _gyLog(GY_DEBUG_WARNING, "%s - <%d, %d> dimensions are not powers of two, dipshit!", tex->filename, tex->width, tex->height);
     }
 
     if(pixmap.isNull()) {
