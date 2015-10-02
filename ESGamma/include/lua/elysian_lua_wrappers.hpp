@@ -317,6 +317,7 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
     s->register_class_static<Character>("STATE_JUMP", Character::STATE_JUMP);
     s->register_class_static<Character>("STATE_FALL", Character::STATE_FALL);
     s->register_class_static<Character>("STATE_HOLD", Character::STATE_HOLD);
+    s->register_class_static<Character>("STATE_COMBAT", Character::STATE_COMBAT);
     s->register_class_static<Character>("STATE_KNOCKBACK", Character::STATE_KNOCKBACK);
     s->register_class_static<Character>("STATE_DEATH", Character::STATE_DEATH);
     s->register_class_static<Character>("STATE_COUNT", Character::STATE_COUNT);
@@ -415,10 +416,6 @@ static inline int Singletons_getMouseInput(lua_State* const vm) {
 
 static inline int Singletons_setProcessInput(lua_State* const vm) {
 	OOLUA_C_FUNCTION(void, elysian::Singletons::setProcessInput, bool)
-}
-
-static inline int Singletons_getAnimationSystem(lua_State* const vm) {
-	OOLUA_C_FUNCTION(elysian::AnimationSystem*, elysian::Singletons::getAnimSys)
 }
 
 static inline int Singletons_getPartySystem(lua_State* const vm) {

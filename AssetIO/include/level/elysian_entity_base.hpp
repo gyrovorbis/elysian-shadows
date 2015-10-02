@@ -88,7 +88,6 @@ namespace elysian {
         bool                isActive(void) const;
         
 		Renderable*			addRenderable(void);
-		Animation*			addAnimation(void);
 		Collidable*			addCollidable(void);
 		RigidBody*			addRigidBody(void);
 		Character*			addCharacter(void);
@@ -101,7 +100,6 @@ namespace elysian {
         Skeleton*           addSkeleton(void);
 
         void                setRenderable(const OOLUA::Lua_table_ref valTable);
-        void                setAnimation(const OOLUA::Lua_table_ref valTable);
         void                setCollidable(const OOLUA::Lua_table_ref valTable);
         void                setRigidBody(const OOLUA::Lua_table_ref valTable);
         void                setCharacter(const OOLUA::Lua_table_ref valTable);
@@ -114,7 +112,6 @@ namespace elysian {
         void                setSkeleton(const OOLUA::Lua_table_ref valTable);
 
         Renderable*			getRenderable(void) const;
-        Animation*			getAnimation(void) const;
         Collidable*			getCollidable(void) const;
         RigidBody*			getRigidBody(void) const;
         Character*			getCharacter(void) const;
@@ -127,7 +124,6 @@ namespace elysian {
         Skeleton*           getSkeleton(void) const;
 
         void                removeRenderable(void);
-        void                removeAnimation(void);
         void                removeCollidable(void);
         void                removeRigidBody(void);
         void                removeCharacter(void);
@@ -189,7 +185,6 @@ namespace elysian {
         bool                _persistent         = false;
 
         Renderable*			_renderable			= nullptr;
-        Animation*			_animation			= nullptr;
         Collidable*			_collidable			= nullptr;
         RigidBody*			_rigidBody			= nullptr;
         Character*			_character			= nullptr;
@@ -226,7 +221,6 @@ namespace elysian {
     //=========== INLINEZ =========
 
     inline Renderable*      EntityBase::getRenderable(void) const { return _renderable; }
-    inline Animation*		EntityBase::getAnimation(void) const { return _animation; }
     inline Collidable*		EntityBase::getCollidable(void) const { return _collidable; }
     inline RigidBody*		EntityBase::getRigidBody(void) const { return _rigidBody; }
     inline Character*		EntityBase::getCharacter(void) const { return _character; }

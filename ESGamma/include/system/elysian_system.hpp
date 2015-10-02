@@ -10,7 +10,6 @@ ELYSIAN_ASSET_TYPEDEF(CameraSystem)
 
 namespace elysian {
 	class LevelSystem;
-	class AnimationSystem;
 	class CharacterSystem;
 	class PartySystem;
 	class WarpSystem;
@@ -44,7 +43,6 @@ namespace elysian {
 		static LevelSystem		*_levelSystem;
 		static MapSystem		*_mapSystem;
 		static CameraSystem		*_cameraSystem;
-		static AnimationSystem	*_animationSystem;
 		static CharacterSystem	*_characterSystem;
 		static PartySystem      *_partySystem;
 		static TimerSystem		*_timerSystem;
@@ -67,7 +65,6 @@ namespace elysian {
 		static LevelSystem*			getLevelSys(void) { return _levelSystem; }
 		static MapSystem*			getMapSys(void) { return _mapSystem; }
 		static CameraSystem*		getCameraSys(void) { return _cameraSystem; }
-		static AnimationSystem*		getAnimSys(void) { return _animationSystem; }
 		static CharacterSystem*		getCharSys(void) { return _characterSystem; }
 		static PartySystem*			getPartySys(void) { return _partySystem; }
 		static TimerSystem*			getTimerSys(void) { return _timerSystem; }

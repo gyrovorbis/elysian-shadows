@@ -20,9 +20,9 @@
 #define ELYSIAN_CHAR_JUMP_DEFAULT_FORCE         GYVector3 { 0.0f, /*-330000.0f*/ 0.0f, 330000.0f }
 #define ELYSIAN_CHAR_THROW_DEFAULT_FORCE		GYVector3 { 0.0f, /*2000.0f*/0.0f, 25000.0f }
 
+#define ELYSIAN_ANIMATION_STATES_MAX        50
+
 namespace elysian {
-
-
 
 	class CharacterAttrib {
 		//bool _canHold = true;
@@ -45,13 +45,14 @@ namespace elysian {
             STATE_JUMP,
             STATE_FALL,
             STATE_HOLD,
+            STATE_COMBAT,
             STATE_KNOCKBACK,
             STATE_DEATH,
             STATE_COUNT
         };
 	private:
 		static const Component::TYPE _type		= Component::CHARACTER;
-        bool _animStates[STATE_COUNT] = { false };
+        bool _animStates[ELYSIAN_ANIMATION_STATES_MAX] = { false };
 		
 	protected:
                             CharacterBase(Entity& entity, const CharacterBase*const prefab=nullptr);
@@ -128,7 +129,7 @@ namespace elysian {
         void                addState(const ANIM_STATE state);
         bool                hasState(const ANIM_STATE state) const;
         void                setSpeedMultiplier(const float factor);
-        const char*         getAnimNameFromStates(const Direction::DIR4 dir);
+        const char*         getAnimNameFromStates(const Direction::DIR4 dir) const;
     };
 
     // ====== INLINEZ ======

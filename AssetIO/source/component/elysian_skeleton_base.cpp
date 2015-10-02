@@ -13,6 +13,8 @@
 
 namespace elysian {
 
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(AnimationTrack)
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(Animation)
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(SkeletonBase)
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(SkeletonAttribBase)
 
@@ -44,6 +46,7 @@ void SkeletonBase::setAnim(const char* name) {
 }
 
 SkeletonAttribBase::~SkeletonAttribBase(void) {
+    for(auto* it: _animations) delete it;
     if(_animStateData) spAnimationStateData_dispose(_animStateData);
     if(_skeletonData) spSkeletonData_dispose(_skeletonData);
     if(_atlas) spAtlas_dispose(_atlas);
@@ -207,6 +210,7 @@ void SkeletonBase::attachEntityToSlot(const char *name, Entity *entity) {
         if(!slot->attachment) {
             attachment = new EntityAttachment;
             attachment->slot = slot;
+            attachment->parent = _entity;
             _entityAttachments.push_back(attachment);
             spSlot_setAttachment(slot, attachment);
             //slot->attachment = attachment;
@@ -266,14 +270,34 @@ void EntityAttachment::update(void) {
 
     auto& transform = entity->getTransform();
 
-    transform.setPos(GYVector2{
-        slot->bone->worldX,
-        slot->bone->worldY
+#if 1
+
+    transform.setPos(GYVector3{
+        parent->getTransform().getPosX() + slot->bone->worldX,
+        parent->getTransform().getPosY() + slot->bone->worldY,
+        parent->getTransform().getPosZ()
     });
 
     if(slot->bone->data->inheritRotation) {
-        transform.setOrientZ(slot->bone->worldRotation);
+        transform.setOrient(0.0f, 0.0f, 1.0f);
+        transform.setAngle(slot->bone->worldRotation*(M_PI/180.0f));
     }
+
+#else
+
+    transform.setPos(GYVector3{
+        parent->getTransform().getPosX() + slot->bone->x,
+        parent->getTransform().getPosY() + slot->bone->y,
+        parent->getTransform().getPosZ()
+    });
+
+    if(slot->bone->data->inheritRotation) {
+        transform.setOrient(0.0f, 0.0f, 1.0f);
+        transform.setAngle(slot->bone->rotation*(M_PI/180.0f));
+    }
+
+
+#endif
 
     if(slot->bone->data->inheritScale) {
         transform.setScale(GYVector2{
@@ -281,7 +305,7 @@ void EntityAttachment::update(void) {
             slot->bone->worldScaleY
         });
     }
-        
+
 }
 
 }

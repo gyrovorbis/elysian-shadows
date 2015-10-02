@@ -114,7 +114,6 @@ namespace elysian {
 
         //Component data
         vector<Renderable*>         renderables;
-        vector<Animation*>			animations;
         vector<Collidable*>         collidables;
         vector<RigidBody*>			rigidBodies;
         vector<Character*>			characters;
@@ -343,7 +342,6 @@ namespace elysian {
      inline std::vector<T*>* AreaBase::getContainer(void) {
         switch(T::containerType) {
         case Component::RENDERABLE: return &renderables;
-        case Component::ANIMATION: return &animations;
         case Component::COLLIDABLE: return &collidables;
         case Component::RIGID_BODY: return &rigidBodies;
         case Component::CHARACTER: return &characters;

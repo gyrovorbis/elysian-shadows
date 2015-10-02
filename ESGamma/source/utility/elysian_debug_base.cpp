@@ -3,7 +3,6 @@
 #include <gyro.h>
 #include <gyro_kinetic.h>
 
-#include <crtp/elysian_animation.hpp>
 #include <level/elysian_zcoords.hpp>
 #include "elysian_party_system.hpp"
 #include <crtp/elysian_entity.hpp>
@@ -19,7 +18,6 @@
 #include "elysian_party_system.hpp"
 #include <crtp/elysian_area.hpp>
 #include "elysian_gui_system.hpp"
-#include <crtp/elysian_animation.hpp>
 #include "elysian_behavior_system.hpp"
 #include "elysian_collision_system.hpp"
 #include <crtp/elysian_level.hpp>

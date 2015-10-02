@@ -1,5 +1,4 @@
 #include <crtp/elysian_character.hpp>
-#include <crtp/elysian_animation.hpp>
 #include <utility/elysian_generic.hpp>
 #include <crtp/elysian_rigid_body.hpp>
 #include <crtp/elysian_collidable.hpp>
@@ -353,9 +352,6 @@ void CharacterBase::addState(const ANIM_STATE state) {
 }
 
 void CharacterBase::setSpeedMultiplier(const float factor) {
-    if(_entity->getAnimation()) {
-        _entity->getAnimation()->setSpeedMultiplier(factor);
-    }
 
 }
 
@@ -368,7 +364,7 @@ bool CharacterBase::canPickUpEntity(Entity * const entity) {
 
 }
 
-const char* CharacterBase::getAnimNameFromStates(const Direction::DIR4 dir) {
+const char* CharacterBase::getAnimNameFromStates(const Direction::DIR4 dir) const {
     switch(dir) {
     case Direction::DIR4_LEFT:
         if(_animStates[STATE_DEATH]) {
@@ -382,11 +378,14 @@ const char* CharacterBase::getAnimNameFromStates(const Direction::DIR4 dir) {
         } else if(_animStates[STATE_FALL]) {
             return "FallLeft";
         } else if(_animStates[STATE_RUN]) {
-            return "RunLeft";
+            if(_animStates[STATE_COMBAT]) return "CombatWalkLeft";
+            else return "RunLeft";
         } else if(_animStates[STATE_WALK]) {
-            return "WalkLeft";
+            if(_animStates[STATE_COMBAT]) return "CombatWalkLeft";
+            else return "WalkLeft";
         } else if(_animStates[STATE_STAND]) {
-            return "StandLeft";
+            if(_animStates[STATE_COMBAT]) return "CombatStandLeft";
+            else return "StandLeft";
         }
         break;
     case Direction::DIR4_RIGHT:
@@ -401,11 +400,14 @@ const char* CharacterBase::getAnimNameFromStates(const Direction::DIR4 dir) {
         } else if(_animStates[STATE_FALL]) {
             return "FallRight";
         } else if(_animStates[STATE_RUN]) {
-            return "RunRight";
+            if(_animStates[STATE_COMBAT]) return "CombatWalkRight";
+            else return "RunRight";
         } else if(_animStates[STATE_WALK]) {
-            return "WalkRight";
+            if(_animStates[STATE_COMBAT]) return "CombatWalkRight";
+            else return "WalkRight";
         } else if(_animStates[STATE_STAND]) {
-            return "StandRight";
+            if(_animStates[STATE_COMBAT]) return "CombatStandRight";
+            else return "StandRight";
         }
         break;
     case Direction::DIR4_UP:
@@ -420,11 +422,14 @@ const char* CharacterBase::getAnimNameFromStates(const Direction::DIR4 dir) {
         } else if(_animStates[STATE_FALL]) {
             return "FallUp";
         } else if(_animStates[STATE_RUN]) {
-            return "RunUp";
-        }  else if(_animStates[STATE_WALK]) {
-            return "WalkUp";
-        }else if(_animStates[STATE_STAND]) {
-            return "StandUp";
+            if(_animStates[STATE_COMBAT]) return "CombatWalkUp";
+            else return "RunUp";
+        } else if(_animStates[STATE_WALK]) {
+            if(_animStates[STATE_COMBAT]) return "CombatWalkUp";
+            else return "WalkUp";
+        } else if(_animStates[STATE_STAND]) {
+            if(_animStates[STATE_COMBAT]) return "CombatStandUp";
+            else return "StandUp";
         }
         break;
     case Direction::DIR4_DOWN:
@@ -438,16 +443,17 @@ const char* CharacterBase::getAnimNameFromStates(const Direction::DIR4 dir) {
             return "DashDown";
         } else if(_animStates[STATE_FALL]) {
             return "FallDown";
-        }  else if(_animStates[STATE_RUN]) {
-            return "RunDown";
+        } else if(_animStates[STATE_RUN]) {
+            if(_animStates[STATE_COMBAT]) return "CombatWalkDown";
+            else return "RunDown";
         } else if(_animStates[STATE_WALK]) {
-            return "WalkDown";
+            if(_animStates[STATE_COMBAT]) return "CombatWalkDown";
+            else return "WalkDown";
         } else if(_animStates[STATE_STAND]) {
-            return "StandDown";
+            if(_animStates[STATE_COMBAT]) return "CombatStandDown";
+            else return "StandDown";
         }
         break;
-
-
     }
     return nullptr;
 }

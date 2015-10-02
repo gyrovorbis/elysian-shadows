@@ -3,7 +3,6 @@
 #include <proxy/elysian_collidable_proxy.hpp>
 #include <proxy/elysian_event_monitor_proxy.hpp>
 #include <proxy/elysian_renderable_proxy.hpp>
-#include <proxy/elysian_animation_proxy.hpp>
 #include <proxy/elysian_warp_proxy.hpp>
 #include <proxy/elysian_rigid_body_proxy.hpp>
 #include <proxy/elysian_character_proxy.hpp>
@@ -15,13 +14,34 @@
 #include <proxy/elysian_skeleton_proxy.hpp>
 #include <proxy/elysian_lua_behavior_proxy.hpp>
 
+OOLUA_EXPORT_FUNCTIONS(Animation,
+                       setName,
+                       setTrack)
+OOLUA_EXPORT_FUNCTIONS_CONST(Animation,
+                             getName,
+                             getTrack,
+                             getTrackCount)
+
+OOLUA_EXPORT_FUNCTIONS(AnimationTrack,
+                       setName,
+                       setLooping,
+                       setTimeScale)
+OOLUA_EXPORT_FUNCTIONS_CONST(AnimationTrack,
+                             getName,
+                             getLooping,
+                             getTimeScale)
+
+
 OOLUA_EXPORT_FUNCTIONS(SkeletonAttrib,
                         loadAssets,
                         setJsonPath,
-                        setAtlasPath)
+                        setAtlasPath,
+                        setAnimation)
 OOLUA_EXPORT_FUNCTIONS_CONST(SkeletonAttrib,
                              getJsonPath,
-                             getAtlasPath)
+                             getAtlasPath,
+                             getAnimation,
+                             getAnimationCount)
 
 OOLUA_EXPORT_FUNCTIONS_CONST(Skeleton,
                              getAttrib,

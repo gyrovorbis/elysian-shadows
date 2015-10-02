@@ -42,6 +42,7 @@ OOLUA_PROXY(Character, Component)
     OOLUA_MEM_FUNC(void, jump)
     OOLUA_MEM_FUNC(void, applyKnockbackForce, const GYVector3&)
     OOLUA_MEM_FUNC_CONST(bool, hasState, const Character::ANIM_STATE)
+    OOLUA_MEM_FUNC_CONST(const char*, getAnimNameFromStates, Direction::DIR4)
 OOLUA_PROXY_END
 
 #endif // ELYSIAN_CHARACTER_PROXY_HPP

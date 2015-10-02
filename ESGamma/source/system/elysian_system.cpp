@@ -9,7 +9,6 @@ namespace elysian {
 	LevelSystem*		System::_levelSystem		= nullptr;
 	MapSystem*			System::_mapSystem			= nullptr;
 	CameraSystem*		System::_cameraSystem		= nullptr;
-	AnimationSystem*	System::_animationSystem	= nullptr;
 	CharacterSystem*	System::_characterSystem	= nullptr;
 	PartySystem*		System::_partySystem		= nullptr;
 	TimerSystem*		System::_timerSystem		= nullptr;

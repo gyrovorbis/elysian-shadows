@@ -3,7 +3,6 @@
 #include <proxy/elysian_collidable_proxy.hpp>
 #include <proxy/elysian_event_monitor_proxy.hpp>
 #include <proxy/elysian_renderable_proxy.hpp>
-#include <proxy/elysian_animation_proxy.hpp>
 #include <proxy/elysian_warp_proxy.hpp>
 #include <proxy/elysian_rigid_body_proxy.hpp>
 #include <proxy/elysian_character_proxy.hpp>
@@ -40,4 +39,5 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Character,
                                 getLastMoveDir,
                                 getWalkForce,
                              getDashMultiplier,
-                             hasState)
+                             hasState,
+                             getAnimNameFromStates)

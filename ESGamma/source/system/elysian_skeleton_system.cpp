@@ -14,7 +14,7 @@ SkeletonSystem::SkeletonSystem(void) {
 
 void SkeletonSystem::_renderEntityAttachment(spAttachment *attachment) {
     EntityAttachment* casted = static_cast<EntityAttachment*>(attachment);
-    casted->entity->render();
+    if(casted->entity) casted->entity->render();
 }
 
 

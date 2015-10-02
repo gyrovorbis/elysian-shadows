@@ -8,7 +8,6 @@
 
 
 #define ELYSIAN_COMPONENT_TYPES_LIST                    Renderable, \
-                                                        Animation, \
                                                         Collidable, \
                                                         Character, \
                                                         Warp, \
@@ -38,7 +37,6 @@ namespace elysian {
 		
 		enum TYPE { 
             RENDERABLE,
-            ANIMATION,
             COLLIDABLE,
 			CHARACTER, 
 			WARP, 

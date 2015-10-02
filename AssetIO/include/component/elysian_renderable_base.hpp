@@ -154,6 +154,7 @@ namespace elysian {
 
             }
             //gyVidTriangleStrip(localVerts, 0, 4);
+            gyMatTranslate(_offset.x, _offset.y, 0.0f);
             gyVidRect(-1); //HACK AS FUCK PROBABLY BROKE OTHER NON-GLAL PLATFORMS!!!
             gyVidQuadListEnd();
             break;
@@ -173,6 +174,7 @@ namespace elysian {
                 gyVidRectTexOrient(_texOrient);
             }
 
+            gyMatTranslate(_offset.x, _offset.y, 0.0f);
             gyVidRect(_frame);
             gyVidQuadListEnd();
             break;

@@ -16,7 +16,6 @@
 #include <asset/tk_entity.h>
 #include "tk_entity_selectable.h"
 #include <asset/tk_renderable.h>
-#include <asset/tk_animation.h>
 #include <asset/tk_level.h>
 
 MapView::MapView(QWidget *parent): DestView<TileEntry>::DestView(parent) {

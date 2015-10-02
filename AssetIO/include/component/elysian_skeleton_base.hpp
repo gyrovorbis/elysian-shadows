@@ -24,6 +24,7 @@ namespace elysian {
 
     struct EntityAttachment: public spAttachment {
         Entity*     entity  = nullptr;
+        Entity*     parent  = nullptr;
         spSlot*     slot    = nullptr;
                     EntityAttachment(void);
 
@@ -31,26 +32,49 @@ namespace elysian {
         static void dispose(spAttachment* attachment);
     };
 
-    struct AnimationTrack {
-        AnimationTrack(const char*name, const bool looping=true): _looping(looping) { strcpy(_name, name); }
-        char    _name[ELYSIAN_ANIMATION_NAME_SIZE] = { 0 };
-        float   _timeScale = 1.0f;
-        bool    _looping    = true;
+    struct AnimationTrack: LuaTableProxy<AnimationTrack> {
+
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+            ELYSIAN_LUA_PROXY_FIELD(name,       getName,        setName)
+            ELYSIAN_LUA_PROXY_FIELD(timeScale,  getTimeScale,   setTimeScale)
+            ELYSIAN_LUA_PROXY_FIELD(looping,    getLooping,     setLooping)
+        ELYSIAN_LUA_PROXY_FIELDS_END()
+
+        char        _name[ELYSIAN_ANIMATION_NAME_SIZE] = { 0 };
+        float       _timeScale = 1.0f;
+        bool        _looping    = true;
+
+                    AnimationTrack(void) = default;
+                    AnimationTrack(const char*name, const bool looping=true);
+        const char* getName(void) const;
+        void        setName(const char* name);
+        float       getTimeScale(void) const;
+        void        setTimeScale(const float scale);
+        bool        getLooping(void) const;
+        void        setLooping(const bool looping);
 
     };
 
 
-    struct SkeletalAnimation {
-        char _name[ELYSIAN_ANIMATION_NAME_SIZE] = { 0 };
-        SkeletalAnimation(const char*const name, const std::initializer_list<AnimationTrack*> &tracks):
-            _tracks(tracks) {
-            strcpy(_name, name);
-        }
+    struct Animation: public LuaTableProxy<Animation> {
+
+        ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+            ELYSIAN_LUA_PROXY_FIELD(name,           getName,    setName)
+            ELYSIAN_LUA_PROXY_ARRAY_FIELD(tracks,   getTrack,   setTrack,   getTrackCount)
+        ELYSIAN_LUA_PROXY_FIELDS_END()
 
         std::vector<AnimationTrack*> _tracks;
-        unsigned _trackCount = 0;
-    };
+        char            _name[ELYSIAN_ANIMATION_NAME_SIZE] = { 0 };
 
+                        Animation(void) = default;
+                        Animation(const char*const name, const std::initializer_list<AnimationTrack*>& tracks);
+                        ~Animation(void);
+        const char*     getName(void) const;
+        void            setName(const char*name);
+        AnimationTrack* getTrack(const unsigned index) const;
+        void            setTrack(const unsigned index, AnimationTrack* track);
+        unsigned        getTrackCount(void) const;
+    };
 
 
     class SkeletonAttribBase:
@@ -60,12 +84,13 @@ namespace elysian {
     friend Skeleton;
 
     ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
-        ELYSIAN_LUA_PROXY_FIELD(atlasPath,               getAtlasPath,      setAtlasPath)
-        ELYSIAN_LUA_PROXY_FIELD(jsonPath,                getJsonPath,       setJsonPath)
+        ELYSIAN_LUA_PROXY_FIELD(atlasPath,         getAtlasPath,      setAtlasPath)
+        ELYSIAN_LUA_PROXY_FIELD(jsonPath,          getJsonPath,       setJsonPath)
+        ELYSIAN_LUA_PROXY_ARRAY_FIELD(animations,  getAnimation,      setAnimation,       getAnimationCount)
     ELYSIAN_LUA_PROXY_FIELDS_END()
 
 
-        std::vector<SkeletalAnimation*> _animations;
+        std::vector<Animation*> _animations;
         char                    _atlasPath[ELYSIAN_SKELETON_ATLAS_PATH_SIZE]    = { 0 };
         char                    _jsonPath[ELYSIAN_SKELETON_JSON_PATH_SIZE]      = { 0 };
         spAtlas*                _atlas          = nullptr;
@@ -85,8 +110,12 @@ namespace elysian {
         void                    setJsonPath(const char*const json);
         const char*             getJsonPath(void) const;
 
-        void                    addAnimations(const std::initializer_list<SkeletalAnimation*>& list);
-        SkeletalAnimation*      findAnimation(const char*name) const;
+        Animation*              getAnimation(const unsigned index) const;
+        void                    setAnimation(const unsigned index, Animation* anim);
+        unsigned                getAnimationCount(void) const;
+
+        void                    addAnimations(const std::initializer_list<Animation*>& list);
+        Animation*              findAnimation(const char*name) const;
 
         bool                    isReested(void) const;
     };
@@ -104,7 +133,7 @@ namespace elysian {
         SkeletonAttrib*     _attrib         = nullptr;
         spSkeleton*         _skeleton       = nullptr;
         spAnimationState*   _animState      = nullptr;
-        SkeletalAnimation*  _curAnim        = nullptr;
+        Animation*          _curAnim        = nullptr;
 
         float               _animTimeScale  = 1.0f;
 
@@ -149,13 +178,48 @@ namespace elysian {
 
 
     // ========= INLINEZ =============
-    //inline SkeletonAttrib::SkeletonAttrib(void) {}
 
+    //------- ANIMATIONTRACK -------
+    inline AnimationTrack::AnimationTrack(const char*name, const bool looping): _looping(looping) { strcpy(_name, name); }
+    inline const char* AnimationTrack::getName(void) const { return _name; }
+    inline void AnimationTrack::setName(const char* name) { strcpy(_name, name); }
+    inline float AnimationTrack::getTimeScale(void) const { return _timeScale; }
+    inline void AnimationTrack::setTimeScale(const float scale) { _timeScale = scale; }
+    inline bool AnimationTrack::getLooping(void) const { return _looping; }
+    inline void AnimationTrack::setLooping(const bool looping) { _looping = looping; }
+
+    //----- ANIMATION -------
+    inline Animation::Animation(const char*const name, const std::initializer_list<AnimationTrack*> &tracks):
+        _tracks(tracks) {
+        strcpy(_name, name);
+    }
+    inline Animation::~Animation(void) { for(auto* it : _tracks) delete it; }
+    inline const char* Animation::getName(void) const { return _name; }
+    inline void Animation::setName(const char*name) { strcpy(_name, name); }
+    inline AnimationTrack* Animation::getTrack(const unsigned index) const { return _tracks[index]; }
+    inline unsigned Animation::getTrackCount(void) const { return _tracks.size(); }
+    inline void Animation::setTrack(const unsigned index, AnimationTrack* track) {
+        if(index == _tracks.size()) {
+            _tracks.push_back(track);
+        }
+    }
+
+
+    //------ SKELETONATTRIB -------
     inline SkeletonAttrib* SkeletonBase::getAttrib(void) const { return _attrib; }
     inline const char* SkeletonAttribBase::getAtlasPath(void) const { return _atlasPath; }
     inline const char* SkeletonAttribBase::getJsonPath(void) const { return _jsonPath; }
     inline bool SkeletonAttribBase::isReested(void) const { return !_atlas || !_skeletonData || !_animStateData; }
+    inline unsigned SkeletonAttribBase::getAnimationCount(void) const { return _animations.size(); }
+    inline Animation* SkeletonAttribBase::getAnimation(const unsigned index) const { return _animations[index]; }
+    inline void SkeletonAttribBase::setAnimation(const unsigned index, Animation *anim) {
+        if(index == _animations.size()) {
+            _animations.push_back(anim);
+        }
+    }
 
+
+    //----- SKELETON ------
     inline SkeletonBase::SkeletonBase(Entity& entity, const SkeletonBase *other): Component(entity) {
         if(other) *this = *other;
     }
@@ -163,9 +227,9 @@ namespace elysian {
     inline float SkeletonBase::getAnimTimeScale(void) const { return _animTimeScale; }
 
 
-    inline void SkeletonAttribBase::addAnimations(const std::initializer_list<SkeletalAnimation*>& list) { _animations.insert(_animations.end(), list); }
+    inline void SkeletonAttribBase::addAnimations(const std::initializer_list<Animation*>& list) { _animations.insert(_animations.end(), list); }
 
-    inline SkeletalAnimation* SkeletonAttribBase::findAnimation(const char *name) const {
+    inline Animation* SkeletonAttribBase::findAnimation(const char *name) const {
         for(unsigned i = 0; i < _animations.size(); ++i) {
             if(strcmp(_animations[i]->_name, name) == 0) return _animations[i];
         }

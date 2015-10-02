@@ -4,7 +4,6 @@
 #include <crtp/elysian_character.hpp>
 #include "elysian_game_input.hpp"
 #include "crtp/elysian_camera_system.hpp"
-#include <crtp/elysian_animation.hpp>
 #include "elysian_timer_system.hpp"
 #include <crtp/elysian_collidable.hpp>
 #include "elysian_collision_system.hpp"
@@ -748,7 +747,7 @@ void Player::_processMovement(const float deltaTime, const Controller*const cont
         GYVector3 pos = entity->_transform._pos;
         pos.z += 5.0f;
         pos.y = entity->getDepthBaseY();
-        partySys->getPartSys()->emitFromPoint(0, pos, angle, 500);
+        //partySys->getPartSys()->emitFromPoint(0, pos, angle, 500);
         _dashPartTimer = 0.0f;
     };
 
@@ -876,185 +875,217 @@ void Player::_processPushPull(const float deltaTime, const Controller*const cont
 
 void __initJulienShit(Entity*entity) {
     entity->getSkeleton()->getAttrib()->addAnimations({
-        new SkeletalAnimation("StandDown", {
+        new Animation("StandDown", {
             new AnimationTrack("front_head_hairweave"),
             new AnimationTrack("front_torsolegs_idle"),
             new AnimationTrack("front_hands_idle"),
             new AnimationTrack("root_right")
         }),
-        new SkeletalAnimation("StandUp", {
+        new Animation("StandUp", {
             new AnimationTrack("back_head_hairweave"),
             new AnimationTrack("back_torsolegs_idle"),
             new AnimationTrack("back_hands_idle"),
             new AnimationTrack("root_right")
         }),
-        new SkeletalAnimation("StandRight", {
+        new Animation("StandRight", {
             new AnimationTrack("side_head_hairweave"),
             new AnimationTrack("side_torsolegs_idle"),
             new AnimationTrack("side_hands_idle"),
             new AnimationTrack("root_right")
         }),
-        new SkeletalAnimation("StandLeft", {
+        new Animation("StandLeft", {
             new AnimationTrack("side_head_hairweave"),
             new AnimationTrack("side_torsolegs_idle"),
             new AnimationTrack("side_hands_idle"),
             new AnimationTrack("root_left")
         }),                                         
-        new SkeletalAnimation("WalkDown", {
+        new Animation("WalkDown", {
             new AnimationTrack("front_head_hairweave"),
             new AnimationTrack("front_torsolegs_walk"),
             new AnimationTrack("front_hands_walk"),
             new AnimationTrack("root_right")
         }),
-        new SkeletalAnimation("WalkUp", {
+        new Animation("WalkUp", {
             new AnimationTrack("back_head_hairweave"),
             new AnimationTrack("back_torsolegs_walk"),
             new AnimationTrack("back_hands_walk"),
             new AnimationTrack("root_right")
         }),
-        new SkeletalAnimation("WalkRight", {
+        new Animation("WalkRight", {
             new AnimationTrack("side_head_hairweave"),
             new AnimationTrack("side_torsolegs_walk"),
             new AnimationTrack("side_hands_walk"),
             new AnimationTrack("root_right")
         }),
-        new SkeletalAnimation("WalkLeft", {
+        new Animation("WalkLeft", {
             new AnimationTrack("side_head_hairweave"),
             new AnimationTrack("side_torsolegs_walk"),
             new AnimationTrack("side_hands_walk"),
             new AnimationTrack("root_left")
         }),                                                
-        new SkeletalAnimation("RunDown", {
+        new Animation("RunDown", {
             new AnimationTrack("front_head_hairweave"),
             new AnimationTrack("front_torsolegs_run"),
             new AnimationTrack("front_hands_run"),
             new AnimationTrack("root_right")
         }),
-        new SkeletalAnimation("RunUp", {
+        new Animation("RunUp", {
             new AnimationTrack("back_head_hairweave"),
             new AnimationTrack("back_torsolegs_run"),
             new AnimationTrack("back_hands_run"),
             new AnimationTrack("root_right")
         }),
-        new SkeletalAnimation("RunRight", {
+        new Animation("RunRight", {
             new AnimationTrack("side_head_hairweave"),
             new AnimationTrack("side_torsolegs_run"),
             new AnimationTrack("side_hands_run"),
             new AnimationTrack("root_right")
         }),
-        new SkeletalAnimation("RunLeft", {
+        new Animation("RunLeft", {
             new AnimationTrack("side_head_hairweave"),
             new AnimationTrack("side_torsolegs_run"),
             new AnimationTrack("side_hands_run"),
             new AnimationTrack("root_left")
         }),
-        new SkeletalAnimation("DashDown", {
+        new Animation("DashDown", {
             new AnimationTrack("front_head_hairweave"),
             new AnimationTrack("front_torsolegs_dash"),
             new AnimationTrack("front_hands_dash"),
             new AnimationTrack("root_right")
         }),
-        new SkeletalAnimation("DashUp", {
+        new Animation("DashUp", {
             new AnimationTrack("back_head_hairweave"),
             new AnimationTrack("back_torsolegs_dash"),
             new AnimationTrack("back_hands_dash"),
             new AnimationTrack("root_right")
         }),
-        new SkeletalAnimation("DashRight", {
+        new Animation("DashRight", {
             new AnimationTrack("side_head_hairweave"),
             new AnimationTrack("side_torsolegs_dash"),
             new AnimationTrack("side_hands_dash"),
             new AnimationTrack("root_right")
         }),
-        new SkeletalAnimation("DashLeft", {
+        new Animation("DashLeft", {
             new AnimationTrack("side_head_hairweave"),
             new AnimationTrack("side_torsolegs_dash"),
             new AnimationTrack("side_hands_dash"),
             new AnimationTrack("root_left")
         }),                                               
-        new SkeletalAnimation("JumpDown", {
+        new Animation("JumpDown", {
             new AnimationTrack("front_head_hairweave"),
             new AnimationTrack("front_torsolegs_jump_up"),
             new AnimationTrack("front_hands_jump_up"),
             new AnimationTrack("root_right")
         }),
-        new SkeletalAnimation("JumpUp", {
+        new Animation("JumpUp", {
             new AnimationTrack("back_head_hairweave"),
             new AnimationTrack("back_torsolegs_jump_up"),
             new AnimationTrack("back_hands_jump_up"),
             new AnimationTrack("root_right")
         }),
-        new SkeletalAnimation("JumpRight", {
+        new Animation("JumpRight", {
             new AnimationTrack("side_head_hairweave"),
             new AnimationTrack("side_torsolegs_jump_up"),
             new AnimationTrack("side_hands_jump_up"),
             new AnimationTrack("root_right")
         }),
-        new SkeletalAnimation("JumpLeft", {
+        new Animation("JumpLeft", {
             new AnimationTrack("side_head_hairweave"),
             new AnimationTrack("side_torsolegs_jump_up"),
             new AnimationTrack("side_hands_jump_up"),
             new AnimationTrack("root_left")
         }),                                              
-        new SkeletalAnimation("FallDown", {
+        new Animation("FallDown", {
             new AnimationTrack("front_head_hairweave"),
             new AnimationTrack("front_torsolegs_jump_down"),
             new AnimationTrack("front_hands_jump_down"),
             new AnimationTrack("root_right")
         }),
-        new SkeletalAnimation("FallUp", {
+        new Animation("FallUp", {
             new AnimationTrack("back_head_hairweave"),
             new AnimationTrack("back_torsolegs_jump_down"),
             new AnimationTrack("back_hands_jump_down"),
             new AnimationTrack("root_right")
         }),
-        new SkeletalAnimation("FallRight", {
+        new Animation("FallRight", {
             new AnimationTrack("side_head_hairweave"),
             new AnimationTrack("side_torsolegs_jump_down"),
             new AnimationTrack("side_hands_jump_down"),
             new AnimationTrack("root_right")
         }),
-        new SkeletalAnimation("FallLeft", {
+        new Animation("FallLeft", {
             new AnimationTrack("side_head_hairweave"),
             new AnimationTrack("side_torsolegs_jump_down"),
             new AnimationTrack("side_hands_jump_down"),
             new AnimationTrack("root_left")
         }),
-        new SkeletalAnimation("KnockDown", {
+        new Animation("KnockDown", {
             new AnimationTrack("front_pose_knockback", false),
            // new AnimationTrack("front_head_hairweave", false),
             new AnimationTrack("root_right", false)
         }),
-        new SkeletalAnimation("KnockUp", {
+        new Animation("KnockUp", {
             new AnimationTrack("back_pose_knockback", false),
            // new AnimationTrack("back_head_hairweave", false),
             new AnimationTrack("root_right", false)
         }),
-        new SkeletalAnimation("KnockRight", {
+        new Animation("KnockRight", {
             new AnimationTrack("side_pose_knockback", false),
            // new AnimationTrack("side_head_hairweave", false),
             new AnimationTrack("root_right", false)
         }),
-        new SkeletalAnimation("KnockLeft", {
+        new Animation("KnockLeft", {
             new AnimationTrack("side_pose_knockback", false),
            // new AnimationTrack("side_head_hairweave", false),
             new AnimationTrack("root_left", false)
         }),
-        new SkeletalAnimation("DeathDown", {
+        new Animation("DeathDown", {
             new AnimationTrack("front_pose_death", false),
             new AnimationTrack("root_right", false)
         }),
-        new SkeletalAnimation("DeathUp", {
+        new Animation("DeathUp", {
             new AnimationTrack("back_pose_death", false),
             new AnimationTrack("root_right", false)
         }),
-        new SkeletalAnimation("DeathRight", {
+        new Animation("DeathRight", {
             new AnimationTrack("side_pose_death", false),
             new AnimationTrack("root_right", false)
         }),
-        new SkeletalAnimation("DeathLeft", {
+        new Animation("DeathLeft", {
             new AnimationTrack("side_pose_death", false),
             new AnimationTrack("root_left", false)
+        }),
+        new Animation("CombatStandDown", {
+            new AnimationTrack("front_pose_combat_idle"),
+            new AnimationTrack("root_right")
+        }),
+        new Animation("CombatStandUp", {
+            new AnimationTrack("back_pose_combat_idle"),
+            new AnimationTrack("root_right")
+        }),
+        new Animation("CombatStandRight", {
+            new AnimationTrack("side_pose_combat_idle"),
+            new AnimationTrack("root_right")
+        }),
+        new Animation("CombatStandLeft", {
+            new AnimationTrack("side_pose_combat_idle"),
+            new AnimationTrack("root_left")
+        }),
+        new Animation("CombatWalkDown", {
+            new AnimationTrack("front_pose_combat_move"),
+            new AnimationTrack("root_right")
+        }),
+        new Animation("CombatWalkUp", {
+            new AnimationTrack("back_pose_combat_move"),
+            new AnimationTrack("root_right")
+        }),
+        new Animation("CombatWalkRight", {
+            new AnimationTrack("side_pose_combat_move"),
+            new AnimationTrack("root_right")
+        }),
+        new Animation("CombatWalkLeft", {
+            new AnimationTrack("side_pose_combat_move"),
+            new AnimationTrack("root_left")
         })
     });
 }

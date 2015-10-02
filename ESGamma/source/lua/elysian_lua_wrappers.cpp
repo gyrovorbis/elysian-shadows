@@ -3,7 +3,6 @@
 #include <proxy/elysian_collidable_proxy.hpp>
 #include <proxy/elysian_event_monitor_proxy.hpp>
 #include <proxy/elysian_renderable_proxy.hpp>
-#include <proxy/elysian_animation_proxy.hpp>
 #include <proxy/elysian_warp_proxy.hpp>
 #include <proxy/elysian_rigid_body_proxy.hpp>
 #include <proxy/elysian_character_proxy.hpp>
@@ -20,7 +19,6 @@
 #include <proxy/elysian_game_input_proxy.hpp>
 #include <proxy/elysian_gui_system_proxy.hpp>
 #include <proxy/elysian_level_system_proxy.hpp>
-#include <proxy/elysian_animation_system_proxy.hpp>
 #include <proxy/elysian_character_system_proxy.hpp>
 #include <proxy/elysian_audio_system_proxy.hpp>
 #include <proxy/elysian_camera_system_proxy.hpp>
@@ -73,15 +71,8 @@ namespace elysian {
         Material::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<Renderable>();
         Renderable::registerProxyMetaTable(*_mainState);
-		_mainState->register_class<AnimationSequence>();
-		_mainState->register_class<AnimationAttrib>();
-		_mainState->register_class<ChildAnimationSequence>();
-		_mainState->register_class<ChildAnimationAttrib>();
-		_mainState->register_class<ChildAnimation>();
         _mainState->register_class<LightAttrib>();
         LightAttrib::registerProxyMetaTable(*_mainState);
-        _mainState->register_class<Animation>();
-        Animation::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<CollisionFlags>();
         CollisionFlags::registerProxyMetaTable(*_mainState);
         OOLUA::register_class<CollidableStaticAttrib>(*_mainState);
@@ -145,7 +136,6 @@ namespace elysian {
         AudioSource::registerProxyMetaTable(*_mainState);
 		_mainState->register_class<LightSource>();
         LightSource::registerProxyMetaTable(*_mainState);
-		_mainState->register_class<AnimationSystem>();
 		_mainState->register_class<CharacterSystem>();
 		_mainState->register_class<AudioSystem>();
 		_mainState->register_class<LightSystem>();
@@ -165,6 +155,10 @@ namespace elysian {
 		_mainState->register_class<ImplosionForceGenerator>();
 		_mainState->register_class<ExplosionForceGenerator>();
 		_mainState->register_class<CameraKeyFrame>();
+        _mainState->register_class<AnimationTrack>();
+        AnimationTrack::registerProxyMetaTable(*_mainState);
+        _mainState->register_class<Animation>();
+        Animation::registerProxyMetaTable(*_mainState);
         _mainState->register_class<SkeletonAttrib>();
         SkeletonAttrib::registerProxyMetaTable(*_mainState);
         _mainState->register_class<Skeleton>();
@@ -181,7 +175,6 @@ namespace elysian {
 		_mainState->register_class_static<Singletons>("getGameInput", &Singletons_getGameInput);
         _mainState->register_class_static<Singletons>("getMouseInput", &Singletons_getMouseInput);
 		_mainState->register_class_static<Singletons>("setProcessInput", &Singletons_setProcessInput);
-		_mainState->register_class_static<Singletons>("getAnimSys", &Singletons_getAnimationSystem);
 		_mainState->register_class_static<Singletons>("getPartySys", &Singletons_getPartySystem);
         _mainState->register_class_static<Singletons>("getInputSys", &Singletons_getInputSystem);
 		_mainState->register_class_static<Singletons>("getTimerSys", &Singletons_getTimerSystem);

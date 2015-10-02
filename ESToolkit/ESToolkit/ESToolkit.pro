@@ -97,7 +97,7 @@ INCLUDEPATH += ../../AssetIO/include \
     PRECOMPILED_HEADER = include/tk_precompiled_headers.h
 }
 
-SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
+SOURCES += \
     ../../AssetIO/source/component/elysian_audio_source_base.cpp \
     ../../AssetIO/source/component/elysian_behavior_base.cpp \
     ../../AssetIO/source/component/elysian_character_base.cpp \
@@ -129,7 +129,6 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../ESGamma/source/lua/elysian_lua_script.cpp \
     ../../ESGamma/source/lua/elysian_lua_singleton.cpp \
     ../../ESGamma/source/lua/elysian_lua_wrappers.cpp \
-    ../../ESGamma/source/system/elysian_animation_system.cpp \
     ../../ESGamma/source/system/elysian_audio_system.cpp \
     ../../ESGamma/source/system/elysian_behavior_system.cpp \
     ../../ESGamma/source/system/elysian_character_system.cpp \
@@ -156,7 +155,6 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../ESGamma/source/utility/elysian_sort_sweep.cpp \
     ../../ESGamma/source/utility/elysian_task_monitor_base.cpp \
     ../../ESGamma/source/system/elysian_timer_system_base.cpp \
-    ../../AssetIO/source/proxy/elysian_animation_proxy.cpp \
     ../../AssetIO/source/proxy/elysian_area_proxy.cpp \
     ../../AssetIO/source/proxy/elysian_audio_source_proxy.cpp \
     ../../AssetIO/source/proxy/elysian_character_proxy.cpp \
@@ -175,7 +173,6 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
     ../../AssetIO/source/proxy/elysian_rigid_body_proxy.cpp \
     ../../AssetIO/source/proxy/elysian_skeleton_proxy.cpp \
     ../../AssetIO/source/proxy/elysian_warp_proxy.cpp \
-    ../../ESGamma/source/proxy/elysian_animation_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_audio_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_camera_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_character_system_proxy.cpp \
@@ -209,7 +206,7 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
 
 !ios: !dreamcast: !android {
 
-    SOURCES += source/asset/tk_animation.cpp \
+    SOURCES += \
         source/asset/tk_area.cpp \
         source/asset/tk_asset_manager.cpp \
         source/asset/tk_assets.cpp \
@@ -291,7 +288,7 @@ SOURCES += ../../AssetIO/source/component/elysian_animation_base.cpp \
         SOURCES += ../../ESGamma/source/system/main.cpp
 }
 
-HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
+HEADERS += \
     ../../AssetIO/include/component/elysian_audio_source_base.hpp \
     ../../AssetIO/include/component/elysian_behavior_base.hpp \
     ../../AssetIO/include/component/elysian_character_base.hpp \
@@ -304,7 +301,6 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../AssetIO/include/component/elysian_renderable_base.hpp \
     ../../AssetIO/include/component/elysian_rigid_body_base.hpp \
     ../../AssetIO/include/component/elysian_warp_base.hpp \
-    ../../AssetIO/include/crtp/elysian_animation.hpp \
     ../../AssetIO/include/crtp/elysian_area.hpp \
     ../../AssetIO/include/crtp/elysian_collidable.hpp \
     ../../AssetIO/include/crtp/elysian_component.hpp \
@@ -344,7 +340,6 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../ESGamma/include/lua/elysian_lua_script.hpp \
     ../../ESGamma/include/lua/elysian_lua_singleton.hpp \
     ../../ESGamma/include/lua/elysian_lua_wrappers.hpp \
-    ../../ESGamma/include/system/elysian_animation_system.hpp \
     ../../ESGamma/include/system/elysian_audio_system.hpp \
     ../../ESGamma/include/system/elysian_behavior_system.hpp \
     ../../ESGamma/include/system/elysian_character_system.hpp \
@@ -387,7 +382,6 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../ESGamma/include/crtp/elysian_task_monitor.hpp \
     ../../ESGamma/include/system/elysian_timer_system_base.hpp \
     ../../ESGamma/include/crtp/elysian_timer_system.hpp \
-    ../../AssetIO/include/proxy/elysian_animation_proxy.hpp \
     ../../AssetIO/include/proxy/elysian_area_proxy.hpp \
     ../../AssetIO/include/proxy/elysian_audio_source_proxy.hpp \
     ../../AssetIO/include/proxy/elysian_character_proxy.hpp \
@@ -406,7 +400,6 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../AssetIO/include/proxy/elysian_rigid_body_proxy.hpp \
     ../../AssetIO/include/proxy/elysian_skeleton_proxy.hpp \
     ../../AssetIO/include/proxy/elysian_warp_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_animation_system_proxy.hpp \
     ../../ESGamma/include/proxy/elysian_audio_system_proxy.hpp \
     ../../ESGamma/include/proxy/elysian_camera_system_proxy.hpp \
     ../../ESGamma/include/proxy/elysian_character_system_proxy.hpp \
@@ -445,7 +438,7 @@ HEADERS += ../../AssetIO/include/component/elysian_animation_base.hpp \
     ../../ESGamma/include/proxy/elysian_input_system_proxy.hpp
 
 !ios:!dreamcast: !android {
-    HEADERS +=  include/asset/tk_animation.h \
+    HEADERS +=  \
         include/asset/tk_area.h \
         include/asset/tk_asset_manager.h \
         include/asset/tk_assets.h \

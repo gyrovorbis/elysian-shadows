@@ -6,7 +6,6 @@
 #include "elysian_debug.hpp"
 #include "crtp/elysian_camera_system.hpp"
 #include "elysian_game_input.hpp"
-#include "elysian_animation_system.hpp"
 #include "elysian_character_system.hpp"
 #include "elysian_party_system.hpp"
 #include "elysian_timer_system_base.hpp"
@@ -48,7 +47,6 @@ Engine::Engine(void): _updateMonitor("update"), _renderMonitor("render"), _input
     _levelSystem		= new LevelSystem;
     _mapSystem			= new MapSystem;
     _cameraSystem		= new CameraSystem;
-    _animationSystem	= new AnimationSystem;
     _characterSystem	= new CharacterSystem;
     _partySystem		= new PartySystem;
     _timerSystem		= new TimerSystem;
@@ -120,7 +118,6 @@ void Engine::update(void) {
             _mapSystem->update();
             _characterSystem->update();
             _skeletonSystem->update();
-            _animationSystem->update();
             _guiSystem->update();
             _warpSystem->update();
             _particleSystem->update();
@@ -146,7 +143,6 @@ void Engine::update(void) {
             timerSystem->Update();
             terrainSystem->Update();
             characterSystem->Update();
-            animationSystem->Update();
             partySystem->Update();
             guiSystem->Update();
             conversationSystem->Update();
@@ -282,7 +278,6 @@ Engine::~Engine(void) {
     delete _levelSystem;
     delete _mapSystem;
     delete _cameraSystem;
-    delete _animationSystem;
     delete _characterSystem;
     delete _partySystem;
     delete _timerSystem;

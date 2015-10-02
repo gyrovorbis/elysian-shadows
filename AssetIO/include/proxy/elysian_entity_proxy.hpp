@@ -11,7 +11,6 @@ namespace OOLUA {
     typedef elysian::Skeleton           Skeleton;
     typedef elysian::Renderable         Renderable;
     typedef elysian::Collidable         Collidable;
-    typedef elysian::Animation          Animation;
     typedef elysian::Warp               Warp;
     typedef elysian::RigidBody          RigidBody;
     typedef elysian::LightSource        LightSource;
@@ -41,7 +40,6 @@ OOLUA_PROXY_END
 
 namespace OOLUA {
     template<> class Proxy_class<elysian::Renderable>;
-    template<> class Proxy_class<elysian::Animation>;
     template<> class Proxy_class<elysian::Collidable>;
     template<> class Proxy_class<elysian::RigidBody>;
     template<> class Proxy_class<elysian::Character>;
@@ -67,7 +65,6 @@ OOLUA_PROXY(Entity, RenderableObject)
 //	OOLUA_MFUNC_CONST(getNormalType)
 //	OOLUA_MFUNC(setNormalType)
     OOLUA_MEM_FUNC(maybe_null<Renderable*>, addRenderable)
-    OOLUA_MEM_FUNC(maybe_null<Animation*>, addAnimation)
     OOLUA_MEM_FUNC(maybe_null<Collidable*>, addCollidable)
     OOLUA_MEM_FUNC(maybe_null<RigidBody*>, addRigidBody)
     OOLUA_MEM_FUNC(maybe_null<Character*>, addCharacter)
@@ -81,7 +78,6 @@ OOLUA_PROXY(Entity, RenderableObject)
     OOLUA_MEM_FUNC(maybe_null<Behavior*>, addBehavior, const char*)
     OOLUA_MEM_FUNC(maybe_null<LuaBehavior*>, addLuaBehavior, const char*, OOLUA::Lua_table_ref)
     OOLUA_MEM_FUNC_CONST(maybe_null<Renderable*>, getRenderable)
-    OOLUA_MEM_FUNC_CONST(maybe_null<Animation*>, getAnimation)
     OOLUA_MEM_FUNC_CONST(maybe_null<Collidable*>, getCollidable)
     OOLUA_MEM_FUNC_CONST(maybe_null<RigidBody*>, getRigidBody)
     OOLUA_MEM_FUNC_CONST(maybe_null<Character*>, getCharacter)
@@ -95,7 +91,6 @@ OOLUA_PROXY(Entity, RenderableObject)
     OOLUA_MEM_FUNC_CONST(maybe_null<Behavior*>, getBehavior, const char*)
     OOLUA_MEM_FUNC_CONST(maybe_null<LuaBehavior*>, getLuaBehavior, const char*)
     OOLUA_MEM_FUNC(void, removeRenderable)
-    OOLUA_MEM_FUNC(void, removeAnimation)
     OOLUA_MEM_FUNC(void, removeCollidable)
     OOLUA_MEM_FUNC(void, removeRigidBody)
     OOLUA_MEM_FUNC(void, removeCharacter)
@@ -118,7 +113,6 @@ OOLUA_PROXY(Entity, RenderableObject)
     OOLUA_MEM_FUNC_CONST(bool, isShadowVolume)
     OOLUA_MEM_FUNC(void, setTransform, const OOLUA::Lua_table_ref)
     OOLUA_MEM_FUNC(void, setRenderable, const OOLUA::Lua_table_ref)
-    OOLUA_MEM_FUNC(void, setAnimation, const OOLUA::Lua_table_ref)
     OOLUA_MEM_FUNC(void, setCollidable, const OOLUA::Lua_table_ref)
     OOLUA_MEM_FUNC(void, setRigidBody, const OOLUA::Lua_table_ref)
     OOLUA_MEM_FUNC(void, setWarp, const OOLUA::Lua_table_ref)

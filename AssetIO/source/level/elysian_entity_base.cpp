@@ -3,7 +3,6 @@
 #include <proxy/elysian_entity_proxy.hpp>
 #include <proxy/elysian_renderable_proxy.hpp>
 #include <proxy/elysian_event_monitor_proxy.hpp>
-#include <proxy/elysian_animation_proxy.hpp>
 #include <proxy/elysian_collidable_proxy.hpp>
 #include <proxy/elysian_character_proxy.hpp>
 #include <proxy/elysian_rigid_body_proxy.hpp>
@@ -40,7 +39,6 @@ EntityBase::EntityBase(EntityBase *other) {
         strcpy(_name, other->_name);
         strcpy(_dispName, other->_dispName);
         if(other->getRenderable()) _addComponent<Renderable>(_renderable, nullptr, other->getRenderable());
-        if(other->getAnimation()) _addComponent<Animation>(_animation, nullptr, other->getAnimation());
         if(other->getCollidable()) _addComponent<Collidable>(_collidable, nullptr, other->getCollidable());
         if(other->getRigidBody()) _addComponent<RigidBody>(_rigidBody, nullptr, other->getRigidBody());
         if(other->getCharacter()) _addComponent<Character>(_character, nullptr, other->getCharacter());
@@ -84,7 +82,6 @@ EntityBase::~EntityBase(void) {
 
     //Cleanup Components
     removeRenderable();
-    removeAnimation();
     removeCollidable();
     removeRigidBody();
     removeCharacter();
@@ -106,6 +103,7 @@ EntityBase::~EntityBase(void) {
 void EntityBase::pushViewTransform(void) {
     gyMatPush();
     _oldZ = _transform._size.z;
+
     if(_planeType == GY_RECT_PLANE_FRONT) {
         _transform._size.z = _transform._size.y;
         //transform._size.y = 400.0f;
@@ -114,12 +112,23 @@ void EntityBase::pushViewTransform(void) {
     }
 
     if(_planeType == GY_RECT_PLANE_BOTTOM) {
-        _transform.apply();
+
+        gyMatTranslate(_transform._pos.x, _transform._pos.y, _transform._pos.z);
+        gyMatRotate(_transform._angle, _transform._orient.x, _transform._orient.y, _transform._orient.z);
+        gyMatScale(_transform._size.x*_transform._scale.x, _transform._size.y*_transform._scale.y, _transform._size.z*_transform._scale.z);
+        if(_renderable) {
+            //gyMatTranslate(_renderable->getOffsetVec().x, _renderable->getOffsetVec().y, 0.0f);
+        }
+
+       // _transform.apply();
     } else {
 
         gyMatTranslate(_transform._pos.x, _transform._pos.y, _transform._pos.z);
         gyMatRotate(_transform._angle, _transform._orient.x, _transform._orient.y, _transform._orient.z);
         gyMatScale(_transform._size.x*_transform._scale.x, _transform._size.y*_transform._scale.y, _transform._size.z*_transform._scale.z);
+        if(_renderable) {
+            //gyMatTranslate(_renderable->getOffsetVec().x, _renderable->getOffsetVec().y, 0.0f);
+        }
 
     }
 
@@ -345,10 +354,6 @@ bool EntityBase::activate(void) {
         _area->renderables.push_back(_renderable);
 		_componentActive[Component::RENDERABLE] = true;
 	}
-	if(_animation && !_componentActive[Component::ANIMATION]) {
-        _area->animations.push_back(_animation);
-		_componentActive[Component::ANIMATION] = true;
-	}
 	if(_collidable && !_componentActive[Component::COLLIDABLE]) {
         _area->collidables.push_back(_collidable);
 		_componentActive[Component::COLLIDABLE] = true;
@@ -411,10 +416,6 @@ bool EntityBase::deactivate(void) {
 	if(_renderable && _componentActive[Component::RENDERABLE]) {
         containerEraseOnMatch(_renderable, _area->renderables);
 		_componentActive[Component::RENDERABLE] = false;
-	}
-	if(_animation && _componentActive[Component::ANIMATION]) { 
-        containerEraseOnMatch(_animation, _area->animations);
-		_componentActive[Component::ANIMATION] = false;
 	}
 	if(_collidable && _componentActive[Component::COLLIDABLE]) {
         containerEraseOnMatch(_collidable, _area->collidables);
@@ -493,9 +494,6 @@ bool EntityBase::load(FILE* /*file*/) { //Deserialization
             case Component::RENDERABLE:
                 comp = addRenderable();
                 break;
-            case Component::ANIMATION:
-                comp = addAnimation();
-                break;
             case Component::COLLIDABLE:
                 comp = addCollidable();
                 break;
@@ -567,7 +565,6 @@ bool EntityBase::save(FILE* /*file*/) { //Serialization
     //Component Count
     unsigned int compCount = 0;
     if(getRenderable()) ++compCount;
-    if(getAnimation()) ++compCount;
     if(getCollidable()) ++compCount;
     if(getRigidBody()) ++compCount;
     if(getCharacter()) ++compCount;
@@ -583,10 +580,6 @@ bool EntityBase::save(FILE* /*file*/) { //Serialization
     //Built-in Components
     if((comp = getRenderable())) {
         stream << (int)Component::RENDERABLE << endl;
-        success &= comp->save(stream);
-    }
-    if((comp = getAnimation())) {
-        stream << (int)Component::ANIMATION << endl;
         success &= comp->save(stream);
     }
     if((comp = getCollidable())) {
@@ -759,10 +752,6 @@ Renderable* EntityBase::addRenderable(void) {
     return _addComponent<Renderable>(_renderable, _active? &_area->renderables : nullptr);
 }
 
-Animation *EntityBase::addAnimation(void) {
-    return _addComponent<Animation>(_animation, _active? &_area->animations : nullptr);
-}
-
 Collidable *EntityBase::addCollidable(void) {
     return _addComponent<Collidable>(_collidable, _active? &_area->collidables : nullptr);
 }
@@ -818,10 +807,6 @@ void EntityBase::removeRenderable(void) {
     _removeComponent<Renderable>(_renderable, _active? &_area->renderables : nullptr);
 }
 
-void EntityBase::removeAnimation(void) {
-    _removeComponent<Animation>(_animation, _active? &_area->animations : nullptr);
-}
-
 void EntityBase::removeCollidable(void) {
     _removeComponent<Collidable>(_collidable, _active? &_area->collidables : nullptr);
 }
@@ -872,10 +857,6 @@ void EntityBase::_setComponent(T*& comp, const OOLUA::Lua_table_ref valTable, st
 
 void EntityBase::setRenderable(const OOLUA::Lua_table_ref valTable) {
     _setComponent<Renderable>(_renderable, valTable, _active? &_area->renderables : nullptr);
-}
-
-void EntityBase::setAnimation(const OOLUA::Lua_table_ref valTable) {
-    _setComponent<Animation>(_animation, valTable, _active? &_area->animations : nullptr);
 }
 
 void EntityBase::setCollidable(const OOLUA::Lua_table_ref valTable) {
