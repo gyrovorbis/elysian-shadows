@@ -5,6 +5,24 @@
 #include <crtp/elysian_entity.hpp>
 #include <crtp/elysian_area.hpp>
 #include <crtp/elysian_skeleton.hpp>
+#include <crtp/elysian_lua_variant.hpp>
+#if 1
+#include <proxy/elysian_entity_proxy.hpp>
+#include <proxy/elysian_primitive_proxy.hpp>
+#include <proxy/elysian_event_monitor_proxy.hpp>
+#include <proxy/elysian_renderable_proxy.hpp>
+#include <proxy/elysian_collidable_proxy.hpp>
+#include <proxy/elysian_rigid_body_proxy.hpp>
+#include <proxy/elysian_character_proxy.hpp>
+#include <proxy/elysian_warp_proxy.hpp>
+#include <proxy/elysian_audio_source_proxy.hpp>
+#include <proxy/elysian_light_source_proxy.hpp>
+#include <proxy/elysian_examinable_proxy.hpp>
+#include <proxy/elysian_particle_emitter_proxy.hpp>
+#include <proxy/elysian_combat_proxy.hpp>
+#include <proxy/elysian_skeleton_proxy.hpp>
+#include <proxy/elysian_lua_behavior_proxy.hpp>
+#endif
 
 namespace elysian {
 
@@ -365,6 +383,9 @@ bool CharacterBase::canPickUpEntity(Entity * const entity) {
 }
 
 const char* CharacterBase::getAnimNameFromStates(const Direction::DIR4 dir) const {
+
+#if 0
+
     switch(dir) {
     case Direction::DIR4_LEFT:
         if(_animStates[STATE_DEATH]) {
@@ -456,6 +477,24 @@ const char* CharacterBase::getAnimNameFromStates(const Direction::DIR4 dir) cons
         break;
     }
     return nullptr;
+
+#else
+
+    LuaManager::getGlobal("getAnimNameFromStates");
+    LuaVariant v;
+    assert(v.pull());
+
+    LuaVariant r = v(static_cast<const Character*>(this), dir);
+
+    if(r.getType() == LUA_TSTRING) {
+        if(r != "") {
+            return r.getValue<const char*>();
+        }
+    }
+
+    return nullptr;
+
+#endif
 }
 
 

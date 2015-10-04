@@ -874,6 +874,7 @@ void Player::_processPushPull(const float deltaTime, const Controller*const cont
 
 
 void __initJulienShit(Entity*entity) {
+#if 0
     entity->getSkeleton()->getAttrib()->addAnimations({
         new Animation("StandDown", {
             new AnimationTrack("front_head_hairweave"),
@@ -1088,6 +1089,7 @@ void __initJulienShit(Entity*entity) {
             new AnimationTrack("root_left")
         })
     });
+#endif
 }
 
 
@@ -1098,11 +1100,12 @@ void Player::processInput(const Controller* const cont, PartySystem*const partyS
 
     auto* partyMember = partySys->getPartyMember(_playerNum);
     const float deltaTime = partySys->getTimerSys()->getDeltaTime();
-
+#if 0
     if(!initialized) {
         __initJulienShit(partyMember);
         initialized = true;
     }
+#endif
 
     _processMovement(deltaTime, cont, partyMember, partySys);
     _processJump(deltaTime, cont, partyMember);
