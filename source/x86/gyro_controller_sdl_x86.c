@@ -288,6 +288,7 @@ static void _sdlPollEvents(void) {
           //  _sdlAttachController(event.cdevice.which);
             break;
         case SDL_JOYDEVICEREMOVED:
+
             _sdlRemoveController(event.jdevice.which);
             break;
         case SDL_CONTROLLERDEVICEREMOVED:
