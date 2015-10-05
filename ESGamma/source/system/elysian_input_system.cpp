@@ -112,6 +112,33 @@ void InputSystem::_onKeyboardRemoved(void) {
     dbgprintf("InputSystem: Keyboard Removed!");
 }
 
+void InputSystem::_mapKeyboardToController(const int port) {
+    _controllers[port]._gyHandle->buttons[GY_CONTROLLER_BUT_X] =
+            _keyboard._gyHandle->keys[GY_KEY_C];
+
+    _controllers[port]._gyHandle->buttons[GY_CONTROLLER_BUT_SQUARE] =
+            _keyboard._gyHandle->keys[GY_KEY_X];
+
+    _controllers[port]._gyHandle->buttons[GY_CONTROLLER_BUT_CIRCLE] =
+            _keyboard._gyHandle->keys[GY_KEY_D];
+
+    _controllers[port]._gyHandle->buttons[GY_CONTROLLER_BUT_TRIANGLE] =
+            _keyboard._gyHandle->keys[GY_KEY_S];
+
+    _controllers[port]._gyHandle->buttons[GY_CONTROLLER_BUT_LSHOULDER] =
+            _keyboard._gyHandle->keys[GY_KEY_W];
+
+    _controllers[port]._gyHandle->buttons[GY_CONTROLLER_BUT_RSHOULDER] =
+            _keyboard._gyHandle->keys[GY_KEY_E];
+
+    _controllers[port]._gyHandle->buttons[GY_CONTROLLER_BUT_LANALOG] =
+            _keyboard._gyHandle->keys[GY_KEY_Q];
+
+    _controllers[port]._gyHandle->buttons[GY_CONTROLLER_BUT_RANALOG] =
+            _keyboard._gyHandle->keys[GY_KEY_R];
+
+}
+
 void InputSystem::dumpStats(void) {
     gyInputDeviceDump();
 }
@@ -140,8 +167,8 @@ void InputSystem::update(void) {
         if(isAttached && !wasAttached)      _onControllerAttached(i);
         else if(!isAttached && wasAttached) _onControllerRemoved(i);
     }
-    
-    
+
+
 }
 
 }
