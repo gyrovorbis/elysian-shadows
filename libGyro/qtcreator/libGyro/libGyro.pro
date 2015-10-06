@@ -111,7 +111,8 @@ HEADERS += \
     ../../include/glal/gyro_al.h \
     ../../include/glal/gyro_al.h \
     ../../include/common/turfs.h \
-    ../../include/glal/gyro_file_glal.inl
+    ../../include/glal/gyro_file_glal.inl \
+    ../../include/common/gyro_input_common.h
 
 android {
 
