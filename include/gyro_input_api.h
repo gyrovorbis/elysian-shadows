@@ -90,14 +90,16 @@ typedef struct GYController {
     unsigned         buttons     [GY_CONTROLLER_BUT_COUNT];
 } GYController;
 
-int     gyInputInit(const struct GYInputInitParams*const params);
-int     gyInputUninit(void);
+int         gyInputInit(const struct GYInputInitParams*const params);
+int         gyInputUninit(void);
 
-int     gyControllerPoll(const unsigned slot, struct GYController** const input);
-int     gyKeyboardPoll(struct GYKeyboard** const keybd);
-int     gyMousePoll(struct GYMouse**const mouse);
+int         gyControllerPoll(const unsigned slot, struct GYController** const input);
+int         gyKeyboardPoll(struct GYKeyboard** const keybd);
+int         gyMousePoll(struct GYMouse**const mouse);
 
-void    gyInputDeviceDump(void);
+unsigned    gyButtonNextState(const unsigned current, const unsigned next);
+
+void        gyInputDeviceDump(void);
 
 #ifdef GYRO_INPUT_PLATFORM_INCLUDE
 #	include GYRO_INPUT_PLATFORM_INCLUDE
