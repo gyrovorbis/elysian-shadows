@@ -15,8 +15,6 @@
 #include <proxy/elysian_lua_behavior_proxy.hpp>
 #include <proxy/elysian_level_proxy.hpp>
 #include <proxy/elysian_area_proxy.hpp>
-
-#include <proxy/elysian_game_input_proxy.hpp>
 #include <proxy/elysian_gui_system_proxy.hpp>
 #include <proxy/elysian_level_system_proxy.hpp>
 #include <proxy/elysian_character_system_proxy.hpp>

@@ -151,7 +151,6 @@ SOURCES += \
     ../../ESGamma/source/utility/elysian_debug_base.cpp \
     ../../ESGamma/source/utility/elysian_event_monitor.cpp \
     ../../ESGamma/source/utility/elysian_force_generator.cpp \
-    ../../ESGamma/source/utility/elysian_game_input.cpp \
     ../../ESGamma/source/utility/elysian_sort_sweep.cpp \
     ../../ESGamma/source/utility/elysian_task_monitor_base.cpp \
     ../../ESGamma/source/system/elysian_timer_system_base.cpp \
@@ -180,7 +179,6 @@ SOURCES += \
     ../../ESGamma/source/proxy/elysian_day_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_dialog_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_event_monitor_proxy.cpp \
-    ../../ESGamma/source/proxy/elysian_game_input_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_gui_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_level_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_light_system_proxy.cpp \
@@ -362,7 +360,6 @@ HEADERS += \
     ../../ESGamma/include/utility/elysian_debug_base.hpp \
     ../../ESGamma/include/utility/elysian_event_monitor.hpp \
     ../../ESGamma/include/utility/elysian_force_generator.hpp \
-    ../../ESGamma/include/utility/elysian_game_input.hpp \
     ../../ESGamma/include/utility/elysian_sort_sweep.hpp \
     ../../ESGamma/include/utility/elysian_subprocess_manager.hpp \
     ../../AssetIO/include/crtp/elysian_behavior.hpp \
@@ -407,7 +404,6 @@ HEADERS += \
     ../../ESGamma/include/proxy/elysian_day_system_proxy.hpp \
     ../../ESGamma/include/proxy/elysian_dialog_system_proxy.hpp \
     ../../ESGamma/include/proxy/elysian_event_monitor_proxy.hpp \
-    ../../ESGamma/include/proxy/elysian_game_input_proxy.hpp \
     ../../ESGamma/include/proxy/elysian_gui_system_proxy.hpp \
     ../../ESGamma/include/proxy/elysian_level_system_proxy.hpp \
     ../../ESGamma/include/proxy/elysian_light_system_proxy.hpp \

@@ -1,7 +1,6 @@
 #include "elysian_dialog_system.hpp"
 #include <crtp/elysian_entity.hpp>
 #include <crtp/elysian_dialog.hpp>
-#include "elysian_game_input.hpp"
 #include "elysian_debug.hpp"
 #include <crtp/elysian_collidable.hpp>
 #include <crtp/elysian_entity.hpp>

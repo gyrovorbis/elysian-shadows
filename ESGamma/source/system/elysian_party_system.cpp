@@ -2,7 +2,6 @@
 #include "elysian_debug.hpp"
 #include <crtp/elysian_entity.hpp>
 #include <crtp/elysian_character.hpp>
-#include "elysian_game_input.hpp"
 #include "crtp/elysian_camera_system.hpp"
 #include "elysian_timer_system.hpp"
 #include <crtp/elysian_collidable.hpp>

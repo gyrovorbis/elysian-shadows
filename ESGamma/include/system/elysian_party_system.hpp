@@ -4,8 +4,7 @@
 #include <vector>
 #include <gyro_matrix_api.h>
 #include <gyro_wav_api.h>
-#include "elysian_system.hpp"
-#include "elysian_game_input.hpp"
+#include <system/elysian_system.hpp>
 #include <crtp/elysian_character.hpp>
 
 #define ELYSIAN_PARTY_SYSTEM_FOOT_STEP_SFX_TIME         0.3f
@@ -48,7 +47,7 @@ namespace elysian {
         void        _processPickup(const float deltaTime, const Controller*const cont, Entity*const entity, PartySystem*const partySys);
         void        _processCarry(const float deltaTime, const Controller*const cont, Entity*const entity);
         void        _processPushPull(const float deltaTime, const Controller*const cont, Entity*const entity);
-        void        _processSwapPartyMember(const float deltaTime, const GYController*const cont, PartySystem*const partySys);
+        void        _processSwapPartyMember(const float deltaTime, const Controller*const cont, PartySystem*const partySys);
 
     public:
 

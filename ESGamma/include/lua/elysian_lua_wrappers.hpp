@@ -2,7 +2,6 @@
 #define ELYSIAN_LUA_WRAPPERS_HPP
 
 #include <oolua.h>
-#include <utility/elysian_game_input.hpp>
 #include <utility/elysian_event_monitor.hpp>
 #include <system/elysian_gui_system.hpp>
 #include <lua/elysian_lua_singleton.hpp>

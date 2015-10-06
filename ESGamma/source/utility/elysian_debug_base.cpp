@@ -10,7 +10,6 @@
 #include "elysian_debug.hpp"
 #include "elysian_level_system.hpp"
 #include "elysian_engine.hpp"
-#include "elysian_game_input.hpp"
 //#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tk_map_system.h")
 #include "elysian_map_system.hpp"
 #include "crtp/elysian_camera_system.hpp"

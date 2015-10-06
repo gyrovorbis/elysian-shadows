@@ -1,9 +1,8 @@
 #ifndef ELYSIAN_ENGINE_HPP
 #define ELYSIAN_ENGINE_HPP
 
-#include "elysian_game_input.hpp"
-#include "elysian_system.hpp"
-#include <elysian_task_monitor.hpp>
+#include <system/elysian_system.hpp>
+#include <crtp/elysian_task_monitor.hpp>
 
 ELYSIAN_ASSET_TYPEDEF(Debug)
 

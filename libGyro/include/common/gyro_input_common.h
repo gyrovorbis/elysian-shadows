@@ -1,0 +1,5 @@
+#ifndef GYRO_INPUT_COMMON_H
+#define GYRO_INPUT_COMMON_H
+
+#endif // GYRO_INPUT_COMMON_H
+
