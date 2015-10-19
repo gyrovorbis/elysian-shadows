@@ -5,7 +5,7 @@
 #ifdef ELYSIAN_ENGINE
 #   include <system/elysian_input_system_base.hpp>
 namespace elysian {
-    using InputSystem = TkInputSystemBase;
+    using InputSystem = InputSystemBase;
 }
 #else
 
