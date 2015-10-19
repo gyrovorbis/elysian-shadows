@@ -60,7 +60,7 @@
 #include <QHelpContentWidget>
 #include <QHelpIndexWidget>
 #include <tk_gitlab_manager.h>
-#include <elysian_input_system.hpp>
+#include <crtp/elysian_input_system.hpp>
 
 #ifdef ESTK_UNIT_TESTS
 #include <QtTest>

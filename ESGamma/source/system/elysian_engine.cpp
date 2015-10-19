@@ -27,7 +27,7 @@
 #include "elysian_rigid_body_system.hpp"
 #include "elysian_combat_system.hpp"
 #include "elysian_skeleton_system.hpp"
-#include <system/elysian_input_system.hpp>
+#include <crtp/elysian_input_system.hpp>
 
 namespace elysian {
 

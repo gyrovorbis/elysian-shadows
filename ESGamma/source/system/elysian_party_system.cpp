@@ -11,7 +11,7 @@
 #include "elysian_particle_system.hpp"
 #include <crtp/elysian_level.hpp>
 #include "elysian_audio_system.hpp"
-#include <system/elysian_input_system.hpp>
+#include <crtp/elysian_input_system.hpp>
 #include <crtp/elysian_skeleton.hpp>
 
 namespace elysian {

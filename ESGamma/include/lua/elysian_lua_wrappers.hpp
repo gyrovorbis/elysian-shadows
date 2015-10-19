@@ -405,14 +405,6 @@ static inline int Singletons_getCurLevel(lua_State* const vm) {
     OOLUA_C_FUNCTION_0(elysian::Level*, elysian::Singletons::getCurrentLevel)
 }
 
-static inline int Singletons_getGameInput(lua_State* const vm) {
-//	OOLUA_C_FUNCTION_0(elysian::GameInput*, elysian::Singletons::getGameInput)
-}
-
-static inline int Singletons_getMouseInput(lua_State* const vm) {
-    //OOLUA_C_FUNCTION_0(elysian::MouseInput*, elysian::Singletons::getMouseInput)
-}
-
 static inline int Singletons_setProcessInput(lua_State* const vm) {
 	OOLUA_C_FUNCTION(void, elysian::Singletons::setProcessInput, bool)
 }

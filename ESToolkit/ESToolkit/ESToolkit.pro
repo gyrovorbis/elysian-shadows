@@ -196,8 +196,8 @@ SOURCES += \
     ../../AssetIO/source/proxy/elysian_dialog_proxy.cpp \
     ../../AssetIO/source/level/elysian_dialog_base.cpp \
     ../../AssetIO/source/level/elysian_dialog_screen_base.cpp \
-    ../../ESGamma/source/system/elysian_input_system.cpp \
-    ../../ESGamma/source/proxy/elysian_input_system_proxy.cpp
+    ../../ESGamma/source/proxy/elysian_input_system_proxy.cpp \
+    ../../ESGamma/source/system/elysian_input_system_base.cpp
 
 
 
@@ -430,8 +430,10 @@ HEADERS += \
     ../../AssetIO/include/level/elysian_dialog_screen_base.hpp \
     ../../AssetIO/include/crtp/elysian_lua_variant.hpp \
     ../../AssetIO/include/utility/elysian_lua_variant_base.hpp \
-    ../../ESGamma/include/system/elysian_input_system.hpp \
-    ../../ESGamma/include/proxy/elysian_input_system_proxy.hpp
+    ../../ESGamma/include/proxy/elysian_input_system_proxy.hpp \
+    ../../ESGamma/include/system/elysian_input_system_base.hpp \
+    ../../ESGamma/include/crtp/elysian_input_system.hpp \
+    include/estk/tk_input_system.h
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

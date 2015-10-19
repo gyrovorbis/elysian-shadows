@@ -3,10 +3,11 @@
 
 #include <level/elysian_level_manager.hpp>
 
-ELYSIAN_ASSET_TYPEDEF(TimerSystem)
 ELYSIAN_ASSET_TYPEDEF(Debug)
+ELYSIAN_ASSET_TYPEDEF(TimerSystem)
 ELYSIAN_ASSET_TYPEDEF(MapSystem)
 ELYSIAN_ASSET_TYPEDEF(CameraSystem)
+ELYSIAN_ASSET_TYPEDEF(InputSystem)
 
 namespace elysian {
 	class LevelSystem;
@@ -27,7 +28,6 @@ namespace elysian {
 	class RigidBodySystem;
 	class CombatSystem;
     class SkeletonSystem;
-    class InputSystem;
 
 	class System: public LevelManager {
 	public:

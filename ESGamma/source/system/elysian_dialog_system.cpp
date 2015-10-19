@@ -12,7 +12,7 @@
 #include <crtp/elysian_character.hpp>
 #include "elysian_behavior_system.hpp"
 #include "elysian_audio_system.hpp"
-#include <system/elysian_input_system.hpp>
+#include <crtp/elysian_input_system.hpp>
 
 #include <cmath>
 #include <gyro_audio_api.h>

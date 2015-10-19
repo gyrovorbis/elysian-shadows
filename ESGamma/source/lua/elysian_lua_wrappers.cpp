@@ -170,9 +170,7 @@ namespace elysian {
         lua_register(*_mainState, "dbgPop", &dbgPop);
 		_mainState->register_class_static<Singletons>("getCurArea", &Singletons_getCurArea);
 		_mainState->register_class_static<Singletons>("getCurLevel", &Singletons_getCurLevel);
-		_mainState->register_class_static<Singletons>("getGameInput", &Singletons_getGameInput);
-        _mainState->register_class_static<Singletons>("getMouseInput", &Singletons_getMouseInput);
-		_mainState->register_class_static<Singletons>("setProcessInput", &Singletons_setProcessInput);
+        _mainState->register_class_static<Singletons>("setProcessInput", &Singletons_setProcessInput);
 		_mainState->register_class_static<Singletons>("getPartySys", &Singletons_getPartySystem);
         _mainState->register_class_static<Singletons>("getInputSys", &Singletons_getInputSystem);
 		_mainState->register_class_static<Singletons>("getTimerSys", &Singletons_getTimerSystem);

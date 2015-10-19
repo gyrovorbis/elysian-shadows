@@ -48,7 +48,7 @@ typedef enum GY_MOUSE_BUTTON {
 } GY_MOUSE_BUTTON;
 
 typedef struct GYMouse {
-    GY_BUTTON_STATE buttons[GY_MOUSE_BUT_COUNT];
+    unsigned        buttons[GY_MOUSE_BUT_COUNT];
     GYVector2       scrollWheel;
     GYVector2       screenPos;
 } GYMouse;
@@ -96,8 +96,6 @@ int         gyInputUninit(void);
 int         gyControllerPoll(const unsigned slot, struct GYController** const input);
 int         gyKeyboardPoll(struct GYKeyboard** const keybd);
 int         gyMousePoll(struct GYMouse**const mouse);
-
-unsigned    gyButtonNextState(const unsigned current, const unsigned next);
 
 void        gyInputDeviceDump(void);
 

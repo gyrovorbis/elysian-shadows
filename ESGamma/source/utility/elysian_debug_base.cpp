@@ -32,7 +32,7 @@
 #include "elysian_rigid_body_system.hpp"
 #include "elysian_debug_base.hpp"
 #include <crtp/elysian_renderable.hpp>
-#include <system/elysian_input_system.hpp>
+#include <system/elysian_input_system_base.hpp>
 
 namespace elysian {
 

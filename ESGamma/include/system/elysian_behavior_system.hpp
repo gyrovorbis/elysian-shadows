@@ -50,15 +50,7 @@ namespace elysian {
 	
 	//====INLINEZ====
 
-    inline void BehaviorSystem::_foreachBehavior(const uint64_t triggers, const std::function<void(Behavior*const )>& lambda, Entity*const entity) const {
-        const auto& behaviors = entity? entity->getBehaviors() : _curArea->behaviors;
 
-        for(auto behav : behaviors) {
-            if(behav->getTriggers() & triggers) {
-                lambda(behav);
-            }
-        }
-    }
 
     inline void BehaviorSystem::onCollide(Collidable *const bodyA, Collidable*const bodyB, CollisionContact*const contact) {
         _foreachBehavior(Behavior::ON_COLLIDE, [&](Behavior*const behav) {

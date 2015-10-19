@@ -5,7 +5,7 @@
 #include <crtp/elysian_area.hpp>
 #include <crtp/elysian_level.hpp>
 #include <elysian_timer_system.hpp>
-#include <system/elysian_input_system.hpp>
+#include <system/elysian_input_system_base.hpp>
 
 namespace elysian {
 

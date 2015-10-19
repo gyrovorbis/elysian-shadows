@@ -2,7 +2,7 @@
 #define ELYSIAN_INPUT_SYSTEM_PROXY_HPP
 
 #include <oolua.h>
-#include <system/elysian_input_system.hpp>
+#include <crtp/elysian_input_system.hpp>
 #include <proxy/elysian_instance_transform_proxy.hpp>
 
 

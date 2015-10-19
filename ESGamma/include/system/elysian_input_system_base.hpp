@@ -1,9 +1,8 @@
-#ifndef ELYSIAN_INPUT_SYSTEM_HPP
-#define ELYSIAN_INPUT_SYSTEM_HPP
+#ifndef ELYSIAN_INPUT_SYSTEM_BASE_HPP
+#define ELYSIAN_INPUT_SYSTEM_BASE_HPP
 
 #define ELYSIAN_INPUT_CONTROLLERS_MAX                    4
-#define ELYSIAN_INPUT_MAP_KEYBOARD_TO_CONTROLLER_PORT    -1
-
+#define ELYSIAN_INPUT_MAP_KEYBOARD_TO_CONTROLLER_PORT    0
 
 #define ELYSIAN_INPUT_CONTROLLER_ANALOG_MIN    0.3f
 #define ELYSIAN_INPUT_CONTROLLER_ANALOG_MAX    0.7f
@@ -27,6 +26,7 @@ namespace elysian {
     public:
         GY_BUTTON_STATE     getButtonState(const GY_KEY key) const;
         bool                isPressed(const GY_KEY key) const;
+        void                setPressed(const GY_KEY key, const bool pressed) const;
         bool                isTapped(const GY_KEY key) const;
         bool                isAttached(void) const;
 
@@ -44,6 +44,7 @@ namespace elysian {
         const GYVector2&    getScreenPos(void) const;
         const GYVector2&    getScrollWheel(void) const;
         bool                isPressed(const GY_MOUSE_BUTTON button) const;
+        void                setPressed(const GY_MOUSE_BUTTON button, const bool pressed) const;
         bool                isTapped(const GY_MOUSE_BUTTON button) const;
         bool                isAttached(void) const;
 
@@ -80,12 +81,13 @@ namespace elysian {
         bool                _attached                                   = false;
 
         void                _clearDerivedValues(void);
-        void                _updateDerivedValues(void);
 
     public:
         bool                pollInput(void);
+        void                updateDerivedValues(void);
 
         const GYVector2&    getAnalogStick(const GY_CONTROLLER_ANALOG stick) const;
+        void                setAnalogStick(const GY_CONTROLLER_ANALOG stick, const GYVector2& vec);
         const GYVector2&    getAnalogDir(const GY_CONTROLLER_ANALOG stick) const;
         float               getAnalogMag(const GY_CONTROLLER_ANALOG stick) const;
         float               getAnalogAngle(const GY_CONTROLLER_ANALOG stick) const;
@@ -93,6 +95,7 @@ namespace elysian {
 
         GY_BUTTON_STATE     getButtonState(const GY_CONTROLLER_BUTTON button) const;
         bool                isPressed(const GY_CONTROLLER_BUTTON button) const;
+        void                setPressed(const GY_CONTROLLER_BUTTON button, const bool pressed);
         bool                isTapped(const GY_CONTROLLER_BUTTON button) const;
 
         unsigned            getPort(void) const;
@@ -112,7 +115,7 @@ namespace elysian {
     };
 
 
-    class InputSystem: public System {
+    class InputSystemBase: public System {
     protected:
 
         constexpr const static
@@ -148,7 +151,7 @@ namespace elysian {
 
     public:
 
-                        InputSystem(void);
+                        InputSystemBase(void);
 
         //allow external software (ESTk) to initialize input outside the engine with custom parameters
         static bool     initialize(const GYInputInitParams*const params=nullptr);
@@ -177,14 +180,22 @@ namespace elysian {
     inline GY_BUTTON_STATE Keyboard::getButtonState(const GY_KEY key) const { return (GY_BUTTON_STATE)_gyHandle->keys[key]; }
     inline bool Keyboard::isPressed(const GY_KEY key) const { return (_gyHandle->keys[key] & GY_BUT_FLAGS_IS_PRESSED); }
     inline bool Keyboard::isTapped(const GY_KEY key) const { return _gyHandle->keys[key] == GY_BUT_STATE_TAPPED; }
+    inline void Keyboard::setPressed(const GY_KEY key, const bool pressed) const {
+        _gyHandle->keys[key] &= ~GY_BUT_FLAGS_IS_PRESSED;
+        _gyHandle->keys[key] |= pressed;
+    }
 
     //====== MOUSE INLINEZ ===========
     inline bool Mouse::isAttached(void) const { return _attached; }
     inline bool Mouse::isPressed(const GY_MOUSE_BUTTON button) const { return (_gyHandle->buttons[button] & GY_BUT_FLAGS_IS_PRESSED); }
     inline bool Mouse::isTapped(const GY_MOUSE_BUTTON button) const { return _gyHandle->buttons[button] == GY_BUT_STATE_TAPPED; }
-    inline GY_BUTTON_STATE Mouse::getButtonState(const GY_MOUSE_BUTTON button) const { return _gyHandle->buttons[button]; }
+    inline GY_BUTTON_STATE Mouse::getButtonState(const GY_MOUSE_BUTTON button) const { return (GY_BUTTON_STATE)_gyHandle->buttons[button]; }
     inline const GYVector2& Mouse::getScrollWheel(void) const { return _gyHandle->scrollWheel; }
     inline const GYVector2& Mouse::getScreenPos(void) const { return _gyHandle->screenPos; }
+    inline void Mouse::setPressed(const GY_MOUSE_BUTTON button, const bool pressed) const {
+        _gyHandle->buttons[button] &= (unsigned)~GY_BUT_FLAGS_IS_PRESSED;
+        _gyHandle->buttons[button] |= (unsigned)pressed;
+    }
 
     //====== VIRTUAL DPAD INLINEZ ===========
     inline VirtualDPad::VirtualDPad(const GYVector2 &src) { updateState(src); }
@@ -213,12 +224,19 @@ namespace elysian {
     inline const VirtualDPad& Controller::getVirtualDPad(const GY_CONTROLLER_ANALOG stick) const { return _virtualDPads[stick]; }
     inline float Controller::getAnalogMag(const GY_CONTROLLER_ANALOG stick) const { return _analogMags[stick]; }
     inline float Controller::getAnalogAngle(const GY_CONTROLLER_ANALOG stick) const { return _analogAngles[stick]; }
+    inline void Controller::setPressed(const GY_CONTROLLER_BUTTON button, const bool pressed) {
+        _gyHandle->buttons[button] &= ~GY_BUT_FLAGS_IS_PRESSED;
+        _gyHandle->buttons[button] |= pressed;
+    }
+    inline void Controller::setAnalogStick(const GY_CONTROLLER_ANALOG stick, const GYVector2 &vec) {
+        _gyHandle->analogSticks[stick] = vec;
+    }
 
     //======== INPUTSYSTEM INLINEZ =======
-    inline Controller* InputSystem::getController(const unsigned port) { return &_controllers[port]; }
-    inline Keyboard* InputSystem::getKeyboard(void) { return &_keyboard; }
-    inline Mouse* InputSystem::getMouse(void) { return &_mouse; }
-    inline void InputSystem::setKeyboardAsControllerPort(const int port) { _keyboardAsControllerPort = port; }
+    inline Controller* InputSystemBase::getController(const unsigned port) { return &_controllers[port]; }
+    inline Keyboard* InputSystemBase::getKeyboard(void) { return &_keyboard; }
+    inline Mouse* InputSystemBase::getMouse(void) { return &_mouse; }
+    inline void InputSystemBase::setKeyboardAsControllerPort(const int port) { _keyboardAsControllerPort = port; }
 
 }
 

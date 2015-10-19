@@ -479,20 +479,30 @@ const char* CharacterBase::getAnimNameFromStates(const Direction::DIR4 dir) cons
     return nullptr;
 
 #else
+    LuaManager::stackBalanceBegin();
 
-    LuaManager::getGlobal("getAnimNameFromStates");
-    LuaVariant v;
-    assert(v.pull());
+    static bool init = false;
+    static LuaVariant v;
+    static char buffer[200];
+    if(!init) {
+        LuaManager::getGlobal("getAnimNameFromStates");
+        assert(v.pull());
+        init = true;
+    }
 
+    const char* string = nullptr;
     LuaVariant r = v(static_cast<const Character*>(this), dir);
 
     if(r.getType() == LUA_TSTRING) {
         if(r != "") {
-            return r.getValue<const char*>();
+            strcpy(buffer, r.getValue<const char*>());
+            string = buffer;
         }
     }
 
-    return nullptr;
+    LuaManager::stackBalanceEnd();
+
+    return string;
 
 #endif
 }
