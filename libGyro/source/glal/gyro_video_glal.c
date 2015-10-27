@@ -705,6 +705,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
 
         //handle custom attachment types by deffering to application layer callbacks.
         if(attachment->type > SP_ATTACHMENT_SKINNED_MESH) {
+
             GYMatrix4 mat;
             gyVidVertexBatchFlush();
             gyVidVertexBatchEnd();
