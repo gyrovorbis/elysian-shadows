@@ -27,6 +27,7 @@ SelectionDockWidget::SelectionDockWidget(QWidget *parent) :
 
 SelectionDockWidget::~SelectionDockWidget()
 {
+    SetSelectionModel(nullptr);
     delete ui;
 }
 

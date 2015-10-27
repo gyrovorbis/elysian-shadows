@@ -43,7 +43,7 @@ void GuiSystem::CombatStatusIndicator::update(void) {
         _healthMeter[1].setColor(_colors[_entity->getCombat()->getTargetType()][1]);
 
         _healthMeter[0]._transform._pos.x = _healthMeter[1]._transform._pos.x = _entity->_transform._pos.x;
-        _healthMeter[0]._transform._pos.y = _entity->_transform._pos.y - _entity->_transform._size.y*0.5f;
+        _healthMeter[0]._transform._pos.y = _entity->_transform._pos.y - 0.75f*_entity->_transform._size.y;
         _healthMeter[1]._transform._pos.y = _healthMeter[0]._transform._pos.y;
 
         assert(stats.getMaxHp());

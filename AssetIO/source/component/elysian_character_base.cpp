@@ -224,7 +224,9 @@ void CharacterBase::setHeldEntity(Entity * const entity) {
             entity->getRigidBody()->setActive(false);
             entity->getRigidBody()->clearKinetic();
             entity->getCollidable()->setActive(false);
-            addChildEntity(entity, ELYSIAN_CHAR_ANIM_CHILD_SEQ_HELD);
+            //addChildEntity(entity, ELYSIAN_CHAR_ANIM_CHILD_SEQ_HELD);
+            getEntity()->getSkeleton()->attachEntityToSlot("l_hand_socket", entity);
+
             removeState(STATE_WALK);
             removeState(STATE_STAND);
             removeState(STATE_JUMP);
@@ -322,6 +324,7 @@ void CharacterBase::jump(void) {
 
 
 void CharacterBase::playAnimation(Direction::DIR4 dir) {
+    if(_tempStateActive) return;
     const char* name = getAnimNameFromStates(dir);
 
     if(!name) return;
@@ -382,103 +385,10 @@ bool CharacterBase::canPickUpEntity(Entity * const entity) {
 
 }
 
+
+
 const char* CharacterBase::getAnimNameFromStates(const Direction::DIR4 dir) const {
 
-#if 0
-
-    switch(dir) {
-    case Direction::DIR4_LEFT:
-        if(_animStates[STATE_DEATH]) {
-            return "DeathLeft";
-        } else if(_animStates[STATE_KNOCKBACK]) {
-            return "KnockLeft";
-        } else if(_animStates[STATE_JUMP]) {
-            return "JumpLeft";
-        } else if(_animStates[STATE_DASH]) {
-            return "DashLeft";
-        } else if(_animStates[STATE_FALL]) {
-            return "FallLeft";
-        } else if(_animStates[STATE_RUN]) {
-            if(_animStates[STATE_COMBAT]) return "CombatWalkLeft";
-            else return "RunLeft";
-        } else if(_animStates[STATE_WALK]) {
-            if(_animStates[STATE_COMBAT]) return "CombatWalkLeft";
-            else return "WalkLeft";
-        } else if(_animStates[STATE_STAND]) {
-            if(_animStates[STATE_COMBAT]) return "CombatStandLeft";
-            else return "StandLeft";
-        }
-        break;
-    case Direction::DIR4_RIGHT:
-        if(_animStates[STATE_DEATH]) {
-            return "DeathRight";
-        } else if(_animStates[STATE_KNOCKBACK]) {
-            return "KnockRight";
-        } else if(_animStates[STATE_JUMP]) {
-            return "JumpRight";
-        } else if(_animStates[STATE_DASH]) {
-            return "DashRight";
-        } else if(_animStates[STATE_FALL]) {
-            return "FallRight";
-        } else if(_animStates[STATE_RUN]) {
-            if(_animStates[STATE_COMBAT]) return "CombatWalkRight";
-            else return "RunRight";
-        } else if(_animStates[STATE_WALK]) {
-            if(_animStates[STATE_COMBAT]) return "CombatWalkRight";
-            else return "WalkRight";
-        } else if(_animStates[STATE_STAND]) {
-            if(_animStates[STATE_COMBAT]) return "CombatStandRight";
-            else return "StandRight";
-        }
-        break;
-    case Direction::DIR4_UP:
-        if(_animStates[STATE_DEATH]) {
-            return "DeathUp";
-        } else if(_animStates[STATE_KNOCKBACK]) {
-            return "KnockUp";
-        } else if(_animStates[STATE_JUMP]) {
-            return "JumpUp";
-        } else if(_animStates[STATE_DASH]) {
-            return "DashUp";
-        } else if(_animStates[STATE_FALL]) {
-            return "FallUp";
-        } else if(_animStates[STATE_RUN]) {
-            if(_animStates[STATE_COMBAT]) return "CombatWalkUp";
-            else return "RunUp";
-        } else if(_animStates[STATE_WALK]) {
-            if(_animStates[STATE_COMBAT]) return "CombatWalkUp";
-            else return "WalkUp";
-        } else if(_animStates[STATE_STAND]) {
-            if(_animStates[STATE_COMBAT]) return "CombatStandUp";
-            else return "StandUp";
-        }
-        break;
-    case Direction::DIR4_DOWN:
-        if(_animStates[STATE_DEATH]) {
-            return "DeathDown";
-        } else if(_animStates[STATE_KNOCKBACK]) {
-            return "KnockDown";
-        } else if(_animStates[STATE_JUMP]) {
-            return "JumpDown";
-        } else if(_animStates[STATE_DASH]) {
-            return "DashDown";
-        } else if(_animStates[STATE_FALL]) {
-            return "FallDown";
-        } else if(_animStates[STATE_RUN]) {
-            if(_animStates[STATE_COMBAT]) return "CombatWalkDown";
-            else return "RunDown";
-        } else if(_animStates[STATE_WALK]) {
-            if(_animStates[STATE_COMBAT]) return "CombatWalkDown";
-            else return "WalkDown";
-        } else if(_animStates[STATE_STAND]) {
-            if(_animStates[STATE_COMBAT]) return "CombatStandDown";
-            else return "StandDown";
-        }
-        break;
-    }
-    return nullptr;
-
-#else
     LuaManager::stackBalanceBegin();
 
     static bool init = false;
@@ -504,7 +414,6 @@ const char* CharacterBase::getAnimNameFromStates(const Direction::DIR4 dir) cons
 
     return string;
 
-#endif
 }
 
 
@@ -514,6 +423,29 @@ void CharacterBase::applyKnockbackForce(const GYVector3 &force) {
 
 }
 
+void CharacterBase::addTempState(const ANIM_STATE state, OOLUA::Lua_func_ref ref) {
+    _tempStateActive = true;
+    _luaCallback = ref;
+    addState(state);
+    auto*name = getAnimNameFromStates(_faceDir);
+
+    getEntity()->getSkeleton()->setAnim(name, [=](int trackIndex, spEventType eventType, spEvent* event, int loopCount) {
+        LuaVariant v;
+
+        switch(eventType) {
+        case SP_ANIMATION_COMPLETE:
+            OOLUA::push(*_mainState, _luaCallback);
+            v.pull();
+            (void)v();
+            break;
+        default: break;
+        }
+
+
+    });
+
+
+}
 
 
 }

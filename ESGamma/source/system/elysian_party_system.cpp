@@ -13,6 +13,7 @@
 #include "elysian_audio_system.hpp"
 #include <crtp/elysian_input_system.hpp>
 #include <crtp/elysian_skeleton.hpp>
+#include <behavior/elysian_playable_behavior.hpp>
 
 namespace elysian {
 
@@ -22,7 +23,7 @@ PartySystem::PartySystem(void) {
     for(unsigned i = 0; i < ELYSIAN_PARTY_SLOTS_MAX; ++i) _players[i].setPlayerNum(i);
 }
 
-PartySystem::~PartySystem() {
+PartySystem::~PartySystem(void) {
     //for(unsigned int i = 0; i < _playableAmount; ++i) {
         //delete _playable[i];
     //}
@@ -64,10 +65,11 @@ void PartySystem::setPartyLeader(Entity *entity) {
 }
 
 void PartySystem::processInput(void) {
+#if 0
     for(unsigned i = 0; i < _characterParty.size(); ++i) {
         _players[i].processInput(getInputSys()->getController(i), this);
     }
-
+#endif
 #if 0
     return;
     auto* cont = getInputSys()->getController(0);
@@ -539,6 +541,13 @@ Entity *PartySystem::getPartyLeader(void) const {
 
 bool PartySystem::addCharacterToParty(Entity *entity) {
     if(getPartySlot(entity) != -1) return false;
+
+    if(!entity->getBehavior(ELYSIAN_PLAYABLE_BEHAVIOR_NAME)) {
+        auto* behav = new PlayableBehavior(*entity);
+        entity->addBehavior(behav);
+        behav->setPlayerNum(_characterParty.size());
+    }
+
 	//Debug::printf(Debug::LOG_VERBOSE, "%s has joined the party!", entity->getName());
 	_characterParty.push_back(entity);
     if( _characterParty.size() > 1) entity->_transform.setPos(_partyPathPoint[_partyPathPoint.size()-1]);
@@ -868,229 +877,6 @@ void Player::_processCarry(const float deltaTime, const Controller*const cont, E
 
 void Player::_processPushPull(const float deltaTime, const Controller*const cont, Entity*const entity) {
 }
-
-
-
-
-void __initJulienShit(Entity*entity) {
-#if 0
-    entity->getSkeleton()->getAttrib()->addAnimations({
-        new Animation("StandDown", {
-            new AnimationTrack("front_head_hairweave"),
-            new AnimationTrack("front_torsolegs_idle"),
-            new AnimationTrack("front_hands_idle"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("StandUp", {
-            new AnimationTrack("back_head_hairweave"),
-            new AnimationTrack("back_torsolegs_idle"),
-            new AnimationTrack("back_hands_idle"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("StandRight", {
-            new AnimationTrack("side_head_hairweave"),
-            new AnimationTrack("side_torsolegs_idle"),
-            new AnimationTrack("side_hands_idle"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("StandLeft", {
-            new AnimationTrack("side_head_hairweave"),
-            new AnimationTrack("side_torsolegs_idle"),
-            new AnimationTrack("side_hands_idle"),
-            new AnimationTrack("root_left")
-        }),                                         
-        new Animation("WalkDown", {
-            new AnimationTrack("front_head_hairweave"),
-            new AnimationTrack("front_torsolegs_walk"),
-            new AnimationTrack("front_hands_walk"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("WalkUp", {
-            new AnimationTrack("back_head_hairweave"),
-            new AnimationTrack("back_torsolegs_walk"),
-            new AnimationTrack("back_hands_walk"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("WalkRight", {
-            new AnimationTrack("side_head_hairweave"),
-            new AnimationTrack("side_torsolegs_walk"),
-            new AnimationTrack("side_hands_walk"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("WalkLeft", {
-            new AnimationTrack("side_head_hairweave"),
-            new AnimationTrack("side_torsolegs_walk"),
-            new AnimationTrack("side_hands_walk"),
-            new AnimationTrack("root_left")
-        }),                                                
-        new Animation("RunDown", {
-            new AnimationTrack("front_head_hairweave"),
-            new AnimationTrack("front_torsolegs_run"),
-            new AnimationTrack("front_hands_run"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("RunUp", {
-            new AnimationTrack("back_head_hairweave"),
-            new AnimationTrack("back_torsolegs_run"),
-            new AnimationTrack("back_hands_run"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("RunRight", {
-            new AnimationTrack("side_head_hairweave"),
-            new AnimationTrack("side_torsolegs_run"),
-            new AnimationTrack("side_hands_run"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("RunLeft", {
-            new AnimationTrack("side_head_hairweave"),
-            new AnimationTrack("side_torsolegs_run"),
-            new AnimationTrack("side_hands_run"),
-            new AnimationTrack("root_left")
-        }),
-        new Animation("DashDown", {
-            new AnimationTrack("front_head_hairweave"),
-            new AnimationTrack("front_torsolegs_dash"),
-            new AnimationTrack("front_hands_dash"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("DashUp", {
-            new AnimationTrack("back_head_hairweave"),
-            new AnimationTrack("back_torsolegs_dash"),
-            new AnimationTrack("back_hands_dash"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("DashRight", {
-            new AnimationTrack("side_head_hairweave"),
-            new AnimationTrack("side_torsolegs_dash"),
-            new AnimationTrack("side_hands_dash"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("DashLeft", {
-            new AnimationTrack("side_head_hairweave"),
-            new AnimationTrack("side_torsolegs_dash"),
-            new AnimationTrack("side_hands_dash"),
-            new AnimationTrack("root_left")
-        }),                                               
-        new Animation("JumpDown", {
-            new AnimationTrack("front_head_hairweave"),
-            new AnimationTrack("front_torsolegs_jump_up"),
-            new AnimationTrack("front_hands_jump_up"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("JumpUp", {
-            new AnimationTrack("back_head_hairweave"),
-            new AnimationTrack("back_torsolegs_jump_up"),
-            new AnimationTrack("back_hands_jump_up"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("JumpRight", {
-            new AnimationTrack("side_head_hairweave"),
-            new AnimationTrack("side_torsolegs_jump_up"),
-            new AnimationTrack("side_hands_jump_up"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("JumpLeft", {
-            new AnimationTrack("side_head_hairweave"),
-            new AnimationTrack("side_torsolegs_jump_up"),
-            new AnimationTrack("side_hands_jump_up"),
-            new AnimationTrack("root_left")
-        }),                                              
-        new Animation("FallDown", {
-            new AnimationTrack("front_head_hairweave"),
-            new AnimationTrack("front_torsolegs_jump_down"),
-            new AnimationTrack("front_hands_jump_down"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("FallUp", {
-            new AnimationTrack("back_head_hairweave"),
-            new AnimationTrack("back_torsolegs_jump_down"),
-            new AnimationTrack("back_hands_jump_down"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("FallRight", {
-            new AnimationTrack("side_head_hairweave"),
-            new AnimationTrack("side_torsolegs_jump_down"),
-            new AnimationTrack("side_hands_jump_down"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("FallLeft", {
-            new AnimationTrack("side_head_hairweave"),
-            new AnimationTrack("side_torsolegs_jump_down"),
-            new AnimationTrack("side_hands_jump_down"),
-            new AnimationTrack("root_left")
-        }),
-        new Animation("KnockDown", {
-            new AnimationTrack("front_pose_knockback", false),
-           // new AnimationTrack("front_head_hairweave", false),
-            new AnimationTrack("root_right", false)
-        }),
-        new Animation("KnockUp", {
-            new AnimationTrack("back_pose_knockback", false),
-           // new AnimationTrack("back_head_hairweave", false),
-            new AnimationTrack("root_right", false)
-        }),
-        new Animation("KnockRight", {
-            new AnimationTrack("side_pose_knockback", false),
-           // new AnimationTrack("side_head_hairweave", false),
-            new AnimationTrack("root_right", false)
-        }),
-        new Animation("KnockLeft", {
-            new AnimationTrack("side_pose_knockback", false),
-           // new AnimationTrack("side_head_hairweave", false),
-            new AnimationTrack("root_left", false)
-        }),
-        new Animation("DeathDown", {
-            new AnimationTrack("front_pose_death", false),
-            new AnimationTrack("root_right", false)
-        }),
-        new Animation("DeathUp", {
-            new AnimationTrack("back_pose_death", false),
-            new AnimationTrack("root_right", false)
-        }),
-        new Animation("DeathRight", {
-            new AnimationTrack("side_pose_death", false),
-            new AnimationTrack("root_right", false)
-        }),
-        new Animation("DeathLeft", {
-            new AnimationTrack("side_pose_death", false),
-            new AnimationTrack("root_left", false)
-        }),
-        new Animation("CombatStandDown", {
-            new AnimationTrack("front_pose_combat_idle"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("CombatStandUp", {
-            new AnimationTrack("back_pose_combat_idle"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("CombatStandRight", {
-            new AnimationTrack("side_pose_combat_idle"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("CombatStandLeft", {
-            new AnimationTrack("side_pose_combat_idle"),
-            new AnimationTrack("root_left")
-        }),
-        new Animation("CombatWalkDown", {
-            new AnimationTrack("front_pose_combat_move"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("CombatWalkUp", {
-            new AnimationTrack("back_pose_combat_move"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("CombatWalkRight", {
-            new AnimationTrack("side_pose_combat_move"),
-            new AnimationTrack("root_right")
-        }),
-        new Animation("CombatWalkLeft", {
-            new AnimationTrack("side_pose_combat_move"),
-            new AnimationTrack("root_left")
-        })
-    });
-#endif
-}
-
 
 
 void Player::processInput(const Controller* const cont, PartySystem*const partySys) {

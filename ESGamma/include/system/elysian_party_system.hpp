@@ -18,7 +18,7 @@ namespace elysian {
 
     class Controller;
     class PartySystem;
-	
+
     class Player {
     private:
 
@@ -59,7 +59,7 @@ namespace elysian {
 
 
 	class PartySystem: public System { 
-	private:
+    private:
         Player _players[ELYSIAN_PARTY_SLOTS_MAX];
 
 

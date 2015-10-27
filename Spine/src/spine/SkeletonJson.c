@@ -749,6 +749,7 @@ spSkeletonData* spSkeletonJson_readSkeletonData (spSkeletonJson* self, const cha
 							box->vertices[i] = entry->valueFloat * self->scale;
 						break;
 					}
+                    default: break;
 					}
 
 					spSkin_addAttachment(skin, slotIndex, skinAttachmentName, attachment);

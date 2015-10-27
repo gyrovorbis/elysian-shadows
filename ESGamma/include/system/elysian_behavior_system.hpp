@@ -15,34 +15,34 @@ namespace elysian {
     protected:
 
         //Can operate on single entity or defaults to all behaviors in current area
-        void    _foreachBehavior(const uint64_t triggers, const std::function<void(Behavior*const)>& lambda, Entity*const entity=nullptr) const;
+        void            _foreachBehavior(const uint64_t triggers, const std::function<void(Behavior*const)>& lambda, Entity*const entity=nullptr) const;
 		
 	public:
 
-		virtual ~BehaviorSystem(void) = default;
+        virtual         ~BehaviorSystem(void) = default;
 
-		void initialize(void);
+        void            initialize(void);
 
 		//reimplemented from CollisionContactEventMonitor
-		virtual void onCollisionEnter(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) override;
-		virtual void onCollide(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) override;
-		virtual void onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) override;
+        virtual void    onCollisionEnter(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) override;
+        virtual void    onCollide(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) override;
+        virtual void    onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) override;
 		
 		//Uniform events
-        void callTrigger(Entity*const entity, const Behavior::TRIGGER trigger) const;
-        void callTriggers(const Behavior::TRIGGER trigger) const;
+        void            callTrigger(Entity*const entity, const Behavior::TRIGGER trigger) const;
+        void            callTriggers(const Behavior::TRIGGER trigger) const;
 
 		//Subsystem-specific events
-		//void onCollide(Entity *const entity, CollisionContact*const contact, Collidable *const collidable);
-		//void onCollisionEnter(Entity *const entity, CollisionContact*const contact, Collidable *const collidable);
-		//void onCollisionExit(Entity *const entity, Collidable *const collidable);
-        void onExamine(Entity *const entity1, Entity *const entity2) const;
-        void onDialog(Entity *const entity, const unsigned screen, const int option) const;
-        void onCombatReceiveStatusModifier(Entity*const entity, CombatStatus*const modifier) const;
-        void onCombatTargetCollisionEnter(Entity*const entity, CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier) const;
-        void onShatter(Entity*const entity, CollisionContact*const contact) const;
-        //void onButtonPress(const GameInput::BUTTON button) const;
-        //void onButtonRelease(const GameInput::BUTTON button) const;
+        //void          onCollide(Entity *const entity, CollisionContact*const contact, Collidable *const collidable);
+        //void          onCollisionEnter(Entity *const entity, CollisionContact*const contact, Collidable *const collidable);
+        //void          onCollisionExit(Entity *const entity, Collidable *const collidable);
+        void            onExamine(Entity *const entity1, Entity *const entity2) const;
+        void            onDialog(Entity *const entity, const unsigned screen, const int option) const;
+        void            onCombatReceiveStatusModifier(Entity*const entity, CombatStatus*const modifier) const;
+        void            onCombatTargetCollisionEnter(Entity*const entity, CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier) const;
+        void            onShatter(Entity*const entity, CollisionContact*const contact) const;
+        //void          onButtonPress(const GameInput::BUTTON button) const;
+        //void          onButtonRelease(const GameInput::BUTTON button) const;
 
 		
 	};

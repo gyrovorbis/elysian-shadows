@@ -262,6 +262,8 @@
     <addaction name="actionInput_Device_Dump"/>
     <addaction name="actionTexture_Dump"/>
     <addaction name="actionAudio_Dump"/>
+    <addaction name="actionAdd_Player"/>
+    <addaction name="actionRemove_Player"/>
    </widget>
    <widget class="QMenu" name="menuConsole">
     <property name="title">
@@ -1516,6 +1518,16 @@
   <action name="actionAudio_Dump">
    <property name="text">
     <string>Audio Dump</string>
+   </property>
+  </action>
+  <action name="actionAdd_Player">
+   <property name="text">
+    <string>Add Player</string>
+   </property>
+  </action>
+  <action name="actionRemove_Player">
+   <property name="text">
+    <string>Remove Player</string>
    </property>
   </action>
  </widget>

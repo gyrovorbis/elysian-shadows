@@ -5,22 +5,22 @@
 #include <level/elysian_direction.hpp>
 #include <crtp/elysian_lua_table_proxy.hpp>
 
-#define ELYSIAN_CHAR_ANIM_SEQ_STAND_UP		"StandUp"
-#define ELYSIAN_CHAR_ANIM_SEQ_STAND_DOWN	"StandDown"
-#define ELYSIAN_CHAR_ANIM_SEQ_STAND_LEFT	"StandLeft"
-#define ELYSIAN_CHAR_ANIM_SEQ_STAND_RIGHT	"StandRight"
-#define ELYSIAN_CHAR_ANIM_SEQ_WALK_UP		"WalkUp"
-#define ELYSIAN_CHAR_ANIM_SEQ_WALK_DOWN		"WalkDown"
-#define ELYSIAN_CHAR_ANIM_SEQ_WALK_LEFT		"WalkLeft"
-#define ELYSIAN_CHAR_ANIM_SEQ_WALK_RIGHT	"WalkRight"
-#define ELYSIAN_CHAR_ANIM_CHILD_SEQ_HELD	"HeldEntity"
+#define ELYSIAN_CHAR_ANIM_SEQ_STAND_UP          "StandUp"
+#define ELYSIAN_CHAR_ANIM_SEQ_STAND_DOWN        "StandDown"
+#define ELYSIAN_CHAR_ANIM_SEQ_STAND_LEFT        "StandLeft"
+#define ELYSIAN_CHAR_ANIM_SEQ_STAND_RIGHT       "StandRight"
+#define ELYSIAN_CHAR_ANIM_SEQ_WALK_UP           "WalkUp"
+#define ELYSIAN_CHAR_ANIM_SEQ_WALK_DOWN         "WalkDown"
+#define ELYSIAN_CHAR_ANIM_SEQ_WALK_LEFT         "WalkLeft"
+#define ELYSIAN_CHAR_ANIM_SEQ_WALK_RIGHT        "WalkRight"
+#define ELYSIAN_CHAR_ANIM_CHILD_SEQ_HELD        "HeldEntity"
 
 #define ELYSIAN_CHAR_WALK_DEFAULT_FORCE         28000000.0f
 #define ELYSIAN_CHAR_DASH_DEFAULT_MULTIPLIER    10.0f
 #define ELYSIAN_CHAR_JUMP_DEFAULT_FORCE         GYVector3 { 0.0f, /*-330000.0f*/ 0.0f, 330000.0f }
 #define ELYSIAN_CHAR_THROW_DEFAULT_FORCE		GYVector3 { 0.0f, /*2000.0f*/0.0f, 25000.0f }
 
-#define ELYSIAN_ANIMATION_STATES_MAX        50
+#define ELYSIAN_ANIMATION_STATES_MAX            50
 
 namespace elysian {
 
@@ -37,6 +37,13 @@ namespace elysian {
 		friend class CharacterSystem;
     public:
 
+        enum ANIM_PLAY_STATE {
+            PLAY_START,
+            PLAY_DONE,
+            PLAY_INTERRUPTED,
+            PLAY_STOPPED
+        };
+
         enum ANIM_STATE {
             STATE_STAND,
             STATE_WALK,
@@ -47,6 +54,7 @@ namespace elysian {
             STATE_HOLD,
             STATE_COMBAT,
             STATE_KNOCKBACK,
+            STATE_ATTACK,
             STATE_DEATH,
             STATE_COUNT
         };
@@ -61,6 +69,8 @@ namespace elysian {
 
         CharacterBase&      operator=(const CharacterBase& rhs);
 
+        OOLUA::Lua_func_ref _luaCallback;
+        bool                _tempStateActive    = false;
         Direction::DIR4		_faceDir			= Direction::DIR4_CENTER;
         GYVector3			_lastMoveDir		= { 0.0f, 0.0f, 0.0f };
         float               _walkForce          = ELYSIAN_CHAR_WALK_DEFAULT_FORCE;
@@ -127,6 +137,7 @@ namespace elysian {
         void                addChildEntity(Entity*entity, const char*const name);
         void                removeState(const ANIM_STATE state);
         void                addState(const ANIM_STATE state);
+        void                addTempState(const ANIM_STATE state, OOLUA::Lua_func_ref ref);
         bool                hasState(const ANIM_STATE state) const;
         void                setSpeedMultiplier(const float factor);
         const char*         getAnimNameFromStates(const Direction::DIR4 dir) const;

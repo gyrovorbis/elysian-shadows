@@ -18,7 +18,7 @@ namespace elysian {
 
 // ====== DIALOG PROMPT =======
 DialogOption* DialogPromptBase::getOption(const unsigned index) const {
-                    return _options[index];
+                    return index < _options.size()? _options[index] : nullptr;
     }
 
 void DialogPromptBase::addOption(const char*const text, const int nextIndex) { _options.push_back(new DialogOption(text, nextIndex)); }

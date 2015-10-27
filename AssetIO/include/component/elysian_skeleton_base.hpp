@@ -4,11 +4,13 @@
 #include <crtp/elysian_component.hpp>
 #include <crtp/elysian_lua_table_proxy.hpp>
 #include <spine/Attachment.h>
+#include <spine/AnimationState.h>
 #include <initializer_list>
 
 #define ELYSIAN_SKELETON_ATLAS_PATH_SIZE        300
 #define ELYSIAN_SKELETON_JSON_PATH_SIZE         300
 #define ELYSIAN_ANIMATION_NAME_SIZE             100
+#define ELYSIAN_ANIMATION_DEFAULT_NAME          "Idle"
 
 ELYSIAN_ASSET_TYPEDEF(SkeletonAttrib)
 ELYSIAN_ASSET_TYPEDEF(Skeleton)
@@ -93,6 +95,7 @@ namespace elysian {
         std::vector<Animation*> _animations;
         char                    _atlasPath[ELYSIAN_SKELETON_ATLAS_PATH_SIZE]    = { 0 };
         char                    _jsonPath[ELYSIAN_SKELETON_JSON_PATH_SIZE]      = { 0 };
+        char                    _defaultAnimName[ELYSIAN_ANIMATION_NAME_SIZE]   = { 0 };
         spAtlas*                _atlas          = nullptr;
         spSkeletonData*         _skeletonData   = nullptr;
         spAnimationStateData*   _animStateData  = nullptr;
@@ -102,6 +105,7 @@ namespace elysian {
         void                    _reloadJson(void);
 
     public:
+                                SkeletonAttribBase(void);
                                 ~SkeletonAttribBase(void);
 
         void                    loadAssets(const char*const atlas, const char*const json);
@@ -109,6 +113,7 @@ namespace elysian {
         const char*             getAtlasPath(void) const;
         void                    setJsonPath(const char*const json);
         const char*             getJsonPath(void) const;
+        const char*             getDefaultAnimationName(void) const;
 
         Animation*              getAnimation(const unsigned index) const;
         void                    setAnimation(const unsigned index, Animation* anim);
@@ -128,18 +133,23 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(attrib,     getAttrib,      setAttrib)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
+        using AnimListener = std::function<void(int, spEventType, spEvent*, int)>;
+
         std::vector<EntityAttachment*>
                             _entityAttachments;
         SkeletonAttrib*     _attrib         = nullptr;
         spSkeleton*         _skeleton       = nullptr;
         spAnimationState*   _animState      = nullptr;
         Animation*          _curAnim        = nullptr;
+        AnimListener        _listener;
 
         float               _animTimeScale  = 1.0f;
 
         EntityAttachment*   _findEntityAttachment(const char*const name) const;
         void                _updateEntityAttachments(void) const;
         void                _removeEntityAttachments(void);
+
+        static void         _animationStateListener(spAnimationState* state, int trackIndex, spEventType type, spEvent* event, int loopCount);
 
     public:
                         SkeletonBase(Entity& entity, const SkeletonBase* other=nullptr);
@@ -161,6 +171,7 @@ namespace elysian {
 
         void            setAnimByName(const int trackIndex, const char*const animName, const bool loop=true) const;
         void            setAnim(const char* name);
+        void            setAnim(const char* name, const AnimListener& listener);
 
         Entity*         getEntityAttachedToSlot(const char*name) const;
         void            attachEntityToSlot(const char* name, Entity* entity);
@@ -206,12 +217,13 @@ namespace elysian {
 
 
     //------ SKELETONATTRIB -------
-    inline SkeletonAttrib* SkeletonBase::getAttrib(void) const { return _attrib; }
+    inline SkeletonAttribBase::SkeletonAttribBase(void) { strcpy(_defaultAnimName, ELYSIAN_ANIMATION_DEFAULT_NAME); }
+    inline const char* SkeletonAttribBase::getDefaultAnimationName(void) const { return _defaultAnimName; }
     inline const char* SkeletonAttribBase::getAtlasPath(void) const { return _atlasPath; }
     inline const char* SkeletonAttribBase::getJsonPath(void) const { return _jsonPath; }
     inline bool SkeletonAttribBase::isReested(void) const { return !_atlas || !_skeletonData || !_animStateData; }
     inline unsigned SkeletonAttribBase::getAnimationCount(void) const { return _animations.size(); }
-    inline Animation* SkeletonAttribBase::getAnimation(const unsigned index) const { return _animations[index]; }
+    inline Animation* SkeletonAttribBase::getAnimation(const unsigned index) const { return index < _animations.size()? _animations[index] : nullptr; }
     inline void SkeletonAttribBase::setAnimation(const unsigned index, Animation *anim) {
         if(index == _animations.size()) {
             _animations.push_back(anim);
@@ -220,6 +232,7 @@ namespace elysian {
 
 
     //----- SKELETON ------
+    inline SkeletonAttrib* SkeletonBase::getAttrib(void) const { return _attrib; }
     inline SkeletonBase::SkeletonBase(Entity& entity, const SkeletonBase *other): Component(entity) {
         if(other) *this = *other;
     }

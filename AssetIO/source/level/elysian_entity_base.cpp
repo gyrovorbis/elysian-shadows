@@ -635,8 +635,8 @@ bool EntityBase::save(FILE* /*file*/) { //Serialization
 
 ///===========THIS SHIT ALL BEGS TO BE TEMPLATIZED!? GOD, NO! -- YES============
 
-Behavior* EntityBase::addBehavior(const char *name) {
-    return attachBehavior(Behavior::create(name, *static_cast<Entity*>(this)));
+Behavior* EntityBase::addBehavior(Behavior* behavior) {
+    return attachBehavior(behavior);
 }
 
 LuaBehavior* EntityBase::addLuaBehavior(const char *name, const OOLUA::Lua_table_ref paramTable) {

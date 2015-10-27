@@ -135,7 +135,7 @@ namespace elysian {
         void                removeCombat(void);
         void                removeSkeleton(void);
 
-        Behavior*           addBehavior(char const* behaviorName);
+        Behavior*           addBehavior(Behavior* behavior);
         Behavior*           getBehavior(char const* constbehaviorName) const;
 
         LuaBehavior*        addLuaBehavior(char const* scriptName, const OOLUA::Lua_table_ref paramTable);

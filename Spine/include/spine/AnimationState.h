@@ -79,6 +79,7 @@ struct spTrackEntry {
 struct spAnimationState {
 	spAnimationStateData* const data;
 	float timeScale;
+    void* listenerData;
 	spAnimationStateListener listener;
 
 	int tracksCount;

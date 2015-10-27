@@ -317,6 +317,7 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
     s->register_class_static<Character>("STATE_FALL", Character::STATE_FALL);
     s->register_class_static<Character>("STATE_HOLD", Character::STATE_HOLD);
     s->register_class_static<Character>("STATE_COMBAT", Character::STATE_COMBAT);
+    s->register_class_static<Character>("STATE_ATTACK", Character::STATE_ATTACK);
     s->register_class_static<Character>("STATE_KNOCKBACK", Character::STATE_KNOCKBACK);
     s->register_class_static<Character>("STATE_DEATH", Character::STATE_DEATH);
     s->register_class_static<Character>("STATE_COUNT", Character::STATE_COUNT);

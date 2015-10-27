@@ -170,6 +170,8 @@ void SkeletonBase::setAttrib(SkeletonAttrib * const attrib) {
         errprintf("Could not create AnimationState!");
     }
 
+    setAnim(_attrib->getDefaultAnimationName());
+
     if(_skeleton) {
         _skeleton->x = _entity->_transform._pos.x;
         _skeleton->y = _entity->_transform._pos.y;
@@ -248,12 +250,27 @@ void SkeletonBase::_removeEntityAttachments(void) {
     for(auto* it : _entityAttachments) {
         //it->slot->attachment = nullptr;
         spSlot_setAttachment(it->slot, nullptr);
+        _spAttachment_deinit(it);
         spAttachment_dispose(it);
         //delete it;
     }
     _entityAttachments.clear();
 }
 
+void SkeletonBase::setAnim(const char *name, const AnimListener &listener) {
+    _listener = listener;
+    setAnim(name);
+    _animState->listener = &_animationStateListener;
+    _animState->listenerData = this;
+}
+
+
+void SkeletonBase::_animationStateListener(spAnimationState *state, int trackIndex, spEventType type, spEvent *event, int loopCount) {
+    SkeletonBase* skeleton = static_cast<SkeletonBase*>(state->listenerData);
+    skeleton->_listener(trackIndex, type, event, loopCount);
+    skeleton->_animState->listener      = nullptr;
+    skeleton->_animState->listenerData  = nullptr;
+}
 
 EntityAttachment::EntityAttachment(void) {
     _spAttachment_init(this, "EntityAttachment", SP_ATTACHMENT_ENTITY, &dispose);
@@ -307,5 +324,7 @@ void EntityAttachment::update(void) {
     }
 
 }
+
+
 
 }

@@ -197,7 +197,8 @@ SOURCES += \
     ../../AssetIO/source/level/elysian_dialog_base.cpp \
     ../../AssetIO/source/level/elysian_dialog_screen_base.cpp \
     ../../ESGamma/source/proxy/elysian_input_system_proxy.cpp \
-    ../../ESGamma/source/system/elysian_input_system_base.cpp
+    ../../ESGamma/source/system/elysian_input_system_base.cpp \
+    ../../AssetIO/source/behavior/elysian_playable_behavior.cpp
 
 
 
@@ -433,7 +434,7 @@ HEADERS += \
     ../../ESGamma/include/proxy/elysian_input_system_proxy.hpp \
     ../../ESGamma/include/system/elysian_input_system_base.hpp \
     ../../ESGamma/include/crtp/elysian_input_system.hpp \
-    include/estk/tk_input_system.h
+    ../../AssetIO/include/behavior/elysian_playable_behavior.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \
@@ -537,7 +538,8 @@ HEADERS += \
         include/asset/tk_sprite_attrib.h \
         include/asset/tk_dialog_screen.h \
         include/asset/tk_dialog.h \
-        include/asset/tk_lua_variant.h
+        include/asset/tk_lua_variant.h \
+        include/estk/tk_input_system.h
 }
 
 

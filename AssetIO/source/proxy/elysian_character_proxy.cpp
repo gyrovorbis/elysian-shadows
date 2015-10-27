@@ -31,7 +31,8 @@ OOLUA_EXPORT_FUNCTIONS(Character,
                                     addState,
                                     removeState,
                                     jump,
-                                    applyKnockbackForce)
+                                    applyKnockbackForce,
+                                    addTempState)
 OOLUA_EXPORT_FUNCTIONS_CONST(Character,
                                getFaceDir,
                                isFacing,

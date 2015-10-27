@@ -298,6 +298,8 @@ private Q_SLOTS:
     void on_actionAndroid_Device_triggered();
     void on_actionCamera_View_toggled(bool arg1);
     void on_actionInput_Device_Dump_triggered();
+    void on_actionAdd_Player_triggered();
+    void on_actionRemove_Player_triggered();
 };
 
 

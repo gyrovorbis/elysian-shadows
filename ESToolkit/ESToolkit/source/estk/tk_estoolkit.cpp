@@ -61,6 +61,7 @@
 #include <QHelpIndexWidget>
 #include <tk_gitlab_manager.h>
 #include <crtp/elysian_input_system.hpp>
+#include <system/elysian_party_system.hpp>
 
 #ifdef ESTK_UNIT_TESTS
 #include <QtTest>
@@ -2417,4 +2418,23 @@ void ESToolkit::on_actionInput_Device_Dump_triggered()
     if(_assets.getEngine()) {
         _assets.getEngine()->getInputSys()->dumpStats();
     }
+}
+
+void ESToolkit::on_actionAdd_Player_triggered()
+{
+    static int players = 1;
+
+    ++players;
+    Entity* leader = _assets.getEngine()->getPartySys()->getPartyLeader();
+
+    Entity* newPlayer = new Entity(leader);
+    _assets.getEngine()->getPartySys()->addCharacterToParty(newPlayer);
+
+}
+
+void ESToolkit::on_actionRemove_Player_triggered()
+{
+  //  --players;
+
+
 }
