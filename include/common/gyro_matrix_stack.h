@@ -123,8 +123,15 @@ static inline void gyMatRotate(const float angle, const float x, const float y, 
 }
 
 static inline void gyMatInstance(const GYInstMat *const inst) {
-    GYVector3 sc = inst->_size;
-    gyVec3CompProdAccum(&sc, &inst->_scale);
+    GYVector3 flip = {
+        (inst->_flip & GY_INST_MAT_FLIP_X_AXIS)? -1.0f : 1.0f,
+        (inst->_flip & GY_INST_MAT_FLIP_Y_AXIS)? -1.0f : 1.0f,
+        (inst->_flip & GY_INST_MAT_FLIP_Z_AXIS)? -1.0f : 1.0f
+    };
+
+    gyVec3CompProdAccum(&flip, &inst->_size);
+    gyVec3CompProdAccum(&flip, &inst->_scale);
+
     //gySinCos(inst->_orientZ, &sin, &cos);
 
 #if 0
@@ -135,8 +142,9 @@ static inline void gyMatInstance(const GYInstMat *const inst) {
     gyMatApply(_instanceMat);
 #else
     gyMatTranslate(inst->_pos.x, inst->_pos.y, inst->_pos.z);
-    gyMatScale(sc.x, sc.y, sc.z);
+    gyMatScale(flip.x, flip.y, flip.z);
     gyMatRotate(inst->_angle, inst->_orient.x, inst->_orient.y, inst->_orient.z);
+
 #endif
 
 
