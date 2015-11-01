@@ -36,8 +36,7 @@ int _sdlControllerInit(const struct GYInputInitParams*const  params) {
 
     _gyLog(GY_DEBUG_VERBOSE, "Initializing SDL_GAMECONTROLLER with %d ports.", params->controllerCount);
     _gyPush();
-
-    if(SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER) < 0) {
+    if(SDL_Init(SDL_INIT_GAMECONTROLLER) < 0) {
         success = 0;
         _gyLog(GY_DEBUG_ERROR, "Could not initialize SDL_GAMECONTROLLER! [%s]", SDL_GetError());
     }
@@ -301,14 +300,12 @@ static void _sdlPollEvents(void) {
 
 
 int gyControllerPoll(const unsigned slot, struct GYController** const input) {
-#if 0
     GYVector2 analog = { 0.0f, 0.0f };
 
     if(!_devices[slot].sdlJoystick) {
         _devices[slot].cont.analogSticks[GY_CONTROLLER_ANALOG_LEFT]     = analog;
         _devices[slot].cont.analogSticks[GY_CONTROLLER_ANALOG_RIGHT]    = analog;
     }
-#endif
 
     for(unsigned i = 0; i < GY_CONTROLLER_BUT_COUNT; ++i) {
         int wasDown = (_devices[slot].cont.buttons[i] & GY_BUT_FLAGS_IS_PRESSED);
