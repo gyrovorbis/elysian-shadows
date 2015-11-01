@@ -1,4 +1,5 @@
 #include <tk_lua_table_proxy.h>
+#include <QDebug>
 
 #define PRINT(a) do { \
     } while(0)

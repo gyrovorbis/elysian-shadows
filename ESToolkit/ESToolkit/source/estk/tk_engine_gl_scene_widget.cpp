@@ -36,7 +36,7 @@ EngineGLSceneWidget::EngineGLSceneWidget(QWidget *parent):
     assert(!_self);
             _self = this;
             setAttribute(Qt::WA_NativeWindow);
-            //setAutoBufferSwap(true);
+            setAutoBufferSwap(true);
 
     connect(this, SIGNAL(engineUpdated()), getAssets(), SIGNAL(engineUpdated()));
 }

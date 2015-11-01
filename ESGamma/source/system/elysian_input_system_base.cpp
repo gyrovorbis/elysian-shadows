@@ -159,7 +159,6 @@ void InputSystemBase::dumpStats(void) {
 }
 
 void InputSystemBase::update(void) {
-
     //update keyboard
     bool wasAttached   = _keyboard.isAttached();
     bool isAttached    = _keyboard.pollInput();

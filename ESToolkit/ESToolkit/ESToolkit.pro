@@ -33,8 +33,8 @@ ios {
 
 
 !ios {
-    QMAKE_OBJCXXFLAGS_PRECOMPILE += -std=c++11 -stdlib=libc++
-    CONFIG += precompile_header
+    #QMAKE_OBJCXXFLAGS_PRECOMPILE += -std=c++11 -stdlib=libc++
+    #CONFIG += precompile_header
 }
 QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-empty-body
 
@@ -94,7 +94,7 @@ INCLUDEPATH += ../../AssetIO/include \
     include/dialog \
     include/widget
 
-    PRECOMPILED_HEADER = include/tk_precompiled_headers.h
+    #PRECOMPILED_HEADER = include/tk_precompiled_headers.h
 }
 
 SOURCES += \
@@ -612,8 +612,8 @@ docs {
 
 macx {
     #DESTDIR = ../../executable
-#	CONFIG(release, debug|release):
-    QMAKE_POST_LINK =   "sh ./macdeployes.sh"
+        #CONFIG(release, debug|release):
+    QMAKE_POST_LINK = "sh ./macdeployes.sh"
 }
 
 dreamcast {

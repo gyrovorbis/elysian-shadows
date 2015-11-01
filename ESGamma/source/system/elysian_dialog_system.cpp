@@ -416,7 +416,7 @@ void DialogSystem::CheckModal(void) const {
 }
 
 void DialogSystem::FacePlayer(void) const {
-	if(!_curScreen.screen->getEntity() || !_curScreen.screen->getEntity()->getCharacter()) return;
+    if(!_curScreen.screen || !_curScreen.screen->getEntity() || !_curScreen.screen->getEntity()->getCharacter()) return;
 	_curScreen.screen->getEntity()->getCharacter()->faceEntity(*getPartySys()->getCharacterPartyMember(0u));
 }
 
@@ -475,6 +475,9 @@ void DialogSystem::_splitText(void) {
 
 void DialogSystem::startDialog(Dialog *const dialog, EventMonitor*const monitor) {
 	closeDialog();
+
+    if(dialog->getScreenCount() == 0) return;
+
 	_monitor = monitor;
 	_curDialog = dialog;
 	_curScreen.screen = dialog->getScreen(0);

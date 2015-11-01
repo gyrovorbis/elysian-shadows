@@ -21,27 +21,29 @@ ELYSIAN_LUA_PROXY_FIELDS_EXPORT(SkeletonAttribBase)
 void SkeletonBase::setAnim(const char* name) {
 
     auto* anim = _attrib->findAnimation(name);
-
-
     if(!anim || _curAnim == anim) return;
 
     unsigned oldTrackCount = _curAnim? _curAnim->_tracks.size() : 0;
 #if 0
     for(unsigned i = 0; i < anim->_tracks.size(); ++i) {
         if(_curAnim &&  i < _curAnim->_tracks.size() && strcmp(anim->_tracks[i]->_name, _curAnim->_tracks[i]->_name) == 0) continue;
-            //spAnimationState_clearTrack(_animState, i);
+            spAnimationState_clearTrack(_animState, i);
             setAnimByName(i, anim->_tracks[i]->_name, anim->_tracks[i]->_looping);
     }
 
     for(unsigned i = anim->_tracks.size(); i < oldTrackCount; ++i) {
         spAnimationState_clearTrack(_animState, i);
     }
+#else
 
-#endif
-
-    if(_curAnim) for(unsigned i = 0; i < _curAnim->_tracks.size(); ++i) spAnimationState_clearTrack(_animState, i);
+    if(_curAnim) //for(unsigned i = 0; i < _curAnim->_tracks.size(); ++i) spAnimationState_clearTrack(_animState, i);
+    spAnimationState_clearTracks(_animState);
+    //    spSkeleton_setToSetupPose(_skeleton);
     for(unsigned i = 0; i < anim->_tracks.size(); ++i) setAnimByName(i, anim->_tracks[i]->_name, anim->_tracks[i]->_looping);
 
+
+
+#endif
     _curAnim = anim;
 }
 
@@ -198,7 +200,6 @@ void SkeletonBase::render(void) const {
 }
 
 void SkeletonBase::attachEntityToSlot(const char *name, Entity *entity) {
-
     EntityAttachment* attachment = _findEntityAttachment(name);
 
     if(!attachment) {

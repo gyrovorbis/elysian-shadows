@@ -13,9 +13,9 @@ dreamcast {
     DEFINES+=_arch_dreamcast \
         _arch_sub_pristine \
         ELYSIAN_ENGINE
-
-
 }
+
+QMAKE_MAC_SDK = macosx10.11
 
 
 CONFIG -= exceptions

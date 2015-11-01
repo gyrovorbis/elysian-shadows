@@ -886,7 +886,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
         if(texture) {
 
            // if(slot->data->additiveBlending != lastAdditive) {
-            if(slot->data->additiveBlending) {
+            if(slot->data->blendMode == SP_BLEND_MODE_ADDITIVE) {
                 gyVidBlendMode(GY_BLEND_ONE);
             } else {
                 gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);

@@ -16,6 +16,9 @@
 #define TK_LEVEL_ASSET_ICON         ":/assetIcons/images/_0007_levels_icon.png"
 #define TK_AREA_ASSET_ICON          ":/assetIcons/images/_0008_areas_icon.png"
 
+class QMenu;
+class QItemSelection;
+
 namespace Ui {
     class AssetDockWidget;
 }

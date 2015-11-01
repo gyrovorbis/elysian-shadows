@@ -109,6 +109,7 @@ static GYAppCbRet Init(int argc, char **argv) {
     //glfmt.setDepthBufferSize(16);
     //glfmt.setStencilBufferSize(0);
     //glfmt.setAlphaBufferSize(8);
+    glfmt.setStereo(false);
     glfmt.setVersion( 3, 3 );
     glfmt.setProfile( QGLFormat::CoreProfile ); // Requires >=Qt-4.8.0
     // Set the default GL format to OpenGL 3.2 Core

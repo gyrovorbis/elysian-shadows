@@ -1,5 +1,6 @@
 #include <QMouseEvent>
 #include <QDebug>
+#include <QMenu>
 #include <QPainterPath>
 #include <QScrollBar>
 
