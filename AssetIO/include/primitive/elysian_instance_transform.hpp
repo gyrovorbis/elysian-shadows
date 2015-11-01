@@ -118,6 +118,7 @@ namespace elysian {
                 { 1.0f, 1.0f, 1.0f },
                 { 0.0f, 0.0f, 0.0f },
                 0.0f,
+                GY_INST_MAT_FLIP_NONE,
                 nullptr
             }) {}
 
@@ -161,6 +162,13 @@ namespace elysian {
         float getScaleX(void) const { return _scale.x; }
         void setScaleY(const float y) { _scale.y = y; }
         float getScaleY(void) const { return _scale.y; }
+
+        bool    getFlipX(void) const;
+        bool    getFlipY(void) const;
+        bool    getFlipZ(void) const;
+        void    setFlipX(const bool v);
+        void    setFlipY(const bool v);
+        void    setFlipZ(const bool v);
 
         void setSize(const float x, const float y, const float z) { _size.x = x; _size.y = y; _size.z = z; }
         void setSize(const float x, const float y) { _size.x = x; _size.y = y; }
@@ -276,6 +284,15 @@ namespace elysian {
     inline void Vector4::setY(const float val) const { _ptr->y = val; }
     inline void Vector4::setZ(const float val) const { _ptr->z = val; }
     inline void Vector4::setW(const float val) const { _ptr->w = val; }
+
+    inline bool InstanceTransform::getFlipX(void) const { return (bool)(_flip&(unsigned)GY_INST_MAT_FLIP_X_AXIS); }
+    inline bool InstanceTransform::getFlipY(void) const { return (bool)(_flip&(unsigned)GY_INST_MAT_FLIP_Y_AXIS); }
+    inline bool InstanceTransform::getFlipZ(void) const { return (bool)(_flip&(unsigned)GY_INST_MAT_FLIP_Z_AXIS); }
+
+    inline void InstanceTransform::setFlipX(const bool v) { _flip = (_flip&~(unsigned)GY_INST_MAT_FLIP_X_AXIS)|(v? (unsigned)GY_INST_MAT_FLIP_X_AXIS : 0u); }
+    inline void InstanceTransform::setFlipY(const bool v) { _flip = (_flip&~(unsigned)GY_INST_MAT_FLIP_Y_AXIS)|(v? (unsigned)GY_INST_MAT_FLIP_Y_AXIS : 0u); }
+    inline void InstanceTransform::setFlipZ(const bool v) { _flip = (_flip&~(unsigned)GY_INST_MAT_FLIP_Z_AXIS)|(v? (unsigned)GY_INST_MAT_FLIP_Z_AXIS : 0u); }
+
 
     inline void InstanceTransform::getOrient(float& x, float& y, float& z) const { x = _orient.x; y = _orient.y; z = _orient.z; }
     inline void InstanceTransform::setOrient(const float x, const float y, const float z) { _orient.x = x; _orient.y = y; _orient.z = z; }

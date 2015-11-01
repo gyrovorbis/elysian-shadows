@@ -325,6 +325,12 @@ void EntityAttachment::update(void) {
         });
     }
 
+    if(slot->bone->data->flipX)
+        transform.setFlipX(slot->bone->data->flipX);
+    if(slot->bone->data->flipY)
+        transform.setFlipY(slot->bone->data->flipY);
+
+
 }
 
 
