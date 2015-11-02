@@ -15,8 +15,9 @@ dreamcast {
         ELYSIAN_ENGINE
 }
 
-QMAKE_MAC_SDK = macosx10.11
-
+macx {
+    QMAKE_MAC_SDK = macosx10.11
+}
 
 CONFIG -= exceptions
 

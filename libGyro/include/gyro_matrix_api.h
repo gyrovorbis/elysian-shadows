@@ -23,12 +23,21 @@ typedef struct GYVector2 {
     float x, y;
 } GYVector2;
 
+
+typedef enum GY_INST_MAT_FLIP {
+    GY_INST_MAT_FLIP_NONE       = 0x0,
+    GY_INST_MAT_FLIP_X_AXIS     = 0x1,
+    GY_INST_MAT_FLIP_Y_AXIS     = 0x2,
+    GY_INST_MAT_FLIP_Z_AXIS     = 0x4
+} GY_INST_MAT_FLIP;
+
 typedef struct GYInstMat {
     GYVector3   _pos;
     GYVector3   _size;
     GYVector3   _scale;
     GYVector3   _orient;
     float       _angle;
+    unsigned    _flip;
     struct _GYInstMat *parent;
 } GYInstMat;
 

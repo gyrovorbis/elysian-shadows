@@ -430,20 +430,24 @@ void CharacterBase::addTempState(const ANIM_STATE state, OOLUA::Lua_func_ref ref
     addState(state);
     auto*name = getAnimNameFromStates(_faceDir);
 
-    getEntity()->getSkeleton()->setAnim(name, [=](int trackIndex, spEventType eventType, spEvent* event, int loopCount) {
-        LuaVariant v;
+    if(name) {
+        getEntity()->getSkeleton()->setAnim(name, [=](int trackIndex, spEventType eventType, spEvent* event, int loopCount) {
+            LuaVariant v;
 
-        switch(eventType) {
-        case SP_ANIMATION_COMPLETE:
-            OOLUA::push(*_mainState, _luaCallback);
-            v.pull();
-            (void)v();
-            break;
-        default: break;
-        }
+            switch(eventType) {
+            case SP_ANIMATION_COMPLETE:
+                OOLUA::push(*_mainState, _luaCallback);
+                v.pull();
+                (void)v();
+                _tempStateActive = false;
+                removeState(state);
+                break;
+            default: break;
+            }
 
 
-    });
+        });
+    }
 
 
 }

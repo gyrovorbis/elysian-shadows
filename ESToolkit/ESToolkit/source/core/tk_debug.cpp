@@ -19,6 +19,7 @@
 #include <QTimer>
 #include <QFontDatabase>
 #include <tk_menu_stack.h>
+#include <QApplication>
 #include <QClipboard>
 #include <QMenu>
 //ESTK

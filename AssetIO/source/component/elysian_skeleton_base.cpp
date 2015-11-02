@@ -36,11 +36,11 @@ void SkeletonBase::setAnim(const char* name) {
     }
 #else
 
-    if(_curAnim) //for(unsigned i = 0; i < _curAnim->_tracks.size(); ++i) spAnimationState_clearTrack(_animState, i);
+    //if(_curAnim) //for(unsigned i = 0; i < _curAnim->_tracks.size(); ++i) spAnimationState_clearTrack(_animState, i);
     spAnimationState_clearTracks(_animState);
-    //    spSkeleton_setToSetupPose(_skeleton);
+    //spSkeleton_setToSetupPose(_skeleton);
     for(unsigned i = 0; i < anim->_tracks.size(); ++i) setAnimByName(i, anim->_tracks[i]->_name, anim->_tracks[i]->_looping);
-
+    update(0);
 
 
 #endif
@@ -224,6 +224,7 @@ void SkeletonBase::attachEntityToSlot(const char *name, Entity *entity) {
     }
 
     attachment->entity = entity;
+    attachment->update();
 
 }
 
@@ -279,7 +280,7 @@ EntityAttachment::EntityAttachment(void) {
 
 void EntityAttachment::dispose(spAttachment *attachment) {
     EntityAttachment* self = static_cast<EntityAttachment*>(attachment);
-    dbgprintf("Spine just called vtable[dispose] on entity attachment [%s]!", self->slot->data->name);
+    errprintf("Spine just called vtable[dispose] on entity attachment [%s]!", self->slot->data->name);
     delete self;
 }
 
@@ -323,6 +324,12 @@ void EntityAttachment::update(void) {
             slot->bone->worldScaleY
         });
     }
+
+    if(slot->bone->data->flipX)
+        transform.setFlipX(slot->bone->data->flipX);
+    if(slot->bone->data->flipY)
+        transform.setFlipY(slot->bone->data->flipY);
+
 
 }
 
