@@ -652,9 +652,9 @@ namespace elysian {
 
         if(_type != LUA_TSTRING) {
             setType(LUA_TSTRING);
-            _value.string = (const char*)malloc(sizeof(size)+1);
+            _value.string = (const char*)malloc(size*sizeof(char)+1);
         } else {
-            _value.string = (const char*)realloc((void*)_value.string, sizeof(size)+1);
+            _value.string = (const char*)realloc((void*)_value.string, size*sizeof(char)+1);
         }
 
         std::strcpy((char*)_value.string, str);
