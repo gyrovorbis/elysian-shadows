@@ -8,6 +8,10 @@
 
 #include "../common/gyro_system_callbacks.h"
 
+
+
+#if !(defined(__linux__) && defined(__i386__))
+
 //execute x86 CPUID opcode
 static inline void cpuid(int CPUInfo[4],int InfoType){
     __asm__ __volatile__ (
@@ -73,9 +77,9 @@ static void _checkCPUCapabilities(void) {
         _gyLog(GY_DEBUG_VERBOSE, "SSE CPU Extensions detected! Fast-ass math enabled!");
     }
 }
+#endif
 
-
-#if defined(__LINUX__) || defined(__APPLE__)
+#if defined(__linux__) || defined(__APPLE__)
 #include <signal.h>
 #include <execinfo.h>
 #include <stdlib.h>
@@ -106,7 +110,9 @@ int gySysInit(const GYSysInitParams*const params) {
 #endif
 
     _gySysPrintBuildInfo(platString);
+#if defined(__linux__) && defined(__x86_64__)
     _checkCPUCapabilities();
+#endif
 
 #if GYRO_PLATFORM == GYRO_PLATFORM_x86
     glfwInit();

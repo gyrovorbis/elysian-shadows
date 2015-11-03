@@ -14,6 +14,7 @@
 #include "elysian_party_system.hpp"
 #include <asset/tk_behavior.h>
 #include <core/tk_file_utilities.h>
+#include <crtp/elysian_input_system.hpp>
 
 //====STATIC MEMBERS====
 
@@ -258,7 +259,6 @@ Project *Assets::loadProject(const QString directory) {
     FileUtilities::setAssetPath(QDir(directory).absolutePath());
     Project *proj = new Project;
     connectSlots(proj);
-
     gyTimerInit();
 
     elysian::Debug::getInstance().setEngine(*_engine);

@@ -2139,6 +2139,7 @@ void ESToolkit::on_actionReloadProject_triggered(void)
 {
     TkDebug::clear();
     _assets.setCurrentSelection(nullptr);
+    elysian::InputSystem::uninitialize();
     _assets.reloadProject();
 }
 
