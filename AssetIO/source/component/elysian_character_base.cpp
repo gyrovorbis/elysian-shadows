@@ -358,9 +358,9 @@ void CharacterBase::addChildEntity(Entity*entity, const char*const name) {
 
 
 void CharacterBase::removeState(const ANIM_STATE state) {
-    if(_entity->getSkeleton()) {
+  //  if(_entity->getSkeleton()) {
         _animStates[state] = false;
-    }
+   // }
 
 }
 

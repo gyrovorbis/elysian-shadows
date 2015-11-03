@@ -104,6 +104,12 @@ void EntityBase::pushViewTransform(void) {
     gyMatPush();
     _oldZ = _transform._size.z;
 
+    GYVector3 flip = {
+        getTransform().getFlipX()? -10.0f : 1.0f,
+        getTransform().getFlipY()? -10.0f : 1.0f,
+        getTransform().getFlipZ()? -10.0f : 1.0f
+    };
+
     if(_planeType == GY_RECT_PLANE_FRONT) {
         _transform._size.z = _transform._size.y;
         //transform._size.y = 400.0f;
@@ -115,7 +121,7 @@ void EntityBase::pushViewTransform(void) {
 
         gyMatTranslate(_transform._pos.x, _transform._pos.y, _transform._pos.z);
         gyMatRotate(_transform._angle, _transform._orient.x, _transform._orient.y, _transform._orient.z);
-        gyMatScale(_transform._size.x*_transform._scale.x, _transform._size.y*_transform._scale.y, _transform._size.z*_transform._scale.z);
+        gyMatScale(_transform._size.x*_transform._scale.x*flip.x, _transform._size.y*_transform._scale.y*flip.y, _transform._size.z*_transform._scale.z*flip.z);
         if(_renderable) {
             //gyMatTranslate(_renderable->getOffsetVec().x, _renderable->getOffsetVec().y, 0.0f);
         }
@@ -125,7 +131,7 @@ void EntityBase::pushViewTransform(void) {
 
         gyMatTranslate(_transform._pos.x, _transform._pos.y, _transform._pos.z);
         gyMatRotate(_transform._angle, _transform._orient.x, _transform._orient.y, _transform._orient.z);
-        gyMatScale(_transform._size.x*_transform._scale.x, _transform._size.y*_transform._scale.y, _transform._size.z*_transform._scale.z);
+        gyMatScale(_transform._size.x*_transform._scale.x*flip.x, _transform._size.y*_transform._scale.y*flip.y, _transform._size.z*_transform._scale.z*flip.z);
         if(_renderable) {
             //gyMatTranslate(_renderable->getOffsetVec().x, _renderable->getOffsetVec().y, 0.0f);
         }
