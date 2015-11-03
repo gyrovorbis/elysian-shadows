@@ -269,9 +269,10 @@ void SkeletonBase::setAnim(const char *name, const AnimListener &listener) {
 
 void SkeletonBase::_animationStateListener(spAnimationState *state, int trackIndex, spEventType type, spEvent *event, int loopCount) {
     SkeletonBase* skeleton = static_cast<SkeletonBase*>(state->listenerData);
-    skeleton->_listener(trackIndex, type, event, loopCount);
-    skeleton->_animState->listener      = nullptr;
-    skeleton->_animState->listenerData  = nullptr;
+    if(skeleton->_listener(trackIndex, type, event, loopCount)) {
+        skeleton->_animState->listener      = nullptr;
+        skeleton->_animState->listenerData  = nullptr;
+    }
 }
 
 EntityAttachment::EntityAttachment(void) {

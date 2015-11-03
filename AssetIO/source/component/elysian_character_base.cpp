@@ -422,27 +422,36 @@ void CharacterBase::applyKnockbackForce(const GYVector3 &force) {
 
 }
 
-void CharacterBase::addTempState(const ANIM_STATE state, OOLUA::Lua_func_ref ref) {
+void CharacterBase::addTempState(const ANIM_STATE state, const int track, OOLUA::Lua_func_ref ref) {
     _tempStateActive = true;
     _luaCallback = ref;
+    _callbackTrack = track;
+
     addState(state);
     auto*name = getAnimNameFromStates(_faceDir);
 
     if(name) {
         getEntity()->getSkeleton()->setAnim(name, [=](int trackIndex, spEventType eventType, spEvent* event, int loopCount) {
-            LuaVariant v;
 
-            switch(eventType) {
-            case SP_ANIMATION_COMPLETE:
-                OOLUA::push(*_mainState, _luaCallback);
-                v.pull();
-                (void)v();
-                _tempStateActive = false;
-                removeState(state);
-                break;
-            default: break;
+            if(_callbackTrack == trackIndex || _callbackTrack == -1) {
+                LuaVariant v;
+
+                switch(eventType) {
+                case SP_ANIMATION_END:
+                case SP_ANIMATION_COMPLETE:
+
+                    OOLUA::push(*_mainState, _luaCallback);
+                    v.pull();
+                    (void)v();
+                    _tempStateActive = false;
+                    removeState(state);
+                    return true;
+                    break;
+                default: break;
+                }
+
             }
-
+            return false;
 
         });
     }

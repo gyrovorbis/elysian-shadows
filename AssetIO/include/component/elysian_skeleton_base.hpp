@@ -133,7 +133,7 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(attrib,     getAttrib,      setAttrib)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
-        using AnimListener = std::function<void(int, spEventType, spEvent*, int)>;
+        using AnimListener = std::function<bool(int, spEventType, spEvent*, int)>;
 
         std::vector<EntityAttachment*>
                             _entityAttachments;
