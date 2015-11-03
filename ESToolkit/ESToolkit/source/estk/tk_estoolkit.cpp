@@ -353,8 +353,8 @@ void ESToolkit::_libGyroInitialize(void) {
 
 }
 
-void ESToolkit::_engineLoadAssets(void) {
-
+void ESToolkit::_libGyroUninitialize(void) {
+    //gyAudUninit();
 }
 
 
@@ -2138,8 +2138,10 @@ void ESToolkit::on_actionEnable_Audio_toggled(bool arg1)
 void ESToolkit::on_actionReloadProject_triggered(void)
 {
     TkDebug::clear();
+    //_libGyroUninitialize();
+    //gyAudUninit();
+   // gyAudInit();
     _assets.setCurrentSelection(nullptr);
-    elysian::InputSystem::uninitialize();
     _assets.reloadProject();
 }
 

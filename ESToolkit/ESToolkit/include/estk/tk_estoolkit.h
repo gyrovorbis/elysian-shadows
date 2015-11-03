@@ -78,6 +78,7 @@ protected:
 
     void            _onGYSysSegFault();
     void            _libGyroInitialize(void);
+    void            _libGyroUninitialize(void);
     void            _engineLoadAssets(void);
     void            setMainTextureUniform(const int uniform);
 

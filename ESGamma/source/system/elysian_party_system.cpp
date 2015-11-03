@@ -881,16 +881,10 @@ void Player::_processPushPull(const float deltaTime, const Controller*const cont
 
 void Player::processInput(const Controller* const cont, PartySystem*const partySys) {
 
-    static bool initialized = false;
 
     auto* partyMember = partySys->getPartyMember(_playerNum);
     const float deltaTime = partySys->getTimerSys()->getDeltaTime();
-#if 0
-    if(!initialized) {
-        __initJulienShit(partyMember);
-        initialized = true;
-    }
-#endif
+
 
     _processMovement(deltaTime, cont, partyMember, partySys);
     _processJump(deltaTime, cont, partyMember);

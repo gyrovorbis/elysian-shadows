@@ -58,19 +58,19 @@ const constexpr GYInputInitParams InputSystemBase::_defaultInitParams;
 
 InputSystemBase::InputSystemBase(void) {
     for(unsigned i = 0; i < ELYSIAN_INPUT_CONTROLLERS_MAX; ++i) _controllers[i].setPort(i);
+    //Initial input poll, to initialize controller/mouse/keyboard handles
+    update();
 }
 
 bool InputSystemBase::initialize(const GYInputInitParams*const params) {
-    if(_initialized) return true;
-
     bool success = true;
 
-    success &= gyInputInit(params? params : &_defaultInitParams);
+    if(!_initialized) {
+        success &= gyInputInit(params? params : &_defaultInitParams);
+        if(params != &_defaultInitParams) _managedExternally = true;
+        _initialized = true;
+    }
 
-
-    if(params != &_defaultInitParams) _managedExternally = true;
-
-    _initialized = true;
     return success;
 }
 

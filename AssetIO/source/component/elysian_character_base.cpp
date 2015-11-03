@@ -390,18 +390,16 @@ bool CharacterBase::canPickUpEntity(Entity * const entity) {
 const char* CharacterBase::getAnimNameFromStates(const Direction::DIR4 dir) const {
 
     LuaManager::stackBalanceBegin();
-
-    static bool init = false;
-    static LuaVariant v;
     static char buffer[200] = { 0 };
-    if(!init) {
+
+
+    if(_getAnimNameFromStatesRef.isNil()) {
         LuaManager::getGlobal("getAnimNameFromStates");
-        assert(v.pull());
-        init = true;
+        assert(_getAnimNameFromStatesRef.pull());
     }
 
     const char* string = nullptr;
-    LuaVariant r = v(static_cast<const Character*>(this), dir);
+    LuaVariant r = _getAnimNameFromStatesRef(static_cast<const Character*>(this), dir);
 
     if(r.getType() == LUA_TSTRING) {
         if(r != "") {

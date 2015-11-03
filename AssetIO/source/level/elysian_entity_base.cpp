@@ -105,9 +105,9 @@ void EntityBase::pushViewTransform(void) {
     _oldZ = _transform._size.z;
 
     GYVector3 flip = {
-        getTransform().getFlipX()? -10.0f : 1.0f,
-        getTransform().getFlipY()? -10.0f : 1.0f,
-        getTransform().getFlipZ()? -10.0f : 1.0f
+        getTransform().getFlipX()? -1.0f : 1.0f,
+        getTransform().getFlipY()? -1.0f : 1.0f,
+        getTransform().getFlipZ()? -1.0f : 1.0f
     };
 
     if(_planeType == GY_RECT_PLANE_FRONT) {

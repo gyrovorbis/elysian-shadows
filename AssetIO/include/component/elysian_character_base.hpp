@@ -4,6 +4,7 @@
 #include <crtp/elysian_component.hpp>
 #include <level/elysian_direction.hpp>
 #include <crtp/elysian_lua_table_proxy.hpp>
+#include <crtp/elysian_lua_variant.hpp>
 
 #define ELYSIAN_CHAR_ANIM_SEQ_STAND_UP          "StandUp"
 #define ELYSIAN_CHAR_ANIM_SEQ_STAND_DOWN        "StandDown"
@@ -79,6 +80,10 @@ namespace elysian {
         bool				_animate			= true;
         bool				_movedThisFrame		= false;
         bool                _dashing            = false;
+
+        //REMOVE ME EVENTUALLY
+        mutable LuaVariant  _getAnimNameFromStatesRef;
+
 
         static float		_deltaTime;
         //Direction::DIR4		_prevDir			= Direction::DIR4_CENTER;
