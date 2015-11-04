@@ -181,8 +181,8 @@ void CharacterBase::moveByForce(const GYVector2 &dist) {
 
         if(_pullEntity) {
 
-            //gyVec2Scale(&objForce, &dist, (getEntityForceDampFactor()*_entity->getCollidable()->getAttrib()->getStaticAttrib()->getInverseMass())/_pullEntity->getCollidable()->getAttrib()->getStaticAttrib()->getInverseMass());
-            //_pullEntity->getRigidBody()->applyForce(GYVector3{ objForce.x, objForce.y, 0.0f });
+            gyVec2Scale(&objForce, &dist, (getEntityForceDampFactor()*_entity->getCollidable()->getAttrib()->getStaticAttrib()->getInverseMass())/_pullEntity->getCollidable()->getAttrib()->getStaticAttrib()->getInverseMass());
+            _pullEntity->getRigidBody()->applyForce(GYVector3{ objForce.x, objForce.y, 0.0f });
         }
     }
 

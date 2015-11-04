@@ -134,14 +134,13 @@ void PlayableBehavior::_processMovement(const float deltaTime, const Controller*
         } else {
             entity->getCharacter()->addState(Character::STATE_STRAFE);
             if(mag >= 0.7f && !entity->getCharacter()->isDashing()) mag = 0.699999f;
-
         }
 
         if(move){
             gyVec2ScaleAccum(&moveVec, mag);
 
             entity->getCharacter()->walk(moveVec);
-        }
+        } else entity->getCharacter()->removeState(Character::STATE_STRAFE);
 
 
 
