@@ -2,6 +2,7 @@
 #define ELYSIAN_COLLISION_SYSTEM_HPP
 
 #include <map>
+#include <functional>
 #include <gyro_kinetic.h>
 #include <utility/elysian_mem_pool.hpp>
 #include "elysian_system.hpp"
@@ -43,6 +44,9 @@ namespace elysian {
         friend class DebugBase;
         friend Debug;
 	public:
+
+        using ContactIteratorFunc = std::function<bool(const CollisionContact*const, const unsigned)>;
+
 		enum RENDER_LAYER {
 			RENDER_LAYER_1,
 			RENDER_LAYER_2,
@@ -128,6 +132,7 @@ namespace elysian {
         bool                    checkCollision(const Entity &entity1, const Entity &entity2) const;
         bool                    checkCollision(const Collidable &col1, const Collidable &col2) const;
         bool                    previouslyColliding(const Collidable &col1, const Collidable &col2) const;
+        void                    foreachContact(const Entity& entity, const ContactIteratorFunc& iter) const;
 
         SortSweepCollidable*    addSortSweepCollidable(void);
         void                    removeSortSweepCollidable(SortSweepCollidable* body);

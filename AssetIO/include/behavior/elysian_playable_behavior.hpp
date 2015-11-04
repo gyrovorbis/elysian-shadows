@@ -4,7 +4,7 @@
 #include <crtp/elysian_behavior.hpp>
 
 #define ELYSIAN_PLAYABLE_BEHAVIOR_NAME  "PlayableBehavior"
-#define ELYSIAN_PLAYABLE_BEHAVIOR_DASH_PART_TIME_INTERVAL    0.5f
+#define ELYSIAN_PLAYABLE_BEHAVIOR_DASH_PART_TIME_INTERVAL    0.3f
 
 namespace elysian {
 
@@ -23,7 +23,7 @@ namespace elysian {
         float                   _dashPartInterval           = ELYSIAN_PLAYABLE_BEHAVIOR_DASH_PART_TIME_INTERVAL;
         float                   _dashDuration               = 0.25f;
         float                   _tapTimer                   = 0.0f;
-        float                   _dashTapTimeWindow          = 1.0f;
+        float                   _dashTapTimeWindow          = 0.7f;
         float                   _dashPartTimer              = 0.0f;
         float                   _dashPartAngle              = 0.0f;
 

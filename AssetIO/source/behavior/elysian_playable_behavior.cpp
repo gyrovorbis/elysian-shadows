@@ -116,24 +116,32 @@ void PlayableBehavior::_processMovement(const float deltaTime, const Controller*
     }
 
         //Compensate for inaccuracy and over-sensitivity with dead-zones on either side
-        if(mag < 0.3f)      return;
+
+
+
+        const bool move = (mag < 0.3f)? false : true;
         mag -= 0.3f;
         mag /= 0.7f;
 
         GYVector2 moveVec = cont->getAnalogDir(GY_CONTROLLER_ANALOG_LEFT);
 
         if(!cont->isPressed(GY_CONTROLLER_BUT_LSHOULDER)/* && !entity->getCharacter()->getPullEntity()*/) {
-            auto dir = Direction::fromVector2(moveVec);
-            entity->getCharacter()->setFaceDir(dir);
+            if(move) {
+                auto dir = Direction::fromVector2(moveVec);
+                entity->getCharacter()->setFaceDir(dir);
+            }
+            entity->getCharacter()->removeState(Character::STATE_STRAFE);
         } else {
-
+            entity->getCharacter()->addState(Character::STATE_STRAFE);
             if(mag >= 0.7f && !entity->getCharacter()->isDashing()) mag = 0.699999f;
 
         }
 
-        gyVec2ScaleAccum(&moveVec, mag);
+        if(move){
+            gyVec2ScaleAccum(&moveVec, mag);
 
-        entity->getCharacter()->walk(moveVec);
+            entity->getCharacter()->walk(moveVec);
+        }
 
 
 

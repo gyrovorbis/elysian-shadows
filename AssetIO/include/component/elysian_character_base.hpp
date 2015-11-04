@@ -52,8 +52,11 @@ namespace elysian {
             STATE_DASH,
             STATE_JUMP,
             STATE_FALL,
+            STATE_PUSH,
+            STATE_DRAG,
             STATE_HOLD,
             STATE_COMBAT,
+            STATE_STRAFE,
             STATE_KNOCKBACK,
             STATE_ATTACK,
             STATE_DEATH,
@@ -93,6 +96,8 @@ namespace elysian {
 
         Entity*             _heldEntity     = nullptr;
         Entity*             _pullEntity     = nullptr;
+
+        bool                _checkPushing(void);
 
     public:
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
