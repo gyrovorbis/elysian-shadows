@@ -110,6 +110,10 @@
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_Qt
 
+#if defined(__linux__) && defined(__i386__)
+# define GYRO_MATH_SOFTWARE
+#endif
+
 #   define                                  GYRO_GLAL
 #   define                                  GYRO_GLAL_GL_Desktop
 #	define GYRO_MATRIX4_ALIGN			__attribute__ ((aligned (16)))

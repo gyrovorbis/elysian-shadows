@@ -1,6 +1,7 @@
 #include <xmmintrin.h>
 #include <string.h>
 #include <assert.h>
+#include "gyro_platform.h"
 
 
 #ifdef _WIN32
@@ -15,133 +16,152 @@
 extern GYMatrix4 _curMat;
 
 static inline void gyMatMultMat(GYMatrix4 dMat, const GYMatrix4 sMat1, const GYMatrix4 sMat2) {
-#if 0
-	res[0][0] = _curMat[0][0]*mat[0][0] + _curMat[1][0]*mat[0][1]+ _curMat[2][0]*mat[0][2]+ _curMat[3][0]*mat[0][3];
-	res[1][0] = _curMat[0][0]*mat[1][0] + _curMat[1][0]*mat[1][1]+ _curMat[2][0]*mat[1][2]+ _curMat[3][0]*mat[1][3];
-	res[2][0] = _curMat[0][0]*mat[2][0] + _curMat[1][0]*mat[2][1]+ _curMat[2][0]*mat[2][2]+ _curMat[3][0]*mat[2][3];
-	res[3][0] = _curMat[0][0]*mat[3][0] + _curMat[1][0]*mat[3][1]+ _curMat[2][0]*mat[3][2]+ _curMat[3][0]*mat[3][3];
-
-	res[0][1] = _curMat[0][1]*mat[0][0] + _curMat[1][1]*mat[0][1]+ _curMat[2][1]*mat[0][2]+ _curMat[3][1]*mat[0][3];
-	res[1][1] = _curMat[0][1]*mat[1][0] + _curMat[1][1]*mat[1][1]+ _curMat[2][1]*mat[1][2]+ _curMat[3][1]*mat[1][3];
-	res[2][1] = _curMat[0][1]*mat[2][0] + _curMat[1][1]*mat[2][1]+ _curMat[2][1]*mat[2][2]+ _curMat[3][1]*mat[2][3];
-	res[3][1] = _curMat[0][1]*mat[3][0] + _curMat[1][1]*mat[3][1]+ _curMat[2][1]*mat[3][2]+ _curMat[3][1]*mat[3][3];
-
-	res[0][2] = _curMat[0][2]*mat[0][0] + _curMat[1][2]*mat[0][1]+ _curMat[2][2]*mat[0][2]+ _curMat[3][2]*mat[0][3];
-	res[1][2] = _curMat[0][2]*mat[1][0] + _curMat[1][2]*mat[1][1]+ _curMat[2][2]*mat[1][2]+ _curMat[3][2]*mat[1][3];
-	res[2][2] = _curMat[0][2]*mat[2][0] + _curMat[1][2]*mat[2][1]+ _curMat[2][2]*mat[2][2]+ _curMat[3][2]*mat[2][3];
-	res[3][2] = _curMat[0][2]*mat[3][0] + _curMat[1][2]*mat[3][1]+ _curMat[2][2]*mat[3][2]+ _curMat[3][2]*mat[3][3];
-
-	res[0][3] = _curMat[0][3]*mat[0][0] + _curMat[1][3]*mat[0][1]+ _curMat[2][3]*mat[0][2]+ _curMat[3][3]*mat[0][3];
-	res[1][3] = _curMat[0][3]*mat[1][0] + _curMat[1][3]*mat[1][1]+ _curMat[2][3]*mat[1][2]+ _curMat[3][3]*mat[1][3];
-	res[2][3] = _curMat[0][3]*mat[2][0] + _curMat[1][3]*mat[2][1]+ _curMat[2][3]*mat[2][2]+ _curMat[3][3]*mat[2][3];
-	res[3][3] = _curMat[0][3]*mat[0][0] + _curMat[1][3]*mat[3][1]+ _curMat[2][3]*mat[3][2]+ _curMat[3][3]*mat[3][3];
+#ifdef GYRO_MATH_NOASM
+  for(int j = 0; j < 4; ++j) {
+    for(int i = 0; i < 4; ++i) {
+      dMat[i][j] = sMat1[0][j]*sMat2[i][0]
+          + sMat1[1][j]*sMat2[i][1]
+          + sMat1[2][j]*sMat2[i][2]
+          + sMat1[3][j]*sMat2[i][3];
+    }
+  }
 #else
-	__m128 dest_line, src1_line, src2_line;
-	unsigned i, j;
+  __m128 dest_line, src1_line, src2_line;
+  unsigned i, j;
 
-	for (i = 0; i < 16; i += 4) {
-	//unroll the first step of the loop to avoid having to initialize dest_line to zero
+  for (i = 0; i < 16; i += 4) {
+  //unroll the first step of the loop to avoid having to initialize dest_line to zero
         src1_line = MM_LOAD_ALIGN((float*)sMat1);									//first column
-		src2_line = _mm_set1_ps(((float*)sMat2)[i]);									//initialize vector to first index of ith column
-		dest_line = _mm_mul_ps(src1_line, src2_line);								//multiply
-		for (j = 1; j < 4; j++) {
+    src2_line = _mm_set1_ps(((float*)sMat2)[i]);									//initialize vector to first index of ith column
+    dest_line = _mm_mul_ps(src1_line, src2_line);								//multiply
+    for (j = 1; j < 4; j++) {
             src1_line = MM_LOAD_ALIGN(& (((float*)sMat1) [j<<2]) );					//jth column vector
-			src2_line = _mm_set1_ps( ((float*)sMat2) [i+j] );							//initialized to value of mat[i][j]
-			dest_line = _mm_add_ps(_mm_mul_ps(src1_line, src2_line), dest_line);	//multiply and accumulate column vector
-		}
+      src2_line = _mm_set1_ps( ((float*)sMat2) [i+j] );							//initialized to value of mat[i][j]
+      dest_line = _mm_add_ps(_mm_mul_ps(src1_line, src2_line), dest_line);	//multiply and accumulate column vector
+    }
         MM_STORE_ALIGN(& (((float*)dMat)[i]) , dest_line);								//store column vector
-	}
+  }
 
 #endif
 }
 
 static inline void gyMatApply(GYMatrix4 mat) {
-	GYMatrix4 result;
+  GYMatrix4 result;
     gyMatMultMat(result, (const float (*)[4])_curMat, (const float (*)[4])mat);
-	memcpy(_curMat, result, sizeof(GYMatrix4));
+  memcpy(_curMat, result, sizeof(GYMatrix4));
 }
 
 
 static inline void gyMatMultVec(const GYVector4 *const src, GYVector4 *const dest, const unsigned int count) {
-#if 0
-	float res[4];
-	unsigned int i;
-	for(i = 0; i < count; ++i) {
+#ifdef GYRO_MATH_NOASM
+  float res[4];
+  unsigned int i;
+  for(i = 0; i < count; ++i) {
 
-		res[0] = _curMat[0][0]*src[i].x + _curMat[1][0]*src[i].y + _curMat[2][0]*src[i].z + _curMat[3][0]*src[i].w;
-		res[1] = _curMat[0][1]*src[i].x + _curMat[1][1]*src[i].y + _curMat[2][1]*src[i].z + _curMat[3][1]*src[i].w;
-		res[2] = _curMat[0][2]*src[i].x + _curMat[1][2]*src[i].y + _curMat[2][2]*src[i].z + _curMat[3][2]*src[i].w;
-		res[3] = _curMat[0][3]*src[i].x + _curMat[1][3]*src[i].y + _curMat[2][3]*src[i].z + _curMat[3][3]*src[i].w;
+    res[0] = _curMat[0][0]*src[i].x + _curMat[1][0]*src[i].y + _curMat[2][0]*src[i].z + _curMat[3][0]*src[i].w;
+    res[1] = _curMat[0][1]*src[i].x + _curMat[1][1]*src[i].y + _curMat[2][1]*src[i].z + _curMat[3][1]*src[i].w;
+    res[2] = _curMat[0][2]*src[i].x + _curMat[1][2]*src[i].y + _curMat[2][2]*src[i].z + _curMat[3][2]*src[i].w;
+    res[3] = _curMat[0][3]*src[i].x + _curMat[1][3]*src[i].y + _curMat[2][3]*src[i].z + _curMat[3][3]*src[i].w;
 
-		memcpy(dest+i, res, sizeof(float)*4);
-	}
+    memcpy(dest+i, res, sizeof(float)*4);
+  }
 
 #else
 
-	__m128 dest_line, src1_line, src2_line;
-	unsigned i, j;
+  __m128 dest_line, src1_line, src2_line;
+  unsigned i, j;
   //  assert(((unsigned long)dest & 15) == 0);
 
-	//Unravel first iteration of the loop for dat optimization
-	for(j = 0; j < count; ++j) {													//iterate over every vertex
+  //Unravel first iteration of the loop for dat optimization
+  for(j = 0; j < count; ++j) {													//iterate over every vertex
         src1_line = MM_LOAD_ALIGN( (float*)_curMat );									//load first column vector
-		src2_line = _mm_set1_ps( ((float*)src)[j<<2] );								//initialize vector to value of first element
-		dest_line = _mm_mul_ps(src1_line, src2_line);								//multiply
+    src2_line = _mm_set1_ps( ((float*)src)[j<<2] );								//initialize vector to value of first element
+    dest_line = _mm_mul_ps(src1_line, src2_line);								//multiply
 
-		for (i=1; i < 4; ++i) {
+    for (i=1; i < 4; ++i) {
             src1_line = MM_LOAD_ALIGN(& ( ((float*)_curMat)[i<<2]) );					//load ith column vector
-			src2_line = _mm_set1_ps( ((float*)src)[(j<<2) + i] );					//initialize vector to value of ith element
-			dest_line = _mm_add_ps(_mm_mul_ps(src1_line, src2_line), dest_line);	//multiply and accumulate
-		}
+      src2_line = _mm_set1_ps( ((float*)src)[(j<<2) + i] );					//initialize vector to value of ith element
+      dest_line = _mm_add_ps(_mm_mul_ps(src1_line, src2_line), dest_line);	//multiply and accumulate
+    }
         MM_STORE_ALIGN((float*)(&dest[j]) , dest_line);								//store column vector
-	}
+  }
 
 
 #endif
 }
 
 static inline void gyMatLoad(GYMatrix4 *mat) {
-	memcpy(_curMat, mat, sizeof(GYMatrix4));
+  memcpy(_curMat, mat, sizeof(GYMatrix4));
 }
 
 static inline void gyMatStore(GYMatrix4 *mat) {
-	memcpy(mat, _curMat, sizeof(GYMatrix4));
+  memcpy(mat, _curMat, sizeof(GYMatrix4));
 }
 
 static inline void gyVec4Add(void* const dest, const void* const v1, const void* const v2) {
+#ifdef GYRO_MATH_NOASM
+  for(int i = 0; i < 4; ++i) {
+    ((float*)dest)[i] = ((float*)v1)[i]+((float*)v2)[i];
+  }
+#else
     const __m128 s1 = MM_LOAD_ALIGN((float*)v1);
     const __m128 s2 = MM_LOAD_ALIGN((float*)v2);
-	const __m128 d = _mm_add_ps(s1, s2);
+  const __m128 d = _mm_add_ps(s1, s2);
     MM_STORE_ALIGN((float*)dest, d);
+#endif
 }
 
 static inline void gyVec4Sub(void* const dest, const void* const v1, const void* const v2) {
-   // assert(((unsigned long)dest & 15) == 0);
+#ifdef GYRO_MATH_NOASM
+  for(int i = 0; i < 4; ++i) {
+    ((float*)dest)[i] = ((float*)v1)[i]-((float*)v2)[i];
+  }
+#else
+  // assert(((unsigned long)dest & 15) == 0);
     const __m128 s1 = MM_LOAD_ALIGN((float*)v1);
     const __m128 s2 = MM_LOAD_ALIGN((float*)v2);
-	const __m128 d = _mm_sub_ps(s1, s2);
+  const __m128 d = _mm_sub_ps(s1, s2);
     MM_STORE_ALIGN((float*)dest, d);
+#endif
 }
 
 static inline void gyVec4Mult(void* const dest, const void* const v1, const void* const v2) {
-    const __m128 s1 = MM_LOAD_ALIGN((float*)v1);
+#ifdef GYRO_MATH_NOASM
+  for(int i = 0; i < 4; ++i) {
+    ((float*)dest)[i] = ((float*)v1)[i]*((float*)v2)[i];
+  }
+#else
+  const __m128 s1 = MM_LOAD_ALIGN((float*)v1);
     const __m128 s2 = MM_LOAD_ALIGN((float*)v2);
-	const __m128 d = _mm_mul_ps(s1, s2);
+  const __m128 d = _mm_mul_ps(s1, s2);
     MM_STORE_ALIGN((float*)dest, d);
+#endif
 }
 
 static inline void gyVec4Div(void* const dest, const void* const v1, const void* const v2) {
-    const __m128 s1 = MM_LOAD_ALIGN((float*)v1);
+#ifdef GYRO_MATH_NOASM
+  for(int i = 0; i < 4; ++i) {
+    ((float*)dest)[i] = ((float*)v1)[i]/((float*)v2)[i];
+  }
+#else
+  const __m128 s1 = MM_LOAD_ALIGN((float*)v1);
     const __m128 s2 = MM_LOAD_ALIGN((float*)v2);
-	const __m128 d = _mm_div_ps(s1, s2);
+  const __m128 d = _mm_div_ps(s1, s2);
     MM_STORE_ALIGN((float*)dest, d);
+#endif
 }
 
 static inline void gyVec4Scale(void* const dest, const void* const v1, const float s) {
-    const __m128 s1 = MM_LOAD_ALIGN((float*)v1);
-	const __m128 s2 = _mm_set1_ps(s);
-	const __m128 d = _mm_mul_ps(s1, s2);
+#ifdef GYRO_MATH_NOASM
+  for(int i = 0; i < 4; ++i) {
+    ((float*)dest)[i] = ((float*)v1)[i]*s;
+  }
+#else
+  const __m128 s1 = MM_LOAD_ALIGN((float*)v1);
+  const __m128 s2 = _mm_set1_ps(s);
+  const __m128 d = _mm_mul_ps(s1, s2);
     MM_STORE_ALIGN((float*)dest, d);
+#endif
 }
 
 #define VEC2(a) ((GYVector2*)a)
@@ -298,7 +318,7 @@ static inline void gyVec3CrossProd(void* const dest, const void* const src1, con
 }
 
 static inline void gyVec3AddScaled(void*const dest, const void*const vec,
-														 const float scalar) {
+                             const float scalar) {
     VEC3(dest)->x += scalar * VEC3(vec)->x;
     VEC3(dest)->y += scalar * VEC3(vec)->y;
     VEC3(dest)->z += scalar * VEC3(vec)->z;
