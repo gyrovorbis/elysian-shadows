@@ -1547,9 +1547,37 @@ bool CollisionSystem::checkCollision(const Collidable &col1, const Collidable &c
     return false;
 }
 
-    CollisionSystem::RENDER_LAYER CollisionSystem::cycleRenderLayer(void) {
-        _renderLayer = (_renderLayer+1 == RENDER_MAX)? RENDER_LAYER_1 : (RENDER_LAYER)(_renderLayer+1);
-        return _renderLayer;
+CollisionSystem::RENDER_LAYER CollisionSystem::cycleRenderLayer(void) {
+    _renderLayer = (_renderLayer+1 == RENDER_MAX)? RENDER_LAYER_1 : (RENDER_LAYER)(_renderLayer+1);
+    return _renderLayer;
+}
+
+/* Exceptionally inefficient, but at least this is a pristine, uniform interface, so later optimization
+ * for contact management, retrieval, and grouping can be centralized here.
+ */
+
+void CollisionSystem::foreachContact(const Entity& entity, const ContactIteratorFunc& iter) const {
+    auto* col       = entity.getCollidable();
+    auto count      = col->getContactCount();
+    bool exit       = false;
+
+    if(!count) return;
+
+    for(unsigned i = 0; i < _contactAmount; ++i) {
+        const auto* con = &_contactPool[i];
+        const int index = con->getBodyIndex(col);
+
+        if(index >= 0) {
+            exit = iter(con, index);
+            --count;
+        }
+
+        if(count == 0 || exit) break; //found them all or user-function is done, exit early.
     }
+}
+
 
 }
+
+
+

@@ -101,14 +101,12 @@ EntityBase::~EntityBase(void) {
 }
 
 void EntityBase::pushViewTransform(void) {
+    GYMatrix4 mat;
     gyMatPush();
+    gyMatPush();
+    gyMatLoadIdentity();
     _oldZ = _transform._size.z;
 
-    GYVector3 flip = {
-        getTransform().getFlipX()? -1.0f : 1.0f,
-        getTransform().getFlipY()? -1.0f : 1.0f,
-        getTransform().getFlipZ()? -1.0f : 1.0f
-    };
 
     if(_planeType == GY_RECT_PLANE_FRONT) {
         _transform._size.z = _transform._size.y;
@@ -121,7 +119,7 @@ void EntityBase::pushViewTransform(void) {
 
         gyMatTranslate(_transform._pos.x, _transform._pos.y, _transform._pos.z);
         gyMatRotate(_transform._angle, _transform._orient.x, _transform._orient.y, _transform._orient.z);
-        gyMatScale(_transform._size.x*_transform._scale.x*flip.x, _transform._size.y*_transform._scale.y*flip.y, _transform._size.z*_transform._scale.z*flip.z);
+        gyMatScale(_transform._size.x*_transform._scale.x, _transform._size.y*_transform._scale.y, _transform._size.z*_transform._scale.z);
         if(_renderable) {
             //gyMatTranslate(_renderable->getOffsetVec().x, _renderable->getOffsetVec().y, 0.0f);
         }
@@ -131,12 +129,27 @@ void EntityBase::pushViewTransform(void) {
 
         gyMatTranslate(_transform._pos.x, _transform._pos.y, _transform._pos.z);
         gyMatRotate(_transform._angle, _transform._orient.x, _transform._orient.y, _transform._orient.z);
-        gyMatScale(_transform._size.x*_transform._scale.x*flip.x, _transform._size.y*_transform._scale.y*flip.y, _transform._size.z*_transform._scale.z*flip.z);
+        gyMatScale(_transform._size.x*_transform._scale.x, _transform._size.y*_transform._scale.y, _transform._size.z*_transform._scale.z);
         if(_renderable) {
             //gyMatTranslate(_renderable->getOffsetVec().x, _renderable->getOffsetVec().y, 0.0f);
         }
-
     }
+
+    gyMatStore(&mat);
+
+    if(_transform.getFlipX()) {
+        mat[0][0] *= -1.0f;
+        mat[1][0] *= -1.0f;
+    }
+
+    if(_transform.getFlipY()) {
+        mat[0][1] *= -1.0f;
+        mat[1][1] *= -1.0f;
+    }
+
+    gyMatPop();
+    gyMatApply(mat);
+
 
 }
 

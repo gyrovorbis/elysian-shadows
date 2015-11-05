@@ -52,8 +52,11 @@ namespace elysian {
             STATE_DASH,
             STATE_JUMP,
             STATE_FALL,
+            STATE_PUSH,
+            STATE_DRAG,
             STATE_HOLD,
             STATE_COMBAT,
+            STATE_STRAFE,
             STATE_KNOCKBACK,
             STATE_ATTACK,
             STATE_DEATH,
@@ -71,6 +74,7 @@ namespace elysian {
         CharacterBase&      operator=(const CharacterBase& rhs);
 
         OOLUA::Lua_func_ref _luaCallback;
+        int                 _callbackTrack      = 0;
         bool                _tempStateActive    = false;
         Direction::DIR4		_faceDir			= Direction::DIR4_CENTER;
         GYVector3			_lastMoveDir		= { 0.0f, 0.0f, 0.0f };
@@ -92,6 +96,8 @@ namespace elysian {
 
         Entity*             _heldEntity     = nullptr;
         Entity*             _pullEntity     = nullptr;
+
+        bool                _checkPushing(void);
 
     public:
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
@@ -142,7 +148,7 @@ namespace elysian {
         void                addChildEntity(Entity*entity, const char*const name);
         void                removeState(const ANIM_STATE state);
         void                addState(const ANIM_STATE state);
-        void                addTempState(const ANIM_STATE state, OOLUA::Lua_func_ref ref);
+        void                addTempState(const ANIM_STATE state, const int trackIndex, OOLUA::Lua_func_ref ref);
         bool                hasState(const ANIM_STATE state) const;
         void                setSpeedMultiplier(const float factor);
         const char*         getAnimNameFromStates(const Direction::DIR4 dir) const;

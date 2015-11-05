@@ -6,6 +6,8 @@
 #include <crtp/elysian_area.hpp>
 #include <crtp/elysian_skeleton.hpp>
 #include <crtp/elysian_lua_variant.hpp>
+#include <lua/elysian_lua_singleton.hpp>
+#include <system/elysian_collision_system.hpp>
 #if 1
 #include <proxy/elysian_entity_proxy.hpp>
 #include <proxy/elysian_primitive_proxy.hpp>
@@ -179,8 +181,8 @@ void CharacterBase::moveByForce(const GYVector2 &dist) {
 
         if(_pullEntity) {
 
-            //gyVec2Scale(&objForce, &dist, (getEntityForceDampFactor()*_entity->getCollidable()->getAttrib()->getStaticAttrib()->getInverseMass())/_pullEntity->getCollidable()->getAttrib()->getStaticAttrib()->getInverseMass());
-            //_pullEntity->getRigidBody()->applyForce(GYVector3{ objForce.x, objForce.y, 0.0f });
+            gyVec2Scale(&objForce, &dist, (getEntityForceDampFactor()*_entity->getCollidable()->getAttrib()->getStaticAttrib()->getInverseMass())/_pullEntity->getCollidable()->getAttrib()->getStaticAttrib()->getInverseMass());
+            _pullEntity->getRigidBody()->applyForce(GYVector3{ objForce.x, objForce.y, 0.0f });
         }
     }
 
@@ -193,6 +195,11 @@ void CharacterBase::moveByForce(const GYVector2 &dist) {
 }
 
 void CharacterBase::update(void) {
+
+    const auto pushing = _checkPushing();
+
+    if(!pushing) removeState(STATE_PUSH);
+
 	if(!_movedThisFrame) {
         replaceState(STATE_WALK, STATE_STAND);
         replaceState(STATE_RUN, STATE_STAND);
@@ -202,11 +209,36 @@ void CharacterBase::update(void) {
 	else _movedThisFrame = false;
 
     //Set falling animation state
-    if(_entity->getRigidBody()->getVelocity().z < 0.0f) replaceState(STATE_JUMP, STATE_FALL);
+    if(_entity->getRigidBody()->getVelocity().z < 0.0f) {
+        replaceState(STATE_JUMP, STATE_FALL);
+        removeState(STATE_PUSH);
+    }
+
     if(_entity->getRigidBody()->getRestingOnBody()) {
         removeState(STATE_KNOCKBACK);
         removeState(STATE_FALL);
+        if(pushing) addState(STATE_PUSH);
+
     }
+}
+
+bool CharacterBase::_checkPushing(void) {
+    bool found = false;
+
+    Singletons::getCollisionSys()->foreachContact(*getEntity(), [&](const CollisionContact*const contact, const int bodyIndex) {
+        GYVector2 normal;
+        contact->getNormal(bodyIndex? 0 : 1, normal);
+
+        if(_faceDir == Direction::fromVector2(normal)) {
+            found = true;
+            return true;
+        }
+
+        return false;
+    });
+
+    return found;
+
 }
 
 void CharacterBase::setHeldEntity(Entity * const entity) {
@@ -422,27 +454,36 @@ void CharacterBase::applyKnockbackForce(const GYVector3 &force) {
 
 }
 
-void CharacterBase::addTempState(const ANIM_STATE state, OOLUA::Lua_func_ref ref) {
-    _tempStateActive = true;
-    _luaCallback = ref;
+void CharacterBase::addTempState(const ANIM_STATE state, const int track, OOLUA::Lua_func_ref ref) {
+    _tempStateActive    = true;
+    _luaCallback        = ref;
+    _callbackTrack      = track;
+
     addState(state);
     auto*name = getAnimNameFromStates(_faceDir);
 
     if(name) {
         getEntity()->getSkeleton()->setAnim(name, [=](int trackIndex, spEventType eventType, spEvent* event, int loopCount) {
-            LuaVariant v;
 
-            switch(eventType) {
-            case SP_ANIMATION_COMPLETE:
-                OOLUA::push(*_mainState, _luaCallback);
-                v.pull();
-                (void)v();
-                _tempStateActive = false;
-                removeState(state);
-                break;
-            default: break;
+            if(_callbackTrack == trackIndex || _callbackTrack == -1) {
+                LuaVariant v;
+
+                switch(eventType) {
+                case SP_ANIMATION_END:
+                case SP_ANIMATION_COMPLETE:
+
+                    OOLUA::push(*_mainState, _luaCallback);
+                    v.pull();
+                    (void)v();
+                    _tempStateActive = false;
+                    removeState(state);
+                    return true;
+                    break;
+                default: break;
+                }
+
             }
-
+            return false;
 
         });
     }

@@ -241,9 +241,11 @@ namespace elysian {
 
     public:
         Collidable*		getCollidable(const unsigned index) const;
+        int             getBodyIndex(const Collidable*const body) const;
         const GYStatic*	getStaticAttrib(const unsigned index) const;
         void			getWorldPos(GYVector2& pos) const;
         void			getNormal(GYVector2& _normal) const;
+        void            getNormal(const unsigned body, GYVector2& _normal) const;
         void			getObjPos(const unsigned index, GYVector2& pos) const;
         float			getSeparatingVel(void) const;
         float			getClosingVel(void) const;
@@ -341,10 +343,16 @@ namespace elysian {
 
 
 
+    inline int CollisionContact::getBodyIndex(const Collidable*const body) const {
+        if(body == _bodyA) return 0;
+        else if(body == _bodyB) return 1;
+        else return -1;
+    }
     inline Collidable* CollisionContact::getCollidable(const unsigned index) const { return (index == 0)? _bodyA : _bodyB; }
     inline const GYStatic* CollisionContact::getStaticAttrib(const unsigned index) const { return staticAttrib[index]; }
     inline void CollisionContact::getWorldPos(GYVector2 &pos) const { pos = worldPos; }
     inline void CollisionContact::getNormal(GYVector2 &_normal) const { _normal = normal; }
+    inline void CollisionContact::getNormal(const unsigned body, GYVector2 &_normal) const { gyVec2Scale(&_normal, &normal, body? -1.0f : 1.0f); }
     inline void CollisionContact::getObjPos(const unsigned index, GYVector2 &pos) const { pos = objPos[index]; }
     inline float CollisionContact::getSeparatingVel(void) const { return sepVel; }
     inline float CollisionContact::getClosingVel(void) const { return closingVel; }
