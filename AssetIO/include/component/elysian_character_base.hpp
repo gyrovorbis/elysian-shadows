@@ -55,10 +55,13 @@ namespace elysian {
             STATE_PUSH,
             STATE_DRAG,
             STATE_HOLD,
+            STATE_THROW,
             STATE_COMBAT,
             STATE_STRAFE,
             STATE_KNOCKBACK,
             STATE_ATTACK,
+            STATE_CHARGE,
+            STATE_SHOOT,
             STATE_DEATH,
             STATE_COUNT
         };

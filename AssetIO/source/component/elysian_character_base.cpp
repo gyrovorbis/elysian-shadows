@@ -257,7 +257,7 @@ void CharacterBase::setHeldEntity(Entity * const entity) {
             entity->getRigidBody()->clearKinetic();
             entity->getCollidable()->setActive(false);
             //addChildEntity(entity, ELYSIAN_CHAR_ANIM_CHILD_SEQ_HELD);
-            getEntity()->getSkeleton()->attachEntityToSlot("l_hand_socket", entity);
+            getEntity()->getSkeleton()->attachEntityToSlot("l_hand_slot", entity);
 
             removeState(STATE_WALK);
             removeState(STATE_STAND);
@@ -267,6 +267,7 @@ void CharacterBase::setHeldEntity(Entity * const entity) {
         }
     } else {
         removeState(STATE_HOLD);
+        getEntity()->getSkeleton()->removeEntityFromSlot("l_hand_slot");
     }
 
 }
@@ -329,6 +330,7 @@ void CharacterBase::throwHeldEntity(void) {
     //Also apply a force to "throw" the bitch in the direction we're facing
     if(_movedThisFrame) _heldEntity->getRigidBody()->applyForce(throwForce);
 
+    _heldEntity->activate();
     setHeldEntity(nullptr);
 }
 
