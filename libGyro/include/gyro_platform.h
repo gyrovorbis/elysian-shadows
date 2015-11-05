@@ -111,7 +111,7 @@
 #elif GYRO_PLATFORM == GYRO_PLATFORM_Qt
 
 #if defined(__linux__) && defined(__i386__)
-# define GYRO_MATH_SOFTWARE
+# define GYRO_MATH_NOASM
 #endif
 
 #   define                                  GYRO_GLAL
