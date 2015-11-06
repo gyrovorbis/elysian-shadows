@@ -6,11 +6,11 @@
 
 namespace elysian {
 
-class PathfindingSystem : public System {
+class PathfindingSystemBase : public System {
  public:
   struct Node;
 
-  PathfindingSystem() = default;
+  PathfindingSystemBase() = default;
 
   void findAllPathsTo(const unsigned short x, const unsigned short y);
 
