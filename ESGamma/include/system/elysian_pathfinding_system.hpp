@@ -10,6 +10,8 @@ class PathfindingSystemBase : public System {
  public:
   struct Node {
     Node* Predecessor = nullptr;
+    unsigned short PosX;
+    unsigned short PosY;
     int Distance = -1;
     bool Visited = false;
   };

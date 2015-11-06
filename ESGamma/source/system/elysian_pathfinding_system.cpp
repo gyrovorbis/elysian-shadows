@@ -6,8 +6,8 @@
 namespace elysian {
 
 void PathfindingSystemBase::findAllPathsTo(const unsigned short x,
-                                       const unsigned short y,
-                                       const int maxDistance) {
+                                           const unsigned short y,
+                                           const int maxDistance) {
   // Although static, it's not necessarry to clear frontier, because at the end
   // of this function, it will always be empty
   static std::deque<Node*> frontier;
@@ -21,9 +21,7 @@ void PathfindingSystemBase::findAllPathsTo(const unsigned short x,
   }
 
   // Breadth first search
-  int currPosX = x;
-  int currPosY = y;
-  Node* current = &mMap[currPosX + mCurrentArea->width * currPosY];
+  Node* current = &mMap[x + mCurrentArea->width * y];
   Node* previous = nullptr;
   Node* next = nullptr;
   frontier.push_back(current);
@@ -34,10 +32,10 @@ void PathfindingSystemBase::findAllPathsTo(const unsigned short x,
     // Check for collider
     bool collidable = false;
     for (int layer = 0; layer < 3; ++layer) {
-      if (mCurrentLevel->getTile(mCurrentArea->getTileEntry(layer, currPosX,
-                                                            currPosY)
-                                     .getIndex())->getColliderType() !=
-          Tile::COLLIDER_NONE) {
+      if (mCurrentLevel->getTile(mCurrentArea->getTileEntry(
+                                                   layer, current->PosX,
+                                                   current->PosY).getIndex())
+              ->getColliderType() != Tile::COLLIDER_NONE) {
         collidable = true;
         break;
       }
@@ -53,32 +51,33 @@ void PathfindingSystemBase::findAllPathsTo(const unsigned short x,
     }
 
     // Add children to frontier
-    if (currPosX > 0) {
-      next = &mMap[--currPosX + mCurrentArea->width * currPosY];
+    // TODO Consider adding the diagonal neighbors with distance = sqrt(2)
+    if (current->PosX > 0) {
+      next = &mMap[current->PosX - 1 + mCurrentArea->width * current->PosY];
       if (next != previous && !next->Visited) {
         next->Predecessor = current;
         next->Visited = true;
         frontier.push_back(current);
       }
     }
-    if (currPosX < mCurrentArea->width - 2) {
-      next = &mMap[++currPosX + mCurrentArea->width * currPosY];
+    if (current->PosX < mCurrentArea->width - 2) {
+      next = &mMap[current->PosX + 1 + mCurrentArea->width * current->PosY];
       if (next != previous && !next->Visited) {
         next->Predecessor = current;
         next->Visited = true;
         frontier.push_back(current);
       }
     }
-    if (currPosY > 0) {
-      next = &mMap[currPosX + mCurrentArea->width * --currPosY];
+    if (current->PosY > 0) {
+      next = &mMap[current->PosX + mCurrentArea->width * (current->PosY - 1)];
       if (next != previous && !next->Visited) {
         next->Predecessor = current;
         next->Visited = true;
         frontier.push_back(current);
       }
     }
-    if (currPosY < mCurrentArea->height - 2) {
-      next = &mMap[currPosX + mCurrentArea->width * ++currPosY];
+    if (current->PosY < mCurrentArea->height - 2) {
+      next = &mMap[current->PosX + mCurrentArea->width * (current->PosY + 1)];
       if (next != previous && !next->Visited) {
         next->Predecessor = current;
         next->Visited = true;
@@ -116,6 +115,12 @@ void PathfindingSystemBase::init() {
   const size_t byteSize =
       sizeof(Node) * mCurrentArea->height * mCurrentArea->width;
   mMap = (Node*)malloc(byteSize);
+  for (size_t y = 0; y < mCurrentArea->height; ++y) {
+    for (size_t x = 0; x < mCurrentArea->width; ++x) {
+      mMap[x + mCurrentArea->width * y].PosX = x;
+      mMap[x + mCurrentArea->width * y].PosY = y;
+    }
+  }
   initSearch();
 }
 
@@ -123,11 +128,12 @@ void PathfindingSystemBase::initSearch() {
   if (nullptr == mMap || nullptr == mCurrentArea) {
     return;
   }
-  const size_t nodeCount = mCurrentArea->width * mCurrentArea->height;
-  for (size_t i = 0; i < nodeCount; ++i) {
-    mMap[i].Predecessor = nullptr;
-    mMap[i].Distance = -1;
-    mMap[i].Visited = false;
+  for (size_t y = 0; y < mCurrentArea->height; ++y) {
+    for (size_t x = 0; x < mCurrentArea->width; ++x) {
+      mMap[x + mCurrentArea->width * y].Predecessor = nullptr;
+      mMap[x + mCurrentArea->width * y].Distance = -1;
+      mMap[x + mCurrentArea->width * y].Visited = false;
+    }
   }
 }
 }
