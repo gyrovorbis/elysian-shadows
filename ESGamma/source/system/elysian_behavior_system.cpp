@@ -12,6 +12,7 @@ namespace elysian {
 
         for(auto behav : behaviors) {
             if(!behav->getEntity()) continue;
+            assert(behav->isActive());
             assert(behav->getEntity()->isActive());
             if(behav->getTriggers() & triggers) {
                 lambda(behav);

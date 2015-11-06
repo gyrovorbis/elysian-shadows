@@ -53,7 +53,7 @@ void CollisionSystem::update(void) {
 
     //release every SortSweepCollidable whose collidable is no longer active
     for(auto it = _sortSweepPool.begin(); it != _sortSweepPool.end(); ++it) {
-        if(!(*it).collidable->getEntity()->isActive()) {
+        if(!(*it).collidable->isActive()) {
             _sortSweepPool.removeAABB((*it));
         }
     }
@@ -420,12 +420,13 @@ void CollisionSystem::detectCollisions(void) {
 
 		if(!_broadPhase) {
 			for(i = 0; i < _curArea->collidables.size(); ++i) {
-                detectEntityCollision(i);
+                if(_curArea->collidables[i]->isActive()) detectEntityCollision(i);
 			}
 		} else {
 			_sortSweepPool.sortAndSweep();
             for(unsigned i = 0; i < _sortSweepPool.getContactCount(); ++i) {
-                _detectEntityEntityCollision(_sortSweepPool.getContactBodyA(i)->getEntity(), _sortSweepPool.getContactBodyB(i)->getEntity());
+                if(_sortSweepPool.getContactBodyA(i)->isActive())
+                    _detectEntityEntityCollision(_sortSweepPool.getContactBodyA(i)->getEntity(), _sortSweepPool.getContactBodyB(i)->getEntity());
             }
 
 		}
@@ -527,6 +528,8 @@ bool CollisionSystem::detectCollidableCollidableCollision(Collidable* col1, Coll
     bool worldSpace = bodyA->_worldSpace;
 
     gyColliderCurrent(&bodyA->_collider.col, bodyA->getAttrib()->getStaticAttrib());
+
+    if(!col1->isActive() || !col2->isActive()) return false;
 
     //Return if collision flags don't match OR
     //if both are on different z-planes.
@@ -667,6 +670,8 @@ bool CollisionSystem::_detectEntityEntityCollision(Entity * const entity1, Entit
 	_entityEntityChecks++;
 
 	if(!bodyB || !bodyA) return false;
+
+    if(!bodyA->isActive() || !bodyB->isActive()) return false;
 
     gyColliderCurrent(&bodyA->_collider.col, bodyA->getAttrib()->getStaticAttrib());
 

@@ -171,7 +171,7 @@ namespace elysian {
 		void		addTrigger(const TRIGGER flag);
 		void		addTriggers(const uint64_t flags);
 		void		removeTrigger(const TRIGGER flag);
-		inline bool getActive(void) const { return _active; }
+        inline bool isActive(void) const { return _active; }
 		inline void setActive(const bool val=true) { _active = val; }
 		
         //polymorphic component shit

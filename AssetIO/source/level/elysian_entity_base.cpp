@@ -415,9 +415,9 @@ bool EntityBase::activate(void) {
     }
 
     for(auto it : _behaviors) {
-        if(!it->getActive()) {
+        if(!it->isActive()) {
             _area->behaviors.push_back(it);
-            it->setActive();
+            it->setActive(true);
 		}
 	}
 
@@ -478,7 +478,7 @@ bool EntityBase::deactivate(void) {
     }
 
     for(auto it : _behaviors) {
-        if(it->getActive()) {
+        if(it->isActive()) {
             containerEraseOnMatch(it, _area->behaviors);
             it->setActive(false);
 		}

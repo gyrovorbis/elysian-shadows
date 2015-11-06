@@ -257,7 +257,7 @@ void CharacterBase::setHeldEntity(Entity * const entity) {
             entity->getRigidBody()->clearKinetic();
             entity->getCollidable()->setActive(false);
             //addChildEntity(entity, ELYSIAN_CHAR_ANIM_CHILD_SEQ_HELD);
-            getEntity()->getSkeleton()->attachEntityToSlot("l_hand_slot", entity);
+            getEntity()->getSkeleton()->attachEntityToSlot("hold_slot", entity);
 
             removeState(STATE_WALK);
             removeState(STATE_STAND);
@@ -267,7 +267,7 @@ void CharacterBase::setHeldEntity(Entity * const entity) {
         }
     } else {
         removeState(STATE_HOLD);
-        getEntity()->getSkeleton()->removeEntityFromSlot("l_hand_slot");
+        getEntity()->getSkeleton()->removeEntityFromSlot("hold_slot");
     }
 
 }

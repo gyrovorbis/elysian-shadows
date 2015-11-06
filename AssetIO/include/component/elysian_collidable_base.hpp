@@ -202,6 +202,7 @@ namespace elysian {
         void                    setWorldSize(const Vector3& size);
         void                    setWorldPos(const Vector3& pos);
         void                    setActive(const bool val);
+        bool                    isActive(void) const;
         bool                    getRestingOnBody(void) const;
         void                    setRestingOnBody(const bool v);
         bool                    getStackedOnGround(void) const;
@@ -309,6 +310,7 @@ namespace elysian {
     inline const GYVector3& CollidableBase::getWorldPos(void) const { return _collider.col.worldPos; }
     inline const GYVector3& CollidableBase::getWorldSize(void) const { return _worldSize; }
     inline void CollidableBase::setActive(const bool val) { _active = val; }
+    inline bool CollidableBase::isActive(void) const { return _active; }
     inline bool CollidableBase::getStackedOnGround(void) const { return _stackedOnGround; }
     inline bool CollidableBase::getRestingOnBody(void) const { return _restingOnBody; }
     inline void CollidableBase::setStackedOnGround(const bool v) { _stackedOnGround = v; }
