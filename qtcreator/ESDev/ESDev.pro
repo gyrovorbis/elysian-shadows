@@ -6,13 +6,13 @@ CONFIG 	+= console
 
 
 SUBDIRS +=  ../../libGyro/qtcreator/libGyro \
-	../../Lua5.2/qtcreator/Lua5_2 \
-	../../OOLua/qtcreator/OOLua \
-	../../Spine/qtcreator/Spine
+  ../../Lua5.2/qtcreator/Lua5_2 \
+  ../../OOLua/qtcreator/OOLua \
+  ../../Spine/qtcreator/Spine
 
 
 tests {
-	SUBDIRS += ../../UnitTests
+  SUBDIRS += ../../UnitTests
 }
 
 
@@ -27,10 +27,10 @@ OOLua.depends = Lua5_2
 #ESGamma.depends += libGyro \
  #       OOLua
 ESToolkit.depends += libGyro \
-	OOLua \
-	Spine
+  OOLua \
+  Spine
 
 
 tests {
-	ESToolkit.depends += UnitTests
+  ESToolkit.depends += UnitTests
 }
