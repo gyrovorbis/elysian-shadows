@@ -6,13 +6,18 @@
 
 namespace elysian {
 
-class PathfindingSystem : public System {
+class PathfindingSystemBase : public System {
  public:
-  struct Node;
+  struct Node {
+    Node* Predecessor = nullptr;
+    int Distance = -1;
+    bool Visited = false;
+  };
 
-  PathfindingSystem() = default;
+  PathfindingSystemBase() = default;
 
-  void findAllPathsTo(const unsigned short x, const unsigned short y);
+  void findAllPathsTo(const unsigned short x, const unsigned short y,
+                      const int maxDistance = -1);
 
   const Node* getTileNode(const unsigned short x, const unsigned short y) const;
 
@@ -22,6 +27,7 @@ class PathfindingSystem : public System {
 
   Node* mMap = nullptr;
   Area* mCurrentArea = nullptr;
+  Level* mCurrentLevel = nullptr;
 };
 }
 #endif  // ELYSIAN_PATHFINDING_SYSTEM_HPP

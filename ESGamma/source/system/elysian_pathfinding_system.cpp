@@ -1,17 +1,13 @@
 #include "elysian_pathfinding_system.hpp"
 #include <crtp/elysian_area.hpp>
+#include <crtp/elysian_level.hpp>
 #include <deque>
 
 namespace elysian {
 
-struct PathfindingSystemBase::Node {
-  Node* Predecessor = nullptr;
-  int Distance = -1;
-  bool Visited = false;
-};
-
 void PathfindingSystemBase::findAllPathsTo(const unsigned short x,
-                                           const unsigned short y) {
+                                       const unsigned short y,
+                                       const int maxDistance) {
   // Although static, it's not necessarry to clear frontier, because at the end
   // of this function, it will always be empty
   static std::deque<Node*> frontier;
@@ -19,8 +15,8 @@ void PathfindingSystemBase::findAllPathsTo(const unsigned short x,
   // Exit if no area loaded, bad tile coordinates or init failed (e.g. bad
   // alloc)
   init();
-  if (nullptr == mMap || nullptr == mCurrentArea || x >= mCurrentArea->width ||
-      y >= mCurrentArea->height) {
+  if (nullptr == mMap || nullptr == mCurrentArea || nullptr == mCurrentLevel ||
+      x >= mCurrentArea->width || y >= mCurrentArea->height) {
     return;
   }
 
@@ -34,8 +30,29 @@ void PathfindingSystemBase::findAllPathsTo(const unsigned short x,
   while (!frontier.empty()) {
     current = frontier.front();
     frontier.pop_front();
-    // TODO if collidable -> continue
+
+    // Check for collider
+    bool collidable = false;
+    for (int layer = 0; layer < 3; ++layer) {
+      if (mCurrentLevel->getTile(mCurrentArea->getTileEntry(layer, currPosX,
+                                                            currPosY)
+                                     .getIndex())->getColliderType() !=
+          Tile::COLLIDER_NONE) {
+        collidable = true;
+        break;
+      }
+    }
+    if (collidable) {
+      continue;
+    }
+
+    // Get distance and compare agains max distance
     current->Distance = (previous == nullptr ? 0 : previous->Distance + 1);
+    if (maxDistance >= 0 && current->Distance >= maxDistance) {
+      continue;
+    }
+
+    // Add children to frontier
     if (currPosX > 0) {
       next = &mMap[--currPosX + mCurrentArea->width * currPosY];
       if (next != previous && !next->Visited) {
@@ -88,6 +105,7 @@ void PathfindingSystemBase::init() {
     return;
   }
   mCurrentArea = LevelManager::getCurrentArea();
+  mCurrentLevel = LevelManager::getCurrentLevel();
   if (nullptr == mCurrentArea) {
     return;
   }
