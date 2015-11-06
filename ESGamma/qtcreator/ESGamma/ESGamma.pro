@@ -79,6 +79,7 @@ HEADERS += \
     ../../include/elysian_camera_system.hpp \
     ../../include/elysian_behavior_system.hpp \
     ../../include/elysian_animation_system.hpp \
+    ../../include/elysian_pathfinding_system.hpp \
     ../../include/elysian_adventure_log.hpp \
     ../../../AssetIO/include/elysian_zcoords.hpp \
     ../../../AssetIO/include/elysian_warp.hpp \
@@ -153,6 +154,7 @@ SOURCES += \
     ../../source/elysian_camera_system.cpp \
     ../../source/elysian_behavior_system.cpp \
     ../../source/elysian_animation_system.cpp \
+    ../../source/elysian_pathfinding_system.cpp \
     ../../source/elysian_adventure_log.cpp \
     ../../../AssetIO/source/elysian_zcoords.cpp \
     ../../../AssetIO/source/elysian_warp.cpp \

@@ -198,7 +198,8 @@ SOURCES += \
     ../../AssetIO/source/level/elysian_dialog_screen_base.cpp \
     ../../ESGamma/source/proxy/elysian_input_system_proxy.cpp \
     ../../ESGamma/source/system/elysian_input_system_base.cpp \
-    ../../AssetIO/source/behavior/elysian_playable_behavior.cpp
+    ../../AssetIO/source/behavior/elysian_playable_behavior.cpp \
+    ../../ESGamma/source/system/elysian_pathfinding_system.cpp
 
 
 
@@ -358,6 +359,7 @@ HEADERS += \
     ../../ESGamma/include/system/elysian_skeleton_system.hpp \
     ../../ESGamma/include/system/elysian_system.hpp \
     ../../ESGamma/include/system/elysian_warp_system.hpp \
+    ../../ESGamma/include/system/elysian_pathfinding_system.hpp \
     ../../ESGamma/include/utility/elysian_debug_base.hpp \
     ../../ESGamma/include/utility/elysian_event_monitor.hpp \
     ../../ESGamma/include/utility/elysian_force_generator.hpp \
