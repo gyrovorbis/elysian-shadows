@@ -42,11 +42,19 @@ void CollisionSystem::render(void) {
 void CollisionSystem::update(void) {
 	if(!_enabled) return;
 
+    //make sure every Collidable is assigned a SortSweepCollidable
     for(unsigned i = 0; i < _curArea->collidables.size(); ++i) {
         if(!_curArea->collidables[i]->getSortSweepAABB()) {
             SortSweepCollidable* sweep = &_sortSweepPool.claimFreeEntry();
             sweep->collidable = _curArea->collidables[i];
             _curArea->collidables[i]->setSortSweepAABB(sweep);
+        }
+    }
+
+    //release every SortSweepCollidable whose collidable is no longer active
+    for(auto it = _sortSweepPool.begin(); it != _sortSweepPool.end(); ++it) {
+        if(!(*it).collidable->getEntity()->isActive()) {
+            _sortSweepPool.removeAABB((*it));
         }
     }
 
