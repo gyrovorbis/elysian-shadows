@@ -11,9 +11,8 @@ namespace elysian {
         const auto& behaviors = entity? entity->getBehaviors() : _curArea->behaviors;
 
         for(auto behav : behaviors) {
-            if(!behav->getEntity()) continue;
-            assert(behav->isActive());
-            assert(behav->getEntity()->isActive());
+            //FUCKING REESTED, FIX ME!!!
+            if(!behav->getEntity() || !behav->isActive() || !behav->getEntity()->isActive()) continue;
             if(behav->getTriggers() & triggers) {
                 lambda(behav);
             }

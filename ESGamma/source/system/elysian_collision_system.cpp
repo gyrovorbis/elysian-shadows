@@ -53,7 +53,7 @@ void CollisionSystem::update(void) {
 
     //release every SortSweepCollidable whose collidable is no longer active
     for(auto it = _sortSweepPool.begin(); it != _sortSweepPool.end(); ++it) {
-        if(!(*it).collidable->isActive()) {
+        if(!(*it).collidable->isActive() || !(*it).collidable->getEntity()->isActive()) {
             _sortSweepPool.removeAABB((*it));
         }
     }
