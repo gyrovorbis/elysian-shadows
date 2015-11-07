@@ -59,11 +59,8 @@ namespace elysian {
             STATE_COMBAT,
             STATE_STRAFE,
             STATE_KNOCKBACK,
-            STATE_ATTACK,
-            STATE_CHARGE,
-            STATE_SHOOT,
             STATE_DEATH,
-            STATE_COUNT
+            STATE_LUA
         };
 	private:
 		static const Component::TYPE _type		= Component::CHARACTER;

@@ -321,12 +321,9 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
     s->register_class_static<Character>("STATE_THROW", Character::STATE_THROW);
     s->register_class_static<Character>("STATE_COMBAT", Character::STATE_COMBAT);
     s->register_class_static<Character>("STATE_STRAFE", Character::STATE_STRAFE);
-    s->register_class_static<Character>("STATE_ATTACK", Character::STATE_ATTACK);
-    s->register_class_static<Character>("STATE_CHARGE", Character::STATE_CHARGE);
-    s->register_class_static<Character>("STATE_SHOOT", Character::STATE_SHOOT);
     s->register_class_static<Character>("STATE_KNOCKBACK", Character::STATE_KNOCKBACK);
     s->register_class_static<Character>("STATE_DEATH", Character::STATE_DEATH);
-    s->register_class_static<Character>("STATE_COUNT", Character::STATE_COUNT);
+    s->register_class_static<Character>("STATE_LUA", Character::STATE_LUA);
 
 	//Font Alignment
     typedef elysian::MenuText MenuText;

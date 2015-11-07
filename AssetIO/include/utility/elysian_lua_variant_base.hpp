@@ -229,6 +229,7 @@ namespace elysian {
                                 LuaVariantBase(std::nullptr_t null);
                                 LuaVariantBase(const LuaVariantBase& rhs);
                                 LuaVariantBase(LuaVariantBase&& rhs);
+                                //LuaVariantBase
                                 LuaVariantBase(const int ref);
                                 LuaVariantBase(const float number);
                                 LuaVariantBase(const double number);
@@ -239,6 +240,8 @@ namespace elysian {
 
         LuaVariantBase&             operator=(const LuaVariantBase& rhs);
         LuaVariantBase&             operator=(LuaVariantBase&& rhs);
+        LuaVariantBase&             operator=(const LuaFieldRef& rhs);
+        //LuaVariantBase&             operator=(LuaFieldRef&& rhs);
         LuaVariantBase&             operator=(const std::nullptr_t);
         LuaVariantBase&             operator=(const bool val);
         LuaVariantBase&             operator=(const int num);
@@ -369,7 +372,7 @@ namespace elysian {
 
                         LuaFieldRef(const int ref, const LuaVariantBase key);
                         LuaFieldRef(const LuaFieldRef& rhs);
-                        LuaFieldRef(LuaFieldRef&& rhs);
+                         LuaFieldRef(LuaFieldRef&& rhs);
 
     public:
                         ~LuaFieldRef(void);
@@ -547,6 +550,7 @@ namespace elysian {
     inline LuaVariantBase& LuaVariantBase::operator=(const double num) { setValue((lua_Number)num); return *this; }
     inline LuaVariantBase& LuaVariantBase::operator=(const char*const string) { setValue(string); return *this; }
     inline LuaVariantBase& LuaVariantBase::operator=(void*const ptr) { setValue(ptr); return *this; }
+    inline LuaVariantBase& LuaVariantBase::operator=(const LuaFieldRef& rhs) { *this = rhs.getValue(); return *this; }
 
     inline bool LuaVariantBase::operator==(const LuaVariantBase& rhs) const {
         if(_type != rhs._type) return false;

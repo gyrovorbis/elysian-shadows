@@ -18,8 +18,8 @@
 #   define ELYSIAN_LUA_STACK_BALANCE_RECURSIVE_DEPTH     100
 #endif
 
-#define ELYSIAN_LUA_MANAGER_SERIALIZE_SCRIPT_PATH       "/assets/scripts/utils/serialize.lua"
-#define ELYSIAN_LUA_MANAGER_TABLE_MANIP_SCRIPT_PATH     "/assets/scripts/utils/table_manip.lua"
+#define ELYSIAN_LUA_MANAGER_SERIALIZE_SCRIPT_PATH       "/assets/scripts/utility/serialize.lua"
+#define ELYSIAN_LUA_MANAGER_TABLE_MANIP_SCRIPT_PATH     "/assets/scripts/utility/table_manip.lua"
 
 #define ELYSIAN_LUA_PROXY_TYPE_METAFIELD                "__typename"
 
