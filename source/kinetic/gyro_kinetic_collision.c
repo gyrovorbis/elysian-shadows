@@ -37,6 +37,7 @@ static inline unsigned OBB_getSupportPoints(const GYBoxCollider*const collider, 
 
     for(int i = 0; i < 4; ++i) {
         if(t[i] < min+threshold) {
+          // TODO Marius: strict-aliasing warning here, might interfere with optimization
             support[count++] = *(GYVector2*)&collider->worldVert[i];
             if (count == 2) break;
         }
