@@ -447,6 +447,7 @@ void gyVidTexBind(const GYTexture *const tex) {
             if(!wasActive || passChange) {
                // glEnable(GL_TEXTURE_2D);
             }
+            // TODO Marius: strict-aliasing warning here, might interfere with optimization
             glBindTexture(GL_TEXTURE_2D, *(GLuint *)&tex->_data);
         } else {
             active = 0;
@@ -671,7 +672,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
     spMeshAttachment*           mesh                = NULL;
     spSkinnedMeshAttachment*    skinnedMesh         = NULL;
 
-    float                       width, height;
+    //float                       width, height;
     //GYColor4                    color;
     //int                         i;
     //int                         index;
@@ -706,7 +707,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
         //handle custom attachment types by deffering to application layer callbacks.
         if(attachment->type > SP_ATTACHMENT_SKINNED_MESH) {
 
-            GYMatrix4 mat;
+            //GYMatrix4 mat;
             gyVidVertexBatchFlush();
             gyVidVertexBatchEnd();
             //gyMatStore(&mat);
@@ -750,8 +751,8 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
             };
 
             if(texture) {
-                width = texture->width;
-                height = texture->height;
+//                width = texture->width;
+//                height = texture->height;
             }
 
             vertex->pos.x = worldVertices[SP_VERTEX_X2];
@@ -834,8 +835,8 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
             };
 
             if(texture) {
-                width = texture->width;
-                height = texture->height;
+//                width = texture->width;
+//                height = texture->height;
             }
 
             for (int j = 0; j < mesh->trianglesCount; ++j) { //loop unroll?
@@ -867,8 +868,8 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
             };
 
             if(texture) {
-                width = texture->width;
-                height = texture->height;
+//                width = texture->width;
+//                height = texture->height;
             }
             for (int j = 0; j < skinnedMesh->trianglesCount; ++j) { //loop unroll?
                 int index = skinnedMesh->triangles[j] << 1;
