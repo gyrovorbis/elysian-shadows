@@ -19,7 +19,7 @@ namespace elysian {
     friend Entity;
 
     protected:
-		GYTexCoord2			_texCoord[4];
+    GYTexCoord2			_texCoord[4];
         SpriteAttrib*		_spriteAttrib	= nullptr;      //Prefab-able attributes
         int					_frame			= 0;			//for animation
         GYVector2			_offset			= {0.0f, 0.0f};	//texture offset from base transform (local coords)
@@ -27,7 +27,7 @@ namespace elysian {
 
 
 
-	public:
+  public:
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(frame,          getFrame,           setFrame)
@@ -35,7 +35,7 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(spriteAttrib,   getSpriteAttrib,    setSpriteAttrib)
             ELYSIAN_LUA_PROXY_FIELD(offset,         getOffsetVec,       setOffsetVec)
             ELYSIAN_LUA_PROXY_ARRAY_FIELD(uvCoords, getUVCoords,        setUVCoords,    getUVCoordsCount)
-		ELYSIAN_LUA_PROXY_FIELDS_END()
+    ELYSIAN_LUA_PROXY_FIELDS_END()
 
                             RenderableBase(void) = default;
                             RenderableBase(Entity &parent, const RenderableBase*const prefab=nullptr);
@@ -123,6 +123,7 @@ namespace elysian {
 
         gyVidRectPlaneType(_entity->getPlaneType());
         bool alpha = false;
+        (void)alpha; // TODO use or remove
 
         //Submit vertices
 

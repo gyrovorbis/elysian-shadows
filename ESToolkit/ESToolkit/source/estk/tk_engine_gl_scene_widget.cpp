@@ -206,9 +206,9 @@ void EngineGLSceneWidget::paintGL(void) {
 
     getAssets()->getEngine()->getTimerSys()->popTaskMonitor(&_engineTask);
 
-    auto result = gyTimerTicks() - delta;
+    //auto result = gyTimerTicks() - delta;
 
-    auto sec = (double)result/1000000000.0;
+    //auto sec = (double)result/1000000000.0;
    // qDebug() << "nsec - " << result << "sec - " << sec << "hz - " << 1.0/sec;
 
 

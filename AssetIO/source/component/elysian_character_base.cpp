@@ -55,24 +55,24 @@ void CharacterBase::setDashing(const bool val) {
 void CharacterBase::faceDir(const Direction::DIR4 dir) {
     playAnimation(dir);
 #if 0
-		switch(dir) {
-			case Direction::DIR4_UP:
+    switch(dir) {
+      case Direction::DIR4_UP:
                 playAnimation("Up");
-				break;
-			case Direction::DIR4_DOWN:
+        break;
+      case Direction::DIR4_DOWN:
                 playAnimation("Down");
-				break;
-			case Direction::DIR4_LEFT:
+        break;
+      case Direction::DIR4_LEFT:
                 playAnimation("Left");
                 break;
-			case Direction::DIR4_RIGHT:
+      case Direction::DIR4_RIGHT:
                 playAnimation("Right");
-				break;
-			default:
-				break;
-		}
+        break;
+      default:
+        break;
+    }
 #endif
-	_faceDir = dir;
+  _faceDir = dir;
 }
 
 /* If we are currently holding another entity, their mass must be taken into account when applying
@@ -87,7 +87,7 @@ float CharacterBase::getEntityForceDampFactor(void) {
     else if(_pullEntity) entity = _pullEntity;
     else return 0.0f;
 
-	const float invParent = _entity->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass;
+  const float invParent = _entity->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass;
     const float invChild = entity->getCollidable()->getAttrib()->getStaticAttrib()->inverseMass;
     //Don't divid by zero, dipshit.
     if(invParent+invChild == 0.0f) return 0.0f;
@@ -133,7 +133,7 @@ void CharacterBase::moveByDist(const GYVector2 &dist) {
     gyVec2Normalize((GYVector2*)&_lastMoveDir);
 }
 
-void CharacterBase::animateWalk(const GYVector2 &moveVec) {
+void CharacterBase::animateWalk(const GYVector2 &/*moveVec*/) {
     _movedThisFrame = true;
     //replaceState(STATE_STAND, STATE_WALK);
 
@@ -172,8 +172,8 @@ void CharacterBase::faceEntity(Entity &entity) {
 }
 
 void CharacterBase::moveByForce(const GYVector2 &dist) {
-	if(gyVec2IsZero(&dist)) return;
-	GYVector2 totalForce = dist;
+  if(gyVec2IsZero(&dist)) return;
+  GYVector2 totalForce = dist;
 
     if(_heldEntity || _pullEntity) {
         GYVector2 objForce;
@@ -200,13 +200,13 @@ void CharacterBase::update(void) {
 
     if(!pushing) removeState(STATE_PUSH);
 
-	if(!_movedThisFrame) {
+  if(!_movedThisFrame) {
         replaceState(STATE_WALK, STATE_STAND);
         replaceState(STATE_RUN, STATE_STAND);
         faceDir(_faceDir);
-		//_entity->getRigidBody()->setVelocity(GYVector3{ 0.0f, 0.0f, 0.0f });
-	}
-	else _movedThisFrame = false;
+    //_entity->getRigidBody()->setVelocity(GYVector3{ 0.0f, 0.0f, 0.0f });
+  }
+  else _movedThisFrame = false;
 
     //Set falling animation state
     if(_entity->getRigidBody()->getVelocity().z < 0.0f) {
@@ -242,14 +242,14 @@ bool CharacterBase::_checkPushing(void) {
 }
 
 void CharacterBase::setHeldEntity(Entity * const entity) {
-	if(_heldEntity) {
-		_heldEntity->getRigidBody()->setActive(true);
+  if(_heldEntity) {
+    _heldEntity->getRigidBody()->setActive(true);
         _heldEntity->getCollidable()->setActive(true);
         removeChildEntity(_heldEntity);
-	}
+  }
 
-	_heldEntity = entity;
-	if(entity) {
+  _heldEntity = entity;
+  if(entity) {
         if(!entity->getRigidBody()->getAttrib()->getCanHold()) {
             _heldEntity = nullptr;
         } else {
@@ -273,7 +273,7 @@ void CharacterBase::setHeldEntity(Entity * const entity) {
 }
 
 void CharacterBase::throwHeldEntity(void) {
-	if(!_heldEntity) return;
+  if(!_heldEntity) return;
 
     GYVector3 startPosOffset;
     GYVector3 velocity;
@@ -300,6 +300,7 @@ void CharacterBase::throwHeldEntity(void) {
         startPosOffset = GYVector3 { 0.5f*_entity->getCollidable()->getWorldSize().x+0.5f*_heldEntity->getCollidable()->getWorldSize().x, 0.0f, 0.0f };
         break;
     default:
+        startPosOffset = {0.f,0.f,0.f};
         break;
 
     }
@@ -337,7 +338,7 @@ void CharacterBase::throwHeldEntity(void) {
 void CharacterBase::jump(void) {
     if(!_entity->getRigidBody()->getRestingOnBody()) return;
 
-	GYVector3 force = ELYSIAN_CHAR_JUMP_DEFAULT_FORCE;
+  GYVector3 force = ELYSIAN_CHAR_JUMP_DEFAULT_FORCE;
     RigidBody*const rb = _entity->getRigidBody();
 
     if(_heldEntity) {
@@ -376,13 +377,13 @@ void CharacterBase::replaceState(ANIM_STATE state1, ANIM_STATE state2) {
 
 }
 
-void CharacterBase::removeChildEntity(Entity*entity) {
+void CharacterBase::removeChildEntity(Entity*/*entity*/) {
     if(_entity->getSkeleton()) {
 
     }
 }
 
-void CharacterBase::addChildEntity(Entity*entity, const char*const name) {
+void CharacterBase::addChildEntity(Entity*/*entity*/, const char*const /*name*/) {
     if(_entity->getSkeleton()) {
 
     }
@@ -406,7 +407,7 @@ void CharacterBase::addState(const ANIM_STATE state) {
 
 }
 
-void CharacterBase::setSpeedMultiplier(const float factor) {
+void CharacterBase::setSpeedMultiplier(const float /*factor*/) {
 
 }
 
@@ -474,7 +475,7 @@ void CharacterBase::addTempState(const ANIM_STATE state, const int track, OOLUA:
     auto*name = getAnimNameFromStates(_faceDir);
 
     if(name) {
-        getEntity()->getSkeleton()->setAnim(name, [=](int trackIndex, spEventType eventType, spEvent* event, int loopCount) {
+        getEntity()->getSkeleton()->setAnim(name, [=](int trackIndex, spEventType eventType, spEvent* /*event*/, int /*loopCount*/) {
 
             if(_callbackTrack == trackIndex || _callbackTrack == -1) {
                 LuaVariant v;

@@ -147,6 +147,8 @@ inline void TkLuaTableProxy<P, T, Bases...>::_callPropertyProxyMethod(const bool
 
         lua_pushvalue(*_mainState, keyIndex);
         OOLUA::pull(*_mainState, key);
+    } else {
+      obj = nullptr;
     }
 
     ParentType::_callPropertyProxyMethod(write, args, retVals, keyIndex);

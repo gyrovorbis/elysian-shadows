@@ -427,7 +427,7 @@ static inline void gyVidCamFrustum(GYCamera* const cam, const float fov, const f
     gyVidPerspectiveMat(cam->projMat, fov, aspect, znear, zfar);
     cam->projType = GY_PROJECTION_PERSPECTIVE;
 
-    gyMatMultMat(cam->projViewMat, cam->projMat, cam->viewMat);
+    gyMatMultMat(cam->projViewMat, (const float (*)[4])cam->projMat, (const float (*)[4])cam->viewMat);
 
     volume->ratio = aspect;
     volume->nearD = znear;

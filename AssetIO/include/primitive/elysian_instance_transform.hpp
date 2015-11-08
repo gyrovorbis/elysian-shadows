@@ -233,7 +233,7 @@ namespace elysian {
     inline Vector2::Vector2(void): Vector2(0.0f, 0.0f) {}
     inline Vector2::Vector2(const float x, const float y): GYVector2({x, y}), _ptr(this) {}
     inline Vector2::Vector2(GYVector2 * const vec2): _ptr(vec2) {}
-    inline Vector2::Vector2(const Vector2 &other) {
+    inline Vector2::Vector2(const Vector2 &other) : LuaTableProxy<Vector2>() {
         if(other._ptr != &other) {
             _ptr = other._ptr;
         } else {
@@ -248,7 +248,7 @@ namespace elysian {
 
     inline Vector3::Vector3(void): Vector3(0.0f, 0.0f, 0.0f) {}
     inline Vector3::Vector3(const float x, const float y, const float z): GYVector3({x, y, z}), _ptr(this) {}
-    inline Vector3::Vector3(const Vector3 &other) {
+    inline Vector3::Vector3(const Vector3 &other) : LuaTableProxy<Vector3>() {
         if(other._ptr != &other) {
             _ptr = other._ptr;
         } else {
@@ -267,7 +267,7 @@ namespace elysian {
 
     inline Vector4::Vector4(void): Vector4(0.0f, 0.0f, 0.0f, 0.0f) {}
     inline Vector4::Vector4(const float x, const float y, const float z, const float w): GYVector4({x, y, z, w}), _ptr(this){}
-    inline Vector4::Vector4(const Vector4 &other) {
+    inline Vector4::Vector4(const Vector4 &other) :LuaTableProxy<Vector4>() {
         if(other._ptr != &other) {
             _ptr = other._ptr;
         } else {

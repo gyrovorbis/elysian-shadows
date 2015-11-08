@@ -23,8 +23,8 @@ void SkeletonBase::setAnim(const char* name) {
     auto* anim = _attrib->findAnimation(name);
     if(!anim || _curAnim == anim) return;
 
-    unsigned oldTrackCount = _curAnim? _curAnim->_tracks.size() : 0;
 #if 0
+    unsigned oldTrackCount = _curAnim? _curAnim->_tracks.size() : 0;
     for(unsigned i = 0; i < anim->_tracks.size(); ++i) {
         if(_curAnim &&  i < _curAnim->_tracks.size() && strcmp(anim->_tracks[i]->_name, _curAnim->_tracks[i]->_name) == 0) continue;
             spAnimationState_clearTrack(_animState, i);

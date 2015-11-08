@@ -34,32 +34,32 @@ void CollidableAttribBase::setStaticAttrib(const OOLUA::Lua_table_ref valTable) 
 void CollidableAttribBase::setFlags(const OOLUA::Lua_table_ref valTable) { flags.fromTable(valTable); }
 
 void CollisionContact::_calculatePenetrationInternals(void) {
-	gyContactCalculatePenetrationInternals(this,
-										   (GYVector2*)&_bodyA->getCenterWorldPos(),
-										   (_bodyB)? (GYVector2*)&_bodyB->getCenterWorldPos() : nullptr);
+  gyContactCalculatePenetrationInternals(this,
+                       (GYVector2*)&_bodyA->getCenterWorldPos(),
+                       (_bodyB)? (GYVector2*)&_bodyB->getCenterWorldPos() : nullptr);
 }
 
 void CollisionContact::_calculateVelocityInternals(const float deltaTime) {
-	gyContactCalculateVelocityInternals(this,
-										(GYKinetic*)_bodyA->getEntity()->getRigidBody(),
-										(_bodyB)? (GYKinetic*)_bodyB->getEntity()->getRigidBody() : nullptr,
-										deltaTime);
+  gyContactCalculateVelocityInternals(this,
+                    (GYKinetic*)_bodyA->getEntity()->getRigidBody(),
+                    (_bodyB)? (GYKinetic*)_bodyB->getEntity()->getRigidBody() : nullptr,
+                    deltaTime);
 }
 
 void CollidableBase::update(void) {
-	if(!_active) return;
+  if(!_active) return;
     static const GYVector4 localVecs[2] = {
         { 0.0f, 0.0f, 0.0f, 1.0f }, //position
         { 1.0f, 1.0f, 1.0f, 1.0f }  //size
     };
     GYVector4 worldVecs[2];
     float oldY;
-	/* This is necessary to ensure that if the attribute geometry was dynamically changed,
-		the runtime data is updated to reflect it. Keep shit synced. */
-	_collider.col.type = _attrib->_type; 
+  /* This is necessary to ensure that if the attribute geometry was dynamically changed,
+    the runtime data is updated to reflect it. Keep shit synced. */
+  _collider.col.type = _attrib->_type;
 
-	//Calculate world vertices for collider
-	gyMatPush();
+  //Calculate world vertices for collider
+  gyMatPush();
     if(_worldSpace) {
         gyMatLoadIdentity();
     } else {
@@ -72,11 +72,12 @@ void CollidableBase::update(void) {
     gyMatTranslateScale(_attrib->_relPos.x, _attrib->_relPos.y, _attrib->_relPos.z,
                         _attrib->_relSize.x, _attrib->_relSize.y, _attrib->_relSize.z);
     gyMatMultVec(localVecs, worldVecs, 2);
-	gyCalcWorldVert(&_collider.col);
+  gyCalcWorldVert(&_collider.col);
 
     if(!_worldSpace) _entity->_transform._pos.y = oldY;
      gyMatPop();
 
+    // TODO Marius: strict-aliasing warning here, might interfere with optimization
     _collider.col.worldPos = *(GYVector3*)&worldVecs[0];
     gyVec3Sub(&_worldSize, (GYVector3*)&_collider.box.worldVert[2], (GYVector3*)&_collider.box.worldVert[0]);
     _worldSize.z *= -1.0f;
@@ -84,42 +85,42 @@ void CollidableBase::update(void) {
     _updateSortSweepAABB();
 
 }
-    
+
 void CollidableBase::render(void) {
     if(!_worldSpace) return;
     const static GYColor4 color = { 0, 0, 255, 128 };
-	const static GYColor4 colColor =  { 255, 0, 0, 128 };
-    
+  const static GYColor4 colColor =  { 255, 0, 0, 128 };
+
     gyVidTexBind(nullptr);
     gyVidNormalMapBind(nullptr);
     gyVidSpecularMapBind(nullptr);
-	gyVidAlphaLevel(GY_ALPHA_FULL);
+  gyVidAlphaLevel(GY_ALPHA_FULL);
     gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
 
     gyMatPush();
-        
+
     gyVidQuadListBegin((_contactCount == 0)? &color : &colColor);
     _entity->_transform.apply();
-	gyMatTranslateScale(_attrib->_relPos.x, _attrib->_relPos.y, 0.0f, _attrib->_relSize.x, _attrib->_relSize.y, 1.0f);
+  gyMatTranslateScale(_attrib->_relPos.x, _attrib->_relPos.y, 0.0f, _attrib->_relSize.x, _attrib->_relSize.y, 1.0f);
     gyVidRect(0);
     gyMatPop();
     gyVidQuadListEnd();
-    
-	/* ==== DEBUG CODE ==== */
+
+  /* ==== DEBUG CODE ==== */
 #if 0
-	gyVidQuadListBegin(&colColor);
+  gyVidQuadListBegin(&colColor);
 
-	gyMatPush(); //Render bottom of entity
+  gyMatPush(); //Render bottom of entity
     gyMatTranslateScale(_entity->_transform._pos.x, _entity->_transform._pos.y + 0.5f*_entity->_transform._size.y, /*ZCoordConstants::tileDecor*/ ZCoordConstants::fg1+2.0f, 2.0f, 2.0f, 1.0f);
-	gyVidRect(0);
-	gyMatPop();
+  gyVidRect(0);
+  gyMatPop();
 
-	gyMatPush(); //Render center of entity
+  gyMatPush(); //Render center of entity
     gyMatTranslateScale(_entity->_transform._pos.x, _entity->_transform._pos.y, /*ZCoordConstants::tileDecor*/ ZCoordConstants::fg1+2.0f, 2.0f, 2.0f, 1.0f);
-	gyVidRect(0);
-	gyMatPop();
+  gyVidRect(0);
+  gyMatPop();
 
-	gyVidQuadListEnd();
+  gyVidQuadListEnd();
 #endif
 
 }
@@ -136,7 +137,7 @@ void CollidableBase::_updateSortSweepAABB(void) {
         if(vert.y > endY) endY = vert.y;
     };
 
-	if(!_sortSweepAABB) return;
+  if(!_sortSweepAABB) return;
 
     for(unsigned i = 0; i < 4; ++i) checkBoundary(_collider.box.worldVert[i]);
 
