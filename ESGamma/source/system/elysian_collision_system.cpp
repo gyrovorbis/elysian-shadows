@@ -661,9 +661,9 @@ bool CollisionSystem::_detectEntityEntityCollision(Entity * const entity1, Entit
     Collidable* bodyA = entity1->getCollidable();
     Collidable* bodyB = entity2->getCollidable();
     int swapFlag;
-    float aBot, aTop;
-    float bBot, bTop;
-    float zBot, zTop;
+    float aBot = 0.f, aTop = 0.f;
+    float bBot = 0.f, bTop = 0.f;
+    float zBot = 0.f, zTop = 0.f;
     bool zTopFound, zBotFound;
     bool retVal = false;
 
@@ -739,7 +739,7 @@ bool CollisionSystem::_detectEntityEntityCollision(Entity * const entity1, Entit
         ++bodyA->_contactCount;
         ++bodyB->_contactCount;
 
-       float zDiff;// =  (zTop == aTop)? (aTop-bBot) : -((bTop-aBot));
+       float zDiff = 0.f;// =  (zTop == aTop)? (aTop-bBot) : -((bTop-aBot));
 
         if(!swapFlag) {
             _contactPool[_contactAmount]._bodyA = bodyA;

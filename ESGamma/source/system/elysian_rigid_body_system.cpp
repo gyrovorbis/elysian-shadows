@@ -818,8 +818,7 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
             auto* contact = entity->getRigidBody()->getBreakContact();
             if(contact) {
                 GYVector3 normal = { 0.0f, 0.0f, 0.0f };
-                // TODO Marius: strict-aliasing warning here, might interfere with optimization
-                contact->getNormal(*(GYVector2*)&normal);
+                contact->getNormal(((GYVectorPunned*)&normal)->vec2);
 
                 if(contact->_bodyB == entity->getCollidable()) {
                     gyVec3ScaleAccum(&normal, -1.0f);

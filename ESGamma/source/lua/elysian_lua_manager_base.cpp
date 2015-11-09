@@ -144,7 +144,7 @@ void LuaManagerBase::_cStackDump (void) {
 unsigned LuaManagerBase::_envDump(LuaScript *scr) {
     char envString[20] = {0};
     unsigned envCount = 1;
-    bool topLevel = false;
+    //bool topLevel = false;
     LuaBehaviorScript* behav = static_cast<LuaBehaviorScript*>(scr);
 
     static int recursions = 0;
@@ -154,7 +154,7 @@ unsigned LuaManagerBase::_envDump(LuaScript *scr) {
         envCount += _envDump(behav->getParent()); //How about you fucking recurse at me?
     } else {
         Debug::luaPrint("Script Environment Dump");
-        topLevel = true;
+        //topLevel = true;
         Debug::push();
     }
 
