@@ -18,13 +18,18 @@ private:
     static void _registerWrappers(void);
 
 protected:
-    static QStringList _udTypeNames;
+    static QStringList              _udTypeNames;
+    static elysian::LuaVariant      _serializeFunc;
+    static bool                     _serializing;
 
 public:
 
     static bool         initialize(void);
     static bool         getMetatable(const int index);
+    static bool         isSerializing(void);
     static QStringList  getUdTypeNames(void);
+
+    static int          _serializeCFunc(lua_State* vm);
     //static void getGlobal(const char*const key);
 };
 
