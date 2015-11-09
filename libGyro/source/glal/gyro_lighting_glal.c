@@ -676,7 +676,9 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 #endif
 
         break;
-
+    default:
+      useBias = 0;
+      break;
     }
 
 
@@ -714,14 +716,14 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
     }
 
     //find projView matrix
-    gyMatMultMat(lightProjViewMatrix, lightProjMatrix, lightViewMatrix);
+    gyMatMultMat(lightProjViewMatrix, (const float (*)[4])lightProjMatrix, (const float (*)[4])lightViewMatrix);
 
     //SUBMIT PROJVIEW UNIFORM TO SHADOW SHADER
     glUniformMatrix4fv(glalShadowMapShader.uniformLoc[GLAL_SHADER_PROJ_VIEW_MAT], 1, GL_FALSE, (float*)lightProjViewMatrix);
     ++glalUniformChangeCount;
 
     //Store projection view matrix (plus bias) for next render pass
-    if(useBias) gyMatMultMat(cam->projViewMat, glalShadowTexCoordBiasMat, lightProjViewMatrix);
+    if(useBias) gyMatMultMat(cam->projViewMat, (const float (*)[4])glalShadowTexCoordBiasMat, (const float (*)[4])lightProjViewMatrix);
 
 }
 
