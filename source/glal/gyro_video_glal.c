@@ -447,8 +447,7 @@ void gyVidTexBind(const GYTexture *const tex) {
             if(!wasActive || passChange) {
                // glEnable(GL_TEXTURE_2D);
             }
-            // TODO Marius: strict-aliasing warning here, might interfere with optimization
-            glBindTexture(GL_TEXTURE_2D, *(GLuint *)&tex->_data);
+            glBindTexture(GL_TEXTURE_2D, (GLuint)tex->_data);
         } else {
             active = 0;
             if(wasActive || passChange) {
