@@ -297,7 +297,7 @@ void ParticleEmitterBase::emitFromEntity(const GYVector3 &pos, const float angle
     gyMatMultVec(&localPos, &worldPos, 1);
     gyMatPop();
 
-    emitFromPoint(*(GYVector3*)&worldPos, angle, intensity);
+    emitFromPoint(((GYVectorPunned*)&worldPos)->vec3, angle, intensity);
 
 }
 
@@ -312,7 +312,7 @@ void ParticleEmitterInternals::allocatePool(const unsigned size) {
 
 void ParticleEmitterInternals::setAttrib(ParticleEmitterAttrib * const attrib) {
     //delete _attrib;
-	_attrib = attrib;
+  _attrib = attrib;
 }
 
 ParticleEmitterInternals::~ParticleEmitterInternals(void) {}
