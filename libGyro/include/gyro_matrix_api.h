@@ -11,17 +11,17 @@ extern "C" {
 //Column-Major
 typedef float GYMatrix4[4][4] GYRO_MATRIX4_ALIGN;
 
-typedef struct GYVector4 {
-    float x, y, z, w;
-} GYVector4 GYRO_VECTOR4_ALIGN;
+typedef struct GYVector2 {
+    float x, y;
+} GYVector2;
 
 typedef struct GYVector3 {
     float x, y, z;
 } GYVector3;
 
-typedef struct GYVector2 {
-    float x, y;
-} GYVector2;
+typedef struct GYVector4 {
+    float x, y, z, w;
+} GYVector4 GYRO_VECTOR4_ALIGN;
 
 
 typedef enum GY_INST_MAT_FLIP {
