@@ -48,7 +48,7 @@ namespace elysian {
 
 inline Color4::Color4(void): GYColor4 { 255, 255, 255, 255 }, _ptr(this) {}
 inline Color4::Color4(GYColor4* color): _ptr(color) {}
-inline Color4::Color4(const Color4 &color) {
+inline Color4::Color4(const Color4 &color) : LuaTableProxy<Color4>() {
     if(color._ptr != &color) {
         _ptr = color._ptr;
     } else {

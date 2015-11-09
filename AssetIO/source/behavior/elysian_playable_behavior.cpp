@@ -24,20 +24,20 @@ void PlayableBehavior::onUpdate(void) {
     _processPickup(deltaTime, cont, partyMember, partySys);
 }
 
-void PlayableBehavior::_processMovement(const float deltaTime, const Controller*const cont, Entity*const entity, PartySystem*const partySys) {
+void PlayableBehavior::_processMovement(const float /*deltaTime*/, const Controller*const cont, Entity*const entity, PartySystem*const partySys) {
     auto angle = cont->getAnalogAngle(GY_CONTROLLER_ANALOG_LEFT);
     auto mag = cont->getAnalogMag(GY_CONTROLLER_ANALOG_LEFT);
 
     _tapTimer += partySys->getTimerSys()->getDeltaTime();
     _dashPartTimer += partySys->getTimerSys()->getDeltaTime();
 
-    auto endDash = [&](void) {
-        entity->getCharacter()->setSpeedMultiplier(1.0f);
-        partySys->getAudioSys()->setSfxChannelPitch(0, 1.0f);
-        entity->getCharacter()->setDashing(false);
-        _tapTimer = 0.0f;
-        _lastAngle = 0.0f;
-    };
+//    auto endDash = [&](void) {
+//        entity->getCharacter()->setSpeedMultiplier(1.0f);
+//        partySys->getAudioSys()->setSfxChannelPitch(0, 1.0f);
+//        entity->getCharacter()->setDashing(false);
+//        _tapTimer = 0.0f;
+//        _lastAngle = 0.0f;
+//    };
 
     auto emitDashParticles = [&](void) {
         partySys->getPartSys()->getAttrib(0)->setAcceleration(GYVector3{ 0.0f, -70.0f, 7.0f/*7.0f*//*6.5f*/ });
@@ -147,7 +147,7 @@ void PlayableBehavior::_processMovement(const float deltaTime, const Controller*
 
 }
 
-void PlayableBehavior::_processJump(const float deltaTime, const Controller*const cont, Entity*const entity) {
+void PlayableBehavior::_processJump(const float /*deltaTime*/, const Controller*const cont, Entity*const entity) {
     if(cont->isTapped(GY_CONTROLLER_BUT_X)) {
         entity->getCharacter()->jump();
     }
@@ -155,15 +155,15 @@ void PlayableBehavior::_processJump(const float deltaTime, const Controller*cons
 
 
 
-void PlayableBehavior::_processExamine(const float deltaTime, const Controller*const cont, Entity*const entity, PartySystem* partySys) {
+void PlayableBehavior::_processExamine(const float /*deltaTime*/, const Controller*const cont, Entity*const entity, PartySystem* partySys) {
     if(cont->isTapped(GY_CONTROLLER_BUT_CIRCLE)) {
         partySys->checkExamine(entity);
     }
 }
 
 
-void PlayableBehavior::_processIdle(const float deltaTime, const Controller*const cont, Entity*const entity) { }
-void PlayableBehavior::_processPickup(const float deltaTime, const Controller*const cont, Entity*const entity, PartySystem* partySys) {
+void PlayableBehavior::_processIdle(const float /*deltaTime*/, const Controller*const /*cont*/, Entity*const /*entity*/) { }
+void PlayableBehavior::_processPickup(const float /*deltaTime*/, const Controller*const /*cont*/, Entity*const entity, PartySystem* partySys) {
 
 
 
@@ -173,10 +173,10 @@ void PlayableBehavior::_processPickup(const float deltaTime, const Controller*co
 
 }
 
-void PlayableBehavior::_processCarry(const float deltaTime, const Controller*const cont, Entity*const entity) {
+void PlayableBehavior::_processCarry(const float /*deltaTime*/, const Controller*const /*cont*/, Entity*const /*entity*/) {
 }
 
-void PlayableBehavior::_processPushPull(const float deltaTime, const Controller*const cont, Entity*const entity) {
+void PlayableBehavior::_processPushPull(const float /*deltaTime*/, const Controller*const /*cont*/, Entity*const /*entity*/) {
 }
 
 

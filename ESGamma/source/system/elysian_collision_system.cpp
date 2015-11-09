@@ -40,7 +40,7 @@ void CollisionSystem::render(void) {
 }
 
 void CollisionSystem::update(void) {
-	if(!_enabled) return;
+  if(!_enabled) return;
 
     //make sure every Collidable is assigned a SortSweepCollidable
     for(unsigned i = 0; i < _curArea->collidables.size(); ++i) {
@@ -58,8 +58,8 @@ void CollisionSystem::update(void) {
         }
     }
 
-	//prepareGeometry();
-	detectCollisions();
+  //prepareGeometry();
+  detectCollisions();
     resolvePenetration();
     _checkTriggers();
 }
@@ -393,18 +393,18 @@ void CollisionSystem::renderEntities(void) {
 void CollisionSystem::detectCollisions(void) {
     unsigned i = 0;
 
-	getTimerSys()->pushTaskMonitor(&_detectionMonitor);
+  getTimerSys()->pushTaskMonitor(&_detectionMonitor);
 
-	//reset contact counters
-	_contactAmount = 0;
-	_entityEntityChecks = 0;
-	for(; i < _curArea->collidables.size(); ++i) _curArea->collidables[i]->_contactCount = 0;
+  //reset contact counters
+  _contactAmount = 0;
+  _entityEntityChecks = 0;
+  for(; i < _curArea->collidables.size(); ++i) _curArea->collidables[i]->_contactCount = 0;
 
     if(getEngineState() != System::ENGINE_ESTK_STOP) {
 
-		getTimerSys()->pushTaskMonitor(&_tileDetectMonitor);
+    getTimerSys()->pushTaskMonitor(&_tileDetectMonitor);
 
-		//Entity v Tile Collision Detection
+    //Entity v Tile Collision Detection
         for(i = 0; i < _curArea->collidables.size(); ++i) {
             if(!_curArea->collidables[i]->_active || !_curArea->collidables[i]->_worldSpace) continue;
             _detectEntityTileZCollisionCoarse(*_curArea->collidables[i]);
@@ -413,25 +413,25 @@ void CollisionSystem::detectCollisions(void) {
             }
         }
 
-		getTimerSys()->popTaskMonitor(&_tileDetectMonitor);
+    getTimerSys()->popTaskMonitor(&_tileDetectMonitor);
 
-		//Entity v Entity Collision Detection
-		getTimerSys()->pushTaskMonitor(&_entityDetectMonitor);
+    //Entity v Entity Collision Detection
+    getTimerSys()->pushTaskMonitor(&_entityDetectMonitor);
 
-		if(!_broadPhase) {
-			for(i = 0; i < _curArea->collidables.size(); ++i) {
+    if(!_broadPhase) {
+      for(i = 0; i < _curArea->collidables.size(); ++i) {
                 if(_curArea->collidables[i]->isActive()) detectEntityCollision(i);
-			}
-		} else {
-			_sortSweepPool.sortAndSweep();
+      }
+    } else {
+      _sortSweepPool.sortAndSweep();
             for(unsigned i = 0; i < _sortSweepPool.getContactCount(); ++i) {
                 if(_sortSweepPool.getContactBodyA(i)->isActive())
                     _detectEntityEntityCollision(_sortSweepPool.getContactBodyA(i)->getEntity(), _sortSweepPool.getContactBodyB(i)->getEntity());
             }
 
-		}
+    }
 
-		getTimerSys()->popTaskMonitor(&_entityDetectMonitor);
+    getTimerSys()->popTaskMonitor(&_entityDetectMonitor);
 
     }
 
@@ -445,7 +445,7 @@ void CollisionSystem::detectCollisions(void) {
     //_sortSweepPool.sortAndSweep();
 
 
-	getTimerSys()->popTaskMonitor(&_detectionMonitor);
+  getTimerSys()->popTaskMonitor(&_detectionMonitor);
 }
 
 void CollisionSystem::_detectEntityTileZCollisionCoarse(Collidable& /*collidable*/) {
@@ -661,15 +661,15 @@ bool CollisionSystem::_detectEntityEntityCollision(Entity * const entity1, Entit
     Collidable* bodyA = entity1->getCollidable();
     Collidable* bodyB = entity2->getCollidable();
     int swapFlag;
-    float aBot, aTop;
-    float bBot, bTop;
-    float zBot, zTop;
+    float aBot = 0.f, aTop = 0.f;
+    float bBot = 0.f, bTop = 0.f;
+    float zBot = 0.f, zTop = 0.f;
     bool zTopFound, zBotFound;
     bool retVal = false;
 
-	_entityEntityChecks++;
+  _entityEntityChecks++;
 
-	if(!bodyB || !bodyA) return false;
+  if(!bodyB || !bodyA) return false;
 
     if(!bodyA->isActive() || !bodyB->isActive()) return false;
 
@@ -739,7 +739,7 @@ bool CollisionSystem::_detectEntityEntityCollision(Entity * const entity1, Entit
         ++bodyA->_contactCount;
         ++bodyB->_contactCount;
 
-       float zDiff;// =  (zTop == aTop)? (aTop-bBot) : -((bTop-aBot));
+       float zDiff = 0.f;// =  (zTop == aTop)? (aTop-bBot) : -((bTop-aBot));
 
         if(!swapFlag) {
             _contactPool[_contactAmount]._bodyA = bodyA;
@@ -808,10 +808,10 @@ bool CollisionSystem::_detectEntityEntityCollision(Entity * const entity1, Entit
 
 //Looks correct algorithmically.
 void CollisionSystem::detectEntityCollision(const unsigned i) {
-    
-	for(unsigned j = i+1; j < _curArea->collidables.size(); ++j) {
+
+  for(unsigned j = i+1; j < _curArea->collidables.size(); ++j) {
         _detectEntityEntityCollision(_curArea->collidables[i]->getEntity(), _curArea->collidables[j]->getEntity());
-	}
+  }
 }
 
 
@@ -1034,17 +1034,17 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable, c
 #endif
 
     int startX = (getCurrentArea()->width)*32.0f;
-	int endX = 0;
+  int endX = 0;
     int startY = (getCurrentArea()->height)*32.0f;
-	int endY = 0;
-	auto checkBoundary = [&](GYVector4& vert) {
-		if(vert.x < startX) startX = vert.x;
-		if(vert.x > endX) endX = vert.x;
-		if(vert.y < startY) startY = vert.y;
-		if(vert.y > endY) endY = vert.y;
-	};
+  int endY = 0;
+  auto checkBoundary = [&](GYVector4& vert) {
+    if(vert.x < startX) startX = vert.x;
+    if(vert.x > endX) endX = vert.x;
+    if(vert.y < startY) startY = vert.y;
+    if(vert.y > endY) endY = vert.y;
+  };
 
-	GYVector4 worldVertsOrig[4];
+  GYVector4 worldVertsOrig[4];
     //float sizeZ = 0.0f;
     char startElev;
     char endElev;
@@ -1063,6 +1063,10 @@ void CollisionSystem::_detectEntityTileCollisionCoarse(Collidable &collidable, c
     case ENTITY_TILE_CHECK_TOP:
         startElev	=	(worldVertsOrig[3].z)/32.0f;
         endElev		=	startElev;
+        break;
+    default:
+        startElev = 0;
+        endElev = 0;
         break;
     }
 

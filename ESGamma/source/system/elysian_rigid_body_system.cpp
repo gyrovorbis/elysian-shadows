@@ -57,7 +57,7 @@ RigidBodySystem::RigidBodySystem(void) {
     _gravityGenerator.setForceMask(0x1);
     addForce(&_gravityGenerator);
 
-    for(unsigned i = 0; i < ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_SIZE; ++i) {
+    for(int i = 0; i < ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_SIZE; ++i) {
         _shardPool[i].setIterator(ShardPool::iterator(&_shardPool, i));
     }
 }
@@ -115,7 +115,7 @@ void RigidBodySystem::update(void) {
 }
 
 void RigidBodySystem::applyForce(ForceGenerator*const force) {
-	const float deltaTime = getTimerSys()->getDeltaTime();
+  const float deltaTime = getTimerSys()->getDeltaTime();
     auto rigidBodies = getCurrentArea()->rigidBodies;
 
     for(auto rb : rigidBodies) {
@@ -478,18 +478,18 @@ void RigidBodySystem::integrate(void) {
     GYVector3 worldPos;
     float damping;
 
-	auto accumTileDamping = [&](RigidBody* rb, TileEntry entry) {
-		if(entry.getElev() == rb->getEntity()->getElev()) {
+  auto accumTileDamping = [&](RigidBody* rb, TileEntry entry) {
+    if(entry.getElev() == rb->getEntity()->getElev()) {
             damping *= getCurrentLevel()->getTile(entry.getIndex())->damping;
-		}
-	};
+    }
+  };
 
-	//update entity RigidBodies
+  //update entity RigidBodies
     auto rigidBodies = getCurrentArea()->rigidBodies;
-	for(auto& it : rigidBodies) {
-		damping = 1.0f;
+  for(auto& it : rigidBodies) {
+    damping = 1.0f;
 
-		worldPos = it->getEntity()->getCollidable()->getWorldPos();
+    worldPos = it->getEntity()->getCollidable()->getWorldPos();
         for(unsigned i = 0; i < 3; ++i) accumTileDamping(it, getCurrentArea()->getTileEntry(i, (worldPos.x+16.0f)/32.0f, (worldPos.y+16.0f)/32.0f));
 
         it->setTileDamping(damping);
@@ -695,18 +695,18 @@ void RigidBodySystem::integrate3D(void) {
 }
 
 void RigidBodySystem::breakRigidBodies(void) {
-	std::vector<RigidBody*> toDelete;
+  std::vector<RigidBody*> toDelete;
 
     auto rigidBodies = getCurrentArea()->rigidBodies;
-	for(auto rb : rigidBodies) {
-		if(rb->getAttrib()->isBreakable() && rb->getDurability() <= 0.0f) {
-			toDelete.push_back(rb);
-		}
-	}
+  for(auto rb : rigidBodies) {
+    if(rb->getAttrib()->isBreakable() && rb->getDurability() <= 0.0f) {
+      toDelete.push_back(rb);
+    }
+  }
 
-	for(unsigned i = 0; i < toDelete.size(); ++i) {
-		for(auto rb : rigidBodies) {
-			if(rb == toDelete[i]) {
+  for(unsigned i = 0; i < toDelete.size(); ++i) {
+    for(auto rb : rigidBodies) {
+      if(rb == toDelete[i]) {
                 getBehavSys()->onShatter(rb->getEntity(), rb->getBreakContact());
                 breakRigidBody(rb);
             }
@@ -818,7 +818,7 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
             auto* contact = entity->getRigidBody()->getBreakContact();
             if(contact) {
                 GYVector3 normal = { 0.0f, 0.0f, 0.0f };
-                contact->getNormal(*(GYVector2*)&normal);
+                contact->getNormal(((GYVectorPunned*)&normal)->vec2);
 
                 if(contact->_bodyB == entity->getCollidable()) {
                     gyVec3ScaleAccum(&normal, -1.0f);
@@ -935,7 +935,7 @@ void RigidBodySystem::breakRigidBody(RigidBody * const rigidBody) {
 
     }
 
-	//rigidBody->getEntity()->transform._pos.x += 1000;
+  //rigidBody->getEntity()->transform._pos.x += 1000;
     getCurrentArea()->removeEntity(rigidBody->getEntity());
 
 

@@ -138,7 +138,7 @@ void gyVidNormalMapBind(const GYTexture * const tex) {
         glActiveTexture(glalTextureMapTexUnits[GLAL_NORMAL_MAP]);
         if(tex && tex->_data) {
            // if(!wasActive) glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, *(GLuint *)&tex->_data);
+          glBindTexture(GL_TEXTURE_2D, (GLuint)tex->_data);
         } else {
             active = 0;
             //if(wasActive) glDisable(GL_TEXTURE_2D);
@@ -183,7 +183,7 @@ void gyVidSpecularMapBind(const GYTexture * const tex) {
         glActiveTexture(glalTextureMapTexUnits[GLAL_SPECULAR_MAP]);
         if(tex && tex->_data) {
          //   if(!wasActive) glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, *(GLuint *)&tex->_data);
+          glBindTexture(GL_TEXTURE_2D, (GLuint)tex->_data);
         } else {
             if(wasActive) active = 0;
          //   glDisable(GL_TEXTURE_2D);
@@ -539,7 +539,7 @@ int _gyVidShaderCreate(GYShader* shader) {
         charCount
     };
 
-    glShaderSource(shader->shader, 2, sources, sourceLengths);
+    glShaderSource(shader->shader, 2, (const GLchar**)sources, sourceLengths);
     glCompileShader(shader->shader);
     free(programSource);
 

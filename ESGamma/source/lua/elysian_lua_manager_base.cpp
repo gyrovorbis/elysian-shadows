@@ -144,7 +144,7 @@ void LuaManagerBase::_cStackDump (void) {
 unsigned LuaManagerBase::_envDump(LuaScript *scr) {
     char envString[20] = {0};
     unsigned envCount = 1;
-    bool topLevel = false;
+    //bool topLevel = false;
     LuaBehaviorScript* behav = static_cast<LuaBehaviorScript*>(scr);
 
     static int recursions = 0;
@@ -154,7 +154,7 @@ unsigned LuaManagerBase::_envDump(LuaScript *scr) {
         envCount += _envDump(behav->getParent()); //How about you fucking recurse at me?
     } else {
         Debug::luaPrint("Script Environment Dump");
-        topLevel = true;
+        //topLevel = true;
         Debug::push();
     }
 
@@ -485,7 +485,7 @@ void LuaManagerBase::runGarbageCollector(void) {
 }
 
 bool LuaManagerBase::genericIterate(const int index, std::function<void(void)> lambda) {
-    bool firstPass = true;
+    //bool firstPass = true;
     stackBalanceBegin();
 
     int beginStack = lua_gettop(*_mainState);
@@ -595,7 +595,7 @@ bool LuaManagerBase::genericIterate(const int index, std::function<void(void)> l
         _fieldItems[key] = valueItem;
 */
         lua_pop(*_mainState, 1);
-        firstPass = false;
+        //firstPass = false;
 
         //Pop value, leave key
     } while(1);

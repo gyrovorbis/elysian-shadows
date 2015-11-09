@@ -241,7 +241,7 @@ int gyKeyboardPoll(GYKeyboard**const keybd) {
     return 1;
 }
 
-int gyMousePoll(GYMouse**const mouse) {
+int gyMousePoll(GYMouse**const /*mouse*/) {
     //*mouse = static_cast<GYMouse*>(_inputFilter);
     //_inputFilter->scrollWheel.x = _inputFilter->scrollWheel.y = 0.0f;
     return 1;
