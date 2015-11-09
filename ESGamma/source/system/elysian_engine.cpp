@@ -27,6 +27,7 @@
 #include "elysian_rigid_body_system.hpp"
 #include "elysian_combat_system.hpp"
 #include "elysian_skeleton_system.hpp"
+#include "elysian_pathfinding_system.hpp"
 #include <crtp/elysian_input_system.hpp>
 
 namespace elysian {
@@ -62,6 +63,7 @@ Engine::Engine(void): _updateMonitor("update"), _renderMonitor("render"), _input
     _dialogSystem		= new DialogSystem;
     _combatSystem		= new CombatSystem;
     _skeletonSystem     = new SkeletonSystem;
+    _pathfindingSystem = new PathfindingSystemBase;
 
     InputSystem::initialize();
 
@@ -93,7 +95,7 @@ bool Engine::loadAssets(void) {
 
 void Engine::update(void) {
 
-	_timerSystem->pushTaskMonitor(&_updateMonitor);
+  _timerSystem->pushTaskMonitor(&_updateMonitor);
 
     switch(System::_engineState) {
         case System::ENGINE_NORMAL:
@@ -123,6 +125,7 @@ void Engine::update(void) {
             _daySystem->update();
             _dialogSystem->update();
             _combatSystem->update();
+
 
             _behaviorSystem->callTriggers(Behavior::ON_UPDATE);
             break;
@@ -155,12 +158,12 @@ void Engine::update(void) {
     }
 
 
-	_timerSystem->popTaskMonitor(&_updateMonitor);
+  _timerSystem->popTaskMonitor(&_updateMonitor);
 }
 
 void Engine::processInput(void) {
 
-	_timerSystem->pushTaskMonitor(&_inputMonitor);
+  _timerSystem->pushTaskMonitor(&_inputMonitor);
 
     _inputSystem->update();
 
@@ -197,12 +200,12 @@ void Engine::processInput(void) {
             break;
     }
 
-	_timerSystem->popTaskMonitor(&_inputMonitor);
+  _timerSystem->popTaskMonitor(&_inputMonitor);
 }
 
 void Engine::render(void) {
 
-	_timerSystem->pushTaskMonitor(&_renderMonitor);
+  _timerSystem->pushTaskMonitor(&_renderMonitor);
 
     switch(System::_engineState) {
         default:
@@ -256,7 +259,7 @@ void Engine::render(void) {
             gyVidSceneEnd();
     }
 
-	_timerSystem->popTaskMonitor(&_renderMonitor);
+  _timerSystem->popTaskMonitor(&_renderMonitor);
 }
 
 Engine::~Engine(void) {
@@ -287,7 +290,7 @@ Engine::~Engine(void) {
     delete _guiSystem;
     delete _skeletonSystem;
     delete _behaviorSystem;
-
+    delete _pathfindingSystem;
 
 }
 

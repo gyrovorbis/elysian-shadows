@@ -163,7 +163,7 @@ void EngineGLSceneWidget::paintGL(void) {
     if(!getCurrentArea() || !_initialized) return;
     makeCurrent();
 
-    auto delta = gyTimerTicks();
+    //auto delta = gyTimerTicks();
 
     static bool once = false;
     if(!once) {

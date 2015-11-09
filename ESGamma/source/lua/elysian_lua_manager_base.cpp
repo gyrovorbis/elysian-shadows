@@ -485,7 +485,7 @@ void LuaManagerBase::runGarbageCollector(void) {
 }
 
 bool LuaManagerBase::genericIterate(const int index, std::function<void(void)> lambda) {
-    bool firstPass = true;
+    //bool firstPass = true;
     stackBalanceBegin();
 
     int beginStack = lua_gettop(*_mainState);
@@ -595,7 +595,7 @@ bool LuaManagerBase::genericIterate(const int index, std::function<void(void)> l
         _fieldItems[key] = valueItem;
 */
         lua_pop(*_mainState, 1);
-        firstPass = false;
+        //firstPass = false;
 
         //Pop value, leave key
     } while(1);

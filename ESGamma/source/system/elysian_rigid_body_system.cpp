@@ -57,7 +57,7 @@ RigidBodySystem::RigidBodySystem(void) {
     _gravityGenerator.setForceMask(0x1);
     addForce(&_gravityGenerator);
 
-    for(unsigned i = 0; i < ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_SIZE; ++i) {
+    for(int i = 0; i < ELYSIAN_RIGID_BODY_SYSTEM_SHARD_POOL_SIZE; ++i) {
         _shardPool[i].setIterator(ShardPool::iterator(&_shardPool, i));
     }
 }

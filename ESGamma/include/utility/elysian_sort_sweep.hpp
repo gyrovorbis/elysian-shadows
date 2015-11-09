@@ -56,25 +56,25 @@ private:
 #ifdef ELYSIAN_OPENCL_ACCELERATED
 
 static inline void _checkClError(const cl_int status, const char*const str) {
-	if(status != CL_SUCCESS) {
-		dbgprintf("! - OpenCL Error: %s\n", str);
-		exit(1);
-	}
+  if(status != CL_SUCCESS) {
+    dbgprintf("! - OpenCL Error: %s\n", str);
+    exit(1);
+  }
 }
 
 void _clPrintDeviceInfo(const cl_device_id device) {
-	auto CL_CHECK = [](const cl_int status) {
-		if(status != CL_SUCCESS) {
+  auto CL_CHECK = [](const cl_int status) {
+    if(status != CL_SUCCESS) {
             dbgprintf("! - OpenCL Error querying device attribute!");
-		}
-	};
+    }
+  };
 
-	char buffer[10240];
-		 cl_uint buf_uint;
-		 cl_ulong buf_ulong;
+  char buffer[10240];
+     cl_uint buf_uint;
+     cl_ulong buf_ulong;
          CL_CHECK(clGetDeviceInfo(device, CL_DEVICE_NAME, sizeof(buffer), buffer, nullptr));
          dbgprintf("Device Name:\t%s", buffer);
-		 dbgpush();
+     dbgpush();
 
          CL_CHECK(clGetDeviceInfo(device, CL_DEVICE_VENDOR, sizeof(buffer), buffer, nullptr));
          dbgprintf("Vendor:\t%s", buffer);
@@ -91,45 +91,45 @@ void _clPrintDeviceInfo(const cl_device_id device) {
          CL_CHECK(clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_GROUP_SIZE, sizeof(buf_ulong), &buf_ulong, nullptr));
          dbgprintf("Max Workgroup Size:\t%llu", (unsigned long long)buf_ulong);
 
-		 // CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS
-		 size_t workitem_dims;
+     // CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS
+     size_t workitem_dims;
          clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_ITEM_DIMENSIONS, sizeof(workitem_dims), &workitem_dims, nullptr);
          dbgprintf("Max Work Item Dimensions:\t %u", (unsigned int) workitem_dims);
 
-		 size_t workitem_size[3];
+     size_t workitem_size[3];
          clGetDeviceInfo(device, CL_DEVICE_MAX_WORK_ITEM_SIZES, sizeof(workitem_size), &workitem_size, nullptr);
          dbgprintf("Max Work Item Sizes:\t%u / %u / %u", workitem_size[0], workitem_size[1], workitem_size[2]);
 
-		 dbgpop();
+     dbgpop();
 }
 
  void _clPrintPlatformInfo(void) {
-	char stringBuff[ELYSIAN_SORT_SWEEP_CL_STRING_BUFF_SIZE];
+  char stringBuff[ELYSIAN_SORT_SWEEP_CL_STRING_BUFF_SIZE];
 
-	auto queryCLPlat = [&](const unsigned index, const cl_platform_info info, const char* string) {
-		cl_int status = clGetPlatformInfo(_platforms[index], info, sizeof(char)*ELYSIAN_SORT_SWEEP_CL_STRING_BUFF_SIZE, stringBuff, nullptr);
-		if(status == CL_SUCCESS) {
-			dbgprintf("%s:\t%s", string, stringBuff);
-		} else {
-			dbgprintf("Query failed: %s", string);
-		}
-	};
+  auto queryCLPlat = [&](const unsigned index, const cl_platform_info info, const char* string) {
+    cl_int status = clGetPlatformInfo(_platforms[index], info, sizeof(char)*ELYSIAN_SORT_SWEEP_CL_STRING_BUFF_SIZE, stringBuff, nullptr);
+    if(status == CL_SUCCESS) {
+      dbgprintf("%s:\t%s", string, stringBuff);
+    } else {
+      dbgprintf("Query failed: %s", string);
+    }
+  };
 
-	for(unsigned i = 0; i < _platformCount; ++i) {
-		queryCLPlat(i, CL_PLATFORM_NAME, "Platform Name");
-		dbgpush();
+  for(unsigned i = 0; i < _platformCount; ++i) {
+    queryCLPlat(i, CL_PLATFORM_NAME, "Platform Name");
+    dbgpush();
 
-		queryCLPlat(i, CL_PLATFORM_VENDOR,		"Vendor");
-		queryCLPlat(i, CL_PLATFORM_VERSION,		"Version");
-		queryCLPlat(i, CL_PLATFORM_PROFILE,		"Profile");
-		queryCLPlat(i, CL_PLATFORM_EXTENSIONS,	"Extensions");
+    queryCLPlat(i, CL_PLATFORM_VENDOR,		"Vendor");
+    queryCLPlat(i, CL_PLATFORM_VERSION,		"Version");
+    queryCLPlat(i, CL_PLATFORM_PROFILE,		"Profile");
+    queryCLPlat(i, CL_PLATFORM_EXTENSIONS,	"Extensions");
 
-		for(unsigned j = 0; j < _deviceCount[i]; ++j) {
-			_clPrintDeviceInfo(_devices[i][j]);
-		}
+    for(unsigned j = 0; j < _deviceCount[i]; ++j) {
+      _clPrintDeviceInfo(_devices[i][j]);
+    }
 
-		dbgpop();
-	}
+    dbgpop();
+  }
 }
 
 
@@ -138,10 +138,10 @@ void _clPrintDeviceInfo(const cl_device_id device) {
 
 
 #ifdef ELYSIAN_OPENCL_ACCELERATED
-	cl_platform_id*     _platforms				= nullptr;
-	cl_uint             _platformCount			= 0;
-	cl_device_id**      _devices				= nullptr;
-	cl_uint*            _deviceCount			= nullptr;
+  cl_platform_id*     _platforms				= nullptr;
+  cl_uint             _platformCount			= 0;
+  cl_device_id**      _devices				= nullptr;
+  cl_uint*            _deviceCount			= nullptr;
     cl_uint             _curPlatformIndex       = 0;
     cl_uint             _curDeviceIndex         = 1;
     cl_context          _context;
@@ -260,7 +260,7 @@ inline void SortSweepAABBPool<T>::_sweep(void) {
 
         float s[3] = { 0.0f, 0.0f, 0.0f };
         float s2[3] = { 0.0f, 0.0f, 0.0f};
-        float v[3];
+        //float v[3];
 
         for(unsigned i = 0; i < Parent::_endIndex; ++i) {
 
@@ -282,11 +282,11 @@ inline void SortSweepAABBPool<T>::_sweep(void) {
         }
 
         //find variance per axis?
-        for(int c = 0; c < ELYSIAN_SORT_SWEEP_DIMENSIONS; ++c) v[c] = s2[c] - (s[c] * s[c]) / (float)(Parent::_endIndex);
-        SortSweepAABB<T>::curIndex = 0;
+        //for(int c = 0; c < ELYSIAN_SORT_SWEEP_DIMENSIONS; ++c) v[c] = s2[c] - (s[c] * s[c]) / (float)(Parent::_endIndex);
+        //SortSweepAABB<T>::curIndex = 0;
         //if(v[1] > v[0]) SortSweepAABB<T>::curIndex = 1;
         //if(v[2] > v[SortSweepAABB<T>::curIndex]) SortSweepAABB<T>::curIndex = 2;
-	} else {
+  } else {
 #else
 
     cl_int status = clEnqueueWriteBuffer(_cmdQueue,
@@ -353,8 +353,8 @@ inline void SortSweepAABBPool<T>::_sweep(void) {
      _checkClError(status, "Could not transfer contact list size back to host!");
      _aabbContactsSize = contactListSize;
 
-	 if(_aabbContactsSize) {
-		status = clEnqueueReadBuffer(_cmdQueue,
+   if(_aabbContactsSize) {
+    status = clEnqueueReadBuffer(_cmdQueue,
                                   _aabbContactListBuff,
                                   CL_TRUE,
                                   0,
@@ -363,8 +363,8 @@ inline void SortSweepAABBPool<T>::_sweep(void) {
                                   0,
                                   nullptr,
                                   nullptr);
-		_checkClError(status, "Could not transfer contacts back to host!");
-	}
+    _checkClError(status, "Could not transfer contacts back to host!");
+  }
 #endif
     }
 }
@@ -381,25 +381,25 @@ inline void SortSweepAABBPool<T>::initialize(void) {
     //Initialize platforms
     status = clGetPlatformIDs(0, nullptr, &_platformCount);
     _checkClError(status, "Could not get platform count!");
-	_platforms = (cl_platform_id*)malloc(_platformCount*sizeof(cl_platform_id));
-	_devices = (cl_device_id**)malloc(_platformCount*sizeof(cl_device_id*));
-	_deviceCount = (cl_uint*)malloc(_platformCount*sizeof(cl_uint));
+  _platforms = (cl_platform_id*)malloc(_platformCount*sizeof(cl_platform_id));
+  _devices = (cl_device_id**)malloc(_platformCount*sizeof(cl_device_id*));
+  _deviceCount = (cl_uint*)malloc(_platformCount*sizeof(cl_uint));
     status = clGetPlatformIDs(_platformCount, _platforms, nullptr);
     _checkClError(status, "Could not populate platform array!");
 
     //Initialize devices
-	for(unsigned i = 0; i < _platformCount; ++i) {
-		status = clGetDeviceIDs(_platforms[i], CL_DEVICE_TYPE_ALL, 0, nullptr, &_deviceCount[i]);
-		_checkClError(status, "Could not get device count!");
-		_devices[i] = (cl_device_id*)malloc(_deviceCount[i]*sizeof(cl_device_id));
-		status = clGetDeviceIDs(_platforms[i], CL_DEVICE_TYPE_ALL, _deviceCount[i], _devices[i], nullptr);
-		_checkClError(status, "Could not populate device array!");
+  for(unsigned i = 0; i < _platformCount; ++i) {
+    status = clGetDeviceIDs(_platforms[i], CL_DEVICE_TYPE_ALL, 0, nullptr, &_deviceCount[i]);
+    _checkClError(status, "Could not get device count!");
+    _devices[i] = (cl_device_id*)malloc(_deviceCount[i]*sizeof(cl_device_id));
+    status = clGetDeviceIDs(_platforms[i], CL_DEVICE_TYPE_ALL, _deviceCount[i], _devices[i], nullptr);
+    _checkClError(status, "Could not populate device array!");
 
-		//Create context
-		_context = clCreateContext(nullptr, _deviceCount[i], _devices[i], nullptr, nullptr, &status);
-		_checkClError(status, "Could not create context!");
-	}
-	_clPrintPlatformInfo();
+    //Create context
+    _context = clCreateContext(nullptr, _deviceCount[i], _devices[i], nullptr, nullptr, &status);
+    _checkClError(status, "Could not create context!");
+  }
+  _clPrintPlatformInfo();
 
     //Create command queue
     _cmdQueue = clCreateCommandQueue(_context, _devices[_curPlatformIndex][_curDeviceIndex], 0, &status);

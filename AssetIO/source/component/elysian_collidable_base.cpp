@@ -78,7 +78,9 @@ void CollidableBase::update(void) {
      gyMatPop();
 
     // TODO Marius: strict-aliasing warning here, might interfere with optimization
-    _collider.col.worldPos = *(GYVector3*)&worldVecs[0];
+     _collider.col.worldPos.x = worldVecs[0].x;
+     _collider.col.worldPos.y = worldVecs[0].y;
+     _collider.col.worldPos.z = worldVecs[0].z;
     gyVec3Sub(&_worldSize, (GYVector3*)&_collider.box.worldVert[2], (GYVector3*)&_collider.box.worldVert[0]);
     _worldSize.z *= -1.0f;
 
