@@ -117,18 +117,23 @@
 #   define GY_ASSERT(a)                 Q_ASSERT(a)
 #   define                                  GYRO_GLAL
 #   define                                  GYRO_GLAL_GL_Desktop
+#ifndef GYRO_MATH_NOASM
 #	define GYRO_MATRIX4_ALIGN			__attribute__ ((aligned (16)))
 #	define GYRO_VECTOR4_ALIGN			__attribute__ ((aligned (16)))
+#else
+#	define GYRO_MATRIX4_ALIGN
+#	define GYRO_VECTOR4_ALIGN
+#endif
 
 //#	define GYRO_SYSTEM_PLATFORM_INCLUDE     "glal/gyro_glal.h"
 #	define GYRO_VIDEO_PLATFORM_INCLUDE      "x86/gyro_video_x86.inl"
 #	define GYRO_TEXTURE_PLATFORM_INCLUDE    "qt/gyro_texture_qt.inl"
-#   define GYRO_SHADER_PLATFORM_INCLUDE     "glal/gyro_video_glal.h"
+# define GYRO_SHADER_PLATFORM_INCLUDE     "glal/gyro_video_glal.h"
 #	define GYRO_MATH_PLATFORM_INCLUDE       "x86/gyro_math_sse_x86.inl"
 #	define GYRO_MATRIX_PLATFORM_INCLUDE     "x86/gyro_matrix_sse_x86.inl"
 #	define GYRO_AUDIO_PLATFORM_INCLUDE      "glal/gyro_audio_glal.inl"
 #	define GYRO_INPUT_PLATFORM_INCLUDE      "x86/gyro_input_x86.inl"
-#   define GYRO_FILE_PLATFORM_INCLUDE       "glal/gyro_file_glal.inl"
+# define GYRO_FILE_PLATFORM_INCLUDE       "glal/gyro_file_glal.inl"
 
 
 //===== FUCKING HACK REEST - DESTROY ME =====
