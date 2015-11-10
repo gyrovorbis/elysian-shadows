@@ -77,15 +77,19 @@ void CollisionSystem::_checkTriggers(void) {
             }
 
             for(unsigned i = 0; i < 32; ++i) {
-                if( !(curMask = (curContact._eventMonitorMask & (1<<i))) ) continue;
+                if( !(curMask = (curContact._eventMonitorMask & (1u<<i))) ) continue;
                 auto* monitor = _contactMonitors[curMask];
                 if(!monitor) continue;
 
-                if(curMask & curContact._bodyA->_eventMonitorMask) {
+                uint32_t maskedVal = (curMask & curContact._bodyA->_eventMonitorMask);
+
+                if(maskedVal) {
                     if(!prevCollision) monitor->onCollisionEnter(curContact._bodyA, curContact._bodyB, &curContact);
                     else monitor->onCollide(curContact._bodyA, curContact._bodyB, &curContact);
                 }
-                if(curMask & curContact._bodyB->_eventMonitorMask) {
+
+                maskedVal = (curMask & curContact._bodyA->_eventMonitorMask);
+                if(maskedVal) {
                     if(!prevCollision) monitor->onCollisionEnter(curContact._bodyB, curContact._bodyA, &curContact);
                     else monitor->onCollide(curContact._bodyB, curContact._bodyA, &curContact);
                 }
