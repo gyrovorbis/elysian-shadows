@@ -82,9 +82,9 @@ void MapView::onEngineInitialize(void) {
     sprAttrib->setColor(GYColor4{ 255, 0, 0, 255});
     render->setSpriteAttrib(sprAttrib);
     colAttrib->getFlags()->setType(0);
-    colAttrib->getFlags()->getType().setBit(elysian::CollisionFlags::CURSOR, true);
+    colAttrib->getFlags()->getType().setValue(elysian::CollisionFlags::CURSOR);
     colAttrib->getFlags()->setTypeAgainst(0);
-    colAttrib->getFlags()->getTypeAgainst().setBit(elysian::CollisionFlags::CURSOR, true);
+    colAttrib->getFlags()->getTypeAgainst().setValue(elysian::CollisionFlags::CURSOR);
     collid->setAttrib(colAttrib);
     collid->setWorldSpace(false);
     collid->setResolvePenetration(false);

@@ -42,22 +42,9 @@ void CollisionSystem::render(void) {
 void CollisionSystem::update(void) {
   if(!_enabled) return;
 
-  if(_broadPhase) {
-    //WE ARE DESTROYING AND REBUILDING THE POOL EVERY FRAME? AIGHT? DUNNO.
-    _sortSweepPool.clear();
 
-    //make sure every Collidable is assigned a SortSweepCollidable
-    for(unsigned i = 0; i < _curArea->collidables.size(); ++i) {
-        if(_curArea->collidables[i]->getWorldSpace()) {
-            SortSweepCollidable* sweep = &_sortSweepPool.claimFreeEntry();
-            sweep->collidable = _curArea->collidables[i];
-            _curArea->collidables[i]->setSortSweepAABB(sweep);
-       }
-    }
 
-}
-
-  prepareGeometry();
+  //prepareGeometry();
   detectCollisions();
     resolvePenetration();
     _checkTriggers();
@@ -125,6 +112,21 @@ void CollisionSystem::_checkTriggers(void) {
 }
 
 void CollisionSystem::prepareGeometry(void) {
+    if(_broadPhase) {
+      //WE ARE DESTROYING AND REBUILDING THE POOL EVERY FRAME? AIGHT? DUNNO.
+      _sortSweepPool.clear();
+
+      //make sure every Collidable is assigned a SortSweepCollidable
+      for(unsigned i = 0; i < _curArea->collidables.size(); ++i) {
+          if(_curArea->collidables[i]->getWorldSpace()) {
+              SortSweepCollidable* sweep = &_sortSweepPool.claimFreeEntry();
+              sweep->collidable = _curArea->collidables[i];
+              _curArea->collidables[i]->setSortSweepAABB(sweep);
+         }
+      }
+
+  }
+
     gyMatPush();
     gyMatLoad(&getCameraSys()->getCurrentState()->viewMat);
 
@@ -443,7 +445,8 @@ void CollisionSystem::detectCollisions(void) {
         if(!_curArea->collidables[i]->_active || _curArea->collidables[i]->_worldSpace) continue;
         for(unsigned j = i+1; j < _curArea->collidables.size(); ++j) {
             if(_curArea->collidables[j]->getWorldSpace()) continue;
-            detectCollidableCollidableCollision(_curArea->collidables[i], _curArea->collidables[j]);
+            _detectEntityEntityCollision(_curArea->collidables[i]->getEntity(), _curArea->collidables[j]->getEntity());
+            //detectCollidableCollidableCollision(_curArea->collidables[i], _curArea->collidables[j]);
         }
     }
     //_sortSweepPool.sortAndSweep();

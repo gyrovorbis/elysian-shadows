@@ -33,17 +33,17 @@ namespace elysian {
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
         enum TYPE {
-            TILE		= 1,
-            RENDERABLE	= 1<<1,
-            COLLIDABLE	= 1<<2,
-            CHARACTER	= 1<<3,
-            WARP		= 1<<4,
-            RIGID_BODY	= 1<<5,
-            ITEM		= 1<<6,
-            FRIENDLY	= 1<<7,
-            ENEMY		= 1<<8,
-            PLAYER		= 1<<9,
-            CURSOR      = 1<<10,
+            TILE		= 1u,
+            RENDERABLE	= 1u<<1,
+            COLLIDABLE	= 1u<<2,
+            CHARACTER	= 1u<<3,
+            WARP		= 1u<<4,
+            RIGID_BODY	= 1u<<5,
+            ITEM		= 1u<<6,
+            FRIENDLY	= 1u<<7,
+            ENEMY		= 1u<<8,
+            PLAYER		= 1u<<9,
+            CURSOR      = 1u<<10,
         //MOAR BITS
             ALL			= ~0x0
         };

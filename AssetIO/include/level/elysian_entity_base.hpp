@@ -180,7 +180,7 @@ namespace elysian {
 		unsigned char		_elev				= 0;
 		bool				_shadowVolume		= false;
 		float				_shadowDepth		= 16.0f;
-        GY_RECT_PLANE_TYPE  _planeType			= GY_RECT_PLANE_FRONT;
+        GY_RECT_PLANE_TYPE  _planeType			= GY_RECT_PLANE_BOTTOM;
         bool				_active				= false;
         bool                _persistent         = false;
 

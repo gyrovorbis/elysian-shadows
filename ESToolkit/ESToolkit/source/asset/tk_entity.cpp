@@ -66,8 +66,8 @@ TkEntity::TkEntity(const bool selectable, TkEntity* prefab):
             //_selColliderAttrib->setRelSize(1.0f, 1.0f, 0.0f);
             _selColliderAttrib->getFlags()->setType(elysian::BitMask32(0u));
             _selColliderAttrib->getFlags()->setTypeAgainst(0);
-            _selColliderAttrib->getFlags()->getType().setBit(elysian::CollisionFlags::CURSOR, true);
-            _selColliderAttrib->getFlags()->getTypeAgainst().setBit(elysian::CollisionFlags::CURSOR, true);
+            _selColliderAttrib->getFlags()->getType().setValue(elysian::CollisionFlags::CURSOR);
+            _selColliderAttrib->getFlags()->getTypeAgainst().setValue(elysian::CollisionFlags::CURSOR);
             _staticInit = true;
         }
 

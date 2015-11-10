@@ -467,7 +467,7 @@ void AreaBase::populateVbo(void) {
 
         glGenBuffers(1, &elementVbo[j]);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementVbo[j]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE, elementsArray, GL_STREAM_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE, elementsArray, GL_DYNAMIC_DRAW);
 
         glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
 
