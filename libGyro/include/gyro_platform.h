@@ -114,6 +114,7 @@
 # define GYRO_MATH_NOASM
 #endif
 
+#   define GY_ASSERT(a)                 Q_ASSERT(a)
 #   define                                  GYRO_GLAL
 #   define                                  GYRO_GLAL_GL_Desktop
 #ifndef GYRO_MATH_NOASM
@@ -150,6 +151,11 @@ extern "C" {
 #endif
 // =============== / END REEST ==============
 
+
+
+#ifndef GY_ASSERT
+#   define GY_ASSERT(a) assert(a)
+#endif
 
 #endif
 
