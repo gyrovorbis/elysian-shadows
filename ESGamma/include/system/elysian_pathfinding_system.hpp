@@ -6,7 +6,7 @@
 
 namespace elysian {
 
-class PathfindingSystemBase : public System {
+class PathfindingSystem : public System {
  public:
   struct Node {
     Node* Predecessor = nullptr;
@@ -14,12 +14,15 @@ class PathfindingSystemBase : public System {
     unsigned short PosY;
     int Distance = -1;
     bool Visited = false;
+
+    Node* getPredecessor() const { return Predecessor; }
+    int getDistance() const { return Distance; }
   };
 
-  PathfindingSystemBase() = default;
+  PathfindingSystem() = default;
 
   void findAllPathsTo(const unsigned short x, const unsigned short y,
-                      const int maxDistance = -1);
+                      const int maxDistance);
 
   const Node* getTileNode(const unsigned short x, const unsigned short y) const;
 

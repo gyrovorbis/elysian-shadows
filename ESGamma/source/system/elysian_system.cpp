@@ -25,5 +25,5 @@ namespace elysian {
   CombatSystem*		System::_combatSystem		= nullptr;
   SkeletonSystem*     System::_skeletonSystem     = nullptr;
   BehaviorSystem*		System::_behaviorSystem		= nullptr;
-  PathfindingSystemBase*   System::_pathfindingSystem = nullptr;
+  PathfindingSystem*   System::_pathfindingSystem = nullptr;
 }

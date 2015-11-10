@@ -63,7 +63,7 @@ Engine::Engine(void): _updateMonitor("update"), _renderMonitor("render"), _input
     _dialogSystem		= new DialogSystem;
     _combatSystem		= new CombatSystem;
     _skeletonSystem     = new SkeletonSystem;
-    _pathfindingSystem = new PathfindingSystemBase;
+    _pathfindingSystem = new PathfindingSystem;
 
     InputSystem::initialize();
 

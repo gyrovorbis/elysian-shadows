@@ -28,7 +28,7 @@ namespace elysian {
   class RigidBodySystem;
   class CombatSystem;
   class SkeletonSystem;
-  class PathfindingSystemBase;
+  class PathfindingSystem;
 
   class System: public LevelManager {
   public:
@@ -60,7 +60,7 @@ namespace elysian {
     static CombatSystem		*_combatSystem;
     static SkeletonSystem   *_skeletonSystem;
     static BehaviorSystem	*_behaviorSystem;
-    static PathfindingSystemBase *_pathfindingSystem;
+    static PathfindingSystem *_pathfindingSystem;
 
   public:
     static InputSystem*         getInputSys(void) { return _inputSystem; }
@@ -83,7 +83,7 @@ namespace elysian {
     static CombatSystem*		getCombatSys(void) { return _combatSystem; }
     static SkeletonSystem*      getSkeletonSys(void) { return _skeletonSystem; }
     static BehaviorSystem*		getBehavSys(void) { return _behaviorSystem; }
-    static PathfindingSystemBase* getPathfindingSys(void) { return _pathfindingSystem; }
+    static PathfindingSystem* getPathfindingSys(void) { return _pathfindingSystem; }
 
     static bool         getProcessInput(void) { return _processInput; }
     static void         setProcessInput(const bool in=true) { _processInput = in; }

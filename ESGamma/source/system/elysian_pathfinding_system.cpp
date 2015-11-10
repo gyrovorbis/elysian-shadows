@@ -5,7 +5,7 @@
 
 namespace elysian {
 
-void PathfindingSystemBase::findAllPathsTo(const unsigned short x,
+void PathfindingSystem::findAllPathsTo(const unsigned short x,
                                            const unsigned short y,
                                            const int maxDistance) {
   // Although static, it's not necessarry to clear frontier, because at the end
@@ -89,7 +89,7 @@ void PathfindingSystemBase::findAllPathsTo(const unsigned short x,
   return;
 }
 
-const PathfindingSystemBase::Node* PathfindingSystemBase::getTileNode(
+const PathfindingSystem::Node* PathfindingSystem::getTileNode(
     const unsigned short x, const unsigned short y) const {
   if (nullptr == mCurrentArea || nullptr == mMap || x >= mCurrentArea->width ||
       y >= mCurrentArea->height) {
@@ -98,7 +98,7 @@ const PathfindingSystemBase::Node* PathfindingSystemBase::getTileNode(
   return &mMap[x + mCurrentArea->width * y];
 }
 
-void PathfindingSystemBase::init() {
+void PathfindingSystem::init() {
   if (mCurrentArea == LevelManager::getCurrentArea()) {
     initSearch();
     return;
@@ -124,7 +124,7 @@ void PathfindingSystemBase::init() {
   initSearch();
 }
 
-void PathfindingSystemBase::initSearch() {
+void PathfindingSystem::initSearch() {
   if (nullptr == mMap || nullptr == mCurrentArea) {
     return;
   }

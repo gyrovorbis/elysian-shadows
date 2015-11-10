@@ -183,6 +183,7 @@ SOURCES += \
     ../../ESGamma/source/proxy/elysian_level_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_light_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_particle_system_proxy.cpp \
+    ../../ESGamma/source/proxy/elysian_pathfinding_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_party_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_rigid_body_system_proxy.cpp \
     ../../ESGamma/source/proxy/elysian_timer_system_proxy.cpp \
@@ -415,6 +416,7 @@ HEADERS += \
     ../../ESGamma/include/proxy/elysian_party_system_proxy.hpp \
     ../../ESGamma/include/proxy/elysian_timer_system_proxy.hpp \
     ../../ESGamma/include/proxy/elysian_rigid_body_system_proxy.hpp \
+    ../../ESGamma/include/proxy/elysian_pathfinding_system_proxy.hpp \
     ../../AssetIO/include/component/elysian_lua_behavior_base.hpp \
     ../../AssetIO/include/crtp/elysian_lua_behavior.hpp \
     ../../AssetIO/include/level/elysian_depth_buff_entry_base.hpp \
