@@ -3,18 +3,16 @@
 #include <cstring>
 #include <stdexcept>
 
+namespace elysian {
+
 template <typename T, int SIZE>
 class RingBuffer {
  public:
   RingBuffer() : mReadIdx(0), mWriteIdx(0) {}
 
-  const T& front() const {
-    return mBuffer[mReadIdx];
-  }
+  const T &front() const { return mBuffer[mReadIdx]; }
 
-  void pop_front() {
-    forward(1);
-  }
+  void pop_front() { forward(1); }
 
   bool empty() { return mWriteIdx == mReadIdx; }
 
@@ -118,3 +116,4 @@ class RingBuffer {
   T mBuffer[SIZE];
   int mReadIdx, mWriteIdx;
 };
+}

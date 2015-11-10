@@ -1,7 +1,7 @@
 #include "elysian_pathfinding_system.hpp"
 #include <crtp/elysian_area.hpp>
 #include <crtp/elysian_level.hpp>
-#include <deque>
+#include <utility/elysian_ring_buffer.hpp>
 
 namespace elysian {
 
@@ -10,7 +10,7 @@ void PathfindingSystemBase::findAllPathsTo(const unsigned short x,
                                            const int maxDistance) {
   // Although static, it's not necessarry to clear frontier, because at the end
   // of this function, it will always be empty
-  static std::deque<Node*> frontier;
+  static RingBuffer<Node*, 2048> frontier;
 
   // Exit if no area loaded, bad tile coordinates or init failed (e.g. bad
   // alloc)

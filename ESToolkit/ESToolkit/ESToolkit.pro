@@ -330,6 +330,7 @@ HEADERS += \
     ../../AssetIO/include/utility/elysian_lua_table_proxy_base.hpp \
     ../../AssetIO/include/utility/elysian_mem_pool.hpp \
     ../../AssetIO/include/utility/elysian_stl_algorithm.hpp \
+    ../../AssetIO/include/utility/elysian_ring_buffer.hpp \
     ../../AssetIO/include/utility/luatables.h \
     ../../ESGamma/include/crtp/elysian_debug.hpp \
     ../../ESGamma/include/crtp/elysian_lua_manager.hpp \

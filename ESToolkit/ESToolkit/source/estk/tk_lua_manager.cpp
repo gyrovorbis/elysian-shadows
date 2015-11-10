@@ -12,7 +12,7 @@ bool TkLuaManager::initialize(void) {
     success &= LuaManagerBase::initialize();
 
     success &= runScriptSandbox(TK_LUA_MANAGER_METATABLE_SCRIPT_PATH);
-    
+
     getGlobal("serialize");
     _serializeFunc.pull();
     lua_register(*_mainState, "serialize", &_serializeCFunc);
@@ -23,7 +23,7 @@ bool TkLuaManager::initialize(void) {
     return success;
 }
 
-int TkLuaManager::_serializeCFunc(lua_State *vm) {
+int TkLuaManager::_serializeCFunc(lua_State */*vm*/) {
     _serializing = true;
     _serializeFunc.push();
     lua_insert(*_mainState, -2);
