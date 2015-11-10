@@ -20,6 +20,7 @@ OOLUA_PROXY(PartySystem)
     OOLUA_MEM_FUNC_CONST(maybe_null<Entity*>, getCharacterPartyMember, unsigned)
     OOLUA_MEM_FUNC_CONST(unsigned, getPartySize)
     OOLUA_MEM_FUNC(void, setPartyLeader, Entity*const)
+    OOLUA_MEM_FUNC_CONST(int, getPartySlot, const Entity*)
 OOLUA_PROXY_END
 
 #endif // ELYSIAN_PARTY_SYSTEM_PROXY_LUA

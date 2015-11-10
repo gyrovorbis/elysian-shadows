@@ -40,6 +40,7 @@ namespace elysian {
 #endif
         static const char       _rPrint[];
         static int              _traceBackDbgPushes;
+        static bool             _serializing;
 
         static int              _changePrintSeverity(const int sev);
         static void             _errorprintf(const char *const string, ...);
@@ -168,6 +169,8 @@ namespace elysian {
 		static unsigned				getScriptCount(void);
 		static unsigned				getScriptInstances(void);
 		static unsigned				getKbytesUsed(void);
+        static bool                 isSerializing(void);
+        static void                 setSerializing(const bool v);
 
         static void					rPrintByIndex(const int index, const unsigned depth, const char* name);
         static void					rPrintByRef(const int ref, const unsigned depth, const char* name);
@@ -279,6 +282,9 @@ namespace elysian {
         _printSeverity = (Debug::SEVERITY)sev;
         return current;
     }
+
+    inline bool LuaManagerBase::isSerializing(void) { return _serializing; }
+    inline void LuaManagerBase::setSerializing(const bool v) { _serializing = v; }
 
 
 }

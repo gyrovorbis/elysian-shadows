@@ -20,13 +20,12 @@ private:
 protected:
     static QStringList              _udTypeNames;
     static elysian::LuaVariant      _serializeFunc;
-    static bool                     _serializing;
+    static unsigned                 _serializeDepth;
 
 public:
 
     static bool         initialize(void);
     static bool         getMetatable(const int index);
-    static bool         isSerializing(void);
     static QStringList  getUdTypeNames(void);
 
     static int          _serializeCFunc(lua_State* vm);

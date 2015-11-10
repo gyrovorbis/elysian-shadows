@@ -123,7 +123,7 @@ namespace elysian {
 
         unsigned getPartySize(void) const;
 
-        int    getPartySlot(const Entity* entity);
+        int    getPartySlot(const Entity* entity) const;
 		
 	//	void DisablePartyFollow(); Probably going to want these pretty soon... 
 	//	void EnablePartyFollow();

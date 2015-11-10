@@ -10,6 +10,7 @@ namespace elysian {
 
 //static members
 std::map<const char*, LuaScript*, ltstr>	LuaManagerBase::_scripts;
+bool                                        LuaManagerBase::_serializing                                                = false;
 OOLUA::Script*								LuaManagerBase::_mainState                                                  = nullptr;
 int											LuaManagerBase::_errorCode                                                  = 0;
 Debug::SEVERITY                             LuaManagerBase::_printSeverity                                              = Debug::LOG_VERBOSE;

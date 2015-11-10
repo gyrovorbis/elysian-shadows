@@ -3,7 +3,7 @@
 
 QStringList TkLuaManager::_udTypeNames;
 LuaVariant TkLuaManager::_serializeFunc;
-bool TkLuaManager::_serializing = false;
+unsigned TkLuaManager::_serializeDepth = 0;
 
 
 bool TkLuaManager::initialize(void) {
@@ -24,10 +24,14 @@ bool TkLuaManager::initialize(void) {
 }
 
 int TkLuaManager::_serializeCFunc(lua_State */*vm*/) {
-    _serializing = true;
+    if(++_serializeDepth == 1) setSerializing(true);
+
     _serializeFunc.push();
+
     lua_insert(*_mainState, -2);
     _protectedCall(1, 1, nullptr);
-    _serializing = false;
+
+    if(--_serializeDepth == 0) setSerializing(false);
+
     return 1;
 }

@@ -314,20 +314,22 @@ namespace elysian {
             auto findNextIndexAtDepth = [&](const int startIndex, const int startDepth, int &currentDepth) {
 
                 for(int i = startIndex+1; i < _proxyTotalCount; ++i) {
-                    switch(_combinedFields[i].flags) {
-                    case LuaTableFieldProxy::FLAG_VTABLE_BEGIN:
-                        if(currentDepth == (int)startDepth) {
-                            ++currentDepth;
-                            return i;
+                    if(!LuaManager::isSerializing() || _combinedFields[i].set) {
+                        switch(_combinedFields[i].flags) {
+                        case LuaTableFieldProxy::FLAG_VTABLE_BEGIN:
+                            if(currentDepth == (int)startDepth) {
+                                ++currentDepth;
+                                return i;
+                            }
+                            break;
+                        case LuaTableFieldProxy::FLAG_VTABLE_END:
+                            if(--currentDepth < (int)startDepth) return -1;
+                            break;
+                        case LuaTableFieldProxy::FLAG_ARRAY:
+                        case LuaTableFieldProxy::FLAG_NONE:
+                            if(currentDepth == (int)startDepth) return i;
+                        default: break;
                         }
-                        break;
-                    case LuaTableFieldProxy::FLAG_VTABLE_END:
-                        if(--currentDepth < (int)startDepth) return -1;
-                        break;
-                    case LuaTableFieldProxy::FLAG_ARRAY:
-                    case LuaTableFieldProxy::FLAG_NONE:
-                        if(currentDepth == (int)startDepth) return i;
-                    default: break;
                     }
                 }
                 return -1;
@@ -356,10 +358,24 @@ namespace elysian {
                 while((currentIndex = findNextIndexAtDepth(currentIndex, depth, currentDepth)) != -1) {
                     if(currentIndex >= _proxyTotalCount) break;
                     if(strcmp(key, _combinedFields[currentIndex].key) == 0) {
+#if 1
                         nextIndex = findNextIndexAtDepth(currentIndex, depth, currentDepth);
                         found = true;
                         break;
+#else
+                        found = true;
+                        nextIndex = currentIndex;
+                        for(;;) {
+                            nextIndex = findNextIndexAtDepth(nextIndex, depth, currentDepth);
+                            //Skip read-only fields if we're serializing!
+                            if(!LuaManager::isSerializing() || nextIndex == -1 || nextIndex >= _proxyTotalCount || _combinedFields[nextIndex].set) {
+                                break;
+                            }
+                        }
+#endif
+
                     }
+                    if(found) break;
                 }
 
                 //Never even found the starting key! Must be invalid, and it ain't NIL!

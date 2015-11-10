@@ -23,4 +23,5 @@ OOLUA_EXPORT_FUNCTIONS(PartySystem,
 OOLUA_EXPORT_FUNCTIONS_CONST(PartySystem,
                                 getPartyLeader,
                                 getCharacterPartyMember,
-                                getPartySize)
+                                getPartySize,
+                                getPartySlot)

@@ -40,7 +40,7 @@ void PartySystem::update(void) {//VOIDICATE
 #endif
 }
 
-int PartySystem::getPartySlot(const Entity *entity) {
+int PartySystem::getPartySlot(const Entity *entity) const {
     const size_t size = _characterParty.size();
     for(size_t i = 0; i < size; ++i) {
         if(_characterParty[i] == entity) return i;
