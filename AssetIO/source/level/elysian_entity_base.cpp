@@ -376,6 +376,7 @@ bool EntityBase::activate(void) {
 	if(_collidable && !_componentActive[Component::COLLIDABLE]) {
         _area->collidables.push_back(_collidable);
 		_componentActive[Component::COLLIDABLE] = true;
+     //   _collidable->activate();
 	}
 	if(_rigidBody && !_componentActive[Component::RIGID_BODY]) {
         _area->rigidBodies.push_back(_rigidBody);
@@ -437,6 +438,7 @@ bool EntityBase::deactivate(void) {
 		_componentActive[Component::RENDERABLE] = false;
 	}
 	if(_collidable && _componentActive[Component::COLLIDABLE]) {
+       // _collidable->deactivate();
         containerEraseOnMatch(_collidable, _area->collidables);
 		_componentActive[Component::COLLIDABLE] = false;
 	}

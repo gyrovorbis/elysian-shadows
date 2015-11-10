@@ -14,7 +14,7 @@
 #	endif
 #endif
 
-#define ELYSIAN_SORT_SWEEP_DIMENSIONS               3
+#define ELYSIAN_SORT_SWEEP_DIMENSIONS               2
 #define ELYSIAN_SORT_SWEEP_POOL_SIZE                500
 #define ELYSIAN_SORT_SWEEP_AABB_CONTACT_LIST_SIZE   10000
 #define ELYSIAN_SORT_SWEEP_SWEEP_KERNEL_PATH        "/assets/opencl/sweep_kernel.cl"

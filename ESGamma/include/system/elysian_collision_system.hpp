@@ -68,8 +68,7 @@ namespace elysian {
 		
 		/* Stores minimal collision information from the previous frame ONLY for
 		 * entities that have collision triggers */
-		struct PrevContact {
-                                Collidable* collidable[2];
+		struct PrevContact {                                Collidable* collidable[2];
         }                       _prevContactPool[ELYSIAN_COLLISION_PREV_CONTACT_LIST_SIZE];
 
         unsigned                _contactAmount		= 0;

@@ -14,6 +14,7 @@
 #include <proxy/elysian_skeleton_proxy.hpp>
 #include <proxy/elysian_lua_behavior_proxy.hpp>
 #include <lua/elysian_lua_singleton.hpp>
+#include <elysian_collision_system.hpp>
 
 #include <utility/elysian_generic.hpp>
 #include "elysian_collision_system.hpp"
@@ -196,6 +197,22 @@ void CollidableBase::setSortSweepAABB(SortSweepCollidable* sweep) {
 SortSweepCollidable* CollidableBase::getSortSweepAABB(void) const {
   return _sortSweepAABB;
 }
+
+
+void CollidableBase::activate(void) {
+    if(!_sortSweepAABB) {
+        _sortSweepAABB = Singletons::getCollisionSys()->addSortSweepCollidable();
+    }
+
+}
+
+void CollidableBase::deactivate(void) {
+    if(_sortSweepAABB) {
+        Singletons::getCollisionSys()->removeSortSweepCollidable(_sortSweepAABB);
+        _sortSweepAABB = nullptr;
+    }
+}
+
 /*
 template<>
 unsigned SortSweepCollidable::curIndex = 0;

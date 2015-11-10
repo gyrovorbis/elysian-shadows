@@ -188,6 +188,9 @@ namespace elysian {
         void                    update(void);
         void                    render(void);
 
+        void                    activate(void);
+        void                    deactivate(void);
+
         unsigned                getContactCount(void) const;
         void                    setAttrib(CollidableAttrib *attrib);
         CollidableAttrib*       getAttrib(void) const;
