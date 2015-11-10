@@ -20,14 +20,19 @@ void CombatSystem::initialize(void) {
 void CombatSystem::onCollisionEnter(Collidable* const bodyA,
                                     Collidable* const bodyB,
                                     CollisionContact* contact) {
+    uint32_t mask = 0;
   auto* combatA = bodyA->getEntity()->getCombat();
-  if (!(combatA->getCollisionFlags().getValue() & Combat::ON_COLLISION_ENTER) ||
+  if(!combatA) return;
+  mask = (combatA->getCollisionFlags().getValue() & (uint32_t)Combat::ON_COLLISION_ENTER);
+  if (!(mask) ||
       !combatA->getDmgActive())
     return;
   auto* combatB = bodyB->getEntity()->getCombat();
+  if(!combatB) return;
+  mask = (combatB->getAttrib()->getTypeFlags().getValue() &
+          combatA->getAttrib()->getTypeAgainstFlags().getValue());
   if (!combatB ||
-      !(combatB->getAttrib()->getTypeFlags().getValue() &
-        combatA->getAttrib()->getTypeAgainstFlags().getValue()))
+      !(mask))
     return;
 
   if (!(combatA->getDmgType() == Combat::DMG_SOURCE ||
@@ -49,7 +54,9 @@ void CombatSystem::onCollisionEnter(Collidable* const bodyA,
 
 void CombatSystem::onCollide(Collidable* const bodyA, Collidable* const bodyB,
                              CollisionContact* /*contact*/) {
+#if 0
   auto* combatA = bodyA->getEntity()->getCombat();
+  if(!combatA) return;
   if (!(combatA->getCollisionFlags().getValue() & Combat::ON_COLLIDE) ||
       !combatA->getDmgActive())
     return;
@@ -58,12 +65,13 @@ void CombatSystem::onCollide(Collidable* const bodyA, Collidable* const bodyB,
       !(combatB->getAttrib()->getTypeFlags().getValue() &
         combatA->getAttrib()->getTypeAgainstFlags().getValue()))
     return;
-
+#endif
   //_dealCollisionDamage(combatA, combatB, bodyB, contact);
 }
 
 void CombatSystem::onCollisionExit(Collidable* const bodyA,
                                    Collidable* const bodyB) {
+#if 0
   auto* combatA = bodyA->getEntity()->getCombat();
   if (!(combatA->getCollisionFlags().getValue() & Combat::ON_COLLISION_EXIT) ||
       !combatA->getDmgActive())
@@ -73,7 +81,7 @@ void CombatSystem::onCollisionExit(Collidable* const bodyA,
       !(combatB->getAttrib()->getTypeFlags().getValue() &
         combatA->getAttrib()->getTypeAgainstFlags().getValue()))
     return;
-
+#endif
   //_dealCollisionDamage(combatA, combatB, bodyB, nullptr);
 }
 

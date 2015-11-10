@@ -49,10 +49,10 @@ namespace elysian {
 
     public:
         enum STATUS_EFFECT {
-            POISON                  = 1,
-            CONFUSION               = 1<<1,
-            SLEEP                   = 1<<2,
-            MAX                     = 1<<23,
+            POISON                  = 1u,
+            CONFUSION               = 1u<<1,
+            SLEEP                   = 1u<<2,
+            MAX                     = 1u<<23,
             STATUS_EFFECT_ALL       = ~0
         };
 
@@ -110,9 +110,9 @@ namespace elysian {
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
         enum COLLISION_FLAGS {
-            ON_COLLIDE			= (1<<0),
-            ON_COLLISION_ENTER	= (1<<1),
-            ON_COLLISION_EXIT	= (1<<2)
+            ON_COLLIDE			= (1u<<0),
+            ON_COLLISION_ENTER	= (1u<<1),
+            ON_COLLISION_EXIT	= (1u<<2)
         };
         enum DMG_TYPE { DMG_NONE, DMG_SOURCE, DMG_TARGET, DMG_SOURCE_TARGET };
         enum TARGET_TYPE { TARGET_NONE, TARGET_PARTY, TARGET_ENEMY, TARGET_FRIENDLY, TARGET_MAX };

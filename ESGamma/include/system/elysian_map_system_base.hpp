@@ -346,6 +346,7 @@ break;
         auto& entities = _curArea->entities;
 
         for(auto entity : entities) {
+            if(entity->getParentEntity()) continue; //will be rendered with the parent!
             if(getLightSys()->isShadowPass() && !entity->isShadowVolume()) {
                 continue;
             } //else if(getCameraSys()->isOnscreen(entity)) {

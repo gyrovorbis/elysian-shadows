@@ -223,6 +223,7 @@ void SkeletonBase::attachEntityToSlot(const char *name, Entity *entity) {
         }
     }
 
+    entity->setParentEntity(getEntity());
     attachment->entity = entity;
     attachment->update();
 
@@ -238,6 +239,7 @@ void SkeletonBase::removeEntityFromSlot(const char *name) {
         errprintf("Attachment %s not found on entity %s", name, _entity->getName());
         return;
     }
+    if(attachment->entity) attachment->entity->setParentEntity(nullptr);
     attachment->entity = nullptr;
 }
 
