@@ -50,16 +50,17 @@ class RingBuffer {
     }
     if (mWriteIdx < 0) {
 #ifdef ELYSIAN_ENGINE
-      throw std::runtime_error("Bad ring buffer write pointer.");
+    assert(0);
 #else
-        assert(0);
+    throw std::runtime_error("Bad ring buffer write pointer.");
+
 #endif
     }
     if (mWriteIdx > SIZE - 1) {
 #ifdef ELYSIAN_ENGINE
-      throw std::runtime_error("Bad ring buffer write pointer.");
-#else
         assert(0);
+#else
+      throw std::runtime_error("Bad ring buffer write pointer.");
 #endif
     }
   }
