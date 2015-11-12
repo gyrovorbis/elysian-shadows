@@ -35,16 +35,32 @@ class RingBuffer {
 
   void validateRingBuffer() {
     if (mReadIdx < 0) {
-      throw std::runtime_error("Bad ring buffer read pointer.");
+#ifdef ELYSIAN_ENGINE
+        assert(0);
+#else
+        throw std::runtime_error("Bad ring buffer read pointer.");
+#endif
     }
     if (mReadIdx > SIZE - 1) {
+#ifdef ELYSIAN_ENGINE
+        assert(0);
+#else
       throw std::runtime_error("Bad ring buffer read pointer.");
+#endif
     }
     if (mWriteIdx < 0) {
+#ifdef ELYSIAN_ENGINE
       throw std::runtime_error("Bad ring buffer write pointer.");
+#else
+        assert(0);
+#endif
     }
     if (mWriteIdx > SIZE - 1) {
+#ifdef ELYSIAN_ENGINE
       throw std::runtime_error("Bad ring buffer write pointer.");
+#else
+        assert(0);
+#endif
     }
   }
 

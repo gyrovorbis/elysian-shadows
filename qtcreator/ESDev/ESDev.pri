@@ -34,7 +34,7 @@ ios|android {
 }
 
 !dreamcast {
-    QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-unknown-pragmas -Wno-inconsistent-missing-override
+    QMAKE_CXXFLAGS += -Wno-unused-local-typedef -Wno-unknown-pragmas -Wno-inconsistent-missing-override
 }
 #QMAKE_CFLAGS += -std=c99
 

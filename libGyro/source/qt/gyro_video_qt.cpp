@@ -5,4 +5,5 @@ extern "C" void glalVidBindDefaultFbo(void) {
     //fucking disgusting.
    // glBindFramebuffer(GL_FRAMEBUFFER, glalDefaultFbo());
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDrawBuffer(GL_BACK);
 }

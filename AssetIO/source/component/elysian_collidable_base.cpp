@@ -72,7 +72,8 @@ void CollidableBase::update(void) {
     //_entity->pushViewTransform();
     _entity->_transform._pos.y -= _entity->_transform._pos.z;
   }
-  _entity->_transform.apply();
+  //_entity->_transform.apply();
+  getEntity()->pushViewTransform();
 
   gyMatTranslateScale(_attrib->_relPos.x, _attrib->_relPos.y,
                       _attrib->_relPos.z, _attrib->_relSize.x,
@@ -84,12 +85,15 @@ void CollidableBase::update(void) {
     _entity->_transform._pos.y = oldY;
   }
   gyMatPop();
+  gyMatPop();
 
   memcpy(&_collider.col.worldPos.x, &worldVecs[0].x, sizeof(float) * 3);
 
   gyVec3Sub(&_worldSize, (GYVector3*)&_collider.box.worldVert[2],
             (GYVector3*)&_collider.box.worldVert[0]);
   _worldSize.z *= -1.0f;
+
+
 
   _updateSortSweepAABB();
 }
@@ -108,10 +112,14 @@ void CollidableBase::render(void) {
   gyMatPush();
 
   gyVidQuadListBegin((_contactCount == 0) ? &color : &colColor);
-  _entity->_transform.apply();
+  //_entity->_transform.apply();
+  getEntity()->pushViewTransform();
   gyMatTranslateScale(_attrib->_relPos.x, _attrib->_relPos.y, 0.0f,
                       _attrib->_relSize.x, _attrib->_relSize.y, 1.0f);
+
+  //gyVidQuad(_collider.box.worldVert, 0);
   gyVidRect(0);
+  gyMatPop();
   gyMatPop();
   gyVidQuadListEnd();
 

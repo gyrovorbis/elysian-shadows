@@ -145,6 +145,7 @@ namespace elysian {
 
     public:
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+            ELYSIAN_LUA_PROXY_FIELD(active,             isActive,               setActive)
             ELYSIAN_LUA_PROXY_FIELD(contactCount,       getContactCount)
             ELYSIAN_LUA_PROXY_FIELD(stackedOnGround,    getStackedOnGround)
             ELYSIAN_LUA_PROXY_FIELD(restingOnBody,      getRestingOnBody)

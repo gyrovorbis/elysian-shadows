@@ -37,8 +37,8 @@ void DaySystem::update(void) {
   gyMatPop();
 
   //update sun's direction vector
-  gyVec3Normalize((GYVector3*)&dir);
-  _sunLightSrc->setDirection(((GYVectorPunned*)&dir)->vec3);
+ // gyVec3Normalize((GYVector3*)&dir);
+  _sunLightSrc->setDirection(*(GYVector3*)&dir);
 }
 
 #if 0
@@ -57,7 +57,7 @@ void DaySystem::setSunEnabled(const bool val) {
 
 
 void DaySystem::onAreaEnter(void) {
-    if(_curArea->getUseSun()) {
+    if(_curArea->getUseSun() && !_sunActive && _sunEntity->getArea() != _curArea) {
         getCurrentArea()->addEntity(_sunEntity);
         _sunActive = true;
     }

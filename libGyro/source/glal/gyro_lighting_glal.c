@@ -683,7 +683,7 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 
 
 #if GYRO_PLATFORM == GYRO_PLATFORM_Qt
-    glDrawBuffer(GL_NONE); // No color buffer is drawn to.
+ //   glDrawBuffer(GL_NONE); // No color buffer is drawn to.
    // glReadBuffer(GL_NONE);
 #elif GYRO_PLATFORM == GYRO_PLATFORM_iOS
     glDrawBuffers(0, NULL);

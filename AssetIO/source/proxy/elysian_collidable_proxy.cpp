@@ -69,11 +69,13 @@ OOLUA_EXPORT_FUNCTIONS(CollisionContact)
 OOLUA_EXPORT_FUNCTIONS(Collidable,
                                    setAttrib,
                                    setResolvePenetration,
-                                    setWorldSpace)
+                                    setWorldSpace,
+                                    setActive)
 OOLUA_EXPORT_FUNCTIONS_CONST(Collidable,
                                getAttrib,
                                getContactCount,
                              getResolvePenetration,
                              getWorldSpace,
                              getStackedOnGround,
-                             getRestingOnBody)
+                             getRestingOnBody,
+                             isActive)

@@ -199,7 +199,7 @@ namespace elysian {
             //delete properties;
             properties = (GYLightProperties*)(attrib);
     }
-    inline void LightSourceBase::setDirection(const GYVector3& dir) { gyVec3Normalize(&direction); direction = dir; }
+    inline void LightSourceBase::setDirection(const GYVector3& dir) { direction = dir; gyVec3Normalize(&direction); }
     inline void LightSourceBase::setSpotCutoffAngle(const float angle) { spotCutoffAngle = (type == GY_LIGHT_SPOT)? angle : 360.0f; }
     inline auto LightSourceBase::getLightType(void) const -> GY_LIGHT_TYPE { return type; }
     inline const GYVector4& LightSourceBase::getPosition(void) const { return position; }

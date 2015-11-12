@@ -49,7 +49,7 @@ void PlayableBehavior::_processMovement(const float /*deltaTime*/, const Control
         GYVector3 pos = entity->_transform._pos;
         pos.z += 5.0f;
         pos.y = entity->getDepthBaseY();
-        //partySys->getPartSys()->emitFromPoint(0, pos, angle, 500);
+        partySys->getPartSys()->emitFromPoint(0, pos, angle, 500);
         _dashPartTimer = 0.0f;
     };
 
