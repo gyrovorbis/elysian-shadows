@@ -181,8 +181,7 @@ dreamcast {
         ../../source/glal/gyro_wav_glal.c \
         ../../source/glal/tinycthread.c \
         ../../source/glal/gyro_ogg_glal.c \
-        ../../source/x86/gyro_matrix_x86.c \
-        ../../source/qt/gyro_video_qt.cpp
+        ../../source/x86/gyro_matrix_x86.c
 
     !ios:!android {
         SOURCES += \
