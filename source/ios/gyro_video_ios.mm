@@ -1,6 +1,6 @@
 #include <gyro_video_api.h>
 #include <glal/gyro_video_glal.h>
-
+#include <glal/gyro_gl.h>
 
 void glalVidBindDefaultFbo(void) {
     //fucking disgusting.
