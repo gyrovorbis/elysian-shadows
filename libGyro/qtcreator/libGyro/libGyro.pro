@@ -191,6 +191,7 @@ dreamcast {
             ../../source/qt/gyro_input_qt.cpp \
             ../../source/qt/gyro_timer_qt.cpp \
             ../../source/qt/gyro_file_qt.cpp \
+            ../../source/qt/gyro_video_qt.cpp \
             ../../source/x86/gyro_controller_sdl_x86.c
     } else: android {
         SOURCES += ../../source/android/android_native_app_glue.c \
