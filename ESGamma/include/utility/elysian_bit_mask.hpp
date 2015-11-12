@@ -21,7 +21,7 @@ namespace elysian {
         //constexpr           operator T(void);
 
         constexpr unsigned  getBitCount(void) const;
-        bool      getBit(const unsigned index) const;
+        bool                getBit(const unsigned index) const;
         void                setBit(const unsigned index, const bool val);
 
        // operator            T(void);

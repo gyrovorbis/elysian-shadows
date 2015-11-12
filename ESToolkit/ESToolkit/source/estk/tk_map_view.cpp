@@ -126,9 +126,9 @@ void MapView::_entitySceneSelectionUpdate(void) {
         auto* const colAttrib = new elysian::CollidableAttrib;
 
         colAttrib->getFlags()->setType(0);
-        colAttrib->getFlags()->getType().setBit(elysian::CollisionFlags::CURSOR, true);
-        //colAttrib->getFlags()->setTypeAgainst(0);
-        //colAttrib->getFlags()->getTypeAgainst().setBit(elysian::CollisionFlags::CURSOR, true);
+        colAttrib->getFlags()->getType().setValue(elysian::CollisionFlags::CURSOR);
+        colAttrib->getFlags()->setTypeAgainst(0);
+        colAttrib->getFlags()->getTypeAgainst().setValue(elysian::CollisionFlags::CURSOR);
 
 
         collid->setAttrib(colAttrib);
@@ -560,7 +560,7 @@ void MapView::onCollisionEnter(Collidable*const bodyA, Collidable*const bodyB, C
             if(!_isEntityRegionSelecting()) _setUnderCursorEntity(bodyB->getEntity());
         } else { //region select entity
             if(!(bodyB->getContactEventMonitorMask() & ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK)) {
-                if(bodyB->getAttrib()->getFlags()->getType().getBit(elysian::CollisionFlags::CURSOR)) _entityAddToSceneSelection(bodyB->getEntity());
+                if(bodyB->getAttrib()->getFlags()->getType().getValue() & elysian::CollisionFlags::CURSOR) _entityAddToSceneSelection(bodyB->getEntity());
             }
         }
 
@@ -598,7 +598,7 @@ void MapView::onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) {
         }
     //region select box
     } else {
-        if(bodyB->getAttrib()->getFlags()->getType().getBit(elysian::CollisionFlags::CURSOR))
+        if(bodyB->getAttrib()->getFlags()->getType().getValue() & elysian::CollisionFlags::CURSOR)
                 if(bodyB->getEntity()->getSelectionState() != TkEntity::SELECTION_SELECTED)
                         _entityRemoveFromSceneSelection(bodyB->getEntity());
 
