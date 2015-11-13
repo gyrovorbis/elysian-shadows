@@ -101,6 +101,7 @@ void spBone_updateWorldTransform (spBone* self) {
     CONST_CAST(float, self->m02) = 0.0f;
     CONST_CAST(float, self->m12) = 0.0f;
 
+
     CONST_CAST(float, self->m20) = 0.0f;
     CONST_CAST(float, self->m21) = 0.0f;
     CONST_CAST(float, self->m22) = 1.0f;

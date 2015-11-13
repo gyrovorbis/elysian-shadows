@@ -263,6 +263,7 @@ void CharacterBase::setHeldEntity(Entity * const entity) {
             removeState(STATE_STAND);
             removeState(STATE_JUMP);
             removeState(STATE_FALL);
+            removeState(STATE_COMBAT);
             addState(STATE_HOLD);
         }
     } else {

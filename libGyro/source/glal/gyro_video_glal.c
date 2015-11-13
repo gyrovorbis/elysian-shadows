@@ -300,7 +300,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
 
         glGenBuffers(1, &_streamVertexVbo[0]);
         glBindBuffer(GL_ARRAY_BUFFER, _streamVertexVbo[0]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE, _vertexQueue, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE, _vertexQueue, GL_STREAM_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
         for(unsigned i = 0; i < 2; ++i) {
@@ -367,7 +367,7 @@ static inline void _flushStreamVertices(void* data) {
 
     glBindBuffer(GL_ARRAY_BUFFER, _streamVertexVbo[0]);
 
-    GYVertex* ptr = (GYVertex*)glMapBufferRange(GL_ARRAY_BUFFER, _vertexQueueLastOffset, sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize), /*GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT |*/ GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+    GYVertex* ptr = (GYVertex*)glMapBufferRange(GL_ARRAY_BUFFER, _vertexQueueLastOffset, sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize), /*GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT |*/ GL_MAP_WRITE_BIT/* | GL_MAP_UNSYNCHRONIZED_BIT*/);
 
     if(ptr) {
     memcpy(ptr, &_vertexQueue[_vertexQueueLastSize], sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize));
@@ -646,7 +646,7 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
         _vertexQueueLastSize = 0;
         _vertexQueueLastOffset = 0;
         gyVidVertexArrayBind(_streamVao[gyVidShadowPass()]);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE, NULL, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE, NULL, GL_STREAM_DRAW);
     }
 
 
@@ -923,7 +923,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
                 _vertexQueueLastSize = 0;
                 _vertexQueueLastOffset = 0;
                 gyVidVertexArrayBind(_streamVao[gyVidShadowPass()]);
-                glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE, NULL, GL_DYNAMIC_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE, NULL, GL_STREAM_DRAW);
             }
 
         }

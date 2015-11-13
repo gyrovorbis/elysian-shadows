@@ -301,6 +301,7 @@ private Q_SLOTS:
     void on_actionInput_Device_Dump_triggered();
     void on_actionAdd_Player_triggered();
     void on_actionRemove_Player_triggered();
+    void on_actionLua_Manager_Dump_triggered();
 };
 
 

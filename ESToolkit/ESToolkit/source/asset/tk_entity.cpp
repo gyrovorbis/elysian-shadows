@@ -440,7 +440,7 @@ void TkEntity::registerProxyMetaTable(lua_State*const vm) {
         [&](bool) {
         }
     );
-
+#if 0
     auto* planeDelegate = new EnumDropdownPropertyItemDelegate({
        "RECT_PLANE_BOTTOM",
        "RECT_PLANE_FRONT",
@@ -453,6 +453,7 @@ void TkEntity::registerProxyMetaTable(lua_State*const vm) {
     planeDelegate->setContextMenu(menuStack->first());
     OOLUA::push(*_mainState, planeDelegate);
     lua_setfield(*_mainState, -2, "planeType");
+#endif
 
     auto* elevDelegate = new SpinboxPropertyItemDelegate(0, ELYSIAN_TILE_ENTRY_ELEV_MAX);
     OOLUA::push(*_mainState, elevDelegate);

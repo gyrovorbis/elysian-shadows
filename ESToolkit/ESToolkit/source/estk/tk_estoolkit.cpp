@@ -2441,3 +2441,8 @@ void ESToolkit::on_actionRemove_Player_triggered()
 
 
 }
+
+void ESToolkit::on_actionLua_Manager_Dump_triggered()
+{
+    elysian::LuaManager::dumpStats();
+}

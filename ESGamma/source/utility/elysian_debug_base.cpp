@@ -358,7 +358,7 @@ void DebugBase::processInput(Keyboard*const input) {
         else Debug::printf(Debug::LOG_VERBOSE, "Collision Disabled");
 
 	}
-
+/*
     if(input->isTapped(GY_KEY_B)) {
         if(_engine->_collisionSystem->getBroadPhase()) {
             _engine->_collisionSystem->setBroadPhase(false);
@@ -368,7 +368,7 @@ void DebugBase::processInput(Keyboard*const input) {
             Debug::printf(Debug::LOG_VERBOSE, "Sort and Sweep Enabled!");
         }
     }
-
+*/
     if(input->isTapped(GY_KEY_L)) {
 		ADV_LOG_WRAP newWrap = (_advLogWrap < ADV_LOG_MAX-1)? (ADV_LOG_WRAP)(_advLogWrap+1) : (ADV_LOG_WRAP)0;
         if(newWrap == ADV_LOG_ALL) Debug::printf(Debug::LOG_VERBOSE, "Adventure Log Wrapping Engine Debug");

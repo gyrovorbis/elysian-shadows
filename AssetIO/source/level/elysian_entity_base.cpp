@@ -161,10 +161,20 @@ void EntityBase::popViewTransform(void) {
 void EntityBase::render(void) {
     if(_particleEmitter) _particleEmitter->render();
 
+//    auto oldPlaneType = _planeType;
+  //  if(_skeleton) _planeType = GY_RECT_PLANE_BOTTOM;
+
     pushViewTransform();
+
+
     static_cast<Entity*>(this)->_renderRelative();
 
     if(_skeleton) {
+        //_planeType = oldPlaneType;
+        if(_planeType == GY_RECT_PLANE_FRONT) {
+    //        gyMatRotate(M_PI*0.5f, 1.0f, 0.0f, 1.0f);
+        }
+
         _skeleton->render();
     }
     popViewTransform();

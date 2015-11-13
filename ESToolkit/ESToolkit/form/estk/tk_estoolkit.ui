@@ -271,6 +271,7 @@
     <addaction name="actionInput_Device_Dump"/>
     <addaction name="actionTexture_Dump"/>
     <addaction name="actionAudio_Dump"/>
+    <addaction name="actionLua_Manager_Dump"/>
     <addaction name="actionAdd_Player"/>
     <addaction name="actionRemove_Player"/>
    </widget>
@@ -1534,6 +1535,11 @@
   <action name="actionRemove_Player">
    <property name="text">
     <string>Remove Player</string>
+   </property>
+  </action>
+  <action name="actionLua_Manager_Dump">
+   <property name="text">
+    <string>Lua Manager Dump</string>
    </property>
   </action>
  </widget>
