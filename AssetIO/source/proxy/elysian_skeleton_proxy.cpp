@@ -46,11 +46,11 @@ OOLUA_EXPORT_FUNCTIONS_CONST(SkeletonAttrib,
 OOLUA_EXPORT_FUNCTIONS_CONST(Skeleton,
                              getAttrib,
                              getAnimTimeScale,
-                             setAnimByName,
                              getEntityAttachedToSlot)
 OOLUA_EXPORT_FUNCTIONS(Skeleton,
                        setAttrib,
                        setAnim,
                        setAnimTimeScale,
                        attachEntityToSlot,
-                       removeEntityFromSlot)
+                       removeEntityFromSlot,
+                       setAnimByName)

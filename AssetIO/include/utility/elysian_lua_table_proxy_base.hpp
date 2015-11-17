@@ -314,7 +314,7 @@ namespace elysian {
             auto findNextIndexAtDepth = [&](const int startIndex, const int startDepth, int &currentDepth) {
 
                 for(int i = startIndex+1; i < _proxyTotalCount; ++i) {
-                  //  if(!LuaManager::isSerializing() || _combinedFields[i].set) {
+                    if(!LuaManager::isSerializing() || _combinedFields[i].set) {
                         switch(_combinedFields[i].flags) {
                         case LuaTableFieldProxy::FLAG_VTABLE_BEGIN:
                             if(currentDepth == (int)startDepth) {
@@ -330,7 +330,7 @@ namespace elysian {
                             if(currentDepth == (int)startDepth) return i;
                         default: break;
                         }
-                  //  }
+                    }
                 }
                 return -1;
             };

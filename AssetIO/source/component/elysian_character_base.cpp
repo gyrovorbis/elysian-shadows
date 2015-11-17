@@ -229,7 +229,7 @@ bool CharacterBase::_checkPushing(void) {
         GYVector2 normal;
         contact->getNormal(bodyIndex? 0 : 1, normal);
 
-        if(_faceDir == Direction::fromVector2(normal)) {
+        if(_faceDir == Direction::fromVector2(normal) && _movedThisFrame) {
             found = true;
             return true;
         }

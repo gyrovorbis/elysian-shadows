@@ -30,7 +30,7 @@ public:
     virtual bool    validate(QString& msg) const override;
     virtual QMenu*  createContextMenu(void) override;
 
-    void            setAnimByName(const int trackIndex, const char*const animName, const bool loop=true) const;
+    void            setAnimByName(const int trackIndex, const char*const animName, const bool loop=true);
 
 private Q_SLOTS:
 

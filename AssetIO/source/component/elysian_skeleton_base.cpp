@@ -40,7 +40,7 @@ void SkeletonBase::setAnim(const char* name) {
     spAnimationState_clearTracks(_animState);
     //spSkeleton_setToSetupPose(_skeleton);
     for(unsigned i = 0; i < anim->_tracks.size(); ++i) setAnimByName(i, anim->_tracks[i]->_name, anim->_tracks[i]->_looping);
-    update(0);
+    update(0.001f);
 
 
 #endif
@@ -141,10 +141,11 @@ SkeletonBase::~SkeletonBase(void) {
     /*decrement attrib reference count*/
 }
 
-void SkeletonBase::setAnimByName(const int trackIndex, const char*const animationName, const bool loop) const {
+void SkeletonBase::setAnimByName(const int trackIndex, const char* animationName, const bool loop) {
     if(!spAnimationState_setAnimationByName(_animState, trackIndex, animationName, loop)) {
         warnprintf("SkeletonBase::setAnimByName(%d, %s, %s) - Could not find animation!", trackIndex, animationName, loop? "true" : "false");
     }
+    update(0.001f);
 }
 
 
@@ -266,6 +267,7 @@ void SkeletonBase::setAnim(const char *name, const AnimListener &listener) {
     setAnim(name);
     _animState->listener = &_animationStateListener;
     _animState->listenerData = this;
+    update(0.001f);
 }
 
 
