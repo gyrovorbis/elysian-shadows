@@ -106,9 +106,9 @@ static GYAppCbRet Init(int argc, char **argv) {
     //glfmt.setStencil(false);
     //glfmt.setDirectRendering(true);
     glfmt.setSwapInterval(1);
-    //glfmt.setDepthBufferSize(16);
-    //glfmt.setStencilBufferSize(0);
-    //glfmt.setAlphaBufferSize(8);
+    glfmt.setDepthBufferSize(16);
+    glfmt.setStencilBufferSize(0);
+    glfmt.setAlphaBufferSize(0);
     glfmt.setStereo(false);
     glfmt.setVersion( 3, 3 );
     glfmt.setProfile( QGLFormat::CoreProfile ); // Requires >=Qt-4.8.0
@@ -248,6 +248,7 @@ free(t);
 #endif
 
 int main(int argc, char* argv[]) {
+
 #if 0
     {
 

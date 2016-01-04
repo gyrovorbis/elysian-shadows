@@ -79,6 +79,9 @@ public:
     bool                        getSaveFlag(void) const;
     void                        setSaveFlag(const bool val);
 
+    //LuaTableProxy
+    static void                 initializeDelegates(void);
+
 	//Selectable
     virtual auto                getType(void) const -> TYPE override;
     virtual auto                getTreeWidgetItemType(void) -> ITEM_TYPE override;
@@ -92,9 +95,9 @@ public:
     virtual void                setData(int column, int role, const QVariant &value) override;
     virtual QVariant            data(int column, int role) const override;
 
-    //sstatic Entity*              create(void);
+    //static Entity*              create(void);
     static Entity*              create(const OOLUA::Lua_table_ref valTable);
-    static void                 registerProxyMetaTable(lua_State*const vm);
+
 public Q_SLOTS:
     void                        onEntityParented(Entity*const child, Entity*const parent);
 

@@ -18,7 +18,7 @@
 EngineGLSceneWidget* EngineGLSceneWidget::_self = nullptr;
 
 void EngineGLSceneWidget::makeCurrentContext(void) {
-    if(_self) {
+    if(_self && QGLContext::currentContext() != _self->context()) {
 
         _self->makeCurrent();
        //     glalVidOglInit(_self->_width, _self->_height, _self->_width, _self->_height);
@@ -26,7 +26,7 @@ void EngineGLSceneWidget::makeCurrentContext(void) {
 }
 
 void EngineGLSceneWidget::doneCurrentContext(void) {
-    if(_self) _self->doneCurrent();
+    if(_self && QGLContext::currentContext() == _self->context()) _self->doneCurrent();
 }
 
 EngineGLSceneWidget::EngineGLSceneWidget(QWidget *parent):
@@ -141,7 +141,6 @@ void EngineGLSceneWidget::_updateEngine(void)
             resizeGL(parentWidth, parentHeight);
         }
 //#endif
-        doneCurrent();
 
     QTimer::singleShot(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this, SLOT(_updateEngine()));
 

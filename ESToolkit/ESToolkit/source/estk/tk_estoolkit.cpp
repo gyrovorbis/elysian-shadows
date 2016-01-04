@@ -1031,7 +1031,7 @@ bool ESToolkit::openProjectDir(const QString dir) {
     _engineGLView->makeCurrent();
     success &= glalVidGlewInit();
 
-    _engineGLView->doneCurrent();
+    //_engineGLView->doneCurrent();
 
     _engineGLView->updateGL();
 

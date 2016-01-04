@@ -452,7 +452,7 @@ void AreaBase::populateVbo(void) {
     }
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*width*height*ELYSIAN_AREA_MAP_LAYERS*4, data, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*width*height*ELYSIAN_AREA_MAP_LAYERS*4, data, ELYSIAN_AREA_ARRAY_VBO_TYPE);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     free(data);
 
@@ -467,7 +467,7 @@ void AreaBase::populateVbo(void) {
 
         glGenBuffers(1, &elementVbo[j]);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementVbo[j]);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE, elementsArray, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE, elementsArray, ELYSIAN_AREA_ELEMENT_ARRAY_VBO_TYPE);
 
         glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
 
@@ -520,32 +520,16 @@ void AreaBase::activate(void) {
     activated = true;
 }
 
-
-void AreaBase::setVboEntry(const TileEntry*const tileEntry, const unsigned l, const unsigned x, const unsigned y) const {
-#ifdef GYRO_GLAL
-    GYVertex entry[4];
-
-    vboEntryFromTileEntry(entry, tileEntry, x, y);
-
-    //ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
-    //gyVidVertexArrayBind(0);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
-    glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_TILE_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(GYVertex), sizeof(GYVertex)*4, (void*)entry);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-#endif
-}
-
 void AreaBase::setTileEntry(const unsigned l, const unsigned x, const unsigned y, const TileEntry e) {
-#ifdef GYRO_GLAL
-    GYVertex entry[4];
-
-    vboEntryFromTileEntry(entry, &e, x, y);
     ELYSIAN_AREA_PROTECTED_MAP_ACCESS(l*height*width + y*width + x) = e;
 
-    glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
-    glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_TILE_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(GYVertex), sizeof(GYVertex)*4, (void*)entry);
+#ifdef GYRO_GLAL
+    GYVertex entry[4];
+    if(e.getValue() == 0) return;
+    vboEntryFromTileEntry(entry, &e, x, y);
 
+    glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
+    glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_TILE_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(GYVertex), sizeof(GYVertex)*4, &entry);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 #endif
 

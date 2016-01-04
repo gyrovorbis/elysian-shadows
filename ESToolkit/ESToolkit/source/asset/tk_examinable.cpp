@@ -10,6 +10,7 @@ void TkExaminable::initializeDelegates(void) {
     auto* dirDelegate = new EnumDropdownPropertyItemDelegate({
         "DIR4_CENTER", "DIR4_UP", "DIR4_DOWN", "DIR4_LEFT", "DIR4_RIGHT"
     });
+
     OOLUA::push(*_mainState, dirDelegate);
     lua_setfield(*_mainState, -2, "relativeDir");
 

@@ -355,7 +355,7 @@ bool Area::activate(void) {
        EngineGLSceneWidget::makeCurrentContext();
         AreaBase::activate();
 
-        EngineGLSceneWidget::doneCurrentContext();
+        //EngineGLSceneWidget::doneCurrentContext();
         //editorScene->addItem(_bgRect);
         //resizeEditorScene();
         //editorScene->setSceneRect(QRect(-48,-48,32*width+64, 32*height+64));
@@ -399,7 +399,7 @@ bool Area::open(void) {
     _bgRect->setRect(QRect(-16, -16, 32*width, 32*height));
     _bgRect->setZValue(-1);
 */
-    EngineGLSceneWidget::doneCurrentContext();
+    //EngineGLSceneWidget::doneCurrentContext();
 
     //Populate Entities
     _open = true;

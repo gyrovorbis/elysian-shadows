@@ -61,6 +61,7 @@ void TkCollidableAttrib::initializeDelegates(void) {
     auto* typeDelegate = new EnumDropdownPropertyItemDelegate({
        "COLLIDER_NONE", "COLLIDER_AABB", "COLLIDER_OBB", "COLLIDER_RTRI", "COLLIDER_OTHER_TRIS", "COLLIDER_CIR"
     });
+
     OOLUA::push(*_mainState, typeDelegate);
     lua_setfield(*_mainState, -2, "colliderType");
 

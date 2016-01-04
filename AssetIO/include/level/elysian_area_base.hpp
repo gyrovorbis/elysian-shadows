@@ -9,9 +9,11 @@
 #include <crtp/elysian_component.hpp>
 #include <crtp/elysian_lua_table_proxy.hpp>
 
-#define ELYSIAN_MAP_BOUNDARY_CHECKS false //PLEASE, GOD, TAKE ME OUT BEFORE RELEASE!!!!!!
-#define ELYSIAN_AREA_USE_INIT_LUA	true
+#define ELYSIAN_MAP_BOUNDARY_CHECKS                 false //PLEASE, GOD, TAKE ME OUT BEFORE RELEASE!!!!!!
+#define ELYSIAN_AREA_USE_INIT_LUA                   true
 #define ELYSIAN_AREA_GLAL_STRIP_INDEX_ARRAY_SIZE	(1024*32)
+#define ELYSIAN_AREA_ARRAY_VBO_TYPE                 GL_STATIC_DRAW
+#define ELYSIAN_AREA_ELEMENT_ARRAY_VBO_TYPE         GL_DYNAMIC_DRAW
 
 #define ELYSIAN_AREA_MAP_LAYERS		3
 #define ELYSIAN_AREA_MAP_WIDTH		200
@@ -239,7 +241,6 @@ namespace elysian {
 
         void                        populateVbo(void);
         void                        freeVbo(void);
-        void                        setVboEntry(const TileEntry*const tileEntry, const unsigned l, const unsigned x, const unsigned y) const;
         void                        vboEntryFromTileEntry(GYVertex*const vboEntry, const TileEntry *const tileEntry, const unsigned x, const unsigned y) const;
         void                        animateVboTileEntry(const unsigned l, const unsigned x, const unsigned y, const uint16_t index);
 

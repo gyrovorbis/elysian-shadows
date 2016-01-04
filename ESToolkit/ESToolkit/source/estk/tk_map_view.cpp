@@ -386,6 +386,7 @@ void MapView::wheelEvent(QWheelEvent* event) {
 }
 
 void MapView::mouseMoveEvent(QMouseEvent *event) {
+
     //DIRTY-ASS HACK TO KEEP SHIT SYNCED WITH ENGINE
     //_zoomLabel->setText(QString::number((int)(getAssets()->getEngine()->getCameraSys()->getKeyFrame().getScale()*getAssets()->getEngine()->getCameraSys()->getStaticScale()*100.0f))+QString("%"));
     auto* sel = static_cast<TileSelectable*>(_getTileSelection());
@@ -399,8 +400,11 @@ void MapView::mouseMoveEvent(QMouseEvent *event) {
         unsigned w, h;
         sel->getSelectionArea(w, h);
 
+        //MUST BE THE CURRENT CONTEXT, OR MAP TILES WILL NOT UPDATE BASED ON SELECTION!!!11
+        //EngineGLSceneWidget::makeCurrentContext();
         getAssets()->getCurrentArea()->setEmitMapChange(false);
         _curUndoItem->beginUpdateEntries();
+
         for(unsigned j = 0; j < h; ++j) {
             for(unsigned i = 0; i < w; ++i) {
                 auto newTileEntry = sel->getEntry(i, j);
@@ -408,6 +412,7 @@ void MapView::mouseMoveEvent(QMouseEvent *event) {
                     _curUndoItem->addTile(QPoint(i+(getSceneMousePos().x()+16)/32, j+(getSceneMousePos().y()+16)/32), newTileEntry);
             }
         }
+
         _curUndoItem->endUpdateEntries();
         getAssets()->getCurrentArea()->setEmitMapChange(true);
     }

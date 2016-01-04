@@ -424,6 +424,39 @@ void TkEntity::setTreeWidgetItemState(const TreeItemState state) {
 
 }
 
+void TkEntity::initializeDelegates(void) {
+    lua_newtable(*_mainState);
+    lua_pushvalue(*_mainState, -1);
+    lua_setfield(*_mainState, -3, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
+
+    MenuStack *menuStack = new MenuStack("Entity");
+
+    menuStack->insertCheckableAction("Active",
+        [&](bool) {
+        }
+    );
+
+    auto* planeDelegate = new EnumDropdownPropertyItemDelegate({
+       "RECT_PLANE_BOTTOM",
+       "RECT_PLANE_FRONT",
+       "RECT_PLANE_LEFT",
+       "RECT_PLANE_RIGHT",
+       "RECT_PLANE_FRONT_SLOPE_45",
+       "RECT_PLANE_LEFT_SLOPE_45",
+       "RECT_PLANE_RIGHT_SLOPE_45"
+    });
+    planeDelegate->setContextMenu(menuStack->first());
+    OOLUA::push(*_mainState, planeDelegate);
+    lua_setfield(*_mainState, -2, "planeType");
+
+    auto* elevDelegate = new SpinboxPropertyItemDelegate(0, ELYSIAN_TILE_ENTRY_ELEV_MAX);
+    OOLUA::push(*_mainState, elevDelegate);
+    lua_setfield(*_mainState, -2, "elev");
+
+    lua_pop(*_mainState, 1);
+}
+
+#if 0
 void TkEntity::registerProxyMetaTable(lua_State*const vm) {
 
     LuaManager::stackBalanceBegin();
@@ -465,3 +498,4 @@ void TkEntity::registerProxyMetaTable(lua_State*const vm) {
 
     elysian::EntityBase::registerProxyMetaTable(vm);
 }
+#endif
