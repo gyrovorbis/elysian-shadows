@@ -1201,7 +1201,7 @@ void ESToolkit::on_actionAreaRemove_triggered() {
         return;
     }
 
-    if(_assets.getCurrentSelection() == _assets.getCurrentArea()) _selectionDockWidget->SetSelectionModel(nullptr);
+    if(_assets.getCurrentSelection() == _assets.getCurrentArea()) _selectionDockWidget->setSelectionModel(nullptr);
 
     auto* area = _assets.getCurrentArea();
     Level *level = area->getLevel();
@@ -1218,7 +1218,7 @@ void ESToolkit::on_actionLevelRemove_triggered() {
     }
 
     QString name = _assets.getCurrentLevel()->getNodeName();
-    if(_assets.getCurrentSelection() == _assets.getCurrentLevel()) _selectionDockWidget->SetSelectionModel(nullptr);
+    if(_assets.getCurrentSelection() == _assets.getCurrentLevel()) _selectionDockWidget->setSelectionModel(nullptr);
     _assets.setCurrentLevel(nullptr);
     _assets.getCurrentProject()->removeLevel(name);
     _assets.setCurrentLevel(_assets.getCurrentProject()->getFirstLevel());
@@ -1263,41 +1263,41 @@ void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *cons
     _ui->mapView->deleteSelectionItemGroup();
     /* Must be cleared after every selection change so that the model isn't pointing
       to a deleted TerrainSelection */
-    _selectionDockWidget->SetSelectionModel(nullptr);
+    _selectionDockWidget->setSelectionModel(nullptr);
     _selectionDockWidget->restoreSelectionTreeWidgetDefaultItemDelegate();
 
     switch(type) {
     case Selectable::PROJECT:
         break;
     case Selectable::LEVEL:
-        _selectionDockWidget->SetSelectionTreeWidget();
+        _selectionDockWidget->setSelectionTreeWidget();
         static_cast<Level *>(selection)->populateModel();
-        _selectionDockWidget->SetSelectionModel(static_cast<Level *>(selection));
-        _selectionDockWidget->ExpandSelectionTree();
+        _selectionDockWidget->setSelectionModel(static_cast<Level *>(selection));
+        _selectionDockWidget->expandSelectionTree();
         break;
     case Selectable::AREA:
-        _selectionDockWidget->SetSelectionTreeWidget();
+        _selectionDockWidget->setSelectionTreeWidget();
         //static_cast<Area *>(selection)->populateModel();
-        _selectionDockWidget->SetSelectionModel(selection->getModel());
-        _selectionDockWidget->ExpandSelectionTree();
+        _selectionDockWidget->setSelectionModel(selection->getModel());
+        _selectionDockWidget->expandSelectionTree();
         break;
     case Selectable::TILE:
          _ui->mapView->createSelectionItemGroup();
          static_cast<TileSelectable *>(selection)->populateModel();
-         _selectionDockWidget->SetSelectionModel(static_cast<TileSelectable *>(selection));
-         /*if(static_cast<TileSelectable *>(selection)->getSize() == 1)*/ _selectionDockWidget->ExpandSelectionTree();
+         _selectionDockWidget->setSelectionModel(static_cast<TileSelectable *>(selection));
+         /*if(static_cast<TileSelectable *>(selection)->getSize() == 1)*/ _selectionDockWidget->expandSelectionTree();
          selection->installSelectionViewCustomDelegates(_selectionDockWidget->getSelectionTreeWidget());
-        _selectionDockWidget->SetSelectionTreeWidget();
+        _selectionDockWidget->setSelectionTreeWidget();
         break;
     case Selectable::ENTITY:
         //Update Menu Bar
         //SyncEntityMenuBar(static_cast<Entity *>(selection));
 #if 1
         //Update Entity View
-        _selectionDockWidget->SetSelectionTreeWidget();
+        _selectionDockWidget->setSelectionTreeWidget();
         //static_cast<Entity*>(selection)->populateModel();
-        _selectionDockWidget->SetSelectionModel(static_cast<EntitySelectable*>(selection)->getModel());
-        _selectionDockWidget->ExpandSelectionTree(1);
+        _selectionDockWidget->setSelectionModel(static_cast<EntitySelectable*>(selection)->getModel());
+        _selectionDockWidget->expandSelectionTree(1);
 #else
         select(static_cast<EntitySelectable*>(selection)->)
 #endif
@@ -1675,8 +1675,8 @@ void ESToolkit::on_actionToggle_AutoScroll_triggered()
 
         LuaTableStackModel* model = new LuaTableStackModel(ref);
         model->populateModel();
-        _selectionDockWidget->SetSelectionTreeWidget();
-        _selectionDockWidget->SetSelectionModel(model);
+        _selectionDockWidget->setSelectionTreeWidget();
+        _selectionDockWidget->setSelectionModel(model);
     }
 }
 
@@ -2103,9 +2103,9 @@ void ESToolkit::select(const int luaRef) {
 
     LuaTableStackModel* model = new LuaTableStackModel(newRef);
     model->populateModel();
-    self->_selectionDockWidget->SetSelectionTreeWidget();
-    self->_selectionDockWidget->SetSelectionModel(model);
-    self->_selectionDockWidget->ExpandSelectionTree();
+    self->_selectionDockWidget->setSelectionTreeWidget();
+    self->_selectionDockWidget->setSelectionModel(model);
+    self->_selectionDockWidget->expandSelectionTree();
 }
 
 int ESToolkit::pushSelection(lua_State * const vm) {

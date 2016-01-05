@@ -36,7 +36,7 @@ ios {
     #QMAKE_OBJCXXFLAGS_PRECOMPILE += -std=c++11 -stdlib=libc++
     #CONFIG += precompile_header
 }
-QMAKE_CXXFLAGS += -Wno-unused-local-typedefs -Wno-empty-body
+QMAKE_CXXFLAGS += -Wno-empty-body
 
 
 ICON = resource/images/estk.icns

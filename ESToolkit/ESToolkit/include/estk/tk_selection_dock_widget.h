@@ -16,24 +16,34 @@ class SelectionDockWidget : public QDockWidget
     Q_OBJECT
     
 public:
-    explicit SelectionDockWidget(QWidget *parent = nullptr);
-    ~SelectionDockWidget();
-    void SetSelectionWidget(QWidget *widget);
-    void SetSelectionTreeWidget();
-	void restoreSelectionTreeWidgetDefaultItemDelegate(void);
-    void SetSelectionModel(QAbstractItemModel *model);
-    void ExpandSelectionTree(const int index=0);
-	QTreeView *getSelectionTreeWidget(void);
+    explicit                    SelectionDockWidget(QWidget *parent = nullptr);
+                                ~SelectionDockWidget(void);
+
+    void                        setSelectionWidget(QWidget *widget);
+    void                        setSelectionTreeWidget(void);
+    void                        restoreSelectionTreeWidgetDefaultItemDelegate(void);
+    void                        setSelectionModel(QAbstractItemModel *model);
+    void                        expandSelectionTree(const int index=0);
+    QTreeView*                  getSelectionTreeWidget(void);
+
 Q_SIGNALS:
-    void UncheckMe(int);
+    void                        uncheckMe(int);
 protected:
-    void closeEvent(QCloseEvent *event);
+
+    virtual void                closeEvent(QCloseEvent *event);
+    void                        _sizeColumnsToDefault();
 private:
-    Ui::SelectionDockWidget *ui;
-    QTreeView *_selectionTreeWidget;
-    void SizeColumnsToDefault();
-	QAbstractItemDelegate *_defaultItemDelegate;
+
+    Ui::SelectionDockWidget*    _ui;
+    QTreeView*                  _selectionTreeWidget;
+    QAbstractItemDelegate*      _defaultItemDelegate;
 };
+
+
+
+
+// ==== INLINEZ =====
+
 
 inline QTreeView *SelectionDockWidget::getSelectionTreeWidget(void) {
 	return _selectionTreeWidget;

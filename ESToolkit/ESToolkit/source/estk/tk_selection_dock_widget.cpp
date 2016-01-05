@@ -6,9 +6,9 @@
 
 SelectionDockWidget::SelectionDockWidget(QWidget *parent) :
     QDockWidget(parent),
-    ui(new Ui::SelectionDockWidget)
+    _ui(new Ui::SelectionDockWidget)
 {
-    ui->setupUi(this);
+    _ui->setupUi(this);
     _selectionTreeWidget = new QTreeView();
     QFont font = _selectionTreeWidget->font();
     font.setPointSize(10);
@@ -25,42 +25,35 @@ SelectionDockWidget::SelectionDockWidget(QWidget *parent) :
 	_defaultItemDelegate = _selectionTreeWidget->itemDelegate();
 }
 
-SelectionDockWidget::~SelectionDockWidget()
-{
-    SetSelectionModel(nullptr);
-    delete ui;
+SelectionDockWidget::~SelectionDockWidget(void) {
+    setSelectionModel(nullptr);
+    delete _ui;
 }
 
-void SelectionDockWidget::SetSelectionWidget(QWidget *widget)
-{
+void SelectionDockWidget::setSelectionWidget(QWidget *widget) {
     setWidget(widget);
 }
 
-void SelectionDockWidget::SetSelectionTreeWidget()
-{
+void SelectionDockWidget::setSelectionTreeWidget(void) {
     setWidget(_selectionTreeWidget);
 }
 
-void SelectionDockWidget::SetSelectionModel(QAbstractItemModel *model)
-{
+void SelectionDockWidget::setSelectionModel(QAbstractItemModel *model) {
     _selectionTreeWidget->setModel(model);
-    SizeColumnsToDefault();
+    _sizeColumnsToDefault();
 }
 
-void SelectionDockWidget::ExpandSelectionTree(const int index)
-{
+void SelectionDockWidget::expandSelectionTree(const int index) {
     _selectionTreeWidget->expandToDepth(index);
-    SizeColumnsToDefault();
+    _sizeColumnsToDefault();
 }
 
-void SelectionDockWidget::SizeColumnsToDefault()
-{
+void SelectionDockWidget::_sizeColumnsToDefault(void) {
     _selectionTreeWidget->resizeColumnToContents(0);
 }
 
-void SelectionDockWidget::closeEvent(QCloseEvent *event)
-{
-    Q_EMIT UncheckMe(5);
+void SelectionDockWidget::closeEvent(QCloseEvent *event) {
+    Q_EMIT uncheckMe(5);
     event->accept();
 }
 
