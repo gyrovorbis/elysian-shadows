@@ -24,6 +24,8 @@ static inline void cpuid(int CPUInfo[4],int InfoType){
     );
 }
 
+#  if defined(__linux__) && defined(__x86_64__)
+
 static void _checkCPUCapabilities(void) {
     int x64     = 0;
     int MMX     = 0;
@@ -77,6 +79,7 @@ static void _checkCPUCapabilities(void) {
         _gyLog(GY_DEBUG_VERBOSE, "SSE CPU Extensions detected! Fast-ass math enabled!");
     }
 }
+#endif
 #endif
 
 #if defined(__linux__) || defined(__APPLE__)

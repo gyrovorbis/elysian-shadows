@@ -11,6 +11,7 @@ extern "C" void _sdlControllerDump(void);
 GYInputInitParams    _initParams;
 static bool         _changedThisFrame[GY_KEY_COUNT] = { false };
 
+#if 0
 static inline GY_MOUSE_BUTTON _TranslateMouseButtonFromQt(const Qt::MouseButton button) {
     switch(button) {
     case Qt::LeftButton:
@@ -22,6 +23,7 @@ static inline GY_MOUSE_BUTTON _TranslateMouseButtonFromQt(const Qt::MouseButton 
     default: return GY_MOUSE_BUT_NONE;
     }
 }
+#endif
 
 static inline GY_KEY _TranslateFromQt(const int keyCode) {
     switch(keyCode) {
