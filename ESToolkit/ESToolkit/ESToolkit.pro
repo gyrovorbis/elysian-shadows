@@ -618,7 +618,7 @@ docs {
 macx {
     #DESTDIR = ../../executable
     #    CONFIG(release, debug|release):
-    #QMAKE_POST_LINK = "sh ./macdeployes.sh"
+    release: QMAKE_POST_LINK = "sh ./macdeployes.sh"
 }
 
 dreamcast {
