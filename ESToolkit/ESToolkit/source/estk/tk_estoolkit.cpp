@@ -1297,6 +1297,7 @@ void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *cons
         _selectionDockWidget->setSelectionTreeWidget();
         //static_cast<Entity*>(selection)->populateModel();
         _selectionDockWidget->setSelectionModel(static_cast<EntitySelectable*>(selection)->getModel());
+        _selectionDockWidget->restoreSelectionTreeWidgetDefaultItemDelegate();
         _selectionDockWidget->expandSelectionTree(1);
 #else
         select(static_cast<EntitySelectable*>(selection)->)

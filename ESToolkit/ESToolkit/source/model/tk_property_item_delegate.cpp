@@ -112,7 +112,7 @@ bool PropertyItemProxyDelegate::editorEvent(QEvent *event, QAbstractItemModel *m
 
 QWidget* EnumDropdownPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem& /*option*/, const QModelIndex& /*index*/) const {
     auto* editor = new QComboBox(parent);
-    editor->setFocusPolicy(Qt::WheelFocus);
+   // editor->setFocusPolicy(Qt::WheelFocus);
 
     for(unsigned i = 0; i < (unsigned)_stringNames.size(); ++i) {
         editor->addItem(_stringNames[i], i);
@@ -122,7 +122,7 @@ QWidget* EnumDropdownPropertyItemDelegate::createEditor(QWidget *parent, const Q
 
 
 void EnumDropdownPropertyItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
-    QComboBox* combo = qobject_cast<QComboBox*>(editor);
+    QComboBox* combo = static_cast<QComboBox*>(editor);
 
     auto* model = static_cast<const PropertyStackModel*>(index.model());
     auto* item = static_cast<ESTkStandardItem*>(model->itemFromIndex(index));
@@ -133,14 +133,15 @@ void EnumDropdownPropertyItemDelegate::setEditorData(QWidget *editor, const QMod
 
 
 void EnumDropdownPropertyItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const {
-    QComboBox* combo = qobject_cast<QComboBox*>(editor);
+    QComboBox* combo = static_cast<QComboBox*>(editor);
 
     if(combo) {
         auto* propModel = static_cast<const PropertyStackModel*>(model);
         auto* item = static_cast<ESTkStandardItem*>(propModel->itemFromIndex(index));
+        const int i = combo->currentIndex();
 
-        item->setData(_stringNames[combo->currentIndex()], Qt::DisplayRole);
-        item->setData(combo->currentIndex(), Qt::EditRole);
+        item->setData(_stringNames[i], Qt::DisplayRole);
+        item->setData(i, Qt::EditRole);
     } else QStyledItemDelegate::setModelData(editor, model, index);
 }
 

@@ -58,5 +58,5 @@ void SelectionDockWidget::closeEvent(QCloseEvent *event) {
 }
 
 void SelectionDockWidget::restoreSelectionTreeWidgetDefaultItemDelegate(void) {
-    //_selectionTreeWidget->setItemDelegate(_defaultItemDelegate);
+    _selectionTreeWidget->setItemDelegate(_defaultItemDelegate);
 }
