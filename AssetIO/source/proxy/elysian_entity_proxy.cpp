@@ -122,9 +122,9 @@
  * \sa getParticleEmitter(), setParticleEmitter()
  */
 /*!
- * \qmlproperty LuaBehavior Entity::luaBehaviors
+ * \qmlproperty Behavior Entity::behaviors
  *
- * \sa getLuaBehavior(), setLuaBehaviorByIndex()
+ * \sa getBehaviorByIndex(), setBehaviorByIndex()
  */
 
 
@@ -479,19 +479,19 @@
  * Removes and deletes the attached LuaBehavior instantiated from the LuaScript at "scriptPath."
  */
 /*!
- * \qmlmethod LuaBehavior* Entity::getLuaBehaviorByIndex(int index)
+ * \qmlmethod Behavior* Entity::getBehaviorByIndex(int index)
  *
- * Returns the LuaBehavior component at the specified index or nil if there isn't one.
+ * Returns the Behavior component at the specified index or nil if there isn't one.
  */
 /*!
- * \qmlmethod int Entity::getLuaBehaviorCount()
+ * \qmlmethod int Entity::getBehaviorCount()
  *
- * Returns the number of LuaBehavior components attached to the current entity.
+ * Returns the number of Behavior components attached to the current entity.
  */
 /*!
- * \qmlmethod void Entity::setLuaBehaviorByIndex(int index, Lua_table_ref valueTable)
+ * \qmlmethod void Entity::setBehaviorByIndex(int index, Lua_table_ref valueTable)
  *
- * Sets the LuaBehavior at the specified index to the valueTable or inserts a new one if the specified index doesn't exist.
+ * Sets the Behavior at the specified index to the valueTable or inserts a new one if the specified index doesn't exist.
  */
 
 
@@ -580,7 +580,7 @@ OOLUA_EXPORT_FUNCTIONS(Entity,
                        setSkeleton,
                        setPersistent,
                        setDispName,
-                       setLuaBehaviorByIndex)
+                       setBehaviorByIndex)
 
 
 OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
@@ -604,6 +604,6 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Entity,
                                 getShadowDepth,
                                 isPersistent,
                                 getDispName,
-                                getLuaBehaviorByIndex,
-                                getLuaBehaviorCount,
+                                getBehaviorByIndex,
+                                getBehaviorCount,
                                 isActive)

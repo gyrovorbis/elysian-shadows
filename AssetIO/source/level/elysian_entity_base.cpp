@@ -708,7 +708,7 @@ LuaBehavior* EntityBase::getLuaBehavior(const char*script) const {
     return static_cast<LuaBehavior*>(getBehavior(script));
 }
 
-void EntityBase::setLuaBehaviorByIndex(const unsigned index, const OOLUA::Lua_table_ref valueTable) {
+void EntityBase::setBehaviorByIndex(const unsigned index, const OOLUA::Lua_table_ref valueTable) {
     if(index == _behaviors.size()) { //allocate new entity
         //Entity* entity = Entity::create(valueTable);
         LuaBehavior* behav = new LuaBehavior(*static_cast<Entity*>(this));
@@ -930,9 +930,9 @@ void EntityBase::setSkeleton(const OOLUA::Lua_table_ref valTable) {
     _setComponent<Skeleton>(_skeleton, valTable, _active? &_area->skeletons : nullptr);
 }
 
-LuaBehavior* EntityBase::getLuaBehaviorByIndex(const unsigned index) const {
+Behavior* EntityBase::getBehaviorByIndex(const unsigned index) const {
     if(index >= _behaviors.size()) return nullptr;
-    return static_cast<LuaBehavior*>(_behaviors[index]);
+    return _behaviors[index];
 }
 
 

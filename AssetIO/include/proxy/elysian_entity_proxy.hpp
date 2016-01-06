@@ -128,9 +128,9 @@ OOLUA_PROXY(Entity, RenderableObject)
     OOLUA_MEM_FUNC_CONST(bool, isActive)
     OOLUA_MEM_FUNC_CONST(const char*, getDispName)
     OOLUA_MEM_FUNC(void, setDispName, const char*)
-    OOLUA_MEM_FUNC_CONST(maybe_null<LuaBehavior*>, getLuaBehaviorByIndex, unsigned)
-    OOLUA_MEM_FUNC_CONST(unsigned, getLuaBehaviorCount)
-    OOLUA_MEM_FUNC(void, setLuaBehaviorByIndex, unsigned, OOLUA::Lua_table_ref)
+    OOLUA_MEM_FUNC_CONST(maybe_null<Behavior*>, getBehaviorByIndex, unsigned)
+    OOLUA_MEM_FUNC_CONST(unsigned, getBehaviorCount)
+    OOLUA_MEM_FUNC(void, setBehaviorByIndex, unsigned, OOLUA::Lua_table_ref)
 OOLUA_PROXY_END
 
 

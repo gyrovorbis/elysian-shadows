@@ -1,6 +1,5 @@
 #include <crtp/elysian_dialog.hpp>
 #include <cstring>
-#include <QDebug>
 
 namespace elysian {
 
@@ -39,12 +38,9 @@ DialogPromptBase::~DialogPromptBase(void) { for(auto it: _options) delete it; }
 DialogBase::~DialogBase(void) { for(auto it : _screens) delete it; }
 
 void DialogBase::setScreen(const unsigned index, DialogScreen*const screen) {
-    qDebug() << "INSERTING SCREEN INTO " << index << screen->getText();
     if(index == _screens.size()) {
-        qDebug() << "INSERTED";
         _screens.push_back(screen);
     } else {
-        qDebug() << "NOT INSERTED!";
         GY_ASSERT(0);
        // qDebug() << "REALLOC SHIT" << (void*)screen;
       //  if(_screens[index]) {

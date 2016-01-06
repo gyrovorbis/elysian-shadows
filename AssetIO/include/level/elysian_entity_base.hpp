@@ -48,7 +48,7 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(audioSource,        getAudioSource,         setAudioSource)
             ELYSIAN_LUA_PROXY_FIELD(particleEmitter,    getParticleEmitter,     setParticleEmitter)
             ELYSIAN_LUA_PROXY_FIELD(combat,             getCombat,              setCombat)
-            ELYSIAN_LUA_PROXY_ARRAY_FIELD(luaBehaviors,  getLuaBehaviorByIndex,  setLuaBehaviorByIndex, getLuaBehaviorCount)
+            ELYSIAN_LUA_PROXY_ARRAY_FIELD(behaviors,  getBehaviorByIndex,  setBehaviorByIndex, getBehaviorCount)
 		ELYSIAN_LUA_PROXY_FIELDS_END()
 
 
@@ -142,9 +142,9 @@ namespace elysian {
 
         LuaBehavior*        getLuaBehavior(char const* scriptName) const;
         std::vector<Behavior*>& getBehaviors(void);
-        LuaBehavior*        getLuaBehaviorByIndex(const unsigned index) const;
-        void                setLuaBehaviorByIndex(const unsigned index, const OOLUA::Lua_table_ref valueTable);
-        unsigned            getLuaBehaviorCount(void) const;
+        Behavior*           getBehaviorByIndex(const unsigned index) const;
+        void                setBehaviorByIndex(const unsigned index, const OOLUA::Lua_table_ref valueTable);
+        unsigned            getBehaviorCount(void) const;
 
         void                setParentEntity(Entity*const parent);
         Entity*             getParentEntity(void) const;
@@ -272,7 +272,7 @@ namespace elysian {
     inline bool EntityBase::isActive(void) const { return _active; }
     inline void EntityBase::setPersistent(const bool val) { _persistent = val; }
     inline bool EntityBase::isPersistent(void) const { return _persistent; }
-    inline unsigned EntityBase::getLuaBehaviorCount(void) const { return _behaviors.size(); }
+    inline unsigned EntityBase::getBehaviorCount(void) const { return _behaviors.size(); }
     inline Area* EntityBase::getArea(void) const { return _area; }
     inline void EntityBase::setArea(Area*const area) { _area = area; }
 
