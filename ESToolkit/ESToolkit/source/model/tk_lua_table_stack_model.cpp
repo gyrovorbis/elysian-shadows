@@ -87,6 +87,18 @@ void LuaTableTableFieldData::insertTableFieldItems(QStandardItem*const parentIte
 
     int valueType = lua_type(*_mainState, -1);
 
+    //Downcast to most specific type before recursing over it
+    if(valueType == LUA_TUSERDATA) {
+        LuaManager::getGlobal("down_cast");
+        lua_pushvalue(*_mainState, -2);
+        LuaManager::_protectedCall(1, 1, nullptr, "LuaTableFieldData - downcasting");
+        //update reference
+        lua_pushvalue(*_mainState, -1);
+        luaL_unref(*_mainState, LUA_REGISTRYINDEX, _luaRef);
+        _luaRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
+        lua_remove(*_mainState, -2);
+    }
+
     //Populate metatable
     if((metatable = getMetatable(-1))) {
         //int metaRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);

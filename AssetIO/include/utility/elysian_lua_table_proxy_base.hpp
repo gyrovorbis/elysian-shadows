@@ -762,10 +762,10 @@ namespace elysian {
 
 			luaL_getmetatable(*LuaManager::_mainState, OOLUA::Proxy_class<T>::class_name); //userdata metatable
 
-
 			//Save OOLUA's method table for later
 			lua_getfield(l, -1, "__index");
 
+            //metatable["fromTable"] = _luaFromTableCFunction
             lua_pushstring(l, "fromTable");
             lua_rawgeti(l, LUA_REGISTRYINDEX, _propertyProxyIndexTable);
             lua_rawgeti(l, LUA_REGISTRYINDEX, _propertyProxyNewIndexTable);
@@ -774,10 +774,17 @@ namespace elysian {
             lua_pushcclosure(l, &_luaFromTableCFunction, LUA_TABLE_PROXY_UPVALUE_COUNT);
             lua_rawset(l, -3);
 
+            //metatable["__type"] = class name
             lua_pushstring(l, ELYSIAN_LUA_PROXY_TYPE_METAFIELD);
             lua_pushstring(l, OOLUA::Proxy_class<T>::class_name);
             lua_rawset(l, -3);
 
+            //metatable["__downcast"] = T::_lua_downCast()
+            lua_pushstring(l, ELYSIAN_LUA_PROXY_DOWN_CAST_METAFIELD);
+            lua_pushcfunction(l, &T::lua_downCast);
+            lua_rawset(l, -3);
+
+            //replace OOLUA constructor with custom one
             lua_getfield(l, -1, "new"); //only register creator function if constructor is exposed
             if(!lua_isnil(l, -1)) {
                 lua_pushstring(l, "oolua_new");
@@ -999,6 +1006,10 @@ namespace elysian {
             }
 
             return 1;
+        }
+
+        static int lua_downCast(lua_State*const /*vm*/) {
+            return 1; //hopefully just leave the argument on the stack as a return value?
         }
 
 	};

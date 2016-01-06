@@ -22,6 +22,7 @@
 #define ELYSIAN_LUA_MANAGER_TABLE_MANIP_SCRIPT_PATH     "/assets/scripts/utility/table_manip.lua"
 
 #define ELYSIAN_LUA_PROXY_TYPE_METAFIELD                "__typename"
+#define ELYSIAN_LUA_PROXY_DOWN_CAST_METAFIELD           "__downcast"
 
 namespace elysian {
 	

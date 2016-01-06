@@ -36,16 +36,20 @@ namespace elysian {
 
     public:
 
-        void            setText(const char*const text);
-       const char*      getText(void) const;
-       void             addSourceEntity(Entity*const entity);        //supports multiple
-       void             addSourcePos(const GYVector2& pos);          //for non-entity
-       unsigned         getIndex(void) const;					            //location in overall dialog
-       void             setIndex(const unsigned index);
-       void             setTrigger(const bool val);					//Behavior::onDialog(unsigned screen, int option)
-       SCREEN_TYPE      getScreenType(void) const;
-       Entity*          getEntity(void) const;
-       bool             isTrigger(void) const;
+        void             setText(const char*const text);
+        const char*      getText(void) const;
+        void             addSourceEntity(Entity*const entity);        //supports multiple
+        void             addSourcePos(const GYVector2& pos);          //for non-entity
+        unsigned         getIndex(void) const;					            //location in overall dialog
+        void             setIndex(const unsigned index);
+        void             setTrigger(const bool val);					//Behavior::onDialog(unsigned screen, int option)
+        SCREEN_TYPE      getScreenType(void) const;
+        Entity*          getEntity(void) const;
+        bool             isTrigger(void) const;
+
+        //LuaTableProxy CRTP override
+        static int       lua_downCast(lua_State*const vm);
+
     };
 
 

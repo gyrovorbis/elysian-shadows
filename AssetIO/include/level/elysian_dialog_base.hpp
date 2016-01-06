@@ -32,7 +32,7 @@ namespace elysian {
 
         using           LuaTableProxy<DialogTextBase, DialogText, DialogScreen>::registerProxyMetaTable;
         using           LuaTableProxy<DialogTextBase, DialogText, DialogScreen>::fromTable;
-
+        using           LuaTableProxy<DialogTextBase, DialogText, DialogScreen>::lua_downCast;
 
                         DialogTextBase(void);
                         DialogTextBase(const char*const text);
@@ -72,6 +72,7 @@ namespace elysian {
 
         using                       LuaTableProxy<DialogPromptBase, DialogPrompt, DialogScreen>::registerProxyMetaTable;
         using                       LuaTableProxy<DialogPromptBase, DialogPrompt, DialogScreen>::fromTable;
+        using                       LuaTableProxy<DialogPromptBase, DialogPrompt, DialogScreen>::lua_downCast;
 
                                     DialogPromptBase(void);
                                     DialogPromptBase(const char*const text);

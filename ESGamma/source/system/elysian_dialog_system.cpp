@@ -374,7 +374,7 @@ void DialogSystem::NextScreen(void) {
 
 	getAudioSys()->playSfxChannel(-1, *_scrollDownSFX);
             auto* prompt = static_cast<DialogPrompt*>(_curScreen.screen);
-            auto*text = static_cast<DialogText*>(_curScreen.screen);
+            auto* text = static_cast<DialogText*>(_curScreen.screen);
 
 	switch(_boxState) {
 		case BOX_OUTPUT_END:
@@ -387,6 +387,8 @@ void DialogSystem::NextScreen(void) {
 			nextIndex = -1; //shit's reested.
 		break;
 	}
+
+    GY_ASSERT(nextIndex == -1 || (nextIndex < _curDialog->getScreenCount() && nextIndex >= 0));
 
 	//Invoke Lua trigger
 	if(_curScreen.screen->isTrigger() && _curDialog->getTriggerEntity()) {
