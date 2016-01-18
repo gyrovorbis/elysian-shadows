@@ -126,6 +126,8 @@ void glalLoadDefaultShaders(void);
 void glalDefaultShadersLoadUniforms(void);
 void glalGetLightViewMatrix(GYMatrix4 dest, const GYLightSource*const lightSrc);
 void glalGetPointLightProjectionMatrix(GYMatrix4 dest, const GYLightSource* const lightSrc);
+int _protectedAttribQuery(const GYShaderProgram* prog, const char* const name, const unsigned canFail);
+int _protectedUniformQuery(const GYShaderProgram* prog, const char* const name, const unsigned canFail);
 
 #ifdef __cplusplus
 }

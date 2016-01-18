@@ -2,6 +2,7 @@
 #define ELYSIAN_LUA_VARIANT_BASE_HPP
 
 #include <initializer_list>
+#include <tuple>
 #include <cstdlib>
 #include <crtp/elysian_lua_manager.hpp>
 
@@ -75,9 +76,9 @@ namespace elysian {
         template<typename L>
         LuaVariantBase&             _convertType(const L converter);
 
-        static bool             _lightConvertToBool(const LuaVariantBase& source);
+        static bool                 _lightConvertToBool(const LuaVariantBase& source);
         static LuaVariantBase&      _convertToBool(const LuaVariantBase& source, LuaVariantBase& dest);
-        static lua_Number       _lightConvertToNumber(const LuaVariantBase& source);
+        static lua_Number           _lightConvertToNumber(const LuaVariantBase& source);
         static LuaVariantBase&      _convertToNumber(const LuaVariantBase& source, LuaVariantBase& dest);
 
 
@@ -236,6 +237,10 @@ namespace elysian {
                                 LuaVariantBase(const bool val);
                                 LuaVariantBase(const char*const string);
                                 LuaVariantBase(void*const userdata);
+
+                                template<class... Types>
+                                LuaVariantBase(const std::tuple<Types...> table);
+
                                 ~LuaVariantBase(void);
 
         LuaVariantBase&             operator=(const LuaVariantBase& rhs);
@@ -512,6 +517,15 @@ namespace elysian {
     inline LuaVariantBase::LuaVariantBase(const double number) { setValue(number); }
     inline LuaVariantBase::LuaVariantBase(const int num) { setValue(num); }
     inline LuaVariantBase::LuaVariantBase(void*const ptr) { setValue(ptr); }
+
+
+    template<class... Types>
+    inline LuaVariantBase::LuaVariantBase(const std::tuple<Types...> table) {
+        lua_newtable(*_mainState);
+
+
+    }
+
 
     inline LuaVariantBase::~LuaVariantBase(void) { setNil(); }
 

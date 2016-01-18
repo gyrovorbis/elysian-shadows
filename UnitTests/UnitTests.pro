@@ -94,5 +94,6 @@ HEADERS += \
     test_level_assets.h \
     test_area_assets.h \
     test_lua_variant.h \
-    test_dialog.h
+    test_dialog.h \
+    test_instance_transform.h
 

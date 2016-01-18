@@ -6,7 +6,7 @@
 #include <QMatrix4x4>
 #include <QQuaternion>
 #include <QVector2D>
-#include <QBasicTimer>
+#include <QTimer>
 #include <tk_task_monitor.h>
 //#include <QOpenGLFunctions>
 //#include <QGLFunctions>
@@ -59,6 +59,7 @@ protected:
     bool                    _wasGLError         = false;
     QString                 _prevGLError;
     TaskMonitor             _engineTask;
+    QTimer                  _engineUpdateTimer;
 
     static EngineGLSceneWidget* _self;
 

@@ -21,6 +21,13 @@ namespace elysian {
                     Vector2(const Vector2& other);
                     ~Vector2(void) = default;
 
+        friend bool operator== (const Vector2& vec1, const Vector2& vec2);
+        friend bool operator!= (const Vector2& vec1, const Vector2& vec2);
+        //overload for GYVector2 comparisons
+        //overload addition, subtraction, multiplication, etc. (use rvalue references, move semantics n shit)
+        //overload negation operator
+        //add dot operators and shit
+
         float       getX(void) const;
         float       getY(void) const;
         void        setX(const float val) const;
@@ -241,6 +248,13 @@ namespace elysian {
             _ptr = this;
         }
     }
+    inline bool operator==(const Vector2& vec1, const Vector2& vec2) {
+        return (vec1.x == vec2.x && vec1.y == vec2.y);
+    }
+    inline bool operator!=(const Vector2& vec1, const Vector2& vec2) {
+        return !(vec1==vec2);
+    }
+
     inline float Vector2::getX(void) const { return _ptr->x; }
     inline float Vector2::getY(void) const { return _ptr->y; }
     inline void Vector2::setX(const float val) const { _ptr->x = val; }

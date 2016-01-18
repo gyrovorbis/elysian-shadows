@@ -39,6 +39,14 @@ EngineGLSceneWidget::EngineGLSceneWidget(QWidget *parent):
             //setAutoBufferSwap(true);
 
     connect(this, SIGNAL(engineUpdated()), getAssets(), SIGNAL(engineUpdated()));
+    connect(&_engineUpdateTimer, SIGNAL(timeout()), this, SLOT(_updateEngine()));
+
+    if(format().swapInterval() == -1) {
+        qWarning() << "Swap buffers at V_blank not available: trying to force approx 60fps!";
+        _engineUpdateTimer.setInterval(17);
+    } else {
+        _engineUpdateTimer.setInterval(0);
+    }
 }
 
 
@@ -116,6 +124,7 @@ void EngineGLSceneWidget::startRenderTimer(void) {
    // doneCurrent();
     _updateEngine();
     _initialized = true;
+    _engineUpdateTimer.start();
     //timerEvent(nullptr); //go ahead and update the nigger.
 }
 /*
@@ -142,7 +151,7 @@ void EngineGLSceneWidget::_updateEngine(void)
         }
 //#endif
 
-    QTimer::singleShot(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this, SLOT(_updateEngine()));
+    //QTimer::singleShot(TK_ENGINE_GL_SCENE_WIDGET_UPDATE_TIME, this, SLOT(_updateEngine()));
 
 }
 
@@ -163,13 +172,7 @@ void EngineGLSceneWidget::paintGL(void) {
     if(!getCurrentArea() || !_initialized) return;
     makeCurrent();
 
-    //auto delta = gyTimerTicks();
-
-    static bool once = false;
-    if(!once) {
-       // _initSpineShit();
-        once = true;
-    }
+   // auto delta = gyTimerTicks();
 
     _wasGLError = false;
 
@@ -206,10 +209,10 @@ void EngineGLSceneWidget::paintGL(void) {
 
     getAssets()->getEngine()->getTimerSys()->popTaskMonitor(&_engineTask);
 
-    //auto result = gyTimerTicks() - delta;
+   // auto result = gyTimerTicks() - delta;
 
-    //auto sec = (double)result/1000000000.0;
-   // qDebug() << "nsec - " << result << "sec - " << sec << "hz - " << 1.0/sec;
+   // auto sec = (double)result/1000000000.0;
+   //qDebug() << "nsec - " << result << "sec - " << sec << "hz - " << 1.0/sec;
 
 
     Q_EMIT engineUpdated();

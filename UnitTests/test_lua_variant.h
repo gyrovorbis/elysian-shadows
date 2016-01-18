@@ -33,6 +33,7 @@ private Q_SLOTS:
     void createWithDoubleType(void);
     void createWithStringType(void);
     void createWithVoidPtrType(void);
+    void createFromTuple(void);
     void createFromStack(void);
 
     //fetching values
@@ -159,6 +160,11 @@ inline void LuaVariantTest::createWithVoidPtrType(void) {
     int i = 33;
     LuaVariant variant((void*)&i);
     QVERIFY(variant.getType() == LUA_TLIGHTUSERDATA);
+}
+
+inline void LuaVariantTest::createFromTuple(void) {
+
+
 }
 
 inline void LuaVariantTest::createFromStack(void) {

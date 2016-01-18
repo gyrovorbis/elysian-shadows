@@ -107,12 +107,12 @@ void gyVidLightSourceEndShadowPasses(void);
 void gyVidLightSourceBeginShadowPasses(void);
 
 //Shader management
-GYShader* gyShaderCreate(const char*const path);
-int gyShaderDestroy(GYShader* shader);
-int gyShaderProgramDestroy(GYShaderProgram* program);
-GYShaderProgram* gyShaderProgramCreate(GYShader* vertShader, GYShader* fragShader);
-int gyShadersReloadAll(void);
-void gyShaderWalk(void);
+GYShader*           gyShaderCreate(const char*const path);
+int                 gyShaderDestroy(GYShader* shader);
+int                 gyShaderProgramDestroy(GYShaderProgram* program);
+GYShaderProgram*    gyShaderProgramCreate(GYShader* vertShader, GYShader* fragShader);
+int                 gyShadersReloadAll(void);
+void                gyShaderWalk(void);
 
 //Internal
 int _gyVidShaderCreate(GYShader* shader);
