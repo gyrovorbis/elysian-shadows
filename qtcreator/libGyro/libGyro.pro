@@ -112,7 +112,8 @@ HEADERS += \
     ../../include/glal/gyro_al.h \
     ../../include/common/turfs.h \
     ../../include/glal/gyro_file_glal.inl \
-    ../../include/common/gyro_input_common.h
+    ../../include/common/gyro_input_common.h \
+    ../../include/glal/gyro_glow_glal.h
 
 android {
 
@@ -156,7 +157,8 @@ SOURCES += \
     ../../source/common/gyro_texture.c \
     ../../source/common/gyro_wav.c \
     ../../source/common/turfs_file_stdio.c \
-    ../../source/common/gyro_video.c
+    ../../source/common/gyro_video.c \
+    ../../source/glal/gyro_glow_glal.c
 
 dreamcast {
 

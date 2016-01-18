@@ -19,6 +19,11 @@ extern GYAppQuitCb     gyAppQuitCb;
 static GYView* _view = NULL;
 
 
+int glalVidDefaultFbo(void) {
+    return _view._defaultFbo;
+
+}
+
 void glalVidBindDefaultFbo(void) {
     //fucking disgusting.
    // glBindFramebuffer(GL_FRAMEBUFFER, glalDefaultFbo());
@@ -35,6 +40,8 @@ void glalVidBindDefaultFbo(void) {
 
         if(gyAppInitCb) gyAppInitCb(0, NULL);
         glalVidOglInit(frame.size.width, frame.size.height, frame.size.width, frame.size.height);
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING_OES, &_defaultFbo);
+
         _view = self;
 
 

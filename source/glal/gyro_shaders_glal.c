@@ -291,7 +291,7 @@ void gyVidSetGlobalAmbience(const GYVector4*const color) {
 
 //======= INTERNAL QUERY FUNCTIONS FOR DEFAULT SHADER =======
 
-static inline int _protectedUniformQuery(const GYShaderProgram* prog, const char* const name, const unsigned canFail) {
+int _protectedUniformQuery(const GYShaderProgram* prog, const char* const name, const unsigned canFail) {
     int loc = glGetUniformLocation(prog->program, name);
     if(!canFail && loc == -1) {
         _gyLog(GY_DEBUG_WARNING, "Query for shader uniform %s failed!", name);
@@ -299,7 +299,7 @@ static inline int _protectedUniformQuery(const GYShaderProgram* prog, const char
     return loc;
 }
 
-static inline int _protectedAttribQuery(const GYShaderProgram* prog, const char* const name, const unsigned canFail) {
+int _protectedAttribQuery(const GYShaderProgram* prog, const char* const name, const unsigned canFail) {
     int loc = glGetAttribLocation(prog->program, name);
     if(!canFail && loc == -1) {
         _gyLog(GY_DEBUG_WARNING, "Query for shader attribute %s failed!", name);
