@@ -171,12 +171,13 @@ GLuint                      _streamVertexVbo[2]         = { 0 };
 void gyVidSceneBegin(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     gyMatLoadIdentity();
-    glalPrevVertexRenderCount = glalVertexRenderCount;
-    glalPrevUniformChangeCount = glalUniformChangeCount;
-    glalPrevTextureChangeCount = glalTextureChangeCount;
-    glalVertexRenderCount = 0;
-    glalUniformChangeCount = 0;
-    glalTextureChangeCount = 0;
+
+    glalPrevVertexRenderCount   = glalVertexRenderCount;
+    glalPrevUniformChangeCount  = glalUniformChangeCount;
+    glalPrevTextureChangeCount  = glalTextureChangeCount;
+    glalVertexRenderCount       = 0;
+    glalUniformChangeCount      = 0;
+    glalTextureChangeCount      = 0;
 }
 
 void gyVidSceneEnd(void) {
@@ -186,10 +187,10 @@ void gyVidSceneEnd(void) {
 
 
 void gyVidClearColor(const GYColor4 color) {
-    _clearColor.x = (float)color.r*255.0f;
-    _clearColor.y = (float)color.g*255.0f;
-    _clearColor.z = (float)color.b*255.0f;
-    _clearColor.w = (float)color.a*255.0f;
+    _clearColor.x = (float)color.r * 255.0f;
+    _clearColor.y = (float)color.g * 255.0f;
+    _clearColor.z = (float)color.b * 255.0f;
+    _clearColor.w = (float)color.a * 255.0f;
     glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
 }
 
@@ -201,8 +202,8 @@ void gyVidVertexBatchBegin(void (*flushCallback)(void*), void* obj) {
 }
 
 void gyVidVertexBatchEnd(void) {
-    glalFlushCallback = NULL;
-    glalFlushObject = NULL;
+    glalFlushCallback   = NULL;
+    glalFlushObject     = NULL;
 }
 
 void gyVidVertexBatchFlush(void) {

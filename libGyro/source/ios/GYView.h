@@ -1,5 +1,6 @@
 #import <GLKit/GLKit.h>
 
-@interface GYView : GLKView
-
+@interface GYView : GLKView {
+    GLint _defaultFbo;
+}
 @end
