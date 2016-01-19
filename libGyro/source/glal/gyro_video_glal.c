@@ -4,6 +4,7 @@
 #include <gyro_shader_api.h>
 #include <glal/gyro_video_glal.h>
 #include <glal/gyro_shaders_glal.h>
+#include <glal/gyro_glow_glal.h>
 #include <spine/spine.h>
 
 #include <assert.h>
@@ -274,6 +275,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         _gyPush();
 
         glalLoadDefaultShaders();
+        glalVidInitializeGlow();
         gyVidSetDefaultShaderProgram();
         glalDefaultShadersLoadUniforms();
         //HAVE TO SET DEFAULT GL STATES OR THE STATE CACHES WILL BE DIRTY
@@ -371,12 +373,12 @@ static inline void _flushStreamVertices(void* data) {
     GYVertex* ptr = (GYVertex*)glMapBufferRange(GL_ARRAY_BUFFER, _vertexQueueLastOffset, sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize), /*GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_FLUSH_EXPLICIT_BIT |*/ GL_MAP_WRITE_BIT/* | GL_MAP_UNSYNCHRONIZED_BIT*/);
 
     if(ptr) {
-    memcpy(ptr, &_vertexQueue[_vertexQueueLastSize], sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize));
-    //glFlushMappedBufferRange(GL_ARRAY_BUFFER, _vertexQueueLastOffset, sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize));
-    glUnmapBuffer(GL_ARRAY_BUFFER);
+        memcpy(ptr, &_vertexQueue[_vertexQueueLastSize], sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize));
+        //glFlushMappedBufferRange(GL_ARRAY_BUFFER, _vertexQueueLastOffset, sizeof(GYVertex)*(_vertexQueueSize-_vertexQueueLastSize));
+        glUnmapBuffer(GL_ARRAY_BUFFER);
 
-    glDrawArrays(_glPrimitiveType, _vertexQueueLastSize, (_vertexQueueSize-_vertexQueueLastSize));
-}
+        glDrawArrays(_glPrimitiveType, _vertexQueueLastSize, (_vertexQueueSize-_vertexQueueLastSize));
+    }
     _vertexQueueLastSize    = _vertexQueueSize;
     _vertexQueueLastOffset  = _vertexQueueSize*sizeof(GYVertex);
 #endif
