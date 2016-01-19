@@ -15,7 +15,8 @@ extern "C" {
 #endif
 
 
-
+int glalVidInitializeGlow(void);
+int glalVidUninitializeGlow(void);
 void gyVidApplyGlow(void);
 
 
