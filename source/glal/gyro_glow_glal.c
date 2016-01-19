@@ -1,11 +1,9 @@
-#if 0
-
 #include <gyro_system_api.h>
 #include <glal/gyro_gl.h>
 #include <glal/gyro_video_glal.h>
 #include <glal/gyro_glow_glal.h>
 #include <stdio.h>
-
+#if 0
 
 typedef enum __GLOW_SHADER_ATTRIB {
     GLOW_SHADER_POS,
@@ -105,7 +103,46 @@ static int _glalVidUninitializeGlow(void) {
 }
 
 
+  typedef struct GYVertex {
+    GYVector4	pos;
+    GYTexCoord2	texCoord;
+    GYColor4	color;
+    GYVector3   normal;
+    GYVector3   tangent;
+} GYVertex;
+
+
 void gyVidApplyGlow(void) {
+    GYVertex vertices[4] = {
+        {
+            { -0.5f, -0.5f, 0.0f, 1.0f },
+            { 0.0f, 0.0f },
+            { 255, 255, 255, 255 },
+            { 0.0f, 0.0f, 1.0f },
+            { 0.0f, -1.0f, 0.0f }
+        },
+        {
+            { 0.5f, -0.5f, 0.0f, 1.0f },
+            { 1.0f, 0.0f },
+            { 255, 255, 255, 255 },
+            { 0.0f, 0.0f, 1.0f },
+            { 0.0f, -1.0f, 0.0f }
+        },
+        {
+            { -0.5f, 0.5f, 0.0f, 1.0f },
+            { 0.0f, 1.0f },
+            { 255, 255, 255, 255 },
+            { 0.0f, 0.0f, 1.0f },
+            { 0.0f, -1.0f, 0.0f }
+        },
+        {
+            { 0.5f, 0.5f, 0.0f, 1.0f },
+            { 1.0f, 1.0f },
+            { 255, 255, 255, 255 },
+            { 0.0f, 0.0f, 1.0f },
+            { 0.0f, -1.0f, 0.0f }
+        }
+    };
     unsigned int scrWidth, scrHeight;
 
     //1 - Copy backbuffer to texture.
@@ -130,8 +167,7 @@ void gyVidApplyGlow(void) {
                            GL_TEXTURE_2D,
                            _horizontalConvTex,
                            0);
-    gyVidResolution(GYRO_GLAL_GLOW_TEXTURE_WIDTH, GYRO_GLAL_GLOW_TEXTURE_HEIGHT);
-    glViewport(0, 0, (float)scrWidth, (float)scrHeight);
+    glViewport(0, 0, (float)GYRO_GLAL_GLOW_TEXTURE_WIDTH, (float)GYRO_GLAL_GLOW_TEXTURE_HEIGHT);
     glBindTexture(GL_TEXTURE_2D, _glowBuffTex); //not going to work, where the fuck are texture coords coming from!?
     gyMatPush();
     gyMatLoadIdentity();
@@ -155,14 +191,23 @@ void gyVidApplyGlow(void) {
      gyVidQuadListEnd();
      gyMatPop();
 
-    //RENDER FULL-SCREEN QUAD
-
-
-
-
-
+    //4 - RENDER FULL-SCREEN QUAD
+    gyVidSetDefaultShaderProgram();
+    glalVidBindDefaultFbo();
+    glViewport(0.0f, 0.0f, (float)scrWidth, (float)scrHeight);
+    gyMatPush();
+    gyMatLoadIdentity();
+    gyMatScale(GYRO_GLAL_GLOW_TEXTURE_WIDTH, GYRO_GLAL_GLOW_TEXTURE_HEIGHT, 1.0f);
+    color.a = 100;
+    gyVidAlphaLevel(GY_ALPHA_FULL);
+    glBindTexture(GL_TEXTURE_2D, _finalConvTex);
+    gyVidQuadListBegin(&color);
+    gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
+    gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
+    gyVidRect(0);
+    gyVidQuadListEnd();
+    gyMatPop();
 
 }
 
 #endif
-
