@@ -3,8 +3,8 @@
 
 #include <glal/gyro_shaders_glal.h>
 
-#define GYRO_GLAL_GLOW_TEXTURE_WIDTH    512
-#define GYRO_GLAL_GLOW_TEXTURE_HEIGHT   512
+#define GYRO_GLAL_GLOW_TEXTURE_WIDTH    256
+#define GYRO_GLAL_GLOW_TEXTURE_HEIGHT   256
 #define GYRO_GLAL_GLOW_TEXTURE_FILTER   GL_NEAREST
 #define GYRO_GLAL_GLOW_TEXTURE_WRAP     GL_CLAMP_TO_EDGE
 #define GYRO_GLAL_GLOW_VERTEX_SHADER    "/assets/shaders/glowConvolution.vsh"
@@ -17,7 +17,6 @@ extern "C" {
 
 int glalVidInitializeGlow(void);
 int glalVidUninitializeGlow(void);
-void gyVidApplyGlow(void);
 
 
 #ifdef __cplusplus
