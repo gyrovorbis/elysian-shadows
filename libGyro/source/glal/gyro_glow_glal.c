@@ -199,7 +199,7 @@ void gyVidApplyGlow(void) {
                            _horizontalConvTex,
                            0);
     glViewport(0, 0, (float)GYRO_GLAL_GLOW_TEXTURE_WIDTH, (float)GYRO_GLAL_GLOW_TEXTURE_HEIGHT);
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
     GLenum attachments[1] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers(1, attachments);
     GLenum status;
@@ -228,6 +228,7 @@ void gyVidApplyGlow(void) {
      // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
      //GLenum attachments[1] = { GL_COLOR_ATTACHMENT0 };
      //glDrawBuffers(1, attachments);
+       glClear(GL_COLOR_BUFFER_BIT);
       if((status = glCheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE) {
           _gyLog(GY_DEBUG_WARNING, "Binding GLAL depth texture to frame buffer has reested - %d!", status);
           return;
@@ -267,11 +268,12 @@ void gyVidApplyGlow(void) {
    // glalVidOglInit(scrWidth, scrHeight, scrWidth, scrHeight);
     glViewport(0.0f, 0.0f, (float)scrWidth, (float)scrHeight);
 
-   // color.a = 100;
+    color.a = 100;
     gyVidAlphaLevel(GY_ALPHA_FULL);
+    gyVidBlendMode(GY_BLEND_ONE);
     gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
     gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
-
+#if 0
     gyMatPush();
     gyMatLoadIdentity();
     gyMatTranslate(GYRO_GLAL_GLOW_TEXTURE_WIDTH*0.5f, GYRO_GLAL_GLOW_TEXTURE_HEIGHT*0.5f, 1.0f);
@@ -293,10 +295,11 @@ void gyVidApplyGlow(void) {
     gyVidRect(-1);
     gyVidQuadListEnd();
     gyMatPop();
-
+#endif
+#if 0
     gyMatPush();
     gyMatLoadIdentity();
-    gyMatTranslate(GYRO_GLAL_GLOW_TEXTURE_WIDTH*4.0f, GYRO_GLAL_GLOW_TEXTURE_HEIGHT*2.0f, 0.0f);
+    gyMatTranslate(GYRO_GLAL_GLOW_TEXTURE_WIDTH*2.0f, GYRO_GLAL_GLOW_TEXTURE_HEIGHT*2.0f, 0.0f);
     gyMatScale(GYRO_GLAL_GLOW_TEXTURE_WIDTH, GYRO_GLAL_GLOW_TEXTURE_HEIGHT, 1.0f);
     glBindTexture(GL_TEXTURE_2D, _finalConvTex);
     gyVidTexCoordArray(texCoords);
@@ -304,10 +307,21 @@ void gyVidApplyGlow(void) {
     gyVidRect(-1);
     gyVidQuadListEnd();
     gyMatPop();
-
+#else
+    gyMatPush();
+    gyMatLoadIdentity();
+    gyMatTranslate(scrWidth*0.5f, scrHeight*0.5f, 0.0f);
+    gyMatScale(scrWidth, scrHeight, 1.0f);
+    glBindTexture(GL_TEXTURE_2D, _finalConvTex);
+    gyVidTexCoordArray(texCoords);
+    gyVidQuadListBegin(&color);
+    gyVidRect(-1);
+    gyVidQuadListEnd();
+    gyMatPop();
 
     gyVidVertexBatchEnd();
-
+#endif
+    gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
 }
 
 
