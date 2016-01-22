@@ -548,6 +548,7 @@ void ESToolkit::WriteSettings()
     settings.setValue("showHiddenEntities", _entityDockWidget->getTreeWidget()->getShowHidden());
     settings.setValue("shadowPassEnabled", _engineParams.shadowPassEnabled);
     settings.setValue("lightingEnabled", _engineParams.lightingEnabled);
+    settings.setValue("glowEnabled", _engineParams.glowEnabled);
     settings.setValue("manualCameraEnabled", _engineParams.manualCameraEnabled);
     settings.setValue("audioEnabled", _engineParams.audioEnabled);
     unsigned x, y;
@@ -596,25 +597,26 @@ void ESToolkit::ReadSettings()
     _assets.setCurrentProject(nullptr);
 
     QSettings settings;
-    QString savedSettings = settings.value("settings", "").toString();
-    QByteArray geo = settings.value("geometry", QByteArray()).toByteArray();
-    QByteArray state = settings.value("state", QByteArray()).toByteArray();
+    QString savedSettings       = settings.value("settings", "").toString();
+    QByteArray geo              = settings.value("geometry", QByteArray()).toByteArray();
+    QByteArray state            = settings.value("state", QByteArray()).toByteArray();
     //QString dir = settings.value("projectDir", QString()).toString();
-    bool sheetViewHorizontal = settings.value("sheetViewHorizontal", true).toBool();
-    bool glEnabled = settings.value("glEnabled", true).toBool();
-    bool autoScrollEnabled = settings.value("autoScrollEnabled", true).toBool();
+    bool sheetViewHorizontal    = settings.value("sheetViewHorizontal", true).toBool();
+    bool glEnabled              = settings.value("glEnabled", true).toBool();
+    bool autoScrollEnabled      = settings.value("autoScrollEnabled", true).toBool();
     _engineDialog->setResolution(settings.value("engineResolution", 0).toUInt());
-    bool renderMapBg = settings.value("renderMapBackground", false).toBool();
-    unsigned x = settings.value("engineStartPosX", 0).toUInt();
-    unsigned y = settings.value("engineStartPosY", 0).toUInt();
-    bool showHiddenEntities = settings.value("showHiddenEntities", false).toBool();
-    bool shadowPassEnabled = settings.value("shadowPassEnabled", true).toBool();
-    bool manualCamera = settings.value("manualCameraEnabled", false).toBool();
-    bool audioEnabled = settings.value("audioEnabled", true).toBool();
-    bool lightingEnabled = settings.value("lightingEnabled", true).toBool();
-    bool showHiddenLevels = settings.value("showHiddenLevels", false).toBool();
+    bool renderMapBg            = settings.value("renderMapBackground", false).toBool();
+    unsigned x                  = settings.value("engineStartPosX", 0).toUInt();
+    unsigned y                  = settings.value("engineStartPosY", 0).toUInt();
+    bool showHiddenEntities     = settings.value("showHiddenEntities", false).toBool();
+    bool shadowPassEnabled      = settings.value("shadowPassEnabled", true).toBool();
+    bool glowEnabled            = settings.value("glowEnabled", true).toBool();
+    bool manualCamera           = settings.value("manualCameraEnabled", false).toBool();
+    bool audioEnabled           = settings.value("audioEnabled", true).toBool();
+    bool lightingEnabled        = settings.value("lightingEnabled", true).toBool();
+    bool showHiddenLevels       = settings.value("showHiddenLevels", false).toBool();
     _engineDialog->setStartPos(x, y);
-    MAP_VIEW_RES mapViewRes = (MAP_VIEW_RES)settings.value("mapViewRes", MAP_VIEW_RES_DYNAMIC).toInt();
+    MAP_VIEW_RES mapViewRes     = (MAP_VIEW_RES)settings.value("mapViewRes", MAP_VIEW_RES_DYNAMIC).toInt();
     _setMapViewResolution(mapViewRes);
 
 
@@ -655,6 +657,7 @@ void ESToolkit::ReadSettings()
     _ui->actionHidden_Entities->setChecked(showHiddenEntities);
     _ui->actionShadows->setChecked(shadowPassEnabled);
     _ui->actionLights->setChecked(lightingEnabled);
+    _ui->actionGlows->setChecked(glowEnabled);
     _ui->actionManual_Camera->setChecked(manualCamera);
     _ui->actionEnable_Audio->setChecked(audioEnabled);
     _ui->actionHidden_Levels->setChecked(showHiddenLevels);
@@ -2446,4 +2449,12 @@ void ESToolkit::on_actionRemove_Player_triggered()
 void ESToolkit::on_actionLua_Manager_Dump_triggered()
 {
     elysian::LuaManager::dumpStats();
+}
+
+void ESToolkit::on_actionGlows_toggled(bool arg1)
+{
+    _engineParams.glowEnabled = arg1;
+    if(_assets.getEngine()) {
+        _assets.getEngine()->getLightSys()->setGlowEnabled(arg1);
+    }
 }
