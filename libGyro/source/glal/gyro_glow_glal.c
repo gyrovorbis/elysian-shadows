@@ -267,7 +267,7 @@ void gyVidApplyGlow(void) {
    // glalVidOglInit(scrWidth, scrHeight, scrWidth, scrHeight);
     glViewport(0.0f, 0.0f, (float)scrWidth, (float)scrHeight);
 
-    color.a = 100;
+   // color.a = 100;
     gyVidAlphaLevel(GY_ALPHA_FULL);
     gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
     gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
