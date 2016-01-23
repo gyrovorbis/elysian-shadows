@@ -138,7 +138,7 @@ namespace elysian {
             }
 
              //gyVidAlphaLevel((alpha)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
-             gyVidAlphaLevel(GY_ALPHA_FULL);
+             gyVidAlphaLevel(GY_ALPHA_NONE);
 
 
              //newZFactor = glalOrientNormalMapZFactor(_texOrient);
@@ -161,7 +161,7 @@ namespace elysian {
             break;
         case PrimAttrib::SPRITE:
             if(_spriteAttrib->_color.a == 0.0f) return;
-            gyVidAlphaLevel(GY_ALPHA_FULL);
+            gyVidAlphaLevel(GY_ALPHA_NONE);
 
            // newZFactor = glalOrientNormalMapZFactor(_texOrient);
             //glalVidNormalMapZFactorUpdateUniform(newZFactor);
