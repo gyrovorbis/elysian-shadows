@@ -159,7 +159,7 @@ void*                       glalFlushObject             = NULL;
 //Private video state variables
 static unsigned int			_projWidth                  = 0;
 static unsigned int			_projHeight                 = 0;
-static GYVector4			_clearColor                 = { 0.0f, 0.0f, 0.0f, 1.0f };
+static GYVector4			_clearColor                 = { 0.0f, 0.0f, 0.0f, 0.0f };
 static const GYTexCoord2*   _curTexCoordPtr             = NULL;
 static const GYColor4*      _curColorArrayPtr           = NULL;
 GYColor4                    _curQuadListColor[12]       = { {0, 0, 0, 0}, { 0, 0, 0, 0}, {0,0,0,0}, {0, 0,0,0} };
