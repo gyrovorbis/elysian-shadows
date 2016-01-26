@@ -265,13 +265,6 @@ private Q_SLOTS:
     void on_actionPerformance_Monitor_triggered();
     void on_actionSheet_Manager_triggered();
     void on_actionClear_triggered();
-    void on_actionLibGyro_toggled(bool arg1);
-    void on_actionEngine_toggled(bool arg1);
-    void on_actionToolkit_toggled(bool arg1);
-    void on_actionLua_toggled(bool arg1);
-    void on_actionQt_toggled(bool arg1);
-    void on_actionCommands_toggled(bool arg1);
-    void on_actionOpenGL_toggled(bool arg1);
     void on_actionLibGyroVerbose_toggled(bool arg1);
     void on_actionLibGyroWarning_toggled(bool arg1);
     void on_actionLibGyroError_toggled(bool arg1);

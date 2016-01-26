@@ -20,6 +20,7 @@ macx {
 }
 
 CONFIG -= exceptions
+CONFIG +=
 
 
 #SPEED UP MINGW'S FUCKTARDEDLY SLOW DUMB ASS!

@@ -250,7 +250,7 @@ ESToolkit::ESToolkit(QWidget *parent):
     connect(_sheetDockWidget, SIGNAL(ReleaseFocus()), this, SLOT(GiveMapViewFocus()));
     connect(_sheetDockWidget, SIGNAL(ExitPanMode()), this, SLOT(ExitPanMode()));
     connect(_historyDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
-    connect(_selectionDockWidget, SIGNAL(UncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
+    connect(_selectionDockWidget, SIGNAL(uncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
     connect(_engineDialog, SIGNAL(stopped()), this, SLOT(onInvokeEngineStopped()));
 
     glUtilities::printGLSupport();
@@ -2224,6 +2224,8 @@ void ESToolkit::on_actionClear_triggered()
     Debug::clear();
 }
 
+#if 0
+
 void ESToolkit::on_actionLibGyro_toggled(bool arg1)
 {
     _ui->actionLibGyroVerbose->setChecked(arg1);
@@ -2272,6 +2274,8 @@ void ESToolkit::on_actionOpenGL_toggled(bool arg1)
     _ui->actionOpenGLWarning->setChecked(arg1);
     _ui->actionOpenGLError->setChecked(arg1);
 }
+
+#endif
 
 void ESToolkit::on_actionLibGyroVerbose_toggled(bool arg1)
 {
