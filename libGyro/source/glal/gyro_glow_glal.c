@@ -14,7 +14,6 @@ typedef enum __GLOW_SHADER_ATTRIB {
 typedef enum __GLOW_SHADER_UNIFORM {
     GLOW_SHADER_TEXTURE_MAP,
     GLOW_SHADER_CONV_DIR,
-    GLOW_SHADER_PROJ_VIEW_MAT,
     GLOW_SHADER_UNIFORM_MAX
 } _GLOW_SHADER_UNIFORM;
 
@@ -108,9 +107,9 @@ int glalVidInitializeGlow(void) {
     _gyPush();
 
     //Compile and link shaders
-    GYShader* vertShader = gyShaderCreate(GYRO_GLAL_GLOW_VERTEX_SHADER);
-    GYShader* fragShader = gyShaderCreate(GYRO_GLAL_GLOW_FRAGMENT_SHADER);
-    _glowShader.program = gyShaderProgramCreate(vertShader, fragShader);
+    GYShader* vertShader    = gyShaderCreate(GYRO_GLAL_GLOW_VERTEX_SHADER);
+    GYShader* fragShader    = gyShaderCreate(GYRO_GLAL_GLOW_FRAGMENT_SHADER);
+    _glowShader.program     = gyShaderProgramCreate(vertShader, fragShader);
 
     //Query for shader attrib and uniform locations
     if(_glowShader.program) {
@@ -118,7 +117,6 @@ int glalVidInitializeGlow(void) {
         _glowShader.attribLoc[GLOW_SHADER_TEX_COORD]      = _protectedAttribQuery(_glowShader.program, "aTexCoord", 0);
         _glowShader.uniformLoc[GLOW_SHADER_TEXTURE_MAP]   = _protectedUniformQuery(_glowShader.program, "uTexture", 0);
         _glowShader.uniformLoc[GLOW_SHADER_CONV_DIR]      = _protectedUniformQuery(_glowShader.program, "uConvDir", 0);
-        _glowShader.uniformLoc[GLOW_SHADER_PROJ_VIEW_MAT] = _protectedUniformQuery(_glowShader.program, "uProjViewMat", 0);
     }
 
     glGenBuffers(1, &_glowVbo);
