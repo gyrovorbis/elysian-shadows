@@ -35,6 +35,7 @@ extern "C" {
 #elif GYRO_PLATFORM == GYRO_PLATFORM_Qt
 
 #	ifdef __APPLE__
+# define GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
 //#       include <gl.h>
 #       include <gl3.h>
 #       include <gl3ext.h>
