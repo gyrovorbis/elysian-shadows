@@ -21,7 +21,7 @@
 #if GYRO_PLATFORM != GYRO_PLATFORM_DC
 #include <glal/gyro_gl.h>
 #include <glal/gyro_shaders_glal.h>
-#include <glal/gyro_video_glal.h>
+//#include <glal/gyro_video_glal.h>
 #endif
 #include <gyro_file_api.h>
 #include <system/elysian_audio_system.hpp>

@@ -520,7 +520,7 @@ namespace elysian {
 
 
     template<class... Types>
-    inline LuaVariantBase::LuaVariantBase(const std::tuple<Types...> table) {
+    inline LuaVariantBase::LuaVariantBase(const std::tuple<Types...> /*table*/) {
         lua_newtable(*_mainState);
 
 

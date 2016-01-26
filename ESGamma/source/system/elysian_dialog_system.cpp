@@ -388,7 +388,7 @@ void DialogSystem::NextScreen(void) {
 		break;
 	}
 
-    GY_ASSERT(nextIndex == -1 || (nextIndex < _curDialog->getScreenCount() && nextIndex >= 0));
+    GY_ASSERT(nextIndex == -1 || (nextIndex < (int)_curDialog->getScreenCount() && nextIndex >= 0));
 
 	//Invoke Lua trigger
 	if(_curScreen.screen->isTrigger() && _curDialog->getTriggerEntity()) {

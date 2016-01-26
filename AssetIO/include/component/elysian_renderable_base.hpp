@@ -137,8 +137,8 @@ namespace elysian {
                 }
             }
 
-             //gyVidAlphaLevel((alpha)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
-             gyVidAlphaLevel(GY_ALPHA_NONE);
+             gyVidAlphaLevel((alpha)? GY_ALPHA_PUNCHTHRU : GY_ALPHA_FULL);
+             //gyVidAlphaLevel(GY_ALPHA_NONE);
 
 
              //newZFactor = glalOrientNormalMapZFactor(_texOrient);
