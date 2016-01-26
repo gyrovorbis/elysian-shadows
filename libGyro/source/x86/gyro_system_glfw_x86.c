@@ -12,6 +12,10 @@
 
 #if !(defined(__linux__) && defined(__i386__))
 
+
+
+#  if defined(__linux__) && defined(__x86_64__)
+
 //execute x86 CPUID opcode
 static inline void cpuid(int CPUInfo[4],int InfoType){
     __asm__ __volatile__ (
@@ -23,8 +27,6 @@ static inline void cpuid(int CPUInfo[4],int InfoType){
         "a" (InfoType)
     );
 }
-
-#  if defined(__linux__) && defined(__x86_64__)
 
 static void _checkCPUCapabilities(void) {
     int x64     = 0;
