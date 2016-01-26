@@ -54,7 +54,6 @@ namespace elysian {
 
     class VirtualDPad {
     private:
-        GYVector2           _analog     = { 0.0f, 0.0f };
         unsigned            _dpad[4]    = { 0 };
 
         static unsigned     _toIndex(const GY_CONTROLLER_BUTTON button);

@@ -52,7 +52,7 @@ void CombatSystem::onCollisionEnter(Collidable* const bodyA,
   // bodyB->getContactEventMonitorMask());
 }
 
-void CombatSystem::onCollide(Collidable* const bodyA, Collidable* const bodyB,
+void CombatSystem::onCollide(Collidable* const /*bodyA*/, Collidable* const /*bodyB*/,
                              CollisionContact* /*contact*/) {
 #if 0
   auto* combatA = bodyA->getEntity()->getCombat();
@@ -69,8 +69,8 @@ void CombatSystem::onCollide(Collidable* const bodyA, Collidable* const bodyB,
   //_dealCollisionDamage(combatA, combatB, bodyB, contact);
 }
 
-void CombatSystem::onCollisionExit(Collidable* const bodyA,
-                                   Collidable* const bodyB) {
+void CombatSystem::onCollisionExit(Collidable* const /*bodyA*/,
+                                   Collidable* const /*bodyB*/) {
 #if 0
   auto* combatA = bodyA->getEntity()->getCombat();
   if (!(combatA->getCollisionFlags().getValue() & Combat::ON_COLLISION_EXIT) ||

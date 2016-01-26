@@ -20,6 +20,7 @@ macx {
 }
 
 CONFIG -= exceptions
+#CONFIG += warn_off
 
 
 #SPEED UP MINGW'S FUCKTARDEDLY SLOW DUMB ASS!
@@ -33,8 +34,12 @@ ios|android {
     DEFINES += ELYSIAN_ENGINE
 }
 
+macx {
+    QMAKE_CXXFLAGS_WARN_ON -= -Wall
+}
+
 !dreamcast {
-    QMAKE_CXXFLAGS += -Wno-unused-local-typedef -Wno-unknown-pragmas -Wno-inconsistent-missing-override
+    QMAKE_CXXFLAGS += -Wall -Wno-unused-local-typedef -Wno-unknown-pragmas -Wno-inconsistent-missing-override
 }
 #QMAKE_CFLAGS += -std=c99
 
@@ -44,7 +49,7 @@ ios|android {
 }
 
 CONFIG(debug, debug|release) {
-#	QMAKE_CXXFLAGS += -O0
+#	QMAKE_CXXFLAGS += -O0//
 #	QMAKE_CFLAGS += -O0
 }
 
