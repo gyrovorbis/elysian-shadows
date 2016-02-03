@@ -3,9 +3,10 @@
 
 #include <glal/gyro_shaders_glal.h>
 
-#define GYRO_GLAL_GLOW_TEXTURE_WIDTH    512
-#define GYRO_GLAL_GLOW_TEXTURE_HEIGHT   512
+#define GYRO_GLAL_GLOW_TEXTURE_WIDTH    1024
+#define GYRO_GLAL_GLOW_TEXTURE_HEIGHT   GYRO_GLAL_GLOW_TEXTURE_WIDTH
 #define GYRO_GLAL_GLOW_TEXTURE_FILTER   GL_LINEAR
+#define GYRO_GLAL_GLOW_BLIT_FILTER      GL_LINEAR
 #define GYRO_GLAL_GLOW_TEXTURE_WRAP     GL_CLAMP_TO_EDGE
 #define GYRO_GLAL_GLOW_VERTEX_SHADER    "/assets/shaders/glowConvolution.vsh"
 #define GYRO_GLAL_GLOW_FRAGMENT_SHADER  "/assets/shaders/glowConvolution.fsh"

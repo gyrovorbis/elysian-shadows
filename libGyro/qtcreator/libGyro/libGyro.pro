@@ -113,7 +113,8 @@ HEADERS += \
     ../../include/common/turfs.h \
     ../../include/glal/gyro_file_glal.inl \
     ../../include/common/gyro_input_common.h \
-    ../../include/glal/gyro_glow_glal.h
+    ../../include/glal/gyro_glow_glal.h \
+    ../../include/common/gyro_spine_common.h
 
 android {
 

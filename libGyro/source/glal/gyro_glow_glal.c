@@ -35,7 +35,6 @@ static GLuint               _horizontalConvTex;
 static GLuint               _finalConvTex;
 static GLuint               _glowVao;
 static GLuint               _glowVbo;
-static GYMatrix4            _projViewMat;
 
 
 int glalVidInitializeGlow(void) {
@@ -73,8 +72,6 @@ int glalVidInitializeGlow(void) {
 
     _gyLog(GY_DEBUG_VERBOSE, "Initializing glow postprocessing effect.");
     _gyPush();
-
-    gyVidOrthoProjMat(_projViewMat, 0.0f, (float)GYRO_GLAL_GLOW_TEXTURE_WIDTH, (float)GYRO_GLAL_GLOW_TEXTURE_HEIGHT, 0.0f, -999.0f, 1000.0f);
 
     glGenFramebuffers(1, &_glowBuffFbo);
     glGenFramebuffers(1, &_horizontalConvFbo);
@@ -179,7 +176,7 @@ void gyVidApplyGlow(void) {
                            _glowBuffTex,
                            0);
     gyVidResolution(&scrWidth, &scrHeight);
-    glBlitFramebuffer(0, 0, scrWidth, scrHeight, 0, 0, GYRO_GLAL_GLOW_TEXTURE_WIDTH, GYRO_GLAL_GLOW_TEXTURE_HEIGHT, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+    glBlitFramebuffer(0, 0, scrWidth, scrHeight, 0, 0, GYRO_GLAL_GLOW_TEXTURE_WIDTH, GYRO_GLAL_GLOW_TEXTURE_HEIGHT, GL_COLOR_BUFFER_BIT, GYRO_GLAL_GLOW_BLIT_FILTER);
 
 
     //2 - Perform horizontal convolution on glow FBO.

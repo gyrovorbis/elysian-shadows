@@ -32,6 +32,7 @@
 #include <gyro_texture_api.h>
 #include <gyro_system_api.h>
 #include <gyro_file_api.h>
+#include <common/gyro_spine_common.h>
 #include <spine/extension.h>
 #include <spine/spine.h>
 
@@ -39,20 +40,51 @@
 #define SPINE_MESH_VERTEX_COUNT_MAX 1000 //0.0267MB. Not bad.
 #endif
 
+/*
+ *
+ *
+#define GYRO_SPINE_ATLAS_TEXTURE_NORMAL_SUFFIX      "_n"
+#define GYRO_SPINE_ATLAS_TEXTURE_SPECULAR_SUFFIX    "_r"
+*/
+
 void _spAtlasPage_createTexture (spAtlasPage* self, const char* path) {
-    GYTexture* texture = gyVidTexCreate(path);
-    //assert(texture);
-    if(!texture) {
-        self->rendererObject = NULL;
-        return;
+    char buffer[GYRO_PATH_MAX_SIZE];
+
+    GYSpineRenderObject* obj    = malloc(sizeof(GYSpineRenderObject));
+    obj->textureMap             = gyVidTexCreate(path);
+
+    if(!obj->textureMap) return;
+
+    char* filename = strtok(path, ".");
+    if(path) {
+
+        strcpy(buffer, filename);
+        strcat(buffer, GYRO_SPINE_ATLAS_TEXTURE_NORMAL_SUFFIX);
+        obj->normalMap = gyVidTexCreate(buffer);
+
+        strcpy(buffer, filename);
+        strcat(buffer, GYRO_SPINE_ATLAS_TEXTURE_SPECULAR_SUFFIX);
+        obj->specularMap = gyVidTexCreate(buffer);
+
+    } else {
+        obj->normalMap      = NULL;
+        obj->specularMap    = NULL;
     }
-    self->rendererObject = texture;
-    self->width = texture->width;
-    self->height = texture->height;
+
+    self->rendererObject    = obj;
+    self->width             = obj->textureMap->width;
+    self->height            = obj->textureMap->height;
 }
 
 void _spAtlasPage_disposeTexture (spAtlasPage* self) {
-    gyVidTexDestroy(self->rendererObject);
+    GYSpineRenderObject* obj = self->rendererObject;
+
+    gyVidTexDestroy(obj->textureMap);
+    gyVidTexDestroy(obj->normalMap);
+    gyVidTexDestroy(obj->specularMap);
+
+    free(obj);
+
 }
 
 char* _spUtil_readFile (const char* path, int* length) {
@@ -77,5 +109,5 @@ char* _spUtil_readFile (const char* path, int* length) {
     }
 
     gyFileClose(&file);
-    return data;
+    return data; //Spine frees this later on, not a memory leak... But still stupid for not being static.
 }

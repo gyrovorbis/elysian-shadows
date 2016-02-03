@@ -18,6 +18,7 @@ typedef struct __ShaderProgramEntryData {
 
 
 static int _ShaderComparator(const void *const payload, const void *const data) {
+    if(!payload) return 0;
 	return (strcmp(((GYShader*)payload)->path, ((_ShaderEntryData*)data)->path) == 0);
 }
 

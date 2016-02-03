@@ -1,19 +1,17 @@
-
-#include "crtp/elysian_camera_system.hpp"
+#include <crtp/elysian_camera_system.hpp>
 #include <gyro_video_api.h>
-#include "tk_engine_gl_scene_widget.h"
+#include <tk_engine_gl_scene_widget.h>
 #include <glal/gyro_video_glal.h>
 #include "elysian_engine.hpp"
 #include <elysian_timer_system.hpp>
-#include "elysian_light_system.hpp"
-#include "tk_map_view.h"
+#include <system/elysian_light_system.hpp>
+#include <estk/tk_map_view.h>
 #include <QOpenGLDebugLogger>
 #include <QOpenGLDebugMessage>
 
 #include <QMouseEvent>
 #include <spine/spine.h>
 #include <QOpenGLContext>
-//#undef QT_NO_KEYWORDS
 
 EngineGLSceneWidget* EngineGLSceneWidget::_self = nullptr;
 
@@ -78,7 +76,6 @@ void EngineGLSceneWidget::initializeGL(void) {
   //  makeCurrent();
    // initializeGLFunctions();
    // doneCurrent();
-    qDebug() << QOpenGLContext::currentContext();
 
     //unsigned parentWidth    = parentWidget()->size().width();
     //unsigned parentHeight   = parentWidget()->size().height();
