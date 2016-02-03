@@ -303,18 +303,31 @@ void gyVidApplyGlow(void) {
     gyVidQuadListEnd();
     gyMatPop();
 #else
+        glBindTexture(GL_TEXTURE_2D, _finalConvTex);
+       // glGenerateMipmap(GL_TEXTURE_2D);
+        //for(unsigned i = 0; i < 4; ++i) {
+            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 3);
     gyMatPush();
     gyMatLoadIdentity();
     gyMatTranslate(scrWidth*0.5f, scrHeight*0.5f, 0.0f);
     gyMatScale(scrWidth, scrHeight, 1.0f);
-    glBindTexture(GL_TEXTURE_2D, _finalConvTex);
-    gyVidTexCoordArray(texCoords);
-    gyVidQuadListBegin(&color);
-    gyVidRect(-1);
-    gyVidQuadListEnd();
-    gyMatPop();
 
-    gyVidVertexBatchEnd();
+
+
+
+        gyVidTexCoordArray(texCoords);
+        gyVidQuadListBegin(&color);
+        gyVidRect(-1);
+        gyVidQuadListEnd();
+         gyVidVertexBatchEnd();
+
+             gyMatPop();
+  //  }
+
+
+           // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+
+
 #endif
     gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
     gyVidAlphaLevel(GY_ALPHA_NONE);
