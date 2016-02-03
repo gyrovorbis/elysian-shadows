@@ -38,7 +38,8 @@ typedef enum _GY_RECT_PLANE_TYPE {
 
 typedef enum GY_BLEND_MODE {
     GY_BLEND_ONE_MINUS_SRC_ALPHA,
-    GY_BLEND_ONE
+    GY_BLEND_ONE,
+    GY_BLEND_ADDITIVE
 } GY_BLEND_MODE;
 
 //Internal state

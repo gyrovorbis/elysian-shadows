@@ -5,6 +5,7 @@
 #include <glal/gyro_video_glal.h>
 #include <glal/gyro_shaders_glal.h>
 #include <glal/gyro_glow_glal.h>
+#include <common/gyro_spine_common.h>
 #include <spine/spine.h>
 
 #include <assert.h>
@@ -481,6 +482,8 @@ void gyVidBlendMode(const GY_BLEND_MODE mode) {
         case GY_BLEND_ONE:
             glBlendFunc(GL_ONE, GL_ONE);
             break;
+        case GY_BLEND_ADDITIVE:
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE);
         }
         glalBlendMode = mode;
     }
@@ -741,7 +744,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
             regionAttachment    = (spRegionAttachment*)attachment;
             atlasRegion         = regionAttachment? regionAttachment->rendererObject : NULL;
             atlasPage           = atlasRegion? atlasRegion->page : NULL;
-            texture             = atlasPage? atlasPage->rendererObject : NULL;
+            texture             = atlasPage? ((GYSpineRenderObject*)atlasPage->rendererObject)->textureMap : NULL;
 
             spRegionAttachment_computeWorldVertices(regionAttachment, slot->bone, worldVertices);
 
@@ -820,7 +823,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
             mesh                = (spMeshAttachment*)attachment;
             atlasRegion         = mesh? mesh->rendererObject : NULL;
             atlasPage           = atlasRegion? atlasRegion->page : NULL;
-            texture             = atlasPage? atlasPage->rendererObject : NULL;
+            texture             = atlasPage? ((GYSpineRenderObject*)atlasPage->rendererObject)->textureMap : NULL;
 
 
             //if (mesh->verticesCount > SPINE_MESH_VERTEX_COUNT_MAX) continue;
@@ -858,7 +861,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
            // if (mesh->uvsCount > SPINE_MESH_VERTEX_COUNT_MAX) continue;
             atlasRegion         = skinnedMesh? skinnedMesh->rendererObject : NULL;
             atlasPage           = atlasRegion? atlasRegion->page : NULL;
-            texture             = atlasPage? atlasPage->rendererObject : NULL;
+            texture             = atlasPage? ((GYSpineRenderObject*)atlasPage->rendererObject)->textureMap : NULL;
 
             spSkinnedMeshAttachment_computeWorldVertices(skinnedMesh, slot, worldVertices);
 
