@@ -46,14 +46,16 @@ int _gyVidTexAlloc(GYTexture *const tex) {
     tex->width = pixmap.width();
     tex->height = pixmap.height();
 
-    if(!checkPowerOfTwo(tex->width) || !checkPowerOfTwo(tex->height)) {
-        _gyLog(GY_DEBUG_WARNING, "%s - <%d, %d> dimensions are not powers of two, dipshit!", tex->filename, tex->width, tex->height);
-    }
+
 
     if(pixmap.isNull()) {
         tex->_data = 0;
 //         static_cast<QOpenGLWidget*>(_initParams.glWidget)->doneCurrent();
         return 0; //fuck.
+    }
+
+    if(!checkPowerOfTwo(tex->width) || !checkPowerOfTwo(tex->height)) {
+        _gyLog(GY_DEBUG_WARNING, "%s - <%d, %d> dimensions are not powers of two (suboptimal performance on some platforms).", tex->filename, tex->width, tex->height);
     }
 
     static_cast<QGLWidget*>(_initParams.glWidget)->makeCurrent();
