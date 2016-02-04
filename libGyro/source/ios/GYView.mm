@@ -42,7 +42,7 @@ void glalVidBindDefaultFbo(void) {
         glalVidOglInit(frame.size.width, frame.size.height, frame.size.width, frame.size.height);
 
         _view = self;
-        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &self->_defaultFbo);
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &_view->_defaultFbo);
 
 
     }
