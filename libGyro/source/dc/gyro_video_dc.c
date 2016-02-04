@@ -486,5 +486,5 @@ void gyVidVertexBatchFlush(void) {
 void glalVidNormalMapZFactorUpdateUniform(const float factor) {}
 void gyVidNormalMapBind(const GYTexture * const tex) {}
 void gyVidSpecularMapBind(const GYTexture * const tex) {}
-void gyVidApplyBloom(void);
+void gyVidApplyBloom(void) {}
 

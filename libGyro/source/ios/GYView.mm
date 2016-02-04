@@ -40,10 +40,9 @@ void glalVidBindDefaultFbo(void) {
 
         if(gyAppInitCb) gyAppInitCb(0, NULL);
         glalVidOglInit(frame.size.width, frame.size.height, frame.size.width, frame.size.height);
-        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &self->_defaultFbo);
 
         _view = self;
-
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &self->_defaultFbo);
 
 
     }
