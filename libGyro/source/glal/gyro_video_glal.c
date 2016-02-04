@@ -4,7 +4,7 @@
 #include <gyro_shader_api.h>
 #include <glal/gyro_video_glal.h>
 #include <glal/gyro_shaders_glal.h>
-#include <glal/gyro_glow_glal.h>
+#include <glal/gyro_bloom_glal.h>
 #include <common/gyro_spine_common.h>
 #include <spine/spine.h>
 
@@ -276,7 +276,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
         _gyPush();
 
         glalLoadDefaultShaders();
-        glalVidInitializeGlow();
+        glalVidInitializeBloom();
         gyVidSetDefaultShaderProgram();
         glalDefaultShadersLoadUniforms();
         //HAVE TO SET DEFAULT GL STATES OR THE STATE CACHES WILL BE DIRTY
