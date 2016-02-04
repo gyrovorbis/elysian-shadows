@@ -92,7 +92,7 @@ private:
     struct EngineParameters {
         bool        shadowPassEnabled   = true;
         bool        lightingEnabled     = true;
-        bool        glowEnabled         = true;
+        bool        bloomEnabled         = true;
         bool        manualCameraEnabled = false;
         bool        audioEnabled        = true;
         bool        showHiddenLevels    = false;
@@ -296,7 +296,7 @@ private Q_SLOTS:
     void on_actionAdd_Player_triggered();
     void on_actionRemove_Player_triggered();
     void on_actionLua_Manager_Dump_triggered();
-    void on_actionGlows_toggled(bool arg1);
+    void on_actionBloom_toggled(bool arg1);
 };
 
 

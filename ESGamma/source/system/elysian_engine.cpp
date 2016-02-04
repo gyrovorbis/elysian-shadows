@@ -250,7 +250,7 @@ void Engine::render(void) {
 
             _cameraSystem->popViewProjMatrix();
 
-            _lightSystem->applyGlowEffect();
+            _lightSystem->applyBloomEffect();
 
             //Begin rendering overlays
           //  func();

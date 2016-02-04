@@ -451,8 +451,8 @@ void LightSystem::_sortOnscreenLights(void) {
     }
 }
 
-void LightSystem::applyGlowEffect(void) const {
-    if(_glowEnabled) gyVidApplyGlow();
+void LightSystem::applyBloomEffect(void) const {
+    if(_bloomEnabled) gyVidApplyBloom();
 }
 
 

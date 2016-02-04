@@ -106,8 +106,8 @@ void gyVidLightSourceBeginShadowPass(GYLightSource* const light, const GY_CUBE_M
 void gyVidLightSourceEndShadowPasses(void);
 void gyVidLightSourceBeginShadowPasses(void);
 
-//Glow post-processing effect API
-void gyVidApplyGlow(void);
+//Bloom post-processing effect API
+void gyVidApplyBloom(void);
 
 //Shader management
 GYShader*           gyShaderCreate(const char*const path);

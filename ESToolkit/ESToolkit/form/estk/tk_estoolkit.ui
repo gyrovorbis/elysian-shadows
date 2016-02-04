@@ -174,7 +174,7 @@
      </property>
      <addaction name="actionLights"/>
      <addaction name="actionShadows"/>
-     <addaction name="actionGlows"/>
+     <addaction name="actionBloom"/>
     </widget>
     <addaction name="actionAsset_View"/>
     <addaction name="actionSheet_View"/>
@@ -1543,12 +1543,15 @@
     <string>Lua Manager Dump</string>
    </property>
   </action>
-  <action name="actionGlows">
+  <action name="actionBloom">
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
-    <string>Glows</string>
+    <string>Bloom</string>
    </property>
   </action>
  </widget>

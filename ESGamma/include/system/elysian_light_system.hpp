@@ -26,7 +26,7 @@ namespace elysian {
 
         bool			_shadowPass         = false;
         bool            _shadowPassEnabled  = true;
-        bool            _glowEnabled        = true;
+        bool            _bloomEnabled       = true;
         bool			_enabled            = true;
         bool			_renderDebug        = false;
         unsigned		_onscreenLightCount	= 0;
@@ -52,7 +52,7 @@ namespace elysian {
 
                     LightSystem(void);
         void        shadowRenderPasses(void);
-        void        applyGlowEffect(void) const;
+        void        applyBloomEffect(void) const;
         unsigned    getLightCount(void) const;
         unsigned    getOnscreenLightCount(void) const;
         bool        isShadowPass(void) const;
@@ -68,9 +68,9 @@ namespace elysian {
 
         void        setEnabled(const bool val);
         void        setShadowPassEnabled(const bool val);
-        void        setGlowEnabled(const bool val);
+        void        setBloomEnabled(const bool val);
         bool        getShadowPassEnabled(void) const;
-        bool        isGlowEnabled(void) const;
+        bool        isBloomEnabled(void) const;
 
         void        setRenderDebugEnabled(const bool val);
 
@@ -142,12 +142,12 @@ namespace elysian {
         _shadowPassEnabled = val;
     }
 
-    inline void LightSystem::setGlowEnabled(const bool val) {
-        _glowEnabled = val;
+    inline void LightSystem::setBloomEnabled(const bool val) {
+        _bloomEnabled = val;
     }
 
-    inline bool LightSystem::isGlowEnabled(void) const {
-        return _glowEnabled;
+    inline bool LightSystem::isBloomEnabled(void) const {
+        return _bloomEnabled;
     }
 
     inline bool LightSystem::getShadowPassEnabled(void) const {
