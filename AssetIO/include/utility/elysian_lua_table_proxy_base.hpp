@@ -307,14 +307,16 @@ namespace elysian {
 
             char    key[ELYSIAN_LUA_PROXY_FIELD_KEY_MAX_SIZE];
             int     parentIndex     = lua_tointeger(l, lua_upvalueindex(LUA_TABLE_PROXY_UPVALUE_PARENT_INDEX)); //-1 means parent is top-level
-            int     currentIndex    = -1;
+            //int     currentIndex    = -1;
+            int     currentIndex    = parentIndex;
             int     nextIndex       = -1;
             int     depth           = 0;
+            int     currentDepth    = 0;
 
             auto findNextIndexAtDepth = [&](const int startIndex, const int startDepth, int &currentDepth) {
 
                 for(int i = startIndex+1; i < _proxyTotalCount; ++i) {
-                    if(!LuaManager::isSerializing() || _combinedFields[i].set) {
+                    //if(!LuaManager::isSerializing() || _combinedFields[i].set) {
                         switch(_combinedFields[i].flags) {
                         case LuaTableFieldProxy::FLAG_VTABLE_BEGIN:
                             if(currentDepth == (int)startDepth) {
@@ -327,15 +329,17 @@ namespace elysian {
                             break;
                         case LuaTableFieldProxy::FLAG_ARRAY:
                         case LuaTableFieldProxy::FLAG_NONE:
-                            if(currentDepth == (int)startDepth) return i;
+                            if(currentDepth == (int)startDepth)
+                                if(!LuaManager::isSerializing() || _combinedFields[i].set) return i;
                         default: break;
                         }
-                    }
+                    //}
                 }
                 return -1;
             };
 
-            for(int i = 0; i <= parentIndex; ++i) { //figure out table depth of parent table
+            //figure out table depth of parent table
+            for(int i = 0; i <= parentIndex; ++i) {
                 switch(_combinedFields[i].flags) {
                 case LuaTableFieldProxy::FLAG_VTABLE_BEGIN:
                     ++depth;
@@ -348,13 +352,13 @@ namespace elysian {
                 }
             }
 
+            currentDepth = depth;
+
             if(lua_isstring(l, -1)) {
                 strcpy(key, lua_tostring(l, -1));
                 lua_pop(l, 1);
 
-                bool found = false;
-                currentIndex = parentIndex;
-                int currentDepth = depth;
+                bool found          = false;
                 while((currentIndex = findNextIndexAtDepth(currentIndex, depth, currentDepth)) != -1) {
                     if(currentIndex >= _proxyTotalCount) break;
                     if(strcmp(key, _combinedFields[currentIndex].key) == 0) {
@@ -397,7 +401,9 @@ namespace elysian {
                 //qDebug() << "FIRST KEY " << P::_proxyFields[0].key;
                 lua_pop(l, 1);
                 //depth 0's parent is implicitly -1
-                lua_pushstring(l, _combinedFields[parentIndex+1].key); //Unless you did something fucktarded (empty table), this should be a valid index
+                nextIndex = findNextIndexAtDepth(currentIndex, depth, currentDepth);
+               // lua_pushstring(l, _combinedFields[parentIndex+1].key); //Unless you did something fucktarded (empty table), this should be a valid index
+                lua_pushstring(l, _combinedFields[nextIndex].key);
                 return 1;
             }
         }

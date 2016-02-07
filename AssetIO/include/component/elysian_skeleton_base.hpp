@@ -207,7 +207,7 @@ namespace elysian {
     inline Animation::~Animation(void) { for(auto* it : _tracks) delete it; }
     inline const char* Animation::getName(void) const { return _name; }
     inline void Animation::setName(const char*name) { strcpy(_name, name); }
-    inline AnimationTrack* Animation::getTrack(const unsigned index) const { return _tracks[index]; }
+    inline AnimationTrack* Animation::getTrack(const unsigned index) const { return index < _tracks.size()? _tracks[index] : nullptr; }
     inline unsigned Animation::getTrackCount(void) const { return _tracks.size(); }
     inline void Animation::setTrack(const unsigned index, AnimationTrack* track) {
         if(index == _tracks.size()) {
