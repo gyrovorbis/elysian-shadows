@@ -20,6 +20,7 @@
 
 #define ELYSIAN_LUA_MANAGER_SERIALIZE_SCRIPT_PATH       "/assets/scripts/utility/serialize.lua"
 #define ELYSIAN_LUA_MANAGER_TABLE_MANIP_SCRIPT_PATH     "/assets/scripts/utility/table_manip.lua"
+#define ELYSIAN_LUA_PREFAB_PATH                         "/assets/scripts/prefab"
 
 #define ELYSIAN_LUA_PROXY_TYPE_METAFIELD                "__typename"
 #define ELYSIAN_LUA_PROXY_DOWN_CAST_METAFIELD           "__downcast"
@@ -179,6 +180,7 @@ namespace elysian {
 
         static bool                 getMetatable(const int index);
         static void                 getGlobal(const char*const key);
+        static LuaVariant           getPrefab(const char*const name);
 
 	};
 

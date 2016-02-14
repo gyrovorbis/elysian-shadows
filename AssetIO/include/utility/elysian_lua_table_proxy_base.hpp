@@ -992,21 +992,32 @@ namespace elysian {
 
         static int _luaCreate(lua_State*const l) {
             OOLUA::Lua_table_ref valueTable;
+            T* rvalue = nullptr;
+
             int args = lua_gettop(l);
 
             if(args >= 2) {
                 OOLUA::pull(l, valueTable);
+                if(lua_type(l, -1) == LUA_TUSERDATA) {
+                    OOLUA::pull(l, rvalue);
+                    GY_ASSERT(rvalue);
+                }
             }
 
             lua_rawgeti(l, LUA_REGISTRYINDEX, _ooluaIndexTable);
             lua_getfield(l, -1, "oolua_new");
-            lua_remove(l, -2);
-            assert(!lua_isnil(l, -1)); //better fucking have a constructor if you invoked this method
-            LuaManager::_protectedCall(0, 1, nullptr);
+            //lua_remove(l, -2);
+            GY_ASSERT(!lua_isnil(l, -1)); //better fucking have a constructor if you invoked this method
+            if(rvalue) OOLUA::push(l, rvalue);
+            LuaManager::_protectedCall(rvalue? 1 :0, 1, nullptr);
+
+            //GY_ASSERT(!lua_isnil(l, -1));
 
             if(args >= 2) {
                 T* obj;
                 OOLUA::pull(l, obj);
+                GY_ASSERT(obj);
+
                 static_cast<LuaTableProxy<P, T, Bases...>*>(obj)->fromTable(valueTable);
                 OOLUA::push(l, obj);
             }

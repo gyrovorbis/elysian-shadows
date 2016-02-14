@@ -6,6 +6,7 @@
 #include <core/tk_file_utilities.h>
 #include <asset/tk_project.h>
 #include "ui_tk_asset_dock_widget.h"
+#include <QDebug>
 
 AssetDockWidget::AssetDockWidget(QWidget *parent) :
     QDockWidget(parent),
@@ -50,6 +51,7 @@ void AssetDockWidget::_onProjectAdded(Project * const project) {
         _fsModel->addFileType(new LuaScriptAssetFileType);
         _fsModel->addFileType(new LuaBehaviorAssetFileType);
         _fsModel->addFileType(new MapAssetFileType);
+        _fsModel->addFileType(new PrefabAssetFileType);
         _fsModel->setRootPath(project->getNodePath());
         //qDebug() << "LA NODE PATH" << project->getNodePath();
         //model->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
@@ -186,7 +188,7 @@ AreaAssetFileType::AreaAssetFileType(TkArea*const area): AreaAssetFileType() {
 auto AreaAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
     QDir dir(path);
 
-    if(dir.exists("map.bin")) {
+    if(dir.exists(TK_MAP_ASSET_NAME_TOKEN)) {
         return new AreaAssetFileType(getAssets()->findArea(path));
     }
     return nullptr;
@@ -200,9 +202,6 @@ void AreaAssetFileType::doubleClick(const QModelIndex& /*index*/) {
     getAssets()->setCurrentArea(_area);
     getAssets()->setCurrentSelection(static_cast<Selectable*>(static_cast<TreeNode*>(_area)));
 }
-
-
-
 
 
 LevelAssetFileType::LevelAssetFileType(void): CustomAssetFileType("Level", QIcon(TK_LEVEL_ASSET_ICON)) {}
@@ -228,27 +227,25 @@ void LevelAssetFileType::doubleClick(const QModelIndex& /*index*/) {
     getAssets()->setCurrentSelection(static_cast<Selectable*>(static_cast<TreeNode*>(_level)));
 }
 
-
-
 auto SpecularsheetAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
-    if(QFileInfo(QFile(path).fileName()).fileName() == "specularsheet.png") return new SpecularsheetAssetFileType();
+    if(QFileInfo(QFile(path).fileName()).fileName() == TK_SPECULARSHEET_ASSET_NAME_TOKEN) return new SpecularsheetAssetFileType();
     return nullptr;
 }
 
 auto NormalsheetAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
-    if(QFileInfo(QFile(path).fileName()).fileName() == "normalsheet.png") return new NormalsheetAssetFileType();
+    if(QFileInfo(QFile(path).fileName()).fileName() == TK_NORMALSHEET_ASSET_NAME_TOKEN) return new NormalsheetAssetFileType();
     return nullptr;
 }
 
 
 auto TilesheetAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
-    if(QFileInfo(QFile(path).fileName()).fileName() == "tilesheet.png") return new TilesheetAssetFileType();
+    if(QFileInfo(QFile(path).fileName()).fileName() == TK_TILESHEET_ASSET_NAME_TOKEN) return new TilesheetAssetFileType();
     return nullptr;
 }
 
 
 auto MapAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
-    if(QFileInfo(QFile(path).fileName()).fileName() == "map.bin") return new MapAssetFileType();
+    if(QFileInfo(QFile(path).fileName()).fileName() == TK_MAP_ASSET_NAME_TOKEN) return new MapAssetFileType();
     return nullptr;
 }
 
@@ -260,7 +257,33 @@ auto LuaScriptAssetFileType::fromFilePath(const QString path) -> CustomAssetFile
 
 auto LuaBehaviorAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
     QFile file(path);
-    if(file.fileName().split("_behav.lua").size() > 1) return new LuaBehaviorAssetFileType();
+    if(file.fileName().split(TK_LUA_BEHAVIOR_ASSET_NAME_TOKEN).size() > 1) return new LuaBehaviorAssetFileType();
     return nullptr;
 }
 
+PrefabAssetFileType::PrefabAssetFileType(const QString filePath):
+    PrefabAssetFileType()
+{
+    QDir assetDir(FileUtilities::getAbsoluteAssetPath(ELYSIAN_LUA_PREFAB_PATH));
+    GY_ASSERT(assetDir.exists());
+
+    _prefabName = assetDir.relativeFilePath(filePath);
+    qDebug() << "****** PREFAB RELATIVE FILE PATH " << _prefabName;
+
+    _prefabRef = LuaManager::getPrefab(Q_CSTR(_prefabName));
+
+    qDebug() << "PREFAB - " << _prefabRef.getTypeString();
+
+
+
+}
+
+auto PrefabAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
+    QFile file(path);
+    if(file.fileName().split(TK_PREFAB_ASSET_NAME_TOKEN).size() > 1) return new PrefabAssetFileType(path);
+    return nullptr;
+}
+
+void PrefabAssetFileType::doubleClick(const QModelIndex& index) {
+    qDebug() << "DOUBLE CLICKED - " << index;
+}

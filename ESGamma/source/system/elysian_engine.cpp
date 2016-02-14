@@ -17,7 +17,6 @@
 #include "elysian_behavior_system.hpp"
 #include "elysian_light_system.hpp"
 #include <crtp/elysian_entity.hpp>
-//#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tk_map_system.h")
 #include "elysian_map_system.hpp"
 #include <crtp/elysian_light_source.hpp>
 #include "elysian_particle_system.hpp"
@@ -32,7 +31,11 @@
 
 namespace elysian {
 
-Engine::Engine(void): _updateMonitor("update"), _renderMonitor("render"), _inputMonitor("input") {
+Engine::Engine(void):
+    _updateMonitor("update"),
+    _renderMonitor("render"),
+    _inputMonitor("input")
+{
     srand(time(nullptr));
 
     //gyDebugInit();
@@ -63,7 +66,7 @@ Engine::Engine(void): _updateMonitor("update"), _renderMonitor("render"), _input
     _dialogSystem		= new DialogSystem;
     _combatSystem		= new CombatSystem;
     _skeletonSystem     = new SkeletonSystem;
-    _pathfindingSystem = new PathfindingSystem;
+    _pathfindingSystem  = new PathfindingSystem;
 
     InputSystem::initialize();
 

@@ -4,17 +4,25 @@
 #include <QDockWidget>
 #include <QFileSystemModel>
 #include <asset/tk_asset_manager.h>
+#include <crtp/elysian_lua_variant.hpp>
 #include <QHash>
 
-#define TK_SPECULARSHEET_ASSET_ICON ":/assetIcons/images/_0000_specularsheet_icon.png"
-#define TK_NORMALSHEET_ASSET_ICON   ":/assetIcons/images/_0001_normalsheet_icon.png"
-#define TK_TILESHEET_ASSET_ICON     ":/assetIcons/images/_0002_tilesheet_icon.png"
-#define TK_PREFAB_ASSET_ICON        ":/assetIcons/images/_0003_prefabs_icon.png"
-#define TK_LUA_SCRIPT_ASSET_ICON    ":/assetIcons/images/_0004_LS.png"
-#define TK_LUA_BEHAVIOR_ASSET_ICON  ":/assetIcons/images/_0005_LB.png"
-#define TK_MAP_ASSET_ICON           ":/assetIcons/images/_0006_BIN.png"
-#define TK_LEVEL_ASSET_ICON         ":/assetIcons/images/_0007_levels_icon.png"
-#define TK_AREA_ASSET_ICON          ":/assetIcons/images/_0008_areas_icon.png"
+#define TK_SPECULARSHEET_ASSET_ICON         ":/assetIcons/images/_0000_specularsheet_icon.png"
+#define TK_NORMALSHEET_ASSET_ICON           ":/assetIcons/images/_0001_normalsheet_icon.png"
+#define TK_TILESHEET_ASSET_ICON             ":/assetIcons/images/_0002_tilesheet_icon.png"
+#define TK_PREFAB_ASSET_ICON                ":/assetIcons/images/_0003_prefabs_icon.png"
+#define TK_LUA_SCRIPT_ASSET_ICON            ":/assetIcons/images/_0004_LS.png"
+#define TK_LUA_BEHAVIOR_ASSET_ICON          ":/assetIcons/images/_0005_LB.png"
+#define TK_MAP_ASSET_ICON                   ":/assetIcons/images/_0006_BIN.png"
+#define TK_LEVEL_ASSET_ICON                 ":/assetIcons/images/_0007_levels_icon.png"
+#define TK_AREA_ASSET_ICON                  ":/assetIcons/images/_0008_areas_icon.png"
+
+#define TK_SPECULARSHEET_ASSET_NAME_TOKEN   "specularsheet.png"
+#define TK_NORMALSHEET_ASSET_NAME_TOKEN     "normalsheet.png"
+#define TK_TILESHEET_ASSET_NAME_TOKEN       "tilesheet.png"
+#define TK_PREFAB_ASSET_NAME_TOKEN          "_prefab_data.lua"
+#define TK_LUA_BEHAVIOR_ASSET_NAME_TOKEN    "_behav.lua"
+#define TK_MAP_ASSET_NAME_TOKEN             "map.bin"
 
 class QMenu;
 class QItemSelection;
@@ -79,9 +87,13 @@ public:
 };
 
 class PrefabAssetFileType: public CustomAssetFileType {
+    QString             _prefabName;
+    LuaVariant          _prefabRef;
 public:
                         PrefabAssetFileType(void);
-//    virtual auto        fromFilePath(const QString path) -> CustomAssetFileType* override;
+                        PrefabAssetFileType(const QString filePath);
+    virtual auto        fromFilePath(const QString path) -> CustomAssetFileType* override;
+    virtual void        doubleClick(const QModelIndex& index) override;
 };
 
 class LuaScriptAssetFileType: public CustomAssetFileType {
@@ -182,10 +194,10 @@ inline void AssetFileSystemModel::addDirectoryType(CustomAssetFileType *type) {
 inline SpecularsheetAssetFileType::SpecularsheetAssetFileType(void): CustomAssetFileType("Specular Sheet", QIcon(TK_SPECULARSHEET_ASSET_ICON)) {}
 inline NormalsheetAssetFileType::NormalsheetAssetFileType(void): CustomAssetFileType("Normal Sheet", QIcon(TK_NORMALSHEET_ASSET_ICON)) {}
 inline TilesheetAssetFileType::TilesheetAssetFileType(void): CustomAssetFileType("Tile Sheet", QIcon(TK_TILESHEET_ASSET_ICON)) {}
-inline PrefabAssetFileType::PrefabAssetFileType(void): CustomAssetFileType("Prefab", QIcon(TK_PREFAB_ASSET_ICON)) {}
 inline LuaScriptAssetFileType::LuaScriptAssetFileType(void): CustomAssetFileType("Lua Script", QIcon(TK_LUA_SCRIPT_ASSET_ICON)) {}
 inline LuaBehaviorAssetFileType::LuaBehaviorAssetFileType(void): CustomAssetFileType("Lua Behavior", QIcon(TK_LUA_BEHAVIOR_ASSET_ICON)) {}
 inline MapAssetFileType::MapAssetFileType(void): CustomAssetFileType("Map", QIcon(TK_MAP_ASSET_ICON)) {}
+inline PrefabAssetFileType::PrefabAssetFileType(void): CustomAssetFileType("Prefab", QIcon(TK_PREFAB_ASSET_ICON)) {}
 
 
 #endif // ASSETDOCKWIDGET_H

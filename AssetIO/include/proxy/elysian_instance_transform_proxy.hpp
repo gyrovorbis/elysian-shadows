@@ -23,6 +23,9 @@ OOLUA_PROXY(GYVector2)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Vector2)
+    OOLUA_CTORS(
+        OOLUA_CTOR(const Vector2&)
+    )
     OOLUA_MEM_FUNC_CONST(float, getX)
     OOLUA_MEM_FUNC_CONST(float, getY)
     OOLUA_MEM_FUNC_CONST(void, setX, float)
@@ -36,6 +39,9 @@ OOLUA_PROXY(GYVector3)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Vector3)
+    OOLUA_CTORS(
+        OOLUA_CTOR(const Vector3&)
+    )
     OOLUA_MEM_FUNC_CONST(float, getX)
     OOLUA_MEM_FUNC_CONST(float, getY)
     OOLUA_MEM_FUNC_CONST(float, getZ)
