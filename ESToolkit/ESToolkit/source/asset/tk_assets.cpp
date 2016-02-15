@@ -18,7 +18,7 @@
 
 //====STATIC MEMBERS====
 
-Project *Assets::m_project = nullptr;
+Project *Assets::_project = nullptr;
 elysian::Engine* Assets::_engine = nullptr;
 Selectable *Assets::_currentSelection = nullptr;
 Selectable::TYPE Assets::_currentSelectionType = Selectable::EMPTY;
@@ -71,8 +71,8 @@ QString Assets::formatFileName(const QString string) {
 
 QString Assets::getProjectDir(void)
 {
-    if(m_project != nullptr) {
-        return m_project->getLocation();
+    if(_project != nullptr) {
+        return _project->getLocation();
     }
 
     else {
@@ -120,9 +120,10 @@ Assets::~Assets(void) {
     //for(QMap<QString, Project *>::iterator it = _project.begin(); it != _project.end(); ++it) {
       //  delete it.value();
     //}
-    if(m_project) {
-        delete m_project;
-        m_project->clear();
+    if(_project) {
+        _project->clear();
+        delete _project;
+
     }
     //_project.clear();
 }
@@ -188,8 +189,8 @@ void Assets::setCurrentLayer(const LAYER_TYPE type) {
 
 bool Assets::setCurrentLevel(const QString path) {
 
-    if(!m_project) return false;
-    Level *level = m_project->getLevel(path);
+    if(!_project) return false;
+    Level *level = _project->getLevel(path);
     if(!level) return false;
     setCurrentLevel(level);
     return true;
@@ -220,33 +221,32 @@ bool Assets::setCurrentProject(const QString path) {
 }
 
 void Assets::setCurrentProject(Project *const project) {
-    if(m_project != project) {
-        //m_project->Deactivate();
-        m_project = project;
+    if(_project != project) {
+        _project = project;
     }
 
     if(project) {
         project->activate();
         if(project->getFirstLevel()) setCurrentLevel(project->getFirstLevel()->getNodePath());
         else setCurrentLevel(nullptr);
-        QDir::setCurrent(m_project->getLocation());
+        QDir::setCurrent(_project->getLocation());
     }
 
     else {
         setCurrentLevel(nullptr);
     }
-    //Debug::Log(Debug::LOG_VERBOSE, "!!!!!EMIT CURRENT PROJECT - " + ((project)? project->getName() : "NULL"));
+
     Q_EMIT projectChanged(project);
 }
 
 Project *Assets::getProject(const QString /*name*/) const {
-    return m_project;
+    return _project;
 }
 
 Project *Assets::loadProject(const QString directory) {
     //for(QMap<QString, Project *>::iterator it = _project.begin(); it != _project.end(); ++it) {
-    if(m_project != nullptr) {
-        if(m_project->getLocation() == directory) {
+    if(_project != nullptr) {
+        if(_project->getLocation() == directory) {
             QMessageBox::critical(nullptr, tr("Error!"), tr("The project is already open!\n"));
             return nullptr;
         }
@@ -281,7 +281,7 @@ Project *Assets::loadProject(const QString directory) {
 
     if(proj->load(directory)) {
         //ConnectSlots(proj);
-        m_project = proj;
+        _project = proj;
         Q_EMIT projectAdded(proj);
 
        // _engine->getMapSys()->show();
@@ -296,7 +296,7 @@ Project *Assets::loadProject(const QString directory) {
 }
 
 bool Assets::saveProject(const QString path) const {
-    if(m_project->getNodePath() == path) return m_project->save();
+    if(_project->getNodePath() == path) return _project->save();
     Debug::Logf(Debug::LOG_VERBOSE, "Project %s does not exist!", Q_CSTR(path));
     return false;
 }
@@ -308,12 +308,12 @@ Project *Assets::getFirstProject(void) const {
 
 bool Assets::removeProject(const QString path) {
     //for(QMap<QString, Project *>::iterator it = _project.begin(); it != _project.end(); ++it) {
-        if(m_project->getNodePath() == path) {
+        if(_project->getNodePath() == path) {
             setCurrentProject(nullptr);
-            Q_EMIT projectRemoved(m_project);
+            Q_EMIT projectRemoved(_project);
             Q_EMIT projectRemoveUI();
 
-            Project *temp = m_project;
+            Project *temp = _project;
             //_project.erase(it);
             delete temp;
 
@@ -327,7 +327,7 @@ bool Assets::removeProject(const QString path) {
 }
 
 void Assets::onChildProjectActivating(Project *const project, Level *const level, Area *const area) {
-    if(project && m_project != project) setCurrentProject(project->getNodePath());
+    if(project && _project != project) setCurrentProject(project->getNodePath());
     if(level && _curLevel != level) setCurrentLevel(level->getNodePath());
     if(area && _curArea != area) setCurrentArea(area->getNodePath());
 }
@@ -423,10 +423,10 @@ Area* Assets::reloadArea(Area* area) {
 }
 
 Project* Assets::reloadProject(void) {
-    if(!m_project) return nullptr;
+    if(!_project) return nullptr;
     const QString areaName = _curArea->getNodePath();
     const QString levelName = _curLevel->getNodePath();
-    const QString projPath = m_project->getLocation();
+    const QString projPath = _project->getLocation();
     const elysian::System::ENGINE_STATE engineState = _engine->getEngineState();
     const Entity* partyLeader = _engine->getPartySys()->getPartyLeader();
     GYVector3 playerPos;
@@ -435,18 +435,18 @@ Project* Assets::reloadProject(void) {
         playerPos = partyLeader->_transform._pos;
     }
 
-    Q_EMIT projectRemoved(m_project);
+    Q_EMIT projectRemoved(_project);
 
     setCurrentSelection(nullptr);
     setCurrentArea(nullptr);
     setCurrentLevel(nullptr);
     setCurrentProject(nullptr);
 
-    delete m_project;
+    delete _project;
     delete _engine;
 
     auto* proj = loadProject(projPath);
-    Q_EMIT projectAdded(m_project);
+    Q_EMIT projectAdded(_project);
 
     if(!levelName.isNull()) {
         auto* lev = proj->getLevel(levelName);
@@ -478,13 +478,13 @@ bool Assets::validateProjectPath(const QString path) {
 }
 
 Area* Assets::findArea(const QString path) const {
-    for(unsigned i = 0; i < m_project->getLevelAmount(); ++i) {
-        auto* area = m_project->getLevelByIndex(i)->getArea(path);
+    for(unsigned i = 0; i < _project->getLevelAmount(); ++i) {
+        auto* area = _project->getLevelByIndex(i)->getArea(path);
         if(area) return area;
     }
     return nullptr;
 }
 
 Level* Assets::findLevel(const QString path) const {
-    return m_project->getLevel(path);
+    return _project->getLevel(path);
 }

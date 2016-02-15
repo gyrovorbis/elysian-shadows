@@ -879,7 +879,6 @@ namespace elysian {
         return variant;
     }
 
-
     template <typename... Args>
     inline LuaVariantBase LuaVariantBase::operator()(Args&& ... args) {
         push();

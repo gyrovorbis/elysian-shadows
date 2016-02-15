@@ -625,7 +625,7 @@ LuaVariant LuaManagerBase::exec(const char * const str, ...) {
 }
 
 LuaVariant LuaManagerBase::getPrefab(const char * const name) {
-    return exec("prefab(\"%s\")", name);
+    return exec("return prefab(\"%s\")", name);
 }
 
 

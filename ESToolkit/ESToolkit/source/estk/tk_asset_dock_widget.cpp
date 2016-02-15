@@ -267,14 +267,12 @@ PrefabAssetFileType::PrefabAssetFileType(const QString filePath):
     QDir assetDir(FileUtilities::getAbsoluteAssetPath(ELYSIAN_LUA_PREFAB_PATH));
     GY_ASSERT(assetDir.exists());
 
-    _prefabName = assetDir.relativeFilePath(filePath);
+    _prefabName = assetDir.relativeFilePath(filePath).split(TK_PREFAB_ASSET_NAME_TOKEN)[0];
     qDebug() << "****** PREFAB RELATIVE FILE PATH " << _prefabName;
 
     _prefabRef = LuaManager::getPrefab(Q_CSTR(_prefabName));
 
     qDebug() << "PREFAB - " << _prefabRef.getTypeString();
-
-
 
 }
 
