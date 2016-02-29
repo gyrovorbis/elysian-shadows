@@ -11,6 +11,7 @@
 #include <tk_property_standard_item.h>
 
 #define ELYSIAN_LUA_TABLE_STACK_MODEL_DELEGATE_METAFIELD    "__delegate"
+#define ELYSIAN_LUA_TABLE_STACK_MODEL_PREFAB_FONT_COLOR     QColor(Qt::blue)
 
 class LuaTableStackModel;
 struct LuaTableTableFieldData;
@@ -25,32 +26,32 @@ class LuaTableFieldItem:
     friend struct LuaTableTableFieldData;
 protected:
     mutable LuaTableTableFieldData* _tableData      = nullptr;
-    QStandardItem*                  _labelItem      = nullptr;
+    mutable QStandardItem*          _labelItem      = nullptr;
     const int                       _luaRef         = LUA_NOREF;
     const QVariant                  _key;
 
 public:
-                            LuaTableFieldItem(const int ref, const QVariant key, QStandardItem*const labelItem);
-    virtual                 ~LuaTableFieldItem(void);
-    virtual void            insertingModelItem(void) override;
-    virtual QStyledItemDelegate* getStyledItemDelegate(void) const override;
-    virtual int type(void) const override { return (int)ESTkStandardItemType::LuaTable; }
+                                    LuaTableFieldItem(const int ref, const QVariant key, QStandardItem*const labelItem);
+    virtual                         ~LuaTableFieldItem(void);
+    virtual void                    insertingModelItem(void) override;
+    virtual QStyledItemDelegate*    getStyledItemDelegate(void) const override;
+    virtual int                     type(void) const override { return (int)ESTkStandardItemType::LuaTable; }
 
-    virtual QVariant        getValue(void) const;
-    virtual void            setValue(const QVariant val);
-
-
-    LuaVariant              getVariant(void) const;
-    void                    setVariant(const LuaVariant var);
-    int                     getLuaRef(void) const;
+    virtual QVariant                getValue(void) const;
+    virtual void                    setValue(const QVariant val);
 
 
-    void                    setDirty(const bool val=true);
-    LuaTableTableFieldData* getTableData(void) const;
+    LuaVariant                      getVariant(void) const;
+    void                            setVariant(const LuaVariant var);
+    int                             getLuaRef(void) const;
 
-    int                     getValueLuaType(void) const;
-    int                     getKeyLuaType(void) const;
-    int                     getParentLuaType(void) const;
+
+    void                            setDirty(const bool val=true);
+    LuaTableTableFieldData*         getTableData(void) const;
+
+    int                             getValueLuaType(void) const;
+    int                             getKeyLuaType(void) const;
+    int                             getParentLuaType(void) const;
 
 };
 
@@ -61,8 +62,10 @@ struct LuaTableTableFieldData: public QObject, public LuaManager {
     friend class LuaTableFieldItem;
 public:
     QHash<QVariant, LuaTableFieldItem*> _fieldItems;
-    int                                 _luaRef     = LUA_NOREF;
-    QStandardItem*                      _parentItem = nullptr;
+    int                                 _luaRef         = LUA_NOREF;
+    QStandardItem*                      _parentItem     = nullptr;
+    bool                                _isPrefab       = false;
+    int                                 _prefabDepth    = 0;
 
                                         LuaTableTableFieldData(const int tableRef);
     virtual                             ~LuaTableTableFieldData(void) override;
@@ -70,16 +73,25 @@ public:
     void                                insertTableFieldItem(const QVariant key);
     void                                insertTableFieldItems(QStandardItem* parentItem);
     int                                 getLuaRef(void) const;
+    bool                                isPrefab(void) const;
+    int                                 getPrefabDepth(void) const;
+    void                                pushPrefab(void);
+    void                                popPrefab(void);
 
 public Q_SLOTS:
     void                                onFieldChanged(const QVariant key);
     void                                onFieldAdded(const QVariant key);
   //vod                                 onFieldRemoved(const QVariant key); same shit as onFieldChanged to nil!
 
+Q_SIGNALS:
+
+    void                                fieldChanged(const int ref, const QVariant key);
+
 };
 
 
 class LuaTableStackModel: public PropertyStackModel, public LuaManager {
+
     friend class LuaTableItem;
 
     LuaTableTableFieldData*     _tableData      = nullptr;
@@ -88,11 +100,12 @@ class LuaTableStackModel: public PropertyStackModel, public LuaManager {
     bool                        _populated      = false;
 
 public:
-                    LuaTableStackModel(const int ref);
+                                LuaTableStackModel(const int ref);
 
-    void            setLuaRef(const int ref);
-    virtual void    populateModel(void) override;
-    void            setLabelItemText(const QString string);
+    void                        setLuaRef(const int ref);
+    void                        setLabelItemText(const QString string);
+
+    virtual void                populateModel(void) override;
 
 };
 
@@ -151,6 +164,9 @@ inline QVariant LuaTableFieldItem::getValue(void) const {
         //val.setValue(QString(lua_typename(*_mainState, valType)));
         tableRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
         _tableData = new LuaTableTableFieldData(tableRef);
+        if(_tableData->isPrefab()) {
+            _labelItem->setData(QVariant(ELYSIAN_LUA_TABLE_STACK_MODEL_PREFAB_FONT_COLOR), Qt::ForegroundRole);
+        }
         _tableData->insertTableFieldItems(_labelItem);
     } //else Table/userdata fields should be up-to-date
     else {
@@ -176,7 +192,11 @@ inline void LuaTableFieldItem::setValue(const QVariant val) {
     LuaManager::stackBalanceEnd();
 }
 
-inline LuaTableTableFieldData::LuaTableTableFieldData(const int luaRef): _luaRef(luaRef) {}
+inline LuaTableTableFieldData::LuaTableTableFieldData(const int luaRef):
+    _luaRef(luaRef)
+{
+    _isPrefab = (LuaManager::getPrefabName(luaRef) != nullptr);
+}
 
 
 inline void LuaTableStackModel::setLuaRef(const int ref) {
@@ -218,5 +238,6 @@ inline int LuaTableFieldItem::getParentLuaType(void) const {
 }
 
 inline int LuaTableTableFieldData::getLuaRef(void) const { return _luaRef; }
+inline bool LuaTableTableFieldData::isPrefab(void) const { return _isPrefab; }
 
 #endif // ESTK_LUA_TABLE_MODEL_HPP

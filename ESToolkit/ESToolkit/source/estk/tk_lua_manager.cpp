@@ -13,7 +13,7 @@ bool TkLuaManager::initialize(void) {
 
     success &= runScriptSandbox(TK_LUA_MANAGER_METATABLE_SCRIPT_PATH);
 
-    getGlobal("serialize");
+    pushGlobalField("serialize");
     _serializeFunc.pull();
     lua_register(*_mainState, "serialize", &_serializeCFunc);
 

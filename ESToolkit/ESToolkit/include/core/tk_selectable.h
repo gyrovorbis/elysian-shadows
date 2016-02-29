@@ -1,7 +1,6 @@
 #ifndef SELECTABLE_H
 #define SELECTABLE_H
 
-//#include "property_stack_model.h"
 class QAbstractItemView;
 class QAbstractItemModel;
 
@@ -10,6 +9,7 @@ namespace elysian {
 }
 
 class EntitySelectable;
+class LuaTableSelectable;
 //class TkEntity;
 //typedef TkEntity Entity;
 template<typename T>
@@ -35,19 +35,20 @@ typedef TkArea Area;
 
 class Selectable/*: public PropertyStackModel*/ {
 public:
-    enum TYPE { EMPTY, PROJECT, LEVEL, AREA, TILE, ENTITY };
+    enum TYPE { EMPTY, PROJECT, LEVEL, AREA, TILE, ENTITY, LUA_TABLE };
 
 	union Union {
         TileSelection<elysian::TileEntry>*  terrain;
         Selectable*                         base;
+        LuaTableSelectable*                 luaTable;
         EntitySelectable*                   entity;
         Area*                               area;
         Level*                              level;
         Project*                            project;
 	};
 
-                                Selectable(void);
-    virtual                     ~Selectable(void);
+                                Selectable(void) = default;
+    virtual                     ~Selectable(void) = default;
     virtual TYPE                getType(void) const=0;
     virtual void                installSelectionViewCustomDelegates(QAbstractItemView *const /*view*/);
     virtual void                setCurrentSelection(const bool /*val*/, const Selectable*const other=nullptr);
@@ -66,7 +67,6 @@ public:
 
 inline bool Selectable::isTemporary(void) { return false; }
 inline void Selectable::setCurrentSelection(const bool, const Selectable * const) {}
-inline Selectable::~Selectable(void) {}
 inline void Selectable::installSelectionViewCustomDelegates(QAbstractItemView * const) { }
 
 

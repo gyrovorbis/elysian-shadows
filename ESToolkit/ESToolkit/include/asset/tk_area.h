@@ -35,7 +35,7 @@ struct MapChange {
 
 //ELYSIAN_ASSET_TYPEDEF(Area)
 
-class TkArea: /*public PropertyStackModel,*/  public elysian::AreaBase, public TreeNode {
+class TkArea: /*public PropertyStackModel,*/ public elysian::AreaBase, public TreeNode {
     Q_OBJECT
     friend class Assets;
 
@@ -67,20 +67,20 @@ private:
     void                _disconnectSlots(Entity*const entity);
 
 private Q_SLOTS:
-    void onComponentAttached(Entity *const entity, Component *const comp);
-    void onComponentRemoved(Entity *const entity, Component *const comp);
-    void onEntityParented(Entity*const child, Entity*const parent);
+    void                onComponentAttached(Entity *const entity, Component *const comp);
+    void                onComponentRemoved(Entity *const entity, Component *const comp);
+    void                onEntityParented(Entity*const child, Entity*const parent);
 
 public Q_SLOTS:
-    void onUndoCleanStateChanged(bool changed);
+    void                onUndoCleanStateChanged(bool changed);
 public:
 
-    using AreaBase::getActiveEntityByIndex;
-    using AreaBase::getActiveEntityCount;
-    using AreaBase::setActiveEntityByIndex;
-    using AreaBase::getTileEntry;
-    using AreaBase::setTileEntry;
-    using AreaBase::load;
+    using               AreaBase::getActiveEntityByIndex;
+    using               AreaBase::getActiveEntityCount;
+    using               AreaBase::setActiveEntityByIndex;
+    using               AreaBase::getTileEntry;
+    using               AreaBase::setTileEntry;
+    using               AreaBase::load;
 
                         TkArea(Level *const level=nullptr);
     virtual             ~TkArea(void) override;
@@ -153,17 +153,16 @@ public:
     virtual auto        getTreeWidgetItemType(void) -> ITEM_TYPE;
 
 Q_SIGNALS:
-    void activating(Area *const area);
-    void entityAdded(Area *const area, Entity *const entity);
-    void entityRemoved(Area *const area, Entity *const entity);
-    //void inactiveEntityAdded(Area*const area, Entity*const entity);
-    //void inactiveEntityRemoved(Area*const area, Entity*const entity);
+    void                activating(Area *const area);
+    void                entityAdded(Area *const area, Entity *const entity);
+    void                entityRemoved(Area *const area, Entity *const entity);
 
-    void componentAttached(Area *const area, Entity *const entity, Component *const comp);
-    void componentRemoved(Area *const area, Entity *const entity, Component *const comp);
-    void renamed(const QString oldName, const QString newName);
-    void mapChanged(Area*const area, const QVector<MapChange>& changes);
-    void entityParented(Entity*const child, Entity*const parent);
+    void                componentAttached(Area *const area, Entity *const entity, Component *const comp);
+    void                componentRemoved(Area *const area, Entity *const entity, Component *const comp);
+    void                renamed(const QString oldName, const QString newName);
+    void                mapChanged(Area*const area, const QVector<MapChange>& changes);
+    void                entityParented(Entity*const child, Entity*const parent);
+    void                validChanged(const bool val);
 };
 
 typedef TkArea Area;

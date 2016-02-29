@@ -47,7 +47,6 @@ public:
     void                        removeEntities(QVector<TkEntity*>& entities);
     void                        removeEntity(TkEntity*const entity);
     virtual TYPE                getType(void) const override;
-    //const QVector<TkEntity*>&   getEntities(void) const;
     bool                        isInSelection(const TkEntity*const entity) const;
     int                         getLuaTableRef(void) const;
 

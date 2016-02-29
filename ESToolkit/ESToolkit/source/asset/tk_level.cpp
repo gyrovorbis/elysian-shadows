@@ -385,6 +385,7 @@ bool TkLevel::open(void) {
     }
 
     setValid(success);
+    Q_EMIT validChanged(success);
     return success;
 }
 
@@ -544,6 +545,7 @@ bool TkLevel::load(const QString path) {
     if(!dir.cd("area")) {
         Debug::Log(Debug::LOG_ERROR, "No area directory!");
         setValid(false);
+        Q_EMIT validChanged(false);
         return false;
     }
 //  scanDirectory(path+QString("/")+folders[i]);

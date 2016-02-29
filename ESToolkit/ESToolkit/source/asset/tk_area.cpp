@@ -392,6 +392,7 @@ bool Area::open(void) {
     for(auto& it: inactiveEntities) it->setSaveFlag(true);
 
     setValid(success);
+    Q_EMIT validChanged(success);
 
     resizeEditorScene();
 /*

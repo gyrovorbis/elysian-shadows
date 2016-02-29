@@ -105,10 +105,10 @@ inline void DialogLuaTest::screenTextProperty(void) {
     qWarning() << " VAL " << w.toString();
 #endif
 
-    reff["setText"].getValue()(&text, "TESTFUCKFUCK!");
+    reff["setText"].getVariant()(&text, "TESTFUCKFUCK!");
 
 
-    QVERIFY(reff["getText"].getValue()(&text) == "TESTFUCKFUCK!");
+    QVERIFY(reff["getText"].getVariant()(&text) == "TESTFUCKFUCK!");
     QVERIFY(*reff["text"] == "TESTFUCKFUCK!");
 
     QVERIFY((*reff["getText"])(&text) == "TESTFUCKFUCK!");

@@ -140,6 +140,7 @@ inline Project* Assets::getCurrentProject(void) const { return _project; }
 inline auto Assets::getCurrentLayer(void) const -> LAYER_TYPE { return _currentLayer; }
 inline Selectable::TYPE Assets::getCurrentSelectionType(void) const { return _currentSelectionType; }
 inline elysian::Engine* Assets::getEngine(void) const { return _engine; }
+inline Project* Assets::getFirstProject(void) const { return _project; }
 
 
 

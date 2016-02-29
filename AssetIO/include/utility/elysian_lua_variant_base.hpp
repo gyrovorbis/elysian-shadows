@@ -11,6 +11,36 @@
 #define ELYSIAN_LUA_VARIANT_TYPE_BIT_POS	0
 #define ELYSIAN_LUA_VARIANT_TYPE_BIT_MASK	0x0f
 
+template <typename ...T>
+struct typelist{};
+
+template <typename T>
+struct func_traits
+{
+    using ret_type=typename func_traits<decltype(&T::operator())>::ret_type;
+    using arg_types=typename func_traits<decltype(&T::operator())>::arg_types;
+};
+
+template <typename R, typename C, typename ...ARGS>
+struct func_traits<R (C::*) (ARGS...) const>
+{
+    using ret_type=typelist<R>;
+    using arg_types=typelist<ARGS...>;
+};
+
+template <typename R, typename ...ARGS, typename T>
+auto make_function(T fun, typelist<R>, typelist <ARGS...>) -> ::std::function<R(ARGS...)>
+{
+    return ::std::function<R(ARGS...)>(fun);
+}
+
+template <typename T>
+auto make_function(T fun) -> decltype(make_function(fun, typename func_traits<T>::ret_type{}, typename func_traits<T>::arg_types{}))
+{
+    return make_function(fun,typename func_traits<T>::ret_type{}, typename func_traits<T>::arg_types{});
+}
+
+
 template<unsigned...> struct index_tuple{};
 
 template<unsigned I, typename IndexTuple, typename... Types>
@@ -36,11 +66,20 @@ struct make_indices
   : make_indices_impl<0, index_tuple<>, Types...>
 {};
 
+//Function-type constructor, get?, set, assignment operator
+//overloaded stream operators
+//check for memory leaks
+//pass some shit internally by const reference
+//
+
 
 namespace elysian {
-
+    template<bool is_const_iterator>
+    class const_noconst_iterator;
 
     class LuaFieldRef;
+    class LuaVariantBase;
+    using LuaPair = std::pair<LuaVariantBase, LuaVariantBase>;
 
     //add function operator
     //support C functions/closures and Lua functions
@@ -58,8 +97,13 @@ namespace elysian {
         friend     bool pull<elysian::LuaVariantBase>(lua_State* state, elysian::LuaVariantBase const& variant);
         */
     class LuaVariantBase: public LuaManager {
+        using iterator       = const_noconst_iterator<false>;
+        using const_iterator = const_noconst_iterator<true>;
+
         friend     bool OOLUA::push<elysian::LuaVariantBase>(lua_State* state, elysian::LuaVariantBase const& variant);
         friend     bool OOLUA::pull<elysian::LuaVariantBase>(lua_State* state, elysian::LuaVariantBase& variant);
+        friend      iterator;
+        friend      const_iterator;
 
     protected:
         uint32_t                _type       = LUA_TNIL; //thas a lot of bits .. Type only needs 4, rest can be internal state data
@@ -110,143 +154,49 @@ namespace elysian {
           OOLUA::pull(*_mainState, std::get<std::tuple_size<Tuple>::value-1>(t));
         }
 
+        template<class Tuple>
+        static void pull_tuple(Tuple& /*t*/, int_<0>) {}
 
-        //Assumes actual function is already at the top of the stack!
         template<typename Ret, typename... Args>
-        static int _callLambda(lua_State*vm) {
-            std::tuple<Args...> argTuple;
-
-            pull_tuple(argTuple, int_<sizeof...(Args)>());
-
-            //MEMORY LEAK!!!!!
-            //change this to full-userdata, set a metatable with a _gc metamethod so this context can be deleted...
-            auto* closure = static_cast<const std::function<Ret(Args...)>*>( lua_topointer(vm, lua_upvalueindex(1)) );
-
-            const Ret retVal = forward<Ret>(argTuple, *closure);
-
-            OOLUA::push(*_mainState, retVal);
-            return 1;
-        }
-
+        static int _callLambda(lua_State*vm);
 
 
     public:
-#if 0
-        template<bool is_const_iterator=true>
-
-        class const_noconst_iterator : public std::iterator<std::forward_iterator_tag, LuaVariantBase>, public LuaManager {
-            friend class const_noconst_iterator<true>;
-            friend class LuaVariantBase;
-
-            typedef typename std::conditional<is_const_iterator, const LuaVariantBase*, LuaVariantBase*>::type DataStructurePointerType;
-            typedef typename std::conditional<is_const_iterator, const LuaVariantBase&, LuaVariantBase&>::type ValueReferenceType;
-
-            const_noconst_iterator(DataStructurePointerType pointer_to_datastructure, const int funcRef, const LuaPair initialValue):
-                _pair(initialValue),
-                _variant(pointer_to_datastructure),
-                _nextFuncRef(funcRef)
-            {
-
-
-            }
-
-            /**
-            * Copy constructor. Allows for implicit conversion from a regular iterator to a const_iterator
-            */
-            const_noconst_iterator(const const_noconst_iterator<false>& other):
-              _pair(other._pair),
-              _variant(other._variant),
-                _nextFuncRef(other._nextFuncRef){
-
-            }
-
-            /**
-            * Equals comparison operator
-            */
-            bool operator== (const const_noconst_iterator& other) const {
-                return _variant == _variant && _pair == other._pair;
-            }
-
-            /**
-            * Not-equals comparison operator
-            * @see operator==(const const_noconst_iterator&) const
-            */
-            bool operator!= (const const_noconst_iterator& other) const {
-            return !(*this == other);
-            }
-
-            /**
-            * Dereference operator
-            * @return the value of the element this iterator is currently pointing at
-            */
-            ValueReferenceType operator*(void) {
-                return _pair.second();
-            }
-
-
-            /**
-            * Prefix increment operator (e.g., ++it)
-            */
-            const_noconst_iterator &operator++(void){
-                lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _nextFuncRef);
-                lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _variant._value.ref);
-                OOLUA::push(_pair.first());
-
-                _protectedCall(2, 2, nullptr);
-
-                OOLUA::pull(*_mainState, _pair);
-
-            }
-
-            /**
-            * Postfix increment operator (e.g., it++)
-            */
-            const_noconst_iterator operator++(int){
-            // Use operator++()
-            const const_noconst_iterator old(*this);
-            ++(*this);
-            return old;
-            }
-
-        private:
-            LuaPair                     _pair;
-            DataStructurePointerType    _variant;
-            int                         _nextFuncRef    = LUA_NOREF;
-
-        };
-
-
-       using iterator       = const_noconst_iterator<false>;
-       using const_iterator = const_noconst_iterator<true>;
-#endif
-
 
 
                                 LuaVariantBase(void) = default;
-                                template<typename T>
-                                LuaVariantBase(const std::initializer_list<T>& list);
+                               // LuaVariantBase(const std::initializer_list<LuaVariant>& list);
+                                LuaVariantBase(const std::initializer_list<LuaPair>& pairs);
                                 template<typename T>
                                 LuaVariantBase(T*const userdata);
                                 LuaVariantBase(std::nullptr_t null);
                                 LuaVariantBase(const LuaVariantBase& rhs);
                                 LuaVariantBase(LuaVariantBase&& rhs);
-                                //LuaVariantBase
-                                LuaVariantBase(const int ref);
+                                LuaVariantBase(const int number);
                                 LuaVariantBase(const float number);
                                 LuaVariantBase(const double number);
                                 LuaVariantBase(const bool val);
                                 LuaVariantBase(const char*const string);
-                                LuaVariantBase(void*const userdata);
-
-                                template<class... Types>
-                                LuaVariantBase(const std::tuple<Types...> table);
+                                LuaVariantBase(void*const usd);
+                                LuaVariantBase(const lua_CFunction funcPtr);
+                                LuaVariantBase(const OOLUA::Lua_table_ref& ref);
+                                LuaVariantBase(const OOLUA::Lua_func_ref& ref);
+                                template <typename Ret, typename... Args>
+                                LuaVariantBase(const std::function<Ret(Args...)>& closure);
+                                template<typename T>
+                                LuaVariantBase(const T fun);
 
                                 ~LuaVariantBase(void);
 
+
+      // LuaVariantBase&              operator=(const std::initializer_list<LuaVariant>& list);
+       LuaVariantBase&          operator=(const std::initializer_list<LuaPair>& pairs);
+                                template<typename T>
+        LuaVariantBase&         operator=(const T*const ud);
+        template<typename T>
+        LuaVariantBase&             operator=(T*const ud);
         LuaVariantBase&             operator=(const LuaVariantBase& rhs);
         LuaVariantBase&             operator=(LuaVariantBase&& rhs);
-        LuaVariantBase&             operator=(const LuaFieldRef& rhs);
-        //LuaVariantBase&             operator=(LuaFieldRef&& rhs);
         LuaVariantBase&             operator=(const std::nullptr_t);
         LuaVariantBase&             operator=(const bool val);
         LuaVariantBase&             operator=(const int num);
@@ -254,8 +204,17 @@ namespace elysian {
         LuaVariantBase&             operator=(const double num);
         LuaVariantBase&             operator=(const char*const string);
         LuaVariantBase&             operator=(void*const ptr);
+        LuaVariantBase&             operator=(const lua_CFunction funcPtr);
+        LuaVariantBase&             operator=(const OOLUA::Lua_func_ref& ref);
+        LuaVariantBase&             operator=(const OOLUA::Lua_table_ref& ref);
+        template <typename Ret, typename... Args>
+        LuaVariantBase&             operator=(const std::function<Ret(Args...)>& closure);
+        template<typename T>
+        LuaVariantBase&             operator=(const T func);
 
 
+        template <typename T>
+        bool                    operator==(const T*const ud) const;
         bool                    operator==(const LuaVariantBase& rhs) const;
         bool                    operator==(const std::nullptr_t) const;
         bool                    operator==(const bool val) const;
@@ -265,6 +224,8 @@ namespace elysian {
         bool                    operator==(void*const ptr) const;
         bool                    operator==(const char*const str) const;
 
+        template<typename T>
+        bool                    operator!=(const T*const ud) const;
         bool                    operator!=(const LuaVariantBase& rhs) const;
         bool                    operator!=(const std::nullptr_t) const;
         bool                    operator!=(const bool val) const;
@@ -276,30 +237,15 @@ namespace elysian {
 
 
         template <typename... Args>
-        LuaVariantBase              operator()(Args&& ... args);
+        LuaVariantBase              operator()(Args&& ... args) const;
 
-        template <typename Ret, typename... Args>
-        void                    setClosure(std::function<Ret(Args...)> closure);
-
-        //does not attempt conversion, so you better know what the fuck type you are using at compile-time
-        explicit                operator bool(void) const;
-        explicit                operator int(void) const;
-        explicit                operator float(void) const;
-        explicit                operator double(void) const;
-        explicit                operator const char*(void) const; //FUCK YOU, FUCKING AMBIGUOUS INDEX OPERATOR
-                                operator void*(void) const;
+                                operator OOLUA::Lua_table_ref(void) const;
 
         //returns new QVariant with the desired type
         LuaVariantBase              asBool(void) const;
         LuaVariantBase              asNumber(void) const;
         LuaVariantBase              asString(void) const;
         LuaVariantBase              asUserdata(void) const;
-
-        //conversion functions - converts and returns converted value
-        bool                    toBool(void);
-        lua_Number              toNumber(void);
-        const char*             toString(void);
-        void*                   toUserdata(void);
 
 
         //doesn't do conversions, so type better be known statically
@@ -311,16 +257,22 @@ namespace elysian {
         void                    setNil(void);
         void                    setRef(const int ref);
 
-        //template<typename T>
-        //void                    setValue(T*const ud);
+        template<typename T>
+        void                    setValue(T*const ud);
         void                    setValue(const std::nullptr_t null);
-        void                    setValue(const int ref);
+        void                    setValue(const int number);
         void                    setValue(const float number);
         void                    setValue(const double number);
         void                    setValue(const char*const str);
         void                    setValue(const bool val);
         void                    setValue(void*const ptr);
-        void                    setValue(const OOLUA::Lua_table_ref& ref);
+        void                    setValue(const OOLUA::Lua_table_ref& ooluaRef);
+        void                    setValue(const OOLUA::Lua_func_ref& ooluaRef);
+        void                    setValue(const lua_CFunction funcPtr);
+        template <typename Ret, typename... Args>
+        void                    setValue(const std::function<Ret(Args...)>& closure);
+        template<typename T>
+        void                    setValue(const T func);
 
         bool                    isNil(void) const;
         bool                    isNilRef(void) const;
@@ -331,6 +283,9 @@ namespace elysian {
         int                     getType(void) const;
         const char*             getTypeString(void) const;
         void                    setType(const int luaType);
+        void                    setMetatable(const LuaVariantBase& mt) const;
+        LuaVariant              getMetatable(void) const;
+        int                     getLength(void) const;
 
         bool                    push(void) const;
         bool                    pull(void);
@@ -348,57 +303,136 @@ namespace elysian {
         //bool            save(const char*const filename);
 
         //C++11-style iterators
-
- //       iterator        begin(void);
-  //      const_iterator  begin(void) const;
-   //     const_iterator  cbegin(void) const;
-    //    iterator        end(void);
-   //     const_iterator  end(void) const;
-   //     const_iterator  cend(void) const;
-
-
-        static LuaVariantBase createFromString(const char*const str);
-        static LuaVariantBase createFromFile(const char*const filename);
+        iterator        begin(void);
+        const_iterator  begin(void) const;
+        const_iterator  cbegin(void) const;
+        iterator        end(void);
+        const_iterator  end(void) const;
+        const_iterator  cend(void) const;
 
 
+        //static constructors
         static LuaVariantBase       fromStack(const int index=-1);
+        static LuaVariantBase       fromRef(const int luaRef);
+        static LuaVariantBase       fromArray(const std::initializer_list<LuaVariant>& array);
+        static LuaVariantBase       newTable(void);
 
     };
 
-    using LuaPair = std::pair<LuaVariantBase, LuaVariantBase>;
-
-
-
     class LuaFieldRef: public LuaManager {
         friend class LuaVariantBase;
+        friend class const_noconst_iterator<false>;
+        friend class const_noconst_iterator<true>;
     private:
-        int             _luaRef = LUA_REFNIL;
+        LuaVariantBase      _tableRef;
         LuaVariantBase      _key;
-
-                        LuaFieldRef(const int ref, const LuaVariantBase key);
-                        LuaFieldRef(const LuaFieldRef& rhs);
-                         LuaFieldRef(LuaFieldRef&& rhs);
+        mutable LuaVariantBase      _cachedValue;
 
     public:
-                        ~LuaFieldRef(void);
 
-        LuaVariantBase      getValue(void) const;
-        void            setValue(const LuaVariantBase variant);
+        LuaFieldRef(const LuaVariantBase& tableRef, const LuaVariantBase& key);
+        LuaFieldRef(const LuaVariantBase& tableRef, const LuaPair& kvPairs);
+        LuaFieldRef(const LuaFieldRef& rhs);
+        LuaFieldRef(LuaFieldRef&& rhs);
 
+        LuaVariantBase      getVariant(void) const;
+        LuaVariantBase      getCachedVariant(void) const;
+        void            setCachedVariant(const LuaVariantBase& variant);
+        void            setVariant(const LuaVariantBase& variant);
+        LuaVariantBase  getKey(void) const;
+        void            setKey(const LuaVariantBase& key);
+        LuaVariantBase  getTableRef(void) const;
+        void            setTableRef(const LuaVariantBase& ref);
+
+
+        LuaFieldRef     operator[](const LuaVariantBase& key) const;
 
         LuaFieldRef&    operator=(const LuaFieldRef& rhs);
         LuaFieldRef&    operator=(LuaFieldRef&& rhs);
         LuaFieldRef&    operator=(const LuaVariantBase& rhs);
+        const LuaVariantBase* operator->(void) const;
+        const LuaVariantBase& operator*(void) const;
         //LuaFieldRef&    operator =(LuaVariantBase&& rhs);
 
-        LuaVariantBase      operator->(void);
-        LuaVariantBase      operator*(void);
+        bool            operator==(const LuaFieldRef& rhs) const;
+
                         operator LuaVariantBase(void) const;
     };
 
 
 
 
+    template<bool is_const_iterator=true>
+    class const_noconst_iterator : public std::iterator<std::forward_iterator_tag, LuaVariantBase>, public LuaManager {
+        friend class const_noconst_iterator<true>;
+        friend class LuaVariantBase;
+
+        typedef typename std::conditional<is_const_iterator, const LuaVariantBase*, LuaVariantBase*>::type DataStructurePointerType;
+        typedef typename std::conditional<is_const_iterator, const LuaVariantBase&, LuaVariantBase&>::type ValueReferenceType;
+public:
+        const_noconst_iterator(const LuaFieldRef& fieldRef, const LuaVariant& funcRef):
+            _fieldRef(fieldRef),
+            _nextFuncRef(funcRef)
+        {}
+
+        /**
+        * Copy constructor. Allows for implicit conversion from a regular iterator to a const_iterator
+        */
+        const_noconst_iterator(const const_noconst_iterator<false>& other):
+            _fieldRef(other._fieldRef),
+            _nextFuncRef(other._nextFuncRef)
+        {}
+
+        /**
+        * Equals comparison operator
+        */
+        bool operator== (const const_noconst_iterator& other) const {
+            return _fieldRef == other._fieldRef;
+        }
+
+        /**
+        * Not-equals comparison operator
+        * @see operator==(const const_noconst_iterator&) const
+        */
+        bool operator!= (const const_noconst_iterator& other) const {
+        return !(*this == other);
+        }
+
+        /**
+        * Dereference operator
+        * @return the value of the element this iterator is currently pointing at
+        */
+        LuaFieldRef& operator*(void) {
+            return _fieldRef;
+        }
+
+        LuaFieldRef* operator->(void) {
+            return &_fieldRef;
+        }
+
+        LuaVariantBase first(void) const {
+            return _fieldRef.getKey();
+        }
+
+        LuaVariantBase second(void) const {
+            return _fieldRef.getCachedVariant();
+        }
+
+        const_noconst_iterator operator++(void);
+        /**
+        * Postfix increment operator (e.g., it++)
+        */
+        const_noconst_iterator operator++(int){
+        // Use operator++()
+        const const_noconst_iterator old(*this);
+        ++(*this);
+        return old;
+        }
+
+    private:
+        LuaFieldRef                 _fieldRef;
+        LuaVariant                  _nextFuncRef;
+    };
 
 
 
@@ -408,51 +442,112 @@ namespace elysian {
 
 
 
-    inline LuaFieldRef::LuaFieldRef(const int ref, const LuaVariantBase key): _key(key) {
-        lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, ref);
-        _luaRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
-    }
+
+
+
+
+
+
+
+
+    inline LuaFieldRef::LuaFieldRef(const LuaVariantBase& tableRef, const LuaVariantBase& key):
+        _tableRef(tableRef),
+        _key(key)
+    {}
+
+    inline LuaFieldRef::LuaFieldRef(const LuaVariantBase& tableRef, const LuaPair& kvPair):
+        _tableRef(tableRef),
+        _key(kvPair.first),
+        _cachedValue(kvPair.second){}
 
     inline LuaFieldRef::LuaFieldRef(const LuaFieldRef &rhs) { *this = rhs; }
 
     inline LuaFieldRef::LuaFieldRef(LuaFieldRef &&rhs) { *this = rhs; }
 
-    inline LuaVariantBase LuaFieldRef::operator->(void) { return getValue(); }
-
-    inline LuaVariantBase LuaFieldRef::operator*(void) { return getValue(); }
 
     inline LuaFieldRef& LuaFieldRef::operator=(const LuaFieldRef& rhs) {
-        lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, rhs._luaRef);
-        _luaRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
-        _key = rhs._key;
+        _tableRef       = rhs._tableRef;
+        _key            = rhs._key;
+        _cachedValue    = rhs._cachedValue;
         return *this;
     }
 
     inline LuaFieldRef& LuaFieldRef::operator=(LuaFieldRef&& rhs) {
-        _luaRef     = rhs._luaRef;
-        _key        = rhs._key;
-        rhs._luaRef = LUA_REFNIL;
+        _tableRef       = rhs._tableRef;
+        _key            = rhs._key;
+        _cachedValue    = rhs._cachedValue;
         return *this;
     }
 
     inline LuaFieldRef& LuaFieldRef::operator=(const LuaVariantBase& rhs) {
-        setValue(rhs);
+        setVariant(rhs);
         return *this;
     }
 
-    inline LuaFieldRef::~LuaFieldRef(void) {
-        luaL_unref(*_mainState, LUA_REGISTRYINDEX, _luaRef);
+    inline const LuaVariantBase* LuaFieldRef::operator->(void) const {
+        getVariant();
+        return &_cachedValue;
     }
 
-    inline LuaVariantBase LuaFieldRef::getValue(void) const {
-        lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
-        _key.push();
+    inline const LuaVariantBase& LuaFieldRef::operator*(void) const {
+        getVariant();
+        return _cachedValue;
+    }
+
+    inline bool LuaFieldRef::operator==(const LuaFieldRef& rhs) const {
+        return _tableRef == rhs._tableRef && _key == rhs._key;
+    }
+
+    inline LuaVariantBase LuaFieldRef::getKey(void) const {
+        return _key;
+    }
+
+    inline void LuaFieldRef::setKey(const LuaVariantBase& key) {
+        _key = key;
+    }
+
+    inline LuaVariantBase LuaFieldRef::getTableRef(void) const {
+        return _tableRef;
+    }
+
+    inline void LuaFieldRef::setTableRef(const LuaVariantBase& ref) {
+        _tableRef = ref;
+    }
+
+    inline LuaVariantBase LuaFieldRef::getCachedVariant(void) const {
+        return _cachedValue;
+    }
+
+    inline void LuaFieldRef::setCachedVariant(const LuaVariantBase& variant) {
+        _cachedValue = variant;
+    }
+
+    inline LuaVariantBase LuaFieldRef::getVariant(void) const {
+        bool success = true;
+        success &= _tableRef.push();
+        success &= _key.push();
+        GY_ASSERT(success);
         lua_gettable(*_mainState, -2);
         lua_remove(*_mainState, -2);
-        return LuaVariantBase::fromStack();
+        success &= _cachedValue.pull();
+        return _cachedValue;
+    }
+
+    inline void LuaFieldRef::setVariant(const LuaVariantBase& variant) {
+        bool success = true;
+        success &= _tableRef.push();
+        success &= _key.push();
+        success &= variant.push();
+        GY_ASSERT(success);
+        lua_settable(*_mainState, -3);
+        lua_pop(*_mainState, 1);
     }
 
 
+    inline LuaFieldRef LuaFieldRef::operator[](const LuaVariantBase& key) const {
+        //forward through the variant's index operator
+        return getVariant()[key];
+    }
 
 
 
@@ -470,25 +565,21 @@ namespace elysian {
         OOLUA::push(*_mainState, ref);
         pull();
     }
-    template<typename T>
-    inline LuaVariantBase::LuaVariantBase(const std::initializer_list<T>& list) {
-        const auto size = list.size();
-        if(size == 1) {
-            setValue(list[0]);
-        } else {
-            lua_newtable(*_mainState);
-            for(unsigned i = 0; i < size; ++i) {
-                OOLUA::push(list[i]);
-                lua_rawseti(*_mainState, -2, i+1);
-            }
-            pull();
-        }
+
+    inline LuaVariantBase::LuaVariantBase(const std::initializer_list<LuaPair>& pairs) {
+        *this = pairs;
     }
 
+    template <typename Ret, typename... Args>
+    LuaVariantBase::LuaVariantBase(const std::function<Ret(Args...)>& closure) {
+        setValue<Ret, Args...>(closure);
+    }
 
     inline LuaVariantBase::LuaVariantBase(const LuaVariantBase& rhs) { *this = rhs; }
     inline LuaVariantBase::LuaVariantBase(std::nullptr_t /*null*/): LuaVariantBase() {}
-    inline LuaVariantBase::LuaVariantBase(LuaVariantBase&& rhs) { *this = rhs; }
+    inline LuaVariantBase::LuaVariantBase(LuaVariantBase&& rhs) {
+        *this = rhs;
+    }
     inline LuaVariantBase& LuaVariantBase::operator=(const LuaVariantBase& rhs) {
         switch(rhs._type) {
         case LUA_TNIL:
@@ -517,46 +608,37 @@ namespace elysian {
     inline LuaVariantBase::LuaVariantBase(const double number) { setValue(number); }
     inline LuaVariantBase::LuaVariantBase(const int num) { setValue(num); }
     inline LuaVariantBase::LuaVariantBase(void*const ptr) { setValue(ptr); }
-
-
-    template<class... Types>
-    inline LuaVariantBase::LuaVariantBase(const std::tuple<Types...> /*table*/) {
-        lua_newtable(*_mainState);
-
-
+    inline LuaVariantBase::LuaVariantBase(const OOLUA::Lua_table_ref& ref) { setRef(ref.ref()); }
+    inline LuaVariantBase::LuaVariantBase(const OOLUA::Lua_func_ref &ref) { setRef(ref.ref()); }
+    inline LuaVariantBase::LuaVariantBase(const lua_CFunction funcPtr) { setValue(funcPtr); }
+    template<typename T>
+    inline LuaVariantBase::LuaVariantBase(const T fun) {
+        setValue(make_function(fun));
     }
 
 
     inline LuaVariantBase::~LuaVariantBase(void) { setNil(); }
 
-    inline LuaVariantBase& LuaVariantBase::operator=(LuaVariantBase&& rhs) {
-        switch(rhs._type) {
-        case LUA_TNIL:
-            setNil();
-            break;
-        case LUA_TBOOLEAN:
-            setValue(rhs._value.boolean);
-            break;
-        case LUA_TNUMBER:
-            setValue(rhs._value.number);
-            break;
-        case LUA_TSTRING: //steal heap-allocated string
-            _type           = LUA_TSTRING;
-            _value.string   = rhs._value.string;
-            rhs._type       = LUA_TNIL;
-            rhs._value.ref  = LUA_REFNIL;
-            break;
-        case LUA_TLIGHTUSERDATA:
-            setValue(rhs._value.userdata);
-            break;
-        default:
-            _type           = rhs._type;
-            _value          = rhs._value;
-            rhs._type       = LUA_TNIL;
-            rhs._value.ref  = LUA_REFNIL;
-        }
+    template<typename T>
+    inline LuaVariantBase& LuaVariantBase::operator=(const T*const rhs) {
+        setValue(rhs);
         return *this;
     }
+
+    template<typename T>
+    inline LuaVariantBase& LuaVariantBase::operator=(T*const rhs) {
+        setValue(rhs);
+        return *this;
+    }
+
+    inline LuaVariantBase& LuaVariantBase::operator=(LuaVariantBase&& rhs) {
+        _type           = rhs._type;
+        _value          = rhs._value;
+        rhs._type       = LUA_TNIL;
+        rhs._value.ref  = LUA_REFNIL;
+        return *this;
+    }
+
     inline LuaVariantBase& LuaVariantBase::operator=(const bool val) { setValue(val); return *this; }
     inline LuaVariantBase& LuaVariantBase::operator=(const std::nullptr_t) { setValue(nullptr); return *this; }
     inline LuaVariantBase& LuaVariantBase::operator=(const int num) { setValue(num); return *this; }
@@ -564,7 +646,19 @@ namespace elysian {
     inline LuaVariantBase& LuaVariantBase::operator=(const double num) { setValue((lua_Number)num); return *this; }
     inline LuaVariantBase& LuaVariantBase::operator=(const char*const string) { setValue(string); return *this; }
     inline LuaVariantBase& LuaVariantBase::operator=(void*const ptr) { setValue(ptr); return *this; }
-    inline LuaVariantBase& LuaVariantBase::operator=(const LuaFieldRef& rhs) { *this = rhs.getValue(); return *this; }
+    inline LuaVariantBase& LuaVariantBase::operator=(const OOLUA::Lua_table_ref& ref) { setValue(ref); return *this; }
+    inline LuaVariantBase& LuaVariantBase::operator=(const OOLUA::Lua_func_ref& ref) { setValue(ref); return *this; }
+    inline LuaVariantBase& LuaVariantBase::operator=(const lua_CFunction funcPtr) { setValue(funcPtr); return *this; }
+    template <typename Ret, typename... Args>
+    LuaVariantBase& LuaVariantBase::operator=(const std::function<Ret(Args...)>& closure) {
+        setValue(closure);
+        return *this;
+    }
+    template<typename T>
+    LuaVariantBase& LuaVariantBase::operator=(const T func) {
+        setValue(make_function(func));
+        return *this;
+    }
 
     inline bool LuaVariantBase::operator==(const LuaVariantBase& rhs) const {
         if(_type != rhs._type) return false;
@@ -588,6 +682,20 @@ namespace elysian {
         }
     }
 
+    template<typename T>
+    inline bool LuaVariantBase::operator==(const T*const ud) const {
+        //Purposely defer comparison to Lua, to honor overloaded comparison metamethods
+        bool equal = false;
+        if(push()) {
+            if(OOLUA::push(*_mainState, ud)) {
+                equal = lua_compare(*_mainState, -1, -2, LUA_OPEQ);
+                lua_pop(*_mainState, 1);
+            }
+            lua_pop(*_mainState, 1);
+        }
+        return equal;
+    }
+
     inline bool LuaVariantBase::operator==(const std::nullptr_t) const { return isNil() || (_type == LUA_TLIGHTUSERDATA && _value.userdata == nullptr); }
     inline bool LuaVariantBase::operator==(const bool val) const { return _type == LUA_TBOOLEAN && _value.boolean == val; }
     inline bool LuaVariantBase::operator==(const int num) const { return _type == LUA_TNUMBER && (int)_value.number == (int)num; }
@@ -596,6 +704,11 @@ namespace elysian {
     inline bool LuaVariantBase::operator==(void*const ptr) const { return ptr? isUserdataType() && _value.userdata == ptr : isNil(); }
     inline bool LuaVariantBase::operator==(const char*const str) const { return (_type == LUA_TSTRING && (strcmp(_value.string, str) == 0)); };
 
+
+    template<typename T>
+    inline bool LuaVariantBase::operator!=(const T*const ud) const {
+        return !(*this == ud);
+    }
     inline bool LuaVariantBase::operator!=(const LuaVariantBase& rhs) const { return !(*this == rhs); }
     inline bool LuaVariantBase::operator!=(const std::nullptr_t) const { return !(*this == nullptr); }
     inline bool LuaVariantBase::operator!=(const bool val) const { return !(*this == val); }
@@ -605,12 +718,18 @@ namespace elysian {
     inline bool LuaVariantBase::operator!=(void*const ptr) const { return !(*this == ptr); }
     inline bool LuaVariantBase::operator!=(const char*const str) const { return !(*this == str); }
 
-    inline LuaVariantBase::operator bool(void) const { return _lightConvertToBool(*this); }
-    inline LuaVariantBase::operator int(void) const { return _lightConvertToNumber(*this); }
-    inline LuaVariantBase::operator float(void) const { return _lightConvertToNumber(*this); }
-    inline LuaVariantBase::operator double(void) const { return _lightConvertToNumber(*this); }
-    inline LuaVariantBase::operator const char*(void) const { return _type == LUA_TSTRING? _value.string : lua_typename(*_mainState, _type); }
-    inline LuaVariantBase::operator void*(void) const { return _type == LUA_TLIGHTUSERDATA? _value.userdata : nullptr; }
+    inline LuaVariantBase::operator OOLUA::Lua_table_ref(void) const {
+        OOLUA::Lua_table_ref ref;
+
+        //Don't even bother if this isn't even a valid reference type.
+        if(isRefType()) {
+            //Have to get a fresh reference for OOLUA, or it's going to delete ours
+            if(push()) {
+                OOLUA::pull(*_mainState, ref);
+            }
+        }
+        return ref;
+    }
 
     //inline LuaVariantBase::operator LuaTableRef(void) const;
     //inline LuaVariantBase::operator OOLUA::Lua_table_ref(void);
@@ -636,14 +755,12 @@ namespace elysian {
         setType(LUA_TNIL);
         _value.ref = LUA_REFNIL;
     }
-/*
+
     template<typename T>
     inline void LuaVariantBase::setValue(T*const ud) {
-        OOLUA::push(*_mainState, ud);
-        _type = lua_type(*_mainState, -1);
-        _value.ref = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
+        if(OOLUA::push(*_mainState, ud)) pull();
     }
-*/
+
     inline void LuaVariantBase::setValue(std::nullptr_t /*null*/) {
         setNil();
     }
@@ -690,6 +807,27 @@ namespace elysian {
         } else setType(LUA_TNIL);
     }
 
+    inline void LuaVariantBase::setValue(const OOLUA::Lua_table_ref &ooluaRef) {
+        if(ooluaRef.push(*_mainState)) pull();
+    }
+
+    inline void LuaVariantBase::setValue(const OOLUA::Lua_func_ref &ooluaRef) {
+        if(ooluaRef.push(*_mainState)) pull();
+    }
+
+    inline void LuaVariantBase::setValue(const lua_CFunction funcPtr) {
+        lua_pushcfunction(*_mainState, funcPtr);
+        pull();
+    }
+
+    template<typename T>
+    inline T LuaVariantBase::getValue(void) const {
+        T ud = nullptr;
+        push();
+        OOLUA::pull(*_mainState, ud);
+        return ud;
+    }
+
     template<>
     inline  bool LuaVariantBase::getValue<bool>(void) const { return _value.boolean; }
 
@@ -707,6 +845,24 @@ namespace elysian {
 
     template<>
     inline  void* LuaVariantBase::getValue<void*>(void) const { return _value.userdata; }
+
+    template<>
+    inline OOLUA::Lua_table_ref LuaVariantBase::getValue<OOLUA::Lua_table_ref>(void) const {
+        OOLUA::Lua_table_ref ref;
+        if(push()) {
+            ref.pull(*_mainState);
+        }
+        return ref;
+    }
+
+    template<>
+    inline OOLUA::Lua_func_ref LuaVariantBase::getValue<OOLUA::Lua_func_ref>(void) const {
+        OOLUA::Lua_func_ref ref;
+        if(push()) {
+            ref.pull(*_mainState);
+        }
+        return ref;
+    }
 
     inline  int LuaVariantBase::getType(void) const { return _type; }
 
@@ -733,12 +889,7 @@ namespace elysian {
     inline void LuaVariantBase::setRef(const int ref) {
         lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, ref);
         setType(lua_type(*_mainState, -1));
-        //if(ownsRef) {
-        //    _value.ref = ref;
-        //    lua_pop(*_mainState, 1);
-       // } else {
-            _value.ref = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
-        //}
+        _value.ref = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
     }
 
     template<typename L>
@@ -848,27 +999,37 @@ namespace elysian {
 
     }
 
-    inline bool LuaVariantBase::toBool(void) {
-         return (_type == LUA_TBOOLEAN)? _value.boolean : _convertToBool(*this, *this)._value.boolean;
-    }
-
-    inline lua_Number LuaVariantBase::toNumber(void) {
-         return (_type == LUA_TNUMBER)? _value.number : _convertToNumber(*this, *this)._value.number;
-    }
-
-    inline const char* LuaVariantBase::toString(void) {
-        return (_type == LUA_TSTRING)? _value.string :
-            _convertType( [](void) { luaL_tolstring(*_mainState, -1, nullptr); lua_remove(*_mainState, -2); } )._value.string;
-    }
-
-    inline void* LuaVariantBase::toUserdata(void) {
-        if(_type == LUA_TLIGHTUSERDATA) {
-            return _value.userdata;
-        } else {
-            setType(LUA_TLIGHTUSERDATA);
-            _value.userdata = nullptr;
-            return nullptr;
+    inline int LuaVariantBase::getLength(void) const {
+        int len = 0;
+        if(push()) {
+            lua_len(*_mainState, -1);
+            len = lua_tointeger(*_mainState, -1);
+            lua_pop(*_mainState, 2);
         }
+        return len;
+    }
+
+    inline void LuaVariantBase::setMetatable(const LuaVariantBase &mt) const {
+        GY_ASSERT(isRefType() && mt.isRefType());
+        if(push()) {
+            if(mt.push()) {
+                lua_setmetatable(*_mainState, -2);
+            }
+            lua_pop(*_mainState, 1);
+        }
+    }
+
+    inline LuaVariant LuaVariantBase::getMetatable(void) const {
+        GY_ASSERT(isRefType());
+        push();
+        lua_getmetatable(*_mainState, -1);
+        lua_remove(*_mainState, -2);
+        return LuaVariant::fromStack(-1);
+    }
+
+    inline LuaVariantBase LuaVariantBase::newTable(void) {
+        lua_newtable(*_mainState);
+        return LuaVariantBase::fromStack();
     }
 
     inline LuaVariantBase LuaVariantBase::fromStack(const int index) {
@@ -876,25 +1037,31 @@ namespace elysian {
         lua_pushvalue(*_mainState, index);
         lua_remove(*_mainState, (index > 0)? index : index-1);
         variant.pull();
-        return variant;
+        return std::move(variant);
+    }
+
+    inline LuaVariantBase LuaVariantBase::fromRef(const int luaRef) {
+        LuaVariantBase variant;
+        variant.setRef(luaRef);
+        return std::move(variant);
+    }
+
+    inline LuaVariantBase LuaVariantBase::fromArray(const std::initializer_list<LuaVariant>& array) {
+        int index = 1;
+        lua_newtable(*_mainState);
+        for(const auto& it : array) {
+            lua_pushinteger(*_mainState, index++);
+            const bool success = it.push();
+            GY_ASSERT(success);
+            lua_settable(*_mainState, -3);
+        }
+        return fromStack();
     }
 
     template <typename... Args>
-    inline LuaVariantBase LuaVariantBase::operator()(Args&& ... args) {
+    inline LuaVariantBase LuaVariantBase::operator()(Args&& ... args) const {
         push();
         return LuaManager::_callFunction<LuaVariantBase>(nullptr, args...);
-    }
-
-
-    template <typename Ret, typename... Args>
-    void LuaVariantBase::setClosure(std::function<Ret(Args...)> closure) {
-        lua_pushlightuserdata(*_mainState, new std::function<Ret(Args...)>(closure));
-        lua_CFunction func = (lua_CFunction)&_callLambda<Ret, Args...>;
-
-        lua_pushcclosure(*_mainState, func, 1);
-        _type = lua_type(*_mainState, -1);
-        _value.ref = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
-
     }
 
     inline LuaVariantBase LuaVariantBase::getValue(const LuaVariantBase &key) const {
@@ -909,83 +1076,8 @@ namespace elysian {
     }
 
     inline LuaFieldRef LuaVariantBase::operator[](const LuaVariantBase& key) const {
-        return LuaFieldRef(isIndexable()? _value.ref : LUA_REFNIL, key);
+        return LuaFieldRef(*this, key);
     }
-
-#if 0
-    inline void LuaVariantBase::insert(const LuaPair &pair) {
-        if(isIndexable()) insert(pair.first, pair.second);
-    }
-
-    inline void LuaVariantBase::insert(const LuaVariantBase &key, const LuaVariantBase &value) {
-        if(isIndexable()) {
-            lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _value.ref);
-            OOLUA::push(*_mainState, key);
-            OOLUA::push(*_mainState, value);
-            lua_settable(*_mainState, -3);
-            lua_pop(*_mainState, 1);
-        }
-    }
-
-    inline void LuaVariantBase::insert(const char * const key, const LuaVariantBase &value) {
-        if(isIndexable()) {
-            lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _value.ref);
-            OOLUA::push(*_mainState, value);
-            lua_setfield(*_mainState, -2, key);
-            lua_pop(*_mainState, 1);
-        }
-    }
-#endif
-
-    inline LuaVariantBase LuaVariantBase::createFromString(const char * const str) {
-        LuaVariantBase variant;
-        if(LuaManager::runString(str)) {
-            variant.pull();
-        }
-        return variant;
-    }
-#if 0
-    inline LuaVariantBase::iterator LuaVariantBase::begin(void) {
-        const auto& it = cbegin();
-        return iterator(this,
-                        it._nextFuncRef,
-                        it._pair);
-    }
-
-    inline LuaVariantBase::const_iterator LuaVariantBase::begin(void) const {
-
-        getGlobal("pairs");
-      //  lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, REF);
-        _protectedCall(1, 3, nullptr);
-
-        lua_pushvalue(*_mainState, -3);
-        const int funcRef = luaL_ref(*_mainState, -1);
-
-        _protectedCall(2, 2, nullptr);
-
-        LuaPair pair;
-        OOLUA::pull(*_mainState, pair);
-        return const_iterator(this, funcRef, pair);
-    }
-
-    inline LuaVariantBase::const_iterator LuaVariantBase::cbegin(void) const {
-        return begin();
-    }
-
-
-    inline LuaVariantBase::iterator LuaVariantBase::end(void) {
-        return iterator(this, LUA_NOREF, LuaPair());
-    }
-
-
-    inline LuaVariantBase::const_iterator LuaVariantBase::end(void) const {
-        return const_iterator(this, LUA_NOREF, LuaPair());
-    }
-
-    inline LuaVariantBase::const_iterator LuaVariantBase::cend(void) const {
-        return const_iterator(this, LUA_NOREF, LuaPair());
-    }
-#endif
 
 }
 
@@ -1084,6 +1176,144 @@ namespace elysian {
     inline bool LuaVariantBase::pull(void) {
         return OOLUA::pull(*_mainState, *this);
     }
+
+    inline LuaVariantBase& LuaVariantBase::operator=(const std::initializer_list<LuaPair>& pairs) {
+        lua_newtable(*_mainState);
+        for(auto it : pairs) {
+            it.first.push();
+            it.second.push();
+            lua_settable(*_mainState, -3);
+        }
+        pull();
+        return *this;
+    }
+
+
+    inline LuaVariantBase::iterator LuaVariantBase::begin(void) {
+        const auto& it = cbegin();
+        return iterator(it._fieldRef,
+                        it._nextFuncRef);
+    }
+
+    inline LuaVariantBase::const_iterator LuaVariantBase::begin(void) const {
+        LuaVariant nextFunc;
+        LuaPair pair;
+
+        pushGlobalField("pairs");
+        if(push()) {
+            //call pairs(this)
+            if(_protectedCall(1, 3, nullptr)) {
+                //store next() function
+                lua_pushvalue(*_mainState, -3);
+                if(nextFunc.pull()) {
+                    GY_ASSERT(nextFunc.getType() == LUA_TFUNCTION);
+                    //call next(this, k)
+                    if(_protectedCall(2, 2, nullptr)) {
+                        OOLUA::pull(*_mainState, pair);
+                    } else GY_ASSERT(false);    //next(this, k) failed
+                } else GY_ASSERT(false);        //no next function found
+            } else GY_ASSERT(false);            //pairs(this) failed
+        }
+        return const_iterator(LuaFieldRef(*this, pair), nextFunc);
+    }
+
+    inline LuaVariantBase::const_iterator LuaVariantBase::cbegin(void) const {
+        return begin();
+    }
+
+
+    inline LuaVariantBase::iterator LuaVariantBase::end(void) {
+        return iterator(LuaFieldRef(*this, LuaPair(LuaVariant(), LuaVariant())), LuaVariant());
+    }
+
+
+    inline LuaVariantBase::const_iterator LuaVariantBase::end(void) const {
+        return const_iterator(LuaFieldRef(*this, LuaPair(LuaVariant(), LuaVariant())), LuaVariant());
+    }
+
+    inline LuaVariantBase::const_iterator LuaVariantBase::cend(void) const {
+        return const_iterator(LuaFieldRef(*this, LuaPair(LuaVariant(), LuaVariant())), LuaVariant());
+    }
+
+
+    template<bool is_const_iterator>
+    inline const_noconst_iterator<is_const_iterator> const_noconst_iterator<is_const_iterator>::operator++(void){
+        bool success = true;
+
+        success = _nextFuncRef.push();
+        GY_ASSERT(success);
+        success = _fieldRef._tableRef.push();
+        GY_ASSERT(success);
+        success = _fieldRef._key.push();
+        GY_ASSERT(success);
+
+        if(_protectedCall(2, 2, nullptr)) {
+            success &= _fieldRef._cachedValue.pull();
+            GY_ASSERT(success);
+            success &= _fieldRef._key.pull();
+            GY_ASSERT(success);
+        } else GY_ASSERT(false);
+
+        return *this;
+    }
+
+    //Assumes actual function is already at the top of the stack!
+    template<typename Ret, typename... Args>
+    inline int LuaVariantBase::_callLambda(lua_State*/*vm*/) {
+        std::tuple<Args...> argTuple;
+
+        pull_tuple(argTuple, int_<sizeof...(Args)>());
+
+        lua_pushvalue(*_mainState, lua_upvalueindex(1));
+        LuaVariantBase t = LuaVariantBase::fromStack();
+
+        auto* closure = static_cast<const std::function<Ret(Args...)>*>( t[1]->getValue<void*>() );
+
+        GY_ASSERT(closure);
+
+        const Ret retVal = forward<Ret>(argTuple, *closure);
+
+        OOLUA::push(*_mainState, retVal);
+        return 1;
+    }
+
+
+    template <typename Ret, typename... Args>
+    inline void LuaVariantBase::setValue(const std::function<Ret(Args...)>& closure) {
+        /* Hacky, mindfuck-y bullshit for garbage collecting the C++ lambda. Since it's stored
+         * as lightuserdata, it can't have a finalizer, and we cannot delete the pointer. So now we have
+         * to proxy it in a bullshit table with a __gc metamethod to delete it when the upvalue is deleted.
+         */
+
+        LuaVariantBase upValue = {
+            { 1, (void*)new std::function<Ret(Args...)>(closure) },
+            { "__gc", (lua_CFunction)[](lua_State*) {
+                  LuaVariantBase t = LuaVariantBase::fromStack();
+                    GY_ASSERT(t.getType() == LUA_TTABLE);
+                    dbgprintf("LUA LAMBDA FUNCTION FINALIZER INVOKED, NOT A MEMORY LEAK!!!111");
+                    delete static_cast<std::function<Ret(Args...)>*>(t[1]->getValue<void*>());
+                    return 0;
+                }
+            }
+        };
+
+        upValue.setMetatable(upValue);
+        upValue.push();
+
+        GY_ASSERT(lua_type(*_mainState, -1) == LUA_TTABLE);
+
+        lua_CFunction func = (lua_CFunction)&_callLambda<Ret, Args...>;
+
+        lua_pushcclosure(*_mainState, func, 1);
+        _type = lua_type(*_mainState, -1);
+        _value.ref = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
+    }
+
+    template<typename T>
+    inline void LuaVariantBase::setValue(const T func) {
+        setValue(make_function(func));
+    }
+
 
 }
 

@@ -63,7 +63,7 @@ void LuaManagerBase::_showError(void) {
 void LuaManagerBase::rPrintByIndex(const int index, const unsigned depth, const char* name) {
     //int oldTop = lua_gettop(*_mainState);
     lua_pushvalue(*_mainState, index);							//push table to print
-    LuaManager::getGlobal("rPrint");                            //push function
+    LuaManager::pushGlobalField("rPrint");                            //push function
     lua_pushvalue(*_mainState, -2);                             //push table to print
     if(depth) lua_pushnumber(*_mainState, depth);				//push depth if given
     else lua_pushnil(*_mainState);								//push nil for default depth if not
@@ -97,7 +97,7 @@ int LuaManagerBase::_traceBack(lua_State *L) {
 
     if (!lua_isstring(L, 1))  /* 'message' not a string? */
         return 1;  /* keep it intact */
-    LuaManager::getGlobal("debug");
+    LuaManager::pushGlobalField("debug");
     if (!lua_istable(L, -1)) {
         lua_pop(L, 1);
         return 1;
@@ -159,7 +159,7 @@ unsigned LuaManagerBase::_envDump(LuaScript *scr) {
         Debug::push();
     }
 
-    LuaManager::getGlobal("rPrint");
+    LuaManager::pushGlobalField("rPrint");
     lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, scr->getEnvironRef());
     lua_pushnumber(*_mainState, 3);
     sprintf(envString, "_env[%d]", envCount-1);
@@ -304,15 +304,15 @@ bool LuaManagerBase::runScriptSandbox(const char *const file, LuaScript* const s
 
     } else {
 
-        lua_newtable(*_mainState);							//ENV
-        lua_newtable(*_mainState);							//metatable
-        LuaManager::getGlobal("_G");                        //globals table
-        lua_setfield(*_mainState, -2, "__index");			//metatable[__index] = _G;
-        lua_setmetatable(*_mainState, -2);					//setmetatable(ENV, metatable);
+        lua_newtable(*_mainState);                                      //ENV
+        lua_newtable(*_mainState);                                      //metatable
+        lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);  //globals table
+        lua_setfield(*_mainState, -2, "__index");                       //metatable[__index] = _G;
+        lua_setmetatable(*_mainState, -2);                              //setmetatable(ENV, metatable);
         if(script) {
-            lua_pushvalue(*_mainState, -1);					//duplicate ENV
-            ref = luaL_ref(*_mainState,	LUA_REGISTRYINDEX);	//store reference to ENV in Lua registry
-            script->setEnvironRef(ref);						//and save key in LuaScript
+            lua_pushvalue(*_mainState, -1);                             //duplicate ENV
+            ref = luaL_ref(*_mainState,	LUA_REGISTRYINDEX);             //store reference to ENV in Lua registry
+            script->setEnvironRef(ref);                                 //and save key in LuaScript
         }
         lua_setupvalue(*_mainState, -2, 1);
         _protectedCall(0, retCount, script);
@@ -469,9 +469,7 @@ void LuaManagerBase::dumpStats(void) {
                 }
             }
 
-            Debug::pop();
-            Debug::pop();
-            Debug::pop();
+            Debug::pop(3);
 
             break;
         }
@@ -538,7 +536,7 @@ bool LuaManagerBase::genericIterate(const int index, std::function<void(void)> l
     }
 #endif
 
-    getGlobal("pairs");
+    pushGlobalField("pairs");
     lua_pushvalue(*_mainState, -2);
     _protectedCall(1, 3, nullptr);
 
@@ -621,13 +619,46 @@ LuaVariant LuaManagerBase::exec(const char * const str, ...) {
 
     runString(buffer);
     return LuaVariant::fromStack();
-
 }
 
-LuaVariant LuaManagerBase::getPrefab(const char * const name) {
+LuaVariant LuaManagerBase::getPrefab(const char* const name) {
     return exec("return prefab(\"%s\")", name);
 }
 
+const char* LuaManagerBase::getPrefabName(const int index) {
+    return _callGlobalFunction<const char*>("getPrefabName", nullptr, RawTableReference(index));
+}
+
+bool LuaManagerBase::saveTable(const int ref, const char * const filename) {
+    bool success = true;
+
+    dbgprintf("Serializing Lua table: [%s]", filename);
+    Debug::push();
+
+    const char* serialData = _callGlobalFunction<const char*>("serialize", nullptr, RawTableReference(ref));
+    if(!serialData) {
+        errprintf("Returned NULL string!");
+        success = false;
+    } else {
+
+        FILE* file = fopen(filename, "w");
+        if(!file) {
+            errprintf("Could not open file for writing!");
+            success = false;
+        } else {
+            fprintf(file, "%s", serialData);
+            fclose(file);
+        }
+    }
+
+    Debug::pop();
+    return success;
+}
+
+LuaVariant LuaManagerBase::getGlobalsTable(void) {
+    lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);
+    return LuaVariant::fromStack();
+}
 
 
 

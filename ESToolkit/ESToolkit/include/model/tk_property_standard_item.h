@@ -174,11 +174,12 @@ public:
 
   virtual void setData(const QVariant &value, int role) override {
         //make sure shit actually changed
-        T lastData = (_objInst->*_getAccessor)();
+        T lastData;
 
         switch((Qt::ItemDataRole)role) {
         case Qt::CheckStateRole:
             if(!_ignoreCheck) {
+                lastData = (_objInst->*_getAccessor)();
                 if(lastData != value.value<T>()) {
                     _PropertyStandardItem<UndoRedo, T, C>::setDataEditRole(this, value);
                     return QStandardItem::setData(value, role);
@@ -189,6 +190,7 @@ public:
             _displayValue = true;
             return QStandardItem::setData(value, role);
     case Qt::EditRole:
+            lastData = (_objInst->*_getAccessor)();
             if(lastData != value.value<T>()) {
                 _PropertyStandardItem<UndoRedo, T, C>::setDataEditRole(this, value);
             }

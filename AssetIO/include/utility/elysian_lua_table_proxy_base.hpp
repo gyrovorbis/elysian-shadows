@@ -4,7 +4,7 @@
 #include <utility/luatables.h>
 #include <elysian_lua_manager.hpp>
 #include <utility/elysian_generic.hpp>
-#include <cassert>
+#include <crtp/elysian_lua_variant.hpp>
 
 //DSL for autogenerating proxy fields
 #define ELYSIAN_LUA_PROXY_FIELDS_BEGIN() \
@@ -990,39 +990,63 @@ namespace elysian {
             _initializing = false;
         }
 
+        /* Specialized custom Ud constructor overriding OOLUA's Ud["new"] method.
+         * Automatically supports table-style constructors for property initialization
+         * Calls OOLUA's original new method, also forwarding Ud arguments for copy construction
+         * Supports construction in the following forms ("Entity" ud as an example):
+         * 1) Entity.new()
+         * 2) Entity:new()
+         * 3) Entity.new({})        (initialize properties from table)
+         * 4) entityObj:new()       (copy construct new entity from entityObj)
+         * 5) entityObj:new({})     (copy construct new entity from entityObj then initialize properties from table)
+         */
         static int _luaCreate(lua_State*const l) {
-            OOLUA::Lua_table_ref valueTable;
-            T* rvalue = nullptr;
+            LuaVariant          valueTable;
+            LuaVariant          rvalue;
+            int args     =      lua_gettop(l);
+            int retCount =      1;
 
-            int args = lua_gettop(l);
-
-            if(args >= 2) {
-                OOLUA::pull(l, valueTable);
-                if(lua_type(l, -1) == LUA_TUSERDATA) {
-                    OOLUA::pull(l, rvalue);
-                    GY_ASSERT(rvalue);
+            for(int i = 0; i < args; ++i) {
+                const int luaType = lua_type(l, -1);
+                if(luaType == LUA_TTABLE) {
+                    //Check whether table we were passed is a new value table or just the oolua method table (ie: Entity:new())
+                    lua_rawgeti(l, LUA_REGISTRYINDEX, _ooluaIndexTable);
+                    const bool isMetaTable = lua_compare(l, -1, -2, LUA_OPEQ);
+                    lua_pop(l, 1);
+                    if(!isMetaTable) valueTable.pull(); //Only pull table if it's a value initialization table
+                    else lua_pop(l, 1);
                 }
+                else if(luaType == LUA_TUSERDATA) rvalue.pull();
+                else lua_pop(l, 1); //ignore unknown argument type, whatever.
             }
 
             lua_rawgeti(l, LUA_REGISTRYINDEX, _ooluaIndexTable);
             lua_getfield(l, -1, "oolua_new");
-            //lua_remove(l, -2);
-            GY_ASSERT(!lua_isnil(l, -1)); //better fucking have a constructor if you invoked this method
-            if(rvalue) OOLUA::push(l, rvalue);
-            LuaManager::_protectedCall(rvalue? 1 :0, 1, nullptr);
+            GY_ASSERT(!lua_isnil(l, -1));       //Could not find constructor!
+            if(!rvalue.isNil()) rvalue.push();  //Push rvalue object as argument to copy constructor!
 
-            //GY_ASSERT(!lua_isnil(l, -1));
-
-            if(args >= 2) {
-                T* obj;
-                OOLUA::pull(l, obj);
-                GY_ASSERT(obj);
-
-                static_cast<LuaTableProxy<P, T, Bases...>*>(obj)->fromTable(valueTable);
-                OOLUA::push(l, obj);
+            if(!LuaManager::_protectedCall(!rvalue.isNil()? 1 : 0, 1, nullptr)) {
+                errprintf("LuaTableProxy[%s]::_luaCreate(%s, %s) failed!", OOLUA::Proxy_class<T>::class_name, rvalue.getTypeString(), valueTable.getTypeString());
+                retCount = 0;
             }
 
-            return 1;
+            //Whatever constructor that was invoked did not return a new object!
+            GY_ASSERT(!lua_isnil(l, -1));
+
+            //Initialize new object with valueTable, if supplied.
+            if(!valueTable.isNil()) {
+                T* obj;
+                if(OOLUA::pull(l, obj)) {
+                    static_cast<LuaTableProxy<P, T, Bases...>*>(obj)->fromTable(valueTable.getValue<OOLUA::Lua_table_ref>());
+                    retCount = OOLUA::push(l, obj);
+                } else {
+                    GY_ASSERT(obj); //Could not pull correct object type from stack!
+                    retCount = 0;
+                }
+            }
+
+            GY_ASSERT(retCount);
+            return retCount;
         }
 
         static int lua_downCast(lua_State*const /*vm*/) {
@@ -1097,7 +1121,7 @@ namespace elysian {
         unsigned tableDepth = 0;
         if(C::_proxyRegistered) return; //proxy properties have already been registered!
 
-        LuaManager::getGlobal(OOLUA::Proxy_class<T>::class_name); //push OOLUA's proxy class methods table
+        LuaManager::pushGlobalField(OOLUA::Proxy_class<T>::class_name); //push OOLUA's proxy class methods table
 
         if(_propertyProxyIndexTable != LUA_REFNIL) lua_rawgeti(l, LUA_REGISTRYINDEX, _propertyProxyIndexTable);
         else
@@ -1113,13 +1137,13 @@ namespace elysian {
             switch(C::_proxyFields[i].flags) {
             case LuaTableFieldProxy::FLAG_ARRAY:
                 lua_getfield(l, -3-(tableDepth*2), C::_proxyFields[i].get);         //upvalue #1, getByIndex method
-                assert(!lua_isnil(l, -1)); //LUA GET ACCESSOR NOT FOUND!!!!
+                GY_ASSERT(!lua_isnil(l, -1)); //LUA GET ACCESSOR NOT FOUND!!!!
                 if(C::_proxyFields[i].set) {
                     lua_getfield(l, -3-(tableDepth*2)-1, C::_proxyFields[i].set);   //upvalue #2, setByIndex method
-                    assert(!lua_isnil(l, -1)); //LUA SET ACCESSOR NOT FOUND!!!!
+                    GY_ASSERT(!lua_isnil(l, -1)); //LUA SET ACCESSOR NOT FOUND!!!!
                 } else lua_pushnil(l);
                 lua_getfield(l, -3-(tableDepth*2)-2, C::_proxyFields[i].size);    //upvalue #3 size field for arrays
-                assert(!lua_isnil(l, -1)); //SIZE ACCESSOR NOT FOUND!!!!
+                GY_ASSERT(!lua_isnil(l, -1)); //SIZE ACCESSOR NOT FOUND!!!!
                 lua_pushinteger(l, i);                                              //upvalue #4, starting index of virtual table properties
                 lua_pushcclosure(l, &_createVirtualTableProxy, LUA_TABLE_PROXY_UPVALUE_COUNT);
 #if 0
@@ -1128,13 +1152,13 @@ namespace elysian {
                 lua_setfield(l, -3, C::_proxyFields[i].key);
 #endif
                 lua_getfield(l, -3-(tableDepth*2), C::_proxyFields[i].get);     //upvalue #1, getByIndex method
-                assert(!lua_isnil(l, -1)); //LUA GET ACCESSOR NOT FOUND!!!!
+                GY_ASSERT(!lua_isnil(l, -1)); //LUA GET ACCESSOR NOT FOUND!!!!
                 if(P::_proxyFields[i].set) {
                     lua_getfield(l, -3-(tableDepth*2)-1, C::_proxyFields[i].set); //upvalue #2, setByIndex method
-                    assert(!lua_isnil(l, -1)); //LUA SET ACCESSOR NOT FOUND!!!!
+                    GY_ASSERT(!lua_isnil(l, -1)); //LUA SET ACCESSOR NOT FOUND!!!!
                 } else lua_pushnil(l);
                 lua_getfield(l, -3-(tableDepth*2)-2, P::_proxyFields[i].size);    //upvalue #3 size field for arrays
-                assert(!lua_isnil(l, -1)); //SIZE ACCESSOR NOT FOUND!!!!
+                GY_ASSERT(!lua_isnil(l, -1)); //SIZE ACCESSOR NOT FOUND!!!!
                 lua_pushinteger(l, i);                                          //upvalue #4, starting index of virtual table properties
                 lua_pushcclosure(l, &_setVirtualTableProxy, LUA_TABLE_PROXY_UPVALUE_COUNT);
 #if 0

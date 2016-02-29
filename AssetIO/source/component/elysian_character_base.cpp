@@ -437,7 +437,7 @@ const char* CharacterBase::getAnimNameFromStates(const Direction::DIR4 dir) cons
         lua_pop(*_mainState, 1);
 #endif
         LuaVariant v(static_cast<const Character*>(this));
-        _getAnimNameFromStatesRef = v["getAnimNameFromStates"];
+        _getAnimNameFromStatesRef = v["getAnimNameFromStates"].getVariant();
         GY_ASSERT(_getAnimNameFromStatesRef.getType() == LUA_TFUNCTION);
     }
 

@@ -200,7 +200,8 @@ SOURCES += \
     ../../ESGamma/source/proxy/elysian_input_system_proxy.cpp \
     ../../ESGamma/source/system/elysian_input_system_base.cpp \
     ../../AssetIO/source/behavior/elysian_playable_behavior.cpp \
-    ../../ESGamma/source/system/elysian_pathfinding_system.cpp
+    ../../ESGamma/source/system/elysian_pathfinding_system.cpp \
+    ../../AssetIO/source/utility/elysian_lua_variant_base.cpp
 
 
 
@@ -226,7 +227,6 @@ SOURCES += \
         source/core/tk_debug.cpp \
         source/core/tk_file_utilities.cpp \
         source/core/tk_menu_stack.cpp \
-        source/core/tk_selectable.cpp \
         source/core/tk_tile_sheet_utilities.cpp \
         source/core/tk_tree_node.cpp \
         source/core/tk_undo_item.cpp \
@@ -439,7 +439,8 @@ HEADERS += \
     ../../ESGamma/include/proxy/elysian_input_system_proxy.hpp \
     ../../ESGamma/include/system/elysian_input_system_base.hpp \
     ../../ESGamma/include/crtp/elysian_input_system.hpp \
-    ../../AssetIO/include/behavior/elysian_playable_behavior.hpp
+    ../../AssetIO/include/behavior/elysian_playable_behavior.hpp \
+    include/core/tk_lua_table_selectable.h
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

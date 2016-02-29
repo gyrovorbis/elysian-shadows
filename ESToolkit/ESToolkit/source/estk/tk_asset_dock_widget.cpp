@@ -6,7 +6,10 @@
 #include <core/tk_file_utilities.h>
 #include <asset/tk_project.h>
 #include "ui_tk_asset_dock_widget.h"
+#include <core/tk_lua_table_selectable.h>
 #include <QDebug>
+#include <core/tk_menu_stack.h>
+#include <QMenu>
 
 AssetDockWidget::AssetDockWidget(QWidget *parent) :
     QDockWidget(parent),
@@ -42,6 +45,7 @@ void AssetDockWidget::_onProjectAdded(Project * const project) {
     if(project) {
         _fsModel = new AssetFileSystemModel;
         _ui->treeView->setSelectionMode(QAbstractItemView::SingleSelection);
+        _ui->treeView->	setContextMenuPolicy(Qt::CustomContextMenu);
         //connect(_ui->treeView, SIGNAL(itemChanged))
         _fsModel->addDirectoryType(new AreaAssetFileType);
         _fsModel->addDirectoryType(new LevelAssetFileType);
@@ -62,6 +66,7 @@ void AssetDockWidget::_onProjectAdded(Project * const project) {
         _ui->treeView->setRootIndex(_fsModel->index(project->getNodePath()));
         connect(_ui->treeView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), _fsModel, SLOT(_onSelectionChanged(const QItemSelection&,const QItemSelection&)));
         connect(_ui->treeView, SIGNAL(doubleClicked(const QModelIndex&)), _fsModel, SLOT(_onDoubleClick(const QModelIndex&)));
+        connect(_ui->treeView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(_onCustomContextMenuRequested(const QPoint&)));
         _onLevelChanged(getAssets()->getCurrentLevel());
         _onAreaChanged(getAssets()->getCurrentArea());
     }
@@ -100,9 +105,16 @@ void AssetDockWidget::_onSelectionChanged(const Selectable::TYPE type, Selectabl
     }
 }
 
+void AssetDockWidget::_onCustomContextMenuRequested(const QPoint& pos) {
+    QMenu* menu = _fsModel->customContextMenuRequested(_ui->treeView->indexAt(pos));
+    if(menu) menu->exec(_ui->treeView->mapToGlobal(pos));
+    delete menu;
+}
+
 
 AssetFileSystemModel::AssetFileSystemModel(void) {
-    connect(this, SIGNAL(directoryLoaded(QString)), this, SLOT(_onDirectoryLoaded(QString)));
+    connect(this, SIGNAL(rowsInserted(const QModelIndex&, int, int)), this, SLOT(_onRowsInserted(const QModelIndex&,int,int)));
+    connect(this, SIGNAL(rowsAboutToBeRemoved(const QModelIndex&, int, int)), this, SLOT(_onRowsAboutToBeRemoved(const QModelIndex&,int,int)));
 }
 
 AssetFileSystemModel::~AssetFileSystemModel(void) {
@@ -122,44 +134,68 @@ QVariant AssetFileSystemModel::data(const QModelIndex &index, int role) const {
         if(data != _customData.end()) return data.value()->data(index, role);
     }
 
-
     return QFileSystemModel::data(index, role);
 }
 
-void AssetFileSystemModel::_onDirectoryLoaded(const QString str) {
-    QDir thisDir(str);
-    QString path;
+void AssetFileSystemModel::_onFileAdded(const QString filename) {
+    QFileInfo info(filename);
+    QString path = info.absoluteFilePath();
 
-    //qDebug() << "***** PROCESSING >> " << str;
+    if(info.isDir()) {
 
-    auto dirs = thisDir.entryList(QDir::NoDotAndDotDot|QDir::AllDirs);
-
-    for(auto dir: dirs) {
         for(auto  dirType : _customDirTypes) {
-            path = thisDir.absoluteFilePath(dir);
-            //qDebug() << "ASSESSING PATH" << path;
             auto* dirData = dirType->fromFilePath(path);
             if(dirData) {
-                //qDebug() << "REGISTERING" << str;
+                connect(dirData, SIGNAL(itemChanged()), this, SLOT(_onItemChanged()));
                 _customData[path] = dirData;
                 break;
             }
         }
-    }
 
-    auto files = thisDir.entryList(QDir::Files);
+    } else if(info.isFile()) {
 
-    for(auto file: files) {
         for(auto  fileType : _customFileTypes) {
-            path = thisDir.absoluteFilePath(file);
-            //qDebug() << "ASSESSING PATH" << path;
             auto* fileData = fileType->fromFilePath(path);
             if(fileData) {
-                //qDebug() << "REGISTERING" << str;
+                connect(fileData, SIGNAL(itemChanged()), this, SLOT(_onItemChanged()));
                 _customData[path] = fileData;
                 break;
             }
         }
+
+    } else {
+        warnprintf("AssetFileSystem[%s] - Indexing neither file nor directory, ignoring.");
+    }
+}
+
+void AssetFileSystemModel::_onFileRemoved(const QString filename) {
+    QFileInfo info(filename);
+    auto data = _customData.find(info.absoluteFilePath());
+    if(data != _customData.end()) {
+        delete data.value();
+        _customData.erase(data);
+    }
+}
+
+void AssetFileSystemModel::_onItemChanged(void) {
+    CustomAssetFileType* sender = static_cast<CustomAssetFileType*>(QObject::sender());
+    auto modelIndex = index(sender->getFilePath());
+    if(modelIndex.isValid()) {
+        Q_EMIT dataChanged(modelIndex, modelIndex);
+    }
+}
+
+void AssetFileSystemModel::_onRowsInserted(const QModelIndex& parent, int first, int last) {
+    for(int i = first; i <= last; ++i) {
+        QString path = filePath(index(i, 0, parent));
+        _onFileAdded(path);
+    }
+}
+
+void AssetFileSystemModel::_onRowsAboutToBeRemoved(const QModelIndex& parent, int first, int last) {
+    for(int i = first; i <= last; ++i) {
+        QString path = filePath(index(i, 0, parent));
+        _onFileRemoved(path);
     }
 }
 
@@ -176,20 +212,63 @@ void AssetFileSystemModel::_onDoubleClick(const QModelIndex &index) {
     if(data != _customData.end()) data.value()->doubleClick(index);
 }
 
-CustomAssetFileType::CustomAssetFileType(const QString name, const QIcon icon):
-    _typeName(name), _icon(icon) {}
+QMenu* AssetFileSystemModel::customContextMenuRequested(const QModelIndex &index) {
+    auto data = _customData.find(filePath(index));
+    return (data != _customData.end())? data.value()->contextMenu(index) : nullptr;
+}
+
+CustomAssetFileType::CustomAssetFileType(const QString typeName, const QIcon icon, const QString filePath):
+    _filePath(filePath),
+    _typeName(typeName),
+    _icon(icon)
+{}
+
+QVariant CustomAssetFileType::data(const QModelIndex& index, int role) {
+    if(role == Qt::ForegroundRole) {
+        switch(_fontState) {
+        case FONT_INACTIVE:
+            return QVariant(QColor(Qt::gray));
+        case FONT_ACTIVE:
+            return QVariant(QColor(Qt::black));
+        case FONT_INVALID:
+            return QVariant(QColor(Qt::darkRed));
+        }
+    }
+    else if(role == Qt::DisplayRole && index.column() == 2 && !_typeName.isNull()) return _typeName;
+    else if(role == Qt::DecorationRole && !_icon.isNull()) return _icon;
+    else {
+        QVariant value = static_cast<const QFileSystemModel*>(index.model())->QFileSystemModel::data(index, role);
+        if(role == Qt::DisplayRole && index.column() == 0 && _modified)
+            return QString("*")+value.toString();
+        return value;
+    }
+}
 
 
-AreaAssetFileType::AreaAssetFileType(void): CustomAssetFileType("Area", QIcon(TK_AREA_ASSET_ICON)) {}
-AreaAssetFileType::AreaAssetFileType(TkArea*const area): AreaAssetFileType() {
+AreaAssetFileType::AreaAssetFileType(const QString filePath): CustomAssetFileType("Area", QIcon(TK_AREA_ASSET_ICON), filePath) {}
+AreaAssetFileType::AreaAssetFileType(const QString filePath, TkArea*const area):
+    AreaAssetFileType(filePath)
+{
     _area = area;
+    connect(&area->getUndoStack(), SIGNAL(cleanChanged(bool)), this, SLOT(_onUndoStackCleanChanged(bool)));
+    connect(area, SIGNAL(validChanged(bool)), this, SLOT(_onValidChanged(bool)));
+
+   // setFontState(area->isValid()? CustomAssetFileType::FONT_ACTIVE : )
+}
+
+void AreaAssetFileType::_onUndoStackCleanChanged(const bool clean) {
+    setModified(!clean);
+}
+
+void AreaAssetFileType::_onValidChanged(const bool valid) {
+    setFontState(valid? CustomAssetFileType::FONT_ACTIVE : CustomAssetFileType::FONT_INVALID);
 }
 
 auto AreaAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
     QDir dir(path);
 
     if(dir.exists(TK_MAP_ASSET_NAME_TOKEN)) {
-        return new AreaAssetFileType(getAssets()->findArea(path));
+        return new AreaAssetFileType(path, getAssets()->findArea(path));
     }
     return nullptr;
 }
@@ -203,17 +282,24 @@ void AreaAssetFileType::doubleClick(const QModelIndex& /*index*/) {
     getAssets()->setCurrentSelection(static_cast<Selectable*>(static_cast<TreeNode*>(_area)));
 }
 
+LevelAssetFileType::LevelAssetFileType(const QString filePath): CustomAssetFileType("Level", QIcon(TK_LEVEL_ASSET_ICON), filePath) {}
 
-LevelAssetFileType::LevelAssetFileType(void): CustomAssetFileType("Level", QIcon(TK_LEVEL_ASSET_ICON)) {}
-LevelAssetFileType::LevelAssetFileType(TkLevel*const level): LevelAssetFileType() {
+LevelAssetFileType::LevelAssetFileType(const QString filePath, TkLevel*const level):
+    LevelAssetFileType(filePath)
+{
     _level = level;
+    connect(level, SIGNAL(validChanged(bool)), this, SLOT(_onValidChanged(bool)));
+}
+
+void LevelAssetFileType::_onValidChanged(const bool valid) {
+    setFontState(valid? CustomAssetFileType::FONT_ACTIVE : CustomAssetFileType::FONT_INVALID);
 }
 
 auto LevelAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
     QDir dir(path);
 
     if(dir.exists("area") && dir.exists("tile")) {
-        return new LevelAssetFileType(getAssets()->findLevel(path));
+        return new LevelAssetFileType(path, getAssets()->findLevel(path));
     }
     return nullptr;
 }
@@ -228,52 +314,59 @@ void LevelAssetFileType::doubleClick(const QModelIndex& /*index*/) {
 }
 
 auto SpecularsheetAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
-    if(QFileInfo(QFile(path).fileName()).fileName() == TK_SPECULARSHEET_ASSET_NAME_TOKEN) return new SpecularsheetAssetFileType();
+    if(QFileInfo(QFile(path).fileName()).fileName() == TK_SPECULARSHEET_ASSET_NAME_TOKEN) return new SpecularsheetAssetFileType(path);
     return nullptr;
 }
 
 auto NormalsheetAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
-    if(QFileInfo(QFile(path).fileName()).fileName() == TK_NORMALSHEET_ASSET_NAME_TOKEN) return new NormalsheetAssetFileType();
+    if(QFileInfo(QFile(path).fileName()).fileName() == TK_NORMALSHEET_ASSET_NAME_TOKEN) return new NormalsheetAssetFileType(path);
     return nullptr;
 }
 
 
 auto TilesheetAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
-    if(QFileInfo(QFile(path).fileName()).fileName() == TK_TILESHEET_ASSET_NAME_TOKEN) return new TilesheetAssetFileType();
+    if(QFileInfo(QFile(path).fileName()).fileName() == TK_TILESHEET_ASSET_NAME_TOKEN) return new TilesheetAssetFileType(path);
     return nullptr;
 }
 
 
 auto MapAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
-    if(QFileInfo(QFile(path).fileName()).fileName() == TK_MAP_ASSET_NAME_TOKEN) return new MapAssetFileType();
+    if(QFileInfo(QFile(path).fileName()).fileName() == TK_MAP_ASSET_NAME_TOKEN) return new MapAssetFileType(path);
     return nullptr;
 }
 
 auto LuaScriptAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
     QFileInfo file(QFile(path).fileName());
-    if(file.fileName() == "area_init.lua" || file.fileName() == "level_init.lua") return new LuaScriptAssetFileType();
+    if(file.fileName() == "area_init.lua" || file.fileName() == "level_init.lua") return new LuaScriptAssetFileType(path);
     return nullptr;
 }
 
 auto LuaBehaviorAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
     QFile file(path);
-    if(file.fileName().split(TK_LUA_BEHAVIOR_ASSET_NAME_TOKEN).size() > 1) return new LuaBehaviorAssetFileType();
+    if(file.fileName().split(TK_LUA_BEHAVIOR_ASSET_NAME_TOKEN).size() > 1) return new LuaBehaviorAssetFileType(path);
     return nullptr;
 }
 
 PrefabAssetFileType::PrefabAssetFileType(const QString filePath):
-    PrefabAssetFileType()
+    CustomAssetFileType("Prefab", QIcon(TK_PREFAB_ASSET_ICON), filePath)
 {
+
     QDir assetDir(FileUtilities::getAbsoluteAssetPath(ELYSIAN_LUA_PREFAB_PATH));
     GY_ASSERT(assetDir.exists());
 
-    _prefabName = assetDir.relativeFilePath(filePath).split(TK_PREFAB_ASSET_NAME_TOKEN)[0];
+    _prefabName = prefabNameFromFilePath(filePath);
     qDebug() << "****** PREFAB RELATIVE FILE PATH " << _prefabName;
 
     _prefabRef = LuaManager::getPrefab(Q_CSTR(_prefabName));
 
-    qDebug() << "PREFAB - " << _prefabRef.getTypeString();
+    if(_prefabRef.getType() != LUA_TTABLE && _prefabRef.getType() != LUA_TUSERDATA) {
+        errprintf("Prefab[%s] is not USERDATA or TABLE type! (%s)", Q_CSTR(_prefabName), _prefabRef.getTypeString());
+        setFontState(CustomAssetFileType::FONT_INVALID);
+    }
+}
 
+void PrefabAssetFileType::_onItemChanged(QStandardItem */*item*/) {
+    setModified(true);
 }
 
 auto PrefabAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
@@ -282,6 +375,48 @@ auto PrefabAssetFileType::fromFilePath(const QString path) -> CustomAssetFileTyp
     return nullptr;
 }
 
-void PrefabAssetFileType::doubleClick(const QModelIndex& index) {
-    qDebug() << "DOUBLE CLICKED - " << index;
+void PrefabAssetFileType::doubleClick(const QModelIndex& /*index*/) {
+    LuaTableSelectable* selectable = new LuaTableSelectable(_prefabRef.getRef());
+    connect(selectable, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(_onItemChanged(QStandardItem*)));
+    getAssets()->setCurrentSelection(selectable);
+
+    if(getFontState() == CustomAssetFileType::FONT_INACTIVE) setFontState(CustomAssetFileType::FONT_ACTIVE);
 }
+
+QMenu* PrefabAssetFileType::contextMenu(const QModelIndex& /*index*/) {
+    MenuStack menuStack("Prefab");
+
+    menuStack.insertAction("Save",
+         [&](bool) {
+            LuaManager::saveTable(_prefabRef.getRef(), Q_CSTR(getFilePath()));
+            setModified(false);
+    });
+
+    menuStack.insertAction("Create Child",
+         [&](bool) {
+        LuaVariant v = _prefabRef["new"].getVariant()(_prefabRef);
+        getAssets()->setCurrentSelection(new LuaTableSelectable(v.getRef()));
+
+    });
+
+    return menuStack.first();
+}
+
+QString PrefabAssetFileType::prefabNameFromFilePath(const QString path) {
+    QDir assetDir(FileUtilities::getAbsoluteAssetPath(ELYSIAN_LUA_PREFAB_PATH));
+    return assetDir.relativeFilePath(path).split(TK_PREFAB_ASSET_NAME_TOKEN)[0];
+}
+
+QString PrefabAssetFileType::prefabifyFilePath(const QString path) {
+    QString newFilePath = path;
+    QDir assetDir(FileUtilities::getAbsoluteAssetPath(ELYSIAN_LUA_PREFAB_PATH));
+
+    //Convert if invalid
+    if(assetDir.relativeFilePath(path).split(TK_PREFAB_ASSET_NAME_TOKEN).size() <= 1) {
+        newFilePath = newFilePath.split(".")[0];
+        newFilePath += QString(TK_PREFAB_ASSET_NAME_TOKEN);
+    }
+
+    return newFilePath;
+}
+

@@ -18,12 +18,12 @@
 
 //====STATIC MEMBERS====
 
-Project *Assets::_project = nullptr;
-elysian::Engine* Assets::_engine = nullptr;
-Selectable *Assets::_currentSelection = nullptr;
-Selectable::TYPE Assets::_currentSelectionType = Selectable::EMPTY;
-Assets::LAYER_TYPE Assets::_currentLayer = Assets::LAYER_TILE1;
-bool Assets::_layerVisible[Assets::LAYER_MAX] = { true };
+Project*            Assets::_project                            = nullptr;
+elysian::Engine*    Assets::_engine                             = nullptr;
+Selectable*         Assets::_currentSelection                   = nullptr;
+Selectable::TYPE    Assets::_currentSelectionType               = Selectable::EMPTY;
+Assets::LAYER_TYPE  Assets::_currentLayer                       = Assets::LAYER_TILE1;
+bool                Assets::_layerVisible[Assets::LAYER_MAX]    = { true };
 
 //====INSTANCE MEMBERS====
 
@@ -300,11 +300,6 @@ bool Assets::saveProject(const QString path) const {
     Debug::Logf(Debug::LOG_VERBOSE, "Project %s does not exist!", Q_CSTR(path));
     return false;
 }
-
-Project *Assets::getFirstProject(void) const {
-    return m_project;
-}
-
 
 bool Assets::removeProject(const QString path) {
     //for(QMap<QString, Project *>::iterator it = _project.begin(); it != _project.end(); ++it) {

@@ -53,7 +53,7 @@ inline void TkLuaManager::getGlobal(const char * const key) {
 /* We have to call the function from Lua, because
  * it has been overridden to respect Tk proxy metatables. */
 inline bool TkLuaManager::getMetatable(const int index) {
-    getGlobal("getmetatable");
+    pushGlobalField("getmetatable");
     lua_pushvalue(*_mainState, index < 0? index-1 : index);
     _protectedCall(1, 1, nullptr);
 

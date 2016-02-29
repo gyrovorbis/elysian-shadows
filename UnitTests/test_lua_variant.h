@@ -6,8 +6,19 @@
 #include <crtp/elysian_lua_variant.hpp>
 #include <proxy/elysian_instance_transform_proxy.hpp>
 #include <QDebug>
+#include <initializer_list>
 
 namespace tktest {
+
+//1 - convert to/from OOLUA::Lua_table_refc
+
+
+// iteration
+// 4 types of iteration
+// first/second methods
+// range-based for
+// modifying table during iteration
+
 
 class LuaVariantTest: public QObject, public LuaManager {
     Q_OBJECT
@@ -33,8 +44,13 @@ private Q_SLOTS:
     void createWithDoubleType(void);
     void createWithStringType(void);
     void createWithVoidPtrType(void);
-    void createFromTuple(void);
+    void createWithUserdataType(void);
+    void createFromStdInitializerList(void);
+    void createFromPairsStdInitializerList(void);
     void createFromStack(void);
+    void createFromArray(void);
+    void createNewTable(void);
+    //void createFromRef(void);
 
     //fetching values
     void isNil(void);
@@ -44,6 +60,7 @@ private Q_SLOTS:
     void getDouble(void);
     void getString(void);
     void getVoidPtr(void);
+    void getUserdata(void);
 
     void compareNullPtr(void);
     void compareVariant(void);
@@ -53,6 +70,7 @@ private Q_SLOTS:
     void compareDouble(void);
     void compareString(void);
     void compareVoidPtr(void);
+    void compareUserdata(void);
 
     void setNil(void);
     void setVariant(void);
@@ -62,6 +80,7 @@ private Q_SLOTS:
     void setDouble(void);
     void setString(void);
     void setVoidPtr(void);
+    void setUserdata(void);
 
     void assignNullPtr(void);
     void assignBool(void);
@@ -70,6 +89,7 @@ private Q_SLOTS:
     void assignDouble(void);
     void assignString(void);
     void assignVoidPtr(void);
+    void assignUserdata(void);
 
     void pushNil(void);
     void pullNil(void);
@@ -79,19 +99,21 @@ private Q_SLOTS:
     void pullNumber(void);
     void pushString(void);
     void pullString(void);
+    void pushVoidPtr(void);
+    void pullVoidPtr(void);
     void pushUserdata(void);
     void pullUserdata(void);
     void pushLuaFunction(void);
     void pullLuaFunction(void);
 
     //boolean conversions
-    void nilToBool(void);
-    void boolToBool(void);
-    void intToBool(void);
-    void floatToBool(void);
-    void doubleToBool(void);
-    void stringToBool(void);
-    void voidPtrToBool(void);
+    void nilAsBool(void);
+    void boolAsBool(void);
+    void intAsBool(void);
+    void floatAsBool(void);
+    void doubleAsBool(void);
+    void stringAsBool(void);
+    void voidPtrAsBool(void);
 
     //integer conversions
     void nilAsNumber(void);
@@ -115,6 +137,19 @@ private Q_SLOTS:
     void callLuaFunctionVariadicArgsVoidReturn(void);
 
     void closure(void);
+
+    //metatables
+    //void setMetatable(void);
+    //void getMetatable(void);
+    //getTypeName() userdata
+    //fromString()
+
+    //table iteration
+    void iterateTable(void);
+    void iterateTableConst(void);
+    void iterateTableCConst(void);
+    void iterateTableRangedBasedFor(void);
+    void iterateTableModifyFields(void);
 };
 
 
@@ -162,14 +197,91 @@ inline void LuaVariantTest::createWithVoidPtrType(void) {
     QVERIFY(variant.getType() == LUA_TLIGHTUSERDATA);
 }
 
-inline void LuaVariantTest::createFromTuple(void) {
-
-
+inline void LuaVariantTest::createWithUserdataType(void) {
+    elysian::InstanceTransform transform;
+    LuaVariant variant(&transform);
+    QVERIFY(variant.getType() == LUA_TUSERDATA);
 }
+
+inline void LuaVariantTest::createFromStdInitializerList(void) {
+    LuaVariant variant({{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}});
+    QVERIFY(variant.getType() == LUA_TTABLE);
+    QVERIFY(variant.getLength() == 5);
+}
+
+inline void LuaVariantTest::createFromPairsStdInitializerList(void) {
+    elysian::Vector2 testUd;
+
+    LuaVariant v = {
+        {"field1", 3},
+        {"field2", false},
+        {1, "Testzy"},
+        {"LOLOLOL", {
+            { 0, 33.333f },
+            {"tragler", true },
+            {"twoLayersDeepTable", {
+                {"randomAssUserdata", &testUd},
+                {"randomAssLambdaClosure", [&](const float val) {
+                    testUd.setX(val);
+                     return val;
+                 }}
+             }}
+        }},
+        {"array", LuaVariant::fromArray({
+            1,
+            22.0f,
+            "fuck",
+            false,
+            LuaManager::exec("return function(s) return '%s: '..s end", "DYNAMIC_ASS_STRING")
+        })},
+        { 1, "Weeeeell!!"},
+        { 2, 8 },
+        { &testUd, "Arbitrary userdata as an index... because I can!"},
+        {"So fucking epic", false},
+        {22.8, (void*)this}
+    };
+
+    QVERIFY(v.getType() == LUA_TTABLE);
+    QVERIFY((*v["LOLOLOL"]["twoLayersDeepTable"]["randomAssLambdaClosure"])(-17.77f).getValue<float>() == -17.77f);
+    QVERIFY(v["LOLOLOL"]["twoLayersDeepTable"]["randomAssUserdata"]["x"]->getValue<float>() == -17.77f);
+    QVERIFY((*v["array"][5])("randomString") == "DYNAMIC_ASS_STRING: randomString");
+}
+
 
 inline void LuaVariantTest::createFromStack(void) {
     lua_pushinteger(*_mainState, 3);
     QVERIFY(LuaVariant::fromStack(-1) == 3);
+}
+
+inline void LuaVariantTest::createFromArray(void) {
+   elysian::Vector2 vex;
+
+    LuaVariant v = LuaVariant::fromArray({
+        1,
+        false,
+        2.2f,
+        "fuckme",
+        (void*)this,
+        OOLUA::Lua_table_ref(),
+        OOLUA::Lua_func_ref(),
+        &vex,
+        [&](const int value) {
+            return value;
+        },
+        (lua_CFunction)[](lua_State*) {
+            return 0;
+        }
+    });
+
+    QVERIFY(v.getLength() == 10);
+
+}
+
+inline void LuaVariantTest::createNewTable(void) {
+    LuaVariant variant = LuaVariant::newTable();
+    QVERIFY(variant.getType() == LUA_TTABLE);
+    QVERIFY(variant.getRef() != LUA_REFNIL);
+    QVERIFY(variant.getRef() != LUA_NOREF);
 }
 
 inline void LuaVariantTest::isNil(void) {
@@ -206,6 +318,12 @@ inline void LuaVariantTest::getVoidPtr(void) {
     int i = 3;
     LuaVariant variant((void*)&i);
     QVERIFY(variant.getValue<void*>() == &i);
+}
+
+inline void LuaVariantTest::getUserdata(void) {
+    elysian::InstanceTransform transform;
+    LuaVariant variant(&transform);
+    QVERIFY(variant.getValue<elysian::InstanceTransform*>() == &transform);
 }
 
 inline void LuaVariantTest::compareNullPtr(void) {
@@ -245,7 +363,12 @@ inline void LuaVariantTest::compareString(void) {
 
 inline void LuaVariantTest::compareVoidPtr(void) {
     int i = 33;
-    QVERIFY(LuaVariant((void*)&i) == &i);
+    QVERIFY(LuaVariant((void*)&i) == (void*)&i);
+}
+
+inline void LuaVariantTest::compareUserdata(void) {
+    elysian::InstanceTransform transform;
+    QVERIFY(LuaVariant(&transform) == &transform);
 }
 
 inline void LuaVariantTest::setNil(void) {
@@ -323,6 +446,13 @@ inline void LuaVariantTest::setVoidPtr(void) {
     QVERIFY(v == LuaVariant((void*)this));
 }
 
+inline void LuaVariantTest::setUserdata(void) {
+    elysian::InstanceTransform transform;
+    LuaVariant v;
+    v.setValue(&transform);
+    QVERIFY(v == LuaVariant(&transform));
+}
+
 
 inline void LuaVariantTest::assignNullPtr(void) {
     LuaVariant variant(33.0f);
@@ -363,8 +493,15 @@ inline void LuaVariantTest::assignString(void) {
 inline void LuaVariantTest::assignVoidPtr(void) {
     int i = 3;
     LuaVariant variant;
-    variant = &i;
-    QVERIFY(variant == &i);
+    variant = (void*)&i;
+    QVERIFY(variant == (void*)&i);
+}
+
+inline void LuaVariantTest::assignUserdata(void) {
+    elysian::InstanceTransform transform;
+    LuaVariant variant;
+    variant = &transform;
+    QVERIFY(variant == &transform);
 }
 
 
@@ -437,7 +574,7 @@ inline void LuaVariantTest::pullString(void) {
     QVERIFY(strcmp(variant.getValue<const char*>(), "biiiitches!!!") == 0);
 }
 
-inline void LuaVariantTest::pushUserdata(void) {
+inline void LuaVariantTest::pushVoidPtr(void) {
     int i = 22;
     LuaVariant variant((void*)&i);
     variant.push();
@@ -448,7 +585,7 @@ inline void LuaVariantTest::pushUserdata(void) {
     QVERIFY(val == &i);
 }
 
-inline void LuaVariantTest::pullUserdata(void) {
+inline void LuaVariantTest::pullVoidPtr(void) {
     int i = 22;
     LuaVariant variant;
     lua_pushlightuserdata(*_mainState, &i);
@@ -457,6 +594,25 @@ inline void LuaVariantTest::pullUserdata(void) {
     QVERIFY(variant.getValue<void*>() == &i);
 }
 
+inline void LuaVariantTest::pushUserdata(void) {
+    elysian::InstanceTransform transform;
+    LuaVariant variant(&transform);
+    variant.push();
+    const int luaType = lua_type(*_mainState, -1);
+    elysian::InstanceTransform* ptr = nullptr;
+    OOLUA::pull(*_mainState, ptr);
+    QVERIFY(luaType == LUA_TUSERDATA);
+    QVERIFY(ptr == &transform);
+}
+
+inline void LuaVariantTest::pullUserdata(void) {
+    elysian::InstanceTransform transform;
+    LuaVariant variant;
+    OOLUA::push(*_mainState, &transform);
+    variant.pull();
+    QVERIFY(variant.getType() == LUA_TUSERDATA);
+    QVERIFY(variant.getValue<elysian::InstanceTransform*>() == &transform);
+}
 
 inline void LuaVariantTest::pullLuaFunction(void) {
     LuaVariant variant;
@@ -466,7 +622,7 @@ inline void LuaVariantTest::pullLuaFunction(void) {
 }
 
 inline void LuaVariantTest::pushLuaFunction(void) {
-    LuaManager::getGlobal("print");
+    LuaManager::pushGlobalField("print");
     int ref = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
     QVERIFY(ref != LUA_REFNIL);
     QVERIFY(ref != LUA_NOREF);
@@ -481,238 +637,149 @@ inline void LuaVariantTest::pushLuaFunction(void) {
 }
 
 
-inline void LuaVariantTest::nilToBool(void) {
+inline void LuaVariantTest::nilAsBool(void) {
     LuaVariant v;
     QVERIFY(v.asBool() == false);
-    QVERIFY(v.toBool() == false);
-    QVERIFY((bool)v == false);
 }
 
-inline void LuaVariantTest::boolToBool(void) {
+inline void LuaVariantTest::boolAsBool(void) {
     LuaVariant v(false);
     QVERIFY(v.asBool() == false);
-    QVERIFY(v.toBool() == false);
-    QVERIFY((bool)v == false);
     v = true;
     QVERIFY(v.asBool() == true);
-    QVERIFY(v.toBool() == true);
-    QVERIFY((bool)v == true);
 }
 
-inline void LuaVariantTest::intToBool(void) {
+inline void LuaVariantTest::intAsBool(void) {
     LuaVariant v(0);
     QVERIFY(v.asBool() == false);
-    QVERIFY(v.toBool() == false);
-    QVERIFY((bool)v == false);
     v = 1;
     QVERIFY(v.asBool() == true);
-    QVERIFY(v.toBool() == true);
-    QVERIFY((bool)v == true);
     v = 2;
     QVERIFY(v.asBool() == true);
-    QVERIFY(v.toBool() == true);
-    QVERIFY((bool)v == true);
 
 }
 
-inline void LuaVariantTest::floatToBool(void) {
+inline void LuaVariantTest::floatAsBool(void) {
     LuaVariant v(0.0f);
     QVERIFY(v.asBool() == false);
-    QVERIFY(v.toBool() == false);
-    QVERIFY((bool)v == false);
     v = 1.0f;
     QVERIFY(v.asBool() == true);
-    QVERIFY(v.toBool() == true);
-    QVERIFY((bool)v == true);
     v = 2.0f;
     QVERIFY(v.asBool() == true);
-    QVERIFY(v.toBool() == true);
-    QVERIFY((bool)v == true);
 }
 
-inline void LuaVariantTest::doubleToBool(void) {
+inline void LuaVariantTest::doubleAsBool(void) {
     LuaVariant v(0.0);
     QVERIFY(v.asBool() == false);
-    QVERIFY(v.toBool() == false);
-    QVERIFY((bool)v == false);
     v = 1.0;
     QVERIFY(v.asBool() == true);
-    QVERIFY(v.toBool() == true);
-    QVERIFY((bool)v == true);
     v = 2.0;
     QVERIFY(v.asBool() == true);
-    QVERIFY(v.toBool() == true);
-    QVERIFY((bool)v == true);
 }
 
-inline void LuaVariantTest::stringToBool(void) {
+inline void LuaVariantTest::stringAsBool(void) {
     LuaVariant v("false");
     QVERIFY(v.asBool() == false);
-    QVERIFY(v.toBool() == false);
-    QVERIFY((bool)v == false);
     v = "true";
     QVERIFY(v.asBool() == true);
-    QVERIFY(v.toBool() == true);
-    QVERIFY((bool)v == true);
     v = "fuckface";
     QVERIFY(v.asBool() == false);
-    QVERIFY(v.toBool() == false);
-    QVERIFY((bool)v == false);
 }
 
-inline void LuaVariantTest::voidPtrToBool(void) {
+inline void LuaVariantTest::voidPtrAsBool(void) {
     LuaVariant v((void*)this);
     QVERIFY(v.asBool() == true);
-    QVERIFY(v.toBool() == true);
-    QVERIFY((bool)v == true);
 
     v = (void*)nullptr;
     QVERIFY(v.asBool() == false);
-    QVERIFY(v.toBool() == false);
-    QVERIFY((bool)v == false);
 }
 
 inline void LuaVariantTest::nilAsNumber(void) {
     LuaVariant v;
     QVERIFY(v.asNumber() == 0);
-    QVERIFY(v.toNumber() == 0);
-    QVERIFY((int)v == 0);
-    QVERIFY((float)v == 0.0f);
-    QVERIFY((double)v == 0.0);
 }
 
 inline void LuaVariantTest::boolAsNumber(void) {
     LuaVariant v(false);
     QVERIFY(v.asNumber() == 0);
-    QVERIFY(v.toNumber() == 0);
-    QVERIFY((int)v == 0);
-    QVERIFY((float)v == 0.0f);
-    QVERIFY((double)v == 0.0);
     v = true;
     QVERIFY(v.asNumber() == 1);
-    QVERIFY(v.toNumber() == 1);
-    QVERIFY((int)v == 1);
-    QVERIFY((float)v == 1.0f);
-    QVERIFY((double)v == 1.0);
 }
 
 inline void LuaVariantTest::numberAsNumber(void) {
     LuaVariant v(3.31f);
     QVERIFY(v.asNumber() == 3.31f);
-    QVERIFY(v.toNumber() == 3.31f);
-    QVERIFY((int)v == 3);
-    QVERIFY((float)v == 3.31f);
-    QVERIFY((double)v == 3.31f);
     v = 14;
     QVERIFY(v.asNumber() == 14.0f);
-    QVERIFY(v.toNumber() == 14.0);
-    QVERIFY((int)v == 14);
-    QVERIFY((float)v == 14.0f);
-    QVERIFY((double)v == 14.0);
 }
 
 inline void LuaVariantTest::stringAsNumber(void) {
     LuaVariant v("3.2");
     QVERIFY(v.asNumber() == 3.2f);
-    QVERIFY(v.toNumber() == 3.2f);
-    QVERIFY((int)v == 3);
-    QVERIFY((float)v == 3.2f);
-    QVERIFY((double)v == 3.2f);
     v = "12";
     QVERIFY(v.asNumber() == 12.0f);
-    QVERIFY(v.toNumber() == 12.0);
-    QVERIFY((int)v == 12);
-    QVERIFY((float)v == 12.0f);
-    QVERIFY((double)v == 12.0);
 }
 
 inline void LuaVariantTest::voidPtrAsNumber(void) {
     LuaVariant v((void*)this);
     QVERIFY(v.asNumber() == 1.0f);
-    QVERIFY(v.toNumber() == 1.0);
-    QVERIFY((int)v == 1);
-    QVERIFY((float)v == 1.0f);
-    QVERIFY((double)v == 1.0);
     v = (void*)nullptr;
     QVERIFY(v.asNumber() == 0.0f);
-    QVERIFY(v.toNumber() == 0);
-    QVERIFY((int)v == 0);
-    QVERIFY((float)v == 0.0f);
-    QVERIFY((double)v == 0.0);
 }
 
 inline void LuaVariantTest::nilAsString(void) {
     LuaVariant v;
     QVERIFY(v.asString() == "nil");
-    QVERIFY(strcmp(v.toString(), "nil") == 0);
-    QVERIFY(strcmp((const char*)v, "nil") == 0);
 }
 
 inline void LuaVariantTest::boolAsString(void) {
     LuaVariant v(false);
     QVERIFY(v.asString() == "false");
-    QVERIFY(strcmp(v.toString(), "false") == 0);
-    QVERIFY(strcmp((const char*)v, "false") == 0);
     v = true;
     QVERIFY(v.asString() == "true");
-    QVERIFY(strcmp(v.toString(), "true") == 0);
-    QVERIFY(strcmp((const char*)v, "true") == 0);
 }
 
 inline void LuaVariantTest::numberAsString(void) {
     LuaVariant v(12.4f);
     QVERIFY(QVariant(v.asString().getValue<const char*>()).value<float>() == 12.4f); //helps with inaccuracies and different precisions of strings!!!
-    QVERIFY(strcmp((const char*)v, "number") == 0);
-    QVERIFY(QVariant(v.toString()).value<float>() == 12.4f);
     v = 46;
     QVERIFY(v.asString() == "46");
-    QVERIFY(strcmp((const char*)v, "number") == 0);
-    QVERIFY(strcmp(v.toString(), "46") == 0);
-    QVERIFY(strcmp((const char*)v, "46") == 0);
 }
 
 inline void LuaVariantTest::stringAsString(void) {
     LuaVariant v("Jesus");
     QVERIFY(v.asString() == "Jesus");
-    QVERIFY(strcmp(v.toString(), "Jesus") == 0);
-    QVERIFY(strcmp((const char*)v, "Jesus") == 0);
 }
 
 inline void LuaVariantTest::voidPtrAsString(void) {
     LuaVariant v((void*)this);
-    //QVERIFY(v.asString() == "userdata");
-    //QVERIFY(strcmp(v.toString(), "userdata") == 0);
-    QVERIFY(strcmp((const char*)v, "userdata") == 0);
-    v = (void*)nullptr;
-    //QVERIFY(v.asString() == "userdata");
-    //QVERIFY(strcmp(v.toString(), "userdata") == 0);
-    QVERIFY(strcmp((const char*)v, "nil") == 0);
 
+    v.push();
+
+    QVERIFY(strcmp(v.asString().getValue<const char*>(), luaL_tolstring(*_mainState, -1, nullptr)) == 0);
+
+    lua_pop(*_mainState, 2);
 }
 
 inline void LuaVariantTest::voidPtrAsVoidPtr(void) {
     LuaVariant v((void*)this);
     QVERIFY(v.asUserdata() == (void*)this);
-    QVERIFY(v.toUserdata() == (void*)this);
-    QVERIFY((void*)v == (void*)this);
 }
 
 inline void LuaVariantTest::otherAsVoidPtr(void) {
     LuaVariant v;
     QVERIFY(v.asUserdata() == nullptr);
-    QVERIFY(v.toUserdata() == nullptr);
-    QVERIFY((void*)v == nullptr);
 }
 
 inline void LuaVariantTest::closure(void) {
     int a = 3;
     LuaVariant v;
 
-    v.setClosure(std::function<int(int)>([=](int b) {
+    v.setValue(std::function<int(int)>([=](int b) {
         return a*b;
     }));
 
-    int val = (int)v(3);
+    int val = v(3).getValue<int>();
     QVERIFY(val == 9);
 }
 
@@ -721,16 +788,90 @@ inline void LuaVariantTest::callLuaFunctionIntReturn(void) {
     LuaVariant variant;
     QVERIFY(LuaManager::runString(_luaFunc));
     QVERIFY(variant.pull());
-    int i = (int)variant(3, 4);
+    int i = variant(3, 4).getValue<int>();
     QVERIFY(i == 7);
 }
 
 
 inline void LuaVariantTest::callLuaFunctionVariadicArgsVoidReturn(void) {
     LuaVariant v;
-    LuaManager::getGlobal("print");
+    LuaManager::pushGlobalField("print");
     QVERIFY(v.pull());
     QVERIFY(v("FUCK", "YOU", 3, 45.0f, "LOLZ").isNil());
+}
+
+
+inline void LuaVariantTest::iterateTable(void) {
+    LuaVariant v({{1,1}, {2,2}, {3,3}, {4,4}, {5,5}});
+    int startVal = 1;
+    int values = 0;
+
+    for(auto it = v.begin(); it != v.end(); ++it) {
+        QVERIFY(it.first() == values+1);
+        QVERIFY(it.second() == startVal++);
+        ++values;
+    }
+    QVERIFY(values == v.getLength());
+
+}
+
+inline void LuaVariantTest::iterateTableConst(void) {
+
+    const LuaVariant v({{1,1}, {2,2}, {3,3}, {4,4}, {5,5}});
+    int startVal = 1;
+    int values = 0;
+
+    for(auto it = v.begin(); it != v.end(); it++) {
+        QVERIFY(it.first() == values+1);
+        QVERIFY(it.second() == startVal++);
+        ++values;
+    }
+    QVERIFY(values == v.getLength());
+
+}
+
+inline void LuaVariantTest::iterateTableCConst(void) {
+    const LuaVariant v({{1,1}, {2,2}, {3,3}, {4,4}, {5,5}});
+    int startVal = 1;
+    int values = 0;
+
+    for(auto it = v.cbegin(); it != v.cend(); ++it) {
+        QVERIFY(it.first() == values+1);
+        QVERIFY(it.second() == startVal++);
+        ++values;
+    }
+    QVERIFY(values == v.getLength());
+}
+
+inline void LuaVariantTest::iterateTableRangedBasedFor(void) {
+    std::initializer_list<elysian::LuaPair> array = { {1,2}, {2,3}, {3,5}, {4,7}, {5,8}, {6,10}, {7,12}, {8,33}};
+    const LuaVariant v(array);
+    size_t values = 0;
+
+    auto listIt = array.begin();
+    for(auto it : v) {
+        QVERIFY(*it == (*listIt).second);
+        ++values;
+        ++listIt;
+    }
+    QVERIFY(values == array.size());
+}
+
+inline void LuaVariantTest::iterateTableModifyFields(void) {
+    LuaVariant v({{1,1}, {2,2}, {3,3}, {4,4}, {5,5}});
+    std::initializer_list<elysian::LuaPair> array = { {1,2}, {2,3}, {3,5}, {4,7}, {5,8}};
+
+    auto listIt = array.begin();
+    for(auto it = v.begin(); it != v.end(); ++it) {
+        it->setVariant((*listIt).second);
+        ++listIt;
+    }
+
+    listIt = array.begin();
+    for(auto it : v) {
+        QVERIFY(*it == (*listIt).second);
+        ++listIt;
+    }
 
 }
 

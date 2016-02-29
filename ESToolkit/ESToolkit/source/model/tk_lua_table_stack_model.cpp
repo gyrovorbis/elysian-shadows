@@ -64,6 +64,12 @@ void LuaTableTableFieldData::insertTableFieldItem(const QVariant key) {
     QList<QStandardItem*> items;
     auto* labelItem = (PropertyStackModel::createReadOnlyItem(key.toString()));
     auto* valueItem = new LuaTableFieldItem(_luaRef, key, labelItem);
+
+    if(_isPrefab) {
+        labelItem->setData(QVariant(ELYSIAN_LUA_TABLE_STACK_MODEL_PREFAB_FONT_COLOR), Qt::ForegroundRole);
+        valueItem->setData(QVariant(ELYSIAN_LUA_TABLE_STACK_MODEL_PREFAB_FONT_COLOR), Qt::ForegroundRole);
+    }
+
     items.push_back(labelItem);
     items.push_back(valueItem);
 
@@ -89,9 +95,9 @@ void LuaTableTableFieldData::insertTableFieldItems(QStandardItem*const parentIte
 
     //Downcast to most specific type before recursing over it
     if(valueType == LUA_TUSERDATA) {
-        LuaManager::getGlobal("down_cast");
+        LuaManager::pushGlobalField("down_cast");
         lua_pushvalue(*_mainState, -2);
-        LuaManager::_protectedCall(1, 1, nullptr, "LuaTableFieldData - downcasting");
+        LuaManager::_protectedCall(1, 1, nullptr, "LuaTableTableFieldData - downcasting");
         //update reference
         lua_pushvalue(*_mainState, -1);
         luaL_unref(*_mainState, LUA_REGISTRYINDEX, _luaRef);
@@ -202,7 +208,7 @@ QStyledItemDelegate* LuaTableFieldItem::getStyledItemDelegate(void) const {
             QString registryName;
             OOLUA::pull(*_mainState, registryName);
 
-            LuaManager::getGlobal(Q_CSTR(registryName));
+            LuaManager::pushGlobalField(Q_CSTR(registryName));
 
             if(lua_isnil(*_mainState, -1)) {
                 lua_pop(*_mainState, lua_gettop(*_mainState)-top);

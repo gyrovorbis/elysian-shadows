@@ -62,6 +62,7 @@
 #include <tk_gitlab_manager.h>
 #include <crtp/elysian_input_system.hpp>
 #include <system/elysian_party_system.hpp>
+#include <core/tk_lua_table_selectable.h>
 
 #ifdef ESTK_UNIT_TESTS
 #include <QtTest>
@@ -1280,7 +1281,7 @@ void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *cons
         break;
     case Selectable::AREA:
         _selectionDockWidget->setSelectionTreeWidget();
-        //static_cast<Area *>(selection)->populateModel();
+
         _selectionDockWidget->setSelectionModel(selection->getModel());
         _selectionDockWidget->expandSelectionTree();
         break;
@@ -1288,37 +1289,28 @@ void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *cons
          _ui->mapView->createSelectionItemGroup();
          static_cast<TileSelectable *>(selection)->populateModel();
          _selectionDockWidget->setSelectionModel(static_cast<TileSelectable *>(selection));
-         /*if(static_cast<TileSelectable *>(selection)->getSize() == 1)*/ _selectionDockWidget->expandSelectionTree();
+         _selectionDockWidget->expandSelectionTree();
          selection->installSelectionViewCustomDelegates(_selectionDockWidget->getSelectionTreeWidget());
         _selectionDockWidget->setSelectionTreeWidget();
         break;
     case Selectable::ENTITY:
-        //Update Menu Bar
-        //SyncEntityMenuBar(static_cast<Entity *>(selection));
-#if 1
+
         //Update Entity View
         _selectionDockWidget->setSelectionTreeWidget();
-        //static_cast<Entity*>(selection)->populateModel();
         _selectionDockWidget->setSelectionModel(static_cast<EntitySelectable*>(selection)->getModel());
         _selectionDockWidget->restoreSelectionTreeWidgetDefaultItemDelegate();
-        _selectionDockWidget->expandSelectionTree(1);
-#else
-        select(static_cast<EntitySelectable*>(selection)->)
-#endif
-
-        //center on entity
-        //_ui->mapView->centerOn((Entity *)selection);
-        //_ui->mapView->SetCenter((Entity *)selection);
+        _selectionDockWidget->expandSelectionTree(2);
         break;
-        case Selectable::EMPTY:
 
+    case Selectable::LUA_TABLE:
 
-        /*if(static_cast<TileSelectable *>(selection)->getSize() == 1)*/ //_selectionDockWidget->ExpandSelectionTree();
-      //  selection->installSelectionViewCustomDelegates(_selectionDockWidget->getSelectionTreeWidget());
-       //_selectionDockWidget->SetSelectionTreeWidget();
+        _selectionDockWidget->setSelectionTreeWidget();
+        _selectionDockWidget->setSelectionModel(selection->getModel());
+        _selectionDockWidget->expandSelectionTree();
 
-        //_selectionDockWidget->SetSelectionWidget(NULL);
-        //crap pants?
+        break;
+    case Selectable::EMPTY:
+
          break;
     };
 }
@@ -1666,22 +1658,6 @@ void ESToolkit::on_actionToggle_AutoScroll_triggered()
     _ui->mapView->autoScrollToggle(_ui->actionToggle_AutoScroll->isChecked());
     _sheetDockWidget->getSourceView()->autoScrollToggle(_ui->actionToggle_AutoScroll->isChecked());
 
-
-    if(_assets.getEngine()) {
-        int ref = LUA_NOREF;
-        LuaManager::getGlobal("testInjectTable");
-        //rPrintByIndex(-1, 99, "RAWREF");
-
-        ref = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
-
-        rPrintByRef(ref, 99, "STARTREF");
-
-
-        LuaTableStackModel* model = new LuaTableStackModel(ref);
-        model->populateModel();
-        _selectionDockWidget->setSelectionTreeWidget();
-        _selectionDockWidget->setSelectionModel(model);
-    }
 }
 
 void ESToolkit::on_actionActionSecret_triggered()
@@ -2105,11 +2081,16 @@ void ESToolkit::select(const int luaRef) {
     lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, luaRef);
     int newRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
 
+#if 0
     LuaTableStackModel* model = new LuaTableStackModel(newRef);
     model->populateModel();
     self->_selectionDockWidget->setSelectionTreeWidget();
     self->_selectionDockWidget->setSelectionModel(model);
     self->_selectionDockWidget->expandSelectionTree();
+#else
+    LuaTableSelectable* selection = new LuaTableSelectable(newRef);
+    self->_assets.setCurrentSelection(selection);
+#endif
 }
 
 int ESToolkit::pushSelection(lua_State * const vm) {

@@ -179,10 +179,27 @@ namespace elysian {
         static void                 luaPrint(const char*const string, const Debug::SEVERITY severity = Debug::LOG_OFF);
 
         static bool                 getMetatable(const int index);
-        static void                 getGlobal(const char*const key);
+        static void                 pushGlobalField(const char*const key);
+        static LuaVariant           getGlobalsTable(void);
         static LuaVariant           getPrefab(const char*const name);
+        static const char*          getPrefabName(const int ref);
+
+        static bool                 saveTable(const int ref, const char*const filename);
 
 	};
+
+
+
+
+
+
+
+
+
+
+
+    // ========= INLINEZ ========
+
 
     inline bool LuaManagerBase::_protectedCall(const int nargs, const int nresults, LuaScript *script, const char* /*context*/, ...) {
 #ifdef ELYSIAN_LUA_DEBUG
@@ -237,7 +254,7 @@ namespace elysian {
     }
 
     inline void LuaManagerBase::stackBalanceBegin(void) {
-        assert(_stackBalanceRecursiveDepth < ELYSIAN_LUA_STACK_BALANCE_RECURSIVE_DEPTH-1);
+        GY_ASSERT(_stackBalanceRecursiveDepth < ELYSIAN_LUA_STACK_BALANCE_RECURSIVE_DEPTH-1);
         _stackBalanceTop[_stackBalanceRecursiveDepth++] = stackDepth();
     }
 
@@ -245,7 +262,7 @@ namespace elysian {
         if(_stackBalanceTop[--_stackBalanceRecursiveDepth] != stackDepth()) {
             _cStackDump();
             _errorprintf("Start Depth - %d, End Depth - %d", _stackBalanceTop[_stackBalanceRecursiveDepth], stackDepth());
-            assert(false);
+            GY_ASSERT(false);
         }
     }
 
@@ -253,8 +270,9 @@ namespace elysian {
         return (bool)lua_getmetatable(*_mainState, index);
     }
 
-    inline void LuaManagerBase::getGlobal(const char * const key) {
+    inline void LuaManagerBase::pushGlobalField(const char * const key) {
         lua_getglobal(*_mainState, key);
+        GY_ASSERT(!lua_isnil(*_mainState, -1));
     }
 
     template<>
@@ -263,7 +281,8 @@ namespace elysian {
             static char _internalBuffer[GYRO_PRINTF_BUFFER_SIZE];
 
             if(lua_isnil(state, -1)) {
-               strcpy(_internalBuffer, "");
+                lua_pop(state, 1);
+               return nullptr;
             } else {
                 strcpy(_internalBuffer, lua_tostring(state, -1));
                 lua_pop(state, 1);

@@ -56,6 +56,7 @@ namespace OOLUA {
 OOLUA_PROXY(Entity, RenderableObject)
     OOLUA_CTORS(
         OOLUA_CTOR(const OOLUA::Lua_table_ref)
+        OOLUA_CTOR(Entity*)
     )
     OOLUA_MEM_FUNC(void, move, const GYVector2&)
     OOLUA_MEM_FUNC(void, setName, const char*)

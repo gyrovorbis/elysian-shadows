@@ -164,6 +164,7 @@ Q_SIGNALS:
 	void levelRenamed(const QString oldName, const QString newName);
     void mapChanged(Area*const area, const QVector<MapChange>& changes);
     void entityParented(Entity*const child, Entity*const parent);
+    void validChanged(const bool val);
 
 };
 

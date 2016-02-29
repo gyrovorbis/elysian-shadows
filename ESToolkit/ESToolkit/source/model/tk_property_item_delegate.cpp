@@ -18,6 +18,7 @@
 #include <model/tk_property_stack_model.h>
 #include <model/tk_lua_table_stack_model.h>
 #include <core/tk_menu_stack.h>
+#include <estk/tk_asset_dock_widget.h>
 
 PropertyItemDelegate* PropertyItemProxyDelegate::_defaultTableDelegate = nullptr;
 
@@ -339,6 +340,19 @@ QMenu* PropertyItemDelegate::getContextMenu(ESTkStandardItem*const item) {
 
         });
 
+        menu.insertAction("Make Prefab", [=](bool) {
+            QString filename = QFileDialog::getSaveFileName(nullptr, "Save as Prefab", FileUtilities::getAbsoluteAssetPath(ELYSIAN_LUA_PREFAB_PATH));
+            filename = PrefabAssetFileType::prefabifyFilePath(filename);
+            if(LuaManager::saveTable(fieldItem->getTableData()->getLuaRef(), Q_CSTR(filename))) {
+                LuaVariant prefabRef = LuaManager::getPrefab(Q_CSTR(PrefabAssetFileType::prefabNameFromFilePath(filename)));
+                fieldItem->setVariant(prefabRef);
+            }
+        });
+
+        menu.insertAction("Save As...", [=](bool) {
+            QString filename = QFileDialog::getSaveFileName(nullptr, "Save table as...", FileUtilities::getAssetPath());
+            LuaManager::saveTable(fieldItem->getTableData()->getLuaRef(), Q_CSTR(filename));
+        });
     }
 
     _contextMenu = menu.first();

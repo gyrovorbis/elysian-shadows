@@ -20,4 +20,9 @@ public:
 };
 
 
+
+// ===== INLINEZ ======
+
+inline QString FileUtilities::getAssetPath(void) { return _assetPath; }
+
 #endif // FILEUTILS_H

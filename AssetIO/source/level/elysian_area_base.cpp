@@ -283,14 +283,7 @@ bool AreaBase::save(const char *const dir) {
     strcpy(buffer, dir);
     strcat(buffer, ELYSIAN_AREA_TABLE_PATH);
 
-   // OOLUA::Lua
-    const char* serialData = _callGlobalFunction<const char*>("serialize", nullptr, RawTableReference(getLuaTableRef()));
-    //dbgprintf();
-    FILE* file = fopen(buffer, "w");
-    fprintf(file, "%s", serialData);
-    fclose(file);
-
-    //success &= saveEntities(buffer);
+    success &= LuaManager::saveTable(getLuaTableRef(), buffer);
 
     dbgpop();
     return success;

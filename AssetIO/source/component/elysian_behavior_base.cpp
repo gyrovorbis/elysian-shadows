@@ -124,6 +124,7 @@ void BehaviorBase::addTrigger(TRIGGER flag) {
 	case ON_COLLIDE:
 	case ON_COLLISION_ENTER:
 	case ON_COLLISION_EXIT:
+        GY_ASSERT(getEntity()->getCollidable());
 		getEntity()->getCollidable()->setContactEventMonitorMask(
 					getEntity()->getCollidable()->getContactEventMonitorMask()
 					| ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_BEHAVIOR_MASK);
@@ -160,10 +161,12 @@ void BehaviorBase::removeTrigger(TRIGGER flag) {
 	case ON_COLLIDE:
 	case ON_COLLISION_ENTER:
 	case ON_COLLISION_EXIT:
-        if(!(_triggerBits & (ON_COLLIDE | ON_COLLISION_ENTER | ON_COLLISION_EXIT)))
-		getEntity()->getCollidable()->setContactEventMonitorMask(
+        if(!(_triggerBits & (ON_COLLIDE | ON_COLLISION_ENTER | ON_COLLISION_EXIT))) {
+            GY_ASSERT(getEntity()->getCollidable());
+            getEntity()->getCollidable()->setContactEventMonitorMask(
 					getEntity()->getCollidable()->getContactEventMonitorMask()
 					& ~ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_BEHAVIOR_MASK);
+        }
 		break;
 	default:
 		break;

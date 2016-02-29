@@ -448,7 +448,7 @@ int TkLuaTableUserdata::_pairsMetamethod(lua_State*const l) {
     lua_pushnil(l);
     return 3;
 #else
-    LuaManager::getGlobal("pairs");
+    LuaManager::pushGlobalField("pairs");
     lua_getfield(l, -2, TK_LUA_TABLE_USERDATA_FIELD_KEY);
     auto* ud = static_cast<TkLuaTableUserdata*>(lua_touserdata(l, -1));
     assert(ud);
@@ -465,7 +465,7 @@ int TkLuaTableUserdata::_ipairsMetamethod(lua_State*const l) {
     //1 - default ipairs function
     //2 - proxy table
     //3 - 0 (first key)
-    LuaManager::getGlobal("ipairs");
+    LuaManager::pushGlobalField("ipairs");
     lua_getfield(l, -2, TK_LUA_TABLE_USERDATA_FIELD_KEY);
     auto* ud = static_cast<TkLuaTableUserdata*>(lua_touserdata(l, -1));
     assert(ud);
@@ -507,7 +507,7 @@ int TkLuaTableUserdata::_nextMetamethod(lua_State*const l) {
     //LuaManager::rPrintByIndex(-1, 3, "KEY");
 
   //  auto luaNext = [](lua_State*const l) {
-        LuaManager::getGlobal("next");
+        LuaManager::pushGlobalField("next");
         lua_pushvalue(l, -3);
         lua_pushvalue(l, -3);
         lua_call(l, 2, 2);

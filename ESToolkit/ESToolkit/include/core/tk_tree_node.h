@@ -5,7 +5,7 @@
 #include "tk_selectable.h"
 
 
-//This entire class is reested to all fuck
+//This entire class is reested to all fuck under the new AssetView paradigm.
 class TreeNode: public QTreeWidgetItem, public Selectable {
 protected:
     QString                     _nodeName;
@@ -16,9 +16,11 @@ protected:
 public:
     enum ITEM_TYPE { ITEM_SUBDIR, ITEM_PROJECT, ITEM_LEVEL, ITEM_AREA, ITEM_ENTITY };
 
-                                TreeNode();
+                                TreeNode(void);
 
     void                        setValid(const bool val=true);
+    bool                        isValid(void) const;
+    bool                        hasChanged(void) const;
     QString                     getNodeName(void) const;
     QString                     getNodePath(void) const;
     void                        setNodePath(const QString path);
@@ -28,6 +30,7 @@ public:
     virtual ITEM_TYPE           getTreeWidgetItemType(void);
     virtual QAbstractItemModel* getModel(void) const;
     virtual TYPE                getType(void) const;
+
 };
 
 
@@ -36,7 +39,6 @@ public:
 // ======= INLINEZ ==========
 
 inline QString TreeNode::getNodePath(void) const { return _nodePath; }
-
 inline void TreeNode::setNodePath(const QString path) { _nodePath = path; }
 inline bool TreeNode::activate(void) { return true; }
 inline bool TreeNode::deactivate(void) { return true; }
@@ -47,6 +49,8 @@ inline void TreeNode::setValid(const bool val) {
     QBrush brush = val? QBrush(Qt::black) : QBrush(Qt::darkRed);
     setForeground(0, brush);
 }
+inline bool TreeNode::hasChanged(void) const { return _hasChanged; }
+inline bool TreeNode::isValid(void) const { return _valid; }
 
 
 #endif // TREENODE_H

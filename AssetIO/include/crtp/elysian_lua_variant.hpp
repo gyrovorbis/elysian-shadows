@@ -12,7 +12,8 @@ namespace elysian {
 namespace elysian {
     using LuaVariant = LuaVariantBase;
 }
-using LuaVariant = elysian::LuaVariantBase;
+using LuaVariant    = elysian::LuaVariantBase;
+using LuaPair       = elysian::LuaPair;
 
 #endif
 
