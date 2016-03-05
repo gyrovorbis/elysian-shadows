@@ -7,6 +7,7 @@
 #include <QDir>
 #include "tk_assets.h"
 #include "elysian_lua_manager.hpp"
+#include <crtp/elysian_lua_variant.hpp>
 
 #define ESTOOLKIT_VERSION				GYRO_LIB_VERSION
 #define ESTOOLKIT_VERSION_NAME          "\"Beautiful Thieves\""
@@ -62,7 +63,7 @@ public:
     virtual         ~ESToolkit(void);
 
 
-    static void     select(const int luaRef);
+    static void     select(const LuaVariant& ref);
     static int      pushSelection(lua_State*const vm);
     bool            verifySingleArea(const QString path);
     bool            openProjectDir(const QString dir);

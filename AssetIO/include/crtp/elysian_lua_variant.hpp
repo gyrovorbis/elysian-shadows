@@ -14,6 +14,7 @@ namespace elysian {
 }
 using LuaVariant    = elysian::LuaVariantBase;
 using LuaPair       = elysian::LuaPair;
+using LuaFieldRef   = elysian::LuaFieldRef;
 
 #endif
 

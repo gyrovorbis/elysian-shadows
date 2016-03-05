@@ -816,17 +816,20 @@ inline void LuaVariantTest::iterateTable(void) {
 }
 
 inline void LuaVariantTest::iterateTableConst(void) {
-
-    const LuaVariant v({{1,1}, {2,2}, {3,3}, {4,4}, {5,5}});
+LuaVariant o;
+    const LuaVariant v({{1,1}});
     int startVal = 1;
     int values = 0;
 
     for(auto it = v.begin(); it != v.end(); it++) {
         QVERIFY(it.first() == values+1);
+        it.first().push();
+        o.pull();
         QVERIFY(it.second() == startVal++);
         ++values;
     }
     QVERIFY(values == v.getLength());
+
 
 }
 

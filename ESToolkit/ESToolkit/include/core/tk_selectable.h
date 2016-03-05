@@ -1,6 +1,8 @@
 #ifndef SELECTABLE_H
 #define SELECTABLE_H
 
+//include <crtp/elysian_lua_variant.hpp>
+
 class QAbstractItemView;
 class QAbstractItemModel;
 
@@ -54,6 +56,7 @@ public:
     virtual void                setCurrentSelection(const bool /*val*/, const Selectable*const other=nullptr);
     virtual bool                isTemporary(void);
     virtual QAbstractItemModel* getModel(void) const = 0;
+   // virtual LuaVariant          getLuaRef(void) const { return LuaVariant(); }
 };
 
 

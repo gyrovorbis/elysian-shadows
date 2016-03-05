@@ -1597,52 +1597,6 @@ void ESToolkit::on_actionPaste_triggered()
 
 void ESToolkit::on_actionDefault_Transform_triggered()
 {
-   // static bool inited = false;
-   // static LuaTableStackModel* lmodel;
-#if 0
-    if(!inited) {
-        lua_pushglobaltable(*_mainState);
-        lua_getfield(*_mainState, -1, "tablet");
-        const int ref = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
-        lua_pop(*_mainState, 1);
-
-        //ref = new OOLUA::Lua_table_ref;
-        //ref->pull(*_mainState);
-        //lua_pop(*_mainState, 1);
-
-        //LuaTable ltable = LuaTable::fromLuaExpression(luaExpr);
-        elysian::LuaManager::rPrintByRef(ref, 99, "");
-        lmodel = new LuaTableStackModel(ref);
-        lmodel->populateModel();
-        inited = true;
-    }
-
-    //_luaExplorerDialog->setLuaTableStackModel(_assets.getCurArea());
-    _luaExplorerDialog->setModel(lmodel);
-    _luaExplorerDialog->show();
-
-    RowsJoinerProxy* proxy = new RowsJoinerProxy(nullptr);
-    proxy->insertSourceModel(lmodel);
-    proxy->insertSourceModel(_assets.getCurrentArea());
-
-    _selectionDockWidget->SetSelectionModel(proxy);
-
-    lua_pushglobaltable(*_mainState);
-    lua_getfield(*_mainState, -1, "serialize");helpengine
-    lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, lmodel->_luaRef);
-    lua_pushstring(*_mainState, "");
-    lua_pushboolean(*_mainState, 0);
-    LuaManager::_protectedCall(3, 1, nullptr);
-    elysian::Debug::printf(elysian::Debug::LOG_VERBOSE, lua_tostring(*_mainState, -1));
-    lua_pop(*_mainState, 1);
-
-#else
-
-
-
-#endif
-
-
     elysian::CameraKeyFrame keyFrame;
     unsigned w, h;
     gyVidResolution(&w, &h);
@@ -2075,31 +2029,34 @@ void ESToolkit::_tkLuaInitialize(void) {
 
 }
 
-void ESToolkit::select(const int luaRef) {
+void ESToolkit::select(const LuaVariant& ref) {
     auto* self = _instance;
 
-    lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, luaRef);
-    int newRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
-
-#if 0
-    LuaTableStackModel* model = new LuaTableStackModel(newRef);
-    model->populateModel();
-    self->_selectionDockWidget->setSelectionTreeWidget();
-    self->_selectionDockWidget->setSelectionModel(model);
-    self->_selectionDockWidget->expandSelectionTree();
-#else
-    LuaTableSelectable* selection = new LuaTableSelectable(newRef);
+    LuaTableSelectable* selection = new LuaTableSelectable(ref);
     self->_assets.setCurrentSelection(selection);
-#endif
+
 }
 
 int ESToolkit::pushSelection(lua_State * const vm) {
-    if(_instance->_assets.getCurrentSelectionType() == Selectable::ENTITY) {
-        lua_rawgeti(vm, LUA_REGISTRYINDEX, static_cast<EntitySelectable*>(_instance->_assets.getCurrentSelection())->getLuaTableRef());
+    Selectable* selection = _instance->_assets.getCurrentSelection();
+
+    switch(_instance->_assets.getCurrentSelectionType()) {
+    case Selectable::ENTITY:
+        static_cast<EntitySelectable*>(selection)->getTableRef().push();
         return 1;
+    //case Selectable::AREA:
+        //LuaVariant::fromRef(static_cast<Area*>(selection)->getLuaTableRef()).push();
+        //return 1;
+   // case Selectable::LEVEL:
+   //     OOLUA::push(vm, static_cast<Level*>(selection)->ge);
+      //  return 1;
+    case Selectable::LUA_TABLE:
+        static_cast<LuaTableSelectable*>(selection)->getTableRef().push();
+        return 1;
+    default:
+        lua_pushnil(vm);
+        return 0;
     }
-    lua_pushnil(vm);
-    return 0;
 }
 
 void ESToolkit::on_actionManual_Camera_toggled(bool arg1)

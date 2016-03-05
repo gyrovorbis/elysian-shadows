@@ -5,10 +5,9 @@
 #include <estk/tk_lua_wrappers.h>
 #include <core/tk_lua_qt_utils.h>
 
-LuaTableFieldItem::LuaTableFieldItem(const int ref, const QVariant key, QStandardItem*const labelItem):
+LuaTableFieldItem::LuaTableFieldItem(LuaFieldRef ref, QStandardItem*const labelItem):
     _labelItem(labelItem),
-    _luaRef(ref),
-    _key(key)
+    _fieldRef(std::move(ref))
 {}
 
 void LuaTableFieldItem::insertingModelItem(void) {
@@ -17,13 +16,13 @@ void LuaTableFieldItem::insertingModelItem(void) {
 }
 
 
-void LuaTableTableFieldData::onFieldChanged(const QVariant key) {
-    auto* item = _fieldItems[key];
+void LuaTableTableFieldData::onFieldChanged(const LuaVariant& key) {
+    auto* item = static_cast<LuaTableFieldItem*>(_fieldItems[key]->getValue<void*>());
     item->setDirty();
     item->emitDataChanged();
 }
 
-void LuaTableTableFieldData::onFieldAdded(const QVariant key) {
+void LuaTableTableFieldData::onFieldAdded(const LuaVariant& key) {
     insertTableFieldItem(key);
 }
 
@@ -33,21 +32,16 @@ void LuaTableStackModel::populateModel(void) {
     setHorizontalHeaderItem(1, new QStandardItem("Value"));
     //setHorizontalHeaderItem(2, new QStandardItem("Type"));
 
-    LuaVariant v;
-    v.setRef(_luaRef);
 
-    lua_newtable(*_mainState);
-    lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
-    lua_rawseti(*_mainState, -2, 1);
-    int ref = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
-
-    //luaL_unref(*_mainState, _luaRef);
-    //_luaRef = ref;
+    //Create an invisible outer proxy table around table for table delegates to work properly/orthogonally on first item.
+    LuaVariant v = {
+        { 1, _tableRef }
+    };
 
     QList<QStandardItem*> items;
-    _parentItem = PropertyStackModel::createReadOnlyItem(v.getTypeString());//ESTkStandardItem(QString("Lua Table"));
+    _parentItem = PropertyStackModel::createReadOnlyItem(_tableRef.getTypeString());//ESTkStandardItem(QString("Lua Table"));
     items.push_back(_parentItem);
-    auto* valItem = new LuaTableFieldItem(ref, QVariant(1), _parentItem);
+    auto* valItem = new LuaTableFieldItem(LuaFieldRef(v, LuaVariant(1)), _parentItem);
     items.push_back(valItem);
 
     //items.push_back(PropertyStackModel::createReadOnlyItem());
@@ -60,10 +54,11 @@ void LuaTableStackModel::populateModel(void) {
     _populated = true;
 }
 
-void LuaTableTableFieldData::insertTableFieldItem(const QVariant key) {
+void LuaTableTableFieldData::insertTableFieldItem(const LuaVariant& key) {
     QList<QStandardItem*> items;
-    auto* labelItem = (PropertyStackModel::createReadOnlyItem(key.toString()));
-    auto* valueItem = new LuaTableFieldItem(_luaRef, key, labelItem);
+
+    auto* labelItem = (PropertyStackModel::createReadOnlyItem(key.asString().getValue<const char*>()));
+    auto* valueItem = new LuaTableFieldItem(LuaFieldRef(LuaVariant::makeWeakRef(_tableRef), key), labelItem);
 
     if(_isPrefab) {
         labelItem->setData(QVariant(ELYSIAN_LUA_TABLE_STACK_MODEL_PREFAB_FONT_COLOR), Qt::ForegroundRole);
@@ -75,7 +70,7 @@ void LuaTableTableFieldData::insertTableFieldItem(const QVariant key) {
 
     _parentItem->appendRow(items);
     valueItem->insertingModelItem();
-    _fieldItems[key] = valueItem;
+    _fieldItems[key] = (void*)valueItem;
 
 }
 
@@ -89,8 +84,7 @@ void LuaTableTableFieldData::insertTableFieldItems(QStandardItem*const parentIte
 
     _parentItem = parentItem; //Store reference to its own parent
 
-    lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);   //push table ref
-
+    _tableRef.push();
     int valueType = lua_type(*_mainState, -1);
 
     //Downcast to most specific type before recursing over it
@@ -100,8 +94,8 @@ void LuaTableTableFieldData::insertTableFieldItems(QStandardItem*const parentIte
         LuaManager::_protectedCall(1, 1, nullptr, "LuaTableTableFieldData - downcasting");
         //update reference
         lua_pushvalue(*_mainState, -1);
-        luaL_unref(*_mainState, LUA_REGISTRYINDEX, _luaRef);
-        _luaRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
+
+        _tableRef.pull();
         lua_remove(*_mainState, -2);
     }
 
@@ -134,25 +128,35 @@ void LuaTableTableFieldData::insertTableFieldItems(QStandardItem*const parentIte
     //Populate table
     } else if(valueType == LUA_TTABLE) {
         iterable = true;
-        auto* ud = TkLuaTableUserdata::inject(*_mainState, _luaRef);
-        connect(ud, SIGNAL(fieldChanged(QVariant)), this, SLOT(onFieldChanged(QVariant)));
-        connect(ud, SIGNAL(fieldAdded(QVariant)), this, SLOT(onFieldAdded(QVariant)));
+        auto* ud = TkLuaTableUserdata::inject(*_mainState, _tableRef);
+        connect(ud, SIGNAL(fieldChanged(const LuaVariant&)), this, SLOT(onFieldChanged(const LuaVariant&)));
+        connect(ud, SIGNAL(fieldAdded(const LuaVariant&)), this, SLOT(onFieldAdded(const LuaVariant&)));
     } else iterable = false;
 
     if(iterable) {
 
+
+#if 1
         genericIterate(-1, [&](void) {
-            QVariant key;
+            LuaVariant key;
             lua_pushvalue(*_mainState, -2);
             OOLUA::pull(*_mainState, key);
 
             insertTableFieldItem(key);
 
         });
+#else
+
+        for(auto it = _tableRef.begin(); it != _tableRef.end(); ++it) {
+            //qDebug() << " NEXT KEY " << it.first().asString().getValue<const char*>();
+            insertTableFieldItem(it.first());
+        }
+
+#endif
 
     }
+        lua_pop(*_mainState, 1);
 
-    lua_pop(*_mainState, 1);                                //pop table ref
     LuaManager::stackBalanceEnd();
 }
 
@@ -167,16 +171,10 @@ inline void LuaTableFieldItem::setDirty(const bool val) {
             for(int j = 0; j < row.size(); ++j) {
                 delete row[j];
             }
-
         }
+        delete _tableData;
+        _tableData = nullptr;
     }
-}
-
-LuaTableTableFieldData::~LuaTableTableFieldData(void) {
-    //We have to clear all the child QStandardItems or shit will reest
-
-    luaL_unref(*_mainState, LUA_REGISTRYINDEX, _luaRef);
-
 }
 
 QStyledItemDelegate* LuaTableFieldItem::getStyledItemDelegate(void) const {
@@ -185,9 +183,10 @@ QStyledItemDelegate* LuaTableFieldItem::getStyledItemDelegate(void) const {
 
         LuaManager::stackBalanceBegin();
         int top = lua_gettop(*_mainState);
+#if 1
 
-//#if 11
-        lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
+        _fieldRef.getTableRef().push();
+
         lua_getmetatable(*_mainState, -1);
         LuaManager::getMetatable(-1);
         lua_getfield(*_mainState, -1, ELYSIAN_LUA_TABLE_STACK_MODEL_DELEGATE_METAFIELD);
@@ -196,7 +195,9 @@ QStyledItemDelegate* LuaTableFieldItem::getStyledItemDelegate(void) const {
 
 //#else
             //lua_pop(*_mainState, 3);
-            lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaRef);
+
+            _fieldRef.getTableRef().push();
+
             lua_getfield(*_mainState, -1, ELYSIAN_LUA_PROXY_TYPE_METAFIELD);
 
             if(lua_isnil(*_mainState, -1)) {
@@ -226,7 +227,8 @@ QStyledItemDelegate* LuaTableFieldItem::getStyledItemDelegate(void) const {
 //#endif
         }
 
-        OOLUA::push(*_mainState, _key);
+        _fieldRef.getKey().push();
+
         lua_gettable(*_mainState, -2);
 
         if(lua_isnil(*_mainState, -1)) {
@@ -239,10 +241,62 @@ QStyledItemDelegate* LuaTableFieldItem::getStyledItemDelegate(void) const {
         OOLUA::pull(*_mainState, delegate);
         _delegate = static_cast<QStyledItemDelegate*>(delegate);
 
+
+#else //Way prettier with high-level API, also way the fuck slower...
+
+            LuaVariant delegateTable = *_fieldRef.getTableRef().getMetatable()[ELYSIAN_LUA_TABLE_STACK_MODEL_DELEGATE_METAFIELD];
+
+
+            if(delegateTable.isNil()) {
+
+
+                LuaVariant typeField = *_fieldRef.getTableRef()[ELYSIAN_LUA_PROXY_TYPE_METAFIELD];
+
+                if(typeField.isNil()) {
+                    lua_pop(*_mainState, lua_gettop(*_mainState)-top);
+                    LuaManager::stackBalanceEnd();
+                    return nullptr;
+                }
+
+                LuaVariant registryTable = *LuaManager::getGlobalsTable()[typeField];
+
+                if(registryTable.isNil()) {
+                    lua_pop(*_mainState, lua_gettop(*_mainState)-top);
+                    LuaManager::stackBalanceEnd();
+                    return nullptr;
+                }
+
+                LuaVariant delegateTable = *registryTable[TK_LUA_TABLE_DELEGATE_FIELD_KEY];
+                if(delegateTable.isNil()) {
+                    lua_pop(*_mainState, lua_gettop(*_mainState)-top);
+                    LuaManager::stackBalanceEnd();
+                    return nullptr;
+                }
+            }
+
+
+            LuaVariant delegateRef = *delegateTable[_fieldRef.getKey()];
+            if(delegateRef.isNil()) {
+                lua_pop(*_mainState, lua_gettop(*_mainState)-top);
+                LuaManager::stackBalanceEnd();
+                return nullptr;
+            }
+
+
+            _delegate = delegateRef.getValue<PropertyItemDelegate*>();
+
+            lua_pop(*_mainState, lua_gettop(*_mainState)-top);
+            LuaManager::stackBalanceEnd();
+
+
+        }
+
+        return _delegate;
+#endif
+
+
         lua_pop(*_mainState, lua_gettop(*_mainState)-top);
         LuaManager::stackBalanceEnd();
-
-
     }
 
     return _delegate;

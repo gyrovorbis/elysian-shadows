@@ -150,11 +150,11 @@ void TkLuaTableUserdata::_createMetatable(lua_State*const l) {
     LuaManager::stackBalanceEnd();
 }
 
-TkLuaTableUserdata*  TkLuaTableUserdata::inject(lua_State*const l, const int luaRef) {
+TkLuaTableUserdata*  TkLuaTableUserdata::inject(lua_State*const l, const LuaVariant& ref) {
     TkLuaTableUserdata* ud;
 
     //Shit pants
-    assert(luaRef != LUA_NOREF);
+    GY_ASSERT(ref.getType() == LUA_TTABLE);
 
     //Initialize shared metatable only once
     if(_metaRef == LUA_NOREF) {
@@ -170,7 +170,11 @@ TkLuaTableUserdata*  TkLuaTableUserdata::inject(lua_State*const l, const int lua
     // 2) proxy table (new table with Tk callbacks as original's metatable)
     // 3) parent table (original's metatable, becomes proxy's metatable)
 
+#if 0
     lua_rawgeti(l, LUA_REGISTRYINDEX, luaRef);
+#else
+    ref.push();
+#endif
     lua_pushstring(l, TK_LUA_TABLE_USERDATA_FIELD_KEY);
     lua_rawget(l, -2);
     if(!lua_isnil(l, -1)) {

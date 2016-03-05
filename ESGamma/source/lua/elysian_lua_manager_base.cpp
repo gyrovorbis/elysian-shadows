@@ -625,17 +625,17 @@ LuaVariant LuaManagerBase::getPrefab(const char* const name) {
     return exec("return prefab(\"%s\")", name);
 }
 
-const char* LuaManagerBase::getPrefabName(const int index) {
-    return _callGlobalFunction<const char*>("getPrefabName", nullptr, RawTableReference(index));
+const char* LuaManagerBase::getPrefabName(const LuaVariant& ref) {
+    return _callGlobalFunction<const char*>("getPrefabName", nullptr, ref);
 }
 
-bool LuaManagerBase::saveTable(const int ref, const char * const filename) {
+bool LuaManagerBase::saveTable(const LuaVariant& v, const char * const filename) {
     bool success = true;
 
     dbgprintf("Serializing Lua table: [%s]", filename);
     Debug::push();
 
-    const char* serialData = _callGlobalFunction<const char*>("serialize", nullptr, RawTableReference(ref));
+    const char* serialData = _callGlobalFunction<const char*>("serialize", nullptr, v);
     if(!serialData) {
         errprintf("Returned NULL string!");
         success = false;
@@ -658,6 +658,27 @@ bool LuaManagerBase::saveTable(const int ref, const char * const filename) {
 LuaVariant LuaManagerBase::getGlobalsTable(void) {
     lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, LUA_RIDX_GLOBALS);
     return LuaVariant::fromStack();
+}
+
+
+
+
+
+
+
+//newfangled stack API
+void LuaManagerBase::push(const LuaVariant& variant) {
+    variant.push();
+}
+
+
+void LuaManagerBase::push(const std::initializer_list<LuaPair>& pairs) {
+    lua_newtable(*_mainState);
+    for(auto it : pairs) {
+        it.first.push();
+        it.second.push();
+        lua_settable(*_mainState, -3);
+    }
 }
 
 

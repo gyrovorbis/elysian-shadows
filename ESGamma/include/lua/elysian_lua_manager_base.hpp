@@ -29,6 +29,7 @@ namespace elysian {
 	
     class LuaVariantBase;
     using LuaVariant = LuaVariantBase;
+    using LuaPair = std::pair<LuaVariantBase, LuaVariantBase>;
 
     class LuaManagerBase {
     protected:
@@ -182,9 +183,64 @@ namespace elysian {
         static void                 pushGlobalField(const char*const key);
         static LuaVariant           getGlobalsTable(void);
         static LuaVariant           getPrefab(const char*const name);
-        static const char*          getPrefabName(const int ref);
+        static const char*          getPrefabName(const LuaVariant& v);
 
-        static bool                 saveTable(const int ref, const char*const filename);
+        static bool                 saveTable(const LuaVariant& v, const char*const filename);
+
+
+
+
+
+        // NEWFANGLED-ASS STACK API
+
+        //for everything where LuaVariant creation is not more expensive than raw
+        //Anything creating a temporary reference can be less expensive
+        static void push(const LuaVariant& variant);
+        static void push(const char*const string); //gracefully push nil for nullptr
+        static void push(const std::nullptr_t null);
+        static void push(void); //doesn't do shit
+        static void push(const int number);
+        static void push(const float number);
+        static void push(const double number);
+        static void push(const bool boolean);
+        static void push(void*const lightUd);
+        template<typename T>
+        static void push(T*const userdata);
+        static void push(OOLUA::Lua_table_ref& tableRef);
+        static void push(OOLUA::Lua_func_ref& funcRef);
+        static void push(const std::initializer_list<LuaPair>& pairs);
+        template<typename... Upvalues>
+        static void push(const lua_CFunction funcPtr/*, Upvalues...*/);
+        template<typename Ret, typename... Args>
+        static void push(const std::function<Ret(Args...)>& closure);
+        template<typename T>
+        static void push(const T lambda);
+        template<typename First, typename... Rest>
+        static void push(First first, Rest... rest);
+
+
+        //template<typename T>
+        //static void pullTuple(const T& tuple, )
+
+
+
+
+        void pushField(const int index, const LuaVariant& variant);
+        void pushField(const int index, const char*const string);
+
+        int getTop(void) const;
+
+        void pop(const unsigned count=1);
+
+        template<typename T>
+        T pull(void) const;
+
+        void insertAt(const int index, const LuaVariant& variant);
+
+        void removeAt(const int index) const;
+        void swap(const int index1, const int index2) const;
+
+        void clear(void) const;
 
 	};
 
@@ -308,6 +364,128 @@ namespace elysian {
     inline bool LuaManagerBase::isSerializing(void) { return _serializing; }
     inline void LuaManagerBase::setSerializing(const bool v) { _serializing = v; }
 
+
+
+
+
+
+
+
+
+
+
+
+
+    inline void LuaManagerBase::push(const char*const string) {
+        if(string) lua_pushstring(*_mainState, string);
+        else lua_pushnil(*_mainState);
+    }
+
+    inline void LuaManagerBase::push(const std::nullptr_t) {
+        lua_pushnil(*_mainState);
+    }
+
+
+    inline void LuaManagerBase::push(const int number) {
+        lua_pushnumber(*_mainState, number);
+    }
+
+    inline void LuaManagerBase::push(const float number) {
+        lua_pushnumber(*_mainState, number);
+    }
+
+    inline void LuaManagerBase::push(const double number) {
+        lua_pushnumber(*_mainState, number);
+    }
+
+    inline void LuaManagerBase::push(const bool boolean) {
+        lua_pushboolean(*_mainState, boolean);
+    }
+
+    inline void LuaManagerBase::push(void*const lightUd) {
+        lua_pushlightuserdata(*_mainState, lightUd);
+    }
+
+    inline void LuaManagerBase::push(OOLUA::Lua_table_ref& tableRef) {
+        OOLUA::push(*_mainState, tableRef);
+    }
+
+    inline void LuaManagerBase::push(OOLUA::Lua_func_ref& funcRef) {
+        OOLUA::push(*_mainState, funcRef);
+    }
+
+    template<typename T>
+    inline void LuaManagerBase::push(T* const userdata) {
+        OOLUA::push(*_mainState, userdata);
+    }
+
+    template<typename First, typename... Rest>
+    inline void LuaManagerBase::push(First first, Rest... rest) {
+        push(first);
+        push(rest...);
+    }
+
+
+    template<typename... Upvalues>
+    inline void LuaManagerBase::push(const lua_CFunction funcPtr/*, Upvalues... upvalues*/) {
+        //push(upvalues...);
+        lua_pushcclosure(*_mainState, funcPtr, 0/*sizeof...(Upvalues)*/);
+    }
+
+    template<typename Ret, typename... Args>
+    inline void push(const std::function<Ret(Args...)>&/* closure*/) {
+#if 0
+        auto _callLambda = [](lua_State* vm) {
+            std::tuple<Args...> argTuple;
+
+        };
+
+        //Assumes actual function is already at the top of the stack!
+        template<typename Ret, typename... Args>
+        inline int LuaVariantBase::_callLambda(lua_State*/*vm*/) {
+            std::tuple<Args...> argTuple;
+
+            pull_tuple(argTuple, int_<sizeof...(Args)>());
+
+            lua_pushvalue(*_mainState, lua_upvalueindex(1));
+            LuaVariantBase t = LuaVariantBase::fromStack();
+
+            auto* closure = static_cast<const std::function<Ret(Args...)>*>( t[1]->getValue<void*>() );
+
+            GY_ASSERT(closure);
+
+            const Ret retVal = forward<Ret>(argTuple, *closure);
+
+            OOLUA::push(*_mainState, retVal);
+            return 1;
+        }
+
+        LuaVariantBase upValue = {
+            { 1, (void*)new std::function<Ret(Args...)>(closure) },
+            { "__gc", (lua_CFunction)[](lua_State*) {
+                  LuaVariantBase t = LuaVariantBase::fromStack();
+                    GY_ASSERT(t.getType() == LUA_TTABLE);
+                    dbgprintf("LUA LAMBDA FUNCTION FINALIZER INVOKED, NOT A MEMORY LEAK!!!111");
+                    delete static_cast<std::function<Ret(Args...)>*>(t[1]->getValue<void*>());
+                    return 0;
+                }
+            }
+        };
+
+        upValue.setMetatable(upValue);
+        upvalue.push();
+
+        //push as a regular C function, with lambda table as upvalue
+        //push((lua_CFunction)&_callLambda<Ret, Args...>, upValue);
+        lua_pushcclosure(*_mainState, (lua_CFunction)&_callLambda<Ret, Args...>, 1);
+#endif
+
+    }
+
+    template<typename T>
+    inline void LuaManagerBase::push(const T /*lambda*/) {
+
+    }
 
 }
 

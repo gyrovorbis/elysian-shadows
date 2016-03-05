@@ -49,10 +49,8 @@ OOLUA_PROXY_END
 OOLUA_PROXY(FileBrowserPropertyItemDelegate, PropertyItemDelegate)
 OOLUA_PROXY_END
 
-static inline int Toolkit_setSelection(lua_State* const vm) {
-    const int ref = luaL_ref(vm, LUA_REGISTRYINDEX);
-    ESToolkit::select(ref);
-    luaL_unref(vm, LUA_REGISTRYINDEX, ref);
+static inline int Toolkit_setSelection(lua_State* const /*vm*/) {
+    ESToolkit::select(LuaVariant::fromStack());
     return 0;
 }
 

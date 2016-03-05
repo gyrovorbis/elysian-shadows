@@ -376,7 +376,7 @@ auto PrefabAssetFileType::fromFilePath(const QString path) -> CustomAssetFileTyp
 }
 
 void PrefabAssetFileType::doubleClick(const QModelIndex& /*index*/) {
-    LuaTableSelectable* selectable = new LuaTableSelectable(_prefabRef.getRef());
+    LuaTableSelectable* selectable = new LuaTableSelectable(_prefabRef);
     connect(selectable, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(_onItemChanged(QStandardItem*)));
     getAssets()->setCurrentSelection(selectable);
 

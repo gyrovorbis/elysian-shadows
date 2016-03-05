@@ -440,7 +440,9 @@ HEADERS += \
     ../../ESGamma/include/system/elysian_input_system_base.hpp \
     ../../ESGamma/include/crtp/elysian_input_system.hpp \
     ../../AssetIO/include/behavior/elysian_playable_behavior.hpp \
-    include/core/tk_lua_table_selectable.h
+    include/core/tk_lua_table_selectable.h \
+    ../../AssetIO/include/utility/elysian_lua_stack.hpp \
+    ../../AssetIO/include/utility/elysian_functional.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

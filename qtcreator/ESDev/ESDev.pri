@@ -93,10 +93,10 @@ else:dreamcast {
 
 
 
-    QMAKE_CXXFLAGS += -std=c++11
+    QMAKE_CXXFLAGS += -std=c++14
 !dreamcast {
 QMAKE_CXXFLAGS += -Wno-unknown-warning-option #-fno-rtti -fno-exceptions
-    CONFIG += c++11
+    CONFIG += c++14
 }
 
 CONFIG -= exceptions rtti

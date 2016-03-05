@@ -23,6 +23,10 @@ bool TkLuaManager::initialize(void) {
     return success;
 }
 
+LuaVariant TkLuaManager::getParent(const LuaVariant &t) {
+    return _callGlobalFunction<LuaVariant>("getparenttable", nullptr, t);
+}
+
 int TkLuaManager::_serializeCFunc(lua_State */*vm*/) {
     if(++_serializeDepth == 1) setSerializing(true);
 

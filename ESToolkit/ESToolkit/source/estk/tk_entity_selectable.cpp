@@ -22,8 +22,7 @@
 #include <proxy/elysian_lua_behavior_proxy.hpp>
 
 EntitySelectable::EntitySelectable(void) {
-    lua_newtable(*_mainState);
-    _luaTableRef = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
+    _tableRef = LuaVariant::newTable();
 }
 
 
@@ -44,13 +43,9 @@ EntitySelectable::EntitySelectable(EntitySelectable *selectable):
     }
 }
 
-EntitySelectable::~EntitySelectable(void) {
-    luaL_unref(*_mainState, LUA_REGISTRYINDEX, _luaTableRef);
-}
-
 QAbstractItemModel* EntitySelectable::getModel(void) const {
     if(!_luaModel) {
-        _luaModel = new LuaTableStackModel(getLuaTableRef());
+        _luaModel = new LuaTableStackModel(_tableRef);
         _luaModel->populateModel();
     }
     return _luaModel;
@@ -70,11 +65,15 @@ void EntitySelectable::addEntity(const EntityEntry entry) {
     _entities.push_back(entry);
     //insertSourceModel(entry->getModel());
 
+    _tableRef[_entities.size()] = entry.entity;
+
+#if 0
     lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaTableRef);
     lua_pushinteger(*_mainState, _entities.size());
     OOLUA::push(*_mainState, entry.entity);
     lua_settable(*_mainState, -3);
     lua_pop(*_mainState, 1);
+#endif
 
     //if(!_baseEntity) _baseEntity = entry.entity;
 
@@ -91,11 +90,15 @@ void EntitySelectable::removeEntity(TkEntity * const entity) {
             if(_entities[i] == _baseEntity) _baseEntity = nullptr;
             _entities.erase(_entities.begin()+i);
             //removeSourceModel(entity->getModel());
+#if 0
             lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _luaTableRef);
             lua_pushinteger(*_mainState, i);
             lua_pushnil(*_mainState);
             lua_settable(*_mainState, -3);
             lua_pop(*_mainState, 1);
+#else
+            _tableRef[i] = nullptr;
+#endif
             break;
 		}
 	}

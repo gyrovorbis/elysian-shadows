@@ -118,7 +118,7 @@ void TkEntity::setSaveFlag(const bool val) {
 
 LuaTableStackModel* TkEntity::getModel(void) const {
     if(!_luaModel) {
-        _luaModel = new LuaTableStackModel(getLuaTableRef());
+        _luaModel = new LuaTableStackModel(this);
         _luaModel->populateModel();
     }
     return _luaModel;

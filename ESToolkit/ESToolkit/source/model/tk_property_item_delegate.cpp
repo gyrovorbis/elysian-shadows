@@ -312,7 +312,8 @@ QMenu* PropertyItemDelegate::getContextMenu(ESTkStandardItem*const item) {
 
             if(type.isNull()) return;
 
-            lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, fieldItem->getTableData()->getLuaRef());
+            //lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, fieldItem->getTableData()->getLuaRef());
+            fieldItem->getTableData()->getTableRef().push();
             OOLUA::push(*_mainState, QVariant(key));
 
             if(type == "nil") {
@@ -343,7 +344,7 @@ QMenu* PropertyItemDelegate::getContextMenu(ESTkStandardItem*const item) {
         menu.insertAction("Make Prefab", [=](bool) {
             QString filename = QFileDialog::getSaveFileName(nullptr, "Save as Prefab", FileUtilities::getAbsoluteAssetPath(ELYSIAN_LUA_PREFAB_PATH));
             filename = PrefabAssetFileType::prefabifyFilePath(filename);
-            if(LuaManager::saveTable(fieldItem->getTableData()->getLuaRef(), Q_CSTR(filename))) {
+            if(LuaManager::saveTable(fieldItem->getTableData()->getTableRef(), Q_CSTR(filename))) {
                 LuaVariant prefabRef = LuaManager::getPrefab(Q_CSTR(PrefabAssetFileType::prefabNameFromFilePath(filename)));
                 fieldItem->setVariant(prefabRef);
             }
@@ -351,7 +352,7 @@ QMenu* PropertyItemDelegate::getContextMenu(ESTkStandardItem*const item) {
 
         menu.insertAction("Save As...", [=](bool) {
             QString filename = QFileDialog::getSaveFileName(nullptr, "Save table as...", FileUtilities::getAssetPath());
-            LuaManager::saveTable(fieldItem->getTableData()->getLuaRef(), Q_CSTR(filename));
+            LuaManager::saveTable(fieldItem->getTableData()->getTableRef(), Q_CSTR(filename));
         });
     }
 

@@ -237,7 +237,7 @@ namespace elysian {
                 if(lua_isnumber(l, -1)) {
                     lua_pushvalue(l, lua_upvalueindex(LUA_TABLE_PROXY_UPVALUE_GET_METHOD));
                     lua_getfield(l, -3, "__ud");
-                    assert(!lua_isnil(l, -1));
+                    GY_ASSERT(!lua_isnil(l, -1));
                     int index = lua_tointeger(l, -3);
                     lua_pushinteger(l, --index);                    //Lua property is 1-based, C accessor is 0-based.
                     _callPropertyProxyMethod(false, 2, 1, -4);
@@ -254,7 +254,7 @@ namespace elysian {
                 //assert(!lua_isnil(l, -1));
                 if(!lua_isnil(l, -1)) {
                     lua_getfield(l, -4, "__ud");
-                    assert(!lua_isnil(l, -1));
+                    GY_ASSERT(!lua_isnil(l, -1));
                     _callPropertyProxyMethod(false, 1, 1, -4);
                 }
                 return 1;
@@ -271,7 +271,7 @@ namespace elysian {
                     //_cStackDump();
                     lua_pushvalue(l, lua_upvalueindex(LUA_TABLE_PROXY_UPVALUE_SET_METHOD));
                     lua_getfield(l, -4, "__ud");
-                    assert(!lua_isnil(l, -1));
+                    GY_ASSERT(!lua_isnil(l, -1));
                     lua_pushvalue(l, -4);
                     int index = lua_tointeger(l, -1);
                     lua_pop(l, 1);
@@ -384,7 +384,7 @@ namespace elysian {
 
                 //Never even found the starting key! Must be invalid, and it ain't NIL!
                 if(!found) {
-                    assert(0);
+                    GY_ASSERT(0);
                     return 0;
                 //We're at the end!
                 } else if(nextIndex == -1 || nextIndex >= _proxyTotalCount) {
@@ -429,7 +429,7 @@ namespace elysian {
                 lua_pushvalue(l, lua_upvalueindex(LUA_TABLE_PROXY_UPVALUE_SIZE_METHOD));      //size function
                 lua_pushvalue(l, -2);                       //this ptr
 
-                assert(!lua_isnil(l, -1));      //ARRAY WITH NO SIZE FUNCTION, FOOL!
+                GY_ASSERT(!lua_isnil(l, -1));      //ARRAY WITH NO SIZE FUNCTION, FOOL!
                 LuaManager::_protectedCall(1, 1, nullptr);              //get array size
 
                 int size = lua_tointeger(l, -1);
@@ -612,10 +612,10 @@ namespace elysian {
             case LUA_TABLE_PROXY_ARRAY:
 
                 lua_getfield(l, -1, "__ud");                //this ptr
-                assert(!lua_isnil(l, -1)); //no userdata ptr for array proxy
+                GY_ASSERT(!lua_isnil(l, -1)); //no userdata ptr for array proxy
 
                 lua_pushvalue(l, lua_upvalueindex(LUA_TABLE_PROXY_UPVALUE_SIZE_METHOD));      //size function
-                assert(!lua_isnil(l, -1)); //no sizef unction for array proxy
+                GY_ASSERT(!lua_isnil(l, -1)); //no sizef unction for array proxy
                 lua_pushvalue(l, -2);                       //this ptr
 
                 LuaManager::_protectedCall(1, 1, nullptr); //put array size on stack
@@ -764,7 +764,7 @@ namespace elysian {
             _LuaTableProxyParents<P, T, Bases...>::appendParentNewIndexTable(l);
             lua_pop(l, 1);
 
-			assert(OOLUA::INTERNAL::class_name_is_already_registered(*LuaManager::_mainState, OOLUA::Proxy_class<T>::class_name));
+            GY_ASSERT(OOLUA::INTERNAL::class_name_is_already_registered(*LuaManager::_mainState, OOLUA::Proxy_class<T>::class_name));
 
 			luaL_getmetatable(*LuaManager::_mainState, OOLUA::Proxy_class<T>::class_name); //userdata metatable
 
@@ -820,7 +820,7 @@ namespace elysian {
 
 			lua_pop(*LuaManager::_mainState, 1);
 
-            assert(LuaManager::stackDepth() == 0);
+            GY_ASSERT(LuaManager::stackDepth() == 0);
 
 		}
 
@@ -840,7 +840,7 @@ namespace elysian {
                 sprintf(strBuff, "userdata[%s.%s]: array proxy",  OOLUA::Proxy_class<T>::class_name, _combinedFields[parentIndex].key);
                 break;
             default:
-                assert(0);
+                GY_ASSERT(0);
                 break;
             }
 
@@ -1203,7 +1203,7 @@ namespace elysian {
                 lua_getfield(l, -3-(tableDepth*2), C::_proxyFields[i].get); //get field from OOLUA methods table
                 if(lua_isnil(l, -1)) {
                     errprintf("Proxy GET accessor [%s] not found!", C::_proxyFields[i].get);
-                    assert(false);
+                    GY_ASSERT(false);
                 }
 
                 lua_setfield(l, -3, C::_proxyFields[i].key);
@@ -1211,14 +1211,14 @@ namespace elysian {
                     lua_getfield(l, -3-(tableDepth*2), C::_proxyFields[i].set); //get field from OOLUA methods table
                     if(lua_isnil(l, -1)) {
                         errprintf("Proxy SET accessor [%s] not found!", C::_proxyFields[i].set);
-                        assert(false);
+                        GY_ASSERT(false);
                     }
 
                     lua_setfield(l, -2, C::_proxyFields[i].key);
                 }
             }
         }
-        assert(tableDepth == 0); // YOUR SHIT IS MALFORMED, NIGGER. USE MY DSL CORRECTLY FOR FUCK'S SAKE.
+        GY_ASSERT(tableDepth == 0); // YOUR SHIT IS MALFORMED, NIGGER. USE MY DSL CORRECTLY FOR FUCK'S SAKE.
 
     //                LuaManager::rPrintByIndex(-1, 100, "__INDEX");
         _propertyProxyNewIndexTable = luaL_ref(l, LUA_REGISTRYINDEX);

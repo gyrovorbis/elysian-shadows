@@ -5,66 +5,16 @@
 #include <tuple>
 #include <cstdlib>
 #include <crtp/elysian_lua_manager.hpp>
+#include <utility/elysian_functional.hpp>
+#include <QDebug>
 
 #define ELYSIAN_LUA_VARIANT_DEBUG   ELYSIAN_LUA_DEBUG
 
-#define ELYSIAN_LUA_VARIANT_TYPE_BIT_POS	0
-#define ELYSIAN_LUA_VARIANT_TYPE_BIT_MASK	0x0f
-
-template <typename ...T>
-struct typelist{};
-
-template <typename T>
-struct func_traits
-{
-    using ret_type=typename func_traits<decltype(&T::operator())>::ret_type;
-    using arg_types=typename func_traits<decltype(&T::operator())>::arg_types;
-};
-
-template <typename R, typename C, typename ...ARGS>
-struct func_traits<R (C::*) (ARGS...) const>
-{
-    using ret_type=typelist<R>;
-    using arg_types=typelist<ARGS...>;
-};
-
-template <typename R, typename ...ARGS, typename T>
-auto make_function(T fun, typelist<R>, typelist <ARGS...>) -> ::std::function<R(ARGS...)>
-{
-    return ::std::function<R(ARGS...)>(fun);
-}
-
-template <typename T>
-auto make_function(T fun) -> decltype(make_function(fun, typename func_traits<T>::ret_type{}, typename func_traits<T>::arg_types{}))
-{
-    return make_function(fun,typename func_traits<T>::ret_type{}, typename func_traits<T>::arg_types{});
-}
+#define ELYSIAN_LUA_VARIANT_TYPE_BIT_POS        0
+#define ELYSIAN_LUA_VARIANT_TYPE_BIT_MASK       0x0f
+#define ELYSIAN_LUA_VARIANT_WEAK_REF_BIT_POS    31
 
 
-template<unsigned...> struct index_tuple{};
-
-template<unsigned I, typename IndexTuple, typename... Types>
-struct make_indices_impl;
-
-template<unsigned I, unsigned... Indices, typename T, typename... Types>
-struct make_indices_impl<I, index_tuple<Indices...>, T, Types...>
-{
-  typedef typename
-    make_indices_impl<I + 1,
-                      index_tuple<Indices..., I>,
-                      Types...>::type type;
-};
-
-template<unsigned I, unsigned... Indices>
-struct make_indices_impl<I, index_tuple<Indices...> >
-{
-  typedef index_tuple<Indices...> type;
-};
-
-template<typename... Types>
-struct make_indices
-  : make_indices_impl<0, index_tuple<>, Types...>
-{};
 
 //Function-type constructor, get?, set, assignment operator
 //overloaded stream operators
@@ -106,7 +56,7 @@ namespace elysian {
         friend      const_iterator;
 
     protected:
-        uint32_t                _type       = LUA_TNIL; //thas a lot of bits .. Type only needs 4, rest can be internal state data
+        uint32_t                _type       = LUA_TNIL; //that's a lot of bits .. Type only needs 4, rest can be internal state data
         union Union {
             bool                boolean;
             lua_Number          number;
@@ -125,37 +75,11 @@ namespace elysian {
         static lua_Number           _lightConvertToNumber(const LuaVariantBase& source);
         static LuaVariantBase&      _convertToNumber(const LuaVariantBase& source, LuaVariantBase& dest);
 
+        void                    setWeakRef(const bool val);
+        void                    setType(const int luaType);
 
-        template <unsigned... Indices, class... Args, class Ret>
-        static Ret forward_impl(index_tuple<Indices...>,
-                         std::tuple<Args...> tuple,
-                         const std::function<Ret(Args...)>& closure)
-        {
-          return closure(std::get<Indices>(tuple)...);
-        }
 
-        template<typename Ret, class... Args>
-        static Ret forward(std::tuple<Args...> tuple, const std::function<Ret(Args...)>& closure)
-        {
-           typedef typename make_indices<Args...>::type Indices;
-           return forward_impl(Indices(), tuple, closure);
-        }
 
-        template<std::size_t> struct int_{};
-
-        template <class Tuple, size_t Pos>
-        static void pull_tuple(Tuple& t, int_<Pos> ) {
-          OOLUA::pull(*_mainState, std::get< std::tuple_size<Tuple>::value-Pos >(t));
-          return pull_tuple(t, int_<Pos-1>());
-        }
-
-        template <class Tuple>
-        static void pull_tuple(Tuple& t, int_<1> ) {
-          OOLUA::pull(*_mainState, std::get<std::tuple_size<Tuple>::value-1>(t));
-        }
-
-        template<class Tuple>
-        static void pull_tuple(Tuple& /*t*/, int_<0>) {}
 
         template<typename Ret, typename... Args>
         static int _callLambda(lua_State*vm);
@@ -185,6 +109,10 @@ namespace elysian {
                                 LuaVariantBase(const std::function<Ret(Args...)>& closure);
                                 template<typename T>
                                 LuaVariantBase(const T fun);
+
+#ifdef QT_CORE_LIB
+
+#endif
 
                                 ~LuaVariantBase(void);
 
@@ -273,6 +201,24 @@ namespace elysian {
         void                    setValue(const std::function<Ret(Args...)>& closure);
         template<typename T>
         void                    setValue(const T func);
+        void                    setValue(const std::initializer_list<LuaPair>& pairs);
+
+
+        template <class Tuple, size_t Pos>
+        static void pull_tuple(Tuple& t, int_<Pos> ) {
+          OOLUA::pull(*_mainState, std::get< std::tuple_size<Tuple>::value-Pos >(t));
+          return pull_tuple(t, int_<Pos-1>());
+        }
+
+        template <class Tuple>
+        static void pull_tuple(Tuple& t, int_<1> ) {
+          OOLUA::pull(*_mainState, std::get<std::tuple_size<Tuple>::value-1>(t));
+        }
+
+        template<class Tuple>
+        static void pull_tuple(Tuple& /*t*/, int_<0>) {}
+
+        bool                    isWeakRef(void) const;
 
         bool                    isNil(void) const;
         bool                    isNilRef(void) const;
@@ -282,7 +228,6 @@ namespace elysian {
         bool                    isUserdataType(void) const;
         int                     getType(void) const;
         const char*             getTypeString(void) const;
-        void                    setType(const int luaType);
         void                    setMetatable(const LuaVariantBase& mt) const;
         LuaVariant              getMetatable(void) const;
         int                     getLength(void) const;
@@ -314,7 +259,9 @@ namespace elysian {
         //static constructors
         static LuaVariantBase       fromStack(const int index=-1);
         static LuaVariantBase       fromRef(const int luaRef);
+        static LuaVariantBase       fromWeakRef(const int ref);
         static LuaVariantBase       fromArray(const std::initializer_list<LuaVariant>& array);
+        static LuaVariantBase       makeWeakRef(const LuaVariant& variant);
         static LuaVariantBase       newTable(void);
 
     };
@@ -330,18 +277,18 @@ namespace elysian {
 
     public:
 
-        LuaFieldRef(const LuaVariantBase& tableRef, const LuaVariantBase& key);
-        LuaFieldRef(const LuaVariantBase& tableRef, const LuaPair& kvPairs);
+        //LuaFieldRef(LuaVariantBase&& tableRef, const LuaVariantBase& key);
+        LuaFieldRef(LuaVariantBase tableRef, LuaVariantBase key, LuaVariantBase val=LuaVariantBase());
         LuaFieldRef(const LuaFieldRef& rhs);
         LuaFieldRef(LuaFieldRef&& rhs);
 
-        LuaVariantBase      getVariant(void) const;
-        LuaVariantBase      getCachedVariant(void) const;
+        const LuaVariantBase&      getVariant(void) const;
+        const LuaVariantBase&      getCachedVariant(void) const;
         void            setCachedVariant(const LuaVariantBase& variant);
         void            setVariant(const LuaVariantBase& variant);
-        LuaVariantBase  getKey(void) const;
+        const LuaVariantBase&  getKey(void) const;
         void            setKey(const LuaVariantBase& key);
-        LuaVariantBase  getTableRef(void) const;
+        const LuaVariantBase&  getTableRef(void) const;
         void            setTableRef(const LuaVariantBase& ref);
 
 
@@ -450,15 +397,11 @@ public:
 
 
 
-    inline LuaFieldRef::LuaFieldRef(const LuaVariantBase& tableRef, const LuaVariantBase& key):
-        _tableRef(tableRef),
-        _key(key)
+    inline LuaFieldRef::LuaFieldRef(LuaVariantBase tableRef, LuaVariantBase key, LuaVariantBase value):
+        _tableRef(std::move(tableRef)),
+        _key(std::move(key)),
+        _cachedValue(std::move(value))
     {}
-
-    inline LuaFieldRef::LuaFieldRef(const LuaVariantBase& tableRef, const LuaPair& kvPair):
-        _tableRef(tableRef),
-        _key(kvPair.first),
-        _cachedValue(kvPair.second){}
 
     inline LuaFieldRef::LuaFieldRef(const LuaFieldRef &rhs) { *this = rhs; }
 
@@ -473,9 +416,9 @@ public:
     }
 
     inline LuaFieldRef& LuaFieldRef::operator=(LuaFieldRef&& rhs) {
-        _tableRef       = rhs._tableRef;
-        _key            = rhs._key;
-        _cachedValue    = rhs._cachedValue;
+        _tableRef       = std::move(rhs._tableRef);
+        _key            = std::move(rhs._key);
+        _cachedValue    = std::move(rhs._cachedValue);
         return *this;
     }
 
@@ -498,7 +441,7 @@ public:
         return _tableRef == rhs._tableRef && _key == rhs._key;
     }
 
-    inline LuaVariantBase LuaFieldRef::getKey(void) const {
+    inline const LuaVariantBase& LuaFieldRef::getKey(void) const {
         return _key;
     }
 
@@ -506,7 +449,7 @@ public:
         _key = key;
     }
 
-    inline LuaVariantBase LuaFieldRef::getTableRef(void) const {
+    inline const LuaVariantBase& LuaFieldRef::getTableRef(void) const {
         return _tableRef;
     }
 
@@ -514,7 +457,7 @@ public:
         _tableRef = ref;
     }
 
-    inline LuaVariantBase LuaFieldRef::getCachedVariant(void) const {
+    inline const LuaVariantBase& LuaFieldRef::getCachedVariant(void) const {
         return _cachedValue;
     }
 
@@ -522,7 +465,7 @@ public:
         _cachedValue = variant;
     }
 
-    inline LuaVariantBase LuaFieldRef::getVariant(void) const {
+    inline const LuaVariantBase& LuaFieldRef::getVariant(void) const {
         bool success = true;
         success &= _tableRef.push();
         success &= _key.push();
@@ -581,27 +524,46 @@ public:
         *this = rhs;
     }
     inline LuaVariantBase& LuaVariantBase::operator=(const LuaVariantBase& rhs) {
-        switch(rhs._type) {
-        case LUA_TNIL:
-            setNil();
-            break;
-        case LUA_TBOOLEAN:
-            setValue(rhs._value.boolean);
-            break;
-        case LUA_TNUMBER:
-            setValue(rhs._value.number);
-            break;
-        case LUA_TSTRING:
-            setValue(rhs._value.string);
-            break;
-        case LUA_TLIGHTUSERDATA:
-            setValue(rhs._value.userdata);
-            break;
-        default:
-            setRef(rhs.getRef());
+        if(!rhs.isWeakRef()) { //Gracefully obtain copy of data for strong references
+            switch(rhs._type) {
+            case LUA_TNIL:
+                setNil();
+                break;
+            case LUA_TBOOLEAN:
+                setValue(rhs._value.boolean);
+                break;
+            case LUA_TNUMBER:
+                setValue(rhs._value.number);
+                break;
+            case LUA_TSTRING:
+                setValue(rhs._value.string);
+                break;
+            case LUA_TLIGHTUSERDATA:
+                setValue(rhs._value.userdata);
+                break;
+            default:
+                setRef(rhs.getRef());
+            }
+        } else { //Simply assume raw values, otherwise
+            setType(LUA_TNIL);
+            _type   = rhs._type;
+            _value  = rhs._value;
+
         }
         return *this;
     }
+
+    inline LuaVariantBase& LuaVariantBase::operator=(LuaVariantBase&& rhs) {
+        setType(LUA_TNIL); //clear out old shit
+        _type           = rhs._type;
+        _value          = rhs._value;
+        if(!rhs.isWeakRef()) { //only steal references if this was a strong reference
+            rhs._type       = LUA_TNIL;
+            rhs._value.ref  = LUA_REFNIL;
+        }
+        return *this;
+    }
+
     inline LuaVariantBase::LuaVariantBase(const char * const string) { setValue(string); }
     inline LuaVariantBase::LuaVariantBase(const bool val) { setValue(val); }
     inline LuaVariantBase::LuaVariantBase(const float number) { setValue(number); }
@@ -628,14 +590,6 @@ public:
     template<typename T>
     inline LuaVariantBase& LuaVariantBase::operator=(T*const rhs) {
         setValue(rhs);
-        return *this;
-    }
-
-    inline LuaVariantBase& LuaVariantBase::operator=(LuaVariantBase&& rhs) {
-        _type           = rhs._type;
-        _value          = rhs._value;
-        rhs._type       = LUA_TNIL;
-        rhs._value.ref  = LUA_REFNIL;
         return *this;
     }
 
@@ -696,11 +650,11 @@ public:
         return equal;
     }
 
-    inline bool LuaVariantBase::operator==(const std::nullptr_t) const { return isNil() || (_type == LUA_TLIGHTUSERDATA && _value.userdata == nullptr); }
-    inline bool LuaVariantBase::operator==(const bool val) const { return _type == LUA_TBOOLEAN && _value.boolean == val; }
-    inline bool LuaVariantBase::operator==(const int num) const { return _type == LUA_TNUMBER && (int)_value.number == (int)num; }
-    inline bool LuaVariantBase::operator==(const float num) const { return _type == LUA_TNUMBER && _value.number == (lua_Number)num; }
-    inline bool LuaVariantBase::operator==(const double num) const { return _type == LUA_TNUMBER && _value.number == (lua_Number)num; }
+    inline bool LuaVariantBase::operator==(const std::nullptr_t) const { return isNil() || (getType() == LUA_TLIGHTUSERDATA && _value.userdata == nullptr); }
+    inline bool LuaVariantBase::operator==(const bool val) const { return getType() == LUA_TBOOLEAN && _value.boolean == val; }
+    inline bool LuaVariantBase::operator==(const int num) const { return getType() == LUA_TNUMBER && (int)_value.number == (int)num; }
+    inline bool LuaVariantBase::operator==(const float num) const { return getType() == LUA_TNUMBER && _value.number == (lua_Number)num; }
+    inline bool LuaVariantBase::operator==(const double num) const { return getType() == LUA_TNUMBER && _value.number == (lua_Number)num; }
     inline bool LuaVariantBase::operator==(void*const ptr) const { return ptr? isUserdataType() && _value.userdata == ptr : isNil(); }
     inline bool LuaVariantBase::operator==(const char*const str) const { return (_type == LUA_TSTRING && (strcmp(_value.string, str) == 0)); };
 
@@ -739,16 +693,27 @@ public:
     inline bool LuaVariantBase::isIndexable(void) const { return (_type == LUA_TUSERDATA || _type == LUA_TTABLE); }
     inline bool LuaVariantBase::isValueType(void) const { return _type == LUA_TNIL || !isRefType(); }
     inline bool LuaVariantBase::isUserdataType(void) const { return _type == LUA_TUSERDATA || _type == LUA_TLIGHTUSERDATA; }
+    inline bool LuaVariantBase::isWeakRef(void) const {
+        return ((_type >> ELYSIAN_LUA_VARIANT_WEAK_REF_BIT_POS) & 0x1);
+    }
+
+    inline void LuaVariantBase::setWeakRef(const bool value) {
+        _type &= ~(0x1 << ELYSIAN_LUA_VARIANT_WEAK_REF_BIT_POS);
+        _type |= ((uint32_t)(value) << ELYSIAN_LUA_VARIANT_WEAK_REF_BIT_POS);
+    }
 
     inline void LuaVariantBase::setType(const int luaType) {
-        if(isRefType()) {
-            luaL_unref(*_mainState, LUA_REGISTRYINDEX, _value.ref);
-        } else if(_type == LUA_TSTRING) {
-            free((void*)_value.string);
-        } else if(_type == LUA_TNIL) {
-            _value.ref = LUA_REFNIL;
+        if(!isWeakRef()) { //only delete shit if we have ownership of it (are a strong reference)
+            if(isRefType()) {
+                luaL_unref(*_mainState, LUA_REGISTRYINDEX, _value.ref);
+            } else if(_type == LUA_TSTRING) {
+                free((void*)_value.string);
+            } else if(_type == LUA_TNIL) {
+                _value.ref = LUA_REFNIL;
+            }
         }
-        _type = luaType;
+        _type &= ~(ELYSIAN_LUA_VARIANT_TYPE_BIT_MASK);
+        _type |= ((uint32_t)luaType);
     }
 
     inline void LuaVariantBase::setNil(void) {
@@ -758,7 +723,17 @@ public:
 
     template<typename T>
     inline void LuaVariantBase::setValue(T*const ud) {
+#if 0
         if(OOLUA::push(*_mainState, ud)) pull();
+#else
+        LuaManager::push(ud);
+        pull();
+#endif
+    }
+
+    inline void LuaVariantBase::setValue(const std::initializer_list<LuaPair>& pairs) {
+        LuaManager::push(pairs);
+        pull();
     }
 
     inline void LuaVariantBase::setValue(std::nullptr_t /*null*/) {
@@ -864,11 +839,14 @@ public:
         return ref;
     }
 
-    inline  int LuaVariantBase::getType(void) const { return _type; }
+    inline  int LuaVariantBase::getType(void) const {
+        return (_type & ELYSIAN_LUA_VARIANT_TYPE_BIT_MASK);
+    }
 
     inline const char* LuaVariantBase::getTypeString(void) const {
-        if(_type != LUA_TUSERDATA && _type != LUA_TLIGHTUSERDATA) {
-            return lua_typename(*_mainState, _type);
+        const int luaType = getType();
+        if(luaType != LUA_TUSERDATA && luaType != LUA_TLIGHTUSERDATA) {
+            return lua_typename(*_mainState, luaType);
         } else {
             lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, _value.ref);
             lua_getfield(*_mainState, -1, ELYSIAN_LUA_PROXY_TYPE_METAFIELD);
@@ -877,7 +855,7 @@ public:
                 lua_pop(*_mainState, 2);
                 return name;
             } else {
-                return lua_typename(*_mainState, _type);
+                return lua_typename(*_mainState, luaType);
             }
         }
     }
@@ -908,7 +886,7 @@ public:
     }
 
     inline bool LuaVariantBase::_lightConvertToBool(const LuaVariantBase &source) {
-        switch(source._type) {
+        switch(source.getType()) {
         case LUA_TBOOLEAN:
             return source._value.boolean;
         case LUA_TNIL:
@@ -925,7 +903,7 @@ public:
     }
 
     inline LuaVariantBase& LuaVariantBase::_convertToBool(const LuaVariantBase &source, LuaVariantBase &dest) {
-        switch(source._type) {
+        switch(source.getType()) {
         case LUA_TBOOLEAN:
         case LUA_TNIL:
         case LUA_TSTRING:
@@ -940,7 +918,7 @@ public:
     }
 
     inline lua_Number LuaVariantBase::_lightConvertToNumber(const LuaVariantBase &source) {
-        switch(source._type) {
+        switch(source.getType()) {
         case LUA_TNUMBER:
             return source._value.number;
         case LUA_TBOOLEAN:
@@ -955,7 +933,7 @@ public:
     }
 
     inline LuaVariantBase& LuaVariantBase::_convertToNumber(const LuaVariantBase &source, LuaVariantBase &dest) {
-        switch(source._type) {
+        switch(source.getType()) {
         case LUA_TNUMBER:
         case LUA_TBOOLEAN:
         case LUA_TNIL:
@@ -973,26 +951,26 @@ public:
     //same as above, doesn't change actual value
     inline LuaVariantBase LuaVariantBase::asBool(void) const {
         LuaVariantBase variant;
-        return (_type == LUA_TBOOLEAN)? *this : _convertToBool(*this, variant);
+        return (getType() == LUA_TBOOLEAN)? *this : _convertToBool(*this, variant);
     }
 
     inline LuaVariantBase LuaVariantBase::asNumber(void) const {
         LuaVariantBase variant;
-        return (_type == LUA_TNUMBER)? *this :
+        return (getType() == LUA_TNUMBER)? *this :
             _convertToNumber(*this, variant);
     }
 
     inline LuaVariantBase LuaVariantBase::asString(void) const {
-        return (_type == LUA_TSTRING)? *this :
+        return (getType() == LUA_TSTRING)? *this :
             _convertType( [](void) { luaL_tolstring(*_mainState, -1, nullptr); lua_remove(*_mainState, -2); } );
     }
 
     inline LuaVariantBase LuaVariantBase::asUserdata(void) const {
-        if(_type == LUA_TLIGHTUSERDATA) {
+        if(getType() == LUA_TLIGHTUSERDATA) {
             return *this;
         } else {
             LuaVariantBase variant;
-            variant._type = LUA_TLIGHTUSERDATA;
+            variant.setType(LUA_TLIGHTUSERDATA);
             variant._value.userdata = nullptr;
             return variant;
         }
@@ -1045,6 +1023,17 @@ public:
         variant.setRef(luaRef);
         return std::move(variant);
     }
+#if 0
+    inline LuaVariantBase LuaVariantBase::fromWeakRef(const int luaRef) {
+        LuaVariant v;
+        lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, luaRef);
+        v.setType(lua_type(*_mainState, -1));
+        lua_pop(*_mainState, 1);
+        v._value.ref = luaRef;
+        v.setWeakRef(true);
+        return std::move(v);
+    }
+#endif
 
     inline LuaVariantBase LuaVariantBase::fromArray(const std::initializer_list<LuaVariant>& array) {
         int index = 1;
@@ -1056,6 +1045,14 @@ public:
             lua_settable(*_mainState, -3);
         }
         return fromStack();
+    }
+
+    inline LuaVariantBase LuaVariantBase::makeWeakRef(const LuaVariant& src) {
+        LuaVariant dest;
+        dest._type      = src._type;
+        dest._value     = src._value;
+        dest.setWeakRef(true);
+        return std::move(dest);
     }
 
     template <typename... Args>
@@ -1178,6 +1175,7 @@ namespace elysian {
     }
 
     inline LuaVariantBase& LuaVariantBase::operator=(const std::initializer_list<LuaPair>& pairs) {
+#if 0
         lua_newtable(*_mainState);
         for(auto it : pairs) {
             it.first.push();
@@ -1185,7 +1183,10 @@ namespace elysian {
             lua_settable(*_mainState, -3);
         }
         pull();
+#else
+        setValue(pairs);
         return *this;
+#endif
     }
 
 
@@ -1214,7 +1215,7 @@ namespace elysian {
                 } else GY_ASSERT(false);        //no next function found
             } else GY_ASSERT(false);            //pairs(this) failed
         }
-        return const_iterator(LuaFieldRef(*this, pair), nextFunc);
+        return const_iterator(LuaFieldRef(LuaVariant::makeWeakRef(*this), pair.first, pair.second), nextFunc);
     }
 
     inline LuaVariantBase::const_iterator LuaVariantBase::cbegin(void) const {
@@ -1223,16 +1224,16 @@ namespace elysian {
 
 
     inline LuaVariantBase::iterator LuaVariantBase::end(void) {
-        return iterator(LuaFieldRef(*this, LuaPair(LuaVariant(), LuaVariant())), LuaVariant());
+        return iterator(LuaFieldRef(LuaVariant::makeWeakRef(*this), LuaVariant()), LuaVariant());
     }
 
 
     inline LuaVariantBase::const_iterator LuaVariantBase::end(void) const {
-        return const_iterator(LuaFieldRef(*this, LuaPair(LuaVariant(), LuaVariant())), LuaVariant());
+        return const_iterator(LuaFieldRef(LuaVariant::makeWeakRef(*this), LuaVariant()), LuaVariant());
     }
 
     inline LuaVariantBase::const_iterator LuaVariantBase::cend(void) const {
-        return const_iterator(LuaFieldRef(*this, LuaPair(LuaVariant(), LuaVariant())), LuaVariant());
+        return const_iterator(LuaFieldRef(LuaVariant::makeWeakRef(*this), LuaVariant()), LuaVariant());
     }
 
 
@@ -1248,6 +1249,7 @@ namespace elysian {
         GY_ASSERT(success);
 
         if(_protectedCall(2, 2, nullptr)) {
+
             success &= _fieldRef._cachedValue.pull();
             GY_ASSERT(success);
             success &= _fieldRef._key.pull();
@@ -1271,9 +1273,9 @@ namespace elysian {
 
         GY_ASSERT(closure);
 
-        const Ret retVal = forward<Ret>(argTuple, *closure);
+        //const Ret retVal = forward_tuple_to_func_as_args(*closure, argTuple);
 
-        OOLUA::push(*_mainState, retVal);
+      //  OOLUA::push(*_mainState, retVal);
         return 1;
     }
 
@@ -1305,7 +1307,7 @@ namespace elysian {
         lua_CFunction func = (lua_CFunction)&_callLambda<Ret, Args...>;
 
         lua_pushcclosure(*_mainState, func, 1);
-        _type = lua_type(*_mainState, -1);
+        setType(lua_type(*_mainState, -1));
         _value.ref = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
     }
 

@@ -76,7 +76,7 @@ TkArea::TkArea(Level *const lev) {
 
 QAbstractItemModel* TkArea::getModel(void) const {
     if(!_luaModel) {
-        _luaModel = new LuaTableStackModel(getLuaTableRef());
+        _luaModel = new LuaTableStackModel(const_cast<TkArea*>(this));
         _luaModel->populateModel();
     }
     return _luaModel;

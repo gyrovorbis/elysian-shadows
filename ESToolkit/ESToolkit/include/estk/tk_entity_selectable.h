@@ -5,6 +5,7 @@
 #include <tk_rows_joiner_proxy_model.h>
 #include <tk_asset_manager.h>
 #include <estk/tk_lua_manager.h>
+#include <crtp/elysian_lua_variant.hpp>
 #include <QVector>
 
 class TkEntity;
@@ -32,14 +33,14 @@ private:
     QVector<EntityEntry>            _entities;
     TkEntity*                       _baseEntity     = nullptr;
     mutable LuaTableStackModel*     _luaModel       = nullptr;
-    int                             _luaTableRef    = LUA_REFNIL;
+    LuaVariant                      _tableRef;
 
 
 public:
                                 EntitySelectable(void);
                                 EntitySelectable(TkEntity*const entity);
                                 EntitySelectable(EntitySelectable* selectable);
-    virtual                     ~EntitySelectable(void) override;
+    virtual                     ~EntitySelectable(void) override = default;
 
     void                        addEntity(const EntityEntry entry);
     void                        setBaseEntity(TkEntity*const entity);
@@ -48,7 +49,7 @@ public:
     void                        removeEntity(TkEntity*const entity);
     virtual TYPE                getType(void) const override;
     bool                        isInSelection(const TkEntity*const entity) const;
-    int                         getLuaTableRef(void) const;
+    const LuaVariant&           getTableRef(void) const;
 
     void                        translate(const float x, const float y);
     void                        setPosition(const float x, const float y);
@@ -114,6 +115,6 @@ inline EntitySelectable::EntityEntry::operator const TkEntity*(void) const { ret
 inline QVector<EntitySelectable::EntityEntry>::iterator EntitySelectable::begin(void) { return _entities.begin(); }
 inline QVector<EntitySelectable::EntityEntry>::iterator EntitySelectable::end(void) { return _entities.end(); }
 
-inline int EntitySelectable::getLuaTableRef(void) const { return _luaTableRef; }
+inline const LuaVariant& EntitySelectable::getTableRef(void) const { return _tableRef; }
 
 #endif // ENTITY_SELECTABLE_H

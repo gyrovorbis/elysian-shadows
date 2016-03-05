@@ -12,6 +12,7 @@
 #include <test_lua_field_ref.h>
 #include <test_lua_variant.h>
 #include <test_dialog.h>
+#include <test_functional.h>
 #include <test_instance_transform.h>
 
 /*
@@ -106,6 +107,7 @@ int main(QStringList args)
     ESTkTest::enqueueTest(new LibGyroFileApiTest);
     ESTkTest::enqueueTest(new tktest::InitializationTest(project));
     if(!assetsTest) {
+        ESTkTest::enqueueTest(new tktest::FunctionalTest);
         ESTkTest::enqueueTest(new tktest::Vector2Test);
         ESTkTest::enqueueTest(new tktest::ESToolkitTest);
         ESTkTest::enqueueTest(new tktest::LevelTest);
