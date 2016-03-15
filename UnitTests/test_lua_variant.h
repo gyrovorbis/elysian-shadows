@@ -816,7 +816,7 @@ inline void LuaVariantTest::iterateTable(void) {
 }
 
 inline void LuaVariantTest::iterateTableConst(void) {
-LuaVariant o;
+    LuaVariant o;
     const LuaVariant v({{1,1}});
     int startVal = 1;
     int values = 0;

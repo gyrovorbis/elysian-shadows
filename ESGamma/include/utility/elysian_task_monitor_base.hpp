@@ -58,7 +58,7 @@ namespace elysian {
 
 
 
-    //==== INLINE
+    //==== INLINE ======
 
     inline TaskMonitorBase::TaskMonitorBase(const char*const name) {
         strcpy(_name, name);

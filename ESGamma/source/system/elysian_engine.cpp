@@ -105,6 +105,7 @@ void Engine::update(void) {
         case System::ENGINE_WARPING:
         case System::ENGINE_MODAL_CONVERSATION:
         case System::ENGINE_CONVERSATION:
+            LuaManager::updateFrameStats();
             _partySystem->update();
             _lightSystem->update();
             _audioSystem->update();

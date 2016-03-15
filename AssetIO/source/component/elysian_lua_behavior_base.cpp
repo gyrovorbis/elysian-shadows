@@ -130,7 +130,7 @@ bool LuaBehaviorBase::loadScript(void) {
 		if(_triggerBits & ON_CREATE) {
             DbgEvent event("LuaBehavior::onCreate(%s)", _script->getPath());
             if(_paramTableRef.ref() != LUA_REFNIL) //Call trigger with custom parameter table
-                _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_CREATE_INDEX, _ooSelfTableRef, _paramTableRef));
+                _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_CREATE_INDEX, *_ooSelfTableRef, _paramTableRef));
 			//call basic trigger
 			else onCreate();
 		}
@@ -152,7 +152,7 @@ void LuaBehaviorBase::_selfTableDump(void) {
 }
 
 void LuaBehaviorBase::onUpdate(void) {
-    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_UPDATE_INDEX, _ooSelfTableRef));
+    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_UPDATE_INDEX, *_ooSelfTableRef));
 }
 
 void LuaBehaviorBase::onRender(void) {
@@ -160,71 +160,71 @@ void LuaBehaviorBase::onRender(void) {
 }
 
 void LuaBehaviorBase::onCreate(void) {
-    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_CREATE_INDEX, _ooSelfTableRef));
+    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_CREATE_INDEX, *_ooSelfTableRef));
 }
 
 void LuaBehaviorBase::onDestroy(void) {
-    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_DESTROY_INDEX, _ooSelfTableRef));
+    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_DESTROY_INDEX, *_ooSelfTableRef));
 }
 
 void LuaBehaviorBase::onLoad(void) {
-    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_LOAD_INDEX, _ooSelfTableRef));
+    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_LOAD_INDEX, *_ooSelfTableRef));
 }
 
 void LuaBehaviorBase::onUnload(void) {
-    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_UNLOAD_INDEX, _ooSelfTableRef));
+    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_UNLOAD_INDEX, *_ooSelfTableRef));
 }
 
 void LuaBehaviorBase::onEnter(void) {
-    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_ENTER_INDEX, _ooSelfTableRef));
+    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_ENTER_INDEX, *_ooSelfTableRef));
 }
 
 void LuaBehaviorBase::onExit(void) {
-    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_EXIT_INDEX, _ooSelfTableRef));
+    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_EXIT_INDEX, *_ooSelfTableRef));
 }
 	
 void LuaBehaviorBase::onCollide(CollisionContact*const contact, elysian::Collidable *collidable) {
-    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COLLIDE_INDEX, _ooSelfTableRef, contact, collidable));
+    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COLLIDE_INDEX, *_ooSelfTableRef, contact, collidable));
 }
 
 void LuaBehaviorBase::onCollisionEnter(CollisionContact*const contact, elysian::Collidable *collidable) {
-    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COLLISION_ENTER_INDEX, _ooSelfTableRef, contact, collidable));
+    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COLLISION_ENTER_INDEX, *_ooSelfTableRef, contact, collidable));
 }
 
 void LuaBehaviorBase::onCollisionExit(elysian::Collidable *collidable) {
-    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COLLISION_EXIT_INDEX, _ooSelfTableRef, collidable));
+    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COLLISION_EXIT_INDEX, *_ooSelfTableRef, collidable));
 }
 
 void LuaBehaviorBase::onShatter(CollisionContact* contact) {
-    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_SHATTER_INDEX, _ooSelfTableRef, contact));
+    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_SHATTER_INDEX, *_ooSelfTableRef, contact));
 }
 
 void LuaBehaviorBase::onExamine(Entity* entity) {
-    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_EXAMINE_INDEX, _ooSelfTableRef, entity));
+    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_EXAMINE_INDEX, *_ooSelfTableRef, entity));
 }
 
 void LuaBehaviorBase::onDialog(const unsigned screen, const int option) {
-    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_DIALOG_INDEX, _ooSelfTableRef, screen, option));
+    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_DIALOG_INDEX, *_ooSelfTableRef, screen, option));
 }
 
 void LuaBehaviorBase::onCombatEnter(void) {
-    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COMBAT_ENTER_INDEX, _ooSelfTableRef));
+    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COMBAT_ENTER_INDEX, *_ooSelfTableRef));
 }
 
 void LuaBehaviorBase::onCombatExit(void) {
-    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COMBAT_EXIT_INDEX, _ooSelfTableRef));
+    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COMBAT_EXIT_INDEX, *_ooSelfTableRef));
 }
 
 void LuaBehaviorBase::onCombatDeath(void) {
-    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COMBAT_DEATH_INDEX, _ooSelfTableRef));
+    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COMBAT_DEATH_INDEX, *_ooSelfTableRef));
 }
 
 void LuaBehaviorBase::onCombatReceiveStatusModifier(CombatStatus*const modifier) {
-    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COMBAT_RECEIVE_STATUS_MODIFIER_INDEX, _ooSelfTableRef, modifier));
+    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COMBAT_RECEIVE_STATUS_MODIFIER_INDEX, *_ooSelfTableRef, modifier));
 }
 
 void LuaBehaviorBase::onCombatTargetCollisionEnter(CollisionContact*const contact, Collidable*const collidable, CombatStatus*const modifier) {
-    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COMBAT_TARGET_COLLISION_ENTER_INDEX, _ooSelfTableRef, contact, collidable, modifier));
+    _PROTECTED(_callTriggerByIndex<void>(Behavior::ON_COMBAT_TARGET_COLLISION_ENTER_INDEX, *_ooSelfTableRef, contact, collidable, modifier));
 }
 
 /*
@@ -237,11 +237,11 @@ void LuaBehaviorBase::onButtonRelease(const GameInput::BUTTON button) {
 }*/
 
 void LuaBehaviorBase::onTkSelect(void) {
-    _PROTECTED(_callTriggerByName<void>("onTkSelect", _ooSelfTableRef));
+    _PROTECTED(_callTriggerByName<void>("onTkSelect", *_ooSelfTableRef));
 }
 
 void LuaBehaviorBase::onTkUnselect(void) {
-    _PROTECTED(_callTriggerByName<void>("onTkUnselect", _ooSelfTableRef));
+    _PROTECTED(_callTriggerByName<void>("onTkUnselect", *_ooSelfTableRef));
 }
 
 }

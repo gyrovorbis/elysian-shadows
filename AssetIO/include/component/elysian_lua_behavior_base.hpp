@@ -47,18 +47,18 @@ namespace elysian {
         OOLUA::Lua_table_ref    _paramTableRef;
 
         template<typename RType, typename... PTypes>
-        RType _callTriggerByIndex(const uint64_t trigger, PTypes... parameters) {
+        RType _callTriggerByIndex(const uint64_t trigger, PTypes&&... parameters) {
             lua_rawgeti(*LuaManager::_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());
             lua_pushinteger(*LuaManager::_mainState, trigger);
             lua_gettable(*LuaManager::_mainState, -2);      //must invoke metamethods for behavior inheritance
             //lua_rawgeti(*_mainState, -1, trigger);
             lua_remove(*LuaManager::_mainState, -2);
-            return LuaManager::_callFunction<RType>(_script, parameters...);
+            return LuaManager::_callFunction<RType>(_script, std::forward<PTypes>(parameters)...);
         }
 
         template<typename RType, typename... PTypes>
-        RType _callTriggerByName(const char* funcName, PTypes... parameters) {
-            return LuaManager::_callGlobalFunction<RType>(funcName, _script, parameters...);
+        RType _callTriggerByName(const char* funcName, PTypes&&... parameters) {
+            return LuaManager::callGlobalFunction<RType>(funcName, _script, std::forward<PTypes>(parameters)...);
         }
 
         void				_selfTableDump(void);

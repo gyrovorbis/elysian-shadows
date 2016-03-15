@@ -24,7 +24,7 @@ bool TkLuaManager::initialize(void) {
 }
 
 LuaVariant TkLuaManager::getParent(const LuaVariant &t) {
-    return _callGlobalFunction<LuaVariant>("getparenttable", nullptr, t);
+    return callGlobalFunction<LuaVariant>("getparenttable", nullptr, t);
 }
 
 int TkLuaManager::_serializeCFunc(lua_State */*vm*/) {

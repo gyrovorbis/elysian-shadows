@@ -62,7 +62,7 @@ namespace elysian {
             lua_Number          number;
             int                 ref         = LUA_REFNIL;
             const char*         string;
-            void*               userdata;
+            void*               luserdata;
         } _value;
 
         template<typename L>
@@ -78,11 +78,6 @@ namespace elysian {
         void                    setWeakRef(const bool val);
         void                    setType(const int luaType);
 
-
-
-
-        template<typename Ret, typename... Args>
-        static int _callLambda(lua_State*vm);
 
 
     public:
@@ -165,7 +160,7 @@ namespace elysian {
 
 
         template <typename... Args>
-        LuaVariantBase              operator()(Args&& ... args) const;
+        LuaVariantBase              operator()(Args&&... args) const;
 
                                 operator OOLUA::Lua_table_ref(void) const;
 
@@ -203,7 +198,7 @@ namespace elysian {
         void                    setValue(const T func);
         void                    setValue(const std::initializer_list<LuaPair>& pairs);
 
-
+/*
         template <class Tuple, size_t Pos>
         static void pull_tuple(Tuple& t, int_<Pos> ) {
           OOLUA::pull(*_mainState, std::get< std::tuple_size<Tuple>::value-Pos >(t));
@@ -216,8 +211,8 @@ namespace elysian {
         }
 
         template<class Tuple>
-        static void pull_tuple(Tuple& /*t*/, int_<0>) {}
-
+        static void pull_tuple(Tuple& t, int_<0>) {}
+*/
         bool                    isWeakRef(void) const;
 
         bool                    isNil(void) const;
@@ -539,7 +534,7 @@ public:
                 setValue(rhs._value.string);
                 break;
             case LUA_TLIGHTUSERDATA:
-                setValue(rhs._value.userdata);
+                setValue(rhs._value.luserdata);
                 break;
             default:
                 setRef(rhs.getRef());
@@ -575,7 +570,7 @@ public:
     inline LuaVariantBase::LuaVariantBase(const lua_CFunction funcPtr) { setValue(funcPtr); }
     template<typename T>
     inline LuaVariantBase::LuaVariantBase(const T fun) {
-        setValue(make_function(fun));
+        setValue(fun);
     }
 
 
@@ -626,7 +621,7 @@ public:
         case LUA_TSTRING:
             return *this == rhs._value.string;
         case LUA_TLIGHTUSERDATA:
-            return _value.userdata == rhs._value.userdata;
+            return _value.luserdata == rhs._value.luserdata;
         default: //let Lua handle the comparison for complex types
             push();
             rhs.push();
@@ -650,12 +645,12 @@ public:
         return equal;
     }
 
-    inline bool LuaVariantBase::operator==(const std::nullptr_t) const { return isNil() || (getType() == LUA_TLIGHTUSERDATA && _value.userdata == nullptr); }
+    inline bool LuaVariantBase::operator==(const std::nullptr_t) const { return isNil() || (getType() == LUA_TLIGHTUSERDATA && _value.luserdata == nullptr); }
     inline bool LuaVariantBase::operator==(const bool val) const { return getType() == LUA_TBOOLEAN && _value.boolean == val; }
     inline bool LuaVariantBase::operator==(const int num) const { return getType() == LUA_TNUMBER && (int)_value.number == (int)num; }
     inline bool LuaVariantBase::operator==(const float num) const { return getType() == LUA_TNUMBER && _value.number == (lua_Number)num; }
     inline bool LuaVariantBase::operator==(const double num) const { return getType() == LUA_TNUMBER && _value.number == (lua_Number)num; }
-    inline bool LuaVariantBase::operator==(void*const ptr) const { return ptr? isUserdataType() && _value.userdata == ptr : isNil(); }
+    inline bool LuaVariantBase::operator==(void*const ptr) const { return ptr? isUserdataType() && _value.luserdata == ptr : isNil(); }
     inline bool LuaVariantBase::operator==(const char*const str) const { return (_type == LUA_TSTRING && (strcmp(_value.string, str) == 0)); };
 
 
@@ -764,7 +759,8 @@ public:
             setType(LUA_TSTRING);
             _value.string = (const char*)malloc(size*sizeof(char)+1);
         } else {
-            _value.string = (const char*)realloc((void*)_value.string, size*sizeof(char)+1);
+            const int curSize = std::strlen(_value.string); //only realloc if we actually need more space... fuck fragmentation
+            if(curSize < size) _value.string = (const char*)realloc((void*)_value.string, size*sizeof(char)+1);
         }
 
         std::strcpy((char*)_value.string, str);
@@ -778,7 +774,7 @@ public:
     inline void LuaVariantBase::setValue(void*const ptr) {
         if(ptr) {
             setType(LUA_TLIGHTUSERDATA);
-            _value.userdata = ptr;
+            _value.luserdata = ptr;
         } else setType(LUA_TNIL);
     }
 
@@ -819,7 +815,7 @@ public:
     inline  int LuaVariantBase::getValue<int>(void) const { return _value.number; }
 
     template<>
-    inline  void* LuaVariantBase::getValue<void*>(void) const { return _value.userdata; }
+    inline  void* LuaVariantBase::getValue<void*>(void) const { return _value.luserdata; }
 
     template<>
     inline OOLUA::Lua_table_ref LuaVariantBase::getValue<OOLUA::Lua_table_ref>(void) const {
@@ -896,7 +892,7 @@ public:
         case LUA_TNUMBER:
             return (source._value.number >= 1)? true : false;
         case LUA_TLIGHTUSERDATA:
-            return (source._value.userdata)? true : false;
+            return (source._value.luserdata)? true : false;
         default:
             return false;
         }
@@ -926,7 +922,7 @@ public:
         case LUA_TNIL:
             return 0;
         case LUA_TLIGHTUSERDATA:
-            return source._value.userdata? 1 : 0;
+            return source._value.luserdata? 1 : 0;
         default:
             return 0;
         }
@@ -971,7 +967,7 @@ public:
         } else {
             LuaVariantBase variant;
             variant.setType(LUA_TLIGHTUSERDATA);
-            variant._value.userdata = nullptr;
+            variant._value.luserdata = nullptr;
             return variant;
         }
 
@@ -1056,9 +1052,9 @@ public:
     }
 
     template <typename... Args>
-    inline LuaVariantBase LuaVariantBase::operator()(Args&& ... args) const {
+    inline LuaVariantBase LuaVariantBase::operator()(Args&&... args) const {
         push();
-        return LuaManager::_callFunction<LuaVariantBase>(nullptr, args...);
+       return LuaManager::_callFunction<LuaVariantBase>(nullptr, std::forward<Args>(args)...);
     }
 
     inline LuaVariantBase LuaVariantBase::getValue(const LuaVariantBase &key) const {
@@ -1259,61 +1255,19 @@ namespace elysian {
         return *this;
     }
 
-    //Assumes actual function is already at the top of the stack!
-    template<typename Ret, typename... Args>
-    inline int LuaVariantBase::_callLambda(lua_State*/*vm*/) {
-        std::tuple<Args...> argTuple;
-
-        pull_tuple(argTuple, int_<sizeof...(Args)>());
-
-        lua_pushvalue(*_mainState, lua_upvalueindex(1));
-        LuaVariantBase t = LuaVariantBase::fromStack();
-
-        auto* closure = static_cast<const std::function<Ret(Args...)>*>( t[1]->getValue<void*>() );
-
-        GY_ASSERT(closure);
-
-        //const Ret retVal = forward_tuple_to_func_as_args(*closure, argTuple);
-
-      //  OOLUA::push(*_mainState, retVal);
-        return 1;
-    }
 
 
     template <typename Ret, typename... Args>
     inline void LuaVariantBase::setValue(const std::function<Ret(Args...)>& closure) {
-        /* Hacky, mindfuck-y bullshit for garbage collecting the C++ lambda. Since it's stored
-         * as lightuserdata, it can't have a finalizer, and we cannot delete the pointer. So now we have
-         * to proxy it in a bullshit table with a __gc metamethod to delete it when the upvalue is deleted.
-         */
-
-        LuaVariantBase upValue = {
-            { 1, (void*)new std::function<Ret(Args...)>(closure) },
-            { "__gc", (lua_CFunction)[](lua_State*) {
-                  LuaVariantBase t = LuaVariantBase::fromStack();
-                    GY_ASSERT(t.getType() == LUA_TTABLE);
-                    dbgprintf("LUA LAMBDA FUNCTION FINALIZER INVOKED, NOT A MEMORY LEAK!!!111");
-                    delete static_cast<std::function<Ret(Args...)>*>(t[1]->getValue<void*>());
-                    return 0;
-                }
-            }
-        };
-
-        upValue.setMetatable(upValue);
-        upValue.push();
-
-        GY_ASSERT(lua_type(*_mainState, -1) == LUA_TTABLE);
-
-        lua_CFunction func = (lua_CFunction)&_callLambda<Ret, Args...>;
-
-        lua_pushcclosure(*_mainState, func, 1);
-        setType(lua_type(*_mainState, -1));
-        _value.ref = luaL_ref(*_mainState, LUA_REGISTRYINDEX);
+        LuaManager::push(closure);
+        pull();
     }
 
     template<typename T>
-    inline void LuaVariantBase::setValue(const T func) {
-        setValue(make_function(func));
+    inline void LuaVariantBase::setValue(const T lambda) {
+        setValue(make_function(lambda));
+        //LuaManager::push(lambda);
+        //pull();
     }
 
 

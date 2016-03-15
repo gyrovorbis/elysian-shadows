@@ -51,74 +51,11 @@ auto make_function(T fun) -> decltype(make_function(fun, typename func_traits<T>
 }
 
 
-// ====================
-
-
-
-template<unsigned...> struct index_tuple{};
-
-template<unsigned I, typename IndexTuple, typename... Types>
-struct make_indices_impl;
-
-template<unsigned I, unsigned... Indices, typename T, typename... Types>
-struct make_indices_impl<I, index_tuple<Indices...>, T, Types...>
-{
-  typedef typename
-    make_indices_impl<I + 1,
-                      index_tuple<Indices..., I>,
-                      Types...>::type type;
-};
-
-template<unsigned I, unsigned... Indices>
-struct make_indices_impl<I, index_tuple<Indices...> >
-{
-  typedef index_tuple<Indices...> type;
-};
-
-template<typename... Types>
-struct make_indices
-  : make_indices_impl<0, index_tuple<>, Types...>
-{};
-
-
-
-//needs to support lambdas, C ptrs, and std::functions with no extra erasure shit
-
-#if 0
-template <unsigned... Indices, class... Args, class Ret>
-static Ret forward_impl(index_tuple<Indices...>,
-                 std::tuple<Args...> tuple,
-                 const std::function<Ret(Args...)>& closure)
-{
-  return closure(std::get<Indices>(tuple)...);
-}
-
-
-template<typename Ret, class... Args>
-static Ret forward_tuple_to_func_as_args(const std::tuple<Args...>& tuple, const std::function<Ret(Args...)>& closure)
-{
-   typedef typename make_indices<Args...>::type Indices;
-   return forward_impl(Indices(), tuple, closure);
-}
-
-#endif
-
-
-#include <utility>
-#include <tuple>
-
 
 
 
 namespace meta {
 
-#if 0
-
-
-
-
-
-#endif
 
 // detects callable objects, not functions
 // http://stackoverflow.com/questions/15393938/find-out-if-a-c-object-is-callable
@@ -184,6 +121,24 @@ struct reg_function_traits {
 };
 
 } // namespace detail
+
+
+
+template <typename T, typename R_T, typename ARG_T>
+struct is_stateless_impl: std::false_type {};
+
+template <typename T, typename R_T, typename ...ARG_T>
+struct is_stateless_impl<T,typelist<R_T>,typelist<ARG_T...>>:
+    public std::is_convertible<T,typename std::add_pointer<R_T(ARG_T...)>::type>
+{};
+
+template <typename T>
+struct is_stateless
+{
+    using ft=func_traits<T>;
+    static constexpr bool value=is_stateless_impl<T,typename ft::ret_type,typename ft::arg_types>::value;
+};
+
 
 // no types defined
 template <typename T, typename = void, typename = void>
@@ -261,46 +216,6 @@ struct result_of<R(C::*)(Args...) const> {
 } // namespace meta
 
 
-
-
-#if 0
-
-template <typename F, typename = void>
-struct forward_tuple_impl {
-    template <typename TUPLE, size_t... I, typename = void>
-    auto operator()(F&& f, TUPLE&& tuple, std::index_sequence<I...>) {
-        return f(std::get<I>(std::forward<TUPLE>(tuple))...);
-    }
-};
-
-
-template <typename F>
-struct forward_tuple_impl<F, std::enable_if_t<std::is_member_function_pointer<F>::value>> {
-    template <typename ClassPtrType, typename... TupleArgs, size_t... I>
-    auto operator()(F&& f, std::tuple<ClassPtrType, TupleArgs...>&& tuple, std::index_sequence<0, I...>) {
-        static_assert(
-            std::is_same<std::remove_cv_t<typename meta::function_traits<F>::class_type*>, std::remove_cv_t<ClassPtrType>>::value,
-            "First argument in parameter pack must be a pointer to an class with member function F");
-
-        return (std::get<0>(tuple)->*f)(std::get<I>(std::forward<std::tuple<ClassPtrType, TupleArgs...>>(tuple))...);
-    }
-};
-
-
-template <typename F>
-struct forward_tuple_impl<F, std::enable_if_t<std::is_member_function_pointer<F>::value>> {
-    template <typename ClassPtrType, typename TUPLE, size_t... I>
-    auto operator()(F&& f, TUPLE&& tuple, std::index_sequence<0, I...>) {
-        static_assert(
-            std::is_same<std::remove_cv_t<typename meta::function_traits<F>::class_type*>, std::remove_cv_t<decltype(std::get<0>(tuple))>>::value,
-            "First argument in parameter pack must be a pointer to an class with member function F");
-
-        return (std::get<0>(tuple)->*f)(std::get<I>(std::forward<TUPLE>(tuple))...);
-    }
-};
-
-#endif
-
 template <typename F,
           typename  = std::enable_if_t<!std::is_member_function_pointer<F>::value>,
           typename TUPLE,
@@ -312,7 +227,7 @@ constexpr auto forward_tuple_impl(F&& f, TUPLE&& tuple, std::index_sequence<I...
 template <typename    F,
           typename    TUPLE,
           size_t...   I>
-constexpr auto forward_tuple_impl(F&& f, TUPLE&& tuple, std::index_sequence<0, I...>, typename std::enable_if<std::is_member_function_pointer<F>::value>::type* = nullptr) {
+constexpr auto forward_tuple_impl(F&& f, TUPLE&& tuple, std::index_sequence<0, I...>, typename std::enable_if<std::is_member_function_pointer<F>::value>::type* = nullptr) noexcept {
    static_assert(
         std::is_same<std::remove_cv_t<typename meta::function_traits<F>::class_type*>,
                std::remove_cv_t<std::remove_pointer_t<typename std::tuple_element<0, std::remove_reference_t<decltype(tuple)> >::type >>* >::value,
@@ -332,127 +247,44 @@ constexpr auto forward_tuple(F&& f, TUPLE&& args) {
 }
 
 
+namespace detail {
 
-#if 0
-template<typename F, typename... Args>
-constexpr auto forward_tuple(F&& f, std::tuple<Args...>&& args) {
-    return forward_tuple_impl<F>()(
-        std::forward<F>(f),
-        std::forward<std::tuple<Args...>>(args),
-        std::index_sequence_for<Args...>{}
-    );
-}
+    template<typename T, typename F, size_t... I>
+    constexpr auto foreach_in_tuple_impl(T&& tuple, F&& f, std::index_sequence<I...>) {
+        auto l = { (f(std::get<I>(std::forward<T>(tuple))), 0)... };
+        (void)l;
 
-template <typename F, typename... Args>
-class bound_function {
-public:
-    bound_function(F f, Args... args)
-        : _f(std::move(f))
-        , _args(std::forward<Args>(args)...)
-    {}
-
-    auto operator()(){
-        return forward_tuple(std::move(_f), std::move(_args));
     }
 
-private:
-    F _f;
-    std::tuple<Args...> _args;
-};
-
-template <typename... Args>
-auto bind(Args&&... args) {
-    return bound_function<Args...>(std::forward<Args>(args)...);
-}
-#endif
-
-#if 0
-template <typename F, typename... TupleArgs, size_t... I>
-constexpr auto forward_tuple_impl(F&& f, std::tuple<TupleArgs...>&& tuple, std::index_sequence<I...>) {
-    return f(std::get<I>(std::forward<std::tuple<TupleArgs...>>(tuple))...);
 }
 
-template<typename F, typename... Args>
-constexpr auto forward_tuple(F&& f, std::tuple<Args...>&& args) {
-    return forward_tuple_impl(
-        std::forward<F>(f),
-        std::forward<std::tuple<Args...>>(args),
-        std::index_sequence_for<Args...>{}
-    );
+template<typename T, typename F>
+constexpr void foreach_in_tuple(T&& tuple, F&& f) {
+    detail::foreach_in_tuple_impl(std::forward<T>(tuple),
+                                  std::forward<F>(f),
+                                  std::make_index_sequence<std::tuple_size<std::decay_t<T>>{}>{});
 }
 
-#endif
+template<typename T, typename=std::integer_sequence<typename T::value_type>>
+struct reverse_index_sequence;
 
-//GET RID OF ALL INDICES SHIT AND START USING
-//std::index_sequences
-//Make sure to use PERFECT FORWARDING EVERYWHERE WITH STD::FORWARD!
-//c++14 auto return types, so shit isn't fucking hideous with -> decltypes
-//need a FOREACH lambda iteration scheme for performing someting on every std::tuple element (pulling Lua arguments)
+template<typename T, T... list>
+struct reverse_index_sequence<std::integer_sequence<T>, std::integer_sequence<T, list...>> :
+    std::integer_sequence<T, list...>
+{ };
 
+template<typename T, T first, T... rest, T... done>
+struct reverse_index_sequence<std::integer_sequence<T, first, rest...>, std::integer_sequence<T, done...>> :
+    reverse_index_sequence<std::integer_sequence<T, rest...>, std::integer_sequence<T, first, done...>>
+{ };
 
-//forward std::functions, C functions, Lambdas
-template <unsigned... Indices, class... Args, class Ret, class T>
-static Ret forward_impl(index_tuple<Indices...>,
-                 std::tuple<Args...> tuple,
-                 const T& function,
-                 typelist<Ret>)
-{
-  return function(std::get<Indices>(tuple)...);
+template<typename T, typename F>
+constexpr void foreach_in_tuple_reverse(T&& tuple, F&& f) {
+    detail::foreach_in_tuple_impl(std::forward<T>(tuple),
+                                  std::forward<F>(f),
+                                 reverse_index_sequence<std::make_index_sequence<std::tuple_size<std::decay_t<T>>{}>>{});
+
 }
-
-
-template<typename T, typename ...ARGS>
-auto forward_tuple_to_func_as_args(const T& func, const std::tuple<ARGS...>& argTuple)
-    -> decltype(forward_impl(typename make_indices<ARGS...>::type{}, argTuple, func, typename func_traits<T>::ret_type{})) {
-    typedef typename make_indices<ARGS...>::type Indices;
-    return forward_impl(Indices(), argTuple, func, typename func_traits<T>::ret_type{});
-}
-
-//Forward NONCONST C++ member functions
-template <unsigned... Indices, class... Args, class Ret, class C>
-static Ret forward_impl(index_tuple<Indices...>,
-                 std::tuple<C*, Args...> args,
-                 Ret (C::*&mfuncptr) (Args...),
-                 C*const obj,
-                 typelist<Ret>)
-{
-  return (obj->*mfuncptr)(std::get<Indices>(args)...);
-}
-
-
-template<typename RET, typename C, typename ...ARGS>
-auto forward_tuple_to_func_as_args(RET (C::*mfuncptr)(ARGS...), std::tuple<C*, ARGS...>& argTuple)
-    -> decltype(forward_impl(typename make_indices_impl<1, index_tuple<>, ARGS...>::type{}, argTuple, mfuncptr, std::get<0>(argTuple), typename func_traits<decltype(mfuncptr)>::ret_type{}))
-{
-    //indices are created at an offset of 1, since the first argument is actually used as the this ptr and isn't passed to the function
-    typedef typename make_indices_impl<1, index_tuple<>, ARGS...>::type Indices;
-    return forward_impl(Indices(), argTuple, mfuncptr, std::get<0>(argTuple), typename func_traits<decltype(mfuncptr)>::ret_type{});
-}
-
-//forward CONST C++ member functions
-template <unsigned... Indices, class... Args, class Ret, class C>
-static Ret forward_impl(index_tuple<Indices...>,
-                 std::tuple<const C*, Args...> args,
-                 Ret (C::*&mfuncptr) (Args...) const,
-                 const C*const obj,
-                 typelist<Ret>)
-{
-  return (obj->*mfuncptr)(std::get<Indices>(args)...);
-}
-
-
-template<typename RET, typename C, typename ...ARGS>
-auto forward_tuple_to_func_as_args(RET (C::*mfuncptr)(ARGS...) const, std::tuple<const C*, ARGS...>& argTuple)
-    -> decltype(forward_impl(typename make_indices_impl<1, index_tuple<>, ARGS...>::type{}, argTuple, mfuncptr, std::get<0>(argTuple), typename func_traits<decltype(mfuncptr)>::ret_type{}))
-{
-    typedef typename make_indices_impl<1, index_tuple<>, ARGS...>::type Indices;
-    return forward_impl(Indices(), argTuple, mfuncptr, std::get<0>(argTuple), typename func_traits<decltype(mfuncptr)>::ret_type{});
-}
-
-template<std::size_t> struct int_{};
-
-
-
 
 
 

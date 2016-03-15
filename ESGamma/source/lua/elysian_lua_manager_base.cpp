@@ -17,6 +17,9 @@ Debug::SEVERITY                             LuaManagerBase::_printSeverity      
 int                                         LuaManagerBase::_stackBalanceTop[ELYSIAN_LUA_STACK_BALANCE_RECURSIVE_DEPTH] = { 0 };
 int                                         LuaManagerBase::_stackBalanceRecursiveDepth                                 = 0;
 int                                         LuaManagerBase::_traceBackDbgPushes                                         = 0;
+#ifdef ELYSIAN_LUA_DEBUG
+TaskMonitor                                 LuaManagerBase::_taskMonitor(ELYSIAN_LUA_TASK_MONITOR_NAME);
+#endif
 const char									LuaManagerBase::_rPrint[] =
     "function rPrint(s, l, i) -- recursive Print (structure, limit, indent)\n"
         "l = (l) or 100; i = i or \"\";	-- default item limit, indent string\n"
@@ -63,7 +66,7 @@ void LuaManagerBase::_showError(void) {
 void LuaManagerBase::rPrintByIndex(const int index, const unsigned depth, const char* name) {
     //int oldTop = lua_gettop(*_mainState);
     lua_pushvalue(*_mainState, index);							//push table to print
-    LuaManager::pushGlobalField("rPrint");                            //push function
+    LuaManager::pushGlobalField("rPrint");                      //push function
     lua_pushvalue(*_mainState, -2);                             //push table to print
     if(depth) lua_pushnumber(*_mainState, depth);				//push depth if given
     else lua_pushnil(*_mainState);								//push nil for default depth if not
@@ -126,7 +129,7 @@ int LuaManagerBase::_traceBack(lua_State *L) {
     return 1;
 }
 
-void LuaManagerBase::_cStackDump (void) {
+void LuaManagerBase::_cStackDump(void) {
     int i;
     int top = lua_gettop(*_mainState);
     char varDisplayString[200];
@@ -247,7 +250,7 @@ LuaBehaviorScript* LuaManagerBase::loadBehaviorScript(const char* const file) {
         return nullptr;
     }
 
-    _callGlobalFunction<void>("setScriptAttrib", behav, behav->getAttrib());
+    callGlobalFunction<void>("setScriptAttrib", behav, behav->getAttrib());
     behav->cacheTriggers(*_mainState);
 
     if(behav->getAttrib()->hasParent()) {
@@ -262,7 +265,7 @@ LuaBehaviorScript* LuaManagerBase::loadBehaviorScript(const char* const file) {
     }
 
     if(behav->getAttrib()->getSupportedTriggers() & Behavior::ON_SCRIPT_CREATE) {
-        _callGlobalFunction<void>("onScriptCreate", behav);
+        callGlobalFunction<void>("onScriptCreate", behav);
     }
 
     dbgprintf("Adding new script to cache.");
@@ -375,17 +378,21 @@ bool LuaManagerBase::unloadScript(LuaScript &script) {
 }
 
 bool LuaManagerBase::initialize(void) {
+    bool success = true;
     DbgEvent event("Initializing Lua virtual machine.");
-
     _mainState = new OOLUA::Script;
+
     Debug::printf(Debug::LOG_VERBOSE, "Opening standard libs");
     luaL_openlibs(*_mainState);
+
+    Debug::printf(Debug::LOG_VERBOSE, "Loading utility functions.");
+    success &= runString(_rPrint);
+    success &= runScriptSandbox(ELYSIAN_LUA_MANAGER_SERIALIZE_SCRIPT_PATH);
+    success &= runScriptSandbox(ELYSIAN_LUA_MANAGER_TABLE_MANIP_SCRIPT_PATH);
+
     Debug::printf(Debug::LOG_VERBOSE, "Registering wrappers");
-    runString(_rPrint);
-    runScriptSandbox(ELYSIAN_LUA_MANAGER_SERIALIZE_SCRIPT_PATH);
-    runScriptSandbox(ELYSIAN_LUA_MANAGER_TABLE_MANIP_SCRIPT_PATH);
     LuaManager::_registerWrappers();
-    return true;
+    return success;
 }
 
 bool LuaManagerBase::uninitialize(void) {
@@ -429,7 +436,7 @@ void LuaManagerBase::dumpStats(void) {
     sprintf(buffer, "Memory Usage:\t%fMB", (float)kbytes/1024.0f);
     Debug::luaPrint(buffer);
 
-    for(auto& it : _scripts) {
+    for(auto&& it : _scripts) {
 
         sprintf(buffer, "[%d] = %s", count, it.second->getPath());
         Debug::push();
@@ -491,51 +498,6 @@ bool LuaManagerBase::genericIterate(const int index, std::function<void(void)> l
 
     lua_pushvalue(*_mainState, index);
 
-
-    //assume shit is valid?
-#if 0
-    int valueType = lua_type(*_mainState, -1);
-
-    Q_ASSERT(valueType == LUA_TUSERDATA || valueType == LUA_TTABLE);
-
-    //Populate metatable
-    if((metatable = getMetatable(-1))) {
-        lua_pop(*_mainState, 1);
-    }
-
-    //Check if userdata is iterable
-    if(valueType == LUA_TUSERDATA && metatable) {
-        getMetatable(-1);
-        lua_getfield(*_mainState, -1, "__connectSignals");
-        //userdata has lua table proxy
-        if(!lua_isnil(*_mainState, -1)) {
-            lua_pushvalue(*_mainState, -3);
-            lua_pushlightuserdata(*_mainState, static_cast<QObject*>(this));
-            _protectedCall(2, 0, nullptr);
-            iterable = true;
-        //userdata doesn't have lua table proxy
-        } else {
-            iterable = false;
-            lua_pop(*_mainState, 1); //pop nil
-        }
-        lua_pop(*_mainState, 1); //pop metatable
-    //Populate table
-    } else if(valueType == LUA_TTABLE) {
-        iterable = true;
-        auto* ud = TkLuaTableUserdata::inject(*_mainState, _luaRef);
-        connect(ud, SIGNAL(fieldChanged(QVariant)), this, SLOT(onFieldChanged(QVariant)));
-
-    //userdata with no metatable
-    } else iterable = false;
-
-    //Nothing to iterate over
-    if(!iterable) {
-        lua_pop(*_mainState, 1);
-        LuaManager::stackBalanceEnd();
-        return false;
-    }
-#endif
-
     pushGlobalField("pairs");
     lua_pushvalue(*_mainState, -2);
     _protectedCall(1, 3, nullptr);
@@ -581,18 +543,6 @@ bool LuaManagerBase::genericIterate(const int index, std::function<void(void)> l
         lua_pushvalue(*_mainState, -2);
         OOLUA::pull(*_mainState, lastKey);
 #endif
-        /*
-        QList<QStandardItem*> items;
-        auto* labelItem = (PropertyStackModel::createReadOnlyItem(key.toString()));
-        auto* valueItem = new LuaTableFieldItem(_luaRef, key, labelItem);
-        items.push_back(labelItem);
-        items.push_back(valueItem);
-        //items.push_back(
-
-        parentItem->appendRow(items);
-        valueItem->insertingModelItem();
-        _fieldItems[key] = valueItem;
-*/
         lua_pop(*_mainState, 1);
         //firstPass = false;
 
@@ -626,7 +576,7 @@ LuaVariant LuaManagerBase::getPrefab(const char* const name) {
 }
 
 const char* LuaManagerBase::getPrefabName(const LuaVariant& ref) {
-    return _callGlobalFunction<const char*>("getPrefabName", nullptr, ref);
+    return callGlobalFunction<const char*>("getPrefabName", nullptr, ref);
 }
 
 bool LuaManagerBase::saveTable(const LuaVariant& v, const char * const filename) {
@@ -635,15 +585,14 @@ bool LuaManagerBase::saveTable(const LuaVariant& v, const char * const filename)
     dbgprintf("Serializing Lua table: [%s]", filename);
     Debug::push();
 
-    const char* serialData = _callGlobalFunction<const char*>("serialize", nullptr, v);
+    const char* serialData = callGlobalFunction<const char*>("serialize", nullptr, v);
     if(!serialData) {
         errprintf("Returned NULL string!");
         success = false;
     } else {
 
         FILE* file = fopen(filename, "w");
-        if(!file) {
-            errprintf("Could not open file for writing!");
+        if(!file) {            errprintf("Could not open file for writing!");
             success = false;
         } else {
             fprintf(file, "%s", serialData);
@@ -660,7 +609,9 @@ LuaVariant LuaManagerBase::getGlobalsTable(void) {
     return LuaVariant::fromStack();
 }
 
-
+void LuaManagerBase::updateFrameStats(void) {
+    _taskMonitor.startNewFrame();
+}
 
 
 

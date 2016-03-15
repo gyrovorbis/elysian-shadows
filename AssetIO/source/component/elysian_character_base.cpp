@@ -446,7 +446,7 @@ const char* CharacterBase::getAnimNameFromStates(const Direction::DIR4 dir) cons
 
     if(r.getType() == LUA_TSTRING) {
         if(r != "") {
-            assert(r.getValue<const char*>());
+            GY_ASSERT(r.getValue<const char*>());
             strcpy(buffer, r.getValue<const char*>());
             string = buffer;
         }
