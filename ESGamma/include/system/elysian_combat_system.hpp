@@ -18,20 +18,20 @@ namespace elysian {
 
 	class CombatReceipt {
 	private:
-		char		_text[ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_MAX_CHARS] = { 0 };
-		GYColor4	_textColor = GYColor4 { 255, 255, 255, 255 };
-		GYColor4	_partColor = GYColor4 { 255, 255, 255, 255 };
-		float		_partIntensityFactor = 1.0f;
+        char                _text[ELYSIAN_GUI_SYSTEM_COMBAT_TEXT_MAX_CHARS] = { 0 };
+        GYColor4            _textColor          = GYColor4 { 255, 255, 255, 255 };
+        GYColor4            _partColor          = GYColor4 { 255, 255, 255, 255 };
+        float               _partIntensityFactor= 1.0f;
 	public:
 
-		const char* getText(void);
-		GYColor4	getPartColor(void);
-		GYColor4	getTextColor(void);
-		float		getPartIntensityFactor(void);
-		void		setText(const char* text);
-		void		setTextColor(const GYColor4 &textColor);
-		void		setPartColor(const GYColor4 &partColor);
-		void		setPartIntensityFactor(const float factor);
+        const char*         getText(void);
+        GYColor4            getPartColor(void);
+        GYColor4            getTextColor(void);
+        float               getPartIntensityFactor(void);
+        void                setText(const char* text);
+        void                setTextColor(const GYColor4 &textColor);
+        void                setPartColor(const GYColor4 &partColor);
+        void                setPartIntensityFactor(const float factor);
 	};
 
 	class CombatSystem: public System,
@@ -40,43 +40,44 @@ namespace elysian {
 	private:
 
 		struct ActionResolution {
-            CombatReceipt*		receipt     = nullptr;
-            CollisionContact*	contact     = nullptr;
-            Combat*				src         = nullptr;
-            Combat*				target      = nullptr;
-            GYVector2			initialVel  = { 0.0f, 0.0f };
-		} _curActionRes;
+            CombatReceipt*		receipt         = nullptr;
+            CollisionContact*	contact         = nullptr;
+            Combat*				src             = nullptr;
+            Combat*				target          = nullptr;
+            GYVector2			initialVel      = { 0.0f, 0.0f };
+        }                       _curActionRes;
 
-		Pool<Entity*>	_combatants;
-		unsigned		_bgmCombatTrack = 1;
-		bool			_bgmDynamic		= true;
+        Pool<Entity*>           _combatants;
+        unsigned                _bgmCombatTrack = 1;
+        bool                    _bgmDynamic		= true;
 
-		void _dealCollisionDamage(Combat*const src, Combat*const target, Collidable* bodyB, CollisionContact* contact);
-        void _processCurrentCombatAction(CollisionContact*const contact, Combat*const target);
-        void _emitCombatModifierText(const Combat*const target, const CombatStatus& modifier);
+        void                    _dealCollisionDamage(Combat*const src, Combat*const target, Collidable* bodyB, CollisionContact* contact);
+        void                    _processCurrentCombatAction(CollisionContact*const contact, Combat*const target);
+        void                    _emitCombatModifierText(const Combat*const target, const CombatStatus& modifier);
 	public:
-		virtual ~CombatSystem(void) = default;
+        virtual                 ~CombatSystem(void) = default;
 
 		//reimplemented from CollisionContactEventMonitor
-		virtual void onCollisionEnter(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) override;
-		virtual void onCollide(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) override;
-		virtual void onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) override;
+        virtual void            onCollisionEnter(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) override;
+        virtual void            onCollide(Collidable*const bodyA, Collidable*const bodyB, CollisionContact* contact) override;
+        virtual void            onCollisionExit(Collidable*const bodyA, Collidable*const bodyB) override;
 
-		void initialize(void);
-		void update(void);
+        void                    initialize(void);
+        void                    update(void);
 
-		void addCombatant(Entity& entity);
-		void removeCombatant(Entity& entity);
-		void killCombatant(Entity& entity);
+        void                    addCombatant(Entity& entity);
+        void                    removeCombatant(Entity& entity);
+        void                    killCombatant(Entity& entity);
 
-		void setBgmDynamic(const bool enabled=true);
-		void setBgmCombatTrack(const unsigned track);
+        void                    setBgmDynamic(const bool enabled=true);
+        void                    setBgmCombatTrack(const unsigned track);
 
-        /*void resolveCombatAction(OOLUA::Lua_table_ref action,
-								 Combat*const src,
-                                 Combat*const target);*/
+        void                    sendStatusModifier(Combat*const target, CombatStatusModifier*const modifier);
 
-        void sendStatusModifier(Combat*const target, CombatStatusModifier*const modifier);
+        /*void                  resolveCombatAction(OOLUA::Lua_table_ref action,
+                                    Combat*const src,
+                                    Combat*const target);*/
+
 	};
 
 

@@ -29,15 +29,12 @@ namespace elysian {
 
 	class DialogSystem: public System {
 	public:
-		enum POS_STATE { POS_BOTTOM, POS_TOP, POS_MOVE_UP, POS_MOVE_DOWN };
-		enum BOX_STATE { BOX_OUTPUT, BOX_OUTPUT_END, BOX_INPUT };
+        enum POS_STATE { POS_BOTTOM, POS_TOP, POS_MOVE_UP, POS_MOVE_DOWN };
+        enum BOX_STATE { BOX_OUTPUT, BOX_OUTPUT_END, BOX_INPUT };
 	private:
 
-		static const float _nextCharTime;
-
-
-
-        static const float _maxNonmodalDist;
+        static constexpr const float _nextCharTime      = ELSYIAN_DIALOG_SYSTEM_CHAR_APPEAR_TIME;
+        static constexpr const float _maxNonmodalDist   = ELYSIAN_DIALOG_SYSTEM_MAX_NONMODAL_DIST;
 
 		// ==== INTERNAL DISPLAY STATE ====
 		int				_currentScreen		= 0;

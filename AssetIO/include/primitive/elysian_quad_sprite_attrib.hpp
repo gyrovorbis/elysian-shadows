@@ -56,9 +56,9 @@ namespace elysian {
         unsigned char getVertexAlpha(const unsigned short index) const { return (index > 0)? _vertColor[index-1].a : _color.a; }
 
 
-        virtual void submitVerts(GYVector4 *verts = nullptr) {
+        virtual void submitVerts(GYVector4 *verts = nullptr) override {
             //We got some serious fucking design issues if this shit ain't true.
-            assert((char *)&_vertColor == ((char*)&_color+4));
+            GY_ASSERT((char *)&_vertColor == ((char*)&_color+4));
             gyVidTexBind(_tex);
             gyVidAlphaLevel(GY_ALPHA_FULL);
             gyVidQuadListBegin(&_color);
@@ -67,15 +67,8 @@ namespace elysian {
             gyVidQuadListEnd();
         }
 
-        PrimAttrib::TYPE getType(void) const { return PrimAttrib::QUAD_SPRITE; }
+        PrimAttrib::TYPE getType(void) const override { return PrimAttrib::QUAD_SPRITE; }
 
-        virtual bool load(FILE* /*file*/) {
-            return false;
-        }
-
-        virtual bool save(FILE* /*file*/) {
-            return false;
-        }
     };
 }
 

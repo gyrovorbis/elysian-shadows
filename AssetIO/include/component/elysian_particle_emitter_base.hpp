@@ -192,8 +192,8 @@ namespace elysian {
     inline void ParticleEmitterAttribBase::setEndColor(const GYColor4 color) { _endColor = color; }
     inline void ParticleEmitterAttribBase::setAnimGridSize(const unsigned w, const unsigned h) {
         _animGridWidth = w; _animGridHeight = h;
-        assert(w <= ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_WIDTH);
-        assert(h <= ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_HEIGHT);
+        GY_ASSERT(w <= ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_WIDTH);
+        GY_ASSERT(h <= ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_HEIGHT);
     }
     inline void ParticleEmitterAttribBase::setAnimGridIndex(const unsigned row, const unsigned col, int index) {
         _animGrid[row][col] = index;

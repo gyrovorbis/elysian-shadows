@@ -44,6 +44,11 @@ namespace elysian {
 
 
 
+
+
+
+
+
 //======= INLINEZ ==========
 
 inline Color4::Color4(void): GYColor4 { 255, 255, 255, 255 }, _ptr(this) {}

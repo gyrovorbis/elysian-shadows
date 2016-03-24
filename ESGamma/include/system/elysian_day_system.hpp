@@ -1,7 +1,7 @@
 #ifndef ELYSIAN_DAY_SYSTEM_HPP
 #define ELYSIAN_DAY_SYSTEM_HPP
 
-#include "elysian_system.hpp"
+#include <system/elysian_system.hpp>
 #include <gyro_matrix_api.h>
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
@@ -59,6 +59,12 @@ namespace elysian {
 		void			onAreaExit(void);
 
 	};
+
+
+
+
+
+
 
 	//===== INLINEZ =====
 

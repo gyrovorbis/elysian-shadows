@@ -3,13 +3,11 @@
 
 #include <elysian_system.hpp>
 #include <primitive/elysian_instance_transform.hpp>
-#include <elysian_subprocess_manager.hpp>
-#include <elysian_timer_system_base.hpp>
+#include <utility/elysian_subprocess_manager.hpp>
 #include <level/elysian_zcoords.hpp>
 #include <utility/elysian_camera_shake_subprocess.hpp>
 
 #include <stdlib.h>
-
 #include <cstdlib>
 #include <vector>
 #include <gyro_matrix_api.h>
@@ -28,18 +26,18 @@ namespace elysian {
     struct  Camera;
 
     class CameraKeyFrame: public InstanceTransform {
-        friend class CameraSystemBase;
-        friend struct Camera;
+        friend class            CameraSystemBase;
+        friend struct           Camera;
     private:
 
-        float       _fov        = 45.0f;
+        float                   _fov        = 45.0f;
     public:
 
-        float       getFov(void) const;
-        void        setFov(const float fov);
+        float                   getFov(void) const;
+        void                    setFov(const float fov);
 
-        void linearInterpolate(const CameraKeyFrame& startKeyFrame, const CameraKeyFrame& endKeyFrame,
-                               const float interval, const float elapsed);
+        void                    linearInterpolate(const CameraKeyFrame& startKeyFrame, const CameraKeyFrame& endKeyFrame,
+                                    const float interval, const float elapsed);
     };
 
     using CameraKeyFrameLinearInterpolator = LinearInterpolatorSubProcess<CameraKeyFrame, CameraSystemBase>;
@@ -47,29 +45,29 @@ namespace elysian {
 
     struct Camera: public CameraKeyFrame, public GYCamera {
 
-        Entity* focalEntity	= nullptr;
-        std::vector<Entity*> entities;
+        Entity*                 focalEntity     = nullptr;
+        std::vector<Entity*>    entities;
 
         //GYVector3 dir		= { 0.0f, 1.0f, 1.0f };
-        GYVector3 up		= { 0.0f, 0.0f, 1.0f };
-        float staticScale	= 1.0f;
+        GYVector3               up              = { 0.0f, 0.0f, 1.0f };
+        float                   staticScale     = 1.0f;
 
         //dynamic camera boundaries
-        float maxScale		= 5.0f;
-        float minScale		= 0.5f;
-        float baseScale		= 1.0f;
+        float                   maxScale		= 5.0f;
+        float                   minScale		= 0.5f;
+        float                   baseScale		= 1.0f;
 
         //Bounding Geometry
-        int scrStartX	= 0;
-        int scrStartY	= 0;
-        int scrEndX		= 0;
-        int scrEndY		= 0;
+        int                     scrStartX       = 0;
+        int                     scrStartY       = 0;
+        int                     scrEndX         = 0;
+        int                     scrEndY         = 0;
 
-        void updateViewVolumeBoundingRegion(void);
-        void clipBoundingRegion(const int startX, const int endX, const int startY, const int endY);
-        void clipBoundingRegion(const Camera& cam);
+        void                    updateViewVolumeBoundingRegion(void);
+        void                    clipBoundingRegion(const int startX, const int endX, const int startY, const int endY);
+        void                    clipBoundingRegion(const Camera& cam);
 
-        bool isWithinScreenRegion(const int x, const int y, const int width, const int height) const;
+        bool                    isWithinScreenRegion(const int x, const int y, const int width, const int height) const;
     };
 
     class CameraSystemBase:
@@ -78,207 +76,98 @@ namespace elysian {
                                     CameraShakeSubProcess>,
             public System
     {
-        friend CameraKeyFrameLinearInterpolator;
+        friend                  CameraKeyFrameLinearInterpolator;
 
     protected:
-        Camera				_internalStates[ELYSIAN_CAMERA_SYSTEM_STACK_SIZE];
-        Camera*			_states[ELYSIAN_CAMERA_SYSTEM_STACK_SIZE];
-        Camera				_debugState;
-        Camera				_uiCamera;
-        Camera*			_curState		= &_internalStates[0];
-        int						_depth			= 0; //depth is technically +1... my code, fuck you.
-        bool					_projViewActive = false;
-        bool					_debugActive	= false;
-        bool					_customState	= false;
-        bool                    _followEnabled  = true;
+        Camera                  _internalStates[ELYSIAN_CAMERA_SYSTEM_STACK_SIZE];
+        Camera*                 _states[ELYSIAN_CAMERA_SYSTEM_STACK_SIZE];
+        Camera                  _debugState;
+        Camera                  _uiCamera;
+        Camera*                 _curState           = &_internalStates[0];
+        int						_depth              = 0; //depth is technically +1... my code, fuck you.
+        bool					_projViewActive     = false;
+        bool					_debugActive        = false;
+        bool					_customState        = false;
+        bool                    _followEnabled      = true;
 
-        unsigned				_scrWidth		= 0;
-        unsigned				_scrHeight		= 0;
+        unsigned				_scrWidth           = 0;
+        unsigned				_scrHeight          = 0;
 
-        int						_topBoundary	=	-1;
-        int						_bottomBoundary =	-1;
-        int						_leftBoundary	=	-1;
-        int						_rightBoundary	=	-1;
+        int						_topBoundary        = -1;
+        int						_bottomBoundary     = -1;
+        int						_leftBoundary       = -1;
+        int						_rightBoundary      = -1;
 
-        bool					_dynamic		= true;
-        bool                    _boundByMap     = true;
+        bool					_dynamic            = true;
+        bool                    _boundByMap         = true;
 
         void                    _updateState(Camera*const state, const float deltaTime);
 
     public:
-        enum    SUBPROC_ID { SUBPROC_KEY_FR_INTERP, SUBPROC_CAM_SHAKE };
+        enum    SUBPROC_ID      { SUBPROC_KEY_FR_INTERP, SUBPROC_CAM_SHAKE };
 
-                CameraSystemBase(void);
+                                CameraSystemBase(void);
 
-        void    initializeProjMatrix(void);
-        bool    isBoundByMap(void) const;
-        void    setBoundByMap(const bool val);
-        bool    isDebug(void) const;
-        bool    isFollowEnabled(void) const;
-        void    setFollowEnabled(const bool val);
+        void                    initializeProjMatrix(void);
+        bool                    isBoundByMap(void) const;
+        void                    setBoundByMap(const bool val);
+        bool                    isDebug(void) const;
+        bool                    isFollowEnabled(void) const;
+        void                    setFollowEnabled(const bool val);
 
-        void     setCurrentIndex(const unsigned index);
-        int    getCurrentIndex(void) const;
+        void                    setCurrentIndex(const unsigned index);
+        int                     getCurrentIndex(void) const;
 
-        void pushCustomCamera(Camera*const state) {
-            ++_depth;
-            assert(_depth < ELYSIAN_CAMERA_SYSTEM_STACK_SIZE);
-            setCurrentCamera(state);
-            //_curState = state;
-            _customState = true;
-        }
-
-        void pushPerspectiveState(void) {
-            _debugActive = true;
-            pushCustomCamera(&_debugState);
-        }
-
-        void setCurrentCamera(Camera*const state);
-
-        void processInput(const Keyboard* input);
-
-        CameraKeyFrame getKeyFrame(void) const {
-            return *static_cast<CameraKeyFrame*>(_curState);
-        }
-
-        void setFollowEntity(Entity*const entity) {
-            _curState->focalEntity = entity;
-        }
-
-        void setBaseScale(const float scale) {
-            _curState->baseScale = scale;
-        }
-
-        Entity* getFollowEntity(void) const {
-            return _curState->focalEntity;
-        }
-
-        void addEntity(Entity*const entity) const {
-            _curState->entities.push_back(entity);
-        }
-
-        void removeEntity(Entity*const entity) const {
-            for(int i = 0; i < (int)_curState->entities.size(); ++i)
-                if(_curState->entities[i] == entity) {
-                    _curState->entities.erase(_curState->entities.begin()+i);
-                    return;
-                }
-        }
-
-        void setPosition(const GYVector3 &pos) {
-            _curState->_pos = pos;
-        }
-
-        void translate(const GYVector3 &dist) {
-            gyVec3Add(&_curState->_pos, &_curState->_pos, &dist);
-        }
-
-        void translateOffset(const GYVector3& dist) {
-            gyVec3AddAccum(&_curState->_pos, &dist);
-        }
-
-        void scale(const float factor, const float time=0.0f, EventMonitor*const monitor=nullptr) {
-            auto &interp = get<SUBPROC_KEY_FR_INTERP>(static_cast<SubProcParent&>(*this));
-            //if(interp.getProcState() == PROC_STATE_RUNNING)
-
-            CameraKeyFrame frame = getKeyFrame();
-            frame.setScale(frame.getScale().x*factor, frame.getScale().y*factor, frame.getScale().z*factor);
-            interp.setKeyFrames(_curState, frame);
-            interp.setTimeInterval(time);
-            interp.setEventMonitor(monitor);
-            interp.start(this);
-        }
-
-        void moveToKeyFrame(const CameraKeyFrame& frame, const float time=0.0f, EventMonitor*const monitor=nullptr);
-
-        void shake(const GYVector3& displacement, unsigned int oscillations, const float time, const bool fade=false, EventMonitor*const monitor=nullptr);
-
-        void staticScale(const float factor) {
-            _curState->staticScale *= factor;
-        }
-
-        void setStaticScale(const float factor) {
-            _curState->staticScale = factor;
-        }
-
-        float getStaticScale(void) const { return _curState->staticScale; }
-
-
-
-        void setScale(const float /*factor*/, const float time=0.0f, EventMonitor*const monitor=nullptr) {
-            auto &interp = get<SUBPROC_KEY_FR_INTERP > ( static_cast<SubProcParent&>(*this));
-
-            if(interp.getProcState() == PROC_STATE_RUNNING) return;
-
-            CameraKeyFrame frame = getKeyFrame();
-            //frame.setScale(factor);
-            interp.setKeyFrames(_curState, frame);
-            interp.setTimeInterval(time);
-            interp.setEventMonitor(monitor);
-            interp.start(this);
-        }
-
-        //Perspective functions
-        void setPerspectiveFrustum(const float fov, const float aspect, const float znear, const float zfar);
-
-        void setDirection(const GYVector3 &dir) {
-            _curState->setOrient(dir.x, dir.y, dir.z);
-           // _curState->_keyFrame._dir = dir;
-        }
-
-        void setUpDirection(const GYVector3 &dir) {
-            _curState->up = dir;
-        }
-
-        void pushViewProjMatrix(void);
-
-        void popViewProjMatrix(void);
-
-        void pushState(void) {
-            ++_depth;
-            if(_depth <= 0) _depth = 0;
-            //assert(_depth < ELYSIAN_CAMERA_SYSTEM_STACK_SIZE);
-            _states[_depth] = &_internalStates[_depth];
-            setCurrentCamera(_states[_depth]);
-        }
-
-        void popState(void);
-
-        Camera* getCurrentState(void) const { return _curState; }
-
-        bool isOnscreen(const int x, const int y, const int width, const int height) const;
-
-        void getVisibleTileRegion(int& startX, int& startY, int& endX, int& endY, const Camera* state=nullptr) const;
-
-        void pushViewMatrixToStack(void);
-        void popViewMatrixFromStack(void);
+        void                    pushCustomCamera(Camera*const state);
+        void                    pushPerspectiveState(void);
+        void                    setCurrentCamera(Camera*const state);
+        void                    processInput(const Keyboard* input);
+        CameraKeyFrame          getKeyFrame(void) const;
+        void                    setFollowEntity(Entity*const entity);
+        void                    setBaseScale(const float scale);
+        Entity*                 getFollowEntity(void) const;
+        void                    addEntity(Entity*const entity) const;
+        void                    removeEntity(Entity*const entity) const;
+        void                    setPosition(const GYVector3& pos);
+        void                    translate(const GYVector3& dist);
+        void                    translateOffset(const GYVector3& dist);
+        void                    scale(const float factor, const float time=0.0f, EventMonitor*const monitor=nullptr);
+        void                    moveToKeyFrame(const CameraKeyFrame& frame, const float time=0.0f, EventMonitor*const monitor=nullptr);
+        void                    shake(const GYVector3& displacement, unsigned int oscillations, const float time, const bool fade=false, EventMonitor*const monitor=nullptr);
+        void                    staticScale(const float factor);
+        void                    setStaticScale(const float factor);
+        float                   getStaticScale(void) const;
+        void                    setScale(const float /*factor*/, const float time=0.0f, EventMonitor*const monitor=nullptr);
+        void                    setPerspectiveFrustum(const float fov, const float aspect, const float znear, const float zfar);
+        void                    setDirection(const GYVector3 &dir);
+        void                    setUpDirection(const GYVector3 &dir);
+        void                    pushViewProjMatrix(void);
+        void                    popViewProjMatrix(void);
+        void                    pushState(void);
+        void                    popState(void);
+        Camera*                 getCurrentState(void) const;
+        bool                    isOnscreen(const int x, const int y, const int width, const int height) const;
+        void                    getVisibleTileRegion(int& startX, int& startY, int& endX, int& endY, const Camera* state=nullptr) const;
+        void                    pushViewMatrixToStack(void);
+        void                    popViewMatrixFromStack(void);
 
         //Transforms a WORLD COORDINATE vector into SCREEN COORDINATES
-        void transform(GYVector3* dest, const GYVector3* src);
-        void transform(GYVector4* dest, const GYVector4* src);
+        void                    transform(GYVector3* dest, const GYVector3* src);
+        void                    transform(GYVector4* dest, const GYVector4* src);
 
         //Transforms a SCREEN COORDINATE vector into WORLD COORDINATES
-        void inverseTransform(GYVector3* dest, const GYVector3* src);
+        void                    inverseTransform(GYVector3* dest, const GYVector3* src);
 
-        void update(void);
-
-        bool isOnscreen(const Entity &entity);
-
-        void setBoundaries(const float top, const float bottom, const float left, const float right) {
-            _topBoundary = top; _bottomBoundary = bottom; _leftBoundary = left; _rightBoundary = right;
-        }
-
-        void setDynamic(const bool value) { _dynamic = value; }
+        void                    update(void);
+        bool                    isOnscreen(const Entity &entity);
+        void                    setBoundaries(const float top, const float bottom, const float left, const float right);
+        void                    setDynamic(const bool value);
 
 
-        /* LEGACY
-        //const static gyro::Vector2 screenSize;
-        //void RenderSprite(gyro::Sprite& sprite) const;
-        //void RenderRect(gyro::Rect& rect) const;
-        //void Transform(gyro::Matrix3x3& entity) const;
-        //gyro::Vector2 Transform(const gyro::Vector2& vec);
-        */
     };
+
+
+
 
 
 
@@ -422,6 +311,119 @@ namespace elysian {
         _curState = _states[_depth];
     }
     inline int CameraSystemBase::getCurrentIndex(void) const { return _depth; }
+
+    inline void CameraSystemBase::pushCustomCamera(Camera*const state) {
+        ++_depth;
+        assert(_depth < ELYSIAN_CAMERA_SYSTEM_STACK_SIZE);
+        setCurrentCamera(state);
+        //_curState = state;
+        _customState = true;
+    }
+
+    inline void CameraSystemBase::pushPerspectiveState(void) {
+        _debugActive = true;
+        pushCustomCamera(&_debugState);
+    }
+
+    inline CameraKeyFrame CameraSystemBase::getKeyFrame(void) const {
+        return *static_cast<CameraKeyFrame*>(_curState);
+    }
+
+    inline void CameraSystemBase::setFollowEntity(Entity*const entity) {
+        _curState->focalEntity = entity;
+    }
+
+    inline void CameraSystemBase::setBaseScale(const float scale) {
+        _curState->baseScale = scale;
+    }
+
+    inline Entity* CameraSystemBase::getFollowEntity(void) const {
+        return _curState->focalEntity;
+    }
+
+    inline void CameraSystemBase::addEntity(Entity*const entity) const {
+        _curState->entities.push_back(entity);
+    }
+
+    inline void CameraSystemBase::removeEntity(Entity*const entity) const {
+        for(int i = 0; i < (int)_curState->entities.size(); ++i)
+            if(_curState->entities[i] == entity) {
+                _curState->entities.erase(_curState->entities.begin()+i);
+                return;
+            }
+    }
+
+    inline void CameraSystemBase::setPosition(const GYVector3 &pos) {
+        _curState->_pos = pos;
+    }
+
+    inline void CameraSystemBase::translate(const GYVector3 &dist) {
+        gyVec3Add(&_curState->_pos, &_curState->_pos, &dist);
+    }
+
+    inline void CameraSystemBase::translateOffset(const GYVector3& dist) {
+        gyVec3AddAccum(&_curState->_pos, &dist);
+    }
+
+    inline void CameraSystemBase::scale(const float factor, const float time=0.0f, EventMonitor*const monitor=nullptr) {
+        auto &interp = get<SUBPROC_KEY_FR_INTERP>(static_cast<SubProcParent&>(*this));
+        //if(interp.getProcState() == PROC_STATE_RUNNING)
+
+        CameraKeyFrame frame = getKeyFrame();
+        frame.setScale(frame.getScale().x*factor, frame.getScale().y*factor, frame.getScale().z*factor);
+        interp.setKeyFrames(_curState, frame);
+        interp.setTimeInterval(time);
+        interp.setEventMonitor(monitor);
+        interp.start(this);
+    }
+
+    inline void CameraSystemBase::staticScale(const float factor) {
+        _curState->staticScale *= factor;
+    }
+
+    inline void CameraSystemBase::setStaticScale(const float factor) {
+        _curState->staticScale = factor;
+    }
+
+    inline float CameraSystemBase::getStaticScale(void) const { return _curState->staticScale; }
+
+    inline void CameraSystemBase::setScale(const float /*factor*/, const float time=0.0f, EventMonitor*const monitor=nullptr) {
+        auto &interp = get<SUBPROC_KEY_FR_INTERP > ( static_cast<SubProcParent&>(*this));
+
+        if(interp.getProcState() == PROC_STATE_RUNNING) return;
+
+        CameraKeyFrame frame = getKeyFrame();
+        //frame.setScale(factor);
+        interp.setKeyFrames(_curState, frame);
+        interp.setTimeInterval(time);
+        interp.setEventMonitor(monitor);
+        interp.start(this);
+    }
+
+    inline void CameraSystemBase::setDirection(const GYVector3 &dir) {
+        _curState->setOrient(dir.x, dir.y, dir.z);
+       // _curState->_keyFrame._dir = dir;
+    }
+
+    inline void CameraSystemBase::setUpDirection(const GYVector3 &dir) {
+        _curState->up = dir;
+    }
+
+    inline void CameraSystemBase::pushState(void) {
+        ++_depth;
+        if(_depth <= 0) _depth = 0;
+        //assert(_depth < ELYSIAN_CAMERA_SYSTEM_STACK_SIZE);
+        _states[_depth] = &_internalStates[_depth];
+        setCurrentCamera(_states[_depth]);
+    }
+
+    inline Camera* CameraSystemBase::getCurrentState(void) const { return _curState; }
+
+    inline void CameraSystemBase::setBoundaries(const float top, const float bottom, const float left, const float right) {
+        _topBoundary = top; _bottomBoundary = bottom; _leftBoundary = left; _rightBoundary = right;
+    }
+
+    inline void CameraSystemBase::setDynamic(const bool value) { _dynamic = value; }
 
 }
 

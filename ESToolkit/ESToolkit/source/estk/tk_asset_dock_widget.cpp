@@ -395,7 +395,7 @@ QMenu* PrefabAssetFileType::contextMenu(const QModelIndex& /*index*/) {
     menuStack.insertAction("Create Child",
          [&](bool) {
         LuaVariant v = _prefabRef["new"].getVariant()(_prefabRef);
-        getAssets()->setCurrentSelection(new LuaTableSelectable(v.getRef()));
+        getAssets()->setCurrentSelection(new LuaTableSelectable(v));
 
     });
 

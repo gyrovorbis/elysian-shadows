@@ -36,7 +36,7 @@ public:
     virtual                         ~LuaTableFieldItem(void);
     virtual void                    insertingModelItem(void) override;
     virtual QStyledItemDelegate*    getStyledItemDelegate(void) const override;
-    virtual int                     type(void) const override { return (int)ESTkStandardItemType::LuaTable; }
+    virtual int                     type(void) const override;
 
     virtual QVariant                getValue(void) const;
     virtual void                    setValue(const QVariant val);
@@ -120,6 +120,8 @@ public:
 
 
 //==== INLINEZ ======
+
+inline int LuaTableFieldItem::type(void) const { return (int)ESTkStandardItemType::LuaTable; }
 
 inline void LuaTableFieldItem::setVariant(const LuaVariant var) {
     _fieldRef.setVariant(var);

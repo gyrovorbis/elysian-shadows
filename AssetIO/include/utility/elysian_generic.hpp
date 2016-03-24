@@ -238,6 +238,93 @@ namespace elysian {
       return (((_Ttype&) _memberData)._genericDataElement);
     }
 
+
+
+
+
+
+
+
+
+#if 0
+    //STL-STYLE C++11 ITERATORS
+
+    template<typename C, bool is_const_iterator=true>
+    class const_noconst_iterator : public std::iterator<std::forward_iterator_tag, LuaVariantBase>, public LuaManager {
+        friend class const_noconst_iterator<true>;
+        friend class LuaVariantBase;
+
+        typedef typename std::conditional<is_const_iterator, const LuaVariantBase*, LuaVariantBase*>::type DataStructurePointerType;
+        typedef typename std::conditional<is_const_iterator, const LuaVariantBase&, LuaVariantBase&>::type ValueReferenceType;
+public:
+        const_noconst_iterator(const LuaFieldRef& fieldRef, const LuaVariant& funcRef):
+            _fieldRef(fieldRef),
+            _nextFuncRef(funcRef)
+        {}
+
+        /**
+        * Copy constructor. Allows for implicit conversion from a regular iterator to a const_iterator
+        */
+        const_noconst_iterator(const const_noconst_iterator<false>& other):
+            _fieldRef(other._fieldRef),
+            _nextFuncRef(other._nextFuncRef)
+        {}
+
+        /**
+        * Equals comparison operator
+        */
+        bool operator== (const const_noconst_iterator& other) const {
+            return _fieldRef == other._fieldRef;
+        }
+
+        /**
+        * Not-equals comparison operator
+        * @see operator==(const const_noconst_iterator&) const
+        */
+        bool operator!= (const const_noconst_iterator& other) const {
+        return !(*this == other);
+        }
+
+        /**
+        * Dereference operator
+        * @return the value of the element this iterator is currently pointing at
+        */
+        LuaFieldRef& operator*(void) {
+            return _fieldRef;
+        }
+
+        LuaFieldRef* operator->(void) {
+            return &_fieldRef;
+        }
+
+        LuaVariantBase first(void) const {
+            return _fieldRef.getKey();
+        }
+
+        LuaVariantBase second(void) const {
+            return _fieldRef.getCachedVariant();
+        }
+
+        const_noconst_iterator operator++(void);
+        /**
+        * Postfix increment operator (e.g., it++)
+        */
+        const_noconst_iterator operator++(int){
+            // Use operator++()
+            const const_noconst_iterator old(*this);
+            ++(*this);
+            return old;
+        }
+
+    private:
+        LuaFieldRef                 _fieldRef;
+        LuaVariant                  _nextFuncRef;
+    };
+
+
+
+#endif
+
 }
 
 #endif

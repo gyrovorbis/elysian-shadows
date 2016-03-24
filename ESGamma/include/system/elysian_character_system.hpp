@@ -16,25 +16,25 @@ namespace elysian {
   class WalkToWayPointSubProcess:
       public MonitorableSubProcess<WalkToWayPointSubProcess, CharacterSystem>
   {
-  protected:
-        Entity*     _entity         = nullptr;
-        bool        _walk           = false;
-        GYVector3   _dir;
-        GYVector3   _endPos;
+    protected:
+        Entity*         _entity         = nullptr;
+        bool            _walk           = false;
+        GYVector3       _dir;
+        GYVector3       _endPos;
 
-  public:
+    public:
 
-    void _start(CharacterSystem* sys);
-    void _stop(CharacterSystem* sys);
-    void _update(CharacterSystem* sys, const float deltaTime);
-        void setWayPoint(Entity* comp, const float endX, const float endY);
-        void setWayPoint(Entity* comp, const float endX, const float endY, float endZ);
+        void            _start(CharacterSystem* sys);
+        void            _stop(CharacterSystem* sys);
+        void            _update(CharacterSystem* sys, const float deltaTime);
+        void            setWayPoint(Entity* comp, const float endX, const float endY);
+        void            setWayPoint(Entity* comp, const float endX, const float endY, float endZ);
 
   };
 
   typedef MonitorableSubProcessPool<WalkToWayPointSubProcess,
-                    CharacterSystem,
-                    ELYSIAN_CHARACTER_SYSTEM_WAYPOINT_INTERP_POOL_SIZE>
+                        CharacterSystem,
+                        ELYSIAN_CHARACTER_SYSTEM_WAYPOINT_INTERP_POOL_SIZE>
     WalkToWayPointPool;
 
 
@@ -43,17 +43,25 @@ namespace elysian {
       public SubProcessManager<CharacterSystem, WalkToWayPointPool>,
       public System
   {
-  private:
-    enum SUBPROCS { SUBPROC_WAYPOINT_POOL };
+    private:
+        enum SUBPROCS   { SUBPROC_WAYPOINT_POOL };
 
-  public:
-    CharacterSystem(void);
-    void update(void);
+    public:
+                        CharacterSystem(void);
+        void            update(void);
 
-        void walkToWayPoint(Entity*const entity, const float x, const float y, EventMonitor*const monitor=nullptr);
-        void moveToWayPoint(Entity*const entity, const float x, const float y, const float z, EventMonitor*const monitor=nullptr);
+        void            walkToWayPoint(Entity*const entity, const float x, const float y, EventMonitor*const monitor=nullptr);
+        void            moveToWayPoint(Entity*const entity, const float x, const float y, const float z, EventMonitor*const monitor=nullptr);
 
   };
+
+
+
+
+
+
+
+
 
   // ======= INLINEZ =======
 

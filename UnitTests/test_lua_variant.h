@@ -13,13 +13,6 @@ namespace tktest {
 //1 - convert to/from OOLUA::Lua_table_refc
 
 
-// iteration
-// 4 types of iteration
-// first/second methods
-// range-based for
-// modifying table during iteration
-
-
 class LuaVariantTest: public QObject, public LuaManager {
     Q_OBJECT
 
@@ -135,8 +128,10 @@ private Q_SLOTS:
     //function operations
     void callLuaFunctionIntReturn(void);
     void callLuaFunctionVariadicArgsVoidReturn(void);
+    void callCppLambdaClosure(void);
 
-    void closure(void);
+    void makeWeakRef(void);
+    void getLength(void);
 
     //metatables
     //void setMetatable(void);
@@ -771,7 +766,7 @@ inline void LuaVariantTest::otherAsVoidPtr(void) {
     QVERIFY(v.asUserdata() == nullptr);
 }
 
-inline void LuaVariantTest::closure(void) {
+inline void LuaVariantTest::callCppLambdaClosure(void) {
     int a = 3;
     LuaVariant v;
 
@@ -783,6 +778,29 @@ inline void LuaVariantTest::closure(void) {
     QVERIFY(val == 9);
 }
 
+inline void LuaVariantTest::makeWeakRef(void) {
+    elysian::InstanceTransform transform;
+    LuaVariant v1 = &transform;
+    LuaVariant v2 = LuaVariant::makeWeakRef(v1);
+
+    QVERIFY(v1 == v2);
+    QVERIFY(v1.getValue<elysian::InstanceTransform*>() == v2.getValue<elysian::InstanceTransform*>());
+    QVERIFY(v1.getRef() == v2.getRef());
+}
+
+inline void LuaVariantTest::getLength(void) {
+    LuaVariant v1 = LuaVariant::fromArray( {1, 2, 3, 4, 5 });
+    LuaVariant v2 = {
+        { 1, 1 },
+        { 2, 2 },
+        { 3, 3 },
+        { 6, 6 },
+        {"LOLOL", "TEST" }
+    };
+
+    QVERIFY(v1.getLength() == 5);
+    QVERIFY(v2.getLength() == 3);
+}
 
 inline void LuaVariantTest::callLuaFunctionIntReturn(void) {
     LuaVariant variant;
