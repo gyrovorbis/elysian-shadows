@@ -20,8 +20,8 @@
 namespace elysian {
 
 //const static members
-const float DialogSystem::_maxNonmodalDist = ELYSIAN_DIALOG_SYSTEM_MAX_NONMODAL_DIST;
-const float DialogSystem::_nextCharTime = ELSYIAN_DIALOG_SYSTEM_CHAR_APPEAR_TIME;
+//const float DialogSystem::_maxNonmodalDist = ELYSIAN_DIALOG_SYSTEM_MAX_NONMODAL_DIST;
+//const float DialogSystem::_nextCharTime = ELSYIAN_DIALOG_SYSTEM_CHAR_APPEAR_TIME;
 
 DialogSystem::DialogSystem(void) {
 	/*
@@ -215,7 +215,7 @@ void DialogSystem::update(void) {
 
 	//IF WE'RE SPEAKING TO AN ENTITY ----FUCK
 	if(_curScreen.screen && _curScreen.screen->getEntity()) {
-		FacePlayer();
+        _facePlayer();
 
         const float dist = gyVec3Dist(&getPartySys()->getCharacterPartyMember(0u)->_transform._pos, &_curScreen.screen->getEntity()->_transform._pos);
 
@@ -341,7 +341,7 @@ void DialogSystem::processInput(void) {
 					}
 					//no options
 					else {
-						NextScreen();
+                        _nextScreen();
 					}
 				}
 				break;
@@ -362,14 +362,14 @@ void DialogSystem::processInput(void) {
 				}
 				//select option
                 if(cont->isTapped(GY_CONTROLLER_BUT_CIRCLE)) {
-					NextScreen();
+                    _nextScreen();
 				}
 				break;
 		}
 	}
 }
 
-void DialogSystem::NextScreen(void) {
+void DialogSystem::_nextScreen(void) {
 	int nextIndex;
 
 	getAudioSys()->playSfxChannel(-1, *_scrollDownSFX);
@@ -409,15 +409,15 @@ void DialogSystem::NextScreen(void) {
 		_characterTimer = 0.0f;
 		_updateCamera();
 		_splitText();
-		CheckModal();
+        _checkModal();
 	}
 }
 
-void DialogSystem::CheckModal(void) const {
+void DialogSystem::_checkModal(void) const {
 	setEngineState((_curScreen.screen->getScreenType() == DialogScreen::SCREEN_PROMPT)? System::ENGINE_MODAL_CONVERSATION : System::ENGINE_CONVERSATION);
 }
 
-void DialogSystem::FacePlayer(void) const {
+void DialogSystem::_facePlayer(void) const {
     if(!_curScreen.screen || !_curScreen.screen->getEntity() || !_curScreen.screen->getEntity()->getCharacter()) return;
 	_curScreen.screen->getEntity()->getCharacter()->faceEntity(*getPartySys()->getCharacterPartyMember(0u));
 }
@@ -485,9 +485,9 @@ void DialogSystem::startDialog(Dialog *const dialog, EventMonitor*const monitor)
 	_curScreen.screen = dialog->getScreen(0);
 	getAudioSys()->playSfxChannel(-1, *_scrollUpSFX);
 	_updateCamera();
-	FacePlayer();
+    _facePlayer();
 	_splitText();
-	CheckModal();
+    _checkModal();
     _advLogWasEnabled = getGuiSys()->adventureLog.isEnabled();
     //getGuiSys()->adventureLog.setEnabled(false);
     getGuiSys()->fadeFgLayer(1.0f, false);
