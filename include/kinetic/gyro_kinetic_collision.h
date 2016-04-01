@@ -65,7 +65,7 @@ static inline void gyCalcWorldVert(void *const obj) {
         gyCalcTriWorldVert((GYTriCollider *)obj);
 		return;
 	default:
-		assert(0);
+        assert(0);
 	}
 }
 
