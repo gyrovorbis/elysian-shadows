@@ -36,30 +36,34 @@ class CustomAssetFileType: public QObject {
     Q_OBJECT
 public:
     enum FONT_STATE { FONT_INACTIVE, FONT_ACTIVE, FONT_INVALID };
-private:
-    QString             _filePath;
-    QString             _typeName;
-    QIcon               _icon;
-    FONT_STATE          _fontState  = FONT_INACTIVE;
-    bool                _modified   = false;
+protected:
+    QString                 _filePath;
+    QString                 _typeName;
+    QIcon                   _icon;
+    FONT_STATE              _fontState  = FONT_INACTIVE;
+    bool                    _modified   = false;
 
 Q_SIGNALS:
-    void                itemChanged(void);
+    void                    itemChanged(void);
 
 public:
-                        CustomAssetFileType(const QString typeName, const QIcon icon, const QString filePath=QString());
-    virtual             ~CustomAssetFileType(void) = default;
+                            CustomAssetFileType(QString typeName, QIcon icon, QString filePath=QString());
+    virtual                 ~CustomAssetFileType(void) = default;
 
-    void                setFontState(const FONT_STATE state);
-    FONT_STATE          getFontState(void) const;
-    void                setModified(const bool val);
-    QString             getFilePath(void) const;
+    void                    setFontState(const FONT_STATE state);
+    FONT_STATE              getFontState(void) const;
+    void                    setModified(const bool val);
+    QString                 getFilePath(void) const;
 
-    virtual QMenu*      contextMenu(const QModelIndex& index);
-    virtual void        select(QModelIndex& index);
-    virtual QVariant    data(const QModelIndex& index, int role=Qt::DisplayRole);
-    virtual void        doubleClick(const QModelIndex& index);
-    virtual auto        fromFilePath(const QString path) -> CustomAssetFileType*;
+    virtual QMenu*          contextMenu(const QModelIndex& index);
+    virtual void            select(QModelIndex& index);
+    virtual QVariant        data(const QModelIndex& index, int role=Qt::DisplayRole);
+    virtual void            doubleClick(const QModelIndex& index);
+    virtual auto            fromFilePath(QString path) -> CustomAssetFileType*;
+    virtual QMimeData*      mimeData(void) const;
+    virtual Qt::ItemFlags   flags(void) const;
+    virtual bool            canDropMimeData(const QMimeData* data, Qt::DropAction action) const;
+    virtual bool            dropMimeData(const QMimeData* data, Qt::DropAction action);
 };
 
 class AreaAssetFileType: public CustomAssetFileType, public AssetManager {
@@ -71,10 +75,10 @@ private Q_SLOTS:
     void                _onUndoStackCleanChanged(const bool clean);
     void                _onValidChanged(const bool valid);
 public:
-                        AreaAssetFileType(const QString filePath=QString());
-                        AreaAssetFileType(const QString filePath, TkArea*const area);
+                        AreaAssetFileType(QString filePath=QString());
+                        AreaAssetFileType(QString filePath, TkArea*const area);
 
-    virtual auto        fromFilePath(const QString path) -> CustomAssetFileType* override;
+    virtual auto        fromFilePath(QString path) -> CustomAssetFileType* override;
     virtual void        select(QModelIndex &index) override;
     virtual void        doubleClick(const QModelIndex& index) override;
 };
@@ -88,8 +92,8 @@ private Q_SLOTS:
 void                    _onValidChanged(const bool clean);
 
 public:
-                        LevelAssetFileType(const QString filePath=QString());
-                        LevelAssetFileType(const QString filePath, TkLevel*const level);
+                        LevelAssetFileType(QString filePath=QString());
+                        LevelAssetFileType(QString filePath, TkLevel*const level);
     virtual auto        fromFilePath(const QString path) -> CustomAssetFileType* override;
     virtual void        select(QModelIndex &index) override;
     virtual void        doubleClick(const QModelIndex& index) override;
@@ -97,21 +101,21 @@ public:
 
 class SpecularsheetAssetFileType: public CustomAssetFileType {
 public:
-                        SpecularsheetAssetFileType(const QString filePath=QString());
-    virtual auto        fromFilePath(const QString path) -> CustomAssetFileType* override;
+                        SpecularsheetAssetFileType(QString filePath=QString());
+    virtual auto        fromFilePath(QString path) -> CustomAssetFileType* override;
 
 };
 
 class NormalsheetAssetFileType: public CustomAssetFileType {
 public:
-                        NormalsheetAssetFileType(const QString filePath=QString());
-    virtual auto        fromFilePath(const QString path) -> CustomAssetFileType* override;
+                        NormalsheetAssetFileType(QString filePath=QString());
+    virtual auto        fromFilePath(QString path) -> CustomAssetFileType* override;
 };
 
 class TilesheetAssetFileType: public CustomAssetFileType {
 public:
-                        TilesheetAssetFileType(const QString filePath=QString());
-    virtual auto        fromFilePath(const QString path) -> CustomAssetFileType* override;
+                        TilesheetAssetFileType(QString filePath=QString());
+    virtual auto        fromFilePath(QString path) -> CustomAssetFileType* override;
 };
 
 class PrefabAssetFileType: public CustomAssetFileType, public AssetManager {
@@ -124,31 +128,32 @@ private Q_SLOTS:
     void                _onItemChanged(QStandardItem* item);
 
 public:
-                        PrefabAssetFileType(const QString filePath=QString());
-    virtual auto        fromFilePath(const QString path) -> CustomAssetFileType* override;
+                        PrefabAssetFileType(QString filePath=QString());
+    virtual auto        fromFilePath(QString path) -> CustomAssetFileType* override;
     virtual void        doubleClick(const QModelIndex& index) override;
     virtual QMenu*      contextMenu(const QModelIndex& index) override;
+    virtual QMimeData*  mimeData(void) const override;
 
-    static QString      prefabNameFromFilePath(const QString path);
-    static QString      prefabifyFilePath(const QString path);
+    static QString      prefabNameFromFilePath(QString path);
+    static QString      prefabifyFilePath(QString path);
 };
 
 class LuaScriptAssetFileType: public CustomAssetFileType {
 public:
-                        LuaScriptAssetFileType(const QString filePath=QString());
-    virtual auto        fromFilePath(const QString path) -> CustomAssetFileType* override;
+                        LuaScriptAssetFileType(QString filePath=QString());
+    virtual auto        fromFilePath(QString path) -> CustomAssetFileType* override;
 };
 
 class LuaBehaviorAssetFileType: public CustomAssetFileType {
 public:
-                        LuaBehaviorAssetFileType(const QString filePath=QString());
-    virtual auto        fromFilePath(const QString path) -> CustomAssetFileType* override;
+                        LuaBehaviorAssetFileType(QString filePath=QString());
+    virtual auto        fromFilePath(QString path) -> CustomAssetFileType* override;
 };
 
 class MapAssetFileType: public CustomAssetFileType {
 public:
-                        MapAssetFileType(const QString filePath=QString());
-    virtual auto        fromFilePath(const QString path) -> CustomAssetFileType* override;
+                        MapAssetFileType(QString filePath=QString());
+    virtual auto        fromFilePath(QString path) -> CustomAssetFileType* override;
 };
 
 
@@ -160,24 +165,31 @@ private:
 
     QHash<QString, CustomAssetFileType*>    _customData;
 
-    void                _onFileAdded(const QString filename);
-    void                _onFileRemoved(const QString filename);
+    void                    _onFileAdded(const QString filename);
+    void                    _onFileRemoved(const QString filename);
 private Q_SLOTS:
-    void                _onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
-    void                _onDoubleClick(const QModelIndex& index);
-    void                _onItemChanged(void);
-    void                _onRowsInserted(const QModelIndex& parent, int first, int last);
-    void                _onRowsAboutToBeRemoved(const QModelIndex& parent, int first, int last);
+    void                    _onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
+    void                    _onDoubleClick(const QModelIndex& index);
+    void                    _onItemChanged(void);
+    void                    _onRowsInserted(const QModelIndex& parent, int first, int last);
+    void                    _onRowsAboutToBeRemoved(const QModelIndex& parent, int first, int last);
 
 public:
-                        AssetFileSystemModel(void);
-    virtual             ~AssetFileSystemModel(void) override;
+                            AssetFileSystemModel(void);
+    virtual                 ~AssetFileSystemModel(void) override;
 
-    virtual QVariant    data(const QModelIndex &index, int role=Qt::DisplayRole) const override;
+    void                    addDirectoryType(CustomAssetFileType* type);
+    void                    addFileType(CustomAssetFileType* type);
+    QMenu*                  customContextMenuRequested(const QModelIndex& index);
 
-    void                addDirectoryType(CustomAssetFileType* type);
-    void                addFileType(CustomAssetFileType* type);
-    QMenu*              customContextMenuRequested(const QModelIndex& index);
+    //overridden from QFileSystemModel
+    virtual QVariant        data(const QModelIndex &index, int role=Qt::DisplayRole) const override;
+    virtual Qt::DropActions supportedDragActions(void) const override;
+    virtual Qt::DropActions supportedDropActions(void) const override;
+    virtual Qt::ItemFlags   flags(const QModelIndex &index) const override;
+    virtual QMimeData*      mimeData(const QModelIndexList &indexes) const override;
+    virtual bool            canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
+    virtual bool            dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
 };
 
 class AssetDockWidget: public QDockWidget, public AssetManager
@@ -214,7 +226,7 @@ private:
 inline QMenu* CustomAssetFileType::contextMenu(const QModelIndex& /*index*/) { return nullptr; }
 inline void CustomAssetFileType::select(QModelIndex& /*index*/) { }
 inline void CustomAssetFileType::doubleClick(const QModelIndex& /*index*/) { }
-inline auto CustomAssetFileType::fromFilePath(const QString /*path*/) -> CustomAssetFileType* { return nullptr; }
+inline auto CustomAssetFileType::fromFilePath(QString /*path*/) -> CustomAssetFileType* { return nullptr; }
 inline void CustomAssetFileType::setFontState(const FONT_STATE state) { _fontState = state; Q_EMIT itemChanged(); }
 inline auto CustomAssetFileType::getFontState(void) const -> FONT_STATE { return _fontState; }
 inline void CustomAssetFileType::setModified(const bool val) { _modified = val; Q_EMIT itemChanged(); }
@@ -229,12 +241,12 @@ inline void AssetFileSystemModel::addDirectoryType(CustomAssetFileType *type) {
     _customDirTypes.push_back(type);
 }
 
-inline SpecularsheetAssetFileType::SpecularsheetAssetFileType(const QString filePath): CustomAssetFileType("Specular Sheet", QIcon(TK_SPECULARSHEET_ASSET_ICON), filePath) {}
-inline NormalsheetAssetFileType::NormalsheetAssetFileType(const QString filePath): CustomAssetFileType("Normal Sheet", QIcon(TK_NORMALSHEET_ASSET_ICON), filePath) {}
-inline TilesheetAssetFileType::TilesheetAssetFileType(const QString filePath): CustomAssetFileType("Tile Sheet", QIcon(TK_TILESHEET_ASSET_ICON), filePath) {}
-inline LuaScriptAssetFileType::LuaScriptAssetFileType(const QString filePath): CustomAssetFileType("Lua Script", QIcon(TK_LUA_SCRIPT_ASSET_ICON), filePath) {}
-inline LuaBehaviorAssetFileType::LuaBehaviorAssetFileType(const QString filePath): CustomAssetFileType("Lua Behavior", QIcon(TK_LUA_BEHAVIOR_ASSET_ICON), filePath) {}
-inline MapAssetFileType::MapAssetFileType(const QString filePath): CustomAssetFileType("Map", QIcon(TK_MAP_ASSET_ICON), filePath) {}
+inline SpecularsheetAssetFileType::SpecularsheetAssetFileType(QString filePath): CustomAssetFileType("Specular Sheet", QIcon(TK_SPECULARSHEET_ASSET_ICON), std::move(filePath)) {}
+inline NormalsheetAssetFileType::NormalsheetAssetFileType(QString filePath): CustomAssetFileType("Normal Sheet", QIcon(TK_NORMALSHEET_ASSET_ICON), std::move(filePath)) {}
+inline TilesheetAssetFileType::TilesheetAssetFileType(QString filePath): CustomAssetFileType("Tile Sheet", QIcon(TK_TILESHEET_ASSET_ICON), std::move(filePath)) {}
+inline LuaScriptAssetFileType::LuaScriptAssetFileType(QString filePath): CustomAssetFileType("Lua Script", QIcon(TK_LUA_SCRIPT_ASSET_ICON), std::move(filePath)) {}
+inline LuaBehaviorAssetFileType::LuaBehaviorAssetFileType(QString filePath): CustomAssetFileType("Lua Behavior", QIcon(TK_LUA_BEHAVIOR_ASSET_ICON), std::move(filePath)) {}
+inline MapAssetFileType::MapAssetFileType(QString filePath): CustomAssetFileType("Map", QIcon(TK_MAP_ASSET_ICON), std::move(filePath)) {}
 
 
 #endif // ASSETDOCKWIDGET_H

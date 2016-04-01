@@ -314,7 +314,7 @@ void TileSelectable::elevateUp(void) {
         for(unsigned x = 0; x < _width; ++x) {
             if(!_entry[y][x].value) continue; //Do NOT give attributes to tile 0!
             int elev = _entry[y][x].getElev();
-            if(++elev > 31) elev = 31; //Cap the max elevation
+            if(++elev > ELYSIAN_TILE_ENTRY_ELEV_MAX) elev = ELYSIAN_TILE_ENTRY_ELEV_MAX; //Cap the max elevation
             _entry[y][x].setElev(elev);
         }
     }

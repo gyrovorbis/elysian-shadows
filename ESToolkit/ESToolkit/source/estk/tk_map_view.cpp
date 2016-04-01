@@ -18,9 +18,12 @@
 #include "tk_entity_selectable.h"
 #include <asset/tk_renderable.h>
 #include <asset/tk_level.h>
+#include <core/tk_mime_data.h>
+#include <proxy/elysian_entity_proxy.hpp>
 
 MapView::MapView(QWidget *parent): DestView<TileEntry>::DestView(parent) {
     setMouseTracking(true);
+    setAcceptDrops(true);
     setEventMask(ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK);
 
     _curUndoItem = new MapViewPlaceTileGroupUndoItem();
@@ -688,5 +691,74 @@ void MapView::selectionCopy(void) {
             _cutClipboard = false;
         }
     }
+}
+
+bool MapView::_dropEventSupported(const QMimeData *data, Qt::DropAction action) const {
+    auto* tkMimeData = qobject_cast<const TkMimeData*>(data);
+
+    if(tkMimeData) {
+        switch(tkMimeData->getType()) {
+        case TkMimeData::TYPE_MIME_DATA_ARRAY:
+            for(int i = 1; i <= tkMimeData->getVariant().getLength(); ++i) {
+                if(!_dropEventSupported(static_cast<QMimeData*>(tkMimeData->getVariant()[i]->getValue<void*>()), action)) {
+                    return false;
+                }
+            }
+            return true;
+        case TkMimeData::TYPE_LUA_ENTITY_PREFAB: return true;
+        default: return false;
+        }
+    } else if(data->hasImage()) return true;
+
+    return false;
+}
+
+void MapView::dragEnterEvent(QDragEnterEvent *event) {
+    if(_dropEventSupported(event->mimeData(), event->dropAction())) {
+        event->acceptProposedAction();
+    }
+}
+
+bool MapView::_handleDropEvent(const QMimeData *data, QDropEvent*event) {
+    bool success = true;
+    auto* tkMimeData = qobject_cast<const TkMimeData*>(data);
+
+    if(tkMimeData) {
+        switch(tkMimeData->getType()) {
+        case TkMimeData::TYPE_MIME_DATA_ARRAY:
+            for(int i = 1; i <= tkMimeData->getVariant().getLength(); ++i) {
+                success &= _handleDropEvent(static_cast<QMimeData*>(tkMimeData->getVariant()[i]->getValue<void*>()), event);
+            }
+            return success;
+        case TkMimeData::TYPE_LUA_ENTITY_PREFAB: {
+            LuaVariant v = tkMimeData->getVariant()["new"].getVariant()(tkMimeData->getVariant());
+            Entity* entity = v.getValue<Entity*>();
+            QPointF scenePos = _mapViewPosToScenePos(event->pos(), scenePos);
+
+            if(!entity) return false;
+            entity->getTransform().setPosX(scenePos.x());
+            entity->getTransform().setPosY(scenePos.y());
+
+            getAssets()->getCurrentArea()->addEntity(entity);
+
+            return true;
+        }
+        default: return false;
+        }
+    } else if(data->hasImage()) {
+
+
+
+    }
+
+    return false;
+
+}
+
+void MapView::dropEvent(QDropEvent *event) {
+    if(_handleDropEvent(event->mimeData(), event)) {
+        event->acceptProposedAction();
+    }
+
 }
 

@@ -10,12 +10,20 @@
 #include <QDebug>
 #include <core/tk_menu_stack.h>
 #include <QMenu>
+#include <core/tk_mime_data.h>
 
 AssetDockWidget::AssetDockWidget(QWidget *parent) :
     QDockWidget(parent),
     _ui(new Ui::AssetDockWidget)
 {
     _ui->setupUi(this);
+
+    //enable drag n drop
+    _ui->treeView->setSelectionMode(QAbstractItemView::SingleSelection);
+    _ui->treeView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    _ui->treeView->setDragEnabled(true);
+    //_ui->treeView->setAcceptDrops(true);
+    //_ui->treeView->setDropIndicatorShown(true);
 
     connect(getAssets(), SIGNAL(projectAdded(Project*const)), this, SLOT(_onProjectAdded(Project*const)));
     connect(getAssets(), SIGNAL(projectRemoved(Project*const)), this, SLOT(_onProjectRemoved(Project*const)));
@@ -121,7 +129,14 @@ AssetFileSystemModel::~AssetFileSystemModel(void) {
     for(auto it: _customDirTypes)   delete it;
     for(auto it: _customFileTypes)  delete it;
     for(auto it: _customData)       delete it;
+}
 
+Qt::DropActions AssetFileSystemModel::supportedDragActions(void) const {
+    return (Qt::CopyAction | Qt::MoveAction | Qt::LinkAction | Qt::IgnoreAction | Qt::TargetMoveAction);
+}
+
+Qt::DropActions AssetFileSystemModel::supportedDropActions(void) const {
+    return (Qt::CopyAction | Qt::MoveAction | Qt::LinkAction | Qt::IgnoreAction | Qt::TargetMoveAction);
 }
 
 QVariant AssetFileSystemModel::data(const QModelIndex &index, int role) const {
@@ -217,11 +232,110 @@ QMenu* AssetFileSystemModel::customContextMenuRequested(const QModelIndex &index
     return (data != _customData.end())? data.value()->contextMenu(index) : nullptr;
 }
 
-CustomAssetFileType::CustomAssetFileType(const QString typeName, const QIcon icon, const QString filePath):
-    _filePath(filePath),
-    _typeName(typeName),
-    _icon(icon)
+
+Qt::ItemFlags AssetFileSystemModel::flags(const QModelIndex &index) const {
+    auto data = _customData.find(filePath(index));
+    return (data != _customData.end())? data.value()->flags() : QFileSystemModel::flags(index);
+}
+
+QMimeData* AssetFileSystemModel::mimeData(const QModelIndexList &indexes) const {
+    QList<QMimeData*>           mimeDataList;
+    QModelIndexList             defaultModelIndexList;
+    QList<CustomAssetFileType*> customDataCache;
+
+
+    /* Iterate over QModelIndexList immediately adding MimeData for custom asset types (and preventing duplication),
+     * and creating a new list containing only default QFileSystemModel QModelIndex types, so we can pass them all at once
+     * to the parent class and be efficient, let Qt group them, and be consistent with how the parent and default mime types work.
+     */
+    for(auto&& modelIndex : indexes) {
+        auto data = _customData.find(filePath(modelIndex));
+        if(data != _customData.end()) {
+            if(!customDataCache.contains(data.value())) { //only add to mimeDataList if we haven't already added the custom type (prevent duplicates for multiple cell selection)
+                customDataCache.append(data.value());
+                mimeDataList.append(data.value()->mimeData());
+            }
+        } else {
+            defaultModelIndexList.append(modelIndex);
+        }
+    }
+
+    if(defaultModelIndexList.size()) {
+        mimeDataList.append(QFileSystemModel::mimeData(defaultModelIndexList));
+    }
+
+    //For multiple MIME types, create a Lua Array of QMimeData
+    if(mimeDataList.size() > 1) {
+        //only use custom mime type if ALL indices are custom supported types!
+        int arraySize = 0;
+        LuaVariant mimeDataArray = LuaVariant::newTable();
+
+        //First pass is appending only custom MimeData objects separately
+        for(auto&& mimeData: mimeDataList) {
+            mimeDataArray[++arraySize] = (void*)mimeData;
+        }
+
+        return new TkMimeData(TkMimeData::TYPE_MIME_DATA_ARRAY, std::move(mimeDataArray));
+
+    } else {
+        return mimeDataList[0]; //just return the only element
+    }
+}
+
+bool AssetFileSystemModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const {
+
+    if(row == -1 && column == -1) { //dropped directly on parent
+        auto customData = _customData.find(filePath(parent));
+        if(customData != _customData.end()) return customData.value()->canDropMimeData(data, action);
+    }
+
+    return QFileSystemModel::canDropMimeData(data, action, row, column, parent);
+
+}
+
+bool AssetFileSystemModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) {
+    if(row == -1 && column == -1) {
+        auto customData = _customData.find(filePath(parent));
+        if(customData != _customData.end()) {
+            if(customData.value()->canDropMimeData(data, action)) {
+                return customData.value()->dropMimeData(data, action);
+            }
+            else return false;
+        }
+    }
+    return QFileSystemModel::dropMimeData(data, action, row, column, parent);
+}
+
+
+CustomAssetFileType::CustomAssetFileType(QString typeName, QIcon icon, QString filePath):
+    _filePath(std::move(filePath)),
+    _typeName(std::move(typeName)),
+    _icon(std::move(icon))
 {}
+
+QMimeData* CustomAssetFileType::mimeData(void) const {
+    QMimeData* mimeData = new QMimeData;
+    mimeData->setUrls(QList<QUrl> { QUrl::fromLocalFile(_filePath) });
+    return mimeData;
+}
+
+bool CustomAssetFileType::canDropMimeData(const QMimeData* /*data*/, Qt::DropAction action) const {
+    return action == Qt::IgnoreAction? true : false;
+}
+
+bool CustomAssetFileType::dropMimeData(const QMimeData* data, Qt::DropAction action) {
+    if (!canDropMimeData(data, action))
+        return false;
+
+    if (action == Qt::IgnoreAction)
+        return true;
+
+    return false;
+}
+
+Qt::ItemFlags CustomAssetFileType::flags(void) const {
+    return (Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsEnabled);
+}
 
 QVariant CustomAssetFileType::data(const QModelIndex& index, int role) {
     if(role == Qt::ForegroundRole) {
@@ -264,7 +378,7 @@ void AreaAssetFileType::_onValidChanged(const bool valid) {
     setFontState(valid? CustomAssetFileType::FONT_ACTIVE : CustomAssetFileType::FONT_INVALID);
 }
 
-auto AreaAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
+auto AreaAssetFileType::fromFilePath(QString path) -> CustomAssetFileType* {
     QDir dir(path);
 
     if(dir.exists(TK_MAP_ASSET_NAME_TOKEN)) {
@@ -295,11 +409,11 @@ void LevelAssetFileType::_onValidChanged(const bool valid) {
     setFontState(valid? CustomAssetFileType::FONT_ACTIVE : CustomAssetFileType::FONT_INVALID);
 }
 
-auto LevelAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
+auto LevelAssetFileType::fromFilePath(QString path) -> CustomAssetFileType* {
     QDir dir(path);
 
     if(dir.exists("area") && dir.exists("tile")) {
-        return new LevelAssetFileType(path, getAssets()->findLevel(path));
+        return new LevelAssetFileType(path, getAssets()->findLevel(std::move(path)));
     }
     return nullptr;
 }
@@ -313,48 +427,48 @@ void LevelAssetFileType::doubleClick(const QModelIndex& /*index*/) {
     getAssets()->setCurrentSelection(static_cast<Selectable*>(static_cast<TreeNode*>(_level)));
 }
 
-auto SpecularsheetAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
-    if(QFileInfo(QFile(path).fileName()).fileName() == TK_SPECULARSHEET_ASSET_NAME_TOKEN) return new SpecularsheetAssetFileType(path);
+auto SpecularsheetAssetFileType::fromFilePath(QString path) -> CustomAssetFileType* {
+    if(QFileInfo(QFile(path).fileName()).fileName() == TK_SPECULARSHEET_ASSET_NAME_TOKEN) return new SpecularsheetAssetFileType(std::move(path));
     return nullptr;
 }
 
-auto NormalsheetAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
-    if(QFileInfo(QFile(path).fileName()).fileName() == TK_NORMALSHEET_ASSET_NAME_TOKEN) return new NormalsheetAssetFileType(path);
-    return nullptr;
-}
-
-
-auto TilesheetAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
-    if(QFileInfo(QFile(path).fileName()).fileName() == TK_TILESHEET_ASSET_NAME_TOKEN) return new TilesheetAssetFileType(path);
+auto NormalsheetAssetFileType::fromFilePath(QString path) -> CustomAssetFileType* {
+    if(QFileInfo(QFile(path).fileName()).fileName() == TK_NORMALSHEET_ASSET_NAME_TOKEN) return new NormalsheetAssetFileType(std::move(path));
     return nullptr;
 }
 
 
-auto MapAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
-    if(QFileInfo(QFile(path).fileName()).fileName() == TK_MAP_ASSET_NAME_TOKEN) return new MapAssetFileType(path);
+auto TilesheetAssetFileType::fromFilePath(QString path) -> CustomAssetFileType* {
+    if(QFileInfo(QFile(path).fileName()).fileName() == TK_TILESHEET_ASSET_NAME_TOKEN) return new TilesheetAssetFileType(std::move(path));
     return nullptr;
 }
 
-auto LuaScriptAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
+
+auto MapAssetFileType::fromFilePath(QString path) -> CustomAssetFileType* {
+    if(QFileInfo(QFile(path).fileName()).fileName() == TK_MAP_ASSET_NAME_TOKEN) return new MapAssetFileType(std::move(path));
+    return nullptr;
+}
+
+auto LuaScriptAssetFileType::fromFilePath(QString path) -> CustomAssetFileType* {
     QFileInfo file(QFile(path).fileName());
-    if(file.fileName() == "area_init.lua" || file.fileName() == "level_init.lua") return new LuaScriptAssetFileType(path);
+    if(file.fileName() == "area_init.lua" || file.fileName() == "level_init.lua") return new LuaScriptAssetFileType(std::move(path));
     return nullptr;
 }
 
-auto LuaBehaviorAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
+auto LuaBehaviorAssetFileType::fromFilePath(QString path) -> CustomAssetFileType* {
     QFile file(path);
-    if(file.fileName().split(TK_LUA_BEHAVIOR_ASSET_NAME_TOKEN).size() > 1) return new LuaBehaviorAssetFileType(path);
+    if(file.fileName().split(TK_LUA_BEHAVIOR_ASSET_NAME_TOKEN).size() > 1) return new LuaBehaviorAssetFileType(std::move(path));
     return nullptr;
 }
 
-PrefabAssetFileType::PrefabAssetFileType(const QString filePath):
-    CustomAssetFileType("Prefab", QIcon(TK_PREFAB_ASSET_ICON), filePath)
+PrefabAssetFileType::PrefabAssetFileType(QString filePath):
+    CustomAssetFileType("Prefab", QIcon(TK_PREFAB_ASSET_ICON), std::move(filePath))
 {
 
     QDir assetDir(FileUtilities::getAbsoluteAssetPath(ELYSIAN_LUA_PREFAB_PATH));
     GY_ASSERT(assetDir.exists());
 
-    _prefabName = prefabNameFromFilePath(filePath);
+    _prefabName = prefabNameFromFilePath(_filePath);
     qDebug() << "****** PREFAB RELATIVE FILE PATH " << _prefabName;
 
     _prefabRef = LuaManager::getPrefab(Q_CSTR(_prefabName));
@@ -369,9 +483,9 @@ void PrefabAssetFileType::_onItemChanged(QStandardItem */*item*/) {
     setModified(true);
 }
 
-auto PrefabAssetFileType::fromFilePath(const QString path) -> CustomAssetFileType* {
+auto PrefabAssetFileType::fromFilePath(QString path) -> CustomAssetFileType* {
     QFile file(path);
-    if(file.fileName().split(TK_PREFAB_ASSET_NAME_TOKEN).size() > 1) return new PrefabAssetFileType(path);
+    if(file.fileName().split(TK_PREFAB_ASSET_NAME_TOKEN).size() > 1) return new PrefabAssetFileType(std::move(path));
     return nullptr;
 }
 
@@ -395,7 +509,7 @@ QMenu* PrefabAssetFileType::contextMenu(const QModelIndex& /*index*/) {
     menuStack.insertAction("Create Child",
          [&](bool) {
         LuaVariant v = _prefabRef["new"].getVariant()(_prefabRef);
-        getAssets()->setCurrentSelection(new LuaTableSelectable(v));
+        getAssets()->setCurrentSelection(new LuaTableSelectable(std::move(v)));
 
     });
 
@@ -418,5 +532,10 @@ QString PrefabAssetFileType::prefabifyFilePath(const QString path) {
     }
 
     return newFilePath;
+}
+
+QMimeData* PrefabAssetFileType::mimeData(void) const {
+    return new TkMimeData(strcmp(_prefabRef.getTypeString(), "Entity") == 0?
+                              TkMimeData::TYPE_LUA_ENTITY_PREFAB : TkMimeData::TYPE_LUA_PREFAB, _prefabRef);
 }
 

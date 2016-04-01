@@ -42,7 +42,9 @@ private:
     bool                            _entityDrag             = false;
     bool                            _cutClipboard           = true;
 
-    void _updateScrollBars(void);
+    void                    _updateScrollBars(void);
+    bool                    _dropEventSupported(const QMimeData* data, Qt::DropAction action) const;
+    bool                    _handleDropEvent(const QMimeData* data, QDropEvent* event);
 
     //Internal selection management
     void                    _tileSelectionArrayUpdate(void);
@@ -56,6 +58,10 @@ private:
     void                    _setUnderCursorEntity(TkEntity*const entity);
     bool                    _isEntityRegionSelecting(void) const;
     bool                    _isSelectionCollider(const TkEntity*const entity) const;
+
+    //QWidget override
+    virtual void            dragEnterEvent(QDragEnterEvent* event);
+    virtual void            dropEvent(QDropEvent* event);
 
     //SourceView virtual implementation
     virtual void            _sceneSelectionAddRect(const QRectF &rect) override;

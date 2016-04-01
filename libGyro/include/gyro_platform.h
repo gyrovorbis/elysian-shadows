@@ -114,7 +114,7 @@
 # define GYRO_MATH_NOASM
 #endif
 
-#   define GY_ASSERT(a)                 Q_ASSERT(a)
+#   define GY_ASSERT(a)                     Q_ASSERT(a)
 #   define                                  GYRO_GLAL
 #   define                                  GYRO_GLAL_GL_Desktop
 #ifndef GYRO_MATH_NOASM

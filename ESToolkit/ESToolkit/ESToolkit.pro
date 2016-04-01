@@ -201,7 +201,8 @@ SOURCES += \
     ../../ESGamma/source/system/elysian_input_system_base.cpp \
     ../../AssetIO/source/behavior/elysian_playable_behavior.cpp \
     ../../ESGamma/source/system/elysian_pathfinding_system.cpp \
-    ../../AssetIO/source/utility/elysian_lua_variant_base.cpp
+    ../../AssetIO/source/utility/elysian_lua_variant_base.cpp \
+    source/core/tk_mime_data.cpp
 
 
 
@@ -442,7 +443,8 @@ HEADERS += \
     ../../AssetIO/include/behavior/elysian_playable_behavior.hpp \
     include/core/tk_lua_table_selectable.h \
     ../../AssetIO/include/utility/elysian_lua_stack.hpp \
-    ../../AssetIO/include/utility/elysian_functional.hpp
+    ../../AssetIO/include/utility/elysian_functional.hpp \
+    include/core/tk_mime_data.h
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

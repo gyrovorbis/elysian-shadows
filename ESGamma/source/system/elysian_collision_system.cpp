@@ -133,7 +133,7 @@ void CollisionSystem::prepareGeometry(void) {
 
     unsigned size = _curArea->collidables.size();
     for(unsigned i = 0; i < size; ++i) {
-        assert(_curArea->collidables[i]->getAttrib());
+        GY_ASSERT(_curArea->collidables[i]->getAttrib());
         _curArea->collidables[i]->update();
     }
 

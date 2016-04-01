@@ -78,6 +78,7 @@ public:
     bool                        validate(QString& str) const;
     bool                        getSaveFlag(void) const;
     void                        setSaveFlag(const bool val);
+    QString                     getTexturePath(void) const;
 
     //LuaTableProxy
     static void                 initializeDelegates(void);
