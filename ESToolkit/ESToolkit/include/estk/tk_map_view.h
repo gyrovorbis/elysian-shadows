@@ -3,10 +3,10 @@
 
 #include <QVector>
 #include <QRect>
-#include <tk_dest_view.h>
-#include "tk_asset_manager.h"
+#include <tile_engine/tk_dest_view.h>
+#include <asset/tk_asset_manager.h>
 #include <asset/tk_area.h>
-#include "elysian_collision_system.hpp"
+#include <system/elysian_collision_system.hpp>
 
 #define ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK	(1u<<31)
 
@@ -17,6 +17,7 @@ class TkArea;
 typedef TkArea Area;
 class TkEntity;
 class MapViewPlaceTileGroupUndoItem;
+class MimeDropManager;
 
 class MapView : public DestView<TileEntry>,
                 public AssetManager,
@@ -27,7 +28,7 @@ private:
     typedef elysian::Collidable			Collidable;
     typedef elysian::CollisionContact	CollisionContact;
 
-    bool _tileSelectionArray[ELYSIAN_AREA_MAP_HEIGHT][ELYSIAN_AREA_MAP_WIDTH] = {{false}};
+    bool _tileSelectionArray[ELYSIAN_AREA_MAP_HEIGHT][ELYSIAN_AREA_MAP_WIDTH] = {{ false }};
 
     //the timer id of a 30ms draw refresh
     int								_refreshTimerHandle = 30;
@@ -38,13 +39,14 @@ private:
     TkEntity*                       _cursorEntity           = nullptr;
     TkEntity*                       _underCursorEntity      = nullptr;
     EntitySelectable*               _entityClipboard        = nullptr;
+    MimeDropManager*                _mimeDropManager        = nullptr;
     QPointF                         _cursorDragOffset       = QPointF(0.0f, 0.0f);
     bool                            _entityDrag             = false;
     bool                            _cutClipboard           = true;
 
+    void                    _registerDropEventCallbacks(void);
     void                    _updateScrollBars(void);
     bool                    _dropEventSupported(const QMimeData* data, Qt::DropAction action) const;
-    bool                    _handleDropEvent(const QMimeData* data, QDropEvent* event);
 
     //Internal selection management
     void                    _tileSelectionArrayUpdate(void);
@@ -90,6 +92,7 @@ private:
 
 public:
     explicit    MapView(QWidget *parent = nullptr);
+    virtual     ~MapView(void);
 
     bool isSelected(const unsigned x, const unsigned y) const;
     bool isTerrainLayer(void) const;

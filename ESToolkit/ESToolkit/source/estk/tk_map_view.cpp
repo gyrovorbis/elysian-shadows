@@ -20,6 +20,8 @@
 #include <asset/tk_level.h>
 #include <core/tk_mime_data.h>
 #include <proxy/elysian_entity_proxy.hpp>
+#include <core/tk_mime_drop_manager.h>
+
 
 MapView::MapView(QWidget *parent): DestView<TileEntry>::DestView(parent) {
     setMouseTracking(true);
@@ -28,11 +30,17 @@ MapView::MapView(QWidget *parent): DestView<TileEntry>::DestView(parent) {
 
     _curUndoItem = new MapViewPlaceTileGroupUndoItem();
 
+    _registerDropEventCallbacks();
+
     connect(getAssets(), SIGNAL(areaChanged(Area*const)), this, SLOT(onAreaChange(Area*const)));
     connect(getAssets(), SIGNAL(areaChanging(Area*const)), this, SLOT(onAreaChanging(Area*const)));
     connect(getAssets(), SIGNAL(layerChanged(LAYER_TYPE)), this, SLOT(onLayerChange(LAYER_TYPE)));
     connect(getAssets(), SIGNAL(engineInitialize()), this, SLOT(onEngineInitialize()));
     connect(getAssets(), SIGNAL(mapChanged(Area*const,const QVector<MapChange>&)), this, SLOT(onMapChange(Area*const,const QVector<MapChange>&)));
+}
+
+MapView::~MapView(void) {
+    delete _mimeDropManager;
 }
 
 void MapView::onLayerChange(Assets::LAYER_TYPE type) {
@@ -714,51 +722,33 @@ bool MapView::_dropEventSupported(const QMimeData *data, Qt::DropAction action) 
 }
 
 void MapView::dragEnterEvent(QDragEnterEvent *event) {
-    if(_dropEventSupported(event->mimeData(), event->dropAction())) {
-        event->acceptProposedAction();
-    }
-}
-
-bool MapView::_handleDropEvent(const QMimeData *data, QDropEvent*event) {
-    bool success = true;
-    auto* tkMimeData = qobject_cast<const TkMimeData*>(data);
-
-    if(tkMimeData) {
-        switch(tkMimeData->getType()) {
-        case TkMimeData::TYPE_MIME_DATA_ARRAY:
-            for(int i = 1; i <= tkMimeData->getVariant().getLength(); ++i) {
-                success &= _handleDropEvent(static_cast<QMimeData*>(tkMimeData->getVariant()[i]->getValue<void*>()), event);
-            }
-            return success;
-        case TkMimeData::TYPE_LUA_ENTITY_PREFAB: {
-            LuaVariant v = tkMimeData->getVariant()["new"].getVariant()(tkMimeData->getVariant());
-            Entity* entity = v.getValue<Entity*>();
-            QPointF scenePos = _mapViewPosToScenePos(event->pos(), scenePos);
-
-            if(!entity) return false;
-            entity->getTransform().setPosX(scenePos.x());
-            entity->getTransform().setPosY(scenePos.y());
-
-            getAssets()->getCurrentArea()->addEntity(entity);
-
-            return true;
-        }
-        default: return false;
-        }
-    } else if(data->hasImage()) {
-        //need to copy image into local directory
-
-
-    }
-
-    return false;
-
+    if(_mimeDropManager->canDrop(event)) event->acceptProposedAction();
 }
 
 void MapView::dropEvent(QDropEvent *event) {
-    if(_handleDropEvent(event->mimeData(), event)) {
-        event->acceptProposedAction();
-    }
+    if(_mimeDropManager->drop(event)) event->acceptProposedAction();
+}
+
+void MapView::_registerDropEventCallbacks(void) {
+    _mimeDropManager = new MimeDropManager(QVector<MimeDropManager::Handler> {
+       {
+            TkMimeData::TYPE_LUA_ENTITY_PREFAB,
+            [=](const QMimeData* data, Qt::DropAction, QDropEvent* event) {
+                auto* tkMimeData = qobject_cast<const TkMimeData*>(data);
+                LuaVariant v = tkMimeData->getVariant()["new"].getVariant()(tkMimeData->getVariant());
+                Entity* entity = v.getValue<Entity*>();
+                QPointF scenePos = _mapViewPosToScenePos(event->pos(), scenePos);
+
+                if(!entity) return false; //entity SHOULD be garbage collected by Lua VM when v goes out of scope...
+                entity->getTransform().setPosX(scenePos.x());
+                entity->getTransform().setPosY(scenePos.y());
+
+                getAssets()->getCurrentArea()->addEntity(entity);
+
+                return true;
+            }
+       }
+   });
 
 }
 
