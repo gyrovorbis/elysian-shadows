@@ -746,7 +746,7 @@ bool MapView::_handleDropEvent(const QMimeData *data, QDropEvent*event) {
         default: return false;
         }
     } else if(data->hasImage()) {
-
+        //need to copy image into local directory
 
 
     }

@@ -37,7 +37,7 @@ public:
     TYPE                        getType(void) const;
     void                        setType(const TYPE type);
 
-    virtual bool                hasFormat(const QString& vmimetype) const override;
+    virtual bool                hasFormat(const QString& mimetype) const override;
     virtual QStringList         formats(void) const override;
 
 protected:
