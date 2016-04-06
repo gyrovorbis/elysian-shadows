@@ -26,7 +26,7 @@ public:
     struct Handler {
         int             mimeType;
         DropCbType      dropCallback;
-        CanDropCbType   canDropCallback;
+        CanDropCbType   canDropCallback = CanDropCbType();
         Qt::DropActions dropActions     = Qt::ActionMask;
     };
 

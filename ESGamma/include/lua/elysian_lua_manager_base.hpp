@@ -190,7 +190,12 @@ namespace elysian {
         const unsigned retc = (unsigned)!std::is_void<RType>::value;
 
         push(std::forward<PTypes>(parameters)...);
-        _protectedCall(argc, retc, script);
+        if(!_protectedCall(argc, retc, script) && retc) {
+            /* If a nonvoid function fails, we still have to return something to the calling function,
+             * or we're going to start pulling other shit off the stack.
+             * Put nil on the stack to simulate error return type. */
+            lua_pushnil(*_mainState);
+        }
         return pull<RType>();
     }
 

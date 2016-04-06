@@ -41,7 +41,7 @@ void LuaTableStackModel::populateModel(void) {
     QList<QStandardItem*> items;
     _parentItem = PropertyStackModel::createReadOnlyItem(_tableRef.getTypeString());//ESTkStandardItem(QString("Lua Table"));
     items.push_back(_parentItem);
-    auto* valItem = new LuaTableFieldItem(LuaFieldRef(v, LuaVariant(1)), _parentItem);
+    auto* valItem = new LuaTableFieldItem(LuaFieldRef(std::move(v), LuaVariant(1)), _parentItem);
     items.push_back(valItem);
 
     //items.push_back(PropertyStackModel::createReadOnlyItem());
@@ -54,15 +54,20 @@ void LuaTableStackModel::populateModel(void) {
     _populated = true;
 }
 
-void LuaTableTableFieldData::insertTableFieldItem(const LuaVariant& key) {
+void LuaTableTableFieldData::insertTableFieldItem(LuaVariant key) {
     QList<QStandardItem*> items;
 
     auto* labelItem = (PropertyStackModel::createReadOnlyItem(key.asString().getValue<const char*>()));
-    auto* valueItem = new LuaTableFieldItem(LuaFieldRef(LuaVariant::makeWeakRef(_tableRef), key), labelItem);
+    auto* valueItem = new LuaTableFieldItem(LuaFieldRef(LuaVariant::makeWeakRef(_tableRef), std::move(key)), labelItem);
 
     if(_isPrefab) {
         labelItem->setData(QVariant(ELYSIAN_LUA_TABLE_STACK_MODEL_PREFAB_FONT_COLOR), Qt::ForegroundRole);
         valueItem->setData(QVariant(ELYSIAN_LUA_TABLE_STACK_MODEL_PREFAB_FONT_COLOR), Qt::ForegroundRole);
+    }
+
+    if(!_parentRef.isNil() && (*_parentRef[valueItem->getKey()] == valueItem->getVariant())) {
+        labelItem->setData(QVariant(QColor(Qt::green)), Qt::ForegroundRole);
+        valueItem->setData(QVariant(QColor(Qt::green)), Qt::ForegroundRole);
     }
 
     items.push_back(labelItem);
@@ -70,7 +75,7 @@ void LuaTableTableFieldData::insertTableFieldItem(const LuaVariant& key) {
 
     _parentItem->appendRow(items);
     valueItem->insertingModelItem();
-    _fieldItems[key] = (void*)valueItem;
+    _fieldItems[valueItem->getKey()] = (void*)valueItem;
 
 }
 
@@ -142,7 +147,7 @@ void LuaTableTableFieldData::insertTableFieldItems(QStandardItem*const parentIte
             lua_pushvalue(*_mainState, -2);
             OOLUA::pull(*_mainState, key);
 
-            insertTableFieldItem(key);
+            insertTableFieldItem(std::move(key));
 
         });
 #else
