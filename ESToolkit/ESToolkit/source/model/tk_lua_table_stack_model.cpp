@@ -57,7 +57,7 @@ void LuaTableStackModel::populateModel(void) {
 void LuaTableTableFieldData::insertTableFieldItem(LuaVariant key) {
     QList<QStandardItem*> items;
 
-    auto* labelItem = (PropertyStackModel::createReadOnlyItem(key.asString().getValue<const char*>()));
+    auto* labelItem = PropertyStackModel::createReadOnlyItem(key.asString().getValue<const char*>());
     auto* valueItem = new LuaTableFieldItem(LuaFieldRef(LuaVariant::makeWeakRef(_tableRef), std::move(key)), labelItem);
 
     if(_isPrefab) {
@@ -139,9 +139,6 @@ void LuaTableTableFieldData::insertTableFieldItems(QStandardItem*const parentIte
     } else iterable = false;
 
     if(iterable) {
-
-
-#if 1
         genericIterate(-1, [&](void) {
             LuaVariant key;
             lua_pushvalue(*_mainState, -2);
@@ -150,17 +147,8 @@ void LuaTableTableFieldData::insertTableFieldItems(QStandardItem*const parentIte
             insertTableFieldItem(std::move(key));
 
         });
-#else
-
-        for(auto it = _tableRef.begin(); it != _tableRef.end(); ++it) {
-            //qDebug() << " NEXT KEY " << it.first().asString().getValue<const char*>();
-            insertTableFieldItem(it.first());
-        }
-
-#endif
-
     }
-        lua_pop(*_mainState, 1);
+    lua_pop(*_mainState, 1);
 
     LuaManager::stackBalanceEnd();
 }

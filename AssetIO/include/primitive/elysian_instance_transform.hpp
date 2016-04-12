@@ -215,12 +215,6 @@ namespace elysian {
         void scale(const float x, const float y) { _scale.x *= x; _scale.y *= y; }
         //void scale(const GYVector2& factor) { gyVec2CompProdAccum(&_scale, &factor); }
 
-        void save(FILE* /*file*/) const { /*save(*this, stream);*/ }
-        void load(FILE* /*file*/) { /*load(*this, stream);*/ }
-
-        //static void save(const GYInstMat &mat, std::ofstream &stream) {}
-        //static void load(GYInstMat &mat, std::ifstream &stream) {}
-
         void linearInterpolate(const InstanceTransform& startFrame, const InstanceTransform& endFrame,
                                const float interval, const float elapsed)
         {

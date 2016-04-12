@@ -31,6 +31,7 @@ namespace elysian {
     }
 
 
+    //THIS IS COMPLETELY UNECCESSARY IN C++11 WITH VARIADIC MACROS!!!!11111ONE
     /*No No, No No No No, No No No No, No No there's a limit! */
     #	define OOLUA_INTERNAL_60_N \
             N, N, N, N, N, N, N, N, N, N \

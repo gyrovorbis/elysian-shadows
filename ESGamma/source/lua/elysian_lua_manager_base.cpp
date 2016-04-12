@@ -1,8 +1,7 @@
-#include "elysian_lua_manager.hpp"
-#include "elysian_lua_script.hpp"
+#include <crtp/elysian_lua_manager.hpp>
+#include <lua/elysian_lua_script.hpp>
 #include <crtp/elysian_behavior.hpp>
-#include <utility/luatables.h>
-#include "elysian_debug.hpp"
+#include <crtp/elysian_debug.hpp>
 #include <utility/elysian_lua_variant_base.hpp>
 #include <crtp/elysian_lua_table_proxy.hpp>
 
@@ -35,8 +34,7 @@ const char									LuaManagerBase::_rPrint[] =
     "end\n";
 
 void LuaManagerBase::luaPrint(const char * const string, const Debug::SEVERITY severity) {
-    Debug::SEVERITY sev = (severity == Debug::LOG_OFF)? _printSeverity : severity;
-    Debug::luaPrint(string, sev);
+    Debug::luaPrint(string, (severity == Debug::LOG_OFF)? _printSeverity : severity);
 }
 
 
@@ -467,7 +465,7 @@ void LuaManagerBase::dumpStats(void) {
 
             Debug::luaPrint("triggers = ");
             Debug::push();
-            for(unsigned i = 0; i < 64; ++i) {
+            for(unsigned i = 0; i < Behavior::TRIGGER_MAX_INDEX; ++i) {
                 uint64_t mask = (1<<i);
                 if(mask >= Behavior::TRIGGER_MAX) break;
                 if(triggers & mask) {
@@ -508,19 +506,8 @@ bool LuaManagerBase::genericIterate(const int index, std::function<void(void)> l
     lua_pushvalue(*_mainState, -2);
     lua_insert(*_mainState, -4);
 
-#if GYRO_PLATFORM == GYRO_PLATFORM_Qt
-    QVariant lastKey;
-    QVariant lastValue;
-#endif
-
     do {
-        if(!_protectedCall(2, 2, nullptr
-#if GYRO_PLATFORM == GYRO_PLATFORM_Qt
-                           ,"LuaManager::genericIterate(<%s, %s>)"
-                           , Q_CSTR(lastKey.toString()),
-                           Q_CSTR(lastValue.toString())
-#endif
-                )) {
+        if(!_protectedCall(2, 2, nullptr)) {
             break;
         }
          if(lua_isnil(*_mainState, -2)) {
@@ -536,18 +523,11 @@ bool LuaManagerBase::genericIterate(const int index, std::function<void(void)> l
 
         //STACK[-2] = KEY
         //STACK[-1] = VALUE
-
-#if GYRO_PLATFORM == GYRO_PLATFORM_Qt
-        lua_pushvalue(*_mainState, -1);
-        OOLUA::pull(*_mainState, lastValue);
-        lua_pushvalue(*_mainState, -2);
-        OOLUA::pull(*_mainState, lastKey);
-#endif
         lua_pop(*_mainState, 1);
         //firstPass = false;
 
         //Pop value, leave key
-    } while(1);
+    } while(true);
 
     //pop key + table
     //lua_pop(*_mainState, 5);
@@ -590,9 +570,9 @@ bool LuaManagerBase::saveTable(const LuaVariant& v, const char * const filename)
         errprintf("Returned NULL string!");
         success = false;
     } else {
-
         FILE* file = fopen(filename, "w");
-        if(!file) {            errprintf("Could not open file for writing!");
+        if(!file) {
+            errprintf("Could not open file for writing!");
             success = false;
         } else {
             fprintf(file, "%s", serialData);

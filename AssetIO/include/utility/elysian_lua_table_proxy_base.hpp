@@ -1,7 +1,6 @@
 #ifndef ELYSIAN_LUA_TABLE_PROXY_BASE_HPP
 #define ELYSIAN_LUA_TABLE_PROXY_BASE_HPP
 
-#include <utility/luatables.h>
 #include <elysian_lua_manager.hpp>
 #include <utility/elysian_generic.hpp>
 #include <crtp/elysian_lua_variant.hpp>
@@ -738,9 +737,6 @@ namespace elysian {
 
 	public:
         int         getLuaTableRef(void) const;
-		void		setMetaTable(const LuaTable& ref) const;
-		void		setProtoTable(const LuaTable& ref) const;
-		LuaTable	getProtoTable(void) const;
 
 		//override OOLUA's Proxy Class metatable
 		//do any kind of static registration bullshit for fields

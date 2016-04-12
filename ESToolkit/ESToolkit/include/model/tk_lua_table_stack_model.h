@@ -156,12 +156,8 @@ inline QVariant LuaTableFieldItem::getValue(void) const {
         OOLUA::pull(*_mainState, val);
     //Table/Userdata fields are out-of-date
 
-    }
-    else if(!_tableData) {
-        qDebug() << "NOT TABLE DATA!!!!";
-        qDebug() << "STACK DEPTH = " << LuaManager::stackDepth();
+    } else if(!_tableData) {
         _tableData = new LuaTableTableFieldData(LuaVariant::fromStack());
-        qDebug() << "STACK DEPTH POST = " << LuaManager::stackDepth();
         //if(!_tableData->getParentRef().isNil() && (*_tableData->getParentRef()[_fieldRef.getKey()] == ))
         if(_tableData->isPrefab()) {
             _labelItem->setData(QVariant(ELYSIAN_LUA_TABLE_STACK_MODEL_PREFAB_FONT_COLOR), Qt::ForegroundRole);
@@ -170,7 +166,6 @@ inline QVariant LuaTableFieldItem::getValue(void) const {
         _tableData->insertTableFieldItems(_labelItem);
     } //else Table/userdata fields should be up-to-date
     else {
-        qDebug() << "HAD TABLE DATA!!!!!!";
          //val.setValue(QString(lua_typename(*_mainState, valType)));
          lua_pop(*_mainState, 1); //don't actually give a fuck about the table
     }

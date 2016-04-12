@@ -19,8 +19,13 @@
 //overloaded stream operators
 //check for memory leaks
 //pass some shit internally by const reference
-//
+//are anonyous functions' lightuserdata std::function void* ptrs being deleted correctly?
 
+
+//other comparison operators >, <, >=, <=
+//mathematical operators? Stream operators? Postincrement, preincrement?
+//Fix iteration mechanism
+//doesn't handle unsigned integers
 
 namespace elysian {
     template<bool is_const_iterator>
@@ -101,8 +106,7 @@ namespace elysian {
 
                                     ~LuaVariantBase(void);
 
-
-        LuaVariantBase&              operator=(const std::initializer_list<LuaPair>& pairs);
+        LuaVariantBase&             operator=(const std::initializer_list<LuaPair>& pairs);
         template<typename T>
         LuaVariantBase&             operator=(const T*const ud);
         template<typename T>

@@ -122,7 +122,6 @@ SOURCES += \
     ../../AssetIO/source/primitive/elysian_quad_sprite_attrib.cpp \
     ../../AssetIO/source/primitive/elysian_sprite_attrib.cpp \
     ../../AssetIO/source/utility/elysian_lua_table_proxy_base.cpp \
-    ../../AssetIO/source/utility/luatables.cpp \
     ../../ESGamma/source/gui/elysian_adventure_log.cpp \
     ../../ESGamma/source/gui/elysian_font.cpp \
     ../../ESGamma/source/lua/elysian_lua_manager_base.cpp \
@@ -334,7 +333,6 @@ HEADERS += \
     ../../AssetIO/include/utility/elysian_mem_pool.hpp \
     ../../AssetIO/include/utility/elysian_stl_algorithm.hpp \
     ../../AssetIO/include/utility/elysian_ring_buffer.hpp \
-    ../../AssetIO/include/utility/luatables.h \
     ../../ESGamma/include/crtp/elysian_debug.hpp \
     ../../ESGamma/include/crtp/elysian_lua_manager.hpp \
     ../../ESGamma/include/crtp/elysian_map_system.hpp \

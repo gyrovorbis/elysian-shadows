@@ -68,10 +68,11 @@ namespace elysian {
             ON_SHATTER_INDEX,
             ON_BUTTON_PRESS_INDEX,
             ON_BUTTON_RELEASE_INDEX,
-            TRIGGER_MAX_INDEX,
+            TRIGGER_ENGINE_MAX_INDEX,
             //ESTk-only trigers
             ON_TK_SELECT_INDEX=62,
-            ON_TK_UNSELECT_INDEX=63
+            ON_TK_UNSELECT_INDEX=63,
+            TRIGGER_MAX_INDEX=64
         };
 
         //64 triggers max, currently
