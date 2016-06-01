@@ -19,22 +19,28 @@ static ALCcontext*	_alContext	= NULL;
 int gyAudInit(void) {
     #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     _alDevice = alcOpenDevice(NULL);                                               //Open the device
+    _gyLog(GY_DEBUG_VERBOSE, "Initializing OpenAL Subsystem");
+    _gyPush();
     if(!_alDevice) {
         _gyLog(GY_DEBUG_WARNING, "Could not open OpenAL Device!");
+        _gyPop(1);
         return 0;
     }
     _alContext = alcCreateContext(_alDevice, NULL);                                   //Give the device a context
     alcMakeContextCurrent(_alContext);                                             //Make the context the current
     if(!_alContext) {
         _gyLog(GY_DEBUG_WARNING, "Could not make OpenAL Context!");
+        _gyPop(1);
         return 0;
     }
+    _gyPop(1);
 #endif
     return 1;
 }
 
 int gyAudUninit(void) {
 #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
+    _gyLog(GY_DEBUG_VERBOSE, "Uninitializing OpenAL!");
     alcMakeContextCurrent(NULL);
     alcDestroyContext(_alContext);
     alcCloseDevice(_alDevice);
@@ -175,5 +181,60 @@ void gyAudListenerSetPos(const struct GYVector3* const pos) {
     veccy.z *= _zScale;
     alListenerfv(AL_POSITION, (void*)&veccy);
 #endif
+}
+
+
+GYAudBuffer* gyAudBufferCreate(void) {
+    ALuint id;
+    int alErrorCode;
+
+    _gyLog(GY_DEBUG_VERBOSE, "Creating audio buffer.");
+    _gyPush();
+
+    alGenBuffers(1, &id);
+    if((alErrorCode = alGetError()) != AL_NO_ERROR) {
+        _gyLog(GY_DEBUG_WARNING, "! - alGenBuffers() failure - %s", _openALError(alErrorCode));
+        return NULL;
+    }
+
+    GYAudBuffer* buffer = malloc(sizeof(GYAudBuffer));
+    buffer->_data = (ALuint)id;
+    buffer->bytes = 0;
+
+    _gyPop(1);
+
+    return buffer;
+}
+
+void gyAudBufferDestroy(GYAudBuffer* buff) {
+    if(!buff) return;
+
+    _gyLog(GY_DEBUG_VERBOSE, "Destroying audio buffer.");
+    _gyPush();
+
+    ALuint id = (ALuint)buff->_data;
+    alDeleteBuffers(1, &id);
+    _checkALError();
+    free(buff);
+
+    _gyPop(1);
+}
+
+//void gyAudSourceBindBuffer(struct GYAudioSource* src, const struct GYAudBuffer* buff);
+//void gyAudSourceUnbindBuffer(struct GYAudSource* src);
+
+void gyAudBufferData(GYAudBuffer* buff, unsigned char* data, int format, size_t size, int freq) {
+    int alErrorCode;
+    alBufferData(buff->_data, format, (void*)data, size, freq);
+    if((alErrorCode = alGetError()) != AL_NO_ERROR) {
+        _gyLog(GY_DEBUG_WARNING, "! - alBufferData() failure - %s", _openALError(alErrorCode));
+    }
+}
+
+void gyAudSourcePlayBuffer(struct GYAudioSource* src, const GYAudBuffer* buff) {
+    //now we put our data into the openAL buffer and
+    //check for success
+    alSourcei(*(ALuint*)src, AL_BUFFER, (ALuint)buff->_data);
+    alSourcePlay(*(ALuint*)src);
 }
 

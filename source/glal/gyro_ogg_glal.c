@@ -34,7 +34,7 @@
 typedef struct _GYOggPayload {
 #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
 	ALuint			buffers[2];
-	GYFile*           oggFile;
+    GYFile*         oggFile;
     OggVorbis_File  oggStream;
     vorbis_info*    vorbisInfo;
     vorbis_comment* vorbisComment;

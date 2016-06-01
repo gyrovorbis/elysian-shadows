@@ -3,6 +3,7 @@
 
 #include "gyro_defines.h"
 #include "gyro_platform.h"
+#include <stdlib.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,8 +14,15 @@ struct GYWav;
 struct GYOgg;
 struct GYVector3;
 
-int gyAudInit(void);
-int gyAudUninit(void);
+/*** TODO
+ * GYWav and GYOgg use GYAudBuffer
+ * internally for polymorphic compatibility
+ */
+
+typedef struct GYAudBuffer {
+    unsigned int	bytes;
+    void*			_data;
+} GYAudBuffer;
 
 typedef enum GY_SOURCE_ATTRIB {
     GY_SOURCE_POS,
@@ -25,6 +33,9 @@ typedef enum GY_SOURCE_ATTRIB {
     GY_SOURCE_ROLLOFF_FACTOR,
     GY_SOURCE_RELATIVE
 } GY_SOURCE_ATTRIB;
+
+int gyAudInit(void);
+int gyAudUninit(void);
 
 //audio listener
 void gyAudListenerSetPos(const struct GYVector3* const pos);
@@ -39,9 +50,17 @@ void gyAudSourceSetf(struct GYAudioSource*const src, const GY_SOURCE_ATTRIB attr
 float gyAudSourceGetf(struct GYAudioSource*const src, const GY_SOURCE_ATTRIB attrib);
 void gyAudSourceSeti(struct GYAudioSource*const src, const GY_SOURCE_ATTRIB attrib, const int val);
 void gyAudSourcePlayWav(struct GYAudioSource*const src, const struct GYWav*const wav);
-void gyAudSourcePlayOgg(struct GYAudioSource*const src, const struct GYOgg*const ogg);
+//void gyAudSourcePlayOgg(struct GYAudioSource*const src, const struct GYOgg*const ogg);
 void gyAudSourceStop(struct GYAudioSource*const src);
 int  gyAudSourceIsPlaying(struct GYAudioSource*const src);
+
+GYAudBuffer* gyAudBufferCreate(void);
+void gyAudBufferData(GYAudBuffer* buff, unsigned char* data, int format, size_t size, int freq);
+void gyAudBufferDestroy(GYAudBuffer* buff);
+//void gyAudSourceBindBuffer(struct GYAudioSource* src, const struct GYAudBuffer* buff);
+//void gyAudSourceUnbindBuffer(struct GYAudSource* src);
+void gyAudSourcePlayBuffer(struct GYAudioSource* src, const struct GYAudBuffer* buff);
+
 
 #ifdef GYRO_AUDIO_PLATFORM_INCLUDE
 #	include GYRO_AUDIO_PLATFORM_INCLUDE
