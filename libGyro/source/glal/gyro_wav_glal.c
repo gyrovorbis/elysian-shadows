@@ -20,6 +20,7 @@ void gyAudSourcePlayWav(GYAudioSource*const src, const struct GYWav* wav) {
 #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     if(!wav) return;
     const GYAudWavPayload* payload = wav->_data;
+    alSourceStop(*(ALuint*)src);
     alSourcei(*(ALuint*)src, AL_BUFFER, payload->buffer);
     alSourcePlay(*(ALuint*)src);
 #endif

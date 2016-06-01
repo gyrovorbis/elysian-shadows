@@ -23,8 +23,11 @@ void gyPrintf(const char *const str, ...) {
     //fflush(stdout);
 
     QString qBuff(buffer);
-    qBuff.chop(1);
-    *_stream << qBuff << endl;
+    /*if(qBuff.endsWith("\n")) {
+        qBuff.chop(1);
+
+    }*/
+    *_stream << qBuff;
     _stream->flush();
 
     //QString qBuff(buffer);

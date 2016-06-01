@@ -56,6 +56,7 @@ namespace elysian {
                             EntityBase(void);
                             EntityBase(const OOLUA::Lua_table_ref valTable);
                             EntityBase(EntityBase* other);
+                            EntityBase(EntityBase&& other);
         virtual             ~EntityBase(void);
 
         bool                load(FILE* file);

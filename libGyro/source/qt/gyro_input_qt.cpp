@@ -212,14 +212,14 @@ int gyInputInit(const GYInputInitParams*const params) {
     int success = 1;
     _inputFilter = new EventFilter;
     _initParams = *params;
-    ((QGraphicsView*)_initParams.viewWidget)->installEventFilter(_inputFilter);
+    ((QObject*)_initParams.viewWidget)->installEventFilter(_inputFilter);
     success &= _sdlControllerInit(params);
     return 1;
 }
 
 int gyInputUninit(void) {
     int success = 1;
-     ((QGraphicsView*)_initParams.viewWidget)->removeEventFilter(_inputFilter);
+     ((QObject*)_initParams.viewWidget)->removeEventFilter(_inputFilter);
     QApplication::instance()->removeEventFilter(_inputFilter);
     success &= _sdlControllerUninit();
     delete _inputFilter;

@@ -247,12 +247,19 @@ namespace elysian {
 
     };
 
+
+
+
+
+
+
+
+
+
+    // ==== INLINEZ ====
     inline bool operator== (const TileEntry& t1, const TileEntry& t2) {
         return (t1.value == t2.value);
     }
-
-    // ==== INLINEZ ====
-
     inline TileEntry::TileEntry(void): value(0) {}
     inline TileEntry::TileEntry(const uint32_t val): value(val) {}
     inline uint32_t TileEntry::getValue(void) const { return value; }

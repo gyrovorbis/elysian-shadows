@@ -46,6 +46,10 @@ EntityBase::EntityBase(EntityBase *other) {
     }
 }
 
+EntityBase::EntityBase(EntityBase &&other) {
+    GY_ASSERT(false); //NOT IMPLEMENTED, FUCKER!!
+}
+
 
 void EntityBase::setTransform(const OOLUA::Lua_table_ref valTable) { _transform.fromTable(valTable); }
 

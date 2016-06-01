@@ -65,13 +65,15 @@ namespace elysian {
 
 
 
-    inline void LevelBase::activate(void) { }
-    inline void LevelBase::deactivate(void) { }
+
 
 
 
 
     // ==== INLINEZ ====
+
+        inline void LevelBase::activate(void) { }
+        inline void LevelBase::deactivate(void) { }
 
         inline Tile *LevelBase::getTile(const uint16_t index) {
             return &tileset[index];

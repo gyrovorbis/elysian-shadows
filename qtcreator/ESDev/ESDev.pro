@@ -4,33 +4,40 @@ TEMPLATE = subdirs
 CONFIG += ordered
 CONFIG 	+= console
 
+SUBDIRS +=  ../../libGyro/qtcreator/libGyro\
+    ../../Spine/qtcreator/Spine
 
-SUBDIRS +=  ../../libGyro/qtcreator/libGyro \
-  ../../Lua5.2/qtcreator/Lua5_2 \
-  ../../OOLua/qtcreator/OOLua \
-  ../../Spine/qtcreator/Spine
-
-
-tests {
-  SUBDIRS += ../../UnitTests
+estk {
+    SUBDIRS += ../../Lua5.2/qtcreator/Lua5_2 \
+    ../../OOLua/qtcreator/OOLua \
+    ../../ESToolkit/ESToolkit
 }
 
+tests {
+    SUBDIRS += ../../UnitTests
+}
 
-SUBDIRS += ../../ESToolkit/ESToolkit
-#    ../../ESGamma/qtcreator/ESGamma
+vmu {
+    SUBDIRS += ../../ElysianVMU/qtcreator/ElysianVMU
+}
 
 
 libGyro.depends = Spine
 
-OOLua.depends = Lua5_2
+estk {
 
-#ESGamma.depends += libGyro \
- #       OOLua
-ESToolkit.depends += libGyro \
-  OOLua \
-  Spine
+    OOLua.depends = Lua5_2
 
+    ESToolkit.depends += libGyro \
+      OOLua \
+      Spine
+
+}
 
 tests {
-  ESToolkit.depends += UnitTests
+    ESToolkit.depends += UnitTests
+}
+
+vmu {
+    ElysianVMU.depends += libGyro
 }

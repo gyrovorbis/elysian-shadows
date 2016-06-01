@@ -180,6 +180,12 @@ namespace elysian {
 	};
 	
 	
+
+
+
+
+
+
 	//========= INLINEZ =========
 	
     inline uint64_t BehaviorBase::getTriggers(void) const { return _triggerBits; }

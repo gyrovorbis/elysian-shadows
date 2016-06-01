@@ -1023,7 +1023,7 @@ bool ESToolkit::openProjectDir(const QString dir) {
     //assert(_ui->mapView->scene());
 
     GYInputInitParams inputParams = {
-        static_cast<QGraphicsView*>(_ui->mapView),
+        static_cast<QObject*>(_ui->mapView),
         static_cast<QGLWidget*>(_engineGLView),
         4
     };
