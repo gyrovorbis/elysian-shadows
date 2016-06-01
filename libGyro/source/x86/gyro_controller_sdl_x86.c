@@ -20,6 +20,14 @@
 #include <gyro_system_api.h>
 #include <gyro_input_api.h>
 
+#define GYRO_CONTROLLER_SDL_X86_GUID_SIZE    1024
+
+typedef struct SDLControllerProfile {
+    char    GUID[GYRO_CONTROLLER_SDL_X86_GUID_SIZE];
+
+
+} SDLControllerProfile;
+
 typedef struct SDLController {
     GYController            cont;
     SDL_GameController*     sdlController;
@@ -97,7 +105,7 @@ static int _sdlCloseController(SDLController *const cont) {
 }
 
 static void _sdlPrintControllerStats(SDLController*const cont) {
-    char guidStr[1024];
+    char guidStr[GYRO_CONTROLLER_SDL_X86_GUID_SIZE];
 
     SDL_JoystickGetGUIDString(SDL_JoystickGetGUID(cont->sdlJoystick), guidStr, sizeof(guidStr));
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Device Type:", cont->sdlController? "SDL_GAMECONTROLLER" : "SDL_JOYSTICK");
@@ -192,21 +200,21 @@ static void _sdlControllerEvent(const int deviceIndex, const SDL_Event* event) {
         state = event->type == SDL_JOYBUTTONDOWN? 1 : 0;
 
         switch(event->jbutton.button) {
-        case 12:       gyButton        = GY_CONTROLLER_BUT_DPAD_DOWN;  break;
-        case 11:         gyButton        = GY_CONTROLLER_BUT_DPAD_UP;    break;
-        case 13:       gyButton        = GY_CONTROLLER_BUT_DPAD_LEFT;  break;
-        case 14:      gyButton        = GY_CONTROLLER_BUT_DPAD_RIGHT; break;
-        case 8:           gyButton        = GY_CONTROLLER_BUT_START;      break;
-        case 9:            gyButton        = GY_CONTROLLER_BUT_SELECT;     break;
-        case 10:           gyButton        = GY_CONTROLLER_BUT_HOME;       break;
-        case 0:               gyButton        = GY_CONTROLLER_BUT_X;          break;
-        case 1:               gyButton        = GY_CONTROLLER_BUT_CIRCLE;     break;
-        case 2:               gyButton        = GY_CONTROLLER_BUT_SQUARE;     break;
-        case 3:               gyButton        = GY_CONTROLLER_BUT_TRIANGLE;   break;
-        case 6:       gyButton        = GY_CONTROLLER_BUT_LANALOG;    break;
-        case 7:      gyButton        = GY_CONTROLLER_BUT_RANALOG;    break;
-        case 4:    gyButton        = GY_CONTROLLER_BUT_LSHOULDER;  break;
-        case 5:   gyButton        = GY_CONTROLLER_BUT_RSHOULDER;  break;
+        case 12: gyButton        = GY_CONTROLLER_BUT_DPAD_DOWN;  break;
+        case 11: gyButton        = GY_CONTROLLER_BUT_DPAD_UP;    break;
+        case 13: gyButton        = GY_CONTROLLER_BUT_DPAD_LEFT;  break;
+        case 14: gyButton        = GY_CONTROLLER_BUT_DPAD_RIGHT; break;
+        case 8:  gyButton        = GY_CONTROLLER_BUT_START;      break;
+        case 9:  gyButton        = GY_CONTROLLER_BUT_SELECT;     break;
+        case 10: gyButton        = GY_CONTROLLER_BUT_HOME;       break;
+        case 0:  gyButton        = GY_CONTROLLER_BUT_X;          break;
+        case 1:  gyButton        = GY_CONTROLLER_BUT_CIRCLE;     break;
+        case 2:  gyButton        = GY_CONTROLLER_BUT_SQUARE;     break;
+        case 3:  gyButton        = GY_CONTROLLER_BUT_TRIANGLE;   break;
+        case 6:  gyButton        = GY_CONTROLLER_BUT_LANALOG;    break;
+        case 7:  gyButton        = GY_CONTROLLER_BUT_RANALOG;    break;
+        case 4:  gyButton        = GY_CONTROLLER_BUT_LSHOULDER;  break;
+        case 5:  gyButton        = GY_CONTROLLER_BUT_RSHOULDER;  break;
         default:
             _gyLog(GY_DEBUG_VERBOSE, "Unidentified key - %d", state);
             return;
@@ -266,7 +274,7 @@ static void _sdlControllerEvent(const int deviceIndex, const SDL_Event* event) {
 static void _sdlPollEvents(void) {
     SDL_Event event;
 
-    while( SDL_PollEvent( &event ) != 0 )
+    while(SDL_PollEvent( &event ) != 0)
     {
         switch (event.type) {
         case SDL_JOYAXISMOTION:
@@ -298,13 +306,25 @@ static void _sdlPollEvents(void) {
 
 }
 
-
 int gyControllerPoll(const unsigned slot, struct GYController** const input) {
     GYVector2 analog = { 0.0f, 0.0f };
+    unsigned al[GY_CONTROLLER_ANALOG_COUNT] = { 0 };
+    unsigned ar[GY_CONTROLLER_ANALOG_COUNT] = { 0 };
+    unsigned ad[GY_CONTROLLER_ANALOG_COUNT] = { 0 };
+    unsigned au[GY_CONTROLLER_ANALOG_COUNT] = { 0 };
 
     if(!_devices[slot].sdlJoystick) {
         _devices[slot].cont.analogSticks[GY_CONTROLLER_ANALOG_LEFT]     = analog;
         _devices[slot].cont.analogSticks[GY_CONTROLLER_ANALOG_RIGHT]    = analog;
+    } else {
+
+        for(unsigned a = 0; a < GY_CONTROLLER_ANALOG_COUNT; ++a) {
+            if(_devices[slot].cont.analogSticks[a].x < -GYRO_INPUT_CONTROLLER_ANALOG_MIN)     al[a] = 1;
+            else if(_devices[slot].cont.analogSticks[a].x > GYRO_INPUT_CONTROLLER_ANALOG_MIN) ar[a] = 1;
+            if(_devices[slot].cont.analogSticks[a].y < -GYRO_INPUT_CONTROLLER_ANALOG_MIN)     au[a] = 1;
+            else if(_devices[slot].cont.analogSticks[a].y > GYRO_INPUT_CONTROLLER_ANALOG_MIN) ad[a] = 1;
+
+        }
     }
 
     for(unsigned i = 0; i < GY_CONTROLLER_BUT_COUNT; ++i) {
@@ -315,10 +335,27 @@ int gyControllerPoll(const unsigned slot, struct GYController** const input) {
     }
 
     _sdlPollEvents();
+
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG1_LEFT]     &= ~GY_BUT_FLAGS_IS_PRESSED;
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG1_LEFT]     |= al[GY_CONTROLLER_ANALOG_LEFT];
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG1_RIGHT]    &= ~GY_BUT_FLAGS_IS_PRESSED;
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG1_RIGHT]    |= ar[GY_CONTROLLER_ANALOG_LEFT];
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG1_UP]       &= ~GY_BUT_FLAGS_IS_PRESSED;
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG1_UP]       |= au[GY_CONTROLLER_ANALOG_LEFT];
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG1_DOWN]     &= ~GY_BUT_FLAGS_IS_PRESSED;
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG1_DOWN]     |= ad[GY_CONTROLLER_ANALOG_LEFT];
+
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG2_LEFT]     &= ~GY_BUT_FLAGS_IS_PRESSED;
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG2_LEFT]     |= al[GY_CONTROLLER_ANALOG_RIGHT];
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG2_RIGHT]    &= ~GY_BUT_FLAGS_IS_PRESSED;
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG2_RIGHT]    |= ar[GY_CONTROLLER_ANALOG_RIGHT];
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG2_UP]       &= ~GY_BUT_FLAGS_IS_PRESSED;
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG2_UP]       |= au[GY_CONTROLLER_ANALOG_RIGHT];
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG2_DOWN]     &= ~GY_BUT_FLAGS_IS_PRESSED;
+    _devices[slot].cont.buttons[GY_CONTROLLER_BUT_ANALOG2_DOWN]     |= ad[GY_CONTROLLER_ANALOG_RIGHT];
+
     *input = &_devices[slot].cont;
 
-
-
-    return _devices[slot].sdlController? 1 : 0;
+    return _devices[slot].sdlJoystick? 1 : 0;
 }
 
