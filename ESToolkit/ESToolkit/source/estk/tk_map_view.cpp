@@ -21,6 +21,7 @@
 #include <core/tk_mime_data.h>
 #include <proxy/elysian_entity_proxy.hpp>
 #include <core/tk_mime_drop_manager.h>
+#include <core/tk_file_utilities.h>
 
 
 MapView::MapView(QWidget *parent): DestView<TileEntry>::DestView(parent) {
@@ -699,26 +700,6 @@ void MapView::selectionCopy(void) {
             _cutClipboard = false;
         }
     }
-}
-
-bool MapView::_dropEventSupported(const QMimeData *data, Qt::DropAction action) const {
-    auto* tkMimeData = qobject_cast<const TkMimeData*>(data);
-
-    if(tkMimeData) {
-        switch(tkMimeData->getType()) {
-        case TkMimeData::TYPE_MIME_DATA_ARRAY:
-            for(int i = 1; i <= tkMimeData->getVariant().getLength(); ++i) {
-                if(!_dropEventSupported(static_cast<QMimeData*>(tkMimeData->getVariant()[i]->getValue<void*>()), action)) {
-                    return false;
-                }
-            }
-            return true;
-        case TkMimeData::TYPE_LUA_ENTITY_PREFAB: return true;
-        default: return false;
-        }
-    } else if(data->hasImage()) return true;
-
-    return false;
 }
 
 void MapView::dragEnterEvent(QDragEnterEvent *event) {

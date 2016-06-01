@@ -125,7 +125,7 @@ namespace elysian {
         bool            isRef(void) const;
 
         operator        GYColor4*(void);
-        operator        const GYColor4&(void);
+        //operator        const GYColor4&(void);
 
         Color4&         operator=(const Color4& rhs);
         Color4&         operator=(GYColor4& rhs);

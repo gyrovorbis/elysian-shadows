@@ -49,6 +49,7 @@
 #include <fcntl.h>
 #include <gyro_vmu_instr.h>
 #include <gyro_system_api.h>
+#include <sys/time.h>
 
 
 #define SGNEXT(n) ((n)&0x80? (n)-0x100:(n))

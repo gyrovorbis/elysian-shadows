@@ -81,7 +81,7 @@ public:
 };
 
 template <typename T>
-static constexpr auto is_callable_object_v = is_callable_object<T>::value;
+static constexpr const auto is_callable_object_v = is_callable_object<T>::value;
 
 // function traits
 

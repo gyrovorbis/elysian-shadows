@@ -46,7 +46,6 @@ private:
 
     void                    _registerDropEventCallbacks(void);
     void                    _updateScrollBars(void);
-    bool                    _dropEventSupported(const QMimeData* data, Qt::DropAction action) const;
 
     //Internal selection management
     void                    _tileSelectionArrayUpdate(void);
