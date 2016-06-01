@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>images/vmu_es.png</file>
+        <file>images/vmu_icon.icns</file>
+        <file>images/vmu_icon.ico</file>
+    </qresource>
+</RCC>
