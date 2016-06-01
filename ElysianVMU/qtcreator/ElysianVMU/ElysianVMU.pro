@@ -98,6 +98,51 @@ macx {
         -L../../../ESGamma/lib/osx
 }
 
+
+win32 {
+    QMAKE_CFLAGS += -msse -std=c99
+    INCLUDEPATH += ../../../libGyro/lib/win32
+    LIBS += -L../../../lib/win32 \
+        -L../../../libGyro/lib/win32 \
+        -lDbgHelp \
+        -lglew32 \
+        -lglu32 \
+        -lopengl32 \
+        -lopenal32.dll \
+        -lz \
+        -lz.dll \
+        -lSDL2 \
+        -lSDL2Main \
+        -lSDL2.dll \
+        -logg \
+        -lvorbis \
+        -lvorbis.dll \
+        -lvorbisenc \
+        -lvorbisenc.dll \
+        -lvorbisfile \
+        -limagehlp \
+        -lvorbisfile.dll
+
+}
+
+linux {
+    LIBS += \
+        -lSDL2 \
+        -lGL \
+        -lopenal \
+        -lGLU \
+        -lGLEW \
+        -lz \
+        -logg \
+        -lvorbis \
+        -lvorbisenc \
+        -lvorbisfile \
+        -lX11 \
+        -lpthread \
+        -lrt
+}
+
+
 DISTFILES +=
 
 RESOURCES += \
