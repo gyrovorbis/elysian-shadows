@@ -24,6 +24,9 @@ public:
     };
 
     struct Handler {
+                        Handler(void) = default;
+                        Handler(int type, DropCbType dropCb, CanDropCbType canDropCb=CanDropCbType(), Qt::DropActions actions=Qt::ActionMask());
+
         int             mimeType;
         DropCbType      dropCallback;
         CanDropCbType   canDropCallback = CanDropCbType();
@@ -62,6 +65,9 @@ private:
 //========= INLINEZ =========
 inline bool MimeDropManager::isMimeArraySupported(void) const { return _supportMimeArray; }
 inline void MimeDropManager::setMimeArraySupported(bool v) { _supportMimeArray = v; }
+inline MimeDropManager::Handler::Handler(int type, DropCbType dropCb, CanDropCbType canDropCb, Qt::DropActions actions):
+    timeType(type), dropCallback(dropCb), canDropCallback(canDropCb), dropActions(actions)
+{}
 
 
 #endif // TK_MIME_DROP_MANAGER_H

@@ -37,7 +37,7 @@ inline void FunctionalTest::forwardTupleToLambda(void) {
         return s;
     };
 
-    std::tuple<float, int, const char*> args = {
+    std::tuple<float, int, const char*> args {
         17.7f,
         33,
         "Fuck you!"
@@ -56,7 +56,7 @@ inline void FunctionalTest::forwardTupleToStdFunction(void) {
 inline void FunctionalTest::forwardTupleToMemberFunctionPtr(void) {
     elysian::InstanceTransform transform;
 
-    std::tuple<elysian::InstanceTransform*, float> args = {
+    std::tuple<elysian::InstanceTransform*, float> args {
         &transform,
         78.6f
     };
@@ -71,7 +71,7 @@ inline void FunctionalTest::forwardTupleToMemberFunctionPtr(void) {
 inline void FunctionalTest::forwardTupleToConstMemberFunctionPtr(void) {
     const elysian::Vector2 vex { 33.0f, 192.8f };
 
-    std::tuple<const elysian::Vector2*, float> args = {
+    std::tuple<const elysian::Vector2*, float> args {
         &vex,
         -14.4f
     };
@@ -89,7 +89,7 @@ inline void FunctionalTest::forwardTupleToCFuncPtr(void) {
         return s;
     };
 
-    std::tuple<float, int, const char*> args = {
+    std::tuple<float, int, const char*> args {
         17.7f,
         33,
         "WHOOO!"

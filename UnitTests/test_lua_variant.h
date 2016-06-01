@@ -263,9 +263,9 @@ inline void LuaVariantTest::createFromArray(void) {
         [&](const int value) {
             return value;
         },
-        (lua_CFunction)[](lua_State*) {
+        static_cast<lua_CFunction>([](lua_State*) {
             return 0;
-        }
+        })
     });
 
     QVERIFY(v.getLength() == 10);

@@ -1,6 +1,7 @@
 #ifndef ELYSIAN_FUNCTIONAL_HPP
 #define ELYSIAN_FUNCTIONAL_HPP
 
+#include <functional>
 
 // ======== CONVERT LAMBDA TO STD::FUNCTION SEAMLESSLY =======
 
@@ -80,8 +81,8 @@ public:
     static const bool value = sizeof(test<Derived>(0)) == sizeof(yes);
 };
 
-template <typename T>
-static const bool is_callable_object_v = is_callable_object<T>::value;
+//template <typename T>
+//static const bool is_callable_object_v = is_callable_object<T>::value;
 
 // function traits
 
@@ -150,7 +151,7 @@ struct function_traits {
 template <typename T>
 struct function_traits<T,
     std::enable_if_t<std::is_class<T>::value>,
-    std::enable_if_t<is_callable_object_v<T>>>
+    std::enable_if_t<is_callable_object<T>::value>>
     : public function_traits<decltype(&T::operator())>
 { };
 
