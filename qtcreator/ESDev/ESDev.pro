@@ -9,12 +9,15 @@ SUBDIRS +=  ../../libGyro/qtcreator/libGyro\
 
 estk {
     SUBDIRS += ../../Lua5.2/qtcreator/Lua5_2 \
-    ../../OOLua/qtcreator/OOLua \
-    ../../ESToolkit/ESToolkit
+    ../../OOLua/qtcreator/OOLua
 }
 
 tests {
     SUBDIRS += ../../UnitTests
+}
+
+estk {
+    SUBDIRS += ../../ESToolkit/ESToolkit
 }
 
 vmu {
