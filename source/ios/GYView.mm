@@ -20,7 +20,7 @@ static GYView* _view = NULL;
 
 
 int glalVidDefaultFbo(void) {
-    return _view._defaultFbo;
+    return _view->_defaultFbo;
 
 }
 
