@@ -71,7 +71,7 @@ android {
     iphonesimulator {
         QMAKE_IOS_DEPLOYMENT_TARGET = 5.1
         DEFINES += GYRO_PLATFORM_iOS_SIMULATOR
-        QMAKE_CXXFLAGS += -fno-rtii -fno-exceptions
+        QMAKE_CXXFLAGS += -fno-rtti -fno-exceptions
         LIBS+=-stdlib=libc++
     }
     iphoneos {
