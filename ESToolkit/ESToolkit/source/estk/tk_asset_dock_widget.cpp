@@ -464,6 +464,7 @@ auto LuaBehaviorAssetFileType::fromFilePath(QString path) -> CustomAssetFileType
 PrefabAssetFileType::PrefabAssetFileType(QString filePath):
     CustomAssetFileType("Prefab", QIcon(TK_PREFAB_ASSET_ICON), std::move(filePath))
 {
+    if(filePath.isEmpty()) return;
 
     QDir assetDir(FileUtilities::getAbsoluteAssetPath(ELYSIAN_LUA_PREFAB_PATH));
     GY_ASSERT(assetDir.exists());
