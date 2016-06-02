@@ -73,7 +73,7 @@ android {
         QMAKE_IOS_DEPLOYMENT_TARGET = 5.1
         DEFINES += GYRO_PLATFORM_iOS_SIMULATOR
         QMAKE_CXXFLAGS += -fno-rtti -fno-exceptions
-        QMAKE_CXXFLAGS+=-stdlib=libstdc++
+        QMAKE_CXXFLAGS+=-stdlib=libc++
     }
     iphoneos {
         #QMAKE_CFLAGS += -target armv8-apple-none-eabi -mcpu=cortex-a8 -mfpu=neon -miphoneos-version-min=7.0
