@@ -96,13 +96,7 @@ else:dreamcast {
 }
 
 
-
-
-
-!iphoneos {
-
-    QMAKE_CXXFLAGS += -std=c++1y
-}
+QMAKE_CXXFLAGS += -std=c++1y
 
 !dreamcast {
 QMAKE_CXXFLAGS += -Wno-unknown-warning-option #-fno-rtti -fno-exceptions
