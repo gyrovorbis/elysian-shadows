@@ -69,6 +69,7 @@ android {
 } else: ios {
     DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_iOS
     iphonesimulator {
+        QMAKE_IOS_DEPLOYMENT_TARGET = 5.1.1
         DEFINES += GYRO_PLATFORM_iOS_SIMULATOR
     }
     iphoneos {
