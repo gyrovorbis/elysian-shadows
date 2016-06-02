@@ -35,8 +35,8 @@ public:
 
         GYAudioSource*      _audioSrc       = nullptr;
         GYAudBuffer*        _audioBuff      = nullptr;
-            VMUDevice*          _dev            = nullptr;
-                Ui::VMUMainWindow*  _ui             = nullptr;
+        VMUDevice*          _dev            = nullptr;
+        Ui::VMUMainWindow*  _ui             = nullptr;
 private:
 
     virtual void        paintEvent(QPaintEvent* event) override;
