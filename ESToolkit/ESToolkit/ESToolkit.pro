@@ -778,14 +778,9 @@ macx {
 }
 
 ios {
-    iphoneos {
-        LIBS += -lstdc++
-    }
-    iphonesimulator {
-        LIBS += -lstdc++.6.dylib
-    }
 
-    LIBS += -framework OpenGLES \
+    LIBS += -lstdc++ \
+        -framework OpenGLES \
         -framework GLKit \
         -framework UIKit \
         -framework Foundation \
