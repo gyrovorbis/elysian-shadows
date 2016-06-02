@@ -42,6 +42,7 @@ extern "C" void playSoundAL(int period, int pulseWidth, int db);
 #define SCREENSHOT_FILENAME "screenshot"
 #define SCREENSHOT_FILENAME_EXT "png"
 #define VMU_OUTPUT_DIR          "ElysianVMU"
+#define SETTINGS_FILE           "UserSettings.ini"
 #define SCREENSHOT_FILENAME_SIZE_MAX    100
 //#define MARCUS_VMU
 #define CYCLES      1000
@@ -190,14 +191,6 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     gyAudSourceSetf(_audioSrc, GY_SOURCE_GAIN, 1.0f);
     gyAudSourceSetf(_audioSrc, GY_SOURCE_PITCH, 1.0f);
     gyAudSourceSeti(_audioSrc, GY_SOURCE_LOOPING, 1);
-#if 0
-
-   // sleep(5);
-    //auto* wav = gyAudWavCreate("/Users/falco/desktop/VMU/wavTones.wav");
-    //gyAudSourcePlayWav(_audioSrc, wav);
-    //sleep(5);
-    playSoundAL(2, 1, 0);
-#else
 
     _fb.fill(Qt::black);
     QPainter painter(&_fb);
@@ -248,7 +241,6 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
 
     _loadSettings();
 
-#endif
 }
 
 VMUMainWindow::~VMUMainWindow(void)
@@ -295,13 +287,11 @@ void VMUMainWindow::closeEvent(QCloseEvent* /*event*/) {
 void VMUMainWindow::paintEvent(QPaintEvent *) {
     QPainter painter2(this);
     int y = 0;
-#ifndef Q_OS_MAC
+#ifndef Q_OS_MAC //Menubar is not part of the window widget on a Mac.
     if(_ui->menubar->isVisible()) y = _ui->menubar->height();
 #endif
     int height = geometry().height();
-//#ifdef Q_OS_MAC //fucking mac bug
     if(_ui->statusbar->isVisible()) height -= _ui->statusbar->height();
-//#endif
     height -= y;
     painter2.drawPixmap(0, y, geometry().width(), height, _fb);
 }
@@ -585,7 +575,8 @@ bool VMUMainWindow::loadRom(QString filepath) {
 
 void VMUMainWindow::on_actionLoad_ROM_triggered(void)
 {
-    loadRom(QFileDialog::getOpenFileName(nullptr, "Browse VMS ROM to Open", _romDir, "*.vms;*.VMS;*.dci;*.DCI;*.vmi;*.VMI"));
+    loadRom(QFileDialog::getOpenFileName(nullptr, "Browse VMS ROM to Open", _romDir,
+                                         "VMS Files(*.vms *.VMS);;Web Browser Files(*.vmi *.VMI)"));
 }
 
 void VMUMainWindow::on_actionSave_State_triggered(void)
@@ -726,7 +717,7 @@ void VMUMainWindow::on_actionScreenshot_triggered(void)
 }
 
 void VMUMainWindow::_saveSettings(void) {
-    QSettings settings;
+    QSettings settings(SETTINGS_FILE, QSettings::IniFormat);
     char buffer[256];
 
     _gyLog(GY_DEBUG_VERBOSE, "Saving User Settings [%s].", settings.fileName().toStdString().c_str());
@@ -745,7 +736,7 @@ void VMUMainWindow::_saveSettings(void) {
 }
 
 void VMUMainWindow::_loadSettings(void) {
-    QSettings settings;
+    QSettings settings(SETTINGS_FILE, QSettings::IniFormat);
     char buffer[256];
 
     _gyLog(GY_DEBUG_VERBOSE, "Loading User Settings [%s].", settings.fileName().toStdString().c_str());
@@ -816,7 +807,7 @@ void VMUMainWindow::dragEnterEvent(QDragEnterEvent *event) {
     if(mime->hasUrls()) {
         for(auto&& url : mime->urls()) {
             if(url.isLocalFile()) {
-                QFileInfo info(url.path());
+                QFileInfo info(url.toLocalFile());
                 if(info.suffix() == "VMS" || info.suffix() == "vms") {
                     event->acceptProposedAction();
                     return;
@@ -832,7 +823,7 @@ void VMUMainWindow::dropEvent(QDropEvent* event) {
     if(mime->hasUrls()) {
         for(auto&& url : mime->urls()) {
             if(url.isLocalFile()) {
-                QFileInfo info(url.path());
+                QFileInfo info(url.toLocalFile());
                 if(info.suffix() == "VMS" || info.suffix() == "vms") {
                     event->acceptProposedAction();
                     loadRom(info.absoluteFilePath());
