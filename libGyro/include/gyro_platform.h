@@ -83,6 +83,7 @@
 #	define GYRO_AUDIO_PLATFORM_INCLUDE		"glal/gyro_audio_glal.inl"
 #	define GYRO_INPUT_PLATFORM_INCLUDE		"ios/gyro_input_ios.inl"
 #	define GYRO_TEXTURE_PLATFORM_INCLUDE	"glal/gyro_texture_glal.inl"
+#   define GYRO_SHADER_PLATFORM_INCLUDE     "glal/gyro_video_glal.h"
 
 #ifdef GYRO_PLATFORM_iOS_SIMULATOR
 #	define GYRO_MATH_PLATFORM_INCLUDE       "x86/gyro_math_sse_x86.inl"
