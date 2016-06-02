@@ -294,11 +294,16 @@ void VMUMainWindow::closeEvent(QCloseEvent* /*event*/) {
 
 void VMUMainWindow::paintEvent(QPaintEvent *) {
     QPainter painter2(this);
-    int height = geometry().height();
-#ifdef Q_OS_MAC //fucking mac bug
-    if(_ui->statusbar->isVisible()) height -= _ui->statusbar->height();
+    int y = 0;
+#ifndef Q_OS_MAC
+    if(_ui->menubar->isVisible()) y = _ui->menubar->height();
 #endif
-    painter2.drawPixmap(0, 0, geometry().width(), height, _fb);
+    int height = geometry().height();
+//#ifdef Q_OS_MAC //fucking mac bug
+    if(_ui->statusbar->isVisible()) height -= _ui->statusbar->height();
+//#endif
+    height -= y;
+    painter2.drawPixmap(0, y, geometry().width(), height, _fb);
 }
 
 void VMUMainWindow::_update(void) {
