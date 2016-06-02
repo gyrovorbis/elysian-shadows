@@ -6,6 +6,7 @@
 namespace elysian {
     typedef BehaviorBase Behavior;
 }
+typedef BehaviorBase Behavior;
 #else
 #   include <tk_behavior.h>
 namespace elysian {

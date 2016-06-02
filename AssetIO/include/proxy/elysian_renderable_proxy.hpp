@@ -5,6 +5,7 @@
 #include <proxy/elysian_component_proxy.hpp>
 
 namespace OOLUA {
+    typedef elysian::Renderable         Renderable;
     typedef elysian::Vector2            Vector2;
     typedef elysian::SpriteAttrib       SpriteAttrib;
     typedef elysian::Material           Material;

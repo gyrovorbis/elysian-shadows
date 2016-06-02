@@ -6,6 +6,7 @@
 namespace elysian {
     typedef AudioSourceBase AudioSource;
 }
+typedef AudioSourceBase AudioSource;
 #else
 #   include <tk_audio_source.h>
 namespace elysian {

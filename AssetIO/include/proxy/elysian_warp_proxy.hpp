@@ -1,8 +1,11 @@
 #ifndef ELYSIAN_WARP_PROXY_HPP
 #define ELYSIAN_WARP_PROXY_HPP
 
-
 #include <crtp/elysian_warp.hpp>
+
+namespace OOLUA {
+    typedef elysian::Warp Warp;
+}
 
 OOLUA_PROXY(Warp, Component)
     OOLUA_TAGS (
