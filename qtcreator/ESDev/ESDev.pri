@@ -82,8 +82,7 @@ android {
         #QMAKE_CFLAGS += -target armv8-apple-none-eabi
         #QMAKE_CXXFLAGS += -target armv8-apple-none-eabi
         QMAKE_IOS_DEVICE_ARCHS=armv7
-        QMAKE_IOS_DEPLOYMENT_TARGET=8.2
-        QMAKE_IOS_TARGETED_DEVICE_FAMILY=1,2
+        QMAKE_IOS_DEPLOYMENT_TARGET=5.1.1
         DEFINES += GYRO_PLATFORM_iOS_DEVICE
         #CONFIG+=neon
     }
