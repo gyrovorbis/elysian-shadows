@@ -16,6 +16,7 @@ dreamcast {
 }
 
 macx {
+    QMAKE_CFLAGS += -emit-llvm
     QMAKE_MAC_SDK = macosx10.11
 }
 
@@ -41,6 +42,7 @@ macx {
 !dreamcast {
     QMAKE_CXXFLAGS += -Wall -Wno-unused-local-typedef -Wno-unknown-pragmas -Wno-inconsistent-missing-override
 }
+
 #QMAKE_CFLAGS += -std=c99
 
 !iphoneos:!dreamcast:!android {
@@ -72,7 +74,7 @@ android {
         QMAKE_IOS_DEPLOYMENT_TARGET = 5.1
         DEFINES += GYRO_PLATFORM_iOS_SIMULATOR
         QMAKE_CXXFLAGS += -fno-rtti -fno-exceptions
-        LIBS+=-stdlib=libstdc++
+        QMAKE_CXXFLAGS+=-stdlib=libc++
     }
     iphoneos {
         #QMAKE_CFLAGS += -target armv8-apple-none-eabi -mcpu=cortex-a8 -mfpu=neon -miphoneos-version-min=7.0
@@ -82,7 +84,8 @@ android {
         #QMAKE_CFLAGS += -target armv8-apple-none-eabi
         #QMAKE_CXXFLAGS += -target armv8-apple-none-eabi
         QMAKE_IOS_DEVICE_ARCHS=armv7
-        QMAKE_IOS_DEPLOYMENT_TARGET=5.1.1
+        QMAKE_IOS_DEPLOYMENT_TARGET=9.3
+        QMAKE_IOS_TARGETED_DEVICE_FAMILY=1,2
         DEFINES += GYRO_PLATFORM_iOS_DEVICE
         #CONFIG+=neon
     }
@@ -94,8 +97,8 @@ else:dreamcast {
 }
 
 
+QMAKE_CXXFLAGS += -std=c++1y
 
- QMAKE_CXXFLAGS += -std=c++1y
 !dreamcast {
 QMAKE_CXXFLAGS += -Wno-unknown-warning-option #-fno-rtti -fno-exceptions
     CONFIG += c++14
