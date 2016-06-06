@@ -150,7 +150,7 @@ OOLUA_EXPORT_FUNCTIONS_CONST(LuaBehaviorScript,
 
 
 namespace elysian {
-	
+
 LuaScript::LuaScript(const char *path): _environRef(LUA_NOREF) { strcpy(_path, path); }
 
 
@@ -159,7 +159,7 @@ void LuaBehaviorScript::cacheTriggers(lua_State*const state) {
 
     lua_rawgeti(state, LUA_REGISTRYINDEX, _environRef);
 
-    for(unsigned i = 0; i < LuaBehavior::TRIGGER_MAX_INDEX; ++i) {
+    for(unsigned i = 0; i < LuaBehavior::TRIGGER_ENGINE_MAX_INDEX; ++i) {
         if((_attrib.getSupportedTriggers()&(1ul<<i))) {
             lua_pushnumber(state, i);
             lua_getfield(state, -2, LuaBehavior::triggerStrings[i]);
