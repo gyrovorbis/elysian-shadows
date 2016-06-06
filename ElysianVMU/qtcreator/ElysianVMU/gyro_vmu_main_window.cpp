@@ -36,6 +36,7 @@ static unsigned char icon[4][7] = {
 extern "C" void playSoundAL(int period, int pulseWidth, int db);
 
 //#define VMS_IMAGE "/Users/falco/Desktop/VMU/Tetris.vms"
+#define BIOS_IMAGE "/Users/falcogirgis/Documents/Dev/ESDev/ElysianVMU/bin/vmu_bios.bin"
 #define GYRO_VMU
 #define VMU_STATUS_TEMP_TIMEOUT 2000
 #define VMU_LOG_FILE "vmu_debug.txt"
@@ -167,6 +168,11 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     gyInputInit(&inputParams);
 
     _dev = gyVmuDeviceCreate();
+
+#ifdef BIOS_IMAGE
+     gyloadbios(_dev, BIOS_IMAGE);
+     _running = true;
+#endif
 
 #ifdef VMS_IMAGE
 #ifdef GYRO_VMU

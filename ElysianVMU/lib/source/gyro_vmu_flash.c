@@ -342,4 +342,33 @@ int gyloadflash(VMUDevice* dev, const char *filename)
 
 }
 
+int gyinitbios(VMUDevice* dev, int fd)
+{
+  int r=0, t=0;
+  memset(dev->rom, 0, sizeof(dev->rom));
+  while(t<sizeof(dev->rom) && (r=read(fd, dev->rom+t, sizeof(dev->rom)-t))>0)
+    t += r;
+  if(r<0 || t<0x200)
+    return 0;
+  return 1;
+}
+
+int gyloadbios(VMUDevice* dev, char *filename)
+{
+  int fd;
+
+  if((fd = open(filename, O_RDONLY|O_BINARY))>=0) {
+    if(!initbios(dev, fd)) {
+      close(fd);
+      _gyLog(GY_DEBUG_ERROR, "%s: can't load BIOS image", filename);
+      return 0;
+    }
+    close(fd);
+    dev->biosLoaded = 1;
+    return 1;
+  } else {
+    //perror(filename);
+    return 0;
+  }
+}
 

@@ -55,6 +55,9 @@ int gyVmuFlashLoadVMI(struct VMIFileInfo* info, const char* path);
 int gyVmuFlashLoadImage(struct VMUDevice* dev, const char* path);
 int gyVmuFlashLoadDCM(struct VMUDevice* dev, const char* path);
 
+int gyinitbios(struct VMUDevice* dev, int fd);
+int gyloadbios(struct VMUDevice* dev, char *filename);
+
 #ifdef __cplusplus
 }
 #endif
