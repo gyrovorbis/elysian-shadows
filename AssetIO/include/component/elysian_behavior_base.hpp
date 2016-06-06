@@ -13,30 +13,30 @@ ELYSIAN_ASSET_TYPEDEF(Entity)
 ELYSIAN_ASSET_TYPEDEF(Collidable)
 
 namespace elysian {
-	
-	struct ltstr;
-	class CollisionContact;
-	class CombatStatus;
-	
+
+    struct ltstr;
+    class CollisionContact;
+    class CombatStatus;
+
     class BehaviorBase:
             public Component
     {
         friend class BaseEntity;
 
 
-	private:
-		static const Component::TYPE _type = Component::BEHAVIOR;
-		static std::map<const char*, Behavior* (*)(Entity&), ltstr> _creators;
-		bool _active = false;
-        
-	protected:
-		static void registerCreator(const char*typeName, Behavior* (*const func)(Entity&));
-		
+    private:
+        static const Component::TYPE _type = Component::BEHAVIOR;
+        static std::map<const char*, Behavior* (*)(Entity&), ltstr> _creators;
+        bool _active = false;
+
+    protected:
+        static void registerCreator(const char*typeName, Behavior* (*const func)(Entity&));
+
         BehaviorBase(Entity& parent);
-		
-		uint64_t _triggerBits = 0;
-		
-	public:
+
+        uint64_t _triggerBits = 0;
+
+    public:
 
        /* ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(triggers, getTriggers)
@@ -70,9 +70,9 @@ namespace elysian {
             ON_BUTTON_RELEASE_INDEX,
             TRIGGER_ENGINE_MAX_INDEX,
             //ESTk-only trigers
-            ON_TK_SELECT_INDEX=62,
-            ON_TK_UNSELECT_INDEX=63,
-            TRIGGER_MAX_INDEX=64
+            ON_TK_SELECT_INDEX=61,
+            ON_TK_UNSELECT_INDEX=62,
+            TRIGGER_MAX_INDEX=63
         };
 
         //64 triggers max, currently
@@ -100,7 +100,7 @@ namespace elysian {
             ON_SHATTER                          = 1ul<<ON_SHATTER_INDEX,
             ON_BUTTON_PRESS                     = 1ul<<ON_BUTTON_PRESS_INDEX,
             ON_BUTTON_RELEASE                   = 1ul<<ON_BUTTON_RELEASE_INDEX,
-            TRIGGER_MAX							= 1ul<<TRIGGER_MAX_INDEX,//1<<23,
+            TRIGGER_MAX							= 1ul<<TRIGGER_ENGINE_MAX_INDEX,//1<<23,
             //ESTk-only trigers
             ON_TK_SELECT                        = 1ull<<ON_TK_SELECT_INDEX,
             ON_TK_UNSELECT                      = 1ull<<ON_TK_UNSELECT_INDEX
@@ -167,61 +167,61 @@ namespace elysian {
 
         void		callTrigger(const TRIGGER trigger);
 
-		uint64_t	getTriggers(void) const;
+        uint64_t	getTriggers(void) const;
         void        setTriggers(const uint64_t triggers);
-		void		addTrigger(const TRIGGER flag);
-		void		addTriggers(const uint64_t flags);
-		void		removeTrigger(const TRIGGER flag);
+        void		addTrigger(const TRIGGER flag);
+        void		addTriggers(const uint64_t flags);
+        void		removeTrigger(const TRIGGER flag);
         inline bool isActive(void) const { return _active; }
-		inline void setActive(const bool val=true) { _active = val; }
-		
+        inline void setActive(const bool val=true) { _active = val; }
+
         //polymorphic component shit
         static constexpr const  Component::TYPE componentType = Component::BEHAVIOR;
-	};
-	
-	
+    };
 
 
 
 
 
 
-	//========= INLINEZ =========
-	
+
+
+    //========= INLINEZ =========
+
     inline uint64_t BehaviorBase::getTriggers(void) const { return _triggerBits; }
     inline void BehaviorBase::setTriggers(const uint64_t triggers) { _triggerBits = triggers; }
-	//inline void Behavior::addTrigger(const uint64_t flags) { _triggerBits |= flags; }
-	//inline void Behavior::setTriggers(const uint64_t flags) { _triggerBits = flags; }
+    //inline void Behavior::addTrigger(const uint64_t flags) { _triggerBits |= flags; }
+    //inline void Behavior::setTriggers(const uint64_t flags) { _triggerBits = flags; }
 
     inline void BehaviorBase::addTriggers(const uint64_t flags) {
-		for(unsigned i = 0; i < 64; ++i) {
-			addTrigger((TRIGGER)(flags & (0x1<<i)));
-		}
-	}
-	
+        for(unsigned i = 0; i < 64; ++i) {
+            addTrigger((TRIGGER)(flags & (0x1<<i)));
+        }
+    }
+
     inline void BehaviorBase::callTrigger(const TRIGGER trigger) {
 #if 0
         if(!_triggerBits & trigger) return; //not our fucking job to check this shit here
 #endif
-		switch(trigger) {
-			case ON_LOAD:
-				return onLoad();
-			case ON_UNLOAD:
-				return onUnload();
-			case ON_ENTER:
-				return onEnter();
-			case ON_EXIT:
-				return onExit();
-			case ON_UPDATE:
-				return onUpdate();
-			case ON_RENDER:
-				return onRender();
-			case ON_COMBAT_ENTER:
-				return onCombatEnter();
-			case ON_COMBAT_EXIT:
-				return onCombatExit();
-			case ON_COMBAT_DEATH:
-				return onCombatDeath();
+        switch(trigger) {
+            case ON_LOAD:
+                return onLoad();
+            case ON_UNLOAD:
+                return onUnload();
+            case ON_ENTER:
+                return onEnter();
+            case ON_EXIT:
+                return onExit();
+            case ON_UPDATE:
+                return onUpdate();
+            case ON_RENDER:
+                return onRender();
+            case ON_COMBAT_ENTER:
+                return onCombatEnter();
+            case ON_COMBAT_EXIT:
+                return onCombatExit();
+            case ON_COMBAT_DEATH:
+                return onCombatDeath();
             case ON_TK_SELECT:
                 return onTkSelect();
             case ON_TK_UNSELECT:
