@@ -200,7 +200,8 @@ SOURCES += \
     ../../ESGamma/source/system/elysian_input_system_base.cpp \
     ../../AssetIO/source/behavior/elysian_playable_behavior.cpp \
     ../../ESGamma/source/system/elysian_pathfinding_system.cpp \
-    ../../AssetIO/source/utility/elysian_lua_variant_base.cpp
+    ../../AssetIO/source/utility/elysian_lua_variant_base.cpp \
+    source/estk/tk_estoolkit_menu_bar_slots.cpp
 
 
 

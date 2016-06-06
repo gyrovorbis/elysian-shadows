@@ -106,6 +106,7 @@ private:
 
     elysian::Debug *        _debug;
     QDir                    _outputDir;
+    QString                 _prevProjectPath;
 
     Ui::ESToolkit*          _ui;
     QTabBar*                _areaTabBar;
@@ -143,7 +144,6 @@ private:
     void                _setMapViewResolution(const MAP_VIEW_RES res);
     void                _tkLuaInitialize(void);
 
-    void SyncEntityMenuBar(const Entity *const entity);
     void toggleProjectActions(bool enabled);
     bool MaybeSave();
     void WriteSettings();
@@ -157,21 +157,8 @@ private Q_SLOTS:
     //----CONNECTED BY DESIGNER----
     void _onEngineInitialized();
     void on_actionLevelReloadSheets_triggered();
-    //void on_actionFileImportArea_triggered();
-    //void on_actionFileImportLevel_triggered();
-    //void on_actionFileSaveAsCurrentProject_triggered();
-    //void on_actionFileExportCurrentLevel_triggered();
-    //void on_actionFileExportCurrentArea_triggered();
     void on_actionLevelRemove_triggered();
     void on_actionAreaRemove_triggered();
-    void on_actionEntityRemoveCharacter_triggered();
-    void on_actionEntityRemoveWarp_triggered();
-    void on_actionEntityRemoveCollidable_triggered();
-    void on_actionEntityRemoveAnimation_triggered();
-    void on_actionEntityAttachCharacter_triggered();
-    void on_actionEntityAttachWarp_triggered();
-    void on_actionEntityAttachCollidable_triggered();
-    void on_actionEntityAttachAnimation_triggered();
     void on_actionEntityRemove_triggered();
     void on_actionDebugViewLog_triggered();
     void on_actionAreaAddEntity_triggered();
@@ -187,8 +174,6 @@ private Q_SLOTS:
     void OnAddArea(Project *const project, Level *const level, Area *const area);
     void OnAreaRenamed(const QString oldName, const QString newName);
     void OnRemoveArea(Project *const project, Level *const level, Area *const area);
-    void OnComponentAttached(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
-    void OnComponentRemoved(Project *const project, Level *const level, Area *const area, Entity *const entity, Component *const comp);
     void OnAreaChanged(Area *const area);
     void OnLevelChanged(Level *const level);
     void OnProjectChanged(Project *const project);
@@ -202,8 +187,6 @@ private Q_SLOTS:
     void OnSelectionChanged(const Selectable::TYPE, Selectable *const);
     void on_actionFileNewLevel_triggered();
     void on_actionFileNewArea_triggered();
-    void on_actionEntityAttachRenderable_triggered();
-    void on_actionEntityRemoveRenderable_triggered();
     void on_actionFileCloseProject_triggered();
     void on_actionEnable_OpenGL_triggered();
     void on_actionNix_triggered();
@@ -301,6 +284,14 @@ private Q_SLOTS:
     void on_actionBloom_toggled(bool arg1);
 };
 
+
+
+
+
+
+
+
+//===== INLINEZ =====
 
 inline Assets& ESToolkit::getAssets(void) {
     return _assets;
