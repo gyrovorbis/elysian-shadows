@@ -36,7 +36,7 @@ static unsigned char icon[4][7] = {
 extern "C" void playSoundAL(int period, int pulseWidth, int db);
 
 //#define VMS_IMAGE "/Users/falco/Desktop/VMU/Tetris.vms"
-#define BIOS_IMAGE "/Users/falcogirgis/Documents/Dev/ESDev/ElysianVMU/bin/vmu_bios.bin"
+#define BIOS_IMAGE "/Users/falco/Documents/Dev/esdev/ElysianVMU/bin/DCVMSBIOS.bin"
 #define GYRO_VMU
 #define VMU_STATUS_TEMP_TIMEOUT 2000
 #define VMU_LOG_FILE "vmu_debug.txt"
@@ -171,6 +171,7 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
 
 #ifdef BIOS_IMAGE
      gyloadbios(_dev, BIOS_IMAGE);
+     gyVmuCpuReset(_dev);
      _running = true;
 #endif
 
@@ -408,7 +409,11 @@ void VMUMainWindow::_update(void) {
 
       for(int i = 0; i < 1; ++i) {
 #ifdef GYRO_VMU
+#ifndef VMU_DEBUG
             gyVmuCpuTick(_dev, _timeScalar*(float)deltaTicks/1000000000.0f);
+#else
+        gyVmuCpuTick(_dev, 1.0f/30.0f);
+#endif
 #endif
 #ifdef MARCUS_VMU
           run_cpu();
@@ -695,6 +700,9 @@ void VMUMainWindow::_log(GY_DEBUG_SEVERITY level, const char *msg) {
         "X - "
     };
     qDebug() << tabBuff << prefix[level] << msg;
+#ifdef VMU_DEBUG
+    return;
+#endif
     fprintf(_logFile, "%s%s%s\n", tabBuff, prefix[level], msg);
     fflush(_logFile);
 }

@@ -374,12 +374,27 @@ static int _instrExecute(VMUDevice* dev) {
         }
         break;
     }
-    case OPCODE_LDF:
+    case OPCODE_LDF: {
         _gyLog(GY_DEBUG_ERROR, "Using unknown opcode LDF!");
+        /*
+        writemem(0x100, flash[0x1ffff&(readmem(0x104)+(readmem(0x105)<<8)+
+                       (readmem(0x154)<<16))]);*/
+        uint32_t flashAddr = ((dev->sfr[0x54]&0x1)<<16)+(dev->sfr[SFR_OFFSET(SFR_ADDR_TRL)] | (dev->sfr[SFR_OFFSET(SFR_ADDR_TRH)]<<8u));
+        if(flashAddr == 0) {
+            dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)] = 0xff;
+        } else {
+            gyVmuMemWrite(dev, SFR_ADDR_ACC, dev->flash[flashAddr]);
+        }
         break;
-    case OPCODE_STF:
+    }
+    case OPCODE_STF: {
+        uint32_t flashAddr = ((dev->sfr[0x54]&0x1)<<16)+(dev->sfr[SFR_OFFSET(SFR_ADDR_TRL)] | (dev->sfr[SFR_OFFSET(SFR_ADDR_TRH)]<<8u));
+                uint8_t acc = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
         _gyLog(GY_DEBUG_ERROR, "Using unknown opcode STF!");
+        if(!(gyVmuMemRead(dev, 0x154)&0x2))
+               dev->flash[flashAddr] = acc;
         break;
+    }
     case OPCODE_DBNZ: {
         int mem = gyVmuMemRead(dev, _operands[ADDR_MODE_DIR])-1;
         gyVmuMemWrite(dev, _operands[ADDR_MODE_DIR], mem);
@@ -719,7 +734,7 @@ static int _fetchNextInstruction(VMUDevice* device) {
         gyVmuTimersUpdate(device);
 
         //check for firmware entry based
-        if(!(device->sfr[0x0d]&1) /*&& !hasbios*/)
+        if(!(device->sfr[0x0d]&1) && !device->biosLoaded)
             if((device->pc = gyVmuBiosHandleCall(device)))
                 //device->sfr[0x0d]|=1;
                 gyVmuMemWrite(device, SFR_ADDR_EXT, gyVmuMemRead(device, SFR_ADDR_EXT)|1);
@@ -792,8 +807,6 @@ int gyVmuCpuReset(VMUDevice* dev) {
     struct tm *tm = localtime(&t);
     dev->memMap[VMU_MEM_SEG_XRAM]   = dev->xram[VMU_XRAM_BANK_LCD_TOP];
     dev->memMap[VMU_MEM_SEG_SFR]    = dev->sfr;
-    dev->memMap[VMU_MEM_SEG_GP1]    = dev->ram[VMU_RAM_BANK1];
-    dev->memMap[VMU_MEM_SEG_GP2]    = &dev->ram[VMU_RAM_BANK1][VMU_MEM_SEG_SIZE];
 
     dev->sfr[0x06] = 0x7f;
     dev->sfr[0x4c] = 0xff;
@@ -823,9 +836,15 @@ int gyVmuCpuReset(VMUDevice* dev) {
     dev->ram[0][0x31] = 0xff;
 
     if(dev->biosLoaded) {
+        dev->memMap[VMU_MEM_SEG_GP1]    = dev->ram[VMU_RAM_BANK0];
+        dev->memMap[VMU_MEM_SEG_GP2]    = &dev->ram[VMU_RAM_BANK0][VMU_MEM_SEG_SIZE];
         dev->sfr[0x0d] = 0;
+        //dev->pc = 0x1f0;
+        dev->imem = dev->rom;
         //dev->pc = 0x1f0; no fucking clue
     } else {
+        dev->memMap[VMU_MEM_SEG_GP1]    = dev->ram[VMU_RAM_BANK1];
+        dev->memMap[VMU_MEM_SEG_GP2]    = &dev->ram[VMU_RAM_BANK1][VMU_MEM_SEG_SIZE];
         dev->sfr[0x0d] = 1;
             dev->imem = dev->flash;
             dev->pc = 0;
@@ -841,11 +860,13 @@ int gyVmuCpuReset(VMUDevice* dev) {
 
 
     //BIOS DEFAULT VALUES
+#if 0
     gyVmuMemWrite(dev, SFR_ADDR_P1FCR,  0xbf);
     gyVmuMemWrite(dev, SFR_ADDR_P3INT,  0xfd);
     gyVmuMemWrite(dev, SFR_ADDR_ISL,    0xc0);
     gyVmuMemWrite(dev, SFR_ADDR_VSEL,   0xf4);
     gyVmuMemWrite(dev, SFR_ADDR_BTCR,   0x41);
+#endif
 
 
 

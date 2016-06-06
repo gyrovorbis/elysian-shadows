@@ -173,6 +173,9 @@ extern "C" {
 #define SFR_P3INT_P30INT_POS    0       //Set to 1 to enable interrupts when P1INT is set
 #define SFR_P3INT_P30INT_MASK   0x1
 
+#define SFR_FLASH_PRG_ADDR_POS  0
+#define SFR_FLASH_PRG_ADDR_MASK 0x1
+
 //XBNK - Bank Address Register
 #define SFR_EXT_MASK            0x01
 #define SFR_EXT_POS             0

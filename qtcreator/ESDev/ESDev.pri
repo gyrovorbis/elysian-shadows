@@ -16,7 +16,7 @@ dreamcast {
 }
 
 macx {
-    QMAKE_CFLAGS += -emit-llvm
+   # QMAKE_CFLAGS += -emit-llvm
     QMAKE_MAC_SDK = macosx10.11
 }
 

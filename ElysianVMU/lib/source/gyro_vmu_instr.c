@@ -567,7 +567,7 @@ const VMUInstr _instrMap[INSTR_MAP_SIZE] = {
         1,
         OPCODE_PSW_CY_MASK | OPCODE_PSW_OV_MASK | OPCODE_PSW_AC_MASK
     },
-    [OPCODE_SUBC_IND...OPCODE_SUBC_IND+OPCODE_SUBC_COUNT-1] = {
+    [OPCODE_SUBC_IND...OPCODE_SUBC_IND+OPCODE_SUBC_IND_COUNT-1] = {
         "SUBC @Ri",
         "Subtract the operand and the carry bit (CY) from the ACC register. CY, AC and OV are set according to the result.",
         OPCODE_SUBC_IND,
