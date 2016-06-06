@@ -53,7 +53,7 @@ typedef struct VMUDevice {
     uint16_t        pc;
     unsigned char   instrBytesFetched;
     union {
-        unsigned char   instrBytes[INSTR_BYTE_MAX];
+        uint8_t         instrBytes[INSTR_BYTE_MAX];
         uint32_t        instr;
     };
 

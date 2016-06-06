@@ -68,65 +68,85 @@ extern "C" {
 #define SFR_ADDR_PCON           0x107   //Power Control register
 #define SFR_ADDR_IE             0x108   //Interrupt Enable control
 #define SFR_ADDR_IP             0x109   //Interrupt Priority Ranking control
-
+//0x10A-0x10C Not Used
 #define SFR_ADDR_EXT            0x10d   //External Memory control - Whether program is read from ROM (BIOS) or FLASH (GAME)
 #define SFR_ADDR_OCR            0x10e   //Oscillation Control Register (32kHz/600kHz/6MHz)
-
+//0x10f Not Used
 #define SFR_ADDR_T0CNT          0x110   //Timer/Counter 0 control
 #define SFR_ADDR_T0PRR          0x111   //Timer 0 Prescalar Data register
 #define SFR_ADDR_T0L            0x112   //Timer 0 Low
 #define SFR_ADDR_T0LR           0x113   //Timer 0 Low Reload register
 #define SFR_ADDR_T0H            0x114   //Timer 0 High
 #define SFR_ADDR_T0HR           0x115   //Timer 0 High Reload register
-
+//0x116-0x117 Not Used
 #define SFR_ADDR_T1CNT          0x118   //Timer 1 control
-
+//0x119 Not Used
 #define SFR_ADDR_T1LC           0x11a   //Timer 1 Low Compare Data register
 #define SFR_ADDR_T1L            0x11b   //Timer 1 Low (Read-only)
 #define SFR_ADDR_T1LR           0x11b   //Timer 1 Low Reload register (Write-only)
 #define SFR_ADDR_T1HC           0x11c   //Timer 1 High Compare Data register
 #define SFR_ADDR_T1H            0x11d   //Timer 1 High (Read-only)
 #define SFR_ADDR_T1HR           0x11d   //Timer 1 High Reload Register (Write-only)
-
+//0x11E-0x11F Not used
 #define SFR_ADDR_MCR            0x120   //Mode Control register
-
+//0x121 Not Used
 #define SFR_ADDR_STAD           0x122   //Start Address register
 #define SFR_ADDR_CNR            0x123   //Character Number register
 #define SFR_ADDR_TDR            0x124   //Time Division register
 #define SFR_ADDR_XBNK           0x125   //Bank Address register
-
+//0x126 Not Used
 #define SFR_ADDR_VCCR           0x127   //LCD Contrast Control register
-
+//0x128-0x12f Not Used
 #define SFR_ADDR_SCON0          0x130   //SIO0 Control register
 #define SFR_ADDR_SBUF0          0x131   //SIO0 Buffer
 #define SFR_ADDR_SBR            0x132   //SIO Baud Rate Generator register
-
+//0x133 Not Used
 #define SFR_ADDR_SCON1          0x134   //SI01 Control register
 #define SFR_ADDR_SBUF1          0x135   //SI01 Buffer
-
+//0x136-0x143 Not Used
 #define SFR_ADDR_P1             0x144   //Port 1 Latch
 #define SFR_ADDR_P1DDR          0x145   //Port 1 Data Direction register
 #define SFR_ADDR_P1FCR          0x146   //Port 1 Function Control register
-
+//0x147-0x14b Not (officially) Used
+//0x148 Unknown BIOS Use
 #define SFR_ADDR_P3             0x14c   //Port 3 Latch
 #define SFR_ADDR_P3DDR          0x14d   //Port 3 Data Direction register
 #define SFR_ADDR_P3INT          0x14e   //Port 3 Interrupt Control register
-
+//0x14F-0x15B Not (officially) Used
+//0x151 Unknown BIOS Use
+#define SFR_ADDR_FLASH_PRG      0x154
+//0x155 Unknown BIOS Use
 #define SFR_ADDR_P7             0x15c   //Port 7 Latch
 #define SFR_ADDR_I01CR          0x15d   //External Interrupt 0, 1 Control
 #define SFR_ADDR_I23CR          0x15e   //External Interrupt 2, 3 Control
 #define SFR_ADDR_ISL            0x15f   //Input Signal Selection register
+/*
+ * 0x160-0x162 Not (officially) Used
+The BIOS clears bits 2 and 4, and sets bits 0 and 1.
 
+These registers seem to write data to the Maple bus from the Work RAM.
+One little routine does this series of operations:
+
+1. Write 3 to VLREG
+2. Clears VSEL.0
+3. sets VRMAD1 to 0 (zeros address)
+4. writes 32 bytes to VTRBF
+5. Sets VSEL.0
+6. Sets SFR161.1
+7.Waits for SFR161.0 to be set
+8. loop lines 2-7
+*/
 #define SFR_ADDR_VSEL           0x163   //VMS Control register
 #define SFR_ADDR_VRMAD1         0x164   //Work RAM Access Address 1
 #define SFR_ADDR_VRMAD2         0x165   //Work RAM Access Address 2
 #define SFR_ADDR_VTRBF          0x166   //Send/Receive Buffer
 #define SFR_ADDR_VLREG          0x167   //Length registration
-
+//0x168-0x17E Not Used
 #define SFR_ADDR_BTCR           0x17f   //Base Time Control register
 #define SFR_ADDR_XRAM_BASE      0x180   //LCD Frame Buffer base
 #define SFR_ADDR_XRAM_END       0x1fb   //LCD Frame Buffer end
 #define XRAM_OFFSET(a)          (a-SFR_ADDR_XRAM_BASE)
+//0x1FB-0x1FF Not Used
 
 #define SFR_ADDR_XRAM_ICN_FILE  0x181   //File Icon - XRAM Bank 2
 #define SFR_ADDR_XRAM_ICN_GAME  0x182   //Game Icon - XRAM Bank 2

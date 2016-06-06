@@ -56,9 +56,6 @@ int gyVmuMemRead(VMUDevice* dev, int addr) {
       return 0xfe|(dev->sfr[0x65]&1);
     default: {
         int val;
-#ifdef VMU_DEBUG
-        _gyLog(GY_DEBUG_VERBOSE, "READMEM[%x] = %d", addr, dev->memMap[(addr&VMU_MEM_SEG_MASK)>>VMU_MEM_SEG_POS][addr&VMU_MEM_OFFSET_MASK]);
-#endif
 
         //return dev->memMap[(addr>>7)&0x3][addr&0x7f];
 #if 0

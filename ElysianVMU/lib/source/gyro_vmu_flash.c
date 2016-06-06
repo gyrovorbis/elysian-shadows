@@ -358,7 +358,7 @@ int gyloadbios(VMUDevice* dev, char *filename)
   int fd;
 
   if((fd = open(filename, O_RDONLY|O_BINARY))>=0) {
-    if(!initbios(dev, fd)) {
+    if(!gyinitbios(dev, fd)) {
       close(fd);
       _gyLog(GY_DEBUG_ERROR, "%s: can't load BIOS image", filename);
       return 0;
