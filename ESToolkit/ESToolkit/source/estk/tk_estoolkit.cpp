@@ -529,7 +529,13 @@ bool ESToolkit::MaybeSave()
 
 void ESToolkit::WriteSettings()
 {
+#ifdef ESTOOLKIT_SETTINGS_FILE
+    QSettings settings(_outputDir.absoluteFilePath(ESTOOLKIT_SETTINGS_FILE), QSettings::IniFormat);
+#else
     QSettings settings;
+#endif
+    DbgEvent event("Saving user settings [%s].", Q_CSTR(settings.fileName()));
+
     settings.setValue("settings", "Did Set");
     settings.setValue("geometry", saveGeometry());
     setWindowState(Qt::WindowMaximized);
@@ -578,7 +584,13 @@ void ESToolkit::WriteSettings()
 
 void ESToolkit::ReadSettings()
 {
-    DbgEvent event("Restoring user settings.");
+#ifdef ESTOOLKIT_SETTINGS_FILE
+    QSettings settings(_outputDir.absoluteFilePath(ESTOOLKIT_SETTINGS_FILE), QSettings::IniFormat);
+#else
+    QSettings settings;
+#endif
+
+    DbgEvent event("Loading user settings [%s].", Q_CSTR(settings.fileName()));
     toggleProjectActions(true);
     _assetDockWidget->setEnabled(false);
     _entityDockWidget->setEnabled(false);
@@ -597,7 +609,7 @@ void ESToolkit::ReadSettings()
 
     _assets.setCurrentProject(nullptr);
 
-    QSettings settings;
+
     QString savedSettings       = settings.value("settings", "").toString();
     QByteArray geo              = settings.value("geometry", QByteArray()).toByteArray();
     QByteArray state            = settings.value("state", QByteArray()).toByteArray();
@@ -2006,6 +2018,7 @@ void ESToolkit::_onEngineInitialized(void) {
     _assets.getEngine()->getLightSys()->setEnabled(_engineParams.lightingEnabled);
     _engineGLView->setCameraManualOnPlay(_engineParams.manualCameraEnabled);
     _assets.getEngine()->getAudioSys()->setEnabled(_engineParams.audioEnabled);
+    _assets.getEngine()->getLightSys()->setBloomEnabled(_engineParams.bloomEnabled);
 
     //Override
 }

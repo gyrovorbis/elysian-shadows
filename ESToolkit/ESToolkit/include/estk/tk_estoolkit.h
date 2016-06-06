@@ -14,6 +14,7 @@
 #define ESTOOLKIT_OUTPUT_DIR            "ESTk"
 #define ESTOOLKIT_SCREENS_DIR           "screenshots"
 #define ESTOOLKIT_CRASH_CMD_LINE_ARG    "--crash"
+#define ESTOOLKIT_SETTINGS_FILE         "estk_settings.ini"
 
 ELYSIAN_ASSET_TYPEDEF(Debug)
 
@@ -91,12 +92,12 @@ private:
     static ESToolkit* _instance;
 
     struct EngineParameters {
-        bool        shadowPassEnabled   = true;
-        bool        lightingEnabled     = true;
-        bool        bloomEnabled         = true;
-        bool        manualCameraEnabled = false;
-        bool        audioEnabled        = true;
-        bool        showHiddenLevels    = false;
+        bool        shadowPassEnabled       = true;
+        bool        lightingEnabled         = true;
+        bool        bloomEnabled            = false;
+        bool        manualCameraEnabled     = false;
+        bool        audioEnabled            = true;
+        bool        showHiddenLevels        = false;
     } _engineParams;
 
     Assets                  _assets;

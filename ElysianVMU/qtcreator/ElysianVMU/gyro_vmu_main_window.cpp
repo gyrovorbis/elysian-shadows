@@ -36,7 +36,9 @@ static unsigned char icon[4][7] = {
 extern "C" void playSoundAL(int period, int pulseWidth, int db);
 
 //#define VMS_IMAGE "/Users/falco/Desktop/VMU/Tetris.vms"
-#define BIOS_IMAGE "/Users/falco/Documents/Dev/esdev/ElysianVMU/bin/DCVMSBIOS.bin"
+#ifdef VMU_DEBUG
+#define BIOS_IMAGE "/Users/falcogirgis/Documents/Dev/esdev/ElysianVMU/bin/vmu_bios.bin"
+#endif
 #define GYRO_VMU
 #define VMU_STATUS_TEMP_TIMEOUT 2000
 #define VMU_LOG_FILE "vmu_debug.txt"
