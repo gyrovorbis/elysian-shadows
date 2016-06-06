@@ -48,6 +48,8 @@ typedef struct VMUDevice {
     int             speed;
     float           tBaseDeltaTime;
 
+    unsigned char   biosLoaded;
+
     uint16_t        pc;
     unsigned char   instrBytesFetched;
     union {

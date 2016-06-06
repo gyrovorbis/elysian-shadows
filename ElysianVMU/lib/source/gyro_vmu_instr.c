@@ -257,6 +257,26 @@ const VMUInstr _instrMap[INSTR_MAP_SIZE] = {
         2,
         OPCODE_PSW_NONE
     },
+    [OPCODE_LDF] = {
+        "LDF",
+        "Load a constant from ROM space into the ACC register. The ROM address is formed by taking the TRH and TRL registers viewed as a 16-bit value (TRH being the upper 8 bits, and TRL being the lower 8 bits). No PSW flags are affected.",
+        OPCODE_LDF,
+        8,
+        INSTR_ARG_TYPES_PACK(INSTR_ARG_TYPE_NONE),
+        1,
+        2,
+        OPCODE_PSW_NONE
+    },
+    [OPCODE_STF] = {
+        "STF",
+        "Write to flash some fucking how.",
+        OPCODE_STF,
+        8,
+        INSTR_ARG_TYPES_PACK(INSTR_ARG_TYPE_NONE),
+        1,
+        2,
+        OPCODE_PSW_NONE
+    },
     [OPCODE_DBNZ...OPCODE_DBNZ+OPCODE_DBNZ_COUNT-1] = {
         "DBNZ d9, r8",
         "Decrement the operand by one, and branch if the result is not zero. See BR for address calculation. No PSW flags are affected.",

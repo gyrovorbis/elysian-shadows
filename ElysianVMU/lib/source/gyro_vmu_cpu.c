@@ -374,6 +374,12 @@ static int _instrExecute(VMUDevice* dev) {
         }
         break;
     }
+    case OPCODE_LDF:
+        _gyLog(GY_DEBUG_ERROR, "Using unknown opcode LDF!");
+        break;
+    case OPCODE_STF:
+        _gyLog(GY_DEBUG_ERROR, "Using unknown opcode STF!");
+        break;
     case OPCODE_DBNZ: {
         int mem = gyVmuMemRead(dev, _operands[ADDR_MODE_DIR])-1;
         gyVmuMemWrite(dev, _operands[ADDR_MODE_DIR], mem);
@@ -815,19 +821,20 @@ int gyVmuCpuReset(VMUDevice* dev) {
     dev->ram[0][0x1c] = tm->tm_min;
     dev->ram[0][0x1d] = tm->tm_sec;
     dev->ram[0][0x31] = 0xff;
-#if 0 //bios
-    dev->sfr[0x0d] = 0;
-    dev->pc = 0x1f0;
-#else //game
-    //gyVmuMemWrite(dev, SFR_ADDR_EXT, 1);
-    dev->sfr[0x0d] = 1;
-        dev->imem = dev->flash;
-        dev->pc = 0;
-        gyVmuMemWrite(dev, 0x125, 2);
-        gyVmuMemWrite(dev, 0x182, 0x10);
-        gyVmuMemWrite(dev, 0x125, 0);
-        gyVmuMemWrite(dev, 0x127, 0x80);
-#endif
+
+    if(dev->biosLoaded) {
+        dev->sfr[0x0d] = 0;
+        //dev->pc = 0x1f0; no fucking clue
+    } else {
+        dev->sfr[0x0d] = 1;
+            dev->imem = dev->flash;
+            dev->pc = 0;
+            gyVmuMemWrite(dev, 0x125, 2);
+            gyVmuMemWrite(dev, 0x182, 0x10);
+            gyVmuMemWrite(dev, 0x125, 0);
+            gyVmuMemWrite(dev, 0x127, 0x80);
+
+    }
     dev->sfr[SFR_OFFSET(SFR_ADDR_IE)] = SFR_IE_IE7_MASK;
     gyVmuMemWrite(dev, 0x10e, 0x81);
 
