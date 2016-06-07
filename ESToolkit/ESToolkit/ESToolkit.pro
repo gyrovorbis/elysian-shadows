@@ -200,10 +200,7 @@ SOURCES += \
     ../../ESGamma/source/system/elysian_input_system_base.cpp \
     ../../AssetIO/source/behavior/elysian_playable_behavior.cpp \
     ../../ESGamma/source/system/elysian_pathfinding_system.cpp \
-    ../../AssetIO/source/utility/elysian_lua_variant_base.cpp \
-    source/estk/tk_estoolkit_menu_bar_slots.cpp
-
-
+    ../../AssetIO/source/utility/elysian_lua_variant_base.cpp
 
 
 !ios: !dreamcast: !android {
@@ -285,7 +282,8 @@ SOURCES += \
         source/asset/tk_dialog.cpp \
         source/core/tk_lua_qt_utils.cpp \
         source/core/tk_mime_data.cpp \
-        source/core/tk_mime_drop_manager.cpp
+        source/core/tk_mime_drop_manager.cpp \
+        source/estk/tk_estoolkit_menu_bar_slots.cpp
 
 } else {
         SOURCES += ../../ESGamma/source/system/main.cpp
