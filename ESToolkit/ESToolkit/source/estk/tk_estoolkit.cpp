@@ -2,6 +2,7 @@
 #include "ui_tk_estoolkit.h"
 #include "ui_tk_sheet_dock_widget.h"
 
+#include <QSettings>
 #include <QStatusBar>
 #include <QMessageBox>
 #include <QToolButton>
