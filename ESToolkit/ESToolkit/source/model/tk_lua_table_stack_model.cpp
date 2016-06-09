@@ -66,8 +66,8 @@ void LuaTableTableFieldData::insertTableFieldItem(LuaVariant key) {
     }
 
     if(!_parentRef.isNil() && (*_parentRef[valueItem->getKey()] == valueItem->getVariant())) {
-        labelItem->setData(QVariant(QColor(Qt::green)), Qt::ForegroundRole);
-        valueItem->setData(QVariant(QColor(Qt::green)), Qt::ForegroundRole);
+        labelItem->setData(QVariant(QColor(Qt::darkGreen)), Qt::ForegroundRole);
+        valueItem->setData(QVariant(QColor(Qt::darkGreen)), Qt::ForegroundRole);
     }
 
     items.push_back(labelItem);

@@ -65,7 +65,7 @@ bool MimeDropManager::_iterateHandlersForMimeData(const QMimeData* data, Qt::Dro
 
 bool MimeDropManager::canDrop(const QMimeData *data, Qt::DropAction action, QDragEnterEvent *event) {
     return _iterateHandlersForMimeData(data, action, [=](const Handler& handler, const QMimeData* singleData) {
-       return handler.canDropCallback(singleData, action, event);
+       return handler.canDropCallback? handler.canDropCallback(singleData, action, event) : true;
     });
 }
 

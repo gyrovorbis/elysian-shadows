@@ -462,7 +462,7 @@ auto LuaBehaviorAssetFileType::fromFilePath(QString path) -> CustomAssetFileType
 }
 
 PrefabAssetFileType::PrefabAssetFileType(QString filePath):
-    CustomAssetFileType("Prefab", QIcon(TK_PREFAB_ASSET_ICON), std::move(filePath))
+    CustomAssetFileType("Prefab", QIcon(TK_PREFAB_ASSET_ICON), filePath)
 {
     if(filePath.isEmpty()) return;
 

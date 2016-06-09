@@ -157,7 +157,7 @@ void EntityTreeWidget::setShowHidden(const bool val) {
 
 
 void EntityTreeWidget::_onItemSelectionChanged(void) {
-    auto selection = std::move(selectedItems());
+    auto selection = selectedItems();
     EntitySelectable* selectable = nullptr;
 
     if(selection.size()) {

@@ -205,8 +205,6 @@ ESToolkit::ESToolkit(QWidget *parent):
     connect(&_assets, SIGNAL(areaAdded(Project*const,Level*const,Area*const)), this, SLOT(OnAddArea(Project*const,Level*const,Area*const)));
     connect(&_assets, SIGNAL(areaRenamed(QString,QString)), this, SLOT(OnAreaRenamed(QString,QString)));
     connect(&_assets, SIGNAL(areaRemoved(Project*const,Level*const,Area*const)), this, SLOT(OnRemoveArea(Project*const,Level*const,Area*const)));
-    connect(&_assets, SIGNAL(componentAttached(Project*const,Level*const,Area*const,Entity*const,Component*const)), this, SLOT(OnComponentAttached(Project*const,Level*const,Area*const,Entity*const,Component*const)));
-    connect(&_assets, SIGNAL(componentRemoved(Project*const,Level*const,Area*const,Entity*const,Component*const)), this, SLOT(OnComponentRemoved(Project*const,Level*const,Area*const,Entity*const,Component*const)));
     connect(&_assets, SIGNAL(selectionChanged(const Selectable::TYPE, Selectable *const)), this, SLOT(OnSelectionChanged(const Selectable::TYPE, Selectable *const)));
     connect(_areaTabBar, SIGNAL(currentChanged(int)),this, SLOT(OnTabChanged(int)));
     connect(_layerDockWidget, SIGNAL(LayerVisibilityChanged(int, bool)), this, SLOT(OnSubLayerVisibilityChanged(int, bool)));
@@ -490,7 +488,7 @@ void ESToolkit::ReadSettings()
             char buff[30];
             sprintf(buff, "debugFilter_%d_%d", source, severity);
             const bool enabled = settings.value(buff, true).toBool();
-            Debug::setFilter((Debug::TK_SOURCE)source, (Debug::SEVERITY)severity++, enabled);
+            Debug::setFilter((Debug::TK_SOURCE)source, (Debug::SEVERITY)severity++, enabled); //shouldn't be necessary, but signal isn't firing. 0_o
             itSeverity->setChecked(enabled);
         }
         source++;

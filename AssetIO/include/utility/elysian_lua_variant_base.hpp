@@ -987,25 +987,22 @@ public:
         lua_pushvalue(*_mainState, index);
         lua_remove(*_mainState, (index > 0)? index : index-1);
         variant.pull();
-        return std::move(variant);
+        return variant;
     }
 
     inline LuaVariantBase LuaVariantBase::fromRef(const int luaRef) {
         LuaVariantBase variant;
         variant.setRef(luaRef);
-        return std::move(variant);
+        return variant;
     }
-#if 0
+
     inline LuaVariantBase LuaVariantBase::fromWeakRef(const int luaRef) {
         LuaVariant v;
         lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, luaRef);
-        v.setType(lua_type(*_mainState, -1));
-        lua_pop(*_mainState, 1);
-        v._value.ref = luaRef;
-        v.setWeakRef(true);
-        return std::move(v);
+        v.pull();
+        v._setWeakRef(true);
+        return v;
     }
-#endif
 
     inline LuaVariantBase LuaVariantBase::fromArray(const std::initializer_list<LuaVariant>& array) {
         int index = 1;
@@ -1024,7 +1021,7 @@ public:
         dest._type      = src._type;
         dest._value     = src._value;
         dest._setWeakRef(true);
-        return std::move(dest);
+        return dest;
     }
 
     template <typename... Args>

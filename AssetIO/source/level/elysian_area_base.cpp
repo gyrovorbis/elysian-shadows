@@ -269,7 +269,7 @@ bool AreaBase::save(const char *const dir) {
     strcpy(buffer, dir);
     strcat(buffer, ELYSIAN_AREA_TABLE_PATH);
 
-    success &= LuaManager::saveTable(getLuaTableRef(), buffer);
+    success &= LuaManager::saveTable(LuaVariant::fromWeakRef(getLuaTableRef()), buffer);
 
     dbgpop();
     return success;
