@@ -15,15 +15,12 @@ float EntityBase::_oldZ;
 
 EntityBase::EntityBase(void): EntityBase(nullptr) {  }
 
-EntityBase::EntityBase(const OOLUA::Lua_table_ref /*valTable*/): EntityBase() { /* static_cast<Entity*>(this)->fromTable(valTable); */ }
-
 EntityBase::EntityBase(EntityBase *other) {
     if(!other) {
         strcpy(_name, ELYSIAN_ENTITY_NAME_DEFAULT);
         strcpy(_dispName, ELYSIAN_ENTITY_DESC_DEFAULT);
     } else {
-        strcpy(_name, other->_name);
-        strcpy(_dispName, other->_dispName);
+
         if(other->getRenderable()) _addComponent<Renderable>(_renderable, nullptr, other->getRenderable());
         if(other->getCollidable()) _addComponent<Collidable>(_collidable, nullptr, other->getCollidable());
         if(other->getRigidBody()) _addComponent<RigidBody>(_rigidBody, nullptr, other->getRigidBody());
@@ -36,6 +33,22 @@ EntityBase::EntityBase(EntityBase *other) {
         if(other->getCombat()) _addComponent<Combat>(_combat, nullptr, other->getCombat());
         if(other->getSkeleton()) _addComponent<Skeleton>(_skeleton, nullptr, other->getSkeleton());
 
+        for(unsigned i = 0; i < other->_behaviors.size(); ++i) {
+            LuaBehavior* luaBehav = static_cast<LuaBehavior*>(other->_behaviors[i]);
+          //  attachBehavior(new LuaBehavior(*static_cast<Entity*>(this), static_cast<LuaBehavior*>(behav)));
+           // addLuaBehavior(luaBehav->getBehavName(), luaBehav->getParamTable());
+
+            LuaBehavior* newbehav = new LuaBehavior(*static_cast<Entity*>(this));
+            //newbehav->setBehavName(luaBehav->getBehavName());
+
+            newbehav->fromTable(luaBehav);
+            newbehav->loadScript();
+            //if(behav->loadScript()) { //sitl allow it to be attached if it's invalid, so it can be dereested.
+            attachBehavior(newbehav);
+        }
+
+        strcpy(_name, other->_name);
+        strcpy(_dispName, other->_dispName);
         _transform = other->_transform;
         _area = other->_area;
         _elev = other->_elev;
@@ -51,7 +64,7 @@ EntityBase::EntityBase(EntityBase &&other) {
 }
 
 
-void EntityBase::setTransform(const OOLUA::Lua_table_ref valTable) { _transform.fromTable(valTable); }
+void EntityBase::setTransform(LuaVariant valTable) { _transform.fromTable(std::move(valTable)); }
 
 Entity* EntityBase::getTopParentEntity(void) {
     Entity* it = static_cast<Entity*>(this);
@@ -66,7 +79,7 @@ void EntityBase::reested(void) {
 }
 
 EntityBase::~EntityBase(void) {
-
+    dbgprintf("Entity[%s] garbage collected!", _name);
     return;
     if(_active) deactivate();
 
@@ -490,168 +503,6 @@ bool EntityBase::deactivate(void) {
     return true;
 }
 
-bool EntityBase::load(FILE* /*file*/) { //Deserialization
-#if 0
-    bool success = true;
-    unsigned int amount, compType;
-
-    dbgprintf(LOG_LOG_VERBOSE, "Entity::Load(ifstream)");
-    dbgPush();
-
-    stream >> _name;
-    dbgprintf(LOG_LOG_VERBOSE, "_name = %s", _name);
-
-    //Transform
-    transform.load(stream);
-
-    //Components
-    stream >> amount;
-    for(unsigned i = 0; i < amount; ++i) {
-        Component *comp = NULL;
-        char behaviorName[ELYSIAN_BEHAVIOR_NAME_SIZE];
-        stream >> compType;
-
-        switch((Component::TYPE)compType) {
-            case Component::RENDERABLE:
-                comp = addRenderable();
-                break;
-            case Component::COLLIDABLE:
-                comp = addCollidable();
-                break;
-            case Component::RIGID_BODY:
-                comp = addRigidBody();
-                break;
-            case Component::CHARACTER:
-                comp = addCharacter();
-                break;
-            case Component::WARP:
-                comp = addWarp();
-                break;
-            case Component::EXAMINABLE:
-                comp = addExaminable();
-                break;
-            case Component::AUDIO_SOURCE:
-                comp = addAudioSource();
-                break;
-            case Component::LIGHT_SOURCE:
-                comp = addLightSource();
-                break;
-            case Component::PARTICLE_EMITTER:
-                comp = addParticleEmitter();
-                break;
-            case Component::COMBAT:
-                comp = addCombat();
-                break;
-            case Component::BEHAVIOR:
-                stream >> behaviorName;
-                comp = addBehavior(behaviorName);
-                break;
-            default:
-                dbgprintf(LOG_LOG_WARNING, "Unknown component type %d!", compType);
-                comp = NULL;
-                break;
-        }
-
-        if(!comp) { //Deserialization of this entity has reested. Bail out.
-            reested();
-            success = false;
-            break;
-        }
-        else if(!comp->load(stream)) {
-            dbgprintf(LOG_LOG_WARNING, "Unable to create component %d", compType);
-            success = false;
-            continue;
-        }
-    }
-    dbgPop();
-    return success;
-#endif
-    return true;
-}
-
-bool EntityBase::save(FILE* /*file*/) { //Serialization
-#if 0
-    Component *comp = NULL;
-    bool success = true;
-    dbgprintf(LOG_LOG_VERBOSE, "Entity::Save(ofstream)");
-    dbgPush();
-
-    stream.precision(6);
-
-    stream << _name << endl;
-
-    //Transform
-    transform.save(stream);
-
-    //Component Count
-    unsigned int compCount = 0;
-    if(getRenderable()) ++compCount;
-    if(getCollidable()) ++compCount;
-    if(getRigidBody()) ++compCount;
-    if(getCharacter()) ++compCount;
-    if(getWarp()) ++compCount;
-    if(getExaminable()) ++compCount;
-    if(getAudioSource()) ++compCount;
-    if(getLightSource()) ++compCount;
-    if(getParticleEmitter()) ++compCount;
-    if(getCombat()) ++compCount;
-    for(auto it = _behavior.begin(); it != _behavior.end(); ++it) ++compCount;
-    stream << compCount << endl;
-
-    //Built-in Components
-    if((comp = getRenderable())) {
-        stream << (int)Component::RENDERABLE << endl;
-        success &= comp->save(stream);
-    }
-    if((comp = getCollidable())) {
-        stream << (int)Component::COLLIDABLE << endl;
-        success &= comp->save(stream);
-    }
-    if((comp = getRigidBody())) {
-        stream << (int)Component::RIGID_BODY << endl;
-        success &= comp->save(stream);
-    }
-    if((comp = getWarp())) {
-        stream << (int)Component::WARP << endl;
-        success &= comp->save(stream);
-    }
-    if((comp = getCharacter())) {
-        stream << (int)Component::CHARACTER << endl;
-        success &= comp->save(stream);
-    }
-    if((comp = getExaminable())) {
-        stream << (int)Component::EXAMINABLE << endl;
-        success &= comp->save(stream);
-    }
-    if((comp = getAudioSource())) {
-        stream << (int)Component::AUDIO_SOURCE << endl;
-        success &= comp->save(stream);
-    }
-    if((comp = getLightSource())) {
-        stream << (int)Component::LIGHT_SOURCE << endl;
-        success &= comp->save(stream);
-    }
-    if((comp = getParticleEmitter())) {
-        stream << (int)Component::PARTICLE_EMITTER << endl;
-        success &= comp->save(stream);
-    }
-    if((comp = getCombat())) {
-        stream << (int)Component::COMBAT << endl;
-        success &= comp->save(stream);
-    }
-
-    //Behaviors
-    for(auto it = _behavior.begin(); it != _behavior.end(); ++it) {
-        stream << (int)Component::BEHAVIOR << endl;
-        stream << it->second->getBehavName() << endl;
-        success &= it->second->save(stream);
-    }
-    dbgPop();
-    return success;
-#endif
-    return true;
-}
-
 //=====BEHAVIORS======
 
 ///===========THIS SHIT ALL BEGS TO BE TEMPLATIZED!? GOD, NO! -- YES============
@@ -698,11 +549,11 @@ LuaBehavior* EntityBase::getLuaBehavior(const char*script) const {
     return static_cast<LuaBehavior*>(getBehavior(script));
 }
 
-void EntityBase::setBehaviorByIndex(const unsigned index, const OOLUA::Lua_table_ref valueTable) {
+void EntityBase::setBehaviorByIndex(const unsigned index, LuaVariant valueTable) {
     if(index == _behaviors.size()) { //allocate new entity
         //Entity* entity = Entity::create(valueTable);
         LuaBehavior* behav = new LuaBehavior(*static_cast<Entity*>(this));
-        behav->fromTable(valueTable);
+        behav->fromTable(std::move(valueTable));
         behav->loadScript();
         //if(behav->loadScript()) { //sitl allow it to be attached if it's invalid, so it can be dereested.
         attachBehavior(behav);
@@ -869,62 +720,60 @@ void EntityBase::removeSkeleton(void) {
 }
 
 template<typename T>
-void EntityBase::_setComponent(T*& comp, const OOLUA::Lua_table_ref valTable, std::vector<T*>* container) {
+void EntityBase::_setComponent(T*& comp, LuaVariant valTable, std::vector<T*>* container) {
     if(!comp) {
         comp = _addComponent<T>(comp, container);
     }
-    comp->fromTable(valTable);
+    comp->fromTable(std::move(valTable));
 }
 
-void EntityBase::setRenderable(const OOLUA::Lua_table_ref valTable) {
-    _setComponent<Renderable>(_renderable, valTable, _active? &_area->renderables : nullptr);
+void EntityBase::setRenderable(LuaVariant valTable) {
+    _setComponent<Renderable>(_renderable, std::move(valTable), _active? &_area->renderables : nullptr);
 }
 
-void EntityBase::setCollidable(const OOLUA::Lua_table_ref valTable) {
-    _setComponent<Collidable>(_collidable, valTable, _active? &_area->collidables : nullptr);
+void EntityBase::setCollidable(LuaVariant valTable) {
+    _setComponent<Collidable>(_collidable, std::move(valTable), _active? &_area->collidables : nullptr);
 }
 
-void EntityBase::setRigidBody(const OOLUA::Lua_table_ref valTable) {
-    _setComponent<RigidBody>(_rigidBody, valTable, _active? &_area->rigidBodies : nullptr);
+void EntityBase::setRigidBody(LuaVariant valTable) {
+    _setComponent<RigidBody>(_rigidBody, std::move(valTable), _active? &_area->rigidBodies : nullptr);
 }
 
-void EntityBase::setCharacter(const OOLUA::Lua_table_ref valTable) {
-    _setComponent<Character>(_character, valTable, _active? &_area->characters : nullptr);
+void EntityBase::setCharacter(LuaVariant valTable) {
+    _setComponent<Character>(_character, std::move(valTable), _active? &_area->characters : nullptr);
 }
 
-void EntityBase::setWarp(const OOLUA::Lua_table_ref valTable) {
-    _setComponent<Warp>(_warp, valTable, _active? &_area->warps : nullptr);
+void EntityBase::setWarp(LuaVariant valTable) {
+    _setComponent<Warp>(_warp, std::move(valTable), _active? &_area->warps : nullptr);
 }
 
-void EntityBase::setExaminable(const OOLUA::Lua_table_ref valTable) {
-    _setComponent<Examinable>(_examinable, valTable, _active? &_area->examinables : nullptr);
+void EntityBase::setExaminable(LuaVariant valTable) {
+    _setComponent<Examinable>(_examinable, std::move(valTable), _active? &_area->examinables : nullptr);
 }
 
-void EntityBase::setLightSource(const OOLUA::Lua_table_ref valTable) {
-    _setComponent<LightSource>(_lightSource, valTable, _active? &_area->lightSources : nullptr);
+void EntityBase::setLightSource(LuaVariant valTable) {
+    _setComponent<LightSource>(_lightSource, std::move(valTable), _active? &_area->lightSources : nullptr);
 }
 
-void EntityBase::setAudioSource(const OOLUA::Lua_table_ref valTable) {
-    _setComponent<AudioSource>(_audioSource, valTable, _active? &_area->audioSources : nullptr);
+void EntityBase::setAudioSource(LuaVariant valTable) {
+    _setComponent<AudioSource>(_audioSource, std::move(valTable), _active? &_area->audioSources : nullptr);
 }
 
-void EntityBase::setParticleEmitter(const OOLUA::Lua_table_ref valTable) {
-    _setComponent<ParticleEmitter>(_particleEmitter, valTable, _active? &_area->particleEmitters : nullptr);
+void EntityBase::setParticleEmitter(LuaVariant valTable) {
+    _setComponent<ParticleEmitter>(_particleEmitter, std::move(valTable), _active? &_area->particleEmitters : nullptr);
 }
 
-void EntityBase::setCombat(const OOLUA::Lua_table_ref valTable) {
-    _setComponent<Combat>(_combat, valTable, _active? &_area->combats : nullptr);
+void EntityBase::setCombat(LuaVariant valTable) {
+    _setComponent<Combat>(_combat, std::move(valTable), _active? &_area->combats : nullptr);
 }
 
-void EntityBase::setSkeleton(const OOLUA::Lua_table_ref valTable) {
-    _setComponent<Skeleton>(_skeleton, valTable, _active? &_area->skeletons : nullptr);
+void EntityBase::setSkeleton(LuaVariant valTable) {
+    _setComponent<Skeleton>(_skeleton, std::move(valTable), _active? &_area->skeletons : nullptr);
 }
 
 Behavior* EntityBase::getBehaviorByIndex(const unsigned index) const {
     if(index >= _behaviors.size()) return nullptr;
     return _behaviors[index];
 }
-
-
 
 }

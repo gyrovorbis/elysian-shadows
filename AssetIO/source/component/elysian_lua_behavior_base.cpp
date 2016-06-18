@@ -29,6 +29,9 @@ LuaBehaviorBase::LuaBehaviorBase(Entity &entity,
     loadScript();
 }
 
+LuaBehaviorBase::LuaBehaviorBase(Entity &entity, const LuaBehavior* rhs):
+    LuaBehaviorBase(entity, rhs->getBehavName(), rhs->_paramTableRef) {}
+
 void LuaBehaviorBase::setBehavName(const char * const path) {
     if(_script) LuaManager::unloadBehaviorScript(*_script);
     _script = LuaManager::loadBehaviorScript(path);
@@ -93,7 +96,7 @@ bool LuaBehaviorBase::loadScript(void) {
 		_ooSelfTableRef = &_ooSelfTableRefHierarchy[curIndex];
 
 
-		if(parentSelfTableRef != LUA_NOREF) { 	//inherit parent's self table if child
+        if(parentSelfTableRef != LUA_NOREF) { 	//inherit parent's self table if child
 
 			lua_newtable(*_mainState);										//metatable
 			lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, parentSelfTableRef);	//parentSelfTable
@@ -102,9 +105,9 @@ bool LuaBehaviorBase::loadScript(void) {
 
         } else { //initialize self.selfEntity and self.selfBehav if parent
 
-			OOLUA::push(*_mainState, getEntity());							//push parent entity
+            OOLUA::push(*_mainState, getEntity(), OOLUA::Cpp);							//push parent entity
             lua_setfield(*_mainState, -2, "selfEntity");					//selfTable.selfBehav = entity
-            OOLUA::push(*_mainState, static_cast<LuaBehavior*>(this));                                 //push parent entity
+            OOLUA::push(*_mainState, static_cast<LuaBehavior*>(this), OOLUA::Cpp);                                 //push parent entity
             lua_setfield(*_mainState, -2, "selfBehav");                     //selfTable.selfBeahv
 		}
 

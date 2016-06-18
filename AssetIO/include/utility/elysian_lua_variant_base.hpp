@@ -222,7 +222,7 @@ namespace elysian {
 
 
         //static constructors
-        static LuaVariantBase       fromStack(const int index=-1);
+        static LuaVariantBase       fromStack(const int index=-1, const bool remove=true);
         static LuaVariantBase       fromRef(const int luaRef);
         static LuaVariantBase       fromWeakRef(const int ref);
         static LuaVariantBase       fromArray(const std::initializer_list<LuaVariant>& array);
@@ -982,10 +982,10 @@ public:
         return LuaVariantBase::fromStack();
     }
 
-    inline LuaVariantBase LuaVariantBase::fromStack(const int index) {
+    inline LuaVariantBase LuaVariantBase::fromStack(const int index, const bool remove) {
         LuaVariantBase variant;
         lua_pushvalue(*_mainState, index);
-        lua_remove(*_mainState, (index > 0)? index : index-1);
+        if(remove) lua_remove(*_mainState, (index > 0)? index : index-1);
         variant.pull();
         return variant;
     }
@@ -1130,7 +1130,33 @@ namespace OOLUA {
         return success;
     }
 
+    namespace INTERNAL {
 
+        //Force OOLua to treat LuaVariant as a built-in type and not a proxy
+        template<>
+        struct is_false_integral<elysian::LuaVariantBase>
+        {
+            typedef typename LVD::raw_type<elysian::LuaVariantBase>::type raw;
+            enum {value = 1 };
+        };
+
+        namespace LUA_CALLED
+        {
+    #if 0
+            inline void get(lua_State* const vm, int idx, LuaVariant& v) {
+                v = LuaVariant::fromStack(idx, false);
+            }
+    #endif
+
+            //Specialized get function used by OOLua to retrieve item from stack without removing it
+            template<>
+            struct get_basic_type<elysian::LuaVariantBase, 0, 0> {
+                static void get(lua_State* const /*vm*/, int idx, elysian::LuaVariantBase& v) {
+                    v = elysian::LuaVariantBase::fromStack(idx, false);
+                }
+            };
+        }
+    }
 }
 
 namespace elysian {

@@ -7,7 +7,7 @@ namespace elysian {
 		getCollisionSys()->registerContactEventMonitor(ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_BEHAVIOR_MASK, this);
 	}
 
-    void BehaviorSystem::_foreachBehavior(const uint64_t triggers, const std::function<void(Behavior*const )>& lambda, Entity*const entity) const {
+    void BehaviorSystem::_foreachBehavior(const uint32_t triggers, const std::function<void(Behavior*const )>& lambda, Entity*const entity) const {
         std::vector<Behavior*> behaviors = entity? entity->getBehaviors() : _curArea->behaviors;
 
        /*

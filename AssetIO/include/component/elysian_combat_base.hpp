@@ -22,8 +22,8 @@ namespace elysian {
          ELYSIAN_LUA_PROXY_FIELDS_END()
     private:
         //GYColor4				_particleColor		= { 255, 255, 255, 255 };
-        BitMask32				_typeFlags			= BitMask32(~0x0);
-        BitMask32				_typeAgainstFlags	= BitMask32(~0x0);
+        BitMask32				_typeFlags			;//= BitMask32(~0x0);
+        BitMask32				_typeAgainstFlags	;//= BitMask32(~0x0);
         ParticleEmitterAttrib*	_particleAttrib		= nullptr;
 
     public:

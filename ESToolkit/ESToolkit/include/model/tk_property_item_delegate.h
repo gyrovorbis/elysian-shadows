@@ -4,6 +4,7 @@
 #include <QStyledItemDelegate>
 #include <QVector>
 #include <estk/tk_lua_manager.h>
+#include <asset/tk_asset_manager.h>
 
 class QLineEdit;
 class QPushButton;
@@ -11,7 +12,7 @@ class QHBoxLayout;
 class QMenu;
 class ESTkStandardItem;
 
-class PropertyItemDelegate: public QStyledItemDelegate, public TkLuaManager {
+class PropertyItemDelegate: public QStyledItemDelegate, public TkLuaManager, public AssetManager {
 protected:
     bool            _initialized = false;
     bool            _addPairs   = true;
@@ -41,7 +42,7 @@ public:
     virtual bool    editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
 
     void            setContextMenu(QMenu*const menu);
-    virtual QMenu*          getContextMenu(ESTkStandardItem*const item);
+    virtual QMenu*  getContextMenu(ESTkStandardItem*const item);
     void            addSupportedType(const int luaType);
 
 };

@@ -15,7 +15,7 @@ namespace elysian {
     protected:
 
         //Can operate on single entity or defaults to all behaviors in current area
-        void            _foreachBehavior(const uint64_t triggers, const std::function<void(Behavior*const)>& lambda, Entity*const entity=nullptr) const;
+        void            _foreachBehavior(const uint32_t triggers, const std::function<void(Behavior*const)>& lambda, Entity*const entity=nullptr) const;
 		
 	public:
 

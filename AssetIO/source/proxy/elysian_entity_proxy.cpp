@@ -506,7 +506,8 @@
 
 
 
-
+//OOLUA_EXPORT_FUNCTIONS(LuaVariant)
+//OOLUA_EXPORT_FUNCTIONS_CONST(LuaVariant)
 
 
 

@@ -25,10 +25,10 @@ OOLUA_PROXY(LuaBehavior, Behavior)
         No_public_constructors,
         No_public_destructor
     )
-    OOLUA_MEM_FUNC(Lua_table_ref&, getSelfTable)
+    OOLUA_MEM_FUNC(Lua_table_ref, getSelfTable)
 //    OOLUA_MEM_FUNC_CONST(const char*, getBehavName)
-    OOLUA_MEM_FUNC_CONST(uint64_t, getTriggers)
-    OOLUA_MEM_FUNC(void, setTriggers, uint64_t)
+    OOLUA_MEM_FUNC_CONST(uint32_t, getTriggers)
+    OOLUA_MEM_FUNC(void, setTriggers, uint32_t)
     OOLUA_MEM_FUNC_CONST(maybe_null<LuaBehaviorScript*>, getScript)
     OOLUA_MEM_FUNC(void, setBehavName, const char*)
     OOLUA_MEM_FUNC(Lua_table_ref, getParamTable)

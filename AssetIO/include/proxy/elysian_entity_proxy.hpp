@@ -43,6 +43,11 @@ namespace OOLUA {
 }
 
 
+/*
+OOLUA_PROXY(LuaVariant)
+OOLUA_PROXY_END
+*/
+
 OOLUA_PROXY(RenderableObject)
     OOLUA_TAGS (
         No_public_constructors,
@@ -112,7 +117,7 @@ OOLUA_PROXY(Entity, RenderableObject)
     OOLUA_MEM_FUNC(void, removeAudioSource)
     OOLUA_MEM_FUNC(void, removeLightSource)
     OOLUA_MEM_FUNC(void, removeExaminable)
-    OOLUA_MEM_FUNC(void, removeCombat);
+    OOLUA_MEM_FUNC(void, removeCombat)
     OOLUA_MEM_FUNC(void, removeParticleEmitter)
     OOLUA_MEM_FUNC(void, removeSkeleton)
     OOLUA_MEM_FUNC(void, removeBehavior, const char*)
@@ -125,18 +130,18 @@ OOLUA_PROXY(Entity, RenderableObject)
     OOLUA_MEM_FUNC_CONST(GY_RECT_PLANE_TYPE, getPlaneType)
     OOLUA_MEM_FUNC_CONST(float, getShadowDepth)
     OOLUA_MEM_FUNC_CONST(bool, isShadowVolume)
-    OOLUA_MEM_FUNC(void, setTransform, const OOLUA::Lua_table_ref)
-    OOLUA_MEM_FUNC(void, setRenderable, const OOLUA::Lua_table_ref)
-    OOLUA_MEM_FUNC(void, setCollidable, const OOLUA::Lua_table_ref)
-    OOLUA_MEM_FUNC(void, setRigidBody, const OOLUA::Lua_table_ref)
-    OOLUA_MEM_FUNC(void, setWarp, const OOLUA::Lua_table_ref)
-    OOLUA_MEM_FUNC(void, setCharacter, const OOLUA::Lua_table_ref)
-    OOLUA_MEM_FUNC(void, setAudioSource, const OOLUA::Lua_table_ref)
-    OOLUA_MEM_FUNC(void, setLightSource, const OOLUA::Lua_table_ref)
-    OOLUA_MEM_FUNC(void, setExaminable, const OOLUA::Lua_table_ref)
-    OOLUA_MEM_FUNC(void, setCombat, const OOLUA::Lua_table_ref)
-    OOLUA_MEM_FUNC(void, setParticleEmitter, const OOLUA::Lua_table_ref)
-    OOLUA_MEM_FUNC(void, setSkeleton, const OOLUA::Lua_table_ref)
+    OOLUA_MEM_FUNC(void, setTransform, LuaVariant)
+    OOLUA_MEM_FUNC(void, setRenderable, LuaVariant)
+    OOLUA_MEM_FUNC(void, setCollidable, LuaVariant)
+    OOLUA_MEM_FUNC(void, setRigidBody, LuaVariant)
+    OOLUA_MEM_FUNC(void, setWarp, LuaVariant)
+    OOLUA_MEM_FUNC(void, setCharacter, LuaVariant)
+    OOLUA_MEM_FUNC(void, setAudioSource, LuaVariant)
+    OOLUA_MEM_FUNC(void, setLightSource, LuaVariant)
+    OOLUA_MEM_FUNC(void, setExaminable, LuaVariant)
+    OOLUA_MEM_FUNC(void, setCombat, LuaVariant)
+    OOLUA_MEM_FUNC(void, setParticleEmitter, LuaVariant)
+    OOLUA_MEM_FUNC(void, setSkeleton, LuaVariant)
     OOLUA_MEM_FUNC(void, setPersistent, const bool)
     OOLUA_MEM_FUNC_CONST(bool, isPersistent)
     OOLUA_MEM_FUNC_CONST(bool, isActive)
@@ -144,7 +149,7 @@ OOLUA_PROXY(Entity, RenderableObject)
     OOLUA_MEM_FUNC(void, setDispName, const char*)
     OOLUA_MEM_FUNC_CONST(maybe_null<Behavior*>, getBehaviorByIndex, unsigned)
     OOLUA_MEM_FUNC_CONST(unsigned, getBehaviorCount)
-    OOLUA_MEM_FUNC(void, setBehaviorByIndex, unsigned, OOLUA::Lua_table_ref)
+    OOLUA_MEM_FUNC(void, setBehaviorByIndex, unsigned, LuaVariant)
 OOLUA_PROXY_END
 
 

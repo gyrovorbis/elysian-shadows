@@ -403,41 +403,8 @@ void DebugBase::processInput(Keyboard*const input) {
 		static bool enabled = false;
 		enabled = !enabled;
 		getGuiSys()->setDebugOverLayEnabled(enabled);
+	}
 
-		//if(intensity != 0) --intensity;
-		dirVec.z -= 0.1f;
-        //gyVec3Normalize(&dirVec);
-        //src->setDirection(dirVec);
-        printf(LOG_VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
-	}
-    if(input->isTapped(GY_KEY_7)) {
-		++size;
-		dirVec.y += 0.1f;
-		gyVec3Normalize(&dirVec);
-		src->setDirection(dirVec);
-        printf(LOG_VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
-	}
-    if(input->isTapped(GY_KEY_8)) {
-		if(size != 0) --size;
-		dirVec.y -= 0.1f;
-		gyVec3Normalize(&dirVec);
-		src->setDirection(dirVec);
-        printf(LOG_VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
-	}
-    if(input->isTapped(GY_KEY_9)) {
-		dirVec.x += 0.1f;
-		theta += 0.1f;
-		gyVec3Normalize(&dirVec);
-		src->setDirection(dirVec);
-        printf(LOG_VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
-	}
-    if(input->isTapped(GY_KEY_0)) {
-		dirVec.x -= 0.1f;
-		theta -= 0.1f;
-		gyVec3Normalize(&dirVec);
-		src->setDirection(dirVec);
-        printf(LOG_VERBOSE, "<%f, %f, %f>\n", dirVec.x, dirVec.y, dirVec.z);
-	}
 
     if(input->isTapped(GY_KEY_R)) {
         //freeCam = !freeCam;

@@ -34,7 +34,7 @@ namespace elysian {
 
         BehaviorBase(Entity& parent);
 
-        uint64_t _triggerBits = 0;
+        uint32_t _triggerBits = 0;
 
     public:
 
@@ -72,7 +72,7 @@ namespace elysian {
             //ESTk-only trigers
             ON_TK_SELECT_INDEX=61,
             ON_TK_UNSELECT_INDEX=62,
-            TRIGGER_MAX_INDEX=63
+            TRIGGER_MAX_INDEX=TRIGGER_ENGINE_MAX_INDEX
         };
 
         //64 triggers max, currently
@@ -132,7 +132,7 @@ namespace elysian {
             "onButtonRelease"
         };
 
-        static const char* triggerNameFromFlag(const uint64_t flag);
+        static const char* triggerNameFromFlag(const uint32_t flag);
 
         virtual const char* getBehavName(void) const = 0;
 
@@ -167,10 +167,10 @@ namespace elysian {
 
         void		callTrigger(const TRIGGER trigger);
 
-        uint64_t	getTriggers(void) const;
-        void        setTriggers(const uint64_t triggers);
+        uint32_t	getTriggers(void) const;
+        void        setTriggers(const uint32_t triggers);
         void		addTrigger(const TRIGGER flag);
-        void		addTriggers(const uint64_t flags);
+        void		addTriggers(const uint32_t flags);
         void		removeTrigger(const TRIGGER flag);
         inline bool isActive(void) const { return _active; }
         inline void setActive(const bool val=true) { _active = val; }
@@ -188,14 +188,14 @@ namespace elysian {
 
     //========= INLINEZ =========
 
-    inline uint64_t BehaviorBase::getTriggers(void) const { return _triggerBits; }
-    inline void BehaviorBase::setTriggers(const uint64_t triggers) { _triggerBits = triggers; }
+    inline uint32_t BehaviorBase::getTriggers(void) const { return _triggerBits; }
+    inline void BehaviorBase::setTriggers(const uint32_t triggers) { _triggerBits = triggers; }
     //inline void Behavior::addTrigger(const uint64_t flags) { _triggerBits |= flags; }
     //inline void Behavior::setTriggers(const uint64_t flags) { _triggerBits = flags; }
 
-    inline void BehaviorBase::addTriggers(const uint64_t flags) {
-        for(unsigned i = 0; i < 64; ++i) {
-            addTrigger((TRIGGER)(flags & (0x1<<i)));
+    inline void BehaviorBase::addTriggers(const uint32_t flags) {
+        for(unsigned i = 0; i < 32; ++i) {
+            if(flags & (0x1<<i)) addTrigger((TRIGGER)(0x1<<i));
         }
     }
 

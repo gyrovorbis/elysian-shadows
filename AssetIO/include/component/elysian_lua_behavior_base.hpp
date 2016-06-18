@@ -47,7 +47,7 @@ namespace elysian {
         OOLUA::Lua_table_ref    _paramTableRef;
 
         template<typename RType, typename... PTypes>
-        RType _callTriggerByIndex(const uint64_t trigger, PTypes&&... parameters) {
+        RType _callTriggerByIndex(const uint32_t trigger, PTypes&&... parameters) {
             lua_rawgeti(*LuaManager::_mainState, LUA_REGISTRYINDEX, _script->getEnvironRef());
             lua_pushinteger(*LuaManager::_mainState, trigger);
             lua_gettable(*LuaManager::_mainState, -2);      //must invoke metamethods for behavior inheritance
@@ -64,12 +64,8 @@ namespace elysian {
         void				_selfTableDump(void);
     public:
 
-      /*  ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
-            ELYSIAN_LUA_PROXY_FIELD(self, getSelfTable)
-        ELYSIAN_LUA_PROXY_FIELDS_END()
-*/
-
                             LuaBehaviorBase(Entity& entity);
+                            LuaBehaviorBase(Entity& entity, const LuaBehavior* rhs);
                             LuaBehaviorBase(Entity& entity, const char *script, const OOLUA::Lua_table_ref paramTable);
                             ~LuaBehaviorBase(void);
 
@@ -112,7 +108,7 @@ namespace elysian {
         void                setParamTable(OOLUA::Lua_table_ref ref);
         LuaBehaviorScript*  getScript(void) const;
 
-        OOLUA::Lua_table_ref& getSelfTable(void);
+        OOLUA::Lua_table_ref getSelfTable(void);
         OOLUA::Lua_table_ref getParamTable(void);
 
     };
@@ -126,7 +122,7 @@ namespace elysian {
 
     inline LuaBehaviorScript* LuaBehaviorBase::getScript(void) const { return _script; }
 
-    inline OOLUA::Lua_table_ref& LuaBehaviorBase::getSelfTable(void) { return *_ooSelfTableRef; }
+    inline OOLUA::Lua_table_ref LuaBehaviorBase::getSelfTable(void) { return _ooSelfTableRef? *_ooSelfTableRef : OOLUA::Lua_table_ref(); }
 
     inline OOLUA::Lua_table_ref LuaBehaviorBase::getParamTable(void) { return _paramTableRef; }
 

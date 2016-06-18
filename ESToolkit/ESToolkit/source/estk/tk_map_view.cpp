@@ -363,6 +363,12 @@ void MapView::keyPressEvent(QKeyEvent* event) {
     } else if(getCurrentSelectionType() == Selectable::ENTITY) {
         auto* entitySel = static_cast<EntitySelectable*>(getCurrentSelection());
 
+        switch(event->key()) {
+        case Qt::Key_E:
+            entitySel->setPosition(_sceneMousePos.x(), _sceneMousePos.y());
+            break;
+        }
+#if 0
         for(auto it = entitySel->begin(); it != entitySel->end(); ++it) {
             switch(event->key()) {
             case Qt::Key_Left:
@@ -373,13 +379,8 @@ void MapView::keyPressEvent(QKeyEvent* event) {
                 break;
 
             }
-
-
-
-
         }
-
-
+#endif
     }
 }
 

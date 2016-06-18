@@ -19,6 +19,8 @@
 #include <model/tk_lua_table_stack_model.h>
 #include <core/tk_menu_stack.h>
 #include <estk/tk_asset_dock_widget.h>
+#include <asset/tk_area.h>
+#include <proxy/elysian_entity_proxy.hpp>
 
 PropertyItemDelegate* PropertyItemProxyDelegate::_defaultTableDelegate = nullptr;
 
@@ -354,7 +356,26 @@ QMenu* PropertyItemDelegate::getContextMenu(ESTkStandardItem*const item) {
             QString filename = QFileDialog::getSaveFileName(nullptr, "Save table as...", FileUtilities::getAssetPath());
             LuaManager::saveTable(fieldItem->getTableData()->getTableRef(), Q_CSTR(filename));
         });
+
+        auto v = fieldItem->getVariant();
+        if(strcmp(v.getTypeString(), "Entity") == 0) {
+            menu.insertAction("Make Parent", [=](bool) {
+                QString filename = QFileDialog::getSaveFileName(nullptr, "Save as Prefab", FileUtilities::getAbsoluteAssetPath(ELYSIAN_LUA_PREFAB_PATH));
+                filename = PrefabAssetFileType::prefabifyFilePath(filename);
+                if(LuaManager::saveTable(fieldItem->getTableData()->getTableRef(), Q_CSTR(filename))) {
+                    //remove prefab from the area
+                    getAssets()->getCurrentArea()->removeEntity(v.getValue<TkEntity*>());
+
+                    LuaVariant prefabRef = LuaManager::getPrefab(Q_CSTR(PrefabAssetFileType::prefabNameFromFilePath(filename)));
+                    auto entity = prefabRef["new"].getVariant()(prefabRef);
+
+                    getAssets()->getCurrentArea()->addEntity(entity.getValue<TkEntity*>());
+                    fieldItem->setVariant(entity);
+                }
+            });
+        }
     }
+
 
     _contextMenu = menu.first();
 

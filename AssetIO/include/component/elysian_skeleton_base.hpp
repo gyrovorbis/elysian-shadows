@@ -91,7 +91,6 @@ namespace elysian {
         ELYSIAN_LUA_PROXY_ARRAY_FIELD(animations,  getAnimation,      setAnimation,       getAnimationCount)
     ELYSIAN_LUA_PROXY_FIELDS_END()
 
-
         std::vector<Animation*> _animations;
         char                    _atlasPath[ELYSIAN_SKELETON_ATLAS_PATH_SIZE]    = { 0 };
         char                    _jsonPath[ELYSIAN_SKELETON_JSON_PATH_SIZE]      = { 0 };

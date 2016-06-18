@@ -48,10 +48,10 @@ namespace elysian {
             ALL			= ~0x0
         };
 
-        BitMask32       _typeAgainst    = ~0x0;
-        BitMask32       _type           = ~0x0;
+        BitMask32       _typeAgainst;
+        BitMask32       _type;
 
-                            CollisionFlags(void);
+                            CollisionFlags(void) = default;
         BitMask32&          getType(void);
         BitMask32&          getTypeAgainst(void);
         void                setType(const BitMask32 flags);
@@ -277,11 +277,6 @@ namespace elysian {
 
 
     // ======== INLINEZ ========
-    inline CollisionFlags::CollisionFlags(void) {
-        _type.setValue(std::numeric_limits<std::uint32_t>::max());
-        _typeAgainst.setValue(std::numeric_limits<std::uint32_t>::max());
-
-    }
     inline BitMask32& CollisionFlags::getType(void){ return _type; }
     inline BitMask32& CollisionFlags::getTypeAgainst(void) { return _typeAgainst; }
     inline void CollisionFlags::setType(const BitMask32 flags) { _type = flags; }

@@ -139,6 +139,7 @@ namespace OOLUA
 					stack_class_type<typename OOLUA::INTERNAL::param_type<T>::raw
 													, OOLUA::INTERNAL::param_type<T*>::is_constant
 												>::get(vm, idx, class_ptr);
+
 #if OOLUA_RUNTIME_CHECKS_ENABLED  == 1
 					if(!class_ptr)
 					{
@@ -147,6 +148,7 @@ namespace OOLUA
 											  : Proxy_class<typename OOLUA::INTERNAL::param_type<T>::raw>::class_name);
 					}
 #endif
+
 					value = class_ptr;
 				}
 			};
@@ -199,6 +201,7 @@ namespace OOLUA
 										  : Proxy_class<raw>::class_name);
 				}
 #endif
+
 				INTERNAL::PULL::set_index_gc_value_to_false(vm, idx);
 			}
 

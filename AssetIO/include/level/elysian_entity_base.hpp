@@ -54,13 +54,9 @@ namespace elysian {
 
 
                             EntityBase(void);
-                            EntityBase(const OOLUA::Lua_table_ref valTable);
                             EntityBase(EntityBase* other);
                             EntityBase(EntityBase&& other);
         virtual             ~EntityBase(void);
-
-        bool                load(FILE* file);
-        bool                save(FILE* file);
 
         virtual void        render(void) override;
         void                renderAtZ(const float z); //reested?
@@ -76,7 +72,7 @@ namespace elysian {
         void                setDispName(const char* const name);
         const char*         getDispName(void) const;
 
-        void                setTransform(const OOLUA::Lua_table_ref valTable);
+        void                setTransform(LuaVariant valTable);
 
         void                setElev(const unsigned char e);
         unsigned char       getElev(void) const;
@@ -91,8 +87,7 @@ namespace elysian {
 		Renderable*			addRenderable(void);
 		Collidable*			addCollidable(void);
 		RigidBody*			addRigidBody(void);
-		Character*			addCharacter(void);
-		Warp*				addWarp(void);
+		Character*			addCharacter(void);		Warp*				addWarp(void);
 		Examinable*			addExaminable(void);
 		AudioSource*		addAudioSource(void);
 		LightSource*		addLightSource(void);
@@ -100,17 +95,17 @@ namespace elysian {
 		Combat*				addCombat(void);
         Skeleton*           addSkeleton(void);
 
-        void                setRenderable(const OOLUA::Lua_table_ref valTable);
-        void                setCollidable(const OOLUA::Lua_table_ref valTable);
-        void                setRigidBody(const OOLUA::Lua_table_ref valTable);
-        void                setCharacter(const OOLUA::Lua_table_ref valTable);
-        void                setWarp(const OOLUA::Lua_table_ref valTable);
-        void                setExaminable(const OOLUA::Lua_table_ref valTable);
-        void                setAudioSource(const OOLUA::Lua_table_ref valTable);
-        void                setLightSource(const OOLUA::Lua_table_ref valTable);
-        void                setParticleEmitter(const OOLUA::Lua_table_ref valTable);
-        void                setCombat(const OOLUA::Lua_table_ref valTable);
-        void                setSkeleton(const OOLUA::Lua_table_ref valTable);
+        void                setRenderable(LuaVariant valTable);
+        void                setCollidable(LuaVariant valTable);
+        void                setRigidBody(LuaVariant valTable);
+        void                setCharacter(LuaVariant valTable);
+        void                setWarp(LuaVariant valTable);
+        void                setExaminable(LuaVariant valTable);
+        void                setAudioSource(LuaVariant valTable);
+        void                setLightSource(LuaVariant valTable);
+        void                setParticleEmitter(LuaVariant valTable);
+        void                setCombat(LuaVariant valTable);
+        void                setSkeleton(LuaVariant valTable);
 
         Renderable*			getRenderable(void) const;
         Collidable*			getCollidable(void) const;
@@ -144,7 +139,7 @@ namespace elysian {
         LuaBehavior*        getLuaBehavior(char const* scriptName) const;
         std::vector<Behavior*>& getBehaviors(void);
         Behavior*           getBehaviorByIndex(const unsigned index) const;
-        void                setBehaviorByIndex(const unsigned index, const OOLUA::Lua_table_ref valueTable);
+        void                setBehaviorByIndex(const unsigned index, LuaVariant valueTable);
         unsigned            getBehaviorCount(void) const;
 
         void                setParentEntity(Entity*const parent);
@@ -206,7 +201,7 @@ namespace elysian {
         template<typename T>
         void _removeComponent(T*& comp, std::vector<T*>* container=nullptr);
         template<typename T>
-        void _setComponent(T*& comp, const OOLUA::Lua_table_ref valTable, std::vector<T*>* container=nullptr);
+        void _setComponent(T*& comp, LuaVariant valTable, std::vector<T*>* container=nullptr);
 
         void _renderRelative(void);
 

@@ -3,6 +3,10 @@ exists( ESDevCommandLineArgs.pri ) {
     include( ESDevCommandLineArgs.pri )
 }
 
+macx|win32|linux {
+    DEFINES+=OOLUA_DEBUG_CHECKS
+}
+
 dreamcast {
 
     INCLUDEPATH=/home/jenkins/Dreamcast/cadcdev-kallistios/include \

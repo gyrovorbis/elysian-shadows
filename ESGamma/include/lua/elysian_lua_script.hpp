@@ -42,13 +42,13 @@ namespace elysian {
 	//Supplied by Lua
 	class LuaBehaviorScriptAttrib {
 	private:
-		uint64_t	_triggers				= 0;
+        uint32_t	_triggers				= 0;
 		char		_parentPath[200]		= "none";
 		bool		_hasParent				= false;
 	public:
-        uint64_t    getSupportedTriggers(void) const;
+        uint32_t    getSupportedTriggers(void) const;
         const char* getParentPath(void) const;
-        void        addSupportedTrigger(const uint64_t trigger);
+        void        addSupportedTrigger(const uint32_t trigger);
         void        inheritFromBehavior(const char*const path);
         bool        hasParent(void) const;
 	};
@@ -117,9 +117,9 @@ namespace elysian {
     inline LuaBehaviorScriptAttrib*	LuaBehaviorScript::getAttrib(void) { return &_attrib; }
     inline void	LuaBehaviorScript::setParent(LuaBehaviorScript* const parent) { _parent = parent; }
 
-    inline uint64_t LuaBehaviorScriptAttrib::getSupportedTriggers(void) const { return _triggers; }
+    inline uint32_t LuaBehaviorScriptAttrib::getSupportedTriggers(void) const { return _triggers; }
     inline const char* LuaBehaviorScriptAttrib::getParentPath(void) const { return _parentPath; }
-    inline void LuaBehaviorScriptAttrib::addSupportedTrigger(const uint64_t trigger) { _triggers |= trigger; }
+    inline void LuaBehaviorScriptAttrib::addSupportedTrigger(const uint32_t trigger) { _triggers |= trigger; }
     inline void LuaBehaviorScriptAttrib::inheritFromBehavior(const char*const path) { _hasParent = true; strcpy(_parentPath, path); }
     inline bool LuaBehaviorScriptAttrib::hasParent(void) const { return _hasParent; }
 

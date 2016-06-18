@@ -421,7 +421,7 @@ void LuaManagerBase::dumpStats(void) {
     unsigned int count = 0;
     LuaBehaviorScript* behav;
     LuaBehaviorScriptAttrib* attrib;
-    uint64_t triggers;
+    uint32_t triggers;
     int kbytes;
 
     kbytes = lua_gc(*_mainState, LUA_GCCOUNT, 0);
@@ -465,8 +465,8 @@ void LuaManagerBase::dumpStats(void) {
 
             Debug::luaPrint("triggers = ");
             Debug::push();
-            for(unsigned i = 0; i < Behavior::TRIGGER_MAX_INDEX; ++i) {
-                uint64_t mask = (1<<i);
+            for(unsigned i = 0; i < Behavior::TRIGGER_ENGINE_MAX_INDEX; ++i) {
+                uint32_t mask = (1<<i);
                 if(mask >= Behavior::TRIGGER_MAX) break;
                 if(triggers & mask) {
                     sprintf(buffer, "%s", Behavior::triggerNameFromFlag(triggers&mask));

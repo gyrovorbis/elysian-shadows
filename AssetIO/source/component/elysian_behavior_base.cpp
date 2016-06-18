@@ -27,7 +27,7 @@ Behavior* BehaviorBase::create(const char* typeName, Entity& parent) {
 	return _creators[typeName](parent);
 }
 
-const char* BehaviorBase::triggerNameFromFlag(const uint64_t flag) {
+const char* BehaviorBase::triggerNameFromFlag(const uint32_t flag) {
 	static char buff[20];
 
 	switch(flag) {

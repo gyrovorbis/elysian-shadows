@@ -357,6 +357,7 @@ static inline const char* luaGetVariableString(lua_State* const l) {
 
     string[0] = 0;
     for(unsigned i = 1; i <= n; ++i) {
+
         int t = lua_type(l, i);
 
         switch(t) {
@@ -370,10 +371,11 @@ static inline const char* luaGetVariableString(lua_State* const l) {
                 curString = (lua_toboolean(l, i))? "true" : "false";
                 strcat(string, curString);
                 break;
-            default:
-                curString = lua_typename(l, t);
-                strcat(string, curString);
-
+            default: {
+                LuaVariant v = LuaVariant::fromStack(i, false);
+                //curString = lua_typename(l, t);
+                strcat(string, v.asString().getValue<const char*>());
+            }
         }
 
         strcat(string, " ");

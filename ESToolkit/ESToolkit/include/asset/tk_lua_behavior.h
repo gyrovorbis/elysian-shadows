@@ -8,6 +8,7 @@ public:
 
                     TkLuaBehavior(TkEntity& parent);
                     TkLuaBehavior(void) = default;
+                    TkLuaBehavior(Entity& entity, const TkLuaBehavior* rhs);
                     TkLuaBehavior(Entity& entity, const char *script, const OOLUA::Lua_table_ref paramTable);
 
     virtual bool    validate(QString &string) const override;
@@ -22,6 +23,8 @@ inline TkLuaBehavior::TkLuaBehavior(TkEntity &parent): elysian::LuaBehaviorBase(
 
 inline TkLuaBehavior::TkLuaBehavior(Entity &entity, const char *script, const OOLUA::Lua_table_ref paramTable):
     elysian::LuaBehaviorBase(entity, script, paramTable) {}
+
+inline TkLuaBehavior::TkLuaBehavior(Entity &entity, const TkLuaBehavior *rhs): elysian::LuaBehaviorBase(entity, rhs) {}
 
 
 #endif // TK_LUA_BEHAVIOR_H

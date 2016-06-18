@@ -906,7 +906,7 @@ namespace elysian {
             case LUA_TABLE_PROXY_NORMAL:
             case LUA_TABLE_PROXY_VIRTUAL:
                 {
-#if 0
+#if 1
                     DbgEvent event("Deserializing %s Lua Proxy table", tableType == LUA_TABLE_PROXY_NORMAL? "Normal" : "Virtual");
 #endif
                     int depth = 1;
@@ -919,7 +919,7 @@ namespace elysian {
                             if(depth == 1) {
                                 lua_getfield(l, -1, _combinedFields[i].key);
                                 if(!lua_isnil(l, -1)) {
-#if 0
+#if 1
                                     lua_pushvalue(l, -1);
                                     dbgprintf("[%d] = <%s, %s>", i, _combinedFields[i].key, luaL_tolstring(l, -1, nullptr));
                                     lua_pop(l, 2);
@@ -937,26 +937,34 @@ namespace elysian {
             case LUA_TABLE_PROXY_ARRAY:
             default:
                 {
-#if 0
+#if 1
                     DbgEvent event("Deserializing Array Lua Proxy table");
 #endif
-                    lua_len(l, -1);
-                    const int length = lua_tointeger(l, -1);
-                    lua_pop(l, 1);
+                    /* In order to support dynamic arrays whose sizes start at 0 and are populated by contiguous array tables,
+                     * as well as statically sized arrays populated by sparse tables, we assume length is the larger of the two.
+                     */
+                    lua_len(l, -2);
+                    lua_len(l, -2);
+                    int length = lua_tointeger(l, -1);
+                    int length2 = lua_tointeger(l, -2);
+                    if(length2 > length) length = length2;
+
+                    lua_pop(l, 2);
 
                     for(int i = 1; i <= length; ++i) {
                         lua_pushnumber(l, i);
                         lua_gettable(l, -2);
 
-#if 0
+#if 1
                         lua_pushvalue(l, -1);
                         dbgprintf("<%d, %s>", i, luaL_tolstring(l, -1, nullptr));
                         lua_pop(l, 2);
 #endif
-
-                        lua_pushnumber(l, i);
-                        lua_insert(l, -2);
-                        lua_settable(l, -4);
+                        if(!lua_isnil(l, -1)) {
+                            lua_pushnumber(l, i);
+                            lua_insert(l, -2);
+                            lua_settable(l, -4);
+                        } else lua_pop(l, 1);
                     }
 
                 }
@@ -968,13 +976,13 @@ namespace elysian {
             return 0;
         }
 
-        void fromTable(OOLUA::Lua_table_ref ref) {
+        void fromTable(LuaVariant ref) {
             _initializing = true;
             lua_State*const state = *LuaManager::_mainState;
 
             OOLUA::push(state, static_cast<T*>(static_cast<P*>(this)));
             //OOLUA::push(state, static_cast<T*>(this));
-            ref.push(state);
+            ref.push();
 
             lua_rawgeti(state, LUA_REGISTRYINDEX, _propertyProxyIndexTable);
             lua_rawgeti(state, LUA_REGISTRYINDEX, _propertyProxyNewIndexTable);
@@ -997,8 +1005,16 @@ namespace elysian {
          * 5) entityObj:new({})     (copy construct new entity from entityObj then initialize properties from table)
          */
         static int _luaCreate(lua_State*const l) {
+
+#if 0
+    LuaVariant* v = new LuaVariant();
+    LuaVariant& rvalue = *v;
+#else
+                        LuaVariant          rvalue;
+
+#endif
+
             LuaVariant          valueTable;
-            LuaVariant          rvalue;
             int args     =      lua_gettop(l);
             int retCount =      1;
 
@@ -1019,6 +1035,7 @@ namespace elysian {
             lua_rawgeti(l, LUA_REGISTRYINDEX, _ooluaIndexTable);
             lua_getfield(l, -1, "oolua_new");
             GY_ASSERT(!lua_isnil(l, -1));       //Could not find constructor!
+#if 0
             if(!rvalue.isNil()) rvalue.push();  //Push rvalue object as argument to copy constructor!
 
             if(!LuaManager::_protectedCall(!rvalue.isNil()? 1 : 0, 1, nullptr)) {
@@ -1028,12 +1045,34 @@ namespace elysian {
 
             //Whatever constructor that was invoked did not return a new object!
             GY_ASSERT(!lua_isnil(l, -1));
+#else
+
+            if(!LuaManager::_protectedCall(0, 1, nullptr)) {
+                errprintf("LuaTableProxy[%s]::_luaCreate(%s, %s) failed!", OOLUA::Proxy_class<T>::class_name, rvalue.getTypeString(), valueTable.getTypeString());
+                retCount = 0;
+            }
+
+            //Whatever constructor that was invoked did not return a new object!
+            GY_ASSERT(!lua_isnil(l, -1));
+
+            //Initialize new object with valueTable, if supplied.
+            if(!rvalue.isNil()) {
+                T* obj;
+                if(OOLUA::pull(l, obj)) {
+                    static_cast<LuaTableProxy<P, T, Bases...>*>(obj)->fromTable(std::move(rvalue));
+                    retCount = OOLUA::push(l, obj);
+                } else {
+                    GY_ASSERT(obj); //Could not pull correct object type from stack!
+                    retCount = 0;
+                }
+            }
+#endif
 
             //Initialize new object with valueTable, if supplied.
             if(!valueTable.isNil()) {
                 T* obj;
                 if(OOLUA::pull(l, obj)) {
-                    static_cast<LuaTableProxy<P, T, Bases...>*>(obj)->fromTable(valueTable.getValue<OOLUA::Lua_table_ref>());
+                    static_cast<LuaTableProxy<P, T, Bases...>*>(obj)->fromTable(std::move(valueTable));
                     retCount = OOLUA::push(l, obj);
                 } else {
                     GY_ASSERT(obj); //Could not pull correct object type from stack!

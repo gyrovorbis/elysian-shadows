@@ -503,7 +503,7 @@ QMenu* PrefabAssetFileType::contextMenu(const QModelIndex& /*index*/) {
 
     menuStack.insertAction("Save",
          [&](bool) {
-            LuaManager::saveTable(_prefabRef.getRef(), Q_CSTR(getFilePath()));
+            LuaManager::saveTable(_prefabRef, Q_CSTR(getFilePath()));
             setModified(false);
     });
 
