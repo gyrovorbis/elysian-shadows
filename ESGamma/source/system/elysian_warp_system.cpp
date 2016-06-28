@@ -5,7 +5,7 @@
 #include "elysian_debug.hpp"
 #include <crtp/elysian_collidable.hpp>
 #include "elysian_timer_system.hpp"
-#include "elysian_level_system.hpp"
+#include <crtp/elysian_level_system.hpp>
 #include <primitive/elysian_instance_transform.hpp>
 #include <crtp/elysian_entity.hpp>
 #include "elysian_collision_system.hpp"
@@ -52,7 +52,6 @@ void WarpSystem::update(void) {
 			if(_currentWarp._changeLevel) getLevelSys()->switchLevel(_currentWarp._levelPath);
 			if(_currentWarp._changeArea) getLevelSys()->switchArea(_currentWarp._areaPath);
             getPartySys()->getPartyLeader()->_transform.setPos(_currentWarp._toPosition);
-            //getPartySys()->getPartyLeader()->setElev(_currentWarp._toElev);
 			_state = FADE_IN;
 			if(_currentWarp._obliqueTran) {
 				CameraKeyFrame fr = getCameraSys()->getKeyFrame();

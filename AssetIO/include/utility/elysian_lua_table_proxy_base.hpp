@@ -906,7 +906,7 @@ namespace elysian {
             case LUA_TABLE_PROXY_NORMAL:
             case LUA_TABLE_PROXY_VIRTUAL:
                 {
-#if 1
+#if 0
                     DbgEvent event("Deserializing %s Lua Proxy table", tableType == LUA_TABLE_PROXY_NORMAL? "Normal" : "Virtual");
 #endif
                     int depth = 1;
@@ -919,7 +919,7 @@ namespace elysian {
                             if(depth == 1) {
                                 lua_getfield(l, -1, _combinedFields[i].key);
                                 if(!lua_isnil(l, -1)) {
-#if 1
+#if 0
                                     lua_pushvalue(l, -1);
                                     dbgprintf("[%d] = <%s, %s>", i, _combinedFields[i].key, luaL_tolstring(l, -1, nullptr));
                                     lua_pop(l, 2);
@@ -937,7 +937,7 @@ namespace elysian {
             case LUA_TABLE_PROXY_ARRAY:
             default:
                 {
-#if 1
+#if 0
                     DbgEvent event("Deserializing Array Lua Proxy table");
 #endif
                     /* In order to support dynamic arrays whose sizes start at 0 and are populated by contiguous array tables,
@@ -955,7 +955,7 @@ namespace elysian {
                         lua_pushnumber(l, i);
                         lua_gettable(l, -2);
 
-#if 1
+#if 0
                         lua_pushvalue(l, -1);
                         dbgprintf("<%d, %s>", i, luaL_tolstring(l, -1, nullptr));
                         lua_pop(l, 2);
@@ -1005,15 +1005,7 @@ namespace elysian {
          * 5) entityObj:new({})     (copy construct new entity from entityObj then initialize properties from table)
          */
         static int _luaCreate(lua_State*const l) {
-
-#if 0
-    LuaVariant* v = new LuaVariant();
-    LuaVariant& rvalue = *v;
-#else
-                        LuaVariant          rvalue;
-
-#endif
-
+            LuaVariant          rvalue;
             LuaVariant          valueTable;
             int args     =      lua_gettop(l);
             int retCount =      1;

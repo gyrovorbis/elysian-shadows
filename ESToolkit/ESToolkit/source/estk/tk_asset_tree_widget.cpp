@@ -8,7 +8,7 @@
 #include <asset/tk_level.h>
 #include "tk_assets.h"
 #include "elysian_engine.hpp"
-#include "elysian_level_system.hpp"
+#include "elysian_level_system_base.hpp"
 #include <tk_project.h>
 
 AssetTreeWidget::AssetTreeWidget(QWidget *parent): QTreeWidget(parent), _ignoreItemChange(false), _prev(NULL) {

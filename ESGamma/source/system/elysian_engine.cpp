@@ -2,7 +2,7 @@
 #include <ctime>
 
 #include "elysian_engine.hpp"
-#include "elysian_level_system.hpp"
+#include <crtp/elysian_level_system.hpp>
 #include "elysian_debug.hpp"
 #include "crtp/elysian_camera_system.hpp"
 #include "elysian_character_system.hpp"

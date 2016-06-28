@@ -3,12 +3,13 @@
 #include <QMessageBox>
 #include <functional>
 
-#include <tk_project.h>
+#include <asset/tk_project.h>
 #include <asset/tk_level.h>
+#include <asset/tk_area.h>
 #include "elysian_debug.hpp"
 #include <core/tk_file_utilities.h>
 #include "elysian_engine.hpp"
-#include "elysian_level_system.hpp"
+#include <estk/tk_level_system.h>
 #include <crtp/elysian_entity.hpp>
 #include <core/tk_tree_node.h>
 
@@ -151,7 +152,8 @@ bool Project::removeLevel(const QString path, const bool deleteFolder) {
                 }
             }
             Q_EMIT levelRemoved(this, temp);
-            delete temp;
+            getAssets()->getEngine()->getLevelSys()->unloadLevel(temp);
+            //delete temp;
             return success;
         }
     }

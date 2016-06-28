@@ -80,7 +80,7 @@ void EntityBase::reested(void) {
 
 EntityBase::~EntityBase(void) {
     dbgprintf("Entity[%s] garbage collected!", _name);
-    return;
+    //return;
     if(_active) deactivate();
 
     //Cleanup Components

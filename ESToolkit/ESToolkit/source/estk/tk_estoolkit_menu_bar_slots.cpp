@@ -151,7 +151,6 @@ void ESToolkit::on_actionFileNewLevel_triggered() {
 
 void ESToolkit::on_actionFileNewArea_triggered() {
     Area *newArea = _assets.getCurrentLevel()->newArea();
-    //_assets.getEngine()->getLevelSys()->addArea(newArea);
     _assets.setCurrentArea(newArea);
     _assets.setCurrentSelection(newArea);
 }

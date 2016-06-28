@@ -142,8 +142,8 @@ TkLevel::~TkLevel(void) {
     close();
 
     for(int i = 0; i < _area.size(); ++i) {
-        getAssets()->getEngine()->getLevelSys()->removeArea(_area[i]);
-        delete _area[i];
+        getAssets()->getEngine()->getLevelSys()->unloadArea(_area[i]);
+        //delete _area[i];
     }
     _area.clear();
 }
@@ -485,7 +485,8 @@ bool TkLevel::removeArea(const QString path, const bool deleteDir) {
                 dbgprintf("Deleted directory successfully [%s].", Q_CSTR(temp->getNodePath()));
             }
             Q_EMIT areaRemoved(this, temp);
-            delete temp;
+            getAssets()->getEngine()->getLevelSys()->unloadArea(temp);
+            //delete temp;
             return success;
         }
     }

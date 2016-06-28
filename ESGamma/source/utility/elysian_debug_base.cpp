@@ -8,7 +8,7 @@
 #include <crtp/elysian_entity.hpp>
 #include <crtp/elysian_sprite_attrib.hpp>
 #include "elysian_debug.hpp"
-#include "elysian_level_system.hpp"
+#include <crtp/elysian_level_system.hpp>
 #include "elysian_engine.hpp"
 //#include ELYSIAN_ASSET_HEADER("elysian_map_system.hpp", "tk_map_system.h")
 #include "elysian_map_system.hpp"

@@ -106,6 +106,10 @@ namespace elysian {
 
 
 
+
+
+
+
     //====== INLINEZ =======
 
     inline void SpriteAttribBase::setNormalMapPath(const char * const path) {

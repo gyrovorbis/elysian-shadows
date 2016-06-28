@@ -10,13 +10,22 @@ namespace elysian {
 
 	class LevelManager { 
 	protected:
-        static Level* _curLevel;
-        static Area* _curArea;
+        static Level*   _curLevel;
+        static Area*    _curArea;
 	public:
-        static Area* getCurrentArea(void) { return _curArea; }
-        static Level* getCurrentLevel(void) { return _curLevel; }
+        static Area*    getCurrentArea(void);
+        static Level*   getCurrentLevel(void);
 	}; 
 	
+
+
+
+
+
+
+    //===== INLINEZ =====
+    inline Area* LevelManager::getCurrentArea(void) { return _curArea; }
+    inline Level* LevelManager::getCurrentLevel(void) { return _curLevel; }
 }
 
 #endif

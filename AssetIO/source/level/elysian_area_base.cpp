@@ -4,6 +4,7 @@
 #include <crtp/elysian_level.hpp>
 #include <crtp/elysian_lua_manager.hpp>
 #include <utility/elysian_generic.hpp>
+#include <crtp/elysian_behavior.hpp>
 #if GYRO_PLATFORM != GYRO_PLATFORM_DC
 #include <glal/gyro_gl.h>
 #include <glal/gyro_shaders_glal.h>
@@ -120,8 +121,12 @@ AreaBase::AreaBase(void) {
 }*/
 
 AreaBase::~AreaBase(void) {
+    DbgEvent dbg("Deleting Area [%s].", path);
+    behaviorsOnUnload();
     //DELETE COMPONENT/ENTITY SHIT@!!!!
-    dbgprintf("Area::~Area(%s) - FIX FOR WARPS LEAKING MEMORY!! -- Entity Data?", dir);
+    for(auto it: entities) {
+        delete it;
+    }
     freeMap();
     freeVbo();
 }
@@ -247,6 +252,7 @@ bool AreaBase::load(const char *const dir) {
     }
     dbgpop();
 
+    behaviorsOnLoad();
 
     dbgpop();
     return success;
@@ -541,6 +547,28 @@ void AreaBase::setInactiveEntityByIndex(const unsigned index, Entity*const entit
         assert(false);
         //inactiveEntities[index]->fromTable(valueTable);
     }
+}
+
+void AreaBase::behaviorsOnLoad(void) {
+    DbgEvent dbg("Calling Behaviors' ON_LOAD triggers.");
+    for(auto entity: entities) {
+        for(auto behav: entity->getBehaviors()) {
+            behav->onLoad();
+        }
+
+    }
+
+}
+
+void AreaBase::behaviorsOnUnload(void) {
+    DbgEvent dbg("Calling Behaviors' ON_UNLOAD triggers.");
+    for(auto entity: entities) {
+        for(auto behav: entity->getBehaviors()) {
+            behav->onUnload();
+        }
+
+    }
+
 }
 
 }

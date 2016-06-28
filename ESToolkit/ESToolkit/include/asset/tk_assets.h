@@ -114,6 +114,10 @@ private Q_SLOTS:
     void                onMapChanged(Area*const area, const QVector<MapChange>& changes);
     void                onEntityParented(Entity*const child, Entity*const parent);
 
+    //for when they've been changed outside of this API
+    void                onAreaChanged(Area* area);
+    void                onLevelChanged(Level* level);
+
 private:
     void                connectSlots(Project *const project);
 
@@ -125,6 +129,8 @@ private:
     static Assets::LAYER_TYPE   _currentLayer;
     static bool                 _layerVisible[Assets::LAYER_MAX];
     static Selectable::TYPE     _currentSelectionType;
+    static int                  _areaChangeDepth;
+    static int                  _levelChangeDepth;
 
 
 };

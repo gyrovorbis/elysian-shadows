@@ -17,7 +17,7 @@ typedef TkArea Area;
 class AssetManager {
 friend class ESToolkit;
 private:
-    static Assets *_assets;
+    static Assets* _assets;
 
 protected:
     Assets *getAssets(void) const { return _assets; }

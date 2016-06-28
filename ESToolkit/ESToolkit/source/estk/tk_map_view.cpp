@@ -716,18 +716,71 @@ void MapView::_registerDropEventCallbacks(void) {
        {
             TkMimeData::TYPE_LUA_ENTITY_PREFAB,
             [=](const QMimeData* data, Qt::DropAction, QDropEvent* event) {
+                DbgEvent dbg("Drop Event: Instantiating from Entity Prefab.");
                 auto* tkMimeData = qobject_cast<const TkMimeData*>(data);
                 LuaVariant v = tkMimeData->getVariant()["new"].getVariant()(tkMimeData->getVariant());
                 Entity* entity = v.getValue<Entity*>();
                 QPointF scenePos = _mapViewPosToScenePos(event->pos(), scenePos);
 
-                if(!entity) return false; //entity SHOULD be garbage collected by Lua VM when v goes out of scope...
+                if(!entity) {
+                   errprintf("Failed: Prefab constructor return NULL!");
+                   return false; //entity SHOULD be garbage collected by Lua VM when v goes out of scope...
+               }
                 entity->getTransform().setPosX(scenePos.x());
                 entity->getTransform().setPosY(scenePos.y());
 
                 getAssets()->getCurrentArea()->addEntity(entity);
+                dbgprintf("Success: Adding Entity [%s] to area.", entity->getName());
 
                 return true;
+            }
+       }, {
+            MimeDropManager::TYPE_URLS,
+            [=](const QMimeData* data, Qt::DropAction /*action*/, QDropEvent* event) {
+                QPointF scenePos = _mapViewPosToScenePos(event->pos(), scenePos);
+                for(auto&& url : data->urls()) {
+                    if(url.isLocalFile()) {
+                        QString texturePath = url.toLocalFile();
+                        QFileInfo info(texturePath);
+                        if(info.suffix() == "png" || info.suffix() == "PNG") {
+                            DbgEvent dbg("Drop Event: Instantiating Entity from image file [%s].", Q_CSTR(texturePath));
+                            Entity* entity = new Entity;
+                            entity->setName(Q_CSTR(info.fileName().split(".")[0]));
+                            Renderable* render = entity->addRenderable();
+                            SpriteAttrib* attrib = new SpriteAttrib();
+                            attrib->setTexPath(Q_CSTR(FileUtilities::getAssetRelativePath(texturePath)));
+                            GYTexture* tex = attrib->getTexture();
+                            render->setSpriteAttrib(attrib);
+
+                            entity->getTransform().setPosX(scenePos.x());
+                            entity->getTransform().setPosY(scenePos.y());
+
+                            if(tex) {
+                                dbgprintf("SUCCESS: Adding Entity [%s] to area.", entity->getName());
+                                entity->getTransform().setSize(tex->width, tex->height, tex->height);
+                            } else {
+                                errprintf("FAILURE! SpriteAttrib.texture is NULL!");
+                            }
+
+                            getAssets()->getCurrentArea()->addEntity(entity);
+
+                        }
+                    }
+                }
+                return true;
+            },
+            [=](const QMimeData* data, Qt::DropAction /*action*/, QDragEnterEvent* event) {
+                if(data->hasUrls()) {
+                    for(auto&& url : data->urls()) {
+                       if(url.isLocalFile()) {
+                           QFileInfo info(url.toLocalFile());
+                           if(info.suffix() == "png" || info.suffix() == "PNG") {
+                               return true;
+                           }
+                       }
+                    }
+                }
+                return false;
             }
        }
    });

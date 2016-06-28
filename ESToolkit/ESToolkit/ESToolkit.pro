@@ -138,7 +138,6 @@ SOURCES += \
     ../../ESGamma/source/system/elysian_engine.cpp \
     ../../ESGamma/source/system/elysian_examinable_system.cpp \
     ../../ESGamma/source/system/elysian_gui_system.cpp \
-    ../../ESGamma/source/system/elysian_level_system.cpp \
     ../../ESGamma/source/system/elysian_light_system.cpp \
     ../../ESGamma/source/system/elysian_map_system_base.cpp \
     ../../ESGamma/source/system/elysian_particle_system.cpp \
@@ -200,7 +199,8 @@ SOURCES += \
     ../../ESGamma/source/system/elysian_input_system_base.cpp \
     ../../AssetIO/source/behavior/elysian_playable_behavior.cpp \
     ../../ESGamma/source/system/elysian_pathfinding_system.cpp \
-    ../../AssetIO/source/utility/elysian_lua_variant_base.cpp
+    ../../AssetIO/source/utility/elysian_lua_variant_base.cpp \
+    ../../ESGamma/source/system/elysian_level_system_base.cpp
 
 
 !ios: !dreamcast: !android {
@@ -283,7 +283,8 @@ SOURCES += \
         source/core/tk_lua_qt_utils.cpp \
         source/core/tk_mime_data.cpp \
         source/core/tk_mime_drop_manager.cpp \
-        source/estk/tk_estoolkit_menu_bar_slots.cpp
+        source/estk/tk_estoolkit_menu_bar_slots.cpp \
+        source/estk/tk_level_system.cpp
 
 } else {
         SOURCES += ../../ESGamma/source/system/main.cpp
@@ -351,7 +352,6 @@ HEADERS += \
     ../../ESGamma/include/system/elysian_engine.hpp \
     ../../ESGamma/include/system/elysian_examinable_system.hpp \
     ../../ESGamma/include/system/elysian_gui_system.hpp \
-    ../../ESGamma/include/system/elysian_level_system.hpp \
     ../../ESGamma/include/system/elysian_light_system.hpp \
     ../../ESGamma/include/system/elysian_map_system_base.hpp \
     ../../ESGamma/include/system/elysian_particle_system.hpp \
@@ -443,7 +443,10 @@ HEADERS += \
     ../../AssetIO/include/utility/elysian_lua_stack.hpp \
     ../../AssetIO/include/utility/elysian_functional.hpp \
     include/core/tk_mime_data.h \
-    include/core/tk_mime_drop_manager.h
+    include/core/tk_mime_drop_manager.h \
+    ../../ESGamma/include/crtp/elysian_level_system.hpp \
+    ../../ESGamma/include/system/elysian_level_system_base.hpp \
+    include/estk/tk_level_system.h
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

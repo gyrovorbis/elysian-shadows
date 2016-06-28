@@ -7,7 +7,7 @@
 #include <crtp/elysian_entity.hpp>
 #include "elysian_debug.hpp"
 #include "elysian_engine.hpp"
-#include "elysian_level_system.hpp"
+#include <crtp/elysian_level_system.hpp>
 #include "elysian_map_system.hpp"
 #include "elysian_map_system.hpp"
 #include "tk_entity_selectable.h"
@@ -24,6 +24,8 @@ Selectable*         Assets::_currentSelection                   = nullptr;
 Selectable::TYPE    Assets::_currentSelectionType               = Selectable::EMPTY;
 Assets::LAYER_TYPE  Assets::_currentLayer                       = Assets::LAYER_TILE1;
 bool                Assets::_layerVisible[Assets::LAYER_MAX]    = { true };
+int                 Assets::_levelChangeDepth                   = 0;
+int                 Assets::_areaChangeDepth                    = 0;
 
 //====INSTANCE MEMBERS====
 
@@ -164,11 +166,12 @@ bool Assets::setCurrentArea(const QString path) {
 }
 
 void Assets::setCurrentArea(Area *const area) {
+    ++_areaChangeDepth;
    // if(_currentArea) _currentArea->deactivate();
     //if(_currentArea == area) return;
     //_currentArea = area;
     Q_EMIT areaChanging(area);
-    _engine->getLevelSys()->switchArea(area? area->path : nullptr);
+    if(_engine) _engine->getLevelSys()->switchArea(area? area->path : nullptr);
   //  if(area) {
         //area->activate();
     //    Q_EMIT areaChanged(_curArea);
@@ -179,6 +182,7 @@ void Assets::setCurrentArea(Area *const area) {
         setCurrentSelection((EntitySelectable*)nullptr);
         Q_EMIT areaChanged(_curArea);
     //}
+    --_areaChangeDepth;
 }
 
 
@@ -197,19 +201,24 @@ bool Assets::setCurrentLevel(const QString path) {
 }
 
 void Assets::setCurrentLevel(Level *const level) {
+    ++_levelChangeDepth;
    // if(_currentLevel) _currentLevel->deactivate();
     //if(_currentLevel == level) return;
   //  _currentLevel = level;
     Q_EMIT levelChanging(level);
-    _engine->getLevelSys()->switchLevel(level? level->path : nullptr);
+    if(_engine) {
+        //_tkLevelChange = true;  //Prevent recursion from lower level informing upper level of level change
+        _engine->getLevelSys()->switchLevel(level? level->path : nullptr);
+        //_tkLevelChange = false;
+    }
     if(level) {
     //	level->activate();
         if(level->getFirstArea()) setCurrentArea(level->getFirstArea()->getNodePath());
         else setCurrentArea(nullptr);
     }
     else setCurrentArea(nullptr);
-    //Debug::Log(Debug::LOG_VERBOSE, "!!!!!!EMIT CURRENT SEVERITY " +( (level)? level->getName() : "NULL"));
     Q_EMIT levelChanged(level);
+    --_levelChangeDepth;
 }
 
 bool Assets::setCurrentProject(const QString path) {
@@ -482,4 +491,12 @@ Area* Assets::findArea(const QString path) const {
 
 Level* Assets::findLevel(const QString path) const {
     return _project->getLevel(path);
+}
+
+void Assets::onLevelChanged(Level *level) {
+    if(_levelChangeDepth <= 0) setCurrentLevel(level);
+}
+
+void Assets::onAreaChanged(Area *area) {
+    if(_areaChangeDepth <= 0) setCurrentArea(area);
 }

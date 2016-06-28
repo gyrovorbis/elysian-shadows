@@ -8,9 +8,9 @@ ELYSIAN_ASSET_TYPEDEF(TimerSystem)
 ELYSIAN_ASSET_TYPEDEF(MapSystem)
 ELYSIAN_ASSET_TYPEDEF(CameraSystem)
 ELYSIAN_ASSET_TYPEDEF(InputSystem)
+ELYSIAN_ASSET_TYPEDEF(LevelSystem)
 
 namespace elysian {
-  class LevelSystem;
   class CharacterSystem;
   class PartySystem;
   class WarpSystem;
