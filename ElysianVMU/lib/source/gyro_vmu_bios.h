@@ -5,10 +5,13 @@
 extern "C" {
 #endif
 
-#define BIOS_ADDR_FM_WRT_EX 0x100
-#define BIOS_ADDR_FM_VRF_EX 0x110
-#define BIOS_ADDR_FM_PRD_EX 0x120
-#define BIOS_ADDR_TIMER_EX  0x130
+#define BIOS_ADDR_FM_WRT_EX     0x100
+#define BIOS_ADDR_FM_WRTA_EX    0x108
+#define BIOS_ADDR_FM_VRF_EX     0x110
+#define BIOS_ADDR_FM_PRD_EX     0x120
+#define BIOS_ADDR_TIMER_EX      0x130
+#define BIOS_ADDR_SLEEP_EX      0x140
+#define BIOS_ADDR_EXIT_EX       0x1f0
 
 struct VMUDevice;
 

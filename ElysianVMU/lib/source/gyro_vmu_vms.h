@@ -11,6 +11,7 @@ extern "C" {
 #define VMU_VMS_FILE_INFO_VMU_DESC_SIZE                 16
 #define VMU_VMS_FILE_INFO_DC_DESC_SIZE                  32
 #define VMU_VMS_FILE_INFO_CREATOR_APP_SIZE              16
+#define VMU_VMS_FILE_INFO_RESERVED_SIZE                 20
 
 #define VMU_VMS_ICON_PALETTE_BLUE_POS                   0
 #define VMU_VMS_ICON_PALETTE_BLUE_MASK                  0x000f
@@ -25,6 +26,7 @@ extern "C" {
 #define VMU_VMS_ICON_BITMAP_WIDTH                       32
 #define VMU_VMS_ICON_BITMAP_HEIGHT                      32
 #define VMU_VMS_ICON_BITMAP_SIZE                        512
+#define VMU_VMS_ICON_COUNT_MAX                          3
 
 #define VMU_VMS_EYECATCH_BITMAP_WIDTH                   72
 #define VMU_VMS_EYECATCH_BITMAP_HEIGHT                  56
@@ -36,14 +38,17 @@ extern "C" {
 #define VMU_VMS_EYECATCH_BITMAP_SIZE_COLOR_PALETTE_256  4032
 #define VMU_VMS_EYECATCH_BITMAP_SIZE_COLOR_PALETTE_16   2016
 
-
 typedef enum VMS_EYECATCH_MODE {
-    VMS_EYECATCH_MODE_NONE,
+    VMS_EYECATCH_NONE,
     VMS_EYECATCH_COLOR_16BIT,
     VMS_EYECATCH_COLOR_PALETTE_256,
-    VMS_EYECATCH_COLOR_PALETTE_16
+    VMS_EYECATCH_COLOR_PALETTE_16,
+    VMS_EYECATCH_MAX
 } VMS_EYECATCH_MODE;
 
+//Strings are JIS X 0201 encoded (included within Shift-JIS)
+// - Normal ASCII for low byte (except backslash becomes yen)
+// - Katakana high byte (no Kanji)
 typedef struct VMSFileInfo {
     char        vmuDesc[VMU_VMS_FILE_INFO_VMU_DESC_SIZE];
     char        dcDesc[VMU_VMS_FILE_INFO_DC_DESC_SIZE];
@@ -52,17 +57,20 @@ typedef struct VMSFileInfo {
     uint16_t    animSpeed;
     uint16_t    eyecatchType;
     uint16_t    crc;
-    uint32_t    dataBytes;
-    char        reserved[20];
+    uint32_t    dataBytes;      //Size of actual file data, without header, icons, and shit (ignored for GAME files)
+    char        reserved[VMU_VMS_FILE_INFO_RESERVED_SIZE];
     uint16_t    palette[VMU_VMS_ICON_PALETTE_SIZE]; //IS THIS PREMULTIPLIED BY ALPHA!?
 } VMSFileInfo;
 
+void        gyVmuVmsHeaderVmuDescGet(const VMSFileInfo* info, char* string);
+uint16_t    gyVmuVmsFileInfoHeaderSize(const VMSFileInfo* info); //bytes
+int         gyVmuVMSFileInfoCrcCalc(const unsigned char* buf, int size);
+void        gyVmuPrintVMSFileInfo(const VMSFileInfo* vms);
+void*       gyVmuVMSFileInfoEyecatch(const VMSFileInfo* vms);
+uint16_t**  gyVmuVMSFileInfoCreateIconsARGB444(const VMSFileInfo* vms);
+uint16_t*   gyVmuVMSFileInfoCreateEyeCatchARGB444(const VMSFileInfo* vms);
 
-void gyVmuVmsHeaderVmuDescGet(const VMSFileInfo* info, char* string);
-int gyVmuVMSFileInfoCrcCalc(const unsigned char* buf, int size);
-void gyVmuPrintVMSFileInfo(const VMSFileInfo* vms);
-uint16_t** gyVmuVMSFileInfoCreateIconsARGB444(const VMSFileInfo* vms);
-
+int         gyVmuVmsFileInfoType(const void* image);
 
 #ifdef __cplusplus
 }

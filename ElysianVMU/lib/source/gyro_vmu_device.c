@@ -1,5 +1,8 @@
 #include "gyro_vmu_device.h"
+#include "gyro_vmu_cpu.h"
+#include "gyro_vmu_serial.h"
 #include <gyro_system_api.h>
+#include <gyro_vmu_buzzer.h>
 #include <string.h>
 #include <stdlib.h>
 
@@ -7,13 +10,16 @@ VMUDevice* gyVmuDeviceCreate(void) {
     _gyLog(GY_DEBUG_VERBOSE, "Creating VMU Device.");
     VMUDevice* device = malloc(sizeof(VMUDevice));
     memset(device, 0, sizeof(VMUDevice));
-    //gyVmuCpuReset(device);
+
+    gyVmuBuzzerInit(device);
+
     return device;
 }
 
-void gyVmuDeviceDestroy(VMUDevice* device) {
+void gyVmuDeviceDestroy(VMUDevice* dev) {
     _gyLog(GY_DEBUG_VERBOSE, "Destroying VMU Device.");
-    free(device);
+    gyVmuBuzzerUninit(dev);
+    free(dev);
 }
 
 int gyVmuDeviceDump(VMUDevice *dev, const char *path) {
@@ -26,4 +32,15 @@ int gyVmuDeviceRestore(VMUDevice *dev, const char *path) {
     (void)dev;
     (void)path;
     return 0;
+}
+
+void gyVmuDeviceUpdate(VMUDevice *device, float deltaTime) {
+    gyVmuSerialUpdate(device);
+    gyVmuCpuTick(device, deltaTime);
+
+}
+
+void gyVmuDeviceReset(VMUDevice* device) {
+    gyVmuCpuReset(device);
+    gyVmuBuzzerReset(device);
 }

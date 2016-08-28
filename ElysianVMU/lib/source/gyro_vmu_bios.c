@@ -59,13 +59,24 @@ int gyVmuBiosLoad(VMUDevice* device, const char* path) {
 
 }
 
-#if 0
-1) Flash memory write
-2) Flash memory read
-3) Flash memory verify
-4) Clock count-up timer
 
+void _biosWriteFlashRom(VMUDevice* dev) {
+    int i, a = ((dev->ram[1][0x7d]<<16)|(dev->ram[1][0x7e]<<8)|dev->ram[1][0x7f])&0x1ffff;
+    if(a>=dev->gameSize)
+        gyVmuMemWrite(dev, 0x100, 0xff);
+    else {
+        gyVmuMemWrite(dev, 0x100, 0x00);
+        for(i=0; i<0x80; i++)
+            dev->flash[(a&~0xff)|((a+i)&0xff)] = dev->ram[1][i+0x80];
+#if 0
+#ifdef __DC__
+        if(!flash_written(a))
+        writemem(0x100, 0xff);
 #endif
+#endif
+    }
+
+}
 
 /*
  * TimeShooter.VMS is entering FM at unknown address!!!!! Marcus's emulator can't handle it either.
@@ -73,32 +84,14 @@ int gyVmuBiosLoad(VMUDevice* device, const char* path) {
  *
  *
  */
-
-int gyVmuBiosHandleCall(VMUDevice *dev) {
+int gyVmuBiosHandleCall(VMUDevice* dev) {
     switch(dev->pc) {
-    case BIOS_ADDR_FM_WRT_EX: { //fm_wrt_ex(ORG 0100H)
-        int i, a = ((dev->ram[1][0x7d]<<16)|(dev->ram[1][0x7e]<<8)|dev->ram[1][0x7f])&0x1ffff;
-        if(a>=dev->gameSize)
-            gyVmuMemWrite(dev, 0x100, 0xff);
-        else {
-            gyVmuMemWrite(dev, 0x100, 0x00);
-            for(i=0; i<0x80; i++)
-                dev->flash[(a&~0xff)|((a+i)&0xff)] = dev->ram[1][i+0x80];
-#if 0
-#ifdef __DC__
-            if(!flash_written(a))
-            writemem(0x100, 0xff);
-#endif
-#endif
-        }
-        /*
-        fprintf(stderr, "ROM write @ %05x:\n", a);
-        for(i=0; i<0x80; i++)
-        fprintf(stderr, " %02x", ram[1][i+0x80]);
-        fprintf(stderr, "\n");
-        */
+    case BIOS_ADDR_FM_WRT_EX: //fm_wrt_ex(ORG 0100H)
+        _biosWriteFlashRom(dev);
         return 0x105;
-    }
+    case BIOS_ADDR_FM_WRTA_EX:
+        _biosWriteFlashRom(dev);
+        return 0x10b;
     case BIOS_ADDR_FM_VRF_EX: { //fm_vrf_ex(ORG 0110H)
         int i, a = ((dev->ram[1][0x7d]<<16)|(dev->ram[1][0x7e]<<8)|dev->ram[1][0x7f])&0x1ffff;
         int r = 0;
@@ -141,7 +134,8 @@ int gyVmuBiosHandleCall(VMUDevice *dev) {
                 }
             }
         return 0x139;
-    case 0x1f0:
+    case BIOS_ADDR_SLEEP_EX:
+        _gyLog(GY_DEBUG_WARNING, "Entered firmare at SLEEP mode address! Unimplemented!");
         return 0;
     default:
         //assert(0);

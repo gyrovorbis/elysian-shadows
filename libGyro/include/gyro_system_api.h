@@ -66,6 +66,8 @@ int gySysAppExec(int argc, char* argv[]);
 unsigned int gySysStatsVram(void);
 unsigned int gySysStatsRam(void);
 
+const char* gyVersion(void);
+
 
 #include "common/gyro_system_common.h"
 
