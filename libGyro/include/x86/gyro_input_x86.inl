@@ -6,9 +6,9 @@ extern "C" {
 #endif
 
 typedef struct GYInputInitParams {
-    void* viewWidget;
-    void* glWidget;
-    unsigned controllerCount;
+    void*       viewWidget;
+    void*       glWidget;
+    unsigned    controllerCount;
 } GYInputInitParams;
 
 

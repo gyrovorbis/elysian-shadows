@@ -19,6 +19,8 @@ GYAppInputCb    gyAppInputCb       = NULL;
 GYAppDrawCb     gyAppDrawCb        = NULL;
 GYAppQuitCb     gyAppQuitCb        = NULL;
 
+const char* gyVersion(void) { return GYRO_LIB_VERSION; }
+
 void _gySysPrintBuildInfo(const char*const platString) {
     char strBuff[40];
 
