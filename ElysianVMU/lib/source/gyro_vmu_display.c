@@ -2,6 +2,8 @@
 #include "gyro_vmu_device.h"
 #include <assert.h>
 
+/* THIS IS WHERE LIBGYRO-BASED RENDERING SHIT SHOULD BE!!!! */
+
 int gyVmuDisplayPixelGet(const VMUDevice* dev, int x, int y) {
     assert(x >= 0 && x < VMU_DISP_PIXEL_WIDTH && y >= 0 && y < VMU_DISP_PIXEL_HEIGHT);
 

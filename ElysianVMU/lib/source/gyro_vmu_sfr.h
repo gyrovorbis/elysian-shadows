@@ -95,6 +95,36 @@ extern "C" {
 #define SFR_VCCR_VCCR7_POS      7       //Enable (1) LCD Display
 #define SFR_VCCR_VCCR7_MASK     0x80
 
+//SCON0 - Serial Control Register 0 (0x130)
+#define SFR_SCON0_POL_POS           7       //Polarity - 0: maintain, 1: output = SBUF.0
+#define SFR_SCON0_POL_MASK          0x80
+#define SFR_SCON0_OV_POS            6       //Overrun flag - 1: true, 0: false
+#define SFR_SCON0_OV_MASK           0x40
+#define SFR_SCON0_LEN_POS           4       //Transfer bit length - 1: 8-bit xfer, 1: continuous xfer
+#define SFR_SCON0_LEN_MASK          0x10
+#define SFR_SCON0_CTRL_POS          3       //Transfer control - 1: start, 0: stop
+#define SFR_SCON0_CTRL_MASK         0x8
+#define SFR_SCON0_MSB_POS           2       //MSB/LSB select - 1: msb first, 0: lsb first
+#define SFR_SCON0_MSB_MASK          0x4
+#define SFR_SCON0_END_POS           1       //Transer end flag - 1: end 0: in progress
+#define SFR_SCON0_END_MASK          0x2
+#define SFR_SCON0_IE_POS            0       //Interrupt enabled - 1: enabled, 0: disabled
+#define SFR_SCON0_IE_MASK           0x1
+
+//#define SFR_SCON1          0x134   //SI01 Control register
+#define SFR_SCON1_OV_POS            6       //Overrun flag - 1: true, 0: false
+#define SFR_SCON1_OV_MASK           0x40
+#define SFR_SCON1_LEN_POS           4       //Transfer bit length - 1: 8-bit xfer, 0: continuous xfer
+#define SFR_SCON1_LEN_MASK          0x10
+#define SFR_SCON1_CTRL_POS          3       //Transfer control - 1: start, 0: stop
+#define SFR_SCON1_CTRL_MASK         0x8
+#define SFR_SCON1_MSB_POS           2       //MSB/LSB select - 1: msb first, 0: lsb first
+#define SFR_SCON1_MSB_MASK          0x4
+#define SFR_SCON1_END_POS           1       //Transer end flag - 1: end 0: in progress
+#define SFR_SCON1_END_MASK          0x2
+#define SFR_SCON1_IE_POS            0       //Interrupt enabled - 1: enabled, 0: disabled
+#define SFR_SCON1_IE_MASK           0x1
+
 //P1 - Port 1 Latch (0x144)
 #define SFR_P1_P17_POS          7
 #define SFR_P1_P17_MASK         0x80
@@ -187,7 +217,7 @@ extern "C" {
 #define SFR_P7_P73_MASK         0x8
 #define SFR_P7_P72_POS          2       //External connector pin 13 state
 #define SFR_P7_P72_MASK         0x4
-#define SFR_P7_P71_POS          1       //Battery voltage - 0 when battery is low, disabled with 0x6e
+#define SFR_P7_P71_POS          1       //Battery voltage - 0 when battery is low, disabled with system var 0x6e
 #define SFR_P7_P71_MASK         0x2
 #define SFR_P7_P70_POS          0       //External voltage - 1 when plugged into conroller (5v)
 #define SFR_P7_P70_MASK         0x1

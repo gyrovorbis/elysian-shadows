@@ -7,6 +7,7 @@
 #include "gyro_vmu_osc.h"
 #include "gyro_vmu_timers.h"
 #include "gyro_vmu_bios.h"
+#include "gyro_vmu_util.h"
 #include <gyro_system_api.h>
 
 #include <assert.h>
@@ -32,9 +33,7 @@ extern void lcdrefresh(void);
     ((b < 1)?((UCHAR_MAX + b >= a)?0:0):((b<=a)?0:0))
 //    ((b < 1)?((UCHAR_MAX + b >= a)?1:0):((b<=a)?1:0))
 
-inline static int tobcd(int n) {
-  return ((n/10)<<4)|(n%10);
-}
+
 
 inline static unsigned char rotl(unsigned char c) {
     return (c << 1) | (c >> 7);
@@ -754,26 +753,7 @@ static int _fetchNextInstruction(VMUDevice* device) {
     return 1; //keep fetching instruction in next clock-cycle
 }
 
-
-//API for polling registers
-//API for memcpying to/from system memory
-//Error callbacks
-//Error logging
-//API for setting clock frequency, display brightness, etc.
-//API to dynamically execute instruction (lua_dostring equivalent)
-//API for fetching clock cycles/performance
-//LCD_Changed method so app code won't have to update VBOs and shit if not.
-//Callback for VMU beep? Isn't that the only sound it can make?
-
-
-/*Should be handled externally through direct iteration
-void render(void) {
-
-}*/
-
 int reset(void) {
-
-
     //1 - Clear main RAM
    // memset(_ram, 0,
 
@@ -802,115 +782,62 @@ int gyVmuCpuTick(VMUDevice* dev, float deltaTime) {
 
 int gyVmuCpuReset(VMUDevice* dev) {
     _gyLog(GY_DEBUG_VERBOSE, "Resetting VMU CPU.");
-    //dev->imem = dev->rom;
     time_t t = time(NULL);
     struct tm *tm = localtime(&t);
-    dev->memMap[VMU_MEM_SEG_XRAM]   = dev->xram[VMU_XRAM_BANK_LCD_TOP];
-    dev->memMap[VMU_MEM_SEG_SFR]    = dev->sfr;
 
-    dev->sfr[0x06] = 0x7f;
-    dev->sfr[0x4c] = 0xff;
-    dev->sfr[0x01] = 0x02;
+    dev->memMap[VMU_MEM_SEG_XRAM]       = dev->xram[VMU_XRAM_BANK_LCD_TOP];
+    dev->memMap[VMU_MEM_SEG_SFR]        = dev->sfr;
+    dev->sfr[SFR_OFFSET(SFR_ADDR_SP)]   = RAM_STACK_ADDR_BASE-1;    //Initialize stack pointer
+    dev->sfr[SFR_OFFSET(SFR_ADDR_P3)]   = 0xff;                     //Reset all P3 pins (controller buttons)
+    dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)]  = SFR_PSW_RAMBK0_MASK;
 
-#if 0
-    t0h = t0l = 0;
-    t1h = t1l = 0;
-    t0base = 0;
-    t0scale = 256;
-#else
     dev->timer0.tscale = 256;
-#endif
-    dev->ram[0][0x10] = tobcd(tm->tm_year/100+19);
-    dev->ram[0][0x11] = tobcd(tm->tm_year%100);
-    dev->ram[0][0x12] = tobcd(tm->tm_mon+1);
-    dev->ram[0][0x13] = tobcd(tm->tm_mday);
-    dev->ram[0][0x14] = tobcd(tm->tm_hour);
-    dev->ram[0][0x15] = tobcd(tm->tm_min);
-    dev->ram[0][0x17] = (tm->tm_year+1900)>>8;
-    dev->ram[0][0x18] = (tm->tm_year+1900)&0xff;
-    dev->ram[0][0x19] = tm->tm_mon+1;
-    dev->ram[0][0x1a] = tm->tm_mday;
-    dev->ram[0][0x1b] = tm->tm_hour;
-    dev->ram[0][0x1c] = tm->tm_min;
-    dev->ram[0][0x1d] = tm->tm_sec;
-    dev->ram[0][0x31] = 0xff;
+
+    //Initialize System Variables
+    dev->ram[0][RAM_ADDR_YEAR_MSB_BCD]  = gyVmuToBCD(tm->tm_year/100+19);
+    dev->ram[0][RAM_ADDR_YEAR_LSB_BCD]  = gyVmuToBCD(tm->tm_year%100);
+    dev->ram[0][RAM_ADDR_MONTH_BCD]     = gyVmuToBCD(tm->tm_mon+1);
+    dev->ram[0][RAM_ADDR_DAY_BCD]       = gyVmuToBCD(tm->tm_mday);
+    dev->ram[0][RAM_ADDR_HOUR_BCD]      = gyVmuToBCD(tm->tm_hour);
+    dev->ram[0][RAM_ADDR_MINUTE_BCD]    = gyVmuToBCD(tm->tm_min);
+    dev->ram[0][RAM_ADDR_YEAR_MSB]      = (tm->tm_year+1900)>>8;
+    dev->ram[0][RAM_ADDR_YEAR_LSB]      = (tm->tm_year+1900)&0xff;
+    dev->ram[0][RAM_ADDR_MONTH]         = tm->tm_mon+1;
+    dev->ram[0][RAM_ADDR_DAY]           = tm->tm_mday;
+    dev->ram[0][RAM_ADDR_HOUR]          = tm->tm_hour;
+    dev->ram[0][RAM_ADDR_MINUTE]        = tm->tm_min;
+    dev->ram[0][RAM_ADDR_SEC]           = tm->tm_sec;
+    dev->ram[0][RAM_ADDR_CLK_INIT]      = 0xff;
 
     if(dev->biosLoaded) {
         dev->memMap[VMU_MEM_SEG_GP1]    = dev->ram[VMU_RAM_BANK0];
         dev->memMap[VMU_MEM_SEG_GP2]    = &dev->ram[VMU_RAM_BANK0][VMU_MEM_SEG_SIZE];
-        dev->sfr[0x0d] = 0;
-        //dev->pc = 0x1f0;
+        dev->sfr[SFR_OFFSET(SFR_ADDR_EXT)] = 0;
         dev->imem = dev->rom;
-        //dev->pc = 0x1f0; no fucking clue
     } else {
         dev->memMap[VMU_MEM_SEG_GP1]    = dev->ram[VMU_RAM_BANK1];
         dev->memMap[VMU_MEM_SEG_GP2]    = &dev->ram[VMU_RAM_BANK1][VMU_MEM_SEG_SIZE];
-        dev->sfr[0x0d] = 1;
-            dev->imem = dev->flash;
-            dev->pc = 0;
-            gyVmuMemWrite(dev, 0x125, 2);
-            gyVmuMemWrite(dev, 0x182, 0x10);
-            gyVmuMemWrite(dev, 0x125, 0);
-            gyVmuMemWrite(dev, 0x127, 0x80);
+        dev->sfr[SFR_OFFSET(SFR_ADDR_EXT)] = 1;
+        dev->imem = dev->flash;
+        dev->pc = 0;
+        gyVmuMemWrite(dev, SFR_ADDR_XBNK, VMU_XRAM_BANK_ICN);
+        gyVmuMemWrite(dev, SFR_ADDR_XRAM_ICN_GAME, 0x10);           //Enable Game Icon
+        gyVmuMemWrite(dev, SFR_ADDR_XBNK, VMU_XRAM_BANK_LCD_TOP);
+        gyVmuMemWrite(dev, SFR_ADDR_VCCR, SFR_VCCR_VCCR7_MASK);     //turn on LCD
 
     }
+
     dev->sfr[SFR_OFFSET(SFR_ADDR_IE)] = SFR_IE_IE7_MASK;
-    gyVmuMemWrite(dev, 0x10e, 0x81);
+    gyVmuMemWrite(dev, SFR_ADDR_OCR, SFR_OCR_OCR7_MASK|SFR_OCR_OCR0_MASK); //stop main clock, divide active clock by 6
+    dev->sfr[SFR_OFFSET(SFR_ADDR_P7)] = SFR_P7_P71_MASK;
 
 
-
-    //BIOS DEFAULT VALUES
-#if 0
+    //SFR values initialized by BIOS (from Sega Documentation)
     gyVmuMemWrite(dev, SFR_ADDR_P1FCR,  0xbf);
     gyVmuMemWrite(dev, SFR_ADDR_P3INT,  0xfd);
     gyVmuMemWrite(dev, SFR_ADDR_ISL,    0xc0);
     gyVmuMemWrite(dev, SFR_ADDR_VSEL,   0xf4);
     gyVmuMemWrite(dev, SFR_ADDR_BTCR,   0x41);
-#endif
-
-
 
     return 1;
 }
-
-
-#if 0
-//interrupty shit
-//imask seems to be an interrupt depth counter
-//increment before calling interrupt
-//reti decrements when returning
-
-if((sfr[0x4e]&3)==3 && !imask)
-  intreq |= 1<<9;
-
-if(!intreq || imask || !(sfr[0x08]&0x80))   //don't bother checking interrupts
-  continue;
-
-for(r=0; r<10; r++)                         //10 different interrupts
-  if(intreq & (1<<r))                       //check each one
-break;                                      //run interrupt
-
-intreq &= ~(1<<r);                          //clear interrupt bit
-push(pc&0xff);                              //push current PC
-push((pc&0xff00)>>8);
-imask++;                                    //increment interrupt depth
-
-//Jump to ISR?
-pc = ((r&~1)<<3)+((r&1)?0xb:0x3);           //How the fuck does it know where to go?
-
-}
-
-#endif
-
-//bool uninitialize(void);
-
-
-//open bios
-//ram dump
-//ram reload
-//tick update function
-//tick render function
-//use libgyro
-//header of convenient extern pointers to locations in VMU memory for direct access/usage outside of ASM (registers, accumulators, etc)
-//instructions need to respect # of cycles
-

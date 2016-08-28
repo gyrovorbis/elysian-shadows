@@ -3,6 +3,7 @@
 #include <QCommandLineParser>
 #include "gyro_vmu_main_window.hpp"
 #include "../lib/source/gyro_vmu_instr.h"
+#include "../lib/source/gyro_vmu_version.h"
 
 int main(int argc, char* argv[]) {
 
@@ -14,7 +15,7 @@ int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
     QApplication::setApplicationDisplayName("ElysianVMU");
     QApplication::setApplicationName("ElysianVMU");
-    QApplication::setApplicationVersion("0.0.1 Alpha");
+    QApplication::setApplicationVersion(GYRO_VMU_VERSION_STRING);
     app.setWindowIcon(QIcon(":/icons/images/vmu_icon.ico"));
 
     QCommandLineParser parser;

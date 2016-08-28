@@ -5,6 +5,8 @@
 #include "gyro_vmu_memory.h"
 #include "gyro_vmu_instr.h"
 #include "gyro_vmu_timers.h"
+#include "gyro_vmu_serial.h"
+#include "gyro_vmu_buzzer.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,6 +42,8 @@ typedef struct VMUDevice {
 
     VMUTimer0       timer0;
     VMUTimer1       timer1;
+    VMUSerialPort   serialPort;
+    VMUBuzzer       buzzer;
 
     uint16_t        intReq;
     uint16_t        intMask;
@@ -61,6 +65,8 @@ typedef struct VMUDevice {
 
 VMUDevice*          gyVmuDeviceCreate(void);
 void                gyVmuDeviceDestroy(VMUDevice* device);
+void                gyVmuDeviceUpdate(VMUDevice* device, float deltaTime);
+void                gyVmuDeviceReset(VMUDevice* device);
 
 int                 gyVmuDeviceDump(VMUDevice* device, const char* path);
 int                 gyVmuDeviceRestore(VMUDevice* device, const char* path);

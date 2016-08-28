@@ -47,28 +47,6 @@ int gyVmuTimer0Update(struct VMUDevice* dev) {
             do c0++;
             while((dev->timer0.tbase -= dev->timer0.tscale) >= dev->timer0.tscale);
 
-#if 0
-            if(c0)
-    if((sfr[0x10] & 0xe0) == 0xe0) {
-        t0l += c0;
-        if(t0l>=256) {
-            t0l -= 256;
-            if(++t0h >= 256) {
-                t0h -= 256;
-                if((t0l += sfr[0x13])>=256) {
-                    t0l -= 256;
-                    if((t0h += sfr[0x15])>=256) {
-                        t0l = sfr[0x13];
-                        t0h = sfr[0x15];
-                    }
-                }
-                sfr[0x10] |= 10;
-                if(sfr[0x10]&4)
-                intreq |= 1<<4;
-            }
-        }
-    }
-#endif
     //c0*= 4;
             //only update if t0base > t0scale
         if(c0)  {

@@ -5,12 +5,6 @@
 extern "C" {
 #endif
 
-#define VMU_EMULATE_TIMING      0
-#define VMU_EMULATE_NOT_TIMING_SPECIAL_WORD_FROM_MILENKOVICS_SHIT   1
-
-#define RETURN_CODE_SUCCESS     0
-#define RETURN_CODE_FAILURE     -1
-
 //Memory Spaces
 
 //1 - Read-Only Memory
@@ -33,24 +27,48 @@ extern "C" {
 //4 - Working Memory (WRAM)
 #define WRAM_SIZE               0x200
 
-//4 - Random Access Memory
-#define RAM_BANK_SIZE          256
-#define RAM_BANK_COUNT         2
+//5 - Random Access Memory
+#define RAM_BANK_SIZE           256
+#define RAM_BANK_COUNT          2
 
 #define RAM_STACK_SIZE          128
 #define RAM_STACK_ADDR_BASE     0x80
-#define RAM_STACK_ADDR_END      (RAM_STACK_ADDR_BASE+RAM_STACK_SIZE)
+#define RAM_STACK_ADDR_END      0xff
 
 #define RAM_GP_SIZE             256
 #define RAM_GP_ADDR_BASE        0x00
 
-//#define RAM_SFR_SIZE            256
-//#define RAM_SFR_NO_XRAM_SIZE    128
 #define RAM_SFR_SIZE            128
 #define RAM_SFR_ADDR_BASE       0x100
 
 #define RAM_REG_SIZE            16
 #define RAM_REG_ADDR_BASE       0x00
+
+//System Variables
+#define RAM_ADDR_YEAR_MSB_BCD   0x10
+#define RAM_ADDR_YEAR_LSB_BCD   0x11
+#define RAM_ADDR_MONTH_BCD      0x12
+#define RAM_ADDR_DAY_BCD        0x13
+#define RAM_ADDR_HOUR_BCD       0x14
+#define RAM_ADDR_MINUTE_BCD     0x15
+
+#define RAM_ADDR_YEAR_MSB       0x17
+#define RAM_ADDR_YEAR_LSB       0x18
+#define RAM_ADDR_MONTH          0x19
+#define RAM_ADDR_DAY            0x1a
+#define RAM_ADDR_HOUR           0x1b
+#define RAM_ADDR_MINUTE         0x1c
+#define RAM_ADDR_SEC            0x1d
+#define RAM_ADDR_HALF_SEC       0x1e //0 or 1
+#define RAM_ADDR_LEAP_YEAR      0x1f //0 for no, 1 for yes
+
+#define RAM_ADDR_CLK_INIT       0x31 //0xff - date set, 00 - date not set
+#define RAM_ADDR_QUART_YEAR_MSB 0x50 //current year divided by 4 (high byte)
+#define RAM_ADDR_QUART_YEAR_LSB 0x51 //current year divided by 4 (low byte)
+#define RAM_ADDR_CURSOR_POS_COL 0x60 //cursor position, column (0-7)
+#define RAM_ADDR_CURSOR_POS_ROW 0x61 //cursor position, row (0-3)
+#define RAM_ADDR_GAME_LAST_BLK  0x6d //Last block used by mini-game
+#define RAM_ADDR_BATTERY_CHECK  0x6e //Battery check flag (0xff - disable auto battery check, 0x00 - enable auto battery check)
 
 #define SFR_OFFSET(a)           (a-RAM_SFR_ADDR_BASE)
 
