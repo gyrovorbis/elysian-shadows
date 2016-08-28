@@ -97,5 +97,6 @@ HEADERS += \
     test_dialog.h \
     test_instance_transform.h \
     test_lua_field_ref.h \
-    test_functional.h
+    test_functional.h \
+    test_cpp_lua_function.h
 

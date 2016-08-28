@@ -381,6 +381,7 @@ namespace elysian {
             //pull function arguments off of stack
             foreach_in_tuple_reverse(argTuple, [&](auto&& element) {
                 OOLUA::pull(vm, element);
+                //element = pull<decltype(element)>();
             });
 
             //extract std::function pointer from lightuserdata in first upvalue

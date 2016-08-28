@@ -13,6 +13,7 @@
 #include <test_lua_variant.h>
 #include <test_dialog.h>
 #include <test_functional.h>
+#include <test_cpp_lua_function.h>
 #include <test_instance_transform.h>
 
 /*
@@ -113,6 +114,7 @@ int main(QStringList args)
         ESTkTest::enqueueTest(new tktest::LevelTest);
         ESTkTest::enqueueTest(new tktest::LuaVariantTest);
         ESTkTest::enqueueTest(new tktest::LuaFieldRefTest);
+        ESTkTest::enqueueTest(new tktest::CppLuaFunctionTest);
         ESTkTest::enqueueTest(new tktest::DialogLuaTest);
     } else {
         ESTkTest::enqueueTest(new tktest::TestProjectAssets());

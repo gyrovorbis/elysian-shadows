@@ -54,25 +54,7 @@ void CharacterBase::setDashing(const bool val) {
 
 void CharacterBase::faceDir(const Direction::DIR4 dir) {
     playAnimation(dir);
-#if 0
-    switch(dir) {
-      case Direction::DIR4_UP:
-                playAnimation("Up");
-        break;
-      case Direction::DIR4_DOWN:
-                playAnimation("Down");
-        break;
-      case Direction::DIR4_LEFT:
-                playAnimation("Left");
-                break;
-      case Direction::DIR4_RIGHT:
-                playAnimation("Right");
-        break;
-      default:
-        break;
-    }
-#endif
-  _faceDir = dir;
+    _faceDir = dir;
 }
 
 /* If we are currently holding another entity, their mass must be taken into account when applying
@@ -141,25 +123,6 @@ void CharacterBase::animateWalk(const GYVector2 &/*moveVec*/) {
 
   //  if(_animate) {
     playAnimation(_faceDir);
-#if 0
-            switch(_faceDir) {
-                case Direction::DIR4_UP:
-                    playAnimation("Up");
-                    break;
-                case Direction::DIR4_DOWN:
-                    playAnimation("Down");
-                    break;
-                case Direction::DIR4_LEFT:
-                    playAnimation("Left");
-                    break;
-                case Direction::DIR4_RIGHT:
-                    playAnimation("Right");
-                    break;
-                default:
-                    break;
-            }
-       // }
-#endif
 
     //_faceDir = dir;
     //gyVec2Scale(&_lastMoveDir, &totalForce, 1.0f/gyVec2Magnitude(&totalForce));

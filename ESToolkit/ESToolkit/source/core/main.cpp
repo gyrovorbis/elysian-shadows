@@ -88,7 +88,17 @@ static TK_CRASH_STATE _tkCrashReport(QStringList& /*args*/) {
 }
 
 
+class Bullshit {
+public:
+    const char* operator()(int) const { printf("OH FUCK!"); }
+};
+
+int testFunc(int) { dbgprintf("LOLOL"); return 3;}
+
 static GYAppCbRet Init(int argc, char **argv) {
+
+
+
     QString project;
     QString level;
     QString area;
@@ -161,7 +171,6 @@ static GYAppCbRet Init(int argc, char **argv) {
         }
     }
 
-
 #ifdef ESTK_UNIT_TESTS
     if(argc != 1 && !relaunching) {
         return (GYAppCbRet)tktest::main(args);
@@ -169,6 +178,7 @@ static GYAppCbRet Init(int argc, char **argv) {
 #endif
 
     ESToolkit w;
+
     w.setOutputDir(outputDir);
     //QApplication::setWindowIcon(QIcon(":/estk/images/estk.ico"));
 
@@ -203,87 +213,7 @@ static GYAppCbRet Init(int argc, char **argv) {
     return (GYAppCbRet)a.exec();
 }
 
-#if 0
-#include <memory>
-#include <stdio.h>
-auto f = [](int*) { printf("f() invoked\n"); };
-
-void b(int* str) { printf("b() invoked\n"); }
-
-struct A {
-    A(decltype(f) lam): lambda(lam) {}
-    decltype(f) lambda;
-    ~A(void) { lambda(nullptr); }
-};
-
-struct Blank {};
-
-
-template<typename T>
-class NoOverheadLambda {
-    int i = 3;
-private:
-    T getLambdaWithoutReference();
-    ~NoOverheadLambda(void) {
-        getLambdaWithoutReference()();
-    }
-};
-
-
-struct B: public A {
-    Blank blank;
-    B(Blank b, decltype(f) l): A(l), blank(b) {}
-};
-
-struct C: public B {
-    int num;
-    C(const int n, Blank b, decltype(f) lam): B(b, lam), num(n) {}
-};
-
-auto hello = []() { std::cout << "hello world" << std::endl; };
-struct free_deleter {
-template <typename T>
-void operator()(T* t) {
-free(t);
-}
-};
-#endif
-
 int main(int argc, char* argv[]) {
-#if 0
-    {
-
-         auto v = [](){ return 1; }; cout << sizeof(&v) << endl;
-
-        printf("sizeof(int): %lu\n", sizeof(int));
-        printf("sizeof(int*): %lu\n", sizeof(int*));
-
-        std::unique_ptr<int> uptr1;
-        std::unique_ptr<int, decltype(f)> uptr2(new int, f);
-        std::unique_ptr<int, void(*)(int*)> uptr3(new int, b);
-        printf("Default: %lu\n", sizeof(uptr1));
-        printf("Lambda: %lu\n", sizeof(uptr2));
-        printf("FuncPtr: %lu\n", sizeof(uptr3));
-
-        A a = { f };
-        B b = { Blank(), f};
-        C c = { 2, Blank(), f };
-        printf("sizeof(A): %lu\n", sizeof(A));
-        printf("sizeof(B): %lu\n", sizeof(B));
-        printf("sizeof(C): %lu\n", sizeof(C));
-        printf("sizeof(a): %d\n", sizeof(a));
-        printf("sizeof(b): %d\n", sizeof(b));
-        printf("sizeof(c): %d\n", sizeof(c));
-
-        ((decltype(hello)*)(0))->operator()();
-
-        std::unique_ptr<char, free_deleter> foo((char*)malloc(10));
-
-        std::cout << "foo: " << sizeof(foo) << std::endl;
-        std::cout << "char*: " << sizeof(char*) << std::endl;
-
-    }
-#endif
 #ifdef _WIN32
     int retVal = SymInitialize
     (

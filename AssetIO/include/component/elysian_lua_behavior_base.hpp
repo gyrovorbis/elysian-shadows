@@ -40,7 +40,7 @@ namespace elysian {
         LuaBehaviorScript*	_script = nullptr;
         //int					_selfTableRef = LUA_NOREF;
 
-        unsigned			_hierarchyDepth = 0;
+        unsigned                _hierarchyDepth = 0;
 
         OOLUA::Lua_table_ref    _ooSelfTableRefHierarchy[ELYSIAN_LUA_BEHAVIOR_INHERITANCE_DEPTH];
         OOLUA::Lua_table_ref*   _ooSelfTableRef = nullptr;

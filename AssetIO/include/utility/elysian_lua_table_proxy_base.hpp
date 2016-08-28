@@ -83,7 +83,7 @@ namespace elysian {
     };
 
     struct LuaTableFieldProxy {
-        enum FLAGS { FLAG_NONE, FLAG_VTABLE_BEGIN, FLAG_VTABLE_END, FLAG_ARRAY };
+        enum FLAGS { FLAG_NONE, FLAG_VTABLE_BEGIN, FLAG_VTABLE_END, FLAG_ARRAY }; //More like type, flags would not be mutually exclusive
         const char*   key;
         const char*   get;
         const char*   set;

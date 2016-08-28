@@ -270,15 +270,6 @@ namespace elysian {
 
 
 
-
-
-
-
-        // ======== INLINEZ ==========
-
-
-
-
     template<bool is_const_iterator=true>
     class const_noconst_iterator : public std::iterator<std::forward_iterator_tag, LuaVariantBase>, public LuaManager {
         friend class const_noconst_iterator<true>;
@@ -354,18 +345,7 @@ public:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+        // ======== INLINEZ ==========
 
     inline LuaFieldRef::LuaFieldRef(LuaVariantBase tableRef, LuaVariantBase key, LuaVariantBase value):
         _tableRef(std::move(tableRef)),
