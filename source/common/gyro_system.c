@@ -32,10 +32,10 @@ void _gySysPrintBuildInfo(const char*const platString) {
     _gyLog(GY_DEBUG_VERBOSE, "THIS IS AN OFFICIAL BUILD!");
 #endif
     _gyPush();
-    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Git branch name", GYRO_STRINGIFY_MACRO(GYRO_BUILD_BRANCH));
-    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Git commit ID", GYRO_STRINGIFY_MACRO(GYRO_BUILD_COMMIT));
-    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Build number", GYRO_STRINGIFY_MACRO(GYRO_BUILD_NUMBER));
-    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Build node", GYRO_STRINGIFY_MACRO(GYRO_BUILD_NODE));
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Git branch name",  GYRO_STRINGIFY_MACRO(GYRO_BUILD_BRANCH));
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Git commit ID",    GYRO_STRINGIFY_MACRO(GYRO_BUILD_COMMIT));
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Build number",     GYRO_STRINGIFY_MACRO(GYRO_BUILD_NUMBER));
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Build node",       GYRO_STRINGIFY_MACRO(GYRO_BUILD_NODE));
     sprintf(strBuff, "%s %s", __DATE__, __TIME__);
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Build timestamp", strBuff);
     _gyPop(1);
