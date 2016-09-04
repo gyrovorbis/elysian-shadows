@@ -12,6 +12,7 @@ int                 gyTimerInit(void);
 int                 gyTimerUninit(void);
 int64_t             gyTimerTicks(void);
 void                gyTimerSleep(const unsigned long duration);
+char*               gyTimerStrpTime(const char *s, const char *format, struct tm *tm);
 
 #ifdef GYRO_TIMER_PLATFORM_INCLUDE
 #	include GYRO_TIMER_PLATFORM_INCLUDE

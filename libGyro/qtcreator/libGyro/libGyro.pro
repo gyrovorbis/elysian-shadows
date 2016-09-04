@@ -167,7 +167,8 @@ SOURCES += \
     ../../source/common/gyro_wav.c \
     ../../source/common/turfs_file_stdio.c \
     ../../source/common/gyro_video.c \
-    ../../source/x86/gyro_net_sdl_x86.c
+    ../../source/x86/gyro_net_sdl_x86.c \
+    ../../source/common/gyro_timer.c
 
 dreamcast {
 
