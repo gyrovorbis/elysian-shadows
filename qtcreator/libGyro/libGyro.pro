@@ -167,7 +167,6 @@ SOURCES += \
     ../../source/common/gyro_wav.c \
     ../../source/common/turfs_file_stdio.c \
     ../../source/common/gyro_video.c \
-    ../../source/x86/gyro_net_sdl_x86.c \
     ../../source/common/gyro_timer.c
 
 dreamcast {
@@ -205,7 +204,8 @@ dreamcast {
             ../../source/qt/gyro_timer_qt.cpp \
             ../../source/qt/gyro_file_qt.cpp \
             ../../source/qt/gyro_video_qt.cpp \
-            ../../source/x86/gyro_controller_sdl_x86.c
+            ../../source/x86/gyro_controller_sdl_x86.c \
+            ../../source/x86/gyro_net_sdl_x86.c
     } else: android {
         SOURCES += ../../source/android/android_native_app_glue.c \
             ../../source/android/bionic_polyfill.c \
