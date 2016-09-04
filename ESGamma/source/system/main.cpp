@@ -9,8 +9,6 @@
 #include <crtp/elysian_behavior.hpp>
 #include <lua/elysian_lua_singleton.hpp>
 
-#include <QElapsedTimer>
-
 static elysian::Engine* engine  = NULL;
 static elysian::Debug*  debug   = NULL;
 
