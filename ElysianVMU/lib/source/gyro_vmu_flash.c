@@ -492,7 +492,7 @@ const VMUFlashDirEntry* gyVmuFlashDirEntryDataNext(const struct VMUDevice* dev, 
  */
 VMUFlashDirEntry* gyVmuFlashDirEntryAlloc(struct VMUDevice* dev) {
     for(unsigned i = 0; i < VMU_FLASH_BLOCK_DIRECTORY_ENTRIES; ++i) {
-        VMUFlashDirEntry* entry = gyVmuFlashDirEntryByIndex(dev, index);
+        VMUFlashDirEntry* entry = gyVmuFlashDirEntryByIndex(dev, i);
         if(entry->fileType == VMU_FLASH_FILE_TYPE_NONE) {
             return entry;
         }
