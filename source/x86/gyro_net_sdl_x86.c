@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <errno.h>
-#ifdef WIN32 // :D Mmmmmm
+#ifdef __WIN32 // :D Mmmmmm
 #   include <windows.h>
 #   include <SDL2_net/SDL_net.h>
 #endif
