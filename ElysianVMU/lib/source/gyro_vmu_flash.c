@@ -660,7 +660,7 @@ const VMUFlashDirEntry* gyVmuFlashFileCreate(VMUDevice* dev, const VMUFlashNewFi
         return NULL;
     }
 
-    _gyLog("Creating Flash Directory Entry [index: %d]", gyVmuFlashDirEntryIndex(dev, entry));
+    _gyLog(GY_DEBUG_VERBOSE, "Creating Flash Directory Entry [index: %d]", gyVmuFlashDirEntryIndex(dev, entry));
     _gyPush();
 
     //Fill in Flash Directory Entry for file
