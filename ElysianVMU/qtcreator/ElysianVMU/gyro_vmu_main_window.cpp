@@ -42,7 +42,7 @@ static unsigned char icon[4][7] = {
 
 //#define VMS_IMAGE "/Users/falco/Desktop/VMU/Tetris.vms"
 #ifdef VMU_DEBUG
-#define BIOS_IMAGE "/Users/falcogirgis/Documents/Dev/esdev/ElysianVMU/bin/vmu_bios.bin"
+//#define BIOS_IMAGE "/Users/falcogirgis/Documents/Dev/esdev/ElysianVMU/bin/vmu_bios.bin"
 #endif
 #define GYRO_VMU
 #define VMU_STATUS_TEMP_TIMEOUT 2000
