@@ -6,7 +6,7 @@
 #include <errno.h>
 #ifdef __WIN32 // :D Mmmmmm
 #   include <windows.h>
-#   include <SDL2_net/SDL_net.h>
+#   include <SDL2/SDL_net.h>
 #endif
 
 #ifdef __linux__ // :) Sweet!
