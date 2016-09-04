@@ -530,7 +530,7 @@ void AreaBase::setActiveEntityByIndex(const unsigned index, Entity*const entity)
         //Entity* entity = Entity::create(valueTable);
         static_cast<Area*>(this)->addEntity(entity);
     } else if(index < entities.size()) {                        //initialize existing entity
-        Q_ASSERT(false);
+        GY_ASSERT(false);
         //entities[index]->fromTable(valueTable);
     }
 }
