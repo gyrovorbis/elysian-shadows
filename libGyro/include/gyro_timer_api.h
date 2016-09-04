@@ -7,6 +7,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+struct tm;
     
 int                 gyTimerInit(void);
 int                 gyTimerUninit(void);
