@@ -372,7 +372,7 @@ static inline const char* luaGetVariableString(lua_State* const l) {
                 strcat(string, curString);
                 break;
             default: {
-                LuaVariant v = LuaVariant::fromStack(i, false);
+                elysian::LuaVariant v = elysian::LuaVariant::fromStack(i, false);
                 //curString = lua_typename(l, t);
                 strcat(string, v.asString().getValue<const char*>());
             }
