@@ -20,8 +20,14 @@ win32 {
 }
 
 macx {
+    QMAKE_CFLAGS+= -F../../lib/osx
+    QMAKE_LFLAGS += -F../../lib/osx
+    LIBS += -framework SDL2.framework \
+        -framework SDL2_net.framework
+
     INCLUDEPATH += ../../lib/osx
-    INCLUDEPATH += ../../lib/osx/SDL2.framework/Headers
+    INCLUDEPATH += ../../lib/osx/SDL2.framework/Headers \
+                    ../../lib/osx/SDL2_net.framework/Headers
     SOURCES +=	../../source/x86/turfs_osx.c
 }
 
@@ -114,7 +120,8 @@ HEADERS += \
     ../../include/glal/gyro_file_glal.inl \
     ../../include/common/gyro_input_common.h \
     ../../include/common/gyro_spine_common.h \
-    ../../include/glal/gyro_bloom_glal.h
+    ../../include/glal/gyro_bloom_glal.h \
+    ../../include/gyro_net_api.h
 
 android {
 
@@ -141,7 +148,8 @@ android {
     ../../include/x86/gyro_math_sse_x86.inl \
     ../../include/x86/gyro_matrix_sse_x86.inl \
     ../../include/x86/gyro_sdl_x86.inl \
-    ../../include/x86/gyro_video_x86.inl
+    ../../include/x86/gyro_video_x86.inl \
+    ../../include/x86/gyro_net_x86.inl
 
 }
 
@@ -158,7 +166,8 @@ SOURCES += \
     ../../source/common/gyro_texture.c \
     ../../source/common/gyro_wav.c \
     ../../source/common/turfs_file_stdio.c \
-    ../../source/common/gyro_video.c
+    ../../source/common/gyro_video.c \
+    ../../source/x86/gyro_net_sdl_x86.c
 
 dreamcast {
 
