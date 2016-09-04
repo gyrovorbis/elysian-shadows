@@ -35,7 +35,13 @@ SOURCES += ../../console/main.cpp \
     ../../lib/source/gyro_vmu_bullshit.c \
     ../../lib/source/gyro_vmu_buzzer.c \
     ../../lib/source/gyro_vmu_flash.c \
-    ../../lib/source/gyro_vmu_vms.c
+    ../../lib/source/gyro_vmu_vms.c \
+    ../../lib/source/gyro_vmu_vmi.c \
+    ../../lib/source/gyro_vmu_serial.c \
+    ../../lib/source/gyro_vmu_battery.c \
+    ../../lib/source/gyro_vmu_util.c \
+    gyro_vmu_tcp_dialog.cpp \
+    ../../lib/source/gyro_vmu_version.c
 
 
 HEADERS += \
@@ -53,7 +59,13 @@ HEADERS += \
     gyro_vmu_main_window.hpp \
     ../../lib/source/gyro_vmu_buzzer.h \
     ../../lib/source/gyro_vmu_flash.h \
-    ../../lib/source/gyro_vmu_vms.h
+    ../../lib/source/gyro_vmu_vms.h \
+    ../../lib/source/gyro_vmu_vmi.h \
+    ../../lib/source/gyro_vmu_serial.h \
+    ../../lib/source/gyro_vmu_battery.h \
+    ../../lib/source/gyro_vmu_util.h \
+    gyro_vmu_tcp_dialog.h \
+    ../../lib/source/gyro_vmu_version.h
 
 INCLUDEPATH += ../../../libGyro/include \
     ../../lib/source
@@ -76,7 +88,8 @@ else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/
 else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../../libGyro/qtcreator/libGyro/liblibGyro.a
 
 FORMS += \
-    gyro_vmu_main_window.ui
+    gyro_vmu_main_window.ui \
+    gyro_vmu_tcp_dialog.ui
 
 
 macx {
@@ -88,6 +101,7 @@ macx {
         -L../../../ESGamma/lib/osx \
         -F../../../libGyro/lib/osx \
         -framework SDL2 \
+        -framework SDL2_net \
         -framework Foundation \
         -framework Cocoa \
         -lobjc \
@@ -114,6 +128,8 @@ win32 {
         -lSDL2 \
         -lSDL2Main \
         -lSDL2.dll \
+        -lSDL2_net \
+        -lSDL2_net.dll \
         -logg \
         -lvorbis \
         -lvorbis.dll \

@@ -7,13 +7,16 @@
 #include <stdint.h>
 #include <gyro_system_api.h>
 
-#define VMU_ROM_HISTORY_SIZE     5
+#define VMU_ROM_HISTORY_SIZE            5
+#define VMU_TRIGGER_SPEED_FACTOR        10.0f
+#define FILTER_DUPLICATE_LOG_STRINGS    1
 
-struct VMUDevice;
-struct VMSFileInfo;
-struct GYAudioSource;
-struct GYAudBuffer;
-class QLabel;
+struct  VMUDevice;
+struct  VMSFileInfo;
+struct  GYAudioSource;
+struct  GYAudBuffer;
+class   QLabel;
+class   VmuTcpDialog;
 
 namespace Ui {
     class VMUMainWindow;
@@ -28,13 +31,11 @@ public:
     virtual             ~VMUMainWindow(void);
 
     bool                loadRom(QString filepath);
+    void                resetCpu(void);
 
 
 
         QPixmap             _fb;
-
-        GYAudioSource*      _audioSrc       = nullptr;
-        GYAudBuffer*        _audioBuff      = nullptr;
         VMUDevice*          _dev            = nullptr;
         Ui::VMUMainWindow*  _ui             = nullptr;
 private:
@@ -56,16 +57,28 @@ private Q_SLOTS:
     void on_actionLoad_State_triggered();
     void on_actionReset_triggered();
     void on_actionScreenshot_triggered();
-
     void on_actionEmulate_Audio_toggled(bool arg1);
+    void on_actionDump_Icons_triggered(void);
+    void on_actionDump_Eyecatch_triggered(void);
+    void on_actionTCP_Connection_Manager_triggered(void);
 
-    void on_actionDump_Icons_triggered();
+    void on_actionQuick_Connect_triggered();
+
+    void on_actionEnable_Low_Battery_toggled(bool arg1);
+
+    void on_actionQuit_triggered();
+
+    void on_actionView_Log_triggered();
+
+    void on_actionLoad_BIOS_Image_triggered();
 
 private:
 
     static void         _push(void);
     static void         _pop(const unsigned depth);
     static void         _log(GY_DEBUG_SEVERITY level, const char* msg);
+
+    void                _updatePConRegister(void);
 
     bool                _loadIcons(void);
     void                _updateIcon(void);
@@ -78,17 +91,23 @@ private:
     QTimer              _updateTimer;
     QVector<QImage>     _iconImages;
     QVector<QPixmap>    _iconPixmaps;
+    QImage              _eyecatchImage;
     QString             _romDir;
+    VmuTcpDialog*       _tcpDialog          = nullptr;
     QLabel*             _statusLabel        = nullptr;
     QLabel*             _iconLabel          = nullptr;
     VMSFileInfo*        _vmsHeader          = nullptr;
     uint16_t**          _iconsData          = nullptr;
+    uint16_t*           _eyecatchData       = nullptr;
     int64_t             _prevTicks          = 0;
     bool                _running            = false;
     bool                _contAttached       = false;
     float               _timeScalar         = 1.0f;
     int                 _iconAnimCounter    = 0;
     int                 _iconCurIndex       = 0;
+    int                 _turboAButtonState  = 0;
+    int                 _turboBButtonState  = 0;
+    int                 _pConRegister       = 0;
     static FILE*        _logFile;
     static int          _logDepth;
 
