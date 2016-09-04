@@ -40,15 +40,51 @@
     </widget>
     <addaction name="actionLoad_ROM"/>
     <addaction name="menuLoad_Recent"/>
+    <addaction name="actionLoad_BIOS_Image"/>
+    <addaction name="separator"/>
     <addaction name="actionSave_State"/>
     <addaction name="actionLoad_State"/>
-    <addaction name="actionAbout"/>
+    <addaction name="separator"/>
     <addaction name="actionReset"/>
-    <addaction name="actionScreenshot"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuEmulation">
+    <property name="title">
+     <string>Emulation</string>
+    </property>
+    <widget class="QMenu" name="menuSerial_Communications">
+     <property name="title">
+      <string>Serial Communications</string>
+     </property>
+     <addaction name="actionQuick_Connect"/>
+     <addaction name="actionTCP_Connection_Manager"/>
+    </widget>
     <addaction name="actionEmulate_Audio"/>
+    <addaction name="actionEnable_Low_Battery"/>
+    <addaction name="actionConfigure_Input_Devices"/>
+    <addaction name="menuSerial_Communications"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionScreenshot"/>
     <addaction name="actionDump_Icons"/>
+    <addaction name="actionDump_Eyecatch"/>
+    <addaction name="actionView_Log"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEmulation"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionLoad_ROM">
@@ -92,12 +128,63 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Emulate Audio</string>
+    <string>Enable Audio</string>
    </property>
   </action>
   <action name="actionDump_Icons">
    <property name="text">
     <string>Dump Icons</string>
+   </property>
+  </action>
+  <action name="actionDump_Eyecatch">
+   <property name="text">
+    <string>Dump Eyecatch</string>
+   </property>
+  </action>
+  <action name="actionEnable_Audio">
+   <property name="text">
+    <string>Enable Audio</string>
+   </property>
+  </action>
+  <action name="actionEnable_Low_Battery">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Low Battery</string>
+   </property>
+  </action>
+  <action name="actionQuick_Connect">
+   <property name="text">
+    <string>Quick Connect</string>
+   </property>
+  </action>
+  <action name="actionTCP_Connection_Manager">
+   <property name="text">
+    <string>TCP Connection Manager</string>
+   </property>
+  </action>
+  <action name="actionConfigure_Input_Devices">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Configure Input Devices</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionView_Log">
+   <property name="text">
+    <string>View Log</string>
+   </property>
+  </action>
+  <action name="actionLoad_BIOS_Image">
+   <property name="text">
+    <string>Load BIOS Image</string>
    </property>
   </action>
  </widget>

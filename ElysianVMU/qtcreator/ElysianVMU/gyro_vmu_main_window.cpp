@@ -5,16 +5,23 @@
 #include <QLabel>
 #include <QSettings>
 #include <QMimeData>
+#include <QTextCodec>
+#include <QDesktopServices>
 
+#include "gyro_vmu_version.h"
 #include "gyro_vmu_vms.h"
+#include "gyro_vmu_vmi.h"
 #include "gyro_vmu_main_window.hpp"
+#include "gyro_vmu_tcp_dialog.h"
 #include "ui_gyro_vmu_main_window.h"
 #include <gyro_vmu_display.h>
 #include <gyro_wav_api.h>
 #include <gyro_vmu_sfr.h>
 #include <gyro_vmu_device.h>
 #include <gyro_audio_api.h>
+#include <gyro_net_api.h>
 #include <gyro_vmu_flash.h>
+#include <gyro_vmu_battery.h>
 #include <gyro_file_api.h>
 #include <gyro_vmu_cpu.h>
 #include <gyro_vmu_gamepad.h>
@@ -32,8 +39,6 @@ static unsigned char icon[4][7] = {
   { 0x7c, 0x82, 0x92, 0x9b, 0x82, 0x82, 0x7c },
   { 0x10, 0x28, 0xef, 0x6e, 0x6c, 0x7e, 0xc3 }
 };
-
-extern "C" void playSoundAL(int period, int pulseWidth, int db);
 
 //#define VMS_IMAGE "/Users/falco/Desktop/VMU/Tetris.vms"
 #ifdef VMU_DEBUG
@@ -113,27 +118,29 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     QMainWindow(parent),
     _fb(48, 41),
     _ui(new Ui::VMUMainWindow),
+    _tcpDialog(new VmuTcpDialog),
     _statusLabel(new QLabel("HALTED: No ROM Image")),
     _iconLabel(new QLabel())
 {
-
-
     _ui->setupUi(this);
     setAcceptDrops(true);
     _iconLabel->setMargin(0);
     _ui->statusbar->layout()->setSpacing(0);
     _ui->statusbar->insertPermanentWidget(0, _statusLabel);
     _ui->statusbar->insertPermanentWidget(1, _iconLabel);
+    setWindowTitle(QString("ElysianVMU v ")+QString(GYRO_VMU_VERSION_STRING));
     _win = this;
 
     GYFileInitParams fileParams;
-    strcpy(fileParams.workingDir, workingDir.isEmpty()? QDir::homePath().toStdString().c_str() : workingDir.toStdString().c_str());
+    strcpy(fileParams.workingDir, workingDir.isEmpty()?
+               QDir::homePath().toStdString().c_str() : workingDir.toStdString().c_str());
     gyFileInit(&fileParams);
 
     if(workingDir.isEmpty()) {
         QDir outputDir(QDir::current());
         if(!outputDir.cd(VMU_OUTPUT_DIR) && !outputDir.mkdir(VMU_OUTPUT_DIR)) {
-            qCritical() << QString("Could not set VMU working directory: [%s]") << QDir().current().filePath(VMU_OUTPUT_DIR);
+            qCritical() << QString("Could not set VMU working directory: [%s]")
+                        << QDir().current().filePath(VMU_OUTPUT_DIR);
         } else {
             QDir::setCurrent(QDir::current().filePath(VMU_OUTPUT_DIR));
         }
@@ -149,8 +156,14 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     };
     gySysDebugEnable(GY_DEBUG_VERBOSE, &dbgCallbacks);
 
-    _gyLog(GY_DEBUG_VERBOSE, "Initializing ElysianVMU v 0.0.0.1a");
+    _gyLog(GY_DEBUG_VERBOSE, "Initializing ElysianVMU v %s", GYRO_VMU_VERSION_STRING);
     _gyPush();
+
+    _gyLog(GY_DEBUG_VERBOSE, "Qt Library Versions");
+    _gyPush();
+    _gyLog(GY_DEBUG_VERBOSE, "Compile-Time: %s",    QT_VERSION_STR);
+    _gyLog(GY_DEBUG_VERBOSE, "Run-Time: %s",        qVersion());
+    _gyPop(1);
 
     GYSysInitParams sysParams = {
         (void*)this,
@@ -168,19 +181,24 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
         4
     };
     gyInputInit(&inputParams);
+    GYNetInitParams netParams = {
+        2 //maximum number of monitored sockets allowed
+    };
+    gyNetInit(&netParams);
 
     _dev = gyVmuDeviceCreate();
+    _tcpDialog->setVmuDevice(_dev);
 
 #ifdef BIOS_IMAGE
      gyloadbios(_dev, BIOS_IMAGE);
-     gyVmuCpuReset(_dev);
+     resetCpu();
      _running = true;
 #endif
 
 #ifdef VMS_IMAGE
 #ifdef GYRO_VMU
     gyVmuFlashLoadImage(_dev, VMS_IMAGE);
-    gyVmuCpuReset(_dev);
+    resetCpu();
 #endif
 #ifdef MARCUS_VMU
     do_vmsgame(VMS_IMAGE, nullptr);
@@ -188,18 +206,6 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
 #endif
     _running = true;
 #endif
-
-    _audioSrc = gyAudSourceCreate();
-    _audioBuff = gyAudBufferCreate();
-    GYVector3 pos = { 0.0f, 0.0f, 0.0f };
-    gyAudListenerSetPos(&pos);
-    gyAudSetReferenceDistance(0);
-    gyAudSourceSetfv(_audioSrc, GY_SOURCE_POS, &pos);
-    gyAudSourceSetfv(_audioSrc, GY_SOURCE_VEL, &pos);
-    gyAudSourceSetf(_audioSrc, GY_SOURCE_ROLLOFF_FACTOR, 0.0f);
-    gyAudSourceSetf(_audioSrc, GY_SOURCE_GAIN, 1.0f);
-    gyAudSourceSetf(_audioSrc, GY_SOURCE_PITCH, 1.0f);
-    gyAudSourceSeti(_audioSrc, GY_SOURCE_LOOPING, 1);
 
     _fb.fill(Qt::black);
     QPainter painter(&_fb);
@@ -236,7 +242,7 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     connect(_ui->actionAbout, &QAction::triggered, [this]{
         QMessageBox::about(this, "About ElysianVMU",
         QString("ElysianVMU is a Softare emulator for the Sega Dreamcast Visual Memory Unit.<br><br>")+
-        QString("Version 0.0.1 Alpha<br>") +
+        QString("Version ")+QString(GYRO_VMU_VERSION_STRING)+QString("<br>") +
         QString("<a href=\"http://www.elysianshadows.com\">elysianshadows.com</a><br>") +
         QString("</table><tr><td>Programming: </td><td> Falco Girgis</td></tr>") +
         QString("<tr><td>Graphics: </td><td>Patrick Kowalik</td></tr></table><br><br>") +
@@ -256,10 +262,9 @@ VMUMainWindow::~VMUMainWindow(void)
 {
     _gyLog(GY_DEBUG_VERBOSE, "Uninitializing ElysianVMU");
     _gyPush();
-    gyAudSourceDestroy(_audioSrc);
-    gyAudBufferDestroy(_audioBuff);
     _freeIcons();
     gyVmuDeviceDestroy(_dev);
+    gyNetUninit();
     gyInputUninit();
     gyAudUninit();
     gyTimerUninit();
@@ -267,6 +272,7 @@ VMUMainWindow::~VMUMainWindow(void)
     _gyPop(1);
     gyDebugUninit();
     fclose(_logFile);
+    delete _tcpDialog;
     delete _ui;
 }
 
@@ -333,6 +339,8 @@ void VMUMainWindow::_update(void) {
     int r   = kbd->keys[GY_KEY_DPAD_R];
     int a   = kbd->keys[GY_KEY_A];
     int b   = kbd->keys[GY_KEY_B];
+    int ta  = kbd->keys[GY_KEY_X];
+    int tb  = kbd->keys[GY_KEY_Y];
     int m   = kbd->keys[GY_KEY_M];
     int s   = kbd->keys[GY_KEY_S];
     int lt  = kbd->keys[GY_KEY_L];
@@ -348,15 +356,76 @@ void VMUMainWindow::_update(void) {
         r   |= cont->buttons[GY_CONTROLLER_BUT_DPAD_RIGHT]    | cont->buttons[GY_CONTROLLER_BUT_ANALOG1_RIGHT];
         a   |= cont->buttons[GY_CONTROLLER_BUT_CIRCLE];
         b   |= cont->buttons[GY_CONTROLLER_BUT_X];
+        ta  |= cont->buttons[GY_CONTROLLER_BUT_TRIANGLE];
+        tb  |= cont->buttons[GY_CONTROLLER_BUT_SQUARE];
         m   |= cont->buttons[GY_CONTROLLER_BUT_SELECT];
         s   |= cont->buttons[GY_CONTROLLER_BUT_START];
         lt  |= cont->buttons[GY_CONTROLLER_BUT_LSHOULDER];
         rt  |= cont->buttons[GY_CONTROLLER_BUT_RSHOULDER];
     }
 
+    //Update turbo buttons
+#if 0
+    if(ta == GY_BUT_STATE_TAPPED) {
+        a = GY_BUT_STATE_TAPPED;
+    } else if(ta == GY_BUT_STATE_DOWN) {
+        a = GY_BUT_STATE_RELEASED;
+        kbd->keys[GY_KEY_X] = GY_BUT_STATE_UP;
+        if(hasCont && cont) {
+            cont->buttons[GY_CONTROLLER_BUT_TRIANGLE] = GY_BUT_STATE_UP;
+        }
+    }
+
+    if(tb == GY_BUT_STATE_TAPPED) {
+        b = GY_BUT_STATE_TAPPED;
+    } else if(tb == GY_BUT_STATE_DOWN) {
+        b = GY_BUT_STATE_RELEASED;
+        kbd->keys[GY_KEY_Y] = GY_BUT_STATE_UP;
+        if(hasCont && cont) {
+            cont->buttons[GY_CONTROLLER_BUT_SQUARE] = GY_BUT_STATE_UP;
+        }
+    }
+#else
+    switch(ta) {
+    case GY_BUT_STATE_TAPPED:
+        _turboAButtonState = GY_BUT_STATE_TAPPED;
+        break;
+    case GY_BUT_STATE_DOWN:
+        _turboAButtonState = (_turboAButtonState == GY_BUT_STATE_TAPPED)? GY_BUT_STATE_RELEASED : GY_BUT_STATE_TAPPED;
+        break;
+    case GY_BUT_STATE_RELEASED:
+        _turboAButtonState = (_turboAButtonState == GY_BUT_STATE_RELEASED)? GY_BUT_STATE_UP : GY_BUT_STATE_RELEASED;
+        break;
+    case GY_BUT_STATE_UP:
+        _turboAButtonState = GY_BUT_STATE_UP;
+        break;
+    }
+
+    a |= _turboAButtonState;
+
+    switch(tb) {
+    case GY_BUT_STATE_TAPPED:
+        _turboBButtonState = GY_BUT_STATE_TAPPED;
+        break;
+    case GY_BUT_STATE_DOWN:
+        _turboBButtonState = (_turboBButtonState == GY_BUT_STATE_TAPPED)? GY_BUT_STATE_RELEASED : GY_BUT_STATE_TAPPED;
+        break;
+    case GY_BUT_STATE_RELEASED:
+        _turboBButtonState = (_turboBButtonState == GY_BUT_STATE_RELEASED)? GY_BUT_STATE_UP : GY_BUT_STATE_RELEASED;
+        break;
+    case GY_BUT_STATE_UP:
+        _turboBButtonState = GY_BUT_STATE_UP;
+        break;
+    }
+
+    b |= _turboBButtonState;
+#endif
+
+
+    //Trigger speed modifiers
     _timeScalar = 1.0f;
-    if(lt&GY_BUT_FLAGS_IS_PRESSED) _timeScalar /= 10.0f;
-    if(rt&GY_BUT_FLAGS_IS_PRESSED) _timeScalar *= 10.0f;
+    if(lt & GY_BUT_FLAGS_IS_PRESSED) _timeScalar /= VMU_TRIGGER_SPEED_FACTOR;
+    if(rt & GY_BUT_FLAGS_IS_PRESSED) _timeScalar *= VMU_TRIGGER_SPEED_FACTOR;
 
 #ifdef GYRO_VMU
 
@@ -373,8 +442,8 @@ void VMUMainWindow::_update(void) {
     else if(a == GY_BUT_STATE_RELEASED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_A, 0);
     if(b == GY_BUT_STATE_TAPPED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_B, 1);
     else if(b == GY_BUT_STATE_RELEASED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_B, 0);
-    if(m == GY_BUT_STATE_TAPPED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_MODE, 1);
-    else if(m == GY_BUT_STATE_RELEASED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_MODE, 0);
+    //if(m == GY_BUT_STATE_TAPPED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_MODE, 1);
+    //else if(m == GY_BUT_STATE_RELEASED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_MODE, 0);
     if(s == GY_BUT_STATE_TAPPED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_SLEEP, 1);
     else if(s == GY_BUT_STATE_RELEASED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_SLEEP, 0);
 
@@ -409,10 +478,13 @@ void VMUMainWindow::_update(void) {
 
 #endif
 
+    //store socket status before update
+    auto* prevSocket = _dev->serialPort._tcpSocket;
+
       for(int i = 0; i < 1; ++i) {
 #ifdef GYRO_VMU
 #ifndef VMU_DEBUG
-            gyVmuCpuTick(_dev, _timeScalar*(float)deltaTicks/1000000000.0f);
+        gyVmuDeviceUpdate(_dev, _timeScalar*(float)deltaTicks/1000000000.0f);
 #else
         gyVmuCpuTick(_dev, 1.0f/30.0f);
 #endif
@@ -427,7 +499,12 @@ void VMUMainWindow::_update(void) {
 #endif
       }
 
+    //Check if the TCP connection was changed from outside (ie: disconnected)
+    if(prevSocket != _dev->serialPort._tcpSocket) {
+        _tcpDialog->updateConnectionStatus();
+    }
 
+     _updatePConRegister();
      _updateIcon();
      lcdrefresh();
 }
@@ -570,11 +647,13 @@ bool VMUMainWindow::loadRom(QString filepath) {
 
     if(info.exists() && gyVmuFlashLoadImage(_dev, filepath.toStdString().c_str())) {
         _vmsHeader = (VMSFileInfo*)&_dev->flash[VMU_FLASH_GAME_VMS_HEADER_OFFSET];
-        gyVmuCpuReset(_dev);
+        resetCpu();
+
         //_statusLabel->setText(QString("RUNNING: ")+filepath.split("/").last());
         char string[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+1];
         gyVmuVmsHeaderVmuDescGet(_vmsHeader, string);
-        _statusLabel->setText(QString("RUNNING: ")+QString(string));
+        QTextCodec* codec = QTextCodec::codecForName("Shift-JIS");
+        _statusLabel->setText(QString("RUNNING: ")+codec->toUnicode(string));
         _loadIcons();
         _gyLog(GY_DEBUG_VERBOSE, "Running VMU CPU.");
         _running = true;
@@ -583,6 +662,17 @@ bool VMUMainWindow::loadRom(QString filepath) {
     }
     _gyLog(GY_DEBUG_ERROR, "Error Loading File! [%s]", info.absoluteFilePath().toStdString().c_str());
     return false;
+}
+
+void VMUMainWindow::resetCpu(void) {
+
+    gyVmuDeviceReset(_dev);
+
+     //Have to apply non-default settings after CPU reset, since that clears everything back to default state.
+    if(_ui->actionEnable_Low_Battery->isChecked()) {
+        gyVmuBatteryLowSet(_dev, 1);
+        gyVmuBatteryMonitorEnabledSet(_dev, 1);
+    }
 
 }
 
@@ -643,43 +733,6 @@ void VMUMainWindow::on_actionLoad_State_triggered(void)
     _gyPop(1);
 }
 
-extern "C" void playSoundAL(int period, int pulseWidth, int /*db*/) {
-    if(!_win->_ui->actionEmulate_Audio->isChecked()) return;
-
-    if(period > 0) {
-
-        if(pulseWidth > 0 && pulseWidth <= period) {
-            float   periodSample  = 0.000183f;
-            float   freqSample    = roundf(1.0f/periodSample);
-            int     freqSamplei   = freqSample;
-            //float   freqSound     = 1.0f/(0.000183f*(float)period);
-            float   periodSecs    = period*periodSample;
-            float   samples       = freqSample*periodSecs;
-            int     sampleSize    = roundf(samples);
-            float   invDutyCycle  = (float)pulseWidth/(float)period;
-            int     activeCycle   = roundf(invDutyCycle*(float)sampleSize);
-
-            unsigned char buff[sampleSize];
-
-
-            memset(buff, 0x7f, activeCycle);
-            memset(&buff[activeCycle], 0xff, sampleSize-activeCycle);
-
-            gyAudSourceStop(_win->_audioSrc);
-            alSourcei(*(ALuint*)_win->_audioSrc, AL_BUFFER, 0);
-            gyAudBufferData(_win->_audioBuff, buff, AL_FORMAT_MONO8, sampleSize, freqSamplei);
-            gyAudSourcePlayBuffer(_win->_audioSrc, _win->_audioBuff);
-        } else {
-            //SHIT HAS REESTED
-        }
-
-
-    } else {
-        gyAudSourceStop(_win->_audioSrc);
-
-    }
-}
-
 
 void VMUMainWindow::_push(void) {
     ++_logDepth;
@@ -705,6 +758,11 @@ void VMUMainWindow::_log(GY_DEBUG_SEVERITY level, const char *msg) {
 #ifdef VMU_DEBUG
     return;
 #endif
+#if FILTER_DUPLICATE_LOG_STRINGS
+    static QString previous;
+    if(previous == msg) return;
+    previous = msg;
+#endif
     fprintf(_logFile, "%s%s%s\n", tabBuff, prefix[level], msg);
     fflush(_logFile);
 }
@@ -712,7 +770,7 @@ void VMUMainWindow::_log(GY_DEBUG_SEVERITY level, const char *msg) {
 void VMUMainWindow::on_actionReset_triggered(void)
 {
     _ui->statusbar->showMessage("CPU has been reset.", VMU_STATUS_TEMP_TIMEOUT);
-    gyVmuCpuReset(_dev);
+    resetCpu();
 }
 
 void VMUMainWindow::on_actionScreenshot_triggered(void)
@@ -743,11 +801,14 @@ void VMUMainWindow::_saveSettings(void) {
     settings.setValue("state",      saveState());
     settings.setValue("romDir",     _romDir);
     settings.setValue("audio",      _ui->actionEmulate_Audio->isChecked());
+    settings.setValue("lowBattery", _ui->actionEnable_Low_Battery->isChecked());
 
     for(int i = 0; i < _ui->menuLoad_Recent->actions().size(); ++i) {
         sprintf(buffer, "recentRoms%d", i);
         settings.setValue(buffer, _ui->menuLoad_Recent->actions()[i]->text());
     }
+
+    _tcpDialog->saveSettings(settings);
 
 }
 
@@ -764,6 +825,7 @@ void VMUMainWindow::_loadSettings(void) {
         restoreState(settings.value("state", QByteArray()).toByteArray());
         _romDir = settings.value("romDir", "").toString();
         _ui->actionEmulate_Audio->setChecked(settings.value("audio", true).toBool());
+        _ui->actionEnable_Low_Battery->setChecked(settings.value("lowBattery", false).toBool());
 
         for(int i = VMU_ROM_HISTORY_SIZE-1; i >= 0; --i) {
             sprintf(buffer, "recentRoms%d", i);
@@ -773,6 +835,8 @@ void VMUMainWindow::_loadSettings(void) {
     } else {
         _gyLog(GY_DEBUG_WARNING, "No settings found! Using defaults!");
     }
+
+    _tcpDialog->loadSettings(settings);
 
     _gyPop(1);
 }
@@ -863,6 +927,11 @@ void VMUMainWindow::_freeIcons(void) {
         for(int i = 0; i < iconCount; ++i)
             free(_iconsData[i]);
         free(_iconsData);
+
+        if(_eyecatchData) {
+            _gyLog(GY_DEBUG_VERBOSE, "Freeing eyecatch data.");
+            free(_eyecatchData);
+        }
     }
 }
 
@@ -889,6 +958,13 @@ bool VMUMainWindow::_loadIcons(void) {
 
         _iconLabel->setPixmap(_iconPixmaps[0]);
         hasIcons = true;
+    }
+
+    _eyecatchData = gyVmuVMSFileInfoCreateEyeCatchARGB444(_vmsHeader);
+
+    if(_eyecatchData) {
+        _gyLog(GY_DEBUG_VERBOSE, "Creating texture for eyecatch.");
+        _eyecatchImage = QImage((uchar*)_eyecatchData, VMU_VMS_EYECATCH_BITMAP_WIDTH, VMU_VMS_EYECATCH_BITMAP_HEIGHT,  QImage::Format_ARGB4444_Premultiplied);
     }
 
     _gyPop(1);
@@ -929,7 +1005,10 @@ void VMUMainWindow::on_actionDump_Icons_triggered(void)
     char vmsDesc[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+1];
 
     //Ain't nothing to dump!
-    if(!_iconImages.size()) return;
+    if(!_iconImages.size()) {
+        QMessageBox::critical(nullptr, "No Icons", "The current VMS image does not have any icons!");
+        return;
+    }
 
     _gyLog(GY_DEBUG_VERBOSE, "Dumping VMS Icons.");
     _gyPush();
@@ -945,4 +1024,87 @@ void VMUMainWindow::on_actionDump_Icons_triggered(void)
     }
 
     _gyPop(1);
+}
+
+void VMUMainWindow::_updatePConRegister(void) {
+    int pcon = gyVmuMemRead(_dev, SFR_ADDR_PCON) & (SFR_PCON_HALT_MASK|SFR_PCON_HOLD_MASK);
+
+    if(pcon != _pConRegister) {
+        switch(pcon) {
+        case 0:
+            _ui->statusbar->showMessage("CPU State: RUNNING", VMU_STATUS_TEMP_TIMEOUT);
+            break;
+        case 1:
+            _ui->statusbar->showMessage("CPU State: HOLD", VMU_STATUS_TEMP_TIMEOUT);
+            break;
+        case 2:
+            _ui->statusbar->showMessage("CPU State: HALT", VMU_STATUS_TEMP_TIMEOUT);
+            break;
+        case 3:
+            _ui->statusbar->showMessage("CPU State: UNKNOWN", VMU_STATUS_TEMP_TIMEOUT);
+            break;
+        }
+
+        _pConRegister = pcon;
+    }
+
+}
+
+void VMUMainWindow::on_actionDump_Eyecatch_triggered(void)
+{
+    //+2 digits + 4 ext + 1 NULL byte
+    char filename[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+7];
+    char vmsDesc[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+1];
+
+    //Ain't nothing to dump!
+    if(!_eyecatchData) {
+        QMessageBox::critical(nullptr, "No Eyecatch", "The current VMS image does not have an eyecatch graphic!");
+        return;
+    }
+
+    _gyLog(GY_DEBUG_VERBOSE, "Dumping VMS Eyecatch.");
+    _gyPush();
+
+    gyVmuVmsHeaderVmuDescGet(_vmsHeader, vmsDesc);
+
+    sprintf(filename, "%s_eyecatch.png", vmsDesc);
+    if(!_eyecatchImage.save(filename))
+        _gyLog(GY_DEBUG_ERROR, "Could not dump eyecatch to file [%s]!", QDir::current().absoluteFilePath(filename).toStdString().c_str());
+    else
+        _gyLog(GY_DEBUG_VERBOSE, "Dumped eyecatch to file [%s].", QDir::current().absoluteFilePath(filename).toStdString().c_str());
+
+    _gyPop(1);
+
+}
+
+void VMUMainWindow::on_actionTCP_Connection_Manager_triggered(void)
+{
+    _tcpDialog->show();
+}
+
+void VMUMainWindow::on_actionQuick_Connect_triggered(void)
+{
+    _tcpDialog->quickConnect();
+}
+
+void VMUMainWindow::on_actionEnable_Low_Battery_toggled(bool arg1)
+{
+    _gyLog(GY_DEBUG_VERBOSE, "Low Battery Emulation: %s", arg1? "ON" : "OFF");
+    gyVmuBatteryLowSet(_dev, arg1);
+    gyVmuBatteryMonitorEnabledSet(_dev, arg1);
+}
+
+void VMUMainWindow::on_actionQuit_triggered(void)
+{
+    QApplication::quit();
+}
+
+void VMUMainWindow::on_actionView_Log_triggered(void)
+{
+    QDesktopServices::openUrl(QUrl::fromLocalFile(QDir::current().absoluteFilePath(VMU_LOG_FILE)));
+}
+
+void VMUMainWindow::on_actionLoad_BIOS_Image_triggered(void)
+{
+
 }
