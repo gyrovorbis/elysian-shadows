@@ -10,7 +10,7 @@
 #endif
 
 #ifdef __linux__ // :) Sweet!
-#   include <SDL2_net/SDL_net.h>
+#   include <SDL2/SDL_net.h>
 #endif
 
 #ifdef __APPLE__ // D: Fuck my life...
