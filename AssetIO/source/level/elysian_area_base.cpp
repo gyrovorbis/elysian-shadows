@@ -553,7 +553,7 @@ void AreaBase::behaviorsOnLoad(void) {
     DbgEvent dbg("Calling Behaviors' ON_LOAD triggers.");
     for(auto entity: entities) {
         for(auto behav: entity->getBehaviors()) {
-            behav->onLoad();
+            if(behav->getTriggers() & Behavior::ON_LOAD) behav->onLoad();
         }
 
     }
