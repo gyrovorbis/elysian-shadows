@@ -218,7 +218,6 @@ dreamcast {
             ../../source/android/gyro_video_android.c \
             ../../source/android/turfs_android.c
 
-
     } else {
 
         OBJECTIVE_SOURCES += \
