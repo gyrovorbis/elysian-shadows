@@ -7,9 +7,21 @@
 #include <stdint.h>
 #include <gyro_system_api.h>
 
+#define VMU_FB_DEFAULT_WIDTH            48
+#define VMU_FB_DEFAULT_HEIGHT           40
+#define VMU_TEXT_CODEC                  "Shift-JIS"
 #define VMU_ROM_HISTORY_SIZE            5
 #define VMU_TRIGGER_SPEED_FACTOR        10.0f
 #define FILTER_DUPLICATE_LOG_STRINGS    1
+
+#define ICON_ES_PATH                    ":/icons/images/vmu_es.png"
+#define ICON_CLOCK_PATH                 ":/icons/images/icon_clock.png"
+#define ICON_FILE_PATH                  ":/icons/images/icon_file.png"
+#define ICON_FLASH_PATH                 ":/icons/images/icon_flash.png"
+#define ICON_GAME_PATH                  ":/icons/images/icon_game.png"
+#define ICON_DISCONNECTED_PATH          ":/icons/images/task_bar_red.png"
+#define ICON_LISTENING_PATH             ":/icons/images/task_bar_yellow.png"
+#define ICON_CONNECTED_PATH             ":/icons/images/task_bar_green.png"
 
 struct  VMUDevice;
 struct  VMSFileInfo;
@@ -91,6 +103,14 @@ private:
     void                _loadSettings(void);
     void                _pushRecentRom(QString path);
 
+    QPixmap             _iconES;
+    QPixmap             _iconClock;
+    QPixmap             _iconFile;
+    QPixmap             _iconGame;
+    QPixmap             _iconFlash;
+    QPixmap             _iconDisconnected;
+    QPixmap             _iconListening;
+    QPixmap             _iconConnected;
     QTimer              _updateTimer;
     QVector<QImage>     _iconImages;
     QVector<QPixmap>    _iconPixmaps;

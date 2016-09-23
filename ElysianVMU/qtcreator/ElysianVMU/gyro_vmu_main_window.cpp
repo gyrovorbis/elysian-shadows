@@ -34,13 +34,6 @@
 #include <QFileDialog>
 #include <cmath>
 
-static unsigned char icon[4][7] = {
-  { 0x2a, 0x23, 0x47, 0xfb, 0x23, 0x23, 0x3f },
-  { 0xff, 0x83, 0x93, 0xbb, 0x93, 0xbb, 0xff },
-  { 0x7c, 0x82, 0x92, 0x9b, 0x82, 0x82, 0x7c },
-  { 0x10, 0x28, 0xef, 0x6e, 0x6c, 0x7e, 0xc3 }
-};
-
 //#define VMS_IMAGE "/Users/falco/Desktop/VMU/Tetris.vms"
 #ifdef VMU_DEBUG
 //#define BIOS_IMAGE "/Users/falcogirgis/Documents/Dev/esdev/ElysianVMU/bin/vmu_bios.bin"
@@ -117,12 +110,20 @@ int VMUMainWindow::_logDepth = 0;
 
 VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     QMainWindow(parent),
-    _fb(48, 41),
+    _fb(VMU_FB_DEFAULT_WIDTH, VMU_FB_DEFAULT_HEIGHT),
     _ui(new Ui::VMUMainWindow),
+    _iconES(ICON_ES_PATH),
+    _iconClock(ICON_CLOCK_PATH),
+    _iconFile(ICON_FILE_PATH),
+    _iconGame(ICON_GAME_PATH),
+    _iconFlash(ICON_FLASH_PATH),
+    _iconDisconnected(ICON_DISCONNECTED_PATH),
+    _iconListening(ICON_LISTENING_PATH),
+    _iconConnected(ICON_CONNECTED_PATH),
     _tcpDialog(new VmuTcpDialog),
     _statusLabel(new QLabel("HALTED: No ROM Image")),
     _iconLabel(new QLabel()),
-    _japCodec(QTextCodec::codecForName("Shift-JIS"))
+    _japCodec(QTextCodec::codecForName(VMU_TEXT_CODEC))
 {
     _ui->setupUi(this);
     setAcceptDrops(true);
@@ -211,6 +212,7 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
 
     _fb.fill(Qt::black);
     QPainter painter(&_fb);
+#if 0
     for(int i=0; i<4; i++) {
         for(int y=0; y<7; y++) {
             int value = icon[i][y];
@@ -224,8 +226,8 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
             }
         }
     }
-    painter.drawImage(QPoint(0,0), QImage(":/icons/images/vmu_es.png"));
-
+#endif
+    painter.drawPixmap(QPoint(0,0), _iconES);
 
     _updateTimer.setInterval(17);
     connect(&_updateTimer, SIGNAL(timeout()), this, SLOT(_update()));
@@ -293,7 +295,6 @@ bool VMUMainWindow::event(QEvent* event) {
     }
 
     return QMainWindow::event(event);
-
 }
 
 
@@ -303,14 +304,37 @@ void VMUMainWindow::closeEvent(QCloseEvent* /*event*/) {
 
 void VMUMainWindow::paintEvent(QPaintEvent *) {
     QPainter painter2(this);
+
     int y = 0;
 #ifndef Q_OS_MAC //Menubar is not part of the window widget on a Mac.
     if(_ui->menubar->isVisible()) y = _ui->menubar->height();
 #endif
     int height = geometry().height();
+    int width = geometry().width();
     if(_ui->statusbar->isVisible()) height -= _ui->statusbar->height();
     height -= y;
-    painter2.drawPixmap(0, y, geometry().width(), height, _fb);
+    painter2.drawPixmap(0, y, width, height, _fb);
+
+    float yMargin       = 0.20f;
+    float leftOverH     = 1.0f - ((float)VMU_DISP_PIXEL_HEIGHT/(float)VMU_FB_DEFAULT_HEIGHT);
+    float iconHeight    = leftOverH*(1.0f-yMargin)*(float)height;
+    float iconY         = height-iconHeight-((yMargin)*leftOverH*(float)height)/2.0f;
+
+    float xMargin       = 1.0f/20.0f;
+    float leftOverW     = 1.0f - xMargin;
+    float iconWidth     = (2.0f/11.0f)*(float)width*leftOverW;
+    float iconXStart    = xMargin*0.5*(float)width;
+    float iconXStride   = iconWidth+(1.0f/11.0f)*leftOverW*(float)width;
+
+    //if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_FILE))
+        painter2.drawPixmap(iconXStart, iconY, iconWidth, iconHeight, _iconFile);
+   // if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_GAME))
+        painter2.drawPixmap(iconXStart+iconXStride, iconY, iconWidth, iconHeight, _iconGame);
+   // if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_CLOCK))
+        painter2.drawPixmap(iconXStart+iconXStride*2.0f, iconY, iconWidth, iconHeight, _iconClock);
+   // if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_FLASH))
+        painter2.drawPixmap(iconXStart+iconXStride*3.0f, iconY, iconWidth, iconHeight, _iconFlash);
+
 }
 
 void VMUMainWindow::_update(void) {
@@ -572,6 +596,7 @@ extern "C" void lcdrefresh(void) {
         b = 0;
         p -= 6;
     }
+#if 0
     for(i=0; i<4; i++) {
         a = xram[b][p++]>>(2*(3-i));
         //if(!lcdon)
@@ -599,7 +624,7 @@ extern "C" void lcdrefresh(void) {
 
 
     }
-
+#endif
     lcd_updated = 0;
 
     _win->repaint();
