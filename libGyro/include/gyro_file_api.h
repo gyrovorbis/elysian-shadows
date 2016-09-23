@@ -44,8 +44,14 @@ int gyFileQuit(void);
 
 int gyFileResolvePath(GYPathType path_type, const char* vpath, char **path, size_t *len);
 
+
+//size_t fwrite(const void *ptr, size_t size_of_elements, size_t number_of_elements, FILE *a_file);
+
 int gyFileOpen(const char *file_path, const char *mode, GYFile **fp);
 int gyFileRead(GYFile *fp, void *buffer, size_t count, size_t *bytes_read);
+size_t gyFileWrite(GYFile *fp, const void* ptr, size_t elementSize, size_t elementCount);
+int gyFilePrintf(GYFile* fp, const char* str, ...);
+int gyFilePuts(GYFile* fp, const char* str);
 int gyFileSeek(GYFile *fp, off_t offset, int whence);
 int gyFileLength(GYFile *fp, size_t *len);
 int gyFileTell(GYFile *fp, long int *pos);

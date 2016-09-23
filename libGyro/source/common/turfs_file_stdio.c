@@ -39,11 +39,28 @@ TURFSAPI turfs_file_read(Turfs_file* fp, void *buffer, size_t count, size_t *byt
     }
     read_bytes = fread(buffer, sizeof(char), count, fp->fp);
     fp->eof = feof(fp->fp);
-    if (bytes_read != NULL) {
+    if (bytes_read) {
         *bytes_read = read_bytes;
     }
     return TURFS_RET_OK;
 }
+
+TURFSAPI turfs_file_write(Turfs_file* fp, void* ptr, size_t elementSize, size_t elementCount, size_t* elementsWritten) {
+    if (fp == NULL || fp->fp == NULL || ptr == NULL) {
+        return TURFS_RET_INVALID_ARGS;
+    }
+    *elementsWritten = fwrite(ptr, elementCount, elementSize, fp->fp);
+    return (*elementsWritten == elementCount)? TURFS_RET_OK : TURFS_RET_UNKNOWN;
+}
+
+TURFSAPI turfs_file_puts(Turfs_file* fp, const char* str) {
+    if (fp == NULL || fp->fp == NULL || str == NULL) {
+        return TURFS_RET_INVALID_ARGS;
+    }
+
+    return (fputs(str, fp->fp) > 0)? TURFS_RET_OK : TURFS_RET_UNKNOWN;
+}
+
 
 TURFSAPI turfs_file_seek(Turfs_file* fp, off_t offset, int whence)
 {

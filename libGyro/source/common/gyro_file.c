@@ -1,8 +1,9 @@
 #include <stdlib.h>
 
 #include <common/turfs.h>
-
+#include <gyro_defines.h>
 #include <gyro_file_api.h>
+#include <stdarg.h>
 
 int gyFileQuit(void)
 {
@@ -44,6 +45,29 @@ int gyFileRead(GYFile *fp, void *buffer, size_t count, size_t *bytes_read)
 {
     return turfs_file_read((Turfs_file*)fp, buffer, count, bytes_read) == TURFS_RET_OK;
 }
+
+size_t gyFileWrite(GYFile *fp, const void *ptr, size_t elementSize, size_t elementCount) {
+    size_t bytesWritten;
+    int retVal = turfs_file_write((Turfs_file*)fp, ptr, elementSize, elementCount, &bytesWritten);
+    return (retVal == TURFS_RET_OK)? bytesWritten : 0;
+}
+
+int gyFilePuts(GYFile *fp, const char *str) {
+    return (turfs_file_puts((Turfs_file*)fp, str) == TURFS_RET_OK)? 1 : -1;
+}
+
+int gyFilePrintf(GYFile* fp, const char* str, ...) {
+    va_list argptr;
+    char buffer[1000];
+
+
+    va_start(argptr, str);
+    vsprintf(buffer, str, argptr);
+    va_end(argptr);
+
+    return (turfs_file_puts((Turfs_file*)fp, buffer) == TURFS_RET_OK)? 1 : 0;
+}
+
 
 int gyFileSeek(GYFile *fp, off_t offset, int whence)
 {

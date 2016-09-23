@@ -5,6 +5,9 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+#include <string.h>
+
 #define INSTR_BYTE_OPCODE       0x0
 #define INSTR_BYTE_2            0x1
 #define INSTR_BYTE_3            0x2
@@ -203,7 +206,7 @@ typedef enum INSTR_ARG_TYPE {
 } INSTR_ARG_TYPE;
 
 //Instruction data
-typedef struct VMUInstr {
+typedef struct VMUInstrAttr {
     const char*     mnemonic;   //ASM instruction
     const char*     desc;       //instruction description
     unsigned char   opcode;     //opcode
@@ -212,9 +215,44 @@ typedef struct VMUInstr {
     unsigned char   bytes;      //bytes per instruction (1-3)
     unsigned char   cc;         //clock cycles (1-7)
     unsigned char   psw;        //program status word modifiers (CY, AC, DV)
+} VMUInstrAttr;
+
+typedef struct VMUInstr {
+    union {
+        uint8_t         instrBytes[INSTR_BYTE_MAX];
+        uint32_t        instr;
+    };
+    unsigned char       bytes;
 } VMUInstr;
 
-const extern VMUInstr   _instrMap[INSTR_MAP_SIZE];
+typedef struct VMUInstrOperands {
+    uint16_t    addrMode[ADDR_MODE_COUNT];
+    int         addrRel;
+} VMUInstrOperands;
+
+#if 0
+inline static int gyVmuInstrFetchByte(const uint8_t* buffer, VMUInstr* instr) {
+    if(!instr->bytes) { //fetch first byte
+        instr->bytes[INSTR_BYTE_OPCODE] = buffer[0];
+        ++instr->bytes;
+    } else if(instr->bytes < _instrMap[instr->instrBytes[INSTR_BYTE_OPCODE]]) {
+
+    }
+}
+#endif
+
+
+void gyVmuInstrDecodeOperands(const VMUInstr* instr, VMUInstrOperands* operands);
+
+const extern VMUInstrAttr _instrMap[INSTR_MAP_SIZE];
+
+inline static void gyVmuInstrFetch(const unsigned char* buffer, VMUInstr* instr) {
+    memset(instr, 0, sizeof(VMUInstr));
+    do {
+        instr->instrBytes[instr->bytes] = buffer[instr->bytes];
+        ++instr->bytes;
+    } while(instr->bytes < _instrMap[instr->instrBytes[INSTR_BYTE_OPCODE]].bytes);
+}
 
 inline static unsigned instrArgsArgc(unsigned int args) {
     unsigned argc = 0;

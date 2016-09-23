@@ -333,9 +333,18 @@ void EntityAttachment::update(void) {
     transform.setFlipX(slot->bone->flipX);
     transform.setFlipY(slot->bone->flipY);
 
-
 }
 
+void SkeletonBase::setSkin(const char *name) {
+    if(!spSkeleton_setSkinByName(_skeleton, name)) {
+        errprintf("Skeleton::setSkin(%s) - Skin not found on entity: %s.", name, getEntity()->getName());
+    }
+}
+
+const char* SkeletonBase::getSkin(void) const {
+    return _skeleton->skin? _skeleton->skin->name : "";
+
+}
 
 
 }

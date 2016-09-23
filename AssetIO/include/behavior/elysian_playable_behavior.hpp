@@ -15,8 +15,8 @@ namespace elysian {
     private:
         enum DASH_STATE         { DASH_NONE, DASH_FIRST_TAP, DASH_RELEASE, DASH_SECOND_TAP, DASH_ACTIVE };
 
-        unsigned                _playerNum      = 0;
-        bool                    _aiControlled   = false;
+        unsigned                _playerNum                  = 0;
+        bool                    _aiControlled               = false;
         unsigned                _dashState                  = DASH_NONE;
         bool                    _dashing                    = false;
         float                   _lastAngle                  = 0.0f;
