@@ -73,6 +73,7 @@
     <addaction name="actionScreenshot"/>
     <addaction name="actionDump_Icons"/>
     <addaction name="actionDump_Eyecatch"/>
+    <addaction name="actionDisassemble_ROM"/>
     <addaction name="actionView_Log"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -191,6 +192,11 @@
   <action name="actionLoad_BIOS_Image">
    <property name="text">
     <string>Load BIOS Image</string>
+   </property>
+  </action>
+  <action name="actionDisassemble_ROM">
+   <property name="text">
+    <string>Disassemble ROM</string>
    </property>
   </action>
  </widget>

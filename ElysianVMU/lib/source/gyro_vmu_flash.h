@@ -163,7 +163,7 @@ int gyVmuFlashLoadDCM(struct VMUDevice* dev, const char* path);
 
 
 int gyinitbios(struct VMUDevice* dev, int fd);
-int gyloadbios(struct VMUDevice* dev, char *filename);
+int gyloadbios(struct VMUDevice* dev, const char *filename);
 
 
 
