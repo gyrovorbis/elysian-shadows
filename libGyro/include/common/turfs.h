@@ -135,6 +135,10 @@ TURFSAPI turfs_file_open(const char *file, const char *mode, Turfs_file **fp);
  */
 TURFSAPI turfs_file_read(Turfs_file* fp, void *buffer, size_t count, size_t *bytes_read);
 
+TURFSAPI turfs_file_write(Turfs_file* fp, void* ptr, size_t elementSize, size_t elementCount, size_t* elementsWritten);
+
+TURFSAPI turfs_file_puts(Turfs_file* fp, const char* str);
+
 /**
  * Seeks to a position in a file. Equivalent to fseek()
  *
