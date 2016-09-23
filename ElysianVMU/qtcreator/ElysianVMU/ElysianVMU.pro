@@ -41,7 +41,8 @@ SOURCES += ../../console/main.cpp \
     ../../lib/source/gyro_vmu_battery.c \
     ../../lib/source/gyro_vmu_util.c \
     gyro_vmu_tcp_dialog.cpp \
-    ../../lib/source/gyro_vmu_version.c
+    ../../lib/source/gyro_vmu_version.c \
+    ../../lib/source/gyro_vmu_disassembler.c
 
 
 HEADERS += \
@@ -65,7 +66,8 @@ HEADERS += \
     ../../lib/source/gyro_vmu_battery.h \
     ../../lib/source/gyro_vmu_util.h \
     gyro_vmu_tcp_dialog.h \
-    ../../lib/source/gyro_vmu_version.h
+    ../../lib/source/gyro_vmu_version.h \
+    ../../lib/source/gyro_vmu_disassembler.h
 
 INCLUDEPATH += ../../../libGyro/include \
     ../../lib/source

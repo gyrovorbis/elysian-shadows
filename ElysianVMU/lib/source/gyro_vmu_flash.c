@@ -308,7 +308,7 @@ int gyinitbios(VMUDevice* dev, int fd)
   return 1;
 }
 
-int gyloadbios(VMUDevice* dev, char *filename)
+int gyloadbios(VMUDevice* dev, const char *filename)
 {
   int fd;
 
@@ -317,6 +317,8 @@ int gyloadbios(VMUDevice* dev, char *filename)
       close(fd);
       _gyLog(GY_DEBUG_ERROR, "%s: can't load BIOS image", filename);
       return 0;
+    } else {
+        _gyLog(GY_DEBUG_VERBOSE, "Bios image [%s] loaded successfully!", filename);
     }
     close(fd);
     dev->biosLoaded = 1;

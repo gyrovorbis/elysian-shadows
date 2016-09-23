@@ -13,6 +13,7 @@
 #include "gyro_vmu_vmi.h"
 #include "gyro_vmu_main_window.hpp"
 #include "gyro_vmu_tcp_dialog.h"
+#include "gyro_vmu_disassembler.h"
 #include "ui_gyro_vmu_main_window.h"
 #include <gyro_vmu_display.h>
 #include <gyro_wav_api.h>
@@ -120,7 +121,8 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _ui(new Ui::VMUMainWindow),
     _tcpDialog(new VmuTcpDialog),
     _statusLabel(new QLabel("HALTED: No ROM Image")),
-    _iconLabel(new QLabel())
+    _iconLabel(new QLabel()),
+    _japCodec(QTextCodec::codecForName("Shift-JIS"))
 {
     _ui->setupUi(this);
     setAcceptDrops(true);
@@ -652,8 +654,7 @@ bool VMUMainWindow::loadRom(QString filepath) {
         //_statusLabel->setText(QString("RUNNING: ")+filepath.split("/").last());
         char string[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+1];
         gyVmuVmsHeaderVmuDescGet(_vmsHeader, string);
-        QTextCodec* codec = QTextCodec::codecForName("Shift-JIS");
-        _statusLabel->setText(QString("RUNNING: ")+codec->toUnicode(string));
+        _statusLabel->setText(QString("RUNNING: ")+_japCodec->toUnicode(string));
         _loadIcons();
         _gyLog(GY_DEBUG_VERBOSE, "Running VMU CPU.");
         _running = true;
@@ -677,7 +678,7 @@ void VMUMainWindow::resetCpu(void) {
 }
 
 void VMUMainWindow::on_actionLoad_ROM_triggered(void)
-{
+{   
     loadRom(QFileDialog::getOpenFileName(nullptr, "Browse VMS ROM to Open", _romDir,
                                          "VMS Files(*.vms *.VMS);;Web Browser Files(*.vmi *.VMI)"));
 }
@@ -1017,7 +1018,7 @@ void VMUMainWindow::on_actionDump_Icons_triggered(void)
 
     for(int i = 0; i < _iconImages.size(); ++i) {
         sprintf(filename, "%s%d.png", vmsDesc, i);
-        if(!_iconImages[i].save(filename))
+        if(!_iconImages[i].save(_japCodec->toUnicode(filename).toStdString().c_str()))
             _gyLog(GY_DEBUG_ERROR, "Could not dump icon to file [%s]!", QDir::current().absoluteFilePath(filename).toStdString().c_str());
         else
             _gyLog(GY_DEBUG_VERBOSE, "Dumped icon to file [%s].", QDir::current().absoluteFilePath(filename).toStdString().c_str());
@@ -1068,7 +1069,7 @@ void VMUMainWindow::on_actionDump_Eyecatch_triggered(void)
     gyVmuVmsHeaderVmuDescGet(_vmsHeader, vmsDesc);
 
     sprintf(filename, "%s_eyecatch.png", vmsDesc);
-    if(!_eyecatchImage.save(filename))
+    if(!_eyecatchImage.save(_japCodec->toUnicode(filename).toStdString().c_str()))
         _gyLog(GY_DEBUG_ERROR, "Could not dump eyecatch to file [%s]!", QDir::current().absoluteFilePath(filename).toStdString().c_str());
     else
         _gyLog(GY_DEBUG_VERBOSE, "Dumped eyecatch to file [%s].", QDir::current().absoluteFilePath(filename).toStdString().c_str());
@@ -1106,5 +1107,33 @@ void VMUMainWindow::on_actionView_Log_triggered(void)
 
 void VMUMainWindow::on_actionLoad_BIOS_Image_triggered(void)
 {
+    QString file = QFileDialog::getOpenFileName(nullptr, "Browse BIOS file to open", _romDir,
+                                             "Binary Files(*.bin *.BIN)");
 
+    if(file.isNull()) return;
+
+    QFileInfo info(file);
+    file = info.absoluteFilePath();
+
+    gyloadbios(_dev, file.toStdString().c_str());
+
+}
+
+void VMUMainWindow::on_actionDisassemble_ROM_triggered(void)
+{
+    if(!_running) {
+        QMessageBox::critical(nullptr, "Failed to disassemble ROM", "You don't even have a ROM loaded to disassemble!");
+        return;
+    }
+
+    char vmsDesc[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+1];
+    char fileName[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+5];
+    gyVmuVmsHeaderVmuDescGet(_vmsHeader, vmsDesc);
+    sprintf(fileName, "%s.ASM", vmsDesc);
+    auto unicodeFile = _japCodec->toUnicode(fileName);
+    bool lineNumbers = (QMessageBox::question(nullptr, "Disassemble ROM", "Include memory addresses in disassembly file ["+
+                                              unicodeFile+"]?")
+            == QMessageBox::Yes);
+    gyVmuDisassemble((const char*)_dev->flash, VMU_FLASH_BLOCK_SIZE*8, unicodeFile.toStdString().c_str(), lineNumbers);
+    QDesktopServices::openUrl(QUrl::fromLocalFile(unicodeFile));
 }

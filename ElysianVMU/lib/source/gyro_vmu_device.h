@@ -40,6 +40,8 @@ typedef struct VMUDevice {
     unsigned char*  memMap  [VMU_MEM_SEG_COUNT];                //contiguous RAM address space
     unsigned char*  imem;
 
+    VMUInstr        curInstr;
+
     VMUTimer0       timer0;
     VMUTimer1       timer1;
     VMUSerialPort   serialPort;
@@ -55,11 +57,7 @@ typedef struct VMUDevice {
     unsigned char   biosLoaded;
 
     uint16_t        pc;
-    unsigned char   instrBytesFetched;
-    union {
-        uint8_t         instrBytes[INSTR_BYTE_MAX];
-        uint32_t        instr;
-    };
+
 
 } VMUDevice;
 
