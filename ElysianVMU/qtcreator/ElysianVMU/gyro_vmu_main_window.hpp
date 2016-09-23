@@ -17,6 +17,7 @@ struct  GYAudioSource;
 struct  GYAudBuffer;
 class   QLabel;
 class   VmuTcpDialog;
+class   QTextCodec;
 
 namespace Ui {
     class VMUMainWindow;
@@ -72,6 +73,8 @@ private Q_SLOTS:
 
     void on_actionLoad_BIOS_Image_triggered();
 
+    void on_actionDisassemble_ROM_triggered();
+
 private:
 
     static void         _push(void);
@@ -99,6 +102,7 @@ private:
     VMSFileInfo*        _vmsHeader          = nullptr;
     uint16_t**          _iconsData          = nullptr;
     uint16_t*           _eyecatchData       = nullptr;
+    QTextCodec*         _japCodec           = nullptr;
     int64_t             _prevTicks          = 0;
     bool                _running            = false;
     bool                _contAttached       = false;

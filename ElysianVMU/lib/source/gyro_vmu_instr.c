@@ -1,4 +1,5 @@
 #include "gyro_vmu_instr.h"
+#include <assert.h>
 
 /* Read-only array mapping the LCD86000 instruction-set
  * into an 8-bit (256 element) intruction map that can be
@@ -6,7 +7,7 @@
  * information with contant time-complexity.
  */
 
-const VMUInstr _instrMap[INSTR_MAP_SIZE] = {
+const VMUInstrAttr _instrMap[INSTR_MAP_SIZE] = {
     [OPCODE_NOP] = {
         "NOP",
         "Stalls processor for one clock-cycle.",
@@ -788,5 +789,108 @@ const VMUInstr _instrMap[INSTR_MAP_SIZE] = {
         OPCODE_PSW_NONE
     },
 };
+
+
+void gyVmuInstrDecodeOperands(const VMUInstr* instrData, VMUInstrOperands* operands) {
+    uint32_t instr = 0;
+    //unsigned int types[3] = { 0 };
+    memset(operands, 0, sizeof(VMUInstrOperands));
+
+    const unsigned argc = instrArgsArgc(_instrMap[instrData->instrBytes[INSTR_BYTE_OPCODE]].args);
+
+    if(argc == 0) return; //No additional operands, don't fucking bother
+
+    //concatenate instruction bytes into single integer
+    switch(_instrMap[instrData->instrBytes[INSTR_BYTE_OPCODE]].bytes) {
+    case 1:
+        instr = instrData->instrBytes[INSTR_BYTE_OPCODE];
+        break;
+    case 2:
+        instr = instrData->instrBytes[INSTR_BYTE_2] | (instrData->instrBytes[INSTR_BYTE_OPCODE]<<8);
+        break;
+    case 3:
+        instr = instrData->instrBytes[INSTR_BYTE_3] | (instrData->instrBytes[INSTR_BYTE_2]<<8) | (instrData->instrBytes[INSTR_BYTE_OPCODE]<<16);
+        break;
+    default: assert(0);
+    }
+
+    //Have to specifically check for the two fucktardedly encoded instruction types that make no fucking sense...
+    switch(_instrMap[instrData->instrBytes[INSTR_BYTE_OPCODE]].args) {
+    case INSTR_ARG_TYPES_PACK(INSTR_ARG_TYPE_B3, INSTR_ARG_TYPE_D9, INSTR_ARG_TYPE_R8):
+        operands->addrMode[ADDR_MODE_REL] = (uint8_t)(instr&0xff);
+        operands->addrRel = (instr&0xff);
+        instr >>= 8;
+    case INSTR_ARG_TYPES_PACK(INSTR_ARG_TYPE_B3, INSTR_ARG_TYPE_D9):
+        operands->addrMode[ADDR_MODE_DIR] = (uint8_t)(instr&0xff);
+        instr >>= 8;
+        operands->addrMode[ADDR_MODE_BIT] = (uint8_t)(instr&0x7);
+        instr >>= 3;
+        operands->addrMode[ADDR_MODE_DIR] |= (instr&0x2)<<7; //MSB is not fucking contiguous here... YOU ASSHOLES, SANYO.
+        break;
+    default: //instructions that have been encoded without cocks in their mouths
+        for(int i = (int)argc-1; i >= 0; --i) {
+            unsigned argType = INSTR_ARG_TYPES_UNPACK(_instrMap[instrData->instrBytes[INSTR_BYTE_OPCODE]].args, (unsigned)i);
+            switch(argType) {
+            default:
+            case INSTR_ARG_TYPE_NONE:
+                goto doneloop;
+                break;
+            case INSTR_ARG_TYPE_R8:
+                operands->addrMode[ADDR_MODE_REL] = (int8_t)(instr&0xff);
+                operands->addrRel = (instr&0xff);
+                instr >>= 8;
+                break;
+            case INSTR_ARG_TYPE_R16:
+                operands->addrMode[ADDR_MODE_REL] = (uint16_t)((instr>>8)&0xff);
+                operands->addrMode[ADDR_MODE_REL] |= (uint16_t)((instr&0xff)<<8);
+                operands->addrRel = (uint16_t)((instr>>8)&0xff);
+                operands->addrRel |= (uint16_t)((instr&0xff)<<8);
+                instr >>= 16;
+                break;
+            case INSTR_ARG_TYPE_I8:
+                operands->addrMode[ADDR_MODE_IMM] = (uint8_t)(instr&0xff);
+                instr >>= 8;
+                break;
+            case INSTR_ARG_TYPE_D9:
+                operands->addrMode[ADDR_MODE_DIR] = (uint16_t)(instr&0x1ff);
+                instr >>= 9;
+                break;
+            case INSTR_ARG_TYPE_N2:
+#if 0
+                operands->addrMode[ADDR_MODE_IND]    = (gyVmuMemRead(dev,
+                                                            (instr & 0x3) | //Bits 0-1 come from instruction
+                                                            ((dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)]&(SFR_PSW_IRBK0_MASK|SFR_PSW_IRBK1_MASK))>>0x1u)) //Bits 2-3 come from PSW
+                                               | (instr&0x2)<<0x7u); //MSB of pointer is bit 1 from instruction
+#else
+                operands->addrMode[ADDR_MODE_IND] = (instr & 0x3);
+#endif
+                instr >>= 2;
+                break;
+            case INSTR_ARG_TYPE_A12: //So fucking stupid... Not contiguous.
+                operands->addrMode[ADDR_MODE_ABS] = (uint16_t)(instr&0x7ff);
+                operands->addrMode[ADDR_MODE_ABS] |= (uint16_t)((instr&0x1000)>>1);
+                instr >>= 11;
+                break;
+            case INSTR_ARG_TYPE_A16:
+                operands->addrMode[ADDR_MODE_ABS] = (uint16_t)(instr&0xffff);
+                instr >>= 16;
+                break;
+            case INSTR_ARG_TYPE_B3:
+                operands->addrMode[ADDR_MODE_BIT] = (instr&0x7);
+                instr >>= 3;
+                break;
+            }
+        }
+        break;
+    }
+    unsigned char opcode = _instrMap[instrData->instrBytes[INSTR_BYTE_OPCODE]].opcode;
+    assert(instr < 256);
+    unsigned char instrcode = _instrMap[instr<<(8-_instrMap[opcode].opBits)].opcode;
+    assert(instrcode == opcode);
+
+doneloop:
+    return;
+
+}
 
 

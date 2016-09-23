@@ -43,6 +43,14 @@ inline static unsigned char rotr(unsigned char c) {
     return (c >> 1) | (c << 7);
 }
 
+static inline int _fetchRegIndAddr(struct VMUDevice* dev, uint8_t reg) {
+    assert(reg <= 3); //Make sure we're within bounds
+    return (gyVmuMemRead(dev,
+                reg |
+                ((dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)]&(SFR_PSW_IRBK0_MASK|SFR_PSW_IRBK1_MASK))>>0x1u)) //Bits 2-3 come from PSW
+   | (reg&0x2)<<0x7u); //MSB of pointer is bit 1 from instruction
+}
+
 
 inline static void _push(VMUDevice* dev, unsigned val) {
     //check stack overflo
@@ -96,132 +104,27 @@ static int _serviceInterrupts(VMUDevice* dev) {
     return 0; //ain't no pending interrupts...
 }
 
-uint16_t _operands[ADDR_MODE_COUNT] = { 0 };
-int _addrRel = 0;
-
-static void _instrFetchOperands(VMUDevice* dev) {
-    uint32_t instr = 0;
-    //unsigned int types[3] = { 0 };
-    const unsigned argc = instrArgsArgc(_instrMap[dev->instrBytes[INSTR_BYTE_OPCODE]].args);
-
-    if(argc == 0) return; //No additional operands, don't fucking bother
-
-    //concatenate instruction bytes into single integer
-    switch(_instrMap[dev->instrBytes[INSTR_BYTE_OPCODE]].bytes) {
-    case 1:
-        instr = dev->instrBytes[INSTR_BYTE_OPCODE];
-        break;
-    case 2:
-        instr = dev->instrBytes[INSTR_BYTE_2] | (dev->instrBytes[INSTR_BYTE_OPCODE]<<8);
-        break;
-    case 3:
-        instr = dev->instrBytes[INSTR_BYTE_3] | (dev->instrBytes[INSTR_BYTE_2]<<8) | (dev->instrBytes[INSTR_BYTE_OPCODE]<<16);
-        break;
-    default: assert(0);
-    }
-
-    //Have to specifically check for the two fucktardedly encoded instruction types that make no fucking sense...
-    switch(_instrMap[dev->instrBytes[INSTR_BYTE_OPCODE]].args) {
-    case INSTR_ARG_TYPES_PACK(INSTR_ARG_TYPE_B3, INSTR_ARG_TYPE_D9, INSTR_ARG_TYPE_R8):
-        _operands[ADDR_MODE_REL] = (uint8_t)(instr&0xff);
-        _addrRel = (instr&0xff);
-        instr >>= 8;
-    case INSTR_ARG_TYPES_PACK(INSTR_ARG_TYPE_B3, INSTR_ARG_TYPE_D9):
-        _operands[ADDR_MODE_DIR] = (uint8_t)(instr&0xff);
-        instr >>= 8;
-        _operands[ADDR_MODE_BIT] = (uint8_t)(instr&0x7);
-        instr >>= 3;
-        _operands[ADDR_MODE_DIR] |= (instr&0x2)<<7; //MSB is not fucking contiguous here... YOU ASSHOLES, SANYO.
-        break;
-    default: //instructions that have been encoded without cocks in their mouths
-        for(int i = (int)argc-1; i >= 0; --i) {
-            unsigned argType = INSTR_ARG_TYPES_UNPACK(_instrMap[dev->instrBytes[INSTR_BYTE_OPCODE]].args, (unsigned)i);
-            switch(argType) {
-            default:
-            case INSTR_ARG_TYPE_NONE:
-                goto doneloop;
-                break;
-            case INSTR_ARG_TYPE_R8:
-                _operands[ADDR_MODE_REL] = (int8_t)(instr&0xff);
-                _addrRel = (instr&0xff);
-                instr >>= 8;
-                break;
-            case INSTR_ARG_TYPE_R16:
-                _operands[ADDR_MODE_REL] = (uint16_t)((instr>>8)&0xff);
-                _operands[ADDR_MODE_REL] |= (uint16_t)((instr&0xff)<<8);
-                _addrRel = (uint16_t)((instr>>8)&0xff);
-                _addrRel |= (uint16_t)((instr&0xff)<<8);
-                instr >>= 16;
-                break;
-            case INSTR_ARG_TYPE_I8:
-                _operands[ADDR_MODE_IMM] = (uint8_t)(instr&0xff);
-                instr >>= 8;
-                break;
-            case INSTR_ARG_TYPE_D9:
-                _operands[ADDR_MODE_DIR] = (uint16_t)(instr&0x1ff);
-                instr >>= 9;
-                break;
-            case INSTR_ARG_TYPE_N2:
-                _operands[ADDR_MODE_IND]    = (gyVmuMemRead(dev,
-                                                            (instr & 0x3) | //Bits 0-1 come from instruction
-                                                            ((dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)]&(SFR_PSW_IRBK0_MASK|SFR_PSW_IRBK1_MASK))>>0x1u)) //Bits 2-3 come from PSW
-                                               | (instr&0x2)<<0x7u); //MSB of pointer is bit 1 from instruction
-                instr >>= 2;
-                break;
-            case INSTR_ARG_TYPE_A12: //So fucking stupid... Not contiguous.
-                _operands[ADDR_MODE_ABS] = (uint16_t)(instr&0x7ff);
-                _operands[ADDR_MODE_ABS] |= (uint16_t)((instr&0x1000)>>1);
-                instr >>= 11;
-                break;
-            case INSTR_ARG_TYPE_A16:
-                _operands[ADDR_MODE_ABS] = (uint16_t)(instr&0xffff);
-                instr >>= 16;
-                break;
-            case INSTR_ARG_TYPE_B3:
-                _operands[ADDR_MODE_BIT] = (instr&0x7);
-                instr >>= 3;
-                break;
-            }
-        }
-        break;
-    }
-    unsigned char opcode = _instrMap[dev->instrBytes[INSTR_BYTE_OPCODE]].opcode;
-    assert(instr < 256);
-    unsigned char instrcode = _instrMap[instr<<(8-_instrMap[opcode].opBits)].opcode;
-    if(opcode != instrcode) {
-#ifdef VMU_DEBUG
-        _gyLog(GY_DEBUG_VERBOSE, "instr - %x, opcode - %x\n", instrcode, opcode);
-#endif
-    }
-    assert(instrcode == opcode);
-
-doneloop:
-    return;
-}
-
-static int _instrExecute(VMUDevice* dev) {
-
-    _instrFetchOperands(dev);
+static int gyVmuCpuInstrExecute(VMUDevice* dev, const VMUInstr* instr, const VMUInstrOperands* operands) {
 
     //execute instruction
-    switch(_instrMap[dev->instrBytes[INSTR_BYTE_OPCODE]].opcode) {
+    switch(_instrMap[instr->instrBytes[INSTR_BYTE_OPCODE]].opcode) {
 
     case OPCODE_NOP:
     default:
         break;
     case OPCODE_BR:
-        //dev->pc += (signed char)_operands[ADDR_MODE_REL];
-        dev->pc += SGNEXT(_addrRel);
+        //dev->pc += (signed char)operands->addrMode[ADDR_MODE_REL];
+        dev->pc += SGNEXT(operands->addrRel);
         break;
     case OPCODE_LD:
         gyVmuMemWrite(dev,
                       SFR_ADDR_ACC,
-                      gyVmuMemRead(dev, _operands[ADDR_MODE_DIR]));
+                      gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR]));
             break;
     case OPCODE_LD_IND:
         gyVmuMemWrite(dev,
                       SFR_ADDR_ACC,
-                      gyVmuMemRead(dev, _operands[ADDR_MODE_IND]));
+                      gyVmuMemRead(dev, _fetchRegIndAddr(dev, operands->addrMode[ADDR_MODE_IND])));
         break;
     case OPCODE_CALL:
         //gyVmuMemWrite(dev, ++dev->sfr[SFR_OFFSET(SFR_ADDR_SP)], (dev->pc&0xff));
@@ -229,42 +132,42 @@ static int _instrExecute(VMUDevice* dev) {
         //gyVmuMemWrite(dev, ++dev->sfr[SFR_OFFSET(SFR_ADDR_SP)], ((dev->pc&0xff00)>>7u));
         _push(dev, (dev->pc&0xff00)>>8u);
         dev->pc &= ~0xfff;
-        dev->pc |= _operands[ADDR_MODE_ABS];
+        dev->pc |= operands->addrMode[ADDR_MODE_ABS];
         break;
     case OPCODE_CALLR:
         //gyVmuMemWrite(dev, ++dev->sfr[SFR_OFFSET(SFR_ADDR_SP)], (dev->pc&0xff));
         _push(dev, (dev->pc&0xff));
         //gyVmuMemWrite(dev, ++dev->sfr[SFR_OFFSET(SFR_ADDR_SP)], ((dev->pc&0xff00)>>7u));
         _push(dev, (dev->pc&0xff00)>>8u);
-        dev->pc += (_operands[ADDR_MODE_REL]%65536)-1;
+        dev->pc += (operands->addrMode[ADDR_MODE_REL]%65536)-1;
         break;
     case OPCODE_BRF:
         //pc = 0xffff&(pc+1+rom[pc]+((rom[(pc+1)&0xffff])<<8));
-        dev->pc += (_operands[ADDR_MODE_REL]%65536)-1;
+        dev->pc += (operands->addrMode[ADDR_MODE_REL]%65536)-1;
         break;
     case OPCODE_ST:
-        gyVmuMemWrite(dev, _operands[ADDR_MODE_DIR], dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]);
+        gyVmuMemWrite(dev, operands->addrMode[ADDR_MODE_DIR], dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]);
         break;
     case OPCODE_ST_IND:
-        gyVmuMemWrite(dev, _operands[ADDR_MODE_IND], dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]);
+        gyVmuMemWrite(dev, _fetchRegIndAddr(dev, operands->addrMode[ADDR_MODE_IND]), dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]);
         break;
     case OPCODE_CALLF:
         _push(dev, (dev->pc&0xff));
         _push(dev, (dev->pc&0xff00)>>8u);
-        dev->pc = _operands[ADDR_MODE_ABS];
+        dev->pc = operands->addrMode[ADDR_MODE_ABS];
         break;
     case OPCODE_JMPF:
-        dev->pc = _operands[ADDR_MODE_ABS];
+        dev->pc = operands->addrMode[ADDR_MODE_ABS];
         break;
     case OPCODE_MOV:
-        gyVmuMemWrite(dev, _operands[ADDR_MODE_DIR], _operands[ADDR_MODE_IMM]);
+        gyVmuMemWrite(dev, operands->addrMode[ADDR_MODE_DIR], operands->addrMode[ADDR_MODE_IMM]);
         break;
     case OPCODE_MOV_IND:
-        gyVmuMemWrite(dev, _operands[ADDR_MODE_IND], _operands[ADDR_MODE_IMM]);
+        gyVmuMemWrite(dev, _fetchRegIndAddr(dev, operands->addrMode[ADDR_MODE_IND]), operands->addrMode[ADDR_MODE_IMM]);
         break;
     case OPCODE_JMP:
         dev->pc &= ~0xfff;
-        dev->pc |= _operands[ADDR_MODE_ABS];
+        dev->pc |= operands->addrMode[ADDR_MODE_ABS];
         break;
     case OPCODE_MUL: {
             int temp    =   dev->sfr[SFR_OFFSET(SFR_ADDR_C)] | (dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]<<8);
@@ -284,30 +187,30 @@ static int _instrExecute(VMUDevice* dev) {
         break;
     case OPCODE_BEI: {
         int acc = gyVmuMemRead(dev, SFR_ADDR_ACC);
-         gyVmuMemWrite(dev, 0x101, (gyVmuMemRead(dev, 0x101)&0x7f)|(acc<_operands[ADDR_MODE_IMM]? 0x80:0));
-        if(acc == _operands[ADDR_MODE_IMM]) {
-            //dev->pc += (signed char)_operands[ADDR_MODE_REL];
-            dev->pc += SGNEXT(_addrRel);
+         gyVmuMemWrite(dev, 0x101, (gyVmuMemRead(dev, 0x101)&0x7f)|(acc<operands->addrMode[ADDR_MODE_IMM]? 0x80:0));
+        if(acc == operands->addrMode[ADDR_MODE_IMM]) {
+            //dev->pc += (signed char)operands->addrMode[ADDR_MODE_REL];
+            dev->pc += SGNEXT(operands->addrRel);
         }
         break;
     }
     case OPCODE_BE: {
         int acc = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
-        int mem = gyVmuMemRead(dev, _operands[ADDR_MODE_DIR]);
+        int mem = gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR]);
         gyVmuMemWrite(dev, 0x101, (gyVmuMemRead(dev, 0x101)&0x7f)|(acc<mem? 0x80:0));
         if(acc == mem) {
-            //dev->pc += (signed char)_operands[ADDR_MODE_REL];
-            dev->pc += SGNEXT(_addrRel);
+            //dev->pc += (signed char)operands->addrMode[ADDR_MODE_REL];
+            dev->pc += SGNEXT(operands->addrRel);
         }
         break;
     }
     case OPCODE_BE_IND: {
         int acc = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
-        int mem = gyVmuMemRead(dev, _operands[ADDR_MODE_IND]);
+        int mem = gyVmuMemRead(dev, _fetchRegIndAddr(dev, operands->addrMode[ADDR_MODE_IND]));
         gyVmuMemWrite(dev, 0x101, (gyVmuMemRead(dev, 0x101)&0x7f)|(acc<mem? 0x80:0));
         if(acc == mem) {
-            //dev->pc += (signed char)_operands[ADDR_MODE_REL];
-            dev->pc += SGNEXT(_addrRel);
+            //dev->pc += (signed char)operands->addrMode[ADDR_MODE_REL];
+            dev->pc += SGNEXT(operands->addrRel);
         }
         break;
     }
@@ -337,39 +240,39 @@ static int _instrExecute(VMUDevice* dev) {
     case OPCODE_BNEI:{
        // writemem(0x101, (readmem(0x101)&0x7f)|(r<rom[pc]? 0x80:0));
         const int acc = gyVmuMemRead(dev, SFR_ADDR_ACC);
-        dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)] = (dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)]&0x7f)|(acc<_operands[ADDR_MODE_IMM]? 0x80:0);
-        if(acc != _operands[ADDR_MODE_IMM]) {
-            //dev->pc += (signed char)_operands[ADDR_MODE_REL];
-            dev->pc += SGNEXT(_addrRel);
+        dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)] = (dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)]&0x7f)|(acc<operands->addrMode[ADDR_MODE_IMM]? 0x80:0);
+        if(acc != operands->addrMode[ADDR_MODE_IMM]) {
+            //dev->pc += (signed char)operands->addrMode[ADDR_MODE_REL];
+            dev->pc += SGNEXT(operands->addrRel);
         }
         break;
     }
     case OPCODE_BNE:{
         int acc = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
-        int mem = gyVmuMemRead(dev, _operands[ADDR_MODE_DIR]);
+        int mem = gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR]);
         dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)] = (dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)]&0x7f)|(acc<mem? 0x80:0);
         if(acc != mem) {
-            //dev->pc += (signed char)_operands[ADDR_MODE_REL];
-            dev->pc += SGNEXT(_addrRel);
+            //dev->pc += (signed char)operands->addrMode[ADDR_MODE_REL];
+            dev->pc += SGNEXT(operands->addrRel);
         }
         break;
     }
     case OPCODE_BNE_IND: {
         //int acc = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
-        int mem = gyVmuMemRead(dev, _operands[ADDR_MODE_IND]);
-        dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)] = (dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)]&0x7f)|(mem < _operands[ADDR_MODE_IMM]? 0x80:0);
-        if(_operands[ADDR_MODE_IMM] != mem) {
-            //dev->pc += (signed char)_operands[ADDR_MODE_REL];
-            dev->pc += SGNEXT(_addrRel);
+        int mem = gyVmuMemRead(dev, _fetchRegIndAddr(dev, operands->addrMode[ADDR_MODE_IND]));
+        dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)] = (dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)]&0x7f)|(mem < operands->addrMode[ADDR_MODE_IMM]? 0x80:0);
+        if(operands->addrMode[ADDR_MODE_IMM] != mem) {
+            //dev->pc += (signed char)operands->addrMode[ADDR_MODE_REL];
+            dev->pc += SGNEXT(operands->addrRel);
         }
         break;
     }
     case OPCODE_BPC: {
-        int mem = gyVmuMemRead(dev, _operands[ADDR_MODE_DIR]);
-        if(mem & (1<<_operands[ADDR_MODE_BIT])) {
-            gyVmuMemWrite(dev, _operands[ADDR_MODE_DIR], (mem&~(1<<_operands[ADDR_MODE_BIT])));
-            //dev->pc += (signed char)_operands[ADDR_MODE_REL];
-            dev->pc += SGNEXT(_addrRel);
+        int mem = gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR]);
+        if(mem & (1<<operands->addrMode[ADDR_MODE_BIT])) {
+            gyVmuMemWrite(dev, operands->addrMode[ADDR_MODE_DIR], (mem&~(1<<operands->addrMode[ADDR_MODE_BIT])));
+            //dev->pc += (signed char)operands->addrMode[ADDR_MODE_REL];
+            dev->pc += SGNEXT(operands->addrRel);
         }
         break;
     }
@@ -395,61 +298,64 @@ static int _instrExecute(VMUDevice* dev) {
         break;
     }
     case OPCODE_DBNZ: {
-        int mem = gyVmuMemRead(dev, _operands[ADDR_MODE_DIR])-1;
-        gyVmuMemWrite(dev, _operands[ADDR_MODE_DIR], mem);
+        int mem = gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR])-1;
+        gyVmuMemWrite(dev, operands->addrMode[ADDR_MODE_DIR], mem);
         if(mem != 0) {
-            //dev->pc += (signed char)_operands[ADDR_MODE_REL];
-            dev->pc += SGNEXT(_addrRel);
+            //dev->pc += (signed char)operands->addrMode[ADDR_MODE_REL];
+            dev->pc += SGNEXT(operands->addrRel);
         }
         break;
     }
     case OPCODE_DBNZ_IND:{
-        int mem = gyVmuMemRead(dev, _operands[ADDR_MODE_IND])-1;
-        gyVmuMemWrite(dev, _operands[ADDR_MODE_IND], mem);
+        int addr = _fetchRegIndAddr(dev, operands->addrMode[ADDR_MODE_IND]);
+        int mem = gyVmuMemRead(dev, addr)-1;
+        gyVmuMemWrite(dev, addr, mem);
         if(mem != 0) {
-            //dev->pc += (signed char)_operands[ADDR_MODE_REL];
-            dev->pc += SGNEXT(_addrRel);
+            //dev->pc += (signed char)operands->addrMode[ADDR_MODE_REL];
+            dev->pc += SGNEXT(operands->addrRel);
         }
         break;
     }
     case OPCODE_PUSH:
-        _push(dev, gyVmuMemRead(dev, _operands[ADDR_MODE_DIR]));
+        _push(dev, gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR]));
         break;
     case OPCODE_INC: {
-        gyVmuMemWrite(dev, _operands[ADDR_MODE_DIR], gyVmuMemRead(dev, _operands[ADDR_MODE_DIR])+1);
+        gyVmuMemWrite(dev, operands->addrMode[ADDR_MODE_DIR], gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR])+1);
         break;
     }
     case OPCODE_INC_IND: {
-        gyVmuMemWrite(dev, _operands[ADDR_MODE_IND], gyVmuMemRead(dev, _operands[ADDR_MODE_IND])+1);
+        int addr = _fetchRegIndAddr(dev, operands->addrMode[ADDR_MODE_IND]);
+        gyVmuMemWrite(dev, addr, gyVmuMemRead(dev, addr)+1);
         break;
     }
     case OPCODE_BP:
-        if(gyVmuMemRead(dev, _operands[ADDR_MODE_DIR])&(0x1<<_operands[ADDR_MODE_BIT])) {
-            //dev->pc += (signed char)_operands[ADDR_MODE_REL];
-            dev->pc += SGNEXT(_addrRel);
+        if(gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR])&(0x1<<operands->addrMode[ADDR_MODE_BIT])) {
+            //dev->pc += (signed char)operands->addrMode[ADDR_MODE_REL];
+            dev->pc += SGNEXT(operands->addrRel);
         }
         break;
     case OPCODE_POP:
-        //gyVmuMemWrite(dev, _operands[ADDR_MODE_DIR], gyVmuMemRead(dev, dev->sfr[SFR_OFFSET(SFR_ADDR_SP)]--));
-        gyVmuMemWrite(dev, _operands[ADDR_MODE_DIR], _pop(dev));
+        //gyVmuMemWrite(dev, operands->addrMode[ADDR_MODE_DIR], gyVmuMemRead(dev, dev->sfr[SFR_OFFSET(SFR_ADDR_SP)]--));
+        gyVmuMemWrite(dev, operands->addrMode[ADDR_MODE_DIR], _pop(dev));
         break;
     case OPCODE_DEC:{
-        gyVmuMemWrite(dev, _operands[ADDR_MODE_DIR],gyVmuMemRead(dev, _operands[ADDR_MODE_DIR])-1);
+        gyVmuMemWrite(dev, operands->addrMode[ADDR_MODE_DIR],gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR])-1);
         break;
     }
     case OPCODE_DEC_IND:{
-        gyVmuMemWrite(dev, _operands[ADDR_MODE_IND], gyVmuMemRead(dev, _operands[ADDR_MODE_IND])-1);
+        const int addr = _fetchRegIndAddr(dev, operands->addrMode[ADDR_MODE_IND]);
+        gyVmuMemWrite(dev, addr, gyVmuMemRead(dev, addr)-1);
         break;
     }
     case OPCODE_BZ:
         if(!dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]) {
-            //dev->pc += (signed char)_operands[ADDR_MODE_REL];
-            dev->pc += SGNEXT(_addrRel);
+            //dev->pc += (signed char)operands->addrMode[ADDR_MODE_REL];
+            dev->pc += SGNEXT(operands->addrRel);
         }
         break;
     case OPCODE_ADDI: {
         int r = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
-        int s = _operands[ADDR_MODE_IMM];
+        int s = operands->addrMode[ADDR_MODE_IMM];
         gyVmuMemWrite(dev, SFR_ADDR_ACC, r+s);
         gyVmuMemWrite(dev, 0x101, (gyVmuMemRead(dev, 0x101)&0x3b)|(r+s>255? 0x80:0)|
                  ((r&15)+(s&15)>15? 0x40:0)|((0x80&(~r^s)&(s^(r+s)))? 4:0));
@@ -457,7 +363,7 @@ static int _instrExecute(VMUDevice* dev) {
     }
     case OPCODE_ADD: {
         int r = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
-        int s = gyVmuMemRead(dev, _operands[ADDR_MODE_DIR]);
+        int s = gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR]);
         gyVmuMemWrite(dev, SFR_ADDR_ACC, r+s);
         gyVmuMemWrite(dev, 0x101, (gyVmuMemRead(dev, 0x101)&0x3b)|(r+s>255? 0x80:0)|
                  ((r&15)+(s&15)>15? 0x40:0)|((0x80&(~r^s)&(s^(r+s)))? 4:0));
@@ -465,30 +371,30 @@ static int _instrExecute(VMUDevice* dev) {
     }
     case OPCODE_ADD_IND: {
         int r = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
-        int s = gyVmuMemRead(dev, _operands[ADDR_MODE_IND]);
+        int s = gyVmuMemRead(dev, _fetchRegIndAddr(dev, operands->addrMode[ADDR_MODE_IND]));
         gyVmuMemWrite(dev, SFR_ADDR_ACC, r+s);
         gyVmuMemWrite(dev, 0x101, (gyVmuMemRead(dev, 0x101)&0x3b)|(r+s>255? 0x80:0)|
                  ((r&15)+(s&15)>15? 0x40:0)|((0x80&(~r^s)&(s^(r+s)))? 4:0));
         break;
     }
     case OPCODE_BN:
-        if(!(gyVmuMemRead(dev, _operands[ADDR_MODE_DIR])&(0x1<<_operands[ADDR_MODE_BIT]))) {
-            //dev->pc += (signed char)_operands[ADDR_MODE_REL];
-            dev->pc += SGNEXT(_addrRel);
+        if(!(gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR])&(0x1<<operands->addrMode[ADDR_MODE_BIT]))) {
+            //dev->pc += (signed char)operands->addrMode[ADDR_MODE_REL];
+            dev->pc += SGNEXT(operands->addrRel);
         }
         break;
     case OPCODE_BNZ: {
         int acc = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
         if(acc) {
-            //dev->pc += (signed char)_operands[ADDR_MODE_REL];
-            dev->pc += SGNEXT(_addrRel);
+            //dev->pc += (signed char)operands->addrMode[ADDR_MODE_REL];
+            dev->pc += SGNEXT(operands->addrRel);
             //dev->pc &= 0xfff;
         }
     }
         break;
     case OPCODE_ADDCI: {
         int r = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
-        int s = _operands[ADDR_MODE_IMM] + ((dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)]&SFR_PSW_CY_MASK)>>SFR_PSW_CY_POS);
+        int s = operands->addrMode[ADDR_MODE_IMM] + ((dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)]&SFR_PSW_CY_MASK)>>SFR_PSW_CY_POS);
         gyVmuMemWrite(dev, SFR_ADDR_ACC, r+s);
         gyVmuMemWrite(dev, 0x101, (gyVmuMemRead(dev, 0x101)&0x3b)|(r+s>255? 0x80:0)|
                  ((r&15)+(s&15)>15? 0x40:0)|((0x80&(~r^s)&(s^(r+s)))? 4:0));
@@ -496,7 +402,7 @@ static int _instrExecute(VMUDevice* dev) {
     }
     case OPCODE_ADDC: {
         int r = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
-        int s = gyVmuMemRead(dev, _operands[ADDR_MODE_DIR]) + ((dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)]&SFR_PSW_CY_MASK)>>SFR_PSW_CY_POS);
+        int s = gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR]) + ((dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)]&SFR_PSW_CY_MASK)>>SFR_PSW_CY_POS);
         gyVmuMemWrite(dev, SFR_ADDR_ACC, r+s);
         gyVmuMemWrite(dev, 0x101, (gyVmuMemRead(dev, 0x101)&0x3b)|(r+s>255? 0x80:0)|
                  ((r&15)+(s&15)>15? 0x40:0)|((0x80&(~r^s)&(s^(r+s)))? 4:0));
@@ -504,7 +410,7 @@ static int _instrExecute(VMUDevice* dev) {
     }
     case OPCODE_ADDC_IND: {
         int r = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
-        int s = gyVmuMemRead(dev, _operands[ADDR_MODE_IND]) + ((dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)]&SFR_PSW_CY_MASK)>>SFR_PSW_CY_POS);
+        int s = gyVmuMemRead(dev, _fetchRegIndAddr(dev, operands->addrMode[ADDR_MODE_IND])) + ((dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)]&SFR_PSW_CY_MASK)>>SFR_PSW_CY_POS);
         gyVmuMemWrite(dev, SFR_ADDR_ACC, r+s);
         gyVmuMemWrite(dev, 0x101, (gyVmuMemRead(dev, 0x101)&0x3b)|(r+s>255? 0x80:0)|
                  ((r&15)+(s&15)>15? 0x40:0)|((0x80&(~r^s)&(s^(r+s)))? 4:0));
@@ -518,7 +424,7 @@ static int _instrExecute(VMUDevice* dev) {
     }
     case OPCODE_SUBI: {
         int r = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
-        int s = _operands[ADDR_MODE_IMM];
+        int s = operands->addrMode[ADDR_MODE_IMM];
         gyVmuMemWrite(dev, SFR_ADDR_ACC, r-s);
         gyVmuMemWrite(dev, 0x101, (gyVmuMemRead(dev, 0x101)&0x3b)|(r-s<0? 0x80:0)|
              ((r&15)-(s&15)<0? 0x40:0)|(UCHAR_SUB_OV(r,s)? 4:0));
@@ -527,7 +433,7 @@ static int _instrExecute(VMUDevice* dev) {
     }
     case OPCODE_SUB:{
         int r = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
-        int s = gyVmuMemRead(dev, _operands[ADDR_MODE_DIR]);
+        int s = gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR]);
         gyVmuMemWrite(dev, SFR_ADDR_ACC, r-s);
         gyVmuMemWrite(dev, 0x101, (gyVmuMemRead(dev, 0x101)&0x3b)|(r-s<0? 0x80:0)|
              ((r&15)-(s&15)<0? 0x40:0)|(UCHAR_SUB_OV(r,s)? 4:0));
@@ -536,7 +442,7 @@ static int _instrExecute(VMUDevice* dev) {
     }
     case OPCODE_SUB_IND:{
         int r = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
-        int s = gyVmuMemRead(dev, _operands[ADDR_MODE_IND]);
+        int s = gyVmuMemRead(dev, _fetchRegIndAddr(dev, operands->addrMode[ADDR_MODE_IND]));
         gyVmuMemWrite(dev, SFR_ADDR_ACC, r-s);
         gyVmuMemWrite(dev, 0x101, (gyVmuMemRead(dev, 0x101)&0x3b)|(r-s<0? 0x80:0)|
              ((r&15)-(s&15)<0? 0x40:0)|(UCHAR_SUB_OV(r,s)? 4:0));
@@ -544,7 +450,7 @@ static int _instrExecute(VMUDevice* dev) {
         break;
     }
     case OPCODE_NOT1: {
-        gyVmuMemWrite(dev, _operands[ADDR_MODE_DIR], gyVmuMemRead(dev, _operands[ADDR_MODE_DIR]) ^ (0x1u<<_operands[ADDR_MODE_BIT]));
+        gyVmuMemWrite(dev, operands->addrMode[ADDR_MODE_DIR], gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR]) ^ (0x1u<<operands->addrMode[ADDR_MODE_BIT]));
         break;
     }
     case OPCODE_RETI: {
@@ -556,7 +462,7 @@ static int _instrExecute(VMUDevice* dev) {
     }
     case OPCODE_SUBCI: {
         int r = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
-        int s = _operands[ADDR_MODE_IMM];
+        int s = operands->addrMode[ADDR_MODE_IMM];
         int c = ((dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)]&SFR_PSW_CY_MASK)>>SFR_PSW_CY_POS);
         gyVmuMemWrite(dev, SFR_ADDR_ACC, r-s-c);
         gyVmuMemWrite(dev, 0x101, (gyVmuMemRead(dev, 0x101)&0x3b)|(r-s-c<0? 0x80:0)|
@@ -565,7 +471,7 @@ static int _instrExecute(VMUDevice* dev) {
     }
     case OPCODE_SUBC: {
         int r = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
-        int s = gyVmuMemRead(dev, _operands[ADDR_MODE_DIR]);
+        int s = gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR]);
         int c = ((dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)]&SFR_PSW_CY_MASK)>>SFR_PSW_CY_POS);
         gyVmuMemWrite(dev, SFR_ADDR_ACC, r-s-c);
         gyVmuMemWrite(dev, 0x101, (gyVmuMemRead(dev, 0x101)&0x3b)|(r-s-c<0? 0x80:0)|
@@ -575,7 +481,7 @@ static int _instrExecute(VMUDevice* dev) {
     }
     case OPCODE_SUBC_IND:{
         int r = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
-        int s = gyVmuMemRead(dev, _operands[ADDR_MODE_IND]);
+        int s = gyVmuMemRead(dev, _fetchRegIndAddr(dev, operands->addrMode[ADDR_MODE_IND]));
         int c = ((dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)]&SFR_PSW_CY_MASK)>>SFR_PSW_CY_POS);
         gyVmuMemWrite(dev, SFR_ADDR_ACC, r-s-c);
         gyVmuMemWrite(dev, 0x101, (gyVmuMemRead(dev, 0x101)&0x3b)|(r-s-c<0? 0x80:0)|
@@ -594,26 +500,27 @@ static int _instrExecute(VMUDevice* dev) {
         break;
     case OPCODE_XCH: {
         int acc   = gyVmuMemRead(dev, SFR_ADDR_ACC);
-        int mem   = gyVmuMemRead(dev, _operands[ADDR_MODE_DIR]);
+        int mem   = gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR]);
         acc                 ^= mem;
         mem                 ^= acc;
         acc                 ^= mem;
         gyVmuMemWrite(dev, SFR_ADDR_ACC, acc);
-        gyVmuMemWrite(dev, _operands[ADDR_MODE_DIR], mem);
+        gyVmuMemWrite(dev, operands->addrMode[ADDR_MODE_DIR], mem);
         break;
     }
     case OPCODE_XCH_IND: {
+        const int addr = _fetchRegIndAddr(dev, operands->addrMode[ADDR_MODE_IND]);
         int acc   = gyVmuMemRead(dev, SFR_ADDR_ACC);
-        int mem   = gyVmuMemRead(dev, _operands[ADDR_MODE_IND]);
+        int mem   = gyVmuMemRead(dev, addr);
         acc                 ^= mem;
         mem                 ^= acc;
         acc                 ^= mem;
         gyVmuMemWrite(dev, SFR_ADDR_ACC, acc);
-        gyVmuMemWrite(dev, _operands[ADDR_MODE_IND], mem);
+        gyVmuMemWrite(dev, addr, mem);
         break;
     }
     case OPCODE_CLR1: {
-        gyVmuMemWrite(dev, _operands[ADDR_MODE_DIR], gyVmuMemRead(dev, _operands[ADDR_MODE_DIR])& ~(0x1u<<_operands[ADDR_MODE_BIT]));
+        gyVmuMemWrite(dev, operands->addrMode[ADDR_MODE_DIR], gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR])& ~(0x1u<<operands->addrMode[ADDR_MODE_BIT]));
         break;
     }
     case OPCODE_RORC: {
@@ -638,13 +545,13 @@ static int _instrExecute(VMUDevice* dev) {
         break;
     }
     case OPCODE_ORI:
-        gyVmuMemWrite(dev, SFR_ADDR_ACC, dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]|_operands[ADDR_MODE_IMM]);
+        gyVmuMemWrite(dev, SFR_ADDR_ACC, dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]|operands->addrMode[ADDR_MODE_IMM]);
         break;
     case OPCODE_OR:
-        gyVmuMemWrite(dev, SFR_ADDR_ACC, dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]|gyVmuMemRead(dev, _operands[ADDR_MODE_DIR]));
+        gyVmuMemWrite(dev, SFR_ADDR_ACC, dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]|gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR]));
         break;
     case OPCODE_OR_IND:
-        gyVmuMemWrite(dev, SFR_ADDR_ACC, dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]|gyVmuMemRead(dev, _operands[ADDR_MODE_IND]));
+        gyVmuMemWrite(dev, SFR_ADDR_ACC, dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]|gyVmuMemRead(dev, _fetchRegIndAddr(dev, operands->addrMode[ADDR_MODE_IND])));
         break;
     case OPCODE_ROL: {
         int r = gyVmuMemRead(dev, 0x100);
@@ -653,16 +560,16 @@ static int _instrExecute(VMUDevice* dev) {
         break;
     }
     case OPCODE_ANDI:
-        gyVmuMemWrite(dev, SFR_ADDR_ACC, dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]&_operands[ADDR_MODE_IMM]);
+        gyVmuMemWrite(dev, SFR_ADDR_ACC, dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]&operands->addrMode[ADDR_MODE_IMM]);
         break;
     case OPCODE_AND:
-        gyVmuMemWrite(dev, SFR_ADDR_ACC, dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]&gyVmuMemRead(dev, _operands[ADDR_MODE_DIR]));
+        gyVmuMemWrite(dev, SFR_ADDR_ACC, dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]&gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR]));
         break;
     case OPCODE_AND_IND:
-        gyVmuMemWrite(dev, SFR_ADDR_ACC, dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]&gyVmuMemRead(dev, _operands[ADDR_MODE_IND]));
+        gyVmuMemWrite(dev, SFR_ADDR_ACC, dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]&gyVmuMemRead(dev, _fetchRegIndAddr(dev, operands->addrMode[ADDR_MODE_IND])));
         break;
     case OPCODE_SET1: {
-        gyVmuMemWrite(dev, _operands[ADDR_MODE_DIR], gyVmuMemRead(dev, _operands[ADDR_MODE_DIR])|(0x1u<<_operands[ADDR_MODE_BIT]));
+        gyVmuMemWrite(dev, operands->addrMode[ADDR_MODE_DIR], gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR])|(0x1u<<operands->addrMode[ADDR_MODE_BIT]));
         break;
     }
     case OPCODE_ROLC:  {
@@ -688,13 +595,13 @@ static int _instrExecute(VMUDevice* dev) {
         break;
     }
     case OPCODE_XORI:
-        gyVmuMemWrite(dev, SFR_ADDR_ACC, dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]^_operands[ADDR_MODE_IMM]);
+        gyVmuMemWrite(dev, SFR_ADDR_ACC, dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]^operands->addrMode[ADDR_MODE_IMM]);
         break;
     case OPCODE_XOR:
-        gyVmuMemWrite(dev, SFR_ADDR_ACC, dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]^gyVmuMemRead(dev, _operands[ADDR_MODE_DIR]));
+        gyVmuMemWrite(dev, SFR_ADDR_ACC, dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]^gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR]));
         break;
     case OPCODE_XOR_IND:
-        gyVmuMemWrite(dev, SFR_ADDR_ACC, dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]^gyVmuMemRead(dev, _operands[ADDR_MODE_IND]));
+        gyVmuMemWrite(dev, SFR_ADDR_ACC, dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]^gyVmuMemRead(dev, _fetchRegIndAddr(dev, operands->addrMode[ADDR_MODE_IND])));
         break;
     }
 
@@ -703,48 +610,39 @@ static int _instrExecute(VMUDevice* dev) {
 
 
 
-static int _fetchNextInstruction(VMUDevice* device) {
-    //clear current instruction cache
-    device->instrBytesFetched  = 0;
-    device->instr              = 0;
+static int gyVmuCpuInstrExecuteNext(VMUDevice* device) {
+    //Fetch instruction
+    memset(&device->curInstr, 0, sizeof(VMUInstr));
+    gyVmuInstrFetch(&device->imem[device->pc], &device->curInstr);
 
-    do { //keep fetching bytes until entire instruction has been fetched
-        device->instrBytes[device->instrBytesFetched++] = device->imem[device->pc++];
-    } while(device->instrBytesFetched < _instrMap[device->instrBytes[INSTR_BYTE_OPCODE]].bytes);
+    //Advance program counter
+    device->pc += device->curInstr.bytes;
 
     //Entire instruction has been loaded
-    if(device->instrBytesFetched >= _instrMap[device->instrBytes[INSTR_BYTE_OPCODE]].bytes) {
-        static int instrNum = 0;
+    if(device->curInstr.bytes >= _instrMap[device->curInstr.instrBytes[INSTR_BYTE_OPCODE]].bytes) {
 #ifdef VMU_DEBUG
-        _gyLog(GY_DEBUG_VERBOSE, "*************** [%d] PC - %x **************", ++instrNum, device->pc-_instrMap[device->instrBytes[INSTR_BYTE_OPCODE]].bytes+1);
+        static int instrNum = 0;
+        _gyLog(GY_DEBUG_VERBOSE, "*************** [%d] PC - %x **************", ++instrNum, device->pc-_instrMap[device->curInstr.instrBytes[INSTR_BYTE_OPCODE]].bytes+1);
         _gyPush();
-
-        //_gyLog(GY_DEBUG_VERBOSE, "BYTE - %x", byte);
-
-
-        _gyLog(GY_DEBUG_VERBOSE, "mnemonic - %s", _instrMap[device->instrBytes[INSTR_BYTE_OPCODE]].mnemonic);
+        _gyLog(GY_DEBUG_VERBOSE, "mnemonic - %s", _instrMap[device->curInstr.instrBytes[INSTR_BYTE_OPCODE]].mnemonic);
 #endif
-        assert(_instrMap[device->instrBytes[INSTR_BYTE_OPCODE]].mnemonic);
-        //if(_instrMap[device->instrBytes[INSTR_BYTE_OPCODE]].bytes >= 2) _gyLog(GY_DEBUG_VERBOSE, "byte[1] = %x", device->instrBytes[INSTR_BYTE_2]);
-        //if(_instrMap[device->instrBytes[INSTR_BYTE_OPCODE]].bytes >= 3) _gyLog(GY_DEBUG_VERBOSE, "byte[2] = %x", device->instrBytes[INSTR_BYTE_3]);
+        //If this happens, we're at some unknown instruction, and fuck only knows what is about to happen...
+        assert(_instrMap[device->curInstr.instrBytes[INSTR_BYTE_OPCODE]].mnemonic);
 
+        //Fetch operands
+        VMUInstrOperands operands;
+        memset(&operands, 0, sizeof(VMUInstrOperands));
+        gyVmuInstrDecodeOperands(&device->curInstr, &operands);
 
-        _instrExecute(device);
-        gyVmuTimersUpdate(device);
+        //Execute instructions
+        gyVmuCpuInstrExecute(device, &device->curInstr, &operands);
 
-        //check for firmware entry based
-        if(!(device->sfr[0x0d]&1) && !device->biosLoaded)
+        //Check if we entered the firmware
+        if((!device->sfr[SFR_OFFSET(SFR_ADDR_EXT)]&SFR_EXT_MASK) && !device->biosLoaded)
+            //handle the BIOS call in software if no firwmare has been loaded
             if((device->pc = gyVmuBiosHandleCall(device)))
-                //device->sfr[0x0d]|=1;
-                gyVmuMemWrite(device, SFR_ADDR_EXT, gyVmuMemRead(device, SFR_ADDR_EXT)|1);
-
-
-        //check for overflows and shit
-        //if(_instructionMap[device->_instrBytes[INSTR_BYTE_OPCODE]].psw) {
-
-
-        //}
-
+                //jump back to USER mode before resuming execution.
+                gyVmuMemWrite(device, SFR_ADDR_EXT, gyVmuMemRead(device, SFR_ADDR_EXT)|SFR_EXT_USER);
     }
 
 #ifdef VMU_DEBUG
@@ -753,13 +651,6 @@ static int _fetchNextInstruction(VMUDevice* device) {
     return 1; //keep fetching instruction in next clock-cycle
 }
 
-int reset(void) {
-    //1 - Clear main RAM
-   // memset(_ram, 0,
-
-    //set program counter to 0x0000
-    return 0;
-}
 
 int gyVmuCpuTick(VMUDevice* dev, float deltaTime) {
 
@@ -767,12 +658,12 @@ int gyVmuCpuTick(VMUDevice* dev, float deltaTime) {
     float time = 0.0f;
     int cycle = 0;
 
-
     if(deltaTime >= gyVmuOscSecPerCycle(dev)) {
         while(time < deltaTime) {
-            _fetchNextInstruction(dev);
+            gyVmuCpuInstrExecuteNext(dev);
+            gyVmuTimersUpdate(dev);
             _serviceInterrupts(dev);
-            time += gyVmuOscSecPerCycle(dev)*(float)_instrMap[dev->instrBytes[INSTR_BYTE_OPCODE]].cc;
+            time += gyVmuOscSecPerCycle(dev)*(float)_instrMap[dev->curInstr.instrBytes[INSTR_BYTE_OPCODE]].cc;
             ++cycle;
         }
     }

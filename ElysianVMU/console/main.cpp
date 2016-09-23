@@ -1,9 +1,11 @@
 #include <QApplication>
 #include <string>
 #include <QCommandLineParser>
+#include <QDebug>
 #include "gyro_vmu_main_window.hpp"
 #include "../lib/source/gyro_vmu_instr.h"
 #include "../lib/source/gyro_vmu_version.h"
+#include "../lib/source/gyro_vmu_disassembler.h"
 
 int main(int argc, char* argv[]) {
 
@@ -25,6 +27,8 @@ int main(int argc, char* argv[]) {
     parser.addOption({{"r", "rom"}, "Load and run <Rom Image>", "Rom Image"});
     parser.addOption({{"w", "working-dir"}, "Set working the <Working Directory>", "Working Directory"});
     parser.addOption({{"i", "instruction"}, "Decode first byte of <Instruction>", "Instruction"});
+    parser.addOption({{"d", "disassemble"}, "Disassemble <Rom Image> and output assembly <Source File>", "Source File"});
+    parser.addOption({{"l", "line-numbers"}, "Include <Line Numbers> in disassembly file", "Line Numbers"});
     //add options for instruction set
     //add options for decoding instructions
     //add options for encoding instructions
@@ -49,6 +53,18 @@ int main(int argc, char* argv[]) {
 
     if(parser.isSet("w")) {
         workingDir = parser.value("w");
+    }
+
+    if(parser.isSet("d")) {
+        if(!parser.isSet("r")) {
+            qCritical() << "-d flag provided without -r flag for Rom Image file!";
+            return 1;
+        }
+
+        QString outFile = parser.value("d");
+        bool lineNumbers = parser.isSet("l");
+        gyVmuDisassembleFile(romPath.toStdString().c_str(), outFile.toStdString().c_str(), lineNumbers);
+        return 0;
     }
 
     if(parser.isSet("i")) {

@@ -18,9 +18,9 @@ int gyVmuTimersUpdate(VMUDevice *dev) {
 
 int gyVmuTimerBaseUpdate(struct VMUDevice* dev) {
     //hard-coded to generate interrupt every 0.5s by VMU
-    dev->tBaseDeltaTime += (float)_instrMap[dev->instrBytes[INSTR_BYTE_OPCODE]].cc*gyVmuOscSecPerCycle(dev);
+    dev->tBaseDeltaTime += (float)_instrMap[dev->curInstr.instrBytes[INSTR_BYTE_OPCODE]].cc*gyVmuOscSecPerCycle(dev);
 static int cycles = 0;
-cycles += _instrMap[dev->instrBytes[INSTR_BYTE_OPCODE]].cc;
+cycles += _instrMap[dev->curInstr.instrBytes[INSTR_BYTE_OPCODE]].cc;
     if(dev->tBaseDeltaTime >= 0.5f) { //call this many cycles 0.5s...
 #ifdef VMU_DEBUG
         _gyLog(GY_DEBUG_VERBOSE, "TBASE CYCLES - %d", cycles);
@@ -34,7 +34,7 @@ cycles += _instrMap[dev->instrBytes[INSTR_BYTE_OPCODE]].cc;
 }
 
 int gyVmuTimer0Update(struct VMUDevice* dev) {
-    int cy = _instrMap[dev->instrBytes[INSTR_BYTE_OPCODE]].cc;
+    int cy = _instrMap[dev->curInstr.instrBytes[INSTR_BYTE_OPCODE]].cc;
 
     /* Timer 0 */
     //T0H overflow or interrupts enabled
@@ -107,7 +107,7 @@ int gyVmuTimer0Update(struct VMUDevice* dev) {
 }
 
 int gyVmuTimer1Update(struct VMUDevice* dev) {
-    int cy = _instrMap[dev->instrBytes[INSTR_BYTE_OPCODE]].cc;
+    int cy = _instrMap[dev->curInstr.instrBytes[INSTR_BYTE_OPCODE]].cc;
 
     //Interrupts enabled for T1H or overflow on T1H
     if(dev->sfr[SFR_OFFSET(SFR_ADDR_T1CNT)] & (SFR_T1CNT_T1HRUN_MASK|SFR_T1CNT_T1LRUN_MASK)) {

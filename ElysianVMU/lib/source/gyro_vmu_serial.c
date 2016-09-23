@@ -297,7 +297,7 @@ int gyVmuSerialTcpSend(struct VMUDevice* dev, unsigned char byte) {
             byte
         };
 
-        if(gyNetTcpSocketSend(dev->serialPort._tcpSocket, bytes, 2)) {
+        if(gyNetTcpSocketSend(dev->serialPort._tcpSocket, bytes, 2) == 2) {
 
             _gyLog(GY_DEBUG_VERBOSE, "SENDING BYTE - %x", bytes[1]);
 
