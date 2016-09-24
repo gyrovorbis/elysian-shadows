@@ -9,6 +9,7 @@
 #include "elysian_lua_manager.hpp"
 #include "elysian_light_system.hpp"
 #include "elysian_rigid_body_system.hpp"
+#include <crtp/elysian_camera_system.hpp>
 #include <crtp/elysian_rigid_body.hpp>
 #include <crtp/elysian_examinable.hpp>
 #include <crtp/elysian_combat.hpp>
@@ -264,46 +265,60 @@ void GuiSystem::_printDebugLine(const char *title, const char *str, ...) {
 }
 
 void GuiSystem::_renderDebugOverlay(void) {
-    if(!_debugOverlayEnabled) return;
+    int startX, startY, endX, endY;
+
+    if(_debugOverlayPage == -1)
+        return;
 
     pragmata18.setColor(0, 255, 100, 255);
-    pragmata18._transform._pos.y = 100.0f;
+    pragmata18._transform._pos.y = 75.0f;
     pragmata18._transform._pos.z = 50.0f;
 
     pragmata18.startBatchRender();
 
-    _printDebugLine("FPS:", "%.2f", getTimerSys()->getFramerate());
-    _printDebugLine("Verts:", "%u", gyVidDbgVertexRenderCount());
-    _printDebugLine("Uniform Uploads:", "%u", gyVidDbgShaderUniformChangeCount());
-    _printDebugLine("LightSys Uploads:", "%u", getLightSys()->getShaderUniformChangesLastFrame());
-    _printDebugLine("Texture Changes:", "%u", gyVidDbgTextureChangeCount());
-    _printDebugLine("Textures:", "%u", gyVidTexAmount());
-    _printDebugLine("Texture MBytes:", "%f", gyVidTexBytes()/1024.0f/1024.0f);
-    pragmata18._transform._pos.y += 25.0f;
-	_printDebugLine("Onscreen Lights:", "%d", getLightSys()->getOnscreenLightCount());
-    _printDebugLine("Entities:", "%d", getCurrentArea()->entities.size());
-    _printDebugLine("Collision Checks:", "%d", getCollisionSys()->getEntityEntityChecks());
-    _printDebugLine("Collision Time:", "%.4lf", getCollisionSys()->getDetectionTime());
-	_printDebugLine("Contacts:", "%d", getCollisionSys()->getContactCount());
-	_printDebugLine("Pen Res Iter:", "%d", getCollisionSys()->getPenResIterUsed());
-	_printDebugLine("Vel Res Iter:", "%d", getRigidBodySys()->getVelResIterUsed());
-    pragmata18._transform._pos.y += 25.0f;
-    _printDebugLine("Lua Scripts:", "%d", LuaManager::getScriptCount());
-    _printDebugLine("Lua Script Instances:", "%d", LuaManager::getScriptInstances());
-    _printDebugLine("Lua MBytes:", "%f", LuaManager::getKbytesUsed()/1024.0f);
-    pragmata18._transform._pos.y += 25.0f;
-    _printDebugLine("Game Time:", "%d:%d:%d", getDaySys()->getDays(), getDaySys()->getHours(), getDaySys()->getMinutes());
-    if(getPartySys()->getPartyLeader()) {
-        _printDebugLine("player.pos:", "<%.2f, %.2f, %.2f>",
-                        getPartySys()->getPartyLeader()->_transform._pos.x,
-                        getPartySys()->getPartyLeader()->_transform._pos.y,
-                        getPartySys()->getPartyLeader()->_transform._pos.z);
-        _printDebugLine("player.resting:", "%d",
-                        getPartySys()->getPartyLeader()->getCollidable()->getRestingOnBody());
-        _printDebugLine("player.contacts:", "%d",
-                        getPartySys()->getPartyLeader()->getCollidable()->getContactCount());
-    }
+    switch(_debugOverlayPage) {
+    case 0:
+        _printDebugLine("FPS:", "%.2f", getTimerSys()->getFramerate());
+        _printDebugLine("Verts:", "%u", gyVidDbgVertexRenderCount());
+        _printDebugLine("Uniform Uploads:", "%u", gyVidDbgShaderUniformChangeCount());
+        _printDebugLine("LightSys Uploads:", "%u", getLightSys()->getShaderUniformChangesLastFrame());
+        _printDebugLine("Texture Changes:", "%u", gyVidDbgTextureChangeCount());
+        _printDebugLine("Textures:", "%u", gyVidTexAmount());
+        _printDebugLine("Texture MBytes:", "%f", gyVidTexBytes()/1024.0f/1024.0f);
+        getCameraSys()->getVisibleTileRegion(startX, startY, endX, endY);
+        _printDebugLine("Camera Rect:", "<%d, %d, %d, %d>", startX, startY, endX, endY);
+        pragmata18._transform._pos.y += 25.0f;
+        _printDebugLine("Onscreen Lights:", "%d", getLightSys()->getOnscreenLightCount());
+        _printDebugLine("Entities:", "%d", getCurrentArea()->entities.size());
+        pragmata18._transform._pos.y += 25.0f;
+        _printDebugLine("Game Time:", "%d:%d:%d", getDaySys()->getDays(), getDaySys()->getHours(), getDaySys()->getMinutes());
+         if(getPartySys()->getPartyLeader()) {
+            _printDebugLine("player.pos:", "<%.2f, %.2f, %.2f>",
+                            getPartySys()->getPartyLeader()->_transform._pos.x,
+                            getPartySys()->getPartyLeader()->_transform._pos.y,
+                            getPartySys()->getPartyLeader()->_transform._pos.z);
 
+        }
+        break;
+    case 1:
+        _printDebugLine("Collision Checks:", "%d", getCollisionSys()->getEntityEntityChecks());
+        _printDebugLine("Collision Time:", "%.4lf", getCollisionSys()->getDetectionTime());
+        _printDebugLine("Contacts:", "%d", getCollisionSys()->getContactCount());
+        _printDebugLine("Pen Res Iter:", "%d", getCollisionSys()->getPenResIterUsed());
+        _printDebugLine("Vel Res Iter:", "%d", getRigidBodySys()->getVelResIterUsed());
+        pragmata18._transform._pos.y += 25.0f;
+        _printDebugLine("Lua Scripts:", "%d", LuaManager::getScriptCount());
+        _printDebugLine("Lua Script Instances:", "%d", LuaManager::getScriptInstances());
+        _printDebugLine("Lua MBytes:", "%f", LuaManager::getKbytesUsed()/1024.0f);
+         if(getPartySys()->getPartyLeader()) {
+            _printDebugLine("player.resting:", "%d",
+                            getPartySys()->getPartyLeader()->getCollidable()->getRestingOnBody());
+            _printDebugLine("player.contacts:", "%d",
+                            getPartySys()->getPartyLeader()->getCollidable()->getContactCount());
+        }
+        break;
+    default: break;
+    }
     pragmata18.endBatchRender();
 
 }

@@ -195,6 +195,7 @@
     <addaction name="separator"/>
     <addaction name="menuDynamic_Lighting"/>
     <addaction name="separator"/>
+    <addaction name="actionToggle_Fullscreen"/>
    </widget>
    <widget class="QMenu" name="menuLevel">
     <property name="enabled">
@@ -1552,6 +1553,14 @@
    </property>
    <property name="text">
     <string>Bloom</string>
+   </property>
+  </action>
+  <action name="actionToggle_Fullscreen">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Toggle Fullscreen</string>
    </property>
   </action>
  </widget>

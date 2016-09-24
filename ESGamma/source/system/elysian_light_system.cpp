@@ -37,7 +37,7 @@ void LightSystem::_addToLightMap(LightSource*const src) {
     }
 }
 
-unsigned LightSystem::getLightCount(void) const { return (_shadowPass)? 0 :  _curArea->lightSources.size(); }
+unsigned LightSystem::getLightCount(void) const { return (_shadowPass || !_enabled)? 0 :  _curArea->lightSources.size(); }
 
 void LightSystem::update(void) {
     const float deltaTime = getTimerSys()->getDeltaTime();

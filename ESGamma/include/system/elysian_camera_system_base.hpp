@@ -67,7 +67,7 @@ namespace elysian {
         void                    clipBoundingRegion(const int startX, const int endX, const int startY, const int endY);
         void                    clipBoundingRegion(const Camera& cam);
 
-        bool                    isWithinScreenRegion(const int x, const int y, const int width, const int height) const;
+        bool                    isWithinScreenRegion(const float x, const float y, const float width, const float height) const;
     };
 
     class CameraSystemBase:
@@ -249,13 +249,17 @@ namespace elysian {
 
     }
 
-    inline bool Camera::isWithinScreenRegion(const int x, const int y, const int halfWidth, const int halfHeight) const {
-#if 0
-        const int distX = abs((int)x-(int)_keyFrame._pos.x);
-        const int distY = abs((int)y-(int)_keyFrame._pos.y);
+    inline bool Camera::isWithinScreenRegion(const float x, const float y, const float halfWidth, const float halfHeight) const {
+#if 1
 
-        const int maxDistX = (halfWidth + (scrEndX-scrStartX)*0.5f)/(_keyFrame._scale*staticScale);
-        const int maxDistY = (halfHeight + (scrEndY-scrStartY)*0.5f)/(_keyFrame._scale*staticScale);
+        const float scrX = ((float)scrStartX + (float)scrEndX)/2.0f;
+        const float scrY = ((float)scrStartY + (float)scrEndY)/2.0f;
+
+        const float distX = fabs(x-scrX);
+        const float distY = fabs(y-scrY);
+
+        const float maxDistX = ((float)scrEndX-(float)scrStartX)*0.5f + halfWidth;
+        const float maxDistY = ((float)scrEndY-(float)scrStartY)*0.5f + halfHeight;
 
         return (distY < maxDistY && distX < maxDistX);
 #else

@@ -238,6 +238,7 @@ namespace elysian {
 
     template<typename P, typename T, typename E>
     inline void MapSystemCrtp<P, T, E>::beginObjectList(void) {
+        if(!_renderLayer[0] && !_renderLayer[1] && !_renderLayer[2]) return; //Don't render if this layer has been toggled off.
        // flushTileBuffer();
         bindTileBuffer();
     }
@@ -260,6 +261,8 @@ namespace elysian {
 
     template<typename P, typename T, typename E>
     inline void MapSystemCrtp<P, T, E>::endObjectList(void) {
+        if(!_renderLayer[0] && !_renderLayer[1] && !_renderLayer[2]) return; //Don't render if this layer has been toggled off.
+
         flushTileBuffer();
         unbindTileBuffer();
     }
@@ -349,9 +352,10 @@ break;
             if(entity->getParentEntity()) continue; //will be rendered with the parent!
             if(getLightSys()->isShadowPass() && !entity->isShadowVolume()) {
                 continue;
-            } //else if(getCameraSys()->isOnscreen(entity)) {
+            }
+            if(getCameraSys()->isOnscreen(*entity)) {
                 _onscreenEntityPool.claimFreeEntry() = entity;
-            //}
+            }
         }
         //Debug::printf(Debug::VERBOSE, "ONSCREEN ENTITIES - %d", _onscreenEntityPool.size());
         return _onscreenEntityPool.size();

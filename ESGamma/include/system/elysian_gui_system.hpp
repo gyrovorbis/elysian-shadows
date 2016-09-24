@@ -35,6 +35,8 @@
 #define ELYSIAN_GUI_SYSTEM_EXP_TEXT_STICK_TIME      3.0f
 #define ELYSIAN_GUI_SYSTEM_EXP_TEXT_FADE_TIME       0.3f
 
+#define ELYSIAN_GUI_SYSTEM_DEBUG_OVERLAY_PAGES      2
+
 ELYSIAN_ASSET_TYPEDEF(Entity)
 
 namespace elysian {
@@ -133,7 +135,7 @@ namespace elysian {
         Pool<CombatText>            _combatText;
         Pool<VictoryText>           _victoryText;
         static const GYVector2      _combatTextGravity;
-        bool                        _debugOverlayEnabled	= false;
+        int                         _debugOverlayPage       = -1; //disabled
 
         unsigned int                _projWidth;
         unsigned int                _projHeight;
@@ -167,7 +169,9 @@ namespace elysian {
         void            render(void);
         void            getResolution(unsigned int &width, unsigned int &height) const;
         void            addCombatText(const char*const text, const GYColor4 color, const GYVector2& pos, const GYVector2& vel);
-        void            setDebugOverLayEnabled(const bool enabled);
+        void            setDebugOverlayPage(const int page);
+        int             getDebugOverlayPage(void) const;
+        void            nextDebugOverlayPage(void);
         void            setFgMenuWidget(MenuWidget*const widget);
         void            clearFgMenuWidget(void);
         void            setBgMenuWidget(MenuWidget*const widget);
@@ -219,7 +223,11 @@ namespace elysian {
 
     inline void GuiSystem::setExamineEntity(const Entity * const entity) { _examineEntity = entity; }
     inline const Entity* GuiSystem::getExamineEntity(void) const { return _examineEntity; }
-	inline void GuiSystem::setDebugOverLayEnabled(const bool enabled) { _debugOverlayEnabled = enabled; }
+    inline void GuiSystem::setDebugOverlayPage(const int page) { _debugOverlayPage = page; }
+    inline int GuiSystem::getDebugOverlayPage(void) const { return _debugOverlayPage; }
+    inline void GuiSystem::nextDebugOverlayPage(void) {
+        if(++_debugOverlayPage >= ELYSIAN_GUI_SYSTEM_DEBUG_OVERLAY_PAGES) _debugOverlayPage = -1;
+    }
 	inline void GuiSystem::setFgMenuWidget(MenuWidget * const widget) { _fgMenuWidget = widget; }
 	inline void GuiSystem::clearFgMenuWidget(void) { _fgMenuWidget = nullptr; }
 	inline void GuiSystem::setBgMenuWidget(MenuWidget * const widget) { _bgMenuWidget = widget; }

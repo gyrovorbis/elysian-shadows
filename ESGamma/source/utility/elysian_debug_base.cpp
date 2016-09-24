@@ -400,9 +400,7 @@ void DebugBase::processInput(Keyboard*const input) {
         Debug::printf(Debug::LOG_VERBOSE, "Gravity %s.", (enabled)? "enabled" : "disabled");
 	}
     if(input->isTapped(GY_KEY_6)) {
-		static bool enabled = false;
-		enabled = !enabled;
-		getGuiSys()->setDebugOverLayEnabled(enabled);
+        getGuiSys()->nextDebugOverlayPage();
 	}
 
 

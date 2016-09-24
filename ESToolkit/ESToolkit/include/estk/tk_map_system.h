@@ -43,6 +43,7 @@ public:
 // ====== INLINEZ =====
 
 inline void TkMapSystem::renderCustomPassImmediate(void) {
+    return;
     for(int j = _scrStartY; j <= _scrEndY; ++j) {
         for(int i = _scrStartX; i <= _scrEndX; ++i) {
             for(unsigned k = 0; k < 3; ++k) {
@@ -64,6 +65,7 @@ inline void TkMapSystem::renderCustomPassImmediate(void) {
 }
 
 inline void TkMapSystem::renderCustomPassAtElev(const int elev, const elysian::NORMAL_TYPE normalType) const {
+    return;
     MapSystemBase::renderCustomPassAtElev(elev, normalType);
     if(elev != -1) _renderCustomPass(_objectCount[elev], _objectBuff[elev], normalType);
     else           _renderMapBorders();

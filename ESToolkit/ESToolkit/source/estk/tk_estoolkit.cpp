@@ -1148,3 +1148,21 @@ void ESToolkit::showGitlabBugReportTab(void) const {
 void ESToolkit::setIndexHiddenLevels(const bool val) {
     on_actionHidden_Levels_toggled(val);
 }
+
+void ESToolkit::on_actionToggle_Fullscreen_toggled(bool arg1)
+{
+    if(arg1) {
+        _ui->menuBar->hide();
+        _ui->mainToolBar->hide();
+        _areaTabBar->hide();
+        statusBar()->hide();
+        showFullScreen();
+    } else {
+        statusBar()->show();
+        _areaTabBar->show();
+        _ui->mainToolBar->show();
+        _ui->menuBar->show();
+        showNormal();
+    }
+
+}

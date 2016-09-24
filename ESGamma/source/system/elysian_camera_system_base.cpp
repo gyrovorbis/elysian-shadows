@@ -542,9 +542,9 @@ void CameraSystemBase::transform(GYVector4* /*dest*/, const GYVector4* /*src*/) 
 }
 
 //NEEDS TO RESPECT ELEVATION + DIFFERENT PLANE TYPES
-bool CameraSystemBase::isOnscreen(const Entity &/*entity*/) {
-#if 0
-    if(entity._transform._orientZ == 0.0f) { //Entities without rotation
+bool CameraSystemBase::isOnscreen(const Entity &entity) {
+#if 1
+    if(entity._transform._orient.z == 0.0f) { //Entities without rotation
         return _curState->isWithinScreenRegion(entity._transform._pos.x, entity._transform._pos.y,
                                     entity._transform._size.x * entity._transform._scale.x * 0.5f,
                                     entity._transform._size.y * entity._transform._scale.y * 0.5f);

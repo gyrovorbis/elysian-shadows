@@ -24,6 +24,11 @@ Extra:
 CONFIG+=tests - Include unit test support in build
 CONFIG+=docs - Include Lua API documentation within build
 
+Notes:
+ESGamma Folder - Engine-specific code. This code is compiled for both standalone builds and ESTk builds. You'll notice most files have an "elysian_file_base.hpp/cpp" implementation and a "elysian_file_crtp.hpp" wrapper along with a "tk_file.h/cpp" implementation. The crtp header is a wrapper providing a compile-time polymorphic mechanism for engine objects to be compiled as Toolkit-specific subclasses when using ESTk builds. This lets us add additional Qt-specific data and functionality to Toolkit builds without modifying the base engine implementation or incurring additional overhead when the engine is compiled standalone.
+
+AssetIO Folder - This is basically all "asset" objects that are saved and loaded by the Engine and Toolkit. This abstraction was created way back when the Engine and Toolkit were two completely different applications and isn't as important nowadays--although if we release ESTk as a general-purpose Toolkit, AssetIO would be the client library to be compiled within other engines to load ESTk assets, so it's still a useful distinction.
+
 ===================
 BUILDING ELYSIANVMU
 ===================

@@ -117,8 +117,8 @@ static GYAppCbRet Init(int argc, char **argv) {
     QGLFormat glfmt;
     //glfmt.setStencil(false);
     //glfmt.setDirectRendering(true);
-    glfmt.setSwapInterval(1);
-    glfmt.setDepthBufferSize(16);
+    glfmt.setSwapInterval(0);
+    glfmt.setDepthBufferSize(8);
     glfmt.setStencilBufferSize(0);
     glfmt.setAlphaBufferSize(0);
     glfmt.setStereo(false);

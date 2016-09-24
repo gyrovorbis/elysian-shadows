@@ -110,7 +110,7 @@ namespace elysian {
         if(y >= _curArea->height || x >= _curArea->width) {
             return 0;
         }
-        return (_shadowPass)? 0 :_lightMap[y-_screenTileYOffset][x-_screenTileXOffset];
+        return (_shadowPass || !_enabled)? 0 :_lightMap[y-_screenTileYOffset][x-_screenTileXOffset];
     }
 
     inline unsigned LightSystem::getOnscreenLightCount(void) const {
@@ -155,6 +155,7 @@ namespace elysian {
     }
 
     inline uint32_t LightSystem::getLightMask(const Entity& /*entity*/) const {
+         if(_shadowPass || !_enabled) return 0;
         uint32_t mask = 0;
         for(unsigned i = 0; i < getOnscreenLightCount(); ++i) mask |= (0x1<<i);
         return mask;
