@@ -326,13 +326,13 @@ void VMUMainWindow::paintEvent(QPaintEvent *) {
     float iconXStart    = xMargin*0.5*(float)width;
     float iconXStride   = iconWidth+(1.0f/11.0f)*leftOverW*(float)width;
 
-    //if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_FILE))
+    if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_FILE))
         painter2.drawPixmap(iconXStart, iconY, iconWidth, iconHeight, _iconFile);
-   // if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_GAME))
+    if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_GAME))
         painter2.drawPixmap(iconXStart+iconXStride, iconY, iconWidth, iconHeight, _iconGame);
-   // if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_CLOCK))
+    if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_CLOCK))
         painter2.drawPixmap(iconXStart+iconXStride*2.0f, iconY, iconWidth, iconHeight, _iconClock);
-   // if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_FLASH))
+    if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_FLASH))
         painter2.drawPixmap(iconXStart+iconXStride*3.0f, iconY, iconWidth, iconHeight, _iconFlash);
 
 }
