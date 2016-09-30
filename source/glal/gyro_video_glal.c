@@ -140,7 +140,6 @@ float						glalViewZOrient				= 0.0f;
 float						glalViewScale				= 0.0f;
 const GYTexture*			glalCurTex					= 0;
 const GYCamera*				glalCurCamera				= &_defaultCamera;
-float                       glalNormalMapZFactor        = 1.0f;
 GY_RECT_TEX_ORIENT          glalRectTexOrient			= GY_RECT_TEX_ORIENT_NORMAL;
 GY_RECT_PLANE_TYPE          glalPlaneType				= GY_RECT_PLANE_BOTTOM;
 //unsigned                    glalCurStripSize            = 0;
@@ -326,11 +325,12 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
                 glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_COLOR]);
                 glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_NORMAL]);
                 glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_TANGENT]);
+                glEnableVertexAttribArray(shaders[i]->attribLoc[GLAL_SHADER_NORMAL_Z]);
 
                 glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GYVertex), (void*)(6*sizeof(float)));
                 glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(7*sizeof(float)));
                 glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(10*sizeof(float)));
-
+                glVertexAttribPointer(shaders[i]->attribLoc[GLAL_SHADER_NORMAL_Z], 1, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(13*sizeof(float)));
             }
         }
         once = 1;
@@ -551,34 +551,6 @@ void gyVidQuadListEnd(void) {
 // ==== HIGH-LEVEL API ====
 // (glorified wrappers around low-level API)
 
-
-/* IT'S YOUR GODDAMN JOB TO MAKE SURE THESE VECTORS ACTUALLY CHANGED BEFORE CALLING UPDATE ON THEM!
- * DON'T SUBMIT REDUNDANT DATA TO SHADER UNIFORMS, DIPSHIT! */
-/*
-void glalVidNormalUpdateUniform(const GYVector3* const normal) {
-    if(gyVidShadowPass()) return;
-    glalNormalVector = normal;
-    glUniform3fv(glalCurLightShader->uniformLoc[GLAL_SHADER_NORMAL], 1, (float*)glalNormalVector);
-    //++glalUniformChangeCount;
-}
-
-void glalVidTangentUpdateUniform(const GYVector3* const tangent) {
-    if(gyVidShadowPass()) return;
-    glalTangentVector = tangent;
-    glUniform3fv(glalCurLightShader->uniformLoc[GLAL_SHADER_TANGENT], 1, (float*)glalTangentVector);
-    //++glalUniformChangeCount;
-}*/
-
-void glalVidNormalMapZFactorUpdateUniform(const float factor) {
-    if(gyVidShadowPass()) return;
-    if(factor != glalNormalMapZFactor) {
-        gyVidVertexBatchFlush();
-        glalNormalMapZFactor = factor;
-        glUniform1f(glalCurLightShader->uniformLoc[GLAL_SHADER_NORMAL_MAP_ZFACTOR], glalNormalMapZFactor);
-        ++glalUniformChangeCount;
-    }
-}
-
 void gyVidRectPlaneType(const GY_RECT_PLANE_TYPE type) {
     glalPlaneType = type;
 }
@@ -598,9 +570,6 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
         tangent = &glalRectTangents[glalRectTexOrient];
         normal = glalPlaneNormalVector(glalNormalMapActive, glalPlaneType, glalRectTexOrient);
 
-        //update flip flag for normal map texture flipping to correct normals in fragment shader
-        glalVidNormalMapZFactorUpdateUniform(glalOrientNormalMapZFactor(glalRectTexOrient));
-
         gyMatMultVec(verts, worldVerts, 4);
         //Connect current and previous polys with degenerate triangles to continue batching operation
         if(_vertexQueueSize) {
@@ -609,6 +578,7 @@ void gyVidQuad(const GYVector4 *const verts, const int frame) {
                 _vertexQueue[_vertexQueueSize+i+2].pos      = worldVerts[i];
                 _vertexQueue[_vertexQueueSize+i+2].normal   = *normal;
                 _vertexQueue[_vertexQueueSize+i+2].tangent  = *tangent;
+                _vertexQueue[_vertexQueueSize+i+2].normalZ  = glalOrientNormalMapZFactor(glalRectTexOrient);
             }
 
             _vertexQueue[_vertexQueueSize].pos      = _vertexQueue[_vertexQueueSize-1].pos;
@@ -665,6 +635,7 @@ void gyVidRect(const int frame) {
 
 
 //FUCKING GAY!!!! TRANSFORM IN PLACE!!!
+//We aren't taking normalMapZ into account here!!!
 static float worldVertices[GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE];
 //Spine interop
 void gyVidSkeleton(const spSkeleton*const skeleton) {
@@ -690,7 +661,6 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
     gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
     gyVidAlphaLevel(GY_ALPHA_FULL);
     gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
-    glalVidNormalMapZFactorUpdateUniform(1.0f);
     gyVidDepthTest(0);
 
     gyVidVertexBatchFlush();
@@ -735,7 +705,6 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
             gyVidRectPlaneType(GY_RECT_PLANE_BOTTOM);
             gyVidAlphaLevel(GY_ALPHA_FULL);
             gyVidRectTexOrient(GY_RECT_TEX_ORIENT_NORMAL);
-            glalVidNormalMapZFactorUpdateUniform(1.0f);
             gyVidDepthTest(0);
             continue;
         }
@@ -767,6 +736,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
             vertex->texCoord.u = regionAttachment->uvs[SP_VERTEX_X2];// * width;
             vertex->texCoord.v = regionAttachment->uvs[SP_VERTEX_Y2];// * height;
             vertex->color = *(GYColor4*)&color;
+            vertex->normalZ = 1.0f;
             ++vertex;
 
             vertex->pos.x = worldVertices[SP_VERTEX_X1];
@@ -776,6 +746,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
             vertex->texCoord.u = regionAttachment->uvs[SP_VERTEX_X1];// * width;
             vertex->texCoord.v = regionAttachment->uvs[SP_VERTEX_Y1];// * height;
             vertex->color = *(GYColor4*)&color;
+            vertex->normalZ = 1.0f;
             ++vertex;
 
 
@@ -787,6 +758,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
             vertex->texCoord.u = regionAttachment->uvs[SP_VERTEX_X3];// * width;
             vertex->texCoord.v = regionAttachment->uvs[SP_VERTEX_Y3];// * height;
             vertex->color = *(GYColor4*)&color;
+            vertex->normalZ = 1.0f;
             ++vertex;
 
 
@@ -797,6 +769,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
             vertex->texCoord.u = regionAttachment->uvs[SP_VERTEX_X3];// * width;
             vertex->texCoord.v = regionAttachment->uvs[SP_VERTEX_Y3];// * height;
             vertex->color = *(GYColor4*)&color;
+            vertex->normalZ = 1.0f;
             ++vertex;
 
             vertex->pos.x = worldVertices[SP_VERTEX_X4];
@@ -806,6 +779,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
             vertex->texCoord.u = regionAttachment->uvs[SP_VERTEX_X4];// * width;
             vertex->texCoord.v = regionAttachment->uvs[SP_VERTEX_Y4];// * height;
             vertex->color = *(GYColor4*)&color;
+            vertex->normalZ = 1.0f;
             ++vertex;
 
             vertex->pos.x = worldVertices[SP_VERTEX_X1];
@@ -815,6 +789,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
             vertex->texCoord.u = regionAttachment->uvs[SP_VERTEX_X1];// * width;
             vertex->texCoord.v = regionAttachment->uvs[SP_VERTEX_Y1];// * height;
             vertex->color = *(GYColor4*)&color;
+            vertex->normalZ = 1.0f;
             ++vertex;
 
         } else if (attachment->type == SP_ATTACHMENT_MESH) {
@@ -853,6 +828,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
                 vertex->texCoord.u = mesh->uvs[index];// * width;
                 vertex->texCoord.v = mesh->uvs[index + 1];// * height;
                 vertex->color = *(GYColor4*)&color;
+                vertex->normalZ = 1.0f;
                 ++vertex;
             }
 
@@ -885,6 +861,7 @@ void gyVidSkeleton(const spSkeleton*const skeleton) {
                 vertex->texCoord.u = skinnedMesh->uvs[index];// * width;
                 vertex->texCoord.v = skinnedMesh->uvs[index + 1];// * height;
                 vertex->color = *(GYColor4*)&color;
+                vertex->normalZ = 1.0f;
                 ++vertex;
             }
         }
