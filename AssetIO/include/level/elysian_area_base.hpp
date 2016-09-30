@@ -45,7 +45,7 @@
                                                     (value) |= ((unsigned)(v) << ELYSIAN_##t##_ENTRY_##a##_BIT_POS); \
                                                 } while(0)
 
-#define ELYSIAN_TILE_ENTRY_TO_VBO_INDEX(l, x, y) ((l*height*width + y*width + x)*4)
+//#define ELYSIAN_TILE_ENTRY_TO_VBO_INDEX(l, x, y) ((l*height*width + y*E + x)*4)
 
 #ifdef ELYSIAN_MAP_BOUNDARY_CHECKS
 #	define ELYSIAN_AREA_PROTECTED_MAP_ACCESS(t) ((t < tileEntryCount)? tiles[t] : tiles[0])
@@ -243,6 +243,7 @@ namespace elysian {
 
         void                        populateVbo(void);
         void                        freeVbo(void);
+        unsigned                    mapLocationToVBOIndex(unsigned x, unsigned y, unsigned l);
         void                        vboEntryFromTileEntry(GYVertex*const vboEntry, const TileEntry *const tileEntry, const unsigned x, const unsigned y) const;
         void                        animateVboTileEntry(const unsigned l, const unsigned x, const unsigned y, const uint16_t index);
 
@@ -377,6 +378,9 @@ namespace elysian {
      inline void AreaBase::setBgmOggByTrack(const unsigned index, const char* path) { strcpy(_bgmOggTracks[index], path); }
      inline const char* AreaBase::getAuxOggByTrack(const unsigned index) const { return _auxOggTracks[index]; }
      inline void AreaBase::setAuxOggByTrack(const unsigned index, const char* path) { strcpy(_auxOggTracks[index], path); }
+     inline unsigned AreaBase::mapLocationToVBOIndex(unsigned x, unsigned y, unsigned l) {
+        return (y*width*ELYSIAN_AREA_MAP_LAYERS + x*ELYSIAN_AREA_MAP_LAYERS + l)*4;
+     }
 
 }
 

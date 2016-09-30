@@ -212,7 +212,7 @@ void LightSystem::shadowRenderPasses(void) {
 }
 
 void LightSystem::addLightSourcesToScene(void) {
-    if(gyVidShadowPass()) return;
+    if(gyVidShadowPass() || !_enabled) return;
     const auto sources = _curArea->lightSources;
     for(auto it : sources) {
         gyVidLightSourceAdd(it);
@@ -220,7 +220,7 @@ void LightSystem::addLightSourcesToScene(void) {
 }
 
 void LightSystem::removeLightSourcesFromScene(void) {
-    if(gyVidShadowPass()) return;
+    if(gyVidShadowPass() || !_enabled) return;
     const static GYVector4 fullAmbience = GYVector4{ 1.0f, 1.0f, 1.0f, 1.0f };
     gyVidSetGlobalAmbience(&fullAmbience);
     _activeLights = 0;
@@ -362,7 +362,7 @@ uint32_t LightSystem::startLightPass(uint32_t& lightsLeft) {
 
     //Remove current pass from mask representing lights that still need to be rendered
     lightsLeft &= ~_activeLights;
-++call;
+    ++call;
     Debug::pop();
     return _activeLights;
 

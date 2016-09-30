@@ -2,7 +2,10 @@
 #include <glal/gyro_gl.h>
 
 
+
 namespace elysian {
+
+int _mapCount = 0;
 
 void GLMapSystemCrtp::_bindArrayVbo(int buffer) {
 #ifdef GYRO_GLAL
@@ -35,7 +38,9 @@ void GLMapSystemCrtp::_drawElements(void) {
         memcpy(ptr, &_elements[_lastSize], sizeof(GLuint)*(_size-_lastSize));
         //glFlushMappedBufferRange(GL_ELEMENT_ARRAY_BUFFER, _lastOffset, sizeof(GLuint)*(_size-_lastSize));
         glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
-
+#if 0
+        qDebug() << _mapCount++ << " GLMAPBUFFERRANGE SIZE - " << _size-_lastSize;
+#endif
         // glDrawElements(GL_TRIANGLE_STRIP, elemArraySize, GL_UNSIGNED_SHORT, elemArray /*nullptr*/);
 
 

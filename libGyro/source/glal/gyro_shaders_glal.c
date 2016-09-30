@@ -165,9 +165,10 @@ void gyVidNormalMapBind(const GYTexture * const tex) {
         wasActive = glalNormalMapActive;
         glActiveTexture(glalTextureMapTexUnits[GLAL_TEXTURE_MAP]);
 
+#if 0
         const float zFactor = glalOrientNormalMapZFactor(glalRectTexOrient);
         glalVidNormalMapZFactorUpdateUniform(zFactor);
-
+#endif
 
     }
 
@@ -326,11 +327,11 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
     shader->attribLoc[GLAL_SHADER_NORMAL]						= _protectedAttribQuery(shader->program, "aNormal", !light);
     shader->attribLoc[GLAL_SHADER_TANGENT]						= _protectedAttribQuery(shader->program, "aTangent", !light);
     shader->attribLoc[GLAL_SHADER_COLOR]						= _protectedAttribQuery(shader->program, "aColor", !light);
+    shader->attribLoc[GLAL_SHADER_NORMAL_Z]                     = _protectedAttribQuery(shader->program, "aNormalZ", !light);
 
     //if(!light) return; //the rest is lighting only
 
     //poll for global uniform locations
-    shader->uniformLoc[GLAL_SHADER_NORMAL_MAP_ZFACTOR]             = _protectedUniformQuery(shader->program, "uNormalMapZFactor", !light);
     shader->uniformLoc[GLAL_SHADER_CAM_WORLD_POS]			= _protectedUniformQuery(shader->program, "uCamWorldPos", !light);
     shader->uniformLoc[GLAL_SHADER_AMBIENCE]					= _protectedUniformQuery(shader->program, "uAmbience", !light);
     //shader->uniformLoc[GLAL_SHADER_LIGHTING_ENABLED]			= _protectedUniformQuery(shader->program, "uLightingEnabled");
@@ -443,7 +444,6 @@ void glalDefaultShadersLoadUniforms(void) {
     gyVidSetGlobalAmbience(&_globalAmbience);
     gyVidLightingSetEnable(glalLightingEnabled);
 
-    glUniform1f(glalCurLightShader->uniformLoc[GLAL_SHADER_NORMAL_MAP_ZFACTOR], glalNormalMapZFactor);
     glUniform3fv(glalCurLightShader->uniformLoc[GLAL_SHADER_CAM_WORLD_POS], 1, (float*)&glalCamWorldPos);
 
     //set normal map to use texture bank 1

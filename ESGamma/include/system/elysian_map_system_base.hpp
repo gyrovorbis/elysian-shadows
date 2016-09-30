@@ -57,6 +57,8 @@ namespace elysian {
 
     };
 
+    extern int _mapCount;
+
     template<typename P=MapSystem, typename T=MapDepthBuffEntryImplBase, typename E=EntityDepthBuffEntryImplBase>
     class MapSystemCrtp:
         public System,
@@ -88,6 +90,11 @@ namespace elysian {
                     MapSystemCrtp(void);
 
         void        update(void);
+        void        render(void) {
+            _mapCount = 0;
+                MapDepthBuffer<P, T, E>::render();
+        }
+
         void        renderOverlay(void);
         void        resetAnimation(void);
         //void dbgDump(void);
@@ -183,26 +190,28 @@ namespace elysian {
             }*/
             //Blending mode state change
             if(entry.renderPass > 1  || newAlpha != GY_ALPHA_NONE) {
-                disableDepthTest();
+              //  disableDepthTest();
             }
             //We don't give a fuck about blend modes when blending is off
-            else if(entry.renderPass == 1) {
+            else /*if(entry.renderPass == 1) {
                enableDepthTest();
-            }
+            }*/
 
-            //Normal map texture flip state change
-            gyVidBlendMode(newBlend);
-            gyVidAlphaLevel(newAlpha);
+           // gyVidDepthTest(true);
+            gyVidBlendMode(/*newBlend*/GY_BLEND_ONE_MINUS_SRC_ALPHA);
+            gyVidAlphaLevel(/*newAlpha*/GY_ALPHA_NONE);
             gyVidRectPlaneType(newPlane);
             gyVidRectTexOrient(newOrient);
-            const float newZFactor = glalOrientNormalMapZFactor(newOrient);
-            glalVidNormalMapZFactorUpdateUniform(newZFactor);
         }
 
+#if 0
         const unsigned int indexBase = (entry.layer*getCurrentArea()->height*getCurrentArea()->width +
                            entry.y*getCurrentArea()->width + entry.x)*4;
+#else
+        const unsigned indexBase = getCurrentArea()->mapLocationToVBOIndex(entry.x, entry.y, entry.layer);
+#endif
 
-        const unsigned int indices[4] = { indexBase, indexBase+1,indexBase+2, indexBase+3 };
+        const unsigned indices[4] = { indexBase, indexBase+1,indexBase+2, indexBase+3 };
 
         //combine previous triangle strip with this one by using degenerate triangles if we're not the first
         if(elemArraySize) {
@@ -313,7 +322,7 @@ break;
         //assert(elemArraySize <= maxi);
        // assert(elemArraySize < ELYSIAN_MAP_SYSTEM_GLAL_STRIP_INDEX_ARRAY_SIZE);
         gyVidVertexArrayBind(_curArea->vao[gyVidShadowPass()]);
-    _bindArrayVbo(_curArea->vertexVbo);
+        _bindArrayVbo(_curArea->vertexVbo);
          // glDeleteSync(_curArea->elementsArraySyncs[_curArea->elementsCurSegment]);
           //  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _curArea->elementVbo);
         // glBufferData(GL_ELEMENT_ARRAY_BUFFER, );

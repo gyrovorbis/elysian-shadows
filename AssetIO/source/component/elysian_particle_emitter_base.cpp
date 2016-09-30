@@ -245,6 +245,7 @@ void ParticleEmitterInternals::render(void) {
 
 void ParticleEmitterInternals::renderAtElev(const unsigned char elev) {
     if(gyVidShadowPass() && !_attrib->_shadowVolume) return;
+    if(!_pool.size()) return;
     bool initialized = false;
 
     //loop unroll my bitch ass

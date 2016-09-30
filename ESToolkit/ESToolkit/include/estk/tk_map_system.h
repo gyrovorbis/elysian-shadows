@@ -23,6 +23,8 @@ protected:
 
     void        _renderCustomPass(const unsigned count, const TkMapDepthBuffEntryImpl array[], const elysian::NORMAL_TYPE normalType) const;
     void        _renderMapBorders(void) const;
+
+    bool        _useCustomPass(void) const;
 public:
     using       elysian::MapSystemBase::update;
 
@@ -42,8 +44,15 @@ public:
 
 // ====== INLINEZ =====
 
+inline bool TkMapSystem::_useCustomPass(void) const {
+    return (_getTileDrawState() != DRAW_NORMAL || _tileDecor != TILE_DECOR_NONE);
+
+}
+
 inline void TkMapSystem::renderCustomPassImmediate(void) {
-    return;
+    int count = 0;
+    if(!_useCustomPass()) return;
+
     for(int j = _scrStartY; j <= _scrEndY; ++j) {
         for(int i = _scrStartX; i <= _scrEndX; ++i) {
             for(unsigned k = 0; k < 3; ++k) {
@@ -57,17 +66,18 @@ inline void TkMapSystem::renderCustomPassImmediate(void) {
 
                 if(elevation == 0 && !curMapEntry.mapEntry.getPlane()) { //render tile immediately at elevation -1 (below entities)
                     //Immediate render, or buffer if it requires multiple passes
-                    _renderCustomPass(1, &curMapEntry, elysian::NORMAL_FLAT);
+                    _objectBuffImmediate[++count] = curMapEntry;
                 }
             }
         }
+        if(count)
+            _renderCustomPass(count, _objectBuffImmediate, elysian::NORMAL_FLAT);
     }
 }
 
 inline void TkMapSystem::renderCustomPassAtElev(const int elev, const elysian::NORMAL_TYPE normalType) const {
-    return;
     MapSystemBase::renderCustomPassAtElev(elev, normalType);
-    if(elev != -1) _renderCustomPass(_objectCount[elev], _objectBuff[elev], normalType);
+    if(elev != -1 && _useCustomPass()) _renderCustomPass(_objectCount[elev], _objectBuff[elev], normalType);
     else           _renderMapBorders();
 }
 
@@ -172,6 +182,7 @@ inline void TkMapSystem::_renderCustomPass(const unsigned count, const TkMapDept
         gyVidSpecularMapBind(nullptr);
         gyVidAlphaLevel(GY_ALPHA_FULL);
         gyVidBlendMode(GY_BLEND_ONE_MINUS_SRC_ALPHA);
+        //gyVidDepthTest(1);
         gyVidMaterialBind(&_selMat[drawStyle]);
 
         const GYColor4& color = selectionDecorColors[drawStyle];

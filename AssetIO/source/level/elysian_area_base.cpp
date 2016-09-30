@@ -203,7 +203,8 @@ void AreaBase::vboEntryFromTileEntry(GYVertex * const vboEntry, const TileEntry 
             coords[i],
             GYColor4 { 255, 255, 255, 255 },
             *normal,
-            *tangent
+            *tangent,
+            glalOrientNormalMapZFactor(texOrient)
         };
     }
 #endif
@@ -423,18 +424,20 @@ void AreaBase::populateVbo(void) {
     GYVertex* curPtr = data;
 //	const GYTexCoord2* coords;
 
-    for(unsigned z = 0; z < ELYSIAN_AREA_MAP_LAYERS; ++z) {
+   // for(unsigned z = 0; z < ELYSIAN_AREA_MAP_LAYERS; ++z) {
         for(unsigned y = 0; y < height; ++y) {
             for(unsigned x = 0; x < width; ++x) {
+                for(unsigned z = 0; z < ELYSIAN_AREA_MAP_LAYERS; ++z) {
                 TileEntry tileEntry = getTileEntry(z, x, y);
 
                 vboEntryFromTileEntry(curPtr, &tileEntry, x, y);
 
                 curPtr += 4;
+                }
 
             }
         }
-    }
+   // }
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(GYVertex)*width*height*ELYSIAN_AREA_MAP_LAYERS*4, data, ELYSIAN_AREA_ARRAY_VBO_TYPE);
@@ -467,11 +470,12 @@ void AreaBase::populateVbo(void) {
         glEnableVertexAttribArray(shaders[j]->attribLoc[GLAL_SHADER_COLOR]);
         glEnableVertexAttribArray(shaders[j]->attribLoc[GLAL_SHADER_NORMAL]);
         glEnableVertexAttribArray(shaders[j]->attribLoc[GLAL_SHADER_TANGENT]);
+        glEnableVertexAttribArray(shaders[j]->attribLoc[GLAL_SHADER_NORMAL_Z]);
 
         glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_COLOR], 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GYVertex), (void*)(6*sizeof(float)));
         glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_NORMAL], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(7*sizeof(float)));
         glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_TANGENT], 3, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(10*sizeof(float)));
-
+        glVertexAttribPointer(shaders[j]->attribLoc[GLAL_SHADER_NORMAL_Z], 1, GL_FLOAT, GL_TRUE, sizeof(GYVertex), (void*)(13*sizeof(float)));
     }
         }
 
@@ -514,7 +518,7 @@ void AreaBase::setTileEntry(const unsigned l, const unsigned x, const unsigned y
     vboEntryFromTileEntry(entry, &e, x, y);
 
     glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
-    glBufferSubData(GL_ARRAY_BUFFER, ELYSIAN_TILE_ENTRY_TO_VBO_INDEX(l, x, y)*sizeof(GYVertex), sizeof(GYVertex)*4, &entry);
+    glBufferSubData(GL_ARRAY_BUFFER, mapLocationToVBOIndex(x, y, l)*sizeof(GYVertex), sizeof(GYVertex)*4, &entry);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 #endif
 
