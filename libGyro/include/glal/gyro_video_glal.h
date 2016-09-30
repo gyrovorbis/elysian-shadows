@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-#define GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE	(1024)
+#define GYRO_VIDEO_GLAL_MAX_TRI_STRIP_SIZE	(1024*4)
 
 struct GYTexture;
 struct GYCamera;
@@ -24,7 +24,6 @@ extern const struct GYTexture*      glalCurTex;
 extern unsigned                     glalCurStripSize;
 extern GYVector4                    glalModelViewVertices[];
 extern GYTexCoord2                  glalStripTexCoords[];
-extern float                        glalNormalMapZFactor;
 extern GY_RECT_TEX_ORIENT           glalRectTexOrient;
 extern GY_RECT_PLANE_TYPE           glalPlaneType;
 extern unsigned                     glalVertexRenderCount;
@@ -47,7 +46,6 @@ int glalVidGlewInit(void);
 
 void glalVidTangentUpdateUniform(const GYVector3*const tangent);
 void glalVidNormalUpdateUniform(const GYVector3*const normal);
-void glalVidNormalMapZFactorUpdateUniform(const float factor);
 void glalVidBindDefaultFbo(void);
 int  glalVidDefaultFbo(void);
 
