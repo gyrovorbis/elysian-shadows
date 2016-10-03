@@ -1,12 +1,14 @@
 
 
 /*!
-   \page index.html overview
+   	\page estk-user-manual.html
+   	\contentspage {ESToolkit User Manual} {Contents}
+   	\nextpage Project
+
+   	\indexpage Index
+   	\startpage ESToolkit User Manual
 
 	\title ESToolkit User Manual
-
-   \indexpage ESToolkit User Manual
-   \startpage ESToolkit User Manual
 
 	The Elysian Shadows Toolkit or "ESTk" is a multiplatform
 	game development environment facilitating the creation
@@ -16,88 +18,454 @@
 	audio, 3D rigid body and particle physics, and is fully
 	extensible through an extremely powerful Lua API.
 
-  \part Basic Qt
-
-    This is the first part.
-
-
-        \chapter Getting Started
-
-        This is the first part's first chapter.
-
-
-            \section1 Hello Qt
-
-            This is the first chapter's first section.
-
-
-            \section1 Making Connections
-
-            This is the first chapter's second section.
-
-
-            \section1 Using the Reference Documentation
-
-            This is the first chapter's third section.
-
-
-        \chapter Creating Dialogs
-
-        This is the first part's second chapter.
-
-
-            \section1 Subclassing QDialog
-
-            This is the second chapter's first section.
-
-            ...
-
-
-    \part Intermediate Qt
-
-    This is the second part.
-
-
-        \chapter Layout Management
-
-        This is the second part's first chapter.
-
-
-            \section1 Basic Layouts
-
-            This is the first chapter's first section.
-
-
-	ESTk currently supports the following platforms:
-
-
-	Table of contents:
-
+	Table of Contents:
 	\list
-	\li \l{Getting Started}
-	\li \l{Project Structure}
-	\li \l{Creating Maps}
-	\li \l{Creating Entities}
-	\li \l{Dynamic Lighting}
-	\li \l{Spine Integration}
-	\li \l{Rigid Bodies}
-	\li \l{Positional Audio}
-	\li \l{Cross-platform Deployment}
-	\li \l{Debugging and Troubleshooting}
-	\li \l{Editor Tools}
-	\li \l{Sheet Manager}
-	\li \l{Lua API Reference}
+	\li \l {Project}
+	\li \l {Levels}
+	\li \l {Areas}
+	\li \l {Maps}
+	\li \l {Tile Layers}
+	\li \l {Entities}
+	\li \l {Selection View}
+	\li \l {Running Engine}
+	\li \l {Input Devices}
+	\li \l {Status Bar}
+	\li \l {History View}
+	\li \l {Debugging}
+	\endlist
+*/
+
+/*!
+	\page project.html
+	\previouspage ESToolkit User Manual
+	\contentspage {ESToolkit User Manual} {Contents}
+	\nextpage Levels
+
+	\indexpage Index
+	\startpage ESToolkit User Manual
+
+	\title Project
+	The assets folder itself is the entire Elysian Shadows "project." Imagine this folder as being everything that will be distributed with the final game. It will be burned to disc for Dreamcat or bundled into an app for the App store. 
+
+	\section1 Opening a Project
+	Launch ESTk, and go to File->Open Project. Specify the entire "assets" folder, not files within it. Once you have loaded assets once, you can quickly load the previous asset directory with CTRL+O (CMD+O on Mac). Once a project has been loaded, the entire thing can be dynamically reloaded with CTRL+R (CMD+R on Mac).
+
+	\section1 Relative Paths
+	Please note that because ES is running on a million platforms, and "assets" is the root directory to everything, EVERY path in ES should start with the "assets/" prefix and be relative to the assets directory. If you do not do this, the assets may load correctly on your device, but loading will fail on other devices with different file systems.
+
+	\section1 Texture Assets
+	Because the engine runs on so many different platforms with different texture requirements, texture resolution pixel dimensions should always be in powers-of-two. Examples are: 16x16, 128x8, 64x32, 1026x512, etc. Some platforms absolutely require this, and every platform runs better like this. You might get away with using wonky resolutions on your local machine, but it will break elsewhere. 
+*/
+
+/*!
+	\page levels.html
+	\previouspage Project
+	\contentspage {ESToolkit User Manual} {Contents}
+	\nextpage Areas
+
+	\indexpage Index
+	\startpage ESToolkit User Manual
+
+	\title Levels
+	A level is a collection of areas all sharing the same tilesets. For example, a large forest world would be a parent Forest "level" and would be composed of child areas such as "Forest_1," "Forest_2," and "Forest_Boss," because each area is sharing the same tilesheet. This grouping of assets allows us to cut down on load times when moving between forest areas.
+
+	\section1 Changing the Current Level
+	The current level may be changed by double-clicking on another area within Sheet View.
+
+	\section1 Creating a New Level
+	You can create a new level by clicking clicking the New->Level under the file menu. A blank tilesheet will be created for you. You can either import tiles into this sheet using Sheet Manager or you can override it with a different tilesheet.png. Remember that you also have to provide a Level with at least one Area to begin really using it.
+
+	\section1 Deleting the Current Level
+	You can delete a level by clicking the "Remove" option in the Level file menu.
+
+	\section1 Tile Attributes
+	Tile attributes are properties shared by every instance of the same tile. Examples of properties are friction. collider type, and partial transparency. If tile #7 on the tilesheet is a grass tile with no solidity, then every instance of tile #7 on the map shares this property. This properties are edited by simply using Sheet View once a tile selection has been made. Remember, these changes are applied to every tile of the same type, not just to the current selection. Since these attributes are tied to the level and not the area, the changes also effect the other areas in the current level too.
+
+	The various attributes for each tile are as follows:
+	\list
+	\li \b {collider}: Type of collider geometry
+	\li \b {stand on}: Whether the tile is solid from the top or not. ALL FLOOR BETTER HAVE THIS CHECKED, OR YOU'LL FALL THROUGH.
+	\li \b {transparency}: Whether or not the tile uses PARTIAL transparencies. This has to be toggled on individually for each tile, since it is slower for the engine to handle tiles with partial transparency like this.
+	\li \b {animation next index}: next tile index the current tile should transition to after a certain amount of time has elapsed.
+	\li \b {animation time}: time before the current tile should transition into the next tile for animations
 	\endlist
 
+	\section1 Sheet View
+	Sheet View is a dock widget containing the tilesheet associated with the current level. This tilesheet can be used as a selection source for laying tiles on the map. Notice tile index 0 is ALWAYS blank on the tilesheet. This is considered an empty tile and placing it on the map is equivalent to deleting the current tile. Use tile #0 as the eraser tile.
+
+	The orientation of the tilesheet can be changed to either horizontal 1024x512 or vertical 512x1024 depending on your preference by clicking the Horizonal/Vertical Sheet View perspective icon in the Toolbar.
+*/
+
+
+/*!
+	\page areas.html
+	\previouspage Levels
+	\contentspage {ESToolkit User Manual} {Contents}
+	\nextpage Maps
+
+	\indexpage Index
+	\startpage ESToolkit User Manual
+
+	\title Areas
+	Areas are the main structure representing locations in Elysian Shadows. Areas contain the map, entities populating the map, initialization scripts, and more.
+
+	\section1 Changing the Current Area
+	Browse to an area within a level folder in Asset View and double click on it to set it as the current area (if the area is within a different level, the current level is changed too).
+
+	\section1 Creating a New Area
+	To create a new Area within the current Level, use the New Area option from the File dropdown menu.
+
+	\section1 Deleting the Current Area
+	TO delete the current Area, use the "Remove" option from the Area dropdown. THIS CANNOT BE UNDONE!
+
+	\section1 area_init.lua
+	"area_init.lua" is an optional Lua script that is executed when an Area is first loaded by the Engine. This script allows you to programmatically create or modify entities or perform any initialization tasks that are not covered by ESTk.
+*/
+
+/*!
+	\page maps.html
+	\previouspage Areas
+	\contentspage {ESToolkit User Manual} {Contents}
+	\nextpage Tile Layers
+
+	\indexpage Index
+	\startpage ESToolkit User Manual
+
+	\title Maps
+	A map in Elysian Shadows is a grid of tile references. The largest map size is 200x200, and there are 3 general-purpose tile layers, allowing up to 3 different tiles to occupy the same <x, y> tile location. Please note that when all tile layers occupy the same tile location and have the same elevation, they are rendered from top-to-bottom (tile layer 3 first, tile layer 1 last). HOWEVER, there is nothing stopping you from elevating tile layer 1 above the other two layers so that the render order is modified to layers 1, 3, 2... For the sake of sanity, this is not recommended.
+
+	\section1 Tile Map Properties
+	Each tile reference on the map can contain its own individual properties. The propertie are as follows:
 	\list
-	\li \l Windows
-	\li \l MacOS X
-	\li \l Linux
-	\li \l iOS
-	\li \l Android
-	\li \l OUYA
-	\li \l Sega Dreamcast
+	\li \b {orientation}: whether the tile has been flipped or rotated. The current selection can flipped or rotated using the arrow keys.
+	\li \b {elevation}: the tile's Z coordinate in 3D space. Elevation can be increased with the '+'' key, decreased with the '-'' key, and made descending by row using the '=' key with a tile selection.
+	\li \b {plane}: the direction the tile is facing in 3D space. Whether it's laying flat or standing up like a billboard. Imagine each tile location as a 3D cube, where this is which face of the cube the tile is applied to. Faces can be cycled by pressing the 'n' key with a tile selection.
 	\endlist
 
+	\section1 Selecting Tiles
+	Tiles can be selected by holding the right mouse button and dragging a rectangular region provided the current layer within Layer View is a tile layer and not the entity layer. Holding CTRL (CMD on Mac) allows you to continue selecting more regions when the right mouse button is lifted, allowing you to make irregularly sized tile selections.
+
+	\section1 Clearing Tile Selection
+	Simply tap the right mouse button without dragging it over a rectangular region to clear the current tile selection.
+
+	\section1 Placing Tiles
+	Tiles can be placed by simply left clicking on the map with an active tile selection. Note that holding CTRL (CMD on Mac) allows you to repeat the tile selection as a pattern and drag your mouse over a large rectangular area to apply the pattern. This is useful for filling in large spaces of the map and creating multiple-tile patterns.
+
+	\section1 Best Practices
+	\list
+	\li Do not enable the "transparency" tile property for partial tile transparency UNLESS the tile actually uses partial transprency.
+	\li Do not use any tile other than tile index 0 to delete map regions. Even other empty locations on the sheet are not considered a blank tile, and the engine will waste time and resources attempting to render these tiles. Also when the sheet is filled in later on, there will be all kinds of weird floating items on the map.
+	\li Elevate tile layers from in descending order. Nothing is stopping you from making tile layer 1 above tile layer 3, and it will work fine, but for the love of god, please don't, because it makes level design and selecting tiles a pain in the ass.
+	\li Remove tiles that are completely covered. If you have a tile that is 100% covered by a tile on a higher layer or at a higher elevation, please delete the lower tile, as the engine will still be wasting resources rendering it.
+	\endlist
+*/
+
+/*!
+	\page tile-layers.html
+	\previouspage Maps
+	\contentspage {ESToolkit User Manual} {Contents}
+	\nextpage Entities
+
+	\indexpage Index
+	\startpage ESToolkit User Manual
+
+	\title Tile Layers
+	Layer View is the dock widget used for managing the viewing and editing of different map layers. There are 3 different tile layers on the map, and entities are considered a pseudo "4th layer." 
+
+	\section1 Changing Current Tile Layer
+	You can change the active layer by clicking on any of the 4 layers in the list. The current layer is the layer which is currently used as a selection source and destination.
+
+	\section1 Toggling Tile Layer Visibility
+	You can toggle on and off the visibility of each layer by pressing the eye icon.  Sometimes it's useful to toggle off other layers while you're working with another layer. Keep in mind that nothing is stopping you from toggling the current layer invisible so you can't see what the hell you're doing, but you're still actively modififying it. Note that the number keys 1-4 can also be used as shortcuts for modifying tile layer visibility when the engine is in Play Mode.
+
+	\section1 Tile Decorations
+	The tile decorations dropdown is used for displaying additional data with each tile on the map. This data can be helpful when placing or orienting tiles and creating maps. The decoration are as follows:
+	\list
+	\li \b {Collision}: renders tile solidity as translucent blue quads
+	\li \b {Inactive Layers}: renders layers other tha the current as partially transparent
+	\li \b {Elevation}: renders elevation integer for each tile on current layer
+	\li \b {Indeces}: renders tile indecies for each tile on current layer
+	\li \b {Orientation}: renders orientation (flip/rotate) for each tile on current layer
+	\li \b {Plane}: renders tile plane/direction (face of cube) for each tile on current layer
+	\endlist
+*/
+
+/*!
+	\page entities.html
+	\previouspage Tile Layers
+	\contentspage {ESToolkit User Manual} {Contents}
+	\nextpage Selection View
+
+	\indexpage Index
+	\startpage ESToolkit User Manual
+
+	\title Entities
+	Entities represent every non-tile object occupying an area. Everything ranging from NPCs and enemies to invisible warps, and weapons are entities. Entity View lists all entities present within the current area. Entities can be selected either by clicking their name in Entity View or by selecting them within Map View.
+
+	\section1 Selecting Entities in Map View
+	When the current layer is set to "Entity Layer" within Layer View, you can simply click on an entity and drag it around the map to place it. You can also select a region of entities and move them all around by holding the right mouse button and dragging a rectangular selection region around the entities. 
+
+	\section1 Selecting Entities in Entity View
+	Clicking an entity within Selection View adds it to the current selection. Clicking it again removes it. This allows you to multiselect entities. Once an entity has been selected, its properties can be modified through Selection View.
+
+	\section1 Cut, Copy, and Paste
+	Entites can be cut with CTRL+X (CMD+X on Mac) or copied with CTRL+C (CMD+C on Mac), and they can be pasted with CTRL+V (CMD+V on Mac)
+
+	\section1 Creating New Entities
+	You can create a new entity and add it to the current area by clicking the "Add Entity" option in the Area drop-down menu. Notice the entity defaults to inactive! 
+
+	\section1 Deleting Entities
+	Right click an entity and press delete to delete an entity. This cannot be redone!
+
+	\section1 Active vs Inactive Entities
+	In Entity View, active entities are shown in black text. Inactive entities are shown in gray text. An inactive entity is an entity who is saved and loaded with the current area, but who is not actually added in-game until later. This lets you create NPCs and enemies who will not appear in the map until after a certain cutcene takes place, at which time you can "activate" them through the Lua script or "deactivate" entities who leave the area. You can activate or deactivate an entity by right-clicking on the entity and selecting the Active option. It is recommended that entities remain deactivated while they are being configured to avoid potential run-time issues from having half-configured data. Deactivate entities to modify them, then reactivate them when you're done with modifications.
+
+	\section1 Saving Entities
+	The checkbox next to an entity's name in Entity View represents whether or not the entity should be saved as part of the current level. Entities such as NPCs, enemies, chests, barrels, etc should all be saved as part of the level. Persistent entities like Julien, party members, dropped items, or dynamically spawned entities should NEVER be checked, as they should not be saved and loaded with the current area. 
+
+	\section2 area_table.lua
+	If you look within the Area directory you will notice entities and general map data are stored to a file called area_table.lua. This is a very simple, human-readable format of executable Lua object code autogenerated by ESTk. You can also modify this code by hand.
+
+	\section1 Hidden Entities
+	By default, all entities whose names begin with an underscore '_' are not listed within Entity View. These entities are considered "hidden" and should not be modified/manipulated with the rest of the level. Examples of these entities are the Sun entity, which is managed by the engine, and the red cursor entity which is managed by ESTk for selections. If you wish to enable/disable viewing these entities, you can do so through the "Hidden Entities" item in the View File menu, but modify them at your own risk.
+
+	\section1 Components 
+	Components can only be added and removed to and from inactive entities, because the entirety of the component must be configured before the engine can use it (meaning it would crash if the component were active before you were done setting its values). Components can be managed by right-clicking the entity, then clicking on the desired component from the list to add and remove. 
+
+	Certain components require other components to be present before they can be added. You may notice for example that "RigidBody" is grayed out until "Collidable" has been added. This is because a RigidBody component requires a Collidable component to be present. A Collidable also cannot be removed until a RigidBody component has been removed first, for this same reason. 
+
+	\section2 Component Attributes
+	Some components, such as Collidable and RigidBody also require "attributes" to be added once the component has been added before it can be used. These attributes are kept separate from components so that different entities of the same type can share attributes. For example, two Goomba entities will have their own separate "Collidable" components, but their Collidables will share a single set of "attributes," because Goombas all have the same mass, size, and collision geometry. This sharing of attributes among differnet components is how prefabs work. The Goomba's collidable attributes are prefabbed in this scenario.
+*/
+
+/*!
+	\page selection-view.html
+	\previouspage Entities
+	\contentspage {ESToolkit User Manual} {Contents}
+	\nextpage Running Engine
+
+	\indexpage Index
+	\startpage ESToolkit User Manual
+
+	\title Selection View
+	Selection View allows you to view and modify the properties of the currently selected object. The current selection may be a level, area, entity, or any other object that can be represented by a Lua table. Selection View is actually a Lua data browser, which is allowing you to dynamically modify Lua variables through a GUI. Any property that is modified through Selection View is also available to be moodified programmatically through Lua. The Lua property's key is in the left column, and it's value is in the right column.
+
+	\section1 Setting Value Type
+	The Lua datatype of the property's value can be set by right clicing on it and using the checkbox items from a dropdown. Depending on the property, some of them may have preset type(s) or type requirements.
+
+	\section1 Adding a Property
+	Right-clicking on a Lua table item and selecting "Add Key" allows you to add a new property. Note that some datatypes do not allow you to add new keys.
+
+	\section1 Removing a Property
+	Simply setting the value of a property to "nil" effectively removes the variable from the table.
+
+	\section1 Saving a Table
+	Right-clicking on a table then selecting "Save As..." allows you to dump a Lua save file of the selected table.
+
+	\section1 Creating a Prefab
+	Right-clicking on a table then selecting "Make Prefab" allows you to save the current table to the prefabs directory as a prefab.  
+*/
+
+/*!
+	\page running-engine.html
+	\previouspage Selection View
+	\contentspage {ESToolkit User Manual} {Contents}
+	\nextpage Input Devices
+
+	\indexpage Index
+	\startpage ESToolkit User Manual
+
+	\title Running Engine
+	Under normal circumstances with ESTk, the engine is in a "paused" state, meaning everything is being rendered, but no gameplay logic is being updated and no input events are being mapped to the engine. Pushing the play button on the Toolbar will cause the engine logic to also be run in addition to ESTk. Although you can still modify the map in this mode, it's most useful for testing your levels as you create them. The toolbar button beside the play button is the "Advance Frame" button, which tells the engine to only progress by a single-frame. This is very useful when doing frame-by-frame debugging. You can view and modify engine variables at each frame, which is extremely powerful.
+
+	\section1 Selecting Target Platform
+	Next to the two engine buttons is the "Select Platform" dropdown icon. This allows you to select which platform to deploy the current level on. The default is to MapView within ESTk, but you can also deploy a build to the Dreamcast, iPhone/iPad, or iOS simulator as your target. 
+
+	\section2 Dreamcast Deployment
+	Dreamcast deployment must initially be configured in the Engine Settings dialog. ESTk requires a path to the Dreamcast executable, the Dreamcast BBA's MAC address, an IP address to ARP to, and a SUDO password to issue the ARP command (I know, reested).
+
+	\section2 iOS Device and iOS Simulator Deployment
+	Both launch using XCode tools internally, which means they are only deployable from a MacOS device with a correctly provisioned iOS Device or simulator.
+
+	\section1 Dynamic Lighting
+	Dynamic lighting effects will vary on each platform running the ES Engine. Some platforms cannot support all of the effects that others will. These effects are also costly in terms of rendering performance, especially when zooming out over large, complex scenes in ESTk. The engine will normally never be rendering this much geometry, but ESTk has a higher load when modifying large map regions at a time or zooming way out. You can toggle on and off lighting effects for testing or performance purposes from the View->Dynamic Lighting file menu. 
+	\list
+	\li \b {Lighting}: enables/disables all dynamic lighting sources
+	\li \b {Shadows}: enables/disables shadow mapping from dynamic light sources (expensive)
+	\li \b {Bloom}: enables/disables light bloom post-processing effects 
+	\endlist
+
+	\section1 Resolutions
+	Resolution can be adjusted through the View file menu. The resolution defaults to "dynamic" in ESTk, so that the engine resizes to your screen, but certain presets are available to emulate the window sizes of common platforms. It's useful to test at different resolutions when creating areas, to make sure you aren't placing adjacent maps too close together and to ensure that GUI elements scale properly.
+	\list
+	\li \b {Dynamic}: Default. Fits to screen.
+	\li \b {720p}: Largest resolution ES will run on any platform. 
+	\li \b {480p}: Smallest resolution ES will run on any platform (Dreamcast).
+	\endlist
+*/
+
+
+/*!
+	\page input-devices.html
+	\previouspage Running Engine
+	\contentspage {ESToolkit User Manual} {Contents}
+	\nextpage Status Bar
+
+	\indexpage Index
+	\startpage ESToolkit User Manual
+
+	\title Input Devices
+
+	\section1 Mice/Keyboards
+	ESTk should automatically detect the current mouse and keyboard and map them to the engine immediately upon loading on desktop builds. Standalone engine builds should also detect mice and keyboards including Dreamcast mice and keyboards and external USB mice and keyboards plugged into the OUYA or ForgeTV. Keyboards should all behave the same way across platforms, but mice are only used for Toolkit builds (not standalone builds) currently.
+
+	\section2 Keyboard as Virtual Controller
+	The keyboard is mapped to the first input device slot by default, as a "virtual controller," allowing you to use the keyboard for input when the engine is running in "Play" mode without a controller present.
+
+	\section3 Keyboard to Controller Input Mapping (Playstation Standard)
+ 	\table
+    \header
+        \li Keyboard Key
+        \li Controller Button
+    \row
+        \li Arrow Keys
+        \li D-Pad
+    \row
+        \li C
+        \li X Button
+    \row
+        \li X
+        \li Square Button
+	\row
+		\li D
+		\li Circle Button
+	\row
+		\li S
+		\li Triangle Button
+	\row
+		\li W
+		\li L1 Shoulder
+	\row
+		\li E
+		\li R1 Shoulder
+	\row
+		\li Q
+		\li L3 Analog Button
+	\row
+		\li R
+		\li R3 Analog Button
+    \endtable
+
+	\section1 Controllers and Joysticks
+	The engine should normally support 4 external controller devices. Controllers and Joysticks should be automatically detected by ESTk as soon as they're connected. A full device profile should be output to the debug logs listing their device capabilities as well. The device profile should also include any haptic (rumble) support.
+
+	\section2 Issues
+	If your controller is not immediately detected with corresponding device driver information, the issue is most likely a driver issue. Make sure the device drivers are installed correctly. If they are, and the controller works in other applications, but not ESTk, it's most likely an ESTk issue and should be reported.
+
+	You can force the engine to dump the profiles of all detected input devices to the debug logs through the "Input Device Dump" option in the Engine file menu.
+*/
+
+
+/*!
+	\page status-bar.html
+	\previouspage Input Devices
+	\contentspage {ESToolkit User Manual} {Contents}
+	\nextpage History View
+
+	\indexpage Index
+	\startpage ESToolkit User Manual
+
+	\title Status Bar
+	The status bar is located at the bottom of ESTk and is split into 4 different columns or sections. From left to right, the columns are as follows:
+	\list
+	\li Cursor's <x, y> pixel location on the map
+	\li Cursor's <x, y> tile location on the map and pixel location rounded to nearest tile
+	\li Tile size of current tile selection
+	\li Map zoom percentage (100% is default)
+	\endlist
+*/
+
+/*!
+	\page history-view.html
+	\previouspage Status Bar
+	\contentspage {ESToolkit User Manual} {Contents}
+	\nextpage Debugging
+
+	\indexpage Index
+	\startpage ESToolkit User Manual
+
+	\title History View
+	History view shows a visual representation of the current area's undo stack. Every time an action is performed that can be undone, an entry is added. You can undo an action with CTRL+Z (CMD+Z on Mac) or redo the action with CTRL+Y (CMD+Y on Mac). You can click on a particular undo action in the list to revert all actions following the selected action or click on <Undo All> to undo all actions. Any proceeding action following the currently selected action overrides any actions after the selection.
+*/
+
+/*!
+	\page debugging.html
+	\previouspage History View
+	\contentspage {ESToolkit User Manual} {Contents}
+
+	\indexpage Index
+	\startpage ESToolkit User Manual
+
+	\title Debugging
+	All major actions performed by ESTk and the engine are logged to various locations and provide detailed debugging information in the event of a crash or for debugging purposes. When ESTk is run, it automatically generates a directory called "ESTk" within the user's home directory (~/ESTk). This is where ESTk saves and loads all internal files. 
+
+	\section1 Debug Log
+	The debug log is a tab located within the SheetView widget. The debug log offers a collapsable representation of all debugging events from the engine, toolkit, and Lua. Normal events are black and default to collapsed. Warnings are yellow. Errors are red and are expanded by default. The log also features a variety of different filters, allowing you to modify the event sources (engine, toolkit, Lua, libGyro) and event severity (verbose, warning, error) you are interested in viewing. For example, when debugging a Lua script, you probably only care about errors withing the engine, but all verbose output from Lua. 
+
+	\section1 Log Files
+	The engine automatically generates 2 log files after every run, which can later be reviewed for debugging purposes.
+
+	\section2 engine_debug.txt
+	This is the master debug file for all log events from the engine, toolkit, and Lua. It provides the most detailed look at what went wrong in the event of a crash, and should capture every asset file loaded or saved (maps, scripts, graphics, audio), every major event (swapping levels), every handled exception, every Lua print statement, all Lua interpreter errors, and much, much more. This should be the first place you look in the even of an unknown engine issue and should be included with all bug reports.
+
+	\section2 lua_debug.txt
+	This file holds only Lua-specific debug statements and errors. The same information can be found within engine_debug.txt, but this file is provided as a convenience for writing and debugging Lua scripts without having to wade through all of the output from the engine in engine_debug.txt
+
+	\section1 Settings File
+	The settings filed is saved as "estk_settings.ini." The file contains all user settings for ESTk. These settings include widget orientations, screen resolution, default project directory, and preferences and are saved immediately upon exit. They are replayed immediately upon opening ESTk. In the event of ESTk crashing immediately upon loading, delete this file to clear your settings. It could very well be unable to replay the settings properly.
+
+	\section1 Engine Debug Overlays
+	While in play mode, pressing ALT+6 will cycle through different debug information from the engine as a screen overlay. The information includes things such as framerate, poly count, VRAM usage, Lua statistics, <x, y> locations of the player, number of entities, and more.
+
+	\section1 Real-Time Lua Terminal
+	The Lua terminal is located just beneath the Debug Log and provides a real-time execution of Lua code by the engine's internal Lua interpreter. This allows you to manipulate any aspect of the Lua run-time environment such as manipulating and retrieving variables, configuring entities, changing the selection, etc while the game is running.
+	\list
+	\li Pressing enter executes the string as a command.
+	\li Pressing shift+enter inserts a line break.
+	\li Pressing shift+up recalls the previous command. 
+	\endlist
+
+	\section2 Useful Lua Terminal Commands
+	Some useful commands:
+	\list
+	\li \c {print(...)} -- standard Lua printing mechanism (but also goes to engine's log files)
+	\li \c {rPrint(var)} -- recursively print a Lua variable or table
+	\li \c {Toolkit.setSelection(table)} -- sets current Selection in ESTk to the current table or object
+	\li \c {Toolkit.getSelection()} -- retrieves the current selection in ESTk
+	\endlist
+*/
+
+/*!
+	\page index.html
+	\indexpage Index
+	\startpage ESToolkit User Manual
+
+	\title Index
+
+	\list
+		\li \l {ESToolkit User Manual}
+		\li \l {Project}
+		\li \l {Levels}
+		\li \l {Areas}
+		\li \l {Maps}
+		\li \l {Tile Layers}
+		\li \l {Entities}
+		\li \l {Selection View}
+		\li \l {Running Engine}
+		\li \l {Input Devices}
+		\li \l {Status Bar}
+		\li \l {History View}
+		\li \l {Debugging}
+	\endlist
 */
 

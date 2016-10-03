@@ -44,7 +44,7 @@ enum TK_CRASH_STATE {
 
 static TK_CRASH_STATE _tkCrashReport(QStringList& /*args*/) {
     QDir::setCurrent(QDir::homePath());
-    QFile file("ESTk/gamma_debug.txt");
+    QFile file(QString("ESTk/")+QString(ELYSIAN_DEBUG_FILE));
     QString logText = "Debug log file could not be found!";
 
     if(!file.open(QFile::ReadOnly | QFile::Text)) {

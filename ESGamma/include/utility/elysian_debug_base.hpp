@@ -8,7 +8,7 @@
 
 #define ASSETS_VROOT						"/assets"
 
-#define ELYSIAN_DEBUG_FILE					"gamma_debug.txt"
+#define ELYSIAN_DEBUG_FILE					"engine_debug.txt"
 #define ELYSIAN_LUA_DEBUG_FILE				"lua_debug.txt"
 #define ELYSIAN_DEBUG_ARG_FILE_NAME         "gamma_args.txt"
 #define ELYSIAN_DEBUG_ARG_FILE				ASSETS_VROOT "/" ELYSIAN_DEBUG_ARG_FILE_NAME
