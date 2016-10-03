@@ -11,17 +11,18 @@ description = ESToolkit help files, references, examples, and Lua API documentat
 
 qhp.projects = ESToolkit
 
-qhp.ESToolkit.file				 = ESToolkit.qhp
-qhp.ESToolkit.namespace           = elysianshadows.toolkit.help
-qhp.ESToolkit.virtualFolder       = doc
-qhp.ESToolkit.indexTitle          = ESToolkit User Manual
+qhp.ESToolkit.file				 	= ESToolkit.qhp
+qhp.ESToolkit.namespace           	= elysianshadows.toolkit.help
+qhp.ESToolkit.virtualFolder       	= doc
+qhp.ESToolkit.indexTitle          	= Documentation
 qhp.ESToolkit.sortPages				= true
 qhp.ESToolkit.indexRoot		 =
 
 qhp.ESToolkit.subprojects         = lua manual
+
 qhp.ESToolkit.subprojects.manual.title = ESTk User Manual
 qhp.ESToolkit.subprojects.manual.indexTitle = ESToolkit User Manual
-qhp.ESToolkit.subprojects.manual.selectors = fake:headerfile,group,module,qdoc
+qhp.ESToolkit.subprojects.manual.selectors = group:estk
 qhp.ESToolkit.subprojects.manual.sortPages = true
 
 qhp.ESToolkit.subprojects.lua.title = Lua API

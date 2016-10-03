@@ -1,0 +1,37 @@
+
+
+/*!
+   \page lua-wrapper-api.html overview
+
+	\title Lua Wrapper API
+
+	\indexpage Lua Wrapper API
+	\startpage Lua Wrapper API
+	\ingroup lua
+
+	The Elysian Shadows engine contains an embedded Lua interpreter, allowing the engine to be extended through the use of Lua scripting. The engine is currently using version 5.2 of the Lua interpreter as the scripting core, OOLua to create bindings between C++ and Lua, and a custom DSL by Falco for creating a full property system to expose native C++ objects as standard Lua tables.
+
+	\section1 Design Philosophy
+
+	\section1 Extending the Engine
+	Lua code can be loaded and executed through several different mechanisms, depending on the script's requirements.
+	\list
+	\li global_init.lua
+	\li level_init.lua
+	\li area_init.lua
+	\li Lua Behaviors 
+	\endlist
+
+	\section1 Debugging Scripts
+
+	\section1 External Lua Documentation
+	\list
+	\li Official Lua Docs
+	\li OOLua Documentation
+	\endlist
+
+	\section1 Lua Wrappers
+	\generatelist qmlclass
+
+*/
+

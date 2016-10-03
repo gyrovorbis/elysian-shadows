@@ -1,7 +1,9 @@
 
 
+
+
 /*!
-   	\page estk-user-manual.html
+   	\page estk-user-manual.html overview
    	\contentspage {ESToolkit User Manual} {Contents}
    	\nextpage Project
 
@@ -18,6 +20,17 @@
 	audio, 3D rigid body and particle physics, and is fully
 	extensible through an extremely powerful Lua API.
 
+	ESTk currently supports the following platforms with more to come:
+	\list
+	\li Windows
+	\li MacOS X
+	\li Linux
+	\li iOS
+	\li Android
+	\li OUYA
+	\li Sega Dreamcast
+	\endlist
+
 	Table of Contents:
 	\list
 	\li \l {Project}
@@ -33,6 +46,7 @@
 	\li \l {History View}
 	\li \l {Debugging}
 	\endlist
+
 */
 
 /*!
@@ -40,6 +54,7 @@
 	\previouspage ESToolkit User Manual
 	\contentspage {ESToolkit User Manual} {Contents}
 	\nextpage Levels
+	\ingroup estk
 
 	\indexpage Index
 	\startpage ESToolkit User Manual
@@ -58,10 +73,11 @@
 */
 
 /*!
-	\page levels.html
+	\page levels.html overview
 	\previouspage Project
 	\contentspage {ESToolkit User Manual} {Contents}
 	\nextpage Areas
+	\ingroup estk
 
 	\indexpage Index
 	\startpage ESToolkit User Manual
@@ -102,6 +118,7 @@
 	\previouspage Levels
 	\contentspage {ESToolkit User Manual} {Contents}
 	\nextpage Maps
+	\ingroup estk
 
 	\indexpage Index
 	\startpage ESToolkit User Manual
@@ -127,6 +144,7 @@
 	\previouspage Areas
 	\contentspage {ESToolkit User Manual} {Contents}
 	\nextpage Tile Layers
+	\ingroup estk
 
 	\indexpage Index
 	\startpage ESToolkit User Manual
@@ -165,6 +183,7 @@
 	\previouspage Maps
 	\contentspage {ESToolkit User Manual} {Contents}
 	\nextpage Entities
+	\ingroup estk
 
 	\indexpage Index
 	\startpage ESToolkit User Manual
@@ -195,6 +214,7 @@
 	\previouspage Tile Layers
 	\contentspage {ESToolkit User Manual} {Contents}
 	\nextpage Selection View
+	\ingroup estk
 
 	\indexpage Index
 	\startpage ESToolkit User Manual
@@ -243,6 +263,7 @@
 	\previouspage Entities
 	\contentspage {ESToolkit User Manual} {Contents}
 	\nextpage Running Engine
+	\ingroup estk
 
 	\indexpage Index
 	\startpage ESToolkit User Manual
@@ -271,6 +292,7 @@
 	\previouspage Selection View
 	\contentspage {ESToolkit User Manual} {Contents}
 	\nextpage Input Devices
+	\ingroup estk
 
 	\indexpage Index
 	\startpage ESToolkit User Manual
@@ -310,6 +332,7 @@
 	\previouspage Running Engine
 	\contentspage {ESToolkit User Manual} {Contents}
 	\nextpage Status Bar
+	\ingroup estk
 
 	\indexpage Index
 	\startpage ESToolkit User Manual
@@ -371,6 +394,7 @@
 	\previouspage Input Devices
 	\contentspage {ESToolkit User Manual} {Contents}
 	\nextpage History View
+	\ingroup estk
 
 	\indexpage Index
 	\startpage ESToolkit User Manual
@@ -390,6 +414,7 @@
 	\previouspage Status Bar
 	\contentspage {ESToolkit User Manual} {Contents}
 	\nextpage Debugging
+	\ingroup estk
 
 	\indexpage Index
 	\startpage ESToolkit User Manual
@@ -402,6 +427,7 @@
 	\page debugging.html
 	\previouspage History View
 	\contentspage {ESToolkit User Manual} {Contents}
+	\ingroup estk
 
 	\indexpage Index
 	\startpage ESToolkit User Manual
@@ -446,26 +472,8 @@
 */
 
 /*!
-	\page index.html
-	\indexpage Index
-	\startpage ESToolkit User Manual
-
+	\group estk
 	\title Index
 
-	\list
-		\li \l {ESToolkit User Manual}
-		\li \l {Project}
-		\li \l {Levels}
-		\li \l {Areas}
-		\li \l {Maps}
-		\li \l {Tile Layers}
-		\li \l {Entities}
-		\li \l {Selection View}
-		\li \l {Running Engine}
-		\li \l {Input Devices}
-		\li \l {Status Bar}
-		\li \l {History View}
-		\li \l {Debugging}
-	\endlist
 */
 

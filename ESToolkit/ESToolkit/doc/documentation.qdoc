@@ -1,0 +1,22 @@
+
+
+/*!
+   \page index.html overview
+
+	\title Documentation
+
+   	\indexpage Documentation
+   	\startpage Documentation
+   	\ingroup none
+
+   	Welcome to the Elysian Shadows Toolkit Documentation. This is where a wide range of help topics, tutorials, and how-tos are contained. The documentation is split into several groups depending on the topic.
+
+   	\section1 \l {Lua Wrapper API}
+   	The Lua Wrapper API provides detailed documentation for all Lua tables, objects, and methods exposed from the engine to Lua. This is a very useful reference when writing scripts and behaviors.
+
+   	\section1 \l {ESToolkit User Manual}
+   	The ESToolkit User Manual gives a broad overview of how the ESTk GUI works, and how to create and modify projects, levels, maps, and entities, and more along with detailed descriptions of each widget and all of the functionality provided by ESTk.
+
+
+*/
+
