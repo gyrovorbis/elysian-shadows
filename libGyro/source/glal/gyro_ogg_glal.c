@@ -143,6 +143,7 @@ GYOgg* gyAudOggCreate(const char*const path) {
 
 void gyAudOggDestroy(GYOgg*const ogg) {
     #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
+    if(!ogg) return;
     GYOggPayload* payload = ogg->_data;
     int errorCode;
 
@@ -310,6 +311,12 @@ void gyAudOggStreamDestroy(struct GYAudioSource*const src) {
 void gyAudOggStreamPlay(struct GYAudioSource*src, GYOgg*ogg) {
     #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     _OggStreamSource* stream = (void*)src;
+
+    if(!ogg) {
+        _gyLog(GY_DEBUG_ERROR, "gyAudStreamPlay() - Could not play OGG file! (NULL pointer)");
+        return;
+    }
+
     GYOggPayload* payload = ogg->_data;
     int validBuffers = 0;
 
