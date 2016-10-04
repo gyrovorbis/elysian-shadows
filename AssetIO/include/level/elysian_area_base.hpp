@@ -4,10 +4,9 @@
 #include <gyro_video_api.h>
 #include <vector>
 #include <stdint.h>
-#include <utility/elysian_mem_pool.hpp>
+#include <crtp/elysian_lua_table_proxy.hpp>
 #include <primitive/elysian_instance_transform.hpp>
 #include <crtp/elysian_component.hpp>
-#include <crtp/elysian_lua_table_proxy.hpp>
 
 #define ELYSIAN_MAP_BOUNDARY_CHECKS                 false //PLEASE, GOD, TAKE ME OUT BEFORE RELEASE!!!!!!
 #define ELYSIAN_AREA_USE_INIT_LUA                   true
@@ -54,7 +53,6 @@
 #	define ELYSIAN_AREA_PROTECTED_MAP_ACCESS(t) tiles[t]
 #	define ELYSIAN_AREA_PROTECTED_MAP_LAYER_ACCESS(l, t) l[t]
 #endif
-
 
 ELYSIAN_ASSET_TYPEDEF(Area)
 
@@ -241,6 +239,9 @@ namespace elysian {
         void                        activate(void);
         void                        deactivate(void);
 
+        int                         loadOggTracks(void);
+        int                         unloadOggTracks(void);
+
         void                        populateVbo(void);
         void                        freeVbo(void);
         unsigned                    mapLocationToVBOIndex(unsigned x, unsigned y, unsigned l);
@@ -374,13 +375,13 @@ namespace elysian {
      inline void AreaBase::setUseSun(const bool val) { _useSun = val; }
      inline Vector4 AreaBase::getAmbientColor(void) { return Vector4(&_ambientColor); }
      inline void AreaBase::setAmbientColor(const Vector4& color) { _ambientColor = color; }
+     inline unsigned AreaBase::mapLocationToVBOIndex(unsigned x, unsigned y, unsigned l) {
+        return (y*width*ELYSIAN_AREA_MAP_LAYERS + x*ELYSIAN_AREA_MAP_LAYERS + l)*4;
+     }
      inline const char* AreaBase::getBgmOggByTrack(const unsigned index) const { return _bgmOggTracks[index]; }
      inline void AreaBase::setBgmOggByTrack(const unsigned index, const char* path) { strcpy(_bgmOggTracks[index], path); }
      inline const char* AreaBase::getAuxOggByTrack(const unsigned index) const { return _auxOggTracks[index]; }
      inline void AreaBase::setAuxOggByTrack(const unsigned index, const char* path) { strcpy(_auxOggTracks[index], path); }
-     inline unsigned AreaBase::mapLocationToVBOIndex(unsigned x, unsigned y, unsigned l) {
-        return (y*width*ELYSIAN_AREA_MAP_LAYERS + x*ELYSIAN_AREA_MAP_LAYERS + l)*4;
-     }
 
 }
 

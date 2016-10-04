@@ -26,6 +26,7 @@ namespace elysian {
     void            update(void);
     void            setEnabled(const bool val);
     bool            isEnabled(void) const;
+    void            updateAreaTracks(void);
 
     //WAV SFX API
     //accept -1 for dynamic channel

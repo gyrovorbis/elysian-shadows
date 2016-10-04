@@ -449,7 +449,8 @@ HEADERS += \
     ../../ESGamma/include/system/elysian_level_system_base.hpp \
     include/estk/tk_level_system.h \
     ../../AssetIO/include/utility/elysian_cpp_lua_function.hpp \
-    ../../AssetIO/include/behavior/elysian_state_machine_behavior.hpp
+    ../../AssetIO/include/behavior/elysian_state_machine_behavior.hpp \
+    ../../AssetIO/include/utility/elysian_oolua_string_traits.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

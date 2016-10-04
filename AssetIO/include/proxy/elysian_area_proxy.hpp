@@ -3,6 +3,7 @@
 
 #include <crtp/elysian_area.hpp>
 #include <proxy/elysian_instance_transform_proxy.hpp>
+#include <utility/elysian_oolua_string_traits.hpp>
 
 namespace OOLUA
 {

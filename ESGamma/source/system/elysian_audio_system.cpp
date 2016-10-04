@@ -61,6 +61,8 @@ namespace elysian {
 	void AudioSystem::update(void) {
 		auto* player = getPartySys()->getPartyLeader();
 
+        updateAreaTracks();
+
 		//the fuck do we do otherwise?
 		if(player) {
             _listenerPos = { player->_transform._pos.x, player->_transform._pos.y, player->_transform._pos.z };
@@ -342,22 +344,29 @@ namespace elysian {
 	//======= BGM OGG API ========
 
 	void AudioSystem::loadBgmTrack(const unsigned track, const char*const path) {
-		//Check to see if shit is playing? YES
+        bool validPath = (path && strcmp(path, "") != 0);
 
 		//Track is already allocated
 		if(_bgmTracks[track]) {
+            if(validPath && strcmp(_bgmTracks[track]->path, path) == 0) {
+                //SAME TRACK, DON'T BOTHER!!
+                return;
+            }
+
+            if(isBgmTrackPlaying() && getBgmTrack()) {
+                stopBgmTrack();
+            }
 
 			//Deallocate old track
 			gyAudOggDestroy(_bgmTracks[track]);
 		}
 
 		//Allocate new track
-		_bgmTracks[track] = gyAudOggCreate(path);
+        _bgmTracks[track] = validPath? gyAudOggCreate(path) : nullptr;
 
 		if(track == _streamChannels[StreamChannel::Type::BGM].track)
 			_streamChannels[StreamChannel::Type::BGM].ogg = _bgmTracks[track];
-
-	}
+    }
 
 	void AudioSystem::playBgmTrack(void) const {
 		gyAudOggStreamPlay(_streamChannels[StreamChannel::Type::BGM].src, _streamChannels[StreamChannel::Type::BGM].ogg);
@@ -491,7 +500,15 @@ namespace elysian {
 
 	}
 
-	void AudioSystem::fadeIntoNewBgmTrack(const unsigned track, const float secs, const char *path) {
+    void AudioSystem::fadeIntoNewBgmTrack(const unsigned track, const float secs, const char* path) {
+        if(path) {
+            if(_bgmTracks[track]) {
+                if(strcmp(path, _bgmTracks[track]->path) == 0) {
+                    return; //Already have this track loaded. Nothing to do here.
+                }
+            }
+        } else if(!_bgmTracks[track]) return; //both tracks are empty, nothing to do
+
 		//Temp track is already allocated
 		if(_bgmTracks[5]) {
 			//Deallocate old track
@@ -524,19 +541,26 @@ namespace elysian {
 	}
 
 	void AudioSystem::loadAuxTrack(const unsigned track, const char*const path) {
-		//Check to see if shit is playing? YES
-
+        bool validPath = (path && strcmp(path, "") != 0);
 		const unsigned oggTrack = _auxIndexToTrack(track);
 
 		//Track is already allocated
 		if(_auxTracks[oggTrack]) {
+            if(validPath && strcmp(_auxTracks[track]->path, path) == 0) {
+                //SAME TRACK, DON'T BOTHER!!
+                return;
+            }
+
+            if(isAuxTrackPlaying(track)) {
+                stopAuxTrack(track);
+            }
 
 			//Deallocate old track
 			gyAudOggDestroy(_auxTracks[oggTrack]);
 		}
 
 		//Allocate new track
-		_auxTracks[oggTrack] = gyAudOggCreate(path);
+        _auxTracks[oggTrack] = validPath? gyAudOggCreate(path) : nullptr;
 
 		const unsigned channel = _auxIndexToStreamChannel(track);
 		_streamChannels[channel].ogg = _auxTracks[oggTrack];
@@ -610,6 +634,14 @@ namespace elysian {
 		//Temp track is already allocated
 		const unsigned oggTrack = _auxIndexToTrack(track)+1;
 //		const unsigned channel = _auxIndexToStreamChannel(track);
+
+        if(path) {
+            if(_auxTracks[oggTrack]) {
+                if(strcmp(path, _auxTracks[oggTrack]->path) == 0) {
+                    return; //Already have this track loaded. Nothing to do here.
+                }
+            }
+        } else if(!_auxTracks[oggTrack]) return; //both tracks are empty, nothing to do
 
 		//Temp track is already allocated
 		if(_auxTracks[oggTrack]) {
@@ -688,5 +720,13 @@ namespace elysian {
 		}
 	}
 
+    void AudioSystem::updateAreaTracks(void) {
+        for(unsigned i = 0; i < 3; ++i) {
+            fadeIntoNewBgmTrack(i, 1.0f, getCurrentArea()->getBgmOggByTrack(i));
+        }
 
+        for(unsigned i = 0; i < 2; ++i) {
+            fadeIntoNewAuxTrack(i, 1.0f, getCurrentArea()->getAuxOggByTrack(i));
+        }
+    }
 }

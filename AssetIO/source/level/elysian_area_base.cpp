@@ -24,6 +24,7 @@ unsigned AreaBase::getAuxOggTrackCount(void) const { return 2; }
 unsigned AreaBase::getBgmOggTrackCount(void) const { return 3; }
 
 AreaBase::AreaBase(void) {
+#if 0
     for(unsigned i = 0; i < ELYSIAN_AUDIO_BGM_TRACKS; ++i) {
         strcpy(_bgmOggTracks[i], "none");
     }
@@ -31,6 +32,7 @@ AreaBase::AreaBase(void) {
     for(unsigned i = 0; i < ELYSIAN_AUDIO_AUX_TRACKS; ++i) {
         strcpy(_auxOggTracks[i], "none");
     }
+#endif
 }
 
 
