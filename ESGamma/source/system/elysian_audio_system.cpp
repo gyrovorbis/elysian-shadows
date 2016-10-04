@@ -501,10 +501,16 @@ namespace elysian {
 	}
 
     void AudioSystem::fadeIntoNewBgmTrack(const unsigned track, const float secs, const char* path) {
+        const bool validPath = (path && strcmp(path, "") != 0);
         if(path) {
             if(_bgmTracks[track]) {
                 if(strcmp(path, _bgmTracks[track]->path) == 0) {
                     return; //Already have this track loaded. Nothing to do here.
+                }
+            }
+            if(_bgmTracks[5]) {
+                if(strcmp(path, _bgmTracks[5]->path) == 0) {
+                    return; //Already fading into this track.
                 }
             }
         } else if(!_bgmTracks[track]) return; //both tracks are empty, nothing to do
@@ -516,7 +522,7 @@ namespace elysian {
 		}
 
 		//Allocate new track
-		_bgmTracks[5] = gyAudOggCreate(path);
+        _bgmTracks[5] = validPath? gyAudOggCreate(path) : nullptr;
 
 		_globalStates[TYPE_BGM].state = GlobalState::FADE_OUT_NEW;
 		_globalStates[TYPE_BGM].newTrack = track;
@@ -632,6 +638,7 @@ namespace elysian {
 
 	void AudioSystem::fadeIntoNewAuxTrack(const unsigned track, const float secs, const char *path) {
 		//Temp track is already allocated
+        const bool isValid = (path && strcmp(path, "") != 0);
 		const unsigned oggTrack = _auxIndexToTrack(track)+1;
 //		const unsigned channel = _auxIndexToStreamChannel(track);
 
@@ -650,7 +657,7 @@ namespace elysian {
 		}
 
 		//Allocate new track
-		_auxTracks[oggTrack] = gyAudOggCreate(path);
+        _auxTracks[oggTrack] = isValid? gyAudOggCreate(path) : nullptr;
 
 		_globalStates[TYPE_AUX1+track].state = GlobalState::FADE_OUT_NEW;
 		_globalStates[TYPE_AUX1+track].newTrack = oggTrack-1;
@@ -721,12 +728,16 @@ namespace elysian {
 	}
 
     void AudioSystem::updateAreaTracks(void) {
-        for(unsigned i = 0; i < 3; ++i) {
-            fadeIntoNewBgmTrack(i, 1.0f, getCurrentArea()->getBgmOggByTrack(i));
-        }
+        auto isValid = [](const char* path) {
+            return (path && strcmp(path, "") != 0);
+        };
 
-        for(unsigned i = 0; i < 2; ++i) {
-            fadeIntoNewAuxTrack(i, 1.0f, getCurrentArea()->getAuxOggByTrack(i));
-        }
+        const char* path = getCurrentArea()->getBgmOggByTrack(0);
+        if(isValid(path)) fadeIntoNewBgmTrack(0, 1.0f, path);
+        else fadeOutBgmTrack(1.0f);
+
+        path = getCurrentArea()->getAuxOggByTrack(0);
+        if(isValid(path)) fadeIntoNewAuxTrack(0, 1.0f, path);
+        else fadeOutAuxTrack(0, 1.0f);
     }
 }
