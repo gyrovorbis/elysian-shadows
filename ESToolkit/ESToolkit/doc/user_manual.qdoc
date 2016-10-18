@@ -45,6 +45,7 @@
 	\li \l {Status Bar}
 	\li \l {History View}
 	\li \l {Debugging}
+	\li \l {Warps}
 	\endlist
 
 */
@@ -483,7 +484,7 @@
 	\startpage ESToolkit User Manual
 
 	\title Warps
-	Warps are a simple type of entity that transport the player from one map location to another and optionally to map locations in different areas and levels. Warp information is represented by the "Warp" Component, which is a component that can be attached to an entity.
+	Warps are a simple type of entity that transports the player from one map location to another and optionally to map locations in different areas and levels. Warp information is represented by the "Warp" Component, which is a component that can be attached to an entity.
 
 	There are three basic types of warps.
 	\list 1
@@ -495,22 +496,22 @@
 	\section1 Creating a Warp
 
 	\list 1
-	\li \b {Create a new entity}
+	\li \b {Create a new entity}\br
 	Click the "Add Entity" command from the Area file menu.
 	
-	\li \b {Add Collidable Component}
+	\li \b {Add Collidable Component}\br
 	Right click on the new entity in Entity View. Click "Collidable" under the components menu. The warp component is not available until the Collidable component has been added.
 	
-	\li \b {Add Collidable Attributes} 
+	\li \b {Add Collidable Attributes}\br
 	Right click on the entity again. Click "Attributes" under the Collidable component menu.
 	
-	\li \b {Configure Collidable Component}
+	\li \b {Configure Collidable Component}\br
 	With the entity selected, expand the collidable component within Selection View. Make sure the "resolvePen" property is set to FALSE, to ensure that the player cannot push the warp around or hit into it as a solid object. Expand the "staticAttrib" property and set the "invMass" property to 0, to tell the physics system that the warp has infinite weight, so that it is not effected by outside forces such as gravity or wind. Expand the "flags" property followed by the "type" property. Set bit 3 to TRUE to signify the collider as a warp type. Then expand the "typeAgainst" property and set bit 2 to TRUE to tell the engine that the collider should be checking for collision against colliders of "player" type.
 	
-	\li \b {Add Warp Component}
+	\li \b {Add Warp Component}\br
 	Right-click the entity again from Selection View and press the "Warp" action under the Component menu. Note that this component was grayed out before the Collidable was attached, because it depends on that component. 
 
-	\li \b {Configure Warp Component}
+	\li \b {Configure Warp Component}\br
 	With the entity selected, expand the "warp" property in Selection View. The source position triggerig the warp is the entity's position. The destination position can be set by expanding the "toPos" property. If the destination is within a different Area, the "changeArea" flag must be set to TRUE, and the asset-relative path to the new area must be set in the "areaPath" flag. If the destination is in a different level, the "changeLevel" property must be set to TRUE, the "levelPath" property must be an asset-relative path to the new level directory, AND the corresponding new Area data must be supplied additionally. 
 
 	\endlist
