@@ -28,7 +28,7 @@ void LuaTableTableFieldData::onFieldAdded(const LuaVariant& key) {
 
 void LuaTableStackModel::populateModel(void) {
     if(_populated) return;
-    setHorizontalHeaderItem(0, new QStandardItem("Name"));
+    setHorizontalHeaderItem(0, new QStandardItem("Key"));
     setHorizontalHeaderItem(1, new QStandardItem("Value"));
     //setHorizontalHeaderItem(2, new QStandardItem("Type"));
 
