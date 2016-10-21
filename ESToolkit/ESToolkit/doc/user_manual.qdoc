@@ -258,6 +258,8 @@
 
 	\section2 Component Attributes
 	Some components, such as Collidable and RigidBody also require "attributes" to be added once the component has been added before it can be used. These attributes are kept separate from components so that different entities of the same type can share attributes. For example, two Goomba entities will have their own separate "Collidable" components, but their Collidables will share a single set of "attributes," because Goombas all have the same mass, size, and collision geometry. This sharing of attributes among differnet components is how prefabs work. The Goomba's collidable attributes are prefabbed in this scenario.
+
+	\sa {Entity}
 */
 
 /*!
@@ -524,6 +526,8 @@
 
 	\section1 Entity Naming Scheme for Warps
 	It is highly recommended that the entity names of warps abide by some kind of common naming convention. It will be much easier to manage warps in complex areas with lots of entities if you can quickly look at Entity View and see which entities are warps. It's also advisable to include the desination locations' name in the warp for the same reason.
+
+	\sa {Warp}
 */
 
 
@@ -547,6 +551,7 @@
 	\list 1
 	\li \b {Direct (Lua)} - Dialog may be started by directly passing a Dialog object to the DialogSystem through the Lua API. This is useful for cutscenes or for any sort of dialog where the player does not manually trigger an event. See the Lua API documentation for more details.
 	\li \b {Indirect (Examinable)} - Dialog can be indirectly started through examining entities with the Examinable component. This is useful for starting a dialog with NPCs, examining objects, or any sort of dialog event triggered by the player. This article with be focusing on this method.
+	\endlist
 
 	\section1 Creating Dialog
 	We will now walk through the steps required to add dialog to an existing behavior. Note that because the player must collide with the entity to trigger dialog, the Collidable component must be added before the Examinable component can be added.
@@ -618,11 +623,10 @@
 	\section1 Scripting Dialog
 	Coming soon.
 
+	\l {estk://fuckme} { ESTk }
+	\l {http://www.facebook.org} {test}
+	\l {ftp://fuck.com}
 
-
-
-
-	\endlist
 
 
 

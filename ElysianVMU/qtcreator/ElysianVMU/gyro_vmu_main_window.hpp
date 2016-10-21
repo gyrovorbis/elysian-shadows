@@ -126,11 +126,8 @@ private:
     int64_t             _prevTicks          = 0;
     bool                _running            = false;
     bool                _contAttached       = false;
-    float               _timeScalar         = 1.0f;
     int                 _iconAnimCounter    = 0;
     int                 _iconCurIndex       = 0;
-    int                 _turboAButtonState  = 0;
-    int                 _turboBButtonState  = 0;
     int                 _pConRegister       = 0;
     static FILE*        _logFile;
     static int          _logDepth;

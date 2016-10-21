@@ -15,21 +15,24 @@
 ****************************************************************************/
 
 HelpBrowser::HelpBrowser(QHelpEngine* helpEngine,
-                         QWidget* parent):QTextBrowser(parent),
-                         _helpEngine(helpEngine)
+                         QWidget* parent):
+                            QTextBrowser(parent),
+                            _helpEngine(helpEngine)
 {
 }
 
-QVariant HelpBrowser::loadResource(int type, const QUrl &name){
+QVariant HelpBrowser::loadResource(int type, const QUrl& name){
+    qDebug() << "BOUT TO OPEN " << name.url();
     if (name.scheme() == "qthelp")
         return QVariant(_helpEngine->fileData(name));
+   // else if(name.scheme() == "estk")
+    //    qDebug() << "ESTK SCHEME HIT!!!!" << name.url();
     else
         return QTextBrowser::loadResource(type, name);
 }
 
 
 HelpDockWidget::HelpDockWidget(QWidget */*parent*/) {
-
 #ifndef TOOLKIT_DOCUMENTATION_RESOURCES
     warnprintf("This build was compiled without documentation resource files!");
 
@@ -40,7 +43,7 @@ HelpDockWidget::HelpDockWidget(QWidget */*parent*/) {
 
     QDir dir(ESTK_USER_MANUAL_EXPANDED_DIR);
     if(!(dir.exists() || QDir::current().mkdir(ESTK_USER_MANUAL_EXPANDED_DIR))) {
-        Debug::printf(Debug::LOG_WARNING, "Could not access docs directory! [%s]", dir.absolutePath().toStdString().c_str());
+        Debug::printf(Debug::LOG_WARNING, "Could not access docs directory! [%s]", Q_CSTR(dir.absolutePath()));
 
     } else {
 
@@ -76,7 +79,6 @@ HelpDockWidget::HelpDockWidget(QWidget */*parent*/) {
     }
 
     QString dbFileName = dir.absolutePath()+QString("/")+ESTK_USER_MANUAL_DB_NAME+QString(".qhc");
-    qDebug() << dbFileName;
 
         QHelpEngine* helpEngine = new QHelpEngine(dbFileName);
         if(!helpEngine->setupData()) {

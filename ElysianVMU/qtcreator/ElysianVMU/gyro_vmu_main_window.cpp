@@ -338,142 +338,13 @@ void VMUMainWindow::paintEvent(QPaintEvent *) {
 }
 
 void VMUMainWindow::_update(void) {
-
-    GYKeyboard *kbd;
-    GYController* cont;
-
-    gyKeyboardPoll(&kbd);
-    bool hasCont = gyControllerPoll(0, &cont);
-
-    if(hasCont && !_contAttached) {
-        _ui->statusbar->showMessage("Controller detected!", VMU_STATUS_TEMP_TIMEOUT);
-    } else if(!hasCont && _contAttached) {
-        _ui->statusbar->showMessage("Controller removed!", VMU_STATUS_TEMP_TIMEOUT);
-    }
-    _contAttached = hasCont;
+    bool ranThisFrame = false;
 
     if(!_running) return;
 
     auto ticks = gyTimerTicks();
     auto deltaTicks = ticks-_prevTicks;
-    _prevTicks = ticks;
 
-    //Keyboard input
-    int u   = kbd->keys[GY_KEY_DPAD_U];
-    int d   = kbd->keys[GY_KEY_DPAD_D];
-    int l   = kbd->keys[GY_KEY_DPAD_L];
-    int r   = kbd->keys[GY_KEY_DPAD_R];
-    int a   = kbd->keys[GY_KEY_A];
-    int b   = kbd->keys[GY_KEY_B];
-    int ta  = kbd->keys[GY_KEY_X];
-    int tb  = kbd->keys[GY_KEY_Y];
-    int m   = kbd->keys[GY_KEY_M];
-    int s   = kbd->keys[GY_KEY_S];
-    int lt  = kbd->keys[GY_KEY_L];
-    int rt  = kbd->keys[GY_KEY_R];
-
-
-    //Combine with Controller input
-    if(hasCont && cont) {
-        //Combine Dpad input with Analog input
-        u   |= cont->buttons[GY_CONTROLLER_BUT_DPAD_UP]       | cont->buttons[GY_CONTROLLER_BUT_ANALOG1_UP];
-        d   |= cont->buttons[GY_CONTROLLER_BUT_DPAD_DOWN]     | cont->buttons[GY_CONTROLLER_BUT_ANALOG1_DOWN];
-        l   |= cont->buttons[GY_CONTROLLER_BUT_DPAD_LEFT]     | cont->buttons[GY_CONTROLLER_BUT_ANALOG1_LEFT];
-        r   |= cont->buttons[GY_CONTROLLER_BUT_DPAD_RIGHT]    | cont->buttons[GY_CONTROLLER_BUT_ANALOG1_RIGHT];
-        a   |= cont->buttons[GY_CONTROLLER_BUT_CIRCLE];
-        b   |= cont->buttons[GY_CONTROLLER_BUT_X];
-        ta  |= cont->buttons[GY_CONTROLLER_BUT_TRIANGLE];
-        tb  |= cont->buttons[GY_CONTROLLER_BUT_SQUARE];
-        m   |= cont->buttons[GY_CONTROLLER_BUT_SELECT];
-        s   |= cont->buttons[GY_CONTROLLER_BUT_START];
-        lt  |= cont->buttons[GY_CONTROLLER_BUT_LSHOULDER];
-        rt  |= cont->buttons[GY_CONTROLLER_BUT_RSHOULDER];
-    }
-
-    //Update turbo buttons
-#if 0
-    if(ta == GY_BUT_STATE_TAPPED) {
-        a = GY_BUT_STATE_TAPPED;
-    } else if(ta == GY_BUT_STATE_DOWN) {
-        a = GY_BUT_STATE_RELEASED;
-        kbd->keys[GY_KEY_X] = GY_BUT_STATE_UP;
-        if(hasCont && cont) {
-            cont->buttons[GY_CONTROLLER_BUT_TRIANGLE] = GY_BUT_STATE_UP;
-        }
-    }
-
-    if(tb == GY_BUT_STATE_TAPPED) {
-        b = GY_BUT_STATE_TAPPED;
-    } else if(tb == GY_BUT_STATE_DOWN) {
-        b = GY_BUT_STATE_RELEASED;
-        kbd->keys[GY_KEY_Y] = GY_BUT_STATE_UP;
-        if(hasCont && cont) {
-            cont->buttons[GY_CONTROLLER_BUT_SQUARE] = GY_BUT_STATE_UP;
-        }
-    }
-#else
-    switch(ta) {
-    case GY_BUT_STATE_TAPPED:
-        _turboAButtonState = GY_BUT_STATE_TAPPED;
-        break;
-    case GY_BUT_STATE_DOWN:
-        _turboAButtonState = (_turboAButtonState == GY_BUT_STATE_TAPPED)? GY_BUT_STATE_RELEASED : GY_BUT_STATE_TAPPED;
-        break;
-    case GY_BUT_STATE_RELEASED:
-        _turboAButtonState = (_turboAButtonState == GY_BUT_STATE_RELEASED)? GY_BUT_STATE_UP : GY_BUT_STATE_RELEASED;
-        break;
-    case GY_BUT_STATE_UP:
-        _turboAButtonState = GY_BUT_STATE_UP;
-        break;
-    }
-
-    a |= _turboAButtonState;
-
-    switch(tb) {
-    case GY_BUT_STATE_TAPPED:
-        _turboBButtonState = GY_BUT_STATE_TAPPED;
-        break;
-    case GY_BUT_STATE_DOWN:
-        _turboBButtonState = (_turboBButtonState == GY_BUT_STATE_TAPPED)? GY_BUT_STATE_RELEASED : GY_BUT_STATE_TAPPED;
-        break;
-    case GY_BUT_STATE_RELEASED:
-        _turboBButtonState = (_turboBButtonState == GY_BUT_STATE_RELEASED)? GY_BUT_STATE_UP : GY_BUT_STATE_RELEASED;
-        break;
-    case GY_BUT_STATE_UP:
-        _turboBButtonState = GY_BUT_STATE_UP;
-        break;
-    }
-
-    b |= _turboBButtonState;
-#endif
-
-
-    //Trigger speed modifiers
-    _timeScalar = 1.0f;
-    if(lt & GY_BUT_FLAGS_IS_PRESSED) _timeScalar /= VMU_TRIGGER_SPEED_FACTOR;
-    if(rt & GY_BUT_FLAGS_IS_PRESSED) _timeScalar *= VMU_TRIGGER_SPEED_FACTOR;
-
-#ifdef GYRO_VMU
-
-    if(u == GY_BUT_STATE_TAPPED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_UP, 1);
-    else if(u == GY_BUT_STATE_RELEASED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_UP, 0);
-    if(d == GY_BUT_STATE_TAPPED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_DOWN, 1);
-    else if(d == GY_BUT_STATE_RELEASED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_DOWN, 0);
-    if(l == GY_BUT_STATE_TAPPED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_LEFT, 1);
-    else if(l == GY_BUT_STATE_RELEASED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_LEFT, 0);
-    if(r == GY_BUT_STATE_TAPPED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_RIGHT, 1);
-    else if(r == GY_BUT_STATE_RELEASED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_RIGHT, 0);
-
-    if(a == GY_BUT_STATE_TAPPED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_A, 1);
-    else if(a == GY_BUT_STATE_RELEASED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_A, 0);
-    if(b == GY_BUT_STATE_TAPPED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_B, 1);
-    else if(b == GY_BUT_STATE_RELEASED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_B, 0);
-    //if(m == GY_BUT_STATE_TAPPED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_MODE, 1);
-    //else if(m == GY_BUT_STATE_RELEASED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_MODE, 0);
-    if(s == GY_BUT_STATE_TAPPED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_SLEEP, 1);
-    else if(s == GY_BUT_STATE_RELEASED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_SLEEP, 0);
-
-#endif
 
 #ifdef MARCUS_VMU
     static int cycles = 0;
@@ -510,7 +381,7 @@ void VMUMainWindow::_update(void) {
       for(int i = 0; i < 1; ++i) {
 #ifdef GYRO_VMU
 #ifndef VMU_DEBUG
-        gyVmuDeviceUpdate(_dev, _timeScalar*(float)deltaTicks/1000000000.0f);
+        ranThisFrame = gyVmuDeviceUpdate(_dev, (float)deltaTicks/1000000000.0f);
 #else
         gyVmuCpuTick(_dev, 1.0f/30.0f);
 #endif
@@ -525,14 +396,26 @@ void VMUMainWindow::_update(void) {
 #endif
       }
 
-    //Check if the TCP connection was changed from outside (ie: disconnected)
-    if(prevSocket != _dev->serialPort._tcpSocket) {
-        _tcpDialog->updateConnectionStatus();
-    }
+    if(ranThisFrame) {
+         _prevTicks = gyTimerTicks();
 
-     _updatePConRegister();
-     _updateIcon();
-     lcdrefresh();
+        if(_contAttached && !_dev->gamepad.contAttached) {
+            _ui->statusbar->showMessage("Controller Disconnected!", VMU_STATUS_TEMP_TIMEOUT);
+        } else if(!_contAttached && _dev->gamepad.contAttached) {
+            _ui->statusbar->showMessage("Controller Connected!", VMU_STATUS_TEMP_TIMEOUT);
+        }
+        _contAttached = (bool)_dev->gamepad.contAttached;
+
+
+        //Check if the TCP connection was changed from outside (ie: disconnected)
+        if(prevSocket != _dev->serialPort._tcpSocket) {
+            _tcpDialog->updateConnectionStatus();
+        }
+
+        _updatePConRegister();
+        _updateIcon();
+        lcdrefresh();
+    }
 }
 
 

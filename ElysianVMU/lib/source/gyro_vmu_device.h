@@ -7,15 +7,18 @@
 #include "gyro_vmu_timers.h"
 #include "gyro_vmu_serial.h"
 #include "gyro_vmu_buzzer.h"
+#include "gyro_vmu_gamepad.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define VMU_MEM_SEG_MASK        0x180
-#define VMU_MEM_SEG_POS         7
-#define VMU_MEM_OFFSET_MASK     0x7f
-#define VMU_MEM_SEG_SIZE        128
+#define VMU_TRIGGER_SPEED_FACTOR    10.0f
+
+#define VMU_MEM_SEG_MASK            0x180
+#define VMU_MEM_SEG_POS             7
+#define VMU_MEM_OFFSET_MASK         0x7f
+#define VMU_MEM_SEG_SIZE            128
 
 typedef enum VMU_RAM_BANK {
     VMU_RAM_BANK0,
@@ -46,6 +49,7 @@ typedef struct VMUDevice {
     VMUTimer1       timer1;
     VMUSerialPort   serialPort;
     VMUBuzzer       buzzer;
+    VMUGamepad      gamepad;
 
     uint16_t        intReq;
     uint16_t        intMask;
@@ -63,7 +67,7 @@ typedef struct VMUDevice {
 
 VMUDevice*          gyVmuDeviceCreate(void);
 void                gyVmuDeviceDestroy(VMUDevice* device);
-void                gyVmuDeviceUpdate(VMUDevice* device, float deltaTime);
+int                 gyVmuDeviceUpdate(VMUDevice* device, float deltaTime);
 void                gyVmuDeviceReset(VMUDevice* device);
 
 int                 gyVmuDeviceDump(VMUDevice* device, const char* path);
