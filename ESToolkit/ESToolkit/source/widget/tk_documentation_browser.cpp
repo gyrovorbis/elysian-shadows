@@ -102,10 +102,10 @@ HelpDockWidget::HelpDockWidget(QWidget */*parent*/) {
         QSplitter *horizSplitter = new QSplitter(Qt::Horizontal);
         horizSplitter->insertWidget(0, tWidget);
         horizSplitter->insertWidget(1, textViewer);
-        horizSplitter->hide();
+        horizSplitter->setSizes(QList<int>{300, 800});
+       // horizSplitter->hide();
 
-    setWidget(horizSplitter);
-       setFloating(true);
+        setCentralWidget(horizSplitter);
 
         auto geo = geometry();
         geo.setWidth(700);

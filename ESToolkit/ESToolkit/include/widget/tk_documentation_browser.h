@@ -3,7 +3,7 @@
 
 #include <QTextBrowser>
 #include <QHelpEngine>
-#include <QDockWidget>
+#include <QMainWindow>
 
 #define ESTK_USER_MANUAL_DB_NAME            "ESToolkit"
 
@@ -26,7 +26,7 @@ private:
     QHelpEngine* _helpEngine = nullptr;
 };
 
-class HelpDockWidget: public QDockWidget {
+class HelpDockWidget: public QMainWindow {
 private:
     //HelpBrowser*    _helpBrowser = nullptr;
 public:
