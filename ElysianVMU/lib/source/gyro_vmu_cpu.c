@@ -658,17 +658,15 @@ int gyVmuCpuTick(VMUDevice* dev, float deltaTime) {
     float time = 0.0f;
     int cycle = 0;
 
-    if(deltaTime >= gyVmuOscSecPerCycle(dev)) {
-        while(time < deltaTime) {
-            gyVmuCpuInstrExecuteNext(dev);
-            gyVmuTimersUpdate(dev);
-            _serviceInterrupts(dev);
-            time += gyVmuOscSecPerCycle(dev)*(float)_instrMap[dev->curInstr.instrBytes[INSTR_BYTE_OPCODE]].cc;
-            ++cycle;
-        }
+    while(time < deltaTime) {
+        gyVmuCpuInstrExecuteNext(dev);
+        gyVmuTimersUpdate(dev);
+        _serviceInterrupts(dev);
+        time += gyVmuOscSecPerCycle(dev)*(float)_instrMap[dev->curInstr.instrBytes[INSTR_BYTE_OPCODE]].cc;
+        ++cycle;
     }
 
-    return 1;
+    return cycle;
 }
 
 int gyVmuCpuReset(VMUDevice* dev) {
