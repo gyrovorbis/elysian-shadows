@@ -46,6 +46,7 @@
 	\li \l {History View}
 	\li \l {Debugging}
 	\li \l {Warps}
+	\li \l {Dialog}
 	\endlist
 
 */
@@ -477,6 +478,7 @@
 /*!
 	\page warps.html
 	\previouspage Debugging
+	\nextpage Dialog
 	\contentspage {ESToolkit User Manual} {Contents}
 	\ingroup estk
 
@@ -524,9 +526,113 @@
 	It is highly recommended that the entity names of warps abide by some kind of common naming convention. It will be much easier to manage warps in complex areas with lots of entities if you can quickly look at Entity View and see which entities are warps. It's also advisable to include the desination locations' name in the warp for the same reason.
 */
 
+
+/*!
+	\page dialog.html
+	\previouspage Warps
+	\contentspage {ESToolkit User Manual} {Contents}
+	\ingroup estk
+
+	\indexpage Index
+	\startpage ESToolkit User Manual
+
+	\title Dialog
+	The engine supplies an extremely robust dialog system used for cutscenes, 
+	conversing with NPCs, descriptions for examined objects, and other kinds of
+	in-game text. The C++/Lua type containing dialog text and other additional
+	information for the engine is simply called "Dialog." The engine manages
+	all dialog-related functionality through the "DialogSystem" which operates
+	upon dialog objects. There are two ways of supplying the DialogSystem with
+	dialog objects.
+	\list 1
+	\li \b {Direct (Lua)} - Dialog may be started by directly passing a Dialog object to the DialogSystem through the Lua API. This is useful for cutscenes or for any sort of dialog where the player does not manually trigger an event. See the Lua API documentation for more details.
+	\li \b {Indirect (Examinable)} - Dialog can be indirectly started through examining entities with the Examinable component. This is useful for starting a dialog with NPCs, examining objects, or any sort of dialog event triggered by the player. This article with be focusing on this method.
+
+	\section1 Creating Dialog
+	We will now walk through the steps required to add dialog to an existing behavior. Note that because the player must collide with the entity to trigger dialog, the Collidable component must be added before the Examinable component can be added.
+
+	\section2 1. Add Examinable Component
+	Right click on the entity within Entity View, and click the "Examinable" option under the component menu.
+
+	\section2 2. Configure Examinable Component
+	Set the "enabled" property to TRUE. Set the "maxDist" property to the maximum distance the player can be from the entity and still trigger the dialog.
+
+	\section2 3. Create a Dialog Object
+	With the entity as the active selection, expand the Examinable component within Selection View. 
+	\list 1
+	\li Right click on the "nil" value of the "dialog" property.
+	\li Click "Dialog" from the type->userdata submenu.
+	\endlist
+	The "dialog" property should now expand to a Dialog object.
+
+	\section2 4. Configure Dialog Object
+	Expand the dialog object. The "screens" property is an array of the different "screens" of dialog. A screen is an object containing all three lines of text fitting into a single page of the dialog box. When the player pushes a button to advance, the next screen becomes active. To create dialog, you add screens to the array, chaining them together to make a dialog. 
+
+	The "nextIndex" property is the next screen to be shown by the dialog system, allowing you to create nonlinear dialog trees with complex branches. Note that nextIndex starts at 0, and a nextIndex of -1 signifies the end of the dialog.
+
+	There are two different types of screens you can add:
+	\list 1
+	\li \b {DialogText}: Simple screen representing 3 lines of text.
+	\li \b {DialogPrompt}: Screen representing 3 lines of text followed by a multi-option input prompt requiring the user to make a selection before advancing to the next screen or triggering an event.
+	\endlist
+
+	\section3 Adding Text Screens
+	\list 1
+	\li Right click on the empty space in the value field of the "screens" property.
+	\li Click "Add Key" from the drop-down menu.
+	\li Enter the array index of the element you're adding (starting at 1).
+	\li Select "DialogText" from the type drop-down menu.
+	\endlist
+
+	Now the "screens" Dialog property should be expandable with the array index you added also expanding into a DialogText object. Enter the text you would like to have displayed in the "text" property.
+
+	\section3 Adding Prompt Screens
+	\list 1
+	\li Right click on the empty space in the value field of the "screens" property.
+	\li Click "Add Key" from the drop-down menu.
+	\li Enter the array index of the element you're adding (starting at 1).
+	\li Select "DialogPrompt" from the type drop-down menu.
+	\endlist
+
+	The index number should now be expandable from the "screens" array to a "DialogPrompt" object. The "text" field works the same way as in a DialogText screen, but there's an additional "options" property containing an array of DialogOptions.
+
+	\section4 Adding Prompt Options
+	\list 1
+	\li Right click on the empty space in the value field of the "options" property.
+	\li Click "Add Key" from the drop-down menu.
+	\li Enter the array index of the element you're adding (starting at 1).
+	\li Select "DialogOption" from the type drop-down menu.
+	\endlist
+
+	The index number should now be expandable from the "options" array to a "DialogOption" object. The "text" property is the text that's displayed for the option, and the "nextIndex" field is the next screen that the option leads to.
+
+
+	\section1 Removing Dialog
+	To remove the dialog, you can do one of the three:
+	\list 1
+	\li Set the "dialog" property of the Examinable component to nil.
+	\li Remove the examinable component.
+	\li Delete or deactivate the entity with the attached dialog.
+	\endlist
+
+	\section1 Scripting Dialog
+	Coming soon.
+
+
+
+
+
+	\endlist
+
+
+
+*/
+
+
+
+
 /*!
 	\group estk
 	\title Index
 
 */
-
