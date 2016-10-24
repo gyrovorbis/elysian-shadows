@@ -28,7 +28,11 @@ dreamcast {
 
 ios {
 #    QMAKE_XCODE_CODE_SIGN_IDENTITY="Elysian Shadows"
-    QMAKE_INFO_PLIST=ESToolkit_Info.plist
+    QMAKE_INFO_PLIST=iOS_Info.plist
+}
+
+macx {
+    QMAKE_INFO_PLIST=MacOS_Info.plist
 }
 
 
