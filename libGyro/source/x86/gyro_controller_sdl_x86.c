@@ -41,13 +41,24 @@ static SDLController*      _devices        = NULL;
 
 int _sdlControllerInit(const struct GYInputInitParams*const  params) {
     int success = 1;
+    SDL_version version;
 
-    _gyLog(GY_DEBUG_VERBOSE, "Initializing SDL_GAMECONTROLLER with %d ports.", params->controllerCount);
+    _gyLog(GY_DEBUG_VERBOSE, "GYRO_INPUT_API: Initializing SDL_GAMECONTROLLER and SDL_HAPTIC.");
     _gyPush();
-    if(SDL_Init(SDL_INIT_GAMECONTROLLER) < 0) {
+    if(SDL_Init(SDL_INIT_GAMECONTROLLER|SDL_INIT_HAPTIC) < 0) {
         success = 0;
         _gyLog(GY_DEBUG_ERROR, "Could not initialize SDL_GAMECONTROLLER! [%s]", SDL_GetError());
     }
+    _gyLog(GY_DEBUG_VERBOSE, "Max requested controller ports: %d", params->controllerCount);
+
+
+    _gyLog(GY_DEBUG_VERBOSE, "SDL Library Versions");
+    _gyPush();
+    SDL_VERSION(&version);
+    _gyLog(GY_DEBUG_VERBOSE, "%-15s: %10d.%d.%d", "Compile-Time",  version.major, version.minor, version.patch);
+    SDL_GetVersion(&version);
+    _gyLog(GY_DEBUG_VERBOSE, "%-15s: %10d.%d.%d", "Run-time",  version.major, version.minor, version.patch);
+    _gyPop(1);
 
     _devices = malloc(sizeof(SDLController)*params->controllerCount);
     memset(_devices, 0, sizeof(SDLController)*params->controllerCount);
