@@ -28,8 +28,8 @@ OOLUA_PROXY(DialogScreen)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(DialogText, DialogScreen)
-    OOLUA_MEM_FUNC_CONST(int, getNextIndex)
-    OOLUA_MEM_FUNC(void, setNextIndex, int)
+    OOLUA_MEM_FUNC_CONST_RENAME(getNextIndex, int, getNextIndexLua)
+    OOLUA_MEM_FUNC_RENAME(setNextIndex, void, setNextIndexLua, int)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(DialogOption)

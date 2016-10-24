@@ -37,7 +37,9 @@ namespace elysian {
                         DialogTextBase(void);
                         DialogTextBase(const char*const text);
         void            setNextIndex(const int index);
+        void            setNextIndexLua(const int index);
         int             getNextIndex(void) const;
+        int             getNextIndexLua(void) const;
     };
 
 
@@ -57,7 +59,9 @@ namespace elysian {
         const char*     getText(void) const;
         void            setText(const char* string);
         int             getNextIndex(void) const;
+        int             getNextIndexLua(void) const;
         void            setNextIndex(const int index);
+        void            setNextIndexLua(const int index);
     };
 
 
@@ -124,15 +128,21 @@ namespace elysian {
         DialogScreen(DialogScreenBase::SCREEN_TEXT, text) {}
     inline void	DialogTextBase::setNextIndex(const int index) { _nextIndex = index; }
     inline int	DialogTextBase::getNextIndex(void) const { return _nextIndex; }
+    inline void DialogTextBase::setNextIndexLua(const int index) { _nextIndex = index-1; }
+    inline int DialogTextBase::getNextIndexLua(void) const { return _nextIndex+1; }
 
     //==== DIALOGOPTION INLINEZ ====
-    inline DialogOptionBase::DialogOptionBase(const char *string, const int nextIndex): _nextIndex(nextIndex) {
+    inline DialogOptionBase::DialogOptionBase(const char *string, const int nextIndex):
+        _nextIndex(nextIndex)
+    {
         strcpy(_text, string);
     }
     inline const char* DialogOptionBase::getText(void) const { return _text; }
     inline void DialogOptionBase::setText(const char *string) { strcpy(_text, string); }
     inline int DialogOptionBase::getNextIndex(void) const { return _nextIndex; }
     inline void DialogOptionBase::setNextIndex(const int index) { _nextIndex = index; }
+    inline int DialogOptionBase::getNextIndexLua(void) const { return _nextIndex+1; }
+    inline void DialogOptionBase::setNextIndexLua(const int index) { _nextIndex = index-1; }
 
     //==== DIALOGPROMPT INLINEZ =====
     inline DialogPromptBase::DialogPromptBase(void):
