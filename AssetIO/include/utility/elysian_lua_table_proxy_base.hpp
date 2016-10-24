@@ -1005,8 +1005,8 @@ namespace elysian {
          * 5) entityObj:new({})     (copy construct new entity from entityObj then initialize properties from table)
          */
         static int _luaCreate(lua_State*const l) {
-            LuaVariant          rvalue;
-            LuaVariant          valueTable;
+            LuaVariant          rvalue;     //Entity Object
+            LuaVariant          valueTable; //Lua Value Table
             int args     =      lua_gettop(l);
             int retCount =      1;
 
@@ -1047,7 +1047,7 @@ namespace elysian {
             //Whatever constructor that was invoked did not return a new object!
             GY_ASSERT(!lua_isnil(l, -1));
 
-            //Initialize new object with valueTable, if supplied.
+            //Initialize new object from rvalue, if supplied.
             if(!rvalue.isNil()) {
                 T* obj;
                 if(OOLUA::pull(l, obj)) {
@@ -1112,20 +1112,7 @@ namespace elysian {
         nullptr,
         0
     }};
-#if 0
-    template <typename P, typename T, class... Args>
-    LuaTable LuaTableProxyBase<P, T, Args...>::_ooluaIndexTable;
 
-    template <typename P, typename T, class... Args>
-    LuaTable LuaTableProxyBase<P, T, Args...>::_ooluaNewIndexTable;
-
-    template <typename P, typename T, class... Args>
-    LuaTable LuaTableProxyBase<P, T, Args...>::_propertyProxyIndexTable;
-
-    template <typename P, typename T, class... Args>
-    LuaTable LuaTableProxyBase<P, T, Args...>::_propertyProxyNewIndexTable;
-
-#else
     template <typename P, typename T, class... Args>
     int LuaTableProxyBase<P, T, Args...>::_ooluaIndexTable = LUA_REFNIL;
 
@@ -1137,8 +1124,6 @@ namespace elysian {
 
     template <typename P, typename T, class... Args>
     int LuaTableProxyBase<P, T, Args...>::_propertyProxyNewIndexTable = LUA_REFNIL;
-
-#endif
 
     template <typename P, typename T, class... Args>
     bool LuaTableProxyBase<P, T, Args...>::_initializing = false;

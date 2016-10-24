@@ -60,9 +60,18 @@ void AdventureLog::addLine(const TEXT_TYPE lineType, const char *line) {
     }
 }
 
-/*
+void AdventureLog::printf(const char *str, ...) {
+    static char buffer[ELYSIAN_ADV_LOG_CHARS_PER_LINE];
+    va_list argptr;
 
- */
+    va_start(argptr, str);
+    vsprintf(buffer, str, argptr);
+    va_end(argptr);
+
+    addLine(buffer);
+}
+
+
 void AdventureLog::update(void) {
   if(_exitState == EXIT_DISABLED) return;
     getGuiSys()->getResolution(_scrW, _scrH);

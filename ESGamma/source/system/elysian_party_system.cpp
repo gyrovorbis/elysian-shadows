@@ -14,6 +14,7 @@
 #include <crtp/elysian_input_system.hpp>
 #include <crtp/elysian_skeleton.hpp>
 #include <behavior/elysian_playable_behavior.hpp>
+#include <system/elysian_gui_system.hpp>
 
 namespace elysian {
 
@@ -548,12 +549,18 @@ bool PartySystem::addCharacterToParty(Entity *entity) {
         behav->setPlayerNum(_characterParty.size());
     }
 
-  //Debug::printf(Debug::LOG_VERBOSE, "%s has joined the party!", entity->getName());
-  _characterParty.push_back(entity);
-    if( _characterParty.size() > 1) entity->_transform.setPos(_partyPathPoint[_partyPathPoint.size()-1]);
-  if(_playableParty.size() == 0 && _characterParty.size() == 1) getCameraSys()->setFollowEntity(entity);
-  _resizePartyPathPoints();
-  return true;
+    Debug::printf(Debug::LOG_VERBOSE, "%s has joined the party!", entity->getName());
+    _characterParty.push_back(entity);
+    if(_characterParty.size() > 1) entity->_transform.setPos(_partyPathPoint[_partyPathPoint.size()-1]);
+    if(_playableParty.size() == 0 && _characterParty.size() == 1) getCameraSys()->setFollowEntity(entity);
+
+    if(_characterParty.size() > 1) {
+        getCameraSys()->addEntity(entity);
+        getGuiSys()->getAdvLog().printf("~c02%s ~c00has joined the party!", entity->getName());
+    }
+
+    _resizePartyPathPoints();
+    return true;
 }
 
 bool PartySystem::removeCharacterFromParty(const char *name) {

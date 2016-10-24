@@ -33,7 +33,7 @@
 #include <crtp/elysian_input_system.hpp>
 #include <core/tk_selection_scene.h>
 #include <widget/tk_documentation_browser.h>
-
+#include <proxy/elysian_entity_proxy.hpp>
 
 
 
@@ -718,11 +718,18 @@ void ESToolkit::on_actionAdd_Player_triggered()
 {
     static int players = 1;
 
-    ++players;
     Entity* leader = _assets.getEngine()->getPartySys()->getPartyLeader();
+    if(!leader) {
+        errprintf("No party leader to instantiate new player from!");
+        return;
+    }
 
-    Entity* newPlayer = new Entity(leader);
+    Entity* newPlayer = new Entity;
+    newPlayer->fromTable(LuaVariant(leader));
+    _assets.getCurrentArea()->addEntity(newPlayer);
     _assets.getEngine()->getPartySys()->addCharacterToParty(newPlayer);
+
+    ++players;
 
 }
 

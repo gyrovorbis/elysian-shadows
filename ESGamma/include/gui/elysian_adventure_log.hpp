@@ -41,6 +41,7 @@ class Font;
 		void update(void);
         void render(void);
 
+        void printf(const char* str, ...);
 		void addLine(const TEXT_TYPE lineType, const char* line);
         void addLine(const char* line);
         void clear(void);
@@ -60,8 +61,7 @@ class Font;
 		
         char        _log[ELYSIAN_ADV_LOG_LINES][ELYSIAN_ADV_LOG_CHARS_PER_LINE];
         TEXT_TYPE   _type[ELYSIAN_ADV_LOG_LINES];
-        char        _label[ELYSIAN_ADV_LOG_LABEL_LENGTH]
-                                    = ELYSIAN_ADV_LOG_LABEL_DEFAULT;
+        char        _label[ELYSIAN_ADV_LOG_LABEL_LENGTH] = ELYSIAN_ADV_LOG_LABEL_DEFAULT;
 
         LOG_STATE   _state			= WAIT;
         LOG_EXIT    _exitState		= EXIT_DISABLED;
