@@ -128,8 +128,8 @@ namespace elysian {
         DialogScreen(DialogScreenBase::SCREEN_TEXT, text) {}
     inline void	DialogTextBase::setNextIndex(const int index) { _nextIndex = index; }
     inline int	DialogTextBase::getNextIndex(void) const { return _nextIndex; }
-    inline void DialogTextBase::setNextIndexLua(const int index) { _nextIndex = index-1; }
-    inline int DialogTextBase::getNextIndexLua(void) const { return _nextIndex+1; }
+    inline void DialogTextBase::setNextIndexLua(const int index) { _nextIndex = (index == -1)? -1 : index-1; }
+    inline int DialogTextBase::getNextIndexLua(void) const { return (_nextIndex == -1)? -1 :_nextIndex+1; }
 
     //==== DIALOGOPTION INLINEZ ====
     inline DialogOptionBase::DialogOptionBase(const char *string, const int nextIndex):
@@ -141,8 +141,8 @@ namespace elysian {
     inline void DialogOptionBase::setText(const char *string) { strcpy(_text, string); }
     inline int DialogOptionBase::getNextIndex(void) const { return _nextIndex; }
     inline void DialogOptionBase::setNextIndex(const int index) { _nextIndex = index; }
-    inline int DialogOptionBase::getNextIndexLua(void) const { return _nextIndex+1; }
-    inline void DialogOptionBase::setNextIndexLua(const int index) { _nextIndex = index-1; }
+    inline int DialogOptionBase::getNextIndexLua(void) const { return (_nextIndex == -1)? -1 : _nextIndex+1; }
+    inline void DialogOptionBase::setNextIndexLua(const int index) { _nextIndex = (index == -1)? -1 : index-1; }
 
     //==== DIALOGPROMPT INLINEZ =====
     inline DialogPromptBase::DialogPromptBase(void):

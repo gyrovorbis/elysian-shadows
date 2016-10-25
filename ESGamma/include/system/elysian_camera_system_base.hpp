@@ -392,7 +392,7 @@ namespace elysian {
     inline float CameraSystemBase::getStaticScale(void) const { return _curState->staticScale; }
 
     inline void CameraSystemBase::setScale(const float /*factor*/, const float time, EventMonitor*const monitor) {
-        auto &interp = get<SUBPROC_KEY_FR_INTERP > ( static_cast<SubProcParent&>(*this));
+        auto &interp = get<SUBPROC_KEY_FR_INTERP> ( static_cast<SubProcParent&>(*this));
 
         if(interp.getProcState() == PROC_STATE_RUNNING) return;
 
