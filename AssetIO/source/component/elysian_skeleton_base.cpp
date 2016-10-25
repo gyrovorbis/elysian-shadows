@@ -342,7 +342,7 @@ void SkeletonBase::setSkin(const char *name) {
 }
 
 const char* SkeletonBase::getSkin(void) const {
-    return _skeleton->skin? _skeleton->skin->name : "";
+    return (_skeleton && _skeleton->skin)? _skeleton->skin->name : nullptr;
 
 }
 

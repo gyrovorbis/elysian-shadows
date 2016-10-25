@@ -2,6 +2,7 @@
 #define ELYSIAN_SKELETON_PROXY_HPP
 
 #include <crtp/elysian_skeleton.hpp>
+#include <utility/elysian_oolua_string_traits.hpp>
 
 namespace OOLUA
 {
@@ -57,7 +58,7 @@ OOLUA_PROXY(Skeleton, Component)
     OOLUA_MEM_FUNC(void, attachEntityToSlot, const char*, cpp_in_p<Entity*>)
     OOLUA_MEM_FUNC(void, removeEntityFromSlot, const char*)
     OOLUA_MEM_FUNC(void, setSkin, const char*)
-    OOLUA_MEM_FUNC_CONST(const char*, getSkin)
+    OOLUA_MEM_FUNC_CONST(maybe_null<const char*>, getSkin)
 OOLUA_PROXY_END
 
 

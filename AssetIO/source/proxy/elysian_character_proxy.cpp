@@ -7,7 +7,7 @@ EXPORT_OOLUA_FUNCTIONS_0_CONST(Direction)
 
 OOLUA_EXPORT_FUNCTIONS(Character,
                                    faceEntity,
-                                   faceDir,
+                                   setFaceDir,
                                    moveByForce,
                                    setAnimate,
                                    setWalkForce,

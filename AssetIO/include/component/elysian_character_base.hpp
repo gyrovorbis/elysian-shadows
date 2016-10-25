@@ -101,6 +101,7 @@ namespace elysian {
 
     public:
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
+            ELYSIAN_LUA_PROXY_FIELD(faceDir,            getFaceDir,             setFaceDir)
             ELYSIAN_LUA_PROXY_FIELD(walkForce,          getWalkForce,           setWalkForce)
             ELYSIAN_LUA_PROXY_FIELD(dashMultiplier,     getDashMultiplier,      setDashMultiplier)
             ELYSIAN_LUA_PROXY_FIELD(holdingDampFactor,  getEntityForceDampFactor)
@@ -177,7 +178,6 @@ namespace elysian {
     inline float CharacterBase::getWalkForce(void) const { return _walkForce; }
     inline const GYVector3& CharacterBase::getLastMoveDir(void) const { return _lastMoveDir; }
     inline void CharacterBase::setAnimate(const bool val) { _animate = val; }
-    inline void CharacterBase::setFaceDir(const Direction::DIR4 dir) { _faceDir = dir; }
     inline Entity* CharacterBase::getPullEntity(void) const { return _pullEntity; }
     inline void CharacterBase::setPullEntity(Entity * const entity) { _pullEntity = entity; }
     inline bool CharacterBase::hasState(const ANIM_STATE state) const { return _animStates[state]; }

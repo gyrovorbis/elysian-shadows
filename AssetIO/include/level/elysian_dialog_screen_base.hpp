@@ -16,7 +16,7 @@ namespace elysian {
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(text,           getText,    setText)
             ELYSIAN_LUA_PROXY_FIELD(trigger,        isTrigger,  setTrigger)
-            ELYSIAN_LUA_PROXY_FIELD(source,         getEntity,  addSourceEntity)
+            //ELYSIAN_LUA_PROXY_FIELD(source,         getEntity,  addSourceEntity)
         ELYSIAN_LUA_PROXY_FIELDS_END()
     public:
         enum BUBBLE_TYPE { BUBBLE_SPEECH, BUBBLE_THOUGHT };

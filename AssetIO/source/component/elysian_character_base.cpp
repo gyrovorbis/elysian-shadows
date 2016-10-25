@@ -52,7 +52,7 @@ void CharacterBase::setDashing(const bool val) {
     setSpeedMultiplier(val? _dashMultiplier : 1.0f);
 }
 
-void CharacterBase::faceDir(const Direction::DIR4 dir) {
+void CharacterBase::setFaceDir(const Direction::DIR4 dir) {
     playAnimation(dir);
     _faceDir = dir;
 }
@@ -131,7 +131,7 @@ void CharacterBase::animateWalk(const GYVector2 &/*moveVec*/) {
 void CharacterBase::faceEntity(Entity &entity) {
     GYVector2 dist;
     gyVec2Sub(&dist, (GYVector2*)&entity._transform._pos, (GYVector2*)&_entity->_transform._pos);
-    faceDir(Direction::fromVector2(dist));
+    setFaceDir(Direction::fromVector2(dist));
 }
 
 void CharacterBase::moveByForce(const GYVector2 &dist) {
@@ -166,7 +166,7 @@ void CharacterBase::update(void) {
   if(!_movedThisFrame) {
         replaceState(STATE_WALK, STATE_STAND);
         replaceState(STATE_RUN, STATE_STAND);
-        faceDir(_faceDir);
+        setFaceDir(_faceDir);
     //_entity->getRigidBody()->setVelocity(GYVector3{ 0.0f, 0.0f, 0.0f });
   }
   else _movedThisFrame = false;

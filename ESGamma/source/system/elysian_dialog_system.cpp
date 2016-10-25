@@ -225,55 +225,6 @@ void DialogSystem::update(void) {
 			closeDialog();
 			return;
 		}
-#if 0
-/*
-        _mainCanvas._transform._pos.x = curPos.x;
-        if(_mainCanvas._transform._pos.x- _mainCanvas._transform._size.x*0.5f < 0)
-            _mainCanvas._transform._pos.x = _mainCanvas._transform._size.x*0.5f;
-        else if (_mainCanvas._transform._pos.x + _mainCanvas._transform._size.x*0.5f > width)
-            _mainCanvas._transform._pos.x = width - _mainCanvas._transform._size.x*0.5f;
-*/
-		const float yEntityTop = (float)height*ELYSIAN_DIALOG_SYSTEM_DIST_MARGIN_SIZE;
-		const float yEntityBottom = (float)height;// - (float)height*ELYSIAN_DIALOG_SYSTEM_DIST_MARGIN_SIZE;
-
-		const float yTop = (float)height*ELYSIAN_DIALOG_SYSTEM_MARGIN_SIZE;
-		const float yBottom = (float)height;// - (float)height*ELYSIAN_DIALOG_SYSTEM_MARGIN_SIZE;
-
-		switch(_posState) {
-			case POS_BOTTOM:
-                //if(curPos.y > yEntityBottom) _posState = POS_MOVE_UP;
-				break;
-			case POS_TOP:
-				if(curPos.y < yEntityTop) _posState = POS_MOVE_DOWN;
-				break;
-			case POS_MOVE_UP:
-                if(_mainCanvas._transform._pos.y <= yTop) {
-                    //_mainCanvas._transform.setPos(_mainCanvas._transform._pos.x, yTop);
-					_posState = POS_TOP;
-				}
-				else if(curPos.y < yTop) _posState = POS_MOVE_DOWN;
-				else {
-                    float alpha = fabs(_mainCanvas._transform._pos.y-240.0f)/600.0f;// - 0.8f;
-					if(alpha < 0.0f) alpha = 0.0f;
-                    _mainCanvas._transform.translate(0.0f, -(350.0f-130.0f)*getTimerSys()->getDeltaTime()*2.0f);
-					_mainCanvas.setVerticesAlpha(alpha*255, alpha*255, alpha*255, alpha*255);
-				}
-				break;
-			case POS_MOVE_DOWN:
-                if(_mainCanvas._transform._pos.y >= yBottom) {
-                    //_mainCanvas._transform.setPos(_mainCanvas._transform._pos.x, yBottom);
-					_posState = POS_BOTTOM;
-				}
-                //else if(curPos.y > yBottom) _posState = POS_MOVE_UP;
-				else {
-                    float alpha = fabs(_mainCanvas._transform._pos.y-240.0f)/600.0f;// - 0.8f;
-					if(alpha < 0.0f) alpha = 0.0f;
-                    _mainCanvas._transform.translate(0.0f, (350.0f-130.0f)*getTimerSys()->getDeltaTime()*2.0f);
-					_mainCanvas.setVerticesAlpha(alpha*255, alpha*255, alpha*255, alpha*255);
-				}
-				break;
-		}
-#endif
 
 	}
 
@@ -305,24 +256,8 @@ void DialogSystem::update(void) {
 void DialogSystem::processInput(void) {
     Controller* cont = getInputSys()->getController(0);
 
-
 	//No active dialog
-	if(!_curDialog) {
-#if 0 //we aren't doing this polling anymore -- examinablesystem
-		if(input.getTapped(GameInput::BUT_J)) {
-			Entity *player = getPartySys()->getPlayablePartyMember(0u);
-
-			for(unsigned int i = 0; i < _curArea->conversations.size(); ++i) {
-				/*if(player->getCollidable()->isCollidingWith(*_curArea->conversations[i]->getEntity()->getCollidable())) {
-					Debug::printf(Debug::LOG_VERBOSE, "Start the dialog with the %s, fucker!\n", _curArea->conversations[i]->getEntity()->getName());
-					Open(*_curArea->conversations[i]);
-				}*/
-			}
-		}
-	#endif
-	}
-	//active dialog
-	else {
+    if(_curDialog) {
         auto* prompt = static_cast<DialogPrompt*>(_curScreen.screen);
 
 		switch(_boxState) {
@@ -388,7 +323,10 @@ void DialogSystem::_nextScreen(void) {
 		break;
 	}
 
-    GY_ASSERT(nextIndex == -1 || (nextIndex < (int)_curDialog->getScreenCount() && nextIndex >= 0));
+    if(nextIndex < -1 || nextIndex >= (int)_curDialog->getScreenCount()) {
+        errprintf("DialogSystem - Invalid nextIndex [%d] in current Dialog!", nextIndex);
+        nextIndex = -1;
+    }
 
 	//Invoke Lua trigger
 	if(_curScreen.screen->isTrigger() && _curDialog->getTriggerEntity()) {
