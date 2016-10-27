@@ -24,8 +24,6 @@
 
 typedef struct SDLControllerProfile {
     char    GUID[GYRO_CONTROLLER_SDL_X86_GUID_SIZE];
-
-
 } SDLControllerProfile;
 
 typedef struct SDLController {
@@ -33,11 +31,27 @@ typedef struct SDLController {
     SDL_GameController*     sdlController;
     SDL_Joystick*           sdlJoystick;
     SDL_Haptic*             sdlHaptic;
-    SDL_JoystickID          sdlJoystickId;
+    SDL_JoystickID          sdlJoystickInstanceId;
+    int                     deviceIndex;
+    unsigned                port;
 } SDLController;
 
 extern GYInputInitParams   _initParams;
 static SDLController*      _devices        = NULL;
+
+inline static SDLController* _findControllerByInstanceID(SDL_JoystickID id) {
+    for(unsigned i = 0; i < _initParams.controllerCount; ++i) {
+        if(_devices[i].sdlJoystickInstanceId == id) return &_devices[i];
+    }
+    return NULL;
+}
+
+inline static SDLController* _claimFreeController(void) {
+    for(unsigned i = 0; i < _initParams.controllerCount; ++i) {
+        if(!_devices[i].sdlJoystick) return &_devices[i];
+    }
+    return NULL;
+}
 
 int _sdlControllerInit(const struct GYInputInitParams*const  params) {
     int success = 1;
@@ -62,6 +76,11 @@ int _sdlControllerInit(const struct GYInputInitParams*const  params) {
 
     _devices = malloc(sizeof(SDLController)*params->controllerCount);
     memset(_devices, 0, sizeof(SDLController)*params->controllerCount);
+    for(unsigned i = 0; i < params->controllerCount; ++i) {
+        _devices[i].sdlJoystickInstanceId = -1;
+        _devices[i].port = i;
+        _devices[i].deviceIndex = -1;
+    }
 
     _gyPop(1);
 
@@ -69,7 +88,7 @@ int _sdlControllerInit(const struct GYInputInitParams*const  params) {
 }
 
 int _sdlControllerUninit(void) {
-    _gyLog(GY_DEBUG_VERBOSE, "Uninitializing SDL_GAMECONTROLLER");
+    _gyLog(GY_DEBUG_VERBOSE, "GYRO_INPUT_API: Uninitializing SDL_GAMECONTROLLER and SDL_HAPTIC");
 
     free(_devices);
     SDL_Quit();
@@ -85,7 +104,8 @@ static int _sdlOpenController(const int deviceIndex, SDLController*const cont) {
         cont->sdlController = SDL_GameControllerOpen(deviceIndex);
     }
     //cont->sdlJoystick   = SDL_GameControllerGetJoystick(cont->sdlController);
-    cont->sdlJoystickId = SDL_JoystickInstanceID(cont->sdlJoystick);
+    cont->sdlJoystickInstanceId = SDL_JoystickInstanceID(cont->sdlJoystick);
+    cont->deviceIndex = deviceIndex;
 
     if(SDL_JoystickIsHaptic(cont->sdlJoystick)) {
         cont->sdlHaptic = SDL_HapticOpenFromJoystick(cont->sdlJoystick);
@@ -107,10 +127,11 @@ static int _sdlCloseController(SDLController *const cont) {
     if(cont->sdlController) SDL_GameControllerClose(cont->sdlController);
     SDL_JoystickClose(cont->sdlJoystick);
 
-    cont->sdlController     = NULL;
-    cont->sdlHaptic         = NULL;
-    cont->sdlJoystick       = NULL;
-    cont->sdlJoystickId     = 0;
+    cont->sdlController             = NULL;
+    cont->sdlHaptic                 = NULL;
+    cont->sdlJoystick               = NULL;
+    cont->sdlJoystickInstanceId     = -1;
+    cont->deviceIndex               = -1;
 
     return 1;
 }
@@ -122,6 +143,8 @@ static void _sdlPrintControllerStats(SDLController*const cont) {
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Device Type:", cont->sdlController? "SDL_GAMECONTROLLER" : "SDL_JOYSTICK");
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Name", SDL_JoystickName(cont->sdlJoystick));
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "GUID", guidStr);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Device Index", cont->deviceIndex);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Instance ID", cont->sdlJoystickInstanceId);
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Number of Axes", SDL_JoystickNumAxes(cont->sdlJoystick));
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Number of Buttons", SDL_JoystickNumButtons(cont->sdlJoystick));
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Number of Hats", SDL_JoystickNumHats(cont->sdlJoystick));
@@ -164,12 +187,9 @@ void _sdlControllerDump(void) {
 
 static void _sdlAttachController(const int deviceIndex) {
     SDLController tempController;
-    SDLController *cont;
+    SDLController *cont = _claimFreeController();
 
-    if(deviceIndex < (int)_initParams.controllerCount) {
-        cont = &_devices[deviceIndex];
-        if(cont->sdlJoystick) return;
-    } else {
+    if(!cont) {
         cont = &tempController;
     }
 
@@ -190,16 +210,16 @@ static void _sdlAttachController(const int deviceIndex) {
     _gyPop(1);
 }
 
-static void _sdlRemoveController(const int deviceIndex) {
-    if(deviceIndex >= (int)_initParams.controllerCount) return;
-    SDLController*const cont = &_devices[deviceIndex];
-    if(!cont->sdlJoystick) return;
-    _gyLog(GY_DEBUG_VERBOSE, "SDL Joystick Disconnected! [Port: %d]", deviceIndex);
+static void _sdlRemoveController(const SDL_JoystickID instanceID) {
+    SDLController*const cont = _findControllerByInstanceID(instanceID);
+    if(!cont || !cont->sdlJoystick) return;
+    _gyLog(GY_DEBUG_VERBOSE, "SDL Joystick Disconnected! [Port: %d]", cont->port);
     _sdlCloseController(cont);
 }
 
-static void _sdlControllerEvent(const int deviceIndex, const SDL_Event* event) {
-    SDLController* cont = &_devices[deviceIndex];
+static void _sdlControllerEvent(const SDL_JoystickID instanceID, const SDL_Event* event) {
+    SDLController* cont = _findControllerByInstanceID(instanceID);
+    if(!cont) return;
     enum GY_CONTROLLER_BUTTON gyButton;
     float analogVal;
     int state;
@@ -227,7 +247,7 @@ static void _sdlControllerEvent(const int deviceIndex, const SDL_Event* event) {
         case 4:  gyButton        = GY_CONTROLLER_BUT_LSHOULDER;  break;
         case 5:  gyButton        = GY_CONTROLLER_BUT_RSHOULDER;  break;
         default:
-            _gyLog(GY_DEBUG_VERBOSE, "Unidentified key - %d", state);
+            _gyLog(GY_DEBUG_VERBOSE, "GYRO_INPUT_API: Unidentified key - %d", state);
             return;
         }
         cont->cont.buttons[gyButton] &= ~GY_BUT_FLAGS_IS_PRESSED;
@@ -257,7 +277,7 @@ static void _sdlControllerEvent(const int deviceIndex, const SDL_Event* event) {
         case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:    gyButton        = GY_CONTROLLER_BUT_LSHOULDER;  break;
         case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:   gyButton        = GY_CONTROLLER_BUT_RSHOULDER;  break;
         default:
-            _gyLog(GY_DEBUG_VERBOSE, "Unidentified key - %d", state);
+            _gyLog(GY_DEBUG_VERBOSE, "GYRO_INPUT_API: Unidentified Controller Button - %d", state);
             return;
         }
         cont->cont.buttons[gyButton] &= ~GY_BUT_FLAGS_IS_PRESSED;
