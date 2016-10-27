@@ -18,7 +18,7 @@
 #define ELYSIAN_DIALOG_SYSTEM_MAX_NONMODAL_DIST     200.0f
 
 #define ELYSIAN_DIALOG_SYSTEM_SFX_OPEN              "/assets/audio/sfx/UI/dialogBoxAppear.wav"
-#define ELYSIAN_DIALOG_SYSTEM_SFX_CLOSE             "/assets/audio/sfx/UI/dialogBoxClose.wav"
+#define ELYSIAN_DIALOG_SYSTEM_SFX_CLOSE             "/assets/audio/sfx/UI/dialogBoxDispose.wav"
 #define ELYSIAN_DIALOG_SYSTEM_SFX_TEXT              "/assets/audio/sfx/UI/scrollingText_01.wav"
 #define ELYSIAN_DIALOG_SYSTEM_SFX_SELECT            "/assets/audio/sfx/UI/menuSelect_01.wav"
 

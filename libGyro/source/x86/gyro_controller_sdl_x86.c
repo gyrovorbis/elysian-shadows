@@ -39,6 +39,19 @@ typedef struct SDLController {
 extern GYInputInitParams   _initParams;
 static SDLController*      _devices        = NULL;
 
+inline static const char* _sdlJoystickPowerLevelString(const SDL_JoystickPowerLevel level) {
+    switch(level) {
+    default:
+    case SDL_JOYSTICK_POWER_UNKNOWN:    return "UNKNOWN";
+    case SDL_JOYSTICK_POWER_EMPTY:      return "EMPTY";
+    case SDL_JOYSTICK_POWER_LOW:        return "LOW";
+    case SDL_JOYSTICK_POWER_MEDIUM:     return "MEDIUM";
+    case SDL_JOYSTICK_POWER_FULL:       return "FULL";
+    case SDL_JOYSTICK_POWER_WIRED:      return "WIRED";
+    case SDL_JOYSTICK_POWER_MAX:        return "MAX";
+    }
+}
+
 inline static SDLController* _findControllerByInstanceID(SDL_JoystickID id) {
     for(unsigned i = 0; i < _initParams.controllerCount; ++i) {
         if(_devices[i].sdlJoystickInstanceId == id) return &_devices[i];
@@ -145,6 +158,8 @@ static void _sdlPrintControllerStats(SDLController*const cont) {
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "GUID", guidStr);
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Device Index", cont->deviceIndex);
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Instance ID", cont->sdlJoystickInstanceId);
+    _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Power Level",
+           _sdlJoystickPowerLevelString(SDL_JoystickCurrentPowerLevel(cont->sdlJoystick)));
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Number of Axes", SDL_JoystickNumAxes(cont->sdlJoystick));
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Number of Buttons", SDL_JoystickNumButtons(cont->sdlJoystick));
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Number of Hats", SDL_JoystickNumHats(cont->sdlJoystick));

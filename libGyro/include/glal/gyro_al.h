@@ -36,6 +36,10 @@ extern "C" {
 #	endif
 #endif
 
+extern ALenum              _alFmtStereo32;
+extern ALenum              _alFmtMono32;
+extern ALboolean           _alExtFloat32;
+
 #ifdef __cplusplus
 }
 #endif
