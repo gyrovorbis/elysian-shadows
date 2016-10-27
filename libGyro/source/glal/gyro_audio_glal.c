@@ -13,19 +13,24 @@ static int			_refDist	= 1;
 static ALCdevice*	_alDevice	= NULL;
 static ALCcontext*	_alContext	= NULL;
 #endif
+ALenum              _alFmtStereo32  = -1;
+ALenum              _alFmtMono32    = -1;
+ALboolean           _alExtFloat32   = 0;
 
 //==== PUBLIC API IMPLEMENTATION =====
 
 int gyAudInit(void) {
     #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
     _alDevice = alcOpenDevice(NULL);                                               //Open the device
-    _gyLog(GY_DEBUG_VERBOSE, "Initializing OpenAL Subsystem");
+    _gyLog(GY_DEBUG_VERBOSE, "GYRO_AUDIO_API: Initializing OpenAL Subsystem");
     _gyPush();
+
     if(!_alDevice) {
         _gyLog(GY_DEBUG_WARNING, "Could not open OpenAL Device!");
         _gyPop(1);
         return 0;
     }
+
     _alContext = alcCreateContext(_alDevice, NULL);                                   //Give the device a context
     alcMakeContextCurrent(_alContext);                                             //Make the context the current
     if(!_alContext) {
@@ -33,6 +38,16 @@ int gyAudInit(void) {
         _gyPop(1);
         return 0;
     }
+
+    _alExtFloat32 = alIsExtensionPresent("AL_EXT_float32");
+    if(_alExtFloat32) {
+        _gyLog(GY_DEBUG_VERBOSE, "'AL_EXT_float32' extension supported.");
+        _alFmtMono32 = alGetEnumValue("AL_FORMAT_MONO_FLOAT32");
+        _alFmtStereo32 = alGetEnumValue("AL_FORMAT_STEREO_FLOAT32");
+    } else {
+        _gyLog(GY_DEBUG_WARNING, "'AL_EXT_float32' not supported by device.");
+    }
+
     _gyPop(1);
 #endif
     return 1;
