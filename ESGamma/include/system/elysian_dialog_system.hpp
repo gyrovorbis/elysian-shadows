@@ -17,8 +17,10 @@
 
 #define ELYSIAN_DIALOG_SYSTEM_MAX_NONMODAL_DIST     200.0f
 
-#define ELYSIAN_DIALOG_SYSTEM_SCROLL_DOWN_SFX       "/assets/audio/sfx/SFX_DialogScrollDown_1.wav"
-#define ELYSIAN_DIALOG_SYSTEM_SCROLL_UP_SFX         "/assets/audio/sfx/SFX_DialogScrollUp_1.wav"
+#define ELYSIAN_DIALOG_SYSTEM_SFX_OPEN              "/assets/audio/sfx/UI/dialogBoxAppear.wav"
+#define ELYSIAN_DIALOG_SYSTEM_SFX_CLOSE             "/assets/audio/sfx/UI/dialogBoxClose.wav"
+#define ELYSIAN_DIALOG_SYSTEM_SFX_TEXT              "/assets/audio/sfx/UI/scrollingText_01.wav"
+#define ELYSIAN_DIALOG_SYSTEM_SFX_SELECT            "/assets/audio/sfx/UI/menuSelect_01.wav"
 
 ELYSIAN_ASSET_TYPEDEF(Entity)
 
@@ -64,8 +66,10 @@ namespace elysian {
         POS_STATE                   _posState               = POS_BOTTOM;
         BOX_STATE                   _boxState               = BOX_OUTPUT;
 
-        GYWav*                      _scrollUpSFX            = nullptr;
-        GYWav*                      _scrollDownSFX          = nullptr;
+        GYWav*                      _sfxOpen                = nullptr;
+        GYWav*                      _sfxClose               = nullptr;
+        GYWav*                      _sfxText                = nullptr;
+        GYWav*                      _sfxSelect              = nullptr;
 
         bool                        _advLogWasEnabled       = true;
 

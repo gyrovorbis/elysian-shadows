@@ -73,18 +73,24 @@ DialogSystem::DialogSystem(void) {
 }
 
 DialogSystem::~DialogSystem(void) {
-    gyAudWavDestroy(_scrollDownSFX);
-    gyAudWavDestroy(_scrollUpSFX);
-
+    gyAudWavDestroy(_sfxOpen);
+    gyAudWavDestroy(_sfxClose);
+    gyAudWavDestroy(_sfxText);
+    gyAudWavDestroy(_sfxSelect);
 }
 
 bool DialogSystem::loadAssets(void) {
 	bool success = true;
 
-	_scrollDownSFX = gyAudWavCreate(ELYSIAN_DIALOG_SYSTEM_SCROLL_DOWN_SFX);
-	if(!_scrollDownSFX) Debug::printf(Debug::LOG_WARNING, "Could not load - %s", ELYSIAN_DIALOG_SYSTEM_SCROLL_DOWN_SFX);
-	_scrollUpSFX = gyAudWavCreate(ELYSIAN_DIALOG_SYSTEM_SCROLL_UP_SFX);
-	if(!_scrollUpSFX) Debug::printf(Debug::LOG_WARNING, "Could not load - %s", ELYSIAN_DIALOG_SYSTEM_SCROLL_UP_SFX);
+    dbgprintf("DialogSystem - Loading Assets");
+    dbgpush();
+
+    _sfxOpen    = gyAudWavCreate(ELYSIAN_DIALOG_SYSTEM_SFX_OPEN);
+    _sfxClose   = gyAudWavCreate(ELYSIAN_DIALOG_SYSTEM_SFX_CLOSE);
+    _sfxText    = gyAudWavCreate(ELYSIAN_DIALOG_SYSTEM_SFX_TEXT);
+    _sfxSelect  = gyAudWavCreate(ELYSIAN_DIALOG_SYSTEM_SFX_SELECT);
+
+    dbgpop();
 
 	return success;
 }
@@ -307,9 +313,8 @@ void DialogSystem::processInput(void) {
 void DialogSystem::_nextScreen(void) {
 	int nextIndex;
 
-	getAudioSys()->playSfxChannel(-1, *_scrollDownSFX);
-            auto* prompt = static_cast<DialogPrompt*>(_curScreen.screen);
-            auto* text = static_cast<DialogText*>(_curScreen.screen);
+    auto* prompt = static_cast<DialogPrompt*>(_curScreen.screen);
+    auto* text = static_cast<DialogText*>(_curScreen.screen);
 
 	switch(_boxState) {
 		case BOX_OUTPUT_END:
@@ -327,6 +332,8 @@ void DialogSystem::_nextScreen(void) {
         errprintf("DialogSystem - Invalid nextIndex [%d] in current Dialog!", nextIndex);
         nextIndex = -1;
     }
+
+    getAudioSys()->playSfxChannel(-1, (nextIndex == -1)? *_sfxClose : *_sfxOpen);
 
 	//Invoke Lua trigger
 	if(_curScreen.screen->isTrigger() && _curDialog->getTriggerEntity()) {
@@ -382,8 +389,6 @@ void DialogSystem::closeDialog(void) {
 
 void DialogSystem::_updateCamera(void) {
 
-
-
 	if(_curScreen.screen && _curScreen.screen->getEntity()) {
 		getCameraSys()->setBaseScale(2.5f);
 		getCameraSys()->addEntity(_curScreen.screen->getEntity());
@@ -421,7 +426,7 @@ void DialogSystem::startDialog(Dialog *const dialog, EventMonitor*const monitor)
 	_monitor = monitor;
 	_curDialog = dialog;
 	_curScreen.screen = dialog->getScreen(0);
-	getAudioSys()->playSfxChannel(-1, *_scrollUpSFX);
+    getAudioSys()->playSfxChannel(-1, *_sfxOpen);
 	_updateCamera();
     _facePlayer();
 	_splitText();
