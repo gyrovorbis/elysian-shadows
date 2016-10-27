@@ -24,7 +24,7 @@ const char* gyVersion(void) { return GYRO_LIB_VERSION; }
 void _gySysPrintBuildInfo(const char*const platString) {
     char strBuff[40];
 
-    _gyLog(GY_DEBUG_VERBOSE, "Initializing libGyro_x86_64 [%s] v%s", platString, GYRO_LIB_VERSION);
+    _gyLog(GY_DEBUG_VERBOSE, "GYRO_SYSTEM_API: Initializing libGyro_x86_64 [%s] v%s", platString, GYRO_LIB_VERSION);
     _gyPush();
 #ifdef GYRO_LOCAL_BUILD
     _gyLog(GY_DEBUG_WARNING, "THIS IS AN UNOFFICIAL BUILD!");
