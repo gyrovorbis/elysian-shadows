@@ -71,7 +71,7 @@ void gyVmuBuzzerSoundPlay(VMUDevice* dev, int period, int pulseWidth, int db) {
             }
         } else {
             _gyLog(GY_DEBUG_WARNING, "Attempting to play malformed sound wave [period: %d, pulseWidth: %d]", period, pulseWidth);
-            assert(0); //malformed sound wave!
+            //assert(0); //malformed sound wave!
         }
 
 
