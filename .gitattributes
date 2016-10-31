@@ -1,0 +1,24 @@
+#Declare files that will always have LF (Unix style) line endings on checkout.
+*.fsh text eol=lf
+*.vsh text eol=lf
+
+#Declare files that will always have LF (Unix style) end of file characters on checkout.
+*.fsh text eof=lf
+*.vsh text eof=lf
+
+#Declares files that will always be converted to OS native line endings upon checkout.
+*.lua text
+
+#Denotes all files that are truly binary and/or should not be modified.
+*.png -text
+*.bin binary
+*.txt -text
+*.jpg -text
+*.js -text
+deviceconsole -text
+ios-deploy -text
+*.sh binary
+*.rb binary
+*.spine binary
+*.psd binary
+*.gif -text
