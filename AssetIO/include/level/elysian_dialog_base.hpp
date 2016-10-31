@@ -93,7 +93,7 @@ namespace elysian {
     class DialogBase: public LuaTableProxy<DialogBase, Dialog> {
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(startScreen,        getStartScreen,     setStartScreen)
-            ELYSIAN_LUA_PROXY_FIELD(triggerEntity,      getTriggerEntity,   setTriggerEntity)
+            //ELYSIAN_LUA_PROXY_FIELD(triggerEntity,      getTriggerEntity,   setTriggerEntity)
             ELYSIAN_LUA_PROXY_ARRAY_FIELD(screens,      getScreen,          setScreen,          getScreenCount)
         ELYSIAN_LUA_PROXY_FIELDS_END()
     private:

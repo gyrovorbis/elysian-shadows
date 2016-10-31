@@ -190,16 +190,16 @@ namespace elysian {
             }*/
             //Blending mode state change
             if(entry.renderPass > 1  || newAlpha != GY_ALPHA_NONE) {
-              //  disableDepthTest();
+                //disableDepthTest();
             }
             //We don't give a fuck about blend modes when blending is off
-            else /*if(entry.renderPass == 1) {
+            else if(entry.renderPass == 1) {
                enableDepthTest();
-            }*/
+            }
 
-           // gyVidDepthTest(true);
-            gyVidBlendMode(/*newBlend*/GY_BLEND_ONE_MINUS_SRC_ALPHA);
-            gyVidAlphaLevel(/*newAlpha*/GY_ALPHA_NONE);
+           //gyVidDepthTest(true);
+            gyVidBlendMode(newBlend);
+            gyVidAlphaLevel(newAlpha);
             gyVidRectPlaneType(newPlane);
             gyVidRectTexOrient(newOrient);
         }
