@@ -1,0 +1,109 @@
+<RCC>
+    <qresource prefix="/projectwizard">
+        <file>images/banner.jpg</file>
+        <file>images/bg.jpg</file>
+        <file>images/logo.png</file>
+        <file>images/modwatermarks.png</file>
+        <file>images/bulletAngel.jpg</file>
+    </qresource>
+    <qresource prefix="/layerSelectionWidget">
+        <file>images/eyeBox_checked.png</file>
+        <file>images/eyeBox_unchecked.png</file>
+        <file>images/eyeBox_disabled.png</file>
+    </qresource>
+    <qresource prefix="/toolbar">
+        <file>images/dreamcastIcon.png</file>
+        <file>images/invokeIconColor.png</file>
+        <file>images/macIcon.png</file>
+        <file>images/openGLIcon.png</file>
+        <file>images/openGLIconColor.png</file>
+        <file>images/openIcon.png</file>
+        <file>images/openIconColor.png</file>
+        <file>images/panIcon.png</file>
+        <file>images/panIconColor.png</file>
+        <file>images/resetLayoutIcon.png</file>
+        <file>images/resetLayoutIconColor.png</file>
+        <file>images/saveIcon.png</file>
+        <file>images/saveIconColor.png</file>
+        <file>images/unixIcon.png</file>
+        <file>images/windowsIcon.png</file>
+        <file>images/zoomIcon.png</file>
+        <file>images/zoomIconColor.png</file>
+        <file>images/invokeIcon.png</file>
+        <file>images/selectIcon.png</file>
+        <file>images/selectIconColor.png</file>
+        <file>images/cutIcon.png</file>
+        <file>images/cutIconColor.png</file>
+        <file>images/pasteIcon.png</file>
+        <file>images/pasteIconColor.png</file>
+        <file>images/colliderLNorthWest.png</file>
+        <file>images/default-transform.png</file>
+        <file>images/default-transform-color.png</file>
+        <file>images/sheet-manager.png</file>
+        <file>images/sheet-manager-color.png</file>
+        <file>images/sheet-view-ratio.png</file>
+        <file>images/sheet-view-ratio-color.png</file>
+        <file>images/toggle-autoscroll.png</file>
+        <file>images/toggle-autoscroll-color.png</file>
+        <file>images/advanceFrameIcon.png</file>
+        <file>images/stopIcon.png</file>
+        <file>images/camera.png</file>
+        <file>images/audio.png</file>
+        <file>images/ios_sim.png</file>
+        <file>images/ios_logo.png</file>
+        <file>images/droid_logo.png</file>
+    </qresource>
+    <qresource prefix="/splash">
+        <file>images/splashScreen.png</file>
+    </qresource>
+    <qresource prefix="/estk">
+        <file>images/estk.ico</file>
+        <file>images/estk.icns</file>
+    </qresource>
+    <qresource prefix="/statusbar">
+        <file>images/absPosStatusIcon.png</file>
+        <file>images/selectionSizeStatusIcon.png</file>
+        <file>images/tilePosStatusIcon.png</file>
+        <file>images/zoomStatusIcon.png</file>
+    </qresource>
+    <qresource prefix="/misc">
+        <file>images/alphaChecker.png</file>
+    </qresource>
+    <qresource prefix="/sheetManager">
+        <file>images/reservedTile.png</file>
+    </qresource>
+    <qresource prefix="/colliders">
+        <file>images/collider45NE.png</file>
+        <file>images/collider45NW.png</file>
+        <file>images/collider45SE.png</file>
+        <file>images/collider45SW.png</file>
+        <file>images/colliderFull.png</file>
+        <file>images/colliderHalfEast.png</file>
+        <file>images/colliderHalfNorth.png</file>
+        <file>images/colliderHalfSouth.png</file>
+        <file>images/colliderHalfWest.png</file>
+        <file>images/colliderLNorthEast.png</file>
+        <file>images/colliderLNorthWest.png</file>
+        <file>images/colliderLSouthEast.png</file>
+        <file>images/colliderLSouthWest.png</file>
+        <file>images/colliderNone.png</file>
+        <file>images/colliderQuadNE.png</file>
+        <file>images/colliderQuadNW.png</file>
+        <file>images/colliderQuadSE.png</file>
+        <file>images/colliderQuadSW.png</file>
+        <file>images/colliderDiagSENW.png</file>
+        <file>images/colliderDiagSWNE.png</file>
+    </qresource>
+    <qresource prefix="/assetIcons">
+        <file>images/_0000_specularsheet_icon.png</file>
+        <file>images/_0001_normalsheet_icon.png</file>
+        <file>images/_0002_tilesheet_icon.png</file>
+        <file>images/_0003_prefabs_icon.png</file>
+        <file>images/_0004_LS.png</file>
+        <file>images/_0005_LB.png</file>
+        <file>images/_0006_BIN.png</file>
+        <file>images/_0007_levels_icon.png</file>
+        <file>images/_0008_areas_icon.png</file>
+    </qresource>
+    <qresource prefix="/"/>
+</RCC>

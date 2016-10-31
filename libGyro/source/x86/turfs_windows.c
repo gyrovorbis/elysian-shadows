@@ -1,0 +1,139 @@
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <gyro_platform.h>
+
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <shlobj.h>
+
+#include <common/turfs.h>
+
+#include "../common/internal.h"
+
+static char *s_author = NULL;
+static char *s_name = NULL;
+
+//static char *s_assets_path = NULL;
+//static char *s_userdata_path = NULL;
+
+int g_initialized = 0;
+
+TURFSAPI turfs_init(const char *author, const char *name, void *aactivity)
+{
+    (void)aactivity;
+    if (author == NULL || name == NULL) {
+        return TURFS_RET_INVALID_ARGS;
+    }
+    s_author = turfs__strdup(author);
+    s_name = turfs__strdup(name);
+    g_initialized = 1;
+    return TURFS_RET_OK;
+}
+
+TURFSAPI turfs_quit(void)
+{
+    if (!g_initialized) {
+        return TURFS_RET_NOT_INITIALIZED;
+    }
+    if (s_author != NULL) {
+        free(s_author);
+        s_author = NULL;
+    }
+    if (s_name != NULL) {
+        free(s_name);
+        s_name = NULL;
+    }
+    g_initialized = 0;
+    return TURFS_RET_OK;
+}
+
+#if GYRO_PLATFORM == GYRO_PLATFORM_Qt
+static int s__get_assets_path(const char* vpath, char **path, size_t *len)
+{
+    static char temp_path[2048];
+    char *ptr;
+    memset(temp_path, 0, sizeof temp_path);
+    strcat(temp_path, "../");
+    strcat(temp_path, vpath);
+    *path = temp_path;
+
+    if (*path == NULL) {
+        return 0;
+    }
+    if (len != NULL) {
+        *len = strlen(*path);
+    }
+    return 1;
+}
+#else
+
+static int s__get_assets_path(const char* vpath, char **path, size_t *len)
+{
+    char temp_path[2048];
+    char *ptr;
+    memset(temp_path, 0, sizeof temp_path);
+    GetModuleFileNameA(NULL, temp_path, sizeof temp_path);
+    if (strlen(temp_path)) {
+        ptr = &temp_path[strlen(temp_path)];
+        while (*(--ptr) != '\\');
+        ptr[1] = '\x0';
+    }
+    else {
+        strcpy(temp_path, ".\\");
+    }
+    strcat(temp_path, "assets");
+    *path = turfs__strdup(temp_path);
+    if (*path == NULL) {
+        return 0;
+    }
+    if (len != NULL) {
+        *len = strlen(*path);
+    }
+    return 1;
+}
+
+#endif
+
+
+static int s__get_userdata_path(const char* vpath, char **path, size_t *len)
+{
+    char temp_path[2048];
+    memset(temp_path, 0, sizeof temp_path);
+    SHGetFolderPathA(NULL, CSIDL_APPDATA | CSIDL_FLAG_CREATE, NULL, 0, temp_path);
+    sprintf(temp_path, "%s\\%s\\%s", temp_path, s_author, s_name);
+    *path = turfs__strdup(temp_path);
+    if (*path == NULL) {
+        return 0;
+    }
+    if (len != NULL) {
+        *len = strlen(temp_path);
+    }
+    return 1;
+}
+
+TURFSAPI turfs_resolve_path(turfs_path_type type, const char* vpath, char **path, size_t *len)
+{
+    if (!g_initialized) {
+        return TURFS_RET_NOT_INITIALIZED;
+    }
+    if (path == NULL) {
+        return TURFS_RET_INVALID_ARGS;
+    }
+    switch (type) {
+    case TURFS_PATH_ASSETS:
+        if (!s__get_assets_path(vpath, path, len)) {
+            return TURFS_RET_UNKNOWN;
+        }
+        break;
+    case TURFS_PATH_USERDATA:
+        if (!s__get_userdata_path(vpath, path, len)) {
+            return TURFS_RET_UNKNOWN;
+        }
+        break;
+    default:
+        return TURFS_RET_INVALID_ARGS;
+    }
+    return TURFS_RET_OK;
+}

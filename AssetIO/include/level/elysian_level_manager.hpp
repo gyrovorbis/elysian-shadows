@@ -1,0 +1,32 @@
+#ifndef ELYSIAN_LEVEL_MANAGER_HPP
+#define ELYSIAN_LEVEL_MANAGER_HPP
+
+#include <utility/elysian_asset_typedefs.hpp>
+
+ELYSIAN_ASSET_TYPEDEF(Level)
+ELYSIAN_ASSET_TYPEDEF(Area)
+
+namespace elysian {
+
+	class LevelManager { 
+	protected:
+        static Level*   _curLevel;
+        static Area*    _curArea;
+	public:
+        static Area*    getCurrentArea(void);
+        static Level*   getCurrentLevel(void);
+	}; 
+	
+
+
+
+
+
+
+    //===== INLINEZ =====
+    inline Area* LevelManager::getCurrentArea(void) { return _curArea; }
+    inline Level* LevelManager::getCurrentLevel(void) { return _curLevel; }
+}
+
+#endif
+

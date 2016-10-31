@@ -1,0 +1,1582 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ESToolkit</class>
+ <widget class="QMainWindow" name="ESToolkit">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1024</width>
+    <height>768</height>
+   </rect>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::ClickFocus</enum>
+  </property>
+  <property name="windowTitle">
+   <string>overwritten programmatically</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../../resource/resource.qrc">
+    <normaloff>:/estk/images/estk.ico</normaloff>:/estk/images/estk.ico</iconset>
+  </property>
+  <property name="accessibleName">
+   <string>ESToolkit</string>
+  </property>
+  <property name="toolButtonStyle">
+   <enum>Qt::ToolButtonFollowStyle</enum>
+  </property>
+  <property name="animated">
+   <bool>false</bool>
+  </property>
+  <property name="tabShape">
+   <enum>QTabWidget::Rounded</enum>
+  </property>
+  <property name="dockNestingEnabled">
+   <bool>true</bool>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>false</bool>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <item row="1" column="0">
+     <widget class="MapView" name="mapView">
+      <property name="focusPolicy">
+       <enum>Qt::ClickFocus</enum>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignHCenter|Qt::AlignTop</set>
+      </property>
+      <property name="transformationAnchor">
+       <enum>QGraphicsView::AnchorUnderMouse</enum>
+      </property>
+      <property name="viewportUpdateMode">
+       <enum>QGraphicsView::SmartViewportUpdate</enum>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1024</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="title">
+     <string>File</string>
+    </property>
+    <widget class="QMenu" name="menuOpen">
+     <property name="title">
+      <string>Open</string>
+     </property>
+     <addaction name="actionFileOpenProject"/>
+     <addaction name="actionPrevious_Project"/>
+    </widget>
+    <widget class="QMenu" name="menuSave">
+     <property name="title">
+      <string>Save</string>
+     </property>
+     <addaction name="actionFileSaveCurrentArea"/>
+    </widget>
+    <widget class="QMenu" name="menuClose">
+     <property name="title">
+      <string>Close</string>
+     </property>
+     <addaction name="actionFileCloseProject"/>
+    </widget>
+    <widget class="QMenu" name="menuNew">
+     <property name="title">
+      <string>New</string>
+     </property>
+     <addaction name="actionFileNewLevel"/>
+     <addaction name="actionFileNewArea"/>
+    </widget>
+    <widget class="QMenu" name="menuReload">
+     <property name="focusPolicy">
+      <enum>Qt::StrongFocus</enum>
+     </property>
+     <property name="title">
+      <string>Reload</string>
+     </property>
+     <addaction name="actionReloadProject"/>
+    </widget>
+    <addaction name="menuNew"/>
+    <addaction name="separator"/>
+    <addaction name="menuOpen"/>
+    <addaction name="menuClose"/>
+    <addaction name="menuReload"/>
+    <addaction name="separator"/>
+    <addaction name="menuSave"/>
+    <addaction name="separator"/>
+    <addaction name="actionFileQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <widget class="QMenu" name="menuResolution">
+     <property name="title">
+      <string>Resolution</string>
+     </property>
+     <addaction name="action480p"/>
+     <addaction name="action720p"/>
+     <addaction name="actionDynamic"/>
+    </widget>
+    <widget class="QMenu" name="menuSheet_Texture">
+     <property name="title">
+      <string>Main Texture</string>
+     </property>
+     <addaction name="actionTilesheet"/>
+     <addaction name="actionNormalsheet"/>
+     <addaction name="actionSpecularsheet"/>
+    </widget>
+    <widget class="QMenu" name="menuActive_Textures">
+     <property name="title">
+      <string>Enable Textures</string>
+     </property>
+     <addaction name="actionTile_Map"/>
+     <addaction name="actionNormal_Map"/>
+     <addaction name="actionSpecular_Map"/>
+    </widget>
+    <widget class="QMenu" name="menuDynamic_Lighting">
+     <property name="title">
+      <string>Dynamic Lighting</string>
+     </property>
+     <addaction name="actionLights"/>
+     <addaction name="actionShadows"/>
+     <addaction name="actionBloom"/>
+    </widget>
+    <addaction name="actionAsset_View"/>
+    <addaction name="actionSheet_View"/>
+    <addaction name="actionLayer_View"/>
+    <addaction name="actionSelection_View"/>
+    <addaction name="actionEntity_View"/>
+    <addaction name="actionCamera_View"/>
+    <addaction name="actionHistory_View"/>
+    <addaction name="separator"/>
+    <addaction name="actionReset_Layout"/>
+    <addaction name="separator"/>
+    <addaction name="actionMap_Background"/>
+    <addaction name="menuResolution"/>
+    <addaction name="menuSheet_Texture"/>
+    <addaction name="menuActive_Textures"/>
+    <addaction name="actionHidden_Entities"/>
+    <addaction name="actionHidden_Levels"/>
+    <addaction name="separator"/>
+    <addaction name="menuDynamic_Lighting"/>
+    <addaction name="separator"/>
+    <addaction name="actionToggle_Fullscreen"/>
+   </widget>
+   <widget class="QMenu" name="menuLevel">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="title">
+     <string>Level</string>
+    </property>
+    <widget class="QMenu" name="menuNormal_Maps">
+     <property name="title">
+      <string>Normal Maps</string>
+     </property>
+     <addaction name="actionScatter"/>
+     <addaction name="actionGather"/>
+    </widget>
+    <widget class="QMenu" name="menuSpecular_Maps">
+     <property name="title">
+      <string>Specular Maps</string>
+     </property>
+     <addaction name="actionScatter_2"/>
+     <addaction name="actionGather_2"/>
+    </widget>
+    <addaction name="actionReload_2"/>
+    <addaction name="actionLevelRemove"/>
+    <addaction name="actionLevelReloadSheets"/>
+    <addaction name="menuNormal_Maps"/>
+    <addaction name="menuSpecular_Maps"/>
+    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menuArea">
+    <property name="title">
+     <string>Area</string>
+    </property>
+    <addaction name="actionAreaAddEntity"/>
+    <addaction name="actionReload"/>
+    <addaction name="actionAreaRemove"/>
+    <addaction name="separator"/>
+    <addaction name="actionScreenshot"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
+    <addaction name="actionCopy"/>
+   </widget>
+   <widget class="QMenu" name="menuEngine">
+    <property name="title">
+     <string>Engine</string>
+    </property>
+    <widget class="QMenu" name="menuSelect_Platform">
+     <property name="title">
+      <string>Select Platform</string>
+     </property>
+     <property name="toolTipsVisible">
+      <bool>false</bool>
+     </property>
+     <addaction name="actionNix"/>
+     <addaction name="actionWindows"/>
+     <addaction name="actionMac_OS_X"/>
+     <addaction name="actionDreamcast"/>
+     <addaction name="actionIPhone_iPad"/>
+     <addaction name="actionIOS_Simulator"/>
+     <addaction name="actionAndroid_Device"/>
+    </widget>
+    <addaction name="actionInvoke"/>
+    <addaction name="menuSelect_Platform"/>
+    <addaction name="actionReload_Shaders"/>
+    <addaction name="separator"/>
+    <addaction name="actionEngine_Settings"/>
+    <addaction name="actionInput_Device_Dump"/>
+    <addaction name="actionTexture_Dump"/>
+    <addaction name="actionAudio_Dump"/>
+    <addaction name="actionLua_Manager_Dump"/>
+    <addaction name="actionAdd_Player"/>
+    <addaction name="actionRemove_Player"/>
+   </widget>
+   <widget class="QMenu" name="menuConsole">
+    <property name="title">
+     <string>Console</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="actionClear"/>
+    <addaction name="actionReset_Stack_Depth"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionSheet_Manager"/>
+    <addaction name="actionGitLab_Manager"/>
+    <addaction name="actionPerformance_Monitor"/>
+    <addaction name="actionDocumentation"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
+   <addaction name="menuView"/>
+   <addaction name="menuLevel"/>
+   <addaction name="menuArea"/>
+   <addaction name="menuEngine"/>
+   <addaction name="menuConsole"/>
+   <addaction name="menuTools"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="windowTitle">
+    <string>ToolBar</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionFileOpenProject"/>
+   <addaction name="actionFileSaveCurrentArea"/>
+   <addaction name="separator"/>
+   <addaction name="actionCut"/>
+   <addaction name="actionPaste"/>
+   <addaction name="separator"/>
+   <addaction name="actionEnable_OpenGL"/>
+   <addaction name="actionToggle_AutoScroll"/>
+   <addaction name="actionDefault_Transform"/>
+   <addaction name="actionHorizontal_SheetView"/>
+   <addaction name="separator"/>
+   <addaction name="actionReset_Layout"/>
+   <addaction name="separator"/>
+   <addaction name="actionInvoke"/>
+   <addaction name="actionAdvance_Frame"/>
+   <addaction name="actionManual_Camera"/>
+   <addaction name="actionEnable_Audio"/>
+  </widget>
+  <action name="actionFileQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionLevelRemove">
+   <property name="text">
+    <string>Remove</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove Level</string>
+   </property>
+  </action>
+  <action name="actionLevelReloadSheets">
+   <property name="text">
+    <string>Reload Sheets</string>
+   </property>
+  </action>
+  <action name="actionAreaRemove">
+   <property name="text">
+    <string>Remove</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove Area</string>
+   </property>
+  </action>
+  <action name="actionAreaAddEntity">
+   <property name="text">
+    <string>Add Entity</string>
+   </property>
+  </action>
+  <action name="actionDebugViewLog">
+   <property name="text">
+    <string>View Log</string>
+   </property>
+   <property name="toolTip">
+    <string>View Debug Log</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
+   </property>
+  </action>
+  <action name="actionFileOpenProject">
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/openIcon.png</normaloff>
+     <activeoff>:/toolbar/images/openIconColor.png</activeoff>:/toolbar/images/openIcon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open Project...</string>
+   </property>
+   <property name="toolTip">
+    <string>Open Project...</string>
+   </property>
+  </action>
+  <action name="actionFileCloseProject">
+   <property name="text">
+    <string>Project</string>
+   </property>
+   <property name="toolTip">
+    <string>Close Project</string>
+   </property>
+  </action>
+  <action name="actionFileSaveCurrentProject">
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/saveIcon.png</normaloff>
+     <activeoff>:/toolbar/images/saveIconColor.png</activeoff>:/toolbar/images/saveIcon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Project</string>
+   </property>
+   <property name="toolTip">
+    <string>Save Project</string>
+   </property>
+  </action>
+  <action name="actionFileSaveCurrentLevel">
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/saveIcon.png</normaloff>
+     <activeoff>:/toolbar/images/saveIconColor.png</activeoff>:/toolbar/images/saveIcon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Level</string>
+   </property>
+   <property name="toolTip">
+    <string>Save Level</string>
+   </property>
+  </action>
+  <action name="actionFileSaveCurrentArea">
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/saveIcon.png</normaloff>
+     <activeoff>:/toolbar/images/saveIconColor.png</activeoff>:/toolbar/images/saveIcon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Area</string>
+   </property>
+   <property name="toolTip">
+    <string>Save Area</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionEntityRemove">
+   <property name="text">
+    <string>Remove</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove Entity</string>
+   </property>
+  </action>
+  <action name="actionEntityAttachAnimation">
+   <property name="text">
+    <string>Animation</string>
+   </property>
+   <property name="toolTip">
+    <string>Attach Animation Component</string>
+   </property>
+  </action>
+  <action name="actionEntityAttachCollidable">
+   <property name="text">
+    <string>Collidable</string>
+   </property>
+   <property name="toolTip">
+    <string>Attach Collidable Component</string>
+   </property>
+  </action>
+  <action name="actionEntityAttachWarp">
+   <property name="text">
+    <string>Warp</string>
+   </property>
+   <property name="toolTip">
+    <string>Attach Warp Component</string>
+   </property>
+  </action>
+  <action name="actionEntityAttachItem">
+   <property name="text">
+    <string>Item</string>
+   </property>
+   <property name="toolTip">
+    <string>Attach Item Component</string>
+   </property>
+  </action>
+  <action name="actionEntityAttachCharacter">
+   <property name="text">
+    <string>Character</string>
+   </property>
+   <property name="toolTip">
+    <string>Attach Character Component</string>
+   </property>
+  </action>
+  <action name="actionEntityAttachFriendly">
+   <property name="text">
+    <string>Friendly</string>
+   </property>
+   <property name="toolTip">
+    <string>Attach Friendly Component</string>
+   </property>
+  </action>
+  <action name="actionEntityAttachEnemy">
+   <property name="text">
+    <string>Enemy</string>
+   </property>
+   <property name="toolTip">
+    <string>Attach Enemy Component</string>
+   </property>
+  </action>
+  <action name="actionEntityRemoveAnimation">
+   <property name="text">
+    <string>Animation</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove Animation Component</string>
+   </property>
+  </action>
+  <action name="actionEntityRemoveCollidable">
+   <property name="text">
+    <string>Collidable</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove Collidable Component</string>
+   </property>
+  </action>
+  <action name="actionEntityRemoveWarp">
+   <property name="text">
+    <string>Warp</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove Warp Component</string>
+   </property>
+  </action>
+  <action name="actionEntityRemoveItem">
+   <property name="text">
+    <string>Item</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove Item Component</string>
+   </property>
+  </action>
+  <action name="actionEntityRemoveCharacter">
+   <property name="text">
+    <string>Character</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove Character Component</string>
+   </property>
+  </action>
+  <action name="actionEntityRemoveFriendly">
+   <property name="text">
+    <string>Friendly</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove Friendly Component</string>
+   </property>
+  </action>
+  <action name="actionEntityRemoveEnemy">
+   <property name="text">
+    <string>Enemy</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove Enemy Component</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="text">
+    <string>Undo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Z</string>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="text">
+    <string>Redo</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Y</string>
+   </property>
+  </action>
+  <action name="actionEntityAttachRenderable">
+   <property name="text">
+    <string>Renderable</string>
+   </property>
+   <property name="toolTip">
+    <string>Attach Renderable Component</string>
+   </property>
+  </action>
+  <action name="actionEntityRemoveRenderable">
+   <property name="text">
+    <string>Renderable</string>
+   </property>
+   <property name="toolTip">
+    <string>Remove Renderable Component</string>
+   </property>
+  </action>
+  <action name="actionFileNewLevel">
+   <property name="text">
+    <string>Level...</string>
+   </property>
+   <property name="toolTip">
+    <string>New Level...</string>
+   </property>
+  </action>
+  <action name="actionFileNewArea">
+   <property name="text">
+    <string>Area...</string>
+   </property>
+   <property name="toolTip">
+    <string>New Area...</string>
+   </property>
+  </action>
+  <action name="actionInvoke">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/invokeIcon.png</normaloff>
+     <normalon>:/toolbar/images/stopIcon.png</normalon>
+     <activeoff>:/toolbar/images/invokeIconColor.png</activeoff>:/toolbar/images/invokeIcon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Invoke...</string>
+   </property>
+   <property name="toolTip">
+    <string>Play current level</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
+  </action>
+  <action name="actionNix">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/unixIcon.png</normaloff>:/toolbar/images/unixIcon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Nix</string>
+   </property>
+  </action>
+  <action name="actionWindows">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/windowsIcon.png</normaloff>:/toolbar/images/windowsIcon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Windows</string>
+   </property>
+  </action>
+  <action name="actionMac_OS_X">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/macIcon.png</normaloff>:/toolbar/images/macIcon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Mac OS X</string>
+   </property>
+  </action>
+  <action name="actionDreamcast">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/dreamcastIcon.png</normaloff>:/toolbar/images/dreamcastIcon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Dreamcast</string>
+   </property>
+  </action>
+  <action name="actionIPhone_iPad">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/ios_logo.png</normaloff>:/toolbar/images/ios_logo.png</iconset>
+   </property>
+   <property name="text">
+    <string>iPhone/iPad Device</string>
+   </property>
+  </action>
+  <action name="actionPan">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/panIcon.png</normaloff>
+     <activeoff>:/toolbar/images/panIconColor.png</activeoff>:/toolbar/images/panIcon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Pan</string>
+   </property>
+   <property name="toolTip">
+    <string>Pan</string>
+   </property>
+   <property name="shortcut">
+    <string>P</string>
+   </property>
+  </action>
+  <action name="actionZoom">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/zoomIcon.png</normaloff>
+     <activeoff>:/toolbar/images/zoomIconColor.png</activeoff>:/toolbar/images/zoomIcon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Zoom</string>
+   </property>
+   <property name="toolTip">
+    <string>Zoom</string>
+   </property>
+   <property name="shortcut">
+    <string>Z</string>
+   </property>
+  </action>
+  <action name="actionEnable_OpenGL">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/openGLIcon.png</normaloff>
+     <activeoff>:/toolbar/images/openGLIconColor.png</activeoff>:/toolbar/images/openGLIcon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Enable OpenGL</string>
+   </property>
+   <property name="toolTip">
+    <string>Enable OpenGL</string>
+   </property>
+  </action>
+  <action name="actionReset_Layout">
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/resetLayoutIcon.png</normaloff>
+     <activeoff>:/toolbar/images/resetLayoutIconColor.png</activeoff>:/toolbar/images/resetLayoutIcon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Reset Layout</string>
+   </property>
+   <property name="toolTip">
+    <string>Reset Layout</string>
+   </property>
+  </action>
+  <action name="actionSelect">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/selectIcon.png</normaloff>
+     <activeoff>:/toolbar/images/selectIconColor.png</activeoff>:/toolbar/images/selectIcon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Select</string>
+   </property>
+   <property name="toolTip">
+    <string>Select</string>
+   </property>
+   <property name="shortcut">
+    <string>S</string>
+   </property>
+  </action>
+  <action name="actionAsset_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Asset View</string>
+   </property>
+   <property name="toolTip">
+    <string>Asset View</string>
+   </property>
+  </action>
+  <action name="actionEntity_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Entity View</string>
+   </property>
+   <property name="toolTip">
+    <string>Entity View</string>
+   </property>
+  </action>
+  <action name="actionLayer_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Layer View</string>
+   </property>
+   <property name="toolTip">
+    <string>Layer View</string>
+   </property>
+  </action>
+  <action name="actionSelection_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Selection View</string>
+   </property>
+   <property name="toolTip">
+    <string>Selection View</string>
+   </property>
+  </action>
+  <action name="actionSheet_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Sheet View</string>
+   </property>
+   <property name="toolTip">
+    <string>Sheet View</string>
+   </property>
+   <property name="shortcut">
+    <string>Space</string>
+   </property>
+  </action>
+  <action name="actionHistory_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>History View</string>
+   </property>
+  </action>
+  <action name="actionCut">
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/cutIcon.png</normaloff>
+     <activeoff>:/toolbar/images/cutIconColor.png</activeoff>:/toolbar/images/cutIcon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Cut</string>
+   </property>
+   <property name="toolTip">
+    <string>Cut</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+X</string>
+   </property>
+  </action>
+  <action name="actionPaste">
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/pasteIcon.png</normaloff>
+     <activeoff>:/toolbar/images/pasteIconColor.png</activeoff>:/toolbar/images/pasteIcon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Paste</string>
+   </property>
+   <property name="toolTip">
+    <string>Paste</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+V</string>
+   </property>
+  </action>
+  <action name="actionDefault_Transform">
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/default-transform.png</normaloff>
+     <activeoff>:/toolbar/images/default-transform-color.png</activeoff>:/toolbar/images/default-transform.png</iconset>
+   </property>
+   <property name="text">
+    <string>Default Transform</string>
+   </property>
+   <property name="toolTip">
+    <string>Default Transform</string>
+   </property>
+  </action>
+  <action name="actionToggle_AutoScroll">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/toggle-autoscroll.png</normaloff>
+     <activeoff>:/toolbar/images/toggle-autoscroll-color.png</activeoff>:/toolbar/images/toggle-autoscroll.png</iconset>
+   </property>
+   <property name="text">
+    <string>Enable AutoScroll</string>
+   </property>
+   <property name="toolTip">
+    <string>Enable/Disable AutoScroll</string>
+   </property>
+  </action>
+  <action name="actionActionSecret">
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/sheet-manager.png</normaloff>
+     <activeoff>:/toolbar/images/sheet-manager-color.png</activeoff>:/toolbar/images/sheet-manager.png</iconset>
+   </property>
+   <property name="text">
+    <string>Sheet Manager...</string>
+   </property>
+   <property name="toolTip">
+    <string>Sheet Manager...</string>
+   </property>
+  </action>
+  <action name="actionEngine_Settings">
+   <property name="text">
+    <string>Tools Settings</string>
+   </property>
+  </action>
+  <action name="actionToggle_SheetView_Solidity">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Sheet View Solidity</string>
+   </property>
+  </action>
+  <action name="actionMap_View_Solidity">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Map View Solidity</string>
+   </property>
+  </action>
+  <action name="actionIndeces">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Index</string>
+   </property>
+  </action>
+  <action name="actionFlip_Rotation">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Orientation</string>
+   </property>
+  </action>
+  <action name="actionComing_Soon">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Solidity</string>
+   </property>
+  </action>
+  <action name="actionElevation_2">
+   <property name="text">
+    <string>Elevation.</string>
+   </property>
+  </action>
+  <action name="actionComing_Soon_2">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Coming Soon...</string>
+   </property>
+  </action>
+  <action name="actionElevation">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Elevation</string>
+   </property>
+  </action>
+  <action name="actionSolidity">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Solidity</string>
+   </property>
+  </action>
+  <action name="actionZ_Transitional">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Z Transitional</string>
+   </property>
+  </action>
+  <action name="actionHorizontal_SheetView">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/sheet-view-ratio.png</normaloff>
+     <activeoff>:/toolbar/images/sheet-view-ratio-color.png</activeoff>:/toolbar/images/sheet-view-ratio.png</iconset>
+   </property>
+   <property name="text">
+    <string>Horizontal SheetView</string>
+   </property>
+   <property name="toolTip">
+    <string>Change Horizontal/Vertical SheetView Perspective</string>
+   </property>
+  </action>
+  <action name="actionScreenshot">
+   <property name="text">
+    <string>Dump to PNG</string>
+   </property>
+  </action>
+  <action name="actionScatter">
+   <property name="text">
+    <string>Scatter</string>
+   </property>
+  </action>
+  <action name="actionGather">
+   <property name="text">
+    <string>Gather</string>
+   </property>
+  </action>
+  <action name="actionScatter_2">
+   <property name="text">
+    <string>Scatter</string>
+   </property>
+  </action>
+  <action name="actionGather_2">
+   <property name="text">
+    <string>Gather</string>
+   </property>
+  </action>
+  <action name="actionPrevious_Project">
+   <property name="text">
+    <string>Previous Project</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionAdvance_Frame">
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/advanceFrameIcon.png</normaloff>:/toolbar/images/advanceFrameIcon.png</iconset>
+   </property>
+   <property name="text">
+    <string>Advance Frame</string>
+   </property>
+   <property name="toolTip">
+    <string>Run engine's next frame</string>
+   </property>
+  </action>
+  <action name="actionClear">
+   <property name="text">
+    <string>Clear</string>
+   </property>
+  </action>
+  <action name="actionMap_Background">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Map Background</string>
+   </property>
+  </action>
+  <action name="action480p">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>480p</string>
+   </property>
+  </action>
+  <action name="action720p">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>720p</string>
+   </property>
+  </action>
+  <action name="actionDynamic">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Dynamic</string>
+   </property>
+  </action>
+  <action name="actionReload_Shaders">
+   <property name="text">
+    <string>Reload Shaders</string>
+   </property>
+  </action>
+  <action name="actionTilesheet">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Texture Map</string>
+   </property>
+  </action>
+  <action name="actionNormalsheet">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Normal Map</string>
+   </property>
+  </action>
+  <action name="actionSpecularsheet">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Specular Map</string>
+   </property>
+  </action>
+  <action name="actionTile_Map">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Texture Map</string>
+   </property>
+  </action>
+  <action name="actionNormal_Map">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Normal Map</string>
+   </property>
+  </action>
+  <action name="actionSpecular_Map">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Specular Map</string>
+   </property>
+  </action>
+  <action name="actionHidden_Entities">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Hidden Entities</string>
+   </property>
+  </action>
+  <action name="actionReload">
+   <property name="text">
+    <string>Reload</string>
+   </property>
+  </action>
+  <action name="actionReload_2">
+   <property name="text">
+    <string>Reload</string>
+   </property>
+  </action>
+  <action name="actionShadows">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Shadows</string>
+   </property>
+  </action>
+  <action name="actionLights">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Lights</string>
+   </property>
+  </action>
+  <action name="actionManual_Camera">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/camera.png</normaloff>:/toolbar/images/camera.png</iconset>
+   </property>
+   <property name="text">
+    <string>Manual Camera</string>
+   </property>
+   <property name="toolTip">
+    <string>Manual Camera Control</string>
+   </property>
+  </action>
+  <action name="actionEnable_Audio">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normalon>:/toolbar/images/audio.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Enable Audio</string>
+   </property>
+   <property name="toolTip">
+    <string>Enable/Disable Audio</string>
+   </property>
+  </action>
+  <action name="actionReloadProject">
+   <property name="text">
+    <string>Project</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionDocumentation">
+   <property name="text">
+    <string>User Manual</string>
+   </property>
+  </action>
+  <action name="actionGitLab_Manager">
+   <property name="text">
+    <string>GitLab Manager</string>
+   </property>
+  </action>
+  <action name="actionSheet_Manager">
+   <property name="text">
+    <string>Sheet Manager</string>
+   </property>
+  </action>
+  <action name="actionPerformance_Monitor">
+   <property name="text">
+    <string>Performance Monitor</string>
+   </property>
+  </action>
+  <action name="actionLibGyroVerbose">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Verbose</string>
+   </property>
+  </action>
+  <action name="actionLibGyroWarning">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Warning</string>
+   </property>
+  </action>
+  <action name="actionLibGyroError">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Error</string>
+   </property>
+  </action>
+  <action name="actionEngineVerbose">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Verbose</string>
+   </property>
+  </action>
+  <action name="actionEngineWarning">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Warning</string>
+   </property>
+  </action>
+  <action name="actionEngineError">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Error</string>
+   </property>
+  </action>
+  <action name="actionToolkitVerbose">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Verbose</string>
+   </property>
+  </action>
+  <action name="actionToolkitWarning">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Warning</string>
+   </property>
+  </action>
+  <action name="actionToolkitError">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Error</string>
+   </property>
+  </action>
+  <action name="actionQtVerbose">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Verbose</string>
+   </property>
+  </action>
+  <action name="actionQtWarning">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Warning</string>
+   </property>
+  </action>
+  <action name="actionQtError">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Error</string>
+   </property>
+  </action>
+  <action name="actionOpenGLVerbose">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Verbose</string>
+   </property>
+  </action>
+  <action name="actionOpenGLWarning">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Warning</string>
+   </property>
+  </action>
+  <action name="actionOpenGLError">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Error</string>
+   </property>
+  </action>
+  <action name="actionLuaVerbose">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Verbose</string>
+   </property>
+  </action>
+  <action name="actionLuaWarning">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Warning</string>
+   </property>
+  </action>
+  <action name="actionLuaError">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Error</string>
+   </property>
+  </action>
+  <action name="actionCommandsVerbose">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Verbose</string>
+   </property>
+  </action>
+  <action name="actionCommandsWarning">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Warning</string>
+   </property>
+  </action>
+  <action name="actionCommandsError">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Error</string>
+   </property>
+  </action>
+  <action name="actionReset_Stack_Depth">
+   <property name="text">
+    <string>Reset Stack Depth</string>
+   </property>
+  </action>
+  <action name="actionCopy">
+   <property name="text">
+    <string>Copy</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WindowShortcut</enum>
+   </property>
+  </action>
+  <action name="actionHidden_Levels">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Hidden Levels</string>
+   </property>
+  </action>
+  <action name="actionIOS_Simulator">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/ios_sim.png</normaloff>:/toolbar/images/ios_sim.png</iconset>
+   </property>
+   <property name="text">
+    <string>iOS Simulator</string>
+   </property>
+   <property name="toolTip">
+    <string>Launch Engine on iOS Simualtor</string>
+   </property>
+  </action>
+  <action name="actionAndroid_Device">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resource/resource.qrc">
+     <normaloff>:/toolbar/images/droid_logo.png</normaloff>:/toolbar/images/droid_logo.png</iconset>
+   </property>
+   <property name="text">
+    <string>Android Device</string>
+   </property>
+   <property name="toolTip">
+    <string>Send Toolkit to Android Device</string>
+   </property>
+  </action>
+  <action name="actionCamera_View">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Camera View</string>
+   </property>
+   <property name="toolTip">
+    <string>Toggle Camera View</string>
+   </property>
+  </action>
+  <action name="actionInput_Device_Dump">
+   <property name="text">
+    <string>Input Device Dump</string>
+   </property>
+  </action>
+  <action name="actionTexture_Dump">
+   <property name="text">
+    <string>Texture Dump</string>
+   </property>
+  </action>
+  <action name="actionAudio_Dump">
+   <property name="text">
+    <string>Audio Dump</string>
+   </property>
+  </action>
+  <action name="actionAdd_Player">
+   <property name="text">
+    <string>Add Player</string>
+   </property>
+  </action>
+  <action name="actionRemove_Player">
+   <property name="text">
+    <string>Remove Player</string>
+   </property>
+  </action>
+  <action name="actionLua_Manager_Dump">
+   <property name="text">
+    <string>Lua Manager Dump</string>
+   </property>
+  </action>
+  <action name="actionBloom">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Bloom</string>
+   </property>
+  </action>
+  <action name="actionToggle_Fullscreen">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Toggle Fullscreen</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>MapView</class>
+   <extends>QGraphicsView</extends>
+   <header location="global">tk_map_view.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../../resource/resource.qrc"/>
+ </resources>
+ <connections/>
+ <slots>
+  <slot>newProject()</slot>
+ </slots>
+</ui>

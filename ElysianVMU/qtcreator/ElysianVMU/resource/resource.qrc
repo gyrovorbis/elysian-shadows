@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>images/vmu_es.png</file>
+        <file>images/vmu_icon.icns</file>
+        <file>images/vmu_icon.ico</file>
+        <file>images/icon_clock.png</file>
+        <file>images/icon_file.png</file>
+        <file>images/icon_flash.png</file>
+        <file>images/icon_game.png</file>
+        <file>images/task_bar_connected.png</file>
+        <file>images/task_bar_disconnected.png</file>
+        <file>images/task_bar_green.png</file>
+        <file>images/task_bar_listening.png</file>
+        <file>images/task_bar_yellow.png</file>
+        <file>images/task_bar_red.png</file>
+    </qresource>
+    <qresource prefix="/dialog">
+        <file>images/vmu_buttons.png</file>
+    </qresource>
+</RCC>

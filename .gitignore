@@ -106,13 +106,13 @@ build/*
 lua_debug.txt
 gamma_debug.txt
 gamma_args.txt
-toolkit_debug.txt
 
 # OS generated files #
 ######################
 .DS_Store?
 .DS_Store
 ehthumbs.db
+Icon?
 Thumbs.db
 *~
 *.swp
@@ -133,10 +133,19 @@ Docs/Documentation/
 out/
 CMakeLists.txt.user
 
-#ESTk generated
-#################
-#level/**/estk/**
-
-#Symlink for debug.txts, to make them appear correctly in SublimeText #
-#######################################################################
-debug/
+#Annoying shit sitting in our git directory #
+#############################################
+ESToolkit.app/*
+ESGamma.app/*
+ESToolkit/ESToolkit/ESToolkit.app/
+#ESToolkit/ESToolkit/.qmake.stash
+ESToolkit/ESToolkit/qrc_resource.cpp
+#libGyro/qtcreator/*
+#qtcreator/*
+shadowRenderPasses
+*qmake.stash
+Lua5.2/qtcreator/Lua5_2/Makefile
+toolkit_debug.txt
+Spine/qtcreator/Spine/*.o
+Spine/qtcreator/Spine/*.pri
+Spine/qtcreator/Spine/Makefile

@@ -1,0 +1,40 @@
+#include <proxy/elysian_entity_proxy.hpp>
+
+OOLUA_EXPORT_FUNCTIONS(LightAttrib,
+                       setAmbientColor,
+                       setDiffuseColor,
+                       setSpecularColor,
+                       setAttenuationFactors,
+                       setSpotExponent,
+                       getAmbient,
+                       getDiffuse,
+                       getSpecular,
+                       getAttenuation,
+                       getRadius,
+                       setDiffuse,
+                       setSpecular,
+                       setAmbient,
+                       setAttenuation)
+OOLUA_EXPORT_FUNCTIONS_CONST(LightAttrib,
+                             getAmbientColor,
+                             getDiffuseColor,
+                             getSpecularColor,
+                             getAttenuationFactors,
+                             getSpotExponent)
+
+OOLUA_EXPORT_FUNCTIONS(LightSource,
+                       setLightType,
+                       setDirection,
+                       setSpotCutoffAngle,
+                       setAttrib,
+                       getAttrib,
+                       setShadowCaster,
+                       setRelativePos,
+                       getRelPos,
+                       getDir)
+OOLUA_EXPORT_FUNCTIONS_CONST(LightSource,
+                             getDirection,
+                             getSpotCutoffAngle,
+                             getLightType,
+                             isShadowCaster,
+                             getRelativePos)

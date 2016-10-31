@@ -1,0 +1,50 @@
+
+# /vs2010/
+/vs2010/*.opensdf
+/vs2010/*.sdf
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+build/*
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
+
+# OS generated files #
+######################
+.DS_Store?
+ehthumbs.db
+Icon?
+Thumbs.db
+*~
+*.swp
+
+
+qtcreator/ESGamma/debug
+qtcreator/ESGamma/release
+qtcreator/ESGamma/Makefile
+qtcreator/ESGamma/Makefile.debug
+qtcreator/ESGamma/Makefile.release
+qtcreator/ESGamma/object_script.ESGamma.Debug
+qtcreator/ESGamma/object_script.ESGamma.Release
+

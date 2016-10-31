@@ -1,0 +1,5 @@
+#ifndef TEST_LIGHT_SYSTEM
+#define TEST_LIGHT_SYSTEM
+
+#endif // TEST_LIGHT_SYSTEM
+

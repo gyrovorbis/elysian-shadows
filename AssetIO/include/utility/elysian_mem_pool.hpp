@@ -1,0 +1,461 @@
+#ifndef ELYSIAN_MEM_POOL_HPP
+#define ELYSIAN_MEM_POOL_HPP
+
+#include <cassert>
+#include <cstdlib>
+#include <cstring>
+#include <functional>
+
+namespace elysian {
+
+#define ELYSIAN_MEM_POOL_DEFAULT_FREE_INDEX_CAPACITY    10
+#define ELYSIAN_MEM_POOL_DEFAULT_MAX_CAPACITY           100
+
+/* elysian::Pool
+ *
+ * Simple vector-like data-structure using contiguous
+ * static data pool for internal storage. Does not
+ * do any automatic dynamic resizing, return index 0
+ * on overflow. Maintains an internal state to reduce
+ * time complexity of insertions.
+ *
+ * Time Complexity:
+ * Indexing     - O(1)
+ * Insertion    - O(1) - O(n)
+ * Deletion     - O(1) - O(ELYSIAN_MEM_POOL_FREE_INDEX_ARRAY_SIZE)
+ *
+ * Iterations must jump over inactive indices, since the container
+ * is not sparse. Uses internal state data to be slightly more
+ * efficient in certain (hopefully most) cases.
+ */
+
+template <bool replacement, typename T>
+struct _PoolReplacementPolicy;
+
+template <typename T, bool replacement=false>
+class Pool {
+    friend struct _PoolReplacementPolicy<replacement, T>;
+protected:
+
+    //internal state to reduce time complexities
+    unsigned    _usedCount          = 0;
+    bool        _sequential         = true;
+    unsigned    _endIndex           = 0;
+    unsigned    _freeCacheCount     = 0;
+    unsigned    _startSearchIndex   = 0;
+
+    //actual storage
+    int*            _freeIndices       = nullptr;
+    T*              _entries           = nullptr;
+    bool*           _used              = nullptr;
+    unsigned        _maxSize            = ELYSIAN_MEM_POOL_DEFAULT_MAX_CAPACITY;
+    unsigned        _freeIndicesSize    = ELYSIAN_MEM_POOL_DEFAULT_FREE_INDEX_CAPACITY;
+
+    unsigned _claimFreeIndex(void) {
+        //Out of space
+        if(_usedCount == _maxSize) {
+           // return _PoolReplacementPolicy<replacement, T>::findDirtyIndex(this);
+        }
+
+        //We have space left!
+
+		if(_sequential) {
+            //grab next index
+            _used[_endIndex] = true;
+
+			if(++_endIndex == _maxSize) {
+                _sequential = false;
+            }
+
+			++_usedCount;
+
+            _used[_endIndex] = true;
+            return _endIndex-1;
+
+        } else {
+            //search free list
+            if(_freeCacheCount) {
+                for(unsigned i = 0; i < _freeIndicesSize; ++i) {
+                    if(_freeIndices[i] != -1) {
+                        ++_usedCount;
+                        unsigned index = _freeIndices[i];
+                        _used[index] = true;
+                        _freeIndices[i] = -1;
+                        --_freeCacheCount;
+                        return index;
+                    }
+                }
+				//assert(0);
+			} else {
+
+                auto searchFreeIndex = [&](unsigned& index, const unsigned start, const unsigned end) {
+                    for(index = start; index < end; ++index) {
+                        if(!_used[index]) {
+                            //++_usedCount;
+							//_used[index] = true;
+                            return true;
+                        }
+                    }
+                    return false;
+                };
+
+                //fuck, search everything!!
+                unsigned pivot = _startSearchIndex;
+                if(searchFreeIndex(_startSearchIndex, pivot, _maxSize)) {
+                    ++_usedCount;
+                    _used[_startSearchIndex] = true;
+                    return _startSearchIndex;
+                }
+                //Loop back around!
+                else if(searchFreeIndex(_startSearchIndex, 0, pivot)) {
+                    ++_usedCount;
+                    _used[_startSearchIndex] = true;
+                    return _startSearchIndex;
+                }
+
+				//assert(0);
+
+			}
+		}
+
+		//assert(0);
+        return 0;
+    }
+
+
+public:
+
+    class iterator {
+        friend class Pool;
+    private:
+
+        Pool<T>* _parent    = nullptr;
+        unsigned _index     = 0;
+
+    public:
+
+        iterator(void) = default;
+
+        iterator(Pool<T>*const parent, const unsigned index):
+            _parent(parent), _index(index) {}
+
+        bool operator != (const iterator& other) const {
+            return (_index != other._index);
+        }
+
+        bool operator == (const iterator& other) const {
+            return (_index == other._index);
+        }
+
+        bool operator < (const iterator& other) const {
+            return (_index < other._index);
+        }
+
+	   // T* operator->(void) const;
+		T& operator*(void) const;
+
+        const iterator& operator++(void) {
+            while(!_parent->_used[++_index]);
+
+            return *this;
+        }
+    };
+
+
+
+    class const_iterator {
+        friend class Pool;
+    private:
+
+        const Pool<T>* _parent    = nullptr;
+        unsigned _index     = 0;
+
+    public:
+
+        const_iterator(void) = default;
+
+        const_iterator(const Pool<T>*const parent, const unsigned index):
+            _parent(parent), _index(index) {}
+
+        bool operator != (const const_iterator& other) const {
+            return (_index != other._index);
+        }
+
+        bool operator == (const const_iterator& other) const {
+            return (_index == other._index);
+        }
+
+        bool operator < (const const_iterator& other) const {
+            return (_index < other._index);
+        }
+
+       // T* operator->(void) const;
+        const T& operator*(void) const;
+
+        const const_iterator& operator++(void) {
+            while(!_parent->_used[++_index]);
+
+            return *this;
+        }
+    };
+
+
+    Pool(const unsigned maxCapacity = ELYSIAN_MEM_POOL_DEFAULT_MAX_CAPACITY,
+         const unsigned freeIndexSize = ELYSIAN_MEM_POOL_DEFAULT_FREE_INDEX_CAPACITY):
+            _maxSize(maxCapacity), _freeIndicesSize(freeIndexSize)
+    {
+        //_entries        = new T[maxCapacity];
+        _entries        = (T*)malloc(sizeof(T)*maxCapacity);
+        for(unsigned i = 0; i < maxCapacity; ++i) {
+            new (&_entries[i]) T();
+        }
+        _used           = (bool*)malloc(sizeof(bool) * (maxCapacity+1));
+        _freeIndices    = (int*)malloc(sizeof(int) * freeIndexSize);
+
+		//_endIndex = maxCapacity;
+
+        memset(_used, 0, sizeof(bool) * maxCapacity);
+        _used[maxCapacity] = true;
+        for(unsigned i = 0; i < freeIndexSize; ++i) _freeIndices[i] = -1;
+    }
+
+    ~Pool(void) {
+        for(unsigned i = 0 ; i < _maxSize; ++i) {
+            _entries[i].~T();
+        }
+        free(_freeIndices);
+        free(_used);
+        free(_entries);
+    }
+
+    T& operator[] (const int index) { return _entries[index]; }
+
+	const T& operator[] (const int index) const { return _entries[index]; }
+
+    iterator begin(void) {
+        for(unsigned i = 0; i < _endIndex; ++i) {
+            if(_used[i]) return iterator(this, i);
+        }
+        return iterator(this, _endIndex);
+    }
+
+    const_iterator begin(void) const {
+        for(unsigned i = 0; i < _endIndex; ++i) {
+            if(_used[i]) return const_iterator(this, i);
+        }
+        return const_iterator(this, _endIndex);
+    }
+
+    iterator end(void) {
+        return iterator(this, _endIndex);
+    }
+
+    const_iterator end(void) const {
+        return const_iterator(this, _endIndex);
+    }
+
+    iterator find(const T& entry) {
+        for(auto it = begin(); it < end(); ++it) {
+            if(_entries[it._index] == entry) {
+                return it;
+            }
+        }
+        return end();
+    }
+
+    iterator findByComparator(const std::function<bool(const T& entry)> comparator) {
+        auto it = begin();
+        for(; it < end(); ++it) {
+            if(comparator(*(it))) return it;
+        }
+        return it;
+    }
+
+    const_iterator find(const T& entry) const {
+        for(auto it = begin(); it < end(); ++it) {
+            if(_entries[it._index] == entry) {
+                return it;
+            }
+        }
+        return end();
+    }
+
+
+    T& claimFreeEntry(void) {
+        return _entries[_claimFreeIndex()];
+
+    }
+
+    void insertEntry(const T& entry) {
+        _entries[_claimFreeIndex()] = entry;
+    }
+
+	//Way slower than doing it with the iterator... but k.
+	void removeEntry(const T& entry) {
+		for(auto it = begin(); it < end(); ++it) {
+			if(_entries[it._index] == entry) {
+				remove(it);
+				return;
+			}
+		}
+	}
+
+    void remove(const iterator it) {
+
+        if(_freeCacheCount < _freeIndicesSize) {
+            for(unsigned i = 0; i < _freeIndicesSize; ++i) {
+                if(_freeIndices[i] == -1) {
+                    _freeIndices[i] = it._index;
+                    ++_freeCacheCount;
+                    break;
+                }
+            }
+        }
+
+        _used[it._index] = false;
+        _entries[it._index].~T();
+        new (&_entries[it._index]) T();
+
+        if(--_usedCount == 0) {
+            _startSearchIndex = 0;
+            _sequential = true;
+            if(_endIndex != _maxSize) _used[_endIndex] = 0;
+            _endIndex = 0;
+            _freeCacheCount = 0;
+            for(unsigned i = 0; i < _freeIndicesSize; ++i) _freeIndices[i] = -1;
+        }
+    }
+
+    void removeEntryContiguous(const T& entry) {
+        for(auto it = begin(); it < end(); ++it) {
+            if(&_entries[it._index] == &entry) {
+                removeContiguous(it);
+                return;
+            }
+        }
+    }
+
+    void removeContiguous(const iterator it) {
+        //close gap in array
+        for(unsigned i = it._index; i < _endIndex-1; ++i) {
+            _entries[i] = _entries[i+1];
+            _used[i] = _used[i+1];
+        }
+        _entries[_endIndex].~T();
+        new (&_entries[_endIndex]) T();
+        _used[_endIndex--] = false;
+        --_usedCount;
+    }
+
+
+    void resize(const unsigned size) {
+        //T *old_entries = _entries;
+        //_entries = (T*)malloc(sizeof(T)*size);//new T[size];
+        //memcpy(reinterpret_cast<void*>(_entries), reinterpret_cast<const void*>(old_entries), sizeof(T) * _maxSize);
+        //free(old_entries);
+
+        _entries = (T*)realloc(_entries, sizeof(T)*size);
+        for(unsigned i = _maxSize; i < _maxSize; ++i) {
+            new (&_entries[i]) T();
+        }
+        _used    = (bool*)realloc(_used, sizeof(bool) * (size+1));
+        _maxSize = size;
+        clear();
+    }
+
+    void clear(void) {
+         memset(_used, 0, sizeof(bool) * _maxSize);
+         _usedCount = 0;
+         _sequential = true;
+         _endIndex = 0;
+         _used[_maxSize] = true;
+         _startSearchIndex = 0;
+         for(unsigned i = 0; i < _freeIndicesSize; ++i) _freeIndices[i] = -1;
+    }
+
+    unsigned size(void) const { return _usedCount; }
+
+    bool isFull(void) const { return _usedCount == _maxSize; }
+
+    unsigned bytesUsed(void) const {
+        return (sizeof(Pool<T>) +
+                sizeof(T) * _maxSize +
+                sizeof(bool) * (_maxSize+1) +
+                sizeof(unsigned) * _freeIndicesSize);
+    }
+
+};
+
+template<typename T>
+struct _PoolReplacementPolicy<true, T> {
+    static inline unsigned findDirtyIndex(const Pool<T, true>*const pool) {
+        //Search through entries with custom comparator to find best fit entry for replacement
+        unsigned current = 0;
+        for(unsigned i = 1; i < pool->_maxSize; ++i) {
+            if(pool->_entries[current] < pool->_entries[i]) {
+                current = i;
+            }
+        }
+        pool->_entries[current].~T();
+        new (&pool->_entries[current]) T();
+        return current;
+    }
+};
+
+template<bool replacement, typename T>
+struct _PoolReplacementPolicy {
+    static inline unsigned findDirtyIndex(const Pool<T, replacement>*const /*pool*/) {
+        return 1;
+    }
+};
+
+/*
+template<typename T>
+inline T* Pool<T>::iterator::operator ->(void) const {
+    return &_parent._entries[_index];
+}*/
+
+template<typename T, bool replacement>
+inline T& Pool<T, replacement>::iterator::operator *(void) const {
+    return _parent->_entries[_index];
+}
+
+template<typename T, bool replacement>
+inline const T& Pool<T, replacement>::const_iterator::operator *(void) const {
+    return _parent->_entries[_index];
+}
+
+template<unsigned size>
+struct CharArrayPoolEntry {
+    char string[size] = { 0 };
+
+    CharArrayPoolEntry(void) = default;
+
+    CharArrayPoolEntry(const char* str) {
+        strcpy(string, str);
+    }
+
+    CharArrayPoolEntry(const CharArrayPoolEntry& rhs) {
+        strcpy(string, rhs.string);
+    }
+
+    CharArrayPoolEntry& operator= (const CharArrayPoolEntry& rhs) {
+        strcpy(string, rhs.string);
+    }
+
+    bool operator== (const CharArrayPoolEntry& rhs) {
+         return (strcmp(string, rhs.string) == 0);
+    }
+
+    void setString(const char* str) {
+        strcpy(string, str);
+    }
+
+    const char* getString(void) const {
+        return string;
+    }
+};
+
+}
+
+#endif // ELYSIAN_MEM_POOL_HPP

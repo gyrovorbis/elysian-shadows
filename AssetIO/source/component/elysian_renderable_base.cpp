@@ -1,0 +1,9 @@
+#include "crtp/elysian_renderable.hpp"
+
+namespace elysian {
+
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(RenderableBase)
+
+
+
+}

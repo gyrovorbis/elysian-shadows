@@ -1,0 +1,779 @@
+#include <algorithm>
+#include <proxy/elysian_primitive_proxy.hpp>
+#include <proxy/elysian_entity_proxy.hpp>
+#include <utility/elysian_stl_algorithm.hpp>
+#include <crtp/elysian_area.hpp>
+#include <utility/elysian_generic.hpp>
+
+using namespace std;
+
+namespace elysian {
+
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(EntityBase)
+
+float EntityBase::_oldZ;
+
+EntityBase::EntityBase(void): EntityBase(nullptr) {  }
+
+EntityBase::EntityBase(EntityBase *other) {
+    if(!other) {
+        strcpy(_name, ELYSIAN_ENTITY_NAME_DEFAULT);
+        strcpy(_dispName, ELYSIAN_ENTITY_DESC_DEFAULT);
+    } else {
+
+        if(other->getRenderable()) _addComponent<Renderable>(_renderable, nullptr, other->getRenderable());
+        if(other->getCollidable()) _addComponent<Collidable>(_collidable, nullptr, other->getCollidable());
+        if(other->getRigidBody()) _addComponent<RigidBody>(_rigidBody, nullptr, other->getRigidBody());
+        if(other->getCharacter()) _addComponent<Character>(_character, nullptr, other->getCharacter());
+        if(other->getWarp()) _addComponent<Warp>(_warp, nullptr, other->getWarp());
+        if(other->getExaminable()) _addComponent<Examinable>(_examinable, nullptr, other->getExaminable());
+        if(other->getAudioSource()) _addComponent<AudioSource>(_audioSource, nullptr, other->getAudioSource());
+        if(other->getLightSource()) _addComponent<LightSource>(_lightSource, nullptr, other->getLightSource());
+        if(other->getParticleEmitter()) _addComponent<ParticleEmitter>(_particleEmitter, nullptr, other->getParticleEmitter());
+        if(other->getCombat()) _addComponent<Combat>(_combat, nullptr, other->getCombat());
+        if(other->getSkeleton()) _addComponent<Skeleton>(_skeleton, nullptr, other->getSkeleton());
+
+        for(unsigned i = 0; i < other->_behaviors.size(); ++i) {
+            LuaBehavior* luaBehav = static_cast<LuaBehavior*>(other->_behaviors[i]);
+          //  attachBehavior(new LuaBehavior(*static_cast<Entity*>(this), static_cast<LuaBehavior*>(behav)));
+           // addLuaBehavior(luaBehav->getBehavName(), luaBehav->getParamTable());
+
+            LuaBehavior* newbehav = new LuaBehavior(*static_cast<Entity*>(this));
+            //newbehav->setBehavName(luaBehav->getBehavName());
+
+            newbehav->fromTable(luaBehav);
+            newbehav->loadScript();
+            //if(behav->loadScript()) { //sitl allow it to be attached if it's invalid, so it can be dereested.
+            attachBehavior(newbehav);
+        }
+
+        strcpy(_name, other->_name);
+        strcpy(_dispName, other->_dispName);
+        _transform = other->_transform;
+        _area = other->_area;
+        _elev = other->_elev;
+        _shadowVolume = other->_shadowVolume;
+        _shadowDepth = other->_shadowDepth;
+        _planeType = other->_planeType;
+        if(other->isActive()) activate();
+    }
+}
+
+EntityBase::EntityBase(EntityBase &&other) {
+    GY_ASSERT(false); //NOT IMPLEMENTED, FUCKER!!
+}
+
+
+void EntityBase::setTransform(LuaVariant valTable) { _transform.fromTable(std::move(valTable)); }
+
+Entity* EntityBase::getTopParentEntity(void) {
+    Entity* it = static_cast<Entity*>(this);
+    for(; it->_parent; it = it->_parent);
+    return it;
+}
+
+void EntityBase::reested(void) {
+    dbgprintf("Entity::Reested(%s) - Dereesting entity!", _name);
+	//SHED COMPONENTS GRACEFULLY
+	strcpy(_name, "Reested");
+}
+
+EntityBase::~EntityBase(void) {
+    dbgprintf("Entity[%s] garbage collected!", _name);
+    //return;
+    if(_active) deactivate();
+
+    //Cleanup Components
+    removeRenderable();
+    removeCollidable();
+    removeRigidBody();
+    removeCharacter();
+    removeWarp();
+    removeExaminable();
+    removeAudioSource();
+    removeLightSource();
+    removeParticleEmitter();
+    removeCombat();
+    removeSkeleton();
+
+    // Cleanup Behaviors
+    for(auto it : _behaviors) {
+        removeBehavior(it->getBehavName());
+    }
+    _behaviors.clear();
+}
+
+void EntityBase::pushViewTransform(void) {
+    GYMatrix4 mat;
+    gyMatPush();
+    gyMatPush();
+    gyMatLoadIdentity();
+    _oldZ = _transform._size.z;
+
+
+    if(_planeType == GY_RECT_PLANE_FRONT) {
+        _transform._size.z = _transform._size.y;
+        //transform._size.y = 400.0f;
+    } else {
+        //transform._pos.z += _shadowDepth;
+    }
+
+    if(_planeType == GY_RECT_PLANE_BOTTOM) {
+
+        gyMatTranslate(_transform._pos.x, _transform._pos.y, _transform._pos.z);
+        gyMatRotate(_transform._angle, _transform._orient.x, _transform._orient.y, _transform._orient.z);
+        gyMatScale(_transform._size.x*_transform._scale.x, _transform._size.y*_transform._scale.y, _transform._size.z*_transform._scale.z);
+        if(_renderable) {
+            //gyMatTranslate(_renderable->getOffsetVec().x, _renderable->getOffsetVec().y, 0.0f);
+        }
+
+       // _transform.apply();
+    } else {
+
+        gyMatTranslate(_transform._pos.x, _transform._pos.y, _transform._pos.z);
+        gyMatRotate(_transform._angle, _transform._orient.x, _transform._orient.y, _transform._orient.z);
+        gyMatScale(_transform._size.x*_transform._scale.x, _transform._size.y*_transform._scale.y, _transform._size.z*_transform._scale.z);
+        if(_renderable) {
+            //gyMatTranslate(_renderable->getOffsetVec().x, _renderable->getOffsetVec().y, 0.0f);
+        }
+    }
+
+    gyMatStore(&mat);
+
+    if(_transform.getFlipX()) {
+        mat[0][0] *= -1.0f;
+        mat[1][0] *= -1.0f;
+    }
+
+    if(_transform.getFlipY()) {
+        mat[0][1] *= -1.0f;
+        mat[1][1] *= -1.0f;
+    }
+
+    gyMatPop();
+    gyMatApply(mat);
+
+
+}
+
+void EntityBase::popViewTransform(void) {
+    gyMatPop();
+    _transform._size.z = _oldZ;
+}
+
+void EntityBase::render(void) {
+    if(_particleEmitter) _particleEmitter->render();
+
+//    auto oldPlaneType = _planeType;
+  //  if(_skeleton) _planeType = GY_RECT_PLANE_BOTTOM;
+
+    pushViewTransform();
+
+
+    static_cast<Entity*>(this)->_renderRelative();
+
+    if(_skeleton) {
+        //_planeType = oldPlaneType;
+        if(_planeType == GY_RECT_PLANE_FRONT) {
+    //        gyMatRotate(M_PI*0.5f, 1.0f, 0.0f, 1.0f);
+        }
+
+        _skeleton->render();
+    }
+    popViewTransform();
+}
+
+void EntityBase::_renderRelative(void) {
+    if(_renderable) {
+        _renderable->beginRender();
+        //if(_depthType == DEPTH_BUFFERED) transform._size.y = transform._size.z;
+        _renderable->render();
+        _renderable->endRender();
+    }
+}
+
+#if 0
+    void EntityBase::renderAtZ(const float z) {
+        if(!_renderable) return;
+        gyMatPush();
+        float oldZ = transform._posZ;
+        transform._posZ = z;
+        transform.apply();
+        transform._posZ = oldZ;
+        _renderable->beginRender();
+        _renderable->render();
+        _renderable->endRender();
+        gyMatPop();
+    }
+#endif
+
+void EntityBase::renderShadowVolume(void) {
+#if 0
+/*
+    static const float verts[17*4] = {
+        -1,  1,  1, 1.0f,
+         1,  1,  1, 1.0f,
+        -1, -1,  1, 1.0f,
+         1, -1,  1, 1.0f,
+        -1, -1, -1, 1.0f,
+        1, -1, -1, 1.0f,
+        -1,  1, -1, 1.0f,
+         1,  1, -1, 1.0f,
+         -1,  1,  1, 1.0f,
+         1,  1,  1, 1.0f,
+         1, -1,  1, 1.0f,
+         1,  1, -1, 1.0f,
+         1, -1, -1, 1.0f,
+        -1, -1, -1, 1.0f,
+        -1,  1, -1, 1.0f,
+        -1, -1,  1, 1.0f,
+        -1,  1,  1, 1.0f
+    };*/
+
+    static const float verts[17*4] = {
+        -1,  1,  2, 1.0f,
+         1,  1,  2, 1.0f,
+        -1, -1,  2, 1.0f,
+         1, -1,  2, 1.0f,
+        -1, -1, 0, 1.0f,
+        1, -1, 0, 1.0f,
+        -1,  1, 0, 1.0f,
+         1,  1, 0, 1.0f,
+         -1,  1,  2, 1.0f,
+         1,  1,  2, 1.0f,
+         1, -1,  2, 1.0f,
+         1,  1, 0, 1.0f,
+         1, -1, 0, 1.0f,
+        -1, -1, 0, 1.0f,
+        -1,  1, 0, 1.0f,
+        -1, -1,  2, 1.0f,
+        -1,  1,  2, 1.0f
+    };
+
+/*
+    static const float verts[17*4] = {
+        -1,  1,  2, 1.0f,
+         1,  1,  2, 1.0f,
+        -1, -1,  2, 1.0f,
+         1, -1,  2, 1.0f,
+        -1, -1, 0, 1.0f,
+        1, -1, 0, 1.0f,
+        -1,  1, 0, 1.0f,
+         1,  1, 0, 1.0f,
+         -1,  1,  2, 1.0f,
+         1,  1,  2, 1.0f,
+         1, -1,  2, 1.0f,
+         1,  1, 0, 1.0f,
+         1, -1, 0, 1.0f,
+        -1, -1, 0, 1.0f,
+        -1,  1, 0, 1.0f,
+        -1, -1,  2, 1.0f,
+        -1,  1,  2, 1.0f
+    };*/
+
+    static const GYColor4 colors[17] = {
+        { 255, 255, 0, 255 },
+        { 255, 0, 255, 255 },
+        { 255, 255, 255, 255 },
+        { 255, 0, 255, 255 },
+        { 255, 255, 0, 255 },
+        { 255, 0, 255, 255 },
+        { 255, 255, 255, 255 },
+        { 255, 0, 255, 255 },
+        { 255, 255, 0, 255 },
+        { 255, 0, 255, 255 },
+        { 255, 255, 255, 255 },
+        { 255, 0, 255, 255 },
+        { 255, 255, 0, 255 },
+        { 255, 0, 255, 255 },
+        { 255, 255, 255, 255 },
+        { 255, 0, 255, 255 },
+        { 255, 255, 0, 255 }
+    };
+
+    gyMatPush();
+    gyMatLoadIdentity();
+
+#if 1
+
+    GYVector3 halfSize = {
+        _transform._size.x*_transform._scale.x*0.5f,
+        _shadowDepth*0.5f,
+        _transform._size.y*_transform._scale.y*0.5f
+    };
+
+    if(_planeType == GY_RECT_PLANE_FRONT) {
+        const float shearFactor = halfSize.z/halfSize.y;
+
+        gyMatTranslate(_transform._pos.x,
+                       _transform._pos.y+shearFactor*halfSize.y, //move to bottom then move back up by half the depth
+                       _transform._pos.z);
+
+        gyMatScale(halfSize.x, halfSize.y, halfSize.z);
+        gyMatShearZ(0.0f, -shearFactor);
+        //gyMatRotateZ(transform._orientZ);
+
+    } else {
+
+        gyMatTranslate(_transform._pos.x,
+                       _transform._pos.y, //move to bottom then move back up by half the depth
+                       _transform._pos.z);
+
+        gyMatRotateZ(-_transform._orientZ);
+        gyMatScale(halfSize.x, halfSize.z, halfSize.y);
+
+    }
+
+#else
+
+
+
+    GYVector3 halfSize = {
+        transform._size.x*transform._scale.x*0.5f,
+        _shadowDepth*0.5f,
+        transform._size.y*transform._scale.y*0.5f
+    };
+
+    if(_normalType == NORMAL_FRONT) {
+
+        gyMatTranslate(transform._pos.x,
+                       transform._pos.y+halfSize.z, //move to bottom then move back up by half the depth
+                       ZCoordConstants::mapBase + (_elev)*32.0f);
+
+        gyMatScale(halfSize.x, -halfSize.y, halfSize.z*2.0f);
+        gyMatShearZ(0.0f, 1.0f);
+        //gyMatRotateZ(transform._orientZ);
+
+    } else {
+
+        gyMatTranslate(transform._pos.x,
+                       transform._pos.y, //move to bottom then move back up by half the depth
+                       ZCoordConstants::mapBase + (_elev)*32.0f + halfSize.z);
+
+        gyMatScale(halfSize.x, halfSize.z, halfSize.y);
+        gyMatRotateZ(transform._orientZ);
+
+    }
+
+
+
+
+#endif
+
+    //transform.apply();
+    gyVidColorArray(colors);
+//	gyVidTriangleStrip((GYVector4*)verts, 0, 17);
+
+    gyMatPop();
+#endif
+
+}
+
+void EntityBase::move(const GYVector2& dist) {
+    if(_character) _character->moveByForce(dist);
+    else gyVec2AddAccum((GYVector2*)&_transform._pos, &dist);
+}
+
+
+bool EntityBase::activate(void) {
+    if(_active) return true; //already active
+    if(!_area) return false; //not even in an area
+
+    containerEraseOnMatch(static_cast<Entity*>(this), _area->inactiveEntities);
+    _area->entities.push_back(static_cast<Entity*>(this));
+
+	if(_renderable && !_componentActive[Component::RENDERABLE]) {
+        _area->renderables.push_back(_renderable);
+		_componentActive[Component::RENDERABLE] = true;
+	}
+	if(_collidable && !_componentActive[Component::COLLIDABLE]) {
+        _area->collidables.push_back(_collidable);
+		_componentActive[Component::COLLIDABLE] = true;
+     //   _collidable->activate();
+	}
+	if(_rigidBody && !_componentActive[Component::RIGID_BODY]) {
+        _area->rigidBodies.push_back(_rigidBody);
+		_componentActive[Component::RIGID_BODY] = true;
+	}
+	if(_character && !_componentActive[Component::CHARACTER]) {
+        _area->characters.push_back(_character);
+		_componentActive[Component::CHARACTER] = true;
+	}
+	if(_warp && !_componentActive[Component::WARP]) {
+        _area->warps.push_back(_warp);
+		_componentActive[Component::WARP] = true;
+	}
+	if(_examinable && !_componentActive[Component::EXAMINABLE]) {
+        _area->examinables.push_back(_examinable);
+		_componentActive[Component::EXAMINABLE] = true;
+	}
+	if(_audioSource && !_componentActive[Component::AUDIO_SOURCE]) {
+        _area->audioSources.push_back(_audioSource);
+		_componentActive[Component::AUDIO_SOURCE] = true;
+	}
+	if(_lightSource && !_componentActive[Component::LIGHT_SOURCE]) {
+        _area->lightSources.push_back(_lightSource);
+		_componentActive[Component::LIGHT_SOURCE] = true;
+	}
+	if(_particleEmitter && !_componentActive[Component::PARTICLE_EMITTER]) {
+        _area->particleEmitters.push_back(_particleEmitter);
+		_componentActive[Component::PARTICLE_EMITTER] = true;
+	}
+	if(_combat && !_componentActive[Component::COMBAT]) {
+        _area->combats.push_back(_combat);
+		_componentActive[Component::COMBAT] = true;
+	}
+    if(_skeleton && !_componentActive[Component::SKELETON]) {
+        _area->skeletons.push_back(_skeleton);
+        _componentActive[Component::SKELETON] = true;
+    }
+
+    for(auto it : _behaviors) {
+        if(!it->isActive()) {
+            _area->behaviors.push_back(it);
+            it->setActive(true);
+		}
+	}
+
+    _active = true;
+    return true;
+}
+
+bool EntityBase::deactivate(void) {
+    if(!_active) return true; //already inactive
+    if(!_area) return false; //not even in an area
+
+    containerEraseOnMatch(static_cast<Entity*>(this), _area->entities);
+    _area->inactiveEntities.push_back(static_cast<Entity*>(this));
+	
+	if(_renderable && _componentActive[Component::RENDERABLE]) {
+        containerEraseOnMatch(_renderable, _area->renderables);
+		_componentActive[Component::RENDERABLE] = false;
+	}
+	if(_collidable && _componentActive[Component::COLLIDABLE]) {
+       // _collidable->deactivate();
+        containerEraseOnMatch(_collidable, _area->collidables);
+		_componentActive[Component::COLLIDABLE] = false;
+	}
+	if(_rigidBody && _componentActive[Component::RIGID_BODY]) {
+        containerEraseOnMatch(_rigidBody, _area->rigidBodies);
+		_componentActive[Component::RIGID_BODY] = false;
+	}
+	if(_character && _componentActive[Component::CHARACTER]) {
+        containerEraseOnMatch(_character, _area->characters);
+		_componentActive[Component::CHARACTER] = false;
+	}
+	if(_warp && _componentActive[Component::WARP]) {
+        containerEraseOnMatch(_warp, _area->warps);
+		_componentActive[Component::WARP] = false;
+	}
+	if(_examinable && _componentActive[Component::EXAMINABLE]) {
+        containerEraseOnMatch(_examinable, _area->examinables);
+		_componentActive[Component::EXAMINABLE] = false;
+	}
+	if(_audioSource && _componentActive[Component::AUDIO_SOURCE]) {
+        containerEraseOnMatch(_audioSource, _area->audioSources);
+		_componentActive[Component::AUDIO_SOURCE] = false;
+	}
+	if(_lightSource && _componentActive[Component::LIGHT_SOURCE]) {
+        containerEraseOnMatch(_lightSource, _area->lightSources);
+		_componentActive[Component::LIGHT_SOURCE] = false;
+	}
+	if(_particleEmitter && _componentActive[Component::PARTICLE_EMITTER]) {
+        containerEraseOnMatch(_particleEmitter, _area->particleEmitters);
+		_componentActive[Component::PARTICLE_EMITTER] = false;
+	}
+	if(_combat && _componentActive[Component::COMBAT]) {
+        containerEraseOnMatch(_combat, _area->combats);
+		_componentActive[Component::COMBAT] = false;
+	}
+    if(_skeleton && _componentActive[Component::SKELETON]) {
+        containerEraseOnMatch(_skeleton, _area->skeletons);
+        _componentActive[Component::SKELETON] = false;
+    }
+
+    for(auto it : _behaviors) {
+        if(it->isActive()) {
+            containerEraseOnMatch(it, _area->behaviors);
+            it->setActive(false);
+		}
+	}
+	
+	_active = false;
+    return true;
+}
+
+//=====BEHAVIORS======
+
+///===========THIS SHIT ALL BEGS TO BE TEMPLATIZED!? GOD, NO! -- YES============
+
+Behavior* EntityBase::addBehavior(Behavior* behavior) {
+    return attachBehavior(behavior);
+}
+
+LuaBehavior* EntityBase::addLuaBehavior(const char *name, const OOLUA::Lua_table_ref paramTable) {
+    return static_cast<LuaBehavior*>(attachBehavior(new LuaBehavior(*static_cast<Entity*>(this), name, paramTable)));
+}
+
+Behavior *EntityBase::attachBehavior(Behavior *behav) {
+    //Check for duplicate behaviors.
+#if 0
+    std::map<const char *, Behavior*, ltstr>::iterator it = _behavior.find(behav->getBehavName());
+    if(it != _behavior.end()) {
+        dbgprintf(LOG_LOG_WARNING, "Entity::AddBehavior(%s) - Already attached!", behav->getBehavName());
+        delete behav;
+        return null;
+    }
+#endif
+
+	//Check for prereqs
+    if(!behav->getBehavName()) {
+        Debug::printf(Debug::LOG_WARNING, "Could not attach behavior!");
+		delete behav;
+        return nullptr;
+	}
+	
+    //Attach using its own typeName as a key (so that it never leaves scope), fixing the reest mentioned above.
+    _behaviors.push_back(behav);
+	
+	//add to level
+    if(_active) {
+        _area->behaviors.push_back(behav);
+		behav->setActive();
+	}
+	
+	return behav;
+}
+
+LuaBehavior* EntityBase::getLuaBehavior(const char*script) const {
+    return static_cast<LuaBehavior*>(getBehavior(script));
+}
+
+void EntityBase::setBehaviorByIndex(const unsigned index, LuaVariant valueTable) {
+    if(index == _behaviors.size()) { //allocate new entity
+        //Entity* entity = Entity::create(valueTable);
+        LuaBehavior* behav = new LuaBehavior(*static_cast<Entity*>(this));
+        behav->fromTable(std::move(valueTable));
+        behav->loadScript();
+        //if(behav->loadScript()) { //sitl allow it to be attached if it's invalid, so it can be dereested.
+        attachBehavior(behav);
+        //}
+
+    } else if(index < _behaviors.size()) {                        //initialize existing entity
+        assert(false);
+        //inactiveEntities[index]->fromTable(valueTable);
+    }
+}
+
+void EntityBase::removeLuaBehavior(const char *script) {
+    removeBehavior(script);
+}
+
+Behavior* EntityBase::getBehavior(const char *behaviorName) const {
+
+    for(auto it : _behaviors) {
+        if(strcmp(behaviorName, it->getBehavName()) == 0) {
+            return it;
+        }
+    }
+
+    return nullptr;
+}
+
+void EntityBase::removeBehavior(const char* behaviorName) {
+    auto it = _behaviors.begin();
+
+    for(; it != _behaviors.end(); ++it) {
+        if(strcmp(behaviorName, (*it)->getBehavName()) == 0) {
+            break;
+        }
+    }
+
+    if(it == _behaviors.end()) {
+        Debug::printf(Debug::LOG_WARNING, "Behavior::RemoveBehavior(%s) - Not attached!", behaviorName);
+		return;
+	}
+	
+	//remove component from area if not null
+	if(_active) {
+        containerEraseOnMatch(*it, _area->behaviors);
+        (*it)->setActive(false);
+	}
+    delete (*it);
+    _behaviors.erase(it);
+}
+    
+
+template<typename T>
+T* EntityBase::_addComponent(T*& comp, std::vector<T*>* activeList, T* prefab) {
+    if(comp) return comp;
+    //if(!T::canAddTo(*static_cast<Entity*>(this))) return nullptr;
+
+    comp = new T(*static_cast<Entity*>(this), prefab);
+
+    if(_active) {
+        activeList->push_back(comp);
+        _componentActive[T::componentType] = true;
+    }
+    return comp;
+}
+
+
+
+Renderable* EntityBase::addRenderable(void) {
+    return _addComponent<Renderable>(_renderable, _active? &_area->renderables : nullptr);
+}
+
+Collidable *EntityBase::addCollidable(void) {
+    return _addComponent<Collidable>(_collidable, _active? &_area->collidables : nullptr);
+}
+
+RigidBody *EntityBase::addRigidBody(void) {
+    return _addComponent<RigidBody>(_rigidBody, _active? &_area->rigidBodies : nullptr);
+}
+
+Character *EntityBase::addCharacter(void) {
+    return _addComponent<Character>(_character, _active? &_area->characters : nullptr);
+}
+
+Warp *EntityBase::addWarp(void) {
+    return _addComponent<Warp>(_warp, _active? &_area->warps : nullptr);
+}
+
+Examinable *EntityBase::addExaminable(void) {
+    return _addComponent<Examinable>(_examinable, _active? &_area->examinables : nullptr);
+}
+
+AudioSource *EntityBase::addAudioSource(void) {
+    return _addComponent<AudioSource>(_audioSource, _active? &_area->audioSources : nullptr);
+}
+
+LightSource *EntityBase::addLightSource(void) {
+    return _addComponent<LightSource>(_lightSource, _active? &_area->lightSources : nullptr);
+}
+
+ParticleEmitter *EntityBase::addParticleEmitter(void) {
+    return _addComponent<ParticleEmitter>(_particleEmitter, _active? &_area->particleEmitters : nullptr);
+}
+
+Combat *EntityBase::addCombat(void) {
+    return _addComponent<Combat>(_combat, _active? &_area->combats : nullptr);
+}
+
+Skeleton* EntityBase::addSkeleton(void) {
+    return _addComponent<Skeleton>(_skeleton, _active? &_area->skeletons : nullptr);
+}
+
+template<typename T>
+void EntityBase::_removeComponent(T*& comp, std::vector<T*>* container) {
+    if(comp && _active) {
+        containerEraseOnMatch(comp, *container);
+        _componentActive[T::componentType] = false;
+    }
+    delete comp;
+    comp = nullptr;
+}
+
+
+void EntityBase::removeRenderable(void) {
+    _removeComponent<Renderable>(_renderable, _active? &_area->renderables : nullptr);
+}
+
+void EntityBase::removeCollidable(void) {
+    _removeComponent<Collidable>(_collidable, _active? &_area->collidables : nullptr);
+}
+
+void EntityBase::removeRigidBody(void) {
+    _removeComponent<RigidBody>(_rigidBody, _active? &_area->rigidBodies : nullptr);
+}
+
+void EntityBase::removeCharacter(void) {
+    _removeComponent<Character>(_character, _active? &_area->characters : nullptr);
+}
+
+void EntityBase::removeWarp(void) {
+    _removeComponent<Warp>(_warp, _active? &_area->warps : nullptr);
+}
+
+void EntityBase::removeExaminable(void) {
+    _removeComponent<Examinable>(_examinable, _active? &_area->examinables : nullptr);
+}
+
+void EntityBase::removeAudioSource(void) {
+    _removeComponent<AudioSource>(_audioSource, _active? &_area->audioSources : nullptr);
+}
+
+void EntityBase::removeLightSource(void) {
+    _removeComponent<LightSource>(_lightSource, _active? &_area->lightSources : nullptr);
+}
+
+void EntityBase::removeParticleEmitter(void) {
+    _removeComponent<ParticleEmitter>(_particleEmitter, _active? &_area->particleEmitters : nullptr);
+}
+
+void EntityBase::removeCombat(void) {
+    _removeComponent<Combat>(_combat, _active? &_area->combats : nullptr);
+}
+
+void EntityBase::removeSkeleton(void) {
+    _removeComponent<Skeleton>(_skeleton, _active? &_area->skeletons : nullptr);
+}
+
+template<typename T>
+void EntityBase::_setComponent(T*& comp, LuaVariant valTable, std::vector<T*>* container) {
+    if(!comp) {
+        comp = _addComponent<T>(comp, container);
+    }
+    comp->fromTable(std::move(valTable));
+}
+
+void EntityBase::setRenderable(LuaVariant valTable) {
+    _setComponent<Renderable>(_renderable, std::move(valTable), _active? &_area->renderables : nullptr);
+}
+
+void EntityBase::setCollidable(LuaVariant valTable) {
+    _setComponent<Collidable>(_collidable, std::move(valTable), _active? &_area->collidables : nullptr);
+}
+
+void EntityBase::setRigidBody(LuaVariant valTable) {
+    _setComponent<RigidBody>(_rigidBody, std::move(valTable), _active? &_area->rigidBodies : nullptr);
+}
+
+void EntityBase::setCharacter(LuaVariant valTable) {
+    _setComponent<Character>(_character, std::move(valTable), _active? &_area->characters : nullptr);
+}
+
+void EntityBase::setWarp(LuaVariant valTable) {
+    _setComponent<Warp>(_warp, std::move(valTable), _active? &_area->warps : nullptr);
+}
+
+void EntityBase::setExaminable(LuaVariant valTable) {
+    _setComponent<Examinable>(_examinable, std::move(valTable), _active? &_area->examinables : nullptr);
+}
+
+void EntityBase::setLightSource(LuaVariant valTable) {
+    _setComponent<LightSource>(_lightSource, std::move(valTable), _active? &_area->lightSources : nullptr);
+}
+
+void EntityBase::setAudioSource(LuaVariant valTable) {
+    _setComponent<AudioSource>(_audioSource, std::move(valTable), _active? &_area->audioSources : nullptr);
+}
+
+void EntityBase::setParticleEmitter(LuaVariant valTable) {
+    _setComponent<ParticleEmitter>(_particleEmitter, std::move(valTable), _active? &_area->particleEmitters : nullptr);
+}
+
+void EntityBase::setCombat(LuaVariant valTable) {
+    _setComponent<Combat>(_combat, std::move(valTable), _active? &_area->combats : nullptr);
+}
+
+void EntityBase::setSkeleton(LuaVariant valTable) {
+    _setComponent<Skeleton>(_skeleton, std::move(valTable), _active? &_area->skeletons : nullptr);
+}
+
+Behavior* EntityBase::getBehaviorByIndex(const unsigned index) const {
+    if(index >= _behaviors.size()) return nullptr;
+    return _behaviors[index];
+}
+
+}
