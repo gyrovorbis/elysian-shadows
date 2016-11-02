@@ -198,6 +198,10 @@ void gyAudListenerSetPos(const struct GYVector3* const pos) {
 #endif
 }
 
+void gyAudListenerSetGain(const float gain) {
+    alListenerf(AL_GAIN, gain);
+}
+
 
 GYAudBuffer* gyAudBufferCreate(void) {
     ALuint id;
