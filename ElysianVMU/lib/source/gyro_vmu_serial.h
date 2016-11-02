@@ -19,18 +19,18 @@ typedef enum VMU_SERIAL_CONNECTION_TYPE {
     VMU_SERIAL_CONNECTION_DC
 } VMU_SERIAL_CONNECTION_TYPE;
 
-typedef enum VMU_SERIAL_PORT_REMOTE_STATE {
-    VMU_SERIAL_PORT_REMOTE_INACTIVE,
-    VMU_SERIAL_PORT_REMOTE_READY,
-    VMU_SERIAL_PORT_REMOTE_WAITING
-} VMU_SERIAL_PORT_REMOTE_STATE;
+typedef enum VMU_SERIAL_PORT_STATE {
+    VMU_SERIAL_PORT_INACTIVE,
+    VMU_SERIAL_PORT_READY,
+    VMU_SERIAL_PORT_WAITING
+} VMU_SERIAL_PORT_STATE;
 
 typedef struct VMUSerialPort {
-    GYTcpServer*                    _tcpServer;
-    GYTcpSocket*                    _tcpSocket;
-    VMU_SERIAL_PORT_REMOTE_STATE    _sio0State;
-    VMU_SERIAL_PORT_REMOTE_STATE    _sio1State;
-    int                             _useMostRecentClient;
+    GYTcpServer*             _tcpServer;
+    GYTcpSocket*             _tcpSocket;
+    VMU_SERIAL_PORT_STATE    _txState;
+    VMU_SERIAL_PORT_STATE    _rxState;
+    int                      _useMostRecentClient;
 } VMUSerialPort;
 
 void gyVmuSerialUpdate(struct VMUDevice* dev);
@@ -41,7 +41,7 @@ void gyVmuSerialTcpServerUseMostRecentClientSet(struct VMUDevice* dev, int val);
 
 int gyVmuSerialTcpOpen(struct VMUDevice* dev, const char* host, unsigned port);
 int gyVmuSerialTcpClose(struct VMUDevice* dev);
-int gyVmuSerialTcpSend(struct VMUDevice* dev, unsigned char byte);
+int gyVmuSerialTcpSend(struct VMUDevice* dev, const unsigned char* byte, int size);
 
 void gyVmuSerialTcpSconUpdate(struct VMUDevice* dev, int sfr, unsigned char val);
 
