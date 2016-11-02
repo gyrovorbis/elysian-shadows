@@ -61,7 +61,33 @@ int gyVmuMemRead(VMUDevice* dev, int addr) {
         return val;
     }
     }
+}
 
+void _sconBitUpdate(uint8_t oldVal, uint8_t newVal, uint8_t bit, const char* name) {
+    if((oldVal&(0x1<<bit)) != (newVal&(0x1<<bit))) {
+        int val = (newVal&(0x1<<bit));
+        val = val? 1 : 0;
+        _gyLog(GY_DEBUG_VERBOSE, "%s - %d", name, val);
+
+    }
+
+}
+
+void _sconPrintUpdate(int port, uint8_t oldVal, uint8_t newVal) {
+
+    _gyLog(GY_DEBUG_VERBOSE, "SCON%d UPDATE", port);
+    _gyPush();
+
+    _sconBitUpdate(oldVal, newVal, 0, "IE");
+    _sconBitUpdate(oldVal, newVal, 1, "XFER END");
+    _sconBitUpdate(oldVal, newVal, 2, "LSB/MSB");
+    _sconBitUpdate(oldVal, newVal, 3, "XFER CONTROL");
+    _sconBitUpdate(oldVal, newVal, 4, "8-bit/Continuous");
+    _sconBitUpdate(oldVal, newVal, 5, "UNUSED");
+    _sconBitUpdate(oldVal, newVal, 6, "Overrun Flag");
+    _sconBitUpdate(oldVal, newVal, 7, "Polarity Control");
+
+    _gyPop(1);
 
 }
 
@@ -168,17 +194,12 @@ void gyVmuMemWrite(VMUDevice* dev, int addr, int val) {
             dev->timer1._base.th = val;
         break;
     case SFR_ADDR_SCON0:
+        _sconPrintUpdate(0, dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)], val);
         dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)] = val;
-        if(val & SFR_SCON0_CTRL_MASK) { //transfer started
-            if((dev->sfr[SFR_OFFSET(SFR_ADDR_P1DDR)]&(SFR_P1DDR_P10DDR_MASK|SFR_P1DDR_P13DDR_MASK)) && //P1.SO0 and P1.SCK0 set as OUT pins
-               (dev->sfr[SFR_OFFSET(SFR_ADDR_P1FCR)]&(SFR_P1FCR_P10FCR_MASK|SFR_P1FCR_P13FCR_MASK))) //SO0 and SCK0 sourced from serial interface
-            {
-                gyVmuSerialTcpSend(dev, dev->sfr[SFR_OFFSET(SFR_ADDR_SBUF0)]);
-            }
-        }
         return;
         //return; Let SBUF0 be written with the byte?
     case SFR_ADDR_SCON1:
+        _sconPrintUpdate(1, dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)], val);
         break;
 
     case SFR_ADDR_VCCR:

@@ -100,7 +100,7 @@ extern "C" {
 #define SFR_SCON0_POL_MASK          0x80
 #define SFR_SCON0_OV_POS            6       //Overrun flag - 1: true, 0: false
 #define SFR_SCON0_OV_MASK           0x40
-#define SFR_SCON0_LEN_POS           4       //Transfer bit length - 1: 8-bit xfer, 1: continuous xfer
+#define SFR_SCON0_LEN_POS           4       //Transfer bit length - 0: 8-bit xfer, 1: continuous xfer
 #define SFR_SCON0_LEN_MASK          0x10
 #define SFR_SCON0_CTRL_POS          3       //Transfer control - 1: start, 0: stop
 #define SFR_SCON0_CTRL_MASK         0x8
@@ -114,7 +114,7 @@ extern "C" {
 //#define SFR_SCON1          0x134   //SI01 Control register
 #define SFR_SCON1_OV_POS            6       //Overrun flag - 1: true, 0: false
 #define SFR_SCON1_OV_MASK           0x40
-#define SFR_SCON1_LEN_POS           4       //Transfer bit length - 1: 8-bit xfer, 0: continuous xfer
+#define SFR_SCON1_LEN_POS           4       //Transfer bit length - 0: 8-bit xfer, 1: continuous xfer
 #define SFR_SCON1_LEN_MASK          0x10
 #define SFR_SCON1_CTRL_POS          3       //Transfer control - 1: start, 0: stop
 #define SFR_SCON1_CTRL_MASK         0x8

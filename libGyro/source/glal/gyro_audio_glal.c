@@ -55,7 +55,7 @@ int gyAudInit(void) {
 
 int gyAudUninit(void) {
 #if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
-    _gyLog(GY_DEBUG_VERBOSE, "Uninitializing OpenAL!");
+    _gyLog(GY_DEBUG_VERBOSE, "GYRO_AUDIO_API: Uninitializing OpenAL!");
     alcMakeContextCurrent(NULL);
     alcDestroyContext(_alContext);
     alcCloseDevice(_alDevice);
