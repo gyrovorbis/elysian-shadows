@@ -39,6 +39,7 @@ int gyAudUninit(void);
 
 //audio listener
 void gyAudListenerSetPos(const struct GYVector3* const pos);
+void gyAudListenerSetGain(const float gain);
 void gyAudSetReferenceDistance(const int dist);
 void gyAudSetZScale(const float scale);
 
