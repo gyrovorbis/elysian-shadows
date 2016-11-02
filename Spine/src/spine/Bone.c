@@ -30,6 +30,7 @@
 
 #include <spine/Bone.h>
 #include <spine/extension.h>
+#include <gyro_matrix_api.h>
 
 static int yDown;
 
@@ -111,6 +112,19 @@ void spBone_updateWorldTransform (spBone* self) {
     CONST_CAST(float, self->m32) = 0.0f;
     CONST_CAST(float, self->m33) = 1.0f;
 
+
+#if 0
+    gyMatPush();
+    gyMatLoadIdentity();
+    gyMatRotate(0.5f*M_PI, 1.0f, 0.0f, 0.0f);
+    GYMatrix4 transpose = {
+        { self->m00, self->m10, self->m20, self->m30 },
+        { self->m01, self->m11, self->m21, self->m31 },
+        { self->m02, self->m12, self->m22, self->m32 },
+        { self->worldX, self->worldY, self->m23, self->m33}
+    };
+    gyMatApply(transpose);
+#endif
 }
 
 void spBone_setToSetupPose (spBone* self) {

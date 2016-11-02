@@ -74,7 +74,9 @@ void ESToolkit::on_actionFileSaveCurrentArea_triggered() {
 }
 
 void ESToolkit::on_actionAreaAddEntity_triggered() {
-    _assets.setCurrentSelection(new EntitySelectable(_assets.getCurrentArea()->newEntity()));
+    Entity* entity = _assets.getCurrentArea()->newEntity();
+    entity->setSaveFlag(true); //set to true by default!!!
+    _assets.setCurrentSelection(new EntitySelectable(entity));
 }
 
 void ESToolkit::on_actionDebugViewLog_triggered()

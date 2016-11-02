@@ -7,17 +7,6 @@
 
 namespace elysian {
 
-    void AudioSystem::setEnabled(const bool val) {
-        if(val) {
-            for(unsigned i = 0; i <= AudioChannel::DYN_16; ++i) {
-                gyAudSourceSetf(_channels[i].src, GY_SOURCE_GAIN, 1.0f);
-            }
-        } else {
-            for(unsigned i = 0; i <= AudioChannel::DYN_16; ++i) {
-                gyAudSourceSetf(_channels[i].src, GY_SOURCE_GAIN, 0.0f);
-            }
-        }
-    }
 
 	AudioSystem::AudioSystem(void) {
 		AudioSource::setAudioSys(this);
@@ -57,6 +46,14 @@ namespace elysian {
 
 		//Deallocate BGM tracks
 	}
+
+    void AudioSystem::setEnabled(const bool val) {
+        gyAudListenerSetGain(val? 1.0f : 0.0f);
+    }
+
+    void AudioSystem::setListenerGain(const float gain) {
+        gyAudListenerSetGain(gain);
+    }
 
 	void AudioSystem::update(void) {
 		auto* player = getPartySys()->getPartyLeader();
