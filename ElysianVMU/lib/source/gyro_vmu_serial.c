@@ -29,7 +29,8 @@ static void _setSerialConnectionPins(VMUDevice* dev, VMU_SERIAL_CONNECTION_TYPE 
         _gyLog(GY_DEBUG_VERBOSE, "Configuring VMU external serial pins for VMU to VMU connection.");
         dev->sfr[SFR_OFFSET(SFR_ADDR_P7)] &= ~(SFR_P7_P70_MASK|SFR_P7_P72_MASK); //Clear DC/PC pins
         dev->sfr[SFR_OFFSET(SFR_ADDR_P7)] |= SFR_P7_P73_MASK;   //Set VMU pin
-        dev->serialPort._sio1State = VMU_SERIAL_PORT_REMOTE_INACTIVE; //reset remote RX port state
+        dev->serialPort._txState = VMU_SERIAL_PORT_INACTIVE; //reset remote RX port state
+        dev->serialPort._rxState = VMU_SERIAL_PORT_INACTIVE;
         break;
 
     case VMU_SERIAL_CONNECTION_DC:
@@ -87,7 +88,45 @@ static int _updateTcpServer(VMUDevice* dev) {
     return newConnection;
 }
 
-static void _updateTcpSocket(VMUDevice* dev) {
+static void _updateTcpSocketSend(VMUDevice* dev) {
+
+    //Send SBUF0 to remote if it's ready and SCON0.CTRL is set.
+    if(dev->serialPort._txState == VMU_SERIAL_PORT_READY //remote SCON1 is ready to recieve
+            && (dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)] & SFR_SCON0_CTRL_MASK)) //local SCON0 is ready to send
+    {   //check pin directions
+        if((dev->sfr[SFR_OFFSET(SFR_ADDR_P1DDR)]&(SFR_P1DDR_P10DDR_MASK|SFR_P1DDR_P13DDR_MASK)) && //P1.SO0 and P1.SCK0 set as OUT pins
+           (dev->sfr[SFR_OFFSET(SFR_ADDR_P1FCR)]&(SFR_P1FCR_P10FCR_MASK|SFR_P1FCR_P13FCR_MASK))) //SO0 and SCK0 sourced from serial interface
+        {
+            //send SBUF0 to remote
+            unsigned char sbuf0[2] = {
+                TCP_MSG_SIO0_BUFFER,
+                dev->sfr[SFR_OFFSET(SFR_ADDR_SBUF0)]
+            };
+            //update txStat if send is successful
+            if(gyVmuSerialTcpSend(dev, sbuf0, 2)) {
+                _gyLog(GY_DEBUG_VERBOSE, "SENT BYTE - %x", dev->sfr[SFR_OFFSET(SFR_ADDR_SBUF0)]);
+                dev->serialPort._txState = VMU_SERIAL_PORT_WAITING;
+            }
+
+            if(dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)] & SFR_SCON0_OV_MASK) {
+
+            }
+        }
+    }
+
+    //Tell remote that we're ready to receive and change our state to ready.
+    if(dev->serialPort._rxState == VMU_SERIAL_PORT_INACTIVE &&
+        (dev->sfr[SFR_OFFSET(SFR_ADDR_SCON1)] & SFR_SCON1_CTRL_MASK))
+    {
+        unsigned char ready = TCP_MSG_SIO1_READY;
+        if(gyVmuSerialTcpSend(dev, &ready, 1)) {
+            dev->serialPort._rxState = VMU_SERIAL_PORT_READY;
+        }
+    }
+
+}
+
+static void _updateTcpSocketRecv(VMUDevice* dev) {
     unsigned char packetBuff[VMU_SERIAL_TCP_PACKET_SIZE_MAX];
     int recvBytes;
 
@@ -119,50 +158,62 @@ static void _updateTcpSocket(VMUDevice* dev) {
                //    !(dev->sfr[SFR_OFFSET(SFR_ADDR_P1FCR)]&(SFR_P1FCR_P13FCR_MASK)))     //P13/SO1 as general input
                // {
                     //Check if receiving on SBUF1
-                    if(dev->sfr[SFR_OFFSET(SFR_ADDR_SCON1)] & SFR_SCON1_CTRL_MASK) {
+                    if(dev->serialPort._rxState == VMU_SERIAL_PORT_READY &&
+                            (dev->sfr[SFR_OFFSET(SFR_ADDR_SCON1)] & SFR_SCON1_CTRL_MASK))
+                    {
                         _gyLog(GY_DEBUG_VERBOSE, "RECEIVED BYTE - %x", packetBuff[1]);
+                        _gyPush();
                         //receive data
                         dev->sfr[SFR_OFFSET(SFR_ADDR_SBUF1)] = packetBuff[1];
 
                         if(dev->sfr[SFR_OFFSET(SFR_ADDR_SCON1)] & SFR_SCON1_LEN_MASK) {
-                            dev->sfr[SFR_OFFSET(SFR_ADDR_SCON1)] |= SFR_SCON1_OV_MASK;
-                            _gyLog(GY_DEBUG_VERBOSE, "CONTINUOUS RECEIVE SET");
-                        } else _gyLog(GY_DEBUG_VERBOSE, "CONTINUOUS RECEIVE NOT SET");
+                           // dev->sfr[SFR_OFFSET(SFR_ADDR_SCON1)] |= SFR_SCON1_OV_MASK;
+                            _gyLog(GY_DEBUG_VERBOSE, "CONTINUOUS RECEIVE SET - setting SCON1_OV_MASK overflow mask");
+                        } else {
 
+                            _gyLog(GY_DEBUG_VERBOSE, "CONTINUOUS RECEIVE NOT SET - not setting SCON1_OV_MASK");
+
+                        }
+
+                         dev->sfr[SFR_OFFSET(SFR_ADDR_SCON1)] &= ~SFR_SCON1_CTRL_MASK;
                         //signal transfer complete
                         dev->sfr[SFR_OFFSET(SFR_ADDR_SCON1)] |= SFR_SCON1_END_MASK;
-                        dev->sfr[SFR_OFFSET(SFR_ADDR_SCON1)] &= ~SFR_SCON1_CTRL_MASK;
+
                         //Raise interrupt after byte has been received, if IE bit is set
                         if(dev->sfr[SFR_OFFSET(SFR_ADDR_SCON1)] & SFR_SCON1_IE_MASK) {
                             _gyLog(GY_DEBUG_VERBOSE, "RAISING SCON1 INTERRUPT!");
                             dev->intReq |= 1 << VMU_INT_SI01;
                         }
 
-                        //Send ACK back to TX
-                        char ack = TCP_MSG_SIO1_ACK;
-                        gyNetTcpSocketSend(dev->serialPort._tcpSocket, &ack, 1);
-                    } else {
-                        _gyLog(GY_DEBUG_ERROR, "Remote device sent a byte while local VMU's SBUF1 was not ready to receive.");
-                    }
-               // } else {
-               //     _gyLog(GY_DEBUG_ERROR, "Remote device sent a byte while local VMU's SBUF1 was not configured to receive.");
+                        _gyPop(1);
 
-                //}
+                        //Send ACK back to TX
+                        unsigned char ack = TCP_MSG_SIO1_ACK;
+                        if(gyVmuSerialTcpSend(dev, &ack, 1)) {
+                           // if(dev->sfr[SFR_OFFSET(SFR_ADDR_SCON1)] & SFR_SCON1_LEN_MASK) {
+                                dev->serialPort._rxState = VMU_SERIAL_PORT_INACTIVE;
+                           // }
+
+                        }
+                    } else {
+                        _gyLog(GY_DEBUG_ERROR, "Remote device sent a byte [%x] while local VMU's was not ready to receive!", packetBuff[1]);
+                    }
                 break;
             case TCP_MSG_SIO1_BUFFER: //Normally SBUF1 should not be a sending buffer, but check config to support it
 
                 break;
             case TCP_MSG_SIO1_ACK:
-#if 0
-                if(dev->serialPort._awaitingAck) {
+
+                if(dev->serialPort._txState == VMU_SERIAL_PORT_WAITING) {
                     _gyLog(GY_DEBUG_VERBOSE, "ACK RECEIVED!");
 
                     if(dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)] & SFR_SCON0_LEN_MASK) {
-                        dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)] |= SFR_SCON0_OV_MASK;
+                     //   dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)] |= SFR_SCON0_OV_MASK;
                         _gyLog(GY_DEBUG_VERBOSE, "CONTINUOUS SEND SET");
-                    } else _gyLog(GY_DEBUG_VERBOSE, "CONTINUOUS SEND NOT SET");
-
-                    //signal transfer done
+                    } else {
+                        _gyLog(GY_DEBUG_VERBOSE, "CONTINUOUS SEND NOT SET");
+                        //signal transfer done
+                    }
                     dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)] &= ~SFR_SCON0_CTRL_MASK;
                     dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)] |= SFR_SCON0_END_MASK;
                     //Raise interrupt if interrupt bit is set
@@ -170,13 +221,16 @@ static void _updateTcpSocket(VMUDevice* dev) {
                         dev->intReq |= 1 << VMU_INT_SIO0;
                         _gyLog(GY_DEBUG_VERBOSE, "RAISING SCON0 INTERRUPT!");
                     }
-
-   //                 dev->serialPort._awaitingAck = 0;
+                     dev->serialPort._txState = VMU_SERIAL_PORT_INACTIVE;
 
                 } else {
-                    _gyLog(GY_DEBUG_WARNING, "RECEIVED AN UNEXPECTED ACK!");
+                    _gyLog(GY_DEBUG_ERROR, "RECEIVED AN UNEXPECTED ACK!");
                 }
-#endif
+
+                break;
+
+            case TCP_MSG_SIO1_READY:
+                dev->serialPort._txState = VMU_SERIAL_PORT_READY;
                 break;
             default:
                 _gyLog(GY_DEBUG_ERROR, "Received unknown VMU TCP message type [%d].", packetBuff[0]);
@@ -203,8 +257,8 @@ void _gyVmuSerialUpdateTcp(VMUDevice* dev) {
 
         //Update TCP Socket (only if it existed when we polled the sockets)
         if(!newConnection && dev->serialPort._tcpSocket) {
-
-            _updateTcpSocket(dev);
+            _updateTcpSocketSend(dev);
+            _updateTcpSocketRecv(dev);
         }
 
     }
@@ -288,40 +342,16 @@ void gyVmuSerialTcpServerUseMostRecentClientSet(struct VMUDevice* dev, int val) 
     dev->serialPort._useMostRecentClient = val;
 }
 
-int gyVmuSerialTcpSend(struct VMUDevice* dev, unsigned char byte) {
+int gyVmuSerialTcpSend(struct VMUDevice* dev, const unsigned char* bytes, int size) {
+    int bytesSent = 0;
     int success = 0;
 
     if(dev->serialPort._tcpSocket) {
-        unsigned char bytes[2] = {
-            TCP_MSG_SIO0_BUFFER,
-            byte
-        };
-
-        if(gyNetTcpSocketSend(dev->serialPort._tcpSocket, bytes, 2) == 2) {
-
-            _gyLog(GY_DEBUG_VERBOSE, "SENDING BYTE - %x", bytes[1]);
-
-#if 1
-            if(dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)] & SFR_SCON0_LEN_MASK) {
-                dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)] |= SFR_SCON0_OV_MASK;
-                _gyLog(GY_DEBUG_VERBOSE, "CONTINUOUS SEND SET");
-            } else _gyLog(GY_DEBUG_VERBOSE, "CONTINUOUS SEND NOT SET");
-
-            //signal transfer done
-            dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)] &= ~SFR_SCON0_CTRL_MASK;
-            dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)] |= SFR_SCON0_END_MASK;
-            //Raise interrupt if interrupt bit is set
-            if(dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)] & SFR_SCON0_IE_MASK) {
-                dev->intReq |= 1 << VMU_INT_SIO0;
-                _gyLog(GY_DEBUG_VERBOSE, "RAISING SCON0 INTERRUPT!");
-            }
-#endif
-  //          dev->serialPort._awaitingAck = 1;
-            success = 1;
-
-        } else {
-            _gyLog(GY_DEBUG_ERROR, "Could not send packet from SIO0 over TCP!");
-        }
+        if((bytesSent = gyNetTcpSocketSend(dev->serialPort._tcpSocket, bytes, size)) != size) {
+            _gyLog(GY_DEBUG_ERROR, "Could not send packet over TCP! [Bytes Sent: %d]", bytesSent);
+        } else success = 1;
+    } else {
+        _gyLog(GY_DEBUG_ERROR, "No open TCP socket! Cannot send packet!");
     }
 
     return success;

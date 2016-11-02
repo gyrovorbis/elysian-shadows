@@ -105,16 +105,20 @@ void spRegionAttachment_updateOffset (spRegionAttachment* self) {
 void spRegionAttachment_computeWorldVertices (spRegionAttachment* self, spBone* bone, float* vertices) {
     const float* offset = self->offset;
 
-#if 1
+#if 0
     float x = bone->skeleton->x + bone->worldX, y = bone->skeleton->y + bone->worldY;
     vertices[SP_VERTEX_X1] = offset[SP_VERTEX_X1] * bone->m00 + offset[SP_VERTEX_Y1] * bone->m01 + x;
-	vertices[SP_VERTEX_Y1] = offset[SP_VERTEX_X1] * bone->m10 + offset[SP_VERTEX_Y1] * bone->m11 + y;
-   // vertices[SP_VERTEX_Z1] = -(offset[SP_VERTEX_X1] * bone->m10 + offset[SP_VERTEX_Y1] * bone->m11 +bone->skeleton->y);
+    vertices[SP_VERTEX_Y1] = offset[SP_VERTEX_X1] * bone->m10 + offset[SP_VERTEX_Y1] * bone->m11 + bone->worldY;
+    //vertices[SP_VERTEX_Z1] = -vertices[SP_VERTEX_Y1];
+    vertices[SP_VERTEX_Y1] += bone->skeleton->y;
+    //vertices[SP_VERTEX_Z1] = -(offset[SP_VERTEX_X1] * bone->m10 + offset[SP_VERTEX_Y1] * bone->m11 +bone->skeleton->y);
     vertices[SP_VERTEX_Z1] = 0.0f;
 
+
 	vertices[SP_VERTEX_X2] = offset[SP_VERTEX_X2] * bone->m00 + offset[SP_VERTEX_Y2] * bone->m01 + x;
-	vertices[SP_VERTEX_Y2] = offset[SP_VERTEX_X2] * bone->m10 + offset[SP_VERTEX_Y2] * bone->m11 + y;
-   // vertices[SP_VERTEX_Z2] = -(offset[SP_VERTEX_X2] * bone->m10 + offset[SP_VERTEX_Y2] * bone->m11 +bone->skeleton->y);
+    vertices[SP_VERTEX_Y2] = offset[SP_VERTEX_X2] * bone->m10 + offset[SP_VERTEX_Y2] * bone->m11 + bone->worldY;
+    //vertices[SP_VERTEX_Z2] = -vertices[SP_VERTEX_Y2];
+    vertices[SP_VERTEX_Y2] += bone->skeleton->y;
     vertices[SP_VERTEX_Z2] = 0.0f;
 
 	vertices[SP_VERTEX_X3] = offset[SP_VERTEX_X3] * bone->m00 + offset[SP_VERTEX_Y3] * bone->m01 + x;
@@ -129,7 +133,9 @@ void spRegionAttachment_computeWorldVertices (spRegionAttachment* self, spBone* 
     gyMatPush();
     gyMatLoadIdentity();
 
-    gyMatTranslate(bone->worldX, bone->worldY, 0.0f);
+    //World location
+    gyMatTranslate(bone->skeleton->x, bone->skeleton->y, 0.0f);
+
 
     GYMatrix4 spineMat = {
         { bone->m00, bone->m10, 0.0f, 0.0f },
@@ -139,31 +145,42 @@ void spRegionAttachment_computeWorldVertices (spRegionAttachment* self, spBone* 
 
     };
 
+#if 1
     GYVector4 localVerts[4] = {
-        { 0.0f, 0.0f, 1.0f, 1.0f },
-        { 0.0f, 0.0f, 1.0f, 1.0f },
+        { 0.0f, 0.0f, 0.0f, 1.0f },
+        { 0.0f, 0.0f, 0.0f, 1.0f },
         { 0.0f, 0.0f, 0.0f, 1.0f },
         { 0.0f, 0.0f, 0.0f, 1.0f }
 
     };
-
-        gyMatTranslate(bone->skeleton->x, bone->skeleton->y, 0.0f);
-                  // gyMatShearZ(0.0f, -1.0f);
-   // gyMatRotate(0.5f*M_PI, 1.0f, 0.0f, 0.0f);
-
-
-
-
-    for(unsigned i = 0; i < 4; ++i) {
-    #if 0
-        GYVector4 localPos = { bone->skeleton->x, bone->skeleton->y, 0.0f, 1.0f };
 #else
-        GYVector4 localPos = { 0.0f, 0.0f, 0.0f, 1.0f };
+    GYVector4 localVerts[4] = {
+        {0.5f, -0.5f, 0.0f, 1.0f},
+        {-0.5f, -0.5f, 0.0f, 1.0f},
+        {0.5f, 0.5f, 0.0f, 1.0f},
+        {-0.5f, 0.5f, 0.0f, 1.0f}
+    };
 #endif
 
-        gyMatPush();
 
-        //gyMatScale(0.0f, 0.0f, bone->worldScaleY);
+    //gyMatShearZ(0.0f, -1.0f);
+
+
+    gyMatTranslate(bone->worldX, bone->worldY, 0.0f);
+
+
+
+    //gyMatRotate(0.5f*M_PI, 1.0f, 0.0f, 0.0f);
+    gyMatRotate((120.0f/180.0f)*M_PI, 1.0f, 0.0f, 0.0f);
+
+    for(unsigned i = 0; i < 4; ++i) {
+
+        gyMatPush();
+        //gyMatTranslate(0.0f, 0.0f, -offset[4*i+1]);
+
+        //gyMatTranslate(0.0f, 0.0f, -offset[4*i+1]);
+
+       //gyMatScale(0.0f, 0.0f, bone->worldScaleY);
            gyMatApply(spineMat);
 
 
@@ -175,8 +192,18 @@ void spRegionAttachment_computeWorldVertices (spRegionAttachment* self, spBone* 
         gyMatPop();
     }
     gyMatPop();
+#if 0
+    int max = 0;
 
+    for(int i = 1; i < 4; ++i) {
+        if(vertices[i*4+1] > vertices[max*4+1]) max = i;
+    }
 
+    for(unsigned i = 0; i < 4; ++i) {
+        vertices[i*4+2] = vertices[max*4+1]-vertices[i*4+1] + (bone->skeleton->y - bone->worldY);
+    }
+
+#endif
 
 #endif
 }
