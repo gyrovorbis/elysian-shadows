@@ -59,7 +59,7 @@ typedef struct spSkeleton {
 	float r, g, b, a;
 	float time;
 	int/*bool*/flipX, flipY;
-	float x, y;
+    float x, y, z;
 
 #ifdef __cplusplus
 	spSkeleton() :
@@ -79,7 +79,7 @@ typedef struct spSkeleton {
 		time(0),
 		flipX(0),
 		flipY(0),
-		x(0), y(0) {
+        x(0), y(0), z(0.0f) {
 	}
 #endif
 } spSkeleton;

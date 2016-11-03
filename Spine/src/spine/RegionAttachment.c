@@ -134,7 +134,7 @@ void spRegionAttachment_computeWorldVertices (spRegionAttachment* self, spBone* 
     gyMatLoadIdentity();
 
     //World location
-    gyMatTranslate(bone->skeleton->x, bone->skeleton->y, 0.0f);
+    gyMatTranslate(bone->skeleton->x, bone->skeleton->y, bone->skeleton->z);
 
 
     GYMatrix4 spineMat = {
@@ -170,8 +170,8 @@ void spRegionAttachment_computeWorldVertices (spRegionAttachment* self, spBone* 
 
 
 
-    //gyMatRotate(0.5f*M_PI, 1.0f, 0.0f, 0.0f);
-    gyMatRotate((120.0f/180.0f)*M_PI, 1.0f, 0.0f, 0.0f);
+    gyMatRotate(0.5f*M_PI, 1.0f, 0.0f, 0.0f);
+   // gyMatRotate((120.0f/180.0f)*M_PI, 1.0f, 0.0f, 0.0f);
 
     for(unsigned i = 0; i < 4; ++i) {
 

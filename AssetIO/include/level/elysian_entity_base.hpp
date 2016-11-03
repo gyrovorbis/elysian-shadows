@@ -252,7 +252,7 @@ namespace elysian {
             return _transform._pos.y - 32.0f;
 
         default:
-           return  getSkeleton()? _transform._pos.y : (_transform._pos.y  + 0.5f * _transform._size.y * _transform._scale.y + 16.0f);
+           return  /*getSkeleton()? _transform._pos.y :*/ (_transform._pos.y  + 0.5f * _transform._size.y * _transform._scale.y + 16.0f);
         }
     }
 

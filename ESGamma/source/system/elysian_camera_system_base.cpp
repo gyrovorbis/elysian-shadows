@@ -545,7 +545,7 @@ void CameraSystemBase::transform(GYVector4* /*dest*/, const GYVector4* /*src*/) 
 bool CameraSystemBase::isOnscreen(const Entity &entity) {
 #if 1
     if(entity._transform._orient.z == 0.0f) { //Entities without rotation
-        return _curState->isWithinScreenRegion(entity._transform._pos.x, entity._transform._pos.y,
+        return _curState->isWithinScreenRegion(entity._transform._pos.x, entity._transform._pos.y-entity._transform._pos.z,
                                     entity._transform._size.x * entity._transform._scale.x * 0.5f,
                                     entity._transform._size.y * entity._transform._scale.y * 0.5f);
     } else { //Entities with rotation

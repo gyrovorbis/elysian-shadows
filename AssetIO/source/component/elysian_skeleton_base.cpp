@@ -195,6 +195,7 @@ void SkeletonBase::render(void) const {
     if(_skeleton && _animState && !_attrib->isReested()) {
         _skeleton->x = _entity->_transform._pos.x;
         _skeleton->y = _entity->_transform._pos.y;
+        _skeleton->z = _entity->_transform._pos.z;
         spSkeleton_updateWorldTransform(_skeleton);
         gyVidSkeleton(_skeleton);
     }
