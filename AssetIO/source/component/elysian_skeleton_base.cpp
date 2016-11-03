@@ -194,7 +194,7 @@ void SkeletonBase::update(const float deltaTime) const {
 void SkeletonBase::render(void) const {
     if(_skeleton && _animState && !_attrib->isReested()) {
         _skeleton->x = _entity->_transform._pos.x;
-        _skeleton->y = _entity->_transform._pos.y - _entity->_transform._pos.z;
+        _skeleton->y = _entity->_transform._pos.y;
         spSkeleton_updateWorldTransform(_skeleton);
         gyVidSkeleton(_skeleton);
     }
