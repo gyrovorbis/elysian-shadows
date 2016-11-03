@@ -6,25 +6,22 @@ namespace OOLUA {
     template<>
     bool push<QVariant>(lua_State* state, QVariant const& variant) {
 
-        bool boolean = false;
-        bool boolVal;
         QString str = variant.toString();
         if(variant.canConvert(QMetaType::QString)) {
             if(str == "true") {
-                boolean = true;
-                boolVal = true;
+                lua_pushboolean(state, true);
+                return true;
             } else if(str == "false") {
-                boolean = true;
-                boolVal = false;
+                lua_pushboolean(state, false);
+                return true;
             }
-        }
 
-        if(boolean) {
-            lua_pushboolean(state, boolVal);
-            return true;
-        } else if(variant.canConvert(QMetaType::Int) || variant.canConvert(QMetaType::Float)) {
-            return push(state, variant.toFloat());
-        } else if(variant.canConvert(QMetaType::QString)) {
+            bool validFloat;
+            float floatValue = str.toFloat(&validFloat);
+            if(validFloat) {
+                return push(state, floatValue);
+            }
+
             if(str == "nil") {
                 lua_pushnil(state);
                 return true;
