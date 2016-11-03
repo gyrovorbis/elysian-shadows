@@ -81,13 +81,13 @@ namespace elysian {
         gyVec3Scale(&_dir, &dist, 1.0f/mag);
 
     if(mag <= 4.0f) {
-      stop(sys);
+        stop(sys);
     } else {
             //charComp->move(dist);
             if(_walk) {
                 //gyVec3Scale(&dist, &_dir, _entity->getCharacter()->getWalkForce()*deltaTime);
               // TODO Marius: strict-aliasing warning here, might interfere with optimization
-                _entity->getCharacter()->walk(((GYVectorPunned*)&dist)->vec2);
+                _entity->getCharacter()->walk(*(const GYVector2*)&_dir);
             } else {
                 gyVec3Scale(&dist, &_dir, ELYSIAN_CHAR_WALK_DEFAULT_FORCE*deltaTime);
                 //gyVec3AddAccum(&_entity->transform._pos, &dist);
@@ -98,7 +98,7 @@ namespace elysian {
 
     inline void WalkToWayPointSubProcess::setWayPoint(Entity* entity, const float endX, const float endY) {
         _entity = entity;
-    _endPos.x = endX; _endPos.y = endY;
+        _endPos.x = endX; _endPos.y = endY;
         _endPos.z = entity->_transform._pos.z;
         _walk = true;
   }

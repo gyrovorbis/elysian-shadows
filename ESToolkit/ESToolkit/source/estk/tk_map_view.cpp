@@ -728,6 +728,7 @@ void MapView::_registerDropEventCallbacks(void) {
                }
                 entity->getTransform().setPosX(scenePos.x());
                 entity->getTransform().setPosY(scenePos.y());
+                entity->setSaveFlag(true);
 
                 getAssets()->getCurrentArea()->addEntity(entity);
                 dbgprintf("Success: Adding Entity [%s] to area.", entity->getName());

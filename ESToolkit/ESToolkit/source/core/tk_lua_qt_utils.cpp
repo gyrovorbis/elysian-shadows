@@ -6,17 +6,32 @@ namespace OOLUA {
     template<>
     bool push<QVariant>(lua_State* state, QVariant const& variant) {
 
-        switch(variant.type()) {
-        case QMetaType::Bool:
-            return push(state, variant.toBool());
-        case QMetaType::QString:
-            if(variant.toString() == "nil") {
+        bool boolean = false;
+        bool boolVal;
+        QString str = variant.toString();
+        if(variant.canConvert(QMetaType::QString)) {
+            if(str == "true") {
+                boolean = true;
+                boolVal = true;
+            } else if(str == "false") {
+                boolean = true;
+                boolVal = false;
+            }
+        }
+
+        if(boolean) {
+            lua_pushboolean(state, boolVal);
+            return true;
+        } else if(variant.canConvert(QMetaType::Int) || variant.canConvert(QMetaType::Float)) {
+            return push(state, variant.toFloat());
+        } else if(variant.canConvert(QMetaType::QString)) {
+            if(str == "nil") {
                 lua_pushnil(state);
                 return true;
-            }
-             else return push(state, variant.toString());
-        default:
-            return push(state, variant.toFloat());
+            } else return push(state, str);
+        } else {
+            Q_ASSERT("Trying to push unknown QVariant type to Lua!");
+            return false;
         }
     }
 
