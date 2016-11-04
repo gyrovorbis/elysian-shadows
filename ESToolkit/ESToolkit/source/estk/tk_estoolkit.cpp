@@ -359,13 +359,6 @@ void ESToolkit::WriteSettings()
     settings.setValue("geometry", saveGeometry());
     setWindowState(Qt::WindowMaximized);
     settings.setValue("state", saveState());
-    if(!_assets.getProjectDir().isEmpty()) {
-        settings.setValue("projectDir", _assets.getProjectDir());
-        qDebug() << "WRITING PRJ " << _assets.getProjectDir();
-    } else {
-        settings.setValue("projectDir", _prevProjectPath);
-        qDebug() << "BAD WRITE" << _prevProjectPath;
-    }
     settings.setValue("assetDock", _assetDockWidget->isVisible());
     settings.setValue("entityDock", _entityDockWidget->isVisible());
     settings.setValue("layerDock", _layerDockWidget->isVisible());
@@ -388,6 +381,11 @@ void ESToolkit::WriteSettings()
     settings.setValue("engineStartPosX", x);
     settings.setValue("engineStartPosY", y);
     settings.setValue("previousProject", _assets.getProjectDir());
+    if(!_assets.getProjectDir().isEmpty()) {
+        settings.setValue("previousProject", _assets.getProjectDir());
+    } else {
+        settings.setValue("previousProject", _prevProjectPath);
+    }
     if(_gitlabDialog->isAuthenticated()) {
         settings.setValue("gitLabHostName", _gitlabDialog->getHostName());
         settings.setValue("gitLabPrivateToken", _gitlabDialog->getPrivateToken());
@@ -438,7 +436,6 @@ void ESToolkit::ReadSettings()
     QString savedSettings       = settings.value("settings", "").toString();
     QByteArray geo              = settings.value("geometry", QByteArray()).toByteArray();
     QByteArray state            = settings.value("state", QByteArray()).toByteArray();
-    //QString dir = settings.value("projectDir", QString()).toString();
     bool sheetViewHorizontal    = settings.value("sheetViewHorizontal", true).toBool();
     bool glEnabled              = settings.value("glEnabled", true).toBool();
     bool autoScrollEnabled      = settings.value("autoScrollEnabled", true).toBool();
