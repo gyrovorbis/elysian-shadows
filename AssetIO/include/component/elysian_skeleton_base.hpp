@@ -131,6 +131,7 @@ namespace elysian {
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(attrib,     getAttrib,      setAttrib)
             ELYSIAN_LUA_PROXY_FIELD(skin,       getSkin,        setSkin)
+            ELYSIAN_LUA_PROXY_FIELD(curAnim,    getAnim,        setAnim)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
         using AnimListener = std::function<bool(int, spEventType, spEvent*, int)>;
@@ -171,6 +172,7 @@ namespace elysian {
 
         void            setAnimByName(const int trackIndex, const char*const animName, const bool loop=true);
         void            setAnim(const char* name);
+        const char*     getAnim(void) const;
         void            setAnim(const char* name, const AnimListener& listener);
         void            setSkin(const char* name);
         const char*     getSkin(void) const;

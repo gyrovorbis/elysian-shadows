@@ -2,7 +2,7 @@
 #include "tk_lua_manager.h"
 #include <asset/tk_lua_table_proxy.h>
 #include <proxy/elysian_entity_proxy.hpp>
-#include <model/tk_property_item_delegate.h>
+//#include <model/tk_property_item_delegate.h>
 
 static inline int Toolkit_findEntity(lua_State* const vm) {
     QString name;

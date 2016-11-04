@@ -359,7 +359,13 @@ void ESToolkit::WriteSettings()
     settings.setValue("geometry", saveGeometry());
     setWindowState(Qt::WindowMaximized);
     settings.setValue("state", saveState());
-    settings.setValue("projectDir", _assets.getProjectDir());
+    if(!_assets.getProjectDir().isEmpty()) {
+        settings.setValue("projectDir", _assets.getProjectDir());
+        qDebug() << "WRITING PRJ " << _assets.getProjectDir();
+    } else {
+        settings.setValue("projectDir", _prevProjectPath);
+        qDebug() << "BAD WRITE" << _prevProjectPath;
+    }
     settings.setValue("assetDock", _assetDockWidget->isVisible());
     settings.setValue("entityDock", _entityDockWidget->isVisible());
     settings.setValue("layerDock", _layerDockWidget->isVisible());

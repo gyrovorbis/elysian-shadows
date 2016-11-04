@@ -64,7 +64,7 @@ const char* BehaviorBase::triggerNameFromFlag(const uint32_t flag) {
 	case TRIGGER_MAX:
 		return "TRIGGER_MAX";
 	default:
-		sprintf(buff, "INVALID (%llu)", flag);
+        sprintf(buff, "INVALID (%u)", flag);
 		return buff;
 	}
 }

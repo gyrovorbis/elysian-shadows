@@ -205,7 +205,11 @@ SOURCES += \
     ../../ESGamma/source/system/elysian_pathfinding_system.cpp \
     ../../AssetIO/source/utility/elysian_lua_variant_base.cpp \
     ../../ESGamma/source/system/elysian_level_system_base.cpp \
-    ../../AssetIO/source/behavior/elysian_state_machine_behavior.cpp
+    ../../AssetIO/source/behavior/elysian_state_machine_behavior.cpp \
+    source/delegate/tk_enum_dropdown_property_item_delegate.cpp \
+    source/delegate/tk_file_browser_property_item_delegate.cpp \
+    source/delegate/tk_spinbox_property_item_delegate.cpp \
+    source/delegate/tk_property_item_proxy_delegate.cpp
 
 
 !ios: !dreamcast: !android {
@@ -280,7 +284,6 @@ SOURCES += \
         source/asset/tk_character.cpp \
         source/asset/tk_warp.cpp \
         source/asset/tk_sprite_attrib.cpp \
-        source/model/tk_property_item_delegate.cpp \
         source/estk/tk_camera_dock_widget.cpp \
         source/asset/tk_examinable.cpp \
         source/estk/tk_camera_system.cpp \
@@ -289,7 +292,8 @@ SOURCES += \
         source/core/tk_mime_data.cpp \
         source/core/tk_mime_drop_manager.cpp \
         source/estk/tk_estoolkit_menu_bar_slots.cpp \
-        source/estk/tk_level_system.cpp
+        source/estk/tk_level_system.cpp \
+        source/delegate/tk_property_item_delegate.cpp
 
 } else {
         SOURCES += ../../ESGamma/source/system/main.cpp
@@ -454,7 +458,9 @@ HEADERS += \
     include/estk/tk_level_system.h \
     ../../AssetIO/include/utility/elysian_cpp_lua_function.hpp \
     ../../AssetIO/include/behavior/elysian_state_machine_behavior.hpp \
-    ../../AssetIO/include/utility/elysian_oolua_string_traits.hpp
+    ../../AssetIO/include/utility/elysian_oolua_string_traits.hpp \
+    include/delegate/tk_property_item_proxy_delegate.h \
+    include/delegate/tk_combobox_property_item_delegate.h
 
 !ios:!dreamcast: !android {
     HEADERS +=  \
@@ -540,7 +546,6 @@ HEADERS += \
         include/widget/tk_history_dock_widget.h \
         include/tile_engine/tk_tile_graphics_item_impl.h \
         include/tile_engine/tk_dest_view_impl.h \
-        include/model/tk_property_item_delegate.h \
         include/core/tk_lua_qt_utils.h \
         include/widget/tk_documentation_browser.h \
         include/model/tk_task_monitor.h \
@@ -559,7 +564,11 @@ HEADERS += \
         include/asset/tk_dialog_screen.h \
         include/asset/tk_dialog.h \
         include/asset/tk_lua_variant.h \
-        include/estk/tk_input_system.h
+        include/estk/tk_input_system.h \
+        include/delegate/tk_property_item_delegate.h \
+        include/delegate/tk_spinbox_property_item_delegate.h \
+        include/delegate/tk_file_browser_property_item_delegate.h \
+        include/delegate/tk_enum_dropdown_property_item_delegate.h
 }
 
 

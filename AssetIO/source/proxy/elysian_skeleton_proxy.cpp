@@ -33,7 +33,8 @@ OOLUA_EXPORT_FUNCTIONS_CONST(Skeleton,
                              getAttrib,
                              getAnimTimeScale,
                              getEntityAttachedToSlot,
-                             getSkin)
+                             getSkin,
+                             getAnim)
 OOLUA_EXPORT_FUNCTIONS(Skeleton,
                        setAttrib,
                        setAnim,

@@ -3,6 +3,7 @@
 
 #include <crtp/elysian_lua_behavior.hpp>
 #include <proxy/elysian_component_proxy.hpp>
+#include <utility/elysian_oolua_string_traits.hpp>
 
 namespace OOLUA {
     typedef elysian::Behavior       Behavior;
@@ -17,7 +18,7 @@ OOLUA_PROXY(Behavior, Component)
     )
     OOLUA_MEM_FUNC(void, addTrigger, Behavior::TRIGGER)
     OOLUA_MEM_FUNC(void, removeTrigger, Behavior::TRIGGER)
-    OOLUA_MEM_FUNC_CONST(const char*, getBehavName)
+    OOLUA_MEM_FUNC_CONST(maybe_null<const char*>, getBehavName)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(LuaBehavior, Behavior)

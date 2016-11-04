@@ -1,7 +1,7 @@
 #include <tk_renderable.h>
 #include <tk_menu_stack.h>
 #include <QMenu>
-#include <model/tk_property_item_delegate.h>
+#include <delegate/tk_enum_dropdown_property_item_delegate.h>
 
 bool TkRenderable::validate(QString &str) const {
     bool success = true;

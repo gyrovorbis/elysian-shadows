@@ -117,7 +117,7 @@ namespace elysian {
     //======= INLINEZ ======
 
     inline const char* LuaBehaviorBase::getBehavName(void) const {
-        return (_script)? _script->getPath() : "none";
+        return (_script)? _script->getPath() : nullptr;
     }
 
     inline LuaBehaviorScript* LuaBehaviorBase::getScript(void) const { return _script; }

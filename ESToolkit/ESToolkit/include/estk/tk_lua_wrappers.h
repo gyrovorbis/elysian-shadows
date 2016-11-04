@@ -6,7 +6,10 @@
 #include <estk/tk_estoolkit.h>
 #include <lua/elysian_lua_singleton.hpp>
 #include <asset/tk_area.h>
-#include <model/tk_property_item_delegate.h>
+#include <delegate/tk_property_item_delegate.h>
+#include <delegate/tk_file_browser_property_item_delegate.h>
+#include <delegate/tk_spinbox_property_item_delegate.h>
+#include <delegate/tk_enum_dropdown_property_item_delegate.h>
 
 
 namespace OOLUA

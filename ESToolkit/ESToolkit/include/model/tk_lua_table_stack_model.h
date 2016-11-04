@@ -6,7 +6,7 @@
 #include <crtp/elysian_lua_manager.hpp>
 #include <core/tk_lua_qt_utils.h>
 #include <crtp/elysian_lua_variant.hpp>
-#include <tk_property_stack_model.h>
+//#include <tk_property_stack_model.h>
 #include <tk_property_standard_item.h>
 
 #define ELYSIAN_LUA_TABLE_STACK_MODEL_DELEGATE_METAFIELD    "__delegate"

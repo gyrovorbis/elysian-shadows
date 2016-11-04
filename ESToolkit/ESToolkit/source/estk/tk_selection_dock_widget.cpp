@@ -2,7 +2,7 @@
 #include <QCloseEvent>
 #include "tk_selection_dock_widget.h"
 #include "ui_tk_selection_dock_widget.h"
-#include <model/tk_property_item_delegate.h>
+#include <delegate/tk_property_item_proxy_delegate.h>
 
 SelectionDockWidget::SelectionDockWidget(QWidget *parent) :
     QDockWidget(parent),

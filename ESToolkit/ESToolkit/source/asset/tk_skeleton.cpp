@@ -2,7 +2,7 @@
 #include <core/tk_menu_stack.h>
 #include <asset/tk_entity.h>
 #include <spine/AnimationState.h>
-#include <model/tk_property_item_delegate.h>
+#include <delegate/tk_file_browser_property_item_delegate.h>
 #include <estk/tk_lua_wrappers.h>
 
 void TkSkeleton::onAtlasChanged(void) {

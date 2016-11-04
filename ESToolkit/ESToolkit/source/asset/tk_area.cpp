@@ -12,7 +12,6 @@
 #include <QOpenGLContext>
 #include <tk_engine_gl_scene_widget.h>
 #include <tk_selection_scene.h>
-#include <model/tk_property_item_delegate.h>
 #include <tk_lua_wrappers.h>
 
 

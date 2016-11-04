@@ -1,7 +1,8 @@
 #include <asset/tk_light_source.h>
 #include <core/tk_menu_stack.h>
 #include <asset/tk_entity.h>
-#include <model/tk_property_item_delegate.h>
+#include <delegate/tk_enum_dropdown_property_item_delegate.h>
+#include <delegate/tk_spinbox_property_item_delegate.h>
 #include <estk/tk_lua_wrappers.h>
 
 bool TkLightSource::validate(QString& str) const {

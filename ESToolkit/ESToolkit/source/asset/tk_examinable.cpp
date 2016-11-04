@@ -1,5 +1,5 @@
 #include <asset/tk_examinable.h>
-#include <model/tk_property_item_delegate.h>
+#include <delegate/tk_enum_dropdown_property_item_delegate.h>
 #include <estk/tk_lua_wrappers.h>
 
 void TkExaminable::initializeDelegates(void) {

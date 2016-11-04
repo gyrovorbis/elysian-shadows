@@ -11,7 +11,8 @@
 #include <QSpacerItem>
 #include <utility/elysian_generic.hpp>
 #include <QGridLayout>
-#include <model/tk_property_item_delegate.h>
+#include <delegate/tk_enum_dropdown_property_item_delegate.h>
+#include <delegate/tk_spinbox_property_item_delegate.h>
 #include <tk_menu_stack.h>
 #include <tk_lua_wrappers.h>
 

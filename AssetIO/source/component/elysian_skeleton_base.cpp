@@ -18,6 +18,10 @@ ELYSIAN_LUA_PROXY_FIELDS_EXPORT(Animation)
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(SkeletonBase)
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(SkeletonAttribBase)
 
+const char* SkeletonBase::getAnim(void) const {
+    return (_curAnim)? _curAnim->getName() : nullptr;
+}
+
 void SkeletonBase::setAnim(const char* name) {
 
     auto* anim = _attrib->findAnimation(name);
