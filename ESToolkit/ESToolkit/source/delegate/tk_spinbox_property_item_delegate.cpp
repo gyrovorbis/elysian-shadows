@@ -1,7 +1,7 @@
 #include <delegate/tk_spinbox_property_item_delegate.h>
 #include <model/tk_property_stack_model.h>
 #include <model/tk_property_standard_item.h>
-#include <QSpinbox>
+#include <QSpinBox>
 
 
 QWidget* SpinboxPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem& /*option*/, const QModelIndex& /*index*/) const {

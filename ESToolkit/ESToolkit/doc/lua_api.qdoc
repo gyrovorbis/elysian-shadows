@@ -16,10 +16,11 @@
 	\section1 Extending the Engine
 	Lua code can be loaded and executed through several different mechanisms, depending on the script's requirements.
 	\list
-	\li global_init.lua
-	\li level_init.lua
-	\li area_init.lua
-	\li Lua Behaviors 
+	\li \b {global_init.lua} - script that gets executed when the engine loads
+	\li \b {level_init.lua} - script that gets executed when a level is loaded
+	\li \b {area_init.lua} - script that gets executed when an area is loaded
+	\li \b {Lua Behaviors} - script that gets attached to an entity has a Behavior component
+	\li \b {Lua Debug Console} - dynamically executes code for debugging and testing purposes
 	\endlist
 
 	\section1 Debugging Scripts

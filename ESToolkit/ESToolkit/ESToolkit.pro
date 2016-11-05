@@ -205,11 +205,7 @@ SOURCES += \
     ../../ESGamma/source/system/elysian_pathfinding_system.cpp \
     ../../AssetIO/source/utility/elysian_lua_variant_base.cpp \
     ../../ESGamma/source/system/elysian_level_system_base.cpp \
-    ../../AssetIO/source/behavior/elysian_state_machine_behavior.cpp \
-    source/delegate/tk_enum_dropdown_property_item_delegate.cpp \
-    source/delegate/tk_file_browser_property_item_delegate.cpp \
-    source/delegate/tk_spinbox_property_item_delegate.cpp \
-    source/delegate/tk_property_item_proxy_delegate.cpp
+    ../../AssetIO/source/behavior/elysian_state_machine_behavior.cpp
 
 
 !ios: !dreamcast: !android {
@@ -293,7 +289,11 @@ SOURCES += \
         source/core/tk_mime_drop_manager.cpp \
         source/estk/tk_estoolkit_menu_bar_slots.cpp \
         source/estk/tk_level_system.cpp \
-        source/delegate/tk_property_item_delegate.cpp
+        source/delegate/tk_property_item_delegate.cpp \
+        source/delegate/tk_enum_dropdown_property_item_delegate.cpp \
+        source/delegate/tk_file_browser_property_item_delegate.cpp \
+        source/delegate/tk_spinbox_property_item_delegate.cpp \
+        source/delegate/tk_property_item_proxy_delegate.cpp
 
 } else {
         SOURCES += ../../ESGamma/source/system/main.cpp
