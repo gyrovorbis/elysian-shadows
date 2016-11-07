@@ -107,6 +107,8 @@ private:
     elysian::Debug *        _debug;
     QDir                    _outputDir;
     QString                 _prevProjectPath;
+    QString                 _prevLevelPath;
+    QString                 _prevAreaPath;
 
     Ui::ESToolkit*          _ui;
     QTabBar*                _areaTabBar;

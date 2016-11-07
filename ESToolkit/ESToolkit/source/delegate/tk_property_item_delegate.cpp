@@ -38,6 +38,10 @@ bool PropertyItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
 
 
 QMenu* PropertyItemDelegate::getContextMenu(ESTkStandardItem*const item) {
+
+    if(_customContextMenu && _contextMenu)
+        return _contextMenu;
+
     LuaTableFieldItem* fieldItem =
             (item->type() == (int)ESTkStandardItemType::LuaTable)?
                 static_cast<LuaTableFieldItem*>(item) : nullptr;

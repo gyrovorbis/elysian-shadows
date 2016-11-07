@@ -71,7 +71,6 @@ bool PropertyItemProxyDelegate::editorEvent(QEvent *event, QAbstractItemModel *m
                 _defaultTableDelegate = new FileBrowserPropertyItemDelegate;
             }
             return _defaultTableDelegate->editorEvent(event, model, option, index);
-
         }
 
     }

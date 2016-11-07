@@ -16,6 +16,7 @@ public:
     void        setAtlasPath(const char*const path);
 
     static void initializeDelegates(void);
+    static void initializeVirtualTableDelegates(QString key);
 
 Q_SIGNALS:
     void        jsonChanged(void);

@@ -526,24 +526,9 @@ namespace elysian {
             lua_pushvalue(l, -2);
             lua_setfield(l, -2, "__ud");
             lua_newtable(l);
-            _LuaTableProxyParents<P, T>::pushUpvalues();
-            lua_pushcclosure(l, &_indexVirtualTableProxyMetamethod, LUA_TABLE_PROXY_UPVALUE_COUNT);
-            lua_setfield(l, -2, "__index");
-            _LuaTableProxyParents<P, T>::pushUpvalues();
-            lua_pushcclosure(l, &_newIndexVirtualTableProxyMetamethod, LUA_TABLE_PROXY_UPVALUE_COUNT);
-            lua_setfield(l, -2, "__newindex");
-            _LuaTableProxyParents<P, T>::pushUpvalues();
-            lua_pushcclosure(l, &_nextMetaMethodCFunction, LUA_TABLE_PROXY_UPVALUE_COUNT);
-            lua_setfield(l, -2, "__next");
-            _LuaTableProxyParents<P, T>::pushUpvalues();
-            lua_pushcclosure(l, &_pairsMetaMethodCFunction, LUA_TABLE_PROXY_UPVALUE_COUNT);
-            lua_setfield(l, -2, "__pairs");
-            _LuaTableProxyParents<P, T>::pushUpvalues();
-            lua_pushcclosure(l, &_lengthMetaMethodCFunction, LUA_TABLE_PROXY_UPVALUE_COUNT);
-            lua_setfield(l, -2, "__len");
-            _LuaTableProxyParents<P, T>::pushUpvalues();
-            lua_pushcclosure(l, &_luaToStringMetaMethodCFunction, LUA_TABLE_PROXY_UPVALUE_COUNT);
-            lua_setfield(l, -2, "__tostring");
+
+            LuaTableProxy<P, T, Bases...>::_addVirtualTableMetamethods(l);
+
             //SET ANY OTHER METAMETHODS
             lua_setmetatable(l, -2);
 
@@ -886,7 +871,27 @@ namespace elysian {
 
             //lua_pushstring(l, OOLUA::Proxy_class<T>::class_name);
             //lua_setfield(l, -2, "__typename");
+        }
 
+        static void _addVirtualTableMetamethods(lua_State* l) {
+            _LuaTableProxyParents<P, T>::pushUpvalues();
+            lua_pushcclosure(l, &_indexVirtualTableProxyMetamethod, LUA_TABLE_PROXY_UPVALUE_COUNT);
+            lua_setfield(l, -2, "__index");
+            _LuaTableProxyParents<P, T>::pushUpvalues();
+            lua_pushcclosure(l, &_newIndexVirtualTableProxyMetamethod, LUA_TABLE_PROXY_UPVALUE_COUNT);
+            lua_setfield(l, -2, "__newindex");
+            _LuaTableProxyParents<P, T>::pushUpvalues();
+            lua_pushcclosure(l, &_nextMetaMethodCFunction, LUA_TABLE_PROXY_UPVALUE_COUNT);
+            lua_setfield(l, -2, "__next");
+            _LuaTableProxyParents<P, T>::pushUpvalues();
+            lua_pushcclosure(l, &_pairsMetaMethodCFunction, LUA_TABLE_PROXY_UPVALUE_COUNT);
+            lua_setfield(l, -2, "__pairs");
+            _LuaTableProxyParents<P, T>::pushUpvalues();
+            lua_pushcclosure(l, &_lengthMetaMethodCFunction, LUA_TABLE_PROXY_UPVALUE_COUNT);
+            lua_setfield(l, -2, "__len");
+            _LuaTableProxyParents<P, T>::pushUpvalues();
+            lua_pushcclosure(l, &_luaToStringMetaMethodCFunction, LUA_TABLE_PROXY_UPVALUE_COUNT);
+            lua_setfield(l, -2, "__tostring");
         }
 
         static int _luaFromTableCFunction(lua_State*const l) {

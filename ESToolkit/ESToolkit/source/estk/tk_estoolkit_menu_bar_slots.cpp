@@ -509,7 +509,18 @@ void ESToolkit::on_actionGather_2_triggered(void) {
 }
 
 void ESToolkit::on_actionPrevious_Project_triggered(void) {
-    if(!_prevProjectPath.isEmpty()) openProjectDir(_prevProjectPath);
+    if(!_prevProjectPath.isEmpty()) {
+        if(openProjectDir(_prevProjectPath)) {
+            auto* level = _assets.getCurrentProject()->getLevel(_prevLevelPath);
+            if(level) {
+                _assets.setCurrentLevel(level);
+                auto* area = _assets.getCurrentLevel()->getArea(_prevAreaPath);
+                if(area) {
+                    _assets.setCurrentArea(area);
+                }
+            }
+        }
+    }
 }
 
 void ESToolkit::on_actionInvoke_triggered(bool checked)

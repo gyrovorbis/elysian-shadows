@@ -6,6 +6,7 @@
 class TkParticleEmitterAttrib: public elysian::ParticleEmitterAttribBase {
 public:
     using       LuaTableProxy<elysian::ParticleEmitterAttribBase, ParticleEmitterAttrib, elysian::CollidableStaticAttrib, SpriteAttrib>::initializeDelegates;
+    using       LuaTableProxy<elysian::ParticleEmitterAttribBase, ParticleEmitterAttrib, elysian::CollidableStaticAttrib, SpriteAttrib>::initializeVirtualTableDelegates;
 
 
 };

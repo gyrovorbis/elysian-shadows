@@ -383,6 +383,16 @@ void ESToolkit::WriteSettings()
     settings.setValue("previousProject", _assets.getProjectDir());
     if(!_assets.getProjectDir().isEmpty()) {
         settings.setValue("previousProject", _assets.getProjectDir());
+        if(_assets.getCurrentLevel()) {
+            settings.setValue("previousLevel", _assets.getCurrentLevel()->getPath());
+            if(_assets.getCurrentArea()) {
+                settings.setValue("previousArea", _assets.getCurrentArea()->getPath());
+            } else {
+                settings.setValue("previousArea", _prevAreaPath);
+            }
+        } else {
+            settings.setValue("previousLevel", _prevLevelPath);
+        }
     } else {
         settings.setValue("previousProject", _prevProjectPath);
     }
@@ -451,6 +461,8 @@ void ESToolkit::ReadSettings()
     bool lightingEnabled        = settings.value("lightingEnabled", true).toBool();
     bool showHiddenLevels       = settings.value("showHiddenLevels", false).toBool();
     _prevProjectPath            = settings.value("previousProject", "").toString();
+    _prevLevelPath              = settings.value("previousLevel", "").toString();
+    _prevAreaPath               = settings.value("previousArea", "").toString();
 
     _engineDialog->setStartPos(x, y);
     MAP_VIEW_RES mapViewRes     = (MAP_VIEW_RES)settings.value("mapViewRes", MAP_VIEW_RES_DYNAMIC).toInt();
@@ -768,9 +780,9 @@ bool ESToolkit::openProjectDir(const QString dir) {
         auto* viewport = _engineGLView = new EngineGLSceneWidget(this);
 
         connect(viewport, SIGNAL(engineUpdated()), _ui->mapView, SLOT(onEngineUpdated()));
-    viewport->setMouseTracking(true);
-    _engineGLView->setMapView(_ui->mapView);
-    _engineGLView->makeCurrent();
+        viewport->setMouseTracking(true);
+        _engineGLView->setMapView(_ui->mapView);
+        _engineGLView->makeCurrent();
         _engineGLView->update();
         _engineGLView->show();
         _engineGLView->updateGL();

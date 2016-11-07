@@ -8,7 +8,7 @@ class LuaTableFieldItem;
 
 
 class DynamicTextPropertyItemDelegate: public PropertyItemDelegate {
-    using CallbackType = std::function<QStringList(LuaTableFieldItem*, QStyleOptionViewItem&)>;
+    using CallbackType = std::function<void(LuaTableFieldItem*, QStyleOptionViewItem&)>;
 
 private:
     CallbackType   _callback;

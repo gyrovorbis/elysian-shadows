@@ -187,9 +187,9 @@ QStyledItemDelegate* LuaTableFieldItem::getStyledItemDelegate(void) const {
 
         _fieldRef.getTableRef().push();
 
-        lua_getmetatable(*_mainState, -1);
+        //lua_getmetatable(*_mainState, -1);
         LuaManager::getMetatable(-1);
-        lua_getfield(*_mainState, -1, ELYSIAN_LUA_TABLE_STACK_MODEL_DELEGATE_METAFIELD);
+        lua_getfield(*_mainState, -1, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
 
         if(lua_isnil(*_mainState, -1)) {
 
@@ -227,20 +227,34 @@ QStyledItemDelegate* LuaTableFieldItem::getStyledItemDelegate(void) const {
 //#endif
         }
 
-        _fieldRef.getKey().push();
+        int type = lua_type(*_mainState, -1);
 
-        lua_gettable(*_mainState, -2);
+        switch(type) {
+        case LUA_TFUNCTION:
+            qDebug() << "TFUNCTION!!!!!!";
+            _delegate = LuaManager::_callFunction<PropertyItemDelegate*>(nullptr, _fieldRef.getTableRef(), _fieldRef.getKey());
+            break;
+        case LUA_TTABLE:
 
-        if(lua_isnil(*_mainState, -1)) {
-            lua_pop(*_mainState, lua_gettop(*_mainState)-top);
-            LuaManager::stackBalanceEnd();
-            return nullptr;
+            _fieldRef.getKey().push();
+
+            lua_gettable(*_mainState, -2);
+
+            if(lua_isnil(*_mainState, -1)) {
+                lua_pop(*_mainState, lua_gettop(*_mainState)-top);
+                LuaManager::stackBalanceEnd();
+                return nullptr;
+            }
+
+            PropertyItemDelegate* delegate;
+            OOLUA::pull(*_mainState, delegate);
+            _delegate = static_cast<QStyledItemDelegate*>(delegate);
+            break;
+
+        default:
+            break;
+
         }
-
-        PropertyItemDelegate* delegate;
-        OOLUA::pull(*_mainState, delegate);
-        _delegate = static_cast<QStyledItemDelegate*>(delegate);
-
 
 #else //Way prettier with high-level API, also way the fuck slower...
 

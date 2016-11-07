@@ -15,10 +15,11 @@ class ESTkStandardItem;
  */
 class PropertyItemDelegate: public QStyledItemDelegate, public TkLuaManager, public AssetManager {
 protected:
-    bool            _initialized = false;
-    bool            _addPairs   = true;
-    QMenu*          _contextMenu = nullptr;
-    QVector<int>    _supportedTypes = {
+    bool            _initialized        = false;
+    bool            _addPairs           = true;
+    QMenu*          _contextMenu        = nullptr;
+    bool            _customContextMenu  = false;
+    QVector<int>    _supportedTypes     = {
         LUA_TNIL,
         LUA_TBOOLEAN,
         LUA_TNUMBER,
@@ -33,9 +34,9 @@ protected:
     QVector<QString> _supportedUserData;
 
 
-    virtual QWidget*createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const = 0;
-    virtual void    setEditorData(QWidget *editor, const QModelIndex &index) const = 0;
-    virtual void    setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const = 0;
+    //virtual QWidget*createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const = 0;
+    //virtual void    setEditorData(QWidget *editor, const QModelIndex &index) const = 0;
+    //virtual void    setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const = 0;
 
 public:
                     PropertyItemDelegate(void) = default;
@@ -53,7 +54,7 @@ public:
 
 // ====== INLINEZ ======
 
-inline void PropertyItemDelegate::setContextMenu(QMenu * const menu) { _contextMenu = menu; }
+inline void PropertyItemDelegate::setContextMenu(QMenu * const menu) { _contextMenu = menu; _customContextMenu = true; }
 inline void PropertyItemDelegate::addSupportedType(const int luaType) { _supportedTypes.push_back(luaType); }
 
 

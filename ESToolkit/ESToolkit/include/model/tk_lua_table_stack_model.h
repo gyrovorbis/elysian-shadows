@@ -9,7 +9,6 @@
 //#include <tk_property_stack_model.h>
 #include <tk_property_standard_item.h>
 
-#define ELYSIAN_LUA_TABLE_STACK_MODEL_DELEGATE_METAFIELD    "__delegate"
 #define ELYSIAN_LUA_TABLE_STACK_MODEL_PREFAB_FONT_COLOR     QColor(Qt::blue)
 
 class LuaTableStackModel;

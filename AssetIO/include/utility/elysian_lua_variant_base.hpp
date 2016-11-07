@@ -771,6 +771,9 @@ public:
     inline  int LuaVariantBase::getValue<int>(void) const { return _value.number; }
 
     template<>
+    inline unsigned LuaVariantBase::getValue<unsigned>(void) const { return (unsigned)_value.number; }
+
+    template<>
     inline  void* LuaVariantBase::getValue<void*>(void) const { return _value.luserdata; }
 
     template<>

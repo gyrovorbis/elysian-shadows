@@ -6,6 +6,7 @@
 class TkRigidBody: public elysian::RigidBodyBase {
 public:
     using                       LuaTableProxy<elysian::RigidBodyBase, RigidBody, ForceTarget>::initializeDelegates;
+    using                       LuaTableProxy<elysian::RigidBodyBase, RigidBody, ForceTarget>::initializeVirtualTableDelegates;
 
     TkRigidBody(TkEntity& parent, const TkRigidBody*const prefab=nullptr);
     TkRigidBody(void) = default;

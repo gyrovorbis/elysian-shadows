@@ -97,6 +97,7 @@ protected:
     //CRTP overridden from engine
     static void _callPropertyProxyMethod(const bool write, const unsigned args, const unsigned retVals, const unsigned keyIndex);
     static void _addMetamethods(lua_State* l);
+    static void _addVirtualTableMetamethods(lua_State* l);
 
     //Tk-Specific metamethods
     static int  _connectSignals(lua_State* l);
@@ -108,6 +109,7 @@ public:
     virtual     ~TkLuaTableProxy(void);
 
     static void initializeDelegates(void);
+    static void initializeVirtualTableDelegates(QString property);
 
     //Might also need copy constructor
     const TkLuaTableProxy<P, T, Bases...>&    operator=(const TkLuaTableProxy<P, T, Bases...>& rhs);
@@ -134,6 +136,9 @@ inline void TkLuaTableUserdata::emitFieldChanged(const LuaVariant& key) const { 
 
 template <typename P, typename T, class... Bases>
 inline void TkLuaTableProxy<P, T, Bases...>::initializeDelegates(void) { }
+
+template <typename P, typename T, class... Bases>
+inline void TkLuaTableProxy<P, T, Bases...>::initializeVirtualTableDelegates(QString) { }
 
 template <typename P, typename T, class... Bases>
 inline void TkLuaTableProxy<P, T, Bases...>::_callPropertyProxyMethod(const bool write, const unsigned args, const unsigned retVals, const unsigned keyIndex) {
@@ -211,6 +216,17 @@ inline void TkLuaTableProxy<P, T, Bases...>::_addMetamethods(lua_State *l) {
 
     LuaManager::_udTypeNames.push_back(OOLUA::Proxy_class<T>::class_name);
 }
+
+template<typename P, typename T, class... Bases>
+inline void TkLuaTableProxy<P, T, Bases...>::_addVirtualTableMetamethods(lua_State *l) {
+
+    int proxyIndex = lua_tointeger(l, lua_upvalueindex(elysian::LUA_TABLE_PROXY_UPVALUE_PARENT_INDEX));
+
+    T::initializeVirtualTableDelegates(ParentType::_combinedFields[proxyIndex].key);
+    ParentType::_addVirtualTableMetamethods(l);
+}
+
+
 
 
 #endif // TK_LUA_TABLE_PROXY_H
