@@ -46,3 +46,9 @@ OOLUA_EXPORT_FUNCTIONS(SpinboxPropertyItemDelegate,
 
 OOLUA_EXPORT_FUNCTIONS_CONST(FileBrowserPropertyItemDelegate)
 OOLUA_EXPORT_FUNCTIONS(FileBrowserPropertyItemDelegate)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(ComboBoxPropertyItemDelegate)
+OOLUA_EXPORT_FUNCTIONS(ComboBoxPropertyItemDelegate)
+
+OOLUA_EXPORT_FUNCTIONS_CONST(DynamicTextPropertyItemDelegate)
+OOLUA_EXPORT_FUNCTIONS(DynamicTextPropertyItemDelegate)

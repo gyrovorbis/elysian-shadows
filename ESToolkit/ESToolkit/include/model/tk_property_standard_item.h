@@ -9,7 +9,7 @@
 
 class QStyledItemDelegate;
 
-enum class ESTkStandardItemType: uint32_t {
+enum ESTkStandardItemType: uint32_t {
     Generic = QStandardItem::UserType+1,
     LuaTable
 };
@@ -86,9 +86,10 @@ private:
     UndoItem::TYPE      _undoType;
     bool                _ignoreCheck;
     bool                _displayValue = false;
-    bool                _settingFlags = false;
   //unsigned _refCount;
 protected:
+    bool                _settingFlags = false;
+
     PropertyStandardItem(void) = default;
     void _latentInit(C *const object, T (C::*const get)(void)const,
                      void (C::*const set)(const T)=nullptr,
@@ -109,23 +110,24 @@ protected:
 
 public:
   PropertyStandardItem(C *const object, T (C::*const get)(void)const,
-                         void (C::*const set)(const T)=nullptr,
-             const UndoItem::TYPE undoType=UndoItem::TYPE_SIZE,
-                         QUndoStack *stack=nullptr, QIcon (C::*const ico)(const T)const=nullptr):
+                        void (C::*const set)(const T)=nullptr,
+                        const UndoItem::TYPE undoType=UndoItem::TYPE_SIZE,
+                        QUndoStack *stack=nullptr,
+                        QIcon (C::*const ico)(const T)const=nullptr):
     _objInst(object),
     _getAccessor(get),
     _setAccessor(set),
     _updateIcon(ico),
     _undoStack(stack),
-        _undoType(undoType),
-        _ignoreCheck(true)
+    _undoType(undoType),
+    _ignoreCheck(true)
     //  _refCount(0)
   {
 
         _settingFlags = true;
         //Prevent the asshole from immediately fetching and latently populating tables just because
         //flags are being set.
-    setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable |
+        setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable |
          ((_setAccessor)? Qt::ItemIsEditable : Qt::NoItemFlags));
         _settingFlags = false;
 

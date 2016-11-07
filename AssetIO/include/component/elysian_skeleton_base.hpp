@@ -12,6 +12,7 @@
 #define ELYSIAN_ANIMATION_NAME_SIZE             100
 #define ELYSIAN_ANIMATION_DEFAULT_NAME          "Idle"
 
+ELYSIAN_ASSET_TYPEDEF(AnimationTrack)
 ELYSIAN_ASSET_TYPEDEF(SkeletonAttrib)
 ELYSIAN_ASSET_TYPEDEF(Skeleton)
 
@@ -34,7 +35,7 @@ namespace elysian {
         static void dispose(spAttachment* attachment);
     };
 
-    struct AnimationTrack: LuaTableProxy<AnimationTrack> {
+    struct AnimationTrackBase: LuaTableProxy<AnimationTrack> {
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(name,       getName,        setName)
@@ -46,8 +47,8 @@ namespace elysian {
         float       _timeScale = 1.0f;
         bool        _looping    = true;
 
-                    AnimationTrack(void) = default;
-                    AnimationTrack(const char*name, const bool looping=true);
+                    AnimationTrackBase(void) = default;
+                    AnimationTrackBase(const char*name, const bool looping=true);
         const char* getName(void) const;
         void        setName(const char* name);
         float       getTimeScale(void) const;
@@ -117,6 +118,8 @@ namespace elysian {
         Animation*              getAnimation(const unsigned index) const;
         void                    setAnimation(const unsigned index, Animation* anim);
         unsigned                getAnimationCount(void) const;
+        const char*             getSpineAnimNameByIndex(const unsigned index) const;
+        const char*             getSpineSkinNameByIndex(const unsigned index) const;
 
         void                    addAnimations(const std::initializer_list<Animation*>& list);
         Animation*              findAnimation(const char*name) const;
@@ -195,20 +198,19 @@ namespace elysian {
     // ========= INLINEZ =============
 
     //------- ANIMATIONTRACK -------
-    inline AnimationTrack::AnimationTrack(const char*name, const bool looping): _looping(looping) { strcpy(_name, name); }
-    inline const char* AnimationTrack::getName(void) const { return _name; }
-    inline void AnimationTrack::setName(const char* name) { strcpy(_name, name); }
-    inline float AnimationTrack::getTimeScale(void) const { return _timeScale; }
-    inline void AnimationTrack::setTimeScale(const float scale) { _timeScale = scale; }
-    inline bool AnimationTrack::getLooping(void) const { return _looping; }
-    inline void AnimationTrack::setLooping(const bool looping) { _looping = looping; }
+    inline AnimationTrackBase::AnimationTrackBase(const char*name, const bool looping): _looping(looping) { strcpy(_name, name); }
+    inline const char* AnimationTrackBase::getName(void) const { return _name; }
+    inline void AnimationTrackBase::setName(const char* name) { strcpy(_name, name); }
+    inline float AnimationTrackBase::getTimeScale(void) const { return _timeScale; }
+    inline void AnimationTrackBase::setTimeScale(const float scale) { _timeScale = scale; }
+    inline bool AnimationTrackBase::getLooping(void) const { return _looping; }
+    inline void AnimationTrackBase::setLooping(const bool looping) { _looping = looping; }
 
     //----- ANIMATION -------
     inline Animation::Animation(const char*const name, const std::initializer_list<AnimationTrack*> &tracks):
         _tracks(tracks) {
         strcpy(_name, name);
     }
-    inline Animation::~Animation(void) { for(auto* it : _tracks) delete it; }
     inline const char* Animation::getName(void) const { return _name; }
     inline void Animation::setName(const char*name) { strcpy(_name, name); }
     inline AnimationTrack* Animation::getTrack(const unsigned index) const { return index < _tracks.size()? _tracks[index] : nullptr; }

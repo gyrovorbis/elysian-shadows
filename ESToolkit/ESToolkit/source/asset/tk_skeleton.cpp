@@ -2,8 +2,11 @@
 #include <core/tk_menu_stack.h>
 #include <asset/tk_entity.h>
 #include <spine/AnimationState.h>
-#include <delegate/tk_file_browser_property_item_delegate.h>
 #include <estk/tk_lua_wrappers.h>
+#include <proxy/elysian_entity_proxy.hpp>
+#include <delegate/tk_file_browser_property_item_delegate.h>
+#include <delegate/tk_combobox_property_item_delegate.h>
+#include <model/tk_lua_table_stack_model.h>
 
 void TkSkeleton::onAtlasChanged(void) {
     setAttrib(_attrib);
@@ -52,9 +55,44 @@ QMenu* TkSkeleton::createContextMenu(void) {
 void TkSkeleton::setAnimByName(const int trackIndex, const char*const animName, const bool loop) {
     if(!spAnimationState_setAnimationByName(_animState, trackIndex, animName, loop)) {
         //qWarning() << "Skeleton::setAnimByName() - " << animName << "animation could not be found!";
-
     }
+}
 
+void TkSkeleton::initializeDelegates(void) {
+    LuaVariant delegates = {
+        {
+            "curAnim", new ComboBoxPropertyItemDelegate([](LuaTableFieldItem* luaFieldItem) {
+                TkSkeleton* skeleton = luaFieldItem->getTableRef().getValue<TkSkeleton*>();
+                QStringList options;
+                if(skeleton && skeleton->_attrib) {
+                    for(auto&& it: skeleton->_attrib->_animations) {
+                        options.push_back(it->getName());
+                    }
+                }
+                return options;
+
+            }, true)
+        },
+        {
+            "skin", new ComboBoxPropertyItemDelegate([](LuaTableFieldItem* luaFieldItem) {
+                TkSkeleton* skeleton = luaFieldItem->getTableRef().getValue<TkSkeleton*>();
+                QStringList options;
+                if(skeleton && skeleton->_attrib) {
+                    int i = 0;
+                    for(;;) {
+                        const char* name = skeleton->_attrib->getSpineSkinNameByIndex(i++);
+                        if(!name) break;
+                        options.push_back(QString(name));
+                    }
+                }
+                return options;
+
+            }, true)
+        }
+    };
+
+    delegates.push();
+    lua_setfield(*_mainState, -2, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
 }
 
 void TkSkeletonAttrib::initializeDelegates(void) {
@@ -72,3 +110,41 @@ void TkSkeletonAttrib::initializeDelegates(void) {
 
     lua_pop(*_mainState, 1);
 }
+
+void TkAnimationTrack::initializeDelegates(void) {
+    LuaVariant delegates = {
+        {
+            "name", new ComboBoxPropertyItemDelegate([](LuaTableFieldItem* luaFieldItem) {
+                //Traversal to get back to TkSkeleton
+                //AnimationTrack->Animation->AnimationAttrib
+                QStringList options;
+                LuaTableFieldItem* animItem  = static_cast<LuaTableFieldItem*>(luaFieldItem->getTableData()->getParentItem());
+
+                if(animItem && QString(animItem->getVariant().getTypeString()) == "Animation") {
+                    LuaTableFieldItem* attribItem = static_cast<LuaTableFieldItem*>(animItem->getTableData()->getParentItem());
+
+                    if(attribItem && QString(attribItem->getVariant().getTypeString()) == "SkeletonAttrib") {
+
+                        TkSkeletonAttrib* attrib = attribItem->getVariant().getValue<TkSkeletonAttrib*>();
+                        if(attrib) {
+                            int i = 0;
+                            for(;;) {
+                                const char* name = attrib->getSpineAnimNameByIndex(i++);
+                                if(!name) break;
+                                options.push_back(QString(name));
+                            }
+                        }
+                    }
+                }
+
+                return options;
+
+            }, true)
+        }
+
+    };
+
+    delegates.push();
+    lua_setfield(*_mainState, -2, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
+}
+

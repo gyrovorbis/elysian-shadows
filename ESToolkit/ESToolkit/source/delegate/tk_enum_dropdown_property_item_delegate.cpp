@@ -2,9 +2,15 @@
 #include <model/tk_property_stack_model.h>
 #include <model/tk_property_standard_item.h>
 #include <QComboBox>
+#include <QPainter>
+#include <QApplication>
 
-QWidget* EnumDropdownPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem& /*option*/, const QModelIndex& /*index*/) const {
-    auto* editor = new QComboBox(parent);
+QWidget* EnumDropdownPropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem& option, const QModelIndex& /*index*/) const {
+    QComboBox* editor = new QComboBox(parent);
+    editor->setFrame(false);
+    //editor->setContentsMargins(0, 0, 0, 0);
+    editor->setAutoFillBackground(true);
+    editor->setGeometry(option.rect);
     //editor->setEditable(true);
    // editor->setFocusPolicy(Qt::WheelFocus);
 
@@ -39,3 +45,15 @@ void EnumDropdownPropertyItemDelegate::setModelData(QWidget *editor, QAbstractIt
     } else QStyledItemDelegate::setModelData(editor, model, index);
 }
 
+void EnumDropdownPropertyItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem& option, const QModelIndex& /*index*/) const {
+    editor->setGeometry(option.rect);
+}
+
+void EnumDropdownPropertyItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const {
+    QStyleOptionViewItem itemOption(option);
+
+   initStyleOption(&itemOption, index);
+   itemOption.text = _stringNames[index.data(Qt::EditRole).toInt()];  // override text
+
+   QApplication::style()->drawControl(QStyle::CE_ItemViewItem, &itemOption, painter, nullptr);
+}

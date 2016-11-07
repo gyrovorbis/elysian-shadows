@@ -7,15 +7,18 @@
 namespace elysian {
     typedef SkeletonBase        Skeleton;
     typedef SkeletonAttribBase  SkeletonAttrib;
+    typedef AnimationTrackBase  AnimationTrack;
 }
 #else
 #   include <tk_skeleton.h>
 namespace elysian {
     typedef TkSkeleton          Skeleton;
     typedef TkSkeletonAttrib    SkeletonAttrib;
+    typedef TkAnimationTrack    AnimationTrack;
 }
-typedef TkSkeleton          Skeleton;
-typedef TkSkeletonAttrib    SkeletonAttrib;
+typedef TkSkeleton              Skeleton;
+typedef TkSkeletonAttrib        SkeletonAttrib;
+typedef TkAnimationTrack        AnimationTrack;
 
 #endif
 

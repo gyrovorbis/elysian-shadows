@@ -1,5 +1,6 @@
 #include <QDir>
 #include <QMessageBox>
+#include <model/tk_lua_table_stack_model.h>
 #include <proxy/elysian_area_proxy.hpp>
 #include <proxy/elysian_entity_proxy.hpp>
 #include <asset/tk_area.h>

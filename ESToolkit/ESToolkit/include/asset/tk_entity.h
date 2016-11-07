@@ -3,8 +3,8 @@
 
 #include <tk_tree_node.h>
 #include <level/elysian_entity_base.hpp>
-#include <tk_lua_table_stack_model.h>
 #include <elysian_system.hpp>
+#include <asset/tk_asset_manager.h>
 
 class QMenu;
 class Sprite;
@@ -86,7 +86,7 @@ public:
 	//Selectable
     virtual auto                getType(void) const -> TYPE override;
     virtual auto                getTreeWidgetItemType(void) -> ITEM_TYPE override;
-    virtual LuaTableStackModel* getModel(void) const override;
+    virtual QAbstractItemModel* getModel(void) const override;
 
     //elysian::EntityBase
     virtual bool                activate(void) override;

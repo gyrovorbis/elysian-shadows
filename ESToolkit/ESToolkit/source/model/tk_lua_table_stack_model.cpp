@@ -8,7 +8,14 @@
 LuaTableFieldItem::LuaTableFieldItem(LuaFieldRef ref, QStandardItem*const labelItem):
     _labelItem(labelItem),
     _fieldRef(std::move(ref))
-{}
+{
+    if(_fieldRef->getType() == LUA_TTABLE || _fieldRef->getType() == LUA_TUSERDATA) {
+        _settingFlags = true;
+        setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::NoItemFlags);
+        _settingFlags = false;
+    }
+
+}
 
 void LuaTableFieldItem::insertingModelItem(void) {
     _latentInit(this, &LuaTableFieldItem::getValue, &LuaTableFieldItem::setValue,

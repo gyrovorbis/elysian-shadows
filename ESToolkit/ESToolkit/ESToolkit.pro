@@ -69,7 +69,8 @@ DEPENDPATH += 	../../AssetIO/include \
         include/core \
         include/sheet_manager \
         include/dialog \
-        include/widget
+        include/widget \
+        include/delegate
 }
 
 #PRIORITIZED TO REDUCE BUILD TIME ON FUCKING MINGW
@@ -205,7 +206,9 @@ SOURCES += \
     ../../ESGamma/source/system/elysian_pathfinding_system.cpp \
     ../../AssetIO/source/utility/elysian_lua_variant_base.cpp \
     ../../ESGamma/source/system/elysian_level_system_base.cpp \
-    ../../AssetIO/source/behavior/elysian_state_machine_behavior.cpp
+    ../../AssetIO/source/behavior/elysian_state_machine_behavior.cpp \
+    source/delegate/tk_combobox_property_item_delegate.cpp \
+    source/delegate/tk_dynamic_text_property_item_delegate.cpp
 
 
 !ios: !dreamcast: !android {
@@ -273,7 +276,6 @@ SOURCES += \
         source/core/tk_network_access_manager.cpp \
         source/asset/tk_lua_behavior.cpp \
         source/estk/tk_timer_system.cpp \
-        source/core/tk_gitlab_manager.cpp \
         source/dialog/tk_gitlab_dialog.cpp \
         source/asset/tk_skeleton.cpp \
         source/asset/tk_rigid_body.cpp \
@@ -459,8 +461,7 @@ HEADERS += \
     ../../AssetIO/include/utility/elysian_cpp_lua_function.hpp \
     ../../AssetIO/include/behavior/elysian_state_machine_behavior.hpp \
     ../../AssetIO/include/utility/elysian_oolua_string_traits.hpp \
-    include/delegate/tk_property_item_proxy_delegate.h \
-    include/delegate/tk_combobox_property_item_delegate.h
+    include/delegate/tk_dynamic_text_property_item_delegate.h
 
 !ios:!dreamcast: !android {
     HEADERS +=  \
@@ -552,7 +553,6 @@ HEADERS += \
         include/widget/tk_pie_chart_view.h \
         include/dialog/tk_task_monitor_dialog.h \
         include/estk/tk_timer_system.h \
-        include/core/tk_gitlab_manager.h \
         include/dialog/tk_gitlab_dialog.h \
         include/tk_precompiled_headers.h \
         include/core/tk_network_access_manager.h \
@@ -568,7 +568,9 @@ HEADERS += \
         include/delegate/tk_property_item_delegate.h \
         include/delegate/tk_spinbox_property_item_delegate.h \
         include/delegate/tk_file_browser_property_item_delegate.h \
-        include/delegate/tk_enum_dropdown_property_item_delegate.h
+        include/delegate/tk_enum_dropdown_property_item_delegate.h \
+        include/delegate/tk_property_item_proxy_delegate.h \
+        include/delegate/tk_combobox_property_item_delegate.h
 }
 
 

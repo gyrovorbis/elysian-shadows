@@ -41,7 +41,8 @@ public:
 
     LuaVariant                      getVariant(void) const;
     void                            setVariant(const LuaVariant var);
-    int                             getLuaRef(void) const;
+    int                             getTableRefInt(void) const;
+    LuaVariant                      getTableRef(void) const;
     const LuaVariant&               getKey(void) const;
 
 
@@ -79,6 +80,7 @@ public:
     int                                 getPrefabDepth(void) const;
     void                                pushPrefab(void);
     void                                popPrefab(void);
+    QStandardItem*                      getParentItem(void) const;
 
 public Q_SLOTS:
     void                                onFieldChanged(const LuaVariant& key);
@@ -130,7 +132,9 @@ inline LuaVariant LuaTableFieldItem::getVariant(void) const {
     return _fieldRef.getVariant();
 }
 
-inline int LuaTableFieldItem::getLuaRef(void) const { return _fieldRef.getTableRef().getRef(); }
+inline LuaVariant LuaTableFieldItem::getTableRef(void) const { return _fieldRef.getTableRef(); }
+
+inline int LuaTableFieldItem::getTableRefInt(void) const { return _fieldRef.getTableRef().getRef(); }
 
 //Pull value from Lua table/userdata to update model
 inline QVariant LuaTableFieldItem::getValue(void) const {
@@ -190,7 +194,10 @@ inline LuaTableTableFieldData::LuaTableTableFieldData(LuaVariant tableRef):
     _tableRef(std::move(tableRef)),
     _parentRef(LuaManager::getParent(_tableRef)),
     _isPrefab((LuaManager::getPrefabName(_tableRef) != nullptr))
-{
+{}
+
+inline QStandardItem* LuaTableTableFieldData::getParentItem(void) const {
+    return _parentItem;
 }
 
 inline LuaTableStackModel::LuaTableStackModel(LuaVariant tableRef):

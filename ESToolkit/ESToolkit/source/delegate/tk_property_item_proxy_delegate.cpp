@@ -42,7 +42,6 @@ void PropertyItemProxyDelegate::setModelData(QWidget *editor, QAbstractItemModel
     auto* propModel = static_cast<const PropertyStackModel*>(model);
     auto* item = static_cast<ESTkStandardItem*>(propModel->itemFromIndex(index));
 
-
     if(item->getStyledItemDelegate()) {
         return item->getStyledItemDelegate()->setModelData(editor, model, index);
     } else {
@@ -78,4 +77,33 @@ bool PropertyItemProxyDelegate::editorEvent(QEvent *event, QAbstractItemModel *m
     }
     return QStyledItemDelegate::editorEvent(event, model, option, index);
 
+}
+
+
+void PropertyItemProxyDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const {
+    auto* propModel = static_cast<const PropertyStackModel*>(index.model());
+    auto* item = static_cast<ESTkStandardItem*>(propModel->itemFromIndex(index));
+
+    if(item->getStyledItemDelegate()) {
+        return item->getStyledItemDelegate()->updateEditorGeometry(editor, option, index);
+    } else {
+        return QStyledItemDelegate::updateEditorGeometry(editor, option, index);
+    }
+}
+
+void PropertyItemProxyDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const {
+    if(!index.isValid()) return;
+
+    auto* propModel = static_cast<const PropertyStackModel*>(index.model());
+    if(propModel) {
+        QStandardItem* stdItem = propModel->itemFromIndex(index);
+        if(stdItem && stdItem->type() >= (int)ESTkStandardItemType::Generic) {
+            ESTkStandardItem* item = static_cast<ESTkStandardItem*>(stdItem);
+            if(item->getStyledItemDelegate()) {
+                return item->getStyledItemDelegate()->paint(painter, option, index);
+            }
+        }
+    }
+
+    return QStyledItemDelegate::paint(painter, option, index);
 }

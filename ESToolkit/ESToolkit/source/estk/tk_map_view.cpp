@@ -22,6 +22,7 @@
 #include <proxy/elysian_entity_proxy.hpp>
 #include <core/tk_mime_drop_manager.h>
 #include <core/tk_file_utilities.h>
+#include <QFileInfo>
 
 
 MapView::MapView(QWidget *parent): DestView<TileEntry>::DestView(parent) {

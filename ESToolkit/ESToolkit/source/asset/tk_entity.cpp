@@ -103,7 +103,7 @@ void TkEntity::setSaveFlag(const bool val) {
     //treeWidget()->dataChanged
 }
 
-LuaTableStackModel* TkEntity::getModel(void) const {
+QAbstractItemModel* TkEntity::getModel(void) const {
     if(!_luaModel) {
         _luaModel = new LuaTableStackModel(this);
         _luaModel->populateModel();

@@ -13,10 +13,12 @@
 
 namespace elysian {
 
-ELYSIAN_LUA_PROXY_FIELDS_EXPORT(AnimationTrack)
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(AnimationTrackBase)
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(Animation)
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(SkeletonBase)
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(SkeletonAttribBase)
+
+Animation::~Animation(void) { for(auto* it : _tracks) delete it; }
 
 const char* SkeletonBase::getAnim(void) const {
     return (_curAnim)? _curAnim->getName() : nullptr;
@@ -137,6 +139,14 @@ void SkeletonAttribBase::loadAssets(const char * const atlas, const char * const
     setJsonPath(json);
 }
 
+
+const char* SkeletonAttribBase::getSpineAnimNameByIndex(const unsigned index) const {
+    return (_skeletonData && index < _skeletonData->animationsCount)? _skeletonData->animations[index]->name : nullptr;
+}
+
+const char* SkeletonAttribBase::getSpineSkinNameByIndex(const unsigned index) const {
+    return (_skeletonData && index < _skeletonData->skinsCount)? _skeletonData->skins[index]->name : nullptr;
+}
 
 SkeletonBase::~SkeletonBase(void) {
     _removeEntityAttachments();
@@ -350,6 +360,7 @@ const char* SkeletonBase::getSkin(void) const {
     return (_skeleton && _skeleton->skin)? _skeleton->skin->name : nullptr;
 
 }
+
 
 
 }

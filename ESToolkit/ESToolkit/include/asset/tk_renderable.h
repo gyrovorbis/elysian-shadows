@@ -2,7 +2,6 @@
 #define TKRENDERABLE_H
 
 #include <component/elysian_renderable_base.hpp>
-#include <estk/tk_lua_wrappers.h>
 
 class TkRenderable: public elysian::RenderableBase {
 friend class TkEntity;

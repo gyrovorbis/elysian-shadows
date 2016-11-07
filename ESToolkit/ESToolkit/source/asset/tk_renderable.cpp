@@ -2,6 +2,7 @@
 #include <tk_menu_stack.h>
 #include <QMenu>
 #include <delegate/tk_enum_dropdown_property_item_delegate.h>
+#include <estk/tk_lua_wrappers.h>
 
 bool TkRenderable::validate(QString &str) const {
     bool success = true;

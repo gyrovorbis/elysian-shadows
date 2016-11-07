@@ -1,7 +1,13 @@
-#ifndef TKSKELETON_H
-#define TKSKELETON_H
+#ifndef TK_SKELETON_H
+#define TK_SKELETON_H
 
 #include <component/elysian_skeleton_base.hpp>
+
+class TkAnimationTrack: public elysian::AnimationTrackBase {
+public:
+
+    static void initializeDelegates(void);
+};
 
 class TkSkeletonAttrib: public elysian::SkeletonAttribBase {
     Q_OBJECT
@@ -18,7 +24,6 @@ Q_SIGNALS:
 
 
 
-
 class TkSkeleton: public elysian::SkeletonBase {
             Q_OBJECT
 public:
@@ -31,6 +36,8 @@ public:
     virtual QMenu*  createContextMenu(void) override;
 
     void            setAnimByName(const int trackIndex, const char*const animName, const bool loop=true);
+
+    static void     initializeDelegates(void);
 
 private Q_SLOTS:
 

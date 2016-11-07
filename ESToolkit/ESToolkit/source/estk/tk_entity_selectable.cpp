@@ -63,7 +63,7 @@ void EntitySelectable::addEntity(const EntityEntry entry) {
 
     //if(!_baseEntity) _baseEntity = entry.entity;
 
-    entry->getModel()->setLabelItemText("Entity");
+    static_cast<LuaTableStackModel*>(entry->getModel())->setLabelItemText("Entity");
 
     LuaManager::stackBalanceEnd();
 }
