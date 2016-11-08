@@ -57,6 +57,13 @@ bool PropertyItemProxyDelegate::editorEvent(QEvent *event, QAbstractItemModel *m
     auto* item = propModel? propModel->itemFromIndex(index) : nullptr;
     auto* propItem = (item && item->type() >= QStandardItem::UserType)? static_cast<ESTkStandardItem*>(item) : nullptr;
 
+    if(event->type() == QEvent::MouseMove) {
+        qDebug() << "ENTER";
+    } else if(event->type() == QEvent::Leave) {
+        qDebug() << "LEAVE";
+    }
+
+
     if(propItem) {
         QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
 

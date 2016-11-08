@@ -22,6 +22,7 @@ bool PropertyItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
     auto* item = propModel? propModel->itemFromIndex(index) : nullptr;
     auto* propItem = (item && item->type() >= QStandardItem::UserType)? static_cast<ESTkStandardItem*>(item) : nullptr;
 
+
     if(event->type() == QEvent::MouseButtonPress) {
         QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
         if(mouseEvent->button() == Qt::RightButton) {

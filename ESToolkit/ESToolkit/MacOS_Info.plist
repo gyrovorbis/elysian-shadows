@@ -6,8 +6,6 @@
 	<false/>
 	<key>CFBundleGetInfoString</key>
 	<string>Created by Qt/QMake</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
 	<key>CFBundleIconFile</key>
 	<string>estk.icns</string>
 	<key>CFBundlePackageType</key>

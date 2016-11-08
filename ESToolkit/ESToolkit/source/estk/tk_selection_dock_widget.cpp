@@ -9,6 +9,7 @@ SelectionDockWidget::SelectionDockWidget(QWidget *parent) :
     _ui(new Ui::SelectionDockWidget)
 {
     _ui->setupUi(this);
+    setMouseTracking(true);
     _selectionTreeWidget = new QTreeView();
     QFont font = _selectionTreeWidget->font();
     font.setPointSize(10);
@@ -22,6 +23,8 @@ SelectionDockWidget::SelectionDockWidget(QWidget *parent) :
 	_selectionTreeWidget->setAlternatingRowColors(true);
 
     _selectionTreeWidget->setItemDelegate(new PropertyItemProxyDelegate);
+    _selectionTreeWidget->setMouseTracking(true);
+    _selectionTreeWidget->viewport()->setMouseTracking(true);
 	_defaultItemDelegate = _selectionTreeWidget->itemDelegate();
 }
 

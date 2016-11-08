@@ -3,6 +3,7 @@
 #include <model/tk_property_standard_item.h>
 #include <model/tk_lua_table_stack_model.h>
 #include <QApplication>
+#include <QPainter>
 
 void DynamicTextPropertyItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const {
     QStyleOptionViewItem itemOption(option);
@@ -17,5 +18,27 @@ void DynamicTextPropertyItemDelegate::paint(QPainter *painter, const QStyleOptio
 
    _callback(fieldItem, itemOption);
 
-   QApplication::style()->drawControl(QStyle::CE_ItemViewItem, &itemOption, painter, nullptr);
+   QStyle* style = QApplication::style();
+
+   //itemOption.icon = style->standardIcon(QStyle::SP_MediaPlay);
+   itemOption.viewItemPosition = QStyleOptionViewItem::Beginning;
+   //painter->drawImage(itemOption.rect, itemOption.icon.pixmap(itemOption.icon.availableSizes().first()).toImage());
+
+   style->drawControl(QStyle::CE_ItemViewItem, &itemOption, painter, nullptr);
+
+   QStyleOptionButton button;
+   int x = option.rect.x()+option.rect.width()-20;
+   int y = option.rect.y();
+   int w = option.rect.height();
+   int h = option.rect.height();
+   button.rect = QRect(x, y, w, h);
+   button.iconSize = QSize(h, h);
+   button.state = itemOption.state;
+   button.fontMetrics = itemOption.fontMetrics;
+   button.palette = itemOption.palette;
+   button.styleObject = itemOption.styleObject;
+   button.icon = style->standardIcon(QStyle::SP_MediaPlay);
+
+   style->drawControl(QStyle::CE_PushButton, &button, painter, nullptr);
+
 }

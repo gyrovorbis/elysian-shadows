@@ -492,7 +492,7 @@ void ESToolkit::ReadSettings()
     if(!settings.value("gitLabPrivateToken").isNull()) {
         _gitlabDialog->setHostName(settings.value("gitLabHostName").toString());
         _gitlabDialog->setPrivateToken(settings.value("gitLabPrivateToken").toString());
-        _gitlabDialog->authenticate(true);
+        //_gitlabDialog->authenticate(true);
         _gitlabDialog->setProjectId(settings.value("gitLabProjectId").toInt());
     }
 
