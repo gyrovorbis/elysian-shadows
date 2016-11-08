@@ -18,10 +18,7 @@
 
 
 bool PropertyItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) {
-    auto* propModel =  qobject_cast<const PropertyStackModel*>(model);
-    auto* item = propModel? propModel->itemFromIndex(index) : nullptr;
-    auto* propItem = (item && item->type() >= QStandardItem::UserType)? static_cast<ESTkStandardItem*>(item) : nullptr;
-
+    auto* propItem = modelIndexToLuaTableFieldItem(index);
 
     if(event->type() == QEvent::MouseButtonPress) {
         QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
@@ -185,6 +182,32 @@ QMenu* PropertyItemDelegate::getContextMenu(ESTkStandardItem*const item) {
     _initialized = true;
 
     return _contextMenu;
+}
+
+
+ESTkStandardItem* PropertyItemDelegate::modelIndexToESTkStandardItem(const QModelIndex& index) {
+    if(index.isValid()) {
+        auto* model = qobject_cast<const PropertyStackModel*>(index.model());
+        if(model) {
+            auto* item = static_cast<ESTkStandardItem*>(model->itemFromIndex(index));
+            if(item->type() >= (int)ESTkStandardItemType::Generic) {
+                return static_cast<ESTkStandardItem*>(item);
+            }
+        }
+    }
+    return nullptr;
+}
+
+LuaTableFieldItem*  PropertyItemDelegate::modelIndexToLuaTableFieldItem(const QModelIndex& index) {
+    if(index.isValid()) {
+        auto* model = qobject_cast<const PropertyStackModel*>(index.model());
+        if(model) {
+            auto* item = static_cast<ESTkStandardItem*>(model->itemFromIndex(index));
+            if(item->type() == (int)ESTkStandardItemType::LuaTable)
+                return static_cast<LuaTableFieldItem*>(item);
+        }
+    }
+    return nullptr;
 }
 
 

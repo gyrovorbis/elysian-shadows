@@ -5,11 +5,11 @@
 #include <functional>
 #include <QStringList>
 
-class LuaTableFieldItem;
+class ESTkStandardItem;
 
 
 class ComboBoxPropertyItemDelegate: public PropertyItemDelegate {
-    using PopulatorType = std::function<QStringList(LuaTableFieldItem*)>;
+    using PopulatorType = std::function<QStringList(ESTkStandardItem*)>;
 
 private:
     PopulatorType   _populator;

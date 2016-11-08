@@ -14,9 +14,7 @@ QWidget* SpinboxPropertyItemDelegate::createEditor(QWidget *parent, const QStyle
 
 void SpinboxPropertyItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
     QSpinBox* spinbox = qobject_cast<QSpinBox*>(editor);
-
-    auto* model = static_cast<const PropertyStackModel*>(index.model());
-    auto* item = static_cast<ESTkStandardItem*>(model->itemFromIndex(index));
+    auto* item = modelIndexToESTkStandardItem(index);
 
     if(spinbox) spinbox->setValue(item->data(Qt::EditRole).toInt());
     else QStyledItemDelegate::setEditorData(editor, index);
@@ -27,8 +25,7 @@ void SpinboxPropertyItemDelegate::setModelData(QWidget *editor, QAbstractItemMod
     QSpinBox* spinbox = qobject_cast<QSpinBox*>(editor);
 
     if(spinbox) {
-        auto* propModel = static_cast<const PropertyStackModel*>(model);
-        auto* item = static_cast<ESTkStandardItem*>(propModel->itemFromIndex(index));
+        auto* item = modelIndexToESTkStandardItem(index);
 
         item->setData(spinbox->value(), Qt::EditRole);
     } else QStyledItemDelegate::setModelData(editor, model, index);

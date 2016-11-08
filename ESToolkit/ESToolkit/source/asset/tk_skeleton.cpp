@@ -5,11 +5,12 @@
 #include <estk/tk_lua_wrappers.h>
 #include <proxy/elysian_entity_proxy.hpp>
 #include <delegate/tk_file_browser_property_item_delegate.h>
-#include <delegate/tk_dynamic_text_property_item_delegate.h>
+#include <delegate/tk_dynamic_content_property_item_delegate.h>
 #include <delegate/tk_combobox_property_item_delegate.h>
 #include <model/tk_lua_table_stack_model.h>
 #include <core/tk_menu_stack.h>
 #include <QStyleOptionViewItem>
+#include <QApplication>
 
 void TkSkeleton::onAtlasChanged(void) {
     setAttrib(_attrib);
@@ -64,7 +65,8 @@ void TkSkeleton::setAnimByName(const int trackIndex, const char*const animName, 
 void TkSkeleton::initializeDelegates(void) {
     LuaVariant delegates = {
         {
-            "curAnim", new ComboBoxPropertyItemDelegate([](LuaTableFieldItem* luaFieldItem) {
+            "curAnim", new ComboBoxPropertyItemDelegate([](ESTkStandardItem* item) {
+                LuaTableFieldItem* luaFieldItem = static_cast<LuaTableFieldItem*>(item);
                 TkSkeleton* skeleton = luaFieldItem->getTableRef().getValue<TkSkeleton*>();
                 QStringList options;
                 if(skeleton && skeleton->_attrib) {
@@ -77,7 +79,8 @@ void TkSkeleton::initializeDelegates(void) {
             }, true)
         },
         {
-            "skin", new ComboBoxPropertyItemDelegate([](LuaTableFieldItem* luaFieldItem) {
+            "skin", new ComboBoxPropertyItemDelegate([](ESTkStandardItem* item) {
+                LuaTableFieldItem* luaFieldItem = static_cast<LuaTableFieldItem*>(item);
                 TkSkeleton* skeleton = luaFieldItem->getTableRef().getValue<TkSkeleton*>();
                 QStringList options;
                 if(skeleton && skeleton->_attrib) {
@@ -111,6 +114,14 @@ void TkSkeletonAttrib::initializeDelegates(void) {
     OOLUA::push(*_mainState, jsonDelegate);
     lua_setfield(*_mainState, -2, "jsonPath");
 
+    DynamicContentPropertyItemDelegate* animDelegate =
+            new DynamicContentPropertyItemDelegate(DynamicContentPropertyItemDelegate::luaArraySizeTextCallback);
+    animDelegate->addButton(QIcon(DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_ICON_PLUS_PATH), DynamicContentPropertyItemDelegate::luaAddItemButtonCallback<elysian::Animation>);
+
+
+    OOLUA::push(*_mainState, animDelegate);
+    lua_setfield(*_mainState, -2, "animations");
+
     lua_pop(*_mainState, 1);
 }
 
@@ -118,20 +129,42 @@ void TkSkeletonAttrib::initializeVirtualTableDelegates(QString key) {
     if(key == "animations") {
 
         LuaVariant delegateFunc = [](LuaVariant t, LuaVariant k) -> PropertyItemDelegate* {
-          //  qDebug() << "IN DELEGATE -" << k.getValue<unsigned>();
             TkSkeletonAttrib* self = t["__ud"]->getValue<TkSkeletonAttrib*>();
             if(k.getType() == LUA_TNUMBER) {
                 unsigned index = k.getValue<unsigned>();
                 if(index <= self->getAnimationCount()) {
-                    DynamicTextPropertyItemDelegate* delegate = new DynamicTextPropertyItemDelegate([](LuaTableFieldItem* item, QStyleOptionViewItem& option) {
-                      //  qDebug() << "IN DYNAMIC TEXT";
-                        TkSkeletonAttrib* attrib = item->getTableRef()["__ud"]->getValue<TkSkeletonAttrib*>();
-                        unsigned index = item->getKey().getValue<unsigned>()-1;
+                    DynamicContentPropertyItemDelegate* delegate = new DynamicContentPropertyItemDelegate([](ESTkStandardItem* item, QStyleOptionViewItem& option) {
+                        LuaTableFieldItem* luaFieldItem = static_cast<LuaTableFieldItem*>(item);
+                        TkSkeletonAttrib* attrib = luaFieldItem->getTableRef()["__ud"]->getValue<TkSkeletonAttrib*>();
+                        unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
                         elysian::Animation* anim = attrib->getAnimation(index);
                         QPalette palette = option.palette;
                         palette.setColor(QPalette::Text, QColor(Qt::gray));
                         option.palette = palette;
-                        option.text = QString(anim->getName());// + QString("[") + QString(anim->getTrackCount()) + QString(" tracks]");
+                        option.text = QString(anim->getName());
+                    });
+
+                    delegate->addButton(QApplication::style()->standardIcon(QStyle::SP_MediaPlay), [](ESTkStandardItem* item) {
+
+                        QStandardItem* parent = item->parent();
+                        if(parent && parent->data(Qt::DisplayRole).toString() == "animations") {
+                            parent = parent->parent();
+                            if(parent && parent->data(Qt::DisplayRole).toString() == "attrib") {
+                                parent = parent->parent();
+                                if(parent && parent->data(Qt::DisplayRole).toString() == "skeleton") {
+                                    QModelIndex labelIndex = parent->index();
+                                    QModelIndex tableIndex = labelIndex.sibling(labelIndex.row(), labelIndex.column()+1);
+                                    if(tableIndex.isValid()) {
+                                        LuaTableFieldItem* luaItem = static_cast<LuaTableFieldItem*>(item->model()->itemFromIndex(tableIndex));
+                                        luaItem->getVariant()["curAnim"].setVariant(static_cast<LuaTableFieldItem*>(item)->getVariant()["name"].getVariant());
+                                    }
+
+                                }
+                            }
+
+                        }
+
+
                     });
 
                     MenuStack stack("Animation");
@@ -160,7 +193,8 @@ void TkSkeletonAttrib::initializeVirtualTableDelegates(QString key) {
 void TkAnimationTrack::initializeDelegates(void) {
     LuaVariant delegates = {
         {
-            "name", new ComboBoxPropertyItemDelegate([](LuaTableFieldItem* luaFieldItem) {
+            "name", new ComboBoxPropertyItemDelegate([](ESTkStandardItem* item) {
+                auto* luaFieldItem = static_cast<LuaTableFieldItem*>(item);
                 //Traversal to get back to TkSkeleton
                 //AnimationTrack->Animation->AnimationAttrib
                 QStringList options;
@@ -192,5 +226,61 @@ void TkAnimationTrack::initializeDelegates(void) {
 
     delegates.push();
     lua_setfield(*_mainState, -2, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
+}
+
+void TkAnimation::initializeDelegates(void) {
+    lua_newtable(*_mainState);
+    lua_pushvalue(*_mainState, -1);
+    lua_setfield(*_mainState, -3, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
+
+    DynamicContentPropertyItemDelegate* tracksDelegate =
+            new DynamicContentPropertyItemDelegate(DynamicContentPropertyItemDelegate::luaArraySizeTextCallback);
+    tracksDelegate->addButton(QIcon(DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_ICON_PLUS_PATH), DynamicContentPropertyItemDelegate::luaAddItemButtonCallback<AnimationTrack>);
+
+    OOLUA::push(*_mainState, tracksDelegate);
+    lua_setfield(*_mainState, -2, "tracks");
+
+    lua_pop(*_mainState, 1);
+}
+
+void TkAnimation::initializeVirtualTableDelegates(QString key) {
+    if(key == "tracks") {
+
+        LuaVariant delegateFunc = [](LuaVariant t, LuaVariant k) -> PropertyItemDelegate* {
+            TkAnimation* self = t["__ud"]->getValue<TkAnimation*>();
+            if(k.getType() == LUA_TNUMBER) {
+                unsigned index = k.getValue<unsigned>();
+                if(index <= self->getTrackCount()) {
+                    DynamicContentPropertyItemDelegate* delegate = new DynamicContentPropertyItemDelegate([](ESTkStandardItem* item, QStyleOptionViewItem& option) {
+                        LuaTableFieldItem* luaFieldItem = static_cast<LuaTableFieldItem*>(item);
+                        TkAnimation* anim = luaFieldItem->getTableRef()["__ud"]->getValue<TkAnimation*>();
+                        unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
+                        elysian::AnimationTrack* track = anim->getTrack(index);
+                        QPalette palette = option.palette;
+                        palette.setColor(QPalette::Text, QColor(Qt::gray));
+                        option.palette = palette;
+                        option.text = QString(track->getName());
+                    });
+
+                    MenuStack stack("Animation");
+                    stack.insertAction("Remove Animation", [=](bool) {
+                        /*for(auto&& it : self->_animations) {
+
+                        }*/
+
+
+                    });
+
+                    delegate->setContextMenu(stack.first());
+
+                    return delegate;
+                }
+            }
+            return nullptr;
+        };
+       // qDebug() << "REGISTERING" << delegateFunc.getTypeString();
+        delegateFunc.push();
+        lua_setfield(*_mainState, -2, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
+    }
 }
 

@@ -90,6 +90,7 @@ namespace elysian {
                                     LuaVariantBase(const LuaVariantBase& rhs);
                                     LuaVariantBase(LuaVariantBase&& rhs);
                                     LuaVariantBase(const int number);
+                                    LuaVariantBase(const unsigned number);
                                     LuaVariantBase(const float number);
                                     LuaVariantBase(const double number);
                                     LuaVariantBase(const bool val);
@@ -177,6 +178,7 @@ namespace elysian {
         void                        setValue(T*const ud);
         void                        setValue(const std::nullptr_t null);
         void                        setValue(const int number);
+        void                        setValue(const unsigned number);
         void                        setValue(const float number);
         void                        setValue(const double number);
         void                        setValue(const char*const str);
@@ -519,6 +521,7 @@ public:
     inline LuaVariantBase::LuaVariantBase(const float number) { setValue(number); }
     inline LuaVariantBase::LuaVariantBase(const double number) { setValue(number); }
     inline LuaVariantBase::LuaVariantBase(const int num) { setValue(num); }
+    inline LuaVariantBase::LuaVariantBase(const unsigned num) { setValue((int)num); }
     inline LuaVariantBase::LuaVariantBase(void*const ptr) { setValue(ptr); }
     inline LuaVariantBase::LuaVariantBase(const OOLUA::Lua_table_ref& ref) { setRef(ref.ref()); }
     inline LuaVariantBase::LuaVariantBase(const OOLUA::Lua_func_ref &ref) { setRef(ref.ref()); }
@@ -692,6 +695,11 @@ public:
     }
 
     inline void LuaVariantBase::setValue(const int number) {
+        _setType(LUA_TNUMBER);
+        _value.number = (lua_Number)number;
+    }
+
+    inline void LuaVariantBase::setValue(const unsigned number) {
         _setType(LUA_TNUMBER);
         _value.number = (lua_Number)number;
     }

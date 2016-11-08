@@ -13,6 +13,7 @@
 #define ELYSIAN_ANIMATION_DEFAULT_NAME          "Idle"
 
 ELYSIAN_ASSET_TYPEDEF(AnimationTrack)
+ELYSIAN_ASSET_TYPEDEF(Animation)
 ELYSIAN_ASSET_TYPEDEF(SkeletonAttrib)
 ELYSIAN_ASSET_TYPEDEF(Skeleton)
 
@@ -59,7 +60,7 @@ namespace elysian {
     };
 
 
-    struct Animation: public LuaTableProxy<Animation> {
+    struct AnimationBase: public LuaTableProxy<Animation> {
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(name,           getName,    setName)
@@ -69,9 +70,9 @@ namespace elysian {
         std::vector<AnimationTrack*> _tracks;
         char            _name[ELYSIAN_ANIMATION_NAME_SIZE] = { 0 };
 
-                        Animation(void) = default;
-                        Animation(const char*const name, const std::initializer_list<AnimationTrack*>& tracks);
-                        ~Animation(void);
+                        AnimationBase(void) = default;
+                        AnimationBase(const char*const name, const std::initializer_list<AnimationTrack*>& tracks);
+                        ~AnimationBase(void);
         const char*     getName(void) const;
         void            setName(const char*name);
         AnimationTrack* getTrack(const unsigned index) const;
@@ -134,7 +135,7 @@ namespace elysian {
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(attrib,     getAttrib,      setAttrib)
             ELYSIAN_LUA_PROXY_FIELD(skin,       getSkin,        setSkin)
-            ELYSIAN_LUA_PROXY_FIELD(curAnim,    getAnim,        setAnim)
+            ELYSIAN_LUA_PROXY_FIELD(curAnim,    getAnimName,    playAnimNameBlocking)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 
         using AnimListener = std::function<bool(int, spEventType, spEvent*, int)>;
@@ -144,10 +145,11 @@ namespace elysian {
         SkeletonAttrib*     _attrib         = nullptr;
         spSkeleton*         _skeleton       = nullptr;
         spAnimationState*   _animState      = nullptr;
-        Animation*          _curAnim        = nullptr;
+        const Animation*    _curAnim        = nullptr;
         AnimListener        _listener;
 
         float               _animTimeScale  = 1.0f;
+        uint32_t            _blockedTracks  = 0;
 
         EntityAttachment*   _findEntityAttachment(const char*const name) const;
         void                _updateEntityAttachments(void) const;
@@ -173,10 +175,15 @@ namespace elysian {
         void            setAnimTimeScale(const float scale);
         float           getAnimTimeScale(void) const;
 
-        void            setAnimByName(const int trackIndex, const char*const animName, const bool loop=true);
-        void            setAnim(const char* name);
-        const char*     getAnim(void) const;
-        void            setAnim(const char* name, const AnimListener& listener);
+        void            setAnimTrackByName(const int trackIndex, const char*const animName, const bool loop=true);
+        void            setAnimName(const char* name);
+        void            setAnim(const Animation* anim);
+        void            setAnimName(const char* name, const AnimListener& listener);
+        void            setAnim(const Animation* anim, const AnimListener& listener);
+        const char*     getAnimName(void) const;
+        void            playAnimNameBlocking(const char* name);
+
+
         void            setSkin(const char* name);
         const char*     getSkin(void) const;
 
@@ -207,15 +214,15 @@ namespace elysian {
     inline void AnimationTrackBase::setLooping(const bool looping) { _looping = looping; }
 
     //----- ANIMATION -------
-    inline Animation::Animation(const char*const name, const std::initializer_list<AnimationTrack*> &tracks):
+    inline AnimationBase::AnimationBase(const char*const name, const std::initializer_list<AnimationTrack*> &tracks):
         _tracks(tracks) {
         strcpy(_name, name);
     }
-    inline const char* Animation::getName(void) const { return _name; }
-    inline void Animation::setName(const char*name) { strcpy(_name, name); }
-    inline AnimationTrack* Animation::getTrack(const unsigned index) const { return index < _tracks.size()? _tracks[index] : nullptr; }
-    inline unsigned Animation::getTrackCount(void) const { return _tracks.size(); }
-    inline void Animation::setTrack(const unsigned index, AnimationTrack* track) {
+    inline const char* AnimationBase::getName(void) const { return _name; }
+    inline void AnimationBase::setName(const char*name) { strcpy(_name, name); }
+    inline AnimationTrack* AnimationBase::getTrack(const unsigned index) const { return index < _tracks.size()? _tracks[index] : nullptr; }
+    inline unsigned AnimationBase::getTrackCount(void) const { return _tracks.size(); }
+    inline void AnimationBase::setTrack(const unsigned index, AnimationTrack* track) {
         if(index == _tracks.size()) {
             _tracks.push_back(track);
         }
@@ -247,13 +254,6 @@ namespace elysian {
 
 
     inline void SkeletonAttribBase::addAnimations(const std::initializer_list<Animation*>& list) { _animations.insert(_animations.end(), list); }
-
-    inline Animation* SkeletonAttribBase::findAnimation(const char *name) const {
-        for(unsigned i = 0; i < _animations.size(); ++i) {
-            if(strcmp(_animations[i]->_name, name) == 0) return _animations[i];
-        }
-        return nullptr;
-    }
 
     inline Entity* SkeletonBase::getEntityAttachedToSlot(const char *name) const {
         auto* slot = _findEntityAttachment(name);

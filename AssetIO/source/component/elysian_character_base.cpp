@@ -329,7 +329,7 @@ void CharacterBase::playAnimation(Direction::DIR4 dir) {
     if(!name) return;
 
     if(_entity->getSkeleton()) {
-        _entity->getSkeleton()->setAnim(name);
+        _entity->getSkeleton()->setAnimName(name);
     }
 }
 
@@ -437,7 +437,7 @@ void CharacterBase::addTempState(const ANIM_STATE state, const int track, OOLUA:
     auto*name = getAnimNameFromStates(_faceDir);
 
     if(name) {
-        getEntity()->getSkeleton()->setAnim(name, [=](int trackIndex, spEventType eventType, spEvent* /*event*/, int /*loopCount*/) {
+        getEntity()->getSkeleton()->setAnimName(name, [=](int trackIndex, spEventType eventType, spEvent* /*event*/, int /*loopCount*/) {
 
             if(_callbackTrack == trackIndex || _callbackTrack == -1) {
                 LuaVariant v;

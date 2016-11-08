@@ -208,7 +208,7 @@ SOURCES += \
     ../../ESGamma/source/system/elysian_level_system_base.cpp \
     ../../AssetIO/source/behavior/elysian_state_machine_behavior.cpp \
     source/delegate/tk_combobox_property_item_delegate.cpp \
-    source/delegate/tk_dynamic_text_property_item_delegate.cpp
+    source/delegate/tk_dynamic_content_property_item_delegate.cpp
 
 
 !ios: !dreamcast: !android {
@@ -461,7 +461,7 @@ HEADERS += \
     ../../AssetIO/include/utility/elysian_cpp_lua_function.hpp \
     ../../AssetIO/include/behavior/elysian_state_machine_behavior.hpp \
     ../../AssetIO/include/utility/elysian_oolua_string_traits.hpp \
-    include/delegate/tk_dynamic_text_property_item_delegate.h
+    include/delegate/tk_dynamic_content_property_item_delegate.h
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

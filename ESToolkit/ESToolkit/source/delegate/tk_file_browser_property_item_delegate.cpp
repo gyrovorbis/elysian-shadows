@@ -49,15 +49,13 @@ QWidget* FileBrowserPropertyItemDelegate::createEditor(QWidget *parent, const QS
 }
 
 void FileBrowserPropertyItemDelegate::setEditorData(QWidget* /*editor*/, const QModelIndex &index) const {
-    auto* model = static_cast<const PropertyStackModel*>(index.model());
-    auto* item = static_cast<ESTkStandardItem*>(model->itemFromIndex(index));
+    auto* item = modelIndexToESTkStandardItem(index);
 
     _pathEdit->setText(item? item->data(Qt::EditRole).toString() : "");
 }
 
 void FileBrowserPropertyItemDelegate::setModelData(QWidget* /*editor*/, QAbstractItemModel *model, const QModelIndex &index) const {
-    auto* propModel = static_cast<const PropertyStackModel*>(model);
-    auto* item = static_cast<ESTkStandardItem*>(propModel->itemFromIndex(index));
+    auto* item = modelIndexToESTkStandardItem(index);
 
     item->setData(_pathEdit->text(), Qt::EditRole);
 

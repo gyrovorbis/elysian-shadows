@@ -24,8 +24,7 @@ QWidget* EnumDropdownPropertyItemDelegate::createEditor(QWidget *parent, const Q
 void EnumDropdownPropertyItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
     QComboBox* combo = static_cast<QComboBox*>(editor);
 
-    auto* model = static_cast<const PropertyStackModel*>(index.model());
-    auto* item = static_cast<ESTkStandardItem*>(model->itemFromIndex(index));
+    auto* item = modelIndexToESTkStandardItem(index);
 
     if(combo) combo->setCurrentIndex(item->data(Qt::EditRole).toInt());
     else QStyledItemDelegate::setEditorData(editor, index);
@@ -36,8 +35,7 @@ void EnumDropdownPropertyItemDelegate::setModelData(QWidget *editor, QAbstractIt
     QComboBox* combo = static_cast<QComboBox*>(editor);
 
     if(combo) {
-        auto* propModel = static_cast<const PropertyStackModel*>(model);
-        auto* item = static_cast<ESTkStandardItem*>(propModel->itemFromIndex(index));
+        auto* item = modelIndexToESTkStandardItem(index);
         const int i = combo->currentIndex();
 
         item->setData(_stringNames[i], Qt::DisplayRole);

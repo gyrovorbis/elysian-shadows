@@ -11,7 +11,7 @@
 #include <delegate/tk_spinbox_property_item_delegate.h>
 #include <delegate/tk_enum_dropdown_property_item_delegate.h>
 #include <delegate/tk_combobox_property_item_delegate.h>
-#include <delegate/tk_dynamic_text_property_item_delegate.h>
+#include <delegate/tk_dynamic_content_property_item_delegate.h>
 
 
 namespace OOLUA
@@ -57,7 +57,7 @@ OOLUA_PROXY_END
 OOLUA_PROXY(ComboBoxPropertyItemDelegate, PropertyItemDelegate)
 OOLUA_PROXY_END
 
-OOLUA_PROXY(DynamicTextPropertyItemDelegate, PropertyItemDelegate)
+OOLUA_PROXY(DynamicContentPropertyItemDelegate, PropertyItemDelegate)
 OOLUA_PROXY_END
 
 static inline int Toolkit_setSelection(lua_State* const /*vm*/) {

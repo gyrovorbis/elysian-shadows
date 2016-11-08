@@ -9,6 +9,12 @@ public:
     static void initializeDelegates(void);
 };
 
+class TkAnimation: public elysian::AnimationBase {
+public:
+    static void initializeDelegates(void);
+    static void initializeVirtualTableDelegates(QString property);
+};
+
 class TkSkeletonAttrib: public elysian::SkeletonAttribBase {
     Q_OBJECT
 public:
@@ -22,7 +28,6 @@ Q_SIGNALS:
     void        jsonChanged(void);
     void        atlasChanged(void);
 };
-
 
 
 class TkSkeleton: public elysian::SkeletonBase {

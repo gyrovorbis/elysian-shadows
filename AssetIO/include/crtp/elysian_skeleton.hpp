@@ -7,6 +7,7 @@
 namespace elysian {
     typedef SkeletonBase        Skeleton;
     typedef SkeletonAttribBase  SkeletonAttrib;
+    typedef AnimationBase       Animation;
     typedef AnimationTrackBase  AnimationTrack;
 }
 #else
@@ -14,10 +15,12 @@ namespace elysian {
 namespace elysian {
     typedef TkSkeleton          Skeleton;
     typedef TkSkeletonAttrib    SkeletonAttrib;
+    typedef TkAnimation         Animation;
     typedef TkAnimationTrack    AnimationTrack;
 }
 typedef TkSkeleton              Skeleton;
 typedef TkSkeletonAttrib        SkeletonAttrib;
+typedef TkAnimation             Animation;
 typedef TkAnimationTrack        AnimationTrack;
 
 #endif

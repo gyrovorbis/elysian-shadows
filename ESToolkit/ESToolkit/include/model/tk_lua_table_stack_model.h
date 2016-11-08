@@ -60,8 +60,7 @@ struct LuaTableTableFieldData: public QObject, public LuaManager {
     Q_OBJECT
     friend class LuaTableFieldItem;
 public:
-    //Lua table/hash maintaining a list of child fieldItems lightuserdata for each key
-    LuaVariant                          _fieldItems;
+    LuaVariant                          _fieldItems; //Lua table/hash maintaining a list of child fieldItems lightuserdata for each key
     LuaVariant                          _tableRef;
     LuaVariant                          _parentRef      = false;
     QStandardItem*                      _parentItem     = nullptr;

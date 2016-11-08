@@ -8,6 +8,7 @@
 
 class QMenu;
 class ESTkStandardItem;
+class LuaTableFieldItem;
 
 /* Default delegate type for SelectionView items. Also implements default functionality for Lua
  * proxy types by checking whether the PropertyItem type is Lua. If not, it returns default
@@ -41,11 +42,13 @@ protected:
 public:
                     PropertyItemDelegate(void) = default;
 
-    virtual bool    editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
+    virtual bool                editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
 
-    void            setContextMenu(QMenu*const menu);
-    virtual QMenu*  getContextMenu(ESTkStandardItem*const item);
-    void            addSupportedType(const int luaType);
+    void                        setContextMenu(QMenu*const menu);
+    virtual QMenu*              getContextMenu(ESTkStandardItem*const item);
+    void                        addSupportedType(const int luaType);
+    static LuaTableFieldItem*   modelIndexToLuaTableFieldItem(const QModelIndex& index);
+    static ESTkStandardItem*    modelIndexToESTkStandardItem(const QModelIndex& index);
 
 };
 

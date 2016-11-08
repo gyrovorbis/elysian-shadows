@@ -14,7 +14,6 @@ LuaTableFieldItem::LuaTableFieldItem(LuaFieldRef ref, QStandardItem*const labelI
         setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::NoItemFlags);
         _settingFlags = false;
     }
-
 }
 
 void LuaTableFieldItem::insertingModelItem(void) {
@@ -183,18 +182,13 @@ QStyledItemDelegate* LuaTableFieldItem::getStyledItemDelegate(void) const {
 
         LuaManager::stackBalanceBegin();
         int top = lua_gettop(*_mainState);
-#if 1
 
         _fieldRef.getTableRef().push();
 
-        //lua_getmetatable(*_mainState, -1);
         LuaManager::getMetatable(-1);
         lua_getfield(*_mainState, -1, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
 
         if(lua_isnil(*_mainState, -1)) {
-
-//#else
-            //lua_pop(*_mainState, 3);
 
             _fieldRef.getTableRef().push();
 
@@ -224,14 +218,12 @@ QStyledItemDelegate* LuaTableFieldItem::getStyledItemDelegate(void) const {
                 LuaManager::stackBalanceEnd();
                 return nullptr;
             }
-//#endif
         }
 
         int type = lua_type(*_mainState, -1);
 
         switch(type) {
         case LUA_TFUNCTION:
-            qDebug() << "TFUNCTION!!!!!!";
             _delegate = LuaManager::_callFunction<PropertyItemDelegate*>(nullptr, _fieldRef.getTableRef(), _fieldRef.getKey());
             break;
         case LUA_TTABLE:
@@ -255,59 +247,6 @@ QStyledItemDelegate* LuaTableFieldItem::getStyledItemDelegate(void) const {
             break;
 
         }
-
-#else //Way prettier with high-level API, also way the fuck slower...
-
-            LuaVariant delegateTable = *_fieldRef.getTableRef().getMetatable()[ELYSIAN_LUA_TABLE_STACK_MODEL_DELEGATE_METAFIELD];
-
-
-            if(delegateTable.isNil()) {
-
-
-                LuaVariant typeField = *_fieldRef.getTableRef()[ELYSIAN_LUA_PROXY_TYPE_METAFIELD];
-
-                if(typeField.isNil()) {
-                    lua_pop(*_mainState, lua_gettop(*_mainState)-top);
-                    LuaManager::stackBalanceEnd();
-                    return nullptr;
-                }
-
-                LuaVariant registryTable = *LuaManager::getGlobalsTable()[typeField];
-
-                if(registryTable.isNil()) {
-                    lua_pop(*_mainState, lua_gettop(*_mainState)-top);
-                    LuaManager::stackBalanceEnd();
-                    return nullptr;
-                }
-
-                LuaVariant delegateTable = *registryTable[TK_LUA_TABLE_DELEGATE_FIELD_KEY];
-                if(delegateTable.isNil()) {
-                    lua_pop(*_mainState, lua_gettop(*_mainState)-top);
-                    LuaManager::stackBalanceEnd();
-                    return nullptr;
-                }
-            }
-
-
-            LuaVariant delegateRef = *delegateTable[_fieldRef.getKey()];
-            if(delegateRef.isNil()) {
-                lua_pop(*_mainState, lua_gettop(*_mainState)-top);
-                LuaManager::stackBalanceEnd();
-                return nullptr;
-            }
-
-
-            _delegate = delegateRef.getValue<PropertyItemDelegate*>();
-
-            lua_pop(*_mainState, lua_gettop(*_mainState)-top);
-            LuaManager::stackBalanceEnd();
-
-
-        }
-
-        return _delegate;
-#endif
-
 
         lua_pop(*_mainState, lua_gettop(*_mainState)-top);
         LuaManager::stackBalanceEnd();

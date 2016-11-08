@@ -8,13 +8,9 @@ QWidget* ComboBoxPropertyItemDelegate::createEditor(QWidget *parent, const QStyl
     editor->setEditable(_editable);
    // editor->setFocusPolicy(Qt::WheelFocus);
 
-    auto* model = static_cast<const PropertyStackModel*>(index.model());
-    auto* item = static_cast<ESTkStandardItem*>(model->itemFromIndex(index));
-    LuaTableFieldItem* fieldItem =
-            (item->type() == (int)ESTkStandardItemType::LuaTable)?
-                static_cast<LuaTableFieldItem*>(item) : nullptr;
+    auto* item = modelIndexToESTkStandardItem(index);
 
-    QStringList strings = _populator(fieldItem);
+    QStringList strings = _populator(item);
 
     for(auto&& it : strings) {
         editor->addItem(it, it);
@@ -26,9 +22,7 @@ QWidget* ComboBoxPropertyItemDelegate::createEditor(QWidget *parent, const QStyl
 
 void ComboBoxPropertyItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const {
     QComboBox* combo = static_cast<QComboBox*>(editor);
-
-    auto* model = static_cast<const PropertyStackModel*>(index.model());
-    auto* item = static_cast<ESTkStandardItem*>(model->itemFromIndex(index));
+    auto* item = modelIndexToESTkStandardItem(index);
 
     if(combo) {
         combo->setCurrentText(item->data(Qt::EditRole).toString());
@@ -41,8 +35,7 @@ void ComboBoxPropertyItemDelegate::setModelData(QWidget *editor, QAbstractItemMo
     QComboBox* combo = static_cast<QComboBox*>(editor);
 
     if(combo) {
-        auto* propModel = static_cast<const PropertyStackModel*>(model);
-        auto* item = static_cast<ESTkStandardItem*>(propModel->itemFromIndex(index));
+        auto* item = modelIndexToESTkStandardItem(index);
 
         item->setData(combo->itemData(combo->currentIndex()), Qt::DisplayRole);
         item->setData(combo->itemData(combo->currentIndex()), Qt::EditRole);

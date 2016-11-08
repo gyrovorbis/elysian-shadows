@@ -14,44 +14,70 @@
 namespace elysian {
 
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(AnimationTrackBase)
-ELYSIAN_LUA_PROXY_FIELDS_EXPORT(Animation)
+ELYSIAN_LUA_PROXY_FIELDS_EXPORT(AnimationBase)
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(SkeletonBase)
 ELYSIAN_LUA_PROXY_FIELDS_EXPORT(SkeletonAttribBase)
 
-Animation::~Animation(void) { for(auto* it : _tracks) delete it; }
+AnimationBase::~AnimationBase(void) { for(auto* it : _tracks) delete it; }
 
-const char* SkeletonBase::getAnim(void) const {
+const char* SkeletonBase::getAnimName(void) const {
     return (_curAnim)? _curAnim->getName() : nullptr;
 }
 
-void SkeletonBase::setAnim(const char* name) {
-
-    auto* anim = _attrib->findAnimation(name);
-    if(!anim || _curAnim == anim) return;
-
-#if 0
-    unsigned oldTrackCount = _curAnim? _curAnim->_tracks.size() : 0;
-    for(unsigned i = 0; i < anim->_tracks.size(); ++i) {
-        if(_curAnim &&  i < _curAnim->_tracks.size() && strcmp(anim->_tracks[i]->_name, _curAnim->_tracks[i]->_name) == 0) continue;
-            spAnimationState_clearTrack(_animState, i);
-            setAnimByName(i, anim->_tracks[i]->_name, anim->_tracks[i]->_looping);
-    }
-
-    for(unsigned i = anim->_tracks.size(); i < oldTrackCount; ++i) {
-        spAnimationState_clearTrack(_animState, i);
-    }
-#else
+void SkeletonBase::setAnim(const Animation *anim) {
+    if(_blockedTracks || _curAnim == anim) return;
 
     //if(_curAnim) //for(unsigned i = 0; i < _curAnim->_tracks.size(); ++i) spAnimationState_clearTrack(_animState, i);
     spAnimationState_clearTracks(_animState);
     //spSkeleton_setToSetupPose(_skeleton);
-    for(unsigned i = 0; i < anim->_tracks.size(); ++i) setAnimByName(i, anim->_tracks[i]->_name, anim->_tracks[i]->_looping);
+    for(unsigned i = 0; i < anim->_tracks.size(); ++i) setAnimTrackByName(i, anim->_tracks[i]->_name, anim->_tracks[i]->_looping);
     update(0.001f);
-
-
-#endif
     _curAnim = anim;
 }
+
+void SkeletonBase::setAnimName(const char* name) {
+    auto* anim = _attrib->findAnimation(name);
+    if(!anim) return;
+    setAnim(anim);
+}
+
+void SkeletonBase::setAnim(const Animation *anim, const AnimListener &listener) {
+    _listener = listener;
+    setAnim(anim);
+    _animState->listener = &_animationStateListener;
+    _animState->listenerData = this;
+    update(0.001f);
+}
+
+void SkeletonBase::setAnimName(const char *name, const AnimListener &listener) {
+    auto* anim = _attrib->findAnimation(name);
+    if(!anim) return;
+    setAnim(anim, listener);
+}
+
+
+void SkeletonBase::playAnimNameBlocking(const char *name) {
+    auto* anim = _attrib->findAnimation(name);
+    if(!anim) return;
+
+    setAnim(anim, [&](int trackIndex, spEventType type, spEvent*, int) {
+            switch(type) {
+            case SP_ANIMATION_END:
+            case SP_ANIMATION_COMPLETE:
+                _blockedTracks &= ~(1u<<(uint32_t)trackIndex);
+                if(!_blockedTracks) return true;
+            default: break;
+            }
+        return false;
+
+    });
+
+    for(uint32_t i = 0; i < anim->getTrackCount(); ++i) {
+        auto* track = spSkeletonData_findAnimation(_attrib->_skeletonData, anim->getTrack(i)->getName());
+        if(track && track->duration > 0.0f) _blockedTracks |= (1u<<i);
+    }
+}
+
 
 SkeletonAttribBase::~SkeletonAttribBase(void) {
     for(auto* it: _animations) delete it;
@@ -148,6 +174,13 @@ const char* SkeletonAttribBase::getSpineSkinNameByIndex(const unsigned index) co
     return (_skeletonData && index < _skeletonData->skinsCount)? _skeletonData->skins[index]->name : nullptr;
 }
 
+Animation* SkeletonAttribBase::findAnimation(const char *name) const {
+    for(unsigned i = 0; i < _animations.size(); ++i) {
+        if(strcmp(_animations[i]->_name, name) == 0) return _animations[i];
+    }
+    return nullptr;
+}
+
 SkeletonBase::~SkeletonBase(void) {
     _removeEntityAttachments();
     if(_animState) spAnimationState_dispose(_animState);
@@ -155,7 +188,7 @@ SkeletonBase::~SkeletonBase(void) {
     /*decrement attrib reference count*/
 }
 
-void SkeletonBase::setAnimByName(const int trackIndex, const char* animationName, const bool loop) {
+void SkeletonBase::setAnimTrackByName(const int trackIndex, const char* animationName, const bool loop) {
     if(!spAnimationState_setAnimationByName(_animState, trackIndex, animationName, loop)) {
         warnprintf("SkeletonBase::setAnimByName(%d, %s, %s) - Could not find animation!", trackIndex, animationName, loop? "true" : "false");
     }
@@ -187,7 +220,7 @@ void SkeletonBase::setAttrib(SkeletonAttrib * const attrib) {
         errprintf("Could not create AnimationState!");
     }
 
-    setAnim(_attrib->getDefaultAnimationName());
+    setAnimName(_attrib->getDefaultAnimationName());
 
     if(_skeleton) {
         _skeleton->x = _entity->_transform._pos.x;
@@ -277,15 +310,6 @@ void SkeletonBase::_removeEntityAttachments(void) {
     _entityAttachments.clear();
 }
 
-void SkeletonBase::setAnim(const char *name, const AnimListener &listener) {
-    _listener = listener;
-    setAnim(name);
-    _animState->listener = &_animationStateListener;
-    _animState->listenerData = this;
-    update(0.001f);
-}
-
-
 void SkeletonBase::_animationStateListener(spAnimationState *state, int trackIndex, spEventType type, spEvent *event, int loopCount) {
     SkeletonBase* skeleton = static_cast<SkeletonBase*>(state->listenerData);
     if(skeleton->_listener(trackIndex, type, event, loopCount)) {
@@ -360,7 +384,6 @@ const char* SkeletonBase::getSkin(void) const {
     return (_skeleton && _skeleton->skin)? _skeleton->skin->name : nullptr;
 
 }
-
 
 
 }
