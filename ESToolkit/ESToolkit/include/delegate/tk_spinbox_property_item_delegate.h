@@ -1,10 +1,10 @@
 #ifndef TK_SPINBOX_PROPERTY_ITEM_DELEGATE_H
 #define TK_SPINBOX_PROPERTY_ITEM_DELEGATE_H
 
-#include <delegate/tk_property_item_delegate.h>
+#include <delegate/tk_dynamic_content_property_item_delegate.h>
 
 
-class SpinboxPropertyItemDelegate: public PropertyItemDelegate {
+class SpinboxPropertyItemDelegate: public DynamicContentPropertyItemDelegate {
 private:
     int     _min = 0;
     int     _max = 100;
@@ -36,7 +36,7 @@ public:
 
 
 
-inline SpinboxPropertyItemDelegate::SpinboxPropertyItemDelegate(const int min, const int max): PropertyItemDelegate(), _min(min), _max(max) {}
+inline SpinboxPropertyItemDelegate::SpinboxPropertyItemDelegate(const int min, const int max):  _min(min), _max(max) {}
 
 inline void SpinboxPropertyItemDelegate::setMinValue(const int min) { _min = min; }
 inline void SpinboxPropertyItemDelegate::setMaxValue(const int max) { _max = max; }

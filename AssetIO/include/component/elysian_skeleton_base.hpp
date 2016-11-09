@@ -102,8 +102,8 @@ namespace elysian {
         spAnimationStateData*   _animStateData  = nullptr;
 
     protected:
-        void                    _reloadAtlas(void);
-        void                    _reloadJson(void);
+        void                    _loadAtlas(void);
+        void                    _loadJson(void);
 
     public:
                                 SkeletonAttribBase(void);
@@ -116,7 +116,11 @@ namespace elysian {
         const char*             getJsonPath(void) const;
         const char*             getDefaultAnimationName(void) const;
 
+        bool                    isAtlasValid(void) const;
+        bool                    isJsonValid(void) const;
+
         Animation*              getAnimation(const unsigned index) const;
+        spAnimation*            findSpineAnimation(const char* name) const;
         void                    setAnimation(const unsigned index, Animation* anim);
         unsigned                getAnimationCount(void) const;
         const char*             getSpineAnimNameByIndex(const unsigned index) const;
@@ -153,7 +157,8 @@ namespace elysian {
 
         EntityAttachment*   _findEntityAttachment(const char*const name) const;
         void                _updateEntityAttachments(void) const;
-        void                _removeEntityAttachments(void);
+        void                _clearEntityAttachments(void);
+        void                _removeEntityAttachment(EntityAttachment* attachment);
 
         static void         _animationStateListener(spAnimationState* state, int trackIndex, spEventType type, spEvent* event, int loopCount);
 
@@ -237,11 +242,9 @@ namespace elysian {
     inline bool SkeletonAttribBase::isReested(void) const { return !_atlas || !_skeletonData || !_animStateData; }
     inline unsigned SkeletonAttribBase::getAnimationCount(void) const { return _animations.size(); }
     inline Animation* SkeletonAttribBase::getAnimation(const unsigned index) const { return index < _animations.size()? _animations[index] : nullptr; }
-    inline void SkeletonAttribBase::setAnimation(const unsigned index, Animation *anim) {
-        if(index == _animations.size()) {
-            _animations.push_back(anim);
-        }
-    }
+    inline bool SkeletonAttribBase::isAtlasValid(void) const { return _atlas; }
+    inline bool SkeletonAttribBase::isJsonValid(void) const { return _skeletonData && _animStateData; }
+    inline spAnimation* SkeletonAttribBase::findSpineAnimation(const char *name) const { return spSkeletonData_findAnimation(_skeletonData, name); }
 
 
     //----- SKELETON ------

@@ -70,6 +70,7 @@
         <file>images/alphaChecker.png</file>
         <file>images/plus_icon.ico</file>
         <file>images/minus_icon.ico</file>
+        <file>images/browse_file_icon.ico</file>
     </qresource>
     <qresource prefix="/sheetManager">
         <file>images/reservedTile.png</file>

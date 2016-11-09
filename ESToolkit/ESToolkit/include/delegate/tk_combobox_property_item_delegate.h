@@ -1,14 +1,14 @@
 #ifndef TK_COMBOBOX_PROPERTY_ITEM_DELEGATE_H
 #define TK_COMBOBOX_PROPERTY_ITEM_DELEGATE_H
 
-#include <delegate/tk_property_item_delegate.h>
+#include <delegate/tk_dynamic_content_property_item_delegate.h>
 #include <functional>
 #include <QStringList>
 
 class ESTkStandardItem;
 
 
-class ComboBoxPropertyItemDelegate: public PropertyItemDelegate {
+class ComboBoxPropertyItemDelegate: public DynamicContentPropertyItemDelegate {
     using PopulatorType = std::function<QStringList(ESTkStandardItem*)>;
 
 private:

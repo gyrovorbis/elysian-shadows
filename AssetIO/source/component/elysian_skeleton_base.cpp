@@ -92,7 +92,7 @@ SkeletonBase& SkeletonBase::operator= (const SkeletonBase& other) {
     return *this;
 }
 
-void SkeletonAttribBase::_reloadAtlas(void) {
+void SkeletonAttribBase::_loadAtlas(void) {
     if(_atlas) {
         spAtlas_dispose(_atlas);
         _atlas = nullptr;
@@ -109,12 +109,12 @@ void SkeletonAttribBase::_reloadAtlas(void) {
 void SkeletonAttribBase::setAtlasPath(const char * const file) {
     if(strcmp(_atlasPath, file) == 0) return;
     strcpy(_atlasPath, file);
-    _reloadAtlas();
-    if(_atlas) _reloadJson();
+    _loadAtlas();
+    if(_atlas) _loadJson();
 
 }
 
-void SkeletonAttribBase::_reloadJson(void) {
+void SkeletonAttribBase::_loadJson(void) {
     if(_jsonPath[0] == '\0') return;
     DbgEvent event("Skeleton Attrib loading json file [%s]", _jsonPath);
 
@@ -155,7 +155,7 @@ void SkeletonAttribBase::setJsonPath(const char * const json) {
     if(strcmp(_jsonPath, json) == 0) return;
     strcpy(_jsonPath, json);
     if(!_atlas) return;
-    _reloadJson();
+    _loadJson();
 }
 
 
@@ -167,11 +167,11 @@ void SkeletonAttribBase::loadAssets(const char * const atlas, const char * const
 
 
 const char* SkeletonAttribBase::getSpineAnimNameByIndex(const unsigned index) const {
-    return (_skeletonData && index < _skeletonData->animationsCount)? _skeletonData->animations[index]->name : nullptr;
+    return (_skeletonData && (int)index < _skeletonData->animationsCount)? _skeletonData->animations[index]->name : nullptr;
 }
 
 const char* SkeletonAttribBase::getSpineSkinNameByIndex(const unsigned index) const {
-    return (_skeletonData && index < _skeletonData->skinsCount)? _skeletonData->skins[index]->name : nullptr;
+    return (_skeletonData && (int)index < _skeletonData->skinsCount)? _skeletonData->skins[index]->name : nullptr;
 }
 
 Animation* SkeletonAttribBase::findAnimation(const char *name) const {
@@ -181,8 +181,23 @@ Animation* SkeletonAttribBase::findAnimation(const char *name) const {
     return nullptr;
 }
 
+
+void SkeletonAttribBase::setAnimation(const unsigned index, Animation *anim) {
+    if(index == _animations.size()) {                       //insert
+        _animations.push_back(anim);
+    } else if(index < _animations.size()) {
+        if(!anim) {
+            _animations.erase(_animations.begin()+index);   //remove
+        } else {
+            delete _animations[index];                      //reassign
+            _animations[index] = anim;
+        }
+    }
+}
+
+
 SkeletonBase::~SkeletonBase(void) {
-    _removeEntityAttachments();
+    _clearEntityAttachments();
     if(_animState) spAnimationState_dispose(_animState);
     if(_skeleton) spSkeleton_dispose(_skeleton);
     /*decrement attrib reference count*/
@@ -198,7 +213,12 @@ void SkeletonBase::setAnimTrackByName(const int trackIndex, const char* animatio
 
 void SkeletonBase::setAttrib(SkeletonAttrib * const attrib) {
     DbgEvent event("SkeletonBase setting attributes.");
-    //float x, y;
+
+    //REMOVE ALL ATTACHMENTS
+    if(_entityAttachments.size()) {
+
+    }
+
     _attrib = attrib;
     if(_skeleton) {
         spSkeleton_dispose(_skeleton);
@@ -219,6 +239,9 @@ void SkeletonBase::setAttrib(SkeletonAttrib * const attrib) {
     if(!_animState) {
         errprintf("Could not create AnimationState!");
     }
+
+    _curAnim        = nullptr;
+    //READD ALL ATTACHMENTS
 
     setAnimName(_attrib->getDefaultAnimationName());
 
@@ -299,15 +322,20 @@ EntityAttachment* SkeletonBase::_findEntityAttachment(const char * const name) c
     return nullptr;
 }
 
-void SkeletonBase::_removeEntityAttachments(void) {
+void SkeletonBase::_clearEntityAttachments(void) {
     for(auto* it : _entityAttachments) {
+        _removeEntityAttachment(it);
         //it->slot->attachment = nullptr;
-        spSlot_setAttachment(it->slot, nullptr);
-        _spAttachment_deinit(it);
-        spAttachment_dispose(it);
         //delete it;
     }
     _entityAttachments.clear();
+}
+
+//DOES NOT REMOVE ATTACHMENT FROM VECTOR
+void SkeletonBase::_removeEntityAttachment(EntityAttachment *attachment) {
+    spSlot_setAttachment(attachment->slot, nullptr);
+    _spAttachment_deinit(attachment);
+    spAttachment_dispose(attachment);
 }
 
 void SkeletonBase::_animationStateListener(spAnimationState *state, int trackIndex, spEventType type, spEvent *event, int loopCount) {
@@ -382,7 +410,6 @@ void SkeletonBase::setSkin(const char *name) {
 
 const char* SkeletonBase::getSkin(void) const {
     return (_skeleton && _skeleton->skin)? _skeleton->skin->name : nullptr;
-
 }
 
 

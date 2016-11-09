@@ -4,6 +4,7 @@
 #include <model/tk_lua_table_stack_model.h>
 #include <QApplication>
 #include <QMouseEvent>
+#include <QKeyEvent>
 #include <QPainter>
 
 void DynamicContentPropertyItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const {
@@ -21,13 +22,16 @@ void DynamicContentPropertyItemDelegate::paint(QPainter *painter, const QStyleOp
         _textCallback(item, itemOption);
         itemOption.viewItemPosition = QStyleOptionViewItem::Beginning;
         style->drawControl(QStyle::CE_ItemViewItem, &itemOption, painter, nullptr);
+    } else {
+        PropertyItemDelegate::paint(painter, option, index);
+
     }
 
     if(_buttons.size()) {
         int y               = option.rect.y();
         int h               = option.rect.height();
         int w               = h;
-        int x               = option.rect.x()+option.rect.width();
+        int x               = option.rect.x()+option.rect.width() - DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_BUTTON_MARGIN;
         QStyleOptionButton button;
         button.iconSize     = QSize(h, h);
         button.state        = itemOption.state;
@@ -37,7 +41,7 @@ void DynamicContentPropertyItemDelegate::paint(QPainter *painter, const QStyleOp
 
         for(auto&& it : _buttons) {
             if(it.persistent || (option.state & QStyle::State_MouseOver)) {
-                x           -= (w + DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_BUTTON_MARGIN);
+                x           -= (w + DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_BUTTON_SPACING);
                 button.rect = QRect(x, y, w, h);
                 button.icon = it.icon;
                 style->drawControl(QStyle::CE_PushButton, &button, painter, nullptr);
@@ -50,18 +54,18 @@ void DynamicContentPropertyItemDelegate::paint(QPainter *painter, const QStyleOp
 
 bool DynamicContentPropertyItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) {
 
-    if(_buttons.size()) {
-        if(event->type() == QEvent::MouseButtonPress) {
+    if(event->type() == QEvent::MouseButtonPress) {
+        if(_buttons.size()) {
             QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
 
             if(mouseEvent->button() == Qt::LeftButton) {
-                int x = option.rect.x()+option.rect.width();
+                int x = option.rect.x()+option.rect.width() - DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_BUTTON_MARGIN;
                 int y = option.rect.y();
                 int h = option.rect.height();
                 int w = h;
 
                 for(auto&& it : _buttons) {
-                    x -= (w + DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_BUTTON_MARGIN);
+                    x -= (w + DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_BUTTON_SPACING);
                     QPoint mousePos = mouseEvent->pos();
 
                     if(mousePos.x() >= x && mousePos.x() <= x+w && mousePos.y() >= y && mousePos.y() <= y+h) {
@@ -73,7 +77,6 @@ bool DynamicContentPropertyItemDelegate::editorEvent(QEvent *event, QAbstractIte
                         }
                     }
                 }
-
             }
         }
     }
@@ -88,4 +91,19 @@ void DynamicContentPropertyItemDelegate::luaArraySizeTextCallback(ESTkStandardIt
     QPalette palette = option.palette;
     palette.setColor(QPalette::Text, QColor(Qt::gray));
     option.palette = palette;
+}
+
+bool DynamicContentPropertyItemDelegate::eventFilter(QObject* editor, QEvent* event) {
+    if(event->type() == QEvent::KeyPress) {
+        if(_deleteCallback) {
+            QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+            if(keyEvent->key() == Qt::Key_Delete) {
+                //auto* item = modelIndexToESTkStandardItem(index);
+                //_deleteCallback(item);
+                qDebug() << "DELETE KEY!!!!1";
+                return true;
+            }
+        }
+    }
+    return PropertyItemDelegate::eventFilter(editor, event);
 }

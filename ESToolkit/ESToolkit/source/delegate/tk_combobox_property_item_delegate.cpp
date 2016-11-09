@@ -1,5 +1,6 @@
 #include <delegate/tk_combobox_property_item_delegate.h>
 #include <QComboBox>
+#include <QCompleter>
 #include <model/tk_lua_table_stack_model.h>
 
 
@@ -14,6 +15,11 @@ QWidget* ComboBoxPropertyItemDelegate::createEditor(QWidget *parent, const QStyl
 
     for(auto&& it : strings) {
         editor->addItem(it, it);
+    }
+
+    if(_editable) {
+        QCompleter* completer = new QCompleter(strings);
+        editor->setCompleter(completer);
     }
 
     return editor;

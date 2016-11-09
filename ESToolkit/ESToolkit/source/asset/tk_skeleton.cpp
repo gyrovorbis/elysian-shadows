@@ -106,11 +106,33 @@ void TkSkeletonAttrib::initializeDelegates(void) {
     lua_pushvalue(*_mainState, -1);
     lua_setfield(*_mainState, -3, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
 
-    auto* atlasDelegate = new FileBrowserPropertyItemDelegate;
+    FileBrowserPropertyItemDelegate* atlasDelegate = new FileBrowserPropertyItemDelegate([](ESTkStandardItem* item, QStyleOptionViewItem& option) {
+        LuaTableFieldItem* luaItem = static_cast<LuaTableFieldItem*>(item);
+        TkSkeletonAttrib* attrib = luaItem->getTableRef().getValue<TkSkeletonAttrib*>();
+        option.text = attrib->getAtlasPath();
+        QPalette palette = option.palette;
+        palette.setColor(QPalette::Text, attrib->isAtlasValid()? QColor(Qt::black) : QColor(Qt::red));
+        option.palette = palette;
+    });
+    atlasDelegate->addButton(QIcon(QApplication::style()->standardIcon(QStyle::SP_BrowserReload)), [](ESTkStandardItem* item) {
+        LuaTableFieldItem* luaItem = static_cast<LuaTableFieldItem*>(item);
+        luaItem->getTableRef().getValue<TkSkeletonAttrib*>()->reloadAtlas();
+    });
     OOLUA::push(*_mainState, atlasDelegate);
     lua_setfield(*_mainState, -2, "atlasPath");
 
-    auto* jsonDelegate = new FileBrowserPropertyItemDelegate;
+    FileBrowserPropertyItemDelegate* jsonDelegate = new FileBrowserPropertyItemDelegate([](ESTkStandardItem* item, QStyleOptionViewItem& option) {
+        LuaTableFieldItem* luaItem = static_cast<LuaTableFieldItem*>(item);
+        TkSkeletonAttrib* attrib = luaItem->getTableRef().getValue<TkSkeletonAttrib*>();
+        option.text = attrib->getJsonPath();
+        QPalette palette = option.palette;
+        palette.setColor(QPalette::Text, attrib->isJsonValid()? QColor(Qt::black) : QColor(Qt::red));
+        option.palette = palette;
+    });
+    jsonDelegate->addButton(QIcon(QApplication::style()->standardIcon(QStyle::SP_BrowserReload)), [](ESTkStandardItem* item) {
+        LuaTableFieldItem* luaItem = static_cast<LuaTableFieldItem*>(item);
+        luaItem->getTableRef().getValue<TkSkeletonAttrib*>()->reloadJson();
+    });
     OOLUA::push(*_mainState, jsonDelegate);
     lua_setfield(*_mainState, -2, "jsonPath");
 
@@ -158,22 +180,20 @@ void TkSkeletonAttrib::initializeVirtualTableDelegates(QString key) {
                                         LuaTableFieldItem* luaItem = static_cast<LuaTableFieldItem*>(item->model()->itemFromIndex(tableIndex));
                                         luaItem->getVariant()["curAnim"].setVariant(static_cast<LuaTableFieldItem*>(item)->getVariant()["name"].getVariant());
                                     }
-
                                 }
                             }
-
                         }
+                    });
 
-
+                    delegate->setDeleteCallback([](ESTkStandardItem* item) {
+                        LuaTableFieldItem* luaItem = static_cast<LuaTableFieldItem*>(item);
+                        luaItem->setVariant(nullptr);
                     });
 
                     MenuStack stack("Animation");
-                    stack.insertAction("Remove Animation", [=](bool) {
-                        /*for(auto&& it : self->_animations) {
-
-                        }*/
-
-
+                    stack.insertAction("Remove", [=](bool) {
+                        //LuaTableFieldItem* luaItem = static_cast<LuaTableFieldItem*>(item);
+                        //luaItem->setVariant(nullptr);
                     });
 
                     delegate->setContextMenu(stack.first());
@@ -191,35 +211,53 @@ void TkSkeletonAttrib::initializeVirtualTableDelegates(QString key) {
 
 
 void TkAnimationTrack::initializeDelegates(void) {
+    ComboBoxPropertyItemDelegate* nameDelegate = new ComboBoxPropertyItemDelegate([](ESTkStandardItem* item) {
+            auto* luaFieldItem = static_cast<LuaTableFieldItem*>(item);
+            //Traversal to get back to TkSkeleton
+            //AnimationTrack->Animation->AnimationAttrib
+            QStringList options;
+
+            QStandardItem* parent = item->parent()->parent()->parent()->parent()->parent();
+            auto modelIndex = item->model()->indexFromItem(parent);
+            auto attribIndex = modelIndex.sibling(modelIndex.row(), modelIndex.column()+1);
+            LuaTableFieldItem* attribItem = static_cast<LuaTableFieldItem*>(item->model()->itemFromIndex(attribIndex));
+            TkSkeletonAttrib* attrib = attribItem->getVariant().getValue<TkSkeletonAttrib*>();
+            if(attrib) {
+                int i = 0;
+                for(;;) {
+                    const char* name = attrib->getSpineAnimNameByIndex(i++);
+                    if(!name) break;
+                    options.push_back(QString(name));
+                }
+            }
+            return options;
+
+        }, true);
+
+    nameDelegate->setTextCallback([](ESTkStandardItem* item, QStyleOptionViewItem& option){
+        auto* luaFieldItem = static_cast<LuaTableFieldItem*>(item);
+        //Traversal to get back to TkSkeleton
+        //AnimationTrack->Animation->AnimationAttrib
+        QStringList options;
+
+        QStandardItem* parent = item->parent()->parent()->parent()->parent()->parent();
+        auto modelIndex = item->model()->indexFromItem(parent);
+        auto attribIndex = modelIndex.sibling(modelIndex.row(), modelIndex.column()+1);
+        LuaTableFieldItem* attribItem = static_cast<LuaTableFieldItem*>(item->model()->itemFromIndex(attribIndex));
+        TkSkeletonAttrib* attrib = attribItem->getVariant().getValue<TkSkeletonAttrib*>();
+
+        option.text = item->data(Qt::EditRole).toString();
+        QPalette palette = option.palette;
+        palette.setColor(QPalette::Text, attrib->findSpineAnimation(Q_CSTR(option.text))? QColor(Qt::black) : QColor(Qt::red));
+        option.palette = palette;
+
+
+    });
+
+
     LuaVariant delegates = {
         {
-            "name", new ComboBoxPropertyItemDelegate([](ESTkStandardItem* item) {
-                auto* luaFieldItem = static_cast<LuaTableFieldItem*>(item);
-                //Traversal to get back to TkSkeleton
-                //AnimationTrack->Animation->AnimationAttrib
-                QStringList options;
-                LuaTableFieldItem* animItem  = static_cast<LuaTableFieldItem*>(luaFieldItem->getTableData()->getParentItem());
-
-                if(animItem && QString(animItem->getVariant().getTypeString()) == "Animation") {
-                    LuaTableFieldItem* attribItem = static_cast<LuaTableFieldItem*>(animItem->getTableData()->getParentItem());
-
-                    if(attribItem && QString(attribItem->getVariant().getTypeString()) == "SkeletonAttrib") {
-
-                        TkSkeletonAttrib* attrib = attribItem->getVariant().getValue<TkSkeletonAttrib*>();
-                        if(attrib) {
-                            int i = 0;
-                            for(;;) {
-                                const char* name = attrib->getSpineAnimNameByIndex(i++);
-                                if(!name) break;
-                                options.push_back(QString(name));
-                            }
-                        }
-                    }
-                }
-
-                return options;
-
-            }, true)
+            "name", nameDelegate
         }
 
     };

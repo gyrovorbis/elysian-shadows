@@ -20,6 +20,8 @@ class TkSkeletonAttrib: public elysian::SkeletonAttribBase {
 public:
     void        setJsonPath(const char*const path);
     void        setAtlasPath(const char*const path);
+    void        reloadAtlas(void);
+    void        reloadJson(void);
 
     static void initializeDelegates(void);
     static void initializeVirtualTableDelegates(QString key);
@@ -71,15 +73,27 @@ inline void TkSkeletonAttrib::setJsonPath(const char*const path) {
     Q_EMIT jsonChanged();
 }
 
+inline void TkSkeletonAttrib::reloadAtlas(void) {
+    _loadAtlas();
+    _loadJson();
+    Q_EMIT atlasChanged();
+}
+
+inline void TkSkeletonAttrib::reloadJson(void) {
+    _loadJson();
+    Q_EMIT jsonChanged();
+}
+
 
 inline void TkSkeleton::setAttrib(SkeletonAttrib * const attrib) {
-    disconnect(_attrib);
+    _attrib->disconnect(this);
 
     connect(attrib, SIGNAL(atlasChanged()), this, SLOT(onAtlasChanged()));
     connect(attrib, SIGNAL(jsonChanged()), this, SLOT(onJsonChanged()));
 
     elysian::SkeletonBase::setAttrib(attrib);
 }
+
 
 
 
