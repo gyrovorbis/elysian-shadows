@@ -86,6 +86,15 @@ bool DynamicContentPropertyItemDelegate::editorEvent(QEvent *event, QAbstractIte
                 }
             }
         }
+    } else if(event->type() == QEvent::KeyPress) {
+        if(_deleteCallback) {
+            QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+            if(keyEvent->key() == Qt::Key_Delete) {
+                auto* item = modelIndexToESTkStandardItem(index);
+                _deleteCallback(item);
+                return true;
+            }
+        }
     }
 
     return PropertyItemDelegate::editorEvent(event, model, option, index);
@@ -98,19 +107,4 @@ void DynamicContentPropertyItemDelegate::luaArraySizeTextCallback(ESTkStandardIt
     QPalette palette = option.palette;
     palette.setColor(QPalette::Text, QColor(Qt::gray));
     option.palette = palette;
-}
-
-bool DynamicContentPropertyItemDelegate::eventFilter(QObject* editor, QEvent* event) {
-    if(event->type() == QEvent::KeyPress) {
-        if(_deleteCallback) {
-            QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
-            if(keyEvent->key() == Qt::Key_Delete) {
-                //auto* item = modelIndexToESTkStandardItem(index);
-                //_deleteCallback(item);
-                qDebug() << "DELETE KEY!!!!1";
-                return true;
-            }
-        }
-    }
-    return PropertyItemDelegate::eventFilter(editor, event);
 }

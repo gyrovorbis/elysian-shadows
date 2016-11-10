@@ -295,7 +295,8 @@ SOURCES += \
         source/delegate/tk_spinbox_property_item_delegate.cpp \
         source/delegate/tk_property_item_proxy_delegate.cpp \
         source/delegate/tk_combobox_property_item_delegate.cpp \
-        source/delegate/tk_dynamic_content_property_item_delegate.cpp
+        source/delegate/tk_dynamic_content_property_item_delegate.cpp \
+        source/estk/tk_selection_tree_view.cpp
 
 } else {
         SOURCES += ../../ESGamma/source/system/main.cpp
@@ -460,8 +461,7 @@ HEADERS += \
     include/estk/tk_level_system.h \
     ../../AssetIO/include/utility/elysian_cpp_lua_function.hpp \
     ../../AssetIO/include/behavior/elysian_state_machine_behavior.hpp \
-    ../../AssetIO/include/utility/elysian_oolua_string_traits.hpp \
-    include/delegate/tk_dynamic_content_property_item_delegate.h
+    ../../AssetIO/include/utility/elysian_oolua_string_traits.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \
@@ -570,7 +570,9 @@ HEADERS += \
         include/delegate/tk_file_browser_property_item_delegate.h \
         include/delegate/tk_enum_dropdown_property_item_delegate.h \
         include/delegate/tk_property_item_proxy_delegate.h \
-        include/delegate/tk_combobox_property_item_delegate.h
+        include/delegate/tk_combobox_property_item_delegate.h \
+        include/delegate/tk_dynamic_content_property_item_delegate.h \
+        include/estk/tk_selection_tree_view.h
 }
 
 

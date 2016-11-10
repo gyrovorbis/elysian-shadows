@@ -186,8 +186,17 @@ void TkSkeletonAttrib::initializeVirtualTableDelegates(QString key) {
                     });
 
                     delegate->setDeleteCallback([](ESTkStandardItem* item) {
-                        LuaTableFieldItem* luaItem = static_cast<LuaTableFieldItem*>(item);
-                        luaItem->setVariant(nullptr);
+                        LuaTableFieldItem* luaFieldItem = static_cast<LuaTableFieldItem*>(item);
+                        TkSkeletonAttrib* attrib = luaFieldItem->getTableRef()["__ud"]->getValue<TkSkeletonAttrib*>();
+                        unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
+                        attrib->setAnimation(index, nullptr);
+
+                        QStandardItem* parent = luaFieldItem->parent()->parent();
+                        auto modelIndex = item->model()->indexFromItem(parent);
+                        auto valIndex = modelIndex.sibling(modelIndex.row(), modelIndex.column()+1);
+
+                        static_cast<LuaTableFieldItem*>(item->model()->itemFromIndex(valIndex))->setDirty();
+
                     });
 
                     delegate->setContextMenuCallback([](ESTkStandardItem* item) {
@@ -337,7 +346,18 @@ void TkAnimation::initializeVirtualTableDelegates(QString key) {
 
                     });
 
-                    //delegate->setContextMenu(stack.first());
+                    delegate->setDeleteCallback([](ESTkStandardItem* item) {
+                        LuaTableFieldItem* luaFieldItem = static_cast<LuaTableFieldItem*>(item);
+                        TkAnimation* anim = luaFieldItem->getTableRef()["__ud"]->getValue<TkAnimation*>();
+                        unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
+                        anim->setTrack(index, nullptr);
+
+                        QStandardItem* parent = luaFieldItem->parent()->parent();
+                        auto modelIndex = item->model()->indexFromItem(parent);
+                        auto valIndex = modelIndex.sibling(modelIndex.row(), modelIndex.column()+1);
+
+                        static_cast<LuaTableFieldItem*>(item->model()->itemFromIndex(valIndex))->setDirty();
+                    });
 
                     return delegate;
                 }

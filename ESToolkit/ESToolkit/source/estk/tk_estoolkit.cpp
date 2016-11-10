@@ -844,19 +844,19 @@ void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *cons
     /* Must be cleared after every selection change so that the model isn't pointing
       to a deleted TerrainSelection */
     _selectionDockWidget->setSelectionModel(nullptr);
-    _selectionDockWidget->restoreSelectionTreeWidgetDefaultItemDelegate();
+    _selectionDockWidget->restoreSelectionTreeViewDefaultItemDelegate();
 
     switch(type) {
     case Selectable::PROJECT:
         break;
     case Selectable::LEVEL:
-        _selectionDockWidget->setSelectionTreeWidget();
+        _selectionDockWidget->setSelectionTreeView();
         static_cast<Level *>(selection)->populateModel();
         _selectionDockWidget->setSelectionModel(static_cast<Level *>(selection));
         _selectionDockWidget->expandSelectionTree();
         break;
     case Selectable::AREA:
-        _selectionDockWidget->setSelectionTreeWidget();
+        _selectionDockWidget->setSelectionTreeView();
 
         _selectionDockWidget->setSelectionModel(selection->getModel());
         _selectionDockWidget->expandSelectionTree();
@@ -866,21 +866,21 @@ void ESToolkit::OnSelectionChanged(const Selectable::TYPE type, Selectable *cons
          static_cast<TileSelectable *>(selection)->populateModel();
          _selectionDockWidget->setSelectionModel(static_cast<TileSelectable *>(selection));
          _selectionDockWidget->expandSelectionTree();
-         selection->installSelectionViewCustomDelegates(_selectionDockWidget->getSelectionTreeWidget());
-        _selectionDockWidget->setSelectionTreeWidget();
+         selection->installSelectionViewCustomDelegates(_selectionDockWidget->getSelectionTreeView());
+        _selectionDockWidget->setSelectionTreeView();
         break;
     case Selectable::ENTITY:
 
         //Update Entity View
-        _selectionDockWidget->setSelectionTreeWidget();
+        _selectionDockWidget->setSelectionTreeView();
         _selectionDockWidget->setSelectionModel(static_cast<EntitySelectable*>(selection)->getModel());
-        _selectionDockWidget->restoreSelectionTreeWidgetDefaultItemDelegate();
+        _selectionDockWidget->restoreSelectionTreeViewDefaultItemDelegate();
         _selectionDockWidget->expandSelectionTree(2);
         break;
 
     case Selectable::LUA_TABLE:
 
-        _selectionDockWidget->setSelectionTreeWidget();
+        _selectionDockWidget->setSelectionTreeView();
         _selectionDockWidget->setSelectionModel(selection->getModel());
         _selectionDockWidget->expandSelectionTree();
 

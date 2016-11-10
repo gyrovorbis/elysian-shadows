@@ -1,6 +1,6 @@
-#include <QTreeView>
+#include <estk/tk_selection_tree_view.h>
 #include <QCloseEvent>
-#include "tk_selection_dock_widget.h"
+#include <estk/tk_selection_dock_widget.h>
 #include "ui_tk_selection_dock_widget.h"
 #include <delegate/tk_property_item_proxy_delegate.h>
 
@@ -10,22 +10,11 @@ SelectionDockWidget::SelectionDockWidget(QWidget *parent) :
 {
     _ui->setupUi(this);
     //setMouseTracking(true);
-    _selectionTreeWidget = new QTreeView();
-    QFont font = _selectionTreeWidget->font();
-    font.setPointSize(10);
-    _selectionTreeWidget->setFont(font);
+    _selectionTreeView = new SelectionTreeView;
 
-    QPalette p = _selectionTreeWidget->palette();
-    p.setColor(QPalette::Highlight, QColor(225,202,251));
-    p.setColor(QPalette::HighlightedText, Qt::black);
-    _selectionTreeWidget->setPalette(p);
-	_selectionTreeWidget->setIndentation(9);
-	_selectionTreeWidget->setAlternatingRowColors(true);
-
-    _selectionTreeWidget->setItemDelegate(new PropertyItemProxyDelegate);
-    _selectionTreeWidget->setMouseTracking(true);
-    //_selectionTreeWidget->viewport()->setMouseTracking(true);
-	_defaultItemDelegate = _selectionTreeWidget->itemDelegate();
+    _selectionTreeView->setItemDelegate(new PropertyItemProxyDelegate);
+    //_selectionTreeView->viewport()->setMouseTracking(true);
+    _defaultItemDelegate = _selectionTreeView->itemDelegate();
 }
 
 SelectionDockWidget::~SelectionDockWidget(void) {
@@ -37,22 +26,22 @@ void SelectionDockWidget::setSelectionWidget(QWidget *widget) {
     setWidget(widget);
 }
 
-void SelectionDockWidget::setSelectionTreeWidget(void) {
-    setWidget(_selectionTreeWidget);
+void SelectionDockWidget::setSelectionTreeView(void) {
+    setWidget(_selectionTreeView);
 }
 
 void SelectionDockWidget::setSelectionModel(QAbstractItemModel *model) {
-    _selectionTreeWidget->setModel(model);
+    _selectionTreeView->setModel(model);
     _sizeColumnsToDefault();
 }
 
 void SelectionDockWidget::expandSelectionTree(const int index) {
-    _selectionTreeWidget->expandToDepth(index);
+    _selectionTreeView->expandToDepth(index);
     _sizeColumnsToDefault();
 }
 
 void SelectionDockWidget::_sizeColumnsToDefault(void) {
-    _selectionTreeWidget->resizeColumnToContents(0);
+    _selectionTreeView->resizeColumnToContents(0);
 }
 
 void SelectionDockWidget::closeEvent(QCloseEvent *event) {
@@ -60,6 +49,10 @@ void SelectionDockWidget::closeEvent(QCloseEvent *event) {
     event->accept();
 }
 
-void SelectionDockWidget::restoreSelectionTreeWidgetDefaultItemDelegate(void) {
-    _selectionTreeWidget->setItemDelegate(_defaultItemDelegate);
+void SelectionDockWidget::restoreSelectionTreeViewDefaultItemDelegate(void) {
+    _selectionTreeView->setItemDelegate(_defaultItemDelegate);
+}
+
+QTreeView* SelectionDockWidget::getSelectionTreeView(void) {
+    return _selectionTreeView;
 }

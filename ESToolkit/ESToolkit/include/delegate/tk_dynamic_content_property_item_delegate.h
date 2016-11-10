@@ -47,7 +47,6 @@ public:
 
     virtual void            paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     virtual bool            editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
-    virtual bool            eventFilter(QObject* editor, QEvent* event) override;
 
 };
 

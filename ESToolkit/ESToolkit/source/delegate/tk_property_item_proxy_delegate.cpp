@@ -92,17 +92,3 @@ void PropertyItemProxyDelegate::paint(QPainter *painter, const QStyleOptionViewI
     return QStyledItemDelegate::paint(painter, option, index);
 }
 
-bool PropertyItemProxyDelegate::eventFilter(QObject *editor, QEvent *event) {
-    if(event->type() == QEvent::KeyPress) {
-       // if(_deleteCallback) {
-            QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
-            if(keyEvent->key() == Qt::Key_Delete) {
-                //auto* item = modelIndexToESTkStandardItem(index);
-                //_deleteCallback(item);
-                qDebug() << "DELETE KEY!!!!1";
-                return true;
-            }
-       // }
-    }
-    return QStyledItemDelegate::eventFilter(editor, event);
-}

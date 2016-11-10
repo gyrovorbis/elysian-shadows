@@ -6,6 +6,7 @@
 class QTreeView;
 class QAbstractItemModel;
 class QAbstractItemDelegate;
+class SelectionTreeView;
 
 namespace Ui {
     class SelectionDockWidget;
@@ -17,36 +18,31 @@ class SelectionDockWidget : public QDockWidget
     
 public:
     explicit                    SelectionDockWidget(QWidget *parent = nullptr);
-                                ~SelectionDockWidget(void);
+    virtual                     ~SelectionDockWidget(void);
 
     void                        setSelectionWidget(QWidget *widget);
-    void                        setSelectionTreeWidget(void);
-    void                        restoreSelectionTreeWidgetDefaultItemDelegate(void);
+    void                        setSelectionTreeView(void);
+    void                        restoreSelectionTreeViewDefaultItemDelegate(void);
     void                        setSelectionModel(QAbstractItemModel *model);
     void                        expandSelectionTree(const int index=0);
-    QTreeView*                  getSelectionTreeWidget(void);
+    QTreeView*                  getSelectionTreeView(void);
 
 Q_SIGNALS:
     void                        uncheckMe(int);
 protected:
 
-    virtual void                closeEvent(QCloseEvent *event);
-    void                        _sizeColumnsToDefault();
+    virtual void                closeEvent(QCloseEvent *event) override;
+    void                        _sizeColumnsToDefault(void);
 private:
 
     Ui::SelectionDockWidget*    _ui;
-    QTreeView*                  _selectionTreeWidget;
+    SelectionTreeView*          _selectionTreeView;
     QAbstractItemDelegate*      _defaultItemDelegate;
 };
 
 
 
 
-// ==== INLINEZ =====
 
-
-inline QTreeView *SelectionDockWidget::getSelectionTreeWidget(void) {
-	return _selectionTreeWidget;
-}
 
 #endif // SELECTIONDOCKWIDGET_H
