@@ -12,7 +12,27 @@ void DynamicContentPropertyItemDelegate::paint(QPainter *painter, const QStyleOp
     QStyleOptionViewItem itemOption(option);
     initStyleOption(&itemOption, index);
 
-    int buttonsW = 0;
+    //Render text
+    if(_textCallback) {
+        QStyleOptionViewItem itemOption(option);
+       initStyleOption(&itemOption, index);
+
+       auto* item = modelIndexToESTkStandardItem(index);
+       int buttonsW = _buttons.size()? DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_BUTTON_MARGIN+DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_BUTTON_SPACING : 0;
+
+       for(auto&& it: _buttons)
+           if(it.persistent || (option.state & QStyle::State_MouseOver))
+                buttonsW += option.rect.height() + DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_BUTTON_SPACING;
+
+        _textCallback(item, itemOption);
+        itemOption.viewItemPosition = QStyleOptionViewItem::Beginning;
+        itemOption.rect.setWidth(itemOption.rect.width()-buttonsW);
+        style->drawControl(QStyle::CE_ItemViewItem, &itemOption, painter, nullptr);
+    } else {
+        PropertyItemDelegate::paint(painter, option, index);
+
+    }
+
 
     if(_buttons.size()) {
         int y               = option.rect.y();
@@ -30,7 +50,6 @@ void DynamicContentPropertyItemDelegate::paint(QPainter *painter, const QStyleOp
         for(auto&& it : _buttons) {
             if(it.persistent || (option.state & QStyle::State_MouseOver)) {
                 x           -= (w + DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_BUTTON_SPACING);
-                buttonsW    += (w + DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_BUTTON_SPACING);
                 button.rect = QRect(x, y, w, h);
                 button.icon = it.icon;
                 style->drawControl(QStyle::CE_PushButton, &button, painter, nullptr);
@@ -38,24 +57,6 @@ void DynamicContentPropertyItemDelegate::paint(QPainter *painter, const QStyleOp
 
         }
     }
-
-    //Render text
-    if(_textCallback) {
-        QStyleOptionViewItem itemOption(option);
-       initStyleOption(&itemOption, index);
-
-       auto* item = modelIndexToESTkStandardItem(index);
-
-        _textCallback(item, itemOption);
-        itemOption.viewItemPosition = QStyleOptionViewItem::Beginning;
-        itemOption.rect.setWidth(itemOption.rect.width()-buttonsW);
-        style->drawControl(QStyle::CE_ItemViewItem, &itemOption, painter, nullptr);
-    } else {
-        PropertyItemDelegate::paint(painter, option, index);
-
-    }
-
-
 }
 
 bool DynamicContentPropertyItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) {
