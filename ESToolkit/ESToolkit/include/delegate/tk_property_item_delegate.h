@@ -3,6 +3,7 @@
 
 #include <QStyledItemDelegate>
 #include <QVector>
+#include <functional>
 #include <estk/tk_lua_manager.h>
 #include <asset/tk_asset_manager.h>
 
@@ -15,12 +16,12 @@ class LuaTableFieldItem;
  * behavior.
  */
 class PropertyItemDelegate: public QStyledItemDelegate, public TkLuaManager, public AssetManager {
+public:
+    using MenuCallbackType                  = std::function<QMenu*(ESTkStandardItem*)>;
+
 protected:
-    bool            _initialized        = false;
-    bool            _addPairs           = true;
-    QMenu*          _contextMenu        = nullptr;
-    bool            _customContextMenu  = false;
-    QVector<int>    _supportedTypes     = {
+    bool                _addPairs           = true;
+    QVector<int>        _supportedTypes     = {
         LUA_TNIL,
         LUA_TBOOLEAN,
         LUA_TNUMBER,
@@ -31,8 +32,8 @@ protected:
         //LUA_TLIGHTUSERDATA,
         LUA_TUSERDATA
     };
-
-    QVector<QString> _supportedUserData;
+    MenuCallbackType    _menuCallback;
+    QVector<QString>    _supportedUserData;
 
 
     //virtual QWidget*createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const = 0;
@@ -40,11 +41,11 @@ protected:
     //virtual void    setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const = 0;
 
 public:
-                    PropertyItemDelegate(void) = default;
+                                PropertyItemDelegate(void) = default;
 
     virtual bool                editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
 
-    void                        setContextMenu(QMenu*const menu);
+    void                        setContextMenuCallback(MenuCallbackType callback);
     virtual QMenu*              getContextMenu(ESTkStandardItem*const item);
     void                        addSupportedType(const int luaType);
     static LuaTableFieldItem*   modelIndexToLuaTableFieldItem(const QModelIndex& index);
@@ -57,8 +58,8 @@ public:
 
 // ====== INLINEZ ======
 
-inline void PropertyItemDelegate::setContextMenu(QMenu * const menu) { _contextMenu = menu; _customContextMenu = true; }
 inline void PropertyItemDelegate::addSupportedType(const int luaType) { _supportedTypes.push_back(luaType); }
+inline void PropertyItemDelegate::setContextMenuCallback(MenuCallbackType callback) { _menuCallback = std::move(callback); }
 
 
 

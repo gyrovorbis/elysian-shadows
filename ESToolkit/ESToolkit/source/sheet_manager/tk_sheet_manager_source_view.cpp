@@ -12,5 +12,5 @@ void SheetManagerSourceView::_externalSelectionCreate(void) {
 }
 
 void SheetManagerSourceView::_externalSelectionClear(void) {
-	getSMAssets()->setCurrentSelection(NULL);
+    getSMAssets()->setCurrentSelection(nullptr);
 }

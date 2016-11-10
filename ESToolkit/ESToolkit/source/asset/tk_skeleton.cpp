@@ -190,13 +190,29 @@ void TkSkeletonAttrib::initializeVirtualTableDelegates(QString key) {
                         luaItem->setVariant(nullptr);
                     });
 
-                    MenuStack stack("Animation");
-                    stack.insertAction("Remove", [=](bool) {
-                        //LuaTableFieldItem* luaItem = static_cast<LuaTableFieldItem*>(item);
-                        //luaItem->setVariant(nullptr);
+                    delegate->setContextMenuCallback([](ESTkStandardItem* item) {
+                        LuaTableFieldItem* luaFieldItem = static_cast<LuaTableFieldItem*>(item);
+                        TkSkeletonAttrib* attrib = luaFieldItem->getTableRef()["__ud"]->getValue<TkSkeletonAttrib*>();
+                        unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
+
+                        MenuStack stack("Animation");
+                        stack.insertAction("Delete", [=](bool) {
+                            attrib->setAnimation(index, nullptr);
+
+                            QStandardItem* parent = luaFieldItem->parent()->parent();
+                            auto modelIndex = item->model()->indexFromItem(parent);
+                            auto valIndex = modelIndex.sibling(modelIndex.row(), modelIndex.column()+1);
+
+                            static_cast<LuaTableFieldItem*>(item->model()->itemFromIndex(valIndex))->setDirty();
+
+                        });
+
+                        return stack.first();
+
                     });
 
-                    delegate->setContextMenu(stack.first());
+
+                    //delegate->setContextMenu(stack.first());
 
                     return delegate;
                 }
@@ -300,16 +316,28 @@ void TkAnimation::initializeVirtualTableDelegates(QString key) {
                         option.text = QString(track->getName());
                     });
 
-                    MenuStack stack("Animation");
-                    stack.insertAction("Remove Animation", [=](bool) {
-                        /*for(auto&& it : self->_animations) {
+                    delegate->setContextMenuCallback([](ESTkStandardItem* item) {
+                        LuaTableFieldItem* luaFieldItem = static_cast<LuaTableFieldItem*>(item);
+                        TkAnimation* anim = luaFieldItem->getTableRef()["__ud"]->getValue<TkAnimation*>();
+                        unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
 
-                        }*/
+                        MenuStack stack("AnimationTrack");
+                        stack.insertAction("Delete", [=](bool) {
+                            anim->setTrack(index, nullptr);
 
+                            QStandardItem* parent = luaFieldItem->parent()->parent();
+                            auto modelIndex = item->model()->indexFromItem(parent);
+                            auto valIndex = modelIndex.sibling(modelIndex.row(), modelIndex.column()+1);
+
+                            static_cast<LuaTableFieldItem*>(item->model()->itemFromIndex(valIndex))->setDirty();
+
+                        });
+
+                        return stack.first();
 
                     });
 
-                    delegate->setContextMenu(stack.first());
+                    //delegate->setContextMenu(stack.first());
 
                     return delegate;
                 }

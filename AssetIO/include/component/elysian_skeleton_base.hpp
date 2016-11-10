@@ -227,11 +227,7 @@ namespace elysian {
     inline void AnimationBase::setName(const char*name) { strcpy(_name, name); }
     inline AnimationTrack* AnimationBase::getTrack(const unsigned index) const { return index < _tracks.size()? _tracks[index] : nullptr; }
     inline unsigned AnimationBase::getTrackCount(void) const { return _tracks.size(); }
-    inline void AnimationBase::setTrack(const unsigned index, AnimationTrack* track) {
-        if(index == _tracks.size()) {
-            _tracks.push_back(track);
-        }
-    }
+
 
 
     //------ SKELETONATTRIB -------

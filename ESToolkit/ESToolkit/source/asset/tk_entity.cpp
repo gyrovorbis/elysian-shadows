@@ -416,13 +416,6 @@ void TkEntity::initializeDelegates(void) {
     lua_pushvalue(*_mainState, -1);
     lua_setfield(*_mainState, -3, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
 
-    MenuStack *menuStack = new MenuStack("Entity");
-
-    menuStack->insertCheckableAction("Active",
-        [&](bool) {
-        }
-    );
-
     auto* planeDelegate = new EnumDropdownPropertyItemDelegate({
        "RECT_PLANE_BOTTOM",
        "RECT_PLANE_FRONT",
@@ -432,7 +425,6 @@ void TkEntity::initializeDelegates(void) {
        "RECT_PLANE_LEFT_SLOPE_45",
        "RECT_PLANE_RIGHT_SLOPE_45"
     });
-    planeDelegate->setContextMenu(menuStack->first());
     OOLUA::push(*_mainState, planeDelegate);
     lua_setfield(*_mainState, -2, "planeType");
 

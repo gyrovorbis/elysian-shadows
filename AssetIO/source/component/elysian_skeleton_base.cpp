@@ -20,6 +20,19 @@ ELYSIAN_LUA_PROXY_FIELDS_EXPORT(SkeletonAttribBase)
 
 AnimationBase::~AnimationBase(void) { for(auto* it : _tracks) delete it; }
 
+void AnimationBase::setTrack(const unsigned index, AnimationTrack* track) {
+    if(index == _tracks.size()) {
+        _tracks.push_back(track);
+    } else if(index < _tracks.size()) {
+        if(!track) {
+            _tracks.erase(_tracks.begin()+index);   //remove
+        } else {
+            delete _tracks[index];                      //reassign
+            _tracks[index] = track;
+        }
+    }
+}
+
 const char* SkeletonBase::getAnimName(void) const {
     return (_curAnim)? _curAnim->getName() : nullptr;
 }

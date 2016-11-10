@@ -37,8 +37,7 @@ bool PropertyItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
 
 QMenu* PropertyItemDelegate::getContextMenu(ESTkStandardItem*const item) {
 
-    if(_customContextMenu && _contextMenu)
-        return _contextMenu;
+    if(_menuCallback) return _menuCallback(item);
 
     LuaTableFieldItem* fieldItem =
             (item->type() == (int)ESTkStandardItemType::LuaTable)?
@@ -176,12 +175,7 @@ QMenu* PropertyItemDelegate::getContextMenu(ESTkStandardItem*const item) {
         }
     }
 
-
-    _contextMenu = menu.first();
-
-    _initialized = true;
-
-    return _contextMenu;
+    return menu.first();
 }
 
 
