@@ -42,5 +42,5 @@ OOLUA_EXPORT_FUNCTIONS(Skeleton,
                        setAnimTimeScale,
                        attachEntityToSlot,
                        removeEntityFromSlot,
-                       setAnimByName,
+                       setAnimTrackByName,
                        setSkin)

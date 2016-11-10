@@ -163,7 +163,7 @@ LuaTableFieldItem::~LuaTableFieldItem(void) {
     delete _tableData;
 }
 
-inline void LuaTableFieldItem::setDirty(const bool val) {
+void LuaTableFieldItem::setDirty(const bool val) {
     if(val) {
         while(_labelItem->rowCount()) {
             auto&& row = _labelItem->takeRow(0);
