@@ -206,8 +206,7 @@ SOURCES += \
     ../../ESGamma/source/system/elysian_pathfinding_system.cpp \
     ../../AssetIO/source/utility/elysian_lua_variant_base.cpp \
     ../../ESGamma/source/system/elysian_level_system_base.cpp \
-    ../../AssetIO/source/behavior/elysian_state_machine_behavior.cpp \
-    source/asset/tk_dialog_screen.cpp
+    ../../AssetIO/source/behavior/elysian_state_machine_behavior.cpp
 
 
 !ios: !dreamcast: !android {
@@ -297,7 +296,8 @@ SOURCES += \
         source/delegate/tk_property_item_proxy_delegate.cpp \
         source/delegate/tk_combobox_property_item_delegate.cpp \
         source/delegate/tk_dynamic_content_property_item_delegate.cpp \
-        source/estk/tk_selection_tree_view.cpp
+        source/estk/tk_selection_tree_view.cpp \
+        source/asset/tk_dialog_screen.cpp
 
 } else {
         SOURCES += ../../ESGamma/source/system/main.cpp
