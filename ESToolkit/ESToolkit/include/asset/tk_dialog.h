@@ -6,8 +6,8 @@
 
 class TkDialogText: public elysian::DialogTextBase {
 public:
-        using       LuaTableProxy<DialogTextBase, DialogText, DialogScreen>::initializeDelegates;
-        using       LuaTableProxy<DialogTextBase, DialogText, DialogScreen>::initializeVirtualTableDelegates;
+        using       TkDialogScreen::initializeDelegates;
+        using       TkDialogScreen::initializeVirtualTableDelegates;
 
                     TkDialogText(void) = default;
                     TkDialogText(const char *str);
@@ -21,8 +21,8 @@ public:
 
 class TkDialogPrompt: public elysian::DialogPromptBase {
 public:
-        using       LuaTableProxy<DialogPromptBase, DialogPrompt, DialogScreen>::initializeDelegates;
-        using       LuaTableProxy<DialogPromptBase, DialogPrompt, DialogScreen>::initializeVirtualTableDelegates;
+        using       TkDialogScreen::initializeDelegates;
+        using       TkDialogScreen::initializeVirtualTableDelegates;
 
                     TkDialogPrompt(void) = default;
                     TkDialogPrompt(const char* str);

@@ -44,6 +44,7 @@ public:
                                 PropertyItemDelegate(void) = default;
 
     virtual bool                editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
+    virtual QWidget*            createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
     void                        setContextMenuCallback(MenuCallbackType callback);
     virtual QMenu*              getContextMenu(ESTkStandardItem*const item);

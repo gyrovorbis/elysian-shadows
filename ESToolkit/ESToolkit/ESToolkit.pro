@@ -206,7 +206,8 @@ SOURCES += \
     ../../ESGamma/source/system/elysian_pathfinding_system.cpp \
     ../../AssetIO/source/utility/elysian_lua_variant_base.cpp \
     ../../ESGamma/source/system/elysian_level_system_base.cpp \
-    ../../AssetIO/source/behavior/elysian_state_machine_behavior.cpp
+    ../../AssetIO/source/behavior/elysian_state_machine_behavior.cpp \
+    source/asset/tk_dialog_screen.cpp
 
 
 !ios: !dreamcast: !android {

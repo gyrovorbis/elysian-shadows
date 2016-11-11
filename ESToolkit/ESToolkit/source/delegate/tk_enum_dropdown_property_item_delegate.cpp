@@ -38,8 +38,10 @@ void EnumDropdownPropertyItemDelegate::setModelData(QWidget *editor, QAbstractIt
         auto* item = modelIndexToESTkStandardItem(index);
         const int i = combo->currentIndex();
 
-        item->setData(_stringNames[i], Qt::DisplayRole);
-        item->setData(i, Qt::EditRole);
+        if(i < _stringNames.size()) {
+            item->setData(_stringNames[i], Qt::DisplayRole);
+            item->setData(i, Qt::EditRole);
+        }
     } else QStyledItemDelegate::setModelData(editor, model, index);
 }
 
@@ -51,7 +53,10 @@ void EnumDropdownPropertyItemDelegate::paint(QPainter *painter, const QStyleOpti
     QStyleOptionViewItem itemOption(option);
 
    initStyleOption(&itemOption, index);
-   itemOption.text = _stringNames[index.data(Qt::EditRole).toInt()];  // override text
+   int strIndex = index.data(Qt::EditRole).toInt();
+   if(strIndex < _stringNames.size()) {
+        itemOption.text = _stringNames[index.data(Qt::EditRole).toInt()];  // override text
+   }
 
    QApplication::style()->drawControl(QStyle::CE_ItemViewItem, &itemOption, painter, nullptr);
 }

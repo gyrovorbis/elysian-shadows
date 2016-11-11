@@ -17,6 +17,42 @@
 #include <proxy/elysian_entity_proxy.hpp>
 
 
+class NewLineFilter: public QObject {
+public:
+    virtual bool eventFilter(QObject* object, QEvent* event) override;
+};
+
+bool NewLineFilter::eventFilter(QObject* object, QEvent* event) {
+    QLineEdit* edit = qobject_cast<QLineEdit*>(object);
+    if(edit && event->type() == QEvent::KeyPress) {
+        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
+        if(keyEvent->key() == Qt::Key_Return && keyEvent->modifiers()&Qt::ShiftModifier) {
+            int pos = edit->cursorPosition();
+            QString str = edit->text();
+            str.insert(pos, "\n");
+            edit->setCursorPosition(pos+1);
+            edit->setText(str);
+            event->accept();
+            return true;
+        }
+    }
+    return false;
+}
+
+
+QWidget* PropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const {
+    auto* widget = QStyledItemDelegate::createEditor(parent, option, index);
+
+    QLineEdit* lineEdit = qobject_cast<QLineEdit*>(widget);
+
+    if(lineEdit) {
+        lineEdit->installEventFilter(new NewLineFilter);
+    }
+
+    return widget;
+
+}
+
 bool PropertyItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) {
     auto* propItem = modelIndexToLuaTableFieldItem(index);
 
