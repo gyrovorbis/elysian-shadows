@@ -715,7 +715,7 @@ void MapView::dropEvent(QDropEvent *event) {
 void MapView::_registerDropEventCallbacks(void) {
     _mimeDropManager = new MimeDropManager(QVector<MimeDropManager::Handler> {
        {
-            TkMimeData::TYPE_LUA_ENTITY_PREFAB,
+            TkMimeData::TYPE_LUA_VARIANT,
             [=](const QMimeData* data, Qt::DropAction, QDropEvent* event) {
                 DbgEvent dbg("Drop Event: Instantiating from Entity Prefab.");
                 auto* tkMimeData = qobject_cast<const TkMimeData*>(data);

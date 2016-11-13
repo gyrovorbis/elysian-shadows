@@ -12,11 +12,9 @@ class QModelIndex;
 
 class MimeDropManager {
 public:
-    using DropCbType            = std::function<bool(const QMimeData*, Qt::DropAction, QDropEvent*)>;
-    using CanDropCbType         = std::function<bool(const QMimeData*, Qt::DropAction, QDragEnterEvent*)>;
 
-    using DropModelCbType       = std::function<bool(const QMimeData*, Qt::DropAction, QDropEvent*, int, int, QModelIndex&)>;
-    using CanDropModelCbType    = std::function<bool(const QMimeData*, Qt::DropAction, QDragEnterEvent*, int, int, QModelIndex&)>;
+    using DropCbType       = std::function<bool(const QMimeData*, Qt::DropAction, QDropEvent*, int, int, QModelIndex&)>;
+    using CanDropCbType    = std::function<bool(const QMimeData*, Qt::DropAction, QDragEnterEvent*, int, int, QModelIndex&)>;
 
     enum BUILTIN_MIME_TYPES {
         TYPE_TEXT   = -1,
@@ -44,8 +42,11 @@ public:
     void                setMimeArraySupported(bool v);
     void                addHandler(int type, DropCbType dropCallback, CanDropCbType canDropCallback, Qt::DropActions actions);
     void                removeHandler(int type);
+
+    bool                canDrop(const QMimeData *data, Qt::DropAction action, QDragEnterEvent *event, int row, int col, const QModelIndex& parent);
     bool                canDrop(const QMimeData* data, Qt::DropAction action, QDragEnterEvent* event=nullptr);
     bool                canDrop(QDragEnterEvent* event);
+    bool                drop(const QMimeData *data, Qt::DropAction action, QDropEvent *event, int row, int col, const QModelIndex& parent);
     bool                drop(const QMimeData* data, Qt::DropAction action, QDropEvent* event=nullptr);
     bool                drop(QDropEvent* event);
 
@@ -72,6 +73,7 @@ inline void MimeDropManager::setMimeArraySupported(bool v) { _supportMimeArray =
 inline MimeDropManager::Handler::Handler(int type, DropCbType dropCb, CanDropCbType canDropCb, Qt::DropActions actions):
     mimeType(type), dropCallback(dropCb), canDropCallback(canDropCb), dropActions(actions)
 {}
+
 
 
 #endif // TK_MIME_DROP_MANAGER_H

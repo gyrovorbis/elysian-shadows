@@ -1,6 +1,7 @@
 #include <core/tk_mime_data.h>
 #include <asset/tk_entity.h>
 #include <proxy/elysian_entity_proxy.hpp>
+#include <estk/tk_lua_manager.h>
 
 const QStringList TkMimeData::_formatsList = {
     "text/plain"
@@ -39,3 +40,9 @@ QStringList TkMimeData::formats(void) const {
 bool TkMimeData::hasFormat(const QString& mimeType) const {
     return _formatsList.contains(mimeType);
 }
+
+void TkMimeData::_updateLuaAttribMask(void) {
+    if(isVariant() && LuaManager::getPrefabName(_variant) != nullptr) _luaAttribMask.setBit(LUA_ATTRIB_BIT_PREFAB, true);
+}
+
+

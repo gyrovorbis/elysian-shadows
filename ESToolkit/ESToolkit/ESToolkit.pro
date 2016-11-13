@@ -206,7 +206,8 @@ SOURCES += \
     ../../ESGamma/source/system/elysian_pathfinding_system.cpp \
     ../../AssetIO/source/utility/elysian_lua_variant_base.cpp \
     ../../ESGamma/source/system/elysian_level_system_base.cpp \
-    ../../AssetIO/source/behavior/elysian_state_machine_behavior.cpp
+    ../../AssetIO/source/behavior/elysian_state_machine_behavior.cpp \
+    source/core/tk_lua_mime_drop_manager.cpp
 
 
 !ios: !dreamcast: !android {
@@ -462,7 +463,8 @@ HEADERS += \
     include/estk/tk_level_system.h \
     ../../AssetIO/include/utility/elysian_cpp_lua_function.hpp \
     ../../AssetIO/include/behavior/elysian_state_machine_behavior.hpp \
-    ../../AssetIO/include/utility/elysian_oolua_string_traits.hpp
+    ../../AssetIO/include/utility/elysian_oolua_string_traits.hpp \
+    include/core/tk_lua_mime_drop_manager.h
 
 !ios:!dreamcast: !android {
     HEADERS +=  \

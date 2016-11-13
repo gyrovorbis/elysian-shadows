@@ -30,9 +30,7 @@ void DynamicContentPropertyItemDelegate::paint(QPainter *painter, const QStyleOp
         style->drawControl(QStyle::CE_ItemViewItem, &itemOption, painter, nullptr);
     } else {
         PropertyItemDelegate::paint(painter, option, index);
-
     }
-
 
     if(_buttons.size()) {
         int y               = option.rect.y();

@@ -536,7 +536,6 @@ QString PrefabAssetFileType::prefabifyFilePath(const QString path) {
 }
 
 QMimeData* PrefabAssetFileType::mimeData(void) const {
-    return new TkMimeData(strcmp(_prefabRef.getTypeString(), "Entity") == 0?
-                              TkMimeData::TYPE_LUA_ENTITY_PREFAB : TkMimeData::TYPE_LUA_PREFAB, _prefabRef);
+    return new TkMimeData(_prefabRef);
 }
 

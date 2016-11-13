@@ -50,7 +50,7 @@ bool MimeDropManager::_iterateHandlersForMimeData(const QMimeData* data, Qt::Dro
 
     const TkMimeData* tkData = qobject_cast<const TkMimeData*>(data);
 
-    if(_supportMimeArray && tkData && tkData->getType() == TkMimeData::TYPE_MIME_DATA_ARRAY) {
+    if(_supportMimeArray && tkData && tkData->isArray()) {
         auto& array = tkData->getVariant();
         for(int i = 1; i <= array.getLength(); ++i) {
             if(!handleSingleMimeData(static_cast<const QMimeData*>(array[i]->getValue<void*>()))) {
@@ -63,20 +63,30 @@ bool MimeDropManager::_iterateHandlersForMimeData(const QMimeData* data, Qt::Dro
     }
 }
 
-bool MimeDropManager::canDrop(const QMimeData *data, Qt::DropAction action, QDragEnterEvent *event) {
+bool MimeDropManager::canDrop(const QMimeData *data, Qt::DropAction action, QDragEnterEvent *event, int row, int col, const QModelIndex& parent) {
     return _iterateHandlersForMimeData(data, action, [=](const Handler& handler, const QMimeData* singleData) {
        return handler.canDropCallback? handler.canDropCallback(singleData, action, event) : true;
     });
+}
+
+
+bool MimeDropManager::canDrop(const QMimeData *data, Qt::DropAction action, QDragEnterEvent *event) {
+    return canDrop(data, action, event, -1, -1, QModelIndex)
 }
 
 bool MimeDropManager::canDrop(QDragEnterEvent* event) {
     return canDrop(event->mimeData(), event->dropAction(), event);
 }
 
-bool MimeDropManager::drop(const QMimeData *data, Qt::DropAction action, QDropEvent *event) {
+bool MimeDropManager::drop(const QMimeData *data, Qt::DropAction action, QDropEvent *event, int row, int col, const QModelIndex& parent) {
     return _iterateHandlersForMimeData(data, action, [=](const Handler& handler, const QMimeData* singleData) {
        return handler.dropCallback(singleData, action, event);
     });
+}
+
+
+bool MimeDropManager::drop(const QMimeData *data, Qt::DropAction action, QDropEvent *event) {
+
 }
 
 bool MimeDropManager::drop(QDropEvent* event) {
