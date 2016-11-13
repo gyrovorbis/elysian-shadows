@@ -724,7 +724,7 @@ void MapView::_registerDropEventCallbacks(void) {
                 QPointF scenePos = _mapViewPosToScenePos(event->pos(), scenePos);
 
                 if(!entity) {
-                   errprintf("Failed: Prefab constructor return NULL!");
+                   errprintf("Failed: Prefab constructor returned NULL!");
                    return false; //entity SHOULD be garbage collected by Lua VM when v goes out of scope...
                }
                 entity->getTransform().setPosX(scenePos.x());

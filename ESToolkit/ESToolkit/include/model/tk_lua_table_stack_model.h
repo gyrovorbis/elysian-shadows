@@ -107,6 +107,9 @@ public:
     const LuaVariant&           getTableRef(void) const;
 
     virtual void                populateModel(void) override;
+    virtual bool                canDropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) const override;
+    virtual bool                dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) override;
+
 
 };
 

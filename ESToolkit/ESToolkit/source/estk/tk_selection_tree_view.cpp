@@ -15,6 +15,7 @@ SelectionTreeView::SelectionTreeView(void) {
     setIndentation(9);
     setAlternatingRowColors(true);
     setMouseTracking(true);
+    setAcceptDrops(true);
 }
 
 void SelectionTreeView::keyPressEvent(QKeyEvent *event) {

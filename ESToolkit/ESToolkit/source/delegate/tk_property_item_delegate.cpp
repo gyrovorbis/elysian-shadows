@@ -240,4 +240,10 @@ LuaTableFieldItem*  PropertyItemDelegate::modelIndexToLuaTableFieldItem(const QM
     return nullptr;
 }
 
+bool PropertyItemDelegate::canDropMimeData(const QMimeData* data, Qt::DropAction action, int row , int col, const QModelIndex& parent) const {
+    qDebug() << "PROPERTY ITEM DELEGATE CAN DROP!";
+}
 
+bool PropertyItemDelegate::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) const {
+
+}

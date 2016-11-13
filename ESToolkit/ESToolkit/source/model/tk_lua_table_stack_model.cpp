@@ -11,7 +11,7 @@ LuaTableFieldItem::LuaTableFieldItem(LuaFieldRef ref, QStandardItem*const labelI
 {
     if(_fieldRef->getType() == LUA_TTABLE || _fieldRef->getType() == LUA_TUSERDATA) {
         _settingFlags = true;
-        setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::NoItemFlags);
+        setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDropEnabled);
         _settingFlags = false;
     }
 }
@@ -256,3 +256,30 @@ QStyledItemDelegate* LuaTableFieldItem::getStyledItemDelegate(void) const {
 
 }
 
+
+bool LuaTableStackModel::canDropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) const {
+    QStandardItem* item = itemFromIndex(parent);
+    LuaTableFieldItem* luaItem = nullptr;
+
+    if(item && item->type() == ESTkStandardItemType::LuaTable) {
+        luaItem = static_cast<LuaTableFieldItem*>(item);
+        PropertyItemDelegate* delegate = qobject_cast<PropertyItemDelegate*>(luaItem->getStyledItemDelegate());
+
+        if(delegate) delegate->canDropMimeData(data, action, row, column, parent);
+    }
+
+        dbgprintf("CAN_DROP!!!! - Row: %d, Col: %d, Value: %s", row, column, luaItem? luaItem->getVariant().getTypeString() : "NONE");
+}
+
+bool LuaTableStackModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) {
+    QStandardItem* item = itemFromIndex(parent);
+    LuaTableFieldItem* luaItem = nullptr;
+
+    if(item->type() == ESTkStandardItemType::LuaTable) {
+        luaItem = static_cast<LuaTableFieldItem*>(item);
+    }
+
+    if(item) {
+        dbgprintf("DROP!!!! - Row: %d, Col: %d, Value: %s", row, column, luaItem? luaItem->getVariant().getValue<const char*>() : "NONE");
+    }
+}

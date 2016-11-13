@@ -8,11 +8,15 @@
 class QMimeData;
 class QDropEvent;
 class QDragEnterEvent;
+class QModelIndex;
 
 class MimeDropManager {
 public:
-    using DropCbType        = std::function<bool(const QMimeData*, Qt::DropAction, QDropEvent*)>;
-    using CanDropCbType     = std::function<bool(const QMimeData*, Qt::DropAction, QDragEnterEvent*)>;
+    using DropCbType            = std::function<bool(const QMimeData*, Qt::DropAction, QDropEvent*)>;
+    using CanDropCbType         = std::function<bool(const QMimeData*, Qt::DropAction, QDragEnterEvent*)>;
+
+    using DropModelCbType       = std::function<bool(const QMimeData*, Qt::DropAction, QDropEvent*, int, int, QModelIndex&)>;
+    using CanDropModelCbType    = std::function<bool(const QMimeData*, Qt::DropAction, QDragEnterEvent*, int, int, QModelIndex&)>;
 
     enum BUILTIN_MIME_TYPES {
         TYPE_TEXT   = -1,

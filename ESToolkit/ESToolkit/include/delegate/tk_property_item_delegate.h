@@ -16,6 +16,7 @@ class LuaTableFieldItem;
  * behavior.
  */
 class PropertyItemDelegate: public QStyledItemDelegate, public TkLuaManager, public AssetManager {
+    Q_OBJECT
 public:
     using MenuCallbackType                  = std::function<QMenu*(ESTkStandardItem*)>;
 
@@ -48,6 +49,11 @@ public:
 
     void                        setContextMenuCallback(MenuCallbackType callback);
     virtual QMenu*              getContextMenu(ESTkStandardItem*const item);
+
+    virtual bool                canDropMimeData(const QMimeData* data, Qt::DropAction action, int row , int col, const QModelIndex& parent) const;
+    virtual bool                dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) const;
+
+
     void                        addSupportedType(const int luaType);
     static LuaTableFieldItem*   modelIndexToLuaTableFieldItem(const QModelIndex& index);
     static ESTkStandardItem*    modelIndexToESTkStandardItem(const QModelIndex& index);
