@@ -15,6 +15,7 @@
 #include <estk/tk_asset_dock_widget.h>
 #include <asset/tk_area.h>
 #include <proxy/elysian_entity_proxy.hpp>
+#include <core/tk_lua_mime_drop_manager.h>
 
 
 class NewLineFilter: public QObject {
@@ -241,9 +242,13 @@ LuaTableFieldItem*  PropertyItemDelegate::modelIndexToLuaTableFieldItem(const QM
 }
 
 bool PropertyItemDelegate::canDropMimeData(const QMimeData* data, Qt::DropAction action, int row , int col, const QModelIndex& parent) const {
-    qDebug() << "PROPERTY ITEM DELEGATE CAN DROP!";
+    return _mimeDropManager?
+                _mimeDropManager->canDrop(data, action, nullptr, row, col, parent) :
+                false;
 }
 
-bool PropertyItemDelegate::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) const {
-
+bool PropertyItemDelegate::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int col, const QModelIndex& parent) const {
+    return _mimeDropManager?
+                _mimeDropManager->drop(data, action, nullptr, row, col, parent) :
+                false;
 }

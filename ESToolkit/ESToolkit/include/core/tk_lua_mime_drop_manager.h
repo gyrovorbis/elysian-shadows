@@ -11,13 +11,13 @@ public:
     using   LuaDropCbType            = std::function<bool(LuaVariant, Qt::DropAction, QDropEvent*, int, int, const QModelIndex&)>;
     using   LuaCanDropCbType         = std::function<bool(LuaVariant, Qt::DropAction, QDragEnterEvent*, int, int, const QModelIndex&)>;
 
-protected:
     struct LuaHandler {
         LuaDropCbType       dropCallback;
         LuaCanDropCbType    canDropCallback = LuaCanDropCbType();
-        QString             typeName;
-        Qt::DropActions     actions;
+        Qt::DropActions     actions         = Qt::ActionMask;
     };
+
+protected:
 
     QMap<QString, LuaHandler>   _luaHandlers;
 
@@ -27,21 +27,28 @@ protected:
 
 public:
                             LuaMimeDropManager(void) = default;
-                            LuaMimeDropManager(QVector<Handler>&& handlers);
+                            LuaMimeDropManager(QMap<QString, LuaHandler>&& handlers);
 
-    void                    addLuaTypeHandler(QString typeName, LuaDropCbType dropCallback, LuaCanDropCbType canDropCallback, Qt::DropActions actions);
+    void                    addLuaTypeHandler(QString typeName, LuaDropCbType dropCallback, LuaCanDropCbType canDropCallback=LuaCanDropCbType(), Qt::DropActions actions=Qt::ActionMask);
     void                    removeLuaTypeHandler(QString typeName);
-
-    static bool             mimeDataHasLuaTypeName(QString typeName, const QMimeData* data);
 
 };
 
 
+
+
+
+
 inline void LuaMimeDropManager::addLuaTypeHandler(QString typeName, LuaDropCbType dropCallback, LuaCanDropCbType canDropCallback, Qt::DropActions actions) {
+    _luaHandlers[std::move(typeName)] = LuaHandler {
+        std::move(dropCallback),
+        std::move(canDropCallback),
+        actions
+    };
 }
 
 inline void LuaMimeDropManager::removeLuaTypeHandler(QString typeName) {
-
+    _luaHandlers.erase(_luaHandlers.find(typeName));
 }
 
 

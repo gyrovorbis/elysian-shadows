@@ -206,8 +206,7 @@ SOURCES += \
     ../../ESGamma/source/system/elysian_pathfinding_system.cpp \
     ../../AssetIO/source/utility/elysian_lua_variant_base.cpp \
     ../../ESGamma/source/system/elysian_level_system_base.cpp \
-    ../../AssetIO/source/behavior/elysian_state_machine_behavior.cpp \
-    source/core/tk_lua_mime_drop_manager.cpp
+    ../../AssetIO/source/behavior/elysian_state_machine_behavior.cpp
 
 
 !ios: !dreamcast: !android {
@@ -298,7 +297,8 @@ SOURCES += \
         source/delegate/tk_combobox_property_item_delegate.cpp \
         source/delegate/tk_dynamic_content_property_item_delegate.cpp \
         source/estk/tk_selection_tree_view.cpp \
-        source/asset/tk_dialog_screen.cpp
+        source/asset/tk_dialog_screen.cpp \
+        source/core/tk_lua_mime_drop_manager.cpp
 
 } else {
         SOURCES += ../../ESGamma/source/system/main.cpp
@@ -463,8 +463,7 @@ HEADERS += \
     include/estk/tk_level_system.h \
     ../../AssetIO/include/utility/elysian_cpp_lua_function.hpp \
     ../../AssetIO/include/behavior/elysian_state_machine_behavior.hpp \
-    ../../AssetIO/include/utility/elysian_oolua_string_traits.hpp \
-    include/core/tk_lua_mime_drop_manager.h
+    ../../AssetIO/include/utility/elysian_oolua_string_traits.hpp
 
 !ios:!dreamcast: !android {
     HEADERS +=  \
@@ -575,7 +574,8 @@ HEADERS += \
         include/delegate/tk_property_item_proxy_delegate.h \
         include/delegate/tk_combobox_property_item_delegate.h \
         include/delegate/tk_dynamic_content_property_item_delegate.h \
-        include/estk/tk_selection_tree_view.h
+        include/estk/tk_selection_tree_view.h \
+        include/core/tk_lua_mime_drop_manager.h
 }
 
 

@@ -13,8 +13,8 @@ class QModelIndex;
 class MimeDropManager {
 public:
 
-    using DropCbType       = std::function<bool(const QMimeData*, Qt::DropAction, QDropEvent*, int, int, QModelIndex&)>;
-    using CanDropCbType    = std::function<bool(const QMimeData*, Qt::DropAction, QDragEnterEvent*, int, int, QModelIndex&)>;
+    using DropCbType       = std::function<bool(const QMimeData*, Qt::DropAction, QDropEvent*, int, int, const QModelIndex&)>;
+    using CanDropCbType    = std::function<bool(const QMimeData*, Qt::DropAction, QDragEnterEvent*, int, int, const QModelIndex&)>;
 
     enum BUILTIN_MIME_TYPES {
         TYPE_TEXT   = -1,

@@ -9,6 +9,7 @@
 #include <delegate/tk_combobox_property_item_delegate.h>
 #include <model/tk_lua_table_stack_model.h>
 #include <core/tk_menu_stack.h>
+#include <core/tk_lua_mime_drop_manager.h>
 #include <QStyleOptionViewItem>
 #include <QApplication>
 
@@ -133,7 +134,18 @@ void TkSkeletonAttrib::initializeDelegates(void) {
     DynamicContentPropertyItemDelegate* animDelegate =
             new DynamicContentPropertyItemDelegate(DynamicContentPropertyItemDelegate::luaArraySizeTextCallback);
     animDelegate->addButton(QIcon(DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_ICON_PLUS_PATH), DynamicContentPropertyItemDelegate::luaAddItemButtonCallback<elysian::Animation>);
+    animDelegate->setMimeDropManager(new LuaMimeDropManager(QMap<QString, LuaMimeDropManager::LuaHandler> {
+        {
+            QString("Entity"),
+            {
+                [](LuaVariant v, Qt::DropAction action, QDropEvent* event, int row, int col, const QModelIndex& parent) {
+                    qDebug() << "JEEESUS!";
+                    return true;
+                }
+            }
+        }
 
+    }));
 
     OOLUA::push(*_mainState, animDelegate);
     lua_setfield(*_mainState, -2, "animations");

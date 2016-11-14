@@ -716,7 +716,7 @@ void MapView::_registerDropEventCallbacks(void) {
     _mimeDropManager = new MimeDropManager(QVector<MimeDropManager::Handler> {
        {
             TkMimeData::TYPE_LUA_VARIANT,
-            [=](const QMimeData* data, Qt::DropAction, QDropEvent* event) {
+            [=](const QMimeData* data, Qt::DropAction, QDropEvent* event, int, int, const QModelIndex&) {
                 DbgEvent dbg("Drop Event: Instantiating from Entity Prefab.");
                 auto* tkMimeData = qobject_cast<const TkMimeData*>(data);
                 LuaVariant v = tkMimeData->getVariant()["new"].getVariant()(tkMimeData->getVariant());
@@ -735,10 +735,15 @@ void MapView::_registerDropEventCallbacks(void) {
                 dbgprintf("Success: Adding Entity [%s] to area.", entity->getName());
 
                 return true;
-            }
+            },
+           [=](const QMimeData* data, Qt::DropAction, QDragEnterEvent*, int, int, const QModelIndex&) {
+               auto* tkMimeData = qobject_cast<const TkMimeData*>(data);
+                return (tkMimeData->isPrefab() && QString(tkMimeData->getVariant().getTypeString()) == QString("Entity"));
+           }
+
        }, {
             MimeDropManager::TYPE_URLS,
-            [=](const QMimeData* data, Qt::DropAction /*action*/, QDropEvent* event) {
+            [=](const QMimeData* data, Qt::DropAction /*action*/, QDropEvent* event, int, int, const QModelIndex&) {
                 QPointF scenePos = _mapViewPosToScenePos(event->pos(), scenePos);
                 for(auto&& url : data->urls()) {
                     if(url.isLocalFile()) {
@@ -771,7 +776,7 @@ void MapView::_registerDropEventCallbacks(void) {
                 }
                 return true;
             },
-            [=](const QMimeData* data, Qt::DropAction /*action*/, QDragEnterEvent* event) {
+            [=](const QMimeData* data, Qt::DropAction /*action*/, QDragEnterEvent*, int, int, const QModelIndex&) {
                 if(data->hasUrls()) {
                     for(auto&& url : data->urls()) {
                        if(url.isLocalFile()) {

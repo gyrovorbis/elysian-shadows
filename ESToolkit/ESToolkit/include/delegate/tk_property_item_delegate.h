@@ -10,6 +10,7 @@
 class QMenu;
 class ESTkStandardItem;
 class LuaTableFieldItem;
+class MimeDropManager;
 
 /* Default delegate type for SelectionView items. Also implements default functionality for Lua
  * proxy types by checking whether the PropertyItem type is Lua. If not, it returns default
@@ -35,6 +36,7 @@ protected:
     };
     MenuCallbackType    _menuCallback;
     QVector<QString>    _supportedUserData;
+    MimeDropManager*    _mimeDropManager    = nullptr;
 
 
     //virtual QWidget*createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const = 0;
@@ -51,8 +53,8 @@ public:
     virtual QMenu*              getContextMenu(ESTkStandardItem*const item);
 
     virtual bool                canDropMimeData(const QMimeData* data, Qt::DropAction action, int row , int col, const QModelIndex& parent) const;
-    virtual bool                dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) const;
-
+    virtual bool                dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int col, const QModelIndex& parent) const;
+    void                        setMimeDropManager(MimeDropManager* mgr);
 
     void                        addSupportedType(const int luaType);
     static LuaTableFieldItem*   modelIndexToLuaTableFieldItem(const QModelIndex& index);
@@ -67,6 +69,7 @@ public:
 
 inline void PropertyItemDelegate::addSupportedType(const int luaType) { _supportedTypes.push_back(luaType); }
 inline void PropertyItemDelegate::setContextMenuCallback(MenuCallbackType callback) { _menuCallback = std::move(callback); }
+inline void PropertyItemDelegate::setMimeDropManager(MimeDropManager* mgr) { _mimeDropManager = mgr; }
 
 
 

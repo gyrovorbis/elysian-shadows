@@ -265,21 +265,22 @@ bool LuaTableStackModel::canDropMimeData(const QMimeData* data, Qt::DropAction a
         luaItem = static_cast<LuaTableFieldItem*>(item);
         PropertyItemDelegate* delegate = qobject_cast<PropertyItemDelegate*>(luaItem->getStyledItemDelegate());
 
-        if(delegate) delegate->canDropMimeData(data, action, row, column, parent);
+        if(delegate) return delegate->canDropMimeData(data, action, row, column, parent);
     }
 
-        dbgprintf("CAN_DROP!!!! - Row: %d, Col: %d, Value: %s", row, column, luaItem? luaItem->getVariant().getTypeString() : "NONE");
+    return false;
 }
 
 bool LuaTableStackModel::dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) {
     QStandardItem* item = itemFromIndex(parent);
     LuaTableFieldItem* luaItem = nullptr;
 
-    if(item->type() == ESTkStandardItemType::LuaTable) {
+    if(item && item->type() == ESTkStandardItemType::LuaTable) {
         luaItem = static_cast<LuaTableFieldItem*>(item);
+        PropertyItemDelegate* delegate = qobject_cast<PropertyItemDelegate*>(luaItem->getStyledItemDelegate());
+
+        if(delegate) return delegate->dropMimeData(data, action, row, column, parent);
     }
 
-    if(item) {
-        dbgprintf("DROP!!!! - Row: %d, Col: %d, Value: %s", row, column, luaItem? luaItem->getVariant().getValue<const char*>() : "NONE");
-    }
+    return false;
 }
