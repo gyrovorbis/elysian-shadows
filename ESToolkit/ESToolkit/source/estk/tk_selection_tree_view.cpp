@@ -16,6 +16,8 @@ SelectionTreeView::SelectionTreeView(void) {
     setAlternatingRowColors(true);
     setMouseTracking(true);
     setAcceptDrops(true);
+    setDragDropMode(QAbstractItemView::DragDrop);
+    viewport()->setAcceptDrops(true);
 }
 
 void SelectionTreeView::keyPressEvent(QKeyEvent *event) {

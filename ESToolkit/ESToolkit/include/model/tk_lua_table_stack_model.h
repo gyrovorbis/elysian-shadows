@@ -110,6 +110,9 @@ public:
     virtual bool                canDropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) const override;
     virtual bool                dropMimeData(const QMimeData* data, Qt::DropAction action, int row, int column, const QModelIndex& parent) override;
 
+    virtual Qt::DropActions     supportedDropActions(void) const;
+    virtual Qt::DropActions     supportedDragQctions(void) const;
+
 
 };
 

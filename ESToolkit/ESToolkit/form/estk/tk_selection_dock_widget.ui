@@ -31,6 +31,9 @@
    <string>Selection View</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
+   <property name="mouseTracking">
+    <bool>true</bool>
+   </property>
    <layout class="QVBoxLayout" name="verticalLayout"/>
   </widget>
  </widget>

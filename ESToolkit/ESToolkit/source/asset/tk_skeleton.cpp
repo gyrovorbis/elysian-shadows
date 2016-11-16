@@ -141,6 +141,10 @@ void TkSkeletonAttrib::initializeDelegates(void) {
                 [](LuaVariant v, Qt::DropAction action, QDropEvent* event, int row, int col, const QModelIndex& parent) {
                     qDebug() << "JEEESUS!";
                     return true;
+                },
+                [](LuaVariant v, Qt::DropAction action, QDragEnterEvent* event, int row, int col, const QModelIndex& parent) {
+                    qDebug() << "JEEESUSYYY!";
+                    return true;
                 }
             }
         }
