@@ -9,11 +9,11 @@ LuaTableFieldItem::LuaTableFieldItem(LuaFieldRef ref, QStandardItem*const labelI
     _labelItem(labelItem),
     _fieldRef(std::move(ref))
 {
-    if(_fieldRef->getType() == LUA_TTABLE || _fieldRef->getType() == LUA_TUSERDATA) {
+    //f(_fieldRef->getType() == LUA_TTABLE || _fieldRef->getType() == LUA_TUSERDATA) {
         _settingFlags = true;
-        setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDropEnabled);
+        setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsSelectable | Qt::ItemIsDropEnabled);
         _settingFlags = false;
-    }
+    //}
 }
 
 void LuaTableFieldItem::insertingModelItem(void) {

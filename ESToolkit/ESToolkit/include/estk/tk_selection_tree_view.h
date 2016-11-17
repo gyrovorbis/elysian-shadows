@@ -9,7 +9,10 @@ public:
                     SelectionTreeView(void);
 
     virtual void    keyPressEvent(QKeyEvent* event) override;
-
+#if 0
+    virtual void    dragEnterEvent(QDragEnterEvent *event) override;
+    virtual void    dropEvent(QDropEvent *event) override;
+#endif
 };
 
 #endif // TK_SELECTION_TREE_VIEW_H
