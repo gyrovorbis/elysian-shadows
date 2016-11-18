@@ -202,7 +202,7 @@ namespace elysian {
 
         /* Do some fucking terrible, type-unsafe casting to batch process linear interpolation
          * of all floats in the struct with the SIMD instructions. Ugly, but fast as shit. */
-        gyLinearInterp((float*)&_pos.x, 6,
+        gyLinearInterp((float*)&_pos.x, 13,
                        (float*)&startKeyFrame._pos.x, (float*)&endKeyFrame._pos.x,
                        interval, elapsed);
 #if 0

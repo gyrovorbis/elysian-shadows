@@ -297,4 +297,3 @@ QStringList LuaTableStackModel::mimeTypes(void) const {
     return list;
 
 }
-//Qt::ItemFlags   LuaTableStackModel::flags(const QModelIndex &index) const { return Qt::
