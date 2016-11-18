@@ -625,15 +625,16 @@
 	\section1 Scripting Dialog
 	Coming soon.
 
-	\l {estk://fuckme} { ESTk }
-	\l {http://www.facebook.org} {test}
-	\l {ftp://fuck.com}
+	\l {estk://fuckme.net} { ESTk }
+	\l {http://www.facebook.com} {test}
+	\l {file://lolz?bullshit=asdlkfkj&bowsht=33}
+	<a href="estk://bullshit">ESTK BOWSHT</a>
 
 */
 
 
 /*!
-	\page cutscene.html
+	\page cutscenes.html
 	\previouspage Dialog
 	\contentspage {ESToolkit User Manual} {Contents}
 	\ingroup estk
@@ -651,22 +652,36 @@
 
 	The first keyframe within the list might look something like this:
 	\code
+	state1 = function() 
+		callbackEvent = LuaEventCallback.new(state2)    --point to next state
+		fr = Singletons.getCameraSys():getKeyFrame()   	--get current keyframe
+		fr:setScale2f(3.0, 3.0)							--scale current keyframe by 3
+		Singletons.getCameraSys():moveToKeyFrame(fr, 4.0, callbackEvent)	--linearly interpolate into new keyframe over 4 seconds
+	end
 
 	\endcode
 	We create a new LuaEventCallback that will start the second event when this event is complete. Then we grab the current CameraKeyFrame, made a slight modification to pan the camera, and finally call CameraSystem:applyBlah() to tell the camera system to linearly interpolate the current keyframe into the new keyframe over X seconds.
 
 	Then the next keyframe might look something like this:
 	\code
-
+	state2 = function() 
+		lfr = Singletons.getCameraSys():getKeyFrame() 	--retrieve current keyframe						
+		fr:setScale2f(0.2, 0.2)							--scale				
+		fr:setPos2f(1000, 1000)							--pan
+		callbackEvent:setCallbackFunction(state3)		--set next state to call for when this one is complete		
+		Singletons.getCameraSys():moveToKeyFrame(fr, 5.0, callbackEvent)	--apply new keyframe over next 5 seconds
+	end
 	\endcode
 	We once again grab the current key frame and make a modification to its transform. Notice that we now set the LuaEventCallback to point to the next event in our list before linearly interpolating to the new keyFrame. 
 
 
 	\section1 Demo Area
-	You can find a live demo area with a sample cutscene here: 
-	The Lua Behavior script containing the cutscene is located at aasdlfkjdf.
+	You can find a live demo area with a sample cutscene here: /assets/level/Examples/area/CutsceneDemo
+	The Lua Behavior script containing the cutscene is located at /assets/level/Examples/area/CutsceneDemo/cutscene_demo_behav.lua.
 	The Lua Behavior has been attached to the SavePoint entity within area_table.lua.
 	Press the "C" Key or "X" Button to begin the cutscene.
+
+*/
 
 
 

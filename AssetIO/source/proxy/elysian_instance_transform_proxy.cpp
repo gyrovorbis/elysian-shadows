@@ -266,22 +266,22 @@
  * Returns the number of radians the transform is rotated about the orientation vector.
  */
 /*!
- * \qmlmethod GYVector3& InstanceTransform::getPos()
+ * \qmlmethod Vector3& InstanceTransform::getPos()
  *
  * Returns a reference to the 3D position vector.
  */
 /*!
- * \qmlmethod GYVector3& InstanceTransform::getSize()
+ * \qmlmethod Vector3& InstanceTransform::getSize()
  *
  * Returns a reference to the 3D size vector.
  */
 /*!
- * \qmlmethod GYVector3& InstanceTransform::getScale()
+ * \qmlmethod Vector3& InstanceTransform::getScale()
  *
  * Returns a reference to the 3D scale vector.
  */
 /*!
- * \qmlmethod GYVector3& InstanceTransform::getOrient()
+ * \qmlmethod Vector3& InstanceTransform::getOrient()
  *
  * Returns a reference to the 3D orientation vector.
  */

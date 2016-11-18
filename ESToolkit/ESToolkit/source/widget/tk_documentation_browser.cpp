@@ -7,6 +7,7 @@
 #include <elysian_debug.hpp>
 #include <QHelpContentWidget>
 #include <QHelpIndexWidget>
+#include <estk/tk_asset_dock_widget.h>
 
 /****************************************************************************
 ** This file is part of the documentation of Qt. It was originally
@@ -25,6 +26,12 @@ QVariant HelpBrowser::loadResource(int type, const QUrl& name){
     qDebug() << "BOUT TO OPEN " << name.url();
     if (name.scheme() == "qthelp")
         return QVariant(_helpEngine->fileData(name));
+#if 0
+    else if(name.scheme() == "file") {
+        if()
+
+    }
+#endif
    // else if(name.scheme() == "estk")
     //    qDebug() << "ESTK SCHEME HIT!!!!" << name.url();
     else
