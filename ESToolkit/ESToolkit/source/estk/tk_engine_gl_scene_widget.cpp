@@ -69,7 +69,7 @@ bool EngineGLSceneWidget::isPlaying(void) const { return getAssets()->getEngine(
 
 
 void EngineGLSceneWidget::initializeGL(void) {
-    DbgEvent event("Initializing OpenGL");
+    DbgEvent event("QGLWidget::initializeGL()");
    // initializeOpenGLFunctions();
  //   auto* con = context();
   //  assert(con->isValid());

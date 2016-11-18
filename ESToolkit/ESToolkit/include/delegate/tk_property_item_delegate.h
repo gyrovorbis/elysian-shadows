@@ -6,6 +6,7 @@
 #include <functional>
 #include <estk/tk_lua_manager.h>
 #include <asset/tk_asset_manager.h>
+#include <QCompleter>
 
 class QMenu;
 class ESTkStandardItem;
@@ -39,7 +40,7 @@ protected:
     CompleterCallbackType   _completerCallback;
     QVector<QString>        _supportedUserData;
     MimeDropManager*        _mimeDropManager    = nullptr;
-
+    int                     _completerMode;
 
     //virtual QWidget*createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const = 0;
     //virtual void    setEditorData(QWidget *editor, const QModelIndex &index) const = 0;
@@ -52,7 +53,7 @@ public:
     virtual QWidget*            createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
     void                        setContextMenuCallback(MenuCallbackType callback);
-    void                        setCompleterCallback(CompleterCallbackType callback);
+    void                        setCompleterCallback(CompleterCallbackType callback, int mode=QCompleter::PopupCompletion);
     virtual QMenu*              getContextMenu(ESTkStandardItem*const item);
 
     virtual bool                canDropMimeData(const QMimeData* data, Qt::DropAction action, int row , int col, const QModelIndex& parent) const;
@@ -73,6 +74,7 @@ public:
 inline void PropertyItemDelegate::addSupportedType(const int luaType) { _supportedTypes.push_back(luaType); }
 inline void PropertyItemDelegate::setContextMenuCallback(MenuCallbackType callback) { _menuCallback = std::move(callback); }
 inline void PropertyItemDelegate::setMimeDropManager(MimeDropManager* mgr) { _mimeDropManager = mgr; }
+inline void PropertyItemDelegate::setCompleterCallback(CompleterCallbackType callback, int mode) { _completerCallback = std::move(callback); _completerMode = mode; }
 
 
 
