@@ -271,7 +271,7 @@ int glalVidOglInit(const int viewWidth, const int viewHeight, const int projWidt
 
     static int once = 0;
     if(!once) {
-        _gyLog(GY_DEBUG_VERBOSE, "GYRO_VIDEO_API: Initializing libGyro Video Subystem.");
+        _gyLog(GY_DEBUG_VERBOSE, "GYRO_VIDEO_API: Initializing OpenGL.");
         _gyPush();
 
         glalLoadDefaultShaders();
