@@ -312,6 +312,20 @@ void TkAnimation::initializeDelegates(void) {
     lua_pushvalue(*_mainState, -1);
     lua_setfield(*_mainState, -3, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
 
+    auto* nameDelegate = new PropertyItemDelegate();
+    nameDelegate->setCompleterCallback([](ESTkStandardItem*) {
+        QStringList list;
+        list << "Idle";
+        LuaVariant nameTable = LuaManager::exec("return Character.animNameList");
+        for(int i = 1; i < nameTable.getLength(); ++i) {
+            QString name = nameTable[i].getVariant().getValue<const char*>();
+            list << name+QString("Left") << name+QString("Right") << name+QString("Up") << name+QString("Down");
+        }
+        return list;
+    }, QCompleter::UnfilteredPopupCompletion);
+    OOLUA::push(*_mainState, nameDelegate);
+    lua_setfield(*_mainState, -2, "name");
+
     DynamicContentPropertyItemDelegate* tracksDelegate =
             new DynamicContentPropertyItemDelegate(DynamicContentPropertyItemDelegate::luaArraySizeTextCallback);
     tracksDelegate->addButton(QIcon(DYNAMIC_CONTENT_PROPERTY_ITEM_DELEGATE_ICON_PLUS_PATH), DynamicContentPropertyItemDelegate::luaAddItemButtonCallback<AnimationTrack>);

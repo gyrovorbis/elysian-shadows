@@ -266,12 +266,9 @@ bool LuaTableStackModel::canDropMimeData(const QMimeData* data, Qt::DropAction a
         PropertyItemDelegate* delegate = qobject_cast<PropertyItemDelegate*>(luaItem->getStyledItemDelegate());
 
         if(delegate) {
-            dbgprintf("CANDROP row - %d, col = %d, type - %s", row, column, luaItem->getVariant().getTypeString());
             return delegate->canDropMimeData(data, action, row, column, parent);
-    } else {
-             dbgprintf("NO DELEGATE row - %d, col = %d, type - %s", row, column, luaItem->getVariant().getTypeString());
         }
-        }
+    }
 
     return false;
 }
@@ -285,9 +282,7 @@ bool LuaTableStackModel::dropMimeData(const QMimeData* data, Qt::DropAction acti
         PropertyItemDelegate* delegate = qobject_cast<PropertyItemDelegate*>(luaItem->getStyledItemDelegate());
 
         if(delegate) {
-            dbgprintf("DROP row - %d, col = %d, type - %s", row, column, luaItem->getVariant().getTypeString());
             return delegate->dropMimeData(data, action, row, column, parent);
-
         }
     }
 
@@ -299,8 +294,6 @@ Qt::DropActions LuaTableStackModel::supportedDragActions(void) const { return Qt
 QStringList LuaTableStackModel::mimeTypes(void) const {
     QStringList list;
     list << "text/plain";
-    dbgprintf("FUCK!IMEZ");
     return list;
 
 }
-//Qt::ItemFlags   LuaTableStackModel::flags(const QModelIndex &index) const { return Qt::

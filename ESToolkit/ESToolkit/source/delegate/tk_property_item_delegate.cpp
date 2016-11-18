@@ -48,6 +48,15 @@ QWidget* PropertyItemDelegate::createEditor(QWidget *parent, const QStyleOptionV
 
     if(lineEdit) {
         lineEdit->installEventFilter(new NewLineFilter);
+
+        if(_completerCallback) {
+            QStringList list = _completerCallback(modelIndexToESTkStandardItem(index));
+            if(list.size()) {
+                QCompleter* completer = new QCompleter(list);
+                completer->setCompletionMode((QCompleter::CompletionMode)_completerMode);
+                lineEdit->setCompleter(completer);
+            }
+        }
     }
 
     return widget;
