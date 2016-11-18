@@ -20,6 +20,7 @@ class PropertyItemDelegate: public QStyledItemDelegate, public TkLuaManager, pub
     Q_OBJECT
 public:
     using MenuCallbackType                  = std::function<QMenu*(ESTkStandardItem*)>;
+    using CompleterCallbackType             = std::function<QStringList(ESTkStandardItem*)>;
 
 protected:
     bool                _addPairs           = true;
@@ -34,9 +35,10 @@ protected:
         //LUA_TLIGHTUSERDATA,
         LUA_TUSERDATA
     };
-    MenuCallbackType    _menuCallback;
-    QVector<QString>    _supportedUserData;
-    MimeDropManager*    _mimeDropManager    = nullptr;
+    MenuCallbackType        _menuCallback;
+    CompleterCallbackType   _completerCallback;
+    QVector<QString>        _supportedUserData;
+    MimeDropManager*        _mimeDropManager    = nullptr;
 
 
     //virtual QWidget*createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const = 0;
@@ -50,6 +52,7 @@ public:
     virtual QWidget*            createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
 
     void                        setContextMenuCallback(MenuCallbackType callback);
+    void                        setCompleterCallback(CompleterCallbackType callback);
     virtual QMenu*              getContextMenu(ESTkStandardItem*const item);
 
     virtual bool                canDropMimeData(const QMimeData* data, Qt::DropAction action, int row , int col, const QModelIndex& parent) const;

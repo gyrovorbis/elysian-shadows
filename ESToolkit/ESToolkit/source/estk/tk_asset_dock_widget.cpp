@@ -53,7 +53,7 @@ void AssetDockWidget::_onProjectAdded(Project * const project) {
     if(project) {
         _fsModel = new AssetFileSystemModel;
         _ui->treeView->setSelectionMode(QAbstractItemView::SingleSelection);
-        _ui->treeView->	setContextMenuPolicy(Qt::CustomContextMenu);
+        _ui->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
         //connect(_ui->treeView, SIGNAL(itemChanged))
         _fsModel->addDirectoryType(new AreaAssetFileType);
         _fsModel->addDirectoryType(new LevelAssetFileType);

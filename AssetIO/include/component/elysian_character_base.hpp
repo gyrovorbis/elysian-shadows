@@ -6,16 +6,6 @@
 #include <crtp/elysian_lua_table_proxy.hpp>
 #include <crtp/elysian_lua_variant.hpp>
 
-#define ELYSIAN_CHAR_ANIM_SEQ_STAND_UP          "StandUp"
-#define ELYSIAN_CHAR_ANIM_SEQ_STAND_DOWN        "StandDown"
-#define ELYSIAN_CHAR_ANIM_SEQ_STAND_LEFT        "StandLeft"
-#define ELYSIAN_CHAR_ANIM_SEQ_STAND_RIGHT       "StandRight"
-#define ELYSIAN_CHAR_ANIM_SEQ_WALK_UP           "WalkUp"
-#define ELYSIAN_CHAR_ANIM_SEQ_WALK_DOWN         "WalkDown"
-#define ELYSIAN_CHAR_ANIM_SEQ_WALK_LEFT         "WalkLeft"
-#define ELYSIAN_CHAR_ANIM_SEQ_WALK_RIGHT        "WalkRight"
-#define ELYSIAN_CHAR_ANIM_CHILD_SEQ_HELD        "HeldEntity"
-
 #define ELYSIAN_CHAR_WALK_DEFAULT_FORCE         28000000.0f
 #define ELYSIAN_CHAR_DASH_DEFAULT_MULTIPLIER    10.0f
 #define ELYSIAN_CHAR_JUMP_DEFAULT_FORCE         GYVector3 { 0.0f, /*-330000.0f*/ 0.0f, 330000.0f }

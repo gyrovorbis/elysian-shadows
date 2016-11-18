@@ -139,12 +139,18 @@ void TkSkeletonAttrib::initializeDelegates(void) {
             QString("Entity"),
             {
                 [](LuaVariant v, Qt::DropAction action, QDropEvent* event, int row, int col, const QModelIndex& parent) {
-                    qDebug() << "JEEESUS!";
+                    const LuaVariant& self = static_cast<LuaTableFieldItem*>(static_cast<const QStandardItemModel*>(parent.model())->itemFromIndex(parent))->getTableData()->getTableRef();
+
+                    LuaVariant srcTable = v["skeleton"]["attrib"]["animations"].getVariant();
+
+                    for(int i = 1; i <= srcTable.getLength(); ++i) {
+                        self[i].setVariant(srcTable[i].getVariant());
+                    }
+
                     return true;
                 },
                 [](LuaVariant v, Qt::DropAction action, QDragEnterEvent* event, int row, int col, const QModelIndex& parent) {
-                    qDebug() << "JEEESUSYYY!";
-                    return true;
+                    return !v["skeleton"]["attrib"]["animations"].getVariant().isNil();
                 }
             }
         }

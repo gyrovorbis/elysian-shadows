@@ -419,12 +419,14 @@ public:
 
     inline const LuaVariantBase& LuaFieldRef::getVariant(void) const {
         bool success = true;
-        success &= _tableRef.push();
-        success &= _key.push();
-        GY_ASSERT(success);
-        lua_gettable(*_mainState, -2);
-        lua_remove(*_mainState, -2);
-        success &= _cachedValue.pull();
+        if(!_tableRef.isNil()) {
+            success &= _tableRef.push();
+            success &= _key.push();
+            GY_ASSERT(success);
+            lua_gettable(*_mainState, -2);
+            lua_remove(*_mainState, -2);
+            success &= _cachedValue.pull();
+        }
         return _cachedValue;
     }
 
