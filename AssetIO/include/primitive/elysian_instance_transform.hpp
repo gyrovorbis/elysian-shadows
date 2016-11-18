@@ -133,12 +133,14 @@ namespace elysian {
             gyMatInstance(this);
         }
 
-        GYVector3& getPosVec(void);
-        GYVector3& getSizeVec(void);
-        GYVector3& getScaleVec(void);
-        void setPosVec(const OOLUA::Lua_table_ref valTable);
-        void setSizeVec(const OOLUA::Lua_table_ref valTable);
-        void setScaleVec(const OOLUA::Lua_table_ref valTable);
+        GYVector3& getPos(void);
+        GYVector3& getSize(void);
+        GYVector3& getScale(void);
+        GYVector3& getOrient(void);
+
+        //void setPosVec(const OOLUA::Lua_table_ref valTable);
+        //void setSizeVec(const OOLUA::Lua_table_ref valTable);
+        //void setScaleVec(const OOLUA::Lua_table_ref valTable);
 
         void setPos(const float x, const float y, const float z) { _pos.x = x; _pos.y = y; _pos.z = z; }
         void setPos(const float x, const float y) { _pos.x = x; _pos.y = y; }
@@ -170,12 +172,22 @@ namespace elysian {
         void setScaleY(const float y) { _scale.y = y; }
         float getScaleY(void) const { return _scale.y; }
 
+        float getOrientX(void) const;
+        float getOrientY(void) const;
+        float getOrientZ(void) const;
+        void setOrientX(const float orient);
+        void setOrientY(const float orient);
+        void setOrientZ(const float orient);
+
         bool    getFlipX(void) const;
         bool    getFlipY(void) const;
         bool    getFlipZ(void) const;
         void    setFlipX(const bool v);
         void    setFlipY(const bool v);
         void    setFlipZ(const bool v);
+
+        float getAngle(void) const;
+        void setAngle(const float angle);
 
         void setSize(const float x, const float y, const float z) { _size.x = x; _size.y = y; _size.z = z; }
         void setSize(const float x, const float y) { _size.x = x; _size.y = y; }
@@ -190,35 +202,25 @@ namespace elysian {
         void setScale(const GYVector2& scale) { _scale.x = scale.x; _scale.y = scale.y; }
         void getScale(float& x, float& y) const { x = _scale.x; y = _scale.y; }
         //void getScale(GYVector3& scale) const { scale = _scale; }
-        void getScale(GYVector2& scale) const { scale.x = _scale.x; scale.y = _scale.y; }
-        const GYVector3& getScale(void) const { return _scale; }
 
         void getOrient(float& x, float& y, float& z) const;
         void setOrient(const float x, const float y, const float z);
-        float getAngle(void) const;
-        void setAngle(const float angle);
-        float getOrientX(void) const;
-        float getOrientY(void) const;
-        float getOrientZ(void) const;
-        void setOrientX(const float orient);
-        void setOrientY(const float orient);
-        void setOrientZ(const float orient);
 
-        void rotate(const float z) { _angle += z; }
+        void rotate(const float delta) { _angle += delta; }
 
         void translate(const float x, const float y, const float z) { _pos.x += x; _pos.y += y; _pos.z += z; }
         void translate(const float x, const float y) { _pos.x += x; _pos.y += y; }
         void translate(const GYVector3& dist) { _pos.x += dist.x; _pos.y += dist.y; _pos.z += dist.z; }
         void translate(const GYVector2& dist) { _pos.x += dist.x; _pos.y += dist.y; }
 
-        void scale(const float x, const float y, const float /*z*/) { _scale.x *= x; _scale.y *= y; }
+        void scale(const float x, const float y, const float z) { _scale.x *= x; _scale.y *= y; _scale.z *= z; }
         void scale(const float x, const float y) { _scale.x *= x; _scale.y *= y; }
         //void scale(const GYVector2& factor) { gyVec2CompProdAccum(&_scale, &factor); }
 
         void linearInterpolate(const InstanceTransform& startFrame, const InstanceTransform& endFrame,
                                const float interval, const float elapsed)
         {
-            gyLinearInterp((float*)&_pos.x, 10,
+            gyLinearInterp((float*)&_pos.x, 13,
                            (float*)&startFrame._pos.x, (float*)&endFrame._pos.x,
                            interval, elapsed);
         }
@@ -312,7 +314,10 @@ namespace elysian {
     inline void InstanceTransform::setOrientX(const float orient) { _orient.x = orient; }
     inline void InstanceTransform::setOrientY(const float orient) { _orient.y = orient; }
     inline void InstanceTransform::setOrientZ(const float orient) { _orient.z = orient; }
-    inline GYVector3& InstanceTransform::getPosVec(void) { return _pos; }
+    inline GYVector3& InstanceTransform::getPos(void) { return _pos; }
+    inline GYVector3& InstanceTransform::getSize(void) { return _size; }
+    inline GYVector3& InstanceTransform::getScale(void) { return _scale; }
+    inline GYVector3& InstanceTransform::getOrient(void) { return _orient; }
 
     //inline GYVector3& InstanceTransform::getSizeVec(void) { return _size; }
     //inline GYVector3& InstanceTransform::getScaleVec(void) { return _scale; }

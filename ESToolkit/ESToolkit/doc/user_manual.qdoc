@@ -47,6 +47,7 @@
 	\li \l {Debugging}
 	\li \l {Warps}
 	\li \l {Dialog}
+	\li \l {Cutscenes}
 	\endlist
 
 */
@@ -534,6 +535,7 @@
 /*!
 	\page dialog.html
 	\previouspage Warps
+	\nextpage Cutscenes
 	\contentspage {ESToolkit User Manual} {Contents}
 	\ingroup estk
 
@@ -627,11 +629,44 @@
 	\l {http://www.facebook.org} {test}
 	\l {ftp://fuck.com}
 
-
-
-
 */
 
+
+/*!
+	\page cutscene.html
+	\previouspage Dialog
+	\contentspage {ESToolkit User Manual} {Contents}
+	\ingroup estk
+
+	\indexpage Index
+	\startpage ESToolkit User Manual
+
+	\title Cutscenes
+	Cutscenes are constructed in ESTk as a series of sequential CameraKeyFrame objects. Each CameraKeyFrame transforms the active Camera to its position, orientation, and scale over a specified period of time through linear interpolation.
+
+	For example, the first keyframe may pan the camera 200 pixels to the right over 4 seconds, then the next may zoom the camera out by 50% over 3 seconds, then the final keyframe may rotate the camera 90 degrees about the Z-axis over 2 seconds. A single keyframe may also modify position, zoom, and orientation all at once for complex transformations during a single keyframe. 
+
+	\section1 Creating a KeyFrame Event Chain
+	In order to create an event chain for each desired CameraKeyFrame within the cutscene, we must use the LuaEventCallback to notify us when the CameraSystem has finished linearly interpolating to the keyframe and schedue the next keyframe. 
+
+	The first keyframe within the list might look something like this:
+	\code
+
+	\endcode
+	We create a new LuaEventCallback that will start the second event when this event is complete. Then we grab the current CameraKeyFrame, made a slight modification to pan the camera, and finally call CameraSystem:applyBlah() to tell the camera system to linearly interpolate the current keyframe into the new keyframe over X seconds.
+
+	Then the next keyframe might look something like this:
+	\code
+
+	\endcode
+	We once again grab the current key frame and make a modification to its transform. Notice that we now set the LuaEventCallback to point to the next event in our list before linearly interpolating to the new keyFrame. 
+
+
+	\section1 Demo Area
+	You can find a live demo area with a sample cutscene here: 
+	The Lua Behavior script containing the cutscene is located at aasdlfkjdf.
+	The Lua Behavior has been attached to the SavePoint entity within area_table.lua.
+	Press the "C" Key or "X" Button to begin the cutscene.
 
 
 
