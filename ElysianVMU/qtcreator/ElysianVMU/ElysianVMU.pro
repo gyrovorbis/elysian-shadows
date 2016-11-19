@@ -143,7 +143,22 @@ win32 {
 
 }
 
-linux {
+raspberrypi {
+    LIBS += \
+        -lSDL2 \
+        -lSDL2_net \
+        -lGLESv2 \
+        -lEGL \
+        -lopenal \
+        -lz \
+        -logg \
+        -lvorbis \
+        -lvorbisenc \
+        -lvorbisfile \
+        -lpthread \
+        -lrt
+
+} else : linux {
     LIBS += \
         -lSDL2 \
         -lSDL2_net \
@@ -160,6 +175,8 @@ linux {
         -lpthread \
         -lrt
 }
+
+
 
 
 DISTFILES +=
