@@ -113,7 +113,7 @@
 
 #   define GY_ASSERT(a)                     Q_ASSERT(a)
 #	define GYRO_GLAL
-#   define GYRO_GLAL_GL_ES2
+#   define GYRO_GLAL_GL_ES3
 #ifndef GYRO_MATH_NOASM
 #	define GYRO_MATRIX4_ALIGN               __attribute__ ((aligned (16)))
 #	define GYRO_VECTOR4_ALIGN               __attribute__ ((aligned (16)))

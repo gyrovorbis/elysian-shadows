@@ -32,6 +32,12 @@ extern "C" {
 #	include <GLES2/gl2.h>
 #	include <GLES2/gl2ext.h>
 
+#elif GYRO_PLATFORM == GYRO_PLATFORM_RASPI
+#   include <EGL/egl.h>
+#   include <GLES3/gl3.h>
+#   include <GLES3/gl3ext.h>
+
+
 #elif GYRO_PLATFORM == GYRO_PLATFORM_Qt
 
 #	ifdef __APPLE__
