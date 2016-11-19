@@ -238,7 +238,7 @@ int glalVidGlewInit(void) {
 
     if(!once) {
     //God fucking damnit, Windows....
-#if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID
+#if GYRO_PLATFORM != GYRO_PLATFORM_ANDROID && GYRO_PLATFORM != GYRO_PLATFORM_RASPI
 #   if defined(_WIN32) || defined(__linux__)
         _gyLog(GY_DEBUG_VERBOSE, "Initializing GLEW...");
         _gyPush();
