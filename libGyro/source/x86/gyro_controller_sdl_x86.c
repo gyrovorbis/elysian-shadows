@@ -46,6 +46,7 @@ typedef struct SDLController {
 extern GYInputInitParams   _initParams;
 static SDLController*      _devices        = NULL;
 
+#if SDL_PATCHLEVEL >= 5
 inline static const char* _sdlJoystickPowerLevelString(const SDL_JoystickPowerLevel level) {
     switch(level) {
     default:
@@ -58,6 +59,7 @@ inline static const char* _sdlJoystickPowerLevelString(const SDL_JoystickPowerLe
     case SDL_JOYSTICK_POWER_MAX:        return "MAX";
     }
 }
+#endif
 
 inline static SDLController* _findControllerByInstanceID(SDL_JoystickID id) {
     for(unsigned i = 0; i < _initParams.controllerCount; ++i) {
@@ -165,8 +167,10 @@ static void _sdlPrintControllerStats(SDLController*const cont) {
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "GUID", guidStr);
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Device Index", cont->deviceIndex);
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Instance ID", cont->sdlJoystickInstanceId);
+#if SDL_PATCHLEVEL >= 5
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40s", "Power Level",
            _sdlJoystickPowerLevelString(SDL_JoystickCurrentPowerLevel(cont->sdlJoystick)));
+#endif
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Number of Axes", SDL_JoystickNumAxes(cont->sdlJoystick));
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Number of Buttons", SDL_JoystickNumButtons(cont->sdlJoystick));
     _gyLog(GY_DEBUG_VERBOSE, "%-20s: %40d", "Number of Hats", SDL_JoystickNumHats(cont->sdlJoystick));
