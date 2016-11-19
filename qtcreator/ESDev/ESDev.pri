@@ -97,6 +97,8 @@ android {
     DEFINES+=GYRO_PLATFORM=GYRO_PLATFORM_DC
 } else: raspberrypi {
     DEFINES+=GYRO_PLATFORM=GYRO_PLATFORM_RASPI
+    DEFINES+=__USE_POSIX199309 #have to fucking do this for time.h
+    QMAKE_LFLAGS    += -lrt
     QMAKE_CFLAGS    += -mfpu=neon
     QMAKE_CXXFLAGS  += -mfpu=neon
 } else {
