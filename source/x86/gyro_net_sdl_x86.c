@@ -4,6 +4,11 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <errno.h>
+
+#if GYRO_PLATFORM == GYRO_PLATFORM_RASPI
+    #include <SDL2/SDL2_net.h>
+#else
+
 #ifdef __WIN32 // :D Mmmmmm
 #   include <windows.h>
 #   include <SDL/SDL_net.h>
@@ -15,6 +20,7 @@
 
 #ifdef __APPLE__ // D: Fuck my life...
 #include <SDL2_net/SDL_net.h>
+#endif
 #endif
 
 typedef struct TcpSocketServer {
