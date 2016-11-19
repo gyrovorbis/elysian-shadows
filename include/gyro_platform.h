@@ -10,6 +10,7 @@
 #define GYRO_PLATFORM_PSP		(1<<2)
 #define GYRO_PLATFORM_iOS		(1<<3)
 #define GYRO_PLATFORM_ANDROID	(1<<4)
+#define GYRO_PLATFORM_RASPI     (1<<4)
 #define GYRO_PLATFORM_Qt		(1<<5)
 
 //#define GYRO_GLAL_GL_Desktop    (1<<0)
@@ -107,6 +108,30 @@
 
 #	define GYRO_MATRIX4_ALIGN				__attribute__ ((aligned (32)));
 #	define GYRO_VECTOR4_ALIGN				__attribute__ ((aligned (16)));
+
+#elif GYRO_PLATFORM == GYRO_PLATFORM_RASPI
+
+#   define GY_ASSERT(a)                     Q_ASSERT(a)
+#   define                                  GYRO_GLAL
+#   define                                  GYRO_GLAL_GL_Desktop
+#ifndef GYRO_MATH_NOASM
+#	define GYRO_MATRIX4_ALIGN               __attribute__ ((aligned (16)))
+#	define GYRO_VECTOR4_ALIGN               __attribute__ ((aligned (16)))
+#else
+#	define GYRO_MATRIX4_ALIGN
+#	define GYRO_VECTOR4_ALIGN
+#endif
+
+//#	define GYRO_SYSTEM_PLATFORM_INCLUDE     "glal/gyro_glal.h"
+#	define GYRO_VIDEO_PLATFORM_INCLUDE      "x86/gyro_video_x86.inl"
+#	define GYRO_TEXTURE_PLATFORM_INCLUDE    "qt/gyro_texture_qt.inl"
+#   define GYRO_SHADER_PLATFORM_INCLUDE     "glal/gyro_video_glal.h"
+#	define GYRO_MATH_PLATFORM_INCLUDE       "common/gyro_math_common.inl"
+#	define GYRO_MATRIX_PLATFORM_INCLUDE     "arm/gyro_matrix_arm_neon.inl"
+#	define GYRO_AUDIO_PLATFORM_INCLUDE      "glal/gyro_audio_glal.inl"
+#	define GYRO_INPUT_PLATFORM_INCLUDE      "x86/gyro_input_x86.inl"
+#   define GYRO_FILE_PLATFORM_INCLUDE       "glal/gyro_file_glal.inl"
+#   define GYRO_NET_PLATFORM_INCLUDE        "x86/gyro_net_x86.inl"
 
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_Qt
