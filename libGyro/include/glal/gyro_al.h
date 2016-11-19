@@ -23,6 +23,7 @@ extern "C" {
 #elif GYRO_PLATFORM == GYRO_PLATFORM_ANDROID
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_RASPI
+#       define AL_LIBTYPE_STATIC
 #		include <AL/al.h>
 #       include <AL/alc.h>
 #elif GYRO_PLATFORM == GYRO_PLATFORM_Qt
