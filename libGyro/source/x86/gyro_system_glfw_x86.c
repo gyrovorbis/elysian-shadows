@@ -106,12 +106,14 @@ int gySysInit(const GYSysInitParams*const params) {
     //gyDebugInit();
 
   const char* platString =
-#ifdef __APPLE__
-  "OSX";
+#if GYRO_PLATFORM == GYRO_PLATFORM_RASPI
+  "RaspberryPi"
+#elif defined(__APPLE__)
+  "MacOS";
 #elif defined(_WIN32)
-  "WINDOWS";
+  "Windows";
 #else
-  "LINUX";
+  "Linux";
 #endif
 
     _gySysPrintBuildInfo(platString);
@@ -514,10 +516,11 @@ void gyDebugSigInit(void) {
 #endif
 }
 
-
+#if 0
 #if GYRO_PLATFORM != GYRO_PLATFORM_Qt
 int main(int argc, char *argv[])
 {
     return gyro_entry_point(argc, argv);
 }
+#endif
 #endif
