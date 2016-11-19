@@ -113,7 +113,7 @@
 
 #   define GY_ASSERT(a)                     Q_ASSERT(a)
 #	define GYRO_GLAL
-#   define GYRO_GLAL_GL_ES3
+#   define GYRO_GLAL_GL_ES2
 #ifndef GYRO_MATH_NOASM
 #	define GYRO_MATRIX4_ALIGN               __attribute__ ((aligned (16)))
 #	define GYRO_VECTOR4_ALIGN               __attribute__ ((aligned (16)))
@@ -122,7 +122,6 @@
 #	define GYRO_VECTOR4_ALIGN
 #endif
 
-//#	define GYRO_SYSTEM_PLATFORM_INCLUDE     "glal/gyro_glal.h"
 #	define GYRO_VIDEO_PLATFORM_INCLUDE      "x86/gyro_video_x86.inl"
 #	define GYRO_TEXTURE_PLATFORM_INCLUDE    "qt/gyro_texture_qt.inl"
 #   define GYRO_SHADER_PLATFORM_INCLUDE     "glal/gyro_video_glal.h"
