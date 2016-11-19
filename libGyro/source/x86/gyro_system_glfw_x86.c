@@ -107,7 +107,7 @@ int gySysInit(const GYSysInitParams*const params) {
 
   const char* platString =
 #if GYRO_PLATFORM == GYRO_PLATFORM_RASPI
-  "RaspberryPi"
+  "RaspberryPi";
 #elif defined(__APPLE__)
   "MacOS";
 #elif defined(_WIN32)
