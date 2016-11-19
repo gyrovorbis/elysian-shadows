@@ -6,7 +6,7 @@
 #include <errno.h>
 
 #if GYRO_PLATFORM == GYRO_PLATFORM_RASPI
-    #include <SDL2/SDL2_net.h>
+    #include <SDL2/SDL_net.h>
 #else
 
 #ifdef __WIN32 // :D Mmmmmm
