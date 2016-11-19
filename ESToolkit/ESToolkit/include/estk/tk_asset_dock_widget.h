@@ -180,6 +180,7 @@ public:
 
     void                    addDirectoryType(CustomAssetFileType* type);
     void                    addFileType(CustomAssetFileType* type);
+    CustomAssetFileType*    getCustomAssetFileType(QString path);
     QMenu*                  customContextMenuRequested(const QModelIndex& index);
 
     //overridden from QFileSystemModel
@@ -239,6 +240,10 @@ inline void AssetFileSystemModel::addFileType(CustomAssetFileType *type) {
 
 inline void AssetFileSystemModel::addDirectoryType(CustomAssetFileType *type) {
     _customDirTypes.push_back(type);
+}
+
+inline CustomAssetFileType* AssetFileSystemModel::getCustomAssetFileType(QString path) {
+
 }
 
 inline SpecularsheetAssetFileType::SpecularsheetAssetFileType(QString filePath): CustomAssetFileType("Specular Sheet", QIcon(TK_SPECULARSHEET_ASSET_ICON), std::move(filePath)) {}

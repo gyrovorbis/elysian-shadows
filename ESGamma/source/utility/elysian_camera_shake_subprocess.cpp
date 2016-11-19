@@ -36,10 +36,10 @@ void CameraShakeSubProcess::_startNextKeyFrame(void) {
         gyVec3Scale(&translation, &_displacement, -0.5f*newMag);
         time = _timePerOscillation*0.5f;
         break;
-    default: assert(0); //Ya dun fucked up!
+    default: GY_ASSERT(0); //Ya dun fucked up!
     }
 
-    //keyFrame.setOffset(translation);
+    keyFrame.translate(translation);
     _cameraSys->moveToKeyFrame(keyFrame, time, this);
 }
 
