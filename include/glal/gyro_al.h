@@ -22,6 +22,9 @@ extern "C" {
 #   include <OpenAL/alc.h>
 #elif GYRO_PLATFORM == GYRO_PLATFORM_ANDROID
 
+#elif GYRO_PLATFORM == GYRO_PLATFORM_RASPI
+#		include <AL/al.h>
+#       include <AL/alc.h>
 #elif GYRO_PLATFORM == GYRO_PLATFORM_Qt
 
 #	ifdef __APPLE__
