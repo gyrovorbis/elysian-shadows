@@ -36,7 +36,7 @@ extern "C" {
 #   include <EGL/egl.h>
 #   include <GLES3/gl3.h>
 #   include <GLES3/gl3ext.h>
-
+#   include <GL/glew.h>
 
 #elif GYRO_PLATFORM == GYRO_PLATFORM_Qt
 
