@@ -49,7 +49,7 @@ macx {
 
 #QMAKE_CFLAGS += -std=c99
 
-!iphoneos:!dreamcast:!android {
+!iphoneos:!dreamcast:!android:!raspberrypi {
     QMAKE_CFLAGS += -msse
     QMAKE_CXXFLAGS += -msse
 }
@@ -93,9 +93,12 @@ android {
         DEFINES += GYRO_PLATFORM_iOS_DEVICE
         #CONFIG+=neon
     }
-}
-else:dreamcast {
+} else:dreamcast {
     DEFINES+=GYRO_PLATFORM=GYRO_PLATFORM_DC
+} else: raspberrypi {
+    DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_RASPI
+    QMAKE_CFLAGS    += -mfpu=neon
+    QMAKE_CXXFLAGS  += -mfpu=neon
 } else {
     DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt
 }
