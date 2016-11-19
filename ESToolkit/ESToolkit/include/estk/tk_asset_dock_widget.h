@@ -142,12 +142,14 @@ class LuaScriptAssetFileType: public CustomAssetFileType {
 public:
                         LuaScriptAssetFileType(QString filePath=QString());
     virtual auto        fromFilePath(QString path) -> CustomAssetFileType* override;
+    virtual void        doubleClick(const QModelIndex &index) override;
 };
 
 class LuaBehaviorAssetFileType: public CustomAssetFileType {
 public:
                         LuaBehaviorAssetFileType(QString filePath=QString());
     virtual auto        fromFilePath(QString path) -> CustomAssetFileType* override;
+    virtual void        doubleClick(const QModelIndex &index) override;
 };
 
 class MapAssetFileType: public CustomAssetFileType {
@@ -180,7 +182,7 @@ public:
 
     void                    addDirectoryType(CustomAssetFileType* type);
     void                    addFileType(CustomAssetFileType* type);
-    CustomAssetFileType*    getCustomAssetFileType(QString path);
+    CustomAssetFileType*    getCustomAssetFileType(QString fileName);
     QMenu*                  customContextMenuRequested(const QModelIndex& index);
 
     //overridden from QFileSystemModel
@@ -200,6 +202,7 @@ public:
     explicit                AssetDockWidget(QWidget *parent = nullptr);
     virtual                 ~AssetDockWidget(void);
     void                    clearTreeView(void);
+    AssetFileSystemModel*   getAssetFileSystemModel(void) const;
 Q_SIGNALS:
     void                    UncheckMe(int);
 protected:
@@ -224,6 +227,10 @@ private:
 
 // ======= INLINEZ =======
 
+inline AssetFileSystemModel* AssetDockWidget::getAssetFileSystemModel(void) const {
+    return _fsModel;
+}
+
 inline QMenu* CustomAssetFileType::contextMenu(const QModelIndex& /*index*/) { return nullptr; }
 inline void CustomAssetFileType::select(QModelIndex& /*index*/) { }
 inline void CustomAssetFileType::doubleClick(const QModelIndex& /*index*/) { }
@@ -240,10 +247,6 @@ inline void AssetFileSystemModel::addFileType(CustomAssetFileType *type) {
 
 inline void AssetFileSystemModel::addDirectoryType(CustomAssetFileType *type) {
     _customDirTypes.push_back(type);
-}
-
-inline CustomAssetFileType* AssetFileSystemModel::getCustomAssetFileType(QString path) {
-
 }
 
 inline SpecularsheetAssetFileType::SpecularsheetAssetFileType(QString filePath): CustomAssetFileType("Specular Sheet", QIcon(TK_SPECULARSHEET_ASSET_ICON), std::move(filePath)) {}

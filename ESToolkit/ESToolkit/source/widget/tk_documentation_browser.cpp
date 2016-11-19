@@ -8,6 +8,9 @@
 #include <QHelpContentWidget>
 #include <QHelpIndexWidget>
 #include <estk/tk_asset_dock_widget.h>
+#include <core/tk_file_utilities.h>
+#include <estk/tk_estoolkit.h>
+#include <estk/tk_asset_dock_widget.h>
 
 /****************************************************************************
 ** This file is part of the documentation of Qt. It was originally
@@ -20,20 +23,24 @@ HelpBrowser::HelpBrowser(QHelpEngine* helpEngine,
                             QTextBrowser(parent),
                             _helpEngine(helpEngine)
 {
+    setOpenLinks(false);
+    connect(this, SIGNAL(anchorClicked(const QUrl&)), this, SLOT(onAnchorClicked(const QUrl&)));
+}
+
+void HelpBrowser::onAnchorClicked(const QUrl &link) {
+    if(link.scheme() == "qthelp") {
+        setSource(link);
+    } else if(link.scheme() == "file") {
+        QString localFile = link.toLocalFile();
+        QString absPath = FileUtilities::getAbsoluteAssetPath(localFile);
+        auto* asset = ESToolkit::getInstance()->getAssetDockWidget()->getAssetFileSystemModel()->getCustomAssetFileType(absPath);
+        asset->doubleClick(QModelIndex());
+    }
 }
 
 QVariant HelpBrowser::loadResource(int type, const QUrl& name){
-    qDebug() << "BOUT TO OPEN " << name.url();
     if (name.scheme() == "qthelp")
         return QVariant(_helpEngine->fileData(name));
-#if 0
-    else if(name.scheme() == "file") {
-        if()
-
-    }
-#endif
-   // else if(name.scheme() == "estk")
-    //    qDebug() << "ESTK SCHEME HIT!!!!" << name.url();
     else
         return QTextBrowser::loadResource(type, name);
 }

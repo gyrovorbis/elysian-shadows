@@ -10,6 +10,7 @@
 #include <QDebug>
 #include <core/tk_menu_stack.h>
 #include <QMenu>
+#include <QDesktopServices>
 #include <core/tk_mime_data.h>
 
 AssetDockWidget::AssetDockWidget(QWidget *parent) :
@@ -155,6 +156,8 @@ QVariant AssetFileSystemModel::data(const QModelIndex &index, int role) const {
 void AssetFileSystemModel::_onFileAdded(const QString filename) {
     QFileInfo info(filename);
     QString path = info.absoluteFilePath();
+
+    if(_customData.find(path) != _customData.end()) return; //already have shit cached.
 
     if(info.isDir()) {
 
@@ -455,10 +458,18 @@ auto LuaScriptAssetFileType::fromFilePath(QString path) -> CustomAssetFileType* 
     return nullptr;
 }
 
+void LuaScriptAssetFileType::doubleClick(const QModelIndex&) {
+    QDesktopServices::openUrl(QUrl::fromLocalFile(getFilePath()));
+}
+
 auto LuaBehaviorAssetFileType::fromFilePath(QString path) -> CustomAssetFileType* {
     QFile file(path);
     if(file.fileName().split(TK_LUA_BEHAVIOR_ASSET_NAME_TOKEN).size() > 1) return new LuaBehaviorAssetFileType(std::move(path));
     return nullptr;
+}
+
+void LuaBehaviorAssetFileType::doubleClick(const QModelIndex&) {
+    QDesktopServices::openUrl(QUrl::fromLocalFile(getFilePath()));
 }
 
 PrefabAssetFileType::PrefabAssetFileType(QString filePath):
@@ -537,5 +548,18 @@ QString PrefabAssetFileType::prefabifyFilePath(const QString path) {
 
 QMimeData* PrefabAssetFileType::mimeData(void) const {
     return new TkMimeData(_prefabRef);
+}
+
+CustomAssetFileType* AssetFileSystemModel::getCustomAssetFileType(QString fileName) {
+    QFileInfo info(fileName);
+    QString path = info.absoluteFilePath();
+    auto it = _customData.find(path);
+
+    if(it == _customData.end()) {
+        _onFileAdded(path);
+        it = _customData.find(path);
+    }
+
+    return (it == _customData.end())? nullptr : it.value();
 }
 

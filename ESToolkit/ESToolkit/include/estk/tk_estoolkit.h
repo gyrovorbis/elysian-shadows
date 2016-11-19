@@ -64,6 +64,7 @@ public:
     virtual         ~ESToolkit(void);
 
 
+    static ESToolkit* getInstance(void);
     static void     select(const LuaVariant& ref);
     static int      pushSelection(lua_State*const vm);
     bool            verifySingleArea(const QString path);
@@ -73,6 +74,7 @@ public:
     void            setOutputDir(const QDir dir);
     QDir            getOutputDir(void) const;
     void            setIndexHiddenLevels(const bool val);
+    AssetDockWidget* getAssetDockWidget(void) const;
 
 protected:
     virtual void    changeEvent(QEvent *e) override;
@@ -281,6 +283,7 @@ inline Assets& ESToolkit::getAssets(void) {
 
 inline void ESToolkit::setOutputDir(const QDir dir) { _outputDir = dir; }
 inline QDir ESToolkit::getOutputDir(void) const { return _outputDir; }
-
+inline ESToolkit* ESToolkit::getInstance(void) { return _instance; }
+inline AssetDockWidget* ESToolkit::getAssetDockWidget(void) const { return _assetDockWidget; }
 
 #endif // ESTOOLKIT_H

@@ -19,11 +19,15 @@
 
 class HelpBrowser : public QTextBrowser
 {
+    Q_OBJECT
 public:
                             HelpBrowser(QHelpEngine* helpEngine, QWidget* parent=nullptr);
     virtual QVariant        loadResource (int type, const QUrl& name) override;
 private:
     QHelpEngine* _helpEngine = nullptr;
+
+private Q_SLOTS:
+    void onAnchorClicked(const QUrl& link);
 };
 
 class HelpDockWidget: public QMainWindow {

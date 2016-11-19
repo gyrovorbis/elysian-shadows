@@ -625,11 +625,6 @@
 	\section1 Scripting Dialog
 	Coming soon.
 
-	\l {estk://fuckme.net} { ESTk }
-	\l {http://www.facebook.com} {test}
-	\l {file://lolz?bullshit=asdlkfkj&bowsht=33}
-	<a href="estk://bullshit">ESTK BOWSHT</a>
-
 */
 
 
@@ -676,8 +671,8 @@
 
 
 	\section1 Demo Area
-	You can find a live demo area with a sample cutscene here: /assets/level/Examples/area/CutsceneDemo
-	The Lua Behavior script containing the cutscene is located at /assets/level/Examples/area/CutsceneDemo/cutscene_demo_behav.lua.
+	You can find a live demo area with a sample cutscene here: \l {file:/assets/level/Examples/area/CutsceneDemo}
+	The Lua Behavior script containing the cutscene is located at \l {file:/assets/level/Examples/area/CutsceneDemo/cutscene_demo_behav.lua}.
 	The Lua Behavior has been attached to the SavePoint entity within area_table.lua.
 	Press the "C" Key or "X" Button to begin the cutscene.
 
