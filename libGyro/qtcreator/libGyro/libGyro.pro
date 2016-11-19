@@ -37,6 +37,10 @@ linux {
     SOURCES +=	../../source/x86/turfs_unix.c
 }
 
+raspberrypi {
+    SOURCES +=	../../source/x86/turfs_unix.c
+}
+
 ios {
 
     INCLUDEPATH += ../../lib/ios/Ogg.framework/Headers \

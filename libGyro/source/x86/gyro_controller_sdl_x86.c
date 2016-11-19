@@ -1,5 +1,12 @@
+#include <gyro_platform.h>
 
-#ifdef __WIN32
+#if GYRO_PLATFORM == GYRO_PLATFORM_RASPI
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_joystick.h>
+#include <SDL2/SDL_gamecontroller.h>
+#include <SDL2/SDL_haptic.h>
+
+#elif defined(__WIN32)
 #include <sdl/SDL.h>
 #include <sdl/SDL_joystick.h>
 #include <sdl/SDL_gamecontroller.h>
