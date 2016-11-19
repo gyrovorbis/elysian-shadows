@@ -10,8 +10,8 @@
 #define GYRO_PLATFORM_PSP		(1<<2)
 #define GYRO_PLATFORM_iOS		(1<<3)
 #define GYRO_PLATFORM_ANDROID	(1<<4)
-#define GYRO_PLATFORM_RASPI     (1<<4)
-#define GYRO_PLATFORM_Qt		(1<<5)
+#define GYRO_PLATFORM_RASPI     (1<<5)
+#define GYRO_PLATFORM_Qt		(1<<6)
 
 //#define GYRO_GLAL_GL_Desktop    (1<<0)
 //#define GYRO_GLAL_GL_ES3        (1<<1)
