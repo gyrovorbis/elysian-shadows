@@ -96,13 +96,12 @@ android {
 } else:dreamcast {
     DEFINES+=GYRO_PLATFORM=GYRO_PLATFORM_DC
 } else: raspberrypi {
-    DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_RASPI
+    DEFINES+=GYRO_PLATFORM=GYRO_PLATFORM_RASPI
     QMAKE_CFLAGS    += -mfpu=neon
     QMAKE_CXXFLAGS  += -mfpu=neon
 } else {
     DEFINES += GYRO_PLATFORM=GYRO_PLATFORM_Qt
 }
-
 
 QMAKE_CXXFLAGS += -std=c++1y
 
