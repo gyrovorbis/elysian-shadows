@@ -37,9 +37,9 @@ int gyVmuDeviceRestore(VMUDevice* dev, const char *path) {
 }
 
 int gyVmuDeviceUpdate(VMUDevice* device, float deltaTime) {
-
     if(deltaTime >= gyVmuOscSecPerCycle(device)) {
         gyVmuSerialUpdate(device);
+
         gyVmuGamepadPoll(device);
 
 #ifdef VMU_TRIGGER_SPEED_FACTOR

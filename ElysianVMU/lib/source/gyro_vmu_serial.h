@@ -30,6 +30,7 @@ typedef struct VMUSerialPort {
     GYTcpSocket*             _tcpSocket;
     VMU_SERIAL_PORT_STATE    _txState;
     VMU_SERIAL_PORT_STATE    _rxState;
+    unsigned char            _txStart;
     int                      _useMostRecentClient;
 } VMUSerialPort;
 
@@ -43,9 +44,10 @@ int gyVmuSerialTcpOpen(struct VMUDevice* dev, const char* host, unsigned port);
 int gyVmuSerialTcpClose(struct VMUDevice* dev);
 int gyVmuSerialTcpSend(struct VMUDevice* dev, const unsigned char* byte, int size);
 
-void gyVmuSerialTcpSconUpdate(struct VMUDevice* dev, int sfr, unsigned char val);
+void gyVmuSerialTcpSconModified(struct VMUDevice* dev, int sfr, unsigned char val);
 
 VMU_SERIAL_CONNECTION_TYPE gyVmuSerialConnectionType(const struct VMUDevice* dev);
+
 
 
 #ifdef __cplusplus
