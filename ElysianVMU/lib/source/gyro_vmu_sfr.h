@@ -23,7 +23,7 @@ extern "C" {
 
 //PCON - Power Control Register (0x107)
 #define SFR_PCON_HOLD_POS       1       //Stop CPU and Timers - When 1, puts the VMS into deep suspension
-#define SFR_PCON_HOLD_MASK      0x2     //  CPU, all timers and clock sstop, only external interrupt or reset resumes
+#define SFR_PCON_HOLD_MASK      0x2     //  CPU, all timers and clock stop, only external interrupt or reset resumes
 #define SFR_PCON_HALT_POS       0       //Suspend Program Execution - When 1, causes CPU to stop executing instructions
 #define SFR_PCON_HALT_MASK      0x1     //  all timers and peripherals continue normally, and any interrupt wakes CPU up
 
@@ -106,7 +106,7 @@ extern "C" {
 #define SFR_SCON0_CTRL_MASK         0x8
 #define SFR_SCON0_MSB_POS           2       //MSB/LSB select - 1: msb first, 0: lsb first
 #define SFR_SCON0_MSB_MASK          0x4
-#define SFR_SCON0_END_POS           1       //Transer end flag - 1: end 0: in progress
+#define SFR_SCON0_END_POS           1       //Transfer end flag - 1: end 0: in progress
 #define SFR_SCON0_END_MASK          0x2
 #define SFR_SCON0_IE_POS            0       //Interrupt enabled - 1: enabled, 0: disabled
 #define SFR_SCON0_IE_MASK           0x1
