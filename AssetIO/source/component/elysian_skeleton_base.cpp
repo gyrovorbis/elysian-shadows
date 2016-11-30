@@ -321,7 +321,7 @@ void SkeletonBase::_updateEntityAttachments(void) const {
 void SkeletonBase::removeEntityFromSlot(const char *name) {
     EntityAttachment* attachment = _findEntityAttachment(name);
     if(!attachment) {
-        errprintf("Attachment on slot %s not found on entity %s", name, _entity->getName());
+        warnprintf("Attachment on slot %s not found on entity %s", name, _entity->getName());
         return;
     }
     if(attachment->entity) attachment->entity->setParentEntity(nullptr);
