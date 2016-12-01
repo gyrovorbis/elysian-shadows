@@ -354,8 +354,8 @@ static void _queryLightingShader(_LightingShaderProgram*const shader, const unsi
         sprintf(buff, "uLights[%d].position", i);
         shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_POS]							= _protectedUniformQuery(shader->program, buff, !light);
 
-        sprintf(buff, "uLights[%d].ambientColor", i);
-        shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_AMBIENT_COLOR]					= _protectedUniformQuery(shader->program, buff, !light);
+        //sprintf(buff, "uLights[%d].ambientColor", i);
+        //shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_AMBIENT_COLOR]					= _protectedUniformQuery(shader->program, buff, !light);
 
         sprintf(buff, "uLights[%d].diffuseColor", i);
         shader->lightsUniformLoc[i][GLAL_SHADER_LIGHT_DIFFUSE_COLOR]					= _protectedUniformQuery(shader->program, buff, !light);

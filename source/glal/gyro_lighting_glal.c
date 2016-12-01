@@ -184,6 +184,7 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
         ++glalUniformChangeCount;
     }
 
+#if 0
     if(!old || !gyVec4Compare(&light->properties->ambientColor, &cache->ambientColor)) {
         if(!flushed) {
             gyVidVertexBatchFlush();
@@ -193,6 +194,7 @@ void _addLightUniform(const unsigned index, const GYLightSource*const light) {
         memcpy(&cache->ambientColor, &light->properties->ambientColor, sizeof(float)*4);
         ++glalUniformChangeCount;
     }
+#endif
 
     if(!old || !gyVec4Compare(&light->properties->diffuseColor, &cache->diffuseColor)) {
         if(!flushed) {
