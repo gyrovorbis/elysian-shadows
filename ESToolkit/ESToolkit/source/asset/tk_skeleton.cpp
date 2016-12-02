@@ -13,6 +13,8 @@
 #include <QStyleOptionViewItem>
 #include <QApplication>
 
+//========== SKELETON ==========
+
 void TkSkeleton::onAtlasChanged(void) {
     setAttrib(_attrib);
 }
@@ -61,33 +63,36 @@ void TkSkeleton::initializeDelegates(void) {
     LuaVariant delegates = {
         {
             "curAnim", new ComboBoxPropertyItemDelegate([](ESTkStandardItem* item) {
-                LuaTableFieldItem* luaFieldItem = static_cast<LuaTableFieldItem*>(item);
-                TkSkeleton* skeleton = luaFieldItem->getTableRef().getValue<TkSkeleton*>();
                 QStringList options;
-                if(skeleton && skeleton->_attrib) {
-                    for(auto&& it: skeleton->_attrib->_animations) {
-                        options.push_back(it->getName());
+                LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+                if(luaFieldItem) {
+                    TkSkeleton* skeleton = luaFieldItem->getTableRef().getValue<TkSkeleton*>();
+                    if(skeleton && skeleton->_attrib) {
+                        for(auto&& it: skeleton->_attrib->_animations) {
+                            options.push_back(it->getName());
+                        }
                     }
                 }
                 return options;
-
             }, true)
         },
         {
             "skin", new ComboBoxPropertyItemDelegate([](ESTkStandardItem* item) {
-                LuaTableFieldItem* luaFieldItem = static_cast<LuaTableFieldItem*>(item);
-                TkSkeleton* skeleton = luaFieldItem->getTableRef().getValue<TkSkeleton*>();
                 QStringList options;
-                if(skeleton && skeleton->_attrib) {
-                    int i = 0;
-                    for(;;) {
-                        const char* name = skeleton->_attrib->getSpineSkinNameByIndex(i++);
-                        if(!name) break;
-                        options.push_back(QString(name));
+                LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+                if(luaFieldItem) {
+                    TkSkeleton* skeleton = luaFieldItem->getTableRef().getValue<TkSkeleton*>();
+
+                    if(skeleton && skeleton->_attrib) {
+                        int i = 0;
+                        for(;;) {
+                            const char* name = skeleton->_attrib->getSpineSkinNameByIndex(i++);
+                            if(!name) break;
+                            options.push_back(QString(name));
+                        }
                     }
                 }
                 return options;
-
             }, true)
         }
     };
@@ -96,37 +101,53 @@ void TkSkeleton::initializeDelegates(void) {
     lua_setfield(*_mainState, -2, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
 }
 
+//========== SKELETONATTRIB ==========
+
 void TkSkeletonAttrib::initializeDelegates(void) {
     lua_newtable(*_mainState);
     lua_pushvalue(*_mainState, -1);
     lua_setfield(*_mainState, -3, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
 
     FileBrowserPropertyItemDelegate* atlasDelegate = new FileBrowserPropertyItemDelegate([](ESTkStandardItem* item, QStyleOptionViewItem& option) {
-        LuaTableFieldItem* luaItem = static_cast<LuaTableFieldItem*>(item);
+        LuaTableFieldItem* luaItem = LuaTableFieldItem::fromStandardItem(item);
+        if(luaItem) {
         TkSkeletonAttrib* attrib = luaItem->getTableRef().getValue<TkSkeletonAttrib*>();
-        option.text = attrib->getAtlasPath();
-        QPalette palette = option.palette;
-        palette.setColor(QPalette::Text, attrib->isAtlasValid()? QColor(Qt::black) : QColor(Qt::red));
-        option.palette = palette;
+            if(attrib) {
+                option.text = attrib->getAtlasPath();
+                option.palette.setColor(QPalette::Text, attrib->isAtlasValid()? QColor(Qt::black) : QColor(Qt::red));
+            }
+        }
     });
     atlasDelegate->addButton(QIcon(QApplication::style()->standardIcon(QStyle::SP_BrowserReload)), [](ESTkStandardItem* item) {
-        LuaTableFieldItem* luaItem = static_cast<LuaTableFieldItem*>(item);
-        luaItem->getTableRef().getValue<TkSkeletonAttrib*>()->reloadAtlas();
+        LuaTableFieldItem* luaItem = LuaTableFieldItem::fromStandardItem(item);
+        if(luaItem) {
+            auto* attrib = luaItem->getTableRef().getValue<TkSkeletonAttrib*>();
+            if(attrib) {
+                attrib->reloadAtlas();
+            }
+        }
     });
     OOLUA::push(*_mainState, atlasDelegate);
     lua_setfield(*_mainState, -2, "atlasPath");
 
     FileBrowserPropertyItemDelegate* jsonDelegate = new FileBrowserPropertyItemDelegate([](ESTkStandardItem* item, QStyleOptionViewItem& option) {
-        LuaTableFieldItem* luaItem = static_cast<LuaTableFieldItem*>(item);
-        TkSkeletonAttrib* attrib = luaItem->getTableRef().getValue<TkSkeletonAttrib*>();
-        option.text = attrib->getJsonPath();
-        QPalette palette = option.palette;
-        palette.setColor(QPalette::Text, attrib->isJsonValid()? QColor(Qt::black) : QColor(Qt::red));
-        option.palette = palette;
+        LuaTableFieldItem* luaItem = LuaTableFieldItem::fromStandardItem(item);
+        if(luaItem) {
+            TkSkeletonAttrib* attrib = luaItem->getTableRef().getValue<TkSkeletonAttrib*>();
+            if(attrib) {
+                option.text = attrib->getJsonPath();
+                option.palette.setColor(QPalette::Text, attrib->isJsonValid()? QColor(Qt::black) : QColor(Qt::red));
+            }
+        }
     });
     jsonDelegate->addButton(QIcon(QApplication::style()->standardIcon(QStyle::SP_BrowserReload)), [](ESTkStandardItem* item) {
-        LuaTableFieldItem* luaItem = static_cast<LuaTableFieldItem*>(item);
-        luaItem->getTableRef().getValue<TkSkeletonAttrib*>()->reloadJson();
+        LuaTableFieldItem* luaItem = LuaTableFieldItem::fromStandardItem(item);
+        if(luaItem) {
+            auto* attrib = luaItem->getTableRef().getValue<TkSkeletonAttrib*>();
+            if(attrib) {
+                attrib->reloadJson();
+            }
+        }
     });
     OOLUA::push(*_mainState, jsonDelegate);
     lua_setfield(*_mainState, -2, "jsonPath");
@@ -138,18 +159,24 @@ void TkSkeletonAttrib::initializeDelegates(void) {
         {
             QString("Entity"),
             {
-                [](LuaVariant v, Qt::DropAction action, QDropEvent* event, int row, int col, const QModelIndex& parent) {
-                    const LuaVariant& self = static_cast<LuaTableFieldItem*>(static_cast<const QStandardItemModel*>(parent.model())->itemFromIndex(parent))->getTableData()->getTableRef();
+                [](LuaVariant v, Qt::DropAction, QDropEvent*, int, int, const QModelIndex& parent) {
+                    auto* model = qobject_cast<const QStandardItemModel*>(parent.model());
+                    if(model) {
+                        LuaTableFieldItem* luaItem = LuaTableFieldItem::fromStandardItem(model->itemFromIndex(parent));
+                        if(luaItem) {
+                            const LuaVariant& self = luaItem->getTableData()->getTableRef();
+                            LuaVariant srcTable = v["skeleton"]["attrib"]["animations"].getVariant();
 
-                    LuaVariant srcTable = v["skeleton"]["attrib"]["animations"].getVariant();
+                            for(int i = 1; i <= srcTable.getLength(); ++i) {
+                                self[i].setVariant(srcTable[i].getVariant());
+                            }
 
-                    for(int i = 1; i <= srcTable.getLength(); ++i) {
-                        self[i].setVariant(srcTable[i].getVariant());
+                            return true;
+                        }
                     }
-
-                    return true;
+                    return false;
                 },
-                [](LuaVariant v, Qt::DropAction action, QDragEnterEvent* event, int row, int col, const QModelIndex& parent) {
+                [](LuaVariant v, Qt::DropAction, QDragEnterEvent*, int, int, const QModelIndex&) {
                     return !v["skeleton"]["attrib"]["animations"].getVariant().isNil();
                 }
             }
@@ -168,144 +195,90 @@ void TkSkeletonAttrib::initializeVirtualTableDelegates(QString key) {
 
         LuaVariant delegateFunc = [](LuaVariant t, LuaVariant k) -> PropertyItemDelegate* {
             TkSkeletonAttrib* self = t["__ud"]->getValue<TkSkeletonAttrib*>();
-            if(k.getType() == LUA_TNUMBER) {
+            if(self && k.getType() == LUA_TNUMBER) {
                 unsigned index = k.getValue<unsigned>();
                 if(index <= self->getAnimationCount()) {
+
                     DynamicContentPropertyItemDelegate* delegate = new DynamicContentPropertyItemDelegate([](ESTkStandardItem* item, QStyleOptionViewItem& option) {
-                        LuaTableFieldItem* luaFieldItem = static_cast<LuaTableFieldItem*>(item);
-                        TkSkeletonAttrib* attrib = luaFieldItem->getTableRef()["__ud"]->getValue<TkSkeletonAttrib*>();
-                        unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
-                        elysian::Animation* anim = attrib->getAnimation(index);
-                        QPalette palette = option.palette;
-                        palette.setColor(QPalette::Text, QColor(Qt::gray));
-                        option.palette = palette;
-                        option.text = QString(anim->getName());
-                    });
-
-                    delegate->addButton(QApplication::style()->standardIcon(QStyle::SP_MediaPlay), [](ESTkStandardItem* item) {
-
-                        QStandardItem* parent = item->parent();
-                        if(parent && parent->data(Qt::DisplayRole).toString() == "animations") {
-                            parent = parent->parent();
-                            if(parent && parent->data(Qt::DisplayRole).toString() == "attrib") {
-                                parent = parent->parent();
-                                if(parent && parent->data(Qt::DisplayRole).toString() == "skeleton") {
-                                    QModelIndex labelIndex = parent->index();
-                                    QModelIndex tableIndex = labelIndex.sibling(labelIndex.row(), labelIndex.column()+1);
-                                    if(tableIndex.isValid()) {
-                                        LuaTableFieldItem* luaItem = static_cast<LuaTableFieldItem*>(item->model()->itemFromIndex(tableIndex));
-                                        luaItem->getVariant()["curAnim"].setVariant(static_cast<LuaTableFieldItem*>(item)->getVariant()["name"].getVariant());
-                                    }
+                        LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+                        if(luaFieldItem) {
+                            TkSkeletonAttrib* attrib = luaFieldItem->getTableRef()["__ud"]->getValue<TkSkeletonAttrib*>();
+                            if(attrib) {
+                                unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
+                                elysian::Animation* anim = attrib->getAnimation(index);
+                                if(anim) {
+                                    option.palette.setColor(QPalette::Text, QColor(Qt::gray));
+                                    option.text = QString(anim->getName());
                                 }
                             }
                         }
                     });
 
+                    delegate->addButton(QApplication::style()->standardIcon(QStyle::SP_MediaPlay), [](ESTkStandardItem* item) {
+                        auto* luaItem = LuaTableFieldItem::fromStandardItem(item);
+                        if(luaItem) {
+                            auto* skeletonItem = luaItem->getAncestorSiblingLuaItem({"animations", "attrib", "skeleton"}, 1);
+                            if(skeletonItem) {
+                                skeletonItem->getVariant()["curAnim"].setVariant(luaItem->getVariant()["name"].getVariant());
+                            }
+                        }
+                    });
+
                     delegate->setDeleteCallback([](ESTkStandardItem* item) {
-                        LuaTableFieldItem* luaFieldItem = static_cast<LuaTableFieldItem*>(item);
-                        TkSkeletonAttrib* attrib = luaFieldItem->getTableRef()["__ud"]->getValue<TkSkeletonAttrib*>();
-                        unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
-                        attrib->setAnimation(index, nullptr);
+                        LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+                        if(luaFieldItem) {
+                            TkSkeletonAttrib* attrib = luaFieldItem->getTableRef()["__ud"]->getValue<TkSkeletonAttrib*>();
+                            if(attrib) {
+                                unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
+                                attrib->setAnimation(index, nullptr);
 
-                        QStandardItem* parent = luaFieldItem->parent()->parent();
-                        auto modelIndex = item->model()->indexFromItem(parent);
-                        auto valIndex = modelIndex.sibling(modelIndex.row(), modelIndex.column()+1);
-
-                        static_cast<LuaTableFieldItem*>(item->model()->itemFromIndex(valIndex))->setDirty();
-
-                    });
-
-                    delegate->setContextMenuCallback([](ESTkStandardItem* item) {
-                        LuaTableFieldItem* luaFieldItem = static_cast<LuaTableFieldItem*>(item);
-                        TkSkeletonAttrib* attrib = luaFieldItem->getTableRef()["__ud"]->getValue<TkSkeletonAttrib*>();
-                        unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
-
-                        MenuStack stack("Animation");
-                        stack.insertAction("Delete", [=](bool) {
-                            attrib->setAnimation(index, nullptr);
-
-                            QStandardItem* parent = luaFieldItem->parent()->parent();
-                            auto modelIndex = item->model()->indexFromItem(parent);
-                            auto valIndex = modelIndex.sibling(modelIndex.row(), modelIndex.column()+1);
-
-                            static_cast<LuaTableFieldItem*>(item->model()->itemFromIndex(valIndex))->setDirty();
-
-                        });
-
-                        return stack.first();
+                                auto* attribItem = luaFieldItem->getAncestorSiblingLuaItem({"animations", "attrib"}, 1);
+                                if(attribItem) {
+                                    attribItem->setDirty();
+                                }
+                            }
+                        }
 
                     });
 
+                    delegate->setContextMenuCallback([](ESTkStandardItem* item) -> QMenu* {
+                        LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+                        if(luaFieldItem) {
+                            TkSkeletonAttrib* attrib = luaFieldItem->getTableRef()["__ud"]->getValue<TkSkeletonAttrib*>();
+                            if(attrib) {
+                                unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
 
-                    //delegate->setContextMenu(stack.first());
+                                MenuStack stack("Animation");
+                                stack.insertAction("Delete", [=](bool) {
+                                    attrib->setAnimation(index, nullptr);
+
+                                    auto* attribItem = luaFieldItem->getAncestorSiblingLuaItem({"animations", "attrib"}, 1);
+                                    if(attribItem) {
+                                        attribItem->setDirty();
+                                    }
+
+                                });
+
+                                return stack.first();
+                            }
+                        }
+                        return nullptr;
+                    });
 
                     return delegate;
                 }
             }
             return nullptr;
         };
-       // qDebug() << "REGISTERING" << delegateFunc.getTypeString();
+
         delegateFunc.push();
         lua_setfield(*_mainState, -2, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
     }
 }
 
 
-void TkAnimationTrack::initializeDelegates(void) {
-    ComboBoxPropertyItemDelegate* nameDelegate = new ComboBoxPropertyItemDelegate([](ESTkStandardItem* item) {
-            auto* luaFieldItem = static_cast<LuaTableFieldItem*>(item);
-            //Traversal to get back to TkSkeleton
-            //AnimationTrack->Animation->AnimationAttrib
-            QStringList options;
+//========== ANIMATION ==========
 
-            QStandardItem* parent = item->parent()->parent()->parent()->parent()->parent();
-            auto modelIndex = item->model()->indexFromItem(parent);
-            auto attribIndex = modelIndex.sibling(modelIndex.row(), modelIndex.column()+1);
-            LuaTableFieldItem* attribItem = static_cast<LuaTableFieldItem*>(item->model()->itemFromIndex(attribIndex));
-            TkSkeletonAttrib* attrib = attribItem->getVariant().getValue<TkSkeletonAttrib*>();
-            if(attrib) {
-                int i = 0;
-                for(;;) {
-                    const char* name = attrib->getSpineAnimNameByIndex(i++);
-                    if(!name) break;
-                    options.push_back(QString(name));
-                }
-            }
-            return options;
-
-        }, true);
-
-    nameDelegate->setTextCallback([](ESTkStandardItem* item, QStyleOptionViewItem& option){
-        auto* luaFieldItem = static_cast<LuaTableFieldItem*>(item);
-        //Traversal to get back to TkSkeleton
-        //AnimationTrack->Animation->AnimationAttrib
-        QStringList options;
-
-        QStandardItem* parent = item->parent()->parent()->parent()->parent()->parent();
-        auto modelIndex = item->model()->indexFromItem(parent);
-        auto attribIndex = modelIndex.sibling(modelIndex.row(), modelIndex.column()+1);
-        LuaTableFieldItem* attribItem = static_cast<LuaTableFieldItem*>(item->model()->itemFromIndex(attribIndex));
-        TkSkeletonAttrib* attrib = attribItem->getVariant().getValue<TkSkeletonAttrib*>();
-
-        option.text = item->data(Qt::EditRole).toString();
-        QPalette palette = option.palette;
-        palette.setColor(QPalette::Text, attrib->findSpineAnimation(Q_CSTR(option.text))? QColor(Qt::black) : QColor(Qt::red));
-        option.palette = palette;
-
-
-    });
-
-
-    LuaVariant delegates = {
-        {
-            "name", nameDelegate
-        }
-
-    };
-
-    delegates.push();
-    lua_setfield(*_mainState, -2, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
-}
 
 void TkAnimation::initializeDelegates(void) {
     lua_newtable(*_mainState);
@@ -341,52 +314,57 @@ void TkAnimation::initializeVirtualTableDelegates(QString key) {
 
         LuaVariant delegateFunc = [](LuaVariant t, LuaVariant k) -> PropertyItemDelegate* {
             TkAnimation* self = t["__ud"]->getValue<TkAnimation*>();
-            if(k.getType() == LUA_TNUMBER) {
+            if(self && k.getType() == LUA_TNUMBER) {
                 unsigned index = k.getValue<unsigned>();
                 if(index <= self->getTrackCount()) {
                     DynamicContentPropertyItemDelegate* delegate = new DynamicContentPropertyItemDelegate([](ESTkStandardItem* item, QStyleOptionViewItem& option) {
-                        LuaTableFieldItem* luaFieldItem = static_cast<LuaTableFieldItem*>(item);
-                        TkAnimation* anim = luaFieldItem->getTableRef()["__ud"]->getValue<TkAnimation*>();
-                        unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
-                        elysian::AnimationTrack* track = anim->getTrack(index);
-                        QPalette palette = option.palette;
-                        palette.setColor(QPalette::Text, QColor(Qt::gray));
-                        option.palette = palette;
-                        option.text = QString(track->getName());
+                        LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+                        if(luaFieldItem) {
+                            TkAnimation* anim = luaFieldItem->getTableRef()["__ud"]->getValue<TkAnimation*>();
+                            if(anim) {
+                                unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
+                                elysian::AnimationTrack* track = anim->getTrack(index);
+                                option.palette.setColor(QPalette::Text, QColor(Qt::gray));
+                                option.text = QString(track->getName());
+                            }
+                        }
                     });
 
-                    delegate->setContextMenuCallback([](ESTkStandardItem* item) {
-                        LuaTableFieldItem* luaFieldItem = static_cast<LuaTableFieldItem*>(item);
-                        TkAnimation* anim = luaFieldItem->getTableRef()["__ud"]->getValue<TkAnimation*>();
-                        unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
+                    delegate->setContextMenuCallback([](ESTkStandardItem* item) -> QMenu* {
+                        LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+                        if(luaFieldItem) {
+                            TkAnimation* anim = luaFieldItem->getTableRef()["__ud"]->getValue<TkAnimation*>();
+                            if(anim) {
+                                unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
 
-                        MenuStack stack("AnimationTrack");
-                        stack.insertAction("Delete", [=](bool) {
-                            anim->setTrack(index, nullptr);
+                                MenuStack stack("AnimationTrack");
+                                stack.insertAction("Delete", [=](bool) {
+                                    anim->setTrack(index, nullptr);
 
-                            QStandardItem* parent = luaFieldItem->parent()->parent();
-                            auto modelIndex = item->model()->indexFromItem(parent);
-                            auto valIndex = modelIndex.sibling(modelIndex.row(), modelIndex.column()+1);
+                                    auto* parentItem = luaFieldItem->getAncestorSiblingLuaItem({"tracks", "*"}, 1);
+                                    if(parentItem) parentItem->setDirty();
 
-                            static_cast<LuaTableFieldItem*>(item->model()->itemFromIndex(valIndex))->setDirty();
+                                });
 
-                        });
-
-                        return stack.first();
+                                return stack.first();
+                            }
+                        }
+                        return nullptr;
 
                     });
 
                     delegate->setDeleteCallback([](ESTkStandardItem* item) {
-                        LuaTableFieldItem* luaFieldItem = static_cast<LuaTableFieldItem*>(item);
-                        TkAnimation* anim = luaFieldItem->getTableRef()["__ud"]->getValue<TkAnimation*>();
-                        unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
-                        anim->setTrack(index, nullptr);
+                        LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+                        if(luaFieldItem) {
+                            TkAnimation* anim = luaFieldItem->getTableRef()["__ud"]->getValue<TkAnimation*>();
+                            if(anim) {
+                                unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
+                                anim->setTrack(index, nullptr);
 
-                        QStandardItem* parent = luaFieldItem->parent()->parent();
-                        auto modelIndex = item->model()->indexFromItem(parent);
-                        auto valIndex = modelIndex.sibling(modelIndex.row(), modelIndex.column()+1);
-
-                        static_cast<LuaTableFieldItem*>(item->model()->itemFromIndex(valIndex))->setDirty();
+                                auto* parentItem = luaFieldItem->getAncestorSiblingLuaItem({"tracks", "*"}, 1);
+                                if(parentItem) parentItem->setDirty();
+                            }
+                        }
                     });
 
                     return delegate;
@@ -394,9 +372,56 @@ void TkAnimation::initializeVirtualTableDelegates(QString key) {
             }
             return nullptr;
         };
-       // qDebug() << "REGISTERING" << delegateFunc.getTypeString();
         delegateFunc.push();
         lua_setfield(*_mainState, -2, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
     }
+}
+
+
+//========== ANIMATIONTRACK ==========
+
+void TkAnimationTrack::initializeDelegates(void) {
+    ComboBoxPropertyItemDelegate* nameDelegate = new ComboBoxPropertyItemDelegate([](ESTkStandardItem* item) {
+            QStringList options;
+            LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+            if(luaFieldItem) {
+                LuaTableFieldItem* attribItem = luaFieldItem->getAncestorSiblingLuaItem({"*", "tracks", "*", "animations", "attrib"}, 1);
+                TkSkeletonAttrib* attrib = attribItem->getVariant().getValue<TkSkeletonAttrib*>();
+                if(attrib) {
+                    int i = 0;
+                    for(;;) {
+                        const char* name = attrib->getSpineAnimNameByIndex(i++);
+                        if(!name) break;
+                        options.push_back(QString(name));
+                    }
+                }
+            }
+            return options;
+        }, true);
+
+    nameDelegate->setTextCallback([](ESTkStandardItem* item, QStyleOptionViewItem& option) {
+        auto* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+        if(luaFieldItem) {
+            LuaTableFieldItem* attribItem = luaFieldItem->getAncestorSiblingLuaItem({"*", "tracks", "*", "animations", "attrib"}, 1);
+            if(attribItem) {
+                TkSkeletonAttrib* attrib = attribItem->getVariant().getValue<TkSkeletonAttrib*>();
+                if(attrib) {
+                    option.text = item->data(Qt::EditRole).toString();
+                    option.palette.setColor(QPalette::Text, attrib->findSpineAnimation(Q_CSTR(option.text))? QColor(Qt::black) : QColor(Qt::red));
+                }
+            }
+        }
+    });
+
+
+    LuaVariant delegates = {
+        {
+            "name", nameDelegate
+        }
+
+    };
+
+    delegates.push();
+    lua_setfield(*_mainState, -2, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
 }
 

@@ -15,6 +15,13 @@
 #include <delegate/tk_spinbox_property_item_delegate.h>
 #include <tk_menu_stack.h>
 #include <tk_lua_wrappers.h>
+#include <core/tk_mime_drop_manager.h>
+#include <QMimeData>
+#include <estk/tk_asset_dock_widget.h>
+#include <estk/tk_estoolkit.h>
+#include <core/tk_file_utilities.h>
+#include <QUrl>
+#include <asset/tk_lua_behavior.h>
 
 #define TK_ENTITY_CONTEXT_MENU_BEHAVIOR_NAME_SIZE   100
 
@@ -411,6 +418,15 @@ void TkEntity::setTreeWidgetItemState(const TreeItemState state) {
 
 }
 
+QString TkEntity::getTexturePath(void) const {
+    if(getRenderable() && getRenderable()->getSpriteAttrib() && getRenderable()->getSpriteAttrib()->getTexture()) {
+        return getRenderable()->getSpriteAttrib()->getTexture()->filename;
+    } else if(getSkeleton() && getSkeleton()->getAttrib() && getSkeleton()->getAttrib()->getAtlasPath()) {
+        return getSkeleton()->getAttrib()->getAtlasPath();
+    } else return QString();
+}
+
+
 void TkEntity::initializeDelegates(void) {
     lua_newtable(*_mainState);
     lua_pushvalue(*_mainState, -1);
@@ -432,57 +448,123 @@ void TkEntity::initializeDelegates(void) {
     OOLUA::push(*_mainState, elevDelegate);
     lua_setfield(*_mainState, -2, "elev");
 
+    DynamicContentPropertyItemDelegate* behavDelegate = new DynamicContentPropertyItemDelegate(DynamicContentPropertyItemDelegate::luaArraySizeTextCallback);
+    behavDelegate->setMimeDropManager(new MimeDropManager(QVector<MimeDropManager::Handler> {
+        {
+            MimeDropManager::TYPE_URLS,
+            [](const QMimeData* data, Qt::DropAction, QDropEvent*, int, int, const QModelIndex& parent) {
+                LuaTableFieldItem* luaItem = LuaTableFieldItem::fromModelIndex(parent);
+                if(luaItem) {
+                    auto* entityItem = luaItem->getAncestorSiblingLuaItem({"*"}, 1);
+                    if(entityItem) {
+                        Entity* entity = entityItem->getVariant().getValue<Entity*>();
+                        if(entity) {
+                            for(auto&& url : data->urls()) {
+                                QString assetPath = FileUtilities::getAssetRelativePath(url.toLocalFile());
+                                entity->addLuaBehavior(Q_CSTR(assetPath), LuaVariant());
+                            }
+                            luaItem->setDirty(true);
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            },
+            [](const QMimeData* data, Qt::DropAction, QDragEnterEvent*, int, int, const QModelIndex&) {
+                if(data->hasUrls()) {
+                    for(auto&& url : data->urls()) {
+                        if(url.isLocalFile()) {
+                            QString absPath = FileUtilities::getAbsoluteAssetPath(url.toLocalFile());
+                            auto* asset = ESToolkit::getInstance()->getAssetDockWidget()->getAssetFileSystemModel()->getCustomAssetFileType(absPath);
+                            if(!asset || asset->getTypeName() != "Lua Behavior") {
+                                return false;
+                            }
+                        } else return false;
+                    }
+                    return true;
+                } else return false;
+            }
+        }
+    }));
+    OOLUA::push(*_mainState, behavDelegate);
+    lua_setfield(*_mainState, -2, "behaviors");
+
     lua_pop(*_mainState, 1);
 }
 
-#if 0
-void TkEntity::registerProxyMetaTable(lua_State*const vm) {
+void TkEntity::initializeVirtualTableDelegates(QString property) {
+    if(property == "behaviors") {
+        LuaVariant delegateFunc = [](LuaVariant t, LuaVariant k) -> PropertyItemDelegate* {
+            TkEntity* entity = t["__ud"]->getValue<TkEntity*>();
+            if(entity && k.getType() == LUA_TNUMBER) {
+                unsigned index = k.getValue<unsigned>();
+                if(index <= entity->getBehaviorCount()) {
 
-    LuaManager::stackBalanceBegin();
+                    DynamicContentPropertyItemDelegate* delegate = new DynamicContentPropertyItemDelegate([](ESTkStandardItem* item, QStyleOptionViewItem& option) {
+                        LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+                        if(luaFieldItem) {
+                            Entity* self = luaFieldItem->getTableRef()["__ud"]->getValue<TkEntity*>();
+                            if(self) {
+                                unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
+                                Behavior* behav = static_cast<LuaBehavior*>(self->getBehaviorByIndex(index));
+                                if(behav) {
+                                    QColor color(Qt::gray);
+                                    //Change text to red if a LuaBehavior in an error state
+                                    if(behav->isLuaBehavior() && static_cast<LuaBehavior*>(behav)->getScript()->getError()) {
+                                        color = Qt::red;
+                                    }
+                                    option.palette.setColor(QPalette::Text, color);
+                                    //Only show script name
+                                    QString path = behav->getBehavName();
+                                    option.text = path.split("/").last();
+                                }
+                            }
+                        }
+                    });
 
-    getGlobal(OOLUA::Proxy_class<elysian::Entity>::class_name); //userdata metatable
-    lua_newtable(*_mainState);
-    lua_pushstring(vm, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
-    lua_pushvalue(vm, -2);
-    lua_rawset(vm, -4);
+                    delegate->setContextMenuCallback([](ESTkStandardItem* item) -> QMenu* {
+                        LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+                        if(luaFieldItem) {
+                            Entity* entity = luaFieldItem->getTableRef()["__ud"]->getValue<Entity*>();
+                            if(entity) {
+                                unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
 
-    MenuStack *menuStack = new MenuStack("Entity");
+                                MenuStack stack("Behavior");
+                                stack.insertAction("Delete", [=](bool) {
+                                    entity->removeBehavior(entity->getBehaviorByIndex(index)->getBehavName());
+                                    auto* parent = luaFieldItem->getAncestorSiblingLuaItem({"behaviors"}, 1);
+                                    parent->setDirty(true);
 
-    menuStack->insertCheckableAction("Active",
-        [&](bool) {
-        }
-    );
-#if 0
-    auto* planeDelegate = new EnumDropdownPropertyItemDelegate({
-       "RECT_PLANE_BOTTOM",
-       "RECT_PLANE_FRONT",
-       "RECT_PLANE_LEFT",
-       "RECT_PLANE_RIGHT",
-       "RECT_PLANE_FRONT_SLOPE_45",
-       "RECT_PLANE_LEFT_SLOPE_45",
-       "RECT_PLANE_RIGHT_SLOPE_45"
-    });
-    planeDelegate->setContextMenu(menuStack->first());
-    OOLUA::push(*_mainState, planeDelegate);
-    lua_setfield(*_mainState, -2, "planeType");
-#endif
+                                });
 
-    auto* elevDelegate = new SpinboxPropertyItemDelegate(0, ELYSIAN_TILE_ENTRY_ELEV_MAX);
-    OOLUA::push(*_mainState, elevDelegate);
-    lua_setfield(*_mainState, -2, "elev");
+                                return stack.first();
+                            }
+                        }
+                        return nullptr;
+                    });
 
-    lua_pop(*_mainState, 2);
+                    delegate->setDeleteCallback([](ESTkStandardItem* item) {
+                        LuaTableFieldItem* luaFieldItem = LuaTableFieldItem::fromStandardItem(item);
+                        if(luaFieldItem) {
+                            Entity* entity = luaFieldItem->getTableRef()["__ud"]->getValue<Entity*>();
+                            if(entity) {
+                                unsigned index = luaFieldItem->getKey().getValue<unsigned>()-1;
 
-    LuaManager::stackBalanceEnd();
+                                entity->removeBehavior(entity->getBehaviorByIndex(index)->getBehavName());
+                                auto* parent = luaFieldItem->getAncestorSiblingLuaItem({"behaviors"}, 1);
+                                parent->setDirty(true);
+                            }
+                        }
+                    });
 
-    elysian::EntityBase::registerProxyMetaTable(vm);
-}
-#endif
+                    return delegate;
+                }
+            }
+            return nullptr;
+        };
 
-QString TkEntity::getTexturePath(void) const {
-    if(getRenderable() && getRenderable()->getSpriteAttrib() && getRenderable()->getSpriteAttrib()->getTexture()) {
-        return getRenderable()->getSpriteAttrib()->getTexture()->filename;
-    } else if(getSkeleton() && getSkeleton()->getAttrib() && getSkeleton()->getAttrib()->getAtlasPath()) {
-        return getSkeleton()->getAttrib()->getAtlasPath();
-    } else return QString();
+        delegateFunc.push();
+        lua_setfield(*_mainState, -2, TK_LUA_TABLE_DELEGATE_FIELD_KEY);
+
+    }
 }

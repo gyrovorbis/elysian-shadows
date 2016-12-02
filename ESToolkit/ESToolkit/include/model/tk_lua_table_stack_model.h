@@ -6,7 +6,6 @@
 #include <crtp/elysian_lua_manager.hpp>
 #include <core/tk_lua_qt_utils.h>
 #include <crtp/elysian_lua_variant.hpp>
-//#include <tk_property_stack_model.h>
 #include <tk_property_standard_item.h>
 
 #define ELYSIAN_LUA_TABLE_STACK_MODEL_PREFAB_FONT_COLOR     QColor(Qt::blue)
@@ -26,6 +25,7 @@ protected:
     mutable LuaTableTableFieldData* _tableData      = nullptr;
     mutable QStandardItem*          _labelItem      = nullptr;
     LuaFieldRef                     _fieldRef;
+    mutable bool                    _ownsDelegate   = false;
 
 public:
                                     LuaTableFieldItem(LuaFieldRef ref, QStandardItem*const labelItem);
@@ -52,6 +52,14 @@ public:
     int                             getKeyLuaType(void) const;
     int                             getParentLuaType(void) const;
 
+    QStandardItem*                  getAncestorItem(QStringList keyNames);
+    LuaTableFieldItem*              getAncestorLuaItem(QStringList keyNames);
+    QStandardItem*                  getAncestorSiblingItem(QStringList keyNames, int col);
+    LuaTableFieldItem*              getAncestorSiblingLuaItem(QStringList keyNames, int col);
+
+    static LuaTableFieldItem*       fromStandardItem(QStandardItem* item);
+    static const LuaTableFieldItem* fromStandardItem(const QStandardItem* item);
+    static LuaTableFieldItem*       fromModelIndex(const QModelIndex& index);
 };
 
 
@@ -125,7 +133,9 @@ public:
 
 
 
-//==== INLINEZ ======
+
+
+//==== INLINEZ - LuaTableFieldItem ======
 
 inline int LuaTableFieldItem::type(void) const { return (int)ESTkStandardItemType::LuaTable; }
 
@@ -141,84 +151,6 @@ inline LuaVariant LuaTableFieldItem::getTableRef(void) const { return _fieldRef.
 
 inline int LuaTableFieldItem::getTableRefInt(void) const { return _fieldRef.getTableRef().getRef(); }
 
-//Pull value from Lua table/userdata to update model
-inline QVariant LuaTableFieldItem::getValue(void) const {
-    LuaManager::stackBalanceBegin();
-
-    QVariant    val;
-    int         valType;
-
-    //retrieve field
-    _fieldRef.getTableRef().push();
-    _fieldRef.getKey().push();
-    lua_gettable(*_mainState, -2);
-
-    //check type
-    valType = lua_type(*_mainState, -1);
-
-    //Let QVariant handle all primitive types
-    if(valType != LUA_TTABLE && valType != LUA_TUSERDATA) {
-        if(_tableData) {
-            //setDirty(true);
-            //emitDataChanged();
-        }
-        OOLUA::pull(*_mainState, val);
-    //Table/Userdata fields are out-of-date
-
-    } else if(!_tableData) {
-        _tableData = new LuaTableTableFieldData(LuaVariant::fromStack());
-        //if(!_tableData->getParentRef().isNil() && (*_tableData->getParentRef()[_fieldRef.getKey()] == ))
-        if(_tableData->isPrefab()) {
-            _labelItem->setData(QVariant(ELYSIAN_LUA_TABLE_STACK_MODEL_PREFAB_FONT_COLOR), Qt::ForegroundRole);
-        }
-
-        _tableData->insertTableFieldItems(_labelItem);
-    } //else Table/userdata fields should be up-to-date
-    else {
-         //val.setValue(QString(lua_typename(*_mainState, valType)));
-         lua_pop(*_mainState, 1); //don't actually give a fuck about the table
-    }
-    lua_pop(*_mainState, 1);
-
-    LuaManager::stackBalanceEnd();
-    return val;
-}
-
-
-//Push value from model to update Lua table/userdata
-inline void LuaTableFieldItem::setValue(const QVariant val) {
-    _fieldRef.getTableRef().push();
-    _fieldRef.getKey().push();
-    OOLUA::push(*_mainState, val);
-    lua_settable(*_mainState, -3);
-    lua_pop(*_mainState, 1);
-}
-
-inline LuaTableTableFieldData::LuaTableTableFieldData(LuaVariant tableRef):
-    _fieldItems(LuaVariant::newTable()),
-    _tableRef(std::move(tableRef)),
-    _parentRef(LuaManager::getParent(_tableRef)),
-    _isPrefab((LuaManager::getPrefabName(_tableRef) != nullptr))
-{}
-
-inline QStandardItem* LuaTableTableFieldData::getParentItem(void) const {
-    return _parentItem;
-}
-
-inline LuaTableStackModel::LuaTableStackModel(LuaVariant tableRef):
-    PropertyStackModel(nullptr),
-    _tableRef(std::move(tableRef))
-{
-    GY_ASSERT(_tableRef.isIndexable());
-}
-
-inline void LuaTableStackModel::setLabelItemText(const QString string) {
-    _parentItem->setData(string, Qt::DisplayRole);
-}
-
-inline const LuaVariant& LuaTableStackModel::getTableRef(void) const {
-    return _tableRef;
-}
 
 inline const LuaVariant& LuaTableFieldItem::getKey(void) const {
     return _fieldRef.getKey();
@@ -237,15 +169,78 @@ inline int LuaTableFieldItem::getValueLuaType(void) const {
     return type;
 }
 
-
 inline LuaTableTableFieldData* LuaTableFieldItem::getTableData(void) const { return _tableData; }
 
 inline int LuaTableFieldItem::getParentLuaType(void) const {
     return _fieldRef.getTableRef().getType();
 }
 
+
+inline LuaTableFieldItem* LuaTableFieldItem::getAncestorLuaItem(QStringList keyNames) {
+    return fromStandardItem(getAncestorItem(keyNames));
+}
+
+inline LuaTableFieldItem* LuaTableFieldItem::getAncestorSiblingLuaItem(QStringList keyNames, int col) {
+    return fromStandardItem(getAncestorSiblingItem(keyNames, col));
+}
+
+inline LuaTableFieldItem* LuaTableFieldItem::fromStandardItem(QStandardItem* item) {
+    if(item && item->type() == ESTkStandardItemType::LuaTable) {
+        return static_cast<LuaTableFieldItem*>(item);
+    }
+    return nullptr;
+}
+
+inline const LuaTableFieldItem* LuaTableFieldItem::fromStandardItem(const QStandardItem* item) {
+    if(item && item->type() == ESTkStandardItemType::LuaTable) {
+        return static_cast<const LuaTableFieldItem*>(item);
+    }
+    return nullptr;
+}
+
+inline LuaTableFieldItem* LuaTableFieldItem::fromModelIndex(const QModelIndex& index) {
+    const QStandardItemModel* model = qobject_cast<const QStandardItemModel*>(index.model());
+    if(model) {
+        return fromStandardItem(model->itemFromIndex(index));
+    }
+    return nullptr;
+}
+
+
+//==== LuaTableFieldData ======
+
+inline LuaTableTableFieldData::LuaTableTableFieldData(LuaVariant tableRef):
+    _fieldItems(LuaVariant::newTable()),
+    _tableRef(std::move(tableRef)),
+    _parentRef(LuaManager::getParent(_tableRef)),
+    _isPrefab((LuaManager::getPrefabName(_tableRef) != nullptr))
+{}
+
+inline QStandardItem* LuaTableTableFieldData::getParentItem(void) const {
+    return _parentItem;
+}
+
 inline const LuaVariant& LuaTableTableFieldData::getTableRef(void) const { return _tableRef; }
 inline bool LuaTableTableFieldData::isPrefab(void) const { return _isPrefab; }
 inline const LuaVariant& LuaTableTableFieldData::getParentRef(void) const { return _parentRef; }
+
+
+//==== LuaStackModel ======
+
+inline LuaTableStackModel::LuaTableStackModel(LuaVariant tableRef):
+    PropertyStackModel(nullptr),
+    _tableRef(std::move(tableRef))
+{
+    GY_ASSERT(_tableRef.isIndexable());
+}
+
+inline void LuaTableStackModel::setLabelItemText(const QString string) {
+    _parentItem->setData(string, Qt::DisplayRole);
+}
+
+inline const LuaVariant& LuaTableStackModel::getTableRef(void) const {
+    return _tableRef;
+}
+
 
 #endif // ESTK_LUA_TABLE_MODEL_HPP

@@ -54,6 +54,7 @@ public:
     FONT_STATE              getFontState(void) const;
     void                    setModified(const bool val);
     QString                 getFilePath(void) const;
+    QString                 getTypeName(void) const;
 
     virtual QMenu*          contextMenu(const QModelIndex& index);
     virtual void            select(QModelIndex& index);
@@ -239,6 +240,7 @@ inline void CustomAssetFileType::setFontState(const FONT_STATE state) { _fontSta
 inline auto CustomAssetFileType::getFontState(void) const -> FONT_STATE { return _fontState; }
 inline void CustomAssetFileType::setModified(const bool val) { _modified = val; Q_EMIT itemChanged(); }
 inline QString CustomAssetFileType::getFilePath(void) const { return _filePath; }
+inline QString CustomAssetFileType::getTypeName(void) const { return _typeName; }
 
 
 inline void AssetFileSystemModel::addFileType(CustomAssetFileType *type) {

@@ -82,6 +82,7 @@ public:
 
     //LuaTableProxy
     static void                 initializeDelegates(void);
+    static void                 initializeVirtualTableDelegates(QString property);
 
 	//Selectable
     virtual auto                getType(void) const -> TYPE override;
