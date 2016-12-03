@@ -39,6 +39,7 @@
 	\li \l {Maps}
 	\li \l {Tile Layers}
 	\li \l {Entities}
+	\li \l {Prefabs}
 	\li \l {Selection View}
 	\li \l {Running Engine}
 	\li \l {Input Devices}
@@ -216,7 +217,7 @@
 	\page entities.html
 	\previouspage Tile Layers
 	\contentspage {ESToolkit User Manual} {Contents}
-	\nextpage Selection View
+	\nextpage Prefabs
 	\ingroup estk
 
 	\indexpage Index
@@ -264,8 +265,45 @@
 */
 
 /*!
-	\page selection-view.html
+	\page prefabs.html
 	\previouspage Entities
+	\contentspage {ESToolkit User Manual} {Contents}
+	\nextpage Selection View
+	\ingroup estk
+
+	\indexpage Index
+	\startpage ESToolkit User Manual
+
+	\title Prefabs
+	Prefabs are a mechanism through which an entity can be saved as a "template" from which other entities can be instantiated. The template serves as the parent entity, which can then instantiate copies of itself as children. These children inherit all values and share internal data. This mechanism prevents duplicate work reconfiguring similar entities. It also prevents duplicate data having to be allocated in memory, as similar entities all share the same set of internal data. 
+
+	\section1 Creating a Prefab
+	First create and configure a regular entity within some area the usual way ("Add Entity" from Area file menu). When you're satisfied, select the entity. Once selected, right-click on the entity's table within Selection View. NOTE: \e {Since Selection View supports multiselect, all selections are added to an array. This means the entity's table is the table at key "1", not the highest level parent table (which is the array table).}
+
+	To simply save the entity as a prefab, click the "Make Prefab" action. To save the entity as a prefab AND modify the existing entity to be a child of the new prefab, press "Make Parent." NOTE: \e {All prefabs must be saved to /assets/scripts/prefabs with filenames ending in "*_prefab_data.lua".}
+
+	\section1 Deleting a Prefab
+	Prefabs can be deleted through Asset View or by simply deleting the prefab file through your default file explorer.
+
+	\section1 Modifying a Prefab
+	Once a prefab has been created, it should appear in Asset View under the directory: /assets/scripts/prefabs. Double-clicking a prefab should open it within Selection View, and you should notice that its properties are all blue, signifying that the table is of prefab type. Once modifications have been made to the selection, it must be manually saved by right-clicking the prefab again, and pressing the save action. 
+
+	Note that since child entities share data with their parent prefabs, certain prefab data can technically be modified through the child entity; however, changes will not be saved unless the prefab is saved manually through Asset View.
+
+	\section1 Instantiating a Prefab
+	There are two ways to create a new entity from an existing entity prefab. 
+	\list 1
+	\li \b {Create and Add to Area:} Simply drag and drop a prefab into Map View.
+	\li \b {Just Create:} Right-click the prefab, and click "Create Child." The child will be created and set as the current selection. You need to use the Lua Console to do anything useful with it.
+	\endlist
+
+	\sa {Entity}
+
+*/
+
+/*!
+	\page selection-view.html
+	\previouspage Prefabs
 	\contentspage {ESToolkit User Manual} {Contents}
 	\nextpage Running Engine
 	\ingroup estk
