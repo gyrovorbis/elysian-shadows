@@ -40,13 +40,13 @@
 
 namespace OOLUA
 {
-    typedef elysian::Singletons     Singletons;
+    typedef elysian::Engine     Engine;
 }
 
 
 
 
-OOLUA_PROXY(Singletons)
+OOLUA_PROXY(Engine)
 	OOLUA_TAGS (
 		No_public_constructors,
 		No_public_destructor
@@ -216,64 +216,52 @@ static inline void luaRegisterEnumsConstants(OOLUA::Script *s) {
 	s->register_class_static<Tile>("COLLIDER_45DEG_NW", Tile::COLLIDER_45DEG_NW);
 	s->register_class_static<Tile>("COLLIDER_45DEG_SW", Tile::COLLIDER_45DEG_SW);
 
-	//GameInput::BUTTONS
-#if 0
-    typedef elysian::GameInput GameInput;
-	s->register_class_static<GameInput>("BUT_NONE", GameInput::BUT_NONE);
-	s->register_class_static<GameInput>("BUT_A", GameInput::BUT_A);
-	s->register_class_static<GameInput>("BUT_B", GameInput::BUT_B);
-	s->register_class_static<GameInput>("BUT_C", GameInput::BUT_C);
-	s->register_class_static<GameInput>("BUT_D", GameInput::BUT_D);
-	s->register_class_static<GameInput>("BUT_E", GameInput::BUT_E);
-	s->register_class_static<GameInput>("BUT_F", GameInput::BUT_F);
-	s->register_class_static<GameInput>("BUT_G", GameInput::BUT_G);
-	s->register_class_static<GameInput>("BUT_H", GameInput::BUT_H);
-	s->register_class_static<GameInput>("BUT_I", GameInput::BUT_I);
-	s->register_class_static<GameInput>("BUT_J", GameInput::BUT_J);
-	s->register_class_static<GameInput>("BUT_K", GameInput::BUT_K);
-	s->register_class_static<GameInput>("BUT_L", GameInput::BUT_L);
-	s->register_class_static<GameInput>("BUT_M", GameInput::BUT_M);
-	s->register_class_static<GameInput>("BUT_N", GameInput::BUT_N);
-	s->register_class_static<GameInput>("BUT_O", GameInput::BUT_O);
-	s->register_class_static<GameInput>("BUT_P", GameInput::BUT_P);
-	s->register_class_static<GameInput>("BUT_Q", GameInput::BUT_Q);
-	s->register_class_static<GameInput>("BUT_R", GameInput::BUT_R);
-	s->register_class_static<GameInput>("BUT_S", GameInput::BUT_S);
-	s->register_class_static<GameInput>("BUT_T", GameInput::BUT_T);
-	s->register_class_static<GameInput>("BUT_U", GameInput::BUT_U);
-	s->register_class_static<GameInput>("BUT_V", GameInput::BUT_V);
-	s->register_class_static<GameInput>("BUT_W", GameInput::BUT_W);
-	s->register_class_static<GameInput>("BUT_X", GameInput::BUT_X);
-	s->register_class_static<GameInput>("BUT_Y", GameInput::BUT_Y);
-	s->register_class_static<GameInput>("BUT_Z", GameInput::BUT_Z);
-	s->register_class_static<GameInput>("BUT_DPAD_U", GameInput::BUT_DPAD_U);
-	s->register_class_static<GameInput>("BUT_DPAD_D", GameInput::BUT_DPAD_D);
-	s->register_class_static<GameInput>("BUT_DPAD_L", GameInput::BUT_DPAD_L);
-	s->register_class_static<GameInput>("BUT_DPAD_R", GameInput::BUT_DPAD_R);
-	s->register_class_static<GameInput>("BUT_0", GameInput::BUT_0);
-	s->register_class_static<GameInput>("BUT_1", GameInput::BUT_1);
-	s->register_class_static<GameInput>("BUT_2", GameInput::BUT_2);
-	s->register_class_static<GameInput>("BUT_3", GameInput::BUT_3);
-	s->register_class_static<GameInput>("BUT_4", GameInput::BUT_4);
-	s->register_class_static<GameInput>("BUT_5", GameInput::BUT_5);
-	s->register_class_static<GameInput>("BUT_6", GameInput::BUT_6);
-	s->register_class_static<GameInput>("BUT_7", GameInput::BUT_7);
-	s->register_class_static<GameInput>("BUT_8", GameInput::BUT_8);
-	s->register_class_static<GameInput>("BUT_9", GameInput::BUT_9);
-	s->register_class_static<GameInput>("BUT_ESC", GameInput::BUT_ESC);
-	s->register_class_static<GameInput>("BUT_SPACE", GameInput::BUT_SPACE);
-	s->register_class_static<GameInput>("BUT_RETURN", GameInput::BUT_RETURN);
-	s->register_class_static<GameInput>("BUT_LSHIFT", GameInput::BUT_LSHIFT);
-	s->register_class_static<GameInput>("BUT_RSHIFT", GameInput::BUT_RSHIFT);
-	s->register_class_static<GameInput>("BUT_LCTRL", GameInput::BUT_LCTRL);
-	s->register_class_static<GameInput>("BUT_RCTRL", GameInput::BUT_RCTRL);
-	s->register_class_static<GameInput>("BUT_LALT", GameInput::BUT_LALT);
-	s->register_class_static<GameInput>("BUT_RALT", GameInput::BUT_RALT);
-	s->register_class_static<GameInput>("BUT_BACKQUOTE", GameInput::BUT_BACKQUOTE);
-    s->register_class_static<GameInput>("BUT_BACKSLASH", GameInput::BUT_BACKSLASH);
-    s->register_class_static<GameInput>("BUT_FORWARDSLASH", GameInput::BUT_FORWARDSLASH);
-	s->register_class_static<GameInput>("BUT_MAX", GameInput::BUT_MAX);
-#endif
+    //Keyboard::KEYS
+    typedef elysian::Keyboard Keyboard;
+    s->register_class_static<Keyboard>("KEY_NONE", GY_KEY_NONE);
+    s->register_class_static<Keyboard>("KEY_A", GY_KEY_A);
+    s->register_class_static<Keyboard>("KEY_B", GY_KEY_B);
+    s->register_class_static<Keyboard>("KEY_C", GY_KEY_C);
+    s->register_class_static<Keyboard>("KEY_D", GY_KEY_D);
+    s->register_class_static<Keyboard>("KEY_E", GY_KEY_E);
+    s->register_class_static<Keyboard>("KEY_F", GY_KEY_F);
+    s->register_class_static<Keyboard>("KEY_G", GY_KEY_G);
+    s->register_class_static<Keyboard>("KEY_H", GY_KEY_H);
+    s->register_class_static<Keyboard>("KEY_I", GY_KEY_I);
+    s->register_class_static<Keyboard>("KEY_J", GY_KEY_J);
+    s->register_class_static<Keyboard>("KEY_K", GY_KEY_K);
+    s->register_class_static<Keyboard>("KEY_L", GY_KEY_L);
+    s->register_class_static<Keyboard>("KEY_M", GY_KEY_M);
+    s->register_class_static<Keyboard>("KEY_N", GY_KEY_N);
+    s->register_class_static<Keyboard>("KEY_O", GY_KEY_O);
+    s->register_class_static<Keyboard>("KEY_P", GY_KEY_P);
+    s->register_class_static<Keyboard>("KEY_Q", GY_KEY_Q);
+    s->register_class_static<Keyboard>("KEY_R", GY_KEY_R);
+    s->register_class_static<Keyboard>("KEY_S", GY_KEY_S);
+    s->register_class_static<Keyboard>("KEY_T", GY_KEY_T);
+    s->register_class_static<Keyboard>("KEY_U", GY_KEY_U);
+    s->register_class_static<Keyboard>("KEY_V", GY_KEY_V);
+    s->register_class_static<Keyboard>("KEY_W", GY_KEY_W);
+    s->register_class_static<Keyboard>("KEY_X", GY_KEY_X);
+    s->register_class_static<Keyboard>("KEY_Y", GY_KEY_Y);
+    s->register_class_static<Keyboard>("KEY_Z", GY_KEY_Z);
+    s->register_class_static<Keyboard>("KEY_DPAD_U", GY_KEY_DPAD_U);
+    s->register_class_static<Keyboard>("KEY_DPAD_D", GY_KEY_DPAD_D);
+    s->register_class_static<Keyboard>("KEY_DPAD_L", GY_KEY_DPAD_L);
+    s->register_class_static<Keyboard>("KEY_DPAD_R", GY_KEY_DPAD_R);
+    s->register_class_static<Keyboard>("KEY_SPACE", GY_KEY_SPACE);
+    s->register_class_static<Keyboard>("KEY_RETURN", GY_KEY_RETURN);
+    s->register_class_static<Keyboard>("KEY_ESC", GY_KEY_ESC);
+    s->register_class_static<Keyboard>("KEY_BACKSLASH", GY_KEY_BACKSLASH);
+    s->register_class_static<Keyboard>("KEY_FORWARDSLASH", GY_KEY_FORWARDSLASH);
+    s->register_class_static<Keyboard>("KEY_LSHIFT", GY_KEY_LSHIFT);
+    s->register_class_static<Keyboard>("KEY_RSHIFT", GY_KEY_RSHIFT);
+    s->register_class_static<Keyboard>("KEY_LCTRL", GY_KEY_LCTRL);
+    s->register_class_static<Keyboard>("KEY_RCTRL", GY_KEY_RCTRL);
+    s->register_class_static<Keyboard>("KEY_LALT", GY_KEY_LALT);
+    s->register_class_static<Keyboard>("KEY_RALT", GY_KEY_RALT);
+    s->register_class_static<Keyboard>("KEY_BACKQUOTE", GY_KEY_BACKQUOTE);
+    s->register_class_static<Keyboard>("KEY_COUNT", GY_KEY_COUNT);
 
     typedef elysian::Controller Controller;
     s->register_class_static<Controller>("BUT_DPAD_UP", GY_CONTROLLER_BUT_DPAD_UP);

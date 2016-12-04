@@ -5,8 +5,9 @@
     \qmltype Entity
     \since 1.5.8
     \inmodule ESToolkit
-    \brief Class representing all non-terrain Game Objects. An entity is
-    an aggregate of Components, which may either be built into the engine
+    \brief Class representing all non-terrain Game Objects.
+
+    An entity is an aggregate of Components, which may either be built into the engine
     or created custom as LuaBehaviors.
 */
 

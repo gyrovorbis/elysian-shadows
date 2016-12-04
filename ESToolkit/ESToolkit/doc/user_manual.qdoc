@@ -141,6 +141,8 @@
 
 	\section1 area_init.lua
 	"area_init.lua" is an optional Lua script that is executed when an Area is first loaded by the Engine. This script allows you to programmatically create or modify entities or perform any initialization tasks that are not covered by ESTk.
+
+	\sa {Area}
 */
 
 /*!
@@ -687,9 +689,9 @@
 	\code
 	state1 = function() 
 		callbackEvent = LuaEventCallback.new(state2)    --point to next state
-		fr = Singletons.getCameraSys():getKeyFrame()   	--get current keyframe
+		fr = Engine.getCameraSys():getKeyFrame()   	--get current keyframe
 		fr:setScale2f(3.0, 3.0)							--scale current keyframe by 3
-		Singletons.getCameraSys():moveToKeyFrame(fr, 4.0, callbackEvent)	--linearly interpolate into new keyframe over 4 seconds
+		Engine.getCameraSys():moveToKeyFrame(fr, 4.0, callbackEvent)	--linearly interpolate into new keyframe over 4 seconds
 	end
 
 	\endcode
@@ -698,11 +700,11 @@
 	Then the next keyframe might look something like this:
 	\code
 	state2 = function() 
-		lfr = Singletons.getCameraSys():getKeyFrame() 	--retrieve current keyframe						
+		lfr = Engine.getCameraSys():getKeyFrame() 	--retrieve current keyframe						
 		fr:setScale2f(0.2, 0.2)							--scale				
 		fr:setPos2f(1000, 1000)							--pan
 		callbackEvent:setCallbackFunction(state3)		--set next state to call for when this one is complete		
-		Singletons.getCameraSys():moveToKeyFrame(fr, 5.0, callbackEvent)	--apply new keyframe over next 5 seconds
+		Engine.getCameraSys():moveToKeyFrame(fr, 5.0, callbackEvent)	--apply new keyframe over next 5 seconds
 	end
 	\endcode
 	We once again grab the current key frame and make a modification to its transform. Notice that we now set the LuaEventCallback to point to the next event in our list before linearly interpolating to the new keyFrame. 

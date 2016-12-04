@@ -341,6 +341,7 @@ void TileSelectable::elevateFromBase(void) {
     }
 }
 
+#if 0
 void TileSelectable::toggleZTransitional(void) {
     for(unsigned y = 0; y < _height; ++y) {
         for(unsigned x = 0; x < _width; ++x) {
@@ -349,6 +350,7 @@ void TileSelectable::toggleZTransitional(void) {
         }
     }
 }
+#endif
 
 void TileSelectable::toggleNormalFace(void) {
     for(unsigned y = 0; y < _height; ++y) {

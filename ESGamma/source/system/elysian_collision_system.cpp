@@ -265,7 +265,7 @@ void CollisionSystem::renderTileColliders(void) const {
                 colType = Tile::combineColliders(colType, colType2);
                 //isOnZPlane = true;
 
-                if(tileEntry.getZTran() && tileEntry.getElev() == playerElev) isZTran = true;
+                //if(tileEntry.getZTran() && tileEntry.getElev() == playerElev) isZTran = true;
             }
 
 

@@ -33,8 +33,6 @@
 #define ELYSIAN_TILE_ENTRY_ELEV_BIT_MASK	0x001f
 #define ELYSIAN_TILE_ENTRY_INDEX_BIT_POS	0
 #define ELYSIAN_TILE_ENTRY_INDEX_BIT_MASK	0x01ff
-#define ELYSIAN_TILE_ENTRY_ZTRAN_BIT_POS	31
-#define ELYSIAN_TILE_ENTRY_ZTRAN_BIT_MASK	0x0001
 #define ELYSIAN_TILE_ENTRY_PLANE_BIT_POS	17
 #define ELYSIAN_TILE_ENTRY_PLANE_BIT_MASK	0x000f
 
@@ -74,8 +72,6 @@ namespace elysian {
         void                    setElev(const unsigned char e);
         void					setIndex(const uint16_t i);
         uint16_t				getIndex(void) const;
-        void					setZTran(const bool z);
-        bool					getZTran(void) const;
         void					setPlane(const GY_RECT_PLANE_TYPE n);
         GY_RECT_PLANE_TYPE		getPlane(void) const;
         bool					getNormal(void) const;
@@ -274,8 +270,6 @@ namespace elysian {
     inline void TileEntry::setElev(const unsigned char e) { ELYSIAN_TILE_ENTRY_SET_ATTRIB(TILE, ELEV, e); }
     inline uint16_t TileEntry::getIndex(void) const { return ELYSIAN_TILE_ENTRY_GET_ATTRIB(TILE, INDEX); }
     inline void TileEntry::setIndex(const uint16_t i) { ELYSIAN_TILE_ENTRY_SET_ATTRIB(TILE, INDEX, i); }
-    inline bool TileEntry::getZTran(void) const { return ELYSIAN_TILE_ENTRY_GET_ATTRIB(TILE, ZTRAN); }
-    inline void TileEntry::setZTran(const bool z) { ELYSIAN_TILE_ENTRY_SET_ATTRIB(TILE, ZTRAN, z); }
     inline GY_RECT_PLANE_TYPE TileEntry::getPlane(void) const { return (GY_RECT_PLANE_TYPE)ELYSIAN_TILE_ENTRY_GET_ATTRIB(TILE, PLANE); }
     inline void TileEntry::setPlane(const GY_RECT_PLANE_TYPE n) { ELYSIAN_TILE_ENTRY_SET_ATTRIB(TILE, PLANE, n); }
     inline bool TileEntry::getNormal(void) const {

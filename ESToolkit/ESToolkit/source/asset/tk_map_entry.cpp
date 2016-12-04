@@ -133,11 +133,13 @@ void TileEntry::renderDecoration(QPainter *const painter, const unsigned /*x*/, 
 	}
 
 	//TileEntry attrib
+#if 0
 	if(renderZTran && getZTran()) {
 		QBrush brush(Qt::DiagCrossPattern);
 		brush.setColor(Qt::yellow);
 		painter->fillRect(QRect(-16, -16, 32, 32), brush);
 	}
+#endif
 
     if(renderPlane) {
         GY_RECT_PLANE_TYPE plane = getPlane();

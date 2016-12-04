@@ -351,7 +351,7 @@ void MapView::keyPressEvent(QKeyEvent* event) {
                 //createSelectionItemGroup(); //force update region
                 break;
             case Qt::Key_Z:
-                terSel->toggleZTransitional();
+                //terSel->toggleZTransitional();
                 //createSelectionItemGroup();
                 break;
             case Qt::Key_N:

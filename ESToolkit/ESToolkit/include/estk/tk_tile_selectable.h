@@ -106,7 +106,7 @@ public:
     void    elevateUp(void);
     void    elevateDown(void);
     void    elevateFromBase(void);
-    void    toggleZTransitional(void);
+    //void    toggleZTransitional(void);
     void    toggleNormalFace(void);
     void    setElev(const unsigned elev);
     void    setPlane(const GY_RECT_PLANE_TYPE plane);

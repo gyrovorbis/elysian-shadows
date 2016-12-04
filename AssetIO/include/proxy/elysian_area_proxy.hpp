@@ -19,8 +19,6 @@ namespace OOLUA
 OOLUA_PROXY(TileEntry)
     OOLUA_MEM_FUNC_CONST(uint16_t, getIndex)
     OOLUA_MEM_FUNC(void, setIndex, uint16_t)
-    OOLUA_MEM_FUNC_CONST(bool, getZTran)
-    OOLUA_MEM_FUNC(void, setZTran, bool)
     OOLUA_MEM_FUNC(void, setNormal, bool)
     OOLUA_MEM_FUNC_CONST(bool, getNormal)
     OOLUA_MEM_FUNC_CONST(GY_RECT_PLANE_TYPE, getPlane)

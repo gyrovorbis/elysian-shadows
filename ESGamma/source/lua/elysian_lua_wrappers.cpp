@@ -113,7 +113,7 @@ namespace elysian {
        // _mainState->register_class<MouseInput>();
 		_mainState->register_class<PartySystem>();
 		_mainState->register_class<TimerSystem>();
-		_mainState->register_class<Singletons>();
+        _mainState->register_class<Engine>();
 		_mainState->register_class<gyro>();
 		_mainState->register_class<GYWav>();
 		_mainState->register_class<AudioSource>();
@@ -154,23 +154,23 @@ namespace elysian {
         lua_register(*_mainState, "printAdvLog", &printAdvLog);
         lua_register(*_mainState, "dbgPush", &dbgPush);
         lua_register(*_mainState, "dbgPop", &dbgPop);
-		_mainState->register_class_static<Singletons>("getCurArea", &Singletons_getCurArea);
-		_mainState->register_class_static<Singletons>("getCurLevel", &Singletons_getCurLevel);
-        _mainState->register_class_static<Singletons>("setProcessInput", &Singletons_setProcessInput);
-		_mainState->register_class_static<Singletons>("getPartySys", &Singletons_getPartySystem);
-        _mainState->register_class_static<Singletons>("getInputSys", &Singletons_getInputSystem);
-		_mainState->register_class_static<Singletons>("getTimerSys", &Singletons_getTimerSystem);
-		_mainState->register_class_static<Singletons>("getAudioSys", &Singletons_getAudioSystem);
-		_mainState->register_class_static<Singletons>("getLightSys", &Singletons_getLightSystem);
-		_mainState->register_class_static<Singletons>("getLevelSys", &Singletons_getLevelSystem);
-        _mainState->register_class_static<Singletons>("getCombatSys", &Singletons_getCombatSystem);
-		_mainState->register_class_static<Singletons>("getPartSys", &Singletons_getParticleSystem);
-		_mainState->register_class_static<Singletons>("getDaySys", &Singletons_getDaySystem);
-		_mainState->register_class_static<Singletons>("getRigidBodySys", &Singletons_getRigidBodySystem);
-		_mainState->register_class_static<Singletons>("getDialogSys", &Singletons_getDialogSystem);
-		_mainState->register_class_static<Singletons>("getGuiSys", &Singletons_getGuiSystem);
-		_mainState->register_class_static<Singletons>("getCameraSys", &Singletons_getCameraSystem);
-		_mainState->register_class_static<Singletons>("getCharSys", &Singletons_getCharacterSystem);
+        _mainState->register_class_static<Engine>("getCurArea", &Singletons_getCurArea);
+        _mainState->register_class_static<Engine>("getCurLevel", &Singletons_getCurLevel);
+        _mainState->register_class_static<Engine>("setProcessInput", &Singletons_setProcessInput);
+        _mainState->register_class_static<Engine>("getPartySys", &Singletons_getPartySystem);
+        _mainState->register_class_static<Engine>("getInputSys", &Singletons_getInputSystem);
+        _mainState->register_class_static<Engine>("getTimerSys", &Singletons_getTimerSystem);
+        _mainState->register_class_static<Engine>("getAudioSys", &Singletons_getAudioSystem);
+        _mainState->register_class_static<Engine>("getLightSys", &Singletons_getLightSystem);
+        _mainState->register_class_static<Engine>("getLevelSys", &Singletons_getLevelSystem);
+        _mainState->register_class_static<Engine>("getCombatSys", &Singletons_getCombatSystem);
+        _mainState->register_class_static<Engine>("getPartSys", &Singletons_getParticleSystem);
+        _mainState->register_class_static<Engine>("getDaySys", &Singletons_getDaySystem);
+        _mainState->register_class_static<Engine>("getRigidBodySys", &Singletons_getRigidBodySystem);
+        _mainState->register_class_static<Engine>("getDialogSys", &Singletons_getDialogSystem);
+        _mainState->register_class_static<Engine>("getGuiSys", &Singletons_getGuiSystem);
+        _mainState->register_class_static<Engine>("getCameraSys", &Singletons_getCameraSystem);
+        _mainState->register_class_static<Engine>("getCharSys", &Singletons_getCharacterSystem);
 
 		_mainState->register_class_static<EventMonitor>("null", &EventMonitor_null);
 
@@ -189,10 +189,156 @@ namespace elysian {
 
 }
 
+/*!
+    \qmltype Engine
+    \since 1.6.0
+    \inmodule ESToolkit
+    \brief Static class for Engine providing access to all subsystems.
+*/
+
+/*!
+ * \qmlmethod Area* Engine::getCurArea()
+ *
+ * Returns the current active Area.
+ */
+/*!
+ * \qmlmethod Level* Engine::getCurLevel()
+ *
+ * Returns the current active Level.
+ */
+/*!
+ * \qmlmethod void Engine::setProcessInput(bool val)
+ *
+ * Tells the engine to process input normally if \a val is true, otherwise the engine will no longer process input events,
+ * giving full control to Lua.
+ */
+/*!
+ * \qmlmethod PartySystem* Engine::getPartySys()
+ *
+ * Returns the PartySystem subsystem.
+ */
+/*!
+ * \qmlmethod InputSystem* Engine::getInputSys()
+ *
+ * Returns the InputSystem subsystem.
+ */
+/*!
+ * \qmlmethod TimerSystem* Engine::getTimerSys()
+ *
+ * Returns the TimerSystem subsystem.
+ */
+/*!
+ * \qmlmethod AudioSystem* Engine::getAudioSys()
+ *
+ * Returns the AudioSystem subsystem.
+ */
+/*!
+ * \qmlmethod LightSystem* Engine::getLightSys()
+ *
+ * Returns the LightSystem subsystem.
+ */
+/*!
+ * \qmlmethod LevelSystem* Engine::getLevelSys()
+ *
+ * Returns the LevelSystem subsystem.
+ */
+/*!
+ * \qmlmethod CombatSystem* Engine::getCombatSys()
+ *
+ * Returns the CombatSystem subsystem.
+ */
+/*!
+ * \qmlmethod ParticleSystem* Engine::getPartSys()
+ *
+ * Returns the ParticleSystem subsystem.
+ */
+/*!
+ * \qmlmethod DaySystem* Engine::getDaySys()
+ *
+ * Returns the DaySystem subsystem.
+ */
+/*!
+ * \qmlmethod RigidBodySystem* Engine::getRigidBodySys()
+ *
+ * Returns the RigidBodySystem subsystem.
+ */
+/*!
+ * \qmlmethod GuiSystem* Engine::getGuiSys()
+ *
+ * Returns the GuiSystem subsystem.
+ */
+/*!
+ * \qmlmethod CameraSystem* Engine::getCameraSys()
+ *
+ * Returns the CameraSystem subsystem.
+ */
+/*!
+ * \qmlmethod CharacterSystem* Engine::getCharSys()
+ *
+ * Returns the CharacterSystem subsystem.
+ */
+
+EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Engine)
+EXPORT_OOLUA_FUNCTIONS_0_CONST(Engine)
 
 
-EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Singletons)
-EXPORT_OOLUA_FUNCTIONS_0_CONST(Singletons)
+/*!
+    \qmltype gyro
+    \since 1.6.0
+    \inmodule ESToolkit
+    \brief Static class for libGyro constants and enumerations.
+*/
+
+/*!
+\qmlproperty enumeration gyro::TEX_ORIENT_TYPE
+
+Represents the different possible orientations of a 2D texture.
+
+The orientations can be of:
+\list
+\li gyro.TEX_ORIENT_NORMAL              - No special orientation
+\li gyro.TEX_ORIENT_FLIP_HORIZ          - Textured flipped over the Y axis
+\li gyro.TEX_ORIENT_FLIP_VERT           - Textured flipped over the X axis
+\li gyro.TEX_ORIENT_ROT_90              - Texture rotated 90 degrees clockwise
+\li gyro.TEX_ORIENT_ROT_180             - Texture rotated 180 degrees clockwise
+\li gyro.TEX_ORIENT_ROT_270             - Textured rotated 270 degrees clockwise
+\li gyro.TEX_ORIENT_FLIP_HORIZ_ROT_90   - Texture flipped over the Y axis then rotated 90 degrees clockwise
+\li gyro.TEX_ORIENT_FLIP_HORIZ_ROT_270  - Texture flipped over the Y axis then rotated 270 degrees clockwise
+\endlist
+*/
+
+/*!
+\qmlproperty enumeration gyro::RECT_PLANE_TYPE
+
+Represents the different planes a 2D texture can be applied to. Imagine these as the faces of a cube.
+
+The different possible plane types are:
+\list
+\li gyro.RECT_PLANE_BOTTOM              - Regular, flat texture
+\li gyro.RECT_PLANE_FRONT               - Texture standing up, facing front
+\li gyro.RECT_PLANE_LEFT                - Texture standing up, facing left
+\li gyro.RECT_PLANE_RIGHT               - Texture standing up, facing right
+\li gyro.RECT_PLANE_FRONT_SLOPE_45      - Texture as a 45 degree ramp, facing front
+\li gyro.RECT_PLANE_LEFT_SLOPE_45       - Texture as a 45 degree ramp, facing left
+\li gyro.RECT_PLANE_RIGHT_SLOPE_45      - Texture as a 45 degree ramp, facing right
+\endlist
+*/
+
+/*!
+\qmlproperty enumeration gyro::COLLIDER_TYPE
+
+Represents the different types of 2D colliders supported by the physics engine.
+
+The different collider primitives are:
+\list
+\li gyro.COLLIDER_NONE  - No collider
+\li gyro.COLLIDER_AABB  - Axis-aligned bounding box (only for rectangles that never rotate)
+\li gyro.COLLIDER_OBB   - Oriented bounding box (for rectangles that can rotate)
+\li gyro.COLLIDER_RTRI  - Right-triangle
+\li gyro.COLLIDER_CIR   - Circle
+\endlist
+*/
+
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(gyro)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(gyro)

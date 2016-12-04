@@ -20,6 +20,13 @@ OOLUA_EXPORT_FUNCTIONS(CameraKeyFrame)
     \since 1.5.8
     \inmodule ESToolkit
     \brief Engine subsystem handling all Camera-related logic, transformations, and states.
+
+    \section2 Retrieving the CameraSystem
+    The CameraSystem object can be retrieved through the static Engine class:
+    \code
+    camSys = Engine.getCameraSys()
+    \endcode
+    \sa {CameraKeyFrame}, {Engine}, {Cutscenes}
 */
 
 /*!
