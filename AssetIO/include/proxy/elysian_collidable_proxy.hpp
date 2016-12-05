@@ -72,7 +72,7 @@ OOLUA_PROXY(CollisionContact)
         No_public_constructors,
         No_public_destructor
     )
-    OOLUA_MEM_FUNC_CONST(Collidable*, getCollidable, unsigned)
+    OOLUA_MEM_FUNC_CONST(maybe_null<Collidable*>, getCollidable, unsigned)
     OOLUA_MEM_FUNC_CONST(void, getWorldPos, GYVector2&)
     OOLUA_MEM_FUNC_CONST(void, getNormal, GYVector2&)
     OOLUA_MEM_FUNC_CONST(void, getObjPos, unsigned, GYVector2&)
