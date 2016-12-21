@@ -81,6 +81,14 @@ private Q_SLOTS:
     void on_actionLoad_BIOS_Image_triggered();
     void on_actionDisassemble_ROM_triggered();
     void on_actionEnable_Pixel_Ghosting_toggled(bool arg1);
+    void on_actionPreserve_Aspect_Ratio_toggled(bool arg1);
+    void on_action1x_triggered();
+    void on_action2x_triggered();
+    void on_action4x_triggered();
+    void on_action8x_triggered();
+    void on_action16x_triggered();
+    void on_action32x_triggered();
+    void on_action64x_triggered();
 
 private:
 
@@ -89,6 +97,7 @@ private:
     static void         _log(GY_DEBUG_SEVERITY level, const char* msg);
 
     void                _updatePConRegister(void);
+    void                _resizeWindowFromScreenZoom(int level);
 
     bool                _loadIcons(void);
     void                _updateIcon(void);
@@ -112,6 +121,7 @@ private:
     QImage              _eyecatchImage;
     QString             _romDir;
     VmuTcpDialog*       _tcpDialog          = nullptr;
+    QLabel*             _fbLabel            = nullptr;
     QLabel*             _statusLabel        = nullptr;
     QLabel*             _iconLabel          = nullptr;
     VMSFileInfo*        _vmsHeader          = nullptr;

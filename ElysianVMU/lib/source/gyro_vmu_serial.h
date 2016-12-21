@@ -1,52 +1,59 @@
 #ifndef GYRO_VMU_SERIAL_H
 #define GYRO_VMU_SERIAL_H
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-//#define VMU_SERIAL_TCP_SERVER_USE_LATEST_CLIENT IMPLEMENT OPTION FOR ME
-#define VMU_SERIAL_TCP_POLL_TIMEOUT           0
-#define VMU_SERIAL_TCP_PACKET_SIZE_MAX        10000
+#define VMU_SERIAL_IFACE_COUNT      2
+#define VMU_SERIAL_IFACE_RECV_POS   0
+#define VMU_SERIAL_IFACE_RECV_MASK  0x1
+#define VMU_SERIAL_IFACE_SEND_POS   1
+#define VMU_SERIAL_IFACE_SEND_MASK  0x2
 
-struct          VMUDevice;
-typedef void    GYTcpSocket;
-typedef void    GYTcpServer;
+struct VMUDevice;
 
-typedef enum VMU_SERIAL_CONNECTION_TYPE {
-    VMU_SERIAL_CONNECTION_NONE,
-    VMU_SERIAL_CONNECTION_VMU,
-    VMU_SERIAL_CONNECTION_DC
-} VMU_SERIAL_CONNECTION_TYPE;
+typedef enum VMU_SERIAL_CLK_STATE {
+    VMU_SERIAL_CLK_STATE1,
+    VMU_SERIAL_CLK_STATE2
+} VMU_SERIAL_CLK_STATE;
 
-typedef enum VMU_SERIAL_PORT_STATE {
-    VMU_SERIAL_PORT_INACTIVE,
-    VMU_SERIAL_PORT_READY,
-    VMU_SERIAL_PORT_WAITING
-} VMU_SERIAL_PORT_STATE;
+typedef enum VMU_SERIAL_SIGNAL {
+    VMU_SERIAL_SO0,
+    VMU_SERIAL_SI0,
+    VMU_SERIAL_SCK0,
+    VMU_SERIAL_SO1,
+    VMU_SERIAL_SI1,
+    VMU_SERIAL_SCK1
+} VMU_SERIAL_SIGNAL;
 
-typedef struct VMUSerialPort {
-    GYTcpServer*             _tcpServer;
-    GYTcpSocket*             _tcpSocket;
-    VMU_SERIAL_PORT_STATE    _txState;
-    VMU_SERIAL_PORT_STATE    _rxState;
-    unsigned char            _txStart;
-    int                      _useMostRecentClient;
-} VMUSerialPort;
+typedef struct VMUSerialIface {
+    int     sbufCurPos;
+    int     sentFirstBit;
+    uint8_t sconReg;
+    uint8_t sbufReg;
+    uint8_t soPin;
+    uint8_t siPin;
+    uint8_t sckPin;
+    uint8_t intReq;
+} VMUSerialIface;
 
-void gyVmuSerialUpdate(struct VMUDevice* dev);
+typedef struct VMUSerial {
+    VMUSerialIface  ifaces[VMU_SERIAL_IFACE_COUNT];
+    float           timeElapsed;
+    float           tsbr;
+    uint8_t         sbrState;
+} VMUSerial;
 
-int gyVmuSerialTcpServerStart(struct VMUDevice* dev, unsigned port);
-int gyVmuSerialTcpServerStop(struct VMUDevice* dev);
-void gyVmuSerialTcpServerUseMostRecentClientSet(struct VMUDevice* dev, int val);
 
-int gyVmuSerialTcpOpen(struct VMUDevice* dev, const char* host, unsigned port);
-int gyVmuSerialTcpClose(struct VMUDevice* dev);
-int gyVmuSerialTcpSend(struct VMUDevice* dev, const unsigned char* byte, int size);
+void gyVmuSerialInit(struct VMUDevice* dev);
+void gyVmuSerialUpdate(struct VMUDevice* dev, float deltaTime);
+void gyVmuSerialMemorySink(struct VMUDevice* dev, uint8_t addr, uint8_t value);
+void gyVmuSerialP1Recv(struct VMUDevice* dev, uint8_t pins, uint8_t changedMask);
 
-void gyVmuSerialTcpSconModified(struct VMUDevice* dev, int sfr, unsigned char val);
-
-VMU_SERIAL_CONNECTION_TYPE gyVmuSerialConnectionType(const struct VMUDevice* dev);
+int gyVmuSerialIfaceConfigMask(const struct VMUDevice* dev, int ifaceIndex);
 
 
 
@@ -54,5 +61,8 @@ VMU_SERIAL_CONNECTION_TYPE gyVmuSerialConnectionType(const struct VMUDevice* dev
 }
 #endif
 
-#endif // GYRO_VMU_SERIAL_H
 
+
+
+
+#endif // GYRO_VMU_SERIAL_H

@@ -93,7 +93,7 @@ bool VmuTcpDialog::quickConnect(void) {
 
 void VmuTcpDialog::updateConnectionStatus(void) {
     bool connected = false;
-
+#if 0
     switch(gyVmuSerialConnectionType(_dev)) {
     case VMU_SERIAL_CONNECTION_NONE:
         _ui->remoteTypeText->setText("None");
@@ -125,6 +125,7 @@ void VmuTcpDialog::updateConnectionStatus(void) {
         if(_serverActive) setConnectionStatus(Qt::darkYellow, "Listening for Incoming Connections...");
         else setConnectionStatus(Qt::black, "Not Connected");
     }
+#endif
 }
 
 void VmuTcpDialog::saveSettings(QSettings &settings) {
@@ -184,6 +185,7 @@ void VmuTcpDialog::on_clientGroupBox_toggled(bool arg1)
 }
 
 bool VmuTcpDialog::startTcpServer(void) {
+#if 0
     if(!_ui->hostGroupBox->isChecked()) _ui->hostGroupBox->setChecked(true);
     if(gyVmuSerialTcpServerStart(_dev, _ui->listenPortSpinBox->value())) {
         setConnectionStatus(Qt::darkYellow, "Listening for Incoming Connections...");
@@ -194,11 +196,12 @@ bool VmuTcpDialog::startTcpServer(void) {
         QMessageBox::critical(nullptr, "Failed to Start", "Failed to launch TCP server. Probably could not bind to port.");
         return false;
     }
+#endif
 }
 
 bool VmuTcpDialog::stopTcpServer(void) {
     bool success = true;
-
+#if 0
     if(gyVmuSerialConnectionType(_dev) != VMU_SERIAL_CONNECTION_NONE) {
         auto reply = QMessageBox::question(this, "Disconnect Remote Client",
                                            "There is still a remote client connected to the current VMU. Stopping the TCP server will disconnect the client. Continue?",
@@ -217,6 +220,7 @@ bool VmuTcpDialog::stopTcpServer(void) {
     _serverActive = false;
     updateConnectionStatus();
     return success;
+#endif
 }
 
 void VmuTcpDialog::on_startServerButton_clicked(void)
@@ -244,7 +248,7 @@ bool VmuTcpDialog::connectToServer(void) {
                               "Hostname must be specified to connect to remote server!");
         return false;
     }
-
+#if 0
     if(gyVmuSerialTcpOpen(_dev, _ui->ipEdit->text().toStdString().c_str(), _ui->portSpinbox->value())) {
         setConnectionStatus(Qt::darkGreen, "Connected!");
         _ui->connectButton->setText("Disconnect From Server");
@@ -256,14 +260,18 @@ bool VmuTcpDialog::connectToServer(void) {
         QMessageBox::critical(nullptr, "Connection Failure", "Could not connect to the remote host! See debug logs for more information.");
         return false;
     }
+#endif
 }
 
 bool VmuTcpDialog::disconnectFromServer(void) {
+
     bool success = true;
+#if 0
     if(!gyVmuSerialTcpClose(_dev)) {
         _gyLog(GY_DEBUG_ERROR, "Something reested while disconnecting from remote TCP server.");
         success = false;
     }
+#endif
     _ui->connectButton->setText("Connect To Server");
     _clientActive = false;
     updateConnectionStatus();
@@ -305,5 +313,7 @@ void VmuTcpDialog::on_mostRecentCheckBox_stateChanged(int arg1)
     }
 
     _gyLog(GY_DEBUG_VERBOSE, "VMU Serial TCP Server - Use most recent connection: %s", checked? "ON" : "OFF");
+#if 0
     gyVmuSerialTcpServerUseMostRecentClientSet(_dev, (int)checked);
+#endif
 }

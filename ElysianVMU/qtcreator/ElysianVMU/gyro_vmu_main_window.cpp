@@ -128,6 +128,24 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _japCodec(QTextCodec::codecForName(VMU_TEXT_CODEC))
 {
     _ui->setupUi(this);
+    _fbLabel = new QLabel;
+
+
+   // gridLayout->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed));
+
+  //  gridLayout->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed));
+
+    QVBoxLayout* vertLayout = qobject_cast<QVBoxLayout*>(centralWidget()->layout());
+    Q_ASSERT(vertLayout);
+    //vertLayout->addLayout(gridLayout);
+    vertLayout->addWidget(_fbLabel);
+    vertLayout->setAlignment(_fbLabel, Qt::AlignHCenter);
+    _fbLabel->setPixmap(_fb);
+    _fbLabel->setMargin(0);
+    _fbLabel->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    vertLayout->setMargin(0);
+    vertLayout->setSpacing(0);
+
     setAcceptDrops(true);
     _iconLabel->setMargin(0);
     _ui->statusbar->layout()->setSpacing(0);
@@ -260,7 +278,7 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
         QString("<i>Dreamcast and VMU Copyright Sega</i><br><br>"));
     });
 
-
+    _resizeWindowFromScreenZoom(8);
     _loadSettings();
 
 }
@@ -345,12 +363,14 @@ void VMUMainWindow::_update(void) {
 #endif
 
     //store socket status before update
+#if 0
     auto* prevSocket = _dev->serialPort._tcpSocket;
+#endif
 
       for(int i = 0; i < 1; ++i) {
 #ifdef GYRO_VMU
 #ifndef VMU_DEBUG
-        ranThisFrame = gyVmuDeviceUpdate(_dev, (float)deltaTicks/900000000.0f);
+        ranThisFrame = gyVmuDeviceUpdate(_dev, (float)deltaTicks/1000000000.0f);
 #else
         gyVmuCpuTick(_dev, 1.0f/30.0f);
 #endif
@@ -375,12 +395,12 @@ void VMUMainWindow::_update(void) {
         }
         _contAttached = (bool)_dev->gamepad.contAttached;
 
-
+#if 0
         //Check if the TCP connection was changed from outside (ie: disconnected)
         if(prevSocket != _dev->serialPort._tcpSocket) {
             _tcpDialog->updateConnectionStatus();
         }
-
+#endif
         _updatePConRegister();
         _updateIcon();
 //        lcdrefresh();
@@ -394,53 +414,48 @@ void VMUMainWindow::_update(void) {
 }
 
 
-    void VMUMainWindow::paintEvent(QPaintEvent *) {
-
-
- {
-            QPainter painter(&_fb);
+void VMUMainWindow::paintEvent(QPaintEvent*) {
+    //Update framebuffer texture based on VMU LCD screen state
+    {
+        QPainter painter(&_fb);
         if(!gyVmuDisplayEnabled(_win->_dev)) {
             painter.drawPixmap(QPoint(0,0), _win->_iconES);
         } else if(gyVmuDisplayUpdateEnabled(_win->_dev)) {
-        for(int y = 0; y < 32; ++y)
-            for(int x = 0; x < 48; ++x) {
+            for(int y = 0; y < VMU_DISP_PIXEL_HEIGHT; ++y) {
+                for(int x = 0; x < VMU_DISP_PIXEL_WIDTH; ++x) {
                     int col = gyVmuDisplayPixelGhostValue(_dev, x, y);
                     painter.fillRect(x, y, 1, 1, QBrush(QColor(col, col, col, 255)));
+                }
+            }
         }
- }
-        }
-                QPainter painter2(this);
+    }
 
-        int y = 0;
-    #ifndef Q_OS_MAC //Menubar is not part of the window widget on a Mac.
-        if(_ui->menubar->isVisible()) y = _ui->menubar->height();
-    #endif
-        int height = geometry().height();
-        int width = geometry().width();
-        if(_ui->statusbar->isVisible()) height -= _ui->statusbar->height();
-        height -= y;
-        float aspectRatio = (float)VMU_DISP_PIXEL_HEIGHT/(float)VMU_DISP_PIXEL_WIDTH;
+    //Resize framebuffer to the viewport size to produce final image
+    int width = centralWidget()->width();
+    int height = centralWidget()->height();
+    QPixmap scaledFb = _fb.scaled(width, height,
+                                  _ui->actionPreserve_Aspect_Ratio->isChecked()?
+                                      Qt::KeepAspectRatio : Qt::IgnoreAspectRatio);
 
-        int heightFromWidth = (float)width*aspectRatio;
-        if(heightFromWidth > height) { //Nope, have to try the other way
-            int widthFromHeight = (float)height*(1.0f/aspectRatio);
-            if(widthFromHeight > width) {
-                Q_ASSERT(false); //WTF!? Fucked either way!
-            } else width = widthFromHeight;
-        } else height = heightFromWidth;
+    //Scaled dimensions of final image
+    int frameHeight = scaledFb.height();
+    int frameWidth = scaledFb.width();
 
-        painter2.drawPixmap(0, y, width, height, _fb);
-
+    //Apply icon pixmaps to SCALED framebuffer, so they can stay higher resolution
+    {
+        QPainter painter2(&scaledFb);
         float yMargin       = 0.20f;
         float leftOverH     = 1.0f - ((float)VMU_DISP_PIXEL_HEIGHT/(float)VMU_FB_DEFAULT_HEIGHT);
-        float iconHeight    = leftOverH*(1.0f-yMargin)*(float)height;
-        float iconY         = height-iconHeight-((yMargin)*leftOverH*(float)height)/2.0f;
-
+        float iconHeight    = leftOverH*(1.0f-yMargin)*(float)frameHeight;
+        float iconY         = frameHeight-iconHeight-((yMargin)*leftOverH*(float)frameHeight)/2.0f;
+#ifndef Q_OS_MAC //Add menubar offset to icon's y
+      //  if(_ui->menubar->isVisible()) iconY += _ui->menubar->height();
+#endif
         float xMargin       = 1.0f/20.0f;
         float leftOverW     = 1.0f - xMargin;
-        float iconWidth     = (2.0f/11.0f)*(float)width*leftOverW;
-        float iconXStart    = xMargin*0.5*(float)width;
-        float iconXStride   = iconWidth+(1.0f/11.0f)*leftOverW*(float)width;
+        float iconWidth     = (2.0f/11.0f)*(float)frameWidth*leftOverW;
+        float iconXStart    = xMargin*0.5*(float)frameWidth;
+        float iconXStride   = iconWidth+(1.0f/11.0f)*leftOverW*(float)frameWidth;
 
         if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_FILE))
             painter2.drawPixmap(iconXStart, iconY, iconWidth, iconHeight, _iconFile);
@@ -450,8 +465,12 @@ void VMUMainWindow::_update(void) {
             painter2.drawPixmap(iconXStart+iconXStride*2.0f, iconY, iconWidth, iconHeight, _iconClock);
         if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_FLASH))
             painter2.drawPixmap(iconXStart+iconXStride*3.0f, iconY, iconWidth, iconHeight, _iconFlash);
-
     }
+
+    //Update the pixmap within the central widget
+    _fbLabel->setPixmap(scaledFb);
+
+}
 
 bool VMUMainWindow::loadRom(QString filepath) {
     if(filepath.isEmpty()) return false;
@@ -518,7 +537,7 @@ void VMUMainWindow::resetCpu(void) {
 
     gyVmuDeviceReset(_dev);
 
-    gyVmuBuzzerEnabledSet(_dev, _ui->actionEnable_Audio->isChecked());
+    gyVmuBuzzerEnabledSet(_dev, _ui->actionEmulate_Audio->isChecked());
 
      //Have to apply non-default settings after CPU reset, since that clears everything back to default state.
     if(_ui->actionEnable_Low_Battery->isChecked()) {
@@ -530,7 +549,7 @@ void VMUMainWindow::resetCpu(void) {
 }
 
 void VMUMainWindow::on_actionLoad_ROM_triggered(void)
-{   
+{
     loadRom(QFileDialog::getOpenFileName(nullptr, "Browse VMS ROM to Open", _romDir,
                                          "VMS Files(*.vms *.VMS);;Web Browser Files(*.vmi *.VMI)"));
 }
@@ -662,6 +681,7 @@ void VMUMainWindow::_saveSettings(void) {
     settings.setValue("audio",      _ui->actionEmulate_Audio->isChecked());
     settings.setValue("ghosting",   _ui->actionEnable_Pixel_Ghosting->isChecked());
     settings.setValue("lowBattery", _ui->actionEnable_Low_Battery->isChecked());
+    settings.setValue("aspectRatio", _ui->actionPreserve_Aspect_Ratio->isChecked());
 
     for(int i = 0; i < _ui->menuLoad_Recent->actions().size(); ++i) {
         sprintf(buffer, "recentRoms%d", i);
@@ -687,6 +707,7 @@ void VMUMainWindow::_loadSettings(void) {
         _ui->actionEmulate_Audio->setChecked(settings.value("audio", true).toBool());
         _ui->actionEnable_Low_Battery->setChecked(settings.value("lowBattery", false).toBool());
         _ui->actionEnable_Pixel_Ghosting->setChecked(settings.value("ghosting", true).toBool());
+        _ui->actionPreserve_Aspect_Ratio->setChecked(settings.value("aspectRatio", true).toBool());
 
         for(int i = VMU_ROM_HISTORY_SIZE-1; i >= 0; --i) {
             sprintf(buffer, "recentRoms%d", i);
@@ -698,11 +719,6 @@ void VMUMainWindow::_loadSettings(void) {
     }
 
     _tcpDialog->loadSettings(settings);
-
-    //auto policy = centralWidget()->sizePolicy();
-    //policy.setHeightForWidth(true);
-    //policy.setWidthForHeight(true);
-    //centralWidget()->setSizePolicy(policy);
 
     _gyPop(1);
 }
@@ -1009,4 +1025,61 @@ void VMUMainWindow::on_actionDisassemble_ROM_triggered(void)
 void VMUMainWindow::on_actionEnable_Pixel_Ghosting_toggled(bool arg1)
 {
     gyVmuDisplayGhostingEnabledSet(_dev, arg1);
+    if(!arg1) {
+        _gyLog(GY_DEBUG_VERBOSE, "Pixel Ghosting Disabled.");
+    } else {
+        _gyLog(GY_DEBUG_VERBOSE, "Pixel Ghosting Enabled.");
+    }
+}
+
+void VMUMainWindow::on_actionPreserve_Aspect_Ratio_toggled(bool arg1)
+{
+    if(!arg1) {
+        _gyLog(GY_DEBUG_VERBOSE, "LCD aspect ratio enabled.");
+    } else {
+        _gyLog(GY_DEBUG_VERBOSE, "LCD aspect ratio disabled.");
+    }
+    repaint();
+}
+
+void VMUMainWindow::_resizeWindowFromScreenZoom(int level) {
+    _fbLabel->resize(VMU_FB_DEFAULT_WIDTH*level, VMU_FB_DEFAULT_HEIGHT*level);
+    _fbLabel->setMinimumSize(VMU_FB_DEFAULT_WIDTH*level, VMU_FB_DEFAULT_HEIGHT*level);
+    adjustSize();
+    _fbLabel->setMinimumSize(0, 0);
+}
+
+void VMUMainWindow::on_action1x_triggered()
+{
+    _resizeWindowFromScreenZoom(1);
+}
+
+void VMUMainWindow::on_action2x_triggered()
+{
+    _resizeWindowFromScreenZoom(2);
+}
+
+void VMUMainWindow::on_action4x_triggered()
+{
+    _resizeWindowFromScreenZoom(4);
+}
+
+void VMUMainWindow::on_action8x_triggered()
+{
+    _resizeWindowFromScreenZoom(8);
+}
+
+void VMUMainWindow::on_action16x_triggered()
+{
+    _resizeWindowFromScreenZoom(16);
+}
+
+void VMUMainWindow::on_action32x_triggered()
+{
+    _resizeWindowFromScreenZoom(32);
+}
+
+void VMUMainWindow::on_action64x_triggered()
+{
+    _resizeWindowFromScreenZoom(64);
 }

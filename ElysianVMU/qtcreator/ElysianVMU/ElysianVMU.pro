@@ -37,12 +37,14 @@ SOURCES += ../../console/main.cpp \
     ../../lib/source/gyro_vmu_flash.c \
     ../../lib/source/gyro_vmu_vms.c \
     ../../lib/source/gyro_vmu_vmi.c \
-    ../../lib/source/gyro_vmu_serial.c \
     ../../lib/source/gyro_vmu_battery.c \
     ../../lib/source/gyro_vmu_util.c \
     gyro_vmu_tcp_dialog.cpp \
     ../../lib/source/gyro_vmu_version.c \
-    ../../lib/source/gyro_vmu_disassembler.c
+    ../../lib/source/gyro_vmu_disassembler.c \
+    ../../lib/source/gyro_vmu_tcp.c \
+    ../../lib/source/gyro_vmu_serial.c \
+    ../../lib/source/gyro_vmu_port1.c
 
 
 HEADERS += \
@@ -62,12 +64,14 @@ HEADERS += \
     ../../lib/source/gyro_vmu_flash.h \
     ../../lib/source/gyro_vmu_vms.h \
     ../../lib/source/gyro_vmu_vmi.h \
-    ../../lib/source/gyro_vmu_serial.h \
     ../../lib/source/gyro_vmu_battery.h \
     ../../lib/source/gyro_vmu_util.h \
     gyro_vmu_tcp_dialog.h \
     ../../lib/source/gyro_vmu_version.h \
-    ../../lib/source/gyro_vmu_disassembler.h
+    ../../lib/source/gyro_vmu_disassembler.h \
+    ../../lib/source/gyro_vmu_tcp.h \
+    ../../lib/source/gyro_vmu_serial.h \
+    ../../lib/source/gyro_vmu_port1.h
 
 INCLUDEPATH += ../../../libGyro/include \
     ../../lib/source

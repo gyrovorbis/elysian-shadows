@@ -26,7 +26,7 @@ typedef enum VMU_INT {
     VMU_INT_T0H,
     VMU_INT_T1,
     VMU_INT_SIO0,
-    VMU_INT_SI01,
+    VMU_INT_SIO1,
     VMU_INT_RFB,
     VMU_INT_P3,
     VMU_INT_COUNT

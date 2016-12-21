@@ -5,10 +5,11 @@
 #include "gyro_vmu_memory.h"
 #include "gyro_vmu_instr.h"
 #include "gyro_vmu_timers.h"
-#include "gyro_vmu_serial.h"
 #include "gyro_vmu_buzzer.h"
 #include "gyro_vmu_gamepad.h"
 #include "gyro_vmu_display.h"
+#include "gyro_vmu_serial.h"
+#include "gyro_vmu_port1.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,9 +47,11 @@ typedef struct VMUDevice {
 
     VMUInstr        curInstr;
 
+
     VMUTimer0       timer0;
     VMUTimer1       timer1;
-    VMUSerialPort   serialPort;
+    VMUPort1        port1;
+    VMUSerial       serial;
     VMUBuzzer       buzzer;
     VMUGamepad      gamepad;
     VMUDisplay      display;
