@@ -7,7 +7,7 @@
 #include <string.h>
 #include <assert.h>
 
-bool gyVmuDisassemble(const char* buffer, size_t size, const char* outputFile, bool writeAddr) {
+bool gyVmuDisassemble(const unsigned char* buffer, size_t size, const char* outputFile, bool writeAddr) {
     char strBuff[100];
     char tempBuff[100];
     char mneumonic[100];
@@ -25,6 +25,15 @@ bool gyVmuDisassemble(const char* buffer, size_t size, const char* outputFile, b
 
     int i = 0;
     while(i < size) {
+
+        if(buffer[i] == 0xff && buffer[i+1] == 0xff && buffer[i+2] == 0xff && buffer[i+3] == 0xff) {
+            int startIndex = i;
+            do {
+                if(writeAddr)
+                    gyFilePrintf(fp, "%-5x: NOP\n", i);
+                ++i;
+            } while(buffer[i] == 0xff);
+        }
 
         gyVmuInstrFetch(&buffer[i], &instr);
         gyVmuInstrDecodeOperands(&instr, &operands);
@@ -67,7 +76,7 @@ bool gyVmuDisassemble(const char* buffer, size_t size, const char* outputFile, b
         }
 
         if(writeAddr) {
-            if(!gyFilePrintf(fp, "%-5d: %s\n", i, strBuff)) {
+            if(!gyFilePrintf(fp, "%-5x: %s\n", i, strBuff)) {
                 break;
             }
         } else {

@@ -11,7 +11,7 @@ extern "C" {
 struct VMUDevice;
 
 bool gyVmuDisassembleFlashGame(const struct VMUDevice* dev, const char* outputFile, bool showAddr);
-bool gyVmuDisassemble(const char* buffer, size_t size, const char* outputFile, bool showAddr);
+bool gyVmuDisassemble(const unsigned char* buffer, size_t size, const char* outputFile, bool showAddr);
 bool gyVmuDisassembleFile(const char* inFile, const char* outFile, bool showAddr);
 
 #ifdef __cplusplus

@@ -47,10 +47,10 @@ public:
     void                resetCpu(void);
 
 
-
-        QPixmap             _fb;
+        QPixmap             _iconES;
         VMUDevice*          _dev            = nullptr;
         Ui::VMUMainWindow*  _ui             = nullptr;
+
 private:
 
     virtual void        paintEvent(QPaintEvent* event) override;
@@ -74,18 +74,13 @@ private Q_SLOTS:
     void on_actionDump_Icons_triggered(void);
     void on_actionDump_Eyecatch_triggered(void);
     void on_actionTCP_Connection_Manager_triggered(void);
-
     void on_actionQuick_Connect_triggered();
-
     void on_actionEnable_Low_Battery_toggled(bool arg1);
-
     void on_actionQuit_triggered();
-
     void on_actionView_Log_triggered();
-
     void on_actionLoad_BIOS_Image_triggered();
-
     void on_actionDisassemble_ROM_triggered();
+    void on_actionEnable_Pixel_Ghosting_toggled(bool arg1);
 
 private:
 
@@ -103,7 +98,7 @@ private:
     void                _loadSettings(void);
     void                _pushRecentRom(QString path);
 
-    QPixmap             _iconES;
+    QPixmap             _fb;
     QPixmap             _iconClock;
     QPixmap             _iconFile;
     QPixmap             _iconGame;

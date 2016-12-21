@@ -57,6 +57,7 @@ int gyVmuGamepadPoll(struct VMUDevice* dev) {
         deviceRemoved = true;
     }
 
+#if 1
     //Have to clear gamepad buttons if we just removed the last input device while buttons were still down!
     if(deviceRemoved && !deviceCount) {
         u   = dev->gamepad.u    << 1;
@@ -113,6 +114,14 @@ int gyVmuGamepadPoll(struct VMUDevice* dev) {
     dev->gamepad.turboB = _turboButtonStateNext(tb, dev->gamepad.turboB);
     a |= dev->gamepad.turboA;
     b |= dev->gamepad.turboB;
+#else
+    u   = kbd->keys[GY_KEY_DPAD_U];
+    d   = kbd->keys[GY_KEY_DPAD_D];
+    l   = kbd->keys[GY_KEY_DPAD_L];
+    r   = kbd->keys[GY_KEY_DPAD_R];
+    a   = kbd->keys[GY_KEY_A];
+    b   = kbd->keys[GY_KEY_B];
+#endif
 
     //Update VMU hardware pin states
     if(u == GY_BUT_STATE_TAPPED) gyVmuButtonStateSet(dev, VMU_GAMEPAD_UP, 1);
@@ -128,10 +137,13 @@ int gyVmuGamepadPoll(struct VMUDevice* dev) {
     else if(a == GY_BUT_STATE_RELEASED) gyVmuButtonStateSet(dev, VMU_GAMEPAD_A, 0);
     if(b == GY_BUT_STATE_TAPPED) gyVmuButtonStateSet(dev, VMU_GAMEPAD_B, 1);
     else if(b == GY_BUT_STATE_RELEASED) gyVmuButtonStateSet(dev, VMU_GAMEPAD_B, 0);
-    //if(m == GY_BUT_STATE_TAPPED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_MODE, 1);
-    //else if(m == GY_BUT_STATE_RELEASED) gyVmuButtonStateSet(_dev, VMU_GAMEPAD_MODE, 0);
     if(s == GY_BUT_STATE_TAPPED) gyVmuButtonStateSet(dev, VMU_GAMEPAD_SLEEP, 1);
     else if(s == GY_BUT_STATE_RELEASED) gyVmuButtonStateSet(dev, VMU_GAMEPAD_SLEEP, 0);
+
+    if(dev->biosLoaded) {
+        if(m == GY_BUT_STATE_TAPPED) gyVmuButtonStateSet(dev, VMU_GAMEPAD_MODE, 1);
+        else if(m == GY_BUT_STATE_RELEASED) gyVmuButtonStateSet(dev, VMU_GAMEPAD_MODE, 0);
+    }
 
     //Update internal input state
     dev->gamepad.kbdAttached    = hasKbd;

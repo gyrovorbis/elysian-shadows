@@ -61,6 +61,7 @@
      <addaction name="actionTCP_Connection_Manager"/>
     </widget>
     <addaction name="actionEmulate_Audio"/>
+    <addaction name="actionEnable_Pixel_Ghosting"/>
     <addaction name="actionEnable_Low_Battery"/>
     <addaction name="actionConfigure_Input_Devices"/>
     <addaction name="menuSerial_Communications"/>
@@ -197,6 +198,17 @@
   <action name="actionDisassemble_ROM">
    <property name="text">
     <string>Disassemble ROM</string>
+   </property>
+  </action>
+  <action name="actionEnable_Pixel_Ghosting">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Enable Pixel Ghosting</string>
    </property>
   </action>
  </widget>

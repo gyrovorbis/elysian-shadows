@@ -205,10 +205,10 @@ static int gyVmuCpuInstrExecute(VMUDevice* dev, const VMUInstr* instr, const VMU
         break;
     }
     case OPCODE_BE_IND: {
-        int acc = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
+        int imm = operands->addrMode[ADDR_MODE_IMM];
         int mem = gyVmuMemRead(dev, _fetchRegIndAddr(dev, operands->addrMode[ADDR_MODE_IND]));
-        gyVmuMemWrite(dev, 0x101, (gyVmuMemRead(dev, 0x101)&0x7f)|(acc<mem? 0x80:0));
-        if(acc == mem) {
+        gyVmuMemWrite(dev, 0x101, (gyVmuMemRead(dev, 0x101)&0x7f)|(mem<imm? 0x80:0));
+        if(mem == imm) {
             //dev->pc += (signed char)operands->addrMode[ADDR_MODE_REL];
             dev->pc += SGNEXT(operands->addrRel);
         }
@@ -258,7 +258,6 @@ static int gyVmuCpuInstrExecute(VMUDevice* dev, const VMUInstr* instr, const VMU
         break;
     }
     case OPCODE_BNE_IND: {
-        //int acc = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
         int mem = gyVmuMemRead(dev, _fetchRegIndAddr(dev, operands->addrMode[ADDR_MODE_IND]));
         dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)] = (dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)]&0x7f)|(mem < operands->addrMode[ADDR_MODE_IMM]? 0x80:0);
         if(operands->addrMode[ADDR_MODE_IMM] != mem) {
@@ -277,22 +276,23 @@ static int gyVmuCpuInstrExecute(VMUDevice* dev, const VMUInstr* instr, const VMU
         break;
     }
     case OPCODE_LDF: {
-        _gyLog(GY_DEBUG_ERROR, "Using unknown opcode LDF!");
         /*
         writemem(0x100, flash[0x1ffff&(readmem(0x104)+(readmem(0x105)<<8)+
                        (readmem(0x154)<<16))]);*/
-        uint32_t flashAddr = ((dev->sfr[0x54]&0x1)<<16)+(dev->sfr[SFR_OFFSET(SFR_ADDR_TRL)] | (dev->sfr[SFR_OFFSET(SFR_ADDR_TRH)]<<8u));
-        if(flashAddr == 0) {
-            dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)] = 0xff;
-        } else {
+        //uint32_t flashAddr = ((dev->ram[1][0x7d]<<16)|(dev->ram[1][0x7e]<<8)|dev->ram[1][0x7f])&0x1ffff;
+        uint32_t flashAddr = ((dev->sfr[0x54]&0x1)<<16u)|(dev->sfr[SFR_OFFSET(SFR_ADDR_TRL)] | (dev->sfr[SFR_OFFSET(SFR_ADDR_TRH)]<<8u));
+      //  if(flashAddr == 0) {
+       //     dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)] = 0xff;
+       // } else {
+       // _gyLog(GY_DEBUG_ERROR, "LDF: FLASH[%x] = [%d]", flashAddr, dev->flash[flashAddr]);
             gyVmuMemWrite(dev, SFR_ADDR_ACC, dev->flash[flashAddr]);
-        }
+        //}
         break;
     }
     case OPCODE_STF: {
         uint32_t flashAddr = ((dev->sfr[0x54]&0x1)<<16)+(dev->sfr[SFR_OFFSET(SFR_ADDR_TRL)] | (dev->sfr[SFR_OFFSET(SFR_ADDR_TRH)]<<8u));
                 uint8_t acc = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
-        _gyLog(GY_DEBUG_ERROR, "Using unknown opcode STF!");
+      //  _gyLog(GY_DEBUG_ERROR, "Using unknown opcode STF!");
         if(!(gyVmuMemRead(dev, 0x154)&0x2))
                dev->flash[flashAddr] = acc;
         break;
@@ -638,11 +638,16 @@ static int gyVmuCpuInstrExecuteNext(VMUDevice* device) {
         gyVmuCpuInstrExecute(device, &device->curInstr, &operands);
 
         //Check if we entered the firmware
-        if((!device->sfr[SFR_OFFSET(SFR_ADDR_EXT)]&SFR_EXT_MASK) && !device->biosLoaded)
-            //handle the BIOS call in software if no firwmare has been loaded
-            if((device->pc = gyVmuBiosHandleCall(device)))
-                //jump back to USER mode before resuming execution.
-                gyVmuMemWrite(device, SFR_ADDR_EXT, gyVmuMemRead(device, SFR_ADDR_EXT)|SFR_EXT_USER);
+        if((!device->sfr[SFR_OFFSET(SFR_ADDR_EXT)]&SFR_EXT_MASK) && !device->biosLoaded) {
+            if(!device->biosLoaded) {
+                //handle the BIOS call in software if no firwmare has been loaded
+                if((device->pc = gyVmuBiosHandleCall(device)))
+                    //jump back to USER mode before resuming execution.
+                    gyVmuMemWrite(device, SFR_ADDR_EXT, gyVmuMemRead(device, SFR_ADDR_EXT)|SFR_EXT_USER);
+            } else {
+
+            }
+        }
     }
 
 #ifdef VMU_DEBUG
@@ -661,8 +666,11 @@ int gyVmuCpuTick(VMUDevice* dev, float deltaTime) {
     while(time < deltaTime) {
         gyVmuCpuInstrExecuteNext(dev);
         gyVmuTimersUpdate(dev);
+        gyVmuGamepadPoll(dev);
         _serviceInterrupts(dev);
-        time += gyVmuOscSecPerCycle(dev)*(float)_instrMap[dev->curInstr.instrBytes[INSTR_BYTE_OPCODE]].cc;
+        float cpuTime = gyVmuOscSecPerCycle(dev)*(float)_instrMap[dev->curInstr.instrBytes[INSTR_BYTE_OPCODE]].cc;
+        time += cpuTime;
+        gyVmuDisplayUpdate(dev, cpuTime);
         ++cycle;
     }
 
@@ -681,52 +689,58 @@ int gyVmuCpuReset(VMUDevice* dev) {
     dev->sfr[SFR_OFFSET(SFR_ADDR_PSW)]  = SFR_PSW_RAMBK0_MASK;
 
     dev->timer0.tscale = 256;
+    dev->pc = 0x0;
 
-    //Initialize System Variables
-    dev->ram[0][RAM_ADDR_YEAR_MSB_BCD]  = gyVmuToBCD(tm->tm_year/100+19);
-    dev->ram[0][RAM_ADDR_YEAR_LSB_BCD]  = gyVmuToBCD(tm->tm_year%100);
-    dev->ram[0][RAM_ADDR_MONTH_BCD]     = gyVmuToBCD(tm->tm_mon+1);
-    dev->ram[0][RAM_ADDR_DAY_BCD]       = gyVmuToBCD(tm->tm_mday);
-    dev->ram[0][RAM_ADDR_HOUR_BCD]      = gyVmuToBCD(tm->tm_hour);
-    dev->ram[0][RAM_ADDR_MINUTE_BCD]    = gyVmuToBCD(tm->tm_min);
-    dev->ram[0][RAM_ADDR_YEAR_MSB]      = (tm->tm_year+1900)>>8;
-    dev->ram[0][RAM_ADDR_YEAR_LSB]      = (tm->tm_year+1900)&0xff;
-    dev->ram[0][RAM_ADDR_MONTH]         = tm->tm_mon+1;
-    dev->ram[0][RAM_ADDR_DAY]           = tm->tm_mday;
-    dev->ram[0][RAM_ADDR_HOUR]          = tm->tm_hour;
-    dev->ram[0][RAM_ADDR_MINUTE]        = tm->tm_min;
-    dev->ram[0][RAM_ADDR_SEC]           = tm->tm_sec;
-    dev->ram[0][RAM_ADDR_CLK_INIT]      = 0xff;
 
     if(dev->biosLoaded) {
+        dev->sfr[SFR_OFFSET(SFR_ADDR_P7)] |= SFR_P7_P71_MASK;
         dev->memMap[VMU_MEM_SEG_GP1]    = dev->ram[VMU_RAM_BANK0];
         dev->memMap[VMU_MEM_SEG_GP2]    = &dev->ram[VMU_RAM_BANK0][VMU_MEM_SEG_SIZE];
         dev->sfr[SFR_OFFSET(SFR_ADDR_EXT)] = 0;
         dev->imem = dev->rom;
+
     } else {
-        dev->memMap[VMU_MEM_SEG_GP1]    = dev->ram[VMU_RAM_BANK1];
-        dev->memMap[VMU_MEM_SEG_GP2]    = &dev->ram[VMU_RAM_BANK1][VMU_MEM_SEG_SIZE];
-        dev->sfr[SFR_OFFSET(SFR_ADDR_EXT)] = 1;
-        dev->imem = dev->flash;
-        dev->pc = 0;
-        gyVmuMemWrite(dev, SFR_ADDR_XBNK, VMU_XRAM_BANK_ICN);
-        gyVmuMemWrite(dev, SFR_ADDR_XRAM_ICN_GAME, 0x10);           //Enable Game Icon
-        gyVmuMemWrite(dev, SFR_ADDR_XBNK, VMU_XRAM_BANK_LCD_TOP);
-        gyVmuMemWrite(dev, SFR_ADDR_VCCR, SFR_VCCR_VCCR7_MASK);     //turn on LCD
 
+        if(!dev->biosLoaded) {
+            //Initialize System Variables
+            dev->ram[0][RAM_ADDR_YEAR_MSB_BCD]  = gyVmuToBCD(tm->tm_year/100+19);
+            dev->ram[0][RAM_ADDR_YEAR_LSB_BCD]  = gyVmuToBCD(tm->tm_year%100);
+            dev->ram[0][RAM_ADDR_MONTH_BCD]     = gyVmuToBCD(tm->tm_mon+1);
+            dev->ram[0][RAM_ADDR_DAY_BCD]       = gyVmuToBCD(tm->tm_mday);
+            dev->ram[0][RAM_ADDR_HOUR_BCD]      = gyVmuToBCD(tm->tm_hour);
+            dev->ram[0][RAM_ADDR_MINUTE_BCD]    = gyVmuToBCD(tm->tm_min);
+            dev->ram[0][RAM_ADDR_YEAR_MSB]      = (tm->tm_year+1900)>>8;
+            dev->ram[0][RAM_ADDR_YEAR_LSB]      = (tm->tm_year+1900)&0xff;
+            dev->ram[0][RAM_ADDR_MONTH]         = tm->tm_mon+1;
+            dev->ram[0][RAM_ADDR_DAY]           = tm->tm_mday;
+            dev->ram[0][RAM_ADDR_HOUR]          = tm->tm_hour;
+            dev->ram[0][RAM_ADDR_MINUTE]        = tm->tm_min;
+            dev->ram[0][RAM_ADDR_SEC]           = tm->tm_sec;
+            dev->ram[0][RAM_ADDR_CLK_INIT]      = 0xff;
+
+            dev->memMap[VMU_MEM_SEG_GP1]    = dev->ram[VMU_RAM_BANK1];
+            dev->memMap[VMU_MEM_SEG_GP2]    = &dev->ram[VMU_RAM_BANK1][VMU_MEM_SEG_SIZE];
+            dev->sfr[SFR_OFFSET(SFR_ADDR_EXT)] = 1;
+            dev->imem = dev->flash;
+            gyVmuMemWrite(dev, SFR_ADDR_XBNK, VMU_XRAM_BANK_ICN);
+            gyVmuMemWrite(dev, SFR_ADDR_XRAM_ICN_GAME, 0x10);           //Enable Game Icon
+
+
+            //SFR values initialized by BIOS (from Sega Documentation)
+            gyVmuMemWrite(dev, SFR_ADDR_P1FCR,  0xbf);
+            gyVmuMemWrite(dev, SFR_ADDR_P3INT,  0xfd);
+            gyVmuMemWrite(dev, SFR_ADDR_ISL,    0xc0);
+            gyVmuMemWrite(dev, SFR_ADDR_VSEL,   0xf4);
+            gyVmuMemWrite(dev, SFR_ADDR_BTCR,   0x41);
+
+            dev->sfr[SFR_OFFSET(SFR_ADDR_IE)] = SFR_IE_IE7_MASK;
+            gyVmuMemWrite(dev, SFR_ADDR_OCR, SFR_OCR_OCR7_MASK|SFR_OCR_OCR0_MASK); //stop main clock, divide active clock by 6
+            dev->sfr[SFR_OFFSET(SFR_ADDR_P7)] = SFR_P7_P71_MASK;
+
+            gyVmuMemWrite(dev, SFR_ADDR_XBNK, VMU_XRAM_BANK_LCD_TOP);
+            gyVmuMemWrite(dev, SFR_ADDR_VCCR, SFR_VCCR_VCCR7_MASK);     //turn on LCD
+        }
     }
-
-    dev->sfr[SFR_OFFSET(SFR_ADDR_IE)] = SFR_IE_IE7_MASK;
-    gyVmuMemWrite(dev, SFR_ADDR_OCR, SFR_OCR_OCR7_MASK|SFR_OCR_OCR0_MASK); //stop main clock, divide active clock by 6
-    dev->sfr[SFR_OFFSET(SFR_ADDR_P7)] = SFR_P7_P71_MASK;
-
-
-    //SFR values initialized by BIOS (from Sega Documentation)
-    gyVmuMemWrite(dev, SFR_ADDR_P1FCR,  0xbf);
-    gyVmuMemWrite(dev, SFR_ADDR_P3INT,  0xfd);
-    gyVmuMemWrite(dev, SFR_ADDR_ISL,    0xc0);
-    gyVmuMemWrite(dev, SFR_ADDR_VSEL,   0xf4);
-    gyVmuMemWrite(dev, SFR_ADDR_BTCR,   0x41);
 
     return 1;
 }

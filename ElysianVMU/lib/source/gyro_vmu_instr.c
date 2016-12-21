@@ -260,7 +260,7 @@ const VMUInstrAttr _instrMap[INSTR_MAP_SIZE] = {
     },
     [OPCODE_LDF] = {
         "LDF",
-        "Load a constant from ROM space into the ACC register. The ROM address is formed by taking the TRH and TRL registers viewed as a 16-bit value (TRH being the upper 8 bits, and TRL being the lower 8 bits). No PSW flags are affected.",
+        "Load a constant from Flash space into the ACC register. The Flash address is formed by taking the TRH and TRL registers viewed as a 16-bit value (TRH being the upper 8 bits, and TRL being the lower 8 bits). No PSW flags are affected.",
         OPCODE_LDF,
         8,
         INSTR_ARG_TYPES_PACK(INSTR_ARG_TYPE_NONE),
