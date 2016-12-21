@@ -1,6 +1,6 @@
 #include "gyro_vmu_device.h"
 #include "gyro_vmu_cpu.h"
-#include "gyro_vmu_serial.h"
+#include "gyro_vmu_tcp.h"
 #include <gyro_system_api.h>
 #include <gyro_vmu_buzzer.h>
 #include <gyro_vmu_gamepad.h>
@@ -38,7 +38,7 @@ int gyVmuDeviceRestore(VMUDevice* dev, const char *path) {
 
 int gyVmuDeviceUpdate(VMUDevice* device, float deltaTime) {
     if(deltaTime >= gyVmuOscSecPerCycle(device)) {
-        gyVmuSerialUpdate(device);
+        //gyVmuSerialUpdate(device, deltaTime);
 
 
 #if 0

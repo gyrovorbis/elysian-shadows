@@ -17,8 +17,27 @@
    <iconset resource="resource/resource.qrc">
     <normaloff>:/icons/images/vmu_icon.ico</normaloff>:/icons/images/vmu_icon.ico</iconset>
   </property>
+  <property name="layoutDirection">
+   <enum>Qt::LeftToRight</enum>
+  </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout"/>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -26,7 +45,7 @@
      <x>0</x>
      <y>0</y>
      <width>320</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -83,7 +102,27 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <widget class="QMenu" name="menuPixel_Perfect_Aspect_Zoom">
+     <property name="title">
+      <string>Pixel-Perfect Zoom</string>
+     </property>
+     <addaction name="action1x"/>
+     <addaction name="action2x"/>
+     <addaction name="action4x"/>
+     <addaction name="action8x"/>
+     <addaction name="action16x"/>
+     <addaction name="action32x"/>
+     <addaction name="action64x"/>
+    </widget>
+    <addaction name="actionPreserve_Aspect_Ratio"/>
+    <addaction name="menuPixel_Perfect_Aspect_Zoom"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuView"/>
    <addaction name="menuEmulation"/>
    <addaction name="menuTools"/>
    <addaction name="menuHelp"/>
@@ -149,11 +188,6 @@
     <string>Dump Eyecatch</string>
    </property>
   </action>
-  <action name="actionEnable_Audio">
-   <property name="text">
-    <string>Enable Audio</string>
-   </property>
-  </action>
   <action name="actionEnable_Low_Battery">
    <property name="checkable">
     <bool>true</bool>
@@ -209,6 +243,52 @@
    </property>
    <property name="text">
     <string>Enable Pixel Ghosting</string>
+   </property>
+  </action>
+  <action name="action1x">
+   <property name="text">
+    <string>1x</string>
+   </property>
+  </action>
+  <action name="action2x">
+   <property name="text">
+    <string>2x</string>
+   </property>
+  </action>
+  <action name="action4x">
+   <property name="text">
+    <string>4x</string>
+   </property>
+  </action>
+  <action name="action8x">
+   <property name="text">
+    <string>8x</string>
+   </property>
+  </action>
+  <action name="action16x">
+   <property name="text">
+    <string>16x</string>
+   </property>
+  </action>
+  <action name="action32x">
+   <property name="text">
+    <string>32x</string>
+   </property>
+  </action>
+  <action name="action64x">
+   <property name="text">
+    <string>64x</string>
+   </property>
+  </action>
+  <action name="actionPreserve_Aspect_Ratio">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Preserve Aspect Ratio</string>
    </property>
   </action>
  </widget>

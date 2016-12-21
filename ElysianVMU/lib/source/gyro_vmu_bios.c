@@ -99,7 +99,7 @@ int gyVmuBiosHandleCall(VMUDevice* dev) {
         if((r = (dev->flash[(a&~0xff)|((a+i)&0xff)] ^ dev->ram[1][i+0x80])) != 0)
         break;
         //writemem(0x100, r);
-        printf("READ FLASH[%x] = %d\n", 0, r);
+        //printf("READ FLASH[%x] = %d\n", 0, r);
         gyVmuMemWrite(dev, 0x100, r);
         return 0x115;
     }
@@ -107,7 +107,7 @@ int gyVmuBiosHandleCall(VMUDevice* dev) {
         int i, a = ((dev->ram[1][0x7d]<<16)|(dev->ram[1][0x7e]<<8)|dev->ram[1][0x7f])&0x1ffff;
         for(i=0; i<0x80; i++) {
         dev->ram[1][i+0x80] = dev->flash[(a&~0xff)|((a+i)&0xff)];
-                printf("READ FLASH[%x] = %d\n", (a&~0xff)|((a+i)&0xff), dev->ram[1][i+0x80]);
+                //printf("READ FLASH[%x] = %d\n", (a&~0xff)|((a+i)&0xff), dev->ram[1][i+0x80]);
         }
 
 
