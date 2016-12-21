@@ -8,7 +8,16 @@
     \since 1.5.8
     \inmodule ESToolkit
     \brief Engine base-class for all event monitor types.
+
+    EventMonitor is the base-class for all EventMonitor types, including those built into the
+    \l{Engine} and those provided by Lua.
 */
+/*!
+ * \qmlmethod EventMonitor* EventMonitor::null()
+ *
+ * Static function returning a blank, default EventMonitor object that can be passed to functions when we don't
+ * care about using a notification callback.
+ */
 
 
 /*!
@@ -17,14 +26,17 @@
     \since 1.5.8
     \inmodule ESToolkit
     \brief Base class for Lua event monitors.
+
+    Base class for all \l{EventMonitor}s to be used within Lua. Stores a user-provided Lua
+    table as a context, that can be accessed later on.
 */
 /*!
- * \qmlmethod void LuaEventMonitor::setTable(OOLUA::Lua_table_ref& table)
+ * \qmlmethod void LuaEventMonitor::setTable(Lua_table table)
  *
  * Stores a reference to an internal Lua table for storing custom context data within the event.
  */
 /*!
- * \qmlmethod OOLUA::Lua_table_ref& LuaEventMonitor::getTable()
+ * \qmlmethod Lua_table* LuaEventMonitor::getTable()
  *
  * Retrieves reference to user's custom Lua table.
  */
@@ -35,14 +47,19 @@
     \since 1.5.8
     \inmodule ESToolkit
     \brief Holds a reference to a Lua function that will be invoked when the event is completed.
+
+    LuaEventCallback is a type of \l{LuaEventMonitor} that invokes a Lua function when the
+    requested processing is complete. The Lua callback function can be set with setCallbackFunction(),
+    and an optional context table can be set through LuaEventMonitor::setTable() and can be
+    retrieved later from the callback function with LuaEventMonitor::getTable().
 */
 /*!
- * \qmlmethod LuaEventCallback::LuaEventCallback(OOLUA::Lua_func_ref& func)
+ * \qmlmethod LuaEventCallback::LuaEventCallback(Lua_function func)
  *
  * Constructor taking a reference to a Lua function to be invoked after the event is completed.
  */
 /*!
- * \qmlmethod void LuaEventCallback::setCallbackFunction(OOLUA::Lua_func_ref& func)
+ * \qmlmethod void LuaEventCallback::setCallbackFunction(Lua_function func)
  *
  * Sets the internal Lua callback function to func.
  */

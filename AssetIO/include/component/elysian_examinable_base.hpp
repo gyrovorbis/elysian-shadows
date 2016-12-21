@@ -29,7 +29,7 @@ namespace elysian {
             ELYSIAN_LUA_PROXY_FIELD(enabled,        isEnabled,      setEnabled)
             ELYSIAN_LUA_PROXY_FIELD(maxDist,        getMaxDist,     setMaxDist)
             ELYSIAN_LUA_PROXY_FIELD(relativeDir,    getRelativeDir, setRelativeDir)
-            ELYSIAN_LUA_PROXY_FIELD(description,    hasDescription, setHasDescription)
+        //    ELYSIAN_LUA_PROXY_FIELD(description,    hasDescription, setHasDescription)
             ELYSIAN_LUA_PROXY_FIELD(dialog,         getDialog,      setDialog)
         ELYSIAN_LUA_PROXY_FIELDS_END()
 

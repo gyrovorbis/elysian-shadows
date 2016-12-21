@@ -4,6 +4,7 @@
 #include "gyro_vmu_device.h"
 #include "gyro_vmu_sfr.h"
 #include "gyro_vmu_buzzer.h"
+#include "gyro_vmu_display.h"
 
 extern void lcdrefresh(void);
 
@@ -131,6 +132,7 @@ void gyVmuMemWrite(VMUDevice* dev, int addr, int val) {
         //changing CPU mode (change imem between BIOS in rom and APP in flash)
         unsigned mode = val&SFR_EXT_MASK;
         if((dev->sfr[SFR_OFFSET(SFR_ADDR_EXT)]&SFR_EXT_MASK) != mode) {
+
             //next instr must be JMPF, do it now, since imem is changing
             if(dev->pc > 0xfffd || dev->imem[dev->pc] != OPCODE_JMPF) {
                 //assert(0);
@@ -139,6 +141,17 @@ void gyVmuMemWrite(VMUDevice* dev, int addr, int val) {
                 dev->pc = (dev->imem[dev->pc+1]<<8) | dev->imem[dev->pc+2];
                 //dev->imem = mode? dev->flash : dev->rom;
             }
+
+            if(!mode) {
+                //dev->memMap[VMU_MEM_SEG_GP1]    = dev->ram[VMU_RAM_BANK0];
+                //dev->memMap[VMU_MEM_SEG_GP2]    = &dev->ram[VMU_RAM_BANK0][VMU_MEM_SEG_SIZE];
+                dev->imem = dev->rom;
+            } else {
+                //dev->memMap[VMU_MEM_SEG_GP1]    = dev->ram[VMU_RAM_BANK1];
+                //dev->memMap[VMU_MEM_SEG_GP2]    = &dev->ram[VMU_RAM_BANK1][VMU_MEM_SEG_SIZE];
+                dev->imem = dev->flash;
+            }
+
         }
         break;
     }
@@ -219,14 +232,16 @@ void gyVmuMemWrite(VMUDevice* dev, int addr, int val) {
     }
     //do actual memory write
 
+    if((addr >= SFR_ADDR_XRAM_BASE && addr <= SFR_ADDR_XRAM_END)/* || addr == SFR_ADDR_STAD || addr == SFR_ADDR_XBNK*/) {
+        if(dev->memMap[addr/VMU_MEM_SEG_SIZE][addr%VMU_MEM_SEG_SIZE] != val) {
+            dev->display.screenChanged = 1;
+        }
+    }
 #if 0
     dev->memMap[(addr&VMU_MEM_SEG_MASK)>>VMU_MEM_SEG_POS][addr&VMU_MEM_OFFSET_MASK] = val;
 #else
     dev->memMap[addr/VMU_MEM_SEG_SIZE][addr%VMU_MEM_SEG_SIZE] = val;
 #endif
-    if((addr >= SFR_ADDR_XRAM_BASE && addr <= SFR_ADDR_XRAM_END) || addr == SFR_ADDR_STAD || addr == SFR_ADDR_XBNK) {
-       // lcdrefresh();
-    }
 
     //Check for buzzer state change
     if(addr == SFR_ADDR_T1CNT || addr == SFR_ADDR_T1LR || addr == SFR_ADDR_T1LC) {

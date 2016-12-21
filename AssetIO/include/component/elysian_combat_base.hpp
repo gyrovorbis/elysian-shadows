@@ -62,7 +62,7 @@ namespace elysian {
         int             _maxMp                  = 100;
         int				_mp                     = 0;
         //USE STATUS BITFLAGS!!!111
-        uint64_t        _statusEffects          = 0;
+        uint32_t        _statusEffects          = 0;
 
 
     public:
@@ -76,19 +76,19 @@ namespace elysian {
         void            setMaxHp(const int val);
         void            setMp(const int val);
         void            setMaxMp(const int val);
-        void            setStatusEffects(const uint64_t effects);
-        uint64_t        getStatusEffects(void) const;
+        void            setStatusEffects(const uint32_t effects);
+        uint32_t        getStatusEffects(void) const;
     };
 
 
     class CombatStatusModifier: public CombatStatus {
         friend class CombatStatus;
     protected:
-        uint64_t        _addRemoveStatusEffects        = 0;
+        uint32_t        _addRemoveStatusEffects        = 0;
 
     public:
-        void            addStatusEffect(const int effect);
-        void            removeStatusEffect(const int effect);
+        void            addStatusEffect(const uint32_t effect);
+        void            removeStatusEffect(const uint32_t effect);
     };
 
     class CombatBase:
@@ -200,20 +200,20 @@ namespace elysian {
     inline int CombatStatus::getMaxHp(void) const { return _maxHp; }
     inline int CombatStatus::getMp(void) const { return _mp; }
     inline int CombatStatus::getMaxMp(void) const { return _maxMp; }
-    inline void CombatStatus::setStatusEffects(const uint64_t effects) { _statusEffects = effects; }
-    inline uint64_t CombatStatus::getStatusEffects(void) const { return _statusEffects; }
+    inline void CombatStatus::setStatusEffects(const uint32_t effects) { _statusEffects = effects; }
+    inline uint32_t CombatStatus::getStatusEffects(void) const { return _statusEffects; }
     inline bool CombatStatus::hasStatusEffect(const STATUS_EFFECT effect) const { return (_statusEffects&effect); }
     inline void	CombatStatus::setHp(const int hp) { _hp = hp; }
     inline void CombatStatus::setMaxHp(const int val) { _maxHp = val; }
     inline void	CombatStatus::setMp(const int mp) { _mp = mp; }
     inline void CombatStatus::setMaxMp(const int val) { _maxMp = val; }
 
-    inline void CombatStatusModifier::addStatusEffect(const int effect) {
+    inline void CombatStatusModifier::addStatusEffect(const uint32_t effect) {
         _statusEffects |= effect;
         _addRemoveStatusEffects |= effect;
     }
 
-    inline void CombatStatusModifier::removeStatusEffect(const int effect) {
+    inline void CombatStatusModifier::removeStatusEffect(const uint32_t effect) {
         _statusEffects |= effect;
         _addRemoveStatusEffects &= ~effect;
     }

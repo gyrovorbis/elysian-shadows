@@ -5,6 +5,8 @@
     \since 1.5.8
     \inmodule ESToolkit
     \brief Represents a 2-dimensional vector.
+
+    A simple 2D vector containing an \l{x} and \l{y} component.
 */
 
 /*!
@@ -45,6 +47,7 @@
     \since 1.5.8
     \inmodule ESToolkit
     \brief Represents a 3-dimensional vector.
+    A simple 3D vector containing an \l{x}, \l{y}, and \l{z} component.
 */
 
 /*!
@@ -100,6 +103,7 @@
     \since 1.5.8
     \inmodule ESToolkit
     \brief Represents a 4-dimensional vector.
+    A simple 4D vector containing an \l{x}, \l{y}, \l{z}, and \l{w} component.
 */
 
 /*!
@@ -171,6 +175,26 @@
     \since 1.5.8
     \inmodule ESToolkit
     \brief Represents a 3D instance transform with position, scale, and rotation.
+
+    InstanceTransform represents a set of transforms: scale, rotation, and translation,
+    applied in that order, to take geometry from local coordinates to its final size,
+    orientation, and world-coordiate position in 3D space.
+
+    The following table describes the properties used for each transform.
+    \table
+    \header
+        \li transform
+        \li properties used
+    \row
+        \li translation
+        \li \l{pos}
+    \row
+        \li rotation
+        \li \l {orient} and \l{angle}
+    \row
+        \li scale
+        \li \l{size} * \l{scale}
+    \endtable
 */
 /*!
  * \qmlproperty Vector3 InstanceTransform::pos

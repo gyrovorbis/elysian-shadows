@@ -89,7 +89,7 @@ int gyVmuBiosHandleCall(VMUDevice* dev) {
     case BIOS_ADDR_FM_WRT_EX: //fm_wrt_ex(ORG 0100H)
         _biosWriteFlashRom(dev);
         return 0x105;
-    case BIOS_ADDR_FM_WRTA_EX:
+    case BIOS_ADDR_FM_WRTA_EX: //fm_vrf_ex(ORG 0108H)
         _biosWriteFlashRom(dev);
         return 0x10b;
     case BIOS_ADDR_FM_VRF_EX: { //fm_vrf_ex(ORG 0110H)
@@ -99,19 +99,24 @@ int gyVmuBiosHandleCall(VMUDevice* dev) {
         if((r = (dev->flash[(a&~0xff)|((a+i)&0xff)] ^ dev->ram[1][i+0x80])) != 0)
         break;
         //writemem(0x100, r);
+        printf("READ FLASH[%x] = %d\n", 0, r);
         gyVmuMemWrite(dev, 0x100, r);
         return 0x115;
     }
     case BIOS_ADDR_FM_PRD_EX: { //fm_prd_ex(ORG 0120H)
         int i, a = ((dev->ram[1][0x7d]<<16)|(dev->ram[1][0x7e]<<8)|dev->ram[1][0x7f])&0x1ffff;
-        for(i=0; i<0x80; i++)
+        for(i=0; i<0x80; i++) {
         dev->ram[1][i+0x80] = dev->flash[(a&~0xff)|((a+i)&0xff)];
+                printf("READ FLASH[%x] = %d\n", (a&~0xff)|((a+i)&0xff), dev->ram[1][i+0x80]);
+        }
+
+
         /*
         fprintf(stderr, "ROM read @ %05x\n", a);
         */
         return 0x125;
     }
-    case BIOS_ADDR_TIMER_EX: //timer_ex
+    case BIOS_ADDR_TIMER_EX: //timer_ex fm_prd_ex(ORG 0130H)
         if(!((dev->ram[0][0x1e]^=1)&1))
             if(++dev->ram[0][0x1d]>=60) {
                 dev->ram[0][0x1d] = 0;
@@ -134,7 +139,7 @@ int gyVmuBiosHandleCall(VMUDevice* dev) {
                 }
             }
         return 0x139;
-    case BIOS_ADDR_SLEEP_EX:
+    case BIOS_ADDR_SLEEP_EX: //fm_prd_ex(ORG 0140H)
         _gyLog(GY_DEBUG_WARNING, "Entered firmare at SLEEP mode address! Unimplemented!");
         return 0;
     default:

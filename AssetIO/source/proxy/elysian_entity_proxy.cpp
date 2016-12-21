@@ -7,8 +7,79 @@
     \inmodule ESToolkit
     \brief Class representing all non-terrain Game Objects.
 
-    An entity is an aggregate of Components, which may either be built into the engine
-    or created custom as LuaBehaviors.
+    \l{Entity} is the central class for representing any game object that inhabits an \l{Area}.
+    An Entity can be a player, a warp, an NPC, an enemy, a bookcase, an invisible
+    trigger region, a particle emitter, a dynamic light, a positional audio source,
+    and virtually anything else.
+
+    \section2 Entities as a Collection of Components
+    Entities are an aggregate of Components, which may either be built into the engine
+    or created custom as Behaviors. By attaching Components to an Entity, you are
+    able to add to its run-time capabilities and behaviors. For example, adding a Renderable
+    Component to an Entity makes it visible as either a rectangle or sprite. Adding a
+    Collidable Component to an Entity makes it solid in the game world. Adding an AudioSource
+    to an Entity gives it the ability to emit 3D positional audio. An Entity is basically a blank
+    slate from which any non-tile game object can be constructed.
+
+    Another powerful aspect of the Entity/Component architecture is the fact that these Components
+    can be added and removed to modify the characteristics of an Entity at run-time, rather than having
+    to statically define them at compile-time through the use of inheritance, as in traditional engines.
+    This means the player could dyamically turn into a warp that swallows up the rest of the party
+    and shits out a million particles with a crazy flash of dynamic light before morphing back into
+    himself by simply adding and removing components... because why the fuck not?
+
+    \section2 Built-in Components
+    The following is a table of all the Components built into the engine and the capabilities they add
+    to an Entity when attached.
+
+    \table
+    \header
+        \li \l{Component} Type
+        \li Capabilities
+    \row
+        \li \l{Renderable}
+        \li Draws the Entity as a sprite or quad.
+    \row
+        \li \l{Skeleton}
+        \li Draws the Entity as a Spine Skeleton with animation support.
+    \row
+        \li \l{Collidable}
+        \li Gives the Entity solidity.
+    \row
+        \li \l{RigidBody}
+        \li Gives the Entity rigid body physical traits and adds it to the physics simulator.
+    \row
+        \li \l{AudioSource}
+        \li Allows the Entity to play positional sounds in 3D space.
+    \row
+        \li \l{Character}
+        \li Gives the Entity the ability to jump, pick up objects, and other characteristics common to players, NPCs, or enemies.
+    \row
+        \li \l{Combat}
+        \li Gives the Entity battle stats and allows it to engage in battle with other Entities.
+    \row
+        \li \l{Examinable}
+        \li Gives the Entity dialog or a description.
+    \row
+        \li \l{LightSource}
+        \li Gives the Entity a point, spot, or directional dynamic light.
+    \row
+        \li \l{ParticleEmitter}
+        \li Allows the Entity to spawn particles for special effects.
+    \row
+        \li \l{Warp}
+        \li Makes the Entity transport the player from one location to another upon collision.
+    \endtable
+
+    \section2 Behaviors as Custom Components
+    \l{Behavior} is a special type of dynamic Component which allows you to create your own custom
+    Components and extend Entity functionality beyond what was built into the engine. A \l{LuaBehavior}
+    is a special kind of \l{Behavior} which is implemented within a Lua script, allowing you to use
+    the Lua scriptig language to extend the engine. See the \l{Behavior} and \l{LuaBehavior} documentation
+    for more details.
+
+    \sa Component, Renderable, Collidable, Skeleton, RigidBody, Character, AudioSource, Combat, Examinable,
+    LightSource, ParticleEmitter, Warp, Behavior, LuaBehavior
 */
 
 /*!
@@ -51,11 +122,6 @@
  * \qmlproperty Renderable Entity::renderable
  *
  * \sa getRenderable(), setRenderable()
- */
-/*!
- * \qmlproperty Animation Entity::animation
- *
- * \sa getAnimation(), setAnimation()
  */
 /*!
  * \qmlproperty Collidable Entity::collidable
@@ -209,11 +275,6 @@
  * Creates and adds a Renderable component to the entity (if one doesn't already exist) and returns a reference to the component.
  */
 /*!
- * \qmlmethod Animation* Entity::addAnimation()
- *
- * Creates and adds an Animation component to the entity (if one doesn't already exist) and returns a reference to the component.
- */
-/*!
  * \qmlmethod Collidable* Entity::addCollidable()
  *
  * Creates and adds a Collidable component to the entity (if one doesn't already exist) and returns a reference to the component.
@@ -274,11 +335,6 @@
  * \qmlmethod Renderable* Entity::getRenderable()
  *
  * Returns the entity's attached renderable component or nil if there isn't one.
- */
-/*!
- * \qmlmethod Animation* Entity::getAnimation()
- *
- * Returns the entity's attached Animation component or nil if there isn't one.
  */
 /*!
  * \qmlmethod Collidable* Entity::getCollidable()
@@ -343,11 +399,6 @@
  * Creates a new Renderable component and sets it equal to valueTable.
  */
 /*!
- * \qmlmethod void Entity::setAnimation(Lua_table_ref valueTable)
- *
- * Creates a new Animation component and sets it equal to valueTable.
- */
-/*!
  * \qmlmethod void Entity::setCollidable(Lua_table_ref valueTable)
  *
  * Creates a new Collidable component and sets it equal to valueTable.
@@ -403,11 +454,6 @@
  * \qmlmethod void Entity::removeRenderable()
  *
  * Removes and deletes the attached Renderable component (if it exists).
- */
-/*!
- * \qmlmethod void Entity::removeAnimation()
- *
- * Removes and deletes the attached Animation component (if it exists).
  */
 /*!
  * \qmlmethod void Entity::removeCollidable()

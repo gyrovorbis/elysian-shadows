@@ -22,6 +22,17 @@ ParticleEmitterAttribBase::~ParticleEmitterAttribBase(void) {
 
 }
 
+void ParticleEmitterAttribBase::setAnimGridSize(const unsigned w, const unsigned h) {
+    _animGridWidth = w; _animGridHeight = h;
+
+    GY_ASSERT(w <= ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_WIDTH);
+    GY_ASSERT(h <= ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_HEIGHT);
+
+    for(unsigned y = 0; y < h; ++y)
+        for(unsigned x = 0; x < w; ++x)
+            _animGrid[y][x] = y*w+x;
+}
+
 auto Particle::getTargetType(void)	const -> TARGET_TYPE { return TARGET_PARTICLE; }
 float Particle::getOrientation(void) const { return orientation; }
 const GYVector3& Particle::getPosition(void) const { return position; }

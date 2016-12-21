@@ -327,10 +327,10 @@ namespace elysian {
 		gyAudSourceSeti(_channels[channel].src, GY_SOURCE_LOOPING, static_cast<int>(val));
 	}
 
-	void AudioSystem::setSfxChannelPos(const unsigned channel, const GYVector2 &pos, const unsigned elev) const {
+    void AudioSystem::setSfxChannelPos(const unsigned channel, const float x, const float y, const float z) const {
         //gyAudSourceSetf(_channels[channel].src, GY_SOURCE_ROLLLOG_OFF_FACTOR, 1.0f);
         //gyAudSourceSeti(_channels[channel].src, GY_SOURCE_RELATIVE, 1);
-		GYVector3 pos3 = { pos.x, pos.y, static_cast<float>(elev) };
+        GYVector3 pos3 = { x, y, z };
 		gyAudSourceSetfv(_channels[channel].src, GY_SOURCE_POS, &pos3);
 	}
 

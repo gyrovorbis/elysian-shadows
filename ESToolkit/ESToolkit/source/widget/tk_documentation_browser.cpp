@@ -2,6 +2,7 @@
 #include <QTabWidget>
 #include <QSplitter>
 #include <QFile>
+#include <QDesktopServices>
 #include <QDir>
 #include <QDebug>
 #include <elysian_debug.hpp>
@@ -11,6 +12,7 @@
 #include <core/tk_file_utilities.h>
 #include <estk/tk_estoolkit.h>
 #include <estk/tk_asset_dock_widget.h>
+#include <QMessageBox>
 
 /****************************************************************************
 ** This file is part of the documentation of Qt. It was originally
@@ -31,10 +33,17 @@ void HelpBrowser::onAnchorClicked(const QUrl &link) {
     if(link.scheme() == "qthelp") {
         setSource(link);
     } else if(link.scheme() == "file") {
-        QString localFile = link.toLocalFile();
-        QString absPath = FileUtilities::getAbsoluteAssetPath(localFile);
-        auto* asset = ESToolkit::getInstance()->getAssetDockWidget()->getAssetFileSystemModel()->getCustomAssetFileType(absPath);
-        asset->doubleClick(QModelIndex());
+        if(ESToolkit::getInstance()->getAssets().getCurrentProject()) {
+            QString localFile = link.toLocalFile();
+            QString absPath = FileUtilities::getAbsoluteAssetPath(localFile);
+            auto* asset = ESToolkit::getInstance()->getAssetDockWidget()->getAssetFileSystemModel()->getCustomAssetFileType(absPath);
+            if(asset) asset->doubleClick(QModelIndex());
+            else QDesktopServices::openUrl(link);
+        } else {
+           QMessageBox::critical(this, "Cannot open link!", "A valid project must be loaded before you can follow this link!");
+        }
+    } else {
+        QDesktopServices::openUrl(link);
     }
 }
 

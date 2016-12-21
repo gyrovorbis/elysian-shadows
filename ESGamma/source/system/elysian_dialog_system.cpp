@@ -339,10 +339,11 @@ void DialogSystem::_nextScreen(void) {
 	if(_curScreen.screen->isTrigger() && _curDialog->getTriggerEntity()) {
 		getBehavSys()->onDialog(_curDialog->getTriggerEntity(),
 								_curScreen.screen->getIndex(),
-								_currentOption);
+                                _boxState == BOX_INPUT? _currentOption : -1);
 
 	}
 
+    _currentOption = 0;
 	_prevScreen = _curScreen;
 	if(nextIndex == -1) {
 		_curScreen.screen = nullptr;

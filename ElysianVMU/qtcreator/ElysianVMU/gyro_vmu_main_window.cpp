@@ -8,6 +8,8 @@
 #include <QTextCodec>
 #include <QDesktopServices>
 
+#define PIXEL_GHOST_FRAMES 10
+
 #include "gyro_vmu_version.h"
 #include "gyro_vmu_vms.h"
 #include "gyro_vmu_vmi.h"
@@ -248,11 +250,12 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
         QString("ElysianVMU is a Softare emulator for the Sega Dreamcast Visual Memory Unit.<br><br>")+
         QString("Version ")+QString(GYRO_VMU_VERSION_STRING)+QString("<br>") +
         QString("<a href=\"http://www.elysianshadows.com\">elysianshadows.com</a><br>") +
-        QString("</table><tr><td>Programming: </td><td> Falco Girgis</td></tr>") +
+        QString("</table><tr><td>Software: </td><td> Falco Girgis</td></tr>") +
+        QString("<tr><td>Hardware: </td><td>Tulio Goncalves</td></tr>") +
         QString("<tr><td>Graphics: </td><td>Patrick Kowalik</td></tr></table><br><br>") +
-        QString("Special Thanks:<br> Marcus Comstedt, Lauren Scheeler, Marcel Girgis, Marcus Girgis, Andrew Girgis, Andrew Hill, and all of our awesome Kickstarter backers. :)</br</br>") +
+        QString("Special Thanks:<br> Deunan Knute, Marcus Comstedt, Lauren Girgis, Marcel Girgis, Marcus Girgis, Andrew Girgis, Andrew Hill, and all of our awesome Kickstarter backers. :)</br</br>") +
         QString("</table><br><br>") +
-        QString("Powered by LibGyro<br><br>") +
+        QString("Powered by LibGyro (version ")+QString(GYRO_LIB_VERSION)+QString(")<br><br>") +
         QString("<i>ElysianVMU Copyright 2017 Elysian Shadows</i><br>") +
         QString("<i>Dreamcast and VMU Copyright Sega</i><br><br>"));
     });
@@ -302,40 +305,6 @@ void VMUMainWindow::closeEvent(QCloseEvent* /*event*/) {
     _saveSettings();
 }
 
-void VMUMainWindow::paintEvent(QPaintEvent *) {
-    QPainter painter2(this);
-
-    int y = 0;
-#ifndef Q_OS_MAC //Menubar is not part of the window widget on a Mac.
-    if(_ui->menubar->isVisible()) y = _ui->menubar->height();
-#endif
-    int height = geometry().height();
-    int width = geometry().width();
-    if(_ui->statusbar->isVisible()) height -= _ui->statusbar->height();
-    height -= y;
-    painter2.drawPixmap(0, y, width, height, _fb);
-
-    float yMargin       = 0.20f;
-    float leftOverH     = 1.0f - ((float)VMU_DISP_PIXEL_HEIGHT/(float)VMU_FB_DEFAULT_HEIGHT);
-    float iconHeight    = leftOverH*(1.0f-yMargin)*(float)height;
-    float iconY         = height-iconHeight-((yMargin)*leftOverH*(float)height)/2.0f;
-
-    float xMargin       = 1.0f/20.0f;
-    float leftOverW     = 1.0f - xMargin;
-    float iconWidth     = (2.0f/11.0f)*(float)width*leftOverW;
-    float iconXStart    = xMargin*0.5*(float)width;
-    float iconXStride   = iconWidth+(1.0f/11.0f)*leftOverW*(float)width;
-
-    if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_FILE))
-        painter2.drawPixmap(iconXStart, iconY, iconWidth, iconHeight, _iconFile);
-    if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_GAME))
-        painter2.drawPixmap(iconXStart+iconXStride, iconY, iconWidth, iconHeight, _iconGame);
-    if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_CLOCK))
-        painter2.drawPixmap(iconXStart+iconXStride*2.0f, iconY, iconWidth, iconHeight, _iconClock);
-    if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_FLASH))
-        painter2.drawPixmap(iconXStart+iconXStride*3.0f, iconY, iconWidth, iconHeight, _iconFlash);
-
-}
 
 void VMUMainWindow::_update(void) {
     bool ranThisFrame = false;
@@ -381,7 +350,7 @@ void VMUMainWindow::_update(void) {
       for(int i = 0; i < 1; ++i) {
 #ifdef GYRO_VMU
 #ifndef VMU_DEBUG
-        ranThisFrame = gyVmuDeviceUpdate(_dev, (float)deltaTicks/1000000000.0f);
+        ranThisFrame = gyVmuDeviceUpdate(_dev, (float)deltaTicks/900000000.0f);
 #else
         gyVmuCpuTick(_dev, 1.0f/30.0f);
 #endif
@@ -414,104 +383,75 @@ void VMUMainWindow::_update(void) {
 
         _updatePConRegister();
         _updateIcon();
-        lcdrefresh();
+//        lcdrefresh();
+        repaint();
+        //if(gyVmuDisplayUpdate(_dev, (float)deltaTicks/1000000000.0f))
+       // if(_dev->display.xramChanged) {
+       //     _dev->display.xramChanged = 0;
+           // lcdrefresh();
+        //}
     }
 }
 
 
-
-extern "C" void lcdrefresh(void) {
-    QPainter painter(&_win->_fb);
+    void VMUMainWindow::paintEvent(QPaintEvent *) {
 
 
-#ifdef GYRO_VMU
-    unsigned char *sfr;
-    unsigned char (*xram)[0x80];
-    sfr = _win->_dev->sfr;
-    xram = _win->_dev->xram;
-
-#endif
-
-      int y, x, i, a, b=0, p=0;
-
-    p = sfr[0x22];
-    if(p>=0x83)
-        p -= 0x83;
-    b = (p>>6);
-    p = (p&0x3f)*2;
-    for(y=0; y<32; y++) {
-        for(x=0; x<48; ) {
-            unsigned value = xram[b][p++];
-            //if(!lcdon)
-             //   value = 0;
-
-            for(int i = 7; i >= 0; --i) {
-                if((value>>(unsigned)i)&0x1) {
-                    painter.fillRect(x, y, 1, 1, QBrush(Qt::black));
-                } else {
-                    painter.fillRect(x, y, 1, 1, QBrush(Qt::white));
-                }
-                x++;
-            }
-
-            if((p&0xf)>=12)
-                p+=4;
-            if(p>=128) {
-                b++;
-                p-=128;
-            }
-            if(b==2 && p>=6) {
-                b = 0;
-                p -= 6;
-            }
+ {
+            QPainter painter(&_fb);
+        if(!gyVmuDisplayEnabled(_win->_dev)) {
+            painter.drawPixmap(QPoint(0,0), _win->_iconES);
+        } else if(gyVmuDisplayUpdateEnabled(_win->_dev)) {
+        for(int y = 0; y < 32; ++y)
+            for(int x = 0; x < 48; ++x) {
+                    int col = gyVmuDisplayPixelGhostValue(_dev, x, y);
+                    painter.fillRect(x, y, 1, 1, QBrush(QColor(col, col, col, 255)));
         }
-    }
-
-
-    p++;
-    if((p&0xf)>=12)
-        p+=4;
-    if(p>=128) {
-        b++;
-        p-=128;
-    }
-    if(b==2 && p>=6) {
-        b = 0;
-        p -= 6;
-    }
-#if 0
-    for(i=0; i<4; i++) {
-        a = xram[b][p++]>>(2*(3-i));
-        //if(!lcdon)
-          //  a = 0;
-        for(y=0; y<7; y++) {
-            int value = icon[i][y];
-            for(x=0; x<7; x++) {
-                if((value>>(7-x))&a) {
-                    painter.fillRect((2+i*12+x)*1, (y+33)*1, 1, 1, QBrush(Qt::black));
-                } else {
-                    painter.fillRect((2+i*12+x)*1, (y+33)*1, 1, 1, QBrush(Qt::white));
-                }
-            }
+ }
         }
-        if((p&0xf)>=12)
-            p+=4;
-        if(p>=128) {
-            b++;
-            p-=128;
-        }
-        if(b==2 && p>=6) {
-            b = 0;
-            p -= 6;
-        }
+                QPainter painter2(this);
 
+        int y = 0;
+    #ifndef Q_OS_MAC //Menubar is not part of the window widget on a Mac.
+        if(_ui->menubar->isVisible()) y = _ui->menubar->height();
+    #endif
+        int height = geometry().height();
+        int width = geometry().width();
+        if(_ui->statusbar->isVisible()) height -= _ui->statusbar->height();
+        height -= y;
+        float aspectRatio = (float)VMU_DISP_PIXEL_HEIGHT/(float)VMU_DISP_PIXEL_WIDTH;
+
+        int heightFromWidth = (float)width*aspectRatio;
+        if(heightFromWidth > height) { //Nope, have to try the other way
+            int widthFromHeight = (float)height*(1.0f/aspectRatio);
+            if(widthFromHeight > width) {
+                Q_ASSERT(false); //WTF!? Fucked either way!
+            } else width = widthFromHeight;
+        } else height = heightFromWidth;
+
+        painter2.drawPixmap(0, y, width, height, _fb);
+
+        float yMargin       = 0.20f;
+        float leftOverH     = 1.0f - ((float)VMU_DISP_PIXEL_HEIGHT/(float)VMU_FB_DEFAULT_HEIGHT);
+        float iconHeight    = leftOverH*(1.0f-yMargin)*(float)height;
+        float iconY         = height-iconHeight-((yMargin)*leftOverH*(float)height)/2.0f;
+
+        float xMargin       = 1.0f/20.0f;
+        float leftOverW     = 1.0f - xMargin;
+        float iconWidth     = (2.0f/11.0f)*(float)width*leftOverW;
+        float iconXStart    = xMargin*0.5*(float)width;
+        float iconXStride   = iconWidth+(1.0f/11.0f)*leftOverW*(float)width;
+
+        if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_FILE))
+            painter2.drawPixmap(iconXStart, iconY, iconWidth, iconHeight, _iconFile);
+        if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_GAME))
+            painter2.drawPixmap(iconXStart+iconXStride, iconY, iconWidth, iconHeight, _iconGame);
+        if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_CLOCK))
+            painter2.drawPixmap(iconXStart+iconXStride*2.0f, iconY, iconWidth, iconHeight, _iconClock);
+        if(gyVmuDisplayIconGet(_dev, VMU_DISP_ICN_FLASH))
+            painter2.drawPixmap(iconXStart+iconXStride*3.0f, iconY, iconWidth, iconHeight, _iconFlash);
 
     }
-#endif
-    lcd_updated = 0;
-
-    _win->repaint();
-}
 
 bool VMUMainWindow::loadRom(QString filepath) {
     if(filepath.isEmpty()) return false;
@@ -557,6 +497,7 @@ bool VMUMainWindow::loadRom(QString filepath) {
 
     if(info.exists() && gyVmuFlashLoadImage(_dev, filepath.toStdString().c_str())) {
         _vmsHeader = (VMSFileInfo*)&_dev->flash[VMU_FLASH_GAME_VMS_HEADER_OFFSET];
+
         resetCpu();
 
         //_statusLabel->setText(QString("RUNNING: ")+filepath.split("/").last());
@@ -577,12 +518,15 @@ void VMUMainWindow::resetCpu(void) {
 
     gyVmuDeviceReset(_dev);
 
+    gyVmuBuzzerEnabledSet(_dev, _ui->actionEnable_Audio->isChecked());
+
      //Have to apply non-default settings after CPU reset, since that clears everything back to default state.
     if(_ui->actionEnable_Low_Battery->isChecked()) {
         gyVmuBatteryLowSet(_dev, 1);
         gyVmuBatteryMonitorEnabledSet(_dev, 1);
     }
 
+    gyVmuDisplayGhostingEnabledSet(_dev, _ui->actionEnable_Pixel_Ghosting->isChecked());
 }
 
 void VMUMainWindow::on_actionLoad_ROM_triggered(void)
@@ -635,8 +579,6 @@ void VMUMainWindow::on_actionLoad_State_triggered(void)
 
         _ui->statusbar->showMessage("State Loaded.", VMU_STATUS_TEMP_TIMEOUT);
 
-        lcdrefresh();
-
     }
 
     _gyPop(1);
@@ -664,6 +606,14 @@ void VMUMainWindow::_log(GY_DEBUG_SEVERITY level, const char *msg) {
         "X - "
     };
     qDebug() << tabBuff << prefix[level] << msg;
+#if 0
+    char buffer[10000] = {0};
+    strcat(buffer, tabBuff);
+    strcat(buffer, prefix[level]);
+    strcat(buffer, msg);
+    strcat(buffer, "\n");
+    printf(buffer);
+#endif
 #ifdef VMU_DEBUG
     return;
 #endif
@@ -710,6 +660,7 @@ void VMUMainWindow::_saveSettings(void) {
     settings.setValue("state",      saveState());
     settings.setValue("romDir",     _romDir);
     settings.setValue("audio",      _ui->actionEmulate_Audio->isChecked());
+    settings.setValue("ghosting",   _ui->actionEnable_Pixel_Ghosting->isChecked());
     settings.setValue("lowBattery", _ui->actionEnable_Low_Battery->isChecked());
 
     for(int i = 0; i < _ui->menuLoad_Recent->actions().size(); ++i) {
@@ -735,6 +686,7 @@ void VMUMainWindow::_loadSettings(void) {
         _romDir = settings.value("romDir", "").toString();
         _ui->actionEmulate_Audio->setChecked(settings.value("audio", true).toBool());
         _ui->actionEnable_Low_Battery->setChecked(settings.value("lowBattery", false).toBool());
+        _ui->actionEnable_Pixel_Ghosting->setChecked(settings.value("ghosting", true).toBool());
 
         for(int i = VMU_ROM_HISTORY_SIZE-1; i >= 0; --i) {
             sprintf(buffer, "recentRoms%d", i);
@@ -746,6 +698,11 @@ void VMUMainWindow::_loadSettings(void) {
     }
 
     _tcpDialog->loadSettings(settings);
+
+    //auto policy = centralWidget()->sizePolicy();
+    //policy.setHeightForWidth(true);
+    //policy.setWidthForHeight(true);
+    //centralWidget()->setSizePolicy(policy);
 
     _gyPop(1);
 }
@@ -1023,7 +980,10 @@ void VMUMainWindow::on_actionLoad_BIOS_Image_triggered(void)
     QFileInfo info(file);
     file = info.absoluteFilePath();
 
-    gyloadbios(_dev, file.toStdString().c_str());
+    if(gyloadbios(_dev, file.toStdString().c_str())) {
+        resetCpu();
+        _running = true;
+    }
 
 }
 
@@ -1042,6 +1002,11 @@ void VMUMainWindow::on_actionDisassemble_ROM_triggered(void)
     bool lineNumbers = (QMessageBox::question(nullptr, "Disassemble ROM", "Include memory addresses in disassembly file ["+
                                               unicodeFile+"]?")
             == QMessageBox::Yes);
-    gyVmuDisassemble((const char*)_dev->flash, VMU_FLASH_BLOCK_SIZE*8, unicodeFile.toStdString().c_str(), lineNumbers);
+    gyVmuDisassemble((const unsigned char*)_dev->flash, VMU_FLASH_BLOCK_SIZE*8, unicodeFile.toStdString().c_str(), lineNumbers);
     QDesktopServices::openUrl(QUrl::fromLocalFile(unicodeFile));
+}
+
+void VMUMainWindow::on_actionEnable_Pixel_Ghosting_toggled(bool arg1)
+{
+    gyVmuDisplayGhostingEnabledSet(_dev, arg1);
 }

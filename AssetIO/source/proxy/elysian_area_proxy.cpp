@@ -198,7 +198,22 @@ OOLUA_EXPORT_FUNCTIONS_CONST(TileEntry,
  * \endlist
  * \sa getBgmOggByTrack(), setBgmOggByTrack(), getBgmOggTrackCount(), getAuxOggByTrack(), setAuxOggByTrack(), getAuxOggTrackCount()
  */
-
+/*!
+ * \qmlproperty bool Area::useSun
+ * When set to true, tells the \l{DaySystem} to automatically add the sun \l{Entity} to the Area to simulate the
+ * time of day with the sun rising and setting for outdoor Areas. If set to false, no sun is added. The
+ * default value is true.
+ * \sa getUseSun(), setUseSun(), DaySystem
+ */
+/*!
+ * \qmlproperty Vector4 Area::ambientColor
+ * 4D RGBA vector representing the intensity of ambient light in the Area. Ambient light is light that is always present everywhere
+ * in equal amounts. If this is set to <0, 0, 0, 0>, the entire Area will be pitch black. For outdoor Areas, this should be
+ * set to a low value to simulate night, then the \l{useSun} property should be set to true, so the sun entity emits sunlight
+ * to light the rest of the Area during the day. Without the sun, this can be used to simulate ambient color within caves or
+ * indoor locations.
+ * \sa getAmbientColor(), setAmbientColor()
+ */
 
 /*!
  * \qmlmethod string Area::getDirName()

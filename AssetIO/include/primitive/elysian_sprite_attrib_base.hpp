@@ -54,15 +54,6 @@ namespace elysian {
         GYTexture*          getNormalMap(void) const;
         GYTexture*          getSpecularMap(void) const;
 
-        unsigned char getColorR(void) const;
-        unsigned char getColorG(void) const;
-        unsigned char getColorB(void) const;
-        unsigned char getColorA(void) const;
-        void setColorR(const unsigned char r);
-        void setColorG(const unsigned char g);
-        void setColorB(const unsigned char b);
-        void setColorA(const unsigned char a);
-
         virtual ~SpriteAttribBase(void) override;
 
         inline void submitHeader(void);
@@ -140,14 +131,6 @@ namespace elysian {
 
     }
 
-    inline unsigned char SpriteAttribBase::getColorR(void) const { return _color.r; }
-    inline unsigned char SpriteAttribBase::getColorG(void) const { return _color.g; }
-    inline unsigned char SpriteAttribBase::getColorB(void) const { return _color.b; }
-    inline unsigned char SpriteAttribBase::getColorA(void) const { return _color.a; }
-    inline void SpriteAttribBase::setColorR(const unsigned char r) { _color.r = r; }
-    inline void SpriteAttribBase::setColorG(const unsigned char g) { _color.g = g; }
-    inline void SpriteAttribBase::setColorB(const unsigned char b) { _color.b = b; }
-    inline void SpriteAttribBase::setColorA(const unsigned char a) { _color.a = a; }
     inline GYTexture* SpriteAttribBase::getSpecularMap(void) const { return _specularMap; }
     inline GYTexture* SpriteAttribBase::getNormalMap(void) const { return _normalMap; }
     inline GYTexture* SpriteAttribBase::getTexture(void) const { return _tex; }

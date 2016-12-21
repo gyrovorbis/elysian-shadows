@@ -194,6 +194,13 @@ namespace elysian {
     \since 1.6.0
     \inmodule ESToolkit
     \brief Static class for Engine providing access to all subsystems.
+
+    Engine is a static class (class of all static functions) providing access
+    to the various subsystems and the current \l{Level} and \l{Area}.
+
+    \sa PartySystem, InputSystem, TimerSystem, AudioSystem, LightSystem, LevelSystem,
+    CombatSystem, ParticleSystem, DaySystem, RigidBodySystem, GuiSystem, DaySystem,
+    CharacterSystem, CameraSystem, DialogSystem
 */
 
 /*!
@@ -277,6 +284,11 @@ namespace elysian {
  *
  * Returns the CharacterSystem subsystem.
  */
+/*!
+ * \qmlmethod DialogSystem* Engine::getDialogSys()
+ *
+ * Returns the DialogSystem subsystem.
+ */
 
 EXPORT_OOLUA_FUNCTIONS_0_NON_CONST(Engine)
 EXPORT_OOLUA_FUNCTIONS_0_CONST(Engine)
@@ -288,6 +300,24 @@ EXPORT_OOLUA_FUNCTIONS_0_CONST(Engine)
     \inmodule ESToolkit
     \brief Static class for libGyro constants and enumerations.
 */
+/*!
+ * \qmlmethod GYWav* gyro::createWav(string path)
+ * This function is static.
+ * Loads a wave file from the given asset-relative \a{path} and returns a new \l{GYWav}
+ * object containing its audio buffer or returns a reference to an existing \l{GYWav}
+ * object if it has already been loaded.
+ *
+ * \e{NOTE: Any WAV created in this manner must also be deleted with destroyWav()!}
+ * \sa destroyWav(), GYWav
+ */
+/*!
+ * \qmlmethod void gyro::destroyWav(GYWav* wav)
+ * This function is static.
+ * Destroys the given \a{wav} object and frees its audio buffer if \a{wav} was the last
+ * object still referencing the buffer or simply decrements the internal reference count
+ * for the buffer if its still in use by other objects.
+ * \sa createWav(), GYWav
+ */
 
 /*!
 \qmlproperty enumeration gyro::TEX_ORIENT_TYPE

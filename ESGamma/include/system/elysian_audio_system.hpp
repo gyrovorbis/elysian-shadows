@@ -38,7 +38,7 @@ namespace elysian {
     void            setSfxChannelPitch(const unsigned channel, const float val) const;
     void            setSfxChannelLooping(const unsigned channel, const bool val) const;
     void            setSfxChannelRolloffFactor(const unsigned channel, const float val) const;
-    void            setSfxChannelPos(const unsigned channel, const GYVector2 &pos, const unsigned elev) const;
+    void            setSfxChannelPos(const unsigned channel, const float x, const float y, const float z) const;
 
     //OGG BGM API
     void            loadBgmTrack(const unsigned track, const char*const path);

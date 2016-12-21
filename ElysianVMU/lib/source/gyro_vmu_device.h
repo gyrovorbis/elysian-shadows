@@ -8,6 +8,7 @@
 #include "gyro_vmu_serial.h"
 #include "gyro_vmu_buzzer.h"
 #include "gyro_vmu_gamepad.h"
+#include "gyro_vmu_display.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -50,6 +51,7 @@ typedef struct VMUDevice {
     VMUSerialPort   serialPort;
     VMUBuzzer       buzzer;
     VMUGamepad      gamepad;
+    VMUDisplay      display;
 
     uint16_t        intReq;
     uint16_t        intMask;

@@ -34,8 +34,8 @@ OOLUA_PROXY(CombatStatus)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(CombatStatusModifier, CombatStatus)
-    OOLUA_MEM_FUNC(void, addStatusEffect, const int)
-    OOLUA_MEM_FUNC(void, removeStatusEffect, const int)
+    OOLUA_MEM_FUNC(void, addStatusEffect, const uint32_t)
+    OOLUA_MEM_FUNC(void, removeStatusEffect, const uint32_t)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(Combat, Component)

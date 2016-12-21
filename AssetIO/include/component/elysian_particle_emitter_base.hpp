@@ -39,7 +39,6 @@ namespace elysian {
         GYColor4    _endColor           = { 255, 255, 255, 255 };
 
         GYVector3	_acceleration		= { 0.0f, 0.0f, 0.0f };
-        Material*	_material			= nullptr;
         float		_intensityFactor	= 1.0f;
         unsigned	_maxLife			= 100;
         BitMask32	_forceMask			= ~0x0;
@@ -174,7 +173,7 @@ namespace elysian {
 		//reimplemented from component
         static constexpr const Component::TYPE componentType = Component::PARTICLE_EMITTER;
 
-        void                    emitFromEntity(const GYVector3& pos, const float angle, const unsigned intensity);
+        void                    emitFromEntity(const GYVector3& localPos, const float angle, const unsigned intensity);
 
     };
 
@@ -190,11 +189,7 @@ namespace elysian {
     inline void ParticleEmitterAttribBase::setStartSize(const unsigned size) { _startSize = size; }
     inline void ParticleEmitterAttribBase::setEndSize(const unsigned size) { _endSize = size; }
     inline void ParticleEmitterAttribBase::setEndColor(const GYColor4 color) { _endColor = color; }
-    inline void ParticleEmitterAttribBase::setAnimGridSize(const unsigned w, const unsigned h) {
-        _animGridWidth = w; _animGridHeight = h;
-        GY_ASSERT(w <= ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_WIDTH);
-        GY_ASSERT(h <= ELYSIAN_PARTICLE_EMITTER_ANIM_GRID_HEIGHT);
-    }
+
     inline void ParticleEmitterAttribBase::setAnimGridIndex(const unsigned row, const unsigned col, int index) {
         _animGrid[row][col] = index;
     }

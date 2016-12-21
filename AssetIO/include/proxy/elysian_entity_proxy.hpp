@@ -37,7 +37,6 @@ namespace OOLUA {
     typedef elysian::RenderableObject   RenderableObject;
     typedef elysian::Entity             Entity;
     typedef elysian::Component          Component;
-    typedef elysian::Skeleton           Skeleton;
     typedef elysian::LuaVariant         LuaVariant;
 
     template<>                          class Proxy_class<elysian::Entity>;

@@ -22,19 +22,33 @@ namespace elysian {
 
         }
 
+        void setVertexColor4(const unsigned short index, const Color4& color) {
+            GY_ASSERT(index < 4);
+            if(index > 0) _vertColor[index-1] = *(const GYColor4*)color;
+            else setColor4(color);
+        }
+
         void setVertexColor(const unsigned short index, const GYColor4 color) {
+            GY_ASSERT(index < 4);
             if(index > 0) _vertColor[index-1] = color;
             else setColor(color);
         }
 
         void setVertexColor(const unsigned short index, const unsigned char r, const unsigned char g, const unsigned char b, const unsigned char a) {
+            GY_ASSERT(index < 4);
             if(index > 0) {
                 _vertColor[index-1].r = r; _vertColor[index-1].g = g; _vertColor[index-1].b = b; _vertColor[index-1].a = a;
             }
             else setColor(r, g, b, a);
         }
 
+        Color4 getVertexColor4(const unsigned short index) {
+            GY_ASSERT(index < 4);
+            return (index > 0)? Color4(&_vertColor[index-1]) : getColor4();
+        }
+
         void getVertexColor(const unsigned short index, unsigned char& r, unsigned char& g, unsigned char& b, unsigned char& a) const {
+            GY_ASSERT(index < 4);
             if(index > 0) {
                 r = _vertColor[index-1].r; g = _vertColor[index-1].g; b = _vertColor[index-1].b; a = _vertColor[index-1].a;
             }
@@ -47,13 +61,17 @@ namespace elysian {
         }
 
         void setVertexAlpha(const unsigned short index, const float alpha) {
+            GY_ASSERT(index < 4);
             if(index > 0) {
                 _vertColor[index-1].a = alpha;
             } else {
                 _color.a = alpha;
             }
         }
-        unsigned char getVertexAlpha(const unsigned short index) const { return (index > 0)? _vertColor[index-1].a : _color.a; }
+        unsigned char getVertexAlpha(const unsigned short index) const {
+            GY_ASSERT(index < 4);
+            return (index > 0)? _vertColor[index-1].a : _color.a;
+        }
 
 
         virtual void submitVerts(GYVector4 *verts = nullptr) override {

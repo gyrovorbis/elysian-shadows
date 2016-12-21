@@ -3,9 +3,16 @@
 
 /*!
     \qmltype Warp
+    \inherits Component
     \since 1.5.8
     \inmodule ESToolkit
     \brief Entity component for warping player from one location to another.
+
+    Warp is a Component that can be attached to an Entity to move a player from one
+    location to another upon collision. Warp requires an Entity to already have a
+    Collidable present for collision before it can be attached.
+
+    \sa Warps
 */
 
 

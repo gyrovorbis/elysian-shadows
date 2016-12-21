@@ -40,6 +40,7 @@ DialogBase::~DialogBase(void) { for(auto it : _screens) delete it; }
 void DialogBase::setScreen(const unsigned index, DialogScreen*const screen) {
     if(index == _screens.size()) {
         _screens.push_back(screen);
+        screen->setIndex(_screens.size());
     } else {
         GY_ASSERT(0);
        // qDebug() << "REALLOC SHIT" << (void*)screen;

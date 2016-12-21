@@ -55,7 +55,7 @@ OOLUA_EXPORT_FUNCTIONS(AdventureLog,
                        setStaticText,
                        addLine,
                        clear)
-OOLUA_EXPORT_FUNCTIONS_CONST(AdventureLog);
+OOLUA_EXPORT_FUNCTIONS_CONST(AdventureLog)
 
 
 OOLUA_EXPORT_FUNCTIONS(GuiSystem,

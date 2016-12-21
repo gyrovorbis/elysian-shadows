@@ -125,6 +125,7 @@ namespace elysian {
         bool            isRef(void) const;
 
         operator        GYColor4*(void);
+        operator        const GYColor4*(void) const;
         //operator        const GYColor4&(void);
 
         Color4&         operator=(const Color4& rhs);
@@ -204,6 +205,7 @@ inline void Color4::setG(const unsigned char g) const { _ptr->g = g; }
 inline void Color4::setB(const unsigned char b) const { _ptr->b = b; }
 
 inline Color4::operator GYColor4*(void) { return _ptr; }
+inline Color4::operator const GYColor4*(void) const { return _ptr; }
 
 
 }

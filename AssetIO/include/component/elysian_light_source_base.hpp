@@ -22,7 +22,7 @@ namespace elysian {
     public:
 
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
-            ELYSIAN_LUA_PROXY_FIELD(ambient,        getAmbient,         setAmbient)
+            //ELYSIAN_LUA_PROXY_FIELD(ambient,        getAmbient,         setAmbient)
             ELYSIAN_LUA_PROXY_FIELD(diffuse,        getDiffuse,         setDiffuse)
             ELYSIAN_LUA_PROXY_FIELD(specular,       getSpecular,        setSpecular)
             ELYSIAN_LUA_PROXY_FIELD(attenuation,    getAttenuation,     setAttenuation)

@@ -111,13 +111,13 @@ namespace elysian {
 
 
     inline void CharacterSystem::walkToWayPoint(Entity* entity, const float x, const float y, EventMonitor * const monitor) {
-    auto& proc = get<SUBPROC_WAYPOINT_POOL> ( static_cast<SubProcessManager<CharacterSystem,
+        auto& proc = get<SUBPROC_WAYPOINT_POOL> ( static_cast<SubProcessManager<CharacterSystem,
                           WalkToWayPointPool>& >(*this));
 
-    auto& subProc = proc.claimIdleSubProcess();
+        auto& subProc = proc.claimIdleSubProcess();
         subProc.setWayPoint(entity, x, y);
-    subProc.setEventMonitor(monitor);
-    subProc.start(this);
+        subProc.setEventMonitor(monitor);
+        subProc.start(this);
   }
 
 

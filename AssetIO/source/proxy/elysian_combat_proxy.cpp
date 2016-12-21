@@ -165,6 +165,30 @@ OOLUA_EXPORT_FUNCTIONS(CombatStatus,
                        setMaxMp,
                        setMp)
 
+/*!
+    \qmltype CombatStatusModifier
+    \inherits CombatStatus
+    \since 1.6.0
+    \inmodule ESToolkit
+    \brief Modifier to dealing/healing damage or applying/removing status effects from a combatant.
+
+    CombatStatusModifier is the class used to represent any kind of modifications to the status
+    of a combatant, whether it's HP, MP, a status effect, beneficial, or harmful.
+
+    \sa Combat, CombatSystem, CombatAttrib
+*/
+/*!
+ * \qmlmethod void CombatStatusModifier::addStatusEffect(int bitflag)
+ *
+ * Adds the status effect represented by the given \a{bitflag}.
+ * \sa removeStatusEffect()
+ */
+/*!
+ * \qmlmethod void CombatStatusModifier::removeStatusEffect(int bitflag)
+ *
+ * Removes the status effect represented by the given \a{bitflag}.
+ * \sa addStatusEffect()
+ */
 OOLUA_EXPORT_FUNCTIONS_CONST(CombatStatusModifier)
 OOLUA_EXPORT_FUNCTIONS(CombatStatusModifier,
                        addStatusEffect,
@@ -200,34 +224,6 @@ The following is a list o the different collision damage types:
 \li Keyboard.KEY_D
 \endlist
 */
-#if 0
-s->register_class_static<Combat>("DMG_NONE", Combat::DMG_NONE);
-s->register_class_static<Combat>("DMG_SOURCE", Combat::DMG_SOURCE);
-s->register_class_static<Combat>("DMG_TARGET", Combat::DMG_TARGET);
-s->register_class_static<Combat>("DMG_SOURCE_TARGET", Combat::DMG_SOURCE_TARGET);
-
-s->register_class_static<Combat>("TARGET_NONE", Combat::TARGET_NONE);
-s->register_class_static<Combat>("TARGET_PARTY", Combat::TARGET_PARTY);
-s->register_class_static<Combat>("TARGET_FRIENDLY", Combat::TARGET_FRIENDLY);
-s->register_class_static<Combat>("TARGET_ENEMY", Combat::TARGET_ENEMY);
-
-s->register_class_static<Combat>("ON_COLLIDE", Combat::ON_COLLIDE);
-s->register_class_static<Combat>("ON_COLLISION_ENTER", Combat::ON_COLLISION_ENTER);
-s->register_class_static<Combat>("ON_COLLISION_EXIT", Combat::ON_COLLISION_EXIT);
-
-
-ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
-    ELYSIAN_LUA_PROXY_FIELD(dmgType,        getDmgType,         setDmgType)
-    ELYSIAN_LUA_PROXY_FIELD(collisionFlags, getCollisionFlags,  setCollisionFlags)
-    ELYSIAN_LUA_PROXY_FIELD(aggroDist,      getAggroDist,       setAggroDist)
-    ELYSIAN_LUA_PROXY_FIELD(deaggroDist,    getDeaggroDist,     setDeaggroDist)
-    ELYSIAN_LUA_PROXY_FIELD(targetType,     getTargetType,      setTargetType)
-    ELYSIAN_LUA_PROXY_FIELD(inCombat,       isInCombat)
-    ELYSIAN_LUA_PROXY_FIELD(status,         getStatus,          setStatus)
-    ELYSIAN_LUA_PROXY_FIELD(attrib,         getAttrib,          setAttrib)
-ELYSIAN_LUA_PROXY_FIELDS_END()
-
-#endif
 
 OOLUA_EXPORT_FUNCTIONS_CONST(Combat,
                              getAttrib,

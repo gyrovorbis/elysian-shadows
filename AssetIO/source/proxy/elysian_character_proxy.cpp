@@ -6,6 +6,9 @@
     \since 1.6.0
     \inmodule ESToolkit
     \brief Static helper class containing functions relevant to directions in 2D/3D space.
+
+    Static helper class containing methods relevant to directions in 2D and 3D space.
+    Contains methods for converting a between a simple 4 directional value and a 2D unit vector.
 */
 
 /*!

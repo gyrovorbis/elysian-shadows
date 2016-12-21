@@ -52,8 +52,6 @@ OOLUA_PROXY(RigidBody, Component, ForceTarget)
     OOLUA_MEM_FUNC_CONST(maybe_null<RigidBodyAttrib*>, getAttrib)
     OOLUA_MEM_FUNC(void, setDurability, float)
     OOLUA_MEM_FUNC_CONST(float, getDurability)
-    OOLUA_MEM_FUNC_CONST(GYVector3, getVelocity)
-    OOLUA_MEM_FUNC(void, setVelocity, const GYVector3&)
     OOLUA_MEM_FUNC_CONST(float, getTileDamping)
 OOLUA_PROXY_END
 
