@@ -26,18 +26,21 @@ typedef enum VMU_SERIAL_SIGNAL {
     VMU_SERIAL_SCK0,
     VMU_SERIAL_SO1,
     VMU_SERIAL_SI1,
-    VMU_SERIAL_SCK1
+    VMU_SERIAL_SCK1,
+    VMU_SERIAL_SIGNAL_COUNT
 } VMU_SERIAL_SIGNAL;
 
 typedef struct VMUSerialIface {
     int     sbufCurPos;
     int     sentFirstBit;
-    uint8_t sconReg;
-    uint8_t sbufReg;
+    int     sconReg;
+    int     sbufReg;
+    uint8_t intReq;
     uint8_t soPin;
     uint8_t siPin;
     uint8_t sckPin;
-    uint8_t intReq;
+    uint8_t sbufVal;
+    uint8_t ovWaiting;
 } VMUSerialIface;
 
 typedef struct VMUSerial {
@@ -50,7 +53,7 @@ typedef struct VMUSerial {
 
 void gyVmuSerialInit(struct VMUDevice* dev);
 void gyVmuSerialUpdate(struct VMUDevice* dev, float deltaTime);
-void gyVmuSerialMemorySink(struct VMUDevice* dev, uint8_t addr, uint8_t value);
+void gyVmuSerialMemorySink(struct VMUDevice* dev, int addr, uint8_t value);
 void gyVmuSerialP1Recv(struct VMUDevice* dev, uint8_t pins, uint8_t changedMask);
 
 int gyVmuSerialIfaceConfigMask(const struct VMUDevice* dev, int ifaceIndex);

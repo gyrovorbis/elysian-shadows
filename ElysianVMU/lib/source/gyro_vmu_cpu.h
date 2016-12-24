@@ -8,6 +8,8 @@ extern "C" {
 #include <stdint.h>
 #include "gyro_vmu_instr.h"
 
+#define GYRO_VMU_CPU_WORD_SIZE  8
+
 struct VMUDevice;
 
 int gyVmuCpuTick(struct VMUDevice* dev, float deltaTime);

@@ -182,6 +182,7 @@ One little routine does this series of operations:
 struct  VMUDevice;
 
 int     gyVmuMemRead(struct VMUDevice* dev, int addr);
+int     gyVmuMemReadLatch(struct VMUDevice* dev, int addr);
 void    gyVmuMemWrite(struct VMUDevice* dev, int addr, int val);
 
 #ifdef __cplusplus

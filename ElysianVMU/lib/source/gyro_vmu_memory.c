@@ -5,6 +5,7 @@
 #include "gyro_vmu_sfr.h"
 #include "gyro_vmu_buzzer.h"
 #include "gyro_vmu_display.h"
+#include "gyro_vmu_port1.h"
 
 extern void lcdrefresh(void);
 
@@ -17,22 +18,40 @@ inline static int getParity(unsigned char n) {
     return p;
 }
 
-int gyVmuMemRead(VMUDevice* dev, int addr) {
+/* On the VMU, all read-modify-write instructions read from
+ * latches, rather than the actual pin/port output to keep
+ * data coherent. Otherwise instructions would have unintended
+ * side-effects since latch and port values can be diffferent,
+ * meaning a SET1 could be setting more than just 1 bit.
+ */
+int gyVmuMemReadLatch(VMUDevice* dev, int addr) {
+    switch(addr) {
+    case SFR_ADDR_T1L:
+    case SFR_ADDR_T1H:
+    case SFR_ADDR_P1:
+    case SFR_ADDR_P3:   //3 and 7 really SHOULDN'T matter, since the port output should equal the latch...
+    case SFR_ADDR_P7:
+        return dev->memMap[addr/VMU_MEM_SEG_SIZE][addr%VMU_MEM_SEG_SIZE];
+    default:
+        return gyVmuMemRead(dev, addr); //fall through to memory for non-latch data
+    }
+}
 
-    /*
-    if(addr >= SFR_ADDR_XRAM_BASE && addr <= SFR_ADDR_XRAM_END) {
-        return dev->xram[dev->sfr[SFR_OFFSET(SFR_ADDR_XBNK)]][XRAM_OFFSET(addr)];
-    }*/
+int gyVmuMemRead(VMUDevice* dev, int addr) {
+    //Write out other DNE SFR register bits to return 1s for H regions.
+
+    //CHECK IF WRITE-ONLY REGISTER:
+    switch(addr) {
+    case SFR_ADDR_P1DDR:
+    case SFR_ADDR_P1FCR:
+    case SFR_ADDR_P3DDR:
+    case SFR_ADDR_MCR:
+    case SFR_ADDR_VCCR:
+        _gyLog(GY_DEBUG_WARNING, "MEMORY[%x]: READ from WRITE-ONLY register!", addr);
+        return 0xFF;    //Return (hopefully hardware-accurate) bullshit.
+    }
 
     switch(addr) {
-#if 0
-    case 0x166:
-        r = wram[0x1ff&((sfr[0x65]<<8)|sfr[0x64])];
-        if(sfr[0x63]&0x10)
-          if(!++sfr[0x64])
-        sfr[0x65]^=1;
-        return r;
-#endif
     case SFR_ADDR_VTRBF: { //Reading from separate working memory
         int r = dev->wram[0x1ff&((dev->sfr[SFR_OFFSET(SFR_ADDR_VRMAD2)]<<8)|dev->sfr[SFR_OFFSET(SFR_ADDR_VRMAD1)])];
         //must auto-increment pointer if VSEL_INCE is set
@@ -43,17 +62,18 @@ int gyVmuMemRead(VMUDevice* dev, int addr) {
                 dev->sfr[SFR_OFFSET(SFR_ADDR_VRMAD2)]^=1;
         return r;
     }
-    //case SFR_ADDR_P7: return SFR_P7_P71_MASK;
-    case 0x112:
+    case SFR_ADDR_T0L:
       return dev->timer0._base.tl;
-    case 0x114:
+    case SFR_ADDR_T0H:
       return dev->timer0._base.th;
-    case 0x11b:
+    case SFR_ADDR_T1L:
       return dev->timer1._base.tl;
-    case 0x11d:
+    case SFR_ADDR_T1H:
       return dev->timer1._base.th;
-    case 0x165:
-      return 0xfe|(dev->sfr[0x65]&1);
+    case SFR_ADDR_VRMAD2:
+      return 0xfe|(dev->sfr[SFR_OFFSET(SFR_ADDR_VRMAD2)]&0x1);
+    case SFR_ADDR_P1:
+        return dev->port1.pins;
     default: {
         int val = dev->memMap[addr/VMU_MEM_SEG_SIZE][addr%VMU_MEM_SEG_SIZE];
 #ifdef VMU_DEBUG
@@ -69,9 +89,7 @@ void _sconBitUpdate(uint8_t oldVal, uint8_t newVal, uint8_t bit, const char* nam
         int val = (newVal&(0x1<<bit));
         val = val? 1 : 0;
         _gyLog(GY_DEBUG_VERBOSE, "%s - %d", name, val);
-
     }
-
 }
 
 void _sconPrintUpdate(int port, uint8_t oldVal, uint8_t newVal) {
@@ -104,12 +122,6 @@ void gyVmuMemWrite(VMUDevice* dev, int addr, int val) {
       _gyLog(GY_DEBUG_VERBOSE, "WRITEMEM[%x] = %d", addr, val);
 #endif
 
-    //if(addr >= SFR_ADDR_XRAM_BASE && addr <= SFR_ADDR_XRAM_END) {
-        //dev->xram[dev->sfr[SFR_OFFSET(SFR_ADDR_XBNK)]][XRAM_OFFSET(addr)] = val;
-        //lcdrefresh();
-        //return;
-    //}
-
     //Check for SFRs with side-effects
     switch(addr) {
     case SFR_ADDR_ACC: {
@@ -139,16 +151,11 @@ void gyVmuMemWrite(VMUDevice* dev, int addr, int val) {
                 //EXT 0 changed without a proceeding JMPF!
             } else {
                 dev->pc = (dev->imem[dev->pc+1]<<8) | dev->imem[dev->pc+2];
-                //dev->imem = mode? dev->flash : dev->rom;
             }
 
             if(!mode) {
-                //dev->memMap[VMU_MEM_SEG_GP1]    = dev->ram[VMU_RAM_BANK0];
-                //dev->memMap[VMU_MEM_SEG_GP2]    = &dev->ram[VMU_RAM_BANK0][VMU_MEM_SEG_SIZE];
                 dev->imem = dev->rom;
             } else {
-                //dev->memMap[VMU_MEM_SEG_GP1]    = dev->ram[VMU_RAM_BANK1];
-                //dev->memMap[VMU_MEM_SEG_GP2]    = &dev->ram[VMU_RAM_BANK1][VMU_MEM_SEG_SIZE];
                 dev->imem = dev->flash;
             }
 
@@ -206,13 +213,18 @@ void gyVmuMemWrite(VMUDevice* dev, int addr, int val) {
         if(!(dev->sfr[SFR_OFFSET(SFR_ADDR_T1CNT)]&SFR_T1CNT_T1HRUN_MASK))
             dev->timer1._base.th = val;
         break;
+    case SFR_ADDR_P3DDR:
+        if((dev->sfr[SFR_OFFSET(SFR_ADDR_EXT)]&SFR_EXT_MASK) == SFR_EXT_USER) {
+            _gyLog(GY_DEBUG_WARNING, "MEMORY WRITE: Attempted to write to P3DDR register which is not allowed in user mode!");
+        }
+        break;
     case SFR_ADDR_SCON0:
         _sconPrintUpdate(0, dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)], val);
 #if 0
         gyVmuSerialTcpSconUpdate(dev, SFR_ADDR_SCON0, val);
 #endif
-        dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)] = val;
-        return;
+        //dev->sfr[SFR_OFFSET(SFR_ADDR_SCON0)] = val;
+        //return;
         //return; Let SBUF0 be written with the byte?
     case SFR_ADDR_SCON1:
 #if 0
@@ -235,18 +247,20 @@ void gyVmuMemWrite(VMUDevice* dev, int addr, int val) {
        // lcdrefresh();
     default: break;
     }
+
+    gyVmuSerialMemorySink(dev, addr, val);
+
     //do actual memory write
+    dev->memMap[addr/VMU_MEM_SEG_SIZE][addr%VMU_MEM_SEG_SIZE] = val;
 
     if((addr >= SFR_ADDR_XRAM_BASE && addr <= SFR_ADDR_XRAM_END)/* || addr == SFR_ADDR_STAD || addr == SFR_ADDR_XBNK*/) {
         if(dev->memMap[addr/VMU_MEM_SEG_SIZE][addr%VMU_MEM_SEG_SIZE] != val) {
             dev->display.screenChanged = 1;
         }
     }
-#if 0
-    dev->memMap[(addr&VMU_MEM_SEG_MASK)>>VMU_MEM_SEG_POS][addr&VMU_MEM_OFFSET_MASK] = val;
-#else
-    dev->memMap[addr/VMU_MEM_SEG_SIZE][addr%VMU_MEM_SEG_SIZE] = val;
-#endif
+
+    gyVmuPort1MemorySink(dev, addr, val);
+
 
     //Check for buzzer state change
     if(addr == SFR_ADDR_T1CNT || addr == SFR_ADDR_T1LR || addr == SFR_ADDR_T1LC) {

@@ -29,6 +29,7 @@ struct  GYAudioSource;
 struct  GYAudBuffer;
 class   QLabel;
 class   VmuTcpDialog;
+class   VmuComDialog;
 class   QTextCodec;
 
 namespace Ui {
@@ -89,6 +90,7 @@ private Q_SLOTS:
     void on_action16x_triggered();
     void on_action32x_triggered();
     void on_action64x_triggered();
+    void on_actionSerial_COM_Connection_Manager_triggered();
 
 private:
 
@@ -121,6 +123,7 @@ private:
     QImage              _eyecatchImage;
     QString             _romDir;
     VmuTcpDialog*       _tcpDialog          = nullptr;
+    VmuComDialog*       _comDialog          = nullptr;
     QLabel*             _fbLabel            = nullptr;
     QLabel*             _statusLabel        = nullptr;
     QLabel*             _iconLabel          = nullptr;

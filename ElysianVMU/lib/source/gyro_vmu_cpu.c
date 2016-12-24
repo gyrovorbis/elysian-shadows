@@ -267,7 +267,7 @@ static int gyVmuCpuInstrExecute(VMUDevice* dev, const VMUInstr* instr, const VMU
         break;
     }
     case OPCODE_BPC: {
-        int mem = gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR]);
+        int mem = gyVmuMemReadLatch(dev, operands->addrMode[ADDR_MODE_DIR]);
         if(mem & (1<<operands->addrMode[ADDR_MODE_BIT])) {
             gyVmuMemWrite(dev, operands->addrMode[ADDR_MODE_DIR], (mem&~(1<<operands->addrMode[ADDR_MODE_BIT])));
             //dev->pc += (signed char)operands->addrMode[ADDR_MODE_REL];
@@ -298,7 +298,7 @@ static int gyVmuCpuInstrExecute(VMUDevice* dev, const VMUInstr* instr, const VMU
         break;
     }
     case OPCODE_DBNZ: {
-        int mem = gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR])-1;
+        int mem = gyVmuMemReadLatch(dev, operands->addrMode[ADDR_MODE_DIR])-1;
         gyVmuMemWrite(dev, operands->addrMode[ADDR_MODE_DIR], mem);
         if(mem != 0) {
             //dev->pc += (signed char)operands->addrMode[ADDR_MODE_REL];
@@ -320,12 +320,12 @@ static int gyVmuCpuInstrExecute(VMUDevice* dev, const VMUInstr* instr, const VMU
         _push(dev, gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR]));
         break;
     case OPCODE_INC: {
-        gyVmuMemWrite(dev, operands->addrMode[ADDR_MODE_DIR], gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR])+1);
+        gyVmuMemWrite(dev, operands->addrMode[ADDR_MODE_DIR], gyVmuMemReadLatch(dev, operands->addrMode[ADDR_MODE_DIR])+1);
         break;
     }
     case OPCODE_INC_IND: {
         int addr = _fetchRegIndAddr(dev, operands->addrMode[ADDR_MODE_IND]);
-        gyVmuMemWrite(dev, addr, gyVmuMemRead(dev, addr)+1);
+        gyVmuMemWrite(dev, addr, gyVmuMemReadLatch(dev, addr)+1);
         break;
     }
     case OPCODE_BP:
@@ -450,7 +450,7 @@ static int gyVmuCpuInstrExecute(VMUDevice* dev, const VMUInstr* instr, const VMU
         break;
     }
     case OPCODE_NOT1: {
-        gyVmuMemWrite(dev, operands->addrMode[ADDR_MODE_DIR], gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR]) ^ (0x1u<<operands->addrMode[ADDR_MODE_BIT]));
+        gyVmuMemWrite(dev, operands->addrMode[ADDR_MODE_DIR], gyVmuMemReadLatch(dev, operands->addrMode[ADDR_MODE_DIR]) ^ (0x1u<<operands->addrMode[ADDR_MODE_BIT]));
         break;
     }
     case OPCODE_RETI: {
@@ -520,7 +520,7 @@ static int gyVmuCpuInstrExecute(VMUDevice* dev, const VMUInstr* instr, const VMU
         break;
     }
     case OPCODE_CLR1: {
-        gyVmuMemWrite(dev, operands->addrMode[ADDR_MODE_DIR], gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR])& ~(0x1u<<operands->addrMode[ADDR_MODE_BIT]));
+        gyVmuMemWrite(dev, operands->addrMode[ADDR_MODE_DIR], gyVmuMemReadLatch(dev, operands->addrMode[ADDR_MODE_DIR])& ~(0x1u<<operands->addrMode[ADDR_MODE_BIT]));
         break;
     }
     case OPCODE_RORC: {
@@ -569,7 +569,7 @@ static int gyVmuCpuInstrExecute(VMUDevice* dev, const VMUInstr* instr, const VMU
         gyVmuMemWrite(dev, SFR_ADDR_ACC, dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)]&gyVmuMemRead(dev, _fetchRegIndAddr(dev, operands->addrMode[ADDR_MODE_IND])));
         break;
     case OPCODE_SET1: {
-        gyVmuMemWrite(dev, operands->addrMode[ADDR_MODE_DIR], gyVmuMemRead(dev, operands->addrMode[ADDR_MODE_DIR])|(0x1u<<operands->addrMode[ADDR_MODE_BIT]));
+        gyVmuMemWrite(dev, operands->addrMode[ADDR_MODE_DIR], gyVmuMemReadLatch(dev, operands->addrMode[ADDR_MODE_DIR])|(0x1u<<operands->addrMode[ADDR_MODE_BIT]));
         break;
     }
     case OPCODE_ROLC:  {
@@ -667,9 +667,11 @@ int gyVmuCpuTick(VMUDevice* dev, float deltaTime) {
         gyVmuCpuInstrExecuteNext(dev);
         gyVmuTimersUpdate(dev);
         gyVmuGamepadPoll(dev);
+        gyVmuPort1PollRecv(dev);
         _serviceInterrupts(dev);
         float cpuTime = gyVmuOscSecPerCycle(dev)*(float)_instrMap[dev->curInstr.instrBytes[INSTR_BYTE_OPCODE]].cc;
         time += cpuTime;
+        gyVmuSerialUpdate(dev, cpuTime);
         gyVmuDisplayUpdate(dev, cpuTime);
         ++cycle;
     }

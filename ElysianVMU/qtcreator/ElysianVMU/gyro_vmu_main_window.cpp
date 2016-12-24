@@ -14,7 +14,8 @@
 #include "gyro_vmu_vms.h"
 #include "gyro_vmu_vmi.h"
 #include "gyro_vmu_main_window.hpp"
-#include "gyro_vmu_tcp_dialog.h"
+#include "gyro_vmu_tcp_dialog.hpp"
+#include "gyro_vmu_com_dialog.hpp"
 #include "gyro_vmu_disassembler.h"
 #include "ui_gyro_vmu_main_window.h"
 #include <gyro_vmu_display.h>
@@ -123,6 +124,7 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _iconListening(ICON_LISTENING_PATH),
     _iconConnected(ICON_CONNECTED_PATH),
     _tcpDialog(new VmuTcpDialog),
+    _comDialog(new VmuComDialog),
     _statusLabel(new QLabel("HALTED: No ROM Image")),
     _iconLabel(new QLabel()),
     _japCodec(QTextCodec::codecForName(VMU_TEXT_CODEC))
@@ -211,6 +213,7 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
 
     _dev = gyVmuDeviceCreate();
     _tcpDialog->setVmuDevice(_dev);
+    _comDialog->setVmuDevice(_dev);
 
 #ifdef BIOS_IMAGE
      gyloadbios(_dev, BIOS_IMAGE);
@@ -297,6 +300,7 @@ VMUMainWindow::~VMUMainWindow(void)
     _gyPop(1);
     gyDebugUninit();
     fclose(_logFile);
+    delete _comDialog;
     delete _tcpDialog;
     delete _ui;
 }
@@ -689,6 +693,7 @@ void VMUMainWindow::_saveSettings(void) {
     }
 
     _tcpDialog->saveSettings(settings);
+    _comDialog->saveSettings(settings);
 
 }
 
@@ -719,6 +724,7 @@ void VMUMainWindow::_loadSettings(void) {
     }
 
     _tcpDialog->loadSettings(settings);
+    _comDialog->loadSettings(settings);
 
     _gyPop(1);
 }
@@ -1082,4 +1088,9 @@ void VMUMainWindow::on_action32x_triggered()
 void VMUMainWindow::on_action64x_triggered()
 {
     _resizeWindowFromScreenZoom(64);
+}
+
+void VMUMainWindow::on_actionSerial_COM_Connection_Manager_triggered()
+{
+    _comDialog->show();
 }
