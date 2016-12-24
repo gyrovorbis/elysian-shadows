@@ -1,6 +1,8 @@
 #include "gyro_vmu_device.h"
 #include "gyro_vmu_cpu.h"
 #include "gyro_vmu_tcp.h"
+#include "gyro_vmu_serial.h"
+#include "gyro_vmu_port1.h"
 #include <gyro_system_api.h>
 #include <gyro_vmu_buzzer.h>
 #include <gyro_vmu_gamepad.h>
@@ -14,6 +16,7 @@ VMUDevice* gyVmuDeviceCreate(void) {
     memset(device, 0, sizeof(VMUDevice));
 
     gyVmuBuzzerInit(device);
+    gyVmuSerialInit(device);
 
     return device;
 }

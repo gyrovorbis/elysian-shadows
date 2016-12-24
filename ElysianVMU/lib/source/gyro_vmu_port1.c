@@ -4,30 +4,37 @@
 #include <gyro_system_api.h>
 #include <assert.h>
 
-static void _writePin(VMUDevice* dev, uint8_t pin, uint8_t value, PORT1_PIN_SRC src) {
-    assert(0); //YOU NEED TO HAVE CALLED BEGIN WRITE FIRST, DICKWEASEL!
+/* Have to make the whole "PENDING PINS" mechanism look at ALL changes to the pins
+ * (P1, P1DDR, P1FCR, P1 Serial Data) and modify the resultant "pins" based on ALL
+ * values then only broadcast pins that are configured for Serial, configured as
+ * output, and changed!
+ *
+ */
 
-    //check if we're even modifying anything
-    if(((dev->port1.pins>>pin)&0x1) != value) {
-        //check if the pin is even configured as an output
-        if(gyVmuPort1PinDir(dev, pin) == PORT1_PIN_OUT) {
-            //Check whether pin is configured to receive data from the source
-            int pinSrc = gyVmuPort1PinSrc(dev, pin);
-            if(pinSrc == src) {
-                //add pin to pendingPins
-                if(value) dev->port1.pendingPins |= (0x1<<pin);
-                else dev->port1.pendingPins &= ~(0x1<<pin);
-                dev->port1.pendingMask |= (0x1<<pin);
-            }
-        }
-    }
+/*
+ *
+ * INPUT SIGNALS:
+ * port1.serialInSignals - serial signals as input to port1
+ * port1.extSignals - external signals applied to port1
+ * SFR_ADDR_P1 - latch value of port1
+ *
+ * also taking into account
+ * P1DDR
+ * P1FCR
+ *
+ */
+
+inline static void _updatePin(VMUDevice* dev, uint8_t pin) {
+    assert(dev->port1.writing);
+    //add pin to pendingPins
+    dev->port1.pendingMask |= (0x1<<pin);
 }
 
-static void _writePins(VMUDevice* dev, uint8_t pins, PORT1_PIN_SRC src) {
+inline static void _updatePins(VMUDevice* dev, uint8_t mask) {
     gyVmuPort1PinsWriteBegin(dev);
-    for(uint8_t i = 0; i < PORT1_SIZE; ++i) {
-        _writePin(dev, i, (pins>>i)&0x1, src);
-    }
+    for(uint8_t i = 0; i < PORT1_SIZE; ++i)
+        if(mask&(0x1<<i))
+            _updatePin(dev, i);
     gyVmuPort1PinsWriteEnd(dev);
 }
 
@@ -36,7 +43,6 @@ void gyVmuPort1PinsWriteBegin(struct VMUDevice* dev) {
         _gyLog(GY_DEBUG_WARNING, "Attempting write to P1 before last write ended.");
     }
     dev->port1.writing = true;
-    dev->port1.pendingPins = 0;
     dev->port1.pendingMask = 0;
 }
 
@@ -45,11 +51,43 @@ void gyVmuPort1PinsWriteEnd(struct VMUDevice* dev) {
         _gyLog(GY_DEBUG_WARNING, "Attempting to end writing to P1 before a write even began.");
     }
 
+    int writeSerialOut  = 0;
+    int newPinsVal      = 0;
+
     //Flush the pins if they have been modified
     if(dev->port1.pendingMask) {
-        const uint8_t newPins = dev->port1.pendingPins & dev->port1.pendingMask;
-        dev->port1.pins = newPins;
-        //POLYRMOPHIC SERIAL/GPIO/TCP TRANSMIT(newPins)
+        for(uint8_t i = 0; i < PORT1_SIZE; ++i) {
+            const uint8_t curMask = (0x1<<i);
+            //current pin has pending change
+            if(dev->port1.pendingMask&curMask) {
+                if(gyVmuPort1PinDir(dev, i) == PORT1_PIN_IN) {
+                    //Input comes from external signals
+                    newPinsVal |= (dev->port1.extSignals&curMask);
+                } else {
+                    if(gyVmuPort1PinSrc(dev, i) == PORT1_PIN_DATA) {
+                        //data output comes from latch
+                        newPinsVal |= (dev->sfr[SFR_OFFSET(SFR_ADDR_P1)]&curMask);
+                    } else { //serial output
+                        //SI0 and SI1 are tied to SO0 and SO1 when used as output
+                        int inputSignalMask = (i == VMU_SERIAL_SI0 || i == VMU_SERIAL_SI1)?
+                                    (curMask>>0x1) : curMask;
+
+                        //Serial output is SIO pin ORed with P1 latch (so P1 latch better be reset to 0!)
+                        newPinsVal |= ((dev->port1.serialInSignals&inputSignalMask)
+                                      || (dev->sfr[SFR_OFFSET(SFR_ADDR_P1)]&curMask));
+
+                        //Serial output pin has changed!
+                        if((newPinsVal&curMask) != (dev->port1.pins&curMask)) writeSerialOut = 1;
+                    }
+                }
+            }
+        }
+
+        //Update pins
+        dev->port1.pins &= ~dev->port1.pendingMask;
+        dev->port1.pins |= newPinsVal;
+        //If any serial output pins changed, write to serial
+        if(writeSerialOut && dev->port1.ext) dev->port1.ext->write(dev->port1.ext->context, &dev->port1.pins, sizeof(dev->port1.pins));
     }
     dev->port1.writing = 0;
 }
@@ -79,6 +117,7 @@ void gyVmuPort1MemorySink(VMUDevice *dev, int addr, uint8_t val) {
                 _gyLog(GY_DEBUG_VERBOSE, "P1.7: %s", active? "out" : "in");
             }
         }
+        _updatePins(dev, 0xff);
         _gyPop(1);
         break;
     case SFR_ADDR_P1FCR:
@@ -103,8 +142,8 @@ void gyVmuPort1MemorySink(VMUDevice *dev, int addr, uint8_t val) {
             } else if(i == SFR_P1FCR_P17FCR_POS) {
                 _gyLog(GY_DEBUG_VERBOSE, "Port1.7 Output: %s", active? "PWM" : "P1.7 Data");
             }
-
         }
+        _updatePins(dev, 0xff);
         _gyPop(1);
         break;
     case SFR_ADDR_P1: {
@@ -113,12 +152,12 @@ void gyVmuPort1MemorySink(VMUDevice *dev, int addr, uint8_t val) {
             if(gyVmuPort1PinSrc(dev, i) == PORT1_PIN_DATA &&
                     gyVmuPort1PinDir(dev, i) == PORT1_PIN_OUT) {
                 tx = 1;
-                _writePins(dev, val, PORT1_PIN_DATA);
                 break;
             }
         }
+        _updatePins(dev, 0xff);
         if(!tx) {
-            gyPrintf(GY_DEBUG_WARNING, "P1 data write [%d] with no output pins sourced from data!", val);
+            _gyLog(GY_DEBUG_WARNING, "P1 data write [%d] with no output pins sourced from data!", val);
         }
     }
         break;
@@ -126,52 +165,68 @@ void gyVmuPort1MemorySink(VMUDevice *dev, int addr, uint8_t val) {
 }
 
 PORT1_PIN_SRC gyVmuPort1PinSrc(const struct VMUDevice* dev, uint8_t pin) {
-    return (uint8_t)dev->memMap[SFR_OFFSET(SFR_ADDR_P1FCR)]&(0x1<<pin);
+    return (uint8_t)dev->sfr[SFR_OFFSET(SFR_ADDR_P1FCR)]&(0x1<<pin);
 }
 
 PORT1_PIN_DIR gyVmuPort1PinDir(const struct VMUDevice* dev, uint8_t pin) {
-    return (uint8_t)dev->memMap[SFR_OFFSET(SFR_ADDR_P1DDR)]&(0x1<<pin);
+    return (uint8_t)dev->sfr[SFR_OFFSET(SFR_ADDR_P1DDR)]&(0x1<<pin);
 }
 
 void gyVmuPort1PinSerialWrite(struct VMUDevice* dev, uint8_t pin, uint8_t value) {
-    _writePin(dev, pin, value, PORT1_PIN_SERIAL);
+    if(value) dev->port1.serialInSignals |= (0x1<<pin);
+    else dev->port1.serialInSignals &= ~(0x1<<pin);
+    _updatePin(dev, pin);
 }
 
 void gyVmuPort1PinsSerialWrite(VMUDevice *dev, uint8_t value) {
-    _writePins(dev, value, PORT1_PIN_SERIAL);
+    gyVmuPort1PinsWriteBegin(dev);
+    for(uint8_t i = 0; i < VMU_SERIAL_SIGNAL_COUNT; ++i)
+        gyVmuPort1PinSerialWrite(dev, i, value&(0x1<<i));
+    gyVmuPort1PinsWriteEnd(dev);
 }
 
 void gyVmuPort1PollRecv(struct VMUDevice* dev) {
     uint8_t recvPinMask = 0;
     for(uint8_t i = 0; i < PORT1_SIZE; ++i) {
-        if(gyVmuPort1PinDir(dev, i) == PORT1_PIN_OUT) {
+        if(gyVmuPort1PinDir(dev, i) == PORT1_PIN_IN) {
             recvPinMask |= (0x1<<i);
         }
     }
 
     //Don't bother polling anything if we don't have any input pins
     if(recvPinMask) {
-        if(/*PHYSICAL_LAYER_READY_RECV(dev)*/1) {
-            int newPinsState    = 0;//PHYSICAL_LAYER_RECV();
-            int changedMask     = 0;
+        if(dev->port1.ext && dev->port1.ext->readyRead(dev->port1.ext->context)) {
+            uint8_t newPinsState;
+            if(dev->port1.ext->read(dev->port1.ext->context, &newPinsState, sizeof(newPinsState))
+                    == sizeof(newPinsState))
+            {
+                uint8_t changedMask     = 0;
 
-            for(uint8_t i = 0; i < PORT1_SIZE; ++i) {
-                const uint8_t curMask = 0x1<<i;
-                //Check if the pin is set to receive data
-                if(recvPinMask&curMask) {
-                    const newHigh = newPinsState&curMask;
-                    //Check if the state of the pin changed
-                    if(dev->port1.pins&curMask != newHigh) {
-                        changedMask |= curMask;
-                        if(newHigh) dev->port1.pins |= newHigh;
-                        else dev->port1.pins &= ~newHigh;
+                for(uint8_t i = 0; i < PORT1_SIZE; ++i) {
+                    const uint8_t curMask = 0x1<<i;
+                    //Check if the pin is set to receive data
+                    if(recvPinMask&curMask) {
+                        const uint8_t newHigh = newPinsState&curMask;
+                        //Check if the state of the pin changed
+                        if((dev->port1.extSignals&curMask) != newHigh) {
+                            changedMask |= curMask;
+                            if(newHigh) dev->port1.extSignals |= newHigh;
+                            else dev->port1.extSignals &= ~newHigh;
+                        }
                     }
                 }
-            }
-            //Notify the upper layer of any state change on relevant pins
-            if(changedMask) {
-                gyVmuSerialP1Recv(dev, newPinsState, changedMask);
+
+                _updatePins(dev, changedMask);
+
+                //Notify the upper layer of any state change on relevant pins
+                if(changedMask) {
+                    gyVmuSerialP1Recv(dev, newPinsState, changedMask);
+                }
             }
         }
     }
+}
+
+void gyVmuPort1ExtConnect(struct VMUDevice* dev, VMUPort1Ext* ext) {
+    dev->port1.ext = ext;
 }

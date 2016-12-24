@@ -1,4 +1,4 @@
-#include "gyro_vmu_tcp_dialog.h"
+#include "gyro_vmu_tcp_dialog.hpp"
 #include "ui_gyro_vmu_tcp_dialog.h"
 #include "gyro_vmu_serial.h"
 #include "gyro_system_api.h"

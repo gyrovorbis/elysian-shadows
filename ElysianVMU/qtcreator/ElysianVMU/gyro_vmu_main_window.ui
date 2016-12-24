@@ -45,7 +45,7 @@
      <x>0</x>
      <y>0</y>
      <width>320</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -78,6 +78,7 @@
      </property>
      <addaction name="actionQuick_Connect"/>
      <addaction name="actionTCP_Connection_Manager"/>
+     <addaction name="actionSerial_COM_Connection_Manager"/>
     </widget>
     <addaction name="actionEmulate_Audio"/>
     <addaction name="actionEnable_Pixel_Ghosting"/>
@@ -289,6 +290,11 @@
    </property>
    <property name="text">
     <string>Preserve Aspect Ratio</string>
+   </property>
+  </action>
+  <action name="actionSerial_COM_Connection_Manager">
+   <property name="text">
+    <string>Serial/COM Connection Manager</string>
    </property>
   </action>
  </widget>

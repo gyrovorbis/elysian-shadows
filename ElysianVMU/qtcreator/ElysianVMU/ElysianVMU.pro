@@ -1,7 +1,7 @@
 include(../../../qtcreator/ESDev/ESDev.pri)
 TEMPLATE = app
 TARGET = ElysianVMU
-QT += gui opengl
+QT += gui opengl serialport
 
 win32 {
     DESTDIR = ../../../executable
@@ -44,7 +44,9 @@ SOURCES += ../../console/main.cpp \
     ../../lib/source/gyro_vmu_disassembler.c \
     ../../lib/source/gyro_vmu_tcp.c \
     ../../lib/source/gyro_vmu_serial.c \
-    ../../lib/source/gyro_vmu_port1.c
+    ../../lib/source/gyro_vmu_port1.c \
+    gyro_vmu_com_dialog.cpp \
+    ../../lib/source/gyro_vmu_port7.c
 
 
 HEADERS += \
@@ -59,19 +61,21 @@ HEADERS += \
     ../../lib/source/gyro_vmu_memory.h \
     ../../lib/source/gyro_vmu_timers.h \
     ../../lib/source/gyro_vmu_osc.h \
-    gyro_vmu_main_window.hpp \
     ../../lib/source/gyro_vmu_buzzer.h \
     ../../lib/source/gyro_vmu_flash.h \
     ../../lib/source/gyro_vmu_vms.h \
     ../../lib/source/gyro_vmu_vmi.h \
     ../../lib/source/gyro_vmu_battery.h \
     ../../lib/source/gyro_vmu_util.h \
-    gyro_vmu_tcp_dialog.h \
     ../../lib/source/gyro_vmu_version.h \
     ../../lib/source/gyro_vmu_disassembler.h \
     ../../lib/source/gyro_vmu_tcp.h \
     ../../lib/source/gyro_vmu_serial.h \
-    ../../lib/source/gyro_vmu_port1.h
+    ../../lib/source/gyro_vmu_port1.h \
+    gyro_vmu_com_dialog.hpp \
+    gyro_vmu_main_window.hpp \
+    gyro_vmu_tcp_dialog.hpp \
+    ../../lib/source/gyro_vmu_port7.h
 
 INCLUDEPATH += ../../../libGyro/include \
     ../../lib/source
@@ -95,7 +99,8 @@ else:unix: PRE_TARGETDEPS += $$OUT_PWD/../../../libGyro/qtcreator/libGyro/liblib
 
 FORMS += \
     gyro_vmu_main_window.ui \
-    gyro_vmu_tcp_dialog.ui
+    gyro_vmu_tcp_dialog.ui \
+    gyro_vmu_com_dialog.ui
 
 
 macx {
