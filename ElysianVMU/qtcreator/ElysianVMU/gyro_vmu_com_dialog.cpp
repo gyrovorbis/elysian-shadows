@@ -353,7 +353,7 @@ qint64 VmuComDialog::_writeSerial(const char *data, qint64 bytes) {
     if(written == -1) {
         _gyLog(GY_DEBUG_ERROR, "COULDNT WRITE!");
     } else if(written != bytes) {
-        _gyLog(GY_DEBUG_ERROR, "Only wrote %" PRIu64 " of %" PRIu64 "bytes!!!", written, bytes);
+        _gyLog(GY_DEBUG_ERROR, "Only wrote %lld of %lld bytes!!!", written, bytes);
     } else {
         _pendingBytes += written;
         _writeTimeout->start();
@@ -365,7 +365,7 @@ qint64 VmuComDialog::_writeSerial(const char *data, qint64 bytes) {
 
 void VmuComDialog::onWriteTimeout(void) {
     if(_pendingBytes) {
-        _gyLog(GY_DEBUG_ERROR, "Timed out writing after %d msec with %" PRIu64 " bytes left!", _writeTimeout->interval(), _pendingBytes);
+        _gyLog(GY_DEBUG_ERROR, "Timed out writing after %d msec with %lld bytes left!", _writeTimeout->interval(), _pendingBytes);
         _pendingBytes = 0;
     }
 }
