@@ -22,6 +22,8 @@ extern "C" {
 #define VMU_MEM_OFFSET_MASK         0x7f
 #define VMU_MEM_SEG_SIZE            128
 
+struct LCDFile;
+
 typedef enum VMU_RAM_BANK {
     VMU_RAM_BANK0,
     VMU_RAM_BANK1
@@ -47,7 +49,6 @@ typedef struct VMUDevice {
 
     VMUInstr        curInstr;
 
-
     VMUTimer0       timer0;
     VMUTimer1       timer1;
     VMUPort1        port1;
@@ -55,6 +56,7 @@ typedef struct VMUDevice {
     VMUBuzzer       buzzer;
     VMUGamepad      gamepad;
     VMUDisplay      display;
+    struct LCDFile* lcdFile;
 
     uint16_t        intReq;
     uint16_t        intMask;

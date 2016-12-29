@@ -1,6 +1,8 @@
 #ifndef GYRO_VMU_BUZZER_H
 #define GYRO_VMU_BUZZER_H
 
+#include <stdint.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -22,6 +24,7 @@ int     gyVmuBuzzerInit(struct VMUDevice* dev);
 int     gyVmuBuzzerUninit(struct VMUDevice* dev);
 void    gyVmuBuzzerReset(struct VMUDevice* dev);
 
+void    gyVmuBuzzerMemorySink(struct VMUDevice* dev, int addr, uint8_t value);
 void    gyVmuBuzzerSoundPlay(struct VMUDevice* dev, int period, int pulseWidth, int db);
 void    gyVmuBuzzerSoundStop(struct VMUDevice* dev);
 int     gyVmuBuzzerEnabled(const struct VMUDevice* dev);

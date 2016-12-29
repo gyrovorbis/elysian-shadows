@@ -1,4 +1,5 @@
 #include "gyro_vmu_device.h"
+#include "gyro_vmu_lcd.h"
 #include "gyro_vmu_cpu.h"
 #include "gyro_vmu_tcp.h"
 #include "gyro_vmu_serial.h"
@@ -40,23 +41,32 @@ int gyVmuDeviceRestore(VMUDevice* dev, const char *path) {
 }
 
 int gyVmuDeviceUpdate(VMUDevice* device, float deltaTime) {
-    if(deltaTime >= gyVmuOscSecPerCycle(device)) {
-        //gyVmuSerialUpdate(device, deltaTime);
 
-
-#if 0
-#ifdef VMU_TRIGGER_SPEED_FACTOR
-        if(device->gamepad.lt) deltaTime /= VMU_TRIGGER_SPEED_FACTOR;
-        if(device->gamepad.rt) deltaTime *= VMU_TRIGGER_SPEED_FACTOR;
-#endif
-#endif
-        gyVmuCpuTick(device, deltaTime);
-
+    if(device->lcdFile) {
+        gyVmuLcdFileUpdate(device, deltaTime);
+        gyVmuDisplayUpdate(device, deltaTime);
         return 1;
-
     } else {
 
-        return 0;
+        if(deltaTime >= gyVmuOscSecPerCycle(device)) {
+            //gyVmuSerialUpdate(device, deltaTime);
+            gyVmuGamepadPoll(device);
+
+
+    #if 0
+    #ifdef VMU_TRIGGER_SPEED_FACTOR
+            if(device->gamepad.lt) deltaTime /= VMU_TRIGGER_SPEED_FACTOR;
+            if(device->gamepad.rt) deltaTime *= VMU_TRIGGER_SPEED_FACTOR;
+    #endif
+    #endif
+            gyVmuCpuTick(device, deltaTime);
+
+            return 1;
+
+        } else {
+
+            return 0;
+        }
     }
 }
 

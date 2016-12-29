@@ -426,7 +426,7 @@ void DialogSystem::startDialog(Dialog *const dialog, EventMonitor*const monitor)
 
 	_monitor = monitor;
 	_curDialog = dialog;
-	_curScreen.screen = dialog->getScreen(0);
+    _curScreen.screen = dialog->getScreen(dialog->getStartScreen()-1);
     getAudioSys()->playSfxChannel(-1, *_sfxOpen);
 	_updateCamera();
     _facePlayer();
