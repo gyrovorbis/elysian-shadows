@@ -331,7 +331,7 @@ void VMUMainWindow::closeEvent(QCloseEvent* /*event*/) {
 void VMUMainWindow::_update(void) {
     bool ranThisFrame = false;
 
-    if(!_running) return;
+    if(!_running && !_dev->lcdFile) return;
 
     auto ticks = gyTimerTicks();
     auto deltaTicks = ticks-_prevTicks;
@@ -405,10 +405,11 @@ void VMUMainWindow::_update(void) {
             _tcpDialog->updateConnectionStatus();
         }
 #endif
+        if(!_dev->lcdFile)
         _updatePConRegister();
         _updateIcon();
 //        lcdrefresh();
-        repaint();
+        //repaint();
         //if(gyVmuDisplayUpdate(_dev, (float)deltaTicks/1000000000.0f))
        // if(_dev->display.xramChanged) {
        //     _dev->display.xramChanged = 0;
@@ -419,24 +420,30 @@ void VMUMainWindow::_update(void) {
 
 
 void VMUMainWindow::paintEvent(QPaintEvent*) {
+    bool updatedFb = false;
+
     //Update framebuffer texture based on VMU LCD screen state
     {
         QPainter painter(&_fb);
-        if(!gyVmuDisplayEnabled(_win->_dev)) {
+        if(!gyVmuDisplayEnabled(_dev)) {
             painter.drawPixmap(QPoint(0,0), _win->_iconES);
-        } else if(gyVmuDisplayUpdateEnabled(_win->_dev)) {
+            updatedFb = true;
+        } else if(gyVmuDisplayUpdateEnabled(_dev) && _dev->display.screenChanged) {
             for(int y = 0; y < VMU_DISP_PIXEL_HEIGHT; ++y) {
                 for(int x = 0; x < VMU_DISP_PIXEL_WIDTH; ++x) {
                     int col = gyVmuDisplayPixelGhostValue(_dev, x, y);
                     painter.fillRect(x, y, 1, 1, QBrush(QColor(col, col, col, 255)));
+                    updatedFb = true;
                 }
             }
+            _dev->display.screenChanged = 0;
         }
     }
 
     //Resize framebuffer to the viewport size to produce final image
     int width = centralWidget()->width();
     int height = centralWidget()->height();
+    //if(updatedFb || width != _prevFbWidth || height != _prevFbHeight) {
     QPixmap scaledFb = _fb.scaled(width, height,
                                   _ui->actionPreserve_Aspect_Ratio->isChecked()?
                                       Qt::KeepAspectRatio : Qt::IgnoreAspectRatio);
@@ -452,9 +459,6 @@ void VMUMainWindow::paintEvent(QPaintEvent*) {
         float leftOverH     = 1.0f - ((float)VMU_DISP_PIXEL_HEIGHT/(float)VMU_FB_DEFAULT_HEIGHT);
         float iconHeight    = leftOverH*(1.0f-yMargin)*(float)frameHeight;
         float iconY         = frameHeight-iconHeight-((yMargin)*leftOverH*(float)frameHeight)/2.0f;
-#ifndef Q_OS_MAC //Add menubar offset to icon's y
-      //  if(_ui->menubar->isVisible()) iconY += _ui->menubar->height();
-#endif
         float xMargin       = 1.0f/20.0f;
         float leftOverW     = 1.0f - xMargin;
         float iconWidth     = (2.0f/11.0f)*(float)frameWidth*leftOverW;
@@ -473,6 +477,11 @@ void VMUMainWindow::paintEvent(QPaintEvent*) {
 
     //Update the pixmap within the central widget
     _fbLabel->setPixmap(scaledFb);
+
+    _prevFbWidth = width;
+    _prevFbHeight = height;
+
+  //  }
 
 }
 
@@ -519,19 +528,28 @@ bool VMUMainWindow::loadRom(QString filepath) {
     }
 
     if(info.exists() && gyVmuFlashLoadImage(_dev, filepath.toStdString().c_str())) {
-        _vmsHeader = (VMSFileInfo*)&_dev->flash[VMU_FLASH_GAME_VMS_HEADER_OFFSET];
+        if(_dev->lcdFile) {
+            _statusLabel->setText("Playing animation...");
+            _running = true;
+            _pushRecentRom(filepath);
+            _gyLog(GY_DEBUG_VERBOSE, "Playing LCD animation.");
+            resetCpu();
+            return true;
+        } else {
+            _vmsHeader = (VMSFileInfo*)&_dev->flash[VMU_FLASH_GAME_VMS_HEADER_OFFSET];
 
-        resetCpu();
+            resetCpu();
 
-        //_statusLabel->setText(QString("RUNNING: ")+filepath.split("/").last());
-        char string[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+1];
-        gyVmuVmsHeaderVmuDescGet(_vmsHeader, string);
-        _statusLabel->setText(QString("RUNNING: ")+_japCodec->toUnicode(string));
-        _loadIcons();
-        _gyLog(GY_DEBUG_VERBOSE, "Running VMU CPU.");
-        _running = true;
-        _pushRecentRom(filepath);
-        return true;
+            //_statusLabel->setText(QString("RUNNING: ")+filepath.split("/").last());
+            char string[VMU_VMS_FILE_INFO_VMU_DESC_SIZE+1];
+            gyVmuVmsHeaderVmuDescGet(_vmsHeader, string);
+            _statusLabel->setText(QString("RUNNING: ")+_japCodec->toUnicode(string));
+            _loadIcons();
+            _gyLog(GY_DEBUG_VERBOSE, "Running VMU CPU.");
+            _running = true;
+            _pushRecentRom(filepath);
+            return true;
+        }
     }
     _gyLog(GY_DEBUG_ERROR, "Error Loading File! [%s]", info.absoluteFilePath().toStdString().c_str());
     return false;
@@ -555,7 +573,7 @@ void VMUMainWindow::resetCpu(void) {
 void VMUMainWindow::on_actionLoad_ROM_triggered(void)
 {
     loadRom(QFileDialog::getOpenFileName(nullptr, "Browse VMS ROM to Open", _romDir,
-                                         "VMS Files(*.vms *.VMS);;Web Browser Files(*.vmi *.VMI)"));
+                                         "VMS Files(*.vms *.VMS);;Web Browser Files(*.vmi *.VMI);;Dream Animator Files(*.lcd *.LCD)"));
 }
 
 void VMUMainWindow::on_actionSave_State_triggered(void)

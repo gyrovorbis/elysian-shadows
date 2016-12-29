@@ -166,7 +166,7 @@ void gyVmuMemWrite(VMUDevice* dev, int addr, int val) {
         if(dev->sfr[SFR_OFFSET(SFR_ADDR_XBNK)] != val) {
             assert(val <= 2);
             dev->memMap[VMU_MEM_SEG_XRAM] = dev->xram[val];
-          //  lcdrefresh();
+            //lcdrefresh();
         }
         break;
     }
@@ -260,21 +260,7 @@ void gyVmuMemWrite(VMUDevice* dev, int addr, int val) {
     }
 
     gyVmuPort1MemorySink(dev, addr, val);
+    gyVmuBuzzerMemorySink(dev, addr, val);
 
-
-    //Check for buzzer state change
-    if(addr == SFR_ADDR_T1CNT || addr == SFR_ADDR_T1LR || addr == SFR_ADDR_T1LC) {
-        if(dev->sfr[SFR_OFFSET(SFR_ADDR_T1CNT)]&SFR_T1CNT_T1LRUN_MASK) {
-            if(dev->sfr[SFR_OFFSET(SFR_ADDR_T1CNT)]&SFR_T1CNT_ELDT1C_MASK) { //This bit must be set for buzzer output changes to be applied
-                //if(mode == VMU_TIMER1_MODE_TIMER8_PULSE8) - Yes, this really should be correct. Must be in Mode #1.
-                int pulseWidth = (dev->sfr[SFR_OFFSET(SFR_ADDR_T1LC)] - dev->sfr[SFR_OFFSET(SFR_ADDR_T1LR)]);
-                int cycleLength = (256-dev->sfr[SFR_OFFSET(SFR_ADDR_T1LR)]);
-                //183us with 32khz clock
-                gyVmuBuzzerSoundPlay(dev, cycleLength, pulseWidth, 0);
-            }
-        } else {
-            gyVmuBuzzerSoundStop(dev); //Stop sound output
-        }
-    }
 }
 

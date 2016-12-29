@@ -46,7 +46,8 @@ SOURCES += ../../console/main.cpp \
     ../../lib/source/gyro_vmu_serial.c \
     ../../lib/source/gyro_vmu_port1.c \
     gyro_vmu_com_dialog.cpp \
-    ../../lib/source/gyro_vmu_port7.c
+    ../../lib/source/gyro_vmu_port7.c \
+    ../../lib/source/gyro_vmu_lcd.c
 
 
 HEADERS += \
@@ -75,7 +76,8 @@ HEADERS += \
     gyro_vmu_com_dialog.hpp \
     gyro_vmu_main_window.hpp \
     gyro_vmu_tcp_dialog.hpp \
-    ../../lib/source/gyro_vmu_port7.h
+    ../../lib/source/gyro_vmu_port7.h \
+    ../../lib/source/gyro_vmu_lcd.h
 
 INCLUDEPATH += ../../../libGyro/include \
     ../../lib/source

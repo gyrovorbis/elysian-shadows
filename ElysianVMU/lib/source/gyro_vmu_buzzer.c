@@ -1,4 +1,5 @@
 #include "gyro_vmu_buzzer.h"
+#include "gyro_vmu_sfr.h"
 #include <gyro_system_api.h>
 #include <gyro_matrix_api.h>
 #include <gyro_audio_api.h>
@@ -26,6 +27,26 @@ static unsigned char _freqResponse[0xff] = {
     [0xfe]          = 66
 };
 
+void gyVmuBuzzerMemorySink(VMUDevice *dev, int addr, uint8_t value) {
+    //Check for buzzer state change
+    if(addr == SFR_ADDR_T1CNT || addr == SFR_ADDR_T1LR || addr == SFR_ADDR_T1LC) {
+        if(dev->sfr[SFR_OFFSET(SFR_ADDR_T1CNT)]&SFR_T1CNT_T1LRUN_MASK) {
+            if(dev->sfr[SFR_OFFSET(SFR_ADDR_T1CNT)]&SFR_T1CNT_ELDT1C_MASK) { //This bit must be set for buzzer output changes to be applied
+                //if(mode == VMU_TIMER1_MODE_TIMER8_PULSE8) - Yes, this really should be correct. Must be in Mode #1.
+                int pulseWidth = (dev->sfr[SFR_OFFSET(SFR_ADDR_T1LC)] - dev->sfr[SFR_OFFSET(SFR_ADDR_T1LR)]);
+                int cycleLength = (256-dev->sfr[SFR_OFFSET(SFR_ADDR_T1LR)]);
+                //183us with 32khz clock
+                if((dev->sfr[SFR_OFFSET(SFR_ADDR_P1DDR)]&SFR_P1DDR_P17DDR_MASK)) {
+                    if(dev->sfr[SFR_OFFSET(SFR_ADDR_P1FCR)]&SFR_P1FCR_P17FCR_MASK) {
+                        gyVmuBuzzerSoundPlay(dev, cycleLength, pulseWidth, 0);
+                    }
+                }
+            }
+        } else {
+            gyVmuBuzzerSoundStop(dev); //Stop sound output
+        }
+    }
+}
 
 void gyVmuBuzzerSoundPlay(VMUDevice* dev, int period, int pulseWidth, int db) {
     db = (pulseWidth == period*0.5f)? _freqResponse[256-period] : 0;
@@ -36,7 +57,7 @@ void gyVmuBuzzerSoundPlay(VMUDevice* dev, int period, int pulseWidth, int db) {
     if(period > 0) {
 
         //ensure sane sound wave
-        if(pulseWidth > 0 && pulseWidth <= period) {
+        if(pulseWidth >= 0 && pulseWidth <= period) {
 
             //Check to see if wave is different from what's in the audio buffer
             if(dev->buzzer._period != period || dev->buzzer._pulseWidth != pulseWidth) {

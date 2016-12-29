@@ -5,6 +5,37 @@
 
 /* THIS IS WHERE LIBGYRO-BASED RENDERING SHIT SHOULD BE!!!! */
 
+// 6 bytes per row (8 bits per byte) = 48 bits per row
+// rows are in groups of 2
+// after each group of 2, next row starts after 4 bytes
+// maps a row and a byte (col/8) to an address
+static int _xramAddrLUT[16][6] = {
+    { 0x180, 0x181, 0x182, 0x183, 0x184, 0x185 },
+    { 0x186, 0x187,	0x188, 0x189, 0x18A, 0x18B },
+    { 0x190, 0x191,	0x192, 0x193, 0x194, 0x195 },
+    { 0x196, 0x197,	0x198, 0x199, 0x19A, 0x19B },
+    { 0x1A0, 0x1A1,	0x1A2, 0x1A3, 0x1A4, 0x1A5 },
+    { 0x1A6, 0x1A7,	0x1A8, 0x1A9, 0x1AA, 0x1AB },
+    { 0x1B0, 0x1B1,	0x1B2, 0x1B3, 0x1B4, 0x1B5 },
+    { 0x1B6, 0x1B7,	0x1B8, 0x1B9, 0x1BA, 0x1BB },
+    { 0x1C0, 0x1C1,	0x1C2, 0x1C3, 0x1C4, 0x1C5 },
+    { 0x1C6, 0x1C7,	0x1C8, 0x1C9, 0x1CA, 0x1CB },
+    { 0x1D0, 0x1D1,	0x1D2, 0x1D3, 0x1D4, 0x1D5 },
+    { 0x1D6, 0x1D7,	0x1D8, 0x1D9, 0x1DA, 0x1DB },
+    { 0x1E0, 0x1E1,	0x1E2, 0x1E3, 0x1E4, 0x1E5 },
+    { 0x1E6, 0x1E7,	0x1E8, 0x1E9, 0x1EA, 0x1EB },
+    { 0x1F0, 0x1F1,	0x1F2, 0x1F3, 0x1F4, 0x1F5 },
+    { 0x1F6, 0x1F7,	0x1F8, 0x1F9, 0x1FA, 0x1FB }
+};
+
+inline static void _xramBitFromRowCol(int x, int y, unsigned* bank, int* addr, unsigned* bit) {
+    *bank = y/16;
+    unsigned row = y%16;
+    unsigned col = x/8;
+    *addr = _xramAddrLUT[row][col];
+    *bit = 7-x%8;
+}
+
 void _updateLcdBuffer(VMUDevice* dev) {
 
     unsigned char *sfr =     dev->sfr;
@@ -26,6 +57,8 @@ void _updateLcdBuffer(VMUDevice* dev) {
 
 
             for(int i = 7; i >= 0; --i) {
+                int prevVal = dev->display.lcdBuffer[y][x];
+
                 if((value>>(unsigned)i)&0x1) {
                     dev->display.lcdBuffer[y][x] += pixelDelta;
                     if(dev->display.lcdBuffer[y][x] > VMU_DISP_GHOSTING_FRAMES)
@@ -37,6 +70,9 @@ void _updateLcdBuffer(VMUDevice* dev) {
                     if(dev->display.lcdBuffer[y][x] < 0)
                         dev->display.lcdBuffer[y][x] = 0;
                 }
+
+                if(dev->display.lcdBuffer[y][x] != prevVal)
+                    dev->display.screenChanged = 1;
 
 
                 x++;
@@ -58,19 +94,31 @@ void _updateLcdBuffer(VMUDevice* dev) {
 
 }
 
+void gyVmuDisplayPixelSet(struct VMUDevice* dev, int x, int y, int on) {
+    assert(x >= 0 && x < VMU_DISP_PIXEL_WIDTH && y >= 0 && y < VMU_DISP_PIXEL_HEIGHT);
+
+    int addr;
+    unsigned bank, bit;
+    _xramBitFromRowCol(x, y, &bank, &addr, &bit);
+    addr -= 0x180;
+
+    if(on) {
+        dev->xram[bank][addr] |= (0x1<<bit);
+    } else {
+        dev->xram[bank][addr] &= ~(0x1<<bit);
+    }
+}
+
 int gyVmuDisplayPixelGet(const VMUDevice* dev, int x, int y) {
     assert(x >= 0 && x < VMU_DISP_PIXEL_WIDTH && y >= 0 && y < VMU_DISP_PIXEL_HEIGHT);
 
-    int bank = y/16;
-    int row = y%16;
-    int offset = row/2*4;
+    unsigned bank, addr, bit;
 
-    int byte = row*6 + offset + x/8;
-    int bit = x%8;
+    _xramBitFromRowCol(x, y, &bank, &addr, &bit);
+    addr -= 0x180;
 
-    return ((dev->xram[bank][byte]>>bit)&0x1);
+    return ((dev->xram[bank][addr]>>bit)&0x1);
 
-   // return ((((unsigned char*)dev->xram)[byte]>>bit)&0x1);
 }
 
 int gyVmuDisplayPixelGhostValue(const struct VMUDevice* dev, int x, int y) {

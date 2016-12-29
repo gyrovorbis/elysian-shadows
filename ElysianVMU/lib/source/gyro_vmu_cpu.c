@@ -666,12 +666,11 @@ int gyVmuCpuTick(VMUDevice* dev, float deltaTime) {
     while(time < deltaTime) {
         gyVmuCpuInstrExecuteNext(dev);
         gyVmuTimersUpdate(dev);
-        gyVmuGamepadPoll(dev);
-        gyVmuPort1PollRecv(dev);
+       // gyVmuPort1PollRecv(dev);
         _serviceInterrupts(dev);
         float cpuTime = gyVmuOscSecPerCycle(dev)*(float)_instrMap[dev->curInstr.instrBytes[INSTR_BYTE_OPCODE]].cc;
         time += cpuTime;
-        gyVmuSerialUpdate(dev, cpuTime);
+        //gyVmuSerialUpdate(dev, cpuTime);
         gyVmuDisplayUpdate(dev, cpuTime);
         ++cycle;
     }

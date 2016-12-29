@@ -137,6 +137,8 @@ private:
     int                 _iconAnimCounter    = 0;
     int                 _iconCurIndex       = 0;
     int                 _pConRegister       = 0;
+    int                 _prevFbWidth        = 0;
+    int                 _prevFbHeight       = 0;
     static FILE*        _logFile;
     static int          _logDepth;
 

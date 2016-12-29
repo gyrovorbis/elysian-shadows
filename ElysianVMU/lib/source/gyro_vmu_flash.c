@@ -2,6 +2,7 @@
 #include "gyro_vmu_device.h"
 #include "gyro_vmu_vmi.h"
 #include "gyro_vmu_vms.h"
+#include "gyro_vmu_lcd.h"
 #include "gyro_vmu_util.h"
 #include <stdio.h>
 #include <ctype.h>
@@ -52,7 +53,8 @@ int gyVmuFlashLoadImage(VMUDevice* dev, const char* path) {
             if(gyVmuFlashLoadVMI(&info, path)) {
                 gyVmuFlashPrintVMIFileInfo(&info);
             }
-
+        } else if(!strcmp(ext, VMU_LCD_FILE_EXTENSION)) {
+            success = gyVmuLcdFileLoadAndStart(dev, path);
         } else {
             _gyLog(GY_DEBUG_ERROR, "Unknown extension! [%s]", prevTok);
         }
