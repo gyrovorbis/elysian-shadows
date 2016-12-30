@@ -54,8 +54,8 @@ OOLUA_PROXY(Dialog)
     OOLUA_MEM_FUNC_CONST(unsigned, getScreenCount)
     OOLUA_MEM_FUNC(void, setTriggerEntity, Entity*)
     OOLUA_MEM_FUNC_CONST(maybe_null<Entity*>, getTriggerEntity)
-    OOLUA_MEM_FUNC(void, setStartScreen, const int)
-    OOLUA_MEM_FUNC_CONST(int, getStartScreen)
+    OOLUA_MEM_FUNC_RENAME(setStartScreen, void, setStartScreenLua, const int)
+    OOLUA_MEM_FUNC_CONST_RENAME(getStartScreen, int, getStartScreenLua)
 OOLUA_PROXY_END
 
 #endif // ELYSIAN_DIALOG_PROXY_HPP

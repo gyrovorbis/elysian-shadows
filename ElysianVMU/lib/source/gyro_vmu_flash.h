@@ -154,7 +154,7 @@ int gyVmuFlashDefragment(struct VMUDevice* dev);
 
 
 
-
+int gyVmuFlashLoadVMUImage(struct VMUDevice* dev, const char* path);
 int gyVmuFlashLoadVMI(struct VMIFileInfo* info, const char* path);
 int gyVmuFlashLoadImage(struct VMUDevice* dev, const char* path);
 int gyVmuFlashLoadDCM(struct VMUDevice* dev, const char* path);

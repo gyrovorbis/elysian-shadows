@@ -93,7 +93,6 @@ namespace elysian {
     class DialogBase: public LuaTableProxy<DialogBase, Dialog> {
         ELYSIAN_LUA_PROXY_FIELDS_BEGIN()
             ELYSIAN_LUA_PROXY_FIELD(startScreen,        getStartScreen,     setStartScreen)
-            //ELYSIAN_LUA_PROXY_FIELD(triggerEntity,      getTriggerEntity,   setTriggerEntity)
             ELYSIAN_LUA_PROXY_ARRAY_FIELD(screens,      getScreen,          setScreen,          getScreenCount)
         ELYSIAN_LUA_PROXY_FIELDS_END()
     private:
@@ -113,7 +112,9 @@ namespace elysian {
         void                        setTriggerEntity(Entity*const entity);
         Entity*                     getTriggerEntity(void) const;
         int                         getStartScreen(void) const;
+        int                         getStartScreenLua(void) const;
         void                        setStartScreen(const int index);
+        void                        setStartScreenLua(const int index);
     };
 
 
@@ -155,7 +156,9 @@ namespace elysian {
     //==== DIALOG INLINEZ =====
 
     inline int DialogBase::getStartScreen(void) const { return _startScreen; }
+    inline int DialogBase::getStartScreenLua(void) const { return _startScreen+1; }
     inline void DialogBase::setStartScreen(const int index) { _startScreen = index; }
+    inline void DialogBase::setStartScreenLua(const int index) { _startScreen = index-1; }
     inline unsigned DialogBase::getScreenCount(void) const { return _screens.size(); }
     inline DialogScreen* DialogBase::getScreen(const unsigned index) const { return index < _screens.size()? _screens[index] : nullptr; }
     inline void DialogBase::setTriggerEntity(Entity * const entity) { _triggerEntity = entity; }

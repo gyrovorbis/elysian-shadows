@@ -422,11 +422,21 @@ void DialogSystem::_splitText(void) {
 void DialogSystem::startDialog(Dialog *const dialog, EventMonitor*const monitor) {
 	closeDialog();
 
-    if(dialog->getScreenCount() == 0) return;
+    if(dialog->getScreenCount() == 0) {
+        errprintf("Cannot start a dialog with 0 screens!");
+        return;
+    }
 
+    int screenIndex = dialog->getStartScreen();
+    auto* screen = dialog->getScreen(dialog->getStartScreen());
+    if(!screen) {
+        errprintf("Could not start Dialog! (dialog.screen[%d] could not be found!)", screenIndex+1);
+        return;
+    }
+
+    _curScreen.screen = screen;
 	_monitor = monitor;
 	_curDialog = dialog;
-    _curScreen.screen = dialog->getScreen(dialog->getStartScreen()-1);
     getAudioSys()->playSfxChannel(-1, *_sfxOpen);
 	_updateCamera();
     _facePlayer();

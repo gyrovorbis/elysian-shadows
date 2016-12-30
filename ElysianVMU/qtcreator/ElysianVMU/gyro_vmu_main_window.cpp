@@ -573,7 +573,10 @@ void VMUMainWindow::resetCpu(void) {
 void VMUMainWindow::on_actionLoad_ROM_triggered(void)
 {
     loadRom(QFileDialog::getOpenFileName(nullptr, "Browse VMS ROM to Open", _romDir,
-                                         "VMS Files(*.vms *.VMS);;Web Browser Files(*.vmi *.VMI);;Dream Animator Files(*.lcd *.LCD)"));
+                                         "VMS Files(*.vms *.VMS);;"
+                                         "Web Browser Files(*.vmi *.VMI);;"
+                                         "Dream Animator Files(*.lcd *.LCD);;"
+                                         "Flash Image Files(*.vmu *.VMU)"));
 }
 
 void VMUMainWindow::on_actionSave_State_triggered(void)
@@ -794,7 +797,9 @@ void VMUMainWindow::dragEnterEvent(QDragEnterEvent *event) {
         for(auto&& url : mime->urls()) {
             if(url.isLocalFile()) {
                 QFileInfo info(url.toLocalFile());
-                if(info.suffix() == "VMS" || info.suffix() == "vms") {
+                QString suff = info.suffix().toLower();
+                if(suff == "vms" || suff == "lcd" ||
+                        suff == "vmi" || suff == "vmu") {
                     event->acceptProposedAction();
                     return;
                 }
@@ -810,7 +815,9 @@ void VMUMainWindow::dropEvent(QDropEvent* event) {
         for(auto&& url : mime->urls()) {
             if(url.isLocalFile()) {
                 QFileInfo info(url.toLocalFile());
-                if(info.suffix() == "VMS" || info.suffix() == "vms") {
+                QString suff = info.suffix().toLower();
+                if(suff == "vms" || suff == "lcd" ||
+                        suff == "vmi" || suff == "vmu") {
                     event->acceptProposedAction();
                     loadRom(info.absoluteFilePath());
                     return;

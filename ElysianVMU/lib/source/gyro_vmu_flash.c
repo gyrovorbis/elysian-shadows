@@ -52,7 +52,10 @@ int gyVmuFlashLoadImage(VMUDevice* dev, const char* path) {
             VMIFileInfo info;
             if(gyVmuFlashLoadVMI(&info, path)) {
                 gyVmuFlashPrintVMIFileInfo(&info);
-            }
+                success = 1;
+            } else success = 0;
+        } else if(!strcmp(ext, "vmu")) {
+            success = gyVmuFlashLoadVMUImage(dev, path);
         } else if(!strcmp(ext, VMU_LCD_FILE_EXTENSION)) {
             success = gyVmuLcdFileLoadAndStart(dev, path);
         } else {
@@ -70,10 +73,10 @@ int gyVmuFlashLoadImage(VMUDevice* dev, const char* path) {
 
 }
 
-int gyVmuFlashLoadDCI(VMUDevice *dev, const char *path) {
+int gyVmuFlashLoadVMUImage(VMUDevice *dev, const char *path) {
     GYFile* file;
 
-    _gyLog(GY_DEBUG_VERBOSE, "Loading DCM Flash image from file [%s].", path);
+    _gyLog(GY_DEBUG_VERBOSE, "Loading Flash image from file [%s].", path);
     _gyPush();
 
     if (!gyFileOpen(path, "rb", &file)) {
@@ -101,7 +104,14 @@ int gyVmuFlashLoadDCI(VMUDevice *dev, const char *path) {
     assert(bytesTotal >= 0);
     assert(bytesTotal == sizeof(dev->flash));
 
-    for(unsigned i = 0; i < bytesTotal; i += 4) {
+    _gyPop(1);
+    return 1;
+}
+
+int gyVmuFlashLoadDCI(VMUDevice *dev, const char *path) {
+  gyVmuFlashLoadVMUImage(dev, path);
+
+    for(unsigned i = 0; i < sizeof(dev->flash); i += 4) {
         for(unsigned j = i; j < i + 4; ++j) {
             unsigned temp       = dev->flash[j];
             dev->flash[j]       = dev->flash[i+3-j];
@@ -109,7 +119,7 @@ int gyVmuFlashLoadDCI(VMUDevice *dev, const char *path) {
         }
     }
 
-    _gyPop(0);
+    _gyPop(1);
     return 1;
 }
 
