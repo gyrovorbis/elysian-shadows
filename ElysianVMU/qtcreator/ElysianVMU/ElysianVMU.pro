@@ -1,7 +1,11 @@
 include(../../../qtcreator/ESDev/ESDev.pri)
 TEMPLATE = app
 TARGET = ElysianVMU
-QT += gui opengl serialport
+QT += gui opengl
+
+!raspberrypi {
+    QT += serialport
+}
 
 win32 {
     DESTDIR = ../../../executable
@@ -30,7 +34,6 @@ SOURCES += ../../console/main.cpp \
     ../../lib/source/gyro_vmu_display.c \
     ../../lib/source/gyro_vmu_timers.c \
     ../../lib/source/gyro_vmu_osc.c \
-    gyro_vmu_main_window.cpp \
     ../../lib/source/gyro_vmu_gamepad.c \
     ../../lib/source/gyro_vmu_bullshit.c \
     ../../lib/source/gyro_vmu_buzzer.c \
@@ -39,15 +42,19 @@ SOURCES += ../../console/main.cpp \
     ../../lib/source/gyro_vmu_vmi.c \
     ../../lib/source/gyro_vmu_battery.c \
     ../../lib/source/gyro_vmu_util.c \
-    gyro_vmu_tcp_dialog.cpp \
     ../../lib/source/gyro_vmu_version.c \
     ../../lib/source/gyro_vmu_disassembler.c \
     ../../lib/source/gyro_vmu_tcp.c \
     ../../lib/source/gyro_vmu_serial.c \
     ../../lib/source/gyro_vmu_port1.c \
-    gyro_vmu_com_dialog.cpp \
     ../../lib/source/gyro_vmu_port7.c \
-    ../../lib/source/gyro_vmu_lcd.c
+    ../../lib/source/gyro_vmu_lcd.c \
+    gyro_vmu_main_window.cpp \
+    gyro_vmu_tcp_dialog.cpp
+
+!raspberrypi {
+    SOURCES += gyro_vmu_com_dialog.cpp
+}
 
 
 HEADERS += \
@@ -73,11 +80,14 @@ HEADERS += \
     ../../lib/source/gyro_vmu_tcp.h \
     ../../lib/source/gyro_vmu_serial.h \
     ../../lib/source/gyro_vmu_port1.h \
-    gyro_vmu_com_dialog.hpp \
-    gyro_vmu_main_window.hpp \
-    gyro_vmu_tcp_dialog.hpp \
     ../../lib/source/gyro_vmu_port7.h \
-    ../../lib/source/gyro_vmu_lcd.h
+    ../../lib/source/gyro_vmu_lcd.h \
+    gyro_vmu_main_window.hpp \
+    gyro_vmu_tcp_dialog.hpp
+
+!raspberrypi {
+    HEADERS += gyro_vmu_com_dialog.hpp
+}
 
 INCLUDEPATH += ../../../libGyro/include \
     ../../lib/source

@@ -123,8 +123,8 @@ void VmuComDialog::_updateCurrentPortInfo(void) {
     QSerialPortInfo& info = _portInfoList[_portIndex];
     _ui->systemPathValueLabel->setText(info.systemLocation());
     _ui->manufacturerValueLabel->setText(!info.manufacturer().isEmpty()? info.manufacturer() : "Not Available");
-    _ui->vendorIDValueLabel->setText(info.hasVendorIdentifier()? QString(info.vendorIdentifier()) : "Not Available");
-    _ui->productIDValueLabel->setText(info.hasProductIdentifier()? QString(info.productIdentifier()) : "Not Available");
+    _ui->vendorIDValueLabel->setText(info.hasVendorIdentifier()? QString::number(info.vendorIdentifier()) : "Not Available");
+    _ui->productIDValueLabel->setText(info.hasProductIdentifier()? QString::number(info.productIdentifier()) : "Not Available");
     _ui->serialNumberValueLabel->setText(!info.serialNumber().isEmpty()? info.serialNumber() : "Not Available");
     _ui->descValueLabel->setText(!info.description().isEmpty()? info.description() : "Not Available");
     _ui->statusValueLabel->setText(info.isBusy()? "BUSY" : "IDLE");

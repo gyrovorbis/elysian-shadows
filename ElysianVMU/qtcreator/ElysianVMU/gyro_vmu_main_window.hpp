@@ -29,8 +29,10 @@ struct  GYAudioSource;
 struct  GYAudBuffer;
 class   QLabel;
 class   VmuTcpDialog;
-class   VmuComDialog;
 class   QTextCodec;
+#if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
+class   VmuComDialog;
+#endif
 
 namespace Ui {
     class VMUMainWindow;
@@ -90,7 +92,9 @@ private Q_SLOTS:
     void on_action16x_triggered();
     void on_action32x_triggered();
     void on_action64x_triggered();
+#if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
     void on_actionSerial_COM_Connection_Manager_triggered();
+#endif
 
 private:
 
@@ -123,7 +127,9 @@ private:
     QImage              _eyecatchImage;
     QString             _romDir;
     VmuTcpDialog*       _tcpDialog          = nullptr;
+#if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
     VmuComDialog*       _comDialog          = nullptr;
+#endif
     QLabel*             _fbLabel            = nullptr;
     QLabel*             _statusLabel        = nullptr;
     QLabel*             _iconLabel          = nullptr;
