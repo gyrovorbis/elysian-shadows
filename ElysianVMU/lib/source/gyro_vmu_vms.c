@@ -7,7 +7,7 @@
 
 
 static int _vmsHeaderCheck(const void* data) {
-    VMSFileInfo* info = data;
+    VMSFileInfo* info = (VMSFileInfo*)data;
 
     if(info->iconCount <= VMU_VMS_ICON_COUNT_MAX && info->eyecatchType <= VMS_EYECATCH_MAX) {
         for(unsigned i = 0; i < VMU_VMS_FILE_INFO_RESERVED_SIZE; ++i) {

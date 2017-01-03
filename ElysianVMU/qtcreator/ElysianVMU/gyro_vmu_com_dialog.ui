@@ -326,16 +326,6 @@
        </layout>
       </item>
      </layout>
-     <zorder>connectionGroupBox</zorder>
-     <zorder>portNameLabel</zorder>
-     <zorder>portNameComboBox</zorder>
-     <zorder>infoGroupBox</zorder>
-     <zorder>configGroupBox</zorder>
-     <zorder>openPortButton</zorder>
-     <zorder>connectionGroupBox</zorder>
-     <zorder>connectionGroupBox</zorder>
-     <zorder>openPortSpacer</zorder>
-     <zorder></zorder>
     </widget>
    </item>
    <item>

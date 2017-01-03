@@ -1,5 +1,6 @@
 #include "gyro_vmu_vmi.h"
 #include <gyro_system_api.h>
+#include <string.h>
 
 
 uint32_t gyVmuVMIChecksumGenerate(const VMIFileInfo *info) {

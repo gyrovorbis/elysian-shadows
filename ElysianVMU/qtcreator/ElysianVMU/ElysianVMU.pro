@@ -35,7 +35,6 @@ SOURCES += ../../console/main.cpp \
     ../../lib/source/gyro_vmu_timers.c \
     ../../lib/source/gyro_vmu_osc.c \
     ../../lib/source/gyro_vmu_gamepad.c \
-    ../../lib/source/gyro_vmu_bullshit.c \
     ../../lib/source/gyro_vmu_buzzer.c \
     ../../lib/source/gyro_vmu_flash.c \
     ../../lib/source/gyro_vmu_vms.c \

@@ -41,7 +41,6 @@
 #ifdef VMU_DEBUG
 //#define BIOS_IMAGE "/Users/falcogirgis/Documents/Dev/esdev/ElysianVMU/bin/vmu_bios.bin"
 #endif
-#define GYRO_VMU
 #define VMU_STATUS_TEMP_TIMEOUT 2000
 #define VMU_LOG_FILE "vmu_debug.txt"
 #define SCREENSHOT_FILENAME "screenshot"
@@ -49,72 +48,18 @@
 #define VMU_OUTPUT_DIR          "ElysianVMU"
 #define SETTINGS_FILE           "UserSettings.ini"
 #define SCREENSHOT_FILENAME_SIZE_MAX    100
-//#define MARCUS_VMU
 #define CYCLES      1000
 #define AUDIO_SAMPLE_RATE   44100
 #define STATE_FILE "elysianVMUSaveState.bin"
-extern "C" void lcdrefresh(void);
-extern "C" int loadbios(char *filename);
-extern "C" void run_cpu();
-extern "C" void resetcpu();
-extern "C" void keypress(int i);
-extern "C" void keyrelease(int i);
-extern "C" int do_vmsgame(char *filename, char *biosname);
-extern unsigned char sfr[0x100];
-extern unsigned char xram[3][0x80];
-extern unsigned char ram[2][0x100];
-extern unsigned char wram[0x200];
-extern unsigned char flash[0x20000];
-extern int pc;
-extern int lcd_updated;
 
-extern "C" int gyloadflash(VMUDevice* dev, const char *filename);
-
-static VMUMainWindow* _win = nullptr;
-
-
-int compareCores(VMUDevice* dev) {
-    //have to sync reset clock values
-
-
-    //compare instruction
-    if(dev->pc != pc) {
-        Q_ASSERT(0);
-        //return 0;
-    }
-
-    for(unsigned i = 0; i < RAM_SFR_SIZE; ++i)
-        Q_ASSERT(dev->sfr[i] == sfr[i]);
-
-    //compare memory
-    for(unsigned j = 0; j < RAM_BANK_COUNT; ++j)
-        for(unsigned i = 0; i < RAM_BANK_SIZE; ++i) {
-            Q_ASSERT(dev->ram[j][i] == ram[j][i]);
-        }
-
-    for(unsigned j = 0; j < XRAM_BANK_COUNT; ++j)
-        for(unsigned i = 0; i < XRAM_BANK_SIZE; ++i) {
-            Q_ASSERT(dev->xram[j][i] == xram[j][i]);
-        }
-
-    for(unsigned i = 0; i < WRAM_SIZE; ++i) Q_ASSERT(dev->wram[i] == wram[i]);
-
-    for(unsigned i = 0; i < FLASH_SIZE; ++i) Q_ASSERT(dev->flash[i] == flash[i]);
-
-    //Q_ASSERT();
-    //compare timers
-
-    return 1;
-
-}
 
 FILE* VMUMainWindow::_logFile = nullptr;
 int VMUMainWindow::_logDepth = 0;
 
 VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     QMainWindow(parent),
-    _fb(VMU_FB_DEFAULT_WIDTH, VMU_FB_DEFAULT_HEIGHT),
     _ui(new Ui::VMUMainWindow),
+    _fb(VMU_FB_DEFAULT_WIDTH, VMU_FB_DEFAULT_HEIGHT),
     _iconES(ICON_ES_PATH),
     _iconClock(ICON_CLOCK_PATH),
     _iconFile(ICON_FILE_PATH),
@@ -128,17 +73,19 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _iconLabel(new QLabel()),
     _japCodec(QTextCodec::codecForName(VMU_TEXT_CODEC))
 {
+    //UI Initialization/Setup
     _ui->setupUi(this);
+    setAcceptDrops(true);
+    _iconLabel->setMargin(0);
+    _ui->statusbar->layout()->setSpacing(0);
+    _ui->statusbar->insertPermanentWidget(0, _statusLabel);
+    _ui->statusbar->insertPermanentWidget(1, _iconLabel);
+    setWindowTitle(QString("ElysianVMU v ")+QString(GYRO_VMU_VERSION_STRING));
+
+    //Create framebuffer label and layouts for centering and managing its size
     _fbLabel = new QLabel;
-
-
-   // gridLayout->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed));
-
-  //  gridLayout->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Fixed));
-
     QVBoxLayout* vertLayout = qobject_cast<QVBoxLayout*>(centralWidget()->layout());
     Q_ASSERT(vertLayout);
-    //vertLayout->addLayout(gridLayout);
     vertLayout->addWidget(_fbLabel);
     vertLayout->setAlignment(_fbLabel, Qt::AlignHCenter);
     _fbLabel->setPixmap(_fb);
@@ -147,14 +94,7 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     vertLayout->setMargin(0);
     vertLayout->setSpacing(0);
 
-    setAcceptDrops(true);
-    _iconLabel->setMargin(0);
-    _ui->statusbar->layout()->setSpacing(0);
-    _ui->statusbar->insertPermanentWidget(0, _statusLabel);
-    _ui->statusbar->insertPermanentWidget(1, _iconLabel);
-    setWindowTitle(QString("ElysianVMU v ")+QString(GYRO_VMU_VERSION_STRING));
-    _win = this;
-
+    //Initialize libGyro File API, working directory, and log file
     GYFileInitParams fileParams;
     strcpy(fileParams.workingDir, workingDir.isEmpty()?
                QDir::homePath().toStdString().c_str() : workingDir.toStdString().c_str());
@@ -169,10 +109,9 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
             QDir::setCurrent(QDir::current().filePath(VMU_OUTPUT_DIR));
         }
     }
-
     _logFile = fopen(VMU_LOG_FILE, "w");
 
-
+    //Initialize libGyro Debug API with logging
     GYDebugCallbacks dbgCallbacks = {
         &_log,
         &_push,
@@ -189,6 +128,7 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _gyLog(GY_DEBUG_VERBOSE, "Run-Time: %s",        qVersion());
     _gyPop(1);
 
+    //Initialize libGyro System, Timer, Audio, Input, and Network APIs
     GYSysInitParams sysParams = {
         (void*)this,
         [](void* /*context*/) {
@@ -210,9 +150,11 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     };
     gyNetInit(&netParams);
 
+    //Create VMU instance
     _dev = gyVmuDeviceCreate();
-    _tcpDialog->setVmuDevice(_dev);
 
+    //Initialize external file menu dialogs
+    _tcpDialog->setVmuDevice(_dev);
 #if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
     QAction* comConfig = new QAction("Serial/COM Connection Manager");
     connect(comConfig, SIGNAL(triggered()), this, SLOT(on_actionSerial_COM_Connection_Manager_triggered()));
@@ -221,6 +163,7 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _comDialog->setVmuDevice(_dev);
 #endif
 
+    //Begin running (debugging)
 #ifdef BIOS_IMAGE
      gyloadbios(_dev, BIOS_IMAGE);
      resetCpu();
@@ -228,40 +171,17 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
 #endif
 
 #ifdef VMS_IMAGE
-#ifdef GYRO_VMU
     gyVmuFlashLoadImage(_dev, VMS_IMAGE);
     resetCpu();
-#endif
-#ifdef MARCUS_VMU
-    do_vmsgame(VMS_IMAGE, nullptr);
-    resetcpu();
-#endif
     _running = true;
 #endif
 
+    //Clear framebuffer
     _fb.fill(Qt::black);
     QPainter painter(&_fb);
-#if 0
-    for(int i=0; i<4; i++) {
-        for(int y=0; y<7; y++) {
-            int value = icon[i][y];
-            for(int x=0; x<7; x++) {
-                int a = i==0? 1 : 0;
-                if((value>>(7-x))&a) {
-                    painter.fillRect((2+i*12+x)*1, (y+33)*1, 1, 1, QBrush(Qt::black));
-                } else {
-                    painter.fillRect((2+i*12+x)*1, (y+33)*1, 1, 1, QBrush(Qt::white));
-                }
-            }
-        }
-    }
-#endif
     painter.drawPixmap(QPoint(0,0), _iconES);
 
-    _updateTimer.setInterval(17);
-    connect(&_updateTimer, SIGNAL(timeout()), this, SLOT(_update()));
-    _updateTimer.start();
-
+    //Set ESC to exit fullscreen
     auto* exitFs = new QAction(this);
     exitFs->setShortcut(Qt::Key_Escape);
     connect(exitFs, &QAction::triggered, this, [&](void) {
@@ -270,27 +190,20 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
 
     });
     addAction(exitFs);
+
+    _setupAboutMsgBox();
+
+    //Set update timer
+    _updateTimer.setInterval(17);
+    connect(&_updateTimer, SIGNAL(timeout()), this, SLOT(_update()));
+    _updateTimer.start();
+
     _gyPop(1);
-
-    connect(_ui->actionAbout, &QAction::triggered, [this]{
-        QMessageBox::about(this, "About ElysianVMU",
-        QString("ElysianVMU is a Softare emulator for the Sega Dreamcast Visual Memory Unit.<br><br>")+
-        QString("Version ")+QString(GYRO_VMU_VERSION_STRING)+QString("<br>") +
-        QString("<a href=\"http://www.elysianshadows.com\">elysianshadows.com</a><br>") +
-        QString("</table><tr><td>Software: </td><td> Falco Girgis</td></tr>") +
-        QString("<tr><td>Hardware: </td><td>Tulio Goncalves</td></tr>") +
-        QString("<tr><td>Graphics: </td><td>Patrick Kowalik</td></tr></table><br><br>") +
-        QString("Special Thanks:<br> Deunan Knute, Marcus Comstedt, Lauren Girgis, Marcel Girgis, Marcus Girgis, Andrew Girgis, Andrew Hill, and all of our awesome Kickstarter backers. :)</br</br>") +
-        QString("</table><br><br>") +
-        QString("Powered by LibGyro (version ")+QString(GYRO_LIB_VERSION)+QString(")<br><br>") +
-        QString("<i>ElysianVMU Copyright 2017 Elysian Shadows</i><br>") +
-        QString("<i>Dreamcast and VMU Copyright Sega</i><br><br>"));
-    });
-
-    _resizeWindowFromScreenZoom(8);
+    _resizeWindowFromScreenZoom(VMU_FB_DEFAULT_ZOOM_LEVEL);
     _loadSettings();
-
 }
+
+
 
 VMUMainWindow::~VMUMainWindow(void)
 {
@@ -311,6 +224,23 @@ VMUMainWindow::~VMUMainWindow(void)
 #endif
     delete _tcpDialog;
     delete _ui;
+}
+
+void VMUMainWindow::_setupAboutMsgBox(void) {
+    connect(_ui->actionAbout, &QAction::triggered, [this]{
+        QMessageBox::about(this, "About ElysianVMU",
+        QString("ElysianVMU is a Softare emulator for the Sega Dreamcast Visual Memory Unit.<br><br>")+
+        QString("Version ")+QString(GYRO_VMU_VERSION_STRING)+QString("<br>") +
+        QString("<a href=\"http://www.elysianshadows.com\">elysianshadows.com</a><br>") +
+        QString("</table><tr><td>Software: </td><td> Falco Girgis</td></tr>") +
+        QString("<tr><td>Hardware: </td><td>Tulio Goncalves</td></tr>") +
+        QString("<tr><td>Graphics: </td><td>Patrick Kowalik</td></tr></table><br><br>") +
+        QString("Special Thanks:<br> Deunan Knute, Marcus Comstedt, Lauren Girgis, Marcel Girgis, Marcus Girgis, Andrew Girgis, Andrew Hill, and all of our awesome Kickstarter backers. :)</br</br>") +
+        QString("</table><br><br>") +
+        QString("Powered by LibGyro (version ")+QString(GYRO_LIB_VERSION)+QString(")<br><br>") +
+        QString("<i>ElysianVMU Copyright 2017 Elysian Shadows</i><br>") +
+        QString("<i>Dreamcast and VMU Copyright Sega</i><br><br>"));
+    });
 }
 
 bool VMUMainWindow::event(QEvent* event) {
@@ -344,56 +274,17 @@ void VMUMainWindow::_update(void) {
     auto ticks = gyTimerTicks();
     auto deltaTicks = ticks-_prevTicks;
 
-
-#ifdef MARCUS_VMU
-    static int cycles = 0;
-
-
-#if 1
-
-    if(u == GY_BUT_STATE_TAPPED) keypress(VMU_GAMEPAD_UP);
-    else if(u == GY_BUT_STATE_RELEASED) keyrelease(VMU_GAMEPAD_UP);
-    if(d == GY_BUT_STATE_TAPPED) keypress(VMU_GAMEPAD_DOWN);
-    else if(d == GY_BUT_STATE_RELEASED) keyrelease(VMU_GAMEPAD_DOWN);
-    if(l == GY_BUT_STATE_TAPPED) keypress(VMU_GAMEPAD_LEFT);
-    else if(l == GY_BUT_STATE_RELEASED) keyrelease(VMU_GAMEPAD_LEFT);
-    if(r == GY_BUT_STATE_TAPPED) keypress(VMU_GAMEPAD_RIGHT);
-    else if(r == GY_BUT_STATE_RELEASED) keyrelease(VMU_GAMEPAD_RIGHT);
-
-    if(a == GY_BUT_STATE_TAPPED) keypress(VMU_GAMEPAD_A);
-    else if(a == GY_BUT_STATE_RELEASED) keyrelease(VMU_GAMEPAD_A);
-    if(b == GY_BUT_STATE_TAPPED) keypress(VMU_GAMEPAD_B);
-    else if(b == GY_BUT_STATE_RELEASED) keyrelease(VMU_GAMEPAD_B);
-    if(m == GY_BUT_STATE_TAPPED) keypress(VMU_GAMEPAD_MODE);
-    else if(m == GY_BUT_STATE_RELEASED) keyrelease(VMU_GAMEPAD_MODE);
-    if(s == GY_BUT_STATE_TAPPED) keypress(VMU_GAMEPAD_SLEEP);
-    else if(s == GY_BUT_STATE_RELEASED) keyrelease(VMU_GAMEPAD_SLEEP);
-
-#endif
-
-
-#endif
-
     //store socket status before update
 #if 0
     auto* prevSocket = _dev->serialPort._tcpSocket;
 #endif
 
       for(int i = 0; i < 1; ++i) {
-#ifdef GYRO_VMU
+
 #ifndef VMU_DEBUG
         ranThisFrame = gyVmuDeviceUpdate(_dev, (float)deltaTicks/1000000000.0f);
 #else
         gyVmuCpuTick(_dev, 1.0f/30.0f);
-#endif
-#endif
-#ifdef MARCUS_VMU
-          run_cpu();
-#endif
-#if defined(GYRO_VMU)&&defined(MARCUS_VMU)
-
-      compareCores(_dev);
-
 #endif
       }
 
@@ -413,16 +304,9 @@ void VMUMainWindow::_update(void) {
             _tcpDialog->updateConnectionStatus();
         }
 #endif
-        if(!_dev->lcdFile)
-        _updatePConRegister();
+        if(!_dev->lcdFile) _updatePConRegister();
         _updateIcon();
-//        lcdrefresh();
         //repaint();
-        //if(gyVmuDisplayUpdate(_dev, (float)deltaTicks/1000000000.0f))
-       // if(_dev->display.xramChanged) {
-       //     _dev->display.xramChanged = 0;
-           // lcdrefresh();
-        //}
     }
 }
 
@@ -434,7 +318,7 @@ void VMUMainWindow::paintEvent(QPaintEvent*) {
     {
         QPainter painter(&_fb);
         if(!gyVmuDisplayEnabled(_dev)) {
-            painter.drawPixmap(QPoint(0,0), _win->_iconES);
+            painter.drawPixmap(QPoint(0,0), _iconES);
             updatedFb = true;
         } else if(gyVmuDisplayUpdateEnabled(_dev) && _dev->display.screenChanged) {
             for(int y = 0; y < VMU_DISP_PIXEL_HEIGHT; ++y) {

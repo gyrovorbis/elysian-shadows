@@ -6,6 +6,24 @@
 #include "gyro_vmu_bios.h"
 #include "gyro_vmu_device.h"
 
+static inline int _monthDays(const VMUDevice* dev) {
+  int m = dev->ram[0][0x19];
+  if(m==2) {
+    int y = dev->ram[0][0x18] | (dev->ram[0][0x17] << 8);
+    if(y&3)
+      return 28;
+    if(!(y%4000))
+      return 29;
+    if(!(y%1000))
+      return 28;
+    if(!(y%400))
+      return 29;
+    if(!(y%100))
+      return 28;
+    return 29;
+  } else return (m>7? ((m&1)? 30:31) : ((m&1)? 31:30));
+}
+
 int gyVmuBiosLoadImage(VMUDevice *device, const unsigned char* buffer, int size) {
     _gyLog(GY_DEBUG_VERBOSE, "Copying BIOS image from buffer [%d bytes].", size);
     _gyPush();
@@ -124,7 +142,7 @@ int gyVmuBiosHandleCall(VMUDevice* dev) {
                     dev->ram[0][0x1c] = 0;
                     if(++dev->ram[0][0x1b]>=24) {
                         dev->ram[0][0x1b] = 0;
-                        if(++dev->ram[0][0x1a]>month_days()) {
+                        if(++dev->ram[0][0x1a] > _monthDays(dev)) {
                             dev->ram[0][0x1a] = 1;
                             if(++dev->ram[0][0x19]>=13) {
                                 dev->ram[0][0x19] = 1;
