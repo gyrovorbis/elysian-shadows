@@ -217,7 +217,7 @@ void gycheck_gamesize(VMUDevice* dev)
 }
 
 
-static inline size_t _read(GYFile* fd, void* buff, size_t bytes) {
+static inline size_t _gyread(GYFile* fd, void* buff, size_t bytes) {
     size_t bytesRead;
     gyFileRead(fd, buff, bytes, &bytesRead);
     return bytesRead;
@@ -227,7 +227,7 @@ int gyinitflash(VMUDevice* dev, GYFile* fd) {
     int r=0, t=0;
     memset(dev->flash, 0, sizeof(dev->flash));
 
-    while(t<(int)sizeof(dev->flash) && (r=_read(fd, dev->flash+t, sizeof(dev->flash)-t))>0)
+    while(t<(int)sizeof(dev->flash) && (r=_gyread(fd, dev->flash+t, sizeof(dev->flash)-t))>0)
     t += r;
     if(r<0 || t<0x480)
     return 0;
@@ -313,7 +313,7 @@ int gyVmuFlashLoadVMS(VMUDevice* dev, const char *filename) {
 int gyinitbios(VMUDevice* dev, GYFile* fd) {
     int r=0, t=0;
     memset(dev->rom, 0, sizeof(dev->rom));
-    while(t<(int)sizeof(dev->rom) && (r=_read(fd, dev->rom+t, sizeof(dev->rom)-t))>0)
+    while(t<(int)sizeof(dev->rom) && (r=_gyread(fd, dev->rom+t, sizeof(dev->rom)-t))>0)
     t += r;
     if(r<0 || t<0x200)
     return 0;
