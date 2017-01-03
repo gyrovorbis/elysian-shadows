@@ -78,7 +78,6 @@
      </property>
      <addaction name="actionQuick_Connect"/>
      <addaction name="actionTCP_Connection_Manager"/>
-     <addaction name="actionSerial_COM_Connection_Manager"/>
     </widget>
     <addaction name="actionEmulate_Audio"/>
     <addaction name="actionEnable_Pixel_Ghosting"/>

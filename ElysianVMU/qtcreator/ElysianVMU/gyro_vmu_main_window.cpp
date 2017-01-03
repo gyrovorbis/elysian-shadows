@@ -8,14 +8,14 @@
 #include <QTextCodec>
 #include <QDesktopServices>
 
-#define PIXEL_GHOST_FRAMES 10
-
 #include "gyro_vmu_version.h"
 #include "gyro_vmu_vms.h"
 #include "gyro_vmu_vmi.h"
 #include "gyro_vmu_main_window.hpp"
 #include "gyro_vmu_tcp_dialog.hpp"
-#include "gyro_vmu_com_dialog.hpp"
+#if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
+#   include "gyro_vmu_com_dialog.hpp"
+#endif
 #include "gyro_vmu_disassembler.h"
 #include "ui_gyro_vmu_main_window.h"
 #include <gyro_vmu_display.h>
@@ -124,7 +124,6 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
     _iconListening(ICON_LISTENING_PATH),
     _iconConnected(ICON_CONNECTED_PATH),
     _tcpDialog(new VmuTcpDialog),
-    _comDialog(new VmuComDialog),
     _statusLabel(new QLabel("HALTED: No ROM Image")),
     _iconLabel(new QLabel()),
     _japCodec(QTextCodec::codecForName(VMU_TEXT_CODEC))
@@ -213,7 +212,14 @@ VMUMainWindow::VMUMainWindow(QWidget *parent, QString workingDir) :
 
     _dev = gyVmuDeviceCreate();
     _tcpDialog->setVmuDevice(_dev);
+
+#if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
+    QAction* comConfig = new QAction("Serial/COM Connection Manager");
+    connect(comConfig, SIGNAL(triggered()), this, SLOT(on_actionSerial_COM_Connection_Manager_triggered()));
+    _ui->menuSerial_Communications->addAction(comConfig);
+    _comDialog = new VmuComDialog;
     _comDialog->setVmuDevice(_dev);
+#endif
 
 #ifdef BIOS_IMAGE
      gyloadbios(_dev, BIOS_IMAGE);
@@ -300,7 +306,9 @@ VMUMainWindow::~VMUMainWindow(void)
     _gyPop(1);
     gyDebugUninit();
     fclose(_logFile);
+#if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
     delete _comDialog;
+#endif
     delete _tcpDialog;
     delete _ui;
 }
@@ -714,8 +722,9 @@ void VMUMainWindow::_saveSettings(void) {
     }
 
     _tcpDialog->saveSettings(settings);
+#if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
     _comDialog->saveSettings(settings);
-
+#endif
 }
 
 void VMUMainWindow::_loadSettings(void) {
@@ -745,7 +754,9 @@ void VMUMainWindow::_loadSettings(void) {
     }
 
     _tcpDialog->loadSettings(settings);
+#if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
     _comDialog->loadSettings(settings);
+#endif
 
     _gyPop(1);
 }
@@ -1115,7 +1126,9 @@ void VMUMainWindow::on_action64x_triggered()
     _resizeWindowFromScreenZoom(64);
 }
 
+#if GYRO_PLATFORM != GYRO_PLATFORM_RASPI
 void VMUMainWindow::on_actionSerial_COM_Connection_Manager_triggered()
 {
     _comDialog->show();
 }
+#endif
