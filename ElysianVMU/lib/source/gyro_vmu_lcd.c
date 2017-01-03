@@ -4,6 +4,7 @@
 #include <gyro_file_api.h>
 #include <gyro_system_api.h>
 #include <assert.h>
+#include <stdlib.h>
 
 static inline size_t _minFileSize(void) {
     return sizeof(LCDFileHeader)+sizeof(LCDCopyright); //assuming you don't have a single frame, which may not even be valid anyway...
@@ -44,7 +45,7 @@ LCDFile* gyVmuLcdFileLoad(const char* filePath) {
         }
 
         //Validate header data
-        file->header        = file->fileData;
+        file->header        = (LCDFileHeader*)file->fileData;
 
         char buff[VMU_LCD_SIGNATURE_SIZE+1] = { 0 };
         memcpy(buff, file->header->signature, VMU_LCD_SIGNATURE_SIZE);
@@ -72,12 +73,12 @@ LCDFile* gyVmuLcdFileLoad(const char* filePath) {
             goto freedata;
         }
 
-        int offset = VMU_LCD_FILE_HEADER_SIZE;
+        size_t offset = VMU_LCD_FILE_HEADER_SIZE;
 
         //Populate frame info pointers
         file->frameInfo = malloc(file->header->frameCount*sizeof(LCDFrameInfo*));
         for(unsigned i = 0; i < file->header->frameCount; ++i) {
-            file->frameInfo[i] = &file->fileData[offset];
+            file->frameInfo[i] = (LCDFrameInfo*)&file->fileData[offset];
             offset += VMU_LCD_FRAME_INFO_SIZE;
         }
 
@@ -88,7 +89,7 @@ LCDFile* gyVmuLcdFileLoad(const char* filePath) {
             offset += VMU_LCD_FRAME_DATA_SIZE;
         }
 
-        file->copyright = &file->fileData[offset];
+        file->copyright = (LCDCopyright*)&file->fileData[offset];
         offset += VMU_LCD_COPYRIGHT_SIZE;
 
         assert(offset == bytes); //Something is FUNDAMENTALLY reested otherwise!

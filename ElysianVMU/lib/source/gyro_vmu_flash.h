@@ -114,7 +114,9 @@ typedef struct VMUFlashMemUsage {
 
 //Low-level FAT Block API
 unsigned char*      gyVmuFlashBlock(struct VMUDevice* dev, uint16_t block);
+const unsigned char*gyVmuFlashBlockReadOnly(const struct VMUDevice* dev, uint16_t block);
 uint16_t*           gyVmuFlashBlockFATEntry(struct VMUDevice* dev, uint16_t block);
+const uint16_t*     gyVmuFlashBlockFATEntryReadOnly(const struct VMUDevice* dev, uint16_t block);
 uint16_t            gyVmuFlashBlockAlloc(struct VMUDevice* dev, uint16_t previous, int fileType); //Returns VMU_FLASH_BLOCK_FAT_UNALLOCATED if full
 void                gyVmuFlashBlockFree(struct VMUDevice* dev, uint16_t block);
 uint16_t            gyVmuFlashBlockNext(const struct VMUDevice* dev, uint16_t block);
@@ -122,7 +124,8 @@ uint16_t            gyVmuFlashBlockNext(const struct VMUDevice* dev, uint16_t bl
 //Mid-level Directory API
 const VMUFlashDirEntry* gyVmuFlashDirEntryGame(const struct VMUDevice* dev);
 const VMUFlashDirEntry* gyVmuFlashDirEntryDataNext(const struct VMUDevice* dev, const VMUFlashDirEntry* prev);
-const VMUFlashDirEntry* gyVmuFlashDirEntryByIndex(struct VMUDevice* dev, uint8_t index);
+VMUFlashDirEntry* gyVmuFlashDirEntryByIndex(struct VMUDevice* dev, uint8_t index);
+const VMUFlashDirEntry* gyVmuFlashDirEntryByIndexReadOnly(const struct VMUDevice* dev, uint8_t index);
 const VMUFlashDirEntry* gyVmuFlashDirEntryFind(const struct VMUDevice* dev, const char* name);
 uint8_t                 gyVmuFlashDirEntryIndex(const struct VMUDevice* dev, const VMUFlashDirEntry* entry);
 VMUFlashDirEntry*       gyVmuFlashDirEntryAlloc(struct VMUDevice* dev);
@@ -131,7 +134,7 @@ void                    gyVmuFlashDirEntryPrint(const struct VMUDevice* dev, con
 
 //High-level File API
 const VMUFlashDirEntry* gyVmuFlashFileCreate(struct VMUDevice* dev, const VMUFlashNewFileProperties* properties, const char* data);
-int gyVmuFlashFileDelete(struct VMUDevice* dev, const VMUFlashDirEntry* entry);
+int gyVmuFlashFileDelete(struct VMUDevice* dev, VMUFlashDirEntry* entry);
 int gyVmuFlashFileCopy(const struct VMUDevice* devSrc, const VMUFlashDirEntry* entrySrc,
                        struct VMUDevice* devDst, const VMUFlashDirEntry* entryDst, int force);
 int gyVmuFlashFileRead(const struct VMUDevice* dev, const struct VMUFlashDirEntry* entry, char* buffer);
@@ -155,14 +158,13 @@ int gyVmuFlashDefragment(struct VMUDevice* dev);
 
 
 int gyVmuFlashLoadVMUImage(struct VMUDevice* dev, const char* path);
+int gyVmuFlashLoadVMS(struct VMUDevice* dev, const char* path);
 int gyVmuFlashLoadVMI(struct VMIFileInfo* info, const char* path);
 int gyVmuFlashLoadImage(struct VMUDevice* dev, const char* path);
-int gyVmuFlashLoadDCM(struct VMUDevice* dev, const char* path);
+int gyVmuFlashLoadDCI(struct VMUDevice* dev, const char* path);
 
 //Save API (VMI, VMS, DCM, emulator formats, etc)
 
-
-int gyinitbios(struct VMUDevice* dev, int fd);
 int gyloadbios(struct VMUDevice* dev, const char *filename);
 
 

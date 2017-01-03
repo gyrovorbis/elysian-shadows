@@ -92,8 +92,8 @@ bool VmuTcpDialog::quickConnect(void) {
 }
 
 void VmuTcpDialog::updateConnectionStatus(void) {
+    #if 0
     bool connected = false;
-#if 0
     switch(gyVmuSerialConnectionType(_dev)) {
     case VMU_SERIAL_CONNECTION_NONE:
         _ui->remoteTypeText->setText("None");
@@ -197,11 +197,13 @@ bool VmuTcpDialog::startTcpServer(void) {
         return false;
     }
 #endif
+    return true;
 }
 
 bool VmuTcpDialog::stopTcpServer(void) {
+    #if 0
     bool success = true;
-#if 0
+
     if(gyVmuSerialConnectionType(_dev) != VMU_SERIAL_CONNECTION_NONE) {
         auto reply = QMessageBox::question(this, "Disconnect Remote Client",
                                            "There is still a remote client connected to the current VMU. Stopping the TCP server will disconnect the client. Continue?",
@@ -221,6 +223,7 @@ bool VmuTcpDialog::stopTcpServer(void) {
     updateConnectionStatus();
     return success;
 #endif
+    return true;
 }
 
 void VmuTcpDialog::on_startServerButton_clicked(void)
@@ -261,6 +264,7 @@ bool VmuTcpDialog::connectToServer(void) {
         return false;
     }
 #endif
+    return true;
 }
 
 bool VmuTcpDialog::disconnectFromServer(void) {

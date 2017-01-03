@@ -6,6 +6,7 @@
 #include <gyro_system_api.h>
 #include <string.h>
 #include <assert.h>
+#include <stdlib.h>
 
 bool gyVmuDisassemble(const unsigned char* buffer, size_t size, const char* outputFile, bool writeAddr) {
     char strBuff[100];
@@ -23,11 +24,10 @@ bool gyVmuDisassemble(const unsigned char* buffer, size_t size, const char* outp
         _gyLog(GY_DEBUG_VERBOSE, "Opened file for writing [%s]", outputFile);
     }
 
-    int i = 0;
+    size_t i = 0;
     while(i < size) {
 
         if(buffer[i] == 0xff && buffer[i+1] == 0xff && buffer[i+2] == 0xff && buffer[i+3] == 0xff) {
-            int startIndex = i;
             do {
                 if(writeAddr)
                     gyFilePrintf(fp, "%-5x: NOP\n", i);
@@ -97,11 +97,11 @@ bool gyVmuDisassemble(const unsigned char* buffer, size_t size, const char* outp
 
 
 bool gyVmuDisassembleFlashGame(const VMUDevice* dev, const char* outputFile, bool showAddr) {
-    VMUFlashDirEntry* dirEntry;
-
     _gyLog(GY_DEBUG_VERBOSE, "Disassembling Game File");
     _gyPush();
+
 #if 0
+    VMUFlashDirEntry* dirEntry;
     VMUFlashDirEntry* entry;
     if(!(dirEntry = gyVmuFlashDirEntryGame(dev))) {
         _gyLog(GY_DEBUG_ERROR, "No game image loaded on current device!");
@@ -120,7 +120,7 @@ bool gyVmuDisassembleFlashGame(const VMUDevice* dev, const char* outputFile, boo
  */
 bool gyVmuDisassembleFile(const char* inFile, const char* outFile, bool showAddr) {
     GYFile* fp;
-    char* buff;
+    unsigned char* buff;
     size_t fileSize, bytesRead;
     int success = 1;
 

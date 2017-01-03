@@ -28,6 +28,8 @@ static unsigned char _freqResponse[0xff] = {
 };
 
 void gyVmuBuzzerMemorySink(VMUDevice *dev, int addr, uint8_t value) {
+    (void)value;
+
     //Check for buzzer state change
     if(addr == SFR_ADDR_T1CNT || addr == SFR_ADDR_T1LR || addr == SFR_ADDR_T1LC) {
         if(dev->sfr[SFR_OFFSET(SFR_ADDR_T1CNT)]&SFR_T1CNT_T1LRUN_MASK) {

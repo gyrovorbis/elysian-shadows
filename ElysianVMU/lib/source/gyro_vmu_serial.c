@@ -9,15 +9,6 @@
 #include <gyro_system_api.h>
 #include <assert.h>
 
-static const char* _serialSignalStr[] = {
-    "P1.SO0",
-    "P1.SI0",
-    "P1.SCK0",
-    "P1.SO1",
-    "P1.SI1",
-    "P1.SCK1"
-};
-
 static inline int _ifaceSerialActive(const VMUDevice* dev, int ifaceIndex) {
     const VMUSerialIface* iface = &dev->serial.ifaces[ifaceIndex];
 

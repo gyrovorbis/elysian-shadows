@@ -40,7 +40,7 @@ void _updateLcdBuffer(VMUDevice* dev) {
 
     unsigned char *sfr =     dev->sfr;
     unsigned char (*xram)[0x80] =     dev->xram;
-      int y, x, i, a, b=0, p=0;
+      int y, x, b=0, p=0;
 
     const int pixelDelta = dev->display.ghostingEnabled? 1 : VMU_DISP_GHOSTING_FRAMES;
 
@@ -112,7 +112,8 @@ void gyVmuDisplayPixelSet(struct VMUDevice* dev, int x, int y, int on) {
 int gyVmuDisplayPixelGet(const VMUDevice* dev, int x, int y) {
     assert(x >= 0 && x < VMU_DISP_PIXEL_WIDTH && y >= 0 && y < VMU_DISP_PIXEL_HEIGHT);
 
-    unsigned bank, addr, bit;
+    unsigned bank, bit;
+    int addr;
 
     _xramBitFromRowCol(x, y, &bank, &addr, &bit);
     addr -= 0x180;

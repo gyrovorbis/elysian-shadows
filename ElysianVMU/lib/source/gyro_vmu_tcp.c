@@ -1,3 +1,5 @@
+#if 0
+
 #include "gyro_vmu_tcp.h"
 #include "gyro_vmu_device.h"
 #include "gyro_vmu_sfr.h"
@@ -416,4 +418,5 @@ void gyVmuSerialTcpSconUpdate(struct VMUDevice* dev, int sfr, unsigned char val)
     }
 
 }
+#endif
 #endif

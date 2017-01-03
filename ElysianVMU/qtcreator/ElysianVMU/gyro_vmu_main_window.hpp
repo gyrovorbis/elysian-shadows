@@ -13,6 +13,7 @@
 #define VMU_ROM_HISTORY_SIZE            5
 #define VMU_TRIGGER_SPEED_FACTOR        10.0f
 #define FILTER_DUPLICATE_LOG_STRINGS    1
+#define VMU_FB_DEFAULT_ZOOM_LEVEL       8
 
 #define ICON_ES_PATH                    ":/icons/images/vmu_es.png"
 #define ICON_CLOCK_PATH                 ":/icons/images/icon_clock.png"
@@ -49,11 +50,6 @@ public:
     bool                loadRom(QString filepath);
     void                resetCpu(void);
 
-
-        QPixmap             _iconES;
-        VMUDevice*          _dev            = nullptr;
-        Ui::VMUMainWindow*  _ui             = nullptr;
-
 private:
 
     virtual void        paintEvent(QPaintEvent* event) override;
@@ -64,7 +60,6 @@ private:
 
 protected Q_SLOTS:
     void                _update(void);
-
 
 
 private Q_SLOTS:
@@ -109,11 +104,14 @@ private:
     void                _updateIcon(void);
     void                _freeIcons(void);
 
+    void                _setupAboutMsgBox(void);
     void                _saveSettings(void);
     void                _loadSettings(void);
     void                _pushRecentRom(QString path);
 
+    Ui::VMUMainWindow*  _ui                 = nullptr;
     QPixmap             _fb;
+    QPixmap             _iconES;
     QPixmap             _iconClock;
     QPixmap             _iconFile;
     QPixmap             _iconGame;
@@ -137,6 +135,7 @@ private:
     uint16_t**          _iconsData          = nullptr;
     uint16_t*           _eyecatchData       = nullptr;
     QTextCodec*         _japCodec           = nullptr;
+    VMUDevice*          _dev                = nullptr;
     int64_t             _prevTicks          = 0;
     bool                _running            = false;
     bool                _contAttached       = false;
