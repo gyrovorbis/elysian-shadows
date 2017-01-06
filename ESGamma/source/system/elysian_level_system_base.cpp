@@ -193,10 +193,9 @@ void LevelSystemBase::_onAreaExit(void) {
 void LevelSystemBase::_removePersistentEntities(void) {
     auto& entities = _curArea->entities;
 
-    for(auto& it : entities) {
+    for(auto it : entities) {
         if(it->isPersistent()) {
             _persistentPool.claimFreeEntry() = it;
-            it->deactivate();
             _curArea->removeEntity(it);
         }
     }
@@ -206,6 +205,7 @@ void LevelSystemBase::_addPersistentEntities(void) {
     for(auto entity = _persistentPool.begin(); entity < _persistentPool.end(); ++entity) {
         _curArea->addEntity(*entity);
     }
+    _persistentPool.clear();
 }
 
 }
