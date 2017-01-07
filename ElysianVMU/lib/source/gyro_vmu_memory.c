@@ -110,12 +110,6 @@ void _sconPrintUpdate(int port, uint8_t oldVal, uint8_t newVal) {
 
 }
 
-
-//PLAY SOUND
-//HANDLE TIMERS
-//CLOCK FREQUENCY
-//HALT MODE
-//LCD ENABLE/DISABLE
 void gyVmuMemWrite(VMUDevice* dev, int addr, int val) {
     val &= 0xff; //clamp to single byte
 #ifdef VMU_DEBUG
