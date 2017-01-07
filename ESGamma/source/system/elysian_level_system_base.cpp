@@ -192,12 +192,17 @@ void LevelSystemBase::_onAreaExit(void) {
 
 void LevelSystemBase::_removePersistentEntities(void) {
     auto& entities = _curArea->entities;
+    std::vector<Entity*> toRemove;
 
     for(auto it : entities) {
         if(it->isPersistent()) {
             _persistentPool.claimFreeEntry() = it;
-            _curArea->removeEntity(it);
+            toRemove.push_back(it);
         }
+    }
+
+    for(auto it : toRemove) {
+        _curArea->removeEntity(it);
     }
 }
 

@@ -519,21 +519,27 @@ namespace elysian {
     inline const char* LuaManagerBase::pull<const char*>(void) {
         static char _internalBuffer[GYRO_PRINTF_BUFFER_SIZE]; //gay way of handling this, but only way if we want to return value
 
-        if(lua_isnil(*_mainState, -1)) {
+        if(lua_isnil(*_mainState, -1)) {    //allow for nil to convert to a NULL C string ptr
             lua_pop(*_mainState, 1);
            return nullptr;
         } else {
-            strcpy(_internalBuffer, lua_tostring(*_mainState, -1));
-            lua_pop(*_mainState, 1);
+            size_t len;
+            const char* str = lua_tolstring(*_mainState, -1, &len);
+            if(str) {
+                if(len < GYRO_PRINTF_BUFFER_SIZE) {
+                    strcpy(_internalBuffer, str);
+                } else {
+                    errprintf("String on Lua stack is too big to be pulled into C++ buffer [%d/%d]!", len, GYRO_PRINTF_BUFFER_SIZE);
+                    strncpy(_internalBuffer, str, GYRO_PRINTF_BUFFER_SIZE);
+                }
+                lua_pop(*_mainState, 1);
+                return _internalBuffer; //you better copy this shit asap!!!!
+            } else {
+                errprintf("Expected to pull string-compatible value from Lua stack, got '%s' instead.", lua_typename(*_mainState, -1));
+                return nullptr;
+            }
         }
-        return _internalBuffer; //you better copy this shit asap
-
     }
-
-
-
-
-
 }
 
 #endif

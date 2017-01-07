@@ -611,8 +611,8 @@ FORMS += form/estk/tk_sheet_dock_widget.ui \
 
 #Required to get C++11x to work on OSX
 macx {
-    QMAKE_CXXFLAGS += -mmacosx-version-min=10.7 -stdlib=libc++
-    LIBS += -mmacosx-version-min=10.7 -stdlib=libc++
+    QMAKE_CXXFLAGS += -mmacosx-version-min=10.8 -stdlib=libc++
+    LIBS += -mmacosx-version-min=10.8 -stdlib=libc++
 
     #CONFIG(release, debug|release) {
      #  QMAKE_POST_LINK = "macdeployqt TARGET"
