@@ -43,6 +43,8 @@ int gyVmuDeviceRestore(VMUDevice* dev, const char *path) {
 int gyVmuDeviceUpdate(VMUDevice* device, float deltaTime) {
 
     if(device->lcdFile) {
+        gyVmuGamepadPoll(device);
+        gyVmuLcdFileProcessInput(device);
         gyVmuLcdFileUpdate(device, deltaTime);
         gyVmuDisplayUpdate(device, deltaTime);
         return 1;

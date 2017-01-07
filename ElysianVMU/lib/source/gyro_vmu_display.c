@@ -151,6 +151,32 @@ int gyVmuDisplayIconGet(const VMUDevice *dev, VMU_DISP_ICN icn) {
     return (dev->xram[VMU_XRAM_BANK_ICN][XRAM_OFFSET(SFR_ADDR_XRAM_BASE)+icn+1]>>bit)&0x1;
 }
 
+
+void gyVmuDisplayIconSet(VMUDevice *dev, VMU_DISP_ICN icn, int val) {
+    assert(icn >= 0 && icn < VMU_DISP_ICN_COUNT);
+    uint8_t bit;
+
+    //0x181-184, icons at bit 6-0
+    switch(icn) {
+    case VMU_DISP_ICN_FILE:
+        bit = 6;
+        break;
+    case VMU_DISP_ICN_GAME:
+        bit = 4;
+        break;
+    case VMU_DISP_ICN_CLOCK:
+        bit = 2;
+        break;
+    default:
+    case VMU_DISP_ICN_FLASH:
+        bit = 0;
+        break;
+    }
+
+    if(val) dev->xram[VMU_XRAM_BANK_ICN][XRAM_OFFSET(SFR_ADDR_XRAM_BASE)+icn+1] |= (0x1<<bit);
+    else dev->xram[VMU_XRAM_BANK_ICN][XRAM_OFFSET(SFR_ADDR_XRAM_BASE)+icn+1] &= ~(0x1<<bit);
+}
+
 int gyVmuDisplayEnabled(const VMUDevice* dev) {
     return (dev->sfr[SFR_OFFSET(SFR_ADDR_VCCR)]>>SFR_VCCR_VCCR7_POS);
 }
