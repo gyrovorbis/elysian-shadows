@@ -90,23 +90,28 @@ void AreaBase::validateEntityName(Entity *entity) {
             sprintf(concatBuff, "%s%lu", strBuff, ++num);
         }
 
+        dbgprintf("RENAMED ENTITY %s to %s", entity->getName(), concatBuff);
         entity->setName(concatBuff);
+
     }
 }
 
 void AreaBase::addEntity(Entity *entity) {
+    dbgprintf("Adding active entity %s", entity->getName());
     validateEntityName(entity);
     entity->setArea(static_cast<Area*>(this));
     entity->activate();
 }
 
 void AreaBase::addInactiveEntity(Entity *entity) {
+    dbgprintf("Adding inactive entity %s", entity->getName());
     validateEntityName(entity);
     entity->setArea(static_cast<Area*>(this));
     inactiveEntities.push_back(entity);
 }
 
 void AreaBase::removeEntity(Entity *entity) {
+    dbgprintf("Removing entity %s", entity->getName());
     entity->deactivate();
     entity->setArea(nullptr);
     containerEraseOnMatch(entity, inactiveEntities);

@@ -1,6 +1,12 @@
 #include <proxy/elysian_entity_proxy.hpp>
 #include <proxy/elysian_gui_system_proxy.hpp>
 
+/*!
+    \qmltype AdventureLog
+    \since 1.5.8
+    \inmodule ESToolkit
+    \brief GUI Widget for Combat Log and in-game text. Can be used to display custom content.
+*/
 
 OOLUA_EXPORT_FUNCTIONS_CONST(MenuWidget)
 OOLUA_EXPORT_FUNCTIONS(MenuWidget)
