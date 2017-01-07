@@ -2,6 +2,7 @@
 #include "gyro_vmu_display.h"
 #include "gyro_vmu_device.h"
 #include <gyro_file_api.h>
+#include <gyro_input_api.h>
 #include <gyro_system_api.h>
 #include <assert.h>
 #include <stdlib.h>
@@ -163,18 +164,21 @@ void gyVmuLcdFileFrameStart(struct VMUDevice* dev, uint16_t frameIndex) {
 
 void gyVmuLcdFileUpdate(VMUDevice* dev, float deltaTime) {
     LCDFile* lcdFile = dev->lcdFile;
-    lcdFile->elapsedTime += deltaTime;
 
-    if(lcdFile->elapsedTime >= lcdFile->frameInfo[lcdFile->currentFrame]->delay*VMU_LCD_DELAY_SECS) {
-        if(++lcdFile->currentFrame >= lcdFile->header->frameCount) {
-            if(lcdFile->header->repeatCount != VMU_LCD_REPEAT_INFINITE && ++lcdFile->loopCount >= lcdFile->header->repeatCount) {
-                gyVmuLcdFileStopAndUnload(dev);
-                return;
-            } else {
-                lcdFile->currentFrame = 0;
+    if(lcdFile->playing) {
+        lcdFile->elapsedTime += deltaTime;
+
+        if(lcdFile->elapsedTime >= lcdFile->frameInfo[lcdFile->currentFrame]->delay*VMU_LCD_DELAY_SECS) {
+            if(++lcdFile->currentFrame >= lcdFile->header->frameCount) {
+                if(lcdFile->header->repeatCount != VMU_LCD_REPEAT_INFINITE && ++lcdFile->loopCount >= lcdFile->header->repeatCount) {
+                    gyVmuLcdFileStopAndUnload(dev);
+                    return;
+                } else {
+                    lcdFile->currentFrame = 0;
+                }
             }
+            gyVmuLcdFileFrameStart(dev, lcdFile->currentFrame);
         }
-        gyVmuLcdFileFrameStart(dev, lcdFile->currentFrame);
     }
 }
 
@@ -186,6 +190,8 @@ int gyVmuLcdFileLoadAndStart(VMUDevice *dev, const char *filePath) {
         gyVmuDisplayEnabledSet(dev, 1);
         gyVmuDisplayUpdateEnabledSet(dev, 1);
         gyVmuLcdFileFrameStart(dev, 0);
+        for(int i = 0; i < VMU_DISP_ICN_COUNT; ++i) gyVmuDisplayIconSet(dev, i, 0);
+        dev->lcdFile->playing = 1;
         return 1;
     } else {
         return 0;
@@ -195,4 +201,38 @@ int gyVmuLcdFileLoadAndStart(VMUDevice *dev, const char *filePath) {
 void gyVmuLcdFileStopAndUnload(VMUDevice *dev) {
     gyVmuLcdFileUnload(dev->lcdFile);
     dev->lcdFile = NULL;
+}
+
+
+void gyVmuLcdFileProcessInput(VMUDevice *dev) {
+
+    //Start/pause
+    if(dev->gamepad.a == GY_BUT_STATE_TAPPED) dev->lcdFile->playing = !dev->lcdFile->playing;
+
+    //Reset
+    if(dev->gamepad.b == GY_BUT_STATE_TAPPED) {
+        gyVmuLcdFileFrameStart(dev, 0);
+        dev->lcdFile->playing = 1;
+    }
+
+    //Single frame advance/rewind
+    if(dev->gamepad.l == GY_BUT_STATE_TAPPED) {
+        if(dev->lcdFile->currentFrame > 0)
+            gyVmuLcdFileFrameStart(dev, dev->lcdFile->currentFrame-1);
+    }
+    if(dev->gamepad.r == GY_BUT_STATE_TAPPED) {
+        if(dev->lcdFile->currentFrame+1 < dev->lcdFile->header->frameCount)
+            gyVmuLcdFileFrameStart(dev, dev->lcdFile->currentFrame+1);
+    }
+
+    //Continuous Advance/Rewind
+    if(dev->gamepad.u & GY_BUT_STATE_DOWN) {
+        if(dev->lcdFile->currentFrame > 0)
+            gyVmuLcdFileFrameStart(dev, dev->lcdFile->currentFrame-1);
+    }
+    if(dev->gamepad.d & GY_BUT_STATE_DOWN) {
+        if(dev->lcdFile->currentFrame+1 < dev->lcdFile->header->frameCount)
+            gyVmuLcdFileFrameStart(dev, dev->lcdFile->currentFrame+1);
+    }
+
 }

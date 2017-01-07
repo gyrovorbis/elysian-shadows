@@ -55,6 +55,7 @@ typedef struct LCDFile {
     float           elapsedTime;
     int             currentFrame;
     int             loopCount;
+    int             playing;
 } LCDFile;
 
 LCDFile*    gyVmuLcdFileLoad(const char* filePath);
@@ -62,9 +63,12 @@ void        gyVmuLcdPrintFileInfo(const LCDFile* lcdFile);
 void        gyVmuLcdFileUnload(LCDFile* lcdFile);
 
 void        gyVmuLcdFileUpdate(struct VMUDevice* dev, float deltaTime);
+void        gyVmuLcdFileProcessInput(struct VMUDevice* dev);
 int         gyVmuLcdFileLoadAndStart(struct VMUDevice* dev, const char* filePath);
 void        gyVmuLcdFileFrameStart(struct VMUDevice* dev, uint16_t frameIndex);
 void        gyVmuLcdFileStopAndUnload(struct VMUDevice* dev);
+
+
 
 #ifdef __cplusplus
 }

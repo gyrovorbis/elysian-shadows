@@ -306,7 +306,7 @@ void VMUMainWindow::_update(void) {
 #endif
         if(!_dev->lcdFile) _updatePConRegister();
         _updateIcon();
-        //repaint();
+        repaint();
     }
 }
 
