@@ -49,9 +49,14 @@ macx {
 
 #QMAKE_CFLAGS += -std=c99
 
-!iphoneos:!dreamcast:!android:!raspberrypi {
+!iphoneos:!dreamcast:!android:!raspberrypi:!iphonesimulator {
     QMAKE_CFLAGS += -msse
     QMAKE_CXXFLAGS += -msse
+}
+
+iphonesimulator {
+    QMAKE_CFLAGS += -msse3
+    QMAKE_CXXFLAGS += -msse3
 }
 
 CONFIG(debug, debug|release) {
