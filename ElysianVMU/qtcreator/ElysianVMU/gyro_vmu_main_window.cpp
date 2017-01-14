@@ -26,6 +26,7 @@
 #include <gyro_net_api.h>
 #include <gyro_vmu_flash.h>
 #include <gyro_vmu_battery.h>
+#include <gyro_vmu_lcd.h>
 #include <gyro_file_api.h>
 #include <gyro_vmu_cpu.h>
 #include <gyro_vmu_gamepad.h>
@@ -305,6 +306,7 @@ void VMUMainWindow::_update(void) {
         }
 #endif
         if(!_dev->lcdFile) _updatePConRegister();
+        else _updateLcdAnimStatusMessage();
         _updateIcon();
         repaint();
     }
@@ -383,6 +385,7 @@ bool VMUMainWindow::loadRom(QString filepath) {
     QFileInfo info(filepath);
     _romDir = info.absoluteDir().absolutePath();
 
+    //If loading a .VMI, we need to get the .VMS file too.
     if(info.exists()) {
         if(info.suffix() == "VMI" || info.suffix() == "vmi") {
             VMIFileInfo vmiInfo;
@@ -421,8 +424,7 @@ bool VMUMainWindow::loadRom(QString filepath) {
 
     if(info.exists() && gyVmuFlashLoadImage(_dev, filepath.toStdString().c_str())) {
         if(_dev->lcdFile) {
-            _statusLabel->setText("Playing animation...");
-            _running = true;
+            _statusLabel->setText(QString("LCD ANIM: ")+info.fileName());
             _pushRecentRom(filepath);
             _gyLog(GY_DEBUG_VERBOSE, "Playing LCD animation.");
             resetCpu();
@@ -460,6 +462,19 @@ void VMUMainWindow::resetCpu(void) {
     }
 
     gyVmuDisplayGhostingEnabledSet(_dev, _ui->actionEnable_Pixel_Ghosting->isChecked());
+}
+
+void VMUMainWindow::_updateLcdAnimStatusMessage(void) {
+    static const char* stateNames[] = {
+        "STOPPED",
+        "PLAYING",
+        "COMPLETE"
+    };
+    char buff[100];
+
+    sprintf(buff, "frame: [%d/%d]\t state: %s", _dev->lcdFile->currentFrame, _dev->lcdFile->header->frameCount-1,
+            stateNames[_dev->lcdFile->state]);
+    _ui->statusbar->showMessage(buff, VMU_STATUS_TEMP_TIMEOUT);
 }
 
 void VMUMainWindow::on_actionLoad_ROM_triggered(void)
