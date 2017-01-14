@@ -10,6 +10,7 @@
 #include "gyro_vmu_display.h"
 #include "gyro_vmu_serial.h"
 #include "gyro_vmu_port1.h"
+#include "gyro_vmu_flash.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -56,20 +57,18 @@ typedef struct VMUDevice {
     VMUBuzzer       buzzer;
     VMUGamepad      gamepad;
     VMUDisplay      display;
-    struct LCDFile* lcdFile;
-
-    uint16_t        intReq;
-    uint16_t        intMask;
 
     int             gameSize;
     int             speed;
     float           tBaseDeltaTime;
-
-    unsigned char   biosLoaded;
+    struct LCDFile* lcdFile;
 
     uint16_t        pc;
+    uint16_t        intReq;
+    uint16_t        intMask;
+    VMUFlashPrg     flashPrg;
 
-
+    unsigned char   biosLoaded;
 } VMUDevice;
 
 VMUDevice*          gyVmuDeviceCreate(void);

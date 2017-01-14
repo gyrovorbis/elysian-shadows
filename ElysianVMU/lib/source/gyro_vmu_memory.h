@@ -132,7 +132,7 @@ extern "C" {
 #define SFR_ADDR_P3INT          0x14e   //Port 3 Interrupt Control register
 //0x14F-0x15B Not (officially) Used
 //0x151 Unknown BIOS Use
-#define SFR_ADDR_FLASH_PRG      0x154
+#define SFR_ADDR_FLASH          0x154   //Used by LDF and STF flash instructions (in BIOS)
 //0x155 Unknown BIOS Use
 #define SFR_ADDR_P7             0x15c   //Port 7 Latch
 #define SFR_ADDR_I01CR          0x15d   //External Interrupt 0, 1 Control
