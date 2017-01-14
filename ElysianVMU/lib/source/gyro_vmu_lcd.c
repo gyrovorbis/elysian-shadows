@@ -153,6 +153,7 @@ void gyVmuLcdFileFrameStart(struct VMUDevice* dev, uint16_t frameIndex) {
     assert(frameIndex < lcdFile->header->frameCount);
     lcdFile->currentFrame   = frameIndex;
     lcdFile->elapsedTime    = 0.0f;
+    if(lcdFile->state == LCD_FILE_STATE_COMPLETE) lcdFile->state = LCD_FILE_STATE_STOPPED;
 
     for(unsigned i = 0; i < VMU_LCD_FRAME_DATA_SIZE; ++i) {
         //_gyLog(GY_DEBUG_VERBOSE, "FRAME[%d] = %x", i, lcdFile->frameData[frameIndex]);
@@ -165,13 +166,14 @@ void gyVmuLcdFileFrameStart(struct VMUDevice* dev, uint16_t frameIndex) {
 void gyVmuLcdFileUpdate(VMUDevice* dev, float deltaTime) {
     LCDFile* lcdFile = dev->lcdFile;
 
-    if(lcdFile->playing) {
+    if(lcdFile->state == LCD_FILE_STATE_PLAYING) {
         lcdFile->elapsedTime += deltaTime;
 
         if(lcdFile->elapsedTime >= lcdFile->frameInfo[lcdFile->currentFrame]->delay*VMU_LCD_DELAY_SECS) {
             if(++lcdFile->currentFrame >= lcdFile->header->frameCount) {
                 if(lcdFile->header->repeatCount != VMU_LCD_REPEAT_INFINITE && ++lcdFile->loopCount >= lcdFile->header->repeatCount) {
-                    gyVmuLcdFileStopAndUnload(dev);
+                    --lcdFile->currentFrame;
+                    lcdFile->state = LCD_FILE_STATE_COMPLETE;
                     return;
                 } else {
                     lcdFile->currentFrame = 0;
@@ -191,7 +193,7 @@ int gyVmuLcdFileLoadAndStart(VMUDevice *dev, const char *filePath) {
         gyVmuDisplayUpdateEnabledSet(dev, 1);
         gyVmuLcdFileFrameStart(dev, 0);
         for(int i = 0; i < VMU_DISP_ICN_COUNT; ++i) gyVmuDisplayIconSet(dev, i, 0);
-        dev->lcdFile->playing = 1;
+        dev->lcdFile->state = LCD_FILE_STATE_PLAYING;
         return 1;
     } else {
         return 0;
@@ -207,12 +209,18 @@ void gyVmuLcdFileStopAndUnload(VMUDevice *dev) {
 void gyVmuLcdFileProcessInput(VMUDevice *dev) {
 
     //Start/pause
-    if(dev->gamepad.a == GY_BUT_STATE_TAPPED) dev->lcdFile->playing = !dev->lcdFile->playing;
+    if(dev->gamepad.a == GY_BUT_STATE_TAPPED) {
+        if(dev->lcdFile->state == LCD_FILE_STATE_PLAYING) {
+            dev->lcdFile->state = LCD_FILE_STATE_STOPPED;
+        } else if(dev->lcdFile->state == LCD_FILE_STATE_STOPPED) {
+            dev->lcdFile->state = LCD_FILE_STATE_PLAYING;
+        }
+    }
 
     //Reset
     if(dev->gamepad.b == GY_BUT_STATE_TAPPED) {
         gyVmuLcdFileFrameStart(dev, 0);
-        dev->lcdFile->playing = 1;
+        dev->lcdFile->state = LCD_FILE_STATE_PLAYING;
     }
 
     //Single frame advance/rewind

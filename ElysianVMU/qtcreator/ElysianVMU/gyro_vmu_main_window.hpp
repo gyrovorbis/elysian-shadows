@@ -98,6 +98,7 @@ private:
     static void         _log(GY_DEBUG_SEVERITY level, const char* msg);
 
     void                _updatePConRegister(void);
+    void                _updateLcdAnimStatusMessage(void);
     void                _resizeWindowFromScreenZoom(int level);
 
     bool                _loadIcons(void);

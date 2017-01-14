@@ -45,6 +45,12 @@ typedef struct LCDCopyright {
     char copyright[VMU_LCD_COPYRIGHT_SIZE];         //'Dream Animator ver.0.50 (C)1999 F.Sahara' (for Dream Animator 0.5)
 } LCDCopyright;
 
+typedef enum LCD_FILE_STATE {
+    LCD_FILE_STATE_STOPPED,
+    LCD_FILE_STATE_PLAYING,
+    LCD_FILE_STATE_COMPLETE
+} LCD_FILE_STATE;
+
 typedef struct LCDFile {
     LCDFileHeader*  header;
     LCDFrameInfo**  frameInfo;
@@ -55,7 +61,7 @@ typedef struct LCDFile {
     float           elapsedTime;
     int             currentFrame;
     int             loopCount;
-    int             playing;
+    int             state;
 } LCDFile;
 
 LCDFile*    gyVmuLcdFileLoad(const char* filePath);

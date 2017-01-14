@@ -35,6 +35,11 @@ int gyVmuFlashLoadImage(VMUDevice* dev, const char* path) {
     _gyLog(GY_DEBUG_VERBOSE, "Loading Flash Image [%s]", path);
     _gyPush();
 
+    if(dev->lcdFile) {
+        gyVmuLcdFileUnload(dev->lcdFile);
+        dev->lcdFile = NULL;
+    }
+
     while(curTok) {
         prevTok = curTok;
         curTok = strtok(NULL, ".");
