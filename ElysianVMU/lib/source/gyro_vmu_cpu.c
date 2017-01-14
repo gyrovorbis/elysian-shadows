@@ -250,19 +250,39 @@ static int gyVmuCpuInstrExecute(VMUDevice* dev, const VMUInstr* instr, const VMU
         break;
     }
     case OPCODE_LDF: {
-        uint32_t flashAddr = ((dev->sfr[0x54]&0x1)<<16u)|(dev->sfr[SFR_OFFSET(SFR_ADDR_TRL)] | (dev->sfr[SFR_OFFSET(SFR_ADDR_TRH)]<<8u));
+        uint32_t flashAddr = ((dev->sfr[SFR_OFFSET(SFR_ADDR_FLASH)]&SFR_FLASH_ADDR_MASK)<<16u)|(dev->sfr[SFR_OFFSET(SFR_ADDR_TRL)] | (dev->sfr[SFR_OFFSET(SFR_ADDR_TRH)]<<8u));
         gyVmuMemWrite(dev, SFR_ADDR_ACC, dev->flash[flashAddr]);
         break;
     }
     case OPCODE_STF: {
-
-
-
-        uint32_t flashAddr = ((dev->sfr[0x54]&0x1)<<16)+(dev->sfr[SFR_OFFSET(SFR_ADDR_TRL)] | (dev->sfr[SFR_OFFSET(SFR_ADDR_TRH)]<<8u));
-                uint8_t acc = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
-      //  _gyLog(GY_DEBUG_ERROR, "Using unknown opcode STF!");
-        if(!(gyVmuMemRead(dev, 0x154)&0x2))
-               dev->flash[flashAddr] = acc;
+        uint32_t flashAddr = (dev->sfr[SFR_OFFSET(SFR_ADDR_TRL)] | (dev->sfr[SFR_OFFSET(SFR_ADDR_TRH)]<<8u));
+        uint8_t acc = dev->sfr[SFR_OFFSET(SFR_ADDR_ACC)];
+        if(dev->sfr[SFR_OFFSET(SFR_ADDR_FLASH)]&SFR_FLASH_UNLOCK_MASK) {
+            switch(dev->flashPrg.prgState) {
+            case VMU_FLASH_PRG_STATE0:
+                if(flashAddr == VMU_FLASH_PRG_STATE0_ADDR && acc == VMU_FLASH_PRG_STATE0_VALUE)
+                    dev->flashPrg.prgState = VMU_FLASH_PRG_STATE1;
+                break;
+            case VMU_FLASH_PRG_STATE1:
+                dev->flashPrg.prgState =
+                        (flashAddr == VMU_FLASH_PRG_STATE1_ADDR && acc == VMU_FLASH_PRG_STATE1_VALUE)?
+                        VMU_FLASH_PRG_STATE2 : VMU_FLASH_PRG_STATE0;
+                break;
+            case VMU_FLASH_PRG_STATE2:
+                if(flashAddr == VMU_FLASH_PRG_STATE2_ADDR && acc == VMU_FLASH_PRG_STATE2_VALUE)
+                    dev->flashPrg.prgBytes = VMU_FLASH_PRG_BYTE_COUNT;
+                dev->flashPrg.prgState = VMU_FLASH_PRG_STATE0;
+                break;
+            }
+        } else {
+            if(dev->flashPrg.prgBytes) {
+                flashAddr |= (dev->sfr[SFR_OFFSET(SFR_ADDR_FLASH)]&SFR_FLASH_ADDR_MASK)<<16u;
+                dev->flash[flashAddr] = acc;
+                --dev->flashPrg.prgBytes;
+            } else {
+                _gyLog(GY_DEBUG_WARNING, "VMU_CPU: STF Instruction attempting to write byte %d to addr %x while Flash is locked!", acc, flashAddr);
+            }
+        }
         break;
     }
     case OPCODE_DBNZ: {

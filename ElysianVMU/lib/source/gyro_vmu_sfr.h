@@ -35,7 +35,7 @@ extern "C" {
 #define SFR_IE_IE0_POS          1       //INT0/INT1 Priority Level - When 1, priority of both external interrupts INT0 and INT1 are
 #define SFR_IE_IE0_MASK         0x1     //lowered from nonmaskable to low
 
-//T0CNT - Timer 0 Control
+//T0CNT - Timer 0 Control (0x110)
 #define SFR_T0CNT_T0LIE_POS     0       //T0L interrupt request enabled - 1: enabled 0: disabled
 #define SFR_T0CNT_T0LIE_MASK    0x1
 #define SFR_T0CNT_T0LOVF_POS    1       //T0L overflow flag - 1: overflow 0: no overflow
@@ -52,6 +52,12 @@ extern "C" {
 #define SFR_T0CNT_P0LRUN_MASK   0x40
 #define SFR_T0CNT_P0HRUN_POS    7       //T0H count control - 0: count stop/data reload 1: count start
 #define SFR_T0CNT_P0HRUN_MASK   0x80
+
+//EXT - External Memory Control (0x10d)
+#define SFR_EXT_MASK            0x01
+#define SFR_EXT_POS             0
+#define SFR_EXT_SYSTEM          0x00    //value of EXT register for when executing system/BIOS code from rom
+#define SFR_EXT_USER            0x01    //value of EXT register for when executing user app code from flash
 
 //OCR - Oscillation Control Register (0x10e)
 #define SFR_OCR_OCR7_POS        7       //Clock Divisor - when 0, divides clock frequency by 12
@@ -203,14 +209,11 @@ extern "C" {
 #define SFR_P3INT_P30INT_POS    0       //Set to 1 to enable interrupts when P1INT is set
 #define SFR_P3INT_P30INT_MASK   0x1
 
-#define SFR_FLASH_PRG_ADDR_POS  0
-#define SFR_FLASH_PRG_ADDR_MASK 0x1
-
-//XBNK - Bank Address Register
-#define SFR_EXT_MASK            0x01
-#define SFR_EXT_POS             0
-#define SFR_EXT_SYSTEM          0x00    //value of EXT register for when executing system/BIOS code from rom
-#define SFR_EXT_USER            0x01    //value of EXT register for when executing user app code from flash
+//FLASH - Flash Control (0x154)
+#define SFR_FLASH_UNLOCK_MASK   0x2
+#define SFR_FLASH_UNLOCK_POS    1       //Set to true when entering flash write unlock sequence for STF
+#define SFR_FLASH_ADDR_MASK     0x1
+#define SFR_FLASH_ADDR_POS      0       //Used as 9th bit for flash address calculations
 
 //P7 - Port 7 Latch (0x15c)
 #define SFR_P7_P73_POS          3       //External connector pin 6 state

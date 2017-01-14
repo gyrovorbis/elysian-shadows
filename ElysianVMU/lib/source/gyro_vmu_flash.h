@@ -42,8 +42,30 @@ extern "C" {
 #define VMU_FLASH_DIRECTORY_DATE_WEEKDAY    7
 #define VMU_FLASH_DIRECTORY_DATE_SIZE       8
 
+#define VMU_FLASH_PRG_BYTE_COUNT            128     //number of bytes software can write to flash once unlocked
+#define VMU_FLASH_PRG_STATE0_ADDR           0x5555  //Key-value pairs for flash unlock sequence used by STF instruction
+#define VMU_FLASH_PRG_STATE0_VALUE          0xaa
+#define VMU_FLASH_PRG_STATE1_ADDR           0x2aaa
+#define VMU_FLASH_PRG_STATE1_VALUE          0x55
+#define VMU_FLASH_PRG_STATE2_ADDR           0x5555
+#define VMU_FLASH_PRG_STATE2_VALUE          0xa0
+
+
 struct VMUDevice;
 struct VMIFileInfo;
+
+typedef enum VMU_FLASH_PRG_STATE {
+    VMU_FLASH_PRG_STATE0,
+    VMU_FLASH_PRG_STATE1,
+    VMU_FLASH_PRG_STATE2
+} VMU_FLASH_PRG_STATE;
+
+
+//Flash controller for VMU (note actual flash blocks are stored within device)
+typedef struct VMUFlashPrg {
+    uint8_t prgBytes;
+    uint8_t prgState;
+} VMUFlashPrg;
 
 /*
  * To extract a file:
