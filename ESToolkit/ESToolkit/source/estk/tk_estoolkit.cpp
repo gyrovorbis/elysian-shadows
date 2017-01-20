@@ -220,6 +220,20 @@ ESToolkit::ESToolkit(QWidget *parent):
     connect(_selectionDockWidget, SIGNAL(uncheckMe(int)), this, SLOT(UpdateDockWidgetChecked(int)));
     connect(_engineDialog, SIGNAL(stopped()), this, SLOT(onInvokeEngineStopped()));
 
+
+    auto* altTabAction = new QAction(this);
+    /* Since CMD+Tab is already used for swapping windows on OSX AND
+     * ALT+Tab does the same on Windows, this shortcut has to be treated
+     * differently between Win/Mac. Linux should work like Window.
+     */
+#ifdef Q_OS_MAC
+    altTabAction->setShortcut(QKeySequence("Alt+Tab"));
+#else
+    altTabAction->setShortcut(QKeySequence("Ctrl+Tab"));
+#endif
+    connect(altTabAction, SIGNAL(triggered()), this, SLOT(onAltTabShortcutTriggered()));
+    addAction(altTabAction);
+
     glUtilities::printGLSupport();
     ReadSettings();
 
@@ -1180,4 +1194,17 @@ void ESToolkit::on_actionToggle_Fullscreen_toggled(bool arg1)
         showNormal();
     }
 
+}
+
+void ESToolkit::onAltTabShortcutTriggered(void) {
+    const auto count = _areaTabBar->count();
+    if(!count) return;
+
+    auto prevIndex = _areaTabBar->currentIndex();
+    auto newIndex = prevIndex + 1;
+    if(newIndex >= count) newIndex = 0;
+
+    if(prevIndex != newIndex) {
+        _areaTabBar->setCurrentIndex(newIndex);
+    }
 }

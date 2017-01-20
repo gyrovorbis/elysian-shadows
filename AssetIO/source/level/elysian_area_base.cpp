@@ -90,28 +90,24 @@ void AreaBase::validateEntityName(Entity *entity) {
             sprintf(concatBuff, "%s%lu", strBuff, ++num);
         }
 
-        dbgprintf("RENAMED ENTITY %s to %s", entity->getName(), concatBuff);
         entity->setName(concatBuff);
 
     }
 }
 
 void AreaBase::addEntity(Entity *entity) {
-    dbgprintf("Adding active entity %s", entity->getName());
     validateEntityName(entity);
     entity->setArea(static_cast<Area*>(this));
     entity->activate();
 }
 
 void AreaBase::addInactiveEntity(Entity *entity) {
-    dbgprintf("Adding inactive entity %s", entity->getName());
     validateEntityName(entity);
     entity->setArea(static_cast<Area*>(this));
     inactiveEntities.push_back(entity);
 }
 
 void AreaBase::removeEntity(Entity *entity) {
-    dbgprintf("Removing entity %s", entity->getName());
     entity->deactivate();
     entity->setArea(nullptr);
     containerEraseOnMatch(entity, inactiveEntities);
@@ -342,61 +338,6 @@ bool AreaBase::saveMap(const char *const filename) {
 
     fclose(file);
     dbgpop();
-    return true;
-}
-
-bool AreaBase::loadEntities(const char *const /*filename*/) {
-#if 0
-    ifstream file(gyFilePath(filename));
-    Entity *currentEntity;
-    unsigned int amount;
-
-    dbgprintf(LOG_LOG_VERBOSE, "Area::LoadEntities(%s)", filename);
-    dbgPush();
-
-    if(!file.is_open())	{
-        dbgprintf(LOG_LOG_WARNING, "FAILURE - could not open file!");
-        dbgPop();
-        return false;
-    }
-
-    file >> amount;
-    dbgprintf(LOG_LOG_VERBOSE, "%d entities", amount);
-    for(unsigned int i = 0; i < amount; ++i) {
-        if(file.eof()) {
-            dbgprintf(LOG_LOG_WARNING, "FAILURE! - Unexpected end of file");
-            dbgPop();
-            return false;
-        }
-        currentEntity = new Entity;
-        currentEntity->load(file);
-    }
-
-    dbgPop();
-#endif
-    return true;
-}
-
-bool AreaBase::saveEntities(const char *const /*filename*/) {
-#if 0
-    ofstream file(gyFilePath(filename));
-    dbgprintf(LOG_LOG_VERBOSE, "Area::SaveEntities(%s)", filename);
-    dbgPush();
-
-    if(!file.is_open()) {
-        dbgprintf(LOG_LOG_WARNING, "FAILURE! - Could not open file.");
-        dbgPop();
-        return false;
-    }
-
-    file << entities.size() << endl;
-    for(unsigned int i = 0; i < entities.size(); ++i) {
-        dbgprintf(LOG_LOG_VERBOSE, "Writing entity #%d", i);
-        entities[i]->save(file);
-    }
-
-    dbgPop();
-#endif
     return true;
 }
 

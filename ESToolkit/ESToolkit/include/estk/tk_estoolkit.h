@@ -173,6 +173,7 @@ private Q_SLOTS:
     void on_actionFileQuit_triggered();
 
     //----CONNECTED MANUALLY----
+    void onAltTabShortcutTriggered(void);
     void OnProjectRemoved();
     void onEntityTreeWidgetLayerChange();
     void OnAddArea(Project *const project, Level *const level, Area *const area);

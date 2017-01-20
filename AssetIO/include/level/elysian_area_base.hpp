@@ -230,8 +230,6 @@ namespace elysian {
         bool                        saveMap(const char *const filename);
         void                        behaviorsOnLoad(void);
         void                        behaviorsOnUnload(void);
-        bool                        loadEntities(const char *const filename);
-        bool                        saveEntities(const char *const filename);
         void                        activate(void);
         void                        deactivate(void);
 

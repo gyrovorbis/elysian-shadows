@@ -40,7 +40,7 @@
 
 void ESToolkit::on_actionFileQuit_triggered() {
     //Check for unsaved changes!!
-    QCoreApplication::exit(0);
+    close();
 }
 
 void ESToolkit::on_actionFileOpenProject_triggered(void) {
