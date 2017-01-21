@@ -13,6 +13,7 @@
 #include <QOpenGLContext>
 #include <tk_engine_gl_scene_widget.h>
 #include <tk_selection_scene.h>
+#include <tk_camera_system.h>
 #include <tk_lua_wrappers.h>
 
 
@@ -46,7 +47,9 @@ void Area::updateScene(void) {
 
 //====NONSTATIC====
 
-TkArea::TkArea(Level *const lev) {
+TkArea::TkArea(Level *const lev):
+    _cameraKeyFrame(new elysian::CameraKeyFrame)
+{
     this->level = lev;
     width = height = 50;
     //Must allocate a map in case this map is to be saved before it is loaded.
@@ -67,6 +70,7 @@ QAbstractItemModel* TkArea::getModel(void) const {
 }
 
 TkArea::~TkArea(void) {
+    delete _cameraKeyFrame;
     //deactivate();
     //close();
 }

@@ -121,7 +121,10 @@ TileSelectable::TileSelectable(const TileSelectable &rval):
     _layer(rval._layer),
     _level(rval._level),
     _area(rval._area)
-{}
+{
+    _populateTileIndicesList();
+
+}
 
 void TileSelectable::populateModel(void) {
 

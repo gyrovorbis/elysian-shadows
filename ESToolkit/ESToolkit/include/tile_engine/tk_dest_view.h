@@ -75,6 +75,7 @@ public:
     void placeSelection(void);
     void disableSelectionPlacementMerge(void);
 
+    void selectionCopy(void);
     void selectionCut(void);
     void selectionPaste(void);
     void selectionFlipHorizontal(void);

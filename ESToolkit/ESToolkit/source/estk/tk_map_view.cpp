@@ -690,6 +690,7 @@ void MapView::selectionPaste(void) {
 }
 
 void MapView::selectionCopy(void) {
+    DestView<TileEntry>::selectionCopy();
 
     if(getAssets()->getCurrentSelectionType() == Selectable::ENTITY) {
         auto* curSelection = static_cast<EntitySelectable*>(getAssets()->getCurrentSelection());

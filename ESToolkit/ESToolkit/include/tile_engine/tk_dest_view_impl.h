@@ -499,6 +499,18 @@ void DestView<T>::selectionRotateCC(void) {
 }
 
 template<typename T>
+void DestView<T>::selectionCopy(void) {
+    TileSelection<T> *terSel = _getTileSelection();
+    if(terSel) {
+        delete _selClipboard;
+        _selClipboard = _copyConstructTileSelection(*terSel);
+    } else {
+        delete _selClipboard;
+        _selClipboard = nullptr;
+    }
+}
+
+template<typename T>
 void DestView<T>::selectionCut(void) {
     TileSelection<T> *terSel = _getTileSelection();
     if(terSel) {
@@ -508,15 +520,18 @@ void DestView<T>::selectionCut(void) {
         deleteSelectionItemGroup();
         _setTileSelection(nullptr);
         _sceneSelectionClear();
+    } else {
+        delete _selClipboard;
+        _selClipboard = nullptr;
     }
 }
 
 template<typename T>
 void DestView<T>::selectionPaste(void) {
     if(_selClipboard) {
-        _setTileSelection(_selClipboard);
+        auto* newSelection = _copyConstructTileSelection(*_selClipboard);
+        _setTileSelection(newSelection);
         mouseMoveEvent(nullptr);
-        _selClipboard = nullptr;
     }
 }
 

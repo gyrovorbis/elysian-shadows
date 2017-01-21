@@ -13,6 +13,10 @@
 class QPainter;
 class QPoint;
 
+namespace elysian {
+    class CameraKeyFrame;
+}
+
 class TkEntity;
 typedef TkEntity Entity;
 class TkComponent;
@@ -57,11 +61,14 @@ private:
     QVector<MapChange>  _mapChanges;
     QUndoStack          _undoStack;
     QString             _location;
-    mutable LuaTableStackModel* _luaModel       = nullptr;
+    mutable
+    LuaTableStackModel* _luaModel       = nullptr;
     bool                _active         = false;
     bool                _open           = false;
     bool                _emitMapChange  = true;
     bool                _batchMapUpdate = false;
+    elysian::CameraKeyFrame*
+                        _cameraKeyFrame = nullptr;
 
     void                _connectSlots(Entity *const entity);
     void                _disconnectSlots(Entity*const entity);
