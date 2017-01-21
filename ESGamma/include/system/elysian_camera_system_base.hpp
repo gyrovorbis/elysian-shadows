@@ -32,6 +32,7 @@ namespace elysian {
 
         float                   _fov        = 45.0f;
     public:
+                                CameraKeyFrame(void);
 
         float                   getFov(void) const;
         void                    setFov(const float fov);
@@ -175,28 +176,20 @@ namespace elysian {
 
 
     // ======== INLINEZ =======
-#if 0
-    inline float CameraKeyFrame::getScale(void) const { return _scale; }
-    inline void CameraKeyFrame::setScale(const float sc) { _scale = sc; }
-    inline void CameraKeyFrame::setPos(const float x, const float y, const float z) { _pos.x = x; _pos.y = y; _pos.z = z;}
-    inline void CameraKeyFrame::setZOrient(const float zOrient) { _zOrient = zOrient; }
-    inline void CameraKeyFrame::setXOrient(const float xOrient) { _xOrient = xOrient; }
-    inline void CameraKeyFrame::setDir(const float x, const float y, const float z) { _dir.x = x; _dir.y = y; _dir.z = z; }
-    inline void CameraKeyFrame::setOffset(const GYVector3 &vec) { _offset = vec; }
-    inline constexpr float CameraKeyFrame::getAngle(void) const { return _angle; }
-    inline void CameraKeyFrame::setAngle(const float angle) { _angle = angle; }
-    inline void CameraKeyFrame::setOffset(const float x, const float y, const float z) { _offset.x = x; _offset.y = y; _offset.z = z; }
-    inline void CameraKeyFrame::getPos(float& x, float& y, float& z) const { x = _pos.x; y = _pos.y; z = _pos.z; }
-    inline void CameraKeyFrame::setPos(const float x, const float y) { _pos.x = x; _pos.y = y; }
-    inline void CameraKeyFrame::getOffset(float& x, float& y, float& z) const { x = _offset.x; y = _offset.y; z = _offset.z; }
-    constexpr inline float CameraKeyFrame::getZOrient(void) const { return _zOrient; }
-    constexpr inline float CameraKeyFrame::getXOrient(void) const { return _xOrient; }
-    inline void CameraKeyFrame::getDir(float& x, float& y, float& z) const { x = _dir.x; y = _dir.y; z = _dir.z; }
-    inline void CameraKeyFrame::getPos(float &x, float &y) const { x = _pos.x; y = _pos.y; }
-#else
+
+    inline CameraKeyFrame::CameraKeyFrame(void):
+        InstanceTransform({
+            { 100.0f, 100.0f, 1.0f },
+            { 1.0f, 1.0f, 1.0f },
+            { 1.0f, 1.0f, 1.0f },
+            { 0.0f, 0.0f, 0.0f },
+            0.0f,
+            GY_INST_MAT_FLIP_NONE,
+            nullptr
+        })
+    {}
     inline float CameraKeyFrame::getFov(void) const { return _fov; }
     inline void CameraKeyFrame::setFov(const float fov) { _fov = fov; }
-#endif
     inline void CameraKeyFrame::linearInterpolate(const CameraKeyFrame& startKeyFrame, const CameraKeyFrame& endKeyFrame,
                                         const float interval, const float elapsed) {
 
@@ -205,29 +198,6 @@ namespace elysian {
         gyLinearInterp((float*)&_pos.x, 13,
                        (float*)&startKeyFrame._pos.x, (float*)&endKeyFrame._pos.x,
                        interval, elapsed);
-#if 0
-        gyLinearInterp((float*)&_dir.x, 3,
-                       (float*)&startKeyFrame._dir.x, (float*)&endKeyFrame._dir.x,
-                       interval, elapsed);
-
-        gyLinearInterp((float*)&_offset.x, 3,
-                       (float*)&startKeyFrame._offset.x, (float*)&endKeyFrame._offset.x,
-                       interval, elapsed);
-
-        gyVec3Normalize(&_dir);
-#endif
-/*
-        gyLinearInterp((float*)&_scale, 1,
-                       (float*)&startKeyFrame._scale, (float*)&endKeyFrame._scale,
-                       interval, elapsed);
-
-        gyLinearInterp((float*)&_xOrient, 1,
-                       (float*)&startKeyFrame._xOrient, (float*)&endKeyFrame._xOrient,
-                       interval, elapsed);
-
-        gyLinearInterp((float*)&_zOrient, 1,
-                       (float*)&startKeyFrame._zOrient, (float*)&endKeyFrame._zOrient,
-                       interval, elapsed);*/
     }
 
     inline bool CameraSystemBase::isOnscreen(const int x, const int y, const int halfWidth, const int halfHeight) const {
@@ -273,11 +243,15 @@ namespace elysian {
     }
 
     inline void CameraSystemBase::moveToKeyFrame(const CameraKeyFrame &frame, const float time, EventMonitor * const monitor) {
-        auto &interp = get<SUBPROC_KEY_FR_INTERP>(static_cast<SubProcParent&>(*this));
-        interp.setKeyFrames(_curState, frame);
-        interp.setTimeInterval(time);
-        interp.setEventMonitor(monitor);
-        interp.start(this);
+        if(time == 0.0f) { //perform operation immediately right fucking here
+            *static_cast<CameraKeyFrame*>(_curState) = frame;
+        } else { //create an event to perform the operation later
+            auto &interp = get<SUBPROC_KEY_FR_INTERP>(static_cast<SubProcParent&>(*this));
+            interp.setKeyFrames(_curState, frame);
+            interp.setTimeInterval(time);
+            interp.setEventMonitor(monitor);
+            interp.start(this);
+        }
     }
 
     inline void CameraSystemBase::shake(const GYVector3& displacement, unsigned int oscillations, const float time, const bool fade, EventMonitor*const monitor) {
@@ -318,7 +292,7 @@ namespace elysian {
 
     inline void CameraSystemBase::pushCustomCamera(Camera*const state) {
         ++_depth;
-        assert(_depth < ELYSIAN_CAMERA_SYSTEM_STACK_SIZE);
+        GY_ASSERT(_depth < ELYSIAN_CAMERA_SYSTEM_STACK_SIZE);
         setCurrentCamera(state);
         //_curState = state;
         _customState = true;

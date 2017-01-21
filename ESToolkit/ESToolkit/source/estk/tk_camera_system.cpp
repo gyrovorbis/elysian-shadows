@@ -1,4 +1,5 @@
 #include <estk/tk_camera_system.h>
+#include <asset/tk_assets.h>
 
 TkCameraSystem::TkCameraSystem(void) {
 
@@ -8,10 +9,24 @@ TkCameraSystem::TkCameraSystem(void) {
         _states[i]->updateViewVolumeBoundingRegion();
     }
 
+    connect(getAssets(), SIGNAL(areaChanging(Area*const)), this, SLOT(onAreaChanging(Area*const)));
+
 }
 
 void TkCameraSystem::setCurrentIndex(const unsigned index) {
 
     elysian::CameraSystemBase::setCurrentIndex(index);
     Q_EMIT cameraIndexChanged(index);
+}
+
+void TkCameraSystem::onAreaChanging(Area *const area) {
+    //Store current keyframe state within old area (if there was one)
+    if(_curArea) {
+        _curArea->setCameraKeyFrame(getKeyFrame());
+    }
+
+    //Load new keyframe state stored in new area (if there is one)
+    if(area) {
+        moveToKeyFrame(area->getCameraKeyFrame());
+    }
 }

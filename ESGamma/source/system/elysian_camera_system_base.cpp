@@ -96,7 +96,9 @@ void CameraSystemBase::_updateState(Camera*const state, const float /*deltaTime*
         if(state->_pos.x > boundRight)    _curState->_pos.x = boundRight;
     }
 
-    if(!_dynamic) return;
+    if(!_dynamic) {
+        return;
+    }
 
     //return to base zoom
     if(state->entities.size() == 0) {
@@ -271,7 +273,7 @@ void CameraSystemBase::popState(void) {
     --_depth;
     if(_depth <= 0) _depth = 0;
     //_states[_depth] = &_internalStates[_depth];
-    assert(_depth >= 0);
+    GY_ASSERT(_depth >= 0);
     setCurrentCamera(_states[_depth]);
     _customState = false;
     //restore projection matrix if it's supposed to be on the stack is this even really necessary?
@@ -375,29 +377,6 @@ void CameraSystemBase::update(void) {
 
     if(_customState) return;
 
-
-#if 0
-
-
-
-    int startX = _curState->_keyFrame._pos.x/32.0f - 25;
-    if(startX < 0) startX = 0;
-    _curState->tileStartX = startX;
-    int startY = _curState->_keyFrame._pos.y/32.0f - 25;
-    if(startY < 0) startY = 0;
-    _curState->tileStartY = startY;
-    _curState->tileEndX = _curState->_keyFrame._pos.x/32.0f + 25;
-    if(_curState->tileEndX > getCurrentArea()->getMapWidth()-1) _curState->tileEndX = getCurrentArea()->getMapWidth()-1;
-    _curState->tileEndY = _curState->_keyFrame._pos.y/32.0f + 25;
-    if(_curState->tileEndY > getCurrentArea()->getMapHeight()-1) _curState->tileEndY = getCurrentArea()->getMapHeight()-1;
-
-    _curState->scrStartX = 0;
-    _curState->scrStartY = 0;
-    _curState->scrEndX = getCurrentArea()->getMapWidth()*32.0f;
-    _curState->scrEndY = getCurrentArea()->getMapHeight()*32.0f;
-
-#endif
-
     if(_curState->projType == GY_PROJECTION_ORTHO) {
         //Follow entities
         if(_followEnabled && _curState->focalEntity) {
@@ -486,27 +465,6 @@ void CameraSystemBase::update(void) {
         gyMatMultMat(_curState->projViewMat, _curState->projMat, _curState->viewMat);
 
         gyVidSetCamWorldPos(&worldPos);
-
-#if 0
-/*
-        GYMatrix4 camMat;
-        gyMatPush();
-        gyMatLoadIdentity();
-
-        //Create View Matrix
-        gyVidLookAtMat(camMat, 0.0f, 0.0f, 0.0f,
-                       0.0f, 1.0f, 1.0f,
-                       _curState->up.x, _curState->up.y, _curState->up.z);
-        gyMatApply(camMat);
-
-        //PRETTY SURE THIS SCALAR BULLSHIT IS WRONG ON THE DREAMCAST!!!
-        gyMatScale(1.0f, 1.0f, -1.0f);
-        gyMatTranslate(-_curState->entity->transform._pos.x, -_curState->entity->transform._pos.y+30.0f, -(_curState->entity->getElev()+1)*32.0f-ZCoordConstants::mapBase);
-        gyMatStore(&camMat);
-        gyMatPop();*/
-
-
-#endif
 
 
        // }

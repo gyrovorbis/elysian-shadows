@@ -129,6 +129,10 @@ namespace elysian {
                 nullptr
             }) {}
 
+        InstanceTransform(const GYInstMat& mat):
+            GYInstMat(mat)
+        {}
+
         void apply(void) const {
             gyMatInstance(this);
         }

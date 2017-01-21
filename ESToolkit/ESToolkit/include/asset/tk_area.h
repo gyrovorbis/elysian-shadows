@@ -102,6 +102,7 @@ public:
 
     bool                load(const char*const str);
     bool                save(void);
+    bool                duplicate(void);
 
     QUndoStack&         getUndoStack(void);
     elysian::Area&      getElysianArea(void);
@@ -114,7 +115,8 @@ public:
     void                setMapHeight(const unsigned short h);
     int                 getUndoStackCount(void);
     bool                saveAs(const QString dir);
-    bool                duplicate(void);
+    auto                getCameraKeyFrame(void) const -> const elysian::CameraKeyFrame&;
+    void                setCameraKeyFrame(const elysian::CameraKeyFrame& keyframe);
 
     QString             getLocation(void) const;
     unsigned short      getMapWidth(void) const;

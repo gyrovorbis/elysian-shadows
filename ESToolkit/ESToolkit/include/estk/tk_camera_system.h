@@ -3,14 +3,18 @@
 
 #include <QObject>
 #include <system/elysian_camera_system_base.hpp>
+#include <asset/tk_asset_manager.h>
 
-class TkCameraSystem: public QObject, public elysian::CameraSystemBase {
+class TkCameraSystem: public QObject, public elysian::CameraSystemBase, public AssetManager {
 Q_OBJECT
 
 public:
         TkCameraSystem(void);
 
     void setCurrentIndex(const unsigned index);
+
+private Q_SLOTS:
+    void onAreaChanging(Area*const area);
 
 Q_SIGNALS:
 

@@ -135,9 +135,9 @@ void Engine::update(void) {
             break;
 
         case System::ENGINE_ESTK_STOP:
+            _audioSystem->update();
              _collisionSystem->prepareGeometry();
              _collisionSystem->update();
-            _cameraSystem->update();
             _lightSystem->update();
             _timerSystem->update();
             _mapSystem->update();
@@ -145,17 +145,6 @@ void Engine::update(void) {
         break;
 
 
-#if 0
-            timerSystem->Update();
-            terrainSystem->Update();
-            characterSystem->Update();
-            partySystem->Update();
-            guiSystem->Update();
-            conversationSystem->Update();
-            behaviorSystem->Update();
-            collisionSystem->DetectCollisions();
-//			behaviorSystem->Update();
-#endif
             break;
         default:
             break;

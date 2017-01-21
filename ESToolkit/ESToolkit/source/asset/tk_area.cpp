@@ -50,6 +50,8 @@ void Area::updateScene(void) {
 TkArea::TkArea(Level *const lev):
     _cameraKeyFrame(new elysian::CameraKeyFrame)
 {
+    //_cameraKeyFrame->setScale(1.0f, 1.0f, 1.0f);
+    //_cameraKeyFrame->setSize(1.0f, 1.0f, 1.0f);
     this->level = lev;
     width = height = 50;
     //Must allocate a map in case this map is to be saved before it is loaded.
@@ -340,9 +342,8 @@ bool Area::activate(void) {
     Q_EMIT activating(this);
     if(!_active) {
         DbgEvent event("Activating Area [%s].", Q_CSTR(_location));
-       EngineGLSceneWidget::makeCurrentContext();
+        EngineGLSceneWidget::makeCurrentContext();
         AreaBase::activate();
-
         //EngineGLSceneWidget::doneCurrentContext();
         //editorScene->addItem(_bgRect);
         //resizeEditorScene();
@@ -483,6 +484,14 @@ Entity* Area::getFirstEntity(void) const {
     return (entities.empty())? nullptr : entities[0];
 }
 
+auto Area::getCameraKeyFrame(void) const -> const elysian::CameraKeyFrame& {
+    return *_cameraKeyFrame;
+}
+
+void Area::setCameraKeyFrame(const elysian::CameraKeyFrame& keyframe) {
+    *_cameraKeyFrame = keyframe;
+}
+
 void Area::onComponentAttached(Entity *const entity, Component *const comp) {
     Q_EMIT componentAttached(this, entity, comp);
 }
@@ -547,3 +556,5 @@ void TkArea::initializeDelegates(void) {
     lua_pop(*_mainState, 1);
 
 }
+
+
