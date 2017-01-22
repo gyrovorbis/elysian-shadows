@@ -62,10 +62,10 @@ void AssetDockWidget::_onProjectAdded(Project * const project) {
         _fsModel->addFileType(new SpecularsheetAssetFileType);
         _fsModel->addFileType(new NormalsheetAssetFileType);
         _fsModel->addFileType(new TilesheetAssetFileType);
-        _fsModel->addFileType(new LuaScriptAssetFileType);
         _fsModel->addFileType(new LuaBehaviorAssetFileType);
         _fsModel->addFileType(new MapAssetFileType);
         _fsModel->addFileType(new PrefabAssetFileType);
+        _fsModel->addFileType(new LuaScriptAssetFileType);
         _fsModel->setRootPath(project->getNodePath());
         //qDebug() << "LA NODE PATH" << project->getNodePath();
         //model->setFilter(QDir::AllDirs | QDir::NoDotAndDotDot);
@@ -496,7 +496,7 @@ auto MapAssetFileType::fromFilePath(QString path) -> CustomAssetFileType* {
 
 auto LuaScriptAssetFileType::fromFilePath(QString path) -> CustomAssetFileType* {
     QFileInfo file(QFile(path).fileName());
-    if(file.fileName() == "area_init.lua" || file.fileName() == "level_init.lua") return new LuaScriptAssetFileType(std::move(path));
+    if(file.suffix().toLower() == "lua") return new LuaScriptAssetFileType(std::move(path));
     return nullptr;
 }
 
