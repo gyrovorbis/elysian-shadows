@@ -50,8 +50,6 @@ void Area::updateScene(void) {
 TkArea::TkArea(Level *const lev):
     _cameraKeyFrame(new elysian::CameraKeyFrame)
 {
-    //_cameraKeyFrame->setScale(1.0f, 1.0f, 1.0f);
-    //_cameraKeyFrame->setSize(1.0f, 1.0f, 1.0f);
     this->level = lev;
     width = height = 50;
     //Must allocate a map in case this map is to be saved before it is loaded.

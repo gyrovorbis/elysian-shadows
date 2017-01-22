@@ -202,7 +202,7 @@ namespace elysian {
     template<typename RType, typename... PTypes>
     inline RType LuaManagerBase::callGlobalFunction(const char*const funcName, LuaScript* script, PTypes&&... parameters) {
 
-        //Put the function on the top of the stack
+        //Retrieve function and place ontop of the stack.
         if(script) { //if script is provided, check _ENV first and let it defer to _G
             lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, script->getEnvironRef());	//push ENV
             lua_getfield(*_mainState, -1, funcName);								//get ENV.<function>()
@@ -210,8 +210,15 @@ namespace elysian {
         } else { //No _ENV provided, call _G directly
             lua_getglobal(*_mainState, funcName);
         }
-        //Invoke next template to push args, make the call, and pop retVal
-        return _callFunction<RType>(script, std::forward<PTypes>(parameters)...);
+
+        //Check if function is on top of stack.
+        if(lua_type(*_mainState, -1) != LUA_TFUNCTION) {
+            errprintf("LuaManager::callGlobalFunction(%s): Function not found! %s type is on stack, instead!", funcName, lua_typename(*_mainState, -1));
+            return RType();
+        } else {
+            //Invoke next template to push args, make the call, and pop retVal
+            return _callFunction<RType>(script, std::forward<PTypes>(parameters)...);
+        }
     }
 
 

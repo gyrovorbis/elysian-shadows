@@ -76,6 +76,7 @@ namespace elysian {
 
         void                        _setWeakRef(const bool val);
         void                        _setType(const int luaType);
+        void                        _setRefDirect(const int luaRef);
 
 
 
@@ -991,8 +992,13 @@ public:
 
     inline LuaVariantBase LuaVariantBase::fromWeakRef(const int luaRef) {
         LuaVariant v;
+#if 0 //WRONG AS FUCK! NOT WEAK AT ALL!
+
         lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, luaRef);
         v.pull();
+#else
+        v._setRefDirect(luaRef);
+#endif
         v._setWeakRef(true);
         return v;
     }
@@ -1036,6 +1042,14 @@ public:
 
     inline LuaFieldRef LuaVariantBase::operator[](const LuaVariantBase& key) const {
         return LuaFieldRef(*this, key);
+    }
+
+    //Assumes ownership of reference rather than duplicating!
+    inline void LuaVariantBase::_setRefDirect(const int luaRef) {
+        lua_rawgeti(*_mainState, LUA_REGISTRYINDEX, luaRef);
+        _setType(lua_type(*_mainState, -1));
+        lua_pop(*_mainState, 1);
+        _value.ref = luaRef;
     }
 
 }
@@ -1099,7 +1113,11 @@ namespace OOLUA {
         case LUA_TUSERDATA:
         case LUA_TFUNCTION:
         case LUA_TTHREAD:
+#if 0
             variant.setRef(luaL_ref(state, LUA_REGISTRYINDEX));
+#else
+            variant._setRefDirect(luaL_ref(state, LUA_REGISTRYINDEX));
+#endif
             return true;
         }
 
