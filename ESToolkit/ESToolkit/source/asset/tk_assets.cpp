@@ -500,3 +500,26 @@ void Assets::onLevelChanged(Level *level) {
 void Assets::onAreaChanged(Area *area) {
     if(_areaChangeDepth <= 0) setCurrentArea(area);
 }
+
+Level* Assets::loadLevel(const QString path) {
+    return _project->loadLevel(path);
+}
+
+Area* Assets::loadArea(const QString path) {
+    DbgEvent event("Assets::loadArea(%s)", Q_CSTR(path));
+    (void)event;
+
+    QString levelPath   = FileUtilities::getLevelPathFromAreaPath(path);
+    Level*  level       = findLevel(levelPath);
+    Area*   area        = nullptr;
+    if(!level) {
+        dbgprintf("Parent level not found. Loading it first!");
+        level = loadLevel(levelPath);
+    }
+
+    if(level) {
+        area = level->loadArea(path);
+    }
+
+    return area;
+}

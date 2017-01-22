@@ -52,6 +52,8 @@ public:
 
     Level*              findLevel(const QString path) const;
     Area*               findArea(const QString path) const;
+    Level*              loadLevel(const QString path);
+    Area*               loadArea(const QString path);
 
     Project*            getFirstProject(void) const;
     Project*            getProject(const QString name) const;

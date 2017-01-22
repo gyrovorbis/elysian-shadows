@@ -1076,7 +1076,6 @@ void ESToolkit::setMainTextureUniform(const int uniform) {
 
 void ESToolkit::_onEngineInitialized(void) {
     _assets.getEngine()->getMapSys()->setView(_ui->mapView);
-    _tkLuaInitialize();
     _assets.getEngine()->getLightSys()->setShadowPassEnabled(_engineParams.shadowPassEnabled);
     _assets.getEngine()->getLightSys()->setEnabled(_engineParams.lightingEnabled);
     _engineGLView->setCameraManualOnPlay(_engineParams.manualCameraEnabled);
@@ -1084,13 +1083,6 @@ void ESToolkit::_onEngineInitialized(void) {
     _assets.getEngine()->getLightSys()->setBloomEnabled(_engineParams.bloomEnabled);
 
     //Override
-}
-
-
-
-void ESToolkit::_tkLuaInitialize(void) {
-
-
 }
 
 void ESToolkit::select(const LuaVariant& ref) {

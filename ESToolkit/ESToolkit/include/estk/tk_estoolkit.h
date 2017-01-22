@@ -146,7 +146,6 @@ private:
 
     void                _resizeMapView(void);
     void                _setMapViewResolution(const MAP_VIEW_RES res);
-    void                _tkLuaInitialize(void);
 
     void toggleProjectActions(bool enabled);
     bool MaybeSave();

@@ -10,6 +10,7 @@
 #include <QDebug>
 #include <core/tk_menu_stack.h>
 #include <QMenu>
+#include <QMessageBox>
 #include <QDesktopServices>
 #include <core/tk_mime_data.h>
 
@@ -123,7 +124,7 @@ void AssetDockWidget::_onCustomContextMenuRequested(const QPoint& pos) {
 
 AssetFileSystemModel::AssetFileSystemModel(void) {
     connect(this, SIGNAL(rowsInserted(const QModelIndex&, int, int)), this, SLOT(_onRowsInserted(const QModelIndex&,int,int)));
-    connect(this, SIGNAL(rowsAboutToBeRemoved(const QModelIndex&, int, int)), this, SLOT(_onRowsAboutToBeRemoved(const QModelIndex&,int,int)));
+    connect(this, SIGNAL(rowsRemoved(const QModelIndex&, int, int)), this, SLOT(_onRowsAboutToBeRemoved(const QModelIndex&,int,int)));
 }
 
 AssetFileSystemModel::~AssetFileSystemModel(void) {
@@ -190,6 +191,7 @@ void AssetFileSystemModel::_onFileRemoved(const QString filename) {
     QFileInfo info(filename);
     auto data = _customData.find(info.absoluteFilePath());
     if(data != _customData.end()) {
+        data.value()->fileRemoved();
         delete data.value();
         _customData.erase(data);
     }
@@ -385,7 +387,14 @@ auto AreaAssetFileType::fromFilePath(QString path) -> CustomAssetFileType* {
     QDir dir(path);
 
     if(dir.exists(TK_MAP_ASSET_NAME_TOKEN)) {
-        return new AreaAssetFileType(path, getAssets()->findArea(path));
+        Area* area;
+        if(!(area = getAssets()->findArea(path))) {
+            DbgEvent dbg("FileSystem: Area '%s' added outside of editor. Loading dynamically.", Q_CSTR(path));
+            (void)dbg;
+            area = getAssets()->loadArea(path);
+        }
+
+        return area? new AreaAssetFileType(path, area) : nullptr;
     }
     return nullptr;
 }
@@ -397,6 +406,20 @@ void AreaAssetFileType::select(QModelIndex& /*index*/) {
 void AreaAssetFileType::doubleClick(const QModelIndex& /*index*/) {
     getAssets()->setCurrentArea(_area);
     getAssets()->setCurrentSelection(static_cast<Selectable*>(static_cast<TreeNode*>(_area)));
+}
+
+void AreaAssetFileType::fileRemoved(void) {
+    DbgEvent event("FileSystem: Area '%s' removed from outside of ESTk!", _area->getPath());
+    (void)event;
+     auto reply = QMessageBox::question(nullptr, "Area Removed", "Area '"+QString(_area->getPath())+QString("' has been removed from outside of ESTk and will be closed. Would you like to resave and reopen it?"),
+                                   QMessageBox::Yes|QMessageBox::No);
+   #if 0
+     if(reply == QMessageBox::Yes) {
+        _area->save();
+    } else if(reply == QMessageBox::No) {
+        _area->getLevel()->removeArea(_area->getPath(), false);
+    }
+#endif
 }
 
 LevelAssetFileType::LevelAssetFileType(const QString filePath): CustomAssetFileType("Level", QIcon(TK_LEVEL_ASSET_ICON), filePath) {}
@@ -416,7 +439,14 @@ auto LevelAssetFileType::fromFilePath(QString path) -> CustomAssetFileType* {
     QDir dir(path);
 
     if(dir.exists("area") && dir.exists("tile")) {
-        return new LevelAssetFileType(path, getAssets()->findLevel(std::move(path)));
+        Level* level;
+        if(!(level = getAssets()->findLevel(path))) {
+            DbgEvent event("FileSystem: Level '%s' added outside of editor. Loading dynamically.", Q_CSTR(path));
+            (void)event;
+            level = getAssets()->loadLevel(std::move(path));
+        }
+
+        return level? new LevelAssetFileType(path, level) : nullptr;
     }
     return nullptr;
 }
@@ -428,6 +458,18 @@ void LevelAssetFileType::select(QModelIndex& /*index*/) {
 void LevelAssetFileType::doubleClick(const QModelIndex& /*index*/) {
     getAssets()->setCurrentLevel(_level);
     getAssets()->setCurrentSelection(static_cast<Selectable*>(static_cast<TreeNode*>(_level)));
+}
+
+void LevelAssetFileType::fileRemoved(void) {
+    DbgEvent event("FileSystem: Level %s removed from outside of ESTk.", _level->path);
+    (void)event;
+     auto reply = QMessageBox::question(nullptr, "Level Removed", "Level '"+QString(_level->path)+QString("' has been removed from outside of ESTk and will be closed. Would you like to resave and reopen it?"),
+                                   QMessageBox::Yes|QMessageBox::No);
+    if(reply == QMessageBox::Yes) {
+        _level->save();
+    } else if(reply == QMessageBox::No) {
+        _level->getProject()->removeLevel(_level->path);
+    }
 }
 
 auto SpecularsheetAssetFileType::fromFilePath(QString path) -> CustomAssetFileType* {

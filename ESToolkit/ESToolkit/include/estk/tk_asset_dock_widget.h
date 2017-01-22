@@ -65,6 +65,7 @@ public:
     virtual Qt::ItemFlags   flags(void) const;
     virtual bool            canDropMimeData(const QMimeData* data, Qt::DropAction action) const;
     virtual bool            dropMimeData(const QMimeData* data, Qt::DropAction action);
+    virtual void            fileRemoved(void);
 };
 
 class AreaAssetFileType: public CustomAssetFileType, public AssetManager {
@@ -82,6 +83,7 @@ public:
     virtual auto        fromFilePath(QString path) -> CustomAssetFileType* override;
     virtual void        select(QModelIndex &index) override;
     virtual void        doubleClick(const QModelIndex& index) override;
+    virtual void        fileRemoved(void) override;
 };
 
 class LevelAssetFileType: public CustomAssetFileType, public AssetManager {
@@ -98,6 +100,7 @@ public:
     virtual auto        fromFilePath(const QString path) -> CustomAssetFileType* override;
     virtual void        select(QModelIndex &index) override;
     virtual void        doubleClick(const QModelIndex& index) override;
+    virtual void        fileRemoved(void) override;
 };
 
 class SpecularsheetAssetFileType: public CustomAssetFileType {
@@ -241,6 +244,7 @@ inline auto CustomAssetFileType::getFontState(void) const -> FONT_STATE { return
 inline void CustomAssetFileType::setModified(const bool val) { _modified = val; Q_EMIT itemChanged(); }
 inline QString CustomAssetFileType::getFilePath(void) const { return _filePath; }
 inline QString CustomAssetFileType::getTypeName(void) const { return _typeName; }
+inline void CustomAssetFileType::fileRemoved(void) {}
 
 
 inline void AssetFileSystemModel::addFileType(CustomAssetFileType *type) {

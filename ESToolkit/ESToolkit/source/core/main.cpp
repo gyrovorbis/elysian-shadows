@@ -88,17 +88,7 @@ static TK_CRASH_STATE _tkCrashReport(QStringList& /*args*/) {
 }
 
 
-class Bullshit {
-public:
-    const char* operator()(int) const { printf("OH FUCK!"); }
-};
-
-int testFunc(int) { dbgprintf("LOLOL"); return 3;}
-
 static GYAppCbRet Init(int argc, char **argv) {
-
-
-
     QString project;
     QString level;
     QString area;

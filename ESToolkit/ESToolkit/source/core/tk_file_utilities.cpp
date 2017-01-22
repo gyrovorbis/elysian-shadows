@@ -126,3 +126,7 @@ QString FileUtilities::getAbsoluteAssetPath(const QString path) {
 #endif
 
 }
+
+QString FileUtilities::getLevelPathFromAreaPath(const QString areaPath) {
+    return areaPath.split("/area/")[0];
+}

@@ -11,6 +11,7 @@ private:
 
 public:
     static QString  getAssetPath(void);
+    static QString  getLevelPathFromAreaPath(const QString areaPath);
     static void     setAssetPath(const QString path);
     static QString  getAssetRelativePath(const QString path);
     static QString  getAbsoluteAssetPath(const QString path);
