@@ -336,7 +336,7 @@ EntityAttachment* SkeletonBase::_findEntityAttachment(const char * const name) c
 }
 
 void SkeletonBase::_clearEntityAttachments(void) {
-    for(auto* it : _entityAttachments) {
+    for(auto it : _entityAttachments) {
         _removeEntityAttachment(it);
         //it->slot->attachment = nullptr;
         //delete it;
@@ -347,7 +347,6 @@ void SkeletonBase::_clearEntityAttachments(void) {
 //DOES NOT REMOVE ATTACHMENT FROM VECTOR
 void SkeletonBase::_removeEntityAttachment(EntityAttachment *attachment) {
     spSlot_setAttachment(attachment->slot, nullptr);
-    _spAttachment_deinit(attachment);
     spAttachment_dispose(attachment);
 }
 
@@ -360,12 +359,13 @@ void SkeletonBase::_animationStateListener(spAnimationState *state, int trackInd
 }
 
 EntityAttachment::EntityAttachment(void) {
-    _spAttachment_init(this, "EntityAttachment", SP_ATTACHMENT_ENTITY, &dispose);
+    _spAttachment_init(this, "EntityAttachment", SP_ATTACHMENT_ENTITY, dispose);
 }
 
 void EntityAttachment::dispose(spAttachment *attachment) {
     EntityAttachment* self = static_cast<EntityAttachment*>(attachment);
-    errprintf("Spine just called vtable[dispose] on entity attachment [%s]!", self->slot->data->name);
+    dbgprintf("SPINE: Disposing of EntityAttachment [%s] on Entity [%s]!", self->slot->data->name, self->parent->getName());
+    _spAttachment_deinit(attachment);
     delete self;
 }
 

@@ -79,7 +79,7 @@ void EntityBase::reested(void) {
 }
 
 EntityBase::~EntityBase(void) {
-    dbgprintf("Entity[%s] garbage collected!", _name);
+    dbgprintf("Deleting Entity[%s]", _name);
     //return;
     if(_active) deactivate();
 

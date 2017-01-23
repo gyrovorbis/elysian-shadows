@@ -140,6 +140,10 @@ namespace elysian {
     GYOgg*				_auxTracks[ELYSIAN_AUDIO_AUX_TRACKS]    = { nullptr };
     GYVector3			_listenerPos                            = { 0.0f, 0.0f, 0.0f };
 
+    //TODO: Get the fuck rid of this shit and make it Tk-specific
+    char                _prevBgmPaths[ELYSIAN_AUDIO_BGM_TRACKS][GYRO_PATH_MAX_SIZE];
+    char                _prevAuxPaths[ELYSIAN_AUDIO_AUX_TRACKS][GYRO_PATH_MAX_SIZE];
+
     struct GlobalState {
         enum STATE {
             NORMAL, FADE_OUT, FADE_OUT_NEW, FADE_IN

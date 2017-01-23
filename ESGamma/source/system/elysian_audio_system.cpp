@@ -724,17 +724,57 @@ namespace elysian {
 		}
 	}
 
+    //Todo: this is fucking reested for DC to be doing every frame
     void AudioSystem::updateAreaTracks(void) {
         auto isValid = [](const char* path) {
             return (path && strcmp(path, "") != 0);
         };
 
-        const char* path = getCurrentArea()->getBgmOggByTrack(0);
-        if(isValid(path)) fadeIntoNewBgmTrack(0, 1.0f, path);
-        else fadeOutBgmTrack(1.0f);
+        for(unsigned i = 0; i < ELYSIAN_AUDIO_BGM_TRACKS; ++i) {
+            const char* path = getCurrentArea()->getBgmOggByTrack(i);
 
-        path = getCurrentArea()->getAuxOggByTrack(0);
-        if(isValid(path)) fadeIntoNewAuxTrack(0, 1.0f, path);
-        else fadeOutAuxTrack(0, 1.0f);
+            if((!path && _prevBgmPaths[i][0] == '\0') ||
+                    (path && strcmp(path, _prevBgmPaths[i]) == 0)) continue; //shit hasn't changed
+
+            if(path) {
+                strcpy(_prevBgmPaths[i], path);
+            } else _prevBgmPaths[i][0] = '\0';
+
+
+            if(isValid(path)) {
+                if(!_bgmTracks[i] || strcmp(_bgmTracks[i]->path, path) != 0) {
+                    if(_streamChannels[StreamChannel::BGM].track == i) {
+                        stopBgmTrack();
+                        loadBgmTrack(i, path);
+                        fadeInBgmTrack(1.0);
+                    }
+                    else loadBgmTrack(i, path);
+                }
+            } else if(_streamChannels[StreamChannel::BGM].track == i) {
+                fadeOutBgmTrack(1.0);
+            }
+        }
+
+        for(unsigned i = 0; i < ELYSIAN_AUDIO_AUX_TRACKS; ++i) {
+            const char* path = getCurrentArea()->getAuxOggByTrack(i);
+            if((!path && _prevAuxPaths[i][0] == '\0') ||
+                    (path && strcmp(path, _prevAuxPaths[i]) == 0)) continue; //shit hasn't changed
+
+            if(path) {
+                strcpy(_prevAuxPaths[i], path);
+            } else _prevAuxPaths[i][0] = '\0';
+
+            if(isValid(path)) {
+                if(!_auxTracks[i] || strcmp(_auxTracks[i]->path, path) != 0) {
+                    stopAuxTrack(i);
+                    loadAuxTrack(i, path);
+                    fadeInAuxTrack(i, 1.0);
+                }
+            } else {
+                fadeOutAuxTrack(i, 1.0);
+            }
+        }
+
+
     }
 }
