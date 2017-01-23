@@ -325,8 +325,6 @@
    <addaction name="actionCut"/>
    <addaction name="actionPaste"/>
    <addaction name="separator"/>
-   <addaction name="actionEnable_OpenGL"/>
-   <addaction name="actionToggle_AutoScroll"/>
    <addaction name="actionDefault_Transform"/>
    <addaction name="actionHorizontal_SheetView"/>
    <addaction name="separator"/>
@@ -392,7 +390,10 @@
     <string>Open Project...</string>
    </property>
    <property name="toolTip">
-    <string>Open Project...</string>
+    <string>Load Project (CTL/CMD+L)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
    </property>
   </action>
   <action name="actionFileCloseProject">
@@ -439,7 +440,7 @@
     <string>Area</string>
    </property>
    <property name="toolTip">
-    <string>Save Area</string>
+    <string>Save Current Area (CTRL/CMD+S)</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -627,7 +628,7 @@
     <string>Invoke...</string>
    </property>
    <property name="toolTip">
-    <string>Play current level</string>
+    <string>Play/Stop Current Area (F5)</string>
    </property>
    <property name="shortcut">
     <string>F5</string>
@@ -757,7 +758,10 @@
     <string>Reset Layout</string>
    </property>
    <property name="toolTip">
-    <string>Reset Layout</string>
+    <string>Reset Widget Layout (CTRL/CMD+W)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
    </property>
   </action>
   <action name="actionSelect">
@@ -855,7 +859,7 @@
     <string>Cut</string>
    </property>
    <property name="toolTip">
-    <string>Cut</string>
+    <string>Cut Selection (CTRL/CMD+X)</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+X</string>
@@ -871,7 +875,7 @@
     <string>Paste</string>
    </property>
    <property name="toolTip">
-    <string>Paste</string>
+    <string>Paste Selection (CTRL/CMD+V)</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+V</string>
@@ -887,7 +891,10 @@
     <string>Default Transform</string>
    </property>
    <property name="toolTip">
-    <string>Default Transform</string>
+    <string>Reset Camera Transform (CTRL/CMD+T)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
    </property>
   </action>
   <action name="actionToggle_AutoScroll">
@@ -919,7 +926,10 @@
     <string>Sheet Manager...</string>
    </property>
    <property name="toolTip">
-    <string>Sheet Manager...</string>
+    <string>Launch Sheet Manager (CTRL/CMD+G)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+G</string>
    </property>
   </action>
   <action name="actionEngine_Settings">
@@ -1020,7 +1030,10 @@
     <string>Horizontal SheetView</string>
    </property>
    <property name="toolTip">
-    <string>Change Horizontal/Vertical SheetView Perspective</string>
+    <string>Flip Sheet Orientation (CTRL/CMD+F)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+F</string>
    </property>
   </action>
   <action name="actionScreenshot">
@@ -1065,7 +1078,10 @@
     <string>Advance Frame</string>
    </property>
    <property name="toolTip">
-    <string>Run engine's next frame</string>
+    <string>Advance Engine Playback by Single Frame</string>
+   </property>
+   <property name="shortcut">
+    <string>F4</string>
    </property>
   </action>
   <action name="actionClear">
@@ -1225,7 +1241,10 @@
     <string>Manual Camera</string>
    </property>
    <property name="toolTip">
-    <string>Manual Camera Control</string>
+    <string>Manual Camera Control (CTRL/CMD+M)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
    </property>
   </action>
   <action name="actionEnable_Audio">
@@ -1241,7 +1260,10 @@
     <string>Enable Audio</string>
    </property>
    <property name="toolTip">
-    <string>Enable/Disable Audio</string>
+    <string>Enable/Disable Audio (CTRL/CMD+A)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
    </property>
   </action>
   <action name="actionReloadProject">
