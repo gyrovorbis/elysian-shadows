@@ -122,6 +122,14 @@ TileSelectable::TileSelectable(const TileSelectable &rval):
     _populateTileIndicesList();
 
 }
+TileSelectable::TileSelectable(const unsigned w, const unsigned h, Area * const area, Level * const level):
+    TileSelection<TileEntry>(w, h),
+    _level(level),
+    _area(area)
+{
+    if(!_selectionViewDelegate) _selectionViewDelegate = new TileSelectableSelectionViewDelegate;
+    _populateTileIndicesList();
+}
 
 void TileSelectable::populateModel(void) {
 

@@ -88,7 +88,9 @@ public:
     //Copy constructor
     TileSelectable(const TileSelectable &rval);
     //MEGA reesty constructor to optimize creation from MapView
-    TileSelectable(const QRect &region, bool (*selectionArray)[ELYSIAN_AREA_MAP_WIDTH], Area *const area, Level *const lev, const Assets::LAYER_TYPE layer);
+    TileSelectable(const QRect &region, bool (*selectionArray)[ELYSIAN_AREA_MAP_WIDTH], Area* const area, Level* const lev, const Assets::LAYER_TYPE layer);
+    //Set tile values yourself after construction (but size must static still)
+    TileSelectable(const unsigned w, const unsigned h, Area* const area, Level* const level);
 
     virtual void                populateModel(void) override;
     virtual void                installSelectionViewCustomDelegates(QAbstractItemView *const view) override;

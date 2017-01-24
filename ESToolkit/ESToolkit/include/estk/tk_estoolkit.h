@@ -267,6 +267,7 @@ private Q_SLOTS:
     void on_actionBloom_toggled(bool arg1);
     void on_actionToggle_Fullscreen_toggled(bool arg1);
     void on_actionSelect_All_triggered();
+    void on_actionSelect_Eraser_triggered();
 };
 
 

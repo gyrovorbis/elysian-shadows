@@ -22,6 +22,8 @@ public:
 	TileSelection(const QList<QGraphicsItem *> &items);
 	//Copy constructor -- deep copy
 	TileSelection(const TileSelection &rval);
+    //Manually initialize shit yourself
+    TileSelection(const unsigned w, const unsigned h);
     //Move constructor (C++11)
     //TileSelection(TileSelection &&rval);
 	virtual ~TileSelection(void);
@@ -34,6 +36,8 @@ public:
 	//virtual uint16_t getIndex(const unsigned x, const unsigned y, const QPointF &mousePos) const;
 	//virtual GY_RECT_TEX_ORIENT getOrient(const unsigned x, const unsigned y, const QPointF &mousePos) const;
 	T getEntry(const unsigned x, const unsigned y, const QPointF &mousePos=QPointF()) const;
+    //used with the manual initialization constructor!
+    void setEntry(const unsigned x, const unsigned y, T&& entry);
 
 	//Region Fill Data
 	//virtual uint16_t getFillIndex(int x, int y, const QPointF &pivot, const QPointF &mousePos) const;
@@ -56,17 +60,17 @@ protected:
 	void _mapToFillCoords(int mapX, int mapY, const QPointF &pivot, const QPointF &mousePos, unsigned &fillX, unsigned &fillY) const;
     static void _mapToSelectionCoords(const int mapX, const int mapY, const QPointF &mousePos, int &selX, int &selY);
 
-	static void _freeArrays(T **&entry, bool **&selection, unsigned width, unsigned height);
-	static void _allocArrays(T **&entry, bool **&selection, unsigned width, unsigned height);
+    static void _freeArrays(T**& entry, bool**& selection, unsigned width, unsigned height);
+    static void _allocArrays(T**& entry, bool**& selection, unsigned width, unsigned height);
 
 	static const GY_RECT_TEX_ORIENT _texOrientLut[GY_RECT_TEX_ORIENT_MAX][TEX_REORIENT_MAX];
 
     unsigned _width = 0;
     unsigned _height = 0;
 	//Determines which indices have valid entries (sparse array)
-    bool **_inSelection = nullptr;
+    bool**  _inSelection = nullptr;
 	//Actual SPARSE SelectionEntry array
-    T **_entry = nullptr;
+    T**     _entry = nullptr;
 
 };
 
@@ -160,15 +164,19 @@ bool TileSelection<T>::isWithinSelectionFill(int x, int y, const QPointF &pivot,
 	return _inSelection[fillY][fillX];
 }
 
-
-
-
 template<typename T>
 T TileSelection<T>::getEntry(const unsigned x, const unsigned y, const QPointF &mousePos) const {
     int selX = x;
     int selY = y;
     if(!mousePos.isNull()) _mapToSelectionCoords(x, y, mousePos, selX, selY);
     return _entry[selY][selX];
+}
+
+template<typename T>
+void TileSelection<T>::setEntry(const unsigned x, const unsigned y, T&& entry) {
+    Q_ASSERT(x < _width && y < _height);
+    _inSelection[y][x] = true;
+    _entry[y][x] = entry;
 }
 
 
@@ -238,6 +246,20 @@ TileSelection<T>::TileSelection(const TileSelection &rval) {
         for(unsigned j = 0; j < _width; ++j) _entry[i][j] = rval._entry[i][j];
         memcpy(_inSelection[i], rval._inSelection[i], sizeof(_inSelection[0][0])*_width);
     }
+}
+
+template<typename T>
+TileSelection<T>::TileSelection(const unsigned w, const unsigned h):
+    _width(w),
+    _height(h)
+{
+    Q_ASSERT(w && h);
+    _allocArrays(_entry, _inSelection, _width, _height);
+
+    //Actual values are uninitialized bullshit, but nothing is considered as part of the selection yet.
+    for(unsigned y = 0; y < _height; ++y)
+        for(unsigned x = 0; x < _width; ++x)
+            _inSelection[y][x] = false;
 }
 
 /*

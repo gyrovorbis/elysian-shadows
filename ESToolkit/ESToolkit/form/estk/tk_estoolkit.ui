@@ -246,6 +246,8 @@
     <addaction name="actionRedo"/>
     <addaction name="actionCopy"/>
     <addaction name="actionSelect_All"/>
+    <addaction name="separator"/>
+    <addaction name="actionSelect_Eraser"/>
    </widget>
    <widget class="QMenu" name="menuEngine">
     <property name="title">
@@ -1592,6 +1594,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="actionSelect_Eraser">
+   <property name="text">
+    <string>Select Eraser</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
    </property>
   </action>
  </widget>

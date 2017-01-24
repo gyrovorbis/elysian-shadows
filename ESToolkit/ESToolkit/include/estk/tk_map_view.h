@@ -97,6 +97,7 @@ public:
     bool isTerrainLayer(void) const;
     bool isEntityLayer(void) const;
     void selectAll(void);
+    void selectEraserTile(void);
 
     //QGraphicsView virtual implementation
     virtual void mouseMoveEvent(QMouseEvent *event) override;

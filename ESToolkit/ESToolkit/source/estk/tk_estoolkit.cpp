@@ -1193,3 +1193,8 @@ void ESToolkit::onAltTabShortcutTriggered(void) {
     }
 }
 
+
+void ESToolkit::on_actionSelect_Eraser_triggered()
+{
+    _ui->mapView->selectEraserTile();
+}

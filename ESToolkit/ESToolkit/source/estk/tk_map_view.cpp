@@ -823,3 +823,12 @@ void MapView::_registerDropEventCallbacks(void) {
 
 }
 
+void MapView::selectEraserTile(void) {
+    //only do this if we are on a tile layer!
+    if(getAssets()->getCurrentLayer() != Assets::LAYER_ENTITY) {
+        TileSelectable* tileSelectable = new TileSelectable(1, 1, getCurrentArea(), getCurrentLevel());
+        tileSelectable->setEntry(0, 0, 0);
+        getAssets()->setCurrentSelection(tileSelectable);
+    }
+}
+
