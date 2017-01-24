@@ -7,11 +7,19 @@
 class QMenu;
 class QAction;
 
-struct MenuStack {
-    QStack<QMenu*> stack;
+/* Once you've created the stack, calling takeTopLevel() relinquishes ownership of the menus on the stack.
+ * If you do not call takeTopLevel() and assume ownership, the QMenus will be deleted with the MenuStack object.
+ */
+class MenuStack {
+private:
+    QStack<QMenu*>  _stack;
+    bool            _ownsStack = true;
 
+public:
                 MenuStack(void) = default;
                 MenuStack(const QString name);
+                ~MenuStack(void);
+
     QAction*    insertAction(const QString text, const std::function<void(bool)>& callback, const bool enabled=true);
     QAction*    insertCheckableAction(const QString text, const std::function<void(bool)>& callback, const bool checked=false, const bool enabled=true);
 
@@ -20,6 +28,7 @@ struct MenuStack {
 
     QMenu*      current(void) const;
     QMenu*      first(void) const;
+    QMenu*      takeTopLevel(void);
 
 };
 
@@ -31,9 +40,10 @@ struct MenuStack {
 
 // ========= INLINEZ =======
 
-inline QMenu* MenuStack::current(void) const { return stack.top(); }
-inline QMenu* MenuStack::first(void) const { return stack.first(); }
-inline void MenuStack::pop(const unsigned count) { for(unsigned i = 0; i < count; ++i) stack.pop(); }
+inline QMenu* MenuStack::current(void) const { return _stack.top(); }
+inline QMenu* MenuStack::takeTopLevel(void) { _ownsStack = false; return _stack.first(); }
+inline QMenu* MenuStack::first(void) const { return _stack.first(); }
+inline void MenuStack::pop(const unsigned count) { for(unsigned i = 0; i < count; ++i) _stack.pop(); }
 
 
 

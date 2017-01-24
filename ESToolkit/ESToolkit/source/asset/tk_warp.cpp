@@ -18,7 +18,7 @@ QMenu* TkWarp::createContextMenu(void) {
     );
 
 
-    return menuStack.first();
+    return menuStack.takeTopLevel();
 }
 
 void TkWarp::initializeDelegates(void) {

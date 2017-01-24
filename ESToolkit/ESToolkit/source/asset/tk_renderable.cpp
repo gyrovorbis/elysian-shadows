@@ -38,7 +38,7 @@ QMenu* TkRenderable::createContextMenu(void) {
     );
 
 
-    return menuStack.first();
+    return menuStack.takeTopLevel();
 
 }
 

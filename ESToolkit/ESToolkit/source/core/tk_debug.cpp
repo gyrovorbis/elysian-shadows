@@ -31,27 +31,29 @@
 #include <test_estk.h>
 #endif
 
-TkDebug* TkDebug::_window = nullptr;
-QTreeWidgetItem *TkDebug::_curParent;
-QTreeWidgetItem *TkDebug::_prevItem;
-QTreeWidget *TkDebug::_treeWidget;
-QVBoxLayout *TkDebug::_vertLayout;
-QTextEdit* TkDebug::_prompt;
-QWidget* TkDebug::_centralWidget;
-bool TkDebug::_pendingError = false;
-unsigned TkDebug::_stackDepth = 0;
-constexpr char TkDebug::_srcEnumToStr[TkDebug::SOURCE_MAX][50];
-bool TkDebug::_filterEnabled[TkDebug::SOURCE_MAX][TkDebug::LOG_OFF] = {{ true }};
-QVector<QString> TkDebug::_commandHistory;
-int TkDebug::_commandHistoryIndex;
-bool TkDebug::_shiftDown = false;
-QMutex* TkDebug::_mutex = nullptr;
-QQueue<TkDebug::LogEntry>* TkDebug::_pendingQueue = nullptr;
-QString* TkDebug::_debugLogPath = nullptr;
-QString TkDebug::_lastString;
-bool TkDebug::_prevMsgDiscarded = false;
-QStack<bool> TkDebug::_ignoredPushes;
-QMenu* TkDebug::_filterMenu;
+TkDebug*            TkDebug::_window = nullptr;
+QTreeWidgetItem*    TkDebug::_curParent;
+QTreeWidgetItem*    TkDebug::_prevItem;
+QTreeWidget*        TkDebug::_treeWidget;
+QVBoxLayout*        TkDebug::_vertLayout;
+QTextEdit*          TkDebug::_prompt;
+QWidget*            TkDebug::_centralWidget;
+bool                TkDebug::_pendingError = false;
+unsigned            TkDebug::_stackDepth = 0;
+constexpr char      TkDebug::_srcEnumToStr[TkDebug::SOURCE_MAX][50];
+bool                TkDebug::_filterEnabled[TkDebug::SOURCE_MAX][TkDebug::LOG_OFF] = {{ true }};
+QVector<QString>    TkDebug::_commandHistory;
+int                 TkDebug::_commandHistoryIndex;
+bool                TkDebug::_shiftDown = false;
+QMutex*             TkDebug::_mutex = nullptr;
+QQueue<TkDebug::LogEntry>*
+                    TkDebug::_pendingQueue = nullptr;
+QString*            TkDebug::_debugLogPath = nullptr;
+QString             TkDebug::_lastString;
+bool                TkDebug::_prevMsgDiscarded = false;
+QStack<bool>        TkDebug::_ignoredPushes;
+QMenu*              TkDebug::_filterMenu;
+QAction*            TkDebug::_filterActions[TkDebug::SOURCE_MAX][TkDebug::LOG_OFF] = {{nullptr}};
 
 TkDebug::TkDebug(void) {
     _commandHistory = QVector<QString>();
@@ -100,40 +102,29 @@ TkDebug::TkDebug(void) {
     qInstallMessageHandler(&logQ);
 	//Register AssetIO debug interface!
 
-#if 0
-    if(QDir(GY_FILE_QT_DEBUG_DIR).exists() || QDir().mkdir(GY_FILE_QT_DEBUG_DIR)) {
-        QDir debugDir(GY_FILE_QT_DEBUG_DIR);
-        if(debugDir.exists() && QDir::setCurrent(debugDir.path())) {
-            dbgprintf("Creating log files at %s", debugDir.absolutePath().toStdString().c_str());
-        } else {
-            errprintf("Could not cd into debug log file directory: %s", debugDir.path().toStdString().c_str());
-        }
-
-    } else {
-        errprintf("Could not access debug log file directory: %s/%s", Q_CSTR(QDir::currentPath()), GY_FILE_QT_DEBUG_DIR);
-    }
-#endif
     dbgprintf("Creating log files at %s", Q_CSTR(QDir::currentPath()));
     _debugLogPath = new QString(QDir::currentPath()); //QString(QDir().current().absoluteFilePath(GY_FILE_QT_DEBUG_DIR));
 
 
     MenuStack sourcesMenu("Filters");
     auto addFilterSource = [&](const QString name, const Debug::TK_SOURCE source) {
-        MenuStack severityMenu("Severity");
-        severityMenu.insertCheckableAction("Verbose", [=](const bool checked) {
+        sourcesMenu.push(name);
+        _filterActions[source][Debug::LOG_VERBOSE] = sourcesMenu.insertCheckableAction("Verbose", [=](const bool checked) {
+            _filterActions[source][Debug::LOG_VERBOSE]->blockSignals(true);
             Debug::setFilter(source, Debug::LOG_VERBOSE, checked);
+            _filterActions[source][Debug::LOG_VERBOSE]->blockSignals(false);
         });
-        severityMenu.insertCheckableAction("Warning", [=](const bool checked) {
+        _filterActions[source][Debug::LOG_WARNING] = sourcesMenu.insertCheckableAction("Warning", [=](const bool checked) {
+            _filterActions[source][Debug::LOG_WARNING]->blockSignals(true);
             Debug::setFilter(source, Debug::LOG_WARNING, checked);
+            _filterActions[source][Debug::LOG_WARNING]->blockSignals(false);
         });
-        severityMenu.insertCheckableAction("Error", [=](const bool checked) {
+        _filterActions[source][Debug::LOG_ERROR] = sourcesMenu.insertCheckableAction("Error", [=](const bool checked) {
+            _filterActions[source][Debug::LOG_ERROR]->blockSignals(true);
             Debug::setFilter(source, Debug::LOG_ERROR, checked);
+            _filterActions[source][Debug::LOG_ERROR]->blockSignals(false);
         });
-        sourcesMenu.insertCheckableAction(name, [](const bool /*checked*/) {
-            //for(auto it : action->menu()->actions()) {
-             //   it->setChecked(checked);
-            //}
-        })->setMenu(severityMenu.first());
+        sourcesMenu.pop();
     };
     addFilterSource("LibGyro",  Debug::LIBGYRO);
     addFilterSource("Engine",   Debug::ENGINE);
@@ -142,7 +133,12 @@ TkDebug::TkDebug(void) {
     addFilterSource("OpenGL",   Debug::OPENGL);
     addFilterSource("Lua",      Debug::LUA);
     addFilterSource("Commands", Debug::COMMAND);
-    _filterMenu = sourcesMenu.first();
+    sourcesMenu.insertAction("Enable All Filters", [](bool) {
+        for(unsigned i = 0; i < Debug::SOURCE_MAX; ++i)
+            for(unsigned j = 0; j < Debug::LOG_OFF; ++j)
+                setFilter((TK_SOURCE)i, (SEVERITY)j, true);
+    });
+    _filterMenu = sourcesMenu.takeTopLevel();
     _treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(_treeWidget, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(_onLogWidgetContextMenuRequested(QPoint)));
 
@@ -518,4 +514,9 @@ bool DebugLogTreeWidget::eventFilter(QObject* /*object*/, QEvent *event) {
 
     }
     return false;
+}
+
+void TkDebug::setFilter(const TK_SOURCE src, const SEVERITY severity, const bool enabled) {
+    _filterEnabled[src][severity] = enabled;
+    _filterActions[src][severity]->setChecked(enabled);
 }

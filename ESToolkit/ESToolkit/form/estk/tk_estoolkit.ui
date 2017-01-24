@@ -245,6 +245,7 @@
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
     <addaction name="actionCopy"/>
+    <addaction name="actionSelect_All"/>
    </widget>
    <widget class="QMenu" name="menuEngine">
     <property name="title">
@@ -1583,6 +1584,14 @@
    </property>
    <property name="text">
     <string>Toggle Fullscreen</string>
+   </property>
+  </action>
+  <action name="actionSelect_All">
+   <property name="text">
+    <string>Select All</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
    </property>
   </action>
  </widget>

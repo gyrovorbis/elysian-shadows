@@ -55,7 +55,7 @@ QMenu* TkSkeleton::createContextMenu(void) {
         canRemoveFrom(*_entity)
     );
 
-    return menuStack.first();
+    return menuStack.takeTopLevel();
 
 }
 

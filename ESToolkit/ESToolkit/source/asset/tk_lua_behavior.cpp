@@ -29,7 +29,7 @@ QMenu* TkLuaBehavior::createContextMenu(void) {
         !_entity->isActive()
     );
 
-    return menuStack.first();
+    return menuStack.takeTopLevel();
 #endif
     return nullptr;
 }

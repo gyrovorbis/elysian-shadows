@@ -9,24 +9,29 @@ namespace elysian {
 
 class EventMonitor {
 private:
-	static EventMonitor		_nullMonitor;
+    static EventMonitor         _nullMonitor;
+    std::function<void(void)>   _cancel   = nullptr;
 
 public:
-	static bool				isNull(const EventMonitor*const mon);
-	static EventMonitor*	null(void);
+    virtual					~EventMonitor(void);
+
+    void                    setCancelCallback(std::function<void(void)> func);
+    void                    cancel(void);
 	virtual void			onStart(void);
 	virtual void			onFinish(void);
-	virtual					~EventMonitor(void) = default;
-    void                    setEnabled(const bool val);
+
+    static bool				isNull(const EventMonitor*const mon);
+    static EventMonitor*	null(void);
 
 };
 
 class EventCallback: public EventMonitor {
 private:
 	std::function<void(void)> _callback = nullptr;
+
 public:
 
-	void			setCallbackFunction(const std::function<void(void)> func);
+    void			setCallbackFunction(std::function<void(void)> func);
 	virtual void	onFinish(void) override;
 };
 
@@ -61,27 +66,44 @@ public:
 
 // =========== INLINEZ ===========
 
-//inline void LuaEventMonitor::setEnabled(const bool val) { _enabled = val; }
+
+inline void EventMonitor::setCancelCallback(std::function<void(void)> func) {
+    _cancel = std::move(func);
+}
+inline EventMonitor::~EventMonitor(void) {
+    cancel();
+}
+inline void EventMonitor::cancel(void) {
+     if(_cancel) {
+         _cancel();
+         _cancel = nullptr;
+     }
+ }
+
+inline bool EventMonitor::isNull(const EventMonitor*const mon) { return (mon == &_nullMonitor); }
+inline EventMonitor* EventMonitor::null(void) { return &_nullMonitor; }
+inline void EventMonitor::onStart(void) { }
+inline void EventMonitor::onFinish(void) { _cancel = nullptr; }
+
+
+inline void EventCallback::setCallbackFunction(std::function<void(void)> func) {
+    _callback = std::move(func);
+}
+
+inline void EventCallback::onFinish(void) {
+    EventMonitor::onFinish();
+    _callback();
+}
 
 inline void LuaEventMonitor::setTable(OOLUA::Lua_table_ref& table) { _table = table; }
 inline OOLUA::Lua_table_ref& LuaEventMonitor::getTable(void) { return _table; }
 
 inline LuaEventCallback::LuaEventCallback(OOLUA::Lua_func_ref &callback):
-	_callback(callback) {}
-inline void LuaEventCallback::setCallbackFunction(OOLUA::Lua_func_ref &callback) { _callback = callback; }
-
-
-
-inline bool EventMonitor::isNull(const EventMonitor*const mon) { return (mon == &_nullMonitor); }
-inline EventMonitor* EventMonitor::null(void) { return &_nullMonitor; }
-inline void EventMonitor::onStart(void) { }
-inline void EventMonitor::onFinish(void) { }
-
-inline void EventCallback::setCallbackFunction(const std::function<void(void)> func) {
-	_callback = func;
+    _callback(callback) {}
+inline void LuaEventCallback::setCallbackFunction(OOLUA::Lua_func_ref &callback) {
+    _callback = callback;
 }
 
-inline void EventCallback::onFinish(void) { _callback(); }
 
 }
 

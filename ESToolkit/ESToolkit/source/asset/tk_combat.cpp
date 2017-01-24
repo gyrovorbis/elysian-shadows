@@ -36,7 +36,7 @@ QMenu* TkCombat::createContextMenu(void) {
     );
 
 
-    return menuStack.first();
+    return menuStack.takeTopLevel();
 
 }
 

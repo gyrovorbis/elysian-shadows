@@ -329,6 +329,11 @@ void ESToolkit::on_actionReset_Layout_triggered()
 
 }
 
+void ESToolkit::on_actionSelect_All_triggered()
+{
+    _ui->mapView->selectAll();
+}
+
 void ESToolkit::on_actionCut_triggered()
 {
     _ui->mapView->selectionCut();

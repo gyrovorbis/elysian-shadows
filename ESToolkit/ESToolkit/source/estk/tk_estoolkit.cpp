@@ -415,16 +415,15 @@ void ESToolkit::WriteSettings()
         settings.setValue("gitLabPrivateToken", _gitlabDialog->getPrivateToken());
         settings.setValue("gitLabProjectId", _gitlabDialog->getProjectId());
     }
-    unsigned source = 0;
-    for(auto itSource : _filterMenu->actions()) {
-        unsigned severity = 0;
-        for(auto itSeverity : itSource->menu()->actions()) {
+
+    for(unsigned i = 0; i < TkDebug::SOURCE_MAX; ++i) {
+        for(unsigned j = 0; j < TkDebug::LOG_OFF; ++j) {
             char buff[30];
-            sprintf(buff, "debugFilter_%d_%d", source, severity++);
-            settings.setValue(buff, itSeverity->isChecked());
+            sprintf(buff, "debugFilter_%d_%d", i, j);
+            settings.setValue(buff, Debug::isFilterEnabled((TkDebug::TK_SOURCE)i, (TkDebug::SEVERITY)j));
         }
-        ++source;
     }
+
     settings.setValue("showHiddenLevels", _assets.getCurrentProject()? _assets.getCurrentProject()->getIndexHiddenLevels() : false);
 
 }
@@ -469,7 +468,7 @@ void ESToolkit::ReadSettings()
     unsigned y                  = settings.value("engineStartPosY", 0).toUInt();
     bool showHiddenEntities     = settings.value("showHiddenEntities", false).toBool();
     bool shadowPassEnabled      = settings.value("shadowPassEnabled", true).toBool();
-    bool bloomEnabled            = settings.value("bloomEnabled", true).toBool();
+    bool bloomEnabled           = settings.value("bloomEnabled", true).toBool();
     bool manualCamera           = settings.value("manualCameraEnabled", false).toBool();
     bool audioEnabled           = settings.value("audioEnabled", true).toBool();
     bool lightingEnabled        = settings.value("lightingEnabled", true).toBool();
@@ -481,6 +480,15 @@ void ESToolkit::ReadSettings()
     _engineDialog->setStartPos(x, y);
     MAP_VIEW_RES mapViewRes     = (MAP_VIEW_RES)settings.value("mapViewRes", MAP_VIEW_RES_DYNAMIC).toInt();
     _setMapViewResolution(mapViewRes);
+
+    for(unsigned source = 0; source < Debug::SOURCE_MAX; ++source) {
+        for(unsigned severity = 0; severity < Debug::LOG_OFF; ++severity) {
+            char buff[30];
+            sprintf(buff, "debugFilter_%d_%d", source, severity);
+            const bool enabled = settings.value(buff, true).toBool();
+            Debug::setFilter((Debug::TK_SOURCE)source, (Debug::SEVERITY)severity, enabled);
+        }
+    }
 
     if(savedSettings == "") {
         return;
@@ -510,23 +518,7 @@ void ESToolkit::ReadSettings()
         _gitlabDialog->setProjectId(settings.value("gitLabProjectId").toInt());
     }
 
-    unsigned source = 0;
-    for(auto itSource : _filterMenu->actions()) {
-        unsigned severity = 0;
-        for(auto itSeverity : itSource->menu()->actions()) {
-            char buff[30];
-            sprintf(buff, "debugFilter_%d_%d", source, severity);
-            const bool enabled = settings.value(buff, true).toBool();
-            Debug::setFilter((Debug::TK_SOURCE)source, (Debug::SEVERITY)severity++, enabled); //shouldn't be necessary, but signal isn't firing. 0_o
-            itSeverity->setChecked(enabled);
-        }
-        source++;
-    }
-
-
-
     toggleProjectActions(false);
-
 }
 
 void ESToolkit::OnAreaRenamed(const QString /*oldName*/, const QString /*newName*/) {
@@ -1200,3 +1192,4 @@ void ESToolkit::onAltTabShortcutTriggered(void) {
         _areaTabBar->setCurrentIndex(newIndex);
     }
 }
+

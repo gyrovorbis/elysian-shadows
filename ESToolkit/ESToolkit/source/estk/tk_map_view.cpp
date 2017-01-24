@@ -705,6 +705,34 @@ void MapView::selectionCopy(void) {
     }
 }
 
+void MapView::selectAll(void) {
+    const auto layer = getAssets()->getCurrentLayer();
+
+    if(layer == Assets::LAYER_ENTITY) {
+        EntitySelectable* entitySelectable = nullptr;
+        auto& entities = getCurrentArea()->getEntities(); //only look at active entities!
+        auto addEntity = [&](Entity* e) {
+            if(!entitySelectable) entitySelectable = new EntitySelectable(e);
+            else entitySelectable->addEntity(e);
+        };
+
+        if(entities.size()) {
+            for(auto&& entity : entities) {
+                if(entity->getName()[0] != '_') { //don't select hidden entities
+                    addEntity(entity);
+                }
+            }
+
+            if(entitySelectable) getAssets()->setCurrentSelection(entitySelectable);
+        }
+    } else {
+        auto* area = getCurrentArea();
+        TileSelectable* tileSelectable = new TileSelectable(QRect(0, 0, area->getMapWidth(), area->getMapHeight()),
+                                                            nullptr, area, getCurrentLevel(), layer);
+        getAssets()->setCurrentSelection(tileSelectable);
+    }
+}
+
 void MapView::dragEnterEvent(QDragEnterEvent *event) {
     if(_mimeDropManager->canDrop(event)) event->acceptProposedAction();
 }

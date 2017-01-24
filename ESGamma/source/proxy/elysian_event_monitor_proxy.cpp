@@ -18,7 +18,17 @@
  * Static function returning a blank, default EventMonitor object that can be passed to functions when we don't
  * care about using a notification callback.
  */
-
+/*!
+ * \qmlmethod void EventMonitor::cancel()
+ *
+ * Cancels the action being listened to by EventMonitor. This function must be called before any objects
+ * involved in the event processing are deleted, otherwise the engine will still be trying to use them. It can
+ * also be called to cancel an ongoing event and reschedule or reassign the event.
+ *
+ * \e { For Example: If you have a \l{Character} with a WayPoint Behavior attached to it to make him walk back
+ * and forth between waypoints, the waypoint event must be cancelled through this function before you can safely
+ * delete the \l{Entity}, otherwise it will still be in use by the Engine!}
+ */
 
 /*!
     \qmltype LuaEventMonitor
@@ -66,7 +76,8 @@
 
 
 
-OOLUA_EXPORT_FUNCTIONS(EventMonitor)
+OOLUA_EXPORT_FUNCTIONS(EventMonitor,
+                       cancel)
 OOLUA_EXPORT_FUNCTIONS_CONST(EventMonitor)
 
 OOLUA_EXPORT_FUNCTIONS(LuaEventMonitor,

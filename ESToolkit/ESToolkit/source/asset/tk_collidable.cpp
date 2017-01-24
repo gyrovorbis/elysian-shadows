@@ -46,7 +46,7 @@ QMenu* TkCollidable::createContextMenu(void) {
     );
 
 
-    return menuStack.first();
+    return menuStack.takeTopLevel();
 }
 
 bool TkCollidable::canRemoveFrom(const Entity &entity) const {

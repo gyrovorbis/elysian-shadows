@@ -266,6 +266,7 @@ private Q_SLOTS:
     void on_actionLua_Manager_Dump_triggered();
     void on_actionBloom_toggled(bool arg1);
     void on_actionToggle_Fullscreen_toggled(bool arg1);
+    void on_actionSelect_All_triggered();
 };
 
 

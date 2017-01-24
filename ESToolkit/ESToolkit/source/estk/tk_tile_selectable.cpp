@@ -88,7 +88,7 @@ TileSelectable::TileSelectable(const QList<QGraphicsItem *> &items, Area *const 
 }
 
 
-TileSelectable::TileSelectable(const QRect &region, bool selectionArray[][ELYSIAN_AREA_MAP_WIDTH], Area *const area, Level *const lev, const Assets::LAYER_TYPE layer):
+TileSelectable::TileSelectable(const QRect &region, bool (*selectionArray)[ELYSIAN_AREA_MAP_WIDTH], Area *const area, Level *const lev, const Assets::LAYER_TYPE layer):
     _layer(layer),
     _level(lev),
     _area(area)
@@ -100,18 +100,15 @@ TileSelectable::TileSelectable(const QRect &region, bool selectionArray[][ELYSIA
 
     for(unsigned j = 0; j < _height; ++j) {
         for(unsigned i = 0; i < _width; ++i) {
-            //uint16_t tileValue = area->getTileValue(QPoint(region.topLeft().x()+i, region.topLeft().y()+j), layer);
             _entry[j][i] = area->getTileEntry(QPoint(region.topLeft().x()+i, region.topLeft().y()+j), layer);
-            _inSelection[j][i] = selectionArray[region.topLeft().y()+j][region.topLeft().x()+i];
-            //_index[j][i] = ELYSIAN_MAP_INDEX_FROM_VALUE(tileValue);
-            //_orient[j][i] = ELYSIAN_MAP_ORIENT_FROM_VALUE(tileValue);
+            _inSelection[j][i] = selectionArray?
+                        selectionArray[region.topLeft().y()+j][region.topLeft().x()+i] : true;
 
         }
     }
 
     if(!_selectionViewDelegate) _selectionViewDelegate = new TileSelectableSelectionViewDelegate;
     _populateTileIndicesList();
-    //updateSceneSelection(region.topLeft().x(), region.topLeft().y());
 }
 
 TileSelectable::TileSelectable(const TileSelectable &rval):

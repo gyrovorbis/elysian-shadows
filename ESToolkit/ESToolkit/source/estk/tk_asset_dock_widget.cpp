@@ -567,7 +567,7 @@ QMenu* PrefabAssetFileType::contextMenu(const QModelIndex& /*index*/) {
 
     });
 
-    return menuStack.first();
+    return menuStack.takeTopLevel();
 }
 
 QString PrefabAssetFileType::prefabNameFromFilePath(const QString path) {

@@ -96,6 +96,7 @@ public:
     bool isSelected(const unsigned x, const unsigned y) const;
     bool isTerrainLayer(void) const;
     bool isEntityLayer(void) const;
+    void selectAll(void);
 
     //QGraphicsView virtual implementation
     virtual void mouseMoveEvent(QMouseEvent *event) override;

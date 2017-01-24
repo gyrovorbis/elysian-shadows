@@ -74,6 +74,7 @@ public:
 	}
 
     static void setFilter(const TK_SOURCE source, const SEVERITY severity, const bool enabled);
+    static bool isFilterEnabled(const TK_SOURCE source, const SEVERITY severity);
     static void clear(void);
 
     static QString getDebugLogPath(void);
@@ -84,10 +85,10 @@ public:
 private:
     struct LogEntry {
         enum TYPE { TEXT, PUSH, POP };
-        QString string;
-        SEVERITY   level;
-        int     source;
-        TYPE    type;
+        QString     string;
+        SEVERITY    level;
+        int         source;
+        TYPE        type;
     };
 
 public Q_SLOTS:
@@ -120,6 +121,7 @@ private:
     static bool                 _pendingError;
     static unsigned             _stackDepth;
     static bool                 _filterEnabled[SOURCE_MAX][DebugBase::LOG_OFF];
+    static QAction*             _filterActions[SOURCE_MAX][DebugBase::LOG_OFF];
     static QVector<QString>     _commandHistory;
     static int                  _commandHistoryIndex;
     static bool                 _shiftDown;
@@ -157,12 +159,13 @@ inline void TkDebug::writeLog(const int source, const SEVERITY level, const char
 inline QString TkDebug::getDebugLogPath(void) { return *_debugLogPath; }
 
 
-inline void TkDebug::setFilter(const TK_SOURCE src, const SEVERITY severity, const bool enabled) {
-    _filterEnabled[src][severity] = enabled;
-}
-
 inline QMenu* TkDebug::getFilterMenu(void) {
     return _filterMenu;
+}
+
+inline bool TkDebug::isFilterEnabled(const TK_SOURCE source, const SEVERITY severity) {
+    Q_ASSERT(source < SOURCE_MAX && severity < LOG_OFF);
+    return _filterEnabled[source][severity];
 }
 
 

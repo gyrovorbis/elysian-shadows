@@ -20,7 +20,7 @@ OOLUA_PROXY(EventMonitor)
         No_public_constructors,
         No_public_destructor
     )
-    //OOLUA_SFUNC(null)
+    OOLUA_MEM_FUNC(void, cancel)
 OOLUA_PROXY_END
 
 OOLUA_PROXY(LuaEventMonitor, EventMonitor)

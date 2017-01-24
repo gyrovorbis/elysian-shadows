@@ -393,7 +393,7 @@ QMenu* TkEntity::createContextMenu(void) {
     menuStack.pop();
 
 
-    return menuStack.first();
+    return menuStack.takeTopLevel();
 }
 
 void TkEntity::setTreeWidgetItemState(const TreeItemState state) {
@@ -461,7 +461,8 @@ void TkEntity::initializeDelegates(void) {
                         if(entity) {
                             for(auto&& url : data->urls()) {
                                 QString assetPath = FileUtilities::getAssetRelativePath(url.toLocalFile());
-                                entity->addLuaBehavior(Q_CSTR(assetPath), LuaVariant());
+                                auto* behav = entity->addLuaBehavior(Q_CSTR(assetPath), LuaVariant());
+                                if(!behav) QMessageBox::critical(nullptr, "Error!", "The Lua Behavior could not be attached, because there was a problem with the script. View the console for more details.");
                             }
                             luaItem->setDirty(true);
                             return true;
@@ -537,7 +538,7 @@ void TkEntity::initializeVirtualTableDelegates(QString property) {
 
                                 });
 
-                                return stack.first();
+                                return stack.takeTopLevel();
                             }
                         }
                         return nullptr;

@@ -37,7 +37,7 @@ QMenu* TkLightSource::createContextMenu(void) {
     );
 
 
-    return menuStack.first();
+    return menuStack.takeTopLevel();
 
 }
 

@@ -59,6 +59,13 @@ public:
 
 	inline void setEventMonitor(EventMonitor*const monitor) {
 		_monitor = (EventMonitor::isNull(monitor))? nullptr : monitor;
+        if(_monitor) {
+            _monitor->setCancelCallback([&]() {
+                //static_cast<SubProcess<P,M>*>(this)->stop(m);
+                SubProcess<P,M>::_state = PROC_STATE_IDLE;
+                _monitor = nullptr;
+            });
+        }
 	}
 
 

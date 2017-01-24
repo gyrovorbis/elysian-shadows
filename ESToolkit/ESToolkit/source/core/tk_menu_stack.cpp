@@ -1,11 +1,17 @@
 #include <tk_menu_stack.h>
 #include <QMenu>
 
-MenuStack::MenuStack(const QString name) { stack.push_back(new QMenu(name)); }
+MenuStack::MenuStack(const QString name) { _stack.push_back(new QMenu(name)); }
+
+MenuStack::~MenuStack(void) {
+    if(_ownsStack) {
+        delete first();
+    }
+}
 
 QMenu* MenuStack::push(const QString name) {
-    auto* menu = stack.size()? current()->addMenu(name) : new QMenu(name);
-    stack.push_back(menu);
+    auto* menu = _stack.size()? current()->addMenu(name) : new QMenu(name);
+    _stack.push_back(menu);
     return menu;
 }
 
@@ -14,7 +20,7 @@ QAction* MenuStack::insertAction(const QString text, const std::function<void(bo
     //motherfucking C++11 lambda function Qt SLAWTS!!!
     QObject::connect(action, &QAction::triggered, callback);
     action->setEnabled(enabled);
-    stack.top()->addAction(action);
+    _stack.top()->addAction(action);
     return action;
 }
 
