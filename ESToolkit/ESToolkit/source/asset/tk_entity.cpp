@@ -372,11 +372,11 @@ QMenu* TkEntity::createContextMenu(void) {
     for(auto behav : _behaviors) {
         char strBuff[TK_ENTITY_CONTEXT_MENU_BEHAVIOR_NAME_SIZE];
 
-        sprintf(strBuff, "%d - %s", ++behavNum, Q_CSTR(static_cast<LuaBehavior*>(behav)->getScriptName()));
+        sprintf(strBuff, "%d - %s", ++behavNum, behav->getBehavName());
         menuStack.insertCheckableAction(strBuff,
             [=](bool checked) {
                 if(!checked) {
-                    removeLuaBehavior(behav->getBehavName());
+                    removeBehavior(behav->getBehavName());
                 }
             },
             true,
