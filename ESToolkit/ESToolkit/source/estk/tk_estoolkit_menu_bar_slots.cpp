@@ -770,3 +770,14 @@ void ESToolkit::on_actionBloom_toggled(bool arg1)
         _assets.getEngine()->getLightSys()->setBloomEnabled(arg1);
     }
 }
+
+void ESToolkit::on_actionSelect_Eraser_triggered()
+{
+    _ui->mapView->selectEraserTile();
+}
+
+void ESToolkit::on_actionDelete_Selection_triggered()
+{
+    _ui->mapView->deleteSelection();
+}
+

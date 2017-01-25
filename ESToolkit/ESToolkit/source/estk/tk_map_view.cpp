@@ -39,6 +39,7 @@ MapView::MapView(QWidget *parent): DestView<TileEntry>::DestView(parent) {
     connect(getAssets(), SIGNAL(layerChanged(LAYER_TYPE)), this, SLOT(onLayerChange(LAYER_TYPE)));
     connect(getAssets(), SIGNAL(engineInitialize()), this, SLOT(onEngineInitialize()));
     connect(getAssets(), SIGNAL(mapChanged(Area*const,const QVector<MapChange>&)), this, SLOT(onMapChange(Area*const,const QVector<MapChange>&)));
+    connect(getAssets(), SIGNAL(selectionChanged(const Selectable::TYPE, Selectable *const)), this, SLOT(onSelectionChanged(const Selectable::TYPE, Selectable*const)));
 }
 
 MapView::~MapView(void) {
@@ -54,6 +55,11 @@ void MapView::onLayerChange(Assets::LAYER_TYPE type) {
     } else {
         getAssets()->getEngine()->getCollisionSys()->unregisterContactEventMonitor(ELYSIAN_COLLISION_CONTACT_EVENT_MONITOR_TK_MAPVIEW_MASK);
     }
+}
+
+void MapView::onSelectionChanged(const Selectable::TYPE type, Selectable* const) {
+    if(type != Selectable::TILE || type != Selectable::ENTITY)
+        _sceneSelectionClear();
 }
 
 void MapView::onAreaChanging(Area * const /*area*/) {
@@ -267,9 +273,14 @@ void MapView::_sceneSelectionClear(void) {
     _entityClearSceneSelection();
     memset(_tileSelectionArray, 0, sizeof(_tileSelectionArray));
     //scene()->update(scene()->sceneRect());
-    getAssets()->getCurrentArea()->setEmitMapChange(false);
+    auto* area = getCurrentArea();
+
+    /*It is possible to set a selection before an area is loaded or clear the selection by
+    setting a NULL selection after areas area already deleted!*/
+    if(area) area->setEmitMapChange(false);
     _curUndoItem->clearEntries();
-    getAssets()->getCurrentArea()->setEmitMapChange(true);
+    if(area) area->setEmitMapChange(true);
+
     _forceSceneUpdate();
 }
 
@@ -829,6 +840,20 @@ void MapView::selectEraserTile(void) {
         TileSelectable* tileSelectable = new TileSelectable(1, 1, getCurrentArea(), getCurrentLevel());
         tileSelectable->setEntry(0, 0, 0);
         getAssets()->setCurrentSelection(tileSelectable);
+    }
+}
+
+void MapView::deleteSelection(void) {
+    //"delete" is more like clear for tile selections
+    if(getAssets()->getCurrentSelectionType() == Selectable::TILE) {
+       getAssets()->setCurrentSelection(nullptr);
+
+    } else if(getAssets()->getCurrentSelectionType() == Selectable::ENTITY) { //deletes the shit out of any currently selected entities
+        auto* selectable = static_cast<EntitySelectable*>(getAssets()->getCurrentSelection());
+        for(auto&& it: *selectable) {
+            delete it.entity;
+        }
+        getAssets()->setCurrentSelection(nullptr);
     }
 }
 

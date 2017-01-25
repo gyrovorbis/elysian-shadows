@@ -246,6 +246,7 @@
     <addaction name="actionRedo"/>
     <addaction name="actionCopy"/>
     <addaction name="actionSelect_All"/>
+    <addaction name="actionDelete_Selection"/>
     <addaction name="separator"/>
     <addaction name="actionSelect_Eraser"/>
    </widget>
@@ -1602,6 +1603,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="actionDelete_Selection">
+   <property name="text">
+    <string>Delete Selection</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
    </property>
   </action>
  </widget>

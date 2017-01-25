@@ -98,6 +98,7 @@ public:
     bool isEntityLayer(void) const;
     void selectAll(void);
     void selectEraserTile(void);
+    void deleteSelection(void);
 
     //QGraphicsView virtual implementation
     virtual void mouseMoveEvent(QMouseEvent *event) override;
@@ -118,7 +119,7 @@ public:
     void selectionPaste(void);
     void selectionCopy(void);
 
-public Q_SLOTS:
+private Q_SLOTS:
 
     void onEngineInitialize(void);
     void onEngineUpdated(void);
@@ -126,6 +127,7 @@ public Q_SLOTS:
     void onAreaChanging(Area*const area);
     void onLayerChange(LAYER_TYPE type);
     void onMapChange(Area*const area, const QVector<MapChange>& changes);
+    void onSelectionChanged(const Selectable::TYPE type, Selectable*const selectable);
 };
 
 

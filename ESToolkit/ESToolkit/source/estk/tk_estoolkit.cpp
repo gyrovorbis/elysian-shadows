@@ -1192,9 +1192,3 @@ void ESToolkit::onAltTabShortcutTriggered(void) {
         _areaTabBar->setCurrentIndex(newIndex);
     }
 }
-
-
-void ESToolkit::on_actionSelect_Eraser_triggered()
-{
-    _ui->mapView->selectEraserTile();
-}
